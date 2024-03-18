@@ -209,19 +209,13 @@ function UsedUp()
 	}
 	if (NumCopies<=0)
 	{
-
 		bActivatable = false;
 		//Destroy();  //GMDX                                                    //RSD: Bottom one left at 0% mostly so new repair bot features aren't hell
-		if (player != none && player.bHardcoreMode)                             //RSD: Actually let's do it but only on Hardcore
-			Destroy();
-		else
-		{
 		NumCopies=1;                                                            //RSD: Stuff
 		Charge = 0;                                                             //RSD: To ensure we don't have slightly negative charges
 		GotoState('DeActivated');
 		UpdateBeltText();
 		DimIcon();
-		}
 	}
 	else
 	{
