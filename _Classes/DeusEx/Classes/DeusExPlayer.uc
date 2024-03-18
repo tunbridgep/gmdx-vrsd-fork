@@ -436,7 +436,6 @@ var float augEffectTime;
 var vector vecta;
 var rotator rota;
 var bool bOnLadder;
-var bool bWasLasing;
 //var bool bBoosty;  //CyberP: low-tech speed boost
 //Alias=LeanLeft,LeanRight
 //Aliases[18]=(Command="Button bLeanRightHook",Alias=LeanRH)
@@ -1179,7 +1178,7 @@ function PreTravel()
 	ExtinguishFire();
 	if (bRadialAugMenuVisible) ToggleRadialAugMenu();
 	if (inHand != none && inHand.IsA('DeusExWeapon'))
-		DeusExWeapon(inHand).LaserOff();                                        //RSD: Otherwise dots will remain on the map
+		DeusExWeapon(inHand).LaserOff(true);                                    //RSD: Otherwise dots will remain on the map
     ForceDroneOff();                                                            //RSD: Since we can move on standby, shut drone off
 	for(i=0;i<ArrayCount(DrugsTimerArray);i++)                                  //RSD: Hack to keep drug timers from resetting from 0 for unknown reasons
 	{
@@ -6952,11 +6951,9 @@ exec function ShowScores()
                 if (inHand != none && inHand.IsA('DeusExWeapon'))
                 {
                     primaryWeapon = inHand;
-                    if (DeusExWeapon(inHand).bLasing)
-                        bWasLasing = True;
                     //DeusExWeapon(inHand).GotoState('DownWeapon');
                     DeusExWeapon(inHand).ScopeOff();
-                    DeusExWeapon(inHand).LaserOff();
+                    DeusExWeapon(inHand).LaserOff(true);
                     PutInHand(None);
                 }
                 else if (inHand.IsA('SkilledTool'))
@@ -8858,7 +8855,7 @@ exec function ToggleScope()
         {
          bFromCrosshair=true;
 		if (W.bLasing)
-        W.LaserOff();
+        W.LaserOff(true);
 		}
 	  }
 	}
@@ -9413,7 +9410,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 			else		// make sure the scope/laser are turned off
 			{
 				DeusExWeapon(item).ScopeOff();
-				DeusExWeapon(item).LaserOff();
+				DeusExWeapon(item).LaserOff(false);
 				if (DeusExWeapon(item).bIsCloaked)
 				{
 				   DeusExWeapon(item).HideCamo();
@@ -9705,7 +9702,7 @@ function RemoveItemDuringConversation(Inventory item)
 		if (item.IsA('DeusExWeapon'))
 		{
 			DeusExWeapon(item).ScopeOff();
-			DeusExWeapon(item).LaserOff();
+			DeusExWeapon(item).LaserOff(false);
 		}
 		else if (item.IsA('DeusExPickup'))
 		{
@@ -10354,7 +10351,7 @@ function SetLaser(bool bNewOn,optional bool bCheckXhair)
 	  if (bCheckXhair) SetCrosshair(false,false);
 	} else
 	{
-	  W.LaserOff();
+	  W.LaserOff(false);
 	  if (bCheckXhair) SetCrosshair(bWasCrosshair,false);
 	}
 }

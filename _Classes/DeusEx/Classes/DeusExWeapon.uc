@@ -77,6 +77,7 @@ var() int				ScopeFOV;				// FOV while using scope
 var bool				bZoomed;				// are we currently zoomed?
 var bool				bWasZoomed;				// were we zoomed? (used during reloading)
 
+var travel bool         bLaserToggle;           // Remembers the toggle state of our laser independent of whether it has been turned on or off by the game
 
 var bool				bCanHaveLaser;			// can this weapon have a laser sight?
 var() travel bool		bHasLaser;				// does this weapon have a laser sight?
@@ -1256,10 +1257,10 @@ local float p, mod;
     bAimingDown=False;
 	Owner.PlaySound(SelectSound, SLOT_Misc, Pawn(Owner).SoundDampening);
 	negTime = 0;
-	if (player != none && player.bWasLasing)
-	{
+	
+    if (player != none && bLaserToggle) //Sarge: Add laser check to re-enable laser if we turned it on
+	{                                   //Sarge: The block for mantling checks was also removed, now it uses this directly
 	   LaserOn();
-	   player.bWasLasing = False;
 	}
 	}
 }
@@ -2659,6 +2660,7 @@ function LaserOn()
 			Emitter.TurnOn();
                 Owner.PlaySound(sound'KeyboardClick3', SLOT_None,,, 1024,1.5); //CyberP: suitable laser on sfx
 		bLasing = True;
+        bLaserToggle = true;
 	  }
 		if ((Owner!=none)&&(Owner.IsA('DeusExPlayer'))&&!bAimingDown)
 		{
@@ -2671,18 +2673,20 @@ function LaserOn()
 	}
 }
 
-function LaserOff()
+function LaserOff(bool forced)
 {
 	if (IsA('WeaponNanoSword')&&!IsInState('DownWeapon')) return;
 	if (bHasLaser && bLasing)
 	{
-	  if (IsA('WeaponPistol')) WeaponPistol(self).PistolLaserOff();
+	  if (IsA('WeaponPistol')) WeaponPistol(self).PistolLaserOff(forced);
 	  else
 	  {
 		 if (Emitter != None)
 			Emitter.TurnOff();
                  Owner.PlaySound(sound'KeyboardClick2', SLOT_Misc,,, 1024,1.5); //CyberP: suitable laser off sfx
 		 bLasing = False;
+         if (!forced)
+            bLaserToggle = false;
 	  }
 //	  log(Owner@DeusExPlayer(Owner).bWasCrosshair@DeusExPlayer(Owner).bFromCrosshair);
 	  if ((Owner!=none)&&(Owner.IsA('DeusExPlayer'))&&(DeusExPlayer(Owner).bWasCrosshair)&& !bAimingDown)
@@ -2713,9 +2717,13 @@ function LaserToggle()
 		if (bHasLaser)
 		{
 			if (bLasing)
-				LaserOff();
+            {
+				LaserOff(false);
+            }
 			else
+            {
 				LaserOn();
+            }
 		}
 
 	}
@@ -6546,8 +6554,6 @@ Begin:
 		FinishAnim();
 	if ( bChangeWeapon )
 	{
-	    if (Owner.IsA('DeusExPlayer'))
-           DeusExPlayer(Owner).bWasLasing = False;
 		GotoState('DownWeapon');
     }
 	bWeaponUp = True;
@@ -6612,7 +6618,7 @@ Begin:
     //if(!DeusExPlayer(Owner).assignedWeapon.IsA('Binoculars'));                   //RSD
 	   ScopeOff();
     //if (Owner.IsA('DeusExPlayer') && !DeusExPlayer(Owner).IsInState('Mantling'))
-	   LaserOff();
+	   LaserOff(true);
     if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).bCrosshairVisible && !bLasing)
        DeusExPlayer(Owner).SetCrosshair(true,false);
 	//if (!class'DeusExPlayer'.default.bRadarTran)                              //RSD: Overhauled cloak/radar routines

@@ -757,8 +757,6 @@ State Mantling
          {
             if (inHand.IsA('DeusExWeapon'))
             {
-                 if (DeusExWeapon(inHand).bLasing)
-                     bWasLasing = True;
                  DeusExWeapon(inHand).GotoState('DownWeapon');
             }
             else if (inHand.IsA('SkilledTool'))
@@ -774,8 +772,6 @@ State Mantling
       {
             if (inHand.IsA('DeusExWeapon'))
             {
-                 if (DeusExWeapon(inHand).bLasing)
-                     bWasLasing = True;
                  DeusExWeapon(inHand).GotoState('DownWeapon');
             }
             else if (inHand.IsA('SkilledTool'))

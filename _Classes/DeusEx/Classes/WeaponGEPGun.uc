@@ -113,9 +113,9 @@ function LaserOn()
        LockTime=0.100000;
 }
 
-function LaserOff()
+function LaserOff(bool forced)
 {
-   super.LaserOff();
+   super.LaserOff(forced);
 
    LockTime=default.LockTime;
 }

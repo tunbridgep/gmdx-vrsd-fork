@@ -394,10 +394,11 @@ function PistolLaserOn()
 		    Multiskins[3] = texture'HDTPGlockTex4';
 
 		bLasing = True;
+        bLaserToggle = true;
 	}
 }
 
-function PistolLaserOff()
+function PistolLaserOff(bool forced)
 {
 	if (bHasLaser && bLasing)
 	{
@@ -408,6 +409,8 @@ function PistolLaserOff()
             Multiskins[3] = none;
 
 		bLasing = False;
+        if (!forced)
+            bLaserToggle = false;
 	}
 }
 

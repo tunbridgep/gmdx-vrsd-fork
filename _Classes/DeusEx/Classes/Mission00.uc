@@ -234,7 +234,7 @@ function RemoveAllInventory()
 				if (item.IsA('DeusExWeapon'))
 				{
 					DeusExWeapon(item).ScopeOff();
-					DeusExWeapon(item).LaserOff();
+					DeusExWeapon(item).LaserOff(false);
 				}
 				if (item.IsA('DeusExPickup'))
 				{
