@@ -76,10 +76,6 @@ var travel DeusExGoal LastGoal;
 var travel DeusExNote FirstNote;
 var travel DeusExNote LastNote;
 
-// Email Tracking -- Added by Sarge945 to allow us to remember codes from emails
-//var travel DeusExNote FirstEmail;
-//var travel DeusExNote LastEmail;
-
 // Data Vault Images
 var travel DataVaultImage FirstImage;
 
@@ -429,6 +425,7 @@ var travel bool bWasCrosshair;
 var bool bFromCrosshair;
 var transient bool bThrowDecoration;
 var int SlotMem; //CyberP: for belt/weapon switching, so the code remembers what weapon we had before holstering
+var int BeltLast; //Sarge: The last item we literally selected from the belt, regardless of holstering or alternate belt behaviour
 var int clickCountCyber; //CyberP: for double clicking to unequip
 var bool bStunted; //CyberP: for slowing player under various conditions
 var bool bRegenStamina; //CyberP: regen when in water but head above water
@@ -7673,6 +7670,13 @@ exec function ParseRightClick()
 		{
 			    PutInHand(None);
 		}
+		else if (inHand == None && !bAlternateToolbelt)
+		{
+			//SARGE: Added support for the reholster behaviour from the Alternate Toolbelt without the DX:IW toolbelt enabled
+			root = DeusExRootWindow(rootWindow);
+			if (root != None && root.hud != None)
+				root.ActivateObjectInBelt(BeltLast);
+		}
 		else if (clickCountCyber >= 1)
 		{
 			PutInHand(None);
@@ -10602,7 +10606,10 @@ exec function ActivateBelt(int objectNum)
 	{
 		root = DeusExRootWindow(rootWindow);
 		if (root != None)
+		{
 			root.ActivateObjectInBelt(objectNum);
+			BeltLast = objectNum;
+		}
 	}
 }
 
@@ -10714,6 +10721,7 @@ exec function NextBeltItem()
 		}
 	}
 	}
+	BeltLast = slot;
 }
 
 // ----------------------------------------------------------------------
@@ -10822,6 +10830,7 @@ exec function PrevBeltItem()
 		}
 	}
 	}
+	BeltLast = slot;
 }
 
 // ----------------------------------------------------------------------
