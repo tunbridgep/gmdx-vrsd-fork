@@ -7645,7 +7645,7 @@ exec function ParseRightClick()
 		}
 		else if (CarriedDecoration != None)
 		{
-			    PutInHand(None);
+			PutInHand(None);
 		}
 		else if (inHand == None)
 		{
@@ -7657,6 +7657,7 @@ exec function ParseRightClick()
 					root.ActivateObjectInBelt(advBelt);
 				else
 					root.ActivateObjectInBelt(BeltLast);
+				bNumberSelect = false;
 			}
 		}
 		else if (((bAlternateToolbelt == 1 && !bNumberSelect) || bAlternateToolbelt > 1) && inHand != None && advBelt != inHand.beltPos) //If we have moved our main weapon, switch to it. But not if we simply selected a different belt item.
@@ -7665,12 +7666,14 @@ exec function ParseRightClick()
 			if (root != None && root.hud != None)
 			{
 				root.ActivateObjectInBelt(advBelt);
+				bNumberSelect = false;
 			}
 			
 		}
 		else if (clickCountCyber >= 1 || !bDblClickHolster)
 		{
 			PutInHand(None);
+			bNumberSelect = false;
 		}
 		else
 		{
@@ -10594,6 +10597,13 @@ exec function ActivateBelt(int objectNum)
 		root = DeusExRootWindow(rootWindow);
 		if (root != None)
 		{
+			//SARGE: If already selected in IW Belt mode (except classic), an additional press will set our primary weapon to that slot.
+			if (bAlternateToolbelt >= 1 && BeltLast == objectNum && bNumberSelect)
+			{
+				advBelt = objectNum;
+				root.hud.belt.RefreshAlternateToolbelt();
+			}
+		
 			root.ActivateObjectInBelt(objectNum);
 			BeltLast = objectNum;
 			bNumberSelect = true;
