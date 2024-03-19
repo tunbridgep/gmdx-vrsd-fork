@@ -297,9 +297,9 @@ function DrawWindow(GC gc)
 					numTools = int((dxMover.lockStrength / player.SkillSystem.GetSkillLevelValue(class'SkillLockpicking')) + 0.99);
 					if (player.PerkNamesArray[32] == 1)
 					    numTools = 1;
-                    if (numTools == 1)
-						strInfo = ownedTools $ "/" $ numTools @ msgPick;
-					else
+                    //if (numTools == 1)
+					//	strInfo = ownedTools $ "/" $ numTools @ msgPick;
+					//else
 						strInfo = ownedTools $ "/" $ numTools @ msgPicks;
 				    //if (dxMover.bPerkApplied)                                   //RSD: Doorsman perk
 						gc.DrawText(infoX+(infoW-barLength-2), infoY+4+(infoH-8)/4, barLength, ((infoH-8)/4)-2, strInfo);
@@ -375,9 +375,9 @@ function DrawWindow(GC gc)
 					ownedTools = player.GetInventoryCount('Multitool');
 					/*if (player.PerkNamesArray[31] == 1)                       //RSD: Changed CRACKED
 					   numTools = 1;*/
-					if (numTools == 1)
-						strInfo = ownedTools $ "/" $ numTools @ msgTool;
-					else
+					//if (numTools == 1)
+					//	strInfo = ownedTools $ "/" $ numTools @ msgTool;
+					//else
 						strInfo = ownedTools $ "/" $ numTools @ msgTools;
 					gc.DrawText(infoX+(infoW-barLength-2), infoY+infoH/2.7, barLength, infoH/2.7-6, strInfo);
 					//gc.DrawText(infoX+(infoW-barLength-2), infoY+infoH/2, barLength, infoH/2-6, strInfo); //RSD: reverted
