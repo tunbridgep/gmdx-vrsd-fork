@@ -544,6 +544,7 @@ var travel bool bRandomizeModsAttachments;*/
 var travel bool bRandomizeCrates;
 var travel bool bRandomizeMods;
 var travel bool bRandomizeAugs;
+var travel bool bRestrictedSaving;												//Sarge: This used to be tied to hardcore, now it's a config option
 var travel int augOrderNums[21];                                                //RSD: New aug can order for scrambling
 var const augBinary augOrderList[21];                                           //RSD: List of all aug cans in the game in order (to be scrambled)
 var travel bool bAddictionSystem;
@@ -1328,7 +1329,7 @@ event TravelPostAccept()
 
 	foreach AllActors(class'SavePoint',SP)
 	{
- 	 if ((!bHardCoreMode)||(SP.bUsedSavePoint))
+ 	 if ((!bHardCoreMode && !bRestrictedSaving)||(SP.bUsedSavePoint))
 		 SP.Destroy();
 	}
 	//ConsoleCommand("set ini:Engine.Engine.ViewportManager Brightness 1");

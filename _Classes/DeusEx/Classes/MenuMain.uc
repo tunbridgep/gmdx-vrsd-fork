@@ -46,7 +46,7 @@ function UpdateButtonStatus()
    }
 
 //GMDX: wahahaha
-   if(player.bHardCoreMode) winButtons[1].SetSensitivity(False);
+   if(player.bHardCoreMode || player.bRestrictedSaving) winButtons[1].SetSensitivity(False);
 
    // Disable the "Save Game", "New Game", "Intro", "Training" and "Load Game" menu choices if in multiplayer
    if (player.Level.Netmode != NM_Standalone)

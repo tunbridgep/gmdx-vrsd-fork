@@ -50,6 +50,7 @@ var bool bRandomizeCrates;                                                      
 var bool bRandomizeMods;
 var bool bRandomizeAugs;
 var bool bAddictionSystem;
+var bool bRestrictedSaving;
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -77,10 +78,12 @@ event InitWindow()
     bRandomizeMods=false;                                                       //RSD
     bRandomizeAugs=false;                                                       //RSD
     bAddictionSystem=false;                                                     //RSD
+    bRestrictedSaving=false;                                                    //Sarge
     default.bRandomizeCrates=false;                                             //RSD: Also need default values! Otherwise get command in modifier menu takes the wrong value
     default.bRandomizeMods=false;                                               //RSD
     default.bRandomizeAugs=false;                                               //RSD
     default.bAddictionSystem=false;                                             //RSD
+    default.bRestrictedSaving=false;                                            //Sarge
 
 	StyleChanged();
 }
@@ -674,6 +677,7 @@ function SaveSettings()
     player.bRandomizeCrates=bRandomizeCrates;                                   //RSD
     player.bRandomizeMods=bRandomizeMods;                                       //RSD
     player.bRandomizeAugs=bRandomizeAugs;                                       //RSD
+    player.bRestrictedSaving=bRestrictedSaving;                                 //Sarge
     if (player.bRandomizeAugs)                                                  //RSD: New aug randomization feature
         ScrambleAugOrderList();
     player.bAddictionSystem=bAddictionSystem;
