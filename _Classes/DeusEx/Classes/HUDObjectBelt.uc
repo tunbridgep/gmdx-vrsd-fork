@@ -177,24 +177,7 @@ function UpdateInHand()
 		}
 	}
 }
- //CyberP: DX:IW toolbelt
-function UpdateInHand2(int slot)
-{
-	local int slotIndex;
 
-	// highlight the slot and unhighlight the other slots
-	if ((player != None) && (!bInteractive))
-	{
-		for (slotIndex=0; slotIndex<ArrayCount(objects); slotIndex++)
-		{
-			// Highlight the chosen slot
-			if (slotIndex == slot)
-				iHighlightedSlot = slot;
-		}
-		
-		RefreshAlternateToolbelt();
-	}
-}
 
 //Refresh the Toolbelt, needed after a load game
 //Since we normally only set the highlights

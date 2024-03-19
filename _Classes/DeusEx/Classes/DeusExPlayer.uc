@@ -426,6 +426,7 @@ var bool bFromCrosshair;
 var transient bool bThrowDecoration;
 var int SlotMem; //CyberP: for belt/weapon switching, so the code remembers what weapon we had before holstering
 var int BeltLast; //Sarge: The last item we literally selected from the belt, regardless of holstering or alternate belt behaviour
+var bool bNumberSelect; //Sarge: Whether or not our last belt selection was done with number keys (ActivateBelt) rather than Next/Prev. Used by Alternative Belt to know when to holster
 var int clickCountCyber; //CyberP: for double clicking to unequip
 var bool bStunted; //CyberP: for slowing player under various conditions
 var bool bRegenStamina; //CyberP: regen when in water but head above water
@@ -7658,7 +7659,7 @@ exec function ParseRightClick()
 					root.ActivateObjectInBelt(BeltLast);
 			}
 		}
-		else if (bAlternateToolbelt && inHand != None && advBelt != inHand.beltPos) //Always change back to our selected weapon if we have something else out
+		else if (bAlternateToolbelt && !bNumberSelect && inHand != None && advBelt != inHand.beltPos) //If we have moved our main weapon, switch to it. But not if we simply selected a different belt item.
 		{
 			root = DeusExRootWindow(rootWindow);
 			if (root != None && root.hud != None)
@@ -10595,6 +10596,7 @@ exec function ActivateBelt(int objectNum)
 		{
 			root.ActivateObjectInBelt(objectNum);
 			BeltLast = objectNum;
+			bNumberSelect = true;
 		}
 	}
 }
@@ -10675,6 +10677,7 @@ exec function NextBeltItem()
 			until (root.ActivateObjectInBelt(slot) || (startSlot == slot));
 
 			clientInHandPending = root.hud.belt.GetObjectFromBelt(slot);
+			bNumberSelect = false;
 
             switch( inHandPending.beltPos )
 	   {
@@ -10702,7 +10705,8 @@ exec function NextBeltItem()
 		{
 				if (++advBelt >= 10)
 					advBelt = 0;
-            root.hud.belt.UpdateInHand2(advBelt);
+			root.hud.belt.RefreshAlternateToolbelt();
+			bNumberSelect = false;
 			clientInHandPending = root.hud.belt.GetObjectFromBelt(advBelt);
 		}
 	}
@@ -10785,6 +10789,8 @@ exec function PrevBeltItem()
 			until (root.ActivateObjectInBelt(slot) || (startSlot == slot));
 
 			clientInHandPending = root.hud.belt.GetObjectFromBelt(slot);
+			bNumberSelect = false;
+			
 			switch( inHandPending.beltPos )
 	   {
 		case 1:SlotMem = 1;break;
@@ -10811,7 +10817,8 @@ exec function PrevBeltItem()
 		{
 				if (--advBelt <= -1)
 					advBelt = 9;
-            root.hud.belt.UpdateInHand2(advBelt);
+            root.hud.belt.RefreshAlternateToolbelt();
+			bNumberSelect = false;
 			clientInHandPending = root.hud.belt.GetObjectFromBelt(advBelt);
 		}
 	}
