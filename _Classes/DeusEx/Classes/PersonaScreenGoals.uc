@@ -224,6 +224,7 @@ function PopulateGoalsByType(Bool bPrimaryGoals, String goalHeaderText)
 // PopulateNotes()
 //
 // Loops through all the notes and displays them
+// SARGE: Ignore hidden notes
 // ----------------------------------------------------------------------
 
 function PopulateNotes()
@@ -243,11 +244,13 @@ function PopulateNotes()
 	note = player.FirstNote;
 	while(note != None)
 	{
-		noteWindow = CreateNoteEditWindow( note );
+        if (!note.bHidden)
+        {
+            noteWindow = CreateNoteEditWindow( note );
 
-		if (firstNoteWindow == None)
-			firstNoteWindow = noteWindow;
-
+            if (firstNoteWindow == None)
+                firstNoteWindow = noteWindow;
+        }
 		// Continue on to the next note
 		note = note.next;
 	}

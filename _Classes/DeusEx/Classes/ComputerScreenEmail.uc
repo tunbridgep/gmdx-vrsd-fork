@@ -293,6 +293,8 @@ event bool ListSelectionChanged(window list, int numSelections, int focusRowId)
 	// Process the body
 	winEmail.SetText("");
 	ProcessDeusExText(emailInfo[emailInfoIndex].emailName, winEmail);
+    //player.AddNote(emailInfo[emailInfoIndex].emailName);
+    player.NoteAdd(winEmail.GetText(),false,true,emailInfo[emailInfoIndex].emailName);
 }
 
 // ----------------------------------------------------------------------

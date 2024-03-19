@@ -76,6 +76,10 @@ var travel DeusExGoal LastGoal;
 var travel DeusExNote FirstNote;
 var travel DeusExNote LastNote;
 
+// Email Tracking -- Added by Sarge945 to allow us to remember codes from emails
+//var travel DeusExNote FirstEmail;
+//var travel DeusExNote LastEmail;
+
 // Data Vault Images
 var travel DataVaultImage FirstImage;
 
@@ -12364,6 +12368,26 @@ function bool GetCodeNote(string code)
 	return false;
 }
 
+//This is a simple list of codes which serve as exceptions to No Keypad Cheese
+//See here for a full list. https://deusex.fandom.com/wiki/Passwords,_Logins,_and_Codes_(DX)
+function bool GetExceptedCode(string code)
+{
+	return code == "calvo" //Alex Jacobson computer password on the wall next to his computer
+        || code == "bionicman" //we get our code as soon as we enter our office, but it takes a little bit. Fix it not working when we should know it
+        || code == "insurgent" //maggie chows code can only be guessed, never found, but is designed that way.
+        || code == "2167" //Only displayed in a computer message, so we never get a note for it
+        || code == "718"; //Can only be guessed based on cryptic information
+}
+
+//"Security" is a commonly used word in many logs.
+//It's also a login for a lot of computers.
+//But none of the computers with that username have in-game logs
+//So anything with security as the username needs to be ignored
+function bool EvilUsernameHack(string username)
+{
+    return (username == "security") && bNoKeypadCheese;
+}
+
 // ----------------------------------------------------------------------
 // GetNote()
 //
@@ -12392,6 +12416,7 @@ function DeusExNote GetNote(Name textTag)
 //
 // Deletes the specified note
 // Returns True if the note successfully deleted
+// SARGE: This has been replaced with simply hiding notes instead
 // ----------------------------------------------------------------------
 
 function Bool DeleteNote( DeusExNote noteToDelete )
@@ -12408,6 +12433,9 @@ function Bool DeleteNote( DeusExNote noteToDelete )
 	{
 		if ( note == noteToDelete )
 		{
+            // SARGE: This has been replaced with simply hiding notes instead
+            note.SetHidden(true);
+            /*
 			if ( note == FirstNote )
 				FirstNote = note.next;
 
@@ -12419,6 +12447,8 @@ function Bool DeleteNote( DeusExNote noteToDelete )
 
 			note = None;
 
+            */
+			note = None;
 			bNoteDeleted = True;
 			break;
 		}
@@ -12457,12 +12487,14 @@ function DeleteAllNotes()
 // NoteAdd()
 // ----------------------------------------------------------------------
 
-exec function NoteAdd( String noteText, optional bool bUserNote )
+exec function NoteAdd( String noteText, optional bool bUserNote, optional bool bHidden, optional name noteName )
 {
 	local DeusExNote newNote;
 
 	newNote = AddNote( noteText );
 	newNote.SetUserNote( bUserNote );
+	newNote.SetHidden( bHidden );
+	newNote.SetTextTag( noteName );
 }
 
 // ----------------------------------------------------------------------

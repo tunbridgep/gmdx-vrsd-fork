@@ -10,7 +10,10 @@ var travel DeusExNote next;			// Next note
 
 // Text tag, used for DataCube notes to prevent 
 // the same note fromgetting added more than once
-var travel Name textTag;			
+var travel Name textTag;
+
+var travel bool bHidden;            //SARGE: Allow us to add "hidden" notes that don't show up
+                                    //Use these for codes given by emails
 
 // ----------------------------------------------------------------------
 // SetUserNote()
@@ -28,6 +31,11 @@ function SetUserNote( Bool bNewUserNote )
 function SetTextTag( Name newTextTag )
 {
 	textTag = newTextTag;
+}
+
+function SetHidden( bool bNewHidden )
+{
+    bHidden = bNewHidden;
 }
 
 defaultproperties
