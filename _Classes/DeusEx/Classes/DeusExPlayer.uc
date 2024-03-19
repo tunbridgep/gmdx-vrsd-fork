@@ -7536,36 +7536,7 @@ exec function ParseRightClick()
 		// First check if this is a NanoKey, in which case we just
 		// want to add it to the NanoKeyRing without disrupting
 		// what the player is holding
-        if ((FrobTarget.IsA('ScriptedPawn') || FrobTarget.IsA('DeusExMover')) && bAlternateToolbelt) //CyberP: no, first we do this for the invisible war toolbelt.
-        {
-            if ((ScriptedPawn(FrobTarget) != None && ScriptedPawn(FrobTarget).GetPawnAllianceType(self) == ALLIANCE_Hostile) ||
-            (DeusExMover(FrobTarget) != None && DeusExMover(FrobTarget).bFrobbable == False))
-            {
-             if (CarriedDecoration == None)
-             {
-              if (inHand != None && inHand.IsA('POVCorpse'))
-              {
-              }
-              else
-              {
-               if (inHand == None)
-               {
-		       root = DeusExRootWindow(rootWindow);
-                if (root != None && root.hud.belt.GetObjectFromBelt(advBelt) != inHand)
-                {
-                   root.ActivateObjectInBelt(advBelt);
-                   return;
-                }
-               }
-               else
-                PutInHand(None);
-              }
-             }
-            }
-            else
-                DoFrob(Self, None);
-        }
-		else if (FrobTarget.IsA('NanoKey'))
+		if (FrobTarget.IsA('NanoKey'))
 		{
 			PickupNanoKey(NanoKey(FrobTarget));
 			FrobTarget.Destroy();
@@ -7667,21 +7638,6 @@ exec function ParseRightClick()
 	{
 		// if there's no FrobTarget, put away an inventory item or drop a decoration
 		// or drop the corpse
-        if (bAlternateToolbelt && CarriedDecoration == None) //CyberP: DX:IW toolbelt
-        {
-          if (inHand != None && inHand.IsA('POVCorpse'))
-          {
-          }
-          else
-          {
-                root = DeusExRootWindow(rootWindow);
-                if (root != None && root.hud != None && root.hud.belt.GetObjectFromBelt(advBelt) != inHand)
-                {
-                    root.ActivateObjectInBelt(advBelt);
-                    return;
-                }
-          }
-        }
 		if ((inHand != None) && inHand.IsA('POVCorpse'))
 		{
 			DropItem();
@@ -7690,18 +7646,28 @@ exec function ParseRightClick()
 		{
 			    PutInHand(None);
 		}
-		else if (inHand == None && !bAlternateToolbelt)
+		else if (inHand == None)
 		{
 			//SARGE: Added support for the reholster behaviour from the Alternate Toolbelt without the DX:IW toolbelt enabled
 			root = DeusExRootWindow(rootWindow);
 			if (root != None && root.hud != None)
-				root.ActivateObjectInBelt(BeltLast);
+			{
+				if (bAlternateToolbelt)
+					root.ActivateObjectInBelt(advBelt);
+				else
+					root.ActivateObjectInBelt(BeltLast);
+			}
 		}
-		else if (clickCountCyber >= 1)
+		else if (bAlternateToolbelt && inHand != None && advBelt != inHand.beltPos) //Always change back to our selected weapon if we have something else out
 		{
-			PutInHand(None);
+			root = DeusExRootWindow(rootWindow);
+			if (root != None && root.hud != None)
+			{
+				root.ActivateObjectInBelt(advBelt);
+			}
+			
 		}
-		else if (!bDblClickHolster)
+		else if (clickCountCyber >= 1 || !bDblClickHolster)
 		{
 			PutInHand(None);
 		}

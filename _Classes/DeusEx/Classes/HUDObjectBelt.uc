@@ -152,13 +152,17 @@ function UpdateInHand()
 	// highlight the slot and unhighlight the other slots
 	if ((player != None) && (!bInteractive))
 	{
+		if (player.bAlternateToolbelt)
+		{
+			RefreshAlternateToolbelt();
+			return;
+		}
+	
 		for (slotIndex=0; slotIndex<ArrayCount(objects); slotIndex++)
 		{
 			// Highlight the object in the player's hand
 			if ((player.inHand != None) && (objects[slotIndex].item == player.inHand))
 			 objects[slotIndex].HighlightSelect(True);
-			else if (player.bAlternateToolbelt)
-                 return;
 			else if (player.inHand == None)
 			   {
 			   }
@@ -185,17 +189,36 @@ function UpdateInHand2(int slot)
 		{
 			// Highlight the chosen slot
 			if (slotIndex == slot)
-				objects[slotIndex].HighlightSelect(True);
-			else
-				objects[slotIndex].HighlightSelect(False);
+				iHighlightedSlot = slot;
+		}
+		
+		RefreshAlternateToolbelt();
+	}
+}
 
-			if 	(slotIndex == slot)
-				objects[slotIndex].SetToggle(true);
+//Refresh the Toolbelt, needed after a load game
+//Since we normally only set the highlights
+//Also, allows the grey and white highlights to work independently.
+function RefreshAlternateToolbelt()
+{
+	local int slotIndex;
+
+	if ((player != None) && (!bInteractive))
+	{
+		for (slotIndex=0; slotIndex<ArrayCount(objects); slotIndex++)
+		{
+			//Grey background follows
+			objects[slotIndex].HighlightSelect(slotIndex == player.advBelt);
+			
+			//White outline stays with our selcted weapon
+			if (player.inHandPending != None)
+				objects[slotIndex].SetToggle(slotIndex == player.inHandPending.beltPos);
 			else
 				objects[slotIndex].SetToggle(false);
 		}
 	}
 }
+
 // ----------------------------------------------------------------------
 // SetInteractive()
 // ----------------------------------------------------------------------
@@ -407,6 +430,8 @@ function PopulateBelt()
       {
 			AddObjectToBelt(anItem, anItem.beltPos, True);
       }
+	 
+	//Set the highlight
 }
 
 // ----------------------------------------------------------------------
