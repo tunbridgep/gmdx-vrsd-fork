@@ -152,7 +152,7 @@ function UpdateInHand()
 	// highlight the slot and unhighlight the other slots
 	if ((player != None) && (!bInteractive))
 	{
-		if (player.bAlternateToolbelt)
+		if (player.bAlternateToolbelt > 0)
 		{
 			RefreshAlternateToolbelt();
 			return;

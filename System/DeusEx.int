@@ -3526,7 +3526,7 @@ actionText="????"
 HelpText="Finish GMDX on any difficulty level to unlock these options."
 
 [MenuChoice_AlternBelt]
-HelpText="If true, belt selection uses 'interact' (default: right click) to confirm selection, eliminating the act of cycling multiple items before reaching the desired. Default belt is also improved so experiment to form a preference."
+HelpText="If true, belt selection uses 'interact' (default: right click) to confirm selection. Classic mode additionally makes interact switch back after using the number keys."
 actionText="|&Invisible War Toolbelt"
 
 [MenuChoice_RealTimeUI]

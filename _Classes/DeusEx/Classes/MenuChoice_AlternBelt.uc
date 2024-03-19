@@ -1,14 +1,14 @@
 //-----------------------------------------------------------
 //CyberP: IW=like belt behaviour
 //-----------------------------------------------------------
-class MenuChoice_AlternBelt extends MenuChoice_EnabledDisabled;
+class MenuChoice_AlternBelt extends MenuUIChoiceEnum;
 // ----------------------------------------------------------------------
 // LoadSetting()
 // ----------------------------------------------------------------------
 
 function LoadSetting()
 {
-	SetValue(int(!player.bAlternateToolbelt));
+	SetValue(player.bAlternateToolbelt);
 }
 
 // ----------------------------------------------------------------------
@@ -17,7 +17,7 @@ function LoadSetting()
 
 function SaveSetting()
 {
-	player.bAlternateToolbelt = !bool(GetValue());
+	player.bAlternateToolbelt = GetValue();
 }
 
 // ----------------------------------------------------------------------
@@ -25,7 +25,7 @@ function SaveSetting()
 
 function ResetToDefault()
 {
-	SetValue(int(!player.bAlternateToolbelt));
+	SetValue(0);
 }
 
 // ----------------------------------------------------------------------
@@ -34,6 +34,9 @@ function ResetToDefault()
 defaultproperties
 {
      defaultInfoWidth=88
-     HelpText="If true, belt selection uses 'interact' (default: right click) to confirm selection, eliminating the act of cycling multiple items before reaching the desired. Default belt is also improved so experiment to form a preference."
+     HelpText="If true, belt selection uses 'interact' (default: right click) to confirm selection, eliminating the act of cycling multiple items before reaching the desired.|nClassic mode additionally makes right click switch back after using the number keys."
      actionText="|&Invisible War Toolbelt"
+	 enumText(0)="Disabled"
+     enumText(1)="Enabled"
+     enumText(2)="Classic"
 }

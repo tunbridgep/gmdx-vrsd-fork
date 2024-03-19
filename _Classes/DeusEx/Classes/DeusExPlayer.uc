@@ -396,7 +396,7 @@ var globalconfig bool bRealUI;
 var globalconfig bool bHardcoreAI1;
 var globalconfig bool bHardcoreAI2;
 var globalconfig bool bHardcoreAI3;
-var globalconfig bool bAlternateToolbelt;
+var globalconfig int bAlternateToolbelt;
 var globalconfig bool bAnimBar1;
 var globalconfig bool bAnimBar2;
 var globalconfig bool bExtraObjectDetails;
@@ -7653,13 +7653,13 @@ exec function ParseRightClick()
 			root = DeusExRootWindow(rootWindow);
 			if (root != None && root.hud != None)
 			{
-				if (bAlternateToolbelt)
+				if (bAlternateToolbelt > 0)
 					root.ActivateObjectInBelt(advBelt);
 				else
 					root.ActivateObjectInBelt(BeltLast);
 			}
 		}
-		else if (bAlternateToolbelt && !bNumberSelect && inHand != None && advBelt != inHand.beltPos) //If we have moved our main weapon, switch to it. But not if we simply selected a different belt item.
+		else if (((bAlternateToolbelt == 1 && !bNumberSelect) || bAlternateToolbelt > 1) && inHand != None && advBelt != inHand.beltPos) //If we have moved our main weapon, switch to it. But not if we simply selected a different belt item.
 		{
 			root = DeusExRootWindow(rootWindow);
 			if (root != None && root.hud != None)
@@ -10650,7 +10650,7 @@ exec function NextBeltItem()
 	   }
 	}
 
-   if (!bAlternateToolbelt)
+   if (bAlternateToolbelt == 0)
    {
 	if (CarriedDecoration == None)
 	{
@@ -10763,7 +10763,7 @@ exec function PrevBeltItem()
 	   }
 	}
 
-   if (!bAlternateToolbelt)
+   if (bAlternateToolbelt == 0)
    {
 	if (CarriedDecoration == None)
 	{
