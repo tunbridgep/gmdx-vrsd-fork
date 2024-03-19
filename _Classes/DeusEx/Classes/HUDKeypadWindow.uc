@@ -98,7 +98,7 @@ function Tick(float deltaTime)
 		if (bInstantSuccess)
 		{
 			inputCode = keypadOwner.validCode;
-			ValidateCode();
+			ValidateCode(false);
 		}
 	}
 }
@@ -307,7 +307,7 @@ function PressButton(int num)
 	winText.SetText(msgEnterCode);
 
 	if (Len(inputCode) == Len(keypadOwner.validCode))
-		ValidateCode();
+		ValidateCode(true);
 }
 
 // ----------------------------------------------------------------------
@@ -316,12 +316,14 @@ function PressButton(int num)
 // Check for correct code entry
 // ----------------------------------------------------------------------
 
-function ValidateCode()
+function ValidateCode(bool checkDiscovery)
 {
 	local Actor A;
 	local int i;
+    local bool discovered;
+    discovered = !checkDiscovery || keypadOwner.IsDiscovered(player,keypadOwner.validCode);
 
-	if (inputCode == keypadOwner.validCode)
+	if (inputCode == keypadOwner.validCode && discovered)
 	{
 		if (keypadOwner.Event != '')
 		{

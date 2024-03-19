@@ -51,6 +51,7 @@ var bool bRandomizeMods;
 var bool bRandomizeAugs;
 var bool bAddictionSystem;
 var bool bRestrictedSaving;
+var bool bNoKeypadCheese;
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -79,11 +80,13 @@ event InitWindow()
     bRandomizeAugs=false;                                                       //RSD
     bAddictionSystem=false;                                                     //RSD
     bRestrictedSaving=false;                                                    //Sarge
+    bNoKeypadCheese=false;                                                    //Sarge
     default.bRandomizeCrates=false;                                             //RSD: Also need default values! Otherwise get command in modifier menu takes the wrong value
     default.bRandomizeMods=false;                                               //RSD
     default.bRandomizeAugs=false;                                               //RSD
     default.bAddictionSystem=false;                                             //RSD
     default.bRestrictedSaving=false;                                            //Sarge
+    default.bNoKeypadCheese=false;                                              //Sarge
 
 	StyleChanged();
 }
@@ -678,6 +681,7 @@ function SaveSettings()
     player.bRandomizeMods=bRandomizeMods;                                       //RSD
     player.bRandomizeAugs=bRandomizeAugs;                                       //RSD
     player.bRestrictedSaving=bRestrictedSaving;                                 //Sarge
+    player.bNoKeypadCheese=bNoKeypadCheese;                                     //Sarge
     if (player.bRandomizeAugs)                                                  //RSD: New aug randomization feature
         ScrambleAugOrderList();
     player.bAddictionSystem=bAddictionSystem;

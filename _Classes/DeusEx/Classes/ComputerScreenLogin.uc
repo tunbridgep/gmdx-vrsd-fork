@@ -177,6 +177,7 @@ function ProcessLogin()
 	local int compIndex;
 	local int userSkillLevel;
 	local bool bSuccessfulLogin;
+    local bool discovered;
 
 	bSuccessfulLogin = False;
 	userIndex        = -1;
@@ -186,7 +187,8 @@ function ProcessLogin()
 	// First check the name
 	for (compIndex=0; compIndex<Computers(compOwner).NumUsers(); compIndex++)
 	{
-		if (Caps(editUsername.GetText()) == Caps(Computers(compOwner).GetUserName(compIndex)))
+        discovered = compOwner.IsDiscovered(player,Computers(compOwner).GetUserName(compIndex));
+		if (discovered && Caps(editUsername.GetText()) == Caps(Computers(compOwner).GetUserName(compIndex)))
 		{
 			userName  = Caps(Computers(compOwner).GetUserName(compIndex));
 			userIndex = compIndex;

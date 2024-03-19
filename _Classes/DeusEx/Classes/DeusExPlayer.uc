@@ -545,6 +545,7 @@ var travel bool bRandomizeCrates;
 var travel bool bRandomizeMods;
 var travel bool bRandomizeAugs;
 var travel bool bRestrictedSaving;												//Sarge: This used to be tied to hardcore, now it's a config option
+var travel bool bNoKeypadCheese;												//Sarge: Prevent using keycodes that we don't know
 var travel int augOrderNums[21];                                                //RSD: New aug can order for scrambling
 var const augBinary augOrderList[21];                                           //RSD: List of all aug cans in the game in order (to be scrambled)
 var travel bool bAddictionSystem;
@@ -12337,6 +12338,30 @@ function DeusExNote AddNote( optional String strNote, optional Bool bUserNote, o
 	}
 
 	return newNote;
+}
+
+// ----------------------------------------------------------------------
+// GetCodeNote()
+//
+// Loops through the notes and searches for the code in any note.
+// Ignores user notes, so we can't add some equivalent of "The code's 0451" and instantly know a code
+// ----------------------------------------------------------------------
+
+function bool GetCodeNote(string code)
+{
+	local DeusExNote note;
+
+	note = FirstNote;
+
+	while( note != None )
+	{
+		if (!note.bUserNote && InStr(note.text,code) != -1)
+            return true;
+
+		note = note.next;
+	}
+
+	return false;
 }
 
 // ----------------------------------------------------------------------

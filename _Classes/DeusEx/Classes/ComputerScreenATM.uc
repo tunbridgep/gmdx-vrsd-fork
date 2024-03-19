@@ -202,6 +202,7 @@ function ProcessLogin()
 	local bool bSuccessfulLogin;
 	local int  accountIndex;
 	local int  userIndex;
+    local bool discovered;
 
 	bSuccessfulLogin = False;
 
@@ -216,7 +217,8 @@ function ProcessLogin()
 
 	if (userIndex != -1)
 	{
-		if (Caps(editPIN.GetText()) == atmOwner.GetPIN(userIndex))
+        discovered = atmOwner.IsDiscovered(player,atmOwner.GetAccountNumber(userIndex));
+		if (Caps(editPIN.GetText()) == atmOwner.GetPIN(userIndex) && discovered)
 			bSuccessfulLogin = True;
 	}
 

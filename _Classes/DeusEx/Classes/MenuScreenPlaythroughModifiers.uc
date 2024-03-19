@@ -15,10 +15,10 @@ var localized string strHeaderActionLabel;
 var localized string strHeaderAssignedLabel;
 var localized string ReassignedFromLabel;
 
-var string modifierBools[5];
-var localized string modifierText[5];
-var localized string modifierDesc[5];
-var int MenuValues[5];
+var string modifierBools[6];
+var localized string modifierText[6];
+var localized string modifierDesc[6];
+var int MenuValues[6];
 var MenuUIListWindow lstModifiers;
 var localized string EnabledText;
 var localized string DisabledText;
@@ -228,16 +228,19 @@ defaultproperties
      modifierBools(2)="bRandomizeAugs"
      modifierBools(3)="bAddictionSystem"
      modifierBools(4)="bRestrictedSaving"
+     modifierBools(5)="bNoKeypadCheese"
      modifierText(0)="Crate Randomization"
      modifierText(1)="Weapon Mod Randomization"
      modifierText(2)="Aug Canister Shuffle"
      modifierText(3)="Addiction System"
      modifierText(4)="Restricted Saving"
+     modifierText(5)="Undiscovered Codes"
      modifierDesc(0)="Randomizes crate contents. Items are swapped for other items of the same class (e.g. 10mm ammo for steel darts) based on in-game item distribution."
      modifierDesc(1)="Randomizes weapon mods. Mods are swapped for related types (e.g. accuracy for range) based on in-game item distribution."
      modifierDesc(2)="Shuffles the order of aug canisters in the game. Total number of each aug canister type is unchanged."
      modifierDesc(3)="Replaces drug effects with temporary buffs on use and debuffs on withdrawal. Addiction accumulates with use and depreciates through play."
      modifierDesc(4)="Prevents manually saving and adds single-use save points to the level. Autosaves still occur as normal."
+     modifierDesc(5)="Prevents using keypads and logins unless you have them in your notes."
      EnabledText="Enabled"
      DisabledText="Disabled"
      actionButtons(0)=(Align=HALIGN_Right,Action=AB_OK)
