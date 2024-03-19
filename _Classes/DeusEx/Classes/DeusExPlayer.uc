@@ -1122,6 +1122,26 @@ function InitializeSubSystems()
 	}
 }
 
+//SARGE: Helper function to get the count of an item type
+function int GetInventoryCount(Name item)
+{
+	local int count;
+	local Inventory anItem;
+	
+	anItem = Inventory;
+	count = 0;
+
+	while(anItem != None)
+	{
+		if (anItem.IsA(item))
+			count++;
+
+		anItem = anItem.Inventory;
+	}
+	
+	return count;
+}
+
 // ----------------------------------------------------------------------
 // PostPostBeginPlay()
 // ----------------------------------------------------------------------
