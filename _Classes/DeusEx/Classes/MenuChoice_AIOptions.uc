@@ -11,6 +11,6 @@ defaultproperties
 {
      Action=MA_MenuScreen
      Invoke=Class'DeusEx.MenuScreenGMDXAIOptions'
-     HelpText="Click to access unlocked options."
-     actionText="Unlocked Options..."
+     HelpText="These options can have a significant impact on gameplay."
+     actionText="Gameplay Options..."
 }

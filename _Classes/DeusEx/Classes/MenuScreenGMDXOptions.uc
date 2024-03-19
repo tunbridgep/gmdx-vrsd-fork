@@ -14,8 +14,6 @@ event InitWindow()
 {
     root = DeusExRootWindow(GetRootWindow());
     player = DeusExPlayer(root.parentPawn);
-    if (!player.bHardcoreUnlocked)
-        choices[1]=Class'DeusEx.MenuChoice_AIOptionsFake';
 
 	Super.InitWindow();
 

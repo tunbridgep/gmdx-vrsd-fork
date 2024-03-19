@@ -138,14 +138,20 @@ function InvokeMessageDialog2()
 
 function InvokeMessageDialog3()
 {
-	msgBoxMode = MB_Information;
-	root.MessageBox(HardcoreUnlockInfo, HardcoreUnlockDescription, 1, False, Self);
+	msgBoxMode = MB_HardCore;
+	root.MessageBox(HardcoreUnlockInfo, HardcoreUnlockDescription, 0, False, Self);
 }
 
 function InvokeMessageDialog4()
 {
 	msgBoxMode = MB_Realistic;
 	root.MessageBox(RealisticTitle, RealisticDescription, 0, False, Self);
+}
+
+function InvokeMessageDialog5()
+{
+	msgBoxMode = MB_HardCore;
+	root.MessageBox(HardCoreTitle, HardCoreDescription, 0, False, Self);
 }
 
 // ----------------------------------------------------------------------
@@ -171,8 +177,8 @@ defaultproperties
      HardCoreDescription="Disables manual saving, enables save points. |nAdditional rules: disabled console access, real-time inventory use, greater stamina drain, no weapon auto-reload, less ammo and more."
      InfoTitle="GMDX Difficulty Information"
      InfoDescription="Difficulty levels primarily influence stealth, combat & exploration. You cannot change the difficulty in-game, so choose wisely. 'Medium' is recommended for a first-time playthrough of GMDX."
-     HardcoreUnlockInfo="Locked"
-     HardcoreUnlockDescription="Complete GMDX on any difficulty level to unlock this game mode."
+     HardcoreUnlockInfo="Are you sure?"
+     HardcoreUnlockDescription="Hardcore difficulty will be extremely unforgiving and is not recommended for those new to GMDX.|nIt is strongly recommended that you choose a lower diffiuculty!|nProceed?"
      RealisticDescription="Realistic difficulty will be a testing challenge and is not recommended for those new to GMDX.|nProceed?"
      RealisticTitle="Warning"
      ButtonNames(0)="Easy"

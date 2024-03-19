@@ -1750,8 +1750,8 @@ InfoTitle="GMDX Difficulty Information"
 InfoDescription="Difficulty levels primarily influence stealth, combat & exploration. You cannot change the difficulty in-game, so choose wisely. 'Medium' is recommended for a first-time playthrough of GMDX."
 HardCoreTitle="Enable Hardcore Mode?"
 HardCoreDescription="Disables manual saving, enables save points. |nAdditional rules: disabled console access, real-time inventory use, greater stamina drain, no weapon auto-reload, less ammo and more."
-HardcoreUnlockInfo="Locked"
-HardcoreUnlockDescription="Complete GMDX on any difficulty level to unlock this game mode."
+HardcoreUnlockInfo="Are you sure?"
+HardcoreUnlockDescription="Hardcore difficulty will be extremely unforgiving and is not recommended for those new to GMDX.|nIt is strongly recommended that you choose a lower diffiuculty! Proceed?"
 RealisticTitle="Warning"
 RealisticDescription="Realistic difficulty will be a testing challenge and is not recommended for those new to GMDX.|nProceed Anyway?"
 //ButtonNames[5]="Previous Menu"
@@ -3562,8 +3562,8 @@ HelpText="Select how many autosave slots are cycled through."
 actionText="|&Autosave Slots"
 
 [MenuChoice_AIOptions]
-actionText="Unlocked Options..."
-HelpText="Click to access unlocked options."
+actionText="Gameplay Options..."
+HelpText="It is strongly recommended that you complete the game at least once before modifying these!"
 
 [MenuChoice_CreateCustomColor]
 actionText="Create Custom Color Theme"
