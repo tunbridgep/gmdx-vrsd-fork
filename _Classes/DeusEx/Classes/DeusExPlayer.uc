@@ -10721,8 +10721,12 @@ exec function NextBeltItem()
 		root = DeusExRootWindow(rootWindow);
 		if (root != None)
 		{
+			do
+			{
 				if (++advBelt >= 10)
 					advBelt = 0;
+			}
+			until (root.hud.belt.GetObjectFromBelt(advBelt) != None);
 			root.hud.belt.RefreshAlternateToolbelt();
 			bNumberSelect = false;
 			bScrollSelect = true;
@@ -10834,9 +10838,13 @@ exec function PrevBeltItem()
 		//slot = advBelt;
 		root = DeusExRootWindow(rootWindow);
 		if (root != None)
-		{
+		{	
+			do
+			{
 				if (--advBelt <= -1)
 					advBelt = 9;
+			}
+			until (root.hud.belt.GetObjectFromBelt(advBelt) != None);
             root.hud.belt.RefreshAlternateToolbelt();
 			bNumberSelect = false;
 			bScrollSelect = true;
