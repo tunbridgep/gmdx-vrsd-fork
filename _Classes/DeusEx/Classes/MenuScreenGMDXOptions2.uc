@@ -115,6 +115,7 @@ defaultproperties
      choices(7)=Class'DeusEx.MenuChoice_Hitmarker'
      choices(8)=Class'DeusEx.MenuChoice_AutoSaving'
      choices(9)=Class'DeusEx.MenuChoice_AutoSaveSlots'
+     choices(1)=Class'DeusEx.MenuChoice_AutofillBelt'
      actionButtons(0)=(Align=HALIGN_Right,Action=AB_Cancel)
      actionButtons(1)=(Align=HALIGN_Right,Action=AB_OK)
      actionButtons(2)=(Action=AB_Reset)

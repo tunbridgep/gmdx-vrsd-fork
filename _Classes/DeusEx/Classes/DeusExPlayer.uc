@@ -413,6 +413,7 @@ var globalconfig bool bSkillMessage;
 var globalconfig bool bXhairShrink;
 var globalconfig bool bNoKnives;
 var globalconfig bool bModdedHeadBob;
+var globalconfig bool bBeltAutofill;											//Sarge: Added new feature for auto-populating belt
 var travel float fullUp; //CyberP: eat/drink limit.                             //RSD: was int, now float
 var localized string fatty; //CyberP: eat/drink limit.
 var localized string noUsing;  //CyberP: left click interaction
@@ -11183,8 +11184,9 @@ function bool AddInventory(inventory item)
 	// unless it's ammo
 	//
 	// Don't add Ammo and don't add Images!
+	// Sarge: Don't add belt items if we have told not to
 
-	if ((item != None) && !item.IsA('Ammo') && (!item.IsA('DataVaultImage')) && (!item.IsA('Credits')))
+	if ((item != None) && !item.IsA('Ammo') && (!item.IsA('DataVaultImage')) && (!item.IsA('Credits')) && bBeltAutofill)
 	{
 		root = DeusExRootWindow(rootWindow);
 
