@@ -25,7 +25,7 @@ function SaveSetting()
 
 function ResetToDefault()
 {
-	SetValue(int(!player.bBeltMemory));
+	SetValue(1);
 }
 
 // ----------------------------------------------------------------------

@@ -106,7 +106,7 @@ defaultproperties
      ss18="ADVANCED TIP: Leaning is better than strafing under certain circumstances as whilst leaning your standing accuracy bonus is retained."
      ss19="TIP: There are many ways in which you can distract the enemy."
      ss20="Your Deus Ex is Augmented."
-     choices(0)=Class'DeusEx.MenuChoice_AlternBelt'
+     choices(0)=Class'DeusEx.MenuChoice_GMDXBeltOption'
      choices(1)=Class'DeusEx.MenuChoice_RealTimeUI'
      choices(3)=Class'DeusEx.MenuChoice_DoubleClickHolster'
      choices(4)=Class'DeusEx.MenuChoice_AnimatedBar1'
@@ -115,8 +115,6 @@ defaultproperties
      choices(7)=Class'DeusEx.MenuChoice_Hitmarker'
      choices(8)=Class'DeusEx.MenuChoice_AutoSaving'
      choices(9)=Class'DeusEx.MenuChoice_AutoSaveSlots'
-     choices(10)=Class'DeusEx.MenuChoice_AutofillBelt'
-     choices(11)=Class'DeusEx.MenuChoice_BeltMemory'
      actionButtons(0)=(Align=HALIGN_Right,Action=AB_Cancel)
      actionButtons(1)=(Align=HALIGN_Right,Action=AB_OK)
      actionButtons(2)=(Action=AB_Reset)

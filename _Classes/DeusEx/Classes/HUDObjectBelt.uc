@@ -344,7 +344,7 @@ function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
                     if (( (Player.Level.NetMode == NM_Standalone) || (!Player.bBeltIsMPInventory) || (newItem.TestMPBeltSpot(i))))
                     {
                         //First, always allow empty slots if we have autofill turned on
-                        if (objects[i].GetItem() == None)
+                        if (objects[i].GetItem() == None && !objects[i].bPlaceholder)
                             break;
                     }
                 }
