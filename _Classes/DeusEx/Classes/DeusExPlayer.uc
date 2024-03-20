@@ -427,6 +427,7 @@ var transient bool bThrowDecoration;
 var int SlotMem; //CyberP: for belt/weapon switching, so the code remembers what weapon we had before holstering
 var int BeltLast; //Sarge: The last item we literally selected from the belt, regardless of holstering or alternate belt behaviour
 var bool bNumberSelect; //Sarge: Whether or not our last belt selection was done with number keys (ActivateBelt) rather than Next/Prev. Used by Alternative Belt to know when to holster
+var bool bScrollSelect; //Sarge: Whether or not our last belt selection was done with Next/Last weapon keys rather than Number Keys. Used by Alternative Belt to know when to holster
 var int clickCountCyber; //CyberP: for double clicking to unequip
 var bool bStunted; //CyberP: for slowing player under various conditions
 var bool bRegenStamina; //CyberP: regen when in water but head above water
@@ -7647,13 +7648,14 @@ exec function ParseRightClick()
 		{
 			PutInHand(None);
 		}
-		else if (((bAlternateToolbelt == 1 && !bNumberSelect) || bAlternateToolbelt > 1) && inHand != None && advBelt != inHand.beltPos) //If we have moved our main weapon, switch to it. But not if we simply selected a different belt item.
+		else if (((bAlternateToolbelt == 1 && !bNumberSelect) || bAlternateToolbelt > 1) && (bNumberSelect || bScrollSelect) ) //If we have moved our main weapon, switch to it. But not if we simply selected a different belt item.
 		{
 			root = DeusExRootWindow(rootWindow);
 			if (root != None && root.hud != None)
 			{
 				root.ActivateObjectInBelt(advBelt);
 				bNumberSelect = false;
+				bScrollSelect = false;
 			}
 			
 		}
@@ -7661,7 +7663,7 @@ exec function ParseRightClick()
 		{
 			if (inHand == None)
 			{
-				//SARGE: Added support for the ubholster behaviour from the Alternate Toolbelt on both Toolbelts
+				//SARGE: Added support for the unholster behaviour from the Alternate Toolbelt on both Toolbelts
 				//Additionally, unholstering is now tied to the double-click holstering setting.
 				root = DeusExRootWindow(rootWindow);
 				if (root != None && root.hud != None)
@@ -7671,11 +7673,13 @@ exec function ParseRightClick()
 					else
 						root.ActivateObjectInBelt(BeltLast);
 					bNumberSelect = false;
+					bScrollSelect = false;
 				}
 			}
 			else
 				PutInHand(None);
 			bNumberSelect = false;
+			bScrollSelect = false;
 		}
 		else
 		{
@@ -10609,6 +10613,7 @@ exec function ActivateBelt(int objectNum)
 			root.ActivateObjectInBelt(objectNum);
 			BeltLast = objectNum;
 			bNumberSelect = true;
+			bScrollSelect = false;
 		}
 	}
 }
@@ -10719,6 +10724,7 @@ exec function NextBeltItem()
 					advBelt = 0;
 			root.hud.belt.RefreshAlternateToolbelt();
 			bNumberSelect = false;
+			bScrollSelect = true;
 			clientInHandPending = root.hud.belt.GetObjectFromBelt(advBelt);
 		}
 	}
@@ -10802,6 +10808,7 @@ exec function PrevBeltItem()
 
 			clientInHandPending = root.hud.belt.GetObjectFromBelt(slot);
 			bNumberSelect = false;
+			bScrollSelect = true;
 			
 			switch( inHandPending.beltPos )
 	   {
@@ -10831,6 +10838,7 @@ exec function PrevBeltItem()
 					advBelt = 9;
             root.hud.belt.RefreshAlternateToolbelt();
 			bNumberSelect = false;
+			bScrollSelect = true;
 			clientInHandPending = root.hud.belt.GetObjectFromBelt(advBelt);
 		}
 	}
