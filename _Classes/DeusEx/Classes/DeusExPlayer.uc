@@ -12419,7 +12419,8 @@ function bool GetExceptedCode(string code)
         || code == "insurgent" //maggie chows code can only be guessed, never found, but is designed that way.
         || code == "2167" //Only displayed in a computer message, so we never get a note for it
         || code == "718" //Can only be guessed based on cryptic information
-        || code == "7243"; //We are only given 3 digits, need to guess the 4th
+        || code == "7243" //We are only given 3 digits, need to guess the 4th
+        || code == "wyrdred08"; //We are not given the last digit
 }
 
 //"Security" is a commonly used word in many logs.
