@@ -9507,7 +9507,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 
 				// Remove it from the inventory slot grid
 				RemoveItemFromSlot(item);
-                MakeBeltObjectPlaceholder(item);
+                //MakeBeltObjectPlaceholder(item); //SARGE: Disabled because keeping dropped items as placeholders feels weird
 
 				// make sure we have one copy to throw!
 				DeusExPickup(item).NumCopies = 1;
@@ -9526,7 +9526,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 
 			// Remove it from the inventory slot grid
 			RemoveItemFromSlot(item);
-            MakeBeltObjectPlaceholder(item);
+            //MakeBeltObjectPlaceholder(item); //SARGE: Disabled because keeping dropped items as placeholders feels weird
 		}
 
 		// if we are highlighting something, try to place the object on the target //CyberP: more lenience when dropping
@@ -9633,7 +9633,6 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 								// must circumvent PutInHand() since it won't allow
 								// things in hand when you're carrying a corpse
 								SetInHandPending(None);
-                                //MakeBeltObjectPlaceholder(item);
 								item.Destroy();
 								item = None;
 
