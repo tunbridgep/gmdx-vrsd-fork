@@ -10605,7 +10605,7 @@ exec function ActivateBelt(int objectNum)
 		if (root != None)
 		{
 			//SARGE: If already selected in IW Belt mode (except classic), an additional press will set our primary weapon to that slot.
-			if (bAlternateToolbelt >= 1 && BeltLast == objectNum && bNumberSelect)
+			if (bAlternateToolbelt >= 1 && BeltLast == objectNum && bNumberSelect && root.hud.belt.GetObjectFromBelt(objectNum) != None)
 			{
 				advBelt = objectNum;
 				root.hud.belt.RefreshAlternateToolbelt();
