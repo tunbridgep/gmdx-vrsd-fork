@@ -74,7 +74,11 @@ function CopyObjectBeltInventory()
 
 	// Now copy the items
 	for (objectIndex=1;objectIndex<10;objectIndex++)
+    {
 		objBelt.AddObjectToBelt(hudBelt.GetObjectFromBelt(objectIndex), objectIndex, True);
+        objBelt.objects[objectIndex].bPlaceholder = hudBelt.objects[objectIndex].bPlaceholder;
+        objBelt.objects[objectIndex].icon = hudBelt.objects[objectIndex].icon;
+    }
 }
 
 // ----------------------------------------------------------------------

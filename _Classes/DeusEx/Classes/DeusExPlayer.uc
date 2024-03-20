@@ -414,6 +414,7 @@ var globalconfig bool bXhairShrink;
 var globalconfig bool bNoKnives;
 var globalconfig bool bModdedHeadBob;
 var globalconfig bool bBeltAutofill;											//Sarge: Added new feature for auto-populating belt
+var globalconfig bool bBeltMemory;  											//Sarge: Added new feature to allow belt to rember items
 var travel float fullUp; //CyberP: eat/drink limit.                             //RSD: was int, now float
 var localized string fatty; //CyberP: eat/drink limit.
 var localized string noUsing;  //CyberP: left click interaction
@@ -8642,6 +8643,12 @@ function RemoveObjectFromBelt(Inventory item)
 	  DeusExRootWindow(rootWindow).hud.belt.RemoveObjectFromBelt(item);
 }
 
+function MakeBeltObjectPlaceholder(Inventory item)
+{
+	if (DeusExRootWindow(rootWindow) != None)
+	  DeusExRootWindow(rootWindow).hud.belt.RemoveObjectFromBelt(item,true);
+}
+
 function AddObjectToBelt(Inventory item, int pos, bool bOverride)
 {
 	if (DeusExRootWindow(rootWindow) != None)
@@ -9500,6 +9507,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 
 				// Remove it from the inventory slot grid
 				RemoveItemFromSlot(item);
+                MakeBeltObjectPlaceholder(item);
 
 				// make sure we have one copy to throw!
 				DeusExPickup(item).NumCopies = 1;
@@ -9518,6 +9526,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 
 			// Remove it from the inventory slot grid
 			RemoveItemFromSlot(item);
+            MakeBeltObjectPlaceholder(item);
 		}
 
 		// if we are highlighting something, try to place the object on the target //CyberP: more lenience when dropping
@@ -9624,6 +9633,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 								// must circumvent PutInHand() since it won't allow
 								// things in hand when you're carrying a corpse
 								SetInHandPending(None);
+                                //MakeBeltObjectPlaceholder(item);
 								item.Destroy();
 								item = None;
 
@@ -11194,7 +11204,7 @@ function bool AddInventory(inventory item)
 	// Don't add Ammo and don't add Images!
 	// Sarge: Don't add belt items if we have told not to
 
-	if ((item != None) && !item.IsA('Ammo') && (!item.IsA('DataVaultImage')) && (!item.IsA('Credits')) && bBeltAutofill)
+	if ((item != None) && !item.IsA('Ammo') && (!item.IsA('DataVaultImage')) && (!item.IsA('Credits')))
 	{
 		root = DeusExRootWindow(rootWindow);
 
@@ -11250,6 +11260,7 @@ function bool DeleteInventory(inventory item)
 			winInv.InventoryDeleted(item);
 
 		// Remove the item from the object belt
+		// Sarge: Keep darkened version in the belt if we have Keep Deleted Belt Items setting turn on
 		if (root != None)
 			root.DeleteInventory(item);
 	  else //In multiplayer, we often don't have a root window when creating corpse, so hand delete

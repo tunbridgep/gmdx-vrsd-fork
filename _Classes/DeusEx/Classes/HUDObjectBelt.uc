@@ -185,13 +185,16 @@ function UpdateInHand()
 function RefreshAlternateToolbelt()
 {
 	local int slotIndex;
+    local bool placeholderSlot;
 
 	if ((player != None) && (!bInteractive))
 	{
 		for (slotIndex=0; slotIndex<ArrayCount(objects); slotIndex++)
 		{
+            placeholderSlot = objects[slotIndex].bPlaceholder;
+
 			//Grey background follows
-			objects[slotIndex].HighlightSelect(slotIndex == player.advBelt);
+			objects[slotIndex].HighlightSelect(slotIndex == player.advBelt && !placeholderSlot);
 			
 			//White outline stays with our selcted weapon
 			if (player.inHandPending != None)
@@ -250,9 +253,10 @@ function ClearBelt()
 
 // ----------------------------------------------------------------------
 // RemoveObjectFromBelt()
+// Sarge: Added optional parameter to make the slot be a placeholder
 // ----------------------------------------------------------------------
 
-function RemoveObjectFromBelt(Inventory item)
+function RemoveObjectFromBelt(Inventory item, optional bool Placeholder)
 {
 	local int i;
    local int StartPos;
@@ -268,6 +272,9 @@ function RemoveObjectFromBelt(Inventory item)
 			objects[i].SetItem(None);
 			item.bInObjectBelt = False;
 			item.beltPos = -1;
+
+            if (placeholder)
+                objects[i].bPlaceholder = true;
 
 			break;
 		}
@@ -292,7 +299,8 @@ function UpdateObjectText(int pos)
 function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
 {
 	local int  i;
-   local int FirstPos;
+    local int FirstPos;
+    local bool FoundPlaceholder;
 	local bool retval;
 
 	retval = true;
@@ -314,14 +322,36 @@ function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
          FirstPos = 1;
          if ((Player.Level.NetMode != NM_Standalone) && (Player.bBeltIsMPInventory))
             FirstPos = 0;
+            //Sarge: First, check for an existing placeholder slot
+            //Then, if we don't find one, check for an empty slot if we have autofill enabled.
 			for (i=FirstPos; IsValidPos(i); i++)
-         {
-				if ((objects[i].GetItem() == None) && ( (Player.Level.NetMode == NM_Standalone) || (!Player.bBeltIsMPInventory) || (newItem.TestMPBeltSpot(i))))
             {
-					break;
+				if (( (Player.Level.NetMode == NM_Standalone) || (!Player.bBeltIsMPInventory) || (newItem.TestMPBeltSpot(i))))
+                {
+                    //Additionally, allow slots with the same icon if we have a placeholder
+                    if (objects[i].icon == newItem.icon && objects[i].bPlaceholder)
+                    {
+                        FoundPlaceholder = true;
+                        break;
+                    }
+                }
             }
-         }
-			if (!IsValidPos(i))
+            //No placeholder slot found, check for an empty one
+            if (!FoundPlaceholder && player.bBeltAutofill)
+            {
+                for (i=FirstPos; IsValidPos(i); i++)
+                {
+                    if (( (Player.Level.NetMode == NM_Standalone) || (!Player.bBeltIsMPInventory) || (newItem.TestMPBeltSpot(i))))
+                    {
+                        //First, always allow empty slots if we have autofill turned on
+                        if (objects[i].GetItem() == None)
+                            break;
+                    }
+                }
+            }
+
+            //Now check if we found a valid slot
+            if (!IsValidPos(i))
 			{
 				if (bOverride)
 					pos = 1;

@@ -4864,7 +4864,7 @@ function Finish()
                   {
                      bBeginQuickMelee = False;
                      DeusExPlayer(Owner).assignedWeapon = None;
-				     Destroy();
+				     DestroyMe();
 				     return;
 				  }
                   if (DeusExPlayer(Owner).CarriedDecoration == None)
@@ -5887,7 +5887,7 @@ state NormalFire
 			{
 			   if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).assignedWeapon != None && DeusExPlayer(Owner).assignedWeapon == self)
 			      DeusExPlayer(Owner).assignedWeapon = None;
-				Destroy();
+				DestroyMe();
 			}
 		}
 	}
@@ -6000,7 +6000,7 @@ Begin:
 	{
 		if (DeusExPlayer(Owner) != None)
 			DeusExPlayer(Owner).RemoveItemFromSlot(Self);   // remove it from the inventory grid
-		Destroy();
+		DestroyMe();
 	}
 	ReadyToFire();
 Done:
@@ -6018,7 +6018,7 @@ Begin:
 	 //      DeusExPlayer(Owner).UpdateSensitivity(DeusExPlayer(Owner).default.MouseSensitivity);
 
 	if ( bDestroyOnFinish )
-		Destroy();
+		DestroyMe();
 	else
 		Finish();
 }
@@ -6675,6 +6675,18 @@ state ADSToggle                                                                 
 simulated function bool TestMPBeltSpot(int BeltSpot)
 {
 	return ((BeltSpot <= 3) && (BeltSpot >= 1));
+}
+
+//SARGE: Destroys the object, and makes sure if it's in our belt, it becomes a placeholder
+//I hate having to do this here, but I can't think of anywhere else to do it that doesn't suck equally as hard
+//or works in a generic way.
+function DestroyMe()
+{
+	local DeusExPlayer player;
+	player = DeusExPlayer(GetPlayerPawn());
+
+    player.MakeBeltObjectPlaceholder(self);
+    Destroy();
 }
 
 defaultproperties

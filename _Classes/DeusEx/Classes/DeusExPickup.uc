@@ -481,7 +481,7 @@ function UseOnce()
 			player.PutInHand(None);
 		if (player.assignedWeapon == Self)                                      //RSD: Reset our assigned weapon
 			player.assignedWeapon = None;
-		Destroy();
+		DestroyMe();
 	}
 	else
 	{
@@ -633,7 +633,7 @@ simulated function BreakItSmashIt(class<fragment> FragType, float size)
 		}
 	}
 
-	Destroy();
+	DestroyMe();
 }
 
 singular function BaseChange()
@@ -698,7 +698,7 @@ auto state Pickup
         //if (IsA('VialCrack') || IsA('VialAmbrosia'))
         //{
         //PlaySound(sound'GlassBreakSmall', SLOT_None,,, 768);
-        //Destroy();
+        //DestroyMe();
         //}
     if (Owner == None && !bSimplePhysics)
     {
@@ -876,6 +876,18 @@ function SetSkin()
 {
 //	if(bHasMultipleSkins)
 //		dumptexturelist();
+}
+
+//SARGE: Destroys the object, and makes sure if it's in our belt, it becomes a placeholder
+//I hate having to do this here, but I can't think of anywhere else to do it that doesn't suck equally as hard
+//or works in a generic way.
+function DestroyMe()
+{
+	local DeusExPlayer player;
+	player = DeusExPlayer(GetPlayerPawn());
+
+    player.MakeBeltObjectPlaceholder(self);
+    Destroy();
 }
 
 // ----------------------------------------------------------------------
