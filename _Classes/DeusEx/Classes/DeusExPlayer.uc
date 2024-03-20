@@ -7647,19 +7647,6 @@ exec function ParseRightClick()
 		{
 			PutInHand(None);
 		}
-		else if (inHand == None)
-		{
-			//SARGE: Added support for the reholster behaviour from the Alternate Toolbelt without the DX:IW toolbelt enabled
-			root = DeusExRootWindow(rootWindow);
-			if (root != None && root.hud != None)
-			{
-				if (bAlternateToolbelt > 0)
-					root.ActivateObjectInBelt(advBelt);
-				else
-					root.ActivateObjectInBelt(BeltLast);
-				bNumberSelect = false;
-			}
-		}
 		else if (((bAlternateToolbelt == 1 && !bNumberSelect) || bAlternateToolbelt > 1) && inHand != None && advBelt != inHand.beltPos) //If we have moved our main weapon, switch to it. But not if we simply selected a different belt item.
 		{
 			root = DeusExRootWindow(rootWindow);
@@ -7672,7 +7659,22 @@ exec function ParseRightClick()
 		}
 		else if (clickCountCyber >= 1 || !bDblClickHolster)
 		{
-			PutInHand(None);
+			if (inHand == None)
+			{
+				//SARGE: Added support for the ubholster behaviour from the Alternate Toolbelt on both Toolbelts
+				//Additionally, unholstering is now tied to the double-click holstering setting.
+				root = DeusExRootWindow(rootWindow);
+				if (root != None && root.hud != None)
+				{
+					if (bAlternateToolbelt > 0)
+						root.ActivateObjectInBelt(advBelt);
+					else
+						root.ActivateObjectInBelt(BeltLast);
+					bNumberSelect = false;
+				}
+			}
+			else
+				PutInHand(None);
 			bNumberSelect = false;
 		}
 		else
