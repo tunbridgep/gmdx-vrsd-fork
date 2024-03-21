@@ -414,7 +414,9 @@ var globalconfig bool bXhairShrink;
 var globalconfig bool bNoKnives;
 var globalconfig bool bModdedHeadBob;
 var globalconfig bool bBeltAutofill;											//Sarge: Added new feature for auto-populating belt
+var bool bForceBeltAutofill;    	    										//Sarge: Overwrite autofill setting. Used by starting items
 var globalconfig bool bBeltMemory;  											//Sarge: Added new feature to allow belt to rember items
+var globalconfig bool bSmartKeyring;  											//Sarge: Added new feature to allow keyring to be used without belt, freeing up a slot
 var travel float fullUp; //CyberP: eat/drink limit.                             //RSD: was int, now float
 var localized string fatty; //CyberP: eat/drink limit.
 var localized string noUsing;  //CyberP: left click interaction
@@ -7537,6 +7539,12 @@ exec function ParseRightClick()
 
 	if (FrobTarget != None)
 	{
+        //SARGE: Add Smart Keyring support.
+	    if (FrobTarget.IsA('DeusExMover') && DeusExMover(FrobTarget).bLocked==True && bSmartKeyring && inHand != KeyRing)
+        {
+            PutInHand(KeyRing);
+            return;
+        }
 		// First check if this is a NanoKey, in which case we just
 		// want to add it to the NanoKeyRing without disrupting
 		// what the player is holding
@@ -10635,7 +10643,7 @@ exec function ActivateBelt(int objectNum)
 exec function NextBeltItem()
 {
 	local DeusExRootWindow root;
-	local int slot, startSlot;
+	local int slot, startSlot, tries;
 
 	if (RestrictInput())
 		return;
@@ -10734,8 +10742,9 @@ exec function NextBeltItem()
 			{
 				if (++advBelt >= 10)
 					advBelt = 0;
+                tries++;
 			}
-			until (root.hud.belt.GetObjectFromBelt(advBelt) != None);
+			until (root.hud.belt.GetObjectFromBelt(advBelt) != None || tries == 10);
 			root.hud.belt.RefreshAlternateToolbelt();
 			bNumberSelect = false;
 			bScrollSelect = true;
@@ -10753,7 +10762,7 @@ exec function NextBeltItem()
 exec function PrevBeltItem()
 {
 	local DeusExRootWindow root;
-	local int slot, startSlot;
+	local int slot, startSlot, tries;
 
 	if (RestrictInput())
 		return;
@@ -10852,8 +10861,9 @@ exec function PrevBeltItem()
 			{
 				if (--advBelt <= -1)
 					advBelt = 9;
+                tries++;
 			}
-			until (root.hud.belt.GetObjectFromBelt(advBelt) != None);
+			until (root.hud.belt.GetObjectFromBelt(advBelt) != None || tries == 10);
             root.hud.belt.RefreshAlternateToolbelt();
 			bNumberSelect = false;
 			bScrollSelect = true;
@@ -16304,6 +16314,10 @@ function GrantAugs(int NumAugs)
 function GiveInitialInventory()
 {
 	local Inventory anItem;
+    local bool bTempAutofill;
+
+    //SARGE: Hack to make the starting items always appear in the belt, regardless of settings
+    bForceBeltAutofill = true;
 
 	// Give the player a pistol.
 
@@ -16342,6 +16356,8 @@ function GiveInitialInventory()
 	anItem.Frob(Self,None);
 	inventory.bInObjectBelt = True;
 	anItem.Destroy();
+
+    bForceBeltAutofill = false;
 }
 
 // ----------------------------------------------------------------------

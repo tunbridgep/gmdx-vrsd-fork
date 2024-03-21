@@ -74,6 +74,8 @@ function CreateSlots()
 //
 // The last object slot contains the NanoKeyRing, which lets the user
 // easily open doors for which they have the code (Know the code!)
+// SARGE: Complete overhaul. Instead of simply assigning the keyring, now we only assign it
+// if we have smart keyring disabled, and remove it otherwise
 // ----------------------------------------------------------------------
 
 function CreateNanoKeySlot()
@@ -82,9 +84,19 @@ function CreateNanoKeySlot()
 	{
 		if (player.KeyRing != None)
 		{
-			objects[KeyRingSlot].SetItem(player.KeyRing);
-			objects[KeyRingSlot].AllowDragging(False);
+            if (!player.bSmartKeyring)
+            {
+                RemoveObjectFromBelt(objects[KeyRingSlot].item);
+    			objects[KeyRingSlot].SetItem(player.KeyRing);
+            }
+            else if (objects[KeyRingSlot].item == player.KeyRing)
+            {
+                objects[KeyRingSlot].SetItem(None);
+            }
+			objects[KeyRingSlot].AllowDragging(player.bSmartKeyring);
 		}
+
+
 	}
 }
 
@@ -148,6 +160,9 @@ function DrawBorder(GC gc)
 function UpdateInHand()
 {
 	local int slotIndex;
+	
+    //SARGE: Update Keyring Slot. This is now required due to smart keyring
+    CreateNanoKeySlot();
 
 	// highlight the slot and unhighlight the other slots
 	if ((player != None) && (!bInteractive))
@@ -259,15 +274,14 @@ function ClearBelt()
 function RemoveObjectFromBelt(Inventory item, optional bool Placeholder)
 {
 	local int i;
-   local int StartPos;
 
-   StartPos = 1;
-   if ( (Player != None) && (Player.Level.NetMode != NM_Standalone) && (Player.bBeltIsMPInventory) )
-      StartPos = 0;
-
-	for (i=StartPos; IsValidPos(i); i++)
+    //Sarge: Previously, there was a StartPos variable, which would be 0 for MP and 1 for SP.
+    //This was designed to skip the nano key slot.
+    //Now that we have smart keyring, we can get rid of the check entirely, and instead
+    //only allow a position to be valid if the object in it is draggable.
+	for (i=0; IsValidPos(i); i++)
 	{
-		if (objects[i].GetItem() == item)
+		if (objects[i].GetItem() == item && objects[i].bAllowDragging)
 		{
 			objects[i].SetItem(None);
 			item.bInObjectBelt = False;
@@ -299,7 +313,6 @@ function UpdateObjectText(int pos)
 function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
 {
 	local int  i;
-    local int FirstPos;
     local bool FoundPlaceholder;
 	local bool retval;
 
@@ -319,12 +332,13 @@ function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
                (Player.bBeltIsMPInventory) &&
                (!newItem.TestMPBeltSpot(pos)) ) )
 		{
-         FirstPos = 1;
-         if ((Player.Level.NetMode != NM_Standalone) && (Player.bBeltIsMPInventory))
-            FirstPos = 0;
+            //Sarge: Previously, there was a FirstPos variable, which would be 0 for MP and 1 for SP.
+            //This was designed to skip the nano key slot.
+            //Now that we have smart keyring, we can get rid of the check entirely, and instead
+            //only allow a position to be valid if the object in it is draggable.
             //Sarge: First, check for an existing placeholder slot
             //Then, if we don't find one, check for an empty slot if we have autofill enabled.
-			for (i=FirstPos; IsValidPos(i); i++)
+			for (i=0; IsValidPos(i); i++)
             {
 				if (( (Player.Level.NetMode == NM_Standalone) || (!Player.bBeltIsMPInventory) || (newItem.TestMPBeltSpot(i))))
                 {
@@ -337,18 +351,21 @@ function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
                 }
             }
             //No placeholder slot found, check for an empty one
-            if (!FoundPlaceholder && player.bBeltAutofill)
+            if (!FoundPlaceholder && (player.bBeltAutofill || player.bForceBeltAutofill))
             {
-                for (i=FirstPos; IsValidPos(i); i++)
+                for (i=1; IsValidPos(i); i++)
                 {
                     if (( (Player.Level.NetMode == NM_Standalone) || (!Player.bBeltIsMPInventory) || (newItem.TestMPBeltSpot(i))))
                     {
                         //First, always allow empty slots if we have autofill turned on
-                        if (objects[i].GetItem() == None && !objects[i].bPlaceholder)
+                        if (objects[i].GetItem() == None && !objects[i].bPlaceholder && objects[i].bAllowDragging)
                             break;
                     }
                 }
             }
+            //SARGE: We need to check the 0 slot LAST, so we don't fill it first, otherwise new items appear at the end
+            if (!IsValidPos(i) && objects[KeyRingSlot].GetItem() == None && !objects[KeyRingSlot].bPlaceholder && objects[KeyRingSlot].bAllowDragging)
+                pos = KeyRingSlot;
 
             //Now check if we found a valid slot
             if (!IsValidPos(i))

@@ -15,6 +15,7 @@ defaultproperties
      choices(0)=Class'DeusEx.MenuChoice_AlternBelt'
      choices(1)=Class'DeusEx.MenuChoice_AutofillBelt'
      choices(2)=Class'DeusEx.MenuChoice_BeltMemory'
+     choices(3)=Class'DeusEx.MenuChoice_SmartKeyring'
      actionButtons(0)=(Align=HALIGN_Right,Action=AB_Cancel)
      actionButtons(1)=(Align=HALIGN_Right,Action=AB_OK)
      actionButtons(2)=(Action=AB_Reset)

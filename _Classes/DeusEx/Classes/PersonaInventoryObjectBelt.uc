@@ -73,7 +73,7 @@ function CopyObjectBeltInventory()
 	local int objectIndex;
 
 	// Now copy the items
-	for (objectIndex=1;objectIndex<10;objectIndex++)
+	for (objectIndex=0;objectIndex<10;objectIndex++)
     {
 		objBelt.AddObjectToBelt(hudBelt.GetObjectFromBelt(objectIndex), objectIndex, True);
         objBelt.objects[objectIndex].bPlaceholder = hudBelt.objects[objectIndex].bPlaceholder;
@@ -101,7 +101,7 @@ function AssignObjectBeltByKey(Inventory invItem, EInputKey key)
 {
 	local int objectNum;
 
-	if ((key < IK_1) || ( key > IK_9 ))
+	if ((key < IK_0) || ( key > IK_9 ))
 		return;
 
 	// Typecasting EInputKey to int doesn't seem to work.
@@ -139,6 +139,9 @@ function AssignObjectBeltByKey(Inventory invItem, EInputKey key)
 		case IK_9:
 			objectNum = 9;
 			break;
+		case IK_0: //SARGE: Needed now because we can assign slot 0
+			objectNum = 0;
+			break;
 	}
 
 	AddObject(invItem, objectNum);
@@ -152,7 +155,7 @@ function AddObject(Inventory inv, int objectNum)
 {
 	// Don't allow this if it's the NanoKeyRing object
 
-	if (( inv != None ) && (objectNum != 0))
+	if (inv != None && objBelt.objects[objectNum].bAllowDragging)
 	{
       //DEUS_EX AMSD Changed so hudbelt call propagates through player
       DeusExPlayer(GetRootWindow().ParentPawn).RemoveObjectFromBelt(inv);

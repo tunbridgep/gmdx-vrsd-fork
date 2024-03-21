@@ -491,7 +491,7 @@ event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
 
 	// If a number key was pressed and we have a selected inventory item,
 	// then assign the hotkey
-	if (( key >= IK_1 ) && ( key <= IK_9 ) && (selectedItem != None) && (Inventory(selectedItem.GetClientObject()) != None))
+	if (( key >= IK_0 ) && ( key <= IK_9 ) && (selectedItem != None) && (Inventory(selectedItem.GetClientObject()) != None))
 	{
 		invBelt.AssignObjectBeltByKey(Inventory(selectedItem.GetClientObject()), key);
 	}
