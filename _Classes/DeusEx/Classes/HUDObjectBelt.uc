@@ -89,9 +89,9 @@ function CreateNanoKeySlot()
                 RemoveObjectFromBelt(objects[KeyRingSlot].item);
     			objects[KeyRingSlot].SetItem(player.KeyRing);
             }
-            else if (objects[KeyRingSlot].item == player.KeyRing)
+            else if (objects[KeyRingSlot].item.IsA('NanoKeyRing'))
             {
-                objects[KeyRingSlot].SetItem(None);
+                RemoveObjectFromBelt(objects[KeyRingSlot].item);
             }
 			objects[KeyRingSlot].AllowDragging(player.bSmartKeyring);
 		}
@@ -362,10 +362,11 @@ function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
                             break;
                     }
                 }
+
+                //SARGE: We need to check the 0 slot LAST, so we don't fill it first, otherwise new items appear at the end of the players belt
+                if (!IsValidPos(i) && objects[KeyRingSlot].GetItem() == None && !objects[KeyRingSlot].bPlaceholder && objects[KeyRingSlot].bAllowDragging)
+                    pos = KeyRingSlot;
             }
-            //SARGE: We need to check the 0 slot LAST, so we don't fill it first, otherwise new items appear at the end
-            if (!IsValidPos(i) && objects[KeyRingSlot].GetItem() == None && !objects[KeyRingSlot].bPlaceholder && objects[KeyRingSlot].bAllowDragging)
-                pos = KeyRingSlot;
 
             //Now check if we found a valid slot
             if (!IsValidPos(i))

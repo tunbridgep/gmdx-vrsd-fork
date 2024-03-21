@@ -25,7 +25,7 @@ function SaveSetting()
 
 function ResetToDefault()
 {
-	SetValue(1);
+	SetValue(int(!player.bSmartKeyring));
 }
 
 // ----------------------------------------------------------------------
