@@ -1893,7 +1893,8 @@ function FinishButtonDrag()
 				beltSlot = HUDObjectSlot(lastDragOverButton).objectNum;
 
 				// Don't allow to be moved over NanoKeyRing
-				if (beltSlot > 0)
+                //SARGE: Change this to work if the nanokey slot is draggable
+				if (HUDObjectSlot(lastDragOverButton).bAllowDragging)
 				{
 					invBelt.AddObject(dragInv, beltSlot);
 				}
