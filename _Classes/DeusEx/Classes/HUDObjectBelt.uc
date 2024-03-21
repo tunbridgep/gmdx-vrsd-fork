@@ -209,7 +209,7 @@ function RefreshAlternateToolbelt()
 	{
 		for (slotIndex=0; slotIndex<ArrayCount(objects); slotIndex++)
 		{
-            placeholderSlot = objects[slotIndex].bPlaceholder;
+            placeholderSlot = player.GetPlaceholder(slotIndex);
 
 			//Grey background follows
 			objects[slotIndex].HighlightSelect(slotIndex == player.advBelt && !placeholderSlot && objects[slotIndex].item != None);
@@ -286,12 +286,12 @@ function RemoveObjectFromBelt(Inventory item, optional bool Placeholder)
 	{
 		if (objects[i].GetItem() == item && objects[i].bAllowDragging)
 		{
+            if (placeholder)
+                player.SetPlaceholder(i,true);
+
 			objects[i].SetItem(None);
 			item.bInObjectBelt = False;
 			item.beltPos = -1;
-
-            if (placeholder)
-                objects[i].bPlaceholder = true;
 
 			break;
 		}
@@ -346,7 +346,7 @@ function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
 				if (( (Player.Level.NetMode == NM_Standalone) || (!Player.bBeltIsMPInventory) || (newItem.TestMPBeltSpot(i))))
                 {
                     //Additionally, allow slots with the same icon if we have a placeholder
-                    if (objects[i].icon == newItem.icon && objects[i].bPlaceholder)
+                    if (player.GetBeltIcon(i) == newItem.icon && player.GetPlaceholder(i))
                     {
                         FoundPlaceholder = true;
                         break;
@@ -361,13 +361,13 @@ function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
                     if (( (Player.Level.NetMode == NM_Standalone) || (!Player.bBeltIsMPInventory) || (newItem.TestMPBeltSpot(i))))
                     {
                         //First, always allow empty slots if we have autofill turned on
-                        if (objects[i].GetItem() == None && !objects[i].bPlaceholder && objects[i].bAllowDragging)
+                        if (objects[i].GetItem() == None && !player.GetPlaceholder(i) && objects[i].bAllowDragging)
                             break;
                     }
                 }
 
                 //SARGE: We need to check the 0 slot LAST, so we don't fill it first, otherwise new items appear at the end of the players belt
-                if (!IsValidPos(i) && objects[KeyRingSlot].GetItem() == None && !objects[KeyRingSlot].bPlaceholder && objects[KeyRingSlot].bAllowDragging)
+                if (!IsValidPos(i) && objects[KeyRingSlot].GetItem() == None && !player.GetPlaceholder(KeyRingSlot) && objects[KeyRingSlot].bAllowDragging)
                     pos = KeyRingSlot;
             }
 

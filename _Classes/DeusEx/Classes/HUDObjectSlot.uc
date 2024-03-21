@@ -23,8 +23,6 @@ var int			slotFillWidth;
 var int			slotFillHeight;
 var int         borderWidth;
 var int         borderHeight;
-var bool		bPlaceholder;		//Sarge. Allow "empty" slots that show the old icon
-var texture		icon;				//Sarge. Disconnect the icon from the inventory item, so we can keep it when the item disappears.
 
 // Stuff to optimize DrawWindow()
 var String      itemText;
@@ -141,28 +139,11 @@ function SetItem(Inventory newItem)
 
 	if (newItem != None)
     {
-		icon = newItem.icon;
-        bPlaceholder = false; //Sarge: Reset placeholder status if a new item is added
+        player.SetPlaceholder(objectNum,false,newItem.icon); //Sarge: Reset placeholder status if a new item is added
     }
-
-    /*
-	if (newItem != None)
-		bPlaceholder = false;
-	else if (!clearSlot && newItem == None && player.bBeltMemory)
-		bPlaceholder = true;
-	else if (newItem == None)
-		bPlaceholder = false;
-    */
 
 	// Update the text that will be displayed above the icon (if any)
 	UpdateItemText();
-}
-
-// Set Placeholder
-function SetPlaceholder()
-{
-    if (item == None && player.bBeltMemory)
-        bPlaceholder = true;
 }
 
 // ----------------------------------------------------------------------
@@ -246,7 +227,7 @@ local DeusExWeapon weapon;
 	}
 
 	// Don't draw any of this if we're dragging
-	if ((item != None || bPlaceholder) && (icon != None) && (!bDragging))
+	if ((item != None || player.GetPlaceholder(objectNum)) && (player.GetBeltIcon(objectNum) != None) && (!bDragging))
 	{
 		// Draw the icon
 		DrawHUDIcon(gc);
@@ -323,7 +304,7 @@ function DrawHUDIcon(GC gc)
 
         gc.SetStyle(DSTY_Masked);
 		//gc.SetTileColorRGB(255, 255, 255);
-		if (bDimIcon || bPlaceholder)	                                        //RSD: Can now dim icons
+		if (bDimIcon || player.GetPlaceholder(objectNum))	                                        //RSD: Can now dim icons
 		{
 			gc.SetTileColorRGB(64,64,64);
 		}
@@ -331,7 +312,7 @@ function DrawHUDIcon(GC gc)
 		{
 			gc.SetTileColorRGB(255,255,255);
 		}
-		gc.DrawTexture(slotIconX, slotIconY, slotFillWidth, slotFillHeight, 0, 0, icon);
+		gc.DrawTexture(slotIconX, slotIconY, slotFillWidth, slotFillHeight, 0, 0, player.GetBeltIcon(objectNum));
 }
 
 function DrawHUDBackground(GC gc)
@@ -531,7 +512,7 @@ event texture CursorRequested(window win, float pointX, float pointY,
 			newColor.B = 64;
 		}
 
-		return icon;
+		return player.GetBeltIcon(objectNum);
 	}
 	else
 	{

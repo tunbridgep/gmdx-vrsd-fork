@@ -10,6 +10,13 @@ struct augBinary                                                                
 	var name aug2;
 };
 
+//Holds information about the reserved items on the belt
+struct BeltInfo
+{
+    var bool		bPlaceholder;		    //Sarge. Allow "empty" slots that show the old icon
+    var texture		icon;				    //Sarge. Disconnect the icon from the inventory item, so we can keep it when the item disappears.
+};
+
 #exec OBJ LOAD FILE=Effects
 
 // Name and skin assigned to PC by player on the Character Generation screen
@@ -417,6 +424,7 @@ var globalconfig bool bBeltAutofill;											//Sarge: Added new feature for au
 var bool bForceBeltAutofill;    	    										//Sarge: Overwrite autofill setting. Used by starting items
 var globalconfig bool bBeltMemory;  											//Sarge: Added new feature to allow belt to rember items
 var globalconfig bool bSmartKeyring;  											//Sarge: Added new feature to allow keyring to be used without belt, freeing up a slot
+var travel BeltInfo beltInfos[10];                                              //Sarge: Holds information about belt slots
 var travel float fullUp; //CyberP: eat/drink limit.                             //RSD: was int, now float
 var localized string fatty; //CyberP: eat/drink limit.
 var localized string noUsing;  //CyberP: left click interaction
@@ -428,10 +436,12 @@ var float camInterpol;
 var travel bool bWasCrosshair;
 var bool bFromCrosshair;
 var transient bool bThrowDecoration;
-var int SlotMem; //CyberP: for belt/weapon switching, so the code remembers what weapon we had before holstering
-var int BeltLast; //Sarge: The last item we literally selected from the belt, regardless of holstering or alternate belt behaviour
-var bool bNumberSelect; //Sarge: Whether or not our last belt selection was done with number keys (ActivateBelt) rather than Next/Prev. Used by Alternative Belt to know when to holster
-var bool bScrollSelect; //Sarge: Whether or not our last belt selection was done with Next/Last weapon keys rather than Number Keys. Used by Alternative Belt to know when to holster
+var travel int SlotMem; //CyberP: for belt/weapon switching, so the code remembers what weapon we had before holstering
+var travel int BeltLast; //Sarge: The last item we literally selected from the belt, regardless of holstering or alternate belt behaviour
+var travel bool bNumberSelect; //Sarge: Whether or not our last belt selection was done with number keys (ActivateBelt) rather than Next/Prev. Used by Alternative Belt to know when to holster
+var travel bool bScrollSelect; //Sarge: Whether or not our last belt selection was done with Next/Last weapon keys rather than Number Keys. Used by Alternative Belt to know when to holster
+var travel bool	bPlaceholder;		    //Sarge. Allow "empty" slots that show the old icon
+var travel texture icon;				//Sarge. Disconnect the icon from the inventory item, so we can keep it when the item disappears.
 var int clickCountCyber; //CyberP: for double clicking to unequip
 var bool bStunted; //CyberP: for slowing player under various conditions
 var bool bRegenStamina; //CyberP: regen when in water but head above water
@@ -8664,6 +8674,26 @@ function AddObjectToBelt(Inventory item, int pos, bool bOverride)
 {
 	if (DeusExRootWindow(rootWindow) != None)
 	  DeusExRootWindow(rootWindow).hud.belt.AddObjectToBelt(item,pos,bOverride);
+}
+
+////Sarge: Functions for dealing with belt memory
+
+// Set Placeholder
+function SetPlaceholder(int objectNum, bool value, optional texture icon)
+{
+    beltInfos[objectNum].bPlaceholder = value;
+    if (icon != None)
+        beltInfos[objectNum].icon = icon;
+}
+
+function bool GetPlaceholder(int objectNum)
+{
+    return beltInfos[objectNum].bPlaceholder;
+}
+
+function texture GetBeltIcon(int objectNum)
+{
+    return beltInfos[objectNum].icon;
 }
 
 
