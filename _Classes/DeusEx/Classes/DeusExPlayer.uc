@@ -1140,7 +1140,12 @@ function int GetInventoryCount(Name item)
 	while(anItem != None)
 	{
 		if (anItem.IsA(item))
-			count++;
+        {
+            if (anItem.IsA('DeusExPickup'))
+                count += DeusExPickup(anItem).NumCopies;
+            else
+    			count++;
+        }
 
 		anItem = anItem.Inventory;
 	}
@@ -2092,6 +2097,9 @@ function ResetPlayer(optional bool bTraining)
 	// Give the player a pistol and a prod
 	if (!bTraining)
 	{
+
+        //SARGE: Hack to make the starting items always appear in the belt, regardless of autofill setting
+        bForceBeltAutofill = true;
 		anItem = Spawn(class'WeaponPistol');
 		anItem.Frob(Self, None);
 		anItem.bInObjectBelt = True;
@@ -2104,6 +2112,7 @@ function ResetPlayer(optional bool bTraining)
 		swimTimer = 1000;  //CyberP: start with full stamina.
 		KillerCount = 0;    //CyberP: start with 0 kills
 		stepCount = 0;      //CyberP: start with 0 steps
+        bForceBeltAutofill = false;
 	}
 }
 
@@ -16314,10 +16323,6 @@ function GrantAugs(int NumAugs)
 function GiveInitialInventory()
 {
 	local Inventory anItem;
-    local bool bTempAutofill;
-
-    //SARGE: Hack to make the starting items always appear in the belt, regardless of settings
-    bForceBeltAutofill = true;
 
 	// Give the player a pistol.
 
@@ -16356,8 +16361,6 @@ function GiveInitialInventory()
 	anItem.Frob(Self,None);
 	inventory.bInObjectBelt = True;
 	anItem.Destroy();
-
-    bForceBeltAutofill = false;
 }
 
 // ----------------------------------------------------------------------

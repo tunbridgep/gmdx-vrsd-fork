@@ -175,20 +175,23 @@ function UpdateInHand()
 	
 		for (slotIndex=0; slotIndex<ArrayCount(objects); slotIndex++)
 		{
-			// Highlight the object in the player's hand
-			if ((player.inHand != None) && (objects[slotIndex].item == player.inHand))
-			 objects[slotIndex].HighlightSelect(True);
-			else if (player.inHand == None)
-			   {
-			   }
-			else
-				objects[slotIndex].HighlightSelect(False);
+            if (objects[slotIndex].item != None)
+            {
+                // Highlight the object in the player's hand
+                if ((player.inHand != None) && (objects[slotIndex].item == player.inHand))
+                objects[slotIndex].HighlightSelect(True);
+                else if (player.inHand == None)
+                {
+                }
+                else
+                    objects[slotIndex].HighlightSelect(False);
 
-			if ((player.inHandPending != None) && //(player.inHandPending != player.inHand) &&
-			    (objects[slotIndex].item == player.inHandPending))
-				objects[slotIndex].SetToggle(true);
-			else
-				objects[slotIndex].SetToggle(false);
+                if ((player.inHandPending != None) && //(player.inHandPending != player.inHand) &&
+                    (objects[slotIndex].item == player.inHandPending))
+                    objects[slotIndex].SetToggle(true);
+                else
+                    objects[slotIndex].SetToggle(false);
+            }
 		}
 	}
 }
@@ -209,7 +212,7 @@ function RefreshAlternateToolbelt()
             placeholderSlot = objects[slotIndex].bPlaceholder;
 
 			//Grey background follows
-			objects[slotIndex].HighlightSelect(slotIndex == player.advBelt && !placeholderSlot);
+			objects[slotIndex].HighlightSelect(slotIndex == player.advBelt && !placeholderSlot && objects[slotIndex].item != None);
 			
 			//White outline stays with our selcted weapon
 			if (player.inHandPending != None)
