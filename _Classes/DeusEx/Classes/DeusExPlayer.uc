@@ -7424,31 +7424,26 @@ exec function ParseLeftClick()
     {
       if (DeusExMover(FrobTarget).bLocked)
       {
-      for(item = Inventory; item != None; item = nextItem)
-	  {
-		nextItem = item.Inventory;
-		    if (item.IsA('Lockpick') && DeusExMover(FrobTarget).bPickable)
-		    {
-		       if (DeusExMover(FrobTarget).bPickable==True)
-	    	   {
-	    	      PutInHand(item);
-	    	      break;
-	    	   }
-		    }
-	    	else if (nextItem.IsA('Lockpick') && DeusExMover(FrobTarget).bPickable)
-	    	{
-	    	   if (DeusExMover(FrobTarget).bPickable==True)
-	    	   {
-	    	      PutInHand(nextItem);
-	    	      break;
-	    	   }
-	    	}
-	    	else if (nextItem.IsA('NanoKeyRing'))
-	    	{
-	    	   PutInHand(nextItem);
-  	           break;
-	    	}
-      }
+        //Sarge: Move NanoKeyring check to work based on whether or not we have the key.
+        //Rather than always selecting a lockpick if we have one and always selecting the nanokey if we don't
+        if (KeyRing.HasKey(DeusExMover(FrobTarget).KeyIDNeeded))
+                PutInHand(KeyRing);
+        else
+        {
+            item = Inventory;
+            while (item != None)
+            {
+                if (item.IsA('Lockpick') && DeusExMover(FrobTarget).bPickable)
+                {
+                    if (DeusExMover(FrobTarget).bPickable==True)
+                    {
+                        PutInHand(item);
+                        break;
+                    }
+                }
+                item = item.Inventory;
+            }
+        }
       }
     }
     else if (inHand == None && CarriedDecoration == None && FrobTarget != None && FrobTarget.IsA('HackableDevices'))
@@ -7472,6 +7467,11 @@ exec function ParseLeftClick()
 	    	}
        }
     }
+}
+
+function HasKeyForLock(DeusExMover lock)
+{
+
 }
 
 // ----------------------------------------------------------------------
@@ -7548,12 +7548,6 @@ exec function ParseRightClick()
 
 	if (FrobTarget != None)
 	{
-        //SARGE: Add Smart Keyring support.
-	    if (FrobTarget.IsA('DeusExMover') && DeusExMover(FrobTarget).bLocked==True && bSmartKeyring && inHand != KeyRing)
-        {
-            PutInHand(KeyRing);
-            return;
-        }
 		// First check if this is a NanoKey, in which case we just
 		// want to add it to the NanoKeyRing without disrupting
 		// what the player is holding
