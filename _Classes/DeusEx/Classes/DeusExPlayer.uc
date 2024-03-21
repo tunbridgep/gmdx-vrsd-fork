@@ -12427,13 +12427,14 @@ function bool GetCodeNote(string code)
 //See here for a full list. https://deusex.fandom.com/wiki/Passwords,_Logins,_and_Codes_(DX)
 function bool GetExceptedCode(string code)
 {
-	return code == "calvo" //Alex Jacobson computer password on the wall next to his computer
-        || code == "bionicman" //we get our code as soon as we enter our office, but it takes a little bit. Fix it not working when we should know it
-        || code == "insurgent" //maggie chows code can only be guessed, never found, but is designed that way.
+    code = Caps(code);
+	return code == "CALVO" //Alex Jacobson computer password on the wall next to his computer
+        || code == "BIONICMAN" //we get our code as soon as we enter our office, but it takes a little bit. Fix it not working when we should know it
+        || code == "INSURGENT" //maggie chows code can only be guessed, never found, but is designed that way.
         || code == "2167" //Only displayed in a computer message, so we never get a note for it
         || code == "718" //Can only be guessed based on cryptic information
         || code == "7243" //We are only given 3 digits, need to guess the 4th
-        || code == "wyrdred08"; //We are not given the last digit
+        || code == "WYRDRED08"; //We are not given the last digit
 }
 
 //"Security" is a commonly used word in many logs.
@@ -12442,7 +12443,7 @@ function bool GetExceptedCode(string code)
 //So anything with security as the username needs to be ignored
 function bool EvilUsernameHack(string username)
 {
-    return (username == "security") && bNoKeypadCheese;
+    return (Caps(username) == "SECURITY") && bNoKeypadCheese;
 }
 
 // ----------------------------------------------------------------------
