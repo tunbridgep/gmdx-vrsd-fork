@@ -12414,7 +12414,7 @@ function bool GetCodeNote(string code)
 
 	while( note != None )
 	{
-		if (!note.bUserNote && InStr(note.text,code) != -1)
+		if (!note.bUserNote && InStr(Caps(note.text),Caps(code)) != -1)
             return true;
 
 		note = note.next;
