@@ -437,11 +437,10 @@ var travel bool bWasCrosshair;
 var bool bFromCrosshair;
 var transient bool bThrowDecoration;
 var travel int SlotMem; //CyberP: for belt/weapon switching, so the code remembers what weapon we had before holstering
-var travel int BeltLast; //Sarge: The last item we literally selected from the belt, regardless of holstering or alternate belt behaviour
-var travel bool bNumberSelect; //Sarge: Whether or not our last belt selection was done with number keys (ActivateBelt) rather than Next/Prev. Used by Alternative Belt to know when to holster
-var travel bool bScrollSelect; //Sarge: Whether or not our last belt selection was done with Next/Last weapon keys rather than Number Keys. Used by Alternative Belt to know when to holster
-var travel bool	bPlaceholder;		    //Sarge. Allow "empty" slots that show the old icon
-var travel texture icon;				//Sarge. Disconnect the icon from the inventory item, so we can keep it when the item disappears.
+var travel int BeltLast;                                                    //Sarge: The last item we literally selected from the belt, regardless of holstering or alternate belt behaviour
+var travel bool bUsedKeyringLast;  											//Sarge: Added new feature to allow keyring to be used without belt, freeing up a slot
+var travel bool bNumberSelect;                                              //Sarge: Whether or not our last belt selection was done with number keys (ActivateBelt) rather than Next/Prev. Used by Alternative Belt to know when to holster
+var travel bool bScrollSelect;                                              //Sarge: Whether or not our last belt selection was done with Next/Last weapon keys rather than Number Keys. Used by Alternative Belt to know when to holster
 var int clickCountCyber; //CyberP: for double clicking to unequip
 var bool bStunted; //CyberP: for slowing player under various conditions
 var bool bRegenStamina; //CyberP: regen when in water but head above water
@@ -16983,6 +16982,7 @@ defaultproperties
      bObjectNames=True
      bNPCHighlighting=True
      bSubtitles=True
+     bBeltAutofill=True
      bAlwaysRun=True
      logTimeout=3.000000
      maxLogLines=4
