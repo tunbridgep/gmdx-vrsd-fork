@@ -7479,9 +7479,16 @@ exec function ParseLeftClick()
     }
 }
 
-function HasKeyForLock(DeusExMover lock)
-{
+// ----------------------------------------------------------------------
+// NewWeaponSelected()
+// Sarge: Resets some values when a new weapon is selected, to control belt/holstering/selection functions
+// ----------------------------------------------------------------------
 
+function NewWeaponSelected()
+{
+    bNumberSelect = false;
+    bScrollSelect = false;
+    bUsedKeyringLast = false;
 }
 
 // ----------------------------------------------------------------------
@@ -7671,14 +7678,13 @@ exec function ParseRightClick()
 		{
 			PutInHand(None);
 		}
-		else if (((bAlternateToolbelt == 1 && !bNumberSelect) || bAlternateToolbelt > 1) && (bNumberSelect || bScrollSelect) ) //If we have moved our main weapon, switch to it. But not if we simply selected a different belt item.
+		else if (((bAlternateToolbelt == 1 && !bNumberSelect) || bAlternateToolbelt > 1) && (bNumberSelect || bScrollSelect || bUsedKeyringLast) ) //If we have moved our main weapon, switch to it. But not if we simply selected a different belt item.
 		{
 			root = DeusExRootWindow(rootWindow);
 			if (root != None && root.hud != None)
 			{
 				root.ActivateObjectInBelt(advBelt);
-				bNumberSelect = false;
-				bScrollSelect = false;
+                //NewWeaponSelected();
 			}
 			
 		}
@@ -7695,14 +7701,11 @@ exec function ParseRightClick()
 						root.ActivateObjectInBelt(advBelt);
 					else
 						root.ActivateObjectInBelt(BeltLast);
-					bNumberSelect = false;
-					bScrollSelect = false;
 				}
 			}
 			else
 				PutInHand(None);
-			bNumberSelect = false;
-			bScrollSelect = false;
+            //NewWeaponSelected();
 		}
 		else
 		{
@@ -8049,6 +8052,10 @@ exec function PutInHand(optional Inventory inv)
 		if (Binoculars(assignedWeapon).bActive)
             assignedWeapon.GotoState('DeActivated');
     SetInHandPending(inv);
+    NewWeaponSelected();                                                        //Sarge: Set new weapon selection variables for belt control
+
+    if (inv.isA('NanoKeyRing'))
+        bUsedKeyringLast = true;
 }
 
 // ----------------------------------------------------------------------
@@ -10663,8 +10670,8 @@ exec function ActivateBelt(int objectNum)
 		
 			root.ActivateObjectInBelt(objectNum);
 			BeltLast = objectNum;
+            //NewWeaponSelected();
 			bNumberSelect = true;
-			bScrollSelect = false;
 		}
 	}
 }
@@ -10745,7 +10752,6 @@ exec function NextBeltItem()
 			until (root.ActivateObjectInBelt(slot) || (startSlot == slot));
 
 			clientInHandPending = root.hud.belt.GetObjectFromBelt(slot);
-			bNumberSelect = false;
 
             switch( inHandPending.beltPos )
 	   {
@@ -10779,7 +10785,7 @@ exec function NextBeltItem()
 			}
 			until (root.hud.belt.GetObjectFromBelt(advBelt) != None || tries == 10);
 			root.hud.belt.RefreshAlternateToolbelt();
-			bNumberSelect = false;
+            //NewWeaponSelected();
 			bScrollSelect = true;
 			clientInHandPending = root.hud.belt.GetObjectFromBelt(advBelt);
 		}
@@ -10863,8 +10869,6 @@ exec function PrevBeltItem()
 			until (root.ActivateObjectInBelt(slot) || (startSlot == slot));
 
 			clientInHandPending = root.hud.belt.GetObjectFromBelt(slot);
-			bNumberSelect = false;
-			bScrollSelect = true;
 			
 			switch( inHandPending.beltPos )
 	   {
@@ -10898,7 +10902,6 @@ exec function PrevBeltItem()
 			}
 			until (root.hud.belt.GetObjectFromBelt(advBelt) != None || tries == 10);
             root.hud.belt.RefreshAlternateToolbelt();
-			bNumberSelect = false;
 			bScrollSelect = true;
 			clientInHandPending = root.hud.belt.GetObjectFromBelt(advBelt);
 		}
