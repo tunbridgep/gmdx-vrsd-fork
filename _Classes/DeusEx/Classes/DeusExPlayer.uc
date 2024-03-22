@@ -12464,7 +12464,8 @@ function bool GetExceptedCode(string code)
         || code == "2167" //Only displayed in a computer message, so we never get a note for it
         || code == "718" //Can only be guessed based on cryptic information
         || code == "7243" //We are only given 3 digits, need to guess the 4th
-        || code == "WYRDRED08"; //We are not given the last digit
+        || code == "WYRDRED08" //We are not given the last digit
+        || code == "4321"; //We are told to "count backwards from 4"
 }
 
 //"Security" is a commonly used word in many logs.
