@@ -1057,7 +1057,8 @@ function EEventAction SetupEventSpeechPost( ConEventSpeech event, out String nex
 	// 1.  Player has bSubtitles flag on
 	// 2.  No speech audio exists for the speech
 
-	if ((player.bSubtitles) || (!bHaveSpeechAudio))
+    //SARGE: Make subtitles play in Third Person cutscenes always
+	if ((player.bSubtitles) || (!bHaveSpeechAudio) || (displayMode == DM_ThirdPerson && player.bSubtitlesCutscene))
 	{
 		if ( displayMode == DM_FirstPerson )
 			conWinFirst.Show();

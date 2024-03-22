@@ -225,6 +225,7 @@ var String NextMap;
 var globalconfig bool bObjectNames;					// Object names on/off
 var globalconfig bool bNPCHighlighting;				// NPC highlighting when new convos
 var globalconfig bool bSubtitles;					// True if Conversation Subtitles are on
+var globalconfig bool bSubtitlesCutscene;			// SARGE: Allow Subtitles for Third-Person cutscenes. Should generally be left on
 var globalconfig bool bAlwaysRun;					// True to default to running
 var globalconfig bool bToggleCrouch;				// True to let key toggle crouch
 var globalconfig float logTimeout;					// Log Timeout Value
@@ -16982,6 +16983,7 @@ defaultproperties
      bObjectNames=True
      bNPCHighlighting=True
      bSubtitles=True
+     bSubtitlesCutscene=True
      bBeltAutofill=True
      bAlwaysRun=True
      logTimeout=3.000000
