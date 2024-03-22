@@ -172,6 +172,8 @@ event bool ListSelectionChanged(window list, int numSelections, int focusRowId)
 	bulletinIndex = lstBulletins.RowIdToIndex(focusRowId);
 	winBulletin.SetText("");
 	ProcessDeusExText(fileInfo[bulletinIndex].fileName, winBulletin);
+    //Sarge: Bulletins can contain codes. Add them as hidden notes
+    player.NoteAdd(winBulletin.GetText(),false,true,fileInfo[bulletinIndex].fileName);
 }
 
 // ----------------------------------------------------------------------
