@@ -3,37 +3,11 @@
 //=============================================================================
 class VialCrack extends Vice; //DeusExPickup;
 
-state Activated
+function Eat(DeusExPlayer player)
 {
-	function Activate()
-	{
-		// can't turn it off
-	}
-
-	function BeginState()
-	{
-		local DeusExPlayer player;
-
-		Super.BeginState();
-
-		player = DeusExPlayer(GetPlayerPawn());
-
-		/*if (player != none && player.fullUp >= 100 && (player.bHardCoreMode || player.bRestrictedMetabolism)) //RSD: Added option stuff
-		{
-		GotoState('Deactivated');                                               //RSD: Otherwise we try to activate again on map transition
-        player.ClientMessage(player.fatty);
-		return;
-		}*/                                                                     //RSD: Removed food limits for dugs
-		if (player != None)
-		{
-			player.drugEffectTimer += 60.0;
-			player.bHardDrug = True;
-			player.HealPlayer(-10, False);
-		}
-
-		UseOnce();
-	}
-Begin:
+    player.drugEffectTimer += 60.0;
+    player.bHardDrug = True;
+    player.HealPlayer(-10, False);
 }
 
 defaultproperties

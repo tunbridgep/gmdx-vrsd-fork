@@ -6,6 +6,12 @@ class FireExtinguisher extends DeusExPickup;
 #exec OBJ LOAD FILE=Ambient
 var bool bAltActivate;  //CyberP: for being triggered by left click
 
+function bool DoLeftFrob(DeusExPlayer frobber, bool objectInHand)
+{
+    bAltActivate=true;
+    return Super.DoLeftFrob(frobber,objectInHand);
+}
+
 function Timer()
 {
 local FireExtinguisherEmpty empt;
@@ -111,6 +117,7 @@ state DeActivated
 defaultproperties
 {
      bBreakable=True
+     bAutoActivate=True
      FragType=Class'DeusEx.MetalFragment'
      bActivatable=True
      ItemName="Fire Extinguisher"

@@ -15,6 +15,19 @@ enum ESkinColor
 
 var() ESkinColor SkinColor;
 
+function bool DoLeftFrob(DeusExPlayer frobber, bool objectInHand)
+{
+    return true;
+}
+//Add it to the frobbers keyring, then destroy it
+function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
+{
+    frobber.PickupNanoKey(Self);
+    Destroy();
+    return false;
+}
+
+
 // ----------------------------------------------------------------------
 // BeginPlay()
 // ----------------------------------------------------------------------

@@ -16,6 +16,15 @@ var localized String RechargesLabel;
       rechargeAmount = mpRechargeAmount;
 }*/
 
+//SARGE: Moved the Bioenergy perk-based max amount bonus here, was in DeusExPlayer
+function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
+{
+    if (frobber.PerkNamesArray[30]==1)
+        MaxCopies = 25;
+    return super.DoRightFrob(frobber,objectInHand);
+}
+
+
 state Activated
 {
 	function Activate()
@@ -103,6 +112,7 @@ simulated function bool TestMPBeltSpot(int BeltSpot)
 
 defaultproperties
 {
+     bAutoActivate=True
      rechargeAmount=20
      mpRechargeAmount=50
      msgRecharged="Recharged %d points"

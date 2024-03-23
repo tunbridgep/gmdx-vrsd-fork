@@ -567,6 +567,8 @@ var travel int augOrderNums[21];                                                
 var const augBinary augOrderList[21];                                           //RSD: List of all aug cans in the game in order (to be scrambled)
 var travel bool bAddictionSystem;
 
+var travel DeusExWeapon lastMeleeWeapon;                                           //Sarge: Stores our last melee weapon, for use when left-click frobbing crates and other breakables
+
 //////////END GMDX
 
 // native Functions
@@ -7127,6 +7129,116 @@ exec function ShowScores()
 	bShowScores = !bShowScores;
 }
 
+//Sarge: Because we can only inherit from one class,
+//we don't have proper OOP support, because all the Deus Ex objects
+//are inheriting off native unreal objects. So we need to do some
+//magic here to fix it all up.
+//This should probably be moved elsewhere
+function DoLeftFrob(Actor frobTarget)
+{
+    local bool bDefaultFrob;
+
+    if (frobTarget.isA('DeusExPickup'))
+        bDefaultFrob = DeusExPickup(frobTarget).DoLeftFrob(Self,inHand == None);
+    else if (frobTarget.isA('DeusExWeapon'))
+        bDefaultFrob = DeusExWeapon(frobTarget).DoLeftFrob(Self,inHand == None);
+    else if (frobTarget.isA('DeusExMover'))
+        bDefaultFrob = DeusExMover(frobTarget).DoLeftFrob(Self,inHand == None);
+    else if (frobTarget.isA('ElectronicDevices'))
+        bDefaultFrob = ElectronicDevices(frobTarget).DoLeftFrob(Self,inHand == None);
+    else if (frobTarget.isA('DeusExDecoration'))
+        bDefaultFrob = DeusExDecoration(frobTarget).DoLeftFrob(Self,inHand == None);
+
+    //Handle Inventory classes. Ugh. I really wish we could access this class!
+    if (bDefaultFrob && frobTarget.IsA('Inventory') && inHand == None)
+   {
+        if (HandleItemPickup(FrobTarget, True))
+        { 
+            bLeftClicked = true;
+            FindInventorySlot(Inventory(FrobTarget));
+        }
+    }
+    //If we elected to do a default frob, simply do a right click
+    else if (bDefaultFrob && inHand == None)
+    {
+        DoFrob(Self, inHand);
+    }
+}
+
+//Sarge: Because we can only inherit from one class,
+//we don't have proper OOP support, because all the Deus Ex objects
+//are inheriting off native unreal objects. So we need to do some
+//magic here to fix it all up.
+//This should probably be moved elsewhere
+function DoRightFrob(Actor frobTarget)
+{
+    local bool bDefaultFrob;
+    bDefaultFrob = true;
+
+    if (frobTarget.isA('DeusExPickup'))
+        bDefaultFrob = DeusExPickup(frobTarget).DoRightFrob(Self,inHand == None);
+    else if (frobTarget.isA('DeusExWeapon'))
+        bDefaultFrob = DeusExWeapon(frobTarget).DoRightFrob(Self,inHand == None);
+    else if (frobTarget.isA('DeusExMover'))
+        bDefaultFrob = DeusExMover(frobTarget).DoRightFrob(Self,inHand == None);
+    else if (frobTarget.isA('ElectronicDevices'))
+        bDefaultFrob = ElectronicDevices(frobTarget).DoRightFrob(Self,inHand == None);
+    else if (frobTarget.isA('DeusExDecoration'))
+        bDefaultFrob = DeusExDecoration(frobTarget).DoRightFrob(Self,inHand == None);
+
+    //Handle Inventory classes. Ugh. I really wish we could access this class!
+    if (bDefaultFrob && frobTarget.IsA('Inventory') && inHand == None)
+    {
+        if (HandleItemPickup(FrobTarget, True))
+            FindInventorySlot(Inventory(FrobTarget));
+    }
+    else if (bDefaultFrob)
+        DoFrob(Self, None);
+}
+
+//Sarge: Because we can only inherit from one class,
+//we don't have proper OOP support, because all the Deus Ex objects
+//are inheriting off native unreal objects. So we need to do some
+//magic here to fix it all up.
+//This should probably be moved elsewhere
+function DoItemPutAwayFunction(Inventory inv)
+{
+    /*
+    if (inv.isA('DeusExPickup'))
+        DeusExPickup(inv).PutAway(Self);
+    else if (inv.isA('DeusExWeapon'))
+        DeusExWeapon(inv).PutAway(Self);
+    else if (inv.isA('DeusExMover'))
+        DeusExMover(inv).PutAway(Self);
+    else if (inv.isA('ElectronicDevices'))
+        ElectronicDevices(inv).PutAway(Self);
+    else if (inv.isA('DeusExDecoration'))
+        DeusExDecoration(inv).PutAway(Self);
+    */
+}
+
+//Sarge: Because we can only inherit from one class,
+//we don't have proper OOP support, because all the Deus Ex objects
+//are inheriting off native unreal objects. So we need to do some
+//magic here to fix it all up.
+//This should probably be moved elsewhere
+function DoItemDrawFunction(Inventory inv)
+{
+    /*
+    if (inv.isA('DeusExPickup'))
+        DeusExPickup(inv).Draw(Self);
+    else*/ if (inv.isA('DeusExWeapon'))
+        DeusExWeapon(inv).Draw(Self);
+    /*else if (inv.isA('DeusExMover'))
+        DeusExMover(inv).Draw(Self);
+    else if (inv.isA('ElectronicDevices'))
+        ElectronicDevices(inv).Draw(Self);
+    else if (inv.isA('DeusExDecoration'))
+        DeusExDecoration(inv).Draw(Self);
+    */
+}
+
+
 // ----------------------------------------------------------------------
 // ParseLeftClick()
 // ----------------------------------------------------------------------
@@ -7145,76 +7257,65 @@ exec function ParseLeftClick()
 	// ParseLeftClick deals with things in your HAND
 	//
 	// Precedence:
+    // - Select aug in radial menu
 	// - Detonate spy drone
 	// - Fire (handled automatically by user.ini bindings)
 	// - Use inHand
 	//
 
-//log("ParseLeftClick");
 	if (RestrictInput())
 		return;
 
+    //Select current aug
 	if (bRadialAugMenuVisible) {
         RadialMenuToggleCurrentAug();
         return;
     }
-//log("ParseLeftClick1");
+
 	// if the spy drone augmentation is active, blow it up
 	if (bSpyDroneActive && !bSpyDroneSet && !bRadialAugMenuVisible)                                       //RSD: Allows the user to toggle between moving and controlling the drone, also added Lorenz's wheel
 	{
 		DroneExplode();
 		return;
 	}
+
+    //Blow up any GEP profectiles in flight
 	else if (bGEPprojectileInflight)
 	{
-	 if (aGEPProjectile!=none && aGEPProjectile.IsA('Rocket'))
-	 {
-	    if (aGEPProjectile.SoundPitch!=112)
-	    {
-           aGEPProjectile.MaxSpeed=1600.000000;
-           aGEPProjectile.speed=1600.000000;
-           aGEPProjectile.Velocity *= 2;
-           aGEPProjectile.SoundPitch=112;
-           PlaySound(sound'impboom2',SLOT_None);
-		}
-        return;
-	 }
+        if (aGEPProjectile!=none && aGEPProjectile.IsA('Rocket'))
+        {
+            if (aGEPProjectile.SoundPitch!=112)
+            {
+                aGEPProjectile.MaxSpeed=1600.000000;
+                aGEPProjectile.speed=1600.000000;
+                aGEPProjectile.Velocity *= 2;
+                aGEPProjectile.SoundPitch=112;
+                PlaySound(sound'impboom2',SLOT_None);
+            }
+            return;
+        }
 	}
 
     if (inHand != None)
        if (inHand.IsA('DeusExWeapon'))  //CyberP: cancel reloading - shotguns only
          if (DeusExWeapon(inHand).IsInState('Reload'))
              DeusExWeapon(inHand).bCancelLoading = True;
-//log("ParseLeftClick2");
-	if ((inHand != None) && !bInHandTransition &&(!inHand.IsA('POVcorpse')))
+	if (FrobTarget == none && inHand != None && !bInHandTransition && !inHand.IsA('POVcorpse'))
 	{
-//	log("ParseLeftClick3");
 		if (inHand.bActivatable)
 			inHand.Activate();
-		else if (FrobTarget != None)
-		{
-//		 log("ParseLeftClick4");
-			// special case for using keys or lockpicks on doors
-			if (FrobTarget.IsA('DeusExMover'))
-				if (inHand.IsA('NanoKeyRing') || inHand.IsA('Lockpick'))
-					DoFrob(Self, inHand);
-
-			// special case for using multitools on hackable things
-			if (FrobTarget.IsA('HackableDevices'))
-			{
-				if (inHand.IsA('Multitool'))
-				{
-					if (( Level.Netmode != NM_Standalone ) && (TeamDMGame(DXGame) != None) && FrobTarget.IsA('AutoTurretGun') && (AutoTurretGun(FrobTarget).team==PlayerReplicationInfo.team) )
-					{
-						MultiplayerNotifyMsg( MPMSG_TeamHackTurret );
-						return;
-					}
-					else
-						DoFrob(Self, inHand);
-				}
-			}
-		}
 	}
+    else if (FrobTarget != none && CarriedDecoration == None)
+    {
+        if (FrobTarget.IsA('DeusExAmmo'))
+        {
+            ClientMessage(noUsing);
+        }
+        else
+        {
+            DoLeftFrob(FrobTarget);
+        }
+    }
 	else
 	{
 	  if (AugmentationSystem != None)
@@ -7248,235 +7349,6 @@ exec function ParseLeftClick()
 		   }
 	   }
 	}
-	/*if (inHand == None && FrobTarget != none && FrobTarget.IsA('DeusExDecoration') && Decoration(FrobTarget).bPushable == False)
-    {
-    Decoration(FrobTarget).bPushable = True;
-    GrabDecoration();
-    } */ //CyberP: this allowed us to pick up objects like datacubes, lamps. vending machines and such, but it is not worth the effort.
-    if (inHand == None && FrobTarget != none && FrobTarget.IsA('DeusExPickup'))
-    {
-      /*if (FrobTarget.IsA('Sodacan'))                                          //RSD: Greatly simplifying all of this code
-      {
-      if (fullUp >= 100)
-      {ClientMessage(fatty); return;}
-       HealPlayer(2, False);
-       PlaySound(sound'MaleBurp');
-       fullUp+=4;
-       DeusExPickup(FrobTarget).Destroy();
-      }
-      else if (FrobTarget.IsA('SoyFood'))
-      {
-      if (fullUp >= 100)
-      {ClientMessage(fatty); return;}
-       HealPlayer(5, False);
-       PlaySound(sound'EatingChips',SLOT_None,3.0);                                                                          j
-       fullUp+=8;
-       DeusExPickup(FrobTarget).Destroy();
-      }
-      else if (FrobTarget.IsA('Candybar'))
-      {
-      if (fullUp >= 100)
-      {ClientMessage(fatty); return;}
-       HealPlayer(3, False);
-       PlaySound(sound'CandyEat',SLOT_None,2);
-       ClientMessage(CandyBar(FrobTarget).bioboost);
-       Energy += 3;
-       if (Energy > EnergyMax)
-	      Energy = EnergyMax;
-       fullUp+=6;
-       DeusExPickup(FrobTarget).Destroy();
-      }
-      else if (FrobTarget.IsA('Flare'))
-      {
-       Flare(FrobTarget).bLClicked = true;
-       Flare(FrobTarget).LightFlare();
-      }
-      else if (FrobTarget.IsA('FireExtinguisher'))
-      {
-       if (FireExtinguisher(FrobTarget).bAltActivate==False)
-       {
-       FireExtinguisher(FrobTarget).bAltActivate=True;
-       FireExtinguisher(FrobTarget).Activate();
-       }
-      }
-      else if (FrobTarget.IsA('WineBottle'))
-      {
-      if (fullUp >= 100)
-      {ClientMessage(fatty); return;}
-       HealPlayer(2, False);
-	   drugEffectTimer += 5.0;
-	   PlaySound(sound'drinkwine',SLOT_None);
-	   fullUp+=4;
-       DeusExPickup(FrobTarget).Destroy();
-      }
-      else if (FrobTarget.IsA('Liquor40oz'))
-      {
-      if (fullUp >= 100)
-      {ClientMessage(fatty); return;}
-       HealPlayer(2, False);
-	   drugEffectTimer += 7.0;
-	   PlaySound(sound'drinkwine',SLOT_None);
-	   fullUp+=4;
-       DeusExPickup(FrobTarget).Destroy();
-      }
-      else if (FrobTarget.IsA('LiquorBottle'))
-      {
-      if (fullUp >= 100)
-      {ClientMessage(fatty); return;}
-       HealPlayer(2, False);
-	   drugEffectTimer += 4.0;
-	   PlaySound(sound'drinkwine',SLOT_None);
-	   fullUp+=4;
-       DeusExPickup(FrobTarget).Destroy();
-      }
-      else if (FrobTarget.IsA('VialCrack'))
-      {
-      if (fullUp >= 100)
-      {ClientMessage(fatty); return;}
-       HealPlayer(-10, False);
-	   drugEffectTimer += 60.0;
-	   bHardDrug = True;
-	   fullUp+=1;
-       DeusExPickup(FrobTarget).Destroy();
-      }
-      else if (FrobTarget.IsA('Medkit'))
-      {
-       HealPlayer(30, True);
-       PlaySound(sound'MedicalHiss', SLOT_None,,, 256);
-       ClientFlash(4,vect(0,0,200));
-       DeusExPickup(FrobTarget).Destroy();
-      }
-      else if (FrobTarget.IsA('BioelectricCell'))
-      {
-       PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
-       if (PerkNamesArray[8]==1)
-		    BioelectricCell(FrobTarget).rechargeAmount=25;
-	   ClientMessage(Sprintf(BioelectricCell(FrobTarget).msgRecharged, BioelectricCell(FrobTarget).rechargeAmount));
-       Energy += BioelectricCell(FrobTarget).rechargeAmount; //25;
-			if (Energy > EnergyMax)
-				Energy = EnergyMax;
-	   DeusExPickup(FrobTarget).Destroy();
-      }
-      else if (FrobTarget.IsA('Cigarettes'))
-      {
-       Cigarettes(FrobTarget).bDontUse = True;
-       Cigarettes(FrobTarget).GoToState('Activated');
-      }
-      else if (FrobTarget.Is4A('SkilledTool') || FrobTarget.IsA('ChargedPickup') || FrobTarget.IsA('AugmentationCannisterOverdrive') || FrobTarget.IsA('WeaponMod') ||
-      FrobTarget.IsA('AugmentationUpgradeCannister') || FrobTarget.IsA('AugmentationCannister') || FrobTarget.IsA('Binoculars'))
-      {
-      bLeftClicked = True;
-      ParseRightClick();
-      }
-      else
-      ClientMessage(noUsing);*/
-      if (FrobTarget.IsA('SoyFood') || FrobTarget.IsA('Candybar') || FrobTarget.IsA('Sodacan'))
-      {
-        if (fullUp >= 100 && (bHardCoreMode || bRestrictedMetabolism))          //RSD: Best to check here first, otherwise objects can become unfrobbable
-        {
-          ClientMessage(fatty);
-          return;
-        }
-        else
-          FrobTarget.GotoState('Activated');
-      }
-      else if ((FrobTarget.IsA('Vice') && !FrobTarget.IsA('Cigarette')))
-      {
-        /*if (fullUp >= 100 && (bHardCoreMode || bRestrictedMetabolism))          //RSD: Best to check here first, otherwise objects can become unfrobbable
-        {
-          ClientMessage(fatty);
-          return;
-        }
-        else*/                                                                   //RSD: Removed food limits for dugs
-          FrobTarget.GotoState('Activated');
-      }
-      else if (FrobTarget.IsA('Cigarette'))
-      {
-        Cigarettes(FrobTarget).bDontUse = True;
-        FrobTarget.GotoState('Activated');
-      }
-      else if (FrobTarget.IsA('Medkit') || FrobTarget.IsA('Bioelectriccell') || FrobTarget.IsA('VialAmbrosia'))
-      {
-        FrobTarget.GotoState('Activated');
-      }
-      else if (FrobTarget.IsA('Flare'))
-      {
-       Flare(FrobTarget).bLClicked = true;
-       Flare(FrobTarget).LightFlare();
-      }
-      else if (FrobTarget.IsA('FireExtinguisher'))
-      {
-       if (FireExtinguisher(FrobTarget).bAltActivate==False)
-       {
-       FireExtinguisher(FrobTarget).bAltActivate=True;
-       FireExtinguisher(FrobTarget).Activate();
-       }
-      }
-      else if (FrobTarget.IsA('SkilledTool') || FrobTarget.IsA('ChargedPickup') || FrobTarget.IsA('AugmentationCannisterOverdrive') || FrobTarget.IsA('WeaponMod') ||
-      FrobTarget.IsA('AugmentationUpgradeCannister') || FrobTarget.IsA('AugmentationCannister') || FrobTarget.IsA('Binoculars'))
-      {
-      bLeftClicked = True;
-      ParseRightClick();
-      }
-      else
-      ClientMessage(noUsing);
-    }
-    else if (inHand == None && FrobTarget != none && FrobTarget.IsA('DeusExWeapon'))
-    {
-    bLeftClicked = True;
-    ParseRightClick();
-    }
-    else if (inHand == None && FrobTarget != none && FrobTarget.IsA('DeusExAmmo'))
-    {
-    ClientMessage(noUsing);
-    }
-    else if (inHand == None && CarriedDecoration == None && FrobTarget != None && FrobTarget.IsA('DeusExMover'))
-    {
-      if (DeusExMover(FrobTarget).bLocked)
-      {
-        //Sarge: Move NanoKeyring check to work based on whether or not we have the key.
-        //Rather than always selecting a lockpick if we have one and always selecting the nanokey if we don't
-        if (KeyRing.HasKey(DeusExMover(FrobTarget).KeyIDNeeded))
-                PutInHand(KeyRing);
-        else
-        {
-            item = Inventory;
-            while (item != None)
-            {
-                if (item.IsA('Lockpick') && DeusExMover(FrobTarget).bPickable)
-                {
-                    if (DeusExMover(FrobTarget).bPickable==True)
-                    {
-                        PutInHand(item);
-                        break;
-                    }
-                }
-                item = item.Inventory;
-            }
-        }
-      }
-    }
-    else if (inHand == None && CarriedDecoration == None && FrobTarget != None && FrobTarget.IsA('HackableDevices'))
-    {
-       for(item = Inventory; item != None; item = nextItem)
-	   {
-		nextItem = item.Inventory;
-		    if (item.IsA('Multitool'))
-		    {
-		        PutInHand(item);
-		        break;
-		    }
-	    	else if (nextItem.IsA('Multitool') || nextItem.IsA('NanoKeyRing'))
-	    	{
-	    	   if (nextItem.IsA('Multitool'))
-	    	      PutInHand(nextItem);
-	    	   else
-               {
-               }
-   	        break;
-	    	}
-       }
-    }
 }
 
 // ----------------------------------------------------------------------
@@ -7501,6 +7373,8 @@ exec function ParseRightClick()
 	// ParseRightClick deals with things in the WORLD
 	//
 	// Precedence:
+    // - Unscope/Unzoom currently held object
+    // - Park Spy Drone
 	// - Pickup highlighted Inventory
 	// - Frob highlighted object
 	// - Grab highlighted Decoration
@@ -7520,6 +7394,7 @@ exec function ParseRightClick()
     if (RestrictInput())
 		return;
 
+    //Descope if we have binocs/scope
     if (inHand != None)
     {
         if (inHand.IsA('DeusExWeapon') && DeusExWeapon(inhand).bZoomed)
@@ -7533,9 +7408,11 @@ exec function ParseRightClick()
             return;
         }
     }
+
+    //Park spy drone
     if (bSpyDroneActive && !bSpyDroneSet)                                       //RSD: Allows the user to toggle between moving and controlling the drone
 	{
-	/*if (aDrone != none)
+	    /*if (aDrone != none)
 		aDrone.AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 768);
 		if (FRand() < 0.25)
         PlaySound(sound'CatDie');
@@ -7556,6 +7433,7 @@ exec function ParseRightClick()
 		}
         return;
 	}
+
 	oldFirstItem = Inventory;
 	oldInHand = inHand;
 	oldCarriedDecoration = CarriedDecoration;
@@ -7565,106 +7443,50 @@ exec function ParseRightClick()
 
 	if (FrobTarget != None)
 	{
-		// First check if this is a NanoKey, in which case we just
-		// want to add it to the NanoKeyRing without disrupting
-		// what the player is holding
-		if (FrobTarget.IsA('NanoKey'))
-		{
-			PickupNanoKey(NanoKey(FrobTarget));
-			FrobTarget.Destroy();
-			FrobTarget = None;
-			return;
-		}
-		else if (FrobTarget.IsA('Inventory'))
-		{
-			// If this is an item that can be stacked, check to see if
-			// we already have one, in which case we don't need to
-			// allocate more space in the inventory grid.
-			//
-			// TODO: This logic may have to get more involved if/when
-			// we start allowing other types of objects to get stacked.
-
-            if (PerkNamesArray[30]==1)
+        //SARGE: I really should add this to the proper OOP setup, but I just don't care.
+        //We don't care about MP, so will omit it for now
+        if (( Level.NetMode != NM_Standalone ) && ( TeamDMGame(DXGame) != None ))
+        {
+            if ( FrobTarget.IsA('LAM') || FrobTarget.IsA('GasGrenade') || FrobTarget.IsA('EMPGrenade'))
             {
-                if (FrobTarget.IsA('BioelectricCell'))
-                BioelectricCell(FrobTarget).MaxCopies=25;
-                else if (FrobTarget.IsA('Medkit'))
-                Medkit(FrobTarget).MaxCopies=20;
+                if ((ThrownProjectile(FrobTarget).team == PlayerReplicationInfo.team) && ( ThrownProjectile(FrobTarget).Owner != Self ))
+                {
+                    if ( ThrownProjectile(FrobTarget).bDisabled )		// You can re-enable a grenade for a teammate
+                    {
+                        ThrownProjectile(FrobTarget).ReEnable();
+                        return;
+                    }
+                    MultiplayerNotifyMsg( MPMSG_TeamLAM );
+                    return;
+                }
             }
-
-			if (HandleItemPickup(FrobTarget, True) == False)
-				return;
-
-			// if the frob succeeded, put it in the player's inventory
-		 //DEUS_EX AMSD ARGH! Because of the way respawning works, the item I pick up
-		 //is NOT the same as the frobtarget if I do a pickup.  So how do I tell that
-		 //I've successfully picked it up?  Well, if the first item in my inventory
-		 //changed, I picked up a new item.
-			if ( ((Level.NetMode == NM_Standalone) && (Inventory(FrobTarget).Owner == Self)) ||
-			  ((Level.NetMode != NM_Standalone) && (oldFirstItem != Inventory)) )
-			{
-			if (Level.NetMode == NM_Standalone)
-			   FindInventorySlot(Inventory(FrobTarget));
-			else
-			   FindInventorySlot(Inventory);
-				FrobTarget = None;
-			}
-		}
-		else if (FrobTarget.IsA('Decoration') && Decoration(FrobTarget).bPushable)
-		{
-		    if (swimTimer <= 1)
-		    {
-		    }
-		    else
-		    {
-			GrabDecoration();
-			}
-		}
-		else
-		{
-			if (( Level.NetMode != NM_Standalone ) && ( TeamDMGame(DXGame) != None ))
-			{
-				if ( FrobTarget.IsA('LAM') || FrobTarget.IsA('GasGrenade') || FrobTarget.IsA('EMPGrenade'))
-				{
-					if ((ThrownProjectile(FrobTarget).team == PlayerReplicationInfo.team) && ( ThrownProjectile(FrobTarget).Owner != Self ))
-					{
-						if ( ThrownProjectile(FrobTarget).bDisabled )		// You can re-enable a grenade for a teammate
-						{
-							ThrownProjectile(FrobTarget).ReEnable();
-							return;
-						}
-						MultiplayerNotifyMsg( MPMSG_TeamLAM );
-						return;
-					}
-				}
-				if ( FrobTarget.IsA('ComputerSecurity') && (PlayerReplicationInfo.team == ComputerSecurity(FrobTarget).team) )
-				{
-					// Let controlling player re-hack his/her own computer
-					bPlayerOwnsIt = False;
-					foreach AllActors(class'AutoTurret',turret)
-					{
-						for (ViewIndex = 0; ViewIndex < ArrayCount(ComputerSecurity(FrobTarget).Views); ViewIndex++)
-						{
-							if (ComputerSecurity(FrobTarget).Views[ViewIndex].turretTag == turret.Tag)
-							{
-								if (( turret.safeTarget == Self ) || ( turret.savedTarget == Self ))
-								{
-									bPlayerOwnsIt = True;
-									break;
-								}
-							}
-						}
-					}
-					if ( !bPlayerOwnsIt )
-					{
-						MultiplayerNotifyMsg( MPMSG_TeamComputer );
-						return;
-					}
-				}
-			}
-			// otherwise, just frob it
-			DoFrob(Self, None);
-		}
+            if ( FrobTarget.IsA('ComputerSecurity') && (PlayerReplicationInfo.team == ComputerSecurity(FrobTarget).team) )
+            {
+                // Let controlling player re-hack his/her own computer
+                bPlayerOwnsIt = False;
+                foreach AllActors(class'AutoTurret',turret)
+                {
+                    for (ViewIndex = 0; ViewIndex < ArrayCount(ComputerSecurity(FrobTarget).Views); ViewIndex++)
+                    {
+                        if (ComputerSecurity(FrobTarget).Views[ViewIndex].turretTag == turret.Tag)
+                        {
+                            if (( turret.safeTarget == Self ) || ( turret.savedTarget == Self ))
+                            {
+                                bPlayerOwnsIt = True;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if ( !bPlayerOwnsIt )
+                {
+                    MultiplayerNotifyMsg( MPMSG_TeamComputer );
+                    return;
+                }
+            }
+        }
+		// otherwise, just frob it
+		DoRightFrob(FrobTarget);
 	}
 	else
 	{
@@ -8052,7 +7874,6 @@ exec function PutInHand(optional Inventory inv)
 		if (Binoculars(assignedWeapon).bActive)
             assignedWeapon.GotoState('DeActivated');
     SetInHandPending(inv);
-    NewWeaponSelected();                                                        //Sarge: Set new weapon selection variables for belt control
 
     if (inv.isA('NanoKeyRing'))
         bUsedKeyringLast = true;
@@ -8101,6 +7922,11 @@ function UpdateAmmoBeltText(Ammo ammo)
 function SetInHand(Inventory newInHand)
 {
 	local DeusExRootWindow root;
+    
+    //Sarge: Call weapon putaway/draw functions and reset belt variables
+    DoItemPutAwayFunction(inHand);
+    DoItemDrawFunction(newInHand);
+    NewWeaponSelected();
 
 	inHand = newInHand;
 
@@ -8562,8 +8388,8 @@ function Bool FindInventorySlot(Inventory anItem, optional Bool bSearchOnly)
 		PlaceItemInSlot(anItem, col, row);
 		if (bLeftClicked && inHand == None)
 		{
-		PutInHand(anItem); //CyberP: left click interaction
-		bLeftClicked = False;
+            PutInHand(anItem); //CyberP: left click interaction
+            bLeftClicked = False;
 		}
 	}
 

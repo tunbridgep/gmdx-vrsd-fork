@@ -26,48 +26,18 @@ function BeginPlay()
 	}
 }
 
-state Activated
+function Eat(DeusExPlayer player)
 {
-	function Activate()
-	{
-		// can't turn it off
-	}
-
-	function BeginState()
-	{
-		local DeusExPlayer player;
-
-		Super.BeginState();
-
-		player = DeusExPlayer(GetPlayerPawn());
-
-		if (player != none && player.fullUp >= 100 && (player.bHardCoreMode || player.bRestrictedMetabolism) && !player.bAddictionSystem) //RSD: Added option stuff, no food limit on drugs with addiction system
-		{
-		GotoState('Deactivated');                                               //RSD: Otherwise we try to activate again on map transition
-        player.ClientMessage(player.fatty);
-		return;
-		}
-
-        UseOnce();                                                              //RSD: Moved
-
-		if (player != None)
-		{
-			if (player.bAddictionSystem)                                        //RSD: Was 2, now 5 health to go alongside the addiction system bonus
-            	player.HealPlayer(5, False);
-            else
-                player.HealPlayer(2, False);
-			player.drugEffectTimer += 7.0;
-			player.PlaySound(sound'drinkwine',SLOT_None);
-		}
-
-		//UseOnce();                                                            //RSD: Moved
-	}
-Begin:
+    if (!player.bAddictionSystem)                                        //RSD: Was 2, now 5 health to go alongside the addiction system bonus //SARGE: Actually just back to 2, with addiction system only giving the buff
+        player.HealPlayer(2, False);
+    player.drugEffectTimer += 7.0;
+    player.PlaySound(sound'drinkwine',SLOT_None);
 }
 
 defaultproperties
 {
      AddictionIncrement=5.000000
+     bUseHunger=True
      bBreakable=True
      ItemName="Forty"
      PlayerViewOffset=(X=30.000000,Z=-12.000000)

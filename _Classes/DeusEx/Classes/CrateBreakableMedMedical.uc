@@ -1,7 +1,7 @@
 //=============================================================================
 // CrateBreakableMedMedical.
 //=============================================================================
-class CrateBreakableMedMedical extends Containers;
+class CrateBreakableMedMedical extends BreakableContainers;
 
 defaultproperties
 {

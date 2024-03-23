@@ -294,6 +294,7 @@ var localized string abridgedName;                                              
 var texture largeIconRot;                                                       //RSD: rotated inventory icon
 var travel int invSlotsXtravel;                                                 //RSD: since Inventory invSlotsX doesn't travel through maps
 var travel int invSlotsYtravel;                                                 //RSD: since Inventory invSlotsY doesn't travel through maps
+var bool bIsMeleeWeapon;                                                        //Is this weapon a melee weapon? Used for selecting our last melee weapon for crate-breaking
 //END GMDX:
 
 //
@@ -317,6 +318,31 @@ replication
 	// Functions Server calls in client
 	reliable if ( Role == ROLE_Authority )
 	  RefreshScopeDisplay, ReadyClientToFire, SetClientAmmoParams, ClientDownWeapon, ClientActive, ClientReload;
+}
+
+
+//SARGE: Added "Left Click Frob" and "Right Click Frob" support
+//Return true to use the default frobbing mechanism (right click), or false for custom behaviour
+function bool DoLeftFrob(DeusExPlayer frobber, bool objectInHand)
+{
+    if (objectInHand)
+        return false;
+
+    frobber.bLeftClicked = true;
+    frobber.ParseRightClick();
+    return false;
+}
+function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
+{
+    return true;
+}
+
+//Called when the item is added to the players hands
+function Draw(DeusExPlayer frobber)
+{
+    if (bIsMeleeWeapon)
+        frobber.lastMeleeWeapon = self;
+
 }
 
 // ---------------------------------------------------------------------
