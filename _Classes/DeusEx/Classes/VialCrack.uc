@@ -7,7 +7,8 @@ function Eat(DeusExPlayer player)
 {
     player.drugEffectTimer += 60.0;
     player.bHardDrug = True;
-    player.HealPlayer(-10, False);
+    if (!player.bAddictionSystem)
+        player.HealPlayer(-10, False);
 }
 
 defaultproperties
