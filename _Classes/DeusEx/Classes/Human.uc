@@ -324,7 +324,7 @@ function PlayFiring()
     if (comb <= 1.3)
     comb = 1.3;
 
-    if (DrugsTimerArray[2] > 0)                                                 //RSD: Zyme gives its own +50% boost
+    if (AddictionManager.addictions[DRUG_CRACK].drugTimer > 0)                                                 //RSD: Zyme gives its own +50% boost
         comb += 0.5;
 
 	if ((W != None) && (!IsInState('Dying')))

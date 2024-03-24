@@ -223,11 +223,11 @@ function CreateRegionWindows()
    local float MedSkillAdd;
    local int DrunkAdd, ZymeSubtract;                                            //RSD: Now get bonus max torso health from drinking, penalty for zyme
 	MedSkillAdd=0.0;
-	if (player.DrugsTimerArray[1] > 0.0)
-        DrunkAdd = 5*int(player.DrugsTimerArray[1]/120.0+1.0);                  //RSD: Get 5 bonus health for every 2 min on timer
+	if (player.AddictionManager.addictions[1].drugTimer > 0.0)
+        DrunkAdd = 5*int(player.AddictionManager.addictions[1].drugTimer/120.0+1.0);                  //RSD: Get 5 bonus health for every 2 min on timer
     else
         DrunkAdd = 0;
-    if (player.DrugsWithdrawalArray[2] == 1)                                    //RSD: 10 health penalty for zyme withdrawal
+    if (player.AddictionManager.addictions[2].bInWithdrawals)                                    //RSD: 10 health penalty for zyme withdrawal
         ZymeSubtract = 10;
     else
         ZymeSubtract = 0;
@@ -555,7 +555,7 @@ function UpdateStatusText()                                                     
      if (player.HealthHead < player.default.HealthHead)
 		accuracyPenalty += 5;
 
-     if (player.DrugsWithdrawalArray[1] == 1)                                   //RSD: If suffering from alcohol withdrawal, add 15% inaccuracy
+     if (player.AddictionManager.addictions[1].bInWithdrawals)                                   //RSD: If suffering from alcohol withdrawal, add 15% inaccuracy
     	accuracyPenalty += 20;
 
      if (speedPenalty > 0 && player.PerkNamesArray[5] != 1)                     //RSD: Will display N/A if we have Perserverance perk
@@ -582,27 +582,27 @@ function UpdateStatusText()                                                     
         log("Not enough UI elements for addiction in PersonaHeathScreen.uc");
         return;
      }*/
-     for (i=0;i<ArrayCount(player.DrugsTimerArray);i++)
+     for (i=0;i<ArrayCount(player.AddictionManager.addictions);i++)
      {
         winInfo.AddLine();
         winInfo.SetText(drugLabels[i]);
         winInfo.AddLine();
-        winInfo.SetText(addictionLabel $ FormatFloatString(player.AddictionLevelsArray[i],1.0) $ "% ("
-                                      $ thresholdLabel $ FormatFloatString(player.AddictionThresholdsArray[i],1.0) $ "%)");
-        if (player.DrugsTimerArray[i] > 0.0)
+        winInfo.SetText(addictionLabel $ FormatFloatString(player.AddictionManager.addictions[i].level,1.0) $ "% ("
+                                      $ thresholdLabel $ FormatFloatString(player.AddictionManager.addictions[i].threshold,1.0) $ "%)");
+        if (player.AddictionManager.addictions[i].drugTimer > 0.0)
         {
-           winInfo.SetText(drugStatusLabel $ drugActiveLabel $ int(player.DrugsTimerArray[i]) $ "s");
+           winInfo.SetText(drugStatusLabel $ drugActiveLabel $ int(player.AddictionManager.addictions[i].drugTimer) $ "s");
            if (i == 1)
-              winInfo.SetText(drugEffectLabel $ sprintf(drugActiveEffects[i], 5*int(player.DrugsTimerArray[1]/120.0+1.0)));
+              winInfo.SetText(drugEffectLabel $ sprintf(drugActiveEffects[i], 5*int(player.AddictionManager.addictions[i].drugTimer/120.0+1.0)));
            else
               winInfo.SetText(drugEffectLabel $ drugActiveEffects[i]);
         }
-        else if (player.DrugsWithdrawalArray[i] == 1)
+        else if (player.AddictionManager.addictions[i].bInWithdrawals)
         {
            winInfo.SetText(drugStatusLabel $ drugWithdrawalLabel);
            winInfo.SetText(drugEffectLabel $ drugWithdrawalEffects[i]);
         }
-        else if (player.DrugsAddictedArray[i] == 1)
+        else if (player.AddictionManager.addictions[i].bAddicted)
         {
            winInfo.SetText(drugStatusLabel $ drugAddictedLabel);
            winInfo.SetText(drugEffectLabel $ drugAddictedEffects);
@@ -881,11 +881,11 @@ function int HealPart(PersonaHealthRegionWindow region, optional float pointsToH
 	else
 	{
       MedSkillAdd=0.0;  //GMDX
-      if (player.DrugsTimerArray[1] > 0.0)
-        DrunkAdd = 5*int(player.DrugsTimerArray[1]/120.0+1.0);                  //RSD: Get 5 bonus health for every 2 min on timer
+      if (player.AddictionManager.addictions[1].drugTimer > 0.0)
+        DrunkAdd = 5*int(player.AddictionManager.addictions[1].drugTimer/120.0+1.0);                  //RSD: Get 5 bonus health for every 2 min on timer
       else
         DrunkAdd = 0;
-      if (player.DrugsWithdrawalArray[2] == 1)                                  //RSD: 10 health penalty for zyme withdrawal
+      if (player.AddictionManager.addictions[2].bInWithdrawals)                                  //RSD: 10 health penalty for zyme withdrawal
           ZymeSubtract = 10;
       else
           ZymeSubtract = 0;
@@ -1032,11 +1032,11 @@ function UpdateRegionsMaxHealth()                                               
    local float MedSkillAdd;
    local int DrunkAdd, ZymeSubtract;                                            //RSD: Now get bonus max torso health from drinking, penalty for zyme
 	MedSkillAdd=0.0;
-	if (player.DrugsTimerArray[1] > 0.0)
-        DrunkAdd = 5*int(player.DrugsTimerArray[1]/120.0+1.0);                  //RSD: Get 5 bonus health for every 2 min on timer
+	if (player.AddictionManager.addictions[1].drugTimer > 0.0)
+        DrunkAdd = 5*int(player.AddictionManager.addictions[1].drugTimer/120.0+1.0);                  //RSD: Get 5 bonus health for every 2 min on timer
     else
         DrunkAdd = 0;
-    if (player.DrugsWithdrawalArray[2] == 1)                                    //RSD: 10 health penalty for zyme withdrawal
+    if (player.AddictionManager.addictions[2].bInWithdrawals)                                    //RSD: 10 health penalty for zyme withdrawal
         ZymeSubtract = 10;
     else
         ZymeSubtract = 0;

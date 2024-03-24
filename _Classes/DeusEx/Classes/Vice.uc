@@ -69,22 +69,10 @@ function HandleViceEffects()
 
     player = DeusExPlayer(GetPlayerPawn());
 
-    player.AddictionLevelsArray[AddictionType] += AddictionIncrement;           //RSD: Add to the addiction meter
-    if (player.AddictionLevelsArray[AddictionType] > 100.0)
-    	player.AddictionLevelsArray[AddictionType] = 100.0;
+    //SARGE: New Addiction System
+    player.AddictionManager.AddAddiction(AddictionType,AddictionIncrement,DrugIncrement);
 
-   	player.DrugsTimerArray[AddictionType] += DrugIncrement;                     //RSD: Add to the drug timer
-   	if (player.DrugsTimerArray[AddictionType] > MaxDrugTimer)
-   		player.DrugsTimerArray[AddictionType] = MaxDrugTimer;
-   	if (player.DrugsWithdrawalArray[AddictionType] == 1)                        //RSD: Remove any withdrawal symptoms
-   	{
-   		player.DrugsWithdrawalArray[AddictionType] = 0;
-   		player.DrugsWasWithdrawalArray[AddictionType] = 0;                      //RSD: Reset this "bool" so we'll get the addiction message again when it runs out
-   		player.DrugsWithdrawalTimerArray[AddictionType] = 0.;                   //RSD: Reset this timer as well
-    }
-
-    if (AddictionType == 1)                                                     //RSD: need this for a hack in DrugEffects() in DeusExPlayer.uc
-    	player.DrunkLevel = int(player.DrugsTimerArray[1]/120.0+1.0);
+    return;
 }
 
 defaultproperties

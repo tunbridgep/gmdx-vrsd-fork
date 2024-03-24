@@ -35,11 +35,11 @@ function bool IncLevel(optional DeusExPlayer usePlayer)
 {
 	local DeusExPlayer localPlayer;
     local int DrunkAdd, ZymeSubtract;                                           //RSD: Now get bonus max health from drinking, penalty for zyme
-    if (player.DrugsTimerArray[1] > 0.0)
-        DrunkAdd = 5*int(player.DrugsTimerArray[1]/120.0+1.0);                  //RSD: Get 5 bonus health for every 2 min on timer
+    if (player.AddictionManager.addictions[1].drugTimer > 0.0)
+        DrunkAdd = 5*int(player.AddictionManager.addictions[1].drugTimer/120.0+1.0);                  //RSD: Get 5 bonus health for every 2 min on timer
     else
         DrunkAdd = 0;
-    if (player.DrugsWithdrawalArray[2] == 1)                                    //RSD: 10 health penalty for zyme withdrawal
+    if (player.AddictionManager.addictions[2].bInWithdrawals)                                    //RSD: 10 health penalty for zyme withdrawal
         ZymeSubtract = 10;
     else
         ZymeSubtract = 0;

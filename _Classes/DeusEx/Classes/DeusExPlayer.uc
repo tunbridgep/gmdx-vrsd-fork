@@ -1,8 +1,7 @@
 //=============================================================================
 // DeusExPlayer.
 //=============================================================================
-class DeusExPlayer extends PlayerPawnExt
-	native;
+class DeusExPlayer extends PlayerPawnExt native;
 
 struct augBinary                                                                //RSD: Used to create the list of all augs in the game
 {
@@ -517,26 +516,6 @@ var bool bStaticFreeze;
 var rotator DRONESAVErotation;                                                  //RSD: For Drone camera switching
 var rotator WHEELSAVErotation;                                                  //RSD: For Lorenz's wheel so it doesn't interfere with drone stuff
 
-var travel float AddictionLevelsArray[3];                                       //RSD: Addiction system: how addicted are we?
-var float AddictionThresholdsArray[3];                                          //RSD: Addiction system: when does withdrawal kick in?
-var travel float DrugsTimerArray[3];                                            //RSD: Addiction system: how much longer does the drug buff last?
-var travel int DrugsAddictedArray[3];                                           //RSD: Addiction system: are we suffering from withdrawal? (treat as fake bool)
-var travel int DrugsWasAddictedArray[3];                                        //RSD: Addiction system: were we just suffering from withdrawal? (treat as fake bool)
-var travel int DrugsWithdrawalArray[3];                                         //RSD: Addiction system: are we suffering from withdrawal? (treat as fake bool)
-var travel int DrugsWasWithdrawalArray[3];                                      //RSD: Addiction system: were we just suffering from withdrawal? (treat as fake bool)
-var travel float AddictionToSubtractArray[3];                                   //RSD: Addiction system: how much to deincrement levels by?
-var travel float AddictionSubtractTimerArray[3];                                //RSD: Addiction system: when should we deincrement levels?
-var travel float DrugsWithdrawalTimerArray[3];                                  //RSD: Addiction system: when should we activate withdrawal?
-var float WithdrawalDurationArray[3];                                           //RSD: Addiction system: how long to wait before activating withdrawal?
-var travel int DrunkLevel;                                                      //RSD: Level of drunkenness (up to 5, NOT used by health manipulation formulas, exists to optimize tick stuff)
-var travel bool bZymeHealthCheck;                                               //RSD: Tells the system whether to check for Zyme withdrawal (only to optimize tick stuff)
-var localized string MsgWithdrawal;                                             //RSD: Addiction system: Message saying you're now suffering from withdrawal
-var localized string MsgAddicted;                                               //RSD: Addiction system: Message saying you're now addicted
-var localized string MsgNotAddicted;                                            //RSD: Addiction system: Message saying you're no longer addicted
-var localized string MsgDrugWornOff;                                            //RSD: Addiction system: Message saying the drug wore off
-var localized string drugLabels[3];                                             //RSD: Addiction system: Name of each drug
-var travel int forceDrugZero[3];                                                //RSD: Addiction system: Fix for timer reset bug
-
 var float savedStandingTimer;                                                   //RSD: For transferring the standingTimer between weapons (Sidearm perk)
 var travel float NanoVirusTimer;                                                //RSD: For deactivating augs from scrambler grenades
 var int NanoVirusTicks;                                                         //RSD: For stupid hack to display the client message
@@ -566,6 +545,11 @@ var travel bool bNoKeypadCheese;												//Sarge: Prevent using keycodes that
 var travel int augOrderNums[21];                                                //RSD: New aug can order for scrambling
 var const augBinary augOrderList[21];                                           //RSD: List of all aug cans in the game in order (to be scrambled)
 var travel bool bAddictionSystem;
+var travel AddictionSystem AddictionManager;
+
+const DRUG_TOBACCO = 0;
+const DRUG_ALCOHOL = 1;
+const DRUG_CRACK = 2;
 
 var travel DeusExWeapon lastMeleeWeapon;                                           //Sarge: Stores our last melee weapon, for use when left-click frobbing crates and other breakables
 
@@ -1094,6 +1078,17 @@ simulated function PostNetBeginPlay()
 	 ServerSetAutoReload( bAutoReload );
 }
 
+function SetupAddictionManager()
+{
+	// install the Addiction Manager if not found
+	if (AddictionManager == None)
+    {
+	    AddictionManager = new(Self) class'AddictionSystem';
+    }
+    AddictionManager.SetPlayer(Self);
+
+}
+
 // ----------------------------------------------------------------------
 // InitializeSubSystems()
 // ----------------------------------------------------------------------
@@ -1138,6 +1133,8 @@ function InitializeSubSystems()
 	  // Give the player a keyring
 	  CreateKeyRing();
 	}
+
+    SetupAddictionManager();
 }
 
 //SARGE: Helper function to get the count of an item type
@@ -1226,13 +1223,6 @@ function PreTravel()
 	if (inHand != none && inHand.IsA('DeusExWeapon'))
 		DeusExWeapon(inHand).LaserOff(true);                                    //RSD: Otherwise dots will remain on the map
     ForceDroneOff();                                                            //RSD: Since we can move on standby, shut drone off
-	for(i=0;i<ArrayCount(DrugsTimerArray);i++)                                  //RSD: Hack to keep drug timers from resetting from 0 for unknown reasons
-	{
-		if (DrugsTimerArray[i] == 0.0)
-			forceDrugZero[i] = 1;
-		else
-		    forceDrugZero[i] = 0;
-    }
     ConsoleCommand("set DeusExCarcass bRandomModFix" @ bRandomizeMods);         //RSD: Stupid config-level hack since PostBeginPlay() can't access player pawn in DeusExCarcass.uc
 }
 
@@ -1256,6 +1246,7 @@ event TravelPostAccept()
 
 	Super.TravelPostAccept();
 
+    SetupAddictionManager();
 
 	// reset the keyboard
 	ResetKeyboard();
@@ -1392,10 +1383,6 @@ event TravelPostAccept()
 
 	SetRocketWireControl();
 	//end GMDX
-
-	for(j=0;j<ArrayCount(DrugsTimerArray);j++)                                  //RSD: Hack to keep drug timers from resetting from 0 for unknown reasons
-		if (forceDrugZero[j] == 1)
-			DrugsTimerArray[j] = 0.0;
 
 	//bWasCrosshair=bCrosshairVisible;                                            //RSD: moved from PostBeginPlay() //RSD: Reverted, needs to use SaveConfigOverride value before using the set value
 
@@ -2452,120 +2439,7 @@ simulated function DrugEffects(float deltaTime)
 
 	//RSD: Management for new Addiction System follows
 	if (bAddictionSystem)
-	{
-	for (i=0;i<ArrayCount(DrugsTimerArray);i++)
-	{
-		if (DrugsTimerArray[i] > 0)
-		{
-        DrugsTimerArray[i] -= deltaTime;
-		if (DrugsTimerArray[i] <= 0.0)
-		{
-			DrugsTimerArray[i] = 0.0;
-			if (i == 2)
-				bZymeHealthCheck = true;                                        //RSD: optimization for zyme health manipulation
-			ClientMessage(Sprintf(MsgDrugWornOff,DrugLabels[i]));               //RSD: Tell the player the drug wore off
-		}
-		if (i == 1 && DrunkLevel > 0 && drugsTimerArray[i] < (DrunkLevel-1)*120)//RSD: hack to de-increment player health as they get less drunk
-		{
-        	skillMedLevel = SkillSystem.GetSkillLevel(class'SkillMedicine');
-        	DrunkLevel = int(DrugsTimerArray[1]/120.0+1.0);
-            HealthTorso=Min(HealthTorso/*+SkillMedLevel*10.0+5.0*DrunkLevel*/,100.0+(SkillMedLevel-DrugsWithdrawalArray[2])*10.0+5.0*DrunkLevel); //RSD just min healthtorso, right?
-            winHealth = PersonaScreenHealth(root.GetTopWindow());               //RSD: If health screen open, update max health bars
-            if (winHealth != none)
-            	winHealth.UpdateRegionsMaxHealth();
-            GenerateTotalHealth();
-		}
-		else if (i == 1 && drugsTimerArray[i] == 0.0)
-		{
-        	skillMedLevel = SkillSystem.GetSkillLevel(class'SkillMedicine');
-            DrunkLevel = 0;
-            HealthTorso=Min(HealthTorso/*+SkillMedLevel*10.0*/,100.0+(SkillMedLevel-DrugsWithdrawalArray[2])*10.0); //RSD just min healthtorso, right?
-            winHealth = PersonaScreenHealth(root.GetTopWindow());               //RSD: If health screen open, update max health bars
-            if (winHealth != none)
-            	winHealth.UpdateRegionsMaxHealth();
-            GenerateTotalHealth();
-		}
-		}
-		if (AddictionSubtractTimerArray[i] > 0)                                 //RSD: subtract addiction levels 60s after skill point acquisition (shhhh!)
-		{
-			AddictionSubtractTimerArray[i] -= deltaTime;
-			if (AddictionSubtractTimerArray[i] <= 0.0)
-			{
-				AddictionSubtractTimerArray[i] = 0.0;;
-				AddictionLevelsArray[i] -= AddictionToSubtractArray[i];
-				if (AddictionLevelsArray[i] <= 0.0)
-					AddictionLevelsArray[i] = 0.0;
-				AddictionToSubtractArray[i] = 0.0;
-			}
-		}
-		if (AddictionLevelsArray[i] >= AddictionThresholdsArray[i]) //&& DrugsWasWithdrawalArray[i] == 0) //RSD: If we've above the threshold and no drug active, turn on withdrawal symptoms
-        {
-            //RSD: Actually, first just make the player addicted, only activate withdrawal after a duration
-            DrugsAddictedArray[i] = 1;
-            if (DrugsWasAddictedArray[i] == 0)                                  //RSD: Tell the player they are addicted, but only once
-        	{
-        		ClientMessage(Sprintf(MsgAddicted,DrugLabels[i]));
-        		DrugsWasAddictedArray[i] = 1;
-      		}
-      		if (DrugsTimerArray[i] <= 0.0)
-      		{
-      		if (DrugsWithdrawalTimerArray[i] == 0 && DrugsWasWithdrawalArray[i] == 0) //RSD: If the drug just wore off, essentially
-      		{
-        		if (bHardCoreMode || bRestrictedMetabolism)
-        			DrugsWithdrawalTimerArray[i] = (0.5+(0.1*FRand()-0.1))*WithdrawalDurationArray[i];
-       			else
-                	DrugsWithdrawalTimerArray[i] = (1.0+(0.2*FRand()-0.2))*WithdrawalDurationArray[i];
-        		//BroadcastMessage(DrugsWithdrawalTimerArray[i]);
-       		}
-       		else
-       		{
-       			DrugsWithdrawalTimerArray[i] -= DeltaTime;
-       			if (DrugsWithdrawalTimerArray[i] < 0)
-       				DrugsWithdrawalTimerArray[i] = 0;
-       		}
-       		//BroadcastMessage(DrugsWithdrawalTimerArray[i]);
-       		if (DrugsWithdrawalTimerArray[i] == 0)
-       		{
-            	DrugsWithdrawalArray[i] = 1;
-        		if (DrugsWasWithdrawalArray[i] == 0)                            //RSD: Tell the player they're in withdrawal, but only once
-        		{
-        			PlaySound(Sound'GMDXSFX.Player.withdrawal_notice_loud',SLOT_None);
-                    ClientMessage(Sprintf(MsgWithdrawal,DrugLabels[i]));
-        			DrugsWasWithdrawalArray[i] = 1;
-       			}
-        		if (i == 2 && bZymeHealthCheck)                                 //RSD: hack to de-increment player health on zyme withdrawal
-        		{
-        			skillMedLevel = SkillSystem.GetSkillLevel(class'SkillMedicine');
-        			//DrunkLevel = int(DrugsTimerArray[1]/120.0+1.0);
-            		HealthTorso=Min(HealthTorso/*+SkillMedLevel*10.0+5.0*DrunkLevel*/,100.0+(SkillMedLevel-DrugsWithdrawalArray[2])*10.0+5.0*DrunkLevel); //RSD just min healthtorso, right?
-            		winHealth = PersonaScreenHealth(root.GetTopWindow());               //RSD: If health screen open, update max health bars
-            		if (winHealth != none)
-            			winHealth.UpdateRegionsMaxHealth();
-            		GenerateTotalHealth();
-            		bZymeHealthCheck = false;
-        		}
-        	}
-        	}
-       	}
-        else //if (AddictionLevelsArray[i] <= AddictionThresholdsArray[i])        //RSD: If we've below the threshold, turn off withdrawal symptoms
-        {                                                                       //    (above and drug active handled in Vice.uc)
-        	DrugsAddictedArray[i] = 0;
-            DrugsWithdrawalArray[i] = 0;
-            DrugsWithdrawalTimerArray[i] = 0;
-        	if (DrugsWasAddictedArray[i] == 1)                                  //RSD: Tell the player they are not addicted, but only once
-        	{
-        		ClientMessage(Sprintf(MsgNotAddicted,DrugLabels[i]));
-        		DrugsWasAddictedArray[i] = 0;
-       		}
-       		if (DrugsWasWithdrawalArray[i] == 1)
-            	DrugsWasWithdrawalArray[i] = 0;
-       	}
-	}
-	//BroadcastMessage(DrugsTimerArray[1]);
-	//BroadcastMessage(AddictionLevelsArray[1]);
-	//BroadcastMessage(DrugsWithdrawalArray[1]);
-	//BroadcastMessage(DrunkLevel);
-	}
+        AddictionManager.TickAddictions(deltaTime);
 }
 
 // ----------------------------------------------------------------------
@@ -4797,11 +4671,11 @@ function HealPartMedicalSkillDrunk(out int points, out int amt)
 	local int spill;
 	local Skill sk;
     local int DrunkAdd, ZymeSubtract;                                           //RSD: Now get bonus max torso health from drinking, penalty for zyme
-    if (DrugsTimerArray[1] > 0.0)
-        DrunkAdd = 5*int(DrugsTimerArray[1]/120.0+1.0);                         //RSD: Get 5 bonus health for every 2 min on timer
+    if (AddictionManager.addictions[DRUG_ALCOHOL].drugTimer > 0.0)
+        DrunkAdd = 5*int(AddictionManager.addictions[DRUG_ALCOHOL].drugTimer/120.0+1.0);                         //RSD: Get 5 bonus health for every 2 min on timer
     else
         DrunkAdd = 0;
-    if (DrugsWithdrawalArray[2] == 1)                                           //RSD: 10 health penalty for zyme withdrawal
+    if (AddictionManager.addictions[DRUG_CRACK].bInWithdrawals)                                           //RSD: 10 health penalty for zyme withdrawal
         ZymeSubtract = 10;
     else
         ZymeSubtract = 0;
@@ -12799,11 +12673,11 @@ function GenerateTotalHealth()
 	local Skill sk;
 	local float MedSkillAdd, headMult, torsoMult;
 	local int DrunkAdd, ZymeSubtract;                                           //RSD: Now get bonus max torso health from drinking, penalty for zyme
-    if (DrugsTimerArray[1] > 0.0)
-        DrunkAdd = 5*int(DrugsTimerArray[1]/120.0+1.0);                         //RSD: Get 5 bonus health for every 2 min on timer
+    if (AddictionManager.addictions[DRUG_ALCOHOL].drugTimer > 0.0)
+        DrunkAdd = 5*int(AddictionManager.addictions[DRUG_ALCOHOL].drugTimer/120.0+1.0);                         //RSD: Get 5 bonus health for every 2 min on timer
     else
         DrunkAdd = 0;
-    if (DrugsWithdrawalArray[2] == 1)                                           //RSD: 10 health penalty for zyme withdrawal
+    if (AddictionManager.addictions[DRUG_CRACK].bInWithdrawals)                                           //RSD: 10 health penalty for zyme withdrawal
         ZymeSubtract = 10;
     else
         ZymeSubtract = 0;
@@ -12837,11 +12711,11 @@ function int GenerateTotalMaxHealth()                                           
 	local float MedSkillAdd, headMult, torsoMult;
 	local int DrunkAdd, ZymeSubtract;                                           //RSD: Now get bonus max torso health from drinking, penalty for zyme
 	local int maxHealth;
-    if (DrugsTimerArray[1] > 0.0)
-        DrunkAdd = 5*int(DrugsTimerArray[1]/120.0+1.0);                         //RSD: Get 5 bonus health for every 2 min on timer
+    if (AddictionManager.addictions[DRUG_ALCOHOL].drugTimer > 0.0)
+        DrunkAdd = 5*int(AddictionManager.addictions[1].drugTimer/120.0+1.0);                         //RSD: Get 5 bonus health for every 2 min on timer
     else
         DrunkAdd = 0;
-    if (DrugsWithdrawalArray[2] == 1)                                           //RSD: 10 health penalty for zyme withdrawal
+    if (AddictionManager.addictions[DRUG_CRACK].bInWithdrawals)                                           //RSD: 10 health penalty for zyme withdrawal
         ZymeSubtract = 10;
     else
         ZymeSubtract = 0;
@@ -14326,12 +14200,9 @@ function SkillPointsAdd(int numPoints)
 		}
 	}
 
-    for (i=0;i<ArrayCount(DrugsTimerArray);i++)                                 //RSD: Subtracts 1% of skill points acquired from addiction levels
-	{
-		//AddictionLevelsArray[i] -= 0.01*float(numPoints);
-		AddictionToSubtractArray[i] += 0.01*float(numPoints);                   //RSD: Does it on a delay to hide that it's related to skill point acquisition
-		AddictionSubtractTimerArray[i] = 60.0;                                  //RSD: 60s timer, refreshes every skill point acquisition and dumps all accumulation at once
-	}
+    //RSD: Subtracts 1% of skill points acquired from addiction levels
+    AddictionManager.RemoveAddictions(0.01*float(numPoints),60.0);
+
 	//if (bHardCoreMode)                                                          //RSD: Also subtract 1% of skill points acquired from hunger level
 	//{                                                                         //RSD: Since we now have a menu option, always de-increment hunger and check option elsewhere
     	fullUp -= 0.01*float(numPoints);
@@ -15023,11 +14894,11 @@ function RestoreAllHealth()
 	local Skill sk;
 	local float MedSkillAdd;
 	local int DrunkAdd, ZymeSubtract;                                           //RSD: Now get bonus max torso health from drinking, penalty for zyme
-    if (DrugsTimerArray[1] > 0.0)
-        DrunkAdd = 5*int(DrugsTimerArray[1]/120.0+1.0);                         //RSD: Get 5 bonus health for every 2 min on timer
+    if (AddictionManager.addictions[DRUG_ALCOHOL].drugTimer > 0.0)
+        DrunkAdd = 5*int(AddictionManager.addictions[DRUG_ALCOHOL].drugTimer/120.0+1.0);                         //RSD: Get 5 bonus health for every 2 min on timer
     else
         DrunkAdd = 0;
-    if (DrugsWithdrawalArray[2] == 1)                                           //RSD: 10 health penalty for zyme withdrawal
+    if (AddictionManager.addictions[DRUG_CRACK].bInWithdrawals)                                           //RSD: 10 health penalty for zyme withdrawal
         ZymeSubtract = 10;
     else
         ZymeSubtract = 0;
@@ -16772,9 +16643,9 @@ function RegenStaminaTick(float deltaTime)                                      
 	//RSD: base regen now 2.0, now properly multiplied with additive increases/decreases
 	if (PerkNamesArray[27] == 1)                                                //RSD: endurance perk adds x2
 		mult += 1.0;
-	if (drugsWithdrawalArray[0] == 1)                                           //RSD: if suffering from nicotine withdrawal, subtract x0.5
+	if (AddictionManager.addictions[DRUG_TOBACCO].bInWithdrawals == true)                                           //RSD: if suffering from nicotine withdrawal, subtract x0.5
 		mult -= 0.5;
-	if (DrugsTimerArray[2] > 0)                                                 //RSD: Zyme adds x2
+	if (AddictionManager.addictions[DRUG_TOBACCO].drugTimer > 0)                                                 //RSD: Zyme adds x2
 		mult += 1.0;
 
 	swimTimer += 5.0*mult*deltaTime;
@@ -16935,19 +16806,6 @@ defaultproperties
      RecoilSimLimit=(X=7.000000,Y=16.000000,Z=7.000000)
      RecoilDrain=0.950000
      RecoilTime=0.140000
-     AddictionThresholdsArray(0)=50.000000
-     AddictionThresholdsArray(1)=50.000000
-     AddictionThresholdsArray(2)=50.000000
-     WithdrawalDurationArray(0)=1200.000000
-     WithdrawalDurationArray(1)=1800.000000
-     WithdrawalDurationArray(2)=600.000000
-     MsgWithdrawal="You are now suffering from %s withdrawal"
-     MsgAddicted="You are now addicted to %s"
-     MsgNotAddicted="You are no longer addicted to %s"
-     MsgDrugWornOff="%s has worn off"
-     drugLabels(0)="Nicotine"
-     drugLabels(1)="Alcohol"
-     drugLabels(2)="Zyme"
      NanoVirusLabel="Augmentation system scrambled for %d seconds"
      augOrderList(0)=(aug1=AugMuscle,aug2=AugCombat)
      augOrderList(1)=(aug1=AugAqualung,aug2=AugEnviro)
