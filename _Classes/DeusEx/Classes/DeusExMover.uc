@@ -70,7 +70,10 @@ function bool DoLeftFrob(DeusExPlayer frobber, bool objectInHand)
     
     //Handle being lockpicked or nanokey'd on left click
     if (frobber.inHand.IsA('NanoKeyRing') || frobber.inHand.IsA('Lockpick'))
-        return true;
+    {
+        frobber.DoFrob(frobber, frobber.inHand);
+        return false;
+    }
     //Sarge: Move NanoKeyring check to work based on whether or not we have the key.
     //Rather than always selecting a lockpick if we have one and always selecting the nanokey if we don't
     else if (objectInHand)

@@ -38,7 +38,10 @@ function bool DoLeftFrob(DeusExPlayer frobber, bool objectInHand)
     
     //If we have a multitool out, use it
     if (frobber.inHand.IsA('Multitool'))
-        return true;
+    {
+        frobber.DoFrob(frobber, frobber.inHand);
+        return false;
+    }
     
     //Select a multitool if it's locked and we've got one
     for(item = frobber.Inventory; item != None; item = item.Inventory)
