@@ -7139,15 +7139,15 @@ function DoLeftFrob(Actor frobTarget)
     local bool bDefaultFrob;
 
     if (frobTarget.isA('DeusExPickup'))
-        bDefaultFrob = DeusExPickup(frobTarget).DoLeftFrob(Self,inHand == None);
+        bDefaultFrob = DeusExPickup(frobTarget).DoLeftFrob(Self,inHand != None);
     else if (frobTarget.isA('DeusExWeapon'))
-        bDefaultFrob = DeusExWeapon(frobTarget).DoLeftFrob(Self,inHand == None);
+        bDefaultFrob = DeusExWeapon(frobTarget).DoLeftFrob(Self,inHand != None);
     else if (frobTarget.isA('DeusExMover'))
-        bDefaultFrob = DeusExMover(frobTarget).DoLeftFrob(Self,inHand == None);
+        bDefaultFrob = DeusExMover(frobTarget).DoLeftFrob(Self,inHand != None);
     else if (frobTarget.isA('ElectronicDevices'))
-        bDefaultFrob = ElectronicDevices(frobTarget).DoLeftFrob(Self,inHand == None);
+        bDefaultFrob = ElectronicDevices(frobTarget).DoLeftFrob(Self,inHand != None);
     else if (frobTarget.isA('DeusExDecoration'))
-        bDefaultFrob = DeusExDecoration(frobTarget).DoLeftFrob(Self,inHand == None);
+        bDefaultFrob = DeusExDecoration(frobTarget).DoLeftFrob(Self,inHand != None);
 
     //Handle Inventory classes. Ugh. I really wish we could access this class!
     if (bDefaultFrob && frobTarget.IsA('Inventory') && inHand == None)
@@ -7176,15 +7176,15 @@ function DoRightFrob(Actor frobTarget)
     bDefaultFrob = true;
 
     if (frobTarget.isA('DeusExPickup'))
-        bDefaultFrob = DeusExPickup(frobTarget).DoRightFrob(Self,inHand == None);
+        bDefaultFrob = DeusExPickup(frobTarget).DoRightFrob(Self,inHand != None);
     else if (frobTarget.isA('DeusExWeapon'))
-        bDefaultFrob = DeusExWeapon(frobTarget).DoRightFrob(Self,inHand == None);
+        bDefaultFrob = DeusExWeapon(frobTarget).DoRightFrob(Self,inHand != None);
     else if (frobTarget.isA('DeusExMover'))
-        bDefaultFrob = DeusExMover(frobTarget).DoRightFrob(Self,inHand == None);
+        bDefaultFrob = DeusExMover(frobTarget).DoRightFrob(Self,inHand != None);
     else if (frobTarget.isA('ElectronicDevices'))
-        bDefaultFrob = ElectronicDevices(frobTarget).DoRightFrob(Self,inHand == None);
+        bDefaultFrob = ElectronicDevices(frobTarget).DoRightFrob(Self,inHand != None);
     else if (frobTarget.isA('DeusExDecoration'))
-        bDefaultFrob = DeusExDecoration(frobTarget).DoRightFrob(Self,inHand == None);
+        bDefaultFrob = DeusExDecoration(frobTarget).DoRightFrob(Self,inHand != None);
 
     //Handle Inventory classes. Ugh. I really wish we could access this class!
     if (bDefaultFrob && frobTarget.IsA('Inventory') && inHand == None)
