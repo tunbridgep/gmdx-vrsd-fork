@@ -66,6 +66,7 @@ var localized string drugAddictedLabel;
 var localized string drugWithdrawalLabel;
 var localized string drugInactiveLabel;
 var localized string drugEffectLabel;
+var localized string drugStacks;
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -218,19 +219,13 @@ function PersonaHealthItemButton CreatePartButton(
 
 function CreateRegionWindows()
 {
-   local int spill;
-   local Skill sk;
-   local float MedSkillAdd;
-   local int DrunkAdd, ZymeSubtract;                                            //RSD: Now get bonus max torso health from drinking, penalty for zyme
-	MedSkillAdd=0.0;
-	if (player.AddictionManager.addictions[1].drugTimer > 0.0)
-        DrunkAdd = 5*int(player.AddictionManager.addictions[1].drugTimer/120.0+1.0);                  //RSD: Get 5 bonus health for every 2 min on timer
-    else
-        DrunkAdd = 0;
-    if (player.AddictionManager.addictions[2].bInWithdrawals)                                    //RSD: 10 health penalty for zyme withdrawal
-        ZymeSubtract = 10;
-    else
-        ZymeSubtract = 0;
+    local int spill;
+    local Skill sk;
+    local float MedSkillAdd;
+    local int AddictionAdd;                                            //RSD: Now get bonus max torso health from drinking, penalty for zyme
+        
+    AddictionAdd = player.AddictionManager.GetTorsoHealthBonus();                  //RSD: Get 5 bonus health for every 2 min on timer
+    MedSkillAdd=0.0;
    if (player.SkillSystem!=None)
    {
       sk = player.SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine');
@@ -238,7 +233,7 @@ function CreateRegionWindows()
       if (sk!=None) MedSkillAdd=sk.CurrentLevel*10;
    }
 	regionWindows[0] = CreateRegionWindow(0, 218,  29, player.HealthHead,     player.default.HealthHead+MedSkillAdd,     HealthLocationHead);
-	regionWindows[1] = CreateRegionWindow(1,  27,  43, player.HealthTorso,    player.default.HealthTorso+MedSkillAdd+DrunkAdd-ZymeSubtract,    HealthLocationTorso); //RSD: Added drunk, zyme
+	regionWindows[1] = CreateRegionWindow(1,  27,  43, player.HealthTorso,    player.default.HealthTorso+MedSkillAdd+AddictionAdd,    HealthLocationTorso); //RSD: Added drunk, zyme
 	regionWindows[2] = CreateRegionWindow(2,  19, 237, player.HealthArmRight, player.default.HealthArmRight, HealthLocationRightArm);
 	regionWindows[3] = CreateRegionWindow(3, 230, 237, player.HealthArmLeft,  player.default.HealthArmLeft,  HealthLocationLeftArm);
 	regionWindows[4] = CreateRegionWindow(4,  24, 347, player.HealthLegRight, player.default.HealthLegRight, HealthLocationRightLeg);
@@ -592,8 +587,10 @@ function UpdateStatusText()                                                     
         if (player.AddictionManager.addictions[i].drugTimer > 0.0)
         {
            winInfo.SetText(drugStatusLabel $ drugActiveLabel $ int(player.AddictionManager.addictions[i].drugTimer) $ "s");
-           if (i == 1)
-              winInfo.SetText(drugEffectLabel $ sprintf(drugActiveEffects[i], 5*int(player.AddictionManager.addictions[i].drugTimer/120.0+1.0)));
+           if (i == 1 && player.AddictionManager.stacks[i] > 1)
+              winInfo.SetText(drugEffectLabel $ sprintf(drugActiveEffects[i], 5*player.AddictionManager.stacks[i]) @ sprintf(drugStacks,player.AddictionManager.stacks[i],player.AddictionManager.maxStacks[i]));
+           else if (i == 1)
+              winInfo.SetText(drugEffectLabel $ sprintf(drugActiveEffects[i], 5*player.AddictionManager.stacks[i]));
            else
               winInfo.SetText(drugEffectLabel $ drugActiveEffects[i]);
         }
@@ -816,8 +813,8 @@ function int HealPart(PersonaHealthRegionWindow region, optional float pointsToH
 	local medKit medKit;
 
 	local Skill sk;
-   local float MedSkillAdd;
-    local int DrunkAdd, ZymeSubtract;                                           //RSD: Now get bonus max torso health from drinking, penalty for zyme
+    local float MedSkillAdd;
+    local int AddictionAdd;
 
 	// First make sure the player has a medkit
 	medKit = MedKit(player.FindInventoryType(Class'MedKit'));
@@ -880,15 +877,8 @@ function int HealPart(PersonaHealthRegionWindow region, optional float pointsToH
 	}
 	else
 	{
+      AddictionAdd = player.AddictionManager.GetTorsoHealthBonus();
       MedSkillAdd=0.0;  //GMDX
-      if (player.AddictionManager.addictions[1].drugTimer > 0.0)
-        DrunkAdd = 5*int(player.AddictionManager.addictions[1].drugTimer/120.0+1.0);                  //RSD: Get 5 bonus health for every 2 min on timer
-      else
-        DrunkAdd = 0;
-      if (player.AddictionManager.addictions[2].bInWithdrawals)                                  //RSD: 10 health penalty for zyme withdrawal
-          ZymeSubtract = 10;
-      else
-          ZymeSubtract = 0;
       if (player.SkillSystem!=None) //GMDX
       {
          sk = player.SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine');
@@ -904,7 +894,7 @@ function int HealPart(PersonaHealthRegionWindow region, optional float pointsToH
 				break;
 
 			case 1:		// torso
-				newHealth = FMin(playerHealth[1] + pointsToHeal, player.default.HealthTorso+MedSkillAdd+DrunkAdd-ZymeSubtract);   //GMDX //RSD: Added drunk, zyme
+				newHealth = FMin(playerHealth[1] + pointsToHeal, player.default.HealthTorso+MedSkillAdd+AddictionAdd);   //GMDX //RSD: Added drunk, zyme
 				healthAdded = newHealth - playerHealth[1];
 				playerHealth[1] = newHealth;
 				break;
@@ -1030,16 +1020,12 @@ function UpdateRegionsMaxHealth()                                               
    local int spill;
    local Skill sk;
    local float MedSkillAdd;
-   local int DrunkAdd, ZymeSubtract;                                            //RSD: Now get bonus max torso health from drinking, penalty for zyme
+   local int AddictionAdd;                                            //RSD: Now get bonus max torso health from drinking, penalty for zyme
+	
+
+    AddictionAdd = player.AddictionManager.GetTorsoHealthBonus();                  //RSD: Get 5 bonus health for every 2 min on timer
+
 	MedSkillAdd=0.0;
-	if (player.AddictionManager.addictions[1].drugTimer > 0.0)
-        DrunkAdd = 5*int(player.AddictionManager.addictions[1].drugTimer/120.0+1.0);                  //RSD: Get 5 bonus health for every 2 min on timer
-    else
-        DrunkAdd = 0;
-    if (player.AddictionManager.addictions[2].bInWithdrawals)                                    //RSD: 10 health penalty for zyme withdrawal
-        ZymeSubtract = 10;
-    else
-        ZymeSubtract = 0;
    if (player.SkillSystem!=None)
    {
       sk = player.SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine');
@@ -1047,7 +1033,7 @@ function UpdateRegionsMaxHealth()                                               
       if (sk!=None) MedSkillAdd=sk.CurrentLevel*10;
    }
 	regionWindows[0].SetMaxHealth(player.default.HealthHead+MedSkillAdd);
-	regionWindows[1].SetMaxHealth(player.default.HealthTorso+MedSkillAdd+DrunkAdd-ZymeSubtract); //RSD: Added drunk, zyme
+	regionWindows[1].SetMaxHealth(player.default.HealthTorso+MedSkillAdd+AddictionAdd); //RSD: Added drunk, zyme
 }
 
 // ----------------------------------------------------------------------
@@ -1098,6 +1084,7 @@ defaultproperties
      drugWithdrawalEffects(0)="Stamina Regen -50%"
      drugWithdrawalEffects(1)="Accuracy -20%"
      drugWithdrawalEffects(2)="Max Torso Health -10"
+     drugStacks="(%d/%d Stacks)"
      drugAddictedEffects="Prone To Withdrawal"
      addictionLabel=" Addiction Level: "
      thresholdLabel="Threshold "
