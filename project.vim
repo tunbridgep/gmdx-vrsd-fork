@@ -1,4 +1,4 @@
 set nofoldenable
 
-" set C style syntax
-setlocal ft=c
+" set C++ style syntax
+setlocal ft=cpp
