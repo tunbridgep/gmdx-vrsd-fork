@@ -546,6 +546,9 @@ var const augBinary augOrderList[21];                                           
 var travel bool bAddictionSystem;
 var travel AddictionSystem AddictionManager;
 
+var travel float autosaveRestrictTimer;                                         //Sarge: Current time left before we're allowed to autosave again.
+var const float autosaveRestrictTimerDefault;                                   //Sarge: Timer for autosaves.
+
 const DRUG_TOBACCO = 0;
 const DRUG_ALCOHOL = 1;
 const DRUG_CRACK = 2;
@@ -1745,6 +1748,7 @@ function bool CanSave(optional bool allowHardcore)
 	// 4) We're interpolating (playing outtro)
 	// 5) A datalink is playing
 	// 6) We're in a multiplayer game
+    // 7) If autosaving, that we're within the autosave time limit
 
     if ((bHardCoreMode || bRestrictedSaving) && !allowHardcore && !autosave) //Hardcore Mode
         return false;
@@ -1760,6 +1764,9 @@ function bool CanSave(optional bool allowHardcore)
 
     if (Level.Netmode != NM_Standalone) //Multiplayer Game
 	   return false;
+
+    if ((bRestrictedSaving || bHardCoreMode) && autosave && autosaveRestrictTimer > 0.) //Autosave timer not expired
+        return false;
 
     return true; 
 }
@@ -1817,6 +1824,10 @@ exec function QuickSave()
 	log("MYCHK:DX_QuickSave: ,"@QuickSaveName@" ,Last:"@QuickSaveLast@" ,Current:"@QuickSaveCurrent);
 	DoSaveGame(QuickSaveLast, QuickSaveName);
 	ConsoleCommand("set DeusEx.JCDentonMale iQuickSaveLast "$QuickSaveLast);
+
+    if (autosave)
+        autosaveRestrictTimer = autosaveRestrictTimerDefault;
+
 //	default.iQuickSaveLast=QuickSaveLast;
 
 //original	SaveGame(-1, QuickSaveGameTitle);
@@ -6010,6 +6021,9 @@ state PlayerWalking
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
+
+        //Update autosave restriction timer
+        autosaveRestrictTimer = MAX(0,autosaveRestrictTimer-deltaTime);
 
 		Super.PlayerTick(deltaTime);
 	}
@@ -16680,6 +16694,7 @@ function RegenStaminaTick(float deltaTime)                                      
 
 defaultproperties
 {
+     autosaveRestrictTimerDefault=900
      TruePlayerName="JC Denton"
      CombatDifficulty=1.000000
      SkillPointsTotal=5000
