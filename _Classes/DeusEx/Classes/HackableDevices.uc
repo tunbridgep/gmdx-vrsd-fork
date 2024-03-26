@@ -30,6 +30,31 @@ var localized string	msgAlreadyHacked;		// message when the device is already ha
 
 var bool bBeenHacked; //RSD: For having been hacked at least once
 
+//SARGE: Added "Left Click Frob" and "Right Click Frob" support
+//Return true to use the default frobbing mechanism, or false for custom behaviour
+function bool DoLeftFrob(DeusExPlayer frobber)
+{
+    local Inventory item;
+    
+    if (!bHackable || hackStrength == 0.0)
+        return true;
+
+    //Select a multitool if it's locked and we've got one
+    for(item = frobber.Inventory; item != None; item = item.Inventory)
+    {
+        if (item.IsA('Multitool'))
+        {
+            frobber.PutInHand(item);
+            return false;
+        }
+    }
+    return true;
+}
+function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
+{
+    return true;
+}
+
 // ---------------------------------------------------------------------------------------
 // Networking Replication
 // ---------------------------------------------------------------------------------------

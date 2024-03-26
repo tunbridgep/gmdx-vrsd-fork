@@ -12,6 +12,14 @@ var bool bNoPrintMustBeUsed;
 var localized string MustBeUsedOn;
 var localized String HealsLabel;                                                //RSD: Added
 
+//SARGE: Moved the Bioenergy perk-based max amount bonus here, was in DeusExPlayer
+function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
+{
+    if (frobber.PerkNamesArray[30]==1)
+        MaxCopies = 20;
+    return super.DoRightFrob(frobber,objectInHand);
+}
+
 // ----------------------------------------------------------------------
 state Activated
 {
@@ -166,6 +174,7 @@ simulated function bool TestMPBeltSpot(int BeltSpot)
 
 defaultproperties
 {
+     bAutoActivate=True
      healAmount=30
      MustBeUsedOn="Use to heal critical body parts, or use on character screen to direct healing at a certain body part."
      HealsLabel="Heals %d points"

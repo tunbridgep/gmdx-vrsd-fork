@@ -294,6 +294,7 @@ var localized string abridgedName;                                              
 var texture largeIconRot;                                                       //RSD: rotated inventory icon
 var travel int invSlotsXtravel;                                                 //RSD: since Inventory invSlotsX doesn't travel through maps
 var travel int invSlotsYtravel;                                                 //RSD: since Inventory invSlotsY doesn't travel through maps
+var bool bIsMeleeWeapon;                                                        //Is this weapon a melee weapon? Used for selecting our last melee weapon for crate-breaking
 //END GMDX:
 
 //
@@ -317,6 +318,28 @@ replication
 	// Functions Server calls in client
 	reliable if ( Role == ROLE_Authority )
 	  RefreshScopeDisplay, ReadyClientToFire, SetClientAmmoParams, ClientDownWeapon, ClientActive, ClientReload;
+}
+
+
+//SARGE: Added "Left Click Frob" and "Right Click Frob" support
+//Return true to use the default frobbing mechanism (right click), or false for custom behaviour
+function bool DoLeftFrob(DeusExPlayer frobber)
+{
+    frobber.bLeftClicked = true;
+    frobber.DoFrob(frobber,None);
+    return false;
+}
+function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
+{
+    return true;
+}
+
+//Called when the item is added to the players hands
+function Draw(DeusExPlayer frobber)
+{
+    if (bIsMeleeWeapon)
+        frobber.lastMeleeWeapon = self;
+
 }
 
 // ---------------------------------------------------------------------
@@ -1212,7 +1235,7 @@ local float p, mod;
           mod = 1;
         else
           mod = 0.5;
-        if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).DrugsTimerArray[2] > 0) //RSD: Zyme cancels all melee stamina drain
+        if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).AddictionManager.addictions[2].drugTimer > 0) //RSD: Zyme cancels all melee stamina drain
           mod = 0.0;
 
         player.swimTimer -= meleeStaminaDrain*mod;
@@ -1372,7 +1395,7 @@ simulated function float CalculateAccuracy()
 		// 0.0 = dead on, 1.0 = way off
 		accuracy += weapskill;
 
-        if (player.DrugsWithdrawalArray[1] == 1)                                //RSD: If suffering from alcohol withdrawal, add 15% inaccuracy
+        if (player.AddictionManager.addictions[1].bInWithdrawals)                                //RSD: If suffering from alcohol withdrawal, add 15% inaccuracy
         	accuracy += 0.4;
 
 		// get the health values for the player
@@ -2454,7 +2477,7 @@ simulated function Tick(float deltaTime)
             mult += 0.25;                                                        //RSD: Now +25% bonus
         /*else if (player.PerkNamesArray[3]==1 && GoverningSkill==Class'DeusEx.SkillWeaponHeavy') //RSD: Removed Focused: Heavy
             mult += 0.25;*/                                                        //RSD: Now +25% bonus
-		if (player.DrugsTimerArray[0] > 0)                                      //RSD: Cigarettes make you aim faster
+		if (player.AddictionManager.addictions[0].drugTimer > 0)                                      //RSD: Cigarettes make you aim faster
 	        mult += 1.0;
         if (player.CombatDifficulty < 1.0)                                      //RSD: Properly doubling on easy now
 		    mult *= 2.0;
@@ -3238,7 +3261,7 @@ function Fire(float Value)
           mod = 1;
         else
           mod = 0.5;
-        if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).DrugsTimerArray[2] > 0) //RSD: Zyme cancels all melee stamina drain
+        if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).AddictionManager.addictions[2].drugTimer > 0) //RSD: Zyme cancels all melee stamina drain
           mod = 0.0;
 
         DeusExPlayer(Owner).swimTimer -= meleeStaminaDrain*mod;
@@ -3440,7 +3463,7 @@ else
 
             if (Owner.IsA('DeusExPlayer'))
             {
-            	if (DeusExPlayer(Owner).DrugsTimerArray[2] > 0)                 //RSD: Zyme gives its own +50% boost
+            	if (DeusExPlayer(Owner).AddictionManager.addictions[2].drugTimer > 0)                 //RSD: Zyme gives its own +50% boost
                 	hhspeed += 0.5;
                 if (DeusExPlayer(Owner).bStunted)                               //RSD: Halve melee speed if we're out of breath
                 	hhspeed *= 0.5;
@@ -4110,14 +4133,14 @@ simulated function Projectile ProjectileFire(class<projectile> ProjClass, float 
 		/*mult = DeusExPlayer(Owner).AugmentationSystem.GetAugLevelValue(class'AugCombat'); //RSD: No more buffs to projectile speed from Combat Speed
 		if (mult == -1.0)
 			mult = 1.0;
-		if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).DrugsTimerArray[2] > 0) //RSD: Zyme gives its own +50% boost
+		if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).AddictionManager.addictions[2].drugTimer > 0) //RSD: Zyme gives its own +50% boost
             mult += 0.5;
 		ProjSpeed *= mult;*/
 
 		mult = DeusExPlayer(Owner).AugmentationSystem.GetAugLevelValue(class'AugCombatStrength'); //RSD: Combat Speed was still doing this before
 		if (mult == -1.0)
         	mult = 1.0;
-        if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).DrugsTimerArray[2] > 0) //RSD: Zyme gives its own +50% boost
+        if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).AddictionManager.addictions[2].drugTimer > 0) //RSD: Zyme gives its own +50% boost
             mult += 0.5;
 	}
 
@@ -4632,7 +4655,7 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
 			mult = DeusExPlayer(Owner).AugmentationSystem.GetAugLevelValue(class'AugCombatStrength');
 			if (mult == -1.0)
 				mult = 1.0;
-			if (DeusExPlayer(Owner).DrugsTimerArray[2] > 0)                     //RSD: Zyme gives its own +50% boost
+			if (DeusExPlayer(Owner).AddictionManager.addictions[2].drugTimer > 0)                     //RSD: Zyme gives its own +50% boost
                 mult += 0.5;
 		}
 
@@ -5129,7 +5152,7 @@ simulated function bool UpdateInfo(Object winObject)
     else
     	hh -= 1.0;                                                              //RSD: Simple formula! Wow!
 
-    if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).DrugsTimerArray[2] > 0) //RSD: Zyme gives its own +50% boost, accessed none?
+    if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).AddictionManager.addictions[2].drugTimer > 0) //RSD: Zyme gives its own +50% boost, accessed none?
     	hh += 0.5;
 
 	//G-Flex: display the correct damage bonus
@@ -5915,7 +5938,7 @@ state NormalFire
 				mult = DeusExPlayer(Owner).AugmentationSystem.GetAugLevelValue(class'AugCombat');
 				if (mult == -1.0)
 					mult = 1.0;
-				if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).DrugsTimerArray[2] > 0) //RSD: Zyme gives its own +50% boost
+				if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).AddictionManager.addictions[2].drugTimer > 0) //RSD: Zyme gives its own +50% boost
                     mult += 0.5;
                 mult = 1.0/mult;
 			}
@@ -6240,7 +6263,7 @@ simulated state ClientFiring
 				mult = 1.0 / DeusExPlayer(Owner).AugmentationSystem.GetAugLevelValue(class'AugCombat');
 				if (mult == -1.0)
 					mult = 1.0;
-				if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).DrugsTimerArray[2] > 0) //RSD: Zyme gives its own +50% boost
+				if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).AddictionManager.addictions[2].drugTimer > 0) //RSD: Zyme gives its own +50% boost
                     mult += 0.5;
 			}
 			sTime = ShotTime * mult;
@@ -6498,7 +6521,7 @@ state FlameThrowerOn
 				mult = 1.0 / DeusExPlayer(Owner).AugmentationSystem.GetAugLevelValue(class'AugCombat');
 				if (mult == -1.0)
 					mult = 1.0;
-				if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).DrugsTimerArray[2] > 0) //RSD: Zyme gives its own +50% boost
+				if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).AddictionManager.addictions[2].drugTimer > 0) //RSD: Zyme gives its own +50% boost
                     mult += 0.5;
 			}
 			sTime = ShotTime * mult;

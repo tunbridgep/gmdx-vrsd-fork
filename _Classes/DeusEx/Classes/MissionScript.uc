@@ -163,12 +163,9 @@ function FirstFrame()
         //else
         //   Player.fullUp=-99999;
 
-        for (i=0; i<ArrayCount(Player.AddictionLevelsArray); i++)
-        {
-            Player.AddictionLevelsArray[i] -= 20;
-            if (Player.AddictionLevelsArray[i] < 0)                             //RSD: Lose 20% addiction on mission transitions
-                Player.AddictionLevelsArray[i] = 0;
-        }
+        //Lose 20% addictions per mission
+        Player.AddictionManager.RemoveAddictions(20,0.1);
+
 		// Set this flag so we only get in here once per mission.
 		flags.SetBool(flagName, True);
 	}

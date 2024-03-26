@@ -1,7 +1,7 @@
 //=============================================================================
 // Sodacan.
 //=============================================================================
-class Sodacan extends DeusExPickup;
+class Sodacan extends RSDEdible;
 
 state Activated
 {
@@ -18,11 +18,11 @@ state Activated
 
 		player = DeusExPlayer(GetPlayerPawn());
 
-		if (player != none && player.fullUp >= 100 && (player.bHardCoreMode || player.bRestrictedMetabolism)) //RSD: Added option stuff
+        if (RestrictedUse(player))
 		{
-		GotoState('Deactivated');                                               //RSD: Otherwise we try to activate again on map transition
-        player.ClientMessage(player.fatty);
-		return;
+            GotoState('Deactivated');                                               //RSD: Otherwise we try to activate again on map transition
+            player.ClientMessage(player.fatty);
+            return;
 		}
 
 		if (player != None)

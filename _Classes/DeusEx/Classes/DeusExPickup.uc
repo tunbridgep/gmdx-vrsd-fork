@@ -37,6 +37,27 @@ var() bool bSimplePhysics;
 var travel bool bIsRadar;                                                       //RSD: for splitting cloak/radar texture functionality
 var bool bJustUncloaked;                                                        //RSD: for splitting cloak/radar texture functionality
 var bool bJustUnRadar;                                                          //RSD: for splitting cloak/radar texture functionality
+var bool bAutoActivate;                                                         //Sarge: Auto activate with left click, rather than placing in the players hands                                                                                
+
+
+//SARGE: Added "Left Click Frob" and "Right Click Frob" support
+//Return true to use the default frobbing mechanism (right click), or false for custom behaviour
+function bool DoLeftFrob(DeusExPlayer frobber)
+{
+    if (bAutoActivate)
+    {
+        GotoState('Activated');
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
+{
+    return true;
+}
 
 // ----------------------------------------------------------------------
 // Networking Replication
@@ -461,14 +482,6 @@ function UseOnce()
 	NumCopies--;
 	UpdateSkinStatus();
 
-    if (IsA('SoyFood'))
-       player.fullUp+= 8;
-    else if (IsA('Candybar'))
-       player.fullUp+= 6;
-    else if (IsA('Sodacan') || IsA('WineBottle') || IsA('Liquor40oz') || IsA('LiquorBottle'))
-       player.fullUp+= 4;
-    /*else if (IsA('VialCrack'))                                                //RSD: How about no zyme eat cost
-       player.fullUp+= 1;*/
     if (player.fullUp > 200)                                                    //RSD: Capped at 200
        player.fullUp = 200;
 

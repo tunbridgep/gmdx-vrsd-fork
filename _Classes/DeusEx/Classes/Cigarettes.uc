@@ -3,17 +3,6 @@
 //=============================================================================
 class Cigarettes extends Vice; //DeusExPickup;
 
-//enum ECigType
-//{
-//	SC_Default,
-//	SC_BigTop
-//};
-
-
-//var() ECigType Cig;
-
-var bool bDontUse;
-
 function SetSkin()
 {
 	switch(textureSet)
@@ -25,78 +14,29 @@ function SetSkin()
 	super.SetSkin();
 }
 
-
-
-
-
-state Activated
+function Eat(DeusExPlayer player)
 {
-	function Activate()
-	{
-		// can't turn it off
-	}
-
-	function BeginState()
-	{
-		local Pawn P;
-		local vector loc;
-		local rotator rot;
-		local SmokeTrail puff;
-		local DeusExPlayer playa;
-
-		Super.BeginState();
-
-
-      if (bDontUse)
-      {
-        playa = DeusExPlayer(GetPlayerPawn());
-        if (playa!=none)
-        {
-        loc = playa.Location;
-		rot = playa.Rotation;
-		if (!playa.bAddictionSystem)                                            //RSD: Only deal damage without addiction system
-		{
-        if (playa.HealthTorso > 4)                                              //RSD: Cigs can't kill you like below (for crash fix)
-        	playa.TakeDamage(2, playa, loc, vect(0,0,0), 'PoisonGas');
+    local vector loc;
+    local rotator rot;
+    local SmokeTrail puff;
+    loc = player.Location;
+    rot = player.Rotation;
+    loc += 2.0 * player.CollisionRadius * vector(player.ViewRotation);
+    loc.Z += player.CollisionHeight * 0.9;
+    puff = Spawn(class'SmokeTrail', player,, loc, rot);
+    if (puff != None)
+    {
+        puff.DrawScale = 1.0;
+        puff.origScale = puff.DrawScale;
+    }
+    if (!player.bAddictionSystem)                                        //RSD: Only deal damage without addiction system
+    {
         PlaySound(sound'MaleCough');
-        }
-        loc += 2.0 * playa.CollisionRadius * vector(playa.ViewRotation);
-		loc.Z += playa.CollisionHeight * 0.9;
-        puff = Spawn(class'SmokeTrail', playa,, loc, rot);
-			if (puff != None)
-			{
-				puff.DrawScale = 1.2;
-				puff.origScale = puff.DrawScale;
-			}
-			bDontUse=false;
-			Destroy();
-		  }
-		}
-
-        playa = DeusExPlayer(GetPlayerPawn());
-		if (playa != None)
-		{
-			loc = playa.Location;
-			rot = playa.Rotation;
-			loc += 2.0 * playa.CollisionRadius * vector(playa.ViewRotation);
-			loc.Z += playa.CollisionHeight * 0.9;
-			puff = Spawn(class'SmokeTrail', playa,, loc, rot);
-			if (puff != None)
-			{
-				puff.DrawScale = 1.0;
-				puff.origScale = puff.DrawScale;
-			}
-			if (!playa.bAddictionSystem)                                        //RSD: Only deal damage without addiction system
-			{
-			PlaySound(sound'MaleCough');
-            if (playa.HealthTorso > 4 || !playa.bRealUI || !playa.bHardCoreMode)//RSD: Dunno why it was !bRealUI, but I added !bHardcoreMode to match (maybe crash bug?)
-			    playa.TakeDamage(2, playa, playa.Location, vect(0,0,0), 'PoisonGas');
-			}
-		}
-		if (playa != None && !playa.IsInState('Dying'))
-		    UseOnce();
-	}
-Begin:
+        if (player.HealthTorso > 4 || !player.bRealUI || !player.bHardCoreMode) //RSD: Dunno why it was !bRealUI, but I added !bHardcoreMode to match (maybe crash bug?)
+            player.TakeDamage(2, player, player.Location, vect(0,0,0), 'PoisonGas');
+    }
+    if (!player.IsInState('Dying'))
+        UseOnce();
 }
 
 defaultproperties

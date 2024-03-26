@@ -5,6 +5,7 @@ class DataCube extends InformationDevices;
 
 defaultproperties
 {
+     bLeftGrab=True
      bAddToVault=True
      bInvincible=True
      bCanBeBase=True

@@ -1,8 +1,7 @@
 //=============================================================================
 // DeusExPlayer.
 //=============================================================================
-class DeusExPlayer extends PlayerPawnExt
-	native;
+class DeusExPlayer extends PlayerPawnExt native;
 
 struct augBinary                                                                //RSD: Used to create the list of all augs in the game
 {
@@ -517,26 +516,6 @@ var bool bStaticFreeze;
 var rotator DRONESAVErotation;                                                  //RSD: For Drone camera switching
 var rotator WHEELSAVErotation;                                                  //RSD: For Lorenz's wheel so it doesn't interfere with drone stuff
 
-var travel float AddictionLevelsArray[3];                                       //RSD: Addiction system: how addicted are we?
-var float AddictionThresholdsArray[3];                                          //RSD: Addiction system: when does withdrawal kick in?
-var travel float DrugsTimerArray[3];                                            //RSD: Addiction system: how much longer does the drug buff last?
-var travel int DrugsAddictedArray[3];                                           //RSD: Addiction system: are we suffering from withdrawal? (treat as fake bool)
-var travel int DrugsWasAddictedArray[3];                                        //RSD: Addiction system: were we just suffering from withdrawal? (treat as fake bool)
-var travel int DrugsWithdrawalArray[3];                                         //RSD: Addiction system: are we suffering from withdrawal? (treat as fake bool)
-var travel int DrugsWasWithdrawalArray[3];                                      //RSD: Addiction system: were we just suffering from withdrawal? (treat as fake bool)
-var travel float AddictionToSubtractArray[3];                                   //RSD: Addiction system: how much to deincrement levels by?
-var travel float AddictionSubtractTimerArray[3];                                //RSD: Addiction system: when should we deincrement levels?
-var travel float DrugsWithdrawalTimerArray[3];                                  //RSD: Addiction system: when should we activate withdrawal?
-var float WithdrawalDurationArray[3];                                           //RSD: Addiction system: how long to wait before activating withdrawal?
-var travel int DrunkLevel;                                                      //RSD: Level of drunkenness (up to 5, NOT used by health manipulation formulas, exists to optimize tick stuff)
-var travel bool bZymeHealthCheck;                                               //RSD: Tells the system whether to check for Zyme withdrawal (only to optimize tick stuff)
-var localized string MsgWithdrawal;                                             //RSD: Addiction system: Message saying you're now suffering from withdrawal
-var localized string MsgAddicted;                                               //RSD: Addiction system: Message saying you're now addicted
-var localized string MsgNotAddicted;                                            //RSD: Addiction system: Message saying you're no longer addicted
-var localized string MsgDrugWornOff;                                            //RSD: Addiction system: Message saying the drug wore off
-var localized string drugLabels[3];                                             //RSD: Addiction system: Name of each drug
-var travel int forceDrugZero[3];                                                //RSD: Addiction system: Fix for timer reset bug
-
 var float savedStandingTimer;                                                   //RSD: For transferring the standingTimer between weapons (Sidearm perk)
 var travel float NanoVirusTimer;                                                //RSD: For deactivating augs from scrambler grenades
 var int NanoVirusTicks;                                                         //RSD: For stupid hack to display the client message
@@ -566,6 +545,13 @@ var travel bool bNoKeypadCheese;												//Sarge: Prevent using keycodes that
 var travel int augOrderNums[21];                                                //RSD: New aug can order for scrambling
 var const augBinary augOrderList[21];                                           //RSD: List of all aug cans in the game in order (to be scrambled)
 var travel bool bAddictionSystem;
+var travel AddictionSystem AddictionManager;
+
+const DRUG_TOBACCO = 0;
+const DRUG_ALCOHOL = 1;
+const DRUG_CRACK = 2;
+
+var travel DeusExWeapon lastMeleeWeapon;                                           //Sarge: Stores our last melee weapon, for use when left-click frobbing crates and other breakables
 
 //////////END GMDX
 
@@ -1092,6 +1078,17 @@ simulated function PostNetBeginPlay()
 	 ServerSetAutoReload( bAutoReload );
 }
 
+function SetupAddictionManager()
+{
+	// install the Addiction Manager if not found
+	if (AddictionManager == None)
+    {
+	    AddictionManager = new(Self) class'AddictionSystem';
+    }
+    AddictionManager.SetPlayer(Self);
+
+}
+
 // ----------------------------------------------------------------------
 // InitializeSubSystems()
 // ----------------------------------------------------------------------
@@ -1136,6 +1133,8 @@ function InitializeSubSystems()
 	  // Give the player a keyring
 	  CreateKeyRing();
 	}
+
+    SetupAddictionManager();
 }
 
 //SARGE: Helper function to get the count of an item type
@@ -1224,13 +1223,6 @@ function PreTravel()
 	if (inHand != none && inHand.IsA('DeusExWeapon'))
 		DeusExWeapon(inHand).LaserOff(true);                                    //RSD: Otherwise dots will remain on the map
     ForceDroneOff();                                                            //RSD: Since we can move on standby, shut drone off
-	for(i=0;i<ArrayCount(DrugsTimerArray);i++)                                  //RSD: Hack to keep drug timers from resetting from 0 for unknown reasons
-	{
-		if (DrugsTimerArray[i] == 0.0)
-			forceDrugZero[i] = 1;
-		else
-		    forceDrugZero[i] = 0;
-    }
     ConsoleCommand("set DeusExCarcass bRandomModFix" @ bRandomizeMods);         //RSD: Stupid config-level hack since PostBeginPlay() can't access player pawn in DeusExCarcass.uc
 }
 
@@ -1254,6 +1246,7 @@ event TravelPostAccept()
 
 	Super.TravelPostAccept();
 
+    SetupAddictionManager();
 
 	// reset the keyboard
 	ResetKeyboard();
@@ -1390,10 +1383,6 @@ event TravelPostAccept()
 
 	SetRocketWireControl();
 	//end GMDX
-
-	for(j=0;j<ArrayCount(DrugsTimerArray);j++)                                  //RSD: Hack to keep drug timers from resetting from 0 for unknown reasons
-		if (forceDrugZero[j] == 1)
-			DrugsTimerArray[j] = 0.0;
 
 	//bWasCrosshair=bCrosshairVisible;                                            //RSD: moved from PostBeginPlay() //RSD: Reverted, needs to use SaveConfigOverride value before using the set value
 
@@ -2450,120 +2439,7 @@ simulated function DrugEffects(float deltaTime)
 
 	//RSD: Management for new Addiction System follows
 	if (bAddictionSystem)
-	{
-	for (i=0;i<ArrayCount(DrugsTimerArray);i++)
-	{
-		if (DrugsTimerArray[i] > 0)
-		{
-        DrugsTimerArray[i] -= deltaTime;
-		if (DrugsTimerArray[i] <= 0.0)
-		{
-			DrugsTimerArray[i] = 0.0;
-			if (i == 2)
-				bZymeHealthCheck = true;                                        //RSD: optimization for zyme health manipulation
-			ClientMessage(Sprintf(MsgDrugWornOff,DrugLabels[i]));               //RSD: Tell the player the drug wore off
-		}
-		if (i == 1 && DrunkLevel > 0 && drugsTimerArray[i] < (DrunkLevel-1)*120)//RSD: hack to de-increment player health as they get less drunk
-		{
-        	skillMedLevel = SkillSystem.GetSkillLevel(class'SkillMedicine');
-        	DrunkLevel = int(DrugsTimerArray[1]/120.0+1.0);
-            HealthTorso=Min(HealthTorso/*+SkillMedLevel*10.0+5.0*DrunkLevel*/,100.0+(SkillMedLevel-DrugsWithdrawalArray[2])*10.0+5.0*DrunkLevel); //RSD just min healthtorso, right?
-            winHealth = PersonaScreenHealth(root.GetTopWindow());               //RSD: If health screen open, update max health bars
-            if (winHealth != none)
-            	winHealth.UpdateRegionsMaxHealth();
-            GenerateTotalHealth();
-		}
-		else if (i == 1 && drugsTimerArray[i] == 0.0)
-		{
-        	skillMedLevel = SkillSystem.GetSkillLevel(class'SkillMedicine');
-            DrunkLevel = 0;
-            HealthTorso=Min(HealthTorso/*+SkillMedLevel*10.0*/,100.0+(SkillMedLevel-DrugsWithdrawalArray[2])*10.0); //RSD just min healthtorso, right?
-            winHealth = PersonaScreenHealth(root.GetTopWindow());               //RSD: If health screen open, update max health bars
-            if (winHealth != none)
-            	winHealth.UpdateRegionsMaxHealth();
-            GenerateTotalHealth();
-		}
-		}
-		if (AddictionSubtractTimerArray[i] > 0)                                 //RSD: subtract addiction levels 60s after skill point acquisition (shhhh!)
-		{
-			AddictionSubtractTimerArray[i] -= deltaTime;
-			if (AddictionSubtractTimerArray[i] <= 0.0)
-			{
-				AddictionSubtractTimerArray[i] = 0.0;;
-				AddictionLevelsArray[i] -= AddictionToSubtractArray[i];
-				if (AddictionLevelsArray[i] <= 0.0)
-					AddictionLevelsArray[i] = 0.0;
-				AddictionToSubtractArray[i] = 0.0;
-			}
-		}
-		if (AddictionLevelsArray[i] >= AddictionThresholdsArray[i]) //&& DrugsWasWithdrawalArray[i] == 0) //RSD: If we've above the threshold and no drug active, turn on withdrawal symptoms
-        {
-            //RSD: Actually, first just make the player addicted, only activate withdrawal after a duration
-            DrugsAddictedArray[i] = 1;
-            if (DrugsWasAddictedArray[i] == 0)                                  //RSD: Tell the player they are addicted, but only once
-        	{
-        		ClientMessage(Sprintf(MsgAddicted,DrugLabels[i]));
-        		DrugsWasAddictedArray[i] = 1;
-      		}
-      		if (DrugsTimerArray[i] <= 0.0)
-      		{
-      		if (DrugsWithdrawalTimerArray[i] == 0 && DrugsWasWithdrawalArray[i] == 0) //RSD: If the drug just wore off, essentially
-      		{
-        		if (bHardCoreMode || bRestrictedMetabolism)
-        			DrugsWithdrawalTimerArray[i] = (0.5+(0.1*FRand()-0.1))*WithdrawalDurationArray[i];
-       			else
-                	DrugsWithdrawalTimerArray[i] = (1.0+(0.2*FRand()-0.2))*WithdrawalDurationArray[i];
-        		//BroadcastMessage(DrugsWithdrawalTimerArray[i]);
-       		}
-       		else
-       		{
-       			DrugsWithdrawalTimerArray[i] -= DeltaTime;
-       			if (DrugsWithdrawalTimerArray[i] < 0)
-       				DrugsWithdrawalTimerArray[i] = 0;
-       		}
-       		//BroadcastMessage(DrugsWithdrawalTimerArray[i]);
-       		if (DrugsWithdrawalTimerArray[i] == 0)
-       		{
-            	DrugsWithdrawalArray[i] = 1;
-        		if (DrugsWasWithdrawalArray[i] == 0)                            //RSD: Tell the player they're in withdrawal, but only once
-        		{
-        			PlaySound(Sound'GMDXSFX.Player.withdrawal_notice_loud',SLOT_None);
-                    ClientMessage(Sprintf(MsgWithdrawal,DrugLabels[i]));
-        			DrugsWasWithdrawalArray[i] = 1;
-       			}
-        		if (i == 2 && bZymeHealthCheck)                                 //RSD: hack to de-increment player health on zyme withdrawal
-        		{
-        			skillMedLevel = SkillSystem.GetSkillLevel(class'SkillMedicine');
-        			//DrunkLevel = int(DrugsTimerArray[1]/120.0+1.0);
-            		HealthTorso=Min(HealthTorso/*+SkillMedLevel*10.0+5.0*DrunkLevel*/,100.0+(SkillMedLevel-DrugsWithdrawalArray[2])*10.0+5.0*DrunkLevel); //RSD just min healthtorso, right?
-            		winHealth = PersonaScreenHealth(root.GetTopWindow());               //RSD: If health screen open, update max health bars
-            		if (winHealth != none)
-            			winHealth.UpdateRegionsMaxHealth();
-            		GenerateTotalHealth();
-            		bZymeHealthCheck = false;
-        		}
-        	}
-        	}
-       	}
-        else //if (AddictionLevelsArray[i] <= AddictionThresholdsArray[i])        //RSD: If we've below the threshold, turn off withdrawal symptoms
-        {                                                                       //    (above and drug active handled in Vice.uc)
-        	DrugsAddictedArray[i] = 0;
-            DrugsWithdrawalArray[i] = 0;
-            DrugsWithdrawalTimerArray[i] = 0;
-        	if (DrugsWasAddictedArray[i] == 1)                                  //RSD: Tell the player they are not addicted, but only once
-        	{
-        		ClientMessage(Sprintf(MsgNotAddicted,DrugLabels[i]));
-        		DrugsWasAddictedArray[i] = 0;
-       		}
-       		if (DrugsWasWithdrawalArray[i] == 1)
-            	DrugsWasWithdrawalArray[i] = 0;
-       	}
-	}
-	//BroadcastMessage(DrugsTimerArray[1]);
-	//BroadcastMessage(AddictionLevelsArray[1]);
-	//BroadcastMessage(DrugsWithdrawalArray[1]);
-	//BroadcastMessage(DrunkLevel);
-	}
+        AddictionManager.TickAddictions(deltaTime);
 }
 
 // ----------------------------------------------------------------------
@@ -4794,15 +4670,9 @@ function HealPartMedicalSkillDrunk(out int points, out int amt)
 {
 	local int spill;
 	local Skill sk;
-    local int DrunkAdd, ZymeSubtract;                                           //RSD: Now get bonus max torso health from drinking, penalty for zyme
-    if (DrugsTimerArray[1] > 0.0)
-        DrunkAdd = 5*int(DrugsTimerArray[1]/120.0+1.0);                         //RSD: Get 5 bonus health for every 2 min on timer
-    else
-        DrunkAdd = 0;
-    if (DrugsWithdrawalArray[2] == 1)                                           //RSD: 10 health penalty for zyme withdrawal
-        ZymeSubtract = 10;
-    else
-        ZymeSubtract = 0;
+    local int AddictionAdd;                                           //RSD: Now get bonus max torso health from drinking, penalty for zyme
+    
+    AddictionAdd = AddictionManager.GetTorsoHealthBonus();                         //RSD: Get 5 bonus health for every 2 min on timer
 	if (SkillSystem!=None)
 	{
 	  sk = SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine');
@@ -4810,9 +4680,9 @@ function HealPartMedicalSkillDrunk(out int points, out int amt)
 	  else
 	  {
 		 points += amt;
-		 spill = points - (100+sk.CurrentLevel*10+DrunkAdd-ZymeSubtract);
+		 spill = points - (100+sk.CurrentLevel*10+AddictionAdd);
 		 if (spill > 0)
-			points = (100+sk.CurrentLevel*10+DrunkAdd-ZymeSubtract);
+			points = (100+sk.CurrentLevel*10+AddictionAdd);
 		 else
 			spill = 0;
 		 amt = spill;
@@ -7127,6 +6997,125 @@ exec function ShowScores()
 	bShowScores = !bShowScores;
 }
 
+//Sarge: Because we can only inherit from one class,
+//we don't have proper OOP support, because all the Deus Ex objects
+//are inheriting off native unreal objects. So we need to do some
+//magic here to fix it all up.
+//This should probably be moved elsewhere
+function DoLeftFrob(Actor frobTarget)
+{
+    local bool bDefaultFrob;
+
+    //Use items from our hand
+    if (inHand != None)
+    {
+        DoFrob(Self, inHand);
+    }
+    else if (inHand == None)
+    {
+        if (frobTarget.isA('DeusExPickup'))
+            bDefaultFrob = DeusExPickup(frobTarget).DoLeftFrob(Self);
+        else if (frobTarget.isA('DeusExWeapon'))
+            bDefaultFrob = DeusExWeapon(frobTarget).DoLeftFrob(Self);
+        else if (frobTarget.isA('DeusExMover'))
+            bDefaultFrob = DeusExMover(frobTarget).DoLeftFrob(Self);
+        else if (frobTarget.isA('ElectronicDevices'))
+            bDefaultFrob = ElectronicDevices(frobTarget).DoLeftFrob(Self);
+        else if (frobTarget.isA('DeusExDecoration'))
+            bDefaultFrob = DeusExDecoration(frobTarget).DoLeftFrob(Self);
+    }
+
+    //Pick up and equip items by default
+    //This can't be done in Inventory classes. Ugh. I really wish we could access this class!
+    if (bDefaultFrob && frobTarget.IsA('Inventory'))
+    {
+        if (HandleItemPickup(FrobTarget, True))
+        { 
+            bLeftClicked = true;
+            FindInventorySlot(Inventory(FrobTarget));
+        }
+    }
+    
+    //By default, left click with an empty hand does nothing
+    else if (bDefaultFrob)
+    {
+    }
+}
+
+//Sarge: Because we can only inherit from one class,
+//we don't have proper OOP support, because all the Deus Ex objects
+//are inheriting off native unreal objects. So we need to do some
+//magic here to fix it all up.
+//This should probably be moved elsewhere
+function DoRightFrob(Actor frobTarget)
+{
+    local bool bDefaultFrob;
+    bDefaultFrob = true;
+
+    if (frobTarget.isA('DeusExPickup'))
+        bDefaultFrob = DeusExPickup(frobTarget).DoRightFrob(Self,inHand != None);
+    else if (frobTarget.isA('DeusExWeapon'))
+        bDefaultFrob = DeusExWeapon(frobTarget).DoRightFrob(Self,inHand != None);
+    else if (frobTarget.isA('DeusExMover'))
+        bDefaultFrob = DeusExMover(frobTarget).DoRightFrob(Self,inHand != None);
+    else if (frobTarget.isA('ElectronicDevices'))
+        bDefaultFrob = ElectronicDevices(frobTarget).DoRightFrob(Self,inHand != None);
+    else if (frobTarget.isA('DeusExDecoration'))
+        bDefaultFrob = DeusExDecoration(frobTarget).DoRightFrob(Self,inHand != None);
+
+    //Handle Inventory classes. Ugh. I really wish we could access this class!
+    if (bDefaultFrob && frobTarget.IsA('Inventory') && inHand == None)
+    {
+        if (HandleItemPickup(FrobTarget, True))
+            FindInventorySlot(Inventory(FrobTarget));
+    }
+    else if (bDefaultFrob)
+        DoFrob(Self, None);
+}
+
+//Sarge: Because we can only inherit from one class,
+//we don't have proper OOP support, because all the Deus Ex objects
+//are inheriting off native unreal objects. So we need to do some
+//magic here to fix it all up.
+//This should probably be moved elsewhere
+function DoItemPutAwayFunction(Inventory inv)
+{
+    /*
+    if (inv.isA('DeusExPickup'))
+        DeusExPickup(inv).PutAway(Self);
+    else if (inv.isA('DeusExWeapon'))
+        DeusExWeapon(inv).PutAway(Self);
+    else if (inv.isA('DeusExMover'))
+        DeusExMover(inv).PutAway(Self);
+    else if (inv.isA('ElectronicDevices'))
+        ElectronicDevices(inv).PutAway(Self);
+    else if (inv.isA('DeusExDecoration'))
+        DeusExDecoration(inv).PutAway(Self);
+    */
+}
+
+//Sarge: Because we can only inherit from one class,
+//we don't have proper OOP support, because all the Deus Ex objects
+//are inheriting off native unreal objects. So we need to do some
+//magic here to fix it all up.
+//This should probably be moved elsewhere
+function DoItemDrawFunction(Inventory inv)
+{
+    /*
+    if (inv.isA('DeusExPickup'))
+        DeusExPickup(inv).Draw(Self);
+    else*/ if (inv.isA('DeusExWeapon'))
+        DeusExWeapon(inv).Draw(Self);
+    /*else if (inv.isA('DeusExMover'))
+        DeusExMover(inv).Draw(Self);
+    else if (inv.isA('ElectronicDevices'))
+        ElectronicDevices(inv).Draw(Self);
+    else if (inv.isA('DeusExDecoration'))
+        DeusExDecoration(inv).Draw(Self);
+    */
+}
+
+
 // ----------------------------------------------------------------------
 // ParseLeftClick()
 // ----------------------------------------------------------------------
@@ -7145,76 +7134,65 @@ exec function ParseLeftClick()
 	// ParseLeftClick deals with things in your HAND
 	//
 	// Precedence:
+    // - Select aug in radial menu
 	// - Detonate spy drone
 	// - Fire (handled automatically by user.ini bindings)
 	// - Use inHand
 	//
 
-//log("ParseLeftClick");
 	if (RestrictInput())
 		return;
 
+    //Select current aug
 	if (bRadialAugMenuVisible) {
         RadialMenuToggleCurrentAug();
         return;
     }
-//log("ParseLeftClick1");
+
 	// if the spy drone augmentation is active, blow it up
 	if (bSpyDroneActive && !bSpyDroneSet && !bRadialAugMenuVisible)                                       //RSD: Allows the user to toggle between moving and controlling the drone, also added Lorenz's wheel
 	{
 		DroneExplode();
 		return;
 	}
+
+    //Blow up any GEP profectiles in flight
 	else if (bGEPprojectileInflight)
 	{
-	 if (aGEPProjectile!=none && aGEPProjectile.IsA('Rocket'))
-	 {
-	    if (aGEPProjectile.SoundPitch!=112)
-	    {
-           aGEPProjectile.MaxSpeed=1600.000000;
-           aGEPProjectile.speed=1600.000000;
-           aGEPProjectile.Velocity *= 2;
-           aGEPProjectile.SoundPitch=112;
-           PlaySound(sound'impboom2',SLOT_None);
-		}
-        return;
-	 }
+        if (aGEPProjectile!=none && aGEPProjectile.IsA('Rocket'))
+        {
+            if (aGEPProjectile.SoundPitch!=112)
+            {
+                aGEPProjectile.MaxSpeed=1600.000000;
+                aGEPProjectile.speed=1600.000000;
+                aGEPProjectile.Velocity *= 2;
+                aGEPProjectile.SoundPitch=112;
+                PlaySound(sound'impboom2',SLOT_None);
+            }
+            return;
+        }
 	}
 
     if (inHand != None)
        if (inHand.IsA('DeusExWeapon'))  //CyberP: cancel reloading - shotguns only
          if (DeusExWeapon(inHand).IsInState('Reload'))
              DeusExWeapon(inHand).bCancelLoading = True;
-//log("ParseLeftClick2");
-	if ((inHand != None) && !bInHandTransition &&(!inHand.IsA('POVcorpse')))
+	if (FrobTarget == none && inHand != None && !bInHandTransition && !inHand.IsA('POVcorpse'))
 	{
-//	log("ParseLeftClick3");
 		if (inHand.bActivatable)
 			inHand.Activate();
-		else if (FrobTarget != None)
-		{
-//		 log("ParseLeftClick4");
-			// special case for using keys or lockpicks on doors
-			if (FrobTarget.IsA('DeusExMover'))
-				if (inHand.IsA('NanoKeyRing') || inHand.IsA('Lockpick'))
-					DoFrob(Self, inHand);
-
-			// special case for using multitools on hackable things
-			if (FrobTarget.IsA('HackableDevices'))
-			{
-				if (inHand.IsA('Multitool'))
-				{
-					if (( Level.Netmode != NM_Standalone ) && (TeamDMGame(DXGame) != None) && FrobTarget.IsA('AutoTurretGun') && (AutoTurretGun(FrobTarget).team==PlayerReplicationInfo.team) )
-					{
-						MultiplayerNotifyMsg( MPMSG_TeamHackTurret );
-						return;
-					}
-					else
-						DoFrob(Self, inHand);
-				}
-			}
-		}
 	}
+    else if (FrobTarget != none && CarriedDecoration == None)
+    {
+        if (FrobTarget.IsA('DeusExAmmo'))
+        {
+            ClientMessage(noUsing);
+        }
+        else
+        {
+            DoLeftFrob(FrobTarget);
+        }
+    }
 	else
 	{
 	  if (AugmentationSystem != None)
@@ -7248,235 +7226,6 @@ exec function ParseLeftClick()
 		   }
 	   }
 	}
-	/*if (inHand == None && FrobTarget != none && FrobTarget.IsA('DeusExDecoration') && Decoration(FrobTarget).bPushable == False)
-    {
-    Decoration(FrobTarget).bPushable = True;
-    GrabDecoration();
-    } */ //CyberP: this allowed us to pick up objects like datacubes, lamps. vending machines and such, but it is not worth the effort.
-    if (inHand == None && FrobTarget != none && FrobTarget.IsA('DeusExPickup'))
-    {
-      /*if (FrobTarget.IsA('Sodacan'))                                          //RSD: Greatly simplifying all of this code
-      {
-      if (fullUp >= 100)
-      {ClientMessage(fatty); return;}
-       HealPlayer(2, False);
-       PlaySound(sound'MaleBurp');
-       fullUp+=4;
-       DeusExPickup(FrobTarget).Destroy();
-      }
-      else if (FrobTarget.IsA('SoyFood'))
-      {
-      if (fullUp >= 100)
-      {ClientMessage(fatty); return;}
-       HealPlayer(5, False);
-       PlaySound(sound'EatingChips',SLOT_None,3.0);                                                                          j
-       fullUp+=8;
-       DeusExPickup(FrobTarget).Destroy();
-      }
-      else if (FrobTarget.IsA('Candybar'))
-      {
-      if (fullUp >= 100)
-      {ClientMessage(fatty); return;}
-       HealPlayer(3, False);
-       PlaySound(sound'CandyEat',SLOT_None,2);
-       ClientMessage(CandyBar(FrobTarget).bioboost);
-       Energy += 3;
-       if (Energy > EnergyMax)
-	      Energy = EnergyMax;
-       fullUp+=6;
-       DeusExPickup(FrobTarget).Destroy();
-      }
-      else if (FrobTarget.IsA('Flare'))
-      {
-       Flare(FrobTarget).bLClicked = true;
-       Flare(FrobTarget).LightFlare();
-      }
-      else if (FrobTarget.IsA('FireExtinguisher'))
-      {
-       if (FireExtinguisher(FrobTarget).bAltActivate==False)
-       {
-       FireExtinguisher(FrobTarget).bAltActivate=True;
-       FireExtinguisher(FrobTarget).Activate();
-       }
-      }
-      else if (FrobTarget.IsA('WineBottle'))
-      {
-      if (fullUp >= 100)
-      {ClientMessage(fatty); return;}
-       HealPlayer(2, False);
-	   drugEffectTimer += 5.0;
-	   PlaySound(sound'drinkwine',SLOT_None);
-	   fullUp+=4;
-       DeusExPickup(FrobTarget).Destroy();
-      }
-      else if (FrobTarget.IsA('Liquor40oz'))
-      {
-      if (fullUp >= 100)
-      {ClientMessage(fatty); return;}
-       HealPlayer(2, False);
-	   drugEffectTimer += 7.0;
-	   PlaySound(sound'drinkwine',SLOT_None);
-	   fullUp+=4;
-       DeusExPickup(FrobTarget).Destroy();
-      }
-      else if (FrobTarget.IsA('LiquorBottle'))
-      {
-      if (fullUp >= 100)
-      {ClientMessage(fatty); return;}
-       HealPlayer(2, False);
-	   drugEffectTimer += 4.0;
-	   PlaySound(sound'drinkwine',SLOT_None);
-	   fullUp+=4;
-       DeusExPickup(FrobTarget).Destroy();
-      }
-      else if (FrobTarget.IsA('VialCrack'))
-      {
-      if (fullUp >= 100)
-      {ClientMessage(fatty); return;}
-       HealPlayer(-10, False);
-	   drugEffectTimer += 60.0;
-	   bHardDrug = True;
-	   fullUp+=1;
-       DeusExPickup(FrobTarget).Destroy();
-      }
-      else if (FrobTarget.IsA('Medkit'))
-      {
-       HealPlayer(30, True);
-       PlaySound(sound'MedicalHiss', SLOT_None,,, 256);
-       ClientFlash(4,vect(0,0,200));
-       DeusExPickup(FrobTarget).Destroy();
-      }
-      else if (FrobTarget.IsA('BioelectricCell'))
-      {
-       PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
-       if (PerkNamesArray[8]==1)
-		    BioelectricCell(FrobTarget).rechargeAmount=25;
-	   ClientMessage(Sprintf(BioelectricCell(FrobTarget).msgRecharged, BioelectricCell(FrobTarget).rechargeAmount));
-       Energy += BioelectricCell(FrobTarget).rechargeAmount; //25;
-			if (Energy > EnergyMax)
-				Energy = EnergyMax;
-	   DeusExPickup(FrobTarget).Destroy();
-      }
-      else if (FrobTarget.IsA('Cigarettes'))
-      {
-       Cigarettes(FrobTarget).bDontUse = True;
-       Cigarettes(FrobTarget).GoToState('Activated');
-      }
-      else if (FrobTarget.Is4A('SkilledTool') || FrobTarget.IsA('ChargedPickup') || FrobTarget.IsA('AugmentationCannisterOverdrive') || FrobTarget.IsA('WeaponMod') ||
-      FrobTarget.IsA('AugmentationUpgradeCannister') || FrobTarget.IsA('AugmentationCannister') || FrobTarget.IsA('Binoculars'))
-      {
-      bLeftClicked = True;
-      ParseRightClick();
-      }
-      else
-      ClientMessage(noUsing);*/
-      if (FrobTarget.IsA('SoyFood') || FrobTarget.IsA('Candybar') || FrobTarget.IsA('Sodacan'))
-      {
-        if (fullUp >= 100 && (bHardCoreMode || bRestrictedMetabolism))          //RSD: Best to check here first, otherwise objects can become unfrobbable
-        {
-          ClientMessage(fatty);
-          return;
-        }
-        else
-          FrobTarget.GotoState('Activated');
-      }
-      else if ((FrobTarget.IsA('Vice') && !FrobTarget.IsA('Cigarette')))
-      {
-        /*if (fullUp >= 100 && (bHardCoreMode || bRestrictedMetabolism))          //RSD: Best to check here first, otherwise objects can become unfrobbable
-        {
-          ClientMessage(fatty);
-          return;
-        }
-        else*/                                                                   //RSD: Removed food limits for dugs
-          FrobTarget.GotoState('Activated');
-      }
-      else if (FrobTarget.IsA('Cigarette'))
-      {
-        Cigarettes(FrobTarget).bDontUse = True;
-        FrobTarget.GotoState('Activated');
-      }
-      else if (FrobTarget.IsA('Medkit') || FrobTarget.IsA('Bioelectriccell') || FrobTarget.IsA('VialAmbrosia'))
-      {
-        FrobTarget.GotoState('Activated');
-      }
-      else if (FrobTarget.IsA('Flare'))
-      {
-       Flare(FrobTarget).bLClicked = true;
-       Flare(FrobTarget).LightFlare();
-      }
-      else if (FrobTarget.IsA('FireExtinguisher'))
-      {
-       if (FireExtinguisher(FrobTarget).bAltActivate==False)
-       {
-       FireExtinguisher(FrobTarget).bAltActivate=True;
-       FireExtinguisher(FrobTarget).Activate();
-       }
-      }
-      else if (FrobTarget.IsA('SkilledTool') || FrobTarget.IsA('ChargedPickup') || FrobTarget.IsA('AugmentationCannisterOverdrive') || FrobTarget.IsA('WeaponMod') ||
-      FrobTarget.IsA('AugmentationUpgradeCannister') || FrobTarget.IsA('AugmentationCannister') || FrobTarget.IsA('Binoculars'))
-      {
-      bLeftClicked = True;
-      ParseRightClick();
-      }
-      else
-      ClientMessage(noUsing);
-    }
-    else if (inHand == None && FrobTarget != none && FrobTarget.IsA('DeusExWeapon'))
-    {
-    bLeftClicked = True;
-    ParseRightClick();
-    }
-    else if (inHand == None && FrobTarget != none && FrobTarget.IsA('DeusExAmmo'))
-    {
-    ClientMessage(noUsing);
-    }
-    else if (inHand == None && CarriedDecoration == None && FrobTarget != None && FrobTarget.IsA('DeusExMover'))
-    {
-      if (DeusExMover(FrobTarget).bLocked)
-      {
-        //Sarge: Move NanoKeyring check to work based on whether or not we have the key.
-        //Rather than always selecting a lockpick if we have one and always selecting the nanokey if we don't
-        if (KeyRing.HasKey(DeusExMover(FrobTarget).KeyIDNeeded))
-                PutInHand(KeyRing);
-        else
-        {
-            item = Inventory;
-            while (item != None)
-            {
-                if (item.IsA('Lockpick') && DeusExMover(FrobTarget).bPickable)
-                {
-                    if (DeusExMover(FrobTarget).bPickable==True)
-                    {
-                        PutInHand(item);
-                        break;
-                    }
-                }
-                item = item.Inventory;
-            }
-        }
-      }
-    }
-    else if (inHand == None && CarriedDecoration == None && FrobTarget != None && FrobTarget.IsA('HackableDevices'))
-    {
-       for(item = Inventory; item != None; item = nextItem)
-	   {
-		nextItem = item.Inventory;
-		    if (item.IsA('Multitool'))
-		    {
-		        PutInHand(item);
-		        break;
-		    }
-	    	else if (nextItem.IsA('Multitool') || nextItem.IsA('NanoKeyRing'))
-	    	{
-	    	   if (nextItem.IsA('Multitool'))
-	    	      PutInHand(nextItem);
-	    	   else
-               {
-               }
-   	        break;
-	    	}
-       }
-    }
 }
 
 // ----------------------------------------------------------------------
@@ -7501,6 +7250,8 @@ exec function ParseRightClick()
 	// ParseRightClick deals with things in the WORLD
 	//
 	// Precedence:
+    // - Unscope/Unzoom currently held object
+    // - Park Spy Drone
 	// - Pickup highlighted Inventory
 	// - Frob highlighted object
 	// - Grab highlighted Decoration
@@ -7520,6 +7271,7 @@ exec function ParseRightClick()
     if (RestrictInput())
 		return;
 
+    //Descope if we have binocs/scope
     if (inHand != None)
     {
         if (inHand.IsA('DeusExWeapon') && DeusExWeapon(inhand).bZoomed)
@@ -7533,9 +7285,11 @@ exec function ParseRightClick()
             return;
         }
     }
+
+    //Park spy drone
     if (bSpyDroneActive && !bSpyDroneSet)                                       //RSD: Allows the user to toggle between moving and controlling the drone
 	{
-	/*if (aDrone != none)
+	    /*if (aDrone != none)
 		aDrone.AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 768);
 		if (FRand() < 0.25)
         PlaySound(sound'CatDie');
@@ -7556,6 +7310,7 @@ exec function ParseRightClick()
 		}
         return;
 	}
+
 	oldFirstItem = Inventory;
 	oldInHand = inHand;
 	oldCarriedDecoration = CarriedDecoration;
@@ -7565,106 +7320,50 @@ exec function ParseRightClick()
 
 	if (FrobTarget != None)
 	{
-		// First check if this is a NanoKey, in which case we just
-		// want to add it to the NanoKeyRing without disrupting
-		// what the player is holding
-		if (FrobTarget.IsA('NanoKey'))
-		{
-			PickupNanoKey(NanoKey(FrobTarget));
-			FrobTarget.Destroy();
-			FrobTarget = None;
-			return;
-		}
-		else if (FrobTarget.IsA('Inventory'))
-		{
-			// If this is an item that can be stacked, check to see if
-			// we already have one, in which case we don't need to
-			// allocate more space in the inventory grid.
-			//
-			// TODO: This logic may have to get more involved if/when
-			// we start allowing other types of objects to get stacked.
-
-            if (PerkNamesArray[30]==1)
+        //SARGE: I really should add this to the proper OOP setup, but I just don't care.
+        //We don't care about MP, so will omit it for now
+        if (( Level.NetMode != NM_Standalone ) && ( TeamDMGame(DXGame) != None ))
+        {
+            if ( FrobTarget.IsA('LAM') || FrobTarget.IsA('GasGrenade') || FrobTarget.IsA('EMPGrenade'))
             {
-                if (FrobTarget.IsA('BioelectricCell'))
-                BioelectricCell(FrobTarget).MaxCopies=25;
-                else if (FrobTarget.IsA('Medkit'))
-                Medkit(FrobTarget).MaxCopies=20;
+                if ((ThrownProjectile(FrobTarget).team == PlayerReplicationInfo.team) && ( ThrownProjectile(FrobTarget).Owner != Self ))
+                {
+                    if ( ThrownProjectile(FrobTarget).bDisabled )		// You can re-enable a grenade for a teammate
+                    {
+                        ThrownProjectile(FrobTarget).ReEnable();
+                        return;
+                    }
+                    MultiplayerNotifyMsg( MPMSG_TeamLAM );
+                    return;
+                }
             }
-
-			if (HandleItemPickup(FrobTarget, True) == False)
-				return;
-
-			// if the frob succeeded, put it in the player's inventory
-		 //DEUS_EX AMSD ARGH! Because of the way respawning works, the item I pick up
-		 //is NOT the same as the frobtarget if I do a pickup.  So how do I tell that
-		 //I've successfully picked it up?  Well, if the first item in my inventory
-		 //changed, I picked up a new item.
-			if ( ((Level.NetMode == NM_Standalone) && (Inventory(FrobTarget).Owner == Self)) ||
-			  ((Level.NetMode != NM_Standalone) && (oldFirstItem != Inventory)) )
-			{
-			if (Level.NetMode == NM_Standalone)
-			   FindInventorySlot(Inventory(FrobTarget));
-			else
-			   FindInventorySlot(Inventory);
-				FrobTarget = None;
-			}
-		}
-		else if (FrobTarget.IsA('Decoration') && Decoration(FrobTarget).bPushable)
-		{
-		    if (swimTimer <= 1)
-		    {
-		    }
-		    else
-		    {
-			GrabDecoration();
-			}
-		}
-		else
-		{
-			if (( Level.NetMode != NM_Standalone ) && ( TeamDMGame(DXGame) != None ))
-			{
-				if ( FrobTarget.IsA('LAM') || FrobTarget.IsA('GasGrenade') || FrobTarget.IsA('EMPGrenade'))
-				{
-					if ((ThrownProjectile(FrobTarget).team == PlayerReplicationInfo.team) && ( ThrownProjectile(FrobTarget).Owner != Self ))
-					{
-						if ( ThrownProjectile(FrobTarget).bDisabled )		// You can re-enable a grenade for a teammate
-						{
-							ThrownProjectile(FrobTarget).ReEnable();
-							return;
-						}
-						MultiplayerNotifyMsg( MPMSG_TeamLAM );
-						return;
-					}
-				}
-				if ( FrobTarget.IsA('ComputerSecurity') && (PlayerReplicationInfo.team == ComputerSecurity(FrobTarget).team) )
-				{
-					// Let controlling player re-hack his/her own computer
-					bPlayerOwnsIt = False;
-					foreach AllActors(class'AutoTurret',turret)
-					{
-						for (ViewIndex = 0; ViewIndex < ArrayCount(ComputerSecurity(FrobTarget).Views); ViewIndex++)
-						{
-							if (ComputerSecurity(FrobTarget).Views[ViewIndex].turretTag == turret.Tag)
-							{
-								if (( turret.safeTarget == Self ) || ( turret.savedTarget == Self ))
-								{
-									bPlayerOwnsIt = True;
-									break;
-								}
-							}
-						}
-					}
-					if ( !bPlayerOwnsIt )
-					{
-						MultiplayerNotifyMsg( MPMSG_TeamComputer );
-						return;
-					}
-				}
-			}
-			// otherwise, just frob it
-			DoFrob(Self, None);
-		}
+            if ( FrobTarget.IsA('ComputerSecurity') && (PlayerReplicationInfo.team == ComputerSecurity(FrobTarget).team) )
+            {
+                // Let controlling player re-hack his/her own computer
+                bPlayerOwnsIt = False;
+                foreach AllActors(class'AutoTurret',turret)
+                {
+                    for (ViewIndex = 0; ViewIndex < ArrayCount(ComputerSecurity(FrobTarget).Views); ViewIndex++)
+                    {
+                        if (ComputerSecurity(FrobTarget).Views[ViewIndex].turretTag == turret.Tag)
+                        {
+                            if (( turret.safeTarget == Self ) || ( turret.savedTarget == Self ))
+                            {
+                                bPlayerOwnsIt = True;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if ( !bPlayerOwnsIt )
+                {
+                    MultiplayerNotifyMsg( MPMSG_TeamComputer );
+                    return;
+                }
+            }
+        }
+		// otherwise, just frob it
+		DoRightFrob(FrobTarget);
 	}
 	else
 	{
@@ -8052,7 +7751,6 @@ exec function PutInHand(optional Inventory inv)
 		if (Binoculars(assignedWeapon).bActive)
             assignedWeapon.GotoState('DeActivated');
     SetInHandPending(inv);
-    NewWeaponSelected();                                                        //Sarge: Set new weapon selection variables for belt control
 
     if (inv.isA('NanoKeyRing'))
         bUsedKeyringLast = true;
@@ -8101,6 +7799,11 @@ function UpdateAmmoBeltText(Ammo ammo)
 function SetInHand(Inventory newInHand)
 {
 	local DeusExRootWindow root;
+    
+    //Sarge: Call weapon putaway/draw functions and reset belt variables
+    DoItemPutAwayFunction(inHand);
+    DoItemDrawFunction(newInHand);
+    NewWeaponSelected();
 
 	inHand = newInHand;
 
@@ -8562,8 +8265,8 @@ function Bool FindInventorySlot(Inventory anItem, optional Bool bSearchOnly)
 		PlaceItemInSlot(anItem, col, row);
 		if (bLeftClicked && inHand == None)
 		{
-		PutInHand(anItem); //CyberP: left click interaction
-		bLeftClicked = False;
+            PutInHand(anItem); //CyberP: left click interaction
+            bLeftClicked = False;
 		}
 	}
 
@@ -12972,15 +12675,7 @@ function GenerateTotalHealth()
 	//RSD: Fix max health calculation from Medicine skill, alcohol buff, zyme debuff
 	local Skill sk;
 	local float MedSkillAdd, headMult, torsoMult;
-	local int DrunkAdd, ZymeSubtract;                                           //RSD: Now get bonus max torso health from drinking, penalty for zyme
-    if (DrugsTimerArray[1] > 0.0)
-        DrunkAdd = 5*int(DrugsTimerArray[1]/120.0+1.0);                         //RSD: Get 5 bonus health for every 2 min on timer
-    else
-        DrunkAdd = 0;
-    if (DrugsWithdrawalArray[2] == 1)                                           //RSD: 10 health penalty for zyme withdrawal
-        ZymeSubtract = 10;
-    else
-        ZymeSubtract = 0;
+
     MedSkillAdd = 0.0;
 	if (SkillSystem!=None)
 	{
@@ -12988,7 +12683,8 @@ function GenerateTotalHealth()
 	  if (sk!=None) MedSkillAdd=sk.CurrentLevel*10;
 	}
     headMult = default.HealthHead/(default.HealthHead+MedSkillAdd);
-    torsoMult = default.HealthTorso/(default.HealthTorso+MedSkillAdd+DrunkAdd-ZymeSubtract);
+    //SARGE: Instead of adding Zyme and Brunkenness manually, we now just call into the AddictionSystem's health boost function
+    torsoMult = default.HealthTorso/(default.HealthTorso+MedSkillAdd+AddictionManager.GetTorsoHealthBonus());
 
 	ave = (HealthLegLeft + HealthLegRight + HealthArmLeft + HealthArmRight) / 4.0;
 
@@ -13009,31 +12705,28 @@ function int GenerateTotalMaxHealth()                                           
 	//RSD: Fix max health calculation from Medicine skill, alcohol buff, zyme debuff
 	local Skill sk;
 	local float MedSkillAdd, headMult, torsoMult;
-	local int DrunkAdd, ZymeSubtract;                                           //RSD: Now get bonus max torso health from drinking, penalty for zyme
+	local int AddictionAdd;                                           //RSD: Now get bonus max torso health from drinking, penalty for zyme
 	local int maxHealth;
-    if (DrugsTimerArray[1] > 0.0)
-        DrunkAdd = 5*int(DrugsTimerArray[1]/120.0+1.0);                         //RSD: Get 5 bonus health for every 2 min on timer
-    else
-        DrunkAdd = 0;
-    if (DrugsWithdrawalArray[2] == 1)                                           //RSD: 10 health penalty for zyme withdrawal
-        ZymeSubtract = 10;
-    else
-        ZymeSubtract = 0;
+    
+    AddictionAdd = AddictionManager.GetTorsoHealthBonus();                         //RSD: Get 5 bonus health for every 2 min on timer
+
     MedSkillAdd = 0.0;
 	if (SkillSystem!=None)
 	{
 	  sk = SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine');
 	  if (sk!=None) MedSkillAdd=sk.CurrentLevel*10;
 	}
+
+    //SARGE: Was this intentionally commented out????
     //headMult = default.HealthHead/(default.HealthHead+MedSkillAdd);
-    //torsoMult = default.HealthTorso/(default.HealthTorso+MedSkillAdd+DrunkAdd-ZymeSubtract);
+    //torsoMult = default.HealthTorso/(default.HealthTorso+MedSkillAdd+AddictionAdd);
 
 	ave = (default.HealthLegLeft + default.HealthLegRight + default.HealthArmLeft + default.HealthArmRight) / 4.0;
 
 	if ((default.HealthHead <= 0) || (default.HealthTorso <= 0))
 		avecrit = 0;
 	else
-		avecrit = (default.HealthHead + default.HealthTorso) / 2.0; //RSD: Added mults
+		avecrit = (default.HealthHead + default.HealthTorso) / 2.0; //RSD: Added mults //SARGE: Was this intentionally not using mults, or did I break something??
 
 	if (avecrit == 0)
 		maxHealth = 0;
@@ -14500,12 +14193,9 @@ function SkillPointsAdd(int numPoints)
 		}
 	}
 
-    for (i=0;i<ArrayCount(DrugsTimerArray);i++)                                 //RSD: Subtracts 1% of skill points acquired from addiction levels
-	{
-		//AddictionLevelsArray[i] -= 0.01*float(numPoints);
-		AddictionToSubtractArray[i] += 0.01*float(numPoints);                   //RSD: Does it on a delay to hide that it's related to skill point acquisition
-		AddictionSubtractTimerArray[i] = 60.0;                                  //RSD: 60s timer, refreshes every skill point acquisition and dumps all accumulation at once
-	}
+    //RSD: Subtracts 1% of skill points acquired from addiction levels
+    AddictionManager.RemoveAddictions(0.01*float(numPoints),60.0);
+
 	//if (bHardCoreMode)                                                          //RSD: Also subtract 1% of skill points acquired from hunger level
 	//{                                                                         //RSD: Since we now have a menu option, always de-increment hunger and check option elsewhere
     	fullUp -= 0.01*float(numPoints);
@@ -15196,15 +14886,8 @@ function RestoreAllHealth()
 	local int spill;
 	local Skill sk;
 	local float MedSkillAdd;
-	local int DrunkAdd, ZymeSubtract;                                           //RSD: Now get bonus max torso health from drinking, penalty for zyme
-    if (DrugsTimerArray[1] > 0.0)
-        DrunkAdd = 5*int(DrugsTimerArray[1]/120.0+1.0);                         //RSD: Get 5 bonus health for every 2 min on timer
-    else
-        DrunkAdd = 0;
-    if (DrugsWithdrawalArray[2] == 1)                                           //RSD: 10 health penalty for zyme withdrawal
-        ZymeSubtract = 10;
-    else
-        ZymeSubtract = 0;
+	local int AddictionAdd;                                           //RSD: Now get bonus max torso health from drinking, penalty for zyme
+    AddictionAdd = AddictionManager.GetTorsoHealthBonus();
     MedSkillAdd = 0.0;
 	if (SkillSystem!=None)
 	{
@@ -15212,7 +14895,7 @@ function RestoreAllHealth()
 	  if (sk!=None) MedSkillAdd=sk.CurrentLevel*10;
 	}
 	HealthHead = default.HealthHead+MedSkillAdd;
-	HealthTorso = default.HealthTorso+MedSkillAdd+DrunkAdd-ZymeSubtract;        //RSD: Added drunk, zyme
+	HealthTorso = default.HealthTorso+MedSkillAdd+AddictionAdd;        //RSD: Added drunk, zyme
 	HealthLegLeft = default.HealthLegLeft;
 	HealthLegRight = default.HealthLegRight;
 	HealthArmLeft = default.HealthArmLeft;
@@ -16946,9 +16629,9 @@ function RegenStaminaTick(float deltaTime)                                      
 	//RSD: base regen now 2.0, now properly multiplied with additive increases/decreases
 	if (PerkNamesArray[27] == 1)                                                //RSD: endurance perk adds x2
 		mult += 1.0;
-	if (drugsWithdrawalArray[0] == 1)                                           //RSD: if suffering from nicotine withdrawal, subtract x0.5
+	if (AddictionManager.addictions[DRUG_TOBACCO].bInWithdrawals == true)                                           //RSD: if suffering from nicotine withdrawal, subtract x0.5
 		mult -= 0.5;
-	if (DrugsTimerArray[2] > 0)                                                 //RSD: Zyme adds x2
+	if (AddictionManager.addictions[DRUG_TOBACCO].drugTimer > 0)                                                 //RSD: Zyme adds x2
 		mult += 1.0;
 
 	swimTimer += 5.0*mult*deltaTime;
@@ -17109,19 +16792,6 @@ defaultproperties
      RecoilSimLimit=(X=7.000000,Y=16.000000,Z=7.000000)
      RecoilDrain=0.950000
      RecoilTime=0.140000
-     AddictionThresholdsArray(0)=50.000000
-     AddictionThresholdsArray(1)=50.000000
-     AddictionThresholdsArray(2)=50.000000
-     WithdrawalDurationArray(0)=1200.000000
-     WithdrawalDurationArray(1)=1800.000000
-     WithdrawalDurationArray(2)=600.000000
-     MsgWithdrawal="You are now suffering from %s withdrawal"
-     MsgAddicted="You are now addicted to %s"
-     MsgNotAddicted="You are no longer addicted to %s"
-     MsgDrugWornOff="%s has worn off"
-     drugLabels(0)="Nicotine"
-     drugLabels(1)="Alcohol"
-     drugLabels(2)="Zyme"
      NanoVirusLabel="Augmentation system scrambled for %d seconds"
      augOrderList(0)=(aug1=AugMuscle,aug2=AugCombat)
      augOrderList(1)=(aug1=AugAqualung,aug2=AugEnviro)

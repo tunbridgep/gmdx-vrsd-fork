@@ -60,6 +60,43 @@ var bool                bPerkApplied;
 var float               frobGate;                    //CyberP: to prevent NPCs constantly closing doors that have just been opened
 var ScriptedPawn        ChosenPawn;                 //CyberP: used by AI to determine wether they should open doors in the newly elaborated post-combat seeking sub-state
 
+
+
+//SARGE: Added "Left Click Frob" and "Right Click Frob" support
+//Return true to use the default frobbing mechanism (right click), or false for custom behaviour
+function bool DoLeftFrob(DeusExPlayer frobber)
+{
+    local Inventory item;
+    
+    //Sarge: Move NanoKeyring check to work based on whether or not we have the key.
+    //Rather than always selecting a lockpick if we have one and always selecting the nanokey if we don't
+    if (frobber.KeyRing.HasKey(KeyIDNeeded) && bLocked)
+    {
+        frobber.PutInHand(frobber.KeyRing);
+        return false;
+    }
+    else if (bPickable && bLocked)
+    {
+        item = frobber.Inventory;
+        while (item != None)
+        {
+            if (item.IsA('Lockpick'))
+            {
+                frobber.PutInHand(item);
+                return false;
+            }
+            item = item.Inventory;
+        }
+    }
+    return true;
+}
+function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
+{
+    return true;
+}
+
+
+
 function PostBeginPlay()
 {
 	Super.PostBeginPlay();

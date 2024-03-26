@@ -1,54 +1,16 @@
 //=============================================================================
 // SoyFood.
 //=============================================================================
-class SoyFood extends DeusExPickup;
+class SoyFood extends RSDEdible;
 
-var bool bEat;
-
-function Timer()
-	{
-	bEat=True;
-	}
-
-state Activated
+function Eat(DeusExPlayer player)
 {
-	function Activate()
-	{
-		// can't turn it off
-	}
-
-	function BeginState()
-	{
-		local DeusExPlayer player;
-
-		Super.BeginState();
-
-		player = DeusExPlayer(GetPlayerPawn());
-
-		if (player != none && player.fullUp >= 100 && (player.bHardCoreMode || player.bRestrictedMetabolism)) //RSD: Added option stuff
-		{
-		GotoState('Deactivated');                                               //RSD: Otherwise we try to activate again on map transition
-		player.ClientMessage(player.fatty);
-		return;
-		}
-
-		if (player != None)
-			player.HealPlayer(5, False);
-
-		UseOnce();
-		if (bEat)
-		{
-		PlaySound(sound'EatingChips',SLOT_None,3.0);
-		bEat = False;
-		SetTimer(3.0,false);
-		}
-	}
-Begin:
+    player.HealPlayer(5, False);
+	PlaySound(sound'EatingChips',SLOT_None,3.0);
 }
 
 defaultproperties
 {
-     bEat=True
      bBreakable=True
      FragType=Class'DeusEx.PaperFragment'
      maxCopies=10

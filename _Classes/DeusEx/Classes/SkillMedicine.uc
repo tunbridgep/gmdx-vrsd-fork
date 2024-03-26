@@ -34,15 +34,9 @@ simulated function PreBeginPlay()
 function bool IncLevel(optional DeusExPlayer usePlayer)
 {
 	local DeusExPlayer localPlayer;
-    local int DrunkAdd, ZymeSubtract;                                           //RSD: Now get bonus max health from drinking, penalty for zyme
-    if (player.DrugsTimerArray[1] > 0.0)
-        DrunkAdd = 5*int(player.DrugsTimerArray[1]/120.0+1.0);                  //RSD: Get 5 bonus health for every 2 min on timer
-    else
-        DrunkAdd = 0;
-    if (player.DrugsWithdrawalArray[2] == 1)                                    //RSD: 10 health penalty for zyme withdrawal
-        ZymeSubtract = 10;
-    else
-        ZymeSubtract = 0;
+    local int AddictionAdd;                                           //RSD: Now get bonus max health from drinking, penalty for zyme
+    
+    AddictionAdd = player.AddictionManager.GetTorsoHealthBonus();                  //RSD: Get 5 bonus health for every 2 min on timer
 	// First make sure we're not maxed out
 	if (CurrentLevel < 3)
 	{
@@ -67,8 +61,8 @@ function bool IncLevel(optional DeusExPlayer usePlayer)
 				//GMDX !HACK give extra health to player
 				localPlayer.PlaySound(Sound'GMDXSFX.Generic.Select',SLOT_None);
 				localPlayer.HealthHead=Min(localPlayer.HealthHead+CurrentLevel*10.0,100.0+CurrentLevel*10.0);
-				localPlayer.HealthTorso=Min(localPlayer.HealthTorso+CurrentLevel*10.0+DrunkAdd,100.0+CurrentLevel*10.0+DrunkAdd-ZymeSubtract); //RSD: Added drunk, zyme
-            localPlayer.GenerateTotalHealth();
+				localPlayer.HealthTorso=Min(localPlayer.HealthTorso+CurrentLevel*10.0+AddictionAdd,100.0+CurrentLevel*10.0+AddictionAdd); //RSD: Added drunk, zyme
+                localPlayer.GenerateTotalHealth();
 				return True;
 			}
 		}
@@ -77,7 +71,7 @@ function bool IncLevel(optional DeusExPlayer usePlayer)
 			CurrentLevel++;
 			//GMDX !HACK
 			localPlayer.HealthHead=Min(localPlayer.HealthHead+CurrentLevel*10.0,100.0+CurrentLevel*10.0);
-			localPlayer.HealthTorso=Min(localPlayer.HealthTorso+CurrentLevel*10.0+DrunkAdd,100.0+CurrentLevel*10.0+DrunkAdd-ZymeSubtract); //RSD: Added drunk, zyme
+			localPlayer.HealthTorso=Min(localPlayer.HealthTorso+CurrentLevel*10.0+AddictionAdd,100.0+CurrentLevel*10.0+AddictionAdd); //RSD: Added drunk, zyme
 	      localPlayer.GenerateTotalHealth();
 			return True;
 		}
