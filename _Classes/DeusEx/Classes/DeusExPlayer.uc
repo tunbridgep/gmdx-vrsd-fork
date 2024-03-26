@@ -7285,6 +7285,7 @@ function NewWeaponSelected()
     bNumberSelect = false;
     bScrollSelect = false;
     bUsedKeyringLast = false;
+    clickCountCyber = 0;
 }
 
 // ----------------------------------------------------------------------
@@ -7430,7 +7431,7 @@ exec function ParseRightClick()
 			if (root != None && root.hud != None)
 			{
 				root.ActivateObjectInBelt(advBelt);
-                //NewWeaponSelected();
+                NewWeaponSelected();
 			}
 			
 		}
@@ -7451,13 +7452,13 @@ exec function ParseRightClick()
 			}
 			else
 				PutInHand(None);
-            //NewWeaponSelected();
+            NewWeaponSelected();
 		}
 		else
 		{
             SetTimer(0.3,false);
             bDoubleClickCheck=True;
-            clickCountCyber++;
+            clickCountCyber=1;
         }
 	}
 
@@ -10420,7 +10421,7 @@ exec function ActivateBelt(int objectNum)
 		
 			root.ActivateObjectInBelt(objectNum);
 			BeltLast = objectNum;
-            //NewWeaponSelected();
+            NewWeaponSelected();
 			bNumberSelect = true;
 		}
 	}
@@ -10535,7 +10536,7 @@ exec function NextBeltItem()
 			}
 			until (root.hud.belt.GetObjectFromBelt(advBelt) != None || tries == 10);
 			root.hud.belt.RefreshAlternateToolbelt();
-            //NewWeaponSelected();
+            NewWeaponSelected();
 			bScrollSelect = true;
 			clientInHandPending = root.hud.belt.GetObjectFromBelt(advBelt);
 		}
@@ -14008,6 +14009,12 @@ function Timer()      //CyberP: my god I've turned this into a mess.
 
     if (bBoosterUpgrade && !HeadRegion.Zone.bWaterZone)
         AugmentationSystem.AutoAugs(true,false);
+    
+    if (bDoubleClickCheck)
+    {
+      clickCountCyber = 0;
+      bDoubleClickCheck=False;
+    }
 
     if (bCrouchHack)
     {
@@ -14022,14 +14029,6 @@ function Timer()      //CyberP: my god I've turned this into a mess.
      if (!bOnFire)
           return;
 	}
-    if (bDoubleClickCheck)
-    {
-      clickCountCyber = 0;
-      bDoubleClickCheck=False;
-      bStunted = False;
-      if (!bOnFire)
-          return;
-    }
 
     bStunted = False;  //CyberP: called from takedamage.
 
