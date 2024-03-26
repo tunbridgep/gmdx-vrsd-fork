@@ -71,7 +71,7 @@ function bool IncLevel(optional DeusExPlayer usePlayer)
 			CurrentLevel++;
 			//GMDX !HACK
 			localPlayer.HealthHead=Min(localPlayer.HealthHead+CurrentLevel*10.0,100.0+CurrentLevel*10.0);
-			localPlayer.HealthTorso=Min(localPlayer.HealthTorso+CurrentLevel*10.0+DrunkAdd,100.0+CurrentLevel*10.0+DrunkAdd-ZymeSubtract); //RSD: Added drunk, zyme
+			localPlayer.HealthTorso=Min(localPlayer.HealthTorso+CurrentLevel*10.0+AddictionAdd,100.0+CurrentLevel*10.0+AddictionAdd); //RSD: Added drunk, zyme
 	      localPlayer.GenerateTotalHealth();
 			return True;
 		}

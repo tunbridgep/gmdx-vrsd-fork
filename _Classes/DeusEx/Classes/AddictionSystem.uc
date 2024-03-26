@@ -90,15 +90,15 @@ function TickAddictions(float deltaTime)
             switch (i)
             {
                 case DRUG_TOBACCO:
-                    player.ClientMessage("Tobacco Stack Removed");
+                    //player.ClientMessage("Tobacco Stack Removed");
                     break;
                 case DRUG_ALCOHOL:
                     //Remove added HP
                     SubtractTorsoHealth(5);
-                    player.ClientMessage("Alcohol Stack Removed");
+                    //player.ClientMessage("Alcohol Stack Removed");
                     break;
                 case DRUG_CRACK:
-                    player.ClientMessage("Zyme Stack Removed");
+                    //player.ClientMessage("Zyme Stack Removed");
                     break;
             }
         }
@@ -140,14 +140,14 @@ function TickAddictions(float deltaTime)
                 switch (i)
                 {
                     case DRUG_TOBACCO:
-                        player.ClientMessage("Tobacco Withdrawal Added");
+                        //player.ClientMessage("Tobacco Withdrawal Added");
                         break;
                     case DRUG_ALCOHOL:
-                        player.ClientMessage("Alcohol Withdrawal Added");
+                        //player.ClientMessage("Alcohol Withdrawal Added");
                         break;
                     case DRUG_CRACK:
                         SubtractTorsoHealth(10);
-                        player.ClientMessage("Zyme Withdrawal Added");
+                        //player.ClientMessage("Zyme Withdrawal Added");
                         break;
                 }
             }
@@ -158,7 +158,7 @@ function TickAddictions(float deltaTime)
         {
             ticked = true;
             info.subtractionTimer = MAX(0.,info.subtractionTimer - deltaTime);
-            if (info.subtractionTimer == 0)
+            if (info.subtractionTimer == 0 && info.bAddicted)
             {
                 //subtract our addiction level by the specified reduction
                 info.level = MAX(0.,info.level - info.subtractionLevel);
@@ -167,13 +167,13 @@ function TickAddictions(float deltaTime)
                 switch (i)
                 {
                     case DRUG_TOBACCO:
-                        player.ClientMessage("Tobacco Addiction Removed");
+                        //player.ClientMessage("Tobacco Addiction Removed");
                         break;
                     case DRUG_ALCOHOL:
-                        player.ClientMessage("Alcohol Addiction Removed");
+                        //player.ClientMessage("Alcohol Addiction Removed");
                         break;
                     case DRUG_CRACK:
-                        player.ClientMessage("Zyme Addiction Removed");
+                        //player.ClientMessage("Zyme Addiction Removed");
                         break;
                 }
             }
@@ -202,13 +202,13 @@ function TickAddictions(float deltaTime)
             switch (i)
             {
                 case DRUG_TOBACCO:
-                    player.ClientMessage("Tobacco Withdrawal Removed");
+                    //player.ClientMessage("Tobacco Withdrawal Removed");
                     break;
                 case DRUG_ALCOHOL:
-                    player.ClientMessage("Alcohol Withdrawal Removed");
+                    //player.ClientMessage("Alcohol Withdrawal Removed");
                     break;
                 case DRUG_CRACK:
-                    player.ClientMessage("Zyme Withdrawal Removed");
+                    //player.ClientMessage("Zyme Withdrawal Removed");
                     break;
             }
         }
@@ -249,14 +249,14 @@ function AddAddiction(int type, float addictionIncrease, float timerIncrease)
     switch (type)
     {
         case DRUG_TOBACCO:
-            player.ClientMessage("Tobacco Buff Added");
+            //player.ClientMessage("Tobacco Buff Added");
             break;
         case DRUG_ALCOHOL:
             player.HealthTorso+=5;
-            player.ClientMessage("Alcohol Buff Added");
+            //player.ClientMessage("Alcohol Buff Added");
             break;
         case DRUG_CRACK:
-            player.ClientMessage("Zyme Buff Added");
+            //player.ClientMessage("Zyme Buff Added");
             break;
     }
 }

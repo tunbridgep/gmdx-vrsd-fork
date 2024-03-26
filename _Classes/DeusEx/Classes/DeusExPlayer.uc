@@ -4670,15 +4670,9 @@ function HealPartMedicalSkillDrunk(out int points, out int amt)
 {
 	local int spill;
 	local Skill sk;
-    local int DrunkAdd, ZymeSubtract;                                           //RSD: Now get bonus max torso health from drinking, penalty for zyme
-    if (AddictionManager.addictions[DRUG_ALCOHOL].drugTimer > 0.0)
-        DrunkAdd = 5*int(AddictionManager.addictions[DRUG_ALCOHOL].drugTimer/120.0+1.0);                         //RSD: Get 5 bonus health for every 2 min on timer
-    else
-        DrunkAdd = 0;
-    if (AddictionManager.addictions[DRUG_CRACK].bInWithdrawals)                                           //RSD: 10 health penalty for zyme withdrawal
-        ZymeSubtract = 10;
-    else
-        ZymeSubtract = 0;
+    local int AddictionAdd;                                           //RSD: Now get bonus max torso health from drinking, penalty for zyme
+    
+    AddictionAdd = AddictionManager.GetTorsoHealthBonus();                         //RSD: Get 5 bonus health for every 2 min on timer
 	if (SkillSystem!=None)
 	{
 	  sk = SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine');
@@ -4686,9 +4680,9 @@ function HealPartMedicalSkillDrunk(out int points, out int amt)
 	  else
 	  {
 		 points += amt;
-		 spill = points - (100+sk.CurrentLevel*10+DrunkAdd-ZymeSubtract);
+		 spill = points - (100+sk.CurrentLevel*10+AddictionAdd);
 		 if (spill > 0)
-			points = (100+sk.CurrentLevel*10+DrunkAdd-ZymeSubtract);
+			points = (100+sk.CurrentLevel*10+AddictionAdd);
 		 else
 			spill = 0;
 		 amt = spill;
@@ -12672,15 +12666,7 @@ function GenerateTotalHealth()
 	//RSD: Fix max health calculation from Medicine skill, alcohol buff, zyme debuff
 	local Skill sk;
 	local float MedSkillAdd, headMult, torsoMult;
-	local int DrunkAdd, ZymeSubtract;                                           //RSD: Now get bonus max torso health from drinking, penalty for zyme
-    if (AddictionManager.addictions[DRUG_ALCOHOL].drugTimer > 0.0)
-        DrunkAdd = 5*int(AddictionManager.addictions[DRUG_ALCOHOL].drugTimer/120.0+1.0);                         //RSD: Get 5 bonus health for every 2 min on timer
-    else
-        DrunkAdd = 0;
-    if (AddictionManager.addictions[DRUG_CRACK].bInWithdrawals)                                           //RSD: 10 health penalty for zyme withdrawal
-        ZymeSubtract = 10;
-    else
-        ZymeSubtract = 0;
+
     MedSkillAdd = 0.0;
 	if (SkillSystem!=None)
 	{
@@ -12688,7 +12674,8 @@ function GenerateTotalHealth()
 	  if (sk!=None) MedSkillAdd=sk.CurrentLevel*10;
 	}
     headMult = default.HealthHead/(default.HealthHead+MedSkillAdd);
-    torsoMult = default.HealthTorso/(default.HealthTorso+MedSkillAdd+DrunkAdd-ZymeSubtract);
+    //SARGE: Instead of adding Zyme and Brunkenness manually, we now just call into the AddictionSystem's health boost function
+    torsoMult = default.HealthTorso/(default.HealthTorso+MedSkillAdd+AddictionManager.GetTorsoHealthBonus());
 
 	ave = (HealthLegLeft + HealthLegRight + HealthArmLeft + HealthArmRight) / 4.0;
 
@@ -12709,31 +12696,28 @@ function int GenerateTotalMaxHealth()                                           
 	//RSD: Fix max health calculation from Medicine skill, alcohol buff, zyme debuff
 	local Skill sk;
 	local float MedSkillAdd, headMult, torsoMult;
-	local int DrunkAdd, ZymeSubtract;                                           //RSD: Now get bonus max torso health from drinking, penalty for zyme
+	local int AddictionAdd;                                           //RSD: Now get bonus max torso health from drinking, penalty for zyme
 	local int maxHealth;
-    if (AddictionManager.addictions[DRUG_ALCOHOL].drugTimer > 0.0)
-        DrunkAdd = 5*int(AddictionManager.addictions[1].drugTimer/120.0+1.0);                         //RSD: Get 5 bonus health for every 2 min on timer
-    else
-        DrunkAdd = 0;
-    if (AddictionManager.addictions[DRUG_CRACK].bInWithdrawals)                                           //RSD: 10 health penalty for zyme withdrawal
-        ZymeSubtract = 10;
-    else
-        ZymeSubtract = 0;
+    
+    AddictionAdd = AddictionManager.GetTorsoHealthBonus();                         //RSD: Get 5 bonus health for every 2 min on timer
+
     MedSkillAdd = 0.0;
 	if (SkillSystem!=None)
 	{
 	  sk = SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine');
 	  if (sk!=None) MedSkillAdd=sk.CurrentLevel*10;
 	}
+
+    //SARGE: Was this intentionally commented out????
     //headMult = default.HealthHead/(default.HealthHead+MedSkillAdd);
-    //torsoMult = default.HealthTorso/(default.HealthTorso+MedSkillAdd+DrunkAdd-ZymeSubtract);
+    //torsoMult = default.HealthTorso/(default.HealthTorso+MedSkillAdd+AddictionAdd);
 
 	ave = (default.HealthLegLeft + default.HealthLegRight + default.HealthArmLeft + default.HealthArmRight) / 4.0;
 
 	if ((default.HealthHead <= 0) || (default.HealthTorso <= 0))
 		avecrit = 0;
 	else
-		avecrit = (default.HealthHead + default.HealthTorso) / 2.0; //RSD: Added mults
+		avecrit = (default.HealthHead + default.HealthTorso) / 2.0; //RSD: Added mults //SARGE: Was this intentionally not using mults, or did I break something??
 
 	if (avecrit == 0)
 		maxHealth = 0;
@@ -14893,15 +14877,8 @@ function RestoreAllHealth()
 	local int spill;
 	local Skill sk;
 	local float MedSkillAdd;
-	local int DrunkAdd, ZymeSubtract;                                           //RSD: Now get bonus max torso health from drinking, penalty for zyme
-    if (AddictionManager.addictions[DRUG_ALCOHOL].drugTimer > 0.0)
-        DrunkAdd = 5*int(AddictionManager.addictions[DRUG_ALCOHOL].drugTimer/120.0+1.0);                         //RSD: Get 5 bonus health for every 2 min on timer
-    else
-        DrunkAdd = 0;
-    if (AddictionManager.addictions[DRUG_CRACK].bInWithdrawals)                                           //RSD: 10 health penalty for zyme withdrawal
-        ZymeSubtract = 10;
-    else
-        ZymeSubtract = 0;
+	local int AddictionAdd;                                           //RSD: Now get bonus max torso health from drinking, penalty for zyme
+    AddictionAdd = AddictionManager.GetTorsoHealthBonus();
     MedSkillAdd = 0.0;
 	if (SkillSystem!=None)
 	{
@@ -14909,7 +14886,7 @@ function RestoreAllHealth()
 	  if (sk!=None) MedSkillAdd=sk.CurrentLevel*10;
 	}
 	HealthHead = default.HealthHead+MedSkillAdd;
-	HealthTorso = default.HealthTorso+MedSkillAdd+DrunkAdd-ZymeSubtract;        //RSD: Added drunk, zyme
+	HealthTorso = default.HealthTorso+MedSkillAdd+AddictionAdd;        //RSD: Added drunk, zyme
 	HealthLegLeft = default.HealthLegLeft;
 	HealthLegRight = default.HealthLegRight;
 	HealthArmLeft = default.HealthArmLeft;
