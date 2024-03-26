@@ -39,14 +39,8 @@ singular function Touch(Actor Other)
    {
    if ((Pawn(Other)!=None) && (Pawn(Other).bIsPlayer) && (!bUsedSavePoint))
    {
-   	if (((info != None) && (info.MissionNumber < 0)) ||
-	   ((DxPlayer.IsInState('Dying')) || (DxPlayer.IsInState('Paralyzed')) || (DxPlayer.IsInState('Interpolating'))) ||
-	   (DxPlayer.dataLinkPlay != None) || (DxPlayer.Level.Netmode != NM_Standalone))
-	     {
-	        return;
-	     }
-
-      GotoState('QuickSaver');
+      if (DxPlayer.CanSave(true))
+          GotoState('QuickSaver');
 
 //      log("Save Game touched by player "@Other);
 //      bUsedSavePoint=true;
@@ -73,10 +67,8 @@ State QuickSaver
          DxPlayer.ClientMessage(msgDeducted);
          }
          bUsedSavePoint=true;
-         DxPlayer.bPendingHardCoreSave=true;
-         DxPlayer.QuickSave();
+         DxPlayer.DoSaveGame(0,"Save Point Save [" $ DxPlayer.TruePlayerName $ "]");
          PlaySound(sound'CloakDown', SLOT_None,,,,0.5);
-         DxPlayer.bPendingHardCoreSave=False;
          GotoState('');
          Global.SetTimer(0.02,true);
       } else

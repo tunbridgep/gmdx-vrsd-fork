@@ -240,8 +240,7 @@ function Tick(float DeltaTime)
    {
       if (TimeToSave>0) TimeToSave-=DeltaTime;
       else
-      if (dxInfo != None && !(player.IsInState('Dying')) && !(player.IsInState('Paralyzed')) && !(player.IsInState('Interpolating')) &&
-      player.dataLinkPlay == None && Level.Netmode == NM_Standalone)
+      if (player.CanSave(true))
       {
          CanQuickSave=false;
          /*if (localURL == "05_NYC_UNATCOMJ12LAB")
@@ -249,9 +248,7 @@ function Tick(float DeltaTime)
          else
          TimeToSave=0.1;*/
          TimeToSave=0.0;                                                        //RSD: Removed autosave delay
-         Player.bPendingHardCoreSave=true;
-         player.QuickSave();
-         Player.bPendingHardCoreSave=False;
+         player.PerformAutoSave();
       } else
          CanQuickSave=false;
    }

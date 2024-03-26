@@ -45,9 +45,6 @@ function UpdateButtonStatus()
       }
    }
 
-//GMDX: wahahaha
-   if(player.bHardCoreMode || player.bRestrictedSaving) winButtons[1].SetSensitivity(False);
-
    // Disable the "Save Game", "New Game", "Intro", "Training" and "Load Game" menu choices if in multiplayer
    if (player.Level.Netmode != NM_Standalone)
    {
@@ -58,8 +55,8 @@ function UpdateButtonStatus()
       winButtons[5].SetSensitivity(False);
    }
 
-	// Don't allow saving if a datalink is playing
-	if (player.dataLinkPlay != None)
+	// Don't allow saving if we can't save.
+	if (!player.CanSave())
 		winButtons[1].SetSensitivity(False);
 
 	// DEUS_EX_DEMO - Uncomment when building demo

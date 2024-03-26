@@ -388,7 +388,6 @@ var travel int QuickSaveCurrent;
 var string     QuickSaveName;
 //hardcore mode
 var travel bool bHardCoreMode; //if set disable save game options.
-var bool bPendingHardCoreSave; //set this to active quicksave
 //misc
 var globalconfig bool bSkipNewGameIntro; //CyberP: for GMDX option menu
 var globalconfig bool bColorCodedAmmo;
@@ -550,6 +549,8 @@ var travel AddictionSystem AddictionManager;
 const DRUG_TOBACCO = 0;
 const DRUG_ALCOHOL = 1;
 const DRUG_CRACK = 2;
+
+var bool autosave;                                                              //Sarge: Autosave tells the Quicksave function to make an autosave instead
 
 var travel DeusExWeapon lastMeleeWeapon;                                           //Sarge: Stores our last melee weapon, for use when left-click frobbing crates and other breakables
 
@@ -725,7 +726,6 @@ local AlarmUnit        AU;                                                      
       bHDTP_All=-1;
 
      bStunted = False; //CyberP: failsafe
-     bPendingHardCoreSave = False;
      if (CarriedDecoration != None && CarriedDecoration.IsA('Barrel1'))
          Barrel1(CarriedDecoration).StupidBugfix();
      ForEach AllActors(class'ScriptedPawn', P)
@@ -1727,10 +1727,66 @@ exec function LoadGame(int saveIndex)
 	}
     if (bRadialAugMenuVisible) ToggleRadialAugMenu();
 	DesiredFOV = Default.DesiredFOV;
-	bPendingHardCoreSave = False;
 	ClientTravel("?loadgame=" $ saveIndex, TRAVEL_Absolute, False);
 }
 
+//Sarge: Move Save Checks to a single function, rather than being everywhere
+function bool CanSave(optional bool allowHardcore)
+{
+	local DeusExLevelInfo info;
+
+	info = GetLevelInfo();
+
+	// Don't allow saving if:
+	//
+    // 1) Hardcore mode or Restricted Saving is on (disable with allowHardcore flag)
+	// 2) We're on the logo map
+	// 3) The player is dead
+	// 4) We're interpolating (playing outtro)
+	// 5) A datalink is playing
+	// 6) We're in a multiplayer game
+
+    if ((bHardCoreMode || bRestrictedSaving) && !allowHardcore && !autosave) //Hardcore Mode
+        return false;
+
+	if ((info != None) && (info.MissionNumber < 0)) //Logo Screen
+        return false;
+
+	if ((IsInState('Dying')) || (IsInState('Paralyzed')) || (IsInState('Interpolating'))) //Dead or Interpolating
+        return false;
+
+	if (dataLinkPlay != None) //Datalink playing
+        return false;
+
+    if (Level.Netmode != NM_Standalone) //Multiplayer Game
+	   return false;
+
+    return true; 
+}
+
+//We can't modify the native function, so do this here, and then call it
+function DoSaveGame(int saveIndex, optional String saveDesc)
+{
+    local TechGoggles tech;
+
+    //Placeholder Hackfix
+    if (AugmentationSystem != None && AugmentationSystem.GetAugLevelValue(class'AugVision') != -1.0)
+        AugmentationSystem.DeactivateAll();
+    else if (UsingChargedPickup(class'TechGoggles'))
+        foreach AllActors(class'TechGoggles', tech)
+            if ((tech.Owner == Self) && tech.bActive)
+                tech.Activate();
+	
+    SaveGame(saveIndex, saveDesc);
+
+}
+
+function PerformAutoSave()
+{
+    autosave = true;
+    QuickSave();
+    autosave = false;
+}
 
 // ----------------------------------------------------------------------
 // QuickSave()
@@ -1739,33 +1795,11 @@ exec function LoadGame(int saveIndex)
 exec function QuickSave()
 {
 	local DeusExLevelInfo info;
-    local TechGoggles tech;
 
 	info = GetLevelInfo();
 
-	// Don't allow saving if:
-	//
-	// 1) The player is dead
-	// 2) We're on the logo map
-	// 4) We're interpolating (playing outtro)
-	// 3) A datalink is playing
-	// 4) We're in a multiplayer game
-    if (bHardCoreMode && !bPendingHardCoreSave)
+    if (!CanSave())
         return;
-
-	if (((info != None) && (info.MissionNumber < 0)) ||
-	   ((IsInState('Dying')) || (IsInState('Paralyzed')) || (IsInState('Interpolating'))) ||
-	   (dataLinkPlay != None) || (Level.Netmode != NM_Standalone))
-	{
-	   return;
-	}
-    //Placeholder Hackfix
-    if (AugmentationSystem != None && AugmentationSystem.GetAugLevelValue(class'AugVision') != -1.0)
-        AugmentationSystem.DeactivateAll();
-    else if (UsingChargedPickup(class'TechGoggles'))
-        foreach AllActors(class'TechGoggles', tech)
-            if ((tech.Owner == Self) && tech.bActive)
-                tech.Activate();
 
 //SAVEOUT
 	ConsoleCommand("set DeusEx.JCDentonMale QuickSaveIndex "$QuickSaveCurrent);
@@ -1776,14 +1810,13 @@ exec function QuickSave()
 	QuickSaveCurrent++;
 
 	QuickSaveLast=-(10+QuickSaveCurrent);
-	if (!bPendingHardCoreSave)
+	if (!autosave)
 	   QuickSaveName=sprintf(QuickSaveGameTitle,QuickSaveCurrent);
 	else
        QuickSaveName=sprintf("Auto Save%d",QuickSaveCurrent);
 	log("MYCHK:DX_QuickSave: ,"@QuickSaveName@" ,Last:"@QuickSaveLast@" ,Current:"@QuickSaveCurrent);
-	SaveGame(QuickSaveLast, QuickSaveName);
+	DoSaveGame(QuickSaveLast, QuickSaveName);
 	ConsoleCommand("set DeusEx.JCDentonMale iQuickSaveLast "$QuickSaveLast);
-	bPendingHardCoreSave=false;
 //	default.iQuickSaveLast=QuickSaveLast;
 
 //original	SaveGame(-1, QuickSaveGameTitle);
