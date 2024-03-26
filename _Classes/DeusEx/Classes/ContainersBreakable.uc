@@ -4,10 +4,8 @@
 
 class BreakableContainers extends Containers abstract;
 
-function bool DoLeftFrob(DeusExPlayer frobber, bool objectInHand)
+function bool DoLeftFrob(DeusExPlayer frobber)
 {
-    if (objectInHand)
-        return false;
     frobber.PutInHand(frobber.lastMeleeWeapon);
-    return super.DoLeftFrob(frobber,objectInHand);
+    return false;
 }

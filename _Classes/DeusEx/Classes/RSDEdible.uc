@@ -12,7 +12,7 @@ function bool RestrictedUse(DeusExPlayer player)
     return player != none && player.fullUp >= 100 && (player.bHardCoreMode || player.bRestrictedMetabolism);
 }
 
-function bool DoLeftFrob(DeusExPlayer frobber, bool objectInHand)
+function bool DoLeftFrob(DeusExPlayer frobber)
 {
     if (!RestrictedUse(frobber)) //SARGE: We have to check this here rather than simply going to Activate because frobbing breaks otherwise
         GotoState('Activated');

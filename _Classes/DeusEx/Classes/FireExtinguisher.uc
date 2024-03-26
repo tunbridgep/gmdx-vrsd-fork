@@ -6,10 +6,15 @@ class FireExtinguisher extends DeusExPickup;
 #exec OBJ LOAD FILE=Ambient
 var bool bAltActivate;  //CyberP: for being triggered by left click
 
-function bool DoLeftFrob(DeusExPlayer frobber, bool objectInHand)
+function bool DoLeftFrob(DeusExPlayer frobber)
 {
     bAltActivate=true;
-    return Super.DoLeftFrob(frobber,objectInHand);
+    return true;
+}
+function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
+{
+    bAltActivate=false;
+    return true;
 }
 
 function Timer()

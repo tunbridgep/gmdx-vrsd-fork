@@ -22,7 +22,7 @@ var float quickThrowCombo;
 //but since that's still miles off release point, what the hell
 ////HDTP
 
-function bool DoLeftFrob(DeusExPlayer frobber, bool objectInHand)
+function bool DoLeftFrob(DeusExPlayer frobber)
 {
     blClicked=true;
     LightFlare();

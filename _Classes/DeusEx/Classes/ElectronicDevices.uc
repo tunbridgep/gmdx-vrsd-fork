@@ -4,20 +4,6 @@
 class ElectronicDevices extends DeusExDecoration
 	abstract;
 
-//SARGE: Added "Left Click Frob" and "Right Click Frob" support
-//Returns if it was able to be frobbed or not.
-function bool DoLeftFrob(DeusExPlayer frobber, bool objectInHand)
-{
-    if (frobber.inHand.isA('Multitool'))
-        return true;
-    return false;
-}
-function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
-{
-    return true;
-}
-
-
 // ----------------------------------------------------------------------
 // No Keypad Cheese
 // ----------------------------------------------------------------------

@@ -83,10 +83,8 @@ replication
 
 //SARGE: Added "Left Click Frob" and "Right Click Frob" support
 //Return true to use the default frobbing mechanism (right click), or false for custom behaviour
-function bool DoLeftFrob(DeusExPlayer frobber, bool objectInHand)
+function bool DoLeftFrob(DeusExPlayer frobber)
 {
-    if (objectInHand)
-        return false;
     //Don't allow frobbing while swimming, and only allow objects grabbable via left click
     if (bLeftGrab && !bPushable && frobber.swimTimer > 1)
     {

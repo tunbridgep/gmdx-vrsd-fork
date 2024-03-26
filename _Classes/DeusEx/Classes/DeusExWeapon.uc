@@ -323,13 +323,10 @@ replication
 
 //SARGE: Added "Left Click Frob" and "Right Click Frob" support
 //Return true to use the default frobbing mechanism (right click), or false for custom behaviour
-function bool DoLeftFrob(DeusExPlayer frobber, bool objectInHand)
+function bool DoLeftFrob(DeusExPlayer frobber)
 {
-    if (objectInHand)
-        return false;
-
     frobber.bLeftClicked = true;
-    frobber.ParseRightClick();
+    frobber.DoFrob(frobber,None);
     return false;
 }
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)

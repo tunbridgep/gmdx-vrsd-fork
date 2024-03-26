@@ -64,26 +64,18 @@ var ScriptedPawn        ChosenPawn;                 //CyberP: used by AI to dete
 
 //SARGE: Added "Left Click Frob" and "Right Click Frob" support
 //Return true to use the default frobbing mechanism (right click), or false for custom behaviour
-function bool DoLeftFrob(DeusExPlayer frobber, bool objectInHand)
+function bool DoLeftFrob(DeusExPlayer frobber)
 {
     local Inventory item;
     
-    //Handle being lockpicked or nanokey'd on left click
-    if (frobber.inHand.IsA('NanoKeyRing') || frobber.inHand.IsA('Lockpick'))
-    {
-        frobber.DoFrob(frobber, frobber.inHand);
-        return false;
-    }
     //Sarge: Move NanoKeyring check to work based on whether or not we have the key.
     //Rather than always selecting a lockpick if we have one and always selecting the nanokey if we don't
-    else if (objectInHand)
-        return false;
-    else if (frobber.KeyRing.HasKey(KeyIDNeeded))
+    if (frobber.KeyRing.HasKey(KeyIDNeeded) && bLocked)
     {
         frobber.PutInHand(frobber.KeyRing);
         return false;
     }
-    else if (bPickable)
+    else if (bPickable && bLocked)
     {
         item = frobber.Inventory;
         while (item != None)

@@ -7006,30 +7006,39 @@ function DoLeftFrob(Actor frobTarget)
 {
     local bool bDefaultFrob;
 
-    if (frobTarget.isA('DeusExPickup'))
-        bDefaultFrob = DeusExPickup(frobTarget).DoLeftFrob(Self,inHand != None);
-    else if (frobTarget.isA('DeusExWeapon'))
-        bDefaultFrob = DeusExWeapon(frobTarget).DoLeftFrob(Self,inHand != None);
-    else if (frobTarget.isA('DeusExMover'))
-        bDefaultFrob = DeusExMover(frobTarget).DoLeftFrob(Self,inHand != None);
-    else if (frobTarget.isA('ElectronicDevices'))
-        bDefaultFrob = ElectronicDevices(frobTarget).DoLeftFrob(Self,inHand != None);
-    else if (frobTarget.isA('DeusExDecoration'))
-        bDefaultFrob = DeusExDecoration(frobTarget).DoLeftFrob(Self,inHand != None);
+    //Use items from our hand
+    if (inHand != None)
+    {
+        DoFrob(Self, inHand);
+    }
+    else if (inHand == None)
+    {
+        if (frobTarget.isA('DeusExPickup'))
+            bDefaultFrob = DeusExPickup(frobTarget).DoLeftFrob(Self);
+        else if (frobTarget.isA('DeusExWeapon'))
+            bDefaultFrob = DeusExWeapon(frobTarget).DoLeftFrob(Self);
+        else if (frobTarget.isA('DeusExMover'))
+            bDefaultFrob = DeusExMover(frobTarget).DoLeftFrob(Self);
+        else if (frobTarget.isA('ElectronicDevices'))
+            bDefaultFrob = ElectronicDevices(frobTarget).DoLeftFrob(Self);
+        else if (frobTarget.isA('DeusExDecoration'))
+            bDefaultFrob = DeusExDecoration(frobTarget).DoLeftFrob(Self);
+    }
 
-    //Handle Inventory classes. Ugh. I really wish we could access this class!
-    if (bDefaultFrob && frobTarget.IsA('Inventory') && inHand == None)
-   {
+    //Pick up and equip items by default
+    //This can't be done in Inventory classes. Ugh. I really wish we could access this class!
+    if (bDefaultFrob && frobTarget.IsA('Inventory'))
+    {
         if (HandleItemPickup(FrobTarget, True))
         { 
             bLeftClicked = true;
             FindInventorySlot(Inventory(FrobTarget));
         }
     }
-    //If we elected to do a default frob, simply do a right click
-    else if (bDefaultFrob && inHand == None)
+    
+    //By default, left click with an empty hand does nothing
+    else if (bDefaultFrob)
     {
-        DoFrob(Self, inHand);
     }
 }
 
