@@ -325,9 +325,7 @@ replication
 //Return true to use the default frobbing mechanism (right click), or false for custom behaviour
 function bool DoLeftFrob(DeusExPlayer frobber)
 {
-    frobber.bLeftClicked = true;
-    frobber.DoFrob(frobber,None);
-    return false;
+    return true;
 }
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {
