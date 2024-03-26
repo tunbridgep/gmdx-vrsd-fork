@@ -8,6 +8,7 @@ var int Tcount;
 var DeusExPlayer DxPlayer;
 var localized String msgDeducted;
 var localized String msgNotEnough;
+var localized String msgSaveName;
 
 #exec OBJ LOAD FILE=Extras
 
@@ -67,7 +68,7 @@ State QuickSaver
          DxPlayer.ClientMessage(msgDeducted);
          }
          bUsedSavePoint=true;
-         DxPlayer.DoSaveGame(0,"Save Point Save [" $ DxPlayer.TruePlayerName $ "]");
+         DxPlayer.DoSaveGame(0,sprintf(msgSaveName,DxPlayer.TruePlayerName));
          PlaySound(sound'CloakDown', SLOT_None,,,,0.5);
          GotoState('');
          Global.SetTimer(0.02,true);
@@ -84,6 +85,7 @@ defaultproperties
      Tcount=100
      msgDeducted="100 credits deducted from your account"
      msgNotEnough="100 credits required"
+     msgSaveName="Location Save [%s]"
      numThings=0
      bFlammable=False
      bHighlight=False
