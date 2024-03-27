@@ -166,6 +166,9 @@ function FirstFrame()
         //Lose 20% addictions per mission
         Player.AddictionManager.RemoveAddictions(20,0.1);
 
+        //Reset player Autosave timer
+        Player.autosaveRestrictTimer = 0;
+
 		// Set this flag so we only get in here once per mission.
 		flags.SetBool(flagName, True);
 	}

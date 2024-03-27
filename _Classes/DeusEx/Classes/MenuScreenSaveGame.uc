@@ -496,14 +496,6 @@ function PerformSave()
 	local int gameIndex,newgameIndex;
 	local String saveName;
 	local GameDirectory saveDir;
-    local TechGoggles tech;
-
-    if (player.AugmentationSystem != None && player.AugmentationSystem.GetAugLevelValue(class'AugVision') != -1.0)
-        player.AugmentationSystem.DeactivateAll();
-    else if (player.UsingChargedPickup(class'TechGoggles'))
-        foreach player.AllActors(class'TechGoggles', tech)
-            if ((tech.Owner == player) && tech.bActive)
-                tech.Activate();
 
 	saveDir = GetSaveGameDirectory();
 
@@ -527,7 +519,7 @@ function PerformSave()
 	localRoot     = root;
 	localRoot.ClearWindowStack();
 
-	localPlayer.SaveGame(gameIndex,saveName);
+	localPlayer.DoSaveGame(gameIndex,saveName);
 
 //SAVEOUT
 

@@ -1772,6 +1772,7 @@ function bool CanSave(optional bool allowHardcore)
 }
 
 //We can't modify the native function, so do this here, and then call it
+//TODO: Generating snapshots is left as an exercise for the reader
 function DoSaveGame(int saveIndex, optional String saveDesc)
 {
     local TechGoggles tech;
