@@ -6024,7 +6024,7 @@ state PlayerWalking
 		UpdateTimePlayed(deltaTime);
 
         //Update autosave restriction timer
-        autosaveRestrictTimer = MAX(0,autosaveRestrictTimer-deltaTime);
+        autosaveRestrictTimer = FMAX(0,autosaveRestrictTimer-deltaTime);
 
 		Super.PlayerTick(deltaTime);
 	}
@@ -6070,6 +6070,9 @@ state PlayerFlying
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
+
+        //Update autosave restriction timer
+        autosaveRestrictTimer = FMAX(0,autosaveRestrictTimer-deltaTime);
 
 		Super.PlayerTick(deltaTime);
 	}
@@ -6256,6 +6259,9 @@ state PlayerSwimming
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
+
+        //Update autosave restriction timer
+        autosaveRestrictTimer = FMAX(0,autosaveRestrictTimer-deltaTime);
 
 		Super.PlayerTick(deltaTime);
 	}
@@ -7112,7 +7118,7 @@ function DoRightFrob(Actor frobTarget)
         bDefaultFrob = DeusExDecoration(frobTarget).DoRightFrob(Self,inHand != None);
 
     //Handle Inventory classes. Ugh. I really wish we could access this class!
-    if (bDefaultFrob && frobTarget.IsA('Inventory') && inHand == None)
+    if (bDefaultFrob && frobTarget.IsA('Inventory'))
     {
         if (HandleItemPickup(FrobTarget, True))
             FindInventorySlot(Inventory(FrobTarget));
@@ -11241,6 +11247,9 @@ ignores SeePlayer, HearNoise, Bump;
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
+
+        //Update autosave restriction timer
+        autosaveRestrictTimer = FMAX(0,autosaveRestrictTimer-deltaTime);
 	}
 
 	function LoopHeadConvoAnim()
@@ -16694,7 +16703,7 @@ function RegenStaminaTick(float deltaTime)                                      
 
 defaultproperties
 {
-     autosaveRestrictTimerDefault=900
+     autosaveRestrictTimerDefault=900.0
      TruePlayerName="JC Denton"
      CombatDifficulty=1.000000
      SkillPointsTotal=5000

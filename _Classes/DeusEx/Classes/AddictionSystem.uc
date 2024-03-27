@@ -157,11 +157,11 @@ function TickAddictions(float deltaTime)
         if (info.subtractionTimer > 0)
         {
             ticked = true;
-            info.subtractionTimer = MAX(0.,info.subtractionTimer - deltaTime);
+            info.subtractionTimer = FMAX(0.,info.subtractionTimer - deltaTime);
             if (info.subtractionTimer == 0 && info.bAddicted)
             {
                 //subtract our addiction level by the specified reduction
-                info.level = MAX(0.,info.level - info.subtractionLevel);
+                info.level = FMAX(0.,info.level - info.subtractionLevel);
 
                 //Do addiction removal effects
                 switch (i)
@@ -231,8 +231,8 @@ function AddAddiction(int type, float addictionIncrease, float timerIncrease)
 {
     local bool bJustAdded;
 
-    addictions[type].drugTimer = MIN(player.AddictionManager.addictions[type].maxTimer,player.AddictionManager.addictions[type].drugTimer + timerIncrease);
-    addictions[type].level = MIN(100,player.AddictionManager.addictions[type].level + addictionIncrease);
+    addictions[type].drugTimer = FMIN(player.AddictionManager.addictions[type].maxTimer,player.AddictionManager.addictions[type].drugTimer + timerIncrease);
+    addictions[type].level = FMIN(100.0,player.AddictionManager.addictions[type].level + addictionIncrease);
 
     //Stop withdrawals on added addiction type
     addictions[type].bInWithdrawals = false;
