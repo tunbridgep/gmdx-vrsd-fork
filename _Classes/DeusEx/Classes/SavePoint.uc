@@ -12,6 +12,17 @@ var localized String msgSaveName;
 
 #exec OBJ LOAD FILE=Extras
 
+function int GetSaveGameIndex(DeusExPlayer player)
+{
+	local GameDirectory saveDir;
+
+	// Create our Map Directory class
+	saveDir = player.CreateGameDirectoryObject();
+	saveDir.SetDirType(saveDir.EGameDirectoryTypes.GD_SaveGames);
+	saveDir.GetGameDirectory();
+    return saveDir.GetNewSaveFileIndex();
+}
+
 function Timer()
 {
    Tcount--;
@@ -58,7 +69,7 @@ State QuickSaver
    {
       local DeusExLevelInfo dxInfo;
       dxInfo=DxPlayer.GetLevelInfo();
-
+	
       if (dxInfo != None && !(DxPlayer.IsInState('Dying')) && !(DxPlayer.IsInState('Paralyzed')) && !(DxPlayer.IsInState('Interpolating')) &&
       DxPlayer.dataLinkPlay == None && Level.Netmode == NM_Standalone)
       {
@@ -68,7 +79,7 @@ State QuickSaver
          DxPlayer.ClientMessage(msgDeducted);
          }
          bUsedSavePoint=true;
-         DxPlayer.DoSaveGame(0,sprintf(msgSaveName,DxPlayer.TruePlayerName));
+         DxPlayer.DoSaveGame(GetSaveGameIndex(DxPlayer),sprintf(msgSaveName,DxPlayer.TruePlayerName));
          PlaySound(sound'CloakDown', SLOT_None,,,,0.5);
          GotoState('');
          Global.SetTimer(0.02,true);

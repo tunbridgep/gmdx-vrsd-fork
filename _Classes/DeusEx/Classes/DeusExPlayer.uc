@@ -7060,11 +7060,18 @@ function DoLeftFrob(Actor frobTarget)
 {
     local bool bDefaultFrob;
 
-    //Use items from our hand
-    if (inHand != None)
+    //Use SkilledTools
+    if (inHand.isA('SkilledTool'))
     {
         DoFrob(Self, inHand);
     }
+    //Activate activatable items
+    else if (inHand.bActivatable)
+        inHand.Activate();
+    //CyberP: cancel reloading - shotguns only
+    //Moved by Sarge
+    else if (inHand.IsA('DeusExWeapon') && DeusExWeapon(inHand).IsInState('Reload'))
+        DeusExWeapon(inHand).bCancelLoading = True;
     else if (inHand == None)
     {
         if (frobTarget.isA('DeusExPickup'))
@@ -7088,11 +7095,6 @@ function DoLeftFrob(Actor frobTarget)
             bLeftClicked = true;
             FindInventorySlot(Inventory(FrobTarget));
         }
-    }
-    
-    //By default, left click with an empty hand does nothing
-    else if (bDefaultFrob)
-    {
     }
 }
 
@@ -7227,26 +7229,13 @@ exec function ParseLeftClick()
         }
 	}
 
-    if (inHand != None)
-       if (inHand.IsA('DeusExWeapon'))  //CyberP: cancel reloading - shotguns only
-         if (DeusExWeapon(inHand).IsInState('Reload'))
-             DeusExWeapon(inHand).bCancelLoading = True;
-	if (FrobTarget == none && inHand != None && !bInHandTransition && !inHand.IsA('POVcorpse'))
+    //Special cases aside, now do the left hand frob behaviour
+	if (FrobTarget != none && !bInHandTransition && !inHand.IsA('POVcorpse') && CarriedDecoration == None)
 	{
-		if (inHand.bActivatable)
-			inHand.Activate();
+        DoLeftFrob(FrobTarget);
 	}
-    else if (FrobTarget != none && CarriedDecoration == None)
-    {
-        if (FrobTarget.IsA('DeusExAmmo'))
-        {
-            ClientMessage(noUsing);
-        }
-        else
-        {
-            DoLeftFrob(FrobTarget);
-        }
-    }
+
+    //Handle throwing decorations/corpses
 	else
 	{
 	  if (AugmentationSystem != None)

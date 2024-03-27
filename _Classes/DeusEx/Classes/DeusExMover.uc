@@ -70,7 +70,7 @@ function bool DoLeftFrob(DeusExPlayer frobber)
     
     //Sarge: Move NanoKeyring check to work based on whether or not we have the key.
     //Rather than always selecting a lockpick if we have one and always selecting the nanokey if we don't
-    if (frobber.KeyRing.HasKey(KeyIDNeeded) && bLocked)
+    if (frobber.KeyRing.HasKey(KeyIDNeeded) && bLocked && KeyIDNeeded != '')
     {
         frobber.PutInHand(frobber.KeyRing);
         return false;

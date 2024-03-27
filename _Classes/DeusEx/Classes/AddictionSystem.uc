@@ -71,6 +71,7 @@ function TickAddictions(float deltaTime)
     local int i;
     local int stackSize, currentStackTime;
     local PersonaScreenHealth winHealth;
+    local bool bWasAddicted;
 
     if (player == None)
         return;
@@ -131,24 +132,27 @@ function TickAddictions(float deltaTime)
             {
                 info.withdrawalTimer = 0;
 
-                //Tell player they are in withdrawals
-                player.PlaySound(Sound'GMDXSFX.Player.withdrawal_notice_loud',SLOT_None);
-                player.ClientMessage(Sprintf(MsgWithdrawal,DrugLabels[i]));
-                info.bInWithdrawals = true;
-            
-                //Do withdrawal effects
-                switch (i)
+                if (info.level >= info.threshold)
                 {
-                    case DRUG_TOBACCO:
-                        //player.ClientMessage("Tobacco Withdrawal Added");
-                        break;
-                    case DRUG_ALCOHOL:
-                        //player.ClientMessage("Alcohol Withdrawal Added");
-                        break;
-                    case DRUG_CRACK:
-                        SubtractTorsoHealth(10);
-                        //player.ClientMessage("Zyme Withdrawal Added");
-                        break;
+                    //Tell player they are in withdrawals
+                    player.PlaySound(Sound'GMDXSFX.Player.withdrawal_notice_loud',SLOT_None);
+                    player.ClientMessage(Sprintf(MsgWithdrawal,DrugLabels[i]));
+                    info.bInWithdrawals = true;
+                
+                    //Do withdrawal effects
+                    switch (i)
+                    {
+                        case DRUG_TOBACCO:
+                            //player.ClientMessage("Tobacco Withdrawal Added");
+                            break;
+                        case DRUG_ALCOHOL:
+                            //player.ClientMessage("Alcohol Withdrawal Added");
+                            break;
+                        case DRUG_CRACK:
+                            SubtractTorsoHealth(10);
+                            //player.ClientMessage("Zyme Withdrawal Added");
+                            break;
+                    }
                 }
             }
         }
@@ -192,7 +196,7 @@ function TickAddictions(float deltaTime)
         }
         
         //Remove withdrawals when we get below the threshold
-        if (info.bInWithdrawals && !info.bAddicted)
+        if (info.bInWithdrawals && info.level < info.threshold)
         {
             ticked = true;
             info.bInWithdrawals = false;
@@ -264,14 +268,14 @@ function AddAddiction(int type, float addictionIncrease, float timerIncrease)
 //Remove from all addictions after a certain time limit
 function RemoveAddictions(float amount, float timer)
 {
-    local int i;
-    
-    //Add some randomness to the timer
-    timer = (1.0+(0.1*FRand()-0.1))*timer;
+    local int i, t;
 
     for (i=0;i<ArrayCount(addictions);i++)
     {
-        addictions[i].subtractionTimer = timer;
+    
+        //Add some randomness to the timer
+        t = (1.0+(0.1*FRand()-0.1))*timer;
+        addictions[i].subtractionTimer = t;
         addictions[i].subtractionLevel = amount;
     }
 }
