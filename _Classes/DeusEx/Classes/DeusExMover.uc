@@ -77,22 +77,13 @@ function bool DoLeftFrob(DeusExPlayer frobber)
     }
     else if (bPickable && bLocked)
     {
-        item = frobber.Inventory;
-        while (item != None)
-        {
-            if (item.IsA('Lockpick'))
-            {
-                frobber.PutInHand(item);
-                return false;
-            }
-            item = item.Inventory;
-        }
+        if (!frobber.SelectInventoryItem('Lockpick'))
+            frobber.PutInHand(frobber.KeyRing);
         /*
 	    frobber.ClientMessage(msgNoNanoKey);
 	    PlaySound(sound'lockeddoor',SLOT_None);
         */
         //Instead of telling us we don't have a nanokey, instead just pull out the nanokeyring, to ensure some uncertainty and possibly let the player waste their time, potentially adding more depth to gameplay.
-        frobber.PutInHand(frobber.KeyRing);
         return false;
     }
     return true;

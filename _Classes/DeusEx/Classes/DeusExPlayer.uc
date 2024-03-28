@@ -7290,6 +7290,23 @@ function NewWeaponSelected()
     clickCountCyber = 0;
 }
 
+//Select Inventory Item
+function bool SelectInventoryItem(Name type)
+{
+    local Inventory item;
+    item = Inventory;
+    while (item != None)
+    {
+        if (item.IsA(type))
+        {
+            PutInHand(item);
+            return true;
+        }
+        item = item.Inventory;
+    }
+    return false;
+}
+
 // ----------------------------------------------------------------------
 // ParseRightClick()
 // ----------------------------------------------------------------------
