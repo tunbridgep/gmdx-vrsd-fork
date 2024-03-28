@@ -68,28 +68,25 @@ function bool DoLeftFrob(DeusExPlayer frobber)
 {
     local Inventory item;
     
-    //Sarge: Move NanoKeyring check to work based on whether or not we have the key.
-    //Rather than always selecting a lockpick if we have one and always selecting the nanokey if we don't
-    if (frobber.KeyRing.HasKey(KeyIDNeeded) && bLocked && KeyIDNeeded != '')
-    {
-        frobber.PutInHand(frobber.KeyRing);
-        return false;
-    }
-    else if (bPickable && bLocked)
+    if (bPickable && bLocked)
     {
         if (!frobber.SelectInventoryItem('Lockpick'))
             frobber.PutInHand(frobber.KeyRing);
-        /*
-	    frobber.ClientMessage(msgNoNanoKey);
-	    PlaySound(sound'lockeddoor',SLOT_None);
-        */
-        //Instead of telling us we don't have a nanokey, instead just pull out the nanokeyring, to ensure some uncertainty and possibly let the player waste their time, potentially adding more depth to gameplay.
         return false;
     }
     return true;
 }
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {
+    //Swap between lockpicks and nanokeyring
+    if (bPickable && bLocked && frobber.inHand != None)
+    {
+        if (frobber.inHand.isA('NanoKeyRing'))
+            return !frobber.SelectInventoryItem('Lockpick');
+        else if (frobber.inHand.isA('Lockpick'))
+            frobber.PutInHand(frobber.KeyRing);
+        return false;
+    }
     return true;
 }
 
