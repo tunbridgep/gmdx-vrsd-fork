@@ -50,6 +50,8 @@ state Activated
 		if (player != None)
 		{
             player.fullUp+=fullness;
+            if (player.fullUp > 200)                                                    //RSD: Capped at 200
+                player.fullUp = 200;
             Eat(player);
         }
 

@@ -499,7 +499,7 @@ function UpdateStatusText()                                                     
 	//if (player.PerkNamesArray[17]== 1)
     // winInfo.SetText(HungerStr $ "--");
     if (player.fullUp >= 100)
-       winInfo.SetText(HungerStr $ SatiatedStr);
+       winInfo.SetText(HungerStr $ FormatFloatString(player.fullUp,1.0) $ "%" $ SatiatedStr);
     else if (player.fullUp < 50)
        winInfo.SetText(HungerStr $ FormatFloatString(player.fullUp,1.0) $ "%" $ HungryStr); //RSD: Now FormatFloatString(fullUp) because it's now a float
     else
@@ -1060,7 +1060,7 @@ defaultproperties
      AvgHealthStr=" Health: "
      StaminaStr=" Fatigue: "
      HungerStr=" Hunger: "
-     SatiatedStr="100% (Satiated)"
+     SatiatedStr=" (Satiated)"
      MoralityStr=" Morality: "
      PacifistStr="Pacifist"
      killerStr="Killer"

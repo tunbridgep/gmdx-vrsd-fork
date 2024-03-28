@@ -68,9 +68,9 @@ function bool DoLeftFrob(DeusExPlayer frobber)
 {
     local Inventory item;
     
-    if (bPickable && bLocked)
+    if (bLocked)
     {
-        if (!frobber.SelectInventoryItem('Lockpick'))
+        if (!bPickable || !frobber.SelectInventoryItem('Lockpick'))
             frobber.PutInHand(frobber.KeyRing);
         return false;
     }
@@ -79,13 +79,15 @@ function bool DoLeftFrob(DeusExPlayer frobber)
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {
     //Swap between lockpicks and nanokeyring
-    if (bPickable && bLocked && frobber.inHand != None)
+    if (bLocked && frobber.inHand != None)
     {
-        if (frobber.inHand.isA('NanoKeyRing'))
+        if (bPickable && frobber.inHand.isA('NanoKeyRing'))
             return !frobber.SelectInventoryItem('Lockpick');
         else if (frobber.inHand.isA('Lockpick'))
+        {
             frobber.PutInHand(frobber.KeyRing);
-        return false;
+            return false;
+        }
     }
     return true;
 }

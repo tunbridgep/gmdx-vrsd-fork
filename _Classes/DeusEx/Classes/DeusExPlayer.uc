@@ -1734,7 +1734,7 @@ exec function LoadGame(int saveIndex)
 }
 
 //Sarge: Move Save Checks to a single function, rather than being everywhere
-function bool CanSave(optional bool allowHardcore)
+function bool CanSave(optional bool allowHardcore, optional bool checkAutosave)
 {
 	local DeusExLevelInfo info;
 
@@ -1765,14 +1765,13 @@ function bool CanSave(optional bool allowHardcore)
     if (Level.Netmode != NM_Standalone) //Multiplayer Game
 	   return false;
 
-    if ((bRestrictedSaving || bHardCoreMode) && autosave && autosaveRestrictTimer > 0.) //Autosave timer not expired
+    if ((bRestrictedSaving || bHardCoreMode) && checkAutosave && autosaveRestrictTimer > 0.) //Autosave timer not expired
         return false;
 
     return true; 
 }
 
 //We can't modify the native function, so do this here, and then call it
-//TODO: Generating snapshots is left as an exercise for the reader
 function DoSaveGame(int saveIndex, optional String saveDesc)
 {
     local TechGoggles tech;
@@ -1790,6 +1789,13 @@ function DoSaveGame(int saveIndex, optional String saveDesc)
     root.hide();
     SaveGame(saveIndex, saveDesc);
     root.show();
+
+    
+    if (autosave || true) //Sarge: Add || true so we always do this
+    {
+        autosave = false;
+        autosaveRestrictTimer = autosaveRestrictTimerDefault;
+    }
 
 }
 
@@ -1829,9 +1835,6 @@ exec function QuickSave()
 	log("MYCHK:DX_QuickSave: ,"@QuickSaveName@" ,Last:"@QuickSaveLast@" ,Current:"@QuickSaveCurrent);
 	DoSaveGame(QuickSaveLast, QuickSaveName);
 	ConsoleCommand("set DeusEx.JCDentonMale iQuickSaveLast "$QuickSaveLast);
-
-    if (autosave)
-        autosaveRestrictTimer = autosaveRestrictTimerDefault;
 
 //	default.iQuickSaveLast=QuickSaveLast;
 
@@ -6028,7 +6031,12 @@ state PlayerWalking
 		UpdateTimePlayed(deltaTime);
 
         //Update autosave restriction timer
-        autosaveRestrictTimer = FMAX(0,autosaveRestrictTimer-deltaTime);
+        autosaveRestrictTimer = FMAX(0.,autosaveRestrictTimer-deltaTime);
+
+        /*
+        if (autosaveRestrictTimer >= autosaveRestrictTimerDefault - 20)
+            ClientMessage("autosaveRestrictTimer: " $ autosaveRestrictTimer);
+        */
 
 		Super.PlayerTick(deltaTime);
 	}

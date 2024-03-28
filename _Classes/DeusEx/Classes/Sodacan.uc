@@ -47,5 +47,5 @@ defaultproperties
      CollisionHeight=4.500000
      Mass=5.000000
      Buoyancy=3.000000
-     fullness=5
+     fullness=4
 }

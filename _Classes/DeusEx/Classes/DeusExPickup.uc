@@ -482,9 +482,6 @@ function UseOnce()
 	NumCopies--;
 	UpdateSkinStatus();
 
-    if (player.fullUp > 200)                                                    //RSD: Capped at 200
-       player.fullUp = 200;
-
 	if (!IsA('SkilledTool'))
 		GotoState('DeActivated');
 

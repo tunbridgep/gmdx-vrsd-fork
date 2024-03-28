@@ -59,4 +59,5 @@ defaultproperties
      bBlockPlayers=True
      Mass=10.000000
      Buoyancy=8.000000
+     fullness=4
 }

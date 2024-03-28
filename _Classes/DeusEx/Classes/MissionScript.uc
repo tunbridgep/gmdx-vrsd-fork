@@ -243,7 +243,7 @@ function Tick(float DeltaTime)
    {
       if (TimeToSave>0) TimeToSave-=DeltaTime;
       else
-      if (player.CanSave(true))
+      if (player.CanSave(true,true))
       {
          CanQuickSave=false;
          /*if (localURL == "05_NYC_UNATCOMJ12LAB")
