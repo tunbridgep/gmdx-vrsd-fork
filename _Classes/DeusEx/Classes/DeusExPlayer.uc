@@ -1776,6 +1776,8 @@ function bool CanSave(optional bool allowHardcore)
 function DoSaveGame(int saveIndex, optional String saveDesc)
 {
     local TechGoggles tech;
+	local DeusExRootWindow root;
+	root = DeusExRootWindow(rootWindow);
 
     //Placeholder Hackfix
     if (AugmentationSystem != None && AugmentationSystem.GetAugLevelValue(class'AugVision') != -1.0)
@@ -1785,7 +1787,9 @@ function DoSaveGame(int saveIndex, optional String saveDesc)
             if ((tech.Owner == Self) && tech.bActive)
                 tech.Activate();
 	
+    root.hide();
     SaveGame(saveIndex, saveDesc);
+    root.show();
 
 }
 
@@ -7059,20 +7063,8 @@ exec function ShowScores()
 function DoLeftFrob(Actor frobTarget)
 {
     local bool bDefaultFrob;
-
-    //Use SkilledTools
-    if (inHand.isA('SkilledTool'))
-    {
-        DoFrob(Self, inHand);
-    }
-    //Activate activatable items
-    else if (inHand.bActivatable)
-        inHand.Activate();
-    //CyberP: cancel reloading - shotguns only
-    //Moved by Sarge
-    else if (inHand.IsA('DeusExWeapon') && DeusExWeapon(inHand).IsInState('Reload'))
-        DeusExWeapon(inHand).bCancelLoading = True;
-    else if (inHand == None)
+    
+    if (inHand == None)
     {
         if (frobTarget.isA('DeusExPickup'))
             bDefaultFrob = DeusExPickup(frobTarget).DoLeftFrob(Self);
@@ -7229,8 +7221,22 @@ exec function ParseLeftClick()
         }
 	}
 
+    //Handle Reload Cancelling
+    if (inHand.isA('DeusExWeapon') && DeusExWeapon(inHand).IsInState('Reload'))
+        DeusExWeapon(inHand).bCancelLoading = true;
+
+    //Use SkilledTools
+    else if (inHand.isA('SkilledTool') && (frobTarget.isA('DeusExMover') || frobTarget.isA('HackableDevices')))
+    {
+        DoFrob(Self, inHand);
+    }
+
+    //Activate activatable items
+    else if (inHand.bActivatable)
+        inHand.Activate();
+
     //Special cases aside, now do the left hand frob behaviour
-	if (FrobTarget != none && !bInHandTransition && !inHand.IsA('POVcorpse') && CarriedDecoration == None)
+    else if (FrobTarget != none && !bInHandTransition && !inHand.IsA('POVcorpse') && CarriedDecoration == None)
 	{
         DoLeftFrob(FrobTarget);
 	}

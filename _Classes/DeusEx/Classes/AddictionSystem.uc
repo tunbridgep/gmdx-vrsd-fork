@@ -1,5 +1,4 @@
 //Sarge: Class to manage addictions
-
 class AddictionSystem extends object;
 
 // which player am I attached to?

@@ -87,6 +87,13 @@ function bool DoLeftFrob(DeusExPlayer frobber)
             }
             item = item.Inventory;
         }
+        /*
+	    frobber.ClientMessage(msgNoNanoKey);
+	    PlaySound(sound'lockeddoor',SLOT_None);
+        */
+        //Instead of telling us we don't have a nanokey, instead just pull out the nanokeyring, to ensure some uncertainty and possibly let the player waste their time, potentially adding more depth to gameplay.
+        frobber.PutInHand(frobber.KeyRing);
+        return false;
     }
     return true;
 }
@@ -561,6 +568,8 @@ function Frob(Actor Frobber, Inventory frobWith)
 	local float dotp;
 	local DeusExMover M;
     local Actor A;
+        
+
 	// if we shouldn't be frobbed, get out
 	if (!bFrobbable)
 		return;
@@ -579,7 +588,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 	bOpenIt = False;
 	bDone = False;
 	msg = msgLocked;
-
+    
 	// make sure someone is trying to open the door
 	if (P == None)
 		return;
@@ -604,7 +613,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 	}
 
 	// If the door is not closed, it can always be closed no matter what
-	if ((KeyNum != 0) || (PrevKeyNum != 0))
+	if (((KeyNum != 0) || (PrevKeyNum != 0)) && (Player == None || !Player.inHand.isA('NanoKeyRing')))
 	{
 		bOpenIt = True;
 		msg = "";
@@ -669,11 +678,11 @@ function Frob(Actor Frobber, Inventory frobWith)
 					msg = msgAlreadyUnlocked;
 				}
 			}
-			else if ((KeyIDNeeded != '') && frobWith.IsA('NanoKeyRing') && (lockStrength > 0.0))
+			else if (frobWith.IsA('NanoKeyRing') && (lockStrength > 0.0))
 			{
 				// check for the correct key use
 				NanoKeyRing(frobWith).PlayUseAnim();
-				if (NanoKeyRing(frobWith).HasKey(KeyIDNeeded))
+				if (NanoKeyRing(frobWith).HasKey(KeyIDNeeded) && KeyIDNeeded != '')
 				{
 					bLocked = !bLocked;		// toggle the lock state
 					TimeSinceReset = 0;
