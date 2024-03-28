@@ -3,37 +3,10 @@
 //=============================================================================
 class Sodacan extends RSDEdible;
 
-state Activated
+function Eat(DeusExPlayer player)
 {
-	function Activate()
-	{
-		// can't turn it off
-	}
-
-	function BeginState()
-	{
-		local DeusExPlayer player;
-        local string staminup;
-		Super.BeginState();
-
-		player = DeusExPlayer(GetPlayerPawn());
-
-        if (RestrictedUse(player))
-		{
-            GotoState('Deactivated');                                               //RSD: Otherwise we try to activate again on map transition
-            player.ClientMessage(player.fatty);
-            return;
-		}
-
-		if (player != None)
-		{
-			player.HealPlayer(2, False);
-		}
-
-		PlaySound(sound'MaleBurp');
-		UseOnce();
-	}
-Begin:
+    player.HealPlayer(2, False);
+    PlaySound(sound'MaleBurp');
 }
 
 function postpostbeginplay()
@@ -74,4 +47,5 @@ defaultproperties
      CollisionHeight=4.500000
      Mass=5.000000
      Buoyancy=3.000000
+     fullness=5
 }

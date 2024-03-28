@@ -335,7 +335,7 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 //Called when the item is added to the players hands
 function Draw(DeusExPlayer frobber)
 {
-    if (bIsMeleeWeapon)
+    if (bIsMeleeWeapon && frobber.assignedWeapon != Self)
         frobber.lastMeleeWeapon = self;
 
 }

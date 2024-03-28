@@ -177,12 +177,11 @@ function UpdateInHand()
 		{
             if (objects[slotIndex].item != None)
             {
-                // Highlight the object in the player's hand
+                // Grey Backpack for last equipped object in the player's hand
                 if ((player.inHand != None) && (objects[slotIndex].item == player.inHand))
-                objects[slotIndex].HighlightSelect(True);
-                else if (player.inHand == None)
-                {
-                }
+                    objects[slotIndex].HighlightSelect(True);
+                else if (player.inHand == None && player.bAlternateToolbelt == 0 && slotIndex == player.BeltLast)
+                    objects[slotIndex].HighlightSelect(True);
                 else
                     objects[slotIndex].HighlightSelect(False);
 
