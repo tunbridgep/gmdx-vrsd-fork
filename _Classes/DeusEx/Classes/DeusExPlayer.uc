@@ -12364,8 +12364,7 @@ exec function NoteAdd( String noteText, optional bool bUserNote, optional bool b
 {
 	local DeusExNote newNote;
 
-	newNote = AddNote( noteText );
-	newNote.SetUserNote( bUserNote );
+	newNote = AddNote( noteText, bUserNote, !bHidden );
 	newNote.SetHidden( bHidden );
 	newNote.SetTextTag( noteName );
 }

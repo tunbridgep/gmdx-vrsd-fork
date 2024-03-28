@@ -164,7 +164,7 @@ function FirstFrame()
         //   Player.fullUp=-99999;
 
         //Lose 20% addictions per mission
-        Player.AddictionManager.RemoveAddictions(20,0.1);
+        Player.AddictionManager.RemoveAddictions(20,60);
 
         //Reset player Autosave timer
         Player.autosaveRestrictTimer = 0;

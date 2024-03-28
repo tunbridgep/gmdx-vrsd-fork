@@ -9,7 +9,8 @@ var bool bAltActivate;  //CyberP: for being triggered by left click
 function bool DoLeftFrob(DeusExPlayer frobber)
 {
     bAltActivate=true;
-    return true;
+    Activate();
+    return false;
 }
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {

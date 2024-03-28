@@ -161,24 +161,12 @@ function TickAddictions(float deltaTime)
         {
             ticked = true;
             info.subtractionTimer = FMAX(0.,info.subtractionTimer - deltaTime);
-            if (info.subtractionTimer == 0 && info.bAddicted)
+            if (info.subtractionTimer == 0)
             {
                 //subtract our addiction level by the specified reduction
                 info.level = FMAX(0.,info.level - info.subtractionLevel);
 
-                //Do addiction removal effects
-                switch (i)
-                {
-                    case DRUG_TOBACCO:
-                        //player.ClientMessage("Tobacco Addiction Removed");
-                        break;
-                    case DRUG_ALCOHOL:
-                        //player.ClientMessage("Alcohol Addiction Removed");
-                        break;
-                    case DRUG_CRACK:
-                        //player.ClientMessage("Zyme Addiction Removed");
-                        break;
-                }
+                player.ClientMessage("Removing " $ info.subtractionLevel $ " from " $ druglabels[i]);
             }
         }
 
@@ -187,11 +175,39 @@ function TickAddictions(float deltaTime)
         {
             player.ClientMessage(Sprintf(MsgAddicted,DrugLabels[i]));
             info.bAddicted = true;
+
+            //Do addiction addition effects
+            switch (i)
+            {
+                case DRUG_TOBACCO:
+                    //player.ClientMessage("Tobacco Addiction Added");
+                    break;
+                case DRUG_ALCOHOL:
+                    //player.ClientMessage("Alcohol Addiction Added");
+                    break;
+                case DRUG_CRACK:
+                    //player.ClientMessage("Zyme Addiction Added");
+                    break;
+            }
         }
         else if (info.bAddicted && info.level < info.threshold)
         {
             player.ClientMessage(Sprintf(MsgNotAddicted,DrugLabels[i]));
             info.bAddicted = false;
+
+            //Do addiction removal effects
+            switch (i)
+            {
+                case DRUG_TOBACCO:
+                    //player.ClientMessage("Tobacco Addiction Removed");
+                    break;
+                case DRUG_ALCOHOL:
+                    //player.ClientMessage("Alcohol Addiction Removed");
+                    break;
+                case DRUG_CRACK:
+                    //player.ClientMessage("Zyme Addiction Removed");
+                    break;
+            }
         }
         
         //Remove withdrawals when we get below the threshold

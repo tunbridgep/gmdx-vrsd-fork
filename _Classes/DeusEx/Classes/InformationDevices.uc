@@ -144,18 +144,13 @@ function CreateInfoWindow()
 
 			// Check to see if we need to save this string in the
 			// DataVault
-			if (bAddToVault)
-			{
-				note = aReader.GetNote(textTag);
+            // SARGE: Now we always add it, but hide it if it's not supposed to be added
+            note = aReader.GetNote(textTag);
 
-				if (note == None)
-				{
-					note = aReader.AddNote(vaultString,, True);
-					note.SetTextTag(textTag);
-				}
+            if (note == None)
+                aReader.NoteAdd(vaultString, False, True, textTag);
 
-				vaultString = "";
-			}
+            vaultString = "";
 		}
 		CriticalDelete(parser);
 	}
