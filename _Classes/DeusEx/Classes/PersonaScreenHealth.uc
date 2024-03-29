@@ -49,6 +49,8 @@ var bool bBodyPartPressed;
 var int extraBPM;
 var int randBPM;
 var localized string StatsButtonLabel;
+var localized string AddictionButtonLabel;
+var localized string PedometerButtonLabel;
 var PersonaActionButtonWindow buttonStats;
 var localized string accuracyLabel;
 var localized string speedLabel;
@@ -67,6 +69,7 @@ var localized string drugWithdrawalLabel;
 var localized string drugInactiveLabel;
 var localized string drugEffectLabel;
 var localized string drugStacks;
+
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -120,24 +123,9 @@ function CreateStatusWindow()
 
 function CreateInfoWindow()
 {
-local string conc;
-local int heartRate, conv, accuracyPenalty;
-local float speedPenalty;
-local float formatInt;
-local int i;                                                                    //RSD: Added
-local PersonaScrollAreaWindow winScroll;                                        //RSD: Added
-
-    //winScroll = PersonaScrollAreaWindow(NewChild(Class'PersonaScrollAreaWindow'));
-    //winScroll.SetPos(348, 22);
-    //winScroll.SetSize(238, 239);
-    //winInfo = PersonaInfoWindow(winScroll.ClipWindow.NewChild(Class'PersonaInfoWindow'));
     winInfo = PersonaInfoWindow(winClient.NewChild(Class'PersonaInfoWindow'));
 	winInfo.SetPos(348, 22);
 	winInfo.SetSize(238, 239);
-	if (player.bShowStatus)
-	{
-	    UpdateStatusText();                                                     //RSD: Used to have repeat code blocks here and Tick(), moved to a function
-    }
 }
 
 // ----------------------------------------------------------------------
@@ -153,7 +141,7 @@ function CreateButtons()
 	winActionButtons.SetWidth(160);
 	winActionButtons.FillAllSpace(False);
     buttonStats = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow'));
-    buttonStats.SetButtonText(StatsButtonLabel);
+    
 	btnHealAll = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow'));
 	btnHealAll.SetButtonText(HealAllButtonLabel);
 	PlaySound(sound'Optiwand_Screenretracted1',0.6);
@@ -362,13 +350,21 @@ function bool ButtonActivated(Window buttonPressed)
 				break;
 
             case buttonStats:
-                if (bBodyPartPressed || !player.bShowStatus)
+                if (bBodyPartPressed && !player.bAddictionSystem) //Always show pedometer if we click regular Status button, rather than an empty window.
+                    player.bShowStatus = true;
+                if (!bBodyPartPressed) //Otherwise, reset it back to what it was
+                    player.bShowStatus = !player.bShowStatus;
+                winInfo.Clear();
+                bBodyPartPressed = False;
+                PlaySound(Sound'MetalDrawerOpen',0.5);
+                /*
                 {
-                    player.bShowStatus = True;
+                    player.bShowStatus = !player.bShowStatus;
                     winInfo.Clear();
                     CreateInfoWindow();
                     bBodyPartPressed = False;
                     PlaySound(Sound'MetalDrawerOpen',0.5);
+                
                 }
                 else
                 {
@@ -382,6 +378,7 @@ function bool ButtonActivated(Window buttonPressed)
                     bBodyPartPressed = True;
                     PlaySound(Sound'MetalDrawerOpen',0.5);
                 }
+                */
                 break;
 
 			default:
@@ -469,22 +466,32 @@ function Tick(float deltaTime)
 	regionWindows[4].SetHealth(player.HealthLegRight);
 	regionWindows[5].SetHealth(player.HealthLegLeft);
 
-    if (player.bShowStatus)
-    {
     if (!bBodyPartPressed)
     {
-        UpdateStatusText();                                                     //RSD: Used to have repeat code blocks here and CreateInfoWindo(), moved to a function
-	}
-	}
+        if (player.bShowStatus)
+            UpdateStatusText();                                                     //Sarge: Added the ability for the Status button to toggle addictions, rather than on/off empty page
+        else if (player.bAddictionSystem)
+            UpdateAddictionText();                                                  //RSD: Used to have repeat code blocks here and CreateInfoWindo(), moved to a function
+    }
+    
+    //Update Status Button
+    if (!player.bAddictionSystem)
+        buttonStats.SetButtonText(StatsButtonLabel); //Default button when not using addiction system
+    else if (player.bShowStatus && !bBodyPartPressed)
+        buttonStats.SetButtonText(AddictionButtonLabel); //Show Addiction Button
+    else if (!player.bShowStatus && bBodyPartPressed)
+        buttonStats.SetButtonText(AddictionButtonLabel); //Show Addiction Button
+    else
+        buttonStats.SetButtonText(PedometerButtonLabel); //Show Pedometer Button
+
+
 }
 
-function UpdateStatusText()                                                     //RSD: Had repeat code in CreatInfoWindow() and Tick(), how about not
+function DisplayCommonInfo()
 {
-    local string conc;
-    local int heartRate, conv, accuracyPenalty;
+    local string suffix;
+    local float accuracyPenalty;
     local float speedPenalty;
-    local float formatInt;
-    local int i;
 
     winInfo.bStylization = False;
     winInfo.bStylization2 = True;
@@ -492,20 +499,6 @@ function UpdateStatusText()                                                     
 	player.GenerateTotalHealth();
 	winInfo.SetTitle(StatusTitle);
     winInfo.SetText(AvgHealthStr $ player.Health $ "%");
-    //winInfo.SetText(StaminaStr $ int(player.swimTimer*100) $ "/" $ int(player.swimDuration*100)); //RSD: Removed stamina
-    //winInfo.SetText(BioStr $ int(player.Energy) $ "/" $ int(player.EnergyMax));
-    if (player.bHardCoreMode || player.bRestrictedMetabolism)                   //RSD: Added menu option
-    {
-	//if (player.PerkNamesArray[17]== 1)
-    // winInfo.SetText(HungerStr $ "--");
-    if (player.fullUp >= 100)
-       winInfo.SetText(HungerStr $ FormatFloatString(player.fullUp,1.0) $ "%" $ SatiatedStr);
-    else if (player.fullUp < 50)
-       winInfo.SetText(HungerStr $ FormatFloatString(player.fullUp,1.0) $ "%" $ HungryStr); //RSD: Now FormatFloatString(fullUp) because it's now a float
-    else
-       winInfo.SetText(HungerStr $ FormatFloatString(player.fullUp,1.0) $ "%" );//RSD: Now FormatFloatString(fullUp) because it's now a float
-    }
-    //winInfo.SetText(LocStr $ player.retInfo());                               //RSD: Removed location
     /*if (player.KillerCount > 300)
        winInfo.SetText(MoralityStr $ MassMurdererStr);
     else if (player.KillerCount > 4)
@@ -513,7 +506,17 @@ function UpdateStatusText()                                                     
     else
 	   winInfo.SetText(MoralityStr $ PacifistStr);
      */
-     //PEDOMETER
+    if (player.bHardCoreMode || player.bRestrictedMetabolism)                   //RSD: Added menu option
+    {
+        if (player.fullUp >= 100)
+            suffix = SatiatedStr;
+        else if (player.fullUp < 50)
+            suffix = HungryStr;
+        
+        winInfo.SetText(HungerStr $ FormatFloatString(player.fullUp,1.0) $ "%" $ suffix );//RSD: Now FormatFloatString(fullUp) because it's now a float
+    }
+
+    //Speed and Accuracy Penalty
      speedPenalty = 0;
      if (player.HealthLegLeft < 1)
 		speedPenalty = 12.5;
@@ -553,71 +556,84 @@ function UpdateStatusText()                                                     
      if (player.AddictionManager.addictions[1].bInWithdrawals)                                   //RSD: If suffering from alcohol withdrawal, add 15% inaccuracy
     	accuracyPenalty += 20;
 
+     //Speed Penalty
      if (speedPenalty > 0 && player.PerkNamesArray[5] != 1)                     //RSD: Will display N/A if we have Perserverance perk
      {
-       formatInt = int(speedPenalty);
-       formatInt -= speedPenalty;
-       if (formatInt != 0)
-          winInfo.SetText(speedLabel $ "-" $ FormatFloatString(speedPenalty,1.0) $ "%");
-       else
-          winInfo.SetText(speedLabel $ "-" $ int(speedPenalty) $ "%");
+        if (speedPenalty % 1 == 0)
+            winInfo.SetText(speedLabel $ "-" $ int(speedPenalty) $ "%");
+        else
+            winInfo.SetText(speedLabel $ "-" $ FormatFloatString(speedPenalty,1.0) $ "%");
      }
      else
         winInfo.SetText(speedLabel $ "N/A");
+
+     //Accuracy Penalts
      if (accuracyPenalty > 0)
-        winInfo.SetText(accuracyLabel $ "-" $ accuracyPenalty $ "%");
+     {
+        if (accuracyPenalty % 1 == 0)
+            winInfo.SetText(accuracyLabel $ "-" $ int(accuracyPenalty) $ "%");
+        else
+            winInfo.SetText(accuracyLabel $ "-" $ FormatFloatString(accuracyPenalty,1.0) $ "%");
+     }
      else
         winInfo.SetText(accuracyLabel $ "N/A");
 
-     //RSD: New Addiction status follows
-     if (player.bAddictionSystem)
-     {
-     /*if (ArrayCount(drugLabels) < ArrayCount(player.DrugsTimerArray))
-     {
-        log("Not enough UI elements for addiction in PersonaHeathScreen.uc");
-        return;
-     }*/
-     for (i=0;i<ArrayCount(player.AddictionManager.addictions);i++)
-     {
+     //winInfo.SetText(StaminaStr $ int(player.swimTimer*100) $ "/" $ int(player.swimDuration*100));
+     //winInfo.SetText(BioStr $ int(player.Energy) $ "/" $ int(player.EnergyMax));
+     winInfo.SetText(LocStr $ player.retInfo());
+}
+
+function UpdateAddictionText()
+{
+    local int i;
+
+    DisplayCommonInfo();
+
+    for (i=0;i<ArrayCount(player.AddictionManager.addictions);i++)
+    {
         winInfo.AddLine();
         winInfo.SetText(drugLabels[i]);
         winInfo.AddLine();
         winInfo.SetText(addictionLabel $ FormatFloatString(player.AddictionManager.addictions[i].level,1.0) $ "% ("
-                                      $ thresholdLabel $ FormatFloatString(player.AddictionManager.addictions[i].threshold,1.0) $ "%)");
+                                    $ thresholdLabel $ FormatFloatString(player.AddictionManager.addictions[i].threshold,1.0) $ "%)");
         if (player.AddictionManager.addictions[i].drugTimer > 0.0)
         {
-           winInfo.SetText(drugStatusLabel $ drugActiveLabel $ int(player.AddictionManager.addictions[i].drugTimer) $ "s");
-           if (i == 1 && player.AddictionManager.stacks[i] > 1)
-              winInfo.SetText(drugEffectLabel $ sprintf(drugActiveEffects[i], 5*player.AddictionManager.stacks[i]) @ sprintf(drugStacks,player.AddictionManager.stacks[i],player.AddictionManager.maxStacks[i]));
-           else if (i == 1)
-              winInfo.SetText(drugEffectLabel $ sprintf(drugActiveEffects[i], 5*player.AddictionManager.stacks[i]));
-           else
-              winInfo.SetText(drugEffectLabel $ drugActiveEffects[i]);
+            winInfo.SetText(drugStatusLabel $ drugActiveLabel $ int(player.AddictionManager.addictions[i].drugTimer) $ "s");
+            if (i == 1 && player.AddictionManager.stacks[i] > 1)
+                winInfo.SetText(drugEffectLabel $ sprintf(drugActiveEffects[i], 5*player.AddictionManager.stacks[i]) @ sprintf(drugStacks,player.AddictionManager.stacks[i],player.AddictionManager.maxStacks[i]));
+            else if (i == 1)
+                winInfo.SetText(drugEffectLabel $ sprintf(drugActiveEffects[i], 5*player.AddictionManager.stacks[i]));
+            else
+                winInfo.SetText(drugEffectLabel $ drugActiveEffects[i]);
         }
         else if (player.AddictionManager.addictions[i].bInWithdrawals)
         {
-           winInfo.SetText(drugStatusLabel $ drugWithdrawalLabel);
-           winInfo.SetText(drugEffectLabel $ drugWithdrawalEffects[i]);
+            winInfo.SetText(drugStatusLabel $ drugWithdrawalLabel);
+            winInfo.SetText(drugEffectLabel $ drugWithdrawalEffects[i]);
         }
         else if (player.AddictionManager.addictions[i].bAddicted)
         {
-           winInfo.SetText(drugStatusLabel $ drugAddictedLabel);
-           winInfo.SetText(drugEffectLabel $ drugAddictedEffects);
+            winInfo.SetText(drugStatusLabel $ drugAddictedLabel);
+            winInfo.SetText(drugEffectLabel $ drugAddictedEffects);
         }
         else
         {
-           winInfo.SetText(drugStatusLabel $ drugInactiveLabel);
-           winInfo.SetText(drugEffectLabel $ "N/A");
+            winInfo.SetText(drugStatusLabel $ drugInactiveLabel);
+            winInfo.SetText(drugEffectLabel $ "N/A");
         }
-     }
-     }
-     //RSD: Old GMDX Pedometer stuff follows
-     else
-     {
+    }
+}
+
+function UpdateStatusText()                                                     //RSD: Had repeat code in CreatInfoWindow() and Tick(), how about not
+{
+    local string conc;
+    local int heartRate, conv;
+
+     DisplayCommonInfo();
+
+     //PEDOMETER
      winInfo.SetText(winInfo.CR());
      winInfo.SetText(winInfo.CR());
-     //if (!player.bHardCoreMode)
-     //   winInfo.SetText(winInfo.CR());
      winInfo.bStylization2 = False;
      winInfo.bStylization = True;
      randBPM = 0;
@@ -656,7 +672,6 @@ function UpdateStatusText()                                                     
      conc = conc $ winInfo.CR() $ "     " $ timeStr $ BuildElapsedPlayTimeString(Int(player.saveTime));
      conc = conc $ winInfo.CR() $ winInfo.CR() $ winInfo.CR() $ winInfo.CR() $ winInfo.CR();
      winInfo.SetText(conc);
-     }
 }
 
 function String TwoDigit(int number)
@@ -1072,7 +1087,9 @@ defaultproperties
      heartStr="Heart Rate: "
      timeStr="Monitored Time: "
      pedStr="PEDOMETER"
-     StatsButtonLabel="|&Status"
+     StatsButtonLabel="|&Stats"
+     AddictionButtonLabel="|&Addictions"
+     PedometerButtonLabel="|&Pedometer"
      accuracyLabel=" Accuracy Penalty: "
      speedLabel=" Speed Penalty: "
      drugLabels(0)=" Nicotine "
