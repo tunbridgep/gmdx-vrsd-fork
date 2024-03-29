@@ -37,7 +37,7 @@ simulated function bool CanUpgradeWeapon(DeusExWeapon weapon)
 
 defaultproperties
 {
-     WeaponModifier=-0.100000
+     WeaponModifier=-0.050000
      maxCopies=5
      bCanHaveMultipleCopies=True
      ItemName="Weapon Modification (Recoil)"
