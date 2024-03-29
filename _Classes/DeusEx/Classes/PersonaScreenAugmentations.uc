@@ -413,7 +413,7 @@ function int GetAutomaticType()
 	anAug = player.AugmentationSystem.FirstAug;
 	while(anAug != None)
 	{
-		if ( (anAug.IsA('AugHeartLung') || anAug.IsA('AugPower')) && anAug.bHasIt)
+		if (anAug.IsA('AugMuscle') && anAug.bHasIt) //Sarge: Changed this to fix wrong count in Aug screen
 		{
 			augCount++;
 		}
