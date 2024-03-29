@@ -60,7 +60,16 @@ var bool                bPerkApplied;
 var float               frobGate;                    //CyberP: to prevent NPCs constantly closing doors that have just been opened
 var ScriptedPawn        ChosenPawn;                 //CyberP: used by AI to determine wether they should open doors in the newly elaborated post-combat seeking sub-state
 
+var bool                bPlayerLocked;           // Sarge: Flag for when the door was re-locked by the player. Prevents NPC's from opening it.
 
+
+
+//SARGE: Check to see if we can re-lock a door
+//Either we have the key for it in our keyring, or we previously picked it open and have the Locksport perk
+function bool CanToggleLock(DeusExPlayer Player, NanoKeyRing keyring)
+{
+    return (keyring.HasKey(KeyIDNeeded) && KeyIDNeeded != '') || ((!bLocked || bPlayerLocked) && pickPlayer == Player && Player.perkNamesArray[32] == 1);
+}
 
 //SARGE: Added "Left Click Frob" and "Right Click Frob" support
 //Return true to use the default frobbing mechanism (right click), or false for custom behaviour
@@ -72,6 +81,11 @@ function bool DoLeftFrob(DeusExPlayer frobber)
     {
         if (!bPickable || !frobber.SelectInventoryItem('Lockpick'))
             frobber.PutInHand(frobber.KeyRing);
+        return false;
+    }
+    else if (CanToggleLock(frobber,frobber.KeyRing))
+    {
+        frobber.PutInHand(frobber.KeyRing);
         return false;
     }
     return true;
@@ -588,7 +602,8 @@ function Frob(Actor Frobber, Inventory frobWith)
 		return;
 
 	// Let any non-player pawn open any door for now
-	if (Player == None)
+    // SARGE: Unless we manually locked it
+	if (Player == None && !bPlayerLocked)
 	{
 		bOpenIt = True;
 		msg = "";
@@ -603,7 +618,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 	}
 
 	// If the door is not closed, it can always be closed no matter what
-	if (((KeyNum != 0) || (PrevKeyNum != 0)) && (Player == None || !Player.inHand.isA('NanoKeyRing')))
+	if (((KeyNum != 0) || (PrevKeyNum != 0)) && Player == None)
 	{
 		bOpenIt = True;
 		msg = "";
@@ -668,14 +683,19 @@ function Frob(Actor Frobber, Inventory frobWith)
 					msg = msgAlreadyUnlocked;
 				}
 			}
-			else if (frobWith.IsA('NanoKeyRing') && (lockStrength > 0.0))
+			else if (frobWith.IsA('NanoKeyRing'))
 			{
 				// check for the correct key use
 				NanoKeyRing(frobWith).PlayUseAnim();
-				if (NanoKeyRing(frobWith).HasKey(KeyIDNeeded) && KeyIDNeeded != '')
+				if (CanToggleLock(Player,NanoKeyRing(frobWith))) //Sarge: Moved to function rather than having the check inline
 				{
 					bLocked = !bLocked;		// toggle the lock state
+                    bPlayerLocked = bLocked;
 					TimeSinceReset = 0;
+
+                    //if re-locked, reset the lock strength
+                    if (bLocked)
+                        lockStrength = initialLockStrength;
 
 					// toggle the lock state for all like-tagged movers at once (for double doors and such)
 					if ((Tag != '') && (Tag != 'DeusExMover'))
@@ -684,6 +704,8 @@ function Frob(Actor Frobber, Inventory frobWith)
 							{
 								M.bLocked = !M.bLocked;
 								M.TimeSinceReset = 0;
+                                if (M.bLocked)
+                                    M.lockStrength = M.initialLockStrength;
 							}
 
 					bOpenIt = False;

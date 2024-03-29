@@ -2929,7 +2929,7 @@ PerksDescription="|nAn agent is able to pick locks and perform acts of theft wit
 LocalizedPerkName2="DOORSMAN"
 PerksDescription2=|nWith advanced lockpicking skill comes knowledge of doors and their structural vulnerabilities -- the damage threshold of all breakable doors is reduced by 5.|n|nRequires: Lockpicking: ADVANCED 
 LocalizedPerkName3="LOCKSPORT"
-PerksDescription3="|nAn agent can pick any mechanical lock with a single lockpick.|n|nRequires: Lockpicking: MASTER"
+PerksDescription3="|nAn agent can pick any mechanical lock with a single lockpick. Additionally, any locks that are successfully picked will be added to your keyring.|n|nRequires: Lockpicking: MASTER"
 
 [SkillMedicine]
 SkillName="Medicine"
