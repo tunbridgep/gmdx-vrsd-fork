@@ -1750,7 +1750,7 @@ function bool CanSave(optional bool allowHardcore, optional bool checkAutosave)
 	// 6) We're in a multiplayer game
     // 7) If autosaving, that we're within the autosave time limit
 
-    if ((bHardCoreMode || bRestrictedSaving) && !allowHardcore && !autosave) //Hardcore Mode
+    if ((bHardCoreMode || bRestrictedSaving) && !allowHardcore) //Hardcore Mode
         return false;
 
 	if ((info != None) && (info.MissionNumber < 0)) //Logo Screen
