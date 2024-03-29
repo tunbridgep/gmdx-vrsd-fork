@@ -23,6 +23,13 @@ function bool RestrictedUse(DeusExPlayer player)
     return bUseHunger && !player.bAddictionSystem && (player != none && player.fullUp >= 100 && (player.bHardCoreMode || player.bRestrictedMetabolism));
 }
 
+//Add to the players FullUp bar, but only if we aren't using vices
+function FillUp(DeusExPlayer player)
+{
+    if (!player.bAddictionSystem)
+        Super.FillUp(player);
+}
+
 simulated function bool UpdateInfo(Object winObject)
 {
 	local PersonaInfoWindow winInfo;

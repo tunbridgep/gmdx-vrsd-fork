@@ -21,8 +21,17 @@ function bool DoLeftFrob(DeusExPlayer frobber)
     return false;
 }
 
+//What happens when we eat this.
 function Eat(DeusExPlayer player)
 {
+}
+
+//Add to the players FullUp bar
+function FillUp(DeusExPlayer player)
+{
+    player.fullUp+=fullness;
+    if (player.fullUp > 200)                                                    //RSD: Capped at 200
+        player.fullUp = 200;
 }
 
 state Activated
@@ -49,9 +58,7 @@ state Activated
 
 		if (player != None)
 		{
-            player.fullUp+=fullness;
-            if (player.fullUp > 200)                                                    //RSD: Capped at 200
-                player.fullUp = 200;
+            FillUp(player);
             Eat(player);
         }
 
