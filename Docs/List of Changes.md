@@ -1,7 +1,9 @@
 Sarge's Changes since Beta 2.2:
 
 - Moved DeusEx.Int to the mod's System folder, so as to not overwrite any vanilla files. The int file will be handled automatically when using Kentie's Deus Exe.
-- Fixed a bug where the Nuke and Worm software buttons were completely white squares on the Hacking menu.
+- Numerous Bug Fixes
+    - Fixed a bug where the Nuke and Worm software buttons were completely white squares on the Hacking menu.
+    - Fixed GMDX vRSD bug where you could pick up and carry heavy objects while out of energy with the Muscle Augmentation
 - Quality of Life Improvements:
     - Laser Attachments now re-enable themselves automatically if a weapon is holstered and reselected.
     - Hardcore Mode difficulty selection and Gameplay Settings menu are no longer locked behind completing the game, however they strongly warn against changing them.
