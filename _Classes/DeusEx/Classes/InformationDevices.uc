@@ -148,7 +148,7 @@ function CreateInfoWindow()
             note = aReader.GetNote(textTag);
 
             if (note == None)
-                aReader.NoteAdd(vaultString, False, True, textTag);
+                aReader.NoteAdd(vaultString, False, !bAddToVault, textTag);
 
             vaultString = "";
 		}
