@@ -161,12 +161,13 @@ function TickAddictions(float deltaTime)
         {
             ticked = true;
             info.subtractionTimer = FMAX(0.,info.subtractionTimer - deltaTime);
+            //player.ClientMessage("Ticking subtraction timer for " $ drugLabels[i] $ ": " $ info.subtractionTimer);
             if (info.subtractionTimer == 0)
             {
                 //subtract our addiction level by the specified reduction
                 info.level = FMAX(0.,info.level - info.subtractionLevel);
 
-                player.ClientMessage("Removing " $ info.subtractionLevel $ " from " $ druglabels[i]);
+                //player.ClientMessage("Removing " $ info.subtractionLevel $ " from " $ druglabels[i]);
             }
         }
 
@@ -215,7 +216,6 @@ function TickAddictions(float deltaTime)
         {
             ticked = true;
             info.bInWithdrawals = false;
-            player.ClientMessage(Sprintf(MsgNotAddicted,DrugLabels[i]));
                 
             //Do withdrawal removal effects
             switch (i)
@@ -287,9 +287,15 @@ function RemoveAddictions(float amount, float timer)
 
     for (i=0;i<ArrayCount(addictions);i++)
     {
-    
         //Add some randomness to the timer
-        t = (1.0+(0.1*FRand()-0.1))*timer;
+        t = timer + (FRand() * 10) + (FRand() * -10);
+
+        //Don't allow zero timers
+        if (t <= 0)
+            t = 0.1;
+        
+        //player.ClientMessage("Removing " $ amount $ " addiction from " $ drugLabels[i] $ " in " $ t $ " seconds ");
+
         addictions[i].subtractionTimer = t;
         addictions[i].subtractionLevel = amount;
     }

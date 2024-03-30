@@ -618,7 +618,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 	}
 
 	// If the door is not closed, it can always be closed no matter what
-	if (((KeyNum != 0) || (PrevKeyNum != 0)) && Player == None)
+	if (((KeyNum != 0) || (PrevKeyNum != 0)) && frobWith == None)
 	{
 		bOpenIt = True;
 		msg = "";
