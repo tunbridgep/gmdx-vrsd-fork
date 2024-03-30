@@ -124,6 +124,9 @@ function FirstFrame()
     flagName = Player.rootWindow.StringToName("M"$Caps(dxInfo.mapName)$"_NotFirstTime");
 	if (!flags.GetBool(flagName))
 	{
+        //Reset player Autosave timer
+        Player.autosaveRestrictTimer = 0;
+
 		//Player.BroadcastMessage("Loading this map for the first time");
 		//Player.setupDifficultyMod();
 		InitializeRandomAmmoCounts();
@@ -165,9 +168,6 @@ function FirstFrame()
 
         //Lose 20% addictions per mission
         Player.AddictionManager.RemoveAddictions(20,60);
-
-        //Reset player Autosave timer
-        Player.autosaveRestrictTimer = 0;
 
 		// Set this flag so we only get in here once per mission.
 		flags.SetBool(flagName, True);
