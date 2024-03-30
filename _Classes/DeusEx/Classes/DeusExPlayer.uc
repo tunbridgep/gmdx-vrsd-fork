@@ -7088,6 +7088,8 @@ function DoLeftFrob(Actor frobTarget)
             bDefaultFrob = ElectronicDevices(frobTarget).DoLeftFrob(Self);
         else if (frobTarget.isA('DeusExDecoration'))
             bDefaultFrob = DeusExDecoration(frobTarget).DoLeftFrob(Self);
+        else if (frobTarget.isA('DeusExCarcass'))
+            bDefaultFrob = DeusExCarcass(frobTarget).DoLeftFrob(Self);
     }
 
     //Pick up and equip items by default

@@ -838,6 +838,59 @@ function SetScaleGlow()
 	ScaleGlow = pct;
 }
 
+//Enable picking up corpses regardless of inventory using left-frob
+function bool DoLeftFrob(DeusExPlayer frobber)
+{
+    PickupCorpse(frobber);
+    return false;
+}
+
+//Pick Up Corpse
+//SARGE: Move this to an external function so we can do it with left-frob
+function PickupCorpse(DeusExPlayer player)
+{
+	local POVCorpse corpse;
+    local int j;
+
+    bDblClickStart=false;
+    bDblClickFrob=false;
+    if (!bInvincible)
+    {
+        corpse = Spawn(class'POVCorpse');
+        if (corpse != None)
+        {
+            // destroy the actual carcass and put the fake one
+            // in the player's hands
+            if (passedSkins)
+            {
+                for(j=0;j<arrayCount(Multiskins);j++)
+                {
+                    corpse.pMultitex[j] = Multiskins[j];
+                    corpse.bHasSkins = true;
+                }
+            }
+            corpse.carcClassString = String(Class);
+            corpse.KillerAlliance = KillerAlliance;
+            corpse.KillerBindName = KillerBindName;
+            corpse.Alliance = Alliance;
+            corpse.bNotDead = bNotDead;
+            corpse.bEmitCarcass = bEmitCarcass;
+            corpse.CumulativeDamage = CumulativeDamage;
+            corpse.MaxDamage = MaxDamage;
+            corpse.CorpseItemName = itemName;
+            corpse.CarcassName = CarcassName;
+            corpse.bEmitCarcass = False; //CyberP: don't emit carc when in player hand
+            corpse.CarcassTag = Tag; //CyberP: don't wipe the tag
+            corpse.Inv=Inventory; //GMDX:dbl click
+            corpse.Frob(player, None);
+            corpse.SetBase(player);
+            player.PutInHand(corpse);
+            bQueuedDestroy=True;
+            Destroy();
+        }
+    }
+}
+
 // ----------------------------------------------------------------------
 // Frob()
 //
@@ -853,10 +906,8 @@ function Frob(Actor Frobber, Inventory frobWith)
 	local DeusExPlayer player;
 	local ammo AmmoType;
 	local bool bPickedItemUp;
-	local POVCorpse corpse;
 	local DeusExPickup invItem;
 	local int itemCount, startcopies, i,addedAmount;
-    local int j;
     local int ammoCount, intj;                                                  //RSD: Added
 
 //log("DeusExCarcass::Frob()--------------------------------");
@@ -880,45 +931,8 @@ function Frob(Actor Frobber, Inventory frobWith)
 		if ((((bDblClickStart)&&(bDblClickFrob))||(Inventory==none))&&
 		(player != None) && (player.inHand == None) && player.carriedDecoration == None)
 		{
-
-			bDblClickStart=false;
-			bDblClickFrob=false;
-			if (!bInvincible)
-			{
-				corpse = Spawn(class'POVCorpse');
-				if (corpse != None)
-				{
-					// destroy the actual carcass and put the fake one
-					// in the player's hands
-					if (passedSkins)
-					{
-					    for(j=0;j<arrayCount(Multiskins);j++)
-					    {
-                            corpse.pMultitex[j] = Multiskins[j];
-					        corpse.bHasSkins = true;
-					    }
-					}
-					corpse.carcClassString = String(Class);
-					corpse.KillerAlliance = KillerAlliance;
-					corpse.KillerBindName = KillerBindName;
-					corpse.Alliance = Alliance;
-					corpse.bNotDead = bNotDead;
-					corpse.bEmitCarcass = bEmitCarcass;
-					corpse.CumulativeDamage = CumulativeDamage;
-					corpse.MaxDamage = MaxDamage;
-					corpse.CorpseItemName = itemName;
-					corpse.CarcassName = CarcassName;
-					corpse.bEmitCarcass = False; //CyberP: don't emit carc when in player hand
-					corpse.CarcassTag = Tag; //CyberP: don't wipe the tag
-					corpse.Inv=Inventory; //GMDX:dbl click
-					corpse.Frob(player, None);
-					corpse.SetBase(player);
-					player.PutInHand(corpse);
-					bQueuedDestroy=True;
-					Destroy();
-					return;
-				}
-			}
+            PickupCorpse(player);
+            return;
 		}
 		else if (player != None && player.inhand != none && player.bAutoHolster && !player.inHand.IsA('POVCorpse') && player.CarriedDecoration == None)
 		{
