@@ -8870,6 +8870,10 @@ function bool CanBeLifted(Decoration deco)
 	if (AugmentationSystem != None)
 	{
 		augLevel = AugmentationSystem.GetClassLevel(class'AugMuscle');
+
+        if (Energy < 1)
+            augLevel = -1;               //SARGE: If out of energy, pretend we don't have the aug at all
+
 		augMult = 1;
 		if (augLevel >= 1)
 			augMult = augLevel+1;
@@ -16226,6 +16230,12 @@ function MultiplayerTick(float DeltaTime)
 	  if (ShieldStatus == SS_Strong)
 		 ShieldStatus = SS_Fade;
 	}
+
+    //Sarge: If we're carrying an object we can no longer carry (such as running out of energy while using Microfibral Muscle), drop it
+    if (CarriedDecoration != None && !CanBeLifted(CarriedDecoration))
+    {
+        DropDecoration();
+    }
 
 	// If we have a drone active (post-death etc) and we're not using the aug, kill it off
 	augLevel = AugmentationSystem.GetAugLevelValue(class'AugDrone');
