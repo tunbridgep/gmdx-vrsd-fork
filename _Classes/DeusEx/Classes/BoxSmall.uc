@@ -13,6 +13,7 @@ singular function SupportActor(Actor standingActor)  //CyberP: hack lazy patch
 
 defaultproperties
 {
+     bSelectMeleeWeapon=True
      HitPoints=12
      FragType=Class'DeusEx.PaperFragment'
      ItemName="Cardboard Box"

@@ -5,6 +5,7 @@ class BoxMedium extends Containers;
 
 defaultproperties
 {
+	 bSelectMeleeWeapon=True
      FragType=Class'DeusEx.PaperFragment'
      ItemName="Cardboard Box"
      bBlockSight=True

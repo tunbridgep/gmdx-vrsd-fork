@@ -5,6 +5,7 @@ class BoxRectangle extends Containers;
 
 defaultproperties
 {
+     bSelectMeleeWeapon=True
      HitPoints=10
      FragType=Class'DeusEx.PaperFragment'
      ItemName="Cardboard Box"

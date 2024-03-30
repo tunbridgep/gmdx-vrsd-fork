@@ -1,10 +1,11 @@
 //=============================================================================
 // CrateBreakableMedGeneral.
 //=============================================================================
-class CrateBreakableMedGeneral extends BreakableContainers;
+class CrateBreakableMedGeneral extends Containers;
 
 defaultproperties
 {
+     bSelectMeleeWeapon=True
      FragType=Class'DeusEx.WoodFragment'
      ItemName="General Supply Crate"
      contents=Class'DeusEx.Lockpick'

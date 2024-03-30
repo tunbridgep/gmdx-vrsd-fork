@@ -5,6 +5,7 @@ class BoxLarge extends Containers;
 
 defaultproperties
 {
+	 bSelectMeleeWeapon=True
      HitPoints=50
      FragType=Class'DeusEx.PaperFragment'
      ItemName="Cardboard Box"
