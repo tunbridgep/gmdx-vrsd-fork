@@ -1,0 +1,46 @@
+Sarge's Changes since Beta 2.2:
+
+- Moved DeusEx.Int to the mod's System folder, so as to not overwrite any vanilla files. The int file will be handled automatically when using Kentie's Deus Exe.
+- Fixed a bug where the Nuke and Worm software buttons were completely white squares on the Hacking menu.
+- Quality of Life Improvements:
+    - Laser Attachments now re-enable themselves automatically if a weapon is holstered and reselected.
+    - Hardcore Mode difficulty selection and Gameplay Settings menu are no longer locked behind completing the game, however they strongly warn against changing them.
+    - Double-Click holstering now also works to enable Double Click Unholstering, rather than always unholstering with right-click (with IW toolbelt) or doing nothing (regular Toolbelt)
+    - The number of total Lockpicks or Multitools in your inventory is now listed on lockpicking/electronics information windows, allowing you to see how many lockpicks or multitools you have compared to how many are required to bypass a given device or lock.
+    - Belt Autofilling can now be disabled in the options.
+    - Save Points no longer use Autosave slots, which can be easily overridden by accident, and now create fresh hard-saves instead.
+    - Complete overhaul of "Left-click frobbing", which happens when left-clicking certain items without an item equipped.
+        - Left-Clicking a datacube will pick it up and allow you to carry it.
+        - Left-Clicking a breakable box will select your last used melee weapon (except melee weapons assigned as a quick secondary)
+        - Left-Clicking on a door will pull out a lockpick (or the keyring if the lock is unpickable or you have no lockpicks). Right-clicking will then swap between the keyring and lockpicks.
+        - Left-Clicking on a corpse will always pick it up regardless of inventory. Double-Rightclick still works.
+    - Right-Clicking with the Keyring equipped will select your last used weapon.
+    - The Pedometer can now be viewed in the Health screen when using the Addiction system.
+    - Subtitles are now enabled in third-person cutscenes regardless of Subtitles setting, allowing text to show instead of useless black bars while also not displaying in-game barks. This can be disabled using the `bSubtitlesCutscene` option in `DeusEx.ini`
+    - Added "Belt Memory". When belt memory is enabled, using the last item in a belt slot will keep a darkened version of the item's icon in the toolbelt
+        - Regardless of the Autofill setting, no other items will be added to the item's slot automatically.
+        - Regardless of the Autofill setting, all items of the remembered type will be automatically added to the belt slot when picked up.
+        - Belt memory can be overridden by manually adding an item to a given belt slot at any time.
+        - Items dropped from the inventory or via the drop key will not be remembered, to allow easily throwing away unwanted junk without affecting the belt.
+    - Infinity War Toolbelt improvements and bugfixes
+        - Fixed bug where selected icon in the belt was forgotten between game sessions.
+        - With Double Click Unholstering enabled, a single-rightclick will unholster a weapon if the selection was changed.
+        - Pressing a number key while a numbered slot is selected will set it as the primary selection.
+        - Added "Classic Mode". In Classic Mode, right-clicking while having a belt item selected which is not the primary selection will select the primary selection, similar to regular GMDX.
+        - Fixed GMDX bug where you could scroll to empty slots when using the IW toolbelt.
+    - "Smart Keyring" support added.
+        - When Smart Keyring is enabled, the keyring will no longer occupy belt slot 0, allowing it to be used for regular items.
+        - The keyring can be selected using Left-Click Frob on doors.
+- Gameplay Changes:
+    - Charged Objects no longer destroy themselves on use in Hardcore mode.
+    - Restricted Saving is now a Playthrough Modifier and is no longer restricted to Hardcore Mode. It's still enforced in Hardcore Mode.
+    - Added No Keypad Cheese Playthrough Modifier (called "Unknown Codes") which prevents using keypads or computer logins without having found them beforehand. Some codes which are hinted but never given are excepted.
+    - Bypassing Turrets now requires Advanced hacking, as in Vanilla.
+    - Added Door Locking mechanics
+        - You can now lock any door you have the nanokey for, plus any doors you have picked previously if you have the Locksport perk (this is retroactive).
+        - Enemies cannot open doors which you have locked (Enemies can still open doors that are initially locked in the map unless you lock them)
+    - When using Restricted Saving (and Hardcore Mode), Autosaves are now only created the first time upon entering a new level, or if no save has been performed in the last 15 minutes. This is designed to mitigate save-abuse by crossing between maps.
+    - Addiction System Rework
+        - Alcohol no longer heals for 5 points. Instead, it temporarily gives you 5 torso HP (along with it's usual 5 extra torso Max-HP) while in effect, which is removed afterwards. This health removal cannot kill the player.
+        - Alcohol no longer adds to fullness when the addiction system is enabled
+        - Zyme no longer removes 10HP if the addiction system is enabled.
