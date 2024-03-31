@@ -79,7 +79,13 @@ function bool DoLeftFrob(DeusExPlayer frobber)
 {
     local Inventory item;
     
-    if (bLocked)
+    //When not on hardcore, always select the keyring if we have the key
+    if (bLocked && !frobber.bHardcoreMode && frobber.KeyRing.HasKey(KeyIDNeeded) && KeyIDNeeded != '')
+    {
+        frobber.PutInHand(frobber.KeyRing);
+        return false;
+    }
+    else if (bLocked)
     {
         if (!bPickable || !frobber.SelectInventoryItem('Lockpick'))
             frobber.PutInHand(frobber.KeyRing);
