@@ -7683,6 +7683,25 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly)
 }
 
 // ----------------------------------------------------------------------
+// GetNanoKeyDesc(Name)
+// Returns the description for the NanoKey matching the specified name
+// ----------------------------------------------------------------------
+
+function String GetNanoKeyDesc(Name nanokey)
+{
+    local NanoKeyInfo key;
+    key = KeyList;
+    while (key != None)
+    {
+        if (key.KeyID == nanokey)
+            return key.Description;
+        key = key.NextKey;
+    }
+    return "";
+}
+
+
+// ----------------------------------------------------------------------
 // CreateNanoKeyInfo()
 // ----------------------------------------------------------------------
 
