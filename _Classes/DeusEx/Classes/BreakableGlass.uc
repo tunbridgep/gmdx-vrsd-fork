@@ -5,6 +5,14 @@ class BreakableGlass expands DeusExMover;
 
 var() bool ParisUndergroundHack;
 
+//SARGE: Added "Left Click Frob" and "Right Click Frob" support
+//Simply pull out a melee weapon
+function bool DoLeftFrob(DeusExPlayer frobber)
+{
+    frobber.PutInHand(frobber.lastMeleeWeapon);
+    return false;
+}
+
 function BlowItUp(Pawn instigatedBy)
 {
     local ScriptedPawn P;

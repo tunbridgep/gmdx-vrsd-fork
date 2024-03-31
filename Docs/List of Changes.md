@@ -14,7 +14,7 @@ Sarge's Changes since Beta 2.2:
     - The Nano Keyring now tells you which key was used when locking/unlocking a door.
     - Complete overhaul of "Left-click frobbing", which happens when left-clicking certain items without an item equipped.
         - Left-Clicking a datacube will pick it up and allow you to carry it.
-        - Left-Clicking a breakable box will select your last used melee weapon (except melee weapons assigned as a quick secondary)
+        - Left-Clicking a breakable box, window or wall will select your last used melee weapon (except melee weapons assigned as a quick secondary)
         - Left-Clicking on a door will pull out the Nano Keyring if you have the correct key, otherwise it will pull out a lockpick.
             - This behaviour is disabled in Hardcore mode
             - In Hardcore, Left-Clicking on a door will always pull out a lockpick (or the keyring if the lock is unpickable or you have no lockpicks). Right-clicking will then swap between the keyring and lockpicks.

@@ -3,6 +3,14 @@
 //=============================================================================
 class BreakableWall expands DeusExMover;
 
+//SARGE: Added "Left Click Frob" and "Right Click Frob" support
+//Simply pull out a melee weapon
+function bool DoLeftFrob(DeusExPlayer frobber)
+{
+    frobber.PutInHand(frobber.lastMeleeWeapon);
+    return false;
+}
+
 defaultproperties
 {
      bPickable=False
