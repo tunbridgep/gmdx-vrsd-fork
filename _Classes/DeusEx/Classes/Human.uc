@@ -17,6 +17,7 @@ var DeusExDecoration decorum;
 var DeusExMover mova;
 var bool bSpecialCase, bSpecialCase2;
 var bool bOnKeyHold;
+var() bool bDontRandomize;      //Sarge: Prevents an NPC from being randomized by the Enemy Randomization Feature
 
 //var Actor LockPawn;
 //var vector LockPawnHeight;
