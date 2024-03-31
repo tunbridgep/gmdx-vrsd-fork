@@ -46,6 +46,8 @@ var() float          TimeToReset;      // how long between relocks
 
 var localized string	msgKeyLocked;			// message when key locked door
 var localized string	msgKeyUnlocked;			// message when key unlocked door
+var localized string	msgKeyLockedKey;		// message when key locked door with key
+var localized string	msgKeyUnlockedKey;		// message when key unlocked door with key
 var localized string	msgLockpickSuccess;		// message when lock is picked
 var localized string	msgOneWayFail;			// message when one-way door can't be opened
 var localized string	msgLocked;				// message when the door is locked
@@ -572,6 +574,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 	local float dotp;
 	local DeusExMover M;
     local Actor A;
+    local string KeyName;
         
 
 	// if we shouldn't be frobbed, get out
@@ -592,6 +595,9 @@ function Frob(Actor Frobber, Inventory frobWith)
 	bOpenIt = False;
 	bDone = False;
 	msg = msgLocked;
+
+    //Get the name of our key if the player has it
+    KeyName = Player.GetNanoKeyDesc(KeyIDNeeded);
     
 	// make sure someone is trying to open the door
 	if (P == None)
@@ -709,10 +715,23 @@ function Frob(Actor Frobber, Inventory frobWith)
 							}
 
 					bOpenIt = False;
+
+                    //We need to check this, because we can now lock doors without a key
+                    //if we use the Locksport perk
 					if (bLocked)
-						msg = msgKeyLocked;
+                    {
+                        if (KeyName != "")
+    						msg = Sprintf(msgKeyLockedKey,KeyName);
+                        else
+    						msg = msgKeyLocked;
+                    }
 					else
-						msg = msgKeyUnlocked;
+                    {
+                        if (KeyName != "")
+    						msg = Sprintf(msgKeyUnlockedKey,KeyName);
+                        else
+    						msg = msgKeyUnlocked;
+                    }
 				}
 				else if (bLocked)
 				{
@@ -957,6 +976,8 @@ defaultproperties
      TimeToReset=28.000000
      msgKeyLocked="Your NanoKey Ring locked it"
      msgKeyUnlocked="Your NanoKey Ring unlocked it"
+     msgKeyLockedKey="Your NanoKey Ring locked it using %s"
+     msgKeyUnlockedKey="Your NanoKey Ring unlocked it using %s"
      msgLockpickSuccess="You picked the lock"
      msgOneWayFail="It won't open from this side"
      msgLocked="It's locked"

@@ -178,6 +178,8 @@ msgRecharged="Recharged %d points"
 [DeusExMover]
 msgKeyLocked="Your NanoKey Ring locked it"
 msgKeyUnlocked="Your NanoKey Ring unlocked it"
+msgKeyLockedKey="Your NanoKey Ring locked it using %s"
+msgKeyUnlockedKey="Your NanoKey Ring unlocked it using %s"
 msgLockpickSuccess="You picked the lock"
 msgOneWayFail="It won't open from this side"
 msgLocked="It's locked"
