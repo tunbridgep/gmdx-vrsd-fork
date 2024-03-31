@@ -1790,12 +1790,12 @@ function DoSaveGame(int saveIndex, optional String saveDesc)
     SaveGame(saveIndex, saveDesc);
     root.show();
 
-    
-    if (autosave || true) //Sarge: Add || true so we always do this
-    {
+    //Sarge: actually, always do this
+    //if (autosave) 
+    //{
         autosave = false;
         autosaveRestrictTimer = autosaveRestrictTimerDefault;
-    }
+    //}
 
 }
 
@@ -1816,7 +1816,7 @@ exec function QuickSave()
 
 	info = GetLevelInfo();
 
-    if (!CanSave())
+    if (!autosave && !CanSave())
         return;
 
 //SAVEOUT

@@ -124,8 +124,10 @@ function FirstFrame()
     flagName = Player.rootWindow.StringToName("M"$Caps(dxInfo.mapName)$"_NotFirstTime");
 	if (!flags.GetBool(flagName))
 	{
+
         //Reset player Autosave timer
-        Player.autosaveRestrictTimer = 0;
+        //Actually, make this per mission instead, to really be punishing
+        //Player.autosaveRestrictTimer = 0.0;
 
 		//Player.BroadcastMessage("Loading this map for the first time");
 		//Player.setupDifficultyMod();
@@ -150,6 +152,10 @@ function FirstFrame()
 	{
 		// Remove completed Primary goals and all Secondary goals
 		Player.ResetGoals();
+        
+        //Reset player Autosave timer
+        //Actually, make this per mission instead, to really be punishing
+        Player.autosaveRestrictTimer = 0.0;
 
 		// Remove any Conversation History.
 		Player.ResetConversationHistory();
