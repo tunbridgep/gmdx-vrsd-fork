@@ -56,7 +56,7 @@ function name WeaponDamageType()
 
 defaultproperties
 {
-    //bIsMeleeWeapon = true //SARGE: Not really a good melee weapon for breaking crates with.
+     //bIsMeleeWeapon = true //SARGE: Not really a good melee weapon for breaking crates with.
      LowAmmoWaterMark=0
      GoverningSkill=Class'DeusEx.SkillWeaponLowTech'
      NoiseLevel=0.050000
