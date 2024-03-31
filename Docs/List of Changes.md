@@ -11,10 +11,13 @@ Sarge's Changes since Beta 2.2:
     - The number of total Lockpicks or Multitools in your inventory is now listed on lockpicking/electronics information windows, allowing you to see how many lockpicks or multitools you have compared to how many are required to bypass a given device or lock.
     - Belt Autofilling can now be disabled in the options.
     - Save Points no longer use Autosave slots, which can be easily overridden by accident, and now create fresh hard-saves instead.
+    - The Nano Keyring now tells you which key was used when locking/unlocking a door.
     - Complete overhaul of "Left-click frobbing", which happens when left-clicking certain items without an item equipped.
         - Left-Clicking a datacube will pick it up and allow you to carry it.
         - Left-Clicking a breakable box will select your last used melee weapon (except melee weapons assigned as a quick secondary)
-        - Left-Clicking on a door will pull out a lockpick (or the keyring if the lock is unpickable or you have no lockpicks). Right-clicking will then swap between the keyring and lockpicks.
+        - Left-Clicking on a door will pull out the Nano Keyring if you have the correct key, otherwise it will pull out a lockpick.
+            - This behaviour is disabled in Hardcore mode
+            - In Hardcore, Left-Clicking on a door will always pull out a lockpick (or the keyring if the lock is unpickable or you have no lockpicks). Right-clicking will then swap between the keyring and lockpicks.
         - Left-Clicking on a corpse will always pick it up regardless of inventory. Double-Rightclick still works.
     - Right-Clicking with the Keyring equipped will select your last used weapon.
     - The Pedometer can now be viewed in the Health screen when using the Addiction system.
