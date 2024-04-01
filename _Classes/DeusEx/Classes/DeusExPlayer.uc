@@ -1783,7 +1783,7 @@ function bool CanSave(optional bool allowHardcore, optional bool checkAutosave)
     if (Level.Netmode != NM_Standalone) //Multiplayer Game
 	   return false;
 
-    if ((bRestrictedSaving || bHardCoreMode) && checkAutosave && autosaveRestrictTimer > 0.) //Autosave timer not expired
+    if ((bRestrictedSaving || bHardCoreMode) && checkAutosave && autosaveRestrictTimer > 0.0) //Autosave timer not expired
         return false;
 
     return true; 
