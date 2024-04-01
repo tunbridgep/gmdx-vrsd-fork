@@ -6943,7 +6943,13 @@ exec function ShowScores()
         if (CarriedDecoration != none)                                          //RSD: just don't screw around with this, it didn't make any sense anyway
         return;
 
-        if (assignedWeapon != none && (assignedWeapon.IsA('Medkit') || assignedWeapon.IsA('BioelectricCell') || assignedWeapon.IsA('ChargedPickup')))
+        //Sarge: Now we check for ChargedPickup charge level
+        if (assignedWeapon.IsA('ChargedPickup') && ChargedPickup(assignedWeapon).GetCurrentCharge() == 0)
+        {
+            //Do nothing.
+            return;
+        }
+        else if (assignedWeapon != none && (assignedWeapon.IsA('Medkit') || assignedWeapon.IsA('BioelectricCell') || (assignedWeapon.IsA('ChargedPickup'))))
 		{
             if(assignedWeapon.IsInState('Activated'))
                 assignedWeapon.GotoState('DeActivated');
@@ -8693,7 +8699,8 @@ exec function ReloadWeapon()
 //	if (bGEPprojectileInflight) return;// cant reload during projectil flight
 
 	W = DeusExWeapon(Weapon);  //CyberP: cannot reload when ammo in mag but none in reserves.
-	if (W != None && (W.AmmoLeftInClip() != W.AmmoType.AmmoAmount || W.IsA('WeaponHideAGun') || W.GoverningSkill == class'DeusEx.SkillDemolition'))
+                                //Sarge: Additionally fix reloading when full
+	if (W != None && (W.AmmoLeftInClip() != W.AmmoType.AmmoAmount || W.IsA('WeaponHideAGun') || W.GoverningSkill == class'DeusEx.SkillDemolition') && W.AmmoLeftInClip() < W.ReloadCount)
 		W.ReloadAmmo();
 }
 
