@@ -375,7 +375,7 @@ function InitializeEnemySwap()
         }
 	}
     
-    Player.ClientMessage("Total Enemies Found: " $ totalRandomized);
+    //Player.ClientMessage("Total Enemies Found: " $ totalRandomized);
 
     //Shuffle the array
     for (i = totalRandomized;i > 0;i--)
