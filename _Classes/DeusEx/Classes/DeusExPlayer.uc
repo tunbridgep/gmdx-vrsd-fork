@@ -545,6 +545,7 @@ var travel int augOrderNums[21];                                                
 var const augBinary augOrderList[21];                                           //RSD: List of all aug cans in the game in order (to be scrambled)
 var travel bool bAddictionSystem;
 var travel AddictionSystem AddictionManager;
+var travel RandomTable Randomizer;
 
 var travel float autosaveRestrictTimer;                                         //Sarge: Current time left before we're allowed to autosave again.
 var const float autosaveRestrictTimerDefault;                                   //Sarge: Timer for autosaves.
@@ -1086,10 +1087,22 @@ function SetupAddictionManager()
 	// install the Addiction Manager if not found
 	if (AddictionManager == None)
     {
+        //ClientMessage("Make new Addiction System");
 	    AddictionManager = new(Self) class'AddictionSystem';
     }
     AddictionManager.SetPlayer(Self);
 
+}
+
+function SetupRandomizer()
+{
+	// install the Addiction Manager if not found
+	if (Randomizer == None)
+    {
+        //ClientMessage("Make new Randomiser");
+	    Randomizer = new(Self) class'RandomTable';
+        Randomizer.Generate();
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -1137,6 +1150,8 @@ function InitializeSubSystems()
 	  CreateKeyRing();
 	}
 
+    //Setup player subcomponents
+    SetupRandomizer();
     SetupAddictionManager();
 }
 
@@ -1249,6 +1264,8 @@ event TravelPostAccept()
 
 	Super.TravelPostAccept();
 
+    //Setup player subcomponents
+    SetupRandomizer();
     SetupAddictionManager();
 
 	// reset the keyboard
