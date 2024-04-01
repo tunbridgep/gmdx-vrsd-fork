@@ -136,7 +136,7 @@ event DrawWindow(GC gc)
 			}
 			else
 			{
-				if (weapon.IsInState('Reload'))
+				if (weapon.IsInState('Reload') || weapon.bPerShellReload == false)
 					gc.DrawText(infoX, 26, 20, 9, msgReloading);
 				else
 					gc.DrawText(infoX, 26, 20, 9, ammoRemaining);
