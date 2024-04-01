@@ -132,6 +132,7 @@ function FirstFrame()
 		//Player.BroadcastMessage("Loading this map for the first time");
 		//Player.setupDifficultyMod();
 		InitializeRandomAmmoCounts();
+
         bRandomItems = player.bRandomizeMods; //(player.bRandomizeModsHandling || player.bRandomizeModsAmmo || player.bRandomizeModsBallistics || player.bRandomizeModsAttachments);
         bRandomCrates = (bRandomItems || player.bRandomizeCrates); /*player.bRandomizeCratesGeneralTool || player.bRandomizeCratesGeneralWearable
                        || player.bRandomizeCratesGeneralPickup || player.bRandomizeCratesMedicalMain
@@ -144,6 +145,10 @@ function FirstFrame()
 			InitializeRandomItems();
 		if (player.bRandomizeAugs)
 			SetScrambledAugs();
+        
+        if (player.bRandomizeEnemies)
+            InitializeEnemySwap();
+
 		flags.SetBool(flagName, True);
 	}
 

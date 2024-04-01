@@ -539,6 +539,7 @@ var travel bool bRandomizeModsAttachments;*/
 var travel bool bRandomizeCrates;
 var travel bool bRandomizeMods;
 var travel bool bRandomizeAugs;
+var travel bool bRandomizeEnemies;
 var travel bool bRestrictedSaving;												//Sarge: This used to be tied to hardcore, now it's a config option
 var travel bool bNoKeypadCheese;												//Sarge: Prevent using keycodes that we don't know
 var travel int augOrderNums[21];                                                //RSD: New aug can order for scrambling
