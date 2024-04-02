@@ -37,6 +37,8 @@ var localized String CameraOptionsHeader;
 var localized String PanZoomSpeedHeader;
 var localized String ClickCameraWindowText;
 
+const hackTimeMult = 10.0;               //Sarge: Our hacking skill is multiplied by this to give total disable time
+
 // ----------------------------------------------------------------------
 // InitWindow()
 // ----------------------------------------------------------------------
@@ -323,18 +325,12 @@ function ToggleCameraState(optional bool bCamIsActive, optional bool bCamWasActi
 
 		if (cam != None)
 		{
-         player.ToggleCameraState(cam, compOwner);
+            if (winTerm.bHacked)
+                player.SetCameraStateHacked(cam,winterm.GetSkillLevel() * hackTimeMult);
+            else
+                player.ToggleCameraState(cam, compOwner);
 
-			selectedCamera.UpdateCameraStatus();
-
-         //make turret match, yes, I suck.
-         if ((SelectedCamera.Turret != None) && (Player.Level.Netmode != NM_Standalone))
-         {
-            //if ((selectedCamera.Turret.bActive != cam.bActive) || (selectedCamera.Turret.bDisabled == cam.bActive))
-            player.SetTurretState(SelectedCamera.Turret,bCamIsActive,!bCamIsActive);
-            selectedCamera.UpdateTurretStatus();
-            ComputerSecurityChoice_Turret(choiceWindows[3]).SetMPEnumState();
-         }
+            selectedCamera.UpdateCameraStatus();
 		}
 	}
 }
@@ -409,17 +405,11 @@ function SetTurretState(bool bActive, bool bDisabled)
 {
 	if ((selectedCamera != None) && (selectedCamera.turret != None))
 	{
-      player.SetTurretState(selectedCamera.turret,bActive,bDisabled);
-      selectedCamera.UpdateTurretStatus();
-
-      //make camera match
-      if ((SelectedCamera.Camera != None) && (Player.Level.Netmode != NM_Standalone))
-      {
-         if (selectedCamera.camera.bActive != bActive)
-            player.ToggleCameraState(selectedCamera.camera, compOwner);
-         selectedCamera.UpdateCameraStatus();
-         ComputerSecurityChoice_MPCamera(choiceWindows[0]).SetMPEnumState();
-      }
+        if (winTerm.bHacked && bActive == false)
+            player.SetTurretStateHacked(selectedCamera.turret,winterm.GetSkillLevel() * hackTimeMult);
+        else
+            player.SetTurretState(selectedCamera.turret,bActive,bDisabled);
+        selectedCamera.UpdateTurretStatus();
 	}
 }
 

@@ -3610,11 +3610,25 @@ function ToggleCameraState(SecurityCamera cam, ElectronicDevices compOwner)
 	cam.bStasis = False;
 }
 
+//Sarge: Alternate version with hacking
+function SetCameraStateHacked(SecurityCamera cam, float timer)
+{
+    cam.disableTime = timer;
+}
+
 //client->server (window to player)
 function SetTurretState(AutoTurret turret, bool bActive, bool bDisabled)
 {
 	turret.bActive   = bActive;
 	turret.bDisabled = bDisabled;
+	turret.bComputerReset = False;
+}
+
+//Sarge: Alternate version with hacking
+function SetTurretStateHacked(AutoTurret turret, float timer)
+{
+    turret.disableTime = timer;
+	turret.bActive     = false;
 	turret.bComputerReset = False;
 }
 

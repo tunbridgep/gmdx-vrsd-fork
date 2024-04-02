@@ -40,6 +40,9 @@ var bool bSwitching;
 var float SwitchTime, beepTime;
 var Pawn savedTarget;
 
+//Sarge: Hacking disable time
+var float disableTime;           //Sarge: timer before we are enabled again after hacking.
+
 // networking replication
 replication
 {
@@ -217,6 +220,12 @@ function Tick(float deltaTime)
 		UpdateSwitch();
 		return;
 	}
+    
+    disableTime = FMAX(0,disableTime - deltaTime);
+
+	// if this turret is not active, get out
+	if (disableTime > 0)
+        return;
 
 	GetAxes(gun.Rotation, X, Y, Z);
 

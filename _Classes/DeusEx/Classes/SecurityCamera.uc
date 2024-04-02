@@ -47,6 +47,10 @@ var bool bTrigSound; //CyberP
 var() bool bAlarmEvent;  //CyberP: optionally send event if triggered.
 var bool bDiffProperties; //CyberP:
 var bool bSkillApplied; //CyberP:
+
+//Sarge: Hacking disable time
+var float disableTime;           //Sarge: timer before we are enabled again after hacking.
+
 // ------------------------------------------------------------------------------------
 // Network replication
 // ------------------------------------------------------------------------------------
@@ -409,8 +413,10 @@ function Tick(float deltaTime)
 
 	curTarget = None;
 
+    disableTime = FMAX(0,disableTime - deltaTime);
+
 	// if this camera is not active, get out
-	if (!bActive)
+	if (!bActive || disableTime > 0)
 	{
 		// DEUS_EX AMSD For multiplayer
 		ReplicatedRotation = DesiredRotation;
