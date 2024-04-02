@@ -132,6 +132,7 @@ function FirstFrame()
 		//Player.BroadcastMessage("Loading this map for the first time");
 		//Player.setupDifficultyMod();
 		InitializeRandomAmmoCounts();
+
         bRandomItems = player.bRandomizeMods; //(player.bRandomizeModsHandling || player.bRandomizeModsAmmo || player.bRandomizeModsBallistics || player.bRandomizeModsAttachments);
         bRandomCrates = (bRandomItems || player.bRandomizeCrates); /*player.bRandomizeCratesGeneralTool || player.bRandomizeCratesGeneralWearable
                        || player.bRandomizeCratesGeneralPickup || player.bRandomizeCratesMedicalMain
@@ -144,6 +145,10 @@ function FirstFrame()
 			InitializeRandomItems();
 		if (player.bRandomizeAugs)
 			SetScrambledAugs();
+        
+        if (player.bRandomizeEnemies)
+            InitializeEnemySwap();
+
 		flags.SetBool(flagName, True);
 	}
 
@@ -342,14 +347,112 @@ function InitializeRandomAmmoCounts()                                           
 
 	foreach AllActors(class'ScriptedPawn', SP)
 	{
-		ammoDropCount = Rand(4) + 1;                                            //RSD: From general randomized PickupAmmoCount in DeusExCarcass.uc
+		ammoDropCount = Player.Randomizer.GetRandomInt(4) + 1;                                            //RSD: From general randomized PickupAmmoCount in DeusExCarcass.uc
 		SP.PickupAmmoCount = ammoDropCount;
 	}
 	foreach AllActors(class'DeusExCarcass', DC)
 	{
-	    ammoDropCount = Rand(4) + 1;                                            //RSD: From general randomized PickupAmmoCount in DeusExCarcass.uc
+	    ammoDropCount = Player.Randomizer.GetRandomInt(4) + 1;                                            //RSD: From general randomized PickupAmmoCount in DeusExCarcass.uc
 		DC.PickupAmmoCount = ammoDropCount;
 	}
+}
+
+function InitializeEnemySwap()
+{
+	local ScriptedPawn Man;
+    local ScriptedPawn randomizeActors[100];
+    local int totalRandomized;
+    local int i, swapTo, randPos;
+    local ScriptedPawn temp;
+
+    //Get all the relevant actors on the map
+    foreach AllActors(class'ScriptedPawn', Man)
+	{
+        if (!Man.bImportant && Man.GetPawnAllianceType(Player) == ALLIANCE_Hostile && !Man.isA('Robot') && !Man.isA('Animal') && !Man.isA('HumanCivilian') && !Man.bDontRandomizeWeapons)
+        {
+            randomizeActors[totalRandomized] = Man;
+            totalRandomized++;
+        }
+	}
+    
+    //Player.ClientMessage("Total Enemies Found: " $ totalRandomized);
+
+    //Shuffle the array
+    for (i = totalRandomized;i > 0;i--)
+    {
+        swapTo = Player.Randomizer.GetRandomInt(i + 1);
+        temp = randomizeActors[i];
+        randomizeActors[i] = randomizeActors[swapTo];
+        randomizeActors[swapTo] = temp;
+    }
+    
+    //Now swap the actual enemies around
+    for (i = 0;i < totalRandomized;i += 2)
+    {
+        randPos = i + 1;
+        if (randPos >= totalRandomized)
+            break;
+
+        if (randomizeActors[i] != None && randomizeActors[randPos] != None)
+            ReplaceEnemyWeapon(randomizeActors[i],randomizeActors[randPos]);
+        //Player.SetLocation(tempLocation);
+    }
+
+}
+
+function ReplaceEnemyWeapon(ScriptedPawn first, ScriptedPawn second)
+{
+    local Inventory weaps1[5], weaps2[5];
+    local Inventory inv;
+    local int i,j,k;
+
+    //Get a list of all the weapons in each inventory
+    inv = first.Inventory;
+    while (inv != None && i < 5)
+    {
+        if (inv.isA('DeusExWeapon') || inv.isA('Ammo'))
+        {
+            weaps1[i] = inv;
+            i++;
+        }
+        inv = inv.Inventory;
+    }
+    
+    inv = second.Inventory;
+    while (inv != None && j < 5)
+    {
+        if (inv.isA('DeusExWeapon') || inv.isA('Ammo'))
+        {
+            weaps2[j] = inv;
+            j++;
+        }
+        inv = inv.Inventory;
+    }
+
+    //Now actually swap the weapons between pawns
+    for (k=0;k < i;k++)
+    {
+        //Player.ClientMessage("Give " $ first.FamiliarName $ " " $weaps1[k].ItemName $ " to " $ second.FamiliarName);
+        weaps1[k].GiveTo(second);
+    }
+
+    for (k=0;k < j;k++)
+    {
+        //Player.ClientMessage("Give " $ second.FamiliarName $ " " $ weaps2[k].ItemName $ " to " $ first.FamiliarName);
+        weaps2[k].GiveTo(first);
+    }
+
+    first.SwitchToBestWeapon();
+    second.SwitchToBestWeapon();
+
+    /*
+    if (weap != None && weap2 != None)
+    {
+        weap.GiveTo(second);
+        weap2.GiveTo(first);
+        Player.ClientMessage("Swapping " $ first.bindName $ " with " $ second.bindName);
+    }
+    */
 }
 
 function InitializeRandomCrateContents()                                        //RSD: Randomizes crate contents depdending on new loot table classes
@@ -521,12 +624,12 @@ function bool checkCrateLootTable(Containers CO, LootTable LT)                  
     }
     if (bMatchFound)
     {
-        if (FRand() > LT.slotChance)
+        if (Player.Randomizer.GetRandomFloat() > LT.slotChance)
         {
             CO.contents = none;
             return bMatchFound;
         }
-        rnd = Rand(weightCount);
+        rnd = Player.Randomizer.GetRandomInt(weightCount);
         weightCount = 0;
         for (i=0;i<ArrayCount(LT.entries);i++)
         {
@@ -561,7 +664,7 @@ function bool checkItemLootTable(Inventory item, LootTable LT)                  
     }
     if (bMatchFound)
     {
-        rnd = Rand(weightCount);
+        rnd = Player.Randomizer.GetRandomInt(weightCount);
         weightCount = 0;
         for (i=0;i<ArrayCount(LT.entries);i++)
         {

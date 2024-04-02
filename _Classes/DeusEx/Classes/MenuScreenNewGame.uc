@@ -49,6 +49,7 @@ var bool bHardCoreMode; //GMDX: menu holder for player
 var bool bRandomizeCrates;                                                      //RSD: Same for these
 var bool bRandomizeMods;
 var bool bRandomizeAugs;
+var bool bRandomizeEnemies;
 var bool bAddictionSystem;
 var bool bRestrictedSaving;
 var bool bNoKeypadCheese;
@@ -81,12 +82,14 @@ event InitWindow()
     bAddictionSystem=false;                                                     //RSD
     bRestrictedSaving=false;                                                    //Sarge
     bNoKeypadCheese=false;                                                    //Sarge
+    bRandomizeEnemies=false;                                                    //Sarge
     default.bRandomizeCrates=false;                                             //RSD: Also need default values! Otherwise get command in modifier menu takes the wrong value
     default.bRandomizeMods=false;                                               //RSD
     default.bRandomizeAugs=false;                                               //RSD
     default.bAddictionSystem=false;                                             //RSD
     default.bRestrictedSaving=false;                                            //Sarge
     default.bNoKeypadCheese=false;                                              //Sarge
+    default.bRandomizeEnemies=false;                                              //Sarge
 
 	StyleChanged();
 }
@@ -682,6 +685,7 @@ function SaveSettings()
     player.bRandomizeAugs=bRandomizeAugs;                                       //RSD
     player.bRestrictedSaving=bRestrictedSaving;                                 //Sarge
     player.bNoKeypadCheese=bNoKeypadCheese;                                     //Sarge
+    player.bRandomizeEnemies=bRandomizeEnemies;                                 //Sarge
     if (player.bRandomizeAugs)                                                  //RSD: New aug randomization feature
         ScrambleAugOrderList();
     player.bAddictionSystem=bAddictionSystem;

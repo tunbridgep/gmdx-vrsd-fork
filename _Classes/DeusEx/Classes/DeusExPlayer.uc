@@ -539,12 +539,14 @@ var travel bool bRandomizeModsAttachments;*/
 var travel bool bRandomizeCrates;
 var travel bool bRandomizeMods;
 var travel bool bRandomizeAugs;
+var travel bool bRandomizeEnemies;
 var travel bool bRestrictedSaving;												//Sarge: This used to be tied to hardcore, now it's a config option
 var travel bool bNoKeypadCheese;												//Sarge: Prevent using keycodes that we don't know
 var travel int augOrderNums[21];                                                //RSD: New aug can order for scrambling
 var const augBinary augOrderList[21];                                           //RSD: List of all aug cans in the game in order (to be scrambled)
 var travel bool bAddictionSystem;
 var travel AddictionSystem AddictionManager;
+var travel RandomTable Randomizer;
 
 var travel float autosaveRestrictTimer;                                         //Sarge: Current time left before we're allowed to autosave again.
 var const float autosaveRestrictTimerDefault;                                   //Sarge: Timer for autosaves.
@@ -1086,10 +1088,22 @@ function SetupAddictionManager()
 	// install the Addiction Manager if not found
 	if (AddictionManager == None)
     {
+        //ClientMessage("Make new Addiction System");
 	    AddictionManager = new(Self) class'AddictionSystem';
     }
     AddictionManager.SetPlayer(Self);
 
+}
+
+function SetupRandomizer()
+{
+	// install the Addiction Manager if not found
+	if (Randomizer == None)
+    {
+        //ClientMessage("Make new Randomiser");
+	    Randomizer = new(Self) class'RandomTable';
+        Randomizer.Generate();
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -1137,6 +1151,8 @@ function InitializeSubSystems()
 	  CreateKeyRing();
 	}
 
+    //Setup player subcomponents
+    SetupRandomizer();
     SetupAddictionManager();
 }
 
@@ -1249,6 +1265,8 @@ event TravelPostAccept()
 
 	Super.TravelPostAccept();
 
+    //Setup player subcomponents
+    SetupRandomizer();
     SetupAddictionManager();
 
 	// reset the keyboard
@@ -1765,7 +1783,7 @@ function bool CanSave(optional bool allowHardcore, optional bool checkAutosave)
     if (Level.Netmode != NM_Standalone) //Multiplayer Game
 	   return false;
 
-    if ((bRestrictedSaving || bHardCoreMode) && checkAutosave && autosaveRestrictTimer > 0.) //Autosave timer not expired
+    if ((bRestrictedSaving || bHardCoreMode) && checkAutosave && autosaveRestrictTimer > 0.0) //Autosave timer not expired
         return false;
 
     return true; 

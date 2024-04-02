@@ -236,6 +236,7 @@ function DifficultyMod(float CombatDifficulty, bool bHardCoreMode, bool bExtraHa
 
 defaultproperties
 {
+     bDontRandomizeWeapons=True
      MinHealth=0.000000
      CarcassType=Class'DeusEx.MJ12CommandoCarcass'
      WalkingSpeed=0.296000

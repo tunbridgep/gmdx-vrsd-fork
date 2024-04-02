@@ -467,6 +467,9 @@ var float stunSleepTime;                                                        
 var bool bStunTimeAltered;                                                      //RSD: Determines if the stun time was altered to avoid any edge cases
 var bool bNotFirstDiffMod;                                                      //RSD: Have we already changed difficulty stats?
 
+//Sarge
+var(GMDX) bool bDontRandomizeWeapons;                                           //If true, this pawn will never have it's weapons randomised amongst other enemies.
+
 native(2102) final function ConBindEvents();
 
 native(2105) final function bool IsValidEnemy(Pawn TestEnemy, optional bool bCheckAlliance);
