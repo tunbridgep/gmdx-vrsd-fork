@@ -3610,12 +3610,6 @@ function ToggleCameraState(SecurityCamera cam, ElectronicDevices compOwner)
 	cam.bStasis = False;
 }
 
-//Sarge: Alternate version with hacking
-function SetCameraStateHacked(SecurityCamera cam, float timer)
-{
-    cam.disableTime = timer;
-}
-
 //client->server (window to player)
 function SetTurretState(AutoTurret turret, bool bActive, bool bDisabled)
 {
@@ -3624,12 +3618,18 @@ function SetTurretState(AutoTurret turret, bool bActive, bool bDisabled)
 	turret.bComputerReset = False;
 }
 
-//Sarge: Alternate version with hacking
-function SetTurretStateHacked(AutoTurret turret, float timer)
+//These are required because of client/server stuff making modifying the above functions impossible
+function ToggleCameraStateHacked(SecurityCamera cam, ElectronicDevices compOwner)
 {
-    turret.disableTime = timer;
-	turret.bActive     = false;
-	turret.bComputerReset = False;
+    if (cam.bActive)
+          cam.disableTime = cam.disableTimeMult * SkillSystem.GetSkillLevel(class'SkillComputer');
+    ToggleCameraState(cam,compOwner);
+}
+
+function SetTurretStateHacked(AutoTurret turret, bool bActive, bool bDisabled)
+{
+    SetTurretState(turret,bActive,bDisabled);
+    turret.disableTime = turret.disableTimeMult * SkillSystem.GetSkillLevel(class'SkillComputer');
 }
 
 //client->server (window to player)

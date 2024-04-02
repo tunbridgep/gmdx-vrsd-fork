@@ -41,7 +41,8 @@ var float SwitchTime, beepTime;
 var Pawn savedTarget;
 
 //Sarge: Hacking disable time
-var float disableTime;           //Sarge: timer before we are enabled again after hacking.
+var float disableTime;                    //Sarge: timer before we are enabled again after hacking.
+const disableTimeMult = 120.0;            //Sarge: Our hacking skill is multiplied by this to give total disable time
 
 // networking replication
 replication
@@ -221,11 +222,18 @@ function Tick(float deltaTime)
 		return;
 	}
     
-    disableTime = FMAX(0,disableTime - deltaTime);
+    if (disableTime > 0 && !bConfused)
+    {
+        disableTime -= deltaTime;
 
-	// if this turret is not active, get out
-	if (disableTime > 0)
-        return;
+        if (disableTime <= 0 && bDisabled && gun.hackStrength != 0.0)
+        {
+		    bDisabled = False;
+            //Reset Tracking
+            bTrackPlayersOnly = true;
+            bTrackPawnsOnly = false;
+        }
+    }
 
 	GetAxes(gun.Rotation, X, Y, Z);
 

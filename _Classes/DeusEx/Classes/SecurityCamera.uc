@@ -49,7 +49,8 @@ var bool bDiffProperties; //CyberP:
 var bool bSkillApplied; //CyberP:
 
 //Sarge: Hacking disable time
-var float disableTime;           //Sarge: timer before we are enabled again after hacking.
+var float disableTime;                    //Sarge: timer before we are enabled again after hacking.
+const disableTimeMult = 120.0;            //Sarge: Our hacking skill is multiplied by this to give total disable time
 
 // ------------------------------------------------------------------------------------
 // Network replication
@@ -185,7 +186,7 @@ function UnTrigger(Actor Other, Pawn Instigator)
 		LightType = LT_None;
 		AmbientSound = None;
 		DesiredRotation = origRot;
-		hackStrength = 0.0;
+		//hackStrength = 0.0;
 	}
 }
 
@@ -413,10 +414,18 @@ function Tick(float deltaTime)
 
 	curTarget = None;
 
-    disableTime = FMAX(0,disableTime - deltaTime);
+    if (disableTime > 0 && !bConfused)
+    {
+        disableTime -= deltaTime;
+
+        if (disableTime <= 0 && !bActive && hackStrength != 0.0)
+        {
+		    bActive = True;
+        }
+    }
 
 	// if this camera is not active, get out
-	if (!bActive || disableTime > 0)
+	if (!bActive)
 	{
 		// DEUS_EX AMSD For multiplayer
 		ReplicatedRotation = DesiredRotation;

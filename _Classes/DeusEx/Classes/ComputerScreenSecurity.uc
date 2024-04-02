@@ -37,8 +37,6 @@ var localized String CameraOptionsHeader;
 var localized String PanZoomSpeedHeader;
 var localized String ClickCameraWindowText;
 
-const hackTimeMult = 10.0;               //Sarge: Our hacking skill is multiplied by this to give total disable time
-
 // ----------------------------------------------------------------------
 // InitWindow()
 // ----------------------------------------------------------------------
@@ -326,10 +324,9 @@ function ToggleCameraState(optional bool bCamIsActive, optional bool bCamWasActi
 		if (cam != None)
 		{
             if (winTerm.bHacked)
-                player.SetCameraStateHacked(cam,winterm.GetSkillLevel() * hackTimeMult);
+                player.ToggleCameraStateHacked(cam, compOwner);
             else
                 player.ToggleCameraState(cam, compOwner);
-
             selectedCamera.UpdateCameraStatus();
 		}
 	}
@@ -405,8 +402,8 @@ function SetTurretState(bool bActive, bool bDisabled)
 {
 	if ((selectedCamera != None) && (selectedCamera.turret != None))
 	{
-        if (winTerm.bHacked && bActive == false)
-            player.SetTurretStateHacked(selectedCamera.turret,winterm.GetSkillLevel() * hackTimeMult);
+        if (winTerm.bHacked)
+            player.SetTurretStateHacked(selectedCamera.turret,bActive,bDisabled);
         else
             player.SetTurretState(selectedCamera.turret,bActive,bDisabled);
         selectedCamera.UpdateTurretStatus();
