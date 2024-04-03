@@ -41,7 +41,6 @@ Sarge's Changes since Beta 2.2:
         - The keyring can be selected using Left-Click Frob on doors.
 - Gameplay Changes:
     - Hacking Overhaul
-        - Nuke Software can now be used at Untrained hacking. The hacking window is now shown at Untrained hacking, but without a usable hack button.
         - Bypassing Turrets now requires Advanced hacking, as in Vanilla.
         - Hacked Cameras and Turrets will "reboot" and become re-enabled again after 2 minutes (plus an additional 2 minutes for each level of the Hacking skill)
         - Hacking a computer terminal will disable it and show an access denied message instead, similar to ATMs (Hardcore Only).

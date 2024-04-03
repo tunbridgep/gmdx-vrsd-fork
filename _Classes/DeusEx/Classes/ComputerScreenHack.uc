@@ -36,7 +36,6 @@ var Texture texBorder;
 var localized String HackButtonLabel;
 var localized String ReturnButtonLabel;
 var localized String HackReadyLabel;
-var localized String HackNotReadyLabel;
 var localized String HackInitializingLabel;
 var localized String HackSuccessfulLabel;
 var localized String HackDetectedLabel;
@@ -65,6 +64,7 @@ event InitWindow()
 
 	CreateControls();
 
+	SetHackMessage(HackReadyLabel);
 }
 
 // ----------------------------------------------------------------------
@@ -90,12 +90,9 @@ function CreateControls()
 	CreateTextDigits();
 	CreateHackMessageWindow();
 	CreateHackProgressBar();
-    SetHackMessage(HackReadyLabel);
 	CreateHackButton();
 	//CreateWormButton();
 	//CreateNukeButton();
-    //Sarge: Allow using Nuke at level 0
-    UpdateSoftwareNuke();
 }
 
 // ----------------------------------------------------------------------
@@ -150,9 +147,6 @@ function CreateHackProgressBar()
 function CreateHackButton()
 {
 	local PersonaButtonBarWindow winActionButtons;
-    local float skillLevel;
-
-	skillLevel      = player.SkillSystem.GetSkillLevel(class'SkillComputer');
 
 	winActionButtons = PersonaButtonBarWindow(NewChild(Class'PersonaButtonBarWindow'));
 	winActionButtons.SetPos(20, 86);
@@ -161,11 +155,6 @@ function CreateHackButton()
 
 	btnHack = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow'));
 	btnHack.SetButtonText(HackButtonLabel);
-    if (skillLevel == 0)
-    {
-    	btnHack.DisableWindow();
-	    SetHackMessage(HackNotReadyLabel);
-    }
 }
 
 function CreateWormButton()
@@ -350,11 +339,11 @@ function UpdateSoftwareWorm()
 			if (anItem.IsA('SoftwareStop'))
 				softCount++;
 
+            if (softCount == 1)
+			CreateWormButton();
+
 			anItem = anItem.Inventory;
 		}
-
-        if (softCount >= 1)
-			CreateWormButton();
 
         if (softCount == 0 && btnWorm != none)
             btnWorm.SetSensitivity(false);
@@ -375,11 +364,11 @@ function UpdateSoftwareNuke()
 			if (anItem.IsA('SoftwareNuke'))
 				softCount++;
 
+            if (softCount == 1)
+			CreateNukeButton();
+
 			anItem = anItem.Inventory;
 		}
-
-        if (softCount >= 1)
-			CreateNukeButton();
         if (softCount == 0 && btnNuke != none)
             btnNuke.SetSensitivity(false);
 		//winAugCans.SetCount(augCanCount);
@@ -757,7 +746,6 @@ defaultproperties
      HackButtonLabel="|&Hack"
      ReturnButtonLabel="|&Return"
      HackReadyLabel="Ice Breaker Ready..."
-     HackNotReadyLabel="Ice Breaker Unavailable..."
      HackInitializingLabel="Initializing ICE Breaker..."
      HackSuccessfulLabel="ICE Breaker Hack Successful..."
      HackDetectedLabel="*** WARNING ***|nICE DETECTED! ABORT HACK!"

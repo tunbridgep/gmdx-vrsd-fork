@@ -355,7 +355,7 @@ function CreateHackWindow()
 
 	// Check to see if the player is skilled in Hacking before
 	// creating the window
-	if (bUsesHackWindow)
+	if ((skillLevel > 0) && (bUsesHackWindow))
 	{
 	    //if (skillLevel <= 1 && IsA('NetworkTerminalATM'))
 	    //return;         //CyberP: ATM's need advanced hacking
