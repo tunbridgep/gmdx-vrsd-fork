@@ -100,6 +100,7 @@ function AdditionalDeactivation(DeusExPlayer DeactivatingPlayer)
 
 defaultproperties
 {
+     allowHackingLockout=true
      Team=-1
      terminalType=Class'DeusEx.NetworkTerminalSecurity'
      lockoutDelay=120.000000

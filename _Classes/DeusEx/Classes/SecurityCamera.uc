@@ -409,6 +409,7 @@ function Tick(float deltaTime)
 	local DeusExPlayer curplayer;
 	local DeusExCarcass carcass; // eshkrm
 	//local int skillz; //CyberP                                                //RSD: Removed
+    local int disableTimeInt;
 
 	Super.Tick(deltaTime);
 
@@ -417,6 +418,17 @@ function Tick(float deltaTime)
     if (disableTime > 0 && !bConfused)
     {
         disableTime -= deltaTime;
+        disableTimeInt = int(disableTime);
+        MultiSkins[2] = Texture'BlackMaskTex';
+
+        if (disableTimeInt <= 6)
+        {
+            if (disableTimeInt % 2 == 0)
+            {
+                MultiSkins[2] = Texture'YellowLightTex';
+				//PlaySound(Sound'Beep6',,0.9,, 2560, 0.9);
+            }
+        }
 
         if (disableTime <= 0 && !bActive && hackStrength != 0.0)
         {
@@ -430,7 +442,8 @@ function Tick(float deltaTime)
 		// DEUS_EX AMSD For multiplayer
 		ReplicatedRotation = DesiredRotation;
 
-		MultiSkins[2] = Texture'BlackMaskTex';
+        if (disableTime == 0) //We will handle our own textures
+    		MultiSkins[2] = Texture'BlackMaskTex';
 		return;
 	}
 

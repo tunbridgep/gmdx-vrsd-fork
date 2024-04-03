@@ -27,7 +27,8 @@ var float lockoutTime;				// time when terminal was locked out
 var float lastHackTime;				// last time the terminal was hacked
 var DeusExPlayer curFrobber;     // player currently frobbing.
 var localized String msgLockedOut;
-var bool bBeenHacked;				// Has this computer been hacked before?
+var travel int timesHacked;			// How many times has this computer been hacked?
+var const bool allowHackingLockout;       // Can the player be locked out of this terminal after hacking?
 
 enum EAccessLevel
 {

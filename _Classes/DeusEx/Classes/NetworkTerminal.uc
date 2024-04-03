@@ -251,7 +251,7 @@ event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
 
 function ShowFirstScreen()
 {
-    if (Computers(compOwner) != None && Computers(compOwner).bBeenHacked)
+    if (Computers(compOwner) != None && Computers(compOwner).allowHackingLockout && Computers(compOwner).timesHacked > player.SkillSystem.GetSkillLevel(class'SkillComputer') && player.bHardcoreMode)
         ShowScreen(LockoutScreen);
     else
     	ShowScreen(FirstScreen);
@@ -568,7 +568,7 @@ function ComputerHacked()
 	if (compOwner.IsA('Computers'))
     {
 		userName  = Computers(compOwner).GetUserName(userIndex);
-        Computers(compOwner).bBeenHacked = true;
+        Computers(compOwner).timesHacked++;
     }
 
 	CloseScreen("LOGIN");

@@ -3622,14 +3622,14 @@ function SetTurretState(AutoTurret turret, bool bActive, bool bDisabled)
 function ToggleCameraStateHacked(SecurityCamera cam, ElectronicDevices compOwner)
 {
     if (cam.bActive)
-          cam.disableTime = cam.disableTimeMult * SkillSystem.GetSkillLevel(class'SkillComputer');
+          cam.disableTime = cam.disableTimeMult * MAX(1,SkillSystem.GetSkillLevel(class'SkillComputer'));
     ToggleCameraState(cam,compOwner);
 }
 
 function SetTurretStateHacked(AutoTurret turret, bool bActive, bool bDisabled)
 {
     SetTurretState(turret,bActive,bDisabled);
-    turret.disableTime = turret.disableTimeMult * SkillSystem.GetSkillLevel(class'SkillComputer');
+    turret.disableTime = turret.disableTimeMult * MAX(1,SkillSystem.GetSkillLevel(class'SkillComputer'));
 }
 
 //client->server (window to player)
