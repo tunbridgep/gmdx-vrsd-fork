@@ -2904,7 +2904,7 @@ PerksDescription3="|nAn agent's stamina regenerates at a faster rate (+100%), ev
 
 [SkillComputer]
 SkillName="Hacking"
-Description="The covert manipulation of computers and security consoles.|n|nTotal skill points to master: 6000.|n|nUNTRAINED: An agent can use terminals to read bulletins and news. |n|nTRAINED: An agent can hack computers and security consoles of intermediate security systems and siphon up to half of an ATM's funds. |n|nADVANCED: An agent can hack computers featuring advanced defense systems and siphon all credits from ATMs, and achieves a moderate increase in detection time.|n|nMASTER: An agent is an elite hacker that no system can withstand, gaining the ability to spoof additional credits from ATMs and evading detection for long periods."
+Description="The covert manipulation of computers and security consoles.|n|nTotal skill points to master: 6000.|n|nUNTRAINED: An agent can use terminals to read bulletins and news. |n|nTRAINED: An agent can hack computers and security consoles of intermediate security systems, can shut security systems down for 2 minutes, and siphon up to half of an ATM's funds. |n|nADVANCED: An agent can hack computers featuring advanced defense systems and siphon all credits from ATMs, and achieves a moderate increase in detection time as well as a 2 minute increase in security shutdown time.|n|nMASTER: An agent is an elite hacker that no system can withstand, gaining the ability to spoof additional credits from ATMs and evading detection for long periods, including an additional 2 minute increase in security shutdown time."
 LocalizedPerkName="MODDER"
 LocalizedPerkName2="MISFEATURE EXPLOIT"
 LocalizedPerkName3="TURRET DOMINATION"

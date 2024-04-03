@@ -43,8 +43,9 @@ Sarge's Changes since Beta 2.2:
     - Hacking Overhaul
         - Bypassing Turrets now requires Advanced hacking, as in Vanilla.
         - Hacked Cameras and Turrets will "reboot" and become re-enabled again after 2 minutes (plus an additional 2 minutes for each level of the Hacking skill)
-        - Hacking a computer terminal will disable it and show an access denied message instead, similar to ATMs (Hardcore Only).
+        - Hacking a security computer terminal will disable it and show an access denied message instead, similar to ATMs (Hardcore Only).
             - The number of times a computer can be hacked is based on your Computers skill.
+            - Regular computers will never be locked out, so you can read email to your hearts content.
     - Charged Objects no longer destroy themselves on use in Hardcore mode.
     - Restricted Saving is now a Playthrough Modifier and is no longer restricted to Hardcore Mode. It's still enforced in Hardcore Mode.
     - Added No Keypad Cheese Playthrough Modifier (called "Unknown Codes") which prevents using keypads or computer logins without having found them beforehand. Some codes which are hinted but never given are excepted.
