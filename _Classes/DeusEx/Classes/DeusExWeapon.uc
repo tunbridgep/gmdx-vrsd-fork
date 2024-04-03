@@ -177,6 +177,7 @@ var localized String msgLockAcquire;
 var localized String msgLockLocked;
 var localized String msgRangeUnit;
 var localized String msgTimeUnit;
+var localized String msgPerShellTimeUnit;
 var localized String msgMassUnit;
 var localized String msgNotWorking;
 
@@ -5240,6 +5241,8 @@ simulated function bool UpdateInfo(Object winObject)
 	{
 		if (Level.NetMode != NM_Standalone )
 			str = FormatFloatString(Default.mpReloadTime, 0.1) @ msgTimeUnit;
+		else if (bPerShellReload)
+			str = FormatFloatString(1 / Default.ReloadTime, 0.1) @ msgPerShellTimeUnit;
 		else
 			str = FormatFloatString(Default.ReloadTime, 0.1) @ msgTimeUnit;
 	}
@@ -5247,8 +5250,12 @@ simulated function bool UpdateInfo(Object winObject)
 	if (HasReloadMod())
 	{
 		str = str @ BuildPercentString(ModReloadTime);
-		str = str @ "=" @ FormatFloatString(ReloadTime, 0.1) @ msgTimeUnit;
+		if (bPerShellReload)
+			str = str @ "=" @ FormatFloatString(1 / ReloadTime, 0.1) @ msgPerShellTimeUnit;
+		else
+			str = str @ "=" @ FormatFloatString(ReloadTime, 0.1) @ msgTimeUnit;
 	}
+
     if (!bHandToHand || IsA('WeaponPepperGun') || IsA('WeaponProd'))
 	winInfo.AddInfoItem(msgInfoReload, str, HasReloadMod());
 
@@ -6744,6 +6751,7 @@ defaultproperties
      msgLockLocked="LOCKED"
      msgRangeUnit="FT"
      msgTimeUnit="SEC"
+     msgPerShellTimeUnit="RND/SEC"
      msgMassUnit="LBS"
      msgNotWorking="This weapon doesn't work underwater"
      msgInfoAmmoLoaded="Ammo loaded:"
