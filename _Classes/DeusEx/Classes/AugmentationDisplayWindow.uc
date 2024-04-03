@@ -57,6 +57,7 @@ var localized String msgLightAmpActive;
 var localized String msgIRAmpActive;
 var localized String msgNoImage;
 var localized String msgDisabled;
+var localized String msgReboot;                                                 //Sarge: Added
 var localized String SpottedTeamString;
 var localized String YouArePoisonedString;
 var localized String YouAreBurnedString;
@@ -1320,6 +1321,10 @@ function DrawTargetAugmentation(GC gc)
 				// print disabled robot info
 				if (target.IsA('Robot') && (Robot(target).EMPHitPoints == 0))
 					str = str $ " (" $ msgDisabled $ ")";
+				
+                // print disabled camera info
+                str = str $ GetHackDisabledText(target,true);
+
 				gc.SetTextColor(crossColor);
 
 				// print the range to target
@@ -1428,14 +1433,19 @@ function DrawTargetAugmentation(GC gc)
 			{
 				// display disabled robots
 				if (target.IsA('Robot') && (Robot(target).EMPHitPoints == 0))
-				{
 					str = msgDisabled;
+				
+                // print disabled camera info
+                str = GetHackDisabledText(target,false);
+
+                if (str != "")
+                {
 					gc.SetTextColor(crossColor);
 					gc.GetTextExtent(0, w, h, str);
 					x = boxCX - w/2;
 					y = boxTLY - h - margin;
 					gc.DrawText(x, y, w, h, str);
-				}
+                }
 			}
 		}
 	}
@@ -1460,6 +1470,31 @@ function DrawTargetAugmentation(GC gc)
 	}
 	// set the crosshair colors
 	DeusExRootWindow(player.rootWindow).hud.cross.SetCrosshairColor(crossColor);
+}
+
+function string GetHackDisabledText(Actor target,bool TargetingDisplay)
+{
+    local SecurityCamera cam;
+    local AutoTurret turr;
+    local string str;
+
+    if (target.IsA('AutoTurretGun'))
+        turr = AutoTurret(target.Owner);
+    //else if (target.IsA('AutoTurret'))
+    //    turr = AutoTurret(target);
+    
+    cam = SecurityCamera(target);
+
+    if (turr != None && turr.disableTime > 0)
+        str = Sprintf(msgReboot,int(turr.disableTime));
+    else if (cam != None && cam.disableTime > 0)
+        str = Sprintf(msgReboot,int(cam.disableTime));
+
+    //If using the targeting aug, we need to format it
+    if (TargetingDisplay && str != "")
+        str = " (" $ str $ ")";
+
+    return str;
 }
 
 // ----------------------------------------------------------------------
@@ -1885,6 +1920,7 @@ defaultproperties
      msgIRAmpActive="IRAmp Active"
      msgNoImage="Image Not Available"
      msgDisabled="Disabled"
+     msgReboot="Rebooting in %ds"
      SpottedTeamString="You have spotted a teammate!"
      YouArePoisonedString="You have been poisoned!"
      YouAreBurnedString="You are burning!"
