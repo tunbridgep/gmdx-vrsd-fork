@@ -417,6 +417,7 @@ function Tick(float deltaTime)
 
     if (disableTime > 0 && !bConfused)
     {
+        bActive = False;
         disableTime -= deltaTime;
         disableTimeInt = int(disableTime);
         MultiSkins[2] = Texture'BlackMaskTex';

@@ -224,6 +224,7 @@ function Tick(float deltaTime)
     
     if (disableTime > 0 && !bConfused)
     {
+        bDisabled = True;
         disableTime -= deltaTime;
 
         if (disableTime <= 0 && bDisabled && gun.hackStrength != 0.0)

@@ -1436,7 +1436,8 @@ function DrawTargetAugmentation(GC gc)
 					str = msgDisabled;
 				
                 // print disabled camera info
-                str = GetHackDisabledText(target,false);
+                if (str == "")
+                    str = GetHackDisabledText(target,false);
 
                 if (str != "")
                 {
