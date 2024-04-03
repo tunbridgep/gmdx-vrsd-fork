@@ -130,6 +130,7 @@ function ChargedPickupEnd(DeusExPlayer Player)
     class'DeusExPlayer'.default.bRadarTran=False;
     }
 	bIsActive = False;
+	Player.RefreshChargedPickups(); //SARGE: Now we need to refresh, rather than remove, because an item can be still be assigned to the special weapon slot
 }
 
 // ----------------------------------------------------------------------

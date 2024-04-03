@@ -110,7 +110,7 @@ event DrawWindow(GC gc)
 			ammoInClip = weapon.AmmoLeftInClip();
 			clipsRemaining = weapon.NumClips();
 
-			if (weapon.IsInState('Reload'))
+			if (weapon.IsInState('Reload') && weapon.bPerShellReload == false)
 				gc.DrawText(infoX, 26, 20, 9, msgReloading);
 			else
 				gc.DrawText(infoX, 26, 20, 9, ammoInClip);
@@ -121,7 +121,7 @@ event DrawWindow(GC gc)
 			else
 				gc.SetTextColor(colAmmoText);
 
-			if (weapon.IsInState('Reload'))
+			if (weapon.IsInState('Reload') && weapon.bPerShellReload == false)
 				gc.DrawText(infoX, 38, 20, 9, msgReloading);
 			else
 				gc.DrawText(infoX, 38, 20, 9, clipsRemaining);

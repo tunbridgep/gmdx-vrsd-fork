@@ -627,6 +627,21 @@ exec function cheat()
 
 }
 
+// ----------------------------------------------------------------------
+// AssignSecondaryWeapon
+// Sarge: Now needed because we need to fix up our charged item display if it's out of date
+// ----------------------------------------------------------------------
+
+function AssignSecondary(Inventory item)
+{
+    if (assignedWeapon.isA('ChargedPickup'))
+        RemoveChargedDisplay(ChargedPickup(assignedWeapon));
+
+    assignedWeapon = item;
+
+    RefreshChargedPickups();
+}
+
 function UpdateHDTPsettings()
 {
 	local mesh tempmesh;
@@ -1563,13 +1578,14 @@ function RefreshChargedPickups()
 
 	foreach AllActors(class'ChargedPickup', anItem)
 	{
-		if ((anItem.Owner == Self) && (anItem.IsActive()))
+		if (anItem.Owner == Self)
 		{
 			// Make sure tech goggles display is refreshed
-			if (anItem.IsA('TechGoggles'))
+			if (anItem.IsA('TechGoggles') && anItem.IsActive())
 				TechGoggles(anItem).UpdateHUDDisplay(Self);
 
-			AddChargedDisplay(anItem);
+            if ((anItem.IsActive() || assignedWeapon == anItem) && anItem.GetCurrentCharge() > 0)
+    			AddChargedDisplay(anItem);
 		}
 	}
 }
@@ -9407,7 +9423,9 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 				DeusExPickup(item).NumCopies = 1;
 
 				if (DeusExPickup(item) == assignedWeapon)                       //RSD: Reset our assigned weapon
-					assignedWeapon = None;
+				{
+					AssignSecondary(None);
+				}
 			}
 		}
 		else

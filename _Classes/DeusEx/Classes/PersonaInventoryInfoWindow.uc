@@ -310,12 +310,12 @@ function bool ButtonActivated( Window buttonPressed )
 
                if (assignThis != None && player.assignedWeapon != None && player.assignedWeapon == assignThis)
                {
-                   player.assignedWeapon = None;
+                   player.AssignSecondary(none);
                    player.ClientMessage(msgUnassigned);
                }
                else if (assignThis != None)
                {
-                   player.assignedWeapon = assignThis;
+                   player.AssignSecondary(assignThis);
                    player.ClientMessage(msgAssigned);
                }
 			   break;

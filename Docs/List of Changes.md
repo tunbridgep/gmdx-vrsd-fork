@@ -6,7 +6,8 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX vRSD bug where you could pick up and carry heavy objects while out of energy with the Muscle Augmentation
     - Fixed GMDX vRSD bug allowing using Tech Goggles in the secondary slot for half a second or so when out of charge
 - Quality of Life Improvements:
-    - Reloading "One-shot-at-a-time" weapon (shotguns) will show the ammo count in the ammo display, rather than --, because reloading can be cancelled part way through.
+    - The secondary ammo display for items (when assigned as secondary items) now shows inventory count, rather than always displaying N/A
+    - Reloading "One-shot-at-a-time" weapon (shotguns) will show the ammo count in the ammo display, rather than `---`, because reloading can be cancelled part way through.
     - Pressing the Reload key will no longer reload weapons that have a full clip.
     - Laser Attachments now re-enable themselves automatically if a weapon is holstered and reselected.
     - Hardcore Mode difficulty selection and Gameplay Settings menu are no longer locked behind completing the game, however they strongly warn against changing them.
@@ -47,12 +48,14 @@ Sarge's Changes since Beta 2.2:
             - The number of times a computer can be hacked is based on your Computers skill.
             - Regular computers will never be locked out, so you can read email to your hearts content.
     - Charged Objects no longer destroy themselves on use in Hardcore mode.
+    - Swapped Level 2 and 3 of the EUAS augmentation, because level 2 was arguably better than level 3. Now level 2 detects environmental hazards, level 3 shows visibility on the HUD.
     - Restricted Saving is now a Playthrough Modifier and is no longer restricted to Hardcore Mode. It's still enforced in Hardcore Mode.
     - Added No Keypad Cheese Playthrough Modifier (called "Unknown Codes") which prevents using keypads or computer logins without having found them beforehand. Some codes which are hinted but never given are excepted.
     - Added Door Locking mechanics
         - You can now lock any door you have the nanokey for, plus any doors you have picked previously if you have the Locksport perk (this is retroactive).
         - Enemies cannot open doors which you have locked (Enemies can still open doors that are initially locked in the map unless you lock them)
     - When using Restricted Saving (and Hardcore Mode), Autosaves are now only created the first time upon entering a new level, or if no save has been performed in the last 15 minutes. This is designed to mitigate save-abuse by crossing between maps.
+    - Weapon Mod, Enemy Weapon and Container Randomisation gameplay modifiers now use a table of predetermined random numbers, generated at the start of the game, rather than randomising on map load. This means that you can no longer reroll randomisation for a given map by loading a save before a transition to a new map.
     - Addiction System Rework
         - Alcohol no longer heals for 5 points. Instead, it temporarily gives you 5 torso HP (along with it's usual 5 extra torso Max-HP) while in effect, which is removed afterwards. This health removal cannot kill the player.
         - Alcohol no longer adds to fullness when the addiction system is enabled

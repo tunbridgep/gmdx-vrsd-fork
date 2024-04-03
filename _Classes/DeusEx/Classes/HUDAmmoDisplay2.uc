@@ -22,7 +22,7 @@ var int clipsRemaining;
 var int ammoRemaining;
 var int ammoInClip;
 var DeusExWeapon weapon;
-var Inventory item;                                                             //RSD: Added
+var DeusExPickup item;                                                             //RSD: Added
 
 // Defaults
 var Texture texBackground;
@@ -73,9 +73,9 @@ event DrawWindow(GC gc)
 		weapon = DeusExWeapon(player.assignedWeapon);
 		item = none;                                                            //RSD: Fix for the last weapon assigned icon always showing up
 	}
-    else if (player != None && player.assignedWeapon != none && player.assignedWeapon.IsA('Inventory')) //RSD: Extended to include general inventory items
+    else if (player != None && player.assignedWeapon != none && player.assignedWeapon.IsA('DeusExPickup')) //RSD: Extended to include general inventory items
     {
-    	item = player.assignedWeapon;
+    	item = DeusExPickup(player.assignedWeapon);
     	weapon = none;                                                          //RSD: Fix for the last weapon assigned icon always showing up
    	}
 
@@ -167,8 +167,19 @@ event DrawWindow(GC gc)
 
         //RSD: No ammo for these
         gc.SetTextColor(colAmmoText);
-		gc.DrawText(infoX, 38, 20, 9, NotAvailable);
-        gc.DrawText(infoX, 26, 20, 9, NotAvailable);
+		//gc.DrawText(infoX, 38, 20, 9, NotAvailable);
+        //gc.DrawText(infoX, 26, 20, 9, NotAvailable); //Sarge: Extended to show item counts
+        if (item.isA('ChargedPickup') && ChargedPickup(item).GetCurrentCharge() == 0)
+        {
+    		gc.SetTextColor(colAmmoLowText);
+            gc.DrawText(infoX, 26, 20, 9, "0");
+        }
+        else
+            gc.DrawText(infoX, 26, 20, 9, "1");
+
+        if (item.NumCopies - 1 < 2)
+    		gc.SetTextColor(colAmmoLowText);
+		gc.DrawText(infoX, 38, 20, 9, item.NumCopies - 1);
 	}
 }
 
