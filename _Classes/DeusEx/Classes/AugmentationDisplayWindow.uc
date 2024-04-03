@@ -1082,6 +1082,7 @@ function DrawTargetAugmentation(GC gc)
 	local vector AimLocation;
 	local int AimBodyPart, casted;
     local float visi, wepAcc, litemult, dist;                                   //RSD: Added litemult, dist
+    local int ifflevel;
 
 	crossColor.R = 255; crossColor.G = 255; crossColor.B = 255;
 
@@ -1092,8 +1093,17 @@ function DrawTargetAugmentation(GC gc)
 	targetplayerlocationstring = "";
 
 	//CyberP: Aug IFF
-        if (Player != none && Player.AugmentationSystem!= none && Player.AugmentationSystem.GetAugLevelValue(class'AugIFF') >= 2.0) //RSD: accessed none?
+        if (Player != none && Player.AugmentationSystem!= none) //RSD: accessed none?
         {
+            ifflevel = Player.AugmentationSystem.GetAugLevelValue(class'AugIFF');
+
+            //Level 2 - hazard check
+            if (!bDefenseActive && ifflevel >= 2.0)
+                checkForHazards(gc);
+
+            //Level 3 - visibility display
+            if (ifflevel >= 3.0)
+            {
                 visi = Player.AIVisibility(false);
                 //litemult = ((visi - 0.062745) / (visi));                      //RSD: Jose21Crisis' formula to keep visibility constant during night vision
                 litemult = visi-0.031376;                                       //RSD: New formula to keep visibility constant during night vision (9.3%)
@@ -1105,8 +1115,7 @@ function DrawTargetAugmentation(GC gc)
                 if (casted > 100)
                    casted = 100;
                 Player.LightLevelDisplay = casted;
-                if (!bDefenseActive && Player.AugmentationSystem.GetAugLevelValue(class'AugIFF') >= 3.0)
-                   checkForHazards(gc);
+            }
         }
 
 	if ( target != None && !target.bHidden //)                                  //RSD
