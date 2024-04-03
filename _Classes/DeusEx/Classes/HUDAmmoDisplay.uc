@@ -16,6 +16,7 @@ var localized String NotAvailable;
 var localized String msgReloading;
 var localized String AmmoLabel;
 var localized String ClipsLabel;
+var localized String RoundsLabel;
 
 // Used by DrawWindow
 var int clipsRemaining;
@@ -179,7 +180,11 @@ function DrawBackground(GC gc)
 	gc.SetAlignments(HALIGN_Center, VALIGN_Top);
 
 	gc.DrawText(66, 17, 21, 8, AmmoLabel);
-	gc.DrawText(66, 48, 21, 8, ClipsLabel);
+
+	if (bPerShellReload)
+		gc.DrawText(66, 48, 21, 8, RoundsLabel);
+	else
+		gc.DrawText(66, 48, 21, 8, ClipsLabel);
 }
 
 // ----------------------------------------------------------------------
@@ -220,6 +225,7 @@ defaultproperties
      msgReloading="---"
      AmmoLabel="AMMO"
      ClipsLabel="MAGS"
+	 RoundsLabel="RNDS"
      texBackground=Texture'DeusExUI.UserInterface.HUDAmmoDisplayBackground_1'
      texBorder=Texture'DeusExUI.UserInterface.HUDAmmoDisplayBorder_1'
      LaserLabel="LASER GUIDANCE"
