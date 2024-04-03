@@ -323,18 +323,11 @@ function ToggleCameraState(optional bool bCamIsActive, optional bool bCamWasActi
 
 		if (cam != None)
 		{
-         player.ToggleCameraState(cam, compOwner);
-
-			selectedCamera.UpdateCameraStatus();
-
-         //make turret match, yes, I suck.
-         if ((SelectedCamera.Turret != None) && (Player.Level.Netmode != NM_Standalone))
-         {
-            //if ((selectedCamera.Turret.bActive != cam.bActive) || (selectedCamera.Turret.bDisabled == cam.bActive))
-            player.SetTurretState(SelectedCamera.Turret,bCamIsActive,!bCamIsActive);
-            selectedCamera.UpdateTurretStatus();
-            ComputerSecurityChoice_Turret(choiceWindows[3]).SetMPEnumState();
-         }
+            if (winTerm.bHacked)
+                player.ToggleCameraStateHacked(cam, compOwner);
+            else
+                player.ToggleCameraState(cam, compOwner);
+            selectedCamera.UpdateCameraStatus();
 		}
 	}
 }
@@ -409,17 +402,11 @@ function SetTurretState(bool bActive, bool bDisabled)
 {
 	if ((selectedCamera != None) && (selectedCamera.turret != None))
 	{
-      player.SetTurretState(selectedCamera.turret,bActive,bDisabled);
-      selectedCamera.UpdateTurretStatus();
-
-      //make camera match
-      if ((SelectedCamera.Camera != None) && (Player.Level.Netmode != NM_Standalone))
-      {
-         if (selectedCamera.camera.bActive != bActive)
-            player.ToggleCameraState(selectedCamera.camera, compOwner);
-         selectedCamera.UpdateCameraStatus();
-         ComputerSecurityChoice_MPCamera(choiceWindows[0]).SetMPEnumState();
-      }
+        if (winTerm.bHacked)
+            player.SetTurretStateHacked(selectedCamera.turret,bActive,bDisabled);
+        else
+            player.SetTurretState(selectedCamera.turret,bActive,bDisabled);
+        selectedCamera.UpdateTurretStatus();
 	}
 }
 
