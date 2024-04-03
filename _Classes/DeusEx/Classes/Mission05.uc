@@ -146,7 +146,7 @@ function FirstFrame()
 	       			}
        			}
 
-				player.assignedWeapon = None;
+				player.AssignSecondary(None);
 				player.primaryWeapon = None;
 			}
 

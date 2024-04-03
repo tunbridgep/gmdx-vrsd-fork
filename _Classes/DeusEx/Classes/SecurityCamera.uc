@@ -47,6 +47,11 @@ var bool bTrigSound; //CyberP
 var() bool bAlarmEvent;  //CyberP: optionally send event if triggered.
 var bool bDiffProperties; //CyberP:
 var bool bSkillApplied; //CyberP:
+
+//Sarge: Hacking disable time
+var float disableTime;                    //Sarge: timer before we are enabled again after hacking.
+const disableTimeMult = 120.0;            //Sarge: Our hacking skill is multiplied by this to give total disable time
+
 // ------------------------------------------------------------------------------------
 // Network replication
 // ------------------------------------------------------------------------------------
@@ -181,7 +186,7 @@ function UnTrigger(Actor Other, Pawn Instigator)
 		LightType = LT_None;
 		AmbientSound = None;
 		DesiredRotation = origRot;
-		hackStrength = 0.0;
+		//hackStrength = 0.0;
 	}
 }
 
@@ -404,10 +409,33 @@ function Tick(float deltaTime)
 	local DeusExPlayer curplayer;
 	local DeusExCarcass carcass; // eshkrm
 	//local int skillz; //CyberP                                                //RSD: Removed
+    local int disableTimeInt;
 
 	Super.Tick(deltaTime);
 
 	curTarget = None;
+
+    if (disableTime > 0 && !bConfused)
+    {
+        bActive = False;
+        disableTime -= deltaTime;
+        disableTimeInt = int(disableTime);
+        MultiSkins[2] = Texture'BlackMaskTex';
+
+        if (disableTimeInt <= 6)
+        {
+            if (disableTimeInt % 2 == 0)
+            {
+                MultiSkins[2] = Texture'YellowLightTex';
+				//PlaySound(Sound'Beep6',,0.9,, 2560, 0.9);
+            }
+        }
+
+        if (disableTime <= 0 && !bActive && hackStrength != 0.0)
+        {
+		    bActive = True;
+        }
+    }
 
 	// if this camera is not active, get out
 	if (!bActive)
@@ -415,7 +443,8 @@ function Tick(float deltaTime)
 		// DEUS_EX AMSD For multiplayer
 		ReplicatedRotation = DesiredRotation;
 
-		MultiSkins[2] = Texture'BlackMaskTex';
+        if (disableTime == 0) //We will handle our own textures
+    		MultiSkins[2] = Texture'BlackMaskTex';
 		return;
 	}
 

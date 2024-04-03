@@ -12,6 +12,7 @@ var ShadowWindow               winHackAccountsShadow;
 var ElectronicDevices          compOwner;		// what computer owns this window?
 
 var Class<ComputerUIWindow> FirstScreen;	// First screen to push
+var Class<ComputerUIWindow> LockoutScreen;	// Lockout Screen
 
 // Hacking related variables
 var float loginTime;			// time that the user logged in
@@ -250,7 +251,10 @@ event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
 
 function ShowFirstScreen()
 {
-	ShowScreen(FirstScreen);
+    if (Computers(compOwner) != None && Computers(compOwner).allowHackingLockout && Computers(compOwner).timesHacked > player.SkillSystem.GetSkillLevel(class'SkillComputer') && player.bHardcoreMode)
+        ShowScreen(LockoutScreen);
+    else
+    	ShowScreen(FirstScreen);
 }
 
 // ----------------------------------------------------------------------
@@ -562,7 +566,10 @@ function ComputerHacked()
 	userIndex = 0;
 
 	if (compOwner.IsA('Computers'))
+    {
 		userName  = Computers(compOwner).GetUserName(userIndex);
+        Computers(compOwner).timesHacked++;
+    }
 
 	CloseScreen("LOGIN");
 }
@@ -645,4 +652,5 @@ defaultproperties
      shadowOffsetX=15
      shadowOffsetY=15
      ScreenType=ST_Computer
+	 LockoutScreen=Class'DeusEx.ComputerScreenDisabled'
 }
