@@ -5240,6 +5240,8 @@ simulated function bool UpdateInfo(Object winObject)
 	{
 		if (Level.NetMode != NM_Standalone )
 			str = FormatFloatString(Default.mpReloadTime, 0.1) @ msgTimeUnit;
+		else if (bPerShellReload)
+			str = FormatFloatString(1 / Default.ReloadTime, 0.1) @ msgInfoRoundsPerSec;
 		else
 			str = FormatFloatString(Default.ReloadTime, 0.1) @ msgTimeUnit;
 	}
@@ -5247,6 +5249,9 @@ simulated function bool UpdateInfo(Object winObject)
 	if (HasReloadMod())
 	{
 		str = str @ BuildPercentString(ModReloadTime);
+		if (bPerShellReload)
+			str = str @ "=" @ FormatFloatString(1 / ReloadTime, 0.1) @ msgInfoRoundsPerSec;
+		else
 		str = str @ "=" @ FormatFloatString(ReloadTime, 0.1) @ msgTimeUnit;
 	}
     if (!bHandToHand || IsA('WeaponPepperGun') || IsA('WeaponProd'))

@@ -7,7 +7,9 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX vRSD bug allowing using Tech Goggles in the secondary slot for half a second or so when out of charge
 - Quality of Life Improvements:
     - The secondary ammo display for items (when assigned as secondary items) now shows inventory count, rather than always displaying N/A
-    - Reloading "One-shot-at-a-time" weapon (shotguns) will show the ammo count in the ammo display, rather than `---`, because reloading can be cancelled part way through.
+    - Reloading "One-shot-at-a-time" weapon (shotguns, crossbow, GEP gun) will show the ammo count in the ammo display, rather than `---`, because reloading can be cancelled part way through.
+    - "One-shot-at-a-time" weapons now have "RDS" instead of "MAGS" on the ammo HUD.
+    - "One-shot-at-a-time" weapons have a different formula for calculating reload speed (RDS/SEC).
     - Pressing the Reload key will no longer reload weapons that have a full clip.
     - Laser Attachments now re-enable themselves automatically if a weapon is holstered and reselected.
     - Hardcore Mode difficulty selection and Gameplay Settings menu are no longer locked behind completing the game, however they strongly warn against changing them.

@@ -225,7 +225,7 @@ defaultproperties
      msgReloading="---"
      AmmoLabel="AMMO"
      ClipsLabel="MAGS"
-	 RoundsLabel="RNDS"
+	 RoundsLabel="RDS"
      texBackground=Texture'DeusExUI.UserInterface.HUDAmmoDisplayBackground_1'
      texBorder=Texture'DeusExUI.UserInterface.HUDAmmoDisplayBorder_1'
      LaserLabel="LASER GUIDANCE"
