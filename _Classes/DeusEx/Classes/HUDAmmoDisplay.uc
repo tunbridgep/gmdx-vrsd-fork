@@ -109,7 +109,11 @@ event DrawWindow(GC gc)
 		{
 			// how much ammo is left in the current clip?
 			ammoInClip = weapon.AmmoLeftInClip();
-			clipsRemaining = weapon.NumClips();
+
+			if (weapon.bPerShellReload)
+				clipsRemaining = weapon.NumRounds();
+			else
+				clipsRemaining = weapon.NumClips();
 
 			if (weapon.IsInState('Reload') && weapon.bPerShellReload == false)
 				gc.DrawText(infoX, 26, 20, 9, msgReloading);

@@ -1905,6 +1905,18 @@ simulated function int NumClips()
 		return ((AmmoType.AmmoAmount-AmmoLeftInClip()) + (ReloadCount-1)) / ReloadCount;
 }
 
+simulated function int NumRounds()
+{
+	if (ReloadCount == 0)  // if this weapon is not reloadable
+		return 0;
+	else if (AmmoType == None)
+		return 0;
+	else if (AmmoType.AmmoAmount == 0)	// if we are out of ammo
+		return 0;
+	else  // compute remaining clips
+		return ((AmmoType.AmmoAmount-AmmoLeftInClip()));
+}
+
 simulated function int AmmoAvailable(int ammoNum)
 {
 	local class<Ammo> newAmmoClass;
