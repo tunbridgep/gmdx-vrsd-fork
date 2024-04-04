@@ -251,7 +251,7 @@ event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
 
 function ShowFirstScreen()
 {
-    if (Computers(compOwner) != None && Computers(compOwner).allowHackingLockout && Computers(compOwner).timesHacked > player.SkillSystem.GetSkillLevel(class'SkillComputer') && player.bHardcoreMode)
+    if (Computers(compOwner) != None && Computers(compOwner).allowHackingLockout && Computers(compOwner).timesHacked > player.SkillSystem.GetSkillLevel(class'SkillComputer') && (player.bHardcoreMode || player.bHackLockouts))
         ShowScreen(LockoutScreen);
     else
     	ShowScreen(FirstScreen);
