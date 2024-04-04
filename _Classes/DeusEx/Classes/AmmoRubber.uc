@@ -54,7 +54,7 @@ function Timer()
 		{
 			shell.Velocity = (FRand()*20+90) * Y + (10-FRand()*20) * X;
 			shell.Velocity.Z = 20;
-			shell.MultiSkins[0]=Texture'HDTPItems.Skins.HDTPminicrossbowtex1';
+			shell.MultiSkins[0]=Texture'RSDCrap.Items.RubberShell';
 		}
 		bWaitForIt=False;
 }
@@ -92,7 +92,7 @@ function bool UseAmmo(int AmountNeeded)
 		{
 			shell.Velocity = (FRand()*20+90) * Y + (10-FRand()*20) * X;
 			shell.Velocity.Z = 20;
-			shell.MultiSkins[0]=Texture'HDTPItems.Skins.HDTPminicrossbowtex1';
+			shell.MultiSkins[0]=Texture'RSDCrap.Items.RubberShell';
 		}
 		return True;
 	}
@@ -117,7 +117,7 @@ defaultproperties
      largeIconHeight=45
      Description="A law enforcement tool for non-lethal crowd control."
      beltDescription="RUBBER"
-     Skin=Texture'GMDXSFX.Skins.HDTPAmmoshelltex3'
+     Skin=Texture'RSDCrap.Items.RubberShellBox'
      Mesh=LodMesh'HDTPItems.HDTPammoshell'
      CollisionRadius=9.300000
      CollisionHeight=10.210000
