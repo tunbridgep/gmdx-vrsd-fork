@@ -1278,6 +1278,9 @@ event TravelPostAccept()
 	//local WeaponGEPGun gepTest;
 	local vector ofst;
 
+	//Refresh laser sight
+    RefreshLaser();
+
 	Super.TravelPostAccept();
 
     //Setup player subcomponents
@@ -10267,6 +10270,16 @@ exec function ToggleLaser()
 	if (!W.bHasLaser||W.IsA('WeaponNanoSword')||!W.IsInState('idle')) return;
 
 	SetLaser(!W.bLasing,true);
+}
+
+//Re-enables or re-disables our laser, to stop load-game issues
+function RefreshLaser()
+{
+	local DeusExWeapon W;
+	W = DeusExWeapon(Weapon);
+	if (W==none||(W!=none&&!W.bHasLaser)) return;
+
+    SetLaser(W.bLasing,true);
 }
 
 function SetLaser(bool bNewOn,optional bool bCheckXhair)
