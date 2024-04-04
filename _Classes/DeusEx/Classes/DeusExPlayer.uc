@@ -8978,7 +8978,11 @@ function bool CanBeLifted(Decoration deco)
         }
 	}
 
-	if (!deco.bPushable || (deco.Mass > maxLift) || (deco.StandingCount > 1))
+    //Always allow left-grabbing if we have bLeftGrab set, no matter what
+    if (deco.isA('DeusExDecoration') && DeusExDecoration(deco).bLeftGrab)
+    {
+    }
+    else if (!deco.bPushable || (deco.Mass > maxLift) || (deco.StandingCount > 1))
 	{
 		if (deco.bPushable)
 			ClientMessage(TooHeavyToLift);
