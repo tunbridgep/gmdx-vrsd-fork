@@ -203,7 +203,7 @@ function CycleNextValue()
 		super.CycleNextValue();
 
 	UpdateInfoButton();
-	Player.SaveConfigOverride();
+	Player.SaveConfig();
 }
 
 // ----------------------------------------------------------------------

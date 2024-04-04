@@ -545,7 +545,7 @@ function UpdateSettings( DeusExPlayer player , optional bool bNoBelt)
 	activeItems.SetVisibility(player.bAugDisplayVisible);
 	damageDisplay.SetVisibility(player.bHitDisplayVisible);
 	compass.SetVisibility(player.bCompassVisible);
-	cross.SetCrosshair(player.bCrosshairVisible);
+    UpdateCrosshair(player);
 	radialAugMenu.Show(player.bRadialAugMenuVisible);
 
 	//RSD: Also bring back any windows we may have closed in realtime UI
@@ -566,6 +566,12 @@ function UpdateSettings( DeusExPlayer player , optional bool bNoBelt)
 
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
+
+function UpdateCrosshair(DeusExPlayer player)
+{
+    //player.bCrosshairVisible = player.GetCrosshairState();
+	cross.SetCrosshair(player.GetCrosshairState());
+}
 
 defaultproperties
 {

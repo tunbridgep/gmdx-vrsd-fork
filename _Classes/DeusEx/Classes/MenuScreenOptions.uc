@@ -12,7 +12,7 @@ class MenuScreenOptions expands MenuUIScreenWindow;
 function SaveSettings()
 {
    Super.SaveSettings();
-	player.SaveConfigOverride();
+	player.SaveConfig();
 }
 
 // ----------------------------------------------------------------------

@@ -230,6 +230,7 @@ simulated function renderoverlays(Canvas canvas)
 		SetHand(PlayerPawn(Owner).Handedness);
 		if (player!=none)
 		{
+            player.UpdateCrosshair();
 			player.GEPmounted=none;
 			player=none;
 		}

@@ -51,10 +51,12 @@ event Tick(float deltaSeconds)
 	{
 		cross = dxRoot.hud.cross;
 
+		/*
 		if (bActive)
 			cross.SetCrosshair(false);
 		else
 			cross.SetCrosshair(player.bCrosshairVisible);
+		*/
 	}
 }
 
@@ -137,6 +139,8 @@ function ActivateView(int newFOV, bool bNewBinocs, bool bInstant)
 
 		}*/
 	}
+	
+	player.UpdateCrosshair();
 }
 
 // ----------------------------------------------------------------------
@@ -197,6 +201,8 @@ function DeactivateView()
 			Hide();
 		}
 	}
+	
+	player.UpdateCrosshair();
 }
 
 // ----------------------------------------------------------------------

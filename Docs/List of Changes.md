@@ -5,7 +5,10 @@ Sarge's Changes since Beta 2.2:
     - Fixed a bug where the Nuke and Worm software buttons were completely white squares on the Hacking menu.
     - Fixed GMDX vRSD bug where you could pick up and carry heavy objects while out of energy with the Muscle Augmentation
     - Fixed GMDX vRSD bug allowing using Tech Goggles in the secondary slot for half a second or so when out of charge
+    - Fixed the Crosshair Visibility settings in the options getting constantly overridden by lasers etc. The outer crosshairs showing your accuracy are also now linked to the Crosshair visibility setting.
 - Quality of Life Improvements:
+    - Added an optional "Dynamic Crosshair" mode, which shows a small dot-crosshair when no weapons is equipped, and some items have no crosshairs at all.
+        - Also fixed many instances of crosshair weirdness.
     - The secondary ammo display for items (when assigned as secondary items) now shows inventory count, rather than always displaying N/A
     - Reloading "One-shot-at-a-time" weapon (shotguns) will show the ammo count in the ammo display, rather than `---`, because reloading can be cancelled part way through.
     - Pressing the Reload key will no longer reload weapons that have a full clip.
