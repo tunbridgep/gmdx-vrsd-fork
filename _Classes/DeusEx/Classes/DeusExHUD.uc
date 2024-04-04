@@ -569,7 +569,6 @@ function UpdateSettings( DeusExPlayer player , optional bool bNoBelt)
 
 function UpdateCrosshair(DeusExPlayer player)
 {
-    //player.bCrosshairVisible = player.GetCrosshairState();
 	cross.SetCrosshair(player.GetCrosshairState());
 }
 

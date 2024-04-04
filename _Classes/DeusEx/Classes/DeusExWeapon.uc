@@ -2646,6 +2646,8 @@ simulated function RefreshScopeDisplay(DeusExPlayer player, bool bInstant, bool 
 	{
 	  DeusExrootWindow(player.rootWindow).scopeView.DeactivateView();
 	}
+
+    player.UpdateCrosshair();
 }
 
 //

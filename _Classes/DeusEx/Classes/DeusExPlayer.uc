@@ -425,7 +425,7 @@ var globalconfig bool bHackLockouts;											//Sarge: Allow locking-out securi
 var bool bForceBeltAutofill;    	    										//Sarge: Overwrite autofill setting. Used by starting items
 var globalconfig bool bBeltMemory;  											//Sarge: Added new feature to allow belt to rember items
 var globalconfig bool bSmartKeyring;  											//Sarge: Added new feature to allow keyring to be used without belt, freeing up a slot
-var globalconfig bool bDynamicCrosshair;    									//Sarge: Allow using a special interaction crosshair
+var globalconfig int dynamicCrosshair;       									//Sarge: Allow using a special interaction crosshair
 var travel BeltInfo beltInfos[10];                                              //Sarge: Holds information about belt slots
 var travel float fullUp; //CyberP: eat/drink limit.                             //RSD: was int, now float
 var localized string fatty; //CyberP: eat/drink limit.
@@ -1288,6 +1288,9 @@ event TravelPostAccept()
 
 	// reset the keyboard
 	ResetKeyboard();
+
+    //Reset Crosshair
+    UpdateCrosshair();
 
 	RefreshLeanKeys();
     RefreshMantleKey();
@@ -10211,7 +10214,7 @@ exec function ToggleRadialAugMenu()
 	   ViewRotation = aDrone.Rotation; // This is especially nausea-invoking
 
 
-
+    UpdateCrosshair();
     UpdateHud();
 }
 
@@ -10284,7 +10287,7 @@ function bool GetCrosshairState(optional bool bCheckForOuterCrosshairs)
 {
 	local DeusExWeapon W;
 
-	W = DeusExWeapon(inHandPending);
+	W = DeusExWeapon(inHand);
 
     if (!bCrosshairVisible)
         return false;
@@ -10322,8 +10325,10 @@ function bool GetCrosshairState(optional bool bCheckForOuterCrosshairs)
                 return false;
         }
     }
-    else if (inHandPending != None && !inHandPending.isA('SkilledTool') && bDynamicCrosshair) //Non-weapons have no crosshair
+    else if (dynamicCrosshair == 2) //If not a weapon, use nothing as our crosshair
         return false;
+    //else if (inHand != None && !inHand.isA('SkilledTool') && dynamicCrosshair > 0) //Non-weapons have no crosshair
+    //    return false;
     //else //Empty hands or non-weapons have no crosshair //SARGE: Now get a dot crosshair instead
     //    return false;
     
@@ -10348,9 +10353,9 @@ function UpdateCrosshairStyle()
 
         if (hitmarkerTime > 0)
             root.hud.cross.SetBackground(Texture'GMDXSFX.Icons.Hitmarker');
-        else if (inHandPending.isA('DeusExWeapon') || !bDynamicCrosshair)
+        else if (inHand.isA('DeusExWeapon') || dynamicCrosshair == 0)
     		root.hud.cross.SetBackground(Texture'CrossSquare');
-        else if (inHandPending == None)
+        else if (inHand == None)
     		root.hud.cross.SetBackground(Texture'CrossDot');
     }
 }
