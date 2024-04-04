@@ -181,7 +181,7 @@ function DrawBackground(GC gc)
 
 	gc.DrawText(66, 17, 21, 8, AmmoLabel);
 
-	if (bPerShellReload)
+	if (weapon.bPerShellReload)
 		gc.DrawText(66, 48, 21, 8, RoundsLabel);
 	else
 		gc.DrawText(66, 48, 21, 8, ClipsLabel);
