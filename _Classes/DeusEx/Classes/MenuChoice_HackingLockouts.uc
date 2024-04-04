@@ -1,14 +1,14 @@
 //-----------------------------------------------------------
-//CyberP: Enable Disable Save Points costing credits
+//Sarge: Enable/disable belt autofill
 //-----------------------------------------------------------
-class MenuChoice_ExtraHardcore extends MenuChoice_EnabledDisabled;
+class MenuChoice_HackingLockouts extends MenuChoice_EnabledDisabled;
 // ----------------------------------------------------------------------
 // LoadSetting()
 // ----------------------------------------------------------------------
 
 function LoadSetting()
 {
-	SetValue(int(!player.bExtraHardcore));
+	SetValue(int(!player.bHackLockouts));
 }
 
 // ----------------------------------------------------------------------
@@ -17,7 +17,7 @@ function LoadSetting()
 
 function SaveSetting()
 {
-	player.bExtraHardcore = !bool(GetValue());
+	player.bHackLockouts = !bool(GetValue());
 }
 
 // ----------------------------------------------------------------------
@@ -25,7 +25,7 @@ function SaveSetting()
 
 function ResetToDefault()
 {
-	SetValue(int(!player.bExtraHardcore));
+	SetValue(int(!player.bHackLockouts));
 }
 
 // ----------------------------------------------------------------------
@@ -33,7 +33,7 @@ function ResetToDefault()
 
 defaultproperties
 {
-     defaultInfoWidth=98
-     HelpText="If set to Enabled, hardcore mode's save points require 100 credits to use. For veterans only."
-     actionText="|&Hardcore Mode+"
+     defaultInfoWidth=88
+     HelpText="Security Terminals will prevent access after being hacked a certain number of times, based on Computer skill. Hardcore features this behaviour by default"
+     actionText="|&Hacking Lockouts"
 }

@@ -420,6 +420,7 @@ var globalconfig bool bXhairShrink;
 var globalconfig bool bNoKnives;
 var globalconfig bool bModdedHeadBob;
 var globalconfig bool bBeltAutofill;											//Sarge: Added new feature for auto-populating belt
+var globalconfig bool bHackLockouts;											//Sarge: Allow locking-out security terminals when hacked.
 var bool bForceBeltAutofill;    	    										//Sarge: Overwrite autofill setting. Used by starting items
 var globalconfig bool bBeltMemory;  											//Sarge: Added new feature to allow belt to rember items
 var globalconfig bool bSmartKeyring;  											//Sarge: Added new feature to allow keyring to be used without belt, freeing up a slot
@@ -1277,6 +1278,9 @@ event TravelPostAccept()
 
 	//local WeaponGEPGun gepTest;
 	local vector ofst;
+
+	//Refresh laser sight
+    RefreshLaser();
 
 	Super.TravelPostAccept();
 
@@ -3638,14 +3642,19 @@ function SetTurretState(AutoTurret turret, bool bActive, bool bDisabled)
 function ToggleCameraStateHacked(SecurityCamera cam, ElectronicDevices compOwner)
 {
     if (cam.bActive)
-          cam.disableTime = cam.disableTimeMult * MAX(1,SkillSystem.GetSkillLevel(class'SkillComputer'));
+        cam.disableTime = cam.disableTimeMult * MAX(1,SkillSystem.GetSkillLevel(class'SkillComputer'));
+    else
+        cam.disableTime = 0;
     ToggleCameraState(cam,compOwner);
 }
 
 function SetTurretStateHacked(AutoTurret turret, bool bActive, bool bDisabled)
 {
+    if (bDisabled)
+        turret.disableTime = turret.disableTimeMult * MAX(1,SkillSystem.GetSkillLevel(class'SkillComputer'));
+    else
+        turret.disableTime = 0;
     SetTurretState(turret,bActive,bDisabled);
-    turret.disableTime = turret.disableTimeMult * MAX(1,SkillSystem.GetSkillLevel(class'SkillComputer'));
 }
 
 //client->server (window to player)
@@ -8978,7 +8987,11 @@ function bool CanBeLifted(Decoration deco)
         }
 	}
 
-	if (!deco.bPushable || (deco.Mass > maxLift) || (deco.StandingCount > 1))
+    //Always allow left-grabbing if we have bLeftGrab set, no matter what
+    if (deco.isA('DeusExDecoration') && DeusExDecoration(deco).bLeftGrab)
+    {
+    }
+    else if (!deco.bPushable || (deco.Mass > maxLift) || (deco.StandingCount > 1))
 	{
 		if (deco.bPushable)
 			ClientMessage(TooHeavyToLift);
@@ -10263,6 +10276,16 @@ exec function ToggleLaser()
 	if (!W.bHasLaser||W.IsA('WeaponNanoSword')||!W.IsInState('idle')) return;
 
 	SetLaser(!W.bLasing,true);
+}
+
+//Re-enables or re-disables our laser, to stop load-game issues
+function RefreshLaser()
+{
+	local DeusExWeapon W;
+	W = DeusExWeapon(Weapon);
+	if (W==none||(W!=none&&!W.bHasLaser)) return;
+
+    SetLaser(W.bLasing,true);
 }
 
 function SetLaser(bool bNewOn,optional bool bCheckXhair)

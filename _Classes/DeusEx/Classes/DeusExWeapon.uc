@@ -81,7 +81,7 @@ var travel bool         bLaserToggle;           // Remembers the toggle state of
 
 var bool				bCanHaveLaser;			// can this weapon have a laser sight?
 var() travel bool		bHasLaser;				// does this weapon have a laser sight?
-var bool				bLasing;				// is the laser sight currently on?
+var travel bool			bLasing;				// is the laser sight currently on?
 var LaserEmitter		Emitter;				// actual laser emitter - valid only when bLasing == True
 
 var bool				bCanHaveSilencer;		// can this weapon have a silencer?

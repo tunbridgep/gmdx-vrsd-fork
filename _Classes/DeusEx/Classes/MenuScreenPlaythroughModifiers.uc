@@ -23,6 +23,11 @@ var MenuUIListWindow lstModifiers;
 var localized string EnabledText;
 var localized string DisabledText;
 
+var localized string HardcorePlusText;
+var localized string HardcorePlusDesc;
+
+var bool bHardcoreSelected;                             //SARGE: Set by the new game menu to tell this menu we are playing in Hardcore mode
+
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -38,7 +43,7 @@ event InitWindow()
     BuildModifierList();
 	CreateModifierList();
 	CreateHeaderButtons();
-	PopulateModifierList();
+	//PopulateModifierList(); //Sarge: We now do this manually so we can pass the Hardcore setting
 
     if (Selection != -1)
 		ShowHelp(modifierDesc[lstModifiers.RowIdToIndex(lstModifiers.GetSelectedRow())]);
@@ -114,6 +119,14 @@ function PopulateModifierList()
 
 	// First erase the old list
 	lstModifiers.DeleteAllRows();
+
+    //Update for hardcore mode. Remove save restrictions and add hardcore+ instead
+    if (bHardcoreSelected)
+    {
+        modifierText[5]=HardcorePlusText;
+        modifierDesc[5]=HardcorePlusDesc;
+        modifierBools[5] = "bExtraHardcore";
+    }
 
 	for(modIndex=0; modIndex<arrayCount(modifierBools); modIndex++ )
 	{
@@ -258,4 +271,6 @@ defaultproperties
      textureCols=2
      bHelpAlwaysOn=True
      helpPosY=312
+     hardcorePlusText="Hardcore Mode+"
+     hardcorePlusDesc="If enabled, hardcore mode's save points require 100 credits to use, among other new rules such as -10% base accuracy for all weapons. For veterans only."
 }
