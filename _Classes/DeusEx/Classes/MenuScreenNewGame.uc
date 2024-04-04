@@ -53,6 +53,7 @@ var bool bRandomizeEnemies;
 var bool bAddictionSystem;
 var bool bRestrictedSaving;
 var bool bNoKeypadCheese;
+var bool bExtraHardcore;
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -81,15 +82,17 @@ event InitWindow()
     bRandomizeAugs=false;                                                       //RSD
     bAddictionSystem=false;                                                     //RSD
     bRestrictedSaving=false;                                                    //Sarge
-    bNoKeypadCheese=false;                                                    //Sarge
+    bNoKeypadCheese=false;                                                      //Sarge
     bRandomizeEnemies=false;                                                    //Sarge
+    bExtraHardcore=false;                                                       //Sarge
     default.bRandomizeCrates=false;                                             //RSD: Also need default values! Otherwise get command in modifier menu takes the wrong value
     default.bRandomizeMods=false;                                               //RSD
     default.bRandomizeAugs=false;                                               //RSD
     default.bAddictionSystem=false;                                             //RSD
     default.bRestrictedSaving=false;                                            //Sarge
     default.bNoKeypadCheese=false;                                              //Sarge
-    default.bRandomizeEnemies=false;                                              //Sarge
+    default.bRandomizeEnemies=false;                                            //Sarge
+    default.bExtraHardcore=false;                                               //Sarge
 
 	StyleChanged();
 }
@@ -664,7 +667,11 @@ function ProcessAction(String actionKey)
 		}
 	}
 	else if (actionKey == "MODIFIERS")                                          //RSD: New modifiers menu
+    {
 		modMenu = MenuScreenPlaythroughModifiers(root.InvokeMenuScreen(Class'MenuScreenPlaythroughModifiers'));
+        modMenu.bHardcoreSelected = bHardCoreMode;
+        modMenu.PopulateModifierList();
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -689,6 +696,7 @@ function SaveSettings()
     if (player.bRandomizeAugs)                                                  //RSD: New aug randomization feature
         ScrambleAugOrderList();
     player.bAddictionSystem=bAddictionSystem;
+    player.bExtraHardcore=bExtraHardcore;
 }
 
 function ScrambleAugOrderList()                                                 //RSD: Shuffle the order of aug canisters encountered throughout the game

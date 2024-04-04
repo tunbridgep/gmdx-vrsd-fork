@@ -420,6 +420,7 @@ var globalconfig bool bXhairShrink;
 var globalconfig bool bNoKnives;
 var globalconfig bool bModdedHeadBob;
 var globalconfig bool bBeltAutofill;											//Sarge: Added new feature for auto-populating belt
+var globalconfig bool bHackLockouts;											//Sarge: Allow locking-out security terminals when hacked.
 var bool bForceBeltAutofill;    	    										//Sarge: Overwrite autofill setting. Used by starting items
 var globalconfig bool bBeltMemory;  											//Sarge: Added new feature to allow belt to rember items
 var globalconfig bool bSmartKeyring;  											//Sarge: Added new feature to allow keyring to be used without belt, freeing up a slot
@@ -3641,14 +3642,19 @@ function SetTurretState(AutoTurret turret, bool bActive, bool bDisabled)
 function ToggleCameraStateHacked(SecurityCamera cam, ElectronicDevices compOwner)
 {
     if (cam.bActive)
-          cam.disableTime = cam.disableTimeMult * MAX(1,SkillSystem.GetSkillLevel(class'SkillComputer'));
+        cam.disableTime = cam.disableTimeMult * MAX(1,SkillSystem.GetSkillLevel(class'SkillComputer'));
+    else
+        cam.disableTime = 0;
     ToggleCameraState(cam,compOwner);
 }
 
 function SetTurretStateHacked(AutoTurret turret, bool bActive, bool bDisabled)
 {
+    if (bDisabled)
+        turret.disableTime = turret.disableTimeMult * MAX(1,SkillSystem.GetSkillLevel(class'SkillComputer'));
+    else
+        turret.disableTime = 0;
     SetTurretState(turret,bActive,bDisabled);
-    turret.disableTime = turret.disableTimeMult * MAX(1,SkillSystem.GetSkillLevel(class'SkillComputer'));
 }
 
 //client->server (window to player)

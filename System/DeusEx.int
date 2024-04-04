@@ -3595,10 +3595,6 @@ actionText="|&Hit Indicator"
 HelpText="If Enabled, you can mantle objects within view by pressing jump (default: Space) whilst airborne."
 actionText="|&Mantling"
 
-[MenuChoice_ExtraHardcore]
-HelpText="If set to Enabled, hardcore mode's save points require 100 credits to use, among other new rules such as -10% base accuracy for all weapons. For veterans only."
-actionText="|&Hardcore Mode+"
-
 [MenuChoice_CameraState]
 HelpText="Cameras detect downed NPCs in their field of view and sound an alarm. Note: hardcore mode features this behaviour by default."
 actionText="|&Advanced Security A"

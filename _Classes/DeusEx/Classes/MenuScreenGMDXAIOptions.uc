@@ -12,7 +12,7 @@ function SaveSettings()
 
 defaultproperties
 {
-     choices(0)=Class'DeusEx.MenuChoice_ExtraHardcore'
+     choices(0)=Class'DeusEx.MenuChoice_HackingLockouts'
      choices(1)=Class'DeusEx.MenuChoice_CameraState'
      choices(2)=Class'DeusEx.MenuChoice_CameraState2'
      choices(3)=Class'DeusEx.MenuChoice_HardcoreAI1'
