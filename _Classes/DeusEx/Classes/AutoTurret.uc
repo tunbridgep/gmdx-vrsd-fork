@@ -70,7 +70,8 @@ function Trigger(Actor Other, Pawn Instigator)
 // if we are untriggered, turn us off
 function UnTrigger(Actor Other, Pawn Instigator)
 {
-	if (bConfused || bDisabled)
+	//if (bConfused || bDisabled) //Sarge: Attempted fix for EMP not allowing turrets to be hacked at all
+    if (bDisabled)
 		return;
 
 	if (bActive)
