@@ -3591,6 +3591,7 @@ function ToggleCameraState(SecurityCamera cam, ElectronicDevices compOwner)
 	}
 	else
 	{
+      cam.disableTime = 0;
 	  MakeCameraAlly(cam);
 	  cam.Trigger(compOwner, self);
 	}
@@ -3603,6 +3604,8 @@ function ToggleCameraState(SecurityCamera cam, ElectronicDevices compOwner)
 //client->server (window to player)
 function SetTurretState(AutoTurret turret, bool bActive, bool bDisabled)
 {
+    if (bActive)
+      turret.disableTime = 0;
 	turret.bActive   = bActive;
 	turret.bDisabled = bDisabled;
 	turret.bComputerReset = False;
