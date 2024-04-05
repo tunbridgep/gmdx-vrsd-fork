@@ -4,7 +4,6 @@
 class HUDRadialMenu extends Window;
 
 
-#exec TEXTURE IMPORT NAME=WhiteDot FILE=Textures\WhiteDot.pcx MIPS=Off
 #exec TEXTURE IMPORT NAME=PowerIconActive FILE=Textures\PowerIconActive.pcx MIPS=Off
 #exec TEXTURE IMPORT NAME=PowerIconInactive FILE=Textures\PowerIconInactive.pcx MIPS=Off
 
@@ -351,7 +350,7 @@ defaultproperties
      cursorPos=(Y=-1.000000)
      focusMarkerCol=(R=255,G=255,B=255)
      focusMarkerStyle=DSTY_Translucent
-     focusMarkerTex=Texture'DeusEx.WhiteDot'
+     focusMarkerTex=Texture'RSDCrap.UserInterface.WhiteDot'
      markerDistanceToCenter=0.500000
      powerActive=Texture'DeusEx.PowerIconActive'
      powerInactive=Texture'DeusEx.PowerIconInactive'

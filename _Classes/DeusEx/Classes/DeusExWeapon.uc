@@ -1660,7 +1660,11 @@ function bool LoadAmmo(int ammoNum)
 			if (DeusExPlayer(P) != None)
 				DeusExPlayer(P).UpdateBeltText(Self);
 
-			ReloadAmmo();
+			if (IsA('WeaponAssaultGun'))
+			{
+			}
+			else
+				ReloadAmmo();
 
 			P.ClientMessage(Sprintf(msgNowHas, ItemName, newAmmoClass.Default.ItemName));
 			return True;
