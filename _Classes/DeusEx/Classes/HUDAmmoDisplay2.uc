@@ -16,6 +16,7 @@ var localized String NotAvailable;
 var localized String msgReloading;
 var localized String AmmoLabel;
 var localized String ClipsLabel;
+var localized String InvLabel;
 
 // Used by DrawWindow
 var int clipsRemaining;
@@ -198,8 +199,16 @@ function DrawBackground(GC gc)
 	gc.SetTextColor(colText);
 	gc.SetAlignments(HALIGN_Center, VALIGN_Top);
 
-	gc.DrawText(66, 17, 21, 8, AmmoLabel);
-	gc.DrawText(66, 48, 21, 8, ClipsLabel);
+    if (player.assignedWeapon.isA('DeusExWeapon'))
+    {
+        gc.DrawText(66, 17, 21, 8, AmmoLabel);
+        gc.DrawText(66, 48, 21, 8, ClipsLabel);
+    }
+    else
+    {
+        //gc.DrawText(66, 17, 21, 8, AmmoLabel);
+        gc.DrawText(66, 48, 21, 8, InvLabel);
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -240,6 +249,7 @@ defaultproperties
      msgReloading="---"
      AmmoLabel="AMMO"
      ClipsLabel="MAGS"
+     InvLabel="COUNT"
      texBackground=Texture'DeusExUI.UserInterface.HUDAmmoDisplayBackground_1'
      texBorder=Texture'DeusExUI.UserInterface.HUDAmmoDisplayBorder_1'
 }
