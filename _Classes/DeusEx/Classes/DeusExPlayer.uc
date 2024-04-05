@@ -10297,10 +10297,6 @@ function bool GetCrosshairState(optional bool bCheckForOuterCrosshairs)
 
     if (IsInState('Dying')) //No crosshair while dying
         return false;
-    
-    //Always allow hit markers
-    if (hitmarkerTime > 0)
-        return true;
 
     if (W != None)
     {
@@ -10354,13 +10350,16 @@ function UpdateCrosshairStyle()
     {
         cross = root.hud.cross;
 
-        if (hitmarkerTime > 0)
-            root.hud.cross.SetBackground(Texture'GMDXSFX.Icons.Hitmarker');
-        else if (inHand.isA('DeusExWeapon') || dynamicCrosshair == 0)
+        if (inHand.isA('DeusExWeapon') || dynamicCrosshair == 0)
     		root.hud.cross.SetBackground(Texture'CrossSquare');
         else if (inHand == None)
     		root.hud.cross.SetBackground(Texture'CrossDot');
     }
+}
+
+function bool GetHitMarkerState()
+{
+    return hitmarkerTime > 0;
 }
 
 function UpdateCrosshair()

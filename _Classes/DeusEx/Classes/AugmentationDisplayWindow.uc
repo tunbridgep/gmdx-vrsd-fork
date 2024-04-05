@@ -1477,6 +1477,7 @@ function DrawTargetAugmentation(GC gc)
 	}
 	// set the crosshair colors
 	DeusExRootWindow(player.rootWindow).hud.cross.SetCrosshairColor(crossColor);
+	DeusExRootWindow(player.rootWindow).hud.hitmarker.SetCrosshairColor(crossColor);
 }
 
 function string GetHackDisabledText(Actor target,bool TargetingDisplay)
