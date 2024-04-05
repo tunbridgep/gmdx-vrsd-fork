@@ -443,7 +443,16 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
 		//log("dooStrength "@doorStrength); //CyberP: we don't need to log this
       // add up the damage
 		if (Damage >= minDamageThreshold)
+        {
 			doorStrength -= Damage * 0.01;
+
+            //Sarge: Add Hit Markers
+            if (instigatedBy != None && instigatedBy.IsA('DeusExPlayer'))
+            {
+                if (DeusExPlayer(instigatedBy).bHitmarkerOn)
+                    DeusExPlayer(instigatedBy).hitmarkerTime = 0.2;
+            }
+        }
 
 		//log("doorStrength1 "@doorStrength);
 

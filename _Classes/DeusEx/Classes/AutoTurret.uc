@@ -902,6 +902,8 @@ function bool checkForObstruction()                                             
 defaultproperties
 {
      titleString="AutoTurret"
+     bHitMarkers=True
+     bEMPHitMarkers=True
      bTrackPlayersOnly=True
      bActive=True
      maxRange=4000
