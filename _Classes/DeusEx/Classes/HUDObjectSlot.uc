@@ -246,12 +246,12 @@ local DeusExWeapon weapon;
         if ((weapon != None) && (weapon.AmmoName != class'AmmoNone') && (!weapon.bHandToHand) && (weapon.ReloadCount != 0) && (weapon.AmmoType != None))
 			{
             	itemText = weapon.AmmoType.beltDescription;
-            if (weapon.AmmoName == class'AmmoDartPoison')
+            if (weapon.AmmoName == class'AmmoDartPoison' || weapon.AmmoName == class'AmmoRubber')
             gc.SetTextColor(colAmmoTranqText);
             else if (weapon.AmmoName == class'AmmoDartFlare' || weapon.AmmoName == class'Ammo10mmAP' || weapon.AmmoName == class'AmmoSabot' ||
             weapon.AmmoName == class'AmmoRocketWP' || weapon.AmmoName == class'Ammo20mm')
 			gc.SetTextColor(colAmmoFlareText);
-			else if (weapon.AmmoName == class'Ammo20mmEMP' || weapon.AmmoName == class'AmmoPlasmaSuperheated' || weapon.AmmoName == class'AmmoRubber' || weapon.AmmoName == class'AmmoDartTaser')
+			else if (weapon.AmmoName == class'Ammo20mmEMP' || weapon.AmmoName == class'AmmoPlasmaSuperheated' || weapon.AmmoName == class'AmmoSabot' || weapon.AmmoName == class'AmmoDartTaser')
 			gc.SetTextColor(colAmmoEMPText);
 			}
 		if (weapon != None && weapon.IsA('WeaponHideAGun') && weapon.ProjectileClass == class'DeusEx.PlasmaBolt')
