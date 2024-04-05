@@ -6,6 +6,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX vRSD bug where you could pick up and carry heavy objects while out of energy with the Muscle Augmentation
     - Fixed GMDX vRSD bug allowing using Tech Goggles in the secondary slot for half a second or so when out of charge
     - Fixed the Crosshair Visibility settings in the options getting constantly overridden by lasers etc. The outer crosshairs showing your accuracy are also now linked to the Crosshair visibility setting.
+    - Fixed GMDX Bug where EMP'd turrets and cameras will re-enable themselves after the EMP effect runs out, even if they were disabled during the EMP effect.
 - Quality of Life Improvements:
     - Added an optional "Dynamic Crosshair" mode, which shows a small dot-crosshair when no weapons is equipped, and some items have no crosshairs at all.
         - Also fixed many instances of crosshair weirdness.
