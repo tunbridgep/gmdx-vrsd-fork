@@ -6095,7 +6095,7 @@ state PlayerWalking
 		UpdateTimePlayed(deltaTime);
 
         //Update autosave restriction timer
-        autosaveRestrictTimer = FMAX(0.,autosaveRestrictTimer-deltaTime);
+        autosaveRestrictTimer = FMAX(0.0,autosaveRestrictTimer-deltaTime);
 
         /*
         if (autosaveRestrictTimer >= autosaveRestrictTimerDefault - 20)
