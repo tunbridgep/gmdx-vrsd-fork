@@ -171,8 +171,8 @@ function Trigger(Actor Other, Pawn Instigator)
 
 function UnTrigger(Actor Other, Pawn Instigator)
 {
-	if (bConfused)
-		return;
+	//if (bConfused) //Sarge: Attempted fix for cameras reactivating once EMP wears off if they were disabled during EMP
+	//	return;
 
 	Super.UnTrigger(Other, Instigator);
 
