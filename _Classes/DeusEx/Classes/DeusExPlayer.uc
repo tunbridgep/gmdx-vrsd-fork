@@ -6068,7 +6068,7 @@ state PlayerWalking
 		UpdateTimePlayed(deltaTime);
 
         //Update autosave restriction timer
-        autosaveRestrictTimer = FMAX(0.,autosaveRestrictTimer-deltaTime);
+        autosaveRestrictTimer = FMAX(0.0,autosaveRestrictTimer-deltaTime);
 
         /*
         if (autosaveRestrictTimer >= autosaveRestrictTimerDefault - 20)
@@ -7438,7 +7438,7 @@ exec function ParseRightClick()
 	if (FrobTarget != None)
 		loc = FrobTarget.Location;
 
-	if (FrobTarget != None)
+	if (FrobTarget != None && (!FrobTarget.isA('DeusExDecoration') || DeusExDecoration(FrobTarget).bHighlight))
 	{
         //SARGE: I really should add this to the proper OOP setup, but I just don't care.
         //We don't care about MP, so will omit it for now
@@ -7525,12 +7525,14 @@ exec function ParseRightClick()
 			else
 				PutInHand(None);
             NewWeaponSelected();
+		    DoRightFrob(FrobTarget); //Last minute check for things with no highlight.
 		}
 		else
 		{
             SetTimer(0.3,false);
             bDoubleClickCheck=True;
             clickCountCyber=1;
+		    DoRightFrob(FrobTarget); //Last minute check for things with no highlight.
         }
 	}
 

@@ -170,7 +170,7 @@ function BeginPlay()
 		}
 //GMDX
 	//log(self);
-	if ((!bInvincible)&&(!IsA('ElectronicDevices'))&&(!IsA('Barrel1'))&&bHighlight&&!bExplosive&&bPushable)
+	if ((!bInvincible)&&(!IsA('AutoTurret'))&&(!IsA('ElectronicDevices'))&&(!IsA('Barrel1'))&&bHighlight&&!bExplosive&&bPushable)
 	{
 	  Volume=3.1415*CollisionRadius*CollisionRadius*CollisionHeight;
 	  temp=1.0-Sqrt(Mass/Volume);
