@@ -7,6 +7,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX vRSD bug allowing using Tech Goggles in the secondary slot for half a second or so when out of charge
     - Fixed GMDX Bug where EMP'd turrets and cameras will re-enable themselves after the EMP effect runs out, even if they were disabled during the EMP effect.
 - Quality of Life Improvements:
+    - Default Right-Click action (holster/unholster) is no longer blocked by having non-highlighting decorative objects under your crosshair.
     - The secondary ammo display for items (when assigned as secondary items) now shows inventory count, rather than always displaying N/A
     - Reloading "One-shot-at-a-time" weapon (shotguns) will show the ammo count in the ammo display, rather than `---`, because reloading can be cancelled part way through.
     - Pressing the Reload key will no longer reload weapons that have a full clip.
