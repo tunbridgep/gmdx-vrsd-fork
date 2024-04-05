@@ -55,6 +55,8 @@ function Timer()
 			shell.Velocity = (FRand()*20+90) * Y + (10-FRand()*20) * X;
 			shell.Velocity.Z = 20;
 			shell.MultiSkins[0]=Texture'RSDCrap.Items.RubberShell';
+			shell.ImpactSound=Sound'RSDCrap.Weapons.ShellCaseSound';
+			shell.MiscSound=Sound'RSDCrap.Weapons.ShellCaseSound';
 		}
 		bWaitForIt=False;
 }
@@ -93,6 +95,8 @@ function bool UseAmmo(int AmountNeeded)
 			shell.Velocity = (FRand()*20+90) * Y + (10-FRand()*20) * X;
 			shell.Velocity.Z = 20;
 			shell.MultiSkins[0]=Texture'RSDCrap.Items.RubberShell';
+			shell.ImpactSound=Sound'RSDCrap.Weapons.ShellCaseSound';
+			shell.MiscSound=Sound'RSDCrap.Weapons.ShellCaseSound';
 		}
 		return True;
 	}

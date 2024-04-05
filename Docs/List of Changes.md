@@ -13,6 +13,8 @@ Sarge's Changes since Beta 2.2:
     - "One-shot-at-a-time" weapons now have "RDS" instead of "MAGS" on the ammo HUD.
     - "One-shot-at-a-time" weapons have a different formula for calculating reload speed (RDS/SEC).
     - The rifle's grenade launcher doesn't require reloading to turn on.
+    - Different shotgun shells have different textures, and the boxes were reworked to have a different texture for easier identification.
+        - Shells also have different sounds when they hit the floor
     - Pressing the Reload key will no longer reload weapons that have a full clip.
     - Laser Attachments now re-enable themselves automatically if a weapon is holstered and reselected.
     - Hardcore Mode difficulty selection and Gameplay Settings menu are no longer locked behind completing the game, however they strongly warn against changing them.
