@@ -16424,19 +16424,19 @@ function ForceDroneOff()
 
     if (AugmentationSystem != none)                                             //RSD: fix
     {
-	anAug = AugDrone(AugmentationSystem.FindAugmentation(class'AugDrone'));
-	//foreach AllActors(class'AugDrone', anAug)
-	if (anAug != None)
-	{
- 	  if (bSpyDroneSet)
-      {
-    	  SAVErotation = ViewRotation;
-    	  bSpyDroneSet = false;                                                 //RSD: Ensures that the Spy Drone will ACTUALLY be turned off
-      }
-      anAug.bTimerEarly = true;                                                 //RSD: Hack so the drone doesn't spin us around when it gets destroyed
-      anAug.Deactivate();
-      bSpyDroneActive = false;                                                  //RSD: Prevents being forced back into drone control at the last second
-    }
+        anAug = AugDrone(AugmentationSystem.FindAugmentation(class'AugDrone'));
+        //foreach AllActors(class'AugDrone', anAug)
+        if (anAug != None)
+        {
+            if (bSpyDroneSet)
+            {
+                SAVErotation = ViewRotation;
+                bSpyDroneSet = false;                                                 //RSD: Ensures that the Spy Drone will ACTUALLY be turned off
+            }
+            anAug.bTimerEarly = true;                                                 //RSD: Hack so the drone doesn't spin us around when it gets destroyed
+            anAug.Deactivate();
+            bSpyDroneActive = false;                                                  //RSD: Prevents being forced back into drone control at the last second
+        }
     }
 }
 

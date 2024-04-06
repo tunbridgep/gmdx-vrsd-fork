@@ -10,33 +10,40 @@ var float reconstructTime;
 var float lastDroneTime;
 
 var bool bTimerEarly;                                                           //RSD: bool for if you tried to use the drone too early (need for rotation shenanigans)
+function bool CanActivate(out string message)
+{
+	if (Level.TimeSeconds - lastDroneTime < reconstructTime)
+    {
+        message = "Reconstruction will be complete in" @ Int(reconstructTime - (Level.TimeSeconds - lastDroneTime)) @ "seconds";
+        return false;
+    }
+    
+    if (player.Physics == PHYS_Falling || player.physics == PHYS_Swimming)
+    {
+        message = "You must be grounded to construct the drone";
+        return false;
+    }
+
+    return Super.CanActivate(message);
+}
 
 state Active
 {
 
 function Timer()
 {
-if (IsInState('Active'))
-{
-        Player.bSpyDroneActive = True;
-        Player.bSpyDroneSet = False;                                            //RSD: Allows the user to toggle between moving and controlling the drone
-		Player.spyDroneLevel = CurrentLevel;
-		Player.spyDroneLevelValue = LevelValues[CurrentLevel];
-}
+    if (IsInState('Active'))
+    {
+            Player.bSpyDroneActive = True;
+            Player.bSpyDroneSet = False;                                            //RSD: Allows the user to toggle between moving and controlling the drone
+            Player.spyDroneLevel = CurrentLevel;
+            Player.spyDroneLevelValue = LevelValues[CurrentLevel];
+    }
 }
 Begin:
-	if (Level.TimeSeconds - lastDroneTime < reconstructTime)
-	{
-		Player.ClientMessage("Reconstruction will be complete in" @ Int(reconstructTime - (Level.TimeSeconds - lastDroneTime)) @ "seconds");
-		bTimerEarly = true;                                                     //RSD: make sure rotation isn't reset in Deactivate
-		Deactivate();
-	}
-	else
-	{
 	bTimerEarly = false;                                                        //RSD
     SetTimer(0.4,False);
     player.SAVErotation = player.ViewRotation;                                  //RSD: Set the SAVErotation the first time we activate
-	}
 }
 
 function Deactivate()
