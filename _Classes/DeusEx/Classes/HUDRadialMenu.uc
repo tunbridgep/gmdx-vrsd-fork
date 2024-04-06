@@ -3,10 +3,6 @@
 //=============================================================================
 class HUDRadialMenu extends Window;
 
-
-#exec TEXTURE IMPORT NAME=PowerIconActive FILE=Textures\PowerIconActive.pcx MIPS=Off
-#exec TEXTURE IMPORT NAME=PowerIconInactive FILE=Textures\PowerIconInactive.pcx MIPS=Off
-
 var DeusExPlayer player; // local reference to Jesus Christ
 var DeusExRootWindow root;
 
@@ -352,6 +348,6 @@ defaultproperties
      focusMarkerStyle=DSTY_Translucent
      focusMarkerTex=Texture'RSDCrap.UserInterface.WhiteDot'
      markerDistanceToCenter=0.500000
-     powerActive=Texture'DeusEx.PowerIconActive'
-     powerInactive=Texture'DeusEx.PowerIconInactive'
+     powerActive=Texture'RSDCrap.UserInterface.PowerIconActive'
+     powerInactive=Texture'RSDCrap.UserInterface.PowerIconInactive'
 }
