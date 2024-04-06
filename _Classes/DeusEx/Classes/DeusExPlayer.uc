@@ -3648,26 +3648,22 @@ function SetTurretState(AutoTurret turret, bool bActive, bool bDisabled)
 //These are required because of client/server stuff making modifying the above functions impossible
 function ToggleCameraStateHacked(SecurityCamera cam, ElectronicDevices compOwner)
 {
-    if (cam.bActive)
+    ToggleCameraState(cam,compOwner);
+    if (!cam.bActive)
     {
         cam.bRebooting = true;
         cam.disableTime = saveTime + (cam.disableTimeMult * MAX(1,SkillSystem.GetSkillLevel(class'SkillComputer')));
     }
-    else
-        cam.disableTime = 0;
-    ToggleCameraState(cam,compOwner);
 }
 
 function SetTurretStateHacked(AutoTurret turret, bool bActive, bool bDisabled)
 {
+    SetTurretState(turret,bActive,bDisabled);
     if (bDisabled)
     {
         turret.bRebooting = true;
         turret.disableTime = saveTime + (turret.disableTimeMult * MAX(1,SkillSystem.GetSkillLevel(class'SkillComputer')));
     }
-    else
-        turret.disableTime = 0;
-    SetTurretState(turret,bActive,bDisabled);
 }
 
 //client->server (window to player)

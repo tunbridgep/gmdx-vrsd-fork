@@ -104,7 +104,7 @@ function HackAction(Actor Hacker, bool bHacked)
 	{
 		if (Level.NetMode == NM_Standalone)
 		{
-			if (bActive)
+			if (bActive || HackStrength == 0)
 				UnTrigger(Hacker, Pawn(Hacker));
 			else
 				Trigger(Hacker, Pawn(Hacker));
@@ -151,6 +151,28 @@ function HackAction(Actor Hacker, bool bHacked)
 	}
 }
 
+function EnableCamera()
+{
+    bActive = True;
+    LightType = LT_Steady;
+    LightHue = 80;
+    MultiSkins[2] = Texture'GreenLightTex';
+    AmbientSound = None;
+    bRebooting = false;
+}
+
+function DisableCamera()
+{
+    TriggerEvent(False);
+    TriggerCarcassEvent(False); // eshkrm
+    bActive = False;
+    LightType = LT_None;
+    AmbientSound = None;
+    DesiredRotation = origRot;
+    bRebooting = false;
+    //hackStrength = 0.0;
+}
+
 function Trigger(Actor Other, Pawn Instigator)
 {
 	if (bConfused)
@@ -162,12 +184,8 @@ function Trigger(Actor Other, Pawn Instigator)
 	{
 		if (Instigator != None)
 			Instigator.ClientMessage(msgActivated);
-		bActive = True;
-		LightType = LT_Steady;
-		LightHue = 80;
-		MultiSkins[2] = Texture'GreenLightTex';
-		AmbientSound = None;
 	}
+    EnableCamera();
 }
 
 function UnTrigger(Actor Other, Pawn Instigator)
@@ -181,14 +199,8 @@ function UnTrigger(Actor Other, Pawn Instigator)
 	{
 		if (Instigator != None)
 			Instigator.ClientMessage(msgDeactivated);
-		TriggerEvent(False);
-		TriggerCarcassEvent(False); // eshkrm
-		bActive = False;
-		LightType = LT_None;
-		AmbientSound = None;
-		DesiredRotation = origRot;
-		//hackStrength = 0.0;
 	}
+    DisableCamera();
 }
 
 function TriggerEvent(bool bTrigger)
@@ -437,8 +449,7 @@ function Tick(float deltaTime)
         if (remainingTime <= 0)
         {
             if (hackStrength != 0.0 && !bActive)
-    		    bActive = True;
-            bRebooting = false;
+                EnableCamera();
         }
     }
 
