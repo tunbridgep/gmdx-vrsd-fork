@@ -3621,6 +3621,7 @@ function ToggleCameraState(SecurityCamera cam, ElectronicDevices compOwner)
 	}
 	else
 	{
+      cam.bRebooting = false;
       cam.disableTime = 0;
 	  MakeCameraAlly(cam);
 	  cam.Trigger(compOwner, self);
@@ -3634,8 +3635,11 @@ function ToggleCameraState(SecurityCamera cam, ElectronicDevices compOwner)
 //client->server (window to player)
 function SetTurretState(AutoTurret turret, bool bActive, bool bDisabled)
 {
-    if (bActive)
-      turret.disableTime = 0;
+    if (!bDisabled)
+    {
+        turret.disableTime = 0;
+        turret.bRebooting = false;
+    }
 	turret.bActive   = bActive;
 	turret.bDisabled = bDisabled;
 	turret.bComputerReset = False;
@@ -3645,7 +3649,10 @@ function SetTurretState(AutoTurret turret, bool bActive, bool bDisabled)
 function ToggleCameraStateHacked(SecurityCamera cam, ElectronicDevices compOwner)
 {
     if (cam.bActive)
-        cam.disableTime = cam.disableTimeMult * MAX(1,SkillSystem.GetSkillLevel(class'SkillComputer'));
+    {
+        cam.bRebooting = true;
+        cam.disableTime = saveTime + (cam.disableTimeMult * MAX(1,SkillSystem.GetSkillLevel(class'SkillComputer')));
+    }
     else
         cam.disableTime = 0;
     ToggleCameraState(cam,compOwner);
@@ -3654,7 +3661,10 @@ function ToggleCameraStateHacked(SecurityCamera cam, ElectronicDevices compOwner
 function SetTurretStateHacked(AutoTurret turret, bool bActive, bool bDisabled)
 {
     if (bDisabled)
-        turret.disableTime = turret.disableTimeMult * MAX(1,SkillSystem.GetSkillLevel(class'SkillComputer'));
+    {
+        turret.bRebooting = true;
+        turret.disableTime = saveTime + (turret.disableTimeMult * MAX(1,SkillSystem.GetSkillLevel(class'SkillComputer')));
+    }
     else
         turret.disableTime = 0;
     SetTurretState(turret,bActive,bDisabled);
