@@ -12,6 +12,7 @@ Sarge's Changes since Beta 2.2:
         - Also fixed many instances of crosshair weirdness.
     - The hit marker no longer hides the crosshair when it appears.
     - Default Right-Click action (holster/unholster) is no longer blocked by having non-highlighting decorative objects under your crosshair.
+    - The Crosshair and Selection Brackets will be hidden when a window or menu is open, as they would previously get in the way of notes and other text.
     - The secondary ammo display for items (when assigned as secondary items) now shows inventory count, rather than always displaying N/A
     - Reloading "One-shot-at-a-time" weapon (shotguns) will show the ammo count in the ammo display, rather than `---`, because reloading can be cancelled part way through.
     - Pressing the Reload key will no longer reload weapons that have a full clip.
