@@ -21,14 +21,10 @@ state ADSToggle
 		If(bAimingDown)
 		{
 			PlayAnim('SupressorOn',,0.1);
-			if (Owner.IsA('DeusExPlayer'))
-                DeusExPlayer(Owner).SetCrosshair(DeusExPlayer(Owner).bWasCrosshair,false); //RSD: true to bWasCrosshair
 		}
 		else
 		{
 			PlayAnim('SuperssorOff',,0.1);
-			if (Owner.IsA('DeusExPlayer'))
-                DeusExPlayer(Owner).SetCrosshair(false,false);
 		}
 		bAimingDown=!bAimingDown;
 		FinishAnim();
@@ -282,8 +278,6 @@ state Reload
     Super.BeginState();
 
     lerpClamp = 0;
-    if (Owner.IsA('DeusExPlayer') && bAimingDown)
-        DeusExPlayer(Owner).SetCrosshair(DeusExPlayer(Owner).bWasCrosshair,false); //RSD: true to bWasCrosshair
     bAimingDown=False;
     BobDamping=default.BobDamping;
    }
@@ -408,8 +402,6 @@ local float p;
 		}
 	}
 	BobDamping=default.BobDamping;
-	if (Owner.IsA('DeusExPlayer') && bAimingDown)
-         DeusExPlayer(Owner).SetCrosshair(DeusExPlayer(Owner).bWasCrosshair,false); //RSD: true to bWasCrosshair
 	bAimingDown=False; // Supresson defaults to off on deselect.
 }
 

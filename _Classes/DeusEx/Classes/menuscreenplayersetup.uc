@@ -149,7 +149,7 @@ function SaveSettings()
 
    SetMultiplayerName(PlayerNameEditor.GetText());
 
-   player.SaveConfigOverride();
+   player.SaveConfig();
 }
 
 // ----------------------------------------------------------------------
@@ -165,7 +165,7 @@ function ResetToDefaults()
 
    PlayerNameEditor.SetText(GetMultiplayerName());
 
-   player.SaveConfigOverride();
+   player.SaveConfig();
 }
 
 // ----------------------------------------------------------------------

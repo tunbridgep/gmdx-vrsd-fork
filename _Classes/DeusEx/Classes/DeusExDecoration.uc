@@ -55,6 +55,8 @@ var bool bPsychoBump;
 var() bool bDoNotResetRotationOnLanded;
 var bool bWrapped;
 var bool bLeftGrab;               //Sarge: Can this object be picked up with left click
+var bool bEMPHitMarkers;          //Sarge: Show hitmarkers for all EMP damage, for things like cameras
+var bool bHitMarkers;             //Sarge: Show hitmarkers when damaged. For things like glass panes
 
 native(2101) final function ConBindEvents();
 
@@ -1072,6 +1074,7 @@ auto state Active
 		local float dammult, massmult;
         local int i;
         local DeusExFragment s;
+        local bool hit;
 
 		stickaround=false;
 		//log("IN STATE ACTIVE AND DAMAGED "@Damage@" "@EventInstigator@" "@Momentum@" "@DamageType@" "@bStatic@" "@(Damage >= minDamageThreshold)@" "@HitPoints);
@@ -1082,8 +1085,26 @@ auto state Active
 		if ((DamageType == 'TearGas') || (DamageType == 'PoisonGas') || (DamageType == 'Radiation'))
 			return;
 
-		if ((DamageType == 'EMP') || (DamageType == 'NanoVirus') || (DamageType == 'Shocked'))
+		if ((DamageType == 'NanoVirus') || (DamageType == 'Shocked'))
 			return;
+
+        if (DamageType == 'EMP')
+        {
+            //Sarge: Add EMP Hit Markers
+            if (eventInstigator != None && eventInstigator.IsA('DeusExPlayer') && bEMPHitMarkers)
+            {
+                if (DeusExPlayer(eventInstigator).bHitmarkerOn)
+                    DeusExPlayer(eventInstigator).hitmarkerTime = 0.2;
+            }
+            return;
+        }
+        
+        //Sarge: Add Hit Markers
+        if (bHitMarkers && hit && eventInstigator != None && eventInstigator.IsA('DeusExPlayer'))
+        {
+            if (DeusExPlayer(eventInstigator).bHitmarkerOn)
+                DeusExPlayer(eventInstigator).hitmarkerTime = 0.2;
+        }
 
         if (DamageType == 'KnockedOut' && IsA('ElectronicDevices'))
             Damage *= 0.5; //CyberP: less damage from baton, rubber bullets and gas grenade explosion.
@@ -1191,13 +1212,17 @@ auto state Active
 		if ((DamageType == 'Burned') || (DamageType == 'Flamed'))
 		{
 			if (bExplosive)		// blow up if we are hit by fire
+            {
 				HitPoints = 0;
+                hit = true;
+            }
 			else if (bFlammable && !Region.Zone.bWaterZone)
 			{
 				GotoState('Burning');
 				return;
 			}
 		}
+
 		//log("DXdeco.Active.TakeDamage:-"@DamageType@" "@Damage@" "@EventInstigator);
 //GMDX
 		/*if ((EventInstigator!=none)&&EventInstigator.IsA('DeusExPlayer')&&
@@ -1217,16 +1242,33 @@ auto state Active
 				Damage=0;
 		} */
 		if ((Damage >= minDamageThreshold)||((DamageType!='throw')&&(DamageScaler>0)&&(Damage >= minDamageThreshold)))
+        {
+            DeusExPlayer(EventInstigator).ClientMessage("Damage " $ Damage $ " was above threshold of " $ minDamageThreshold );
 			HitPoints -= Damage;
+            hit = true;
+        }
 		else
 		{
 			// sabot damage at 50%
 			// explosion damage at 25%
 			if (damageType == 'Sabot')
+            {
 				HitPoints -= Damage * 0.5;
+                hit = true;
+            }
 			else if (damageType == 'Exploded')
+            {
 				HitPoints -= Damage * 0.3;   //CyberP: 0.25
+                hit = true;
+            }
 		}
+            
+        //Sarge: Add Hit Markers
+        if (hit && eventInstigator != None && eventInstigator.IsA('DeusExPlayer'))
+        {
+            if (DeusExPlayer(eventInstigator).bHitmarkerOn)
+                DeusExPlayer(eventInstigator).hitmarkerTime = 0.2;
+        }
 
 //      log(HitPoints);
 		if (HitPoints > 0)		// darken it to show damage (from 1.0 to 0.1 - don't go completely black)

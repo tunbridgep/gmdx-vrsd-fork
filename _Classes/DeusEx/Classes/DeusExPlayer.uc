@@ -17,6 +17,7 @@ struct BeltInfo
 };
 
 #exec OBJ LOAD FILE=Effects
+#exec TEXTURE IMPORT NAME=CrossDot FILE=Textures\CrossDot.bmp MIPS=Off
 
 // Name and skin assigned to PC by player on the Character Generation screen
 var travel String	TruePlayerName;
@@ -424,6 +425,7 @@ var globalconfig bool bHackLockouts;											//Sarge: Allow locking-out securi
 var bool bForceBeltAutofill;    	    										//Sarge: Overwrite autofill setting. Used by starting items
 var globalconfig bool bBeltMemory;  											//Sarge: Added new feature to allow belt to rember items
 var globalconfig bool bSmartKeyring;  											//Sarge: Added new feature to allow keyring to be used without belt, freeing up a slot
+var globalconfig int dynamicCrosshair;       									//Sarge: Allow using a special interaction crosshair
 var travel BeltInfo beltInfos[10];                                              //Sarge: Holds information about belt slots
 var travel float fullUp; //CyberP: eat/drink limit.                             //RSD: was int, now float
 var localized string fatty; //CyberP: eat/drink limit.
@@ -433,8 +435,6 @@ var bool bDrainAlert; //CyberP: alert if energy low
 var float bloodTime; //CyberP:
 var float hitmarkerTime;
 var float camInterpol;
-var travel bool bWasCrosshair;
-var bool bFromCrosshair;
 var transient bool bThrowDecoration;
 var travel int SlotMem; //CyberP: for belt/weapon switching, so the code remembers what weapon we had before holstering
 var travel int BeltLast;                                                    //Sarge: The last item we literally selected from the belt, regardless of holstering or alternate belt behaviour
@@ -983,8 +983,6 @@ function PostBeginPlay()
 
 	log("MYCHK::"@QuickSaveCurrent@"::"@QuickSaveLast);
 
-	bWasCrosshair=bCrosshairVisible;                                          //RSD: This doesn't work in PostBeginPlay(), moved to TravelPostAccept() //RSD: FALSE it should be here
-
 	RefreshLeanKeys();
     RefreshMantleKey();
     RefreshAugWheelKey();                                                       //RSD: Hold aug wheel
@@ -1279,8 +1277,8 @@ event TravelPostAccept()
 	//local WeaponGEPGun gepTest;
 	local vector ofst;
 
-	//Refresh laser sight
-    RefreshLaser();
+    //Update HUD
+    UpdateHUD();
 
 	Super.TravelPostAccept();
 
@@ -1290,6 +1288,9 @@ event TravelPostAccept()
 
 	// reset the keyboard
 	ResetKeyboard();
+
+    //Reset Crosshair
+    UpdateCrosshair();
 
 	RefreshLeanKeys();
     RefreshMantleKey();
@@ -1423,8 +1424,6 @@ event TravelPostAccept()
 
 	SetRocketWireControl();
 	//end GMDX
-
-	//bWasCrosshair=bCrosshairVisible;                                            //RSD: moved from PostBeginPlay() //RSD: Reverted, needs to use SaveConfigOverride value before using the set value
 
 	foreach AllActors(class'SpyDrone',SD)                                       //RSD: Destroy all spy drones so we can't activate disabled drones on map transition
 		SD.Destroy();
@@ -1758,12 +1757,10 @@ exec function LoadGame(int saveIndex)
     }
     if (DeusExRootWindow(rootWindow) != None)
     {
-       //bCrosshairVisible=True;
        DeusExRootWindow(rootWindow).ClearWindowStack();
 	}
 	if (DeusExRootWindow(rootWindow) != None)
 	{
-	   //bCrosshairVisible=True;
 	   DeusExRootWindow(rootWindow).ClearWindowStack();
 	}
     if (bRadialAugMenuVisible) ToggleRadialAugMenu();
@@ -1934,18 +1931,6 @@ function BuySkillSound( int code )
 			break;
 	}
 	PlaySound( snd, SLOT_Interface, 0.75 );
-}
-
-//GMDX meh my bloody saveconfig over(um)ride , changed all player.saveconfigs files to point here so i can handle DTS
-function SaveConfigOverride()
-{
-	if (DeusExWeapon(Weapon)!=none&&DeusExWeapon(Weapon).bLasing) //CyberP: &&Weapon.IsA('WeaponNanoSword')
-	  bCrosshairVisible=bWasCrossHair;
-
-	SaveConfig();
-
-	if (DeusExWeapon(Weapon)!=none&&DeusExWeapon(Weapon).bLasing) //CyberP: &&Weapon.IsA('WeaponNanoSword')
-	  bCrosshairVisible=false;
 }
 
 // ----------------------------------------------------------------------
@@ -2434,30 +2419,15 @@ simulated function DrugEffects(float deltaTime)
 
 	if (hitmarkerTime > 0)
     {
-    if ((root != None) && (root.hud != None))
+        if ((root != None) && (root.hud != None))
 		{
-			cross = root.hud.cross;
-			if (cross != None)
-			{
-			if (!bCrosshairVisible)
-			   bCrosshairVisible=True;
-			cross.SetBackground(Texture'GMDXSFX.Icons.Hitmarker');
-             //root.hud.SetBackground(Texture'GMDXSFX.Icons.Hitmarker');
+            hitmarkerTime -= deltaTime;
 
-			hitmarkerTime -= deltaTime;
-
-			if (hitmarkerTime < 0.05 || IsInState('Dying'))
-			{
-			hitmarkerTime = 0;
-			if (!bWasCrosshair || (Weapon != None && Weapon.IsA('DeusExWeapon') && (DeusExWeapon(Weapon).bLasing || (DeusExWeapon(Weapon).bAimingdown && !DeusExWeapon(Weapon).bZoomed)) && bCrosshairVisible)) //RSD: Added bWasCrosshair for user setting
-			{
-                bCrosshairVisible=False;
-                SetCrosshair(bCrosshairVisible,false);                          //RSD: Added so we don't get default crosshair flicker with it off
-            }
-			cross.SetBackground(Texture'CrossSquare');
-			}
-			}
-		}
+            if (hitmarkerTime < 0.05 || IsInState('Dying'))
+                hitmarkerTime = 0;
+            
+            UpdateCrosshair();
+        }
     }
     if (enviroAutoTime > 0)
 	{
@@ -4594,7 +4564,10 @@ function Reloading(DeusExWeapon weapon, float reloadTime)
 	if (!IsLeaning() && !bIsCrouching && (Physics != PHYS_Swimming) && !IsInState('Dying'))
 		PlayAnim('Reload', 1.0 / reloadTime, 0.1);
 }
-function DoneReloading(DeusExWeapon weapon);
+function DoneReloading(DeusExWeapon weapon)
+{
+    UpdateCrosshair();
+}
 
 // ----------------------------------------------------------------------
 // HealPlayer()
@@ -6430,6 +6403,8 @@ state Dying
     local Inventory anItem;
     local DeusExLevelInfo info;
 
+    UpdateCrosshair();
+
 	info = GetLevelInfo();
 	root = DeusExRootWindow(rootWindow);
 
@@ -6440,8 +6415,6 @@ state Dying
 	if (root != None)
 	{
 	  root.ClearWindowStack();
-      //if (!bCrosshairVisible && root.hud.cross != None) //CyberP: override hitmarker
-		//cross.SetBackground(Texture'CrossSquare');
 	}
     	FrobTime = Level.TimeSeconds;
 
@@ -7928,6 +7901,8 @@ exec function PutInHand(optional Inventory inv)
 
     if (inv.isA('NanoKeyRing'))
         bUsedKeyringLast = true;
+
+    UpdateCrosshair();
 }
 
 // ----------------------------------------------------------------------
@@ -7985,6 +7960,8 @@ function SetInHand(Inventory newInHand)
 	root = DeusExRootWindow(rootWindow);
 	if (root != None)
 		root.hud.belt.UpdateInHand();
+
+    UpdateCrosshair();
 }
 
 // ----------------------------------------------------------------------
@@ -8003,6 +7980,8 @@ function SetInHandPending(Inventory newInHandPending)
 	root = DeusExRootWindow(rootWindow);
 	if (root != None)
 		root.hud.belt.UpdateInHand();
+    
+    UpdateCrosshair();
 }
 
 // ----------------------------------------------------------------------
@@ -8752,6 +8731,8 @@ exec function ReloadWeapon()
                                 //Sarge: Additionally fix reloading when full
 	if (W != None && (W.AmmoLeftInClip() != W.AmmoType.AmmoAmount || W.IsA('WeaponHideAGun') || W.GoverningSkill == class'DeusEx.SkillDemolition') && W.AmmoLeftInClip() < W.ReloadCount)
 		W.ReloadAmmo();
+
+    UpdateCrosshair();
 }
 
 // ----------------------------------------------------------------------
@@ -8780,25 +8761,24 @@ exec function ToggleScope()
             W.ScopeToggle();
         }
 	    else if (W.bZoomed==False&&W.IsA('WeaponRifle'))
-	    WeaponRifle(W).activateAn = True;
+	        WeaponRifle(W).activateAn = True;
 	    else if (W.bZoomed==False&&W.IsA('WeaponPistol') && W.bHasScope)
-	    WeaponPistol(W).activateAn = True;
+    	    WeaponPistol(W).activateAn = True;
 	    else if (W.bZoomed==False&&W.IsA('WeaponMiniCrossbow') && W.bHasScope)
-	    WeaponMiniCrossbow(W).activateAn = True;
+	        WeaponMiniCrossbow(W).activateAn = True;
 	    else if (W.bZoomed==False&&W.IsA('WeaponStealthPistol') && W.bHasScope)
-	    WeaponStealthPistol(W).activateAn = True;
+	        WeaponStealthPistol(W).activateAn = True;
 	    else if (W.bZoomed==False&&W.IsA('WeaponAssaultGun') && W.bHasScope)
-	    WeaponAssaultGun(W).activateAn = True;
+    	    WeaponAssaultGun(W).activateAn = True;
         else
-		W.ScopeToggle();
-		if (W.bZoomed&&W.IsA('WeaponGEPGun'))
-        {
-         bFromCrosshair=true;
-		if (W.bLasing)
-        W.LaserOff(true);
-		}
+	    	W.ScopeToggle();
+		
+        if (W.bZoomed&&W.IsA('WeaponGEPGun'))
+            SetLaser(false);
 	  }
 	}
+
+    UpdateCrosshair();
 }
 
 
@@ -10230,9 +10210,6 @@ exec function ToggleRadialAugMenu()
     if (!root.hud.bIsVisible) return; // don't toggle menu if HUD is invis
 
 	bRadialAugMenuVisible = !bRadialAugMenuVisible;
-	bCrosshairVisible=!bRadialAugMenuVisible
-        && !(DeusExWeapon(inHand) != none && DeusExWeapon(inHand).bLasing)      //RSD: Make sure we don't activate crosshairs if using a laser sight
-        && bWasCrosshair;                                                       //RSD: Also make sure we respect the menu setting
 
 	if (bRadialAugMenuVisible) {
 	   // I know this is very bad design. But the shitty input handling forces
@@ -10248,9 +10225,8 @@ exec function ToggleRadialAugMenu()
 	   ViewRotation = aDrone.Rotation; // This is especially nausea-invoking
 
 
-
-	if (root != None)
-		root.UpdateHud();
+    UpdateCrosshair();
+    UpdateHud();
 }
 
 // ----------------------------------------------------------------------
@@ -10259,13 +10235,8 @@ exec function ToggleRadialAugMenu()
 
 exec function ToggleCompass()
 {
-	local DeusExRootWindow root;
-
 	bCompassVisible = !bCompassVisible;
-
-	root = DeusExRootWindow(rootWindow);
-	if (root != None)
-		root.UpdateHud();
+    UpdateHUD();
 }
 
 
@@ -10278,57 +10249,32 @@ exec function ToggleCompass()
 exec function ToggleLaser()
 {
 	local DeusExWeapon W;
+	W = DeusExWeapon(Weapon);
+
+    if (W == None || !W.bHasLaser)
+        return;
+
+	SetLaser(!W.bLasing);
+    UpdateCrosshair();
+}
+
+function SetLaser(bool bNewOn)
+{
+	local DeusExWeapon W;
+	W = DeusExWeapon(Weapon);
 
 	if (RestrictInput()||bGEPzoomActive)
 		return;
 
-	W = DeusExWeapon(Weapon);
-	if (W==none) return;
-	if (!W.bHasLaser||W.IsA('WeaponNanoSword')||!W.IsInState('idle')) return;
+	if (W == None || !W.bHasLaser)
+        return;
 
-	SetLaser(!W.bLasing,true);
-}
-
-//Re-enables or re-disables our laser, to stop load-game issues
-function RefreshLaser()
-{
-	local DeusExWeapon W;
-	W = DeusExWeapon(Weapon);
-	if (W==none||(W!=none&&!W.bHasLaser)) return;
-
-    SetLaser(W.bLasing,true);
-}
-
-function SetLaser(bool bNewOn,optional bool bCheckXhair)
-{
-	local DeusExWeapon W;
-	W = DeusExWeapon(Weapon);
-
-	if (W==none||(W!=none&&!W.bHasLaser)) return;
-
-	bFromCrosshair=true;
 	if (bNewOn)
-	{
-	  W.LaserOn();
-	  if (bCheckXhair) SetCrosshair(false,false);
-	} else
-	{
-	  W.LaserOff(false);
-	  if (bCheckXhair) SetCrosshair(bWasCrosshair,false);
-	}
-}
-
-function SetCrosshair(bool bNewOn,optional bool bCheckLasing)
-{
-	local DeusExRootWindow root;
-	root = DeusExRootWindow(rootWindow);
-
-	if (root == None) return;
-
-	bCrosshairVisible=bNewOn;
-	root.UpdateHud();
-
-	if (bNewOn&&bCheckLasing) SetLaser(false,false);
+	    W.LaserOn();
+    else
+	    W.LaserOff(false);
+	
+    UpdateCrosshair();
 }
 
 // ----------------------------------------------------------------------
@@ -10336,17 +10282,112 @@ function SetCrosshair(bool bNewOn,optional bool bCheckLasing)
 // ----------------------------------------------------------------------
 exec function ToggleCrosshair()
 {
+    bCrosshairVisible = !bCrosshairVisible;
+	UpdateCrosshair();
+}
+
+
+
+// ----------------------------------------------------------------------
+// GetCrosshairState()
+// returns whether or not we should show the crosshair based on current conditions, such as lasing etc
+// The checkforoutercrosshairs bool adds some additional checks for disabling the accuracy component of the crosshair
+// ----------------------------------------------------------------------
+
+function bool GetCrosshairState(optional bool bCheckForOuterCrosshairs)
+{
 	local DeusExWeapon W;
-	if (RestrictInput())
-		return;
-	W = DeusExWeapon(Weapon);
 
-	if (W!=none&&(W.IsA('WeaponNanoSword')||!W.IsInState('idle'))) return;
+	W = DeusExWeapon(inHand);
 
-	bCrosshairVisible = !bCrosshairVisible;
-	bWasCrosshair=bCrosshairVisible;
+    if (!bCrosshairVisible)
+        return false;
 
-	SetCrosshair(bCrosshairVisible,true);
+    if (IsInState('Dying')) //No crosshair while dying
+        return false;
+
+    if (W != None)
+    {
+        if (W.bLasing)
+            return false;
+        else if (W.bLaserToggle)
+            return false;
+        //else if (W.bIsMeleeWeapon)
+        //    return false;
+        //else if (W.isA('WeaponBaton') || W.isA('WeaponProd'))
+        //    return false;
+        else if (W.bAimingDown)
+            return false;
+        else if(bRadialAugMenuVisible) //RSD: Remove the accuracy indicators if the radial aug menu is visible
+            return false;
+        else if (W.IsA('WeaponGEPGun') && WeaponGEPGun(W).GEPinout>=1.0) //No crosshair when using GEP scope
+            return false;
+
+        //Accuracy Crosshair stuff
+        if (bCheckForOuterCrosshairs)
+        {
+            if (W.bHandToHand || W.IsA('WeaponShuriken') || W.GoverningSkill == class'DeusEx.SkillDemolition') //Melee weapons and grenades have no accuracy crosshairs
+                return false;
+            else if (bHardcoreMode && W.IsInState('Reload')) //RSD: Remove the accuracy indicators if reloading on Hardcore
+                return false;
+        }
+    }
+    else if (dynamicCrosshair == 2) //If not a weapon, use nothing as our crosshair
+        return false;
+    //else if (inHand != None && !inHand.isA('SkilledTool') && dynamicCrosshair > 0) //Non-weapons have no crosshair
+    //    return false;
+    //else //Empty hands or non-weapons have no crosshair //SARGE: Now get a dot crosshair instead
+    //    return false;
+    
+    return true;
+}
+
+// ----------------------------------------------------------------------
+// UpdateCrosshairStyle()
+// Sets the crosshair style based on hitmarkers, death, etc.
+// ----------------------------------------------------------------------
+
+function UpdateCrosshairStyle()
+{
+	local DeusExRootWindow root;
+    local Crosshair cross;
+
+	root = DeusExRootWindow(rootWindow);
+
+    if (root != None && root.hud != None && root.hud.cross != None)
+    {
+        cross = root.hud.cross;
+
+        if (inHand.isA('DeusExWeapon') || dynamicCrosshair == 0)
+    		root.hud.cross.SetBackground(Texture'CrossSquare');
+        else if (inHand == None)
+    		root.hud.cross.SetBackground(Texture'CrossDot');
+    }
+}
+
+function bool GetHitMarkerState()
+{
+    return hitmarkerTime > 0;
+}
+
+function UpdateCrosshair()
+{
+	local DeusExRootWindow root;
+	root = DeusExRootWindow(rootWindow);
+    
+    UpdateCrosshairStyle();
+
+    if (root != None)
+        root.UpdateCrosshair();
+}
+
+function UpdateHUD()
+{
+	local DeusExRootWindow root;
+	root = DeusExRootWindow(rootWindow);
+
+    if (root != None)
+        root.UpdateHUD();
 }
 
 // ----------------------------------------------------------------------

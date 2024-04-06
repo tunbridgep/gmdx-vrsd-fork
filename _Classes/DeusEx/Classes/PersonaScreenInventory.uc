@@ -464,7 +464,7 @@ event bool ToggleChanged(Window button, bool bNewToggle)
 	else if (button.IsA('PersonaCheckboxWindow'))
 	{
 		player.bShowAmmoDescriptions = bNewToggle;
-		player.SaveConfigOverride();
+		player.SaveConfig();
 		UpdateAmmoDisplay();
 	}
 
