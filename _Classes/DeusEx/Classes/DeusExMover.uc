@@ -63,7 +63,7 @@ var float               frobGate;                    //CyberP: to prevent NPCs c
 var ScriptedPawn        ChosenPawn;                 //CyberP: used by AI to determine wether they should open doors in the newly elaborated post-combat seeking sub-state
 
 var bool                bPlayerLocked;           // Sarge: Flag for when the door was re-locked by the player. Prevents NPC's from opening it.
-
+var float               previousStrength;        //Sarge: What was the strength before we started picking?
 
 
 //SARGE: Check to see if we can re-lock a door
@@ -521,11 +521,11 @@ function Timer()
 
 		// check to see if we've moved too far away from the door to continue
 		else if (pickPlayer.frobTarget != Self)
-			StopPicking();
+			StopPicking(true);
 
 		// check to see if we've put the lockpick away
 		else if (pickPlayer.inHand != curPick)
-			StopPicking();
+			StopPicking(true);
 	}
 }
 
@@ -561,8 +561,10 @@ function Tick(float deltaTime)
 //
 // Stops the current pick-in-progress
 //
-function StopPicking()
+function StopPicking(optional bool aborted)
 {
+	local DeusExMover M;
+
 	// alert NPCs that I'm not messing with stuff anymore
 	AIEndEvent('MegaFutz', EAITYPE_Visual);
 	bPicking = False;
@@ -570,10 +572,24 @@ function StopPicking()
 	{
 		curPick.StopUseAnim();
 		curPick.bBeingUsed = False;
-		curPick.UseOnce();
+
+        //Sarge: Only take a pick if we didn't abort.
+        if (!aborted)
+    		curPick.UseOnce();
 	}
 	curPick = None;
 	SetTimer(0.1, False);
+
+    //Sarge: If we aborted, reset lock strength
+    if (aborted)
+    {
+        LockStrength = previousStrength;
+		if ((Tag != '') && (Tag != 'DeusExMover'))
+			foreach AllActors(class'DeusExMover', M, Tag)
+				if (M != Self)
+					M.lockStrength = lockStrength;
+        
+    }
 }
 
 //
@@ -681,10 +697,12 @@ function Frob(Actor Frobber, Inventory frobWith)
 					if (Player.PerkNamesArray[36]!=1)                           //RSD: Unless you have the Sleight of Hand perk
 						AIStartEvent('MegaFutz', EAITYPE_Visual);
 
+                    previousStrength = LockStrength;
+
 					pickValue = Player.SkillSystem.GetSkillLevelValue(class'SkillLockpicking');
 					pickPlayer = Player;
 					if (Player.PerkNamesArray[32]==1)
-					pickValue = 1;
+                        pickValue = 1;
 					curPick = LockPick(frobWith);
 					curPick.bBeingUsed = True;
 					curPick.PlayUseAnim();
