@@ -899,6 +899,10 @@ function DeusExBaseWindow PushWindow(
 		// Now push this new window on the stack
 		winStack[winCount++] = newWindow;
 
+        UpdateCrosshair();
+        hud.frobDisplay.Hide();
+
+
 		// Pause the game
 		if (!bNoPause)
 			UIPauseGame();
@@ -951,6 +955,13 @@ function DeusExBaseWindow PopWindow(
 				newWindow.Show();
 		}
 	}
+
+    if (winCount == 0)
+    {
+        UpdateCrosshair();
+        hud.frobDisplay.Show();
+    }
+
 
 	if ((newWindow == None) && (!bNoUnpause))
 		UnPauseGame();

@@ -10298,13 +10298,18 @@ exec function ToggleCrosshair()
 function bool GetCrosshairState(optional bool bCheckForOuterCrosshairs)
 {
 	local DeusExWeapon W;
+	local DeusExRootWindow root;
 
+	root = DeusExRootWindow(rootWindow);
 	W = DeusExWeapon(inHand);
 
     if (!bCrosshairVisible)
         return false;
 
     if (IsInState('Dying')) //No crosshair while dying
+        return false;
+
+    if (root != None && root.WindowStackCount() > 0) //No crosshair while windows are open
         return false;
 
     if (W != None)
