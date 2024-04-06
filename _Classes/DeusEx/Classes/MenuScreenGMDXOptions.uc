@@ -26,7 +26,7 @@ event InitWindow()
 function SaveSettings()
 {
    Super.SaveSettings();
-	player.SaveConfigOverride();
+	player.SaveConfig();
 }
 
 // ----------------------------------------------------------------------

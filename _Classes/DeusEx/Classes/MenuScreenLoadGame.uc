@@ -81,7 +81,7 @@ event InitWindow()
 
 event DestroyWindow()
 {
-	player.SaveConfigOverride();
+	player.SaveConfig();
 	Super.DestroyWindow();
 }
 

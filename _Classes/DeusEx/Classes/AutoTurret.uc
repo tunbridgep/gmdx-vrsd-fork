@@ -43,6 +43,7 @@ var Pawn savedTarget;
 //Sarge: Hacking disable time
 var float disableTime;                    //Sarge: timer before we are enabled again after hacking.
 const disableTimeMult = 120.0;            //Sarge: Our hacking skill is multiplied by this to give total disable time
+var bool bRebooting;                      //This will be set when the turret is hacked, to control rebooting
 
 // networking replication
 replication
@@ -55,31 +56,28 @@ replication
 // if we are triggered, turn us on
 function Trigger(Actor Other, Pawn Instigator)
 {
-	if (bConfused || bDisabled)
-		return;
-
 	if (!bActive)
 	{
 		bActive = True;
 		AmbientSound = Default.AmbientSound;
 	}
 
+    bDisabled = false;
 	Super.Trigger(Other, Instigator);
 }
 
 // if we are untriggered, turn us off
 function UnTrigger(Actor Other, Pawn Instigator)
 {
-	//if (bConfused || bDisabled) //Sarge: Attempted fix for EMP not allowing turrets to be hacked at all
-    if (bDisabled)
-		return;
+    bRebooting = false;
 
 	if (bActive)
 	{
 		bActive = False;
 		AmbientSound = None;
 	}
-
+    
+    bDisabled = true;
 	Super.UnTrigger(Other, Instigator);
 }
 
@@ -212,6 +210,7 @@ function Tick(float deltaTime)
 	local Rotator destRot;
 	local bool bSwitched;
 	local Vector X,Y,Z;
+    local float remainingTime;
 
 	Super.Tick(deltaTime);
 
@@ -223,17 +222,22 @@ function Tick(float deltaTime)
 		return;
 	}
     
-    if (disableTime > 0 && !bConfused)
+    remainingTime = disableTime - DeusExPlayer(GetPlayerPawn()).saveTime;
+    
+    if (bRebooting && !bConfused)
     {
         bDisabled = True;
-        disableTime -= deltaTime;
 
-        if (disableTime <= 0 && bDisabled && gun.hackStrength != 0.0)
+        if (remainingTime <= 0)
         {
-		    bDisabled = False;
-            //Reset Tracking
-            bTrackPlayersOnly = true;
-            bTrackPawnsOnly = false;
+            if (bDisabled && gun.hackStrength != 0.0)
+            {
+                bDisabled = False;
+                //Reset Tracking
+                bTrackPlayersOnly = true;
+                bTrackPawnsOnly = false;
+            }
+            bRebooting = false;
         }
     }
 
@@ -902,6 +906,8 @@ function bool checkForObstruction()                                             
 defaultproperties
 {
      titleString="AutoTurret"
+     bHitMarkers=True
+     bEMPHitMarkers=True
      bTrackPlayersOnly=True
      bActive=True
      maxRange=4000

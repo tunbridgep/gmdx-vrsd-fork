@@ -39,10 +39,12 @@ function Destroyed()
 
 function DestroyWindow()
 {
+    local DeusExPlayer player;
+
 	// restore the crosshairs and the other hud elements
 	if (aReader != None)
 	{
-		DeusExRootWindow(aReader.rootWindow).hud.cross.SetCrosshair(aReader.bCrosshairVisible);
+        aReader.UpdateCrosshair();
 		DeusExRootWindow(aReader.rootWindow).hud.frobDisplay.Show();
 	}
 
@@ -102,6 +104,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 		else
 		{
 			DestroyWindow();
+            player.UpdateCrosshair();
 		}
 	}
 }

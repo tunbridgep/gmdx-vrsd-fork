@@ -4,6 +4,7 @@
 class DeusExHUD expands Window;
 
 var Crosshair						cross;
+var Crosshair						hitmarker;
 var TimerDisplay					timer;
 var FrobDisplayWindow				frobDisplay;
 var DamageHUDDisplay				damageDisplay;
@@ -60,6 +61,7 @@ event InitWindow()
 	ammo2			= HUDAmmoDisplay2(NewChild(Class'HUDAmmoDisplay2'));
 	hit				= HUDHitDisplay(NewChild(Class'HUDHitDisplay'));
 	cross			= Crosshair(NewChild(Class'Crosshair'));
+	hitmarker		= Crosshair(NewChild(Class'Crosshair'));
 	belt			= HUDObjectBelt(NewChild(Class'HUDObjectBelt'));
 	activeItems		= HUDActiveItemsDisplay(NewChild(Class'HUDActiveItemsDisplay'));
 	damageDisplay	= DamageHUDDisplay(NewChild(Class'DamageHUDDisplay'));
@@ -69,6 +71,10 @@ event InitWindow()
 
 	// Create the InformationWindow
 	info = HUDInformationDisplay(NewChild(Class'HUDInformationDisplay', False));
+
+    //Set hitmarker texture
+	hitmarker.SetBackground(Texture'GMDXSFX.Icons.Hitmarker');
+
 
 	// Create the log window
 	msgLog	= HUDLogDisplay(NewChild(Class'HUDLogDisplay', False));
@@ -230,6 +236,11 @@ function ConfigurationChanged()
 	{
 		cross.QueryPreferredSize(qWidth, qHeight);
 		cross.ConfigureChild((width-qWidth)*0.5+0.5, (height-qHeight)*0.5+0.5, qWidth, qHeight);
+	}
+	if (hitmarker != None)
+	{
+		hitmarker.QueryPreferredSize(qWidth, qHeight);
+		hitmarker.ConfigureChild((width-qWidth)*0.5+0.5, (height-qHeight)*0.5+0.5, qWidth, qHeight);
 	}
 	if (belt != None)
 	{
@@ -545,7 +556,7 @@ function UpdateSettings( DeusExPlayer player , optional bool bNoBelt)
 	activeItems.SetVisibility(player.bAugDisplayVisible);
 	damageDisplay.SetVisibility(player.bHitDisplayVisible);
 	compass.SetVisibility(player.bCompassVisible);
-	cross.SetCrosshair(player.bCrosshairVisible);
+    UpdateCrosshair(player);
 	radialAugMenu.Show(player.bRadialAugMenuVisible);
 
 	//RSD: Also bring back any windows we may have closed in realtime UI
@@ -566,6 +577,12 @@ function UpdateSettings( DeusExPlayer player , optional bool bNoBelt)
 
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
+
+function UpdateCrosshair(DeusExPlayer player)
+{
+	cross.SetCrosshair(player.GetCrosshairState());
+	hitmarker.SetCrosshair(player.GetHitMarkerState());
+}
 
 defaultproperties
 {

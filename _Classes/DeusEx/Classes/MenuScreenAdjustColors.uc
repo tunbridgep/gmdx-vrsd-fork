@@ -36,7 +36,7 @@ function CreateExampleWindow()
 function SaveSettings()
 {
 	Super.SaveSettings();
-	player.SaveConfigOverride();
+	player.SaveConfig();
 	player.ThemeManager.SaveConfig();
 }
 
