@@ -17,7 +17,6 @@ struct BeltInfo
 };
 
 #exec OBJ LOAD FILE=Effects
-#exec TEXTURE IMPORT NAME=CrossDot FILE=Textures\CrossDot.bmp MIPS=Off
 
 // Name and skin assigned to PC by player on the Character Generation screen
 var travel String	TruePlayerName;
@@ -10367,7 +10366,7 @@ function UpdateCrosshairStyle()
         if (inHand.isA('DeusExWeapon') || dynamicCrosshair == 0)
     		root.hud.cross.SetBackground(Texture'CrossSquare');
         else if (inHand == None)
-    		root.hud.cross.SetBackground(Texture'CrossDot');
+    		root.hud.cross.SetBackground(Texture'RSDCrap.UserInterface.CrossDot');
     }
 }
 
