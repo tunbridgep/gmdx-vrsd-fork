@@ -34,6 +34,7 @@ var() localized string AlwaysActiveLabel;
 var() localized String CanUpgradeLabel;
 var() localized String CurrentLevelLabel;
 var() localized String MaximumLabel;
+var() localized String AugRecharging;
 
 // which player am I attached to?
 var DeusExPlayer Player;
@@ -45,6 +46,12 @@ var travel bool bHasIt;
 
 // is it actually turned on?
 var travel bool bIsActive;
+
+// When deactivated, give a red icon for this long.
+// THIS DOES NOT ACTUALLY DISABLE THE AUG, just gives a red icon
+// Used by Spy Drone so we know when a new drone is ready
+var travel float currentChargeTime;
+var const float chargeTime;
 
 var() enum EAugmentationLocation
 {
@@ -102,6 +109,23 @@ Begin:
 
 auto state Inactive
 {
+    function Tick(float deltaTime)
+    {
+        //Update aug icon
+        if (currentChargeTime > 0)
+        {
+            currentChargeTime = FMAX(0,currentChargeTime - deltaTime);
+
+            if (currentChargeTime ~= 0)
+            {
+                if (Player.bHUDShowAllAugs)
+                    Player.UpdateAugmentationDisplayStatus(Self);
+                else if (!bIsActive)
+                    Player.RemoveAugmentationDisplay(Self);
+            }
+        }
+
+    }
 }
 
 
@@ -122,6 +146,12 @@ function bool CanActivate(out string message)
 	if (player.Energy == 0)
     {
         message = player.EnergyDepleted;
+        return false;
+    }
+
+    if (IsCharging())
+    {
+        message = Sprintf(AugRecharging, AugmentationName);
         return false;
     }
 
@@ -200,9 +230,11 @@ function Deactivate()
 
 		Player.ClientMessage(Sprintf(AugDeactivated, AugmentationName));
 
-		if (Player.bHUDShowAllAugs)
-			Player.UpdateAugmentationDisplayStatus(Self);
-		else
+        if (chargeTime > 0)
+            currentChargeTime = chargeTime;
+
+        Player.UpdateAugmentationDisplayStatus(Self);
+		if (!Player.bHUDShowAllAugs && !IsCharging())
 			Player.RemoveAugmentationDisplay(Self);
 		Player.RadialMenuUpdateAug(Self);
 
@@ -344,6 +376,15 @@ simulated function bool IsActive()
 }
 
 // ----------------------------------------------------------------------
+// IsActive()
+// ----------------------------------------------------------------------
+
+function bool IsCharging()
+{
+	return currentChargeTime > 0.0;
+}
+
+// ----------------------------------------------------------------------
 // IsAlwaysActive()
 // ----------------------------------------------------------------------
 
@@ -401,6 +442,7 @@ defaultproperties
      AugLocsText(5)="Subdermal"
      AugLocsText(6)="Default"
      AugActivated="%s activated"
+     AugRecharging="%s is recharging"
      AugDeactivated="%s deactivated"
      MPInfo="DEFAULT AUG MP INFO - REPORT THIS AS A BUG"
      AugAlreadyHave="You already have the %s at the maximum level"

@@ -6,15 +6,14 @@ class AugDrone extends Augmentation;
 var float mpAugValue;
 var float mpEnergyDrain;
 
-var float reconstructTime;
 var float lastDroneTime;
 
 var bool bTimerEarly;                                                           //RSD: bool for if you tried to use the drone too early (need for rotation shenanigans)
 function bool CanActivate(out string message)
 {
-	if (Level.TimeSeconds - lastDroneTime < reconstructTime)
+	if (currentChargeTime > 0)
     {
-        message = "Reconstruction will be complete in" @ Int(reconstructTime - (Level.TimeSeconds - lastDroneTime)) @ "seconds";
+        message = "Reconstruction will be complete in" @ Int(currentChargeTime) @ "seconds";
         return false;
     }
     
@@ -34,10 +33,10 @@ function Timer()
 {
     if (IsInState('Active'))
     {
-            Player.bSpyDroneActive = True;
-            Player.bSpyDroneSet = False;                                            //RSD: Allows the user to toggle between moving and controlling the drone
-            Player.spyDroneLevel = CurrentLevel;
-            Player.spyDroneLevelValue = LevelValues[CurrentLevel];
+        Player.bSpyDroneActive = True;
+        Player.bSpyDroneSet = False;                                            //RSD: Allows the user to toggle between moving and controlling the drone
+        Player.spyDroneLevel = CurrentLevel;
+        Player.spyDroneLevelValue = LevelValues[CurrentLevel];
     }
 }
 Begin:
@@ -86,9 +85,9 @@ simulated function PreBeginPlay()
 
 defaultproperties
 {
+     chargeTime=30.000000
      mpAugValue=100.000000
      mpEnergyDrain=20.000000
-     reconstructTime=30.000000
      lastDroneTime=-30.000000
      EnergyRate=90.000000
      Icon=Texture'DeusExUI.UserInterface.AugIconDrone'
