@@ -7,6 +7,7 @@ class HUDActiveAug extends HUDActiveItemBase;
 var Color colBlack;
 var Color colAugActive;
 var Color colAugInactive;
+var Color colAugCharging;
 
 var int    hotKeyNum;
 var String hotKeyString;
@@ -70,6 +71,8 @@ function UpdateAugIconStatus()
 	{
 		if (aug.IsActive())
 			colItemIcon = colAugActive;
+        else if (aug.IsCharging())
+			colItemIcon = colAugCharging;
 		else
 			colItemIcon = colAugInactive;
 	}
@@ -82,5 +85,6 @@ defaultproperties
 {
      colAugActive=(B=255)
      colAugInactive=(R=100,G=100,B=100)
+     colAugCharging=(R=100,G=0,B=0)
      colItemIcon=(B=0)
 }
