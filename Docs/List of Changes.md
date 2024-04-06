@@ -16,7 +16,6 @@ Sarge's Changes since Beta 2.2:
     - Reloading "One-shot-at-a-time" weapon (shotguns, crossbow, GEP gun) will show the ammo count in the ammo display, rather than `---`, because reloading can be cancelled part way through.
     - "One-shot-at-a-time" weapons now have "RDS" instead of "MAGS" on the ammo HUD.
     - "One-shot-at-a-time" weapons have a different formula for calculating reload speed (RDS/SEC).
-    - The rifle's grenade launcher doesn't require reloading to turn on.
     - Different shotgun shells have different textures, and the boxes were reworked to have a different texture for easier identification.
         - Shells also have different sounds when they hit the floor
     - Pressing the Reload key will no longer reload weapons that have a full clip.
@@ -60,6 +59,7 @@ Sarge's Changes since Beta 2.2:
             - Regular computers will never be locked out, so you can read email to your hearts content.
     - Charged Objects no longer destroy themselves on use in Hardcore mode.
     - Swapped Level 2 and 3 of the EUAS augmentation, because level 2 was arguably better than level 3. Now level 2 detects environmental hazards, level 3 shows visibility on the HUD.
+    - The rifle's grenade launcher doesn't require reloading to turn on, but you need to reload after each shot. It now works like a different weapon.
     - Restricted Saving is now a Playthrough Modifier and is no longer restricted to Hardcore Mode. It's still enforced in Hardcore Mode.
     - Added No Keypad Cheese Playthrough Modifier (called "Unknown Codes") which prevents using keypads or computer logins without having found them beforehand. Some codes which are hinted but never given are excepted.
     - Added Door Locking mechanics
