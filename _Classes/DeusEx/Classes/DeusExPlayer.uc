@@ -7158,6 +7158,7 @@ function DoRightFrob(Actor frobTarget)
 {
     local bool bDefaultFrob;
     bDefaultFrob = true;
+    bLeftClicked = false;
 
     if (frobTarget.isA('DeusExPickup'))
         bDefaultFrob = DeusExPickup(frobTarget).DoRightFrob(Self,inHand != None);
