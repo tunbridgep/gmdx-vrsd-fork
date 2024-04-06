@@ -53,6 +53,9 @@ enum ELockMode
 var bool				bReadyToFire;			// true if our bullets are loaded, etc.
 var() int				LowAmmoWaterMark;		// critical low ammo count
 var travel int			ClipCount;				// number of bullets remaining in current clip
+var travel int			ARClipSize;
+var travel int			ARLoaded;
+var travel int			ARGLLoaded;
 
 var() Name		FireAnim[2];
 
@@ -170,6 +173,8 @@ var localized String msgCannotBeReloaded;
 var localized String msgOutOf;
 var localized String msgNowHas;
 var localized String msgAlreadyHas;
+var localized String msgGLModeActivated;
+var localized String msgRifleModeActivated;
 var localized String msgNone;
 var localized String msgLockInvalid;
 var localized String msgLockRange;
@@ -1601,6 +1606,12 @@ function bool LoadAmmo(int ammoNum)
                 ClipCount = ReloadCount;
                 LoadedShells = 0;                                                 //RSD: without this, we can get stopped from fully loading the new ammo type if we switch repeatedly
             }
+
+			if ( Ammo20mm(newAmmo) != None || Ammo762mm(newAmmo) != None)
+			{
+				SwitchModes();
+			}
+
             //P.BroadcastMessage(ClipCount);
 
 			// AlexB had a new sound for 20mm but there's no mechanism for playing alternate sounds per ammo type
@@ -1658,9 +1669,15 @@ function bool LoadAmmo(int ammoNum)
 			if (DeusExPlayer(P) != None)
 				DeusExPlayer(P).UpdateBeltText(Self);
 
-			ReloadAmmo();
+			if (IsA('WeaponAssaultGun'))
+			{
+			}
+			else
+			{
+				ReloadAmmo();
+				P.ClientMessage(Sprintf(msgNowHas, ItemName, newAmmoClass.Default.ItemName));
+			}
 
-			P.ClientMessage(Sprintf(msgNowHas, ItemName, newAmmoClass.Default.ItemName));
 			return True;
 		}
 		else
@@ -1901,6 +1918,18 @@ simulated function int NumClips()
 		return 0;
 	else  // compute remaining clips
 		return ((AmmoType.AmmoAmount-AmmoLeftInClip()) + (ReloadCount-1)) / ReloadCount;
+}
+
+simulated function int NumRounds()
+{
+	if (ReloadCount == 0)  // if this weapon is not reloadable
+		return 0;
+	else if (AmmoType == None)
+		return 0;
+	else if (AmmoType.AmmoAmount == 0)	// if we are out of ammo
+		return 0;
+	else  // compute remaining clips
+		return ((AmmoType.AmmoAmount-AmmoLeftInClip()));
 }
 
 simulated function int AmmoAvailable(int ammoNum)
@@ -2650,6 +2679,39 @@ simulated function RefreshScopeDisplay(DeusExPlayer player, bool bInstant, bool 
     player.UpdateCrosshair();
 }
 
+// ----------------------------------------------------------------------
+// SwitchModes()
+// ----------------------------------------------------------------------
+
+function SwitchModes()
+{
+	local Pawn p;
+
+	p = Pawn(Owner);
+
+	if (AmmoName == Class'Ammo20mm')
+    {
+        ARClipSize = ReloadCount;
+        ARloaded = ClipCount;	// Save the original rifle's stats
+
+        ReloadCount = 1; // Return the GL's stats
+		ClipCount = ARGLLoaded;
+		LowAmmoWaterMark = 1;
+
+		p.ClientMessage(msgRifleModeActivated);
+    }
+    else
+    {
+		ARGLLoaded = ClipCount; // Save the GL's stats
+
+        ReloadCount = ARClipSize; // Return the original rifle's stats
+        ClipCount = ARLoaded;
+		LowAmmoWaterMark = 16;
+
+		p.ClientMessage(msgGLModeActivated);
+    }
+}
+
 //
 // laser functions for weapons which have them
 //
@@ -3130,8 +3192,8 @@ simulated function bool ClientFire( float value )
 				PlayerPawn(Owner).PlayFiring();
 			}
 			// Don't play firing anim for 20mm
-			if ( Ammo20mm(AmmoType) == None && Ammo20mmEMP(AmmoType) == None)
-				PlaySelectiveFiring();
+			//if ( Ammo20mm(AmmoType) == None && Ammo20mmEMP(AmmoType) == None)
+				//PlaySelectiveFiring();
 			PlayFiringSound();
 
 			if ( bInstantHit &&  (( Ammo20mm(AmmoType) == None ) && ( Ammo20mmEMP(AmmoType) == None )))
@@ -3382,9 +3444,6 @@ simulated function PlaySelectiveFiring()
 
 	anim = FireAnim[animNum];
 */
-if (bSuperheated || Ammo20mm(AmmoType) != None || Ammo20mmEMP(AmmoType) != None)
-    anim = 'idle2';
-else
     anim = 'Shoot';
 
 //	if(anim == '\'')
@@ -5228,6 +5287,8 @@ simulated function bool UpdateInfo(Object winObject)
 	{
 		if (Level.NetMode != NM_Standalone )
 			str = FormatFloatString(Default.mpReloadTime, 0.1) @ msgTimeUnit;
+		else if (bPerShellReload)
+			str = FormatFloatString(1 / Default.ReloadTime, 0.1) @ msgInfoRoundsPerSec;
 		else
 			str = FormatFloatString(Default.ReloadTime, 0.1) @ msgTimeUnit;
 	}
@@ -5235,6 +5296,9 @@ simulated function bool UpdateInfo(Object winObject)
 	if (HasReloadMod())
 	{
 		str = str @ BuildPercentString(ModReloadTime);
+		if (bPerShellReload)
+			str = str @ "=" @ FormatFloatString(1 / ReloadTime, 0.1) @ msgInfoRoundsPerSec;
+		else
 		str = str @ "=" @ FormatFloatString(ReloadTime, 0.1) @ msgTimeUnit;
 	}
     if (!bHandToHand || IsA('WeaponPepperGun') || IsA('WeaponProd'))
@@ -6720,6 +6784,8 @@ defaultproperties
      msgOutOf="Out of %s"
      msgNowHas="%s now has %s loaded"
      msgAlreadyHas="No other ammo to load"
+	 msgGLModeActivated="Switched to Rifle"
+	 msgRifleModeActivated="Switched to Underbarrel Grenade Launcher"
      msgNone="NONE"
      msgLockInvalid="INVALID"
      msgLockRange="RANGE"
@@ -6791,6 +6857,7 @@ defaultproperties
      Misc1Sound=Sound'DeusExSounds.Generic.DryFire'
      MuzzleScale=6.000000
      AutoSwitchPriority=0
+	 ARGLLoaded=1
      bRotatingPickup=False
      PickupMessage="You found"
      ItemName="DEFAULT WEAPON NAME - REPORT THIS AS A BUG"

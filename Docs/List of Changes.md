@@ -15,7 +15,11 @@ Sarge's Changes since Beta 2.2:
     - Default Right-Click action (holster/unholster) is no longer blocked by having non-highlighting decorative objects under your crosshair.
     - The Crosshair and Selection Brackets will be hidden when a window or menu is open, as they would previously get in the way of notes and other text.
     - The secondary ammo display for items (when assigned as secondary items) now shows inventory count, rather than always displaying N/A
-    - Reloading "One-shot-at-a-time" weapon (shotguns) will show the ammo count in the ammo display, rather than `---`, because reloading can be cancelled part way through.
+    - Reloading "One-shot-at-a-time" weapon (shotguns, crossbow, GEP gun) will show the ammo count in the ammo display, rather than `---`, because reloading can be cancelled part way through.
+    - "One-shot-at-a-time" weapons now have "RDS" instead of "MAGS" on the ammo HUD.
+    - "One-shot-at-a-time" weapons have a different formula for calculating reload speed (RDS/SEC).
+    - Different shotgun shells have different textures, and the boxes were reworked to have a different texture for easier identification.
+        - Shells also have different sounds when they hit the floor
     - Pressing the Reload key will no longer reload weapons that have a full clip.
     - Laser Attachments now re-enable themselves automatically if a weapon is holstered and reselected.
     - Hardcore Mode difficulty selection and Gameplay Settings menu are no longer locked behind completing the game, however they strongly warn against changing them.
@@ -57,6 +61,7 @@ Sarge's Changes since Beta 2.2:
             - Regular computers will never be locked out, so you can read email to your hearts content.
     - Charged Objects no longer destroy themselves on use in Hardcore mode.
     - Swapped Level 2 and 3 of the EUAS augmentation, because level 2 was arguably better than level 3. Now level 2 detects environmental hazards, level 3 shows visibility on the HUD.
+    - The rifle's grenade launcher doesn't require reloading to turn on, but you need to reload after each shot. It now works like a different weapon.
     - Restricted Saving is now a Playthrough Modifier and is no longer restricted to Hardcore Mode. It's still enforced in Hardcore Mode.
     - Added No Keypad Cheese Playthrough Modifier (called "Unknown Codes") which prevents using keypads or computer logins without having found them beforehand. Some codes which are hinted but never given are excepted.
     - Added Door Locking mechanics

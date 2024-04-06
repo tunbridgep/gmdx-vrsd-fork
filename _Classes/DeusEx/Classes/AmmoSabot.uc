@@ -31,7 +31,9 @@ function Timer()
 		{
 			shell.Velocity = (FRand()*20+90) * Y + (10-FRand()*20) * X;
 			shell.Velocity.Z = 20;
-			shell.MultiSkins[0]=Texture'HDTPItems.Skins.HDTPminicrossbowtex2';
+			shell.MultiSkins[0]=Texture'RSDCrap.Items.SabotShell';
+         shell.ImpactSound=Sound'RSDCrap.Weapons.ShellCaseSound';
+			shell.MiscSound=Sound'RSDCrap.Weapons.ShellCaseSound';
 		}
 		bWaitForIt=False;
 }
@@ -63,7 +65,9 @@ function bool UseAmmo(int AmountNeeded)
 		{
 			shell.Velocity = (FRand()*20+90) * Y + (10-FRand()*20) * X;
 			shell.Velocity.Z = 20;
-			shell.MultiSkins[0]=Texture'HDTPItems.Skins.HDTPminicrossbowtex2';
+			shell.MultiSkins[0]=Texture'RSDCrap.Items.SabotShell';
+         shell.ImpactSound=Sound'RSDCrap.Weapons.ShellCaseSound';
+			shell.MiscSound=Sound'RSDCrap.Weapons.ShellCaseSound';
 		}
 		return True;
 	}
@@ -87,9 +91,9 @@ defaultproperties
      largeIconHeight=46
      Description="A 12 gauge shotgun shell surrounding a solid core of tungsten that can punch through all but the thickest hardened steel armor at close range."
      beltDescription="SABOT"
-     Skin=Texture'HDTPItems.Skins.HDTPAmmoshelltex2'
+     Skin=Texture'RSDCrap.Items.SabotShellBox'
      Mesh=LodMesh'HDTPItems.HDTPammoshell'
-     MultiSkins(1)=Texture'HDTPItems.Skins.HDTPAmmoshelltex2'
+     MultiSkins(1)=Texture'RSDCrap.Items.SabotShellBox'
      CollisionRadius=9.300000
      CollisionHeight=10.210000
      bCollideActors=True

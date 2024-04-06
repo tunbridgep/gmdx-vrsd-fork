@@ -16,6 +16,7 @@ var localized String NotAvailable;
 var localized String msgReloading;
 var localized String AmmoLabel;
 var localized String ClipsLabel;
+var localized String RoundsLabel;
 
 // Used by DrawWindow
 var int clipsRemaining;
@@ -104,16 +105,20 @@ event DrawWindow(GC gc)
 			gc.SetTextColor(colAmmoText);
 
 		// Ammo count drawn differently depending on user's setting
-		if (weapon.ReloadCount > 1 || weapon.IsA('WeaponGEPGun'))
+		if (weapon.ReloadCount > 1 || weapon.IsA('WeaponGEPGun') || weapon.AmmoName == Class'Ammo20mm')
 		{
 			// how much ammo is left in the current clip?
 			ammoInClip = weapon.AmmoLeftInClip();
-			clipsRemaining = weapon.NumClips();
+
+			if (weapon.bPerShellReload)
+				clipsRemaining = weapon.NumRounds();
+			else
+				clipsRemaining = weapon.NumClips();
 
 			if (weapon.IsInState('Reload') && weapon.bPerShellReload == false)
-				gc.DrawText(infoX, 26, 20, 9, msgReloading);
+				gc.DrawText(infoX, 27, 20, 9, msgReloading);
 			else
-				gc.DrawText(infoX, 26, 20, 9, ammoInClip);
+				gc.DrawText(infoX, 27, 20, 9, ammoInClip);
 
 			// if there are no clips (or a partial clip) remaining, color me red
 			if (( clipsRemaining == 0 ) || (( clipsRemaining == 1 ) && ( ammoRemaining < 2 * weapon.ReloadCount )))
@@ -122,24 +127,24 @@ event DrawWindow(GC gc)
 				gc.SetTextColor(colAmmoText);
 
 			if (weapon.IsInState('Reload') && weapon.bPerShellReload == false)
-				gc.DrawText(infoX, 38, 20, 9, msgReloading);
+				gc.DrawText(infoX, 39, 20, 9, msgReloading);
 			else
-				gc.DrawText(infoX, 38, 20, 9, clipsRemaining);
+				gc.DrawText(infoX, 39, 20, 9, clipsRemaining);
 		}
 		else
 		{
-			gc.DrawText(infoX, 38, 20, 9, NotAvailable);
+			gc.DrawText(infoX, 39, 20, 9, NotAvailable);
 
 			if (weapon.ReloadCount == 0)
 			{
-				gc.DrawText(infoX, 26, 20, 9, NotAvailable);
+				gc.DrawText(infoX, 27, 20, 9, NotAvailable);
 			}
 			else
 			{
 				if (weapon.IsInState('Reload') && weapon.bPerShellReload == false)
-					gc.DrawText(infoX, 26, 20, 9, msgReloading);
+					gc.DrawText(infoX, 27, 20, 9, msgReloading);
 				else
-					gc.DrawText(infoX, 26, 20, 9, ammoRemaining);
+					gc.DrawText(infoX, 27, 20, 9, ammoRemaining);
 			}
 		}
 
@@ -179,7 +184,11 @@ function DrawBackground(GC gc)
 	gc.SetAlignments(HALIGN_Center, VALIGN_Top);
 
 	gc.DrawText(66, 17, 21, 8, AmmoLabel);
-	gc.DrawText(66, 48, 21, 8, ClipsLabel);
+
+	if (weapon.bPerShellReload || weapon.AmmoName == Class'Ammo20mm')
+		gc.DrawText(66, 48, 21, 8, RoundsLabel);
+	else
+		gc.DrawText(66, 48, 21, 8, ClipsLabel);
 }
 
 // ----------------------------------------------------------------------
@@ -220,6 +229,7 @@ defaultproperties
      msgReloading="---"
      AmmoLabel="AMMO"
      ClipsLabel="MAGS"
+	 RoundsLabel="RDS"
      texBackground=Texture'DeusExUI.UserInterface.HUDAmmoDisplayBackground_1'
      texBorder=Texture'DeusExUI.UserInterface.HUDAmmoDisplayBorder_1'
      LaserLabel="LASER GUIDANCE"
