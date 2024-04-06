@@ -2695,10 +2695,8 @@ function SwitchModes()
         ARloaded = ClipCount;	// Save the original rifle's stats
 
         ReloadCount = 1; // Return the GL's stats
-		ClipCount = ARGLLoaded; // Returns the value of the grenade inside the gun
-
-        if (ClipCount > 1)	// Possible not needed?
-            ClipCount = 1;
+		ClipCount = ARGLLoaded;
+		LowAmmoWaterMark = 1;
 
 		p.ClientMessage(msgRifleModeActivated);
     }
@@ -2708,6 +2706,7 @@ function SwitchModes()
 
         ReloadCount = ARClipSize; // Return the original rifle's stats
         ClipCount = ARLoaded;
+		LowAmmoWaterMark = 16;
 
 		p.ClientMessage(msgGLModeActivated);
     }
@@ -6785,8 +6784,8 @@ defaultproperties
      msgOutOf="Out of %s"
      msgNowHas="%s now has %s loaded"
      msgAlreadyHas="No other ammo to load"
-	 msgGLModeActivated="Switched to rifle"
-	 msgRifleModeActivated="Switched to underbarrel grenade launcher"
+	 msgGLModeActivated="Switched to Rifle"
+	 msgRifleModeActivated="Switched to Underbarrel Grenade Launcher"
      msgNone="NONE"
      msgLockInvalid="INVALID"
      msgLockRange="RANGE"
