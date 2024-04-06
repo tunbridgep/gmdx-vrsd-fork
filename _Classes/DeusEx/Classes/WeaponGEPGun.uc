@@ -393,6 +393,7 @@ function RenderPortal(canvas Canvas)
 
 		bGEPjit=!bGEPjit;
 		bFlipFlopCanvas=false;
+        player.UpdateCrosshair();
 	}
 }
 

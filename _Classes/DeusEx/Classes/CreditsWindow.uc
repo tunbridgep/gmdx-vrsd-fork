@@ -237,7 +237,7 @@ function EggFound(int eggIndex)
 	if (easterSearch == "QUOTES")
 	{
 		player.bQuotesEnabled = True;
-		player.SaveConfigOverride();
+		player.SaveConfig();
 	}
 	else if (easterSearch == "DANCEPARTY")
 	{

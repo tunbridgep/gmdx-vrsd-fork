@@ -74,7 +74,7 @@ event DestroyWindow()
 {
 	player.bDisplayCompletedGoals = bDisplayCompletedGoals;
 	player.bConfirmNoteDeletes    = bConfirmNoteDeletes;
-	player.SaveConfigOverride();
+	player.SaveConfig();
 
 	Super.DestroyWindow();
 }

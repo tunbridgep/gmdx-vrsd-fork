@@ -35,7 +35,7 @@ function DestroyWindow()
 	// restore the crosshairs and the other hud elements
 	if (aReader != None)
 	{
-		DeusExRootWindow(aReader.rootWindow).hud.cross.SetCrosshair(aReader.bCrosshairVisible);
+		//DeusExRootWindow(aReader.rootWindow).hud.cross.SetCrosshair(aReader.bCrosshairVisible);
 		DeusExRootWindow(aReader.rootWindow).hud.frobDisplay.Show();
 	}
 

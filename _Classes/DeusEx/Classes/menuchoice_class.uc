@@ -94,7 +94,7 @@ function SaveSetting()
 
    player.UpdateURL("Class", GetModuleName(currentValue), true);
 //log("menuchoice_class.SaveSettings.after"@GetModuleName(currentValue));
-   player.SaveConfigOverride();
+   player.SaveConfig();
    /*if ((player.Weapon!=none)&&(player.Weapon.IsA('WeaponNanoSword')))         //RSD: Uhhhhhhh
    {
       player.bCrosshairVisible=false;
@@ -127,7 +127,7 @@ function LoadSetting()
 function ResetToDefault()
 {
    player.UpdateURL("Class", GetModuleName(defaultValue), true);
-   player.SaveConfigOverride();
+   player.SaveConfig();
    LoadSetting();
 }
 

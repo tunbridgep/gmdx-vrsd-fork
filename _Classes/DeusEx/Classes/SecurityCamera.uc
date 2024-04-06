@@ -752,6 +752,7 @@ function TriggerAlarmOverride()                                                 
 
 defaultproperties
 {
+     bEMPHitMarkers=True
      swingAngle=8192
      swingPeriod=8.000000
      cameraFOV=4096

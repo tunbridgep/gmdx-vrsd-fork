@@ -1137,13 +1137,10 @@ function DrawTargetAugmentation(GC gc)
 		}
 
 		weapon = DeusExWeapon(Player.Weapon);
-		if ((weapon != None) && !Player.IsInState('Dying') && (!weapon.bHandToHand || weapon.IsA('WeaponShuriken') || weapon.GoverningSkill == class'DeusEx.SkillDemolition')
-        && !bUseOldTarget && !(weapon.IsA('WeaponGEPGun')&& WeaponGEPGun(weapon).GEPinout>=1.0)) //GMDX:remove IFF from overlaying GEP
+		if ((weapon != None) && !bUseOldTarget && player.GetCrosshairState(true)) //GMDX:remove IFF from overlaying GEP
 		{
 			// if the target is out of range, don't draw the reticle
-			if (weapon.MaxRange >= dist /*VSize(target.Location - Player.Location)*/ && !weapon.bLasing && (!weapon.bAimingDown || weapon.bZoomed) //RSD: replaced with dist
-			  && !(Player.bHardcoreMode && weapon.IsInState('Reload'))          //RSD: Remove the accuracy indicators if reloading on Hardcore
-			  && !Player.bRadialAugMenuVisible)                                 //RSD: Remove the accuracy indicators if the radial aug menu is visible
+			if (weapon.MaxRange >= dist /*VSize(target.Location - Player.Location)*/) //RSD: replaced with dist
 			{
 				w = width;
 				h = height;
@@ -1171,19 +1168,19 @@ function DrawTargetAugmentation(GC gc)
 				gc.SetTileColorRGB(0,0,0);
 				for (i=1; i>=0; i--)
 				{
-					//RSD: Redone so that accuracy indicator mult occurs in the inner rather than outer radius of the reticle (pushed everything out by pixels = corner)
-					gc.DrawBox(x+i, y-mult-corner+i, 1, corner, 0, 0, 1, Texture'Solid');
-					gc.DrawBox(x+i, y+mult+1+i, 1, corner, 0, 0, 1, Texture'Solid'); //RSD Added +1 to make reticle lengths equal
-					gc.DrawBox(x-(corner-1)/2+i, y-mult-corner+i, corner, 1, 0, 0, 1, Texture'Solid');
-					gc.DrawBox(x-(corner-1)/2+i, y+mult+corner+i, corner, 1, 0, 0, 1, Texture'Solid');
+                    //RSD: Redone so that accuracy indicator mult occurs in the inner rather than outer radius of the reticle (pushed everything out by pixels = corner)
+                    gc.DrawBox(x+i, y-mult-corner+i, 1, corner, 0, 0, 1, Texture'Solid');
+                    gc.DrawBox(x+i, y+mult+1+i, 1, corner, 0, 0, 1, Texture'Solid'); //RSD Added +1 to make reticle lengths equal
+                    gc.DrawBox(x-(corner-1)/2+i, y-mult-corner+i, corner, 1, 0, 0, 1, Texture'Solid');
+                    gc.DrawBox(x-(corner-1)/2+i, y+mult+corner+i, corner, 1, 0, 0, 1, Texture'Solid');
 
-					gc.DrawBox(x-mult-corner+i, y+i, corner, 1, 0, 0, 1, Texture'Solid');
-					gc.DrawBox(x+mult+1+i, y+i, corner, 1, 0, 0, 1, Texture'Solid'); //RSD Added +1 to make reticle lengths equal
-					gc.DrawBox(x-mult-corner+i, y-(corner-1)/2+i, 1, corner, 0, 0, 1, Texture'Solid');
-					gc.DrawBox(x+mult+corner+i, y-(corner-1)/2+i, 1, corner, 0, 0, 1, Texture'Solid');
+                    gc.DrawBox(x-mult-corner+i, y+i, corner, 1, 0, 0, 1, Texture'Solid');
+                    gc.DrawBox(x+mult+1+i, y+i, corner, 1, 0, 0, 1, Texture'Solid'); //RSD Added +1 to make reticle lengths equal
+                    gc.DrawBox(x-mult-corner+i, y-(corner-1)/2+i, 1, corner, 0, 0, 1, Texture'Solid');
+                    gc.DrawBox(x+mult+corner+i, y-(corner-1)/2+i, 1, corner, 0, 0, 1, Texture'Solid');
 
                     //gc.DrawIcon(x*0.975, y*0.975, Texture'AugIconTarget_Small');
-					gc.SetTileColor(crossColor);
+                    gc.SetTileColor(crossColor);
 				}
 			}
 		}
@@ -1480,6 +1477,7 @@ function DrawTargetAugmentation(GC gc)
 	}
 	// set the crosshair colors
 	DeusExRootWindow(player.rootWindow).hud.cross.SetCrosshairColor(crossColor);
+	DeusExRootWindow(player.rootWindow).hud.hitmarker.SetCrosshairColor(crossColor);
 }
 
 function string GetHackDisabledText(Actor target,bool TargetingDisplay)

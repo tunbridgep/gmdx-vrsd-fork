@@ -1,16 +1,14 @@
-//=============================================================================
-// MenuChoice_Crosshairs
-//=============================================================================
-
-class MenuChoice_Crosshairs extends MenuChoice_VisibleHidden;
-
+//-----------------------------------------------------------
+//Sarge: Enable/disable Dynamic Crosshair
+//-----------------------------------------------------------
+class MenuChoice_DynamicCrosshair extends MenuUIChoiceEnum;
 // ----------------------------------------------------------------------
 // LoadSetting()
 // ----------------------------------------------------------------------
 
 function LoadSetting()
 {
-	SetValue(int(!player.bCrosshairVisible));
+	SetValue(player.dynamicCrosshair);
 }
 
 // ----------------------------------------------------------------------
@@ -19,7 +17,7 @@ function LoadSetting()
 
 function SaveSetting()
 {
-	player.bCrosshairVisible = !bool(GetValue());
+	player.dynamicCrosshair = GetValue();
     player.UpdateCrosshair();
 }
 
@@ -28,7 +26,7 @@ function SaveSetting()
 
 function ResetToDefault()
 {
-	SetValue(int(!player.bCrosshairVisible));
+	SetValue(player.dynamicCrosshair);
 }
 
 // ----------------------------------------------------------------------
@@ -37,6 +35,9 @@ function ResetToDefault()
 defaultproperties
 {
      defaultInfoWidth=88
-     HelpText="Toggles Crosshairs visibility."
-     actionText="Cross|&hairs"
+     HelpText="Use a small dot-crosshair (or no crosshair) when no weapon is equipped, and in a few other cases."
+     actionText="|&Dynamic Crosshair"
+	 enumText(0)="Disabled"
+     enumText(1)="Dot"
+     enumText(2)="Nothing"
 }

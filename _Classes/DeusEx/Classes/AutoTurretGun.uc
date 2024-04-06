@@ -67,7 +67,7 @@ function HackAction(Actor Hacker, bool bHacked)
 	{
 		if (Level.NetMode == NM_Standalone)
 		{
-			if (!turret.bDisabled)
+			if (!turret.bDisabled || turret.bRebooting)
 			{
 				turret.UnTrigger(Hacker, Pawn(Hacker));
 				turret.bDisabled = True;
@@ -178,6 +178,7 @@ defaultproperties
      hackStrength=0.750000
      HitPoints=60
      minDamageThreshold=60
+     bEMPHitMarkers=True
      bInvincible=False
      FragType=Class'DeusEx.MetalFragment'
      ItemName="Autonomous Defense Turret"

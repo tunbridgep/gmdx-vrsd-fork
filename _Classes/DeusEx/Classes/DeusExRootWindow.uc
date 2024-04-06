@@ -380,6 +380,12 @@ function UpdateHud()
 		hud.UpdateSettings(DeusExPlayer(parentPawn), WindowStackCount() != 0);
 }
 
+function UpdateCrosshair()
+{
+	if (hud != None)
+		hud.UpdateCrosshair(DeusExPlayer(parentPawn));
+}
+
 // ----------------------------------------------------------------------
 // RefreshDisplay()
 // DEUS_EX AMSD Used to keep displays up to date with replication from
@@ -1017,7 +1023,7 @@ function ExitGame()
 	/*if (parentPawn!=none&&parentPawn.IsA('DeusExPlayer')&&DeusExPlayer(parentPawn).Weapon!=none&&DeusExPlayer(parentPawn).Weapon.IsA('WeaponNanoSword')) //RSD: Uhhhhhhh
 	{
 		DeusExPlayer(parentPawn).bCrosshairVisible=DeusExPlayer(parentPawn).bWasCrosshair;
-		DeusExPlayer(parentPawn).SaveConfigOverride();
+		DeusExPlayer(parentPawn).SaveConfig();
 	}*/
 	ClearWindowStack();
 
