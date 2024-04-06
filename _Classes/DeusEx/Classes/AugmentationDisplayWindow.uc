@@ -1495,10 +1495,10 @@ function string GetHackDisabledText(Actor target,bool TargetingDisplay)
     
     cam = SecurityCamera(target);
 
-    if (turr != None && turr.disableTime > 0)
-        str = Sprintf(msgReboot,int(turr.disableTime));
-    else if (cam != None && cam.disableTime > 0)
-        str = Sprintf(msgReboot,int(cam.disableTime));
+    if (turr != None && turr.bRebooting)
+        str = Sprintf(msgReboot,int(turr.disableTime - player.saveTime));
+    else if (cam != None && cam.bRebooting)
+        str = Sprintf(msgReboot,int(cam.disableTime - player.saveTime));
 
     //If using the targeting aug, we need to format it
     if (TargetingDisplay && str != "")

@@ -51,6 +51,7 @@ var bool bSkillApplied; //CyberP:
 //Sarge: Hacking disable time
 var float disableTime;                    //Sarge: timer before we are enabled again after hacking.
 const disableTimeMult = 120.0;            //Sarge: Our hacking skill is multiplied by this to give total disable time
+var bool bRebooting;                      //This will be set when the camera is hacked, to control rebooting
 
 // ------------------------------------------------------------------------------------
 // Network replication
@@ -103,7 +104,7 @@ function HackAction(Actor Hacker, bool bHacked)
 	{
 		if (Level.NetMode == NM_Standalone)
 		{
-			if (bActive)
+			if (bActive || HackStrength == 0)
 				UnTrigger(Hacker, Pawn(Hacker));
 			else
 				Trigger(Hacker, Pawn(Hacker));
@@ -150,6 +151,28 @@ function HackAction(Actor Hacker, bool bHacked)
 	}
 }
 
+function EnableCamera()
+{
+    bActive = True;
+    LightType = LT_Steady;
+    LightHue = 80;
+    MultiSkins[2] = Texture'GreenLightTex';
+    AmbientSound = None;
+    bRebooting = false;
+}
+
+function DisableCamera()
+{
+    TriggerEvent(False);
+    TriggerCarcassEvent(False); // eshkrm
+    bActive = False;
+    LightType = LT_None;
+    AmbientSound = None;
+    DesiredRotation = origRot;
+    bRebooting = false;
+    //hackStrength = 0.0;
+}
+
 function Trigger(Actor Other, Pawn Instigator)
 {
 	if (bConfused)
@@ -161,12 +184,8 @@ function Trigger(Actor Other, Pawn Instigator)
 	{
 		if (Instigator != None)
 			Instigator.ClientMessage(msgActivated);
-		bActive = True;
-		LightType = LT_Steady;
-		LightHue = 80;
-		MultiSkins[2] = Texture'GreenLightTex';
-		AmbientSound = None;
 	}
+    EnableCamera();
 }
 
 function UnTrigger(Actor Other, Pawn Instigator)
@@ -180,14 +199,8 @@ function UnTrigger(Actor Other, Pawn Instigator)
 	{
 		if (Instigator != None)
 			Instigator.ClientMessage(msgDeactivated);
-		TriggerEvent(False);
-		TriggerCarcassEvent(False); // eshkrm
-		bActive = False;
-		LightType = LT_None;
-		AmbientSound = None;
-		DesiredRotation = origRot;
-		//hackStrength = 0.0;
 	}
+    DisableCamera();
 }
 
 function TriggerEvent(bool bTrigger)
@@ -409,31 +422,34 @@ function Tick(float deltaTime)
 	local DeusExPlayer curplayer;
 	local DeusExCarcass carcass; // eshkrm
 	//local int skillz; //CyberP                                                //RSD: Removed
-    local int disableTimeInt;
+    local float remainingTime;
+    local int remainingTimeInt;
 
 	Super.Tick(deltaTime);
 
 	curTarget = None;
 
-    if (disableTime > 0 && !bConfused)
+    remainingTime = disableTime - DeusExPlayer(GetPlayerPawn()).saveTime;
+
+    if (bRebooting && !bConfused)
     {
         bActive = False;
-        disableTime -= deltaTime;
-        disableTimeInt = int(disableTime);
+        remainingTimeInt = int(remainingTime);
         MultiSkins[2] = Texture'BlackMaskTex';
 
-        if (disableTimeInt <= 6)
+        if (remainingTimeInt <= 6)
         {
-            if (disableTimeInt % 2 == 0)
+            if (remainingTimeInt % 2 == 0)
             {
                 MultiSkins[2] = Texture'YellowLightTex';
 				//PlaySound(Sound'Beep6',,0.9,, 2560, 0.9);
             }
         }
 
-        if (disableTime <= 0 && !bActive && hackStrength != 0.0)
+        if (remainingTime <= 0)
         {
-		    bActive = True;
+            if (hackStrength != 0.0 && !bActive)
+                EnableCamera();
         }
     }
 
@@ -443,7 +459,7 @@ function Tick(float deltaTime)
 		// DEUS_EX AMSD For multiplayer
 		ReplicatedRotation = DesiredRotation;
 
-        if (disableTime == 0) //We will handle our own textures
+        if (!bRebooting) //We will handle our own textures
     		MultiSkins[2] = Texture'BlackMaskTex';
 		return;
 	}
