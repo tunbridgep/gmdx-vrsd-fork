@@ -40,7 +40,6 @@ local actor HitActor;
  incremental +=  player.FrobTime;
  player.HeadRegion.Zone.ViewFog.Z = incremental * 0.125;
  player.Spawn(class'SphereEffectShield2');
- player.bCrosshairVisible = False;
  StartTrace = Player.Location;
  StartTrace.Z += Player.BaseEyeHeight;
  EndTrace = StartTrace + 96 * Vector(player.ViewRotation);
@@ -65,7 +64,6 @@ local actor HitActor;
      player.RocketTargetMaxDistance=40001.000000;
      player.DesiredFOV = player.default.DesiredFOV;
      player.Energy -= 3;
-     player.bCrosshairVisible = True;
      if (player.Energy < 0)
          player.Energy = 0;
  }

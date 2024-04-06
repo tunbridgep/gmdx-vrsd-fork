@@ -7,7 +7,7 @@ class MenuScreenGMDXAIOptions expands MenuUIScreenWindow;
 function SaveSettings()
 {
    Super.SaveSettings();
-	player.SaveConfigOverride();
+	player.SaveConfig();
 }
 
 defaultproperties

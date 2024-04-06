@@ -7,7 +7,7 @@ class MenuScreenGMDXOptionsBelt expands MenuUIScreenWindow;
 function SaveSettings()
 {
     Super.SaveSettings();
-	player.SaveConfigOverride();
+	player.SaveConfig();
 }
 
 defaultproperties
@@ -16,6 +16,7 @@ defaultproperties
      choices(1)=Class'DeusEx.MenuChoice_AutofillBelt'
      choices(2)=Class'DeusEx.MenuChoice_BeltMemory'
      choices(3)=Class'DeusEx.MenuChoice_SmartKeyring'
+     choices(4)=Class'DeusEx.MenuChoice_DynamicCrosshair'
      actionButtons(0)=(Align=HALIGN_Right,Action=AB_Cancel)
      actionButtons(1)=(Align=HALIGN_Right,Action=AB_OK)
      actionButtons(2)=(Action=AB_Reset)

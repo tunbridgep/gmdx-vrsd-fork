@@ -489,8 +489,6 @@ function DropFrom(vector StartLocation)
     if (bIsCloaked || bIsRadar)                                                 //RSD: Overhauled cloak/radar routines
 	 SetCloakRadar(false,false,true);//SetCloak(false,true);
 	bMantlingEffect = False;
-	if (Owner != none && Owner.IsA('DeusExPlayer') && bAimingDown)
-         DeusExPlayer(Owner).SetCrosshair(DeusExPlayer(Owner).bWasCrosshair,false); //RSD: true to bWasCrosshair
     BobDamping=default.BobDamping;
 	bAimingDown=False;
 	EraseWeaponHandTex();                                                       //RSD: To ensure we don't get hand tex on dropped weapons
@@ -2639,6 +2637,7 @@ simulated function ScopeToggle()
 				ScopeOff();
 			else
 				ScopeOn();
+            DeusExPlayer(Owner).UpdateCrosshair();
 		}
 	}
 }
@@ -2663,6 +2662,8 @@ simulated function RefreshScopeDisplay(DeusExPlayer player, bool bInstant, bool 
 	{
 	  DeusExrootWindow(player.rootWindow).scopeView.DeactivateView();
 	}
+
+    player.UpdateCrosshair();
 }
 
 //
@@ -2699,12 +2700,6 @@ function LaserOn()
 		bLasing = True;
         bLaserToggle = true;
 	  }
-		if ((Owner!=none)&&(Owner.IsA('DeusExPlayer'))&&!bAimingDown)
-		{
-		   if (!DeusExPlayer(Owner).bFromCrosshair)
-			DeusExPlayer(Owner).SetCrosshair(false,false);
-		 DeusExPlayer(Owner).bFromCrosshair=false;
-	  }
 	  LaserYaw = (currentAccuracy) * (Rand(4096) - 2048);                       //RSD: Reset laser position when turning on
 	  LaserPitch = (currentAccuracy) * (Rand(4096) - 2048);
 	}
@@ -2724,13 +2719,6 @@ function LaserOff(bool forced)
 		 bLasing = False;
          if (!forced)
             bLaserToggle = false;
-	  }
-//	  log(Owner@DeusExPlayer(Owner).bWasCrosshair@DeusExPlayer(Owner).bFromCrosshair);
-	  if ((Owner!=none)&&(Owner.IsA('DeusExPlayer'))&&(DeusExPlayer(Owner).bWasCrosshair)&& !bAimingDown)
-		{
-		 if (!DeusExPlayer(Owner).bFromCrosshair)
-			DeusExPlayer(Owner).SetCrosshair(DeusExPlayer(Owner).bWasCrosshair,false); //RSD: true to bWasCrosshair
-		 DeusExPlayer(Owner).bFromCrosshair=false;
 	  }
 	  if ((IsA('WeaponGEPGun'))&&(Owner.IsA('DeusExPlayer')))
 	  {
@@ -6245,6 +6233,8 @@ else
 	{
 		StandingTimer = 0;
 	}*/
+    if (Owner.isA('DeusExPlayer'))
+        DeusExPlayer(Owner).UpdateCrosshair();
 	GotoState('Idle');
 }
 
@@ -6661,8 +6651,7 @@ Begin:
 	   ScopeOff();
     //if (Owner.IsA('DeusExPlayer') && !DeusExPlayer(Owner).IsInState('Mantling'))
 	   LaserOff(true);
-    if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).bCrosshairVisible && !bLasing)
-       DeusExPlayer(Owner).SetCrosshair(true,false);
+    if (Owner.IsA('DeusExPlayer') && !bLasing)
 	//if (!class'DeusExPlayer'.default.bRadarTran)                              //RSD: Overhauled cloak/radar routines
        SetCloakRadar(false,false);//SetCloak(false);                            //RSD: Overhauled cloak/radar routines
 
@@ -6693,18 +6682,12 @@ state ADSToggle                                                                 
 	ignores Fire, AltFire, PutDown, ReloadAmmo, DropFrom; // Whee! We can't do sweet F.A. in this state! :D
 	Begin:
 		If(bAimingDown)
-		{
 			PlayAnim('SupressorOn',,0.1);
-			if (Owner.IsA('DeusExPlayer'))
-                DeusExPlayer(Owner).SetCrosshair(DeusExPlayer(Owner).bWasCrosshair,false); //RSD: true to bWasCrosshair
-		}
 		else
-		{
 			PlayAnim('SuperssorOff',,0.1);
-			if (Owner.IsA('DeusExPlayer'))
-                DeusExPlayer(Owner).SetCrosshair(false,false);
-		}
 		bAimingDown=!bAimingDown;
+        if (Owner.IsA('DeusExPlayer'))
+            DeusExPlayer(Owner).UpdateCrosshair();
 		FinishAnim();
 		GoToState('Idle');
 }

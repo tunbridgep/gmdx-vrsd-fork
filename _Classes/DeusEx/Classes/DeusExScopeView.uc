@@ -51,10 +51,12 @@ event Tick(float deltaSeconds)
 	{
 		cross = dxRoot.hud.cross;
 
+		/*
 		if (bActive)
 			cross.SetCrosshair(false);
 		else
 			cross.SetCrosshair(player.bCrosshairVisible);
+		*/
 	}
 }
 
@@ -78,16 +80,6 @@ function ActivateViewType(int newFOV, bool bNewBinocs, bool bInstant, bool bGEPS
 	  player.SpawnGEPmounted(true);
 	  player.GEPmounted.bFlipFlopCanvas=false;
 	  player.bGEPzoomActive=true;
-
-		if ((player.bCrosshairVisible)&&(DeusExRootWindow(player.rootWindow)!=none))
-		{
-			bOldCrossHair=true;
-			player.ToggleCrosshair();
-		} else
-		{
-			bOldCrossHair=false;
-			player.bCrosshairVisible=True;
-		}
 
 	  //SetBackground(texture'GMDXUI.Skins.GEPScopeOverlay');
 	  //SetBackgroundStretching(False);
@@ -137,6 +129,8 @@ function ActivateView(int newFOV, bool bNewBinocs, bool bInstant)
 
 		}*/
 	}
+	
+	player.UpdateCrosshair();
 }
 
 // ----------------------------------------------------------------------
@@ -166,13 +160,6 @@ function DeactivateView()
 					DeusExWeapon(player.InHand).ReloadAmmo();
 			}
 
-			if ((bOldCrossHair&&(!player.bCrosshairVisible))&&
-				(DeusExRootWindow(player.rootWindow)!=none))
-				{
-					player.ToggleCrosshair();
-					player.bCrosshairVisible=true;
-				}
-
 			if (DeusExWeapon(player.inHand).IsA('WeaponGEPGun'))
 			{
 			/*DeusExWeapon(player.inHand).Mesh=DeusExWeapon(player.inHand).PlayerViewMesh;
@@ -197,6 +184,8 @@ function DeactivateView()
 			Hide();
 		}
 	}
+	
+	player.UpdateCrosshair();
 }
 
 // ----------------------------------------------------------------------

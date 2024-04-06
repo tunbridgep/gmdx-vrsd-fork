@@ -318,8 +318,6 @@ state ADSToggle                                                                 
             {
 			    PlayAnim('SupressorOn',,0.1);
 		    }
-			if (Owner.IsA('DeusExPlayer') && !bLasing)
-                DeusExPlayer(Owner).SetCrosshair(DeusExPlayer(Owner).bWasCrosshair,false); //RSD: true to bWasCrosshair
 		}
 		else
 		{
@@ -329,8 +327,6 @@ state ADSToggle                                                                 
 		    {
 			    PlayAnim('SuperssorOff',,0.1);
 		    }
-			if (Owner.IsA('DeusExPlayer') && !bHasScope)
-                DeusExPlayer(Owner).SetCrosshair(false,false);
 		}
 		bAimingDown=!bAimingDown;
 		FinishAnim();

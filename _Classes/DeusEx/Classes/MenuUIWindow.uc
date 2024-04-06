@@ -678,7 +678,7 @@ function StartNewGame()
 	{
 		messageBoxMode = MB_AskToTrain;
 		player.bAskedToTrain = True;		// Only prompt ONCE!
-		player.SaveConfigOverride();
+		player.SaveConfig();
 		root.MessageBox(AskToTrainTitle, AskToTrainMessage, 0, False, Self);
 	}
 	else
