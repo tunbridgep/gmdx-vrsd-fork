@@ -116,9 +116,9 @@ event DrawWindow(GC gc)
 				clipsRemaining = weapon.NumClips();
 
 			if (weapon.IsInState('Reload') && weapon.bPerShellReload == false)
-				gc.DrawText(infoX, 26, 20, 9, msgReloading);
+				gc.DrawText(infoX, 27, 20, 9, msgReloading);
 			else
-				gc.DrawText(infoX, 26, 20, 9, ammoInClip);
+				gc.DrawText(infoX, 27, 20, 9, ammoInClip);
 
 			// if there are no clips (or a partial clip) remaining, color me red
 			if (( clipsRemaining == 0 ) || (( clipsRemaining == 1 ) && ( ammoRemaining < 2 * weapon.ReloadCount )))
@@ -127,24 +127,24 @@ event DrawWindow(GC gc)
 				gc.SetTextColor(colAmmoText);
 
 			if (weapon.IsInState('Reload') && weapon.bPerShellReload == false)
-				gc.DrawText(infoX, 38, 20, 9, msgReloading);
+				gc.DrawText(infoX, 39, 20, 9, msgReloading);
 			else
-				gc.DrawText(infoX, 38, 20, 9, clipsRemaining);
+				gc.DrawText(infoX, 39, 20, 9, clipsRemaining);
 		}
 		else
 		{
-			gc.DrawText(infoX, 38, 20, 9, NotAvailable);
+			gc.DrawText(infoX, 39, 20, 9, NotAvailable);
 
 			if (weapon.ReloadCount == 0)
 			{
-				gc.DrawText(infoX, 26, 20, 9, NotAvailable);
+				gc.DrawText(infoX, 27, 20, 9, NotAvailable);
 			}
 			else
 			{
 				if (weapon.IsInState('Reload') && weapon.bPerShellReload == false)
-					gc.DrawText(infoX, 26, 20, 9, msgReloading);
+					gc.DrawText(infoX, 27, 20, 9, msgReloading);
 				else
-					gc.DrawText(infoX, 26, 20, 9, ammoRemaining);
+					gc.DrawText(infoX, 27, 20, 9, ammoRemaining);
 			}
 		}
 
