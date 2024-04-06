@@ -105,7 +105,7 @@ event DrawWindow(GC gc)
 			gc.SetTextColor(colAmmoText);
 
 		// Ammo count drawn differently depending on user's setting
-		if (weapon.ReloadCount > 1 || weapon.IsA('WeaponGEPGun'))
+		if (weapon.ReloadCount > 1 || weapon.IsA('WeaponGEPGun') || weapon.AmmoName == Class'Ammo20mm')
 		{
 			// how much ammo is left in the current clip?
 			ammoInClip = weapon.AmmoLeftInClip();
@@ -185,7 +185,7 @@ function DrawBackground(GC gc)
 
 	gc.DrawText(66, 17, 21, 8, AmmoLabel);
 
-	if (weapon.bPerShellReload)
+	if (weapon.bPerShellReload || weapon.AmmoName == Class'Ammo20mm')
 		gc.DrawText(66, 48, 21, 8, RoundsLabel);
 	else
 		gc.DrawText(66, 48, 21, 8, ClipsLabel);
