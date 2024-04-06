@@ -67,7 +67,7 @@ function HackAction(Actor Hacker, bool bHacked)
 	{
 		if (Level.NetMode == NM_Standalone)
 		{
-			if (!turret.bDisabled)
+			if (!turret.bDisabled || turret.bRebooting)
 			{
 				turret.UnTrigger(Hacker, Pawn(Hacker));
 				turret.bDisabled = True;

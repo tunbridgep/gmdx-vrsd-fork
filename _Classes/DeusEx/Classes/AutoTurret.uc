@@ -56,31 +56,28 @@ replication
 // if we are triggered, turn us on
 function Trigger(Actor Other, Pawn Instigator)
 {
-	if (bConfused || bDisabled)
-		return;
-
 	if (!bActive)
 	{
 		bActive = True;
 		AmbientSound = Default.AmbientSound;
 	}
 
+    bDisabled = false;
 	Super.Trigger(Other, Instigator);
 }
 
 // if we are untriggered, turn us off
 function UnTrigger(Actor Other, Pawn Instigator)
 {
-	//if (bConfused || bDisabled) //Sarge: Attempted fix for EMP not allowing turrets to be hacked at all
-    if (bDisabled)
-		return;
+    bRebooting = false;
 
 	if (bActive)
 	{
 		bActive = False;
 		AmbientSound = None;
 	}
-
+    
+    bDisabled = true;
 	Super.UnTrigger(Other, Instigator);
 }
 
