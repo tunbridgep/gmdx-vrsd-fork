@@ -557,8 +557,6 @@ const DRUG_CRACK = 2;
 
 var bool autosave;                                                              //Sarge: Autosave tells the Quicksave function to make an autosave instead
 
-var travel DeusExWeapon lastMeleeWeapon;                                           //Sarge: Stores our last melee weapon, for use when left-click frobbing crates and other breakables
-
 //////////END GMDX
 
 // native Functions
@@ -2397,6 +2395,46 @@ function RecoilEffectTick(float deltaTime)
               RecoilShake=vect(0,0,0);
 		}
 	}
+}
+
+// ----------------------------------------------------------------------
+// GetMeleePriority()
+// ----------------------------------------------------------------------
+
+function GetMeleePriority() // Trash: Used to automatically decide what to draw, does NOT take into account container minimum damage!
+{
+	local Inventory anItem;
+	local DeusExWeapon meleeWeapon;
+
+	local DeusExWeapon crowbar, sword, knife, baton, dts;
+
+	For(anItem = Inventory; anItem != None; anItem = anItem.Inventory) // Go through the entire inventory, check for these melee weapons
+	{
+		if (anItem.IsA('WeaponCrowbar'))
+			crowbar = DeusExWeapon(anItem);
+		if (anItem.IsA('WeaponSword'))
+			sword = DeusExWeapon(anItem);
+		if (anItem.IsA('WeaponCombatKnife'))
+			knife = DeusExWeapon(anItem);
+		if (anItem.IsA('WeaponBaton'))
+			baton = DeusExWeapon(anItem);
+		if (anItem.IsA('WeaponNanoSword'))
+			dts = DeusExWeapon(anItem);
+	}
+
+	if (crowbar != none) // Prioritize weapons better at breaking containers, DTS is an exception because it generates sound when equipped
+		meleeWeapon = crowbar;
+	else if (sword != none)
+		meleeWeapon = sword;
+	else if (knife != none)
+		meleeWeapon = knife;
+	else if (baton != none)
+		meleeWeapon = baton;
+	else if (dts != none)
+		meleeWeapon = dts;
+	
+
+	PutInHand(meleeWeapon);
 }
 
 // ----------------------------------------------------------------------
