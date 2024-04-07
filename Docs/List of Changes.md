@@ -73,3 +73,5 @@ Sarge's Changes since Beta 2.2:
         - Alcohol no longer heals for 5 points. Instead, it temporarily gives you 5 torso HP (along with it's usual 5 extra torso Max-HP) while in effect, which is removed afterwards. This health removal cannot kill the player.
         - Alcohol no longer adds to fullness when the addiction system is enabled
         - Zyme no longer removes 10HP if the addiction system is enabled.
+- Miscellaneous Changes:
+    - Implemented optional Lay-D Denton support. If installed, Lay-D Denton should be at a lower priority than GMDX vRSD.

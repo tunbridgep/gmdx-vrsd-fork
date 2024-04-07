@@ -1602,6 +1602,7 @@ function UpdatePlayerSkin()
 	local PaulDentonCarcass paulCarcass;
 	local JCDentonMaleCarcass jcCarcass;
 	local JCDouble jc;
+	local DentonClone DC;
 
 	// Paul Denton
 	foreach AllActors(class'PaulDenton', paul)
@@ -1627,6 +1628,12 @@ function UpdatePlayerSkin()
 	// JC's stunt double
 	foreach AllActors(class'JCDouble', jc)
 		break;
+
+	//LDDP, 10/26/21: Reskin denton clone on the fly
+	forEach AllActors(class'DentonClone', DC)
+	{
+		DC.SetSkin(Human(Self));
+	}
 
 	if (jc != None)
 		jc.SetSkin(Self);
@@ -5126,6 +5133,16 @@ function bool SetBasedPawnSize(float newRadius, float newHeight)
 //		DesiredPrePivot -= centerDelta;
 		BaseEyeHeight   = newHeight - deltaEyeHeight;
 
+		//LDDP, 10/26/21: We use this to dynamically adjust our collision height. Bear this in mind.
+		if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
+		{
+			if (PrePivot.Z ~= 4.5)
+			{
+				PrePivot.Z -= 4.5;
+			}
+			BaseEyeHeight -= 2;
+		}
+
 		// Complaints that eye height doesn't seem like your crouching in multiplayer
 		if (( Level.NetMode != NM_Standalone ) && (bIsCrouching || bForceDuck) )
 			EyeHeight		-= (centerDelta.Z * 2.5);
@@ -5150,6 +5167,10 @@ function bool ResetBasedPawnSize()
 
 function float GetDefaultCollisionHeight()
 {
+	if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
+	{
+		return Default.CollisionHeight-9.0;
+	}
 	return (Default.CollisionHeight-4.5);
 }
 

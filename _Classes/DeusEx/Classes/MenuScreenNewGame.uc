@@ -17,13 +17,32 @@ var ButtonWindow             btnLeftArrow;
 var ButtonWindow             btnRightArrow;
 var ButtonWindow             btnPortrait;
 
-var Texture texPortraits[5];
+var Texture texPortraits[10]; //LDDP, 10/26/21: We're expanding this array to 10, and doing some swoocey bullshit after the fact.
 var int     portraitIndex;
 var Skill   selectedSkill;
 var int		selectedRowId;
 var int     saveSkillPointsAvail;
 var int     saveSkillPointsTotal;
 var float   combatDifficulty;
+
+//---------------
+//LDDP, 10/26/21: Other stuff added here for convenience.
+//---------------
+var bool bFemaleEnabled; 
+var NewGameCheckBoxWindow MorpheusCheckBox, MaleInteractionsCheckbox;
+
+struct LDDPButtonPos {
+	var int X;
+	var int Y;
+};
+
+var LDDPButtonPos MorpheusCheckboxPos, MaleInteractionsCheckboxPos;
+var localized string MorpheusCheckboxLabel, MaleInteractionsCheckboxLabel,
+			CheckboxTipHeader, CheckboxTipText;
+
+//---------------
+//LDDP end.
+//---------------
 
 var String filterString;
 
@@ -63,7 +82,26 @@ var bool bExtraHardcore;
 
 event InitWindow()
 {
+    local Texture TTex;
+
 	Super.InitWindow();
+    
+	//LDDP, 10/26/21: Attempt a load. If succesful, we have LDDP installed. Thus, we can flick on all the female functionality.
+	TTex = Texture(DynamicLoadObject("FemJC.MenuPlayerSetupJCDentonFemale_1", class'Texture', false));
+	if (TTex != None)
+	{
+		bFemaleEnabled = true;
+		TexPortraits[0] = Texture(DynamicLoadObject("FemJC.MenuPlayerSetupJCDentonMale_1", class'Texture', false));
+		TexPortraits[1] = Texture(DynamicLoadObject("FemJC.MenuPlayerSetupJCDentonFemale_1", class'Texture', false));
+		TexPortraits[2] = Texture(DynamicLoadObject("FemJC.MenuPlayerSetupJCDentonMale_2", class'Texture', false));
+		TexPortraits[3] = Texture(DynamicLoadObject("FemJC.MenuPlayerSetupJCDentonFemale_2", class'Texture', false));
+		TexPortraits[4] = Texture(DynamicLoadObject("FemJC.MenuPlayerSetupJCDentonMale_3", class'Texture', false));
+		TexPortraits[5] = Texture(DynamicLoadObject("FemJC.MenuPlayerSetupJCDentonFemale_3", class'Texture', false));
+		TexPortraits[6] = Texture(DynamicLoadObject("FemJC.MenuPlayerSetupJCDentonMale_4", class'Texture', false));
+		TexPortraits[7] = Texture(DynamicLoadObject("FemJC.MenuPlayerSetupJCDentonFemale_4", class'Texture', false));
+		TexPortraits[8] = Texture(DynamicLoadObject("FemJC.MenuPlayerSetupJCDentonMale_5", class'Texture', false));
+		TexPortraits[9] = Texture(DynamicLoadObject("FemJC.MenuPlayerSetupJCDentonFemale_5", class'Texture', false));
+	}
 
 	SaveSkillPoints();
 	ResetToDefaults();
@@ -124,6 +162,9 @@ function CreateControls()
 	CreateSkillsListWindow();
 	CreateSkillInfoWindow();
 	CreateSkillPointsButton();
+
+    //LDDP
+    CreateLDDPCheckboxes();
 }
 
 // ----------------------------------------------------------------------
@@ -484,8 +525,19 @@ function PreviousPortrait()
 {
 	portraitIndex--;
 
+	//LDDP, 10/26/21: Hacky logic for array count wraparound based on load/did not load status.
 	if (portraitIndex < 0)
-		portraitIndex = arrayCount(texPortraits) - 1;
+		portraitIndex = arrayCount(texPortraits) - 1 - (5*int(!bFemaleEnabled));
+	
+	//Male? Hide male interactions checkbox.
+	if (PortraitIndex%2 == 0)
+	{
+		MaleInteractionsCheckbox.SetPos(5000+MaleInteractionsCheckboxPos.X, MaleInteractionsCheckboxPos.Y);
+	}
+	else
+	{
+		MaleInteractionsCheckbox.SetPos(MaleInteractionsCheckboxPos.X, MaleInteractionsCheckboxPos.Y);
+	}
 
 	btnPortrait.SetBackground(texPortraits[portraitIndex]);
 }
@@ -498,8 +550,19 @@ function NextPortrait()
 {
 	portraitIndex++;
 
-	if (portraitIndex == arrayCount(texPortraits))
+	//LDDP, 10/26/21: Hacky logic for array count wraparound based on load/did not load status.
+	if (portraitIndex == arrayCount(texPortraits)/(1+int(!bFemaleEnabled)))
 		portraitIndex = 0;
+	
+	//Male? Hide male interactions checkbox.
+	if (PortraitIndex%2 == 0)
+	{
+		MaleInteractionsCheckbox.SetPos(5000+MaleInteractionsCheckboxPos.X, MaleInteractionsCheckboxPos.Y);
+	}
+	else
+	{
+		MaleInteractionsCheckbox.SetPos(MaleInteractionsCheckboxPos.X, MaleInteractionsCheckboxPos.Y);
+	}
 
 	btnPortrait.SetBackground(texPortraits[portraitIndex]);
 }
@@ -547,6 +610,11 @@ function DowngradeSkill()
 function ResetToDefaults()
 {
 	editName.SetText(player.TruePlayerName);
+
+	//LDDP, 11/01/21: Set LDDP checkbox options to default, hide MI4FJC checkbox because we're male now.
+	MorpheusCheckbox.SetToggle(false);
+	MaleInteractionsCheckbox.SetToggle(false);
+	MaleInteractionsCheckbox.SetPos(5000+MaleInteractionsCheckboxPos.X, MaleInteractionsCheckboxPos.Y);
 
 	player.SkillPointsAvail = player.Default.SkillPointsAvail;
 	player.SkillPointsTotal = player.Default.SkillPointsTotal;
@@ -672,6 +740,11 @@ function ProcessAction(String actionKey)
         modMenu.bHardcoreSelected = bHardCoreMode;
         modMenu.PopulateModifierList();
     }
+    else if (actionKey == "HELP")
+    {
+        //LDDP, 10/28/21: Optimized parsing. Also invoking new help window here.
+        root.MessageBox(CheckboxTipHeader, CheckboxTipText, 1, False, Self);
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -680,9 +753,10 @@ function ProcessAction(String actionKey)
 
 function SaveSettings()
 {
+    local Human THuman;
+
     ApplySkills();
 	player.TruePlayerName   = editName.GetText();
-	player.PlayerSkin       = portraitIndex;
 	player.CombatDifficulty = combatDifficulty;
 	player.bHardCoreMode=bHardCoreMode;
 	if (bHardCoreMode)
@@ -697,6 +771,54 @@ function SaveSettings()
         ScrambleAugOrderList();
     player.bAddictionSystem=bAddictionSystem;
     player.bExtraHardcore=bExtraHardcore;
+
+    //LDDP
+	THuman = Human(Player);
+	if (THuman != None)
+	{
+		THuman.bRetroMorpheus = MorpheusCheckbox.GetToggle();
+		THuman.bFemaleUsesMaleInteractions = MaleInteractionsCheckbox.GetToggle();
+		THuman.bGaveNewGameTips = true;
+		THuman.SaveConfig();
+	}
+
+	//LDDP, 10/26/21: Do some swoocey bullshit for indices.
+	if (!bFemaleEnabled)
+	{
+		player.PlayerSkin = portraitIndex;
+	}
+	else
+	{
+		switch(PortraitIndex)
+		{
+			case 0:
+			case 1:
+				Player.PlayerSkin = 0;
+			break;
+			case 2:
+			case 3:
+				Player.PlayerSkin = 1;
+			break;
+			case 4:
+			case 5:
+				Player.PlayerSkin = 2;
+			break;
+			case 6:
+			case 7:
+				Player.PlayerSkin = 3;
+			break;
+			case 8:
+			case 9:
+				Player.PlayerSkin = 4;
+			break;
+		}
+		
+		//LDDP, 10/26/21: Save this as a boolean, since flags are about to be wiped. Add this boolean to human, modders.
+		if (Human(Player) != None)
+		{
+			Human(Player).bMadeFemale = (PortraitIndex % 2 == 1);
+		}
+	}
 }
 
 function ScrambleAugOrderList()                                                 //RSD: Shuffle the order of aug canisters encountered throughout the game
@@ -714,6 +836,41 @@ function ScrambleAugOrderList()                                                 
     }
     for (i=0; i<ArrayCount(player.augOrderNums); i++)
 log(player.augOrderNums[i]);
+}
+
+//LDDP
+function CreateLDDPCheckboxes()
+{
+	local Human THuman;
+	
+	THuman = Human(GetPlayerPawn());
+	
+	MorpheusCheckbox = NewGameCheckBoxWindow(winClient.NewChild(Class'NewGameCheckBoxWindow'));
+	MorpheusCheckbox.SetWindowAlignments(HALIGN_Right, VALIGN_Top, 203, 424);
+	MorpheusCheckbox.SetText(MorpheusCheckboxLabel);
+	MorpheusCheckbox.SetToggle(false);
+	MorpheusCheckbox.SetPos(MorpheusCheckboxPos.X, MorpheusCheckboxPos.Y);
+	
+	//Note: Add 5000 to default because default is MALE, and has no use for this checkbox.
+	MaleInteractionsCheckbox = NewGameCheckBoxWindow(winClient.NewChild(Class'NewGameCheckBoxWindow'));
+	MaleInteractionsCheckbox.SetWindowAlignments(HALIGN_Right, VALIGN_Top, 203, 424);
+	MaleInteractionsCheckbox.SetText(MaleInteractionsCheckboxLabel);
+	MaleInteractionsCheckbox.SetToggle(false);
+	MaleInteractionsCheckbox.SetPos(5000+MaleInteractionsCheckboxPos.X, MaleInteractionsCheckboxPos.Y);
+	
+	if (THuman != None)
+	{
+		MorpheusCheckbox.SetToggle(THuman.bRetroMorpheus);
+		MaleInteractionsCheckbox.SetToggle(THuman.bFemaleUsesMaleInteractions);
+	}
+}
+
+function GiveTip()
+{
+	if ((Human(Player) == None) || (!Human(Player).bGaveNewGameTips))
+	{
+		root.MessageBox(CheckboxTipHeader, CheckboxTipText, 1, False, Self);
+	}
 }
 
 // ----------------------------------------------------------------------
@@ -837,7 +994,6 @@ defaultproperties
      texPortraits(3)=Texture'DeusExUI.UserInterface.MenuNewGameJCDenton_4'
      texPortraits(4)=Texture'DeusExUI.UserInterface.MenuNewGameJCDenton_5'
      filterString="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890 "
-     ButtonUpgradeLabel="Upg|&rade"
      ButtonDowngradeLabel="|&Downgrade"
      HeaderNameLabel="Real Name"
      HeaderCodeNameLabel="Code Name"
@@ -863,4 +1019,12 @@ defaultproperties
      clientTextures(5)=Texture'DeusExUI.UserInterface.MenuNewGameBackground_6'
      bUsesHelpWindow=False
      bEscapeSavesSettings=False
+     
+     //LDDP Settings
+     MorpheusCheckboxPos=(X=3,Y=342)
+     MaleInteractionsCheckboxPos=(X=3,Y=362)
+     MorpheusCheckboxLabel="Original Morpheus?"
+     MaleInteractionsCheckboxLabel="Original Interactions?"
+     CheckboxTipHeader="LDDP 1.1 Checkbox Options"
+     CheckboxTipText="'Original Morpheus' reverts to his old voiceover. 'Original interactions' reverts to the old dialogue for Mercedes, Camille, Mamasan, and CanalWhore."     ButtonUpgradeLabel="Upg|&rade"
 }
