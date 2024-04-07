@@ -84,8 +84,6 @@ event InitWindow()
 {
     local Texture TTex;
 
-	Super.InitWindow();
-    
 	//LDDP, 10/26/21: Attempt a load. If succesful, we have LDDP installed. Thus, we can flick on all the female functionality.
 	TTex = Texture(DynamicLoadObject("FemJC.MenuPlayerSetupJCDentonFemale_1", class'Texture', false));
 	if (TTex != None)
@@ -102,6 +100,8 @@ event InitWindow()
 		TexPortraits[8] = Texture(DynamicLoadObject("FemJC.MenuPlayerSetupJCDentonMale_5", class'Texture', false));
 		TexPortraits[9] = Texture(DynamicLoadObject("FemJC.MenuPlayerSetupJCDentonFemale_5", class'Texture', false));
 	}
+	
+    Super.InitWindow();
 
 	SaveSkillPoints();
 	ResetToDefaults();
@@ -164,7 +164,13 @@ function CreateControls()
 	CreateSkillPointsButton();
 
     //LDDP
-    CreateLDDPCheckboxes();
+    //SARGE: Only create these if LDDP is actually loaded
+    if (bFemaleEnabled)
+    {
+        CreateLDDPCheckboxes();
+        //LDDP, 10/28/21: Modders: I suggest you do this, but for now we're using an Exec command for it.
+    	AddTimer(0.1, false,, 'GiveTip');
+    }
 }
 
 // ----------------------------------------------------------------------

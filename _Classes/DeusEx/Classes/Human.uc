@@ -1088,7 +1088,10 @@ Begin:
 		if (PerkNamesArray[9] != 1)
 		{
         AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 544);
-        PlaySound(sound'MaleLand', SLOT_None, 1.5, true, 1024);
+		if (FlagBase.GetBool('LDDPJCIsFemale'))
+			PlaySound(Sound(DynamicLoadObject("FJCLand", class'Sound', false)), SLOT_None, 1.5, true, 1024);
+		else
+			PlaySound(sound'MaleLand', SLOT_None, 1.5, true, 1024);
         }
         }
         swimTimer -= 0.5;

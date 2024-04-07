@@ -192,99 +192,8 @@ event TravelPostAccept()
 }
 
 // ----------------------------------------------------------------------
-// RenderOverlays()
-// render our in-hand object
 // ----------------------------------------------------------------------
 
-//LDDP, 10/26/21: Imported from FemJC.u. This is for swapping female hand textures.
-simulated event RenderOverlays( canvas Canvas )
-{
-	local int i;
-	local Texture OldMultiskins[8], TTex;
-	
-	if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
-	{
-		if ((inHand != None) && (inHand.Mesh == inHand.PlayerViewMesh))
-		{
-        		for (i=0;i<8;i++)
-        		{
-        	   		OldMultiskins[i] = InHand.Multiskins[i];
-        	    		
-        	    		if (inHand.GetMeshTexture(i) == Texture'WeaponHandsTex')
-        	    		{
-					switch(PlayerSkin)
-					{
-						case 0:
-							TTex = Texture(DynamicLoadObject("FemJC.WeaponHandsTex0Fem", class'Texture', false));
-							if (TTex != None) inHand.Multiskins[i] = TTex;
-						break;
-						case 1:
-							TTex = Texture(DynamicLoadObject("FemJC.WeaponHandsTex4Fem", class'Texture', false));
-							if (TTex != None) inHand.Multiskins[i] = TTex;
-						break;
-						case 2:
-							TTex = Texture(DynamicLoadObject("FemJC.WeaponHandsTex5Fem", class'Texture', false));
-							if (TTex != None) inHand.Multiskins[i] = TTex;
-						break;
-						case 3:
-							TTex = Texture(DynamicLoadObject("FemJC.WeaponHandsTex6Fem", class'Texture', false));
-							if (TTex != None) inHand.Multiskins[i] = TTex;
-						break;
-						case 4:
-							TTex = Texture(DynamicLoadObject("FemJC.WeaponHandsTex7Fem", class'Texture', false));
-							if (TTex != None) inHand.Multiskins[i] = TTex;
-						break;
-					}
-        	    		}
-        	    		else if (inHand.GetMeshTexture(i) == Texture'MiniCrossbowTex1')
-        	    		{
-					switch(PlayerSkin)
-					{
-						case 0:
-							TTex = Texture(DynamicLoadObject("FemJC.MiniCrossbowTex0Fem", class'Texture', false));
-							if (TTex != None) inHand.Multiskins[i] = TTex;
-						break;
-						case 1:
-							TTex = Texture(DynamicLoadObject("FemJC.MiniCrossbowTex4Fem", class'Texture', false));
-							if (TTex != None) inHand.Multiskins[i] = TTex;
-						break;
-						case 2:
-							TTex = Texture(DynamicLoadObject("FemJC.MiniCrossbowTex5Fem", class'Texture', false));
-							if (TTex != None) inHand.Multiskins[i] = TTex;
-						break;
-						case 3:
-							TTex = Texture(DynamicLoadObject("FemJC.MiniCrossbowTex6Fem", class'Texture', false));
-							if (TTex != None) inHand.Multiskins[i] = TTex;
-						break;
-						case 4:
-							TTex = Texture(DynamicLoadObject("FemJC.MiniCrossbowTex7Fem", class'Texture', false));
-							if (TTex != None) inHand.Multiskins[i] = TTex;
-						break;
-					}
-            			}
-        		}
-		}
-    	}
-    	
-    	Super.RenderOverlays(Canvas);
-    	
-	if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
-	{
-    		if ((inHand != None) && (inHand.Mesh == inHand.PlayerViewMesh))
-    		{
-        		for (i=0;i<8;i++)
-        		{
-        	    		InHand.Multiskins[i] = OldMultiskins[i];
-			}
-        	}
-    	}
-}
-
-// ----------------------------------------------------------------------
-// ----------------------------------------------------------------------
-
-//Sarge: Disabled due to Lay-D Denton Support
-/*
 function setSkin()
 {
 	if(GetHDTPSettings(self))
@@ -310,7 +219,6 @@ function setSkin()
 		}
 	}
 }
-*/
 
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------

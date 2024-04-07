@@ -2961,7 +2961,12 @@ function StartPoison( Pawn poisoner, int Damage )
 	myPoisoner = poisoner;
 
     if (myPoisoner.weapon.IsA('WeaponGreaselSpit') && FRand() < 0.3)
-    PlaySound(sound'MaleCough',SLOT_Pain);    //CyberP: cough to greasel spit
+    {
+        if (FlagBase.GetBool('LDDPJCIsFemale')) //Sarge: Lay-D Denton support
+            PlaySound(Sound(DynamicLoadObject("FJCCough", class'Sound', false)), SLOT_Pain);
+        else
+            PlaySound(sound'MaleCough',SLOT_Pain);    //CyberP: cough to greasel spit
+    }
 
 	if (Health <= 0)  // no more pain -- you're already dead!
 		return;
@@ -5742,7 +5747,12 @@ state PlayerWalking
                bStunted = true;
                SetTimer(3,false);
                if (!bOnLadder && FRand() < 0.7)
-                  PlaySound(sound'MaleBreathe', SLOT_None,0.8);
+               {
+                    if (FlagBase.GetBool('LDDPJCIsFemale')) //Sarge: Lay-D Denton support
+                        PlaySound(Sound(DynamicLoadObject("FJCGasp", class'Sound', false)), SLOT_None, 0.8);
+                    else
+                        PlaySound(sound'MaleBreathe', SLOT_None,0.8);
+               }
                if (bBoosterUpgrade && Energy > 0)
 	               AugmentationSystem.AutoAugs(false,false);
             }
