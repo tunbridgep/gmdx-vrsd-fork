@@ -30,7 +30,10 @@ Sarge's Changes since Beta 2.2:
     - The Nano Keyring now tells you which key was used when locking/unlocking a door.
     - Complete overhaul of "Left-click frobbing", which happens when left-clicking certain items without an item equipped.
         - Left-Clicking a datacube will pick it up and allow you to carry it.
-        - Left-Clicking a breakable box, window or wall will select your last used melee weapon (except melee weapons assigned as a quick secondary)
+        - Left-Clicking a breakable box, window or wall will select a melee weapon from your inventory based on a priority list.
+            - The priority list is as follows: Chinese Sword, Crowbar, Combat Knife, Baton, Dragon Tooth Sword.
+            - If you don't have the weapon or the weapon deals less damage than the breakable object's DT, it'll go to the next one in the priority list.
+            - The DT check is disabled on hardcore, so it simply checks the weapon's priority and equips it even if it won't deal enough damage to break the container.
         - Left-Clicking on a door will pull out the Nano Keyring if you have the correct key, otherwise it will pull out a lockpick.
             - This behaviour is disabled in Hardcore mode
             - In Hardcore, Left-Clicking on a door will always pull out a lockpick (or the keyring if the lock is unpickable or you have no lockpicks). Right-clicking will then swap between the keyring and lockpicks.

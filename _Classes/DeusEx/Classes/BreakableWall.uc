@@ -7,7 +7,7 @@ class BreakableWall expands DeusExMover;
 //Simply pull out a melee weapon
 function bool DoLeftFrob(DeusExPlayer frobber)
 {
-    frobber.GetMeleePriority();
+    frobber.GetMeleePriority(minDamageThreshold);
     return false;
 }
 

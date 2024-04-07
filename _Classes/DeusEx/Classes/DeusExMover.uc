@@ -89,6 +89,11 @@ function bool DoLeftFrob(DeusExPlayer frobber)
     {
         if (!bPickable || !frobber.SelectInventoryItem('Lockpick'))
             frobber.PutInHand(frobber.KeyRing);
+			
+		if (bBreakable)
+		{
+			frobber.GetMeleePriority(minDamageThreshold);
+		}
         return false;
     }
     else if (CanToggleLock(frobber,frobber.KeyRing))

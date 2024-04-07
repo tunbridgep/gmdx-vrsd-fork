@@ -337,12 +337,13 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
     return true;
 }
 
+// Trash: Sarge, is this thing obsolete now?
+
 //Called when the item is added to the players hands
 function Draw(DeusExPlayer frobber)
 {
-    if (bIsMeleeWeapon && frobber.assignedWeapon != Self)
-        frobber.lastMeleeWeapon = self;
-
+    //if (bIsMeleeWeapon && frobber.assignedWeapon != Self)
+    //    frobber.lastMeleeWeapon = self;
 }
 
 // ---------------------------------------------------------------------
@@ -1371,6 +1372,15 @@ simulated function float GetWeaponSkill()
 		}
 	}
 	return value;
+}
+
+function int CalculateTrueDamage()
+{
+	local int trueDamage;
+
+	trueDamage = HitDamage * (1.0 - (2.0 * GetWeaponSkill()) + ModDamage);
+
+	return trueDamage;
 }
 
 // calculate the accuracy for this weapon and the owner's damage

@@ -12,7 +12,7 @@ var   bool bSelectMeleeWeapon; //Select a melee weapon when we left-frob this co
 
 function bool DoLeftFrob(DeusExPlayer frobber)
 {
-    frobber.GetMeleePriority();
+    frobber.GetMeleePriority(minDamageThreshold);
     return false;
 }
 

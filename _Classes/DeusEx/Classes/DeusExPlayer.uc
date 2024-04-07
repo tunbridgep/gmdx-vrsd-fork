@@ -2401,19 +2401,19 @@ function RecoilEffectTick(float deltaTime)
 // GetMeleePriority()
 // ----------------------------------------------------------------------
 
-function GetMeleePriority() // Trash: Used to automatically decide what to draw, does NOT take into account container minimum damage!
+function GetMeleePriority(int damageThreshold)	// Trash: Used to automatically decide what to draw
 {
 	local Inventory anItem;
 	local DeusExWeapon meleeWeapon;
 
 	local DeusExWeapon crowbar, sword, knife, baton, dts;
 
-	For(anItem = Inventory; anItem != None; anItem = anItem.Inventory) // Go through the entire inventory, check for these melee weapons
+	For(anItem = Inventory; anItem != None; anItem = anItem.Inventory)	// Go through the entire inventory, check for these melee weapons
 	{
-		if (anItem.IsA('WeaponCrowbar'))
-			crowbar = DeusExWeapon(anItem);
 		if (anItem.IsA('WeaponSword'))
 			sword = DeusExWeapon(anItem);
+		if (anItem.IsA('WeaponCrowbar'))
+			crowbar = DeusExWeapon(anItem);
 		if (anItem.IsA('WeaponCombatKnife'))
 			knife = DeusExWeapon(anItem);
 		if (anItem.IsA('WeaponBaton'))
@@ -2422,19 +2422,53 @@ function GetMeleePriority() // Trash: Used to automatically decide what to draw,
 			dts = DeusExWeapon(anItem);
 	}
 
-	if (crowbar != none) // Prioritize weapons better at breaking containers, DTS is an exception because it generates sound when equipped
-		meleeWeapon = crowbar;
-	else if (sword != none)
-		meleeWeapon = sword;
-	else if (knife != none)
-		meleeWeapon = knife;
-	else if (baton != none)
-		meleeWeapon = baton;
-	else if (dts != none)
-		meleeWeapon = dts;
-	
 
-	PutInHand(meleeWeapon);
+	if (bHardcoreMode)
+	{
+		if (sword != none)	// Prioritize weapons better at breaking containers
+			meleeWeapon = sword;
+		else if (crowbar != none)
+			meleeWeapon = crowbar;
+		else if (knife != none)
+			meleeWeapon = knife;
+		else if (baton != none)
+			meleeWeapon = baton;
+		else if (dts != none)
+			meleeWeapon = dts;
+	}
+	else
+	{
+		if (sword != none && BreaksDamageThreshold(sword, damageThreshold))	// Prioritize weapons based on priority and container DT
+			meleeWeapon = sword;
+		else if (crowbar != none && BreaksDamageThreshold(crowbar, damageThreshold))
+			meleeWeapon = crowbar;
+		else if (knife != none && BreaksDamageThreshold(knife, damageThreshold))
+			meleeWeapon = knife;
+		else if (baton != none && BreaksDamageThreshold(baton, damageThreshold))
+			meleeWeapon = baton;
+		else if (dts != none && BreaksDamageThreshold(dts, damageThreshold))
+			meleeWeapon = dts;
+	}
+	
+	if (meleeWeapon != None)
+		PutInHand(meleeWeapon);
+}
+
+function bool BreaksDamageThreshold(DeusExWeapon weapon, int damageThreshold)	// Checks if the weapon breaks the damageThreshold
+{
+	local int mod;
+
+	if (weapon.IsA('WeaponCrowbar'))	// Special check for Crowbar since it deals +5 extra damage to objects
+		mod += 5;
+
+	if ((weapon.CalculateTrueDamage() + mod) >= damageThreshold)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 // ----------------------------------------------------------------------
