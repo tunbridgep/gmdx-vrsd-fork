@@ -551,6 +551,8 @@ var travel RandomTable Randomizer;
 var travel float autosaveRestrictTimer;                                         //Sarge: Current time left before we're allowed to autosave again.
 var const float autosaveRestrictTimerDefault;                                   //Sarge: Timer for autosaves.
 
+var travel bool bMoreLDDPNPCs;
+
 const DRUG_TOBACCO = 0;
 const DRUG_ALCOHOL = 1;
 const DRUG_CRACK = 2;
@@ -16918,6 +16920,14 @@ function RegenStaminaTick(float deltaTime)                                      
 		swimTimer = swimDuration;
 		bStunted = false;
 	}
+}
+
+//Sarge: Checks if Lay-D Denton Mod is installed
+function bool FemaleEnabled()
+{
+    local Texture TTex;
+	TTex = Texture(DynamicLoadObject("FemJC.MenuPlayerSetupJCDentonFemale_1", class'Texture', false));
+	return TTex != None;
 }
 
 // ----------------------------------------------------------------------

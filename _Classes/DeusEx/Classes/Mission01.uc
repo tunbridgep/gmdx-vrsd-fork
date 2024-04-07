@@ -26,16 +26,8 @@ function FirstFrame()
     {
         if (flags.GetBool('LDDPJCIsFemale'))
         {
-                foreach AllActors(class'Female2', Shannon, 'Female2')
-                    Shannon.Destroy();
-        }
-    }
-    else
-    {
-        foreach AllActors(class'ScriptedPawn', SP)
-        {
-            if (SP.IsA('LDDPChet'))
-                    SP.Destroy();
+            foreach AllActors(class'Female2', Shannon, 'Female2')
+                Shannon.Destroy();
         }
     }
 

@@ -28,7 +28,6 @@ var float   combatDifficulty;
 //---------------
 //LDDP, 10/26/21: Other stuff added here for convenience.
 //---------------
-var bool bFemaleEnabled; 
 var NewGameCheckBoxWindow MorpheusCheckBox, MaleInteractionsCheckbox;
 
 struct LDDPButtonPos {
@@ -74,6 +73,9 @@ var bool bRestrictedSaving;
 var bool bNoKeypadCheese;
 var bool bExtraHardcore;
 
+//LDDP
+var bool bFemaleEnabled;
+
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -82,13 +84,12 @@ var bool bExtraHardcore;
 
 event InitWindow()
 {
-    local Texture TTex;
+    local DeusExPlayer player;
+    player = DeusExPlayer(GetPlayerPawn());
 
-	//LDDP, 10/26/21: Attempt a load. If succesful, we have LDDP installed. Thus, we can flick on all the female functionality.
-	TTex = Texture(DynamicLoadObject("FemJC.MenuPlayerSetupJCDentonFemale_1", class'Texture', false));
-	if (TTex != None)
+	if (player != None && player.FemaleEnabled())
 	{
-		bFemaleEnabled = true;
+        bFemaleEnabled = true;
 		TexPortraits[0] = Texture(DynamicLoadObject("FemJC.MenuPlayerSetupJCDentonMale_1", class'Texture', false));
 		TexPortraits[1] = Texture(DynamicLoadObject("FemJC.MenuPlayerSetupJCDentonFemale_1", class'Texture', false));
 		TexPortraits[2] = Texture(DynamicLoadObject("FemJC.MenuPlayerSetupJCDentonMale_2", class'Texture', false));
@@ -169,7 +170,8 @@ function CreateControls()
     {
         CreateLDDPCheckboxes();
         //LDDP, 10/28/21: Modders: I suggest you do this, but for now we're using an Exec command for it.
-    	AddTimer(0.1, false,, 'GiveTip');
+    	//AddTimer(0.1, false,, 'GiveTip');
+        GiveTip();
     }
 }
 
