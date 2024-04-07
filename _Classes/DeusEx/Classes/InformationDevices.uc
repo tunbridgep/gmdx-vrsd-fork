@@ -95,7 +95,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 			// hide the crosshairs if there's text to read, otherwise display a message
 			if (infoWindow != None)
 			{
-				DeusExRootWindow(player.rootWindow).hud.cross.SetCrosshair(False);
+                player.UpdateCrosshair();
 				DeusExRootWindow(player.rootWindow).hud.frobDisplay.Hide();
 			}
 			else

@@ -10311,6 +10311,9 @@ function bool GetCrosshairState(optional bool bCheckForOuterCrosshairs)
     if (root != None && root.WindowStackCount() > 0) //No crosshair while windows are open
         return false;
 
+    if (frobTarget != None && frobTarget.isA('InformationDevices') && InformationDevices(frobTarget).aReader == Self)
+        return false;
+
     if (W != None)
     {
         if (W.bLasing)
