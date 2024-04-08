@@ -8418,7 +8418,8 @@ function Bool FindInventorySlot(Inventory anItem, optional Bool bSearchOnly)
 		PlaceItemInSlot(anItem, col, row);
 		if (bLeftClicked && inHand == None)
 		{
-            PutInHand(anItem); //CyberP: left click interaction
+            //PutInHand(anItem); //CyberP: left click interaction //SARGE: This breaks stacked items
+            SelectInventoryItem(anItem.Class.name);
             bLeftClicked = False;
 		}
 	}
