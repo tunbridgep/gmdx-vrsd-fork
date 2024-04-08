@@ -67,10 +67,19 @@ function DestroyWindow()
 
 function Tick(float deltaTime)
 {
+	local DeusExPlayer player;
+    player = DeusExPlayer(GetPlayerPawn());
+
 	// if the reader strays too far from the object, kill the text window
 	if ((aReader != None) && (infoWindow != None))
 		if (aReader.FrobTarget != Self)
 			DestroyWindow();
+    
+    //If we shouldn't be created, abort
+    if (!bFirstTickDone && !ShouldCreate(player))
+        Destroy();
+
+    bFirstTickDone = true;
 }
 
 // ----------------------------------------------------------------------

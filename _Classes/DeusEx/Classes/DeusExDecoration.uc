@@ -58,6 +58,32 @@ var bool bLeftGrab;               //Sarge: Can this object be picked up with lef
 var bool bEMPHitMarkers;          //Sarge: Show hitmarkers for all EMP damage, for things like cameras
 var bool bHitMarkers;             //Sarge: Show hitmarkers when damaged. For things like glass panes
 
+var bool bFirstTickDone;                                                        //SARGE: Set to true after the first tick. Allows us to do stuff on the first frame
+
+//Sarge: Gender Stuff
+var(GMDX) const bool requiresLDDP;                                              //Delete this character LDD is uninstalled
+var(GMDX) const bool LDDPExtra;                                                 //Delete this character we don't have the "Extra LDDP Characters" playthrough modifier
+var(GMDX) const bool deleteIfMale;                                              //Delete this character if we're male
+var(GMDX) const bool deleteIfFemale;                                            //Delete this character if we're female
+
+// ----------------------------------------------------------------------
+// ShouldCreate()
+// If this returns FALSE, the object will be deleted on it's first tick
+// ----------------------------------------------------------------------
+
+function bool ShouldCreate(DeusExPlayer player)
+{
+    local bool maleDelete;
+    local bool femaleDelete;
+    local bool extraDelete;
+
+    maleDelete = !player.FlagBase.GetBool('LDDPJCIsFemale') && deleteIfMale;
+    femaleDelete = player.FlagBase.GetBool('LDDPJCIsFemale') && deleteIfFemale;
+    extraDelete = LDDPExtra && !player.bMoreLDDPNPCs;
+
+    return !maleDelete && !femaleDelete && !extraDelete && (player.FemaleEnabled() || !requiresLDDP);
+}
+
 native(2101) final function ConBindEvents();
 
 //
@@ -474,6 +500,12 @@ simulated function Tick(float deltaTime)
 	local float        ang;
 	local rotator      rot;
 	local DeusExPlayer player;
+		
+    player = DeusExPlayer(GetPlayerPawn());
+
+    //If we shouldn't be created, abort
+    if (!bFirstTickDone && !ShouldCreate(player))
+        Destroy();
 
 	Super.Tick(deltaTime);
 
@@ -516,7 +548,6 @@ simulated function Tick(float deltaTime)
 
 	if (conListItems != None)
 	{
-		player = DeusExPlayer(GetPlayerPawn());
 		if (player != None)
 			player.StartConversation(Self, IM_Radius);
 	}
@@ -525,6 +556,8 @@ simulated function Tick(float deltaTime)
 	{
 	  Velocity *= 0;
 	}
+    
+    bFirstTickDone = true;
 }
 
 // ----------------------------------------------------------------------

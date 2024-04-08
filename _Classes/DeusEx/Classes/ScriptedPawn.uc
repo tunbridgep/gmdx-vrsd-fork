@@ -470,7 +470,7 @@ var bool bNotFirstDiffMod;                                                      
 //Sarge
 var(GMDX) bool bDontRandomizeWeapons;                                           //If true, this pawn will never have it's weapons randomised amongst other enemies.
 
-var bool bFirstTickDone;                                                        //Set to true after the first tick. Allows us to do stuff on the first frame
+var bool bFirstTickDone;                                                        //SARGE: Set to true after the first tick. Allows us to do stuff on the first frame
 
 //Sarge: Gender Stuff
 var(GMDX) const bool requiresLDDP;                                              //Delete this character LDD is uninstalled
@@ -489,6 +489,7 @@ native(2109) final function AddCarcass(Name CarcassName);
 
 // ----------------------------------------------------------------------
 // ShouldCreate()
+// If this returns FALSE, the object will be deleted on it's first tick
 // ----------------------------------------------------------------------
 
 function bool ShouldCreate(DeusExPlayer player)
@@ -499,7 +500,7 @@ function bool ShouldCreate(DeusExPlayer player)
 
     maleDelete = !player.FlagBase.GetBool('LDDPJCIsFemale') && deleteIfMale;
     femaleDelete = player.FlagBase.GetBool('LDDPJCIsFemale') && deleteIfFemale;
-    extraDelete = LDDPExtra && player.bMoreLDDPNPCs;
+    extraDelete = LDDPExtra && !player.bMoreLDDPNPCs;
 
     return !maleDelete && !femaleDelete && !extraDelete && (player.FemaleEnabled() || !requiresLDDP);
 }
