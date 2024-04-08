@@ -7,8 +7,6 @@ class LDDPChetS extends HumanCivilian;
 
 defaultproperties
 {
-     requiresLDDP=true;
-     deleteIfMale=true;
      CarcassType=Class'FemJC.LDDPChetCarcass'
      WalkingSpeed=0.300000
      walkAnimMult=0.750000
