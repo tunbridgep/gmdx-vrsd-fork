@@ -76,3 +76,5 @@ Sarge's Changes since Beta 2.2:
         - Zyme no longer removes 10HP if the addiction system is enabled.
 - Miscellaneous Changes:
     - Implemented optional Lay-D Denton support. If installed, Lay-D Denton should be at a lower priority than GMDX vRSD.
+        - When Lay-D Denton is installed, a new Gameplay Modifier is available, which will add the extra NPC's added by the LDDP mod.
+        - Without the Gameplay Modifier, only Chet, Russ and a few other NPC's are added where necessary to maintain immersion and gameplay balance.
