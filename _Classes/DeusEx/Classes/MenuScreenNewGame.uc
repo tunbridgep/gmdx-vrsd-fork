@@ -72,6 +72,7 @@ var bool bAddictionSystem;
 var bool bRestrictedSaving;
 var bool bNoKeypadCheese;
 var bool bExtraHardcore;
+var bool bMoreLDDPNPCs;
 
 //LDDP
 var bool bFemaleEnabled;
@@ -124,6 +125,7 @@ event InitWindow()
     bNoKeypadCheese=false;                                                      //Sarge
     bRandomizeEnemies=false;                                                    //Sarge
     bExtraHardcore=false;                                                       //Sarge
+    bMoreLDDPNPCs=false;                                                        //Sarge
     default.bRandomizeCrates=false;                                             //RSD: Also need default values! Otherwise get command in modifier menu takes the wrong value
     default.bRandomizeMods=false;                                               //RSD
     default.bRandomizeAugs=false;                                               //RSD
@@ -132,6 +134,7 @@ event InitWindow()
     default.bNoKeypadCheese=false;                                              //Sarge
     default.bRandomizeEnemies=false;                                            //Sarge
     default.bExtraHardcore=false;                                               //Sarge
+    default.bMoreLDDPNPCs=false;                                                //Sarge
 
 	StyleChanged();
 }
@@ -779,6 +782,7 @@ function SaveSettings()
         ScrambleAugOrderList();
     player.bAddictionSystem=bAddictionSystem;
     player.bExtraHardcore=bExtraHardcore;
+    player.bMoreLDDPNPCs=bMoreLDDPNPCs;
 
     //LDDP
 	THuman = Human(Player);
