@@ -8,6 +8,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed the Crosshair Visibility settings in the options getting constantly overridden by lasers etc. The outer crosshairs showing your accuracy are also now linked to the Crosshair visibility setting.
     - Fixed GMDX Bug where EMP'd turrets and cameras will re-enable themselves after the EMP effect runs out, even if they were disabled during the EMP effect.
 - Quality of Life Improvements:
+    - Lockpicks and Multitools will no longer be consumed if you look away from an object you're picking/bypassing. Instead, the action will be cancelled and any progress cancelled.
     - Added an optional "Dynamic Crosshair" mode, which shows a small dot-crosshair when no weapons is equipped, and some items have no crosshairs at all.
         - Also fixed many instances of crosshair weirdness.
     - The hit marker no longer hides the crosshair when it appears.
