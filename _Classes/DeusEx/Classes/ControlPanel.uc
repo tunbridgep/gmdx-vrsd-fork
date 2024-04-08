@@ -11,15 +11,15 @@ function PostBeginPlay()
    bInvincible = True;
 }
 
-function StopHacking()
+function StopHacking(optional bool aborted)
 {
-	Super.StopHacking();
+	Super.StopHacking(aborted);
 
 	if (hackStrength == 0.0)
-		{
+    {
         PlayAnim('Open');
 		PlaySound(Sound'GarageDoorOpen', SLOT_Pain,,,768,1.5); //CyberP: added new sound
-		}
+    }
 }
 
 function HackAction(Actor Hacker, bool bHacked)

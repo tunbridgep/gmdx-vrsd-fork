@@ -1243,7 +1243,6 @@ auto state Active
 		} */
 		if ((Damage >= minDamageThreshold)||((DamageType!='throw')&&(DamageScaler>0)&&(Damage >= minDamageThreshold)))
         {
-            DeusExPlayer(EventInstigator).ClientMessage("Damage " $ Damage $ " was above threshold of " $ minDamageThreshold );
 			HitPoints -= Damage;
             hit = true;
         }
