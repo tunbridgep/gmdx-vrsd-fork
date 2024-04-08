@@ -299,7 +299,6 @@ var localized string abridgedName;                                              
 var texture largeIconRot;                                                       //RSD: rotated inventory icon
 var travel int invSlotsXtravel;                                                 //RSD: since Inventory invSlotsX doesn't travel through maps
 var travel int invSlotsYtravel;                                                 //RSD: since Inventory invSlotsY doesn't travel through maps
-var bool bIsMeleeWeapon;                                                        //Is this weapon a melee weapon? Used for selecting our last melee weapon for crate-breaking
 //END GMDX:
 
 //
@@ -337,13 +336,11 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
     return true;
 }
 
-// Trash: Sarge, is this thing obsolete now?
 
 //Called when the item is added to the players hands
 function Draw(DeusExPlayer frobber)
 {
-    //if (bIsMeleeWeapon && frobber.assignedWeapon != Self)
-    //    frobber.lastMeleeWeapon = self;
+
 }
 
 // ---------------------------------------------------------------------

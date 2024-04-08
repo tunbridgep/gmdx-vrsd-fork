@@ -92,7 +92,7 @@ function bool DoLeftFrob(DeusExPlayer frobber)
 			
 		if (bBreakable)
 		{
-			frobber.GetMeleePriority(minDamageThreshold);
+			frobber.SelectMeleePriority(minDamageThreshold);
 		}
         return false;
     }
