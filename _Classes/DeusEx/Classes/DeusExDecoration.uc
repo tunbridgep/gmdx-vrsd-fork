@@ -60,11 +60,12 @@ var bool bHitMarkers;             //Sarge: Show hitmarkers when damaged. For thi
 
 var bool bFirstTickDone;                                                        //SARGE: Set to true after the first tick. Allows us to do stuff on the first frame
 
-//Sarge: Gender Stuff
+//Sarge: LDDP Stuff
 var(GMDX) const bool requiresLDDP;                                              //Delete this character LDD is uninstalled
 var(GMDX) const bool LDDPExtra;                                                 //Delete this character we don't have the "Extra LDDP Characters" playthrough modifier
 var(GMDX) const bool deleteIfMale;                                              //Delete this character if we're male
 var(GMDX) const bool deleteIfFemale;                                            //Delete this character if we're female
+
 
 // ----------------------------------------------------------------------
 // ShouldCreate()

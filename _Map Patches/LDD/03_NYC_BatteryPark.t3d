@@ -1,0 +1,24 @@
+Begin Map
+Begin Actor Class=LDDPBatPark2NiceBumS Name=LDDPBatPark2NiceBum0
+    requiresLDDP=true;
+    LDDPExtra=true;
+    Orders=Standing
+    bFearShot=False
+    InitialAlliances(0)=(AllianceName=Player,AllianceLevel=1.000000)
+    FootRegion=(Zone=ZoneInfo'MyLevel.ZoneInfo1',iLeaf=2095,ZoneNumber=8)
+    HeadRegion=(Zone=ZoneInfo'MyLevel.ZoneInfo1',iLeaf=3592,ZoneNumber=8)
+    ViewRotation=(Yaw=-36640)
+    Alliance=Civilian
+    bDynamicLight=True
+    LastRenderTime=186.792328
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=LDDPBatPark2NiceBum
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo1',iLeaf=3592,ZoneNumber=8)
+    Location=(X=-2653.022705,Y=1381.866577,Z=369.598755)
+    Rotation=(Yaw=-36640)
+    OldLocation=(X=-2665.101074,Y=1395.780029,Z=369.598755)
+    bSelected=True
+    BarkBindName="Man"
+    Name=LDDPBatPark2NiceBum0
+End Actor
+End Map

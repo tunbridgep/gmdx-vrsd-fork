@@ -7,7 +7,7 @@ class LDDPChetS extends HumanCivilian;
 
 defaultproperties
 {
-     CarcassType=Class'FemJC.LDDPChetCarcass'
+     CarcassType=Class'LDDPChetSCarcass'
      WalkingSpeed=0.300000
      walkAnimMult=0.750000
      GroundSpeed=200.000000

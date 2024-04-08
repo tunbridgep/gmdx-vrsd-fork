@@ -1,5 +1,9 @@
 Begin Map
+//NOTE: Patrol Paths need to be regenerated manually
+//NOTE: Shannon needs to be set to deleteIfFemale
 Begin Actor Class=LDDPChetS Name=LDDPChet0
+    requiresLDDP=true;
+    deleteIfMale=true;
     Orders=Standing
     bInvincible=True
     FootRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=1957,ZoneNumber=3)
@@ -14,5 +18,85 @@ Begin Actor Class=LDDPChetS Name=LDDPChet0
     BindName="LDDPChet"
     BarkBindName="LDDPChet"
     Name=LDDPChet0
+End Actor
+Begin Actor Class=OrdersTrigger Name=OrdersTrigger0
+    Orders=Patrolling
+    ordersTag=Chetbathroomroute01
+    Message="a"
+    bDynamicLight=True
+    LastRenderTime=0.444889
+    DistanceFromPlayer=1084.837280
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OrdersTrigger
+    Event=LDDPChet
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
+    Location=(X=225.367798,Y=183.659286,Z=32.100555)
+    OldLocation=(X=429.810974,Y=176.940796,Z=32.100555)
+    Name=OrdersTrigger0
+End Actor
+Begin Actor Class=PatrolPoint Name=PatrolPoint0
+    Nextpatrol=Chetbathroomroute02
+    pausetime=12.000000
+    upstreamPaths(0)=1719
+    upstreamPaths(1)=405
+    Paths(0)=1714
+    Paths(1)=1711
+    PrunedPaths(0)=1710
+    PrunedPaths(1)=1712
+    PrunedPaths(2)=1713
+    visitedWeight=10000000
+    bestPathWeight=80
+    nextNavigationPoint=PathNode'MyLevel.PathNode64'
+    previousPath=PathNode'MyLevel.PathNode245'
+    bDynamicLight=True
+    LastRenderTime=0.444889
+    DistanceFromPlayer=1105.453613
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=Chetbathroomroute01
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
+    Location=(X=253.745178,Y=274.709534,Z=7.100267)
+    Rotation=(Yaw=16080)
+    OldLocation=(X=400.006653,Y=279.942932,Z=7.100267)
+    Name=PatrolPoint0
+End Actor
+Begin Actor Class=PatrolPoint Name=PatrolPoint1
+    Nextpatrol=Chetbathroomroute01
+    pausetime=8.000000
+    upstreamPaths(0)=1714
+    upstreamPaths(1)=1076
+    upstreamPaths(2)=406
+    Paths(0)=1719
+    Paths(1)=1717
+    Paths(2)=1716
+    PrunedPaths(0)=1718
+    PrunedPaths(1)=1715
+    visitedWeight=10000000
+    bestPathWeight=211
+    nextNavigationPoint=PatrolPoint'MyLevel.PatrolPoint0'
+    previousPath=PathNode'MyLevel.PathNode33'
+    bDynamicLight=True
+    LastRenderTime=0.444889
+    DistanceFromPlayer=1161.432617
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=Chetbathroomroute02
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
+    Location=(X=212.321609,Y=194.571396,Z=7.100351)
+    Rotation=(Yaw=-131680)
+    OldLocation=(X=520.536743,Y=175.144699,Z=7.100351)
+    Name=PatrolPoint1
+End Actor
+Begin Actor Class=DataCube Name=DataCube4
+    requiresLDDP=true;
+    LDDPExtra=true;
+    textTag=01_Datacube10
+    bDynamicLight=True
+    LastRenderTime=1.945012
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=DataCube
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=917,ZoneNumber=2)
+    Location=(X=2383.162109,Y=1876.178955,Z=-126.689644)
+    Rotation=(Yaw=-6328)
+    OldLocation=(X=2369.564453,Y=1868.217163,Z=-126.630135)
+    Name=DataCube4
 End Actor
 End Map
