@@ -65,6 +65,9 @@ var ScriptedPawn        ChosenPawn;                 //CyberP: used by AI to dete
 var bool                bPlayerLocked;           // Sarge: Flag for when the door was re-locked by the player. Prevents NPC's from opening it.
 var float               previousStrength;        //Sarge: What was the strength before we started picking?
 
+var float               leftFrobTimer;           //Sarge: Ticks down from 3 seconds after we do a left frob, so that we can use right-click to select different options
+const             leftFrobTimerMax = 6.0;
+
 
 //SARGE: Check to see if we can re-lock a door
 //Either we have the key for it in our keyring, or we previously picked it open and have the Locksport perk
@@ -79,6 +82,11 @@ function bool DoLeftFrob(DeusExPlayer frobber)
 {
     local Inventory item;
     
+    //Give us 3 seconds to use the right-click options after left-frobbing
+    //This is so we don't accudentally change weapons in the middle of gameplay, by
+    //right clicking on a mover
+    leftFrobTimer = leftFrobTimerMax;
+
     //When not on hardcore, always select the keyring if we have the key
     if (!frobber.bHardcoreMode && CanToggleLock(frobber,frobber.KeyRing))
     {
@@ -107,18 +115,32 @@ function bool DoLeftFrob(DeusExPlayer frobber)
         frobber.PutInHand(frobber.KeyRing);
         return false;
     }
+    
+    leftFrobTimer = 0.0;
     return true;
 }
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {
+    if (leftFrobTimer == 0.0)
+        return true;
+
     //Swap between lockpicks and nanokeyring
     if (bLocked && frobber.inHand != None)
     {
-        if (bPickable && frobber.inHand.isA('NanoKeyRing'))
-            return !frobber.SelectInventoryItem('Lockpick');
+        if (bPickable && frobber.inHand.isA('NanoKeyRing') && frobber.SelectMeleePriority(minDamageThreshold))
+        {
+            leftFrobTimer = leftFrobTimerMax;
+            return false;
+        }
         else if (frobber.inHand.isA('Lockpick'))
         {
             frobber.PutInHand(frobber.KeyRing);
+            leftFrobTimer = leftFrobTimerMax;
+            return false;
+        }
+        else if (frobber.inHand.isA('DeusExWeapon') && DeusExWeapon(frobber.inHand).bHandToHand && frobber.SelectInventoryItem('Lockpick'))
+        {
+            leftFrobTimer = leftFrobTimerMax;
             return false;
         }
     }
@@ -545,6 +567,10 @@ function Timer()
 //
 function Tick(float deltaTime)
 {
+
+    //Reduce our left-frob timer
+    leftFrobTimer = FMAX(0.0,leftFrobTimer - deltaTime);
+
    TimeSinceReset = TimeSinceReset + deltaTime;
    if (frobGate > 0)
        frobGate -= deltaTime;
