@@ -2402,7 +2402,7 @@ function RecoilEffectTick(float deltaTime)
 // SelectMeleePriority()
 // ----------------------------------------------------------------------
 
-function SelectMeleePriority(int damageThreshold)	// Trash: Used to automatically decide what to draw
+function bool SelectMeleePriority(int damageThreshold)	// Trash: Used to automatically decide what to draw
 {
 	local Inventory anItem;
 	local DeusExWeapon meleeWeapon;
@@ -2424,9 +2424,7 @@ function SelectMeleePriority(int damageThreshold)	// Trash: Used to automaticall
 	}
 
 	if (sword == None && crowbar == none && knife == none && baton == none && dts == none)	// Don't proceed if you have no melee weapons
-	{
-		return;
-	}
+		return false;
 
 
 	if (sword != None && (bHardCoreMode || BreaksDamageThreshold(sword, damageThreshold)))
@@ -2440,10 +2438,15 @@ function SelectMeleePriority(int damageThreshold)	// Trash: Used to automaticall
 	else if (dts != None && (bHardCoreMode || BreaksDamageThreshold(dts, damageThreshold)))
 		meleeWeapon = dts;
 	else if (!bHardCoreMode)
+    {
 		ClientMessage(CantBreakDT);
+        return false;
+    }
+    else
+        return false;
 	
-	if (meleeWeapon != None)
-		PutInHand(meleeWeapon);
+    PutInHand(meleeWeapon);
+    return true;
 }
 
 function bool BreaksDamageThreshold(DeusExWeapon weapon, int damageThreshold)	// Checks if the weapon breaks the damageThreshold

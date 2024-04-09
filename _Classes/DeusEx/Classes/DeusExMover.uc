@@ -80,23 +80,29 @@ function bool DoLeftFrob(DeusExPlayer frobber)
     local Inventory item;
     
     //When not on hardcore, always select the keyring if we have the key
-    if (bLocked && !frobber.bHardcoreMode && frobber.KeyRing.HasKey(KeyIDNeeded) && KeyIDNeeded != '')
+    if (!frobber.bHardcoreMode && CanToggleLock(frobber,frobber.KeyRing))
     {
         frobber.PutInHand(frobber.KeyRing);
         return false;
     }
-    else if (bLocked)
+    else if (bLocked && frobber.bHardcoreMode) //Hardcore Mode: Always select picks. If we don't have one, always select melee
     {
-        if (!bPickable || !frobber.SelectInventoryItem('Lockpick'))
-            frobber.PutInHand(frobber.KeyRing);
-			
-		if (bBreakable)
-		{
-			frobber.SelectMeleePriority(minDamageThreshold);
-		}
+        if (bPickable && frobber.SelectInventoryItem('Lockpick'))
+            return false;
+        else if (bBreakable && frobber.SelectMeleePriority(minDamageThreshold));
+            return false;
+        frobber.PutInHand(frobber.KeyRing);
         return false;
     }
-    else if (CanToggleLock(frobber,frobber.KeyRing))
+    else if (bLocked) //Non-Hardcore. See if we have a melee weapon to bust the mover. Otherwise, select picks
+    {
+        if (bBreakable && frobber.SelectMeleePriority(minDamageThreshold))
+			return false;
+        else if (!bPickable || !frobber.SelectInventoryItem('Lockpick'))
+            frobber.PutInHand(frobber.KeyRing);
+        return false;
+    }
+    else if (CanToggleLock(frobber,frobber.KeyRing)) //Keyring check for Hardcore mode
     {
         frobber.PutInHand(frobber.KeyRing);
         return false;
