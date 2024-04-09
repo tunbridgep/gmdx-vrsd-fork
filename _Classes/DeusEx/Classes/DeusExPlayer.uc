@@ -279,6 +279,7 @@ var localized String NoRoomToLift;
 var localized String CanCarryOnlyOne;
 var localized String CannotDropHere;
 var localized String HandsFull;
+var localized String CantBreakDT;
 var localized String NoteAdded;
 var localized String GoalAdded;
 var localized String PrimaryGoalCompleted;
@@ -558,8 +559,6 @@ const DRUG_ALCOHOL = 1;
 const DRUG_CRACK = 2;
 
 var bool autosave;                                                              //Sarge: Autosave tells the Quicksave function to make an autosave instead
-
-var travel DeusExWeapon lastMeleeWeapon;                                           //Sarge: Stores our last melee weapon, for use when left-click frobbing crates and other breakables
 
 //////////END GMDX
 
@@ -2406,6 +2405,64 @@ function RecoilEffectTick(float deltaTime)
               RecoilShake=vect(0,0,0);
 		}
 	}
+}
+
+// ----------------------------------------------------------------------
+// SelectMeleePriority()
+// ----------------------------------------------------------------------
+
+function SelectMeleePriority(int damageThreshold)	// Trash: Used to automatically decide what to draw
+{
+	local Inventory anItem;
+	local DeusExWeapon meleeWeapon;
+
+	local DeusExWeapon crowbar, sword, knife, baton, dts;
+
+	For(anItem = Inventory; anItem != None; anItem = anItem.Inventory)	// Go through the entire inventory, check for these melee weapons
+	{
+		if (anItem.IsA('WeaponSword'))
+			sword = DeusExWeapon(anItem);
+		if (anItem.IsA('WeaponCrowbar'))
+			crowbar = DeusExWeapon(anItem);
+		if (anItem.IsA('WeaponCombatKnife'))
+			knife = DeusExWeapon(anItem);
+		if (anItem.IsA('WeaponBaton'))
+			baton = DeusExWeapon(anItem);
+		if (anItem.IsA('WeaponNanoSword'))
+			dts = DeusExWeapon(anItem);
+	}
+
+	if (sword == None && crowbar == none && knife == none && baton == none && dts == none)	// Don't proceed if you have no melee weapons
+	{
+		return;
+	}
+
+
+	if (sword != None && (bHardCoreMode || BreaksDamageThreshold(sword, damageThreshold)))
+		meleeWeapon = sword;
+	else if (crowbar != None && (bHardCoreMode || BreaksDamageThreshold(crowbar, damageThreshold)))
+		meleeWeapon = crowbar;
+	else if (knife != None && (bHardCoreMode || BreaksDamageThreshold(knife, damageThreshold)))
+		meleeWeapon = knife;
+	else if (baton != None && (bHardCoreMode || BreaksDamageThreshold(baton, damageThreshold)))
+		meleeWeapon = baton;
+	else if (dts != None && (bHardCoreMode || BreaksDamageThreshold(dts, damageThreshold)))
+		meleeWeapon = dts;
+	else if (!bHardCoreMode)
+		ClientMessage(CantBreakDT);
+	
+	if (meleeWeapon != None)
+		PutInHand(meleeWeapon);
+}
+
+function bool BreaksDamageThreshold(DeusExWeapon weapon, int damageThreshold)	// Checks if the weapon breaks the damageThreshold
+{
+	local int mod;
+
+	if (weapon.IsA('WeaponCrowbar'))	// Special check for Crowbar since it deals +5 extra damage to objects
+		mod += 5;
+
+	return (weapon.CalculateTrueDamage() + mod) >= damageThreshold;
 }
 
 // ----------------------------------------------------------------------
@@ -17002,6 +17059,7 @@ defaultproperties
      CanCarryOnlyOne="You can only carry one %s"
      CannotDropHere="Can't drop that here"
      HandsFull="Your hands are full"
+	 CantBreakDT="Strongest melee damage doesn't pass threshold"
      NoteAdded="Note Received - Check DataVault For Details"
      GoalAdded="Goal Received - Check DataVault For Details"
      PrimaryGoalCompleted="Primary Goal Completed"

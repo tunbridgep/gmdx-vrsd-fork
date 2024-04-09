@@ -133,7 +133,6 @@ state Active
 
 defaultproperties
 {
-     bIsMeleeWeapon=True
      LowAmmoWaterMark=0
      GoverningSkill=Class'DeusEx.SkillWeaponLowTech'
      reloadTime=0.000000
