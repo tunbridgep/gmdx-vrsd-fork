@@ -15811,6 +15811,7 @@ function CreateColorThemeManager()
 		ThemeManager.AddTheme(Class'ColorThemeMenu_Superhero');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_Terminator');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_Violet');
+		ThemeManager.AddTheme(Class'ColorThemeMenu_LDDP');
 
 		// HUD
 		ThemeManager.AddTheme(Class'ColorThemeHUD_Default');
@@ -15838,6 +15839,7 @@ function CreateColorThemeManager()
 		ThemeManager.AddTheme(Class'ColorThemeHUD_Superhero');
 		ThemeManager.AddTheme(Class'ColorThemeHUD_Terminator');
 		ThemeManager.AddTheme(Class'ColorThemeHUD_Violet');
+		ThemeManager.AddTheme(Class'ColorThemeHUD_LDDP');
 	}
 }
 
