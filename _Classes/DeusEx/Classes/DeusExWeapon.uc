@@ -51,7 +51,7 @@ enum ELockMode
 };
 
 var bool				bReadyToFire;			// true if our bullets are loaded, etc.
-var() int				LowAmmoWaterMark;		// critical low ammo count
+var() travel int				LowAmmoWaterMark;		// critical low ammo count
 var travel int			ClipCount;				// number of bullets remaining in current clip
 var travel int			ARClipSize;
 var travel int			ARLoaded;
