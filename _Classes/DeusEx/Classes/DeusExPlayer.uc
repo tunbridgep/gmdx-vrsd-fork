@@ -7475,7 +7475,6 @@ exec function ParseRightClick()
     if (bRadialAugMenuVisible)
     {
         RadialMenuQuickCancel();
-        ToggleRadialAugMenu();
         return;
     }
 

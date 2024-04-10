@@ -33,6 +33,7 @@ var Texture powerActive;
 var Texture powerInactive;
 
 var bool skipQuickToggle;            //Skip toggling augs on menu close if this is set
+var bool bClicked;                   //Skip toggling augs on menu close if this is set
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -75,7 +76,10 @@ event Tick(float deltaSeconds) {
 	// mouse actually moved
 	pos = mouseToMarkerPos(cursorPos);
 	positionMarker(pos);
-	highlightSingleItem(getNearestItem(pos));
+    if (!skipQuickToggle)
+    	highlightSingleItem(getNearestItem(pos));
+    else
+        highlightSingleItem(None);
 
 	pos = cursorPos; // save last mouse pos for next tick
 }
@@ -96,11 +100,12 @@ event VisibilityChanged(bool isVis) {
         if (!player.bQuickAugWheel)
             PlaySound(Sound'Menu_Activate', 0.25);
         skipQuickToggle = false;
+        bClicked = false;
     }
 	else
     {
         //Toggle aug on closing, if we have Quick Aug Menu on
-        if (player.bQuickAugWheel && !skipQuickToggle)
+        if (player.bQuickAugWheel && !skipQuickToggle && !bClicked)
             ToggleCurrent();
         else
     	    PlaySound(Sound'Menu_OK', 0.25);
@@ -143,6 +148,10 @@ function highlightSingleItem(HUDRadialMenuItem item) {
  * (De-)Activates the currently highlited aug.
  */
 function ToggleCurrent() {
+
+    //Left-click prevents quick-toggle
+    bClicked = true;
+
     if (highlightedItem == power && activeItems > 0) {
         player.DeactivateAllAugs();
         activeItems = 0;
