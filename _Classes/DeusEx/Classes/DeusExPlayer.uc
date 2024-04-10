@@ -626,6 +626,41 @@ exec function cheat()
 
 }
 
+//Handle Crouch Toggle
+function HandleCrouchToggle()
+{
+    if (bToggleCrouch && !bCrouchOn && lastbDuck == 0 && bDuck == 1)
+    {
+        //ClientMessage("Crouching");
+        //SetCrouch(true);
+        bCrouchOn = true;
+    }
+    else if (bToggleCrouch && bCrouchOn && lastbDuck == 0 && bDuck == 1)
+    {
+        //ClientMessage("Uncrouching");
+        //SetCrouch(false);
+        bCrouchOn = false;
+    }
+    lastbDuck = bDuck;
+}
+
+//Return if the character is crouching
+function bool IsCrouching()
+{
+    return bCrouchOn || bForceDuck || bIsCrouching || bDuck == 1;
+}
+
+//set our crouch state to a certain value
+function SetCrouch(bool crouch, optional bool setForce)
+{
+    bIsCrouching = crouch;
+    bDuck = int(crouch);
+    bCrouchOn = crouch;
+    lastbDuck = int(crouch);
+    if (setForce)
+        bForceDuck = crouch;
+}
+
 // ----------------------------------------------------------------------
 // AssignSecondaryWeapon
 // Sarge: Now needed because we need to fix up our charged item display if it's out of date
@@ -4179,7 +4214,7 @@ simulated function PlayFootStep()
 	}
 	//if (bJustLanded) log("PlayFootStep bJustLanded vol="@volume@": mod="@volumeMod@": Z="@Velocity.Z);
 
-    if (bIsCrouching && velocity.Z == 0)  //CyberP: only applies when speed enhancement is active.
+    if (IsCrouching() && velocity.Z == 0)  //CyberP: only applies when speed enhancement is active.
        volume *= 1.5;
     else if (bIsWalking)
        volume *= 0.5;  //CyberP: can walk up behind enemies.
@@ -4322,7 +4357,7 @@ function HighlightCenterObject()
 		minSize = 99999;
 		bFirstTarget = True;
 
-        if (bIsCrouching)
+        if (IsCrouching())
         {
            if (PerkNamesArray[27]==1)                                           //RSD: Was PerkNamesArray[29] (Creeper), now PerkNamesArray[27] (Endurance)
               bCrouchRegen=True;
@@ -4448,7 +4483,7 @@ function Landed(vector HitNormal)
 	if (Velocity.Z < -460)//(Abs(Velocity.Z) >= 1.5 * JumpZ)//GMDX add compression to jump/fall (cosmetic) //CyberP: edited
 	{
 	camInterpol = 0.4;
-	if (bIsCrouching)
+	if (IsCrouching())
 	   PlayFootstep();
 	if (inHand != none && (inHand.IsA('NanoKeyRing') || inHand.IsA('DeusExPickup')))
 	{
@@ -4620,7 +4655,7 @@ function Carcass SpawnCarcass()
 
 function Reloading(DeusExWeapon weapon, float reloadTime)
 {
-	if (!IsLeaning() && !bIsCrouching && (Physics != PHYS_Swimming) && !IsInState('Dying'))
+	if (!IsLeaning() && !IsCrouching() && (Physics != PHYS_Swimming) && !IsInState('Dying'))
 		PlayAnim('Reload', 1.0 / reloadTime, 0.1);
 }
 function DoneReloading(DeusExWeapon weapon)
@@ -4857,7 +4892,7 @@ function HandleWalking()
     local rotator carried;
 
 	// this is changed from Unreal -- default is now walk - DEUS_EX CNN
-	bIsWalking = ((bRun == 0) || (bDuck != 0)) && !Region.Zone.IsA('WarpZoneInfo');
+	bIsWalking = ((bRun == 0) || (IsCrouching())) && !Region.Zone.IsA('WarpZoneInfo');
 
 	if ( CarriedDecoration != None )
 	{
@@ -4879,55 +4914,13 @@ function HandleWalking()
 	//CyberP: super function override end
 
 	if (bAlwaysRun)  //&& !bHardCoreMode
-		bIsWalking = (bRun != 0) || (bDuck != 0);
+		bIsWalking = (bRun != 0) || IsCrouching();
 	else
-		bIsWalking = (bRun == 0) || (bDuck != 0);
+		bIsWalking = (bRun == 0) || IsCrouching();
 
 	// handle the toggle walk key
 	if (bToggleWalk)   //&& !bHardCoreMode
 		bIsWalking = !bIsWalking;
-
-	if (bToggleCrouch)
-	{
-		if (!bCrouchOn && !bWasCrouchOn && (bDuck != 0))
-		{
-			bCrouchOn = True;
-			if ((InHand != None && InHand.IsA('DeusExPickup')) || CarriedDecoration != None)
-			{
-			}
-			else
-			{
-			    RecoilTime*=3.0;
-			    if (inHand != None && inHand.IsA('DeusExWeapon') && (DeusExWeapon(inHand).bAimingDown && AnimSequence != 'Shoot'))
-	            {
-	                RecoilShake.Z-=lerp(min(Abs(4),4.0*4)/(4.0*4),1,2);
-                    RecoilShaker(vect(0,0,-0.5));
-	            }
-	            else /*if (!(assignedWeapon != none && assignedWeapon.IsA('Binoculars') && Binoculars(assignedWeapon).bActive))*/
-	            {                                                               //RSD: Keeps RecoilShaker from messing up FOV with secondary item binocs, but actually moved inside RecoilShaker
-			        RecoilShake.Z-=lerp(min(Abs(4),4.0*4)/(4.0*4),3,5);
-                    RecoilShaker(vect(0,0,-1.5));
-                }
-            }
-		}
-		else if (bCrouchOn && !bWasCrouchOn && (bDuck == 0))
-		{
-			bWasCrouchOn = True;
-		}
-		else if (bCrouchOn && bWasCrouchOn && (bDuck == 0) && (lastbDuck != 0))
-		{
-			bCrouchOn = False;
-			bWasCrouchOn = False;
-		}
-
-		if (bCrouchOn)
-		{
-			bIsCrouching = True;
-			bDuck = 1;
-		}
-
-		lastbDuck = bDuck;
-	}
 }
 
 // ----------------------------------------------------------------------
@@ -5002,7 +4995,7 @@ function DoJump( optional float F )
 		}
 
 		// reduce the jump velocity if you are crouching
-//		if (bIsCrouching)
+//		if (IsCrouching())
 //			Velocity.Z *= 0.9;
 
 		//if ( Base != Level )
@@ -5091,7 +5084,7 @@ if (Physics == PHYS_Walking)
 		}
 
 		// reduce the jump velocity if you are crouching
-//		if (bIsCrouching)
+//		if (IsCrouching())
 //			Velocity.Z *= 0.9;
 
 		if ( Base != Level )
@@ -5187,7 +5180,7 @@ function bool SetBasedPawnSize(float newRadius, float newHeight)
 		BaseEyeHeight   = newHeight - deltaEyeHeight;
 
 		// Complaints that eye height doesn't seem like your crouching in multiplayer
-		if (( Level.NetMode != NM_Standalone ) && (bIsCrouching || bForceDuck) )
+		if (( Level.NetMode != NM_Standalone ) && (IsCrouching()) )
 			EyeHeight		-= (centerDelta.Z * 2.5);
 		else
 			EyeHeight		-= centerDelta.Z;
@@ -5522,7 +5515,7 @@ state PlayerWalking
 	  bTiptoes=bPreTiptoes&&(!IsLeaning()||bIsTiptoes);
 
 	  // crouching makes you two feet tall
-		if (bIsCrouching || bForceDuck)
+		if (IsCrouching())
 		{
 			if ( Level.NetMode != NM_Standalone )
 				SetBasedPawnSize(Default.CollisionRadius, 30.0);
@@ -5547,7 +5540,7 @@ state PlayerWalking
 		if (bTiptoes)
 		{ //check we can go on tiptoes
 			checkpoint = Location;
-		 if (bForceDuck||bIsCrouching)
+		 if (IsCrouching())
 			checkpoint.Z = checkpoint.Z + 14 +18;
 			else
 			   checkpoint.Z = checkpoint.Z + 5.3 + GetDefaultCollisionHeight();
@@ -5615,7 +5608,7 @@ state PlayerWalking
 			bCanTiptoes=false;
 		}
 		// make crouch speed faster than normal
-		else if ((bIsCrouching || bForceDuck) && !bOnLadder)
+		else if (IsCrouching() && !bOnLadder)
 		{
 		    mult3=1;             //CyberP: faster crouch speed. Comment out all except bIsWalking = True to remove
 		    if (SkillSystem!=None && SkillSystem.GetSkillLevel(class'SkillStealth')>=1)
@@ -5733,7 +5726,7 @@ state PlayerWalking
 	  if (bTiptoes&&bCanTiptoes) //!bIsTiptoes fuuk why so much spamming size
 	  {
 		 bIsTiptoes=true;
-		 if (bIsCrouching || bForceDuck)
+		 if (IsCrouching())
 			SetBasedPawnSize(Default.CollisionRadius, 16+18);
 			else
 			   SetBasedPawnSize(Default.CollisionRadius, GetDefaultCollisionHeight()+5.3);
@@ -5747,7 +5740,7 @@ state PlayerWalking
       swimDuration = UnderWaterTime * mult;                                  //RSD: Removed effect of Athletics on stamina //RSD: reinstated
       //if (mult > 1.0)                                                         //RSD: Never went into effect anyway?
       //   mult *= 0.85;
-      if (bIsWalking && !bIsCrouching && !bForceDuck)  //CyberP: faster walking
+      if (bIsWalking && !IsCrouching())  //CyberP: faster walking
       {
           mult3=1;             //CyberP: faster walk speed. Comment out all except newSpeed *= 1.7 to remove
 		  if (SkillSystem!=None && SkillSystem.GetSkillLevel(class'SkillStealth')>=1)
@@ -5757,9 +5750,9 @@ state PlayerWalking
           newSpeed *= mult3;
       }
 
-      if (Physics == PHYS_Walking && !bCrouchOn && (bStaminaSystem || bHardCoreMode))   //CyberP: stamina system
+      if (Physics == PHYS_Walking && (bStaminaSystem || bHardCoreMode))   //CyberP: stamina system
       {
-      if (bIsWalking == false && !bIsCrouching && (Velocity.X != 0 || Velocity.Y != 0 ))
+      if (bIsWalking == false && !IsCrouching() && (Velocity.X != 0 || Velocity.Y != 0 ))
 	  {
 	    /*if (bHardCoreMode)                                                    //RSD: Generalizing this a bit
 		swimTimer -= deltaTime*1.3;
@@ -5804,7 +5797,7 @@ state PlayerWalking
                }
            }
         }
-	    if ((!bIsCrouching || bCrouchRegen) && !bOnLadder) //(bIsCrouching)     //RSD: Simplified this entire logic from original crouching -> bCrouchRegen check, added !bOnLadder
+	    if ((!IsCrouching() || bCrouchRegen) && !bOnLadder) //(bIsCrouching)     //RSD: Simplified this entire logic from original crouching -> bCrouchRegen check, added !bOnLadder
 	    	RegenStaminaTick(deltaTime);                                        //RSD: Generalized stamina regen function
 	  }
       }
@@ -5827,7 +5820,7 @@ state PlayerWalking
 				if ( PlayerIsClient() || (Level.NetMode == NM_Standalone) )
 					ViewRotation.Roll = curLeanDist * 20;
 
-				if (!bIsCrouching && !bForceDuck)
+				if (!IsCrouching())
 				{
 					SetBasedPawnSize(CollisionRadius, GetDefaultCollisionHeight() - Abs(curLeanDist) / 3.0);
 					//log("Size REset");
@@ -6209,11 +6202,7 @@ event HeadZoneChange(ZoneInfo newHeadZone)
 	if (newheadZone != none && newHeadZone.bWaterZone && !HeadRegion.Zone.bWaterZone) //RSD: accessed none?
 	{
 		// make sure we're not crouching when we start swimming
-		bIsCrouching = False;
-		bCrouchOn = False;
-		bWasCrouchOn = False;
-		bDuck = 0;
-		lastbDuck = 0;
+        SetCrouch(false);
 		Velocity = vect(0,0,0);
 		Acceleration = vect(0,0,0);
 		if (SkillSystem != none)                                                //RSD: accessed none?
@@ -6468,7 +6457,7 @@ state Dying
 	root = DeusExRootWindow(rootWindow);
 
     ClientFlash(900000,vect(255,0,0));
-    if (bCrouchOn || bWasCrouchOn || bIsCrouching || bForceDuck)
+    if (IsCrouching())
        MeleeRange=51.000000; //CyberP: change this unused var to avoid adding yet more global vars
 
 	if (root != None)
@@ -6701,12 +6690,7 @@ Begin:
     if (AugmentationSystem != None)
         AugmentationSystem.DeactivateAll(); //CyberP: deactivate augs
 	// Don't come back to life crouched
-	bCrouchOn			= False;
-	bWasCrouchOn		= False;
-	bIsCrouching		= False;
-	bForceDuck			= False;
-	lastbDuck			= 0;
-	bDuck				= 0;
+    SetCrouch(false,true);
 
     ClientFlash(900000,vect(160,0,0));
     IncreaseClientFlashLength(4);
@@ -14240,12 +14224,7 @@ function ClientDeath()
 	drugEffectTimer	= 0;
 
 	// Don't come back to life crouched
-	bCrouchOn			= False;
-	bWasCrouchOn		= False;
-	bIsCrouching		= False;
-	bForceDuck			= False;
-	lastbDuck			= 0;
-	bDuck					= 0;
+    SetCrouch(false,true);
 
 	// No messages carry over
 	mpMsgCode = 0;
@@ -14273,12 +14252,6 @@ function Timer()      //CyberP: my god I've turned this into a mess.
     {
       clickCountCyber = 0;
       bDoubleClickCheck=False;
-    }
-
-    if (bCrouchHack)
-    {
-        bToggleCrouch = False;
-        bCrouchHack = False;
     }
 
     if (Physics == PHYS_Flying)
@@ -14752,7 +14725,7 @@ function float CalculatePlayerVisibility(ScriptedPawn P)                        
             else if ((UsingChargedPickup(class'TechGoggles') ||  AugmentationSystem.GetAugLevelValue(class'AugVision') != -1.0) && vis != 0.0)
                 //vis = litemult;                                               //RSD: From Jose21Crisis
                 vis -= 0.031;                                                   //RSD: Hopefully accounts for night vision brightness
-            if (vis != 0.0 && bIsCrouching)
+            if (vis != 0.0 && IsCrouching())
                 vis -= (1.0-litelvl)*skillStealthMod;*/                           //RSD: Up to 0/20/40/60% visibility reduction when crouched in darkness
 		}
 
@@ -16398,6 +16371,9 @@ function MultiplayerTick(float DeltaTime)
 	{
 	   ClientInHandPending = None;
 	}
+
+    //handle crouch toggle
+    HandleCrouchToggle();
 
 	LastInHand = InHand;
 

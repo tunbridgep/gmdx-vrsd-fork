@@ -2081,7 +2081,7 @@ function bool CheckEnemyPresence(float deltaSeconds,
 						if (candidate.IsA('DeusExPlayer'))
 						{
 							playerCandidate = DeusExPlayer(candidate);
-							if (playerCandidate.bIsCrouching)                   //RSD: Increase VisibilityThreshold according to stealth skill when crouched in darkness
+							if (playerCandidate.IsCrouching())                   //RSD: Increase VisibilityThreshold according to stealth skill when crouched in darkness
 							{
 								/*skillStealthMod = (playerCandidate.SkillSystem.GetSkillLevelValue(class'SkillStealth')-0.5)*0.3;
 								if (skillStealthMod < 0.0)
