@@ -32,6 +32,8 @@ var HUDRadialMenuItem power; // just a reference to a Child item. For conveniece
 var Texture powerActive;
 var Texture powerInactive;
 
+var bool skipQuickToggle;            //Skip toggling augs on menu close if this is set
+
 // ----------------------------------------------------------------------
 // InitWindow()
 // ----------------------------------------------------------------------
@@ -93,11 +95,12 @@ event VisibilityChanged(bool isVis) {
         positionPowerIcon();
         if (!player.bQuickAugWheel)
             PlaySound(Sound'Menu_Activate', 0.25);
+        skipQuickToggle = false;
     }
 	else
     {
         //Toggle aug on closing, if we have Quick Aug Menu on
-        if (player.bQuickAugWheel)
+        if (player.bQuickAugWheel && !skipQuickToggle)
             ToggleCurrent();
         else
     	    PlaySound(Sound'Menu_OK', 0.25);

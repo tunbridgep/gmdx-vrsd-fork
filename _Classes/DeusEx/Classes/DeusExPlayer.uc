@@ -3468,6 +3468,16 @@ function RadialMenuUpdateAug(Augmentation aug)
 }
 
 // ----------------------------------------------------------------------
+// RadialMenuQuickCancel()
+// ----------------------------------------------------------------------
+
+function RadialMenuQuickCancel()
+{
+	if (rootWindow != None)
+	   DeusExRootWindow(rootWindow).hud.radialAugMenu.skipQuickToggle = true;
+}
+
+// ----------------------------------------------------------------------
 // RadialMenuUpdateAug()
 // ----------------------------------------------------------------------
 
@@ -7461,6 +7471,13 @@ exec function ParseRightClick()
 
     if (RestrictInput())
 		return;
+
+    if (bRadialAugMenuVisible)
+    {
+        RadialMenuQuickCancel();
+        ToggleRadialAugMenu();
+        return;
+    }
 
     //Descope if we have binocs/scope
     if (inHand != None)
