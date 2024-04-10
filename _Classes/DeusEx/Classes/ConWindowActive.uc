@@ -9,6 +9,7 @@ var Window upperConWindow;						// Upper letterbox region
 var int numChoices;								// Number of choice buttons
 var ConChoiceWindow conChoices[10];				// Maximum of ten buttons
 var HUDReceivedDisplay winReceived;
+var HUDConCreditsDisplay winCredits;
 var bool bRestrictInput;
 
 var Color colConTextFocus;
@@ -51,6 +52,7 @@ event InitWindow()
 	moveMode = MM_None;
 
 	CreateReceivedWindow();
+	CreateCreditsWindow();
 }
 
 // ----------------------------------------------------------------------
@@ -82,6 +84,9 @@ event Tick(float deltaSeconds)
 
 	Super.Tick(deltaSeconds);
 
+    //Update credits counter
+    winCredits.SetCredits(player.Credits);
+
 	// Compute how much we should move the windows this frame
 	increment = deltaSeconds/movePeriod;
 
@@ -90,6 +95,8 @@ event Tick(float deltaSeconds)
 	switch( moveMode )
 	{
 		case MM_Enter:
+	        winCredits.SetTextFont(conPlay.GetCurrentSpeechFont());
+            winCredits.Show();
 			currentWindowPos += increment;
 			if (currentWindowPos >= 1.0)
 			{
@@ -102,6 +109,7 @@ event Tick(float deltaSeconds)
 		case MM_Exit:
 			// Don't increment while the Items Received window
 			// is still active
+            
 
 			if (!winReceived.IsVisible())
 			{
@@ -244,6 +252,12 @@ function CalculateWindowSizes()
 	{
 		winReceived.QueryPreferredSize(recWidth, recHeight);
 		winReceived.ConfigureChild(10, lowerCurrentPos - recHeight - 5, recWidth, recHeight);
+	}
+	
+    // Configure Received Window
+	if (winCredits != None)
+	{
+		winCredits.ConfigureChild(10, upperCurrentPos + upperHeight - 25, recWidth * 10, recHeight * 2);
 	}
 
 	ConfigureCameraWindow(lowerCurrentPos);
@@ -506,6 +520,16 @@ function ConChoiceWindow CreateConButton( EHAlign hAlign, Color colTextNormal, C
 	newButton.SetTextColors( colTextNormal, colTextFocus, colTextFocus, colTextFocus );
 
 	return newButton;
+}
+
+// ----------------------------------------------------------------------
+// CreateCreditsWindow()
+// ----------------------------------------------------------------------
+
+function CreateCreditsWindow()
+{
+	winCredits = HUDConCreditsDisplay(NewChild(Class'HUDConCreditsDisplay'));
+	winCredits.Hide();
 }
 
 // ----------------------------------------------------------------------
