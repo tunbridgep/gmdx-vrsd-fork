@@ -5,7 +5,6 @@ class HUDConCreditsDisplay expands HUDBaseWindow;
 
 var localized string CreditsLabel;
 var TextWindow txtCredits;
-var Color CreditsColor;
 var Font  fontCredits;
 
 event InitWindow()
@@ -26,7 +25,7 @@ function CreateCreditsLabel()
 	txtCredits = TextWindow(NewChild(Class'TextWindow'));
 	txtCredits.SetFont(fontCredits);
 	txtCredits.SetText(CreditsLabel);
-	txtCredits.SetTextColor(CreditsColor);
+	txtCredits.SetTextColor(player.ThemeManager.GetDialogTextColor());
 }
 
 function SetTextFont(Font newFont)
@@ -43,5 +42,4 @@ defaultproperties
 {
      fontCredits=Font'DeusExUI.FontMenuHeaders_DS'
      CreditsLabel="Credits:"
-     CreditsColor=(B=255)
 }

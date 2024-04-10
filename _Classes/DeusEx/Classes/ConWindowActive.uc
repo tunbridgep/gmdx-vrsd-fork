@@ -12,10 +12,6 @@ var HUDReceivedDisplay winReceived;
 var HUDConCreditsDisplay winCredits;
 var bool bRestrictInput;
 
-var Color colConTextFocus;
-var Color colConTextChoice;
-var Color colConTextSkill;
-
 var float currentWindowPos;
 var float lowerFinalHeightPercent;
 var float upperFinalHeightPercent;
@@ -264,19 +260,27 @@ function CalculateWindowSizes()
 	ConfigureCameraWindow(lowerCurrentPos);
 }
 
+
 // ----------------------------------------------------------------------
 // DisplayChoice()
 //
 // Displays a choice, but sets up the button a little differently than
 // when displaying normal conversation text
 // SARGE: Added choiceNum parameter, and show numbers before each choice
+// SARGE: Now this uses your HUD colorscheme, rather than always being blue
 // ----------------------------------------------------------------------
 
 function DisplayChoice( ConChoice choice, int choiceNum )
 {
 	local ConChoiceWindow newButton;
+    local Color backgroundColor, textColor, highlightColor;
 
-	newButton = CreateConButton( HALIGN_Left, colConTextChoice, colConTextFocus );
+    backgroundColor = player.ThemeManager.GetDialogBackgroundColor();
+    textColor = player.ThemeManager.GetDialogTextColor();
+    highlightColor = player.ThemeManager.GetDialogHighlightColor();
+
+
+	newButton = CreateConButton( HALIGN_Left, textColor, highlightColor );
     if (player.bNumberedDialog)
     	newButton.SetText( choiceNum $ ". " $ choice.choiceText ); //Sarge: Display number now
     else
@@ -285,7 +289,7 @@ function DisplayChoice( ConChoice choice, int choiceNum )
 
 	// These next two calls handle highlighting of the choice
 	newButton.SetButtonTextures(,Texture'Solid', Texture'Solid', Texture'Solid');
-	newButton.SetButtonColors(,colConTextChoice, colConTextChoice, colConTextChoice);
+	newButton.SetButtonColors(,backgroundColor, backgroundColor, backgroundColor);
 
 	// Add the button
 	AddButton( newButton );
@@ -301,8 +305,13 @@ function DisplayChoice( ConChoice choice, int choiceNum )
 function DisplaySkillChoice( ConChoice choice )
 {
 	local ConChoiceWindow newButton;
+    local Color backgroundColor, textColor, highlightColor;
 
-	newButton = CreateConButton( HALIGN_Left, colConTextSkill, colConTextFocus );
+    backgroundColor = player.ThemeManager.GetDialogBackgroundColor();
+    textColor = player.ThemeManager.GetDialogTextColor();
+    highlightColor = player.ThemeManager.GetDialogHighlightColor();
+
+	newButton = CreateConButton( HALIGN_Left, textColor, highlightColor );
 	newButton.SetText( 	"~  " $ choice.choiceText $ "  (" $ choice.SkillNeeded $ ":" $ choice.SkillLevelNeeded $ ")" );
 	newButton.SetUserObject( choice );
 
@@ -630,9 +639,6 @@ function SetForcePlay(bool bNewForcePlay)
 
 defaultproperties
 {
-     colConTextFocus=(R=255,G=255)
-     colConTextChoice=(B=255)
-     colConTextSkill=(R=255)
      lowerFinalHeightPercent=0.210000
      upperFinalHeightPercent=0.104000
      movePeriod=0.600000

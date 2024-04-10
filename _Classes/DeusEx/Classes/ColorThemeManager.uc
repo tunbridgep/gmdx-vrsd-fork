@@ -16,6 +16,53 @@ var travel EColorThemeTypes CurrentSearchThemeType;
 var travel ColorTheme currentHUDTheme;
 var travel ColorTheme currentMenuTheme;
 
+var const Color colConTextFocus;
+var const Color colConTextChoice;
+var const Color colConTextSkill;
+
+// ----------------------------------------------------------------------
+// Sarge: Dialog Colour Functions
+// ----------------------------------------------------------------------
+
+//Sarge: If we're using HUD Colors for the dialogue menu, use them. Otherwise, use the built-in blue color
+
+function Color GetDialogBackgroundColor()
+{
+    local DeusExPlayer player;
+    local Color bgColor;
+
+    player = DeusExPlayer(GetPlayerPawn());
+
+    if (player.bDialogHUDColors)
+        //return currentHUDTheme.GetColor(0); //HUDColor_Background
+        return currentHUDTheme.GetColor(3); //HUDColor_ButtonFace
+    else
+        return colConTextChoice;
+}
+
+function Color GetDialogTextColor()
+{
+    local DeusExPlayer player;
+    player = DeusExPlayer(GetPlayerPawn());
+
+    if (player.bDialogHUDColors)
+        return currentHUDTheme.GetColor(4); //HUDColor_ButtonTextNormal
+    else
+        return colConTextChoice;
+}
+
+function Color GetDialogHighlightColor()
+{
+    local DeusExPlayer player;
+    player = DeusExPlayer(GetPlayerPawn());
+
+    if (player.bDialogHUDColors)
+        return currentHUDTheme.GetColor(5); //HUDColor_ButtonTextFocus
+    else
+        return colConTextFocus;
+}
+
+
 // ----------------------------------------------------------------------
 // SetCurrentHUDColorTheme()
 // ----------------------------------------------------------------------
@@ -296,6 +343,9 @@ simulated function ColorTheme SetMenuThemeByName(String themeName)
 
 defaultproperties
 {
+     colConTextFocus=(R=255,G=255)
+     colConTextChoice=(B=255)
+     colConTextSkill=(R=255)
      bHidden=True
      bTravel=True
 }

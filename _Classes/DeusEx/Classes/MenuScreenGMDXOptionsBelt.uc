@@ -19,6 +19,7 @@ defaultproperties
      choices(4)=Class'DeusEx.MenuChoice_DynamicCrosshair'
      choices(5)=Class'DeusEx.MenuChoice_NumberedReplies'
      choices(6)=Class'DeusEx.MenuChoice_DialogCredits'
+     choices(7)=Class'DeusEx.MenuChoice_DialogHUDColors'
      actionButtons(0)=(Align=HALIGN_Right,Action=AB_Cancel)
      actionButtons(1)=(Align=HALIGN_Right,Action=AB_OK)
      actionButtons(2)=(Action=AB_Reset)

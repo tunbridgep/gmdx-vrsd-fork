@@ -8,9 +8,7 @@ var TextWindow txtSpeech;
 
 var bool bForcePlay;
 
-var Color colConTextNormal;
-var Color colConTextPlayer;
-var Color colConTextName;
+var DeusExPlayer player;
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -24,6 +22,8 @@ event InitWindow()
 
 	SetChildVAlignment(VALIGN_Top);
 
+    player = DeusExPlayer(GetPlayerPawn());
+
 	CreateControls();
 }
 
@@ -33,8 +33,10 @@ event InitWindow()
 
 function CreateControls()
 {
+    local Color backgroundColor, textColor, highlightColor;
+
 	txtName = TextWindow(NewChild(Class'TextWindow', False));
-	txtName.SetTextColor(colConTextName);
+	txtName.SetTextColor(player.ThemeManager.GetDialogTextColor());
 	txtName.SetTextAlignments(HALIGN_Left, VALIGN_Top);
 	txtName.Hide();
 
@@ -98,9 +100,9 @@ function SetSpeech(String newSpeech, optional Actor speakingActor)
 
 		// Use a different color for the player's text
 		if ((speakingActor != None) && (DeusExPlayer(speakingActor) != None))
-			txtSpeech.SetTextColor(colConTextPlayer);
+			txtSpeech.SetTextColor(player.ThemeManager.GetDialogHighlightColor());
 		else	
-			txtSpeech.SetTextColor(colConTextNormal);
+			txtSpeech.SetTextColor(player.ThemeManager.GetDialogTextColor());
 
 		txtSpeech.Show(True);
 	}
@@ -132,7 +134,4 @@ function SetForcePlay(bool bNewForcePlay)
 
 defaultproperties
 {
-     colConTextNormal=(G=255,B=255)
-     colConTextPlayer=(R=255,G=255,B=255)
-     colConTextName=(R=255,G=255,B=255)
 }

@@ -561,6 +561,7 @@ var bool autosave;                                                              
 //Sarge: Dialog Settings
 var globalconfig bool bNumberedDialog;                                          //Sarge: Shows numbers in the dialog window and allows selecting topics with the number keys
 var globalconfig bool bCreditsInDialog;                                         //Sarge: Shows credits in the dialog window
+var globalconfig bool bDialogHUDColors;                                         //Sarge: Use HUD Theme Colors in the Dialog window
 
 //////////END GMDX
 
