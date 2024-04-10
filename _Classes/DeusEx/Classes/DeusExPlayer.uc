@@ -558,6 +558,10 @@ const DRUG_CRACK = 2;
 
 var bool autosave;                                                              //Sarge: Autosave tells the Quicksave function to make an autosave instead
 
+//Sarge: Dialog Settings
+var globalconfig bool bNumberedDialog;                                          //Sarge: Shows numbers in the dialog window and allows selecting topics with the number keys
+var globalconfig bool bCreditsInDialog;                                         //Sarge: Shows credits in the dialog window
+
 //////////END GMDX
 
 // native Functions
@@ -16958,6 +16962,8 @@ function RegenStaminaTick(float deltaTime)                                      
 
 defaultproperties
 {
+     bNumberedDialog=True
+     bCreditsInDialog=True
      autosaveRestrictTimerDefault=900.0
      TruePlayerName="JC Denton"
      CombatDifficulty=1.000000

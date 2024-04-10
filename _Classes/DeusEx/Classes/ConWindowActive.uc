@@ -96,7 +96,8 @@ event Tick(float deltaSeconds)
 	{
 		case MM_Enter:
 	        winCredits.SetTextFont(conPlay.GetCurrentSpeechFont());
-            winCredits.Show();
+            if (player.bCreditsInDialog)
+                winCredits.Show();
 			currentWindowPos += increment;
 			if (currentWindowPos >= 1.0)
 			{
@@ -268,14 +269,18 @@ function CalculateWindowSizes()
 //
 // Displays a choice, but sets up the button a little differently than
 // when displaying normal conversation text
+// SARGE: Added choiceNum parameter, and show numbers before each choice
 // ----------------------------------------------------------------------
 
-function DisplayChoice( ConChoice choice )
+function DisplayChoice( ConChoice choice, int choiceNum )
 {
 	local ConChoiceWindow newButton;
 
 	newButton = CreateConButton( HALIGN_Left, colConTextChoice, colConTextFocus );
-	newButton.SetText( "~ " $ choice.choiceText );
+    if (player.bNumberedDialog)
+    	newButton.SetText( choiceNum $ ". " $ choice.choiceText ); //Sarge: Display number now
+    else
+        newButton.SetText( "~ " $ choice.choiceText );
 	newButton.SetUserObject( choice );
 
 	// These next two calls handle highlighting of the choice
@@ -479,10 +484,64 @@ event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
 			case IK_Down:
 				bHandled = False;
 				break;
+
+            //Sarge: Add Number Key Support
+            case IK_1:
+                bHandled = HandleNumberKey(0);
+                break;
+            case IK_2:
+                bHandled = HandleNumberKey(1);
+                break;
+            case IK_3:
+                bHandled = HandleNumberKey(2);
+                break;
+            case IK_4:
+                bHandled = HandleNumberKey(3);
+                break;
+            case IK_5:
+                bHandled = HandleNumberKey(4);
+                break;
+            case IK_6:
+                bHandled = HandleNumberKey(5);
+                break;
+            case IK_7:
+                bHandled = HandleNumberKey(6);
+                break;
+            case IK_8:
+                bHandled = HandleNumberKey(7);
+                break;
+            case IK_9:
+                bHandled = HandleNumberKey(8);
+                break;
+            case IK_0:
+                bHandled = HandleNumberKey(9);
+                break;
 		}
 	}
 
 	return bHandled;
+}
+
+// HandleChoice
+// Used by the number keys
+function bool HandleNumberKey(int number)
+{
+    //Abort if we're not using numbered replies
+    if (!player.bNumberedDialog) 
+        return false;
+
+    //If there are no choices, number keys simply skip, so we can hold 2 to select GEP gun, etc.
+    else if (numChoices == 0)
+    {
+    	conPlay.PlayNextEvent();
+        return true;
+    }
+
+    //Otherwise, just select our choice
+    else if (numChoices > number)
+        return ButtonActivated(conChoices[number]);
+
+    return false;
 }
 
 // ----------------------------------------------------------------------
