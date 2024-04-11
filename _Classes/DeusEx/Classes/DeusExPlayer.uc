@@ -17162,7 +17162,6 @@ defaultproperties
      BindName="JCDenton"
      FamiliarName="JC Denton"
      UnfamiliarName="JC Denton"
-     bAdvancedAugWheel=false
      bQuickAugWheel=false
      bAugWheelDisableAll=true
 }
