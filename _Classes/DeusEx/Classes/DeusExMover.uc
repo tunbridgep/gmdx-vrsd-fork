@@ -97,9 +97,10 @@ function bool DoLeftFrob(DeusExPlayer frobber)
     {
         if (bPickable && frobber.SelectInventoryItem('Lockpick'))
             return false;
-        else if (bBreakable && frobber.SelectMeleePriority(minDamageThreshold));
+        else if (bBreakable && frobber.SelectMeleePriority(minDamageThreshold))
             return false;
-        frobber.PutInHand(frobber.KeyRing);
+        else
+            frobber.PutInHand(frobber.KeyRing);
         return false;
     }
     else if (bLocked) //Non-Hardcore. See if we have a melee weapon to bust the mover. Otherwise, select picks
