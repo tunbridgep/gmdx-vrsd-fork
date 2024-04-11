@@ -7413,6 +7413,18 @@ function bool SelectInventoryItem(Name type)
     return false;
 }
 
+//Returns whether a given frobbable can actually be interacted with
+//So that we can skip the ones that don't highlight or can't really be used,
+//preventing them from blocking holstering with right click
+function bool IsReallyFrobbable(Actor target)
+{
+    if (target.isA('DeusExDecoration') && !DeusExDecoration(target).bHighlight)
+        return false;
+    if (target.isA('DeusExMover'))
+        return DeusExMover(target).bHighlight && DeusExMover(target).bFrobbable;
+    return true;
+}
+
 // ----------------------------------------------------------------------
 // ParseRightClick()
 // ----------------------------------------------------------------------
@@ -7491,7 +7503,7 @@ exec function ParseRightClick()
 	if (FrobTarget != None)
 		loc = FrobTarget.Location;
 
-	if (FrobTarget != None && (!FrobTarget.isA('DeusExDecoration') || DeusExDecoration(FrobTarget).bHighlight))
+	if (FrobTarget != None && IsReallyFrobbable(FrobTarget))
 	{
         //SARGE: I really should add this to the proper OOP setup, but I just don't care.
         //We don't care about MP, so will omit it for now
