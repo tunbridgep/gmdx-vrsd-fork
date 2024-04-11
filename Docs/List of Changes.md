@@ -8,6 +8,11 @@ Sarge's Changes since Beta 2.2:
     - Fixed the Crosshair Visibility settings in the options getting constantly overridden by lasers etc. The outer crosshairs showing your accuracy are also now linked to the Crosshair visibility setting.
     - Fixed GMDX Bug where EMP'd turrets and cameras will re-enable themselves after the EMP effect runs out, even if they were disabled during the EMP effect.
 - Quality of Life Improvements:
+    - Augmentation Wheel improvements
+        - While in the augmentation screen, use middle-click on an active augmentation to add or remove it from the augmentation wheel.
+        - By default all augmentations will appear on the wheel.
+        - The "Disable All" button can optionally be removed using the options menu.
+        - The augmentation wheel can be changed to work in Quick mode. In Quick mode, releasing the augmentation wheel key will select the currently highlighted augmentation. Use right click to cancel.
     - Lockpicks and Multitools will no longer be consumed if you look away from an object you're picking/bypassing. Instead, the action will be cancelled and any progress cancelled.
     - Added an optional "Dynamic Crosshair" mode, which shows a small dot-crosshair when no weapons is equipped, and some items have no crosshairs at all.
         - Also fixed many instances of crosshair weirdness.
