@@ -72,7 +72,7 @@ Sarge's Changes since Beta 2.2:
         - You can now lock any door you have the nanokey for, plus any doors you have picked previously if you have the Locksport perk (this is retroactive).
         - Enemies cannot open doors which you have locked (Enemies can still open doors that are initially locked in the map unless you lock them)
     - When using Restricted Saving (and Hardcore Mode), Autosaves are now only created the first time upon entering a new level, or if no save has been performed in the last 15 minutes. This is designed to mitigate save-abuse by crossing between maps.
-    - Weapon Mod, Enemy Weapon and Container Randomisation gameplay modifiers now use a table of predetermined random numbers, generated at the start of the game, rather than randomising on map load. This means that you can no longer reroll randomisation for a given map by loading a save before a transition to a new map.
+    - Weapon Mod, Enemy Weapon and Container Randomisation gameplay modifiers now use a seed generated at the start of every playthrough. This means that they can no longer be rerolled by loading a save before a transition to a new map.
     - Addiction System Rework
         - Alcohol no longer heals for 5 points. Instead, it temporarily gives you 5 torso HP (along with it's usual 5 extra torso Max-HP) while in effect, which is removed afterwards. This health removal cannot kill the player.
         - Alcohol no longer adds to fullness when the addiction system is enabled
