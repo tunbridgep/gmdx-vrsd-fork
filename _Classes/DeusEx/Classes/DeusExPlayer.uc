@@ -543,6 +543,7 @@ var travel bool bRandomizeAugs;
 var travel bool bRandomizeEnemies;
 var travel bool bRestrictedSaving;												//Sarge: This used to be tied to hardcore, now it's a config option
 var travel bool bNoKeypadCheese;												//Sarge: Prevent using keycodes that we don't know
+var travel int seed;                                                            //Sarge: When using randomisation playthrough modifiers, this is our generated seed for the playthrough, to prevent autosave abuse and the like
 var travel int augOrderNums[21];                                                //RSD: New aug can order for scrambling
 var const augBinary augOrderList[21];                                           //RSD: List of all aug cans in the game in order (to be scrambled)
 var travel bool bAddictionSystem;
@@ -1115,7 +1116,13 @@ function SetupRandomizer()
     {
         //ClientMessage("Make new Randomiser");
 	    Randomizer = new(Self) class'RandomTable';
-        Randomizer.Generate();
+    }
+
+    //If no seed is set, generate a new one
+    if (seed == -1)
+    {
+        seed = Rand(10000);
+        //ClientMessage("Generating new playthrough seed: " $ seed);
     }
 }
 
@@ -16971,6 +16978,7 @@ function RegenStaminaTick(float deltaTime)                                      
 
 defaultproperties
 {
+     seed=-1;
      autosaveRestrictTimerDefault=900.0
      TruePlayerName="JC Denton"
      CombatDifficulty=1.000000

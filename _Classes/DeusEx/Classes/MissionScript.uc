@@ -81,6 +81,25 @@ function InitStateMachine()
 	}
 }
 
+// Generate a seed for the randomiser
+// This is combined with the players seed to
+// generate a unique combination for this playthrough
+function int GenerateMapSeed()
+{
+    local float seed;
+    local PathNode P;
+
+    // Generate seed by finding every character in the map, and getting their world position
+    foreach AllActors(class'PathNode', P)
+    {
+        seed += P.Location.X;
+        seed += P.Location.Y;
+        seed += P.Location.Z;
+    }
+        
+    return int(seed) % 10000.00;
+}
+
 // ----------------------------------------------------------------------
 // FirstFrame()
 //
@@ -96,6 +115,7 @@ function FirstFrame()
 	local HumanMilitary HumM;
     local bool bRandomCrates;                                                   //RSD
     local bool bRandomItems;                                                    //RSD
+    local int seed;
 
 	flags.DeleteFlag('PlayerTraveling', FLAG_Bool);
 
@@ -124,6 +144,10 @@ function FirstFrame()
     flagName = Player.rootWindow.StringToName("M"$Caps(dxInfo.mapName)$"_NotFirstTime");
 	if (!flags.GetBool(flagName))
 	{
+        //SARGE: Seed the Randomiser, so that we can't autosave-cheese the generated items
+        seed = GenerateMapSeed();
+        //Player.ClientMessage("Map seed is: " $ seed);
+        Player.Randomizer.Seed(Player.seed + seed);
 
         //Reset player Autosave timer
         //Actually, make this per mission instead, to really be punishing
@@ -147,7 +171,10 @@ function FirstFrame()
 			SetScrambledAugs();
         
         if (player.bRandomizeEnemies)
-            InitializeEnemySwap();
+        {
+            InitializeEnemySwap(0);
+            InitializeEnemySwap(1);
+        }
 
 		flags.SetBool(flagName, True);
 	}
@@ -357,7 +384,8 @@ function InitializeRandomAmmoCounts()                                           
 	}
 }
 
-function InitializeEnemySwap()
+//Sarge: Randomize Weapons amongs Enemies
+function InitializeEnemySwap(int pool) //use pool 0 for regular weapons, pool 1 for snipers, plasma and GEP guns
 {
 	local ScriptedPawn Man;
     local ScriptedPawn randomizeActors[100];
@@ -370,7 +398,10 @@ function InitializeEnemySwap()
 	{
         if (!Man.bImportant && Man.GetPawnAllianceType(Player) == ALLIANCE_Hostile && !Man.isA('Robot') && !Man.isA('Animal') && !Man.isA('HumanCivilian') && !Man.bDontRandomizeWeapons)
         {
-            randomizeActors[totalRandomized] = Man;
+            if (pool == 0 && !Man.Weapon.isA('WeaponRifle') && !Man.Weapon.isA('WeaponGEPGun') && !Man.Weapon.isA('WeaponPlasmaRifle'))
+                randomizeActors[totalRandomized] = Man;
+            else if (pool == 1 && (Man.Weapon.isA('WeaponRifle') || Man.Weapon.isA('WeaponGEPGun') || Man.Weapon.isA('WeaponPlasmaRifle')))
+                randomizeActors[totalRandomized] = Man;
             totalRandomized++;
         }
 	}
