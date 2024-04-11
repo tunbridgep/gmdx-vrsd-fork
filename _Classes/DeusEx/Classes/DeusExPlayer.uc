@@ -551,6 +551,7 @@ var travel RandomTable Randomizer;
 
 var travel float autosaveRestrictTimer;                                         //Sarge: Current time left before we're allowed to autosave again.
 var const float autosaveRestrictTimerDefault;                                   //Sarge: Timer for autosaves.
+var travel bool bResetAutosaveTimer;                                            //Sarge: This is necessary because our timer isn't set properly during the same frame as saving, for some reason.
 
 const DRUG_TOBACCO = 0;
 const DRUG_ALCOHOL = 1;
@@ -1798,7 +1799,7 @@ function bool CanSave(optional bool allowHardcore, optional bool checkAutosave)
     if (Level.Netmode != NM_Standalone) //Multiplayer Game
 	   return false;
 
-    if ((bRestrictedSaving || bHardCoreMode) && checkAutosave && autosaveRestrictTimer > 0.0) //Autosave timer not expired
+    if ((bRestrictedSaving || bHardCoreMode) && checkAutosave && autosaveRestrictTimer > saveTime) //Autosave timer not expired
         return false;
 
     return true; 
@@ -1827,7 +1828,7 @@ function DoSaveGame(int saveIndex, optional String saveDesc)
     //if (autosave) 
     //{
         autosave = false;
-        autosaveRestrictTimer = autosaveRestrictTimerDefault;
+        bResetAutosaveTimer = true;
     //}
 
 }
@@ -6132,14 +6133,6 @@ state PlayerWalking
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
 
-        //Update autosave restriction timer
-        autosaveRestrictTimer = FMAX(0.0,autosaveRestrictTimer-deltaTime);
-
-        /*
-        if (autosaveRestrictTimer >= autosaveRestrictTimerDefault - 20)
-            ClientMessage("autosaveRestrictTimer: " $ autosaveRestrictTimer);
-        */
-
 		Super.PlayerTick(deltaTime);
 	}
 }
@@ -6184,9 +6177,6 @@ state PlayerFlying
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
-
-        //Update autosave restriction timer
-        autosaveRestrictTimer = FMAX(0,autosaveRestrictTimer-deltaTime);
 
 		Super.PlayerTick(deltaTime);
 	}
@@ -6373,9 +6363,6 @@ state PlayerSwimming
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
-
-        //Update autosave restriction timer
-        autosaveRestrictTimer = FMAX(0,autosaveRestrictTimer-deltaTime);
 
 		Super.PlayerTick(deltaTime);
 	}
@@ -11497,9 +11484,6 @@ ignores SeePlayer, HearNoise, Bump;
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
-
-        //Update autosave restriction timer
-        autosaveRestrictTimer = FMAX(0,autosaveRestrictTimer-deltaTime);
 	}
 
 	function LoopHeadConvoAnim()
@@ -16478,6 +16462,23 @@ function MultiplayerTick(float DeltaTime)
 	}
 	RepairInventory();
 	lastRefreshTime = 0;
+
+
+    //Update autosave restriction timer
+    if (bResetAutosaveTimer)
+    {
+	    autosaveRestrictTimer = saveTime + autosaveRestrictTimerDefault;
+        bResetAutosaveTimer = false;
+        //ClientMessage("reset autosaveRestrictTimer");
+    }
+
+    
+    /*
+    autosaveTimeRemaining = autosaveRestrictTimer - saveTime;
+    if (int(autosaveTimeRemaining % 60) == 0)
+        ClientMessage((int(autosaveTimeRemaining) / 60) @ "minutes until autosave");
+     */
+
 }
 
 // ----------------------------------------------------------------------
