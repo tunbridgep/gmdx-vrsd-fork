@@ -276,8 +276,8 @@ function DisplayChoice( ConChoice choice, int choiceNum )
     local Color backgroundColor, textColor, highlightColor;
 
     backgroundColor = player.ThemeManager.GetDialogBackgroundColor();
-    textColor = player.ThemeManager.GetDialogTextColor();
-    highlightColor = player.ThemeManager.GetDialogHighlightColor();
+    textColor = player.ThemeManager.GetDialogTextColor(true,false);
+    highlightColor = player.ThemeManager.GetDialogHighlightColor(true);
 
 
 	newButton = CreateConButton( HALIGN_Left, textColor, highlightColor );
@@ -308,8 +308,8 @@ function DisplaySkillChoice( ConChoice choice )
     local Color backgroundColor, textColor, highlightColor;
 
     backgroundColor = player.ThemeManager.GetDialogBackgroundColor();
-    textColor = player.ThemeManager.GetDialogTextColor();
-    highlightColor = player.ThemeManager.GetDialogHighlightColor();
+    textColor = player.ThemeManager.GetDialogTextColor(true,false);
+    highlightColor = player.ThemeManager.GetDialogHighlightColor(true);
 
 	newButton = CreateConButton( HALIGN_Left, textColor, highlightColor );
 	newButton.SetText( 	"~  " $ choice.choiceText $ "  (" $ choice.SkillNeeded $ ":" $ choice.SkillLevelNeeded $ ")" );

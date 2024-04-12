@@ -19,6 +19,9 @@ var travel ColorTheme currentMenuTheme;
 var const Color colConTextFocus;
 var const Color colConTextChoice;
 var const Color colConTextSkill;
+var const Color colConTextSpeech;
+var const Color colConTextSpeaker;
+var const Color colConTextPlayer;
 
 // ----------------------------------------------------------------------
 // Sarge: Dialog Colour Functions
@@ -40,26 +43,32 @@ function Color GetDialogBackgroundColor()
         return colConTextChoice;
 }
 
-function Color GetDialogTextColor()
+function Color GetDialogTextColor(bool active, bool bPlayer)
 {
     local DeusExPlayer player;
     player = DeusExPlayer(GetPlayerPawn());
 
     if (player.bDialogHUDColors)
         return currentHUDTheme.GetColor(4); //HUDColor_ButtonTextNormal
-    else
+    else if (active)
         return colConTextChoice;
+    else if (bPlayer)
+        return colConTextPlayer;
+    else
+        return colConTextSpeech;
 }
 
-function Color GetDialogHighlightColor()
+function Color GetDialogHighlightColor(bool active)
 {
     local DeusExPlayer player;
     player = DeusExPlayer(GetPlayerPawn());
 
     if (player.bDialogHUDColors)
         return currentHUDTheme.GetColor(5); //HUDColor_ButtonTextFocus
-    else
+    else if (active)
         return colConTextFocus;
+    else
+        return colConTextSpeaker;
 }
 
 
@@ -346,6 +355,9 @@ defaultproperties
      colConTextFocus=(R=255,G=255)
      colConTextChoice=(B=255)
      colConTextSkill=(R=255)
+     colConTextSpeaker=(R=255,G=255,B=255)
+     colConTextPlayer=(R=255,G=255,B=255)
+     colConTextSpeech=(G=255,B=255)
      bHidden=True
      bTravel=True
 }

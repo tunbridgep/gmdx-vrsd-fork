@@ -36,7 +36,7 @@ function CreateControls()
     local Color backgroundColor, textColor, highlightColor;
 
 	txtName = TextWindow(NewChild(Class'TextWindow', False));
-	txtName.SetTextColor(player.ThemeManager.GetDialogTextColor());
+	txtName.SetTextColor(player.ThemeManager.GetDialogHighlightColor(false));
 	txtName.SetTextAlignments(HALIGN_Left, VALIGN_Top);
 	txtName.Hide();
 
@@ -100,9 +100,9 @@ function SetSpeech(String newSpeech, optional Actor speakingActor)
 
 		// Use a different color for the player's text
 		if ((speakingActor != None) && (DeusExPlayer(speakingActor) != None))
-			txtSpeech.SetTextColor(player.ThemeManager.GetDialogHighlightColor());
+			txtSpeech.SetTextColor(player.ThemeManager.GetDialogTextColor(false,true));
 		else	
-			txtSpeech.SetTextColor(player.ThemeManager.GetDialogTextColor());
+			txtSpeech.SetTextColor(player.ThemeManager.GetDialogTextColor(false,false));
 
 		txtSpeech.Show(True);
 	}

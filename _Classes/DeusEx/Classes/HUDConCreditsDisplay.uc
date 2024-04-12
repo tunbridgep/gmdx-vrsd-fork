@@ -25,7 +25,7 @@ function CreateCreditsLabel()
 	txtCredits = TextWindow(NewChild(Class'TextWindow'));
 	txtCredits.SetFont(fontCredits);
 	txtCredits.SetText(CreditsLabel);
-	txtCredits.SetTextColor(player.ThemeManager.GetDialogTextColor());
+	txtCredits.SetTextColor(player.ThemeManager.GetDialogHighlightColor(false));
 }
 
 function SetTextFont(Font newFont)
