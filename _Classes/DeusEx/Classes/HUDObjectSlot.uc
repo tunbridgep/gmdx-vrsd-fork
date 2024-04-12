@@ -427,6 +427,11 @@ event bool MouseButtonPressed(float pointX, float pointY, EInputKey button,
 		clickY = pointY;
 		bResult = True;
 	}
+    else if (item == None && button == IK_RightMouse) //Sarge: Allow removing belt memory with right click
+    {
+        player.ClearPlaceholder(objectNum);
+        bResult = True;
+    }
 	return bResult;
 }
 

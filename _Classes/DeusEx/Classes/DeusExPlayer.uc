@@ -8609,6 +8609,12 @@ function SetPlaceholder(int objectNum, bool value, optional texture icon)
         beltInfos[objectNum].icon = icon;
 }
 
+function ClearPlaceholder(int objectNum)
+{
+    beltInfos[objectNum].bPlaceholder = false;
+    beltInfos[objectNum].icon = None;
+}
+
 function bool GetPlaceholder(int objectNum)
 {
     return beltInfos[objectNum].bPlaceholder;
@@ -9481,7 +9487,8 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 
 				// Remove it from the inventory slot grid
 				RemoveItemFromSlot(item);
-                //MakeBeltObjectPlaceholder(item); //SARGE: Disabled because keeping dropped items as placeholders feels weird
+                if (!bBeltAutofill)
+                    MakeBeltObjectPlaceholder(item); //SARGE: Disabled because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
 
 				// make sure we have one copy to throw!
 				DeusExPickup(item).NumCopies = 1;
@@ -9502,7 +9509,8 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 
 			// Remove it from the inventory slot grid
 			RemoveItemFromSlot(item);
-            //MakeBeltObjectPlaceholder(item); //SARGE: Disabled because keeping dropped items as placeholders feels weird
+            if (!bBeltAutofill)
+                MakeBeltObjectPlaceholder(item); //SARGE: Disabled because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
 		}
 
 		// if we are highlighting something, try to place the object on the target //CyberP: more lenience when dropping
