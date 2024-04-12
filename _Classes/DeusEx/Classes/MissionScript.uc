@@ -97,7 +97,7 @@ function int GenerateMapSeed()
         seed += P.Location.Z;
     }
         
-    return abs(int(seed)) % 10000;
+    return int(seed);
 }
 
 // ----------------------------------------------------------------------
