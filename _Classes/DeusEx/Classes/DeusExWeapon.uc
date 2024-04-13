@@ -299,6 +299,13 @@ var localized string abridgedName;                                              
 var texture largeIconRot;                                                       //RSD: rotated inventory icon
 var travel int invSlotsXtravel;                                                 //RSD: since Inventory invSlotsX doesn't travel through maps
 var travel int invSlotsYtravel;                                                 //RSD: since Inventory invSlotsY doesn't travel through maps
+
+//SARGE: Weapon Offset Stuff
+//TODO: Replace this with a generic implementation
+var const vector weaponOffsets;                                                 //Sarge: Our weapon offsets. Leave at (0,0,0) to disable using offsets
+var travel vector oldOffsets;                                                   //Sarge: Stores our old default offsets
+var travel bool bOldOffsetsSet;                                                 //Sarge: Stores whether or not old default offsets have been remembered
+
 //END GMDX:
 
 //
@@ -336,11 +343,45 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
     return true;
 }
 
+//Function to fix weapon offsets
+function DoWeaponOffset(DeusExPlayer player)
+{
+    if ((weaponOffsets.x != 0.0 || weaponOffsets.y != 0.0 || weaponOffsets.z != 0.0))
+    {
+    
+        //Remember our old weapon offsets
+        if (!bOldOffsetsSet)
+        {
+            player.ClientMessage("Setting old offsets");
+            oldOffsets.x = default.PlayerViewOffset.x;
+            oldOffsets.y = default.PlayerViewOffset.y;
+            oldOffsets.z = default.PlayerViewOffset.z;
+            bOldOffsetsSet = true;
+        }
 
-//Called when the item is added to the players hands
+        if (player.bEnhancedWeaponOffsets)
+        {
+            default.PlayerViewOffset.x = weaponOffsets.x;
+            default.PlayerViewOffset.y = weaponOffsets.y;
+            default.PlayerViewOffset.z = weaponOffsets.z;
+        }
+        else if (bOldOffsetsSet)
+        {
+            default.PlayerViewOffset.x = oldOffsets.x;
+            default.PlayerViewOffset.y = oldOffsets.y;
+            default.PlayerViewOffset.z = oldOffsets.z;
+        }
+
+        default.FireOffset.x = -(default.PlayerViewOffset.x);
+        default.FireOffset.y = -(default.PlayerViewOffset.y);
+        default.FireOffset.z = -(default.PlayerViewOffset.z);
+    }
+}
+
+//SARGE: Called when the item is added to the players hands
 function Draw(DeusExPlayer frobber)
 {
-
+    DoWeaponOffset(frobber);
 }
 
 // ---------------------------------------------------------------------

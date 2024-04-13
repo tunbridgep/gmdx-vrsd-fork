@@ -168,6 +168,8 @@ simulated function TakeDamage(int Damage, Pawn instigatedBy, Vector HitLocation,
 
 defaultproperties
 {
+     //weaponOffsets=(X=16.000000,Y=-13.000000,Z=-20.000000)
+     weaponOffsets=(X=18.000000,Y=-15.000000,Z=-20.000000) //Sarge: Use EMP grenade offset instead, it looks better
      LowAmmoWaterMark=2
      GoverningSkill=Class'DeusEx.SkillDemolition'
      EnemyEffective=ENMEFF_Organic

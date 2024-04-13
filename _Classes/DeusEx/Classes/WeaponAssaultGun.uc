@@ -494,6 +494,7 @@ state Reload
 
 defaultproperties
 {
+     weaponOffsets=(X=8.000000,Y=-5.000000,Z=-10.000000)
      MountedViewOffset=(X=2.000000,Y=-2.100000,Z=10.500000)
      LowAmmoWaterMark=16
      FireAnim(1)=None

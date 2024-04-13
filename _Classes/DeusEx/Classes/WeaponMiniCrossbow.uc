@@ -452,6 +452,7 @@ state Reload
 
 defaultproperties
 {
+     weaponOffsets=(X=15.000000,Y=-8.000000,Z=-14.000000)
      MountedViewOffset=(X=12.000000,Y=0.100000,Z=-65.500000)
      LowAmmoWaterMark=3
      GoverningSkill=Class'DeusEx.SkillWeaponPistol'

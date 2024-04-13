@@ -559,6 +559,9 @@ const DRUG_CRACK = 2;
 
 var bool autosave;                                                              //Sarge: Autosave tells the Quicksave function to make an autosave instead
 
+//Sarge: Allow Enhanced Weapon Offsets
+var globalconfig bool bEnhancedWeaponOffsets; 									//Sarge: Allow using enhanced weapon offsets
+
 //////////END GMDX
 
 // native Functions
@@ -17162,4 +17165,5 @@ defaultproperties
      BindName="JCDenton"
      FamiliarName="JC Denton"
      UnfamiliarName="JC Denton"
+     bEnhancedWeaponOffsets=true
 }

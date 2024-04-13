@@ -156,6 +156,7 @@ state Reload
 
 defaultproperties
 {
+     weaponOffsets=(X=11.000000,Y=-12.000000,Z=-19.000000)
      LowAmmoWaterMark=2
      GoverningSkill=Class'DeusEx.SkillWeaponLowTech'
      NoiseLevel=0.050000

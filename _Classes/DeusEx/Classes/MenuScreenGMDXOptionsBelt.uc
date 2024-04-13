@@ -17,6 +17,7 @@ defaultproperties
      choices(2)=Class'DeusEx.MenuChoice_BeltMemory'
      choices(3)=Class'DeusEx.MenuChoice_SmartKeyring'
      choices(4)=Class'DeusEx.MenuChoice_DynamicCrosshair'
+     choices(10)=Class'DeusEx.MenuChoice_WeaponOffsets'
      actionButtons(0)=(Align=HALIGN_Right,Action=AB_Cancel)
      actionButtons(1)=(Align=HALIGN_Right,Action=AB_OK)
      actionButtons(2)=(Action=AB_Reset)
