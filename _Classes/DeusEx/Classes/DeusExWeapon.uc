@@ -352,7 +352,7 @@ function DoWeaponOffset(DeusExPlayer player)
         //Remember our old weapon offsets
         if (!bOldOffsetsSet)
         {
-            player.ClientMessage("Setting old offsets");
+            //player.ClientMessage("Setting old offsets");
             oldOffsets.x = default.PlayerViewOffset.x;
             oldOffsets.y = default.PlayerViewOffset.y;
             oldOffsets.z = default.PlayerViewOffset.z;
