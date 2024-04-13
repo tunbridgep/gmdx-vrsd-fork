@@ -23,22 +23,46 @@ var const Color colConTextSpeech;
 var const Color colConTextSpeaker;
 var const Color colConTextPlayer;
 
+const DIALOG_BACKGROUND_TRANS = 0.4;           //Fake "transparency" for the background color (the colour of the highighted option background) in the dialog menu
+
 // ----------------------------------------------------------------------
 // Sarge: Dialog Colour Functions
+// Sarge: If we're using HUD Colors for the dialogue menu, use them. Otherwise, use the built-in blue color
 // ----------------------------------------------------------------------
 
-//Sarge: If we're using HUD Colors for the dialogue menu, use them. Otherwise, use the built-in blue color
+//Compare 2 colors for similarity. Blatantly stolen from StackOverflow
+//https://stackoverflow.com/questions/9018016/how-to-compare-two-colors-for-similarity-difference
+//Code taken directly from https://www.compuphase.com/cmetric.htm
+function float ColourDistance(Color e1, Color e2)
+{
+    local int rmean,r,g,b;
+    rmean = ( e1.r + e2.r ) / 2;
+    r = e1.r - e2.r;
+    g = e1.g - e2.g;
+    b = e1.b - e2.b;
+    return sqrt((((512+rmean)*r*r)>>8) + 4*g*g + (((767-rmean)*b*b)>>8));
+}
+
+//Make sure our background color is always sufficiently different to our text color
+function Color BackgroundColorFix(Color bgColour, Color textColour)
+{
+    //If the background colour and the highlight colour are too similar, darken the background
+    if (ColourDistance(bgColour,textColour) <= 500)
+    {
+        bgColour.R = int(float(bgColour.R) * DIALOG_BACKGROUND_TRANS); //Darken because it's usually supposed to be
+        bgColour.G = int(float(bgColour.G) * DIALOG_BACKGROUND_TRANS); //transparent, and if we don't do this, it
+        bgColour.B = int(float(bgColour.B) * DIALOG_BACKGROUND_TRANS); //completely washes out the selection text
+    }
+    return bgColour;
+}
 
 function Color GetDialogBackgroundColor()
 {
     local DeusExPlayer player;
-    local Color bgColor;
-
     player = DeusExPlayer(GetPlayerPawn());
 
     if (player.bDialogHUDColors)
-        //return currentHUDTheme.GetColor(0); //HUDColor_Background
-        return currentHUDTheme.GetColor(3); //HUDColor_ButtonFace
+        return BackgroundColorFix(currentHUDTheme.GetColor(3),currentHUDTheme.GetColor(5)); //HUDColor_ButtonFace, HUDColor_ButtonTextFocus
     else
         return colConTextChoice;
 }
@@ -48,7 +72,9 @@ function Color GetDialogTextColor(bool active, bool bPlayer)
     local DeusExPlayer player;
     player = DeusExPlayer(GetPlayerPawn());
 
-    if (player.bDialogHUDColors)
+    if (player.bDialogHUDColors && bPlayer)
+        return currentHUDTheme.GetColor(5); //HUDColor_ButtonTextFocus
+    else if (player.bDialogHUDColors)
         return currentHUDTheme.GetColor(4); //HUDColor_ButtonTextNormal
     else if (active)
         return colConTextChoice;
