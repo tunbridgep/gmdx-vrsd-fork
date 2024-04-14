@@ -414,12 +414,12 @@ defaultproperties
      NoiseLevel=8.000000
      EnviroEffective=ENVEFF_Air
      Concealability=CONC_Visual
-     ShotTime=1.300000
+     ShotTime=1.200000
      reloadTime=1.200000
      HitDamage=3
      maxRange=3000
      AccurateRange=1500
-     BaseAccuracy=0.550000
+     BaseAccuracy=0.650000
      AmmoNames(0)=Class'DeusEx.AmmoShell'
      AmmoNames(1)=Class'DeusEx.AmmoSabot'
      AmmoNames(2)=Class'DeusEx.AmmoRubber'

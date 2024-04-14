@@ -4512,7 +4512,12 @@ simulated function TraceFire( float Accuracy )
 
 	// check to see if we are a shotgun-type weapon
 	if (AreaOfEffect == AOE_Cone && !ammoType.IsA('AmmoSabot'))                 //RSD: Special case to make Sabot rounds actually slugs
-		numSlugs = 8;  //CyberP: was 5
+    {
+        if (IsA('WeaponSawedOffShotgun'))
+		    numSlugs = 9;  //Sarge: Give the sawed off an extra slug
+        else
+		    numSlugs = 8;  //CyberP: was 5
+    }
 	else
 		numSlugs = 1;
 
@@ -5185,7 +5190,9 @@ simulated function bool UpdateInfo(Object winObject)
 	str = String(dmg);
 	if (AreaOfEffect == AOE_Cone)                                               //RSD: Tell us if we're using a multi-slug weapon
 	{
-		if (bInstantHit && AmmoName!=class'AmmoSabot')
+		if (bInstantHit && isA('WeaponSawedOffShotgun') && AmmoName!=class'AmmoSabot')
+			str = str $ "x9";
+        else if (bInstantHit && AmmoName!=class'AmmoSabot')
 			str = str $ "x8";
 		else if (!bInstantHit && AmmoName!=class'AmmoRubber')
 			str = str $ "x3";
