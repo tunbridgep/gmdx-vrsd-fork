@@ -419,7 +419,7 @@ defaultproperties
      HitDamage=3
      maxRange=3000
      AccurateRange=1500
-     BaseAccuracy=0.650000
+     BaseAccuracy=0.550000
      AmmoNames(0)=Class'DeusEx.AmmoShell'
      AmmoNames(1)=Class'DeusEx.AmmoSabot'
      AmmoNames(2)=Class'DeusEx.AmmoRubber'
