@@ -806,6 +806,11 @@ function Frob(Actor Frobber, Inventory frobWith)
 				}
 				else if (bLocked)
 				{
+                    //Give us 3 seconds to use the right-click options after failing to use the key
+                    //This is so we don't accudentally change weapons in the middle of gameplay, by
+                    //right clicking on a mover
+                    leftFrobTimer = leftFrobTimerMax;
+
 					bOpenIt = False;
 					msg = msgNoNanoKey;
 				}
