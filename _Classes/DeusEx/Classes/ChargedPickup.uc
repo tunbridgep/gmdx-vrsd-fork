@@ -10,6 +10,7 @@ var() class<Skill> skillNeeded;
 var() bool bOneUseOnly;
 var() sound ActivateSound;
 var() sound DeactivateSound;
+var() sound UsedUpSound;
 var() sound LoopSound;
 var Texture ChargedIcon;
 var travel bool bIsActive;
@@ -85,7 +86,7 @@ function ChargedPickupBegin(DeusExPlayer Player)
 	local int DisplayCount;
 
 	Player.AddChargedDisplay(Self);
-	Player.PlaySound(ActivateSound, SLOT_None);
+	Player.PlaySound(ActivateSound, SLOT_Pain);
 	if (LoopSound != None)
 		AmbientSound = LoopSound;
 
@@ -112,7 +113,12 @@ function ChargedPickupBegin(DeusExPlayer Player)
 function ChargedPickupEnd(DeusExPlayer Player)
 {
 	Player.RemoveChargedDisplay(Self);
-	Player.PlaySound(DeactivateSound, SLOT_None);
+
+	if (Charge > 0 && DeactivateSound != None)	// Trash: If charge is more than 0 and there's a deactivation sound, play it instead
+		Player.PlaySound(DeactivateSound, SLOT_Pain);
+	else
+		Player.PlaySound(UsedUpSound, SLOT_None);
+	
 	if (LoopSound != None)
 		AmbientSound = None;
 
@@ -198,7 +204,7 @@ function UsedUp()
 	    //bActivatable = false;
 		Pawn(Owner).ClientMessage(ExpireMessage);
 	}
-	Owner.PlaySound(DeactivateSound);
+	Owner.PlaySound(UsedUpSound);
 	Player = DeusExPlayer(Owner);
 
 	if (Player != None)
@@ -495,7 +501,7 @@ event TravelPostAccept()
 defaultproperties
 {
      ActivateSound=Sound'DeusExSounds.Pickup.PickupActivate'
-     DeActivateSound=Sound'DeusExSounds.Pickup.PickupDeactivate'
+     UsedUpSound=Sound'DeusExSounds.Pickup.PickupDeactivate'
      ChargeRemainingLabel="Charge remaining:"
      DurabilityRemainingLabel="Durability:"
      CanOnlyBeOne="You cannot equip more than one torso armor piece"

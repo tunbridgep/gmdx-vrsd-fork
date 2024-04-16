@@ -9,6 +9,8 @@ class HazMatSuit extends ChargedPickup;
 
 defaultproperties
 {
+     ActivateSound=Sound'RSDCrap.Pickup.HazmatSuitEquip'
+     DeactivateSound=Sound'RSDCrap.Pickup.HazmatSuitUnequip'
      skillNeeded=Class'DeusEx.SkillEnviro'
      ChargedIcon=Texture'DeusExUI.Icons.ChargedIconHazMatSuit'
      ExpireMessage="HazMatSuit power supply used up"

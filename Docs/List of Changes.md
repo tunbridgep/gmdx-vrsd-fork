@@ -20,6 +20,7 @@ Sarge's Changes since Beta 2.2:
     - "One-shot-at-a-time" weapons have a different formula for calculating reload speed (RDS/SEC).
     - Different shotgun shells have different textures, and the boxes were reworked to have a different texture for easier identification.
         - Shells also have different sounds when they hit the floor
+    - Equipping/Unequipping Environmental Training items gives you a unique sound depending on the item.
     - Pressing the Reload key will no longer reload weapons that have a full clip.
     - Laser Attachments now re-enable themselves automatically if a weapon is holstered and reselected.
     - Hardcore Mode difficulty selection and Gameplay Settings menu are no longer locked behind completing the game, however they strongly warn against changing them.
