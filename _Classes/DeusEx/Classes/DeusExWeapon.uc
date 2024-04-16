@@ -2653,10 +2653,7 @@ simulated function ScopeToggle()
 	{
 		if (bHasScope && (Owner != None) && Owner.IsA('DeusExPlayer'))
 		{
-			if (bZoomed)
-				ScopeOff();
-			else
-				ScopeOn();
+            GoToState('ScopeToggleState');
             DeusExPlayer(Owner).UpdateCrosshair();
 		}
 	}
@@ -6725,6 +6722,19 @@ Begin:
 	bOnlyOwnerSee = false;
 	if (Pawn(Owner) != None)
 		Pawn(Owner).ChangedWeapon();
+}
+
+state ScopeToggleState                                                                 //Sarge: Added a new state based on the ADSToggle state to deal with scope animations. Currently only used by Rifle.
+{
+	ignores Fire, AltFire, PutDown, ReloadAmmo, DropFrom; // Whee! We can't do sweet F.A. in this state! :D
+	Begin:
+        if (bZoomed)
+            ScopeOff();
+        else
+            ScopeOn();
+        if (Owner.IsA('DeusExPlayer'))
+            DeusExPlayer(Owner).UpdateCrosshair();
+		GoToState('Idle');
 }
 
 state ADSToggle                                                                 //RSD: Taken from WeaponSawedOffShotgun.uc for inheritance

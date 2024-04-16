@@ -10392,8 +10392,8 @@ function bool GetCrosshairState(optional bool bCheckForOuterCrosshairs)
         //    return false;
         //else if (W.isA('WeaponBaton') || W.isA('WeaponProd'))
         //    return false;
-        else if (W.bAimingDown)
-            return false;
+        //else if (W.bAimingDown)
+        //    return false;
         else if(bRadialAugMenuVisible) //RSD: Remove the accuracy indicators if the radial aug menu is visible
             return false;
         else if (W.IsA('WeaponGEPGun') && WeaponGEPGun(W).GEPinout>=1.0) //No crosshair when using GEP scope

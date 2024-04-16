@@ -246,6 +246,36 @@ function ScopeToggle()                                                          
 
 	super.ScopeToggle();
 }
+state ScopeToggleState
+{
+	ignores Fire, AltFire, PutDown, ReloadAmmo, DropFrom; // Whee! We can't do sweet F.A. in this state! :D
+	Begin:
+		If(bAimingDown)
+		{
+		    if (bHasScope)
+		    {
+		        ScopeOff();
+		        if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkNamesArray[12]== 1)
+		            PlayAnim('SupressorOn',1.3,0.1);
+		        else
+		            PlayAnim('SupressorOn',,0.1);
+            }
+		}
+		else
+		{
+		   if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkNamesArray[12]== 1)
+               PlayAnim('SuperssorOff',1.3,0.1);
+           else
+               PlayAnim('SuperssorOff',,0.1);
+		}
+		bAimingDown=!bAimingDown;
+		FinishAnim();
+		if (bAimingDown)
+		    ScopeOn();
+        if (Owner.IsA('DeusExPlayer'))
+            DeusExPlayer(Owner).UpdateCrosshair();
+		GoToState('Idle');
+}
 state ADSToggle                                                                 //RSD: Clyzm model
 {
 	ignores Fire, AltFire, PutDown, ReloadAmmo, DropFrom; // Whee! We can't do sweet F.A. in this state! :D
