@@ -1,7 +1,7 @@
 //=============================================================================
 // LDDPBatPark2NiceBumeCarcass.
 //=============================================================================
-class LDDPBatPark2NiceBum2Carcass extends DeusExCarcass;
+class LDDPBatPark2NiceBumSCarcass extends DeusExCarcass;
 
 defaultproperties
 {
