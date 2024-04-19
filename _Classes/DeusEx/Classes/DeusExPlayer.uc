@@ -561,6 +561,11 @@ var bool autosave;                                                              
 
 //////////END GMDX
 
+// OUTFIT STUFF
+var travel OutfitManagerBase outfitManager;
+var globalconfig string unlockedOutfits[255];
+
+
 // native Functions
 native(1099) final function string GetDeusExVersion();
 native(2100) final function ConBindEvents();
@@ -1426,6 +1431,10 @@ event TravelPostAccept()
 
 	foreach AllActors(class'SpyDrone',SD)                                       //RSD: Destroy all spy drones so we can't activate disabled drones on map transition
 		SD.Destroy();
+
+    //SARGE: Setup outfit manager
+    SetupOutfitManager();
+
 }
 //GMDX: set up mounted gep spawn, as no matter what i try it still draws it on spawn :/
 function SpawnGEPmounted(bool mountIt)
@@ -1541,6 +1550,37 @@ exec function HDTP(optional string s)
 
 	UpdateHDTPsettings();
 }
+
+// ----------------------------------------------------------------------
+// SetupOutfitManager()
+// SARGE: Setup the outfit manager and restore current outfit
+// ----------------------------------------------------------------------
+
+function SetupOutfitManager()
+{
+    local class<OutfitManagerBase> managerBaseClass;
+    local OutfitSpawner S;
+
+	// create the Outfit Manager if not found
+	if (outfitManager == None)
+    {
+	    //outfitManager = new(Self) class'OutfitManager';
+        managerBaseClass = class<OutfitManagerBase>(DynamicLoadObject("JCOutfits.OutfitManager", class'Class'));
+        outfitManager = new(Self) managerBaseClass;
+    }
+
+    if (outfitManager != None)
+    {
+        //ClientMessage("Outfit Manager successfully inited");
+
+        //Call base setup code, required each map load
+        outfitManager.Setup(Self);
+
+        //Re-assign current outfit
+        outfitManager.ApplyCurrentOutfit();
+    }
+}
+
 
 
 // ----------------------------------------------------------------------
