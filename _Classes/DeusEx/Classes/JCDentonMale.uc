@@ -37,7 +37,65 @@ event TravelPostAccept()
 	Super.TravelPostAccept();
 
 	SetSkin();
+
+    //SARGE: Setup outfit manager
+    SetTimer(0.1,false);
+
 }
+
+// ----------------------------------------------------------------------
+// Timer()
+// SARGE: We need to delay slightly before setting models, to allow mods like LDDP to work properly
+// ----------------------------------------------------------------------
+
+function Timer()
+{
+    SetupOutfitManager();
+    Super.Timer();
+}
+
+// ----------------------------------------------------------------------
+// ResetPlayerToDefaults()
+// SARGE: When we start a new game, throw away our outfit manager
+// ----------------------------------------------------------------------
+function ResetPlayerToDefaults()
+{
+    outfitManager = None;
+    Super.ResetPlayerToDefaults();
+}
+
+// ----------------------------------------------------------------------
+// SetupOutfitManager()
+// SARGE: Setup the outfit manager and restore current outfit
+// ----------------------------------------------------------------------
+
+function SetupOutfitManager()
+{
+    local class<OutfitManagerBase> managerBaseClass;
+
+	// create the Outfit Manager if not found
+	if (outfitManager == None)
+    {
+        //ClientMessage("Outfit Manager successfully created");
+	    //outfitManager = new(Self) class'OutfitManager';
+        managerBaseClass = class<OutfitManagerBase>(DynamicLoadObject("JCOutfits.OutfitManager", class'Class'));
+        outfitManager = new(Self) managerBaseClass;
+    }
+
+    if (outfitManager != None)
+    {
+        //ClientMessage("Outfit Manager successfully inited");
+
+        //Call base setup code, required each map load
+        outfitManager.Setup(Self);
+
+        //Re-assign current outfit
+        outfitManager.ApplyCurrentOutfit();
+    }
+}
+
+// ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
 
 function setSkin()
 {
