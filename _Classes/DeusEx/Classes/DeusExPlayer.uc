@@ -17165,5 +17165,5 @@ defaultproperties
      BindName="JCDenton"
      FamiliarName="JC Denton"
      UnfamiliarName="JC Denton"
-     bEnhancedWeaponOffsets=true
+     bEnhancedWeaponOffsets=false
 }
