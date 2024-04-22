@@ -14,7 +14,5 @@ function string GetOutfitNameByID(string id) {}
 
 function AddOutfit(string id, string n, string d, string preview, bool male, bool female, optional string mesh, optional string tm, optional string t1, optional string t2, optional string t3, optional string t4, optional string t5, optional string t6, optional string t7, optional int accessoriesOffset) {}
 
-//Functions called by spawners
-function bool ValidateSpawn(string id) { return false; }
-
-function PickupOutfit(string id) { }
+//Function called by spawners
+function bool ValidateSpawn(string id) {}
