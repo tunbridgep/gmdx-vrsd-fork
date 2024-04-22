@@ -7,6 +7,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX vRSD bug allowing using Tech Goggles in the secondary slot for half a second or so when out of charge
     - Fixed the Crosshair Visibility settings in the options getting constantly overridden by lasers etc. The outer crosshairs showing your accuracy are also now linked to the Crosshair visibility setting.
     - Fixed GMDX Bug where EMP'd turrets and cameras will re-enable themselves after the EMP effect runs out, even if they were disabled during the EMP effect.
+    - Fixed GMDX/Vanilla issue where you could retain your standing accuracy bonus after moving if you stood still for a long time. Now accuracy decreases immediately.
 - Quality of Life Improvements:
     - In the Inventory screen, charged items will now show their charge level on their icon. Additionally, belt slots containing charged items will show their charge level.
     - Lockpicks and Multitools will no longer be consumed if you look away from an object you're picking/bypassing. Instead, the action will be cancelled and any progress cancelled.

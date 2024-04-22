@@ -299,6 +299,8 @@ var localized string abridgedName;                                              
 var texture largeIconRot;                                                       //RSD: rotated inventory icon
 var travel int invSlotsXtravel;                                                 //RSD: since Inventory invSlotsX doesn't travel through maps
 var travel int invSlotsYtravel;                                                 //RSD: since Inventory invSlotsY doesn't travel through maps
+var travel float previousAccuracy;                                                            //Sarge: Used to limit standing accuracy bonus from increasing past your max accuracy                                                                                
+
 //END GMDX:
 
 //
@@ -2394,6 +2396,7 @@ simulated function Tick(float deltaTime)
 	  SoundTimer = 0;
 	}
 
+    previousAccuracy = currentAccuracy;
 	currentAccuracy = CalculateAccuracy();
 
 	if (player != None)
@@ -2513,7 +2516,8 @@ simulated function Tick(float deltaTime)
 	        mult += 1.0;
         if (player.CombatDifficulty < 1.0)                                      //RSD: Properly doubling on easy now
 		    mult *= 2.0;
-        standingTimer += mult*deltaTime;
+        if (previousAccuracy != currentAccuracy || standingTimer ~= 0.0)                                       //Sarge: Only increase standing timer if our accuracy has changed
+            standingTimer += mult*deltaTime;
 		if (standingTimer > 15.0) //CyberP: the devs forgot to cap the timer
 		    standingTimer = 15.0;
         if (player.bHardcoreMode && IsInState('Reload'))                        //RSD: reset accuracy when reloading in Hardcore
