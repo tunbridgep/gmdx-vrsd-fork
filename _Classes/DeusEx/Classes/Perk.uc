@@ -1,19 +1,48 @@
-//Trash: This is where new perks are created.
+//=============================================================================
+// Perk.
+//=============================================================================
+
+// Trash: This is where new perks are created 
+// PERK SYSTEM #1: Inherit from this and change PerkStats as needed
 
 class Perk extends Actor;
 
 // Trash: Perk Stats.
 
-var string perkName;
-var string perkDescription;
-var Skill perkSkill;
-var int perkCost;
-var int perkLevelRequirement;
-var float perkValue;
+var string PerkName;            // Trash: Self Explanatory
+var string PerkDescription;     // Trash: Self Explanatory
+var class<Skill> PerkSkill;     // Trash: What skill does the perk belong to? Leave blank to make it a general skill
+var int PerkCost;               // Trash: How much does it cost to buy this perk?
+var int PerkLevelRequirement;   // Trash: What's the skill requirement to buy this perk?
+var float PerkValue;            // Trash: Optional, what's the value that you want increased when this perk is obtained? For example, 1.25 could mean you heal 25% faster
 
-var travel bool bPerkObtained;
+var travel bool bPerkObtained;  // Trash: Do you own this perk?
 
-function bool PurchasePerk()
+// ----------------------------------------------------------------------
+// PreBeginPlay()
+// ----------------------------------------------------------------------
+
+simulated function PreBeginPlay()
+{
+	Super.PreBeginPlay();
+}
+
+// ----------------------------------------------------------------------
+// ReturnPerkSkill()
+// ----------------------------------------------------------------------
+
+function Skill ReturnPerkSkill()
+{
+    local DeusExPlayer player;
+
+	return player.SkillSystem.GetSkillFromClass(PerkSkill);
+}
+
+// ----------------------------------------------------------------------
+// PurchasePerk()
+// ----------------------------------------------------------------------
+
+function PurchasePerk()
 {
     local DeusExPlayer player;
 
@@ -24,12 +53,8 @@ function bool PurchasePerk()
             player.SkillPointsAvail -= PerkCost;
             player.PlaySound(Sound'GMDXSFX.Generic.Select',SLOT_None);
             bPerkObtained = true;
-
-            return true;
         }
     }
-    else
-    return false;
 }
 
 // ----------------------------------------------------------------------
@@ -37,9 +62,9 @@ function bool PurchasePerk()
 
 defaultproperties
 {
-     perkName="DEFAULT PERK NAME - ERROR!"
-     perkDescription="DEFAULT PERK DESCRIPTOIN - ERROR!"
+     PerkName="DEFAULT PERK NAME - ERROR!"
+     PerkDescription="DEFAULT PERK DESCRIPTOIN - ERROR!"
      PerkCost=50
-     perkLevelRequirement=1
-     perkValue=1.0
+     PerkLevelRequirement=1
+     PerkValue=1.0
 }
