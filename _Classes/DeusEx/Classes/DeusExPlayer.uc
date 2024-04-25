@@ -441,6 +441,7 @@ var travel int BeltLast;                                                    //Sa
 var travel bool bUsedKeyringLast;  											//Sarge: Added new feature to allow keyring to be used without belt, freeing up a slot
 var travel bool bNumberSelect;                                              //Sarge: Whether or not our last belt selection was done with number keys (ActivateBelt) rather than Next/Prev. Used by Alternative Belt to know when to holster
 var travel bool bScrollSelect;                                              //Sarge: Whether or not our last belt selection was done with Next/Last weapon keys rather than Number Keys. Used by Alternative Belt to know when to holster
+var travel int beltScrolled;                                                //Sarge: The last item we scrolled to on the belt, if we are using Adv Toolbelt
 var int clickCountCyber; //CyberP: for double clicking to unequip
 var bool bStunted; //CyberP: for slowing player under various conditions
 var bool bRegenStamina; //CyberP: regen when in water but head above water
@@ -7394,6 +7395,7 @@ function NewWeaponSelected()
     bScrollSelect = false;
     bUsedKeyringLast = false;
     clickCountCyber = 0;
+    beltScrolled = advBelt;
 }
 
 //Select Inventory Item
@@ -7562,15 +7564,17 @@ exec function ParseRightClick()
 		{
 			PutInHand(None);
 		}
-		else if (((bAlternateToolbelt == 1 && !bNumberSelect) || bAlternateToolbelt > 1) && (bNumberSelect || bScrollSelect || bUsedKeyringLast) ) //If we have moved our main weapon, switch to it. But not if we simply selected a different belt item.
+        //If we are using a different items to our belt item, and classic mode is on or we scrolled, select it instantly
+		else if ((bAlternateToolbelt > 1 || bScrollSelect) && beltScrolled != beltLast && inHand != None)
 		{
+            clientMessage("Special case! advBelt=" $ advBelt @ "beltScrolled="$beltScrolled);
 			root = DeusExRootWindow(rootWindow);
 			if (root != None && root.hud != None)
 			{
 				root.ActivateObjectInBelt(advBelt);
                 NewWeaponSelected();
+                beltLast = advBelt;
 			}
-			
 		}
 		else if (clickCountCyber >= 1 || !bDblClickHolster)
 		{
@@ -7582,14 +7586,15 @@ exec function ParseRightClick()
 				if (root != None && root.hud != None)
 				{
 					if (bAlternateToolbelt > 0)
-						root.ActivateObjectInBelt(advBelt);
-					else
-						root.ActivateObjectInBelt(BeltLast);
+						beltLast = advBelt;
+                    root.ActivateObjectInBelt(BeltLast);
 				}
 			}
 			else
+            {
 				PutInHand(None);
-            NewWeaponSelected();
+                NewWeaponSelected();
+            }
 		    DoRightFrob(FrobTarget); //Last minute check for things with no highlight.
 		}
 		else
@@ -10783,12 +10788,12 @@ exec function NextBeltItem()
     	}
 		}
 	}
+	BeltLast = slot;
 	}
 	else
 	{
 	if (CarriedDecoration == None)
 	{
-		//slot = advBelt;
 		root = DeusExRootWindow(rootWindow);
 		if (root != None)
 		{
@@ -10803,10 +10808,11 @@ exec function NextBeltItem()
             NewWeaponSelected();
 			bScrollSelect = true;
 			clientInHandPending = root.hud.belt.GetObjectFromBelt(advBelt);
+            slot = advBelt;
 		}
 	}
+    beltScrolled = slot;
 	}
-	BeltLast = slot;
 }
 
 // ----------------------------------------------------------------------
@@ -10900,12 +10906,12 @@ exec function PrevBeltItem()
     	}
 		}
 	}
+	BeltLast = slot;
 	}
 	else
 	{
 	if (CarriedDecoration == None)
 	{
-		//slot = advBelt;
 		root = DeusExRootWindow(rootWindow);
 		if (root != None)
 		{	
@@ -10919,10 +10925,11 @@ exec function PrevBeltItem()
             root.hud.belt.RefreshAlternateToolbelt();
 			bScrollSelect = true;
 			clientInHandPending = root.hud.belt.GetObjectFromBelt(advBelt);
+            slot = advBelt;
 		}
 	}
+    beltScrolled = slot;
 	}
-	BeltLast = slot;
 }
 
 // ----------------------------------------------------------------------
