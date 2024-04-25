@@ -442,6 +442,7 @@ var travel bool bUsedKeyringLast;  											//Sarge: Added new feature to allo
 var travel bool bNumberSelect;                                              //Sarge: Whether or not our last belt selection was done with number keys (ActivateBelt) rather than Next/Prev. Used by Alternative Belt to know when to holster
 var travel bool bScrollSelect;                                              //Sarge: Whether or not our last belt selection was done with Next/Last weapon keys rather than Number Keys. Used by Alternative Belt to know when to holster
 var travel int beltScrolled;                                                //Sarge: The last item we scrolled to on the belt, if we are using Adv Toolbelt
+var travel bool selectedNumberFromEmpty;                                    //Sarge: Was the current selection made from an empty hand. Used by Alternate Toolbelt Classic Mode to not jump back to previous weapon when we select from an empty hand.
 var int clickCountCyber; //CyberP: for double clicking to unequip
 var bool bStunted; //CyberP: for slowing player under various conditions
 var bool bRegenStamina; //CyberP: regen when in water but head above water
@@ -7565,7 +7566,7 @@ exec function ParseRightClick()
 			PutInHand(None);
 		}
         //If we are using a different items to our belt item, and classic mode is on or we scrolled, select it instantly
-		else if ((bAlternateToolbelt > 1 || bScrollSelect) && beltScrolled != beltLast && inHand != None)
+		else if ((bAlternateToolbelt > 1 || bScrollSelect) && beltScrolled != beltLast && inHand != None && !selectedNumberFromEmpty)
 		{
 			root = DeusExRootWindow(rootWindow);
 			if (root != None && root.hud != None)
@@ -10686,6 +10687,9 @@ exec function ActivateBelt(int objectNum)
 				advBelt = objectNum;
 				root.hud.belt.RefreshAlternateToolbelt();
 			}
+                
+            //Did we select from empty?
+            selectedNumberFromEmpty = inHand == None;
 		
 			root.ActivateObjectInBelt(objectNum);
 			BeltLast = objectNum;
