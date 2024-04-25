@@ -7567,7 +7567,6 @@ exec function ParseRightClick()
         //If we are using a different items to our belt item, and classic mode is on or we scrolled, select it instantly
 		else if ((bAlternateToolbelt > 1 || bScrollSelect) && beltScrolled != beltLast && inHand != None)
 		{
-            clientMessage("Special case! advBelt=" $ advBelt @ "beltScrolled="$beltScrolled);
 			root = DeusExRootWindow(rootWindow);
 			if (root != None && root.hud != None)
 			{
