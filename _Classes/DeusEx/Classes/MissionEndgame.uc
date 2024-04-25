@@ -45,30 +45,31 @@ function FirstFrame()
 
 	if (Player != None)
 	{
-		// Make sure all the flags are deleted		TarEndgameConvo = 'Barf';
+		// Make sure all the flags are deleted
+		TarEndgameConvo = 'Barf';
 		DelayTimer = 0.05;
 		
 		//LDDP, 11/3/21: Barf.
 		//Player.StartConversationByName(UseConvo, Player, False, True);.
 
-		DeusExRootWindow(Player.rootWindow).ResetFlags();
+		//DeusExRootWindow(Player.rootWindow).ResetFlags();
 
 		// Start the conversation   //CyberP: here we also unlock hardcore mode + options
 		if (localURL == "ENDGAME1")
 		{
-			Player.StartConversationByName('Endgame1', Player, False, True);
+			//Player.StartConversationByName('Endgame1', Player, False, True);
 			Player.ConsoleCommand("set" @ "DeusExPlayer bHardcoreUnlocked" @ "True");
             Player.ConsoleCommand("set" @ "JCDentonMale bHardcoreUnlocked" @ "True");
 		}
 		else if (localURL == "ENDGAME2")
 		{
-			Player.StartConversationByName('Endgame2', Player, False, True);
+			//Player.StartConversationByName('Endgame2', Player, False, True);
 			Player.ConsoleCommand("set" @ "DeusExPlayer bHardcoreUnlocked" @ "True");
             Player.ConsoleCommand("set" @ "JCDentonMale bHardcoreUnlocked" @ "True");
 		}
 		else if (localURL == "ENDGAME3")
 		{
-			Player.StartConversationByName('Endgame3', Player, False, True);
+			//Player.StartConversationByName('Endgame3', Player, False, True);
 			Player.ConsoleCommand("set" @ "DeusExPlayer bHardcoreUnlocked" @ "True");
             Player.ConsoleCommand("set" @ "JCDentonMale bHardcoreUnlocked" @ "True");
 		}
