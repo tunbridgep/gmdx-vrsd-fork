@@ -3,6 +3,11 @@
 //=============================================================================
 class PerkSteady extends Perk;
 
+simulated function PreBeginPlay()
+{
+	Super.PreBeginPlay();
+}
+
 defaultproperties
 {
     PerkName="STEADY"

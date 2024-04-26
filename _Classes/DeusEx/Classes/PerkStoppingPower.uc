@@ -3,6 +3,11 @@
 //=============================================================================
 class PerkStoppingPower extends Perk;
 
+simulated function PreBeginPlay()
+{
+	Super.PreBeginPlay();
+}
+
 defaultproperties
 {
     PerkName="STOPPING POWER"

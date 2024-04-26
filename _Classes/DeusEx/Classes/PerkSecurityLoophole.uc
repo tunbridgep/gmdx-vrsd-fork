@@ -3,6 +3,11 @@
 //=============================================================================
 class PerkSecurityLoophole extends Perk;
 
+simulated function PreBeginPlay()
+{
+	Super.PreBeginPlay();
+}
+
 defaultproperties
 {
     PerkName="SECURITY LOOPHOLE"

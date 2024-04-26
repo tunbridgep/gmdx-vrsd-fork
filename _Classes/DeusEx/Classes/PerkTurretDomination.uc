@@ -3,6 +3,11 @@
 //=============================================================================
 class PerkTurretDomination extends Perk;
 
+simulated function PreBeginPlay()
+{
+	Super.PreBeginPlay();
+}
+
 defaultproperties
 {
     PerkName="TURRET DOMINATION"

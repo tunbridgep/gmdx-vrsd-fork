@@ -3,6 +3,11 @@
 //=============================================================================
 class PerkCombatMedicsBag extends Perk;
 
+simulated function PreBeginPlay()
+{
+	Super.PreBeginPlay();
+}
+
 defaultproperties
 {
     PerkName="COMBAT MEDIC'S BAG"

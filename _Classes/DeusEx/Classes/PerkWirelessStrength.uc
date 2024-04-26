@@ -3,6 +3,11 @@
 //=============================================================================
 class PerkWirelessStrength extends Perk;
 
+simulated function PreBeginPlay()
+{
+	Super.PreBeginPlay();
+}
+
 // Trash: TODO Check PerkValue
 
 defaultproperties

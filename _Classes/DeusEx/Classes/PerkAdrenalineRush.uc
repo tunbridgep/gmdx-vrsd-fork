@@ -3,6 +3,11 @@
 //=============================================================================
 class PerkAdrenalineRush extends Perk;
 
+simulated function PreBeginPlay()
+{
+	Super.PreBeginPlay();
+}
+
 defaultproperties
 {
     PerkName="ADRENALINE RUSH"

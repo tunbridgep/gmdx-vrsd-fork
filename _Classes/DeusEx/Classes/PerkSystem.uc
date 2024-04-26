@@ -5,19 +5,22 @@
 // Trash: This is where perks are initialized and stored
 // PERK SYSTEM #2: Add the perk that you created to InitializePerks()
 
-class PerkSystem extends Actor;
+class PerkSystem extends Actor
+	intrinsic;
 
-var DeusExPlayer Player;
-var travel Perk PerkList[37];
-var travel int numPerks;				// Trash: UnrealScript doesn't support lists, so this is essentially the number of perks in the game.
+var travel Perk PerkList[37];			// Trash: Hopefully with this system, you can make this 500 and it wouldn't matter much
+var travel int numPerks;				// Trash: UnrealScript doesn't support lists, so this is essentially the number of perks in the game
+var travel DeusExPlayer PlayerAttached;	// Trash: The player this class is attached to
 
 
 // ----------------------------------------------------------------------
 // InitializePerks()
 // ----------------------------------------------------------------------
 
-function InitializePerks()	// Trash: Add every perk in the game to the PerkList[] array.
+function InitializePerks(DeusExPlayer newPlayer)	// Trash: Add every perk in the game to the PerkList[] array and assign the player
 {
+	PlayerAttached = newPlayer;
+
 	// Rifle Perks
 	AddPerk(Class'DeusEx.PerkSteady');
 	AddPerk(Class'DeusEx.PerkStoppingPower');
@@ -83,21 +86,38 @@ function AddPerk(class<Perk> perk)
 {
 	local Perk perkInstance;
 
-	perkInstance = new(self)Perk; // tf?
+	perkInstance = new(self)Perk;
 
 	PerkList[numPerks] = perkInstance;
-    numPerks += 1;
+    numPerks++;
+}
+
+// ----------------------------------------------------------------------
+// GetPerkIndex()
+// ----------------------------------------------------------------------
+
+function int GetPerkIndex(Perk Perk)  // Trash: Get the index of the perk by just checking the class
+{
+	local int index;
+
+	for (index = 0; index < ArrayCount(PerkList); index++)
+	{
+		if (PerkList[index] == Perk)
+		{
+			return index;
+		}
+	}
 }
 
 // ----------------------------------------------------------------------
 // GetPerksForSkill()
 // ----------------------------------------------------------------------
-/*
+
 function Perk GetPerksForSkill(Skill skill)  // Trash: Get every perk with the same skill and sort it
 {
-	local Class<Perk> skillPerkList[5];
-	local int skillPerkListIndex;
+	local Perk skillPerkList[10];
 
+	local int skillPerkListIndex;
 	local int index;
 
 	for (index = 0; index < ArrayCount(PerkList); index++)
@@ -106,11 +126,11 @@ function Perk GetPerksForSkill(Skill skill)  // Trash: Get every perk with the s
 		{
 			skillPerkList[skillPerkListIndex] = PerkList[index];
 			skillPerkListIndex++;
-
-			return PerkList[index];
 		}
 	}
-} */
+
+	return skillPerkList[index];
+}
 
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------

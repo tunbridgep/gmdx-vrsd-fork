@@ -5,7 +5,8 @@
 // Trash: This is where new perks are created 
 // PERK SYSTEM #1: Inherit from this and change PerkStats as needed
 
-class Perk extends Actor;
+class Perk extends Actor
+	intrinsic;
 
 // Trash: Perk Stats.
 
@@ -51,7 +52,7 @@ function PurchasePerk()
         if (player.SkillPointsAvail >= PerkCost)
         {
             player.SkillPointsAvail -= PerkCost;
-            player.PlaySound(Sound'GMDXSFX.Generic.Select',SLOT_None);
+            player.PlaySound(Sound'GMDXSFX.Generic.codelearned',SLOT_None,,,,0.8);
             bPerkObtained = true;
         }
     }

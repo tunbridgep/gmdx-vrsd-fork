@@ -3,6 +3,11 @@
 //=============================================================================
 class PerkLocksport extends Perk;
 
+simulated function PreBeginPlay()
+{
+	Super.PreBeginPlay();
+}
+
 defaultproperties
 {
     PerkName="LOCKSPORT"

@@ -3,6 +3,11 @@
 //=============================================================================
 class PerkSharpEyed extends Perk;
 
+simulated function PreBeginPlay()
+{
+	Super.PreBeginPlay();
+}
+
 defaultproperties
 {
     PerkName="SHARP-EYED"

@@ -3,6 +3,11 @@
 //=============================================================================
 class PerkShortFuse extends Perk;
 
+simulated function PreBeginPlay()
+{
+	Super.PreBeginPlay();
+}
+
 defaultproperties
 {
     PerkName="SHORT FUSE"

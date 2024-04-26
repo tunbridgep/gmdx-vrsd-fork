@@ -267,8 +267,7 @@ simulated function bool UpdatePerksInfo(Object winObject)    //CyberP: perks
 	winInfo.SetText(LineBreaker);
 	winInfo.SetText(PerksDescription3);
 	winInfo.SetText(LineBreaker); */
-	winInfo.CreatePerkButtons(PerksDescription,PerksDescription2,PerksDescription3, PerkCost[0],
-    PerkCost[1], PerkCost[2], PerkName, PerkName2, PerkName3, LocalizedPerkName, LocalizedPerkName2, LocalizedPerkName3, SkillIcon);
+	winInfo.CreatePerkButtons(self);
     //Totalitarian: WARNING! THE WHOLE PERK SYSTEM PASSES PERK NAME! DO NOT CHANGE THE NAME OF PERKS
     //Totalitarian: INSTEAD CHANGE THE LocalizedPerkName VAR
 	return True;

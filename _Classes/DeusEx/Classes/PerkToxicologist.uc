@@ -3,6 +3,11 @@
 //=============================================================================
 class PerkToxicologist extends Perk;
 
+simulated function PreBeginPlay()
+{
+	Super.PreBeginPlay();
+}
+
 defaultproperties
 {
     PerkName="TOXICOLOGIST"

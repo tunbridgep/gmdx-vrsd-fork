@@ -3,6 +3,11 @@
 //=============================================================================
 class PerkEndurance extends Perk;
 
+simulated function PreBeginPlay()
+{
+	Super.PreBeginPlay();
+}
+
 defaultproperties
 {
     PerkName="ENDURANCE"

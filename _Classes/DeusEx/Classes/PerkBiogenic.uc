@@ -3,6 +3,11 @@
 //=============================================================================
 class PerkBiogenic extends Perk;
 
+simulated function PreBeginPlay()
+{
+	Super.PreBeginPlay();
+}
+
 defaultproperties
 {
     PerkName="BIOGENIC"

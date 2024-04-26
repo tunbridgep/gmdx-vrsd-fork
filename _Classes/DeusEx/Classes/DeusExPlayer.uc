@@ -28,8 +28,9 @@ var travel Float CombatDifficulty;
 // Augmentation system vars
 var travel AugmentationManager AugmentationSystem;
 
-// Skill system vars
+// Skill system vars // Trash: Now includes perk system
 var travel SkillManager SkillSystem;
+var travel PerkSystem PerkSystem;
 
 var() travel int SkillPointsTotal;
 var() travel int SkillPointsAvail;
@@ -1156,6 +1157,12 @@ function InitializeSubSystems()
 	else
 	{
 		SkillSystem.SetPlayer(Self);
+	}
+
+	if (PerkSystem == None)
+	{
+		PerkSystem = Spawn(class'PerkSystem', Self);
+		PerkSystem.InitializePerks(Self);
 	}
 
 	if ((Level.Netmode == NM_Standalone) || (!bBeltIsMPInventory))

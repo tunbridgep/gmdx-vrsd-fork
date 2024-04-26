@@ -3,6 +3,11 @@
 //=============================================================================
 class PerkBlastEnergy extends Perk;
 
+simulated function PreBeginPlay()
+{
+	Super.PreBeginPlay();
+}
+
 // Trash: TODO change the PerkValue here to the proper Plasma Rifle value.
 
 defaultproperties
