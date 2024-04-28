@@ -558,6 +558,8 @@ const DRUG_CRACK = 2;
 
 var bool autosave;                                                              //Sarge: Autosave tells the Quicksave function to make an autosave instead
 
+var bool bLastRun;                                                              //Sarge: Stores our last running state
+
 //////////END GMDX
 
 // native Functions
@@ -4921,6 +4923,12 @@ function HandleWalking()
 	// handle the toggle walk key
 	if (bToggleWalk)   //&& !bHardCoreMode
 		bIsWalking = !bIsWalking;
+
+    //SARGE: If our walk state has changed, untoggle crouch
+    if (bLastRun != bool(bRun) && bCrouchOn)// && !bAlwaysRun)
+        bCrouchOn = false;
+
+    bLastRun = bool(bRun);
 }
 
 // ----------------------------------------------------------------------
