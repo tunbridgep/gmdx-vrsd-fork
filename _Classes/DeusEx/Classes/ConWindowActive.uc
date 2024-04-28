@@ -49,6 +49,11 @@ event InitWindow()
 
 	CreateReceivedWindow();
 	CreateCreditsWindow();
+
+    //Set the players FOV to 75 so that cutscenes appear mostly normal
+    //TODO: Fix this to work properly on other aspect ratios
+    player.desiredFOV = 75;
+	player.SetFOVAngle(75);
 }
 
 // ----------------------------------------------------------------------
@@ -59,6 +64,10 @@ event DestroyWindow()
 {
 	// Turn the cursor back on
 	root.ShowCursor(True);
+
+    //reset players fov
+    player.desiredFOV = player.default.desiredFOV;
+	player.SetFOVAngle(player.default.desiredFOV);
 }
 
 // ----------------------------------------------------------------------
@@ -77,6 +86,9 @@ function RestrictInput(bool bNewRestrictInput)
 event Tick(float deltaSeconds)
 {
 	local float increment;
+    local DeusExLevelInfo dxInfo;
+
+    dxInfo=player.GetLevelInfo();
 
 	Super.Tick(deltaSeconds);
 
@@ -92,7 +104,7 @@ event Tick(float deltaSeconds)
 	{
 		case MM_Enter:
 	        winCredits.SetTextFont(conPlay.GetCurrentSpeechFont());
-            if (player.bCreditsInDialog)
+            if (player.bCreditsInDialog && dxInfo.MapName != "Intro")
             {
 				AskParentForReconfigure();
                 winCredits.Show();
@@ -206,15 +218,30 @@ function CalculateWindowSizes()
 	local float cinHeight;
 	local float ratio;
 	local RootWindow root;
+	local float minLowerHeight; //MKE
 
 	root = GetRootWindow();
 
 	// Determine the height of the convo windows, based on available space
 	if (bForcePlay)
 	{
+
 		// calculate the correct 16:9 ratio
 		ratio = 0.5625 * (root.width / root.height);
-		cinHeight = root.height * ratio;
+		
+		// if resolution was less than 16:9
+		// Adjusts fov to match 16:9 proportions as well. Must figure out how to make this optional
+		// disabled this feature for now
+		if (ratio < 1) {
+			cinHeight = root.height * ratio;
+		}
+		//if resolution was 16:9 or greater
+		else
+        {
+			//minLowerHeight = int(height * lowerFinalHeightPercent); //Taken from 'normal' convo. lowerFinalHeightPercent=0.21
+			minLowerHeight = int(height * 0.15);
+			cinHeight = min(root.height - minLowerHeight, root.width * 0.5625);
+		}
 
 		upperCurrentPos = 0;
 		upperHeight     = int(0.5 * (root.height - cinHeight));
@@ -255,7 +282,7 @@ function CalculateWindowSizes()
 		winReceived.ConfigureChild(10, lowerCurrentPos - recHeight - 5, recWidth, recHeight);
 	}
 	
-    // Configure Received Window
+    // Configure Credits Window
 	if (winCredits != None)
 	{
 		winCredits.ConfigureChild(10, upperCurrentPos + upperHeight - 25, recWidth * 10, recHeight * 2);
@@ -263,7 +290,6 @@ function CalculateWindowSizes()
 
 	ConfigureCameraWindow(lowerCurrentPos);
 }
-
 
 // ----------------------------------------------------------------------
 // DisplayChoice()
