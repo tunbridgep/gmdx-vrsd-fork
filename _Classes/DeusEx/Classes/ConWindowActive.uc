@@ -93,7 +93,10 @@ event Tick(float deltaSeconds)
 		case MM_Enter:
 	        winCredits.SetTextFont(conPlay.GetCurrentSpeechFont());
             if (player.bCreditsInDialog)
+            {
+				AskParentForReconfigure();
                 winCredits.Show();
+            }
 			currentWindowPos += increment;
 			if (currentWindowPos >= 1.0)
 			{
@@ -115,6 +118,7 @@ event Tick(float deltaSeconds)
 				{
 					currentWindowPos = 0.0;
 					moveMode = MM_None;
+                    winCredits.Hide();
 					Hide();
 				}
 				AskParentForReconfigure();
