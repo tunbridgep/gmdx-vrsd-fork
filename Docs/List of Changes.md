@@ -9,6 +9,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX Bug where EMP'd turrets and cameras will re-enable themselves after the EMP effect runs out, even if they were disabled during the EMP effect.
     - Fixed various issues relating to Crouching, including "standing up" when starting dialogue, female JC using regular footstep sounds while crouched (if using LDDP), and other phantom footstep sounds.
 - Quality of Life Improvements:
+    - Pressing the walk/run key while crouch toggled will now uncrouch.
     - Lockpicks and Multitools will no longer be consumed if you look away from an object you're picking/bypassing. Instead, the action will be cancelled and any progress cancelled.
     - Added an optional "Dynamic Crosshair" mode, which shows a small dot-crosshair when no weapons is equipped, and some items have no crosshairs at all.
         - Also fixed many instances of crosshair weirdness.
