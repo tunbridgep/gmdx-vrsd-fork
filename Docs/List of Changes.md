@@ -2,6 +2,7 @@ Sarge's Changes since Beta 2.2:
 
 - Moved DeusEx.Int to the mod's System folder, so as to not overwrite any vanilla files. The int file will be handled automatically when using Kentie's Deus Exe.
 - Numerous Bug Fixes
+    - Fixed GMDX bug where Intro Cinematic didn't have subtitles bars, and fixed all cinematics to have a FOV of 75, making them always look accurate to the original game.
     - Fixed a bug where the Nuke and Worm software buttons were completely white squares on the Hacking menu.
     - Fixed GMDX vRSD bug where you could pick up and carry heavy objects while out of energy with the Muscle Augmentation
     - Fixed GMDX vRSD bug allowing using Tech Goggles in the secondary slot for half a second or so when out of charge
