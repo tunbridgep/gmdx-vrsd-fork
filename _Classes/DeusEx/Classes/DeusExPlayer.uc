@@ -10413,7 +10413,7 @@ function bool GetCrosshairState(optional bool bCheckForOuterCrosshairs)
                 return false;
         }
     }
-    else if (dynamicCrosshair == 2) //If not a weapon, use nothing as our crosshair
+    else if (dynamicCrosshair == 4) //If not a weapon, use nothing as our crosshair
         return false;
     //else if (inHand != None && !inHand.isA('SkilledTool') && dynamicCrosshair > 0) //Non-weapons have no crosshair
     //    return false;
@@ -10441,7 +10441,11 @@ function UpdateCrosshairStyle()
 
         if (inHand.isA('DeusExWeapon') || dynamicCrosshair == 0)
     		root.hud.cross.SetBackground(Texture'CrossSquare');
-        else if (inHand == None)
+        else if (dynamicCrosshair == 3)
+    		root.hud.cross.SetBackground(Texture'RSDCrap.UserInterface.CrossDot3');
+        else if (dynamicCrosshair == 2)
+    		root.hud.cross.SetBackground(Texture'RSDCrap.UserInterface.CrossDot2');
+        else
     		root.hud.cross.SetBackground(Texture'RSDCrap.UserInterface.CrossDot');
     }
 }
