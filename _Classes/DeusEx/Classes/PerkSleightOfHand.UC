@@ -3,11 +3,6 @@
 //=============================================================================
 class PerkSleightOfHand extends Perk;
 
-simulated function PreBeginPlay()
-{
-	Super.PreBeginPlay();
-}
-
 defaultproperties
 {
     PerkName="SLEIGHT OF HAND"

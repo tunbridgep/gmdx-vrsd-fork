@@ -3,11 +3,6 @@
 //=============================================================================
 class PerkSabotage extends Perk;
 
-simulated function PreBeginPlay()
-{
-	Super.PreBeginPlay();
-}
-
 defaultproperties
 {
     PerkName="SABOTAGE"

@@ -3,11 +3,6 @@
 //=============================================================================
 class PerkHERocket extends Perk;
 
-simulated function PreBeginPlay()
-{
-	Super.PreBeginPlay();
-}
-
 defaultproperties
 {
     PerkName="H.E ROCKET"

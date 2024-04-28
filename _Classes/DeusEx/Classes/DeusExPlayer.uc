@@ -30,7 +30,6 @@ var travel AugmentationManager AugmentationSystem;
 
 // Skill system vars // Trash: Now includes perk system
 var travel SkillManager SkillSystem;
-var travel PerkSystem PerkSystem;
 
 var() travel int SkillPointsTotal;
 var() travel int SkillPointsAvail;
@@ -547,6 +546,7 @@ var travel int augOrderNums[21];                                                
 var const augBinary augOrderList[21];                                           //RSD: List of all aug cans in the game in order (to be scrambled)
 var travel bool bAddictionSystem;
 var travel AddictionSystem AddictionManager;
+var travel PerkSystem PerkManager;
 var travel RandomTable Randomizer;
 
 var travel float autosaveRestrictTimer;                                         //Sarge: Current time left before we're allowed to autosave again.
@@ -1109,6 +1109,18 @@ function SetupAddictionManager()
 
 }
 
+function SetupPerkManager()
+{
+	// install the Addiction Manager if not found
+	if (PerkManager == None)
+    {
+        //ClientMessage("Make new Addiction System");
+	    PerkManager = new(Self) class'PerkSystem';
+    }
+    PerkManager.InitializePerks(Self);
+
+}
+
 function SetupRandomizer()
 {
 	// install the Addiction Manager if not found
@@ -1159,12 +1171,6 @@ function InitializeSubSystems()
 		SkillSystem.SetPlayer(Self);
 	}
 
-	if (PerkSystem == None)
-	{
-		PerkSystem = Spawn(class'PerkSystem', Self);
-		PerkSystem.InitializePerks(Self);
-	}
-
 	if ((Level.Netmode == NM_Standalone) || (!bBeltIsMPInventory))
 	{
 	  // Give the player a keyring
@@ -1174,6 +1180,7 @@ function InitializeSubSystems()
     //Setup player subcomponents
     SetupRandomizer();
     SetupAddictionManager();
+	SetupPerkManager();
 }
 
 //SARGE: Helper function to get the count of an item type
@@ -1291,6 +1298,7 @@ event TravelPostAccept()
     //Setup player subcomponents
     SetupRandomizer();
     SetupAddictionManager();
+	SetupPerkManager();
 
 	// reset the keyboard
 	ResetKeyboard();

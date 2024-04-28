@@ -3,11 +3,6 @@
 //=============================================================================
 class PerkFieldRepair extends Perk;
 
-simulated function PreBeginPlay()
-{
-	Super.PreBeginPlay();
-}
-
 defaultproperties
 {
     PerkName="FIELD REPAIR"

@@ -3,11 +3,6 @@
 //=============================================================================
 class PerkTacticalDistraction extends Perk;
 
-simulated function PreBeginPlay()
-{
-	Super.PreBeginPlay();
-}
-
 defaultproperties
 {
     PerkName="TACTICAL DISTRACTION"

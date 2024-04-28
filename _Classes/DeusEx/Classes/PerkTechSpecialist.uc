@@ -3,11 +3,6 @@
 //=============================================================================
 class PerkTechSpecialist extends Perk;
 
-simulated function PreBeginPlay()
-{
-	Super.PreBeginPlay();
-}
-
 defaultproperties
 {
     PerkName="TECH SPECIALIST"

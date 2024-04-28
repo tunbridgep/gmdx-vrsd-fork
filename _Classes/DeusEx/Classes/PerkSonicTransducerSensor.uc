@@ -3,11 +3,6 @@
 //=============================================================================
 class PerkSonicTransducerSensor extends Perk;
 
-simulated function PreBeginPlay()
-{
-	Super.PreBeginPlay();
-}
-
 defaultproperties
 {
     PerkName="SONIC-TRANSDUCER SENSOR"

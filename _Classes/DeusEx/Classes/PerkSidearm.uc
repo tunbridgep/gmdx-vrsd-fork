@@ -3,11 +3,6 @@
 //=============================================================================
 class PerkSidearm extends Perk;
 
-simulated function PreBeginPlay()
-{
-	Super.PreBeginPlay();
-}
-
 defaultproperties
 {
     PerkName="SIDEARM"

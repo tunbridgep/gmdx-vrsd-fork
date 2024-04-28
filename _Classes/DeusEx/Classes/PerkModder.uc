@@ -3,11 +3,6 @@
 //=============================================================================
 class PerkModder extends Perk;
 
-simulated function PreBeginPlay()
-{
-	Super.PreBeginPlay();
-}
-
 defaultproperties
 {
     PerkName="MODDER"

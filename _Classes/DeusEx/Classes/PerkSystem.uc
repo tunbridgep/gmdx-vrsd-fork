@@ -5,8 +5,7 @@
 // Trash: This is where perks are initialized and stored
 // PERK SYSTEM #2: Add the perk that you created to InitializePerks()
 
-class PerkSystem extends Actor
-	intrinsic;
+class PerkSystem extends object;
 
 var travel Perk PerkList[37];			// Trash: Hopefully with this system, you can make this 500 and it wouldn't matter much
 var travel int numPerks;				// Trash: UnrealScript doesn't support lists, so this is essentially the number of perks in the game
@@ -110,32 +109,44 @@ function int GetPerkIndex(Perk Perk)  // Trash: Get the index of the perk by jus
 }
 
 // ----------------------------------------------------------------------
-// GetPerksForSkill()
+// GetPerkName()
 // ----------------------------------------------------------------------
 
-function Perk GetPerksForSkill(Skill skill)  // Trash: Get every perk with the same skill and sort it
+function Perk GetPerkName(String pName)  // Trash: Get the index of the perk by just checking the class
 {
-	local Perk skillPerkList[10];
+	local int index;
 
-	local int skillPerkListIndex;
+	for (index = 0; index < ArrayCount(PerkList); index++)
+	{
+		if (PerkList[index].PerkName == pName)
+		{
+			return PerkList[index];
+		}
+	}
+}
+
+// ----------------------------------------------------------------------
+// GetPerksForSkill()
+// ----------------------------------------------------------------------
+/*
+function GetPerkButtonsForSkill(Skill skill)  // Trash: Get every perk with the same skill and create a button for it
+{
+	local PersonaInfoWindow button;
 	local int index;
 
 	for (index = 0; index < ArrayCount(PerkList); index++)
 	{
 		if (PerkList[index].ReturnPerkSkill() == Skill)
 		{
-			skillPerkList[skillPerkListIndex] = PerkList[index];
-			skillPerkListIndex++;
+			button.CreatePerkOverview(PerkList[index]);
 		}
 	}
-
-	return skillPerkList[index];
-}
+} */
 
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
 defaultproperties
 {
-     PerkList=0
+    
 }

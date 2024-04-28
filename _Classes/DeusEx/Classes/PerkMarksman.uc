@@ -3,11 +3,6 @@
 //=============================================================================
 class PerkMarksman extends Perk;
 
-simulated function PreBeginPlay()
-{
-	Super.PreBeginPlay();
-}
-
 defaultproperties
 {
     PerkName="MARKSMAN"

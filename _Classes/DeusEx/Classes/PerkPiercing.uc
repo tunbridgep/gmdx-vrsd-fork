@@ -3,11 +3,6 @@
 //=============================================================================
 class PerkPiercing extends Perk;
 
-simulated function PreBeginPlay()
-{
-	Super.PreBeginPlay();
-}
-
 defaultproperties
 {
     PerkName="PIERCING"

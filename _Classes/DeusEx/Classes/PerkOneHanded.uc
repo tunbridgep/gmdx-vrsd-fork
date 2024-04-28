@@ -3,11 +3,6 @@
 //=============================================================================
 class PerkOneHanded extends Perk;
 
-simulated function PreBeginPlay()
-{
-	Super.PreBeginPlay();
-}
-
 defaultproperties
 {
     PerkName="ONE-HANDED"

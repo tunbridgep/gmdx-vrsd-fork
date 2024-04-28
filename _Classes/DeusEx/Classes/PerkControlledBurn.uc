@@ -3,11 +3,6 @@
 //=============================================================================
 class PerkControlledBurn extends Perk;
 
-simulated function PreBeginPlay()
-{
-	Super.PreBeginPlay();
-}
-
 defaultproperties
 {
     PerkName="CONTROLLED BURN"

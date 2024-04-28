@@ -3,11 +3,6 @@
 //=============================================================================
 class PerkInventive extends Perk;
 
-simulated function PreBeginPlay()
-{
-	Super.PreBeginPlay();
-}
-
 defaultproperties
 {
     PerkName="Inventive"

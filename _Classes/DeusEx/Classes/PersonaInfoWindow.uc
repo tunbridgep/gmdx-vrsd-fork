@@ -11,28 +11,28 @@ var PersonaNormalLargeTextWindow winText;			// Last text
 
 var int textVerticalOffset;
 //Totalitarian: perks and stuff
-var PersonaActionButtonWindow buttonUpgrade;
-var PersonaActionButtonWindow buttonUpgrade2;
-var PersonaActionButtonWindow buttonUpgrade3;
+//var PersonaActionButtonWindow buttonUpgrade;
+//var PersonaActionButtonWindow buttonUpgrade2;
+//var PersonaActionButtonWindow buttonUpgrade3;
 var PersonaActionButtonWindow    buttonUpgradeSecond;                           //RSD
 var localized String UpgradeButtonLabel;
-var PersonaButtonBarWindow winActionButtons;
-var PersonaButtonBarWindow winActionButtons2;
-var PersonaButtonBarWindow winActionButtons3;
-var PersonaButtonBarWindow       winActionButtonsSecond;                        //RSD
+//var PersonaButtonBarWindow winActionButtons;
+//var PersonaButtonBarWindow winActionButtons2;
+//var PersonaButtonBarWindow winActionButtons3;
+//var PersonaButtonBarWindow       winActionButtonsSecond;                        //RSD
 
-var PersonaButtonBarWindow winActionButtons4;
-var PersonaButtonBarWindow winActionButtons5;
-var PersonaButtonBarWindow winActionButtons6;
-var Window                 winSkillIconP;
-var Window                 winSkillIconP2;
-var Window                 winSkillIconP3;
-var TextWindow WinSkillText;
-var TextWindow WinSkillText2;
-var TextWindow WinSkillText3;
-var TextWindow WinPerkTitle;
-var TextWindow WinPerkTitle2;
-var TextWindow WinPerkTitle3;
+//var PersonaButtonBarWindow winActionButtons4;
+//var PersonaButtonBarWindow winActionButtons5;
+//var PersonaButtonBarWindow winActionButtons6;
+//var Window                 winSkillIconP;
+//var Window                 winSkillIconP2;
+//var Window                 winSkillIconP3;
+//var TextWindow WinSkillText;
+//var TextWindow WinSkillText2;
+//var TextWindow WinSkillText3;
+//var TextWindow WinPerkTitle;
+//var TextWindow WinPerkTitle2;
+//var TextWindow WinPerkTitle3;
 
 var Inventory                    assignThis;                                    //RSD: Added
 
@@ -51,6 +51,14 @@ var bool bStylization3;
 var bool bMedBotCall;
 
 var Texture PassedSkillIcon;
+
+var PersonaButtonBarWindow winActionButtons1[10];
+var TextWindow WinPerkTitle[10];
+var TextWindow WinSkillText[10];
+var PersonaButtonBarWindow winActionButtons[10];
+var PersonaButtonBarWindow winActionButtonsSecondary;
+var PersonaActionButtonWindow buttonUpgrade[10];
+var Window winSkillIconP[10];
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -90,57 +98,55 @@ function CreateControls()
 // CreatePerkOverview()
 // ----------------------------------------------------------------------
 
-function CreatePerkOverview(Perk Perk)	//Trash: Creates the description, upgrade button, etc for each perk
+function CreatePerkOverview(Perk Perk, int index)	//Trash: Creates the description, upgrade button, etc for each perk
 {
-	local PersonaButtonBarWindow winActionButtons1;
-	local TextWindow WinPerkTitle;
-	local TextWindow WinSkillText;
-	local PersonaButtonBarWindow winActionButtons;
-	local PersonaActionButtonWindow buttonUpgrade;
+	local Perk PerkInManager;
+	local DeusExPlayer player;
 
+	PerkInManager = player.PerkManager.GetPerkName(Perk.PerkName);
 
-    winActionButtons1 = PersonaButtonBarWindow(winTile.NewChild(Class'PersonaButtonBarWindow'));
-    winActionButtons1.SetWidth(0);
-    winActionButtons1.SetHeight(26);
-    winActionButtons1.FillAllSpace(false);
-    WinPerkTitle = TextWindow(winActionButtons1.NewChild(class'TextWindow'));
-	WinPerkTitle.SetText(Perk.PerkName);
-	WinPerkTitle.SetFont(Font'FontMenuSmall');
-    WinPerkTitle.SetTextColor(colText);
-    WinPerkTitle.SetTextMargins(6,4);
-    winSkillIconP = winActionButtons1.NewChild(Class'Window');
-    winSkillIconP.SetPos(192, 0);
-	winSkillIconP.SetSize(24, 24);
-	winSkillIconP.SetBackgroundStyle(DSTY_Normal);
-	winSkillIconP.SetBackground(PassedSkillIcon); // CHECK THIS LATER, TRASH!
-	WinSkillText = TextWindow(winSkillIconP.NewChild(class'TextWindow'));
-	WinSkillText.SetFont(Font'FontConversationLargeBold');
+    winActionButtons1[index] = PersonaButtonBarWindow(winTile.NewChild(Class'PersonaButtonBarWindow'));
+    winActionButtons1[index].SetWidth(0);
+    winActionButtons1[index].SetHeight(26);
+    winActionButtons1[index].FillAllSpace(false);
+    WinPerkTitle[index] = TextWindow(winActionButtons1[index].NewChild(class'TextWindow'));
+	WinPerkTitle[index].SetText(Perk.PerkName);
+	WinPerkTitle[index].SetFont(Font'FontMenuSmall');
+    WinPerkTitle[index].SetTextColor(colText);
+    WinPerkTitle[index].SetTextMargins(6,4);
+    winSkillIconP[index] = winActionButtons1[index].NewChild(Class'Window');
+    winSkillIconP[index].SetPos(192, 0);
+	winSkillIconP[index].SetSize(24, 24);
+	winSkillIconP[index].SetBackgroundStyle(DSTY_Normal);
+	winSkillIconP[index].SetBackground(PassedSkillIcon); // CHECK THIS LATER, TRASH!
+	WinSkillText[index] = TextWindow(winSkillIconP[index].NewChild(class'TextWindow'));
+	WinSkillText[index].SetFont(Font'FontConversationLargeBold');
 	//if (pName == "MODDER")
-	//   WinSkillText.SetTextColorRGB(96,96,96);
+	//   WinSkillText[index].SetTextColorRGB(96,96,96);
 	//else
-    WinSkillText.SetTextColorRGB(192,192,192);
-	WinSkillText.SetText("0");
+    WinSkillText[index].SetTextColorRGB(192,192,192);
+	WinSkillText[index].SetText("0");
 
     SetText(Perk.PerkDescription);
     SetText(RequiredPoints $ Perk.PerkCost);
-	winActionButtons = PersonaButtonBarWindow(winTile.NewChild(Class'PersonaButtonBarWindow'));
-	winActionButtons.SetWidth(32); //149
-	winActionButtons.FillAllSpace(false);
-	buttonUpgrade = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow'));
-	buttonUpgrade.SetButtonText(UpgradeButtonLabel);
-	buttonUpgrade.PerkNamed = Perk.PerkName;
-	buttonUpgrade.PerkSkillCost = Perk.PerkCost;
-	buttonUpgrade.ButtonPerk = Perk;
+	winActionButtons[index] = PersonaButtonBarWindow(winTile.NewChild(Class'PersonaButtonBarWindow'));
+	winActionButtons[index].SetWidth(32); //149
+	winActionButtons[index].FillAllSpace(false);
+	buttonUpgrade[index] = PersonaActionButtonWindow(winActionButtons[index].NewChild(Class'PersonaActionButtonWindow'));
+	buttonUpgrade[index].SetButtonText(UpgradeButtonLabel);
+	buttonUpgrade[index].PerkNamed = Perk.PerkName;
+	buttonUpgrade[index].PerkSkillCost = Perk.PerkCost;
+	buttonUpgrade[index].ButtonPerk = Perk;
 	if (Player.SkillPointsAvail < Perk.PerkCost)
-	   buttonUpgrade.SetSensitivity(False);
+	   buttonUpgrade[index].SetSensitivity(False);
     AddLine();
 
-	if ((Player.SkillSystem.GetSkillLevel(Perk.PerkSkill) < (Perk.PerkLevelRequirement + 1) || Perk.bPerkObtained == True))
-		buttonUpgrade.SetSensitivity(False);
-	if (Perk.bPerkObtained == false && Perk.PerkCost != 0 && Player.SkillPointsAvail >= Perk.PerkCost)
-		buttonUpgrade.SetSensitivity(True);
+	if ((Player.SkillSystem.GetSkillLevel(PerkInManager.PerkSkill.class) < (PerkInManager.PerkLevelRequirement + 1) || PerkInManager.bPerkObtained == True))
+		buttonUpgrade[index].SetSensitivity(False);
+	if (PerkInManager.bPerkObtained == false && PerkInManager.PerkCost != 0 && Player.SkillPointsAvail >= PerkInManager.PerkCost)
+		buttonUpgrade[index].SetSensitivity(True);
 
-	//ButtonActivated(buttonUpgrade); // Trash: Do I even need this nere?
+	//ButtonActivated(buttonUpgrade[index]); // Trash: Do I even need this here?
 }
 
 //////////////////////////////////////////////////
@@ -148,16 +154,42 @@ function CreatePerkOverview(Perk Perk)	//Trash: Creates the description, upgrade
 //////////////////////////////////////////////////
 function CreatePerkButtons(Skill Skill)
 {
-    local int i, index;
+    local int i, index, indexPerkThingy;
+
+	local Perk perksTrained[5];
+	local Perk perksAdvanced[5];
+	local Perk perksMaster[5];
 
                           //Totalitarian: WARNING! THE WHOLE PERK SYSTEM PASSES PERK NAME! DO NOT CHANGE THE NAME OF PERKS
     AddLine();            //Totalitarian: INSTEAD CHANGE THE LocalizedPerkName VAR
-    SetText(PerkTitle);	  // Trash: Ignore the warning above and actually this file entirely, perk system has been overhauled so no more hardcoded perks
+    SetText(PerkTitle);	  // Trash: Ignore the warning above - actually this file entirely, perk system has been overhauled so no more hardcoded perks
     AddLine();
 
-	index = Player.PerkSystem.GetPerkIndex('PerkAdrenalineRush');
-
-	CreatePerkOverview(Player.PerkSystem.PerkList[Player.PerkSystem.GetPerkIndex('PerkAdrenalineRush')]);
+	for (index = 0; index < ArrayCount(Player.PerkManager.PerkList); index++)
+	{
+		if (Player.PerkManager.PerkList[index].PerkSkill  == Skill.class && Player.PerkManager.PerkList[index].PerkLevelRequirement == 0)
+		{
+			CreatePerkOverview(Player.PerkManager.PerkList[index], indexPerkThingy);
+			indexPerkThingy++;
+		}
+	}
+	for (index = 0; index < ArrayCount(Player.PerkManager.PerkList); index++)
+	{
+		if (Player.PerkManager.PerkList[index].PerkSkill == Skill.class && Player.PerkManager.PerkList[index].PerkLevelRequirement == 1)
+		{
+			CreatePerkOverview(Player.PerkManager.PerkList[index], indexPerkThingy);
+			indexPerkThingy++;
+		}
+	}
+	for (index = 0; index < ArrayCount(Player.PerkManager.PerkList); index++)
+	{
+		if (Player.PerkManager.PerkList[index].PerkSkill== Skill.class && Player.PerkManager.PerkList[index].PerkLevelRequirement == 2)
+		{
+			CreatePerkOverview(Player.PerkManager.PerkList[index], indexPerkThingy);
+			indexPerkThingy++;
+		}
+	}
+	
 
 	//string PerkInfo, string PerkInfo2, string PerkInfo3, int Costs, int Costs2, int Costs3,
 //string pName, string pName2, string pName3, string localizedpName, string localizedpName2, string localizedpName3, Texture PassedSkillIcon
@@ -464,12 +496,12 @@ function bool ButtonActivated( Window buttonPressed )
 {
 	local bool bHandled;
     local DeusExBaseWindow TopWin;
-    local int i, perkindex;
+	local DeusExPlayer player;
+    local int i, index;
+	local Perk PerkInManager;
 
 	if (Super.ButtonActivated(buttonPressed))
 		return True;
-
-	PerkIndex = Player.PerkSystem.GetPerkIndex(buttonUpgrade.buttonPerk);
 
 	bHandled   = True;
 
@@ -481,16 +513,46 @@ function bool ButtonActivated( Window buttonPressed )
 	}
 	else
 	{*/
+	for (index = 0; index < ArrayCount(buttonUpgrade); index++)
+	{
+		PerkInManager = player.PerkManager.GetPerkName(buttonUpgrade[index].ButtonPerk.PerkName);
+
+		if (buttonPressed == buttonUpgrade[index])
+		{
+			if (player.SkillPointsAvail >= (buttonUpgrade[index].ButtonPerk.PerkCost))
+			{
+				//Player.PlaySound(Sound'GMDXSFX.Generic.codelearned',SLOT_None,,,,0.8);
+				//Player.SkillPointsAvail-= buttonUpgrade.PerkSkillCost;
+				//Player.perksManager(buttonUpgrade.PerkNamed,1);
+				player.PerkManager.GetPerkName(buttonUpgrade[index].ButtonPerk.PerkName).PurchasePerk();
+				buttonUpgrade[index].SetSensitivity(False);
+				SetText(buttonUpgrade[index].LocalizedPerkNamed);
+				if ( TopWin!=None )
+					TopWin.RefreshWindow( 0.0 );
+				if (Player.SkillPointsAvail < buttonUpgrade[index].ButtonPerk.PerkCost)
+						buttonUpgrade[index].SetSensitivity(False);
+				//if (Player.SkillPointsAvail < buttonUpgrade2.PerkSkillCost2)
+				//     buttonUpgrade2.SetSensitivity(False);
+				//if (Player.SkillPointsAvail < buttonUpgrade3.PerkSkillCost3)
+				//     buttonUpgrade3.SetSensitivity(False);
+			}
+			else
+				buttonUpgrade[index].SetSensitivity(False);
+		}
+	}
+
+
 		switch(buttonPressed)
 		{
+			/* 
 			case buttonUpgrade:
-			    if (Player.SkillPointsAvail >= buttonUpgrade.PerkSkillCost)
+			    if (Player.SkillPointsAvail >= (buttonUpgrade.ButtonPerk.PerkCost))
 			    {
 			    //Player.PlaySound(Sound'GMDXSFX.Generic.codelearned',SLOT_None,,,,0.8);
 				//Player.SkillPointsAvail-= buttonUpgrade.PerkSkillCost;
-				buttonUpgrade.SetSensitivity(False);
 				//Player.perksManager(buttonUpgrade.PerkNamed,1);
-				Player.PerkSystem.PerkList[perkIndex].PurchasePerk();
+				buttonUpgrade.ButtonPerk.PurchasePerk();
+				buttonUpgrade.SetSensitivity(False);
 				SetText(buttonUpgrade.LocalizedPerkNamed);
 				if ( TopWin!=None )
                    TopWin.RefreshWindow( 0.0 );
@@ -514,6 +576,7 @@ function bool ButtonActivated( Window buttonPressed )
 				 }
 				}
 				break;
+			*/
 
 			/* 
             case buttonUpgrade2:
@@ -777,10 +840,10 @@ function AddSecondaryButton(Inventory wep)                                      
    if (wep != None)
    {
     SetText(msgAssign);
-    winActionButtons = PersonaButtonBarWindow(winTile.NewChild(Class'PersonaButtonBarWindow'));
-	winActionButtons.SetWidth(32); //149
-	winActionButtons.FillAllSpace(False);
-	buttonUpgradeSecond = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow'));
+    winActionButtonsSecondary = PersonaButtonBarWindow(winTile.NewChild(Class'PersonaButtonBarWindow'));
+	winActionButtonsSecondary.SetWidth(32); //149
+	winActionButtonsSecondary.FillAllSpace(False);
+	buttonUpgradeSecond = PersonaActionButtonWindow(winActionButtonsSecondary.NewChild(Class'PersonaActionButtonWindow'));
 	buttonUpgradeSecond.SetButtonText(msgConf);
 	assignThis = wep;
    AddLine();

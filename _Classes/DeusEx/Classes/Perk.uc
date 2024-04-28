@@ -5,8 +5,7 @@
 // Trash: This is where new perks are created 
 // PERK SYSTEM #1: Inherit from this and change PerkStats as needed
 
-class Perk extends Actor
-	intrinsic;
+class Perk extends object;
 
 // Trash: Perk Stats.
 
@@ -18,15 +17,6 @@ var int PerkLevelRequirement;   // Trash: What's the skill requirement to buy th
 var float PerkValue;            // Trash: Optional, what's the value that you want increased when this perk is obtained? For example, 1.25 could mean you heal 25% faster
 
 var travel bool bPerkObtained;  // Trash: Do you own this perk?
-
-// ----------------------------------------------------------------------
-// PreBeginPlay()
-// ----------------------------------------------------------------------
-
-simulated function PreBeginPlay()
-{
-	Super.PreBeginPlay();
-}
 
 // ----------------------------------------------------------------------
 // ReturnPerkSkill()

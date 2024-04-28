@@ -3,11 +3,6 @@
 //=============================================================================
 class PerkNimble extends Perk;
 
-simulated function PreBeginPlay()
-{
-	Super.PreBeginPlay();
-}
-
 defaultproperties
 {
     PerkName="NIMBLE"
