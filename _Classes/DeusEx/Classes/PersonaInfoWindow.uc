@@ -141,7 +141,7 @@ function CreatePerkOverview(Perk Perk, int index)	//Trash: Creates the descripti
 	   buttonUpgrade[index].SetSensitivity(False);
     AddLine();
 
-	if ((Player.SkillSystem.GetSkillLevel(PerkInManager.PerkSkill.class) < (PerkInManager.PerkLevelRequirement + 1) || PerkInManager.bPerkObtained == True))
+	if ((Player.SkillSystem.GetSkillLevel(PerkInManager.PerkSkill) < (PerkInManager.PerkLevelRequirement + 1) || PerkInManager.bPerkObtained == True))
 		buttonUpgrade[index].SetSensitivity(False);
 	if (PerkInManager.bPerkObtained == false && PerkInManager.PerkCost != 0 && Player.SkillPointsAvail >= PerkInManager.PerkCost)
 		buttonUpgrade[index].SetSensitivity(True);
