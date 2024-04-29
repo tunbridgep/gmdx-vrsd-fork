@@ -77,6 +77,11 @@ var bool bMoreLDDPNPCs;
 //LDDP
 var bool bFemaleEnabled;
 
+function Timer()
+{
+    GiveTip(false);
+}
+
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -173,8 +178,7 @@ function CreateControls()
     {
         CreateLDDPCheckboxes();
         //LDDP, 10/28/21: Modders: I suggest you do this, but for now we're using an Exec command for it.
-    	//AddTimer(0.1, false,, 'GiveTip');
-        GiveTip();
+    	AddTimer(0.1, false,, 'GiveTip');
     }
 }
 
@@ -754,7 +758,7 @@ function ProcessAction(String actionKey)
     else if (actionKey == "HELP")
     {
         //LDDP, 10/28/21: Optimized parsing. Also invoking new help window here.
-        root.MessageBox(CheckboxTipHeader, CheckboxTipText, 1, False, Self);
+        GiveTip(true);
     }
 }
 
@@ -877,9 +881,9 @@ function CreateLDDPCheckboxes()
 	}
 }
 
-function GiveTip()
+function GiveTip(bool always)
 {
-	if ((Human(Player) == None) || (!Human(Player).bGaveNewGameTips))
+	if ((Human(Player) != None && !Human(Player).bGaveNewGameTips) || always)
 	{
 		root.MessageBox(CheckboxTipHeader, CheckboxTipText, 1, False, Self);
 	}
@@ -1020,6 +1024,7 @@ defaultproperties
      actionButtons(1)=(Align=HALIGN_Right,Action=AB_Other,Text="|&Start Game",Key="START")
      actionButtons(2)=(Action=AB_Reset)
      actionButtons(3)=(Action=AB_Other,Text="Modifiers",Key="MODIFIERS")
+     //actionButtons(4)=(Action=AB_Other,Text="Help",Key="HELP") //Remove this because it appears without LDDP installed
      Title="Start New Game"
      ClientWidth=580
      ClientHeight=389
