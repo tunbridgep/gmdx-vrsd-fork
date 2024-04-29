@@ -563,6 +563,11 @@ const DRUG_CRACK = 2;
 
 var bool autosave;                                                              //Sarge: Autosave tells the Quicksave function to make an autosave instead
 
+//SARGE: Aug Wheel Settings
+//var globalconfig bool bAdvancedAugWheel;                                        //Sarge: Allow manually assigning augmentations to the aug wheel, rather than auto-assigning all of them.
+var globalconfig bool bQuickAugWheel;                                           //Sarge: Instantly enable/disable augs when closing the menu over the selected aug, otherwise require a mouse click.
+var globalconfig bool bAugWheelDisableAll;                                      //Sarge: Show the Disable All button on the Aug Wheel
+
 //////////END GMDX
 
 // native Functions
@@ -3477,6 +3482,16 @@ function RadialMenuUpdateAug(Augmentation aug)
 {
 	if ((rootWindow != None) && (aug != None))
 	   DeusExRootWindow(rootWindow).hud.radialAugMenu.UpdateItemStatus(aug);
+}
+
+// ----------------------------------------------------------------------
+// RadialMenuQuickCancel()
+// ----------------------------------------------------------------------
+
+function RadialMenuQuickCancel()
+{
+	if (rootWindow != None)
+	   DeusExRootWindow(rootWindow).hud.radialAugMenu.skipQuickToggle = true;
 }
 
 // ----------------------------------------------------------------------
@@ -7491,6 +7506,12 @@ exec function ParseRightClick()
 
     if (RestrictInput())
 		return;
+
+    if (bRadialAugMenuVisible)
+    {
+        RadialMenuQuickCancel();
+        return;
+    }
 
     //Descope if we have binocs/scope
     if (inHand != None)
@@ -17300,4 +17321,6 @@ defaultproperties
      BindName="JCDenton"
      FamiliarName="JC Denton"
      UnfamiliarName="JC Denton"
+     bQuickAugWheel=false
+     bAugWheelDisableAll=true
 }

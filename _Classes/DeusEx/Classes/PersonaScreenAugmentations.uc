@@ -1057,6 +1057,17 @@ event bool MouseButtonPressed(float pointX, float pointY, EInputKey button,
        ActivateAugmentation();
        bResult = True;
     }
+    else if (button == IK_MiddleMouse && SelectedAug != None && !SelectedAug.bAlwaysActive)
+    {
+        //Add to Wheel
+        SelectedAug.bAddedToWheel = !SelectedAug.bAddedToWheel;
+        if (SelectedAug.bAddedToWheel)
+            player.ClientMessage(SelectedAug.AugmentationName $ " added to Augmentation Wheel");
+        else
+            player.ClientMessage(SelectedAug.AugmentationName $ " removed from Augmentation Wheel");
+        bResult = True;
+        player.AugmentationSystem.RefreshAugDisplay();
+    }
     //else if (button == IK_LeftMouse && SelectedAug != None)
     //{
     //   ActivateAugmentation();
