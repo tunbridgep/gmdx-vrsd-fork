@@ -27,7 +27,7 @@ struct AugLoc_S
 
 var AugLoc_S augLocs[7];
 var PersonaAugmentationItemButton augItems[13];                                 //RSD: We have 13 slots now
-var Texture                       augHighlightTextures[6];
+var Texture                       augHighlightTextures[6], AugHighlightTexturesFemale[6]; //LDDP, 10/28/21: Load these during InitWindow, please.
 var Window                        augHighlightWindows[6];
 
 var int augSlotSpacingX;
@@ -77,6 +77,9 @@ var Localized string activeLabel;
 var Localized string passiveLabel;
 var Localized string automaticLabel;
 
+//LDDP, 10/28/21: Store this assessment for later.
+var bool bFemale;
+
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -85,7 +88,29 @@ var Localized string automaticLabel;
 
 event InitWindow()
 {
+    local int i;
+	local Texture TTex; 
+
 	Super.InitWindow();
+
+	//LDDP
+	for (i=0; i<ArrayCount(AugHighlightTextures); i++)
+	{
+		AugHighlightTexturesFemale[i] = AugHighlightTextures[i];
+	}
+	
+	TTex = Texture(DynamicLoadObject("FemJC.AugmentationsLocationCerebralFem", class'Texture', false));
+	if (TTex != None) AugHighlightTexturesFemale[0] = TTex;
+	TTex = Texture(DynamicLoadObject("FemJC.AugmentationsLocationEyesFem", class'Texture', false));
+	if (TTex != None) AugHighlightTexturesFemale[1] = TTex;
+	TTex = Texture(DynamicLoadObject("FemJC.AugmentationsLocationTorsoFem", class'Texture', false));
+	if (TTex != None) AugHighlightTexturesFemale[2] = TTex;
+	TTex = Texture(DynamicLoadObject("FemJC.AugmentationsLocationArmsFem", class'Texture', false));
+	if (TTex != None) AugHighlightTexturesFemale[3] = TTex;
+	TTex = Texture(DynamicLoadObject("FemJC.AugmentationsLocationLegsFem", class'Texture', false));
+	if (TTex != None) AugHighlightTexturesFemale[4] = TTex;
+	TTex = Texture(DynamicLoadObject("FemJC.AugmentationsLocationSubdermalFem", class'Texture', false));
+	if (TTex != None) AugHighlightTexturesFemale[5] = TTex;
 
 	EnableButtons();
 
@@ -101,7 +126,16 @@ event InitWindow()
 
 function CreateControls()
 {
+	local DeusExPlayer DXP;
+	
 	Super.CreateControls();
+	
+    //LDDP
+	DXP = DeusExPlayer(GetPlayerPawn());
+	if ((DXP != None) && (DXP.FlagBase != None) && (DXP.FlagBase.GetBool('LDDPJCIsFemale')))
+	{
+		bFemale = true;
+	}
 
 	CreateTitleWindow(9, 5, AugmentationsTitleText);
 	CreateInfoWindow();
@@ -681,12 +715,24 @@ function RefreshWindow(float DeltaTime)
 
 function CreateAugmentationHighlights()
 {
-	augHighlightWindows[0] = CreateHighlight(augHighlightTextures[0], 142,  45, 16, 19);
-	augHighlightWindows[1] = CreateHighlight(augHighlightTextures[1], 161,  63, 19, 12);
-	augHighlightWindows[2] = CreateHighlight(augHighlightTextures[2], 157, 108, 34, 48);
-	augHighlightWindows[3] = CreateHighlight(augHighlightTextures[3], 105, 110, 24, 43);
-	augHighlightWindows[4] = CreateHighlight(augHighlightTextures[4], 165, 222, 32, 94);
-	augHighlightWindows[5] = CreateHighlight(augHighlightTextures[5],  84, 160, 14, 36);
+	if (bFemale)
+	{
+		AugHighlightWindows[0] = CreateHighlight(augHighlightTexturesFemale[0], 142,  45, 16, 19);
+		AugHighlightWindows[1] = CreateHighlight(augHighlightTexturesFemale[1], 161,  63, 19, 12);
+		AugHighlightWindows[2] = CreateHighlight(augHighlightTexturesFemale[2], 157, 108, 34, 48);
+		AugHighlightWindows[3] = CreateHighlight(augHighlightTexturesFemale[3], 105, 110, 24, 43);
+		AugHighlightWindows[4] = CreateHighlight(augHighlightTexturesFemale[4], 165, 222, 32, 94);
+		AugHighlightWindows[5] = CreateHighlight(augHighlightTexturesFemale[5],  84, 160, 14, 36);
+	}
+	else
+	{
+		AugHighlightWindows[0] = CreateHighlight(augHighlightTextures[0], 142,  45, 16, 19);
+		AugHighlightWindows[1] = CreateHighlight(augHighlightTextures[1], 161,  63, 19, 12);
+		AugHighlightWindows[2] = CreateHighlight(augHighlightTextures[2], 157, 108, 34, 48);
+		AugHighlightWindows[3] = CreateHighlight(augHighlightTextures[3], 105, 110, 24, 43);
+		AugHighlightWindows[4] = CreateHighlight(augHighlightTextures[4], 165, 222, 32, 94);
+		AugHighlightWindows[5] = CreateHighlight(augHighlightTextures[5],  84, 160, 14, 36);
+	}
 }
 
 // ----------------------------------------------------------------------

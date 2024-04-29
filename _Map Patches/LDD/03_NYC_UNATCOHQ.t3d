@@ -1,0 +1,21 @@
+Begin Map
+Begin Actor Class=LDDPChetS Name=LDDPChet0
+    requiresLDDP=true;
+    //deleteIfMale=true;
+    LDDPExtra=true;
+    Orders=Sitting
+    bInvincible=True
+    FootRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=1379,ZoneNumber=3)
+    HeadRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=1379,ZoneNumber=3)
+    bDynamicLight=True
+    LastRenderTime=34.264645
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=LDDPChet
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=1379,ZoneNumber=3)
+    Location=(X=112.271927,Y=1713.552490,Z=287.600983)
+    OldLocation=(X=112.271927,Y=1713.552490,Z=287.600983)
+    BindName="LDDPChet"
+    BarkBindName="LDDPChet"
+    Name=LDDPChet0
+End Actor
+End Map

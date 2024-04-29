@@ -22,6 +22,16 @@ function GetAugSpeed()
      }
 	}
 
+//Shorthand for accessing hands tex
+function texture GetWeaponHandTex()
+{
+	local deusexplayer p;
+	p = deusexplayer(owner);
+	if(p != none)
+        return p.GetWeaponHandTex();
+	return None;
+}
+
 // ----------------------------------------------------------------------
 // PlayUseAnim()
 // ----------------------------------------------------------------------

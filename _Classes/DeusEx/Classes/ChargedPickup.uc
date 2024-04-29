@@ -14,6 +14,7 @@ var() sound LoopSound;
 var Texture ChargedIcon;
 var travel bool bIsActive;
 var localized String ChargeRemainingLabel;
+var localized String ChargeRemainingLabelSmall;
 var localized String DurabilityRemainingLabel;
 var localized String CanOnlyBeOne;
 var localized String PickupInfo1;
@@ -148,6 +149,7 @@ simulated function bool IsActive()
 
 function ChargedPickupUpdate(DeusExPlayer Player)
 {
+    UpdateBeltText(); //Sarge: Now we need to update the belt position because it shows charge amounts
 }
 
 // ----------------------------------------------------------------------
@@ -222,8 +224,8 @@ function UsedUp()
 	{
 		GotoState('DeActivated');                                               //RSD: Deactivate when the top one in the stack runs out (default)
 		//GotoState('Activated');                                                 //RSD: Automatically activate the next one in the stack
-		UpdateBeltText();
 		Charge=default.Charge;  //give back charge and make activatable
+		UpdateBeltText();
 		//if (Player != None)
 		//    Player.topCharge[x]=default.Charge;
 	}
@@ -497,6 +499,7 @@ defaultproperties
      ActivateSound=Sound'DeusExSounds.Pickup.PickupActivate'
      DeActivateSound=Sound'DeusExSounds.Pickup.PickupDeactivate'
      ChargeRemainingLabel="Charge remaining:"
+     ChargeRemainingLabelSmall="%d%%"
      DurabilityRemainingLabel="Durability:"
      CanOnlyBeOne="You cannot equip more than one torso armor piece"
      PickupInfo1="Environmental Protection: 60%"
