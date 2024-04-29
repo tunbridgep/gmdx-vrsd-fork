@@ -42,12 +42,14 @@ var Color colWeaponModFalse;
 var Color colDropGood;
 var Color colDropBad;
 var Color colNone;
+var Color colCharge;
 
 // Texture and Color for background
 var Color		fillColor;
 var Texture		fillTexture;
 
 var localized String CountLabel;
+var localized String ChargeLabel;
 var localized String RoundLabel;
 var localized String RoundsLabel;
 
@@ -60,7 +62,7 @@ var Color colIconDimmed; //RSD
 event DrawWindow(GC gc)
 {
 	local Inventory anItem;
-	local String str;
+	local String str,str2;
 	local DeusExWeapon weapon;
 	local float strWidth, strHeight;
 
@@ -136,33 +138,28 @@ event DrawWindow(GC gc)
 			{
 				str = weapon.AmmoType.beltDescription;
 			}
-
-			if (str != "")
-			{
-				gc.SetFont(Font'FontMenuSmall_DS');
-				gc.SetAlignments(HALIGN_Center, VALIGN_Center);
-				gc.SetTextColor(colHeaderText);
-				gc.GetTextExtent(0, strWidth, strHeight, str);
-				gc.DrawText(0, height - strHeight, width, strHeight, str);
-			}
 		}
 
 		// Check to see if we need to print "x copies"
 		if (anItem.IsA('DeusExPickup') && (!anItem.IsA('NanoKeyRing')))
 		{
-			if (DeusExPickup(anItem).NumCopies > 1)
-			{
+            if (DeusExPickup(anItem).NumCopies > 1)
 				str = Sprintf(CountLabel, DeusExPickup(anItem).NumCopies);
 
-				gc.SetFont(Font'FontMenuSmall_DS');
-				gc.SetAlignments(HALIGN_Center, VALIGN_Center);
-				gc.SetTextColor(colHeaderText);
-				gc.GetTextExtent(0, strWidth, strHeight, str);
-				gc.DrawText(0, height - strHeight, width, strHeight, str);
-			}
+            //SARGE: Add charge for ChargedItems
+            if (anItem.isA('ChargedPickup') && ChargedPickup(anItem).GetCurrentCharge() > 0)
+                str2 = Sprintf("%d%%", int(ChargedPickup(anItem).GetCurrentCharge()));
 		}
 		}
 	}
+
+    gc.SetFont(Font'FontMenuSmall_DS');
+    gc.SetAlignments(HALIGN_Center, VALIGN_Center);
+    gc.SetTextColor(colHeaderText);
+    gc.GetTextExtent(0, strWidth, strHeight, "      ");
+    gc.DrawText(0, height - strHeight, width, strHeight, str);
+    //gc.SetTextColor(colCharge);
+    gc.DrawText(0, height/2 - strHeight/2, width, strHeight, str2);
 
 	// Draw selection border width/height of button
 	if (bSelected)
@@ -568,8 +565,10 @@ defaultproperties
      colDropBad=(R=128,G=32,B=32)
      fillTexture=Texture'Extension.Solid'
      CountLabel="Count: %d"
+     ChargeLabel="Charge: %d%%"
      RoundLabel="%d Rd"
      RoundsLabel="%d Rds"
      colDropSwap=(R=16,G=32,B=128)
      colIconDimmed=(R=64,G=64,B=64)
+     colCharge=(R=255,G=243,B=109)
 }

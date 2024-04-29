@@ -87,19 +87,28 @@ function bool DoLeftFrob(DeusExPlayer frobber)
     //right clicking on a mover
     leftFrobTimer = leftFrobTimerMax;
 
+    //If not highlightable, not locked, and having a threshold, just select melee
+    //This is a fallback for glass panes that aren't actually defined as BreakableGlass
+    if (!bLocked && minDamageThreshold > 0 && !bHighlight)
+    {
+        frobber.SelectMeleePriority(minDamageThreshold);
+        return false;
+    }
+
     //When not on hardcore, always select the keyring if we have the key
     if (!frobber.bHardcoreMode && CanToggleLock(frobber,frobber.KeyRing))
     {
         frobber.PutInHand(frobber.KeyRing);
         return false;
     }
-    else if (bLocked && frobber.bHardcoreMode) //Hardcore Mode: Always select picks. If we don't have one, always select melee
+    else if (bLocked && frobber.bHardcoreMode) //Hardcore Mode: Always select picks. If we don't have one, always select keyring
     {
         if (bPickable && frobber.SelectInventoryItem('Lockpick'))
             return false;
-        else if (bBreakable && frobber.SelectMeleePriority(minDamageThreshold));
-            return false;
-        frobber.PutInHand(frobber.KeyRing);
+        //else if (bBreakable && frobber.SelectMeleePriority(minDamageThreshold))
+        //    return false;
+        else
+            frobber.PutInHand(frobber.KeyRing);
         return false;
     }
     else if (bLocked) //Non-Hardcore. See if we have a melee weapon to bust the mover. Otherwise, select picks
@@ -121,30 +130,30 @@ function bool DoLeftFrob(DeusExPlayer frobber)
 }
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {
-    if (leftFrobTimer == 0.0)
+    if (leftFrobTimer ~= 0.0 || !bLocked)
         return true;
 
     //Swap between lockpicks and nanokeyring
     if (bLocked && frobber.inHand != None)
     {
-        if (bPickable && frobber.inHand.isA('NanoKeyRing') && frobber.SelectMeleePriority(minDamageThreshold))
+        if (frobber.inHand.isA('NanoKeyRing'))
         {
-            leftFrobTimer = leftFrobTimerMax;
-            return false;
+            if (!frobber.SelectMeleePriority(minDamageThreshold))
+                if (!frobber.SelectInventoryItem('Lockpick'))
+                    return true;
         }
         else if (frobber.inHand.isA('Lockpick'))
         {
             frobber.PutInHand(frobber.KeyRing);
-            leftFrobTimer = leftFrobTimerMax;
-            return false;
         }
-        else if (frobber.inHand.isA('DeusExWeapon') && DeusExWeapon(frobber.inHand).bHandToHand && frobber.SelectInventoryItem('Lockpick'))
+        else if (frobber.inHand.isA('DeusExWeapon') && DeusExWeapon(frobber.inHand).bHandToHand)
         {
-            leftFrobTimer = leftFrobTimerMax;
-            return false;
+            if (!frobber.SelectInventoryItem('Lockpick'))
+                frobber.PutInHand(frobber.KeyRing);
         }
     }
-    return true;
+    leftFrobTimer = leftFrobTimerMax;
+    return false;
 }
 
 
@@ -805,6 +814,11 @@ function Frob(Actor Frobber, Inventory frobWith)
 				}
 				else if (bLocked)
 				{
+                    //Give us 3 seconds to use the right-click options after failing to use the key
+                    //This is so we don't accudentally change weapons in the middle of gameplay, by
+                    //right clicking on a mover
+                    leftFrobTimer = leftFrobTimerMax;
+
 					bOpenIt = False;
 					msg = msgNoNanoKey;
 				}

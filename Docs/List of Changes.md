@@ -8,7 +8,14 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX vRSD bug allowing using Tech Goggles in the secondary slot for half a second or so when out of charge
     - Fixed the Crosshair Visibility settings in the options getting constantly overridden by lasers etc. The outer crosshairs showing your accuracy are also now linked to the Crosshair visibility setting.
     - Fixed GMDX Bug where EMP'd turrets and cameras will re-enable themselves after the EMP effect runs out, even if they were disabled during the EMP effect.
+    - Fixed GMDX/Vanilla issue where you could retain your standing accuracy bonus after moving if you stood still for a long time. Now accuracy decreases immediately.
 - Quality of Life Improvements:
+    - Augmentation Wheel improvements
+        - While in the augmentation screen, use middle-click on an active augmentation to add or remove it from the augmentation wheel.
+        - By default all augmentations will appear on the wheel.
+        - The "Disable All" button can optionally be removed using the options menu.
+        - The augmentation wheel can be changed to work in Quick mode. In Quick mode, releasing the augmentation wheel key will select the currently highlighted augmentation. Use right click to cancel.
+    - In the Inventory screen, charged items will now show their charge level on their icon. Additionally, belt slots containing charged items will show their charge level.
     - Lockpicks and Multitools will no longer be consumed if you look away from an object you're picking/bypassing. Instead, the action will be cancelled and any progress cancelled.
     - Added an optional "Dynamic Crosshair" mode, which shows a small dot-crosshair when no weapons is equipped, and some items have no crosshairs at all.
         - Also fixed many instances of crosshair weirdness.
@@ -74,6 +81,7 @@ Sarge's Changes since Beta 2.2:
     - The rifle's grenade launcher doesn't require reloading to turn on, but you need to reload after each shot. It now works like a different weapon.
     - Restricted Saving is now a Playthrough Modifier and is no longer restricted to Hardcore Mode. It's still enforced in Hardcore Mode.
     - Added No Keypad Cheese Playthrough Modifier (called "Unknown Codes") which prevents using keypads or computer logins without having found them beforehand. Some codes which are hinted but never given are excepted.
+    - The Laser Sight weapon modification now confers a 15% bonus to moving inaccuracy reduction time.
     - Added Door Locking mechanics
         - You can now lock any door you have the nanokey for, plus any doors you have picked previously if you have the Locksport perk (this is retroactive).
         - Enemies cannot open doors which you have locked (Enemies can still open doors that are initially locked in the map unless you lock them)
@@ -83,3 +91,8 @@ Sarge's Changes since Beta 2.2:
         - Alcohol no longer heals for 5 points. Instead, it temporarily gives you 5 torso HP (along with it's usual 5 extra torso Max-HP) while in effect, which is removed afterwards. This health removal cannot kill the player.
         - Alcohol no longer adds to fullness when the addiction system is enabled
         - Zyme no longer removes 10HP if the addiction system is enabled.
+- Miscellaneous Changes:
+    - Implemented optional Lay-D Denton support. If installed, Lay-D Denton support will be automatically activated.
+        - The Lay-D Denton colour scheme is included and can be selected from the Colors menu.
+        - When Lay-D Denton is installed, a new Gameplay Modifier is available, which will add the extra NPC's added by the LDDP mod.
+        - Without the Gameplay Modifier, only Chet, Russ and a few other NPC's are added where necessary to maintain immersion and gameplay balance for female characters. These characters do not appear for male JC

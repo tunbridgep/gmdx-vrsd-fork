@@ -46,6 +46,12 @@ function ConSpeech GetBarkSpeech()
 				event = ProcessEventJump(ConEventJump(event));
 				break;
 
+			// Transcended - Flag checks
+			//LDDP, 10/25/21: Adding this note so you can find it by Ctrl+F. Howdy.
+			case ET_CheckFlag:
+				event = ProcessEventCheckFlag(ConEventCheckFlag(event));
+				break;
+
 			case ET_Random:
 				event = ProcessEventRandomLabel(ConEventRandomLabel(event));
 				break;
@@ -103,6 +109,41 @@ function ConEvent ProcessEventRandomLabel(ConEventRandomLabel event)
 	nextLabel = event.GetRandomLabel();
 
 	return con.GetEventFromLabel(nextLabel);
+}
+
+// ----------------------------------------------------------------------
+// ProcessEventCheckFlag()
+// ----------------------------------------------------------------------
+
+function ConEvent ProcessEventCheckFlag(ConEventCheckFlag event)
+{
+	local ConFlagRef currentRef;
+	local ConEventJump eventJump;
+	local DeusExPlayer player;
+	local ConEvent ret;
+	
+	player = DeusExPlayer(GetPlayerPawn());
+	
+	//If we can't get a hold of the player, just continue to the next event.
+	if (player == None)
+		return event.NextEvent;
+	
+	// Loop through our list of FlagRef's, checking the value of each.
+	// If we hit a bad match, then we'll stop right away since there's
+	// no point of continuing.
+	for (currentRef = event.flagRef; currentRef != None; currentRef = currentRef.nextFlagRef)
+	{
+		if (player.flagBase.GetBool(currentRef.flagName) != currentRef.value)
+			return event.nextEvent;
+	}
+	
+	eventJump = new class'ConEventJump';
+	eventJump.jumpLabel = event.setLabel;
+	ret = ProcessEventJump(eventJump);
+	CriticalDelete(eventJump); //Get rid of this now so we don't have to wait for gc.
+	
+	//If we've made it so far, it means all flags were checked successfully. Jump to the label.	
+	return ret;
 }
 
 defaultproperties
