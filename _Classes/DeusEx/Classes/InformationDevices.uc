@@ -45,7 +45,6 @@ function DestroyWindow()
 	if (aReader != None)
 	{
         aReader.UpdateCrosshair();
-		DeusExRootWindow(aReader.rootWindow).hud.frobDisplay.Show();
 	}
 
 	if (infoWindow != None)
@@ -93,19 +92,14 @@ function Frob(Actor Frobber, Inventory frobWith)
 			CreateInfoWindow();
 
 			// hide the crosshairs if there's text to read, otherwise display a message
-			if (infoWindow != None)
-			{
-                player.UpdateCrosshair();
-				DeusExRootWindow(player.rootWindow).hud.frobDisplay.Hide();
-			}
-			else
+			if (infoWindow == None)
 				player.ClientMessage(msgNoText);
 		}
 		else
 		{
 			DestroyWindow();
-            player.UpdateCrosshair();
 		}
+        player.UpdateCrosshair();
 	}
 }
 
