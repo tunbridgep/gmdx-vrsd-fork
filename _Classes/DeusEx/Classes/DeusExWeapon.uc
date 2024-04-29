@@ -504,24 +504,20 @@ function DropFrom(vector StartLocation)
 	checkweaponskins();                                                         //RSD: Need to do this after so we know mesh for Clyzm model check
 }
 
+//Shorthand for accessing hands tex
 function texture GetWeaponHandTex()
 {
 	local deusexplayer p;
-	local texture tex;
-
+    
     if (bIsRadar)//class'DeusExPlayer'.default.bRadarTran==True)                //RSD: Overhauled cloak/radar routines
         return Texture'Effects.Electricity.Xplsn_EMPG';
     else if (bIsCloaked)
         return FireTexture'GameEffects.InvisibleTex';
 
-	tex = texture'weaponhandstex';
-
 	p = deusexplayer(owner);
 	if(p != none)
-	{
-        tex = GetLDDPHandsTex(p);
-	}
-	return tex;
+        return p.GetWeaponHandTex();
+	return None;
 }
 
 //SARGE: Had to add this, so that the LDDP Hand Selection works with the HDTP model selection stuff

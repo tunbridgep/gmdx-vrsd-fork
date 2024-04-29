@@ -10219,6 +10219,50 @@ exec function ShowAcceleration(bool bShow)
 			root.actorDisplay.ShowAcceleration(bShow);
 }
 
+//Sarge: Moved this from DeusExWeapon because it's also used by SkilledTools
+function texture GetWeaponHandTex()
+{
+	local texture tex;
+
+	if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
+    {
+        switch(PlayerSkin)
+        {
+            case 0:
+                tex = Texture(DynamicLoadObject("FemJC.WeaponHandsTex0Fem", class'Texture', false));
+                break;
+            case 1:
+                tex = Texture(DynamicLoadObject("FemJC.WeaponHandsTex4Fem", class'Texture', false));
+                break;
+            case 2:
+                tex = Texture(DynamicLoadObject("FemJC.WeaponHandsTex5Fem", class'Texture', false));
+                break;
+            case 3:
+                tex = Texture(DynamicLoadObject("FemJC.WeaponHandsTex6Fem", class'Texture', false));
+                break;
+            case 4:
+                tex = Texture(DynamicLoadObject("FemJC.WeaponHandsTex7Fem", class'Texture', false));
+                break;
+        }
+    }
+    else
+    {
+        //For male, return the basic ones
+		switch(PlayerSkin)
+		{
+			//default, black, latino, ginger, albino, respectively
+			case 0: tex = texture'weaponhandstex'; break;
+			case 1: tex = texture'HDTPItems.skins.weaponhandstexblack'; break;
+			case 2: tex = texture'HDTPItems.skins.weaponhandstexlatino'; break;
+			case 3: tex = texture'HDTPItems.skins.weaponhandstexginger'; break;
+			case 4: tex = texture'HDTPItems.skins.weaponhandstexalbino'; break;
+		}
+    }
+
+    if (tex == None)
+        tex = texture'weaponhandstex'; //White hands texture by default
+	return tex;
+}
 
 // ----------------------------------------------------------------------
 // ShowHud()
