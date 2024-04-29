@@ -16993,7 +16993,7 @@ function RegenStaminaTick(float deltaTime)                                      
 
 defaultproperties
 {
-     autosaveRestrictTimerDefault=900.0
+     autosaveRestrictTimerDefault=600.0
      TruePlayerName="JC Denton"
      CombatDifficulty=1.000000
      SkillPointsTotal=5000
