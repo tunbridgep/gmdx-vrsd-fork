@@ -32,7 +32,7 @@ defaultproperties
 {
      LowAmmoWaterMark=5
      GoverningSkill=Class'DeusEx.SkillWeaponLowTech'
-     NoiseLevel=0.050000
+     NoiseLevel=0.010000
      EnemyEffective=ENMEFF_Organic
      EnviroEffective=ENVEFF_AirVacuum
      Concealability=CONC_Visual

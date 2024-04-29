@@ -914,6 +914,10 @@ local DeusExPlayer player;                                                      
 					if (bPlusOneDamage)                                         //RSD: remove random damage variation
 						Damage=Damage-1.0;
 					Wall.TakeDamage(Damage, Pawn(Owner), Wall.Location, MomentumTransfer*Normal(Velocity), damageType);
+                    
+                    //Sarge: Don't allow knives to be retrieved if they damaged a locked object
+                    if (IsA('Shuriken') && DeusExMover(Wall).bLocked && Damage >= DeusExMover(Wall).minDamagethreshold)
+                        Destroy();
 				}
 			}
 		}
