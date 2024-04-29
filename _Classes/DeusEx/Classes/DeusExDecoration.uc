@@ -93,6 +93,11 @@ function bool DoLeftFrob(DeusExPlayer frobber)
         frobber.GrabDecoration();
         return false;
     }
+    else if (minDamageThreshold > 0)
+    {
+        frobber.SelectMeleePriority(minDamageThreshold);
+        return false;
+    }
     return true;
 }
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
