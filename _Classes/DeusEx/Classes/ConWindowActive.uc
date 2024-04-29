@@ -9,11 +9,8 @@ var Window upperConWindow;						// Upper letterbox region
 var int numChoices;								// Number of choice buttons
 var ConChoiceWindow conChoices[10];				// Maximum of ten buttons
 var HUDReceivedDisplay winReceived;
+var HUDConCreditsDisplay winCredits;
 var bool bRestrictInput;
-
-var Color colConTextFocus;
-var Color colConTextChoice;
-var Color colConTextSkill;
 
 var float currentWindowPos;
 var float lowerFinalHeightPercent;
@@ -51,6 +48,12 @@ event InitWindow()
 	moveMode = MM_None;
 
 	CreateReceivedWindow();
+	CreateCreditsWindow();
+
+    //Set the players FOV to 75 so that cutscenes appear mostly normal
+    //TODO: Fix this to work properly on other aspect ratios
+    player.desiredFOV = 75;
+	player.SetFOVAngle(75);
 }
 
 // ----------------------------------------------------------------------
@@ -61,6 +64,10 @@ event DestroyWindow()
 {
 	// Turn the cursor back on
 	root.ShowCursor(True);
+
+    //reset players fov
+    player.desiredFOV = player.default.desiredFOV;
+	player.SetFOVAngle(player.default.desiredFOV);
 }
 
 // ----------------------------------------------------------------------
@@ -79,8 +86,14 @@ function RestrictInput(bool bNewRestrictInput)
 event Tick(float deltaSeconds)
 {
 	local float increment;
+    local DeusExLevelInfo dxInfo;
+
+    dxInfo=player.GetLevelInfo();
 
 	Super.Tick(deltaSeconds);
+
+    //Update credits counter
+    winCredits.SetCredits(player.Credits);
 
 	// Compute how much we should move the windows this frame
 	increment = deltaSeconds/movePeriod;
@@ -90,6 +103,12 @@ event Tick(float deltaSeconds)
 	switch( moveMode )
 	{
 		case MM_Enter:
+	        winCredits.SetTextFont(conPlay.GetCurrentSpeechFont());
+            if (player.bCreditsInDialog && dxInfo.MapName != "Intro")
+            {
+				AskParentForReconfigure();
+                winCredits.Show();
+            }
 			currentWindowPos += increment;
 			if (currentWindowPos >= 1.0)
 			{
@@ -102,6 +121,7 @@ event Tick(float deltaSeconds)
 		case MM_Exit:
 			// Don't increment while the Items Received window
 			// is still active
+            
 
 			if (!winReceived.IsVisible())
 			{
@@ -110,6 +130,7 @@ event Tick(float deltaSeconds)
 				{
 					currentWindowPos = 0.0;
 					moveMode = MM_None;
+                    winCredits.Hide();
 					Hide();
 				}
 				AskParentForReconfigure();
@@ -197,15 +218,30 @@ function CalculateWindowSizes()
 	local float cinHeight;
 	local float ratio;
 	local RootWindow root;
+	local float minLowerHeight; //MKE
 
 	root = GetRootWindow();
 
 	// Determine the height of the convo windows, based on available space
 	if (bForcePlay)
 	{
+
 		// calculate the correct 16:9 ratio
 		ratio = 0.5625 * (root.width / root.height);
-		cinHeight = root.height * ratio;
+		
+		// if resolution was less than 16:9
+		// Adjusts fov to match 16:9 proportions as well. Must figure out how to make this optional
+		// disabled this feature for now
+		if (ratio < 1) {
+			cinHeight = root.height * ratio;
+		}
+		//if resolution was 16:9 or greater
+		else
+        {
+			//minLowerHeight = int(height * lowerFinalHeightPercent); //Taken from 'normal' convo. lowerFinalHeightPercent=0.21
+			minLowerHeight = int(height * 0.15);
+			cinHeight = min(root.height - minLowerHeight, root.width * 0.5625);
+		}
 
 		upperCurrentPos = 0;
 		upperHeight     = int(0.5 * (root.height - cinHeight));
@@ -245,6 +281,12 @@ function CalculateWindowSizes()
 		winReceived.QueryPreferredSize(recWidth, recHeight);
 		winReceived.ConfigureChild(10, lowerCurrentPos - recHeight - 5, recWidth, recHeight);
 	}
+	
+    // Configure Credits Window
+	if (winCredits != None)
+	{
+		winCredits.ConfigureChild(10, upperCurrentPos + upperHeight - 25, recWidth * 10, recHeight * 2);
+	}
 
 	ConfigureCameraWindow(lowerCurrentPos);
 }
@@ -254,19 +296,30 @@ function CalculateWindowSizes()
 //
 // Displays a choice, but sets up the button a little differently than
 // when displaying normal conversation text
+// SARGE: Added choiceNum parameter, and show numbers before each choice
+// SARGE: Now this uses your HUD colorscheme, rather than always being blue
 // ----------------------------------------------------------------------
 
-function DisplayChoice( ConChoice choice )
+function DisplayChoice( ConChoice choice, int choiceNum )
 {
 	local ConChoiceWindow newButton;
+    local Color backgroundColor, textColor, highlightColor;
 
-	newButton = CreateConButton( HALIGN_Left, colConTextChoice, colConTextFocus );
-	newButton.SetText( "~ " $ choice.choiceText );
+    backgroundColor = player.ThemeManager.GetDialogBackgroundColor();
+    textColor = player.ThemeManager.GetDialogTextColor(true,false);
+    highlightColor = player.ThemeManager.GetDialogHighlightColor(true);
+
+
+	newButton = CreateConButton( HALIGN_Left, textColor, highlightColor );
+    if (player.bNumberedDialog)
+    	newButton.SetText( choiceNum $ ". " $ choice.choiceText ); //Sarge: Display number now
+    else
+        newButton.SetText( "~ " $ choice.choiceText );
 	newButton.SetUserObject( choice );
 
 	// These next two calls handle highlighting of the choice
 	newButton.SetButtonTextures(,Texture'Solid', Texture'Solid', Texture'Solid');
-	newButton.SetButtonColors(,colConTextChoice, colConTextChoice, colConTextChoice);
+	newButton.SetButtonColors(,backgroundColor, backgroundColor, backgroundColor);
 
 	// Add the button
 	AddButton( newButton );
@@ -282,8 +335,13 @@ function DisplayChoice( ConChoice choice )
 function DisplaySkillChoice( ConChoice choice )
 {
 	local ConChoiceWindow newButton;
+    local Color backgroundColor, textColor, highlightColor;
 
-	newButton = CreateConButton( HALIGN_Left, colConTextSkill, colConTextFocus );
+    backgroundColor = player.ThemeManager.GetDialogBackgroundColor();
+    textColor = player.ThemeManager.GetDialogTextColor(true,false);
+    highlightColor = player.ThemeManager.GetDialogHighlightColor(true);
+
+	newButton = CreateConButton( HALIGN_Left, textColor, highlightColor );
 	newButton.SetText( 	"~  " $ choice.choiceText $ "  (" $ choice.SkillNeeded $ ":" $ choice.SkillLevelNeeded $ ")" );
 	newButton.SetUserObject( choice );
 
@@ -465,10 +523,64 @@ event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
 			case IK_Down:
 				bHandled = False;
 				break;
+
+            //Sarge: Add Number Key Support
+            case IK_1:
+                bHandled = HandleNumberKey(0);
+                break;
+            case IK_2:
+                bHandled = HandleNumberKey(1);
+                break;
+            case IK_3:
+                bHandled = HandleNumberKey(2);
+                break;
+            case IK_4:
+                bHandled = HandleNumberKey(3);
+                break;
+            case IK_5:
+                bHandled = HandleNumberKey(4);
+                break;
+            case IK_6:
+                bHandled = HandleNumberKey(5);
+                break;
+            case IK_7:
+                bHandled = HandleNumberKey(6);
+                break;
+            case IK_8:
+                bHandled = HandleNumberKey(7);
+                break;
+            case IK_9:
+                bHandled = HandleNumberKey(8);
+                break;
+            case IK_0:
+                bHandled = HandleNumberKey(9);
+                break;
 		}
 	}
 
 	return bHandled;
+}
+
+// HandleChoice
+// Used by the number keys
+function bool HandleNumberKey(int number)
+{
+    //Abort if we're not using numbered replies
+    if (!player.bNumberedDialog) 
+        return false;
+
+    //If there are no choices, number keys simply skip, so we can hold 2 to select GEP gun, etc.
+    else if (numChoices == 0)
+    {
+    	conPlay.PlayNextEvent();
+        return true;
+    }
+
+    //Otherwise, just select our choice
+    else if (numChoices > number)
+        return ButtonActivated(conChoices[number]);
+
+    return false;
 }
 
 // ----------------------------------------------------------------------
@@ -506,6 +618,16 @@ function ConChoiceWindow CreateConButton( EHAlign hAlign, Color colTextNormal, C
 	newButton.SetTextColors( colTextNormal, colTextFocus, colTextFocus, colTextFocus );
 
 	return newButton;
+}
+
+// ----------------------------------------------------------------------
+// CreateCreditsWindow()
+// ----------------------------------------------------------------------
+
+function CreateCreditsWindow()
+{
+	winCredits = HUDConCreditsDisplay(NewChild(Class'HUDConCreditsDisplay'));
+	winCredits.Hide();
 }
 
 // ----------------------------------------------------------------------
@@ -547,9 +669,6 @@ function SetForcePlay(bool bNewForcePlay)
 
 defaultproperties
 {
-     colConTextFocus=(R=255,G=255)
-     colConTextChoice=(B=255)
-     colConTextSkill=(R=255)
      lowerFinalHeightPercent=0.210000
      upperFinalHeightPercent=0.104000
      movePeriod=0.600000

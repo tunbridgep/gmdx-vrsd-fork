@@ -2,6 +2,7 @@ Sarge's Changes since Beta 2.2:
 
 - Moved DeusEx.Int to the mod's System folder, so as to not overwrite any vanilla files. The int file will be handled automatically when using Kentie's Deus Exe.
 - Numerous Bug Fixes
+    - Fixed GMDX bug where Intro Cinematic didn't have subtitles bars, and fixed all cinematics to have a FOV of 75, making them always look accurate to the original game.
     - Fixed a bug where the Nuke and Worm software buttons were completely white squares on the Hacking menu.
     - Fixed GMDX vRSD bug where you could pick up and carry heavy objects while out of energy with the Muscle Augmentation
     - Fixed GMDX vRSD bug allowing using Tech Goggles in the secondary slot for half a second or so when out of charge
@@ -35,6 +36,11 @@ Sarge's Changes since Beta 2.2:
     - The number of total Lockpicks or Multitools in your inventory is now listed on lockpicking/electronics information windows, allowing you to see how many lockpicks or multitools you have compared to how many are required to bypass a given device or lock.
     - Belt Autofilling can now be disabled in the options.
     - Save Points no longer use Autosave slots, which can be easily overridden by accident, and now create fresh hard-saves instead.
+    - The Dialog Screen has been significantly improved
+        - A display showing your current credits balance has been added to the upper panel of the Conversation window.
+        - The number keys can be used to select dialog topics (and numbered labels will appear beside each option).
+        - The Dialog Menu can now use the HUD Color theme, rather than always having blue text.
+        - Dialog Menu options can be configured in the option screen.
     - The Nano Keyring now tells you which key was used when locking/unlocking a door.
     - Complete overhaul of "Left-click frobbing", which happens when left-clicking certain items without an item equipped.
         - Left-Clicking a datacube will pick it up and allow you to carry it.

@@ -563,6 +563,11 @@ const DRUG_CRACK = 2;
 
 var bool autosave;                                                              //Sarge: Autosave tells the Quicksave function to make an autosave instead
 
+//Sarge: Dialog Settings
+var globalconfig bool bNumberedDialog;                                          //Sarge: Shows numbers in the dialog window and allows selecting topics with the number keys
+var globalconfig bool bCreditsInDialog;                                         //Sarge: Shows credits in the dialog window
+var globalconfig bool bDialogHUDColors;                                         //Sarge: Use HUD Theme Colors in the Dialog window
+
 //SARGE: Aug Wheel Settings
 //var globalconfig bool bAdvancedAugWheel;                                        //Sarge: Allow manually assigning augmentations to the aug wheel, rather than auto-assigning all of them.
 var globalconfig bool bQuickAugWheel;                                           //Sarge: Instantly enable/disable augs when closing the menu over the selected aug, otherwise require a mouse click.
@@ -17138,6 +17143,8 @@ function bool FemaleEnabled()
 
 defaultproperties
 {
+     bNumberedDialog=True
+     bCreditsInDialog=True
      autosaveRestrictTimerDefault=600.0
      TruePlayerName="JC Denton"
      CombatDifficulty=1.000000
