@@ -80,3 +80,8 @@ Sarge's Changes since Beta 2.2:
         - Alcohol no longer heals for 5 points. Instead, it temporarily gives you 5 torso HP (along with it's usual 5 extra torso Max-HP) while in effect, which is removed afterwards. This health removal cannot kill the player.
         - Alcohol no longer adds to fullness when the addiction system is enabled
         - Zyme no longer removes 10HP if the addiction system is enabled.
+- Miscellaneous Changes:
+    - Implemented optional Lay-D Denton support. If installed, Lay-D Denton support will be automatically activated.
+        - The Lay-D Denton colour scheme is included and can be selected from the Colors menu.
+        - When Lay-D Denton is installed, a new Gameplay Modifier is available, which will add the extra NPC's added by the LDDP mod.
+        - Without the Gameplay Modifier, only Chet, Russ and a few other NPC's are added where necessary to maintain immersion and gameplay balance for female characters. These characters do not appear for male JC

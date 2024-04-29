@@ -1,0 +1,23 @@
+Begin Map
+Begin Actor Class=BumMale2 Name=BumMale0
+    requiresLDDP=true;
+    LDDPExtra=true;
+    bCower=True
+    bReactFutz=True
+    FootRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=1221,ZoneNumber=13)
+    HeadRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=1221,ZoneNumber=13)
+    bDynamicLight=True
+    LastRenderTime=14.867109
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=BumMale2
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=1221,ZoneNumber=13)
+    Location=(X=1499.211304,Y=-1590.972534,Z=111.599373)
+    OldLocation=(X=1870.211304,Y=-1204.972534,Z=111.599373)
+    bSelected=True
+    BindName="LDDPM08Bum"
+    BarkBindName="LDDPM08Bum"
+    FamiliarName="Bum"
+    UnfamiliarName="Bum"
+    Name=BumMale0
+End Actor
+End Map
