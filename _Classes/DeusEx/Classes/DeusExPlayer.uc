@@ -10386,6 +10386,9 @@ function bool GetCrosshairState(optional bool bCheckForOuterCrosshairs)
 
     if (frobTarget != None && frobTarget.isA('InformationDevices') && InformationDevices(frobTarget).aReader == Self)
         return false;
+        
+    if(bRadialAugMenuVisible) //RSD: Remove the crosshair if the radial aug menu is visible
+        return false;
 
     if (W != None)
     {
@@ -10398,8 +10401,6 @@ function bool GetCrosshairState(optional bool bCheckForOuterCrosshairs)
         //else if (W.isA('WeaponBaton') || W.isA('WeaponProd'))
         //    return false;
         else if (W.bAimingDown)
-            return false;
-        else if(bRadialAugMenuVisible) //RSD: Remove the accuracy indicators if the radial aug menu is visible
             return false;
         else if (W.IsA('WeaponGEPGun') && WeaponGEPGun(W).GEPinout>=1.0) //No crosshair when using GEP scope
             return false;
@@ -10422,6 +10423,42 @@ function bool GetCrosshairState(optional bool bCheckForOuterCrosshairs)
     
     return true;
 }
+
+// ----------------------------------------------------------------------
+// GetBracketsState()
+// returns whether or not we should show the frob selection brackets based on current conditions
+// ----------------------------------------------------------------------
+
+function bool GetBracketsState()
+{
+	local DeusExWeapon W;
+	local DeusExRootWindow root;
+
+	root = DeusExRootWindow(rootWindow);
+	W = DeusExWeapon(inHand);
+
+    if (IsInState('Dying')) //No brackets while dying
+        return false;
+
+    if (root != None && root.WindowStackCount() > 0) //No brackets while windows are open
+        return false;
+
+    //No brackets while reading books/datacubes/etc
+    if (frobTarget != None && frobTarget.isA('InformationDevices') && InformationDevices(frobTarget).aReader == Self)
+        return false;
+        
+    if(bRadialAugMenuVisible)
+        return false;
+    
+    if (W != None)
+    {
+        if (W.IsA('WeaponGEPGun') && WeaponGEPGun(W).GEPinout>=1.0) //No brackets when using GEP scope
+            return false;
+    }
+
+    return true;
+}
+
 
 // ----------------------------------------------------------------------
 // UpdateCrosshairStyle()

@@ -580,12 +580,10 @@ function UpdateSettings( DeusExPlayer player , optional bool bNoBelt)
 
 function UpdateCrosshair(DeusExPlayer player)
 {
-    local bool crosshairState;
-    crosshairState = player.GetCrosshairState();
-	cross.SetCrosshair(crosshairState);
+	cross.SetCrosshair(player.GetCrosshairState());
 	hitmarker.SetCrosshair(player.GetHitMarkerState());
 
-    if (crosshairState)
+    if (player.GetBracketsState())
         frobDisplay.Show();
     else
         frobDisplay.Hide();
