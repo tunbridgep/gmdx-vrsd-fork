@@ -2514,6 +2514,8 @@ simulated function Tick(float deltaTime)
             mult += 0.25;*/                                                        //RSD: Now +25% bonus
 		if (player.AddictionManager.addictions[0].drugTimer > 0)                                      //RSD: Cigarettes make you aim faster
 	        mult += 1.0;
+        if (bLasing)                                                               //Sarge: Laser Sight adds small bonus
+            mult += 0.15;
         if (player.CombatDifficulty < 1.0)                                      //RSD: Properly doubling on easy now
 		    mult *= 2.0;
         if (previousAccuracy != currentAccuracy || standingTimer ~= 0.0)                                       //Sarge: Only increase standing timer if our accuracy has changed
