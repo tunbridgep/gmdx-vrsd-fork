@@ -171,7 +171,7 @@ function StopHacking()
 	{
 		curTool.StopUseAnim();
 		curTool.bBeingUsed = False;
-		if (!(initialHackStrength <= 0.05 && hackPlayer.PerkNamesArray[31] == 1)) //RSD: Changed CRACKED perk to hack <=5% devices for free
+		if (!(initialHackStrength <= 0.05 && hackPlayer.PerkManager.GetPerkWithClass(class'DeusEx.PerkCracked').bPerkObtained == true)) //RSD: Changed CRACKED perk to hack <=5% devices for free
 		curTool.UseOnce();
 	}
 	curTool = None;

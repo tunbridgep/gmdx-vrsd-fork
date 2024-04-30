@@ -495,7 +495,7 @@ function SetNetworkTerminal(NetworkTerminal newTerm)
    if (Player.Level.NetMode == NM_Standalone)                                 //RSD: Actually this functionality is reworked, see GetValue() in ComputerSecurityChoice_Turret
    {
       if ((winTerm.GetSkillLevel() < 2) && (winTerm.bHacked)) //CyberP: was 2. Now 3 (master level). //RSD: No longer affected by Hacking skill //RSD via sarge: okay just make it require Advanced again
-      if (Player.PerkNamesArray[33] != 1)                                       //RSD: Now you need the Advanced Hacking perk whether you're hacking or not
+      if (Player.PerkManager.GetPerkWithClass(class'DeusEx.PerkTurretDomination').bPerkObtained == false)                                       //RSD: Now you need the Advanced Hacking perk whether you're hacking or not
          choiceWindows[3].DisableChoice();                                      //RSD: (replaces Neat Hack)
    }
 }

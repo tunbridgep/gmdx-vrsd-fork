@@ -9,6 +9,6 @@ defaultproperties
     PerkDescription="|nAn agent's standing accuracy bonus with rifles is accelerated by 50%.|n|nRequires: Rifles: TRAINED"
     PerkSkill=Class'DeusEx.SkillWeaponRifle'
     PerkCost=200
-    perkLevelRequirement=0
+    PerkLevelRequirement=1
     PerkValue=1.5
 }

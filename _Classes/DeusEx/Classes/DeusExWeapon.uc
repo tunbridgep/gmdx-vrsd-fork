@@ -1410,7 +1410,7 @@ simulated function float CalculateAccuracy()
 
 		HealthArmHighest = Max(HealthArmLeft, HealthArmRight);                  //RSD: Get max
 		BestArmHighest = Max(BestArmLeft, BestArmRight);                        //RSD: Get max
-		if (GoverningSkill == class'SkillWeaponPistol' && player.PerkNamesArray[11] == 1) //RSD: New One-Handed perk for Pistols
+		if (GoverningSkill == class'SkillWeaponPistol' && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkOneHanded').bPerkObtained == false) //RSD: New One-Handed perk for Pistols
 			bCheckHighestHealthArm = true;
 		else
 			bCheckHighestHealthArm = false;
@@ -2394,7 +2394,7 @@ simulated function Tick(float deltaTime)
 		// reduce the recoil based on skill
 		/*if (player.PerkNamesArray[22] == 1 && GoverningSkill==Class'DeusEx.SkillWeaponPistol') //RSD: Removed Perfect Stance: Pistols
 		   recoil = recoilStrength * 0.5; // + GetWeaponSkill() * 2.0; //CyberP: Removed Recoil based on skill level.
-		else*/ if (player.PerkNamesArray[23] == 1 && GoverningSkill==Class'DeusEx.SkillWeaponRifle')
+		else*/ if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkMarksman').bPerkObtained == true && GoverningSkill==Class'DeusEx.SkillWeaponRifle')
            recoil = recoilStrength * 0.5;
 		/*else if (player.PerkNamesArray[13] == 1 && GoverningSkill==Class'DeusEx.SkillWeaponHeavy') //RSD: Removed Perfect Stance: Heavy
 		   recoil = recoilStrength * 0.5;*/
@@ -2498,7 +2498,7 @@ simulated function Tick(float deltaTime)
 		    standingTimer += deltaTime*2;*/
         /*if (player.PerkNamesArray[1]==1 && GoverningSkill==Class'DeusEx.SkillWeaponPistol') //RSD: Removed Focused: Pistols
             mult += 0.25;                                                        //RSD: Now +25% bonus
-        else */if (player.PerkNamesArray[2]==1 && GoverningSkill==Class'DeusEx.SkillWeaponRifle')
+        else */if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkSteady').bPerkObtained == true && GoverningSkill==Class'DeusEx.SkillWeaponRifle')
             mult += 0.25;                                                        //RSD: Now +25% bonus
         /*else if (player.PerkNamesArray[3]==1 && GoverningSkill==Class'DeusEx.SkillWeaponHeavy') //RSD: Removed Focused: Heavy
             mult += 0.25;*/                                                        //RSD: Now +25% bonus
@@ -2522,9 +2522,9 @@ simulated function Tick(float deltaTime)
 		{
 		    /*if (player.PerkNamesArray[22] == 1 && GoverningSkill==Class'DeusEx.SkillWeaponPistol') //RSD: Removed Perfect Stance: Pistols
 		        perkMod = 0;
-		    else*/ if (player.PerkNamesArray[23] == 1 && GoverningSkill==Class'DeusEx.SkillWeaponRifle')
+		    else*/ if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkMarksman').bPerkObtained == true && GoverningSkill==Class'DeusEx.SkillWeaponRifle')
 	            perkMod = 0;
-			else if (player.PerkNamesArray[3] == 1 && GoverningSkill==Class'DeusEx.SkillWeaponHeavy')
+			else if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkControlledBurn').bPerkObtained == true && GoverningSkill==Class'DeusEx.SkillWeaponHeavy')
                 perkMod = 0;
 			else
                 perkMod = 0.04;
@@ -3540,11 +3540,11 @@ simulated function UpdateRecoilShaker()
 	if(Owner.IsA('DeusExPlayer'))
 	{
 	  DeusExPlayer(Owner).RecoilShaker(RecoilShaker);
-	  if (DeusExPlayer(Owner).PerkNamesArray[23] == 1 && GoverningSkill==Class'DeusEx.SkillWeaponRifle')
+	  if (DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkMarksman').bPerkObtained == true && GoverningSkill==Class'DeusEx.SkillWeaponRifle')
 	      negTime = (RecoilStrength * default.negTime)*0.75;
 	  /*else if (DeusExPlayer(Owner).PerkNamesArray[22] == 1 && GoverningSkill==Class'DeusEx.SkillWeaponPistol') //RSD: Removed Perfect Stance: Pistols
 	      negTime = (RecoilStrength * default.negTime)*0.75;*/
-	  else if (DeusExPlayer(Owner).PerkNamesArray[3] == 1 && GoverningSkill==Class'DeusEx.SkillWeaponHeavy')
+	  else if (DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkControlledBurn').bPerkObtained == true && GoverningSkill==Class'DeusEx.SkillWeaponHeavy')
 	      negTime = (RecoilStrength * default.negTime)*0.75;
 	  else
 	      negTime = RecoilStrength * default.negTime;
@@ -4364,7 +4364,7 @@ simulated function Projectile ProjectileFire(class<projectile> ProjClass, float 
                   {
                   if (bContactDeton)
                      proj.bContactDetonation=True;
-                  if (DeusExPlayer(Owner).PerkNamesArray[15]==1)
+                  if (DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkShortFuse').bPerkObtained == true)
                   {
                      //proj.MaxSpeed=1650.000000;
                      //proj.Velocity*=1.4;
@@ -4593,7 +4593,7 @@ simulated function TraceFire( float Accuracy )
 
       //RSD: Stopping Power perk for shotguns
       bDoExtraSlugDamage = false;
-      if (numSlugs > 1 && Other != none && Other.IsA('ScriptedPawn') && Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkNamesArray[12] == 1)
+      if (numSlugs > 1 && Other != none && Other.IsA('ScriptedPawn') && Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkStoppingPower').bPerkObtained == true)
       {
           if (i == 0)
               initialPawnHit = ScriptedPawn(Other);
@@ -5037,7 +5037,7 @@ simulated function bool UpdateInfo(Object winObject)
 	winInfo.SetTitle(itemName);
 	if (bHandToHand && Owner.IsA('DeusExPlayer'))
 	{
-	   if (DeusExPlayer(Owner).PerkNamesArray[25] == 1)
+	   if (DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkInventive').bPerkObtained == true)
 	   {
 	      winInfo.AddSecondaryButton(self);
 	   }
@@ -5530,7 +5530,7 @@ simulated function bool UpdateInfo(Object winObject)
     winInfo.AddInfoItem(msgLethality, str);
 
     //secondary weapon
-    if (bHandToHand && DeusExPlayer(Owner).PerkNamesArray[25] == 1)
+    if (bHandToHand && DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkInventive').bPerkObtained == true)
        str = msgInfoYes;
     else if (bHandToHand && GoverningSkill != class'DeusEx.SkillDemolition' && !IsA('WeaponHideAGun') && !IsA('WeaponShuriken'))
        str = msgInfoNo;

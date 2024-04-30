@@ -23,7 +23,7 @@ local DeusExPlayer player;
 
     if (player != none)
     {
-	if (player.PerkNamesArray[4]==1)
+	if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkSharpEyed').bPerkObtained == true)
     {
      smokeGen = Spawn(class'ParticleGenerator', Self);
 	if (smokeGen != None)

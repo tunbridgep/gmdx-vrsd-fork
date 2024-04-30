@@ -209,7 +209,7 @@ simulated function renderoverlays(Canvas canvas)
 	PlayerViewOffset=Default.PlayerViewOffset*100;//meh
 	SetHand(player.Handedness); //meh meh
 
-    if (player.PerkNamesArray[23]== 1)                                          //RSD: Was PerkNamesArray[12], now PerkNamesArray[23] (merged Advanced with Master Rifles perk)
+    if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkMarksman').bPerkObtained == true)                                          //RSD: Was PerkNamesArray[12], now PerkNamesArray[23] (merged Advanced with Master Rifles perk)
     {
 	PlayerViewOffset.X=Smerp(sin(FMin(1.0,GEPinout*1.5)*0.5*Pi),PlayerViewOffset.X,MountedViewOffset.X*100);
 	PlayerViewOffset.Y=Smerp(1.0-cos(FMin(1.0,GEPinout*1.5)*0.5*Pi),PlayerViewOffset.Y,MountedViewOffset.Y*100);
@@ -232,7 +232,7 @@ simulated function renderoverlays(Canvas canvas)
 
 	//IsInState('DownWeapon')
 
-    if (player.PerkNamesArray[23]== 1)                                          //RSD: Was PerkNamesArray[12], now PerkNamesArray[23] (merged Advanced with Master Rifles perk)
+    if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkMarksman').bPerkObtained == true)                                          //RSD: Was PerkNamesArray[12], now PerkNamesArray[23] (merged Advanced with Master Rifles perk)
     {
 	if (scopeTime>=17)
 	{

@@ -427,12 +427,12 @@ function PlayTakeHitSound(int Damage, name damageType, int Mult)
 			if (FRand() < 0.8)
 				PlaySound(sound'MaleDrown', SLOT_Pain, FMax(Mult * TransientSoundVolume, Mult * 2.0),,, RandomPitch());
 		}
-		else if (PerkNamesArray[18] != 1)
+		else if (PerkManager.GetPerkWithClass(class'DeusEx.PerkSecurityLoophole').bPerkObtained == false)
 			PlaySound(sound'MalePainSmall', SLOT_Pain, FMax(Mult * TransientSoundVolume, Mult * 2.0),,, RandomPitch());
 	}
 	else
 	{
-	    if (PerkNamesArray[18] == 1)
+	    if (PerkManager.GetPerkWithClass(class'DeusEx.PerkSecurityLoophole').bPerkObtained == true)
             return;
 		// Body hit sound for multiplayer only
 		if (((damageType=='Shot') || (damageType=='AutoShot'))  && ( Level.NetMode != NM_Standalone ))
@@ -982,7 +982,7 @@ Begin:
 		setPhysics(Phys_Falling);
 		if (FRand() < 0.6)
 		{
-		if (PerkNamesArray[9] != 1)
+		if (PerkManager.GetPerkWithClass(class'DeusEx.PerkFieldRepair').bPerkObtained == false)
 		{
         AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 544);
         PlaySound(sound'MaleLand', SLOT_None, 1.5, true, 1024);

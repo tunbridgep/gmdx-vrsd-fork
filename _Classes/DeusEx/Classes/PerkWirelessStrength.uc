@@ -11,6 +11,6 @@ defaultproperties
     PerkDescription="|nMultitools gain considerably increased wireless signal strength, enabling an agent to hack security systems at range.|n|nRequires: Electronics: ADVANCED"
     PerkSkill=Class'DeusEx.SkillTech'
     PerkCost=250
-    perkLevelRequirement=1
+    PerkLevelRequirement=2
     PerkValue=1
 }

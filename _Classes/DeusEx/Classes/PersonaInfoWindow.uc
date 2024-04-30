@@ -103,7 +103,8 @@ function CreatePerkOverview(Perk Perk, int index)	//Trash: Creates the descripti
 	local Perk PerkInManager;
 	local DeusExPlayer player;
 
-	PerkInManager = player.PerkManager.GetPerkName(Perk.PerkName);
+	player = DeusExPlayer(GetPlayerPawn());
+	PerkInManager = player.PerkManager.PerkList[player.PerkManager.GetPerkIndex(Perk)];
 
     winActionButtons1[index] = PersonaButtonBarWindow(winTile.NewChild(Class'PersonaButtonBarWindow'));
     winActionButtons1[index].SetWidth(0);
@@ -137,16 +138,12 @@ function CreatePerkOverview(Perk Perk, int index)	//Trash: Creates the descripti
 	buttonUpgrade[index].PerkNamed = Perk.PerkName;
 	buttonUpgrade[index].PerkSkillCost = Perk.PerkCost;
 	buttonUpgrade[index].ButtonPerk = Perk;
-	if (Player.SkillPointsAvail < Perk.PerkCost)
-	   buttonUpgrade[index].SetSensitivity(False);
     AddLine();
 
-	if ((Player.SkillSystem.GetSkillLevel(PerkInManager.PerkSkill) < (PerkInManager.PerkLevelRequirement + 1) || PerkInManager.bPerkObtained == True))
-		buttonUpgrade[index].SetSensitivity(False);
-	if (PerkInManager.bPerkObtained == false && PerkInManager.PerkCost != 0 && Player.SkillPointsAvail >= PerkInManager.PerkCost)
+	if (PerkInManager.IsPurchasable())
 		buttonUpgrade[index].SetSensitivity(True);
-
-	//ButtonActivated(buttonUpgrade[index]); // Trash: Do I even need this here?
+	else
+		buttonUpgrade[index].SetSensitivity(False);
 }
 
 //////////////////////////////////////////////////
@@ -155,336 +152,48 @@ function CreatePerkOverview(Perk Perk, int index)	//Trash: Creates the descripti
 function CreatePerkButtons(Skill Skill)
 {
     local int i, index, indexPerkThingy;
-
-	local Perk perksTrained[5];
-	local Perk perksAdvanced[5];
-	local Perk perksMaster[5];
+	local DeusExPlayer player;
 
                           //Totalitarian: WARNING! THE WHOLE PERK SYSTEM PASSES PERK NAME! DO NOT CHANGE THE NAME OF PERKS
     AddLine();            //Totalitarian: INSTEAD CHANGE THE LocalizedPerkName VAR
     SetText(PerkTitle);	  // Trash: Ignore the warning above - actually this file entirely, perk system has been overhauled so no more hardcoded perks
     AddLine();
 
-	for (index = 0; index < ArrayCount(Player.PerkManager.PerkList); index++)
+	player = DeusExPlayer(GetPlayerPawn());
+
+	for (index = 0; index < ArrayCount(player.PerkManager.PerkList); index++)
 	{
-		if (Player.PerkManager.PerkList[index].PerkSkill  == Skill.class && Player.PerkManager.PerkList[index].PerkLevelRequirement == 0)
+		if (player.PerkManager.PerkList[index].PerkSkill == Skill.class && player.PerkManager.PerkList[index].PerkLevelRequirement == 1)
 		{
-			CreatePerkOverview(Player.PerkManager.PerkList[index], indexPerkThingy);
+			CreatePerkOverview(player.PerkManager.PerkList[index], indexPerkThingy);
 			indexPerkThingy++;
 		}
 	}
-	for (index = 0; index < ArrayCount(Player.PerkManager.PerkList); index++)
+	for (index = 0; index < ArrayCount(player.PerkManager.PerkList); index++)
 	{
-		if (Player.PerkManager.PerkList[index].PerkSkill == Skill.class && Player.PerkManager.PerkList[index].PerkLevelRequirement == 1)
+		if (player.PerkManager.PerkList[index].PerkSkill == Skill.class && player.PerkManager.PerkList[index].PerkLevelRequirement == 2)
 		{
-			CreatePerkOverview(Player.PerkManager.PerkList[index], indexPerkThingy);
+			CreatePerkOverview(player.PerkManager.PerkList[index], indexPerkThingy);
 			indexPerkThingy++;
 		}
 	}
-	for (index = 0; index < ArrayCount(Player.PerkManager.PerkList); index++)
+	for (index = 0; index < ArrayCount(player.PerkManager.PerkList); index++)
 	{
-		if (Player.PerkManager.PerkList[index].PerkSkill== Skill.class && Player.PerkManager.PerkList[index].PerkLevelRequirement == 2)
+		if (player.PerkManager.PerkList[index].PerkSkill== Skill.class && player.PerkManager.PerkList[index].PerkLevelRequirement == 3)
 		{
-			CreatePerkOverview(Player.PerkManager.PerkList[index], indexPerkThingy);
+			CreatePerkOverview(player.PerkManager.PerkList[index], indexPerkThingy);
 			indexPerkThingy++;
 		}
 	}
+
+
+    SetText(ob);
+    AddLine();
 	
-
-	//string PerkInfo, string PerkInfo2, string PerkInfo3, int Costs, int Costs2, int Costs3,
-//string pName, string pName2, string pName3, string localizedpName, string localizedpName2, string localizedpName3, Texture PassedSkillIcon
-
-	/*
-    if (Costs != 0)
+    for (i = 0; i<ArrayCount(player.PerkManager.PerkList); i++)
     {
-    winActionButtons4 = PersonaButtonBarWindow(winTile.NewChild(Class'PersonaButtonBarWindow'));
-    winActionButtons4.SetWidth(0);
-    winActionButtons4.SetHeight(26);
-    winActionButtons4.FillAllSpace(false);
-    WinPerkTitle = TextWindow(winActionButtons4.NewChild(class'TextWindow'));
-	WinPerkTitle.SetText(localizedpName);
-	WinPerkTitle.SetFont(Font'FontMenuSmall');
-    WinPerkTitle.SetTextColor(colText);
-    WinPerkTitle.SetTextMargins(6,4);
-    winSkillIconP = winActionButtons4.NewChild(Class'Window');
-    winSkillIconP.SetPos(192, 0);
-	winSkillIconP.SetSize(24, 24);
-	winSkillIconP.SetBackgroundStyle(DSTY_Normal);
-	winSkillIconP.SetBackground(PassedSkillIcon);
-	WinSkillText = TextWindow(winSkillIconP.NewChild(class'TextWindow'));
-	WinSkillText.SetFont(Font'FontConversationLargeBold');
-	if (pName == "MODDER")
-	   WinSkillText.SetTextColorRGB(96,96,96);
-	else
-       WinSkillText.SetTextColorRGB(192,192,192);
-	WinSkillText.SetText("1");
-
-    SetText(PerkInfo);
-    SetText(RequiredPoints $ Costs);
-	winActionButtons = PersonaButtonBarWindow(winTile.NewChild(Class'PersonaButtonBarWindow'));
-	winActionButtons.SetWidth(32); //149
-	winActionButtons.FillAllSpace(false);
-	buttonUpgrade = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow'));
-	buttonUpgrade.SetButtonText(UpgradeButtonLabel);
-	buttonUpgrade.PerkNamed=pName;
-	buttonUpgrade.LocalizedPerkNamed=LocalizedpName;
-	buttonUpgrade.PerkSkillCost=Costs;
-	if (Player.SkillPointsAvail < Costs)
-	   buttonUpgrade.SetSensitivity(False);
-    AddLine();
-    }
-
-    if (Costs2 != 0)
-    {
-    winActionButtons5 = PersonaButtonBarWindow(winTile.NewChild(Class'PersonaButtonBarWindow'));
-    winActionButtons5.SetWidth(0);
-    winActionButtons5.SetHeight(26);
-    winActionButtons5.FillAllSpace(false);
-    WinPerkTitle2 = TextWindow(winActionButtons5.NewChild(class'TextWindow'));
-	WinPerkTitle2.SetText(localizedpName2);
-	WinPerkTitle2.SetFont(Font'FontMenuSmall');
-    WinPerkTitle2.SetTextColor(colText);
-    WinPerkTitle2.SetTextMargins(6,4);
-    winSkillIconP2 = winActionButtons5.NewChild(Class'Window');
-    winSkillIconP2.SetPos(192, 0);
-	winSkillIconP2.SetSize(24, 24);
-	winSkillIconP2.SetBackgroundStyle(DSTY_Normal);
-	winSkillIconP2.SetBackground(PassedSkillIcon);
-	WinSkillText2 = TextWindow(winSkillIconP2.NewChild(class'TextWindow'));
-	WinSkillText2.SetFont(Font'FontConversationLargeBold');
-	if (pName == "MODDER")
-	   WinSkillText2.SetTextColorRGB(96,96,96);
-	else
-       WinSkillText2.SetTextColorRGB(192,192,192);
-	WinSkillText2.SetText("2");
-
-    SetText(PerkInfo2);
-    SetText(RequiredPoints $ Costs2);
-	winActionButtons2 = PersonaButtonBarWindow(winTile.NewChild(Class'PersonaButtonBarWindow'));
-	winActionButtons2.SetWidth(32); //149
-	//winActionButtons2.SetHeight(24);
-	winActionButtons2.FillAllSpace(false);
-	buttonUpgrade2 = PersonaActionButtonWindow(winActionButtons2.NewChild(Class'PersonaActionButtonWindow'));
-	buttonUpgrade2.SetButtonText(UpgradeButtonLabel);
-	buttonUpgrade2.PerkNamed2=pName2;
-	buttonUpgrade2.LocalizedPerkNamed2=LocalizedpName2;
-	buttonUpgrade2.PerkSkillCost2=Costs2;
-	if (Player.SkillPointsAvail < Costs2)
-	buttonUpgrade2.SetSensitivity(False);
-    AddLine();
-    }
-    if (Costs3 != 0)
-    {
-    winActionButtons6 = PersonaButtonBarWindow(winTile.NewChild(Class'PersonaButtonBarWindow'));
-    winActionButtons6.SetWidth(0);
-    winActionButtons6.SetHeight(26);
-    winActionButtons6.FillAllSpace(false);
-    WinPerkTitle3 = TextWindow(winActionButtons6.NewChild(class'TextWindow'));
-	WinPerkTitle3.SetText(localizedpName3);
-	WinPerkTitle3.SetFont(Font'FontMenuSmall');
-    WinPerkTitle3.SetTextColor(colText);
-    WinPerkTitle3.SetTextMargins(6,4);
-    winSkillIconP3 = winActionButtons6.NewChild(Class'Window');
-    winSkillIconP3.SetPos(192, 0);
-	winSkillIconP3.SetSize(24, 24);
-	winSkillIconP3.SetBackgroundStyle(DSTY_Normal);
-	winSkillIconP3.SetBackground(PassedSkillIcon);
-	WinSkillText3 = TextWindow(winSkillIconP3.NewChild(class'TextWindow'));
-	WinSkillText3.SetFont(Font'FontConversationLargeBold');
-	if (pName == "MODDER")
-	   WinSkillText3.SetTextColorRGB(96,96,96);
-	else
-       WinSkillText3.SetTextColorRGB(192,192,192);
-	WinSkillText3.SetText("3");
-
-    SetText(PerkInfo3);
-    SetText(RequiredPoints $ Costs3);
-	winActionButtons3 = PersonaButtonBarWindow(winTile.NewChild(Class'PersonaButtonBarWindow'));
-	winActionButtons3.SetWidth(32); //149
-	winActionButtons3.FillAllSpace(False);
-	buttonUpgrade3 = PersonaActionButtonWindow(winActionButtons3.NewChild(Class'PersonaActionButtonWindow'));
-	buttonUpgrade3.SetButtonText(UpgradeButtonLabel);
-	buttonUpgrade3.PerkNamed3=pName3;
-	buttonUpgrade3.LocalizedPerkNamed3=LocalizedpName3;
-	buttonUpgrade3.PerkSkillCost3=Costs3;
-	if (Player.SkillPointsAvail < Costs3)
-	buttonUpgrade3.SetSensitivity(False);
-	AddLine();
-	}
-
-	switch(pName3)
-	{
-            case "CREEPER":
-			    if ((Player.SkillSystem.GetSkillLevel(class'SkillStealth') < 1 || Player.PerkNamesArray[9] == 1) && Costs != 0)
-				buttonUpgrade.SetSensitivity(False);
-				if ((Player.SkillSystem.GetSkillLevel(class'SkillStealth') < 2 || Player.PerkNamesArray[18] == 1) && Costs2 != 0)
-				buttonUpgrade2.SetSensitivity(False);
-				if (Player.PerkNamesArray[35] == 1 && Player.PerkNamesArray[9] != 1 && Costs != 0 && Player.SkillPointsAvail >= Costs)
-				   buttonUpgrade.SetSensitivity(True);
-				if (Player.PerkNamesArray[35] == 1 && Player.PerkNamesArray[18] != 1 && Costs2 != 0 && Player.SkillPointsAvail >= Costs2)
-				   buttonUpgrade2.SetSensitivity(True);
-				if ((Player.SkillSystem.GetSkillLevel(class'SkillStealth') < 3 || Player.PerkNamesArray[29] == 1) && Costs3 != 0)
-				buttonUpgrade3.SetSensitivity(False);
-				break;
-
-            case "ENDURANCE":
-                if ((Player.SkillSystem.GetSkillLevel(class'SkillSwimming') < 1 || Player.PerkNamesArray[5] == 1) && Costs != 0)
-				buttonUpgrade.SetSensitivity(False);
-				if ((Player.SkillSystem.GetSkillLevel(class'SkillSwimming') < 2 || Player.PerkNamesArray[17] == 1) && Costs2 != 0)
-				buttonUpgrade2.SetSensitivity(False);
-				if (Player.PerkNamesArray[35] == 1 && Player.PerkNamesArray[5] != 1 && Costs != 0 && Player.SkillPointsAvail >= Costs)
-				   buttonUpgrade.SetSensitivity(True);
-				if (Player.PerkNamesArray[35] == 1 && Player.PerkNamesArray[17] != 1 && Costs2 != 0 && Player.SkillPointsAvail >= Costs2)
-				   buttonUpgrade2.SetSensitivity(True);
-				if ((Player.SkillSystem.GetSkillLevel(class'SkillSwimming') < 3 || Player.PerkNamesArray[27] == 1) && Costs3 != 0)
-				buttonUpgrade3.SetSensitivity(False);
-				break;
-
-			case "CRACKED":
-                if ((Player.SkillSystem.GetSkillLevel(class'SkillTech') < 1  || Player.PerkNamesArray[10] == 1)&& Costs != 0)
-				buttonUpgrade.SetSensitivity(False);
-				if ((Player.SkillSystem.GetSkillLevel(class'SkillTech') < 2 || Player.PerkNamesArray[16] == 1) && Costs2 != 0)
-				buttonUpgrade2.SetSensitivity(False);
-				if (Player.PerkNamesArray[35] == 1 && Player.PerkNamesArray[10] != 1 && Costs != 0 && Player.SkillPointsAvail >= Costs)
-				   buttonUpgrade.SetSensitivity(True);
-				if (Player.PerkNamesArray[35] == 1 && Player.PerkNamesArray[16] != 1 && Costs2 != 0 && Player.SkillPointsAvail >= Costs2)
-				   buttonUpgrade2.SetSensitivity(True);
-				if ((Player.SkillSystem.GetSkillLevel(class'SkillTech') < 3 || Player.PerkNamesArray[31] == 1) && Costs3 != 0)
-				buttonUpgrade3.SetSensitivity(False);
-				break;
-
-			case "H.E ROCKET":
-                if ((Player.SkillSystem.GetSkillLevel(class'SkillWeaponHeavy') < 1 || Player.PerkNamesArray[3] == 1) && Costs != 0)
-				buttonUpgrade.SetSensitivity(False);
-				if ((Player.SkillSystem.GetSkillLevel(class'SkillWeaponHeavy') < 2 || Player.PerkNamesArray[13] == 1) && Costs2 != 0)
-				buttonUpgrade2.SetSensitivity(False);
-				if (Player.PerkNamesArray[35] == 1 && Player.PerkNamesArray[3] != 1 && Costs != 0 && Player.SkillPointsAvail >= Costs)
-				   buttonUpgrade.SetSensitivity(True);
-				if (Player.PerkNamesArray[35] == 1 && Player.PerkNamesArray[13] != 1 && Costs2 != 0 && Player.SkillPointsAvail >= Costs2)
-				   buttonUpgrade2.SetSensitivity(True);
-				if ((Player.SkillSystem.GetSkillLevel(class'SkillWeaponHeavy') < 3 || Player.PerkNamesArray[24] == 1) && Costs3 != 0)
-				buttonUpgrade3.SetSensitivity(False);
-				break;
-
-			case "INVENTIVE":
-                if ((Player.SkillSystem.GetSkillLevel(class'SkillWeaponLowTech') < 1 || Player.PerkNamesArray[4] == 1) && Costs != 0)
-				buttonUpgrade.SetSensitivity(False);
-				if ((Player.SkillSystem.GetSkillLevel(class'SkillWeaponLowTech') < 2 || Player.PerkNamesArray[14] == 1) && Costs2 != 0)
-				buttonUpgrade2.SetSensitivity(False);
-				if (Player.PerkNamesArray[35] == 1 && Player.PerkNamesArray[4] != 1 && Costs != 0 && Player.SkillPointsAvail >= Costs)
-				   buttonUpgrade.SetSensitivity(True);
-				if (Player.PerkNamesArray[35] == 1 && Player.PerkNamesArray[14] != 1 && Costs2 != 0 && Player.SkillPointsAvail >= Costs2)
-				   buttonUpgrade2.SetSensitivity(True);
-				if ((Player.SkillSystem.GetSkillLevel(class'SkillWeaponLowTech') < 3 || Player.PerkNamesArray[25] == 1) && Costs3 != 0)
-				buttonUpgrade3.SetSensitivity(False);
-				break;
-
-			case "PERFECT STANCE: PISTOLS":
-                if ((Player.SkillSystem.GetSkillLevel(class'SkillWeaponPistol') < 1 || Player.PerkNamesArray[1] == 1) && Costs != 0)
-				buttonUpgrade.SetSensitivity(False);
-				if ((Player.SkillSystem.GetSkillLevel(class'SkillWeaponPistol') < 2 || Player.PerkNamesArray[11] == 1) && Costs2 != 0)
-				buttonUpgrade2.SetSensitivity(False);
-				if (Player.PerkNamesArray[35] == 1 && Player.PerkNamesArray[1] != 1 && Costs != 0 && Player.SkillPointsAvail >= Costs)
-				   buttonUpgrade.SetSensitivity(True);
-				if (Player.PerkNamesArray[35] == 1 && Player.PerkNamesArray[11] != 1 && Costs2 != 0 && Player.SkillPointsAvail >= Costs2)
-				   buttonUpgrade2.SetSensitivity(True);
-				if ((Player.SkillSystem.GetSkillLevel(class'SkillWeaponPistol') < 3 || Player.PerkNamesArray[22] == 1) && Costs3 != 0)
-				buttonUpgrade3.SetSensitivity(False);
-				break;
-
-			case "PERFECT STANCE: RIFLES":
-                if ((Player.SkillSystem.GetSkillLevel(class'SkillWeaponRifle') < 1 || Player.PerkNamesArray[2] == 1) && Costs != 0)
-				buttonUpgrade.SetSensitivity(False);
-				if ((Player.SkillSystem.GetSkillLevel(class'SkillWeaponRifle') < 2 || Player.PerkNamesArray[12] == 1)&& Costs2 != 0)
-				buttonUpgrade2.SetSensitivity(False);
-				if (Player.PerkNamesArray[35] == 1 && Player.PerkNamesArray[2] != 1 && Costs != 0 && Player.SkillPointsAvail >= Costs)
-				   buttonUpgrade.SetSensitivity(True);
-				if (Player.PerkNamesArray[35] == 1 && Player.PerkNamesArray[12] != 1 && Costs2 != 0 && Player.SkillPointsAvail >= Costs2)
-				   buttonUpgrade2.SetSensitivity(True);
-				if ((Player.SkillSystem.GetSkillLevel(class'SkillWeaponRifle') < 3 || Player.PerkNamesArray[23] == 1) && Costs3 != 0)
-				buttonUpgrade3.SetSensitivity(False);
-				break;
-
-			case "KNOCKOUT GAS":
-                if ((Player.SkillSystem.GetSkillLevel(class'SkillDemolition') < 1 || Player.PerkNamesArray[0] == 1) && Costs != 0)
-				buttonUpgrade.SetSensitivity(False);
-				if ((Player.SkillSystem.GetSkillLevel(class'SkillDemolition') < 2 || Player.PerkNamesArray[15] == 1) && Costs2 != 0)
-				buttonUpgrade2.SetSensitivity(False);
-				if (Player.PerkNamesArray[35] == 1 && Player.PerkNamesArray[0] != 1 && Costs != 0 && Player.SkillPointsAvail >= Costs)
-				   buttonUpgrade.SetSensitivity(True);
-				if (Player.PerkNamesArray[35] == 1 && Player.PerkNamesArray[15] != 1 && Costs2 != 0 && Player.SkillPointsAvail >= Costs2)
-				   buttonUpgrade2.SetSensitivity(True);
-				if ((Player.SkillSystem.GetSkillLevel(class'SkillDemolition') < 3 || Player.PerkNamesArray[26] == 1) && Costs3 != 0)
-				buttonUpgrade3.SetSensitivity(False);
-				break;
-
-            case "LOCKSPORT":
-                //if (Player.PerkNamesArray[35] == 1 && Costs != 0)             //RSD: No more Artificial Lock
-				//buttonUpgrade.SetSensitivity(False);
-				if ((Player.SkillSystem.GetSkillLevel(class'SkillLockpicking') < 1 || Player.PerkNamesArray[36] == 1) && Costs != 0) //RSD: Replaced Artificial lock [35] with Sleight of Hand [36]
-				buttonUpgrade.SetSensitivity(False);
-				if ((Player.SkillSystem.GetSkillLevel(class'SkillLockpicking') < 2 || Player.PerkNamesArray[34] == 1) && Costs2 != 0)
-				buttonUpgrade2.SetSensitivity(False);
-				if (Player.PerkNamesArray[35] == 1 && Player.PerkNamesArray[34] != 1  && Costs2 != 0 && Player.SkillPointsAvail >= Costs2)
-				   buttonUpgrade2.SetSensitivity(True);
-				if ((Player.SkillSystem.GetSkillLevel(class'SkillLockpicking') < 3 || Player.PerkNamesArray[32] == 1) && Costs3 != 0)
-				buttonUpgrade3.SetSensitivity(False);
-				break;
-
-            case "TECH SPECIALIST":
-                if ((Player.SkillSystem.GetSkillLevel(class'SkillEnviro') < 1 || Player.PerkNamesArray[6] == 1) && Costs != 0)
-				buttonUpgrade.SetSensitivity(False);
-				if ((Player.SkillSystem.GetSkillLevel(class'SkillEnviro') < 2 || Player.PerkNamesArray[20] == 1) && Costs2 != 0)
-				buttonUpgrade2.SetSensitivity(False);
-				if (Player.PerkNamesArray[6] != 1 && Player.PerkNamesArray[35] == 1 && Costs != 0 && Player.SkillPointsAvail >= Costs)
-				   buttonUpgrade.SetSensitivity(True);
-				if (Player.PerkNamesArray[20] != 1 && Player.PerkNamesArray[35] == 1 && Costs2 != 0 && Player.SkillPointsAvail >= Costs2)
-				   buttonUpgrade2.SetSensitivity(True);
-				if ((Player.SkillSystem.GetSkillLevel(class'SkillEnviro') < 3 || Player.PerkNamesArray[28] == 1) && Costs3 != 0)
-				buttonUpgrade3.SetSensitivity(False);
-				break;
-
-            case "COMBAT MEDIC'S BAG":
-                if ((Player.SkillSystem.GetSkillLevel(class'SkillMedicine') < 1 || Player.PerkNamesArray[8] == 1) && Costs != 0)
-				buttonUpgrade.SetSensitivity(False);
-				if ((Player.SkillSystem.GetSkillLevel(class'SkillMedicine') < 2 || Player.PerkNamesArray[19] == 1) && Costs2 != 0)
-				buttonUpgrade2.SetSensitivity(False);
-				if (Player.PerkNamesArray[35] == 1 && Player.PerkNamesArray[8] != 1 && Costs != 0 && Player.SkillPointsAvail >= Costs)
-				   buttonUpgrade.SetSensitivity(True);
-				if (Player.PerkNamesArray[35] == 1 && Player.PerkNamesArray[19] != 1 && Costs2 != 0 && Player.SkillPointsAvail >= Costs2)
-				   buttonUpgrade2.SetSensitivity(True);
-				if ((Player.SkillSystem.GetSkillLevel(class'SkillMedicine') < 3 || Player.PerkNamesArray[30] == 1) && Costs3 != 0)
-				buttonUpgrade3.SetSensitivity(False);
-				break;
-
-			case "NEAT HACK":
-                if ((Player.SkillSystem.GetSkillLevel(class'SkillComputer') < 1 || Player.PerkNamesArray[7] == 1) && Costs != 0)
-				buttonUpgrade.SetSensitivity(False);
-				if ((Player.SkillSystem.GetSkillLevel(class'SkillComputer') < 2 || Player.PerkNamesArray[21] == 1) && Costs2 != 0)
-				buttonUpgrade2.SetSensitivity(False);
-				if (Player.PerkNamesArray[35] == 1 && Player.PerkNamesArray[7] != 1 && Costs != 0 && Player.SkillPointsAvail >= Costs)
-				   buttonUpgrade.SetSensitivity(True);
-				if (Player.PerkNamesArray[35] == 1 && Player.PerkNamesArray[21] != 1 && Costs2 != 0 && Player.SkillPointsAvail >= Costs2)
-				   buttonUpgrade2.SetSensitivity(True);
-				if ((Player.SkillSystem.GetSkillLevel(class'SkillComputer') < 3 || Player.PerkNamesArray[33] == 1) && Costs3 != 0)
-				buttonUpgrade3.SetSensitivity(False);
-				break;
-
-            default:
-                buttonUpgrade.SetSensitivity(False);
-                buttonUpgrade2.SetSensitivity(False);
-                buttonUpgrade3.SetSensitivity(False);
-                break;
-     }
-	 */
-
-
-     SetText(ob);
-     AddLine();
-     for (i=0;i<ArrayCount(Player.BoughtPerks);i++)
-    {
-     if (Player.BoughtPerks[i] != "")
-     SetText(Player.BoughtPerks[i]);
+		if (player.PerkManager.PerkList[i].bPerkObtained == true)
+			SetText(player.PerkManager.PerkList[i].PerkName);
     }
 }
 
@@ -498,12 +207,12 @@ function bool ButtonActivated( Window buttonPressed )
     local DeusExBaseWindow TopWin;
 	local DeusExPlayer player;
     local int i, index;
-	local Perk PerkInManager;
 
 	if (Super.ButtonActivated(buttonPressed))
 		return True;
 
 	bHandled   = True;
+	player = DeusExPlayer(GetPlayerPawn());
 
     topWin = DeusExRootWindow(GetRootWindow()).GetTopWindow();
 	// Check if this is one of our Skills buttons
@@ -515,27 +224,15 @@ function bool ButtonActivated( Window buttonPressed )
 	{*/
 	for (index = 0; index < ArrayCount(buttonUpgrade); index++)
 	{
-		PerkInManager = player.PerkManager.GetPerkName(buttonUpgrade[index].ButtonPerk.PerkName);
-
 		if (buttonPressed == buttonUpgrade[index])
 		{
-			if (player.SkillPointsAvail >= (buttonUpgrade[index].ButtonPerk.PerkCost))
-			{
-				//Player.PlaySound(Sound'GMDXSFX.Generic.codelearned',SLOT_None,,,,0.8);
-				//Player.SkillPointsAvail-= buttonUpgrade.PerkSkillCost;
-				//Player.perksManager(buttonUpgrade.PerkNamed,1);
-				player.PerkManager.GetPerkName(buttonUpgrade[index].ButtonPerk.PerkName).PurchasePerk();
-				buttonUpgrade[index].SetSensitivity(False);
-				SetText(buttonUpgrade[index].LocalizedPerkNamed);
-				if ( TopWin!=None )
-					TopWin.RefreshWindow( 0.0 );
-				if (Player.SkillPointsAvail < buttonUpgrade[index].ButtonPerk.PerkCost)
-						buttonUpgrade[index].SetSensitivity(False);
-				//if (Player.SkillPointsAvail < buttonUpgrade2.PerkSkillCost2)
-				//     buttonUpgrade2.SetSensitivity(False);
-				//if (Player.SkillPointsAvail < buttonUpgrade3.PerkSkillCost3)
-				//     buttonUpgrade3.SetSensitivity(False);
-			}
+			player.PerkManager.PerkList[player.PerkManager.GetPerkIndex(buttonUpgrade[index].ButtonPerk)].PurchasePerk();
+			buttonUpgrade[index].SetSensitivity(False);
+			SetText(buttonUpgrade[index].LocalizedPerkNamed);
+			if ( TopWin!=None )
+				TopWin.RefreshWindow( 0.0 );
+			if (Player.SkillPointsAvail < buttonUpgrade[index].ButtonPerk.PerkCost)
+					buttonUpgrade[index].SetSensitivity(False);
 			else
 				buttonUpgrade[index].SetSensitivity(False);
 		}
@@ -544,100 +241,6 @@ function bool ButtonActivated( Window buttonPressed )
 
 		switch(buttonPressed)
 		{
-			/* 
-			case buttonUpgrade:
-			    if (Player.SkillPointsAvail >= (buttonUpgrade.ButtonPerk.PerkCost))
-			    {
-			    //Player.PlaySound(Sound'GMDXSFX.Generic.codelearned',SLOT_None,,,,0.8);
-				//Player.SkillPointsAvail-= buttonUpgrade.PerkSkillCost;
-				//Player.perksManager(buttonUpgrade.PerkNamed,1);
-				buttonUpgrade.ButtonPerk.PurchasePerk();
-				buttonUpgrade.SetSensitivity(False);
-				SetText(buttonUpgrade.LocalizedPerkNamed);
-				if ( TopWin!=None )
-                   TopWin.RefreshWindow( 0.0 );
-                if (Player.SkillPointsAvail < buttonUpgrade.PerkSkillCost)
-	                 buttonUpgrade.SetSensitivity(False);
-                //if (Player.SkillPointsAvail < buttonUpgrade2.PerkSkillCost2)
-	            //     buttonUpgrade2.SetSensitivity(False);
-                //if (Player.SkillPointsAvail < buttonUpgrade3.PerkSkillCost3)
-	            //     buttonUpgrade3.SetSensitivity(False);
-				}
-				else
-				buttonUpgrade.SetSensitivity(False);
-				/*if (buttonUpgrade.PerkNamed == "ARTIFICIAL LOCK" && player.PerkNamesArray[34] != 1 && Player.SkillPointsAvail >= buttonUpgrade2.PerkSkillCost)
-				    buttonUpgrade2.SetSensitivity(true);*/                      //RSD: No more Artificial Lock
-				for (i=0;i<ArrayCount(Player.BoughtPerks);i++)
-				{
-				 if (Player.BoughtPerks[i] == "")
-				 {
-				 Player.BoughtPerks[i] = buttonUpgrade.LocalizedPerkNamed;
-				 break;
-				 }
-				}
-				break;
-			*/
-
-			/* 
-            case buttonUpgrade2:
-                if (Player.SkillPointsAvail >= buttonUpgrade2.PerkSkillCost2)
-                {
-                Player.PlaySound(Sound'GMDXSFX.Generic.codelearned',SLOT_None,,,,0.8);
-				Player.SkillPointsAvail-= buttonUpgrade2.PerkSkillCost2;
-				buttonUpgrade2.SetSensitivity(False);
-				Player.perksManager(buttonUpgrade2.PerkNamed2,2);
-				SetText(buttonUpgrade2.LocalizedPerkNamed2);
-				if ( TopWin!=None )
-                   TopWin.RefreshWindow( 0.0 );
-                if (Player.SkillPointsAvail < buttonUpgrade.PerkSkillCost)
-	                 buttonUpgrade.SetSensitivity(False);
-                if (Player.SkillPointsAvail < buttonUpgrade2.PerkSkillCost2)
-	                 buttonUpgrade2.SetSensitivity(False);
-                if (Player.SkillPointsAvail < buttonUpgrade3.PerkSkillCost3)
-	                 buttonUpgrade3.SetSensitivity(False);
-				}
-				else
-				buttonUpgrade2.SetSensitivity(False);
-				for (i=0;i<ArrayCount(Player.BoughtPerks);i++)
-				{
-				 if (Player.BoughtPerks[i] == "")
-				 {
-				 Player.BoughtPerks[i] = buttonUpgrade2.LocalizedPerkNamed2;
-				 break;
-				 }
-				}
-                break;
-
-            case buttonUpgrade3:
-                if (Player.SkillPointsAvail >= buttonUpgrade3.PerkSkillCost3)
-                {
-                Player.PlaySound(Sound'GMDXSFX.Generic.codelearned',SLOT_None,,,,0.8);
-				Player.SkillPointsAvail-= buttonUpgrade3.PerkSkillCost3;
-				buttonUpgrade3.SetSensitivity(False);
-				Player.perksManager(buttonUpgrade3.PerkNamed3,3);
-				SetText(buttonUpgrade3.LocalizedPerkNamed3);
-				if ( TopWin!=None )
-                   TopWin.RefreshWindow( 0.0 );
-	            if (Player.SkillPointsAvail < buttonUpgrade.PerkSkillCost)
-	                 buttonUpgrade.SetSensitivity(False);
-                if (Player.SkillPointsAvail < buttonUpgrade2.PerkSkillCost2)
-	                 buttonUpgrade2.SetSensitivity(False);
-                if (Player.SkillPointsAvail < buttonUpgrade3.PerkSkillCost3)
-	                 buttonUpgrade3.SetSensitivity(False);
-				}
-				else
-				    buttonUpgrade3.SetSensitivity(False);
-				for (i=0;i<ArrayCount(Player.BoughtPerks);i++)
-				{
-				 if (Player.BoughtPerks[i] == "")
-				 {
-				 Player.BoughtPerks[i] = buttonUpgrade3.LocalizedPerkNamed3;
-				 break;
-				 }
-				}
-                break;
-				*/
-
             case buttonUpgradeSecond:
 
                if (assignThis != None && player.assignedWeapon != None && player.assignedWeapon == assignThis)

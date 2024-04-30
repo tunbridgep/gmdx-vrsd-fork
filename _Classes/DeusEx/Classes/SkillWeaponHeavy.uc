@@ -45,16 +45,4 @@ defaultproperties
      LevelValues(1)=-0.100000
      LevelValues(2)=-0.250000
      LevelValues(3)=-0.500000
-     PerksDescription="|nAn agent is trained with the use of the flamethrower, ensuring that the igniting fuel is not blocked by targets.|n|nRequires: Heavy Weapons: TRAINED"
-     PerksDescription2="|nAn agent tunes the plasma rifle to reduce damage falloff within the same blast radius.|n|nRequires: Heavy Weapons: ADVANCED"
-     PerksDescription3="|nThe blast radius of an agent's GEP rockets is increased two-fold. |n|nRequires: Heavy Weapons: MASTER"
-     PerkName="FOCUSED: HEAVY WEAPONS"
-     PerkName2="PERFECT STANCE: HEAVY WEAPONS"
-     PerkName3="H.E ROCKET"
-     PerkCost(0)=150
-     PerkCost(1)=250
-     PerkCost(2)=400
-     LocalizedPerkName="CONTROLLED BURN"
-     LocalizedPerkName2="BLAST ENERGY"
-     LocalizedPerkName3="H.E ROCKET"
 }

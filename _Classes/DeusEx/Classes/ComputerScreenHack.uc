@@ -672,7 +672,7 @@ function Tick(float deltaTime)
 	       else
                 wormTimeModifier = 1;
 		   wormTime += (deltaTime*wormTimeModifier);*/
-		   if (player.PerkNamesArray[7] != 1)                                   //RSD: MODDER perk makes STOP worm effect permanent rather than +50% effective
+		   if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkModder').bPerkObtained == false)                                   //RSD: MODDER perk makes STOP worm effect permanent rather than +50% effective
 		      wormTime += deltaTime;
 		   if (wormTime > 7.0)
 		   {

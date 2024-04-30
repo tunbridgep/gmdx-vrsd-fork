@@ -11,6 +11,6 @@ defaultproperties
     PerkDescription="|nAn agent tunes the plasma rifle to reduce damage falloff within the same blast radius.|n|nRequires: Heavy Weapons: ADVANCED"
     PerkSkill=Class'DeusEx.SkillWeaponHeavy'
     PerkCost=250
-    perkLevelRequirement=1
+    PerkLevelRequirement=2
     PerkValue=1
 }

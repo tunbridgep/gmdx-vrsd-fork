@@ -7,7 +7,7 @@
 
 class PerkSystem extends object;
 
-var travel Perk PerkList[37];			// Trash: Hopefully with this system, you can make this 500 and it wouldn't matter much
+var travel Perk PerkList[50];			// Trash: Hopefully with this system, you can make this 500 and it wouldn't matter much
 var travel int numPerks;				// Trash: UnrealScript doesn't support lists, so this is essentially the number of perks in the game
 var travel DeusExPlayer PlayerAttached;	// Trash: The player this class is attached to
 
@@ -19,6 +19,9 @@ var travel DeusExPlayer PlayerAttached;	// Trash: The player this class is attac
 function InitializePerks(DeusExPlayer newPlayer)	// Trash: Add every perk in the game to the PerkList[] array and assign the player
 {
 	PlayerAttached = newPlayer;
+
+	// Trash: The system automatically sorts every perk so order doesn't matter
+	// Trash: HOWEVER I'd still highly suggest placing perks under the appropriate comments
 
 	// Rifle Perks
 	AddPerk(Class'DeusEx.PerkSteady');
@@ -88,20 +91,35 @@ function AddPerk(class<Perk> perk)
 	perkInstance = new(self)Perk;
 
 	PerkList[numPerks] = perkInstance;
+	PerkList[numPerks].PerkOwner = PlayerAttached;
     numPerks++;
+}
+
+// ----------------------------------------------------------------------
+// ResetPerks()
+// ----------------------------------------------------------------------
+
+function ResetPerks()  // Trash: Reset every perk
+{
+	local int index;
+
+	for (index = 0; index < ArrayCount(PerkList); index++)
+	{
+		PerkList[index].bPerkObtained = false;
+	}
 }
 
 // ----------------------------------------------------------------------
 // GetPerkIndex()
 // ----------------------------------------------------------------------
 
-function int GetPerkIndex(Perk Perk)  // Trash: Get the index of the perk by just checking the class
+function int GetPerkIndex(Perk Perk)  // Trash: Get the index of the perk by checking the class
 {
 	local int index;
 
 	for (index = 0; index < ArrayCount(PerkList); index++)
 	{
-		if (PerkList[index] == Perk)
+		if (PerkList[index].class == Perk.class)
 		{
 			return index;
 		}
@@ -109,10 +127,10 @@ function int GetPerkIndex(Perk Perk)  // Trash: Get the index of the perk by jus
 }
 
 // ----------------------------------------------------------------------
-// GetPerkName()
+// GetPerkWithName()
 // ----------------------------------------------------------------------
 
-function Perk GetPerkName(String pName)  // Trash: Get the index of the perk by just checking the class
+function Perk GetPerkWithName(String pName)  // Trash: Get the perk by checking the name
 {
 	local int index;
 
@@ -126,22 +144,22 @@ function Perk GetPerkName(String pName)  // Trash: Get the index of the perk by 
 }
 
 // ----------------------------------------------------------------------
-// GetPerksForSkill()
+// GetPerkWithClass()
 // ----------------------------------------------------------------------
-/*
-function GetPerkButtonsForSkill(Skill skill)  // Trash: Get every perk with the same skill and create a button for it
+
+function Perk GetPerkWithClass(Class<Perk> pClass)  // Trash: Get the perk by checking the class
 {
-	local PersonaInfoWindow button;
 	local int index;
 
 	for (index = 0; index < ArrayCount(PerkList); index++)
 	{
-		if (PerkList[index].ReturnPerkSkill() == Skill)
+		if (PerkList[index].class == pClass)
 		{
-			button.CreatePerkOverview(PerkList[index]);
+			return PerkList[index];
 		}
 	}
-} */
+}
+
 
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------

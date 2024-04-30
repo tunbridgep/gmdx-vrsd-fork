@@ -9,6 +9,6 @@ defaultproperties
     PerkDescription="|nGrenade detonation time is 1 second shorter. |n|nRequires: Demolitions: ADVANCED"
     PerkSkill=Class'DeusEx.SkillDemolition'
     PerkCost=200
-    perkLevelRequirement=1
+    PerkLevelRequirement=2
     PerkValue=1
 }

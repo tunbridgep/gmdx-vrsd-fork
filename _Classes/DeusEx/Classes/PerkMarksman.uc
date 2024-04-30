@@ -9,6 +9,6 @@ defaultproperties
     PerkDescription="|nAn agent aims down a rifle's scope 30% faster, handles rifle recoil efficiently, and sway when looking through a rifle's scope is reduced marginally.|n|nRequires: Rifles: MASTER"
     PerkSkill=Class'DeusEx.SkillWeaponRifle'
     PerkCost=300
-    perkLevelRequirement=2
+    PerkLevelRequirement=3
     PerkValue=1.3
 }

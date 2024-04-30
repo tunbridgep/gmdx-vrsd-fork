@@ -9,6 +9,6 @@ defaultproperties
     PerkDescription="|nNearby proximity mines emit audible feedback to your infolink, revealing their location. |n|nRequires: Demolitions: TRAINED"
     PerkSkill=Class'DeusEx.SkillDemolition'
     PerkCost=100
-    perkLevelRequirement=0
+    PerkLevelRequirement=1
     PerkValue=1
 }

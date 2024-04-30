@@ -58,7 +58,7 @@ simulated function bool UpdateInfo(Object winObject)
 		outText = outText $ winInfo.CR() $ PickupInfo3;
 		else
 		outText = outText $ winInfo.CR() $ PickupInfo3;*/
-		if (DeusExPlayer(Owner).PerkNamesArray[6] == 1)                         //RSD: New Repairman perk
+		if (DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkFieldRepair').bPerkObtained == true)                         //RSD: New Repairman perk
 			outText = outText $ winInfo.CR() $ PickupInfo5 @ int(150*(default.chargeMult))$"%";
 		else
 			outText = outText $ winInfo.CR() $ PickupInfo5 @ int(100*default.chargeMult)$"%"; //RSD: Generic now that chargeMult is stored in each class, not hacked

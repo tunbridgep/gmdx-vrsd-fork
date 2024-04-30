@@ -9,6 +9,6 @@ defaultproperties
     PerkDescription="|nAn agent recieves additional bioelectrical charge from biocells (+5). |n|nRequires: Medicine: TRAINED"
     PerkSkill=Class'DeusEx.SkillMedicine'
     PerkCost=175
-    perkLevelRequirement=0
+    PerkLevelRequirement=1
     PerkValue=1
 }

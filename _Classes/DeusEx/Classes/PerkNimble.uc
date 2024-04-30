@@ -9,6 +9,6 @@ defaultproperties
     PerkDescription="|nAn agent is silent whilst mantling and climbing ladders. |n|nRequires: Stealth: TRAINED"
     PerkSkill=Class'DeusEx.SkillStealth'
     PerkCost=150
-    perkLevelRequirement=0
+    PerkLevelRequirement=1
     PerkValue=1
 }
