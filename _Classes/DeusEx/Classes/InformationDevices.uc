@@ -103,12 +103,14 @@ function Frob(Actor Frobber, Inventory frobWith)
 			// hide the crosshairs if there's text to read, otherwise display a message
 			if (infoWindow == None)
 				player.ClientMessage(msgNoText);
+            else
+                player.UpdateCrosshair();
 		}
 		else
 		{
 			DestroyWindow();
+            player.UpdateCrosshair();
 		}
-        player.UpdateCrosshair();
 	}
 }
 
