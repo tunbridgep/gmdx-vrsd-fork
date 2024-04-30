@@ -7,7 +7,7 @@
 
 class PerkSystem extends object;
 
-var travel Perk PerkList[50];			// Trash: Hopefully with this system, you can make this 500 and it wouldn't matter much
+var travel Perk PerkList[36];			// Trash: Hopefully with this system, you can make this 500 and it wouldn't matter much. You still need to manually set how many perks are created here though...
 var travel int numPerks;				// Trash: UnrealScript doesn't support lists, so this is essentially the number of perks in the game
 var travel DeusExPlayer PlayerAttached;	// Trash: The player this class is attached to
 
