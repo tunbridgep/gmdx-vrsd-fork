@@ -12,6 +12,7 @@ class Perk extends object;
 var string PerkName;               // Trash: Self Explanatory
 var string PerkDescription;        // Trash: Self Explanatory
 var class<Skill> PerkSkill;        // Trash: What skill does the perk belong to? Leave blank to make it a general skill
+var Texture PerkIcon;
 var int PerkCost;                  // Trash: How much does it cost to buy this perk?
 var int PerkLevelRequirement;      // Trash: What's the skill requirement to buy this perk?
 var float PerkValue;               // Trash: Optional, what's the value that you want increased when this perk is obtained? For example, 1.25 could mean you heal 25% faster
@@ -19,11 +20,28 @@ var float PerkValue;               // Trash: Optional, what's the value that you
 var travel DeusExPlayer PerkOwner; // Trash: Who's the perk's owner?
 var travel bool bPerkObtained;     // Trash: Do you own this perk?
 
+
+// ----------------------------------------------------------------------
+// GetPerkIcon()
+// ----------------------------------------------------------------------
+
+function Texture GetPerkIcon()     // Trash: Return the perk's icon if it's already there, if not just get the default skill icon
+{
+     if (PerkIcon != None)
+     {
+          return PerkIcon;
+     }
+     else
+     {
+          return PerkOwner.SkillSystem.GetSkillFromClass(PerkSkill).SkillIcon;
+     }
+}
+
 // ----------------------------------------------------------------------
 // IsPurchasable()
 // ----------------------------------------------------------------------
 
-function bool IsPurchasable()
+function bool IsPurchasable() // Trash: Can you purchase this perk?
 {
      if (bPerkObtained == false && PerkOwner.SkillSystem.GetSkillLevel(PerkSkill) >= PerkLevelRequirement && PerkOwner.SkillPointsAvail >= PerkCost)
      {
@@ -39,7 +57,7 @@ function bool IsPurchasable()
 // PurchasePerk()
 // ----------------------------------------------------------------------
 
-function PurchasePerk()
+function PurchasePerk()  // Trash: Purchase the perk if possible
 {
      if (IsPurchasable())
      {

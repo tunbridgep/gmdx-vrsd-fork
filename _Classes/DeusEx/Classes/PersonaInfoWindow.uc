@@ -105,6 +105,7 @@ function CreatePerkOverview(Perk Perk, int index)	//Trash: Creates the descripti
 
 	player = DeusExPlayer(GetPlayerPawn());
 	PerkInManager = player.PerkManager.PerkList[player.PerkManager.GetPerkIndex(Perk)];
+	PassedSkillIcon = PerkInManager.GetPerkIcon();
 
     winActionButtons1[index] = PersonaButtonBarWindow(winTile.NewChild(Class'PersonaButtonBarWindow'));
     winActionButtons1[index].SetWidth(0);
@@ -120,13 +121,13 @@ function CreatePerkOverview(Perk Perk, int index)	//Trash: Creates the descripti
 	winSkillIconP[index].SetSize(24, 24);
 	winSkillIconP[index].SetBackgroundStyle(DSTY_Normal);
 	winSkillIconP[index].SetBackground(PassedSkillIcon); // CHECK THIS LATER, TRASH!
-	WinSkillText[index] = TextWindow(winSkillIconP[index].NewChild(class'TextWindow'));
-	WinSkillText[index].SetFont(Font'FontConversationLargeBold');
+	//WinSkillText[index] = TextWindow(winSkillIconP[index].NewChild(class'TextWindow'));
+	//WinSkillText[index].SetFont(Font'FontConversationLargeBold');
 	//if (pName == "MODDER")
 	//   WinSkillText[index].SetTextColorRGB(96,96,96);
 	//else
-    WinSkillText[index].SetTextColorRGB(192,192,192);
-	WinSkillText[index].SetText("0");
+    //WinSkillText[index].SetTextColorRGB(192,192,192);
+	//WinSkillText[index].SetText("0");
 
     SetText(Perk.PerkDescription);
     SetText(RequiredPoints $ Perk.PerkCost);
