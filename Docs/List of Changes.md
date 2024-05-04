@@ -60,7 +60,7 @@ Sarge's Changes since Beta 2.2:
         - Regardless of the Autofill setting, all items of the remembered type will be automatically added to the belt slot when picked up.
         - Belt memory can be overridden by manually adding an item to a given belt slot at any time.
         - Items dropped from the inventory or via the drop key will not be remembered, to allow easily throwing away unwanted junk without affecting the belt.
-    - Infinity War Toolbelt improvements and bugfixes
+    - Invisible War Toolbelt improvements and bugfixes
         - Fixed bug where selected icon in the belt was forgotten between game sessions.
         - With Double Click Unholstering enabled, a single-rightclick will unholster a weapon if the selection was changed.
         - Pressing a number key while a numbered slot is selected will set it as the primary selection.
