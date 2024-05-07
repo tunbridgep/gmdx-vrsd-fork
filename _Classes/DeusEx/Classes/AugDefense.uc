@@ -49,38 +49,39 @@ state Active
 			defenseSoundTime = Level.Timeseconds + defenseSoundDelay;
 		}
 
-      //DEUS_EX AMSD Exported to function call for duplication in multiplayer.
-      minproj = FindNearestProjectile();
-
+        //DEUS_EX AMSD Exported to function call for duplication in multiplayer.
+        minproj = FindNearestProjectile();
+            
 		// if we have a valid projectile, send it to the aug display window
 		if (minproj != None)
 		{
-         bDefenseActive = True;
-         mindist = VSize(Player.Location - minproj.Location);
-
-         // DEUS_EX AMSD In multiplayer, let the client turn his HUD on here.
-         // In singleplayer, turn it on normally.
-         if (Level.Netmode != NM_Standalone)
-            TriggerDefenseAugHUD();
-         else
-         {
-            SetDefenseAugStatus(True,CurrentLevel,minproj);
-         }
-
-			// play a warning sound
-            //SARGE: prevent earrape by only beeping every 2 seconds
-            if (defenseSoundTime <= Level.Timeseconds)
-            {
-                Player.PlaySound(sound'GEPGunLock', SLOT_None,0.6,,, 2.0);
-                defenseSoundTime = Level.Timeseconds + defenseSoundDelay;
-            }
+            bDefenseActive = True;
+            mindist = VSize(Player.Location - minproj.Location);
+                
 
 			if (mindist < LevelValues[CurrentLevel])
 			{
-                minproj.bAggressiveExploded=True;
+                minproj.bAggressiveExploded = True;
+                minproj.aggressiveExploder = Player;
 				minproj.Explode(minproj.Location, vect(0,0,1));
 				Player.PlaySound(sound'ProdFire', SLOT_None,,,, 2.0);
 			}
+            
+            // play a warning sound
+            //SARGE: prevent earrape by only beeping when a projectile is about to enter our range
+			if (mindist < LevelValues[CurrentLevel] + 600)
+                Player.PlaySound(sound'GEPGunLock', SLOT_None,0.6,,, 2.0);
+            else
+                minproj = None; //Dirty hack. Clear this so that nothing gets passed to the aug display window
+
+            // DEUS_EX AMSD In multiplayer, let the client turn his HUD on here.
+            // In singleplayer, turn it on normally.
+            if (Level.Netmode != NM_Standalone)
+                TriggerDefenseAugHUD();
+            else
+            {
+                SetDefenseAugStatus(True,CurrentLevel,minproj);
+            }
 		}
 		else
 		{

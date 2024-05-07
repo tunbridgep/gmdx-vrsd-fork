@@ -611,17 +611,16 @@ function DrawDefenseAugmentation(GC gc)
 
         //Sarge: Don't draw across the whole map, since it has infinite range. Instead, only draw when something is actually exploding
         //We also want to draw it for a second or so afterwards
-		if (defenseTarget.IsInState('Exploding') || defenseTarget.isA('Dart'))
-		{
-            defenseTargetLastPos = defenseTarget.Location;
-			str = msgADSDetonating;
-            drawTime = 1.0;
-        }
+        defenseTargetLastPos = defenseTarget.Location;
+        drawTime = 1.0;
 	}
 
-    else if (drawTime > 0)
+    if (drawTime > 0)
     {
-        str = msgADSTracking;
+		if (defenseTarget.IsInState('Exploding') || defenseTarget == None)
+            str = msgADSDetonating;
+        else
+            str = msgADSTracking;
         mult = VSize(defenseTargetLastPos - Player.Location);
         str = str $ CR() $ msgRange @ Int(mult/16) @ msgRangeUnits;
 
@@ -1922,7 +1921,7 @@ defaultproperties
      msgNone="None"
      msgScanning1="* No Target *"
      msgScanning2="* Scanning *"
-     msgADSTracking="* ADS Destroyed *"
+     msgADSTracking="* ADS Tracking *"
      msgADSDetonating="* ADS Detonating *"
      msgBehind="BEHIND"
      msgDroneActive="Remote SpyDrone Active"

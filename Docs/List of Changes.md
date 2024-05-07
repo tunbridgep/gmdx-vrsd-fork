@@ -71,10 +71,12 @@ Sarge's Changes since Beta 2.2:
         - The keyring can be selected using Left-Click Frob on doors.
 - Gameplay Changes:
     - Augmentation Changes
+        - EUAS
+            - Swapped Level 2 and 3, because level 2 was arguably better than level 3. Now level 2 detects environmental hazards, level 3 shows visibility on the HUD.
         - Aggressive Defense System:
             - Will no longer display explosives which aren't detonated, so it can't be used to detect placed grenades at long range anymore
                 - Will instead continue to display destroyed projectiles on the HUD for a second or so after they are destroyed.
-            - Now only beeps once per 2 seconds, to prevent annoying constant beeping
+            - Now only beeps as projectiles enter range, to prevent annoying earrape
             - Range increased from 340/480/640/800 to 400/600/800/1000
             - Added Player Damage Reduction for projectiles detonated by ADS. Reduces damage from projectiles by 20%/30%/40%/50%
     - Hacking Overhaul
@@ -84,7 +86,6 @@ Sarge's Changes since Beta 2.2:
             - The number of times a computer can be hacked is based on your Computers skill.
             - Regular computers will never be locked out, so you can read email to your hearts content.
     - Charged Objects no longer destroy themselves on use in Hardcore mode.
-    - Swapped Level 2 and 3 of the EUAS augmentation, because level 2 was arguably better than level 3. Now level 2 detects environmental hazards, level 3 shows visibility on the HUD.
     - The rifle's grenade launcher doesn't require reloading to turn on, but you need to reload after each shot. It now works like a different weapon.
     - Restricted Saving is now a Playthrough Modifier and is no longer restricted to Hardcore Mode. It's still enforced in Hardcore Mode.
     - Added No Keypad Cheese Playthrough Modifier (called "Unknown Codes") which prevents using keypads or computer logins without having found them beforehand. Some codes which are hinted but never given are excepted.
