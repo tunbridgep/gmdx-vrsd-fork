@@ -972,16 +972,21 @@ local DeusExPlayer player;                                                      
 		local float rad, mult;
         local FireballSpoof fSpoof;
         local SFXExp exp;
+        local DeusExPlayer player;
+
+        player = DeusExPlayer(GetPlayerPawn());
 
 	    // Reduce damage on nano exploded projectiles
         // SARGE: make single-player damage scale with aug level, rather than always doing full damage
-	    if (bAggressiveExploded)
+	    if (bAggressiveExploded && player != None)
         {
             if (Level.NetMode != NM_Standalone)
 		        Damage = Damage/6;
             else
-                mult = 0.1 + (player.AugmentationSystem.GetClassLevel(class'AugDefense') * 0.1)
+            {
+                mult = 0.2 + (player.AugmentationSystem.GetClassLevel(class'AugDefense') * 0.1);
                 Damage = Damage * mult;
+            }
         }
 
 		bDestroy = false;
