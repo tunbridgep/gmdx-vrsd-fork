@@ -969,13 +969,20 @@ local DeusExPlayer player;                                                      
 	simulated function Explode(vector HitLocation, vector HitNormal)
 	{
 		local bool bDestroy;
-		local float rad;
+		local float rad, mult;
         local FireballSpoof fSpoof;
         local SFXExp exp;
 
-	  // Reduce damage on nano exploded projectiles
-	  if ((bAggressiveExploded) && (Level.NetMode != NM_Standalone))
-		 Damage = Damage/6;
+	    // Reduce damage on nano exploded projectiles
+        // SARGE: make single-player damage scale with aug level, rather than always doing full damage
+	    if (bAggressiveExploded)
+        {
+            if (Level.NetMode != NM_Standalone)
+		        Damage = Damage/6;
+            else
+                mult = 0.1 + (player.AugmentationSystem.GetClassLevel(class'AugDefense') * 0.1)
+                Damage = Damage * mult;
+        }
 
 		bDestroy = false;
 

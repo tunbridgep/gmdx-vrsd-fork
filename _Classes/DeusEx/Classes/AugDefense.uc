@@ -77,7 +77,7 @@ state Active
 
 			if (mindist < LevelValues[CurrentLevel])
 			{
-            minproj.bAggressiveExploded=True;
+                minproj.bAggressiveExploded=True;
 				minproj.Explode(minproj.Location, vect(0,0,1));
 				Player.PlaySound(sound'ProdFire', SLOT_None,,,, 2.0);
 			}
@@ -122,7 +122,7 @@ simulated function DeusExProjectile FindNearestProjectile()
       if (Level.NetMode != NM_Standalone)
          bValidProj = !proj.bIgnoresNanoDefense;
       else
-         bValidProj = (!proj.IsA('PlasmaBolt')&&!proj.IsA('Cloud') && !proj.IsA('Tracer') && !proj.IsA('GreaselSpit') && !proj.IsA('GraySpit')
+         bValidProj = (!proj.IsA('Dart')&&!proj.IsA('PlasmaBolt')&&!proj.IsA('Cloud') && !proj.IsA('Tracer') && !proj.IsA('GreaselSpit') && !proj.IsA('GraySpit')
                    && !proj.IsA('Fireball') && !proj.IsA('Shuriken') && !proj.IsA('PlasmaRobot') && !proj.IsA('RubberBullet')); //RSD: Also not these
 
       if (bValidProj)
@@ -219,11 +219,11 @@ defaultproperties
      Icon=Texture'DeusExUI.UserInterface.AugIconDefense'
      smallIcon=Texture'DeusExUI.UserInterface.AugIconDefense_Small'
      AugmentationName="Aggressive Defense System"
-     Description="Aerosol nanoparticles are released upon the detection of objects fitting the electromagnetic threat profile of missiles and grenades; these nanoparticles will prematurely detonate such objects prior to reaching the agent.|n|nTECH ONE: The range at which incoming rockets and grenades are detonated is short.|n|nTECH TWO: The range at which detonation occurs is increased slightly.|n|nTECH THREE: The range at which detonation occurs is increased moderately.|n|nTECH FOUR: Rockets and grenades are detonated almost before they are fired."
+     Description="Aerosol nanoparticles are released upon the detection of objects fitting the electromagnetic threat profile of missiles and grenades; these nanoparticles will prematurely detonate such objects prior to reaching the agent. The particles will additionally shape the detonation away from the agent, resulting in a significant reduction in damage from detonated objects.|n|nTECH ONE: The range at which incoming rockets and grenades are detonated is short, and damage is reduced slightly.|n|nTECH TWO: The range at which detonation occurs is increased slightly and damage is reduced by a small amount.|n|nTECH THREE: The range at which detonation occurs is increased moderately and damage is reduced by a moderate amount.|n|nTECH FOUR: Rockets and grenades are detonated almost before they are fired and damage is reduces significantly."
      MPInfo="When active, enemy rockets detonate when they get close, doing reduced damage.  Some large rockets may still be close enough to do damage when they explode.  Energy Drain: Low"
-     LevelValues(0)=320.000000
-     LevelValues(1)=480.000000
-     LevelValues(2)=640.000000
-     LevelValues(3)=800.000000
+     LevelValues(0)=400.000000
+     LevelValues(1)=600.000000
+     LevelValues(2)=800.000000
+     LevelValues(3)=1000.000000
      MPConflictSlot=7
 }
