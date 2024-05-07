@@ -3519,7 +3519,7 @@ function EHitLocation HandleDamage(out int actualDamage, Vector hitLocation, Vec
 
 	if (actualDamage > 0)
 	{
-		if (damageType == 'Burned' || damageType == 'Exploded' || damageType == 'Flamed') // Trash: Code stolen directly from RoSoDude, basically only deal torso damage multiplied by 3 if it's a flamethrower, explosive weapon, or the plasma gun for consistency.
+		if (damageType == 'Burned' || damageType == 'Exploded' || damageType == 'Flamed') // Trash: Code stolen directly from RoSoDude, basically only deal torso damage multiplied by 4 if it's a flamethrower, explosive weapon, or the plasma gun for consistency.
 		{
 			healthTorso -= actualDamage * 4;
 		}
