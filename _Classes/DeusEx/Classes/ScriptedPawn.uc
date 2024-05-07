@@ -460,6 +460,10 @@ var(Combat) bool bStopCamping;
 var bool        bReactToBeamGlobal;
 var bool        bReactFlareBeam;
 
+//Sarge
+var() const float fireReactTime;                                                //Minimum time we must be seeing the player for, before we can fire on them
+var float currentReactTime;                                                     //How much time remaining until we can fire
+
 //RSD
 var bool bHeadshotAltered;                                                      //RSD: Determines if the headshot multiplier was altered to avoid any edge cases
 var int PickupAmmoCount;                                                        //RSD: Ammo count to be passed to DeusExCarcass on death. Initialized in MissionScript.uc on first map load
@@ -13262,6 +13266,11 @@ State Attacking
                 return false;  //CyberP: rand as to whether snipers can fire, to simulate taking variable time to aim.
 			else if (AICanShoot(enemy, true, true, 0.025))
 			{
+                if (currentReactTime > 0)
+                {
+                    //Waiting to fire...
+                    return false;
+                }
 			    vista = VSize(Enemy.velocity);
 			    if (vista > 400)
 			    {
@@ -13290,11 +13299,45 @@ State Attacking
 				return true;
 			}
 			else
+            {
+                currentReactTime = GetFireReactTime();
 				return false;
+            }
 		}
 		else
 			return false;
 	}
+
+    //SARGE: Reset the minimum firing time when we lose LOS, based on factors like difficulty and weapon used
+    function float GetFireReactTime()
+    {
+        local float add;
+        local DeusExPlayer player;
+	    local DeusExWeapon W;
+
+        player = DeusExPlayer(GetPlayerPawn());    
+        W = DeusExWeapon(Weapon);
+
+        if (player.CombatDifficulty < 2) //On lower difficulties, increase the timer
+            add += 0.2;
+        
+        if (W.GoverningSkill == class'SkillWeaponPistol') //Pistols are slightly faster
+            add -= 0.1;
+        
+        else if (W.GoverningSkill == class'SkillWeaponRifle') //Rifles are slightly slow
+            add += 0.1;
+        
+        else if (W.GoverningSkill == class'SkillWeaponHeavy') //Heavy Weapons are very slow
+            add += 0.3;
+
+        if (W.isA('WeaponRifle'))
+            add += 0.2;
+
+        //Add some randomness
+        add += FRand() * 0.1;
+
+        return FMIN(0.75,fireReactTime+add);
+    }
 
 	function CheckAttack(bool bPlaySound)
 	{
@@ -13386,6 +13429,8 @@ State Attacking
 		local Pawn   lastEnemy;
 		local float  surpriseTime;
         local float  distan;
+
+        currentReactTime = FMAX(0.0,currentReactTime - deltaSeconds);
 
 		Global.Tick(deltaSeconds);
 		if (CrouchTimer > 0)
@@ -17074,4 +17119,5 @@ defaultproperties
      BindName="ScriptedPawn"
      FamiliarName="DEFAULT FAMILIAR NAME - REPORT THIS AS A BUG"
      UnfamiliarName="DEFAULT UNFAMILIAR NAME - REPORT THIS AS A BUG"
+     fireReactTime=0.4
 }
