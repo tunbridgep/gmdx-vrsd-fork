@@ -70,6 +70,12 @@ Sarge's Changes since Beta 2.2:
         - When Smart Keyring is enabled, the keyring will no longer occupy belt slot 0, allowing it to be used for regular items.
         - The keyring can be selected using Left-Click Frob on doors.
 - Gameplay Changes:
+    - Augmentation Changes
+        - Aggressive Defense System:
+            - Can now target Darts (including tranquilisers) as well as explosives
+            - Will no longer display explosives which aren't detonated, so it can't be used to detect placed grenades at long range anymore
+            - Now only beeps once per 2 seconds, to prevent annoying constant beeping
+            - Will continue to display destroyed projectiles on the HUD for a second or so after they are destroyed.
     - Hacking Overhaul
         - Bypassing Turrets now requires Advanced hacking, as in Vanilla.
         - Hacked Cameras and Turrets will "reboot" and become re-enabled again after 2 minutes (plus an additional 2 minutes for each level of the Hacking skill)
