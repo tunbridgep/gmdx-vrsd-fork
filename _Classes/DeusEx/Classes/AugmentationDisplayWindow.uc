@@ -10,6 +10,8 @@ var float corner;
 var bool bDefenseActive;
 var int defenseLevel;
 var DeusExProjectile defenseTarget;
+var Vector defenseTargetLastPos;
+var float drawTime;
 
 var ViewportWindow winDrone;
 var bool bDroneCreated;
@@ -451,6 +453,9 @@ function Tick(float deltaTime)
 		}
 	}
 
+    //SARGE: Update the AugDefense draw timer
+    drawTime = FMAX(0.0,drawTime - deltaTime);
+
 	// check for the target ViewportWindow being constructed
 	if (bTargetActive && (targetLevel > 2) && (winZoom == None) && (lastTarget != None) && (Player.Level.NetMode == NM_Standalone))
 	{
@@ -600,40 +605,40 @@ function DrawDefenseAugmentation(GC gc)
 	local String str;
 	local float boxCX, boxCY;
 	local float x, y, w, h, mult;
-	local bool bDrawLine;
 
 	if (defenseTarget != None)
 	{
-		bDrawLine = False;
 
-		if (defenseTarget.IsInState('Exploding'))
+        //Sarge: Don't draw across the whole map, since it has infinite range. Instead, only draw when something is actually exploding
+        //We also want to draw it for a second or so afterwards
+		if (defenseTarget.IsInState('Exploding') || defenseTarget.isA('Dart'))
 		{
+            defenseTargetLastPos = defenseTarget.Location;
 			str = msgADSDetonating;
-			bDrawLine = True;
-		}
-		else
-			str = msgADSTracking;
-
-		mult = VSize(defenseTarget.Location - Player.Location);
-		str = str $ CR() $ msgRange @ Int(mult/16) @ msgRangeUnits;
-
-		if (!ConvertVectorToCoordinates(defenseTarget.Location, boxCX, boxCY))
-			str = str @ msgBehind;
-
-		gc.GetTextExtent(0, w, h, str);
-		x = boxCX - w/2;
-		y = boxCY - h;
-		gc.SetTextColorRGB(255,0,0);
-		gc.DrawText(x, y, w, h, str);
-		gc.SetTextColor(colHeaderText);
-
-		if (bDrawLine)
-		{
-			gc.SetTileColorRGB(255,0,0);
-			Interpolate(gc, width/2, height/2, boxCX, boxCY, 64);
-			gc.SetTileColor(colHeaderText);
-		}
+            drawTime = 1.0;
+        }
 	}
+
+    else if (drawTime > 0)
+    {
+        str = msgADSTracking;
+        mult = VSize(defenseTargetLastPos - Player.Location);
+        str = str $ CR() $ msgRange @ Int(mult/16) @ msgRangeUnits;
+
+        if (!ConvertVectorToCoordinates(defenseTargetLastPos, boxCX, boxCY))
+            str = str @ msgBehind;
+
+        gc.GetTextExtent(0, w, h, str);
+        x = boxCX - w/2;
+        y = boxCY - h;
+        gc.SetTextColorRGB(255,0,0);
+        gc.DrawText(x, y, w, h, str);
+        gc.SetTextColor(colHeaderText);
+
+        gc.SetTileColorRGB(255,0,0);
+        Interpolate(gc, width/2, height/2, boxCX, boxCY, 64);
+        gc.SetTileColor(colHeaderText);
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -1917,7 +1922,7 @@ defaultproperties
      msgNone="None"
      msgScanning1="* No Target *"
      msgScanning2="* Scanning *"
-     msgADSTracking="* ADS Tracking *"
+     msgADSTracking="* ADS Destroyed *"
      msgADSDetonating="* ADS Detonating *"
      msgBehind="BEHIND"
      msgDroneActive="Remote SpyDrone Active"

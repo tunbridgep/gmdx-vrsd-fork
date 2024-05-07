@@ -68,7 +68,12 @@ state Active
          }
 
 			// play a warning sound
-			Player.PlaySound(sound'GEPGunLock', SLOT_None,0.6,,, 2.0);
+            //SARGE: prevent earrape by only beeping every 2 seconds
+            if (defenseSoundTime <= Level.Timeseconds)
+            {
+                Player.PlaySound(sound'GEPGunLock', SLOT_None,0.6,,, 2.0);
+                defenseSoundTime = Level.Timeseconds + defenseSoundDelay;
+            }
 
 			if (mindist < LevelValues[CurrentLevel])
 			{
@@ -117,7 +122,7 @@ simulated function DeusExProjectile FindNearestProjectile()
       if (Level.NetMode != NM_Standalone)
          bValidProj = !proj.bIgnoresNanoDefense;
       else
-         bValidProj = (!proj.IsA('Dart')&&!proj.IsA('PlasmaBolt')&&!proj.IsA('Cloud') && !proj.IsA('Tracer') && !proj.IsA('GreaselSpit') && !proj.IsA('GraySpit')
+         bValidProj = (!proj.IsA('PlasmaBolt')&&!proj.IsA('Cloud') && !proj.IsA('Tracer') && !proj.IsA('GreaselSpit') && !proj.IsA('GraySpit')
                    && !proj.IsA('Fireball') && !proj.IsA('Shuriken') && !proj.IsA('PlasmaRobot') && !proj.IsA('RubberBullet')); //RSD: Also not these
 
       if (bValidProj)
