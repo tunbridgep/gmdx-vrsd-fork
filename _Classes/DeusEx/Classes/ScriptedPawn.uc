@@ -13972,7 +13972,7 @@ RunToRange:
 	if (bCanStrafe && FRand() < smartStrafeRate && EnemyLastSeen < EnemyTimeout - 1.5)
 	{
 	    bSmartStrafe = True;
-	    if (FRand() < 0.9)
+	    //if (FRand() < 0.9) //Sarge: Remove this, let them always fire.
 	       bCanFire = True;
 	    //if (!ActorReachable(Enemy))
         //    bSmartStrafe = False;
