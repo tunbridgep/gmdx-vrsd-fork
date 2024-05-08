@@ -27,6 +27,7 @@ event InitWindow()
 	// Create our local object belt, then get a pointer to the HUD belt
 	objBelt = HUDObjectBelt(NewChild(Class'HUDObjectBelt'));
 	objBelt.SetPos(90, 0);
+    objBelt.SetInventoryBelt(true);
 	objBelt.SetVisibility(True);
 	objBelt.SetInteractive(True);
 

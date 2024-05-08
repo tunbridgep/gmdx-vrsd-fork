@@ -299,6 +299,7 @@ var localized string abridgedName;                                              
 var texture largeIconRot;                                                       //RSD: rotated inventory icon
 var travel int invSlotsXtravel;                                                 //RSD: since Inventory invSlotsX doesn't travel through maps
 var travel int invSlotsYtravel;                                                 //RSD: since Inventory invSlotsY doesn't travel through maps
+var travel float previousAccuracy;                                              //Sarge: Used to limit standing accuracy bonus from increasing past your max accuracy                                                                                
 
 //SARGE: Weapon Offset Stuff
 //TODO: Replace this with a generic implementation
@@ -545,20 +546,50 @@ function DropFrom(vector StartLocation)
 	checkweaponskins();                                                         //RSD: Need to do this after so we know mesh for Clyzm model check
 }
 
+//Shorthand for accessing hands tex
 function texture GetWeaponHandTex()
 {
 	local deusexplayer p;
-	local texture tex;
-
+    
     if (bIsRadar)//class'DeusExPlayer'.default.bRadarTran==True)                //RSD: Overhauled cloak/radar routines
         return Texture'Effects.Electricity.Xplsn_EMPG';
     else if (bIsCloaked)
         return FireTexture'GameEffects.InvisibleTex';
 
-	tex = texture'weaponhandstex';
-
 	p = deusexplayer(owner);
 	if(p != none)
+        return p.GetWeaponHandTex();
+	return None;
+}
+
+//SARGE: Had to add this, so that the LDDP Hand Selection works with the HDTP model selection stuff
+function Texture GetLDDPHandsTex(DeusExPlayer P)
+{
+    local Texture tex;
+
+	if ((P.FlagBase != None) && (P.FlagBase.GetBool('LDDPJCIsFemale')))
+    {
+        switch(P.PlayerSkin)
+        {
+            case 0:
+                tex = Texture(DynamicLoadObject("FemJC.WeaponHandsTex0Fem", class'Texture', false));
+                break;
+            case 1:
+                tex = Texture(DynamicLoadObject("FemJC.WeaponHandsTex4Fem", class'Texture', false));
+                break;
+            case 2:
+                tex = Texture(DynamicLoadObject("FemJC.WeaponHandsTex5Fem", class'Texture', false));
+                break;
+            case 3:
+                tex = Texture(DynamicLoadObject("FemJC.WeaponHandsTex6Fem", class'Texture', false));
+                break;
+            case 4:
+                tex = Texture(DynamicLoadObject("FemJC.WeaponHandsTex7Fem", class'Texture', false));
+                break;
+        }
+    }
+    //For male, return the basic ones
+    else if(p != none)
 	{
 		switch(p.PlayerSkin)
 		{
@@ -570,7 +601,11 @@ function texture GetWeaponHandTex()
 			case 4: tex = texture'HDTPItems.skins.weaponhandstexalbino'; break;
 		}
 	}
-	return tex;
+
+    if (tex == None)
+        tex = texture'weaponhandstex'; //White hands texture by default
+                                       
+    return tex;
 }
 
 function EraseWeaponHandTex()                                                   //RSD: Fixing weapons acquiring the hand texture in 3rd person view
@@ -2435,6 +2470,7 @@ simulated function Tick(float deltaTime)
 	  SoundTimer = 0;
 	}
 
+    previousAccuracy = currentAccuracy;
 	currentAccuracy = CalculateAccuracy();
 
 	if (player != None)
@@ -2554,7 +2590,8 @@ simulated function Tick(float deltaTime)
 	        mult += 1.0;
         if (player.CombatDifficulty < 1.0)                                      //RSD: Properly doubling on easy now
 		    mult *= 2.0;
-        standingTimer += mult*deltaTime;
+        if (previousAccuracy != currentAccuracy || standingTimer ~= 0.0)                                       //Sarge: Only increase standing timer if our accuracy has changed
+            standingTimer += mult*deltaTime;
 		if (standingTimer > 15.0) //CyberP: the devs forgot to cap the timer
 		    standingTimer = 15.0;
         if (player.bHardcoreMode && IsInState('Reload'))                        //RSD: reset accuracy when reloading in Hardcore

@@ -1,0 +1,18 @@
+Begin Map
+Begin Actor Class=LDDPHotelAddictS Name=LDDPHotelAddict0
+    requiresLDDP=true;
+    LDDPExtra=true;
+    InitialInventory(0)=(Inventory=Class'DeusEx.VialCrack')
+    FootRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=1217,ZoneNumber=13)
+    HeadRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=1217,ZoneNumber=13)
+    bDynamicLight=True
+    LastRenderTime=0.240729
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=LDDPHotelAddict
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=1217,ZoneNumber=13)
+    Location=(X=1868.248535,Y=-1333.276855,Z=111.600586)
+    OldLocation=(X=1868.248535,Y=-1333.276855,Z=111.600586)
+    bSelected=True
+    Name=LDDPHotelAddict0
+End Actor
+End Map

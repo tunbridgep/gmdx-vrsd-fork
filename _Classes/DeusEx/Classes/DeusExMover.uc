@@ -87,6 +87,14 @@ function bool DoLeftFrob(DeusExPlayer frobber)
     //right clicking on a mover
     leftFrobTimer = leftFrobTimerMax;
 
+    //If not highlightable, not locked, and having a threshold, just select melee
+    //This is a fallback for glass panes that aren't actually defined as BreakableGlass
+    if (!bLocked && minDamageThreshold > 0 && !bHighlight)
+    {
+        frobber.SelectMeleePriority(minDamageThreshold);
+        return false;
+    }
+
     //When not on hardcore, always select the keyring if we have the key
     if (!frobber.bHardcoreMode && CanToggleLock(frobber,frobber.KeyRing))
     {
@@ -806,6 +814,11 @@ function Frob(Actor Frobber, Inventory frobWith)
 				}
 				else if (bLocked)
 				{
+                    //Give us 3 seconds to use the right-click options after failing to use the key
+                    //This is so we don't accudentally change weapons in the middle of gameplay, by
+                    //right clicking on a mover
+                    leftFrobTimer = leftFrobTimerMax;
+
 					bOpenIt = False;
 					msg = msgNoNanoKey;
 				}

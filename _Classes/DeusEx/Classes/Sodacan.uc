@@ -5,8 +5,18 @@ class Sodacan extends RSDEdible;
 
 function Eat(DeusExPlayer player)
 {
+    local Sound BurpSound;
+    
+    //Heal
     player.HealPlayer(2, False);
-    PlaySound(sound'MaleBurp');
+
+    //LDDP, 10/25/21: Load sound for burping dynamically.
+    if ((player.FlagBase != None) && (Player.FlagBase.GetBool('LDDPJCIsFemale')))
+        BurpSound = Sound(DynamicLoadObject("FemJC.FJCBurp", class'Sound', false));
+    else
+        BurpSound = sound'MaleBurp';
+
+    PlaySound(BurpSound);
 }
 
 function postpostbeginplay()

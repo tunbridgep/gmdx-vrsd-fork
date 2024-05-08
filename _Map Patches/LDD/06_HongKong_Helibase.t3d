@@ -1,0 +1,67 @@
+Begin Map
+//Need to remove SkillAwardTrigger1, right in the basketball hoop
+//This map doesn't open in UnrealEd, so skipped this one
+Begin Actor Class=FlagTrigger Name=FlagTrigger4
+    FlagName=LDDPJCIsFemale
+    flagValue=False
+    bSetFlag=False
+    bTrigger=True
+    TriggerType=TT_ClassProximity
+    bTriggerOnceOnly=False
+    ClassProximityType=Class'DeusEx.Basketball'
+    bDynamicLight=True
+    LastRenderTime=0.393574
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=FlagTrigger
+    Event=MadeBasketM
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo1',iLeaf=3401,ZoneNumber=2)
+    Location=(X=452.115631,Y=520.766296,Z=938.982544)
+    OldLocation=(X=365.330444,Y=543.900024,Z=935.832397)
+    CollisionRadius=14.000000
+    CollisionHeight=1.000000
+    Name=FlagTrigger4
+End Actor
+Begin Actor Class=FlagTrigger Name=FlagTrigger5
+    FlagName=LDDPJCIsFemale
+    bSetFlag=False
+    bTrigger=True
+    TriggerType=TT_ClassProximity
+    bTriggerOnceOnly=False
+    ClassProximityType=Class'DeusEx.Basketball'
+    bDynamicLight=True
+    LastRenderTime=0.393574
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=FlagTrigger
+    Event=MadeBasketF
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo1',iLeaf=3440,ZoneNumber=2)
+    Location=(X=452.115631,Y=520.766296,Z=938.982544)
+    OldLocation=(X=397.330444,Y=575.900024,Z=935.832397)
+    CollisionRadius=14.000000
+    CollisionHeight=1.000000
+    Name=FlagTrigger5
+End Actor
+Begin Actor Class=SpecialEvent Name=SpecialEvent1
+    Message="God shot!"
+    bDynamicLight=True
+    LastRenderTime=0.393574
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=MadeBasketM
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo1',iLeaf=3401,ZoneNumber=2)
+    Location=(X=308.175720,Y=615.900024,Z=963.523071)
+    OldLocation=(X=324.175720,Y=631.900024,Z=963.523071)
+    bCollideActors=False
+    Name=SpecialEvent1
+End Actor
+Begin Actor Class=SpecialEvent Name=SpecialEvent0
+    Message="Goddess shot!"
+    bDynamicLight=True
+    LastRenderTime=0.393574
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=MadeBasketF
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo1',iLeaf=3401,ZoneNumber=2)
+    Location=(X=292.175720,Y=599.900024,Z=963.523071)
+    OldLocation=(X=292.175720,Y=599.900024,Z=963.523071)
+    bCollideActors=False
+    Name=SpecialEvent0
+End Actor
+End Map

@@ -15,15 +15,34 @@ var vector MountedViewOffset;
 var float scopeTime;
 var int lerpClamp;
 
-function texture GetWeaponHandTex()
+//SARGE: This overwrites the one in DeusExWeapon.uc, we need a special one here with a strap
+function Texture GetLDDPHandsTex(DeusExPlayer P)
 {
-	local deusexplayer p;
-	local texture tex;
+    local Texture tex;
 
-	tex = texture'MiniCrossbowTex1';
-
-	p = deusexplayer(owner);
-	if(p != none)
+	if ((P.FlagBase != None) && (P.FlagBase.GetBool('LDDPJCIsFemale')))
+    {
+        switch(P.PlayerSkin)
+        {
+            case 0:
+                tex = Texture(DynamicLoadObject("FemJC.MiniCrossbowTex0Fem", class'Texture', false));
+                break;
+            case 1:
+                tex = Texture(DynamicLoadObject("FemJC.MiniCrossbowTex4Fem", class'Texture', false));
+                break;
+            case 2:
+                tex = Texture(DynamicLoadObject("FemJC.MiniCrossbowTex5Fem", class'Texture', false));
+                break;
+            case 3:
+                tex = Texture(DynamicLoadObject("FemJC.MiniCrossbowTex6Fem", class'Texture', false));
+                break;
+            case 4:
+                tex = Texture(DynamicLoadObject("FemJC.MiniCrossbowTex7Fem", class'Texture', false));
+                break;
+        }
+    }
+    //For male, return the basic ones
+    else if(p != none)
 	{
 		switch(p.PlayerSkin)
 		{
@@ -36,7 +55,10 @@ function texture GetWeaponHandTex()
 		}
 	}
 
-	return tex;
+    if (tex == None)
+        tex = texture'weaponhandstex'; //White hands texture by default
+                                       
+    return tex;
 }
 
 simulated function renderoverlays(Canvas canvas)
