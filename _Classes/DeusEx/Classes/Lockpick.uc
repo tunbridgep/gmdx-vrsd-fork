@@ -29,6 +29,16 @@ simulated function PreBeginPlay()
 		MaxCopies = 5;
 }
 
+function OnEquipped()
+{
+    PlaySound(sound'RSDCrap.Misc.LockpickEquip',SLOT_None);
+}
+
+function OnUnEquipped()
+{
+    PlaySound(sound'RSDCrap.Misc.LockpickUnEquip',SLOT_None);
+}
+
 // ----------------------------------------------------------------------
 // TestMPBeltSpot()
 // Returns true if the suggested belt location is ok for the object in mp.
