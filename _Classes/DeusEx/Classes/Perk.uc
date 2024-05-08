@@ -43,14 +43,7 @@ function Texture GetPerkIcon()     // Trash: Return the perk's icon if it's alre
 
 function bool IsPurchasable() // Trash: Can you purchase this perk?
 {
-     if (bPerkObtained == false && PerkOwner.SkillSystem.GetSkillLevel(PerkSkill) >= PerkLevelRequirement && PerkOwner.SkillPointsAvail >= PerkCost)
-     {
-          return True;
-     }
-     Else
-     {
-          return False;
-     }
+     return !bPerkObtained && PerkOwner.SkillSystem.GetSkillLevel(PerkSkill) >= PerkLevelRequirement && PerkOwner.SkillPointsAvail >= PerkCost;
 }
 
 // ----------------------------------------------------------------------

@@ -96,6 +96,22 @@ function AddPerk(class<Perk> perk)
 }
 
 // ----------------------------------------------------------------------
+// GetNumObtainedPerks()
+// ----------------------------------------------------------------------
+
+function int GetNumObtainedPerks()
+{
+	local int index, num;
+
+	for (index = 0; index < numPerks; index++)
+	{
+        if (PerkList[index].bPerkObtained)
+            num++;
+	}
+    return num;
+}
+
+// ----------------------------------------------------------------------
 // ResetPerks()
 // ----------------------------------------------------------------------
 
@@ -103,7 +119,7 @@ function ResetPerks()  // Trash: Reset every perk
 {
 	local int index;
 
-	for (index = 0; index < ArrayCount(PerkList); index++)
+	for (index = 0; index < numPerks; index++)
 	{
 		PerkList[index].bPerkObtained = false;
 	}
@@ -124,14 +140,6 @@ function int GetPerkIndex(Perk Perk)  // Trash: Get the index of the perk by che
 			return index;
 		}
 	}
-}
-
-//Sarge: Get a perk based on an array index
-function Perk GetPerkBasedOnIndex(int index)
-{
-    if (index > numPerks)
-        return None;
-    return PerkList[index];
 }
 
 // ----------------------------------------------------------------------

@@ -1126,14 +1126,13 @@ function SetupAddictionManager()
 
 function SetupPerkManager()
 {
-	// install the Addiction Manager if not found
+	// install the Perk Manager if not found
 	if (PerkManager == None)
     {
-        //ClientMessage("Make new Addiction System");
+        //ClientMessage("Make new Perk System");
 	    PerkManager = new(Self) class'PerkSystem';
+        PerkManager.InitializePerks(Self);
     }
-    PerkManager.InitializePerks(Self);
-
 }
 
 function SetupRandomizer()

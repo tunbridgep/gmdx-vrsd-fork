@@ -40,7 +40,6 @@ var PersonaButtonBarWindow winActionButtons[10];
 var PersonaButtonBarWindow winActionButtonsSecondary;
 var PersonaActionButtonWindow buttonUpgrade[10];
 var Window winSkillIconP[10];
-var int winPerkIndexes[10];
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -103,9 +102,6 @@ function CreatePerkOverview(Perk Perk, int index)	//Trash: Creates the descripti
 	winSkillIconP[index].SetSize(24, 24);
 	winSkillIconP[index].SetBackgroundStyle(DSTY_Normal);
 	winSkillIconP[index].SetBackground(PassedSkillIcon); // CHECK THIS LATER, TRASH!
-
-    winPerkIndexes[index] = player.PerkManager.GetPerkIndex(Perk);
-
     SetText(Perk.PerkDescription);
     SetText(RequiredPoints $ Perk.PerkCost);
 	winActionButtons[index] = PersonaButtonBarWindow(winTile.NewChild(Class'PersonaButtonBarWindow'));
@@ -113,8 +109,6 @@ function CreatePerkOverview(Perk Perk, int index)	//Trash: Creates the descripti
 	winActionButtons[index].FillAllSpace(false);
 	buttonUpgrade[index] = PersonaActionButtonWindow(winActionButtons[index].NewChild(Class'PersonaActionButtonWindow'));
 	buttonUpgrade[index].SetButtonText(UpgradeButtonLabel);
-	buttonUpgrade[index].PerkNamed = Perk.PerkName;
-	buttonUpgrade[index].PerkSkillCost = Perk.PerkCost;
 	buttonUpgrade[index].ButtonPerk = Perk;
     AddLine();
 
@@ -146,7 +140,7 @@ function CreatePerkButtons(Skill Skill)
 			CreatePerkOverview(player.PerkManager.PerkList[index], numPerkButtons++);
 	}
 
-    SetText(ob);
+    SetText(ob $ ": " $ player.PerkManager.GetNumObtainedPerks());
     AddLine();
 	
     for (index = 0; index < player.PerkManager.numPerks; index++)
@@ -185,18 +179,13 @@ function bool ButtonActivated( Window buttonPressed )
 	{
 		if (buttonPressed == buttonUpgrade[index])
 		{
-			player.PerkManager.GetPerkBasedOnIndex(winPerkIndexes[index]).PurchasePerk();
+			buttonUpgrade[index].ButtonPerk.PurchasePerk();
 			buttonUpgrade[index].SetSensitivity(False);
-			SetText(buttonUpgrade[index].LocalizedPerkNamed);
+			SetText(buttonUpgrade[index].ButtonPerk.PerkName);
 			if ( TopWin!=None )
 				TopWin.RefreshWindow( 0.0 );
-			if (Player.SkillPointsAvail < buttonUpgrade[index].ButtonPerk.PerkCost)
-					buttonUpgrade[index].SetSensitivity(False);
-			else
-				buttonUpgrade[index].SetSensitivity(False);
 		}
 	}
-
 
 		switch(buttonPressed)
 		{
