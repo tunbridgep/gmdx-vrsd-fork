@@ -701,6 +701,7 @@ Begin:
 
 defaultproperties
 {
+     weaponOffsets=(X=13.000000,Y=-2.000000,Z=-29.000000)
      mpNoScopeMult=0.350000
      MountedViewOffset=(X=7.000000,Y=-6.800000,Z=-2.500000)
      LowAmmoWaterMark=3

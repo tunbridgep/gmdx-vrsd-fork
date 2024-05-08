@@ -1,0 +1,19 @@
+Begin Map
+Begin Actor Class=LDDPHKTouristS Name=LDDPHKTourist0
+    requiresLDDP=true;
+    LDDPExtra=true;
+    FootRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=3443,ZoneNumber=1)
+    HeadRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=3443,ZoneNumber=1)
+    bDynamicLight=True
+    LastRenderTime=6.176328
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=LDDPHKTourist
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=3443,ZoneNumber=1)
+    Location=(X=2277.785645,Y=304.684753,Z=47.599991)
+    OldLocation=(X=2277.785645,Y=304.684753,Z=47.599991)
+    bSelected=True
+    BarkBindName="Man"
+    UnfamiliarName="Lost Tourist"
+    Name=LDDPHKTourist0
+End Actor
+End Map

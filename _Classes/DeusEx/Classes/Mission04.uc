@@ -297,7 +297,11 @@ function Timer()
                 }
 				foreach AllActors(class'PaulDenton', Paul)
 				{
-					Player.StartConversationByName('TalkedToPaulAfterMessage', Paul, False, False);
+                    //LDDP, 11/3/2021 Call the FemJC version of the convo if JC is female	
+            		if (flags.GetBool('LDDPJCIsFemale'))
+			    		Player.StartConversationByName('FemJCTalkedToPaulAfterMessage', Paul, False, False);
+                    else
+			    		Player.StartConversationByName('TalkedToPaulAfterMessage', Paul, False, False);
 					break;
 				}
 
