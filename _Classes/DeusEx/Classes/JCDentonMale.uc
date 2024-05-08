@@ -2,12 +2,17 @@
 // JCDentonMale.
 //=============================================================================
 class JCDentonMale extends Human;
+var bool bFemale;
 
 function UpdateHDTPSettings()
 {
 	local int i;
 	local texture newtex; //preload these? Not sure if necessary, but hey
 	local string texstr;
+	local Texture TTex;
+	local Sound TSound;
+	local class<DeusExCarcass> TCarc;
+	
 
 	super.UpdateHDTPsettings();
 
@@ -21,78 +26,8 @@ function UpdateHDTPSettings()
 		texstr = texstr $ i;
 		newtex = texture(dynamicloadobject(texstr,class'texture'));
 	}
-
-	//setskin();
-}
-
-
-// ----------------------------------------------------------------------
-// TravelPostAccept()
-// ----------------------------------------------------------------------
-
-event TravelPostAccept()
-{
-	local DeusExLevelInfo info;
-
-    local int i;
-	local bool bFemale;
-	local Texture TTex;
-	local Sound TSound;
-	local class<DeusExCarcass> TCarc;
 	
-	Super.TravelPostAccept();
-	
-	//LDDP, load and update our female flag accordingly.
-	if (FlagBase != None)
-	{
-		if (bMadeFemale)
-		{
-			FlagBase.SetBool('LDDPJCIsFemale', true);
-			FlagBase.SetExpiration('LDDPJCIsFemale', FLAG_Bool, 0);
-			bFemale = true;
-		}
-		else
-		{
-			FlagBase.SetBool('LDDPJCIsFemale', false);
-			FlagBase.SetExpiration('LDDPJCIsFemale', FLAG_Bool, 0);
-		}
-		
-		if (bRetroMorpheus)
-		{
-			FlagBase.SetBool('LDDPOGMorpheus', true);
-			FlagBase.SetExpiration('LDDPOGMorpheus', FLAG_Bool, 0);
-		}
-		else
-		{
-			FlagBase.SetBool('LDDPOGMorpheus', false);
-			FlagBase.SetExpiration('LDDPOGMorpheus', FLAG_Bool, 0);
-		}
-
-		if (bFemaleUsesMaleInteractions)
-		{
-			FlagBase.SetBool('LDDPMaleCont4FJC', true);
-			FlagBase.SetExpiration('LDDPMaleCont4FJC', FLAG_Bool, 0);
-		}
-		else
-		{
-			FlagBase.SetBool('LDDPMaleCont4FJC', false);
-			FlagBase.SetExpiration('LDDPMaleCont4FJC', FLAG_Bool, 0);
-		}
-		
-		//LDDP, 10/26/21: This is now outdated due to methodology requirements. See Human.uc for more on this.
-		/*if (FlagBase.GetBool('LDDPJCIsFemale'))
-		{
-			bFemale = true;
-		}*/
-	}
-	
-	//LDDP, 10/26/21: Update HUD elements.
-	if ((DeusExRootWindow(RootWindow) != None) && (DeusExRootWindow(RootWindow).HUD != None) && (DeusExRootWindow(RootWindow).HUD.Hit != None))
-	{
-		DeusExRootWindow(RootWindow).HUD.Hit.UpdateAsFemale(bFemale);
-	}
-	
-	//LDDP, 10/26/21: A bunch of annoying bullshit with branching appearance for JC... But luckily, it works well.
+    //LDDP, 10/26/21: A bunch of annoying bullshit with branching appearance for JC... But luckily, it works well.
 	if (bFemale)
 	{
 		TTex = Texture(DynamicLoadObject("FemJC.JCDentonFemaleTex2", class'Texture', false));
@@ -188,6 +123,72 @@ event TravelPostAccept()
 			break;
 		}
 	}
+
+	//setskin();
+}
+
+
+// ----------------------------------------------------------------------
+// TravelPostAccept()
+// ----------------------------------------------------------------------
+
+event TravelPostAccept()
+{
+	local DeusExLevelInfo info;
+
+	Super.TravelPostAccept();
+	
+	//LDDP, load and update our female flag accordingly.
+	if (FlagBase != None)
+	{
+		if (bMadeFemale)
+		{
+			FlagBase.SetBool('LDDPJCIsFemale', true);
+			FlagBase.SetExpiration('LDDPJCIsFemale', FLAG_Bool, 0);
+			bFemale = true;
+		}
+		else
+		{
+			FlagBase.SetBool('LDDPJCIsFemale', false);
+			FlagBase.SetExpiration('LDDPJCIsFemale', FLAG_Bool, 0);
+		}
+		
+		if (bRetroMorpheus)
+		{
+			FlagBase.SetBool('LDDPOGMorpheus', true);
+			FlagBase.SetExpiration('LDDPOGMorpheus', FLAG_Bool, 0);
+		}
+		else
+		{
+			FlagBase.SetBool('LDDPOGMorpheus', false);
+			FlagBase.SetExpiration('LDDPOGMorpheus', FLAG_Bool, 0);
+		}
+
+		if (bFemaleUsesMaleInteractions)
+		{
+			FlagBase.SetBool('LDDPMaleCont4FJC', true);
+			FlagBase.SetExpiration('LDDPMaleCont4FJC', FLAG_Bool, 0);
+		}
+		else
+		{
+			FlagBase.SetBool('LDDPMaleCont4FJC', false);
+			FlagBase.SetExpiration('LDDPMaleCont4FJC', FLAG_Bool, 0);
+		}
+		
+		//LDDP, 10/26/21: This is now outdated due to methodology requirements. See Human.uc for more on this.
+		/*if (FlagBase.GetBool('LDDPJCIsFemale'))
+		{
+			bFemale = true;
+		}*/
+	}
+	
+	//LDDP, 10/26/21: Update HUD elements.
+	if ((DeusExRootWindow(RootWindow) != None) && (DeusExRootWindow(RootWindow).HUD != None) && (DeusExRootWindow(RootWindow).HUD.Hit != None))
+	{
+		DeusExRootWindow(RootWindow).HUD.Hit.UpdateAsFemale(bFemale);
+	}
+	
+    UpdateHDTPsettings();
 	//SetSkin();
 }
 
