@@ -10,6 +10,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX Bug where EMP'd turrets and cameras will re-enable themselves after the EMP effect runs out, even if they were disabled during the EMP effect.
     - Fixed GMDX/Vanilla issue where you could retain your standing accuracy bonus after moving if you stood still for a long time. Now accuracy decreases immediately.
 - Quality of Life Improvements:
+    - You can no longer waste medkits or biocells when at maximum health/energy
     - Added alternate weapon offsets to hide many of the visible seams or missing parts of weapon viewmodels.
     - Augmentation Wheel improvements
         - While in the augmentation screen, use middle-click on an active augmentation to add or remove it from the augmentation wheel.
