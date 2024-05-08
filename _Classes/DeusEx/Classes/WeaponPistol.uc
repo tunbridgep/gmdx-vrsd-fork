@@ -548,6 +548,7 @@ Begin:
 
 defaultproperties
 {
+     weaponOffsets=(X=18.000000,Y=-10.000000,Z=-17.000000)
      MountedViewOffset=(X=2.555000,Y=-6.703000,Z=-110.500000)
      LowAmmoWaterMark=4
      GoverningSkill=Class'DeusEx.SkillWeaponPistol'

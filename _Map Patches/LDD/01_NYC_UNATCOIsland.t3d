@@ -1,0 +1,49 @@
+Begin Map
+Begin Actor Class=UNATCOTroop Name=UNATCOTroop6
+    requiresLDDP=true;
+    deleteIfMale=true;
+    Orders=Standing
+    bInvincible=True
+    InitialAlliances(0)=(AllianceName=Player,AllianceLevel=1.000000)
+    FootRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=4235,ZoneNumber=8)
+    HeadRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=4235,ZoneNumber=8)
+    ViewRotation=(Yaw=-31072)
+    Alliance=UNATCO
+    bDynamicLight=True
+    LastRenderTime=30.487774
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=UNATCOTroop
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=4235,ZoneNumber=8)
+    Location=(X=-4736.295410,Y=2035.264893,Z=-190.732452)
+    Rotation=(Yaw=-31072)
+    OldLocation=(X=-1735.195679,Y=619.726807,Z=607.599976)
+    bSelected=True
+    BindName="LDDPPrivateNash"
+    BarkBindName="UNATCOTroop"
+    FamiliarName="Private Nash"
+    Name=UNATCOTroop6
+End Actor
+Begin Actor Class=UNATCOTroop Name=UNATCOTroop8
+    requiresLDDP=true;
+    deleteIfMale=true;
+    Orders=Sitting
+    bInvincible=True
+    InitialAlliances(0)=(AllianceName=Player,AllianceLevel=1.000000)
+    FootRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=4235,ZoneNumber=8)
+    HeadRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=4235,ZoneNumber=8)
+    ViewRotation=(Yaw=35184)
+    Alliance=UNATCO
+    bDynamicLight=True
+    LastRenderTime=30.487774
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=UNATCOTroop
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=4235,ZoneNumber=8)
+    Location=(X=-4767.123047,Y=2026.875366,Z=-190.728546)
+    Rotation=(Yaw=35184)
+    OldLocation=(X=-1845.884155,Y=615.510925,Z=607.603821)
+    BindName="LDDPPrivateWills"
+    BarkBindName="UNATCOTroop"
+    FamiliarName="Private Wills"
+    Name=UNATCOTroop8
+End Actor
+End Map

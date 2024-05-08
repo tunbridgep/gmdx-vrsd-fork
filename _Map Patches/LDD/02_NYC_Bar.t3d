@@ -1,0 +1,28 @@
+Begin Map
+Begin Actor Class=LDDPBarFlyS Name=LDDPBarFly0
+    requiresLDDP=true;
+    LDDPExtra=true;
+    Orders=Sitting
+    bImportant=True
+    bReactFutz=True
+    bReactShot=True
+    bReactProjectiles=True
+    bFearWeapon=True
+    bFearInjury=True
+    bFearProjectiles=True
+    FootRegion=(Zone=ZoneInfo'MyLevel.ZoneInfo5',iLeaf=574,ZoneNumber=1)
+    HeadRegion=(Zone=ZoneInfo'MyLevel.ZoneInfo5',iLeaf=574,ZoneNumber=1)
+    Alliance=BarFlys
+    bDynamicLight=True
+    LastRenderTime=0.231477
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=LDDPBarFly
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo5',iLeaf=574,ZoneNumber=1)
+    //Location=(X=-1308.484131,Y=319.235474,Z=51.600662) //Was in the floor in GMDX
+    Location=(X=-1308.484131,Y=319.235474,Z=80.600662)
+    OldLocation=(X=-816.484070,Y=352.235474,Z=63.600662)
+    BarkBindName="LDDPBarFly"
+    UnfamiliarName="Bar Fly"
+    Name=LDDPBarFly0
+End Actor
+End Map

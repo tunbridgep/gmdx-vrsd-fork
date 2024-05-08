@@ -1,0 +1,101 @@
+Begin Map
+//Need to delete this actor first, so the new version gets the updated attributes
+//This guy replaces an existing actor, so we don't want to make them restricted to LDDP or special NPCs only or whatever
+Begin Actor Class=LowerClassMale2 Name=LowerClassMale4
+    bAlliancesChanged=False
+    Orders=Sitting
+    OrderTag=MBChair
+    HomeTag=Start
+    HomeExtent=400.000000
+    bHateShot=False
+    bHateInjury=False
+    bReactFutz=True
+    bFearInjury=True
+    bFearAlarm=False
+    bFearProjectiles=True
+    MaxProvocations=2
+    InitialAlliances(0)=(AllianceName=Player)
+    InitialAlliances(1)=(AllianceName=Patrons)
+    InitialAlliances(2)=(AllianceName=Cops)
+    InitialAlliances(3)=(AllianceName=Bums)
+    InitialAlliances(4)=(AllianceName=Merchant)
+    InitialInventory(0)=(Inventory=Class'DeusEx.Credits')
+    FootRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=2239,ZoneNumber=2)
+    HeadRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=2232,ZoneNumber=2)
+    ViewRotation=(Yaw=-44128)
+    Alliance=Patrons
+    bDynamicLight=True
+    LastRenderTime=1412.571899
+    DistanceFromPlayer=2327.616455
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=MarketBum1
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=2232,ZoneNumber=2)
+    Location=(X=-1623.432251,Y=1700.687988,Z=-366.754791)
+    Rotation=(Yaw=-44128)
+    OldLocation=(X=-1403.547729,Y=2262.458008,Z=-432.401703)
+    BindName="MarketBum1"
+    BarkBindName="Man"
+    FamiliarName="Man"
+    UnfamiliarName="Man"
+    Name=LowerClassMale4
+End Actor
+Begin Actor Class=WHChairDining Name=WHChairDining5
+    bDynamicLight=True
+    LastRenderTime=1412.571899
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=MBChair
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=2210,ZoneNumber=2)
+    Location=(X=-1670.651489,Y=1641.423462,Z=-379.897858)
+    Rotation=(Yaw=-28000)
+    OldLocation=(X=-1629.577026,Y=1792.806885,Z=-379.897858)
+    Name=WHChairDining5
+End Actor
+Begin Actor Class=OrdersTrigger Name=OrdersTrigger1
+    Orders=RunningTo
+    bDynamicLight=True
+    LastRenderTime=1412.571899
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=GoGetJC
+    Event=MarketBum1
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=2570,ZoneNumber=2)
+    Location=(X=-1402.368164,Y=2268.920166,Z=-286.698517)
+    OldLocation=(X=-1537.481812,Y=1632.100098,Z=-286.698517)
+    bSelected=True
+    bCollideActors=False
+    Name=OrdersTrigger1
+End Actor
+//Male Flag Trigger
+Begin Actor Class=FlagTrigger Name=FlagTrigger1
+    FlagName=LDDPJCIsFemale
+    flagValue=False
+    bSetFlag=False
+    bTrigger=True
+    bDynamicLight=True
+    LastRenderTime=1412.571899
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=FlagTrigger
+    Event=GoGetJC
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=2265,ZoneNumber=2)
+    Location=(X=-1567.064941,Y=2270.888672,Z=-439.901398)
+    OldLocation=(X=-1545.667603,Y=2239.832520,Z=-439.901398)
+    CollisionRadius=296.000000
+    Name=FlagTrigger1
+End Actor
+//Female Flag Trigger
+Begin Actor Class=FlagTrigger Name=FlagTrigger2
+    FlagName=PaulDenton_Dead
+    flagValue=False
+    bSetFlag=False
+    bTrigger=True
+    bDynamicLight=True
+    LastRenderTime=1412.571899
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=FlagTrigger
+    Event=GoGetJC
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=2265,ZoneNumber=2)
+    Location=(X=-1567.008057,Y=2280.593994,Z=-439.901398)
+    OldLocation=(X=-1535.064941,Y=2302.888672,Z=-439.901398)
+    CollisionRadius=296.000000
+    Name=FlagTrigger2
+End Actor
+End Map

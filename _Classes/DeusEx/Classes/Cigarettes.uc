@@ -19,6 +19,8 @@ function Eat(DeusExPlayer player)
     local vector loc;
     local rotator rot;
     local SmokeTrail puff;
+    local Sound coughSound;
+
     loc = player.Location;
     rot = player.Rotation;
     loc += 2.0 * player.CollisionRadius * vector(player.ViewRotation);
@@ -31,7 +33,12 @@ function Eat(DeusExPlayer player)
     }
     if (!player.bAddictionSystem)                                        //RSD: Only deal damage without addiction system
     {
-        PlaySound(sound'MaleCough');
+			if (Player.FlagBase.GetBool('LDDPJCIsFemale'))
+				CoughSound = Sound(DynamicLoadObject("FemJC.FJCCough", class'Sound', false));
+            else
+                CoughSound = sound'MaleCough';
+        
+        PlaySound(CoughSound);
         if (player.HealthTorso > 4 || !player.bRealUI || !player.bHardCoreMode) //RSD: Dunno why it was !bRealUI, but I added !bHardcoreMode to match (maybe crash bug?)
             player.TakeDamage(2, player, player.Location, vect(0,0,0), 'PoisonGas');
     }
