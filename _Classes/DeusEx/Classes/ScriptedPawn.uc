@@ -13318,20 +13318,23 @@ State Attacking
         player = DeusExPlayer(GetPlayerPawn());    
         W = DeusExWeapon(Weapon);
 
-        if (player.CombatDifficulty < 2) //On lower difficulties, increase the timer
-            add += 0.2;
-        
-        if (W.GoverningSkill == class'SkillWeaponPistol') //Pistols are slightly faster
-            add -= 0.1;
-        
-        else if (W.GoverningSkill == class'SkillWeaponRifle') //Rifles are slightly slow
-            add += 0.1;
-        
-        else if (W.GoverningSkill == class'SkillWeaponHeavy') //Heavy Weapons are very slow
-            add += 0.3;
+        if (W != None && player != None)
+        {
+            if (player.CombatDifficulty < 2) //On lower difficulties, increase the timer
+                add += 0.2;
+            
+            if (W.GoverningSkill == class'SkillWeaponPistol') //Pistols are slightly faster
+                add -= 0.1;
+            
+            else if (W.GoverningSkill == class'SkillWeaponRifle') //Rifles are slightly slow
+                add += 0.1;
+            
+            else if (W.GoverningSkill == class'SkillWeaponHeavy') //Heavy Weapons are very slow
+                add += 0.3;
 
-        if (W.isA('WeaponRifle'))
-            add += 0.2;
+            if (W.isA('WeaponRifle'))
+                add += 0.2;
+        }
 
         //Add some randomness
         add += FRand() * 0.1;
