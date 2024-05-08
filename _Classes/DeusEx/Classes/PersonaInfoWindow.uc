@@ -160,6 +160,7 @@ function bool ButtonActivated( Window buttonPressed )
     local DeusExBaseWindow TopWin;
 	local DeusExPlayer player;
     local int i, index;
+    local bool boughtPerk;
 
 	if (Super.ButtonActivated(buttonPressed))
 		return True;
@@ -179,6 +180,7 @@ function bool ButtonActivated( Window buttonPressed )
 	{
 		if (buttonPressed == buttonUpgrade[index])
 		{
+            boughtPerk = true;
 			buttonUpgrade[index].ButtonPerk.PurchasePerk();
 			buttonUpgrade[index].SetSensitivity(False);
 			SetText(buttonUpgrade[index].ButtonPerk.PerkName);
@@ -186,6 +188,16 @@ function bool ButtonActivated( Window buttonPressed )
 				TopWin.RefreshWindow( 0.0 );
 		}
 	}
+
+    //SARGE: If we bought a perk, we need to update all the perk buttons in case we don't have enough
+    //skill points left to buy them anymore
+    if (boughtPerk)
+    {
+        for (index = 0; index < numPerkButtons; index++)
+        {
+			buttonUpgrade[index].SetSensitivity(buttonUpgrade[index].ButtonPerk.IsPurchasable());
+        }
+    }
 
 		switch(buttonPressed)
 		{
