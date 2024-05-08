@@ -58,6 +58,32 @@ var int PickupAmmoCount;                                                        
 var string savedName;                                                           //RSD: So we can use it again if we kill an unconscious corpse
 var globalconfig bool bRandomModFix;                                            //RSD: Stupid config-level hack since PostBeginPlay() can't access player pawn
 
+//Sarge: LDDP Stuff
+var(GMDX) const bool requiresLDDP;                                              //Delete this character LDD is uninstalled
+var(GMDX) const bool LDDPExtra;                                                 //Delete this character we don't have the "Extra LDDP Characters" playthrough modifier
+var(GMDX) const bool deleteIfMale;                                              //Delete this character if we're male
+var(GMDX) const bool deleteIfFemale;                                            //Delete this character if we're female
+
+
+// ----------------------------------------------------------------------
+// ShouldCreate()
+// If this returns FALSE, the object will be deleted on it's first tick
+// ----------------------------------------------------------------------
+
+function bool ShouldCreate(DeusExPlayer player)
+{
+    local bool maleDelete;
+    local bool femaleDelete;
+    local bool extraDelete;
+
+    maleDelete = !player.FlagBase.GetBool('LDDPJCIsFemale') && deleteIfMale;
+    femaleDelete = player.FlagBase.GetBool('LDDPJCIsFemale') && deleteIfFemale;
+    extraDelete = LDDPExtra && !player.bMoreLDDPNPCs;
+
+    return !maleDelete && !femaleDelete && !extraDelete && (player.FemaleEnabled() || !requiresLDDP);
+}
+
+
 function UpdateHDTPsettings()
 {
 	local mesh tempmesh;
@@ -527,11 +553,16 @@ function Tick(float deltaSeconds)
 	if (!bInit)
 	{
 		bInit = true;
-		if (bEmitCarcass)
+        //If we shouldn't be created, abort
+        if (!ShouldCreate(DeusExPlayer(GetPlayerPawn())))
+            Destroy();
+
+        else if (bEmitCarcass)
 		{
 			//AIStartEvent('Carcass', EAITYPE_Visual);
 			AIStartEvent('WeaponDrawn', EAITYPE_Visual);
 		}
+
 	} else
 	  if (bDblClickStart)
 	  {

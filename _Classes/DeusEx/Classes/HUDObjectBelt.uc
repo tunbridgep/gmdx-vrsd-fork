@@ -31,6 +31,16 @@ event InitWindow()
 	PopulateBelt();
 }
 
+// Set belt mode
+// Used for having different text on the inventory belt vs the HUD belt
+
+function SetInventoryBelt(bool option)
+{
+    local int i;
+	for (i=0; i<10; i++)
+        objects[i].bInventorySlot = option;
+}
+
 // ----------------------------------------------------------------------
 // CreateSlots()
 //

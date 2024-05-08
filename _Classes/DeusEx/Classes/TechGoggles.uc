@@ -71,6 +71,8 @@ function ChargedPickupEnd(DeusExPlayer Player)
 
 defaultproperties
 {
+     ActivateSound=Sound'RSDCrap.Pickup.NightVisionEnable'
+     DeactivateSound=Sound'RSDCrap.Pickup.NightVisionDisable'
      skillNeeded=Class'DeusEx.SkillEnviro'
      LoopSound=Sound'DeusExSounds.Pickup.TechGogglesLoop'
      ChargedIcon=Texture'DeusExUI.Icons.ChargedIconGoggles'

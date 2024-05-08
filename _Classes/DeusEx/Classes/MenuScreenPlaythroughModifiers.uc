@@ -15,10 +15,10 @@ var localized string strHeaderActionLabel;
 var localized string strHeaderAssignedLabel;
 var localized string ReassignedFromLabel;
 
-var string modifierBools[7];
-var localized string modifierText[7];
-var localized string modifierDesc[7];
-var int MenuValues[7];
+var string modifierBools[8];
+var localized string modifierText[8];
+var localized string modifierDesc[8];
+var int MenuValues[8];
 var MenuUIListWindow lstModifiers;
 var localized string EnabledText;
 var localized string DisabledText;
@@ -130,6 +130,11 @@ function PopulateModifierList()
 
 	for(modIndex=0; modIndex<arrayCount(modifierBools); modIndex++ )
 	{
+        //Remove Lay-D Denton option if we don't have the mod installed.
+        //HORRIBLE HACK AHEAD
+        if (modIndex == 7 && !player.FemaleEnabled())
+            continue;
+
     	modName = self.modifierText[modIndex];
     	if (modName != "")
     	    lstModifiers.AddRow(modName $ ";" $ GetEnabledDisabledDisplayText(modIndex));
@@ -243,6 +248,7 @@ defaultproperties
      modifierBools(4)="bAddictionSystem"
      modifierBools(5)="bRestrictedSaving"
      modifierBools(6)="bNoKeypadCheese"
+     modifierBools(7)="bMoreLDDPNPCs"
      modifierText(0)="Crate Randomization"
      modifierText(1)="Weapon Mod Randomization"
      modifierText(2)="Aug Canister Shuffle"
@@ -250,6 +256,7 @@ defaultproperties
      modifierText(4)="Addiction System"
      modifierText(5)="Restricted Saving"
      modifierText(6)="Undiscovered Codes"
+     modifierText(7)="Add extra Lay-D Denton NPCs"
      modifierDesc(0)="Randomizes crate contents. Items are swapped for other items of the same class (e.g. 10mm ammo for steel darts) based on in-game item distribution."
      modifierDesc(1)="Randomizes weapon mods. Mods are swapped for related types (e.g. accuracy for range) based on in-game item distribution."
      modifierDesc(2)="Shuffles the order of aug canisters in the game. Total number of each aug canister type is unchanged."
@@ -257,6 +264,7 @@ defaultproperties
      modifierDesc(4)="Replaces drug effects with temporary buffs on use and debuffs on withdrawal. Addiction accumulates with use and depreciates through play."
      modifierDesc(5)="Prevents manually saving and adds single-use save points to the level. Autosaves still occur as normal."
      modifierDesc(6)="Prevents using keypads and logins unless you have them in your notes."
+     modifierDesc(7)="Enable additional NPC's added by the Lay-D Denton mod. By default only the most relevant ones are enabled."
      EnabledText="Enabled"
      DisabledText="Disabled"
      actionButtons(0)=(Align=HALIGN_Right,Action=AB_OK)

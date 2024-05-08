@@ -1,0 +1,22 @@
+Begin Map
+Begin Actor Class=LDDPBarFlyS Name=LDDPBarFly0
+    requiresLDDP=true;
+    LDDPExtra=true;
+    bImportant=True
+    bReactFutz=True
+    InitialInventory(0)=(Inventory=Class'DeusEx.Liquor40oz')
+    InitialInventory(1)=(Inventory=Class'DeusEx.Candybar')
+    FootRegion=(Zone=ZoneInfo'MyLevel.ZoneInfo5',iLeaf=457,ZoneNumber=1)
+    HeadRegion=(Zone=ZoneInfo'MyLevel.ZoneInfo5',iLeaf=457,ZoneNumber=1)
+    bDynamicLight=True
+    LastRenderTime=0.210981
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=LDDPBarFly
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo5',iLeaf=457,ZoneNumber=1)
+    Location=(X=-1958.040771,Y=-329.471832,Z=47.600067)
+    OldLocation=(X=-1973.040771,Y=-324.471832,Z=47.600067)
+    BarkBindName="LDDPBarFly"
+    UnfamiliarName="Bar Fly"
+    Name=LDDPBarFly0
+End Actor
+End Map

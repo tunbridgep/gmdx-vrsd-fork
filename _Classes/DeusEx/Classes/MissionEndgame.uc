@@ -10,6 +10,9 @@ var localized string endgameQuote[6];
 var HUDMissionStartTextDisplay quoteDisplay;
 var bool bQuotePrinted;
 
+var name TarEndgameConvo; //LDDP, 11/3/21: Store this so we can execute once flags are here and ready.
+var float DelayTimer;
+
 // ----------------------------------------------------------------------
 // InitStateMachine()
 // ----------------------------------------------------------------------
@@ -42,25 +45,31 @@ function FirstFrame()
 
 	if (Player != None)
 	{
-		// Make sure all the flags are deleted.
-		DeusExRootWindow(Player.rootWindow).ResetFlags();
+		// Make sure all the flags are deleted
+		TarEndgameConvo = 'Barf';
+		DelayTimer = 0.05;
+		
+		//LDDP, 11/3/21: Barf.
+		//Player.StartConversationByName(UseConvo, Player, False, True);.
+
+		//DeusExRootWindow(Player.rootWindow).ResetFlags();
 
 		// Start the conversation   //CyberP: here we also unlock hardcore mode + options
 		if (localURL == "ENDGAME1")
 		{
-			Player.StartConversationByName('Endgame1', Player, False, True);
+			//Player.StartConversationByName('Endgame1', Player, False, True);
 			Player.ConsoleCommand("set" @ "DeusExPlayer bHardcoreUnlocked" @ "True");
             Player.ConsoleCommand("set" @ "JCDentonMale bHardcoreUnlocked" @ "True");
 		}
 		else if (localURL == "ENDGAME2")
 		{
-			Player.StartConversationByName('Endgame2', Player, False, True);
+			//Player.StartConversationByName('Endgame2', Player, False, True);
 			Player.ConsoleCommand("set" @ "DeusExPlayer bHardcoreUnlocked" @ "True");
             Player.ConsoleCommand("set" @ "JCDentonMale bHardcoreUnlocked" @ "True");
 		}
 		else if (localURL == "ENDGAME3")
 		{
-			Player.StartConversationByName('Endgame3', Player, False, True);
+			//Player.StartConversationByName('Endgame3', Player, False, True);
 			Player.ConsoleCommand("set" @ "DeusExPlayer bHardcoreUnlocked" @ "True");
             Player.ConsoleCommand("set" @ "JCDentonMale bHardcoreUnlocked" @ "True");
 		}
@@ -85,6 +94,56 @@ function PreTravel()
 	Player.SetInstantSoundVolume(SoundVolume);
     Player.bHardcoreUnlocked = True;      //CyberP: unlock the options menu
 	Super.PreTravel();
+}
+
+//Function added by LDDP
+function Tick(float DT)
+{
+	local bool bFemale;
+	local name UseConvo;
+	
+	Super.Tick(DT);
+	
+	//LDDP, 11/3/21: Barf, part 2.
+	if (TarEndgameConvo == 'Barf')
+	{
+		if (DelayTimer > 0)
+		{
+			DelayTimer -= DT;
+		}
+		else
+		{
+			//LDDP, 10/26/21: Parse this on the fly, and reset flags AFTER playing the right conversation, NOT before.
+			//if ((Player.FlagBase != None) && (Player.FlagBase.GetBool('LDDPJCIsFemale')))
+			if ((Human(Player) != None) && (Human(Player).bMadeFemale))
+			{
+				bFemale = true;
+			}
+			
+			// Start the conversation
+			switch(LocalURL)
+			{
+				case "ENDGAME1":
+					UseConvo = 'Endgame1';
+					if (bFemale) UseConvo = 'FemJCEndgame1';
+				break;
+				case "ENDGAME2":
+					UseConvo = 'Endgame2';
+					if (bFemale) UseConvo = 'FemJCEndgame2';
+				break;
+				case "ENDGAME3":
+					UseConvo = 'Endgame3';
+					if (bFemale) UseConvo = 'FemJCEndgame3';
+				break;
+			}
+			TarEndgameConvo = UseConvo;
+			
+			Player.StartConversationByName(TarEndgameConvo, Player, False, True);
+			
+			//LDDP, 11/3/21: Make sure all the flags are deleted, now that flags manager is here.
+			DeusExRootWindow(Player.rootWindow).ResetFlags();
+		}
+	}
 }
 
 // ----------------------------------------------------------------------

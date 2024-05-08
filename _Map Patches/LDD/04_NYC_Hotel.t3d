@@ -1,0 +1,15 @@
+Begin Map
+Begin Actor Class=LDDPHotelAddictSCarcass Name=LDDPHotelAddictCarcass0
+    requiresLDDP=true;
+    LDDPExtra=true;
+    bDynamicLight=True
+    LastRenderTime=160.533813
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=LDDPHotelAddictCarcass
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=1048,ZoneNumber=13)
+    Location=(X=1850.184814,Y=-1208.109253,Z=82.099968)
+    Rotation=(Yaw=-9056)
+    OldLocation=(X=1908.565796,Y=-1426.047729,Z=71.099968)
+    Name=LDDPHotelAddictCarcass0
+End Actor
+End Map

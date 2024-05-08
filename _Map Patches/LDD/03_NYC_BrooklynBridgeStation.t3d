@@ -1,0 +1,20 @@
+Begin Map
+Begin Actor Class=LDDPStationAddictS Name=LDDPStationAddict0
+    requiresLDDP=true;
+    LDDPExtra=true;
+    Orders=Standing
+    FootRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=994,ZoneNumber=2)
+    HeadRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=994,ZoneNumber=2)
+    ViewRotation=(Yaw=-12176)
+    bDynamicLight=True
+    LastRenderTime=137.295380
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=LDDPStationAddict
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=994,ZoneNumber=2)
+    Location=(X=-1004.862305,Y=1315.344971,Z=111.600304)
+    Rotation=(Yaw=-12176)
+    OldLocation=(X=-999.842590,Y=1332.371460,Z=111.600304)
+    Name=LDDPStationAddict0
+End Actor
+End Map
+
