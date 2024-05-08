@@ -7,7 +7,7 @@
 
 class PerkSystem extends object;
 
-var travel Perk PerkList[36];			// Trash: Hopefully with this system, you can make this 500 and it wouldn't matter much. You still need to manually set how many perks are created here though...
+var travel Perk PerkList[50];			// Trash: Hopefully with this system, you can make this 500 and it wouldn't matter much. You still need to manually set how many perks are created here though...
 var travel int numPerks;				// Trash: UnrealScript doesn't support lists, so this is essentially the number of perks in the game
 var travel DeusExPlayer PlayerAttached;	// Trash: The player this class is attached to
 
@@ -30,7 +30,7 @@ function InitializePerks(DeusExPlayer newPlayer)	// Trash: Add every perk in the
 
 	// Pistol Perks
 	AddPerk(Class'DeusEx.PerkSidearm');
-	AddPerk(Class'DeusEx.PerkOneHanded');
+	AddPerk(Class'DeusEx.PerkAmbidextrous');
 	AddPerk(Class'DeusEx.PerkHumanCombustion');
 
 	// Lowtech Perks
@@ -117,13 +117,21 @@ function int GetPerkIndex(Perk Perk)  // Trash: Get the index of the perk by che
 {
 	local int index;
 
-	for (index = 0; index < ArrayCount(PerkList); index++)
+	for (index = 0; index < numPerks; index++)
 	{
 		if (PerkList[index].class == Perk.class)
 		{
 			return index;
 		}
 	}
+}
+
+//Sarge: Get a perk based on an array index
+function Perk GetPerkBasedOnIndex(int index)
+{
+    if (index > numPerks)
+        return None;
+    return PerkList[index];
 }
 
 // ----------------------------------------------------------------------
@@ -134,7 +142,7 @@ function Perk GetPerkWithName(String pName)  // Trash: Get the perk by checking 
 {
 	local int index;
 
-	for (index = 0; index < ArrayCount(PerkList); index++)
+	for (index = 0; index < numPerks; index++)
 	{
 		if (PerkList[index].PerkName == pName)
 		{
@@ -151,7 +159,7 @@ function Perk GetPerkWithClass(Class<Perk> pClass)  // Trash: Get the perk by ch
 {
 	local int index;
 
-	for (index = 0; index < ArrayCount(PerkList); index++)
+	for (index = 0; index < numPerks; index++)
 	{
 		if (PerkList[index].class == pClass)
 		{
@@ -159,7 +167,6 @@ function Perk GetPerkWithClass(Class<Perk> pClass)  // Trash: Get the perk by ch
 		}
 	}
 }
-
 
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------

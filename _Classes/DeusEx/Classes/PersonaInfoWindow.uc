@@ -10,29 +10,8 @@ var PersonaHeaderTextWindow      winTitle;
 var PersonaNormalLargeTextWindow winText;			// Last text
 
 var int textVerticalOffset;
-//Totalitarian: perks and stuff
-//var PersonaActionButtonWindow buttonUpgrade;
-//var PersonaActionButtonWindow buttonUpgrade2;
-//var PersonaActionButtonWindow buttonUpgrade3;
 var PersonaActionButtonWindow    buttonUpgradeSecond;                           //RSD
 var localized String UpgradeButtonLabel;
-//var PersonaButtonBarWindow winActionButtons;
-//var PersonaButtonBarWindow winActionButtons2;
-//var PersonaButtonBarWindow winActionButtons3;
-//var PersonaButtonBarWindow       winActionButtonsSecond;                        //RSD
-
-//var PersonaButtonBarWindow winActionButtons4;
-//var PersonaButtonBarWindow winActionButtons5;
-//var PersonaButtonBarWindow winActionButtons6;
-//var Window                 winSkillIconP;
-//var Window                 winSkillIconP2;
-//var Window                 winSkillIconP3;
-//var TextWindow WinSkillText;
-//var TextWindow WinSkillText2;
-//var TextWindow WinSkillText3;
-//var TextWindow WinPerkTitle;
-//var TextWindow WinPerkTitle2;
-//var TextWindow WinPerkTitle3;
 
 var Inventory                    assignThis;                                    //RSD: Added
 
@@ -50,6 +29,8 @@ var bool bStylization2;
 var bool bStylization3;
 var bool bMedBotCall;
 
+var int numPerkButtons;
+
 var Texture PassedSkillIcon;
 
 var PersonaButtonBarWindow winActionButtons1[10];
@@ -59,6 +40,7 @@ var PersonaButtonBarWindow winActionButtons[10];
 var PersonaButtonBarWindow winActionButtonsSecondary;
 var PersonaActionButtonWindow buttonUpgrade[10];
 var Window winSkillIconP[10];
+var int winPerkIndexes[10];
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -121,13 +103,8 @@ function CreatePerkOverview(Perk Perk, int index)	//Trash: Creates the descripti
 	winSkillIconP[index].SetSize(24, 24);
 	winSkillIconP[index].SetBackgroundStyle(DSTY_Normal);
 	winSkillIconP[index].SetBackground(PassedSkillIcon); // CHECK THIS LATER, TRASH!
-	//WinSkillText[index] = TextWindow(winSkillIconP[index].NewChild(class'TextWindow'));
-	//WinSkillText[index].SetFont(Font'FontConversationLargeBold');
-	//if (pName == "MODDER")
-	//   WinSkillText[index].SetTextColorRGB(96,96,96);
-	//else
-    //WinSkillText[index].SetTextColorRGB(192,192,192);
-	//WinSkillText[index].SetText("0");
+
+    winPerkIndexes[index] = player.PerkManager.GetPerkIndex(Perk);
 
     SetText(Perk.PerkDescription);
     SetText(RequiredPoints $ Perk.PerkCost);
@@ -152,53 +129,34 @@ function CreatePerkOverview(Perk Perk, int index)	//Trash: Creates the descripti
 //////////////////////////////////////////////////
 function CreatePerkButtons(Skill Skill)
 {
-    local int i, index, indexPerkThingy;
+    local int index;
 	local DeusExPlayer player;
 
-                          //Totalitarian: WARNING! THE WHOLE PERK SYSTEM PASSES PERK NAME! DO NOT CHANGE THE NAME OF PERKS
-    AddLine();            //Totalitarian: INSTEAD CHANGE THE LocalizedPerkName VAR
-    SetText(PerkTitle);	  // Trash: Ignore the warning above - actually this file entirely, perk system has been overhauled so no more hardcoded perks
+    AddLine();
+    SetText(PerkTitle);
     AddLine();
 
 	player = DeusExPlayer(GetPlayerPawn());
 
-	for (index = 0; index < ArrayCount(player.PerkManager.PerkList); index++)
-	{
-		if (player.PerkManager.PerkList[index].PerkSkill == Skill.class && player.PerkManager.PerkList[index].PerkLevelRequirement == 1)
-		{
-			CreatePerkOverview(player.PerkManager.PerkList[index], indexPerkThingy);
-			indexPerkThingy++;
-		}
-	}
-	for (index = 0; index < ArrayCount(player.PerkManager.PerkList); index++)
-	{
-		if (player.PerkManager.PerkList[index].PerkSkill == Skill.class && player.PerkManager.PerkList[index].PerkLevelRequirement == 2)
-		{
-			CreatePerkOverview(player.PerkManager.PerkList[index], indexPerkThingy);
-			indexPerkThingy++;
-		}
-	}
-	for (index = 0; index < ArrayCount(player.PerkManager.PerkList); index++)
-	{
-		if (player.PerkManager.PerkList[index].PerkSkill== Skill.class && player.PerkManager.PerkList[index].PerkLevelRequirement == 3)
-		{
-			CreatePerkOverview(player.PerkManager.PerkList[index], indexPerkThingy);
-			indexPerkThingy++;
-		}
-	}
+    numPerkButtons = 0;
 
+	for (index = 0; index < player.PerkManager.numPerks; index++)
+	{
+		if (player.PerkManager.PerkList[index].PerkSkill == Skill.class)
+			CreatePerkOverview(player.PerkManager.PerkList[index], numPerkButtons++);
+	}
 
     SetText(ob);
     AddLine();
 	
-    for (i = 0; i<ArrayCount(player.PerkManager.PerkList); i++)
+    for (index = 0; index < player.PerkManager.numPerks; index++)
     {
-		if (player.PerkManager.PerkList[i].bPerkObtained == true)
-			SetText(player.PerkManager.PerkList[i].PerkName);
+		if (player.PerkManager.PerkList[index].bPerkObtained == true)
+			SetText(player.PerkManager.PerkList[index].PerkName);
     }
 }
 
-  // ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
 // ButtonActivated()
 // ----------------------------------------------------------------------
 
@@ -223,11 +181,11 @@ function bool ButtonActivated( Window buttonPressed )
 	}
 	else
 	{*/
-	for (index = 0; index < ArrayCount(buttonUpgrade); index++)
+	for (index = 0; index < numPerkButtons; index++)
 	{
 		if (buttonPressed == buttonUpgrade[index])
 		{
-			player.PerkManager.PerkList[player.PerkManager.GetPerkIndex(buttonUpgrade[index].ButtonPerk)].PurchasePerk();
+			player.PerkManager.GetPerkBasedOnIndex(winPerkIndexes[index]).PurchasePerk();
 			buttonUpgrade[index].SetSensitivity(False);
 			SetText(buttonUpgrade[index].LocalizedPerkNamed);
 			if ( TopWin!=None )

@@ -1,11 +1,11 @@
 //=============================================================================
-// PerkOneHanded.
+// PerkAmbidextrous.
 //=============================================================================
-class PerkOneHanded extends Perk;
+class PerkAmbidextrous extends Perk;
 
 defaultproperties
 {
-    PerkName="ONE-HANDED"
+    PerkName="AMBIDEXTROUS"
     PerkDescription="|nAn agent learns to be ambidextrous while handling pistols so that accuracy is determined by the highest health arm.|n|nRequires: Pistols: ADVANCED"
     PerkSkill=Class'DeusEx.SkillWeaponPistol'
     PerkCost=100

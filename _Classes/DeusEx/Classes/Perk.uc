@@ -3,19 +3,19 @@
 //=============================================================================
 
 // Trash: This is where new perks are created 
-// PERK SYSTEM #1: Inherit from this and change PerkStats as needed
+// Inherit from this and change PerkStats as needed
 
 class Perk extends object;
 
 // Trash: Perk Stats.
 
-var string PerkName;               // Trash: Self Explanatory
-var string PerkDescription;        // Trash: Self Explanatory
+var const localized string PerkName;               // Trash: Self Explanatory
+var const localized string PerkDescription;        // Trash: Self Explanatory
 var class<Skill> PerkSkill;        // Trash: What skill does the perk belong to? Leave blank to make it a general skill
-var Texture PerkIcon;
-var int PerkCost;                  // Trash: How much does it cost to buy this perk?
-var int PerkLevelRequirement;      // Trash: What's the skill requirement to buy this perk?
-var float PerkValue;               // Trash: Optional, what's the value that you want increased when this perk is obtained? For example, 1.25 could mean you heal 25% faster
+var const Texture PerkIcon;
+var const int PerkCost;                  // Trash: How much does it cost to buy this perk?
+var const int PerkLevelRequirement;      // Trash: What's the skill requirement to buy this perk?
+var const float PerkValue;               // Trash: Optional, what's the value that you want increased when this perk is obtained? For example, 1.25 could mean you heal 25% faster
 
 var travel DeusExPlayer PerkOwner; // Trash: Who's the perk's owner?
 var travel bool bPerkObtained;     // Trash: Do you own this perk?
