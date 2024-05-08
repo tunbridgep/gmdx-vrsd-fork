@@ -386,6 +386,8 @@ msgUnassigned="Secondary Item Unassigned"
 
 [PersonaInfoWindow]
 UpgradeButtonLabel="|&Upgrade"
+PurchasedButtonLabel="|&Already Upgraded"
+UnobtainableButtonLabel="|&Cannot Upgrade"
 RequiredPoints="Points Needed: "
 PerkTitle="PERKS"
 ob="OBTAINED PERKS"

@@ -12,6 +12,8 @@ var PersonaNormalLargeTextWindow winText;			// Last text
 var int textVerticalOffset;
 var PersonaActionButtonWindow    buttonUpgradeSecond;                           //RSD
 var localized String UpgradeButtonLabel;
+var localized String PurchasedButtonLabel;
+var localized String UnobtainableButtonLabel;
 
 var Inventory                    assignThis;                                    //RSD: Added
 
@@ -108,14 +110,23 @@ function CreatePerkOverview(Perk Perk, int index)	//Trash: Creates the descripti
 	winActionButtons[index].SetWidth(32); //149
 	winActionButtons[index].FillAllSpace(false);
 	buttonUpgrade[index] = PersonaActionButtonWindow(winActionButtons[index].NewChild(Class'PersonaActionButtonWindow'));
-	buttonUpgrade[index].SetButtonText(UpgradeButtonLabel);
 	buttonUpgrade[index].ButtonPerk = Perk;
     AddLine();
 
-	if (PerkInManager.IsPurchasable())
-		buttonUpgrade[index].SetSensitivity(True);
-	else
-		buttonUpgrade[index].SetSensitivity(False);
+    UpdateButton(buttonUpgrade[index], Perk);
+}
+
+function UpdateButton(PersonaActionButtonWindow button, Perk P)
+{
+    if (P.bPerkObtained)
+        button.SetButtonText(PurchasedButtonLabel);
+    else if (P.IsPurchasable())
+        button.SetButtonText(UpgradeButtonLabel);
+    else
+        button.SetButtonText(UnobtainableButtonLabel);
+
+    button.SetSensitivity(P.IsPurchasable());
+
 }
 
 //////////////////////////////////////////////////
@@ -183,6 +194,7 @@ function bool ButtonActivated( Window buttonPressed )
             boughtPerk = true;
 			buttonUpgrade[index].ButtonPerk.PurchasePerk();
 			buttonUpgrade[index].SetSensitivity(False);
+            buttonUpgrade[index].SetButtonText(PurchasedButtonLabel);
 			SetText(buttonUpgrade[index].ButtonPerk.PerkName);
 			if ( TopWin!=None )
 				TopWin.RefreshWindow( 0.0 );
@@ -194,9 +206,7 @@ function bool ButtonActivated( Window buttonPressed )
     if (boughtPerk)
     {
         for (index = 0; index < numPerkButtons; index++)
-        {
-			buttonUpgrade[index].SetSensitivity(buttonUpgrade[index].ButtonPerk.IsPurchasable());
-        }
+            UpdateButton(buttonUpgrade[index], buttonUpgrade[index].ButtonPerk);
     }
 
 		switch(buttonPressed)
@@ -420,7 +430,9 @@ function AddSecondaryButton(Inventory wep)                                      
 defaultproperties
 {
      textVerticalOffset=20
-     UpgradeButtonLabel="|&Upgrade"
+     UpgradeButtonLabel="|&Purchase"
+     PurchasedButtonLabel="|&Already Purchased"
+     UnobtainableButtonLabel="|&Cannot Purchase"
      RequiredPoints="Points Needed: "
      PerkTitle="PERKS"
      ob="OBTAINED PERKS"
