@@ -42,14 +42,12 @@ var localized String HackDetectedLabel;
 var localized String MPHackInitializingLabel;
 
 var int passedSecLevel; //CyberP:
+var PersonaActionButtonWindow btnWorm;
+var PersonaActionButtonWindow btnNuke;
 var bool bTimePaused;
 var float wormTime;
 var localized String hackRequirement1;
 var localized String hackRequirement2;
-	
-var PersonaButtonBarWindow btnWorm;
-var PersonaButtonBarWindow btnNuke;
-
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -159,41 +157,33 @@ function CreateHackButton()
 
 function CreateWormButton()
 {
-    local PersonaActionButtonWindow button;
+	local PersonaButtonBarWindow winActionButtons2;
 
     if (btnWorm == None)
     {
-        btnWorm = PersonaButtonBarWindow(NewChild(Class'PersonaButtonBarWindow'));
-        btnWorm.SetPos(116, 86);
-        btnWorm.SetWidth(0);
-        btnWorm.FillAllSpace(True);
-
-        button = PersonaActionButtonWindow(btnWorm.NewChild(Class'PersonaActionButtonWindow'));
-        button.SetButtonText("Use Worm");
+        winActionButtons2 = PersonaButtonBarWindow(NewChild(Class'PersonaButtonBarWindow'));
+        winActionButtons2.SetPos(116, 86);
+        winActionButtons2.SetWidth(76);
+        winActionButtons2.FillAllSpace(True);
+        btnWorm = PersonaActionButtonWindow(winActionButtons2.NewChild(Class'PersonaActionButtonWindow'));
+        btnWorm.SetButtonText("Use Worm");
     }
-    else
-        btnWorm.SetWidth(76);
 }
 
 function CreateNukeButton()
 {
-    local PersonaActionButtonWindow button;
+	local PersonaButtonBarWindow winActionButtons3;
 
     if (btnNuke == None)
     {
-        btnNuke = PersonaButtonBarWindow(NewChild(Class'PersonaButtonBarWindow'));
-        btnNuke.SetPos(116, 86);
-        btnNuke.SetWidth(0);
-        btnNuke.FillAllSpace(True);
-
-
-    	button = PersonaActionButtonWindow(btnNuke.NewChild(Class'PersonaActionButtonWindow'));
-	    button.SetButtonText("Use Virus");
+        winActionButtons3 = PersonaButtonBarWindow(NewChild(Class'PersonaButtonBarWindow'));
+        winActionButtons3.SetPos(116, 86);
+        winActionButtons3.SetWidth(72);
+        winActionButtons3.FillAllSpace(True);
+        btnNuke = PersonaActionButtonWindow(winActionButtons3.NewChild(Class'PersonaActionButtonWindow'));
+        btnNuke.SetButtonText("Use Virus");
     }
-    else
-	    btnNuke.SetWidth(72);
 }
-
 // ----------------------------------------------------------------------
 // DrawBackground()
 // ----------------------------------------------------------------------

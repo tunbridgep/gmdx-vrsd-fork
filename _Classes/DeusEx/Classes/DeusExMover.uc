@@ -63,7 +63,10 @@ var float               frobGate;                    //CyberP: to prevent NPCs c
 var ScriptedPawn        ChosenPawn;                 //CyberP: used by AI to determine wether they should open doors in the newly elaborated post-combat seeking sub-state
 
 var bool                bPlayerLocked;           // Sarge: Flag for when the door was re-locked by the player. Prevents NPC's from opening it.
+var float               previousStrength;        //Sarge: What was the strength before we started picking?
 
+var float               leftFrobTimer;           //Sarge: Ticks down from 3 seconds after we do a left frob, so that we can use right-click to select different options
+const             leftFrobTimerMax = 6.0;
 
 
 //SARGE: Check to see if we can re-lock a door
@@ -79,39 +82,78 @@ function bool DoLeftFrob(DeusExPlayer frobber)
 {
     local Inventory item;
     
+    //Give us 3 seconds to use the right-click options after left-frobbing
+    //This is so we don't accudentally change weapons in the middle of gameplay, by
+    //right clicking on a mover
+    leftFrobTimer = leftFrobTimerMax;
+
+    //If not highlightable, not locked, and having a threshold, just select melee
+    //This is a fallback for glass panes that aren't actually defined as BreakableGlass
+    if (!bLocked && minDamageThreshold > 0 && !bHighlight)
+    {
+        frobber.SelectMeleePriority(minDamageThreshold);
+        return false;
+    }
+
     //When not on hardcore, always select the keyring if we have the key
-    if (bLocked && !frobber.bHardcoreMode && frobber.KeyRing.HasKey(KeyIDNeeded) && KeyIDNeeded != '')
+    if (!frobber.bHardcoreMode && CanToggleLock(frobber,frobber.KeyRing))
     {
         frobber.PutInHand(frobber.KeyRing);
         return false;
     }
-    else if (bLocked)
+    else if (bLocked && frobber.bHardcoreMode) //Hardcore Mode: Always select picks. If we don't have one, always select keyring
     {
-        if (!bPickable || !frobber.SelectInventoryItem('Lockpick'))
+        if (bPickable && frobber.SelectInventoryItem('Lockpick'))
+            return false;
+        //else if (bBreakable && frobber.SelectMeleePriority(minDamageThreshold))
+        //    return false;
+        else
             frobber.PutInHand(frobber.KeyRing);
         return false;
     }
-    else if (CanToggleLock(frobber,frobber.KeyRing))
+    else if (bLocked) //Non-Hardcore. See if we have a melee weapon to bust the mover. Otherwise, select picks
+    {
+        if (bBreakable && frobber.SelectMeleePriority(minDamageThreshold))
+			return false;
+        else if (!bPickable || !frobber.SelectInventoryItem('Lockpick'))
+            frobber.PutInHand(frobber.KeyRing);
+        return false;
+    }
+    else if (CanToggleLock(frobber,frobber.KeyRing)) //Keyring check for Hardcore mode
     {
         frobber.PutInHand(frobber.KeyRing);
         return false;
     }
+    
+    leftFrobTimer = 0.0;
     return true;
 }
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {
+    if (leftFrobTimer ~= 0.0 || !bLocked)
+        return true;
+
     //Swap between lockpicks and nanokeyring
     if (bLocked && frobber.inHand != None)
     {
-        if (bPickable && frobber.inHand.isA('NanoKeyRing'))
-            return !frobber.SelectInventoryItem('Lockpick');
+        if (frobber.inHand.isA('NanoKeyRing'))
+        {
+            if (!frobber.SelectMeleePriority(minDamageThreshold))
+                if (!frobber.SelectInventoryItem('Lockpick'))
+                    return true;
+        }
         else if (frobber.inHand.isA('Lockpick'))
         {
             frobber.PutInHand(frobber.KeyRing);
-            return false;
+        }
+        else if (frobber.inHand.isA('DeusExWeapon') && DeusExWeapon(frobber.inHand).bHandToHand)
+        {
+            if (!frobber.SelectInventoryItem('Lockpick'))
+                frobber.PutInHand(frobber.KeyRing);
         }
     }
-    return true;
+    leftFrobTimer = leftFrobTimerMax;
+    return false;
 }
 
 
@@ -521,11 +563,11 @@ function Timer()
 
 		// check to see if we've moved too far away from the door to continue
 		else if (pickPlayer.frobTarget != Self)
-			StopPicking();
+			StopPicking(true);
 
 		// check to see if we've put the lockpick away
 		else if (pickPlayer.inHand != curPick)
-			StopPicking();
+			StopPicking(true);
 	}
 }
 
@@ -534,6 +576,10 @@ function Timer()
 //
 function Tick(float deltaTime)
 {
+
+    //Reduce our left-frob timer
+    leftFrobTimer = FMAX(0.0,leftFrobTimer - deltaTime);
+
    TimeSinceReset = TimeSinceReset + deltaTime;
    if (frobGate > 0)
        frobGate -= deltaTime;
@@ -561,8 +607,10 @@ function Tick(float deltaTime)
 //
 // Stops the current pick-in-progress
 //
-function StopPicking()
+function StopPicking(optional bool aborted)
 {
+	local DeusExMover M;
+
 	// alert NPCs that I'm not messing with stuff anymore
 	AIEndEvent('MegaFutz', EAITYPE_Visual);
 	bPicking = False;
@@ -570,10 +618,24 @@ function StopPicking()
 	{
 		curPick.StopUseAnim();
 		curPick.bBeingUsed = False;
-		curPick.UseOnce();
+
+        //Sarge: Only take a pick if we didn't abort.
+        if (!aborted)
+    		curPick.UseOnce();
 	}
 	curPick = None;
 	SetTimer(0.1, False);
+
+    //Sarge: If we aborted, reset lock strength
+    if (aborted)
+    {
+        LockStrength = previousStrength;
+		if ((Tag != '') && (Tag != 'DeusExMover'))
+			foreach AllActors(class'DeusExMover', M, Tag)
+				if (M != Self)
+					M.lockStrength = lockStrength;
+        
+    }
 }
 
 //
@@ -681,10 +743,12 @@ function Frob(Actor Frobber, Inventory frobWith)
 					if (Player.PerkManager.GetPerkWithClass(class'DeusEx.PerkSleightOfHand').bPerkObtained == false)                           //RSD: Unless you have the Sleight of Hand perk
 						AIStartEvent('MegaFutz', EAITYPE_Visual);
 
+                    previousStrength = LockStrength;
+
 					pickValue = Player.SkillSystem.GetSkillLevelValue(class'SkillLockpicking');
 					pickPlayer = Player;
 					if (Player.PerkManager.GetPerkWithClass(class'DeusEx.PerkLocksport').bPerkObtained == true)
-					pickValue = 1;
+                        pickValue = 1;
 					curPick = LockPick(frobWith);
 					curPick.bBeingUsed = True;
 					curPick.PlayUseAnim();
@@ -750,6 +814,11 @@ function Frob(Actor Frobber, Inventory frobWith)
 				}
 				else if (bLocked)
 				{
+                    //Give us 3 seconds to use the right-click options after failing to use the key
+                    //This is so we don't accudentally change weapons in the middle of gameplay, by
+                    //right clicking on a mover
+                    leftFrobTimer = leftFrobTimerMax;
+
 					bOpenIt = False;
 					msg = msgNoNanoKey;
 				}

@@ -101,7 +101,7 @@ function texture GetWeaponHandTex()                                             
 
 defaultproperties
 {
-     bIsMeleeWeapon=True
+     weaponOffsets=(X=20.000000,Y=-10.000000,Z=-32.000000)
      LowAmmoWaterMark=0
      GoverningSkill=Class'DeusEx.SkillWeaponLowTech'
      NoiseLevel=0.050000

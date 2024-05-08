@@ -11,6 +11,6 @@ defaultproperties
 {
      Action=MA_MenuScreen
      Invoke=Class'DeusEx.MenuScreenGMDXOptionsBelt'
-     HelpText="Click to access belt options."
-     actionText="Belt Options..."
+     HelpText="Click to access Quality of Life options."
+     actionText="Quality of Life Options..."
 }

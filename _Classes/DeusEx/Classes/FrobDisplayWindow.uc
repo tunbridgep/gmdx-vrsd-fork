@@ -24,6 +24,8 @@ var localized string msgTools;
 var Color colBackground;
 var Color colBorder;
 var Color colText;
+var const Color colNotEnough;
+var const Color colJustEnough;
 
 var localized string msgDoorThreshold; //CyberP: these two vars are for damage threshold display
 var localized string msgObjThreshold;
@@ -302,6 +304,10 @@ function DrawWindow(GC gc)
 					//else
 						strInfo = ownedTools $ "/" $ numTools @ msgPicks;
 				    //if (dxMover.bPerkApplied)                                   //RSD: Doorsman perk
+                        if (ownedTools < numTools)
+				            gc.SetTextColor(colNotEnough);
+                        else if (ownedTools == numTools)
+				            gc.SetTextColor(colJustEnough);
 						gc.DrawText(infoX+(infoW-barLength-2), infoY+4+(infoH-8)/4, barLength, ((infoH-8)/4)-2, strInfo);
 					//else
 					//	gc.DrawText(infoX+(infoW-barLength-2), infoY+4+(infoH-8)/3, barLength, ((infoH-8)/3)-2, strInfo);
@@ -379,6 +385,10 @@ function DrawWindow(GC gc)
 					//	strInfo = ownedTools $ "/" $ numTools @ msgTool;
 					//else
 						strInfo = ownedTools $ "/" $ numTools @ msgTools;
+                    if (ownedTools < numTools)
+                        gc.SetTextColor(colNotEnough);
+                    else if (ownedTools == numTools)
+                        gc.SetTextColor(colJustEnough);
 					gc.DrawText(infoX+(infoW-barLength-2), infoY+infoH/2.7, barLength, infoH/2.7-6, strInfo);
 					//gc.DrawText(infoX+(infoW-barLength-2), infoY+infoH/2, barLength, infoH/2-6, strInfo); //RSD: reverted
 				}
@@ -487,4 +497,6 @@ defaultproperties
      msgMass="Mass: "
      msgHP="Hitpoints: "
      msgHP2="Hitpoints: 3"
+     colNotEnough=(R=255,G=50,B=50)
+     colJustEnough=(R=255,G=255,B=50)
 }

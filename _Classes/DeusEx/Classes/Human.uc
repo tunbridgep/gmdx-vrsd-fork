@@ -22,6 +22,10 @@ var() bool bDontRandomize;      //Sarge: Prevents an NPC from being randomized b
 //var Actor LockPawn;
 //var vector LockPawnHeight;
 
+//LDDP, 10/26/21: Female storage, because flags wipe on new game.
+var(LDDP) travel bool bMadeFemale, bFemaleUsesMaleInteractions; //Are we female? Do we want traditionally male interactions? Save this per char, I guess.
+var(LDDP) globalconfig bool bRetroMorpheus, bGaveNewGameTips; //Keep old morpheus lines? Also, did we give a tip yet?
+
 replication
 {
 	reliable if (( Role == ROLE_Authority ) && bNetOwner )
@@ -84,6 +88,12 @@ function Bool IsFiring()
 
 function Bool HasTwoHandedWeapon()
 {
+    //LDDP, 11/3/2021: Checking bool here because it's faster, and anim functions are called a LOT.
+	if (bMadeFemale)
+	{
+		return false;
+	} 
+
 	if ((Weapon != None) && (Weapon.Mass >= 30))
 		return True;
 	else
@@ -397,64 +407,157 @@ function float RandomPitch()
 	return (1.1 - 0.2*FRand());
 }
 
+//LDDP, 10/26/21: These next 3 functions are all modified for unique sound playing based on female stuff
 function Gasp()
 {
-    if (swimTimer < swimDuration * 0.3)
-	PlaySound(sound'MaleGasp', SLOT_Pain,,,, RandomPitch());
+	local Sound TSound;
+	
+	if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
+	{
+		TSound = Sound(DynamicLoadObject("FemJC.FJCGasp", class'Sound', false));
+		if (TSound != None) PlaySound(TSound, SLOT_Pain,,,, RandomPitch());
+	}
+	else
+	{
+		PlaySound(sound'MaleGasp', SLOT_Pain,,,, RandomPitch());
+	}
 }
 
 function PlayDyingSound()
 {
-	if (Region.Zone.bWaterZone)
-		PlaySound(sound'MaleWaterDeath', SLOT_Pain,,,, RandomPitch());
+	local Sound TSound;
+	
+	if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
+	{
+		if (Region.Zone.bWaterZone)
+		{
+			TSound = Sound(DynamicLoadObject("FemJC.FJCWaterDeath", class'Sound', false));
+			if (TSound != None) PlaySound(TSound, SLOT_Pain,,,, RandomPitch());
+		}
+		else
+		{
+			TSound = Sound(DynamicLoadObject("FemJC.FJCDeath", class'Sound', false));
+			if (TSound != None) PlaySound(TSound, SLOT_Pain,,,, RandomPitch());
+		}
+	}
 	else
-		PlaySound(sound'AugDeactivate', SLOT_Pain,,,, RandomPitch());
+	{
+		if (Region.Zone.bWaterZone)
+		{
+			PlaySound(sound'MaleWaterDeath', SLOT_Pain,,,, RandomPitch());
+		}
+		else
+		{
+			PlaySound(sound'MaleDeath', SLOT_Pain,,,, RandomPitch());
+		}
+	}
 }
 
 function PlayTakeHitSound(int Damage, name damageType, int Mult)
 {
 	local float rnd;
+	
+	local sound TSound;
 
 	if ( Level.TimeSeconds - LastPainSound < FRand() + 1.1 || Damage <= 0) //CyberP: was 0.9
 		return;
 
 	LastPainSound = Level.TimeSeconds;
 
-	if (Region.Zone.bWaterZone)
+	if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
 	{
-		if (damageType == 'Drowned')
+		if (Region.Zone.bWaterZone)
 		{
-			if (FRand() < 0.8)
-				PlaySound(sound'MaleDrown', SLOT_Pain, FMax(Mult * TransientSoundVolume, Mult * 2.0),,, RandomPitch());
+			if (damageType == 'Drowned')
+			{
+				if (FRand() < 0.8)
+				{
+					TSound = Sound(DynamicLoadObject("FemJC.FJCDrown", class'Sound', false));
+					if (TSound != None) PlaySound(TSound, SLOT_Pain, FMax(Mult * TransientSoundVolume, Mult * 2.0),,, RandomPitch());
+				}
+			}
+			else
+			{
+				TSound = Sound(DynamicLoadObject("FemJC.FJCPainSmall", class'Sound', false));
+				if (TSound != None) PlaySound(TSound, SLOT_Pain, FMax(Mult * TransientSoundVolume, Mult * 2.0),,, RandomPitch());
+			}
 		}
-		else if (PerkManager.GetPerkWithClass(class'DeusEx.PerkSecurityLoophole').bPerkObtained == false)
-			PlaySound(sound'MalePainSmall', SLOT_Pain, FMax(Mult * TransientSoundVolume, Mult * 2.0),,, RandomPitch());
+		else
+		{
+			// Body hit sound for multiplayer only
+			if (((damageType == 'Shot') || (damageType == 'AutoShot'))  && (Level.NetMode != NM_Standalone))
+			{
+				PlaySound(sound'BodyHit', SLOT_Pain, FMax(Mult * TransientSoundVolume, Mult * 2.0),,, RandomPitch());
+			}
+			
+			if ((damageType == 'TearGas') || (damageType == 'HalonGas'))
+			{
+				TSound = Sound(DynamicLoadObject("FemJC.FJCEyePain", class'Sound', false));
+				if (TSound != None) PlaySound(TSound, SLOT_Pain, FMax(Mult * TransientSoundVolume, Mult * 2.0),,, RandomPitch());
+			}
+			else if (damageType == 'PoisonGas')
+			{
+				TSound = Sound(DynamicLoadObject("FemJC.FJCCough", class'Sound', false));
+				if (TSound != None) PlaySound(TSound, SLOT_Pain, FMax(Mult * TransientSoundVolume, Mult * 2.0),,, RandomPitch());
+			}
+			else
+			{
+				rnd = FRand();
+				if (rnd < 0.33)
+				{
+					TSound = Sound(DynamicLoadObject("FemJC.FJCPainSmall", class'Sound', false));
+					if (TSound != None) PlaySound(TSound, SLOT_Pain, FMax(Mult * TransientSoundVolume, Mult * 2.0),,, RandomPitch());
+				}
+				else if (rnd < 0.66)
+				{
+					TSound = Sound(DynamicLoadObject("FemJC.FJCPainMedium", class'Sound', false));
+					if (TSound != None) PlaySound(TSound, SLOT_Pain, FMax(Mult * TransientSoundVolume, Mult * 2.0),,, RandomPitch());
+				}
+				else
+				{
+					TSound = Sound(DynamicLoadObject("FemJC.FJCPainLarge", class'Sound', false));
+					if (TSound != None) PlaySound(TSound, SLOT_Pain, FMax(Mult * TransientSoundVolume, Mult * 2.0),,, RandomPitch());
+				}
+			}
+			AISendEvent('LoudNoise', EAITYPE_Audio, FMax(Mult * TransientSoundVolume, Mult * 2.0));
+		}
 	}
 	else
 	{
-	    if (PerkManager.GetPerkWithClass(class'DeusEx.PerkSecurityLoophole').bPerkObtained == true)
-            return;
-		// Body hit sound for multiplayer only
-		if (((damageType=='Shot') || (damageType=='AutoShot'))  && ( Level.NetMode != NM_Standalone ))
+		if (Region.Zone.bWaterZone)
 		{
-			PlaySound(sound'BodyHit', SLOT_Pain, FMax(Mult * TransientSoundVolume, Mult * 2.0),,, RandomPitch());
+			if (damageType == 'Drowned')
+			{
+				if (FRand() < 0.8)
+					PlaySound(sound'MaleDrown', SLOT_Pain, FMax(Mult * TransientSoundVolume, Mult * 2.0),,, RandomPitch());
+			}
+			else
+				PlaySound(sound'MalePainSmall', SLOT_Pain, FMax(Mult * TransientSoundVolume, Mult * 2.0),,, RandomPitch());
 		}
-
-		if ((damageType == 'TearGas') && FRand() <0.5)
-			PlaySound(sound'MaleEyePain', SLOT_Pain, FMax(Mult * TransientSoundVolume, Mult * 2.0),,, RandomPitch());
-		else if (damageType == 'PoisonGas')
-			PlaySound(sound'MaleCough', SLOT_Pain, FMax(Mult * TransientSoundVolume, Mult * 2.0),,, RandomPitch());
 		else
 		{
-			rnd = FRand();
-			if (rnd < 0.33)
-				PlaySound(sound'MalePainSmall', SLOT_Pain, FMax(Mult * TransientSoundVolume, Mult * 2.0),,, RandomPitch());
-			else if (rnd < 0.86)
-				PlaySound(sound'MalePainMedium', SLOT_Pain, FMax(Mult * TransientSoundVolume, Mult * 2.0),,, RandomPitch());
+			// Body hit sound for multiplayer only
+			if (((damageType=='Shot') || (damageType=='AutoShot'))  && ( Level.NetMode != NM_Standalone ))
+			{
+				PlaySound(sound'BodyHit', SLOT_Pain, FMax(Mult * TransientSoundVolume, Mult * 2.0),,, RandomPitch());
+			}
+			
+			if ((damageType == 'TearGas') || (damageType == 'HalonGas'))
+				PlaySound(sound'MaleEyePain', SLOT_Pain, FMax(Mult * TransientSoundVolume, Mult * 2.0),,, RandomPitch());
+			else if (damageType == 'PoisonGas')
+				PlaySound(sound'MaleCough', SLOT_Pain, FMax(Mult * TransientSoundVolume, Mult * 2.0),,, RandomPitch());
 			else
-				PlaySound(sound'MalePainLarge', SLOT_Pain, FMax(Mult * TransientSoundVolume, Mult * 2.0),,, RandomPitch());
+			{
+				rnd = FRand();
+				if (rnd < 0.33)
+					PlaySound(sound'MalePainSmall', SLOT_Pain, FMax(Mult * TransientSoundVolume, Mult * 2.0),,, RandomPitch());
+				else if (rnd < 0.66)
+					PlaySound(sound'MalePainMedium', SLOT_Pain, FMax(Mult * TransientSoundVolume, Mult * 2.0),,, RandomPitch());
+				else
+					PlaySound(sound'MalePainLarge', SLOT_Pain, FMax(Mult * TransientSoundVolume, Mult * 2.0),,, RandomPitch());
+			}
+			AISendEvent('LoudNoise', EAITYPE_Audio, FMax(Mult * TransientSoundVolume, Mult * 2.0));
 		}
-		AISendEvent('LoudNoise', EAITYPE_Audio, FMax(Mult * TransientSoundVolume, Mult * 2.0));
 	}
 }
 
@@ -982,11 +1085,14 @@ Begin:
 		setPhysics(Phys_Falling);
 		if (FRand() < 0.6)
 		{
-		if (PerkManager.GetPerkWithClass(class'DeusEx.PerkFieldRepair').bPerkObtained == false)
-		{
-        AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 544);
-        PlaySound(sound'MaleLand', SLOT_None, 1.5, true, 1024);
-        }
+            if (PerkManager.GetPerkWithClass(class'DeusEx.PerkNimble').bPerkObtained == false)
+            {
+                AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 544);
+                if (FlagBase.GetBool('LDDPJCIsFemale'))
+                    PlaySound(Sound(DynamicLoadObject("FJCLand", class'Sound', false)), SLOT_None, 1.5, true, 1024);
+                else
+                    PlaySound(sound'MaleLand', SLOT_None, 1.5, true, 1024);
+            }
         }
         swimTimer -= 0.5;
 	}
@@ -1024,6 +1130,50 @@ exec function stopMantling(optional float F)
 	}
 }
 
+//LDDP, 10/26/21: Fix for using "Walk" command resetting collision height in a way that is wrong.
+function ClientReStart()
+{
+	Super.ClientRestart();
+	
+	if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
+	{
+		BaseEyeHeight = CollisionHeight - (GetDefaultCollisionHeight() - Default.BaseEyeHeight) - 2.0;
+	}
+	else
+	{
+		BaseEyeHeight = CollisionHeight - (GetDefaultCollisionHeight() - Default.BaseEyeHeight);
+	}
+}
+
+
+//LDDP, 10/26/21: We tweak this because in theory feign death breaks dynamic collision size. That's bad, M'kay.
+state FeigningDeath
+{
+ignores SeePlayer, HearNoise, Bump;
+
+	function Rise()
+	{
+		if ( !bRising )
+		{
+			Enable('AnimEnd');
+			
+			//LDDP, 10/26/21: Yeah, this is on its way out. Thanks.
+			//BaseEyeHeight = Default.BaseEyeHeight;
+			
+			//LDDP, 10/26/21: Update female sounds a bit here.
+			if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
+			{
+				BaseEyeHeight = CollisionHeight - (GetDefaultCollisionHeight() - Default.BaseEyeHeight) - 2.0;
+			}
+			else
+			{
+				BaseEyeHeight = CollisionHeight - (GetDefaultCollisionHeight() - Default.BaseEyeHeight);
+			}
+			bRising = true;
+			PlayRising();
+		}
+	}
+}
 defaultproperties
 {
      mpGroundSpeed=230.000000

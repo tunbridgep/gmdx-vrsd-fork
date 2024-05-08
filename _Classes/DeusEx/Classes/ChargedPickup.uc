@@ -10,10 +10,12 @@ var() class<Skill> skillNeeded;
 var() bool bOneUseOnly;
 var() sound ActivateSound;
 var() sound DeactivateSound;
+var() sound UsedUpSound;
 var() sound LoopSound;
 var Texture ChargedIcon;
 var travel bool bIsActive;
 var localized String ChargeRemainingLabel;
+var localized String ChargeRemainingLabelSmall;
 var localized String DurabilityRemainingLabel;
 var localized String CanOnlyBeOne;
 var localized String PickupInfo1;
@@ -85,7 +87,7 @@ function ChargedPickupBegin(DeusExPlayer Player)
 	local int DisplayCount;
 
 	Player.AddChargedDisplay(Self);
-	Player.PlaySound(ActivateSound, SLOT_None);
+	Player.PlaySound(ActivateSound, SLOT_Pain);
 	if (LoopSound != None)
 		AmbientSound = LoopSound;
 
@@ -112,7 +114,12 @@ function ChargedPickupBegin(DeusExPlayer Player)
 function ChargedPickupEnd(DeusExPlayer Player)
 {
 	Player.RemoveChargedDisplay(Self);
-	Player.PlaySound(DeactivateSound, SLOT_None);
+
+	if (Charge > 0 && DeactivateSound != None)	// Trash: If charge is more than 0 and there's a deactivation sound, play it instead
+		Player.PlaySound(DeactivateSound, SLOT_Pain);
+	else
+		Player.PlaySound(UsedUpSound, SLOT_None);
+	
 	if (LoopSound != None)
 		AmbientSound = None;
 
@@ -148,6 +155,7 @@ simulated function bool IsActive()
 
 function ChargedPickupUpdate(DeusExPlayer Player)
 {
+    UpdateBeltText(); //Sarge: Now we need to update the belt position because it shows charge amounts
 }
 
 // ----------------------------------------------------------------------
@@ -198,7 +206,7 @@ function UsedUp()
 	    //bActivatable = false;
 		Pawn(Owner).ClientMessage(ExpireMessage);
 	}
-	Owner.PlaySound(DeactivateSound);
+	Owner.PlaySound(UsedUpSound);
 	Player = DeusExPlayer(Owner);
 
 	if (Player != None)
@@ -222,8 +230,8 @@ function UsedUp()
 	{
 		GotoState('DeActivated');                                               //RSD: Deactivate when the top one in the stack runs out (default)
 		//GotoState('Activated');                                                 //RSD: Automatically activate the next one in the stack
-		UpdateBeltText();
 		Charge=default.Charge;  //give back charge and make activatable
+		UpdateBeltText();
 		//if (Player != None)
 		//    Player.topCharge[x]=default.Charge;
 	}
@@ -495,8 +503,9 @@ event TravelPostAccept()
 defaultproperties
 {
      ActivateSound=Sound'DeusExSounds.Pickup.PickupActivate'
-     DeActivateSound=Sound'DeusExSounds.Pickup.PickupDeactivate'
+     UsedUpSound=Sound'DeusExSounds.Pickup.PickupDeactivate'
      ChargeRemainingLabel="Charge remaining:"
+     ChargeRemainingLabelSmall="%d%%"
      DurabilityRemainingLabel="Durability:"
      CanOnlyBeOne="You cannot equip more than one torso armor piece"
      PickupInfo1="Environmental Protection: 60%"

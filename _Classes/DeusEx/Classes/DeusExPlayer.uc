@@ -279,6 +279,7 @@ var localized String NoRoomToLift;
 var localized String CanCarryOnlyOne;
 var localized String CannotDropHere;
 var localized String HandsFull;
+var localized String CantBreakDT;
 var localized String NoteAdded;
 var localized String GoalAdded;
 var localized String PrimaryGoalCompleted;
@@ -440,6 +441,8 @@ var travel int BeltLast;                                                    //Sa
 var travel bool bUsedKeyringLast;  											//Sarge: Added new feature to allow keyring to be used without belt, freeing up a slot
 var travel bool bNumberSelect;                                              //Sarge: Whether or not our last belt selection was done with number keys (ActivateBelt) rather than Next/Prev. Used by Alternative Belt to know when to holster
 var travel bool bScrollSelect;                                              //Sarge: Whether or not our last belt selection was done with Next/Last weapon keys rather than Number Keys. Used by Alternative Belt to know when to holster
+var travel int beltScrolled;                                                //Sarge: The last item we scrolled to on the belt, if we are using Adv Toolbelt
+var travel bool selectedNumberFromEmpty;                                    //Sarge: Was the current selection made from an empty hand. Used by Alternate Toolbelt Classic Mode to not jump back to previous weapon when we select from an empty hand.
 var int clickCountCyber; //CyberP: for double clicking to unequip
 var bool bStunted; //CyberP: for slowing player under various conditions
 var bool bRegenStamina; //CyberP: regen when in water but head above water
@@ -549,6 +552,9 @@ var travel RandomTable Randomizer;
 
 var travel float autosaveRestrictTimer;                                         //Sarge: Current time left before we're allowed to autosave again.
 var const float autosaveRestrictTimerDefault;                                   //Sarge: Timer for autosaves.
+var travel bool bResetAutosaveTimer;                                            //Sarge: This is necessary because our timer isn't set properly during the same frame as saving, for some reason.
+
+var travel bool bMoreLDDPNPCs;
 
 const DRUG_TOBACCO = 0;
 const DRUG_ALCOHOL = 1;
@@ -556,7 +562,18 @@ const DRUG_CRACK = 2;
 
 var bool autosave;                                                              //Sarge: Autosave tells the Quicksave function to make an autosave instead
 
-var travel DeusExWeapon lastMeleeWeapon;                                           //Sarge: Stores our last melee weapon, for use when left-click frobbing crates and other breakables
+//Sarge: Allow Enhanced Weapon Offsets
+var globalconfig bool bEnhancedWeaponOffsets; 									//Sarge: Allow using enhanced weapon offsets
+
+//Sarge: Dialog Settings
+var globalconfig bool bNumberedDialog;                                          //Sarge: Shows numbers in the dialog window and allows selecting topics with the number keys
+var globalconfig bool bCreditsInDialog;                                         //Sarge: Shows credits in the dialog window
+var globalconfig bool bDialogHUDColors;                                         //Sarge: Use HUD Theme Colors in the Dialog window
+
+//SARGE: Aug Wheel Settings
+//var globalconfig bool bAdvancedAugWheel;                                        //Sarge: Allow manually assigning augmentations to the aug wheel, rather than auto-assigning all of them.
+var globalconfig bool bQuickAugWheel;                                           //Sarge: Instantly enable/disable augs when closing the menu over the selected aug, otherwise require a mouse click.
+var globalconfig bool bAugWheelDisableAll;                                      //Sarge: Show the Disable All button on the Aug Wheel
 
 //////////END GMDX
 
@@ -1615,6 +1632,7 @@ function UpdatePlayerSkin()
 	local PaulDentonCarcass paulCarcass;
 	local JCDentonMaleCarcass jcCarcass;
 	local JCDouble jc;
+	local DentonClone DC;
 
 	// Paul Denton
 	foreach AllActors(class'PaulDenton', paul)
@@ -1640,6 +1658,12 @@ function UpdatePlayerSkin()
 	// JC's stunt double
 	foreach AllActors(class'JCDouble', jc)
 		break;
+
+	//LDDP, 10/26/21: Reskin denton clone on the fly
+	forEach AllActors(class'DentonClone', DC)
+	{
+		DC.SetSkin(Human(Self));
+	}
 
 	if (jc != None)
 		jc.SetSkin(Self);
@@ -1812,7 +1836,7 @@ function bool CanSave(optional bool allowHardcore, optional bool checkAutosave)
     if (Level.Netmode != NM_Standalone) //Multiplayer Game
 	   return false;
 
-    if ((bRestrictedSaving || bHardCoreMode) && checkAutosave && autosaveRestrictTimer > 0.0) //Autosave timer not expired
+    if ((bRestrictedSaving || bHardCoreMode) && checkAutosave && autosaveRestrictTimer > saveTime) //Autosave timer not expired
         return false;
 
     return true; 
@@ -1841,7 +1865,7 @@ function DoSaveGame(int saveIndex, optional String saveDesc)
     //if (autosave) 
     //{
         autosave = false;
-        autosaveRestrictTimer = autosaveRestrictTimerDefault;
+        bResetAutosaveTimer = true;
     //}
 
 }
@@ -2410,6 +2434,67 @@ function RecoilEffectTick(float deltaTime)
 }
 
 // ----------------------------------------------------------------------
+// SelectMeleePriority()
+// ----------------------------------------------------------------------
+
+function bool SelectMeleePriority(int damageThreshold)	// Trash: Used to automatically decide what to draw
+{
+	local Inventory anItem;
+	local DeusExWeapon meleeWeapon;
+
+	local DeusExWeapon crowbar, sword, knife, baton, dts;
+
+	For(anItem = Inventory; anItem != None; anItem = anItem.Inventory)	// Go through the entire inventory, check for these melee weapons
+	{
+		if (anItem.IsA('WeaponSword'))
+			sword = DeusExWeapon(anItem);
+		if (anItem.IsA('WeaponCrowbar'))
+			crowbar = DeusExWeapon(anItem);
+		if (anItem.IsA('WeaponCombatKnife'))
+			knife = DeusExWeapon(anItem);
+		if (anItem.IsA('WeaponBaton'))
+			baton = DeusExWeapon(anItem);
+		if (anItem.IsA('WeaponNanoSword'))
+			dts = DeusExWeapon(anItem);
+	}
+
+	if (sword == None && crowbar == none && knife == none && baton == none && dts == none)	// Don't proceed if you have no melee weapons
+		return false;
+
+
+	if (sword != None && (bHardCoreMode || BreaksDamageThreshold(sword, damageThreshold)))
+		meleeWeapon = sword;
+	else if (crowbar != None && (bHardCoreMode || BreaksDamageThreshold(crowbar, damageThreshold)))
+		meleeWeapon = crowbar;
+	else if (knife != None && (bHardCoreMode || BreaksDamageThreshold(knife, damageThreshold)))
+		meleeWeapon = knife;
+	else if (baton != None && (bHardCoreMode || BreaksDamageThreshold(baton, damageThreshold)))
+		meleeWeapon = baton;
+	else if (dts != None && (bHardCoreMode || BreaksDamageThreshold(dts, damageThreshold)))
+		meleeWeapon = dts;
+	else if (!bHardCoreMode)
+    {
+		ClientMessage(CantBreakDT);
+        return false;
+    }
+    else
+        return false;
+	
+    PutInHand(meleeWeapon);
+    return true;
+}
+
+function bool BreaksDamageThreshold(DeusExWeapon weapon, int damageThreshold)	// Checks if the weapon breaks the damageThreshold
+{
+	local int mod;
+
+	if (weapon.IsA('WeaponCrowbar'))	// Special check for Crowbar since it deals +5 extra damage to objects
+		mod += 5;
+
+	return (weapon.CalculateTrueDamage() + mod) >= damageThreshold;
+}
+
+// ----------------------------------------------------------------------
 // DrugEffects()
 // ----------------------------------------------------------------------
 
@@ -2964,7 +3049,12 @@ function StartPoison( Pawn poisoner, int Damage )
 	myPoisoner = poisoner;
 
     if (myPoisoner.weapon.IsA('WeaponGreaselSpit') && FRand() < 0.3)
-    PlaySound(sound'MaleCough',SLOT_Pain);    //CyberP: cough to greasel spit
+    {
+        if (FlagBase.GetBool('LDDPJCIsFemale')) //Sarge: Lay-D Denton support
+            PlaySound(Sound(DynamicLoadObject("FJCCough", class'Sound', false)), SLOT_Pain);
+        else
+            PlaySound(sound'MaleCough',SLOT_Pain);    //CyberP: cough to greasel spit
+    }
 
 	if (Health <= 0)  // no more pain -- you're already dead!
 		return;
@@ -3410,6 +3500,16 @@ function RadialMenuUpdateAug(Augmentation aug)
 {
 	if ((rootWindow != None) && (aug != None))
 	   DeusExRootWindow(rootWindow).hud.radialAugMenu.UpdateItemStatus(aug);
+}
+
+// ----------------------------------------------------------------------
+// RadialMenuQuickCancel()
+// ----------------------------------------------------------------------
+
+function RadialMenuQuickCancel()
+{
+	if (rootWindow != None)
+	   DeusExRootWindow(rootWindow).hud.radialAugMenu.skipQuickToggle = true;
 }
 
 // ----------------------------------------------------------------------
@@ -5136,6 +5236,16 @@ function bool SetBasedPawnSize(float newRadius, float newHeight)
 //		DesiredPrePivot -= centerDelta;
 		BaseEyeHeight   = newHeight - deltaEyeHeight;
 
+		//LDDP, 10/26/21: We use this to dynamically adjust our collision height. Bear this in mind.
+		if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
+		{
+			if (PrePivot.Z ~= 4.5)
+			{
+				PrePivot.Z -= 4.5;
+			}
+			BaseEyeHeight -= 2;
+		}
+
 		// Complaints that eye height doesn't seem like your crouching in multiplayer
 		if (( Level.NetMode != NM_Standalone ) && (bIsCrouching || bForceDuck) )
 			EyeHeight		-= (centerDelta.Z * 2.5);
@@ -5160,6 +5270,10 @@ function bool ResetBasedPawnSize()
 
 function float GetDefaultCollisionHeight()
 {
+	if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
+	{
+		return Default.CollisionHeight-9.0;
+	}
 	return (Default.CollisionHeight-4.5);
 }
 
@@ -5731,7 +5845,12 @@ state PlayerWalking
                bStunted = true;
                SetTimer(3,false);
                if (!bOnLadder && FRand() < 0.7)
-                  PlaySound(sound'MaleBreathe', SLOT_None,0.8);
+               {
+                    if (FlagBase.GetBool('LDDPJCIsFemale')) //Sarge: Lay-D Denton support
+                        PlaySound(Sound(DynamicLoadObject("FJCGasp", class'Sound', false)), SLOT_None, 0.8);
+                    else
+                        PlaySound(sound'MaleBreathe', SLOT_None,0.8);
+               }
                if (bBoosterUpgrade && Energy > 0)
 	               AugmentationSystem.AutoAugs(false,false);
             }
@@ -6082,14 +6201,6 @@ state PlayerWalking
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
 
-        //Update autosave restriction timer
-        autosaveRestrictTimer = FMAX(0.0,autosaveRestrictTimer-deltaTime);
-
-        /*
-        if (autosaveRestrictTimer >= autosaveRestrictTimerDefault - 20)
-            ClientMessage("autosaveRestrictTimer: " $ autosaveRestrictTimer);
-        */
-
 		Super.PlayerTick(deltaTime);
 	}
 }
@@ -6134,9 +6245,6 @@ state PlayerFlying
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
-
-        //Update autosave restriction timer
-        autosaveRestrictTimer = FMAX(0,autosaveRestrictTimer-deltaTime);
 
 		Super.PlayerTick(deltaTime);
 	}
@@ -6323,9 +6431,6 @@ state PlayerSwimming
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
-
-        //Update autosave restriction timer
-        autosaveRestrictTimer = FMAX(0,autosaveRestrictTimer-deltaTime);
 
 		Super.PlayerTick(deltaTime);
 	}
@@ -7357,6 +7462,7 @@ function NewWeaponSelected()
     bScrollSelect = false;
     bUsedKeyringLast = false;
     clickCountCyber = 0;
+    beltScrolled = advBelt;
 }
 
 //Select Inventory Item
@@ -7374,6 +7480,18 @@ function bool SelectInventoryItem(Name type)
         item = item.Inventory;
     }
     return false;
+}
+
+//Returns whether a given frobbable can actually be interacted with
+//So that we can skip the ones that don't highlight or can't really be used,
+//preventing them from blocking holstering with right click
+function bool IsReallyFrobbable(Actor target)
+{
+    if (target.isA('DeusExDecoration') && !DeusExDecoration(target).bHighlight)
+        return false;
+    if (target.isA('DeusExMover'))
+        return DeusExMover(target).bHighlight && DeusExMover(target).bFrobbable;
+    return true;
 }
 
 // ----------------------------------------------------------------------
@@ -7406,6 +7524,12 @@ exec function ParseRightClick()
 
     if (RestrictInput())
 		return;
+
+    if (bRadialAugMenuVisible)
+    {
+        RadialMenuQuickCancel();
+        return;
+    }
 
     //Descope if we have binocs/scope
     if (inHand != None)
@@ -7454,7 +7578,7 @@ exec function ParseRightClick()
 	if (FrobTarget != None)
 		loc = FrobTarget.Location;
 
-	if (FrobTarget != None && (!FrobTarget.isA('DeusExDecoration') || DeusExDecoration(FrobTarget).bHighlight))
+	if (FrobTarget != None && IsReallyFrobbable(FrobTarget))
 	{
         //SARGE: I really should add this to the proper OOP setup, but I just don't care.
         //We don't care about MP, so will omit it for now
@@ -7513,15 +7637,16 @@ exec function ParseRightClick()
 		{
 			PutInHand(None);
 		}
-		else if (((bAlternateToolbelt == 1 && !bNumberSelect) || bAlternateToolbelt > 1) && (bNumberSelect || bScrollSelect || bUsedKeyringLast) ) //If we have moved our main weapon, switch to it. But not if we simply selected a different belt item.
+        //If we are using a different items to our belt item, and classic mode is on or we scrolled, select it instantly
+		else if ((bAlternateToolbelt > 1 || bScrollSelect) && beltScrolled != beltLast && inHand != None && !selectedNumberFromEmpty)
 		{
 			root = DeusExRootWindow(rootWindow);
 			if (root != None && root.hud != None)
 			{
 				root.ActivateObjectInBelt(advBelt);
                 NewWeaponSelected();
+                beltLast = advBelt;
 			}
-			
 		}
 		else if (clickCountCyber >= 1 || !bDblClickHolster)
 		{
@@ -7533,14 +7658,15 @@ exec function ParseRightClick()
 				if (root != None && root.hud != None)
 				{
 					if (bAlternateToolbelt > 0)
-						root.ActivateObjectInBelt(advBelt);
-					else
-						root.ActivateObjectInBelt(BeltLast);
+						beltLast = advBelt;
+                    root.ActivateObjectInBelt(BeltLast);
 				}
 			}
 			else
+            {
 				PutInHand(None);
-            NewWeaponSelected();
+                NewWeaponSelected();
+            }
 		    DoRightFrob(FrobTarget); //Last minute check for things with no highlight.
 		}
 		else
@@ -8428,7 +8554,8 @@ function Bool FindInventorySlot(Inventory anItem, optional Bool bSearchOnly)
 		PlaceItemInSlot(anItem, col, row);
 		if (bLeftClicked && inHand == None)
 		{
-            PutInHand(anItem); //CyberP: left click interaction
+            //PutInHand(anItem); //CyberP: left click interaction //SARGE: This breaks stacked items
+            SelectInventoryItem(anItem.Class.name);
             bLeftClicked = False;
 		}
 	}
@@ -8557,6 +8684,12 @@ function SetPlaceholder(int objectNum, bool value, optional texture icon)
     beltInfos[objectNum].bPlaceholder = value;
     if (icon != None)
         beltInfos[objectNum].icon = icon;
+}
+
+function ClearPlaceholder(int objectNum)
+{
+    beltInfos[objectNum].bPlaceholder = false;
+    beltInfos[objectNum].icon = None;
 }
 
 function bool GetPlaceholder(int objectNum)
@@ -9431,7 +9564,8 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 
 				// Remove it from the inventory slot grid
 				RemoveItemFromSlot(item);
-                //MakeBeltObjectPlaceholder(item); //SARGE: Disabled because keeping dropped items as placeholders feels weird
+                if (!bBeltAutofill)
+                    MakeBeltObjectPlaceholder(item); //SARGE: Disabled because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
 
 				// make sure we have one copy to throw!
 				DeusExPickup(item).NumCopies = 1;
@@ -9452,7 +9586,8 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 
 			// Remove it from the inventory slot grid
 			RemoveItemFromSlot(item);
-            //MakeBeltObjectPlaceholder(item); //SARGE: Disabled because keeping dropped items as placeholders feels weird
+            if (!bBeltAutofill)
+                MakeBeltObjectPlaceholder(item); //SARGE: Disabled because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
 		}
 
 		// if we are highlighting something, try to place the object on the target //CyberP: more lenience when dropping
@@ -10135,6 +10270,50 @@ exec function ShowAcceleration(bool bShow)
 			root.actorDisplay.ShowAcceleration(bShow);
 }
 
+//Sarge: Moved this from DeusExWeapon because it's also used by SkilledTools
+function texture GetWeaponHandTex()
+{
+	local texture tex;
+
+	if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
+    {
+        switch(PlayerSkin)
+        {
+            case 0:
+                tex = Texture(DynamicLoadObject("FemJC.WeaponHandsTex0Fem", class'Texture', false));
+                break;
+            case 1:
+                tex = Texture(DynamicLoadObject("FemJC.WeaponHandsTex4Fem", class'Texture', false));
+                break;
+            case 2:
+                tex = Texture(DynamicLoadObject("FemJC.WeaponHandsTex5Fem", class'Texture', false));
+                break;
+            case 3:
+                tex = Texture(DynamicLoadObject("FemJC.WeaponHandsTex6Fem", class'Texture', false));
+                break;
+            case 4:
+                tex = Texture(DynamicLoadObject("FemJC.WeaponHandsTex7Fem", class'Texture', false));
+                break;
+        }
+    }
+    else
+    {
+        //For male, return the basic ones
+		switch(PlayerSkin)
+		{
+			//default, black, latino, ginger, albino, respectively
+			case 0: tex = texture'weaponhandstex'; break;
+			case 1: tex = texture'HDTPItems.skins.weaponhandstexblack'; break;
+			case 2: tex = texture'HDTPItems.skins.weaponhandstexlatino'; break;
+			case 3: tex = texture'HDTPItems.skins.weaponhandstexginger'; break;
+			case 4: tex = texture'HDTPItems.skins.weaponhandstexalbino'; break;
+		}
+    }
+
+    if (tex == None)
+        tex = texture'weaponhandstex'; //White hands texture by default
+	return tex;
+}
 
 // ----------------------------------------------------------------------
 // ShowHud()
@@ -10323,6 +10502,9 @@ function bool GetCrosshairState(optional bool bCheckForOuterCrosshairs)
 
     if (frobTarget != None && frobTarget.isA('InformationDevices') && InformationDevices(frobTarget).aReader == Self)
         return false;
+        
+    if(bRadialAugMenuVisible) //RSD: Remove the crosshair if the radial aug menu is visible
+        return false;
 
     if (W != None)
     {
@@ -10336,8 +10518,6 @@ function bool GetCrosshairState(optional bool bCheckForOuterCrosshairs)
         //    return false;
         else if (W.bAimingDown)
             return false;
-        else if(bRadialAugMenuVisible) //RSD: Remove the accuracy indicators if the radial aug menu is visible
-            return false;
         else if (W.IsA('WeaponGEPGun') && WeaponGEPGun(W).GEPinout>=1.0) //No crosshair when using GEP scope
             return false;
 
@@ -10350,7 +10530,7 @@ function bool GetCrosshairState(optional bool bCheckForOuterCrosshairs)
                 return false;
         }
     }
-    else if (dynamicCrosshair == 2) //If not a weapon, use nothing as our crosshair
+    else if (dynamicCrosshair == 4) //If not a weapon, use nothing as our crosshair
         return false;
     //else if (inHand != None && !inHand.isA('SkilledTool') && dynamicCrosshair > 0) //Non-weapons have no crosshair
     //    return false;
@@ -10359,6 +10539,42 @@ function bool GetCrosshairState(optional bool bCheckForOuterCrosshairs)
     
     return true;
 }
+
+// ----------------------------------------------------------------------
+// GetBracketsState()
+// returns whether or not we should show the frob selection brackets based on current conditions
+// ----------------------------------------------------------------------
+
+function bool GetBracketsState()
+{
+	local DeusExWeapon W;
+	local DeusExRootWindow root;
+
+	root = DeusExRootWindow(rootWindow);
+	W = DeusExWeapon(inHand);
+
+    if (IsInState('Dying')) //No brackets while dying
+        return false;
+
+    if (root != None && root.WindowStackCount() > 0) //No brackets while windows are open
+        return false;
+
+    //No brackets while reading books/datacubes/etc
+    if (frobTarget != None && frobTarget.isA('InformationDevices') && InformationDevices(frobTarget).aReader == Self)
+        return false;
+        
+    if(bRadialAugMenuVisible)
+        return false;
+    
+    if (W != None)
+    {
+        if (W.IsA('WeaponGEPGun') && WeaponGEPGun(W).GEPinout>=1.0) //No brackets when using GEP scope
+            return false;
+    }
+
+    return true;
+}
+
 
 // ----------------------------------------------------------------------
 // UpdateCrosshairStyle()
@@ -10378,7 +10594,11 @@ function UpdateCrosshairStyle()
 
         if (inHand.isA('DeusExWeapon') || dynamicCrosshair == 0)
     		root.hud.cross.SetBackground(Texture'CrossSquare');
-        else if (inHand == None)
+        else if (dynamicCrosshair == 3)
+    		root.hud.cross.SetBackground(Texture'RSDCrap.UserInterface.CrossDot3');
+        else if (dynamicCrosshair == 2)
+    		root.hud.cross.SetBackground(Texture'RSDCrap.UserInterface.CrossDot2');
+        else
     		root.hud.cross.SetBackground(Texture'RSDCrap.UserInterface.CrossDot');
     }
 }
@@ -10624,6 +10844,9 @@ exec function ActivateBelt(int objectNum)
 				advBelt = objectNum;
 				root.hud.belt.RefreshAlternateToolbelt();
 			}
+                
+            //Did we select from empty?
+            selectedNumberFromEmpty = inHand == None;
 		
 			root.ActivateObjectInBelt(objectNum);
 			BeltLast = objectNum;
@@ -10725,12 +10948,12 @@ exec function NextBeltItem()
     	}
 		}
 	}
+	BeltLast = slot;
 	}
 	else
 	{
 	if (CarriedDecoration == None)
 	{
-		//slot = advBelt;
 		root = DeusExRootWindow(rootWindow);
 		if (root != None)
 		{
@@ -10745,10 +10968,11 @@ exec function NextBeltItem()
             NewWeaponSelected();
 			bScrollSelect = true;
 			clientInHandPending = root.hud.belt.GetObjectFromBelt(advBelt);
+            slot = advBelt;
 		}
 	}
+    beltScrolled = slot;
 	}
-	BeltLast = slot;
 }
 
 // ----------------------------------------------------------------------
@@ -10842,12 +11066,12 @@ exec function PrevBeltItem()
     	}
 		}
 	}
+	BeltLast = slot;
 	}
 	else
 	{
 	if (CarriedDecoration == None)
 	{
-		//slot = advBelt;
 		root = DeusExRootWindow(rootWindow);
 		if (root != None)
 		{	
@@ -10861,10 +11085,11 @@ exec function PrevBeltItem()
             root.hud.belt.RefreshAlternateToolbelt();
 			bScrollSelect = true;
 			clientInHandPending = root.hud.belt.GetObjectFromBelt(advBelt);
+            slot = advBelt;
 		}
 	}
+    beltScrolled = slot;
 	}
-	BeltLast = slot;
 }
 
 // ----------------------------------------------------------------------
@@ -11446,9 +11671,6 @@ ignores SeePlayer, HearNoise, Bump;
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
-
-        //Update autosave restriction timer
-        autosaveRestrictTimer = FMAX(0,autosaveRestrictTimer-deltaTime);
 	}
 
 	function LoopHeadConvoAnim()
@@ -14009,11 +14231,19 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 			       }
 				}
         }
-        if (damageType == 'TearGas' || damageType == 'PoisonGas') //CyberP: gas grenades and poison barrels drain stamina.
+        if (damageType == 'TearGas' || damageType == 'PoisonGas' || damageType == 'Poison' || damageType == 'PoisonEffect') //CyberP: gas grenades and poison barrels drain stamina. // Trash: Now with more damange types!
         {
+
             if (newDamage >= 1 && bStaminaSystem)
             {
-                swimTimer -= newDamage*0.4;
+				if (UsingChargedPickup(class'HazMatSuit'))
+        		{
+					skillLevel = SkillSystem.GetSkillLevelValue(class'SkillEnviro');
+					swimTimer -= (newDamage*0.4) + 3;	// Trash: In the future, we can add a perk to further reduce the stamina damage here
+        		}
+				else
+                	swimTimer -= (newDamage*0.4) + 3;
+				
                 if (swimTimer < 0)
                     swimTimer = 0;
             }
@@ -15546,6 +15776,7 @@ function CreateColorThemeManager()
 		ThemeManager.AddTheme(Class'ColorThemeMenu_Superhero');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_Terminator');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_Violet');
+		ThemeManager.AddTheme(Class'ColorThemeMenu_LDDP');
 
 		// HUD
 		ThemeManager.AddTheme(Class'ColorThemeHUD_Default');
@@ -15573,6 +15804,7 @@ function CreateColorThemeManager()
 		ThemeManager.AddTheme(Class'ColorThemeHUD_Superhero');
 		ThemeManager.AddTheme(Class'ColorThemeHUD_Terminator');
 		ThemeManager.AddTheme(Class'ColorThemeHUD_Violet');
+		ThemeManager.AddTheme(Class'ColorThemeHUD_LDDP');
 	}
 }
 
@@ -16246,6 +16478,23 @@ function MultiplayerTick(float DeltaTime)
 	}
 	RepairInventory();
 	lastRefreshTime = 0;
+
+
+    //Update autosave restriction timer
+    if (bResetAutosaveTimer)
+    {
+	    autosaveRestrictTimer = saveTime + autosaveRestrictTimerDefault;
+        bResetAutosaveTimer = false;
+        //ClientMessage("reset autosaveRestrictTimer");
+    }
+
+    
+    /*
+    autosaveTimeRemaining = autosaveRestrictTimer - saveTime;
+    if (int(autosaveTimeRemaining % 60) == 0)
+        ClientMessage((int(autosaveTimeRemaining) / 60) @ "minutes until autosave");
+     */
+
 }
 
 // ----------------------------------------------------------------------
@@ -16721,12 +16970,22 @@ function RegenStaminaTick(float deltaTime)                                      
 	}
 }
 
+//Sarge: Checks if Lay-D Denton Mod is installed
+function bool FemaleEnabled()
+{
+    local Texture TTex;
+	TTex = Texture(DynamicLoadObject("FemJC.MenuPlayerSetupJCDentonFemale_1", class'Texture', false));
+	return TTex != None;
+}
+
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
 defaultproperties
 {
-     autosaveRestrictTimerDefault=900.0
+     bNumberedDialog=True
+     bCreditsInDialog=True
+     autosaveRestrictTimerDefault=600.0
      TruePlayerName="JC Denton"
      CombatDifficulty=1.000000
      SkillPointsTotal=5000
@@ -16789,6 +17048,7 @@ defaultproperties
      CanCarryOnlyOne="You can only carry one %s"
      CannotDropHere="Can't drop that here"
      HandsFull="Your hands are full"
+	 CantBreakDT="Strongest melee damage doesn't pass threshold"
      NoteAdded="Note Received - Check DataVault For Details"
      GoalAdded="Goal Received - Check DataVault For Details"
      PrimaryGoalCompleted="Primary Goal Completed"
@@ -16908,4 +17168,7 @@ defaultproperties
      BindName="JCDenton"
      FamiliarName="JC Denton"
      UnfamiliarName="JC Denton"
+     bEnhancedWeaponOffsets=false
+     bQuickAugWheel=false
+     bAugWheelDisableAll=true
 }

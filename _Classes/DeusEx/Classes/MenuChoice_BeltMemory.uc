@@ -34,6 +34,6 @@ function ResetToDefault()
 defaultproperties
 {
      defaultInfoWidth=88
-     HelpText="Belt slots are limited to the last object placed in them."
+     HelpText="After consuming the last item in a belt slot, it's position will be preserved.|nIf Autofill is off, dropped items will also be preserved. Right-Click to clear."
      actionText="|&Belt Memory"
 }

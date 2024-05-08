@@ -7,6 +7,7 @@ var int rechargeAmount;
 var int mpRechargeAmount;
 
 var localized String msgRecharged;
+var localized String msgFullEnergy;
 var localized String RechargesLabel;
 
 /*function PostBeginPlay()
@@ -41,6 +42,15 @@ state Activated
 
 		//player = DeusExPlayer(Owner);
 		player = DeusExPlayer(GetPlayerPawn());                                 //RSD: Altering this to enable generic LeftClick interact
+
+		
+		if (player != None && player.Energy == player.EnergyMax)
+		{
+			player.ClientMessage(msgFullEnergy);
+			GoToState('DeActivated');
+			return;
+		}
+
 		if (player != None)
 		{
 		    origEnergy = player.Energy;                                         //RSD
@@ -116,6 +126,7 @@ defaultproperties
      rechargeAmount=20
      mpRechargeAmount=50
      msgRecharged="Recharged %d points"
+	 msgFullEnergy="You're already at full Energy"
      RechargesLabel="Recharges %d Energy Units"
      maxCopies=20
      bCanHaveMultipleCopies=True

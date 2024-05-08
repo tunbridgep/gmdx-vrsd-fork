@@ -30,6 +30,8 @@ var localized string	msgAlreadyHacked;		// message when the device is already ha
 
 var bool bBeenHacked; //RSD: For having been hacked at least once
 
+var float               previousStrength;        //Sarge: What was the strength before we started bypassing?
+
 //SARGE: Added "Left Click Frob" and "Right Click Frob" support
 //Return true to use the default frobbing mechanism, or false for custom behaviour
 function bool DoLeftFrob(DeusExPlayer frobber)
@@ -133,11 +135,11 @@ function Timer()
 
 		// check to see if we've moved too far away from the device to continue
 		else if (hackPlayer.frobTarget != Self)
-			StopHacking();
+			StopHacking(true);
 
 		// check to see if we've put the multitool away
 		else if (hackPlayer.inHand != curTool)
-			StopHacking();
+			StopHacking(true);
 	}
 }
 
@@ -162,7 +164,7 @@ function Tick(float deltaTime)
 //
 // Stops the current hack-in-progress
 //
-function StopHacking()
+function StopHacking(optional bool aborted)
 {
 	// alert NPCs that I'm not messing with stuff anymore
 	AIEndEvent('MegaFutz', EAITYPE_Visual);
@@ -171,11 +173,14 @@ function StopHacking()
 	{
 		curTool.StopUseAnim();
 		curTool.bBeingUsed = False;
-		if (!(initialHackStrength <= 0.05 && hackPlayer.PerkManager.GetPerkWithClass(class'DeusEx.PerkCracked').bPerkObtained == true)) //RSD: Changed CRACKED perk to hack <=5% devices for free
-		curTool.UseOnce();
+		if (!aborted && !(initialHackStrength <= 0.05 && hackPlayer.PerkManager.GetPerkWithClass(class'DeusEx.PerkCracked').bPerkObtained == true)) //RSD: Changed CRACKED perk to hack <=5% devices for free
+            curTool.UseOnce();
 	}
 	curTool = None;
 	SetTimer(0.1, False);
+
+    if (aborted)
+        hackStrength = previousStrength;
 }
 
 //
@@ -225,6 +230,9 @@ function Frob(Actor Frobber, Inventory frobWith)
 			{
 				if (hackStrength > 0.0)
 				{
+                    //Store the previous strength, so we can refund
+                    previousStrength = hackStrength;
+
 					// alert NPCs that I'm messing with stuff
 					AIStartEvent('MegaFutz', EAITYPE_Visual);
 

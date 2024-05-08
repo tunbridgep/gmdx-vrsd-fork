@@ -37,8 +37,10 @@ function DifficultyMod(float CombatDifficulty, bool bHardCoreMode, bool bExtraHa
                 bReactLoudNoise = True;
                 CloakThreshold = 110;
                 if (bFirstLevelLoad || !bNotFirstDiffMod)                       //RSD: Only alter health if it's the first time loading the map
-                Health = 200;
-                EMPHitPoints = 120;
+                {
+                    Health = 200;
+                    EMPHitPoints = 120;
+                }
              }
              bNotFirstDiffMod = true;
 }

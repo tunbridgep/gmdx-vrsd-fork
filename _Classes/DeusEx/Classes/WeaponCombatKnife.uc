@@ -90,7 +90,7 @@ exec function UpdateHDTPsettings()                                              
 
 defaultproperties
 {
-     bIsMeleeWeapon=True
+     weaponOffsets=(X=1.000000,Y=-8.000000,Z=-17.000000)
      LowAmmoWaterMark=0
      GoverningSkill=Class'DeusEx.SkillWeaponLowTech'
      NoiseLevel=0.050000

@@ -79,7 +79,7 @@ State QuickSaver
          DxPlayer.ClientMessage(msgDeducted);
          }
          bUsedSavePoint=true;
-         DxPlayer.DoSaveGame(GetSaveGameIndex(DxPlayer),sprintf(msgSaveName,DxPlayer.TruePlayerName));
+         DxPlayer.DoSaveGame(GetSaveGameIndex(DxPlayer),sprintf(msgSaveName,DxPlayer.retInfo(),DxPlayer.TruePlayerName));
          PlaySound(sound'CloakDown', SLOT_None,,,,0.5);
          GotoState('');
          Global.SetTimer(0.02,true);
@@ -96,7 +96,7 @@ defaultproperties
      Tcount=100
      msgDeducted="100 credits deducted from your account"
      msgNotEnough="100 credits required"
-     msgSaveName="Location Save [%s]"
+     msgSaveName="%s [%s]"
      numThings=0
      bFlammable=False
      bHighlight=False

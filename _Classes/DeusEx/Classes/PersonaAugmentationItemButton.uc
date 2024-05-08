@@ -6,6 +6,7 @@ class PersonaAugmentationItemButton extends PersonaItemButton;
 var PersonaLevelIconWindow winLevels;
 var bool  bActive;
 var int   hotkeyNumber;
+var bool  onWheel;
 var Color colIconActive;
 var Color colIconNormal;
 var Color colIconAlwaysActive;
@@ -28,6 +29,7 @@ event InitWindow()
 event DrawWindow(GC gc)
 {
 	local String str;
+    local bool onWheel;
 
 	Super.DrawWindow(gc);
 

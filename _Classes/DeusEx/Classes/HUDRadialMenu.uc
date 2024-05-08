@@ -32,6 +32,9 @@ var HUDRadialMenuItem power; // just a reference to a Child item. For conveniece
 var Texture powerActive;
 var Texture powerInactive;
 
+var bool skipQuickToggle;            //Skip toggling augs on menu close if this is set
+var bool bClicked;                   //Skip toggling augs on menu close if this is set
+
 // ----------------------------------------------------------------------
 // InitWindow()
 // ----------------------------------------------------------------------
@@ -73,7 +76,10 @@ event Tick(float deltaSeconds) {
 	// mouse actually moved
 	pos = mouseToMarkerPos(cursorPos);
 	positionMarker(pos);
-	highlightSingleItem(getNearestItem(pos));
+    if (!skipQuickToggle)
+    	highlightSingleItem(getNearestItem(pos));
+    else
+        highlightSingleItem(None);
 
 	pos = cursorPos; // save last mouse pos for next tick
 }
@@ -88,9 +94,22 @@ event VisibilityChanged(bool isVis) {
     player.bShowMenu=isVis;
 
 	if (isVis)
-		PlaySound(Sound'Menu_Activate', 0.25);
+    {
+        positionItems();
+        positionPowerIcon();
+        if (!player.bQuickAugWheel)
+            PlaySound(Sound'Menu_Activate', 0.25);
+        skipQuickToggle = false;
+        bClicked = false;
+    }
 	else
-	    PlaySound(Sound'Menu_OK', 0.25);
+    {
+        //Toggle aug on closing, if we have Quick Aug Menu on
+        if (player.bQuickAugWheel && !skipQuickToggle && !bClicked)
+            ToggleCurrent();
+        else
+    	    PlaySound(Sound'Menu_OK', 0.25);
+    }
 }
 
 /**
@@ -129,6 +148,10 @@ function highlightSingleItem(HUDRadialMenuItem item) {
  * (De-)Activates the currently highlited aug.
  */
 function ToggleCurrent() {
+
+    //Left-click prevents quick-toggle
+    bClicked = true;
+
     if (highlightedItem == power && activeItems > 0) {
         player.DeactivateAllAugs();
         activeItems = 0;
@@ -151,9 +174,15 @@ function HUDRadialMenuItem getNearestItem(vector v) {
     local int i;
     local Vector minAngle, tmp;
     local HUDRadialMenuItem nearest;
+    local int visible;
 
-    if (itemCount < 2)
+    visible = GetVisibleItems();
+    
+    if (visible == 1)
+        return GetFirstVisibleItem();
+    else if (visible == 0)
         return orderedItems[0];
+
 
     for (i = 0; i < itemCount; i++) {
         tmp = orderedItems[i].GetRelativePos()-v;
@@ -215,30 +244,96 @@ function updatePowerStatus() {
        power.SetBackground(powerInactive);
 }
 
+function bool IsItemVisible(int item)
+{
+    return orderedItems[item].augmentation.bAddedToWheel;
+}
+
 /**
  * Calculates all item positions depending on how many items there are.
+ * SARGE: Rewrote a lot of this to support the custom Aug wheel
  */
+
+function HUDRadialMenuItem GetFirstVisibleItem()
+{
+	local int i;
+	for (i = 1; i < itemCount; i++)
+    {
+        if (IsItemVisible(i))
+            return orderedItems[i];
+	}
+    //return power button if enabled
+    if (player.bAugWheelDisableAll)
+        return orderedItems[0];
+    return None;
+}
+
+function int GetVisibleItems()
+{
+	local int i;
+    local int visibleiTems;
+    
+    //calculate the number of visible items
+	for (i = 1; i < itemCount; i++)
+    {
+        if (IsItemVisible(i))
+            visibleItems++;
+	}
+
+    //add power button if enabled
+    if (player.bAugWheelDisableAll)
+        visibleItems += 1;
+
+    return visibleItems;
+}
+
 function positionItems() {
+    local float angle;
 	local Rotator ro;
 	local int i;
+    local int visibleiTems;
 
 	if (itemCount == 0) return;
+
+    visibleItems = GetVisibleItems();
+
+    //show power button if enabled
+    if (player.bAugWheelDisableAll)
+        orderedItems[0].Show();
+    else
+        orderedItems[0].Hide();
+	
+    // recalc items agle
+	angle = FULL_CIRCLE/visibleItems;
+	itemAngle.Pitch = angle;
+	itemAngle.Yaw = angle;
 
 	ro.Pitch = 0;
 	ro.Yaw = 0;
 
-	// pull Rotator to the left side so that the middle of all shown items
-	// lies at the top of the radial menu (items are distributed evenly at left
-	// and right sides). Subtract the first item which is the power button.
-	ro -= 0.5*(itemCount-2)*itemAngle;
-
-    pos = (radius - orderedItems[0].iconSize)*vect(0,-1,0);
+    //Single item? Put it in the middle
+    if (visibleItems == 1)
+        pos = vect(0,0,0);
+    else
+    {
+        // pull Rotator to the left side so that the middle of all shown items
+        // lies at the top of the radial menu (items are distributed evenly at left
+        // and right sides). Subtract the first item which is the power button.
+        ro -= 0.5*(visibleItems-2)*itemAngle;
+        pos = (radius - orderedItems[0].iconSize)*vect(0,-1,0);
+    }
 
 	// iterate through all items (the children of the current window) and set
 	// their position
 	for (i = 1; i < itemCount; i++) {
-		orderedItems[i].SetRelativePos(center+(pos >> ro));
-		ro += itemAngle;
+        if (IsItemVisible(i))
+        {
+            orderedItems[i].Show();
+            orderedItems[i].SetRelativePos(center+(pos >> ro));
+            ro += itemAngle;
+        }
+        else
+            orderedItems[i].Hide();
 	}
 }
 
@@ -265,18 +360,6 @@ function insertSorted(HUDRadialMenuItem item) {
 	}
 
 }
-
-/**
- * Calculates a constant angle between all existing items.
- */
-function recalcItemAngle() {
-    local float angle;
-    // recalc items agle
-	angle = FULL_CIRCLE/itemCount;
-	itemAngle.Pitch = angle;
-	itemAngle.Yaw = angle;
-}
-
 
 function SetMaxItems(int max) {
 	maxItems = max;
@@ -312,7 +395,6 @@ function AddItem(Augmentation aug) {
     if (aug.IsActive()) item.Activate();
     // the following order of function calls is necessary for a correct item positioning.
     insertSorted(item);
-    recalcItemAngle();
     positionItems();
 }
 

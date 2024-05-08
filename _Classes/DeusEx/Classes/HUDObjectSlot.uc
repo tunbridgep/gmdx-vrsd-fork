@@ -24,6 +24,8 @@ var int			slotFillHeight;
 var int         borderWidth;
 var int         borderHeight;
 
+var bool        bInventorySlot;                       //Sarge: If true, this is the Inventory belt. If false it's the HUD belt
+
 // Stuff to optimize DrawWindow()
 var String      itemText;
 
@@ -153,6 +155,7 @@ function SetItem(Inventory newItem)
 function UpdateItemText()
 {
 	local DeusExWeapon weapon;
+	local ChargedPickup CP;
 
 	itemText = "";
 
@@ -171,6 +174,7 @@ function UpdateItemText()
 			if (weapon.IsA('WeaponNanoVirusGrenade') ||
 				weapon.IsA('WeaponGasGrenade') ||
 				weapon.IsA('WeaponEMPGrenade') ||
+				weapon.IsA('WeaponHideAGun')   || //Sarge: Added
 				weapon.IsA('WeaponLAM'))
 			{
 				if (weapon.AmmoType != none && weapon.AmmoType.AmmoAmount > 1)  //RSD: accessed none?
@@ -178,6 +182,20 @@ function UpdateItemText()
 			}
 
 		}
+        //Show ChargedPickup charge
+        else if (item.IsA('ChargedPickup'))
+        {
+            CP = ChargedPickup(item);
+            if (CP.GetCurrentCharge() > 0 && !bInventorySlot)
+                itemText = Sprintf(CP.ChargeRemainingLabelSmall,(int(CP.GetCurrentCharge())));
+			if (CP.NumCopies > 1)
+            {
+                if (itemtext == "")
+                    itemText = "x" @ CP.NumCopies;
+                else
+                    itemText = itemText @ "x" @ CP.NumCopies;
+            }
+        }
 		else if (item.IsA('DeusExPickup') && (!item.IsA('NanoKeyRing')))
 		{
 			// If the object is a SkilledTool (but not the NanoKeyRing) then show the
@@ -254,10 +272,13 @@ local DeusExWeapon weapon;
 			else if (weapon.AmmoName == class'Ammo20mmEMP' || weapon.AmmoName == class'AmmoPlasmaSuperheated' || weapon.AmmoName == class'AmmoSabot' || weapon.AmmoName == class'AmmoDartTaser')
 			gc.SetTextColor(colAmmoEMPText);
 			}
+        //Sarge: Disabled because it looks weird on the belt
+        /*
 		if (weapon != None && weapon.IsA('WeaponHideAGun') && weapon.ProjectileClass == class'DeusEx.PlasmaBolt')
-        gc.SetTextColor(colAmmoTranqText);
+            gc.SetTextColor(colAmmoTranqText);
         else if (weapon != None && weapon.IsA('WeaponHideAGun'))
         gc.SetTextColor(colAmmoEMPText);
+        */
 		}                                              //CyberP: end.
 
 		// If there's any additional text (say, for an ammo or weapon), draw it
@@ -427,6 +448,11 @@ event bool MouseButtonPressed(float pointX, float pointY, EInputKey button,
 		clickY = pointY;
 		bResult = True;
 	}
+    else if (item == None && button == IK_RightMouse) //Sarge: Allow removing belt memory with right click
+    {
+        player.ClearPlaceholder(objectNum);
+        bResult = True;
+    }
 	return bResult;
 }
 

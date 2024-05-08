@@ -2,12 +2,22 @@ Sarge's Changes since Beta 2.2:
 
 - Moved DeusEx.Int to the mod's System folder, so as to not overwrite any vanilla files. The int file will be handled automatically when using Kentie's Deus Exe.
 - Numerous Bug Fixes
+    - Fixed GMDX bug where Intro Cinematic didn't have subtitles bars, and fixed all cinematics to have a FOV of 75, making them always look accurate to the original game.
     - Fixed a bug where the Nuke and Worm software buttons were completely white squares on the Hacking menu.
     - Fixed GMDX vRSD bug where you could pick up and carry heavy objects while out of energy with the Muscle Augmentation
     - Fixed GMDX vRSD bug allowing using Tech Goggles in the secondary slot for half a second or so when out of charge
     - Fixed the Crosshair Visibility settings in the options getting constantly overridden by lasers etc. The outer crosshairs showing your accuracy are also now linked to the Crosshair visibility setting.
     - Fixed GMDX Bug where EMP'd turrets and cameras will re-enable themselves after the EMP effect runs out, even if they were disabled during the EMP effect.
+    - Fixed GMDX/Vanilla issue where you could retain your standing accuracy bonus after moving if you stood still for a long time. Now accuracy decreases immediately.
 - Quality of Life Improvements:
+    - Added alternate weapon offsets to hide many of the visible seams or missing parts of weapon viewmodels.
+    - Augmentation Wheel improvements
+        - While in the augmentation screen, use middle-click on an active augmentation to add or remove it from the augmentation wheel.
+        - By default all augmentations will appear on the wheel.
+        - The "Disable All" button can optionally be removed using the options menu.
+        - The augmentation wheel can be changed to work in Quick mode. In Quick mode, releasing the augmentation wheel key will select the currently highlighted augmentation. Use right click to cancel.
+    - In the Inventory screen, charged items will now show their charge level on their icon. Additionally, belt slots containing charged items will show their charge level.
+    - Lockpicks and Multitools will no longer be consumed if you look away from an object you're picking/bypassing. Instead, the action will be cancelled and any progress cancelled.
     - Added an optional "Dynamic Crosshair" mode, which shows a small dot-crosshair when no weapons is equipped, and some items have no crosshairs at all.
         - Also fixed many instances of crosshair weirdness.
     - The hit marker no longer hides the crosshair when it appears.
@@ -20,6 +30,7 @@ Sarge's Changes since Beta 2.2:
     - "One-shot-at-a-time" weapons have a different formula for calculating reload speed (RDS/SEC).
     - Different shotgun shells have different textures, and the boxes were reworked to have a different texture for easier identification.
         - Shells also have different sounds when they hit the floor
+    - Equipping/Unequipping Environmental Training items gives you a unique sound depending on the item.
     - Pressing the Reload key will no longer reload weapons that have a full clip.
     - Laser Attachments now re-enable themselves automatically if a weapon is holstered and reselected.
     - Hardcore Mode difficulty selection and Gameplay Settings menu are no longer locked behind completing the game, however they strongly warn against changing them.
@@ -27,10 +38,18 @@ Sarge's Changes since Beta 2.2:
     - The number of total Lockpicks or Multitools in your inventory is now listed on lockpicking/electronics information windows, allowing you to see how many lockpicks or multitools you have compared to how many are required to bypass a given device or lock.
     - Belt Autofilling can now be disabled in the options.
     - Save Points no longer use Autosave slots, which can be easily overridden by accident, and now create fresh hard-saves instead.
+    - The Dialog Screen has been significantly improved
+        - A display showing your current credits balance has been added to the upper panel of the Conversation window.
+        - The number keys can be used to select dialog topics (and numbered labels will appear beside each option).
+        - The Dialog Menu can now use the HUD Color theme, rather than always having blue text.
+        - Dialog Menu options can be configured in the option screen.
     - The Nano Keyring now tells you which key was used when locking/unlocking a door.
     - Complete overhaul of "Left-click frobbing", which happens when left-clicking certain items without an item equipped.
         - Left-Clicking a datacube will pick it up and allow you to carry it.
-        - Left-Clicking a breakable box, window or wall will select your last used melee weapon (except melee weapons assigned as a quick secondary)
+        - Left-Clicking a breakable box, window or wall will select a melee weapon from your inventory based on a priority list.
+            - The priority list is as follows: Chinese Sword, Crowbar, Combat Knife, Baton, Dragon Tooth Sword.
+            - If you don't have the weapon or the weapon deals less damage than the breakable object's DT, it'll go to the next one in the priority list.
+            - The DT check is disabled on hardcore, so it simply checks the weapon's priority and equips it even if it won't deal enough damage to break the container.
         - Left-Clicking on a door will pull out the Nano Keyring if you have the correct key, otherwise it will pull out a lockpick.
             - This behaviour is disabled in Hardcore mode
             - In Hardcore, Left-Clicking on a door will always pull out a lockpick (or the keyring if the lock is unpickable or you have no lockpicks). Right-clicking will then swap between the keyring and lockpicks.
@@ -43,7 +62,7 @@ Sarge's Changes since Beta 2.2:
         - Regardless of the Autofill setting, all items of the remembered type will be automatically added to the belt slot when picked up.
         - Belt memory can be overridden by manually adding an item to a given belt slot at any time.
         - Items dropped from the inventory or via the drop key will not be remembered, to allow easily throwing away unwanted junk without affecting the belt.
-    - Infinity War Toolbelt improvements and bugfixes
+    - Invisible War Toolbelt improvements and bugfixes
         - Fixed bug where selected icon in the belt was forgotten between game sessions.
         - With Double Click Unholstering enabled, a single-rightclick will unholster a weapon if the selection was changed.
         - Pressing a number key while a numbered slot is selected will set it as the primary selection.
@@ -64,6 +83,7 @@ Sarge's Changes since Beta 2.2:
     - The rifle's grenade launcher doesn't require reloading to turn on, but you need to reload after each shot. It now works like a different weapon.
     - Restricted Saving is now a Playthrough Modifier and is no longer restricted to Hardcore Mode. It's still enforced in Hardcore Mode.
     - Added No Keypad Cheese Playthrough Modifier (called "Unknown Codes") which prevents using keypads or computer logins without having found them beforehand. Some codes which are hinted but never given are excepted.
+    - You now take stamina damage from poison, to encourage better management of your stamina bar and give aqualung/ahtletics an indirect buff in combat.
     - Added Door Locking mechanics
         - You can now lock any door you have the nanokey for, plus any doors you have picked previously if you have the Locksport perk (this is retroactive).
         - Enemies cannot open doors which you have locked (Enemies can still open doors that are initially locked in the map unless you lock them)
@@ -73,3 +93,8 @@ Sarge's Changes since Beta 2.2:
         - Alcohol no longer heals for 5 points. Instead, it temporarily gives you 5 torso HP (along with it's usual 5 extra torso Max-HP) while in effect, which is removed afterwards. This health removal cannot kill the player.
         - Alcohol no longer adds to fullness when the addiction system is enabled
         - Zyme no longer removes 10HP if the addiction system is enabled.
+- Miscellaneous Changes:
+    - Implemented optional Lay-D Denton support. If installed, Lay-D Denton support will be automatically activated.
+        - The Lay-D Denton colour scheme is included and can be selected from the Colors menu.
+        - When Lay-D Denton is installed, a new Gameplay Modifier is available, which will add the extra NPC's added by the LDDP mod.
+        - Without the Gameplay Modifier, only Chet, Russ and a few other NPC's are added where necessary to maintain immersion and gameplay balance for female characters. These characters do not appear for male JC

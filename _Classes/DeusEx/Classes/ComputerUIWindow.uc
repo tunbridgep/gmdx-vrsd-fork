@@ -588,9 +588,18 @@ function ProcessDeusExText(Name textName, optional TextWindow winText)
 {
 	local DeusExTextParser parser;
 	local string TextPackage;
+    local name OName;
+	local bool bWon;
 
 	fileIndex  = -1;
 	emailIndex = -1;
+
+	OName = TextName;
+	//LDDP, 11/02/21: Convert usage to female text flag when female.
+	if ((Player != None) && (bool(TextName)) && (Player.FlagBase != None) && (Player.FlagBase.GetBool('LDDPJCIsFemale')))
+	{
+		TextName = StringToName("FemJC"$String(TextName));
+	}
 
 	// First check to see if we have a name
 	if ( textName != '' )
@@ -604,8 +613,14 @@ function ProcessDeusExText(Name textName, optional TextWindow winText)
 		else
 			TextPackage = "DeusExText";
 
+		bWon = parser.OpenText(textName, TextPackage);
+		if (!bWon)
+		{
+			bWon = parser.OpenText(OName, TextPackage);
+		}
+		
 		// Attempt to find the text object
-		if ( parser.OpenText(textName, TextPackage) )
+		if ( bWon )
 		{
 			while(parser.ProcessText())
 				ProcessDeusExTextTag(parser, winText);
