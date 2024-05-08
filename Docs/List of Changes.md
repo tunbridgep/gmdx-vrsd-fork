@@ -82,6 +82,8 @@ Sarge's Changes since Beta 2.2:
     - The rifle's grenade launcher doesn't require reloading to turn on, but you need to reload after each shot. It now works like a different weapon.
     - Restricted Saving is now a Playthrough Modifier and is no longer restricted to Hardcore Mode. It's still enforced in Hardcore Mode.
     - Added No Keypad Cheese Playthrough Modifier (called "Unknown Codes") which prevents using keypads or computer logins without having found them beforehand. Some codes which are hinted but never given are excepted.
+    - You now take stamina damage from poison, to encourage better management of your stamina bar and give aqualung/ahtletics an indirect buff in combat.
+    - The Laser Sight weapon modification now confers a 15% bonus to moving inaccuracy reduction time.
     - Added Door Locking mechanics
         - You can now lock any door you have the nanokey for, plus any doors you have picked previously if you have the Locksport perk (this is retroactive).
         - Enemies cannot open doors which you have locked (Enemies can still open doors that are initially locked in the map unless you lock them)

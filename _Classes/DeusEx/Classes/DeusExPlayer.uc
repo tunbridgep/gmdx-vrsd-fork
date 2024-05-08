@@ -14221,11 +14221,19 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 			       }
 				}
         }
-        if (damageType == 'TearGas' || damageType == 'PoisonGas') //CyberP: gas grenades and poison barrels drain stamina.
+        if (damageType == 'TearGas' || damageType == 'PoisonGas' || damageType == 'Poison' || damageType == 'PoisonEffect') //CyberP: gas grenades and poison barrels drain stamina. // Trash: Now with more damange types!
         {
+
             if (newDamage >= 1 && bStaminaSystem)
             {
-                swimTimer -= newDamage*0.4;
+				if (UsingChargedPickup(class'HazMatSuit'))
+        		{
+					skillLevel = SkillSystem.GetSkillLevelValue(class'SkillEnviro');
+					swimTimer -= (newDamage*0.4) + 3;	// Trash: In the future, we can add a perk to further reduce the stamina damage here
+        		}
+				else
+                	swimTimer -= (newDamage*0.4) + 3;
+				
                 if (swimTimer < 0)
                     swimTimer = 0;
             }
