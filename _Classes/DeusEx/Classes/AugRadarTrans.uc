@@ -58,4 +58,5 @@ defaultproperties
      LevelValues(3)=0.500000
      AugmentationLocation=LOC_Subdermal
      MPConflictSlot=2
+     chargeTime=5.000000
 }

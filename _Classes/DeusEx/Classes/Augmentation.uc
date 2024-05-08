@@ -154,11 +154,16 @@ function bool CanActivate(out string message)
 
     if (IsCharging())
     {
-        message = Sprintf(AugRecharging, AugmentationName);
+        message = GetChargingMessage();
         return false;
     }
 
     return true;
+}
+
+function string GetChargingMessage()
+{
+    return Sprintf(AugRecharging, AugmentationName);
 }
 
 function Activate()
@@ -462,4 +467,5 @@ defaultproperties
      bTravel=True
      NetUpdateFrequency=5.000000
      bAddedToWheel=true;
+     chargeTime=3.000000
 }

@@ -9,17 +9,20 @@ var float mpEnergyDrain;
 var float lastDroneTime;
 
 var bool bTimerEarly;                                                           //RSD: bool for if you tried to use the drone too early (need for rotation shenanigans)
+
+var const localized string ReconstructionMessage;
+var const localized string GroundedMessage;
+
+function string GetChargingMessage()
+{
+    return Sprintf(ReconstructionMessage, int(currentChargeTime));
+}
+
 function bool CanActivate(out string message)
 {
-	if (currentChargeTime > 0)
-    {
-        message = "Reconstruction will be complete in" @ Int(currentChargeTime) @ "seconds";
-        return false;
-    }
-    
     if (player.Physics == PHYS_Falling || player.physics == PHYS_Swimming)
     {
-        message = "You must be grounded to construct the drone";
+        message = GroundedMessage;
         return false;
     }
 
@@ -95,6 +98,8 @@ defaultproperties
      AugmentationName="Spy Drone"
      Description="Advanced nanofactories can assemble a spy drone upon demand which can then be remotely controlled by the agent until released or destroyed, at which a point a new drone will be assembled. Further upgrades equip the spy drones with better armor and a one-shot EMP attack.|n|nTECH ONE: The drone can take little damage and has a very light EMP attack.|n|nTECH TWO: The drone can take minor damage and has a light EMP attack.|n|nTECH THREE: The drone can take moderate damage and has a medium EMP attack.|n|nTECH FOUR: The drone can take heavy damage and has a strong EMP attack."
      MPInfo="Activation creates a remote-controlled spy drone.  Deactivation disables the drone.  Firing while active detonates the drone in a massive EMP explosion.  Energy Drain: Medium"
+     ReconstructionMessage="Reconstruction will be complete in %i seconds"
+     GroundedMessage="You must be grounded to construct the drone"
      LevelValues(0)=10.000000
      LevelValues(1)=20.000000
      LevelValues(2)=35.000000
