@@ -470,6 +470,14 @@ var bool bNotFirstDiffMod;                                                      
 //Sarge
 var(GMDX) bool bDontRandomizeWeapons;                                           //If true, this pawn will never have it's weapons randomised amongst other enemies.
 
+var bool bFirstTickDone;                                                        //SARGE: Set to true after the first tick. Allows us to do stuff on the first frame
+
+//Sarge: Gender Stuff
+var(GMDX) const bool requiresLDDP;                                              //Delete this character LDD is uninstalled
+var(GMDX) const bool LDDPExtra;                                                 //Delete this character we don't have the "Extra LDDP Characters" playthrough modifier
+var(GMDX) const bool deleteIfMale;                                              //Delete this character if we're male
+var(GMDX) const bool deleteIfFemale;                                            //Delete this character if we're female
+
 native(2102) final function ConBindEvents();
 
 native(2105) final function bool IsValidEnemy(Pawn TestEnemy, optional bool bCheckAlliance);
@@ -478,6 +486,24 @@ native(2107) final function EAllianceType GetPawnAllianceType(Pawn QueryPawn);
 
 native(2108) final function bool HaveSeenCarcass(Name CarcassName);
 native(2109) final function AddCarcass(Name CarcassName);
+
+// ----------------------------------------------------------------------
+// ShouldCreate()
+// If this returns FALSE, the object will be deleted on it's first tick
+// ----------------------------------------------------------------------
+
+function bool ShouldCreate(DeusExPlayer player)
+{
+    local bool maleDelete;
+    local bool femaleDelete;
+    local bool extraDelete;
+
+    maleDelete = !player.FlagBase.GetBool('LDDPJCIsFemale') && deleteIfMale;
+    femaleDelete = player.FlagBase.GetBool('LDDPJCIsFemale') && deleteIfFemale;
+    extraDelete = LDDPExtra && !player.bMoreLDDPNPCs;
+
+    return !maleDelete && !femaleDelete && !extraDelete && (player.FemaleEnabled() || !requiresLDDP);
+}
 
 // ----------------------------------------------------------------------
 // PreBeginPlay()
@@ -8456,6 +8482,11 @@ function Tick(float deltaTime)
 	 local float         ModDistance;
 
 	player = DeusExPlayer(GetPlayerPawn());
+    
+    //If we shouldn't be created, abort
+    if (!bFirstTickDone && !ShouldCreate(player))
+        Destroy();
+
 
 	bDoLowPriority = true;
 	bCheckPlayer   = true;
@@ -8688,6 +8719,8 @@ function Tick(float deltaTime)
 
 	// Handle poison damage
 	UpdatePoison(deltaTime);
+
+    bFirstTickDone = true;
 }
 
 

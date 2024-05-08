@@ -55,6 +55,10 @@ var string percentTxt;
 var Color colLight;
 var color colLightDark;
 var color colMult;
+
+//LDDP, 10/27/21: Store this now, so we can change its texture on the fly!
+var Window BodyWin;
+
 // ----------------------------------------------------------------------
 // InitWindow()
 // ----------------------------------------------------------------------
@@ -391,6 +395,47 @@ function SetVisibility( bool bNewVisibility )
 
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
+
+//LDDP, 10/26/21: Update textures on the fly. Easy one.
+function UpdateAsFemale(bool NewbFemale)
+{
+	local Texture TTex;
+	
+	if (NewbFemale)
+	{
+		TTex = Texture(DynamicLoadObject("FemJC.HUDHitDisplay_HeadFem", class'Texture', false));
+		if (TTex != None) Head.PartWindow.SetBackground(TTex);
+		TTex = Texture(DynamicLoadObject("FemJC.HUDHitDisplay_TorsoFem", class'Texture', false));
+		if (TTex != None) Torso.PartWindow.SetBackground(TTex);
+		TTex = Texture(DynamicLoadObject("FemJC.HUDHitDisplay_ArmLeftFem", class'Texture', false));
+		if (TTex != None) ArmLeft.PartWindow.SetBackground(TTex);
+		TTex = Texture(DynamicLoadObject("FemJC.HUDHitDisplay_ArmRightFem", class'Texture', false));
+		if (TTex != None) ArmRight.PartWindow.SetBackground(TTex);
+		TTex = Texture(DynamicLoadObject("FemJC.HUDHitDisplay_LegLeftFem", class'Texture', false));
+		if (TTex != None) LegLeft.PartWindow.SetBackground(TTex);
+		TTex = Texture(DynamicLoadObject("FemJC.HUDHitDisplay_LegRightFem", class'Texture', false));
+		if (TTex != None) LegRight.PartWindow.SetBackground(TTex);
+	}
+	else
+	{
+		Head.PartWindow.SetBackground(Texture'HUDHitDisplay_Head');
+		Torso.PartWindow.SetBackground(Texture'HUDHitDisplay_Torso');
+		ArmLeft.PartWindow.SetBackground(Texture'HUDHitDisplay_ArmLeft');
+		ArmRight.PartWindow.SetBackground(Texture'HUDHitDisplay_ArmRight');
+		LegLeft.PartWindow.SetBackground(Texture'HUDHitDisplay_LegLeft');
+		LegRight.PartWindow.SetBackground(Texture'HUDHitDisplay_LegRight');
+	}
+	
+	if (NewbFemale)
+	{
+		TTex = Texture(DynamicLoadObject("FemJC.HUDHitDisplay_BodyFem", class'Texture', false));
+		if (TTex != None) bodyWin.SetBackground(TTex);
+	}
+	else
+	{
+		bodyWin.SetBackground(Texture'HUDHitDisplay_Body');
+	}
+}
 
 defaultproperties
 {

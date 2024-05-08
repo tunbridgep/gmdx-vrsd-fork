@@ -1,0 +1,66 @@
+Begin Map
+Begin Actor Class=LDDPBarFlyS Name=LDDPBarFly2
+    requiresLDDP=true;
+    LDDPExtra=true;
+    Orders=Standing
+    bImportant=True
+    bReactFutz=True
+    FootRegion=(Zone=ZoneInfo'MyLevel.ZoneInfo5',iLeaf=457,ZoneNumber=1)
+    HeadRegion=(Zone=ZoneInfo'MyLevel.ZoneInfo5',iLeaf=457,ZoneNumber=1)
+    ViewRotation=(Yaw=-16392)
+    bDynamicLight=True
+    LastRenderTime=0.193018
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=LDDPBarFly
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo5',iLeaf=457,ZoneNumber=1)
+    Location=(X=-1727.536255,Y=-362.118439,Z=47.595940)
+    Rotation=(Yaw=-16392)
+    OldLocation=(X=-1734.995483,Y=-369.048218,Z=47.595940)
+    BarkBindName="LDDPBarFly"
+    UnfamiliarName="Bar Fly"
+    Name=LDDPBarFly2
+End Actor
+Begin Actor Class=LDDPNYC2BarGuyS Name=LDDPNYC2BarGuy0
+    requiresLDDP=true;
+    LDDPExtra=true;
+    Orders=Standing
+    bFearWeapon=True
+    bFearInjury=True
+    bFearProjectiles=True
+    InitialAlliances(0)=(AllianceName=Player,AllianceLevel=1.000000)
+    FootRegion=(Zone=ZoneInfo'MyLevel.ZoneInfo5',iLeaf=152,ZoneNumber=1)
+    HeadRegion=(Zone=ZoneInfo'MyLevel.ZoneInfo5',iLeaf=128,ZoneNumber=1)
+    ViewRotation=(Yaw=-16504)
+    Alliance=BarPatrons
+    bDynamicLight=True
+    LastRenderTime=0.193018
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=LDDPNYC2BarGuy
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo5',iLeaf=128,ZoneNumber=1)
+    Location=(X=-807.160522,Y=-413.400879,Z=50.804153)
+    Rotation=(Yaw=-16504)
+    OldLocation=(X=-797.508240,Y=-416.531494,Z=50.804153)
+    Name=LDDPNYC2BarGuy0
+End Actor
+Begin Actor Class=LDDPLylaS Name=LDDPLyla0
+    requiresLDDP=true;
+    LDDPExtra=true;
+    FootRegion=(Zone=ZoneInfo'MyLevel.ZoneInfo5',iLeaf=384,ZoneNumber=1)
+    HeadRegion=(Zone=ZoneInfo'MyLevel.ZoneInfo5',iLeaf=384,ZoneNumber=1)
+    GroundSpeed=120.000000
+    ViewRotation=(Pitch=16)
+    bDynamicLight=True
+    LastRenderTime=0.193018
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=LDDPLyla
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo5',iLeaf=384,ZoneNumber=1)
+    //Location=(X=-2739.588135,Y=523.145020,Z=47.583591) //GMDX: Outside of map
+    Location=(X=-2439.588135,Y=200.145020,Z=70.0000) //GMDX: Outside of map
+    Rotation=(Pitch=16)
+    OldLocation=(X=-2738.653076,Y=523.145020,Z=22.099009)
+    bSelected=True
+    CollisionRadius=20.000000
+    CollisionHeight=43.000000
+    Name=LDDPLyla0
+End Actor
+End Map

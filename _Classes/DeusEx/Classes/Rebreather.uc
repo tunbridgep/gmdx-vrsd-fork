@@ -14,6 +14,8 @@ function ChargedPickupUpdate(DeusExPlayer Player)
 
 defaultproperties
 {
+     ActivateSound=Sound'RSDCrap.Pickup.RebreatherEquip'
+     DeactivateSound=Sound'RSDCrap.Pickup.RebreatherUnequip'
      skillNeeded=Class'DeusEx.SkillEnviro'
      LoopSound=Sound'DeusExSounds.Pickup.RebreatherLoop'
      ChargedIcon=Texture'DeusExUI.Icons.ChargedIconRebreather'

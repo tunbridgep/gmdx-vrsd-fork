@@ -13,35 +13,6 @@ simulated function bool TestMPBeltSpot(int BeltSpot)
    return (BeltSpot == 8);
 }
 
-function texture GetWeaponHandTex()
-{
-	local deusexplayer p;
-	local texture tex;
-
-    if (class'DeusExPlayer'.default.bRadarTran==True)
-        return Texture'Effects.Electricity.Xplsn_EMPG';
-    else if (class'DeusExPlayer'.default.bIsCloaked==True)
-        return FireTexture'GameEffects.InvisibleTex';
-
-	tex = texture'weaponhandstex';
-
-	p = deusexplayer(owner);
-	if(p != none)
-	{
-		switch(p.PlayerSkin)
-		{
-			//default, black, latino, ginger, albino, respectively
-			case 0: tex = texture'weaponhandstex'; break;
-			case 1: tex = texture'HDTPItems.skins.weaponhandstexblack'; break;
-			case 2: tex = texture'HDTPItems.skins.weaponhandstexlatino'; break;
-			case 3: tex = texture'HDTPItems.skins.weaponhandstexginger'; break;
-			case 4: tex = texture'HDTPItems.skins.weaponhandstexalbino'; break;
-		}
-	}
-
-	return tex;
-}
-
 simulated function renderoverlays(Canvas canvas)
 {
 	multiskins[1] = Getweaponhandtex();

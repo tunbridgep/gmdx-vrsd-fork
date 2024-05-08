@@ -133,6 +133,7 @@ state Active
 
 defaultproperties
 {
+     weaponOffsets=(X=13.000000,Y=-16.000000,Z=-27.000000)
      LowAmmoWaterMark=0
      GoverningSkill=Class'DeusEx.SkillWeaponLowTech'
      reloadTime=0.000000

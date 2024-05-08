@@ -22,4 +22,5 @@ defaultproperties
      CollisionHeight=32.000000
      Mass=100.000000
      Buoyancy=110.000000
+     bSelectMeleeWeapon=False
 }

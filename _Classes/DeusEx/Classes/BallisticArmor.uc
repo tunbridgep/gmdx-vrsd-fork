@@ -10,6 +10,8 @@ class BallisticArmor extends ChargedPickup;
 
 defaultproperties
 {
+     ActivateSound=Sound'RSDCrap.Pickup.BallisticVestEquip'
+     DeactivateSound=Sound'RSDCrap.Pickup.BallisticVestUnequip'
      skillNeeded=Class'DeusEx.SkillEnviro'
      ChargedIcon=Texture'DeusExUI.Icons.ChargedIconArmorBallistic'
      ExpireMessage="Ballistic Armor power supply used up"

@@ -30,6 +30,7 @@ simulated function renderoverlays(Canvas canvas)
 
 defaultproperties
 {
+     weaponOffsets=(X=16.000000,Y=-14.000000,Z=-22.000000)
      LowAmmoWaterMark=5
      GoverningSkill=Class'DeusEx.SkillWeaponLowTech'
      NoiseLevel=0.050000

@@ -11,6 +11,7 @@ var bool bNoPrintMustBeUsed;
 
 var localized string MustBeUsedOn;
 var localized String HealsLabel;                                                //RSD: Added
+var localized String FullHealth;
 
 //SARGE: Moved the Bioenergy perk-based max amount bonus here, was in DeusExPlayer
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
@@ -37,8 +38,17 @@ state Activated
 
 		//player = DeusExPlayer(Owner);
 		player = DeusExPlayer(GetPlayerPawn());                                 //RSD: Altering this to enable generic LeftClick interact
+
+		if (player != None && player.Health == player.GenerateTotalMaxHealth())
+		{
+			player.ClientMessage(FullHealth);
+			GoToState('DeActivated');
+			return;
+		}
+
 		if (player != None)
 		{
+			
 			player.HealPlayer(healAmount, True);
 			if (player.SkillSystem!=None)
 			   MedSkillLevel=player.SkillSystem.GetSkillLevel(class'SkillMedicine');
@@ -177,6 +187,7 @@ defaultproperties
      bAutoActivate=True
      healAmount=30
      MustBeUsedOn="Use to heal critical body parts, or use on character screen to direct healing at a certain body part."
+	 FullHealth="You're already at full Health"
      HealsLabel="Heals %d points"
      maxCopies=15
      bCanHaveMultipleCopies=True

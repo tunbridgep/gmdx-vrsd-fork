@@ -1,0 +1,18 @@
+Begin Map
+Begin Actor Class=LDDPVanSciS Name=LDDPVanSci0
+    requiresLDDP=true;
+    LDDPExtra=true;
+    FootRegion=(Zone=ZoneInfo'MyLevel.ZoneInfo2',iLeaf=510,ZoneNumber=1)
+    HeadRegion=(Zone=ZoneInfo'MyLevel.ZoneInfo2',iLeaf=510,ZoneNumber=1)
+    bDynamicLight=True
+    LastRenderTime=87.791077
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=LDDPVanSci
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo2',iLeaf=510,ZoneNumber=1)
+    Location=(X=692.883057,Y=2534.473633,Z=-2166.916504)
+    OldLocation=(X=692.883057,Y=2534.473633,Z=-2166.916504)
+    BarkBindName="Woman"
+    FamiliarName="Stacey Marshall"
+    Name=LDDPVanSci0
+End Actor
+End Map

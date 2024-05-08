@@ -72,6 +72,9 @@ var() sound ActivateSound;
 var() sound DeactivateSound;
 var() sound LoopSound;
 
+// SARGE: Has this aug been added to the augmentation wheel?
+var travel bool bAddedToWheel;
+
 // ----------------------------------------------------------------------
 // network replication
 // ----------------------------------------------------------------------
@@ -458,4 +461,5 @@ defaultproperties
      bHidden=True
      bTravel=True
      NetUpdateFrequency=5.000000
+     bAddedToWheel=true;
 }
