@@ -563,6 +563,9 @@ const DRUG_CRACK = 2;
 
 var bool autosave;                                                              //Sarge: Autosave tells the Quicksave function to make an autosave instead
 
+//Sarge: Allow Enhanced Weapon Offsets
+var globalconfig bool bEnhancedWeaponOffsets; 									//Sarge: Allow using enhanced weapon offsets
+
 //Sarge: Dialog Settings
 var globalconfig bool bNumberedDialog;                                          //Sarge: Shows numbers in the dialog window and allows selecting topics with the number keys
 var globalconfig bool bCreditsInDialog;                                         //Sarge: Shows credits in the dialog window
@@ -14218,11 +14221,19 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 			       }
 				}
         }
-        if (damageType == 'TearGas' || damageType == 'PoisonGas') //CyberP: gas grenades and poison barrels drain stamina.
+        if (damageType == 'TearGas' || damageType == 'PoisonGas' || damageType == 'Poison' || damageType == 'PoisonEffect') //CyberP: gas grenades and poison barrels drain stamina. // Trash: Now with more damange types!
         {
+
             if (newDamage >= 1 && bStaminaSystem)
             {
-                swimTimer -= newDamage*0.4;
+				if (UsingChargedPickup(class'HazMatSuit'))
+        		{
+					skillLevel = SkillSystem.GetSkillLevelValue(class'SkillEnviro');
+					swimTimer -= (newDamage*0.4) + 3;	// Trash: In the future, we can add a perk to further reduce the stamina damage here
+        		}
+				else
+                	swimTimer -= (newDamage*0.4) + 3;
+				
                 if (swimTimer < 0)
                     swimTimer = 0;
             }
@@ -17328,6 +17339,7 @@ defaultproperties
      BindName="JCDenton"
      FamiliarName="JC Denton"
      UnfamiliarName="JC Denton"
+     bEnhancedWeaponOffsets=false
      bQuickAugWheel=false
      bAugWheelDisableAll=true
 }

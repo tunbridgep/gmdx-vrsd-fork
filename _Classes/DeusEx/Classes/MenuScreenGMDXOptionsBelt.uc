@@ -22,6 +22,7 @@ defaultproperties
      choices(7)=Class'DeusEx.MenuChoice_DialogHUDColors'
      choices(8)=Class'DeusEx.MenuChoice_QuickAugWheel'
      choices(9)=Class'DeusEx.MenuChoice_AugWheelDisableAllButton'
+     choices(10)=Class'DeusEx.MenuChoice_WeaponOffsets'
      actionButtons(0)=(Align=HALIGN_Right,Action=AB_Cancel)
      actionButtons(1)=(Align=HALIGN_Right,Action=AB_OK)
      actionButtons(2)=(Action=AB_Reset)

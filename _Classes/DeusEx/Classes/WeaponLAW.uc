@@ -78,6 +78,7 @@ event Destroyed()
 
 defaultproperties
 {
+     weaponOffsets=(X=8.000000,Y=-18.000000,Z=-7.000000)
      LowAmmoWaterMark=0
      GoverningSkill=Class'DeusEx.SkillWeaponHeavy'
      NoiseLevel=8.000000

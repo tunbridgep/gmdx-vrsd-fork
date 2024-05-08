@@ -409,6 +409,7 @@ local float p;
 
 defaultproperties
 {
+     weaponOffsets=(X=4.000000,Y=-4.000000,Z=-15.000000)
      LowAmmoWaterMark=4
      GoverningSkill=Class'DeusEx.SkillWeaponRifle'
      NoiseLevel=8.000000
