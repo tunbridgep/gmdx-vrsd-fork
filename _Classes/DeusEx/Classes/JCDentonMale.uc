@@ -5,24 +5,7 @@ class JCDentonMale extends Human;
 
 function UpdateHDTPSettings()
 {
-	local int i;
-	local texture newtex; //preload these? Not sure if necessary, but hey
-	local string texstr;
-
-	super.UpdateHDTPsettings();
-
-	for(i=1;i<5;i++)
-	{
-		texstr = "HDTPCharacters.Skins.HDTPJCFaceTex";
-		texstr = texstr $ i;
-		newtex = texture(dynamicloadobject(texstr,class'texture'));
-
-		texstr = "HDTPCharacters.Skins.HDTPJCHandsTex";
-		texstr = texstr $ i;
-		newtex = texture(dynamicloadobject(texstr,class'texture'));
-	}
-
-	//setskin();
+    //Do nothing, we're now handling skin textures etc via the LDDP stuff instead
 }
 
 
@@ -68,67 +51,6 @@ event TravelPostAccept()
 			FlagBase.SetExpiration('LDDPOGMorpheus', FLAG_Bool, 0);
 		}
 
-<<<<<<< HEAD
-	SetSkin();
-
-    //SARGE: Setup outfit manager
-    SetTimer(0.1,false);
-
-}
-
-// ----------------------------------------------------------------------
-// Timer()
-// SARGE: We need to delay slightly before setting models, to allow mods like LDDP to work properly
-// ----------------------------------------------------------------------
-
-function Timer()
-{
-    Super.Timer();
-    SetupOutfitManager();
-}
-
-// ----------------------------------------------------------------------
-// ResetPlayerToDefaults()
-// SARGE: When we start a new game, throw away our outfit manager
-// ----------------------------------------------------------------------
-function ResetPlayerToDefaults()
-{
-    outfitManager = None;
-    Super.ResetPlayerToDefaults();
-}
-
-// ----------------------------------------------------------------------
-// SetupOutfitManager()
-// SARGE: Setup the outfit manager and restore current outfit
-// ----------------------------------------------------------------------
-
-function SetupOutfitManager()
-{
-    local class<OutfitManagerBase> managerBaseClass;
-
-	// create the Outfit Manager if not found
-	if (outfitManager == None)
-    {
-        //ClientMessage("Outfit Manager successfully created");
-	    //outfitManager = new(Self) class'OutfitManager';
-        managerBaseClass = class<OutfitManagerBase>(DynamicLoadObject("JCOutfits.OutfitManager", class'Class'));
-        outfitManager = new(Self) managerBaseClass;
-    }
-
-    if (outfitManager != None)
-    {
-        //ClientMessage("Outfit Manager successfully inited");
-
-        //Call base setup code, required each map load
-        outfitManager.Setup(Self);
-
-        //Re-assign current outfit
-        outfitManager.ApplyCurrentOutfit();
-    }
-}
-
-// ----------------------------------------------------------------------
-=======
 		if (bFemaleUsesMaleInteractions)
 		{
 			FlagBase.SetBool('LDDPMaleCont4FJC', true);
@@ -249,37 +171,63 @@ function SetupOutfitManager()
 			break;
 		}
 	}
-	//SetSkin();
+
+    //SARGE: Setup outfit manager
+    SetTimer(0.1,false);
 }
 
 // ----------------------------------------------------------------------
->>>>>>> master
 // ----------------------------------------------------------------------
 
-function setSkin()
+// ----------------------------------------------------------------------
+// Timer()
+// SARGE: We need to delay slightly before setting models, to allow mods like LDDP to work properly
+// ----------------------------------------------------------------------
+
+function Timer()
 {
-	if(GetHDTPSettings(self))
-	{
-		switch(PlayerSkin)
-		{
-			case 0:	MultiSkins[0] = Texture'HDTPCharacters.Skins.HDTPJCFaceTex0'; MultiSkins[3] = Texture'HDTPCharacters.Skins.HDTPJCHandsTex0'; break;
-			case 1:	MultiSkins[0] = Texture'HDTPCharacters.Skins.HDTPJCFaceTex1'; MultiSkins[3] = Texture'HDTPCharacters.Skins.HDTPJCHandsTex1'; break;
-			case 2:	MultiSkins[0] = Texture'HDTPCharacters.Skins.HDTPJCFaceTex2'; MultiSkins[3] = Texture'HDTPCharacters.Skins.HDTPJCHandsTex2'; break;
-			case 3:	MultiSkins[0] = Texture'HDTPCharacters.Skins.HDTPJCFaceTex3'; MultiSkins[3] = Texture'HDTPCharacters.Skins.HDTPJCHandsTex3'; break;
-			case 4:	MultiSkins[0] = Texture'HDTPCharacters.Skins.HDTPJCFaceTex4'; MultiSkins[3] = Texture'HDTPCharacters.Skins.HDTPJCHandsTex4'; break;
-		}
-	}
-	else
-	{
-		switch(PlayerSkin)
-		{
-			case 0:	MultiSkins[0] = Texture'JCDentonTex0'; break;
-			case 1:	MultiSkins[0] = Texture'JCDentonTex4'; break;
-			case 2:	MultiSkins[0] = Texture'JCDentonTex5'; break;
-			case 3:	MultiSkins[0] = Texture'JCDentonTex6'; break;
-			case 4:	MultiSkins[0] = Texture'JCDentonTex7'; break;
-		}
-	}
+    Super.Timer();
+    SetupOutfitManager();
+}
+
+// ----------------------------------------------------------------------
+// ResetPlayerToDefaults()
+// SARGE: When we start a new game, throw away our outfit manager
+// ----------------------------------------------------------------------
+function ResetPlayerToDefaults()
+{
+    outfitManager = None;
+    Super.ResetPlayerToDefaults();
+}
+
+// ----------------------------------------------------------------------
+// SetupOutfitManager()
+// SARGE: Setup the outfit manager and restore current outfit
+// ----------------------------------------------------------------------
+
+function SetupOutfitManager()
+{
+    local class<OutfitManagerBase> managerBaseClass;
+
+	// create the Outfit Manager if not found
+	if (outfitManager == None)
+    {
+        //ClientMessage("Outfit Manager successfully created");
+	    //outfitManager = new(Self) class'OutfitManager';
+        managerBaseClass = class<OutfitManagerBase>(DynamicLoadObject("JCOutfits.OutfitManager", class'Class'));
+        outfitManager = new(Self) managerBaseClass;
+    }
+
+    if (outfitManager != None)
+    {
+        //ClientMessage("Outfit Manager successfully inited");
+
+        //Call base setup code, required each map load
+        outfitManager.Setup(Self);
+
+        //Re-assign current outfit
+        outfitManager.ApplyCurrentOutfit();
+    }
 }
 
 // ----------------------------------------------------------------------
