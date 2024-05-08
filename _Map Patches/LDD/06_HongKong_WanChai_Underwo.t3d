@@ -37,7 +37,7 @@ End Actor
 Begin Actor Class=FlagTrigger Name=FlagTrigger20
     FlagName=LDDPRussAtBar
     TriggerType=TT_ClassProximity
-    ClassProximityType=Class'FemJC.LDDPRuss'
+    ClassProximityType=Class'DeusEx.LDDPRussS'
     bDynamicLight=True
     LastRenderTime=0.336815
     Level=LevelInfo'MyLevel.LevelInfo0'

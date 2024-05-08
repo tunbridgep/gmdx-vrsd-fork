@@ -20,6 +20,7 @@ var bool    bHasSkins;
 
 defaultproperties
 {
+     weaponOffsets=(X=15.00,Y=15.00,Z=-5.00)
      MaxDamage=10
      bDisplayableInv=False
      ItemName="body"

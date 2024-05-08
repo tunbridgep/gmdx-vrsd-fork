@@ -10,6 +10,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX Bug where EMP'd turrets and cameras will re-enable themselves after the EMP effect runs out, even if they were disabled during the EMP effect.
     - Fixed GMDX/Vanilla issue where you could retain your standing accuracy bonus after moving if you stood still for a long time. Now accuracy decreases immediately.
 - Quality of Life Improvements:
+    - Added alternate weapon offsets to hide many of the visible seams or missing parts of weapon viewmodels.
     - Augmentation Wheel improvements
         - While in the augmentation screen, use middle-click on an active augmentation to add or remove it from the augmentation wheel.
         - By default all augmentations will appear on the wheel.
@@ -29,6 +30,7 @@ Sarge's Changes since Beta 2.2:
     - "One-shot-at-a-time" weapons have a different formula for calculating reload speed (RDS/SEC).
     - Different shotgun shells have different textures, and the boxes were reworked to have a different texture for easier identification.
         - Shells also have different sounds when they hit the floor
+    - Equipping/Unequipping Environmental Training items gives you a unique sound depending on the item.
     - Pressing the Reload key will no longer reload weapons that have a full clip.
     - Laser Attachments now re-enable themselves automatically if a weapon is holstered and reselected.
     - Hardcore Mode difficulty selection and Gameplay Settings menu are no longer locked behind completing the game, however they strongly warn against changing them.
@@ -60,7 +62,7 @@ Sarge's Changes since Beta 2.2:
         - Regardless of the Autofill setting, all items of the remembered type will be automatically added to the belt slot when picked up.
         - Belt memory can be overridden by manually adding an item to a given belt slot at any time.
         - Items dropped from the inventory or via the drop key will not be remembered, to allow easily throwing away unwanted junk without affecting the belt.
-    - Infinity War Toolbelt improvements and bugfixes
+    - Invisible War Toolbelt improvements and bugfixes
         - Fixed bug where selected icon in the belt was forgotten between game sessions.
         - With Double Click Unholstering enabled, a single-rightclick will unholster a weapon if the selection was changed.
         - Pressing a number key while a numbered slot is selected will set it as the primary selection.
@@ -82,6 +84,7 @@ Sarge's Changes since Beta 2.2:
     - Restricted Saving is now a Playthrough Modifier and is no longer restricted to Hardcore Mode. It's still enforced in Hardcore Mode.
     - Added No Keypad Cheese Playthrough Modifier (called "Unknown Codes") which prevents using keypads or computer logins without having found them beforehand. Some codes which are hinted but never given are excepted.
     - The Laser Sight weapon modification now confers a 15% bonus to moving inaccuracy reduction time.
+    - You now take stamina damage from poison, to encourage better management of your stamina bar and give aqualung/ahtletics an indirect buff in combat.
     - Added Door Locking mechanics
         - You can now lock any door you have the nanokey for, plus any doors you have picked previously if you have the Locksport perk (this is retroactive).
         - Enemies cannot open doors which you have locked (Enemies can still open doors that are initially locked in the map unless you lock them)

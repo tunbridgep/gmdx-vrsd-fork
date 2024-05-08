@@ -172,6 +172,7 @@ simulated function bool TestMPBeltSpot(int BeltSpot)
 
 defaultproperties
 {
+     weaponOffsets=(X=18.000000,Y=-15.000000,Z=-19.000000)
      ShortName="LAM"
      LowAmmoWaterMark=2
      GoverningSkill=Class'DeusEx.SkillDemolition'
