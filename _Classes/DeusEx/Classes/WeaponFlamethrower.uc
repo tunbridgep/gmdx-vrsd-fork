@@ -140,6 +140,7 @@ State NormalFire
 
 defaultproperties
 {
+     weaponOffsets=(X=12.000000,Y=-14.000000,Z=-12.000000)
      burnTime=10
      BurnDamage=10
      mpBurnTime=15

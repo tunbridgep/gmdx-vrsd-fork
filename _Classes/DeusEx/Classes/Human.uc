@@ -411,16 +411,19 @@ function float RandomPitch()
 function Gasp()
 {
 	local Sound TSound;
-	
-	if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
-	{
-		TSound = Sound(DynamicLoadObject("FemJC.FJCGasp", class'Sound', false));
-		if (TSound != None) PlaySound(TSound, SLOT_Pain,,,, RandomPitch());
-	}
-	else
-	{
-		PlaySound(sound'MaleGasp', SLOT_Pain,,,, RandomPitch());
-	}
+
+    if (swimTimer < swimDuration * 0.3)
+    {
+        if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
+        {
+            TSound = Sound(DynamicLoadObject("FemJC.FJCGasp", class'Sound', false));
+            if (TSound != None) PlaySound(TSound, SLOT_Pain,,,, RandomPitch());
+        }
+        else
+        {
+            PlaySound(sound'MaleGasp', SLOT_Pain,,,, RandomPitch());
+        }
+    }
 }
 
 function PlayDyingSound()
@@ -459,8 +462,8 @@ function PlayTakeHitSound(int Damage, name damageType, int Mult)
 	
 	local sound TSound;
 
-	if ( Level.TimeSeconds - LastPainSound < FRand() + 0.5)
-		return;
+    if ( Level.TimeSeconds - LastPainSound < FRand() + 1.1 || Damage <= 0) //CyberP: was 0.9
+        return;
 
 	LastPainSound = Level.TimeSeconds;
 
