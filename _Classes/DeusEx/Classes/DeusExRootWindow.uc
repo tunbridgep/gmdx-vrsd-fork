@@ -55,6 +55,8 @@ var S_DataVaultFunction DataVaultFunctions[8];
 var localized String QuickLoadTitle;
 var localized String QuickLoadMessage;
 
+var float HorizontalDivisor; 						// Horizontal divisor for autoscaling code. See: ResizeRoot().
+var float VerticalDivisor, VerticalRelaxedDivisor;	// Vertical divisor for autoscaling code. See: ResizeRoot().
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -1156,6 +1158,109 @@ function S_ColorScheme GetCurrentMenuColorScheme()
 
 function S_ColorScheme GetCurrentHUDColorScheme()
 {
+}
+
+//Stuff from Revision Framework
+// ----------------------------------------------------------------------
+// ResizeRoot()
+//
+// Calculates new RootWindow scale. Override for custom behavior,
+// e.g. for conversations or scope view.
+// ----------------------------------------------------------------------
+event ResizeRoot( Canvas Canvas )
+{
+	local int ScaleMode, hMult, vMult;
+	local PlayerPawnExt P;
+
+	P = GetPlayerPawn();
+	if ( P!=None )
+	{
+		/*
+		if ( P.XLevel.Outer.Name=='00_Intro' )
+			ScaleMode = 1;
+		else
+			ScaleMode = Int(P.GetPropertyText("ScaleMode"));
+		*/
+		ScaleMode = Int(P.GetPropertyText("ScaleMode"));
+	}
+	else
+		ScaleMode = 0;
+
+	// Calculate multipliers
+	hMult = Canvas.ClipX/HorizontalDivisor;
+	if ( ScaleMode==-1 )
+		vMult = Canvas.ClipY/VerticalRelaxedDivisor;
+	else
+		vMult = Canvas.ClipY/VerticalDivisor;
+
+	if ( hMult < 1 )
+		hMult = 1;
+	if ( vMult < 1 )
+		vMult = 1;
+
+	if ( hMult < vMult )
+		vMult = hMult;
+	else if ( hMult > vMult )
+		hMult = vMult;
+
+	// Override scale
+	if ( ScaleMode>0 && ScaleMode<hMult && ScaleMode<vMult )
+	{
+		hMult = ScaleMode;
+		vMult = ScaleMode;
+	}
+
+	// Apply initial settings.
+	ApplyRootWindowSettings( hMult, vMult, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, HALIGN_Left, VALIGN_Top, Canvas.ClipX/hMult, Canvas.ClipY/vMult );
+	if ( hardcodedWidth!=width || hardcodedHeight!=height )
+		ConfigureChild( 0.0, 0.0, hardcodedWidth, hardcodedHeight );
+	ClampMousePosition();
+}
+
+// ----------------------------------------------------------------------
+// ApplyRootWindowSettings()
+//
+// Convenience helper for ResizeRoot().
+// ----------------------------------------------------------------------
+function ApplyRootWindowSettings
+(
+	int InhMultiplier,
+	int InvMultiplier,
+	float Inx,
+	float Iny,
+	float InhMargin0,
+	float InhMargin1,
+	float InvMargin0,
+	float InvMargin1,
+	EHAlign InwinHAlign,
+	EVAlign InwinVAlign,
+	float InhardcodedWidth,
+	float InhardcodedHeight
+)
+{
+	SetPropertyText( "hMultiplier",     String(InhMultiplier)     );
+	SetPropertyText( "vMultiplier",     String(InvMultiplier)     );
+	SetPropertyText( "x",               String(Inx)               );
+	SetPropertyText( "y",               String(Iny)               );
+	SetPropertyText( "hMargin0",        String(InhMargin0)        );
+	SetPropertyText( "hMargin1",        String(InhMargin1)        );
+	SetPropertyText( "vMargin0",        String(InvMargin0)        );
+	SetPropertyText( "vMargin1",        String(InvMargin1)        );
+	SetPropertyText( "winHAlign",       String(InwinHAlign)       );
+	SetPropertyText( "winVAlign",       String(InwinVAlign)       );
+	SetPropertyText( "hardcodedWidth",  String(InhardcodedWidth)  );
+	SetPropertyText( "hardcodedHeight", String(InhardcodedHeight) );
+}
+
+// ----------------------------------------------------------------------
+// ClampMousePosition()
+//
+// Convenience function for clamping mouse position, used by ResizeRoot()
+// ----------------------------------------------------------------------
+function ClampMousePosition()
+{
+	SetPropertyText( "mouseX", String(FClamp(Float(GetPropertyText("mouseX")),x,x+width -1.0)) );
+	SetPropertyText( "mouseY", String(FClamp(Float(GetPropertyText("mouseY")),y,y+height-1.0)) );
 }
 
 

@@ -513,6 +513,7 @@ state Reload
 
 defaultproperties
 {
+     weaponOffsets=(X=34.000000,Y=-22.000000,Z=-10.000000)
      ShortName="GEP Gun"
      GEPvid=Texture'GMDXUI.Skins.GEPOverlayDiamond'
      GEPnoise=Texture'GMDXUI.Skins.GEPnoise'

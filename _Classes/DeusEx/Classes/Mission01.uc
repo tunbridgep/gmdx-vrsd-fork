@@ -16,6 +16,8 @@ function FirstFrame()
 	local TerroristCommander cmdr;
 	local newspaper N;
 	local vector v;
+	local Female2 Shannon;
+    local ScriptedPawn SP;
 
 	Super.FirstFrame();
 

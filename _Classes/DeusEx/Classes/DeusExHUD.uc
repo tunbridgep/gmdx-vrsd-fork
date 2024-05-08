@@ -582,6 +582,11 @@ function UpdateCrosshair(DeusExPlayer player)
 {
 	cross.SetCrosshair(player.GetCrosshairState());
 	hitmarker.SetCrosshair(player.GetHitMarkerState());
+
+    if (player.GetBracketsState())
+        frobDisplay.Show();
+    else
+        frobDisplay.Hide();
 }
 
 defaultproperties

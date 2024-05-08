@@ -137,6 +137,7 @@ simulated function TakeDamage(int Damage, Pawn instigatedBy, Vector HitLocation,
 
 defaultproperties
 {
+     weaponOffsets=(X=18.000000,Y=-15.000000,Z=-20.000000)
      LowAmmoWaterMark=2
      GoverningSkill=Class'DeusEx.SkillDemolition'
      EnemyEffective=ENMEFF_Robot

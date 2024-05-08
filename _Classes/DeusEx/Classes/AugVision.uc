@@ -34,7 +34,7 @@ function Activate()
 	{
 		SetVisionAugStatus(CurrentLevel,LevelValues[CurrentLevel],True);
 		Player.RelevantRadius = LevelValues[CurrentLevel];
-                Player.PlaySound(Sound'PlasmaRifleReload', SLOT_Pain, 0.85, ,768,2.0); //CyberP: added new sound
+      Player.PlaySound(Sound'RSDCrap.Pickup.NightVisionEnable'); //CyberP: added new sound
 	}
 }
 
@@ -50,6 +50,7 @@ function Deactivate()
 	{
 		SetVisionAugStatus(CurrentLevel,LevelValues[CurrentLevel],False);
 		Player.RelevantRadius = 0;
+      Player.PlaySound(Sound'RSDCrap.Pickup.NightVisionDisable'); 
 	}
 }
 

@@ -55,6 +55,7 @@ exec function UpdateHDTPsettings()                                              
 
 defaultproperties
 {
+     weaponOffsets=(X=8.000000,Y=-10.000000,Z=-16.000000)
      LowAmmoWaterMark=25
      GoverningSkill=Class'DeusEx.SkillWeaponLowTech'
      NoiseLevel=0.200000

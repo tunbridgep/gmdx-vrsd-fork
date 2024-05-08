@@ -39,5 +39,7 @@ defaultproperties
      actionText="|&Dynamic Crosshair"
 	 enumText(0)="Disabled"
      enumText(1)="Dot"
-     enumText(2)="Nothing"
+     enumText(2)="Box"
+     enumText(3)="Julian"
+     enumText(4)="Nothing"
 }

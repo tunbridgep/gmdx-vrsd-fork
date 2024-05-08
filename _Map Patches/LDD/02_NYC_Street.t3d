@@ -1,0 +1,116 @@
+Begin Map
+//NOTE: Pimp (ThugMale0) needs his hearing range reduced to 0.5 (HearingThreshold=0.500000) so he doesn't run away if we attack the street loser //EDIT: No he doesn't, streetloser is far enough away with GMDX
+//The Basketball Easter Egg also needs to have it's base triggers removed. They are "Trigger3" and "SpecialEvent0", one is in the basket and one is next to it.
+//Intercom
+Begin Actor Class=Button1 Name=Button2
+    requiresLDDP=true;
+    LDDPExtra=true;
+    buttonSound1=Sound'DeusExSounds.Generic.Buzz1'
+    LastRenderTime=358.275909
+    DistanceFromPlayer=5319.461426
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=Button1
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=4455,ZoneNumber=2)
+    //Location=(X=900.400757,Y=-2396.944336,Z=-571.290833)
+    Location=(X=896.400757,Y=-2396.944336,Z=-571.290833)
+    Rotation=(Yaw=32936)
+    OldLocation=(X=2929.899902,Y=-823.815552,Z=-695.290833)
+    BindName="LDDPBuzzer"
+    BarkBindName="LDDPBuzzer"
+    FamiliarName="Intercomm"
+    UnfamiliarName="Intercomm"
+    Name=Button2
+End Actor
+//Street Loser
+Begin Actor Class=LDDPStreetLoserS Name=LDDPStreetLoser0
+    requiresLDDP=true;
+    LDDPExtra=true;
+    Orders=Standing
+    bUseFallbackWeapons=True
+    bReactFutz=True
+    bReactProjectiles=False
+    FootRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=3692,ZoneNumber=2)
+    HeadRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=3692,ZoneNumber=2)
+    ViewRotation=(Yaw=720)
+    bDynamicLight=True
+    LastRenderTime=0.431168
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=LDDPStreetLoser
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=3692,ZoneNumber=2)
+    //Location=(X=-2355.870361,Y=-89.864975,Z=-464.397736) //Moved to make way for GMDX Map Changes
+    Location=(X=-2050.870361,Y=420.864975,Z=-464.397736)
+    Rotation=(Yaw=720)
+    OldLocation=(X=-2356.031250,Y=-166.746689,Z=-464.397736)
+    Name=LDDPStreetLoser0
+End Actor
+//Basketball Stuff
+Begin Actor Class=FlagTrigger Name=FlagTrigger0
+    FlagName=LDDPJCIsFemale
+    flagValue=False
+    bSetFlag=False
+    bTrigger=True
+    TriggerType=TT_ClassProximity
+    bTriggerOnceOnly=False
+    ClassProximityType=Class'DeusEx.Basketball'
+    bDynamicLight=True
+    LastRenderTime=1140.077759
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=FlagTrigger
+    Event=MadeBasketM
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=4672,ZoneNumber=2)
+    Location=(X=2406.465332,Y=-2751.009521,Z=-326.329559)
+    OldLocation=(X=2486.100098,Y=-2768.602783,Z=-312.673004)
+    CollisionRadius=12.000000
+    CollisionHeight=6.000000
+    Name=FlagTrigger0
+End Actor
+Begin Actor Class=FlagTrigger Name=FlagTrigger1
+    FlagName=LDDPJCIsFemale
+    bSetFlag=False
+    bTrigger=True
+    TriggerType=TT_ClassProximity
+    bTriggerOnceOnly=False
+    ClassProximityType=Class'DeusEx.Basketball'
+    bDynamicLight=True
+    LastRenderTime=1140.077759
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=FlagTrigger
+    Event=MadeBasketF
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=4672,ZoneNumber=2)
+    Location=(X=2406.465332,Y=-2751.009521,Z=-326.329559)
+    OldLocation=(X=2518.100098,Y=-2736.602783,Z=-312.673004)
+    CollisionRadius=12.000000
+    CollisionHeight=6.000000
+    Name=FlagTrigger1
+End Actor
+Begin Actor Class=SpecialEvent Name=SpecialEvent0
+    Message="Sign him up for the Knicks!!!"
+    LastRenderTime=1140.077759
+    DistanceFromPlayer=4943.055176
+    InitialState=DisplayMessage
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=MadeBasketM
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=4673,ZoneNumber=2)
+    Location=(X=2412.576904,Y=-2803.485107,Z=-326.924866)
+    OldLocation=(X=2432.100098,Y=-2747.743164,Z=-327.996582)
+    CollisionRadius=12.000000
+    CollisionHeight=4.000000
+    bCollideActors=False
+    Name=SpecialEvent0
+End Actor
+Begin Actor Class=SpecialEvent Name=SpecialEvent1
+    Message="Sign her up for Liberty!!!"
+    LastRenderTime=1140.077759
+    DistanceFromPlayer=4943.055176
+    InitialState=DisplayMessage
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=MadeBasketF
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=4673,ZoneNumber=2)
+    Location=(X=2428.576904,Y=-2787.485107,Z=-326.924866)
+    OldLocation=(X=2444.576904,Y=-2771.485107,Z=-326.924866)
+    CollisionRadius=12.000000
+    CollisionHeight=4.000000
+    bCollideActors=False
+    Name=SpecialEvent1
+End Actor
+End Map
