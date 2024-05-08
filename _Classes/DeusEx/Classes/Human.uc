@@ -411,16 +411,19 @@ function float RandomPitch()
 function Gasp()
 {
 	local Sound TSound;
-	
-	if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
-	{
-		TSound = Sound(DynamicLoadObject("FemJC.FJCGasp", class'Sound', false));
-		if (TSound != None) PlaySound(TSound, SLOT_Pain,,,, RandomPitch());
-	}
-	else
-	{
-		PlaySound(sound'MaleGasp', SLOT_Pain,,,, RandomPitch());
-	}
+
+    if (swimTimer < swimDuration * 0.3)
+    {
+        if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
+        {
+            TSound = Sound(DynamicLoadObject("FemJC.FJCGasp", class'Sound', false));
+            if (TSound != None) PlaySound(TSound, SLOT_Pain,,,, RandomPitch());
+        }
+        else
+        {
+            PlaySound(sound'MaleGasp', SLOT_Pain,,,, RandomPitch());
+        }
+    }
 }
 
 function PlayDyingSound()
