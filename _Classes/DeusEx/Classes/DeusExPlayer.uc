@@ -563,6 +563,9 @@ const DRUG_CRACK = 2;
 
 var bool autosave;                                                              //Sarge: Autosave tells the Quicksave function to make an autosave instead
 
+//Sarge: Allow Enhanced Weapon Offsets
+var globalconfig bool bEnhancedWeaponOffsets; 									//Sarge: Allow using enhanced weapon offsets
+
 //Sarge: Dialog Settings
 var globalconfig bool bNumberedDialog;                                          //Sarge: Shows numbers in the dialog window and allows selecting topics with the number keys
 var globalconfig bool bCreditsInDialog;                                         //Sarge: Shows credits in the dialog window
@@ -17328,6 +17331,7 @@ defaultproperties
      BindName="JCDenton"
      FamiliarName="JC Denton"
      UnfamiliarName="JC Denton"
+     bEnhancedWeaponOffsets=false
      bQuickAugWheel=false
      bAugWheelDisableAll=true
 }

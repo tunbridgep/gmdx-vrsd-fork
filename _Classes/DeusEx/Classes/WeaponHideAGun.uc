@@ -24,6 +24,7 @@ ProjectileClass = class'DeusEx.PlasmaBolt';
 
 defaultproperties
 {
+     weaponOffsets=(X=12.000000,Y=-10.000000,Z=-16.000000)
      LowAmmoWaterMark=0
      GoverningSkill=Class'DeusEx.SkillWeaponPistol'
      NoiseLevel=3.000000
