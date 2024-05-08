@@ -13882,6 +13882,9 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
 			// narrow the head region
 			if ((Abs(offset.x) < headOffsetY) || (Abs(offset.y) < headOffsetY))
 			{
+				if (damageType == 'Burned' || damageType == 'Exploded')	// Trash: Less damage from plasma and explosions
+				HealthHead -= actualDamage * 1;
+				else
 				HealthHead -= actualDamage * 2;
 				if (bPlayAnim)
 					PlayAnim('HitHead', , 0.1);
@@ -13968,6 +13971,9 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
 			}
 			else
 			{
+				if (damageType == 'Burned' || damageType == 'Exploded')	// Trash: Less damage from plasma and explosions
+				HealthTorso -= actualDamage * 1;
+				else
 				HealthTorso -= actualDamage * 2;
 				if (bPlayAnim)
 				{
