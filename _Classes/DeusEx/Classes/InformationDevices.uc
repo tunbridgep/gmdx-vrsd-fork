@@ -4,7 +4,7 @@
 class InformationDevices extends DeusExDecoration
 	abstract;
 
-var() name					textTag;
+var() name					textTag, FemaleTextTag; //LDDP, 10/25/21: Added female equivalent text tag. Set automatically.
 var() string				TextPackage;
 var() class<DataVaultImage>	imageClass;
 
@@ -66,10 +66,19 @@ function DestroyWindow()
 
 function Tick(float deltaTime)
 {
+	local DeusExPlayer player;
+    player = DeusExPlayer(GetPlayerPawn());
+
 	// if the reader strays too far from the object, kill the text window
 	if ((aReader != None) && (infoWindow != None))
 		if (aReader.FrobTarget != Self)
 			DestroyWindow();
+    
+    //If we shouldn't be created, abort
+    if (!bFirstTickDone && !ShouldCreate(player))
+        Destroy();
+
+    bFirstTickDone = true;
 }
 
 // ----------------------------------------------------------------------
@@ -94,12 +103,14 @@ function Frob(Actor Frobber, Inventory frobWith)
 			// hide the crosshairs if there's text to read, otherwise display a message
 			if (infoWindow == None)
 				player.ClientMessage(msgNoText);
+            else
+                player.UpdateCrosshair();
 		}
 		else
 		{
 			DestroyWindow();
+            player.UpdateCrosshair();
 		}
-        player.UpdateCrosshair();
 	}
 }
 
@@ -115,7 +126,17 @@ function CreateInfoWindow()
 	local DataVaultImage image;
 	local bool bImageAdded;
 
+    local name UseTextTag;
+    local bool bWon;
+
 	rootWindow = DeusExRootWindow(aReader.rootWindow);
+    
+    //LDDP, 10/25/21: Convert usage to female text flag when female.
+	if ((aReader != None) && (aReader.FlagBase != None) && (aReader.FlagBase.GetBool('LDDPJCIsFemale')))
+	{
+		UseTextTag = FemaleTextTag;
+	}
+	if (!bool(UseTextTag)) UseTextTag = TextTag;
 
 	// First check to see if we have a name
 	if ( textTag != '' )
@@ -265,6 +286,15 @@ function postbeginplay()
 {
 	local texture newtex, swaptex;
 	local string str, tempstr;
+
+    local string TS;
+
+    //LDDP, 10/25/21: We now have a female text tag variable. Conjure one based off our base text flag, assuming it's not blank.
+	if (bool(TextTag))
+	{
+		TS = "FemJC"$string(TextTag);
+		SetPropertyText("FemaleTextTag", TS);
+	}
 
 	//gah superclass badness
 	if(Newspaper(self) != none)

@@ -555,11 +555,26 @@ var travel float autosaveRestrictTimer;                                         
 var const float autosaveRestrictTimerDefault;                                   //Sarge: Timer for autosaves.
 var travel bool bResetAutosaveTimer;                                            //Sarge: This is necessary because our timer isn't set properly during the same frame as saving, for some reason.
 
+var travel bool bMoreLDDPNPCs;
+
 const DRUG_TOBACCO = 0;
 const DRUG_ALCOHOL = 1;
 const DRUG_CRACK = 2;
 
 var bool autosave;                                                              //Sarge: Autosave tells the Quicksave function to make an autosave instead
+
+//Sarge: Allow Enhanced Weapon Offsets
+var globalconfig bool bEnhancedWeaponOffsets; 									//Sarge: Allow using enhanced weapon offsets
+
+//Sarge: Dialog Settings
+var globalconfig bool bNumberedDialog;                                          //Sarge: Shows numbers in the dialog window and allows selecting topics with the number keys
+var globalconfig bool bCreditsInDialog;                                         //Sarge: Shows credits in the dialog window
+var globalconfig bool bDialogHUDColors;                                         //Sarge: Use HUD Theme Colors in the Dialog window
+
+//SARGE: Aug Wheel Settings
+//var globalconfig bool bAdvancedAugWheel;                                        //Sarge: Allow manually assigning augmentations to the aug wheel, rather than auto-assigning all of them.
+var globalconfig bool bQuickAugWheel;                                           //Sarge: Instantly enable/disable augs when closing the menu over the selected aug, otherwise require a mouse click.
+var globalconfig bool bAugWheelDisableAll;                                      //Sarge: Show the Disable All button on the Aug Wheel
 
 //////////END GMDX
 
@@ -1604,6 +1619,7 @@ function UpdatePlayerSkin()
 	local PaulDentonCarcass paulCarcass;
 	local JCDentonMaleCarcass jcCarcass;
 	local JCDouble jc;
+	local DentonClone DC;
 
 	// Paul Denton
 	foreach AllActors(class'PaulDenton', paul)
@@ -1629,6 +1645,12 @@ function UpdatePlayerSkin()
 	// JC's stunt double
 	foreach AllActors(class'JCDouble', jc)
 		break;
+
+	//LDDP, 10/26/21: Reskin denton clone on the fly
+	forEach AllActors(class'DentonClone', DC)
+	{
+		DC.SetSkin(Human(Self));
+	}
 
 	if (jc != None)
 		jc.SetSkin(Self);
@@ -3017,7 +3039,12 @@ function StartPoison( Pawn poisoner, int Damage )
 	myPoisoner = poisoner;
 
     if (myPoisoner.weapon.IsA('WeaponGreaselSpit') && FRand() < 0.3)
-    PlaySound(sound'MaleCough',SLOT_Pain);    //CyberP: cough to greasel spit
+    {
+        if (FlagBase.GetBool('LDDPJCIsFemale')) //Sarge: Lay-D Denton support
+            PlaySound(Sound(DynamicLoadObject("FJCCough", class'Sound', false)), SLOT_Pain);
+        else
+            PlaySound(sound'MaleCough',SLOT_Pain);    //CyberP: cough to greasel spit
+    }
 
 	if (Health <= 0)  // no more pain -- you're already dead!
 		return;
@@ -3463,6 +3490,16 @@ function RadialMenuUpdateAug(Augmentation aug)
 {
 	if ((rootWindow != None) && (aug != None))
 	   DeusExRootWindow(rootWindow).hud.radialAugMenu.UpdateItemStatus(aug);
+}
+
+// ----------------------------------------------------------------------
+// RadialMenuQuickCancel()
+// ----------------------------------------------------------------------
+
+function RadialMenuQuickCancel()
+{
+	if (rootWindow != None)
+	   DeusExRootWindow(rootWindow).hud.radialAugMenu.skipQuickToggle = true;
 }
 
 // ----------------------------------------------------------------------
@@ -5189,6 +5226,16 @@ function bool SetBasedPawnSize(float newRadius, float newHeight)
 //		DesiredPrePivot -= centerDelta;
 		BaseEyeHeight   = newHeight - deltaEyeHeight;
 
+		//LDDP, 10/26/21: We use this to dynamically adjust our collision height. Bear this in mind.
+		if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
+		{
+			if (PrePivot.Z ~= 4.5)
+			{
+				PrePivot.Z -= 4.5;
+			}
+			BaseEyeHeight -= 2;
+		}
+
 		// Complaints that eye height doesn't seem like your crouching in multiplayer
 		if (( Level.NetMode != NM_Standalone ) && (bIsCrouching || bForceDuck) )
 			EyeHeight		-= (centerDelta.Z * 2.5);
@@ -5213,6 +5260,10 @@ function bool ResetBasedPawnSize()
 
 function float GetDefaultCollisionHeight()
 {
+	if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
+	{
+		return Default.CollisionHeight-9.0;
+	}
 	return (Default.CollisionHeight-4.5);
 }
 
@@ -5784,7 +5835,12 @@ state PlayerWalking
                bStunted = true;
                SetTimer(3,false);
                if (!bOnLadder && FRand() < 0.7)
-                  PlaySound(sound'MaleBreathe', SLOT_None,0.8);
+               {
+                    if (FlagBase.GetBool('LDDPJCIsFemale')) //Sarge: Lay-D Denton support
+                        PlaySound(Sound(DynamicLoadObject("FJCGasp", class'Sound', false)), SLOT_None, 0.8);
+                    else
+                        PlaySound(sound'MaleBreathe', SLOT_None,0.8);
+               }
                if (bBoosterUpgrade && Energy > 0)
 	               AugmentationSystem.AutoAugs(false,false);
             }
@@ -7458,6 +7514,12 @@ exec function ParseRightClick()
 
     if (RestrictInput())
 		return;
+
+    if (bRadialAugMenuVisible)
+    {
+        RadialMenuQuickCancel();
+        return;
+    }
 
     //Descope if we have binocs/scope
     if (inHand != None)
@@ -10198,6 +10260,50 @@ exec function ShowAcceleration(bool bShow)
 			root.actorDisplay.ShowAcceleration(bShow);
 }
 
+//Sarge: Moved this from DeusExWeapon because it's also used by SkilledTools
+function texture GetWeaponHandTex()
+{
+	local texture tex;
+
+	if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
+    {
+        switch(PlayerSkin)
+        {
+            case 0:
+                tex = Texture(DynamicLoadObject("FemJC.WeaponHandsTex0Fem", class'Texture', false));
+                break;
+            case 1:
+                tex = Texture(DynamicLoadObject("FemJC.WeaponHandsTex4Fem", class'Texture', false));
+                break;
+            case 2:
+                tex = Texture(DynamicLoadObject("FemJC.WeaponHandsTex5Fem", class'Texture', false));
+                break;
+            case 3:
+                tex = Texture(DynamicLoadObject("FemJC.WeaponHandsTex6Fem", class'Texture', false));
+                break;
+            case 4:
+                tex = Texture(DynamicLoadObject("FemJC.WeaponHandsTex7Fem", class'Texture', false));
+                break;
+        }
+    }
+    else
+    {
+        //For male, return the basic ones
+		switch(PlayerSkin)
+		{
+			//default, black, latino, ginger, albino, respectively
+			case 0: tex = texture'weaponhandstex'; break;
+			case 1: tex = texture'HDTPItems.skins.weaponhandstexblack'; break;
+			case 2: tex = texture'HDTPItems.skins.weaponhandstexlatino'; break;
+			case 3: tex = texture'HDTPItems.skins.weaponhandstexginger'; break;
+			case 4: tex = texture'HDTPItems.skins.weaponhandstexalbino'; break;
+		}
+    }
+
+    if (tex == None)
+        tex = texture'weaponhandstex'; //White hands texture by default
+	return tex;
+}
 
 // ----------------------------------------------------------------------
 // ShowHud()
@@ -14115,11 +14221,19 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 			       }
 				}
         }
-        if (damageType == 'TearGas' || damageType == 'PoisonGas') //CyberP: gas grenades and poison barrels drain stamina.
+        if (damageType == 'TearGas' || damageType == 'PoisonGas' || damageType == 'Poison' || damageType == 'PoisonEffect') //CyberP: gas grenades and poison barrels drain stamina. // Trash: Now with more damange types!
         {
+
             if (newDamage >= 1 && bStaminaSystem)
             {
-                swimTimer -= newDamage*0.4;
+				if (UsingChargedPickup(class'HazMatSuit'))
+        		{
+					skillLevel = SkillSystem.GetSkillLevelValue(class'SkillEnviro');
+					swimTimer -= (newDamage*0.4) + 3;	// Trash: In the future, we can add a perk to further reduce the stamina damage here
+        		}
+				else
+                	swimTimer -= (newDamage*0.4) + 3;
+				
                 if (swimTimer < 0)
                     swimTimer = 0;
             }
@@ -15833,6 +15947,7 @@ function CreateColorThemeManager()
 		ThemeManager.AddTheme(Class'ColorThemeMenu_Superhero');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_Terminator');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_Violet');
+		ThemeManager.AddTheme(Class'ColorThemeMenu_LDDP');
 
 		// HUD
 		ThemeManager.AddTheme(Class'ColorThemeHUD_Default');
@@ -15860,6 +15975,7 @@ function CreateColorThemeManager()
 		ThemeManager.AddTheme(Class'ColorThemeHUD_Superhero');
 		ThemeManager.AddTheme(Class'ColorThemeHUD_Terminator');
 		ThemeManager.AddTheme(Class'ColorThemeHUD_Violet');
+		ThemeManager.AddTheme(Class'ColorThemeHUD_LDDP');
 	}
 }
 
@@ -17025,11 +17141,21 @@ function RegenStaminaTick(float deltaTime)                                      
 	}
 }
 
+//Sarge: Checks if Lay-D Denton Mod is installed
+function bool FemaleEnabled()
+{
+    local Texture TTex;
+	TTex = Texture(DynamicLoadObject("FemJC.MenuPlayerSetupJCDentonFemale_1", class'Texture', false));
+	return TTex != None;
+}
+
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
 defaultproperties
 {
+     bNumberedDialog=True
+     bCreditsInDialog=True
      autosaveRestrictTimerDefault=600.0
      TruePlayerName="JC Denton"
      CombatDifficulty=1.000000
@@ -17213,4 +17339,7 @@ defaultproperties
      BindName="JCDenton"
      FamiliarName="JC Denton"
      UnfamiliarName="JC Denton"
+     bEnhancedWeaponOffsets=false
+     bQuickAugWheel=false
+     bAugWheelDisableAll=true
 }

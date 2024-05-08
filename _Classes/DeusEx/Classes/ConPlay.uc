@@ -1209,7 +1209,7 @@ function EEventAction SetupEventChoice( ConEventChoice event, out String nextLab
 			else
 			{
 				// Plain old vanilla choice
-				conWinThird.DisplayChoice(choice);
+				conWinThird.DisplayChoice(choice, choiceCount + 1);
 				choiceCount++;
 			}
 		}

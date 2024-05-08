@@ -684,6 +684,7 @@ state Reload
 
 defaultproperties
 {
+     weaponOffsets=(X=17.000000,Y=-10.000000,Z=-15.000000)
      MountedViewOffset=(X=4.000000,Y=3.500000,Z=-45.500000)
      GoverningSkill=Class'DeusEx.SkillWeaponPistol'
      EnviroEffective=ENVEFF_Air

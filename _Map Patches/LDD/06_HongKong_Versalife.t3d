@@ -1,0 +1,24 @@
+Begin Map
+Begin Actor Class=LDDPVersaEmpS Name=LDDPVersaEmp0
+    requiresLDDP=true;
+    LDDPExtra=true;
+    Orders=Sitting
+    bReactFutz=True
+    InitialAlliances(0)=(AllianceName=Player)
+    InitialAlliances(1)=(AllianceName=mj12)
+    InitialAlliances(2)=(AllianceName=Worker)
+    FootRegion=(Zone=ZoneInfo'MyLevel.ZoneInfo1',iLeaf=42,ZoneNumber=1)
+    HeadRegion=(Zone=ZoneInfo'MyLevel.ZoneInfo1',iLeaf=44,ZoneNumber=1)
+    Alliance=Workers
+    bDynamicLight=True
+    LastRenderTime=40.598488
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=LDDPVersaEmp
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo1',iLeaf=44,ZoneNumber=1)
+    Location=(X=214.500061,Y=1934.965210,Z=207.600494)
+    OldLocation=(X=214.500061,Y=1934.965210,Z=207.600494)
+    bSelected=True
+    BarkBindName="LDDPVersaEmp"
+    Name=LDDPVersaEmp0
+End Actor
+End Map
