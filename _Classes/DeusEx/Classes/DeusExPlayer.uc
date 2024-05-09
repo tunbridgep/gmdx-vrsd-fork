@@ -104,7 +104,6 @@ var bool bSecondOptionsSynced;
 var travel bool bForceDuck;
 var travel bool bCrouchOn;				// used by toggle crouch
 var bool bToggledCrouch;		        // used by toggle crouch
-var travel byte lastbDuck;				// used by toggle crouch
 
 // leaning vars
 var bool bCanLean;
@@ -652,7 +651,7 @@ function HandleCrouchToggle()
     if (!bToggleCrouch)
         return;
 
-    if (!bIsCrouching == bToggledCrouch)
+    if (!bIsCrouching)
         bToggledCrouch = false;
 
     if (bCrouchOn && bIsCrouching && !bToggledCrouch)
