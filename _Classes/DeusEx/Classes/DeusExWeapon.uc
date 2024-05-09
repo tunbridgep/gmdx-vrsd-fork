@@ -2075,8 +2075,10 @@ function name WeaponDamageType()
 	projClass = Class<DeusExProjectile>(ProjectileClass);
 	if (bInstantHit)
 	{
-		if (StunDuration > 0 || AmmoType.IsA('AmmoRubber'))
+        if (AmmoType.IsA('AmmoRubber'))
 			damageType = 'KnockedOut';
+		if (StunDuration > 0)
+			damageType = 'Stunned';
 		else
 			damageType = 'Shot';
 
