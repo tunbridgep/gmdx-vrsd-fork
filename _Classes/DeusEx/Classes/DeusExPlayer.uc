@@ -103,7 +103,7 @@ var bool bSecondOptionsSynced;
 // used while crouching
 var travel bool bForceDuck;
 var travel bool bCrouchOn;				// used by toggle crouch
-var travel bool bWasCrouchOn;			// used by toggle crouch
+var bool bToggledCrouch;		        // used by toggle crouch
 var travel byte lastbDuck;				// used by toggle crouch
 
 // leaning vars
@@ -649,25 +649,28 @@ exec function cheat()
 //Handle Crouch Toggle
 function HandleCrouchToggle()
 {
-    if (bToggleCrouch && !bCrouchOn && lastbDuck == 0 && bDuck == 1)
+    if (!bToggleCrouch)
+        return;
+
+    if (!bIsCrouching == bToggledCrouch)
+        bToggledCrouch = false;
+
+    if (bCrouchOn && bIsCrouching && !bToggledCrouch)
     {
-        //ClientMessage("Crouching");
-        //SetCrouch(true);
-        bCrouchOn = true;
-    }
-    else if (bToggleCrouch && bCrouchOn && lastbDuck == 0 && bDuck == 1)
-    {
-        //ClientMessage("Uncrouching");
-        //SetCrouch(false);
         bCrouchOn = false;
+        bToggledCrouch = true;
     }
-    lastbDuck = bDuck;
+    else if (!bCrouchOn && bIsCrouching && !bToggledCrouch)
+    {
+        bCrouchOn = true;
+        bToggledCrouch = true;
+    }
 }
 
 //Return if the character is crouching
 function bool IsCrouching()
 {
-    return bCrouchOn || bForceDuck || bIsCrouching || bDuck == 1;
+    return bCrouchOn || bForceDuck || bIsCrouching;
 }
 
 //set our crouch state to a certain value
@@ -676,7 +679,6 @@ function SetCrouch(bool crouch, optional bool setForce)
     bIsCrouching = crouch;
     bDuck = int(crouch);
     bCrouchOn = crouch;
-    lastbDuck = int(crouch);
     if (setForce)
         bForceDuck = crouch;
 }
@@ -4965,7 +4967,7 @@ function HandleWalking()
 		bIsWalking = !bIsWalking;
 
     //SARGE: If our walk state has changed, untoggle crouch
-    if (bLastRun != bool(bRun) && bCrouchOn && !bAlwaysRun)
+    if (bRun == 1 && IsCrouching() && !bAlwaysRun)
         SetCrouch(false);
 
     bLastRun = bool(bRun);
