@@ -20,6 +20,20 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\PowerIconInactive.pcx"			NAME="PowerIconInactive"			GROUP="UserInterface"
 #exec TEXTURE IMPORT FILE="Textures\WhiteDot.pcx"			NAME="WhiteDot"			GROUP="UserInterface"
 
+// Perks
+
+// Heavy Weapons
+#exec TEXTURE IMPORT FILE="Textures\PerkBlastEnergy.pcx"			NAME="PerkBlastEnergy"			GROUP="UserInterface"
+
+// Pistols
+#exec TEXTURE IMPORT FILE="Textures\PerkSidearm.pcx"			NAME="PerkSidearm"			GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\PerkHumanCombustion.pcx"			NAME="PerkHumanCombustion"			GROUP="UserInterface"
+
+// Medicine
+#exec TEXTURE IMPORT FILE="Textures\PerkBiogenic.pcx"			NAME="PerkBiogenic"			GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\PerkToxicologist.pcx"			NAME="PerkToxicologist"			GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\PerkCombatMedicsBag.pcx"			NAME="PerkCombatMedicsBag"			GROUP="UserInterface"
+
 #exec AUDIO IMPORT FILE="Sounds\PistolCaseSound.wav"			NAME="PistolCaseSound"			GROUP="Weapons"
 #exec AUDIO IMPORT FILE="Sounds\ShellCaseSound.wav"			NAME="ShellCaseSound"			GROUP="Weapons"
 
