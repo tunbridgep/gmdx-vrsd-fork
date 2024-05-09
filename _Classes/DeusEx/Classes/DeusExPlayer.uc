@@ -4966,8 +4966,10 @@ function HandleWalking()
 		bIsWalking = !bIsWalking;
 
     //SARGE: If our walk state has changed, untoggle crouch
-    if (bRun == 1 && IsCrouching() && !bAlwaysRun)
+    if (!bLastRun && bRun == 1 && IsCrouching() && !bAlwaysRun)
         SetCrouch(false);
+    else if (bLastRun && bRun == 1 && bIsCrouching)
+        SetCrouch(true);
 
     bLastRun = bool(bRun);
 }
