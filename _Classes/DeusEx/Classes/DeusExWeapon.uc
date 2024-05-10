@@ -2077,7 +2077,7 @@ function name WeaponDamageType()
 	{
         if (AmmoType.IsA('AmmoRubber'))
 			damageType = 'KnockedOut';
-		if (StunDuration > 0)
+        else if (StunDuration > 0)
 			damageType = 'Stunned';
 		else
 			damageType = 'Shot';
