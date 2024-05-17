@@ -2295,6 +2295,9 @@ function ResetPlayerToDefaults()
 	// Reinitialize all subsystems we've just nuked
 	InitializeSubSystems();
 
+	AddictionManager = None;
+	SetupAddictionManager();
+
     for(i=0;i<ArrayCount(PerkNamesArray);i++)   //CyberP: reset perks
 		   PerkNamesArray[i] = 0;
 		for(i=0;i<ArrayCount(BoughtPerks);i++)   //CyberP: reset perks
