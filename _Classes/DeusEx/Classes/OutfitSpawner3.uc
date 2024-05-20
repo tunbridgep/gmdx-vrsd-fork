@@ -1,8 +1,8 @@
 //=============================================================================
-// OutfitSpawner2
+// OutfitSpawner3
 // Spawns an outfit, or does nothing depending on if the outfits mod is installed.
 //=============================================================================
-class OutfitSpawner2 extends OutfitSpawner;
+class OutfitSpawner3 extends OutfitSpawner;
 
 defaultproperties
 {
@@ -10,11 +10,11 @@ defaultproperties
      ItemName="Augmentique Collectable"
      bBlockSight=True
      bInvincible=True
-     Skin=Texture'FemJC.deco.AugmentiqueBoxTex1'
-     Mesh=LodMesh'DeusExItems.AmmoDart'
-     DrawScale=3.000000
-     CollisionRadius=25.500000
-     CollisionHeight=6.00000
-     Mass=35.000000
-     Buoyancy=45.000000
+     Skin=Texture'FemJC.deco.AugmentiqueAccBoxTex1'
+     Mesh=LodMesh'DeusExDeco.BoxSmall'
+     DrawScale=1.000000
+     CollisionRadius=13.000000
+     CollisionHeight=5.180000
+     Mass=20.000000
+     Buoyancy=30.000000
 }

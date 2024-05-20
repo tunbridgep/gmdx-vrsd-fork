@@ -3,22 +3,39 @@
 //See the included documentation for more information
 class OutfitManagerBase extends Object abstract;
 
-//This should be called in TravelPostAccept
+//Part Slot Names
+enum PartSlot
+{
+    PS_Body_M,
+    PS_Body_F,
+    PS_Trench,
+    PS_Torso_M,
+    PS_Torso_F,
+    PS_Legs,
+    PS_DressLegs,
+    PS_Skirt,
+    PS_Glasses,
+    PS_Hat,
+    PS_Main,             //Main model texture
+    PS_Mask
+};
+
+
+//These should be called in TravelPostAccept
 function Setup(DeusExPlayer newPlayer) {}
+function CompleteSetup() {}
 
-function ApplyCurrentOutfit() {}
+//Parts List Functions
+function GlobalAddPart(PartSlot slot,string name,bool isAccessory,string id, optional string t0, optional string t1, optional string t2, optional string t3, optional string t4, optional string t5, optional string t6, optional string t7, optional string tm) {}
+function AddPart(PartSlot slot,string name,bool isAccessory,string id, optional string t0, optional string t1, optional string t2, optional string t3, optional string t4, optional string t5, optional string t6, optional string t7, optional string tm) {}
+function GroupAddParts(PartSlot bodySlot) {}
+function GroupTranspose(PartSlot bodySlot,optional int slot0,optional int slot1,optional int slot2,optional int slot3,optional int slot4,optional int slot5,optional int slot6,optional int slot7,optional int slot8) {}
+function GroupTranspose2(PartSlot bodySlot, PartSlot bodySlot2,optional int slot0,optional int slot1,optional int slot2,optional int slot3,optional int slot4,optional int slot5,optional int slot6,optional int slot7,optional int slot8) {}
 
-function Unlock(string id) {}
-
-function string GetOutfitNameByID(string id) {}
-
+//Outfit Functions
 function BeginNewOutfit(string id, string n, string d, string preview, bool male, bool female) {}
-function SetOutfitMesh(string mesh) {}
-function SetOutfitAccessorySlots(int t0, int t1, int t2, int t3, int t4, int t5, int t6, int t7, int tm) {}
-function SetOutfitTextures(optional string t1, optional string t2, optional string t3, optional string t4, optional string t5, optional string t6, optional string t7) {}
-function SetOutfitMainTex(string tm) {}
-function SetOutfitBodyTex(string t0) {}
-function SetOutfitDisableAccessories() {}
+function OutfitAddPartReference(string partID) {}
+function Unlock(string id) {}
 
 //Function called by spawners
 function SpawnerPickup(OutfitSpawner S) {}

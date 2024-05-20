@@ -226,7 +226,7 @@ function SetupOutfitManager()
         outfitManager.Setup(Self);
 
         //Re-assign current outfit
-        outfitManager.ApplyCurrentOutfit();
+        outfitManager.CompleteSetup();
     }
 }
 
