@@ -10971,6 +10971,7 @@ exec function NextBeltItem()
 		}
 	}
     beltScrolled = slot;
+    selectedNumberFromEmpty = false;
 	}
 }
 
@@ -11088,6 +11089,7 @@ exec function PrevBeltItem()
 		}
 	}
     beltScrolled = slot;
+    selectedNumberFromEmpty = false;
 	}
 }
 
