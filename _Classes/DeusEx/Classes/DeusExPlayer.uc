@@ -2304,6 +2304,9 @@ function ResetPlayerToDefaults()
 	saveCount = 0;
 	saveTime  = 0.0;
 
+    // Reset Addiction Manager
+    AddictionManager = None;
+
 	// Reinitialize all subsystems we've just nuked
 	InitializeSubSystems();
 
