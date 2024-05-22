@@ -10,6 +10,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX Bug where EMP'd turrets and cameras will re-enable themselves after the EMP effect runs out, even if they were disabled during the EMP effect.
     - Fixed GMDX/Vanilla issue where you could retain your standing accuracy bonus after moving if you stood still for a long time. Now accuracy decreases immediately.
 - Quality of Life Improvements:
+    - You can no longer waste medkits or biocells when at maximum health/energy
     - Added alternate weapon offsets to hide many of the visible seams or missing parts of weapon viewmodels.
     - Augmentation Wheel improvements
         - While in the augmentation screen, use middle-click on an active augmentation to add or remove it from the augmentation wheel.
@@ -72,15 +73,28 @@ Sarge's Changes since Beta 2.2:
         - When Smart Keyring is enabled, the keyring will no longer occupy belt slot 0, allowing it to be used for regular items.
         - The keyring can be selected using Left-Click Frob on doors.
 - Gameplay Changes:
+    - Augmentation Changes
+        - EUAS
+            - Swapped Level 2 and 3, because level 2 was arguably better than level 3. Now level 2 detects environmental hazards, level 3 shows visibility on the HUD.
+        - Aggressive Defense System:
+            - Will no longer display explosives which aren't detonated, so it can't be used to detect placed grenades at long range anymore
+                - Will instead continue to display destroyed projectiles on the HUD for a second or so after they are destroyed.
+            - Now only beeps as projectiles enter range, to prevent annoying earrape
+            - Range increased from 340/480/640/800 to 400/600/800/1000
+            - Added Player Damage Reduction for projectiles detonated by ADS. Reduces damage from projectiles by 20%/30%/40%/50%
     - Hacking Overhaul
         - Bypassing Turrets now requires Advanced hacking, as in Vanilla.
         - Hacked Cameras and Turrets will "reboot" and become re-enabled again after 2 minutes (plus an additional 2 minutes for each level of the Hacking skill)
         - Hacking a security computer terminal will disable it and show an access denied message instead, similar to ATMs (Optional, always enabled in Hardcore).
             - The number of times a computer can be hacked is based on your Computers skill.
             - Regular computers will never be locked out, so you can read email to your hearts content.
+    - Normalized damage from the Plasma Rifle, PS20, the flamethrower, and explosives.
+        - Now they will use the same damage multiplier across all limbs, making the damage more reliable against enemies.
+        - This also means you will take less damage from plasma and explosives to your torso and head.
     - Charged Objects no longer destroy themselves on use in Hardcore mode.
-    - Swapped Level 2 and 3 of the EUAS augmentation, because level 2 was arguably better than level 3. Now level 2 detects environmental hazards, level 3 shows visibility on the HUD.
     - The rifle's grenade launcher doesn't require reloading to turn on, but you need to reload after each shot. It now works like a different weapon.
+    - Increased the sawed off shotgun's pellet count from 8 to 9, and decreased shot speed from 1.3 to 1.2.
+    - Rubber shells are now hitscan with a harmless projectile.
     - Restricted Saving is now a Playthrough Modifier and is no longer restricted to Hardcore Mode. It's still enforced in Hardcore Mode.
     - Added No Keypad Cheese Playthrough Modifier (called "Unknown Codes") which prevents using keypads or computer logins without having found them beforehand. Some codes which are hinted but never given are excepted.
     - AI Behaviour Changes

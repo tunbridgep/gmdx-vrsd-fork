@@ -1778,7 +1778,7 @@ function FinishButtonDrag()
                       winStatus.AddText("Recharged by 30%");
                 }*/
                 mult = ChargedTarget.default.ChargeMult;                        //RSD: No more special cases for charge rates
-                if (player.PerkNamesArray[6] == 1)                              //RSD: Field Repair perk
+                if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkFieldRepair').bPerkObtained == true)                              //RSD: Field Repair perk
                    mult *= 1.5;
                 ChargedTarget.Charge += mult*ChargedTarget.default.Charge;
                 if (ChargedTarget.Charge >= ChargedTarget.default.Charge)

@@ -79,7 +79,7 @@ function Frob(Actor Frobber, Inventory frobWith)
    if (player == None)
       return;
 
-   if (player.PerkNamesArray[21]==1)
+   if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkMisfeatureExploit').bPerkObtained == true)
       healAmount = 375;                                                         //RSD: Was 450
 
    // DEUS_EX AMSD  In multiplayer, don't pop up the window, just use them
