@@ -53,7 +53,7 @@ function StandStill()
 
     player = DeusExPlayer(GetPlayerPawn());
 
-   if (player != none && player.PerkNamesArray[21] == 1)
+   if (player != none && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkMisfeatureExploit').bPerkObtained == true)
    chargeAmount = 90;
 
     if (player != none && player.CombatDifficulty >= 3.0)                       //RSD: Realistic/Hardcore get 2 charges max
@@ -176,7 +176,7 @@ function ChargeEquipment(ChargedPickup EquipToCharge, DeusExPlayer EquipOwner) /
 	{
 	    if (EquipOwner.CombatDifficulty > 1.0)                                  //RSD: Changed from 2.5 to 1.0, now affects Medium and Hard as well as Realistic/Hardcore
 	        chargeMaxTimes--;
-        if (EquipOwner != none && EquipOwner.PerkNamesArray[21] == 1)           //RSD: Misfeature Exploit perk
+        if (EquipOwner != none && EquipOwner.PerkManager.GetPerkWithClass(class'DeusEx.PerkMisfeatureExploit').bPerkObtained == true)           //RSD: Misfeature Exploit perk
             EquipToCharge.Charge += 4.5*EquipToCharge.default.Charge*EquipToCharge.default.chargeMult;
         else
             EquipToCharge.Charge += 3*EquipToCharge.default.Charge*EquipToCharge.default.chargeMult;

@@ -165,7 +165,7 @@ state Exploding                                                                 
 	  DamageRing();
 		if (gradualHurtCounter >= gradualHurtSteps)
 		{
-			if (Owner.IsA('DeusExPlayer') && WeaponPlasmaRifle(weaponShotBy) != none && DeusExPlayer(Owner).PerkNamesArray[13] == 1) //RSD: If we have the Blast Energy perk, do one more flat damage ring to adjust the curve up
+			if (Owner.IsA('DeusExPlayer') && WeaponPlasmaRifle(weaponShotBy) != none && DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkBlastEnergy').bPerkObtained == true) //RSD: If we have the Blast Energy perk, do one more flat damage ring to adjust the curve up
             HurtRadiusPlasma
 			(
 				0.5*Damage,                                                     //RSD: evaluated at 0.25*gradualHurtSteps*[original damage=2*Damage] since the curve was cut by 25% in HurtRadiusPlasma()
@@ -204,7 +204,7 @@ function HurtRadiusPlasma( float DamageAmount, float DamageRadius, name DamageNa
 	// DEUS_EX CNN
 	local Mover M;
 
-    if (Owner.IsA('DeusExPlayer') && WeaponPlasmaRifle(weaponShotBy) != none && DeusExPlayer(Owner).PerkNamesArray[13] == 1) //RSD: Blast Energy perk
+    if (Owner.IsA('DeusExPlayer') && WeaponPlasmaRifle(weaponShotBy) != none && DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkBlastEnergy').bPerkObtained == true) //RSD: Blast Energy perk
     	mult = 0.75;
    	else mult = 1.0;
 

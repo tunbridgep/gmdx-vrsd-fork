@@ -679,7 +679,7 @@ function UpdateEquipmentWindows()
     		    outText = EquipRechargeLabel1 @ int(300*armor.default.chargeMult)$"%";
             else
                 outText = EquipRechargeLabel2 @ int(300*armor.default.chargeMult)$"%";*/
-            if (player != none && player.PerkNamesArray[21] == 1)                //RSD: Misfeature Exploit perk
+            if (player != none && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkMisfeatureExploit').bPerkObtained == true)                //RSD: Misfeature Exploit perk
             	outText = EquipRechargeLabel3 @ int(450*armor.default.chargeMult)$"%";
            	else
            		outText = EquipRechargeLabel3 @ int(300*armor.default.chargeMult)$"%";

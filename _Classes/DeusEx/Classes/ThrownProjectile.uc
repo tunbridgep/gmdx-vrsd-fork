@@ -88,7 +88,7 @@ simulated function Tick(float deltaTime)
 			else
 			blastRadius=384.000000;
 
-			if (DeusExPlayer(Owner).PerkNamesArray[26]==1 && IsA('GasGrenade'))
+			if (DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkKnockoutGas').bPerkObtained == true && IsA('GasGrenade'))
 		       Damage=260.000000;
     }
 
@@ -127,7 +127,7 @@ simulated function Tick(float deltaTime)
 		playa = DeusExPlayer(GetPlayerPawn());
 		if (!bDisabled && Owner == None)
 		{
-		if (playa != None && playa.PerkNamesArray[0]==1)
+		if (playa != None && playa.PerkManager.GetPerkWithClass(class'DeusEx.PerkSonicTransducerSensor').bPerkObtained == true)
 		{
 		AmbientSound=sound'LAMAmbient';
 		SoundRadius=26;
