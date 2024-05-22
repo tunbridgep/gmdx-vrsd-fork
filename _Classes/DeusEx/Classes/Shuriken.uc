@@ -91,7 +91,7 @@ simulated function PostBeginPlay()
 
     PlaySound(sound'CombatKnifeFire',SLOT_None,,,,1.5);
 
-    if (player != None && player.PerkNamesArray[4]==1)
+    if (player != None && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkSharpEyed').bPerkObtained == true)
     {
         smokeGen = Spawn(class'ParticleGenerator', Self);
         if (smokeGen != None)

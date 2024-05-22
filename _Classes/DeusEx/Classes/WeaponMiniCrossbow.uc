@@ -16,9 +16,14 @@ var float scopeTime;
 var int lerpClamp;
 
 //SARGE: This overwrites the one in DeusExWeapon.uc, we need a special one here with a strap
-function Texture GetLDDPHandsTex(DeusExPlayer P)
+function Texture GetWeaponHandTex()
 {
     local Texture tex;
+    local DeusExPlayer P;
+	
+    P = deusexplayer(owner);
+	if(P == none)
+        return texture'MiniCrossbowTex1';
 
 	if ((P.FlagBase != None) && (P.FlagBase.GetBool('LDDPJCIsFemale')))
     {
