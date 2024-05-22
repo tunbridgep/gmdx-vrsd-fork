@@ -3519,7 +3519,11 @@ function EHitLocation HandleDamage(out int actualDamage, Vector hitLocation, Vec
 
 	if (actualDamage > 0)
 	{
-		if (offset.z > headOffsetZ)		// head
+		if (damageType == 'Burned' || damageType == 'Exploded' || damageType == 'Flamed') // Trash: Code stolen directly from RoSoDude, basically only deal torso damage multiplied by 4 if it's a flamethrower, explosive weapon, or the plasma gun for consistency.
+		{
+			healthTorso -= actualDamage * 4;
+		}
+		else if (offset.z > headOffsetZ)		// head
 		{
 		    if (offset.z > CollisionHeight * 0.85 && !(abs(offset.y) < headOffsetY && offset.x > 0.0 && offset.z < CollisionHeight*0.93) //RSD: Was CollisionHeight*0.93, I'm making it *0.85, and NOT from the front
             	&& bHasHelmet && (damageType == 'Shot' || damageType == 'Poison' || damageType == 'Stunned'))

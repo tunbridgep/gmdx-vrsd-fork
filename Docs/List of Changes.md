@@ -88,6 +88,9 @@ Sarge's Changes since Beta 2.2:
         - Hacking a security computer terminal will disable it and show an access denied message instead, similar to ATMs (Optional, always enabled in Hardcore).
             - The number of times a computer can be hacked is based on your Computers skill.
             - Regular computers will never be locked out, so you can read email to your hearts content.
+    - Normalized damage from the Plasma Rifle, PS20, the flamethrower, and explosives.
+        - Now they will use the same damage multiplier across all limbs, making the damage more reliable against enemies.
+        - This also means you will take less damage from plasma and explosives to your torso and head.
     - Charged Objects no longer destroy themselves on use in Hardcore mode.
     - The rifle's grenade launcher doesn't require reloading to turn on, but you need to reload after each shot. It now works like a different weapon.
     - Increased the sawed off shotgun's pellet count from 8 to 9, and decreased shot speed from 1.3 to 1.2.
