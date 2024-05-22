@@ -1493,10 +1493,7 @@ simulated function float CalculateAccuracy()
 
 		HealthArmHighest = Max(HealthArmLeft, HealthArmRight);                  //RSD: Get max
 		BestArmHighest = Max(BestArmLeft, BestArmRight);                        //RSD: Get max
-		if (GoverningSkill == class'SkillWeaponPistol' && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkAmbidextrous').bPerkObtained == false) //RSD: New One-Handed perk for Pistols
-			bCheckHighestHealthArm = true;
-		else
-			bCheckHighestHealthArm = false;
+		bCheckHighestHealthArm = GoverningSkill == class'SkillWeaponPistol' && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkAmbidextrous').bPerkObtained; //RSD: New One-Handed perk for Pistols
 	}
 	else if (ScriptedPawn(Owner) != None)
 	{
