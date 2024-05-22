@@ -47,16 +47,4 @@ defaultproperties
      LevelValues(1)=1.400000
      LevelValues(2)=2.000000
      LevelValues(3)=3.000000
-     PerksDescription="|nAn agent's vision is not impaired whilst drowning and movement speed is not hindered by damage to the legs unless in a critical state.|n|nRequires: Athletics: TRAINED"
-     PerksDescription2="|nn agent receives a burst of stamina after successful elimination of a target using a hand-to-hand weapon (30%).|n|nRequires: Athletics: ADVANCED"
-     PerksDescription3="|nAn agent's stamina regenerates at a faster rate (+100%), even while crouched.|n|nRequires: Athletics: MASTER"
-     PerkName="CLARITY"
-     PerkName2="ADRENALINE"
-     PerkName3="ENDURANCE"
-     PerkCost(0)=100
-     PerkCost(1)=250
-     PerkCost(2)=300
-     LocalizedPerkName="PERSERVERANCE"
-     LocalizedPerkName2="ADRENALINE RUSH"
-     LocalizedPerkName3="ENDURANCE"
 }

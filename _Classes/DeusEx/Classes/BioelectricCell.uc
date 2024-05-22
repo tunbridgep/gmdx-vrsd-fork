@@ -20,7 +20,7 @@ var localized String RechargesLabel;
 //SARGE: Moved the Bioenergy perk-based max amount bonus here, was in DeusExPlayer
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {
-    if (frobber.PerkNamesArray[30]==1)
+    if (frobber.PerkManager.GetPerkWithClass(class'DeusEx.PerkCombatMedicsBag').bPerkObtained == true)
         MaxCopies = 25;
     return super.DoRightFrob(frobber,objectInHand);
 }
@@ -55,8 +55,8 @@ state Activated
 		{
 		    origEnergy = player.Energy;                                         //RSD
 
-            if (player.PerkNamesArray[8]==1)
-		    rechargeAmount=25;
+			if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkBiogenic').bPerkObtained == true)
+			rechargeAmount=25;
 			//player.ClientMessage(Sprintf(msgRecharged, rechargeAmount));      //RSD
 
 			player.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
@@ -85,7 +85,7 @@ function bool UpdateInfo(Object winObject)
 
     player = DeusExPlayer(Owner);
 
-	if (player != none && player.PerkNamesArray[30]==1)
+	if (player != none && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkCombatMedicsBag').bPerkObtained == true)
 		MaxCopies = 25;
 
 	winInfo = PersonaInfoWindow(winObject);
@@ -93,10 +93,10 @@ function bool UpdateInfo(Object winObject)
 		return False;
 
 	winInfo.SetTitle(itemName);
-	if (player.PerkNamesArray[30] == 1)
+	if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkCombatMedicsBag').bPerkObtained == true)
 		winInfo.AddSecondaryButton(self);                                       //RSD: Can now equip biocells as secondaries with the Combat Medic's Bag perk
 	winInfo.SetText(Description $ winInfo.CR() $ winInfo.CR());
-	if (player.PerkNamesArray[8]==1)                                            //RSD: Set here because otherwise is only set when activating
+	if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkBiogenic').bPerkObtained == true)
 		rechargeAmount=25;
 	winInfo.AppendText(Sprintf(RechargesLabel, RechargeAmount));
 

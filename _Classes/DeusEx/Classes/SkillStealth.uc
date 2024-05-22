@@ -40,16 +40,4 @@ defaultproperties
      LevelValues(1)=1.000000
      LevelValues(2)=1.500000
      LevelValues(3)=2.500000
-     PerksDescription="|nAn agent is silent whilst mantling and climbing ladders. |n|nRequires: Stealth: TRAINED"
-     PerksDescription2="|nAn agent easily identifies the blindspots of modern security systems, evading camera detection for a longer period of time (+50%) and tucking the legs away from laser tripwires.|n|nRequires: Stealth: ADVANCED"
-     PerksDescription3="|nAn agent is skilled in the art of distraction, confusing enemies for longer with sound (+50%) and diverting enraged animals on the attack by using carcasses as bait.|n|nRequires: Stealth: MASTER"
-     PerkName="NIMBLE"
-     PerkName2="NERVES OF STEEL"
-     PerkName3="CREEPER"
-     PerkCost(0)=150
-     PerkCost(1)=200
-     PerkCost(2)=250
-     LocalizedPerkName="NIMBLE"
-     LocalizedPerkName2="SECURITY LOOPHOLE"
-     LocalizedPerkName3="TACTICAL DISTRACTION"
 }
