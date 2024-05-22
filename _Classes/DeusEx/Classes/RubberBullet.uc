@@ -18,7 +18,7 @@ if (speed2 > 1000)
          Other.TakeDamage(19,Pawn(Owner),Location,0.5*Velocity,'KnockedOut');
        else
          Other.TakeDamage(13,Pawn(Owner),Location,0.5*Velocity,'KnockedOut');*/
-       Other.TakeDamage(Damage,Pawn(Owner),Location,0.5*Velocity,'KnockedOut'); //RSD: No more hacks. Just do the actual damage. Christ
+       //Other.TakeDamage(Damage,Pawn(Owner),Location,0.5*Velocity,'KnockedOut'); //RSD: No more hacks. Just do the actual damage. Christ // Trash: No more, it's instant!
   }
  }
 }
