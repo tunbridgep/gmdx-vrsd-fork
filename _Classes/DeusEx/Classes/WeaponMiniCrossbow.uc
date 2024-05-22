@@ -16,9 +16,14 @@ var float scopeTime;
 var int lerpClamp;
 
 //SARGE: This overwrites the one in DeusExWeapon.uc, we need a special one here with a strap
-function Texture GetLDDPHandsTex(DeusExPlayer P)
+function Texture GetWeaponHandTex()
 {
     local Texture tex;
+    local DeusExPlayer P;
+	
+    P = deusexplayer(owner);
+	if(P == none)
+        return texture'MiniCrossbowTex1';
 
 	if ((P.FlagBase != None) && (P.FlagBase.GetBool('LDDPJCIsFemale')))
     {
@@ -474,6 +479,7 @@ state Reload
 
 defaultproperties
 {
+     weaponOffsets=(X=15.000000,Y=-8.000000,Z=-14.000000)
      MountedViewOffset=(X=12.000000,Y=0.100000,Z=-65.500000)
      LowAmmoWaterMark=3
      GoverningSkill=Class'DeusEx.SkillWeaponPistol'

@@ -178,7 +178,7 @@ simulated function renderoverlays(Canvas canvas)
 	PlayerViewOffset=Default.PlayerViewOffset*100;//meh
 	SetHand(player.Handedness); //meh meh
 
-    if (player.PerkNamesArray[23]== 1)                                          //RSD: Was PerkNamesArray[12], now PerkNamesArray[23] (merged Advanced with Master Rifles perk)
+    if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkMarksman').bPerkObtained == true)                                          //RSD: Was PerkNamesArray[12], now PerkNamesArray[23] (merged Advanced with Master Rifles perk)
     {
 	PlayerViewOffset.X=Smerp(sin(FMin(1.0,GEPinout*1.5)*0.5*Pi),PlayerViewOffset.X,MountedViewOffset.X*100);
 	PlayerViewOffset.Y=Smerp(1.0-cos(FMin(1.0,GEPinout*1.5)*0.5*Pi),PlayerViewOffset.Y,MountedViewOffset.Y*100);
@@ -201,7 +201,7 @@ simulated function renderoverlays(Canvas canvas)
 
 	//IsInState('DownWeapon')
 
-    if (player.PerkNamesArray[23]== 1)                                          //RSD: Was PerkNamesArray[12], now PerkNamesArray[23] (merged Advanced with Master Rifles perk)
+    if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkMarksman').bPerkObtained == true)                                          //RSD: Was PerkNamesArray[12], now PerkNamesArray[23] (merged Advanced with Master Rifles perk)
     {
 	if (scopeTime>=17)
 	{
@@ -255,18 +255,18 @@ state ADSToggle                                                                 
 		    if (bHasScope)
 		    {
 		        ScopeOff();
-		        if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkNamesArray[12]== 1)
-		            PlayAnim('SupressorOn',1.3,0.1);
+		        if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkMarksman').bPerkObtained == true)
+                    PlayAnim('SupressorOn',1.3,0.1);
 		        else
 		            PlayAnim('SupressorOn',,0.1);
             }
 		}
 		else
 		{
-		   if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkNamesArray[12]== 1)
-               PlayAnim('SuperssorOff',1.3,0.1);
-           else
-               PlayAnim('SuperssorOff',,0.1);
+            if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkMarksman').bPerkObtained == true)
+                PlayAnim('SuperssorOff',1.3,0.1);
+            else
+                PlayAnim('SuperssorOff',,0.1);
 		}
 		bAimingDown=!bAimingDown;
 		FinishAnim();
@@ -671,6 +671,7 @@ Begin:
 
 defaultproperties
 {
+     weaponOffsets=(X=13.000000,Y=-2.000000,Z=-29.000000)
      mpNoScopeMult=0.350000
      MountedViewOffset=(X=7.000000,Y=-6.800000,Z=-2.500000)
      LowAmmoWaterMark=3

@@ -11,11 +11,12 @@ var bool bNoPrintMustBeUsed;
 
 var localized string MustBeUsedOn;
 var localized String HealsLabel;                                                //RSD: Added
+var localized String FullHealth;
 
 //SARGE: Moved the Bioenergy perk-based max amount bonus here, was in DeusExPlayer
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {
-    if (frobber.PerkNamesArray[30]==1)
+    if (frobber.PerkManager.GetPerkWithClass(class'DeusEx.PerkCombatMedicsBag').bPerkObtained == true)
         MaxCopies = 20;
     return super.DoRightFrob(frobber,objectInHand);
 }
@@ -37,14 +38,23 @@ state Activated
 
 		//player = DeusExPlayer(Owner);
 		player = DeusExPlayer(GetPlayerPawn());                                 //RSD: Altering this to enable generic LeftClick interact
+
+		if (player != None && player.Health == player.GenerateTotalMaxHealth())
+		{
+			player.ClientMessage(FullHealth);
+			GoToState('DeActivated');
+			return;
+		}
+
 		if (player != None)
 		{
+			
 			player.HealPlayer(healAmount, True);
 			if (player.SkillSystem!=None)
 			   MedSkillLevel=player.SkillSystem.GetSkillLevel(class'SkillMedicine');
 
 			// Medkits kill all status effects when used in multiplayer removed (player.Level.NetMode != NM_Standalone )||
-			if (player.PerkNamesArray[19]==1)
+			if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkToxicologist').bPerkObtained == true)
 			{
 				player.StopPoison();
 				player.myPoisoner = None;
@@ -77,13 +87,13 @@ function bool UpdateInfo(Object winObject)
 
 	player = DeusExPlayer(Owner);
 
-	if (player != none && player.PerkNamesArray[30]==1)
+	if (player != none && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkCombatMedicsBag').bPerkObtained == true)
 		MaxCopies = 25;
 
 	if (player != None)
 	{
 		winInfo.SetTitle(itemName);
-		if (player.PerkNamesArray[30] == 1)
+		if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkCombatMedicsBag').bPerkObtained == true)
 			winInfo.AddSecondaryButton(self);                                   //RSD: Can now equip medkits as secondaries with the Combat Medic's Bag perk
 		winInfo.SetText(Description $ winInfo.CR() $ winInfo.CR());
         winInfo.AppendText(Sprintf(healsLabel,player.CalculateSkillHealAmount(30)) $ winInfo.CR()); //RSD Display heal amount
@@ -177,6 +187,7 @@ defaultproperties
      bAutoActivate=True
      healAmount=30
      MustBeUsedOn="Use to heal critical body parts, or use on character screen to direct healing at a certain body part."
+	 FullHealth="You're already at full Health"
      HealsLabel="Heals %d points"
      maxCopies=15
      bCanHaveMultipleCopies=True

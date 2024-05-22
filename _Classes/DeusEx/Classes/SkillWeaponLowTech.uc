@@ -45,16 +45,4 @@ defaultproperties
      LevelValues(1)=-0.100000
      LevelValues(2)=-0.250000
      LevelValues(3)=-0.500000
-     PerksDescription="|nAn agent can clearly see the traversed flight path of airborne darts and throwing knives. |n|nRequires: Low-Tech: TRAINED"
-     PerksDescription2="|nAn agent is more likely to cause organic targets to flinch in pain when struck by low-tech weaponry, and an agent deals 20% more damage to bots with low-tech weaponry. |n|nRequires: Low-Tech: ADVANCED"
-     PerksDescription3="|nAn agent can assign melee weapons as a secondary weapon. |n|nRequires: Low-Tech: MASTER"
-     PerkName="SHARP-EYED"
-     PerkName2="PIERCING"
-     PerkName3="INVENTIVE"
-     PerkCost(0)=125
-     PerkCost(1)=250
-     PerkCost(2)=400
-     LocalizedPerkName="SHARP-EYED"
-     LocalizedPerkName2="PIERCING"
-     LocalizedPerkName3="INVENTIVE"
 }

@@ -175,6 +175,7 @@ function UpdateItemText()
 				weapon.IsA('WeaponGasGrenade') ||
 				weapon.IsA('WeaponEMPGrenade') ||
 				weapon.IsA('WeaponHideAGun')   || //Sarge: Added
+				weapon.IsA('WeaponShuriken')   || //Sarge: Added
 				weapon.IsA('WeaponLAM'))
 			{
 				if (weapon.AmmoType != none && weapon.AmmoType.AmmoAmount > 1)  //RSD: accessed none?

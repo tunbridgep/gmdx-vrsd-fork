@@ -28,7 +28,7 @@ var travel Float CombatDifficulty;
 // Augmentation system vars
 var travel AugmentationManager AugmentationSystem;
 
-// Skill system vars
+// Skill system vars // Trash: Now includes perk system
 var travel SkillManager SkillSystem;
 
 var() travel int SkillPointsTotal;
@@ -459,8 +459,6 @@ var bool bOnLadder;
 //Aliases[18]=(Command="Button bLeanRightHook",Alias=LeanRH)
 //Aliases[19]=(Command="Button bLeanLeftHook",Alias=LeanLH)
 var transient bool bLeanKeysDefined;
-var travel int PerkNamesArray[37]; //CyberP: perk names                         //RSD: Now [37] because I need the extra space
-var travel string BoughtPerks[36];
 var globalconfig color customColorsMenu[14]; //CyberP: custom color theme
 var globalconfig color customColorsHUD[14];
 var bool bTiptoes; //based on left+right lean
@@ -549,6 +547,7 @@ var travel int augOrderNums[21];                                                
 var const augBinary augOrderList[21];                                           //RSD: List of all aug cans in the game in order (to be scrambled)
 var travel bool bAddictionSystem;
 var travel AddictionSystem AddictionManager;
+var travel PerkSystem PerkManager;
 var travel RandomTable Randomizer;
 
 var travel float autosaveRestrictTimer;                                         //Sarge: Current time left before we're allowed to autosave again.
@@ -562,6 +561,9 @@ const DRUG_ALCOHOL = 1;
 const DRUG_CRACK = 2;
 
 var bool autosave;                                                              //Sarge: Autosave tells the Quicksave function to make an autosave instead
+
+//Sarge: Allow Enhanced Weapon Offsets
+var globalconfig bool bEnhancedWeaponOffsets; 									//Sarge: Allow using enhanced weapon offsets
 
 //Sarge: Dialog Settings
 var globalconfig bool bNumberedDialog;                                          //Sarge: Shows numbers in the dialog window and allows selecting topics with the number keys
@@ -826,7 +828,7 @@ local AlarmUnit        AU;                                                      
        }
     }
 
-    if (PerkNamesArray[30]==1)
+    if (PerkManager.GetPerkWithClass(class'DeusEx.PerkCombatMedicsBag').bPerkObtained == true)
     {
     ForEach AllActors(class'Medkit', MK)
     {
@@ -840,7 +842,7 @@ local AlarmUnit        AU;                                                      
 
      ForEach AllActors(class'DeusExMover', MV)
      {
-         if (!MV.bPerkApplied && PerkNamesArray[34] == 1)
+         if (!MV.bPerkApplied && PerkManager.GetPerkWithClass(class'DeusEx.PerkDoorsman').bPerkObtained == true)
          {
 		       MV.bPerkApplied = True;
 		       MV.minDamageThreshold -= 5;
@@ -1122,6 +1124,17 @@ function SetupAddictionManager()
 
 }
 
+function SetupPerkManager()
+{
+	// install the Perk Manager if not found
+	if (PerkManager == None)
+    {
+        //ClientMessage("Make new Perk System");
+	    PerkManager = new(Self) class'PerkSystem';
+        PerkManager.InitializePerks(Self);
+    }
+}
+
 function SetupRandomizer()
 {
 	// install the Addiction Manager if not found
@@ -1181,6 +1194,7 @@ function InitializeSubSystems()
     //Setup player subcomponents
     SetupRandomizer();
     SetupAddictionManager();
+	SetupPerkManager();
 }
 
 //SARGE: Helper function to get the count of an item type
@@ -1298,6 +1312,7 @@ event TravelPostAccept()
     //Setup player subcomponents
     SetupRandomizer();
     SetupAddictionManager();
+	SetupPerkManager();
 
 	// reset the keyboard
 	ResetKeyboard();
@@ -2289,13 +2304,13 @@ function ResetPlayerToDefaults()
 	saveCount = 0;
 	saveTime  = 0.0;
 
+    // Reset Addiction Manager
+    AddictionManager = None;
+
 	// Reinitialize all subsystems we've just nuked
 	InitializeSubSystems();
 
-    for(i=0;i<ArrayCount(PerkNamesArray);i++)   //CyberP: reset perks
-		   PerkNamesArray[i] = 0;
-		for(i=0;i<ArrayCount(BoughtPerks);i++)   //CyberP: reset perks
-		   BoughtPerks[i] = "";
+	PerkManager.ResetPerks();
 
     bBoosterUpgrade = False;
 
@@ -3050,7 +3065,7 @@ function StartPoison( Pawn poisoner, int Damage )
 		return;
 
     // CyberP: less poison if
-	if (PerkNamesArray[20]==1)
+	if (PerkManager.GetPerkWithClass(class'DeusEx.PerkHardened').bPerkObtained == true)
        poisonCounter = 3;
 	else
 	    poisonCounter = 4;   // take damage no more than four times (over 8 seconds)
@@ -3061,7 +3076,7 @@ function StartPoison( Pawn poisoner, int Damage )
 
         // CyberP: Don't do drug effects if
 
-		if (PerkNamesArray[20]==1 && poisonCounter > 0)
+		if (PerkManager.GetPerkWithClass(class'DeusEx.PerkHardened').bPerkObtained == true && poisonCounter > 0)
 		drugEffectTimer = 0;
 		else
      	drugEffectTimer += 3;  // make the player vomit for the next four seconds
@@ -4324,7 +4339,7 @@ function HighlightCenterObject()
            bIsWalking=True;
            if (AugmentationSystem.GetAugLevelValue(class'DeusEx.AugStealth') < 0)
            {
-             if (PerkNamesArray[9] != 1)
+             if (PerkManager.GetPerkWithClass(class'DeusEx.PerkNimble').bPerkObtained == false)
              {
                 rnd = FRand();
                 if (rnd < 0.25) PlaySound(Sound'GMDXSFX.Player.pl_ladder1',SLOT_None,0.75);
@@ -4340,7 +4355,7 @@ function HighlightCenterObject()
       }
       if (inHand != None && inHand.IsA('Multitool'))
           	{
-            	if (self.IsA('DeusExPlayer') && PerkNamesArray[16]==1)
+            	if (self.IsA('DeusExPlayer') && PerkManager.GetPerkWithClass(class'DeusEx.PerkWirelessStrength').bPerkObtained == true)
                 MaxFrobDistance = 768;
           	}
      	else
@@ -4361,7 +4376,7 @@ function HighlightCenterObject()
 
         if (bIsCrouching)
         {
-           if (PerkNamesArray[27]==1)                                           //RSD: Was PerkNamesArray[29] (Creeper), now PerkNamesArray[27] (Endurance)
+           if (PerkManager.GetPerkWithClass(class'DeusEx.PerkEndurance').bPerkObtained == true)                                           //RSD: Was PerkNamesArray[29] (Creeper), now PerkNamesArray[27] (Endurance)
               bCrouchRegen=True;
         }
         else
@@ -5636,7 +5651,7 @@ state PlayerWalking
 		// if the player's legs are damaged, then reduce our speed accordingly
 		newSpeed = defSpeed;
 
-		if ( Level.NetMode == NM_Standalone && PerkNamesArray[5] != 1)          //RSD: Was PerkNamesArray[17] (Adrenaline), changed to PerkNamesArray[5] (Clarity)
+		if ( Level.NetMode == NM_Standalone && PerkManager.GetPerkWithClass(class'DeusEx.PerkPerserverance').bPerkObtained == false)          //RSD: Was PerkNamesArray[17] (Adrenaline), changed to PerkNamesArray[5] (Clarity)
 		{
 			if (HealthLegLeft < 1)
 				newSpeed -= (defSpeed/2) * 0.25;
@@ -7972,7 +7987,7 @@ function DoFrob(Actor Frobber, Inventory frobWith)
 		return;
 
 	// alert NPCs that I'm messing with stuff
-	if ((FrobTarget.bOwned) && perkNamesArray[36] != 1)                         //RSD: Unless you have the Sleight of Hand perk
+	if ((FrobTarget.bOwned) && PerkManager.GetPerkWithClass(class'DeusEx.PerkSleightOfHand').bPerkObtained == false)                         //RSD: Unless you have the Sleight of Hand perk
 		AISendEvent('Futz', EAITYPE_Visual);
 
 	// play an animation
@@ -8158,7 +8173,7 @@ function UpdateInHand()
 				{
 					if (InHandPending != none && InHandPending.IsA('DeusExWeapon') && //RSD: New Sidearm perk
                       DeusExWeapon(inHandPending).GoverningSkill == class'SkillWeaponPistol' &&
-                      PerkNamesArray[1] == 1)
+                      PerkManager.GetPerkWithClass(class'DeusEx.PerkSidearm').bPerkObtained == true)
                         savedStandingTimer = DeusExWeapon(InHand).standingTimer;
                     else
                         savedStandingTimer = 0.0;
@@ -10511,7 +10526,7 @@ function bool GetCrosshairState(optional bool bCheckForOuterCrosshairs)
         //Accuracy Crosshair stuff
         if (bCheckForOuterCrosshairs)
         {
-            if (W.bHandToHand || W.IsA('WeaponShuriken') || W.GoverningSkill == class'DeusEx.SkillDemolition') //Melee weapons and grenades have no accuracy crosshairs
+            if (!W.isA('WeaponShuriken') && (W.bHandToHand || W.GoverningSkill == class'DeusEx.SkillDemolition')) //Melee weapons and grenades have no accuracy crosshairs
                 return false;
             else if (bHardcoreMode && W.IsInState('Reload')) //RSD: Remove the accuracy indicators if reloading on Hardcore
                 return false;
@@ -10959,6 +10974,7 @@ exec function NextBeltItem()
 		}
 	}
     beltScrolled = slot;
+    selectedNumberFromEmpty = false;
 	}
 }
 
@@ -11076,6 +11092,7 @@ exec function PrevBeltItem()
 		}
 	}
     beltScrolled = slot;
+    selectedNumberFromEmpty = false;
 	}
 }
 
@@ -13637,7 +13654,7 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
 	  Damage *= MPDamageMult;
 	else if (damageType=='Drowned')
 	{
-	  if (PerkNamesArray[5]!=1)
+	  if (PerkManager.GetPerkWithClass(class'DeusEx.PerkPerserverance').bPerkObtained == false)
 	      drugEffectTimer += 3.5; //freak player :)
 	  if (combatDifficulty < 3)
          Damage=6;
@@ -13882,6 +13899,9 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
 			// narrow the head region
 			if ((Abs(offset.x) < headOffsetY) || (Abs(offset.y) < headOffsetY))
 			{
+				if (damageType == 'Burned' || damageType == 'Exploded')	// Trash: Less damage from plasma and explosions
+				HealthHead -= actualDamage * 1;
+				else
 				HealthHead -= actualDamage * 2;
 				if (bPlayAnim)
 					PlayAnim('HitHead', , 0.1);
@@ -13968,6 +13988,9 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
 			}
 			else
 			{
+				if (damageType == 'Burned' || damageType == 'Exploded')	// Trash: Less damage from plasma and explosions
+				HealthTorso -= actualDamage * 1;
+				else
 				HealthTorso -= actualDamage * 2;
 				if (bPlayAnim)
 				{
@@ -14218,11 +14241,19 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 			       }
 				}
         }
-        if (damageType == 'TearGas' || damageType == 'PoisonGas') //CyberP: gas grenades and poison barrels drain stamina.
+        if (damageType == 'TearGas' || damageType == 'PoisonGas' || damageType == 'Poison' || damageType == 'PoisonEffect') //CyberP: gas grenades and poison barrels drain stamina. // Trash: Now with more damange types!
         {
+
             if (newDamage >= 1 && bStaminaSystem)
             {
-                swimTimer -= newDamage*0.4;
+				if (UsingChargedPickup(class'HazMatSuit'))
+        		{
+					skillLevel = SkillSystem.GetSkillLevelValue(class'SkillEnviro');
+					swimTimer -= (newDamage*0.4) + 3;	// Trash: In the future, we can add a perk to further reduce the stamina damage here
+        		}
+				else
+                	swimTimer -= (newDamage*0.4) + 3;
+				
                 if (swimTimer < 0)
                     swimTimer = 0;
             }
@@ -14667,177 +14698,13 @@ function SkillPointsAdd(int numPoints)
 	//}
 }
 
-// ----------------------------------------------------------------------
-// perksManager() //CyberP:
-// ----------------------------------------------------------------------
 
-function perksManager(string Perky, int perkLevel)
-{
-local Medkit med;
-local BioelectricCell cell;
-local Robot robo;
-local DeusExMover mov;
-
-   if (perkLevel == 1)
-   {
-    switch(Perky)
-    {
-          case "SONIC-TRANSDUCER SENSOR":
-          PerkNamesArray[0]= 1;
-          break;
-
-          case "FOCUSED: PISTOLS":                                              //RSD: Now actually Sidearm
-          PerkNamesArray[1]= 1;
-          break;
-
-          case "FOCUSED: RIFLES":                                               //RSD: Now actually Steady (same effect)
-          PerkNamesArray[2]= 1;
-          break;
-
-          case "FOCUSED: HEAVY WEAPONS":                                        //RSD: Now actually Controlled Burn
-          PerkNamesArray[3]= 1;
-          break;
-
-          case "SHARP-EYED":
-          PerkNamesArray[4]= 1;
-          break;
-
-          case "CLARITY":                                                       //RSD: Now actually Perserverance
-          PerkNamesArray[5]= 1;
-          break;
-
-          case "STEADY-FOOTED":                                                 //RSD: Now actually Repairman
-          PerkNamesArray[6]= 1;
-          break;
-
-          case "MODDER":
-          PerkNamesArray[7]= 1;
-          break;
-
-          case "BIOGENIC":
-          PerkNamesArray[8]= 1;
-          break;
-
-          case "NIMBLE":
-          PerkNamesArray[9]= 1;
-          break;
-
-          case "SABOTAGE":
-          PerkNamesArray[10]= 1;
-          break;
-
-          case "ARTIFICIAL LOCK":                                               //RSD: Now actually Sleight of Hand
-          PerkNamesArray[36]= 1;
-          break;
-
-          default:
-          break;
-        }
-     }
-   else if (perkLevel == 2)
-   {
-    switch(Perky)
-    {
-          case "HUMAN COMBUSTION":                                              //RSD: Now actually One-Handed
-          PerkNamesArray[11]= 1;
-          break;
-
-          case "QUICKDRAW":                                                     //RSD: Now actually Stopping Power
-          PerkNamesArray[12]= 1;
-          break;
-
-          case "PERFECT STANCE: HEAVY WEAPONS":                                 //RSD: Now actually Blast Energy
-          PerkNamesArray[13]= 1;
-          break;
-
-          case "PIERCING":
-          PerkNamesArray[14]= 1;
-          break;
-
-          case "SHORT FUSE":
-          PerkNamesArray[15]= 1;
-          break;
-
-          case "WIRELESS STRENGTH":
-          PerkNamesArray[16]= 1;
-          break;
-          /*
-          case "ATHLETE'S APPETITE":
-          PerkNamesArray[17]= 1;
-          fullUp=-99999;
-          break;
-          */
-          case "ADRENALINE":                                                    //RSD: Still called Adrenaline, but new effect
-          PerkNamesArray[17]= 1;
-          break;
-
-          case "NERVES OF STEEL":                                               //RSD: Now actually Security Loophole
-          PerkNamesArray[18]= 1;
-          break;
-
-          case "TOXICOLOGIST":
-          PerkNamesArray[19]= 1;
-          break;
-
-          case "HARDENED":
-          PerkNamesArray[20]= 1;
-          break;
-
-          case "MISFEATURE EXPLOIT":
-          PerkNamesArray[21]= 1;
-          break;
-
-          case "DOORSMAN":
-          PerkNamesArray[34]= 1;
-          foreach AllActors(class'DeusExMover',mov)
-          {
+		  /*
              mov.minDamageThreshold -= 5;
              if (mov.minDamageThreshold <= 0)
                 mov.minDamageThreshold = 1;
-             mov.bPerkApplied = True;
-          }
-          break;
-
-          default:
-          break;
-        }
-     }
-    else if (perkLevel == 3)
-   {
-    switch(Perky)
-    {
-          case "PERFECT STANCE: PISTOLS":                                       //RSD: Now actually Human Combustion
-          PerkNamesArray[22]= 1;
-          break;
-
-          case "PERFECT STANCE: RIFLES":                                        //RSD: Now actually Marksman
-          PerkNamesArray[23]= 1;
-          break;
-
-          case "H.E ROCKET":
-          PerkNamesArray[24]= 1;
-          break;
-
-          case "INVENTIVE":
-          PerkNamesArray[25]= 1;
-          break;
-
-          case "KNOCKOUT GAS":
-          PerkNamesArray[26]= 1;
-          break;
-
-          case "ENDURANCE":
-          PerkNamesArray[27]= 1;
-          break;
-
-          case "TECH SPECIALIST":
-          PerkNamesArray[28]= 1;
-          break;
-
-          case "CREEPER":                                                       //RSD: Now actually Diversionary Tactic
-          PerkNamesArray[29]= 1;
-          break;
-
+             mov.bPerkApplied = True; */
+		/* 
           case "COMBAT MEDIC'S BAG":
           PerkNamesArray[30]= 1;
           foreach AllActors(class'Medkit',med)
@@ -14845,24 +14712,7 @@ local DeusExMover mov;
           foreach AllActors(class'BioelectricCell',cell)
              cell.MaxCopies = 25;
           break;
-
-          case "CRACKED":
-          PerkNamesArray[31]= 1;
-          break;
-
-          case "LOCKSPORT":
-          PerkNamesArray[32]= 1;
-          break;
-
-          case "NEAT HACK":                                                     //RSD: Now actually Turret Domination
-          PerkNamesArray[33]= 1;
-          break;
-
-          default:
-          break;
-        }
-     }
-}
+		  */
 
 // ----------------------------------------------------------------------
 // MakePlayerIgnored()
@@ -17115,7 +16965,7 @@ function RegenStaminaTick(float deltaTime)                                      
 	else
         mult = 1.0;
 	//RSD: base regen now 2.0, now properly multiplied with additive increases/decreases
-	if (PerkNamesArray[27] == 1)                                                //RSD: endurance perk adds x2
+	if (PerkManager.GetPerkWithClass(class'DeusEx.PerkEndurance').bPerkObtained == true)                                                //RSD: endurance perk adds x2
 		mult += 1.0;
 	if (AddictionManager.addictions[DRUG_TOBACCO].bInWithdrawals == true)                                           //RSD: if suffering from nicotine withdrawal, subtract x0.5
 		mult -= 0.5;
@@ -17328,6 +17178,7 @@ defaultproperties
      BindName="JCDenton"
      FamiliarName="JC Denton"
      UnfamiliarName="JC Denton"
+     bEnhancedWeaponOffsets=false
      bQuickAugWheel=false
      bAugWheelDisableAll=true
 }

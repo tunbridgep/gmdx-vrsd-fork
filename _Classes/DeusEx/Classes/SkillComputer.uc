@@ -47,16 +47,4 @@ defaultproperties
      LevelValues(1)=1.000000
      LevelValues(2)=2.000000
      LevelValues(3)=16.000000
-     PerksDescription="|nAn agent improves the STOP! Worm program, doubling its effectiveness. |n|nRequires: Hacking: TRAINED"
-     PerksDescription2="|nAn agent hacks additional restoration from medical and maintenance bots. |n|nRequires: Hacking: ADVANCED"
-     PerksDescription3="|nAn agent can alter the IFF routines of gun turrets to make them target his enemies, or everything in sight. |n|nRequires: Hacking: MASTER"
-     PerkName="MODDER"
-     PerkName2="MISFEATURE EXPLOIT"
-     PerkName3="NEAT HACK"
-     PerkCost(0)=50
-     PerkCost(1)=125
-     PerkCost(2)=200
-     LocalizedPerkName="MODDER"
-     LocalizedPerkName2="MISFEATURE EXPLOIT"
-     LocalizedPerkName3="TURRET DOMINATION"
 }

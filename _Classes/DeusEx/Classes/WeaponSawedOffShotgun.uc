@@ -409,12 +409,13 @@ local float p;
 
 defaultproperties
 {
+     weaponOffsets=(X=4.000000,Y=-4.000000,Z=-15.000000)
      LowAmmoWaterMark=4
      GoverningSkill=Class'DeusEx.SkillWeaponRifle'
      NoiseLevel=8.000000
      EnviroEffective=ENVEFF_Air
      Concealability=CONC_Visual
-     ShotTime=1.300000
+     ShotTime=1.200000
      reloadTime=1.200000
      HitDamage=3
      maxRange=3000
