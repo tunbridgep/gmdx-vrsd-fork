@@ -24,6 +24,16 @@ simulated function renderoverlays(Canvas canvas)
 	multiskins[5] = none;
 }
 
+function OnEquipped()
+{
+    PlaySound(sound'RSDCrap.Misc.MultitoolEquip',SLOT_None);
+}
+
+function OnUnEquipped()
+{
+    PlaySound(sound'RSDCrap.Misc.MultitoolUnequip',SLOT_None);
+}
+
 simulated function PreBeginPlay()
 {
 	Super.PreBeginPlay();

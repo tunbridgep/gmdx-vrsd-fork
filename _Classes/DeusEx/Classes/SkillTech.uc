@@ -51,16 +51,4 @@ defaultproperties
      LevelValues(2)=0.250000
      LevelValues(3)=0.500000
      itemNeeded=Class'DeusEx.Multitool'
-     PerksDescription="|nBypassed alarm units deliver a non-lethal electric shock to whoever may attempt to trigger them.|n|nRequires: Electronics: TRAINED"
-     PerksDescription2="|nMultitools gain considerably increased wireless signal strength, enabling an agent to hack security systems at range.|n|nRequires: Electronics: ADVANCED"
-     PerksDescription3="|nAn agent can bypass any security system with a single multitool.|n|nRequires: Electronics: MASTER"
-     PerkName="SABOTAGE"
-     PerkName2="WIRELESS STRENGTH"
-     PerkName3="CRACKED"
-     PerkCost(0)=50
-     PerkCost(1)=250
-     PerkCost(2)=250
-     LocalizedPerkName="SABOTAGE"
-     LocalizedPerkName2="WIRELESS STRENGTH"
-     LocalizedPerkName3="CRACKED"
 }

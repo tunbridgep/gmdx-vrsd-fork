@@ -410,7 +410,7 @@ local DeusExPlayer player;
 player = DeusExPlayer(GetPlayerPawn());
 //skillz = player.SkillSystem.GetSkillLevel(class'SkillStealth');               //RSD: Removed
 
-if (player.PerkNamesArray[29] == 1)// skillz >= 3)                              //RSD: Uses Diversionary Tactic perk now instead of Advanced Stealth
+if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkTacticalDistraction').bPerkObtained == true)// skillz >= 3)                              //RSD: Uses Diversionary Tactic perk now instead of Advanced Stealth
 bFoodOverridesAttack = True; //CyberP: code for stealth lvl 3.
 
 	if (((GetStateName() == 'Wandering') || (GetStateName() == 'Standing') || (GetStateName() == 'Patrolling')) &&

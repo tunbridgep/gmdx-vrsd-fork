@@ -44,16 +44,4 @@ defaultproperties
      LevelValues(1)=-0.100000
      LevelValues(2)=-0.250000
      LevelValues(3)=-0.500000
-     PerksDescription="|nNearby proximity mines emit audible feedback to your infolink, revealing their location. |n|nRequires: Demolitions: TRAINED"
-     PerksDescription2="|nGrenade detonation time is 1 second shorter. |n|nRequires: Demolitions: ADVANCED"
-     PerksDescription3="|nAn agent modifies the chemical formula of gas grenades, adding a incapacitating agent to non-lethally knock out organic targets. |n|nRequires: Demolitions: MASTER"
-     PerkName="SONIC-TRANSDUCER SENSOR"
-     PerkName2="SHORT FUSE"
-     PerkName3="KNOCKOUT GAS"
-     PerkCost(0)=100
-     PerkCost(1)=200
-     PerkCost(2)=400
-     LocalizedPerkName="SONIC-TRANSDUCER SENSOR"
-     LocalizedPerkName2="SHORT FUSE"
-     LocalizedPerkName3="KNOCKOUT GAS"
 }
