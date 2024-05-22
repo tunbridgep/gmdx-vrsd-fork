@@ -63,16 +63,4 @@ defaultproperties
      LevelValues(1)=-0.100000
      LevelValues(2)=-0.250000
      LevelValues(3)=-0.500000
-     PerksDescription="|nAn agent's standing accuracy bonus is not reset when swapping to a pistol.|n|nRequires: Pistols: TRAINED"
-     PerksDescription2="|nAn agent learns to be ambidextrous while handling pistols so that accuracy is determined by the highest health arm.|n|nRequires: Pistols: ADVANCED"
-     PerksDescription3="|nAn agent modifies flare darts with a napalm combustion tube which ignites upon deep penetration of materials.|n|nRequires: Pistols: MASTER"
-     PerkName="FOCUSED: PISTOLS"
-     PerkName2="HUMAN COMBUSTION"
-     PerkName3="PERFECT STANCE: PISTOLS"
-     PerkCost(0)=150
-     PerkCost(1)=100
-     PerkCost(2)=250
-     LocalizedPerkName="SIDEARM"
-     LocalizedPerkName2="ONE-HANDED"
-     LocalizedPerkName3="HUMAN COMBUSTION"
 }

@@ -557,7 +557,7 @@ function DisplayCommonInfo()
     	accuracyPenalty += 20;
 
      //Speed Penalty
-     if (speedPenalty > 0 && player.PerkNamesArray[5] != 1)                     //RSD: Will display N/A if we have Perserverance perk
+     if (speedPenalty > 0 && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkPerserverance').bPerkObtained == false)                     //RSD: Will display N/A if we have Perserverance perk
      {
         if (speedPenalty % 1 == 0)
             winInfo.SetText(speedLabel $ "-" $ int(speedPenalty) $ "%");
@@ -775,7 +775,7 @@ function int GetMedKitHealPoints()
 
 	if (medKit != None)
 	{
-	    if (player.PerkNamesArray[19]==1)
+	    if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkToxicologist').bPerkObtained == true)
 	    {
 	    player.StopPoison();
 		player.myPoisoner = None;
@@ -963,7 +963,7 @@ MedSkillLevel=player.SkillSystem.GetSkillLevel(class'SkillMedicine');
 
 	if (medKit != None)
 	{
-	    if (player.PerkNamesArray[19]==1)
+	    if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkToxicologist').bPerkObtained == true)
 	    {
 	    player.StopPoison();
 	    player.myPoisoner = None;

@@ -462,8 +462,8 @@ function PlayTakeHitSound(int Damage, name damageType, int Mult)
 	
 	local sound TSound;
 
-    if ( Level.TimeSeconds - LastPainSound < FRand() + 1.1 || Damage <= 0) //CyberP: was 0.9
-        return;
+	if ( Level.TimeSeconds - LastPainSound < FRand() + 1.1 || Damage <= 0) //CyberP: was 0.9
+		return;
 
 	LastPainSound = Level.TimeSeconds;
 
@@ -1079,14 +1079,14 @@ Begin:
 		setPhysics(Phys_Falling);
 		if (FRand() < 0.6)
 		{
-		if (PerkNamesArray[9] != 1)
-		{
-        AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 544);
-		if (FlagBase.GetBool('LDDPJCIsFemale'))
-			PlaySound(Sound(DynamicLoadObject("FJCLand", class'Sound', false)), SLOT_None, 1.5, true, 1024);
-		else
-			PlaySound(sound'MaleLand', SLOT_None, 1.5, true, 1024);
-        }
+            if (PerkManager.GetPerkWithClass(class'DeusEx.PerkNimble').bPerkObtained == false)
+            {
+                AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 544);
+                if (FlagBase.GetBool('LDDPJCIsFemale'))
+                    PlaySound(Sound(DynamicLoadObject("FJCLand", class'Sound', false)), SLOT_None, 1.5, true, 1024);
+                else
+                    PlaySound(sound'MaleLand', SLOT_None, 1.5, true, 1024);
+            }
         }
         swimTimer -= 0.5;
 	}

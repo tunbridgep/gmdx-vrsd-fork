@@ -89,7 +89,7 @@ function PostBeginPlay()
 {
 super.PostBeginPlay();
 
-if (Owner!=None && Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkNamesArray[22]==1) //RSD: Was 11, now 22 (Human Combustion perk moved from Advanced -> Master)
+if (Owner!=None && Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkHumanCombustion').bPerkObtained == true) //RSD: Was 11, now 22 (Human Combustion perk moved from Advanced -> Master)
 DamageType='Flamed';
 
 SetTimer(0.05, False);

@@ -386,6 +386,8 @@ msgUnassigned="Secondary Item Unassigned"
 
 [PersonaInfoWindow]
 UpgradeButtonLabel="|&Upgrade"
+PurchasedButtonLabel="|&Already Upgraded"
+UnobtainableButtonLabel="|&Cannot Upgrade"
 RequiredPoints="Points Needed: "
 PerkTitle="PERKS"
 ob="OBTAINED PERKS"
@@ -1211,7 +1213,7 @@ AugContainsText="Contains:|n"
 
 [AugDefense]
 AugmentationName="Aggressive Defense System (Active)"
-Description="Aerosol nanoparticles are released upon the detection of objects fitting the electromagnetic threat profile of missiles and grenades; these nanoparticles will prematurely detonate such objects prior to reaching the agent.|n|nTECH ONE: The range at which incoming rockets and grenades are detonated is short (20ft).|n|nTECH TWO: The range at which detonation occurs is increased slightly (30ft).|n|nTECH THREE: The range at which detonation occurs is increased moderately (40ft).|n|nTECH FOUR: Rockets and grenades are detonated almost before they are fired (50ft)."
+Description="Aerosol nanoparticles are released upon the detection of objects fitting the electromagnetic threat profile of missiles and grenades; these nanoparticles will prematurely detonate such objects prior to reaching the agent. The particles will additionally shape the detonation away from the agent, resulting in a significant reduction in damage from detonated objects.|n|nTECH ONE: The range at which incoming rockets and grenades are detonated is short, and damage is reduced slightly.|n|nTECH TWO: The range at which detonation occurs is increased slightly and damage is reduced by a small amount.|n|nTECH THREE: The range at which detonation occurs is increased moderately and damage is reduced by a moderate amount.|n|nTECH FOUR: Rockets and grenades are detonated almost before they are fired and damage is reduces significantly."
 MPInfo="When active, enemy rockets detonate when they get close, doing reduced damage.  Some large rockets may still be close enough to do damage when they explode.  Energy Drain: Low"
 
 [CigaretteMachine]
@@ -2835,123 +2837,51 @@ UnfamiliarName="JC Denton"
 [SkillWeaponLowTech]
 SkillName="Weapons: Low-Tech"
 Description="The use of melee weapons such as knives, throwing knives, swords, pepper guns, and prods.|n|nTotal skill points to master: 6300|n|nUNTRAINED: An agent can use melee weaponry. |n|nTRAINED: Accuracy, damage, and reload speed increase slightly. More space is allocated to prod batteries, pepper cartridges, and throwing knives.|n|nADVANCED: Accuracy, damage, and reload speed increase moderately. Even more space is allocated to prod batteries, pepper cartridges, and throwing knives.|n|nMASTER: An agent can render most opponents unconscious or dead with a single blow: accuracy, damage, and carrying capacity are optimal, and melee strikes drain 50% less stamina."
-LocalizedPerkName="SHARP-EYED"
-LocalizedPerkName2="PIERCING"
-LocalizedPerkName3="INVENTIVE"
-PerksDescription="|nAn agent can clearly see the traversed flight path of airborne darts and throwing knives. |n|nRequires: Low-Tech: TRAINED"
-PerksDescription2="|nAn agent is more likely to cause organic targets to flinch in pain when struck by low-tech weaponry, and an agent deals 20% more damage to bots with low-tech weaponry. |n|nRequires: Low-Tech: ADVANCED"
-PerksDescription3="|nAn agent can assign melee weapons as a secondary item. |n|nRequires: Low-Tech: MASTER"
 
 [SkillEnviro]
 SkillName="Environmental Training"
 Description="Experience with using hazmat suits, ballistic armor, thermoptic camo, tech goggles and rebreathers in a number of dangerous situations. |n|nTotal skill points to master: 5250|n|nUNTRAINED: An agent can use environmental apparel: armors degrade with sustained damage, charged apparel lasts for a period of time until drained.|n|nTRAINED: Environmental apparel can be used more efficiently and carried in higher quantities.|n|nADVANCED: Apparel can be used yet more efficiently and carried in even greater quantities.|n|nMASTER: An agent wears environmental apparel like a second skin and comes prepared for any tactical situation."
-LocalizedPerkName="FIELD REPAIR"
-LocalizedPerkName2="HARDENED"
-LocalizedPerkName3="TECH SPECIALIST"
-PerksDescription="|nAn agent can perform more effective equipment repairs with biocells (1.5x).|n|nRequires: Environmental Training: TRAINED"
-PerksDescription2="|nAn agent's vision is not distorted and internal damage is reduced marginally when the bloodstream is exposed to toxic poisoning.|n|nRequires: Environmental Training: ADVANCED"
-PerksDescription3="|nAn agent modifies tech goggle functionality with short-ranged sonar scanning to enables them to see potential threats through solid material.|n An agent also modifies thermoptic camo output to enable them to pass through laser alarms undetected.|n|nRequires: Environmental Training: MASTER"
 
 [SkillWeaponRifle]
 SkillName="Weapons: Rifle"
 Description="The use of rifles, including assault rifles, sniper rifles, and shotguns. |n|nTotal skill points to master: 9000|n|nUNTRAINED: An agent can use rifles.|n|nTRAINED: Accuracy and damage increases slightly, while reloading is faster. More space is allocated to rifle rounds and shotgun shells.|n|nADVANCED: Accuracy and damage increases moderately, while reloading is even more rapid. Even more space is allocated to rifle rounds and shotgun shells.|n|nMASTER: An agent can take down a target a mile away with one shot: accuracy, damage, reload speed, and carrying capacity are optimal."
-LocalizedPerkName="STEADY"
-LocalizedPerkName2="STOPPING POWER"
-LocalizedPerkName3="MARKSMAN"
-PerksDescription="|nAn agent's aim stabilization with rifles is accelerated by 50%.|n|nRequires: Rifles: TRAINED"
-PerksDescription2="|nAn agent can stop an enemy in their tracks with a shotgun blast, gaining bonus damage (+25%) when every pellet hits a single target.|n|nRequires: Rifles: ADVANCED"
-PerksDescription3="|nAn agent aims down a rifle's scope 30% faster, handles rifle recoil efficiently, and sway when looking through a rifle's scope is reduced marginally.|n|nRequires: Rifles: MASTER"
 
 [SkillDemolition]
 SkillName="Weapons: Demolition"
 Description="The use of thrown explosive devices, including LAMs, gas grenades, EMP grenades, and electronic scrambler grenades. |n|nTotal skill points to master: 5250|n|nUNTRAINED: An agent can throw grenades, attach them to a surface as a proximity device, or attempt to disarm and remove a previously armed proximity device (0.5 seconds fuse time). An agent can carry up to 5 grenades of each type. |n|nTRAINED: Grenade damage & blast radius increases slightly, as does the safety margin for disarming proximity devices (1 second fuse time). An agent can carry up to 7 grenades of each type.|n|nADVANCED: Grenade damage & blast radius increases moderately, as does the safety margin for disarming proximity devices (2.5 secs fuse time). An agent can carry up to 10 grenades of each type.|n|nMASTER: An agent is an expert at all forms of demolition: grenade damage, blast radius and fuse time is optimal. An agent can carry up to 15 grenades of each type."
-LocalizedPerkName="SONIC-TRANSDUCER SENSOR"
-LocalizedPerkName2="SHORT FUSE"
-LocalizedPerkName3="KNOCKOUT GAS"
-PerksDescription="|nAn agent tunes the infolink to audibly detect the high-frequency emissions of nearby proximity mines, revealing their location.|n|nRequires: Demolitions: TRAINED"
-PerksDescription2="|nAn agent's grenade fuse timer is one second shorter.|n|nRequires: Demolitions: ADVANCED"
-PerksDescription3=|nAn agent modifies the chemical formula of gas grenades, adding an incapacitating agent to non-lethally knock out organic targets.|n|nRequires: Demolitions: MASTER 
 
 [SkillWeaponPistol]
 SkillName="Weapons: Pistol"
 Description="The use of handheld weapons, including the standard 10mm pistol, its stealth variant, the PS20 and the mini-crossbow.|n|nTotal skill points to master: 9000|n|nUNTRAINED: An agent can use pistols.|n|nTRAINED: Accuracy and damage increases slightly, while reloading is faster. More space is allocated to pistol rounds and specialized darts.|n|nADVANCED: Accuracy and damage increases moderately, while reloading is even more rapid. Even more space is allocated to pistol rounds and specialized darts.|n|nMASTER: An agent is lethally precise with pistols: accuracy, damage, reloading speed, and carrying capacity are optimal."
-LocalizedPerkName="SIDEARM"
-LocalizedPerkName2="AMBIDEXTROUS"
-LocalizedPerkName3="HUMAN COMBUSTION"
-PerksDescription="|nAn agent's aim stability is not reset when swapping to a pistol.|n|nRequires: Pistols: TRAINED"
-PerksDescription2="|nAn agent accuracy with pistols is determined by the highest health arm.|n|nRequires: Pistols: ADVANCED"
-PerksDescription3="|nAn agent modifies flare darts with a napalm combustion tube which ignites upon deep penetration of materials.|n|nRequires: Pistols: MASTER"
 
 [SkillWeaponHeavy]
 SkillName="Weapons: Heavy"
 Description="The use of heavy weaponry, including flamethrowers, LAWs, and the experimental plasma and GEP guns.|n|nTotal skill points to master: 9000|n|nUNTRAINED: An agent can use heavy weaponry, but their accuracy is low and movement is difficult.|n|nTRAINED: Accuracy and damage increases slightly, while reloading and movement is somewhat faster. More space is allocated to heavy ammunition.|n|nADVANCED: Accuracy and damage increases moderately, while reloading and movement is even more rapid. Even more space is allocated to heavy ammunition.|n|nMASTER: An agent is a walking tank when equipped with heavy weaponry: accuracy, damage, reloading speed, movement speed, and carrying capacity are optimal."
-LocalizedPerkName="CONTROLLED BURN"
-LocalizedPerkName2="BLAST ENERGY"
-LocalizedPerkName3="H.E ROCKET"
-PerksDescription="|nAn agent is trained with the use of the flamethrower, ensuring that the igniting fuel is not blocked by targets.|n|nRequires: Heavy Weapons: TRAINED"
-PerksDescription2="|nAn agent tunes the plasma rifle to reduce damage falloff within the same blast radius.|n|nRequires: Heavy Weapons: ADVANCED"
-PerksDescription3="|nThe blast radius of an agent's GEP rockets is increased two-fold.|n|nRequires: Heavy Weapons: MASTER"
 
 [SkillSwimming]
 SkillName="Athletics"
 Description="An agent with extreme physical dedication can develop the skills to climb tall heights and swim great distances.|n|nTotal skill points to master: 4725|n|nUNTRAINED: An agent can swim and climb onto short ledges.|n|nTRAINED: The swimming speed and stamina of an agent increases slightly, and an agent can climb onto moderate ledges.|n|nADVANCED: The swimming speed and stamina of an agent increases moderately, and an agent can climb onto tall ledges.|n|nMASTER: An agent moves like a dolphin underwater and climbs like a jaguar."
-LocalizedPerkName="PERSERVERANCE"
-LocalizedPerkName2="ADRENALINE RUSH"
-LocalizedPerkName3="ENDURANCE"
-PerksDescription="|nAn agent's vision is not impaired whilst drowning and movement speed is not hindered by damage to the legs unless in a critical state.|n|nRequires: Athletics: TRAINED"
-PerksDescription2="|nAn agent receives a burst of stamina after successful elimination of a target using a hand-to-hand weapon (50%).|n|nRequires: Athletics: ADVANCED"
-PerksDescription3="|nAn agent's stamina regenerates at a faster rate (+100%), even while crouched.|n|nRequires: Athletics: MASTER"
 
 [SkillComputer]
 SkillName="Hacking"
 Description="The covert manipulation of computers and security consoles.|n|nTotal skill points to master: 6000.|n|nUNTRAINED: An agent can use terminals to read bulletins and news. |n|nTRAINED: An agent can hack computers and security consoles of intermediate security systems, can shut security systems down for 2 minutes, and siphon up to half of an ATM's funds. |n|nADVANCED: An agent can hack computers featuring advanced defense systems and siphon all credits from ATMs, and achieves a moderate increase in detection time as well as a 2 minute increase in security shutdown time.|n|nMASTER: An agent is an elite hacker that no system can withstand, gaining the ability to spoof additional credits from ATMs and evading detection for long periods, including an additional 2 minute increase in security shutdown time."
-LocalizedPerkName="MODDER"
-LocalizedPerkName2="MISFEATURE EXPLOIT"
-LocalizedPerkName3="TURRET DOMINATION"
-PerksDescription="|nAn agent improves the STOP! Worm program, doubling its effectiveness. |n|nRequires: Hacking: TRAINED"
-PerksDescription2="|nAn agent hacks additional restoration from medical and maintenance bots. |n|nRequires: Hacking: ADVANCED"
-PerksDescription3="|nAn agent can alter the IFF routines of gun turrets to make them target enemies or everything in sight.|n|nRequires: Hacking: MASTER"
 
 [SkillTech]
 SkillName="Electronics"
 Description="By studying electronics and its practical application, agents can more efficiently bypass a number of security systems using multitools. |n|nTotal skill points to master: 5250|n|nUNTRAINED: An agent can bypass security systems (10%).|n|nTRAINED: The efficiency with which an agent bypasses security increases slightly (15%).|n|nADVANCED: The efficiency with which an agent bypasses security increases moderately (25%).|n|nMASTER: An agent encounters almost no security systems of any challenge (50%)."
 MultitoolString="Multitooling"
-LocalizedPerkName="SABOTAGE"
-LocalizedPerkName2="WIRELESS STRENGTH"
-LocalizedPerkName3="EASY CRACK"
-PerksDescription="|nBypassed alarm units deliver a non-lethal electric shock to whoever may attempt to trigger them.|n|nRequires: Electronics: TRAINED"
-PerksDescription2="|nMultitools gain considerably increased wireless signal strength, enabling an agent to hack security systems at range.|n|nRequires: Electronics: ADVANCED"
-PerksDescription3="|nAn agent can bypass trivial devices at 5% strength or below without expending a multitool.|n|nRequires: Electronics: MASTER"
 
 [SkillLockpicking]
 SkillName="Lockpicking"
 Description="Lockpicking is as much art as skill, but with intense study it can be mastered by any agent with patience and a set of lockpicks.|n|nTotal skill points to master: 5250|n|nUNTRAINED: An agent can pick locks (10% per pick).|n|nTRAINED: The efficiency with which an agent picks locks increases slightly (15%).|n|nADVANCED: The efficiency with which an agent picks locks increases moderately (25%).|n|nMASTER: An agent can defeat almost any mechanical lock (50%)."
-LocalizedPerkName="SLEIGHT OF HAND"
-PerksDescription="|nAn agent is able to pick locks and perform acts of theft without arousing suspicion from onlookers.|n|nRequires: Lockpicking: TRAINED"
-LocalizedPerkName2="DOORSMAN"
-PerksDescription2=|nWith advanced lockpicking skill comes knowledge of doors and their structural vulnerabilities -- the damage threshold of all breakable doors is reduced by 5.|n|nRequires: Lockpicking: ADVANCED 
-LocalizedPerkName3="LOCKSPORT"
-PerksDescription3="|nAn agent can pick any mechanical lock with a single lockpick. Additionally, any locks that are successfully picked will be added to your keyring.|n|nRequires: Lockpicking: MASTER"
 
 [SkillMedicine]
 SkillName="Medicine"
 Description="Practical knowledge of human physiology can be applied by an agent in the field allowing more efficient use of medkits and survival. |n|nTotal skill points to master: 6300|n|nUNTRAINED: An agent can use medkits (30).|n|nTRAINED: An agent can heal slightly more damage (45) and has slightly more maximum torso & head health (110).|n|nADVANCED: An agent can heal moderately more damage (65) and has further improved maximum torso & head health (120).|n|nMASTER: An agent can perform a heart bypass with household materials (90) and survive near-fatal injuries (130)."
-LocalizedPerkName="BIOGENIC"
-LocalizedPerkName2="TOXICOLOGIST"
-LocalizedPerkName3="COMBAT MEDIC'S BAG"
-PerksDescription="|nAn agent receives additional bioelectrical charge from biocells (+5). |n|nRequires: Medicine: TRAINED"
-PerksDescription2="|nAn agent can instantaneously remove poisonous toxins from the bloodstream by applying a medkit to the torso. |n|nRequires: Medicine: ADVANCED"
-PerksDescription3="|nAn agent can carry five additional medkits and biocells each and swiftly apply them as secondary items.|n|nRequires: Medicine: MASTER"
 
 [SkillStealth]
 SkillName="Stealth"
 Description="Covert ops require swift and precise stealth skills that must be developed by an agent over time via intensive training.|n|nTotal skill points to master: 5250|n|nUNTRAINED: An agent can sneak, most effective if sticking to the shadows.|n|nTRAINED: An agent hides slightly more effectively when sneaking in the shadows, and movement speed whilst walking, sneaking, leaning and climbing ladders increases slightly (+15%).|n|nADVANCED: An agent hides much more effectively when sneaking in the shadows, and movement speed whilst walking, crouched, leaning and climbing ladders increases moderately (+30%).|n|nMASTER: An agent need not rely on advanced technology during infiltration (+45%)."
-LocalizedPerkName="NIMBLE"
-LocalizedPerkName2="SECURITY LOOPHOLE"
-LocalizedPerkName3="TACTICAL DISTRACTION"
-PerksDescription="|nAn agent is silent whilst mantling and climbing ladders. |n|nRequires: Stealth: TRAINED"
-PerksDescription2="|nAn agent easily identifies the blindspots of modern security systems, evading camera detection for a longer period of time (+50%) and tucking the legs away from laser tripwires.|n|nRequires: Stealth: ADVANCED"
-PerksDescription3="|nAn agent is skilled in the art of distraction, confusing enemies for longer with sound (+50%) and diverting enraged animals on the attack by using carcasses as bait.|n|nRequires: Stealth: MASTER"
 
 [Image12_Tiffany_HostagePic]
 imageDescription="Tiffany Hostage Picture"
@@ -3741,3 +3671,6 @@ GMDXText20="STORAGE INVENTORY LEDGER|n|nBatch#    Units         Product         
 GMDXText21="Welcome to your first shift in the lockup, newbie.|n|nSo you're curious about the cannister. You want to hold it, examine it, and think of the possibilities. Don't worry, we've all been there and we're not going to fire you if you do the same. It's unrealistic to expect extreme curiosity to be kept at bay, and we're pretty laid back and fun here. HOWEVER, you're going to have to earn the right to touch it by proving you're not an utter dimwit: |n|nSolve the following problems. Solving the first will give you the first portion of the nano-containment container code. Solve the second problem for the second portion of the code. IF you manage to get it open be gentle with the thing. Lord knows how much it costs to manufacture.|n|n1. How many times does a broken mechanical 12-hour clock display an accurate readout over a period of two weeks? |n|n2. [(12*6)/2]-1 = Second Passcode|n|nIf you attempt to run off with the thing it's your funeral. The cameras are watching."
 GMDXText22="UNATCO MedDirectorate|nNano-Augmentation Guidelines|n|n...nano-augmentations, once 'installed,' irrevocably alter the physiological system they affect and in many cases cause all subsequent augmentations to be rejected; however, the exact number of augmentations each system can support varies. The various interdependencies between these systems can be seen in the following table that details possible nano-augmentation combinations.|n|nArms (1): Combat Speed or Microfibral Muscle|nArms (2): Combat Strength or Ammo Capacity|nLegs: Speed Enhancement or Run Silent|nSubdermal (1): Ballistic Protection (Active) or Ballistic Protection (Passive)|nSubdermal (2): Cloak or Radar Transparency|nTorso (1): Aqualung or Environmental Resistance|nTorso (2): Regeneration or Energy Resistance|nTorso (3): Synthetic Heart or Power Recirculator|nCranium: Aggressive Defense System or Spy Drone|nOptics: Targeting or Vision Enhancement|n|nSpecific nano-augmentations should be selected based on the mission profile of the particular agent..."
 GMDXText23=We've a request to send these up to level 1. Be careful with them as they are very expensive. Dropping one will likelybe grounds for instant dismissal.
+
+[PerkLocksport]
+PerkDescription="|nAn agent can pick any mechanical lock with a single lockpick. Additionally, any locks that are successfully picked will be added to your keyring.|n|nRequires: Lockpicking: MASTER"

@@ -173,8 +173,8 @@ function StopHacking(optional bool aborted)
 	{
 		curTool.StopUseAnim();
 		curTool.bBeingUsed = False;
-		if (!aborted && !(initialHackStrength <= 0.05 && hackPlayer.PerkNamesArray[31] == 1)) //RSD: Changed CRACKED perk to hack <=5% devices for free //Sarge: Don't take a tool if we abort
-		curTool.UseOnce();
+		if (!aborted && !(initialHackStrength <= 0.05 && hackPlayer.PerkManager.GetPerkWithClass(class'DeusEx.PerkCracked').bPerkObtained == true)) //RSD: Changed CRACKED perk to hack <=5% devices for free
+            curTool.UseOnce();
 	}
 	curTool = None;
 	SetTimer(0.1, False);

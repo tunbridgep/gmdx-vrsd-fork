@@ -16,7 +16,7 @@ var localized String FullHealth;
 //SARGE: Moved the Bioenergy perk-based max amount bonus here, was in DeusExPlayer
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {
-    if (frobber.PerkNamesArray[30]==1)
+    if (frobber.PerkManager.GetPerkWithClass(class'DeusEx.PerkCombatMedicsBag').bPerkObtained == true)
         MaxCopies = 20;
     return super.DoRightFrob(frobber,objectInHand);
 }
@@ -54,7 +54,7 @@ state Activated
 			   MedSkillLevel=player.SkillSystem.GetSkillLevel(class'SkillMedicine');
 
 			// Medkits kill all status effects when used in multiplayer removed (player.Level.NetMode != NM_Standalone )||
-			if (player.PerkNamesArray[19]==1)
+			if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkToxicologist').bPerkObtained == true)
 			{
 				player.StopPoison();
 				player.myPoisoner = None;
@@ -87,13 +87,13 @@ function bool UpdateInfo(Object winObject)
 
 	player = DeusExPlayer(Owner);
 
-	if (player != none && player.PerkNamesArray[30]==1)
+	if (player != none && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkCombatMedicsBag').bPerkObtained == true)
 		MaxCopies = 25;
 
 	if (player != None)
 	{
 		winInfo.SetTitle(itemName);
-		if (player.PerkNamesArray[30] == 1)
+		if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkCombatMedicsBag').bPerkObtained == true)
 			winInfo.AddSecondaryButton(self);                                   //RSD: Can now equip medkits as secondaries with the Combat Medic's Bag perk
 		winInfo.SetText(Description $ winInfo.CR() $ winInfo.CR());
         winInfo.AppendText(Sprintf(healsLabel,player.CalculateSkillHealAmount(30)) $ winInfo.CR()); //RSD Display heal amount

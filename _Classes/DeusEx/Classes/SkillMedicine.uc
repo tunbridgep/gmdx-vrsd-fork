@@ -142,16 +142,4 @@ defaultproperties
      LevelValues(1)=2.000000
      LevelValues(2)=2.500000
      LevelValues(3)=3.000000
-     PerksDescription="|nAn agent recieves additional bioelectrical charge from biocells (+5). |n|nRequires: Medicine: TRAINED"
-     PerksDescription2="|nAn agent can instantaneously remove poisonous toxins from the bloodstream by applying a medkit to the torso. |n|nRequires: Medicine: ADVANCED"
-     PerksDescription3="|nAn agent can carry five additional medkits and biocells each and swiftly apply them as secondary items.|n|nRequires: Medicine: MASTER"
-     PerkName="BIOGENIC"
-     PerkName2="TOXICOLOGIST"
-     PerkName3="COMBAT MEDIC'S BAG"
-     PerkCost(0)=175
-     PerkCost(1)=75
-     PerkCost(2)=250
-     LocalizedPerkName="BIOGENIC"
-     LocalizedPerkName2="TOXICOLOGIST"
-     LocalizedPerkName3="COMBAT MEDIC'S BAG"
 }
