@@ -43,7 +43,7 @@ function CalcTrace(float deltaTime)
 			}
 			else
 			{
-				if ((target.IsA('DeusExPlayer') && DeusExPlayer(target).PerkNamesArray[18] == 1)) //RSD: Security Loophole Perk
+				if ((target.IsA('DeusExPlayer') && DeusExPlayer(target).PerkManager.GetPerkWithClass(class'DeusEx.PerkSecurityLoophole').bPerkObtained == true)) //RSD: Security Loophole Perk
 				{
 			    	//headOffsetZ = CollisionHeight * 0.78;
        	        	//headOffsetY = CollisionRadius * 0.35;

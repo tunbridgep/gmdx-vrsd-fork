@@ -73,7 +73,7 @@ const             leftFrobTimerMax = 6.0;
 //Either we have the key for it in our keyring, or we previously picked it open and have the Locksport perk
 function bool CanToggleLock(DeusExPlayer Player, NanoKeyRing keyring)
 {
-    return (keyring.HasKey(KeyIDNeeded) && KeyIDNeeded != '') || ((!bLocked || bPlayerLocked) && pickPlayer == Player && Player.perkNamesArray[32] == 1);
+    return (keyring.HasKey(KeyIDNeeded) && KeyIDNeeded != '') || ((!bLocked || bPlayerLocked) && pickPlayer == Player && Player.PerkManager.GetPerkWithClass(class'DeusEx.PerkLocksport').bPerkObtained == true);
 }
 
 //SARGE: Added "Left Click Frob" and "Right Click Frob" support
@@ -740,14 +740,14 @@ function Frob(Actor Frobber, Inventory frobWith)
 				if (bLocked)
 				{
 					// alert NPCs that I'm messing with stuff
-					if (Player.PerkNamesArray[36]!=1)                           //RSD: Unless you have the Sleight of Hand perk
+					if (Player.PerkManager.GetPerkWithClass(class'DeusEx.PerkSleightOfHand').bPerkObtained == false)                           //RSD: Unless you have the Sleight of Hand perk
 						AIStartEvent('MegaFutz', EAITYPE_Visual);
 
                     previousStrength = LockStrength;
 
 					pickValue = Player.SkillSystem.GetSkillLevelValue(class'SkillLockpicking');
 					pickPlayer = Player;
-					if (Player.PerkNamesArray[32]==1)
+					if (Player.PerkManager.GetPerkWithClass(class'DeusEx.PerkLocksport').bPerkObtained == true)
                         pickValue = 1;
 					curPick = LockPick(frobWith);
 					curPick.bBeingUsed = True;

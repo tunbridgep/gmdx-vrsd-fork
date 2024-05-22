@@ -33,7 +33,7 @@ function PostBeginPlay()
 	  return;
 
     if (default.ItemName=="GEP Rocket")
-        if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkNamesArray[24] == 1)
+        if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkHERocket').bPerkObtained == true)
             blastRadius=576.000000;
 
 	OldRotation=Rotation;
