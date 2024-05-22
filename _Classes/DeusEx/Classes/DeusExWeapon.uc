@@ -480,7 +480,7 @@ function TravelPostAccept()
 	if (AmmoType != None)
 		AmmoName = AmmoType.Class;
 
-	if (!bInstantHit)
+	if (!bInstantHit || AmmoType.IsA('AmmoRubber'))
 	{
 		if (ProjectileClass != None)
 			ProjectileSpeed = ProjectileClass.Default.speed;
@@ -1618,7 +1618,7 @@ function bool LoadAmmo(int ammoNum)
 
 
 			// if we don't have a projectile for this ammo type, then set instant hit
-			if (ProjectileNames[ammoNum] == None)
+			if (ProjectileNames[ammoNum] == None || ProjectileNames[ammoNum] == Class'DeusEx.RubberBullet')
 			{
 				bInstantHit = True;
 				bAutomatic = (Default.bAutomatic || (bFullAuto && IsA('WeaponStealthPistol'))); //RSD: Added || bFullAuto so that stealth pistol ROF isn't fucked when loading alt ammo
@@ -1647,6 +1647,13 @@ function bool LoadAmmo(int ammoNum)
 						ReloadTime = Default.ReloadTime;
 				}
 				FireSound = Default.FireSound;
+
+				if (ProjectileNames[ammoNum] == Class'DeusEx.RubberBullet')
+				{
+					ProjectileClass = ProjectileNames[ammoNum];
+					ProjectileSpeed = ProjectileClass.Default.Speed;
+				}
+				else
 				ProjectileClass = None;
 			}
 			else
@@ -2068,7 +2075,9 @@ function name WeaponDamageType()
 	projClass = Class<DeusExProjectile>(ProjectileClass);
 	if (bInstantHit)
 	{
-		if (StunDuration > 0)
+        if (AmmoType.IsA('AmmoRubber'))
+			damageType = 'KnockedOut';
+        else if (StunDuration > 0)
 			damageType = 'Stunned';
 		else
 			damageType = 'Shot';
@@ -4589,8 +4598,13 @@ simulated function TraceFire( float Accuracy )
 	AdjustedAim = pawn(owner).AdjustAim(1000000, StartTrace, 2.75*AimError, False, False);
 
 	// check to see if we are a shotgun-type weapon
-	if (AreaOfEffect == AOE_Cone && !ammoType.IsA('AmmoSabot'))                 //RSD: Special case to make Sabot rounds actually slugs
-		numSlugs = 8;  //CyberP: was 5
+	if (AreaOfEffect == AOE_Cone && !ammoType.IsA('AmmoSabot') && !ammoType.IsA('AmmoRubber'))                 //RSD: Special case to make Sabot rounds actually slugs
+    {
+        if (IsA('WeaponSawedOffShotgun'))
+		    numSlugs = 9;  //Sarge: Give the sawed off an extra slug
+        else
+		    numSlugs = 8;  //CyberP: was 5
+    }
 	else
 		numSlugs = 1;
 
@@ -4744,6 +4758,11 @@ simulated function TraceFire( float Accuracy )
     	laserKick = 2.0*recoilStrength;
    	//else laserKick = 1.5*recoilStrength;
 
+	if (AmmoName == Class'AmmoRubber')
+	{
+		ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+	}
+
     LaserYaw += (currentAccuracy*laserKick) * (Rand(4096) - 2048);              //RSD: Bump laser position when firing (75% of cone width)
     LaserPitch += (currentAccuracy*laserKick) * (Rand(4096) - 2048);
 
@@ -4810,8 +4829,13 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
 		// Determine damage type
 		damageType = WeaponDamageType();
 
-        if (AmmoSabot(ammoType) != none)                                        //RSD: Since Sabot rounds are slugs now, do 6x damage (18 total)
-            mult *= 6.;
+        if (AmmoSabot(ammoType) != none || AmmoRubber(ammoType) != none)                                        //RSD: Since Sabot rounds are slugs now, do 6x damage (18 total) // Trash: Now rubber too!
+            {
+				if (AmmoSabot(ammoType) != none || AmmoRubber(ammoType) != none)
+					mult *= 6.;
+				if (IsA('WeaponSawedOffShotgun') && AmmoRubber(ammoType) != none)
+					mult *= 1.3;
+			}
         if (bDoExtraSlugDamage)                                                 //RSD: Do two slug's worth of extra damage
             mult *= 3.;
 
@@ -5263,7 +5287,9 @@ simulated function bool UpdateInfo(Object winObject)
 	str = String(dmg);
 	if (AreaOfEffect == AOE_Cone)                                               //RSD: Tell us if we're using a multi-slug weapon
 	{
-		if (bInstantHit && AmmoName!=class'AmmoSabot')
+		if (isA('WeaponSawedOffShotgun') && AmmoName!=class'AmmoSabot' && AmmoName!=class'AmmoRubber')
+			str = str $ "x9";
+        else if (bInstantHit && AmmoName!=class'AmmoSabot' && AmmoName!=class'AmmoRubber')
 			str = str $ "x8";
 		else if (!bInstantHit && AmmoName!=class'AmmoRubber')
 			str = str $ "x3";
@@ -5304,7 +5330,9 @@ simulated function bool UpdateInfo(Object winObject)
 
 		if (AreaOfEffect == AOE_Cone)                                               //RSD: Tell us if we're using a multi-slug weapon
 		{
-			if (bInstantHit && AmmoName!=class'AmmoSabot')
+			if (isA('WeaponSawedOffShotgun') && AmmoName!=class'AmmoSabot' && AmmoName!=class'AmmoRubber')
+				str = str $ "x9";
+			else if (bInstantHit && AmmoName!=class'AmmoSabot' && AmmoName!=class'AmmoRubber')
 				str = str $ "x8";
 			else if (!bInstantHit && AmmoName!=class'AmmoRubber')
 				str = str $ "x3";
