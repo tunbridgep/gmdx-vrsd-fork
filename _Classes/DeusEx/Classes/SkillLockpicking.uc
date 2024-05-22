@@ -47,16 +47,4 @@ defaultproperties
      LevelValues(2)=0.250000
      LevelValues(3)=0.500000
      itemNeeded=Class'DeusEx.Lockpick'
-     PerksDescription="|nAn agent is able to pick locks and perform acts of theft without arousing suspicion from onlookers.|n|nRequires: NONE"
-     PerksDescription2="|nWith advanced lockpicking skill comes knowledge of doors and their structural vulnerabilities. The damage threshold of all breakable doors is reduced by 5.  |n|nRequires: Lockpicking: ADVANCED"
-     PerksDescription3="|nAn agent can pick any mechanical lock with a single lockpick. |n|nRequires: Lockpicking: MASTER"
-     PerkName="ARTIFICIAL LOCK"
-     PerkName2="DOORSMAN"
-     PerkName3="LOCKSPORT"
-     PerkCost(0)=100
-     PerkCost(1)=225
-     PerkCost(2)=200
-     LocalizedPerkName="SLEIGHT OF HAND"
-     LocalizedPerkName2="DOORSMAN"
-     LocalizedPerkName3="LOCKSPORT"
 }

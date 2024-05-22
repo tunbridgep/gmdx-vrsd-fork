@@ -47,16 +47,4 @@ defaultproperties
      LevelValues(1)=0.750000
      LevelValues(2)=0.500000
      LevelValues(3)=0.250000
-     PerksDescription="|nAn agent can perform more effective equipment repairs with biocells (1.5x).|n|nRequires: Environmental Training: TRAINED"
-     PerksDescription2="|nIf the bloodstream is exposed to toxic poisoning, an agent's vision is not distorted and internal damage is reduced marginally. |n|nRequires: Environmental Training: ADVANCED"
-     PerksDescription3="|nAn agent modifies tech goggle functionality, implementing short-ranged sonar scanning which enables the user to see potential threats through solid material.|n An Agent also modifies thermoptic camo output that enables the user to pass through laser alarms undetected. |n|nRequires: Environmental Training: MASTER"
-     PerkName="STEADY-FOOTED"
-     PerkName2="HARDENED"
-     PerkName3="TECH SPECIALIST"
-     PerkCost(0)=200
-     PerkCost(1)=175
-     PerkCost(2)=225
-     LocalizedPerkName="FIELD REPAIR"
-     LocalizedPerkName2="HARDENED"
-     LocalizedPerkName3="TECH SPECIALIST"
 }
