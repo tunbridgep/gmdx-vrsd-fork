@@ -5269,6 +5269,8 @@ simulated function bool UpdateInfo(Object winObject)
     {
         if (AmmoName == class'AmmoDartPoison')
             dmg = 15;
+        else if (AmmoName == class'AmmoDart')
+            dmg = 18;
         else if (AmmoName == class'AmmoDartFlare')
             dmg = 7;
         else if (AmmoName == class'AmmoDartTaser')
