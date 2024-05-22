@@ -22,6 +22,16 @@ replication
       GiveClientKey, RemoveClientKey, ClientRemoveAllKeys;
 }
 
+function OnEquipped()
+{
+    PlaySound(sound'RSDCrap.Misc.NanoKeyEquip',SLOT_None);
+}
+
+function OnUnEquipped()
+{
+    PlaySound(sound'RSDCrap.Misc.NanoKeyUnEquip',SLOT_None);
+}
+
 // ----------------------------------------------------------------------
 // HasKey()
 //

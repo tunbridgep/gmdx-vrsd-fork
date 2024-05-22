@@ -49,33 +49,39 @@ state Active
 			defenseSoundTime = Level.Timeseconds + defenseSoundDelay;
 		}
 
-      //DEUS_EX AMSD Exported to function call for duplication in multiplayer.
-      minproj = FindNearestProjectile();
-
+        //DEUS_EX AMSD Exported to function call for duplication in multiplayer.
+        minproj = FindNearestProjectile();
+            
 		// if we have a valid projectile, send it to the aug display window
 		if (minproj != None)
 		{
-         bDefenseActive = True;
-         mindist = VSize(Player.Location - minproj.Location);
-
-         // DEUS_EX AMSD In multiplayer, let the client turn his HUD on here.
-         // In singleplayer, turn it on normally.
-         if (Level.Netmode != NM_Standalone)
-            TriggerDefenseAugHUD();
-         else
-         {
-            SetDefenseAugStatus(True,CurrentLevel,minproj);
-         }
-
-			// play a warning sound
-			Player.PlaySound(sound'GEPGunLock', SLOT_None,0.6,,, 2.0);
+            bDefenseActive = True;
+            mindist = VSize(Player.Location - minproj.Location);
+                
 
 			if (mindist < LevelValues[CurrentLevel])
 			{
-            minproj.bAggressiveExploded=True;
+                minproj.bAggressiveExploded = True;
+                minproj.aggressiveExploder = Player;
 				minproj.Explode(minproj.Location, vect(0,0,1));
 				Player.PlaySound(sound'ProdFire', SLOT_None,,,, 2.0);
 			}
+            
+            // play a warning sound
+            //SARGE: prevent earrape by only beeping when a projectile is about to enter our range
+			if (mindist < LevelValues[CurrentLevel] + 600)
+                Player.PlaySound(sound'GEPGunLock', SLOT_None,0.6,,, 2.0);
+            else
+                minproj = None; //Dirty hack. Clear this so that nothing gets passed to the aug display window
+
+            // DEUS_EX AMSD In multiplayer, let the client turn his HUD on here.
+            // In singleplayer, turn it on normally.
+            if (Level.Netmode != NM_Standalone)
+                TriggerDefenseAugHUD();
+            else
+            {
+                SetDefenseAugStatus(True,CurrentLevel,minproj);
+            }
 		}
 		else
 		{
@@ -214,11 +220,11 @@ defaultproperties
      Icon=Texture'DeusExUI.UserInterface.AugIconDefense'
      smallIcon=Texture'DeusExUI.UserInterface.AugIconDefense_Small'
      AugmentationName="Aggressive Defense System"
-     Description="Aerosol nanoparticles are released upon the detection of objects fitting the electromagnetic threat profile of missiles and grenades; these nanoparticles will prematurely detonate such objects prior to reaching the agent.|n|nTECH ONE: The range at which incoming rockets and grenades are detonated is short.|n|nTECH TWO: The range at which detonation occurs is increased slightly.|n|nTECH THREE: The range at which detonation occurs is increased moderately.|n|nTECH FOUR: Rockets and grenades are detonated almost before they are fired."
+     Description="Aerosol nanoparticles are released upon the detection of objects fitting the electromagnetic threat profile of missiles and grenades; these nanoparticles will prematurely detonate such objects prior to reaching the agent. The particles will additionally shape the detonation away from the agent, resulting in a significant reduction in damage from detonated objects.|n|nTECH ONE: The range at which incoming rockets and grenades are detonated is short, and damage is reduced slightly.|n|nTECH TWO: The range at which detonation occurs is increased slightly and damage is reduced by a small amount.|n|nTECH THREE: The range at which detonation occurs is increased moderately and damage is reduced by a moderate amount.|n|nTECH FOUR: Rockets and grenades are detonated almost before they are fired and damage is reduces significantly."
      MPInfo="When active, enemy rockets detonate when they get close, doing reduced damage.  Some large rockets may still be close enough to do damage when they explode.  Energy Drain: Low"
-     LevelValues(0)=320.000000
-     LevelValues(1)=480.000000
-     LevelValues(2)=640.000000
-     LevelValues(3)=800.000000
+     LevelValues(0)=400.000000
+     LevelValues(1)=600.000000
+     LevelValues(2)=800.000000
+     LevelValues(3)=1000.000000
      MPConflictSlot=7
 }

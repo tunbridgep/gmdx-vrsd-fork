@@ -297,7 +297,7 @@ function DrawWindow(GC gc)
 				{
 					ownedTools = player.GetInventoryCount('Lockpick');
 					numTools = int((dxMover.lockStrength / player.SkillSystem.GetSkillLevelValue(class'SkillLockpicking')) + 0.99);
-					if (player.PerkNamesArray[32] == 1)
+					if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkLocksport').bPerkObtained == true)
 					    numTools = 1;
                     //if (numTools == 1)
 					//	strInfo = ownedTools $ "/" $ numTools @ msgPick;
