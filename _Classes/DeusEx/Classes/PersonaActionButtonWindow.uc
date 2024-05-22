@@ -3,16 +3,7 @@
 //=============================================================================
 
 class PersonaActionButtonWindow extends PersonaBorderButtonWindow;
-
-var int PerkSkillCost;
-var int PerkSkillCost2;
-var int PerkSkillCost3;
-var string PerkNamed;
-var string PerkNamed2;
-var string PerkNamed3;
-var string LocalizedPerkNamed;
-var string LocalizedPerkNamed2;
-var string LocalizedPerkNamed3;
+var perk ButtonPerk;
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 

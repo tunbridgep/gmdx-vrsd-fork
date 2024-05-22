@@ -1083,7 +1083,7 @@ local DeusExPlayer player;                                                      
 	  }
 	    if (IsA('RubberBullet') || IsA('ShockRingProjectile'))
 	        bDestroy=False;
-        if (IsA('Fireball') && damagee != none && damagee.IsA('ScriptedPawn') && Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkNamesArray[3] == 1)
+        if (IsA('Fireball') && damagee != none && damagee.IsA('ScriptedPawn') && Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkControlledBurn').bPerkObtained == true)
         {
             bDestroy=False;
             pawnAlreadyHit = ScriptedPawn(damagee);
