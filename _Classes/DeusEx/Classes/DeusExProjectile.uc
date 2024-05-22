@@ -37,6 +37,7 @@ var class<Ammo>			spawnAmmoClass;		// weapon to give the player if this projecti
 var bool bIgnoresNanoDefense; //True if the aggressive defense aug does not blow this up.
 
 var bool bAggressiveExploded; //True if exploded by Aggressive Defense
+var DeusExPlayer aggressiveExploder;        //SARGE: Who triggered the aggressive defense aug explosion (used to reduce damage)
 
 var localized string itemName;		// human readable name
 var localized string	itemArticle;	// article much like those for weapons
@@ -637,10 +638,11 @@ function bool CheckHelmetCollision(int actualDamage, Vector hitLocation, name da
 }
 
 //RSD: stolen from HurtRadius() in Actor.uc to patch out mover damage through walls
+//SARGE: make damage scale with ADS level, rather than always doing full damage
 function HurtRadiusGMDX( float DamageAmount, float DamageRadius, name DamageName, float Momentum, vector HitLocation, optional bool bIgnoreLOS , optional bool bIgnoreLOSmover)
 {
 	local actor Victims;
-	local float damageScale, dist;
+	local float damageScale, dist, mult;
 	local vector dir;
 
 	// DEUS_EX CNN
@@ -656,6 +658,12 @@ function HurtRadiusGMDX( float DamageAmount, float DamageRadius, name DamageName
       {
          if( Victims != self)
          {
+            //SARGE: Reduce damage dealt when exploded by ADS
+            if ( Victims == aggressiveExploder )
+            {
+                mult = 0.2 + (aggressiveExploder.AugmentationSystem.GetClassLevel(class'AugDefense') * 0.1);
+                damageAmount = mult * damageAmount;
+            }
             dir = Victims.Location - HitLocation;
             dist = FMax(1,VSize(dir));
             dir = dir/dist;
@@ -677,6 +685,12 @@ function HurtRadiusGMDX( float DamageAmount, float DamageRadius, name DamageName
       {
          if( Victims != self )
          {
+            //SARGE: Reduce damage dealt when exploded by ADS
+            if ( Victims == aggressiveExploder )
+            {
+                mult = 0.2 + (aggressiveExploder.AugmentationSystem.GetClassLevel(class'AugDefense') * 0.1);
+                damageAmount = mult * damageAmount;
+            }
             dir = Victims.Location - HitLocation;
             dist = FMax(1,VSize(dir));
             dir = dir/dist;
@@ -914,6 +928,10 @@ local DeusExPlayer player;                                                      
 					if (bPlusOneDamage)                                         //RSD: remove random damage variation
 						Damage=Damage-1.0;
 					Wall.TakeDamage(Damage, Pawn(Owner), Wall.Location, MomentumTransfer*Normal(Velocity), damageType);
+                    
+                    //Sarge: Don't allow knives to be retrieved if they damaged a locked object
+                    if (IsA('Shuriken') && DeusExMover(Wall).bLocked && Damage >= DeusExMover(Wall).minDamagethreshold)
+                        Destroy();
 				}
 			}
 		}
@@ -969,13 +987,19 @@ local DeusExPlayer player;                                                      
 	simulated function Explode(vector HitLocation, vector HitNormal)
 	{
 		local bool bDestroy;
-		local float rad;
+		local float rad, mult;
         local FireballSpoof fSpoof;
         local SFXExp exp;
+        local DeusExPlayer player;
 
-	  // Reduce damage on nano exploded projectiles
-	  if ((bAggressiveExploded) && (Level.NetMode != NM_Standalone))
-		 Damage = Damage/6;
+        player = DeusExPlayer(GetPlayerPawn());
+
+	    // Reduce damage on nano exploded projectiles
+	    if (bAggressiveExploded)
+        {
+            if (Level.NetMode != NM_Standalone)
+		        Damage = Damage/6;
+        }
 
 		bDestroy = false;
 

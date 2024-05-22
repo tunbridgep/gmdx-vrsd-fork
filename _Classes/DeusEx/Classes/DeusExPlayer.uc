@@ -2304,6 +2304,9 @@ function ResetPlayerToDefaults()
 	saveCount = 0;
 	saveTime  = 0.0;
 
+    // Reset Addiction Manager
+    AddictionManager = None;
+
 	// Reinitialize all subsystems we've just nuked
 	InitializeSubSystems();
 
@@ -10523,7 +10526,7 @@ function bool GetCrosshairState(optional bool bCheckForOuterCrosshairs)
         //Accuracy Crosshair stuff
         if (bCheckForOuterCrosshairs)
         {
-            if (W.bHandToHand || W.IsA('WeaponShuriken') || W.GoverningSkill == class'DeusEx.SkillDemolition') //Melee weapons and grenades have no accuracy crosshairs
+            if (!W.isA('WeaponShuriken') && (W.bHandToHand || W.GoverningSkill == class'DeusEx.SkillDemolition')) //Melee weapons and grenades have no accuracy crosshairs
                 return false;
             else if (bHardcoreMode && W.IsInState('Reload')) //RSD: Remove the accuracy indicators if reloading on Hardcore
                 return false;
@@ -10971,6 +10974,7 @@ exec function NextBeltItem()
 		}
 	}
     beltScrolled = slot;
+    selectedNumberFromEmpty = false;
 	}
 }
 
@@ -11088,6 +11092,7 @@ exec function PrevBeltItem()
 		}
 	}
     beltScrolled = slot;
+    selectedNumberFromEmpty = false;
 	}
 }
 
@@ -13914,6 +13919,9 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
 			// narrow the head region
 			if ((Abs(offset.x) < headOffsetY) || (Abs(offset.y) < headOffsetY))
 			{
+				if (damageType == 'Burned' || damageType == 'Exploded')	// Trash: Less damage from plasma and explosions
+				HealthHead -= actualDamage * 1;
+				else
 				HealthHead -= actualDamage * 2;
 				if (bPlayAnim)
 					PlayAnim('HitHead', , 0.1);
@@ -14000,6 +14008,9 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
 			}
 			else
 			{
+				if (damageType == 'Burned' || damageType == 'Exploded')	// Trash: Less damage from plasma and explosions
+				HealthTorso -= actualDamage * 1;
+				else
 				HealthTorso -= actualDamage * 2;
 				if (bPlayAnim)
 				{
