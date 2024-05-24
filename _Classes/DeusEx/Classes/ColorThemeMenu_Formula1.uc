@@ -2,7 +2,7 @@
 // ColorThemeMenu_Formula1
 //=============================================================================
 
-class ColorThemeMenu_Formula1 extends ColorThemeHUD;
+class ColorThemeMenu_Formula1 extends ColorThemeMenu;
 
 /*
    Colors!
@@ -29,18 +29,18 @@ defaultproperties
 {
     themeName="Formula 1"
     bSystemTheme=True
-    Colors(0)=(R=255,G=0,B=0,A=0)
-    Colors(1)=(R=15,G=15,B=15,A=0)
-    Colors(2)=(R=255,G=255,B=255,A=0)
-    Colors(3)=(R=15,G=15,B=15,A=0)
-    Colors(4)=(R=175,G=175,B=175,A=0)
-    Colors(5)=(R=255,G=255,B=255,A=0)
-    Colors(6)=(R=100,G=100,B=100,A=0)
-    Colors(7)=(R=175,G=175,B=175,A=0)
-    Colors(8)=(R=175,G=175,B=175,A=0)
-    Colors(9)=(R=255,G=255,B=255,A=0)
-    Colors(10)=(R=150,G=150,B=150,A=0)
-    Colors(11)=(R=15,G=15,B=15,A=0)
-    Colors(12)=(R=255,G=255,B=255,A=0)
-    Colors(13)=(R=0,G=0,B=0,A=0)
+    Colors(0)=(R=255,G=0,B=0)
+    Colors(1)=(R=15,G=15,B=15)
+    Colors(2)=(R=255,G=255,B=255)
+    Colors(3)=(R=15,G=15,B=15)
+    Colors(4)=(R=175,G=175,B=175)
+    Colors(5)=(R=255,G=255,B=255)
+    Colors(6)=(R=100,G=100,B=100)
+    Colors(7)=(R=175,G=175,B=175)
+    Colors(8)=(R=175,G=175,B=175)
+    Colors(9)=(R=255,G=255,B=255)
+    Colors(10)=(R=150,G=150,B=150)
+    Colors(11)=(R=15,G=15,B=15)
+    Colors(12)=(R=255,G=255,B=255)
+    Colors(13)=(R=0,G=0,B=0)
 }

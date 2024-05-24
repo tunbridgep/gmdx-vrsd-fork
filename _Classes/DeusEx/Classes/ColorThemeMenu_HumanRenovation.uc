@@ -2,7 +2,7 @@
 // ColorThemeMenu_HumanRenovation
 //=============================================================================
 
-class ColorThemeMenu_HumanRenovation extends ColorThemeHUD;
+class ColorThemeMenu_HumanRenovation extends ColorThemeMenu;
 
 /*
    Colors!
@@ -29,18 +29,18 @@ defaultproperties
 {
     themeName="Human Renovation"
     bSystemTheme=True
-    Colors(0)=(R=15,G=15,B=15,A=0)
-    Colors(1)=(R=212,G=175,B=0,A=0)
-    Colors(2)=(R=255,G=255,B=135,A=0)
-    Colors(3)=(R=212,G=175,B=0,A=0)
-    Colors(4)=(R=255,G=255,B=135,A=0)
-    Colors(5)=(R=255,G=255,B=200,A=0)
-    Colors(6)=(R=100,G=100,B=35,A=0)
-    Colors(7)=(R=255,G=255,B=135,A=0)
-    Colors(8)=(R=255,G=255,B=135,A=0)
-    Colors(9)=(R=255,G=255,B=200,A=0)
-    Colors(10)=(R=255,G=125,B=0,A=0)
-    Colors(11)=(R=255,G=255,B=200,A=0)
-    Colors(12)=(R=255,G=255,B=135,A=0)
-    Colors(13)=(R=0,G=0,B=0,A=0)
+    Colors(0)=(R=15,G=15,B=15)
+    Colors(1)=(R=212,G=175,B=0)
+    Colors(2)=(R=255,G=255,B=135)
+    Colors(3)=(R=212,G=175,B=0)
+    Colors(4)=(R=255,G=255,B=135)
+    Colors(5)=(R=255,G=255,B=200)
+    Colors(6)=(R=100,G=100,B=35)
+    Colors(7)=(R=255,G=255,B=135)
+    Colors(8)=(R=255,G=255,B=135)
+    Colors(9)=(R=255,G=255,B=200)
+    Colors(10)=(R=255,G=125,B=0)
+    Colors(11)=(R=255,G=255,B=200)
+    Colors(12)=(R=255,G=255,B=135)
+    Colors(13)=(R=0,G=0,B=0)
 }

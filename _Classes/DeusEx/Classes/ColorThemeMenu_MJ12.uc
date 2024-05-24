@@ -2,7 +2,7 @@
 // ColorThemeMenu_MJ12
 //=============================================================================
 
-class ColorThemeMenu_MJ12 extends ColorThemeHUD;
+class ColorThemeMenu_MJ12 extends ColorThemeMenu;
 
 /*
    Colors!
@@ -29,18 +29,18 @@ defaultproperties
 {
     themeName="MJ12"
     bSystemTheme=True
-    Colors(0)=(R=10,G=10,B=10,A=0)
-    Colors(1)=(R=40,G=40,B=40,A=0)
-    Colors(2)=(R=255,G=0,B=0,A=0)
-    Colors(3)=(R=40,G=40,B=40,A=0)
-    Colors(4)=(R=150,G=0,B=0,A=0)
-    Colors(5)=(R=255,G=0,B=0,A=0)
-    Colors(6)=(R=48,G=0,B=0,A=0)
-    Colors(7)=(R=175,G=0,B=0,A=0)
-    Colors(8)=(R=175,G=0,B=0,A=0)
-    Colors(9)=(R=255,G=0,B=0,A=0)
-    Colors(10)=(R=10,G=10,B=10,A=0)
-    Colors(11)=(R=220,G=220,B=220,A=0)
-    Colors(12)=(R=255,G=255,B=255,A=0)
-    Colors(13)=(R=0,G=0,B=0,A=0)
+    Colors(0)=(R=10,G=10,B=10)
+    Colors(1)=(R=40,G=40,B=40)
+    Colors(2)=(R=255,G=0,B=0)
+    Colors(3)=(R=40,G=40,B=40)
+    Colors(4)=(R=150,G=0,B=0)
+    Colors(5)=(R=255,G=0,B=0)
+    Colors(6)=(R=48,G=0,B=0)
+    Colors(7)=(R=175,G=0,B=0)
+    Colors(8)=(R=175,G=0,B=0)
+    Colors(9)=(R=255,G=0,B=0)
+    Colors(10)=(R=10,G=10,B=10)
+    Colors(11)=(R=220,G=220,B=220)
+    Colors(12)=(R=255,G=255,B=255)
+    Colors(13)=(R=0,G=0,B=0)
 }

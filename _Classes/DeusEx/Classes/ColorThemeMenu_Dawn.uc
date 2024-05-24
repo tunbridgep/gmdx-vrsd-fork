@@ -2,7 +2,7 @@
 // ColorThemeMenu_Dawn
 //=============================================================================
 
-class ColorThemeMenu_Dawn extends ColorThemeHUD;
+class ColorThemeMenu_Dawn extends ColorThemeMenu;
 
 /*
    Colors!
@@ -29,18 +29,18 @@ defaultproperties
 {
     themeName="Dawn"
     bSystemTheme=True
-    Colors(0)=(R=15,G=0,B=15,A=0)
-    Colors(1)=(R=84,G=0,B=84,A=0)
-    Colors(2)=(R=255,G=175,B=0,A=0)
-    Colors(3)=(R=84,G=0,B=84,A=0)
-    Colors(4)=(R=255,G=175,B=0,A=0)
-    Colors(5)=(R=255,G=255,B=0,A=0)
-    Colors(6)=(R=130,G=130,B=0,A=0)
-    Colors(7)=(R=255,G=175,B=0,A=0)
-    Colors(8)=(R=255,G=175,B=0,A=0)
-    Colors(9)=(R=255,G=175,B=0,A=0)
-    Colors(10)=(R=84,G=0,B=84,A=0)
-    Colors(11)=(R=255,G=175,B=0,A=0)
-    Colors(12)=(R=255,G=175,B=0,A=0)
-    Colors(13)=(R=0,G=0,B=0,A=0)
+    Colors(0)=(R=15,G=0,B=15)
+    Colors(1)=(R=84,G=0,B=84)
+    Colors(2)=(R=255,G=175,B=0)
+    Colors(3)=(R=84,G=0,B=84)
+    Colors(4)=(R=255,G=175,B=0)
+    Colors(5)=(R=255,G=255,B=0)
+    Colors(6)=(R=130,G=130,B=0)
+    Colors(7)=(R=255,G=175,B=0)
+    Colors(8)=(R=255,G=175,B=0)
+    Colors(9)=(R=255,G=175,B=0)
+    Colors(10)=(R=84,G=0,B=84)
+    Colors(11)=(R=255,G=175,B=0)
+    Colors(12)=(R=255,G=175,B=0)
+    Colors(13)=(R=0,G=0,B=0)
 }

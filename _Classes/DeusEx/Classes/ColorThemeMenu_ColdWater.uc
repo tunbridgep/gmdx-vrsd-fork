@@ -2,7 +2,7 @@
 // ColorThemeMenu_ColdWater
 //=============================================================================
 
-class ColorThemeMenu_ColdWater extends ColorThemeHUD;
+class ColorThemeMenu_ColdWater extends ColorThemeMenu;
 
 /*
    Colors!
@@ -29,18 +29,18 @@ defaultproperties
 {
     themeName="Cold Water"
     bSystemTheme=True
-    Colors(0)=(R=15,G=15,B=15,A=0)
-    Colors(1)=(R=135,G=255,B=255,A=0)
-    Colors(2)=(R=255,G=175,B=125,A=0)
-    Colors(3)=(R=135,G=255,B=255,A=0)
-    Colors(4)=(R=255,G=155,B=95,A=0)
-    Colors(5)=(R=255,G=175,B=125,A=0)
-    Colors(6)=(R=125,G=85,B=45,A=0)
-    Colors(7)=(R=255,G=155,B=95,A=0)
-    Colors(8)=(R=255,G=155,B=95,A=0)
-    Colors(9)=(R=255,G=175,B=125,A=0)
-    Colors(10)=(R=80,G=175,B=175,A=0)
-    Colors(11)=(R=255,G=175,B=125,A=0)
-    Colors(12)=(R=255,G=155,B=95,A=0)
-    Colors(13)=(R=0,G=0,B=0,A=0)
+    Colors(0)=(R=15,G=15,B=15)
+    Colors(1)=(R=135,G=255,B=255)
+    Colors(2)=(R=255,G=175,B=125)
+    Colors(3)=(R=135,G=255,B=255)
+    Colors(4)=(R=255,G=155,B=95)
+    Colors(5)=(R=255,G=175,B=125)
+    Colors(6)=(R=125,G=85,B=45)
+    Colors(7)=(R=255,G=155,B=95)
+    Colors(8)=(R=255,G=155,B=95)
+    Colors(9)=(R=255,G=175,B=125)
+    Colors(10)=(R=80,G=175,B=175)
+    Colors(11)=(R=255,G=175,B=125)
+    Colors(12)=(R=255,G=155,B=95)
+    Colors(13)=(R=0,G=0,B=0)
 }

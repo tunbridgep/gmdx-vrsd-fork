@@ -2,7 +2,7 @@
 // ColorThemeMenu_Condiments
 //=============================================================================
 
-class ColorThemeMenu_Condiments extends ColorThemeHUD;
+class ColorThemeMenu_Condiments extends ColorThemeMenu;
 
 /*
    Colors!
@@ -29,18 +29,18 @@ defaultproperties
 {
     themeName="Condiments"
     bSystemTheme=True
-    Colors(0)=(R=150,G=0,B=0,A=0)
-    Colors(1)=(R=150,G=0,B=0,A=0)
-    Colors(2)=(R=200,G=200,B=0,A=0)
-    Colors(3)=(R=150,G=0,B=0,A=0)
-    Colors(4)=(R=150,G=150,B=0,A=0)
-    Colors(5)=(R=255,G=255,B=0,A=0)
-    Colors(6)=(R=50,G=50,B=0,A=0)
-    Colors(7)=(R=175,G=175,B=0,A=0)
-    Colors(8)=(R=175,G=175,B=0,A=0)
-    Colors(9)=(R=255,G=255,B=0,A=0)
-    Colors(10)=(R=150,G=0,B=0,A=0)
-    Colors(11)=(R=255,G=255,B=0,A=0)
-    Colors(12)=(R=255,G=255,B=0,A=0)
-    Colors(13)=(R=0,G=0,B=0,A=0)
+    Colors(0)=(R=150,G=0,B=0)
+    Colors(1)=(R=150,G=0,B=0)
+    Colors(2)=(R=200,G=200,B=0)
+    Colors(3)=(R=150,G=0,B=0)
+    Colors(4)=(R=150,G=150,B=0)
+    Colors(5)=(R=255,G=255,B=0)
+    Colors(6)=(R=50,G=50,B=0)
+    Colors(7)=(R=175,G=175,B=0)
+    Colors(8)=(R=175,G=175,B=0)
+    Colors(9)=(R=255,G=255,B=0)
+    Colors(10)=(R=150,G=0,B=0)
+    Colors(11)=(R=255,G=255,B=0)
+    Colors(12)=(R=255,G=255,B=0)
+    Colors(13)=(R=0,G=0,B=0)
 }

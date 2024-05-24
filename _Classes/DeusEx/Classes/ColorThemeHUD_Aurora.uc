@@ -27,20 +27,20 @@ class ColorThemeHUD_Aurora extends ColorThemeHUD;
 
 defaultproperties
 {
-    themeName="Aurora"
-    bSystemTheme=True
-    Colors(0)=(R=0,G=255,B=130,A=0)
-    Colors(1)=(R=255,G=130,B=255,A=0)
-    Colors(2)=(R=255,G=210,B=255,A=0)
-    Colors(3)=(R=255,G=155,B=255,A=0)
-    Colors(4)=(R=255,G=210,B=255,A=0)
-    Colors(5)=(R=255,G=255,B=255,A=0)
-    Colors(6)=(R=50,G=50,B=50,A=0)
-    Colors(7)=(R=255,G=210,B=255,A=0)
-    Colors(8)=(R=80,G=200,B=230,A=0)
-    Colors(9)=(R=80,G=200,B=230,A=0)
-    Colors(10)=(R=3,G=3,B=3,A=0)
-    Colors(11)=(R=255,G=255,B=255,A=0)
-    Colors(12)=(R=255,G=210,B=255,A=0)
-    Colors(13)=(R=255,G=210,B=255,A=0)
+     themeName="Aurora"
+     bSystemTheme=True
+     Colors(0)=(R=0,G=255,B=130)
+     Colors(1)=(R=255,G=130,B=255)
+     Colors(2)=(R=255,G=210,B=255)
+     Colors(3)=(R=255,G=155,B=255)
+     Colors(4)=(R=255,G=210,B=255)
+     Colors(5)=(R=255,G=255,B=255)
+     Colors(6)=(R=50,G=50,B=50)
+     Colors(7)=(R=255,G=210,B=255)
+     Colors(8)=(R=80,G=200,B=230)
+     Colors(9)=(R=80,G=200,B=230)
+     Colors(10)=(R=3,G=3,B=3)
+     Colors(11)=(R=255,G=255,B=255)
+     Colors(12)=(R=255,G=210,B=255)
+     Colors(13)=(R=255,G=210,B=255)
 }

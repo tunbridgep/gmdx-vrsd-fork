@@ -2,7 +2,7 @@
 // ColorThemeMenu_VonBraun
 //=============================================================================
 
-class ColorThemeMenu_VonBraun extends ColorThemeHUD;
+class ColorThemeMenu_VonBraun extends ColorThemeMenu;
 
 /*
    Colors!
@@ -29,18 +29,18 @@ defaultproperties
 {
     themeName="Von Braun"
     bSystemTheme=True
-    Colors(0)=(R=70,G=50,B=150,A=0)
-    Colors(1)=(R=70,G=50,B=150,A=0)
-    Colors(2)=(R=100,G=150,B=255,A=0)
-    Colors(3)=(R=70,G=50,B=150,A=0)
-    Colors(4)=(R=100,G=150,B=255,A=0)
-    Colors(5)=(R=150,G=200,B=255,A=0)
-    Colors(6)=(R=23,G=50,B=80,A=0)
-    Colors(7)=(R=100,G=150,B=255,A=0)
-    Colors(8)=(R=100,G=150,B=250,A=0)
-    Colors(9)=(R=175,G=230,B=255,A=0)
-    Colors(10)=(R=70,G=50,B=150,A=0)
-    Colors(11)=(R=100,G=150,B=255,A=0)
-    Colors(12)=(R=100,G=150,B=255,A=0)
-    Colors(13)=(R=0,G=0,B=0,A=0)
+    Colors(0)=(R=70,G=50,B=150)
+    Colors(1)=(R=70,G=50,B=150)
+    Colors(2)=(R=100,G=150,B=255)
+    Colors(3)=(R=70,G=50,B=150)
+    Colors(4)=(R=100,G=150,B=255)
+    Colors(5)=(R=150,G=200,B=255)
+    Colors(6)=(R=23,G=50,B=80)
+    Colors(7)=(R=100,G=150,B=255)
+    Colors(8)=(R=100,G=150,B=250)
+    Colors(9)=(R=175,G=230,B=255)
+    Colors(10)=(R=70,G=50,B=150)
+    Colors(11)=(R=100,G=150,B=255)
+    Colors(12)=(R=100,G=150,B=255)
+    Colors(13)=(R=0,G=0,B=0)
 }

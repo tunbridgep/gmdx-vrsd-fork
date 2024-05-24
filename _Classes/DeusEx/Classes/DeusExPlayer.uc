@@ -15954,6 +15954,7 @@ function CreateColorThemeManager()
 		ThemeManager.AddTheme(Class'ColorThemeMenu_Plasma');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_Primaries');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_Purple');
+		ThemeManager.AddTheme(Class'ColorThemeMenu_Radiation');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_Red');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_Seawater');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_SoylentGreen');
@@ -16001,6 +16002,7 @@ function CreateColorThemeManager()
 		ThemeManager.AddTheme(Class'ColorThemeHUD_Plasma');
 		ThemeManager.AddTheme(Class'ColorThemeHUD_Primaries');
 		ThemeManager.AddTheme(Class'ColorThemeHUD_Purple');
+		ThemeManager.AddTheme(Class'ColorThemeHUD_Radiation');
 		ThemeManager.AddTheme(Class'ColorThemeHUD_Red');
 		ThemeManager.AddTheme(Class'ColorThemeHUD_SoylentGreen');
 		ThemeManager.AddTheme(Class'ColorThemeHUD_SplinterCell');

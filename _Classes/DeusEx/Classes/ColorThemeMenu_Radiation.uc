@@ -2,7 +2,7 @@
 // ColorThemeMenu_Radiation
 //=============================================================================
 
-class ColorThemeMenu_Radiation extends ColorThemeHUD;
+class ColorThemeMenu_Radiation extends ColorThemeMenu;
 
 /*
    Colors!
@@ -29,18 +29,18 @@ defaultproperties
 {
     themeName="Radiation"
     bSystemTheme=True
-    Colors(0)=(R=0,G=107,B=0,A=0)
-    Colors(1)=(R=0,G=107,B=0,A=0)
-    Colors(2)=(R=0,G=107,B=0,A=0)
-    Colors(3)=(R=60,G=165,B=0,A=0)
-    Colors(4)=(R=255,G=255,B=0,A=0)
-    Colors(5)=(R=255,G=147,B=0,A=0)
-    Colors(6)=(R=255,G=30,B=0,A=0)
-    Colors(7)=(R=0,G=134,B=0,A=0)
-    Colors(8)=(R=0,G=107,B=0,A=0)
-    Colors(9)=(R=0,G=0,B=0,A=0)
-    Colors(10)=(R=0,G=107,B=0,A=0)
-    Colors(11)=(R=115,G=220,B=0,A=0)
-    Colors(12)=(R=88,G=175,B=0,A=0)
-    Colors(13)=(R=0,G=0,B=0,A=0)
+    Colors(0)=(R=0,G=107,B=0)
+    Colors(1)=(R=0,G=107,B=0)
+    Colors(2)=(R=0,G=107,B=0)
+    Colors(3)=(R=60,G=165,B=0)
+    Colors(4)=(R=255,G=255,B=0)
+    Colors(5)=(R=255,G=147,B=0)
+    Colors(6)=(R=255,G=30,B=0)
+    Colors(7)=(R=0,G=134,B=0)
+    Colors(8)=(R=0,G=107,B=0)
+    Colors(9)=(R=0,G=0,B=0)
+    Colors(10)=(R=0,G=107,B=0)
+    Colors(11)=(R=115,G=220,B=0)
+    Colors(12)=(R=88,G=175,B=0)
+    Colors(13)=(R=0,G=0,B=0)
 }
