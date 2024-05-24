@@ -7,10 +7,9 @@ class OutfitSpawner2 extends OutfitSpawner;
 defaultproperties
 {
      FragType=Class'DeusEx.PaperFragment'
-     ItemName="Augmentique Collectable"
      bBlockSight=True
      bInvincible=True
-     Skin=Texture'FemJC.deco.AugmentiqueBoxTex1'
+     LookupTexture="BoxTex1"
      Mesh=LodMesh'DeusExItems.AmmoDart'
      DrawScale=3.000000
      CollisionRadius=25.500000

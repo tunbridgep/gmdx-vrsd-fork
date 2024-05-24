@@ -4,10 +4,11 @@
 //=============================================================================
 class OutfitSpawner extends DeusExDecoration;
 
-var(JCOutfits) const string id; //IDs of the outfit to spawn
-var(JCOutfits) const string itemArticle;
-var(JCOutfits) const string PickupMessage;
-var(JCOutfits) const string PickupName;
+var(Augmentique) const string id; //IDs of the outfit to spawn
+var(Augmentique) const localized string PickupMessage;
+var(Augmentique) const localized string PickupName;       //Allow us to use a custom Inspect Name
+var(Augmentique) const string LookupTexture;              //This lets us use textures contained within JCOutfits.u without having it as a dependency,
+                                                          //which will let us play maps containing spawners without Augmentique installed
 
 var OutfitManagerBase outfitManager;
 
@@ -23,9 +24,10 @@ defaultproperties
      FragType=Class'DeusEx.PaperFragment'
      Texture=Texture'ClothesRackTex1'
      Mesh=LodMesh'DeusExDeco.ClothesRack'
-     ItemName="Fashionable Outfit"
-     PickupMessage="You found"
-     ItemArticle="a"
+     //ItemName="Fashionable Outfit"
+     ItemName="Augmentique Collectable"
+     PickupMessage="You found a %s"
+     PickupName="%s"
      bHighlight=True
      CollisionRadius=13.000000
      CollisionHeight=64.750000

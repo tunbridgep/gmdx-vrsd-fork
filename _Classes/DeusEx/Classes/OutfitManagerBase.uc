@@ -1,7 +1,7 @@
 //This class is a stub.
 //It is here to work as an interface for the actual Outfit Manager
 //See the included documentation for more information
-class OutfitManagerBase extends Object abstract;
+class OutfitManagerBase extends Object;
 
 //Part Slot Names
 enum PartSlot
@@ -22,7 +22,15 @@ enum PartSlot
 
 
 //These should be called in TravelPostAccept
-function Setup(DeusExPlayer newPlayer) {}
+//This is overridden by the real outfit manager if Augmentique is installed
+//By default, all we want to do is destroy any spawners.
+function Setup(DeusExPlayer newPlayer)
+{
+    local OutfitSpawner S;
+	foreach newPlayer.AllActors(class'OutfitSpawner', S)
+        S.Destroy();
+}
+
 function CompleteSetup() {}
 
 //Parts List Functions
