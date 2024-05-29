@@ -10,6 +10,8 @@ var(Augmentique) const localized string PickupName;       //Allow us to use a cu
 var(Augmentique) const string LookupTexture;              //This lets us use textures contained within JCOutfits.u without having it as a dependency,
                                                           //which will let us play maps containing spawners without Augmentique installed
 
+var(Augmentique) const string LinkedObjects[5];           //If this object is removed for being invalid, all linked objects will also be removed
+
 var OutfitManagerBase outfitManager;
 
 function Frob(Actor Frobber, Inventory frobWith)

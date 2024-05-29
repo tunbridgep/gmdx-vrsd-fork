@@ -1,0 +1,28 @@
+Begin Map
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner8
+    Id="martialartist"
+    bDynamicLight=True
+    LastRenderTime=135.457840
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo2',iLeaf=342,ZoneNumber=4)
+    Location=(X=1482.724976,Y=-412.212372,Z=134.099899)
+    Rotation=(Yaw=50000)
+    OldLocation=(X=1476.724976,Y=-419.212372,Z=134.099899)
+    bSelected=True
+    Name=OutfitSpawner8
+End Actor
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner19
+    Id="jersey"
+    bDynamicLight=True
+    LastRenderTime=1334.284302
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo1',iLeaf=3468,ZoneNumber=2)
+    Location=(X=-969.452454,Y=154.076752,Z=774.097412)
+    Rotation=(Yaw=-50000)
+    OldLocation=(X=-969.452454,Y=154.076752,Z=774.097412)
+    bSelected=True
+    Name=OutfitSpawner19
+End Actor
+End Map
