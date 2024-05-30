@@ -255,7 +255,7 @@ state ScopeToggleState
 		    if (bHasScope)
 		    {
 		        ScopeOff();
-		        if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkNamesArray[12]== 1)
+		        if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkMarksman').bPerkObtained == true)
 		            PlayAnim('SupressorOn',1.3,0.1);
 		        else
 		            PlayAnim('SupressorOn',,0.1);
@@ -263,10 +263,10 @@ state ScopeToggleState
 		}
 		else
 		{
-		   if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkNamesArray[12]== 1)
-               PlayAnim('SuperssorOff',1.3,0.1);
-           else
-               PlayAnim('SuperssorOff',,0.1);
+            if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkMarksman').bPerkObtained == true)
+                PlayAnim('SuperssorOff',1.3,0.1);
+            else
+                PlayAnim('SuperssorOff',,0.1);
 		}
 		bAimingDown=!bAimingDown;
 		FinishAnim();
