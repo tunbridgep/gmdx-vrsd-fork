@@ -26,7 +26,6 @@ Sarge's Changes since Beta 2.2:
     - Added an optional "Dynamic Crosshair" mode, which shows a small dot-crosshair when no weapons is equipped, and some items have no crosshairs at all.
         - Also fixed many instances of crosshair weirdness.
     - The hit marker no longer hides the crosshair when it appears.
-    - Augmentations that need to recharge after use (currently only the Spy Drone) will show a red icon in the Augmentations window while they are recharging.
     - Default Right-Click action (holster/unholster) is no longer blocked by having non-highlighting decorative objects under your crosshair.
     - The Crosshair and Selection Brackets will be hidden when a window or menu is open, as they would previously get in the way of notes and other text.
     - The secondary ammo display for items (when assigned as secondary items) now shows inventory count, rather than always displaying N/A
@@ -78,6 +77,8 @@ Sarge's Changes since Beta 2.2:
         - The keyring can be selected using Left-Click Frob on doors.
 - Gameplay Changes:
     - Augmentation Changes
+        - Some augmentations have been given a short cooldown on use. The Spy Drone retains it's 30 second cooldown.
+            - Augmentations that need to recharge after use (including the Spy Drone) will show a red icon in the Augmentations window while they are recharging.
         - EUAS
             - Swapped Level 2 and 3, because level 2 was arguably better than level 3. Now level 2 detects environmental hazards, level 3 shows visibility on the HUD.
         - Aggressive Defense System:
