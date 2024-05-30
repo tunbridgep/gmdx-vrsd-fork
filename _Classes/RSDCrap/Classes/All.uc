@@ -23,16 +23,28 @@ class All expands Object
 // Perks
 
 // Heavy Weapons
+#exec TEXTURE IMPORT FILE="Textures\PerkControlledBurn.pcx"			NAME="PerkControlledBurn"			GROUP="UserInterface"
 #exec TEXTURE IMPORT FILE="Textures\PerkBlastEnergy.pcx"			NAME="PerkBlastEnergy"			GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\PerkHERocket.pcx"			NAME="PerkHERocket"			GROUP="UserInterface"
 
 // Pistols
 #exec TEXTURE IMPORT FILE="Textures\PerkSidearm.pcx"			NAME="PerkSidearm"			GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\PerkAmbidextrous.pcx"			NAME="PerkAmbidextrous"			GROUP="UserInterface"
 #exec TEXTURE IMPORT FILE="Textures\PerkHumanCombustion.pcx"			NAME="PerkHumanCombustion"			GROUP="UserInterface"
+
+// Low-Tech
+#exec TEXTURE IMPORT FILE="Textures\PerkInventive.pcx"			NAME="PerkInventive"			GROUP="UserInterface"
 
 // Medicine
 #exec TEXTURE IMPORT FILE="Textures\PerkBiogenic.pcx"			NAME="PerkBiogenic"			GROUP="UserInterface"
 #exec TEXTURE IMPORT FILE="Textures\PerkToxicologist.pcx"			NAME="PerkToxicologist"			GROUP="UserInterface"
 #exec TEXTURE IMPORT FILE="Textures\PerkCombatMedicsBag.pcx"			NAME="PerkCombatMedicsBag"			GROUP="UserInterface"
+
+// Environmental Training
+#exec TEXTURE IMPORT FILE="Textures\PerkFieldRepair.pcx"			NAME="PerkFieldRepair"			GROUP="UserInterface"
+
+// Stealth
+#exec TEXTURE IMPORT FILE="Textures\PerkSecurityLoophole.pcx"			NAME="PerkSecurityLoophole"			GROUP="UserInterface"
 
 #exec AUDIO IMPORT FILE="Sounds\PistolCaseSound.wav"			NAME="PistolCaseSound"			GROUP="Weapons"
 #exec AUDIO IMPORT FILE="Sounds\ShellCaseSound.wav"			NAME="ShellCaseSound"			GROUP="Weapons"

@@ -8,6 +8,7 @@ defaultproperties
     PerkName="FIELD REPAIR"
     PerkDescription="|nAn agent can perform more effective equipment repairs with biocells (1.5x).|n|nRequires: Environmental Training: TRAINED"
     PerkSkill=Class'DeusEx.SkillEnviro'
+    PerkIcon=Texture'RSDCrap.UserInterface.PerkFieldRepair'
     PerkCost=200
     PerkLevelRequirement=1
     PerkValue=1.5
