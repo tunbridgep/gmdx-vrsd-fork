@@ -127,4 +127,5 @@ defaultproperties
      LevelValues(1)=512.000000
      AugmentationLocation=LOC_Default
      MPConflictSlot=10
+     chargeTime=0.000000
 }

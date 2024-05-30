@@ -1113,7 +1113,7 @@ function DrawTargetAugmentation(GC gc)
                 litemult = visi-0.031376;                                       //RSD: New formula to keep visibility constant during night vision (9.3%)
                 if ((Player.UsingChargedPickup(class'TechGoggles') ||  Player.AugmentationSystem.GetAugLevelValue(class'AugVision') != -1.0) && visi != 0.0)
                    visi = litemult;
-                if(Player.bIsCrouching)
+                if(Player.IsCrouching())
                    visi *= 1.0-0.15*Player.SkillSystem.GetSkillLevel(class'SkillStealth'); //RSD: Stealth skill fakes visibility reduction by 0/15/30/45%
                 casted = (int(visi*300));
                 if (casted > 100)

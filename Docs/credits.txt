@@ -1,0 +1,20 @@
+GMDX Credits:
+
+This version of the mod is based on GMDX vRSD, which was forked from GMDX v9.
+
+GMDX was created by TT aka Totalitarian aka Ash.
+GMDX vRSD was created by RoSoDude (https://rosodudemods.wordpress.com/)
+
+This fork is possible thanks to the following awesome people:
+
+- Sarge - Programmer, Project Lead
+- Lady Trash - Programmer
+- Xriborg - Sound Design, all LDDP content
+- LupusDraconis - Perk Icons and other graphical assets
+
+This mod would not have been possible without these testers:
+Julian, Georg, the1truepickaxe, Xriborg, domitomi and many others.
+
+Special thanks to the Revision Framerowk team for some small code snippets
+which were used as inspiration for fixing the HUD aspect ratio for cinematics,
+which previously didn't show subtitles.
