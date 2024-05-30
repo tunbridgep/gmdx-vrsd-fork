@@ -28,7 +28,7 @@ var travel Float CombatDifficulty;
 // Augmentation system vars
 var travel AugmentationManager AugmentationSystem;
 
-// Skill system vars
+// Skill system vars // Trash: Now includes perk system
 var travel SkillManager SkillSystem;
 
 var() travel int SkillPointsTotal;
@@ -103,8 +103,7 @@ var bool bSecondOptionsSynced;
 // used while crouching
 var travel bool bForceDuck;
 var travel bool bCrouchOn;				// used by toggle crouch
-var travel bool bWasCrouchOn;			// used by toggle crouch
-var travel byte lastbDuck;				// used by toggle crouch
+var bool bToggledCrouch;		        // used by toggle crouch
 
 // leaning vars
 var bool bCanLean;
@@ -459,8 +458,6 @@ var bool bOnLadder;
 //Aliases[18]=(Command="Button bLeanRightHook",Alias=LeanRH)
 //Aliases[19]=(Command="Button bLeanLeftHook",Alias=LeanLH)
 var transient bool bLeanKeysDefined;
-var travel int PerkNamesArray[37]; //CyberP: perk names                         //RSD: Now [37] because I need the extra space
-var travel string BoughtPerks[36];
 var globalconfig color customColorsMenu[14]; //CyberP: custom color theme
 var globalconfig color customColorsHUD[14];
 var bool bTiptoes; //based on left+right lean
@@ -549,6 +546,7 @@ var travel int augOrderNums[21];                                                
 var const augBinary augOrderList[21];                                           //RSD: List of all aug cans in the game in order (to be scrambled)
 var travel bool bAddictionSystem;
 var travel AddictionSystem AddictionManager;
+var travel PerkSystem PerkManager;
 var travel RandomTable Randomizer;
 
 var travel float autosaveRestrictTimer;                                         //Sarge: Current time left before we're allowed to autosave again.
@@ -563,6 +561,8 @@ const DRUG_CRACK = 2;
 
 var bool autosave;                                                              //Sarge: Autosave tells the Quicksave function to make an autosave instead
 
+var travel bool bLastRun;                                                       //Sarge: Stores our last running state
+                                                                                
 //Sarge: Allow Enhanced Weapon Offsets
 var globalconfig bool bEnhancedWeaponOffsets; 									//Sarge: Allow using enhanced weapon offsets
 
@@ -642,6 +642,43 @@ exec function cheat()
 	if (bHardCoreMode) bCheatsEnabled = false;
 	else bCheatsEnabled = !bCheatsEnabled;
 
+}
+
+//Handle Crouch Toggle
+function HandleCrouchToggle()
+{
+    if (!bToggleCrouch)
+        return;
+
+    if (!bIsCrouching)
+        bToggledCrouch = false;
+
+    if (bCrouchOn && bIsCrouching && !bToggledCrouch)
+    {
+        bCrouchOn = false;
+        bToggledCrouch = true;
+    }
+    else if (!bCrouchOn && bIsCrouching && !bToggledCrouch)
+    {
+        bCrouchOn = true;
+        bToggledCrouch = true;
+    }
+}
+
+//Return if the character is crouching
+function bool IsCrouching()
+{
+    return bCrouchOn || bForceDuck || bIsCrouching;
+}
+
+//set our crouch state to a certain value
+function SetCrouch(bool crouch, optional bool setForce)
+{
+    bIsCrouching = crouch;
+    bDuck = int(crouch);
+    bCrouchOn = crouch;
+    if (setForce)
+        bForceDuck = crouch;
 }
 
 // ----------------------------------------------------------------------
@@ -829,7 +866,7 @@ local AlarmUnit        AU;                                                      
        }
     }
 
-    if (PerkNamesArray[30]==1)
+    if (PerkManager.GetPerkWithClass(class'DeusEx.PerkCombatMedicsBag').bPerkObtained == true)
     {
     ForEach AllActors(class'Medkit', MK)
     {
@@ -843,7 +880,7 @@ local AlarmUnit        AU;                                                      
 
      ForEach AllActors(class'DeusExMover', MV)
      {
-         if (!MV.bPerkApplied && PerkNamesArray[34] == 1)
+         if (!MV.bPerkApplied && PerkManager.GetPerkWithClass(class'DeusEx.PerkDoorsman').bPerkObtained == true)
          {
 		       MV.bPerkApplied = True;
 		       MV.minDamageThreshold -= 5;
@@ -1125,6 +1162,17 @@ function SetupAddictionManager()
 
 }
 
+function SetupPerkManager()
+{
+	// install the Perk Manager if not found
+	if (PerkManager == None)
+    {
+        //ClientMessage("Make new Perk System");
+	    PerkManager = new(Self) class'PerkSystem';
+        PerkManager.InitializePerks(Self);
+    }
+}
+
 function SetupRandomizer()
 {
 	// install the Addiction Manager if not found
@@ -1184,6 +1232,7 @@ function InitializeSubSystems()
     //Setup player subcomponents
     SetupRandomizer();
     SetupAddictionManager();
+	SetupPerkManager();
 }
 
 //SARGE: Helper function to get the count of an item type
@@ -1301,6 +1350,7 @@ event TravelPostAccept()
     //Setup player subcomponents
     SetupRandomizer();
     SetupAddictionManager();
+	SetupPerkManager();
 
 	// reset the keyboard
 	ResetKeyboard();
@@ -2292,13 +2342,13 @@ function ResetPlayerToDefaults()
 	saveCount = 0;
 	saveTime  = 0.0;
 
+    // Reset Addiction Manager
+    AddictionManager = None;
+
 	// Reinitialize all subsystems we've just nuked
 	InitializeSubSystems();
 
-    for(i=0;i<ArrayCount(PerkNamesArray);i++)   //CyberP: reset perks
-		   PerkNamesArray[i] = 0;
-		for(i=0;i<ArrayCount(BoughtPerks);i++)   //CyberP: reset perks
-		   BoughtPerks[i] = "";
+	PerkManager.ResetPerks();
 
     bBoosterUpgrade = False;
 
@@ -3053,7 +3103,7 @@ function StartPoison( Pawn poisoner, int Damage )
 		return;
 
     // CyberP: less poison if
-	if (PerkNamesArray[20]==1)
+	if (PerkManager.GetPerkWithClass(class'DeusEx.PerkHardened').bPerkObtained == true)
        poisonCounter = 3;
 	else
 	    poisonCounter = 4;   // take damage no more than four times (over 8 seconds)
@@ -3064,7 +3114,7 @@ function StartPoison( Pawn poisoner, int Damage )
 
         // CyberP: Don't do drug effects if
 
-		if (PerkNamesArray[20]==1 && poisonCounter > 0)
+		if (PerkManager.GetPerkWithClass(class'DeusEx.PerkHardened').bPerkObtained == true && poisonCounter > 0)
 		drugEffectTimer = 0;
 		else
      	drugEffectTimer += 3;  // make the player vomit for the next four seconds
@@ -4219,7 +4269,7 @@ simulated function PlayFootStep()
 	}
 	//if (bJustLanded) log("PlayFootStep bJustLanded vol="@volume@": mod="@volumeMod@": Z="@Velocity.Z);
 
-    if (bIsCrouching && velocity.Z == 0)  //CyberP: only applies when speed enhancement is active.
+    if (IsCrouching() && velocity.Z == 0)  //CyberP: only applies when speed enhancement is active.
        volume *= 1.5;
     else if (bIsWalking)
        volume *= 0.5;  //CyberP: can walk up behind enemies.
@@ -4327,7 +4377,7 @@ function HighlightCenterObject()
            bIsWalking=True;
            if (AugmentationSystem.GetAugLevelValue(class'DeusEx.AugStealth') < 0)
            {
-             if (PerkNamesArray[9] != 1)
+             if (PerkManager.GetPerkWithClass(class'DeusEx.PerkNimble').bPerkObtained == false)
              {
                 rnd = FRand();
                 if (rnd < 0.25) PlaySound(Sound'GMDXSFX.Player.pl_ladder1',SLOT_None,0.75);
@@ -4343,7 +4393,7 @@ function HighlightCenterObject()
       }
       if (inHand != None && inHand.IsA('Multitool'))
           	{
-            	if (self.IsA('DeusExPlayer') && PerkNamesArray[16]==1)
+            	if (self.IsA('DeusExPlayer') && PerkManager.GetPerkWithClass(class'DeusEx.PerkWirelessStrength').bPerkObtained == true)
                 MaxFrobDistance = 768;
           	}
      	else
@@ -4362,9 +4412,9 @@ function HighlightCenterObject()
 		minSize = 99999;
 		bFirstTarget = True;
 
-        if (bIsCrouching)
+        if (IsCrouching())
         {
-           if (PerkNamesArray[27]==1)                                           //RSD: Was PerkNamesArray[29] (Creeper), now PerkNamesArray[27] (Endurance)
+           if (PerkManager.GetPerkWithClass(class'DeusEx.PerkEndurance').bPerkObtained == true)                                           //RSD: Was PerkNamesArray[29] (Creeper), now PerkNamesArray[27] (Endurance)
               bCrouchRegen=True;
         }
         else
@@ -4488,7 +4538,7 @@ function Landed(vector HitNormal)
 	if (Velocity.Z < -460)//(Abs(Velocity.Z) >= 1.5 * JumpZ)//GMDX add compression to jump/fall (cosmetic) //CyberP: edited
 	{
 	camInterpol = 0.4;
-	if (bIsCrouching)
+	if (IsCrouching())
 	   PlayFootstep();
 	if (inHand != none && (inHand.IsA('NanoKeyRing') || inHand.IsA('DeusExPickup')))
 	{
@@ -4660,7 +4710,7 @@ function Carcass SpawnCarcass()
 
 function Reloading(DeusExWeapon weapon, float reloadTime)
 {
-	if (!IsLeaning() && !bIsCrouching && (Physics != PHYS_Swimming) && !IsInState('Dying'))
+	if (!IsLeaning() && !IsCrouching() && (Physics != PHYS_Swimming) && !IsInState('Dying'))
 		PlayAnim('Reload', 1.0 / reloadTime, 0.1);
 }
 function DoneReloading(DeusExWeapon weapon)
@@ -4897,7 +4947,7 @@ function HandleWalking()
     local rotator carried;
 
 	// this is changed from Unreal -- default is now walk - DEUS_EX CNN
-	bIsWalking = ((bRun == 0) || (bDuck != 0)) && !Region.Zone.IsA('WarpZoneInfo');
+	bIsWalking = ((bRun == 0) || (IsCrouching())) && !Region.Zone.IsA('WarpZoneInfo');
 
 	if ( CarriedDecoration != None )
 	{
@@ -4919,55 +4969,21 @@ function HandleWalking()
 	//CyberP: super function override end
 
 	if (bAlwaysRun)  //&& !bHardCoreMode
-		bIsWalking = (bRun != 0) || (bDuck != 0);
+		bIsWalking = (bRun != 0) || IsCrouching();
 	else
-		bIsWalking = (bRun == 0) || (bDuck != 0);
+		bIsWalking = (bRun == 0) || IsCrouching();
 
 	// handle the toggle walk key
 	if (bToggleWalk)   //&& !bHardCoreMode
 		bIsWalking = !bIsWalking;
 
-	if (bToggleCrouch)
-	{
-		if (!bCrouchOn && !bWasCrouchOn && (bDuck != 0))
-		{
-			bCrouchOn = True;
-			if ((InHand != None && InHand.IsA('DeusExPickup')) || CarriedDecoration != None)
-			{
-			}
-			else
-			{
-			    RecoilTime*=3.0;
-			    if (inHand != None && inHand.IsA('DeusExWeapon') && (DeusExWeapon(inHand).bAimingDown && AnimSequence != 'Shoot'))
-	            {
-	                RecoilShake.Z-=lerp(min(Abs(4),4.0*4)/(4.0*4),1,2);
-                    RecoilShaker(vect(0,0,-0.5));
-	            }
-	            else /*if (!(assignedWeapon != none && assignedWeapon.IsA('Binoculars') && Binoculars(assignedWeapon).bActive))*/
-	            {                                                               //RSD: Keeps RecoilShaker from messing up FOV with secondary item binocs, but actually moved inside RecoilShaker
-			        RecoilShake.Z-=lerp(min(Abs(4),4.0*4)/(4.0*4),3,5);
-                    RecoilShaker(vect(0,0,-1.5));
-                }
-            }
-		}
-		else if (bCrouchOn && !bWasCrouchOn && (bDuck == 0))
-		{
-			bWasCrouchOn = True;
-		}
-		else if (bCrouchOn && bWasCrouchOn && (bDuck == 0) && (lastbDuck != 0))
-		{
-			bCrouchOn = False;
-			bWasCrouchOn = False;
-		}
+    //SARGE: If our walk state has changed, untoggle crouch
+    if (!bLastRun && bRun == 1 && IsCrouching() && !bAlwaysRun)
+        SetCrouch(false);
+    else if (bLastRun && bRun == 1 && bIsCrouching)
+        SetCrouch(true);
 
-		if (bCrouchOn)
-		{
-			bIsCrouching = True;
-			bDuck = 1;
-		}
-
-		lastbDuck = bDuck;
-	}
+    bLastRun = bool(bRun);
 }
 
 // ----------------------------------------------------------------------
@@ -5042,7 +5058,7 @@ function DoJump( optional float F )
 		}
 
 		// reduce the jump velocity if you are crouching
-//		if (bIsCrouching)
+//		if (IsCrouching())
 //			Velocity.Z *= 0.9;
 
 		//if ( Base != Level )
@@ -5131,7 +5147,7 @@ if (Physics == PHYS_Walking)
 		}
 
 		// reduce the jump velocity if you are crouching
-//		if (bIsCrouching)
+//		if (IsCrouching())
 //			Velocity.Z *= 0.9;
 
 		if ( Base != Level )
@@ -5237,7 +5253,7 @@ function bool SetBasedPawnSize(float newRadius, float newHeight)
 		}
 
 		// Complaints that eye height doesn't seem like your crouching in multiplayer
-		if (( Level.NetMode != NM_Standalone ) && (bIsCrouching || bForceDuck) )
+		if (( Level.NetMode != NM_Standalone ) && (IsCrouching()) )
 			EyeHeight		-= (centerDelta.Z * 2.5);
 		else
 			EyeHeight		-= centerDelta.Z;
@@ -5576,7 +5592,7 @@ state PlayerWalking
 	  bTiptoes=bPreTiptoes&&(!IsLeaning()||bIsTiptoes);
 
 	  // crouching makes you two feet tall
-		if (bIsCrouching || bForceDuck)
+		if (IsCrouching())
 		{
 			if ( Level.NetMode != NM_Standalone )
 				SetBasedPawnSize(Default.CollisionRadius, 30.0);
@@ -5601,7 +5617,7 @@ state PlayerWalking
 		if (bTiptoes)
 		{ //check we can go on tiptoes
 			checkpoint = Location;
-		 if (bForceDuck||bIsCrouching)
+		 if (IsCrouching())
 			checkpoint.Z = checkpoint.Z + 14 +18;
 			else
 			   checkpoint.Z = checkpoint.Z + 5.3 + GetDefaultCollisionHeight();
@@ -5639,7 +5655,7 @@ state PlayerWalking
 		// if the player's legs are damaged, then reduce our speed accordingly
 		newSpeed = defSpeed;
 
-		if ( Level.NetMode == NM_Standalone && PerkNamesArray[5] != 1)          //RSD: Was PerkNamesArray[17] (Adrenaline), changed to PerkNamesArray[5] (Clarity)
+		if ( Level.NetMode == NM_Standalone && PerkManager.GetPerkWithClass(class'DeusEx.PerkPerserverance').bPerkObtained == false)          //RSD: Was PerkNamesArray[17] (Adrenaline), changed to PerkNamesArray[5] (Clarity)
 		{
 			if (HealthLegLeft < 1)
 				newSpeed -= (defSpeed/2) * 0.25;
@@ -5669,7 +5685,7 @@ state PlayerWalking
 			bCanTiptoes=false;
 		}
 		// make crouch speed faster than normal
-		else if ((bIsCrouching || bForceDuck) && !bOnLadder)
+		else if (IsCrouching() && !bOnLadder)
 		{
 		    mult3=1;             //CyberP: faster crouch speed. Comment out all except bIsWalking = True to remove
 		    if (SkillSystem!=None && SkillSystem.GetSkillLevel(class'SkillStealth')>=1)
@@ -5787,7 +5803,7 @@ state PlayerWalking
 	  if (bTiptoes&&bCanTiptoes) //!bIsTiptoes fuuk why so much spamming size
 	  {
 		 bIsTiptoes=true;
-		 if (bIsCrouching || bForceDuck)
+		 if (IsCrouching())
 			SetBasedPawnSize(Default.CollisionRadius, 16+18);
 			else
 			   SetBasedPawnSize(Default.CollisionRadius, GetDefaultCollisionHeight()+5.3);
@@ -5801,7 +5817,7 @@ state PlayerWalking
       swimDuration = UnderWaterTime * mult;                                  //RSD: Removed effect of Athletics on stamina //RSD: reinstated
       //if (mult > 1.0)                                                         //RSD: Never went into effect anyway?
       //   mult *= 0.85;
-      if (bIsWalking && !bIsCrouching && !bForceDuck)  //CyberP: faster walking
+      if (bIsWalking && !IsCrouching())  //CyberP: faster walking
       {
           mult3=1;             //CyberP: faster walk speed. Comment out all except newSpeed *= 1.7 to remove
 		  if (SkillSystem!=None && SkillSystem.GetSkillLevel(class'SkillStealth')>=1)
@@ -5811,9 +5827,9 @@ state PlayerWalking
           newSpeed *= mult3;
       }
 
-      if (Physics == PHYS_Walking && !bCrouchOn && (bStaminaSystem || bHardCoreMode))   //CyberP: stamina system
+      if (Physics == PHYS_Walking && (bStaminaSystem || bHardCoreMode))   //CyberP: stamina system
       {
-      if (bIsWalking == false && !bIsCrouching && (Velocity.X != 0 || Velocity.Y != 0 ))
+      if (bIsWalking == false && !IsCrouching() && (Velocity.X != 0 || Velocity.Y != 0 ))
 	  {
 	    /*if (bHardCoreMode)                                                    //RSD: Generalizing this a bit
 		swimTimer -= deltaTime*1.3;
@@ -5863,7 +5879,7 @@ state PlayerWalking
                }
            }
         }
-	    if ((!bIsCrouching || bCrouchRegen) && !bOnLadder) //(bIsCrouching)     //RSD: Simplified this entire logic from original crouching -> bCrouchRegen check, added !bOnLadder
+	    if ((!IsCrouching() || bCrouchRegen) && !bOnLadder) //(bIsCrouching)     //RSD: Simplified this entire logic from original crouching -> bCrouchRegen check, added !bOnLadder
 	    	RegenStaminaTick(deltaTime);                                        //RSD: Generalized stamina regen function
 	  }
       }
@@ -5886,7 +5902,7 @@ state PlayerWalking
 				if ( PlayerIsClient() || (Level.NetMode == NM_Standalone) )
 					ViewRotation.Roll = curLeanDist * 20;
 
-				if (!bIsCrouching && !bForceDuck)
+				if (!IsCrouching())
 				{
 					SetBasedPawnSize(CollisionRadius, GetDefaultCollisionHeight() - Abs(curLeanDist) / 3.0);
 					//log("Size REset");
@@ -6257,11 +6273,7 @@ event HeadZoneChange(ZoneInfo newHeadZone)
 	if (newheadZone != none && newHeadZone.bWaterZone && !HeadRegion.Zone.bWaterZone) //RSD: accessed none?
 	{
 		// make sure we're not crouching when we start swimming
-		bIsCrouching = False;
-		bCrouchOn = False;
-		bWasCrouchOn = False;
-		bDuck = 0;
-		lastbDuck = 0;
+        SetCrouch(false);
 		Velocity = vect(0,0,0);
 		Acceleration = vect(0,0,0);
 		if (SkillSystem != none)                                                //RSD: accessed none?
@@ -6513,7 +6525,7 @@ state Dying
 	root = DeusExRootWindow(rootWindow);
 
     ClientFlash(900000,vect(255,0,0));
-    if (bCrouchOn || bWasCrouchOn || bIsCrouching || bForceDuck)
+    if (IsCrouching())
        MeleeRange=51.000000; //CyberP: change this unused var to avoid adding yet more global vars
 
 	if (root != None)
@@ -6746,12 +6758,7 @@ Begin:
     if (AugmentationSystem != None)
         AugmentationSystem.DeactivateAll(); //CyberP: deactivate augs
 	// Don't come back to life crouched
-	bCrouchOn			= False;
-	bWasCrouchOn		= False;
-	bIsCrouching		= False;
-	bForceDuck			= False;
-	lastbDuck			= 0;
-	bDuck				= 0;
+    SetCrouch(false,true);
 
     ClientFlash(900000,vect(160,0,0));
     IncreaseClientFlashLength(4);
@@ -7975,7 +7982,7 @@ function DoFrob(Actor Frobber, Inventory frobWith)
 		return;
 
 	// alert NPCs that I'm messing with stuff
-	if ((FrobTarget.bOwned) && perkNamesArray[36] != 1)                         //RSD: Unless you have the Sleight of Hand perk
+	if ((FrobTarget.bOwned) && PerkManager.GetPerkWithClass(class'DeusEx.PerkSleightOfHand').bPerkObtained == false)                         //RSD: Unless you have the Sleight of Hand perk
 		AISendEvent('Futz', EAITYPE_Visual);
 
 	// play an animation
@@ -8161,7 +8168,7 @@ function UpdateInHand()
 				{
 					if (InHandPending != none && InHandPending.IsA('DeusExWeapon') && //RSD: New Sidearm perk
                       DeusExWeapon(inHandPending).GoverningSkill == class'SkillWeaponPistol' &&
-                      PerkNamesArray[1] == 1)
+                      PerkManager.GetPerkWithClass(class'DeusEx.PerkSidearm').bPerkObtained == true)
                         savedStandingTimer = DeusExWeapon(InHand).standingTimer;
                     else
                         savedStandingTimer = 0.0;
@@ -10514,7 +10521,7 @@ function bool GetCrosshairState(optional bool bCheckForOuterCrosshairs)
         //Accuracy Crosshair stuff
         if (bCheckForOuterCrosshairs)
         {
-            if (W.bHandToHand || W.IsA('WeaponShuriken') || W.GoverningSkill == class'DeusEx.SkillDemolition') //Melee weapons and grenades have no accuracy crosshairs
+            if (!W.isA('WeaponShuriken') && (W.bHandToHand || W.GoverningSkill == class'DeusEx.SkillDemolition')) //Melee weapons and grenades have no accuracy crosshairs
                 return false;
             else if (bHardcoreMode && W.IsInState('Reload')) //RSD: Remove the accuracy indicators if reloading on Hardcore
                 return false;
@@ -13642,7 +13649,7 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
 	  Damage *= MPDamageMult;
 	else if (damageType=='Drowned')
 	{
-	  if (PerkNamesArray[5]!=1)
+	  if (PerkManager.GetPerkWithClass(class'DeusEx.PerkPerserverance').bPerkObtained == false)
 	      drugEffectTimer += 3.5; //freak player :)
 	  if (combatDifficulty < 3)
          Damage=6;
@@ -13887,6 +13894,9 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
 			// narrow the head region
 			if ((Abs(offset.x) < headOffsetY) || (Abs(offset.y) < headOffsetY))
 			{
+				if (damageType == 'Burned' || damageType == 'Exploded')	// Trash: Less damage from plasma and explosions
+				HealthHead -= actualDamage * 1;
+				else
 				HealthHead -= actualDamage * 2;
 				if (bPlayAnim)
 					PlayAnim('HitHead', , 0.1);
@@ -13973,6 +13983,9 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
 			}
 			else
 			{
+				if (damageType == 'Burned' || damageType == 'Exploded')	// Trash: Less damage from plasma and explosions
+				HealthTorso -= actualDamage * 1;
+				else
 				HealthTorso -= actualDamage * 2;
 				if (bPlayAnim)
 				{
@@ -14253,7 +14266,12 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 				foreach AllActors(class'BallisticArmor', armor)
 				{
 			        if ((armor.Owner == Self) && armor.bActive)
-			            armor.Charge -= (Damage * 16 * skillLevel);
+			            {
+							if (skillLevel == 1)
+								armor.Charge -= (Damage * 16 * skillLevel);
+							else
+								armor.Charge -= (Damage * 32 * skillLevel);	// Trash: Nerfed
+						}
                     if (armor.Charge < 0)                                       //RSD: Don't go below zero
                     {
                         armor.Charge = 0;
@@ -14411,12 +14429,7 @@ function ClientDeath()
 	drugEffectTimer	= 0;
 
 	// Don't come back to life crouched
-	bCrouchOn			= False;
-	bWasCrouchOn		= False;
-	bIsCrouching		= False;
-	bForceDuck			= False;
-	lastbDuck			= 0;
-	bDuck					= 0;
+    SetCrouch(false,true);
 
 	// No messages carry over
 	mpMsgCode = 0;
@@ -14444,12 +14457,6 @@ function Timer()      //CyberP: my god I've turned this into a mess.
     {
       clickCountCyber = 0;
       bDoubleClickCheck=False;
-    }
-
-    if (bCrouchHack)
-    {
-        bToggleCrouch = False;
-        bCrouchHack = False;
     }
 
     if (Physics == PHYS_Flying)
@@ -14680,177 +14687,13 @@ function SkillPointsAdd(int numPoints)
 	//}
 }
 
-// ----------------------------------------------------------------------
-// perksManager() //CyberP:
-// ----------------------------------------------------------------------
 
-function perksManager(string Perky, int perkLevel)
-{
-local Medkit med;
-local BioelectricCell cell;
-local Robot robo;
-local DeusExMover mov;
-
-   if (perkLevel == 1)
-   {
-    switch(Perky)
-    {
-          case "SONIC-TRANSDUCER SENSOR":
-          PerkNamesArray[0]= 1;
-          break;
-
-          case "FOCUSED: PISTOLS":                                              //RSD: Now actually Sidearm
-          PerkNamesArray[1]= 1;
-          break;
-
-          case "FOCUSED: RIFLES":                                               //RSD: Now actually Steady (same effect)
-          PerkNamesArray[2]= 1;
-          break;
-
-          case "FOCUSED: HEAVY WEAPONS":                                        //RSD: Now actually Controlled Burn
-          PerkNamesArray[3]= 1;
-          break;
-
-          case "SHARP-EYED":
-          PerkNamesArray[4]= 1;
-          break;
-
-          case "CLARITY":                                                       //RSD: Now actually Perserverance
-          PerkNamesArray[5]= 1;
-          break;
-
-          case "STEADY-FOOTED":                                                 //RSD: Now actually Repairman
-          PerkNamesArray[6]= 1;
-          break;
-
-          case "MODDER":
-          PerkNamesArray[7]= 1;
-          break;
-
-          case "BIOGENIC":
-          PerkNamesArray[8]= 1;
-          break;
-
-          case "NIMBLE":
-          PerkNamesArray[9]= 1;
-          break;
-
-          case "SABOTAGE":
-          PerkNamesArray[10]= 1;
-          break;
-
-          case "ARTIFICIAL LOCK":                                               //RSD: Now actually Sleight of Hand
-          PerkNamesArray[36]= 1;
-          break;
-
-          default:
-          break;
-        }
-     }
-   else if (perkLevel == 2)
-   {
-    switch(Perky)
-    {
-          case "HUMAN COMBUSTION":                                              //RSD: Now actually One-Handed
-          PerkNamesArray[11]= 1;
-          break;
-
-          case "QUICKDRAW":                                                     //RSD: Now actually Stopping Power
-          PerkNamesArray[12]= 1;
-          break;
-
-          case "PERFECT STANCE: HEAVY WEAPONS":                                 //RSD: Now actually Blast Energy
-          PerkNamesArray[13]= 1;
-          break;
-
-          case "PIERCING":
-          PerkNamesArray[14]= 1;
-          break;
-
-          case "SHORT FUSE":
-          PerkNamesArray[15]= 1;
-          break;
-
-          case "WIRELESS STRENGTH":
-          PerkNamesArray[16]= 1;
-          break;
-          /*
-          case "ATHLETE'S APPETITE":
-          PerkNamesArray[17]= 1;
-          fullUp=-99999;
-          break;
-          */
-          case "ADRENALINE":                                                    //RSD: Still called Adrenaline, but new effect
-          PerkNamesArray[17]= 1;
-          break;
-
-          case "NERVES OF STEEL":                                               //RSD: Now actually Security Loophole
-          PerkNamesArray[18]= 1;
-          break;
-
-          case "TOXICOLOGIST":
-          PerkNamesArray[19]= 1;
-          break;
-
-          case "HARDENED":
-          PerkNamesArray[20]= 1;
-          break;
-
-          case "MISFEATURE EXPLOIT":
-          PerkNamesArray[21]= 1;
-          break;
-
-          case "DOORSMAN":
-          PerkNamesArray[34]= 1;
-          foreach AllActors(class'DeusExMover',mov)
-          {
+		  /*
              mov.minDamageThreshold -= 5;
              if (mov.minDamageThreshold <= 0)
                 mov.minDamageThreshold = 1;
-             mov.bPerkApplied = True;
-          }
-          break;
-
-          default:
-          break;
-        }
-     }
-    else if (perkLevel == 3)
-   {
-    switch(Perky)
-    {
-          case "PERFECT STANCE: PISTOLS":                                       //RSD: Now actually Human Combustion
-          PerkNamesArray[22]= 1;
-          break;
-
-          case "PERFECT STANCE: RIFLES":                                        //RSD: Now actually Marksman
-          PerkNamesArray[23]= 1;
-          break;
-
-          case "H.E ROCKET":
-          PerkNamesArray[24]= 1;
-          break;
-
-          case "INVENTIVE":
-          PerkNamesArray[25]= 1;
-          break;
-
-          case "KNOCKOUT GAS":
-          PerkNamesArray[26]= 1;
-          break;
-
-          case "ENDURANCE":
-          PerkNamesArray[27]= 1;
-          break;
-
-          case "TECH SPECIALIST":
-          PerkNamesArray[28]= 1;
-          break;
-
-          case "CREEPER":                                                       //RSD: Now actually Diversionary Tactic
-          PerkNamesArray[29]= 1;
-          break;
-
+             mov.bPerkApplied = True; */
+		/* 
           case "COMBAT MEDIC'S BAG":
           PerkNamesArray[30]= 1;
           foreach AllActors(class'Medkit',med)
@@ -14858,24 +14701,7 @@ local DeusExMover mov;
           foreach AllActors(class'BioelectricCell',cell)
              cell.MaxCopies = 25;
           break;
-
-          case "CRACKED":
-          PerkNamesArray[31]= 1;
-          break;
-
-          case "LOCKSPORT":
-          PerkNamesArray[32]= 1;
-          break;
-
-          case "NEAT HACK":                                                     //RSD: Now actually Turret Domination
-          PerkNamesArray[33]= 1;
-          break;
-
-          default:
-          break;
-        }
-     }
-}
+		  */
 
 // ----------------------------------------------------------------------
 // MakePlayerIgnored()
@@ -14923,7 +14749,7 @@ function float CalculatePlayerVisibility(ScriptedPawn P)                        
             else if ((UsingChargedPickup(class'TechGoggles') ||  AugmentationSystem.GetAugLevelValue(class'AugVision') != -1.0) && vis != 0.0)
                 //vis = litemult;                                               //RSD: From Jose21Crisis
                 vis -= 0.031;                                                   //RSD: Hopefully accounts for night vision brightness
-            if (vis != 0.0 && bIsCrouching)
+            if (vis != 0.0 && IsCrouching())
                 vis -= (1.0-litelvl)*skillStealthMod;*/                           //RSD: Up to 0/20/40/60% visibility reduction when crouched in darkness
 		}
 
@@ -16608,6 +16434,9 @@ function MultiplayerTick(float DeltaTime)
 	   ClientInHandPending = None;
 	}
 
+    //handle crouch toggle
+    HandleCrouchToggle();
+
 	LastInHand = InHand;
 
 	if ((PlayerIsClient()) || (Level.NetMode == NM_ListenServer))
@@ -17164,7 +16993,7 @@ function RegenStaminaTick(float deltaTime)                                      
 	else
         mult = 1.0;
 	//RSD: base regen now 2.0, now properly multiplied with additive increases/decreases
-	if (PerkNamesArray[27] == 1)                                                //RSD: endurance perk adds x2
+	if (PerkManager.GetPerkWithClass(class'DeusEx.PerkEndurance').bPerkObtained == true)                                                //RSD: endurance perk adds x2
 		mult += 1.0;
 	if (AddictionManager.addictions[DRUG_TOBACCO].bInWithdrawals == true)                                           //RSD: if suffering from nicotine withdrawal, subtract x0.5
 		mult -= 0.5;

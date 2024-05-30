@@ -460,6 +460,10 @@ var(Combat) bool bStopCamping;
 var bool        bReactToBeamGlobal;
 var bool        bReactFlareBeam;
 
+//Sarge
+var() const float fireReactTime;                                                //Minimum time we must be seeing the player for, before we can fire on them
+var float currentReactTime;                                                     //How much time remaining until we can fire
+
 //RSD
 var bool bHeadshotAltered;                                                      //RSD: Determines if the headshot multiplier was altered to avoid any edge cases
 var int PickupAmmoCount;                                                        //RSD: Ammo count to be passed to DeusExCarcass on death. Initialized in MissionScript.uc on first map load
@@ -2107,7 +2111,7 @@ function bool CheckEnemyPresence(float deltaSeconds,
 						if (candidate.IsA('DeusExPlayer'))
 						{
 							playerCandidate = DeusExPlayer(candidate);
-							if (playerCandidate.bIsCrouching)                   //RSD: Increase VisibilityThreshold according to stealth skill when crouched in darkness
+							if (playerCandidate.IsCrouching())                   //RSD: Increase VisibilityThreshold according to stealth skill when crouched in darkness
 							{
 								/*skillStealthMod = (playerCandidate.SkillSystem.GetSkillLevelValue(class'SkillStealth')-0.5)*0.3;
 								if (skillStealthMod < 0.0)
@@ -3519,7 +3523,11 @@ function EHitLocation HandleDamage(out int actualDamage, Vector hitLocation, Vec
 
 	if (actualDamage > 0)
 	{
-		if (offset.z > headOffsetZ)		// head
+		if (damageType == 'Burned' || damageType == 'Exploded' || damageType == 'Flamed') // Trash: Code stolen directly from RoSoDude, basically only deal torso damage multiplied by 4 if it's a flamethrower, explosive weapon, or the plasma gun for consistency.
+		{
+			healthTorso -= actualDamage * 4;
+		}
+		else if (offset.z > headOffsetZ)		// head
 		{
 		    if (offset.z > CollisionHeight * 0.85 && !(abs(offset.y) < headOffsetY && offset.x > 0.0 && offset.z < CollisionHeight*0.93) //RSD: Was CollisionHeight*0.93, I'm making it *0.85, and NOT from the front
             	&& bHasHelmet && (damageType == 'Shot' || damageType == 'Poison' || damageType == 'Stunned'))
@@ -3992,7 +4000,7 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
              }
              }
             }
-            if (DeusExPlayer(instigatedBy).PerkNamesArray[17]==1)               //RSD: 50% Stamina return from Adrenaline perk
+            if (DeusExPlayer(instigatedBy).PerkManager.GetPerkWithClass(class'DeusEx.PerkAdrenalineRush').bPerkObtained == true)               //RSD: 50% Stamina return from Adrenaline perk
             {
               if (DeusExPlayer(instigatedBy).inHand != None && (DeusExPlayer(instigatedBy).inHand.IsA('DeusExWeapon') &&
                  DeusExWeapon(DeusExPlayer(instigatedBy).inHand).bHandToHand && DeusExWeapon(DeusExPlayer(instigatedBy).inHand).AccurateRange < 200) )
@@ -13262,6 +13270,11 @@ State Attacking
                 return false;  //CyberP: rand as to whether snipers can fire, to simulate taking variable time to aim.
 			else if (AICanShoot(enemy, true, true, 0.025))
 			{
+                if (currentReactTime > 0)
+                {
+                    //Waiting to fire...
+                    return false;
+                }
 			    vista = VSize(Enemy.velocity);
 			    if (vista > 400)
 			    {
@@ -13290,11 +13303,48 @@ State Attacking
 				return true;
 			}
 			else
+            {
+                currentReactTime = GetFireReactTime();
 				return false;
+            }
 		}
 		else
 			return false;
 	}
+
+    //SARGE: Reset the minimum firing time when we lose LOS, based on factors like difficulty and weapon used
+    function float GetFireReactTime()
+    {
+        local float add;
+        local DeusExPlayer player;
+	    local DeusExWeapon W;
+
+        player = DeusExPlayer(GetPlayerPawn());    
+        W = DeusExWeapon(Weapon);
+
+        if (W != None && player != None)
+        {
+            if (player.CombatDifficulty < 2) //On lower difficulties, increase the timer
+                add += 0.2;
+            
+            if (W.GoverningSkill == class'SkillWeaponPistol') //Pistols are slightly faster
+                add -= 0.1;
+            
+            else if (W.GoverningSkill == class'SkillWeaponRifle') //Rifles are slightly slow
+                add += 0.1;
+            
+            else if (W.GoverningSkill == class'SkillWeaponHeavy') //Heavy Weapons are very slow
+                add += 0.3;
+
+            if (W.isA('WeaponRifle'))
+                add += 0.2;
+        }
+
+        //Add some randomness
+        add += FRand() * 0.1;
+
+        return FMIN(0.75,fireReactTime+add);
+    }
 
 	function CheckAttack(bool bPlaySound)
 	{
@@ -13386,6 +13436,8 @@ State Attacking
 		local Pawn   lastEnemy;
 		local float  surpriseTime;
         local float  distan;
+
+        currentReactTime = FMAX(0.0,currentReactTime - deltaSeconds);
 
 		Global.Tick(deltaSeconds);
 		if (CrouchTimer > 0)
@@ -13927,7 +13979,7 @@ RunToRange:
 	if (bCanStrafe && FRand() < smartStrafeRate && EnemyLastSeen < EnemyTimeout - 1.5)
 	{
 	    bSmartStrafe = True;
-	    if (FRand() < 0.9)
+	    //if (FRand() < 0.9) //Sarge: Remove this, let them always fire.
 	       bCanFire = True;
 	    //if (!ActorReachable(Enemy))
         //    bSmartStrafe = False;
@@ -14426,7 +14478,7 @@ State Alerting
 
 			if (AlarmActor.hackStrength > 0)  // make sure the alarm hasn't been hacked
 				AlarmActor.Trigger(self, Enemy);
-			else if (playa != None &&  playa.PerkNamesArray[10] == 1)  //CyberP: shock the pawn
+			else if (playa != None &&  playa.PerkManager.GetPerkWithClass(class'DeusEx.PerkSabotage').bPerkObtained == true)  //CyberP: shock the pawn
                 TakeDamage(200,self,vect(0,0,0),vect(0,0,0),'Stunned');
 		}
 	}
@@ -16380,7 +16432,7 @@ state TakingHit
 		SetDistress(true);
         //hack
         player = DeusExPlayer(GetPlayerPawn());
-        if (player != None && player.PerkNamesArray[14]==1 && player.inHand != None)
+        if (player != None && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkPiercing').bPerkObtained == true && player.inHand != None)
         {
            if (player.inHand.IsA('DeusExWeapon') && DeusExWeapon(player.InHand).bHandToHand)
            {
@@ -17074,4 +17126,5 @@ defaultproperties
      BindName="ScriptedPawn"
      FamiliarName="DEFAULT FAMILIAR NAME - REPORT THIS AS A BUG"
      UnfamiliarName="DEFAULT UNFAMILIAR NAME - REPORT THIS AS A BUG"
+     fireReactTime=0.4
 }

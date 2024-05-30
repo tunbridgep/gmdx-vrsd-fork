@@ -23,14 +23,6 @@ var travel Skill next;
 // Printable skill level strings
 var Localized string skillLevelStrings[4];
 var localized string SkillAtMaximum;
-var localized string      PerksDescription; //CyberP: perks
-var localized string      PerksDescription2; //CyberP: perks
-var localized string      PerksDescription3; //CyberP: perks
-var string      PerkName, PerkName2, PerkName3;  //CyberP: not localized as perk name is passed in code
-var int					  PerkCost[3];       //CyberP: perks
-var localized string LocalizedPerkName;       //CyberP: change this to change perk name displayed in-game without fucking up the system
-var localized string LocalizedPerkName2;
-var localized string LocalizedPerkName3;
 // ----------------------------------------------------------------------
 // network replication
 // ----------------------------------------------------------------------
@@ -81,7 +73,7 @@ function bool Use()
 
 			// alert NPCs that I'm messing with stuff
 			if (Player.FrobTarget != None)
-				if (Player.FrobTarget.bOwned && Player.perkNamesArray[35] != 1)     //RSD: Unless you have the Sleight of Hand perk //RSD: WHY DID I COMMENT THAT OUT?! GAHHHH
+				if (Player.FrobTarget.bOwned && Player.PerkManager.GetPerkWithClass(class'DeusEx.PerkSleightOfHand').bPerkObtained == false)     //RSD: Unless you have the Sleight of Hand perk //RSD: WHY DID I COMMENT THAT OUT?! GAHHHH
 					Player.FrobTarget.AISendEvent('MegaFutz', EAITYPE_Visual);
 
 			bDoIt = True;
@@ -256,9 +248,6 @@ simulated function bool UpdatePerksInfo(Object winObject)    //CyberP: perks
 	if (winInfo == None)
 		return False;
 
-    PerkName = default.PerkName;
-    PerkName2 = default.PerkName2;
-    PerkName3 = default.PerkName3;
 	winInfo.Clear();
 	winInfo.SetTitle(SkillName);
 	/*winInfo.SetText(PerksDescription);
@@ -267,10 +256,7 @@ simulated function bool UpdatePerksInfo(Object winObject)    //CyberP: perks
 	winInfo.SetText(LineBreaker);
 	winInfo.SetText(PerksDescription3);
 	winInfo.SetText(LineBreaker); */
-	winInfo.CreatePerkButtons(PerksDescription,PerksDescription2,PerksDescription3, PerkCost[0],
-    PerkCost[1], PerkCost[2], PerkName, PerkName2, PerkName3, LocalizedPerkName, LocalizedPerkName2, LocalizedPerkName3, SkillIcon);
-    //Totalitarian: WARNING! THE WHOLE PERK SYSTEM PASSES PERK NAME! DO NOT CHANGE THE NAME OF PERKS
-    //Totalitarian: INSTEAD CHANGE THE LocalizedPerkName VAR
+	winInfo.CreatePerkButtons(self);
 	return True;
 }
 // ----------------------------------------------------------------------
@@ -283,9 +269,6 @@ defaultproperties
      skillLevelStrings(2)="ADVANCED"
      skillLevelStrings(3)="MASTER"
      SkillAtMaximum="Skill at Maximum Level"
-     PerksDescription="PERK 1 |n|nDescript |n|nRequires: Placeholder Skill (Trained) |nSkill Points Needed: x |n"
-     PerksDescription2="PERK 2|n|nDescript |n|nRequires: Placeholder Skill (Advanced) |nSkill Points Needed: x |n"
-     PerksDescription3="PERK 3|n|nDescript |n|nRequires: Placeholder Skill (Master) |nPoints Needed: x |n"
      bHidden=True
      bTravel=True
      NetUpdateFrequency=5.000000

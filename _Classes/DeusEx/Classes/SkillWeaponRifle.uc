@@ -45,16 +45,4 @@ defaultproperties
      LevelValues(1)=-0.100000
      LevelValues(2)=-0.250000
      LevelValues(3)=-0.500000
-     PerksDescription="|nAn agent's standing accuracy bonus with rifles is accelerated by 50%.|n|nRequires: Rifles: TRAINED"
-     PerksDescription2="|nAn agent can stop an enemy in their tracks with a shotgun blast, gaining bonus damage (+25%) when every pellet hits a single target.|n|nRequires: Rifles: ADVANCED"
-     PerksDescription3="|nAn agent aims down a rifle's scope 30% faster, handles rifle recoil efficiently, and sway when looking through a rifle's scope is reduced marginally.|n|nRequires: Rifles: MASTER"
-     PerkName="FOCUSED: RIFLES"
-     PerkName2="QUICKDRAW"
-     PerkName3="PERFECT STANCE: RIFLES"
-     PerkCost(0)=200
-     PerkCost(1)=150
-     PerkCost(2)=300
-     LocalizedPerkName="STEADY"
-     LocalizedPerkName2="STOPPING POWER"
-     LocalizedPerkName3="MARKSMAN"
 }

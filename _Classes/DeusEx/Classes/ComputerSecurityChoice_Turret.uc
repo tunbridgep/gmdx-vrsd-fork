@@ -145,7 +145,7 @@ function SetTurretState()
 
 function SetValue(int newValue)                                                 //RSD: Overrides the parent routine from MenuiUIChoiceEnum.uc
 {
-	if (Player.PerkNamesArray[33] != 1 && newValue > 1)                         //RSD: If the player does not have the Turret Domination perk, they can't reconfigure turret alliances
+	if (Player.PerkManager.GetPerkWithClass(class'DeusEx.PerkTurretDomination').bPerkObtained == false && newValue > 1)                         //RSD: If the player does not have the Turret Domination perk, they can't reconfigure turret alliances
 		currentValue = 0;                                                       //RSD: (replaces Neat Hack)
 	else
     	currentValue = newValue;

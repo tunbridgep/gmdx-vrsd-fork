@@ -61,7 +61,7 @@ Begin Actor Class=LDDPHKClubGuyS Name=LDDPHKClubGuy0
     Level=LevelInfo'MyLevel.LevelInfo0'
     Tag=LDDPHKClubGuy
     Region=(Zone=ZoneInfo'MyLevel.ZoneInfo1',iLeaf=1340,ZoneNumber=8)
-    Location=(X=-1404.688599,Y=-1089.216431,Z=-336.399384)
+    Location=(X=-1438.688599,Y=-1119.216431,Z=-336.399384)
     Rotation=(Yaw=-7648)
     OldLocation=(X=-1345.980957,Y=-1127.746582,Z=-336.399384)
     BarkBindName="Man"

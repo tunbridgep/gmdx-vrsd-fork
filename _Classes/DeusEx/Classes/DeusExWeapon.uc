@@ -480,7 +480,7 @@ function TravelPostAccept()
 	if (AmmoType != None)
 		AmmoName = AmmoType.Class;
 
-	if (!bInstantHit)
+	if (!bInstantHit || AmmoType.IsA('AmmoRubber'))
 	{
 		if (ProjectileClass != None)
 			ProjectileSpeed = ProjectileClass.Default.speed;
@@ -1493,10 +1493,7 @@ simulated function float CalculateAccuracy()
 
 		HealthArmHighest = Max(HealthArmLeft, HealthArmRight);                  //RSD: Get max
 		BestArmHighest = Max(BestArmLeft, BestArmRight);                        //RSD: Get max
-		if (GoverningSkill == class'SkillWeaponPistol' && player.PerkNamesArray[11] == 1) //RSD: New One-Handed perk for Pistols
-			bCheckHighestHealthArm = true;
-		else
-			bCheckHighestHealthArm = false;
+		bCheckHighestHealthArm = GoverningSkill == class'SkillWeaponPistol' && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkAmbidextrous').bPerkObtained; //RSD: New One-Handed perk for Pistols
 	}
 	else if (ScriptedPawn(Owner) != None)
 	{
@@ -1618,7 +1615,7 @@ function bool LoadAmmo(int ammoNum)
 
 
 			// if we don't have a projectile for this ammo type, then set instant hit
-			if (ProjectileNames[ammoNum] == None)
+			if (ProjectileNames[ammoNum] == None || ProjectileNames[ammoNum] == Class'DeusEx.RubberBullet')
 			{
 				bInstantHit = True;
 				bAutomatic = (Default.bAutomatic || (bFullAuto && IsA('WeaponStealthPistol'))); //RSD: Added || bFullAuto so that stealth pistol ROF isn't fucked when loading alt ammo
@@ -1647,6 +1644,13 @@ function bool LoadAmmo(int ammoNum)
 						ReloadTime = Default.ReloadTime;
 				}
 				FireSound = Default.FireSound;
+
+				if (ProjectileNames[ammoNum] == Class'DeusEx.RubberBullet')
+				{
+					ProjectileClass = ProjectileNames[ammoNum];
+					ProjectileSpeed = ProjectileClass.Default.Speed;
+				}
+				else
 				ProjectileClass = None;
 			}
 			else
@@ -2068,7 +2072,9 @@ function name WeaponDamageType()
 	projClass = Class<DeusExProjectile>(ProjectileClass);
 	if (bInstantHit)
 	{
-		if (StunDuration > 0)
+        if (AmmoType.IsA('AmmoRubber'))
+			damageType = 'KnockedOut';
+        else if (StunDuration > 0)
 			damageType = 'Stunned';
 		else
 			damageType = 'Shot';
@@ -2478,7 +2484,7 @@ simulated function Tick(float deltaTime)
 		// reduce the recoil based on skill
 		/*if (player.PerkNamesArray[22] == 1 && GoverningSkill==Class'DeusEx.SkillWeaponPistol') //RSD: Removed Perfect Stance: Pistols
 		   recoil = recoilStrength * 0.5; // + GetWeaponSkill() * 2.0; //CyberP: Removed Recoil based on skill level.
-		else*/ if (player.PerkNamesArray[23] == 1 && GoverningSkill==Class'DeusEx.SkillWeaponRifle')
+		else*/ if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkMarksman').bPerkObtained == true && GoverningSkill==Class'DeusEx.SkillWeaponRifle')
            recoil = recoilStrength * 0.5;
 		/*else if (player.PerkNamesArray[13] == 1 && GoverningSkill==Class'DeusEx.SkillWeaponHeavy') //RSD: Removed Perfect Stance: Heavy
 		   recoil = recoilStrength * 0.5;*/
@@ -2582,7 +2588,7 @@ simulated function Tick(float deltaTime)
 		    standingTimer += deltaTime*2;*/
         /*if (player.PerkNamesArray[1]==1 && GoverningSkill==Class'DeusEx.SkillWeaponPistol') //RSD: Removed Focused: Pistols
             mult += 0.25;                                                        //RSD: Now +25% bonus
-        else */if (player.PerkNamesArray[2]==1 && GoverningSkill==Class'DeusEx.SkillWeaponRifle')
+        else */if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkSteady').bPerkObtained == true && GoverningSkill==Class'DeusEx.SkillWeaponRifle')
             mult += 0.25;                                                        //RSD: Now +25% bonus
         /*else if (player.PerkNamesArray[3]==1 && GoverningSkill==Class'DeusEx.SkillWeaponHeavy') //RSD: Removed Focused: Heavy
             mult += 0.25;*/                                                        //RSD: Now +25% bonus
@@ -2607,9 +2613,9 @@ simulated function Tick(float deltaTime)
 		{
 		    /*if (player.PerkNamesArray[22] == 1 && GoverningSkill==Class'DeusEx.SkillWeaponPistol') //RSD: Removed Perfect Stance: Pistols
 		        perkMod = 0;
-		    else*/ if (player.PerkNamesArray[23] == 1 && GoverningSkill==Class'DeusEx.SkillWeaponRifle')
+		    else*/ if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkMarksman').bPerkObtained == true && GoverningSkill==Class'DeusEx.SkillWeaponRifle')
 	            perkMod = 0;
-			else if (player.PerkNamesArray[3] == 1 && GoverningSkill==Class'DeusEx.SkillWeaponHeavy')
+			else if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkControlledBurn').bPerkObtained == true && GoverningSkill==Class'DeusEx.SkillWeaponHeavy')
                 perkMod = 0;
 			else
                 perkMod = 0.04;
@@ -3003,7 +3009,7 @@ simulated function MuzzleFlashLight()
     offset += Y * Owner.CollisionRadius * 0.75;
     else
     offset += Y * Owner.CollisionRadius * 0.25;
-    if (DeusExPlayer(Owner).bIsCrouching)
+    if (DeusExPlayer(Owner).IsCrouching())
         offset.Z *= (Owner.CollisionHeight * 0.8);
     /*smoke = spawn(class'FireSmoke',,, offset, Pawn(Owner).ViewRotation);
     if (smoke!=none)
@@ -3625,11 +3631,11 @@ simulated function UpdateRecoilShaker()
 	if(Owner.IsA('DeusExPlayer'))
 	{
 	  DeusExPlayer(Owner).RecoilShaker(RecoilShaker);
-	  if (DeusExPlayer(Owner).PerkNamesArray[23] == 1 && GoverningSkill==Class'DeusEx.SkillWeaponRifle')
+	  if (DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkMarksman').bPerkObtained == true && GoverningSkill==Class'DeusEx.SkillWeaponRifle')
 	      negTime = (RecoilStrength * default.negTime)*0.75;
 	  /*else if (DeusExPlayer(Owner).PerkNamesArray[22] == 1 && GoverningSkill==Class'DeusEx.SkillWeaponPistol') //RSD: Removed Perfect Stance: Pistols
 	      negTime = (RecoilStrength * default.negTime)*0.75;*/
-	  else if (DeusExPlayer(Owner).PerkNamesArray[3] == 1 && GoverningSkill==Class'DeusEx.SkillWeaponHeavy')
+	  else if (DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkControlledBurn').bPerkObtained == true && GoverningSkill==Class'DeusEx.SkillWeaponHeavy')
 	      negTime = (RecoilStrength * default.negTime)*0.75;
 	  else
 	      negTime = RecoilStrength * default.negTime;
@@ -3664,7 +3670,7 @@ simulated function PlayIdleAnim()
 	rnd = FRand();
 	if (Owner.IsA('DeusExPlayer'))
 	{
-    if (DeusExPlayer(Owner).bIsCrouching == False && (DeusExPlayer(Owner).Velocity.X != 0 || DeusExPlayer(Owner).Velocity.Y != 0))
+    if (DeusExPlayer(Owner).IsCrouching() == False && (DeusExPlayer(Owner).Velocity.X != 0 || DeusExPlayer(Owner).Velocity.Y != 0))
     {
 	if (rnd < 0.1)
 		PlayAnim('Idle1',1.5,0.1);
@@ -4449,7 +4455,7 @@ simulated function Projectile ProjectileFire(class<projectile> ProjClass, float 
                   {
                   if (bContactDeton)
                      proj.bContactDetonation=True;
-                  if (DeusExPlayer(Owner).PerkNamesArray[15]==1)
+                  if (DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkShortFuse').bPerkObtained == true)
                   {
                      //proj.MaxSpeed=1650.000000;
                      //proj.Velocity*=1.4;
@@ -4589,8 +4595,13 @@ simulated function TraceFire( float Accuracy )
 	AdjustedAim = pawn(owner).AdjustAim(1000000, StartTrace, 2.75*AimError, False, False);
 
 	// check to see if we are a shotgun-type weapon
-	if (AreaOfEffect == AOE_Cone && !ammoType.IsA('AmmoSabot'))                 //RSD: Special case to make Sabot rounds actually slugs
-		numSlugs = 8;  //CyberP: was 5
+	if (AreaOfEffect == AOE_Cone && !ammoType.IsA('AmmoSabot') && !ammoType.IsA('AmmoRubber'))                 //RSD: Special case to make Sabot rounds actually slugs
+    {
+        if (IsA('WeaponSawedOffShotgun'))
+		    numSlugs = 9;  //Sarge: Give the sawed off an extra slug
+        else
+		    numSlugs = 8;  //CyberP: was 5
+    }
 	else
 		numSlugs = 1;
 
@@ -4678,7 +4689,7 @@ simulated function TraceFire( float Accuracy )
 
       //RSD: Stopping Power perk for shotguns
       bDoExtraSlugDamage = false;
-      if (numSlugs > 1 && Other != none && Other.IsA('ScriptedPawn') && Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkNamesArray[12] == 1)
+      if (numSlugs > 1 && Other != none && Other.IsA('ScriptedPawn') && Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkStoppingPower').bPerkObtained == true)
       {
           if (i == 0)
               initialPawnHit = ScriptedPawn(Other);
@@ -4743,6 +4754,11 @@ simulated function TraceFire( float Accuracy )
     //if (IsA('WeaponStealthPistol'))                                             //RSD: Full-auto needs a bit more kick for the laser
     	laserKick = 2.0*recoilStrength;
    	//else laserKick = 1.5*recoilStrength;
+
+	if (AmmoName == Class'AmmoRubber')
+	{
+		ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+	}
 
     LaserYaw += (currentAccuracy*laserKick) * (Rand(4096) - 2048);              //RSD: Bump laser position when firing (75% of cone width)
     LaserPitch += (currentAccuracy*laserKick) * (Rand(4096) - 2048);
@@ -4810,8 +4826,13 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
 		// Determine damage type
 		damageType = WeaponDamageType();
 
-        if (AmmoSabot(ammoType) != none)                                        //RSD: Since Sabot rounds are slugs now, do 6x damage (18 total)
-            mult *= 6.;
+        if (AmmoSabot(ammoType) != none || AmmoRubber(ammoType) != none)                                        //RSD: Since Sabot rounds are slugs now, do 6x damage (18 total) // Trash: Now rubber too!
+            {
+				if (AmmoSabot(ammoType) != none || AmmoRubber(ammoType) != none)
+					mult *= 6.;
+				if (IsA('WeaponSawedOffShotgun') && AmmoRubber(ammoType) != none)
+					mult *= 1.3;
+			}
         if (bDoExtraSlugDamage)                                                 //RSD: Do two slug's worth of extra damage
             mult *= 3.;
 
@@ -4827,7 +4848,7 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
           GetAxes(DeusExPlayer(Owner).ViewRotation,X,Y,Z);
 		  offset = Owner.Location;
 		  offset += X * Owner.CollisionRadius * 1.75;
-		  if (DeusExPlayer(Owner).bIsCrouching)
+		  if (DeusExPlayer(Owner).IsCrouching())
 		  offset.Z += Owner.CollisionHeight * 0.25;
           else
 		  offset.Z += Owner.CollisionHeight * 0.7;
@@ -5122,7 +5143,7 @@ simulated function bool UpdateInfo(Object winObject)
 	winInfo.SetTitle(itemName);
 	if (bHandToHand && Owner.IsA('DeusExPlayer'))
 	{
-	   if (DeusExPlayer(Owner).PerkNamesArray[25] == 1)
+	   if (DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkInventive').bPerkObtained == true)
 	   {
 	      winInfo.AddSecondaryButton(self);
 	   }
@@ -5245,6 +5266,8 @@ simulated function bool UpdateInfo(Object winObject)
     {
         if (AmmoName == class'AmmoDartPoison')
             dmg = 15;
+        else if (AmmoName == class'AmmoDart')
+            dmg = 18;
         else if (AmmoName == class'AmmoDartFlare')
             dmg = 7;
         else if (AmmoName == class'AmmoDartTaser')
@@ -5263,7 +5286,9 @@ simulated function bool UpdateInfo(Object winObject)
 	str = String(dmg);
 	if (AreaOfEffect == AOE_Cone)                                               //RSD: Tell us if we're using a multi-slug weapon
 	{
-		if (bInstantHit && AmmoName!=class'AmmoSabot')
+		if (isA('WeaponSawedOffShotgun') && AmmoName!=class'AmmoSabot' && AmmoName!=class'AmmoRubber')
+			str = str $ "x9";
+        else if (bInstantHit && AmmoName!=class'AmmoSabot' && AmmoName!=class'AmmoRubber')
 			str = str $ "x8";
 		else if (!bInstantHit && AmmoName!=class'AmmoRubber')
 			str = str $ "x3";
@@ -5304,7 +5329,9 @@ simulated function bool UpdateInfo(Object winObject)
 
 		if (AreaOfEffect == AOE_Cone)                                               //RSD: Tell us if we're using a multi-slug weapon
 		{
-			if (bInstantHit && AmmoName!=class'AmmoSabot')
+			if (isA('WeaponSawedOffShotgun') && AmmoName!=class'AmmoSabot' && AmmoName!=class'AmmoRubber')
+				str = str $ "x9";
+			else if (bInstantHit && AmmoName!=class'AmmoSabot' && AmmoName!=class'AmmoRubber')
 				str = str $ "x8";
 			else if (!bInstantHit && AmmoName!=class'AmmoRubber')
 				str = str $ "x3";
@@ -5615,7 +5642,7 @@ simulated function bool UpdateInfo(Object winObject)
     winInfo.AddInfoItem(msgLethality, str);
 
     //secondary weapon
-    if (bHandToHand && DeusExPlayer(Owner).PerkNamesArray[25] == 1)
+    if (bHandToHand && DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkInventive').bPerkObtained == true)
        str = msgInfoYes;
     else if (bHandToHand && GoverningSkill != class'DeusEx.SkillDemolition' && !IsA('WeaponHideAGun') && !IsA('WeaponShuriken'))
        str = msgInfoNo;
