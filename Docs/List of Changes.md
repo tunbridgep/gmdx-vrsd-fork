@@ -9,11 +9,11 @@ Sarge's Changes since Beta 2.2:
     - Fixed the Crosshair Visibility settings in the options getting constantly overridden by lasers etc. The outer crosshairs showing your accuracy are also now linked to the Crosshair visibility setting.
     - Fixed GMDX Bug where EMP'd turrets and cameras will re-enable themselves after the EMP effect runs out, even if they were disabled during the EMP effect.
     - Fixed various issues relating to Crouching, including "standing up" when starting dialogue, female JC using regular footstep sounds while crouched (if using LDDP), and other phantom footstep sounds.
-- Quality of Life Improvements:
-    - Pressing the walk/run key while crouch toggled will now uncrouch.
     - Fixed GMDX/Vanilla issue where you could retain your standing accuracy bonus after moving if you stood still for a long time. Now accuracy decreases immediately.
+    - Fixed GMDX/Vanilla issue where Environmental Training items would have the same durations at Trained and Advanved due to rounding.
     - Fixed GMDX/Vanilla issue where Darts would display a damage of 20 instead of 18, which is their actual damage.
 - Quality of Life Improvements:
+    - Pressing the walk/run key while crouch toggled will now uncrouch.
     - You can no longer waste medkits or biocells when at maximum health/energy
     - Added alternate weapon offsets to hide many of the visible seams or missing parts of weapon viewmodels.
     - Augmentation Wheel improvements
