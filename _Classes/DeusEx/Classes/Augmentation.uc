@@ -467,5 +467,5 @@ defaultproperties
      bTravel=True
      NetUpdateFrequency=5.000000
      bAddedToWheel=true;
-     chargeTime=3.000000
+     chargeTime=1.000000
 }
