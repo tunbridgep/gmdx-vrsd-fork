@@ -42,7 +42,7 @@ function bool UseAmmo(int AmountNeeded)
             if (W.IsA('WeaponStealthPistol'))
                 offset.Z -= 3;
 		}
-        if (W.Owner.IsA('DeusExPlayer') && DeusExPlayer(W.Owner).bIsCrouching)
+        if (W.Owner.IsA('DeusExPlayer') && DeusExPlayer(W.Owner).IsCrouching())
         offset.Z -= 4;
 
 		// use silent shells if the weapon has been silenced

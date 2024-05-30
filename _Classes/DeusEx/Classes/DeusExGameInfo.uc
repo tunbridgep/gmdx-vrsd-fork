@@ -78,7 +78,7 @@ event DetailChange()
       player = DeusExPlayer(GetPlayerPawn());
 
       if (player != None)
-         if (player.bIsCrouching && player.bToggleCrouch)
+         if (player.IsCrouching())
             player.bDuck = 1;
    }
 }
