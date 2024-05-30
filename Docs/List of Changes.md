@@ -106,6 +106,7 @@ Sarge's Changes since Beta 2.2:
             - This has almost no effect on normal gameplay, other than reducing enemies ability to instantly shoot as they strafe around corners, resulting in frustrating one-shots.
             - Enemies can now always fire while strafing (was previously a 90% chance). This makes them slightly more aggressive, but combined with the previous change doesn't make them more frustrating.
     - You now take stamina damage from poison, to encourage better management of your stamina bar and give aqualung/ahtletics an indirect buff in combat.
+    - Increased ballistic armor durability loss by double, untrained enviro has the same values.
     - Added Door Locking mechanics
         - You can now lock any door you have the nanokey for, plus any doors you have picked previously if you have the Locksport perk (this is retroactive).
         - Enemies cannot open doors which you have locked (Enemies can still open doors that are initially locked in the map unless you lock them)
