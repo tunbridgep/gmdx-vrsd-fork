@@ -106,7 +106,7 @@ function Bool HasTwoHandedWeapon()
 function PlayTurning()
 {
 //	ClientMessage("PlayTurning()");
-	if (bForceDuck || bCrouchOn || IsLeaning())
+	if (IsCrouching() || IsLeaning())
 		TweenAnim('CrouchWalk', 0.1);
 	else
 	{
@@ -120,7 +120,7 @@ function PlayTurning()
 function TweenToWalking(float tweentime)
 {
 //	ClientMessage("TweenToWalking()");
-	if (bForceDuck || bCrouchOn)
+	if (IsCrouching())
 		TweenAnim('CrouchWalk', tweentime);
 	else
 	{
@@ -142,7 +142,7 @@ function PlayWalking()
 		newhumanAnimRate = humanAnimRate * 1.75;
 
 	//	ClientMessage("PlayWalking()");
-	if (bForceDuck || bCrouchOn)
+	if (IsCrouching())
 		LoopAnim('CrouchWalk', newhumanAnimRate+0.2);
 	else
 	{
@@ -231,7 +231,7 @@ function TweenToWaiting(float tweentime)
 		else
 			LoopAnim('Tread');
 	}
-	else if (IsLeaning() || bForceDuck)
+	else if (IsLeaning() || IsCrouching())
 		TweenAnim('CrouchWalk', tweentime);
 	else if (((AnimSequence == 'Pickup') && bAnimFinished) || ((AnimSequence != 'Pickup') && !IsFiring()))
 	{
@@ -254,7 +254,7 @@ function PlayWaiting()
 		isMantling = False;
 	    mantleTimer = -1;
 	}
-	else if (IsLeaning() || bForceDuck)
+	else if (IsLeaning() || IsCrouching())
 		TweenAnim('CrouchWalk', 0.1);
 	else if (!IsFiring())
 	{
@@ -281,7 +281,7 @@ function TweenToSwimming(float tweentime)
 function PlayInAir()
 {
 //	ClientMessage("PlayInAir()");
-	if (!bIsCrouching && (AnimSequence != 'Jump'))
+	if (!IsCrouching() && (AnimSequence != 'Jump'))
 		PlayAnim('Jump',3.0,0.1);
 }
 
@@ -289,7 +289,7 @@ function PlayLanded(float impactVel)
 {
 //	ClientMessage("PlayLanded()");
 	PlayFootStep();
-	if (!bIsCrouching)
+	if (!IsCrouching())
 		PlayAnim('Land',3.0,0.1);
 	isMantling = False;
 }
@@ -347,7 +347,7 @@ function PlayFiring()
 			if (bAnimFinished || (AnimSequence != 'Attack'))
 				PlayAnim('Attack',comb*1.25,0.1);
 		}
-		else if (bIsCrouching || IsLeaning())
+		else if (IsCrouching() || IsLeaning())
 			LoopAnim('CrouchShoot',,0.1);
 		else
 		{
@@ -362,7 +362,7 @@ function PlayFiring()
 function PlayWeaponSwitch(Weapon newWeapon)
 {
 //	ClientMessage("PlayWeaponSwitch()");
-	if (!bIsCrouching && !bForceDuck && !bCrouchOn && !IsLeaning() && !IsInState('Dying')) //CyberP: bugfix: added !state dying
+	if (!IsCrouching() && !IsLeaning() && !IsInState('Dying')) //CyberP: bugfix: added !state dying
 		PlayAnim('Reload');
 }
 
@@ -679,15 +679,6 @@ function checkMantle()                                                          
 					HitActor = Trace(HitLocation, HitNormal, checkpoint, start, true, Extent);
 					if (HitActor == None)
 					{
-					    if (bDuck == 1 && bToggleCrouch == False)
-                        {
-                         bToggleCrouch = True;
-                         bIsCrouching = True;
-                         bCrouchOn = True;
-                         bDuck = 1;
-	                     lastbDuck = 1;
-	                     bCrouchHack = True;
-                        }
                         if (bHardCoreMode)                                      //RSD: Stamina drain
                             swimTimer -= 1.0;
                         else

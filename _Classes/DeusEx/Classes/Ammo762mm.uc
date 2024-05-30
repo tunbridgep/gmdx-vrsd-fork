@@ -68,7 +68,7 @@ function bool UseAmmo(int AmountNeeded)
 		tempvec = 0.82 * Owner.CollisionHeight * Z;
 		offset.Z += tempvec.Z;
         W = DeusExWeapon(Pawn(Owner).Weapon);
-        if (W.Owner.IsA('DeusExPlayer') && DeusExPlayer(W.Owner).bIsCrouching)
+        if (W.Owner.IsA('DeusExPlayer') && DeusExPlayer(W.Owner).IsCrouching())
         offset.Z -= 4;
 		// use silent shells if the weapon has been silenced
 
