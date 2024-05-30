@@ -14,7 +14,7 @@ state Active
 //Justice: hackity hack to make the player noisy if they crouchwalk with the speed aug
 function Timer()
 {
-	if(player.Physics == PHYS_Walking && (player.bIsCrouching || player.bForceDuck))
+	if(player.Physics == PHYS_Walking && player.IsCrouching())
 	{
 		player.playFootStep();
 	}

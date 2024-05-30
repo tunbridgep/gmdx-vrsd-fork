@@ -20,7 +20,7 @@ simulated function bool SimUseAmmo()
 		tempvec = 0.8 * Owner.CollisionHeight * Z;
 		offset.Z += (tempvec.Z-5);
 		if (Owner.IsA('DeusExPlayer'))
-		   if (DeusExPlayer(Owner).bIsCrouching)
+		   if (DeusExPlayer(Owner).IsCrouching())
                offset.Z -= 5;
 		shell = spawn(class'ShellCasing2',,, Owner.Location + offset,Pawn(Owner).viewrotation);
 		shell.RemoteRole = ROLE_None;
@@ -45,7 +45,7 @@ function Timer()
 		tempvec = 0.8 * Owner.CollisionHeight * Z;
 		offset.Z += tempvec.Z;
 		if (Owner.IsA('DeusExPlayer'))
-		   if (DeusExPlayer(Owner).bIsCrouching)
+		   if (DeusExPlayer(Owner).IsCrouching())
                offset.Z -= 7;
 
         shell = spawn(class'ShellCasing2',,, Owner.Location + offset,Pawn(Owner).viewrotation);
