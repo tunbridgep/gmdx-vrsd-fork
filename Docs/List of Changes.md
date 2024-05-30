@@ -95,6 +95,7 @@ Sarge's Changes since Beta 2.2:
         - Alcohol no longer adds to fullness when the addiction system is enabled
         - Zyme no longer removes 10HP if the addiction system is enabled.
 - Miscellaneous Changes:
+    - Added a number of new HUD themes, including themes styled around Splinter Cell, NSF, Human Revolution and more.
     - Implemented optional Lay-D Denton support. If installed, Lay-D Denton support will be automatically activated.
         - The Lay-D Denton colour scheme is included and can be selected from the Colors menu.
         - When Lay-D Denton is installed, a new Gameplay Modifier is available, which will add the extra NPC's added by the LDDP mod.
