@@ -55,4 +55,5 @@ defaultproperties
      BindName="Terrorist"
      FamiliarName="Terrorist"
      UnfamiliarName="Terrorist"
+     fireReactTime=0.6
 }

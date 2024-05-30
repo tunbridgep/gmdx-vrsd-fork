@@ -97,6 +97,10 @@ Sarge's Changes since Beta 2.2:
     - Rubber shells are now hitscan with a harmless projectile.
     - Restricted Saving is now a Playthrough Modifier and is no longer restricted to Hardcore Mode. It's still enforced in Hardcore Mode.
     - Added No Keypad Cheese Playthrough Modifier (called "Unknown Codes") which prevents using keypads or computer logins without having found them beforehand. Some codes which are hinted but never given are excepted.
+    - AI Behaviour Changes
+        - Enemies will now have a small delay (usually between 0.1 and 0.6) seconds before firing after losing sight of the player.
+            - This has almost no effect on normal gameplay, other than reducing enemies ability to instantly shoot as they strafe around corners, resulting in frustrating one-shots.
+            - Enemies can now always fire while strafing (was previously a 90% chance). This makes them slightly more aggressive, but combined with the previous change doesn't make them more frustrating.
     - You now take stamina damage from poison, to encourage better management of your stamina bar and give aqualung/ahtletics an indirect buff in combat.
     - Added Door Locking mechanics
         - You can now lock any door you have the nanokey for, plus any doors you have picked previously if you have the Locksport perk (this is retroactive).

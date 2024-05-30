@@ -208,4 +208,5 @@ defaultproperties
      BindName="MJ12Troop"
      FamiliarName="MJ12 Elite"
      UnfamiliarName="MJ12 Elite"
+     fireReactTime=0.25
 }

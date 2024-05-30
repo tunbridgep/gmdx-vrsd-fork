@@ -268,4 +268,5 @@ defaultproperties
      BindName="MJ12Commando"
      FamiliarName="MJ12 Commando"
      UnfamiliarName="MJ12 Commando"
+     fireReactTime=0.1
 }
