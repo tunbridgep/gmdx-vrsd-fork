@@ -164,6 +164,7 @@ function ChargedPickupUpdate(DeusExPlayer Player)
 
 simulated function int CalcChargeDrain(DeusExPlayer Player)
 {
+	local DeusExPlayer Pplayer;
 	local float skillValue;
 	local float drain;
 
@@ -172,6 +173,11 @@ simulated function int CalcChargeDrain(DeusExPlayer Player)
 	if (skillNeeded != None)
 		skillValue = Player.SkillSystem.GetSkillLevelValue(skillNeeded);
 	drain *= skillValue;
+
+	Pplayer = DeusExPlayer(Owner);
+
+	//if (IsA('AdaptiveArmor') && Pplayer.PerkManager.GetPerkWithClass(class'DeusEx.PerkChameleon').bPerkObtained == true && Pplayer.GetCurrentGroundSpeed() == 0)
+	//	drain -= (drain * 0.5);	// Trash: This won't work because Charge is an int, not a float.
 
 	return Max(1,Int(drain));
 }

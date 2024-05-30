@@ -13632,10 +13632,11 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
 	local float origHealth, fdst;
 	local DeusExLevelInfo info;
 	local DeusExWeapon dxw;
+	local BallisticArmor armor;
 	local String bodyString;
 	local int MPHitLoc;
 	local GMDXFlickerLight lightFlicker;
-    local float augLVL;
+    local float augLVL, skillLevel;
     local DeusExRootWindow root;
     local GMDXImpactSpark AST;
 
@@ -13786,6 +13787,25 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
 		return;
 	    }
     }
+
+	if (instigatedBy.IsA('DeusExPlayer') && (damageType == 'Exploded' || damageType == 'Burned') && PerkManager.GetPerkWithClass(class'DeusEx.PerkBlastPadding').bPerkObtained == true)	// Trash: Less damage if you're wearing a vest and you have Blast Padding
+	{
+		if (UsingChargedPickup(class'BallisticArmor'))
+		{
+			skillLevel = SkillSystem.GetSkillLevelValue(class'SkillEnviro');
+			actualDamage *= PerkManager.GetPerkWithClass(class'DeusEx.PerkBlastPadding').PerkValue; //GMDX: removed too easy * skillLevel; //CyberP: foreach durable armor
+			foreach AllActors(class'BallisticArmor', armor)
+			{
+				if ((armor.Owner == Self) && armor.bActive)
+					armor.Charge -= (Damage * 4 * skillLevel);
+				if (armor.Charge < 0)                                       //RSD: Don't go below zero
+				{
+					armor.Charge = 0;
+					armor.UsedUp();                                         //RSD: Otherwise doesn't deactivate properly
+				}
+			}
+		}
+	}
 
     if (damageType == 'Exploded' || damageType == 'Shocked')
     {
@@ -14241,10 +14261,9 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 
             if (newDamage >= 1 && bStaminaSystem)
             {
-				if (UsingChargedPickup(class'HazMatSuit'))
+				if (UsingChargedPickup(class'HazMatSuit') && PerkManager.GetPerkWithClass(class'DeusEx.PerkFilterUpgrade').bPerkObtained == true)
         		{
-					skillLevel = SkillSystem.GetSkillLevelValue(class'SkillEnviro');
-					swimTimer -= (newDamage*0.4) + 3;	// Trash: In the future, we can add a perk to further reduce the stamina damage here
+					// Trash: No stamina damage while wearing a hazmat suit and with the perk FilterUpgrade
         		}
 				else
                 	swimTimer -= (newDamage*0.4) + 3;
