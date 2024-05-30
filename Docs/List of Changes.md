@@ -113,6 +113,9 @@ Sarge's Changes since Beta 2.2:
         - Alcohol no longer adds to fullness when the addiction system is enabled
         - Zyme no longer removes 10HP if the addiction system is enabled.
 - Miscellaneous Changes:
+    - Added several new high-quality sounds in cases where interactions didn't have sounds, or used the same sounds for multiple interactions.
+        - Added equip/unequip sounds for the Lockpick, Nanokey and Multitool, which were previously silent.
+        - Additionally replaced some sounds with higher quality versions, such as the lockpicking sound.
     - Implemented optional Lay-D Denton support. If installed, Lay-D Denton support will be automatically activated.
         - The Lay-D Denton colour scheme is included and can be selected from the Colors menu.
         - When Lay-D Denton is installed, a new Gameplay Modifier is available, which will add the extra NPC's added by the LDDP mod.
