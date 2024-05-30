@@ -49,7 +49,7 @@ function Timer()
 		   W = DeusExWeapon(Pawn(Owner).Weapon);
 		   //if (W.bAimingDown)
 		   //    offset.Z += 3;
-		   if (DeusExPlayer(Owner).bIsCrouching)
+		   if (DeusExPlayer(Owner).IsCrouching())
                offset.Z -= 7;
            else
                offset.Z -= 4;

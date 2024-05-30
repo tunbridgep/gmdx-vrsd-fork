@@ -49,4 +49,5 @@ defaultproperties
      BindName="Soldier"
      FamiliarName="Soldier"
      UnfamiliarName="Soldier"
+     fireReactTime=0.5
 }

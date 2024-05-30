@@ -89,9 +89,13 @@ function PickupFunction(Pawn Other)
 
 function BringUp()
 {
-
+    OnEquipped();
 	if (!IsInState('Idle'))
 		GotoState('Idle');
+}
+
+function OnEquipped()
+{
 }
 
 // ----------------------------------------------------------------------
@@ -102,8 +106,13 @@ function BringUp()
 
 function PutDown()
 {
+    OnUnEquipped();
 	if (IsInState('Idle'))
 		GotoState('DownItem');
+}
+
+function OnUnEquipped()
+{
 }
 
 function LiquorTex()
