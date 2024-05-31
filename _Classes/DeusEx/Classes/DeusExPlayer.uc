@@ -7081,6 +7081,11 @@ exec function ShowScores()
             //Do nothing.
             return;
         }
+        else if (assignedWeapon != none && assignedWeapon.IsA('RSDEdible')) //Sarge: Allow using edibles from the secondary button
+		{
+            assignedWeapon.GotoState('Activated');
+            return;
+		}
         else if (assignedWeapon != none && (assignedWeapon.IsA('Medkit') || assignedWeapon.IsA('BioelectricCell') || (assignedWeapon.IsA('ChargedPickup'))))
 		{
             if(assignedWeapon.IsInState('Activated'))
