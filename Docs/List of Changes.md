@@ -13,6 +13,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX/Vanilla issue where Environmental Training items would have the same durations at Trained and Advanved due to rounding.
     - Fixed GMDX/Vanilla issue where Darts would display a damage of 20 instead of 18, which is their actual damage.
 - Quality of Life Improvements:
+    - Edibles and Drugs can now be assigned as secondary items.
     - Pressing the walk/run key while crouch toggled will now uncrouch.
     - You can no longer waste medkits or biocells when at maximum health/energy
     - Added alternate weapon offsets to hide many of the visible seams or missing parts of weapon viewmodels.
