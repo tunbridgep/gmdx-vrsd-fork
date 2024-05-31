@@ -85,7 +85,7 @@ event DrawWindow(GC gc)
 		// Draw the weapon icon
 		gc.SetStyle(DSTY_Masked);
 		gc.SetTileColorRGB(255, 255, 255);
-		gc.DrawTexture(22, 20, 40, 35, 0, 0, weapon.icon);
+		gc.DrawTexture(22, 10, 40, 35, 0, 0, weapon.icon);
 
 		// Draw the ammo count
 		gc.SetFont(Font'TechMedium'); //CyberP: hud scaling Font'FontTiny'
@@ -142,25 +142,13 @@ event DrawWindow(GC gc)
 					gc.DrawText(infoX, 26, 20, 9, ammoRemaining);
 			}
 		}
-
-		// Now, let's draw the targetting information
-		if (weapon.bCanTrack)
-		{
-			if (weapon.LockMode == LOCK_Locked)
-				gc.SetTextColor(colLockedText);
-			else if (weapon.LockMode == LOCK_Acquire)
-				gc.SetTextColor(colTrackingText);
-			else
-				gc.SetTextColor(colNormalText);
-			gc.DrawText(25, 56, 65, 8, weapon.TargetMessage);
-		}
 	}
 	else if (item != none)                                                      //RSD: Extended to include general inventory items
 	{
 		// Draw the weapon icon
 		gc.SetStyle(DSTY_Masked);
 		gc.SetTileColorRGB(255, 255, 255);
-		gc.DrawTexture(22, 20, 40, 35, 0, 0, item.icon);
+		gc.DrawTexture(22, 10, 40, 35, 0, 0, item.icon);
 
         gc.SetFont(Font'TechMedium'); //CyberP: hud scaling Font'FontTiny'
 		gc.SetAlignments(HALIGN_Center, VALIGN_Top);   //CyberP: Valignment
@@ -192,7 +180,7 @@ function DrawBackground(GC gc)
 {
 	gc.SetStyle(backgroundDrawStyle);
 	gc.SetTileColor(colBackground);
-	gc.DrawTexture(13, 13, 80, 54, 0, 0, texBackground);
+	gc.DrawTexture(13, 3, 80, 54, 0, 0, texBackground);
 
 	// Draw the Ammo and Clips text labels
 	gc.SetFont(Font'FontTiny');
@@ -221,7 +209,7 @@ function DrawBorder(GC gc)
 	{
 		gc.SetStyle(borderDrawStyle);
 		gc.SetTileColor(colBorder);
-		gc.DrawTexture(0, 0, 95, 77, 0, 0, texBorder);
+		gc.DrawTexture(0, -10, 95, 77, 0, 0, texBorder);
 	}
 }
 
@@ -250,6 +238,6 @@ defaultproperties
      AmmoLabel="AMMO"
      ClipsLabel="MAGS"
      InvLabel="COUNT"
-     texBackground=Texture'DeusExUI.UserInterface.HUDAmmoDisplayBackground_1'
-     texBorder=Texture'DeusExUI.UserInterface.HUDAmmoDisplayBorder_1'
+     texBackground=Texture'RSDCrap.UserInterface.HudAmmoDisplayBackgroundSecondary'
+     texBorder=Texture'RSDCrap.UserInterface.HudAmmoDisplayBorderSecondary'
 }
