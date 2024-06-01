@@ -22,9 +22,7 @@ function Timer()
 
 Begin:
 	Player.GroundSpeed *= (LevelValues[CurrentLevel]);   //CyberP: tone down aug speed now that we have increased base ground speed
-
-	if (Player.Energy >= 3)
-		Player.JumpZ = player.default.JumpZ * (LevelValues[CurrentLevel]*1.25);
+	Player.JumpZ = player.default.JumpZ * (LevelValues[CurrentLevel]*1.25);
 
 		if ( Human(Player) != None )
 			Human(Player).UpdateAnimRate( LevelValues[CurrentLevel] );
