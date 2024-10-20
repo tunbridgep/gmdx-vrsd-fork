@@ -4977,11 +4977,9 @@ function HandleWalking()
 	if (bToggleWalk)   //&& !bHardCoreMode
 		bIsWalking = !bIsWalking;
 
-    //SARGE: If our walk state has changed, untoggle crouch
+    //SARGE: If we started running with the run key, untoggle crouch
     if (!bLastRun && bRun == 1 && IsCrouching() && !bAlwaysRun)
         SetCrouch(false);
-    else if (bLastRun && bRun == 1 && bIsCrouching)
-        SetCrouch(true);
 
     bLastRun = bool(bRun);
 }
