@@ -114,7 +114,7 @@ const			targetPlayerYMul		= 0.79;
 
 var String	keyDropItem, keyTalk, keyTeamTalk;
 
-var Color	colRed, colGreen, colWhite;
+var Color	colRed, colGreen, colWhite, colBlue;
 //CyberP:
 var localized String msgIFFTracking;
 var localized String IFFLabel1;
@@ -1092,6 +1092,8 @@ function DrawTargetAugmentation(GC gc)
 
 	// check 500 feet in front of the player
 	target = TraceLOS(8000,AimLocation);
+		
+    weapon = DeusExWeapon(Player.Weapon);
 
 	targetplayerhealthstring = "";
 	targetplayerlocationstring = "";
@@ -1122,6 +1124,12 @@ function DrawTargetAugmentation(GC gc)
             }
         }
 
+    //Sarge: Set crosshair colour if we're placing a grenade on a wall
+    if (weapon != None && weapon.bNearWall && Player.bWallPlacementCrosshair)
+        crossColor = colBlue;
+    else
+        crossColor = colWhite;
+
 	if ( target != None && !target.bHidden //)                                  //RSD
     	&& !(target.IsA('ScriptedPawn') && ScriptedPawn(target).bCloakOn && !(bVisionActive && visionLevel >= 1))) //RSD: no targeting info if NPCs are cloaked with no player infravision
 	{
@@ -1140,7 +1148,6 @@ function DrawTargetAugmentation(GC gc)
 				TargetPlayerLocationString = "("$msgLegs$")";
 		}
 
-		weapon = DeusExWeapon(Player.Weapon);
 		if ((weapon != None) && !bUseOldTarget && player.GetCrosshairState(true)) //GMDX:remove IFF from overlaying GEP
 		{
 			// if the target is out of range, don't draw the reticle
@@ -1965,6 +1972,7 @@ defaultproperties
      TeamHackTurretString="That turret already belongs to your team!"
      KeyNotBoundString="Key Not Bound"
      OutOfAmmoString="Out of Ammo!"
+     colBlue=(B=255,G=50,R=50)
      colRed=(R=255)
      colGreen=(G=255)
      colWhite=(R=255,G=255,B=255)

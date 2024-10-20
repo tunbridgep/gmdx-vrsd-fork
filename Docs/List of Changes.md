@@ -14,6 +14,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX/Vanilla issue where Darts would display a damage of 20 instead of 18, which is their actual damage.
     - Fixed vRSD bug (feature?) where the player would not cough after using cigarettes if the addiction system was enabled.
 - Quality of Life Improvements:
+    - While having a grenade selected, the crosshair will turn blue when you're able to place it on a wall.
     - Pressing the walk/run key while crouch toggled will now uncrouch.
     - You can no longer waste medkits or biocells when at maximum health/energy
     - Added alternate weapon offsets to hide many of the visible seams or missing parts of weapon viewmodels.
