@@ -900,6 +900,11 @@ function DestroyMe()
     Destroy();
 }
 
+//SARGE: Called when the item is added to the players hands
+function Draw(DeusExPlayer frobber)
+{
+}
+
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 

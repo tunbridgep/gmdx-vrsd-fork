@@ -874,7 +874,7 @@ function bool DoLeftFrob(DeusExPlayer frobber)
 {
     //We can't pick up animal carcasses
     if (bAnimalCarcass)
-        return;
+        return false;
 
     PickupCorpse(frobber);
     return false;

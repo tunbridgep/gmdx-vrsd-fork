@@ -7318,10 +7318,9 @@ function DoItemPutAwayFunction(Inventory inv)
 //This should probably be moved elsewhere
 function DoItemDrawFunction(Inventory inv)
 {
-    /*
     if (inv.isA('DeusExPickup'))
         DeusExPickup(inv).Draw(Self);
-    else*/ if (inv.isA('DeusExWeapon'))
+    else if (inv.isA('DeusExWeapon'))
         DeusExWeapon(inv).Draw(Self);
     /*else if (inv.isA('DeusExMover'))
         DeusExMover(inv).Draw(Self);
