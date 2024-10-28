@@ -14,6 +14,7 @@ function FirstFrame()
 {
 	local SandraRenton Sandra;
 	local FordSchick Ford;
+	local AugmentationUpgradeCannister Upgrade;
     local ScriptedPawn pawn;
 
 	Super.FirstFrame();
@@ -32,6 +33,13 @@ function FirstFrame()
 			foreach AllActors(class'FordSchick', Ford)
 				Ford.EnterWorld();
 		}
+        //SARGE: Else, remove the newly added aug canister
+        else
+        {
+            foreach AllActors(class'AugmentationUpgradeCannister', Upgrade)
+                Upgrade.Destroy();
+        }
+
 	}
 	else if (localURL == "08_NYC_Street")
 	{
