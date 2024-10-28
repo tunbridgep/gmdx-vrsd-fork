@@ -12590,6 +12590,7 @@ function DeusExNote AddNote( optional String strNote, optional Bool bUserNote, o
 	newNote = new(Self) Class'DeusExNote';
 
 	newNote.text = strNote;
+	newNote.originalText = strNote;
 	newNote.SetUserNote( bUserNote );
 
 	// Insert this new note at the top of the notes list
@@ -12615,6 +12616,7 @@ function DeusExNote AddNote( optional String strNote, optional Bool bUserNote, o
 //
 // Loops through the notes and searches for the code in any note.
 // Ignores user notes, so we can't add some equivalent of "The code's 0451" and instantly know a code
+// Also makes sure to check the original text of notes, not user-added text, so we can't cheat by appending 0451 to an existing non-user note.
 // ----------------------------------------------------------------------
 
 function bool GetCodeNote(string code)
@@ -12625,7 +12627,16 @@ function bool GetCodeNote(string code)
 
 	while( note != None )
 	{
-		if (!note.bUserNote && InStr(Caps(note.text),Caps(code)) != -1)
+        //Skip user notes
+        if (note.bUserNote)
+            continue;
+
+        //handle any notes we were given which might not have "original" text for whatever reason
+        if (note.originalText == "")
+            note.originalText = note.text;
+
+        //Check note contents for the code
+		if (InStr(Caps(note.originalText),Caps(code)) != -1)
             return true;
 
 		note = note.next;
