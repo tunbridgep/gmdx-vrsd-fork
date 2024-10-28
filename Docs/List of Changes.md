@@ -13,6 +13,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX/Vanilla issue where Environmental Training items would have the same durations at Trained and Advanved due to rounding.
     - Fixed GMDX/Vanilla issue where Darts would display a damage of 20 instead of 18, which is their actual damage.
     - Fixed vRSD bug (feature?) where the player would not cough after using cigarettes if the addiction system was enabled.
+    - Fixed GMDX bug where Ford Schick would not give you an upgrade canister when telling you he swiped one. Fixed by adding it to his desk.
 - Quality of Life Improvements:
     - Pressing the walk/run key while crouch toggled will now uncrouch.
     - You can no longer waste medkits or biocells when at maximum health/energy
