@@ -15,10 +15,10 @@ struct S_KeyDisplayItem
 	var localized String DisplayName;
 };
 
-var localized string	FunctionText[63];  		 //CyberP: 61
-var string				MenuValues1[63]; //CyberP: 61
-var string				MenuValues2[63]; //CyberP: 61
-var string				AliasNames[63];  //CyberP: 61
+var localized string	FunctionText[64];  		 //CyberP: 61
+var string				MenuValues1[64]; //CyberP: 61
+var string				MenuValues2[64]; //CyberP: 61
+var string				AliasNames[64];  //CyberP: 61
 var string				PendingCommands[100];
 var localized S_KeyDisplayItem    keyDisplayNames[71];
 var localized string			  NoneText;
@@ -629,6 +629,7 @@ defaultproperties
      FunctionText(60)="Show Multiplayer Kill Details"
      FunctionText(61)="Toggle Augmentation Wheel"
      FunctionText(62)="Hold Augmentation Wheel"
+     FunctionText(63)="Stop Current Infolink"
      AliasNames(0)="ParseLeftClick|Fire"
      AliasNames(1)="ParseRightClick"
      AliasNames(2)="DropItem"
@@ -692,6 +693,7 @@ defaultproperties
      AliasNames(60)="KillerProfile"
      AliasNames(61)="ToggleRadialAugMenu"
      AliasNames(62)="HoldRadialAugMenu"
+     AliasNames(63)="SkipMessages"
      keyDisplayNames(0)=(inputKey=IK_LeftMouse,displayName="Left Mouse Button")
      keyDisplayNames(1)=(inputKey=IK_RightMouse,displayName="Right Mouse Button")
      keyDisplayNames(2)=(inputKey=IK_MiddleMouse,displayName="Middle Mouse Button")
