@@ -518,6 +518,7 @@ function PreBeginPlay()
 
     UpdateHDTPSettings();                                                       //RSD: CheckWeaponSkins() is part of UpdateHDTPSettings()
 	//CheckWeaponSkins();
+    DoWeaponOffset(DeusExPlayer(GetPlayerPawn()));
 }
 
 function SupportActor( actor StandingActor )
