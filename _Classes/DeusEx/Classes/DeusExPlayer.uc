@@ -235,6 +235,9 @@ var globalconfig bool bDisplayClips;		        // SARGE: For the weirdos who pref
 var globalconfig bool bColourCodeFrobDisplay;       //SARGE: Colour Code the Frob display when you don't meet or only just meet the number of tools/picks required. Some people might not like the colours.
 var globalconfig bool bGameplayMenuHardcoreMsgShown;//SARGE: Stores whether or not the gameplay menu message has been displayed.
 
+//Sarge: MJ12 Prison Start
+var bool bPrisonStart;
+
 // Overlay Options (TODO: Move to DeusExHUD.uc when serializable)
 var globalconfig byte translucencyLevel;			// 0 - 10?
 var globalconfig bool bObjectBeltVisible;
@@ -378,7 +381,6 @@ var Computers ActiveComputer;
 
 var globalconfig bool bHDTP_JC;
 var globalconfig bool bHDTP_Walton, bHDTP_Anna, bHDTP_UNATCO, bHDTP_MJ12, bHDTP_NSF, bHDTP_RiotCop, bHDTP_Gunther, bHDTP_Paul, bHDTP_Nico;
-var globalconfig int bHDTP_ALL; //-1 = none, 0 = use other settings, 1 = all.
 var string HDTPMeshName;
 var string HDTPMeshTex[8];
 
@@ -744,36 +746,28 @@ function UpdateHDTPsettings()
 
 function bool GetHDTPSettings(actor Other)
 {
-	if(bHDTP_ALL > 0)
-		return true;
-	else if(bHDTP_All < 0)
-		return false;
-	else
-	{
-		if((Other.IsA('JCDentonMaleCarcass') || Other.IsA('JCDouble') || Other.IsA('JCDentonMale')) && bHDTP_JC)     //changed self to JCdentonmale for hopefully better mod compatibility
-			return true;
-		//if((Other.IsA('MJ12Troop') || Other.IsA('MJ12TroopCarcass')) && bHDTP_MJ12)
-		//	return true;
-		else if((Other.IsA('UNATCOTroop') || Other.IsA('UNATCOTroopCarcass')) && bHDTP_UNATCO)
-			return true;
-		else if((Other.IsA('WaltonSimons') || Other.IsA('WaltonSimonsCarcass')) && bHDTP_WALTON)
-			return true;
-		else if((Other.IsA('AnnaNavarre') || Other.IsA('AnnaNavarreCarcass')) && bHDTP_Anna)
-			return true;
-		else if((Other.IsA('GuntherHermann') || Other.IsA('GuntherHermannCarcass')) && bHDTP_Gunther)
-			return true;
-		else if((Other.IsA('RiotCop') || Other.IsA('RiotCopCarcass')) && bHDTP_RiotCop)
-			return true;
-		else if((Other.IsA('Terrorist') || Other.IsA('TerroristCarcass')) && bHDTP_NSF)
-			return true;
-		else if((Other.IsA('PaulDenton') || Other.IsA('PaulDentonCarcass')) && bHDTP_Paul)
-			return true;
-		else if((Other.IsA('NicoletteDuClare') || Other.IsA('NicoletteDuClareCarcass')) && bHDTP_Nico)
-			return true;
-		else
-			return false;
-	}
-	return false;
+    if((Other.IsA('JCDentonMaleCarcass') || Other.IsA('JCDouble') || Other.IsA('JCDentonMale')) && bHDTP_JC)     //changed self to JCdentonmale for hopefully better mod compatibility
+        return true;
+    if((Other.IsA('MJ12Troop') || Other.IsA('MJ12TroopCarcass')) && bHDTP_MJ12)
+        return true;
+    else if((Other.IsA('UNATCOTroop') || Other.IsA('UNATCOTroopCarcass')) && bHDTP_UNATCO)
+        return true;
+    else if((Other.IsA('WaltonSimons') || Other.IsA('WaltonSimonsCarcass')) && bHDTP_WALTON)
+        return true;
+    else if((Other.IsA('AnnaNavarre') || Other.IsA('AnnaNavarreCarcass')) && bHDTP_Anna)
+        return true;
+    else if((Other.IsA('GuntherHermann') || Other.IsA('GuntherHermannCarcass')) && bHDTP_Gunther)
+        return true;
+    else if((Other.IsA('RiotCop') || Other.IsA('RiotCopCarcass')) && bHDTP_RiotCop)
+        return true;
+    else if((Other.IsA('Terrorist') || Other.IsA('TerroristCarcass')) && bHDTP_NSF)
+        return true;
+    else if((Other.IsA('PaulDenton') || Other.IsA('PaulDentonCarcass')) && bHDTP_Paul)
+        return true;
+    else if((Other.IsA('NicoletteDuClare') || Other.IsA('NicoletteDuClareCarcass')) && bHDTP_Nico)
+        return true;
+    else
+        return false;
 }
 
 function setupDifficultyMod() //CyberP: scale things based on difficulty. To find all things modified by
@@ -805,9 +799,6 @@ local AlarmUnit        AU;                                                      
    	 bFirstLevelLoad = !flagBase.GetBool(flagName);                             //RSD: Tells us if this is the first time loading a map
 //log("flagName =" @flagName);
 //log("bFirstLevelLoad =" @bFirstLevelLoad);
-
-     if (bHDTP_All != -1)
-      bHDTP_All=-1;
 
      bStunted = False; //CyberP: failsafe
      if (CarriedDecoration != None && CarriedDecoration.IsA('Barrel1'))
@@ -1030,8 +1021,6 @@ function PostBeginPlay()
 	DXGame = Level.Game;
 	ShieldStatus = SS_Off;
 	ServerTimeLastRefresh = 0;
-    if (bHDTP_All != -1)
-      bHDTP_All=-1;    //CyberP: no HDTP characters for a number of reasons.
 	// Safeguard so no cheats in multiplayer
 	if ( Level.NetMode != NM_Standalone )
 		bCheatsEnabled = False;
@@ -1578,37 +1567,6 @@ exec function HDTP(optional string s)
 	local scriptedpawn P;
 	local deusexcarcass C;
 	local DeusExWeapon W;                                                       //RSD: Added for weapon model toggles
-
-	if(s != "")
-	{
-		s = Caps(s);
-		if(s == "NICO")
-			bHDTP_Nico = !bHDTP_Nico;
-		else if(s == "WALTON")
-			bHDTP_Walton = !bHDTP_Walton;
-		else if(s == "ANNA")
-			bHDTP_Anna = !bHDTP_Anna;
-		else if(s == "MJ12")
-			bHDTP_MJ12 = false;// was !bHDTP_MJ12;
-		else if(s == "UNATCO")
-			bHDTP_UNATCO = !bHDTP_UNATCO;
-		else if(s == "NSF")
-			bHDTP_NSF = !bHDTP_NSF;
-		else if(s == "COP")
-			bHDTP_RiotCop = !bHDTP_RiotCop;
-		else if(s == "GUNTHER")
-			bHDTP_Gunther = !bHDTP_Gunther;
-		else if(s == "PAUL")
-			bHDTP_Paul = !bHDTP_Paul;
-		else if(s == "JC")
-			bHDTP_JC = !bHDTP_JC;
-		else if(s == "ALL")
-		{
-			bHDTP_All++;
-			if(bHDTP_All > 1)
-				bHDTP_All = -1;
-		}
-	}
 
 	foreach Allactors(Class'Scriptedpawn',P)
 		P.UpdateHDTPSettings();
@@ -2256,7 +2214,7 @@ function ResetPlayer(optional bool bTraining)
 	}
 
 	// Give the player a pistol and a prod
-	if (!bTraining)
+	if (!bTraining && !bPrisonStart)
 	{
 
         //SARGE: Hack to make the starting items always appear in the belt, regardless of autofill setting
@@ -11187,6 +11145,10 @@ function PostIntro()
 	{
 		bStartNewGameAfterIntro = False;
 		StartNewGame(strStartMap);
+        if (bPrisonStart)
+            StartNewGame("05_NYC_UNATCOMJ12lab"); //SARGE: Have to hardcode this. Game crashes if we use a property
+        else
+            StartNewGame(strStartMap);
 	}
 	else
 	{
@@ -17144,17 +17106,16 @@ defaultproperties
      BurnString=" with excessive burning"
      NoneString="None"
      MPDamageMult=1.000000
-     bHDTP_JC=True
-     bHDTP_Walton=True
-     bHDTP_Anna=True
-     bHDTP_UNATCO=True
-     bHDTP_MJ12=True
-     bHDTP_NSF=True
-     bHDTP_RiotCop=True
-     bHDTP_Gunther=True
-     bHDTP_Paul=True
-     bHDTP_Nico=True
-     bHDTP_ALL=-1
+     bHDTP_JC=False
+     bHDTP_Walton=False
+     bHDTP_Anna=False
+     bHDTP_UNATCO=False
+     bHDTP_MJ12=False
+     bHDTP_NSF=False
+     bHDTP_RiotCop=False
+     bHDTP_Gunther=False
+     bHDTP_Paul=False
+     bHDTP_Nico=False
      QuickSaveTotal=10
      bTogAutoSave=True
      bColorCodedAmmo=True

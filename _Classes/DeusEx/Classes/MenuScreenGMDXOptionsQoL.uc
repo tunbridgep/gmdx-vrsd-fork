@@ -4,6 +4,13 @@
 
 class MenuScreenGMDXOptionsQoL expands MenuScreenListWindow;
 
+//Update crosshair when closing the menu
+function SaveSettings()
+{
+    Super.SaveSettings();
+    player.UpdateCrosshairStyle();
+}
+
 defaultproperties
 {
      items(0)=(HelpText="If true, belt selection uses 'interact' (default: right click) to confirm selection, eliminating the act of cycling multiple items before reaching the desired. Classic mode additionally makes right click switch back after using the number keys.",actionText="Invisible War Toolbelt",variable="bAlternateToolbelt",valueText2="Classic");

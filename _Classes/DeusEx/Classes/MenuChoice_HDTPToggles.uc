@@ -11,6 +11,6 @@ defaultproperties
 {
      Action=MA_MenuScreen
      Invoke=Class'DeusEx.MenuScreenHDTPToggles'
-     HelpText="Toggle between vanilla, HDTP, and FOMOD beta models for each individual weapon."
-     actionText="Weapon Model Selection (BETA)"
+     HelpText="Toggle between vanilla, HDTP, and FOMOD beta models for each individual character and weapon."
+     actionText="HDTP Model Selection"
 }

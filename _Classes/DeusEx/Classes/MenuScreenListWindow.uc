@@ -23,6 +23,8 @@ var localized string confirmDefaultsText;
 var Window messagebox;
 
 var string consoleTarget;   //The entity we are changing variables on. This should normally be the player.
+var string variable;        //The default value for variables. Usually is nothing
+var string helpText;        //The default value for help text. Displayed if there's nothing defined for an entry.
 
 struct S_ListItem
 {
@@ -39,6 +41,7 @@ struct S_ListItem
 	var string variable;
     var int value;
     var int defaultValue; //TODO: Find a way to reset to default value via console
+    var string consoleTarget; //If not set, use the global one instead
 };
 
 var S_ListItem items[255];
@@ -51,6 +54,7 @@ event InitWindow()
     CreateHeaderButtons();
 	CreateOptionsList();
     CreateChoices();
+    ShowHelp(helpText);
 }
      
 function CreateChoices()
@@ -70,6 +74,18 @@ function CreateChoices()
                 items[i].valueText0 = disabledText;
             if (items[i].valueText1 == "")
                 items[i].valueText1 = enabledText;
+
+            //set to use the global consoleTarget if one is not set
+            if (items[i].consoleTarget == "")
+                items[i].consoleTarget = consoleTarget;
+            
+            //set to use the global variable if one is not set
+            if (items[i].variable == "")
+                items[i].variable = variable;
+            
+            //set to use the global help text if one is not set
+            if (items[i].helpText == "")
+                items[i].helpText = helpText;
 
             lstItems.AddRow(items[i].actionText $ ";" $ GetValueString(i));
             //lstItems.AddRow(items[i].actionText @ items[i].variable $ ";" $ GetValueString(i) $ ", " $ items[i].value);
@@ -92,18 +108,18 @@ function LoadSettings()
 function int GetConsoleValue(int index)
 {
     local string command;
-    command = player.ConsoleCommand("get " $ consoleTarget @ items[index].variable);
+    command = player.ConsoleCommand("get " $ items[index].consoleTarget @ items[index].variable);
     if (command == "True")
         return 1;
     else if (command == "False")
         return 0;
-    player.clientMessage(command);
+    //player.clientMessage(command);
     return int(command);
 }
 
 function SetConsoleValue(int index, int value)
 {
-    player.ConsoleCommand("set " $ consoleTarget @ items[index].variable @ value);
+    player.ConsoleCommand("set " $ items[index].consoleTarget @ items[index].variable @ value);
 }
 
 function string GetValueString(int index)
@@ -167,7 +183,9 @@ function bool HandleResetMessagebox(Window msgBoxWindow, int buttonNumber)
             }
         }
         LoadSettings();
+        SaveSettings();
         CreateChoices();
+        ShowHelp(helpText);
     }
 }
 
@@ -258,7 +276,6 @@ function SaveSettings()
 {
     Super.SaveSettings();
     player.SaveConfig();
-    player.UpdateCrosshairStyle();
 }
 
 //Add and Remove items
