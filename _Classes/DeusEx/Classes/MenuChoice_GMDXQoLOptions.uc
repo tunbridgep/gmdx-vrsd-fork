@@ -2,7 +2,7 @@
 // MenuChoice_Brightness
 //=============================================================================
 
-class MenuChoice_GMDXBeltOption extends MenuUIChoiceAction;
+class MenuChoice_GMDXQoLOptions extends MenuUIChoiceAction;
 
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
@@ -10,7 +10,7 @@ class MenuChoice_GMDXBeltOption extends MenuUIChoiceAction;
 defaultproperties
 {
      Action=MA_MenuScreen
-     Invoke=Class'DeusEx.MenuScreenGMDXOptionsBelt'
-     HelpText="Click to access Quality of Life options."
-     actionText="Quality of Life Options..."
+     Invoke=Class'DeusEx.MenuScreenGMDXOptionsQoL'
+     HelpText="Convenient options to reduce frustration and improve quality of life."
+     actionText="Quality of Life Options"
 }

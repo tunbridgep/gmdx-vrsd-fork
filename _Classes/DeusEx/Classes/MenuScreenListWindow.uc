@@ -20,6 +20,8 @@ var localized string enabledText;
 var localized string confirmDefaultsTitle;
 var localized string confirmDefaultsText;
 
+var Color testcol;
+
 struct S_ListItem
 {
 	var localized string helpText;
@@ -27,11 +29,11 @@ struct S_ListItem
 	var localized string values[255];
 
     //dirty hack because I can't get arrays within structs to work in defaultproperties
+    var localized string valueText0;
     var localized string valueText1;
     var localized string valueText2;
     var localized string valueText3;
     var localized string valueText4;
-    var localized string valueText5;
 	var string variable;
     var int value;
     var int defaultValue; //TODO: Find a way to reset to default value via console
@@ -62,10 +64,10 @@ function CreateChoices()
 		if (items[i].actionText != "")
 		{
             //Set to use "Disabled" and "Enabled" by default if we didn't set custom text
+            if (items[i].valueText0 == "")
+                items[i].valueText0 = disabledText;
             if (items[i].valueText1 == "")
-                items[i].valueText1 = disabledText;
-            if (items[i].valueText2 == "")
-                items[i].valueText2 = enabledText;
+                items[i].valueText1 = enabledText;
 
             lstItems.AddRow(items[i].actionText $ ";" $ GetValueString(i));
             //lstItems.AddRow(items[i].actionText @ items[i].variable $ ";" $ GetValueString(i) $ ", " $ items[i].value);
@@ -111,19 +113,19 @@ function string GetValueString(int index)
     switch(item.value)
     {
         case 0:
-            return item.valueText1;
+            return item.valueText0;
             break;
         case 1:
-            return item.valueText2;
+            return item.valueText1;
             break;
         case 2:
-            return item.valueText3;
+            return item.valueText2;
             break;
         case 3:
-            return item.valueText4;
+            return item.valueText3;
             break;
         case 4:
-            return item.valueText5;
+            return item.valueText4;
             break;
     }
 
@@ -243,6 +245,12 @@ event bool ListSelectionChanged(window list, int numSelections, int focusRowId)
     return bResult;
 }
 
+function SaveSettings()
+{
+    Super.SaveSettings();
+    player.SaveConfig();
+    player.UpdateCrosshairStyle();
+}
 
 defaultproperties
 {
@@ -264,4 +272,5 @@ defaultproperties
      actionButtons(0)=(Align=HALIGN_Right,Action=AB_Cancel)
      actionButtons(1)=(Align=HALIGN_Right,Action=AB_OK)
      actionButtons(2)=(Action=AB_Reset)
+     testCol=(R=255,G=50,B=50)
 }

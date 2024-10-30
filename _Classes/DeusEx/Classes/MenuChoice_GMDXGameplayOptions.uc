@@ -2,7 +2,7 @@
 // MenuChoice_Brightness
 //=============================================================================
 
-class MenuChoice_AIOptionsFake extends MenuUIChoiceAction;
+class MenuChoice_GMDXGameplayOptions extends MenuUIChoiceAction;
 
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
@@ -10,7 +10,7 @@ class MenuChoice_AIOptionsFake extends MenuUIChoiceAction;
 defaultproperties
 {
      Action=MA_MenuScreen
-     Invoke=Class'DeusEx.MenuScreenGMDXOptions'
-     HelpText="Finish GMDX on any difficulty level to unlock these options."
-     actionText="????"
+     Invoke=Class'DeusEx.MenuScreenGMDXOptionsGameplay'
+     HelpText="These options can have a significant impact on gameplay."
+     actionText="Gameplay Options"
 }

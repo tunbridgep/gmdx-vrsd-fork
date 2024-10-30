@@ -229,6 +229,10 @@ var globalconfig bool bToggleCrouch;				// True to let key toggle crouch
 var globalconfig float logTimeout;					// Log Timeout Value
 var globalconfig byte  maxLogLines;					// Maximum number of log lines visible
 var globalconfig bool bHelpMessages;				// Multiplayer help messages
+var globalconfig bool bWallPlacementCrosshair;		// SARGE: Show a blue crosshair when placing objects on walls
+var globalconfig bool bDisplayTotalAmmo;		    // SARGE: Show total ammo count, rather than MAGS
+var globalconfig bool bDisplayClips;		        // SARGE: For the weirdos who prefer Clips instead of Mags. Hidden Option
+var globalconfig bool bColourCodeFrobDisplay;        //SARGE: Colour Code the Frob display when you don't meet or only just meet the number of tools/picks required. Some people might not like the colours.
 
 // Overlay Options (TODO: Move to DeusExHUD.uc when serializable)
 var globalconfig byte translucencyLevel;			// 0 - 10?
@@ -9244,7 +9248,7 @@ function PutCarriedDecorationInHand(optional bool bNoSoundEffect)
 			CarriedDecoration.bCollideWorld = False;
             //CarriedDecoration.SetCollisionSize(CarriedDecoration.CollisionRadius*2,CarriedDecoration.CollisionHeight*2);
 			// make it translucent
-			if (!bNoTranslucency || AugmentationSystem.GetAugLevelValue(class'AugCloak') != -1.0)
+			if ((!bNoTranslucency && !bHardcoreMode) || AugmentationSystem.GetAugLevelValue(class'AugCloak') != -1.0)
 			{
 			CarriedDecoGlow = CarriedDecoration.ScaleGlow;
 			CarriedDecoration.Style = STY_Translucent;
@@ -9398,7 +9402,7 @@ function DropDecoration()
 			// turn off translucency
 			CarriedDecoration.Style = CarriedDecoration.Default.Style;
 			CarriedDecoration.bUnlit = CarriedDecoration.Default.bUnlit;
-			if (!bNoTranslucency && CarriedDecoration.IsA('DeusExDecoration'))
+			if ((!bNoTranslucency && !bHardcoreMode) && CarriedDecoration.IsA('DeusExDecoration'))
 				DeusExDecoration(CarriedDecoration).ScaleGlow = CarriedDecoGlow;
 
 		 if (bThrowDecoration)
@@ -17225,4 +17229,8 @@ defaultproperties
      bEnhancedWeaponOffsets=false
      bQuickAugWheel=false
      bAugWheelDisableAll=true
+     bColourCodeFrobDisplay=True
+     bWallPlacementCrosshair=True
+     dynamicCrosshair=1
+     bBeltMemory=True
 }

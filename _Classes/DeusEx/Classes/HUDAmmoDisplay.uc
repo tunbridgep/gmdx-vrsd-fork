@@ -16,6 +16,7 @@ var localized String NotAvailable;
 var localized String msgReloading;
 var localized String AmmoLabel;
 var localized String ClipsLabel;
+var localized String MagsLabel;
 var localized String RoundsLabel;
 
 // Used by DrawWindow
@@ -110,7 +111,7 @@ event DrawWindow(GC gc)
 			// how much ammo is left in the current clip?
 			ammoInClip = weapon.AmmoLeftInClip();
 
-			if (weapon.bPerShellReload)
+			if (weapon.bPerShellReload || player.bDisplayTotalAmmo)
 				clipsRemaining = weapon.NumRounds();
 			else
 				clipsRemaining = weapon.NumClips();
@@ -185,10 +186,12 @@ function DrawBackground(GC gc)
 
 	gc.DrawText(66, 17, 21, 8, AmmoLabel);
 
-	if (weapon.bPerShellReload || weapon.AmmoName == Class'Ammo20mm')
+	if (weapon.bPerShellReload || weapon.AmmoName == Class'Ammo20mm' || player.bDisplayTotalAmmo)
 		gc.DrawText(66, 48, 21, 8, RoundsLabel);
-	else
+	else if (player.bDisplayClips)
 		gc.DrawText(66, 48, 21, 8, ClipsLabel);
+    else
+		gc.DrawText(66, 48, 21, 8, MagsLabel);
 }
 
 // ----------------------------------------------------------------------
@@ -228,7 +231,8 @@ defaultproperties
      NotAvailable="N/A"
      msgReloading="---"
      AmmoLabel="AMMO"
-     ClipsLabel="MAGS"
+     MagsLabel="MAGSAAAHHH"
+     ClipsLabel="CLIPSAAAAHHH"
 	 RoundsLabel="RDS"
      texBackground=Texture'DeusExUI.UserInterface.HUDAmmoDisplayBackground_1'
      texBorder=Texture'DeusExUI.UserInterface.HUDAmmoDisplayBorder_1'
