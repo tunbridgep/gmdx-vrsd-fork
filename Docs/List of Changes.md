@@ -14,6 +14,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX/Vanilla issue where Darts would display a damage of 20 instead of 18, which is their actual damage.
     - Fixed vRSD bug (feature?) where the player would not cough after using cigarettes if the addiction system was enabled.
 - Quality of Life Improvements:
+    - Completely overhauled the GMDX settings menu to make it simpler, easier to navigate, and with many more options.
     - Pressing the walk/run key while crouch toggled will now uncrouch.
     - You can no longer waste medkits or biocells when at maximum health/energy
     - Added alternate weapon offsets to hide many of the visible seams or missing parts of weapon viewmodels.
@@ -33,6 +34,7 @@ Sarge's Changes since Beta 2.2:
     - Reloading "One-shot-at-a-time" weapon (shotguns, crossbow, GEP gun) will show the ammo count in the ammo display, rather than `---`, because reloading can be cancelled part way through.
     - "One-shot-at-a-time" weapons now have "RDS" instead of "MAGS" on the ammo HUD.
     - "One-shot-at-a-time" weapons have a different formula for calculating reload speed (RDS/SEC).
+    - Added an option to display the total amount of ammo remaining, rather than the number of magazines.
     - Different shotgun shells have different textures, and the boxes were reworked to have a different texture for easier identification.
         - Shells also have different sounds when they hit the floor
     - Equipping/Unequipping Environmental Training items gives you a unique sound depending on the item.
