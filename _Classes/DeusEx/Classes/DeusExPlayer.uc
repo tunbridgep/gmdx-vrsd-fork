@@ -232,7 +232,8 @@ var globalconfig bool bHelpMessages;				// Multiplayer help messages
 var globalconfig bool bWallPlacementCrosshair;		// SARGE: Show a blue crosshair when placing objects on walls
 var globalconfig bool bDisplayTotalAmmo;		    // SARGE: Show total ammo count, rather than MAGS
 var globalconfig bool bDisplayClips;		        // SARGE: For the weirdos who prefer Clips instead of Mags. Hidden Option
-var globalconfig bool bColourCodeFrobDisplay;        //SARGE: Colour Code the Frob display when you don't meet or only just meet the number of tools/picks required. Some people might not like the colours.
+var globalconfig bool bColourCodeFrobDisplay;       //SARGE: Colour Code the Frob display when you don't meet or only just meet the number of tools/picks required. Some people might not like the colours.
+var globalconfig bool bGameplayMenuHardcoreMsgShown;//SARGE: Stores whether or not the gameplay menu message has been displayed.
 
 // Overlay Options (TODO: Move to DeusExHUD.uc when serializable)
 var globalconfig byte translucencyLevel;			// 0 - 10?
@@ -969,7 +970,8 @@ local AlarmUnit        AU;                                                      
                 if (SC.hackStrength > 0.15)                                     //RSD: Reinstating but with failsafe logic
 	        	   SC.hackStrength = 0.150000;
             }
-            if (bA51Camera && SC.minDamageThreshold != 70)
+
+            if ((bA51Camera || bHardcoreMode) && SC.minDamageThreshold != 70)
             {
                 if (!SC.bDiffProperties)
                 {

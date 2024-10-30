@@ -4,6 +4,45 @@
 
 class MenuScreenGMDXOptionsGameplay expands MenuScreenListWindow;
 
+var localized string msgText;
+var localized string msgTitle;
+
+var Window msgbox;
+var bool shownWindow;
+
+event InitWindow()
+{
+	Super.InitWindow();
+
+    //Crashes, no idea why
+    bTickEnabled=true;
+}
+
+event bool BoxOptionSelected(Window msgBoxWindow, int buttonNumber)
+{
+    if (msgBoxWindow != msgbox)
+        //return super.BoxOptionSelected(msgBoxWindow,buttonNumber);
+        return HandleResetMessagebox(msgBoxWindow,buttonNumber);
+	
+    // Destroy the msgbox!  
+	root.PopWindow();
+
+    player.bGameplayMenuHardcoreMsgShown = true;
+
+
+    //return true;
+}
+
+function Tick(float deltaTime)
+{
+    if (!shownWindow && (player.bHardCoreMode || !player.bGameplayMenuHardcoreMsgShown))
+    {
+        msgbox = root.MessageBox(msgTitle,msgText,1,false,self);
+        shownWindow = true;
+    }
+}
+
+
 defaultproperties
 {
      items(0)=(HelpText="If enabled, time is not paused whilst in the inventory & during general UI navigation.",actionText="Real Time UI",variable="bRealUI");
@@ -16,5 +55,7 @@ defaultproperties
      items(7)=(HelpText="In hardcore mode you face enemies in greater numbers. Enable this option to have this feature in other difficulty modes.",actionText="Overwhelming Odds",variable="bHardcoreFilterOption");
      items(8)=(HelpText="Corpses can only be destroyed by realistic means and do not deal throw damage with the muscle aug.",actionText="Persistent Corpses",variable="bRealisticCarc");
      items(9)=(HelpText="Immersion/simulation option. If enabled, carried objects are no longer translucent.",actionText="Immersive Carryables",variable="bNoTranslucency");
+     msgText="The settings available in this menu are always active as part of Hardcore difficulty.|nYou may still edit them freely, but they will have no effect when playing in Hardcore mode."
+     msgTitle="Hardcore Mode"
      Title="GMDX Gameplay Options"
 }

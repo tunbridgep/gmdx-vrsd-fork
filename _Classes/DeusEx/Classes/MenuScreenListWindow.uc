@@ -20,7 +20,7 @@ var localized string enabledText;
 var localized string confirmDefaultsTitle;
 var localized string confirmDefaultsText;
 
-var Color testcol;
+var Window messagebox;
 
 struct S_ListItem
 {
@@ -140,13 +140,15 @@ function string GetValueString(int index)
 
 function ResetToDefaults()
 {
-    root.MessageBox(confirmDefaultsTitle,confirmDefaultsText,0,false,self);
-
+    messagebox = root.MessageBox(confirmDefaultsTitle,confirmDefaultsText,0,false,self);
 }
 
-event bool BoxOptionSelected(Window msgBoxWindow, int buttonNumber)
+function bool HandleResetMessagebox(Window msgBoxWindow, int buttonNumber)
 {
 	local int i, id;
+
+    if (msgBoxWindow != messagebox)
+        return true;
 
     // Destroy the msgbox!
     root.PopWindow();
@@ -165,6 +167,11 @@ event bool BoxOptionSelected(Window msgBoxWindow, int buttonNumber)
         LoadSettings();
         CreateChoices();
     }
+}
+
+event bool BoxOptionSelected(Window msgBoxWindow, int buttonNumber)
+{
+    return HandleResetMessagebox(msgBoxWindow,buttonNumber);
 }
 
 // ----------------------------------------------------------------------
