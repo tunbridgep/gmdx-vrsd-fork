@@ -22,6 +22,8 @@ var localized string confirmDefaultsText;
 
 var Window messagebox;
 
+var string consoleTarget;   //The entity we are changing variables on. This should normally be the player.
+
 struct S_ListItem
 {
 	var localized string helpText;
@@ -90,7 +92,7 @@ function LoadSettings()
 function int GetConsoleValue(int index)
 {
     local string command;
-    command = player.ConsoleCommand("get DeusExPlayer" @ items[index].variable);
+    command = player.ConsoleCommand("get " $ consoleTarget @ items[index].variable);
     if (command == "True")
         return 1;
     else if (command == "False")
@@ -101,7 +103,7 @@ function int GetConsoleValue(int index)
 
 function SetConsoleValue(int index, int value)
 {
-    player.ConsoleCommand("set DeusExPlayer" @ items[index].variable @ value);
+    player.ConsoleCommand("set " $ consoleTarget @ items[index].variable @ value);
 }
 
 function string GetValueString(int index)
@@ -259,6 +261,39 @@ function SaveSettings()
     player.UpdateCrosshairStyle();
 }
 
+//Add and Remove items
+function AppendItem(S_ListItem newItem)
+{
+	local int i;
+    //Add new item to first available slot
+	for(i = 0; i < arrayCount(items); i++)
+	{
+		if (items[i].actionText == "")
+            items[i] = newItem;
+    }
+}
+
+//TODO: Sarge: If we ever move item 255, a bug will occur.
+//Leaving it for now!
+//EDIT: Now takes a string, because things will move around in horrible ways otherwise
+function RemoveItem(string variable)
+{
+	local int i,j;
+    //Add new item to first available slot
+	for(i = 0; i < arrayCount(items); i++)
+    {
+        if (items[i].actionText == "")
+            return;
+
+        if (items[i].variable == variable)
+        {
+            for(j = i; j < arrayCount(items); j++)
+                items[j] = items[j+1];
+            return;
+        }
+    }
+}
+
 defaultproperties
 {
      strHeaderActionLabel="Setting"
@@ -279,5 +314,5 @@ defaultproperties
      actionButtons(0)=(Align=HALIGN_Right,Action=AB_Cancel)
      actionButtons(1)=(Align=HALIGN_Right,Action=AB_OK)
      actionButtons(2)=(Action=AB_Reset)
-     testCol=(R=255,G=50,B=50)
+     consoleTarget="DeusExPlayer"
 }
