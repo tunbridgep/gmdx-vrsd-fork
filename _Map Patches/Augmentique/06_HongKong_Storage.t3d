@@ -1,0 +1,39 @@
+Begin Map
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner23
+    Id="swimmer"
+    bDynamicLight=True
+    LastRenderTime=18.414236
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo3',iLeaf=2844,ZoneNumber=19)
+    Location=(X=-3600.874023,Y=-1726.173584,Z=1622.099121)
+    Rotation=(Yaw=20000)
+    bSelected=True
+    Name=OutfitSpawner23
+End Actor
+Begin Actor Class=OutfitSpawner3 Name=OutfitSpawner3
+    Id="cyanhair"
+    bDynamicLight=True
+    LastRenderTime=194.852768
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner3
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=1462,ZoneNumber=7)
+    Location=(X=-10.620920,Y=-681.978516,Z=-1578.712036)
+    Rotation=(Yaw=30000)
+    OldLocation=(X=-10.620920,Y=-681.978516,Z=-1578.712036)
+    bSelected=True
+    Name=OutfitSpawner3
+End Actor
+Begin Actor Class=OutfitSpawner3 Name=OutfitSpawner4
+    Id="cyclopsshades"
+    bDynamicLight=True
+    LastRenderTime=527.237305
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner3
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=886,ZoneNumber=2)
+    Location=(X=-364.425903,Y=-537.361084,Z=647.278931)
+    Rotation=(Yaw=-1000)
+    bSelected=True
+    Name=OutfitSpawner4
+End Actor
+End Map

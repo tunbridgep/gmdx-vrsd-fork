@@ -1,0 +1,16 @@
+Begin Map
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner2
+    Id="testgrid"
+    bDynamicLight=True
+    LastRenderTime=489.968445
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=44,ZoneNumber=1)
+    Location=(X=2456.524414,Y=1622.777344,Z=-217.899963)
+    Rotation=(Yaw=50000)
+    OldLocation=(X=2456.524414,Y=1622.777344,Z=-217.899963)
+    bSelected=True
+    RotationRate=(Yaw=50000)
+    Name=OutfitSpawner2
+End Actor
+End Map

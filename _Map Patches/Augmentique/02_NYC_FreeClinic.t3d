@@ -1,0 +1,41 @@
+Begin Map
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner4
+    Id="nurse"
+    bDynamicLight=True
+    LastRenderTime=203.072784
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=288,ZoneNumber=2)
+    Location=(X=1129.965576,Y=-527.419678,Z=-313.899506)
+    Rotation=(Yaw=80000)
+    OldLocation=(X=1129.965576,Y=-77.419716,Z=-313.899506)
+    bSelected=True
+    Name=OutfitSpawner4
+End Actor
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner8
+    Id="bum2"
+    bDynamicLight=True
+    LastRenderTime=95.852325
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=422,ZoneNumber=2)
+    Location=(X=436.732391,Y=-1948.308960,Z=-313.899811)
+    Rotation=(Yaw=-50000)
+    OldLocation=(X=426.732391,Y=-1953.308960,Z=-313.899811)
+    bSelected=True
+    Name=OutfitSpawner8
+End Actor
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner9
+    Id="doctor"
+    bDynamicLight=True
+    LastRenderTime=616.197876
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=268,ZoneNumber=2)
+    Location=(X=396.529938,Y=-594.275024,Z=-313.901276)
+    Rotation=(Yaw=1500)
+    OldLocation=(X=386.529938,Y=-603.275024,Z=-313.901276)
+    bSelected=True
+    Name=OutfitSpawner9
+End Actor
+End Map

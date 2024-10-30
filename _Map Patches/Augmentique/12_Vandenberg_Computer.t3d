@@ -1,0 +1,27 @@
+Begin Map
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner16
+    Id="labcoat"
+    bDynamicLight=True
+    LastRenderTime=106.740372
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo2',iLeaf=1949,ZoneNumber=1)
+    Location=(X=835.318909,Y=2855.595703,Z=-1273.898804)
+    OldLocation=(X=835.318909,Y=2855.595703,Z=-1273.898804)
+    bSelected=True
+    Name=OutfitSpawner16
+End Actor
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner26
+    Id="garysavage"
+    bDynamicLight=True
+    LastRenderTime=307.629456
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo2',iLeaf=23,ZoneNumber=1)
+    Location=(X=859.561584,Y=3125.725098,Z=-2203.918945)
+    Rotation=(Yaw=1000)
+    OldLocation=(X=899.561584,Y=3125.725098,Z=-2203.918945)
+    bSelected=True
+    Name=OutfitSpawner26
+End Actor
+End Map

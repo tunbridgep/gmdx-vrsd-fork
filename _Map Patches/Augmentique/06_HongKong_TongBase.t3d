@@ -1,0 +1,27 @@
+Begin Map
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner1
+    Id="tong"
+    bDynamicLight=True
+    LastRenderTime=380.170959
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=484,ZoneNumber=1)
+    Location=(X=863.220520,Y=-89.330643,Z=6.099397)
+    Rotation=(Yaw=100000)
+    OldLocation=(X=863.220520,Y=-89.330643,Z=6.099397)
+    bSelected=True
+    Name=OutfitSpawner1
+End Actor
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner3
+    Id="gordonquick"
+    bDynamicLight=True
+    LastRenderTime=102.584885
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=10,ZoneNumber=1)
+    Location=(X=-467.054413,Y=780.275085,Z=6.099649)
+    OldLocation=(X=-467.054413,Y=795.275085,Z=6.099649)
+    bSelected=True
+    Name=OutfitSpawner3
+End Actor
+End Map
