@@ -656,7 +656,7 @@ Begin:
 			PlayAnim('ReloadEnd2',1-(ModReloadTime*0.8));
 			FinishAnim();
 			NotifyOwner(False);
-			ClipCount = 0;
+			ReloadMaxAmmo();
 		}
 	}
 	if (bLasing)

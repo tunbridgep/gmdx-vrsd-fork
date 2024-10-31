@@ -64,6 +64,7 @@ var(GMDX) const bool LDDPExtra;                                                 
 var(GMDX) const bool deleteIfMale;                                              //Delete this character if we're male
 var(GMDX) const bool deleteIfFemale;                                            //Delete this character if we're female
 
+var travel bool processedWeapons; //Sarge: Already adjusted the weapons and everything on here. Fixes ammo duplication glitch.
 
 // ----------------------------------------------------------------------
 // ShouldCreate()
@@ -1047,6 +1048,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                  DeleteInventory(item);
                  item.Destroy();
                  item = None;
+                 continue;
                  //}
                 }
 				if (item != none && (item.IsA('Ammo') || (item.IsA('WeaponSpiderBotConstructor')) || (item.IsA('WeaponAssaultGunSpider')))) //CyberP: new type weapons exclusive to pawns //RSD: Failsafe
@@ -1055,47 +1057,54 @@ function Frob(Actor Frobber, Inventory frobWith)
 					DeleteInventory(item);
 					item.Destroy();
 					item = None;
+                    continue;
 //log("IS AMMO<DESTROYED>");
 				}
 				else if (item != none && (item.IsA('DeusExWeapon')) )
 				{
 //log("IS A DXWEAPON");
-			   // Any weapons have their ammo set to a random number of rounds (1-4)
-			   // unless it's a grenade, in which case we only want to dole out one.
-			   // DEUS_EX AMSD In multiplayer, give everything away.
-			   W = DeusExWeapon(item);
+                    // Any weapons have their ammo set to a random number of rounds (1-4)
+                    // unless it's a grenade, in which case we only want to dole out one.
+                    // DEUS_EX AMSD In multiplayer, give everything away.
+                    W = DeusExWeapon(item);
 
-			   // Grenades and LAMs always pickup 1
-			   if (W.IsA('WeaponShuriken') && passedImpaleCount > 0)
-			   {
-			      if (passedImpaleCount > 4)
-			          passedImpaleCount = 4;
-			      w.PickupAmmoCount = passedImpaleCount;
-			      if (w.PickupAmmoCount == 0)
-			          w.PickupAmmoCount = 1;
-			      PlaySound(Sound'DeusExSounds.Generic.FleshHit1',SLOT_None,,,,0.95 + (FRand() * 0.2));
-			   }
-			   else if (W.IsA('WeaponNanoVirusGrenade') ||
-				  W.IsA('WeaponGasGrenade') ||
-				  W.IsA('WeaponEMPGrenade') ||
-				  W.IsA('WeaponLAM')  ||
-                  W.IsA('WeaponHideAGun') && player.FindInventorySlot(item, True))  //CyberP: there we go. Now need to stop 1-4 rand for nades
-				  W.PickupAmmoCount = 1;       //CyberP: I need to check if inventory is full and no nades
-			   else if (W.IsA('WeaponAssaultGun'))
-                  //W.PickupAmmoCount = Rand(5) + 1.5;                          //RSD
-                  W.PickupAmmoCount = PickupAmmoCount + 1;                      //RSD: Now 2-5 rounds with initialization in MissionScript.uc on first map load
-               else if (W.IsA('WeaponGepGun'))
-                  W.PickupAmmoCount = 2;
-			   else if (!W.IsA('WeaponNanoVirusGrenade') &&
-				  !W.IsA('WeaponGasGrenade') &&
-				  !W.IsA('WeaponEMPGrenade') &&
-				  !W.IsA('WeaponLAM') &&
-                  !W.IsA('WeaponHideAGun')) //CyberP: no grenades.
-			    //W.PickupAmmoCount = Rand(4) + 1;                              //RSD
-			    W.PickupAmmoCount = PickupAmmoCount;                            //RSD
-                else if (W.Default.PickupAmmoCount != 0)
-                W.PickupAmmoCount = 1; //CyberP: hmm
-				}
+                    if (!processedWeapons)
+                    {
+
+                        // Grenades and LAMs always pickup 1
+                        if (W.IsA('WeaponShuriken') && passedImpaleCount > 0)
+                        {
+                            if (passedImpaleCount > 4)
+                                passedImpaleCount = 4;
+                            w.PickupAmmoCount = passedImpaleCount;
+                            if (w.PickupAmmoCount == 0)
+                                w.PickupAmmoCount = 1;
+                            PlaySound(Sound'DeusExSounds.Generic.FleshHit1',SLOT_None,,,,0.95 + (FRand() * 0.2));
+                        }
+                        else if (W.IsA('WeaponNanoVirusGrenade') ||
+                            W.IsA('WeaponGasGrenade') ||
+                            W.IsA('WeaponEMPGrenade') ||
+                            W.IsA('WeaponLAM')  ||
+                            W.IsA('WeaponHideAGun') && player.FindInventorySlot(item, True))  //CyberP: there we go. Now need to stop 1-4 rand for nades
+                            W.PickupAmmoCount = 1;       //CyberP: I need to check if inventory is full and no nades
+                        else if (W.IsA('WeaponAssaultGun'))
+                            //W.PickupAmmoCount = Rand(5) + 1.5;                          //RSD
+                            W.PickupAmmoCount = PickupAmmoCount + 1;                      //RSD: Now 2-5 rounds with initialization in MissionScript.uc on first map load
+                        else if (W.IsA('WeaponGepGun'))
+                            W.PickupAmmoCount = 2;
+                        else if (!W.IsA('WeaponNanoVirusGrenade') &&
+                            !W.IsA('WeaponGasGrenade') &&
+                            !W.IsA('WeaponEMPGrenade') &&
+                            !W.IsA('WeaponLAM') &&
+                            !W.IsA('WeaponHideAGun')) //CyberP: no grenades.
+                            //W.PickupAmmoCount = Rand(4) + 1;                              //RSD
+                            W.PickupAmmoCount = PickupAmmoCount;                            //RSD
+                            else if (W.Default.PickupAmmoCount != 0)
+                            W.PickupAmmoCount = 1; //CyberP: hmm
+                    }
+                    //SARGE: Set weapons maximum clip size to however much left over ammo it has.
+                    W.ClipCount = W.PickupAmmoCount;
+                }
 
 				if (item != None)
 				{
@@ -1171,6 +1180,8 @@ function Frob(Actor Frobber, Inventory frobWith)
 									// Mark it as 0 to prevent it from being added twice
 									Weapon(item).AmmoType.AmmoAmount = 0;
 									Weapon(item).PickupAmmoCount = 0;
+                                    //SARGE: Set weapons maximum clip size to however much left over ammo it has.
+                                    DeusExWeapon(item).ClipCount = 0;
 								}
 							} else
 							if ((W != None)&&(Weapon(item).AmmoType==none)) //GMDX Fix bug that makes level carcass with weapon just crap out as it has not got spawned ammotype
@@ -1186,6 +1197,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 										player.UpdateAmmoBeltText(AmmoType);
 										AddReceivedItem(player, AmmoType,addedAmount);
 										Weapon(item).PickupAmmoCount=0;
+                                        DeusExWeapon(item).ClipCount = 0;
 										if (AmmoType.PickupViewMesh == Mesh'TestBox')
 									      P.ClientMessage(item.PickupMessage @ item.itemArticle @ item.itemName, 'Pickup');
 									      else
@@ -1346,6 +1358,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 				item = nextItem;
 			}
 			until ((item == None) || (item == startItem));
+            processedWeapons = true;                                        //Sarge: Attempted fix for ammo dupe bug
 		}
 
 //log("  bFoundSomething = " $ bFoundSomething);

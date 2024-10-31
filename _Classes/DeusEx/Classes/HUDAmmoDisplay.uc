@@ -92,28 +92,31 @@ event DrawWindow(GC gc)
 		gc.SetFont(Font'TechMedium'); //CyberP: hud scaling Font'FontTiny'
 		gc.SetAlignments(HALIGN_Center, VALIGN_Top);   //CyberP: Valignment
 		gc.EnableWordWrap(false);
+			
+        // how much ammo is left in the current clip?
+        ammoInClip = weapon.AmmoLeftInClip();
 
 		// how much ammo of this type do we have left?
 		if (weapon.AmmoType != None)
 			ammoRemaining = weapon.AmmoType.AmmoAmount;
 		else
 			ammoRemaining = 0;
-
-		if ( ammoRemaining < weapon.LowAmmoWaterMark )
-			gc.SetTextColor(colAmmoLowText);
-		else
-			gc.SetTextColor(colAmmoText);
+                
+         gc.SetTextColor(colAmmoText);
 
 		// Ammo count drawn differently depending on user's setting
 		if (weapon.ReloadCount > 1 || weapon.IsA('WeaponGEPGun') || weapon.AmmoName == Class'Ammo20mm')
 		{
-			// how much ammo is left in the current clip?
-			ammoInClip = weapon.AmmoLeftInClip();
 
 			if (weapon.bPerShellReload)
 				clipsRemaining = weapon.NumRounds();
 			else
 				clipsRemaining = weapon.NumClips();
+		
+            if ((ammoInClip < weapon.lowAmmoWatermark && weapon.reloadCount > 1) || ammoInClip == 0)
+                gc.SetTextColor(colAmmoLowText);
+            else
+                gc.SetTextColor(colAmmoText);
 
 			if (weapon.IsInState('Reload') && weapon.bPerShellReload == false)
 				gc.DrawText(infoX, 27, 20, 9, msgReloading);
