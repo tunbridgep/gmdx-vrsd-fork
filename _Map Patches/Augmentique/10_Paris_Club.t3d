@@ -1,0 +1,41 @@
+Begin Map
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner12
+    Id="goth2"
+    bDynamicLight=True
+    LastRenderTime=211.880157
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo6',iLeaf=76,ZoneNumber=1)
+    Location=(X=528.551331,Y=-941.864502,Z=-45.899982)
+    Rotation=(Yaw=29000)
+    OldLocation=(X=528.551331,Y=-941.864502,Z=-45.899982)
+    bSelected=True
+    Name=OutfitSpawner12
+End Actor
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner11
+    Id="vellady"
+    bDynamicLight=True
+    LastRenderTime=167.787857
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=447,ZoneNumber=2)
+    Location=(X=-166.189896,Y=-312.430817,Z=22.100733)
+    Rotation=(Yaw=50000)
+    OldLocation=(X=-116.189896,Y=-314.430817,Z=22.100733)
+    bSelected=True
+    Name=OutfitSpawner11
+End Actor
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner16
+    Id="thug3"
+    bDynamicLight=True
+    LastRenderTime=506.520538
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo3',iLeaf=484,ZoneNumber=11)
+    Location=(X=-1915.055664,Y=-60.919178,Z=-47.899994)
+    Rotation=(Yaw=50000)
+    OldLocation=(X=-1915.055664,Y=-60.919178,Z=-47.899994)
+    bSelected=True
+    Name=OutfitSpawner16
+End Actor
+End Map

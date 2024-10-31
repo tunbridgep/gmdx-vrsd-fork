@@ -1,0 +1,41 @@
+Begin Map
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner9
+    Id="radmax"
+    bDynamicLight=True
+    LastRenderTime=145.539948
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=1497,ZoneNumber=3)
+    Location=(X=-726.993164,Y=2683.525635,Z=-2474.904297)
+    Rotation=(Yaw=50000)
+    OldLocation=(X=-726.993164,Y=2683.525635,Z=-2474.904297)
+    bSelected=True
+    Name=OutfitSpawner9
+End Actor
+Begin Actor Class=OutfitSpawner3 Name=OutfitSpawner7
+    Id="messyhair2"
+    bDynamicLight=True
+    LastRenderTime=166.156952
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner3
+    Region=(Zone=WaterZone'MyLevel.WaterZone0',iLeaf=6229,ZoneNumber=9)
+    Location=(X=-2937.385498,Y=3741.136475,Z=-3254.718018)
+    Rotation=(Yaw=-10000)
+    OldLocation=(X=-2937.385498,Y=3741.136475,Z=-3254.718018)
+    bSelected=True
+    Name=OutfitSpawner7
+End Actor
+Begin Actor Class=OutfitSpawner3 Name=OutfitSpawner8
+    Id="baldinghair"
+    bDynamicLight=True
+    LastRenderTime=408.207275
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner3
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=1275,ZoneNumber=4)
+    Location=(X=-311.013062,Y=2226.523926,Z=-2378.719238)
+    Rotation=(Yaw=20000)
+    OldLocation=(X=-311.013062,Y=2226.523926,Z=-2378.719238)
+    bSelected=True
+    Name=OutfitSpawner8
+End Actor
+End Map

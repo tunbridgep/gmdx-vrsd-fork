@@ -1,0 +1,27 @@
+Begin Map
+Begin Actor Class=OutfitSpawner3 Name=OutfitSpawner20
+    Id="purplehair"
+    bDynamicLight=True
+    LastRenderTime=186.350037
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner3
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=729,ZoneNumber=1)
+    Location=(X=-4360.264160,Y=3117.936523,Z=-138.719910)
+    OldLocation=(X=-4360.264160,Y=3117.936523,Z=-138.719910)
+    bSelected=True
+    Name=OutfitSpawner20
+End Actor
+Begin Actor Class=OutfitSpawner3 Name=OutfitSpawner22
+    Id="HUD"
+    bDynamicLight=True
+    LastRenderTime=653.290283
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner3
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=502,ZoneNumber=2)
+    Location=(X=-4259.008789,Y=2387.650879,Z=-146.720139)
+    Rotation=(Yaw=1000)
+    OldLocation=(X=-4259.008789,Y=2387.650879,Z=-146.720139)
+    bSelected=True
+    Name=OutfitSpawner22
+End Actor
+End Map

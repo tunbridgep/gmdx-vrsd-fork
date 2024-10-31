@@ -74,7 +74,7 @@ function ShowVersionInfo()
 	local TextWindow version;
 	local string gmdxtxt;
 
-	gmdxtxt = "GMDX vRSD Beta 2.2";
+	gmdxtxt = "GMDX vSARGE Beta 1.0";
 
 	version = TextWindow(NewChild(Class'TextWindow'));
 	version.SetTextMargins(0, 0);
