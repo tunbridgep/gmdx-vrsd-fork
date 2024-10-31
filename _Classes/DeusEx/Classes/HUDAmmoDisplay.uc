@@ -53,7 +53,7 @@ event InitWindow()
 
 event Tick(float deltaSeconds)
 {
-	if ((player.Weapon != None) && ( bVisible ))
+	if (player.Weapon != None && DeusExWeapon(player.Weapon).ReloadCount > 0 && bVisible )
 		Show();
 	else
 		Hide();
