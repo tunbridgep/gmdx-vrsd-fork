@@ -235,9 +235,6 @@ var globalconfig bool bDisplayClips;		        // SARGE: For the weirdos who pref
 var globalconfig bool bColourCodeFrobDisplay;       //SARGE: Colour Code the Frob display when you don't meet or only just meet the number of tools/picks required. Some people might not like the colours.
 var globalconfig bool bGameplayMenuHardcoreMsgShown;//SARGE: Stores whether or not the gameplay menu message has been displayed.
 
-//Sarge: MJ12 Prison Start
-var bool bPrisonStart;
-
 // Overlay Options (TODO: Move to DeusExHUD.uc when serializable)
 var globalconfig byte translucencyLevel;			// 0 - 10?
 var globalconfig bool bObjectBeltVisible;
@@ -2214,7 +2211,7 @@ function ResetPlayer(optional bool bTraining)
 	}
 
 	// Give the player a pistol and a prod
-	if (!bTraining && !bPrisonStart)
+	if (!bTraining)
 	{
 
         //SARGE: Hack to make the starting items always appear in the belt, regardless of autofill setting
@@ -11145,10 +11142,6 @@ function PostIntro()
 	{
 		bStartNewGameAfterIntro = False;
 		StartNewGame(strStartMap);
-        if (bPrisonStart)
-            StartNewGame("05_NYC_UNATCOMJ12lab"); //SARGE: Have to hardcode this. Game crashes if we use a property
-        else
-            StartNewGame(strStartMap);
 	}
 	else
 	{
