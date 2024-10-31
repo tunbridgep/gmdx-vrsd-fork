@@ -386,7 +386,7 @@ function Draw(DeusExPlayer frobber)
     //Start with a full clip
     if (!givenFreeReload)
     {
-        DeusExPlayer(owner).clientMessage("Give free reload");
+        //DeusExPlayer(owner).clientMessage("Give free reload");
         ReloadMaxAmmo();
         givenFreeReload = true;
     }
