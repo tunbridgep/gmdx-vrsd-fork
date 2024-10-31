@@ -17206,4 +17206,5 @@ defaultproperties
      bWallPlacementCrosshair=True
      dynamicCrosshair=1
      bBeltMemory=True
+     bEnhancedCorpseInteractions=True
 }
