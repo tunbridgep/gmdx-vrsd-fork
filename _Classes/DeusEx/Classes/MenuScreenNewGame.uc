@@ -74,6 +74,7 @@ var bool bNoKeypadCheese;
 var bool bExtraHardcore;
 var bool bMoreLDDPNPCs;
 var bool bRestrictedMetabolism;
+var bool bPrisonStart;
 
 //LDDP
 var bool bFemaleEnabled;
@@ -142,7 +143,8 @@ event InitWindow()
     default.bRandomizeEnemies=false;                                            //Sarge
     default.bExtraHardcore=false;                                               //Sarge
     default.bMoreLDDPNPCs=false;                                                //Sarge
-    //default.bRestrictedMetabolism=false;                                        //Sarge
+    //default.bRestrictedMetabolism=false;                                      //Sarge
+    default.bPrisonStart=false;                                                 //Sarge
 
 	StyleChanged();
 }
@@ -785,10 +787,12 @@ function SaveSettings()
     player.bRestrictedSaving=bRestrictedSaving;                                 //Sarge
     player.bNoKeypadCheese=bNoKeypadCheese;                                     //Sarge
     player.bRandomizeEnemies=bRandomizeEnemies;                                 //Sarge
+    player.bPrisonStart=bPrisonStart;                                           //Sarge
     if (player.bRandomizeAugs)                                                  //RSD: New aug randomization feature
         ScrambleAugOrderList();
     player.bAddictionSystem=bAddictionSystem;
     player.bExtraHardcore=bExtraHardcore;
+    player.bPrisonStart=bPrisonStart;
     //player.bRestrictedMetabolism=bRestrictedMetabolism;
     player.bMoreLDDPNPCs=bMoreLDDPNPCs;
 
