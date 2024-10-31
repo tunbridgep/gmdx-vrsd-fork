@@ -13,12 +13,17 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX/Vanilla issue where Environmental Training items would have the same durations at Trained and Advanved due to rounding.
     - Fixed GMDX/Vanilla issue where Darts would display a damage of 20 instead of 18, which is their actual damage.
     - Fixed vRSD bug (feature?) where the player would not cough after using cigarettes if the addiction system was enabled.
+    - Fixed Vanilla bug where picking up ammo would add it to the players current clip, rather than their reserve ammo.
+    - Fixed GMDX Ammo duplication glitch when looting corpses while having a full inventory.
+    - Fixed GMDX bug where frobbing a corpse with the "Decline Knives" setting would sometimes result in no log message being displayed.
+        - Additionally, combat knives on corpses are no longer deleted, allowing "Decline Knives" to be turned on and off without preventing access to knives on existing corpses.
 - Quality of Life Improvements:
     - Added a new keybinding to stop the currently playing infolink.
     - Completely overhauled the GMDX settings menu to make it simpler, easier to navigate, and with many more options.
     - Pressing the walk/run key while crouch toggled will now uncrouch.
     - You can no longer waste medkits or biocells when at maximum health/energy
     - Added alternate weapon offsets to hide many of the visible seams or missing parts of weapon viewmodels.
+    - Weapons that don't use ammo (such as melee weapons) no longer show the Ammo element on the HUD.
     - Augmentation Wheel improvements
         - While in the augmentation screen, use middle-click on an active augmentation to add or remove it from the augmentation wheel.
         - By default all augmentations will appear on the wheel.
