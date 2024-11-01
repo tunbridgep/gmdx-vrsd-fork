@@ -1348,11 +1348,6 @@ function Frob(Actor Frobber, Inventory frobWith)
 			until ((item == None) || (item == startItem));
 		}
 
-//log("  bFoundSomething = " $ bFoundSomething);
-
-		if (!bFoundSomething && !bSearched)
-			P.ClientMessage(msgEmpty);
-
 //GMDX:
 	}
 //log("DONE ITERATE");
@@ -1368,29 +1363,28 @@ function Frob(Actor Frobber, Inventory frobWith)
 		 player.Energy = player.EnergyMax;
 	}
 
-	// if we've already been searched, let the player pick us up
-	// don't pick up animal carcii
-	if (!bAnimalCarcass)
-	{
-	  // DEUS_EX AMSD Since we don't have animations for carrying corpses, and since it has no real use in multiplayer,
-	  // and since the PutInHand propagation doesn't just work, this is work we don't need to do.
-	  // Were you to do it, you'd need to check the respawning issue, destroy the POVcorpse it creates and point to the
-	  // one in inventory (like I did when giving the player starting inventory).
+    // DEUS_EX AMSD Since we don't have animations for carrying corpses, and since it has no real use in multiplayer,
+    // and since the PutInHand propagation doesn't just work, this is work we don't need to do.
+    // Were you to do it, you'd need to check the respawning issue, destroy the POVcorpse it creates and point to the
+    // one in inventory (like I did when giving the player starting inventory).
 
-		if ((((bDblClickStart)&&(bDblClickFrob))||!bFoundSomething)&&
-		(player != None) && (player.inHand == None) && player.carriedDecoration == None && (bSearched||!player.bEnhancedCorpseInteractions))
-		{
-            PickupCorpse(player);
-            return;
-		}
-		else if (player != None && player.inhand != none && player.bAutoHolster && !player.inHand.IsA('POVCorpse') && player.CarriedDecoration == None)
-		{
-		      if (!bFoundSomething && (bSearched||!player.bEnhancedCorpseInteractions) && (bDblClickStart || !player.bDblClickHolster))
-		          player.PutInHand(none);
-		      else if (!bFoundSomething && (bSearched||!player.bEnhancedCorpseInteractions) && bDblClickStart && player.bDblClickHolster)
-                  player.PutInHand(none);
-		}
-	}
+    if (!bAnimalCarcass && ((bDblClickStart&&bDblClickFrob)||!bFoundSomething)&&
+    (player != None) && (player.inHand == None) && player.carriedDecoration == None && (bSearched||!player.bEnhancedCorpseInteractions))
+    {
+        PickupCorpse(player);
+    }
+    else if (!bAnimalCarcass && player != None && player.inhand != none && player.bAutoHolster && !player.inHand.IsA('POVCorpse') && player.CarriedDecoration == None)
+    {
+            if (!bFoundSomething && (bSearched||!player.bEnhancedCorpseInteractions) && (bDblClickStart || !player.bDblClickHolster))
+                player.PutInHand(none);
+            else if (!bFoundSomething && (bSearched||!player.bEnhancedCorpseInteractions) && bDblClickStart && player.bDblClickHolster)
+                player.PutInHand(none);
+    }
+    else if (!bFoundSomething)
+    {
+        //log("  bFoundSomething = " $ bFoundSomething);
+        P.ClientMessage(msgEmpty);
+    }
             
     AddSearchedString(player);
     bSearched = true; //SARGE: Once we have been searched once, go back to normal behaviour
@@ -1427,7 +1421,7 @@ function AddReceivedItem(DeusExPlayer player, Inventory item, int count)
 
 	if (!bSearchMsgPrinted)
 	{
-		player.ClientMessage(msgSearching);
+		//player.ClientMessage(msgSearching);
 		bSearchMsgPrinted = True;
 	}
 
