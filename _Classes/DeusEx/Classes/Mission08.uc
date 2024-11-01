@@ -33,8 +33,9 @@ function FirstFrame()
 			foreach AllActors(class'FordSchick', Ford)
 				Ford.EnterWorld();
 		}
-        //SARGE: Else, remove the newly added aug canister
-        else
+
+        //SARGE: Remove the newly added aug canister if we didn't rescue him, or if we're using ConFix
+        if (flags.GetBool('Enhancement_Detected') || !flags.GetBool('FordSchickRescued'))
         {
             foreach AllActors(class'AugmentationUpgradeCannister', Upgrade)
                 Upgrade.Destroy();
