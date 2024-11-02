@@ -2079,7 +2079,7 @@ function ShowIntro(optional bool bStartNewGame)
 	// Make sure all augmentations are OFF before going into the intro
 	AugmentationSystem.DeactivateAll();
 
-	if (bSkipNewGameIntro)
+	if (bSkipNewGameIntro || bPrisonStart)
 	  PostIntro();
 	  else// Reset the player
 		 Level.Game.SendPlayer(Self, "00_Intro");
