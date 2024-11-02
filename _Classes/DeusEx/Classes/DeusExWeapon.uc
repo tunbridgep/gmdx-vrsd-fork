@@ -260,7 +260,6 @@ var localized String msgRate;
 var bool bExtraShaker;
 var() sound ReloadMidSound;
 var bool bCancelLoading;
-var int LoadedShells;
 var float negTime;
 var bool bBeginQuickMelee;
 var bool bAlreadyQuickMelee;                                                    //RSD
@@ -307,6 +306,8 @@ var const vector weaponOffsets;                                                 
 var travel vector oldOffsets;                                                   //Sarge: Stores our old default offsets
 var travel bool bOldOffsetsSet;                                                 //Sarge: Stores whether or not old default offsets have been remembered
 var travel bool givenFreeReload;                                                //Sarge: Give a free reload when selecting the weapon for the first time, otherwise it starts empty
+
+var float sleeptime;                                                              //Sarge: Used by per shell reload weapons to store how long they have been sleeping during reload, to allow us to cancel mid-reload in a far more responsive way.
 
 //END GMDX:
 
@@ -1722,8 +1723,7 @@ function bool LoadAmmo(int ammoNum)
 
             if (bPerShellReload)                                                //RSD: originally we checked this in the classes that call LoadAmmo(). was IsA(...), now done with a simple bool check
             {
-                ClipCount = ReloadCount;
-                LoadedShells = 0;                                                 //RSD: without this, we can get stopped from fully loading the new ammo type if we switch repeatedly
+                ClipCount = 0;
             }
 
 			if ( Ammo20mm(newAmmo) != None || Ammo762mm(newAmmo) != None)
@@ -6358,26 +6358,31 @@ else
 			Owner.PlaySound(ReloadMidSound, SLOT_None,,, 1024);   //CyberP: ReloadMidSound is middle of a reload
 			if (bPerShellReload) //CyberP: load shells one at a time            //RSD: was IsA(...), now done with a simple bool check
 			{                                                                   //RSD: load darts one at a time too, don't load Assault Shotgun one at a time
-               while (ClipCount < ReloadCount && AmmoType.AmmoAmount > 0)                //RSD: Reverted Assault shotty, added GEP
-			   {
-                 if (IsA('WeaponAssaultShotgun') || (IsA('WeaponSawedOffShotgun') && iHDTPModelToggle != 2)) //RSD: use normal sound routine if not using Clyzm's shotty
-			        LoadShells();
-                 Sleep(GetReloadTime());
-                 if (IsA('WeaponMiniCrossbow') && Owner.IsA('DeusExPlayer'))
-                    Owner.PlaySound(sound'GMDXSFX.Weapons.PDxbowreload', SLOT_None,,, 1024); //RSD: New Xbow reload sound, play after waiting
-			     ClipCount++;
-			     LoadedShells++;
-			     //Owner.BroadcastMessage(ClipCount);                           //RSD: For testing
-                 /*else if (IsA('WeaponGEPGun') && Owner.IsA('DeusExPlayer')) //RSD: need a new sound for rocket reloads
+                while (ClipCount < ReloadCount && AmmoType.AmmoAmount > 0)                //RSD: Reverted Assault shotty, added GEP
+                {
+                    sleeptime = 0;
+                    if (IsA('WeaponAssaultShotgun') || (IsA('WeaponSawedOffShotgun') && iHDTPModelToggle != 2)) //RSD: use normal sound routine if not using Clyzm's shotty
+                        LoadShells();
+                    //Sleep(GetReloadTime());
+                    //SARGE: Changed to now check during reload, so it's more responsive
+                    while (sleeptime < GetReloadTime() && !bCancelLoading)
+                    {
+                        sleeptime += 0.1;
+                        Sleep(0.1);
+                    }
+                    
+                    if (bCancelLoading)
+                        break;
+
+                    if (IsA('WeaponMiniCrossbow') && Owner.IsA('DeusExPlayer'))
+                        Owner.PlaySound(sound'GMDXSFX.Weapons.PDxbowreload', SLOT_None,,, 1024); //RSD: New Xbow reload sound, play after waiting
+                    ClipCount++;
+                    //Owner.BroadcastMessage(ClipCount);                           //RSD: For testing
+                    /*else if (IsA('WeaponGEPGun') && Owner.IsA('DeusExPlayer')) //RSD: need a new sound for rocket reloads
                     Owner.PlaySound(CockingSound, SLOT_None,,, 1024);*/
-                 if (AmmoType.AmmoAmount < ReloadCount)
-			     {
-			      if (LoadedShells == AmmoType.AmmoAmount)
-                     break;
-			     }
-			     if (bCancelLoading)
-			      break;
-			   }
+                    if (ClipCount == AmmoType.AmmoAmount)
+                        break;
+                }
             }
             else
 			   Sleep(GetReloadTime());
@@ -6390,7 +6395,6 @@ else
 //			if (bWasZoomed)
 //				ScopeOn();
             bCancelLoading = False;
-            LoadedShells = 0;
             if (!bPerShellReload)                                               //RSD: was IsA(...), now done with a simple bool check
 				ReloadMaxAmmo();                                                  //RSD: Assault shotgun loads a clip at a time, Xbow a dart at a time
 		}                                                                       //RSD: Reverted Assault shotty, added GEP

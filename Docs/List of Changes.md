@@ -40,6 +40,7 @@ Sarge's Changes since Beta 2.2:
     - Reloading "One-shot-at-a-time" weapon (shotguns, crossbow, GEP gun) will show the ammo count in the ammo display, rather than `---`, because reloading can be cancelled part way through.
     - "One-shot-at-a-time" weapons now have "RDS" instead of "MAGS" on the ammo HUD.
     - "One-shot-at-a-time" weapons have a different formula for calculating reload speed (RDS/SEC).
+    - "One-shot-at-a-time" reload cancelling has been made far more responsive.
     - Added an option to display the total amount of ammo remaining, rather than the number of magazines.
     - Different shotgun shells have different textures, and the boxes were reworked to have a different texture for easier identification.
         - Shells also have different sounds when they hit the floor
