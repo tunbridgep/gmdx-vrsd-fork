@@ -1400,7 +1400,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 }
 
 // ----------------------------------------------------------------------
-// AddReceivedItem()
+// AddSearchedString()
 // ----------------------------------------------------------------------
 
 function AddSearchedString(DeusExPlayer player)
