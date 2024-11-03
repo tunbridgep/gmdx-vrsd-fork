@@ -83,12 +83,9 @@ event DrawWindow(GC gc)
     	weapon = none;                                                          //RSD: Fix for the last weapon assigned icon always showing up
         amount = item.numCopies;
         icon = item.icon;
-
-        if (IsCharged(item))
-            gc.SetTileColorRGB(255, 255, 255);
-        else
-            gc.SetTileColor(colIconDimmed);                                     //RSD
    	}
+        
+    gc.SetTileColorRGB(255, 255, 255);
     
     if (item != None && item.isA('ChargedPickup'))
     {
@@ -99,11 +96,14 @@ event DrawWindow(GC gc)
 
 	if ( weapon != None || item != None)
 	{
+        if (!IsCharged(item))
+            gc.SetTileColor(colIconDimmed);
+
 		// Draw the weapon icon
 		gc.SetStyle(DSTY_Masked);
 		gc.DrawTexture(22, 10, 40, 35, 0, 0, icon);
 
-        if (amount > 0)
+        if (amount > 0 && (item == None || !item.isA('Binoculars')))
         {
             // Draw the ammo count
             gc.SetFont(Font'TechMedium'); //CyberP: hud scaling Font'FontTiny'
@@ -128,7 +128,7 @@ function bool IsCharged(DeusExPickup item)
     local ChargedPickup charged;
     local int chargeLevel;
 
-    if (item.IsA('ChargedPickup'))
+    if (item != None && item.IsA('ChargedPickup'))
     {
         charged = ChargedPickup(item);
         chargeLevel = int(charged.GetCurrentCharge());
