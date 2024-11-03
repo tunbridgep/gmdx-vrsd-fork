@@ -243,10 +243,12 @@ event TravelPostAccept()
 function Timer()
 {
     Super.Timer();
-    SetupOutfitManager();
 
     //load HDTP Skin
     UpdateHDTPSettings();
+
+
+    SetupOutfitManager();
 }
 
 // ----------------------------------------------------------------------
