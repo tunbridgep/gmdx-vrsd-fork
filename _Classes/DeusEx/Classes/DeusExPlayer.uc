@@ -7249,6 +7249,10 @@ function DoLeftFrob(Actor frobTarget)
 function DoRightFrob(Actor frobTarget)
 {
     local bool bDefaultFrob;
+
+    if (frobTarget == None)
+        return;
+
     bDefaultFrob = true;
     bLeftClicked = false;
 
@@ -7301,6 +7305,9 @@ function DoItemPutAwayFunction(Inventory inv)
 //This should probably be moved elsewhere
 function DoItemDrawFunction(Inventory inv)
 {
+    if (inv == None)
+        return;
+
     if (inv.isA('DeusExPickup'))
         DeusExPickup(inv).Draw(Self);
     else if (inv.isA('DeusExWeapon'))
@@ -10588,7 +10595,7 @@ function UpdateCrosshairStyle()
     {
         cross = root.hud.cross;
 
-        if (inHand.isA('DeusExWeapon') || dynamicCrosshair == 0)
+        if (inHand != None && inHand.isA('DeusExWeapon') || dynamicCrosshair == 0)
     		root.hud.cross.SetBackground(Texture'CrossSquare');
         else if (dynamicCrosshair == 3)
     		root.hud.cross.SetBackground(Texture'RSDCrap.UserInterface.CrossDot3');

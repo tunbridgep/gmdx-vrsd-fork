@@ -1035,7 +1035,7 @@ function PostPostBeginPlay()
         ScaleGlow = 0.5;
 
     //Give NPCs a full clip to start
-    if (!givenFreeReload && Owner.IsA('ScriptedPawn'))
+    if (!givenFreeReload && Owner != None && Owner.IsA('ScriptedPawn'))
     {
         ReloadMaxAmmo();
         givenFreeReload = true;

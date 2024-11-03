@@ -94,7 +94,10 @@ function CreateNanoKeySlot()
 	{
 		if (player.KeyRing != None)
 		{
-            if (!player.bSmartKeyring)
+            if (objects[KeyRingSlot] == None)
+                return;
+
+            else if (!player.bSmartKeyring)
             {
                 RemoveObjectFromBelt(objects[KeyRingSlot].item);
     			objects[KeyRingSlot].SetItem(player.KeyRing);
@@ -105,8 +108,6 @@ function CreateNanoKeySlot()
             }
 			objects[KeyRingSlot].AllowDragging(player.bSmartKeyring);
 		}
-
-
 	}
 }
 
