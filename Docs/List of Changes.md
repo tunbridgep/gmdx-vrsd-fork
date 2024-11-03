@@ -13,6 +13,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX/Vanilla issue where Environmental Training items would have the same durations at Trained and Advanved due to rounding.
     - Fixed GMDX/Vanilla issue where Darts would display a damage of 20 instead of 18, which is their actual damage.
     - Fixed vRSD bug (feature?) where the player would not cough after using cigarettes if the addiction system was enabled.
+    - Fixed GMDX bug where Ford Schick would not give you an upgrade canister when telling you he swiped one, if ConFix isn't installed. Fixed by adding it to his desk.
     - Fixed a number of typos in various places.
 - Quality of Life Improvements:
     - Edibles and Drugs can now be assigned as secondary items.
