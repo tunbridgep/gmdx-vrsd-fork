@@ -234,8 +234,9 @@ var globalconfig bool bDisplayTotalAmmo;		    // SARGE: Show total ammo count, r
 var globalconfig bool bDisplayClips;		        // SARGE: For the weirdos who prefer Clips instead of Mags. Hidden Option
 var globalconfig bool bColourCodeFrobDisplay;       //SARGE: Colour Code the Frob display when you don't meet or only just meet the number of tools/picks required. Some people might not like the colours.
 var globalconfig bool bGameplayMenuHardcoreMsgShown;//SARGE: Stores whether or not the gameplay menu message has been displayed.
-//Sarge: MJ12 Prison Start
-var bool bPrisonStart;
+var globalconfig bool bEnhancedCorpseInteractions;  //SARGE: Right click always searches corpses. After searching, right click picks up corpses as normal.
+var globalconfig bool bSearchedCorpseText;          //SARGE: Corpses show "[Searched]" text when interacted with for the first time.
+var bool bPrisonStart;                              //SARGE: MJ12 Prison Start
 
 // Overlay Options (TODO: Move to DeusExHUD.uc when serializable)
 var globalconfig byte translucencyLevel;			// 0 - 10?
@@ -548,6 +549,7 @@ var travel bool bRandomizeAugs;
 var travel bool bRandomizeEnemies;
 var travel bool bRestrictedSaving;												//Sarge: This used to be tied to hardcore, now it's a config option
 var travel bool bNoKeypadCheese;												//Sarge: Prevent using keycodes that we don't know
+var travel int seed;                                                            //Sarge: When using randomisation playthrough modifiers, this is our generated seed for the playthrough, to prevent autosave abuse and the like
 var travel int augOrderNums[21];                                                //RSD: New aug can order for scrambling
 var const augBinary augOrderList[21];                                           //RSD: List of all aug cans in the game in order (to be scrambled)
 var travel bool bAddictionSystem;
@@ -1179,7 +1181,13 @@ function SetupRandomizer()
     {
         //ClientMessage("Make new Randomiser");
 	    Randomizer = new(Self) class'RandomTable';
-        Randomizer.Generate();
+    }
+
+    //If no seed is set, generate a new one
+    if (seed == -1)
+    {
+        seed = Rand(10000);
+        //ClientMessage("Generating new playthrough seed: " $ seed);
     }
 }
 
@@ -7046,6 +7054,11 @@ exec function ShowScores()
             //Do nothing.
             return;
         }
+        else if (assignedWeapon != none && assignedWeapon.IsA('RSDEdible')) //Sarge: Allow using edibles from the secondary button
+		{
+            assignedWeapon.GotoState('Activated');
+            return;
+		}
         else if (assignedWeapon != none && (assignedWeapon.IsA('Medkit') || assignedWeapon.IsA('BioelectricCell') || (assignedWeapon.IsA('ChargedPickup'))))
 		{
             if(assignedWeapon.IsInState('Activated'))
@@ -9647,6 +9660,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 							carc.SetScaleGlow();
 							Carc.UpdateHDTPSettings();
 							Carc.Inventory = PovCorpse(item).Inv; //GMDX
+							Carc.bSearched = POVCorpse(item).bSearched;
                             //if (FRand() < 0.3)
                             //PlaySound(Sound'DeusExSounds.Player.MaleLand', SLOT_None, 0.9, false, 800, 0.85);
 
@@ -12571,6 +12585,7 @@ function DeusExNote AddNote( optional String strNote, optional Bool bUserNote, o
 	newNote = new(Self) Class'DeusExNote';
 
 	newNote.text = strNote;
+	newNote.originalText = strNote;
 	newNote.SetUserNote( bUserNote );
 
 	// Insert this new note at the top of the notes list
@@ -12596,6 +12611,7 @@ function DeusExNote AddNote( optional String strNote, optional Bool bUserNote, o
 //
 // Loops through the notes and searches for the code in any note.
 // Ignores user notes, so we can't add some equivalent of "The code's 0451" and instantly know a code
+// Also makes sure to check the original text of notes, not user-added text, so we can't cheat by appending 0451 to an existing non-user note.
 // ----------------------------------------------------------------------
 
 function bool GetCodeNote(string code)
@@ -12606,7 +12622,16 @@ function bool GetCodeNote(string code)
 
 	while( note != None )
 	{
-		if (!note.bUserNote && InStr(Caps(note.text),Caps(code)) != -1)
+        //Skip user notes
+        if (note.bUserNote)
+            continue;
+
+        //handle any notes we were given which might not have "original" text for whatever reason
+        if (note.originalText == "")
+            note.originalText = note.text;
+
+        //Check note contents for the code
+		if (InStr(Caps(note.originalText),Caps(code)) != -1)
             return true;
 
 		note = note.next;
@@ -17018,6 +17043,7 @@ function bool FemaleEnabled()
 
 defaultproperties
 {
+     seed=-1;
      bNumberedDialog=True
      bCreditsInDialog=True
      autosaveRestrictTimerDefault=600.0
@@ -17209,4 +17235,5 @@ defaultproperties
      bWallPlacementCrosshair=True
      dynamicCrosshair=1
      bBeltMemory=True
+     bEnhancedCorpseInteractions=True
 }

@@ -57,7 +57,7 @@ defaultproperties
      strHeaderActionLabel="Weapon"
      strHeaderAssignedLabel="Model"
      HelpText="Select the model you wish to change and then press [Enter] or Double-Click to cycle through available models"
-     Title="Item Model Options"
+     Title="HDTP Model Options"
      disabledText="Vanilla"
      enabledText="HDTP"
      variable="iHDTPModelToggle"

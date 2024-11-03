@@ -40,7 +40,9 @@ defaultproperties
      items(23)=(HelpText="Enable alternate visuals for the bioenergy bar.",actionText="Animated Bioenergy Bar",variable="bAnimBar1",defaultValue=1);
      items(24)=(HelpText="Enable alternate visuals for the stamina bar.",actionText="Animated Stamina Bar",variable="bAnimBar2",defaultValue=1);
      items(25)=(HelpText="If enabled, a marker appears within your crosshair when dealing damage.",actionText="Hit Markers",variable="bHitMarkerOn",defaultValue=1);
-     items(26)=(HelpText="Enable/disable level transition autosaving.",actionText="Autosave on Level Transition",variable="bTogAutoSave",defaultValue=1);
+     items(26)=(HelpText="If enabled, right clicking a corpse for the first time will never pick it up, to stop accidentally picking up corpses you wished to search.",actionText="Enhanced Corpse Interactions",variable="bEnhancedCorpseInteractions",defaultValue=1);
+     items(27)=(HelpText="Append [Searched] text to interacted corpses",actionText="Show Searched Labels on Corpses",variable="bSearchedCorpseText");
+     items(28)=(HelpText="Enable/disable level transition autosaving.",actionText="Autosave on Level Transition",variable="bTogAutoSave",defaultValue=1);
 
 
      Title="GMDX Quality of Life Options"

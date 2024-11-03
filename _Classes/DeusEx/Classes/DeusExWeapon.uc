@@ -260,7 +260,6 @@ var localized String msgRate;
 var bool bExtraShaker;
 var() sound ReloadMidSound;
 var bool bCancelLoading;
-var int LoadedShells;
 var float negTime;
 var bool bBeginQuickMelee;
 var bool bAlreadyQuickMelee;                                                    //RSD
@@ -306,6 +305,9 @@ var travel float previousAccuracy;                                              
 var const vector weaponOffsets;                                                 //Sarge: Our weapon offsets. Leave at (0,0,0) to disable using offsets
 var travel vector oldOffsets;                                                   //Sarge: Stores our old default offsets
 var travel bool bOldOffsetsSet;                                                 //Sarge: Stores whether or not old default offsets have been remembered
+var travel bool givenFreeReload;                                                //Sarge: Give a free reload when selecting the weapon for the first time, otherwise it starts empty
+
+var float sleeptime;                                                              //Sarge: Used by per shell reload weapons to store how long they have been sleeping during reload, to allow us to cancel mid-reload in a far more responsive way.
 
 //END GMDX:
 
@@ -382,6 +384,17 @@ function DoWeaponOffset(DeusExPlayer player)
 //SARGE: Called when the item is added to the players hands
 function Draw(DeusExPlayer frobber)
 {
+    //Start with a full clip
+    if (!givenFreeReload)
+    {
+        //DeusExPlayer(owner).clientMessage("Give free reload");
+        ReloadMaxAmmo();
+        givenFreeReload = true;
+    }
+
+    //Fix allowing more in the clip than we have
+    ClipCount = min(ClipCount,AmmoType.AmmoAmount);
+
     DoWeaponOffset(frobber);
 }
 
@@ -518,6 +531,7 @@ function PreBeginPlay()
 
     UpdateHDTPSettings();                                                       //RSD: CheckWeaponSkins() is part of UpdateHDTPSettings()
 	//CheckWeaponSkins();
+    DoWeaponOffset(DeusExPlayer(GetPlayerPawn()));
 }
 
 function SupportActor( actor StandingActor )
@@ -1008,12 +1022,24 @@ local DeusExPlayer playa;
       NPCAccurateRange = default.AccurateRange;
 }
 
+function ReloadMaxAmmo()
+{
+    ClipCount = Min(ReloadCount,AmmoType.AmmoAmount);
+}
+
 function PostPostBeginPlay()
 {
 	Super.PostPostBeginPlay();
 
     if (!bUnlit && ScaleGlow > 0.5)
         ScaleGlow = 0.5;
+
+    //Give NPCs a full clip to start
+    if (!givenFreeReload && Owner.IsA('ScriptedPawn'))
+    {
+        ReloadMaxAmmo();
+        givenFreeReload = true;
+    }
 }
 
 singular function BaseChange()
@@ -1158,18 +1184,25 @@ function bool HandlePickupQuery(Inventory Item)
 					intj = tempMaxAmmo - defAmmo.AmmoAmount;
 					defAmmo.AddAmmo(intj);
 					Weapon(Item).PickupAmmoCount -= intj;
+                    DeusExWeapon(Item).clipcount = Weapon(Item).PickupAmmoCount;
+
 					if (!(DeusExAmmo(defAmmo) != none && (DeusExAmmo(defAmmo).ammoSkill == Class'DeusEx.SkillDemolition') || DeusExAmmo(defAmmo).IsA('ammoHideAGun'))) //RSD: Don't display ammo message for grenades or the PS20
 					{
-					player.ClientMessage(defAmmo.PickupMessage @ defAmmo.itemArticle @ defAmmo.ItemName $ " (" $ intj $ ")", 'Pickup' );
+                        player.ClientMessage(defAmmo.PickupMessage @ defAmmo.itemArticle @ defAmmo.ItemName $ " (" $ intj $ ")", 'Pickup' );
 					}
 					return true;
 				}
 				else                                                            //RSD: Add ammo and TELL the player about it!
 				{
 					defAmmo.AddAmmo( Weapon(Item).PickupAmmoCount );
-					if (!(DeusExAmmo(defAmmo) != none && (DeusExAmmo(defAmmo).ammoSkill == Class'DeusEx.SkillDemolition') || DeusExAmmo(defAmmo).IsA('ammoHideAGun'))) //RSD: Don't display ammo message for grenades or the PS20
+                    
+                    //SARGE: Tell us when we pick up empty weapons, rather than telling us
+                    //that we found 0 ammo
+                    if (Weapon(Item).PickupAmmoCount == 0)
+					    player.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.ItemName, 'Pickup' );
+					else if (!(DeusExAmmo(defAmmo) != none && (DeusExAmmo(defAmmo).ammoSkill == Class'DeusEx.SkillDemolition') || DeusExAmmo(defAmmo).IsA('ammoHideAGun'))) //RSD: Don't display ammo message for grenades or the PS20
 					{
-					player.ClientMessage(defAmmo.PickupMessage @ defAmmo.itemArticle @ defAmmo.ItemName $ " (" $ Weapon(Item).PickupAmmoCount $ ")", 'Pickup' );
+                        player.ClientMessage(defAmmo.PickupMessage @ defAmmo.itemArticle @ defAmmo.ItemName $ " (" $ Weapon(Item).PickupAmmoCount $ ")", 'Pickup' );
 					}
 				}
 
@@ -1260,6 +1293,7 @@ function float SetDroppedAmmoCount(optional int amountPassed)                   
 	else if (Level.NetMode == NM_Standalone)
         //PickupAmmoCount = Rand(4) + 1;                                        //RSD
         PickupAmmoCount = amountPassed;                                         //RSD
+    clipcount = amountPassed;
 }
 
 function BringUp()
@@ -1690,8 +1724,7 @@ function bool LoadAmmo(int ammoNum)
 
             if (bPerShellReload)                                                //RSD: originally we checked this in the classes that call LoadAmmo(). was IsA(...), now done with a simple bool check
             {
-                ClipCount = ReloadCount;
-                LoadedShells = 0;                                                 //RSD: without this, we can get stopped from fully loading the new ammo type if we switch repeatedly
+                ClipCount = 0;
             }
 
 			if ( Ammo20mm(newAmmo) != None || Ammo762mm(newAmmo) != None)
@@ -1966,16 +1999,15 @@ simulated function bool CanLoadAmmo(int ammoNum)                                
 
 simulated function bool CanReload()
 {
-	if ((ClipCount > 0) && (ReloadCount != 0) && (AmmoType != None) && (AmmoType.AmmoAmount > 0) &&
-	    (AmmoType.AmmoAmount > (ReloadCount-ClipCount)))
-		return true;
+	if (ClipCount < ReloadCount && ReloadCount != 0 && AmmoType != None && AmmoType.AmmoAmount > 0)
+        return true;
 	else
 		return false;
 }
 
 simulated function bool MustReload()
 {
-	if ((AmmoLeftInClip() == 0) && (AmmoType != None) && (AmmoType.AmmoAmount > 0))
+	if (AmmoLeftInClip() == 0 && AmmoType != None && AmmoType.AmmoAmount > 0)
 		return true;
 	else
 		return false;
@@ -1983,28 +2015,17 @@ simulated function bool MustReload()
 
 simulated function int AmmoLeftInClip()
 {
-	if (ReloadCount == 0)	// if this weapon is not reloadable
-		return 1;
-	else if (AmmoType == None)
-		return 0;
-	else if (AmmoType.AmmoAmount == 0)		// if we are out of ammo
-		return 0;
-	else if (ReloadCount - ClipCount > AmmoType.AmmoAmount)		// if we have no clips left
-		return AmmoType.AmmoAmount; //CyberP: This is why ammo goes straight into clip upon pickup.
-	else
-		return ReloadCount - ClipCount;
+    return ClipCount;
 }
 
 simulated function int NumClips()
 {
-	if (ReloadCount == 0)  // if this weapon is not reloadable
-		return 0;
-	else if (AmmoType == None)
-		return 0;
-	else if (AmmoType.AmmoAmount == 0)	// if we are out of ammo
-		return 0;
-	else  // compute remaining clips
-		return ((AmmoType.AmmoAmount-AmmoLeftInClip()) + (ReloadCount-1)) / ReloadCount;
+    local int rnds;
+    rnds = NumRounds();
+    if (rnds > 0)
+        return (rnds / reloadcount) + 1;
+    else
+        return 0;
 }
 
 simulated function int NumRounds()
@@ -2013,10 +2034,8 @@ simulated function int NumRounds()
 		return 0;
 	else if (AmmoType == None)
 		return 0;
-	else if (AmmoType.AmmoAmount == 0)	// if we are out of ammo
-		return 0;
-	else  // compute remaining clips
-		return ((AmmoType.AmmoAmount-AmmoLeftInClip()));
+	else  // compute remaining ammo
+		return AmmoType.AmmoAmount - AmmoLeftInClip();
 }
 
 simulated function int AmmoAvailable(int ammoNum)
@@ -2272,7 +2291,7 @@ simulated function Tick(float deltaTime)
       }
    }
 	// all this should only happen IF you have ammo loaded
-	if (ClipCount < ReloadCount)
+	if (ClipCount > 0)
 	{
 		// check for LAM or other placed mine placement
 		if (bHandToHand && (ProjectileClass != None) && (!Self.IsA('WeaponShuriken')))
@@ -2561,7 +2580,7 @@ simulated function Tick(float deltaTime)
 		}
 		else if (sustainedRecoil > 0)
 		{
-             if (AnimSequence != 'shoot' || ClipCount == ReloadCount)
+             if (AnimSequence != 'shoot' || ClipCount == 0)
              {
              player.ViewRotation.Pitch -= deltaTime * (Rand(512) + 1534) + (sustainedRecoil*40) * recoil;
              player.ViewRotation.Yaw -= deltaTime * (Rand(256) + 640) + (sustainedRecoil*40) * recoil;
@@ -3260,11 +3279,11 @@ simulated function bool ClientFire( float value )
 		PlaySelectiveFiring();
 		PlayFiringSound();
 	}
-	else if ((ClipCount < ReloadCount) || (ReloadCount == 0))
+	else if ((ClipCount > 0) || (ReloadCount == 0))
 	{
 		if ((ReloadCount == 0) || (AmmoType.AmmoAmount > 0))
 		{
-			SimClipCount = ClipCount + 1;
+			SimClipCount = ClipCount - 1;
 
 			if ( AmmoType != None )
 				AmmoType.SimUseAmmo();
@@ -3420,7 +3439,7 @@ function Fire(float Value)
 		PlayFiringSound();
 	}
 	// if we are a single-use weapon, then our ReloadCount is 0 and we don't use ammo
-	else if ((ClipCount < ReloadCount) || (ReloadCount == 0))
+	else if ((ClipCount > 0) || (ReloadCount == 0))
 	{
 	    if (AmmoType.AmmoAmount == 0 && IsA('WeaponSawedOffShotgun')) //CyberP: hack for this weird bug on sawed off
 	    {
@@ -3431,7 +3450,7 @@ function Fire(float Value)
 			if (( Level.NetMode != NM_Standalone ) && !bListenClient )
 				bClientReady = False;
 
-			ClipCount++;
+			ClipCount--;
 			bFiring = True;
 			bReadyToFire = False;
 
@@ -3479,7 +3498,7 @@ function Fire(float Value)
     {
        if (Owner.IsA('ScriptedPawn'))
        {
-          if (ClipCount >= ReloadCount)
+          if (ClipCount == 0)
           {
               bReadyToFire = false;
               bFiring = False;
@@ -3508,6 +3527,7 @@ function ReadyToFire()
 function PlayPostSelect()
 {
 	// let's not zero the ammo count anymore - you must always reload
+    //TODO: Sarge: Add backpack reloading
 //	ClipCount = 0;
 }
 
@@ -3926,7 +3946,7 @@ simulated function SimGenerateBullet()
 {
 	if ( Role < ROLE_Authority )
 	{
-		if ((ClipCount < ReloadCount) && (ReloadCount != 0))
+		if ((ClipCount > 0) && (ReloadCount != 0))
 		{
 			if ( AmmoType != None )
 				AmmoType.SimUseAmmo();
@@ -3936,7 +3956,7 @@ simulated function SimGenerateBullet()
 			else
 				ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
 
-			SimClipCount++;
+			SimClipCount--;
 
 			if ( !Self.IsA('WeaponFlamethrower') )
 				ServerGenerateBullet();
@@ -3958,12 +3978,12 @@ function ServerGotoFinishFire()
 
 function ServerDoneReloading()
 {
-	ClipCount = 0;
+    ReloadMaxAmmo();
 }
 
 function ServerGenerateBullet()
 {
-	if ( ClipCount < ReloadCount )
+	if ( ClipCount > 0 )
 		GenerateBullet();
 }
 
@@ -3977,7 +3997,7 @@ function GenerateBullet()
         else
 			ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
 
-		ClipCount++;
+		ClipCount--;
 		if (IsA('WeaponAssaultGun'))
 		   PlayFiringSound();
 	}
@@ -4840,6 +4860,9 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
         if (Other.IsA('ScriptedPawn') && FRand() < (float(HitDamage)*mult-finalDamage)) //RSD: So randomly add +1 damage with probability equal to the remainder (0.0-1.0)
             finalDamage++;
 
+		if (Other.IsA('Animal') && Ammo10mm(ammoType) != none &&DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkHollowPoints').bPerkObtained == true)
+			finalDamage *= DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkHollowPoints').PerkValue;
+
         if (DeusExPlayer(Owner) != None) //cyberP: spawn a tracer               //RSD: != none instead of IsA
         {
          //Owner.BroadcastMessage(finalDamage);                                   //RSD: Testing
@@ -4979,9 +5002,9 @@ simulated function SimFinish()
 
 	if ( Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).bAutoReload )
 	{
-		if ( (SimClipCount >= ReloadCount) && CanReload() )
+		if ( (SimClipCount == 0) && CanReload() )
 		{
-			SimClipCount = 0;
+			SimClipCount = Min(AmmoType.AmmoAmount,reloadcount);
 			bClientReadyToFire = False;
 			bInProcess = False;
 			if ((AmmoType.AmmoAmount == 0) && (AmmoName != AmmoNames[0]))
@@ -5690,10 +5713,7 @@ simulated function bool UpdateInfo(Object winObject)
                 if (bCanHaveModDamage)
                 {
                         numMods = Int(Abs(ModDamage) * 10);
-                        if (IsA('WeaponAssaultGun') || IsA('WeaponSawedOffShotgun') || IsA('WeaponAssaultShotgun'))
-                            winInfo.AddModInfo(msgDama, numMods, (numMods == 4), 1);
-                        else
-                            winInfo.AddModInfo(msgDama, numMods, (numMods == 5));
+                        winInfo.AddModInfo(msgDama, numMods, (numMods == 5));
                 }
 
                 if (bCanHaveModRecoilStrength)
@@ -5987,10 +6007,7 @@ simulated function bool HasDAMMod()
 
 simulated function bool HasMaxDAMMod()
 {
-    if (IsA('WeaponAssaultGun') || IsA('WeaponSawedOffShotgun') || IsA('WeaponAssaultShotgun'))
-        return (ModDamage == 0.4);
-    else
-	    return (ModDamage == 0.5);
+    return (ModDamage == 0.5);
 }
 // ----------------------------------------------------------------------
 // ClientDownWeapon()
@@ -6116,7 +6133,7 @@ state NormalFire
     }
 
 Begin:
-	if ((ClipCount >= ReloadCount) && (ReloadCount != 0))
+	if ((ClipCount == 0) && (ReloadCount != 0))
 	{
 		FinishAnim();
 		bFiring = False;
@@ -6345,26 +6362,31 @@ else
 			Owner.PlaySound(ReloadMidSound, SLOT_None,,, 1024);   //CyberP: ReloadMidSound is middle of a reload
 			if (bPerShellReload) //CyberP: load shells one at a time            //RSD: was IsA(...), now done with a simple bool check
 			{                                                                   //RSD: load darts one at a time too, don't load Assault Shotgun one at a time
-               while (ClipCount != 0 && AmmoType.AmmoAmount > 0)                //RSD: Reverted Assault shotty, added GEP
-			   {
-                 if (IsA('WeaponAssaultShotgun') || (IsA('WeaponSawedOffShotgun') && iHDTPModelToggle != 2)) //RSD: use normal sound routine if not using Clyzm's shotty
-			        LoadShells();
-                 Sleep(GetReloadTime());
-                 if (IsA('WeaponMiniCrossbow') && Owner.IsA('DeusExPlayer'))
-                    Owner.PlaySound(sound'GMDXSFX.Weapons.PDxbowreload', SLOT_None,,, 1024); //RSD: New Xbow reload sound, play after waiting
-			     ClipCount--;
-			     LoadedShells++;
-			     //Owner.BroadcastMessage(ClipCount);                           //RSD: For testing
-                 /*else if (IsA('WeaponGEPGun') && Owner.IsA('DeusExPlayer')) //RSD: need a new sound for rocket reloads
+                while (ClipCount < ReloadCount && AmmoType.AmmoAmount > 0)                //RSD: Reverted Assault shotty, added GEP
+                {
+                    sleeptime = 0;
+                    if (IsA('WeaponAssaultShotgun') || (IsA('WeaponSawedOffShotgun') && iHDTPModelToggle != 2)) //RSD: use normal sound routine if not using Clyzm's shotty
+                        LoadShells();
+                    //Sleep(GetReloadTime());
+                    //SARGE: Changed to now check during reload, so it's more responsive
+                    while (sleeptime < GetReloadTime() && !bCancelLoading)
+                    {
+                        sleeptime += 0.1;
+                        Sleep(0.1);
+                    }
+                    
+                    if (bCancelLoading)
+                        break;
+
+                    if (IsA('WeaponMiniCrossbow') && Owner.IsA('DeusExPlayer'))
+                        Owner.PlaySound(sound'GMDXSFX.Weapons.PDxbowreload', SLOT_None,,, 1024); //RSD: New Xbow reload sound, play after waiting
+                    ClipCount++;
+                    //Owner.BroadcastMessage(ClipCount);                           //RSD: For testing
+                    /*else if (IsA('WeaponGEPGun') && Owner.IsA('DeusExPlayer')) //RSD: need a new sound for rocket reloads
                     Owner.PlaySound(CockingSound, SLOT_None,,, 1024);*/
-                 if (AmmoType.AmmoAmount < ReloadCount)
-			     {
-			      if (LoadedShells == AmmoType.AmmoAmount)
-                     break;
-			     }
-			     if (bCancelLoading)
-			      break;
-			   }
+                    if (ClipCount == AmmoType.AmmoAmount)
+                        break;
+                }
             }
             else
 			   Sleep(GetReloadTime());
@@ -6377,9 +6399,8 @@ else
 //			if (bWasZoomed)
 //				ScopeOn();
             bCancelLoading = False;
-            LoadedShells = 0;
             if (!bPerShellReload)                                               //RSD: was IsA(...), now done with a simple bool check
-				ClipCount = 0;                                                  //RSD: Assault shotgun loads a clip at a time, Xbow a dart at a time
+				ReloadMaxAmmo();                                                  //RSD: Assault shotgun loads a clip at a time, Xbow a dart at a time
 		}                                                                       //RSD: Reverted Assault shotty, added GEP
 	}
 	if (bLasing)
@@ -6435,7 +6456,7 @@ simulated state ClientFiring
 		}
 	}
 Begin:
-	if ((ClipCount >= ReloadCount) && (ReloadCount != 0))
+	if ((ClipCount == 0) && (ReloadCount != 0))
 	{
 		if (!bAutomatic)
 		{
@@ -6693,7 +6714,7 @@ state FlameThrowerOn
 		}
 	}
 Begin:
-	if ( (DeusExPlayer(Owner).Health > 0) && bFlameOn && (ClipCount < ReloadCount))
+	if ( (DeusExPlayer(Owner).Health > 0) && bFlameOn && (ClipCount > 0))
 	{
 		if (( flameShotCount == 0 ) && (Owner != None))
 		{
@@ -6748,7 +6769,7 @@ Begin:
 	if (!Owner.IsA('ScriptedPawn'))
 		FinishAnim();
 	// reload the weapon if it's empty and autoreload is true
-	if ((ClipCount >= ReloadCount) && (ReloadCount != 0))
+	if ((ClipCount == 0) && (ReloadCount != 0))
 	{
 		if (Owner.IsA('ScriptedPawn') || ((DeusExPlayer(Owner) != None) && DeusExPlayer(Owner).bAutoReload))
 			ReloadAmmo();
@@ -6825,7 +6846,7 @@ Begin:
     bAlreadyQuickMelee = False;                                                 //RSD: Added
 	//if ( Level.NetMode != NM_Standalone )
 	//{
-	//	ClipCount = 0;	// Auto-reload in multiplayer (when putting away)
+	//	ReloadMaxAmmo();	// Auto-reload in multiplayer (when putting away)
 	//}
 	bOnlyOwnerSee = false;
 	if (Pawn(Owner) != None)
