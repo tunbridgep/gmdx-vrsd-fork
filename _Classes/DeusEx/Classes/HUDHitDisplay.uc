@@ -91,15 +91,18 @@ event InitWindow()
 	bodyWin.SetTileColor(colArmor);
 	bodyWin.Lower();
 
-	winEnergy = CreateProgressBar(15, 20);
-	if (player.bAnimBar1)
-	    winEnergy.bSpecialFX = True;
-	winBreath = CreateProgressBar(61, 20);
-	if (player.bAnimBar2)
-	    winBreath.bSpecialFX2 = True;
-
 	damageFlash = 0.4;  // seconds
 	healFlash   = 1.0;  // seconds
+	
+    winEnergy = CreateProgressBar(15, 20);
+	winBreath = CreateProgressBar(61, 20);
+    UpdateBars();
+}
+
+function UpdateBars()
+{
+    winEnergy.bSpecialFX = player.bAnimBar1;
+    winBreath.bSpecialFX2 = player.bAnimBar2;
 }
 
 // ----------------------------------------------------------------------

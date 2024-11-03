@@ -9,6 +9,7 @@ function SaveSettings()
 {
     Super.SaveSettings();
     player.UpdateCrosshairStyle();
+    player.UpdateHUD();
 }
 
 defaultproperties

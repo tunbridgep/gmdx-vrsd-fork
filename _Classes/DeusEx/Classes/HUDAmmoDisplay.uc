@@ -234,8 +234,8 @@ defaultproperties
      NotAvailable="N/A"
      msgReloading="---"
      AmmoLabel="AMMO"
-     MagsLabel="MAGSAAAHHH"
-     ClipsLabel="CLIPSAAAAHHH"
+     MagsLabel="MAGS"
+     ClipsLabel="CLIPS"
 	 RoundsLabel="RDS"
      texBackground=Texture'DeusExUI.UserInterface.HUDAmmoDisplayBackground_1'
      texBorder=Texture'DeusExUI.UserInterface.HUDAmmoDisplayBorder_1'
