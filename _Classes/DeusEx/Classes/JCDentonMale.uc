@@ -5,9 +5,65 @@ class JCDentonMale extends Human;
 
 function UpdateHDTPSettings()
 {
-    //Do nothing, we're now handling skin textures etc via the LDDP stuff instead
+
+	local int i;
+	local texture newtex; //preload these? Not sure if necessary, but hey
+	local string texstr;
+
+    //If we're femJC, abort
+    if (FlagBase.GetBool('LDDPJCIsFemale'))
+        return;
+
+	super.UpdateHDTPsettings();
+
+	for(i=2;i<6;i++)
+	{
+		texstr = "HDTPCharacters.Skins.HDTPJCFaceTex";
+		texstr = texstr $ i;
+		newtex = texture(dynamicloadobject(texstr,class'texture'));
+	}
+	for(i=1;i<5;i++)
+	{
+		texstr = "HDTPCharacters.Skins.HDTPJCHandsTex";
+		texstr = texstr $ i;
+		newtex = texture(dynamicloadobject(texstr,class'texture'));
+	}
+
+	SetSkin();
 }
 
+//Set HDTP Skin
+function SetSkin()
+{
+    local LodMesh HDTPMesh;
+
+    //If we're femJC, abort
+    if (FlagBase.GetBool('LDDPJCIsFemale'))
+        return;
+
+	if(GetHDTPSettings(self))
+	{
+		switch(PlayerSkin)
+		{
+			case 0:	MultiSkins[0] = Texture'HDTPCharacters.Skins.HDTPJCFaceTex0'; MultiSkins[3] = Texture'HDTPCharacters.Skins.HDTPJCHandsTex0'; break;
+			case 1:	MultiSkins[0] = Texture'HDTPCharacters.Skins.HDTPJCFaceTex1'; MultiSkins[3] = Texture'HDTPCharacters.Skins.HDTPJCHandsTex1'; break;
+			case 2:	MultiSkins[0] = Texture'HDTPCharacters.Skins.HDTPJCFaceTex2'; MultiSkins[3] = Texture'HDTPCharacters.Skins.HDTPJCHandsTex2'; break;
+			case 3:	MultiSkins[0] = Texture'HDTPCharacters.Skins.HDTPJCFaceTex3'; MultiSkins[3] = Texture'HDTPCharacters.Skins.HDTPJCHandsTex3'; break;
+			case 4:	MultiSkins[0] = Texture'HDTPCharacters.Skins.HDTPJCFaceTex4'; MultiSkins[3] = Texture'HDTPCharacters.Skins.HDTPJCHandsTex4'; break;
+		}
+	}
+	else
+	{
+		switch(PlayerSkin)
+		{
+			case 0:	MultiSkins[0] = Texture'JCDentonTex0'; break;
+			case 1:	MultiSkins[0] = Texture'JCDentonTex4'; break;
+			case 2:	MultiSkins[0] = Texture'JCDentonTex5'; break;
+			case 3:	MultiSkins[0] = Texture'JCDentonTex6'; break;
+			case 4:	MultiSkins[0] = Texture'JCDentonTex7'; break;
+		}
+	}
+}
 
 // ----------------------------------------------------------------------
 // TravelPostAccept()
@@ -188,6 +244,9 @@ function Timer()
 {
     Super.Timer();
     SetupOutfitManager();
+
+    //load HDTP Skin
+    UpdateHDTPSettings();
 }
 
 // ----------------------------------------------------------------------

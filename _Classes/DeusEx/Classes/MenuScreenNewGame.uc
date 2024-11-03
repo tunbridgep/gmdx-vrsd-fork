@@ -73,6 +73,7 @@ var bool bRestrictedSaving;
 var bool bNoKeypadCheese;
 var bool bExtraHardcore;
 var bool bMoreLDDPNPCs;
+var bool bRestrictedMetabolism;
 
 //LDDP
 var bool bFemaleEnabled;
@@ -131,6 +132,7 @@ event InitWindow()
     bRandomizeEnemies=false;                                                    //Sarge
     bExtraHardcore=false;                                                       //Sarge
     bMoreLDDPNPCs=false;                                                        //Sarge
+    //bRestrictedMetabolism=false;                                                //Sarge
     default.bRandomizeCrates=false;                                             //RSD: Also need default values! Otherwise get command in modifier menu takes the wrong value
     default.bRandomizeMods=false;                                               //RSD
     default.bRandomizeAugs=false;                                               //RSD
@@ -140,6 +142,7 @@ event InitWindow()
     default.bRandomizeEnemies=false;                                            //Sarge
     default.bExtraHardcore=false;                                               //Sarge
     default.bMoreLDDPNPCs=false;                                                //Sarge
+    //default.bRestrictedMetabolism=false;                                        //Sarge
 
 	StyleChanged();
 }
@@ -753,7 +756,7 @@ function ProcessAction(String actionKey)
     {
 		modMenu = MenuScreenPlaythroughModifiers(root.InvokeMenuScreen(Class'MenuScreenPlaythroughModifiers'));
         modMenu.bHardcoreSelected = bHardCoreMode;
-        modMenu.PopulateModifierList();
+        modMenu.BuildModifierList();
     }
     else if (actionKey == "HELP")
     {
@@ -786,6 +789,7 @@ function SaveSettings()
         ScrambleAugOrderList();
     player.bAddictionSystem=bAddictionSystem;
     player.bExtraHardcore=bExtraHardcore;
+    //player.bRestrictedMetabolism=bRestrictedMetabolism;
     player.bMoreLDDPNPCs=bMoreLDDPNPCs;
 
     //LDDP

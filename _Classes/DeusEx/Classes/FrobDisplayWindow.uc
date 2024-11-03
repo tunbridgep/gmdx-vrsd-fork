@@ -304,9 +304,9 @@ function DrawWindow(GC gc)
 					//else
 						strInfo = ownedTools $ "/" $ numTools @ msgPicks;
 				    //if (dxMover.bPerkApplied)                                   //RSD: Doorsman perk
-                        if (ownedTools < numTools)
+                        if (ownedTools < numTools && player.bColourCodeFrobDisplay)
 				            gc.SetTextColor(colNotEnough);
-                        else if (ownedTools == numTools)
+                        else if (ownedTools == numTools && player.bColourCodeFrobDisplay)
 				            gc.SetTextColor(colJustEnough);
 						gc.DrawText(infoX+(infoW-barLength-2), infoY+4+(infoH-8)/4, barLength, ((infoH-8)/4)-2, strInfo);
 					//else
@@ -385,9 +385,9 @@ function DrawWindow(GC gc)
 					//	strInfo = ownedTools $ "/" $ numTools @ msgTool;
 					//else
 						strInfo = ownedTools $ "/" $ numTools @ msgTools;
-                    if (ownedTools < numTools)
+                    if (ownedTools < numTools && player.bColourCodeFrobDisplay)
                         gc.SetTextColor(colNotEnough);
-                    else if (ownedTools == numTools)
+                    else if (ownedTools == numTools && player.bColourCodeFrobDisplay)
                         gc.SetTextColor(colJustEnough);
 					gc.DrawText(infoX+(infoW-barLength-2), infoY+infoH/2.7, barLength, infoH/2.7-6, strInfo);
 					//gc.DrawText(infoX+(infoW-barLength-2), infoY+infoH/2, barLength, infoH/2-6, strInfo); //RSD: reverted
