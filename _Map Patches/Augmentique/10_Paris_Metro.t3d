@@ -1,0 +1,67 @@
+Begin Map
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner4
+    Id="businessman1"
+    bDynamicLight=True
+    LastRenderTime=1550.984253
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=208,ZoneNumber=1)
+    Location=(X=1452.724976,Y=1383.275024,Z=758.098999)
+    Rotation=(Yaw=32000)
+    OldLocation=(X=1540.724976,Y=1387.275024,Z=758.098999)
+    bSelected=True
+    Name=OutfitSpawner4
+End Actor
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner3
+    Id="jaimereyes"
+    bDynamicLight=True
+    LastRenderTime=1252.703247
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=508,ZoneNumber=1)
+    Location=(X=2286.059570,Y=1893.417969,Z=614.090210)
+    Rotation=(Yaw=-50000)
+    OldLocation=(X=2286.059570,Y=1893.417969,Z=614.090210)
+    bSelected=True
+    Name=OutfitSpawner3
+End Actor
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner5
+    Id="retro"
+    bDynamicLight=True
+    LastRenderTime=1718.592651
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=617,ZoneNumber=2)
+    Location=(X=1187.590088,Y=1643.275024,Z=150.103485)
+    Rotation=(Yaw=32000)
+    OldLocation=(X=1187.590088,Y=1643.275024,Z=150.103485)
+    bSelected=True
+    Name=OutfitSpawner5
+End Actor
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner15
+    Id="cop"
+    bDynamicLight=True
+    LastRenderTime=552.224182
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=4238,ZoneNumber=1)
+    Location=(X=-3243.908203,Y=2327.685059,Z=198.097351)
+    Rotation=(Yaw=52000)
+    OldLocation=(X=-3243.908203,Y=2327.685059,Z=198.097351)
+    bSelected=True
+    Name=OutfitSpawner15
+End Actor
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner23
+    Id="businesswoman"
+    bDynamicLight=True
+    LastRenderTime=69.506866
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=4733,ZoneNumber=1)
+    Location=(X=-1341.393555,Y=797.391296,Z=230.099960)
+    Rotation=(Yaw=50000)
+    OldLocation=(X=-1341.393555,Y=797.391296,Z=230.099960)
+    bSelected=True
+    Name=OutfitSpawner23
+End Actor
+End Map

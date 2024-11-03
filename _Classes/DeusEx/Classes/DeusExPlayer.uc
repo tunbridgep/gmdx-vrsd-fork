@@ -229,6 +229,17 @@ var globalconfig bool bToggleCrouch;				// True to let key toggle crouch
 var globalconfig float logTimeout;					// Log Timeout Value
 var globalconfig byte  maxLogLines;					// Maximum number of log lines visible
 var globalconfig bool bHelpMessages;				// Multiplayer help messages
+var globalconfig bool bWallPlacementCrosshair;		// SARGE: Show a blue crosshair when placing objects on walls
+var globalconfig bool bDisplayTotalAmmo;		    // SARGE: Show total ammo count, rather than MAGS
+var globalconfig bool bDisplayClips;		        // SARGE: For the weirdos who prefer Clips instead of Mags. Hidden Option
+var globalconfig bool bColourCodeFrobDisplay;       //SARGE: Colour Code the Frob display when you don't meet or only just meet the number of tools/picks required. Some people might not like the colours.
+var globalconfig bool bGameplayMenuHardcoreMsgShown;//SARGE: Stores whether or not the gameplay menu message has been displayed.
+var globalconfig bool bEnhancedCorpseInteractions;  //SARGE: Right click always searches corpses. After searching, right click picks up corpses as normal.
+var globalconfig bool bSearchedCorpseText;          //SARGE: Corpses show "[Searched]" text when interacted with for the first time.
+var globalconfig bool bCutsceneFOVAdjust;           //SARGE: Enforce 75 FOV in cutscenes
+var globalconfig bool bLightingAccessibility;       //SARGE: Changes lighting in some areas to reduce strobing/flashing, as it may hurt eyes or cause seizures.
+
+var bool bPrisonStart;                              //SARGE: Alternate Start
 
 // Overlay Options (TODO: Move to DeusExHUD.uc when serializable)
 var globalconfig byte translucencyLevel;			// 0 - 10?
@@ -373,7 +384,6 @@ var Computers ActiveComputer;
 
 var globalconfig bool bHDTP_JC;
 var globalconfig bool bHDTP_Walton, bHDTP_Anna, bHDTP_UNATCO, bHDTP_MJ12, bHDTP_NSF, bHDTP_RiotCop, bHDTP_Gunther, bHDTP_Paul, bHDTP_Nico;
-var globalconfig int bHDTP_ALL; //-1 = none, 0 = use other settings, 1 = all.
 var string HDTPMeshName;
 var string HDTPMeshTex[8];
 
@@ -542,6 +552,7 @@ var travel bool bRandomizeAugs;
 var travel bool bRandomizeEnemies;
 var travel bool bRestrictedSaving;												//Sarge: This used to be tied to hardcore, now it's a config option
 var travel bool bNoKeypadCheese;												//Sarge: Prevent using keycodes that we don't know
+var travel int seed;                                                            //Sarge: When using randomisation playthrough modifiers, this is our generated seed for the playthrough, to prevent autosave abuse and the like
 var travel int augOrderNums[21];                                                //RSD: New aug can order for scrambling
 var const augBinary augOrderList[21];                                           //RSD: List of all aug cans in the game in order (to be scrambled)
 var travel bool bAddictionSystem;
@@ -577,6 +588,11 @@ var globalconfig bool bQuickAugWheel;                                           
 var globalconfig bool bAugWheelDisableAll;                                      //Sarge: Show the Disable All button on the Aug Wheel
 
 //////////END GMDX
+
+// OUTFIT STUFF
+var travel OutfitManagerBase outfitManager;
+var globalconfig string unlockedOutfits[255];
+
 
 // native Functions
 native(1099) final function string GetDeusExVersion();
@@ -734,36 +750,28 @@ function UpdateHDTPsettings()
 
 function bool GetHDTPSettings(actor Other)
 {
-	if(bHDTP_ALL > 0)
-		return true;
-	else if(bHDTP_All < 0)
-		return false;
-	else
-	{
-		if((Other.IsA('JCDentonMaleCarcass') || Other.IsA('JCDouble') || Other.IsA('JCDentonMale')) && bHDTP_JC)     //changed self to JCdentonmale for hopefully better mod compatibility
-			return true;
-		//if((Other.IsA('MJ12Troop') || Other.IsA('MJ12TroopCarcass')) && bHDTP_MJ12)
-		//	return true;
-		else if((Other.IsA('UNATCOTroop') || Other.IsA('UNATCOTroopCarcass')) && bHDTP_UNATCO)
-			return true;
-		else if((Other.IsA('WaltonSimons') || Other.IsA('WaltonSimonsCarcass')) && bHDTP_WALTON)
-			return true;
-		else if((Other.IsA('AnnaNavarre') || Other.IsA('AnnaNavarreCarcass')) && bHDTP_Anna)
-			return true;
-		else if((Other.IsA('GuntherHermann') || Other.IsA('GuntherHermannCarcass')) && bHDTP_Gunther)
-			return true;
-		else if((Other.IsA('RiotCop') || Other.IsA('RiotCopCarcass')) && bHDTP_RiotCop)
-			return true;
-		else if((Other.IsA('Terrorist') || Other.IsA('TerroristCarcass')) && bHDTP_NSF)
-			return true;
-		else if((Other.IsA('PaulDenton') || Other.IsA('PaulDentonCarcass')) && bHDTP_Paul)
-			return true;
-		else if((Other.IsA('NicoletteDuClare') || Other.IsA('NicoletteDuClareCarcass')) && bHDTP_Nico)
-			return true;
-		else
-			return false;
-	}
-	return false;
+    if((Other.IsA('JCDentonMaleCarcass') || Other.IsA('JCDouble') || Other.IsA('JCDentonMale')) && bHDTP_JC)     //changed self to JCdentonmale for hopefully better mod compatibility
+        return true;
+    if((Other.IsA('MJ12Troop') || Other.IsA('MJ12TroopCarcass')) && bHDTP_MJ12)
+        return true;
+    else if((Other.IsA('UNATCOTroop') || Other.IsA('UNATCOTroopCarcass')) && bHDTP_UNATCO)
+        return true;
+    else if((Other.IsA('WaltonSimons') || Other.IsA('WaltonSimonsCarcass')) && bHDTP_WALTON)
+        return true;
+    else if((Other.IsA('AnnaNavarre') || Other.IsA('AnnaNavarreCarcass')) && bHDTP_Anna)
+        return true;
+    else if((Other.IsA('GuntherHermann') || Other.IsA('GuntherHermannCarcass')) && bHDTP_Gunther)
+        return true;
+    else if((Other.IsA('RiotCop') || Other.IsA('RiotCopCarcass')) && bHDTP_RiotCop)
+        return true;
+    else if((Other.IsA('Terrorist') || Other.IsA('TerroristCarcass')) && bHDTP_NSF)
+        return true;
+    else if((Other.IsA('PaulDenton') || Other.IsA('PaulDentonCarcass')) && bHDTP_Paul)
+        return true;
+    else if((Other.IsA('NicoletteDuClare') || Other.IsA('NicoletteDuClareCarcass')) && bHDTP_Nico)
+        return true;
+    else
+        return false;
 }
 
 function setupDifficultyMod() //CyberP: scale things based on difficulty. To find all things modified by
@@ -795,9 +803,6 @@ local AlarmUnit        AU;                                                      
    	 bFirstLevelLoad = !flagBase.GetBool(flagName);                             //RSD: Tells us if this is the first time loading a map
 //log("flagName =" @flagName);
 //log("bFirstLevelLoad =" @bFirstLevelLoad);
-
-     if (bHDTP_All != -1)
-      bHDTP_All=-1;
 
      bStunted = False; //CyberP: failsafe
      if (CarriedDecoration != None && CarriedDecoration.IsA('Barrel1'))
@@ -965,7 +970,8 @@ local AlarmUnit        AU;                                                      
                 if (SC.hackStrength > 0.15)                                     //RSD: Reinstating but with failsafe logic
 	        	   SC.hackStrength = 0.150000;
             }
-            if (bA51Camera && SC.minDamageThreshold != 70)
+
+            if ((bA51Camera || bHardcoreMode) && SC.minDamageThreshold != 70)
             {
                 if (!SC.bDiffProperties)
                 {
@@ -1019,8 +1025,6 @@ function PostBeginPlay()
 	DXGame = Level.Game;
 	ShieldStatus = SS_Off;
 	ServerTimeLastRefresh = 0;
-    if (bHDTP_All != -1)
-      bHDTP_All=-1;    //CyberP: no HDTP characters for a number of reasons.
 	// Safeguard so no cheats in multiplayer
 	if ( Level.NetMode != NM_Standalone )
 		bCheatsEnabled = False;
@@ -1180,7 +1184,13 @@ function SetupRandomizer()
     {
         //ClientMessage("Make new Randomiser");
 	    Randomizer = new(Self) class'RandomTable';
-        Randomizer.Generate();
+    }
+
+    //If no seed is set, generate a new one
+    if (seed == -1)
+    {
+        seed = Rand(10000);
+        //ClientMessage("Generating new playthrough seed: " $ seed);
     }
 }
 
@@ -1568,37 +1578,6 @@ exec function HDTP(optional string s)
 	local deusexcarcass C;
 	local DeusExWeapon W;                                                       //RSD: Added for weapon model toggles
 
-	if(s != "")
-	{
-		s = Caps(s);
-		if(s == "NICO")
-			bHDTP_Nico = !bHDTP_Nico;
-		else if(s == "WALTON")
-			bHDTP_Walton = !bHDTP_Walton;
-		else if(s == "ANNA")
-			bHDTP_Anna = !bHDTP_Anna;
-		else if(s == "MJ12")
-			bHDTP_MJ12 = false;// was !bHDTP_MJ12;
-		else if(s == "UNATCO")
-			bHDTP_UNATCO = !bHDTP_UNATCO;
-		else if(s == "NSF")
-			bHDTP_NSF = !bHDTP_NSF;
-		else if(s == "COP")
-			bHDTP_RiotCop = !bHDTP_RiotCop;
-		else if(s == "GUNTHER")
-			bHDTP_Gunther = !bHDTP_Gunther;
-		else if(s == "PAUL")
-			bHDTP_Paul = !bHDTP_Paul;
-		else if(s == "JC")
-			bHDTP_JC = !bHDTP_JC;
-		else if(s == "ALL")
-		{
-			bHDTP_All++;
-			if(bHDTP_All > 1)
-				bHDTP_All = -1;
-		}
-	}
-
 	foreach Allactors(Class'Scriptedpawn',P)
 		P.UpdateHDTPSettings();
 	foreach Allactors(Class'DeusexCarcass',C)
@@ -1608,7 +1587,6 @@ exec function HDTP(optional string s)
 
 	UpdateHDTPsettings();
 }
-
 
 // ----------------------------------------------------------------------
 // Update Time Played
@@ -2112,7 +2090,7 @@ function ShowIntro(optional bool bStartNewGame)
 	// Make sure all augmentations are OFF before going into the intro
 	AugmentationSystem.DeactivateAll();
 
-	if (bSkipNewGameIntro)
+	if (bSkipNewGameIntro || bPrisonStart)
 	  PostIntro();
 	  else// Reset the player
 		 Level.Game.SendPlayer(Self, "00_Intro");
@@ -2246,7 +2224,7 @@ function ResetPlayer(optional bool bTraining)
 	}
 
 	// Give the player a pistol and a prod
-	if (!bTraining)
+	if (!bTraining && !bPrisonStart)
 	{
 
         //SARGE: Hack to make the starting items always appear in the belt, regardless of autofill setting
@@ -4977,11 +4955,9 @@ function HandleWalking()
 	if (bToggleWalk)   //&& !bHardCoreMode
 		bIsWalking = !bIsWalking;
 
-    //SARGE: If our walk state has changed, untoggle crouch
+    //SARGE: If we started running with the run key, untoggle crouch
     if (!bLastRun && bRun == 1 && IsCrouching() && !bAlwaysRun)
         SetCrouch(false);
-    else if (bLastRun && bRun == 1 && bIsCrouching)
-        SetCrouch(true);
 
     bLastRun = bool(bRun);
 }
@@ -7081,6 +7057,11 @@ exec function ShowScores()
             //Do nothing.
             return;
         }
+        else if (assignedWeapon != none && assignedWeapon.IsA('RSDEdible')) //Sarge: Allow using edibles from the secondary button
+		{
+            assignedWeapon.GotoState('Activated');
+            return;
+		}
         else if (assignedWeapon != none && (assignedWeapon.IsA('Medkit') || assignedWeapon.IsA('BioelectricCell') || (assignedWeapon.IsA('ChargedPickup'))))
 		{
             if(assignedWeapon.IsInState('Activated'))
@@ -7320,10 +7301,9 @@ function DoItemPutAwayFunction(Inventory inv)
 //This should probably be moved elsewhere
 function DoItemDrawFunction(Inventory inv)
 {
-    /*
     if (inv.isA('DeusExPickup'))
         DeusExPickup(inv).Draw(Self);
-    else*/ if (inv.isA('DeusExWeapon'))
+    else if (inv.isA('DeusExWeapon'))
         DeusExWeapon(inv).Draw(Self);
     /*else if (inv.isA('DeusExMover'))
         DeusExMover(inv).Draw(Self);
@@ -9247,7 +9227,7 @@ function PutCarriedDecorationInHand(optional bool bNoSoundEffect)
 			CarriedDecoration.bCollideWorld = False;
             //CarriedDecoration.SetCollisionSize(CarriedDecoration.CollisionRadius*2,CarriedDecoration.CollisionHeight*2);
 			// make it translucent
-			if (!bNoTranslucency || AugmentationSystem.GetAugLevelValue(class'AugCloak') != -1.0)
+			if ((!bNoTranslucency && !bHardcoreMode) || AugmentationSystem.GetAugLevelValue(class'AugCloak') != -1.0)
 			{
 			CarriedDecoGlow = CarriedDecoration.ScaleGlow;
 			CarriedDecoration.Style = STY_Translucent;
@@ -9401,7 +9381,7 @@ function DropDecoration()
 			// turn off translucency
 			CarriedDecoration.Style = CarriedDecoration.Default.Style;
 			CarriedDecoration.bUnlit = CarriedDecoration.Default.bUnlit;
-			if (!bNoTranslucency && CarriedDecoration.IsA('DeusExDecoration'))
+			if ((!bNoTranslucency && !bHardcoreMode) && CarriedDecoration.IsA('DeusExDecoration'))
 				DeusExDecoration(CarriedDecoration).ScaleGlow = CarriedDecoGlow;
 
 		 if (bThrowDecoration)
@@ -9683,6 +9663,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 							carc.SetScaleGlow();
 							Carc.UpdateHDTPSettings();
 							Carc.Inventory = PovCorpse(item).Inv; //GMDX
+							Carc.bSearched = POVCorpse(item).bSearched;
                             //if (FRand() < 0.3)
                             //PlaySound(Sound'DeusExSounds.Player.MaleLand', SLOT_None, 0.9, false, 800, 0.85);
 
@@ -10382,6 +10363,16 @@ exec function ToggleAugDisplay()
 	root = DeusExRootWindow(rootWindow);
 	if (root != None)
 		root.UpdateHud();
+}
+
+// ----------------------------------------------------------------------
+// SkipMessages
+// ----------------------------------------------------------------------
+
+exec function SkipMessages()
+{
+    if (dataLinkPlay != None)
+        dataLinkPlay.AbortAndSaveHistory();
 }
 
 // ----------------------------------------------------------------------
@@ -11170,6 +11161,10 @@ function PostIntro()
 	{
 		bStartNewGameAfterIntro = False;
 		StartNewGame(strStartMap);
+        if (bPrisonStart)
+            StartNewGame("05_NYC_UNATCOMJ12lab"); //SARGE: Have to hardcode this. Game crashes if we use a property
+        else
+            StartNewGame(strStartMap);
 	}
 	else
 	{
@@ -12593,6 +12588,7 @@ function DeusExNote AddNote( optional String strNote, optional Bool bUserNote, o
 	newNote = new(Self) Class'DeusExNote';
 
 	newNote.text = strNote;
+	newNote.originalText = strNote;
 	newNote.SetUserNote( bUserNote );
 
 	// Insert this new note at the top of the notes list
@@ -12618,6 +12614,7 @@ function DeusExNote AddNote( optional String strNote, optional Bool bUserNote, o
 //
 // Loops through the notes and searches for the code in any note.
 // Ignores user notes, so we can't add some equivalent of "The code's 0451" and instantly know a code
+// Also makes sure to check the original text of notes, not user-added text, so we can't cheat by appending 0451 to an existing non-user note.
 // ----------------------------------------------------------------------
 
 function bool GetCodeNote(string code)
@@ -12628,7 +12625,16 @@ function bool GetCodeNote(string code)
 
 	while( note != None )
 	{
-		if (!note.bUserNote && InStr(Caps(note.text),Caps(code)) != -1)
+        //Skip user notes
+        if (note.bUserNote)
+            continue;
+
+        //handle any notes we were given which might not have "original" text for whatever reason
+        if (note.originalText == "")
+            note.originalText = note.text;
+
+        //Check note contents for the code
+		if (InStr(Caps(note.originalText),Caps(code)) != -1)
             return true;
 
 		note = note.next;
@@ -13632,10 +13638,11 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
 	local float origHealth, fdst;
 	local DeusExLevelInfo info;
 	local DeusExWeapon dxw;
+	local BallisticArmor armor;
 	local String bodyString;
 	local int MPHitLoc;
 	local GMDXFlickerLight lightFlicker;
-    local float augLVL;
+    local float augLVL, skillLevel;
     local DeusExRootWindow root;
     local GMDXImpactSpark AST;
 
@@ -13786,6 +13793,25 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
 		return;
 	    }
     }
+
+	if (instigatedBy.IsA('DeusExPlayer') && (damageType == 'Exploded' || damageType == 'Burned') && PerkManager.GetPerkWithClass(class'DeusEx.PerkBlastPadding').bPerkObtained == true)	// Trash: Less damage if you're wearing a vest and you have Blast Padding
+	{
+		if (UsingChargedPickup(class'BallisticArmor'))
+		{
+			skillLevel = SkillSystem.GetSkillLevelValue(class'SkillEnviro');
+			actualDamage *= PerkManager.GetPerkWithClass(class'DeusEx.PerkBlastPadding').PerkValue; //GMDX: removed too easy * skillLevel; //CyberP: foreach durable armor
+			foreach AllActors(class'BallisticArmor', armor)
+			{
+				if ((armor.Owner == Self) && armor.bActive)
+					armor.Charge -= (Damage * 4 * skillLevel);
+				if (armor.Charge < 0)                                       //RSD: Don't go below zero
+				{
+					armor.Charge = 0;
+					armor.UsedUp();                                         //RSD: Otherwise doesn't deactivate properly
+				}
+			}
+		}
+	}
 
     if (damageType == 'Exploded' || damageType == 'Shocked')
     {
@@ -14241,10 +14267,9 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 
             if (newDamage >= 1 && bStaminaSystem)
             {
-				if (UsingChargedPickup(class'HazMatSuit'))
+				if (UsingChargedPickup(class'HazMatSuit') && PerkManager.GetPerkWithClass(class'DeusEx.PerkFilterUpgrade').bPerkObtained == true)
         		{
-					skillLevel = SkillSystem.GetSkillLevelValue(class'SkillEnviro');
-					swimTimer -= (newDamage*0.4) + 3;	// Trash: In the future, we can add a perk to further reduce the stamina damage here
+					// Trash: No stamina damage while wearing a hazmat suit and with the perk FilterUpgrade
         		}
 				else
                 	swimTimer -= (newDamage*0.4) + 3;
@@ -17021,6 +17046,7 @@ function bool FemaleEnabled()
 
 defaultproperties
 {
+     seed=-1;
      bNumberedDialog=True
      bCreditsInDialog=True
      autosaveRestrictTimerDefault=600.0
@@ -17108,17 +17134,16 @@ defaultproperties
      BurnString=" with excessive burning"
      NoneString="None"
      MPDamageMult=1.000000
-     bHDTP_JC=True
-     bHDTP_Walton=True
-     bHDTP_Anna=True
-     bHDTP_UNATCO=True
-     bHDTP_MJ12=True
-     bHDTP_NSF=True
-     bHDTP_RiotCop=True
-     bHDTP_Gunther=True
-     bHDTP_Paul=True
-     bHDTP_Nico=True
-     bHDTP_ALL=-1
+     bHDTP_JC=False
+     bHDTP_Walton=False
+     bHDTP_Anna=False
+     bHDTP_UNATCO=False
+     bHDTP_MJ12=False
+     bHDTP_NSF=False
+     bHDTP_RiotCop=False
+     bHDTP_Gunther=False
+     bHDTP_Paul=False
+     bHDTP_Nico=False
      QuickSaveTotal=10
      bTogAutoSave=True
      bColorCodedAmmo=True
@@ -17209,4 +17234,11 @@ defaultproperties
      bEnhancedWeaponOffsets=false
      bQuickAugWheel=false
      bAugWheelDisableAll=true
+     bColourCodeFrobDisplay=True
+     bWallPlacementCrosshair=True
+     dynamicCrosshair=1
+     bBeltMemory=True
+     bEnhancedCorpseInteractions=True
+     bDisplayClips=true;
+     bCutsceneFOVAdjust=true;
 }

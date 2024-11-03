@@ -12,10 +12,24 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX/Vanilla issue where you could retain your standing accuracy bonus after moving if you stood still for a long time. Now accuracy decreases immediately.
     - Fixed GMDX/Vanilla issue where Environmental Training items would have the same durations at Trained and Advanved due to rounding.
     - Fixed GMDX/Vanilla issue where Darts would display a damage of 20 instead of 18, which is their actual damage.
+    - Fixed vRSD bug (feature?) where the player would not cough after using cigarettes if the addiction system was enabled.
+    - Fixed Vanilla bug where picking up ammo would add it to the players current clip, rather than their reserve ammo.
+    - Fixed GMDX Ammo duplication glitch when looting corpses while having a full inventory.
+    - Fixed GMDX bug where frobbing a corpse with the "Decline Knives" setting would sometimes result in no log message being displayed.
+        - Additionally, combat knives on corpses are no longer deleted, allowing "Decline Knives" to be turned on and off without preventing access to knives on existing corpses.
+    - Fixed GMDX bug where Ford Schick would not give you an upgrade canister when telling you he swiped one, if ConFix isn't installed. Fixed by adding it to his desk.
+    - Fixed a number of typos in various places.
 - Quality of Life Improvements:
+    - Added a Lighting Accessibility setting, which removes some strobing and flickering in certain areas on some maps, such as the 'Ton hotel elevator shaft.
+    - Added a new corpse searching setting, "Enhanced Corpse Interactions", which makes the first right-click on a corpse never pick them up, even if empty, so that you can search them reliably without accidentally picking them up.
+        - Additionally added a new setting to show "[Searched]" text after interacting with corpses once, to differentiate between those which have been searched and which have not.
+    - Added a new keybinding to stop the currently playing infolink.
+    - Completely overhauled the GMDX settings menu to make it simpler, easier to navigate, and with many more options.
+    - Edibles and Drugs can now be assigned as secondary items.
     - Pressing the walk/run key while crouch toggled will now uncrouch.
     - You can no longer waste medkits or biocells when at maximum health/energy
     - Added alternate weapon offsets to hide many of the visible seams or missing parts of weapon viewmodels.
+    - Weapons that don't use ammo (such as melee weapons) no longer show the Ammo element on the HUD.
     - Augmentation Wheel improvements
         - While in the augmentation screen, use middle-click on an active augmentation to add or remove it from the augmentation wheel.
         - By default all augmentations will appear on the wheel.
@@ -32,6 +46,8 @@ Sarge's Changes since Beta 2.2:
     - Reloading "One-shot-at-a-time" weapon (shotguns, crossbow, GEP gun) will show the ammo count in the ammo display, rather than `---`, because reloading can be cancelled part way through.
     - "One-shot-at-a-time" weapons now have "RDS" instead of "MAGS" on the ammo HUD.
     - "One-shot-at-a-time" weapons have a different formula for calculating reload speed (RDS/SEC).
+    - "One-shot-at-a-time" reload cancelling has been made far more responsive.
+    - Added an option to display the total amount of ammo remaining, rather than the number of magazines.
     - Different shotgun shells have different textures, and the boxes were reworked to have a different texture for easier identification.
         - Shells also have different sounds when they hit the floor
     - Equipping/Unequipping Environmental Training items gives you a unique sound depending on the item.
@@ -69,13 +85,16 @@ Sarge's Changes since Beta 2.2:
     - Invisible War Toolbelt improvements and bugfixes
         - Fixed bug where selected icon in the belt was forgotten between game sessions.
         - With Double Click Unholstering enabled, a single-rightclick will unholster a weapon if the selection was changed.
-        - Pressing a number key while a numbered slot is selected will set it as the primary selection.
-        - Added "Classic Mode". In Classic Mode, right-clicking while having a belt item selected which is not the primary selection will select the primary selection, similar to regular GMDX.
+        - Pressing a number key again while its slot is selected will set it as the primary selection.
+        - Added "Classic Mode". In Classic Mode, right-clicking while having a belt item selected which is not the primary selection will select the primary selection, similar to GMDX v9.
         - Fixed GMDX bug where you could scroll to empty slots when using the IW toolbelt.
     - "Smart Keyring" support added.
         - When Smart Keyring is enabled, the keyring will no longer occupy belt slot 0, allowing it to be used for regular items.
         - The keyring can be selected using Left-Click Frob on doors.
 - Gameplay Changes:
+    - Reverted GMDX change limiting Assault Rifles, Assault Shotguns and Sawed Off's to 4 damage mods. Now they can have 4 just like everything else.
+        - This was done because of integer truncation. In GMDX v9, the 5th upgrade would change their base damage from 4.2 to 4.5, which was pointless as it was rounded to 4 either way.
+        - With vRSD partial damage calculations were added, so this is now relevant again.
     - Augmentation Changes
         - Some augmentations have been given a short cooldown on use. The Spy Drone retains it's 30 second cooldown.
             - Augmentations that need to recharge after use (including the Spy Drone) will show a red icon in the Augmentations window while they are recharging.
@@ -113,11 +132,21 @@ Sarge's Changes since Beta 2.2:
         - Enemies cannot open doors which you have locked (Enemies can still open doors that are initially locked in the map unless you lock them)
     - When using Restricted Saving (and Hardcore Mode), Autosaves are now only created the first time upon entering a new level, or if no save has been performed in the last 15 minutes. This is designed to mitigate save-abuse by crossing between maps.
     - Weapon Mod, Enemy Weapon and Container Randomisation gameplay modifiers now use a table of predetermined random numbers, generated at the start of the game, rather than randomising on map load. This means that you can no longer reroll randomisation for a given map by loading a save before a transition to a new map.
+    - Perk System Rework
+        - Environmental Training Perks:
+            - Filter Upgrade (NEW TRAINED): An agent uses an upgraded hazmat suit that filters out harmful chemicals, removing stamina damage from poison and tear gas entirely.
+            - Blast Padding (NEW ADVANCED): An agent's ballistic vest is fitted with a protective layer that reduces susceptibility to self-damage from explosive and plasma weaponry (-75%).
+            - Chameleon (NEW MASTER): An agent modifies thermoptic camo output that enables the user to pass through laser alarms undetected.
+            - Thermal Imaging (REWORKED MASTER): An agent modifies tech goggle functionality, implementing short-ranged sonar scanning which enables the user to see potential threats through solid material.
     - Addiction System Rework
         - Alcohol no longer heals for 5 points. Instead, it temporarily gives you 5 torso HP (along with it's usual 5 extra torso Max-HP) while in effect, which is removed afterwards. This health removal cannot kill the player.
         - Alcohol no longer adds to fullness when the addiction system is enabled
         - Zyme no longer removes 10HP if the addiction system is enabled.
 - Miscellaneous Changes:
+    - Added an "Alternate Start" option, which skips the first part of the game and starts at the MJ12 Lab. You will start with nothing, so this is extra hardcore.
+    - The "You Found:" message when searching corpses has been removed. The actual items are still listed, only the extra message is removed.
+    - The Paris Metro Police have been changed to using pistols only (from Assault Shotguns and Assault Rifles), to ensure more 10mm ammo is available in the late game, as well as to reinforce their status as the puppet regime under MJ12.
+    - Added a number of new HUD themes, including themes styled around Splinter Cell, NSF, Human Revolution and more. Most themes are based on ones created by GEPGUN, with some modifications.
     - Added several new high-quality sounds in cases where interactions didn't have sounds, or used the same sounds for multiple interactions.
         - Added equip/unequip sounds for the Lockpick, Nanokey and Multitool, which were previously silent.
         - Additionally replaced some sounds with higher quality versions, such as the lockpicking sound.

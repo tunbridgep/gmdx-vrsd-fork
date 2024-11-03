@@ -1,0 +1,28 @@
+Begin Map
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner0
+    Id="toby"
+    bDynamicLight=True
+    LastRenderTime=253.245453
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=515,ZoneNumber=8)
+    Location=(X=-550.280701,Y=-1372.593872,Z=-1097.903076)
+    Rotation=(Yaw=32000)
+    OldLocation=(X=-550.280701,Y=-1372.593872,Z=-1097.903076)
+    bSelected=True
+    Name=OutfitSpawner0
+End Actor
+Begin Actor Class=OutfitSpawner3 Name=OutfitSpawner1
+    Id="diamondearrings"
+    bDynamicLight=True
+    LastRenderTime=3623.655273
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner3
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=227,ZoneNumber=7)
+    Location=(X=312.401917,Y=904.934204,Z=-74.721680)
+    Rotation=(Yaw=10000)
+    OldLocation=(X=312.401917,Y=904.934204,Z=-74.721680)
+    bSelected=True
+    Name=OutfitSpawner1
+End Actor
+End Map

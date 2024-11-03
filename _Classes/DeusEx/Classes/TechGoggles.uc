@@ -33,7 +33,7 @@ function UpdateHUDDisplay(DeusExPlayer Player)
 	if ((DeusExRootWindow(Player.rootWindow).hud.augDisplay.activeCount == 0) && (IsActive()))
 		DeusExRootWindow(Player.rootWindow).hud.augDisplay.activeCount++;
 
-	if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkTechSpecialist').bPerkObtained == true)
+	if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkThermalImaging').bPerkObtained == true)
 	{
 		sonarDistance = 512;                                                    //RSD: Was 500 (31.25ft), now 512 (32ft)
 		skillLevel = 3;

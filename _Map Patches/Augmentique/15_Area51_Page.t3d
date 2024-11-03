@@ -1,0 +1,41 @@
+Begin Map
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner0
+    Id="alex"
+    bDynamicLight=True
+    LastRenderTime=346.568054
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo5',iLeaf=6076,ZoneNumber=1)
+    Location=(X=6242.725098,Y=-10040.672852,Z=-5161.878418)
+    Rotation=(Yaw=50000)
+    OldLocation=(X=6242.725098,Y=-10040.672852,Z=-5161.878418)
+    bSelected=True
+    Name=OutfitSpawner0
+End Actor
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner7
+    Id="dentonclone"
+    bDynamicLight=True
+    LastRenderTime=115.245178
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo5',iLeaf=6696,ZoneNumber=1)
+    Location=(X=6175.467773,Y=-9537.607422,Z=-5157.976563)
+    Rotation=(Yaw=-5000)
+    OldLocation=(X=6175.467773,Y=-9537.607422,Z=-5157.976563)
+    bSelected=True
+    Name=OutfitSpawner7
+End Actor
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner8
+    Id="page"
+    bDynamicLight=True
+    LastRenderTime=202.548950
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo5',iLeaf=995,ZoneNumber=1)
+    Location=(X=6143.182617,Y=-6468.725098,Z=-5177.897461)
+    Rotation=(Yaw=32000)
+    OldLocation=(X=6143.182617,Y=-6468.725098,Z=-5177.897461)
+    bSelected=True
+    Name=OutfitSpawner8
+End Actor
+End Map
