@@ -103,8 +103,7 @@ var bool bSecondOptionsSynced;
 // used while crouching
 var travel bool bForceDuck;
 var travel bool bCrouchOn;				// used by toggle crouch
-var travel bool bWasCrouchOn;			// used by toggle crouch
-var travel byte lastbDuck;				// used by toggle crouch
+var bool bToggledCrouch;		        // used by toggle crouch
 
 // leaning vars
 var bool bCanLean;
@@ -563,6 +562,8 @@ const DRUG_CRACK = 2;
 
 var bool autosave;                                                              //Sarge: Autosave tells the Quicksave function to make an autosave instead
 
+var travel bool bLastRun;                                                       //Sarge: Stores our last running state
+                                                                                
 //Sarge: Allow Enhanced Weapon Offsets
 var globalconfig bool bEnhancedWeaponOffsets; 									//Sarge: Allow using enhanced weapon offsets
 
@@ -577,6 +578,11 @@ var globalconfig bool bQuickAugWheel;                                           
 var globalconfig bool bAugWheelDisableAll;                                      //Sarge: Show the Disable All button on the Aug Wheel
 
 //////////END GMDX
+
+// OUTFIT STUFF
+var travel OutfitManagerBase outfitManager;
+var globalconfig string unlockedOutfits[255];
+
 
 // native Functions
 native(1099) final function string GetDeusExVersion();
@@ -642,6 +648,43 @@ exec function cheat()
 	if (bHardCoreMode) bCheatsEnabled = false;
 	else bCheatsEnabled = !bCheatsEnabled;
 
+}
+
+//Handle Crouch Toggle
+function HandleCrouchToggle()
+{
+    if (!bToggleCrouch)
+        return;
+
+    if (!bIsCrouching)
+        bToggledCrouch = false;
+
+    if (bCrouchOn && bIsCrouching && !bToggledCrouch)
+    {
+        bCrouchOn = false;
+        bToggledCrouch = true;
+    }
+    else if (!bCrouchOn && bIsCrouching && !bToggledCrouch)
+    {
+        bCrouchOn = true;
+        bToggledCrouch = true;
+    }
+}
+
+//Return if the character is crouching
+function bool IsCrouching()
+{
+    return bCrouchOn || bForceDuck || bIsCrouching;
+}
+
+//set our crouch state to a certain value
+function SetCrouch(bool crouch, optional bool setForce)
+{
+    bIsCrouching = crouch;
+    bDuck = int(crouch);
+    bCrouchOn = crouch;
+    if (setForce)
+        bForceDuck = crouch;
 }
 
 // ----------------------------------------------------------------------
@@ -1577,7 +1620,6 @@ exec function HDTP(optional string s)
 
 	UpdateHDTPsettings();
 }
-
 
 // ----------------------------------------------------------------------
 // Update Time Played
@@ -4238,7 +4280,7 @@ simulated function PlayFootStep()
 	}
 	//if (bJustLanded) log("PlayFootStep bJustLanded vol="@volume@": mod="@volumeMod@": Z="@Velocity.Z);
 
-    if (bIsCrouching && velocity.Z == 0)  //CyberP: only applies when speed enhancement is active.
+    if (IsCrouching() && velocity.Z == 0)  //CyberP: only applies when speed enhancement is active.
        volume *= 1.5;
     else if (bIsWalking)
        volume *= 0.5;  //CyberP: can walk up behind enemies.
@@ -4381,7 +4423,7 @@ function HighlightCenterObject()
 		minSize = 99999;
 		bFirstTarget = True;
 
-        if (bIsCrouching)
+        if (IsCrouching())
         {
            if (PerkManager.GetPerkWithClass(class'DeusEx.PerkEndurance').bPerkObtained == true)                                           //RSD: Was PerkNamesArray[29] (Creeper), now PerkNamesArray[27] (Endurance)
               bCrouchRegen=True;
@@ -4507,7 +4549,7 @@ function Landed(vector HitNormal)
 	if (Velocity.Z < -460)//(Abs(Velocity.Z) >= 1.5 * JumpZ)//GMDX add compression to jump/fall (cosmetic) //CyberP: edited
 	{
 	camInterpol = 0.4;
-	if (bIsCrouching)
+	if (IsCrouching())
 	   PlayFootstep();
 	if (inHand != none && (inHand.IsA('NanoKeyRing') || inHand.IsA('DeusExPickup')))
 	{
@@ -4679,7 +4721,7 @@ function Carcass SpawnCarcass()
 
 function Reloading(DeusExWeapon weapon, float reloadTime)
 {
-	if (!IsLeaning() && !bIsCrouching && (Physics != PHYS_Swimming) && !IsInState('Dying'))
+	if (!IsLeaning() && !IsCrouching() && (Physics != PHYS_Swimming) && !IsInState('Dying'))
 		PlayAnim('Reload', 1.0 / reloadTime, 0.1);
 }
 function DoneReloading(DeusExWeapon weapon)
@@ -4916,7 +4958,7 @@ function HandleWalking()
     local rotator carried;
 
 	// this is changed from Unreal -- default is now walk - DEUS_EX CNN
-	bIsWalking = ((bRun == 0) || (bDuck != 0)) && !Region.Zone.IsA('WarpZoneInfo');
+	bIsWalking = ((bRun == 0) || (IsCrouching())) && !Region.Zone.IsA('WarpZoneInfo');
 
 	if ( CarriedDecoration != None )
 	{
@@ -4938,55 +4980,19 @@ function HandleWalking()
 	//CyberP: super function override end
 
 	if (bAlwaysRun)  //&& !bHardCoreMode
-		bIsWalking = (bRun != 0) || (bDuck != 0);
+		bIsWalking = (bRun != 0) || IsCrouching();
 	else
-		bIsWalking = (bRun == 0) || (bDuck != 0);
+		bIsWalking = (bRun == 0) || IsCrouching();
 
 	// handle the toggle walk key
 	if (bToggleWalk)   //&& !bHardCoreMode
 		bIsWalking = !bIsWalking;
 
-	if (bToggleCrouch)
-	{
-		if (!bCrouchOn && !bWasCrouchOn && (bDuck != 0))
-		{
-			bCrouchOn = True;
-			if ((InHand != None && InHand.IsA('DeusExPickup')) || CarriedDecoration != None)
-			{
-			}
-			else
-			{
-			    RecoilTime*=3.0;
-			    if (inHand != None && inHand.IsA('DeusExWeapon') && (DeusExWeapon(inHand).bAimingDown && AnimSequence != 'Shoot'))
-	            {
-	                RecoilShake.Z-=lerp(min(Abs(4),4.0*4)/(4.0*4),1,2);
-                    RecoilShaker(vect(0,0,-0.5));
-	            }
-	            else /*if (!(assignedWeapon != none && assignedWeapon.IsA('Binoculars') && Binoculars(assignedWeapon).bActive))*/
-	            {                                                               //RSD: Keeps RecoilShaker from messing up FOV with secondary item binocs, but actually moved inside RecoilShaker
-			        RecoilShake.Z-=lerp(min(Abs(4),4.0*4)/(4.0*4),3,5);
-                    RecoilShaker(vect(0,0,-1.5));
-                }
-            }
-		}
-		else if (bCrouchOn && !bWasCrouchOn && (bDuck == 0))
-		{
-			bWasCrouchOn = True;
-		}
-		else if (bCrouchOn && bWasCrouchOn && (bDuck == 0) && (lastbDuck != 0))
-		{
-			bCrouchOn = False;
-			bWasCrouchOn = False;
-		}
+    //SARGE: If we started running with the run key, untoggle crouch
+    if (!bLastRun && bRun == 1 && IsCrouching() && !bAlwaysRun)
+        SetCrouch(false);
 
-		if (bCrouchOn)
-		{
-			bIsCrouching = True;
-			bDuck = 1;
-		}
-
-		lastbDuck = bDuck;
-	}
+    bLastRun = bool(bRun);
 }
 
 // ----------------------------------------------------------------------
@@ -5061,7 +5067,7 @@ function DoJump( optional float F )
 		}
 
 		// reduce the jump velocity if you are crouching
-//		if (bIsCrouching)
+//		if (IsCrouching())
 //			Velocity.Z *= 0.9;
 
 		//if ( Base != Level )
@@ -5150,7 +5156,7 @@ if (Physics == PHYS_Walking)
 		}
 
 		// reduce the jump velocity if you are crouching
-//		if (bIsCrouching)
+//		if (IsCrouching())
 //			Velocity.Z *= 0.9;
 
 		if ( Base != Level )
@@ -5256,7 +5262,7 @@ function bool SetBasedPawnSize(float newRadius, float newHeight)
 		}
 
 		// Complaints that eye height doesn't seem like your crouching in multiplayer
-		if (( Level.NetMode != NM_Standalone ) && (bIsCrouching || bForceDuck) )
+		if (( Level.NetMode != NM_Standalone ) && (IsCrouching()) )
 			EyeHeight		-= (centerDelta.Z * 2.5);
 		else
 			EyeHeight		-= centerDelta.Z;
@@ -5595,7 +5601,7 @@ state PlayerWalking
 	  bTiptoes=bPreTiptoes&&(!IsLeaning()||bIsTiptoes);
 
 	  // crouching makes you two feet tall
-		if (bIsCrouching || bForceDuck)
+		if (IsCrouching())
 		{
 			if ( Level.NetMode != NM_Standalone )
 				SetBasedPawnSize(Default.CollisionRadius, 30.0);
@@ -5620,7 +5626,7 @@ state PlayerWalking
 		if (bTiptoes)
 		{ //check we can go on tiptoes
 			checkpoint = Location;
-		 if (bForceDuck||bIsCrouching)
+		 if (IsCrouching())
 			checkpoint.Z = checkpoint.Z + 14 +18;
 			else
 			   checkpoint.Z = checkpoint.Z + 5.3 + GetDefaultCollisionHeight();
@@ -5688,7 +5694,7 @@ state PlayerWalking
 			bCanTiptoes=false;
 		}
 		// make crouch speed faster than normal
-		else if ((bIsCrouching || bForceDuck) && !bOnLadder)
+		else if (IsCrouching() && !bOnLadder)
 		{
 		    mult3=1;             //CyberP: faster crouch speed. Comment out all except bIsWalking = True to remove
 		    if (SkillSystem!=None && SkillSystem.GetSkillLevel(class'SkillStealth')>=1)
@@ -5806,7 +5812,7 @@ state PlayerWalking
 	  if (bTiptoes&&bCanTiptoes) //!bIsTiptoes fuuk why so much spamming size
 	  {
 		 bIsTiptoes=true;
-		 if (bIsCrouching || bForceDuck)
+		 if (IsCrouching())
 			SetBasedPawnSize(Default.CollisionRadius, 16+18);
 			else
 			   SetBasedPawnSize(Default.CollisionRadius, GetDefaultCollisionHeight()+5.3);
@@ -5820,7 +5826,7 @@ state PlayerWalking
       swimDuration = UnderWaterTime * mult;                                  //RSD: Removed effect of Athletics on stamina //RSD: reinstated
       //if (mult > 1.0)                                                         //RSD: Never went into effect anyway?
       //   mult *= 0.85;
-      if (bIsWalking && !bIsCrouching && !bForceDuck)  //CyberP: faster walking
+      if (bIsWalking && !IsCrouching())  //CyberP: faster walking
       {
           mult3=1;             //CyberP: faster walk speed. Comment out all except newSpeed *= 1.7 to remove
 		  if (SkillSystem!=None && SkillSystem.GetSkillLevel(class'SkillStealth')>=1)
@@ -5830,9 +5836,9 @@ state PlayerWalking
           newSpeed *= mult3;
       }
 
-      if (Physics == PHYS_Walking && !bCrouchOn && (bStaminaSystem || bHardCoreMode))   //CyberP: stamina system
+      if (Physics == PHYS_Walking && (bStaminaSystem || bHardCoreMode))   //CyberP: stamina system
       {
-      if (bIsWalking == false && !bIsCrouching && (Velocity.X != 0 || Velocity.Y != 0 ))
+      if (bIsWalking == false && !IsCrouching() && (Velocity.X != 0 || Velocity.Y != 0 ))
 	  {
 	    /*if (bHardCoreMode)                                                    //RSD: Generalizing this a bit
 		swimTimer -= deltaTime*1.3;
@@ -5882,7 +5888,7 @@ state PlayerWalking
                }
            }
         }
-	    if ((!bIsCrouching || bCrouchRegen) && !bOnLadder) //(bIsCrouching)     //RSD: Simplified this entire logic from original crouching -> bCrouchRegen check, added !bOnLadder
+	    if ((!IsCrouching() || bCrouchRegen) && !bOnLadder) //(bIsCrouching)     //RSD: Simplified this entire logic from original crouching -> bCrouchRegen check, added !bOnLadder
 	    	RegenStaminaTick(deltaTime);                                        //RSD: Generalized stamina regen function
 	  }
       }
@@ -5905,7 +5911,7 @@ state PlayerWalking
 				if ( PlayerIsClient() || (Level.NetMode == NM_Standalone) )
 					ViewRotation.Roll = curLeanDist * 20;
 
-				if (!bIsCrouching && !bForceDuck)
+				if (!IsCrouching())
 				{
 					SetBasedPawnSize(CollisionRadius, GetDefaultCollisionHeight() - Abs(curLeanDist) / 3.0);
 					//log("Size REset");
@@ -6276,11 +6282,7 @@ event HeadZoneChange(ZoneInfo newHeadZone)
 	if (newheadZone != none && newHeadZone.bWaterZone && !HeadRegion.Zone.bWaterZone) //RSD: accessed none?
 	{
 		// make sure we're not crouching when we start swimming
-		bIsCrouching = False;
-		bCrouchOn = False;
-		bWasCrouchOn = False;
-		bDuck = 0;
-		lastbDuck = 0;
+        SetCrouch(false);
 		Velocity = vect(0,0,0);
 		Acceleration = vect(0,0,0);
 		if (SkillSystem != none)                                                //RSD: accessed none?
@@ -6532,7 +6534,7 @@ state Dying
 	root = DeusExRootWindow(rootWindow);
 
     ClientFlash(900000,vect(255,0,0));
-    if (bCrouchOn || bWasCrouchOn || bIsCrouching || bForceDuck)
+    if (IsCrouching())
        MeleeRange=51.000000; //CyberP: change this unused var to avoid adding yet more global vars
 
 	if (root != None)
@@ -6765,12 +6767,7 @@ Begin:
     if (AugmentationSystem != None)
         AugmentationSystem.DeactivateAll(); //CyberP: deactivate augs
 	// Don't come back to life crouched
-	bCrouchOn			= False;
-	bWasCrouchOn		= False;
-	bIsCrouching		= False;
-	bForceDuck			= False;
-	lastbDuck			= 0;
-	bDuck				= 0;
+    SetCrouch(false,true);
 
     ClientFlash(900000,vect(160,0,0));
     IncreaseClientFlashLength(4);
@@ -7093,6 +7090,11 @@ exec function ShowScores()
             //Do nothing.
             return;
         }
+        else if (assignedWeapon != none && assignedWeapon.IsA('RSDEdible')) //Sarge: Allow using edibles from the secondary button
+		{
+            assignedWeapon.GotoState('Activated');
+            return;
+		}
         else if (assignedWeapon != none && (assignedWeapon.IsA('Medkit') || assignedWeapon.IsA('BioelectricCell') || (assignedWeapon.IsA('ChargedPickup'))))
 		{
             if(assignedWeapon.IsInState('Activated'))
@@ -7332,10 +7334,9 @@ function DoItemPutAwayFunction(Inventory inv)
 //This should probably be moved elsewhere
 function DoItemDrawFunction(Inventory inv)
 {
-    /*
     if (inv.isA('DeusExPickup'))
         DeusExPickup(inv).Draw(Self);
-    else*/ if (inv.isA('DeusExWeapon'))
+    else if (inv.isA('DeusExWeapon'))
         DeusExWeapon(inv).Draw(Self);
     /*else if (inv.isA('DeusExMover'))
         DeusExMover(inv).Draw(Self);
@@ -12605,6 +12606,7 @@ function DeusExNote AddNote( optional String strNote, optional Bool bUserNote, o
 	newNote = new(Self) Class'DeusExNote';
 
 	newNote.text = strNote;
+	newNote.originalText = strNote;
 	newNote.SetUserNote( bUserNote );
 
 	// Insert this new note at the top of the notes list
@@ -12630,6 +12632,7 @@ function DeusExNote AddNote( optional String strNote, optional Bool bUserNote, o
 //
 // Loops through the notes and searches for the code in any note.
 // Ignores user notes, so we can't add some equivalent of "The code's 0451" and instantly know a code
+// Also makes sure to check the original text of notes, not user-added text, so we can't cheat by appending 0451 to an existing non-user note.
 // ----------------------------------------------------------------------
 
 function bool GetCodeNote(string code)
@@ -12640,7 +12643,16 @@ function bool GetCodeNote(string code)
 
 	while( note != None )
 	{
-		if (!note.bUserNote && InStr(Caps(note.text),Caps(code)) != -1)
+        //Skip user notes
+        if (note.bUserNote)
+            continue;
+
+        //handle any notes we were given which might not have "original" text for whatever reason
+        if (note.originalText == "")
+            note.originalText = note.text;
+
+        //Check note contents for the code
+		if (InStr(Caps(note.originalText),Caps(code)) != -1)
             return true;
 
 		note = note.next;
@@ -13644,10 +13656,11 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
 	local float origHealth, fdst;
 	local DeusExLevelInfo info;
 	local DeusExWeapon dxw;
+	local BallisticArmor armor;
 	local String bodyString;
 	local int MPHitLoc;
 	local GMDXFlickerLight lightFlicker;
-    local float augLVL;
+    local float augLVL, skillLevel;
     local DeusExRootWindow root;
     local GMDXImpactSpark AST;
 
@@ -13798,6 +13811,25 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
 		return;
 	    }
     }
+
+	if (instigatedBy.IsA('DeusExPlayer') && (damageType == 'Exploded' || damageType == 'Burned') && PerkManager.GetPerkWithClass(class'DeusEx.PerkBlastPadding').bPerkObtained == true)	// Trash: Less damage if you're wearing a vest and you have Blast Padding
+	{
+		if (UsingChargedPickup(class'BallisticArmor'))
+		{
+			skillLevel = SkillSystem.GetSkillLevelValue(class'SkillEnviro');
+			actualDamage *= PerkManager.GetPerkWithClass(class'DeusEx.PerkBlastPadding').PerkValue; //GMDX: removed too easy * skillLevel; //CyberP: foreach durable armor
+			foreach AllActors(class'BallisticArmor', armor)
+			{
+				if ((armor.Owner == Self) && armor.bActive)
+					armor.Charge -= (Damage * 4 * skillLevel);
+				if (armor.Charge < 0)                                       //RSD: Don't go below zero
+				{
+					armor.Charge = 0;
+					armor.UsedUp();                                         //RSD: Otherwise doesn't deactivate properly
+				}
+			}
+		}
+	}
 
     if (damageType == 'Exploded' || damageType == 'Shocked')
     {
@@ -14253,10 +14285,9 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 
             if (newDamage >= 1 && bStaminaSystem)
             {
-				if (UsingChargedPickup(class'HazMatSuit'))
+				if (UsingChargedPickup(class'HazMatSuit') && PerkManager.GetPerkWithClass(class'DeusEx.PerkFilterUpgrade').bPerkObtained == true)
         		{
-					skillLevel = SkillSystem.GetSkillLevelValue(class'SkillEnviro');
-					swimTimer -= (newDamage*0.4) + 3;	// Trash: In the future, we can add a perk to further reduce the stamina damage here
+					// Trash: No stamina damage while wearing a hazmat suit and with the perk FilterUpgrade
         		}
 				else
                 	swimTimer -= (newDamage*0.4) + 3;
@@ -14278,7 +14309,12 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 				foreach AllActors(class'BallisticArmor', armor)
 				{
 			        if ((armor.Owner == Self) && armor.bActive)
-			            armor.Charge -= (Damage * 16 * skillLevel);
+			            {
+							if (skillLevel == 1)
+								armor.Charge -= (Damage * 16 * skillLevel);
+							else
+								armor.Charge -= (Damage * 32 * skillLevel);	// Trash: Nerfed
+						}
                     if (armor.Charge < 0)                                       //RSD: Don't go below zero
                     {
                         armor.Charge = 0;
@@ -14436,12 +14472,7 @@ function ClientDeath()
 	drugEffectTimer	= 0;
 
 	// Don't come back to life crouched
-	bCrouchOn			= False;
-	bWasCrouchOn		= False;
-	bIsCrouching		= False;
-	bForceDuck			= False;
-	lastbDuck			= 0;
-	bDuck					= 0;
+    SetCrouch(false,true);
 
 	// No messages carry over
 	mpMsgCode = 0;
@@ -14469,12 +14500,6 @@ function Timer()      //CyberP: my god I've turned this into a mess.
     {
       clickCountCyber = 0;
       bDoubleClickCheck=False;
-    }
-
-    if (bCrouchHack)
-    {
-        bToggleCrouch = False;
-        bCrouchHack = False;
     }
 
     if (Physics == PHYS_Flying)
@@ -14767,7 +14792,7 @@ function float CalculatePlayerVisibility(ScriptedPawn P)                        
             else if ((UsingChargedPickup(class'TechGoggles') ||  AugmentationSystem.GetAugLevelValue(class'AugVision') != -1.0) && vis != 0.0)
                 //vis = litemult;                                               //RSD: From Jose21Crisis
                 vis -= 0.031;                                                   //RSD: Hopefully accounts for night vision brightness
-            if (vis != 0.0 && bIsCrouching)
+            if (vis != 0.0 && IsCrouching())
                 vis -= (1.0-litelvl)*skillStealthMod;*/                           //RSD: Up to 0/20/40/60% visibility reduction when crouched in darkness
 		}
 
@@ -15764,64 +15789,100 @@ function CreateColorThemeManager()
 		// Menus
 		ThemeManager.AddTheme(Class'ColorThemeMenu_Default');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_Custom1');
+		ThemeManager.AddTheme(Class'ColorThemeMenu_Aurora');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_BlueAndGold');
+		ThemeManager.AddTheme(Class'ColorThemeMenu_BlueAngel');
+		ThemeManager.AddTheme(Class'ColorThemeMenu_ColdWater');
+		ThemeManager.AddTheme(Class'ColorThemeMenu_Condiments');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_CoolGreen');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_Cops');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_Cyan');
+		ThemeManager.AddTheme(Class'ColorThemeMenu_Cybermancy');
+		ThemeManager.AddTheme(Class'ColorThemeMenu_Dawn');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_DesertStorm');
+		ThemeManager.AddTheme(Class'ColorThemeMenu_Dimension');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_DriedBlood');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_Dusk');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_Earth');
+		ThemeManager.AddTheme(Class'ColorThemeMenu_Formula1');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_Green');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_Grey');
+		ThemeManager.AddTheme(Class'ColorThemeMenu_Hermes');
+		ThemeManager.AddTheme(Class'ColorThemeMenu_HumanRenovation');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_IonStorm');
+		ThemeManager.AddTheme(Class'ColorThemeMenu_Jasmine');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_Lava');
+		ThemeManager.AddTheme(Class'ColorThemeMenu_LDDP');
+		ThemeManager.AddTheme(Class'ColorThemeMenu_MJ12');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_NightVision');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_Ninja');
+		ThemeManager.AddTheme(Class'ColorThemeMenu_NSF');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_Olive');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_PaleGreen');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_Pastel');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_Plasma');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_Primaries');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_Purple');
+		ThemeManager.AddTheme(Class'ColorThemeMenu_Radiation');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_Red');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_Seawater');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_SoylentGreen');
+		ThemeManager.AddTheme(Class'ColorThemeMenu_SplinterCell');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_Starlight');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_Steel');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_SteelGreen');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_Superhero');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_Terminator');
 		ThemeManager.AddTheme(Class'ColorThemeMenu_Violet');
-		ThemeManager.AddTheme(Class'ColorThemeMenu_LDDP');
+		ThemeManager.AddTheme(Class'ColorThemeMenu_VonBraun');
+		ThemeManager.AddTheme(Class'ColorThemeMenu_WildBerry');
+		ThemeManager.AddTheme(Class'ColorThemeMenu_ZeroOne');
 
 		// HUD
 		ThemeManager.AddTheme(Class'ColorThemeHUD_Default');
 		ThemeManager.AddTheme(Class'ColorThemeHUD_Custom2');
 		ThemeManager.AddTheme(Class'ColorThemeHUD_Amber');
+		ThemeManager.AddTheme(Class'ColorThemeHUD_Aurora');
+		ThemeManager.AddTheme(Class'ColorThemeHUD_BlueAngel');
+		ThemeManager.AddTheme(Class'ColorThemeHUD_ColdWater');
+		ThemeManager.AddTheme(Class'ColorThemeHUD_Condiments');
 		ThemeManager.AddTheme(Class'ColorThemeHUD_Cops');
 		ThemeManager.AddTheme(Class'ColorThemeHUD_Cyan');
+		ThemeManager.AddTheme(Class'ColorThemeHUD_Cybermancy');
 		ThemeManager.AddTheme(Class'ColorThemeHUD_DarkBlue');
+		ThemeManager.AddTheme(Class'ColorThemeHUD_Dawn');
 		ThemeManager.AddTheme(Class'ColorThemeHUD_DesertStorm');
+		ThemeManager.AddTheme(Class'ColorThemeHUD_Dimension');
 		ThemeManager.AddTheme(Class'ColorThemeHUD_DriedBlood');
 		ThemeManager.AddTheme(Class'ColorThemeHUD_Dusk');
+		ThemeManager.AddTheme(Class'ColorThemeHUD_Formula1');
 		ThemeManager.AddTheme(Class'ColorThemeHUD_Grey');
+		ThemeManager.AddTheme(Class'ColorThemeHUD_Hermes');
+		ThemeManager.AddTheme(Class'ColorThemeHUD_HumanRenovation');
 		ThemeManager.AddTheme(Class'ColorThemeHUD_IonStorm');
+		ThemeManager.AddTheme(Class'ColorThemeHUD_Jasmine');
+		ThemeManager.AddTheme(Class'ColorThemeHUD_LDDP');
+		ThemeManager.AddTheme(Class'ColorThemeHUD_MJ12');
 		ThemeManager.AddTheme(Class'ColorThemeHUD_NightVision');
 		ThemeManager.AddTheme(Class'ColorThemeHUD_Ninja');
+		ThemeManager.AddTheme(Class'ColorThemeHUD_NSF');
 		ThemeManager.AddTheme(Class'ColorThemeHUD_PaleGreen');
 		ThemeManager.AddTheme(Class'ColorThemeHUD_Pastel');
 		ThemeManager.AddTheme(Class'ColorThemeHUD_Plasma');
 		ThemeManager.AddTheme(Class'ColorThemeHUD_Primaries');
 		ThemeManager.AddTheme(Class'ColorThemeHUD_Purple');
+		ThemeManager.AddTheme(Class'ColorThemeHUD_Radiation');
 		ThemeManager.AddTheme(Class'ColorThemeHUD_Red');
 		ThemeManager.AddTheme(Class'ColorThemeHUD_SoylentGreen');
+		ThemeManager.AddTheme(Class'ColorThemeHUD_SplinterCell');
 		ThemeManager.AddTheme(Class'ColorThemeHUD_Starlight');
 		ThemeManager.AddTheme(Class'ColorThemeHUD_SteelGreen');
 		ThemeManager.AddTheme(Class'ColorThemeHUD_Superhero');
 		ThemeManager.AddTheme(Class'ColorThemeHUD_Terminator');
 		ThemeManager.AddTheme(Class'ColorThemeHUD_Violet');
-		ThemeManager.AddTheme(Class'ColorThemeHUD_LDDP');
+		ThemeManager.AddTheme(Class'ColorThemeHUD_VonBraun');
+		ThemeManager.AddTheme(Class'ColorThemeHUD_WildBerry');
+		ThemeManager.AddTheme(Class'ColorThemeHUD_ZeroOne');
 	}
 }
 
@@ -16415,6 +16476,9 @@ function MultiplayerTick(float DeltaTime)
 	{
 	   ClientInHandPending = None;
 	}
+
+    //handle crouch toggle
+    HandleCrouchToggle();
 
 	LastInHand = InHand;
 

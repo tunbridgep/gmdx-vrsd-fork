@@ -872,6 +872,10 @@ function SetScaleGlow()
 //Enable picking up corpses regardless of inventory using left-frob
 function bool DoLeftFrob(DeusExPlayer frobber)
 {
+    //We can't pick up animal carcasses
+    if (bAnimalCarcass)
+        return false;
+
     PickupCorpse(frobber);
     return false;
 }

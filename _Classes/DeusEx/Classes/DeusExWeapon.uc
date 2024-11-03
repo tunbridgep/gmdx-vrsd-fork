@@ -3009,7 +3009,7 @@ simulated function MuzzleFlashLight()
     offset += Y * Owner.CollisionRadius * 0.75;
     else
     offset += Y * Owner.CollisionRadius * 0.25;
-    if (DeusExPlayer(Owner).bIsCrouching)
+    if (DeusExPlayer(Owner).IsCrouching())
         offset.Z *= (Owner.CollisionHeight * 0.8);
     /*smoke = spawn(class'FireSmoke',,, offset, Pawn(Owner).ViewRotation);
     if (smoke!=none)
@@ -3670,7 +3670,7 @@ simulated function PlayIdleAnim()
 	rnd = FRand();
 	if (Owner.IsA('DeusExPlayer'))
 	{
-    if (DeusExPlayer(Owner).bIsCrouching == False && (DeusExPlayer(Owner).Velocity.X != 0 || DeusExPlayer(Owner).Velocity.Y != 0))
+    if (DeusExPlayer(Owner).IsCrouching() == False && (DeusExPlayer(Owner).Velocity.X != 0 || DeusExPlayer(Owner).Velocity.Y != 0))
     {
 	if (rnd < 0.1)
 		PlayAnim('Idle1',1.5,0.1);
@@ -4840,6 +4840,9 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
         if (Other.IsA('ScriptedPawn') && FRand() < (float(HitDamage)*mult-finalDamage)) //RSD: So randomly add +1 damage with probability equal to the remainder (0.0-1.0)
             finalDamage++;
 
+		if (Other.IsA('Animal') && Ammo10mm(ammoType) != none &&DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkHollowPoints').bPerkObtained == true)
+			finalDamage *= DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkHollowPoints').PerkValue;
+
         if (DeusExPlayer(Owner) != None) //cyberP: spawn a tracer               //RSD: != none instead of IsA
         {
          //Owner.BroadcastMessage(finalDamage);                                   //RSD: Testing
@@ -4848,7 +4851,7 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
           GetAxes(DeusExPlayer(Owner).ViewRotation,X,Y,Z);
 		  offset = Owner.Location;
 		  offset += X * Owner.CollisionRadius * 1.75;
-		  if (DeusExPlayer(Owner).bIsCrouching)
+		  if (DeusExPlayer(Owner).IsCrouching())
 		  offset.Z += Owner.CollisionHeight * 0.25;
           else
 		  offset.Z += Owner.CollisionHeight * 0.7;

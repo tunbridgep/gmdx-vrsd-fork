@@ -254,6 +254,7 @@ function PreTravel()
 
 	// zero the flags so FirstFrame() gets executed at load
 	flags = None;
+
 }
 
 // ----------------------------------------------------------------------
