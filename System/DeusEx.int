@@ -2963,7 +2963,7 @@ imageDescription="Hong Kong Market"
 imageDescription="MJ12 Lab Facility"
 
 [Image05_GreaselDisection]
-imageDescription="Greasel Dissection"
+imageDescription="Greasel Disection"
 
 [Image04_UNATCONotice]
 imageDescription="UNATCO Notice"
@@ -3671,7 +3671,7 @@ GMDXText19="You Mantled from a Dolphin Jump, or found a cunning alternative to g
 GMDXText20="STORAGE INVENTORY LEDGER|n|nBatch#    Units         Product                          Date|n|n 0001      x4     Sokolo Nano-Lithium Battery       01/24/2052|n 0001      x7     Catering Container                  01/24/2052|n 0001      x1      Augmentation Upgrade Cannister   01/24/2052|n 0001      x3     GDI Combat Supply Crate           01/24/2052|n 0001      x2     GDI Medical Supply Crate           01/24/2052|n 0001      x1      GDI General Supply Crate           01/24/2052|n 0001      x5     Lab Materials Container             01/24/2052|n 0001      x1      Universal Damage Modification        01/24/2052"
 GMDXText21="Welcome to your first shift in the lockup, newbie.|n|nSo you're curious about the cannister. You want to hold it, examine it, and think of the possibilities. Don't worry, we've all been there and we're not going to fire you if you do the same. It's unrealistic to expect extreme curiosity to be kept at bay, and we're pretty laid back and fun here. HOWEVER, you're going to have to earn the right to touch it by proving you're not an utter dimwit: |n|nSolve the following problems. Solving the first will give you the first portion of the nano-containment container code. Solve the second problem for the second portion of the code. IF you manage to get it open be gentle with the thing. Lord knows how much it costs to manufacture.|n|n1. How many times does a broken mechanical 12-hour clock display an accurate readout over a period of two weeks? |n|n2. [(12*6)/2]-1 = Second Passcode|n|nIf you attempt to run off with the thing it's your funeral. The cameras are watching."
 GMDXText22="UNATCO MedDirectorate|nNano-Augmentation Guidelines|n|n...nano-augmentations, once 'installed,' irrevocably alter the physiological system they affect and in many cases cause all subsequent augmentations to be rejected; however, the exact number of augmentations each system can support varies. The various interdependencies between these systems can be seen in the following table that details possible nano-augmentation combinations.|n|nArms (1): Combat Speed or Microfibral Muscle|nArms (2): Combat Strength or Ammo Capacity|nLegs: Speed Enhancement or Run Silent|nSubdermal (1): Ballistic Protection (Active) or Ballistic Protection (Passive)|nSubdermal (2): Cloak or Radar Transparency|nTorso (1): Aqualung or Environmental Resistance|nTorso (2): Regeneration or Energy Resistance|nTorso (3): Synthetic Heart or Power Recirculator|nCranium: Aggressive Defense System or Spy Drone|nOptics: Targeting or Vision Enhancement|n|nSpecific nano-augmentations should be selected based on the mission profile of the particular agent..."
-GMDXText23=We've a request to send these up to level 1. Be careful with them as they are very expensive. Dropping one will likely be grounds for instant dismissal.
+GMDXText23=We've a request to send these up to level 1. Be careful with them as they are very expensive. Dropping one will likelybe grounds for instant dismissal.
 
 [PerkLocksport]
 PerkDescription="|nAn agent can pick any mechanical lock with a single lockpick. Additionally, any locks that are successfully picked will be added to your keyring.|n|nRequires: Lockpicking: MASTER"

@@ -66,12 +66,6 @@ function Draw(DeusExPlayer frobber)
     DoWeaponOffset(frobber);
 }
 
-function PreBeginPlay()
-{
-	Super.PreBeginPlay();
-    DoWeaponOffset(DeusExPlayer(GetPlayerPawn()));
-}
-
 defaultproperties
 {
      weaponOffsets=(X=15.00,Y=15.00,Z=-5.00)

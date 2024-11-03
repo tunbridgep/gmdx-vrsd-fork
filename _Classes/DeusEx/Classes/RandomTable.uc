@@ -3,45 +3,33 @@
 //Used by the item randomisers.
 class RandomTable extends object;
 
-// Linear Congruent RNG for 16-bit integers
-// parameters https://www.pcg-random.org/posts/visualizing-the-heart-of-some-prngs.html
-// Sarge: Provided by RSD. This is all greek to me
+const MAX_VALUES = 500;
 
-const m_mod = 65536; //2^16
-const a_mult = 25385; //optimal primitive element of 2^16
-const c_inc = 1337; //any odd number
-                            
-var int internal_randval;
+var travel float values[500];
+var travel int index;
 
-// Seed with integer between 0 and 2^32
-function Seed(int seed)
+function Generate()
 {
-    internal_randval = abs(seed) % m_mod;
+    local int i;
+    for (i=0;i<MAX_VALUES;i++)
+        values[i] = FRand();
 }
 
-function iterateRand()
+function int GetRandomInt(int multiply)
 {
-    internal_randval = (a_mult*internal_randval + c_inc) % m_mod;
+    return int(values[GetIndex()] * multiply);
 }
 
-function int GetRandomInt(int max)
+function int GetRandomFloat()
 {
-    local int randOut;
-
-    iterateRand();
-    //randOut = internal_randval % max; //RSD: biases the least significant bits for bad cycle period
-    randOut = (max*internal_randval)/m_mod;
-
-
-    return randOut;
+    return values[GetIndex()];
 }
 
-function float GetRandomFloat()
+function int GetIndex()
 {
-    local float randOut;
+    index++;
+    if (index >= MAX_VALUES)
+        index = 0;
 
-	iterateRand();
-	randOut = float(internal_randval)/float(m_mod);
-	
-	return randOut;
+    return index;
 }

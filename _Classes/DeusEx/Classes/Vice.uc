@@ -43,8 +43,6 @@ simulated function bool UpdateInfo(Object winObject)
 		return False;
 
 	winInfo.SetTitle(itemName);
-    
-    winInfo.AddSecondaryButton(self);                   //Sarge: Allow drugs as secondaries
 
     if (player.bAddictionSystem)
     	winInfo.SetText(AddictionDescription $ winInfo.CR() $ winInfo.CR());

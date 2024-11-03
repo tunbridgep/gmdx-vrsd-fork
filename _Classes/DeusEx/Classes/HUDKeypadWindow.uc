@@ -32,8 +32,6 @@ var localized string msgEnterCode;
 var localized string msgAccessDenied;
 var localized string msgAccessGranted;
 
-var bool jumpOut;
-
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -348,7 +346,6 @@ function ValidateCode(bool checkDiscovery)
 		player.PlaySound(keypadOwner.successSound, SLOT_None);
 		winText.SetTextColor(colGreen);
 		winText.SetText(msgAccessGranted);
-        jumpOut = true;
 	}
 	else
 	{
@@ -359,7 +356,6 @@ function ValidateCode(bool checkDiscovery)
 		player.PlaySound(keypadOwner.failureSound, SLOT_None);
 		winText.SetTextColor(colRed);
 		winText.SetText(msgAccessDenied);
-        jumpOut = false;
 	}
 
 	bWait = True;
@@ -374,10 +370,10 @@ function ValidateCode(bool checkDiscovery)
 
 function KeypadDelay(int timerID, int invocations, int clientData)
 {
-	bWait = False;	
+	bWait = False;
 
 	// if we entered a valid code, get out
-	if (jumpOut)
+	if (inputCode == keypadOwner.validCode)
 		root.PopWindow();
 	else
 	{
@@ -386,8 +382,6 @@ function KeypadDelay(int timerID, int invocations, int clientData)
 		winText.SetTextColor(colHeaderText);
 		winText.SetText(msgEnterCode);
 	}
-
-    jumpOut = false;
 }
 
 // ----------------------------------------------------------------------

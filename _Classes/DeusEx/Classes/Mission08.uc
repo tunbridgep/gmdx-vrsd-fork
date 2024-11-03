@@ -14,7 +14,6 @@ function FirstFrame()
 {
 	local SandraRenton Sandra;
 	local FordSchick Ford;
-	local AugmentationUpgradeCannister Upgrade;
     local ScriptedPawn pawn;
 
 	Super.FirstFrame();
@@ -33,14 +32,6 @@ function FirstFrame()
 			foreach AllActors(class'FordSchick', Ford)
 				Ford.EnterWorld();
 		}
-
-        //SARGE: Remove the newly added aug canister if we didn't rescue him, or if we're using ConFix
-        if (flags.GetBool('Enhancement_Detected') || !flags.GetBool('FordSchickRescued'))
-        {
-            foreach AllActors(class'AugmentationUpgradeCannister', Upgrade)
-                Upgrade.Destroy();
-        }
-
 	}
 	else if (localURL == "08_NYC_Street")
 	{

@@ -778,10 +778,6 @@ simulated function bool UpdateInfo(Object winObject)
 	winInfo.SetTitle(itemName);
 	if (IsA('Binoculars')|| IsA('Flare'))                                       //RSD: Assign Binoculars and Flares as a secondary item
 		winInfo.AddSecondaryButton(self);
-
-    if (IsA('RSDEdible'))                                                       //Sarge: Allow edibles as secondaries (mainly used for drugs)
-		winInfo.AddSecondaryButton(self);
-
 	winInfo.SetText(Description $ winInfo.CR() $ winInfo.CR());
 
 	if (bCanHaveMultipleCopies)
