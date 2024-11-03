@@ -20,6 +20,8 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX bug where Ford Schick would not give you an upgrade canister when telling you he swiped one, if ConFix isn't installed. Fixed by adding it to his desk.
     - Fixed a number of typos in various places.
 - Quality of Life Improvements:
+    - Added a new corpse searching setting, "Enhanced Corpse Interactions", which makes the first right-click on a corpse never pick them up, even if empty, so that you can search them reliably without accidentally picking them up.
+        - Additionally added a new setting to show "[Searched]" text after interacting with corpses once, to differentiate between those which have been searched and which have not.
     - Added a new keybinding to stop the currently playing infolink.
     - Completely overhauled the GMDX settings menu to make it simpler, easier to navigate, and with many more options.
     - Edibles and Drugs can now be assigned as secondary items.
@@ -140,6 +142,7 @@ Sarge's Changes since Beta 2.2:
         - Alcohol no longer adds to fullness when the addiction system is enabled
         - Zyme no longer removes 10HP if the addiction system is enabled.
 - Miscellaneous Changes:
+    - The "You Found:" message when searching corpses has been removed. The actual items are still listed, only the extra message is removed.
     - The Paris Metro Police have been changed to using pistols only (from Assault Shotguns and Assault Rifles), to ensure more 10mm ammo is available in the late game, as well as to reinforce their status as the puppet regime under MJ12.
     - Added a number of new HUD themes, including themes styled around Splinter Cell, NSF, Human Revolution and more. Most themes are based on ones created by GEPGUN, with some modifications.
     - Added several new high-quality sounds in cases where interactions didn't have sounds, or used the same sounds for multiple interactions.

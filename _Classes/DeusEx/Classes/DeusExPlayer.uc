@@ -234,6 +234,8 @@ var globalconfig bool bDisplayTotalAmmo;		    // SARGE: Show total ammo count, r
 var globalconfig bool bDisplayClips;		        // SARGE: For the weirdos who prefer Clips instead of Mags. Hidden Option
 var globalconfig bool bColourCodeFrobDisplay;       //SARGE: Colour Code the Frob display when you don't meet or only just meet the number of tools/picks required. Some people might not like the colours.
 var globalconfig bool bGameplayMenuHardcoreMsgShown;//SARGE: Stores whether or not the gameplay menu message has been displayed.
+var globalconfig bool bEnhancedCorpseInteractions;  //SARGE: Right click always searches corpses. After searching, right click picks up corpses as normal.
+var globalconfig bool bSearchedCorpseText;          //SARGE: Corpses show "[Searched]" text when interacted with for the first time.
 
 // Overlay Options (TODO: Move to DeusExHUD.uc when serializable)
 var globalconfig byte translucencyLevel;			// 0 - 10?
@@ -9657,6 +9659,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 							carc.SetScaleGlow();
 							Carc.UpdateHDTPSettings();
 							Carc.Inventory = PovCorpse(item).Inv; //GMDX
+							Carc.bSearched = POVCorpse(item).bSearched;
                             //if (FRand() < 0.3)
                             //PlaySound(Sound'DeusExSounds.Player.MaleLand', SLOT_None, 0.9, false, 800, 0.85);
 
@@ -17227,4 +17230,5 @@ defaultproperties
      bWallPlacementCrosshair=True
      dynamicCrosshair=1
      bBeltMemory=True
+     bEnhancedCorpseInteractions=True
 }
