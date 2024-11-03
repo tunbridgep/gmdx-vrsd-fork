@@ -238,6 +238,7 @@ var globalconfig bool bEnhancedCorpseInteractions;  //SARGE: Right click always 
 var globalconfig bool bSearchedCorpseText;          //SARGE: Corpses show "[Searched]" text when interacted with for the first time.
 var globalconfig bool bCutsceneFOVAdjust;           //SARGE: Enforce 75 FOV in cutscenes
 var globalconfig bool bLightingAccessibility;       //SARGE: Changes lighting in some areas to reduce strobing/flashing, as it may hurt eyes or cause seizures.
+var globalconfig bool bAlwaysShowBloom;             //SARGE: Always show weapon bloom
 
 var bool bPrisonStart;                              //SARGE: Alternate Start
 

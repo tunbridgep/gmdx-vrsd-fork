@@ -1122,7 +1122,7 @@ function DrawTargetAugmentation(GC gc)
             }
         }
 
-	if ( target != None && !target.bHidden //)                                  //RSD
+	if ( target != None && !target.bHidden || player.bAlwaysShowBloom //)                                  //RSD
     	&& !(target.IsA('ScriptedPawn') && ScriptedPawn(target).bCloakOn && !(bVisionActive && visionLevel >= 1))) //RSD: no targeting info if NPCs are cloaked with no player infravision
 	{
 		dist = VSize(target.Location - Player.Location);                        //RSD: was calculated twice, just store it
@@ -1144,7 +1144,7 @@ function DrawTargetAugmentation(GC gc)
 		if ((weapon != None) && !bUseOldTarget && player.GetCrosshairState(true)) //GMDX:remove IFF from overlaying GEP
 		{
 			// if the target is out of range, don't draw the reticle
-			if (weapon.MaxRange >= dist /*VSize(target.Location - Player.Location)*/) //RSD: replaced with dist
+			if (weapon.MaxRange >= dist || player.bAlwaysShowBloom /*VSize(target.Location - Player.Location)*/) //RSD: replaced with dist
 			{
 				w = width;
 				h = height;
