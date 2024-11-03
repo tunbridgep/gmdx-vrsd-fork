@@ -8,6 +8,8 @@ var float mpEnergyDrain;
 
 var float footStepTimer;
 
+var float EnergyDrainJump;              //SARGE: Add an energy drain for jumping
+
 state Active
 {
 
@@ -23,7 +25,7 @@ function Timer()
 Begin:
 	Player.GroundSpeed *= (LevelValues[CurrentLevel]);   //CyberP: tone down aug speed now that we have increased base ground speed
 
-	if (Player.Energy >= 3)
+	if (Player.Energy >= EnergyDrainJump)
 		Player.JumpZ = player.default.JumpZ * (LevelValues[CurrentLevel]*1.25);
 
 		if ( Human(Player) != None )
@@ -69,6 +71,7 @@ defaultproperties
      mpAugValue=2.000000
      mpEnergyDrain=180.000000
      EnergyRate=40.000000
+     EnergyDrainJump=3.0
      Icon=Texture'DeusExUI.UserInterface.AugIconSpeedJump'
      smallIcon=Texture'DeusExUI.UserInterface.AugIconSpeedJump_Small'
      AugmentationName="Speed Enhancement"

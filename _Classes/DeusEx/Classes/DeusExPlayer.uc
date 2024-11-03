@@ -5036,13 +5036,12 @@ function DoJump( optional float F )
         Velocity = Vector(Rotation) * 260;
 		Velocity.Z = JumpZ*0.75;
 		}
-
-		if (AugmentationSystem.GetClassLevel(class'AugSpeed') != -1 && Energy >= 3)	// Trash: Speed Enhancement now uses energy while jumping
-		{
-			Energy -= 3;
-			if (Energy <= 0)
-				Energy = 0;
-		}
+	
+        // Trash: Speed Enhancement now uses energy while jumping
+        if (AugmentationSystem.GetClassLevel(class'AugSpeed') != -1)
+        {
+            Energy=MAX(Energy - AugSpeed(AugmentationSystem.GetAug(class'AugSpeed')).EnergyDrainJump,0);
+        }
 
         if (bHardCoreMode)                                                      //RSD: Running drains 1.3x on Hardcore, now jumping drains 1.25x
             swimTimer -= 1.0;
