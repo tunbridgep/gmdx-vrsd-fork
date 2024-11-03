@@ -792,7 +792,6 @@ function SaveSettings()
         ScrambleAugOrderList();
     player.bAddictionSystem=bAddictionSystem;
     player.bExtraHardcore=bExtraHardcore;
-    player.bPrisonStart=bPrisonStart;
     //player.bRestrictedMetabolism=bRestrictedMetabolism;
     player.bMoreLDDPNPCs=bMoreLDDPNPCs;
 
