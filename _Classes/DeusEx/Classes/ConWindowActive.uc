@@ -52,8 +52,11 @@ event InitWindow()
 
     //Set the players FOV to 75 so that cutscenes appear mostly normal
     //TODO: Fix this to work properly on other aspect ratios
-    player.desiredFOV = 75;
-	player.SetFOVAngle(75);
+    if (player.bCutsceneFOVAdjust)
+    {
+        player.desiredFOV = 75;
+        player.SetFOVAngle(75);
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -66,8 +69,11 @@ event DestroyWindow()
 	root.ShowCursor(True);
 
     //reset players fov
-    player.desiredFOV = player.default.desiredFOV;
-	player.SetFOVAngle(player.default.desiredFOV);
+    if (player.bCutsceneFOVAdjust)
+    {
+        player.desiredFOV = player.default.desiredFOV;
+        player.SetFOVAngle(player.default.desiredFOV);
+    }
 }
 
 // ----------------------------------------------------------------------

@@ -20,6 +20,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX bug where Ford Schick would not give you an upgrade canister when telling you he swiped one, if ConFix isn't installed. Fixed by adding it to his desk.
     - Fixed a number of typos in various places.
 - Quality of Life Improvements:
+    - Added a Lighting Accessibility setting, which removes some strobing and flickering in certain areas on some maps, such as the 'Ton hotel elevator shaft.
     - Added a new corpse searching setting, "Enhanced Corpse Interactions", which makes the first right-click on a corpse never pick them up, even if empty, so that you can search them reliably without accidentally picking them up.
         - Additionally added a new setting to show "[Searched]" text after interacting with corpses once, to differentiate between those which have been searched and which have not.
     - Added a new keybinding to stop the currently playing infolink.
@@ -84,8 +85,8 @@ Sarge's Changes since Beta 2.2:
     - Invisible War Toolbelt improvements and bugfixes
         - Fixed bug where selected icon in the belt was forgotten between game sessions.
         - With Double Click Unholstering enabled, a single-rightclick will unholster a weapon if the selection was changed.
-        - Pressing a number key while a numbered slot is selected will set it as the primary selection.
-        - Added "Classic Mode". In Classic Mode, right-clicking while having a belt item selected which is not the primary selection will select the primary selection, similar to regular GMDX.
+        - Pressing a number key again while its slot is selected will set it as the primary selection.
+        - Added "Classic Mode". In Classic Mode, right-clicking while having a belt item selected which is not the primary selection will select the primary selection, similar to GMDX v9.
         - Fixed GMDX bug where you could scroll to empty slots when using the IW toolbelt.
     - "Smart Keyring" support added.
         - When Smart Keyring is enabled, the keyring will no longer occupy belt slot 0, allowing it to be used for regular items.

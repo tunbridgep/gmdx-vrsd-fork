@@ -236,7 +236,10 @@ var globalconfig bool bColourCodeFrobDisplay;       //SARGE: Colour Code the Fro
 var globalconfig bool bGameplayMenuHardcoreMsgShown;//SARGE: Stores whether or not the gameplay menu message has been displayed.
 var globalconfig bool bEnhancedCorpseInteractions;  //SARGE: Right click always searches corpses. After searching, right click picks up corpses as normal.
 var globalconfig bool bSearchedCorpseText;          //SARGE: Corpses show "[Searched]" text when interacted with for the first time.
-var bool bPrisonStart;                              //SARGE: MJ12 Prison Start
+var globalconfig bool bCutsceneFOVAdjust;           //SARGE: Enforce 75 FOV in cutscenes
+var globalconfig bool bLightingAccessibility;       //SARGE: Changes lighting in some areas to reduce strobing/flashing, as it may hurt eyes or cause seizures.
+
+var bool bPrisonStart;                              //SARGE: Alternate Start
 
 // Overlay Options (TODO: Move to DeusExHUD.uc when serializable)
 var globalconfig byte translucencyLevel;			// 0 - 10?
@@ -17236,4 +17239,6 @@ defaultproperties
      dynamicCrosshair=1
      bBeltMemory=True
      bEnhancedCorpseInteractions=True
+     bDisplayClips=true;
+     bCutsceneFOVAdjust=true;
 }
