@@ -17,9 +17,12 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX Ammo duplication glitch when looting corpses while having a full inventory.
     - Fixed GMDX bug where frobbing a corpse with the "Decline Knives" setting would sometimes result in no log message being displayed.
         - Additionally, combat knives on corpses are no longer deleted, allowing "Decline Knives" to be turned on and off without preventing access to knives on existing corpses.
+    - Fixed GMDX bug where Ford Schick would not give you an upgrade canister when telling you he swiped one, if ConFix isn't installed. Fixed by adding it to his desk.
+    - Fixed a number of typos in various places.
 - Quality of Life Improvements:
     - Added a new keybinding to stop the currently playing infolink.
     - Completely overhauled the GMDX settings menu to make it simpler, easier to navigate, and with many more options.
+    - Edibles and Drugs can now be assigned as secondary items.
     - Pressing the walk/run key while crouch toggled will now uncrouch.
     - You can no longer waste medkits or biocells when at maximum health/energy
     - Added alternate weapon offsets to hide many of the visible seams or missing parts of weapon viewmodels.
@@ -137,6 +140,7 @@ Sarge's Changes since Beta 2.2:
         - Alcohol no longer adds to fullness when the addiction system is enabled
         - Zyme no longer removes 10HP if the addiction system is enabled.
 - Miscellaneous Changes:
+    - The Paris Metro Police have been changed to using pistols only (from Assault Shotguns and Assault Rifles), to ensure more 10mm ammo is available in the late game, as well as to reinforce their status as the puppet regime under MJ12.
     - Added a number of new HUD themes, including themes styled around Splinter Cell, NSF, Human Revolution and more. Most themes are based on ones created by GEPGUN, with some modifications.
     - Added several new high-quality sounds in cases where interactions didn't have sounds, or used the same sounds for multiple interactions.
         - Added equip/unequip sounds for the Lockpick, Nanokey and Multitool, which were previously silent.
