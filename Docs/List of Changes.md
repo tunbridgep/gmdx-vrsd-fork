@@ -15,6 +15,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed vRSD bug (feature?) where the player would not cough after using cigarettes if the addiction system was enabled.
     - Fixed a number of typos in various places.
 - Quality of Life Improvements:
+    - Edibles and Drugs can now be assigned as secondary items.
     - Pressing the walk/run key while crouch toggled will now uncrouch.
     - You can no longer waste medkits or biocells when at maximum health/energy
     - Added alternate weapon offsets to hide many of the visible seams or missing parts of weapon viewmodels.
