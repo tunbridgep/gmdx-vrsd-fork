@@ -31,6 +31,7 @@ function InitializePerks(DeusExPlayer newPlayer)	// Trash: Add every perk in the
 	// Pistol Perks
 	AddPerk(Class'DeusEx.PerkSidearm');
 	AddPerk(Class'DeusEx.PerkAmbidextrous');
+	AddPerk(Class'DeusEx.PerkHollowPoints');
 	AddPerk(Class'DeusEx.PerkHumanCombustion');
 
 	// Lowtech Perks
