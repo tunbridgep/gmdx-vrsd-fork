@@ -518,6 +518,7 @@ function PreBeginPlay()
 
     UpdateHDTPSettings();                                                       //RSD: CheckWeaponSkins() is part of UpdateHDTPSettings()
 	//CheckWeaponSkins();
+    DoWeaponOffset(DeusExPlayer(GetPlayerPawn()));
 }
 
 function SupportActor( actor StandingActor )
@@ -4839,6 +4840,9 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
         finalDamage = HitDamage*mult;                                           //RSD: multiplication by int HitDamage results in a truncated int
         if (Other.IsA('ScriptedPawn') && FRand() < (float(HitDamage)*mult-finalDamage)) //RSD: So randomly add +1 damage with probability equal to the remainder (0.0-1.0)
             finalDamage++;
+
+		if (Other.IsA('Animal') && Ammo10mm(ammoType) != none &&DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkHollowPoints').bPerkObtained == true)
+			finalDamage *= DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkHollowPoints').PerkValue;
 
         if (DeusExPlayer(Owner) != None) //cyberP: spawn a tracer               //RSD: != none instead of IsA
         {

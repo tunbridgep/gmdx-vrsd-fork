@@ -5,7 +5,6 @@ class JCDentonMale extends Human;
 
 function UpdateHDTPSettings()
 {
-
 	local int i;
 	local texture newtex; //preload these? Not sure if necessary, but hey
 	local string texstr;
