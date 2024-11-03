@@ -12626,16 +12626,20 @@ function bool GetCodeNote(string code)
 	while( note != None )
 	{
         //Skip user notes
-        if (note.bUserNote)
-            continue;
+        if (!note.bUserNote)
+        {
 
-        //handle any notes we were given which might not have "original" text for whatever reason
-        if (note.originalText == "")
-            note.originalText = note.text;
+            //handle any notes we were given which might not have "original" text for whatever reason
+            if (note.originalText == "")
+                note.originalText = note.text;
 
-        //Check note contents for the code
-		if (InStr(Caps(note.originalText),Caps(code)) != -1)
-            return true;
+            //Check note contents for the code
+            if (InStr(Caps(note.originalText),Caps(code)) != -1)
+                return true;
+
+            //log("NOTE: " $ note.text);
+            
+        }
 
 		note = note.next;
 	}
