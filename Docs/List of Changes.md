@@ -142,6 +142,7 @@ Sarge's Changes since Beta 2.2:
         - Alcohol no longer adds to fullness when the addiction system is enabled
         - Zyme no longer removes 10HP if the addiction system is enabled.
 - Miscellaneous Changes:
+    - Added an "Alternate Start" option, which skips the first part of the game and starts at the MJ12 Lab. You will start with nothing, so this is extra hardcore.
     - The "You Found:" message when searching corpses has been removed. The actual items are still listed, only the extra message is removed.
     - The Paris Metro Police have been changed to using pistols only (from Assault Shotguns and Assault Rifles), to ensure more 10mm ammo is available in the late game, as well as to reinforce their status as the puppet regime under MJ12.
     - Added a number of new HUD themes, including themes styled around Splinter Cell, NSF, Human Revolution and more. Most themes are based on ones created by GEPGUN, with some modifications.

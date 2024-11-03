@@ -236,6 +236,7 @@ var globalconfig bool bColourCodeFrobDisplay;       //SARGE: Colour Code the Fro
 var globalconfig bool bGameplayMenuHardcoreMsgShown;//SARGE: Stores whether or not the gameplay menu message has been displayed.
 var globalconfig bool bEnhancedCorpseInteractions;  //SARGE: Right click always searches corpses. After searching, right click picks up corpses as normal.
 var globalconfig bool bSearchedCorpseText;          //SARGE: Corpses show "[Searched]" text when interacted with for the first time.
+var bool bPrisonStart;                              //SARGE: MJ12 Prison Start
 
 // Overlay Options (TODO: Move to DeusExHUD.uc when serializable)
 var globalconfig byte translucencyLevel;			// 0 - 10?
@@ -2086,7 +2087,7 @@ function ShowIntro(optional bool bStartNewGame)
 	// Make sure all augmentations are OFF before going into the intro
 	AugmentationSystem.DeactivateAll();
 
-	if (bSkipNewGameIntro)
+	if (bSkipNewGameIntro || bPrisonStart)
 	  PostIntro();
 	  else// Reset the player
 		 Level.Game.SendPlayer(Self, "00_Intro");
@@ -2220,7 +2221,7 @@ function ResetPlayer(optional bool bTraining)
 	}
 
 	// Give the player a pistol and a prod
-	if (!bTraining)
+	if (!bTraining && !bPrisonStart)
 	{
 
         //SARGE: Hack to make the starting items always appear in the belt, regardless of autofill setting
@@ -11157,6 +11158,10 @@ function PostIntro()
 	{
 		bStartNewGameAfterIntro = False;
 		StartNewGame(strStartMap);
+        if (bPrisonStart)
+            StartNewGame("05_NYC_UNATCOMJ12lab"); //SARGE: Have to hardcode this. Game crashes if we use a property
+        else
+            StartNewGame(strStartMap);
 	}
 	else
 	{
