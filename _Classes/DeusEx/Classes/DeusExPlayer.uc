@@ -10490,6 +10490,10 @@ function bool GetCrosshairState(optional bool bCheckForOuterCrosshairs)
 
     if (frobTarget != None && frobTarget.isA('InformationDevices') && InformationDevices(frobTarget).aReader == Self)
         return false;
+
+    //SARGE: Holy shit the GMDX code absolutely sucks
+    if (frobTarget != None && frobTarget.isA('GMDXTutorialCube') && GMDXTutorialCube(frobTarget).aReader == Self)
+        return false;
         
     if(bRadialAugMenuVisible) //RSD: Remove the crosshair if the radial aug menu is visible
         return false;
@@ -10549,6 +10553,10 @@ function bool GetBracketsState()
 
     //No brackets while reading books/datacubes/etc
     if (frobTarget != None && frobTarget.isA('InformationDevices') && InformationDevices(frobTarget).aReader == Self)
+        return false;
+
+    //SARGE: Holy shit the GMDX code absolutely sucks
+    if (frobTarget != None && frobTarget.isA('GMDXTutorialCube') && GMDXTutorialCube(frobTarget).aReader == Self)
         return false;
         
     if(bRadialAugMenuVisible)
