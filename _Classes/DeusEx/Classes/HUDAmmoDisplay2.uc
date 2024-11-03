@@ -4,11 +4,6 @@
 class HUDAmmoDisplay2 expands HUDBaseWindow;
 
 var Bool			bVisible;
-var Color			colAmmoText;		// Ammo count text color
-var Color			colAmmoLowText;		// Color when ammo low
-var Color			colNormalText;		// color for normal weapon messages
-var Color			colTrackingText;	// color when weapon is tracking
-var Color			colLockedText;		// color when weapon is locked
 var DeusExPlayer	player;
 var int             infoX;
 
@@ -28,6 +23,8 @@ var DeusExPickup item;                                                          
 // Defaults
 var Texture texBackground;
 var Texture texBorder;
+
+var Color colIconDimmed;
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -64,6 +61,10 @@ event Tick(float deltaSeconds)
 
 event DrawWindow(GC gc)
 {
+    local int amount, chargeLevel;
+    local Texture icon;
+    local ChargedPickup charged;
+
 	Super.DrawWindow(gc);
 
 	// No need to draw anything if the player doesn't have
@@ -73,103 +74,70 @@ event DrawWindow(GC gc)
 	{
 		weapon = DeusExWeapon(player.assignedWeapon);
 		item = none;                                                            //RSD: Fix for the last weapon assigned icon always showing up
+        amount = weapon.AmmoType.AmmoAmount;
+        icon = weapon.icon;
 	}
     else if (player != None && player.assignedWeapon != none && player.assignedWeapon.IsA('DeusExPickup')) //RSD: Extended to include general inventory items
     {
     	item = DeusExPickup(player.assignedWeapon);
     	weapon = none;                                                          //RSD: Fix for the last weapon assigned icon always showing up
-   	}
+        amount = item.numCopies;
+        icon = item.icon;
 
-	if ( weapon != None )
-	{
-		// Draw the weapon icon
-		gc.SetStyle(DSTY_Masked);
-		gc.SetTileColorRGB(255, 255, 255);
-		gc.DrawTexture(22, 10, 40, 35, 0, 0, weapon.icon);
-
-		// Draw the ammo count
-		gc.SetFont(Font'TechMedium'); //CyberP: hud scaling Font'FontTiny'
-		gc.SetAlignments(HALIGN_Center, VALIGN_Top);   //CyberP: Valignment
-		gc.EnableWordWrap(false);
-
-		// how much ammo of this type do we have left?
-		if (weapon.AmmoType != None)
-			ammoRemaining = weapon.AmmoType.AmmoAmount;
-		else
-			ammoRemaining = 0;
-
-		if ( ammoRemaining < weapon.LowAmmoWaterMark )
-			gc.SetTextColor(colAmmoLowText);
-		else
-			gc.SetTextColor(colAmmoText);
-
-		// Ammo count drawn differently depending on user's setting
-		if (weapon.ReloadCount > 1)
-		{
-			// how much ammo is left in the current clip?
-			ammoInClip = weapon.AmmoLeftInClip();
-			clipsRemaining = weapon.NumClips();
-
-			if (weapon.IsInState('Reload'))
-				gc.DrawText(infoX, 26, 20, 9, msgReloading);
-			else
-				gc.DrawText(infoX, 26, 20, 9, ammoInClip);
-
-			// if there are no clips (or a partial clip) remaining, color me red
-			if (( clipsRemaining == 0 ) || (( clipsRemaining == 1 ) && ( ammoRemaining < 2 * weapon.ReloadCount )))
-				gc.SetTextColor(colAmmoLowText);
-			else
-				gc.SetTextColor(colAmmoText);
-
-			if (weapon.IsInState('Reload'))
-				gc.DrawText(infoX, 38, 20, 9, msgReloading);
-			else
-				gc.DrawText(infoX, 38, 20, 9, clipsRemaining);
-		}
-		else
-		{
-			gc.DrawText(infoX, 38, 20, 9, NotAvailable);
-
-			if (weapon.ReloadCount == 0)
-			{
-				gc.DrawText(infoX, 26, 20, 9, NotAvailable);
-			}
-			else
-			{
-				if (weapon.IsInState('Reload'))
-					gc.DrawText(infoX, 26, 20, 9, msgReloading);
-				else
-					gc.DrawText(infoX, 26, 20, 9, ammoRemaining);
-			}
-		}
-	}
-	else if (item != none)                                                      //RSD: Extended to include general inventory items
-	{
-		// Draw the weapon icon
-		gc.SetStyle(DSTY_Masked);
-		gc.SetTileColorRGB(255, 255, 255);
-		gc.DrawTexture(22, 10, 40, 35, 0, 0, item.icon);
-
-        gc.SetFont(Font'TechMedium'); //CyberP: hud scaling Font'FontTiny'
-		gc.SetAlignments(HALIGN_Center, VALIGN_Top);   //CyberP: Valignment
-		gc.EnableWordWrap(false);
-
-        //RSD: No ammo for these
-        gc.SetTextColor(colAmmoText);
-		//gc.DrawText(infoX, 38, 20, 9, NotAvailable);
-        //gc.DrawText(infoX, 26, 20, 9, NotAvailable); //Sarge: Extended to show item counts
-        if (item.isA('ChargedPickup') && ChargedPickup(item).GetCurrentCharge() == 0)
-        {
-    		gc.SetTextColor(colAmmoLowText);
-            gc.DrawText(infoX, 26, 20, 9, "0");
-        }
+        if (IsCharged(item))
+            gc.SetTileColorRGB(255, 255, 255);
         else
-            gc.DrawText(infoX, 26, 20, 9, "1");
+            gc.SetTileColor(colIconDimmed);                                     //RSD
+   	}
+    
+    if (item != None && item.isA('ChargedPickup'))
+    {
+        //gc.SetFont(Font'TechMedium'); //CyberP: hud scaling Font'FontTiny'
+        charged = ChargedPickup(item);
+        chargeLevel = int(charged.GetCurrentCharge());
+    }
 
-        if (item.NumCopies - 1 < 2)
-    		gc.SetTextColor(colAmmoLowText);
-		gc.DrawText(infoX, 38, 20, 9, item.NumCopies - 1);
+	if ( weapon != None || item != None)
+	{
+		// Draw the weapon icon
+		gc.SetStyle(DSTY_Masked);
+		gc.DrawTexture(22, 10, 40, 35, 0, 0, icon);
+
+        if (amount > 0)
+        {
+            // Draw the ammo count
+            gc.SetFont(Font'TechMedium'); //CyberP: hud scaling Font'FontTiny'
+            gc.SetAlignments(HALIGN_Center, VALIGN_Top);   //CyberP: Valignment
+            gc.EnableWordWrap(false);
+            gc.SetFont(Font'FontTiny');
+            gc.SetTextColor(colText);
+
+            if (charged == None || chargeLevel > 0)
+                gc.DrawText(28, 46, 32, 8, InvLabel @ amount); //Position below icon
+            //gc.DrawText(28, 38, 32, 8, InvLabel @ amount); //Position at bottom of icon
+        
+            if (chargeLevel > 0)
+                gc.DrawText(28, 24, 32, 8, Sprintf("%d%%", chargeLevel)); //Position center of icon
+        }
 	}
+}
+
+//Returns TRUE if this is not a charged item, or if it has charge left
+function bool IsCharged(DeusExPickup item)
+{
+    local ChargedPickup charged;
+    local int chargeLevel;
+
+    if (item.IsA('ChargedPickup'))
+    {
+        charged = ChargedPickup(item);
+        chargeLevel = int(charged.GetCurrentCharge());
+
+        return (charged.numCopies > 1 || chargeLevel > 0);
+    }
+
+    //Otherwise, it's charged
+    return true;
 }
 
 // ----------------------------------------------------------------------
@@ -181,22 +149,6 @@ function DrawBackground(GC gc)
 	gc.SetStyle(backgroundDrawStyle);
 	gc.SetTileColor(colBackground);
 	gc.DrawTexture(13, 3, 80, 54, 0, 0, texBackground);
-
-	// Draw the Ammo and Clips text labels
-	gc.SetFont(Font'FontTiny');
-	gc.SetTextColor(colText);
-	gc.SetAlignments(HALIGN_Center, VALIGN_Top);
-
-    if (player.assignedWeapon.isA('DeusExWeapon'))
-    {
-        gc.DrawText(66, 17, 21, 8, AmmoLabel);
-        gc.DrawText(66, 48, 21, 8, ClipsLabel);
-    }
-    else
-    {
-        //gc.DrawText(66, 17, 21, 8, AmmoLabel);
-        gc.DrawText(66, 48, 21, 8, InvLabel);
-    }
 }
 
 // ----------------------------------------------------------------------
@@ -227,17 +179,9 @@ function SetVisibility( bool bNewVisibility )
 
 defaultproperties
 {
-     colAmmoText=(G=255)
-     colAmmoLowText=(R=255,G=32)
-     colNormalText=(G=255)
-     colTrackingText=(R=255,G=255)
-     colLockedText=(R=255)
      infoX=66
-     NotAvailable="N/A"
-     msgReloading="---"
-     AmmoLabel="AMMO"
-     ClipsLabel="MAGS"
-     InvLabel="COUNT"
+     InvLabel="COUNT:"
      texBackground=Texture'RSDCrap.UserInterface.HudAmmoDisplayBackgroundSecondary'
      texBorder=Texture'RSDCrap.UserInterface.HudAmmoDisplayBorderSecondary'
+     colIconDimmed=(R=64,G=64,B=64)
 }
