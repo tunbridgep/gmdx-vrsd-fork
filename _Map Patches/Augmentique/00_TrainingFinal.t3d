@@ -1,0 +1,15 @@
+Begin Map
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner1
+    Id="assless"
+    bDynamicLight=True
+    LastRenderTime=390.458954
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=3299,ZoneNumber=1)
+    Location=(X=6590.367676,Y=-7504.647949,Z=38.096764)
+    Rotation=(Yaw=31000)
+    OldLocation=(X=6590.367676,Y=-5369.647949,Z=38.096764)
+    bSelected=True
+    Name=OutfitSpawner1
+End Actor
+End Map

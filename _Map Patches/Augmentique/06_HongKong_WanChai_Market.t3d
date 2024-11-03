@@ -1,0 +1,28 @@
+Begin Map
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner27
+    Id="lumpath"
+    bDynamicLight=True
+    LastRenderTime=155.324432
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=3481,ZoneNumber=1)
+    Location=(X=997.502075,Y=-208.437286,Z=-137.899918)
+    Rotation=(Yaw=29000)
+    OldLocation=(X=997.502075,Y=-228.437286,Z=-137.899918)
+    bSelected=True
+    Name=OutfitSpawner27
+End Actor
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner28
+    Id="hkpolice"
+    bDynamicLight=True
+    LastRenderTime=306.564514
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=810,ZoneNumber=1)
+    Location=(X=-474.675903,Y=-722.016907,Z=-103.900085)
+    Rotation=(Yaw=-50000)
+    OldLocation=(X=-468.675903,Y=-712.016907,Z=-153.900085)
+    bSelected=True
+    Name=OutfitSpawner28
+End Actor
+End Map

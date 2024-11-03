@@ -1,0 +1,17 @@
+Begin Map
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner1
+    Id="100black"
+    PickupMessage="We're %s"
+    PickupName="???"
+    bDynamicLight=True
+    LastRenderTime=563.505432
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=1804,ZoneNumber=1)
+    Location=(X=4603.197754,Y=675.437500,Z=102.280136)
+    Rotation=(Yaw=50000)
+    OldLocation=(X=4603.197754,Y=675.437500,Z=102.280136)
+    bSelected=True
+    Name=OutfitSpawner1
+End Actor
+End Map

@@ -1,0 +1,43 @@
+Begin Map
+//Adds an underwear carcass as well, since Agent 47 took their suit
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner9
+    Id="meadphilip"
+    bDynamicLight=True
+    LastRenderTime=152.501221
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo1',iLeaf=1481,ZoneNumber=1)
+    Location=(X=-85.993134,Y=585.548462,Z=118.101135)
+    Rotation=(Yaw=30000)
+    OldLocation=(X=-85.993134,Y=585.548462,Z=118.101135)
+    bSelected=True
+    Name=OutfitSpawner9
+End Actor
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner18
+    Id="agent47"
+    LinkedObjects(0)="StrippedCarcass"
+    bDynamicLight=True
+    LastRenderTime=798.528564
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo1',iLeaf=1044,ZoneNumber=1)
+    Location=(X=592.725037,Y=1442.947754,Z=166.097549)
+    Rotation=(Yaw=50000)
+    OldLocation=(X=592.725037,Y=1442.947754,Z=166.097549)
+    bSelected=True
+    Name=OutfitSpawner18
+End Actor
+Begin Map
+Begin Actor Class=OutfitStrippedCarcass Name=StrippedCarcass
+    bDynamicLight=True
+    LastRenderTime=812.160400
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=Male1Carcass
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo1',iLeaf=1044,ZoneNumber=1)
+    Location=(X=567.066650,Y=1466.632446,Z=167.100220)
+    Rotation=(Yaw=-20000)
+    OldLocation=(X=567.066650,Y=1466.632446,Z=167.100220)
+    bSelected=True
+    Name=StrippedCarcass
+End Actor
+End Map

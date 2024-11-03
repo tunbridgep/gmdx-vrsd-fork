@@ -578,6 +578,11 @@ var globalconfig bool bAugWheelDisableAll;                                      
 
 //////////END GMDX
 
+// OUTFIT STUFF
+var travel OutfitManagerBase outfitManager;
+var globalconfig string unlockedOutfits[255];
+
+
 // native Functions
 native(1099) final function string GetDeusExVersion();
 native(2100) final function ConBindEvents();
@@ -1608,7 +1613,6 @@ exec function HDTP(optional string s)
 
 	UpdateHDTPsettings();
 }
-
 
 // ----------------------------------------------------------------------
 // Update Time Played
