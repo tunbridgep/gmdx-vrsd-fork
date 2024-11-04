@@ -3,19 +3,6 @@
 //=============================================================================
 class DeusExPlayer extends PlayerPawnExt native;
 
-struct augBinary                                                                //RSD: Used to create the list of all augs in the game
-{
-	var name aug1;
-	var name aug2;
-};
-
-//Holds information about the reserved items on the belt
-struct BeltInfo
-{
-    var bool		bPlaceholder;		    //Sarge. Allow "empty" slots that show the old icon
-    var texture		icon;				    //Sarge. Disconnect the icon from the inventory item, so we can keep it when the item disappears.
-};
-
 #exec OBJ LOAD FILE=Effects
 
 // Name and skin assigned to PC by player on the Character Generation screen
@@ -103,7 +90,8 @@ var bool bSecondOptionsSynced;
 // used while crouching
 var travel bool bForceDuck;
 var travel bool bCrouchOn;				// used by toggle crouch
-var bool bToggledCrouch;		        // used by toggle crouch
+var travel bool bWasCrouchOn;			// used by toggle crouch
+var travel byte lastbDuck;				// used by toggle crouch
 
 // leaning vars
 var bool bCanLean;
@@ -162,7 +150,6 @@ var Bool bSavingSkillsAugs;
 
 // Put spy drone here instead of HUD
 var bool bSpyDroneActive;
-var bool bSpyDroneSet;                                                          //RSD: New variable for setting the spy drone in place
 var int spyDroneLevel;
 var float spyDroneLevelValue;
 var SpyDrone aDrone;
@@ -223,33 +210,19 @@ var String NextMap;
 var globalconfig bool bObjectNames;					// Object names on/off
 var globalconfig bool bNPCHighlighting;				// NPC highlighting when new convos
 var globalconfig bool bSubtitles;					// True if Conversation Subtitles are on
-var globalconfig bool bSubtitlesCutscene;			// SARGE: Allow Subtitles for Third-Person cutscenes. Should generally be left on
 var globalconfig bool bAlwaysRun;					// True to default to running
 var globalconfig bool bToggleCrouch;				// True to let key toggle crouch
 var globalconfig float logTimeout;					// Log Timeout Value
 var globalconfig byte  maxLogLines;					// Maximum number of log lines visible
 var globalconfig bool bHelpMessages;				// Multiplayer help messages
-var globalconfig bool bWallPlacementCrosshair;		// SARGE: Show a blue crosshair when placing objects on walls
-var globalconfig bool bDisplayTotalAmmo;		    // SARGE: Show total ammo count, rather than MAGS
-var globalconfig bool bDisplayClips;		        // SARGE: For the weirdos who prefer Clips instead of Mags. Hidden Option
-var globalconfig bool bColourCodeFrobDisplay;       //SARGE: Colour Code the Frob display when you don't meet or only just meet the number of tools/picks required. Some people might not like the colours.
-var globalconfig bool bGameplayMenuHardcoreMsgShown;//SARGE: Stores whether or not the gameplay menu message has been displayed.
-var globalconfig bool bEnhancedCorpseInteractions;  //SARGE: Right click always searches corpses. After searching, right click picks up corpses as normal.
-var globalconfig bool bSearchedCorpseText;          //SARGE: Corpses show "[Searched]" text when interacted with for the first time.
-var globalconfig bool bCutsceneFOVAdjust;           //SARGE: Enforce 75 FOV in cutscenes
-var globalconfig bool bLightingAccessibility;       //SARGE: Changes lighting in some areas to reduce strobing/flashing, as it may hurt eyes or cause seizures.
-
-var bool bPrisonStart;                              //SARGE: Alternate Start
 
 // Overlay Options (TODO: Move to DeusExHUD.uc when serializable)
 var globalconfig byte translucencyLevel;			// 0 - 10?
 var globalconfig bool bObjectBeltVisible;
 var globalconfig bool bHitDisplayVisible;
 var globalconfig bool bAmmoDisplayVisible;
-var globalconfig bool bAugDisplayVisible;
 var globalconfig bool bDisplayAmmoByClip;
 var globalconfig bool bCompassVisible;
-var bool bRadialAugMenuVisible;
 var globalconfig bool bCrosshairVisible;
 var globalconfig bool bAutoReload;
 var globalconfig bool bDisplayAllGoals;
@@ -289,7 +262,6 @@ var localized String NoRoomToLift;
 var localized String CanCarryOnlyOne;
 var localized String CannotDropHere;
 var localized String HandsFull;
-var localized String CantBreakDT;
 var localized String NoteAdded;
 var localized String GoalAdded;
 var localized String PrimaryGoalCompleted;
@@ -382,6 +354,62 @@ const			NintendoDelay = 6.0;
 // For closing comptuers if the server quits
 var Computers ActiveComputer;
 
+////============================================================\\\\
+///                 THIS IS THE LINE OF SHAME
+///                 DONT PLACE ANYTHING ABOVE THIS
+///                 OTHERWISE THE NATIVE IMPLEMENTATION
+///                 OF DEUSEXPLAYER FUCKS UP!
+///                 YOU HAVE BEEN WARNED!!!!
+///                 THIS HAS TO FOLLOW THE ORIGINAL
+///                 STRUCTURE PERFECTLY, OR WEIRD
+///                 SAVE CORRUPTION AND OTHER BUGS START
+///                 TO OCCUR!!!!!!
+///                 DO NOT DELETE, EDIT, MODIFY, CHANGE,
+///                 TRANSPOSE, TRANSFORM, DISTORT, REVISE,
+///                 ADJUST, TRANSMUTE, MUTATE, OR OTHERWISE
+///                 VARY THESE VALUES!
+////============================================================\\\\
+
+////GMDX, RSD and SARGE additions!
+
+var bool bSpyDroneSet;                                                          //RSD: New variable for setting the spy drone in place
+
+struct augBinary                                                                //RSD: Used to create the list of all augs in the game
+{
+	var name aug1;
+	var name aug2;
+};
+
+//Holds information about the reserved items on the belt
+struct BeltInfo
+{
+    var bool		bPlaceholder;		    //Sarge. Allow "empty" slots that show the old icon
+    var texture		icon;				    //Sarge. Disconnect the icon from the inventory item, so we can keep it when the item disappears.
+};
+
+var globalconfig bool bWallPlacementCrosshair;		// SARGE: Show a blue crosshair when placing objects on walls
+var globalconfig bool bDisplayTotalAmmo;		    // SARGE: Show total ammo count, rather than MAGS
+var globalconfig bool bDisplayClips;		        // SARGE: For the weirdos who prefer Clips instead of Mags. Hidden Option
+var globalconfig bool bColourCodeFrobDisplay;       //SARGE: Colour Code the Frob display when you don't meet or only just meet the number of tools/picks required. Some people might not like the colours.
+var globalconfig bool bGameplayMenuHardcoreMsgShown;//SARGE: Stores whether or not the gameplay menu message has been displayed.
+var globalconfig bool bEnhancedCorpseInteractions;  //SARGE: Right click always searches corpses. After searching, right click picks up corpses as normal.
+var globalconfig bool bSearchedCorpseText;          //SARGE: Corpses show "[Searched]" text when interacted with for the first time.
+var globalconfig bool bCutsceneFOVAdjust;           //SARGE: Enforce 75 FOV in cutscenes
+var globalconfig bool bLightingAccessibility;       //SARGE: Changes lighting in some areas to reduce strobing/flashing, as it may hurt eyes or cause seizures.
+
+var globalconfig bool bSubtitlesCutscene;			// SARGE: Allow Subtitles for Third-Person cutscenes. Should generally be left on
+
+var bool bPrisonStart;                              //SARGE: Alternate Start
+
+//Radial Aug Menu
+var bool bRadialAugMenuVisible;
+var globalconfig bool bAugDisplayVisible;
+
+//Left-Frob Weapon Priority
+var localized String CantBreakDT;
+
+
+//HDTP
 var globalconfig bool bHDTP_JC;
 var globalconfig bool bHDTP_Walton, bHDTP_Anna, bHDTP_UNATCO, bHDTP_MJ12, bHDTP_NSF, bHDTP_RiotCop, bHDTP_Gunther, bHDTP_Paul, bHDTP_Nico;
 var string HDTPMeshName;
@@ -507,7 +535,10 @@ var bool bDeadLoad;
 var bool bGMDXNewGame;
 //var travel int topCharge[4];
 var bool bHardDrug;
+
+//Crouch Stuff
 var bool bCrouchHack;
+var bool bToggledCrouch;		        // used by toggle crouch
 
 //Recoil shockwave
 var() vector RecoilSimLimit; //plus/minus
@@ -592,7 +623,6 @@ var globalconfig bool bAugWheelDisableAll;                                      
 // OUTFIT STUFF
 var travel OutfitManagerBase outfitManager;
 var globalconfig string unlockedOutfits[255];
-
 
 // native Functions
 native(1099) final function string GetDeusExVersion();
