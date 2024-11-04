@@ -7379,22 +7379,27 @@ exec function ParseLeftClick()
         }
 	}
 
-    //Handle Reload Cancelling
-    if (inHand.isA('DeusExWeapon') && DeusExWeapon(inHand).IsInState('Reload'))
-        DeusExWeapon(inHand).bCancelLoading = true;
-
-    //Use SkilledTools
-    else if (inHand.isA('SkilledTool') && (frobTarget.isA('DeusExMover') || frobTarget.isA('HackableDevices')))
+    if (inHand != None)
     {
-        DoFrob(Self, inHand);
+
+        //Handle Reload Cancelling
+        if (inHand.isA('DeusExWeapon') && DeusExWeapon(inHand).IsInState('Reload'))
+            DeusExWeapon(inHand).bCancelLoading = true;
+
+        //Use SkilledTools
+        else if (inHand.isA('SkilledTool') && frobTarget != None && (frobTarget.isA('DeusExMover') || frobTarget.isA('HackableDevices')))
+        {
+            DoFrob(Self, inHand);
+        }
+
+        //Activate activatable items
+        else if (inHand.bActivatable)
+            inHand.Activate();
+
     }
 
-    //Activate activatable items
-    else if (inHand.bActivatable)
-        inHand.Activate();
-
     //Special cases aside, now do the left hand frob behaviour
-    else if (FrobTarget != none && !bInHandTransition && !inHand.IsA('POVcorpse') && CarriedDecoration == None)
+    else if (FrobTarget != none && !bInHandTransition && (inHand == None || !inHand.IsA('POVcorpse')) && CarriedDecoration == None)
 	{
         DoLeftFrob(FrobTarget);
 	}
