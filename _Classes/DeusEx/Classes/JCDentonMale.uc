@@ -244,11 +244,14 @@ function Timer()
 {
     Super.Timer();
 
+    //Setup Outfit Manager
+    SetupOutfitManager();
+
     //load HDTP Skin
     UpdateHDTPSettings();
 
-
-    SetupOutfitManager();
+    //Apply Current Outfit
+    outfitManager.ApplyCurrentOutfit();
 }
 
 // ----------------------------------------------------------------------
