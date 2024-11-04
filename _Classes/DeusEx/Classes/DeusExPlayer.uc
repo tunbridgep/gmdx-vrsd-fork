@@ -90,8 +90,8 @@ var bool bSecondOptionsSynced;
 // used while crouching
 var travel bool bForceDuck;
 var travel bool bCrouchOn;				// used by toggle crouch
-var travel bool bWasCrouchOn;			// used by toggle crouch
-var travel byte lastbDuck;				// used by toggle crouch
+var travel bool bWasCrouchOn;			// used by toggle crouch //SARGE: UNUSED now, but left here for native class reasons
+var travel byte lastbDuck;				// used by toggle crouch //SARGE: UNUSED now, but left here for native class reasons
 
 // leaning vars
 var bool bCanLean;
@@ -367,7 +367,9 @@ var Computers ActiveComputer;
 ///                 DO NOT DELETE, EDIT, MODIFY, CHANGE,
 ///                 TRANSPOSE, TRANSFORM, DISTORT, REVISE,
 ///                 ADJUST, TRANSMUTE, MUTATE, OR OTHERWISE
-///                 VARY THESE VALUES!
+///                 VARY THESE VALUES! IF YOU EDIT ANYTHING
+///                 ABOVE THIS LINE, YOUR PR WILL NOT BE ACCEPTED,
+///                 PERIOD.
 ////============================================================\\\\
 
 ////GMDX, RSD and SARGE additions!
