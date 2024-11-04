@@ -101,7 +101,7 @@ event DrawWindow(GC gc)
 
 		// Draw the weapon icon
 		gc.SetStyle(DSTY_Masked);
-		gc.DrawTexture(22, 10, 40, 35, 0, 0, icon);
+		gc.DrawTexture(22, 20, 40, 35, 0, 0, icon);
 
         if (amount > 0 && (item == None || !item.isA('Binoculars')))
         {
@@ -113,11 +113,11 @@ event DrawWindow(GC gc)
             gc.SetTextColor(colText);
 
             if (charged == None || chargeLevel > 0)
-                gc.DrawText(28, 46, 32, 8, InvLabel @ amount); //Position below icon
-            //gc.DrawText(28, 38, 32, 8, InvLabel @ amount); //Position at bottom of icon
+                gc.DrawText(28, 56, 32, 8, InvLabel @ amount); //Position below icon
+            //gc.DrawText(28, 48, 32, 8, InvLabel @ amount); //Position at bottom of icon
         
             if (chargeLevel > 0)
-                gc.DrawText(28, 24, 32, 8, Sprintf("%d%%", chargeLevel)); //Position center of icon
+                gc.DrawText(28, 34, 32, 8, Sprintf("%d%%", chargeLevel)); //Position center of icon
         }
 	}
 }
@@ -148,7 +148,7 @@ function DrawBackground(GC gc)
 {
 	gc.SetStyle(backgroundDrawStyle);
 	gc.SetTileColor(colBackground);
-	gc.DrawTexture(13, 3, 80, 54, 0, 0, texBackground);
+	gc.DrawTexture(13, 13, 80, 54, 0, 0, texBackground);
 }
 
 // ----------------------------------------------------------------------
@@ -161,7 +161,7 @@ function DrawBorder(GC gc)
 	{
 		gc.SetStyle(borderDrawStyle);
 		gc.SetTileColor(colBorder);
-		gc.DrawTexture(0, -10, 95, 77, 0, 0, texBorder);
+		gc.DrawTexture(0, 0, 95, 77, 0, 0, texBorder);
 	}
 }
 
