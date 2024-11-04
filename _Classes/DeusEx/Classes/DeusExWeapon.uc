@@ -349,6 +349,9 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 //Function to fix weapon offsets
 function DoWeaponOffset(DeusExPlayer player)
 {
+    if (player == None)
+        return;
+
     if ((weaponOffsets.x != 0.0 || weaponOffsets.y != 0.0 || weaponOffsets.z != 0.0))
     {
     
@@ -1024,7 +1027,8 @@ local DeusExPlayer playa;
 
 function ReloadMaxAmmo()
 {
-    ClipCount = Min(ReloadCount,AmmoType.AmmoAmount);
+    if (AmmoType != None)
+        ClipCount = Min(ReloadCount,AmmoType.AmmoAmount);
 }
 
 function PostPostBeginPlay()
@@ -1035,7 +1039,7 @@ function PostPostBeginPlay()
         ScaleGlow = 0.5;
 
     //Give NPCs a full clip to start
-    if (!givenFreeReload && Owner.IsA('ScriptedPawn'))
+    if (!givenFreeReload && Owner != None && Owner.IsA('ScriptedPawn'))
     {
         ReloadMaxAmmo();
         givenFreeReload = true;
@@ -2091,7 +2095,7 @@ function name WeaponDamageType()
 	projClass = Class<DeusExProjectile>(ProjectileClass);
 	if (bInstantHit)
 	{
-        if (AmmoType.IsA('AmmoRubber'))
+        if (AmmoType != None && AmmoType.IsA('AmmoRubber'))
 			damageType = 'KnockedOut';
         else if (StunDuration > 0)
 			damageType = 'Stunned';

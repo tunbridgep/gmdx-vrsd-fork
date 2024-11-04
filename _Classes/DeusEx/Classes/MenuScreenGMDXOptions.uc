@@ -115,6 +115,8 @@ defaultproperties
      actionButtons(0)=(Align=HALIGN_Right,Action=AB_Cancel)
      actionButtons(1)=(Align=HALIGN_Right,Action=AB_OK)
      actionButtons(2)=(Action=AB_Reset)
+     //actionButtons(3)=(Align=HALIGN_Right,Action=AB_Other,Text="Video Setup",Key="VIDEO")
+     //actionButtons(4)=(Align=HALIGN_Right,Action=AB_Other,Text="Show Tips",Key="TIPS")
      actionButtons(3)=(Align=HALIGN_Right,Action=AB_Other,Text="Show Tips",Key="TIPS")
      Title="GMDX Options"
      ClientWidth=537
@@ -124,4 +126,10 @@ defaultproperties
      clientTextures(2)=Texture'DeusExUI.UserInterface.MenuControlsBackground_3'
      textureRows=1
      helpPosY=174
+     /*
+     texturesSetting="ini:Engine.Engine.GameRenderDevice UseS3TC"
+     reflectionsSetting="ini:Engine.Engine.GameRenderDevice ShinySurfaces"
+     precacheSetting="ini:Engine.Engine.GameRenderDevice UsePrecache"
+     classicLighting="ini:Engine.Engine.GameRenderDevice ClassicLighting"
+     */
 }

@@ -189,12 +189,15 @@ function DrawBackground(GC gc)
 
 	gc.DrawText(66, 17, 21, 8, AmmoLabel);
 
-	if (weapon.bPerShellReload || weapon.AmmoName == Class'Ammo20mm' || player.bDisplayTotalAmmo)
-		gc.DrawText(66, 48, 21, 8, RoundsLabel);
-	else if (player.bDisplayClips)
-		gc.DrawText(66, 48, 21, 8, ClipsLabel);
-    else
-		gc.DrawText(66, 48, 21, 8, MagsLabel);
+    if (player != None)
+    {
+        if (weapon != None && weapon.bPerShellReload || weapon.AmmoName == Class'Ammo20mm' || player.bDisplayTotalAmmo)
+            gc.DrawText(66, 48, 21, 8, RoundsLabel);
+        else if (player.bDisplayClips)
+            gc.DrawText(66, 48, 21, 8, ClipsLabel);
+        else
+            gc.DrawText(66, 48, 21, 8, MagsLabel);
+    }
 }
 
 // ----------------------------------------------------------------------

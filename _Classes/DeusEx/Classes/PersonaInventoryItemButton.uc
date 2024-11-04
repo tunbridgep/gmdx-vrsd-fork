@@ -311,7 +311,8 @@ event bool MouseButtonPressed(float pointX, float pointY, EInputKey button,
     {
     if (button == IK_RightMouse && anItem.IsA('DeusExPickup'))
     {
-       if (anItem.IsA('Lockpick') || anItem.IsA('Multitool'))
+		//TODO: Sarge: Create a generic Inventory Use/Equip function per item
+       if (anItem.IsA('Lockpick') || anItem.IsA('Multitool') || anItem.IsA('FireExtinguisher'))
        winInv.EquipSelectedItem();
        else
        winInv.UseSelectedItem(); //winInv.ButtonActivated(??????, btnUse);

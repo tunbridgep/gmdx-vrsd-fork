@@ -61,3 +61,6 @@ function Unlock(string id) {}
 
 //Function called by spawners
 function SpawnerPickup(OutfitSpawner S) {}
+
+//Force-apply current outfit
+function ApplyCurrentOutfit() {}

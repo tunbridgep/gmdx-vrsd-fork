@@ -173,6 +173,10 @@ function PostPostBeginPlay()
         LODBias=3.000000;
 	// Bind any conversation events to this DeusExPlayer
 	ConBindEvents();
+
+    //SARGE: Attempted fix for the case where objects have no itemName, for whatever reason
+    if (itemName == "" && bHighlight)
+        itemName = default.itemName;
 }
 
 // ----------------------------------------------------------------------

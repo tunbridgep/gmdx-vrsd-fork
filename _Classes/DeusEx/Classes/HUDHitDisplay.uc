@@ -434,7 +434,7 @@ function UpdateAsFemale(bool NewbFemale)
 		TTex = Texture(DynamicLoadObject("FemJC.HUDHitDisplay_BodyFem", class'Texture', false));
 		if (TTex != None) bodyWin.SetBackground(TTex);
 	}
-	else
+	else if (bodyWin != None)
 	{
 		bodyWin.SetBackground(Texture'HUDHitDisplay_Body');
 	}
