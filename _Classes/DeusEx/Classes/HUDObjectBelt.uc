@@ -90,25 +90,20 @@ function CreateSlots()
 
 function CreateNanoKeySlot()
 {
-	if (player != None)
-	{
-		if (player.KeyRing != None)
+		if (player != None && player.KeyRing != None && objects[KeyRingSlot] != None)
 		{
-            if (objects[KeyRingSlot] == None)
-                return;
-
-            else if (!player.bSmartKeyring)
+            if (!player.bSmartKeyring)
             {
-                RemoveObjectFromBelt(objects[KeyRingSlot].item);
+                if (objects[KeyRingSlot].item != None)
+                    RemoveObjectFromBelt(objects[KeyRingSlot].item);
     			objects[KeyRingSlot].SetItem(player.KeyRing);
             }
-            else if (objects[KeyRingSlot].item.IsA('NanoKeyRing'))
+            else if (objects[KeyRingSlot].item != None && objects[KeyRingSlot].item.IsA('NanoKeyRing'))
             {
                 RemoveObjectFromBelt(objects[KeyRingSlot].item);
             }
 			objects[KeyRingSlot].AllowDragging(player.bSmartKeyring);
 		}
-	}
 }
 
 // ----------------------------------------------------------------------
