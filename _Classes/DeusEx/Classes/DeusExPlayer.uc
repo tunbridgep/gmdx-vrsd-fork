@@ -1993,6 +1993,7 @@ function BuySkillSound( int code )
 exec function StartNewGame(String startMap)
 {
     local Inventory item, nextItem;
+    local int musicVol, soundVol, speechVol;
 
     bGMDXNewGame = True;
 
@@ -2026,6 +2027,16 @@ exec function StartNewGame(String startMap)
     //If Addiction System is enabled, set it as our default screen in the Health display
     if (bAddictionSystem)
         bShowStatus = false;
+
+    //SARGE: Fix audio volume being incorrectly set on new game
+    //TODO: Make this an option
+    musicVol = int(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice MusicVolume"));
+    soundVol = int(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice SoundVolume"));
+    speechVol = int(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice SpeechVolume"));
+    
+    ConsoleCommand("set" @ "ini:Engine.Engine.AudioDevice SoundVolume" @ soundVol);
+    ConsoleCommand("set" @ "ini:Engine.Engine.AudioDevice MusicVolume" @ musicVol);
+    ConsoleCommand("set" @ "ini:Engine.Engine.AudioDevice SpeechVolume" @ speechVol);
 }
 
 // ----------------------------------------------------------------------

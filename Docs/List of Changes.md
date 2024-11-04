@@ -19,6 +19,8 @@ Sarge's Changes since Beta 2.2:
         - Additionally, combat knives on corpses are no longer deleted, allowing "Decline Knives" to be turned on and off without preventing access to knives on existing corpses.
     - Fixed GMDX bug where Ford Schick would not give you an upgrade canister when telling you he swiped one, if ConFix isn't installed. Fixed by adding it to his desk.
     - Fixed a number of typos in various places.
+    - Fixed Vanilla bug where sound volume would reset upon new game.
+    - Fixed many other GMDX and Vanilla bugs.
 - Quality of Life Improvements:
     - Added a Lighting Accessibility setting, which removes some strobing and flickering in certain areas on some maps, such as the 'Ton hotel elevator shaft.
     - Added a new corpse searching setting, "Enhanced Corpse Interactions", which makes the first right-click on a corpse never pick them up, even if empty, so that you can search them reliably without accidentally picking them up.
