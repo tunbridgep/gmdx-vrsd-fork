@@ -1027,7 +1027,8 @@ local DeusExPlayer playa;
 
 function ReloadMaxAmmo()
 {
-    ClipCount = Min(ReloadCount,AmmoType.AmmoAmount);
+    if (AmmoType != None)
+        ClipCount = Min(ReloadCount,AmmoType.AmmoAmount);
 }
 
 function PostPostBeginPlay()
