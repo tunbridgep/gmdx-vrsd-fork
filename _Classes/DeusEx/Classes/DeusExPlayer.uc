@@ -410,7 +410,6 @@ var globalconfig bool bAugDisplayVisible;
 //Left-Frob Weapon Priority
 var localized String CantBreakDT;
 
-
 //HDTP
 var globalconfig bool bHDTP_JC;
 var globalconfig bool bHDTP_Walton, bHDTP_Anna, bHDTP_UNATCO, bHDTP_MJ12, bHDTP_NSF, bHDTP_RiotCop, bHDTP_Gunther, bHDTP_Paul, bHDTP_Nico;
@@ -2062,6 +2061,7 @@ exec function StartNewGame(String startMap)
 
     //SARGE: Fix audio volume being incorrectly set on new game
     //TODO: Make this an option
+    //TODO: Move this to ResetPlayer, since this function is for loading maps
     musicVol = int(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice MusicVolume"));
     soundVol = int(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice SoundVolume"));
     speechVol = int(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice SpeechVolume"));
