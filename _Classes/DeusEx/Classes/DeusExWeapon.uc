@@ -309,6 +309,8 @@ var travel bool givenFreeReload;                                                
 
 var float sleeptime;                                                              //Sarge: Used by per shell reload weapons to store how long they have been sleeping during reload, to allow us to cancel mid-reload in a far more responsive way.
 
+var bool bModified;                                                             //SARGE: Keeps track of whether or not a particular weapon has been modified
+
 //END GMDX:
 
 //
@@ -334,6 +336,14 @@ replication
 	  RefreshScopeDisplay, ReadyClientToFire, SetClientAmmoParams, ClientDownWeapon, ClientActive, ClientReload;
 }
 
+//Sarge: Update weapon description/display when we have a mod applied
+function string GetBeltDescription(DeusExPlayer player)
+{
+    if (bModified && player != None && player.bBeltShowModified)
+        return beltDescription $ "+";
+    else
+        return beltDescription;
+}
 
 //SARGE: Added "Left Click Frob" and "Right Click Frob" support
 //Return true to use the default frobbing mechanism (right click), or false for custom behaviour
