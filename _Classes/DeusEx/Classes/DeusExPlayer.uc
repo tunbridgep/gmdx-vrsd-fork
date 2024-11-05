@@ -1911,16 +1911,21 @@ function PerformAutoSave()
 	iAutosaveLast++;
     if (iAutosaveLast >= iAutosaveMax)
         iAutosaveLast = 0;
-
-	DoSaveGame(-iAutosaveLast, AutoSaveGameTitle);
+        
+	DoSaveGame(-iAutosaveLast, sprintf(AutoSaveGameTitle,TruePlayerName));
     iLastSave = -iAutosaveLast;
 }
 
 // ----------------------------------------------------------------------
 // QuickSave()
 // ----------------------------------------------------------------------
-
 exec function QuickSave()
+{
+    Quicksave2(sprintf(QuickSaveGameTitle,TruePlayerName));
+}
+
+//Can't add an optional to the above function, so we use a separate one instead
+function QuickSave2(string SaveString)
 {
     if (!CanSave())
         return;
@@ -1929,7 +1934,7 @@ exec function QuickSave()
     if (iQuickSaveLast >= iQuickSaveMax)
         iQuickSaveLast = 0;
 
-	DoSaveGame(-iQuickSaveLast, QuickSaveGameTitle);
+	DoSaveGame(-iQuickSaveLast, SaveString);
     iLastSave = -iQuicksaveLast;
 }
 
@@ -17167,8 +17172,8 @@ defaultproperties
      HealedPointsLabel="Healed %d points"
      HealedPointLabel="Healed %d point"
      SkillPointsAward="%d skill points awarded"
-     QuickSaveGameTitle="Quick Save"
-     AutoSaveGameTitle="Auto Save"
+     QuickSaveGameTitle="Quick Save [%s]"
+     AutoSaveGameTitle="Auto Save [%s]"
      WeaponUnCloak="Weapon drawn... Uncloaking"
      TakenOverString="I've taken over the "
      HeadString="Head"
@@ -17190,8 +17195,8 @@ defaultproperties
      bHDTP_Gunther=False
      bHDTP_Paul=False
      bHDTP_Nico=False
-     iQuickSaveMax=3
-     iAutoSaveMax=10
+     iQuickSaveMax=5
+     iAutoSaveMax=3
      bTogAutoSave=True
      bColorCodedAmmo=True
      bHardcoreAI3=True
