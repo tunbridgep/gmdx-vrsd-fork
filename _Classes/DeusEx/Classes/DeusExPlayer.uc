@@ -1925,9 +1925,9 @@ exec function QuickSave()
 }
 
 //Can't add an optional to the above function, so we use a separate one instead
-function QuickSave2(string SaveString)
+function QuickSave2(string SaveString, optional bool allowHardcore)
 {
-    if (!CanSave())
+    if (!CanSave(allowHardcore))
         return;
 
 	iQuickSaveLast++;

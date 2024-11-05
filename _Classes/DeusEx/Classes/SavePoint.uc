@@ -51,7 +51,7 @@ State QuickSaver
         bUsedSavePoint=true;
         bHighlight=false;
         //player.DoSaveGame(-1,sprintf(msgSaveName,player.retInfo(),player.TruePlayerName));
-        player.QuickSave2(sprintf(msgSaveName,player.retInfo(),player.TruePlayerName));
+        player.QuickSave2(sprintf(msgSaveName,player.retInfo(),player.TruePlayerName),true);
         PlaySound(sound'CloakDown', SLOT_None,,,,0.5);
         GotoState('');
         Global.SetTimer(0.02,true);
