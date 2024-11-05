@@ -16,7 +16,7 @@ var DeusExPlayer Player;
 var FlagBase flags;
 var string localURL;
 var DeusExLevelInfo dxInfo;
-var bool CanQuickSave;
+var bool CanQuickSave; //SARGE: Note this is actually for Autosaves, not Quicksaves
 var float TimeToSave;
 
 // ----------------------------------------------------------------------
@@ -278,22 +278,25 @@ function Timer()
 
 function Tick(float DeltaTime)
 {
-   if (CanQuickSave && player != none && (player.bTogAutoSave || player.bHardCoreMode)) //CyberP: toggle autosave option //RSD: TEMPORARILY remove Hardcore autosave because it's pissing me off
-   {
-      if (TimeToSave>0) TimeToSave-=DeltaTime;
-      else
-      if (player.CanSave(true,true))
-      {
-         CanQuickSave=false;
-         /*if (localURL == "05_NYC_UNATCOMJ12LAB")
-         TimeToSave=0.5;
-         else
-         TimeToSave=0.1;*/
-         TimeToSave=0.0;                                                        //RSD: Removed autosave delay
-         player.PerformAutoSave();
-      } else
-         CanQuickSave=false;
-   }
+    if (CanQuickSave && player != none && (player.bTogAutoSave || player.bRestrictedSaving || player.bHardCoreMode)) //CyberP: toggle autosave option //RSD: TEMPORARILY remove Hardcore autosave because it's pissing me off
+    {
+        if (TimeToSave>0)
+            TimeToSave-=DeltaTime;
+        else
+        if (player.CanSave(true,true))
+        {
+            CanQuickSave=false;
+
+            if (localURL == "05_NYC_UNATCOMJ12LAB")
+                TimeToSave=0.5;
+            else
+                TimeToSave=0.1;
+            //TimeToSave=0.0;                                                        //RSD: Removed autosave delay
+            player.PerformAutoSave();
+        }
+        else
+            CanQuickSave=false;
+    }
 }
 //State QuickSaver
 //{

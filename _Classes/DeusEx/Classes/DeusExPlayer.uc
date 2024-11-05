@@ -427,6 +427,7 @@ var globalconfig int iQuickSaveMax;//Maximum number of quicksaves
 var globalconfig int iAutoSaveMax;//Maximum number of autosaves
 var globalconfig int iAutosaveLast;//index to last autosaved file
 var globalconfig int iLastSave;//index to last save. Used for quickloading.
+var localized string AutoSaveGameTitle; //Autosave names
 //var travel int QuickSaveLast;
 //var travel int QuickSaveCurrent;
 //hardcore mode
@@ -605,8 +606,6 @@ var travel bool bMoreLDDPNPCs;
 const DRUG_TOBACCO = 0;
 const DRUG_ALCOHOL = 1;
 const DRUG_CRACK = 2;
-
-var bool autosave;                                                              //Sarge: Autosave tells the Quicksave function to make an autosave instead
 
 var travel bool bLastRun;                                                       //Sarge: Stores our last running state
                                                                                 
@@ -1901,20 +1900,20 @@ function DoSaveGame(int saveIndex, optional String saveDesc)
     SaveGame(saveIndex, saveDesc);
     root.show();
 
-    //Sarge: actually, always do this
-    //if (autosave) 
-    //{
-        autosave = false;
-        bResetAutosaveTimer = true;
-    //}
-
+    bResetAutosaveTimer = true;
 }
 
 function PerformAutoSave()
 {
-    autosave = true;
-    QuickSave();
-    autosave = false;
+    if (!CanSave(true,true))
+        return;
+
+	iAutosaveLast++;
+    if (iAutosaveLast >= iAutosaveMax)
+        iAutosaveLast = 0;
+
+	DoSaveGame(-iAutosaveLast, AutoSaveGameTitle);
+    iLastSave = -iAutosaveLast;
 }
 
 // ----------------------------------------------------------------------
@@ -1923,10 +1922,6 @@ function PerformAutoSave()
 
 exec function QuickSave()
 {
-	local DeusExLevelInfo info;
-
-	info = GetLevelInfo();
-
     if (!CanSave())
         return;
 
@@ -1935,7 +1930,7 @@ exec function QuickSave()
         iQuickSaveLast = 0;
 
 	DoSaveGame(-iQuickSaveLast, QuickSaveGameTitle);
-    iLastSave = iQuicksaveLast;
+    iLastSave = -iQuicksaveLast;
 }
 
 // ----------------------------------------------------------------------
@@ -7512,6 +7507,7 @@ exec function ParseRightClick()
 	// ParseRightClick deals with things in the WORLD
 	//
 	// Precedence:
+    // - Reload last save if dead
     // - Unscope/Unzoom currently held object
     // - Park Spy Drone
 	// - Pickup highlighted Inventory
@@ -7529,6 +7525,12 @@ exec function ParseRightClick()
 	local Vector loc;
 	local DeusExWeapon ExWep;
     local DeusExRootWindow root;
+
+    //SARGE: Add quickloading if pressing right click while dead.
+    if (IsInState('dying') && !bDeadLoad)
+    {
+        QuickLoad();
+    }
 
     if (RestrictInput())
 		return;
@@ -17166,6 +17168,7 @@ defaultproperties
      HealedPointLabel="Healed %d point"
      SkillPointsAward="%d skill points awarded"
      QuickSaveGameTitle="Quick Save"
+     AutoSaveGameTitle="Auto Save"
      WeaponUnCloak="Weapon drawn... Uncloaking"
      TakenOverString="I've taken over the "
      HeadString="Head"
