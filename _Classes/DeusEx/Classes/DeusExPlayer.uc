@@ -1909,11 +1909,12 @@ function PerformAutoSave()
         return;
 
 	iAutosaveLast++;
-    if (iAutosaveLast >= iAutosaveMax)
-        iAutosaveLast = 0;
+    if (iAutosaveLast > iAutosaveMax)
+        iAutosaveLast = 1;
         
 	DoSaveGame(-iAutosaveLast, sprintf(AutoSaveGameTitle,TruePlayerName));
-    iLastSave = -iAutosaveLast;
+    //iLastSave = -iAutosaveLast;
+    ConsoleCommand("set DeusExPlayer iLastSave " $ iAutoSaveLast);
 }
 
 // ----------------------------------------------------------------------
@@ -1931,11 +1932,12 @@ function QuickSave2(string SaveString, optional bool allowHardcore)
         return;
 
 	iQuickSaveLast++;
-    if (iQuickSaveLast >= iQuickSaveMax)
-        iQuickSaveLast = 0;
+    if (iQuickSaveLast > iQuickSaveMax)
+        iQuickSaveLast = 1;
 
 	DoSaveGame(-iQuickSaveLast, SaveString);
-    iLastSave = -iQuicksaveLast;
+    //iLastSave = -iQuicksaveLast;
+    ConsoleCommand("set DeusExPlayer iLastSave " $ iQuickSaveLast);
 }
 
 // ----------------------------------------------------------------------
@@ -1963,7 +1965,7 @@ function QuickLoadConfirmed()
 	if (Level.Netmode != NM_Standalone)
 	  return;
 
-    LoadGame(iLastSave); //changed so now selects last saved game, even if from menu
+    LoadGame(int(ConsoleCommand("get DeusExPlayer iLastSave"))); //changed so now selects last saved game, even if from menu
 }
 
 // ----------------------------------------------------------------------
