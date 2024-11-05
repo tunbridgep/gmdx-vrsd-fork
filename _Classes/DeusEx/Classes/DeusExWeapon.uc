@@ -1174,6 +1174,8 @@ function bool HandlePickupQuery(Inventory Item)
 	}
 
 	player = DeusExPlayer(Owner);
+    if (player != None)
+        player.UpdateHUD(); //SARGE: Required now because weapons can have + icons in the HUD
 
 	if (Item.Class == Class)
 	{

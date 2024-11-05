@@ -17310,4 +17310,5 @@ defaultproperties
      bEnhancedCorpseInteractions=True
      bDisplayClips=true;
      bCutsceneFOVAdjust=true;
+     bBeltShowModified=true;
 }
