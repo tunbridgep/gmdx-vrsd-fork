@@ -8910,7 +8910,7 @@ exec function ReloadWeapon()
 
     if (W != None)
     {
-        full = W.AmmoLeftInClip() >= W.ReloadCount &&;
+        full = W.AmmoLeftInClip() >= W.ReloadCount;
         hasAmmo = W.AmmoType.AmmoAmount - W.ClipCount > 0;
         if (W != None && ((!full && hasAmmo) || bTrickReloading || bHardCoreMode))
             W.ReloadAmmo();
