@@ -307,7 +307,7 @@ function CreateGamesList()
 	lstGames.SetColumnType(1, COLTYPE_String);
 	lstGames.SetColumnFont(1, Font'FontFixedWidthSmall');
 
-	lstGames.SetColumnType(2, COLTYPE_Float);
+	lstGames.SetColumnType(2, COLTYPE_String);
 	lstGames.SetSortColumn(2, bDateSortOrder);
 	lstGames.EnableAutoSort(True);
 
@@ -371,6 +371,7 @@ function UpdateSaveInfo(int rowId)
 			winSaveInfo.SetText(Sprintf(LocationLabel, saveInfo.MissionLocation));
 			winSaveInfo.AppendText(Sprintf(SaveCountLabel, saveInfo.SaveCount));
 			winSaveInfo.AppendText(Sprintf(PlayTimeLabel, BuildElapsedTimeString(saveInfo.saveTime)));
+			//winSaveInfo.AppendText(Sprintf(PlayTimeLabel, BuildTimeJulian(saveInfo)));
 
 			// divide to GetSaveDirectorSize by 1024 to get size of directory in MB
 			// Round up by one for comfort (and so you don't end up with "0MB", only
@@ -715,6 +716,45 @@ function String TwoDigits(int number)
 // BuildTimeJulian()
 // ----------------------------------------------------------------------
 
+//SARGE: Do this with strings. Which suck.
+//TODO: Make it much better
+function String BuildTimeJulian(DeusExSaveInfo saveInfo)
+{
+    local string ret;
+
+    ret = ret $ saveInfo.year;
+
+    if (saveInfo.month < 10)
+        ret = ret $ "0";
+    
+    ret = ret $ saveInfo.month;
+    
+    if (saveinfo.day < 10)
+        ret = ret $ "0";
+    
+    ret = ret $ saveInfo.day;
+    ret = ret $ "---";
+
+    if (saveinfo.hour < 10)
+        ret = ret $ "0";
+    
+    ret = ret $ saveInfo.hour;
+    
+    if (saveinfo.minute < 10)
+        ret = ret $ "0";
+    
+    ret = ret $ saveInfo.minute;
+    
+    if (saveinfo.second < 10)
+        ret = ret $ "0";
+    
+    ret = ret $ saveInfo.second;
+
+    return ret;
+}
+
+/* Original Version Below
+Seems to not work. Float truncation????
 function Float BuildTimeJulian(DeusExSaveInfo saveInfo)
 {
 	local Float retValue;
@@ -737,6 +777,7 @@ function Float BuildTimeJulian(DeusExSaveInfo saveInfo)
 
 	return retValue;
 }
+*/
 
 // ----------------------------------------------------------------------
 // GetSaveGameDirectory()

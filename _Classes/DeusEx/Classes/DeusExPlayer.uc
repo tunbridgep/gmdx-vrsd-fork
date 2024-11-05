@@ -419,13 +419,16 @@ var string HDTPMeshTex[8];
 
 //GMDX: CyberP & dasraiser
 //SAVEOUT
-var globalconfig int QuickSaveIndex; //out of some number
-var globalconfig int QuickSaveTotal;//this number
+//var globalconfig int QuickSaveIndex; //out of some number
+//var globalconfig int QuickSaveTotal;//this number
 var globalconfig bool bTogAutoSave;   //CyberP: enable/disable autosave
 var globalconfig int iQuickSaveLast;//index to last saved file
-var travel int QuickSaveLast;
-var travel int QuickSaveCurrent;
-var string     QuickSaveName;
+var globalconfig int iQuickSaveMax;//Maximum number of quicksaves
+var globalconfig int iAutoSaveMax;//Maximum number of autosaves
+var globalconfig int iAutosaveLast;//index to last autosaved file
+var globalconfig int iLastSave;//index to last save. Used for quickloading.
+//var travel int QuickSaveLast;
+//var travel int QuickSaveCurrent;
 //hardcore mode
 var travel bool bHardCoreMode; //if set disable save game options.
 //misc
@@ -1061,16 +1064,6 @@ function PostBeginPlay()
 	if ( Level.NetMode != NM_Standalone )
 		bCheatsEnabled = False;
 	HDTP();
-
-// SAVEOUT
-
-	//QuickSaveCurrent=int(ConsoleCommand("get DeusEx.JCDentonMale QuickSaveIndex"));
-	//QuickSaveLast=int(ConsoleCommand("get DeusEx.JCDentonMale iQuickSaveLast"));
-
-	QuickSaveCurrent=QuickSaveIndex;
-	QuickSaveLast=iQuickSaveLast;
-
-	log("MYCHK::"@QuickSaveCurrent@"::"@QuickSaveLast);
 
 	RefreshLeanKeys();
     RefreshMantleKey();
@@ -1934,29 +1927,15 @@ exec function QuickSave()
 
 	info = GetLevelInfo();
 
-    if (!autosave && !CanSave())
+    if (!CanSave())
         return;
 
-//SAVEOUT
-	ConsoleCommand("set DeusEx.JCDentonMale QuickSaveIndex "$QuickSaveCurrent);
-//   QuickSaveIndex=QuickSaveCurrent;
+	iQuickSaveLast++;
+    if (iQuickSaveLast >= iQuickSaveMax)
+        iQuickSaveLast = 0;
 
-	if (QuickSaveCurrent>=QuickSaveTotal)
-	  QuickSaveCurrent=0;
-	QuickSaveCurrent++;
-
-	QuickSaveLast=-(10+QuickSaveCurrent);
-	if (!autosave)
-	   QuickSaveName=sprintf(QuickSaveGameTitle,QuickSaveCurrent);
-	else
-       QuickSaveName=sprintf("Auto Save%d",QuickSaveCurrent);
-	log("MYCHK:DX_QuickSave: ,"@QuickSaveName@" ,Last:"@QuickSaveLast@" ,Current:"@QuickSaveCurrent);
-	DoSaveGame(QuickSaveLast, QuickSaveName);
-	ConsoleCommand("set DeusEx.JCDentonMale iQuickSaveLast "$QuickSaveLast);
-
-//	default.iQuickSaveLast=QuickSaveLast;
-
-//original	SaveGame(-1, QuickSaveGameTitle);
+	DoSaveGame(-iQuickSaveLast, QuickSaveGameTitle);
+    iLastSave = iQuicksaveLast;
 }
 
 // ----------------------------------------------------------------------
@@ -1984,10 +1963,7 @@ function QuickLoadConfirmed()
 	if (Level.Netmode != NM_Standalone)
 	  return;
 
-	//log("MYCHK:DX_QuickLoadConfirmed: "@QuickSaveLast);
-//SAVEOUT
-LoadGame(QuickSaveLast); //changed so now selects last saved game, even if from menu
-//original	LoadGame(-1);
+    LoadGame(iLastSave); //changed so now selects last saved game, even if from menu
 }
 
 // ----------------------------------------------------------------------
@@ -17211,7 +17187,8 @@ defaultproperties
      bHDTP_Gunther=False
      bHDTP_Paul=False
      bHDTP_Nico=False
-     QuickSaveTotal=10
+     iQuickSaveMax=3
+     iAutoSaveMax=10
      bTogAutoSave=True
      bColorCodedAmmo=True
      bHardcoreAI3=True
