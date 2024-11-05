@@ -309,7 +309,7 @@ var travel bool givenFreeReload;                                                
 
 var float sleeptime;                                                              //Sarge: Used by per shell reload weapons to store how long they have been sleeping during reload, to allow us to cancel mid-reload in a far more responsive way.
 
-var bool bModified;                                                             //SARGE: Keeps track of whether or not a particular weapon has been modified
+var travel bool bModified;                                                             //SARGE: Keeps track of whether or not a particular weapon has been modified
 
 //END GMDX:
 
