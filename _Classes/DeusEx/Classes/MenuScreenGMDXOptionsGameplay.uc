@@ -39,6 +39,7 @@ function Tick(float deltaTime)
     {
         msgbox = root.MessageBox(msgTitle,msgText,1,false,self);
         shownWindow = true;
+        player.bGameplayMenuHardcoreMsgShown = true;
     }
 }
 
