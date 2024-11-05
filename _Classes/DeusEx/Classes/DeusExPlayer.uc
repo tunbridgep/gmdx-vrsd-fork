@@ -8898,7 +8898,7 @@ exec function ToggleWalk()
 exec function ReloadWeapon()
 {
 	local DeusExWeapon W;
-    local bool full;
+    local bool full, hasAmmo;
 
 	if (RestrictInput())
 		return;
@@ -8908,10 +8908,14 @@ exec function ReloadWeapon()
 	W = DeusExWeapon(Weapon);  //CyberP: cannot reload when ammo in mag but none in reserves.
                                 //Sarge: Additionally fix reloading when full
 
-    full = W != None && W.AmmoLeftInClip() >= W.ReloadCount && !bTrickReloading && !bHardCoreMode;
-	if (W != None && !full)
-		W.ReloadAmmo();
+    if (W != None)
+    {
+        full = W.AmmoLeftInClip() >= W.ReloadCount &&;
+        hasAmmo = W.AmmoType.AmmoAmount - W.ClipCount > 0;
+        if (W != None && ((!full && hasAmmo) || bTrickReloading || bHardCoreMode))
+            W.ReloadAmmo();
 
+    }
     UpdateCrosshair();
 }
 
