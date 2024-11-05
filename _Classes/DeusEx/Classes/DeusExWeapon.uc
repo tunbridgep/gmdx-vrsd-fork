@@ -1171,6 +1171,9 @@ function bool HandlePickupQuery(Inventory Item)
 	   //DAM mod
             if(W.ModDamage > ModDamage)
 				ModDamage = W.ModDamage;
+       
+       if (W.bModified)
+         bModified = true;
 	}
 
 	player = DeusExPlayer(Owner);
