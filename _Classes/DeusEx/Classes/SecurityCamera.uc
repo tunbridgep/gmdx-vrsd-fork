@@ -416,6 +416,13 @@ function CheckCarcassVisibility(DeusExCarcass carcass)
 	}
 }
 
+//SARGE: Telling this camera that it should start rebooting right now
+function StartReboot(DeusExPlayer player)
+{
+    bRebooting = true;
+    disableTime = player.saveTime + disableTimeBase + (disableTimeMult * MAX(0,player.SkillSystem.GetSkillLevel(class'SkillComputer') - 1));
+}
+
 function Tick(float deltaTime)
 {
 	local float ang;
@@ -455,7 +462,7 @@ function Tick(float deltaTime)
     }
 
 	// if this camera is not active, get out
-	if (!bActive)
+	if (!bActive && !bConfused)
 	{
 		// DEUS_EX AMSD For multiplayer
 		ReplicatedRotation = DesiredRotation;
@@ -469,6 +476,10 @@ function Tick(float deltaTime)
 	if (bConfused)
 	{
 		confusionTimer += deltaTime;
+        
+        //SARGE: Confusing pauses hacking reboot time
+        if (bRebooting)
+            disableTime += deltaTime;
 
 		// pick a random facing at random
 		if (confusionTimer % 0.25 > 0.2)

@@ -75,6 +75,25 @@ event DestroyWindow()
       Removetimer(networkTimerID);
       networkTimerID = -1;
    }
+
+    //SARGE: Refresh rebooting duration when closing the window
+    if (winCameras[0].camera.bRebooting)
+        winCameras[0].camera.StartReboot(player);
+    if (winCameras[1].camera.bRebooting)
+        winCameras[1].camera.StartReboot(player);
+    if (winCameras[2].camera.bRebooting)
+        winCameras[2].camera.StartReboot(player);
+    if (winCameras[3].camera.bRebooting)
+        winCameras[3].camera.StartReboot(player);
+    
+    if (winCameras[0].turret.bRebooting)
+        winCameras[0].turret.StartReboot(player);
+    if (winCameras[1].turret.bRebooting)
+        winCameras[1].turret.StartReboot(player);
+    if (winCameras[2].turret.bRebooting)
+        winCameras[2].turret.StartReboot(player);
+    if (winCameras[3].turret.bRebooting)
+        winCameras[3].turret.StartReboot(player);
 }
 
 // -----------------------------------------------------------------------

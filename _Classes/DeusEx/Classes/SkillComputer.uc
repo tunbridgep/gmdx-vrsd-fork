@@ -37,8 +37,8 @@ defaultproperties
      mpLevel1=0.400000
      mpLevel2=1.000000
      mpLevel3=5.000000
-     SkillName="Hacking"
-     Description="The covert manipulation of computers and security consoles. Total Skill points to master: 6000 |n|nUNTRAINED: An agent can use terminals to read bulletins and news.|n|nTRAINED: An agent can hack ATMs, computers, and security consoles.|n|nADVANCED: An agent achieves a moderate increase in detection countdowns, a moderate decrease in lockout times and the ability to Siphon more cash from an ATM, as well as gaining the ability to control automated gun turrets.|n|nMASTER: An agent is an elite hacker that few systems can withstand."
+     SkillName="Computers"
+     Description="The covert manipulation of computers and security consoles.|n|nTotal skill points to master: 6000.|n|nUNTRAINED: An agent can use terminals to read bulletins and news. |n|nTRAINED: An agent can hack computers and security consoles of intermediate security systems, can shut security systems down for 2 minutes, and siphon up to half of an ATM's funds. |n|nADVANCED: An agent can hack computers featuring advanced defense systems and siphon all credits from ATMs, and achieves a moderate increase in detection time as well as a 1 minute increase in security shutdown time.|n|nMASTER: An agent is an elite hacker that no system can withstand, gaining the ability to spoof additional credits from ATMs and evading detection for long periods, including an additional 1 minute increase in security shutdown time."
      SkillIcon=Texture'DeusExUI.UserInterface.SkillIconComputer'
      cost(0)=1000
      cost(1)=2000

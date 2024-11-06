@@ -3765,8 +3765,7 @@ function ToggleCameraState(SecurityCamera cam, ElectronicDevices compOwner, opti
     {
         cam.UnTrigger(compOwner, self);
         cam.team = -1;
-        cam.bRebooting = true;
-        cam.disableTime = saveTime + (cam.disableTimeMult * MAX(1,SkillSystem.GetSkillLevel(class'SkillComputer')));
+        cam.StartReboot(self);
     }
     //Re-enable
 	else
@@ -3792,8 +3791,7 @@ function SetTurretState(AutoTurret turret, bool bActive, bool bDisabled, bool bH
     }
     else if (bDisabled && bHacked)
     {
-        turret.bRebooting = true;
-        turret.disableTime = saveTime + (turret.disableTimeMult * MAX(1,SkillSystem.GetSkillLevel(class'SkillComputer')));
+        turret.StartReboot(self);
     }
 	turret.bActive   = bActive;
 	turret.bDisabled = bDisabled;
@@ -3807,8 +3805,7 @@ function SetTurretTrackMode(ComputerSecurity computer, AutoTurret turret, bool b
     
     if (bHacked)
     {
-        turret.bRebooting = true;
-        turret.disableTime = saveTime + turret.disableTimeBase + (turret.disableTimeMult * MAX(1,SkillSystem.GetSkillLevel(class'SkillComputer')));
+        turret.StartReboot(self);
     }
     else
     {

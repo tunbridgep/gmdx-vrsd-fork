@@ -70,8 +70,6 @@ function Trigger(Actor Other, Pawn Instigator)
 // if we are untriggered, turn us off
 function UnTrigger(Actor Other, Pawn Instigator)
 {
-    bRebooting = false;
-
 	if (bActive)
 	{
 		bActive = False;
@@ -202,6 +200,13 @@ function Actor AcquireMultiplayerTarget()
 	return curtarget;
 }
 
+//SARGE: Telling this turret that it should start rebooting right now
+function StartReboot(DeusExPlayer player)
+{
+    bRebooting = true;
+    disableTime = player.saveTime + disableTimeBase + (disableTimeMult * MAX(0,player.SkillSystem.GetSkillLevel(class'SkillComputer') - 1));
+}
+
 function Tick(float deltaTime)
 {
 	local Pawn pawn;
@@ -227,8 +232,6 @@ function Tick(float deltaTime)
     
     if (bRebooting && !bConfused)
     {
-        //bDisabled = True;
-
         if (remainingTime <= 0)
         {
             if (bDisabled && gun.hackStrength != 0.0)
@@ -284,6 +287,10 @@ function Tick(float deltaTime)
 	if (bConfused)
 	{
 		confusionTimer += deltaTime;
+        
+        //SARGE: Confusing pauses hacking reboot time
+        if (bRebooting)
+            disableTime += deltaTime;
 
 		// pick a random facing
 		if (confusionTimer % 0.25 > 0.2)
