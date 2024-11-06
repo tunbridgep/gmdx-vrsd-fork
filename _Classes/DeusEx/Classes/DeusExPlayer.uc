@@ -422,11 +422,11 @@ var string HDTPMeshTex[8];
 //var globalconfig int QuickSaveIndex; //out of some number
 //var globalconfig int QuickSaveTotal;//this number
 var globalconfig bool bTogAutoSave;   //CyberP: enable/disable autosave
-var globalconfig int iQuickSaveLast;//index to last saved file
 var globalconfig int iQuickSaveMax;//Maximum number of quicksaves
 var globalconfig int iAutoSaveMax;//Maximum number of autosaves
-var globalconfig int iAutosaveLast;//index to last autosaved file
 var globalconfig int iLastSave;//index to last save. Used for quickloading.
+var globalconfig int iAutosaveSlots[50];//Array of autosave slots
+var globalconfig int iQuicksaveSlots[50];//Array of quicksave slots
 var localized string AutoSaveGameTitle; //Autosave names
 //var travel int QuickSaveLast;
 //var travel int QuickSaveCurrent;
@@ -1881,11 +1881,24 @@ function bool CanSave(optional bool allowHardcore, optional bool checkAutosave)
     return true; 
 }
 
+function GameDirectory GetSaveGameDirectory()
+{
+	local GameDirectory saveDir;
+
+	// Create our Map Directory class
+	saveDir = CreateGameDirectoryObject();
+	saveDir.SetDirType(saveDir.EGameDirectoryTypes.GD_SaveGames);
+	saveDir.GetGameDirectory();
+
+	return saveDir;
+}
+
 //We can't modify the native function, so do this here, and then call it
-function DoSaveGame(int saveIndex, optional String saveDesc)
+function int DoSaveGame(int saveIndex, optional String saveDesc)
 {
     local TechGoggles tech;
 	local DeusExRootWindow root;
+	
 	root = DeusExRootWindow(rootWindow);
 
     //Placeholder Hackfix
@@ -1901,20 +1914,77 @@ function DoSaveGame(int saveIndex, optional String saveDesc)
     root.show();
 
     bResetAutosaveTimer = true;
+
+    ConsoleCommand("set DeusExPlayer iLastSave " $ saveIndex);
+    return saveIndex;
+}
+
+function int FindAutosaveSlot()
+{
+    local int slot, i, last;
+	local GameDirectory saveDir;
+
+    last = iAutoSaveMax - 1;
+
+    if (last <= 0)
+        return -1; //If no slots, Use the standard quicksave slot
+
+    //pick out highest index
+    slot = iAutoSaveSlots[last];
+    
+    //If it's zero, get a new index and add it to the array
+    if (slot == 0)
+    {
+        saveDir = GetSaveGameDirectory();
+		slot=saveDir.GetNewSaveFileIndex();
+    }
+
+    //Now "rotate" the array by moving everything up (and wrapping)
+    for (i = last; i > 0;i--)
+        iAutoSaveSlots[i] = iAutoSaveSlots[i - 1];
+
+    //Set slot 0 to our current slot
+    iAutoSaveSlots[0] = slot;
+
+    return slot;
+}
+
+function int FindQuicksaveSlot()
+{
+    local int slot, i, last;
+	local GameDirectory saveDir;
+
+    last = iQuickSaveMax - 1;
+
+    if (last <= 0)
+        return -1; //If no slots, Use the standard quicksave slot
+
+    //pick out highest index
+    slot = iQuicksaveSlots[last];
+    
+    //If it's zero, get a new index and add it to the array
+    if (slot == 0)
+    {
+        saveDir = GetSaveGameDirectory();
+		slot=saveDir.GetNewSaveFileIndex();
+    }
+
+    //Now "rotate" the array by moving everything up (and wrapping)
+    for (i = last; i > 0;i--)
+        iQuicksaveSlots[i] = iQuicksaveSlots[i - 1];
+
+    //Set slot 0 to our current slot
+    iQuicksaveSlots[0] = slot;
+
+    return slot;
 }
 
 function PerformAutoSave()
 {
     if (!CanSave(true,true))
         return;
-
-	iAutosaveLast++;
-    if (iAutosaveLast > iAutosaveMax)
-        iAutosaveLast = 1;
         
-	DoSaveGame(-iAutosaveLast, sprintf(AutoSaveGameTitle,TruePlayerName));
-    //iLastSave = -iAutosaveLast;
-    ConsoleCommand("set DeusExPlayer iLastSave " $ iAutoSaveLast);
+	DoSaveGame(FindAutosaveSlot(), sprintf(AutoSaveGameTitle,TruePlayerName));
 }
 
 // ----------------------------------------------------------------------
@@ -1931,13 +2001,7 @@ function QuickSave2(string SaveString, optional bool allowHardcore)
     if (!CanSave(allowHardcore))
         return;
 
-	iQuickSaveLast++;
-    if (iQuickSaveLast > iQuickSaveMax)
-        iQuickSaveLast = 1;
-
-	DoSaveGame(-iQuickSaveLast, SaveString);
-    //iLastSave = -iQuicksaveLast;
-    ConsoleCommand("set DeusExPlayer iLastSave " $ iQuickSaveLast);
+	DoSaveGame(FindQuicksaveSlot(), SaveString);
 }
 
 // ----------------------------------------------------------------------
