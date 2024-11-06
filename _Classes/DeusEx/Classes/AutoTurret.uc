@@ -42,7 +42,8 @@ var Pawn savedTarget;
 
 //Sarge: Hacking disable time
 var float disableTime;                    //Sarge: timer before we are enabled again after hacking.
-const disableTimeMult = 120.0;            //Sarge: Our hacking skill is multiplied by this to give total disable time
+var float disableTimeBase;                //Sarge: Our hacking skill is multiplied by this to give total disable time
+var float disableTimeMult;                //Sarge: Our hacking skill is multiplied by this to give total disable time
 var bool bRebooting;                      //This will be set when the turret is hacked, to control rebooting
 
 // networking replication
@@ -935,4 +936,6 @@ defaultproperties
      Mass=50.000000
      Buoyancy=10.000000
      bVisionImportant=True
+     disableTimeBase=120.0;
+     disableTimeMult=60.0;
 }

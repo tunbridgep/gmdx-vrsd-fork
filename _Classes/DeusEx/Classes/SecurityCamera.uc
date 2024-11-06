@@ -50,7 +50,8 @@ var bool bSkillApplied; //CyberP:
 
 //Sarge: Hacking disable time
 var float disableTime;                    //Sarge: timer before we are enabled again after hacking.
-const disableTimeMult = 120.0;            //Sarge: Our hacking skill is multiplied by this to give total disable time
+var float disableTimeBase;                //Sarge: Our hacking skill is multiplied by this to give total disable time
+var float disableTimeMult;                //Sarge: Our hacking skill is multiplied by this to give total disable time
 var bool bRebooting;                      //This will be set when the camera is hacked, to control rebooting
 
 // ------------------------------------------------------------------------------------
@@ -785,4 +786,6 @@ defaultproperties
      Buoyancy=5.000000
      RotationRate=(Pitch=65535,Yaw=65535)
      bVisionImportant=True
+     disableTimeBase=120.0;
+     disableTimeMult=60.0;
 }
