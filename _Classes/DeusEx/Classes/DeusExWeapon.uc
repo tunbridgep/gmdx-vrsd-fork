@@ -310,6 +310,7 @@ var travel bool givenFreeReload;                                                
 var float sleeptime;                                                              //Sarge: Used by per shell reload weapons to store how long they have been sleeping during reload, to allow us to cancel mid-reload in a far more responsive way.
 
 var travel bool bModified;                                                             //SARGE: Keeps track of whether or not a particular weapon has been modified
+var localized string strModified;
 
 //END GMDX:
 
@@ -334,6 +335,15 @@ replication
 	// Functions Server calls in client
 	reliable if ( Role == ROLE_Authority )
 	  RefreshScopeDisplay, ReadyClientToFire, SetClientAmmoParams, ClientDownWeapon, ClientActive, ClientReload;
+}
+
+//Sarge: Update weapon frob display when we have a mod applied
+function string GetFrobString(DeusExPlayer player)
+{
+    if (bModified && player != None && player.bBeltShowModified)
+        return itemName @ strModified;
+    else
+        return itemName;
 }
 
 //Sarge: Update weapon description/display when we have a mod applied
@@ -7013,6 +7023,7 @@ defaultproperties
      bRotatingPickup=False
      PickupMessage="You found"
      ItemName="DEFAULT WEAPON NAME - REPORT THIS AS A BUG"
+     strModified="(Modified)"
      BobDamping=0.840000
      LandSound=Sound'DeusExSounds.Generic.DropSmallWeapon'
      bNoSmooth=False
