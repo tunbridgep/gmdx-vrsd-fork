@@ -497,7 +497,10 @@ function Tick(float deltaTime)
 			confusionTimer = 0;
 			confusionDuration = Default.confusionDuration;
 			LightHue = 80;
-			MultiSkins[2] = Texture'GreenLightTex';
+            if (!bRebooting)
+                MultiSkins[2] = Texture'GreenLightTex';
+            else
+                MultiSkins[2] = Texture'BlackMaskTex';
 			SoundPitch = 64;
 			DesiredRotation = origRot;
 		}
