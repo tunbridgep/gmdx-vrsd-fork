@@ -1908,12 +1908,12 @@ function int DoSaveGame(int saveIndex, optional String saveDesc)
         foreach AllActors(class'TechGoggles', tech)
             if ((tech.Owner == Self) && tech.bActive)
                 tech.Activate();
+    
+    bResetAutosaveTimer = true;
 	
     root.hide();
     SaveGame(saveIndex, saveDesc);
     root.show();
-
-    bResetAutosaveTimer = true;
 
     ConsoleCommand("set DeusExPlayer iLastSave " $ saveIndex);
     return saveIndex;
