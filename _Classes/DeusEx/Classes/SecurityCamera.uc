@@ -419,8 +419,11 @@ function CheckCarcassVisibility(DeusExCarcass carcass)
 //SARGE: Telling this camera that it should start rebooting right now
 function StartReboot(DeusExPlayer player)
 {
-    bRebooting = true;
-    disableTime = player.saveTime + disableTimeBase + (disableTimeMult * MAX(0,player.SkillSystem.GetSkillLevel(class'SkillComputer') - 1));
+    if (player.bHardCoreMode || player.bHackLockouts)
+    {
+        bRebooting = true;
+        disableTime = player.saveTime + disableTimeBase + (disableTimeMult * MAX(0,player.SkillSystem.GetSkillLevel(class'SkillComputer') - 1));
+    }
 }
 
 function Tick(float deltaTime)
