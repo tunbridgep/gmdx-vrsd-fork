@@ -357,7 +357,7 @@ function AllyCamera()
 		}
       if ((selectedCamera.turret != None) && (Player.Level.Netmode != NM_Standalone))
       {
-         player.SetTurretTrackMode(ComputerSecurity(selectedCamera.compOwner),selectedCamera.turret,false,true);
+         player.SetTurretTrackMode(ComputerSecurity(selectedCamera.compOwner),selectedCamera.turret,false,true,false);
          selectedCamera.UpdateTurretStatus();
          ComputerSecurityChoice_Turret(choiceWindows[3]).SetMPEnumState();
       }
@@ -421,7 +421,7 @@ function SetTurretTrackMode(bool bTrackPlayers, bool bTrackPawns)
 {
 	if ((selectedCamera != None) && (selectedCamera.turret != None))
 	{
-      player.SetTurretTrackMode(ComputerSecurity(selectedCamera.compOwner),selectedCamera.turret,bTrackPlayers,bTrackPawns);
+      player.SetTurretTrackMode(ComputerSecurity(selectedCamera.compOwner),selectedCamera.turret,bTrackPlayers,bTrackPawns,winTerm.bHacked);
 		selectedCamera.UpdateTurretStatus();
 
       if ((selectedCamera.camera != None) && (Player.Level.Netmode != NM_Standalone))

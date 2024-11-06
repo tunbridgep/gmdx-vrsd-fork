@@ -158,9 +158,10 @@ function SetValue(int newValue)                                                 
 function UpdateText(bool bHacking)
 {
     local int disableTime;
-    if (winCamera.turret.bRebooting && winCamera.turret.bDisabled && !bHacking)
+    if (winCamera.turret.bRebooting && (!bHacking || winCamera.turret.bDisabled))
     {
-        SetValue(1); //Next value goes to Bypassed
+        if (!bHacking)
+            SetValue(1); //Next value goes to Bypassed
         disableTime = winCamera.turret.disableTime - player.saveTime;
         btnInfo.SetButtonText(sprintf(strRebooting,disableTime));
     }

@@ -3801,9 +3801,20 @@ function SetTurretState(AutoTurret turret, bool bActive, bool bDisabled, bool bH
 }
 
 //client->server (window to player)
-function SetTurretTrackMode(ComputerSecurity computer, AutoTurret turret, bool bTrackPlayers, bool bTrackPawns)
+function SetTurretTrackMode(ComputerSecurity computer, AutoTurret turret, bool bTrackPlayers, bool bTrackPawns,bool bHacked)
 {
 	local String str;
+    
+    if (bHacked)
+    {
+        turret.bRebooting = true;
+        turret.disableTime = saveTime + turret.disableTimeBase + (turret.disableTimeMult * MAX(1,SkillSystem.GetSkillLevel(class'SkillComputer')));
+    }
+    else
+    {
+        turret.disableTime = 0;
+        turret.bRebooting = false;
+    }
 
 	turret.bTrackPlayersOnly = bTrackPlayers;
 	turret.bTrackPawnsOnly   = bTrackPawns;

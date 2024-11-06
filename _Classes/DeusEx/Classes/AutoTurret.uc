@@ -227,7 +227,7 @@ function Tick(float deltaTime)
     
     if (bRebooting && !bConfused)
     {
-        bDisabled = True;
+        //bDisabled = True;
 
         if (remainingTime <= 0)
         {
