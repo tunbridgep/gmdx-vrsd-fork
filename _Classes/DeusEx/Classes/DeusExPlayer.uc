@@ -3752,13 +3752,23 @@ function UpdateCameraRotation(SecurityCamera camera, Rotator rot)
 }
 
 //client->server (window to player)
-function ToggleCameraState(SecurityCamera cam, ElectronicDevices compOwner)
+function ToggleCameraState(SecurityCamera cam, ElectronicDevices compOwner, optional bool bHacked)
 {
-	if (cam.bActive)
+    //If we're active, or we were rebooting, and we logged in, then disable
+	if ((cam.bActive || cam.bRebooting) && !bHacked)
 	{
 	  cam.UnTrigger(compOwner, self);
 	  cam.team = -1;
 	}
+    //Set to reboot
+    else if (cam.bActive && bHacked)
+    {
+        cam.UnTrigger(compOwner, self);
+        cam.team = -1;
+        cam.bRebooting = true;
+        cam.disableTime = saveTime + (cam.disableTimeMult * MAX(1,SkillSystem.GetSkillLevel(class'SkillComputer')));
+    }
+    //Re-enable
 	else
 	{
       cam.bRebooting = false;
@@ -3773,37 +3783,21 @@ function ToggleCameraState(SecurityCamera cam, ElectronicDevices compOwner)
 }
 
 //client->server (window to player)
-function SetTurretState(AutoTurret turret, bool bActive, bool bDisabled)
+function SetTurretState(AutoTurret turret, bool bActive, bool bDisabled, bool bHacked)
 {
-    if (!bDisabled)
+    if ((bDisabled && !bHacked) || !bDisabled)
     {
         turret.disableTime = 0;
         turret.bRebooting = false;
     }
-	turret.bActive   = bActive;
-	turret.bDisabled = bDisabled;
-	turret.bComputerReset = False;
-}
-
-//These are required because of client/server stuff making modifying the above functions impossible
-function ToggleCameraStateHacked(SecurityCamera cam, ElectronicDevices compOwner)
-{
-    ToggleCameraState(cam,compOwner);
-    if (!cam.bActive)
-    {
-        cam.bRebooting = true;
-        cam.disableTime = saveTime + (cam.disableTimeMult * MAX(1,SkillSystem.GetSkillLevel(class'SkillComputer')));
-    }
-}
-
-function SetTurretStateHacked(AutoTurret turret, bool bActive, bool bDisabled)
-{
-    SetTurretState(turret,bActive,bDisabled);
-    if (bDisabled)
+    else if (bDisabled && bHacked)
     {
         turret.bRebooting = true;
         turret.disableTime = saveTime + (turret.disableTimeMult * MAX(1,SkillSystem.GetSkillLevel(class'SkillComputer')));
     }
+	turret.bActive   = bActive;
+	turret.bDisabled = bDisabled;
+	turret.bComputerReset = False;
 }
 
 //client->server (window to player)

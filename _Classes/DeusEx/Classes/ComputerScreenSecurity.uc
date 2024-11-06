@@ -105,6 +105,14 @@ function DoorRefreshTimer(int timerID, int invocations, int clientData)
 	winCameras[2].UpdateDoorStatus();
 }
 
+function Tick(float deltaTime)
+{
+    choiceWindows[0].UpdateText(winTerm.bHacked);
+    choiceWindows[1].UpdateText(winTerm.bHacked);
+    choiceWindows[2].UpdateText(winTerm.bHacked);
+    choiceWindows[3].UpdateText(winTerm.bHacked);
+}
+
 // ----------------------------------------------------------------------
 // CreateControls()
 // ----------------------------------------------------------------------
@@ -121,6 +129,7 @@ function CreateControls()
 	CreateHeaders();
 	CreatePanSlider();
 	CreateInfoWindow();
+    bTickEnabled = true;
 }
 
 // ----------------------------------------------------------------------
@@ -323,10 +332,7 @@ function ToggleCameraState(optional bool bCamIsActive, optional bool bCamWasActi
 
 		if (cam != None)
 		{
-            if (winTerm.bHacked)
-                player.ToggleCameraStateHacked(cam, compOwner);
-            else
-                player.ToggleCameraState(cam, compOwner);
+            player.ToggleCameraState(cam, compOwner, winTerm.bHacked);
             selectedCamera.UpdateCameraStatus();
 		}
 	}
@@ -402,10 +408,7 @@ function SetTurretState(bool bActive, bool bDisabled)
 {
 	if ((selectedCamera != None) && (selectedCamera.turret != None))
 	{
-        if (winTerm.bHacked)
-            player.SetTurretStateHacked(selectedCamera.turret,bActive,bDisabled);
-        else
-            player.SetTurretState(selectedCamera.turret,bActive,bDisabled);
+        player.SetTurretState(selectedCamera.turret,bActive,bDisabled,winTerm.bHacked);
         selectedCamera.UpdateTurretStatus();
 	}
 }
