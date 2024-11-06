@@ -105,9 +105,9 @@ function PreRender2()
 	  multiskins[2] = texture'pinkmasktex';
 }
 
-function LaserOn()
+function LaserOn(optional bool IgnoreSound)
 {
-   super.LaserOn();
+   super.LaserOn(IgnoreSound);
 
    if (bHasLaser)
        LockTime=0.100000;

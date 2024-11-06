@@ -1396,7 +1396,7 @@ local float p, mod;
 	
     if (player != none && bLaserToggle) //Sarge: Add laser check to re-enable laser if we turned it on
 	{                                   //Sarge: The block for mantling checks was also removed, now it uses this directly
-	   LaserOn();
+	   LaserOn(true);
 	}
 	}
 }
@@ -2830,15 +2830,12 @@ function SwitchModes()
 // laser functions for weapons which have them
 //
 
-function LaserOn()
+function LaserOn(optional bool IgnoreSound)
 {
 	if (bHasLaser && !bLasing)
 	{
 		// if we don't have an emitter, then spawn one
 		// otherwise, just turn it on
-		if (IsA('WeaponPistol')) WeaponPistol(self).PistolLaserOn(); else
-		{
-
 		if (Emitter == None)
 		{
 			Emitter = Spawn(class'LaserEmitter', Self, , Location, Pawn(Owner).ViewRotation);
@@ -2856,13 +2853,14 @@ function LaserOn()
 		}
 		else
 			Emitter.TurnOn();
-                Owner.PlaySound(sound'KeyboardClick3', SLOT_None,,, 1024,1.5); //CyberP: suitable laser on sfx
+
+        if (!IgnoreSound)
+            Owner.PlaySound(sound'KeyboardClick3', SLOT_None,,, 1024,1.5); //CyberP: suitable laser on sfx //SARGE: Now has sound check
 		bLasing = True;
         bLaserToggle = true;
 	  }
 	  LaserYaw = (currentAccuracy) * (Rand(4096) - 2048);                       //RSD: Reset laser position when turning on
 	  LaserPitch = (currentAccuracy) * (Rand(4096) - 2048);
-	}
 }
 
 function LaserOff(bool forced)
@@ -2870,16 +2868,13 @@ function LaserOff(bool forced)
 	if (IsA('WeaponNanoSword')&&!IsInState('DownWeapon')) return;
 	if (bHasLaser && bLasing)
 	{
-	  if (IsA('WeaponPistol')) WeaponPistol(self).PistolLaserOff(forced);
-	  else
-	  {
-		 if (Emitter != None)
-			Emitter.TurnOff();
-                 Owner.PlaySound(sound'KeyboardClick2', SLOT_Misc,,, 1024,1.5); //CyberP: suitable laser off sfx
-		 bLasing = False;
-         if (!forced)
+        if (Emitter != None)
+            Emitter.TurnOff();
+        if (!forced)
+            Owner.PlaySound(sound'KeyboardClick2', SLOT_Misc,,, 1024,1.5); //CyberP: suitable laser off sfx
+        bLasing = False;
+        if (!forced)
             bLaserToggle = false;
-	  }
 	  if ((IsA('WeaponGEPGun'))&&(Owner.IsA('DeusExPlayer')))
 	  {
 	     if (DeusExPlayer(Owner).aGEPProjectile!=none)
