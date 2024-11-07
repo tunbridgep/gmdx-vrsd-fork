@@ -119,10 +119,12 @@ var Color	colRed, colGreen, colWhite;
 var localized String msgIFFTracking;
 var localized String IFFLabel1;
 var localized String IFFLabel2;
-var bool bHazardRefresh;
 var float passedTime;
 var StaticInterlacedWindow winVisionLines;
 var ConLight lite;
+
+var int hazardRefresh;                    //SARGE: How many hazards were detected previously? If changed, play the hazard sound
+var Actor hazardLast;                     //SARGE: Holds the last actor we marked as a hazard (or, if multiple, the first one in the list). So that, if we only have 1 hazard around, we don't keep replaying the sound when it appears and disappears - we already know about it.
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -318,86 +320,166 @@ function RefreshMultiplayerKeys()
 //  cyberP: check for nearby environmental hazards
 ////////////////////////////
 
+//SARGE: Major rewrite. Updated to work with placed grenades.
+//Additionally, added support for seeing more than one hazard at a time.
 singular function checkForHazards(GC gc)
 {
-local DamageTrigger DT;
-local ZoneInfo ZI;
-local Cloud CL;
-local string threatType;
-local string threatDam;
-local int typecastIt;
-local Actor acti;
+    local DamageTrigger DT;
+    local ThrownProjectile PROJ;
+    local Cloud CL;
+    local string threatType;
+    local int threatDam;
 
- ForEach Player.RadiusActors(class'DamageTrigger', DT, 512)
- {
-   if (DT.bIsOn)
-   {
-    threatType = (string(DT.damageType));
-    if (DT.damageInterval != 0)
-       typecastIt = (int(DT.damageAmount/DT.damageInterval));
-    else
-       typecastIt = (int(DT.damageAmount));
-    threatDam = (string(typecastIt));
-    acti = DT;
-   }
- }
- if (acti == none)
- {
-  ForEach Player.RadiusActors(class'Cloud', CL, 512)
-  {
-    if (CL.Damage > 0)
+    local Actor actors[20];
+    local string damageTypes[20];
+    local int totalActors, i, j;
+
+    local bool dontAdd;
+
+    local float range;
+    range = (Player.AugmentationSystem.GetAugLevelValue(class'AugIFF') - 1) * 512;
+
+    if (range <= 0)
+        return;
+
+    //First, get all the damage triggers
+    foreach Player.RadiusActors(class'DamageTrigger', DT, range)
     {
-    threatType = (string(CL.damageType));
-    if (CL.damageInterval != 0)
-        typecastIt = (int(CL.Damage/CL.damageInterval));
-    else
-        typecastIt = (int(CL.Damage));
-    threatDam = (string(typecastIt));
-    acti = CL;
+        dontAdd = false;
+        if (totalActors >= 20)
+            break;
+
+        if (!DT.bIsOn || DT.damageInterval == 0 || DT.damageAmount == 0)
+            continue;
+
+        //actors[totalActors] = DT;
+        //damageTypes[totalActors++] = DT.damageType;
+        
+        for (i = 0;i < totalActors;i++)
+            if ((VSize(actors[i].location - DT.location)/16) < 10)
+                dontAdd = true;
+        
+        if (!dontAdd)
+            actors[totalActors++] = DT;
     }
-  }
- }
-
- if (acti == None)
-    return;
-
-  if (threatType != "" && threatType != "shot" && threatType != "fell" && threatType != "exploded")
-  {
-    if (bHazardRefresh)
-       Player.PlaySound(sound'hazardwarn',SLOT_None);
-    Switch (threatType)
+    
+    //Second, get all the grenades
+    foreach Player.RadiusActors(class'ThrownProjectile', PROJ, range)
     {
-       case "Shocked":
-       threatType = "Electrical";
-       break;
+        dontAdd = false;
+        //skip grenades if Defense aug is not on (it already shows them)
+        if (bDefenseActive)
+            break;
 
-       case "TearGas":
-       threatDam = "5";
-       break;
+        if (totalActors >= 20)
+            break;
 
-       case "PoisonGas":
-       threatType = "Poison Gas";
-       break;
+        if (!PROJ.bProximityTriggered || PROJ.bDisabled || PROJ.Damage <= 0 || PROJ.Owner == player) //Only detect mines placed on walls, etc
+            continue;
+        
+        for (i = 0;i < totalActors;i++)
+            if ((VSize(actors[i].location - PROJ.location)/16) < 10)
+                dontAdd = true;
 
-       case "Burned":
-       threatType = "Fire";
-       break;
+        if (!dontAdd)
+            actors[totalActors++] = PROJ;
+    }
 
-       case "Flamed":                                                           //RSD: Added this so we don't have both "Flamed" and "Fire"
-       threatType = "Fire";
-       break;
+    //Third, get clouds of each type
+    foreach Player.RadiusActors(class'Cloud', CL, range)
+    {
+        dontAdd = false;
+        if (totalActors >= 20)
+            break;
+
+        if (CL.Damage == 0)
+            continue;
+    
+        for (i = 0;i < totalActors;i++)
+            if ((VSize(actors[i].location - CL.location)/16) < 10)
+                dontAdd = true;
+
+        if (!dontAdd)
+            actors[totalActors++] = CL;
+    }
+
+    //Now, get information for the actors
+    for (i = 0;i < totalActors;i++)
+    {
+        threatType = "";
+        if (actors[i].IsA('DamageTrigger'))
+        {
+            DT = DamageTrigger(actors[i]);
+            threatType = (string(DT.damageType));
+            if (DT.damageInterval != 0)
+                threatDam = int(DT.damageAmount/DT.damageInterval);
+            else
+                threatDam = int(DT.damageAmount);
+        }
+        else if (actors[i].IsA('Cloud'))
+        {
+            CL = Cloud(actors[i]);
+            threatType = string(CL.damageType);
+            if (DT.damageInterval != 0)
+                threatDam = int(CL.Damage/CL.damageInterval);
+            else
+                threatDam = int(CL.Damage);
+        }
+        else if (actors[i].IsA('ThrownProjectile'))
+        {
+            PROJ = ThrownProjectile(actors[i]);
+            threatType = PROJ.ItemName;
+            threatDam = int(PROJ.Damage);
+        }
+
+        //Now draw it
+        if (threatType != "" && threatType != "shot" && threatType != "fell" && threatType != "exploded")
+        {
+            Switch (threatType)
+            {
+                case "Shocked":
+                    threatType = "Electrical";
+                    break;
+
+                case "TearGas":
+                    threatType = "Tear Gas";
+                    threatDam = 5;
+                    break;
+
+                case "PoisonGas":
+                    threatType = "Poison Gas";
+                    break;
+
+                case "Burned":
+                    threatType = "Fire";
+                    break;
+
+                case "Flamed":                                                           //RSD: Added this so we don't have both "Flamed" and "Fire"
+                    threatType = "Fire";
+                    break;
+
+            }
+            DrawThreatDetectionAugmentation(gc, actors[i], threatType, threatDam);
+        }
 
     }
-    bHazardRefresh=False;
-    DrawThreatDetectionAugmentation(gc, acti, threatType, threatDam);
-  }
+    
+    //Play a sound if the number of threats increased
+    if (hazardRefresh < totalActors && totalActors > 0 && hazardLast != actors[0])
+    {
+        Player.PlaySound(sound'hazardwarn',SLOT_None);
+    }
+    
+    if (totalActors > 0)
+        hazardLast = actors[0];
+    hazardRefresh = totalActors;
 }
 
 // ----------------------------------------------------------------------
 // DrawThreatDetectionAugmentation()
 // ----------------------------------------------------------------------
 
-function DrawThreatDetectionAugmentation(GC gc, Actor threat, string threatT, string threatD)
+function DrawThreatDetectionAugmentation(GC gc, Actor threat, string threatT, int threatD)
 {
 	local String str;
 	local float boxCX, boxCY;
@@ -414,7 +496,7 @@ function DrawThreatDetectionAugmentation(GC gc, Actor threat, string threatT, st
 			str = msgIFFTracking;
 
 		mult = VSize(threat.Location - Player.Location);
-		str = str $ CR() $ msgRange @ Int(mult/16) @ msgRangeUnits $ CR() $ IFFLabel1 @ threatT $ CR() $ IFFLabel2 @ threatD $ CR();
+		str = str $ CR() $ msgRange @ Int(mult/16) @ msgRangeUnits $ CR() $ IFFLabel1 @ threatT $ CR() $ IFFLabel2 @ sprintf("%d",threatD) $ CR();
 
 		if (!ConvertVectorToCoordinates(threat.Location, boxCX, boxCY))
 			str = "";//str @ msgBehind;
@@ -422,7 +504,14 @@ function DrawThreatDetectionAugmentation(GC gc, Actor threat, string threatT, st
 		gc.GetTextExtent(0, w, h, str);
 		x = boxCX - w/2;
 		y = boxCY - h;
-		gc.SetTextColorRGB(0,160,16);
+
+        //SARGE: Red text if we're gonna go BOOM //Okay maybe not, will be confused with Defence aug
+        /*
+        if (threatD > 50)
+            gc.SetTextColorRGB(255,0,0);
+        else
+            */
+            gc.SetTextColorRGB(0,160,16);
 		gc.DrawText(x, y, w, h, str);
 		gc.SetTextColor(colHeaderText);
 
@@ -1102,7 +1191,8 @@ function DrawTargetAugmentation(GC gc)
             ifflevel = Player.AugmentationSystem.GetAugLevelValue(class'AugIFF');
 
             //Level 2 - hazard check
-            if (!bDefenseActive && ifflevel >= 2.0)
+            //if (!bDefenseActive && ifflevel >= 2.0)
+            if (ifflevel >= 2.0)
                 checkForHazards(gc);
 
             //Level 3 - visibility display
