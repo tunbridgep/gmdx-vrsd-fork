@@ -123,8 +123,8 @@ var float passedTime;
 var StaticInterlacedWindow winVisionLines;
 var ConLight lite;
 
-var int hazardRefresh;                    //SARGE: How many hazards were detected previously? If changed, play the hazard sound
-var Actor hazardLast;                     //SARGE: Holds the last actor we marked as a hazard (or, if multiple, the first one in the list). So that, if we only have 1 hazard around, we don't keep replaying the sound when it appears and disappears - we already know about it.
+var Actor hazardLast[60];                     //SARGE: Holds the last actors we marked as a hazard (or, if multiple, the first one in the list). So that, if we only have 1 hazard around, we don't keep replaying the sound when it appears and disappears - we already know about it.
+var float lastBeep;                           //SARGE: Add a maximum time of 1 second between beeps
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -335,9 +335,15 @@ singular function checkForHazards(GC gc)
     local int totalActors, i, j;
 
     local bool dontAdd;
+    local bool beep;                //Play the beeping noise
 
     local float range;
-    range = (Player.AugmentationSystem.GetAugLevelValue(class'AugIFF') - 1) * 512;
+    local AugIFF aug;
+
+    aug = AugIFF(Player.AugmentationSystem.GetAug(class'AugIFF'));
+
+    if (aug != None && aug.bHasIt)
+    range = (aug.CurrentLevel) * aug.default.hazardsrange * 16; //Range in which hazards are detected - 75 feet at level 2, 150 at level 3
 
     if (range <= 0)
         return;
@@ -351,12 +357,16 @@ singular function checkForHazards(GC gc)
 
         if (!DT.bIsOn || DT.damageInterval == 0 || DT.damageAmount == 0)
             continue;
+            
+        //We need to check distance, because collision is not good enough as they can be big
+        if ((VSize(DT.location - player.location)) > range)
+            continue;
 
-        //actors[totalActors] = DT;
-        //damageTypes[totalActors++] = DT.damageType;
+        if (AddToHazardsList(DT))
+            beep = true;
         
         for (i = 0;i < totalActors;i++)
-            if ((VSize(actors[i].location - DT.location)/16) < 10)
+            if (actors[i] != None && (VSize(actors[i].location - DT.location)/16) < 10)
                 dontAdd = true;
         
         if (!dontAdd)
@@ -377,9 +387,13 @@ singular function checkForHazards(GC gc)
         if (!PROJ.bProximityTriggered || PROJ.bDisabled || PROJ.Damage <= 0 || PROJ.Owner == player) //Only detect mines placed on walls, etc
             continue;
         
+        if (AddToHazardsList(PROJ))
+            beep = true;
+        
         for (i = 0;i < totalActors;i++)
-            if ((VSize(actors[i].location - PROJ.location)/16) < 10)
+            if (actors[i] != None && (VSize(actors[i].location - PROJ.location)/16) < 10)
                 dontAdd = true;
+        
 
         if (!dontAdd)
             actors[totalActors++] = PROJ;
@@ -395,17 +409,24 @@ singular function checkForHazards(GC gc)
         if (CL.Damage == 0)
             continue;
     
+        if (AddToHazardsList(CL))
+            beep = true;
+
         for (i = 0;i < totalActors;i++)
-            if ((VSize(actors[i].location - CL.location)/16) < 10)
+            if (actors[i] != None && (VSize(actors[i].location - CL.location)/16) < 30)
                 dontAdd = true;
 
         if (!dontAdd)
             actors[totalActors++] = CL;
+
     }
 
     //Now, get information for the actors
     for (i = 0;i < totalActors;i++)
     {
+        if (actors[i] == None)
+            continue;
+        
         threatType = "";
         if (actors[i].IsA('DamageTrigger'))
         {
@@ -465,14 +486,51 @@ singular function checkForHazards(GC gc)
     }
     
     //Play a sound if the number of threats increased
-    if (hazardRefresh < totalActors && totalActors > 0 && hazardLast != actors[0])
+    if (beep && totalActors > 0)
     {
-        Player.PlaySound(sound'hazardwarn',SLOT_None);
+        if (player.savetime - lastBeep > 2.0)
+            Player.PlaySound(sound'hazardwarn',SLOT_None);
+        lastBeep = player.savetime;
     }
+    beep = false;
+}
+
+//Check if an actor has already been registered as a hazard. If it has, don't play the detect sound again.
+function bool PreviousHazard(Actor A)
+{
+    local int i;
+    for (i = 0;i < 60;i++)
+    {
+        if (hazardLast[i] == A)
+        {
+            //player.clientmessage("Found actor " $ a $ " in hazards list at " $ i);
+            return true;
+        }
+    }
+    return false;
+
+}
+
+//Adds an actor to the start of the hazards list, if it's not already on it
+function bool AddToHazardsList(Actor a)
+{
+    local int i;
     
-    if (totalActors > 0)
-        hazardLast = actors[0];
-    hazardRefresh = totalActors;
+    //Bail out if it's already in the array
+    if (PreviousHazard(A))
+        return false;
+
+    //Now move everything up, and put it in slot 0
+    for (i = 59;i > 0;i--)
+    {
+        //if (hazardLast[i] != None)
+            //player.clientmessage("Moving " $ hazardlast[i] $ "(" $ i $ ")" $ " to " $ hazardlast[i-1]);
+        hazardLast[i] = hazardLast[i-1];
+    }
+    hazardLast[0] = a;
+
+    //player.clientmessage("Added actor " $ a $ " to hazards list");
+    return true;
 }
 
 // ----------------------------------------------------------------------
@@ -2061,5 +2119,4 @@ defaultproperties
      msgIFFTracking="* Environmental Hazard *"
      IFFLabel1="Type:"
      IFFLabel2="Lethality:"
-     bHazardRefresh=True
 }
