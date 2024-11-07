@@ -176,6 +176,9 @@ function FirstFrame()
             InitializeEnemySwap(1);
         }
 
+        //Reset player Autosave timer
+        Player.autosaveRestrictTimer = 0.0;
+
 		flags.SetBool(flagName, True);
 	}
 
@@ -187,7 +190,8 @@ function FirstFrame()
         
         //Reset player Autosave timer
         //Actually, make this per mission instead, to really be punishing
-        Player.autosaveRestrictTimer = 0.0;
+        //Actually Actually, we will make it per map as well.
+        //Player.autosaveRestrictTimer = 0.0;
 
 		// Remove any Conversation History.
 		Player.ResetConversationHistory();
