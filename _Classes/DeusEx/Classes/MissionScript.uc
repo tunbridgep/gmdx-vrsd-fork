@@ -19,6 +19,8 @@ var DeusExLevelInfo dxInfo;
 var bool CanQuickSave; //SARGE: Note this is actually for Autosaves, not Quicksaves
 var float TimeToSave;
 
+var bool firstTime;     //SARGE: Set to true the first time we enter a map.
+
 // ----------------------------------------------------------------------
 // PostPostBeginPlay()
 //
@@ -149,10 +151,6 @@ function FirstFrame()
         //Player.ClientMessage("Map seed is: " $ seed);
         Player.Randomizer.Seed(Player.seed + seed);
 
-        //Reset player Autosave timer
-        //Actually, make this per mission instead, to really be punishing
-        //Player.autosaveRestrictTimer = 0.0;
-
 		//Player.BroadcastMessage("Loading this map for the first time");
 		//Player.setupDifficultyMod();
 		InitializeRandomAmmoCounts();
@@ -176,10 +174,9 @@ function FirstFrame()
             InitializeEnemySwap(1);
         }
 
-        //Reset player Autosave timer
-        Player.autosaveRestrictTimer = 0.0;
-
 		flags.SetBool(flagName, True);
+
+        firstTime = true;
 	}
 
 	flagName = Player.rootWindow.StringToName("M"$dxInfo.MissionNumber$"MissionStart");
@@ -188,11 +185,6 @@ function FirstFrame()
 		// Remove completed Primary goals and all Secondary goals
 		Player.ResetGoals();
         
-        //Reset player Autosave timer
-        //Actually, make this per mission instead, to really be punishing
-        //Actually Actually, we will make it per map as well.
-        //Player.autosaveRestrictTimer = 0.0;
-
 		// Remove any Conversation History.
 		Player.ResetConversationHistory();
 
@@ -282,12 +274,11 @@ function Timer()
 
 function Tick(float DeltaTime)
 {
-    if (CanQuickSave && player != none && (player.bTogAutoSave || player.bRestrictedSaving || player.bHardCoreMode)) //CyberP: toggle autosave option //RSD: TEMPORARILY remove Hardcore autosave because it's pissing me off
+    if (CanQuickSave && player != none) //CyberP: toggle autosave option //RSD: TEMPORARILY remove Hardcore autosave because it's pissing me off
     {
         if (TimeToSave>0)
             TimeToSave-=DeltaTime;
         else
-        if (player.CanSave(true,true))
         {
             CanQuickSave=false;
 
@@ -296,10 +287,8 @@ function Tick(float DeltaTime)
             else
                 TimeToSave=0.1;
             //TimeToSave=0.0;                                                        //RSD: Removed autosave delay
-            player.PerformAutoSave();
+            player.PerformAutoSave(firstTime);
         }
-        else
-            CanQuickSave=false;
     }
 }
 //State QuickSaver

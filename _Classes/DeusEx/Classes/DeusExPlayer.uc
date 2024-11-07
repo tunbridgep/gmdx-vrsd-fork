@@ -597,10 +597,6 @@ var travel AddictionSystem AddictionManager;
 var travel PerkSystem PerkManager;
 var travel RandomTable Randomizer;
 
-var travel float autosaveRestrictTimer;                                         //Sarge: Current time left before we're allowed to autosave again.
-var const float autosaveRestrictTimerDefault;                                   //Sarge: Timer for autosaves.
-var travel bool bResetAutosaveTimer;                                            //Sarge: This is necessary because our timer isn't set properly during the same frame as saving, for some reason.
-
 var travel bool bMoreLDDPNPCs;
 
 const DRUG_TOBACCO = 0;
@@ -1844,7 +1840,7 @@ exec function LoadGame(int saveIndex)
 }
 
 //Sarge: Move Save Checks to a single function, rather than being everywhere
-function bool CanSave(optional bool allowHardcore, optional bool checkAutosave)
+function bool CanSave(optional bool allowHardcore)
 {
 	local DeusExLevelInfo info;
 
@@ -1858,7 +1854,6 @@ function bool CanSave(optional bool allowHardcore, optional bool checkAutosave)
 	// 4) We're interpolating (playing outtro)
 	// 5) A datalink is playing
 	// 6) We're in a multiplayer game
-    // 7) If autosaving, that we're within the autosave time limit
 
     if ((bHardCoreMode || bRestrictedSaving) && !allowHardcore) //Hardcore Mode
         return false;
@@ -1874,9 +1869,6 @@ function bool CanSave(optional bool allowHardcore, optional bool checkAutosave)
 
     if (Level.Netmode != NM_Standalone) //Multiplayer Game
 	   return false;
-
-    if ((bRestrictedSaving || bHardCoreMode) && checkAutosave && autosaveRestrictTimer > saveTime) //Autosave timer not expired
-        return false;
 
     return true; 
 }
@@ -1909,8 +1901,6 @@ function int DoSaveGame(int saveIndex, optional String saveDesc)
             if ((tech.Owner == Self) && tech.bActive)
                 tech.Activate();
     
-    bResetAutosaveTimer = true;
-	
     root.hide();
     SaveGame(saveIndex, saveDesc);
     root.show();
@@ -1979,12 +1969,15 @@ function int FindQuicksaveSlot()
     return slot;
 }
 
-function PerformAutoSave()
+function PerformAutoSave(bool allowHardcore)
 {
-    if (!CanSave(true,true))
+    if (!CanSave(allowHardcore))
         return;
-        
-	DoSaveGame(FindAutosaveSlot(), sprintf(AutoSaveGameTitle,TruePlayerName));
+    
+    //Only allow autosaving if we have autosaves turned on,
+    //or if saving restrictions is enabled.
+    if (bTogAutoSave || bRestrictedSaving || bHardCoreMode)
+        DoSaveGame(FindAutosaveSlot(), sprintf(AutoSaveGameTitle,TruePlayerName));
 }
 
 // ----------------------------------------------------------------------
@@ -16657,23 +16650,6 @@ function MultiplayerTick(float DeltaTime)
 	}
 	RepairInventory();
 	lastRefreshTime = 0;
-
-
-    //Update autosave restriction timer
-    if (bResetAutosaveTimer)
-    {
-	    autosaveRestrictTimer = saveTime + autosaveRestrictTimerDefault;
-        bResetAutosaveTimer = false;
-        //ClientMessage("reset autosaveRestrictTimer");
-    }
-
-    
-    /*
-    autosaveTimeRemaining = autosaveRestrictTimer - saveTime;
-    if (int(autosaveTimeRemaining % 60) == 0)
-        ClientMessage((int(autosaveTimeRemaining) / 60) @ "minutes until autosave");
-     */
-
 }
 
 // ----------------------------------------------------------------------
@@ -17165,7 +17141,6 @@ defaultproperties
      seed=-1;
      bNumberedDialog=True
      bCreditsInDialog=True
-     autosaveRestrictTimerDefault=600.0
      TruePlayerName="JC Denton"
      CombatDifficulty=1.000000
      SkillPointsTotal=5000
