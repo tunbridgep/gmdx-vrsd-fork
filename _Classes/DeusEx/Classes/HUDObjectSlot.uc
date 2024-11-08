@@ -260,7 +260,7 @@ local DeusExWeapon weapon;
         // Draw the item description at the bottom
         if (weapon != None)
             gc.DrawText(1, 42, 42, 7, weapon.GetBeltDescription(player));
-        else
+        else if (item != None)
             gc.DrawText(1, 42, 42, 7, item.beltDescription);
 
         if (player != None && player.bColorCodedAmmo) //CyberP: start
