@@ -132,17 +132,13 @@ function SetItem(Inventory newItem)
 	{
 		newItem.bInObjectBelt = True;
 		newItem.beltPos       = objectNum;
+        player.SetPlaceholder(objectNum,false,newItem.icon); //Sarge: Reset placeholder status if a new item is added
 	}
 	else
 	{
 		HighlightSelect(False);
 		SetToggle(False);
 	}
-
-	if (newItem != None)
-    {
-        player.SetPlaceholder(objectNum,false,newItem.icon); //Sarge: Reset placeholder status if a new item is added
-    }
 
 	// Update the text that will be displayed above the icon (if any)
 	UpdateItemText();
@@ -458,9 +454,12 @@ event bool MouseButtonPressed(float pointX, float pointY, EInputKey button,
 		clickY = pointY;
 		bResult = True;
 	}
-    else if (item == None && button == IK_RightMouse) //Sarge: Allow removing belt memory with right click
+    else if (button == IK_RightMouse) //Sarge: Allow removing belt memory with right click
     {
-        player.ClearPlaceholder(objectNum);
+        if (item == None)
+            player.ClearPlaceholder(objectNum);
+        else
+            SetItem(None);  
         bResult = True;
     }
 	return bResult;
