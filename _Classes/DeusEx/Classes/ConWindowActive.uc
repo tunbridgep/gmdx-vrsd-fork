@@ -429,6 +429,10 @@ function bool ButtonActivated( Window buttonPressed )
 			// Clear the screen
 			Clear();
 
+			//SARGE: Block the next belt selection, otherwise pressing the button will trigger it
+			if (player.bNumberedDialog)
+				player.bBlockNextBeltSelection = true;
+
 			break;
 		}
 	}
