@@ -9598,6 +9598,8 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 				RemoveItemFromSlot(item);
                 if (!bBeltAutofill)
                     MakeBeltObjectPlaceholder(item); //SARGE: Disabled because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
+                else
+                    ClearPlaceholder(item.beltPos);
 
 				// make sure we have one copy to throw!
 				DeusExPickup(item).NumCopies = 1;
@@ -9618,8 +9620,10 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 
 			// Remove it from the inventory slot grid
 			RemoveItemFromSlot(item);
-            if (!bBeltAutofill)
+            if (!bBeltAutofill && bBeltMemory)
                 MakeBeltObjectPlaceholder(item); //SARGE: Disabled because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
+            else
+                ClearPlaceholder(item.beltPos);
 		}
 
 		// if we are highlighting something, try to place the object on the target //CyberP: more lenience when dropping

@@ -351,16 +351,10 @@ function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
 				if (( (Player.Level.NetMode == NM_Standalone) || (!Player.bBeltIsMPInventory) || (newItem.TestMPBeltSpot(i))))
                 {
                     //Additionally, allow slots with the same icon if we have a placeholder
-                    //OR Clear all matching placeholders if we're not using belt memory
                     if (player.GetBeltIcon(i) == newItem.icon && player.GetPlaceholder(i))
                     {
-                        if (player.bBeltMemory)
-                        {
-                            FoundPlaceholder = True;
-                            break;
-                        }
-                        else
-                            player.ClearPlaceholder(i);
+                        FoundPlaceholder = true;
+                        break;
                     }
                 }
             }
