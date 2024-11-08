@@ -564,6 +564,11 @@ var bool bNanoVirusSentMessage;                                                 
 var localized String NanoVirusLabel;                                            //RSD: For deactivating augs from scrambler grenades
 var globalconfig bool bRestrictedMetabolism;                                    //RSD: Enables restricted eating and halved withdrawal delay
 
+//SARGE: Allow blocking the next weapon selection. Used by dialog number keys feature
+var bBlockNextBeltSelection;
+
+//GAMEPLAY MODIFIERS
+
 /*var travel bool bRandomizeCratesGeneralTool;
 var travel bool bRandomizeCratesGeneralWearable;
 var travel bool bRandomizeCratesGeneralPickup;
@@ -588,15 +593,22 @@ var travel int seed;                                                            
 var travel int augOrderNums[21];                                                //RSD: New aug can order for scrambling
 var const augBinary augOrderList[21];                                           //RSD: List of all aug cans in the game in order (to be scrambled)
 var travel bool bAddictionSystem;
-var travel AddictionSystem AddictionManager;
-var travel PerkSystem PerkManager;
-var travel RandomTable Randomizer;
 
+var travel bool bMoreLDDPNPCs;
+
+var travel bool bDisableConsoleAccess;                                          //SARGE: Disable console access via a modifier.
+
+//END GAMEPLAY MODIFIERS
+
+//Autosave Stuff
 var travel float autosaveRestrictTimer;                                         //Sarge: Current time left before we're allowed to autosave again.
 var const float autosaveRestrictTimerDefault;                                   //Sarge: Timer for autosaves.
 var travel bool bResetAutosaveTimer;                                            //Sarge: This is necessary because our timer isn't set properly during the same frame as saving, for some reason.
 
-var travel bool bMoreLDDPNPCs;
+
+var travel AddictionSystem AddictionManager;
+var travel PerkSystem PerkManager;
+var travel RandomTable Randomizer;
 
 const DRUG_TOBACCO = 0;
 const DRUG_ALCOHOL = 1;
@@ -1584,21 +1596,27 @@ function string retInfo()
 //GMDX remove console from Hardcore mode >:]
 exec function Say(string Msg )
 {
-	//if (bHardCoreMode) return; else                                           //RSD: temporarily re-enable console for HC testing
-	  super.Say(Msg);
+	if (bDisableConsoleAccess || bExtraHardcore)
+        return;
+    else                                                                  //RSD: temporarily re-enable console for HC testing //SARGE: Made it a gameplay modifier
+	    super.Say(Msg);
 }
 
+//SARGE: TODO: Add a proper console window.
 exec function Type()
 {
-	//if (bHardCoreMode) return; else                                           //RSD: temporarily re-enable console for HC testing
+	if (bDisableConsoleAccess || bExtraHardcore)                         //RSD: temporarily re-enable console for HC testing //SARGE: Made it a gameplay modifier
+        return;
+    else
 	  super.Type();
 }
 
 function Typing( bool bTyping )
 {
-	/*if (bHardCoreMode)                                                        //RSD: temporarily re-enable console for HC testing
-	  Player.Console.GotoState('');
-	else*/ super.Typing(bTyping);
+	if (bDisableConsoleAccess || bExtraHardcore)                                                        //RSD: temporarily re-enable console for HC testing //SARGE: Made it a gameplay modifier
+	    Player.Console.GotoState('');
+	else
+        super.Typing(bTyping);
 }
 
 /////
