@@ -11525,8 +11525,9 @@ function bool DeleteInventory(inventory item)
     DeleteInventory2(item,false);
 }
 
-//We can't add additional parameters to DeleteInventory, so use a separate function
-function bool DeleteInventory2(inventory item, optional bool dontAddToBelt)
+//SARGE: We can't add additional parameters to DeleteInventory, so use a separate function
+//This was extended to let us override the Belt Memory setting and purposely forget an item
+function bool DeleteInventory2(inventory item, optional bool removePlaceholder)
 {
 	local bool retval;
 	local DeusExRootWindow root;
@@ -11540,9 +11541,10 @@ function bool DeleteInventory2(inventory item, optional bool dontAddToBelt)
 		SetInHandPending(None);
 	}
 
-    //Set belt placeholder
-    if (!dontAddToBelt)
-        MakeBeltObjectPlaceholder(item);
+    //Remove belt placeholder
+    //This will override the Belt Memory setting
+    if (removePlaceholder)
+        ClearPlaceholder(item.beltPos);
 
 
 	// Make sure the item is removed from the inventory grid

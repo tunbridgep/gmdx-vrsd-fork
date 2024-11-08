@@ -315,7 +315,7 @@ function InstallAugmentation()
 	medBot.PlayAnim('Scan');
 
 	// Now Destroy the Augmentation cannister
-	player.DeleteInventory2(augCan,true); //SARGE: No belt memory, there's no point remembering it.
+	player.DeleteInventory(augCan);
 
 	// Now remove the cannister from our list
 	selectedAugButton.GetParent().Destroy();
