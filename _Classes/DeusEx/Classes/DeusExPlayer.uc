@@ -2255,6 +2255,7 @@ function ResetPlayer(optional bool bTraining)
 {
 	local inventory anItem;
 	local inventory nextItem;
+    local int i;
 
 	ResetPlayerToDefaults();
 
@@ -2265,6 +2266,10 @@ function ResetPlayer(optional bool bTraining)
 		AugmentationSystem.Destroy();
 		AugmentationSystem = None;
 	}
+
+    // Reset Belt Memory
+    for(i = 0;i < 10;i++)
+        ClearPlaceholder(i);
 
 	// Give the player a pistol and a prod
 	if (!bTraining && !bPrisonStart)
