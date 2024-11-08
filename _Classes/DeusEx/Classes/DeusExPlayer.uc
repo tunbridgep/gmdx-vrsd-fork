@@ -2096,7 +2096,7 @@ function StartTrainingMission()
 	      ForEach AllActors(class'Inventory',anItem)
 	      {
 	          anItem.Destroy();
-              DeleteInventory2(anItem,true);
+              DeleteInventory(anItem);
 	      }
         DeusExRootWindow(rootWindow).ClearWindowStack();
 		DeusExRootWindow(rootWindow).hud.belt.ClearBelt();
@@ -2123,7 +2123,7 @@ function ShowIntro(optional bool bStartNewGame)
 	      ForEach AllActors(class'Inventory',anItem)
 	      {
 	          anItem.Destroy();
-              DeleteInventory2(anItem,true);
+              DeleteInventory(anItem);
 	      }
         DeusExRootWindow(rootWindow).ClearWindowStack();
 		DeusExRootWindow(rootWindow).hud.belt.ClearBelt();
@@ -2320,7 +2320,7 @@ function ResetPlayerToDefaults()
 	while(Inventory != None)
 	{
 		anItem = Inventory;
-		DeleteInventory2(anItem,true);
+		DeleteInventory(anItem);
 	  anItem.Destroy();
 	}
 /*
@@ -11522,13 +11522,6 @@ function bool AddInventory(inventory item)
 
 function bool DeleteInventory(inventory item)
 {
-    DeleteInventory2(item,false);
-}
-
-//SARGE: We can't add additional parameters to DeleteInventory, so use a separate function
-//This was extended to let us override the Belt Memory setting and purposely forget an item
-function bool DeleteInventory2(inventory item, optional bool removePlaceholder)
-{
 	local bool retval;
 	local DeusExRootWindow root;
 	local PersonaScreenInventory winInv;
@@ -11540,12 +11533,6 @@ function bool DeleteInventory2(inventory item, optional bool removePlaceholder)
 		SetInHand(None);
 		SetInHandPending(None);
 	}
-
-    //Remove belt placeholder
-    //This will override the Belt Memory setting
-    if (removePlaceholder)
-        ClearPlaceholder(item.beltPos);
-
 
 	// Make sure the item is removed from the inventory grid
 	RemoveItemFromSlot(item);
