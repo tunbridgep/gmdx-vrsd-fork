@@ -17307,7 +17307,8 @@ defaultproperties
      dynamicCrosshair=1
      bBeltMemory=True
      bEnhancedCorpseInteractions=True
-     bDisplayClips=true;
-     bCutsceneFOVAdjust=true;
+     bSearchedCorpseText=True
+     bDisplayClips=true
+     bCutsceneFOVAdjust=true
      iFrobDisplayStyle=1
 }
