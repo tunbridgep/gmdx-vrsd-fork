@@ -49,7 +49,8 @@ defaultproperties
      items(6)=(HelpText="Prevents manually saving and adds single-use save points to the level. Autosaves still occur as normal. Always enabled in Hardcore mode.",actionText="Restricted Saving",variable="bRestrictedSaving");
      items(7)=(HelpText="Prevents using keypads and logins unless you have them in your notes.",actionText="Undiscovered Codes",variable="bNoKeypadCheese");
      items(8)=(HelpText="Start the game in the MJ12 Prison facility. Not recommended for new players! Also skips the intro cutscene.",actionText="Alternate Start",variable="bPrisonStart");
-     items(9)=(HelpText="Enable additional NPC's added by the Lay-D Denton mod. By default only the most relevant ones are enabled.",actionText="Add extra Lay-D Denton NPCs",variable="bMoreLDDPNPCs");
+     items(9)=(HelpText="Disable the use of the console.",actionText="Disable Console Access",variable="bDisableConsoleAccess");
+     items(10)=(HelpText="Enable additional NPC's added by the Lay-D Denton mod. By default only the most relevant ones are enabled.",actionText="Add extra Lay-D Denton NPCs",variable="bMoreLDDPNPCs");
      Title="Playthrough Modifiers"
      consoleTarget="MenuScreenNewGame"
 }

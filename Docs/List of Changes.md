@@ -123,6 +123,7 @@ Sarge's Changes since Beta 2.2:
     - Increased the sawed off shotgun's pellet count from 8 to 9, and decreased shot speed from 1.3 to 1.2.
     - Rubber shells are now hitscan with a harmless projectile.
     - Restricted Saving is now a Playthrough Modifier and is no longer restricted to Hardcore Mode. It's still enforced in Hardcore Mode.
+    - Added No Console Access Playthrough Modifier, which prevents using the console (disallows cheats) while playing.
     - Added No Keypad Cheese Playthrough Modifier (called "Unknown Codes") which prevents using keypads or computer logins without having found them beforehand. Some codes which are hinted but never given are excepted.
     - AI Behaviour Changes
         - Enemies will now have a small delay (usually between 0.1 and 0.6) seconds before firing after losing sight of the player.
