@@ -330,6 +330,9 @@ function DrawHUDIcon(GC gc)
         else if (player.bBeltMemory)
             icon = player.GetBeltIcon(objectNum);
 
+        if (icon == None)
+            return;
+
         gc.SetStyle(DSTY_Masked);
 		//gc.SetTileColorRGB(255, 255, 255);
 		if (bDimIcon || player.GetPlaceholder(objectNum))	                                        //RSD: Can now dim icons
