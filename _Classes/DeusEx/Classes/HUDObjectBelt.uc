@@ -346,15 +346,20 @@ function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
             //only allow a position to be valid if the object in it is draggable.
             //Sarge: First, check for an existing placeholder slot
             //Then, if we don't find one, check for an empty slot if we have autofill enabled.
-			for (i=0; IsValidPos(i); i++)
+            for (i=0; IsValidPos(i); i++)
             {
-				if (( (Player.Level.NetMode == NM_Standalone) || (!Player.bBeltIsMPInventory) || (newItem.TestMPBeltSpot(i))))
+                if (( (Player.Level.NetMode == NM_Standalone) || (!Player.bBeltIsMPInventory) || (newItem.TestMPBeltSpot(i))))
                 {
                     //Additionally, allow slots with the same icon if we have a placeholder
                     if (player.GetBeltIcon(i) == newItem.icon && player.GetPlaceholder(i))
                     {
-                        FoundPlaceholder = true;
-                        break;
+                        if (player.bBeltMemory)
+                        {
+                            FoundPlaceholder = true;
+                            break;
+                        }
+                        else
+                            player.ClearPlaceholder(i); //Since we're not using placeholders, clear any that exist so we don't get belt weirdness.
                     }
                 }
             }
