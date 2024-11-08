@@ -323,6 +323,12 @@ local DeusExWeapon weapon;
 
 function DrawHUDIcon(GC gc)
 {
+        local texture icon;
+
+        if (item != None)
+            icon = item.icon;
+        else if (player.bBeltMemory)
+            icon = player.GetBeltIcon(objectNum);
 
         gc.SetStyle(DSTY_Masked);
 		//gc.SetTileColorRGB(255, 255, 255);
@@ -334,7 +340,7 @@ function DrawHUDIcon(GC gc)
 		{
 			gc.SetTileColorRGB(255,255,255);
 		}
-		gc.DrawTexture(slotIconX, slotIconY, slotFillWidth, slotFillHeight, 0, 0, player.GetBeltIcon(objectNum));
+		gc.DrawTexture(slotIconX, slotIconY, slotFillWidth, slotFillHeight, 0, 0, icon);
 }
 
 function DrawHUDBackground(GC gc)

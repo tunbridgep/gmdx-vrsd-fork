@@ -2096,7 +2096,7 @@ function StartTrainingMission()
 	      ForEach AllActors(class'Inventory',anItem)
 	      {
 	          anItem.Destroy();
-              DeleteInventory(anItem);
+              DeleteInventory2(anItem,true);
 	      }
         DeusExRootWindow(rootWindow).ClearWindowStack();
 		DeusExRootWindow(rootWindow).hud.belt.ClearBelt();
@@ -2123,7 +2123,7 @@ function ShowIntro(optional bool bStartNewGame)
 	      ForEach AllActors(class'Inventory',anItem)
 	      {
 	          anItem.Destroy();
-              DeleteInventory(anItem);
+              DeleteInventory2(anItem,true);
 	      }
         DeusExRootWindow(rootWindow).ClearWindowStack();
 		DeusExRootWindow(rootWindow).hud.belt.ClearBelt();
@@ -2320,7 +2320,7 @@ function ResetPlayerToDefaults()
 	while(Inventory != None)
 	{
 		anItem = Inventory;
-		DeleteInventory(anItem);
+		DeleteInventory2(anItem,true);
 	  anItem.Destroy();
 	}
 /*
@@ -2329,7 +2329,7 @@ function ResetPlayerToDefaults()
 	{
 	  log("DELETE "@anItem);
 	   nextItem=anItem.Inventory;
-		DeleteInventory(anItem);
+		DeleteInventory(anItem,true);
 	  anItem.Destroy();
 	  anItem=nextItem;
 	}
@@ -11518,6 +11518,12 @@ function bool AddInventory(inventory item)
 
 function bool DeleteInventory(inventory item)
 {
+    DeleteInventory2(item,false);
+}
+
+//We can't add additional parameters to DeleteInventory, so use a separate function
+function bool DeleteInventory2(inventory item, optional bool dontAddToBelt)
+{
 	local bool retval;
 	local DeusExRootWindow root;
 	local PersonaScreenInventory winInv;
@@ -11529,6 +11535,11 @@ function bool DeleteInventory(inventory item)
 		SetInHand(None);
 		SetInHandPending(None);
 	}
+
+    //Set belt placeholder
+    if (!dontAddToBelt)
+        MakeBeltObjectPlaceholder(item);
+
 
 	// Make sure the item is removed from the inventory grid
 	RemoveItemFromSlot(item);
