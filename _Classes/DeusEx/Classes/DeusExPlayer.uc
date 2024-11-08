@@ -564,9 +564,6 @@ var bool bNanoVirusSentMessage;                                                 
 var localized String NanoVirusLabel;                                            //RSD: For deactivating augs from scrambler grenades
 var globalconfig bool bRestrictedMetabolism;                                    //RSD: Enables restricted eating and halved withdrawal delay
 
-//SARGE: Allow blocking the next weapon selection. Used by dialog number keys feature
-var bBlockNextBeltSelection;
-
 //GAMEPLAY MODIFIERS
 
 /*var travel bool bRandomizeCratesGeneralTool;
