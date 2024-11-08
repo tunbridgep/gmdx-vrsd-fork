@@ -393,7 +393,7 @@ var globalconfig bool bWallPlacementCrosshair;		// SARGE: Show a blue crosshair 
 var globalconfig bool bDisplayTotalAmmo;		    // SARGE: Show total ammo count, rather than MAGS
 var globalconfig bool bDisplayClips;		        // SARGE: For the weirdos who prefer Clips instead of Mags. Hidden Option
 var globalconfig bool bColourCodeFrobDisplay;       //SARGE: Colour Code the Frob display when you don't meet or only just meet the number of tools/picks required. Some people might not like the colours.
-var globalconfig bool bFrobDisplayStyle;            //SARGE: Frob Display Style. 0 = "X Tools", 1 = "curr/total Tools", 2 = "total/curr Tools"
+var globalconfig int iFrobDisplayStyle;             //SARGE: Frob Display Style. 0 = "X Tools", 1 = "curr/total Tools", 2 = "total/curr Tools"
 var globalconfig bool bGameplayMenuHardcoreMsgShown;//SARGE: Stores whether or not the gameplay menu message has been displayed.
 var globalconfig bool bEnhancedCorpseInteractions;  //SARGE: Right click always searches corpses. After searching, right click picks up corpses as normal.
 var globalconfig bool bSearchedCorpseText;          //SARGE: Corpses show "[Searched]" text when interacted with for the first time.
@@ -17309,5 +17309,5 @@ defaultproperties
      bEnhancedCorpseInteractions=True
      bDisplayClips=true;
      bCutsceneFOVAdjust=true;
-     bFrobDisplayStyle=1
+     iFrobDisplayStyle=1
 }

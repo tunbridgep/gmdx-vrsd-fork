@@ -299,13 +299,13 @@ function DrawWindow(GC gc)
 					numTools = int((dxMover.lockStrength / player.SkillSystem.GetSkillLevelValue(class'SkillLockpicking')) + 0.99);
 					if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkLocksport').bPerkObtained == true)
 					    numTools = 1;
-                    if (numTools == 1 && player.bFrobDisplayStyle == 0)
+                    if (numTools == 1 && player.iFrobDisplayStyle == 0)
 						strInfo = numTools @ msgPick;
-                    else if (player.bFrobDisplayStyle == 0)
+                    else if (player.iFrobDisplayStyle == 0)
 						strInfo = numTools @ msgPicks;
-					else if (player.bFrobDisplayStyle == 1)
+					else if (player.iFrobDisplayStyle == 1)
 						strInfo = ownedTools $ "/" $ numTools @ msgPicks;
-					else if (player.bFrobDisplayStyle == 2)
+					else if (player.iFrobDisplayStyle == 2)
 						strInfo = numTools $ "/" $ ownedTools @ msgPicks;
 				    //if (dxMover.bPerkApplied)                                   //RSD: Doorsman perk
                         if (ownedTools < numTools && player.bColourCodeFrobDisplay)
@@ -383,13 +383,13 @@ function DrawWindow(GC gc)
 				{
 					numTools = int((device.hackStrength / player.SkillSystem.GetSkillLevelValue(class'SkillTech')) + 0.99);
 					ownedTools = player.GetInventoryCount('Multitool');
-                    if (numTools == 1 && player.bFrobDisplayStyle == 0)
+                    if (numTools == 1 && player.iFrobDisplayStyle == 0)
 						strInfo = numTools @ msgTool;
-                    else if (player.bFrobDisplayStyle == 0)
+                    else if (player.iFrobDisplayStyle == 0)
 						strInfo = numTools @ msgTools;
-					else if (player.bFrobDisplayStyle == 1)
+					else if (player.iFrobDisplayStyle == 1)
 						strInfo = ownedTools $ "/" $ numTools @ msgTools;
-					else if (player.bFrobDisplayStyle == 2)
+					else if (player.iFrobDisplayStyle == 2)
 						strInfo = numTools $ "/" $ ownedTools @ msgTools;
                     if (ownedTools < numTools && player.bColourCodeFrobDisplay)
                         gc.SetTextColor(colNotEnough);
