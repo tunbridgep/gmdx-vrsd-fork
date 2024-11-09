@@ -35,6 +35,6 @@ defaultproperties
      LevelValues(0)=1.000000
      LevelValues(1)=2.000000
      LevelValues(2)=3.000000
-     HazardsRange=75;
+     HazardsRange=50;
      AugmentationLocation=LOC_Default
 }

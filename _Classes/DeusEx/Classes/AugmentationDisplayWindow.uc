@@ -343,7 +343,7 @@ singular function checkForHazards(GC gc)
     aug = AugIFF(Player.AugmentationSystem.GetAug(class'AugIFF'));
 
     if (aug != None && aug.bHasIt)
-    range = (aug.CurrentLevel) * aug.default.hazardsrange * 16; //Range in which hazards are detected - 75 feet at level 2, 150 at level 3
+    range = (aug.CurrentLevel) * aug.default.hazardsrange * 16; //Range in which hazards are detected - 50 feet at level 2, 100 at level 3
 
     if (range <= 0)
         return;
@@ -365,16 +365,17 @@ singular function checkForHazards(GC gc)
         if (AddToHazardsList(DT))
             beep = true;
         
+        //Don't allow other damage triggers within 10 feet
         for (i = 0;i < totalActors;i++)
-            if (actors[i] != None && (VSize(actors[i].location - DT.location)/16) < 10)
+            if (actors[i] != None && (VSize(actors[i].location - DT.location)/16) < 10 && actors[i].IsA('DamageTrigger'))
                 dontAdd = true;
         
         if (!dontAdd)
             actors[totalActors++] = DT;
     }
     
-    //Second, get all the grenades
-    foreach Player.RadiusActors(class'ThrownProjectile', PROJ, range)
+    //Second, get all the grenades (half-range)
+    foreach Player.RadiusActors(class'ThrownProjectile', PROJ, range * 0.5)
     {
         dontAdd = false;
         //skip grenades if Defense aug is not on (it already shows them)
@@ -390,8 +391,9 @@ singular function checkForHazards(GC gc)
         if (AddToHazardsList(PROJ))
             beep = true;
         
+        //Don't allow other grenades within 10 feet
         for (i = 0;i < totalActors;i++)
-            if (actors[i] != None && (VSize(actors[i].location - PROJ.location)/16) < 10)
+            if (actors[i] != None && (VSize(actors[i].location - PROJ.location)/16) < 10 && actors[i].IsA('ThrownProjectile'))
                 dontAdd = true;
         
 
@@ -412,8 +414,9 @@ singular function checkForHazards(GC gc)
         if (AddToHazardsList(CL))
             beep = true;
 
+        //Don't allow other clouds within 50 feet
         for (i = 0;i < totalActors;i++)
-            if (actors[i] != None && (VSize(actors[i].location - CL.location)/16) < 30)
+            if (actors[i] != None && (VSize(actors[i].location - CL.location)/16) < 50 && actors[i].IsA('Cloud'))
                 dontAdd = true;
 
         if (!dontAdd)
