@@ -2273,6 +2273,7 @@ function ResetPlayer(optional bool bTraining)
 {
 	local inventory anItem;
 	local inventory nextItem;
+    local int i;
 
 	ResetPlayerToDefaults();
 
@@ -2283,6 +2284,10 @@ function ResetPlayer(optional bool bTraining)
 		AugmentationSystem.Destroy();
 		AugmentationSystem = None;
 	}
+
+    // Reset Belt Memory
+    for(i = 0;i < 10;i++)
+        ClearPlaceholder(i);
 
 	// Give the player a pistol and a prod
 	if (!bTraining && !bPrisonStart)
@@ -2347,7 +2352,7 @@ function ResetPlayerToDefaults()
 	{
 	  log("DELETE "@anItem);
 	   nextItem=anItem.Inventory;
-		DeleteInventory(anItem);
+		DeleteInventory(anItem,true);
 	  anItem.Destroy();
 	  anItem=nextItem;
 	}
@@ -9636,6 +9641,8 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 				RemoveItemFromSlot(item);
                 if (!bBeltAutofill)
                     MakeBeltObjectPlaceholder(item); //SARGE: Disabled because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
+                else
+                    RemoveObjectFromBelt(item);
 
 				// make sure we have one copy to throw!
 				DeusExPickup(item).NumCopies = 1;
@@ -9656,8 +9663,10 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 
 			// Remove it from the inventory slot grid
 			RemoveItemFromSlot(item);
-            if (!bBeltAutofill)
+            if (!bBeltAutofill && bBeltMemory)
                 MakeBeltObjectPlaceholder(item); //SARGE: Disabled because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
+            else
+                RemoveObjectFromBelt(item);
 		}
 
 		// if we are highlighting something, try to place the object on the target //CyberP: more lenience when dropping
