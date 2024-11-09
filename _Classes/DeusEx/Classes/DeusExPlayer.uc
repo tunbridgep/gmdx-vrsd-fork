@@ -1901,9 +1901,11 @@ function int DoSaveGame(int saveIndex, optional String saveDesc)
             if ((tech.Owner == Self) && tech.bActive)
                 tech.Activate();
     
-    root.hide();
+    //root.hide();
+    root.GenerateSnapshot(True);
     SaveGame(saveIndex, saveDesc);
-    root.show();
+    root.HideSnapshot();
+    //root.show();
 
     ConsoleCommand("set DeusExPlayer iLastSave " $ saveIndex);
     return saveIndex;
@@ -1935,6 +1937,8 @@ function int FindAutosaveSlot()
 
     //Set slot 0 to our current slot
     iAutoSaveSlots[0] = slot;
+    
+    CriticalDelete(saveDir);
 
     return slot;
 }
@@ -1965,6 +1969,8 @@ function int FindQuicksaveSlot()
 
     //Set slot 0 to our current slot
     iQuicksaveSlots[0] = slot;
+	
+    CriticalDelete(saveDir);
 
     return slot;
 }
@@ -2003,9 +2009,19 @@ function QuickSave2(string SaveString, optional bool allowHardcore)
 
 exec function QuickLoad()
 {
+	local GameDirectory saveDir;
+	local DeusExSaveInfo info;
+
+    saveDir = GetSaveGameDirectory();
+
 	//Don't allow in multiplayer.
 	if (Level.Netmode != NM_Standalone)
 	  return;
+
+    //Confirm the save exists before trying to do anything
+    info = saveDir.GetSaveInfo(int(ConsoleCommand("get DeusExPlayer iLastSave")));
+    if (info == None)
+        return;
 
 	if (DeusExRootWindow(rootWindow) != None && !IsInState('dying'))
 		DeusExRootWindow(rootWindow).ConfirmQuickLoad();
