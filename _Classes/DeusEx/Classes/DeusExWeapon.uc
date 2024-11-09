@@ -5192,7 +5192,11 @@ simulated function bool UpdateInfo(Object winObject)
 	if (winInfo == None)
 		return False;
 
-	winInfo.SetTitle(itemName);
+    //SARGE: Show modified weapons in title
+    if (bModified && DeusExPlayer(owner) != None && DeusExPlayer(owner).bBeltShowModified)
+        winInfo.SetTitle(itemName @ strModified);
+    else
+        winInfo.SetTitle(itemName);
 	if (bHandToHand && Owner.IsA('DeusExPlayer'))
 	{
 	   if (DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkInventive').bPerkObtained == true)
