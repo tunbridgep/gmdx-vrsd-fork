@@ -330,15 +330,16 @@ singular function checkForHazards(GC gc)
     local string threatType;
     local int threatDam;
 
-    local Actor actors[20];
+    local Actor actors[20], tempActors[20], temp;
     local string damageTypes[20];
-    local int totalActors, i, j;
+    local int totalActors, totalTempActors, i;
 
-    local bool dontAdd;
     local bool beep;                //Play the beeping noise
 
-    local float range;
+    local float range, range1, range2;
     local AugIFF aug;
+
+    local bool dontAdd;
 
     aug = AugIFF(Player.AugmentationSystem.GetAug(class'AugIFF'));
 
@@ -351,7 +352,6 @@ singular function checkForHazards(GC gc)
     //First, get all the damage triggers
     foreach Player.RadiusActors(class'DamageTrigger', DT, range)
     {
-        dontAdd = false;
         if (totalActors >= 20)
             break;
 
@@ -361,20 +361,75 @@ singular function checkForHazards(GC gc)
         //We need to check distance, because collision is not good enough as they can be big
         if ((VSize(DT.location - player.location)) > range)
             continue;
+        
+        tempActors[totalTempActors++] = DT;
 
-        if (AddToHazardsList(DT))
-            beep = true;
-        
-        //Don't allow other damage triggers within 10 feet
-        for (i = 0;i < totalActors;i++)
-            if (actors[i] != None && (VSize(actors[i].location - DT.location)/16) < 10 && actors[i].IsA('DamageTrigger'))
-                dontAdd = true;
-        
-        if (!dontAdd)
-            actors[totalActors++] = DT;
     }
     
-    //Second, get all the grenades (half-range)
+    //Now get only the closest one
+    for (i = 0;i < totalTempActors;i++)
+    {
+        if (temp == None)
+        {
+            temp = tempActors[i];
+            continue;
+        }
+
+        range1 = VSize(tempActors[i].location - player.location);
+        range2 = VSize(temp.location - player.location);
+        if (range1 < range2)
+            temp = tempActors[i];
+    }
+    
+    //If the closest isn't known about, beep
+    if (AddToHazardsList(temp))
+        beep = true;
+
+    for (i = 0;i < totalTempActors;i++)
+        AddToHazardsList(tempActors[i]);
+
+    totalTempActors = 0;
+    actors[totalActors++] = temp;
+    temp = None;
+
+    //Second, get clouds of each type
+    foreach Player.RadiusActors(class'Cloud', CL, range)
+    {
+        if (totalActors >= 20)
+            break;
+
+        if (CL.Damage == 0)
+            continue;
+    
+        tempActors[totalTempActors++] = CL;
+    }
+    
+    //Now get only the closest one
+    for (i = 0;i < totalTempActors;i++)
+    {
+        if (temp == None)
+        {
+            temp = tempActors[i];
+            continue;
+        }
+
+        range1 = VSize(tempActors[i].location - player.location);
+        range2 = VSize(temp.location - player.location);
+        if (range1 < range2)
+            temp = tempActors[i];
+    }
+    
+    //If the closest isn't known about, beep
+    if (AddToHazardsList(temp))
+        beep = true;
+
+    for (i = 0;i < totalTempActors;i++)
+        AddToHazardsList(tempActors[i]);
+
+    totalTempActors = 0;
+    actors[totalActors++] = temp;
+    
+    //Third, get all the grenades (half-range)
     foreach Player.RadiusActors(class'ThrownProjectile', PROJ, range * 0.5)
     {
         dontAdd = false;
@@ -395,33 +450,9 @@ singular function checkForHazards(GC gc)
         for (i = 0;i < totalActors;i++)
             if (actors[i] != None && (VSize(actors[i].location - PROJ.location)/16) < 10 && actors[i].IsA('ThrownProjectile'))
                 dontAdd = true;
-        
 
         if (!dontAdd)
             actors[totalActors++] = PROJ;
-    }
-
-    //Third, get clouds of each type
-    foreach Player.RadiusActors(class'Cloud', CL, range)
-    {
-        dontAdd = false;
-        if (totalActors >= 20)
-            break;
-
-        if (CL.Damage == 0)
-            continue;
-    
-        if (AddToHazardsList(CL))
-            beep = true;
-
-        //Don't allow other clouds within 50 feet
-        for (i = 0;i < totalActors;i++)
-            if (actors[i] != None && (VSize(actors[i].location - CL.location)/16) < 50 && actors[i].IsA('Cloud'))
-                dontAdd = true;
-
-        if (!dontAdd)
-            actors[totalActors++] = CL;
-
     }
 
     //Now, get information for the actors
@@ -488,7 +519,7 @@ singular function checkForHazards(GC gc)
 
     }
     
-    //Play a sound if the number of threats increased
+    //Play a sound if we detected a new threat
     if (beep && totalActors > 0)
     {
         if (player.savetime - lastBeep > 2.0)
