@@ -123,9 +123,6 @@ var float passedTime;
 var StaticInterlacedWindow winVisionLines;
 var ConLight lite;
 
-var Actor hazardLast[60];                     //SARGE: Holds the last actors we marked as a hazard (or, if multiple, the first one in the list). So that, if we only have 1 hazard around, we don't keep replaying the sound when it appears and disappears - we already know about it.
-var float lastBeep;                           //SARGE: Add a maximum time of 1 second between beeps
-
 // ----------------------------------------------------------------------
 // InitWindow()
 // ----------------------------------------------------------------------
@@ -330,11 +327,9 @@ singular function checkForHazards(GC gc)
     local string threatType;
     local int threatDam;
 
-    local Actor actors[20], tempActors[20], temp;
+    local Actor actors[20], temp;
     local string damageTypes[20];
-    local int totalActors, totalTempActors, i;
-
-    local bool beep;                //Play the beeping noise
+    local int totalActors;
 
     local float range, range1, range2;
     local AugIFF aug;
@@ -362,33 +357,19 @@ singular function checkForHazards(GC gc)
         if ((VSize(DT.location - player.location)) > range)
             continue;
         
-        tempActors[totalTempActors++] = DT;
-
-    }
-    
-    //Now get only the closest one
-    for (i = 0;i < totalTempActors;i++)
-    {
-        if (temp == None)
+        //Get closest
+        if (temp != None)
         {
-            temp = tempActors[i];
-            continue;
+            range1 = VSize(CL.location - player.location);
+            range2 = VSize(temp.location - player.location);
+            if (range1 < range2)
+                temp = DT;
         }
+        else
+            temp = DT;
 
-        range1 = VSize(tempActors[i].location - player.location);
-        range2 = VSize(temp.location - player.location);
-        if (range1 < range2)
-            temp = tempActors[i];
     }
     
-    //If the closest isn't known about, beep
-    if (AddToHazardsList(temp))
-        beep = true;
-
-    for (i = 0;i < totalTempActors;i++)
-        AddToHazardsList(tempActors[i]);
-
-    totalTempActors = 0;
     actors[totalActors++] = temp;
     temp = None;
 
@@ -400,36 +381,23 @@ singular function checkForHazards(GC gc)
 
         if (CL.Damage == 0)
             continue;
-    
-        tempActors[totalTempActors++] = CL;
-    }
-    
-    //Now get only the closest one
-    for (i = 0;i < totalTempActors;i++)
-    {
-        if (temp == None)
+        
+        //Get closest
+        if (temp != None)
         {
-            temp = tempActors[i];
-            continue;
+            range1 = VSize(CL.location - player.location);
+            range2 = VSize(temp.location - player.location);
+            if (range1 < range2)
+                temp = CL;
         }
-
-        range1 = VSize(tempActors[i].location - player.location);
-        range2 = VSize(temp.location - player.location);
-        if (range1 < range2)
-            temp = tempActors[i];
+        else
+            temp = CL;
     }
     
-    //If the closest isn't known about, beep
-    if (AddToHazardsList(temp))
-        beep = true;
-
-    for (i = 0;i < totalTempActors;i++)
-        AddToHazardsList(tempActors[i]);
-
-    totalTempActors = 0;
     actors[totalActors++] = temp;
+    temp = None;
     
-    //Third, get all the grenades (half-range)
+    //Third, get closest grenade (half-range)
     foreach Player.RadiusActors(class'ThrownProjectile', PROJ, range * 0.5)
     {
         dontAdd = false;
@@ -443,16 +411,21 @@ singular function checkForHazards(GC gc)
         if (!PROJ.bProximityTriggered || PROJ.bDisabled || PROJ.Damage <= 0 || PROJ.Owner == player) //Only detect mines placed on walls, etc
             continue;
         
-        if (AddToHazardsList(PROJ))
-            beep = true;
-        
         //Don't allow other grenades within 10 feet
         for (i = 0;i < totalActors;i++)
             if (actors[i] != None && (VSize(actors[i].location - PROJ.location)/16) < 10 && actors[i].IsA('ThrownProjectile'))
                 dontAdd = true;
 
-        if (!dontAdd)
-            actors[totalActors++] = PROJ;
+        //Get closest
+        if (temp != None)
+        {
+            range1 = VSize(CL.location - player.location);
+            range2 = VSize(temp.location - player.location);
+            if (range1 < range2)
+                temp = CL;
+        }
+        else
+            temp = CL;
     }
 
     //Now, get information for the actors
@@ -518,53 +491,6 @@ singular function checkForHazards(GC gc)
         }
 
     }
-    
-    //Play a sound if we detected a new threat
-    if (beep && totalActors > 0)
-    {
-        if (player.savetime - lastBeep > 2.0)
-            Player.PlaySound(sound'hazardwarn',SLOT_None);
-        lastBeep = player.savetime;
-    }
-    beep = false;
-}
-
-//Check if an actor has already been registered as a hazard. If it has, don't play the detect sound again.
-function bool PreviousHazard(Actor A)
-{
-    local int i;
-    for (i = 0;i < 60;i++)
-    {
-        if (hazardLast[i] == A)
-        {
-            //player.clientmessage("Found actor " $ a $ " in hazards list at " $ i);
-            return true;
-        }
-    }
-    return false;
-
-}
-
-//Adds an actor to the start of the hazards list, if it's not already on it
-function bool AddToHazardsList(Actor a)
-{
-    local int i;
-    
-    //Bail out if it's already in the array
-    if (PreviousHazard(A))
-        return false;
-
-    //Now move everything up, and put it in slot 0
-    for (i = 59;i > 0;i--)
-    {
-        //if (hazardLast[i] != None)
-            //player.clientmessage("Moving " $ hazardlast[i] $ "(" $ i $ ")" $ " to " $ hazardlast[i-1]);
-        hazardLast[i] = hazardLast[i-1];
-    }
-    hazardLast[0] = a;
-
-    //player.clientmessage("Added actor " $ a $ " to hazards list");
-    return true;
 }
 
 // ----------------------------------------------------------------------
