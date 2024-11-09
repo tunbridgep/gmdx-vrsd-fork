@@ -336,6 +336,8 @@ singular function checkForHazards(GC gc)
 
     local bool dontAdd;
 
+    local int i;
+
     aug = AugIFF(Player.AugmentationSystem.GetAug(class'AugIFF'));
 
     if (aug != None && aug.bHasIt)
