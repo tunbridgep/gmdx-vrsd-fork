@@ -629,6 +629,8 @@ var globalconfig bool bDialogHUDColors;                                         
 var globalconfig bool bQuickAugWheel;                                           //Sarge: Instantly enable/disable augs when closing the menu over the selected aug, otherwise require a mouse click.
 var globalconfig bool bAugWheelDisableAll;                                      //Sarge: Show the Disable All button on the Aug Wheel
 
+var globalconfig bool bTrickReloading;											//Sarge: Allow reloading with a full clip.
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -8925,6 +8927,7 @@ exec function ToggleWalk()
 exec function ReloadWeapon()
 {
 	local DeusExWeapon W;
+    local bool full, hasAmmo;
 
 	if (RestrictInput())
 		return;
@@ -8933,9 +8936,15 @@ exec function ReloadWeapon()
 
 	W = DeusExWeapon(Weapon);  //CyberP: cannot reload when ammo in mag but none in reserves.
                                 //Sarge: Additionally fix reloading when full
-	if (W != None && (W.AmmoLeftInClip() != W.AmmoType.AmmoAmount || W.IsA('WeaponHideAGun') || W.GoverningSkill == class'DeusEx.SkillDemolition') && W.AmmoLeftInClip() < W.ReloadCount)
-		W.ReloadAmmo();
 
+    if (W != None)
+    {
+        full = W.AmmoLeftInClip() >= W.ReloadCount;
+        hasAmmo = W.AmmoType.AmmoAmount - W.ClipCount > 0;
+        if (W != None && ((!full && hasAmmo) || bTrickReloading || bHardCoreMode))
+            W.ReloadAmmo();
+
+    }
     UpdateCrosshair();
 }
 
