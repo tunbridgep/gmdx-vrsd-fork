@@ -5,11 +5,10 @@
 //=============================================================================
 class ConWindowActive extends ConWindow;
 
-var Window upperConWindow;						// Upper letterbox region
+var ConWindowUpper upperConWindow;						// Upper letterbox region
 var int numChoices;								// Number of choice buttons
 var ConChoiceWindow conChoices[10];				// Maximum of ten buttons
 var HUDReceivedDisplay winReceived;
-var HUDConCreditsDisplay winCredits;
 var bool bRestrictInput;
 
 var float currentWindowPos;
@@ -42,13 +41,12 @@ event InitWindow()
 	lowerConWindow.SetBackgroundStyle(DSTY_Normal);
 
 	// Create upper window
-	upperConWindow = NewChild(Class'Window');
+	upperConWindow = ConWindowUpper(NewChild(Class'ConWindowUpper'));
 	upperConWindow.SetBackground(conTexture);
 
 	moveMode = MM_None;
 
 	CreateReceivedWindow();
-	CreateCreditsWindow();
 
     //Set the players FOV to 75 so that cutscenes appear mostly normal
     //TODO: Fix this to work properly on other aspect ratios
@@ -99,7 +97,9 @@ event Tick(float deltaSeconds)
 	Super.Tick(deltaSeconds);
 
     //Update credits counter
-    winCredits.SetCredits(player.Credits);
+    upperConWindow.SetCreditsFont(conPlay.GetCurrentSpeechFont());
+    upperConWindow.SetLabelFont(conPlay.GetCurrentNameFont());
+    upperConWindow.SetCreditsText(player.Credits);
 
 	// Compute how much we should move the windows this frame
 	increment = deltaSeconds/movePeriod;
@@ -109,12 +109,6 @@ event Tick(float deltaSeconds)
 	switch( moveMode )
 	{
 		case MM_Enter:
-	        winCredits.SetTextFont(conPlay.GetCurrentSpeechFont());
-            if (player.bCreditsInDialog && dxInfo.MapName != "Intro")
-            {
-				AskParentForReconfigure();
-                winCredits.Show();
-            }
 			currentWindowPos += increment;
 			if (currentWindowPos >= 1.0)
 			{
@@ -127,7 +121,6 @@ event Tick(float deltaSeconds)
 		case MM_Exit:
 			// Don't increment while the Items Received window
 			// is still active
-            
 
 			if (!winReceived.IsVisible())
 			{
@@ -136,7 +129,6 @@ event Tick(float deltaSeconds)
 				{
 					currentWindowPos = 0.0;
 					moveMode = MM_None;
-                    winCredits.Hide();
 					Hide();
 				}
 				AskParentForReconfigure();
@@ -288,12 +280,6 @@ function CalculateWindowSizes()
 		winReceived.ConfigureChild(10, lowerCurrentPos - recHeight - 5, recWidth, recHeight);
 	}
 	
-    // Configure Credits Window
-	if (winCredits != None)
-	{
-		winCredits.ConfigureChild(10, upperCurrentPos + upperHeight - 25, recWidth * 10, recHeight * 2);
-	}
-
 	ConfigureCameraWindow(lowerCurrentPos);
 }
 
@@ -624,16 +610,6 @@ function ConChoiceWindow CreateConButton( EHAlign hAlign, Color colTextNormal, C
 	newButton.SetTextColors( colTextNormal, colTextFocus, colTextFocus, colTextFocus );
 
 	return newButton;
-}
-
-// ----------------------------------------------------------------------
-// CreateCreditsWindow()
-// ----------------------------------------------------------------------
-
-function CreateCreditsWindow()
-{
-	winCredits = HUDConCreditsDisplay(NewChild(Class'HUDConCreditsDisplay'));
-	winCredits.Hide();
 }
 
 // ----------------------------------------------------------------------
