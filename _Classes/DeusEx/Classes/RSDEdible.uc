@@ -6,6 +6,9 @@ class RSDEdible extends DeusExPickup abstract;
 
 var int fullness;                                                   //How much a given food item should fill up the player
 
+//Add fullness amount to the description field
+var localized String HungerLabel;
+
 //SARGE: Move hunger/etc checks into separate function, so they can be used from the left frob button as well
 function bool RestrictedUse(DeusExPlayer player)
 {
@@ -24,6 +27,15 @@ function bool DoLeftFrob(DeusExPlayer frobber)
 //What happens when we eat this.
 function Eat(DeusExPlayer player)
 {
+}
+
+//Add Fullnes to description
+function string GetDescription()
+{
+    if (fullness > 0)
+        return Description $ "|n" $ sprintf(HungerLabel,fullness);
+    else
+        return Description;
 }
 
 //Add to the players FullUp bar
@@ -70,4 +82,5 @@ Begin:
 defaultproperties
 {
      fullness=0
+     HungerLabel="Fullness Amount: %d%%"
 }

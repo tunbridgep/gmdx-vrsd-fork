@@ -38,6 +38,7 @@ var travel bool bIsRadar;                                                       
 var bool bJustUncloaked;                                                        //RSD: for splitting cloak/radar texture functionality
 var bool bJustUnRadar;                                                          //RSD: for splitting cloak/radar texture functionality
 var bool bAutoActivate;                                                         //Sarge: Auto activate with left click, rather than placing in the players hands                                                                                
+var localized string StackSizeLabel;                                            //Sarge: Show the stack size in the description
 
 
 //SARGE: Added "Left Click Frob" and "Right Click Frob" support
@@ -775,23 +776,45 @@ simulated function bool UpdateInfo(Object winObject)
 	if (winInfo == None)
 		return False;
 
+    //TODO: Move Secondaries stuff to a separate function and use it from subclasses
 	winInfo.SetTitle(itemName);
 	if (IsA('Binoculars')|| IsA('Flare'))                                       //RSD: Assign Binoculars and Flares as a secondary item
 		winInfo.AddSecondaryButton(self);
 
     if (IsA('RSDEdible'))                                                       //Sarge: Allow edibles as secondaries (mainly used for drugs)
+    {
 		winInfo.AddSecondaryButton(self);
+    }
+    
+	winInfo.SetText(GetDescription());
 
-	winInfo.SetText(Description $ winInfo.CR() $ winInfo.CR());
-
+    /*
+    //SARGE: Removed this as it's pointless
 	if (bCanHaveMultipleCopies)
 	{
 		// Print the number of copies
 		str = CountLabel @ String(NumCopies);
-		winInfo.AppendText(str);
+		winInfo.AppendText(winInfo.CR() $ winInfo.CR() $ str);
 	}
-
+    */
+	
+    //SARGE: Add max carry capacity label
+    /*
+    if (bCanHaveMultipleCopies)
+		winInfo.AppendText(winInfo.CR() $ sprintf(StackSizeLabel,RetMaxCopies()));
+    */
+    
 	return True;
+}
+
+// ----------------------------------------------------------------------
+// GetDescription()
+// ----------------------------------------------------------------------
+
+//SARGE: Now each object can define it's own description text.
+function string GetDescription()
+{
+    return Description;
 }
 
 // ----------------------------------------------------------------------
@@ -967,6 +990,7 @@ defaultproperties
      FragType=Class'DeusEx.GlassFragment'
      CountLabel="x"
      msgTooMany="You can't carry any more of those"
+     StackSizeLabel="Max Stack Size: %d"
      NumCopies=1
      PickupMessage="You found"
      ItemName="DEFAULT PICKUP NAME - REPORT THIS AS A BUG"

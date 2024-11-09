@@ -1057,7 +1057,8 @@ NewNoteLabel="New Note"
 
 [FireExtinguisher]
 ItemName="Fire Extinguisher"
-Description="A chemical fire extinguisher.|n|n<UNATCO OPS FILE NOTE SC119-BLUE> In a pinch, the dry particulate spray from a fire extinguisher can be used to temporarily blind an assailant. Sometimes you have to improvise in the field. -- Sam Carter <END NOTE>"
+//Description="A chemical fire extinguisher.|n|n<UNATCO OPS FILE NOTE SC119-BLUE> In a pinch, the dry particulate spray from a fire extinguisher can be used to temporarily blind an assailant. Sometimes you have to improvise in the field. -- Sam Carter <END NOTE>"
+Description="Be cool about fire safety!|n|n<UNATCO OPS FILE NOTE SC119-BLUE> In a pinch, the dry particulate spray from a fire extinguisher can be used to temporarily blind an assailant. Sometimes you have to improvise in the field. -- Sam Carter <END NOTE>"
 beltDescription="FIRE EXT"
 
 [AugLight]
@@ -1689,7 +1690,7 @@ beltDescription="AMBROSIA"
 [SoyFood]
 ItemName="Soy Food"
 ItemArticle="some"
-Description="Fine print: 'Seasoned with nanoscale mechanochemical generators, this TSP (textured soy protein) not only tastes good but also self-heats when its package is opened.'|n|nHeals 2 points"
+Description="Fine print: 'Seasoned with nanoscale mechanochemical generators, this TSP (textured soy protein) not only tastes good but also self-heats when its package is opened.'|n|nHeals 5 points"
 beltDescription="SOY FOOD"
 
 [Sodacan]
