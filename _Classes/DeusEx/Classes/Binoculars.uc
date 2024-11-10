@@ -11,56 +11,19 @@ function bool CanAssignSecondary(DeusExPlayer player)
     return true;
 }
 
-// ----------------------------------------------------------------------
-// state Activated
-// ----------------------------------------------------------------------
-
-state Activated
+function OnDeActivate(DeusExPlayer player)
 {
-	function Activate()
-	{
-		local DeusExPlayer player;
-
-		Super.Activate();
-
-		player = DeusExPlayer(Owner);
-		if (player != None)
-			player.DesiredFOV = player.Default.DesiredFOV;
-		Owner.PlaySound(Sound'binmiczoomout', SLOT_None);
-	}
-
-	function BeginState()
-	{
-		local DeusExPlayer player;
-
-		Super.BeginState();
-
-		player = DeusExPlayer(Owner);
-		PlaySound(Sound'binmiczoomin', SLOT_None);
-		RefreshScopeDisplay(player, FALSE);
-	}
-Begin:
+    player.DesiredFOV = player.Default.DesiredFOV;
+    player.PlaySound(Sound'binmiczoomout', SLOT_None);
+    // Hide the Scope View
+    DeusExRootWindow(player.rootWindow).scopeView.DeactivateView();
 }
 
-// ----------------------------------------------------------------------
-// state DeActivated
-// ----------------------------------------------------------------------
 
-state DeActivated
+function OnActivate(DeusExPlayer player)
 {
-	function BeginState()
-	{
-		local DeusExPlayer player;
-
-		Super.BeginState();
-
-		player = DeusExPlayer(Owner);
-		if (player != None)
-		{
-			// Hide the Scope View
-			DeusExRootWindow(player.rootWindow).scopeView.DeactivateView();
-		}
-	}
+    PlaySound(Sound'binmiczoomin', SLOT_None);
+    RefreshScopeDisplay(player, FALSE);
 }
 
 // ----------------------------------------------------------------------

@@ -1,75 +1,74 @@
 //=============================================================================
 // MedKit.
 //=============================================================================
-class MedKit extends DeusExPickup;
+class MedKit extends ConsumableItem;
 
 //
 // Healing order is head, torso, legs, then arms (critical -> less critical)
 //
 var int healAmount;
-var bool bNoPrintMustBeUsed;
 
-var localized string MustBeUsedOn;
-var localized String HealsLabel;                                                //RSD: Added
-var localized String FullHealth;
+function bool CanAssignSecondary(DeusExPlayer player)
+{
+    return player.PerkManager.GetPerkWithClass(class'DeusEx.PerkCombatMedicsBag').bPerkObtained;
+}
+
+//SARGE: Cannot use if at max health
+function bool RestrictedUse(DeusExPlayer player)
+{
+    return (player.Health >= player.GenerateTotalMaxHealth());
+}
+
+//Set max copies based on the Medics Bag perk
+function SetMax()
+{
+    local DeusExPlayer player;
+    player = DeusExPlayer(Owner);
+
+	if (player != none && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkCombatMedicsBag').bPerkObtained == true)
+		MaxCopies = default.MaxCopies + 5;
+}
+
+function bool DoLeftFrob(DeusExPlayer frobber)
+{
+    SetMax();
+    return super.DoLeftFrob(frobber);
+}
 
 //SARGE: Moved the Bioenergy perk-based max amount bonus here, was in DeusExPlayer
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {
-    if (frobber.PerkManager.GetPerkWithClass(class'DeusEx.PerkCombatMedicsBag').bPerkObtained == true)
-        MaxCopies = 20;
+    SetMax();
     return super.DoRightFrob(frobber,objectInHand);
 }
 
-// ----------------------------------------------------------------------
-state Activated
+function OnActivate(DeusExPlayer player)
 {
-	function Activate()
-	{
-		// can't turn it off
-	}
+    super.OnActivate(player);
 
-	function BeginState()
-	{
-		local DeusExPlayer player;
-      local int MedSkillLevel;
-
-		Super.BeginState();
-
-		//player = DeusExPlayer(Owner);
-		player = DeusExPlayer(GetPlayerPawn());                                 //RSD: Altering this to enable generic LeftClick interact
-
-		if (player != None && player.Health == player.GenerateTotalMaxHealth())
-		{
-			player.ClientMessage(FullHealth);
-			GoToState('DeActivated');
-			return;
-		}
-
-		if (player != None)
-		{
-			
-			player.HealPlayer(healAmount, True);
-			if (player.SkillSystem!=None)
-			   MedSkillLevel=player.SkillSystem.GetSkillLevel(class'SkillMedicine');
-
-			// Medkits kill all status effects when used in multiplayer removed (player.Level.NetMode != NM_Standalone )||
-			if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkToxicologist').bPerkObtained == true)
-			{
-				player.StopPoison();
-				player.myPoisoner = None;
-	            player.poisonCounter = 0;
-                player.poisonTimer   = 0;
-            	player.poisonDamage  = 0;
-				player.drugEffectTimer = 0;	// stop the drunk effect
-			}
-		}
-
-		UseOnce();
-	}
-Begin:
+    // Medkits kill all status effects when used in multiplayer removed (player.Level.NetMode != NM_Standalone )||
+    if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkToxicologist').bPerkObtained == true)
+    {
+        player.StopPoison();
+        player.myPoisoner = None;
+        player.poisonCounter = 0;
+        player.poisonTimer   = 0;
+        player.poisonDamage  = 0;
+        player.drugEffectTimer = 0;	// stop the drunk effect
+    }
 }
 
+//Override this to use medicine skill
+//lazy hack
+function HealMe(DeusExPlayer player)
+{
+    player.HealPlayer(healAmount, True);
+}
+
+function int GetHealAmount(DeusExPlayer player)
+{
+    return player.CalculateSkillHealAmount(healAmount);
+}
 
 // ----------------------------------------------------------------------
 // UpdateInfo()
@@ -77,96 +76,8 @@ Begin:
 
 function bool UpdateInfo(Object winObject)
 {
-	local PersonaInfoWindow winInfo;
-	local DeusExPlayer player;
-	local String outText;
-
-	winInfo = PersonaInfoWindow(winObject);
-	if (winInfo == None)
-		return False;
-
-	player = DeusExPlayer(Owner);
-
-	if (player != none && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkCombatMedicsBag').bPerkObtained == true)
-		MaxCopies = 25;
-
-	if (player != None)
-	{
-		winInfo.SetTitle(itemName);
-		if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkCombatMedicsBag').bPerkObtained == true)
-			winInfo.AddSecondaryButton(self);                                   //RSD: Can now equip medkits as secondaries with the Combat Medic's Bag perk
-		winInfo.SetText(Description $ winInfo.CR() $ winInfo.CR());
-        winInfo.AppendText(Sprintf(healsLabel,player.CalculateSkillHealAmount(30)) $ winInfo.CR()); //RSD Display heal amount
-		if (!bNoPrintMustBeUsed)
-		{
-			winInfo.AppendText(winInfo.CR() $ MustBeUsedOn $ winInfo.CR());
-		}
-		else
-		{
-			bNoPrintMustBeUsed = False;
-		}
-
-		// Print the number of copies
-		outText = CountLabel @ String(NumCopies);
-
-		winInfo.AppendText(winInfo.CR() $ outText);
-	}
-
-	return True;
-}
-
-// ----------------------------------------------------------------------
-// NoPrintMustBeUsed()
-// ----------------------------------------------------------------------
-
-function NoPrintMustBeUsed()
-{
-	bNoPrintMustBeUsed = True;
-}
-
-// ----------------------------------------------------------------------
-// GetHealAmount()
-//
-// Arms and legs get healing bonuses
-// ----------------------------------------------------------------------
-
-function float GetHealAmount(int bodyPart, optional float pointsToHeal)
-{
-	local float amt;
-
-	if (pointsToHeal == 0)
-		pointsToHeal = healAmount;
-
-	// CNN - just make all body parts equal to avoid confusion
-	return pointsToHeal;
-/*
-	switch (bodyPart)
-	{
-		case 0:		// head
-			amt = pointsToHeal * 2; break;
-			break;
-
-		case 1:		// torso
-			amt = pointstoHeal;
-			break;
-
-		case 2:		// right arm
-			amt = pointsToHeal * 1.5; break;
-
-		case 3:		// left arm
-			amt = pointsToHeal * 1.5; break;
-
-		case 4:		// right leg
-			amt = pointsToHeal * 1.5; break;
-
-		case 5:		// left leg
-			amt = pointsToHeal * 1.5; break;
-
-		default:
-			amt = pointstoHeal;
-	}
-
-	return amt;*/
+    SetMax();
+    Super.UpdateInfo(winObject);
 }
 
 // ----------------------------------------------------------------------
@@ -186,9 +97,7 @@ defaultproperties
 {
      bAutoActivate=True
      healAmount=30
-     MustBeUsedOn="Use to heal critical body parts, or use on character screen to direct healing at a certain body part."
-	 FullHealth="You're already at full Health"
-     HealsLabel="Heals %d points"
+	 CannotUse="You're already at full Health"
      maxCopies=15
      bCanHaveMultipleCopies=True
      bActivatable=True

@@ -978,7 +978,7 @@ ItemName="Barrel"
 msgRecharged="Recharged %d bioelectric energy units"
 RechargesLabel="Recharges %d bioelectric energy units"
 ItemName="Bioelectric Cell"
-Description="A bioelectric cell provides efficient storage of energy in a form that can be utilized by a number of different devices.|n|n<UNATCO OPS FILE NOTE JR289-VIOLET> Augmented agents have been equipped with an interface that allows them to transparently absorb energy from bioelectric cells. -- Jaime Reyes <END NOTE>|n|n"
+Description="A bioelectric cell provides efficient storage of energy in a form that can be utilized by a number of different devices.|n|n<UNATCO OPS FILE NOTE JR289-VIOLET> Augmented agents have been equipped with an interface that allows them to transparently absorb energy from bioelectric cells. -- Jaime Reyes <END NOTE>"
 beltDescription="BIOCELL"
 
 [AugmentationCannister]
@@ -1707,7 +1707,7 @@ ItemName="Book"
 [Candybar]
 ItemName="Candy Bar"
 bioboost="Recharged 3 bioelectric energy units"
-Description="'CHOC-O-LENT DREAM. IT'S CHOCOLATE! IT'S PEOPLE! IT'S BOTH!(tm) 85% Recycled Material.'|n|nHeals 2 points and recharges 3 bioelectric energy units"
+Description="'CHOC-O-LENT DREAM. IT'S CHOCOLATE! IT'S PEOPLE! IT'S BOTH!(tm) 85% Recycled Material.'"
 beltDescription="CANDY BAR"
 
 [Rebreather]
@@ -2996,14 +2996,9 @@ imageDescription="Liberty Island Satellite Photo"
 imageDescription="Gun Fire Sensor"
 
 [ChargedPickup]
-ChargeRemainingLabel="Charge remaining:"
+ChargeRemainingLabel="Charge remaining: %d%%"
+ChargeRemainingLabelSmall="%d%%"
 CanOnlyBeOne="You cannot equip more than one torso armor piece" 
-DurabilityRemainingLabel=Durability: 
-PickupInfo1="Environmental Protection: 60%"
-PickupInfo2="Ballistic Protection: 35%"
-PickupInfo3="Biocell Recharge Amount: 15%"
-PickupInfo4="Biocell Recharge Amount: 30%"
-PickupInfo5="Biocell Recharge Amount:"
 
 [MenuChoice_OnOff]
 enumText[0]="Off"

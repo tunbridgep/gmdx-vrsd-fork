@@ -38,6 +38,10 @@ var travel bool bIsRadar;                                                       
 var bool bJustUncloaked;                                                        //RSD: for splitting cloak/radar texture functionality
 var bool bJustUnRadar;                                                          //RSD: for splitting cloak/radar texture functionality
 var bool bAutoActivate;                                                         //Sarge: Auto activate with left click, rather than placing in the players hands                                                                                
+var int healAmount;                                                 //SARGE: Put healint amoung here to make the code more generic
+var int bioenergyAmount;                                            //SARGE: Put recharge here to make code more generic
+
+
 var localized string StackSizeLabel;                                            //Sarge: Show the stack size in the description
 
 
@@ -70,41 +74,6 @@ replication
 	reliable if ((Role < ROLE_Authority) && (bNetOwner))
 		UseOnce;
 }
-
-//GMDX cloak weapon
-/*function SetCloak(bool bEnableCloak,optional bool bForce)                     Overhauled cloak/radar routines
-{
-	if ((Owner==none)||(!Owner.IsA('DeusExPlayer'))) return;
-	if (Owner!=none && Owner.IsA('DeusExPlayer'))
-	{
-	if (bEnableCloak && class'DeusExPlayer'.default.bRadarTran == True &&(!bIsCloaked||bForce))
-	{
- 	  ShowCamo();
-	  bIsCloaked=true;
-	  AmbientGlow=255;
-      Style=STY_Normal;//STY_Translucent;                                       //RSD: Going for a solid texture here
-	  ScaleGlow=1.000000;
-	}
-    else if (bEnableCloak&&(!bIsCloaked||bForce))
-	{
-	  bIsCloaked=true;
-	  ShowCamo();
-      Style=STY_Translucent;
-	  ScaleGlow=0.500000;
-	  //AmbientGlow=255;
-	} else
-	if(!bEnableCloak&&(bIsCloaked||bForce))
-	{
-	  class'DeusExPlayer'.default.bRadarTran=false;
-	  AmbientGlow=default.AmbientGlow;
-	  Style=default.Style;
-	  ScaleGlow=default.ScaleGlow;
-	  if (bIsCloaked)
-	     HideCamo();
-	  bIsCloaked=false;
-	}
-    }
-}*/
 
 function SetCloakRadar(bool bEnableCloak, bool bEnableRadar, optional bool bForce) //RSD: Overhauled cloak/radar routines
 {
@@ -759,9 +728,53 @@ auto state Pickup
 	}
 }
 
-state DeActivated
+//SARGE: OnActivate() and OnDeactivate() are called when we successfully enter each state.
+//Used by child objects to define custom activation/deactivation behaviour
+function OnActivate(DeusExPlayer player)
 {
 }
+function OnDeActivate(DeusExPlayer player)
+{
+}
+
+state Activated
+{
+	function Activate()
+	{
+		Super.Activate();
+	}
+
+	function BeginState()
+	{
+		local DeusExPlayer player;
+
+		Super.BeginState();
+
+		player = DeusExPlayer(Owner);
+        if (player != None)
+            OnActivate(player);
+	}
+Begin:
+}
+
+// ----------------------------------------------------------------------
+// state DeActivated
+// ----------------------------------------------------------------------
+
+state DeActivated
+{
+	function BeginState()
+	{
+		local DeusExPlayer player;
+
+		Super.BeginState();
+
+		player = DeusExPlayer(Owner);
+		if (player != None)
+            OnDeActivate(player);
+	}
+}
+
 
 // ----------------------------------------------------------------------
 // UpdateInfo()
@@ -776,38 +789,34 @@ simulated function bool UpdateInfo(Object winObject)
     player = DeusExPlayer(Owner);
 
 	winInfo = PersonaInfoWindow(winObject);
-	if (winInfo == None)
+	if (winInfo == None || player == None)
 		return False;
 
     //Set title
-	winInfo.SetTitle(GetTitle());
+	winInfo.SetTitle(GetTitle(player));
 
     if (player != None && CanAssignSecondary(player))
 		winInfo.AddSecondaryButton(self);
 
-	winInfo.SetText(GetDescription());
+	winInfo.SetText(GetDescription(player));
 		
     winInfo.AppendText(winInfo.CR());
 
-	winInfo.SetText(GetDescription2());
+	winInfo.SetText(GetDescription2(player));
 
-    /*
-    //SARGE: Removed this as it's pointless
-	if (bCanHaveMultipleCopies)
-	{
-		// Print the number of copies
-		str = CountLabel @ String(NumCopies);
-		winInfo.AppendText(winInfo.CR() $ winInfo.CR() $ str);
-	}
-    */
-	
-    //SARGE: Add max carry capacity label
-    /*
-    if (bCanHaveMultipleCopies)
-		winInfo.AppendText(winInfo.CR() $ sprintf(StackSizeLabel,RetMaxCopies()));
-    */
-    
 	return True;
+}
+
+// ----------------------------------------------------------------------
+// AddLine()
+// Adds a newlineline if we already have some text, otherwise adds nothing and returns the original
+// ----------------------------------------------------------------------
+function string AddLine(string str, string newStr)
+{
+    if (str != "")
+        return str $ "|n" $ newStr;
+    else
+        return newStr;
 }
 
 // ----------------------------------------------------------------------
@@ -825,21 +834,27 @@ function bool CanAssignSecondary(DeusExPlayer player)
 // ----------------------------------------------------------------------
 
 //SARGE: Now each object can define it's own title, description etc.
-function string GetTitle()
+function string GetTitle(DeusExPlayer player)
 {
     return itemName;
 }
-function string GetDescription()
+
+function string GetDescription(DeusExPlayer player)
 {
     return Description;
 }
+
 //Added after a double line spacing on the Description panel.
 //Usually used for stats and other things.
-function string GetDescription2()
+function string GetDescription2(DeusExPlayer player)
 {
-	if (bCanHaveMultipleCopies)
+    local string str;
+
+	if (bCanHaveMultipleCopies )//&& MaxCopies > 1)
 		//return CountLabel @ String(NumCopies);
-        return sprintf(StackSizeLabel,RetMaxCopies());
+        str = AddLine(str,sprintf(StackSizeLabel,NumCopies,RetMaxCopies()));
+
+    return str;
 }
 
 // ----------------------------------------------------------------------
@@ -1015,7 +1030,7 @@ defaultproperties
      FragType=Class'DeusEx.GlassFragment'
      CountLabel="x"
      msgTooMany="You can't carry any more of those"
-     StackSizeLabel="Max Stack Size: %d"
+     StackSizeLabel="Amount Held: %d/%d"
      NumCopies=1
      PickupMessage="You found"
      ItemName="DEFAULT PICKUP NAME - REPORT THIS AS A BUG"

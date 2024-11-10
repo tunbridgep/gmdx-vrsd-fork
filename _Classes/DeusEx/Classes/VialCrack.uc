@@ -5,6 +5,7 @@ class VialCrack extends Vice; //DeusExPickup;
 
 function Eat(DeusExPlayer player)
 {
+    super.Eat(player);
     player.drugEffectTimer += 60.0;
     player.bHardDrug = True;
     if (!player.bAddictionSystem)

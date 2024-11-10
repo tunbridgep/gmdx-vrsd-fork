@@ -1,77 +1,60 @@
 //=============================================================================
 // BioelectricCell.
 //=============================================================================
-class BioelectricCell extends DeusExPickup;
+class BioelectricCell extends ConsumableItem;
 
 var int rechargeAmount;
 var int mpRechargeAmount;
 
-var localized String msgRecharged;
-var localized String msgFullEnergy;
 var localized String RechargesLabel;
 
-/*function PostBeginPlay()
+function PostBeginPlay()
 {
    Super.PostBeginPlay();
    if (Level.NetMode != NM_Standalone)
-      rechargeAmount = mpRechargeAmount;
-}*/
+      bioenergyAmount = mpRechargeAmount;
+}
+
+function bool CanAssignSecondary(DeusExPlayer player)
+{
+    return player.PerkManager.GetPerkWithClass(class'DeusEx.PerkCombatMedicsBag').bPerkObtained;
+}
+
+//SARGE: Cannot use if at max bioenergy
+function bool RestrictedUse(DeusExPlayer player)
+{
+    return (player.Energy >= player.EnergyMax);
+}
+
+//Set max copies based on the Medics Bag perk
+function SetMax()
+{
+    local DeusExPlayer player;
+    player = DeusExPlayer(Owner);
+
+	if (player != none && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkCombatMedicsBag').bPerkObtained == true)
+		MaxCopies = default.MaxCopies + 5;
+}
+
+function bool DoLeftFrob(DeusExPlayer frobber)
+{
+    SetMax();
+    return super.DoLeftFrob(frobber);
+}
 
 //SARGE: Moved the Bioenergy perk-based max amount bonus here, was in DeusExPlayer
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {
-    if (frobber.PerkManager.GetPerkWithClass(class'DeusEx.PerkCombatMedicsBag').bPerkObtained == true)
-        MaxCopies = 25;
+    SetMax();
     return super.DoRightFrob(frobber,objectInHand);
 }
 
-
-state Activated
+function OnActivate(DeusExPlayer player)
 {
-	function Activate()
-	{
-		// can't turn it off
-	}
-
-	function BeginState()
-	{
-		local DeusExPlayer player;
-        local float origEnergy;                                                 //RSD: Added
-
-		Super.BeginState();
-
-		//player = DeusExPlayer(Owner);
-		player = DeusExPlayer(GetPlayerPawn());                                 //RSD: Altering this to enable generic LeftClick interact
-
-		
-		if (player != None && player.Energy == player.EnergyMax)
-		{
-			player.ClientMessage(msgFullEnergy);
-			GoToState('DeActivated');
-			return;
-		}
-
-		if (player != None)
-		{
-		    origEnergy = player.Energy;                                         //RSD
-
-			if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkBiogenic').bPerkObtained == true)
-			rechargeAmount=25;
-			//player.ClientMessage(Sprintf(msgRecharged, rechargeAmount));      //RSD
-
-			player.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
-
-			player.Energy += rechargeAmount;
-			if (player.Energy > player.EnergyMax)
-				player.Energy = player.EnergyMax;
-
-			player.ClientMessage(Sprintf(msgRecharged, int(player.Energy-origEnergy+0.5))); //RSD: Tells you how much energy you actually recovered
-		}
-
-		UseOnce();
-	}
-Begin:
+    super.OnActivate(player);
+    player.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
 }
+
 
 // ----------------------------------------------------------------------
 // UpdateInfo()
@@ -79,32 +62,8 @@ Begin:
 
 function bool UpdateInfo(Object winObject)
 {
-	local PersonaInfoWindow winInfo;
-	local string str;
-    local DeusExPlayer player;
-
-    player = DeusExPlayer(Owner);
-
-	if (player != none && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkCombatMedicsBag').bPerkObtained == true)
-		MaxCopies = 25;
-
-	winInfo = PersonaInfoWindow(winObject);
-	if (winInfo == None)
-		return False;
-
-	winInfo.SetTitle(itemName);
-	if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkCombatMedicsBag').bPerkObtained == true)
-		winInfo.AddSecondaryButton(self);                                       //RSD: Can now equip biocells as secondaries with the Combat Medic's Bag perk
-	winInfo.SetText(Description $ winInfo.CR() $ winInfo.CR());
-	if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkBiogenic').bPerkObtained == true)
-		rechargeAmount=25;
-	winInfo.AppendText(Sprintf(RechargesLabel, RechargeAmount));
-
-	// Print the number of copies
-	str = CountLabel @ String(NumCopies);
-	winInfo.AppendText(winInfo.CR() $ winInfo.CR() $ str);
-
-	return True;
+    SetMax();
+    Super.UpdateInfo(winObject);
 }
 
 // ----------------------------------------------------------------------
@@ -123,11 +82,9 @@ simulated function bool TestMPBeltSpot(int BeltSpot)
 defaultproperties
 {
      bAutoActivate=True
-     rechargeAmount=20
+     bioenergyAmount=20
      mpRechargeAmount=50
-     msgRecharged="Recharged %d points"
-	 msgFullEnergy="You're already at full Energy"
-     RechargesLabel="Recharges %d Energy Units"
+	 CannotUse="You're already at full Energy"
      maxCopies=20
      bCanHaveMultipleCopies=True
      bActivatable=True
