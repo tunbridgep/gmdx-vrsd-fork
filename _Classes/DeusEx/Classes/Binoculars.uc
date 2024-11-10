@@ -4,6 +4,13 @@
 class Binoculars extends DeusExPickup;
 
 var int ScopeFov;
+
+//SARGE: Always allow as secondary
+function bool CanAssignSecondary(DeusExPlayer player)
+{
+    return true;
+}
+
 // ----------------------------------------------------------------------
 // state Activated
 // ----------------------------------------------------------------------

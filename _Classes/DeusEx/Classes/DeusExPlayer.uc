@@ -602,6 +602,9 @@ var travel float autosaveRestrictTimer;                                         
 var const float autosaveRestrictTimerDefault;                                   //Sarge: Timer for autosaves.
 var travel bool bResetAutosaveTimer;                                            //Sarge: This is necessary because our timer isn't set properly during the same frame as saving, for some reason.
 
+//Menu Overhaul stuff
+var localized String RechargedPointLabel;
+var localized String RechargedPointsLabel;
 
 var travel AddictionSystem AddictionManager;
 var travel PerkSystem PerkManager;
@@ -4849,13 +4852,21 @@ function int HealPlayer(int baseHealPoints, optional Bool bUseMedicineSkill)
 // ChargePlayer()
 // ----------------------------------------------------------------------
 
-function int ChargePlayer(int baseChargePoints)
+function int ChargePlayer(int baseChargePoints, optional bool showMessage)
 {
 	local int chargedPoints;
 
 	chargedPoints = Min(EnergyMax - Int(Energy), baseChargePoints);
 
 	Energy += chargedPoints;
+
+    if (showMessage && chargedPoints > 0)
+    {
+        if (chargedPoints == 1)
+            ClientMessage(sprintf(RechargedPointLabel,chargedPoints));
+        else
+            ClientMessage(sprintf(RechargedPointsLabel,chargedPoints));
+    }
 
 	return chargedPoints;
 }
@@ -17203,6 +17214,8 @@ defaultproperties
      AddedNanoKey="%s added to Nano Key Ring"
      HealedPointsLabel="Healed %d points"
      HealedPointLabel="Healed %d point"
+     RechargedPointsLabel="Recharged %d points"
+     RechargedPointLabel="Recharged %d point"
      SkillPointsAward="%d skill points awarded"
      QuickSaveGameTitle="Quick Save"
      WeaponUnCloak="Weapon drawn... Uncloaking"

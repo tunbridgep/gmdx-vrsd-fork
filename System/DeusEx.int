@@ -29,6 +29,8 @@ EnergyDepleted="Bio-electric energy reserves depleted"
 AddedNanoKey="%s added to Nano Key Ring"
 HealedPointsLabel="Healed %d points"
 HealedPointLabel="Healed %d point"
+RechargedPointsLabel="Recharged %d points"
+RechargedPointLabel="Recharged %d point"
 SkillPointsAward="%d skill points awarded"
 QuickSaveGameTitle="Quick Save"
 FamiliarName="JC Denton"
@@ -1520,15 +1522,15 @@ beltDescription="BINOCS"
 
 [Liquor40oz]
 ItemName="Forty"
-Description="'COLD SWEAT forty ounce malt liquor. Never let 'em see your COLD SWEAT.'|n|nHeals 2 points"
+Description="'COLD SWEAT forty ounce malt liquor. Never let 'em see your COLD SWEAT.'"
 AddictionDescription="'COLD SWEAT forty ounce malt liquor. Never let 'em see your COLD SWEAT.'|n|n<UNATCO OPS FILE NOTE JR155-VIOLET> An augmented agent's immune system reacts to alcohol consumption with a pseudo-anesthetic effect, notably enhancing pain tolerance. While addiction is slow to take root, it will cause increased nerve activity in withdrawal, resulting in involuntary muscle spasms colloquially known as "the shakes". -- Jaime Reyes <END NOTE>|n|nActive Buff: Max Torso Health +5 (stacks x5)|nWithdrawal Debuff: Accuracy -15%|nUse Duration: 120 seconds (stacks x5)|nAddiction Increment: 5%"
 beltDescription="FORTY"
 
 [LiquorBottle]
 ItemName="Liquor"
 ItemArticle="some"
-Description="The label is torn off, but it looks like some of the good stuff.|n|nHeals 2 points"
-AddictionDescription="The label is torn off, but it looks like some of the good stuff.|n|n<UNATCO OPS FILE NOTE JR155-VIOLET> An augmented agent's immune system reacts to alcohol consumption with a pseudo-anesthetic effect, notably enhancing pain tolerance. While addiction is slow to take root, it will cause increased nerve activity in withdrawal, resulting in involuntary muscle spasms colloquially known as "the shakes". -- Jaime Reyes <END NOTE>|n|nHeals 5 points|nActive Buff: Max Torso Health +5 (stacks x5)|nWithdrawal Debuff: Accuracy -15%|nUse Duration: 120 seconds (stacks x5)|nAddiction Increment: 5%"
+Description="The label is torn off, but it looks like some of the good stuff."
+AddictionDescription="The label is torn off, but it looks like some of the good stuff.|n|n<UNATCO OPS FILE NOTE JR155-VIOLET> An augmented agent's immune system reacts to alcohol consumption with a pseudo-anesthetic effect, notably enhancing pain tolerance. While addiction is slow to take root, it will cause increased nerve activity in withdrawal, resulting in involuntary muscle spasms colloquially known as "the shakes". -- Jaime Reyes <END NOTE>|nActive Buff: Max Torso Health +5 (stacks x5)|nWithdrawal Debuff: Accuracy -15%|nUse Duration: 120 seconds (stacks x5)|nAddiction Increment: 5%"
 beltDescription="LIQUOR"
 
 [ComputerPublic]
@@ -1623,8 +1625,8 @@ ItemName="Retinal Scanner"
 [WineBottle]
 ItemName="Wine"
 ItemArticle="some"
-Description="A nice bottle of wine.|n|nHeals 2 points"
-AddictionDescription="A nice bottle of wine.|n|n<UNATCO OPS FILE NOTE JR155-VIOLET> An augmented agent's immune system reacts to alcohol consumption with a pseudo-anesthetic effect, notably enhancing pain tolerance. While addiction is slow to take root, it will cause increased nerve activity in withdrawal, resulting in involuntary muscle spasms colloquially known as "the shakes". -- Jaime Reyes <END NOTE>|n|nHeals 5 points|nActive Buff: Max Torso Health +5 (stacks x5)|nWithdrawal Debuff: Accuracy -15%|nUse Duration: 120 seconds (stacks x5)|nAddiction Increment: 5%"
+Description="A nice bottle of wine."
+AddictionDescription="A nice bottle of wine.|n|n<UNATCO OPS FILE NOTE JR155-VIOLET> An augmented agent's immune system reacts to alcohol consumption with a pseudo-anesthetic effect, notably enhancing pain tolerance. While addiction is slow to take root, it will cause increased nerve activity in withdrawal, resulting in involuntary muscle spasms colloquially known as "the shakes". -- Jaime Reyes <END NOTE>|nActive Buff: Max Torso Health +5 (stacks x5)|nWithdrawal Debuff: Accuracy -15%|nUse Duration: 120 seconds (stacks x5)|nAddiction Increment: 5%"
 beltDescription="WINE"
 
 [Valve]
@@ -1690,13 +1692,13 @@ beltDescription="AMBROSIA"
 [SoyFood]
 ItemName="Soy Food"
 ItemArticle="some"
-Description="Fine print: 'Seasoned with nanoscale mechanochemical generators, this TSP (textured soy protein) not only tastes good but also self-heats when its package is opened.'|n|nHeals 5 points"
+Description="Fine print: 'Seasoned with nanoscale mechanochemical generators, this TSP (textured soy protein) not only tastes good but also self-heats when its package is opened.'"
 beltDescription="SOY FOOD"
 
 [Sodacan]
 ItemName="Soda"
 ItemArticle="some"
-Description="The can is blank except for the phrase 'PRODUCT PLACEMENT HERE.' It is unclear whether this is a name or an invitation.|n|nHeals 2 points"
+Description="The can is blank except for the phrase 'PRODUCT PLACEMENT HERE.' It is unclear whether this is a name or an invitation."
 beltDescription="SODA"
 
 [BookOpen]

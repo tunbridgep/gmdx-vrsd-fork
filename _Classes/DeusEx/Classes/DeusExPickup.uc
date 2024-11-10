@@ -771,22 +771,25 @@ simulated function bool UpdateInfo(Object winObject)
 {
 	local PersonaInfoWindow winInfo;
 	local string str;
+    local DeusExPlayer player;
+
+    player = DeusExPlayer(Owner);
 
 	winInfo = PersonaInfoWindow(winObject);
 	if (winInfo == None)
 		return False;
 
-    //TODO: Move Secondaries stuff to a separate function and use it from subclasses
-	winInfo.SetTitle(itemName);
-	if (IsA('Binoculars')|| IsA('Flare'))                                       //RSD: Assign Binoculars and Flares as a secondary item
+    //Set title
+	winInfo.SetTitle(GetTitle());
+
+    if (player != None && CanAssignSecondary(player))
 		winInfo.AddSecondaryButton(self);
 
-    if (IsA('RSDEdible'))                                                       //Sarge: Allow edibles as secondaries (mainly used for drugs)
-    {
-		winInfo.AddSecondaryButton(self);
-    }
-    
 	winInfo.SetText(GetDescription());
+		
+    winInfo.AppendText(winInfo.CR());
+
+	winInfo.SetText(GetDescription2());
 
     /*
     //SARGE: Removed this as it's pointless
@@ -808,13 +811,35 @@ simulated function bool UpdateInfo(Object winObject)
 }
 
 // ----------------------------------------------------------------------
-// GetDescription()
+// CanAssignSecondary()
 // ----------------------------------------------------------------------
 
-//SARGE: Now each object can define it's own description text.
+//SARGE: Now each object can define it's own function for whether it can be a secondary or not.
+function bool CanAssignSecondary(DeusExPlayer player)
+{
+    return false;
+}
+
+// ----------------------------------------------------------------------
+// Get Description
+// ----------------------------------------------------------------------
+
+//SARGE: Now each object can define it's own title, description etc.
+function string GetTitle()
+{
+    return itemName;
+}
 function string GetDescription()
 {
     return Description;
+}
+//Added after a double line spacing on the Description panel.
+//Usually used for stats and other things.
+function string GetDescription2()
+{
+	if (bCanHaveMultipleCopies)
+		//return CountLabel @ String(NumCopies);
+        return sprintf(StackSizeLabel,RetMaxCopies());
 }
 
 // ----------------------------------------------------------------------

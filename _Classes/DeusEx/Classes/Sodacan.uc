@@ -7,9 +7,6 @@ function Eat(DeusExPlayer player)
 {
     local Sound BurpSound;
     
-    //Heal
-    player.HealPlayer(2, False);
-
     //LDDP, 10/25/21: Load sound for burping dynamically.
     if ((player.FlagBase != None) && (Player.FlagBase.GetBool('LDDPJCIsFemale')))
         BurpSound = Sound(DynamicLoadObject("FemJC.FJCBurp", class'Sound', false));
@@ -34,6 +31,7 @@ function postpostbeginplay()
 
 defaultproperties
 {
+     healAmount=2;
      bBreakable=True
      FragType=Class'DeusEx.PlasticFragment'
      maxCopies=10
