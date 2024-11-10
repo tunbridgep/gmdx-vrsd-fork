@@ -243,10 +243,15 @@ event TravelPostAccept()
 function Timer()
 {
     Super.Timer();
+
+    //Setup Outfit Manager
     SetupOutfitManager();
 
     //load HDTP Skin
     UpdateHDTPSettings();
+
+    //Apply Current Outfit
+    outfitManager.ApplyCurrentOutfit();
 }
 
 // ----------------------------------------------------------------------

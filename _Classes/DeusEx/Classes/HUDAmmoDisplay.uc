@@ -54,7 +54,12 @@ event InitWindow()
 
 event Tick(float deltaSeconds)
 {
-	if (player.Weapon != None && DeusExWeapon(player.Weapon).ReloadCount > 0 && bVisible )
+    local bool validWeap, hastool;
+
+    validWeap = player.Weapon != None && DeusExWeapon(player.Weapon).ReloadCount > 0;
+    hasTool = player.inHand != None && (player.inHand.isA('Multitool') || player.inHand.isA('Lockpick')) && player.iFrobDisplayStyle == 0;
+
+	if ((validweap || hastool) && bVisible )
 		Show();
 	else
 		Hide();
@@ -81,6 +86,25 @@ event DrawWindow(GC gc)
         else
 		    weapon = DeusExWeapon(player.Weapon);
 	}
+
+    //SARGE: Draw tool info if we have one
+    //TODO: Refactor this
+    if (player.inHand != None && (player.inHand.isA('Multitool') || player.inHand.isA('Lockpick')) && player.iFrobDisplayStyle == 0)
+    {
+		// Draw the weapon icon
+		gc.SetStyle(DSTY_Masked);
+		gc.SetTileColorRGB(255, 255, 255);
+		gc.DrawTexture(22, 20, 40, 35, 0, 0, SkilledTool(player.inHand).icon);
+
+		// Draw the ammo count
+		gc.SetFont(Font'TechMedium'); //CyberP: hud scaling Font'FontTiny'
+		gc.SetAlignments(HALIGN_Center, VALIGN_Top);   //CyberP: Valignment
+		gc.EnableWordWrap(false);
+         
+        gc.SetTextColor(colAmmoText);
+        gc.DrawText(infoX, 27, 20, 9, SkilledTool(player.inHand).numCopies);
+        gc.DrawText(infoX, 39, 20, 9, NotAvailable);
+    }
 
 	if ( weapon != None )
 	{
@@ -189,12 +213,15 @@ function DrawBackground(GC gc)
 
 	gc.DrawText(66, 17, 21, 8, AmmoLabel);
 
-	if (weapon.bPerShellReload || weapon.AmmoName == Class'Ammo20mm' || player.bDisplayTotalAmmo)
-		gc.DrawText(66, 48, 21, 8, RoundsLabel);
-	else if (player.bDisplayClips)
-		gc.DrawText(66, 48, 21, 8, ClipsLabel);
-    else
-		gc.DrawText(66, 48, 21, 8, MagsLabel);
+    if (player != None)
+    {
+        if (weapon != None && weapon.bPerShellReload || weapon.AmmoName == Class'Ammo20mm' || player.bDisplayTotalAmmo)
+            gc.DrawText(66, 48, 21, 8, RoundsLabel);
+        else if (player.bDisplayClips)
+            gc.DrawText(66, 48, 21, 8, ClipsLabel);
+        else
+            gc.DrawText(66, 48, 21, 8, MagsLabel);
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -234,8 +261,8 @@ defaultproperties
      NotAvailable="N/A"
      msgReloading="---"
      AmmoLabel="AMMO"
-     MagsLabel="MAGSAAAHHH"
-     ClipsLabel="CLIPSAAAAHHH"
+     MagsLabel="MAGS"
+     ClipsLabel="CLIPS"
 	 RoundsLabel="RDS"
      texBackground=Texture'DeusExUI.UserInterface.HUDAmmoDisplayBackground_1'
      texBorder=Texture'DeusExUI.UserInterface.HUDAmmoDisplayBorder_1'

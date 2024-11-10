@@ -91,15 +91,18 @@ event InitWindow()
 	bodyWin.SetTileColor(colArmor);
 	bodyWin.Lower();
 
-	winEnergy = CreateProgressBar(15, 20);
-	if (player.bAnimBar1)
-	    winEnergy.bSpecialFX = True;
-	winBreath = CreateProgressBar(61, 20);
-	if (player.bAnimBar2)
-	    winBreath.bSpecialFX2 = True;
-
 	damageFlash = 0.4;  // seconds
 	healFlash   = 1.0;  // seconds
+	
+    winEnergy = CreateProgressBar(15, 20);
+	winBreath = CreateProgressBar(61, 20);
+    UpdateBars();
+}
+
+function UpdateBars()
+{
+    winEnergy.bSpecialFX = player.bAnimBar1;
+    winBreath.bSpecialFX2 = player.bAnimBar2;
 }
 
 // ----------------------------------------------------------------------
@@ -431,7 +434,7 @@ function UpdateAsFemale(bool NewbFemale)
 		TTex = Texture(DynamicLoadObject("FemJC.HUDHitDisplay_BodyFem", class'Texture', false));
 		if (TTex != None) bodyWin.SetBackground(TTex);
 	}
-	else
+	else if (bodyWin != None)
 	{
 		bodyWin.SetBackground(Texture'HUDHitDisplay_Body');
 	}

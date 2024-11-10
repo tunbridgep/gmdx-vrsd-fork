@@ -99,7 +99,9 @@ defaultproperties
      tips(25)="TIP: Using the fire button with nothing equipped while looking at a corpse will always pick it up rather than searching it."
      tips(26)="TIP: Food items, tech goggles and drugs can be assigned as secondary items for quick healing or buffs during combat situations."
      tips(27)="TIP: If you're having trouble managing a lot of augmentations, try using the augmentation wheel."
-     tips(28)="TIP: The GEP gun is not actually the most silent way to eliminate Manderley."
+     tips(28)="TIP: When left-clicking on a locked object, you can use the right mouse button to cycle between lockpicks, the nanokey, and melee weapons."
+     tips(29)="TIP: Some weapons reload a single shot at a time. Press the FIRE button at any time to cancel the animation, allowing you to quickly return fire."
+     tips(30)="TIP: The GEP gun is not actually the most silent way to eliminate Manderley."
      choices(0)=Class'DeusEx.MenuChoice_GMDXQoLOptions'
      choices(1)=Class'DeusEx.MenuChoice_GMDXGameplayOptions'
      //choices(2)=Class'DeusEx.MenuChoice_CreateCustomColor'
@@ -113,6 +115,8 @@ defaultproperties
      actionButtons(0)=(Align=HALIGN_Right,Action=AB_Cancel)
      actionButtons(1)=(Align=HALIGN_Right,Action=AB_OK)
      actionButtons(2)=(Action=AB_Reset)
+     //actionButtons(3)=(Align=HALIGN_Right,Action=AB_Other,Text="Video Setup",Key="VIDEO")
+     //actionButtons(4)=(Align=HALIGN_Right,Action=AB_Other,Text="Show Tips",Key="TIPS")
      actionButtons(3)=(Align=HALIGN_Right,Action=AB_Other,Text="Show Tips",Key="TIPS")
      Title="GMDX Options"
      ClientWidth=537
@@ -122,4 +126,10 @@ defaultproperties
      clientTextures(2)=Texture'DeusExUI.UserInterface.MenuControlsBackground_3'
      textureRows=1
      helpPosY=174
+     /*
+     texturesSetting="ini:Engine.Engine.GameRenderDevice UseS3TC"
+     reflectionsSetting="ini:Engine.Engine.GameRenderDevice ShinySurfaces"
+     precacheSetting="ini:Engine.Engine.GameRenderDevice UsePrecache"
+     classicLighting="ini:Engine.Engine.GameRenderDevice ClassicLighting"
+     */
 }
