@@ -60,7 +60,7 @@ ItemArticle="a"
 
 [SkillManager]
 NoToolMessage="You need the %s"
-NoSkillMessage="%s skill level insufficient to use the %s"
+NoSkillMessage="Requires %s at %s"
 SuccessMessage="Success!"
 YourSkillLevelAt="Your skill level at %s is now %d"
 
