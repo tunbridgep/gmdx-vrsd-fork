@@ -5,6 +5,7 @@ class ComputerScreenDisabled extends ComputerUIWindow;
 
 var MenuUILabelWindow        winLoginInfo;
 var MenuUIActionButtonWindow btnClose;
+var MenuUIActionButtonWindow btnLogin;
 
 var localized String ButtonLabelClose;
 var localized String LoginInfoText;
@@ -19,6 +20,7 @@ function CreateControls()
 	Super.CreateControls();
 
 	btnClose = winButtonBar.AddButton(ButtonLabelClose, HALIGN_Right);
+	btnLogin = winButtonBar.AddButton(ButtonLabelLogin, HALIGN_Right);
 
 	CreateLoginInfoWindow();
 
@@ -69,6 +71,10 @@ function bool ButtonActivated( Window buttonPressed )
 		case btnClose:
 			CloseScreen("EXIT");
 			break;
+		
+        case btnLogin:
+			CloseScreen("LOGOUT");
+			break;
 
 		default:
 			bHandled = False;
@@ -87,7 +93,7 @@ function bool ButtonActivated( Window buttonPressed )
 defaultproperties
 {
      ButtonLabelClose="Close"
-     LoginInfoText="This terminal has been locked.|n|nReason: Network Threat Analysis policy has locked this terminal due to suspicious activity.|n|nFor more information, please contact your network administrator.|n"
+     LoginInfoText="Due to suspicious network activity, this terminal has been placed under quarantine by security policy. Special network access functions have been restricted.|nFor more information, please contact your network administrator.|n"
      StatusText="SECUR//GLOBAL//9571.2256"
      Title="Security Notice"
      ClientWidth=403
