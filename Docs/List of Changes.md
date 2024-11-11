@@ -32,6 +32,7 @@ Sarge's Changes since Beta 2.2:
     - You can no longer waste medkits or biocells when at maximum health/energy
     - Added alternate weapon offsets to hide many of the visible seams or missing parts of weapon viewmodels.
     - Weapons that don't use ammo (such as melee weapons) no longer show the Ammo element on the HUD.
+    - Modified Weapons will appear with a "+" icon on the belt and in the inventory screen to differentiate them from unmodded ones.
     - Augmentation Wheel improvements
         - While in the augmentation screen, use middle-click on an active augmentation to add or remove it from the augmentation wheel.
         - By default all augmentations will appear on the wheel.
