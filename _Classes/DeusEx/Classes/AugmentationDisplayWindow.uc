@@ -1484,11 +1484,13 @@ function DrawTargetAugmentation(GC gc)
 	DeusExRootWindow(player.rootWindow).hud.hitmarker.SetCrosshairColor(crossColor);
 }
 
+//SARGE: Get the text for rebooting cameras/turrets
 function string GetHackDisabledText(Actor target,bool TargetingDisplay)
 {
     local SecurityCamera cam;
     local AutoTurret turr;
-    local string str;
+    local string str, strT;
+    local int amt, min, sec;
 
     if (target.IsA('AutoTurretGun'))
         turr = AutoTurret(target.Owner);
@@ -1497,10 +1499,45 @@ function string GetHackDisabledText(Actor target,bool TargetingDisplay)
     
     cam = SecurityCamera(target);
 
+
+
     if (turr != None && turr.bRebooting)
-        str = Sprintf(msgReboot,int(turr.disableTime - player.saveTime));
+        amt = int(turr.disableTime - player.saveTime);
     else if (cam != None && cam.bRebooting)
-        str = Sprintf(msgReboot,int(cam.disableTime - player.saveTime));
+        amt = int(cam.disableTime - player.saveTime);
+
+    //ZAP!
+    if (amt == 0)
+        return "";
+    /*
+    else if (turr != None && turr.bConfused && turr.bRebooting)
+        return Sprintf(msgReboot,"-:--");
+    else if (cam != None && cam.bConfused && cam.bRebooting)
+        return Sprintf(msgReboot,"-:--");
+    */
+
+    //Now format it as minutes and seconds
+    min = amt / 60;
+    sec = amt % 60;
+
+    //minute
+    if (min > 0)
+        strT = strT $ min;
+    else
+        strT = strT $ "0";
+
+    //divider
+    strT = strT $ ":";
+
+    //seconds
+    if (sec > 0 && sec < 10)
+        strT = strT $ "0" $ sec;
+    else if (sec > 0)
+        strT = strT $ sec;
+    else
+        strT = strT $ "00";
+        
+    str = Sprintf(msgReboot,strT);
 
     //If using the targeting aug, we need to format it
     if (TargetingDisplay && str != "")
@@ -1932,7 +1969,7 @@ defaultproperties
      msgIRAmpActive="IRAmp Active"
      msgNoImage="Image Not Available"
      msgDisabled="Disabled"
-     msgReboot="Rebooting in %ds"
+     msgReboot="Rebooting in %s"
      SpottedTeamString="You have spotted a teammate!"
      YouArePoisonedString="You have been poisoned!"
      YouAreBurnedString="You are burning!"

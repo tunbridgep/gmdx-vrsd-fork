@@ -37,14 +37,15 @@ defaultproperties
      items(20)=(HelpText="Breakable objects display hitpoints & throwable objects display mass. Not recommended for the sake of consistency.",actionText="HUD: Extra Object Details",variable="bExtraObjectDetails");
      items(21)=(HelpText="If enabled, a marker appears within your crosshair when dealing damage.",actionText="HUD: Hit Markers",variable="bHitMarkerOn",defaultValue=1);
      items(22)=(HelpText="Display Lockpicking/Bypassing tooltips with yellow text if you only just meet the tool requirement, and red text if you don't meet the requirement.",actionText="HUD: Tool Window Colors",variable="bColourCodeFrobDisplay",defaultValue=1);
-     items(23)=(HelpText="If enabled, the crosshair will turn blue when attempting to attach a mine to a surface.",actionText="HUD: Wall Placement Helper",variable="bWallPlacementCrosshair",defaultValue=1);
-     items(24)=(HelpText="If Enabled, attempting to pick up carryable objects will automatically holster your held weapon, enabling you to pick up the object.",actionText="Interaction: Auto-Holster",variable="bAutoHolster");
-     items(25)=(HelpText="If enabled, you never retrieve combat knives from corpses.",actionText="Interaction: Decline Knives",variable="bNoKnives");
-     items(26)=(HelpText="If enabled, double-right click to holster/unholster items in hand. Prevents accidentally putting away items when attempting to interact with the world.",actionText="Interaction: Double-Click Holstering",variable="bDblClickHolster");
-     items(27)=(HelpText="If enabled, right clicking a corpse for the first time will never pick it up, to stop accidentally picking up corpses while searching for items.",actionText="Interaction: Enhanced Looting",variable="bEnhancedCorpseInteractions",defaultValue=1);
-     items(28)=(HelpText="Append [Searched] text to corpses when they are interacted with.",actionText="Interaction: Show Searched Labels",variable="bSearchedCorpseText");
-     items(29)=(HelpText="Changes lighting on some maps to reduce strobing and flickering.",actionText="Lighting: Lighting Accessibility",variable="bLightingAccessibility");
-     items(30)=(HelpText="When dying, switch to a first or third person camera.",actionText="Player: Death Perspective",variable="bRemoveVanillaDeath",valueText0="Third Person",valueText1="First Person");
-     items(31)=(HelpText="Alternate realistic headbobbing effect. To disable headbobbing outright, see the standard Settings menu.",actionText="Player: Realistic Head-Bobbing",variable="bModdedHeadBob",defaultValue=1);
+     items(23)=(HelpText="When displaying the Tool window, show how many tools or lockpicks you have on the panel.",actionText="HUD: Tool Window Style",variable="iFrobDisplayStyle",defaultValue=1,valueText0="Original",valueText1="Current/Required Tools",valueText2="Required/Current Tools");
+     items(24)=(HelpText="If enabled, the crosshair will turn blue when attempting to attach a mine to a surface.",actionText="HUD: Wall Placement Helper",variable="bWallPlacementCrosshair",defaultValue=1);
+     items(25)=(HelpText="If Enabled, attempting to pick up carryable objects will automatically holster your held weapon, enabling you to pick up the object.",actionText="Interaction: Auto-Holster",variable="bAutoHolster");
+     items(26)=(HelpText="If enabled, you never retrieve combat knives from corpses.",actionText="Interaction: Decline Knives",variable="bNoKnives");
+     items(27)=(HelpText="If enabled, double-right click to holster/unholster items in hand. Prevents accidentally putting away items when attempting to interact with the world.",actionText="Interaction: Double-Click Holstering",variable="bDblClickHolster");
+     items(28)=(HelpText="If enabled, right clicking a corpse for the first time will never pick it up, to stop accidentally picking up corpses while searching for items.",actionText="Interaction: Enhanced Looting",variable="bEnhancedCorpseInteractions",defaultValue=1);
+     items(29)=(HelpText="Append [Searched] text to corpses when they are interacted with.",actionText="Interaction: Show Searched Labels",variable="bSearchedCorpseText");
+     items(30)=(HelpText="Changes lighting on some maps to reduce strobing and flickering.",actionText="Lighting: Lighting Accessibility",variable="bLightingAccessibility");
+     items(31)=(HelpText="When dying, switch to a first or third person camera.",actionText="Player: Death Perspective",variable="bRemoveVanillaDeath",valueText0="Third Person",valueText1="First Person");
+     items(32)=(HelpText="Alternate realistic headbobbing effect. To disable headbobbing outright, see the standard Settings menu.",actionText="Player: Realistic Head-Bobbing",variable="bModdedHeadBob",defaultValue=1);
      Title="GMDX Quality of Life Options"
 }
