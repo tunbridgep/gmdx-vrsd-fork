@@ -103,6 +103,8 @@ Sarge's Changes since Beta 2.2:
             - Augmentations that need to recharge after use (including the Spy Drone) will show a red icon in the Augmentations window while they are recharging.
         - EUAS
             - Swapped Level 2 and 3, because level 2 was arguably better than level 3. Now level 2 detects environmental hazards, level 3 shows visibility on the HUD.
+            - Level 2 "Hazard Detection" now detects multiple threats (not just one at random), and can also detect grenades. Only the closest gas cloud will be shown, to reduce clutter.
+                - Detection Range also increases at Level 3.
         - Aggressive Defense System:
             - Will no longer display explosives which aren't detonated, so it can't be used to detect placed grenades at long range anymore
                 - Will instead continue to display destroyed projectiles on the HUD for a second or so after they are destroyed.
