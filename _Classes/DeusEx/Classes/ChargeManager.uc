@@ -4,6 +4,7 @@
 // Now overhauled entirely by CyberP.                                           //RSD: and me!                  //SARGE: And me!
 // SARGE: This used to be a subclass of DeusExPickup, but now,
 // since it's also used by the DTS, we have moved it to a separate class.
+// TODO: Make ChargedPickup use this
 //=============================================================================
 class ChargeManager extends Object;
 
