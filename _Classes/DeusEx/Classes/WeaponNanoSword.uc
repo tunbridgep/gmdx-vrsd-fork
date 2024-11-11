@@ -5,6 +5,8 @@ class WeaponNanoSword extends DeusExWeapon;
 
 //SARGE: Make DTS require Bioenergy to function
 var travel ChargeManager chargeManager;
+var int chargePerUse;                           //How much charge we use per hit
+var int totalCharge;                           //How much charge we use per hit
 
 simulated function PreBeginPlay()
 {
@@ -33,12 +35,16 @@ function DrainPower()
 
     player = DeusExPlayer(owner);
 
+    /*
     if (player != None)
 		skillValue = player.SkillSystem.GetSkillLevel(governingSkill);
 
     //player.clientmessage("SkillValue: " $ skillValue);
 
     chargeManager.Drain(25 * (4.0 - skillValue));
+    */
+    //SARGE: No longer based on weapon skill
+    chargeManager.Drain(chargePerUse);
 }
 
 //Initialise charge manager and link the player to it
@@ -47,7 +53,7 @@ function SetupChargeManager()
     if (chargeManager == None)
     {
 	    chargeManager = new(Self) class'ChargeManager';
-        chargeManager.SetMaxCharge(1000,true);
+        chargeManager.SetMaxCharge(totalCharge,true);
         chargeManager.chargeMult = 0.2;
     }
         
@@ -240,4 +246,6 @@ defaultproperties
      LightRadius=4
      Mass=20.000000
      minSkillRequirement=3;
+     chargePerUse=2
+     totalCharge=100
 }
