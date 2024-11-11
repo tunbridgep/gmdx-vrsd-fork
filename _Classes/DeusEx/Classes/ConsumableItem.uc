@@ -11,6 +11,9 @@ var localized String RechargeLabel;
 var localized String RechargesLabel;
 var localized String CannotUse;
 
+var int healAmount;                                                 //SARGE: Put healint amoung here to make the code more generic
+var int bioenergyAmount;                                            //SARGE: Put recharge here to make code more generic
+
 //Check whether we are allowed to use this consumable
 function bool RestrictedUse(DeusExPlayer player)
 {
@@ -56,6 +59,7 @@ function OnActivate(DeusExPlayer player)
 {
     super.OnActivate(player);
     HealMe(player);
+    UseOnce();
 }
 
 // ----------------------------------------------------------------------
@@ -100,7 +104,6 @@ state Activated
         else if (player != None && !player.IsInState('Dying'))
         {
             OnActivate(player);
-            UseOnce();
         }
     }
 Begin:

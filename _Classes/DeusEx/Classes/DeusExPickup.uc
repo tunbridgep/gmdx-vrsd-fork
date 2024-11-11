@@ -38,9 +38,6 @@ var travel bool bIsRadar;                                                       
 var bool bJustUncloaked;                                                        //RSD: for splitting cloak/radar texture functionality
 var bool bJustUnRadar;                                                          //RSD: for splitting cloak/radar texture functionality
 var bool bAutoActivate;                                                         //Sarge: Auto activate with left click, rather than placing in the players hands                                                                                
-var int healAmount;                                                 //SARGE: Put healint amoung here to make the code more generic
-var int bioenergyAmount;                                            //SARGE: Put recharge here to make code more generic
-
 
 var localized string StackSizeLabel;                                            //Sarge: Show the stack size in the description
 
