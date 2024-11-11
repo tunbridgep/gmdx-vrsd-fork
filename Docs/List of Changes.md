@@ -20,6 +20,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX bug where Ford Schick would not give you an upgrade canister when telling you he swiped one, if ConFix isn't installed. Fixed by adding it to his desk.
     - Fixed a number of typos in various places.
     - Fixed Vanilla bug where sound volume would reset upon new game.
+    - Fixed GMDX quickloading not always working correctly, and other save issues including incorrect save-game ordering in the save/load screens.
     - Fixed many other GMDX and Vanilla bugs.
 - Quality of Life Improvements:
     - Added a Lighting Accessibility setting, which removes some strobing and flickering in certain areas on some maps, such as the 'Ton hotel elevator shaft.
