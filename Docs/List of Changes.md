@@ -22,6 +22,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed Vanilla bug where sound volume would reset upon new game.
     - Fixed many other GMDX and Vanilla bugs.
 - Quality of Life Improvements:
+    - Right-Clicking an item in the belt with the Inventory Window open will clear the slot.
     - The Inventory "Show Ammo" display now always shows the total amount of ammo you can carry. Before, it was only visible when "Show Descriptions" was enabled.
     - Added a Lighting Accessibility setting, which removes some strobing and flickering in certain areas on some maps, such as the 'Ton hotel elevator shaft.
     - Added a new corpse searching setting, "Enhanced Corpse Interactions", which makes the first right-click on a corpse never pick them up, even if empty, so that you can search them reliably without accidentally picking them up.
