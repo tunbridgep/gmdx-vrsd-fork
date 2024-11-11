@@ -27,7 +27,7 @@ var localized String msgRecharged;
 function int SetMaxCharge(int amount, optional bool resetCharge)
 {
     maxCharge = amount;
-    if (resetCharge)
+    if (resetCharge || charge > maxCharge)
         charge = amount;
 }
 
@@ -141,6 +141,8 @@ function unDimIcon() //RSD: When a biocell is used to charge an item, check if i
     }
 }
 
+//Used for draining at preset intervals based on skill level
+//Similar to the original game.
 function int CalcChargeDrain()
 {
 	local float skillValue;
