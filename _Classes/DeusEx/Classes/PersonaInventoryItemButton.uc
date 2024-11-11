@@ -118,6 +118,10 @@ event DrawWindow(GC gc)
 			weapon = DeusExWeapon(anItem);
 			str = "";
 
+			//SARGE: Add charge for NanoSword
+            if (anItem.isA('WeaponNanoSword') && WeaponNanoSword(anItem).chargeManager != None && WeaponNanoSword(anItem).chargeManager.GetCurrentCharge() > 0)
+                str2 = Sprintf("%d%%", WeaponNanoSword(anItem).chargeManager.GetCurrentCharge());
+
 			if ((weapon != None) && weapon.bHandToHand && (weapon.AmmoType != None) && (weapon.AmmoName != class'AmmoNone'))
 			{
 				str = String(weapon.AmmoType.AmmoAmount);

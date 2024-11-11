@@ -3,7 +3,8 @@
 //=============================================================================
 class WeaponNanoSword extends DeusExWeapon;
 
-var bool bWasCrosshair;
+//SARGE: Make DTS require Bioenergy to function
+var travel ChargeManager chargeManager;
 
 simulated function PreBeginPlay()
 {
@@ -18,13 +19,64 @@ simulated function PreBeginPlay()
 		AccurateRange = mpAccurateRange;
 		MaxRange = mpMaxRange;
 	}
-//	if (!bLasing&&(Owner!=none)&&(Owner.IsA('DeusExPlayer')))
-//	  DeusExPlayer.LaserToggle();
+
+    SetupChargeManager();
 }
 
+function DrainPower()
+{
+    local DeusExPlayer player;
+    local int skillValue;
+
+    if (owner == None)
+        return;
+
+    player = DeusExPlayer(owner);
+
+    if (player != None)
+		skillValue = player.SkillSystem.GetSkillLevel(governingSkill);
+
+    //player.clientmessage("SkillValue: " $ skillValue);
+
+    chargeManager.Drain(25 * (4.0 - skillValue));
+}
+
+//Initialise charge manager and link the player to it
+function SetupChargeManager()
+{
+    if (chargeManager == None)
+    {
+	    chargeManager = new(Self) class'ChargeManager';
+        chargeManager.SetMaxCharge(1000,true);
+        chargeManager.chargeMult = 0.2;
+    }
+        
+    if (owner.IsA('DeusExPlayer'))
+        ChargeManager.Setup(DeusExPlayer(owner),self);
+}
+
+function string DoAmmoInfoWindow(Pawn P, PersonaInventoryInfoWindow winInfo)
+{
+	winInfo.SetText(sprintf(chargeManager.ChargeRemainingLabel,chargeManager.GetCurrentCharge()));
+    winInfo.SetText(sprintf(chargeManager.BiocellRechargeAmountLabel,chargeManager.GetRechargeAmountDisplay()));
+    winInfo.AddLine();
+}
+
+function bool CanUseWeapon(DeusExPlayer player, optional bool noMessage)
+{
+    if (ChargeManager != None && chargeManager.IsUsedUp())
+    {
+        if (!noMessage)
+            player.ClientMessage("Dragon's Tooth Sword is not charged");
+        return false;
+    }
+
+    return super.CanUseWeapon(player,noMessage);
+}
 
 simulated function renderoverlays(Canvas canvas)
 {
+
 	if (iHDTPModelToggle == 1)                                                  //RSD: Need this off for vanilla model
 	{
     multiskins[5] = Getweaponhandtex();
@@ -84,8 +136,6 @@ state DownWeapon
 {
 	function BeginState()
 	{
-//	   if (bLasing&&(Owner!=none)&&(Owner.IsA('DeusExPlayer')))
-//         DeusExPlayer(Owner).ToggleLaser();
 		Super.BeginState();
 		LightType = LT_None;
 	}
@@ -98,10 +148,18 @@ state Idle
 		Super.BeginState();
 		LightType = LT_Steady;
        AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 416);  //CyberP: drawing the sword makes noise
-//		if (!bLasing&&(Owner!=none)&&(Owner.IsA('DeusExPlayer')))
-//         DeusExPlayer(Owner).ToggleLaser();
-//      if (Owner.IsA('DeusExPlayer')) LaserOn();
 	}
+
+    //Put away weapon when it runs out of juice
+    function Tick(float deltaTime)
+    {
+        Super.Tick(deltaTime);
+        if (owner.IsA('DeusExPlayer') && ChargeManager != None)
+        {
+            if (ChargeManager.IsUsedUp())
+                DeusExPlayer(Owner).PutInHand(none);
+        }
+    }
 }
 
 auto state Pickup
@@ -110,26 +168,9 @@ auto state Pickup
 	{
 		Super.EndState();
 		LightType = LT_None;
+        SetupChargeManager();
 	}
 }
-/*
-state Active
-{
-   function BeginState()
-   {
-      if (!bLasing&&(Owner!=none)&&(Owner.IsA('DeusExPlayer')))
-         DeusExPlayer(Owner).ToggleLaser();
-      super.BeginState();
-   }
-   function EndState()
-   {
-      if (bLasing&&(Owner!=none)&&(Owner.IsA('DeusExPlayer')))
-         DeusExPlayer(Owner).ToggleLaser();
-      super.EndState();
-   }
-}
-
-*/
 
 defaultproperties
 {
@@ -180,7 +221,7 @@ defaultproperties
      largeIconWidth=205
      largeIconHeight=46
      invSlotsX=4
-     Description="The true weapon of a modern warrior, the Dragon's Tooth is not a sword in the traditional sense, but a nanotechnologically constructed blade that is dynamically 'forged' on command into a non-eutactic solid. Nanoscale whetting devices insure that the blade is both unbreakable and lethally sharp."
+     Description="The true weapon of a modern warrior, the Dragon's Tooth is not a sword in the traditional sense, but a nanotechnologically constructed blade that is dynamically 'forged' on command into a non-eutactic solid. Nanoscale whetting devices insure that the blade is both unbreakable and lethally sharp. Due to it's molecular nature, it requires a constant energy supply to function."
      beltDescription="DRAGON"
      Mesh=LodMesh'HDTPItems.HDTPDragonToothPickup'
      MultiSkins(2)=WetTexture'Effects.Electricity.WavyBlade'

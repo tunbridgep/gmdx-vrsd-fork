@@ -4929,6 +4929,10 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
 				Other.TakeDamage(finalDamage, Pawn(Owner), HitLocation, 1000.0*X, damageType); //Replaced HitDamage * mult with finalDamage
 
 			SelectiveSpawnEffects( HitLocation, HitNormal, Other, finalDamage); //Replaced HitDamage * mult with finalDamage
+
+            //SARGE: Drain energy when hitting things
+            if (IsA('WeaponNanoSword') && WeaponNanoSword(self).chargeManager != None)
+                WeaponNanoSword(self).DrainPower();
 		}
 		else if ((Other != self) && (Other != Owner))
 		{
@@ -4960,6 +4964,10 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
                 	}
 				}
                 Other.TakeDamage(finalDamage, Pawn(Owner), HitLocation, 1000.0*X, damageType); //Replaced HitDamage * mult with finalDamage
+                
+                //SARGE: Drain energy when hitting things
+                if (IsA('WeaponNanoSword') && WeaponNanoSword(self).chargeManager != None)
+                    WeaponNanoSword(self).DrainPower();
 			}
 			if (bHandToHand)
 				SelectiveSpawnEffects( HitLocation, HitNormal, Other, finalDamage); //Replaced HitDamage * mult with finalDamage
@@ -5170,47 +5178,16 @@ function Finish()
 // UpdateInfo()
 // ----------------------------------------------------------------------
 
-simulated function bool UpdateInfo(Object winObject)
+//Do the Ammo Display in the Inventory Window
+function string DoAmmoInfoWindow(Pawn P, PersonaInventoryInfoWindow winInfo)
 {
-	local PersonaInventoryInfoWindow winInfo;
-	local string str;
-	local int i, dmg, numMods;
-	local float mod, stamDrain;
-	local bool bHasAmmo;
 	local bool bAmmoAvailable;
 	local class<DeusExAmmo> ammoClass;
-	local Pawn P;
 	local Ammo weaponAmmo;
 	local int  ammoAmount;
-	local float hh;
-    local DeusExPlayer player;
-    local string noiseLev, msgMultiplier;
-    local float prec;                                                           //RSD: Floating point precision
-
-	P = Pawn(Owner);
-	if (P == None)
-		return False;
-
-	winInfo = PersonaInventoryInfoWindow(winObject);
-	if (winInfo == None)
-		return False;
-
-	winInfo.SetTitle(itemName);
-	if (bHandToHand && Owner.IsA('DeusExPlayer'))
-	{
-	   if (DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkInventive').bPerkObtained == true)
-	   {
-	      winInfo.AddSecondaryButton(self);
-	   }
-	   else if (GoverningSkill != class'DeusEx.SkillDemolition' && !IsA('WeaponCombatKnife') && !IsA('WeaponHideAGun') && !IsA('WeaponShuriken'))
-	   {                                                                        //RSD: Throwing Knives now require the perk, c'mon //RSD: Or nah
-	   }
-	   else
-	       winInfo.AddSecondaryButton(self);
-	}
-	winInfo.SetText(msgInfoWeaponStats);
-	winInfo.AddLine();
-
+	local bool bHasAmmo;
+	local string str;
+    local int i;
 	// Create the ammo buttons.  Start with the AmmoNames[] array,
 	// which is used for weapons that can use more than one
 	// type of ammo.
@@ -5273,6 +5250,15 @@ simulated function bool UpdateInfo(Object winObject)
 		}
 	}
 
+	// If this weapon has ammo info, display it here
+    /*
+	if (ammoClass != None)
+	{
+		winInfo.AddLine();
+		winInfo.AddAmmoDescription(ammoClass.Default.ItemName $ "|n" $ ammoClass.Default.description);
+	}
+    */
+
 	// Only draw another line if we actually displayed ammo.
 	if (bAmmoAvailable)
 		winInfo.AddLine();
@@ -5291,6 +5277,51 @@ simulated function bool UpdateInfo(Object winObject)
 			str = str $ "|n" $ AmmoNames[i].Default.ItemName;
     if (!bHandToHand || IsA('WeaponProd'))
 	winInfo.AddAmmoTypesItem(msgInfoAmmo, str);
+    
+}
+
+//SARGE: TODO: Turn this horrible mess into generic functions that work with child classes
+simulated function bool UpdateInfo(Object winObject)
+{
+	local PersonaInventoryInfoWindow winInfo;
+	local string str;
+	local int dmg, numMods;
+	local float mod, stamDrain;
+	local Pawn P;
+	local float hh;
+    local DeusExPlayer player;
+    local string noiseLev, msgMultiplier;
+    local float prec;                                                           //RSD: Floating point precision
+
+	P = Pawn(Owner);
+	if (P == None)
+		return False;
+
+	winInfo = PersonaInventoryInfoWindow(winObject);
+	if (winInfo == None)
+		return False;
+
+    //SARGE: Show modified weapons in title
+    if (bModified && DeusExPlayer(owner) != None && DeusExPlayer(owner).bBeltShowModified)
+        winInfo.SetTitle(itemName @ strModified);
+    else
+        winInfo.SetTitle(itemName);
+	if (bHandToHand && Owner.IsA('DeusExPlayer'))
+	{
+	   if (DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkInventive').bPerkObtained == true)
+	   {
+	      winInfo.AddSecondaryButton(self);
+	   }
+	   else if (GoverningSkill != class'DeusEx.SkillDemolition' && !IsA('WeaponCombatKnife') && !IsA('WeaponHideAGun') && !IsA('WeaponShuriken'))
+	   {                                                                        //RSD: Throwing Knives now require the perk, c'mon //RSD: Or nah
+	   }
+	   else
+	       winInfo.AddSecondaryButton(self);
+	}
+	winInfo.SetText(msgInfoWeaponStats);
+	winInfo.AddLine();
+
+    DoAmmoInfoWindow(P,winInfo);
 
 	// base damage
 	if (AreaOfEffect == AOE_Cone)
@@ -5805,13 +5836,6 @@ simulated function bool UpdateInfo(Object winObject)
          }
 	winInfo.AddLine();
 	winInfo.SetText(Description);
-
-	// If this weapon has ammo info, display it here
-	if (ammoClass != None)
-	{
-		winInfo.AddLine();
-		winInfo.AddAmmoDescription(ammoClass.Default.ItemName $ "|n" $ ammoClass.Default.description);
-	}
 
 	return True;
 }

@@ -287,6 +287,10 @@ function CreateInventoryButtons()
 			if (anItem.IsA('ChargedPickup') && !ChargedPickup(anItem).bActivatable)
 				newButton.bDimIcon = true;                                      //RSD: Dim ChargedPickups if they're at 0%
 
+			//Dim Nanosword if it's at 0%
+			if (anItem.IsA('WeaponNanoSword') && WeaponNanoSword(anItem).chargeManager != None && WeaponNanoSword(anItem).chargeManager.GetCurrentCharge() == 0)
+				newButton.bDimIcon = true;  
+
 			// If the item has a large icon, use it.  Otherwise just use the
 			// smaller icon that's also shared by the object belt
 
@@ -1438,6 +1442,23 @@ function UpdateDragMouse(float newX, float newY)
                     	homeButton.ResetFill();
 				}
 			}
+            //SARGE: Check for biocell being dragged over Nanosword
+            else if ((dragButton.GetClientObject().IsA('BioelectricCell')) && (findWin.GetClientObject().IsA('WeaponNanoSword')))
+			{
+				if (!WeaponNanoSword(findWin.GetClientObject()).ChargeManager.IsFull())
+				{
+					bValidDrop = True;
+					PersonaInventoryItemButton(findWin).SetDropFill(True);
+					invButton.bValidSlot = False;
+					invButton.bDimIcon   = False;
+					bOverrideButtonColor = True;
+
+					invButton.ResetFill();
+					if (homeButton != none)                                     //RSD
+                    	homeButton.ResetFill();
+				}
+			}
+            //Check for biocell being dragged over charged items
             else if ((dragButton.GetClientObject().IsA('BioelectricCell')) && (findWin.GetClientObject().IsA('ChargedPickup')))
 			{
 				if (ChargedPickup(findWin.GetClientObject()).Charge < ChargedPickup(findWin.GetClientObject()).default.Charge)
@@ -1693,6 +1714,7 @@ function FinishButtonDrag()
     local string rechargedMsg;
     local ChargedPickup ChargedTarget;                                          //RSD: Added
     local float mult;                                                           //RSD: Added
+    local string msg;
 
 	// Take a look at the last window we were over to determine
 	// what to do now.  If we were over the Inventory Items window,
@@ -1744,6 +1766,20 @@ function FinishButtonDrag()
 				ReturnButton(PersonaInventoryItemButton(dragButton));
 			}
 		}
+		//SARGE: Allow recharging nanosword
+		else if ( (dragInv.IsA('BioelectricCell')) && (dragTarget != None) && (dragTarget.GetClientObject().IsA('WeaponNanoSword')) )
+		{
+            if (!WeaponNanoSword(dragTarget.GetClientObject()).chargeManager.IsFull())
+            {
+                WeaponNanoSword(dragTarget.GetClientObject()).chargeManager.Recharge(msg);
+                winStatus.AddText(msg);
+                Player.RemoveObjectFromBelt(dragInv);
+                BioelectricCell(draginv).UseOnce();
+                Player.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
+                WeaponNanoSword(dragTarget.GetClientObject()).chargeManager.unDimIcon();
+                dragTarget.bDimIcon = false;
+            }
+		}
         else if ( (dragInv.IsA('BioelectricCell')) && (dragTarget != None) && (dragTarget.GetClientObject().IsA('ChargedPickup')) )
 		{
 			ChargedTarget = ChargedPickup(dragTarget.GetClientObject());        //RSD: Making a new var for it so there aren't a billion constructor calls
@@ -1777,6 +1813,7 @@ function FinishButtonDrag()
                    else
                       winStatus.AddText("Recharged by 30%");
                 }*/
+				//SARGE: TODO: Refactor this to use the new ChargeManager system
                 mult = ChargedTarget.default.ChargeMult;                        //RSD: No more special cases for charge rates
                 if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkFieldRepair').bPerkObtained == true)                              //RSD: Field Repair perk
                    mult *= 1.5;
@@ -2121,6 +2158,14 @@ function HighlightCellCharged(BioelectricCell biocell)
 			if ((anItem != None) && (anItem.IsA('ChargedPickup')))
 			{
 				if ((biocell != None) && (ChargedPickup(anItem).Charge < ChargedPickup(anItem).default.Charge))
+				{
+					itemButton.HighlightWeapon(True);
+				}
+			}
+            //SARGE: Nanosword can also be recharged
+			else if ((anItem != None) && (anItem.IsA('WeaponNanoSword')))
+			{
+				if ((biocell != None) && (!WeaponNanoSword(anItem).ChargeManager.IsFull()))
 				{
 					itemButton.HighlightWeapon(True);
 				}

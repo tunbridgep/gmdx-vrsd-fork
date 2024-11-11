@@ -405,6 +405,8 @@ function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
 			{
 				objects[pos].bDimIcon = true;                                   //RSD: Dim ChargedPickups if they're at 0%
 			}
+			else if (newItem.IsA('WeaponNanoSword') && WeaponNanoSword(newItem).chargeManager != None && WeaponNanoSword(newItem).chargeManager.IsUsedUp())
+				objects[pos].bDimIcon = true;                                   //SARGE: Dim NanoSword at 0%
 			else
 				objects[pos].bDimIcon = false;
 		}
