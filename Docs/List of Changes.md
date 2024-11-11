@@ -27,6 +27,7 @@ Sarge's Changes since Beta 2.2:
     - Added a new corpse searching setting, "Enhanced Corpse Interactions", which makes the first right-click on a corpse never pick them up, even if empty, so that you can search them reliably without accidentally picking them up.
         - Additionally added a new setting to show "[Searched]" text after interacting with corpses once, to differentiate between those which have been searched and which have not.
     - Added a new keybinding to stop the currently playing infolink.
+    - Added new pickup sounds for many objects.
     - Completely overhauled the GMDX settings menu to make it simpler, easier to navigate, and with many more options.
     - Edibles and Drugs can now be assigned as secondary items.
     - Pressing the walk/run key while crouch toggled will now uncrouch.
