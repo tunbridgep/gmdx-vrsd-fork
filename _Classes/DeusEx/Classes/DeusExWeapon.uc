@@ -349,24 +349,6 @@ function bool CanUseWeapon(DeusExPlayer player, optional bool noMessage)
     return !player.bWeaponRequirementsMatter || player.SkillSystem.CheckSkill(GoverningSkill,minSkillRequirement,noMessage);
 }
 
-//Sarge: Update weapon frob display when we have a mod applied
-function string GetFrobString(DeusExPlayer player)
-{
-    if (bModified && player != None && player.bBeltShowModified)
-        return itemName @ strModified;
-    else
-        return itemName;
-}
-
-//Sarge: Update weapon description/display when we have a mod applied
-function string GetBeltDescription(DeusExPlayer player)
-{
-    if (bModified && player != None && player.bBeltShowModified)
-        return beltDescription $ "+";
-    else
-        return beltDescription;
-}
-
 //SARGE: Added "Left Click Frob" and "Right Click Frob" support
 //Return true to use the default frobbing mechanism (right click), or false for custom behaviour
 function bool DoLeftFrob(DeusExPlayer frobber)
