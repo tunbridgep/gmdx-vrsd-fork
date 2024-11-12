@@ -358,20 +358,20 @@ singular function checkForHazards(GC gc)
         //We need to check distance, because collision is not good enough as they can be big
         if ((VSize(DT.location - player.location)) > range)
             continue;
-        
+    
+        //actors[totalActors++] = DT;
         //Get closest
         if (temp != None)
         {
-            range1 = VSize(CL.location - player.location);
+            range1 = VSize(DT.location - player.location);
             range2 = VSize(temp.location - player.location);
             if (range1 < range2)
                 temp = DT;
         }
         else
             temp = DT;
-
     }
-    
+        
     actors[totalActors++] = temp;
     temp = None;
 
@@ -424,11 +424,14 @@ singular function checkForHazards(GC gc)
             range1 = VSize(CL.location - player.location);
             range2 = VSize(temp.location - player.location);
             if (range1 < range2)
-                temp = CL;
+                temp = PROJ;
         }
         else
-            temp = CL;
+            temp = PROJ;
     }
+    
+    actors[totalActors++] = temp;
+    temp = None;
 
     //Now, get information for the actors
     for (i = 0;i < totalActors;i++)
