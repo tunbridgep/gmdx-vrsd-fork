@@ -12,6 +12,7 @@ var bool bRescuedMiguel;
 
 function FirstFrame()
 {
+    local SecurityCamera SC;
 	local PaulDentonCarcass carc;
 	local PaulDenton Paul;
 	local Terrorist T;
@@ -21,6 +22,11 @@ function FirstFrame()
     local ammocrate crate;                                                      //RSD: Added an ammo crate to store all the player's ammo (new behavior in SP for that class)
 
 	Super.FirstFrame();
+    
+    //SARGE: Ensure all cameras are set to alarming.
+    //For some reason, some were set to bNoAlarm
+    foreach AllActors(class'SecurityCamera', SC)
+        SC.bNoAlarm = false;
 
 	if (localURL == "05_NYC_UNATCOMJ12LAB")
 	{
