@@ -20,6 +20,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX bug where Ford Schick would not give you an upgrade canister when telling you he swiped one, if ConFix isn't installed. Fixed by adding it to his desk.
     - Fixed a number of typos in various places.
     - Fixed Vanilla bug where sound volume would reset upon new game.
+    - Fixed vRSD bug (feature?) where cameras would not detect unconscious enemies.
     - Fixed many other GMDX and Vanilla bugs.
 - Quality of Life Improvements:
     - Right-Clicking an item in the belt with the Inventory Window open will clear the slot.
@@ -99,6 +100,7 @@ Sarge's Changes since Beta 2.2:
         - When Smart Keyring is enabled, the keyring will no longer occupy belt slot 0, allowing it to be used for regular items.
         - The keyring can be selected using Left-Click Frob on doors.
 - Gameplay Changes:
+    - Cameras set to "No Alarm" (cameras in Wan Chai Market, Versalife Lobby, etc) can now still detect corpses, so you can't do suspicious activity right in front of them.
     - Reverted GMDX change limiting Assault Rifles, Assault Shotguns and Sawed Off's to 4 damage mods. Now they can have 5 just like everything else.
         - This was done because of integer truncation. In GMDX v9, the 5th upgrade would change their base damage from 4.2 to 4.5, which was pointless as it was rounded to 4 either way.
         - With vRSD partial damage calculations were added, so this is now relevant again.
