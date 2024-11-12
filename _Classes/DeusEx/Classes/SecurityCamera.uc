@@ -10,7 +10,7 @@ var() int cameraFOV;
 var() int cameraRange;
 var float memoryTime;
 var() bool bActive;
-var() bool bNoAlarm;			// if True, does NOT sound alarm
+var() bool bNoAlarm;			// if True, does NOT sound alarm //SARGE: unless it detects a corpse
 var Rotator origRot;
 var Rotator ReplicatedRotation; // for net propagation
 var bool bTrackPlayer;
@@ -47,12 +47,14 @@ var bool bTrigSound; //CyberP
 var() bool bAlarmEvent;  //CyberP: optionally send event if triggered.
 var bool bDiffProperties; //CyberP:
 var bool bSkillApplied; //CyberP:
+var() bool bNoDetectCarcass;			// if True, does NOT detect carcasses
 
 //Sarge: Hacking disable time
 var float disableTime;                    //Sarge: timer before we are enabled again after hacking.
 var float disableTimeBase;                //Sarge: Our hacking skill is multiplied by this to give total disable time
 var float disableTimeMult;                //Sarge: Our hacking skill is multiplied by this to give total disable time
 var bool bRebooting;                      //This will be set when the camera is hacked, to control rebooting
+
 
 // ------------------------------------------------------------------------------------
 // Network replication
@@ -368,7 +370,7 @@ function CheckCarcassVisibility(DeusExCarcass carcass)
 		return;
 
 
-        if (carcass.bAnimalCarcass || carcass.bNotDead)                         //RSD: No unconscious bodies either
+        if (carcass.bAnimalCarcass)// || carcass.bNotDead)                         //RSD: No unconscious bodies either //SARGE: I think not!
                 return;  //CyberP: No animals
 
         dist = Abs(VSize(carcass.Location - Location));
@@ -515,53 +517,57 @@ function Tick(float deltaTime)
         MultiSkins[2] = Texture'GreenLightTex';
         LightRadius = 0;
     }
+
 	// Check visibility every 0.1 seconds
-	if (!bNoAlarm)
-	{
-		playerCheckTimer += deltaTime;
-		carcassCheckTimer += deltaTime; // eshkrm
+    playerCheckTimer += deltaTime;
+    carcassCheckTimer += deltaTime; // eshkrm
 
-		if (playerCheckTimer > 0.1 && !bCarcassSeen)
-		{
-			playerCheckTimer = 0;
-			if (Level.NetMode == NM_Standalone)
-				CheckPlayerVisibility(DeusExPlayer(GetPlayerPawn()));
-			else
-			{
-				curPlayer = DeusExPlayer(AcquireMultiplayerTarget());
-				if (curPlayer != None)
-					CheckPlayerVisibility(curPlayer);
-			}
-			if (!bSkillApplied)
-	        {
-            curplayer=DeusExPlayer(GetPlayerPawn());
-             if (curplayer != None)
-             {
-               //skillz = curplayer.SkillSystem.GetSkillLevel(class'SkillStealth'); //RSD: Removed
-               if (curplayer.SkillSystem != none && curplayer.PerkManager.GetPerkWithClass(class'DeusEx.PerkSecurityLoophole').bPerkObtained == true)//skillz >= 2) //RSD: Uses Security Loophole perk now instead of Advanced Stealth
-               {
-                  triggerDelay = 4.125000;                                      //RSD: Was 4.200000, misreported as +45% increase but actually was +52.73%. Now 50%!
-                  bSkillApplied = True;
-               }
-             }
+    //Check player
+    if (playerCheckTimer > 0.1 && !bCarcassSeen && !bNoAlarm)
+    {
+        playerCheckTimer = 0;
+        if (Level.NetMode == NM_Standalone)
+            CheckPlayerVisibility(DeusExPlayer(GetPlayerPawn()));
+        else
+        {
+            curPlayer = DeusExPlayer(AcquireMultiplayerTarget());
+            if (curPlayer != None)
+                CheckPlayerVisibility(curPlayer);
+        }
+        if (!bSkillApplied)
+        {
+        curplayer=DeusExPlayer(GetPlayerPawn());
+            if (curplayer != None)
+            {
+            //skillz = curplayer.SkillSystem.GetSkillLevel(class'SkillStealth'); //RSD: Removed
+            if (curplayer.SkillSystem != none && curplayer.PerkManager.GetPerkWithClass(class'DeusEx.PerkSecurityLoophole').bPerkObtained == true)//skillz >= 2) //RSD: Uses Security Loophole perk now instead of Advanced Stealth
+            {
+                triggerDelay = 4.125000;                                      //RSD: Was 4.200000, misreported as +45% increase but actually was +52.73%. Now 50%!
+                bSkillApplied = True;
             }
-		}
+            }
+        }
+    }
 
-		// Scan over carcasses in CameraRange -- eshkrm
-		if(carcassCheckTimer > 0.1 && !bPlayerSeen)
-		{
-			carcassCheckTimer = 0;
-            curplayer=DeusExPlayer(GetPlayerPawn());
-			// Not a feature in multiplayer
-			if (Level.NetMode == NM_Standalone && curplayer != None && (curplayer.bHardCoreMode || curplayer.bCameraSensors)) //cyberP: carcass scan only in hardcore
-			{
-				foreach RadiusActors(Class'DeusExCarcass', carcass, CameraRange)
-				{
-					CheckCarcassVisibility(carcass);
-				}
-			}
-		}
-	}
+    // Scan over carcasses in CameraRange -- eshkrm
+    //SARGE: Moved out of the bNoAlarm check, since it doesn't seem
+    //right that some cameras will just flat out ignore corpses in places like
+    //the Versalife lobby. bNoAlarm is supposed to mean you're not a threat to them,
+    //but seeing carcasses is still suspicious.
+    //Instead, have added a new bNoDetectCarcass variable.
+    if(carcassCheckTimer > 0.1 && !bPlayerSeen && !bNoDetectCarcass)
+    {
+        carcassCheckTimer = 0;
+        curplayer=DeusExPlayer(GetPlayerPawn());
+        // Not a feature in multiplayer
+        if (Level.NetMode == NM_Standalone && curplayer != None && (curplayer.bHardCoreMode || curplayer.bCameraSensors)) //cyberP: carcass scan only in hardcore
+        {
+            foreach RadiusActors(Class'DeusExCarcass', carcass, CameraRange)
+            {
+                CheckCarcassVisibility(carcass);
+            }
+        }
+    }
 
 	// forget about the player/carcass after a set amount of time
 	if (bPlayerSeen || bCarcassSeen)

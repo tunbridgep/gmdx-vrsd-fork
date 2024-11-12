@@ -14,8 +14,14 @@ function FirstFrame()
 	local DeusExMover M;
 	local BlackHelicopter chopper;
     local ScriptedPawn SP;
+    local SecurityCamera SC;
 
-	Super.FirstFrame();
+    Super.FirstFrame();
+    
+    //SARGE: Ensure all cameras are set to alarming.
+    //For some reason, some were set to bNoAlarm
+    foreach AllActors(class'SecurityCamera', SC)
+        SC.bNoAlarm = false;
 
      if (flags.GetBool('Enhancement_Detected'))
      {
@@ -57,6 +63,19 @@ function FirstFrame()
 	}
 	else if (localURL == "09_NYC_DOCKYARD")
 	{
+
+        //SARGE: If vinnie gave access, make the front entrance camera not alarm
+        //This is a bit backy
+        //SARGE: On second thought, just do it always, since the guards are friendly either way.
+		//if (flags.GetBool('BarneyGaveAccess'))
+        //{
+            foreach AllActors(class'SecurityCamera', SC)
+            {
+                if (SC.Name == 'SecurityCamera2')
+                    SC.bNoAlarm = true;
+            }
+        //}        
+
 		if (flags.GetBool('MS_ShipBreeched'))
 		{
 			foreach AllActors(class'BlackHelicopter', chopper, 'BlackHelicopter')

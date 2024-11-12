@@ -18,8 +18,17 @@ function FirstFrame()
 	local vector v;
 	local Female2 Shannon;
     local ScriptedPawn SP;
+    local SecurityCamera SC;
 
 	Super.FirstFrame();
+    
+    //SARGE: Ensure all friendly cameras don't detect carcasses
+    //This is only the UNATCO one
+    foreach AllActors(class'SecurityCamera', SC)
+    {
+        if (SC.bNoAlarm)
+            SC.bNoDetectCarcass = true;
+    }
 
 	if (localURL == "01_NYC_UNATCOISLAND")
 	{
@@ -219,7 +228,10 @@ function Timer()
 				// turn off all tagged cameras
 				foreach AllActors(class'SecurityCamera', cam)
 					if ((cam.Tag == 'NSFCam01') || (cam.Tag == 'NSFCam02') || (cam.Tag == 'NSFCam03'))
+                    {
 						cam.bNoAlarm = True;
+                        cam.bNoDetectCarcass = true;
+                    }
 
 				flags.SetBool('MS_MissionComplete', True,, 2);
 			}

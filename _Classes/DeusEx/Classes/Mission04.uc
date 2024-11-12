@@ -15,6 +15,7 @@ function FirstFrame()
 	local PaulDenton paul;
 	local FlagTrigger ftrig;
 	local int count;
+    local SecurityCamera SC;
 
 	if(flags.GetBool('PaulDenton_Dead') && !flags.GetBool('TalkedToPaulAfterMessage')) //== Paul CANNOT die before the raid, period
 		flags.SetBool('PaulDenton_Dead',False,, 16);  //CyberP: now checks until talked to paul after message
@@ -101,6 +102,16 @@ function FirstFrame()
 			}
 		}
 	}
+    else if (localURL == "04_NYC_UNATCOISLAND")
+    {
+        //SARGE: Ensure all friendly cameras don't detect carcasses
+        //This is only the UNATCO one
+        foreach AllActors(class'SecurityCamera', SC)
+        {
+            if (SC.bNoAlarm)
+                SC.bNoDetectCarcass = true;
+        }
+    }
 
 CanQuickSave=true;
 }
