@@ -65,9 +65,9 @@ var(GMDX) const bool deleteIfFemale;                                            
 
 var travel bool bSearched; //Sarge: Already adjusted the weapons and everything on here. Fixes ammo duplication glitch.
 	
-var bool bFoundSomething;   //Have we found anything the last time we searched? This was a local variable, but now it's global, so we can query it between searches
-
 var localized string SearchedString;                                            //SARGE: The string to append to the name when searched.
+var localized string IgnoredString;                                            //SARGE: Appended to searches when we don't pick something up
+var localized string msgEmptyS;
 
 // ----------------------------------------------------------------------
 // ShouldCreate()
@@ -946,6 +946,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 	local DeusExPickup invItem;
 	local int itemCount, startcopies, i,addedAmount;
     local int ammoCount, intj;                                                  //RSD: Added
+    local bool bFoundSomething;                                                 //SARGE: Did we find something (unique)
 
 //log("DeusExCarcass::Frob()--------------------------------");
 
@@ -959,7 +960,6 @@ function Frob(Actor Frobber, Inventory frobWith)
     if (PickupAmmoCount == 0)                                                   //RSD: If nothing was passed to us from the initialization from MissionScript.uc on first map load, use old random formula
     	PickupAmmoCount = Rand(4) + 1;
 
-	bFoundSomething = False;
 	bSearchMsgPrinted = False;
 	P = Pawn(Frobber);
 	if (P != None)
@@ -970,7 +970,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 		if ( (player != None) && (Level.NetMode == NM_Standalone) )
 		 DeusExRootWindow(player.rootWindow).hud.receivedItems.RemoveItems();
 
-		if (Inventory != None && !bDblClickStart)
+		if (Inventory != None && (!bDblClickStart || player.inHand != None))
 		{
 
             while(Inventory.Owner == Frobber)
@@ -1035,7 +1035,6 @@ function Frob(Actor Frobber, Inventory frobWith)
 				}
 				else if (item != none && (item.IsA('DeusExWeapon')) )
 				{
-                    bFoundSomething = True;
 //log("IS A DXWEAPON");
                     // Any weapons have their ammo set to a random number of rounds (1-4)
                     // unless it's a grenade, in which case we only want to dole out one.
@@ -1082,9 +1081,10 @@ function Frob(Actor Frobber, Inventory frobWith)
 
 				if (item != None)
 				{
-                    bFoundSomething = True;
+                    log("Found Something");
 					if (item.IsA('NanoKey'))
 					{
+                        bFoundSomething = True;
 						if (player != None)
 						{
 							player.PickupNanoKey(NanoKey(item));
@@ -1097,6 +1097,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 					}
 					else if (item.IsA('Credits'))		// I hate special cases
 					{
+                        bFoundSomething = True;
 						if (player != None)
 						{
 						    //if (player.PerkNamesArray[33]==1)                 //RSD: No more Neat Hack perk
@@ -1135,6 +1136,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 //log("HAS AMMO TYPE");
 						if ((AmmoType != None) && (AmmoType.AmmoAmount < DeusExPlayer(GetPlayerPawn()).GetAdjustedMaxAmmo(AmmoType))) //RSD: Replaced AmmoType.MaxAmmo with adjusted
 								{
+                                bFoundSomething = True;
 //log("IS AMMO TYPE:"@AmmoType);
 						   AmmoCount = AmmoType.AmmoAmount;                     //RSD
                            AmmoType.AddAmmo(Weapon(item).PickupAmmoCount);
@@ -1156,12 +1158,13 @@ function Frob(Actor Frobber, Inventory frobWith)
                                     //SARGE: Set weapons maximum clip size to however much left over ammo it has.
                                     DeusExWeapon(item).ClipCount = 0;
 								}
-							} else
-							if ((W != None)&&(Weapon(item).AmmoType==none)) //GMDX Fix bug that makes level carcass with weapon just crap out as it has not got spawned ammotype
+							}
+                            else if ((W != None)&&(Weapon(item).AmmoType==none)) //GMDX Fix bug that makes level carcass with weapon just crap out as it has not got spawned ammotype
 							{
 								AmmoType = Ammo(player.FindInventoryType(Weapon(item).AmmoName));
-								if (AmmoType!=none)
+								if (AmmoType!=none && W.AmmoType.Class != class'DeusEx.AmmoNone')
 								{
+                                    bFoundSomething = True;
 									addedAmount=-AmmoType.AmmoAmount;
 									AmmoType.AddAmmo(Weapon(item).PickupAmmoCount);
 									addedAmount+=AmmoType.AmmoAmount;
@@ -1177,7 +1180,9 @@ function Frob(Actor Frobber, Inventory frobWith)
 									         P.ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName, 'Pickup');
 						         }
 								}
+                                //TODO: Handle Dragons Tooth custom charge
 							}
+
 							// Print a message "Cannot pickup blah blah blah" if inventory is full
 							// and the player can't pickup this weapon, so the player at least knows
 							// if he empties some inventory he can get something potentially cooler
@@ -1185,21 +1190,26 @@ function Frob(Actor Frobber, Inventory frobWith)
 
 							if ((W == None) && (!player.FindInventorySlot(item, True)))
                             {
+                                bFoundSomething = True;
 								P.ClientMessage(Sprintf(Player.InventoryFull, item.itemName));
                             }
 
 							// Only destroy the weapon if the player already has it.
+                            //SARGE: Keep weapons, just ignore them
 							if (W != None)
 							{
-//log("DESTROY WEAP");
-								// Destroy the weapon, baby!
-								DeleteInventory(item);
-								item.Destroy();
-								item = None;
+                                if (!bSearched && player.bEnhancedCorpseInteractions)
+                                {
+                                    bFoundSomething = True;
+                                    P.ClientMessage(msgSearching @ Item.itemName @ IgnoredString);
+                                }
 							}
 
 							bPickedItemUp = True;
 						}
+                        else
+                            bFoundSomething = True;
+
 					}
 
 					else if (item.IsA('DeusExAmmo'))
@@ -1330,6 +1340,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 					}
 				}
 
+                log("Processed Item: " $ item.name);
 				item = nextItem;
 			}
 			until ((item == None) || (item == startItem));
@@ -1362,17 +1373,20 @@ function Frob(Actor Frobber, Inventory frobWith)
     }
     else if (!bAnimalCarcass && player != None && player.inhand != none && player.bAutoHolster && !player.inHand.IsA('POVCorpse') && player.CarriedDecoration == None)
     {
-            if (!bFoundSomething && (bSearched||!player.bEnhancedCorpseInteractions) && (bDblClickStart || !player.bDblClickHolster))
-                player.PutInHand(none);
-            else if (!bFoundSomething && (bSearched||!player.bEnhancedCorpseInteractions) && bDblClickStart && player.bDblClickHolster)
-                player.PutInHand(none);
+        if (!bFoundSomething && (bSearched||!player.bEnhancedCorpseInteractions) && (bDblClickStart || !player.bDblClickHolster))
+            player.PutInHand(none);
+        else if (!bFoundSomething && (bSearched||!player.bEnhancedCorpseInteractions) && bDblClickStart && player.bDblClickHolster)
+            player.PutInHand(none);
     }
-    else if (!bFoundSomething)
+    else if (!bFoundSomething && (!bDblClickStart || player.inHand != None))
     {
-        //log("  bFoundSomething = " $ bFoundSomething);
-        P.ClientMessage(msgEmpty);
+        if (!bSearched || !player.bEnhancedCorpseInteractions)
+            P.ClientMessage(msgEmpty);
+        else
+            P.ClientMessage(msgEmptyS);
     }
-            
+
+    log("  bFoundSomething = " $ bFoundSomething);
     AddSearchedString(player);
     bSearched = true; //SARGE: Once we have been searched once, go back to normal behaviour
     bFoundSomething = false;
@@ -1646,12 +1660,14 @@ defaultproperties
      bHighlight=True
      msgSearching="You found:"
      msgEmpty="You don't find anything"
+     msgEmptyS="You don't find anything new"
      msgNotDead="Unconscious"
      msgAnimalCarcass="Animal Carcass"
      msgCannotPickup="You cannot pickup the %s"
      msgRecharged="Recharged %d points"
      ItemName="Dead Body"
      SearchedString="[Searched]"
+     IgnoredString="[Not Picked Up]"
      RemoteRole=ROLE_SimulatedProxy
      LifeSpan=0.000000
      CollisionRadius=20.000000
