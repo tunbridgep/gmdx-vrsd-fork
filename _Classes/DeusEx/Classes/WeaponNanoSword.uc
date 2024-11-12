@@ -87,6 +87,12 @@ function bool CanUseWeapon(DeusExPlayer player, optional bool noMessage)
     return super.CanUseWeapon(player,noMessage);
 }
 
+//Stops the game crashing with a "Destroyed != 0" message when loading savegames or transitioning maps
+event Destroyed()
+{
+    CriticalDelete(chargeManager);
+}
+
 simulated function renderoverlays(Canvas canvas)
 {
 
