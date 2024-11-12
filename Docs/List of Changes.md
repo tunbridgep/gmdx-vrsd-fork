@@ -25,8 +25,10 @@ Sarge's Changes since Beta 2.2:
     - Right-Clicking an item in the belt with the Inventory Window open will clear the slot.
     - The Inventory "Show Ammo" display now always shows the total amount of ammo you can carry. Before, it was only visible when "Show Descriptions" was enabled.
     - Added a Lighting Accessibility setting, which removes some strobing and flickering in certain areas on some maps, such as the 'Ton hotel elevator shaft.
-    - Added a new corpse searching setting, "Enhanced Corpse Interactions", which makes the first right-click on a corpse never pick them up, even if empty, so that you can search them reliably without accidentally picking them up.
-        - Additionally added a new setting to show "[Searched]" text after interacting with corpses once, to differentiate between those which have been searched and which have not.
+    - Added a new corpse searching setting, "Enhanced Looting", which makes the first right-click on a corpse never pick them up, even if empty, so that you can search them reliably without accidentally picking them up.
+        - Additionally, the first time a corpse is interacted with, it will show any items which it contains that you cannot pick up (such as duplicate weapons).
+        - Weapons are no longer deleted from corpses after being interacted with once, but they are ignored after the first time.
+    - Added a new setting to show "[Searched]" text after interacting with corpses once, to differentiate between those which have been searched and which have not.
     - Added a new keybinding to stop the currently playing infolink.
     - Completely overhauled the GMDX settings menu to make it simpler, easier to navigate, and with many more options.
     - Edibles and Drugs can now be assigned as secondary items.
