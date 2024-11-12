@@ -7,6 +7,7 @@ class WeaponNanoSword extends DeusExWeapon;
 var travel ChargeManager chargeManager;
 var int chargePerUse;                           //How much charge we use per hit
 var int totalCharge;                           //How much charge we use per hit
+var float drained;                              //Prevent draining within a short time, in case we hit multiple targets.
 
 simulated function PreBeginPlay()
 {
@@ -30,7 +31,7 @@ function DrainPower()
     local DeusExPlayer player;
     local int skillValue;
 
-    if (owner == None)
+    if (owner == None || drained > 0)
         return;
 
     player = DeusExPlayer(owner);
@@ -45,6 +46,12 @@ function DrainPower()
     */
     //SARGE: No longer based on weapon skill
     chargeManager.Drain(chargePerUse);
+    drained = 0.5;
+}
+
+function Tick(float deltaTime)
+{
+    drained = MAX(0,drained - deltaTime);
 }
 
 //Initialise charge manager and link the player to it
