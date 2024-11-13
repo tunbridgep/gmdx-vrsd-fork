@@ -1,5 +1,6 @@
 //=============================================================================
 // GMDXTutorialCube //CyberP: simple display text. Doesn't fuck around with text packages
+// SARGE: TODO: This needs a MAJOR rewrite! It should be generic, rather than having a whole big list of shit
 //=============================================================================
 class GMDXTutorialCube extends DeusExDecoration;
 
@@ -28,6 +29,7 @@ enum EHackText
 	HText21,
 	HText22,
 	HText23
+	HText24
 };
 
 var() EHackText HackText;
@@ -58,6 +60,7 @@ var Localized String GMDXText20;
 var Localized String GMDXText21;
 var Localized String GMDXText22;
 var Localized String GMDXText23;
+var Localized String GMDXText24;
 // ----------------------------------------------------------------------
 // Destroyed()
 //
@@ -217,6 +220,7 @@ defaultproperties
      GMDXText21="Welcome to your first shift in the lockup, newbie.|n|nSo, you're curious about the canister. You want to hold it, examine it, and think of the possibilities. Don't worry, we've all been there and we're not going to fire you if you do the same. It's unrealistic to expect extreme curiosity to be kept at bay, and we're pretty laid back and fun here. HOWEVER, you're going to have to earn the right to touch it by proving you're not an utter dimwit: |n|nSolve the following problems. Solving the first will give you the first portion of the nano-containment container code. Solve the second problem for the second portion of the code. IF you manage to get it open be gentle with the thing. Lord knows how much it costs to manufacture.|n|n1. How many times does a broken mechanical 12-hour clock display an accurate readout over a period of two weeks? |n|n2. [(12*6)/2]-1 = Second Passcode|n|nIf you attempt to run off with the thing it's your funeral -- the cameras are watching."
      GMDXText22="UNATCO MedDirectorate|nNano-Augmentation Guidelines|n|n...nano-augmentations, once 'installed,' irrevocably alter the physiological system they affect and in many cases cause all subsequent augmentations to be rejected; however, the exact number of augmentations each system can support varies. The various interdependencies between these systems can be seen in the following table that details possible nano-augmentation combinations.|n|nArms (1): Combat Speed or Microfibral Muscle|nArms (2): Combat Strength or Ammo Capacity|nLegs: Speed Enhancement or Run Silent|nSubdermal (1): Ballistic Protection or BPN-021|nSubdermal (2): Cloak or Radar Transparency|nTorso (1): Aqualung or Environmental Resistance|nTorso (2): Regeneration or Energy Resistance|nTorso (3): Synthetic Heart or Power Recirculator|nCranium: Aggressive Defense System or Spy Drone|nOptics: Targeting or Vision Enhancement|n|nSpecific nano-augmentations should be selected based on the mission profile of the particular agent..."
      GMDXText23="We've a request to send these up to level 1. Be careful with them, they are very expensive. Drop one and you'll likely face instant dismissal."
+     GMDXText24="Dave,|n|nI understand we've all been working hard, but you can't keep ignoring your responsibilities. I know the camera doesn't beep when we're asleep, but that doesn't mean the base commander isn't going to come down here in person one day and find you asleep. If a real attack happens we don't want to be caught off guard because you weren't watching your post."
      bInvincible=True
      bCanBeBase=True
      ItemName="DataCube"

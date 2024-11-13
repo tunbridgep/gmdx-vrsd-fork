@@ -370,7 +370,7 @@ function CheckCarcassVisibility(DeusExCarcass carcass)
 		return;
 
 
-        if (carcass.bAnimalCarcass)// || carcass.bNotDead)                         //RSD: No unconscious bodies either //SARGE: I think not!
+        if (carcass.bAnimalCarcass || carcass.bNotDead)                         //RSD: No unconscious bodies either
                 return;  //CyberP: No animals
 
         dist = Abs(VSize(carcass.Location - Location));
