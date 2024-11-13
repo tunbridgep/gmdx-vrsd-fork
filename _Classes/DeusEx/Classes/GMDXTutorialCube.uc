@@ -28,7 +28,7 @@ enum EHackText
 	HText20,
 	HText21,
 	HText22,
-	HText23
+	HText23,
 	HText24
 };
 
