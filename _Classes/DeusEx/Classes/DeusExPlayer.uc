@@ -564,8 +564,8 @@ var bool bNanoVirusSentMessage;                                                 
 var localized String NanoVirusLabel;                                            //RSD: For deactivating augs from scrambler grenades
 var globalconfig bool bRestrictedMetabolism;                                    //RSD: Enables restricted eating and halved withdrawal delay
 
-//SARGE: Allow blocking the next weapon selection. Used by dialog number keys feature
-var bool bBlockNextBeltSelection;
+//SARGE: Allow blocking the next weapon selection. Used by dialog number keys feature.
+var float fBlockBeltSelection;
 
 //GAMEPLAY MODIFIERS
 
@@ -10891,9 +10891,9 @@ exec function ActivateBelt(int objectNum)
 
     //SARGE: When holding the number keys in dialog, we will select a weapon
     //upon finishing the conversation. Ignore the weapon change command.
-    if (bBlockNextBeltSelection)
+    if (fBlockBeltSelection > 0)
     {
-        bBlockNextBeltSelection = false;
+        fBlockBeltSelection = 0;
         return;
     }
 
@@ -11754,6 +11754,10 @@ ignores SeePlayer, HearNoise, Bump;
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
+
+        //Update belt selection timer
+        if (fBlockBeltSelection > 0)
+            fBlockBeltSelection -= deltaTime;
 	}
 
 	function LoopHeadConvoAnim()
