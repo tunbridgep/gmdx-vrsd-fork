@@ -1,0 +1,17 @@
+Begin Map
+//Adds cube about cameras not detecting unconscious
+Begin Actor Class=GMDXTutorialCube Name=GMDXTutorialCube0
+    hackText=HText24
+    bDynamicLight=True
+    LastRenderTime=26.505585
+    DistanceFromPlayer=4402.713379
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=GMDXTutorialCube
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=3752,ZoneNumber=3)
+    Location=(X=-4538.176270,Y=852.245239,Z=-1022.629761)
+    Rotation=(Yaw=6584)
+    OldLocation=(X=-4537.620117,Y=851.973083,Z=-1022.629761)
+    bSelected=True
+    Name=GMDXTutorialCube0
+End Actor
+End Map
