@@ -21,7 +21,6 @@ function FirstFrame()
 	local UNATCOTroop troop;
     local LaserTrigger AT;
     local Doberman dob;
-    local SecurityCamera SC;
 
 	Super.FirstFrame();
 
@@ -117,17 +116,6 @@ function FirstFrame()
 				bot.Destroy();
 		}
 	}
-    
-	if (localURL == "03_NYC_UNATCOISLAND")
-    {
-        //SARGE: Ensure all friendly cameras don't detect carcasses
-        //This is only the UNATCO one
-        foreach AllActors(class'SecurityCamera', SC)
-        {
-            if (SC.bNoAlarm)
-                SC.bNoDetectCarcass = true;
-        }
-    }
 
 CanQuickSave=true;
 }

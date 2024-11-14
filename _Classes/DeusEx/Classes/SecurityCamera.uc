@@ -10,7 +10,7 @@ var() int cameraFOV;
 var() int cameraRange;
 var float memoryTime;
 var() bool bActive;
-var() bool bNoAlarm;			// if True, does NOT sound alarm //SARGE: unless it detects a corpse
+var() bool bNoAlarm;			// if True, does NOT sound alarm
 var Rotator origRot;
 var Rotator ReplicatedRotation; // for net propagation
 var bool bTrackPlayer;
@@ -47,7 +47,7 @@ var bool bTrigSound; //CyberP
 var() bool bAlarmEvent;  //CyberP: optionally send event if triggered.
 var bool bDiffProperties; //CyberP:
 var bool bSkillApplied; //CyberP:
-var() bool bNoDetectCarcass;			// if True, does NOT detect carcasses
+var() bool bAlwaysDetectCarcass;			// if True, Always detects carcasses, even with bNoAlarm set
 
 //Sarge: Hacking disable time
 var float disableTime;                    //Sarge: timer before we are enabled again after hacking.
@@ -555,7 +555,7 @@ function Tick(float deltaTime)
     //the Versalife lobby. bNoAlarm is supposed to mean you're not a threat to them,
     //but seeing carcasses is still suspicious.
     //Instead, have added a new bNoDetectCarcass variable.
-    if(carcassCheckTimer > 0.1 && !bPlayerSeen && !bNoDetectCarcass)
+    if(carcassCheckTimer > 0.1 && !bPlayerSeen && bAlwaysDetectCarcass)
     {
         carcassCheckTimer = 0;
         curplayer=DeusExPlayer(GetPlayerPawn());

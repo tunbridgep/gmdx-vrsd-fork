@@ -26,7 +26,14 @@ function FirstFrame()
     local Hooker1 Mercedes;
 	local LowerClassFemale Tessa;
     local ScriptedPawn SP;
+    local SecurityCamera SC;
 
+    //SARGE: Ensure all non-alarming cameras can detect corpses
+    foreach AllActors(class'SecurityCamera', SC)
+    {
+        if (SC.bNoAlarm)
+            SC.bAlwaysDetectCarcass = true;
+    }
 
 	Super.FirstFrame();
 

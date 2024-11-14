@@ -72,7 +72,10 @@ function FirstFrame()
             foreach AllActors(class'SecurityCamera', SC)
             {
                 if (SC.Name == 'SecurityCamera2')
+                {
                     SC.bNoAlarm = true;
+                    SC.bAlwaysDetectCarcass = true;
+                }
             }
         //}        
 
