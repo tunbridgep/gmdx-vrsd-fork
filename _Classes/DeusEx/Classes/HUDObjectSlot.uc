@@ -464,7 +464,10 @@ event bool MouseButtonPressed(float pointX, float pointY, EInputKey button,
         if (item == None)
             player.ClearPlaceholder(objectNum);
         else
-            SetItem(None);  
+        {
+            player.RemoveObjectFromBelt(item);
+            SetItem(None);
+        }
         bResult = True;
     }
 	return bResult;

@@ -460,7 +460,7 @@ var globalconfig bool bXhairShrink;
 var globalconfig bool bNoKnives;
 var globalconfig bool bModdedHeadBob;
 var globalconfig bool bBeltAutofill;											//Sarge: Added new feature for auto-populating belt
-var globalconfig bool bHackLockouts;											//Sarge: Allow locking-out security terminals when hacked.
+var globalconfig bool bHackLockouts;											//Sarge: Allow locking-out security terminals when hacked, and rebooting.
 var bool bForceBeltAutofill;    	    										//Sarge: Overwrite autofill setting. Used by starting items
 var globalconfig bool bBeltMemory;  											//Sarge: Added new feature to allow belt to rember items
 var globalconfig bool bSmartKeyring;  											//Sarge: Added new feature to allow keyring to be used without belt, freeing up a slot
@@ -3778,13 +3778,22 @@ function UpdateCameraRotation(SecurityCamera camera, Rotator rot)
 }
 
 //client->server (window to player)
-function ToggleCameraState(SecurityCamera cam, ElectronicDevices compOwner)
+function ToggleCameraState(SecurityCamera cam, ElectronicDevices compOwner, optional bool bHacked)
 {
-	if (cam.bActive)
+    //If we're active, or we were rebooting, and we logged in, then disable
+	if ((cam.bActive || cam.bRebooting) && !bHacked)
 	{
 	  cam.UnTrigger(compOwner, self);
 	  cam.team = -1;
 	}
+    //Set to reboot
+    else if (cam.bActive && bHacked)
+    {
+        cam.UnTrigger(compOwner, self);
+        cam.team = -1;
+        cam.StartReboot(self);
+    }
+    //Re-enable
 	else
 	{
       cam.bRebooting = false;
@@ -3799,43 +3808,36 @@ function ToggleCameraState(SecurityCamera cam, ElectronicDevices compOwner)
 }
 
 //client->server (window to player)
-function SetTurretState(AutoTurret turret, bool bActive, bool bDisabled)
+function SetTurretState(AutoTurret turret, bool bActive, bool bDisabled, bool bHacked)
 {
-    if (!bDisabled)
+    if ((bDisabled && !bHacked) || !bDisabled)
     {
         turret.disableTime = 0;
         turret.bRebooting = false;
+    }
+    else if (bDisabled && bHacked)
+    {
+        turret.StartReboot(self);
     }
 	turret.bActive   = bActive;
 	turret.bDisabled = bDisabled;
 	turret.bComputerReset = False;
 }
 
-//These are required because of client/server stuff making modifying the above functions impossible
-function ToggleCameraStateHacked(SecurityCamera cam, ElectronicDevices compOwner)
-{
-    ToggleCameraState(cam,compOwner);
-    if (!cam.bActive)
-    {
-        cam.bRebooting = true;
-        cam.disableTime = saveTime + (cam.disableTimeMult * MAX(1,SkillSystem.GetSkillLevel(class'SkillComputer')));
-    }
-}
-
-function SetTurretStateHacked(AutoTurret turret, bool bActive, bool bDisabled)
-{
-    SetTurretState(turret,bActive,bDisabled);
-    if (bDisabled)
-    {
-        turret.bRebooting = true;
-        turret.disableTime = saveTime + (turret.disableTimeMult * MAX(1,SkillSystem.GetSkillLevel(class'SkillComputer')));
-    }
-}
-
 //client->server (window to player)
-function SetTurretTrackMode(ComputerSecurity computer, AutoTurret turret, bool bTrackPlayers, bool bTrackPawns)
+function SetTurretTrackMode(ComputerSecurity computer, AutoTurret turret, bool bTrackPlayers, bool bTrackPawns,bool bHacked)
 {
 	local String str;
+    
+    if (bHacked)
+    {
+        turret.StartReboot(self);
+    }
+    else
+    {
+        turret.disableTime = 0;
+        turret.bRebooting = false;
+    }
 
 	turret.bTrackPlayersOnly = bTrackPlayers;
 	turret.bTrackPawnsOnly   = bTrackPawns;
