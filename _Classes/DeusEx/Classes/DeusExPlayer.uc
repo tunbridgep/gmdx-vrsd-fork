@@ -11276,7 +11276,7 @@ function PostIntro()
         if (bPrisonStart)
             StartNewGame("05_NYC_UNATCOMJ12lab"); //SARGE: Have to hardcode this. Game crashes if we use a property
         else
-            StartNewGame(strStartMap);
+            StartNewGame(strStartMap); //SARGE: TODO: Add loadonly flag so we always reload.
 	}
 	else
 	{
@@ -12771,6 +12771,8 @@ function bool GetExceptedCode(string code)
         || code == "718" //Can only be guessed based on cryptic information
         || code == "7243" //We are only given 3 digits, need to guess the 4th
         || code == "WYRDRED08" //We are not given the last digit
+        //|| (code == "1966" && FlagBase.GetBool('CassandraDone')) //Only given in conversation, no note //EDIT: UNFORTUNATELY THIS IS UNRELIABLE!!
+        || code == "1966" //Only given in conversation, no note
         || code == "4321"; //We are told to "count backwards from 4"
 }
 
