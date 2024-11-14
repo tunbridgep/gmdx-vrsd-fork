@@ -555,7 +555,7 @@ function Tick(float deltaTime)
     //the Versalife lobby. bNoAlarm is supposed to mean you're not a threat to them,
     //but seeing carcasses is still suspicious.
     //Instead, have added a new bNoDetectCarcass variable.
-    if(carcassCheckTimer > 0.1 && !bPlayerSeen && bAlwaysDetectCarcass)
+    if(carcassCheckTimer > 0.1 && !bPlayerSeen && (!bNoAlarm||bAlwaysDetectCarcass))
     {
         carcassCheckTimer = 0;
         curplayer=DeusExPlayer(GetPlayerPawn());
