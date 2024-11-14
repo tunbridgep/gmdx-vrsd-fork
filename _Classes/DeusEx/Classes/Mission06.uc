@@ -28,14 +28,14 @@ function FirstFrame()
     local ScriptedPawn SP;
     local SecurityCamera SC;
 
+	Super.FirstFrame();
+
     //SARGE: Ensure all non-alarming cameras can detect corpses
     foreach AllActors(class'SecurityCamera', SC)
     {
         if (SC.bNoAlarm)
             SC.bAlwaysDetectCarcass = true;
     }
-
-	Super.FirstFrame();
 
 	if (localURL == "06_HONGKONG_VERSALIFE")
 	{
