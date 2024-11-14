@@ -122,6 +122,8 @@ var localized String IFFLabel2;
 var float passedTime;
 var StaticInterlacedWindow winVisionLines;
 var ConLight lite;
+    
+var ThrownProjectile lastGrenade;
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -333,8 +335,7 @@ singular function checkForHazards(GC gc)
 
     local float range, range1, range2;
     local AugIFF aug;
-
-    local bool dontAdd;
+    local bool beep;
 
     local int i;
 
@@ -402,7 +403,6 @@ singular function checkForHazards(GC gc)
     //Third, get closest grenade (half-range)
     foreach Player.RadiusActors(class'ThrownProjectile', PROJ, range * 0.5)
     {
-        dontAdd = false;
         //skip grenades if Defense aug is not on (it already shows them)
         if (bDefenseActive)
             break;
@@ -412,11 +412,6 @@ singular function checkForHazards(GC gc)
 
         if (!PROJ.bProximityTriggered || PROJ.bDisabled || PROJ.Damage <= 0 || PROJ.Owner == player) //Only detect mines placed on walls, etc
             continue;
-        
-        //Don't allow other grenades within 10 feet
-        for (i = 0;i < totalActors;i++)
-            if (actors[i] != None && (VSize(actors[i].location - PROJ.location)/16) < 10 && actors[i].IsA('ThrownProjectile'))
-                dontAdd = true;
 
         //Get closest
         if (temp != None)
@@ -430,6 +425,8 @@ singular function checkForHazards(GC gc)
             temp = PROJ;
     }
     
+    beep = ThrownProjectile(temp) != None && lastGrenade != ThrownProjectile(temp);
+    lastGrenade = ThrownProjectile(temp);
     actors[totalActors++] = temp;
     temp = None;
 
@@ -495,6 +492,8 @@ singular function checkForHazards(GC gc)
             DrawThreatDetectionAugmentation(gc, actors[i], threatType, threatDam);
         }
 
+        if (beep)
+            Player.PlaySound(sound'hazardwarn',SLOT_None);
     }
 }
 
