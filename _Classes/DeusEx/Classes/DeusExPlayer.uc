@@ -2130,7 +2130,7 @@ function StartTrainingMission()
 // ShowIntro()
 // ----------------------------------------------------------------------
 
-function ShowIntro(optional bool bStartNewGame)
+function ShowIntro(optional bool bStartNewGame, optional bool force)
 {
     local Inventory anItem;
 	//GMDX: fix inventory bug when player dies and starts new game
@@ -2151,7 +2151,7 @@ function ShowIntro(optional bool bStartNewGame)
 	// Make sure all augmentations are OFF before going into the intro
 	AugmentationSystem.DeactivateAll();
 
-	if (bSkipNewGameIntro || bPrisonStart)
+	if ((bSkipNewGameIntro || bPrisonStart) && !force)
 	  PostIntro();
 	  else// Reset the player
 		 Level.Game.SendPlayer(Self, "00_Intro");
