@@ -20,7 +20,6 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX bug where Ford Schick would not give you an upgrade canister when telling you he swiped one, if ConFix isn't installed. Fixed by adding it to his desk.
     - Fixed a number of typos in various places.
     - Fixed Vanilla bug where sound volume would reset upon new game.
-    - Fixed vRSD bug (feature?) where cameras would not detect unconscious enemies.
     - Fixed many other GMDX and Vanilla bugs.
 - Quality of Life Improvements:
     - Right-Clicking an item in the belt with the Inventory Window open will clear the slot.
