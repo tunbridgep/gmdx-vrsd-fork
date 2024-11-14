@@ -79,7 +79,6 @@ function bool Recharge(optional out string msg)
     }
     //ChargedTarget.bActivatable=true;                                //RSD: Since now you can hold one at 0%
     unDimIcon();                                      //RSD
-    owner.UpdateBeltText(target);
     return true;
 }
 
@@ -114,6 +113,11 @@ function DimIcon() //RSD: When an item runs out of charge, dim the inv/belt icon
         hudbelt.RefreshHUDDisplay(0.0);
         owner.UpdateBeltText(target);
     }
+    if (winInv != none)
+    {
+        winInv.CreateObjectBelt();
+        winInv.RefreshInventoryItemButtons();
+    }
 }
 
 function unDimIcon() //RSD: When a biocell is used to charge an item, check if it was dead (dimmed inv/belt icon) and undim it
@@ -138,6 +142,11 @@ function unDimIcon() //RSD: When a biocell is used to charge an item, check if i
         hudbelt.objects[target.beltPos].bDimIcon = false;
         hudbelt.RefreshHUDDisplay(0.0);
         owner.UpdateBeltText(target);
+    }
+    if (winInv != none)
+    {
+        winInv.CreateObjectBelt();
+        winInv.RefreshInventoryItemButtons();
     }
 }
 
