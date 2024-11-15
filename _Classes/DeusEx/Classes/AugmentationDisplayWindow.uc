@@ -1083,7 +1083,7 @@ function DrawAccuracyCrosshair(GC gc, DeusExWeapon weapon, Color crossColor, out
 
 
     //SARGE: Don't draw accuracy crosshairs at 100% accuracy
-    if (weapon.currentAccuracy == 0.0)
+    if (weapon.currentAccuracy <= 0.01)
         return;
 
     //if (player.bXhairShrink)
