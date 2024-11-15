@@ -152,6 +152,21 @@ function SetValue(int newValue)                                                 
 	UpdateInfoButton();
 }
 
+//SARGE: When hacked, replace Off with the Rebooting text
+//Since we have multiple states here, and not much room on the button,
+//we will only show the Rebooting text if we log-in normally, and set the next state to Off
+function UpdateText(bool bHacking)
+{
+    local int disableTime;
+    if (winCamera.turret.bRebooting && !bHacking)
+    {
+        SetValue(1); //Next value goes to either Enemies or Bypassed
+        disableTime = winCamera.turret.disableTime - player.saveTime;
+        btnInfo.SetButtonText(sprintf(strRebooting,disableTime));
+    }
+}
+
+
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 

@@ -22,6 +22,8 @@ Sarge's Changes since Beta 2.2:
     - Fixed Vanilla bug where sound volume would reset upon new game.
     - Fixed many other GMDX and Vanilla bugs.
 - Quality of Life Improvements:
+    - Right-Clicking an item in the belt with the Inventory Window open will clear the slot.
+    - The Inventory "Show Ammo" display now always shows the total amount of ammo you can carry. Before, it was only visible when "Show Descriptions" was enabled.
     - Added a Lighting Accessibility setting, which removes some strobing and flickering in certain areas on some maps, such as the 'Ton hotel elevator shaft.
     - Added a new corpse searching setting, "Enhanced Corpse Interactions", which makes the first right-click on a corpse never pick them up, even if empty, so that you can search them reliably without accidentally picking them up.
         - Additionally added a new setting to show "[Searched]" text after interacting with corpses once, to differentiate between those which have been searched and which have not.
@@ -53,11 +55,13 @@ Sarge's Changes since Beta 2.2:
     - Different shotgun shells have different textures, and the boxes were reworked to have a different texture for easier identification.
         - Shells also have different sounds when they hit the floor
     - Equipping/Unequipping Environmental Training items gives you a unique sound depending on the item.
-    - Pressing the Reload key will no longer reload weapons that have a full clip.
+    - Pressing the Reload key will no longer reload weapons that have a full clip, unless Trick Reloading is enabled (always enabled on Hardcore).
     - Laser Attachments now re-enable themselves automatically if a weapon is holstered and reselected.
     - Hardcore Mode difficulty selection and Gameplay Settings menu are no longer locked behind completing the game, however they strongly warn against changing them.
     - Double-Click holstering now also works to enable Double Click Unholstering, rather than always unholstering with right-click (with IW toolbelt) or doing nothing (regular Toolbelt)
     - The number of total Lockpicks or Multitools in your inventory is now listed on lockpicking/electronics information windows, allowing you to see how many lockpicks or multitools you have compared to how many are required to bypass a given device or lock.
+        - The text is also color coded, showing as yellow when you only just have the amount of tools required, and red if you don't meet the requirement.
+        - If this setting is disabled, lockpicks and multitools will display their total count in the ammo display window, allowing you to easily see how many you have when you don't have them on your belt.
     - Belt Autofilling can now be disabled in the options.
     - Save Points no longer use Autosave slots, which can be easily overridden by accident, and now create fresh hard-saves instead.
     - The Dialog Screen has been significantly improved
@@ -82,8 +86,9 @@ Sarge's Changes since Beta 2.2:
     - Added "Belt Memory". When belt memory is enabled, using the last item in a belt slot will keep a darkened version of the item's icon in the toolbelt
         - Regardless of the Autofill setting, no other items will be added to the item's slot automatically.
         - Regardless of the Autofill setting, all items of the remembered type will be automatically added to the belt slot when picked up.
-        - Belt memory can be overridden by manually adding an item to a given belt slot at any time.
+        - Belt memory can be overridden by manually adding an item to a given belt slot at any time, and can be cleared by right-clicking on a belt slot.
         - Items dropped from the inventory or via the drop key will not be remembered, to allow easily throwing away unwanted junk without affecting the belt.
+    - Right-Clicking items in the belt while the inventory screen is open will clear the belt slot.
     - Invisible War Toolbelt improvements and bugfixes
         - Fixed bug where selected icon in the belt was forgotten between game sessions.
         - With Double Click Unholstering enabled, a single-rightclick will unholster a weapon if the selection was changed.
@@ -94,7 +99,7 @@ Sarge's Changes since Beta 2.2:
         - When Smart Keyring is enabled, the keyring will no longer occupy belt slot 0, allowing it to be used for regular items.
         - The keyring can be selected using Left-Click Frob on doors.
 - Gameplay Changes:
-    - Reverted GMDX change limiting Assault Rifles, Assault Shotguns and Sawed Off's to 4 damage mods. Now they can have 4 just like everything else.
+    - Reverted GMDX change limiting Assault Rifles, Assault Shotguns and Sawed Off's to 4 damage mods. Now they can have 5 just like everything else.
         - This was done because of integer truncation. In GMDX v9, the 5th upgrade would change their base damage from 4.2 to 4.5, which was pointless as it was rounded to 4 either way.
         - With vRSD partial damage calculations were added, so this is now relevant again.
     - Augmentation Changes
@@ -122,6 +127,7 @@ Sarge's Changes since Beta 2.2:
     - Increased the sawed off shotgun's pellet count from 8 to 9, and decreased shot speed from 1.3 to 1.2.
     - Rubber shells are now hitscan with a harmless projectile.
     - Restricted Saving is now a Playthrough Modifier and is no longer restricted to Hardcore Mode. It's still enforced in Hardcore Mode.
+    - Added No Console Access Playthrough Modifier, which prevents using the console (disallows cheats) while playing.
     - Added No Keypad Cheese Playthrough Modifier (called "Unknown Codes") which prevents using keypads or computer logins without having found them beforehand. Some codes which are hinted but never given are excepted.
     - AI Behaviour Changes
         - Enemies will now have a small delay (usually between 0.1 and 0.6) seconds before firing after losing sight of the player.
