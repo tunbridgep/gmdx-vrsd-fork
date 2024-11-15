@@ -97,9 +97,15 @@ event Tick(float deltaSeconds)
 	Super.Tick(deltaSeconds);
 
     //Update credits counter
-    upperConWindow.SetCreditsFont(conPlay.GetCurrentSpeechFont());
-    upperConWindow.SetLabelFont(conPlay.GetCurrentNameFont());
-    upperConWindow.SetCreditsText(player.Credits);
+    if (!bForcePlay)
+    {
+        upperConWindow.ShowCredits();
+        upperConWindow.SetCreditsFont(conPlay.GetCurrentSpeechFont());
+        upperConWindow.SetLabelFont(conPlay.GetCurrentNameFont());
+        upperConWindow.SetCreditsText(player.Credits);
+    }
+    else
+        upperConWindow.HideCredits();
 
 	// Compute how much we should move the windows this frame
 	increment = deltaSeconds/movePeriod;

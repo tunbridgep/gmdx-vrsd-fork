@@ -381,7 +381,11 @@ function DrawWindow(GC gc)
 				// draw the absolute number of multitools on top of the colored bar
 				if ((device.bHackable) && (device.hackStrength != 0.0))
 				{
-					numTools = int((device.hackStrength / player.SkillSystem.GetSkillLevelValue(class'SkillTech')) + 0.99);
+                    //SARGE: If we have Cracked, display 0 tools
+                    if (device.hackStrength <= 0.05 && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkCracked').bPerkObtained == true)
+                        numTools = 0;
+                    else
+                        numTools = int((device.hackStrength / player.SkillSystem.GetSkillLevelValue(class'SkillTech')) + 0.99);
 					ownedTools = player.GetInventoryCount('Multitool');
                     if (numTools == 1 && player.iFrobDisplayStyle == 0)
 						strInfo = numTools @ msgTool;
