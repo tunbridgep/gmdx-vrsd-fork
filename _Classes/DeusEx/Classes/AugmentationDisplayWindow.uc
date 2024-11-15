@@ -1071,12 +1071,63 @@ function GetTargetReticleColor( Actor target, out Color xcolor )
 // DrawTargetAugmentation()
 // ----------------------------------------------------------------------
 
+//SARGE: Moved here so we can call it from multiple places
+function DrawAccuracyCrosshair(GC gc, DeusExWeapon weapon, Color crossColor, out float x, out float y, out float mult)
+{
+	local float w, h;
+    local int i;
+    w = width;
+    h = height;
+    x = int(w * 0.5)-1;
+    y = int(h * 0.5)-1;
+
+
+    //SARGE: Don't draw accuracy crosshairs at 100% accuracy
+    if (weapon.currentAccuracy == 0.0)
+        return;
+
+    //if (player.bXhairShrink)
+    //{
+    //   if (weapon.currentAccuracy < 0.04)
+    //      corner = (default.corner * weapon.currentAccuracy) + 1;
+    //   else
+    //      corner = default.corner;
+    //}
+    // scale based on screen resolution - default is 640x480
+    //mult = FClamp(weapon.currentAccuracy * 80.0 * (width/640.0), corner, 80.0);
+    mult = FClamp(weapon.currentAccuracy * (width/16.0), 0, width/4.0); //RSD: New formula based on trig (see new accuracy model in TraceFire() in DeusExWeapon.uc)
+
+    // make sure it's not too close to the center unless you have a perfect accuracy
+    //RSD: Redone so that mult occurs in the inner rather than outer radius of the reticle (no more artificial limits)
+    /*mult = FMax(mult, corner);
+    if (weapon.currentAccuracy == 0.0)
+        mult = corner;*/
+
+    // draw the drop shadowed reticle
+    gc.SetTileColorRGB(0,0,0);
+    for (i=1; i>=0; i--)
+    {
+        //RSD: Redone so that accuracy indicator mult occurs in the inner rather than outer radius of the reticle (pushed everything out by pixels = corner)
+        gc.DrawBox(x+i, y-mult-corner+i, 1, corner, 0, 0, 1, Texture'Solid');
+        gc.DrawBox(x+i, y+mult+1+i, 1, corner, 0, 0, 1, Texture'Solid'); //RSD Added +1 to make reticle lengths equal
+        gc.DrawBox(x-(corner-1)/2+i, y-mult-corner+i, corner, 1, 0, 0, 1, Texture'Solid');
+        gc.DrawBox(x-(corner-1)/2+i, y+mult+corner+i, corner, 1, 0, 0, 1, Texture'Solid');
+
+        gc.DrawBox(x-mult-corner+i, y+i, corner, 1, 0, 0, 1, Texture'Solid');
+        gc.DrawBox(x+mult+1+i, y+i, corner, 1, 0, 0, 1, Texture'Solid'); //RSD Added +1 to make reticle lengths equal
+        gc.DrawBox(x-mult-corner+i, y-(corner-1)/2+i, 1, corner, 0, 0, 1, Texture'Solid');
+        gc.DrawBox(x+mult+corner+i, y-(corner-1)/2+i, 1, corner, 0, 0, 1, Texture'Solid');
+
+        //gc.DrawIcon(x*0.975, y*0.975, Texture'AugIconTarget_Small');
+        gc.SetTileColor(crossColor);
+    }
+}
+
 function DrawTargetAugmentation(GC gc)
 {
 	local String str;
 	local Actor target;
 	local float boxCX, boxCY, boxTLX, boxTLY, boxBRX, boxBRY, boxW, boxH;
-	local float x, y, w, h, mult;
 	local Vector v1, v2;
 	local int i, j, k;
 	local DeusExWeapon weapon;
@@ -1087,6 +1138,7 @@ function DrawTargetAugmentation(GC gc)
 	local int AimBodyPart, casted;
     local float visi, wepAcc, litemult, dist;                                   //RSD: Added litemult, dist
     local int ifflevel;
+    local float x,y,w,h,mult;
 
 	crossColor.R = 255; crossColor.G = 255; crossColor.B = 255;
 
@@ -1122,7 +1174,14 @@ function DrawTargetAugmentation(GC gc)
             }
         }
 
-	if ( target != None && !target.bHidden || player.bAlwaysShowBloom //)                                  //RSD
+    //Sarge: Set crosshair colour if we're placing a grenade on a wall
+    if (weapon != None && weapon.bNearWall && Player.bWallPlacementCrosshair)
+        crossColor = colBlue;
+    else
+        crossColor = colWhite;
+    
+    //SARGE: Moved this out to a new function, and made sure to always show it if enabled
+	if ( target != None && !target.bHidden //)                                  //RSD
     	&& !(target.IsA('ScriptedPawn') && ScriptedPawn(target).bCloakOn && !(bVisionActive && visionLevel >= 1))) //RSD: no targeting info if NPCs are cloaked with no player infravision
 	{
 		dist = VSize(target.Location - Player.Location);                        //RSD: was calculated twice, just store it
@@ -1144,54 +1203,20 @@ function DrawTargetAugmentation(GC gc)
 		if ((weapon != None) && !bUseOldTarget && player.GetCrosshairState(true)) //GMDX:remove IFF from overlaying GEP
 		{
 			// if the target is out of range, don't draw the reticle
-			if (weapon.MaxRange >= dist || player.bAlwaysShowBloom /*VSize(target.Location - Player.Location)*/) //RSD: replaced with dist
+			if (weapon.MaxRange >= dist /*VSize(target.Location - Player.Location)*/) //RSD: replaced with dist
 			{
-				w = width;
-				h = height;
-				x = int(w * 0.5)-1;
-				y = int(h * 0.5)-1;
-
-				//if (player.bXhairShrink)
-				//{
-				//   if (weapon.currentAccuracy < 0.04)
-                //      corner = (default.corner * weapon.currentAccuracy) + 1;
-                //   else
-                //      corner = default.corner;
-                //}
-				// scale based on screen resolution - default is 640x480
-				//mult = FClamp(weapon.currentAccuracy * 80.0 * (width/640.0), corner, 80.0);
-                mult = FClamp(weapon.currentAccuracy * (width/16.0), 0, width/4.0); //RSD: New formula based on trig (see new accuracy model in TraceFire() in DeusExWeapon.uc)
-
-				// make sure it's not too close to the center unless you have a perfect accuracy
-				//RSD: Redone so that mult occurs in the inner rather than outer radius of the reticle (no more artificial limits)
-				/*mult = FMax(mult, corner);
-				if (weapon.currentAccuracy == 0.0)
-					mult = corner;*/
-
-				// draw the drop shadowed reticle
-				gc.SetTileColorRGB(0,0,0);
-				for (i=1; i>=0; i--)
-				{
-                    //RSD: Redone so that accuracy indicator mult occurs in the inner rather than outer radius of the reticle (pushed everything out by pixels = corner)
-                    gc.DrawBox(x+i, y-mult-corner+i, 1, corner, 0, 0, 1, Texture'Solid');
-                    gc.DrawBox(x+i, y+mult+1+i, 1, corner, 0, 0, 1, Texture'Solid'); //RSD Added +1 to make reticle lengths equal
-                    gc.DrawBox(x-(corner-1)/2+i, y-mult-corner+i, corner, 1, 0, 0, 1, Texture'Solid');
-                    gc.DrawBox(x-(corner-1)/2+i, y+mult+corner+i, corner, 1, 0, 0, 1, Texture'Solid');
-
-                    gc.DrawBox(x-mult-corner+i, y+i, corner, 1, 0, 0, 1, Texture'Solid');
-                    gc.DrawBox(x+mult+1+i, y+i, corner, 1, 0, 0, 1, Texture'Solid'); //RSD Added +1 to make reticle lengths equal
-                    gc.DrawBox(x-mult-corner+i, y-(corner-1)/2+i, 1, corner, 0, 0, 1, Texture'Solid');
-                    gc.DrawBox(x+mult+corner+i, y-(corner-1)/2+i, 1, corner, 0, 0, 1, Texture'Solid');
-
-                    //gc.DrawIcon(x*0.975, y*0.975, Texture'AugIconTarget_Small');
-                    gc.SetTileColor(crossColor);
-				}
+                DrawAccuracyCrosshair(gc,weapon,crossColor,x,y,mult);
 			}
 		}
 		// movers are invalid targets for the aug
 		if (target.IsA('DeusExMover'))
 			target = None;
 	}
+    //SARGE: If we have always bloom turned on, just draw it regardless
+    else if (player.bAlwaysShowBloom && weapon != None && player.GetCrosshairState(true))
+    {
+        DrawAccuracyCrosshair(gc,weapon,crossColor,x,y,mult);
+    }
 
 	// let there be a 0.5 second delay before losing a target
 	if (target == None)
