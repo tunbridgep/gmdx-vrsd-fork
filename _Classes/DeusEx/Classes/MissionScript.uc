@@ -282,7 +282,9 @@ function Tick(float DeltaTime)
         {
             CanQuickSave=false;
 
-            if (localURL == "05_NYC_UNATCOMJ12LAB")
+            if (localURL == "11_PARIS_EVERETT")
+                TimeToSave=0.0;
+            else if (localURL == "05_NYC_UNATCOMJ12LAB")
                 TimeToSave=0.5;
             else
                 TimeToSave=0.1;

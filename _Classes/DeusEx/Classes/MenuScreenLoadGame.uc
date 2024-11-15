@@ -55,6 +55,7 @@ var localized string FileSizeLabel;
 var localized string FreeSpaceLabel;
 var localized string ConfirmDeleteLabel;
 var localized string CheatsEnabledLabel;
+var localized string SaveIDLabel;
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -371,14 +372,18 @@ function UpdateSaveInfo(int rowId)
 			winSaveInfo.SetText(Sprintf(LocationLabel, saveInfo.MissionLocation));
 			winSaveInfo.AppendText(Sprintf(SaveCountLabel, saveInfo.SaveCount));
 			winSaveInfo.AppendText(Sprintf(PlayTimeLabel, BuildElapsedTimeString(saveInfo.saveTime)));
+            //SARGE: Add directory index as well
+            if (saveInfo.directoryIndex != -1)
+                winSaveInfo.AppendText(Sprintf(SaveIDLabel, saveInfo.directoryIndex));
 			//winSaveInfo.AppendText(Sprintf(PlayTimeLabel, BuildTimeJulian(saveInfo)));
 
 			// divide to GetSaveDirectorSize by 1024 to get size of directory in MB
 			// Round up by one for comfort (and so you don't end up with "0MB", only
 			// possible with really Tiny maps).
 
-			fileSize = (saveDir.GetSaveDirectorySize(Int(lstGames.GetField(rowId, 4))) / 1024) + 1;
-			winSaveInfo.AppendText(Sprintf(FileSizeLabel, fileSize));
+            //SARGE: Don't have room for this, save ID is more important!
+			//fileSize = (saveDir.GetSaveDirectorySize(Int(lstGames.GetField(rowId, 4))) / 1024) + 1;
+			//winSaveInfo.AppendText(Sprintf(FileSizeLabel, fileSize));
 
 			// Show the "Cheats Enabled" text if cheats were enabled for this savegame
 			winCheatsEnabled.Show(saveInfo.bCheatsEnabled);
@@ -842,6 +847,7 @@ defaultproperties
      PlayTimeLabel="Play Time: %s|n"
      FileSizeLabel="File Size: %dMB"
      FreeSpaceLabel="Free Space: %dMB"
+     SaveIDLabel="Save ID: %s"
      ConfirmDeleteLabel="Confirm Savegame Deletion"
      CheatsEnabledLabel="- CHEATS ENABLED -"
      actionButtons(0)=(Align=HALIGN_Right,Action=AB_Cancel)
