@@ -78,16 +78,16 @@ function Destroyed()
 
 function DestroyWindow()
 {
-	// restore the crosshairs and the other hud elements
-	if (aReader != None)
-	{
-        aReader.UpdateCrosshair();
-	}
-
 	if (infoWindow != None)
 	{
 		infoWindow.ClearTextWindows();
 		infoWindow.Hide();
+	}
+	
+    // restore the crosshairs and the other hud elements
+	if (aReader != None)
+	{
+        aReader.UpdateCrosshair();
 	}
 
 	infoWindow = None;
@@ -135,6 +135,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 		else
 		{
 			DestroyWindow();
+            player.UpdateCrosshair();
 		}
 	}
 }

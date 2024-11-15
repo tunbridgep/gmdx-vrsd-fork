@@ -69,7 +69,8 @@ function AddAmmoInfoWindow(DeusExAmmo ammo, bool bShowDescriptions)
 		}
 		else
 		{
-			winText.SetText(ammo.itemName $ "|n|n" $ AmmoRoundsLabel @ ammo.AmmoAmount);
+            //SARGE: Updated to show Ammo / MaxAmmo, rather than just the number of rounds
+			winText.SetText(ammo.itemName $ "|n|n" $ AmmoRoundsLabel @ ammo.AmmoAmount $ outOf $ player.GetAdjustedMaxAmmo(ammo));
 		}
 	}
 

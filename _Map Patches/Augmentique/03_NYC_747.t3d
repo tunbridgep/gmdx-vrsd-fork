@@ -1,0 +1,28 @@
+Begin Map
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner2
+    Id="lebedev"
+    bDynamicLight=True
+    LastRenderTime=26.205656
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=581,ZoneNumber=1)
+    Location=(X=1609.490601,Y=-717.991211,Z=312.278290)
+    Rotation=(Yaw=50000)
+    OldLocation=(X=1680.490601,Y=-707.991211,Z=314.278290)
+    bSelected=True
+    Name=OutfitSpawner2
+End Actor
+Begin Actor Class=OutfitSpawner3 Name=OutfitSpawner29
+    Id="hairstreak"
+    bDynamicLight=True
+    LastRenderTime=145.182556
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner3
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=988,ZoneNumber=1)
+    Location=(X=-408.355347,Y=-402.021942,Z=367.278748)
+    Rotation=(Yaw=30000)
+    OldLocation=(X=-408.355347,Y=-402.021942,Z=367.278748)
+    bSelected=True
+    Name=OutfitSpawner29
+End Actor
+End Map

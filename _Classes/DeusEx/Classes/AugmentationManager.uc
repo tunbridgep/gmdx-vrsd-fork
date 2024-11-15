@@ -787,6 +787,24 @@ function ResetAugmentations()
 
 }
 
+//Returns the actual augmentation based on class
+function Augmentation GetAug(class<Augmentation> AugClass, optional bool active)
+{
+	local Augmentation anAug;
+
+	anAug = FirstAug;
+	while(anAug != None)
+	{
+		if (anAug.Class == augClass && anAug.bHasIt && (anAug.bIsActive||!active))
+            return anAug;
+
+		anAug = anAug.next;
+	}
+
+    return None;
+}
+
+
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 

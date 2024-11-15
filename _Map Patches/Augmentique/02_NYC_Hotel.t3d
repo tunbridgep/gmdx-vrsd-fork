@@ -1,0 +1,42 @@
+Begin Map
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner1
+    Id="paul"
+    bDynamicLight=True
+    LastRenderTime=381.639496
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=486,ZoneNumber=1)
+    Location=(X=-835.524170,Y=-2910.490479,Z=196.098724)
+    Rotation=(Yaw=-50000)
+    OldLocation=(X=-794.524170,Y=-2927.490479,Z=70.098717)
+    bSelected=True
+    DrawScale=2.000000
+    Name=OutfitSpawner1
+End Actor
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner8
+    Id="electrician"
+    bDynamicLight=True
+    LastRenderTime=192.373627
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=759,ZoneNumber=15)
+    Location=(X=-536.408997,Y=-2052.725098,Z=390.101318)
+    Rotation=(Yaw=-24000)
+    OldLocation=(X=-556.408997,Y=-2052.725098,Z=390.101318)
+    bSelected=True
+    Name=OutfitSpawner8
+End Actor
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner10
+    Id="gilbertrenton"
+    bDynamicLight=True
+    LastRenderTime=465.430115
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=1276,ZoneNumber=14)
+    Location=(X=-977.887329,Y=-1238.400024,Z=-43.704872)
+    OldLocation=(X=-977.887329,Y=-1222.400024,Z=-33.704872)
+    bSelected=True
+    DrawScale=2.000000
+    Name=OutfitSpawner10
+End Actor
+End Map

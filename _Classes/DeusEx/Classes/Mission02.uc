@@ -12,6 +12,7 @@ class Mission02 expands MissionScript;
 function FirstFrame()
 {
 	local ScriptedPawn pawn;
+    local Light L;
 
 	Super.FirstFrame();
 
@@ -114,7 +115,41 @@ function FirstFrame()
             }
 	     }
     }
+	else if (localURL == "02_NYC_HOTEL")
+    {
+        //SARGE: Fix up elevator shaft Lighting if we have Lighting Accessibility enabled
+        if (Player.bLightingAccessibility)
+        {
+            ForEach AllActors(class'Light', L)
+            {
+                //Remove some of the more egregious ones
+                if (L.Name == 'Light44' || L.Name == 'Light45'  )
+                {
+                    L.LightPeriod = 0;
+                    L.LightType = LT_Steady;
+                    //L.Destroy();
+                }
+                else if (L.Name == 'Light42')
+                {
+                    L.LightPeriod = 155;
+                    L.LightType = LT_Strobe;
+                }
 
+                //L.Destroy();
+
+
+                /*
+                if (L.LightType == LT_Flicker)
+                {
+                    clientMessage("Changing Light Period on " $ L.name $ " from " $ L.LightPeriod $ " to 0");
+                    L.LightPeriod = 100;
+                    //L.LightPeriod = Max(L.LightPeriod,255);
+                    L.LightType = LT_Blink;
+                }
+                */
+            }
+        }
+    }
 CanQuickSave=true;
 }
 
@@ -454,6 +489,7 @@ function Timer()
 	}
 	else if (localURL == "02_NYC_HOTEL")
 	{
+
 		// if the player kills all the terrorists, set a flag
 		if (!flags.GetBool('M02HostagesRescued'))
 		{

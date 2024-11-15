@@ -166,8 +166,8 @@ defaultproperties
      ShotTime=1.000000
      reloadTime=3.000000
      HitDamage=16
-     maxRange=120
-     AccurateRange=120
+     maxRange=150
+     AccurateRange=150
      bPenetrating=False
      StunDuration=10.000000
      bHasMuzzleFlash=False

@@ -1,0 +1,55 @@
+Begin Map
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner0
+    Id="hklowclass2"
+    bDynamicLight=True
+    LastRenderTime=259.299286
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=4778,ZoneNumber=2)
+    Location=(X=-337.855255,Y=1309.130493,Z=-294.900574)
+    Rotation=(Yaw=50000)
+    OldLocation=(X=-377.855255,Y=1309.130493,Z=-294.900574)
+    bSelected=True
+    Name=OutfitSpawner0
+End Actor
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner24
+    Id="hklowclass"
+    bDynamicLight=True
+    LastRenderTime=515.226807
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=865,ZoneNumber=2)
+    Location=(X=3281.350586,Y=3429.178955,Z=-505.899292)
+    Rotation=(Yaw=50000)
+    OldLocation=(X=3281.350586,Y=3429.178955,Z=-505.899292)
+    bSelected=True
+    Name=OutfitSpawner24
+End Actor
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner1
+    Id="diver"
+    bDynamicLight=True
+    LastRenderTime=409.523285
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=WaterZone'MyLevel.WaterZone1',iLeaf=3759,ZoneNumber=4)
+    Location=(X=-1577.327271,Y=962.699524,Z=-1225.908936)
+    Rotation=(Yaw=28000)
+    OldLocation=(X=-1577.327271,Y=962.699524,Z=-1225.908936)
+    bSelected=True
+    Name=OutfitSpawner1
+End Actor
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner3
+    Id="boatperson"
+    bDynamicLight=True
+    LastRenderTime=1278.286255
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo1',iLeaf=1676,ZoneNumber=1)
+    Location=(X=1824.519897,Y=1607.191040,Z=-473.898438)
+    Rotation=(Yaw=-10000)
+    OldLocation=(X=1824.519897,Y=1607.191040,Z=-473.898438)
+    bSelected=True
+    Name=OutfitSpawner3
+End Actor
+End Map
+

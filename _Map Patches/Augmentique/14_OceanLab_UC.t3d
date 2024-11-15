@@ -1,0 +1,28 @@
+Begin Map
+Begin Actor Class=OutfitSpawner3 Name=OutfitSpawner1
+    Id="dealwithit"
+    bDynamicLight=True
+    LastRenderTime=568.571533
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner3
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=4118,ZoneNumber=1)
+    Location=(X=789.724243,Y=6620.457031,Z=-4218.715820)
+    Rotation=(Yaw=28000)
+    OldLocation=(X=789.724243,Y=6620.457031,Z=-4218.715820)
+    bSelected=True
+    Name=OutfitSpawner1
+End Actor
+Begin Actor Class=OutfitSpawner3 Name=OutfitSpawner12
+    Id="redgold"
+    bDynamicLight=True
+    LastRenderTime=316.740112
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner3
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=538,ZoneNumber=1)
+    Location=(X=-1050.924316,Y=6061.225098,Z=-3802.731934)
+    Rotation=(Yaw=30000)
+    OldLocation=(X=-1050.924316,Y=6061.225098,Z=-3802.731934)
+    bSelected=True
+    Name=OutfitSpawner12
+End Actor
+End Map

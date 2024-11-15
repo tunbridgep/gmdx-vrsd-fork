@@ -90,24 +90,20 @@ function CreateSlots()
 
 function CreateNanoKeySlot()
 {
-	if (player != None)
-	{
-		if (player.KeyRing != None)
+		if (player != None && player.KeyRing != None && objects[KeyRingSlot] != None)
 		{
             if (!player.bSmartKeyring)
             {
-                RemoveObjectFromBelt(objects[KeyRingSlot].item);
+                if (objects[KeyRingSlot].item != None)
+                    RemoveObjectFromBelt(objects[KeyRingSlot].item);
     			objects[KeyRingSlot].SetItem(player.KeyRing);
             }
-            else if (objects[KeyRingSlot].item.IsA('NanoKeyRing'))
+            else if (objects[KeyRingSlot].item != None && objects[KeyRingSlot].item.IsA('NanoKeyRing'))
             {
                 RemoveObjectFromBelt(objects[KeyRingSlot].item);
             }
 			objects[KeyRingSlot].AllowDragging(player.bSmartKeyring);
 		}
-
-
-	}
 }
 
 // ----------------------------------------------------------------------
@@ -350,15 +346,20 @@ function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
             //only allow a position to be valid if the object in it is draggable.
             //Sarge: First, check for an existing placeholder slot
             //Then, if we don't find one, check for an empty slot if we have autofill enabled.
-			for (i=0; IsValidPos(i); i++)
+            for (i=0; IsValidPos(i); i++)
             {
-				if (( (Player.Level.NetMode == NM_Standalone) || (!Player.bBeltIsMPInventory) || (newItem.TestMPBeltSpot(i))))
+                if (( (Player.Level.NetMode == NM_Standalone) || (!Player.bBeltIsMPInventory) || (newItem.TestMPBeltSpot(i))))
                 {
                     //Additionally, allow slots with the same icon if we have a placeholder
                     if (player.GetBeltIcon(i) == newItem.icon && player.GetPlaceholder(i))
                     {
-                        FoundPlaceholder = true;
-                        break;
+                        if (player.bBeltMemory)
+                        {
+                            FoundPlaceholder = true;
+                            break;
+                        }
+                        else
+                            player.ClearPlaceholder(i); //Since we're not using placeholders, clear any that exist so we don't get belt weirdness.
                     }
                 }
             }
@@ -370,7 +371,7 @@ function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
                     if (( (Player.Level.NetMode == NM_Standalone) || (!Player.bBeltIsMPInventory) || (newItem.TestMPBeltSpot(i))))
                     {
                         //First, always allow empty slots if we have autofill turned on
-                        if (objects[i].GetItem() == None && !player.GetPlaceholder(i) && objects[i].bAllowDragging)
+                        if (objects[i].GetItem() == None && (!player.GetPlaceholder(i) || !player.bBeltMemory) && objects[i].bAllowDragging)
                             break;
                     }
                 }
