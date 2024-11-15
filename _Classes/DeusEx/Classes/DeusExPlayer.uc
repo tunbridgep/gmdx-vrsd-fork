@@ -393,6 +393,7 @@ var globalconfig bool bWallPlacementCrosshair;		// SARGE: Show a blue crosshair 
 var globalconfig bool bDisplayTotalAmmo;		    // SARGE: Show total ammo count, rather than MAGS
 var globalconfig bool bDisplayClips;		        // SARGE: For the weirdos who prefer Clips instead of Mags. Hidden Option
 var globalconfig bool bColourCodeFrobDisplay;       //SARGE: Colour Code the Frob display when you don't meet or only just meet the number of tools/picks required. Some people might not like the colours.
+var globalconfig int iFrobDisplayStyle;             //SARGE: Frob Display Style. 0 = "X Tools", 1 = "curr/total Tools", 2 = "total/curr Tools"
 var globalconfig bool bGameplayMenuHardcoreMsgShown;//SARGE: Stores whether or not the gameplay menu message has been displayed.
 var globalconfig bool bEnhancedCorpseInteractions;  //SARGE: Right click always searches corpses. After searching, right click picks up corpses as normal.
 var globalconfig bool bSearchedCorpseText;          //SARGE: Corpses show "[Searched]" text when interacted with for the first time.
@@ -409,7 +410,6 @@ var globalconfig bool bAugDisplayVisible;
 
 //Left-Frob Weapon Priority
 var localized String CantBreakDT;
-
 
 //HDTP
 var globalconfig bool bHDTP_JC;
@@ -464,7 +464,7 @@ var globalconfig bool bXhairShrink;
 var globalconfig bool bNoKnives;
 var globalconfig bool bModdedHeadBob;
 var globalconfig bool bBeltAutofill;											//Sarge: Added new feature for auto-populating belt
-var globalconfig bool bHackLockouts;											//Sarge: Allow locking-out security terminals when hacked.
+var globalconfig bool bHackLockouts;											//Sarge: Allow locking-out security terminals when hacked, and rebooting.
 var bool bForceBeltAutofill;    	    										//Sarge: Overwrite autofill setting. Used by starting items
 var globalconfig bool bBeltMemory;  											//Sarge: Added new feature to allow belt to rember items
 var globalconfig bool bSmartKeyring;  											//Sarge: Added new feature to allow keyring to be used without belt, freeing up a slot
@@ -569,6 +569,8 @@ var bool bNanoVirusSentMessage;                                                 
 var localized String NanoVirusLabel;                                            //RSD: For deactivating augs from scrambler grenades
 var globalconfig bool bRestrictedMetabolism;                                    //RSD: Enables restricted eating and halved withdrawal delay
 
+//GAMEPLAY MODIFIERS
+
 /*var travel bool bRandomizeCratesGeneralTool;
 var travel bool bRandomizeCratesGeneralWearable;
 var travel bool bRandomizeCratesGeneralPickup;
@@ -593,11 +595,25 @@ var travel int seed;                                                            
 var travel int augOrderNums[21];                                                //RSD: New aug can order for scrambling
 var const augBinary augOrderList[21];                                           //RSD: List of all aug cans in the game in order (to be scrambled)
 var travel bool bAddictionSystem;
+
+var travel bool bMoreLDDPNPCs;
+<<<<<<< HEAD
+=======
+
+var travel bool bDisableConsoleAccess;                                          //SARGE: Disable console access via a modifier.
+
+//END GAMEPLAY MODIFIERS
+
+//Autosave Stuff
+var travel float autosaveRestrictTimer;                                         //Sarge: Current time left before we're allowed to autosave again.
+var const float autosaveRestrictTimerDefault;                                   //Sarge: Timer for autosaves.
+var travel bool bResetAutosaveTimer;                                            //Sarge: This is necessary because our timer isn't set properly during the same frame as saving, for some reason.
+
+
 var travel AddictionSystem AddictionManager;
 var travel PerkSystem PerkManager;
 var travel RandomTable Randomizer;
-
-var travel bool bMoreLDDPNPCs;
+>>>>>>> master
 
 const DRUG_TOBACCO = 0;
 const DRUG_ALCOHOL = 1;
@@ -617,6 +633,8 @@ var globalconfig bool bDialogHUDColors;                                         
 //var globalconfig bool bAdvancedAugWheel;                                        //Sarge: Allow manually assigning augmentations to the aug wheel, rather than auto-assigning all of them.
 var globalconfig bool bQuickAugWheel;                                           //Sarge: Instantly enable/disable augs when closing the menu over the selected aug, otherwise require a mouse click.
 var globalconfig bool bAugWheelDisableAll;                                      //Sarge: Show the Disable All button on the Aug Wheel
+
+var globalconfig bool bTrickReloading;											//Sarge: Allow reloading with a full clip.
 
 //////////END GMDX
 
@@ -1573,21 +1591,27 @@ function string retInfo()
 //GMDX remove console from Hardcore mode >:]
 exec function Say(string Msg )
 {
-	//if (bHardCoreMode) return; else                                           //RSD: temporarily re-enable console for HC testing
-	  super.Say(Msg);
+	if (bDisableConsoleAccess || bExtraHardcore)
+        return;
+    else                                                                  //RSD: temporarily re-enable console for HC testing //SARGE: Made it a gameplay modifier
+	    super.Say(Msg);
 }
 
+//SARGE: TODO: Add a proper console window.
 exec function Type()
 {
-	//if (bHardCoreMode) return; else                                           //RSD: temporarily re-enable console for HC testing
+	if (bDisableConsoleAccess || bExtraHardcore)                         //RSD: temporarily re-enable console for HC testing //SARGE: Made it a gameplay modifier
+        return;
+    else
 	  super.Type();
 }
 
 function Typing( bool bTyping )
 {
-	/*if (bHardCoreMode)                                                        //RSD: temporarily re-enable console for HC testing
-	  Player.Console.GotoState('');
-	else*/ super.Typing(bTyping);
+	if (bDisableConsoleAccess || bExtraHardcore)                                                        //RSD: temporarily re-enable console for HC testing //SARGE: Made it a gameplay modifier
+	    Player.Console.GotoState('');
+	else
+        super.Typing(bTyping);
 }
 
 /////
@@ -2113,6 +2137,7 @@ exec function StartNewGame(String startMap)
 
     //SARGE: Fix audio volume being incorrectly set on new game
     //TODO: Make this an option
+    //TODO: Move this to ResetPlayer, since this function is for loading maps
     musicVol = int(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice MusicVolume"));
     soundVol = int(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice SoundVolume"));
     speechVol = int(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice SpeechVolume"));
@@ -2163,7 +2188,7 @@ function StartTrainingMission()
 // ShowIntro()
 // ----------------------------------------------------------------------
 
-function ShowIntro(optional bool bStartNewGame)
+function ShowIntro(optional bool bStartNewGame, optional bool force)
 {
     local Inventory anItem;
 	//GMDX: fix inventory bug when player dies and starts new game
@@ -2184,7 +2209,7 @@ function ShowIntro(optional bool bStartNewGame)
 	// Make sure all augmentations are OFF before going into the intro
 	AugmentationSystem.DeactivateAll();
 
-	if (bSkipNewGameIntro || bPrisonStart)
+	if ((bSkipNewGameIntro || bPrisonStart) && !force)
 	  PostIntro();
 	  else// Reset the player
 		 Level.Game.SendPlayer(Self, "00_Intro");
@@ -2306,6 +2331,7 @@ function ResetPlayer(optional bool bTraining)
 {
 	local inventory anItem;
 	local inventory nextItem;
+    local int i;
 
 	ResetPlayerToDefaults();
 
@@ -2316,6 +2342,10 @@ function ResetPlayer(optional bool bTraining)
 		AugmentationSystem.Destroy();
 		AugmentationSystem = None;
 	}
+
+    // Reset Belt Memory
+    for(i = 0;i < 10;i++)
+        ClearPlaceholder(i);
 
 	// Give the player a pistol and a prod
 	if (!bTraining && !bPrisonStart)
@@ -2380,7 +2410,7 @@ function ResetPlayerToDefaults()
 	{
 	  log("DELETE "@anItem);
 	   nextItem=anItem.Inventory;
-		DeleteInventory(anItem);
+		DeleteInventory(anItem,true);
 	  anItem.Destroy();
 	  anItem=nextItem;
 	}
@@ -3803,13 +3833,22 @@ function UpdateCameraRotation(SecurityCamera camera, Rotator rot)
 }
 
 //client->server (window to player)
-function ToggleCameraState(SecurityCamera cam, ElectronicDevices compOwner)
+function ToggleCameraState(SecurityCamera cam, ElectronicDevices compOwner, optional bool bHacked)
 {
-	if (cam.bActive)
+    //If we're active, or we were rebooting, and we logged in, then disable
+	if ((cam.bActive || cam.bRebooting) && !bHacked)
 	{
 	  cam.UnTrigger(compOwner, self);
 	  cam.team = -1;
 	}
+    //Set to reboot
+    else if (cam.bActive && bHacked)
+    {
+        cam.UnTrigger(compOwner, self);
+        cam.team = -1;
+        cam.StartReboot(self);
+    }
+    //Re-enable
 	else
 	{
       cam.bRebooting = false;
@@ -3824,43 +3863,36 @@ function ToggleCameraState(SecurityCamera cam, ElectronicDevices compOwner)
 }
 
 //client->server (window to player)
-function SetTurretState(AutoTurret turret, bool bActive, bool bDisabled)
+function SetTurretState(AutoTurret turret, bool bActive, bool bDisabled, bool bHacked)
 {
-    if (!bDisabled)
+    if ((bDisabled && !bHacked) || !bDisabled)
     {
         turret.disableTime = 0;
         turret.bRebooting = false;
+    }
+    else if (bDisabled && bHacked)
+    {
+        turret.StartReboot(self);
     }
 	turret.bActive   = bActive;
 	turret.bDisabled = bDisabled;
 	turret.bComputerReset = False;
 }
 
-//These are required because of client/server stuff making modifying the above functions impossible
-function ToggleCameraStateHacked(SecurityCamera cam, ElectronicDevices compOwner)
-{
-    ToggleCameraState(cam,compOwner);
-    if (!cam.bActive)
-    {
-        cam.bRebooting = true;
-        cam.disableTime = saveTime + (cam.disableTimeMult * MAX(1,SkillSystem.GetSkillLevel(class'SkillComputer')));
-    }
-}
-
-function SetTurretStateHacked(AutoTurret turret, bool bActive, bool bDisabled)
-{
-    SetTurretState(turret,bActive,bDisabled);
-    if (bDisabled)
-    {
-        turret.bRebooting = true;
-        turret.disableTime = saveTime + (turret.disableTimeMult * MAX(1,SkillSystem.GetSkillLevel(class'SkillComputer')));
-    }
-}
-
 //client->server (window to player)
-function SetTurretTrackMode(ComputerSecurity computer, AutoTurret turret, bool bTrackPlayers, bool bTrackPawns)
+function SetTurretTrackMode(ComputerSecurity computer, AutoTurret turret, bool bTrackPlayers, bool bTrackPawns,bool bHacked)
 {
 	local String str;
+    
+    if (bHacked)
+    {
+        turret.StartReboot(self);
+    }
+    else
+    {
+        turret.disableTime = 0;
+        turret.bRebooting = false;
+    }
 
 	turret.bTrackPlayersOnly = bTrackPlayers;
 	turret.bTrackPawnsOnly   = bTrackPawns;
@@ -5106,6 +5138,12 @@ function DoJump( optional float F )
         Velocity = Vector(Rotation) * 260;
 		Velocity.Z = JumpZ*0.75;
 		}
+	
+        // Trash: Speed Enhancement now uses energy while jumping
+        if (AugmentationSystem.GetClassLevel(class'AugSpeed') != -1)
+        {
+            Energy=MAX(Energy - AugSpeed(AugmentationSystem.GetAug(class'AugSpeed')).EnergyDrainJump,0);
+        }
 
         if (bHardCoreMode)                                                      //RSD: Running drains 1.3x on Hardcore, now jumping drains 1.25x
             swimTimer -= 1.0;
@@ -5195,6 +5233,13 @@ if (Physics == PHYS_Walking)
         Velocity.Z = JumpZ*0.75;                                                 //RSD: Was 0.75
         else
 		Velocity.Z = JumpZ;
+
+		if (AugmentationSystem.GetClassLevel(class'AugSpeed') != -1 && Energy >= 3)	// Trash: Speed Enhancement now uses energy while jumping
+		{
+			Energy -= 3;
+			if (Energy <= 0)
+				Energy = 0;
+		}
 
         if (bHardCoreMode)                                                      //RSD: Running drains 1.3x on Hardcore, now jumping drains 1.25x
             swimTimer -= 1.0;
@@ -8954,6 +8999,7 @@ exec function ToggleWalk()
 exec function ReloadWeapon()
 {
 	local DeusExWeapon W;
+    local bool full, hasAmmo;
 
 	if (RestrictInput())
 		return;
@@ -8962,9 +9008,15 @@ exec function ReloadWeapon()
 
 	W = DeusExWeapon(Weapon);  //CyberP: cannot reload when ammo in mag but none in reserves.
                                 //Sarge: Additionally fix reloading when full
-	if (W != None && (W.AmmoLeftInClip() != W.AmmoType.AmmoAmount || W.IsA('WeaponHideAGun') || W.GoverningSkill == class'DeusEx.SkillDemolition') && W.AmmoLeftInClip() < W.ReloadCount)
-		W.ReloadAmmo();
 
+    if (W != None)
+    {
+        full = W.AmmoLeftInClip() >= W.ReloadCount;
+        hasAmmo = W.AmmoType.AmmoAmount - W.ClipCount > 0;
+        if (W != None && ((!full && hasAmmo) || bTrickReloading || bHardCoreMode))
+            W.ReloadAmmo();
+
+    }
     UpdateCrosshair();
 }
 
@@ -9656,6 +9708,8 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 				RemoveItemFromSlot(item);
                 if (!bBeltAutofill)
                     MakeBeltObjectPlaceholder(item); //SARGE: Disabled because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
+                else
+                    RemoveObjectFromBelt(item);
 
 				// make sure we have one copy to throw!
 				DeusExPickup(item).NumCopies = 1;
@@ -9676,8 +9730,10 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 
 			// Remove it from the inventory slot grid
 			RemoveItemFromSlot(item);
-            if (!bBeltAutofill)
+            if (!bBeltAutofill && bBeltMemory)
                 MakeBeltObjectPlaceholder(item); //SARGE: Disabled because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
+            else
+                RemoveObjectFromBelt(item);
 		}
 
 		// if we are highlighting something, try to place the object on the target //CyberP: more lenience when dropping
@@ -11285,7 +11341,7 @@ function PostIntro()
         if (bPrisonStart)
             StartNewGame("05_NYC_UNATCOMJ12lab"); //SARGE: Have to hardcode this. Game crashes if we use a property
         else
-            StartNewGame(strStartMap);
+            StartNewGame(strStartMap); //SARGE: TODO: Add loadonly flag so we always reload.
 	}
 	else
 	{
@@ -12780,6 +12836,8 @@ function bool GetExceptedCode(string code)
         || code == "718" //Can only be guessed based on cryptic information
         || code == "7243" //We are only given 3 digits, need to guess the 4th
         || code == "WYRDRED08" //We are not given the last digit
+        //|| (code == "1966" && FlagBase.GetBool('CassandraDone')) //Only given in conversation, no note //EDIT: UNFORTUNATELY THIS IS UNRELIABLE!!
+        || code == "1966" //Only given in conversation, no note
         || code == "4321"; //We are told to "count backwards from 4"
 }
 
@@ -17348,6 +17406,8 @@ defaultproperties
      dynamicCrosshair=1
      bBeltMemory=True
      bEnhancedCorpseInteractions=True
-     bDisplayClips=true;
-     bCutsceneFOVAdjust=true;
+     bSearchedCorpseText=True
+     bDisplayClips=true
+     bCutsceneFOVAdjust=true
+     iFrobDisplayStyle=1
 }

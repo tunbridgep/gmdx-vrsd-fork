@@ -73,8 +73,9 @@ var bool bRestrictedSaving;
 var bool bNoKeypadCheese;
 var bool bExtraHardcore;
 var bool bMoreLDDPNPCs;
-var bool bRestrictedMetabolism;
+//var bool bRestrictedMetabolism;
 var bool bPrisonStart;
+var bool bDisableConsoleAccess;
 
 //LDDP
 var bool bFemaleEnabled;
@@ -133,7 +134,8 @@ event InitWindow()
     bRandomizeEnemies=false;                                                    //Sarge
     bExtraHardcore=false;                                                       //Sarge
     bMoreLDDPNPCs=false;                                                        //Sarge
-    //bRestrictedMetabolism=false;                                                //Sarge
+    bDisableConsoleAccess=false;                                                //Sarge
+    //bRestrictedMetabolism=false;                                              //Sarge
     default.bRandomizeCrates=false;                                             //RSD: Also need default values! Otherwise get command in modifier menu takes the wrong value
     default.bRandomizeMods=false;                                               //RSD
     default.bRandomizeAugs=false;                                               //RSD
@@ -145,6 +147,7 @@ event InitWindow()
     default.bMoreLDDPNPCs=false;                                                //Sarge
     //default.bRestrictedMetabolism=false;                                      //Sarge
     default.bPrisonStart=false;                                                 //Sarge
+    default.bDisableConsoleAccess=false;                                        //Sarge
 
 	StyleChanged();
 }
@@ -793,7 +796,8 @@ function SaveSettings()
     player.bAddictionSystem=bAddictionSystem;
     player.bExtraHardcore=bExtraHardcore;
     //player.bRestrictedMetabolism=bRestrictedMetabolism;
-    player.bMoreLDDPNPCs=bMoreLDDPNPCs;
+    player.bMoreLDDPNPCs=bMoreLDDPNPCs;                                         //Sarge
+    player.bDisableConsoleAccess=bDisableConsoleAccess;                         //Sarge
 
     //LDDP
 	THuman = Human(Player);

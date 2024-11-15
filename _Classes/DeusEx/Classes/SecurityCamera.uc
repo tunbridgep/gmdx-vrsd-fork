@@ -50,7 +50,8 @@ var bool bSkillApplied; //CyberP:
 
 //Sarge: Hacking disable time
 var float disableTime;                    //Sarge: timer before we are enabled again after hacking.
-const disableTimeMult = 120.0;            //Sarge: Our hacking skill is multiplied by this to give total disable time
+var float disableTimeBase;                //Sarge: Our hacking skill is multiplied by this to give total disable time
+var float disableTimeMult;                //Sarge: Our hacking skill is multiplied by this to give total disable time
 var bool bRebooting;                      //This will be set when the camera is hacked, to control rebooting
 
 // ------------------------------------------------------------------------------------
@@ -415,6 +416,16 @@ function CheckCarcassVisibility(DeusExCarcass carcass)
 	}
 }
 
+//SARGE: Telling this camera that it should start rebooting right now
+function StartReboot(DeusExPlayer player)
+{
+    if (player.bHardCoreMode || player.bHackLockouts)
+    {
+        bRebooting = true;
+        disableTime = player.saveTime + disableTimeBase + (disableTimeMult * MAX(0,player.SkillSystem.GetSkillLevel(class'SkillComputer') - 1));
+    }
+}
+
 function Tick(float deltaTime)
 {
 	local float ang;
@@ -454,7 +465,7 @@ function Tick(float deltaTime)
     }
 
 	// if this camera is not active, get out
-	if (!bActive)
+	if (!bActive && !bConfused)
 	{
 		// DEUS_EX AMSD For multiplayer
 		ReplicatedRotation = DesiredRotation;
@@ -468,6 +479,10 @@ function Tick(float deltaTime)
 	if (bConfused)
 	{
 		confusionTimer += deltaTime;
+        
+        //SARGE: Confusing pauses hacking reboot time
+        if (bRebooting)
+            disableTime += deltaTime;
 
 		// pick a random facing at random
 		if (confusionTimer % 0.25 > 0.2)
@@ -482,7 +497,10 @@ function Tick(float deltaTime)
 			confusionTimer = 0;
 			confusionDuration = Default.confusionDuration;
 			LightHue = 80;
-			MultiSkins[2] = Texture'GreenLightTex';
+            if (!bRebooting)
+                MultiSkins[2] = Texture'GreenLightTex';
+            else
+                MultiSkins[2] = Texture'BlackMaskTex';
 			SoundPitch = 64;
 			DesiredRotation = origRot;
 		}
@@ -785,4 +803,6 @@ defaultproperties
      Buoyancy=5.000000
      RotationRate=(Pitch=65535,Yaw=65535)
      bVisionImportant=True
+     disableTimeBase=120.0;
+     disableTimeMult=60.0;
 }
