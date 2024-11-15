@@ -597,8 +597,6 @@ var const augBinary augOrderList[21];                                           
 var travel bool bAddictionSystem;
 
 var travel bool bMoreLDDPNPCs;
-<<<<<<< HEAD
-=======
 
 var travel bool bDisableConsoleAccess;                                          //SARGE: Disable console access via a modifier.
 
@@ -613,7 +611,6 @@ var travel bool bResetAutosaveTimer;                                            
 var travel AddictionSystem AddictionManager;
 var travel PerkSystem PerkManager;
 var travel RandomTable Randomizer;
->>>>>>> master
 
 const DRUG_TOBACCO = 0;
 const DRUG_ALCOHOL = 1;
