@@ -1151,6 +1151,17 @@ function Frob(Actor Frobber, Inventory frobWith)
 									Weapon(item).PickupAmmoCount = 0;
                                     //SARGE: Set weapons maximum clip size to however much left over ammo it has.
                                     DeusExWeapon(item).ClipCount = 0;
+                                    //Delete grenades
+                                    if (W.IsA('WeaponNanoVirusGrenade') ||
+                                        W.IsA('WeaponGasGrenade') ||
+                                        W.IsA('WeaponEMPGrenade') ||
+                                        W.IsA('WeaponLAM') ||
+                                        W.IsA('WeaponHideAGun'))
+                                    {
+                                        DeleteInventory(item);
+                                        W = None;
+                                        item = None;
+                                    }
 								}
 							}
                             else if ((W != None)&&(Weapon(item).AmmoType==none)) //GMDX Fix bug that makes level carcass with weapon just crap out as it has not got spawned ammotype
@@ -1172,7 +1183,19 @@ function Frob(Actor Frobber, Inventory frobWith)
 									      P.ClientMessage(item.PickupMessage @ item.itemArticle @ item.itemName, 'Pickup');
 									      else
 									         P.ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName, 'Pickup');
-						         }
+                                    }
+                                    //Delete grenades
+                                    if (W.IsA('WeaponNanoVirusGrenade') ||
+                                        W.IsA('WeaponGasGrenade') ||
+                                        W.IsA('WeaponEMPGrenade') ||
+                                        W.IsA('WeaponLAM') ||
+                                        W.IsA('WeaponHideAGun'))
+                                    {
+                                        DeleteInventory(item);
+                                        W = None;
+                                        item = None;
+                                        bPickedItemUp = True;
+                                    }
 								}
                                 //TODO: Handle Dragons Tooth custom charge
                                 //TODO: Handle telling us when we're Picking up Ammo when we're at max
@@ -1183,10 +1206,10 @@ function Frob(Actor Frobber, Inventory frobWith)
 							// if he empties some inventory he can get something potentially cooler
 							// than he already has.
 
-							if ((W == None) && (!player.FindInventorySlot(item, True)))
+							if ((W == None) && (item != None) && (!player.FindInventorySlot(item, True)))
                             {
                                 bFoundSomething = True;
-								P.ClientMessage(Sprintf(Player.InventoryFull, item.itemName));
+								//P.ClientMessage(Sprintf(Player.InventoryFull, item.itemName));
                             }
 
 							// Only destroy the weapon if the player already has it.
@@ -1202,9 +1225,9 @@ function Frob(Actor Frobber, Inventory frobWith)
                                     }
                                     bFoundInvalid = true;
                                 }
+                                bPickedItemUp = True;
 							}
 
-							bPickedItemUp = True;
 						}
                         else
                         {
