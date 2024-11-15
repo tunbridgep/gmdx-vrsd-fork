@@ -321,11 +321,13 @@ function RefreshMultiplayerKeys()
 
 //SARGE: Major rewrite. Updated to work with placed grenades.
 //Additionally, added support for seeing more than one hazard at a time.
+//TODO: Make this not suck. Also localize it.
 singular function checkForHazards(GC gc)
 {
     local DamageTrigger DT;
     local ThrownProjectile PROJ;
     local Cloud CL;
+    local Barrel1 BR;
     local string threatType;
     local int threatDam;
 
@@ -375,8 +377,32 @@ singular function checkForHazards(GC gc)
         
     actors[totalActors++] = temp;
     temp = None;
+    
+    //Next, get radioactive barrels
+    foreach Player.RadiusActors(class'Barrel1', BR, range)
+    {
+        if (totalActors >= 20)
+            break;
 
-    //Second, get clouds of each type
+        if (BR.SkinColor != SC_RadioActive)
+            continue;
+        
+        //Get closest
+        if (temp != None)
+        {
+            range1 = VSize(BR.location - player.location);
+            range2 = VSize(temp.location - player.location);
+            if (range1 < range2)
+                temp = BR;
+        }
+        else
+            temp = BR;
+    }
+    
+    actors[totalActors++] = temp;
+    temp = None;
+
+    //Next, get clouds of each type
     foreach Player.RadiusActors(class'Cloud', CL, range)
     {
         if (totalActors >= 20)
@@ -460,6 +486,12 @@ singular function checkForHazards(GC gc)
             PROJ = ThrownProjectile(actors[i]);
             threatType = PROJ.ItemName;
             threatDam = int(PROJ.Damage);
+        }
+        else if (actors[i].IsA('Barrel1'))
+        {
+            BR = Barrel1(actors[i]);
+            threatType = "Radiation";
+            threatDam = 5;
         }
 
         //Now draw it
