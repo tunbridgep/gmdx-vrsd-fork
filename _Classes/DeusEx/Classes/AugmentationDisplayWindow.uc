@@ -355,7 +355,7 @@ singular function checkForHazards(GC gc)
         if (totalActors >= 20)
             break;
 
-        if (!DT.bIsOn || DT.damageInterval == 0 || DT.damageAmount == 0)
+        if (!DT.bInitiallyActive || !DT.bIsOn || DT.damageInterval == 0 || DT.damageAmount == 0)
             continue;
             
         //We need to check distance, because collision is not good enough as they can be big
