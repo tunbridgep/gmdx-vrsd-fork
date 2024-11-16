@@ -197,7 +197,7 @@ defaultproperties
      LowAmmoWaterMark=0
      GoverningSkill=Class'DeusEx.SkillWeaponLowTech'
      reloadTime=0.000000
-     HitDamage=20
+     HitDamage=25
      maxRange=100
      AccurateRange=100
      BaseAccuracy=1.000000
@@ -259,6 +259,6 @@ defaultproperties
      LightRadius=4
      Mass=20.000000
      minSkillRequirement=3;
-     chargePerUse=2
+     chargePerUse=4
      totalCharge=100
 }
