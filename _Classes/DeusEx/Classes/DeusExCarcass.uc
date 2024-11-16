@@ -54,7 +54,7 @@ var bool            passedSkins;
 
 //RSD
 var int PickupAmmoCount;                                                        //RSD: Ammo count on loot. Initialized in MissionScript.uc on first map load (possibly passed through ScriptedPawn.uc)
-var string savedName;                                                           //RSD: So we can use it again if we kill an unconscious corpse
+var string savedName;    //RSD: So we can use it again if we kill an unconscious corpse
 var globalconfig bool bRandomModFix;                                            //RSD: Stupid config-level hack since PostBeginPlay() can't access player pawn
 
 //Sarge: LDDP Stuff
@@ -218,6 +218,9 @@ local DeusExPlayer player;                                                      
 		        itemName = msgAnimalCarcass;
             }
         }
+
+        //SARGE: Update with our search string
+        AddSearchedString(player);
 
 		Mass           = Other.Mass;
 		Buoyancy       = Mass * 1.2;
@@ -1420,8 +1423,8 @@ function Frob(Actor Frobber, Inventory frobWith)
     }
 
     //log("  bFoundSomething = " $ bFoundSomething);
-    AddSearchedString(player);
     bSearched = true; //SARGE: Once we have been searched once, go back to normal behaviour
+    AddSearchedString(player);
     bFoundSomething = false;
     bDblClickStart=true;
 
@@ -1440,8 +1443,10 @@ function Frob(Actor Frobber, Inventory frobWith)
 
 function AddSearchedString(DeusExPlayer player)
 {
-    if (player.bSearchedCorpseText && InStr(ItemName, SearchedString) == -1)
-        ItemName = SearchedString @ ItemName;
+    if (player != None && bSearched && player.bSearchedCorpseText && InStr(ItemName, SearchedString) == -1)
+    {
+        itemName = SearchedString @ itemName;
+    }
 }
 
 
@@ -1686,6 +1691,9 @@ function KillUnconscious()                                                      
 		}
         else
 		    itemName = msgAnimalCarcass;
+    
+        //SARGE: Add searched string
+        AddSearchedString(DeusExPlayer(GetPlayerPawn()));
 }
 
 defaultproperties
