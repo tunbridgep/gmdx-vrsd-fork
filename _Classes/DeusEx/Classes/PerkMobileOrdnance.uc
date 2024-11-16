@@ -1,13 +1,13 @@
 //=============================================================================
 // PerkHeavilyTweaked.
 //=============================================================================
-class PerkHeavilyTweaked extends Perk;
+class PerkMobileOrdnance extends Perk;
 
 //Make all GEP Guns in the players inventory accept laser and scope mods
 function OnPerkPurchase()
 {
 	local Inventory item;
-    local WeaponGEPGun gep;
+    local DeusExWeapon W;
 
     item = PerkOwner.Inventory;
     do
@@ -15,11 +15,10 @@ function OnPerkPurchase()
         if (item == None) //This should never happen
             return;
 
-        if (item.isA('WeaponGEPGun'))
+        if ( item.isA('WeaponFlamethrower')/* || item.isA('WeaponGEPGun') || item.isA('WeaponPlasmaRifle')*/)
         {
-            gep = WeaponGEPGun(item);
-            gep.bCanHaveScope = true;
-            gep.bCanHaveLaser = true;
+            W = DeusExWeapon(item);
+            W.ResizeHeavyWeapon(PerkOwner);
         }
         item = item.Inventory;
     }
@@ -28,10 +27,10 @@ function OnPerkPurchase()
 
 defaultproperties
 {
-    PerkName="HEAVILY TWEAKED"
-    PerkDescription="|nAn agent is able to attach scopes and laser sights to the GEP gun, enabling laser guidance and fly-by-wire capabilities.|n|nRequires: Heavy Weapons: ADVANCED"
+    PerkName="MOBILE ORDNANCE"
+    PerkDescription="|nAn agent is able to modify the chassis of flame weapons, stripping away unnecessary elements. Flamethrowers are reduced in size by 3 inventory spaces.|n|nRequires: Heavy Weapons: MASTER"
     PerkSkill=Class'DeusEx.SkillWeaponHeavy'
-    PerkCost=100
-    PerkLevelRequirement=2
+    PerkCost=250
+    PerkLevelRequirement=3
 }
 

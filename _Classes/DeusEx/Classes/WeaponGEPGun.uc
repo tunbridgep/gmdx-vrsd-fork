@@ -28,10 +28,10 @@ var int lerpClamp;
 //GMDX:finish vars
 
 //SARGE: Allow laser sight and scope when we have the Heavily Tweaked perk
+//SARGE: Resize if we have the Mobile Ordnance perk
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {
     local PerkHeavilyTweaked perk;
-    local DeusExPlayer playa;
     
     perk = PerkHeavilyTweaked(frobber.PerkManager.GetPerkWithClass(class'DeusEx.PerkHeavilyTweaked'));
     if (perk != None && perk.bPerkObtained)
@@ -44,7 +44,7 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
         bCanHaveScope=False;
         bCanHaveLaser=False;
     }
-    
+    //ResizeHeavyWeapon(frobber);
     return super.DoRightFrob(Frobber,objectInHand);
 }
 
