@@ -27,6 +27,26 @@ var rotator OldRotation;
 var int lerpClamp;
 //GMDX:finish vars
 
+//SARGE: Allow laser sight and scope when we have the Heavily Tweaked perk
+function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
+{
+    local PerkHeavilyTweaked perk;
+    local DeusExPlayer playa;
+    
+    perk = PerkHeavilyTweaked(frobber.PerkManager.GetPerkWithClass(class'DeusEx.PerkHeavilyTweaked'));
+    if (perk != None && perk.bPerkObtained)
+    {
+        bCanHaveScope=True;
+        bCanHaveLaser=True;
+    }
+    else
+    {
+        bCanHaveScope=False;
+        bCanHaveLaser=False;
+    }
+    
+    return super.DoRightFrob(Frobber,objectInHand);
+}
 
 function SetMount(DeusExPlayer dxp)
 {
@@ -529,8 +549,6 @@ defaultproperties
      maxRange=12000
      AccurateRange=7200
      BaseAccuracy=0.800000
-     bCanHaveScope=True
-     bCanHaveLaser=True
      bCanTrack=True
      LockTime=3.000000
      LockedSound=Sound'DeusExSounds.Weapons.GEPGunLock'

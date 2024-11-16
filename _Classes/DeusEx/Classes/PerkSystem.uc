@@ -42,6 +42,7 @@ function InitializePerks(DeusExPlayer newPlayer)	// Trash: Add every perk in the
 	// Heavy Perks
 	AddPerk(Class'DeusEx.PerkControlledBurn');
 	AddPerk(Class'DeusEx.PerkBlastEnergy');
+	AddPerk(Class'DeusEx.PerkHeavilyTweaked');
 	AddPerk(Class'DeusEx.PerkHERocket');
 
 	// Demolition Perks
