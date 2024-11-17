@@ -1203,7 +1203,7 @@ function DrawTargetAugmentation(GC gc)
 		if ((weapon != None) && !bUseOldTarget && player.GetCrosshairState(true)) //GMDX:remove IFF from overlaying GEP
 		{
 			// if the target is out of range, don't draw the reticle
-			if (weapon.MaxRange >= dist /*VSize(target.Location - Player.Location)*/) //RSD: replaced with dist
+			if (weapon.MaxRange >= dist || player.bAlwaysShowBloom /*VSize(target.Location - Player.Location)*/) //RSD: replaced with dist
 			{
                 DrawAccuracyCrosshair(gc,weapon,crossColor,x,y,mult);
 			}
