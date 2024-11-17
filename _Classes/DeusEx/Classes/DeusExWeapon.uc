@@ -5543,7 +5543,7 @@ simulated function bool UpdateInfo(Object winObject)
     }
     else if (IsA('WeaponCrowbar'))
     {
-      str = msgSpec;
+      str = sprintf(msgSpec,player.GetCrowbarBonusDamage());
       if (player.AugmentationSystem != none && player.AugmentationSystem.GetAugLevelValue(class'AugCombat') == -1.0) //RSD: accessed none?
          msgMultiplier = msgFast;
       else

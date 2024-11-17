@@ -2572,10 +2572,25 @@ function bool BreaksDamageThreshold(DeusExWeapon weapon, int damageThreshold)	//
 {
 	local int mod;
 
-	if (weapon.IsA('WeaponCrowbar'))	// Special check for Crowbar since it deals +5 extra damage to objects
-		mod += 5;
+    if (weapon == None)
+        return false;
+
+	// Special check for Crowbar since it deals +5 extra damage to objects
+    //SARGE: Now checks Sharp-Toothed perk as well.
+	if (weapon.IsA('WeaponCrowbar'))
+        mod = GetCrowbarBonusDamage();
 
 	return (weapon.CalculateTrueDamage() + mod) >= damageThreshold;
+}
+
+//Crowbar gains bonus damage per low-tech level if we have the Sharp-Toothed perk.
+//Otherwise, it has a flat 5 damage bonus
+function int GetCrowbarBonusDamage()
+{
+    if (PerkManager.GetPerkWithClass(class'DeusEx.PerkSharpToothed').bPerkObtained)
+        return Max(5,SkillSystem.GetSkillLevel(class'SkillWeaponLowTech') * 5);
+    else
+        return 5;
 }
 
 // ----------------------------------------------------------------------
