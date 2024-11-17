@@ -2570,12 +2570,10 @@ function bool SelectMeleePriority(int damageThreshold)	// Trash: Used to automat
 
 function bool BreaksDamageThreshold(DeusExWeapon weapon, int damageThreshold)	// Checks if the weapon breaks the damageThreshold
 {
-	local int mod;
-
-	if (weapon.IsA('WeaponCrowbar'))	// Special check for Crowbar since it deals +5 extra damage to objects
-		mod += 5;
-
-	return (weapon.CalculateTrueDamage() + mod) >= damageThreshold;
+	if (weapon.IsA('WeaponCrowbar'))	// Special check for Crowbar since it deals +5 extra damage to objects //SARGE: Now deals 2x damage, to scale with low-tech
+        return (weapon.CalculateTrueDamage() * 2) >= damageThreshold;
+    else
+        return (weapon.CalculateTrueDamage()) >= damageThreshold;
 }
 
 // ----------------------------------------------------------------------
