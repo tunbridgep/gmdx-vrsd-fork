@@ -61,7 +61,7 @@ function SetupChargeManager()
     {
 	    chargeManager = new(Self) class'ChargeManager';
         chargeManager.SetMaxCharge(totalCharge,true);
-        chargeManager.chargeMult = 0.2;
+        chargeManager.chargeMult = 0.3;
     }
         
     if (owner.IsA('DeusExPlayer'))
