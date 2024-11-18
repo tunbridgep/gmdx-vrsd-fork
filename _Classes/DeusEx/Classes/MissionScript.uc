@@ -176,8 +176,7 @@ function FirstFrame()
             InitializeEnemySwap(1);
         }
 
-        if (player.bMorePS20s)
-            DistributePS20s();
+        DistributePS20s();
 
 		flags.SetBool(flagName, True);
 	}
@@ -395,8 +394,8 @@ function DistributePS20s()
         actors[swapTo] = temp;
     }
 
-    //Now give the first 5 or so PS20s
-    given = Player.Randomizer.GetRandomInt(4) + 4;
+    //Now give the first 0-2 PS20s
+    given = Player.Randomizer.GetRandomInt(2);
 
     while (given > 0)
     {

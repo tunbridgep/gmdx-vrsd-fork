@@ -596,8 +596,6 @@ var travel bool bMoreLDDPNPCs;
 
 var travel bool bDisableConsoleAccess;                                          //SARGE: Disable console access via a modifier.
 
-var travel bool bMorePS20s;                                                     //Sarge: Adds more PS20's randomly distributed amongst enemies.
-
 //END GAMEPLAY MODIFIERS
 
 //Autosave Stuff
