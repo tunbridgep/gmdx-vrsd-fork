@@ -50,7 +50,8 @@ defaultproperties
      items(7)=(HelpText="Prevents using keypads and logins unless you have them in your notes.",actionText="Undiscovered Codes",variable="bNoKeypadCheese");
      items(8)=(HelpText="Start the game in the MJ12 Prison facility. Not recommended for new players! Also skips the intro cutscene.",actionText="Alternate Start",variable="bPrisonStart");
      items(9)=(HelpText="Disable the use of the console.",actionText="Disable Console Access",variable="bDisableConsoleAccess");
-     items(10)=(HelpText="Enable additional NPC's added by the Lay-D Denton mod. By default only the most relevant ones are enabled.",actionText="Add extra Lay-D Denton NPCs",variable="bMoreLDDPNPCs");
+     items(10)=(HelpText="More enemies will spawn with PS20s",actionText="Add More PS20s",variable="bMorePS20s");
+     items(11)=(HelpText="Enable additional NPC's added by the Lay-D Denton mod. By default only the most relevant ones are enabled.",actionText="Add extra Lay-D Denton NPCs",variable="bMoreLDDPNPCs");
      Title="Playthrough Modifiers"
      consoleTarget="MenuScreenNewGame"
 }

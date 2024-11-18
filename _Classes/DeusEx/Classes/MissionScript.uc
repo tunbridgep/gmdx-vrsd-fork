@@ -176,6 +176,9 @@ function FirstFrame()
             InitializeEnemySwap(1);
         }
 
+        if (player.bMorePS20s)
+            DistributePS20s();
+
 		flags.SetBool(flagName, True);
 	}
 
@@ -365,6 +368,75 @@ function SpawnPoint GetSpawnPoint(Name spawnTag, optional bool bRandom)
 	}
 
 	return aPoint;
+}
+
+//Gives PS20s to 3-5 random enemies in the map.
+function DistributePS20s()
+{
+    local int i, j, swapTo;
+    local ScriptedPawn actors[50], temp, SP;
+    local int actorCount, given;
+    local Inventory inv;
+
+    //player.ClientMessage("Distributing PS20s...");
+
+    foreach AllActors(class'ScriptedPawn', SP)
+    {
+        if (!SP.bImportant && SP.GetPawnAllianceType(Player) == ALLIANCE_Hostile && !SP.isA('Robot') && !SP.isA('Animal') && !SP.isA('HumanCivilian') && !SP.bDontRandomizeWeapons && actorCount < 50)
+            actors[actorCount++] = SP;
+    }
+    
+    //Shuffle the array
+    for (i = actorCount;i > 0;i--)
+    {
+        swapTo = Player.Randomizer.GetRandomInt(i + 1);
+        temp = actors[i];
+        actors[i] = actors[swapTo];
+        actors[swapTo] = temp;
+    }
+
+    //Now give the first 5 or so PS20s
+    given = Player.Randomizer.GetRandomInt(4) + 4;
+
+    while (given > 0)
+    {
+        //First, make sure they don't have one
+        inv = actors[given].Inventory;
+        while (inv != None && j < 5)
+        {
+            if (inv.isA('WeaponHideAGun'))
+                break;
+            inv = inv.Inventory;
+        }
+        if (inv != None && inv.IsA('WeaponHideAGun'))
+        {
+            given--;
+            continue;
+        }
+
+        //Spawn a PS20 and some ammo
+        inv = spawn(class'WeaponHideAGun', actors[given]);
+        if (inv != None)
+        {
+            inv.GiveTo(actors[given]);
+            inv.SetBase(actors[given]);
+            inv.bHidden = True;
+            inv.SetPhysics(PHYS_None);
+            actors[given].AddInventory(inv);
+        }
+        inv = spawn(class'AmmoHideAGun', actors[given]);
+        if (inv != None)
+        {
+            inv.GiveTo(actors[given]);
+            inv.SetBase(actors[given]);
+            inv.bHidden = True;
+            inv.SetPhysics(PHYS_None);
+            actors[given].AddInventory(inv);
+        }
+        actors[given].SwitchToBestWeapon();
+        //Player.ClientMessage("Give " $ actors[given].FamiliarName $ " a PS20");
+        given--;
+    }
 }
 
 function InitializeRandomAmmoCounts()                                           //RSD: Initializes random ammo drop counts on first map load so they can't be savescummed

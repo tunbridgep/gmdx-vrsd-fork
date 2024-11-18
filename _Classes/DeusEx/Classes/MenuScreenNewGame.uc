@@ -76,6 +76,7 @@ var bool bMoreLDDPNPCs;
 //var bool bRestrictedMetabolism;
 var bool bPrisonStart;
 var bool bDisableConsoleAccess;
+var bool bMorePS20s;
 
 //LDDP
 var bool bFemaleEnabled;
@@ -135,6 +136,7 @@ event InitWindow()
     bExtraHardcore=false;                                                       //Sarge
     bMoreLDDPNPCs=false;                                                        //Sarge
     bDisableConsoleAccess=false;                                                //Sarge
+    bMorePS20s=false;                                                           //Sarge
     //bRestrictedMetabolism=false;                                              //Sarge
     default.bRandomizeCrates=false;                                             //RSD: Also need default values! Otherwise get command in modifier menu takes the wrong value
     default.bRandomizeMods=false;                                               //RSD
@@ -148,6 +150,7 @@ event InitWindow()
     //default.bRestrictedMetabolism=false;                                      //Sarge
     default.bPrisonStart=false;                                                 //Sarge
     default.bDisableConsoleAccess=false;                                        //Sarge
+    default.bMorePS20s=false;                                                   //Sarge
 
 	StyleChanged();
 }
@@ -806,6 +809,7 @@ function SaveSettings()
     //player.bRestrictedMetabolism=bRestrictedMetabolism;
     player.bMoreLDDPNPCs=bMoreLDDPNPCs;                                         //Sarge
     player.bDisableConsoleAccess=bDisableConsoleAccess;                         //Sarge
+    player.bMorePS20s=bMorePS20s;                                               //Sarge
 
     //LDDP
 	THuman = Human(Player);
