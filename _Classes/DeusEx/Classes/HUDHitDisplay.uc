@@ -233,7 +233,7 @@ event DrawWindow(GC gc)
 	gc.SetTextColorRGB(128,128,128);  //gc.SetTextColor(winEnergy.GetBarColor());
 
     //SARGE: Draw the percentage
-    if (energyPercent > 99 || !player.bShowEnergyBarPercentages)
+    if (int(energyPercent) > 99 || !player.bShowEnergyBarPercentages)
         gc.DrawText(13, 74, 8, 8, EnergyText);
     else
         gc.DrawText(13, 74, 8, 8, int(energyPercent));
@@ -260,7 +260,7 @@ event DrawWindow(GC gc)
 		}
 		gc.SetTextColor(col02);
         //SARGE: Draw the percentage
-        if (breathPercent > 99 || !player.bShowEnergyBarPercentages)
+        if (int(breathPercent) > 99 || !player.bShowEnergyBarPercentages)
             gc.DrawText(61, 74, 8, 8, O2Text);
         else
             gc.DrawText(61, 74, 8, 8, int(breathPercent));
