@@ -11,10 +11,21 @@ var bool usedammo, genusedammo;
 var int lerpClamp;
 
 //SARGE: Resize if we have the Mobile Ordnance perk
+function bool DoLeftFtob(DeusExPlayer frobber)
+{
+    local bool re;
+    re = super.DoLeftFrob(Frobber);
+    ResizeHeavyWeapon(frobber);
+    return re;
+}
+
+//SARGE: Resize if we have the Mobile Ordnance perk
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {
+    local bool re;
+    re = super.DoRightFrob(Frobber,objectInHand);
     ResizeHeavyWeapon(frobber);
-    return super.DoRightFrob(Frobber,objectInHand);
+    return re;
 }
 
 function PostBeginPlay()

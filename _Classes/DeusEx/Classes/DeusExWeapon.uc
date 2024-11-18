@@ -340,11 +340,21 @@ replication
 //Return true to use the default frobbing mechanism (right click), or false for custom behaviour
 function bool DoLeftFrob(DeusExPlayer frobber)
 {
+    Unrotate();
     return true;
 }
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {
+    Unrotate();
     return true;
+}
+
+function Unrotate()
+{
+    bRotated = false;
+    invSlotsX=default.invSlotsX;
+    invSlotsY=default.invSlotsy;
+    largeIcon = default.largeIcon;
 }
 
 //SARGE: Resize heavy weapons
