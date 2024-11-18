@@ -429,10 +429,6 @@ function bool ButtonActivated( Window buttonPressed )
 			// Clear the screen
 			Clear();
 
-			//SARGE: Block belt selection for the next 2 seconds, otherwise pressing the button will trigger it
-			if (player.bNumberedDialog)
-				player.fBlockBeltSelection = 2.0;
-
 			break;
 		}
 	}
@@ -578,9 +574,12 @@ function bool HandleNumberKey(int number)
     //Abort if we're not using numbered replies
     if (!player.bNumberedDialog) 
         return false;
+			
+    //Block belt selection for the next 2 seconds, otherwise pressing the button will trigger it
+    player.fBlockBeltSelection = 2.0;
 
     //If there are no choices, number keys simply skip, so we can hold 2 to select GEP gun, etc.
-    else if (numChoices == 0)
+    if (numChoices == 0)
     {
     	conPlay.PlayNextEvent();
         return true;
