@@ -14610,7 +14610,7 @@ function Timer()      //CyberP: my god I've turned this into a mess.
           return;
 	}
 
-    bStunted = False;  //CyberP: called from takedamage.
+    //bStunted = False;  //CyberP: called from takedamage.
 
 	if (!InConversation() && bOnFire)
 	{
