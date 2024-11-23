@@ -20,6 +20,8 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX bug where Ford Schick would not give you an upgrade canister when telling you he swiped one, if ConFix isn't installed. Fixed by adding it to his desk.
     - Fixed a number of typos in various places.
     - Fixed Vanilla bug where sound volume would reset upon new game.
+    - Fixed GMDX bug where tiredness effects from low stamina would reset prematurely.
+    - Fixed vanilla "bug" where diving into or leaving water would give free stamina.
     - Fixed many other GMDX and Vanilla bugs.
 - Quality of Life Improvements:
     - Right-Clicking an item in the belt with the Inventory Window open will clear the slot.
