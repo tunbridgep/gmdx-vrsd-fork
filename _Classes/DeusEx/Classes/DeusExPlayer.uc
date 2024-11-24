@@ -1626,6 +1626,7 @@ exec function HDTP(optional string s)
 	local scriptedpawn P;
 	local deusexcarcass C;
 	local DeusExWeapon W;                                                       //RSD: Added for weapon model toggles
+	local DeusExDecoration D;                                                   //SARGE: Added for object toggles
 
 	foreach Allactors(Class'Scriptedpawn',P)
 		P.UpdateHDTPSettings();
@@ -1633,6 +1634,8 @@ exec function HDTP(optional string s)
 		C.UpdateHDTPsettings();
     foreach AllActors(Class'DeusExWeapon',W)                                    //RSD: Added for weapon model toggles
     	W.UpdateHDTPsettings();
+    foreach AllActors(Class'DeusExDecoration',D)                                //SARGE: Added for object toggles
+    	D.UpdateHDTPsettings();
 
 	UpdateHDTPsettings();
 }
@@ -17155,7 +17158,7 @@ function RegenStaminaTick(float deltaTime)                                      
 function bool FemaleEnabled()
 {
     local Texture TTex;
-	TTex = Texture(DynamicLoadObject("FemJC.MenuPlayerSetupJCDentonFemale_1", class'Texture', false));
+	TTex = Texture(DynamicLoadObject("FemJC.MenuPlayerSetupJCDentonFemale_1", class'Texture', true));
 	return TTex != None;
 }
 

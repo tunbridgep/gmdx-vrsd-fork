@@ -60,12 +60,16 @@ var bool bHitMarkers;             //Sarge: Show hitmarkers when damaged. For thi
 
 var bool bFirstTickDone;                                                        //SARGE: Set to true after the first tick. Allows us to do stuff on the first frame
 
+//SARGE: HDTP Model toggles
+var config int iHDTPModelToggle;
+var string HDTPSkin;
+var string HDTPMesh;
+
 //Sarge: LDDP Stuff
 var(GMDX) const bool requiresLDDP;                                              //Delete this character LDD is uninstalled
 var(GMDX) const bool LDDPExtra;                                                 //Delete this character we don't have the "Extra LDDP Characters" playthrough modifier
 var(GMDX) const bool deleteIfMale;                                              //Delete this character if we're male
 var(GMDX) const bool deleteIfFemale;                                            //Delete this character if we're female
-
 
 // ----------------------------------------------------------------------
 // ShouldCreate()
@@ -138,6 +142,14 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
     return true;
 }
 
+exec function UpdateHDTPsettings()                                              //SARGE: New function to update model meshes (specifics handled in each class)
+{
+    if (HDTPSkin != "" && HDTPMesh != "")
+    {
+        Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),iHDTPModelToggle > 0);
+        Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),iHDTPModelToggle > 0);
+    }
+}
 
 // ----------------------------------------------------------------------
 // PreBeginPlay()
@@ -154,6 +166,8 @@ function PreBeginPlay()
 		flyGen = Spawn(Class'FlyGenerator', , , Location, Rotation);
 	else
 		flyGen = None;
+    
+    UpdateHDTPSettings();                                                       //SARGE: Update HDTP
 }
 
 // ----------------------------------------------------------------------
