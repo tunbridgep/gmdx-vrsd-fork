@@ -39,15 +39,10 @@ var bool bJustUncloaked;                                                        
 var bool bJustUnRadar;                                                          //RSD: for splitting cloak/radar texture functionality
 var bool bAutoActivate;                                                         //Sarge: Auto activate with left click, rather than placing in the players hands                                                                                
 
-<<<<<<< Updated upstream
-=======
-var localized string StackSizeLabel;                                            //Sarge: Show the stack size in the description
-
 //SARGE: HDTP Model toggles
 var config int iHDTPModelToggle;
 var string HDTPSkin;
 var string HDTPMesh;
->>>>>>> Stashed changes
 
 //SARGE: Added "Left Click Frob" and "Right Click Frob" support
 //Return true to use the default frobbing mechanism (right click), or false for custom behaviour
