@@ -61,26 +61,27 @@ defaultproperties
      items(35)=(actionText="Candy Bar",consoleTarget="DeusEx.Candybar",defaultValue=1);
      items(36)=(actionText="Cage Light",consoleTarget="DeusEx.CageLight",defaultValue=1);
      items(37)=(actionText="Data Cube",consoleTarget="DeusEx.DataCube",defaultValue=1);
-     items(38)=(actionText="Liquor",consoleTarget="DeusEx.LiquorBottle",defaultValue=1);
-     items(39)=(actionText="Liquor (Forty)",consoleTarget="DeusEx.Liquor40oz",defaultValue=1);
-     items(40)=(actionText="Liquor (Wine)",consoleTarget="DeusEx.WineBottle",defaultValue=1);
-     items(41)=(actionText="Medical Kit",consoleTarget="DeusEx.MedKit",defaultValue=1);
-     items(42)=(actionText="Nanovirus Container",consoleTarget="DeusEx.BarrelVirus",defaultValue=1);
-     items(43)=(actionText="Soda Can",consoleTarget="DeusEx.SodaCan",defaultValue=1);
-     items(44)=(actionText="Supply Crate (General)",consoleTarget="DeusEx.CrateBreakableMedGeneral",defaultValue=1);
-     items(45)=(actionText="Supply Crate (Combat)",consoleTarget="DeusEx.CrateBreakableMedCombat",defaultValue=1);
-     items(46)=(actionText="Supply Crate (Medical)",consoleTarget="DeusEx.CrateBreakableMedMedical",defaultValue=1);
-     items(47)=(actionText="TNT Crate",consoleTarget="DeusEx.CrateExplosiveSmall",defaultValue=1);
-     items(48)=(actionText="Trashcan 1",consoleTarget="DeusEx.TrashCan1",defaultValue=1);
-     items(49)=(actionText="Trashcan 2",consoleTarget="DeusEx.TrashCan2",defaultValue=1);
-     items(50)=(actionText="Trashcan 3",consoleTarget="DeusEx.TrashCan3",defaultValue=1);
-     items(51)=(actionText="Trashcan 4",consoleTarget="DeusEx.TrashCan4",defaultValue=1);
-     items(52)=(actionText="Trashbag 1",consoleTarget="DeusEx.Trashbag",defaultValue=1);
-     items(53)=(actionText="Trashbag 2",consoleTarget="DeusEx.Trashbag2",defaultValue=1);
-     items(54)=(actionText="Trash (Paper)",consoleTarget="DeusEx.TrashPaper",defaultValue=1);
-     items(55)=(actionText="Unbreakable Crate (Large)",consoleTarget="DeusEx.CrateUnbreakableLarge",defaultValue=1);
-     items(56)=(actionText="Unbreakable Crate (Medium)",consoleTarget="DeusEx.CrateUnbreakableMed",defaultValue=1);
-     items(57)=(actionText="Unbreakable Crate (Small)",consoleTarget="DeusEx.CrateUnbreakableSmall",defaultValue=1);
+     items(38)=(actionText="Flag Pole",consoleTarget="DeusEx.FlagPole",defaultValue=1);
+     items(39)=(actionText="Liquor",consoleTarget="DeusEx.LiquorBottle",defaultValue=1);
+     items(40)=(actionText="Liquor (Forty)",consoleTarget="DeusEx.Liquor40oz",defaultValue=1);
+     items(41)=(actionText="Liquor (Wine)",consoleTarget="DeusEx.WineBottle",defaultValue=1);
+     items(42)=(actionText="Medical Kit",consoleTarget="DeusEx.MedKit",defaultValue=1);
+     items(43)=(actionText="Nanovirus Container",consoleTarget="DeusEx.BarrelVirus",defaultValue=1);
+     items(44)=(actionText="Soda Can",consoleTarget="DeusEx.SodaCan",defaultValue=1);
+     items(45)=(actionText="Supply Crate (General)",consoleTarget="DeusEx.CrateBreakableMedGeneral",defaultValue=1);
+     items(46)=(actionText="Supply Crate (Combat)",consoleTarget="DeusEx.CrateBreakableMedCombat",defaultValue=1);
+     items(47)=(actionText="Supply Crate (Medical)",consoleTarget="DeusEx.CrateBreakableMedMedical",defaultValue=1);
+     items(48)=(actionText="TNT Crate",consoleTarget="DeusEx.CrateExplosiveSmall",defaultValue=1);
+     items(49)=(actionText="Trashcan 1",consoleTarget="DeusEx.TrashCan1",defaultValue=1);
+     items(50)=(actionText="Trashcan 2",consoleTarget="DeusEx.TrashCan2",defaultValue=1);
+     items(51)=(actionText="Trashcan 3",consoleTarget="DeusEx.TrashCan3",defaultValue=1);
+     items(52)=(actionText="Trashcan 4",consoleTarget="DeusEx.TrashCan4",defaultValue=1);
+     items(53)=(actionText="Trashbag 1",consoleTarget="DeusEx.Trashbag",defaultValue=1);
+     items(54)=(actionText="Trashbag 2",consoleTarget="DeusEx.Trashbag2",defaultValue=1);
+     items(55)=(actionText="Trash (Paper)",consoleTarget="DeusEx.TrashPaper",defaultValue=1);
+     items(56)=(actionText="Unbreakable Crate (Large)",consoleTarget="DeusEx.CrateUnbreakableLarge",defaultValue=1);
+     items(57)=(actionText="Unbreakable Crate (Medium)",consoleTarget="DeusEx.CrateUnbreakableMed",defaultValue=1);
+     items(58)=(actionText="Unbreakable Crate (Small)",consoleTarget="DeusEx.CrateUnbreakableSmall",defaultValue=1);
      strHeaderActionLabel="Object"
      strHeaderAssignedLabel="Model"
      HelpText="Select the model you wish to change and then press [Enter] or Double-Click to cycle through available models"

@@ -30,7 +30,7 @@ struct S_ListItem
 {
 	var localized string helpText;
 	var localized string actionText;
-	var localized string values[255];
+	var localized Array<string> values;
 
     //dirty hack because I can't get arrays within structs to work in defaultproperties
     var localized string valueText0;
@@ -290,8 +290,6 @@ function AppendItem(S_ListItem newItem)
     }
 }
 
-//TODO: Sarge: If we ever move item 255, a bug will occur.
-//Leaving it for now!
 //EDIT: Now takes a string, because things will move around in horrible ways otherwise
 function RemoveItem(string variable)
 {
