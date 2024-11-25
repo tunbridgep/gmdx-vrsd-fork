@@ -9,7 +9,7 @@ defaultproperties
      ItemName="Metal Crate"
      bBlockSight=True
      HDTPMesh="HDTPDecos.HDTPCrateUnbreakableLarge"
-     Mesh=LodMesh'DeusExDeco.CrateUnbreakableSmall'
+     Mesh=LodMesh'DeusExDeco.CrateUnbreakableLarge'
      ScaleGlow=0.500000
      CollisionRadius=56.500000
      CollisionHeight=56.000000

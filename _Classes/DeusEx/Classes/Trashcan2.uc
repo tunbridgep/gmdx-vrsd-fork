@@ -7,7 +7,8 @@ defaultproperties
 {
      bGenerateTrash=True
      ItemName="Trashcan"
-     Mesh=LodMesh'HDTPDecos.HDTPtrashcan2'
+     Mesh=LodMesh'DeusExDeco.Trashcan2'
+     HDTPMesh="HDTPDecos.HDTPTrashcan2"
      CollisionRadius=14.860000
      CollisionHeight=24.049999
      Mass=40.000000

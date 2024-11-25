@@ -61,10 +61,17 @@ defaultproperties
      items(35)=(actionText="Supply Crate (General)",consoleTarget="DeusEx.CrateBreakableMedGeneral",defaultValue=1);
      items(36)=(actionText="Supply Crate (Combat)",consoleTarget="DeusEx.CrateBreakableMedCombat",defaultValue=1);
      items(37)=(actionText="Supply Crate (Medical)",consoleTarget="DeusEx.CrateBreakableMedMedical",defaultValue=1);
-     items(38)=(actionText="Unbreakable Crate (Large)",consoleTarget="DeusEx.CrateUnbreakableLarge",defaultValue=1);
-     items(39)=(actionText="Unbreakable Crate (Medium)",consoleTarget="DeusEx.CrateUnbreakableLarge",defaultValue=1);
-     items(40)=(actionText="Unbreakable Crate (Small)",consoleTarget="DeusEx.CrateUnbreakableSmall",defaultValue=1);
-     strHeaderActionLabel="Weapon"
+     items(38)=(actionText="Trashcan 1",consoleTarget="DeusEx.TrashCan1",defaultValue=1);
+     items(39)=(actionText="Trashcan 2",consoleTarget="DeusEx.TrashCan2",defaultValue=1);
+     items(40)=(actionText="Trashcan 3",consoleTarget="DeusEx.TrashCan3",defaultValue=1);
+     items(41)=(actionText="Trashcan 4",consoleTarget="DeusEx.TrashCan4",defaultValue=1);
+     items(42)=(actionText="Trashbag 1",consoleTarget="DeusEx.Trashbag",defaultValue=1);
+     items(43)=(actionText="Trashbag 2",consoleTarget="DeusEx.Trashbag2",defaultValue=1);
+     items(44)=(actionText="Trash (Paper)",consoleTarget="DeusEx.TrashPaper",defaultValue=1);
+     items(45)=(actionText="Unbreakable Crate (Large)",consoleTarget="DeusEx.CrateUnbreakableLarge",defaultValue=1);
+     items(46)=(actionText="Unbreakable Crate (Medium)",consoleTarget="DeusEx.CrateUnbreakableMed",defaultValue=1);
+     items(47)=(actionText="Unbreakable Crate (Small)",consoleTarget="DeusEx.CrateUnbreakableSmall",defaultValue=1);
+     strHeaderActionLabel="Object"
      strHeaderAssignedLabel="Model"
      HelpText="Select the model you wish to change and then press [Enter] or Double-Click to cycle through available models"
      Title="HDTP Model Options"

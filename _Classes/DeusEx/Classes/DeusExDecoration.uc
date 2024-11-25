@@ -62,7 +62,7 @@ var bool bFirstTickDone;                                                        
 
 //SARGE: HDTP Model toggles
 var config int iHDTPModelToggle;
-var string oldSkin;
+var string oldSkin;                                                             //SARGE: Can optionally set the vanilla skin, for objects that change skins. Will use default.Skin if left out, which is recommended most of the time.
 var string HDTPSkin;
 var string HDTPMesh;
 

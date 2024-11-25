@@ -40,6 +40,6 @@ static function Texture GetTexture2(string tex, string alternative, bool first)
 
 static function bool HDTPInstalled()
 {
-	return Texture(DynamicLoadObject("HDTPAnim.effects.HDTPFlarespark", class'Texture', true)) != None;
+	return Texture(DynamicLoadObject("HDTPDecos.Skins.HDTPBarrel1Tex10", class'Texture', true)) != None;
 }
 

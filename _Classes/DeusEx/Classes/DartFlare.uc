@@ -92,8 +92,7 @@ super.PostBeginPlay();
 if (Owner!=None && Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkHumanCombustion').bPerkObtained == true) //RSD: Was 11, now 22 (Human Combustion perk moved from Advanced -> Master)
 DamageType='Flamed';
 
-if (class'HDTPLoader'.static.HDTPInstalled())
-    SetTimer(0.05, False);
+SetTimer(0.05, False);
 }
 
 simulated function Destroyed()
@@ -107,15 +106,16 @@ function Timer()
 	local Pawn P;
 	local rotator rota;
 
-	if (gen == None)
+	if (gen == None && class'HDTPLoader'.static.HDTPInstalled())
 	{
-	flaretime=LifeSpan;
+        AmbientSound=Sound'DeusExSounds.Generic.Flare';
+        flaretime=LifeSpan;
 
 		loc2.Y += collisionradius*1.05;
 		loc = loc2 >> rotation;
 		loc += location;
 		gen = Spawn(class'ParticleGenerator', Self,, Loc, rot(16384,0,0));
-		if (gen != None)
+		if (gen != None )
 		{
 			gen.attachTag = Name;
 			gen.SetBase(Self);
@@ -152,7 +152,9 @@ function Timer()
 			flaregen.checkTime = 0.02;
 			flaregen.particleLifeSpan = 0.6*(1 + frand());
 			flaregen.particleDrawScale = 0.01 + 0.05*frand();
-			flaregen.particleTexture = class'HDTPLoader'.static.GetTexture("HDTPAnim.effects.HDTPFlarespark");
+            //SARGE: TODO: Make this actually work
+			flaregen.particleTexture = class'HDTPLoader'.static.GetTexture("HDTPItems.effects.HDTPFlarespark");
+			//flaregen.particleTexture = Texture'HDTPAnim.effects.HDTPFlarespark';
 		}
 		flamething = Spawn(class'Effects', Self,, Loc, rota);
 		if(flamething != none)
@@ -160,8 +162,11 @@ function Timer()
 			flamething.setbase(self);
 			flaregen.attachTag = Name;
 			flamething.DrawType=DT_mesh;
+            //flamething.mesh=lodmesh'HDTPItems.HDTPflareflame';
+            //flamething.multiskins[1]=texture'HDTPanim.effects.HDTPflrflame';
+            //SARGE: TODO: Make this actually work
 			flamething.mesh=class'HDTPLoader'.static.GetMesh("HDTPItems.HDTPflareflame");
-			flamething.multiskins[1]=class'HDTPLoader'.static.GetTexture("HDTPanim.effects.HDTPflrflame");
+			flamething.multiskins[1]=class'HDTPLoader'.static.GetTexture("HDTPItems.effects.HDTPflrflame");
 			flamething.Style=STY_Translucent;
 			flamething.bUnlit=true;
 			flamething.DrawScale=0.15;
@@ -183,7 +188,6 @@ defaultproperties
      bUnlit=True
      SoundRadius=20
      SoundVolume=128
-     AmbientSound=Sound'DeusExSounds.Generic.Flare'
      LightType=LT_Steady
      LightEffect=LE_TorchWaver
      LightBrightness=255
