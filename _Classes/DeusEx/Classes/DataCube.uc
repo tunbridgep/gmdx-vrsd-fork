@@ -3,28 +3,22 @@
 //=============================================================================
 class DataCube extends InformationDevices;
 
-var travel bool bRead;
-
 exec function UpdateHDTPsettings()
 {
     super.UpdateHDTPsettings();
-    if (iHDTPModelToggle > 0)
-    {
-        MultiSkins[2]=class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPDatacubetex1");
-    }
-    else
-    {
-        MultiSkins[2]=class'HDTPLoader'.static.GetTexture("DeusExItems.Skins.Datacubetex1");
-    }
 
+    //Blank the screen once it's been read
     if (bRead)
         MultiSkins[2]=Texture'PinkMaskTex';
+    else if (iHDTPModelToggle > 0)
+        MultiSkins[2]=class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPDatacubetex1");
+    else
+        MultiSkins[2]=class'HDTPLoader'.static.GetTexture("DeusExItems.Skins.Datacubetex1");
 }
 
-//Called when this is opened for the first time
-function void OnRead()
+function OnBeginRead()
 {
-    bRead = true;
+    MultiSkins[2]=Texture'PinkMaskTex';
 }
 
 defaultproperties

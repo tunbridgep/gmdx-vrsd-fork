@@ -19,6 +19,13 @@ var Bool bFirstParagraph;
 var localized String ImageLabel;
 var localized String AddedToDatavaultLabel;
 
+//SARGE: Set to true when we have read this once. Used for blanking datacubes
+var travel bool bRead;
+
+// Called when the device is read
+function OnBeginRead() { }
+function OnEndRead() { }
+
 // ----------------------------------------------------------------------
 // Destroyed()
 //
@@ -44,6 +51,7 @@ function DestroyWindow()
 	// restore the crosshairs and the other hud elements
 	if (aReader != None)
 	{
+        OnEndRead();
         aReader.UpdateCrosshair();
 	}
 
@@ -114,23 +122,16 @@ function Frob(Actor Frobber, Inventory frobWith)
 	}
 }
 
-// ----------------------------------------------------------------------
-// CreateInfoWindow()
-// ----------------------------------------------------------------------
-
-function CreateInfoWindow()
+//SARGE: Since we now support arrbitrary text, we need to get packages separately
+function GetText()
 {
 	local DeusExTextParser parser;
+    local name UseTextTag;
 	local DeusExRootWindow rootWindow;
 	local DeusExNote note;
-	local DataVaultImage image;
-	local bool bImageAdded;
+	
+    rootWindow = DeusExRootWindow(aReader.rootWindow);
 
-    local name UseTextTag;
-    local bool bWon;
-
-	rootWindow = DeusExRootWindow(aReader.rootWindow);
-    
     //LDDP, 10/25/21: Convert usage to female text flag when female.
 	if ((aReader != None) && (aReader.FlagBase != None) && (aReader.FlagBase.GetBool('LDDPJCIsFemale')))
 	{
@@ -173,6 +174,28 @@ function CreateInfoWindow()
 		CriticalDelete(parser);
 	}
 
+
+}
+
+// ----------------------------------------------------------------------
+// CreateInfoWindow()
+// ----------------------------------------------------------------------
+
+function CreateInfoWindow()
+{
+	local DeusExRootWindow rootWindow;
+	local DataVaultImage image;
+	local bool bImageAdded;
+
+    local bool bWon;
+
+	rootWindow = DeusExRootWindow(aReader.rootWindow);
+        
+    bRead = true;
+    OnBeginRead();
+
+    GetText();
+    
 	// do we have any image data to give the player?
 	if ((imageClass != None) && (aReader != None))
 	{
