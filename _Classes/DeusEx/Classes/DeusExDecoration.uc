@@ -144,11 +144,10 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 
 exec function UpdateHDTPsettings()                                              //SARGE: New function to update model meshes (specifics handled in each class)
 {
-    if (HDTPSkin != "" && HDTPMesh != "")
-    {
+    if (HDTPSkin != "")
         Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),iHDTPModelToggle > 0);
+    if (HDTPMesh != "")
         Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),iHDTPModelToggle > 0);
-    }
 }
 
 // ----------------------------------------------------------------------
@@ -1764,4 +1763,5 @@ defaultproperties
      bCollideWorld=True
      bBlockActors=True
      bBlockPlayers=True
+     iHDTPModelToggle=1
 }

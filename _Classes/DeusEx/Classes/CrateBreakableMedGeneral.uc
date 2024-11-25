@@ -18,5 +18,4 @@ defaultproperties
      Buoyancy=60.000000
      HDTPSkin="HDTPDecos.Skins.HDTPCrateBreakableGeneralTex1";
      HDTPMesh="HDTPDecos.HDTPCrateBreakableMed";
-     iHDTPModelToggle=1
 }
