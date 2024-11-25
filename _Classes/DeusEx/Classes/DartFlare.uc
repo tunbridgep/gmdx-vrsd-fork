@@ -92,7 +92,8 @@ super.PostBeginPlay();
 if (Owner!=None && Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkHumanCombustion').bPerkObtained == true) //RSD: Was 11, now 22 (Human Combustion perk moved from Advanced -> Master)
 DamageType='Flamed';
 
-SetTimer(0.05, False);
+if (class'HDTPLoader'.static.HDTPInstalled())
+    SetTimer(0.05, False);
 }
 
 simulated function Destroyed()
@@ -151,7 +152,7 @@ function Timer()
 			flaregen.checkTime = 0.02;
 			flaregen.particleLifeSpan = 0.6*(1 + frand());
 			flaregen.particleDrawScale = 0.01 + 0.05*frand();
-			flaregen.particleTexture = Texture'HDTPAnim.effects.HDTPFlarespark';
+			flaregen.particleTexture = class'HDTPLoader'.static.GetTexture("HDTPAnim.effects.HDTPFlarespark");
 		}
 		flamething = Spawn(class'Effects', Self,, Loc, rota);
 		if(flamething != none)
@@ -159,8 +160,8 @@ function Timer()
 			flamething.setbase(self);
 			flaregen.attachTag = Name;
 			flamething.DrawType=DT_mesh;
-			flamething.mesh=lodmesh'HDTPItems.HDTPflareflame';
-			flamething.multiskins[1]=texture'HDTPanim.effects.HDTPflrflame';
+			flamething.mesh=class'HDTPLoader'.static.GetMesh("HDTPItems.HDTPflareflame");
+			flamething.multiskins[1]=class'HDTPLoader'.static.GetTexture("HDTPanim.effects.HDTPflrflame");
 			flamething.Style=STY_Translucent;
 			flamething.bUnlit=true;
 			flamething.DrawScale=0.15;
