@@ -34,7 +34,7 @@ defaultproperties
      largeIconHeight=36
      Description="'CHOC-O-LENT DREAM. IT'S CHOCOLATE! IT'S PEOPLE! IT'S BOTH!(tm) 85% Recycled Material.'"
      beltDescription="CANDY BAR"
-     Skin=Texture'HDTPItems.Skins.HDTPCandybartex1'
+     HDTPSkin="HDTPItems.Skins.HDTPCandybartex1"
      Mesh=LodMesh'DeusExItems.Candybar'
      CollisionRadius=6.250000
      CollisionHeight=0.670000

@@ -39,6 +39,15 @@ var bool bJustUncloaked;                                                        
 var bool bJustUnRadar;                                                          //RSD: for splitting cloak/radar texture functionality
 var bool bAutoActivate;                                                         //Sarge: Auto activate with left click, rather than placing in the players hands                                                                                
 
+<<<<<<< Updated upstream
+=======
+var localized string StackSizeLabel;                                            //Sarge: Show the stack size in the description
+
+//SARGE: HDTP Model toggles
+var config int iHDTPModelToggle;
+var string HDTPSkin;
+var string HDTPMesh;
+>>>>>>> Stashed changes
 
 //SARGE: Added "Left Click Frob" and "Right Click Frob" support
 //Return true to use the default frobbing mechanism (right click), or false for custom behaviour
@@ -58,6 +67,23 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {
     return true;
 }
+
+exec function UpdateHDTPsettings()                                              //SARGE: New function to update model meshes (specifics handled in each class)
+{
+    if (HDTPMesh != "")
+    {
+        if (PlayerViewMesh == Mesh || PlayerViewMesh == None)
+            PlayerViewMesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),iHDTPModelToggle > 0);
+        if (PickupViewMesh == Mesh || PickupViewMesh == None)
+            PickupViewMesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),iHDTPModelToggle > 0);
+        if (ThirdPersonMesh == Mesh || ThirdPersonMesh == None)
+            ThirdPersonMesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),iHDTPModelToggle > 0);
+        Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),iHDTPModelToggle > 0);
+    }
+    if (HDTPSkin != "")
+        Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),iHDTPModelToggle > 0);
+}
+
 
 // ----------------------------------------------------------------------
 // Networking Replication
@@ -879,10 +905,11 @@ function dumptexturelist() //testing function coz I is teh STOOPID today. Or som
 	}
 }
 
-function BeginPlay()
+function PostBeginPlay()
 {
-	Super.BeginPlay();
+	Super.PostBeginPlay();
 
+    UpdateHDTPSettings();                                                       //SARGE: Update HDTP
 	setSkin();
 }
 
@@ -973,4 +1000,5 @@ defaultproperties
      RespawnTime=30.000000
      LandSound=Sound'DeusExSounds.Generic.PaperHit1'
      bProjTarget=True
+     iHDTPModelToggle=1
 }

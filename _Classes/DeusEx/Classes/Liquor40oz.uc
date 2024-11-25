@@ -17,13 +17,30 @@ function BeginPlay()
 {
 	Super.BeginPlay();
 
-	switch (SkinColor)
-	{
-		case SC_Super45:		Multiskins[1]=texture'HDTPitems.skins.HDTPLiquor40oztex1'; Multiskins[3]=texture'HDTPitems.skins.HDTPLiquor40oztex1'; break;
-		case SC_Bottle2:		Multiskins[1]=texture'HDTPitems.skins.HDTPLiquor40oztex3'; Multiskins[3]=texture'HDTPitems.skins.HDTPLiquor40oztex3'; break;
-		case SC_Bottle3:		Multiskins[1]=texture'HDTPitems.skins.HDTPLiquor40oztex4'; Multiskins[3]=texture'HDTPitems.skins.HDTPLiquor40oztex4'; break;
-		case SC_Bottle4:		Multiskins[1]=texture'HDTPitems.skins.HDTPLiquor40oztex5'; Multiskins[3]=texture'HDTPitems.skins.HDTPLiquor40oztex5'; break;
-	}
+        Texture=class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPLiquor40oztex2","",iHDTPModelToggle > 0);
+        switch (SkinColor)
+        {
+            case SC_Super45:
+                Multiskins[1]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex1","",iHDTPModelToggle > 0);
+                Multiskins[3]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex1","",iHDTPModelToggle > 0);
+                Skin=class'HDTPLoader'.static.GetTexture2("","Liquor40oztex1",iHDTPModelToggle > 0);
+                break;
+            case SC_Bottle2:
+                Multiskins[1]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex3","",iHDTPModelToggle > 0);
+                Multiskins[3]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex3","",iHDTPModelToggle > 0);
+                Skin=class'HDTPLoader'.static.GetTexture2("","Liquor40oztex2",iHDTPModelToggle > 0);
+                break;
+            case SC_Bottle3:
+                Multiskins[1]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex4","",iHDTPModelToggle > 0);
+                Multiskins[3]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex4","",iHDTPModelToggle > 0);
+                Skin=class'HDTPLoader'.static.GetTexture2("","Liquor40oztex3",iHDTPModelToggle > 0);
+                break;
+            case SC_Bottle4:
+                Multiskins[1]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex5","",iHDTPModelToggle > 0);
+                Multiskins[3]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex5","",iHDTPModelToggle > 0);
+                Skin=class'HDTPLoader'.static.GetTexture2("","Liquor40oztex4",iHDTPModelToggle > 0);
+                break;
+        }
 }
 
 function Eat(DeusExPlayer player)
@@ -51,8 +68,8 @@ defaultproperties
      largeIconHeight=47
      Description="'COLD SWEAT forty ounce malt liquor. Never let 'em see your COLD SWEAT.'"
      beltDescription="FORTY"
-     Texture=Texture'HDTPItems.Skins.HDTPLiquor40oztex2'
-     Mesh=LodMesh'HDTPItems.HDTPLiquor40oz'
+     HDTPMesh="HDTPItems.HDTPLiquor40oz"
+     Mesh=LodMesh'DeusExItems.Liquor40oz'
      CollisionRadius=4.000000
      CollisionHeight=9.140000
      bCollideWorld=True

@@ -27,47 +27,51 @@ var float radTimer;
 
 exec function UpdateHDTPsettings()
 {
-    SetSkin();
     super.UpdateHDTPsettings();
+    SetSkin();
 }
 
 function SetSkin()
 {
+    local string oldSkin;
+    local string newSkin;
 	switch (SkinColor)
     {
         case SC_Biohazard:			oldSkin = "DeusExDeco.Skins.Barrel1Tex1";
-                                    HDTPSkin = "HDTPDecos.Skins.HDTPBarrel1Tex1";
+                                    newSkin = "HDTPDecos.Skins.HDTPBarrel1Tex1";
                                     break;
 		case SC_Blue:				oldSkin = "DeusExDeco.Skins.Barrel1Tex2";
-                                    HDTPSkin = "HDTPDecos.Skins.HDTPBarrel1Tex2";
+                                    newSkin = "HDTPDecos.Skins.HDTPBarrel1Tex2";
                                     break;
 		case SC_Brown:				oldSkin = "DeusExDeco.Skins.Barrel1Tex3";
-                                    HDTPSkin = "HDTPDecos.Skins.HDTPBarrel1Tex3";
+                                    newSkin = "HDTPDecos.Skins.HDTPBarrel1Tex3";
                                     break;
 		case SC_Rusty:				oldSkin = "DeusExDeco.Skins.Barrel1Tex4";
-                                    HDTPSkin = "HDTPDecos.Skins.HDTPBarrel1Tex4";
+                                    newSkin = "HDTPDecos.Skins.HDTPBarrel1Tex4";
                                     break;
 		case SC_Explosive:			oldSkin = "DeusExDeco.Skins.Barrel1Tex5";
-                                    HDTPSkin = "HDTPDecos.Skins.HDTPBarrel1Tex5";
+                                    newSkin = "HDTPDecos.Skins.HDTPBarrel1Tex5";
                                     break;
 		case SC_FlammableLiquid:	oldSkin = "DeusExDeco.Skins.Barrel1Tex6";
-                                    HDTPSkin = "HDTPDecos.Skins.HDTPBarrel1Tex6";
+                                    newSkin = "HDTPDecos.Skins.HDTPBarrel1Tex6";
                                     break;
         case SC_FlammableSolid:     oldSkin = "DeusExDeco.Skins.Barrel1Tex7";
-                                    HDTPSkin = "HDTPDecos.Skins.HDTPBarrel1Tex7";
+                                    newSkin = "HDTPDecos.Skins.HDTPBarrel1Tex7";
                                     break;
 		case SC_Poison:				oldSkin = "DeusExDeco.Skins.Barrel1Tex8";
-                                    HDTPSkin = "HDTPDecos.Skins.HDTPBarrel1Tex8";
+                                    newSkin = "HDTPDecos.Skins.HDTPBarrel1Tex8";
 									break;
 		case SC_RadioActive:		oldSkin = "DeusExDeco.Skins.Barrel1Tex9";
-                                    HDTPSkin = "HDTPDecos.Skins.HDTPBarrel1Tex9";
+                                    newSkin = "HDTPDecos.Skins.HDTPBarrel1Tex9";
 									break;
 		case SC_Wood:				oldSkin = "DeusExDeco.Skins.Barrel1Tex10";
-                                    HDTPSkin = "HDTPDecos.Skins.HDTPBarrel1Tex10";
+                                    newSkin = "HDTPDecos.Skins.HDTPBarrel1Tex10";
 									break;
 		case SC_Yellow:				oldSkin = "DeusExDeco.Skins.Barrel1Tex11";
-                                    HDTPSkin = "HDTPDecos.Skins.HDTPBarrel1Tex11";
+                                    newSkin = "HDTPDecos.Skins.HDTPBarrel1Tex11";
     }
+
+    Skin = class'HDTPLoader'.static.GetTexture2(newSkin,oldSkin,iHDTPModelToggle > 0);
 }
 
 function BeginPlay()
