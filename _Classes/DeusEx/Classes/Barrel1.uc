@@ -25,51 +25,96 @@ var() bool bPreDamage;
 var bool bLeaking;
 var float radTimer;
 
+exec function UpdateHDTPsettings()
+{
+    SetSkin();
+    super.UpdateHDTPsettings();
+}
+
+function SetSkin()
+{
+	switch (SkinColor)
+    {
+        case SC_Biohazard:			oldSkin = "DeusExDeco.Skins.Barrel1Tex1";
+                                    HDTPSkin = "HDTPDecos.Skins.HDTPBarrel1Tex1";
+                                    break;
+		case SC_Blue:				oldSkin = "DeusExDeco.Skins.Barrel1Tex2";
+                                    HDTPSkin = "HDTPDecos.Skins.HDTPBarrel1Tex2";
+                                    break;
+		case SC_Brown:				oldSkin = "DeusExDeco.Skins.Barrel1Tex3";
+                                    HDTPSkin = "HDTPDecos.Skins.HDTPBarrel1Tex3";
+                                    break;
+		case SC_Rusty:				oldSkin = "DeusExDeco.Skins.Barrel1Tex4";
+                                    HDTPSkin = "HDTPDecos.Skins.HDTPBarrel1Tex4";
+                                    break;
+		case SC_Explosive:			oldSkin = "DeusExDeco.Skins.Barrel1Tex5";
+                                    HDTPSkin = "HDTPDecos.Skins.HDTPBarrel1Tex5";
+                                    break;
+		case SC_FlammableLiquid:	oldSkin = "DeusExDeco.Skins.Barrel1Tex6";
+                                    HDTPSkin = "HDTPDecos.Skins.HDTPBarrel1Tex6";
+                                    break;
+        case SC_FlammableSolid:     oldSkin = "DeusExDeco.Skins.Barrel1Tex7";
+                                    HDTPSkin = "HDTPDecos.Skins.HDTPBarrel1Tex7";
+                                    break;
+		case SC_Poison:				oldSkin = "DeusExDeco.Skins.Barrel1Tex8";
+                                    HDTPSkin = "HDTPDecos.Skins.HDTPBarrel1Tex8";
+									break;
+		case SC_RadioActive:		oldSkin = "DeusExDeco.Skins.Barrel1Tex9";
+                                    HDTPSkin = "HDTPDecos.Skins.HDTPBarrel1Tex9";
+									break;
+		case SC_Wood:				oldSkin = "DeusExDeco.Skins.Barrel1Tex10";
+                                    HDTPSkin = "HDTPDecos.Skins.HDTPBarrel1Tex10";
+									break;
+		case SC_Yellow:				oldSkin = "DeusExDeco.Skins.Barrel1Tex11";
+                                    HDTPSkin = "HDTPDecos.Skins.HDTPBarrel1Tex11";
+    }
+}
+
 function BeginPlay()
 {
 	Super.BeginPlay();
 
 	switch (SkinColor)
 	{
-		case SC_Biohazard:			Skin = Texture'HDTPBarrel1Tex1';
+		case SC_Biohazard:			
 									HitPoints = 25;
 									break;
-		case SC_Blue:				Skin = Texture'HDTPBarrel1Tex2';
+		case SC_Blue:				
                                     minDamageThreshold=20;
                                     HitPoints = 50;
                                     break;
-		case SC_Brown:				Skin = Texture'HDTPBarrel1Tex3';
+		case SC_Brown:				
 		                            minDamageThreshold=20;
 		                            HitPoints = 50;
 		                            break;
-		case SC_Rusty:				Skin = Texture'HDTPBarrel1Tex4';
+		case SC_Rusty:				
 		                            minDamageThreshold=16;
 		                            HitPoints = 50;
 		                            break;
-		case SC_Explosive:			Skin = Texture'HDTPBarrel1Tex5';
+		case SC_Explosive:			
 									bExplosive = True;
 									explosionDamage = 400;
 									explosionRadius = 608;
 									HitPoints = 5;
 									minDamageThreshold=4;
 									break;
-		case SC_FlammableLiquid:	Skin = Texture'HDTPBarrel1Tex6';
+		case SC_FlammableLiquid:	
 									bExplosive = True;
 									explosionRadius = 320;
 									HitPoints = 5;
 									minDamageThreshold=3;
 									break;
-		case SC_FlammableSolid:		Skin = Texture'HDTPBarrel1Tex7';
+		case SC_FlammableSolid:		
 									bExplosive = True;
 									explosionDamage = 200;
 									explosionRadius = 416;
 									minDamageThreshold=3;
 									HitPoints = 20;
 									break;
-		case SC_Poison:				Skin = Texture'HDTPBarrel1Tex8';
+		case SC_Poison:				
 									HitPoints = 25;
 									break;
-		case SC_RadioActive:		Skin = Texture'HDTPBarrel1Tex9';
+		case SC_RadioActive:		
 									bInvincible = False;
 									HitPoints = 60;
 									minDamageThreshold=80;
@@ -84,9 +129,10 @@ function BeginPlay()
 									bUnlit = True;
 									ScaleGlow = 0.4;
 									break;
-		case SC_Wood:				Skin = Texture'HDTPBarrel1Tex10'; break;
+		case SC_Wood:				
                                     FragType = Class'DeusEx.WoodFragment'; //CyberP
-		case SC_Yellow:				Skin = Texture'HDTPBarrel1Tex11';
+                                    break;
+		case SC_Yellow:				
                                     minDamageThreshold=20;
                                     HitPoints = 50;
 		                            break;
@@ -105,45 +151,45 @@ function StupidBugfix()
 {
 	switch (SkinColor)
 	{
-		case SC_Biohazard:			Skin = Texture'HDTPBarrel1Tex1';
+		case SC_Biohazard:			
 									HitPoints = 25;
 									break;
-		case SC_Blue:				Skin = Texture'HDTPBarrel1Tex2';
+		case SC_Blue:				
                                     minDamageThreshold=20;
                                     HitPoints = 50;
                                     break;
-		case SC_Brown:				Skin = Texture'HDTPBarrel1Tex3';
+		case SC_Brown:				
 		                            minDamageThreshold=20;
 		                            HitPoints = 50;
 		                            break;
-		case SC_Rusty:				Skin = Texture'HDTPBarrel1Tex4';
+		case SC_Rusty:				
 		                            minDamageThreshold=16;
 		                            HitPoints = 50;
 		                            break;
-		case SC_Explosive:			Skin = Texture'HDTPBarrel1Tex5';
+		case SC_Explosive:			
 									bExplosive = True;
 									explosionDamage = 400;
 									explosionRadius = 608;
 									HitPoints = 5;
 									minDamageThreshold=4;
 									break;
-		case SC_FlammableLiquid:	Skin = Texture'HDTPBarrel1Tex6';
+		case SC_FlammableLiquid:	
 									bExplosive = True;
 									explosionRadius = 320;
 									HitPoints = 5;
 									minDamageThreshold=3;
 									break;
-		case SC_FlammableSolid:		Skin = Texture'HDTPBarrel1Tex7';
+		case SC_FlammableSolid:		
 									bExplosive = True;
 									explosionDamage = 200;
 									explosionRadius = 416;
 									minDamageThreshold=3;
 									HitPoints = 20;
 									break;
-		case SC_Poison:				Skin = Texture'HDTPBarrel1Tex8';
+		case SC_Poison:				
 									HitPoints = 25;
 									break;
-		case SC_RadioActive:		Skin = Texture'HDTPBarrel1Tex9';
+		case SC_RadioActive:		
 									bInvincible = True;
 									LightType = LT_Steady;
 									LightRadius = 8;
@@ -156,13 +202,16 @@ function StupidBugfix()
 									bUnlit = True;
 									ScaleGlow = 0.4;
 									break;
-		case SC_Wood:				Skin = Texture'HDTPBarrel1Tex10'; break;
+		case SC_Wood:				
                                     FragType = Class'DeusEx.WoodFragment'; //CyberP
-		case SC_Yellow:				Skin = Texture'HDTPBarrel1Tex11';
+                                    break;
+		case SC_Yellow:				
                                     minDamageThreshold=20;
                                     HitPoints = 50;
 		                            break;
 	}
+
+    UpdateHDTPsettings();
 }
 
 
@@ -347,7 +396,8 @@ defaultproperties
      HitPoints=31
      ItemName="Barrel"
      bBlockSight=True
-     Mesh=LodMesh'HDTPDecos.HDTPbarrel1'
+     Mesh=LodMesh'DeusExDeco.Barrel1'
+     HDTPMesh="HDTPDecos.HDTPbarrel1"
      CollisionRadius=20.000000
      CollisionHeight=29.000000
      Mass=80.000000

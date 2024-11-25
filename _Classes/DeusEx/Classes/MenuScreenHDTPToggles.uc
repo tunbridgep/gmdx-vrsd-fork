@@ -54,12 +54,16 @@ defaultproperties
      items(28)=(actionText="Sawed-Off Shotgun",consoleTarget="DeusEx.WeaponSawedOffShotgun",defaultValue=2,valueText2="FOMOD Beta");
      items(29)=(actionText="Stealth Pistol",consoleTarget="DeusEx.WeaponStealthPistol",defaultValue=1,valueText2="FOMOD Beta");
      items(30)=(actionText="Sword",consoleTarget="DeusEx.WeaponSword",defaultValue=1);
-     items(31)=(actionText="Supply Crate (General)",consoleTarget="DeusEx.CrateBreakableMedGeneral",defaultValue=1);
-     items(32)=(actionText="Supply Crate (Combat)",consoleTarget="DeusEx.CrateBreakableMedCombat",defaultValue=1);
-     items(33)=(actionText="Supply Crate (Medical)",consoleTarget="DeusEx.CrateBreakableMedMedical",defaultValue=1);
-     items(34)=(actionText="Unbreakable Crate (Large)",consoleTarget="DeusEx.CrateUnbreakableLarge",defaultValue=1);
-     items(35)=(actionText="Unbreakable Crate (Medium)",consoleTarget="DeusEx.CrateUnbreakableLarge",defaultValue=1);
-     items(36)=(actionText="Unbreakable Crate (Small)",consoleTarget="DeusEx.CrateUnbreakableSmall",defaultValue=1);
+     items(31)=(actionText="Ambrosia Container",consoleTarget="DeusEx.BarrelAmbrosia",defaultValue=1);
+     items(32)=(actionText="Barrel",consoleTarget="DeusEx.Barrel1",defaultValue=1);
+     items(33)=(actionText="Barrel (Flaming)",consoleTarget="DeusEx.BarrelFire",defaultValue=1);
+     items(34)=(actionText="Nanovirus Container",consoleTarget="DeusEx.BarrelVirus",defaultValue=1);
+     items(35)=(actionText="Supply Crate (General)",consoleTarget="DeusEx.CrateBreakableMedGeneral",defaultValue=1);
+     items(36)=(actionText="Supply Crate (Combat)",consoleTarget="DeusEx.CrateBreakableMedCombat",defaultValue=1);
+     items(37)=(actionText="Supply Crate (Medical)",consoleTarget="DeusEx.CrateBreakableMedMedical",defaultValue=1);
+     items(38)=(actionText="Unbreakable Crate (Large)",consoleTarget="DeusEx.CrateUnbreakableLarge",defaultValue=1);
+     items(39)=(actionText="Unbreakable Crate (Medium)",consoleTarget="DeusEx.CrateUnbreakableLarge",defaultValue=1);
+     items(40)=(actionText="Unbreakable Crate (Small)",consoleTarget="DeusEx.CrateUnbreakableSmall",defaultValue=1);
      strHeaderActionLabel="Weapon"
      strHeaderAssignedLabel="Model"
      HelpText="Select the model you wish to change and then press [Enter] or Double-Click to cycle through available models"
