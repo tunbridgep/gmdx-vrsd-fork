@@ -66,13 +66,13 @@ defaultproperties
      MaxAmmo=20
      ItemName="30.06 Ammo"
      ItemArticle="some"
-     PickupViewMesh=LodMesh'HDTPItems.HDTPammo3006'
      Icon=Texture'DeusExUI.Icons.BeltIconAmmo3006'
      largeIconWidth=43
      largeIconHeight=31
      Description="Its high velocity and accuracy have made sniper rifles using the 30.06 round the preferred tool of individuals requiring 'one shot, one kill' for over fifty years."
      beltDescription="3006 AMMO"
-     Mesh=LodMesh'HDTPItems.HDTPammo3006'
+     HDTPMesh="HDTPItems.HDTPammo3006"
+     Mesh=LodMesh'DeusExItems.Ammo3006'
      CollisionRadius=8.000000
      CollisionHeight=3.860000
      bCollideActors=True

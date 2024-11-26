@@ -116,14 +116,14 @@ defaultproperties
      MaxAmmo=30
      ItemName="12 Gauge Buckshot Shells"
      ItemArticle="some"
-     PickupViewMesh=LodMesh'HDTPItems.HDTPammoshell'
      Icon=Texture'DeusExUI.Icons.BeltIconAmmoShells'
      largeIcon=Texture'DeusExUI.Icons.LargeIconAmmoShells'
      largeIconWidth=34
      largeIconHeight=45
      Description="Standard 12 gauge shotgun shell; very effective for close-quarters combat against soft targets, but useless against body armor."
      beltDescription="BUCKSHOT"
-     Mesh=LodMesh'HDTPItems.HDTPammoshell'
+     HDTPMesh="HDTPItems.HDTPammoshell"
+     Mesh=LodMesh'DeusExItems.AmmoShell'
      CollisionRadius=9.300000
      CollisionHeight=10.210000
      bCollideActors=True

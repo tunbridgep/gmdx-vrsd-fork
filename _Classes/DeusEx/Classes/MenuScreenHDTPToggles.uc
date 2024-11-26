@@ -122,6 +122,24 @@ defaultproperties
      items(96)=(actionText="Vase 2",consoleTarget="DeusEx.Vase2",defaultValue=1);
      items(97)=(actionText="Water Cooler",consoleTarget="DeusEx.WaterCooler",defaultValue=1);
      items(98)=(actionText="Water Fountain",consoleTarget="DeusEx.WaterFountain",defaultValue=1);
+     items(99)=(actionText="10mm Ammo",consoleTarget="DeusEx.Ammo10mm",defaultValue=1);
+     items(100)=(actionText="10mm AP Ammo",consoleTarget="DeusEx.Ammo10mmAP",defaultValue=1);
+     items(101)=(actionText="20mm Ammo",consoleTarget="DeusEx.Ammo20mm",defaultValue=1);
+     items(102)=(actionText="20mm EMP Ammo",consoleTarget="DeusEx.Ammo20mmEMP",defaultValue=1); //TODO: Add 20mm EMP skin
+     items(103)=(actionText="762mm Ammo",consoleTarget="DeusEx.Ammo762mm",defaultValue=1);
+     items(104)=(actionText="3006 Ammo",consoleTarget="DeusEx.Ammo3006",defaultValue=1);
+     items(105)=(actionText="Darts",consoleTarget="DeusEx.AmmoDart",defaultValue=1);
+     items(106)=(actionText="Darts (Flare)",consoleTarget="DeusEx.AmmoDartFlare",defaultValue=1);
+     items(107)=(actionText="Darts (Poison)",consoleTarget="DeusEx.AmmoDartPoison",defaultValue=1);
+     items(108)=(actionText="Darts (Taser)",consoleTarget="DeusEx.AmmoDartTaser",defaultValue=1);
+     items(109)=(actionText="Napalm",consoleTarget="DeusEx.AmmoNapalm",defaultValue=1);
+     items(110)=(actionText="Plasma Ammo",consoleTarget="DeusEx.AmmoPlasma",defaultValue=1); //TODO: Add superheated plasma
+     items(111)=(actionText="Prod Charger",consoleTarget="DeusEx.AmmoBattery",defaultValue=1);
+     items(112)=(actionText="Rockets",consoleTarget="DeusEx.AmmoRocket",defaultValue=1);
+     items(113)=(actionText="WP Rockets",consoleTarget="DeusEx.AmmoRocketWP",defaultValue=1);
+     items(114)=(actionText="Shells",consoleTarget="DeusEx.AmmoShell",defaultValue=1);
+     items(115)=(actionText="Shells (Sabot)",consoleTarget="DeusEx.AmmoSabot",defaultValue=1);
+     items(116)=(actionText="Shells (Rubber)",consoleTarget="DeusEx.AmmoRubber",defaultValue=1);
      strHeaderActionLabel="Object"
      strHeaderAssignedLabel="Model"
      HelpText="Select the model you wish to change and then press [Enter] or Double-Click to cycle through available models"

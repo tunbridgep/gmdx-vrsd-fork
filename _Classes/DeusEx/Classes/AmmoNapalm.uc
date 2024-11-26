@@ -19,7 +19,8 @@ defaultproperties
      largeIconHeight=42
      Description="A pressurized canister of jellied gasoline for use with flamethrowers.|n|n<UNATCO OPS FILE NOTE SC080-BLUE> The canister is double-walled to minimize accidental detonation caused by stray bullets during a firefight. -- Sam Carter <END NOTE>"
      beltDescription="NAPALM"
-     Mesh=LodMesh'HDTPItems.HDTPammoNapalm'
+     HDTPMesh="HDTPItems.HDTPammoNapalm"
+     Mesh=LodMesh'DeusExItems.AmmoNapalm'
      CollisionRadius=3.130000
      CollisionHeight=11.480000
      bCollideActors=True

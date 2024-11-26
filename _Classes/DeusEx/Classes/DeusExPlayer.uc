@@ -1629,7 +1629,8 @@ exec function HDTP(optional string s)
 	local DeusExDecoration D;                                                   //SARGE: Added for object toggles
 	local DeusExPickup PK;                                                      //SARGE: Added for object toggles
 	local DeusExProjectile PR;                                                  //SARGE: Added for object toggles
-
+	local DeusExAmmo AM;                                                        //SARGE: Added for object toggles
+    
 	foreach Allactors(Class'Scriptedpawn',P)
 		P.UpdateHDTPSettings();
 	foreach Allactors(Class'DeusexCarcass',C)
@@ -1640,8 +1641,10 @@ exec function HDTP(optional string s)
     	PK.UpdateHDTPsettings();
     foreach AllActors(Class'DeusExDecoration',D)                                //SARGE: Added for object toggles
     	D.UpdateHDTPsettings();
-    foreach AllActors(Class'DeusExProjectile',PR)                                //SARGE: Added for object toggles
+    foreach AllActors(Class'DeusExProjectile',PR)                               //SARGE: Added for object toggles
     	PR.UpdateHDTPsettings();
+    foreach AllActors(Class'DeusExAmmo',AM)                                     //SARGE: Added for object toggles
+    	AM.UpdateHDTPsettings();
 
 	UpdateHDTPsettings();
 }

@@ -1,18 +1,26 @@
 //=============================================================================
 // AmmoRocketWP.
 //=============================================================================
-class AmmoRocketWP extends AmmoRocket;
+class AmmoRocketWP extends DeusExAmmo;
 
-simulated function PostBeginPlay()
+function UpdateHDTPSettings()
 {
-	Super.PostBeginPlay();
-
-	AmmoAmount=4;
+    super.UpdateHDTPSettings();
+    if (IsHDTP())
+        MultiSkins[1]=class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPgepammotex2");
+    else
+        MultiSkins[1]=None;
 }
 
 defaultproperties
 {
+     bShowInfo=True
+     ammoSkill=Class'DeusEx.SkillWeaponHeavy'
+     LandSound=Sound'DeusExSounds.Generic.WoodHit2'
      altDamage=50
+     AmmoAmount=4;
+     MaxAmmo=10
+     ItemArticle="some"
      ItemName="WP Rockets"
      Icon=Texture'DeusExUI.Icons.BeltIconAmmoWPRockets'
      largeIcon=Texture'DeusExUI.Icons.LargeIconAmmoWPRockets'
@@ -20,6 +28,10 @@ defaultproperties
      largeIconHeight=37
      Description="The white-phosphorus rocket, or 'wooly peter,' was designed to expand the mission profile of the GEP gun. While it does minimal damage upon detonation, the explosion will spread a cloud of particularized white phosphorus that ignites immediately upon contact with the air."
      beltDescription="WP ROCKET"
-     Skin=Texture'HDTPItems.Skins.HDTPgepammotex2'
-     MultiSkins(1)=Texture'HDTPItems.Skins.HDTPgepammotex2'
+     Skin=Texture'DeusExItems.Skins.GEPAmmoTex2'
+     HDTPSkin="HDTPItems.Skins.HDTPgepammotex2"
+     Mesh=LodMesh'DeusExItems.GEPAmmo'
+     CollisionRadius=18.000000
+     CollisionHeight=7.800000
+     bCollideActors=True
 }
