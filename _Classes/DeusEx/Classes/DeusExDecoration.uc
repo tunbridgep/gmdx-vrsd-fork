@@ -146,14 +146,6 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 
 exec function UpdateHDTPsettings()                                              //SARGE: New function to update model meshes (specifics handled in each class)
 {
-    Skin = default.Skin;
-    Mesh = default.Mesh;
-    Texture = default.Texture;
-    MultiSkins[0] = default.MultiSkins[0];
-    MultiSkins[1] = default.MultiSkins[1];
-    MultiSkins[2] = default.MultiSkins[2];
-    MultiSkins[3] = default.MultiSkins[3];
-    MultiSkins[4] = default.MultiSkins[4];
     if (HDTPMesh != "")
         Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),iHDTPModelToggle > 0);
     if (HDTPSkin != "")
