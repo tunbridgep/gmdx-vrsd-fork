@@ -29,7 +29,7 @@ function UpdateButtonStatus()
 	local DeusExLevelInfo info;
 
 	info = player.GetLevelInfo();
-    //winButtons[8].SetSensitivity(False); //CyberP: no multiplayer in GMDX
+    winButtons[8].SetSensitivity(False); //CyberP: no multiplayer in GMDX
 	// Disable the "Save Game" and "Back to Game" menu choices
 	// if the player's dead or we're on the logo map.
 	//
@@ -109,7 +109,7 @@ defaultproperties
      buttonDefaults(5)=(Y=193,Action=MA_Intro)
      buttonDefaults(6)=(Y=229,Action=MA_MenuScreen,Invoke=Class'DeusEx.CreditsWindow')
      buttonDefaults(7)=(Y=265,Action=MA_Previous)
-     buttonDefaults(8)=(Y=301,Action=MA_MenuScreen,Invoke=Class'DeusEx.MenuMPMain')
+     buttonDefaults(8)=(Y=301,Action=MA_MenuScreen,Invoke=Class'DeusEx.MenuScreenHDTP')
      buttonDefaults(9)=(Y=359,Action=MA_Quit)
      Title="Give Me Deus Ex"
      ClientWidth=258
