@@ -17079,23 +17079,23 @@ function int GetAdjustedMaxAmmo(Ammo ammotype)
 
     if (ammotype.IsA('DeusExAmmo'))
     {
-    DXammotype = DeusExAmmo(ammotype);
-    adjustedMaxAmmo = DXammotype.default.MaxAmmo;
-    associatedSkill = DXammotype.default.ammoSkill;
-    if (AugmentationSystem != none)
-    	if (self.AugmentationSystem.GetAugLevelValue(class'AugAmmoCap') > 0.0 && (associatedSkill != class'SkillDemolition'))// || associatedSkill != class'SkillWeaponLowTech'))
-            mult += AugmentationSystem.GetAugLevelValue(class'AugAmmoCap');
-    if (associatedSkill != none && associatedSkill != class'DeusEx.SkillDemolition')
-    	mult -= 2.*SkillSystem.GetSkillLevelValue(associatedSkill);
-   	else if (associatedSkill == class'DeusEx.SkillDemolition')
-   	{
-   		mult -= 4.*SkillSystem.GetSkillLevelValue(associatedSkill);
-   		//BroadcastMessage(mult);
-    }
+        DXammotype = DeusExAmmo(ammotype);
+        adjustedMaxAmmo = DXammotype.default.MaxAmmo;
+        associatedSkill = DXammotype.default.ammoSkill;
+        if (AugmentationSystem != none)
+            if (self.AugmentationSystem.GetAugLevelValue(class'AugAmmoCap') > 0.0 && (associatedSkill != class'SkillDemolition'))// || associatedSkill != class'SkillWeaponLowTech'))
+                mult += AugmentationSystem.GetAugLevelValue(class'AugAmmoCap');
+        if (associatedSkill != none && associatedSkill != class'DeusEx.SkillDemolition')
+            mult += -2*SkillSystem.GetSkillLevelValue(associatedSkill)-0.5;
+        else if (associatedSkill == class'DeusEx.SkillDemolition')
+        {
+            mult += -4*SkillSystem.GetSkillLevelValue(associatedSkill)-0.5;
+            //BroadcastMessage(mult);
+        }
     }
     else
     {
-    adjustedMaxAmmo = ammotype.default.MaxAmmo;
+        adjustedMaxAmmo = ammotype.default.MaxAmmo;
     }
     //if (bHalveAmmo || (bHardcoreMode && bExtraHardcore))                        //RSD: Hardcore+ forces on halved max ammo
   	//	mult *= 0.5;
