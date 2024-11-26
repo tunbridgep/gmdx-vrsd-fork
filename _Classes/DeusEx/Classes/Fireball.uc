@@ -4,12 +4,11 @@
 class Fireball extends DeusExProjectile;
 
 var() float mpDamage;
-var texture texes[5];
+var string texes[5];
 var FireSmoke smoke;
 var bool bSpawned;
 
 #exec OBJ LOAD FILE=Effects
-#exec OBJ LOAD FILE=HDTPAnim
 
 simulated function Tick(float deltaTime)
 {
@@ -130,11 +129,24 @@ function Destroyed()
 	Super.Destroyed();
 }
 
+function UpdateHDTPSettings()
+{
+    super.UpdateHDTPSettings();
+    if (IsHDTP())
+    {
+        Texture = class'HDTPLoader'.static.GetWetTexture(texes[rand(5)]);
+        DrawScale=0.001000;
+    }
+    else
+    {
+        Texture=FireTexture'Effects.Fire.flame_b';
+        DrawScale=0.050000;
+    }
+}
+
 simulated function PreBeginPlay()
 {
 	Super.PreBeginPlay();
-
-	texture = texes[rand(5)];
 
 	drawscale *= 1.0 + (0.3 * (frand() - 0.5)); //vary the drawscale a bit, to make the fire more organic
 
@@ -145,12 +157,14 @@ simulated function PreBeginPlay()
 defaultproperties
 {
      mpDamage=5.000000
-     texes(0)=WetTexture'HDTPanim.Effects.FlmThrwr01'
-     texes(1)=WetTexture'HDTPanim.Effects.FlmThrwr02'
-     texes(2)=WetTexture'HDTPanim.Effects.FlmThrwr03'
-     texes(3)=WetTexture'HDTPanim.Effects.FlmThrwr04'
-     texes(4)=WetTexture'HDTPanim.Effects.FlmThrwr05'
+     hdtpReference=class'DeusEx.WeaponFlamethrower'
+     texes(0)="HDTPanim.Effects.FlmThrwr01";
+     texes(1)="HDTPanim.Effects.FlmThrwr02";
+     texes(2)="HDTPanim.Effects.FlmThrwr03";
+     texes(3)="HDTPanim.Effects.FlmThrwr04";
+     texes(4)="HDTPanim.Effects.FlmThrwr05";
      blastRadius=1.000000
+     Texture=FireTexture'Effects.Fire.flame_b'
      DamageType=Flamed
      AccurateRange=640
      maxRange=640
@@ -165,7 +179,6 @@ defaultproperties
      LifeSpan=0.750000
      DrawType=DT_Sprite
      Style=STY_Translucent
-     Texture=WetTexture'HDTPanim.Effects.FlmThrwr01'
      DrawScale=0.001000
      bUnlit=True
      LightType=LT_Steady

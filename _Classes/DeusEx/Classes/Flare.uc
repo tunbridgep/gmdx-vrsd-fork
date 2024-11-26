@@ -5,7 +5,6 @@ class Flare extends SkilledTool;
 //class Flare extends DeusExPickup;
 
 #exec import file=Effects
-#exec import file=HDTPanim
 
 var ParticleGenerator gen, gen2, flaregen;
 var effects flamething; //trying very hard not to introduce extra classes
@@ -27,36 +26,6 @@ function bool DoLeftFrob(DeusExPlayer frobber)
     blClicked=true;
     LightFlare();
     return false;
-}
-
-function texture GetWeaponHandTex()
-{
-	local deusexplayer p;
-	local texture tex;
-
-    if (class'DeusExPlayer'.default.bRadarTran==True)
-        return Texture'Effects.Electricity.Xplsn_EMPG';
-    else if (class'DeusExPlayer'.default.bIsCloaked==True)
-        return Texture'Effects.Electricity.Xplsn_EMPG';
-    else
-        return none;
-	/*tex = texture'weaponhandstex';
-
-	p = deusexplayer(owner);
-	if(p != none)
-	{
-		switch(p.PlayerSkin)
-		{
-			//default, black, latino, ginger, albino, respectively
-			case 0: tex = texture'weaponhandstex'; break;
-			case 1: tex = texture'HDTPItems.skins.weaponhandstexblack'; break;
-			case 2: tex = texture'HDTPItems.skins.weaponhandstexlatino'; break;
-			case 3: tex = texture'HDTPItems.skins.weaponhandstexginger'; break;
-			case 4: tex = texture'HDTPItems.skins.weaponhandstexalbino'; break;
-		}
-	}*/
-
-	return tex;
 }
 
 function FlareFlame()
@@ -277,7 +246,16 @@ state Activated
 
 	function BeginState()
 	{
-		//Super.BeginState();
+        local Flare flare;
+    
+        if (!IsHDTP())
+        {
+            Super.BeginState();
+            flare = Spawn(class'Flare', Owner);
+            flare.LightFlare();
+
+            UseOnce();
+        }
 	}
 	function PutDown()
 	{
@@ -287,9 +265,12 @@ state Activated
     {
     }
 Begin:
-	PlayAnim('Attack',2,0.1);                                                    //RSD: Was 0.1
-	FinishAnim();
-	Finish();                                                                   //RSD
+    if (IsHDTP())
+    {
+        PlayAnim('Attack',2,0.1);                                                    //RSD: Was 0.1
+        FinishAnim();
+        Finish();                                                                   //RSD
+    }
 	//GoToState('Idle');
 }
 
@@ -400,56 +381,65 @@ function LightFlare()
 		rota = rotation;
 		rota.Roll = 0;
 		rota.Yaw += 16384;
-		flaregen = Spawn(class'ParticleGenerator',Self,, Loc, rota);
-		if (flaregen != None)
-		{
-			flaregen.LifeSpan = flaretime;
-			flaregen.attachTag = Name;
-			flaregen.SetBase(Self);
-			flaregen.bRandomEject=true;
-			flaregen.RandomEjectAmt=0.1;
-			flaregen.bParticlesUnlit=true;
-			flaregen.frequency=0.5 + 0.5*frand();
-			flaregen.numPerSpawn=2;
-			flaregen.bGravity=false;
-			flaregen.ejectSpeed = 100;
-			flaregen.riseRate = -1;
-			flaregen.checkTime = 0.02;
-			flaregen.particleLifeSpan = 0.6*(1 + frand());
-			flaregen.particleDrawScale = 0.05 + 0.05*frand();
-			flaregen.particleTexture = Texture'HDTPAnim.effects.HDTPFlarespark';
-		}
-		flamething = Spawn(class'Effects', Self,, Location, rotation);
-		if(flamething != none)
-		{
-			flamething.setbase(self);
-			flamething.DrawType=DT_mesh;
-			flamething.mesh=lodmesh'HDTPItems.HDTPflareflame';
-			flamething.multiskins[1]=texture'HDTPanim.effects.HDTPflrflame';
-			flamething.Style=STY_Translucent;
-			flamething.bUnlit=true;
-			flamething.DrawScale=0.4;
-			flamething.Scaleglow=5;
-			flamething.lifespan=0;
-			flamething.bHidden=false;
-		}
-		flamething2 = Spawn(class'Effects', Self,, Location, rotation);
-		if(flamething2 != none)
-		{
-			flamething2.setbase(self);
-			flamething2.DrawType=DT_mesh;
-			flamething2.mesh=lodmesh'HDTPItems.HDTPflareflame';
-			flamething2.multiskins[1]=texture'HDTPanim.effects.HDTPflrflame';
-			flamething2.DrawScale=0.00001;
-			flamething2.lifespan=0;
-			flamething2.bHidden=false;
-			flamething2.LightType=LT_None;
-			//flamething2.LightType=LT_Steady;
-            //flamething2.LightBrightness=96;
-            //flamething2.LightHue=16;
-            //flamething2.LightSaturation=96;
-            //flamething2.LightRadius=22;
-		}
+        if (IsHDTP())
+        {
+            flaregen = Spawn(class'ParticleGenerator',Self,, Loc, rota);
+            if (flaregen != None)
+            {
+                flaregen.LifeSpan = flaretime;
+                flaregen.attachTag = Name;
+                flaregen.SetBase(Self);
+                flaregen.bRandomEject=true;
+                flaregen.RandomEjectAmt=0.1;
+                flaregen.bParticlesUnlit=true;
+                flaregen.frequency=0.5 + 0.5*frand();
+                flaregen.numPerSpawn=2;
+                flaregen.bGravity=false;
+                flaregen.ejectSpeed = 100;
+                flaregen.riseRate = -1;
+                flaregen.checkTime = 0.02;
+                flaregen.particleLifeSpan = 0.6*(1 + frand());
+                flaregen.particleDrawScale = 0.05 + 0.05*frand();
+                flaregen.particleTexture = class'HDTPLoader'.static.GetFireTexture("HDTPAnim.effects.HDTPFlarespark");
+            }
+        }
+        if (IsHDTP())
+        {
+            flamething = Spawn(class'Effects', Self,, Location, rotation);
+            if(flamething != none)
+            {
+                flamething.setbase(self);
+                flamething.DrawType=DT_mesh;
+                flamething.mesh=class'HDTPLoader'.static.GetMesh("HDTPItems.HDTPflareflame");
+                flamething.multiskins[1]=class'HDTPLoader'.static.GetFireTexture("HDTPAnim.effects.HDTPflrflame");
+                flamething.Style=STY_Translucent;
+                flamething.bUnlit=true;
+                flamething.DrawScale=0.4;
+                flamething.Scaleglow=5;
+                flamething.lifespan=0;
+                flamething.bHidden=false;
+            }
+        }
+        if (IsHDTP())
+        {
+            flamething2 = Spawn(class'Effects', Self,, Location, rotation);
+            if(flamething2 != none)
+            {
+                flamething2.setbase(self);
+                flamething2.DrawType=DT_mesh;
+                flamething2.mesh=class'HDTPLoader'.static.GetMesh("HDTPItems.HDTPflareflame");
+                flamething2.multiskins[1]=class'HDTPLoader'.static.GetFireTexture("HDTPAnim.effects.HDTPflrflame");
+                flamething2.DrawScale=0.00001;
+                flamething2.lifespan=0;
+                flamething2.bHidden=false;
+                flamething2.LightType=LT_None;
+                //flamething2.LightType=LT_Steady;
+                //flamething2.LightBrightness=96;
+                //flamething2.LightHue=16;
+                //flamething2.LightSaturation=96;
+                //flamething2.LightRadius=22;
+            }
+        }
 	}
 }
 
@@ -498,6 +488,12 @@ function Finish()                                                               
 		return;
 }
 
+exec function UpdateHDTPsettings()
+{
+    Super.UpdateHDTPsettings();
+    PlayerViewMesh=class'HDTPLoader'.static.GetMesh2("FOMOD.flare1st","DeusExItems.Flare",IsHDTP());
+}
+
 defaultproperties
 {
      flaretime=80.000000
@@ -507,16 +503,15 @@ defaultproperties
      bActivatable=True
      ItemName="Flare"
      PlayerViewOffset=(X=22.000000,Y=-2.000000,Z=-17.000000)
-     PlayerViewMesh=LodMesh'FOMOD.flare1st'
-     PickupViewMesh=LodMesh'HDTPItems.HDTPflare'
-     ThirdPersonMesh=LodMesh'HDTPItems.HDTPflare'
+     PlayerViewMesh=LodMesh'DeusExItems.Flare'
+     Mesh=LodMesh'DeusExItems.Flare'
+     HDTPMesh="HDTPItems.HDTPflare"
      Icon=Texture'DeusExUI.Icons.BeltIconFlare'
      largeIcon=Texture'DeusExUI.Icons.LargeIconFlare'
      largeIconWidth=42
      largeIconHeight=43
      Description="A flare."
      beltDescription="FLARE"
-     Mesh=LodMesh'HDTPItems.HDTPflare'
      SoundRadius=16
      SoundVolume=96
      CollisionRadius=6.200000

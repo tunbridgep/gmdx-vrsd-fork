@@ -63,20 +63,25 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
     return true;
 }
 
+function bool IsHDTP()
+{
+    return iHDTPModelToggle > 0 && class'HDTPLoader'.static.HDTPInstalled();
+}
+
 exec function UpdateHDTPsettings()                                              //SARGE: New function to update model meshes (specifics handled in each class)
 {
     if (HDTPMesh != "")
     {
         if (PlayerViewMesh == Mesh || PlayerViewMesh == None)
-            PlayerViewMesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),iHDTPModelToggle > 0);
+            PlayerViewMesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),IsHDTP());
         if (PickupViewMesh == Mesh || PickupViewMesh == None)
-            PickupViewMesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),iHDTPModelToggle > 0);
+            PickupViewMesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),isHDTP());
         if (ThirdPersonMesh == Mesh || ThirdPersonMesh == None)
-            ThirdPersonMesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),iHDTPModelToggle > 0);
-        Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),iHDTPModelToggle > 0);
+            ThirdPersonMesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),IsHDTP());
+        Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),IsHDTP());
     }
     if (HDTPSkin != "")
-        Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),iHDTPModelToggle > 0);
+        Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),IsHDTP());
 }
 
 

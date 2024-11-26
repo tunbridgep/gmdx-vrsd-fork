@@ -561,62 +561,11 @@ function DropFrom(vector StartLocation)
 function texture GetWeaponHandTex()
 {
 	local deusexplayer p;
-    
-    if (bIsRadar)//class'DeusExPlayer'.default.bRadarTran==True)                //RSD: Overhauled cloak/radar routines
-        return Texture'Effects.Electricity.Xplsn_EMPG';
-    else if (bIsCloaked)
-        return FireTexture'GameEffects.InvisibleTex';
-
-	p = deusexplayer(owner);
+	
+    p = deusexplayer(owner);
 	if(p != none)
         return p.GetWeaponHandTex();
 	return None;
-}
-
-//SARGE: Had to add this, so that the LDDP Hand Selection works with the HDTP model selection stuff
-function Texture GetLDDPHandsTex(DeusExPlayer P)
-{
-    local Texture tex;
-
-	if ((P.FlagBase != None) && (P.FlagBase.GetBool('LDDPJCIsFemale')))
-    {
-        switch(P.PlayerSkin)
-        {
-            case 0:
-                tex = Texture(DynamicLoadObject("FemJC.WeaponHandsTex0Fem", class'Texture', false));
-                break;
-            case 1:
-                tex = Texture(DynamicLoadObject("FemJC.WeaponHandsTex4Fem", class'Texture', false));
-                break;
-            case 2:
-                tex = Texture(DynamicLoadObject("FemJC.WeaponHandsTex5Fem", class'Texture', false));
-                break;
-            case 3:
-                tex = Texture(DynamicLoadObject("FemJC.WeaponHandsTex6Fem", class'Texture', false));
-                break;
-            case 4:
-                tex = Texture(DynamicLoadObject("FemJC.WeaponHandsTex7Fem", class'Texture', false));
-                break;
-        }
-    }
-    //For male, return the basic ones
-    else if(p != none)
-	{
-		switch(p.PlayerSkin)
-		{
-			//default, black, latino, ginger, albino, respectively
-			case 0: tex = texture'weaponhandstex'; break;
-			case 1: tex = texture'HDTPItems.skins.weaponhandstexblack'; break;
-			case 2: tex = texture'HDTPItems.skins.weaponhandstexlatino'; break;
-			case 3: tex = texture'HDTPItems.skins.weaponhandstexginger'; break;
-			case 4: tex = texture'HDTPItems.skins.weaponhandstexalbino'; break;
-		}
-	}
-
-    if (tex == None)
-        tex = texture'weaponhandstex'; //White hands texture by default
-                                       
-    return tex;
 }
 
 function EraseWeaponHandTex()                                                   //RSD: Fixing weapons acquiring the hand texture in 3rd person view

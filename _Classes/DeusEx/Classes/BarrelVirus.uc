@@ -7,7 +7,7 @@ class BarrelVirus extends Containers;
 exec function UpdateHDTPsettings()
 {
     super.UpdateHDTPsettings();
-    if (iHDTPModelToggle > 0)
+    if (IsHDTP())
     {
         MultiSkins[2]=FireTexture'Effects.liquid.Virus_SFX';
         MultiSkins[1]=None;

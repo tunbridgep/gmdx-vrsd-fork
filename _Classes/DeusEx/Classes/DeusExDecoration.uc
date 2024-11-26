@@ -143,15 +143,20 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
     return true;
 }
 
+function bool IsHDTP()
+{
+    return iHDTPModelToggle > 0 && class'HDTPLoader'.static.HDTPInstalled();
+}
+
 //SARGE: New function to update model meshes (specifics handled in each class)
 exec function UpdateHDTPsettings()
 {
     if (HDTPMesh != "")
-        Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),iHDTPModelToggle > 0);
+        Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),IsHDTP());
     if (HDTPSkin != "")
-        Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),iHDTPModelToggle > 0);
+        Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),IsHDTP());
     if (HDTPTexture != "")
-        Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),iHDTPModelToggle > 0);
+        Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),IsHDTP());
 }
 
 // ----------------------------------------------------------------------

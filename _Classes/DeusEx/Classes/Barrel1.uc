@@ -71,7 +71,7 @@ function SetSkin()
                                     newSkin = "HDTPDecos.Skins.HDTPBarrel1Tex11";
     }
 
-    Skin = class'HDTPLoader'.static.GetTexture2(newSkin,oldSkin,iHDTPModelToggle > 0);
+    Skin = class'HDTPLoader'.static.GetTexture2(newSkin,oldSkin,IsHDTP());
 }
 
 function BeginPlay()

@@ -52,6 +52,7 @@ var bool bPlusOneDamage;                                                        
 var string HDTPSkin;
 var string HDTPTexture;
 var string HDTPMesh;
+var class<DeusExWeapon> hdtpReference;                                          //SARGE: Used when we want to tell a projectile to use the HDTP settings of a particular weapon
 
 // network replication
 replication
@@ -61,11 +62,15 @@ replication
 	  bTracking, Target, bAggressiveExploded, bHasNetworkTarget, NetworkTargetLoc;
 }
 
+function PreBeginPlay()
+{
+    Super.PreBeginPlay();
+    UpdateHDTPSettings();
+}
+
 function PostBeginPlay()
 {
 	Super.PostBeginPlay();
-
-    UpdateHDTPSettings();
 
 	if (bEmitDanger)
 		AIStartEvent('Projectile', EAITYPE_Visual);
@@ -73,8 +78,13 @@ function PostBeginPlay()
 
 function bool IsHDTP()
 {
-    if (spawnWeaponClass != None)
+	if (!class'HDTPLoader'.static.HDTPInstalled())
+		return false;
+    else if (hdtpReference != None)
+        return hdtpReference.default.iHDTPModelToggle > 0;
+    else if (spawnWeaponClass != None)
         return spawnWeaponClass.default.iHDTPModelToggle > 0;
+    return class'HDTPLoader'.static.HDTPInstalled();
 }
 
 //SARGE: Setup the HDTP settings for this projectile

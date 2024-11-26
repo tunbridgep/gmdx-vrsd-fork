@@ -10365,6 +10365,11 @@ exec function ShowAcceleration(bool bShow)
 function texture GetWeaponHandTex()
 {
 	local texture tex;
+    
+    if (bRadarTran)
+        return Texture'Effects.Electricity.Xplsn_EMPG';
+    else if (bIsCloaked)
+        return FireTexture'GameEffects.InvisibleTex';
 
 	if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
     {
@@ -10387,17 +10392,17 @@ function texture GetWeaponHandTex()
                 break;
         }
     }
-    else
+    else if (class'HDTPLoader'.static.HDTPInstalled())
     {
         //For male, return the basic ones
 		switch(PlayerSkin)
 		{
 			//default, black, latino, ginger, albino, respectively
 			case 0: tex = texture'weaponhandstex'; break;
-			case 1: tex = texture'HDTPItems.skins.weaponhandstexblack'; break;
-			case 2: tex = texture'HDTPItems.skins.weaponhandstexlatino'; break;
-			case 3: tex = texture'HDTPItems.skins.weaponhandstexginger'; break;
-			case 4: tex = texture'HDTPItems.skins.weaponhandstexalbino'; break;
+			case 1: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.skins.weaponhandstexblack"); break;
+			case 2: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.skins.weaponhandstexlatino"); break;
+			case 3: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.skins.weaponhandstexginger"); break;
+			case 4: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.skins.weaponhandstexalbino"); break;
 		}
     }
 

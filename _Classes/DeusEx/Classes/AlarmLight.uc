@@ -18,24 +18,24 @@ function SetLightColor(ESkinColor color)
 {
 	switch (SkinColor)
 	{
-		case SC_Red:		MultiSkins[1] = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex2","DeusExDeco.AlarmLightTex2",iHDTPModelToggle > 0);
-		                    MultiSkins[2] = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex3","DeusExDeco.AlarmLightTex3",iHDTPModelToggle > 0);
-		                    Texture = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex3","DeusExDeco.AlarmLightTex3",iHDTPModelToggle > 0);
+		case SC_Red:		MultiSkins[1] = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex2","DeusExDeco.AlarmLightTex2",IsHDTP());
+		                    MultiSkins[2] = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex3","DeusExDeco.AlarmLightTex3",IsHDTP());
+		                    Texture = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex3","DeusExDeco.AlarmLightTex3",IsHDTP());
 							LightHue = 0;
 							break;
-		case SC_Green:		MultiSkins[1] = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex4","DeusExDeco.AlarmLightTex4",iHDTPModelToggle > 0);
-		                    MultiSkins[2] = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex5","DeusExDeco.AlarmLightTex5",iHDTPModelToggle > 0);
-		                    Texture = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex5","DeusExDeco.AlarmLightTex5",iHDTPModelToggle > 0);
+		case SC_Green:		MultiSkins[1] = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex4","DeusExDeco.AlarmLightTex4",IsHDTP());
+		                    MultiSkins[2] = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex5","DeusExDeco.AlarmLightTex5",IsHDTP());
+		                    Texture = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex5","DeusExDeco.AlarmLightTex5",IsHDTP());
 							LightHue = 64;
 							break;
-		case SC_Blue:		MultiSkins[1] = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex6","DeusExDeco.AlarmLightTex6",iHDTPModelToggle > 0);
-		                    MultiSkins[2] = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex7","DeusExDeco.AlarmLightTex7",iHDTPModelToggle > 0);
-		                    Texture = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex7","DeusExDeco.AlarmLightTex7",iHDTPModelToggle > 0);
+		case SC_Blue:		MultiSkins[1] = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex6","DeusExDeco.AlarmLightTex6",IsHDTP());
+		                    MultiSkins[2] = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex7","DeusExDeco.AlarmLightTex7",IsHDTP());
+		                    Texture = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex7","DeusExDeco.AlarmLightTex7",IsHDTP());
 							LightHue = 160;
 							break;
-		case SC_Amber:		MultiSkins[1] = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex8","DeusExDeco.AlarmLightTex8",iHDTPModelToggle > 0);
-		                    MultiSkins[2] = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex9","DeusExDeco.AlarmLightTex9",iHDTPModelToggle > 0);
-		                    Texture = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex9","DeusExDeco.AlarmLightTex9",iHDTPModelToggle > 0);
+		case SC_Amber:		MultiSkins[1] = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex8","DeusExDeco.AlarmLightTex8",IsHDTP());
+		                    MultiSkins[2] = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex9","DeusExDeco.AlarmLightTex9",IsHDTP());
+		                    Texture = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex9","DeusExDeco.AlarmLightTex9",IsHDTP());
 							LightHue = 36;
 							break;
 	}
@@ -95,8 +95,6 @@ defaultproperties
      HDTPTexture="HDTPDecos.Skins.HDTPAlarmLightTex3"
      Texture=Texture'DeusExDeco.Skins.AlarmLightTex3'
      Mesh=LodMesh'DeusExDeco.AlarmLight'
-     MultiSkins(1)=Texture'HDTPDecos.Skins.HDTPAlarmLightTex2'
-     MultiSkins(2)=Texture'HDTPDecos.Skins.HDTPAlarmLightTex3'
      CollisionRadius=4.000000
      CollisionHeight=6.140000
      LightType=LT_Steady

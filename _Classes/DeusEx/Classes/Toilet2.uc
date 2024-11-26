@@ -16,7 +16,7 @@ function UpdateHDTPsettings()
 {
 	Super.UpdateHDTPsettings();
 
-    if (iHDTPModelToggle > 0)
+    if (IsHDTP())
     {
         switch (SkinColor)
         {

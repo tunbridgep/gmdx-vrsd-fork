@@ -279,7 +279,7 @@ function SetHDTPTex(int texID)
     switch (texID)
     {
         case 1:
-            if (iHDTPModelToggle > 0)
+            if (IsHDTP())
             {
                 MultiSkins[1] = class'HDTPLoader'.static.GetTexture("HDTPAlarmUnittex1");
                 MultiSkins[2] = Texture'PinkMaskTex';
@@ -291,7 +291,7 @@ function SetHDTPTex(int texID)
             }
             break;
         case 2:
-            if (iHDTPModelToggle > 0)
+            if (IsHDTP())
             {
                 MultiSkins[1] = class'HDTPLoader'.static.GetTexture("HDTPAlarmUnittex2");
                 MultiSkins[2] = class'HDTPLoader'.static.GetTexture("HDTPAlarmUnittex2");

@@ -19,10 +19,10 @@ function UpdateHDTPsettings()
 
 	switch (SkinColor)
 	{
-		case SC_GrayLeather:	Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPOfficeChairTex1","DeusExDeco.OfficeChairTex1",iHDTPModelToggle > 0); break;
-		case SC_BrownLeather:	Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPOfficeChairTex2","DeusExDeco.OfficeChairTex2",iHDTPModelToggle > 0); break;
-		case SC_BrownCloth: 	Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPOfficeChairTex3","DeusExDeco.OfficeChairTex3",iHDTPModelToggle > 0); break;
-		case SC_GrayCloth:   	Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPOfficeChairTex4","DeusExDeco.OfficeChairTex4",iHDTPModelToggle > 0); break;
+		case SC_GrayLeather:	Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPOfficeChairTex1","DeusExDeco.OfficeChairTex1",IsHDTP()); break;
+		case SC_BrownLeather:	Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPOfficeChairTex2","DeusExDeco.OfficeChairTex2",IsHDTP()); break;
+		case SC_BrownCloth: 	Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPOfficeChairTex3","DeusExDeco.OfficeChairTex3",IsHDTP()); break;
+		case SC_GrayCloth:   	Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPOfficeChairTex4","DeusExDeco.OfficeChairTex4",IsHDTP()); break;
 	}
 }
 

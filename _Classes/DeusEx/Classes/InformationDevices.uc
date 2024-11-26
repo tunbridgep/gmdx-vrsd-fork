@@ -328,7 +328,7 @@ exec function UpdateHDTPsettings()
 	Super.UpdateHDTPsettings();
 
     //Only apply new book styles if we have HDTP enabled
-    if (iHDTPModelToggle == 0)
+    if (!IsHDTP())
         return;
 
 	//gah superclass badness

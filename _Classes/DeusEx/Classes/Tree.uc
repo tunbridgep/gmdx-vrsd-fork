@@ -29,7 +29,7 @@ function PostBeginPlay()
 exec function UpdateHDTPsettings()
 {
     super.UpdateHDTPsettings();
-    if (iHDTPModelToggle > 0)
+    if (IsHDTP())
     {
         if(location.X + location.Y %2 > 0)
         {

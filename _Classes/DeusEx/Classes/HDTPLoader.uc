@@ -10,6 +10,16 @@ static function Texture GetTexture(string tex)
 	return Texture(DynamicLoadObject(tex, class'Texture', false));
 }
 
+static function Texture GetWetTexture(string tex)
+{
+	return WetTexture(DynamicLoadObject(tex, class'WetTexture', false));
+}
+
+static function Texture GetFireTexture(string tex)
+{
+	return FireTexture(DynamicLoadObject(tex, class'FireTexture', false));
+}
+
 //Gets a mesh
 static function LodMesh GetMesh(string m)
 {

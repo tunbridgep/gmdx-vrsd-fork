@@ -10,7 +10,7 @@ exec function UpdateHDTPsettings()
     //Blank the screen once it's been read
     if (bRead)
         MultiSkins[2]=Texture'PinkMaskTex';
-    else if (iHDTPModelToggle > 0)
+    else if (IsHDTP())
         MultiSkins[2]=class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPDatacubetex1");
     else
         MultiSkins[2]=class'HDTPLoader'.static.GetTexture("DeusExItems.Skins.Datacubetex1");
