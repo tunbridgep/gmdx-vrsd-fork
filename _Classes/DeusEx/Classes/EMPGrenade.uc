@@ -85,7 +85,8 @@ defaultproperties
      MomentumTransfer=50000
      ImpactSound=Sound'DeusExSounds.Weapons.EMPGrenadeExplode'
      LifeSpan=0.000000
-     Mesh=LodMesh'HDTPItems.HDTPEMPgrenadePickup'
+     HDTPMesh="HDTPItems.HDTPEMPGrenadePickup"
+     Mesh=LodMesh'DeusExItems.EMPGrenadePickup'
      CollisionRadius=3.000000
      CollisionHeight=1.900000
      Mass=5.000000

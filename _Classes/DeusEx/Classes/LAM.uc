@@ -11,30 +11,43 @@ var float	mpFuselength;
 simulated function Tick(float deltaTime)
 {
 	local float blinkRate;
+    local Texture tex;
 
 	Super.Tick(deltaTime);
 
 	if (bDisabled)
 	{
-		MultiSkins[1] = Texture'BlackMaskTex';
-		return;
+		tex = Texture'BlackMaskTex';
 	}
+    else
+    {
+        // flash faster as the time expires
+        if (fuseLength - time <= 0.75)
+            blinkRate = 0.1;
+        else if (fuseLength - time <= fuseLength * 0.5)
+            blinkRate = 0.3;
+        else
+            blinkRate = 0.5;
 
-	// flash faster as the time expires
-	if (fuseLength - time <= 0.75)
-		blinkRate = 0.1;
-	else if (fuseLength - time <= fuseLength * 0.5)
-		blinkRate = 0.3;
-	else
-		blinkRate = 0.5;
+        if ((Level.NetMode == NM_Standalone) || (Role < ROLE_Authority) || (Level.NetMode == NM_ListenServer))
+        {
+                if (Abs((fuseLength - time)) % blinkRate > blinkRate * 0.5)
+                    tex = Texture'BlackMaskTex';
+                else
+                    tex = class'HDTPLoader'.static.GetTexture2("HDTPItems.HDTPLAMtex0","DeusExItems.LAM3rdTex1",IsHDTP());
+        }
+    }
 
-   if ((Level.NetMode == NM_Standalone) || (Role < ROLE_Authority) || (Level.NetMode == NM_ListenServer))
-   {
-      if (Abs((fuseLength - time)) % blinkRate > blinkRate * 0.5)
-         MultiSkins[1] = Texture'BlackMaskTex';
-      else
-         MultiSkins[1] = Texture'HDTPLAMtex0';
-   }
+    if (IsHDTP() && tex != None)
+    {
+        MultiSkins[1] = tex;
+        Skin = None;
+    }
+    else if (tex != None)
+    {
+        MultiSkins[1] = None;
+        Skin = tex;
+    }
 }
 
 simulated function PreBeginPlay()
@@ -68,7 +81,8 @@ defaultproperties
      ImpactSound=Sound'DeusExSounds.Weapons.LAMExplode'
      ExplosionDecal=Class'DeusEx.ScorchMark'
      LifeSpan=0.000000
-     Mesh=LodMesh'HDTPItems.HDTPLAMPickup'
+     HDTPMesh="HDTPItems.HDTPLAMPickup"
+     Mesh=LodMesh'DeusExItems.LAMPickup'
      CollisionRadius=4.300000
      CollisionHeight=3.800000
      Mass=5.000000

@@ -47,6 +47,12 @@ var bool bContactDetonation;            //CyberP: explode upon contact
 var ScriptedPawn pawnAlreadyHit;                                                //RSD: So the the Controlled Burn perk doesn't multihit enemies as it passes through them
 var float gravMult;                                                             //RSD: Multiplier for zone gravity. 0.5 in vanilla, now 0 for non-dropping projectiles, ~0.45 for dropping
 var bool bPlusOneDamage;                                                        //RSD: did our damage get boosted by 1 from decimal damage variation? So we can turn it off for movers
+
+//SARGE: HDTP Model toggles
+var string HDTPSkin;
+var string HDTPTexture;
+var string HDTPMesh;
+
 // network replication
 replication
 {
@@ -59,8 +65,30 @@ function PostBeginPlay()
 {
 	Super.PostBeginPlay();
 
+    UpdateHDTPSettings();
+
 	if (bEmitDanger)
 		AIStartEvent('Projectile', EAITYPE_Visual);
+}
+
+function bool IsHDTP()
+{
+    if (spawnWeaponClass != None)
+        return spawnWeaponClass.default.iHDTPModelToggle > 0;
+}
+
+//SARGE: Setup the HDTP settings for this projectile
+function UpdateHDTPSettings()
+{
+    if (spawnWeaponClass != None)
+    {
+        if (HDTPMesh != "")
+            Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),IsHDTP());
+        if (HDTPSkin != "")
+            Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),IsHDTP());
+        if (HDTPTexture != "")
+            Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),IsHDTP());
+    }
 }
 
 //
