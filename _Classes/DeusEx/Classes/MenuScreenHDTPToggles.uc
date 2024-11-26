@@ -109,14 +109,18 @@ defaultproperties
      items(83)=(actionText="Trashbag 1",consoleTarget="DeusEx.Trashbag",defaultValue=1);
      items(84)=(actionText="Trashbag 2",consoleTarget="DeusEx.Trashbag2",defaultValue=1);
      items(85)=(actionText="Trash (Paper)",consoleTarget="DeusEx.TrashPaper",defaultValue=1);
-     items(86)=(actionText="Unbreakable Crate (Large)",consoleTarget="DeusEx.CrateUnbreakableLarge",defaultValue=1);
-     items(87)=(actionText="Unbreakable Crate (Medium)",consoleTarget="DeusEx.CrateUnbreakableMed",defaultValue=1);
-     items(88)=(actionText="Unbreakable Crate (Small)",consoleTarget="DeusEx.CrateUnbreakableSmall",defaultValue=1);
-     items(89)=(actionText="Utility Push-Cart",consoleTarget="DeusEx.Cart",defaultValue=1);
-     items(90)=(actionText="Vase 1",consoleTarget="DeusEx.Vase1",defaultValue=1);
-     items(91)=(actionText="Vase 2",consoleTarget="DeusEx.Vase2",defaultValue=1);
-     items(92)=(actionText="Water Cooler",consoleTarget="DeusEx.WaterCooler",defaultValue=1);
-     items(93)=(actionText="Water Fountain",consoleTarget="DeusEx.WaterFountain",defaultValue=1);
+     items(86)=(actionText="Tree 1",consoleTarget="DeusEx.Tree1",defaultValue=1);
+     items(87)=(actionText="Tree 2",consoleTarget="DeusEx.Tree2",defaultValue=1);
+     items(88)=(actionText="Tree 3",consoleTarget="DeusEx.Tree3",defaultValue=1);
+     items(89)=(actionText="Tree 4",consoleTarget="DeusEx.Tree4",defaultValue=1);
+     items(90)=(actionText="Unbreakable Crate (Large)",consoleTarget="DeusEx.CrateUnbreakableLarge",defaultValue=1);
+     items(91)=(actionText="Unbreakable Crate (Medium)",consoleTarget="DeusEx.CrateUnbreakableMed",defaultValue=1);
+     items(92)=(actionText="Unbreakable Crate (Small)",consoleTarget="DeusEx.CrateUnbreakableSmall",defaultValue=1);
+     items(93)=(actionText="Utility Push-Cart",consoleTarget="DeusEx.Cart",defaultValue=1);
+     items(94)=(actionText="Vase 1",consoleTarget="DeusEx.Vase1",defaultValue=1);
+     items(95)=(actionText="Vase 2",consoleTarget="DeusEx.Vase2",defaultValue=1);
+     items(96)=(actionText="Water Cooler",consoleTarget="DeusEx.WaterCooler",defaultValue=1);
+     items(97)=(actionText="Water Fountain",consoleTarget="DeusEx.WaterFountain",defaultValue=1);
      strHeaderActionLabel="Object"
      strHeaderAssignedLabel="Model"
      HelpText="Select the model you wish to change and then press [Enter] or Double-Click to cycle through available models"

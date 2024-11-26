@@ -12,22 +12,23 @@ enum ESkinColor
 
 var() ESkinColor SkinColor;
 
-function BeginPlay()
+exec function UpdateHDTPsettings()
 {
-	Super.BeginPlay();
+	Super.UpdateHDTPsettings();
 
 	switch (SkinColor)
 	{
-		case SC_Tree1:	MultiSkins[2] = Texture'HDTPDecos.HDTPTreeTex3'; break;
-		case SC_Tree2:	MultiSkins[2] = Texture'HDTPDecos.HDTPTreeTex3'; break;
-		case SC_Tree3:	MultiSkins[2] = Texture'HDTPDecos.HDTPTreeTex2'; break;
+		case SC_Tree1:	MultiSkins[2] = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPTreeTex3","DeusExDeco.Tree2Tex1",iHDTPModelToggle > 0); break;
+		case SC_Tree2:	MultiSkins[2] = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPTreeTex3","DeusExDeco.Tree2Tex2",iHDTPModelToggle > 0); break;
+		case SC_Tree3:	MultiSkins[2] = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPTreeTex2","DeusExDeco.Tree2Tex3",iHDTPModelToggle > 0); break;
 	}
 }
 
 defaultproperties
 {
-     Altmesh=LodMesh'HDTPDecos.hdtptree02b'
-     Mesh=LodMesh'HDTPDecos.hdtptree02'
+     Altmesh="HDTPDecos.HDTPtree02b"
+     HDTPMesh="HDTPDecos.HDTPtree02"
+     Mesh=LodMesh'DeusExDeco.Tree2'
      CollisionRadius=10.000000
      CollisionHeight=182.369995
 }

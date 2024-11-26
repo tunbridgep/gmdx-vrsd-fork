@@ -144,7 +144,8 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
     return true;
 }
 
-exec function UpdateHDTPsettings()                                              //SARGE: New function to update model meshes (specifics handled in each class)
+//SARGE: New function to update model meshes (specifics handled in each class)
+exec function UpdateHDTPsettings()
 {
     if (HDTPMesh != "")
         Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),iHDTPModelToggle > 0);
