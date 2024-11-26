@@ -107,7 +107,8 @@ defaultproperties
      UserList(0)=(userName="SECURITY",Password="SECURITY")
      ItemName="Security Computer Terminal"
      Physics=PHYS_None
-     Skin=Texture'HDTPDecos.Skins.HDTPComputerSecurityTex1'
+     HDTPSkin="HDTPDecos.Skins.HDTPComputerSecurityTex1"
+     Skin=Texture'DeusExDeco.Skins.ComputerSecurityTex1'
      Mesh=LodMesh'DeusExDeco.ComputerSecurity'
      SoundRadius=8
      SoundVolume=255

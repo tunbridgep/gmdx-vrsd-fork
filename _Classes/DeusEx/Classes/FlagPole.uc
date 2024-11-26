@@ -30,7 +30,6 @@ function UpdateHDTPsettings()
         case SC_UNATCO: flagTex = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPFlagPoleTex5","DeusExDeco.FlagPoleTex4",iHDTPModelToggle > 0); break;
         case SC_USA: flagTex = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPFlagPoleTex5","DeusExDeco.FlagPoleTex5",iHDTPModelToggle > 0); break;
 	}
-
     if (iHDTPModelToggle > 0)
         MultiSkins[1] = flagTex;
     else

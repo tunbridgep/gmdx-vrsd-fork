@@ -12,15 +12,26 @@ enum ESkinColor
 var() ESkinColor SkinColor;
 var bool bUsing;
 
-function BeginPlay()
+function UpdateHDTPsettings()
 {
-	Super.BeginPlay();
+	Super.UpdateHDTPsettings();
 
-	switch (SkinColor)
-	{
-		case SC_Clean:	MultiSkins[1] = Texture'CleanUrinalTex'; break;
-		case SC_Filthy:	MultiSkins[1] = Texture'DirtyUrinalTex'; break;
-	}
+    if (iHDTPModelToggle > 0)
+    {
+        switch (SkinColor)
+        {
+            case SC_Clean:	MultiSkins[1] = class'HDTPLoader'.static.GetTexture("HDTPDecos.CleanUrinalTex"); break;
+            case SC_Filthy:	MultiSkins[1] = class'HDTPLoader'.static.GetTexture("HDTPDecos.DirtyUrinalTex"); break;
+        }
+    }
+    else
+    {
+        switch (SkinColor)
+        {
+            case SC_Clean:	Skin = class'HDTPLoader'.static.GetTexture("DeusExDeco.Toilet2Tex1"); break;
+            case SC_Filthy:	Skin = class'HDTPLoader'.static.GetTexture("DeusExDeco.Toilet2Tex2"); break;
+        }
+    }
 }
 
 function Timer()
@@ -49,7 +60,8 @@ defaultproperties
      ItemName="Urinal"
      bPushable=False
      Physics=PHYS_None
-     Mesh=LodMesh'HDTPDecos.HDTPToilet2'
+     HDTPMesh="HDTPDecos.HDTPToilet2"
+     Mesh=LodMesh'DeusExDeco.Toilet2'
      CollisionRadius=18.000000
      CollisionHeight=23.000000
      Mass=100.000000

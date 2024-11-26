@@ -307,9 +307,6 @@ function ProcessTag(DeusExTextParser parser)
 
 function postbeginplay()
 {
-	local texture newtex, swaptex;
-	local string str, tempstr;
-
     local string TS;
 
     //LDDP, 10/25/21: We now have a female text tag variable. Conjure one based off our base text flag, assuming it's not blank.
@@ -318,6 +315,21 @@ function postbeginplay()
 		TS = "FemJC"$string(TextTag);
 		SetPropertyText("FemaleTextTag", TS);
 	}
+
+
+	super.postbeginplay();
+}
+
+exec function UpdateHDTPsettings()
+{
+	local texture newtex, swaptex;
+	local string str, tempstr;
+
+	Super.UpdateHDTPsettings();
+
+    //Only apply new book styles if we have HDTP enabled
+    if (iHDTPModelToggle == 0)
+        return;
 
 	//gah superclass badness
 	if(Newspaper(self) != none)
@@ -363,11 +375,14 @@ function postbeginplay()
 		{
 			str = "HDTPBookClosed.Books.HDTP";
 			str = str$GetString(string(texttag),true); //awful awful code
-			newtex = texture(dynamicloadobject(str,class'texture'));
+            if (iHDTPModelToggle >= 2) //SARGE: Only use "extra book covers" with the extended setting
+            {
+                newtex = texture(dynamicloadobject(str,class'texture'));
 				if(newtex != none)
 					skin = newtex;
 				else
 					log("fail!"$str,name);
+            }
 		}
 	}
 	else if(BookOpen(self) != none)
@@ -376,28 +391,31 @@ function postbeginplay()
 		{
 			str = "HDTPBookOpen.Books.HDTP";
 			str = str$string(texttag);
-			newtex = texture(dynamicloadobject(str,class'texture'));
-			if(newtex != none)
-			{
-				Multiskins[2] = newtex;
-				Multiskins[3] = newtex;
-			}
-			else
-				log("fail!"$str,name);
+            newtex = texture(dynamicloadobject(str,class'texture'));
+            if(newtex != none)
+            {
+                Multiskins[2] = newtex;
+                Multiskins[3] = newtex;
+            }
+            else
+                log("fail!"$str,name);
 			//and now backs
 			str = "HDTPBookOpen.Books.HDTP";
 			tempstr = GetString(string(texttag),false); //awful awful code
 			//if(tempstr == string(texttag)) //nothing changed
 			//{
 				str = str$tempstr$"back";
-			    newtex = texture(dynamicloadobject(str,class'texture'));
-			    if(newtex != none)
-			    {
-					Multiskins[0] = newtex;
-					Multiskins[1] = newtex;
-				}
-				else
-					log("fail!"$str,name);
+                if (iHDTPModelToggle >= 1) //SARGE: Only use "extra book covers" with the extended setting
+                {
+                    newtex = texture(dynamicloadobject(str,class'texture'));
+                    if(newtex != none)
+                    {
+                        Multiskins[0] = newtex;
+                        Multiskins[1] = newtex;
+                    }
+                    else
+                        log("fail!"$str,name);
+                }
 //			}
 //			else //special case
 //			{
@@ -414,9 +432,8 @@ function postbeginplay()
 //			}
 		}
 	}
-
-	super.postbeginplay();
 }
+
 
 function string GetString(string text, bool bClosed)
 {

@@ -64,6 +64,7 @@ var bool bFirstTickDone;                                                        
 var config int iHDTPModelToggle;
 var string oldSkin;                                                             //SARGE: Can optionally set the vanilla skin, for objects that change skins. Will use default.Skin if left out, which is recommended most of the time.
 var string HDTPSkin;
+var string HDTPTexture;
 var string HDTPMesh;
 
 //Sarge: LDDP Stuff
@@ -145,10 +146,20 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 
 exec function UpdateHDTPsettings()                                              //SARGE: New function to update model meshes (specifics handled in each class)
 {
+    Skin = default.Skin;
+    Mesh = default.Mesh;
+    Texture = default.Texture;
+    MultiSkins[0] = default.MultiSkins[0];
+    MultiSkins[1] = default.MultiSkins[1];
+    MultiSkins[2] = default.MultiSkins[2];
+    MultiSkins[3] = default.MultiSkins[3];
+    MultiSkins[4] = default.MultiSkins[4];
     if (HDTPMesh != "")
         Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),iHDTPModelToggle > 0);
     if (HDTPSkin != "")
         Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),iHDTPModelToggle > 0);
+    if (HDTPTexture != "")
+        Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),iHDTPModelToggle > 0);
 }
 
 // ----------------------------------------------------------------------

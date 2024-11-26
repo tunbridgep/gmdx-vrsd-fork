@@ -8,7 +8,8 @@ defaultproperties
      HitPoints=2
      FragType=Class'DeusEx.GlassFragment'
      ItemName="Vase"
-     Mesh=LodMesh'HDTPDecos.HDTPvase2'
+     HDTPMesh="HDTPDecos.HDTPvase2"
+     Mesh=LodMesh'DeusExDeco.Vase2'
      CollisionRadius=7.540000
      CollisionHeight=5.080000
      Mass=18.000000

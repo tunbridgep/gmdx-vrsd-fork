@@ -59,7 +59,8 @@ defaultproperties
      ItemName="Water Fountain"
      bPushable=False
      Physics=PHYS_None
-     Mesh=LodMesh'HDTPDecos.HDTPWaterFountain'
+     HDTPMesh="HDTPDecos.HDTPWaterFountain"
+     Mesh=LodMesh'DeusExDeco.WaterFountain'
      CollisionRadius=20.000000
      CollisionHeight=24.360001
      Mass=70.000000

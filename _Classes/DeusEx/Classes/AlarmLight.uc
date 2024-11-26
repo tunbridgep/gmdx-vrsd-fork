@@ -18,34 +18,27 @@ function SetLightColor(ESkinColor color)
 {
 	switch (SkinColor)
 	{
-		case SC_Red:		MultiSkins[1] = Texture'HDTPAlarmLightTex2';
-							MultiSkins[2] = Texture'HDTPAlarmLightTex3';
-							Texture = Texture'HDTPAlarmLightTex3';
+		case SC_Red:		MultiSkins[1] = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex2","DeusExDeco.AlarmLightTex2",iHDTPModelToggle > 0);
+		                    MultiSkins[2] = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex3","DeusExDeco.AlarmLightTex3",iHDTPModelToggle > 0);
+		                    Texture = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex3","DeusExDeco.AlarmLightTex3",iHDTPModelToggle > 0);
 							LightHue = 0;
 							break;
-		case SC_Green:		MultiSkins[1] = Texture'HDTPAlarmLightTex4';
-							MultiSkins[2] = Texture'HDTPAlarmLightTex5';
-							Texture = Texture'HDTPAlarmLightTex5';
+		case SC_Green:		MultiSkins[1] = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex4","DeusExDeco.AlarmLightTex4",iHDTPModelToggle > 0);
+		                    MultiSkins[2] = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex5","DeusExDeco.AlarmLightTex5",iHDTPModelToggle > 0);
+		                    Texture = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex5","DeusExDeco.AlarmLightTex5",iHDTPModelToggle > 0);
 							LightHue = 64;
 							break;
-		case SC_Blue:		MultiSkins[1] = Texture'HDTPAlarmLightTex6';
-							MultiSkins[2] = Texture'HDTPAlarmLightTex7';
-							Texture = Texture'HDTPAlarmLightTex7';
+		case SC_Blue:		MultiSkins[1] = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex6","DeusExDeco.AlarmLightTex6",iHDTPModelToggle > 0);
+		                    MultiSkins[2] = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex7","DeusExDeco.AlarmLightTex7",iHDTPModelToggle > 0);
+		                    Texture = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex7","DeusExDeco.AlarmLightTex7",iHDTPModelToggle > 0);
 							LightHue = 160;
 							break;
-		case SC_Amber:		MultiSkins[1] = Texture'HDTPAlarmLightTex8';
-							MultiSkins[2] = Texture'HDTPAlarmLightTex9';
-							Texture = Texture'HDTPAlarmLightTex9';
+		case SC_Amber:		MultiSkins[1] = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex8","DeusExDeco.AlarmLightTex8",iHDTPModelToggle > 0);
+		                    MultiSkins[2] = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex9","DeusExDeco.AlarmLightTex9",iHDTPModelToggle > 0);
+		                    Texture = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex9","DeusExDeco.AlarmLightTex9",iHDTPModelToggle > 0);
 							LightHue = 36;
 							break;
 	}
-}
-
-function BeginPlay()
-{
-	Super.BeginPlay();
-
-	SetLightColor(SkinColor);
 
 	if (!bIsOn)
 	{
@@ -53,6 +46,13 @@ function BeginPlay()
 		LightType = LT_None;
 		bFixedRotationDir = False;
 	}
+}
+
+function UpdateHDTPSettings()
+{
+	Super.UpdateHDTPSettings();
+
+	SetLightColor(SkinColor);
 }
 
 // if we are triggered, turn us on
@@ -91,8 +91,9 @@ defaultproperties
      ItemName="Alarm Light"
      bPushable=False
      Physics=PHYS_Rotating
-     Texture=Texture'HDTPDecos.Skins.HDTPAlarmLightTex3'
-     Skin=Texture'HDTPDecos.Skins.HDTPAlarmLightTex1'
+     HDTPSkin="HDTPDecos.Skins.HDTPAlarmLightTex1"
+     HDTPTexture="HDTPDecos.Skins.HDTPAlarmLightTex3"
+     Texture=Texture'DeusExDeco.Skins.AlarmLightTex3'
      Mesh=LodMesh'DeusExDeco.AlarmLight'
      MultiSkins(1)=Texture'HDTPDecos.Skins.HDTPAlarmLightTex2'
      MultiSkins(2)=Texture'HDTPDecos.Skins.HDTPAlarmLightTex3'

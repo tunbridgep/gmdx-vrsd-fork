@@ -26,7 +26,8 @@ defaultproperties
 {
      msgUsed="Clearance granted"
      ItemName="Retinal Scanner"
-     Mesh=LodMesh'HDTPDecos.HDTPretinalscanner'
+     Mesh=LodMesh'DeusExDeco.RetinalScanner'
+     HDTPMesh="HDTPDecos.HDTPretinalscanner"
      SoundRadius=8
      SoundVolume=255
      SoundPitch=96

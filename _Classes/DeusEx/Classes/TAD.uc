@@ -38,20 +38,20 @@ function Timer()
 					PlaySound(beepSound, SLOT_Misc,,, 512);
 					if (light != None)
 						light.LightType = LT_Steady;
-					Skin = Texture'HDTPTADTex2';
+					Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPTADTex2","DeusExDeco.TADTex2",iHDTPModelToggle > 0);
 				}
 				else
 				{
 					if (light != None)
 						light.LightType = LT_None;
-					Skin = Texture'HDTPTADTex1';
+					Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPTADTex1","DeusExDeco.TADTex1",iHDTPModelToggle > 0);
 				}
 			}
 			else
 			{
 				if (light != None)
 					light.LightType = LT_None;
-				Skin = Texture'HDTPTADTex1';
+                Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPTADTex1","DeusExDeco.TADTex1",iHDTPModelToggle > 0);
 			}
 		}
 		else
@@ -59,7 +59,7 @@ function Timer()
 			// turn off the light
 			if (light != None)
 				light.Destroy();
-			Skin = Texture'HDTPTADTex1';
+            Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPTADTex1","DeusExDeco.TADTex1",iHDTPModelToggle > 0);
 			SetTimer(0.1, False);
 		}
 	}
@@ -93,7 +93,8 @@ defaultproperties
      FragType=Class'DeusEx.MetalFragment'
      bCanBeBase=True
      ItemName="Telephone Answering Machine"
-     Mesh=LodMesh'HDTPDecos.HDTPtad'
+     HDTPMesh="HDTPDecos.HDTPtad"
+     Mesh=LodMesh'DeusExDeco.TAD'
      CollisionRadius=7.400000
      CollisionHeight=2.130000
      Mass=10.000000
