@@ -30,7 +30,7 @@ defaultproperties
      ItemName="Switch"
      bPushable=False
      Physics=PHYS_None
-     Skin=Texture'HDTPDecos.Skins.HDTPLightswitchTex1'
+     HDTPSkin="HDTPDecos.Skins.HDTPLightswitchTex1"
      Mesh=LodMesh'DeusExDeco.LightSwitch'
      CollisionRadius=3.750000
      CollisionHeight=6.250000

@@ -43,133 +43,133 @@ function SetSkin(EButtonType type, bool lit)
 	{
 		case BT_Up:			if (lit)
 							{
-								Skin = Texture'HDTPButton1Tex2';
+                                Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPButton1Tex2","DeusExDeco.Button1Tex2",IsHDTP());
 								ScaleGlow = 3.0;
 							}
 							else
 							{
-								Skin = Texture'HDTPButton1Tex1';
+                                Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPButton1Tex1","DeusExDeco.Button1Tex1",IsHDTP());
 								ScaleGlow = Default.ScaleGlow;
 							}
 							break;
 		case BT_Down:		if (lit)
 							{
-								Skin = Texture'HDTPButton1Tex4';
+                                Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPButton1Tex4","DeusExDeco.Button1Tex4",IsHDTP());
 								ScaleGlow = 3.0;
 							}
 							else
 							{
-								Skin = Texture'HDTPButton1Tex3';
+                                Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPButton1Tex3","DeusExDeco.Button1Tex3",IsHDTP());
 								ScaleGlow = Default.ScaleGlow;
 							}
 							break;
 		case BT_1:			if (lit)
 							{
-								Skin = Texture'HDTPButton1Tex6';
+                                Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPButton1Tex6","DeusExDeco.Button1Tex6",IsHDTP());
 								ScaleGlow = 3.0;
 							}
 							else
 							{
-								Skin = Texture'HDTPButton1Tex5';
+                                Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPButton1Tex5","DeusExDeco.Button1Tex5",IsHDTP());
 								ScaleGlow = Default.ScaleGlow;
 							}
 							break;
 		case BT_2:			if (lit)
 							{
-								Skin = Texture'HDTPButton1Tex8';
+                                Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPButton1Tex8","DeusExDeco.Button1Tex8",IsHDTP());
 								ScaleGlow = 3.0;
 							}
 							else
 							{
-								Skin = Texture'HDTPButton1Tex7';
+                                Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPButton1Tex7","DeusExDeco.Button1Tex7",IsHDTP());
 								ScaleGlow = Default.ScaleGlow;
 							}
 							break;
 		case BT_3:			if (lit)
 							{
-								Skin = Texture'HDTPButton1Tex10';
+                                Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPButton1Tex10","DeusExDeco.Button1Tex10",IsHDTP());
 								ScaleGlow = 3.0;
 							}
 							else
 							{
-								Skin = Texture'HDTPButton1Tex9';
+                                Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPButton1Tex9","DeusExDeco.Button1Tex9",IsHDTP());
 								ScaleGlow = Default.ScaleGlow;
 							}
 							break;
 		case BT_4:			if (lit)
 							{
-								Skin = Texture'HDTPButton1Tex12';
+                                Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPButton1Tex12","DeusExDeco.Button1Tex12",IsHDTP());
 								ScaleGlow = 3.0;
 							}
 							else
 							{
-								Skin = Texture'HDTPButton1Tex11';
+                                Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPButton1Tex11","DeusExDeco.Button1Tex11",IsHDTP());
 								ScaleGlow = Default.ScaleGlow;
 							}
 							break;
 		case BT_5:			if (lit)
 							{
-								Skin = Texture'HDTPButton1Tex14';
+                                Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPButton1Tex14","DeusExDeco.Button1Tex14",IsHDTP());
 								ScaleGlow = 3.0;
 							}
 							else
 							{
-								Skin = Texture'HDTPButton1Tex13';
+                                Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPButton1Tex13","DeusExDeco.Button1Tex13",IsHDTP());
 								ScaleGlow = Default.ScaleGlow;
 							}
 							break;
 		case BT_6:			if (lit)
 							{
-								Skin = Texture'HDTPButton1Tex16';
+                                Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPButton1Tex16","DeusExDeco.Button1Tex16",IsHDTP());
 								ScaleGlow = 3.0;
 							}
 							else
 							{
-								Skin = Texture'HDTPButton1Tex15';
+                                Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPButton1Tex15","DeusExDeco.Button1Tex15",IsHDTP());
 								ScaleGlow = Default.ScaleGlow;
 							}
 							break;
 		case BT_7:			if (lit)
 							{
-								Skin = Texture'HDTPButton1Tex18';
+                                Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPButton1Tex18","DeusExDeco.Button1Tex18",IsHDTP());
 								ScaleGlow = 3.0;
 							}
 							else
 							{
-								Skin = Texture'HDTPButton1Tex17';
+                                Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPButton1Tex17","DeusExDeco.Button1Tex17",IsHDTP());
 								ScaleGlow = Default.ScaleGlow;
 							}
 							break;
 		case BT_8:			if (lit)
 							{
-								Skin = Texture'HDTPButton1Tex20';
+                                Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPButton1Tex20","DeusExDeco.Button1Tex20",IsHDTP());
 								ScaleGlow = 3.0;
 							}
 							else
 							{
-								Skin = Texture'HDTPButton1Tex19';
+                                Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPButton1Tex19","DeusExDeco.Button1Tex19",IsHDTP());
 								ScaleGlow = Default.ScaleGlow;
 							}
 							break;
 		case BT_9:			if (lit)
 							{
-								Skin = Texture'HDTPButton1Tex22';
+                                Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPButton1Tex22","DeusExDeco.Button1Tex22",IsHDTP());
 								ScaleGlow = 3.0;
 							}
 							else
 							{
-								Skin = Texture'HDTPButton1Tex21';
+                                Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPButton1Tex21","DeusExDeco.Button1Tex21",IsHDTP());
 								ScaleGlow = Default.ScaleGlow;
 							}
 							break;
 		case BT_Blank:		if (lit)
 							{
-								Skin = Texture'HDTPButton1Tex24';
+                                Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPButton1Tex24","DeusExDeco.Button1Tex24",IsHDTP());
 								ScaleGlow = 3.0;
 							}
 							else
 							{
-								Skin = Texture'HDTPButton1Tex23';
+                                Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPButton1Tex23","DeusExDeco.Button1Tex23",IsHDTP());
 								ScaleGlow = Default.ScaleGlow;
 							}
 							break;
@@ -180,11 +180,16 @@ function BeginPlay()
 {
 	Super.BeginPlay();
 
-	SetSkin(ButtonType, bLit);
-
 	if ( Level.NetMode != NM_Standalone )
 		rpcLocation = Location;
 }
+
+exec function UpdateHDTPsettings()
+{
+    super.UpdateHDTPsettings();
+	SetSkin(ButtonType, bLit);
+}
+
 
 function Trigger(Actor Other, Pawn Instigator)
 {
@@ -273,7 +278,6 @@ defaultproperties
      bPushable=False
      Physics=PHYS_None
      RemoteRole=ROLE_SimulatedProxy
-     Skin=Texture'HDTPDecos.Skins.HDTPButton1Tex23'
      Mesh=LodMesh'DeusExDeco.Button1'
      CollisionRadius=2.000000
      CollisionHeight=2.000000

@@ -329,7 +329,10 @@ exec function UpdateHDTPsettings()
 
     //Only apply new book styles if we have HDTP enabled
     if (!IsHDTP())
+    {
+        skin = default.Skin;
         return;
+    }
 
 	//gah superclass badness
 	if(Newspaper(self) != none)

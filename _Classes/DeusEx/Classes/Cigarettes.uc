@@ -3,15 +3,37 @@
 //=============================================================================
 class Cigarettes extends Vice; //DeusExPickup;
 
+var localized string Description2;
+
 function SetSkin()
 {
-	switch(textureSet)
-	{
-			case 0:		Skin = default.skin; description = default.description; icon = default.icon; largeicon = default.largeicon; break;
-			case 1:		Skin = Texture'HDTPitems.Skins.HDTPcigarettesTex2'; Description = "Big Top Cigarettes -- Elephant tested, Lion Approved!"; icon = texture'HDTPitems.skins.belticonCigarettes2'; largeicon = texture'HDTPitems.skins.largeiconCigarettes2'; break;
-			default:	Skin = default.skin; description = default.description; icon = default.icon; largeicon = default.largeicon; break;
-	}
+    Skin = default.skin;
+    Description = default.Description;
+    Icon = default.Icon;
+    LargeIcon = default.LargeIcon;
+
+    if (IsHDTP())
+    {
+        switch(textureSet)
+        {
+            case 0:
+                Skin = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPCigarettestex1");
+                break;
+            case 1:
+                Skin = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPCigarettestex2");
+                Description = Description2;
+                Icon = class'HDTPLoader'.static.GetTexture("HDTPitems.skins.belticonCigarettes2");
+                LargeIcon = class'HDTPLoader'.static.GetTexture("HDTPitems.skins.largeiconCigarettes2");
+                break;
+        }
+    }
 	super.SetSkin();
+}
+
+function UpdateHDTPsettings()
+{
+    super.UpdateHDTPsettings();
+    SetSkin();
 }
 
 function Eat(DeusExPlayer player)
@@ -68,8 +90,8 @@ defaultproperties
      largeIconWidth=29
      largeIconHeight=43
      Description="'COUGHING NAILS -- when you've just got to have a cigarette.'"
+     Description2="Big Top Cigarettes -- Elephant tested, Lion Approved!"
      beltDescription="CIGS"
-     Skin=Texture'HDTPItems.Skins.HDTPCigarettestex1'
      Mesh=LodMesh'DeusExItems.Cigarettes'
      CollisionRadius=5.200000
      CollisionHeight=1.320000

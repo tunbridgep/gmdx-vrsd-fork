@@ -23,6 +23,7 @@ function UpdateHDTPsettings()
             case SC_Clean:	MultiSkins[1] = class'HDTPLoader'.static.GetTexture("HDTPDecos.CleanUrinalTex"); break;
             case SC_Filthy:	MultiSkins[1] = class'HDTPLoader'.static.GetTexture("HDTPDecos.DirtyUrinalTex"); break;
         }
+        Skin = None;
     }
     else
     {
@@ -31,6 +32,7 @@ function UpdateHDTPsettings()
             case SC_Clean:	Skin = class'HDTPLoader'.static.GetTexture("DeusExDeco.Toilet2Tex1"); break;
             case SC_Filthy:	Skin = class'HDTPLoader'.static.GetTexture("DeusExDeco.Toilet2Tex2"); break;
         }
+        MultiSkins[1] = None;
     }
 }
 

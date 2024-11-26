@@ -8,7 +8,8 @@ defaultproperties
      HitPoints=3
      bCanBeBase=True
      ItemName="Clay Pot"
-     Mesh=LodMesh'HDTPDecos.HDTPPot2'
+     Mesh=LodMesh'DeusExDeco.Pot2'
+     HDTPMesh="HDTPDecos.HDTPPot2"
      CollisionRadius=7.980000
      CollisionHeight=13.000000
      Mass=25.000000
