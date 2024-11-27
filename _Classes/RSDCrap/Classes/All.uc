@@ -29,6 +29,12 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\AmmoDartTex1.pcx"			NAME="AmmoDartTex1"			GROUP="Skins"
 #exec TEXTURE IMPORT FILE="Textures\AmmoDartTex4.pcx"			NAME="AmmoDartTex4"			GROUP="Skins"
 
+// Misc Item Textures
+
+//HDTP Medium Box, ported so we can use it without HDTP
+#exec TEXTURE IMPORT FILE="Textures\boxmedtex1.pcx"			NAME="BoxMedTex1"			GROUP="Skins"
+//#exec TEXTURE IMPORT FILE="Textures\boxmedtex2.pcx"			NAME="BoxMedTex2"			GROUP="Skins"
+
 // Hands Textures
 
 #exec TEXTURE IMPORT FILE="Textures\MiniCrossbowTex0Male.bmp"   	NAME="CrossbowHandstex0"			GROUP="Skins"

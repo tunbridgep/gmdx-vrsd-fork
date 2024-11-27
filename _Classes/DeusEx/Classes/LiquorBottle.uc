@@ -19,9 +19,6 @@ defaultproperties
      ItemName="Liquor"
      ItemArticle="some"
      PlayerViewOffset=(X=30.000000,Z=-12.000000)
-     PlayerViewMesh=LodMesh'HDTPItems.HDTPLiquorBottle'
-     PickupViewMesh=LodMesh'HDTPItems.HDTPLiquorBottle'
-     ThirdPersonMesh=LodMesh'HDTPItems.HDTPLiquorBottle'
      LandSound=Sound'DeusExSounds.Generic.GlassHit1'
      Icon=Texture'DeusExUI.Icons.BeltIconLiquorBottle'
      largeIcon=Texture'DeusExUI.Icons.LargeIconLiquorBottle'
@@ -29,8 +26,9 @@ defaultproperties
      largeIconHeight=48
      Description="The label is torn off, but it looks like some of the good stuff."
      beltDescription="LIQUOR"
-     Texture=Texture'HDTPItems.Skins.HDTPLiquorBottletex2'
-     Mesh=LodMesh'HDTPItems.HDTPLiquorBottle'
+     Mesh=LodMesh'DeusExItems.LiquorBottle'
+     HDTPMesh="HDTPItems.HDTPLiquorBottle"
+     HDTPTexture="HDTPItems.Skins.HDTPLiquorBottletex2"
      CollisionRadius=5.620000
      CollisionHeight=12.500000
      bCollideWorld=True

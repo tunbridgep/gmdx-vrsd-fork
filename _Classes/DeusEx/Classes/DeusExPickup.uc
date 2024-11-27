@@ -42,6 +42,7 @@ var bool bAutoActivate;                                                         
 //SARGE: HDTP Model toggles
 var config int iHDTPModelToggle;
 var string HDTPSkin;
+var string HDTPTexture;
 var string HDTPMesh;
 
 //SARGE: Added "Left Click Frob" and "Right Click Frob" support
@@ -82,6 +83,8 @@ exec function UpdateHDTPsettings()                                              
     }
     if (HDTPSkin != "")
         Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),IsHDTP());
+    if (HDTPTexture != "")
+        Skin = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),IsHDTP());
 }
 
 

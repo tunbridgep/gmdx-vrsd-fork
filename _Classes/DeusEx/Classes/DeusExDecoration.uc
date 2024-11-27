@@ -1778,4 +1778,5 @@ defaultproperties
      bBlockActors=True
      bBlockPlayers=True
      iHDTPModelToggle=1
+     HDTPFailsafe=false;
 }

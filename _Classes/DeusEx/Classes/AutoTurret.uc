@@ -820,6 +820,7 @@ simulated function Timer()
 {
 	gun.LightType = LT_None;
 	gun.MultiSkins[3] = None;
+	gun.MultiSkins[2] = None;
 }
 
 function AlarmHeard(Name event, EAIEventState state, XAIParams params)

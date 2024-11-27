@@ -631,6 +631,7 @@ var globalconfig bool bAugWheelDisableAll;                                      
 
 var globalconfig bool bTrickReloading;											//Sarge: Allow reloading with a full clip.
 
+var globalconfig bool bFemaleHandsAlways;                                      //SARGE: If true, use the Female hands on male JC. Goth JC with nail polish?
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -10368,13 +10369,14 @@ exec function ShowAcceleration(bool bShow)
 function texture GetWeaponHandTex()
 {
 	local texture tex;
+    local bool femHands;
     
     if (bRadarTran)
         return Texture'Effects.Electricity.Xplsn_EMPG';
     else if (bIsCloaked)
         return FireTexture'GameEffects.InvisibleTex';
 
-	if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
+	if (FemaleEnabled() && (bFemaleHandsAlways || (FlagBase != None && FlagBase.GetBool('LDDPJCIsFemale'))))
     {
         switch(PlayerSkin)
         {

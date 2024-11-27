@@ -120,7 +120,6 @@ simulated function PreBeginPlay()
 defaultproperties
 {
      LifeSpan=0.750000
-     hdtpReference=class'DeusEx.WeaponFlamethrower'
      texes(0)="HDTPanim.Effects.FlmThrwr01";
      texes(1)="HDTPanim.Effects.FlmThrwr02";
      texes(2)="HDTPanim.Effects.FlmThrwr03";

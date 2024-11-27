@@ -269,9 +269,8 @@ Begin:
     {
         PlayAnim('Attack',2,0.1);                                                    //RSD: Was 0.1
         FinishAnim();
-        Finish();                                                                   //RSD
     }
-	//GoToState('Idle');
+    Finish();                                                                   //RSD
 }
 
 /*state UseIt
@@ -381,7 +380,8 @@ function LightFlare()
 		rota = rotation;
 		rota.Roll = 0;
 		rota.Yaw += 16384;
-        if (IsHDTP())
+        //if (IsHDTP())
+        if (class'HDTPLoader'.static.HDTPInstalled())
         {
             flaregen = Spawn(class'ParticleGenerator',Self,, Loc, rota);
             if (flaregen != None)
@@ -403,7 +403,8 @@ function LightFlare()
                 flaregen.particleTexture = class'HDTPLoader'.static.GetFireTexture("HDTPAnim.effects.HDTPFlarespark");
             }
         }
-        if (IsHDTP())
+        //if (IsHDTP())
+        if (class'HDTPLoader'.static.HDTPInstalled())
         {
             flamething = Spawn(class'Effects', Self,, Location, rotation);
             if(flamething != none)
@@ -420,7 +421,8 @@ function LightFlare()
                 flamething.bHidden=false;
             }
         }
-        if (IsHDTP())
+        //if (IsHDTP())
+        if (class'HDTPLoader'.static.HDTPInstalled())
         {
             flamething2 = Spawn(class'Effects', Self,, Location, rotation);
             if(flamething2 != none)
