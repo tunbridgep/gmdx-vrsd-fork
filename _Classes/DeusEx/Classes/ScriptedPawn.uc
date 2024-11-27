@@ -482,6 +482,12 @@ var(GMDX) const bool LDDPExtra;                                                 
 var(GMDX) const bool deleteIfMale;                                              //Delete this character if we're male
 var(GMDX) const bool deleteIfFemale;                                            //Delete this character if we're female
 
+//SARGE: HDTP Model toggles
+var config int iHDTPModelToggle;
+var string HDTPSkin;
+var string HDTPTexture;
+var string HDTPMesh;
+
 native(2102) final function ConBindEvents();
 
 native(2105) final function bool IsValidEnemy(Pawn TestEnemy, optional bool bCheckAlliance);
@@ -546,55 +552,20 @@ function PreBeginPlay()
 	UpdateReactionCallbacks();
 }
 
-function UpdateHDTPsettings()
+function bool IsHDTP()
 {
-	local mesh tempmesh;
-	local texture temptex;
-	local int i;
-	local bool bSetHDTP;
-	local deusexplayer P;
+    return iHDTPModelToggle > 0 && class'HDTPLoader'.static.HDTPInstalled();
+}
 
-	P = deusexplayer(getplayerpawn());
-
-	if(P != none)  //sigh, ok so...I guess I should've thought this through. Pawns fucked with in editor etc now also reset to defaults
-	{
-		bSetHDTP = P.GetHDTPSettings(self);
-
-		if(bSetHDTP && !bUsingHDTP)
-		{
-			if(HDTPMeshname != "")
-			{
-				tempmesh = lodmesh(dynamicloadobject(HDTPMeshname,class'mesh',true));
-				if(tempmesh != none)
-				{
-					mesh = tempmesh;
-					texture=none;
-					skin=none;
-					for(i=0;i<=7;i++)
-					{
-						if(HDTPMeshtex[i] != "")
-						{
-							temptex = texture(dynamicloadobject(HDTPMeshtex[i],class'texture',true));
-							if(temptex != none)
-								multiskins[i] = temptex;
-						}
-					}
-				}
-			}
-			bUsingHDTP=true;
-		}
-		else if(!bSetHDTP && bUsingHDTP)
-		{
-			mesh = default.mesh;
-			texture=default.texture;
-			skin=default.skin;
-			for(i=0; i<=7;i++)
-			{
-				multiskins[i]=default.multiskins[i];
-			}
-			bUsingHDTP=false;
-		}
-	}
+//SARGE: New function to update model meshes (specifics handled in each class)
+exec function UpdateHDTPsettings()
+{
+    if (HDTPMesh != "")
+        Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),IsHDTP());
+    if (HDTPSkin != "")
+        Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),IsHDTP());
+    if (HDTPTexture != "")
+        Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),IsHDTP());
 }
 
 // ----------------------------------------------------------------------
@@ -17130,4 +17101,5 @@ defaultproperties
      FamiliarName="DEFAULT FAMILIAR NAME - REPORT THIS AS A BUG"
      UnfamiliarName="DEFAULT UNFAMILIAR NAME - REPORT THIS AS A BUG"
      fireReactTime=0.4
+     iHDTPModelToggle=1
 }

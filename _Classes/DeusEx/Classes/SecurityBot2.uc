@@ -14,14 +14,14 @@ enum ESkinColor
 
 var() ESkinColor SkinColor;
 
-function BeginPlay()
+exec function UpdateHDTPsettings()
 {
-	Super.BeginPlay();
+	Super.UpdateHDTPsettings();
 
 	switch (SkinColor)
 	{
-		case SC_UNATCO:		MultiSkins[1] = Texture'HDTPSecbot2tex1'; break;
-		case SC_Chinese:	MultiSkins[1] = Texture'HDTPSecbot2tex2'; break;
+		case SC_UNATCO:		MultiSkins[1] = class'HDTPLoader'.static.GetTexture2("HDTPCharacters.HDTPSecbot2tex1","DeusExCharacters.SecurityBot2Tex1",IsHDTP()); break;
+		case SC_Chinese:	MultiSkins[1] = class'HDTPLoader'.static.GetTexture2("HDTPCharacters.HDTPSecbot2tex2","DeusExCharacters.SecurityBot2Tex2",IsHDTP()); break;
 	}
 }
 
@@ -160,7 +160,8 @@ defaultproperties
      UnderWaterTime=20.000000
      AttitudeToPlayer=ATTITUDE_Ignore
      DrawType=DT_Mesh
-     Mesh=LodMesh'HDTPCharacters.HDTPSecbot2'
+     HDTPMesh="HDTPCharacters.HDTPSecbot2"
+     Mesh=LodMesh'DeusExCharacters.SecurityBot2'
      CollisionRadius=62.000000
      CollisionHeight=58.279999
      Mass=600.000000

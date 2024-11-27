@@ -119,4 +119,5 @@ defaultproperties
      Mass=50.000000
      Buoyancy=60.000000
      bSelectMeleeWeapon=False
+     HDTPFailsafe=true; //Sometimes used as something weird/wacky, like big trees
 }

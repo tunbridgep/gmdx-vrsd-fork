@@ -52,18 +52,17 @@ function Texture GetWeaponHandTex()
 		switch(p.PlayerSkin)
 		{
 			//default, black, latino, ginger, albino, respectively
-			case 0: tex = texture'MiniCrossbowTex1'; break;
-			case 1: tex = texture'HDTPItems.skins.crossbowhandstexblack'; break;
-			case 2: tex = texture'HDTPItems.skins.crossbowhandstexlatino'; break;
-			case 3: tex = texture'HDTPItems.skins.crossbowhandstexginger'; break;
-			case 4: tex = texture'HDTPItems.skins.crossbowhandstexalbino'; break;
+			case 0: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.crossbowhandstex0A"); break;
+			case 1: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.crossbowhandstex1A"); break;
+			case 2: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.crossbowhandstex2A"); break;
+			case 3: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.crossbowhandstex3A"); break;
+			case 4: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.crossbowhandstex4A"); break;
 		}
 	}
 
-    if (tex == None)
-        tex = texture'weaponhandstex'; //White hands texture by default
-                                       
-    return tex;
+    if (tex == None) //Final backup
+        tex = texture'minicrossbowtex1';
+	return tex;
 }
 
 simulated function renderoverlays(Canvas canvas)

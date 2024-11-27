@@ -65,6 +65,7 @@ var config int iHDTPModelToggle;
 var string HDTPSkin;
 var string HDTPTexture;
 var string HDTPMesh;
+var const bool HDTPFailsafe;
 
 //Sarge: LDDP Stuff
 var(GMDX) const bool requiresLDDP;                                              //Delete this character LDD is uninstalled
@@ -151,6 +152,10 @@ function bool IsHDTP()
 //SARGE: New function to update model meshes (specifics handled in each class)
 exec function UpdateHDTPsettings()
 {
+    //FAILSAFE, some objects aren't what they claim to be, and have weird meshes etc!
+    if (string(Mesh) != HDTPMesh && Mesh != default.Mesh && HDTPFailsafe)
+        return;
+
     if (HDTPMesh != "")
         Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),IsHDTP());
     if (HDTPSkin != "")

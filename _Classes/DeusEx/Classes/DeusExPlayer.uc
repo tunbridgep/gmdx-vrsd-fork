@@ -10395,22 +10395,22 @@ function texture GetWeaponHandTex()
                 break;
         }
     }
-    else if (class'HDTPLoader'.static.HDTPInstalled())
+    else
     {
         //For male, return the basic ones
 		switch(PlayerSkin)
 		{
 			//default, black, latino, ginger, albino, respectively
-			case 0: tex = texture'weaponhandstex'; break;
-			case 1: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.skins.weaponhandstexblack"); break;
-			case 2: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.skins.weaponhandstexlatino"); break;
-			case 3: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.skins.weaponhandstexginger"); break;
-			case 4: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.skins.weaponhandstexalbino"); break;
+			case 0: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.weaponhandstex0A"); break;
+			case 1: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.weaponhandstex1A"); break;
+			case 2: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.weaponhandstex2A"); break;
+			case 3: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.weaponhandstex3A"); break;
+			case 4: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.weaponhandstex4A"); break;
 		}
     }
 
-    if (tex == None)
-        tex = texture'weaponhandstex'; //White hands texture by default
+    if (tex == None) //Final backup
+        tex = texture'weaponhandstex';
 	return tex;
 }
 
