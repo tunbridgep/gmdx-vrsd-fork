@@ -24,5 +24,6 @@ defaultproperties
      Description="Mini-crossbow flare darts use a slow-burning incendiary device, ignited on impact, to provide illumination of a targeted area."
      beltDescription="FLR DART"
      HDTPSkin="GMDXSFX.Skins.FlareAmmo"
+     //HDTPSkin="HDTPItems.Skins.HDTPAmmoDartTex2"
      Skin=Texture'DeusExItems.Skins.AmmoDartTex2'
 }

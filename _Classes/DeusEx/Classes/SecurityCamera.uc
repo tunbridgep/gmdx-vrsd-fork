@@ -65,6 +65,38 @@ replication
 		  bActive, ReplicatedRotation, team, safeTarget;
 }
 
+//SARGE: Get the relevant camera light texture, based on situation and HDTP
+function Texture GetCameraLightTex(int camState)
+{
+    switch camState
+    {
+        case 0: //Disabled
+            LightType = LT_None;
+            return Texture'BlackMaskTex';
+            break;
+        case 1: //Enabled (Green)
+            LightType = LT_Steady;
+            LightHue = 80;
+            return class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex5","DeusExDeco.AlarmLightTex5",IsHDTP());
+            break;
+        case 2: //Beeping (Red)
+            LightType = LT_Steady;
+            LightHue = 0;
+            return class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex3","DeusExDeco.AlarmLightTex3",IsHDTP());
+            break;
+        case 3: //Confused (Yellow)
+            LightType = LT_Steady;
+            LightHue = 40;
+            return class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex9","DeusExDeco.AlarmLightTex9",IsHDTP());
+            break;
+        case 4: //Detect Corpse (Blue)
+            LightType = LT_Steady;
+            LightHue = 144; //CyberP: Blue for carcasses
+            return class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex7","DeusExDeco.AlarmLightTex7",IsHDTP());
+            break;
+    }
+}
+
 function BeginPlay()
 {
 	Super.BeginPlay();
@@ -155,9 +187,7 @@ function HackAction(Actor Hacker, bool bHacked)
 function EnableCamera()
 {
     bActive = True;
-    LightType = LT_Steady;
-    LightHue = 80;
-    MultiSkins[2] = Texture'GreenLightTex';
+    MultiSkins[2] = GetCameraLightTex(1);
     AmbientSound = None;
     bRebooting = false;
 }
@@ -167,7 +197,6 @@ function DisableCamera()
     TriggerEvent(False);
     TriggerCarcassEvent(False); // eshkrm
     bActive = False;
-    LightType = LT_None;
     AmbientSound = None;
     DesiredRotation = origRot;
     bRebooting = false;
@@ -212,7 +241,6 @@ function TriggerEvent(bool bTrigger)
 	bEventTriggered = bTrigger;
 	bTrackPlayer = bTrigger;
 	triggerTimer = 0;
-    LightRadius = 1;
 	// now, the camera sounds its own alarm
 	if (bTrigger)
 	{
@@ -229,8 +257,7 @@ function TriggerEvent(bool bTrigger)
 		SoundVolume = 80;  //lowered volume, increased radius
 		SoundRadius = 112;
                 SoundPitch = 64; //CyberP: set back to default pitch
-		LightHue = 0;
-		MultiSkins[2] = Texture'RedLightTex';
+        MultiSkins[2] = GetCameraLightTex(2);
 		AIStartEvent('Alarm', EAITYPE_Audio, SoundVolume/255.0, 24*(SoundRadius+2));
 
 		// make sure we can't go into stasis while we're alarming
@@ -241,8 +268,7 @@ function TriggerEvent(bool bTrigger)
 		AmbientSound = None;
 		SoundRadius = 48;
 		SoundVolume = 32;
-		LightHue = 80;
-		MultiSkins[2] = Texture'GreenLightTex';
+        MultiSkins[2] = GetCameraLightTex(1);
 		AIEndEvent('Alarm', EAITYPE_Audio);
 
 		// reset our stasis info
@@ -263,8 +289,7 @@ function TriggerCarcassEvent(bool bTrigger)
 		SoundVolume = 80;
 		SoundRadius = 112;
         SoundPitch = 32; //CyberP: Different pitch for carcasses
-		LightHue = 144; //CyberP: Blue for carcasses
-		MultiSkins[2] = Texture'HDTPAlarmLightTex7'; //Cyberp: Blue for carc
+        MultiSkins[2] = GetCameraLightTex(4);
 		AIStartEvent('Alarm', EAITYPE_Audio, SoundVolume/255.0, 24*(SoundRadius+2));
 
 		// make sure we can't go into stasis while we're alarming
@@ -275,8 +300,7 @@ function TriggerCarcassEvent(bool bTrigger)
 		AmbientSound = None;
 		SoundRadius = 48;
 		SoundVolume = 32;
-		LightHue = 80;
-		MultiSkins[2] = Texture'GreenLightTex';
+        MultiSkins[2] = GetCameraLightTex(1);
 		AIEndEvent('Alarm', EAITYPE_Audio);
 
 		// reset our stasis info
@@ -446,13 +470,13 @@ function Tick(float deltaTime)
     {
         bActive = False;
         remainingTimeInt = int(remainingTime);
-        MultiSkins[2] = Texture'BlackMaskTex';
+        MultiSkins[2] = GetCameraLightTex(0);
 
         if (remainingTimeInt <= 6)
         {
             if (remainingTimeInt % 2 == 0)
             {
-                MultiSkins[2] = Texture'YellowLightTex';
+                MultiSkins[2] = GetCameraLightTex(3);
 				//PlaySound(Sound'Beep6',,0.9,, 2560, 0.9);
             }
         }
@@ -471,7 +495,7 @@ function Tick(float deltaTime)
 		ReplicatedRotation = DesiredRotation;
 
         if (!bRebooting) //We will handle our own textures
-    		MultiSkins[2] = Texture'BlackMaskTex';
+            MultiSkins[2] = GetCameraLightTex(0);
 		return;
 	}
 
@@ -496,11 +520,10 @@ function Tick(float deltaTime)
 			bConfused = False;
 			confusionTimer = 0;
 			confusionDuration = Default.confusionDuration;
-			LightHue = 80;
             if (!bRebooting)
-                MultiSkins[2] = Texture'GreenLightTex';
+                MultiSkins[2] = GetCameraLightTex(1);
             else
-                MultiSkins[2] = Texture'BlackMaskTex';
+                MultiSkins[2] = GetCameraLightTex(0);
 			SoundPitch = 64;
 			DesiredRotation = origRot;
 		}
@@ -512,8 +535,7 @@ function Tick(float deltaTime)
         if (bTrigSound)
            PlaySound(Sound'TurretSwitch',,0.9,, 2560, 0.5);
         bTrigSound=False;
-        MultiSkins[2] = Texture'GreenLightTex';
-        LightRadius = 0;
+        MultiSkins[2] = GetCameraLightTex(1);
     }
 	// Check visibility every 0.1 seconds
 	if (!bNoAlarm)
@@ -578,8 +600,7 @@ function Tick(float deltaTime)
 
 			if (triggerTimer % 0.5 > 0.4 || carcassTriggerTimer % 0.5 > 0.4)
 			{
-				LightHue = 0;
-				MultiSkins[2] = Texture'RedLightTex';
+                MultiSkins[2] = GetCameraLightTex(2);
                 if (minDamageThreshold < 70)
 				   PlaySound(Sound'Beep6',,0.9,, 2560, 0.9);
 				if ((bPlayerSeen) && (curplayer != None) && ((curplayer.bHardCoreMode==True) || (curplayer.bHardcoreAI1==true)))  //CyberP: AI notice cameras beeping and hunt in the direction they are facing (player pos). bit of a hack.
@@ -593,9 +614,8 @@ function Tick(float deltaTime)
 			}
 			else
 			{
-				LightHue = 80;
 				if (minDamageThreshold < 70)
-				MultiSkins[2] = Texture'GreenLightTex';
+                MultiSkins[2] = GetCameraLightTex(1);
 			}
 		}
 
@@ -620,7 +640,7 @@ function Tick(float deltaTime)
 
 
 	swingTimer += deltaTime;
-	MultiSkins[2] = Texture'GreenLightTex';
+    MultiSkins[2] = GetCameraLightTex(1);
 
 	// swing back and forth if all is well
 	// the above returns before we ever get to this, which is why cam stops -- eshkrm
@@ -672,8 +692,7 @@ auto state Active
 			if (!bConfused)
 			{
 				bConfused = True;
-				LightHue = 40;
-				MultiSkins[2] = Texture'YellowLightTex';
+                MultiSkins[2] = GetCameraLightTex(3);
 				SoundPitch = 128;
 				PlaySound(sound'EMPZap', SLOT_None,,, 1280);
 			}

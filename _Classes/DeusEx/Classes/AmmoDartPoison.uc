@@ -24,5 +24,6 @@ defaultproperties
      Description="A mini-crossbow dart tipped with a succinylcholine-variant that causes complete skeletal muscle relaxation, effectively incapacitating a target in a non-lethal manner."
      beltDescription="TRQ DART"
      HDTPSkin="GMDXSFX.Skins.TranqAmmo"
+     //HDTPSkin="HDTPItems.Skins.HDTPAmmoDartTex3"
      Skin=Texture'DeusExItems.Skins.AmmoDartTex3'
 }

@@ -30,6 +30,7 @@ defaultproperties
      Description="The mini-crossbow dart is a favored weapon for many 'wet' operations; however, silent kills require a high degree of skill."
      beltDescription="DART"
      HDTPSkin="GMDXSFX.Skins.DartAmmo"
+     //HDTPSkin="HDTPItems.Skins.HDTPAmmoDartTex1"
      Skin=Texture'RSDCrap.Skins.AmmoDartTex1'
      Mesh=LodMesh'DeusExItems.AmmoDart'
      CollisionRadius=8.500000
