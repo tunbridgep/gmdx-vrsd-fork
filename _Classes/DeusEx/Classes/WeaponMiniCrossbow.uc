@@ -25,7 +25,7 @@ function Texture GetWeaponHandTex()
 	if(P == none)
         return texture'MiniCrossbowTex1';
 
-	if ((P.FlagBase != None) && (P.FlagBase.GetBool('LDDPJCIsFemale')))
+	if (P.FemaleEnabled() && (P.bFemaleHandsAlways || (P.FlagBase != None && P.FlagBase.GetBool('LDDPJCIsFemale'))))
     {
         switch(P.PlayerSkin)
         {
