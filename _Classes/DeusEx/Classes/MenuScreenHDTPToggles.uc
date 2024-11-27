@@ -36,8 +36,8 @@ defaultproperties
      items(10)=(actionText="Military Bot",consoleTarget="DeusEx.MilitaryBot",defaultValue=1);
      items(11)=(actionText="Medical Bot",consoleTarget="DeusEx.MedicalBot",defaultValue=1);
      items(12)=(actionText="Repair Bot",consoleTarget="DeusEx.RepairBot",defaultValue=1);
-     items(13)=(actionText="Security Bot",consoleTarget="DeusEx.SecurityBot2",defaultValue=1);
-     items(14)=(actionText="Security Bot 2",consoleTarget="DeusEx.SecurityBot3",defaultValue=1);
+     items(13)=(actionText="Security Bot (Large)",consoleTarget="DeusEx.SecurityBot2",defaultValue=1);
+     items(14)=(actionText="Security Bot (Small)",consoleTarget="DeusEx.SecurityBot3",defaultValue=1);
      items(15)=(actionText="Assault Gun",consoleTarget="DeusEx.WeaponAssaultGun",defaultValue=1);
      items(16)=(actionText="Assault Shotgun",consoleTarget="DeusEx.WeaponAssaultShotgun",defaultValue=1);
      items(17)=(actionText="Baton",consoleTarget="DeusEx.WeaponBaton");
