@@ -80,7 +80,7 @@ simulated function SniperCocking()                                              
 
 exec function UpdateHDTPsettings()                                              //RSD: New function to update weapon model meshes (specifics handled in each class)
 {
-     local name animToSet;
+    local name animToSet;
 
     if (IsHDTP())
     {

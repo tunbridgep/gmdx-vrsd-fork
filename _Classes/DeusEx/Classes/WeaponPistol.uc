@@ -35,8 +35,8 @@ function DisplayWeapon(bool overlay)
         else
             multiskins[3] = texture'PinkMaskTex';
     }
-    //else
-        //multiskins[0] = Getweaponhandtex();
+    else if (overlay)
+        multiskins[1] = Getweaponhandtex();
 }
 
 exec function UpdateHDTPsettings()                                              //RSD: New function to update weapon model meshes (specifics handled in each class)
