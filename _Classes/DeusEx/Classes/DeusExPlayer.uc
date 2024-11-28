@@ -632,6 +632,8 @@ var globalconfig bool bAugWheelDisableAll;                                      
 var globalconfig bool bTrickReloading;											//Sarge: Allow reloading with a full clip.
 
 var globalconfig bool bFemaleHandsAlways;                                      //SARGE: If true, use the Female hands on male JC. Goth JC with nail polish?
+
+var globalconfig bool bShowDataCubeRead;                                      //SARGE: If true, darken the screens on Data Cubes when they have been read.
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -17380,4 +17382,5 @@ defaultproperties
      bDisplayClips=true
      bCutsceneFOVAdjust=true
      iFrobDisplayStyle=1
+     bShowDataCubeRead=true;
 }

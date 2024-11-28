@@ -23,62 +23,24 @@ simulated function PreBeginPlay()
 }
 
 
-simulated function renderoverlays(Canvas canvas)
+function DisplayWeapon(bool overlay)
 {
-	if (iHDTPModelToggle == 1)                                                  //RSD: Need this off for vanilla model
-	{
-    multiskins[5] = Getweaponhandtex();
-    if (!bIsCloaked && !bIsRadar)                                               //RSD: Overhauled cloak/radar routines
+	super.DisplayWeapon(overlay);
+    if (IsHDTP())
     {
-       multiskins[4] = Texture'Effects.Electricity.WavyBlade';                  //RSD: Added so we get the right blade texture when switching from HDTP -> vanilla
-       multiskins[3] = Texture'Effects.Electricity.WavyBlade';                  //RSD
-       multiskins[2] = none;
-       multiskins[1] = none;
-       multiskins[0] = none;
+        multiskins[5] = Getweaponhandtex();
+        multiskins[2] = Texture'Effects.Electricity.WavyBlade';
+        multiskins[3] = Texture'Effects.Electricity.WavyBlade';
+        multiskins[4] = Texture'Effects.Electricity.WavyBlade';
+        multiskins[6] = Texture'Effects.Electricity.WavyBlade';
+        multiskins[7] = Texture'Effects.Electricity.WavyBlade';
     }
-    }
-    else if (!bIsCloaked && !bIsRadar)                                          //RSD: Overhauled cloak/radar routines
+    else
     {
     	multiskins[0] = Getweaponhandtex();
-    	multiskins[1] = none;
-    	multiskins[2] = none;
-    	multiskins[3] = none;
-    	multiskins[4] = none;
-    	multiskins[5] = none;
-    	multiskins[6] = none;
-    	multiskins[7] = none;
     }
-	super.renderoverlays(canvas);
 
-    if (iHDTPModelToggle == 1)                                                  //RSD: Need this off for vanilla model
-		multiskins[5] = none;
 }
-
-exec function UpdateHDTPsettings()                                              //RSD: New function to update weapon model meshes (specifics handled in each class)
-{
-     //RSD: HDTP Toggle Routine
-     //if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).inHand == self)
-     //     DeusExPlayer(Owner).BroadcastMessage(iHDTPModelToggle);
-     if (iHDTPModelToggle == 1)
-     {
-          PlayerViewMesh=LodMesh'HDTPItems.HDTPDragonTooth';
-          PickupViewMesh=LodMesh'HDTPItems.HDTPDragonToothPickup';
-          ThirdPersonMesh=LodMesh'HDTPItems.HDTPDragonTooth3rd';
-     }
-     else
-     {
-          PlayerViewMesh=LodMesh'DeusExItems.NanoSword';
-          PickupViewMesh=LodMesh'DeusExItems.NanoSwordPickup';
-          ThirdPersonMesh=LodMesh'DeusExItems.NanoSword3rd';
-     }
-     //RSD: HDTP Toggle End
-
-     Super.UpdateHDTPsettings();
-}
-
-/*Function CheckWeaponSkins()
-{=
-}*/
 
 state DownWeapon
 {
@@ -171,9 +133,12 @@ defaultproperties
      ItemName="Dragon's Tooth Sword"
      ItemArticle="the"
      PlayerViewOffset=(X=21.000000,Y=-16.000000,Z=-27.000000)
-     PlayerViewMesh=LodMesh'HDTPItems.HDTPDragonTooth'
-     PickupViewMesh=LodMesh'HDTPItems.HDTPDragonToothPickup'
-     ThirdPersonMesh=LodMesh'HDTPItems.HDTPDragonTooth3rd'
+     HDTPPlayerViewMesh="HDTPItems.HDTPDragonTooth"
+     HDTPPickupViewMesh="HDTPItems.HDTPDragonToothPickup"
+     HDTPThirdPersonMesh="HDTPItems.HDTPDragonTooth3rd"
+     PlayerViewMesh=LodMesh'DeusExItems.NanoSword'
+     PickupViewMesh=LodMesh'DeusExItems.NanoSwordPickup'
+     ThirdPersonMesh=LodMesh'DeusExItems.NanoSword3rd'
      LandSound=Sound'DeusExSounds.Weapons.NanoSwordHitHard'
      Icon=Texture'DeusExUI.Icons.BeltIconDragonTooth'
      largeIcon=Texture'DeusExUI.Icons.LargeIconDragonTooth'
@@ -182,13 +147,6 @@ defaultproperties
      invSlotsX=4
      Description="The true weapon of a modern warrior, the Dragon's Tooth is not a sword in the traditional sense, but a nanotechnologically constructed blade that is dynamically 'forged' on command into a non-eutactic solid. Nanoscale whetting devices insure that the blade is both unbreakable and lethally sharp."
      beltDescription="DRAGON"
-     Mesh=LodMesh'HDTPItems.HDTPDragonToothPickup'
-     MultiSkins(2)=WetTexture'Effects.Electricity.WavyBlade'
-     MultiSkins(3)=WetTexture'Effects.Electricity.WavyBlade'
-     MultiSkins(4)=WetTexture'Effects.Electricity.WavyBlade'
-     MultiSkins(5)=WetTexture'Effects.Electricity.WavyBlade'
-     MultiSkins(6)=WetTexture'Effects.Electricity.WavyBlade'
-     MultiSkins(7)=WetTexture'Effects.Electricity.WavyBlade'
      CollisionRadius=32.000000
      CollisionHeight=2.400000
      LightType=LT_Steady

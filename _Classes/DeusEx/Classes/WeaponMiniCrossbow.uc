@@ -65,265 +65,62 @@ function Texture GetWeaponHandTex()
 	return tex;
 }
 
-simulated function renderoverlays(Canvas canvas)
+
+function DisplayWeapon(bool overlay)
 {
-    local rotator rfs;
-	local vector dx;
-	local vector dy;
-	local vector dz;
-	local vector		DrawOffset, WeaponBob;
-	local vector unX,unY,unZ;
-
-    if (iHDTPModelToggle == 1)                                                  //RSD: HDTP Model
+	super.DisplayWeapon(overlay);
+    if (IsHDTP())
     {
-	if (!bIsCloaked && !bIsRadar)                                               //RSD: Overhauled cloak/radar routines
-	{
-	   Multiskins[1] = none;
-	   Multiskins[0] = getweaponhandtex();
-	}
-	else
-	{
-	   if (bIsRadar)
-	   {
-          Multiskins[1] = Texture'Effects.Electricity.Xplsn_EMPG';
-          Multiskins[0] =  Texture'Effects.Electricity.Xplsn_EMPG';
-       }
-	   else
-	   {
-	      Multiskins[1] = FireTexture'GameEffects.InvisibleTex';
-	      Multiskins[0] =  FireTexture'GameEffects.InvisibleTex';;
-	   }
-    }
-
-	if ((AmmoType != None) && (AmmoType.AmmoAmount > 0) && (ClipCount > 0) && !bIsCloaked && !bIsRadar) //RSD: Overhauled cloak/radar routines
-	{
-        /*
-	    if (IsInState('Reload'))
-	    {
-	       if (AnimSequence == 'ReloadEnd')
-	       {
-	          if(AmmoType.isA('AmmoDartPoison'))
-                 Multiskins[2] = texture'HDTPItems.skins.HDTPminicrossbowtex2';
-		      else if(Ammotype.isA('AmmoDartFlare'))
-		       	Multiskins[2] = texture'HDTPItems.skins.HDTPminicrossbowtex3';
-		      else if(Ammotype.isA('AmmoDartTaser'))
-		        Multiskins[2] = texture'HDTPItems.Skins.HDTPAmmoProdTex1';
-		      else
-		    	Multiskins[2] = texture'HDTPItems.skins.HDTPminicrossbowtex1';
-	       }
-	       else
-	        Multiskins[2] = texture'pinkmasktex';
-	    }
-        */
-		if(AmmoType.isA('AmmoDartPoison'))
-			Multiskins[2] = texture'HDTPItems.skins.HDTPminicrossbowtex2';
-		else if(Ammotype.isA('AmmoDartFlare'))
-			Multiskins[2] = texture'HDTPItems.skins.HDTPminicrossbowtex3';
-		else if(Ammotype.isA('AmmoDartTaser'))
-		    Multiskins[2] = texture'HDTPItems.Skins.HDTPAmmoProdTex1';
-		else
-			Multiskins[2] = texture'HDTPItems.skins.HDTPminicrossbowtex1';
-	}
-	else
-		Multiskins[2] = texture'pinkmasktex';
-	if(bHasScope)
-	{
-		if (!bIsCloaked && !bIsRadar)                                           //RSD: Overhauled cloak/radar routines
-		    multiskins[3] = none;
-		else
+        if (overlay)
+            Multiskins[0] = Getweaponhandtex();
+        //Display Ammo Type
+        if ((AmmoType != None) && (AmmoType.AmmoAmount > 0) && (ClipCount > 0) && !bIsCloaked && !bIsRadar) //RSD: Overhauled cloak/radar routines
         {
-         if (bIsRadar)
-	         Multiskins[3] = Texture'Effects.Electricity.Xplsn_EMPG';
-	     else
-             Multiskins[3] = FireTexture'GameEffects.InvisibleTex';
+            if(AmmoType.isA('AmmoDartPoison'))
+                Multiskins[2] = class'HDTPLoader'.static.GetTexture("HDTPItems.skins.HDTPminicrossbowtex2");
+            else if(Ammotype.isA('AmmoDartFlare'))
+                Multiskins[2] = class'HDTPLoader'.static.GetTexture("HDTPItems.skins.HDTPminicrossbowtex3");
+            else if(Ammotype.isA('AmmoDartTaser'))
+                Multiskins[2] = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPAmmoProdTex1");
+            else
+                Multiskins[2] = class'HDTPLoader'.static.GetTexture("HDTPItems.skins.HDTPminicrossbowtex1");
         }
-	}
-	else
-		multiskins[3] = texture'pinkmasktex';
-	if(bHasLaser)
-	{
-		if (!bIsCloaked && !bIsRadar)                                           //RSD: Overhauled cloak/radar routines
-		    multiskins[4] = none;
-		else
+        else
+            Multiskins[2] = texture'pinkmasktex';
+        
+        //Show weapon addons
+        if (overlay)
         {
-         if (bIsRadar)
-	         Multiskins[4] = Texture'Effects.Electricity.Xplsn_EMPG';
-	     else
-             Multiskins[4] = FireTexture'GameEffects.InvisibleTex';
+            ShowWeaponAddon(3,bHasScope);
+            ShowWeaponAddon(4,bHasLaser);
+            ShowWeaponAddon(5,bLasing);
         }
-	}
-	else
-		multiskins[4] = texture'pinkmasktex';
-	if(bLasing)
-		multiskins[5] = none;
-	else
-		multiskins[5] = texture'pinkmasktex';
+        else
+        {
+            ShowWeaponAddon(2,bHasScope);
+            ShowWeaponAddon(3,bHasLaser);
+            ShowWeaponAddon(4,bLasing);
+        }
 
-	super.renderoverlays(canvas); //(weapon)
-
-	multiskins[0] = none;
-
-	if ((AmmoType != None) && (AmmoType.AmmoAmount > 0) && (ClipCount > 0))
-	{
-		if(AmmoType.isA('AmmoDartPoison'))
-			Multiskins[1] = texture'HDTPItems.skins.HDTPminicrossbowtex2';
-		else if(Ammotype.isA('AmmoDartFlare'))
-			Multiskins[1] = texture'HDTPItems.skins.HDTPminicrossbowtex3';
-		else
-			Multiskins[1] = texture'HDTPItems.skins.HDTPminicrossbowtex1';
-	}
-	else
-		Multiskins[1] = texture'pinkmasktex';
-   if(bHasScope)
-      multiskins[2] = none;
-   else
-      multiskins[2] = texture'pinkmasktex';
-   if(bHasLaser)
-      multiskins[3] = none;
-   else
-      multiskins[3] = texture'pinkmasktex';
-   if(bLasing)
-      multiskins[4] = none;
-   else
-      multiskins[4] = texture'pinkmasktex';
     }
     else                                                                        //RSD: Vanilla Model
     {
-        Multiskins[0] = Getweaponhandtex();
-
-        if (!bIsCloaked && !bIsRadar)
-        {
-            if (MultiSkins[3] != None)                                          //RSD: Copied from vanilla Tick()
-			    if ((AmmoType != None) && (AmmoType.AmmoAmount > 0) && (ClipCount > 0))
-				    MultiSkins[3] = None;
-            multiskins[1] = None;                                               //RSD: So we don't get colored stripe textures when switching from HDTP -> vanilla
-            multiskins[2] = None;                                               //RSD
-        }
-		else
-		{
-		    if (bIsRadar)
-		        MultiSkins[3] = Texture'Effects.Electricity.Xplsn_EMPG';
-            else
-                Multiskins[3] = FireTexture'GameEffects.InvisibleTex';
-		}
-
-    	super.renderoverlays(canvas); //(weapon)
-
-    	Multiskins[0] = none;
-   	}
-
-    if (activateAn == True)
-    {
-	if(!bGEPout)
-	{
-		if (GEPinout<1) GEPinout=Fmin(1.0,GEPinout+0.04);
-	} else
-		if (GEPinout<1) GEPinout=Fmax(0,GEPinout-0.04);//do Fmax(0,n) @ >0<=1
-
-	rfs.Yaw=2912*Fmin(1.0,GEPinout);
-	rfs.Pitch=-62912*sin(Fmin(1.0,GEPinout)*Pi);
-	GetAxes(rfs,axesX,axesY,axesZ);
-/*
-	if(!bStaticFreeze)
-	{
-*/
-    player = DeusExPlayer(Owner);
-
-	dx=axesX>>player.ViewRotation;
-	dy=axesY>>player.ViewRotation;
-	dz=axesZ>>player.ViewRotation;
-	rfs=OrthoRotation(dx,dy,dz);
-
-	SetRotation(rfs);
-
-	PlayerViewOffset=Default.PlayerViewOffset*100;//meh
-	SetHand(player.Handedness); //meh meh
-
-    //if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkNamesArray[12]== 1)
-    //{
-	PlayerViewOffset.X=Smerp(sin(FMin(1.0,GEPinout*1.5)*0.5*Pi),PlayerViewOffset.X,MountedViewOffset.X*100);
-	PlayerViewOffset.Y=Smerp(1.0-cos(FMin(1.0,GEPinout*1.5)*0.5*Pi),PlayerViewOffset.Y,MountedViewOffset.Y*100);
-	PlayerViewOffset.Z=Lerp(sin(FMin(1.0,GEPinout*1.25)*0.05*Pi),PlayerViewOffset.Z,cos(FMin(1.0,GEPinout)*2*Pi)*MountedViewOffset.Z*100);
-	//}
-	//else
-	//{
-	//PlayerViewOffset.X=Smerp(sin(FMin(1.0,GEPinout)*0.5*Pi),PlayerViewOffset.X,MountedViewOffset.X*100);
-	//PlayerViewOffset.Y=Smerp(1.0-cos(FMin(1.0,GEPinout)*0.5*Pi),PlayerViewOffset.Y,MountedViewOffset.Y*100);
-	//PlayerViewOffset.Z=Lerp(sin(FMin(1.0,GEPinout)*0.05*Pi),PlayerViewOffset.Z,cos(FMin(1.0,GEPinout)*2*Pi)*MountedViewOffset.Z*100);
-	//}
-    //PlayerViewOffset.Z=Lerp(sin(FMin(1.0,GEPinout)*0.5*Pi),PlayerViewOffset.Z,cos(FMin(1.0,GEPinout)*2*Pi)*MountedViewOffset.Z*100);
-
-	//FireOffset.X=Smerp(sin(FMin(1.0,GEPinout)*0.5*Pi),Default.FireOffset.X,-MountedViewOffset.X);
-	//FireOffset.Y=Smerp(1.0-cos(FMin(1.0,GEPinout)*0.5*Pi),Default.FireOffset.Y,-MountedViewOffset.Y);
-	//FireOffset.Z=Lerp(sin(FMin(1.0,GEPinout)*0.5*Pi),Default.FireOffset.Z,-cos(FMin(1.0,GEPinout)*2*Pi)*MountedViewOffset.Z);
-
-	SetLocation(player.Location+ CalcDrawOffset());
-	scopeTime+=1;
-
-	//IsInState('DownWeapon')
-    /*
-    if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkNamesArray[12]== 1)
-    {
-	if (scopeTime>=17)
-	{
-        activateAn = False;
-        scopeTime = 0;
-        ScopeToggle();
-        GEPinout = 0;
-        axesX = vect(0,0,0);
-        axesY = vect(0,0,0);
-        axesZ = vect(0,0,0);
-        PlayerViewOffset=Default.PlayerViewOffset*100;
-        SetHand(PlayerPawn(Owner).Handedness);
+        //Show Darts
+        if (MultiSkins[3] != None)                                          //RSD: Copied from vanilla Tick()
+            if ((AmmoType != None) && (AmmoType.AmmoAmount > 0) && (ClipCount > 0))
+                MultiSkins[3] = None;
     }
-    }  */
-    if (scopeTime>=18)
-    {
-        activateAn = False;
-        scopeTime = 0;
-        ScopeToggle();
-        GEPinout = 0;
-        axesX = vect(0,0,0);
-        axesY = vect(0,0,0);
-        axesZ = vect(0,0,0);
-        PlayerViewOffset=Default.PlayerViewOffset*100;
-        SetHand(player.Handedness);
-    }
-    }
-
 }
 
-function BecomePickup()
+exec function UpdateHDTPsettings()
 {
-	activateAn = False;
-        scopeTime = 0;
-        GEPinout = 0;
-        axesX = vect(0,0,0);
-        axesY = vect(0,0,0);
-        axesZ = vect(0,0,0);
-        PlayerViewOffset=Default.PlayerViewOffset*100;
-
-	super.BecomePickup();
-}
-
-exec function UpdateHDTPsettings()                                              //RSD: New function to update weapon model meshes (specifics handled in each class)
-{
-	 //RSD: HDTP Toggle Routine
-     //if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).inHand == self)
-     //     DeusExPlayer(Owner).BroadcastMessage(iHDTPModelToggle);
-     if (iHDTPModelToggle == 1)
+     if (IsHDTP())
      {
-          PlayerViewMesh=LodMesh'HDTPItems.HDTPMiniCrossbow';
-          PickupViewMesh=LodMesh'HDTPItems.HDTPminicrossbowPickup';
-          ThirdPersonMesh=LodMesh'HDTPItems.HDTPminicrossbow3rd';
           addYaw=400;
           addPitch=-1800;
      }
      else
      {
-          PlayerViewMesh=LodMesh'DeusExItems.MiniCrossbow';
-          PickupViewMesh=LodMesh'DeusExItems.MiniCrossbowPickup';
-          ThirdPersonMesh=LodMesh'DeusExItems.MiniCrossbow3rd';
           addYaw=0;
           addPitch=0;
      }
@@ -331,26 +128,6 @@ exec function UpdateHDTPsettings()                                              
 
      Super.UpdateHDTPsettings();
 }
-
-function CheckWeaponSkins()
-{
-     if (iHDTPModelToggle == 1)                                                 //RSD: Need this off for vanilla model
-     {
-    if(bHasScope)
-      multiskins[2] = none;
-   else
-      multiskins[2] = texture'pinkmasktex';
-   if(bHasLaser)
-      multiskins[3] = none;
-   else
-      multiskins[3] = texture'pinkmasktex';
-   if(bLasing)
-      multiskins[4] = none;
-   else
-      multiskins[4] = texture'pinkmasktex';
-     }
-}
-
 
 simulated function PostBeginPlay()
 {
@@ -372,7 +149,7 @@ state NormalFire
 
 		if(playerpawn(owner) != none) //just in case :)
 		{
-            if (iHDTPModelToggle == 1)                                          //RSD
+            if (IsHDTP())                                          //RSD
                 numSkin = 2;
             else
                 numSkin = 3;
@@ -383,7 +160,7 @@ state NormalFire
 			if ((AmmoType != None) && (AmmoType.AmmoAmount <= 0))
 				MultiSkins[numSkin] = Texture'PinkMaskTex';                     //RSD: changed 2 to numSkin
 		}
-		else if (iHDTPModelToggle == 1) //fuck me, A)does this get called by NPCs, and B)would anyone even notice? Fuck it: we do insano-detail here //RSD: Only if HDTP
+		else if (IsHDTP()) //fuck me, A)does this get called by NPCs, and B)would anyone even notice? Fuck it: we do insano-detail here //RSD: Only if HDTP
 		{
 			if (ClipCount == 0)
 				MultiSkins[1] = Texture'PinkMaskTex';
@@ -392,45 +169,6 @@ state NormalFire
 				MultiSkins[1] = Texture'PinkMaskTex';
 		}
 		Super.BeginState();
-	}
-}
-
-// unpinkmask the arrow when we reload...handled better in renderoverlays? probably yes.
-/*
-function Tick(float deltaTime)
-{
-	if(playerpawn(owner) != none)
-	{
-		if (MultiSkins[2] == texture'pinkmasktex')
-			if ((AmmoType != None) && (AmmoType.AmmoAmount > 0) && (ClipCount > 0))
-			{
-				if(AmmoType.isA('AmmoDartPoison'))
-					Multiskins[2] = texture'HDTPItems.skins.HDTPminicrossbowtex2';
-				else if(Ammotype.isA('AmmoDartFlare'))
-					Multiskins[2] = texture'HDTPItems.skins.HDTPminicrossbowtex3';
-				else
-					Multiskins[2] = texture'HDTPItems.skins.HDTPminicrossbowtex1';
-			}
-	}
-
-	Super.Tick(deltaTime);
-}
-*/
-
-state DownWeapon
-{
-	function EndState()
-	{
-	    Super.EndState();
-	    activateAn = False;
-        scopeTime = 0;
-        GEPinout = 0;
-        axesX = vect(0,0,0);
-        axesY = vect(0,0,0);
-        axesZ = vect(0,0,0);
-        PlayerViewOffset=Default.PlayerViewOffset*100;
-        if (Owner != None && Owner.IsA('DeusExPlayer'))
-        SetHand(DeusExPlayer(Owner).Handedness);
 	}
 }
 
@@ -546,16 +284,18 @@ defaultproperties
      InventoryGroup=9
      ItemName="Mini-Crossbow"
      PlayerViewOffset=(X=25.000000,Y=-8.000000,Z=-14.000000)
-     PlayerViewMesh=LodMesh'HDTPItems.HDTPMiniCrossbow'
-     PickupViewMesh=LodMesh'HDTPItems.HDTPminicrossbowPickup'
-     ThirdPersonMesh=LodMesh'HDTPItems.HDTPminicrossbow3rd'
+     HDTPPlayerViewMesh="HDTPItems.HDTPMiniCrossbow"
+     HDTPPickupViewMesh="HDTPItems.HDTPminicrossbowPickup"
+     HDTPThirdPersonMesh="HDTPItems.HDTPminicrossbow3rd"
+     PlayerViewMesh=LodMesh'DeusExItems.MiniCrossbow'
+     PickupViewMesh=LodMesh'DeusExItems.MiniCrossbowPickup'
+     ThirdPersonMesh=LodMesh'DeusExItems.MiniCrossbow3rd'
      Icon=Texture'DeusExUI.Icons.BeltIconCrossbow'
      largeIcon=Texture'DeusExUI.Icons.LargeIconCrossbow'
      largeIconWidth=47
      largeIconHeight=46
      Description="The mini-crossbow was specifically developed for espionage work, and accepts a range of dart types (normal, tranquilizer, or flare) that can be changed depending upon the mission requirements."
      beltDescription="CROSSBOW"
-     Mesh=LodMesh'HDTPItems.HDTPminicrossbowPickup'
      CollisionRadius=8.000000
      CollisionHeight=1.000000
      Mass=15.000000

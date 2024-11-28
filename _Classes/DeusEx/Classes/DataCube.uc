@@ -5,10 +5,13 @@ class DataCube extends InformationDevices;
 
 exec function UpdateHDTPsettings()
 {
+    local DeusExPlayer player;
     super.UpdateHDTPsettings();
 
+    player = DeusExPlayer(GetPlayerPawn());
+
     //Blank the screen once it's been read
-    if (bRead)
+    if (bRead && player != None && player.bShowDataCubeRead)
         MultiSkins[2]=Texture'PinkMaskTex';
     else if (IsHDTP())
         MultiSkins[2]=class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPDatacubetex1");

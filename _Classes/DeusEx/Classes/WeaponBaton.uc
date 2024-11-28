@@ -3,51 +3,19 @@
 //=============================================================================
 class WeaponBaton extends DeusExWeapon;
 
-simulated function renderoverlays(Canvas canvas)
+function DisplayWeapon(bool overlay)
 {
-	if (iHDTPModelToggle == 1)
+    super.DisplayWeapon(overlay);
+	if (IsHDTP())
     {
-    multiskins[2] = Getweaponhandtex();
-    if (!bIsCloaked && !bIsRadar)                                               //RSD: Overhauled cloak/radar routines
-       multiskins[1] = none;
+        multiskins[2] = Getweaponhandtex();
     }
     else
     {
        multiskins[1]=GetWeaponHandTex();                                        //RSD: Fix vanilla hand tex
        multiskins[2]=GetWeaponHandTex();
     }
-	super.renderoverlays(canvas);
-
-	if (iHDTPModelToggle == 1)
-       multiskins[2] = none;
-    else
-    {
-       multiskins[1]=none;                                                      //RSD: Fix vanilla hand tex
-       multiskins[2]=none;
-    }
 }
-
-exec function UpdateHDTPsettings()                                              //RSD: New function to update weapon model meshes (specifics handled in each class)
-{
-     //RSD: HDTP Toggle Routine
-     //if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).inHand == self)
-     //     DeusExPlayer(Owner).BroadcastMessage(iHDTPModelToggle);
-     if (iHDTPModelToggle == 1)
-     {
-          PlayerViewMesh=LodMesh'HDTPItems.HDTPWeaponBaton';
-     }
-     else
-     {
-          PlayerViewMesh=LodMesh'DeusExItems.Baton';
-     }
-     //RSD: HDTP Toggle End
-
-     Super.UpdateHDTPsettings();
-}
-
-/*Function CheckWeaponSkins()
-{
-}*/
 
 function name WeaponDamageType()
 {
@@ -87,6 +55,7 @@ defaultproperties
      Misc3Sound=Sound'DeusExSounds.Weapons.BatonHitSoft'
      InventoryGroup=24
      ItemName="Baton"
+     HDTPPlayerViewMesh="HDTPItems.HDTPWeaponBaton"
      PlayerViewOffset=(X=24.000000,Y=-14.000000,Z=-17.000000)
      PlayerViewMesh=LodMesh'DeusExItems.Baton'
      PickupViewMesh=LodMesh'DeusExItems.BatonPickup'

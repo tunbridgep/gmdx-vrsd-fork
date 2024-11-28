@@ -21,98 +21,29 @@ simulated function PreBeginPlay()
 	}
 }
 
-/*simulated function renderoverlays(Canvas canvas)
+function DisplayWeapon(bool overlay)
 {
-	multiskins[0] = Getweaponhandtex();
-    if (!bIsCloaked)
-       multiskins[1] = none;
-
-	super.renderoverlays(canvas);
-
-	multiskins[0] = none;
-}*/
-
-exec function UpdateHDTPsettings()                                              //RSD: New function to update weapon model meshes (specifics handled in each class)
-{
-     //RSD: HDTP Toggle Routine
-     //if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).inHand == self)
-     //     DeusExPlayer(Owner).BroadcastMessage(iHDTPModelToggle);
-     if (iHDTPModelToggle == 1)
-     {
-          PlayerViewMesh=LodMesh'HDTPItems.HDTPProd';
-          PickupViewMesh=LodMesh'HDTPItems.HDTPProdPickup';
-          ThirdPersonMesh=LodMesh'HDTPItems.HDTPProd3rd';
-     }
-     else
-     {
-          PlayerViewMesh=LodMesh'DeusExItems.Prod';
-          PickupViewMesh=LodMesh'DeusExItems.ProdPickup';
-          ThirdPersonMesh=LodMesh'DeusExItems.Prod3rd';
-     }
-     //RSD: HDTP Toggle End
-
-     Super.UpdateHDTPsettings();
-}
-
-Function CheckWeaponSkins()
-{
-     if (iHDTPModelToggle != 1)
-     {
-          multiskins[0]=none;                                                   //RSD: Needed so 3rd person mesh isn't covered with hand tex dropped with cloak/radar active
-     }
-}
-
-function texture GetWeaponHandTex()                                             //RSD: overwritten from DeusExWeapon.uc, see below
-{
-	local deusexplayer p;
-	local texture tex;
-
-    if (iHDTPModelToggle == 0 && (bIsCloaked || bIsRadar))                      //RSD: Need this for some unfathomable reason so the cloak/radar textures animate on the vanilla version. Who fucking knows
-        return Texture'PinkMaskTex';//FireTexture'GameEffects.CamoEffect';
-    else return Super.GetWeaponHandTex();
-}
-
-simulated function renderoverlays(Canvas canvas)                                //RSD: Attempt to fix cloak/radar skins for vanilla prod
-{
-    if (iHDTPModelToggle == 1)
-        multiskins[0] = Getweaponhandtex();
-    else                                                                        //RSD: Vanilla model needs special help for animated cloak/radar
+    super.DisplayWeapon(overlay);
+    if (overlay)
     {
-    multiskins[0] = Getweaponhandtex();
-    multiskins[3] = Getweaponhandtex();
-    if (!bIsCloaked && !bIsRadar)
-    {
-       multiskins[1] = none;
-       multiskins[2] = none;
-       //multiskins[3] = none;
-       multiskins[4] = none;
-    }
-    else
-    {
-	   if (bIsRadar)
-	   {
-          Multiskins[1] = Texture'Effects.Electricity.WEPN_EMPG_SFX';//none;
-          Multiskins[2] = none;
-          Multiskins[3] = Texture'Effects.Electricity.Xplsn_EMPG';
-          Multiskins[4] = Texture'Effects.Electricity.Xplsn_EMPG';
-	   }
-	   else
-	   {
-	      Multiskins[1] = Texture'Effects.Electricity.WEPN_EMPG_SFX';//Texture'pinkmasktex';
-          Multiskins[2] = none;
-          Multiskins[3] = FireTexture'GameEffects.InvisibleTex';
-          Multiskins[4] = FireTexture'GameEffects.InvisibleTex';
-       }
-    }
-    }
-	super.renderoverlays(canvas);
-
-	if (iHDTPModelToggle == 1)
-        multiskins[0] = none;
-    else
-    {
-    multiskins[0] = none;
-    multiskins[3] = none;
+        if (IsHDTP())
+        {
+            multiskins[0] = Getweaponhandtex();
+        }
+        else
+        {
+            //RSD: Need this for some unfathomable reason so the cloak/radar textures animate on the vanilla version. Who fucking knows
+            if (bIsCloaked || bIsRadar)
+            {
+                multiskins[0] = texture'PinkMaskTex';
+                multiskins[3] = texture'PinkMaskTex';
+            }
+            else
+            {
+                multiskins[0] = Getweaponhandtex();
+                multiskins[3] = Getweaponhandtex();
+            }
+        }
     }
 }
 
@@ -203,6 +134,9 @@ defaultproperties
      PlayerViewMesh=LodMesh'DeusExItems.Prod'
      PickupViewMesh=LodMesh'DeusExItems.ProdPickup'
      ThirdPersonMesh=LodMesh'DeusExItems.Prod3rd'
+     HDTPPlayerViewMesh="HDTPItems.HDTPProd"
+     HDTPPickupViewMesh="HDTPItems.HDTPProdPickup"
+     HDTPThirdPersonMesh="HDTPItems.HDTPProd3rd"
      Icon=Texture'DeusExUI.Icons.BeltIconProd'
      largeIcon=Texture'DeusExUI.Icons.LargeIconProd'
      largeIconWidth=49

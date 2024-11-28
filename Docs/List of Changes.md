@@ -151,6 +151,14 @@ Sarge's Changes since Beta 2.2:
         - Alcohol no longer adds to fullness when the addiction system is enabled
         - Zyme no longer removes 10HP if the addiction system is enabled.
 - Miscellaneous Changes:
+    - Hand textures have been ported over from LDDP. This means the first-person weapon textures now have properly coloured hand textures, as well as visible augmentation markings where they align with the third person models.
+    - HDTP overhaul
+        - HDTP is no longer integrated, it's now an optional addon.
+        - When HDTP is installed, most HDTP related objects can be toggled on/off in the HDTP model settings menu
+        - Some HDTP assets were copied over where they were absolutely necessary for the mod to function properly, such as a few menu backgrounds, weapon muzzle flashes, and blood effects. These are now in RSDCrap.u and don't require HDTP.
+        - Added some vanilla-styled textures that were missing non-HDTP variants (such as the Taser Darts)
+        - Changed some textures to different ones to account for their HDTP variants better, such as the glowing areas on Security Cameras, which now have a proper blue variant.
+        - Some HDTP features that were removed from GMDX (such as alternate belt icons) have been re-added.
     - Added an "Alternate Start" option, which skips the first part of the game and starts at the MJ12 Lab. You will start with nothing, so this is extra hardcore.
     - The "You Found:" message when searching corpses has been removed. The actual items are still listed, only the extra message is removed.
     - The Paris Metro Police have been changed to using pistols only (from Assault Shotguns and Assault Rifles), to ensure more 10mm ammo is available in the late game, as well as to reinforce their status as the puppet regime under MJ12.
@@ -159,6 +167,7 @@ Sarge's Changes since Beta 2.2:
         - Added equip/unequip sounds for the Lockpick, Nanokey and Multitool, which were previously silent.
         - Additionally replaced some sounds with higher quality versions, such as the lockpicking sound.
     - Implemented optional Lay-D Denton support. If installed, Lay-D Denton support will be automatically activated.
+        - Added an option to the QoL menu to allow male JC to use female hands, for cosplaying as "goth JC" with nail polish.
         - The Lay-D Denton colour scheme is included and can be selected from the Colors menu.
         - When Lay-D Denton is installed, a new Gameplay Modifier is available, which will add the extra NPC's added by the LDDP mod.
         - Without the Gameplay Modifier, only Chet, Russ and a few other NPC's are added where necessary to maintain immersion and gameplay balance for female characters. These characters do not appear for male JC
