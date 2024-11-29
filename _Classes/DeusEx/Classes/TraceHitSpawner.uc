@@ -12,7 +12,7 @@ var bool bForceBulletHole;
 
 function bool IsHDTP()
 {
-    return class'HDTPLoader'.static.HDTPInstalled();
+    return class'HDTPLoader'.static.HDTPInstalled() && class'DeusExDecal'.default.iHDTPModelToggle > 0;
 }
 
 simulated function PostBeginPlay()
@@ -375,10 +375,11 @@ if (Other != none)
 
 			if (hole != None)
 			{
-				if (mov != none)// && mov.bBreakable && mov.minDamageThreshold <= Damage) //SARGE: Allow glass-holes on glass objects always
+				if (mov != none )// && mov.bBreakable && mov.minDamageThreshold <= Damage) //SARGE: Allow glass-holes on glass objects always
 				{
 					// don't draw damage art on destroyed movers, or ones we can't damage
-					if (mov.bDestroyed || (mov.minDamageThreshold > Damage) || !mov.bBreakable)
+                    //SARGE: Always show it, the tooltip will tell us
+					if (mov.bDestroyed)// || (mov.minDamageThreshold > Damage))
 						hole.Destroy();
 					else if (mov.FragmentClass == class'GlassFragment')
 					{

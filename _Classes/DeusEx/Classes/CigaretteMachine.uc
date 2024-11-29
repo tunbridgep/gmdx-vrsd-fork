@@ -68,7 +68,8 @@ defaultproperties
      msgEmpty="It's empty"
      ItemName="Cigarette Machine"
      Physics=PHYS_None
-     Mesh=LodMesh'HDTPDecos.HDTPcigarettemachine'
+     HDTPMesh="HDTPDecos.HDTPcigarettemachine"
+     Mesh=LodMesh'DeusExDeco.CigaretteMachine'
      SoundRadius=8
      SoundVolume=96
      AmbientSound=Sound'Ambient.Ambient.HumLight3'

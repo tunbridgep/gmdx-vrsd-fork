@@ -13,34 +13,32 @@ enum ESkinColor
 
 var() ESkinColor SkinColor;
 
-function BeginPlay()
+exec function UpdateHDTPSettings()
 {
-	Super.BeginPlay();
-
-        Texture=class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPLiquor40oztex2","",iHDTPModelToggle > 0);
-        switch (SkinColor)
-        {
-            case SC_Super45:
-                Multiskins[1]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex1","",iHDTPModelToggle > 0);
-                Multiskins[3]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex1","",iHDTPModelToggle > 0);
-                Skin=class'HDTPLoader'.static.GetTexture2("","Liquor40oztex1",iHDTPModelToggle > 0);
-                break;
-            case SC_Bottle2:
-                Multiskins[1]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex3","",iHDTPModelToggle > 0);
-                Multiskins[3]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex3","",iHDTPModelToggle > 0);
-                Skin=class'HDTPLoader'.static.GetTexture2("","Liquor40oztex2",iHDTPModelToggle > 0);
-                break;
-            case SC_Bottle3:
-                Multiskins[1]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex4","",iHDTPModelToggle > 0);
-                Multiskins[3]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex4","",iHDTPModelToggle > 0);
-                Skin=class'HDTPLoader'.static.GetTexture2("","Liquor40oztex3",iHDTPModelToggle > 0);
-                break;
-            case SC_Bottle4:
-                Multiskins[1]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex5","",iHDTPModelToggle > 0);
-                Multiskins[3]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex5","",iHDTPModelToggle > 0);
-                Skin=class'HDTPLoader'.static.GetTexture2("","Liquor40oztex4",iHDTPModelToggle > 0);
-                break;
-        }
+	Super.UpdateHDTPSettings();
+    switch (SkinColor)
+    {
+        case SC_Super45:
+            Multiskins[1]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex1","",iHDTPModelToggle > 0);
+            Multiskins[3]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex1","",iHDTPModelToggle > 0);
+            Skin=class'HDTPLoader'.static.GetTexture2("","Liquor40oztex1",iHDTPModelToggle > 0);
+            break;
+        case SC_Bottle2:
+            Multiskins[1]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex3","",iHDTPModelToggle > 0);
+            Multiskins[3]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex3","",iHDTPModelToggle > 0);
+            Skin=class'HDTPLoader'.static.GetTexture2("","Liquor40oztex2",iHDTPModelToggle > 0);
+            break;
+        case SC_Bottle3:
+            Multiskins[1]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex4","",iHDTPModelToggle > 0);
+            Multiskins[3]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex4","",iHDTPModelToggle > 0);
+            Skin=class'HDTPLoader'.static.GetTexture2("","Liquor40oztex3",iHDTPModelToggle > 0);
+            break;
+        case SC_Bottle4:
+            Multiskins[1]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex5","",iHDTPModelToggle > 0);
+            Multiskins[3]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex5","",iHDTPModelToggle > 0);
+            Skin=class'HDTPLoader'.static.GetTexture2("","Liquor40oztex4",iHDTPModelToggle > 0);
+            break;
+    }
 }
 
 function Eat(DeusExPlayer player)
@@ -58,9 +56,6 @@ defaultproperties
      bBreakable=True
      ItemName="Forty"
      PlayerViewOffset=(X=30.000000,Z=-12.000000)
-     PlayerViewMesh=LodMesh'HDTPItems.HDTPLiquor40oz'
-     PickupViewMesh=LodMesh'HDTPItems.HDTPLiquor40oz'
-     ThirdPersonMesh=LodMesh'HDTPItems.HDTPLiquor40oz'
      LandSound=Sound'DeusExSounds.Generic.GlassHit1'
      Icon=Texture'DeusExUI.Icons.BeltIconBeerBottle'
      largeIcon=Texture'DeusExUI.Icons.LargeIconBeerBottle'
@@ -68,6 +63,7 @@ defaultproperties
      largeIconHeight=47
      Description="'COLD SWEAT forty ounce malt liquor. Never let 'em see your COLD SWEAT.'"
      beltDescription="FORTY"
+     HDTPTexture="HDTPItems.Skins.HDTPLiquor40oztex2"
      HDTPMesh="HDTPItems.HDTPLiquor40oz"
      Mesh=LodMesh'DeusExItems.Liquor40oz'
      CollisionRadius=4.000000

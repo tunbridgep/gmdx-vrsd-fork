@@ -175,6 +175,13 @@ function PostBeginPlay()
    TimeSinceReset = 0.0;
    bInitialLocked = bLocked;
 
+    //SARGE: If we aren't highlighting but are breakable, set our health to 1
+    //This essentially means that when you can't see the door strength, a big hit will always
+    //blow it up, no guessing-games. Having to memorize certain door strengths and knowing that you can
+    //whack them a certain number of times is extremely degenerate.
+    if (bBreakable && !bHighlight)
+        doorStrength = 0.0;
+
    /*if (lockStrength == 0.150000)                                              //RSD: This disgusting dirty hack has to go. You could have two movers associated together so that unlocking one unlocks the other, but with different strengths. NO
 	{
 	    if (FRand() < 0.3)
