@@ -86,7 +86,7 @@ function bool IsHDTP()
         return hdtpReference.default.iHDTPModelToggle > 0;
     else if (spawnWeaponClass != None)
         return spawnWeaponClass.default.iHDTPModelToggle > 0;
-    return class'HDTPLoader'.static.HDTPInstalled();
+    return false;
 }
 
 //SARGE: Setup the HDTP settings for this projectile

@@ -381,7 +381,7 @@ function LightFlare()
 		rota.Roll = 0;
 		rota.Yaw += 16384;
         //if (IsHDTP())
-        if (class'HDTPLoader'.static.HDTPInstalled())
+        if (bHDTPInstalled)
         {
             flaregen = Spawn(class'ParticleGenerator',Self,, Loc, rota);
             if (flaregen != None)
@@ -404,7 +404,7 @@ function LightFlare()
             }
         }
         //if (IsHDTP())
-        if (class'HDTPLoader'.static.HDTPInstalled())
+        if (bHDTPInstalled)
         {
             flamething = Spawn(class'Effects', Self,, Location, rotation);
             if(flamething != none)
@@ -422,7 +422,7 @@ function LightFlare()
             }
         }
         //if (IsHDTP())
-        if (class'HDTPLoader'.static.HDTPInstalled())
+        if (bHDTPInstalled)
         {
             flamething2 = Spawn(class'Effects', Self,, Location, rotation);
             if(flamething2 != none)

@@ -13,7 +13,7 @@ var bool bHDTPInstalled;                                             //SARGE: St
 
 function bool IsHDTP()
 {
-    return bHDTPInstalled && class'HDTPLoader'.static.HDTPInstalled();
+    return bHDTPInstalled;
 }
 
 simulated function PostBeginPlay()
