@@ -16,6 +16,8 @@ simulated event BeginPlay()
 
 defaultproperties
 {
-     Texture=Texture'HDTPItems.Skins.HDTPFlatFXtex9'
-     DrawScale=0.019000
+     HDTPTexture"HDTPItems.Skins.HDTPFlatFXtex9"
+	 Texture=Texture'DeusExItems.Skins.FlatFXtex9'
+     DrawScale=0.100000
+     HDTPDrawScale=0.019000;
 }

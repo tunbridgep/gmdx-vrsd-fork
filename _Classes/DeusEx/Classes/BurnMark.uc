@@ -5,6 +5,6 @@ class BurnMark extends DeusExDecal;
 
 defaultproperties
 {
-     Texture=Texture'HDTPItems.Skins.HDTPFlatFXtex40'
-     DrawScale=0.051250
-}
+     HDTPTexture="HDTPItems.Skins.HDTPFlatFXtex40"
+     Texture=Texture'DeusExItems.Skins.FlatFXtex40'
+     HDTPDrawScale=0.051250;

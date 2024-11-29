@@ -448,7 +448,10 @@ simulated function DrawExplosionEffects(vector HitLocation, vector HitNormal)
 	else if (blastRadius < 352)
 	{
 		expeffect = Spawn(class'ExplosionMedium',,, HitLocation);
-		Spawn(class'ExplosionExtra',,, HitLocation);
+		if (IsHDTP())
+			Spawn(class'ExplosionExtra',,, HitLocation);
+		else
+			Spawn(class'ExplosionMedium',,, HitLocation);
 		light.size = 12;
 		//light2.size = 12;
 	}
