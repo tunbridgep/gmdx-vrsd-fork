@@ -10,6 +10,11 @@ var bool bInstantHit;
 var Name damageType;
 var bool bForceBulletHole;
 
+function bool IsHDTP()
+{
+    return class'HDTPLoader'.static.HDTPInstalled();
+}
+
 simulated function PostBeginPlay()
 {
 	Super.PostBeginPlay();
@@ -263,7 +268,7 @@ if (Other != none)
 
          if (GetFloorMaterial(texGroup)=='Glass' && hole != none)
          {
-        hole.Texture = Texture'HDTPItems.Skins.HDTPFlatFXTex29';
+        hole.Texture = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFlatFXTex29","FlatFXTex29",IsHDTP());
         hole.DrawScale = 0.05625;
 	    hole.drawscale *= 1.0 + frand()*0.2;
 	    hole.ReattachDecal();
@@ -325,7 +330,7 @@ if (Other != none)
 				if (damageType == 'Sabot')                                  //if ( Level.NetMode != NM_Standalone )
 				{
                  spark.DrawScale=0.120000;
-                 spark.Skin=texture'HDTPItems.Skins.HDTPMuzzleflashLarge7';                                 //	spark.DrawScale = 0.25;
+				 spark.Skin = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPMuzzleflashLarge7","FlatFXTex29",IsHDTP());
 				 spark.LightRadius=3;
 				 spark.LightBrightness=255;
                  spark.LightSaturation=192;
@@ -374,7 +379,7 @@ if (Other != none)
 					{
 						// glass hole
 						//if (FRand() < 0.5)
-							hole.Texture = Texture'HDTPItems.Skins.HDTPFlatFXTex29';
+							hole.Texture = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFlatFXTex29","FlatFXTex29",IsHDTP());
 						//else
 						//	hole.Texture = Texture'FlatFXTex30';
 
@@ -448,8 +453,11 @@ if (Other != none)
                         }
                         else if (GetFloorMaterial(texGroup)=='Glass')
                         {
-                        hole.Texture = Texture'HDTPItems.Skins.HDTPFlatFXTex29';
-                        hole.DrawScale = 0.05;
+                        hole.Texture = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFlatFXTex29","FlatFXTex29",IsHDTP());
+						if (IsHDTP())
+							hole.DrawScale = 0.05;
+						else
+							hole.DrawScale = 0.5;
 	                    hole.drawscale *= 1.0 + frand()*0.2;
 	                    hole.ReattachDecal();
                         }

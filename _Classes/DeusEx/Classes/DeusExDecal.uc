@@ -76,7 +76,12 @@ function bool IsHDTP()
 exec function UpdateHDTPsettings()
 {
     if (HDTPDrawScale > 0)
-        DrawScale = IsHDTP() ? HDTPDrawScale : default.DrawScale;
+    {
+        if (IsHDTP())
+            DrawScale = HDTPDrawScale;
+        else
+            DrawScale = default.DrawScale;
+    }
     if (HDTPMesh != "")
         Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),IsHDTP());
     if (HDTPSkin != "")

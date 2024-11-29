@@ -17,11 +17,11 @@ function BeginPlay()
 
 	rnd = FRand();
 	if (rnd < 0.25)
-		Texture = Texture'HDTPItems.Skins.HDTPFlatFXTex3';
+		Texture = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFlatFXTex2","DeusExItems.Skins.FlatFXTex2",IsHDTP());
 	else if (rnd < 0.5)
-		Texture = Texture'HDTPItems.Skins.HDTPFlatFXTex5';
+		Texture = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFlatFXTex5","DeusExItems.Skins.FlatFXTex5",IsHDTP());
 	else if (rnd < 0.75)
-		Texture = Texture'HDTPItems.Skins.HDTPFlatFXTex6';
+		Texture = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFlatFXTex6","DeusExItems.Skins.FlatFXTex6",IsHDTP());
 
 	DrawScale += FRand() * 0.12;  //better textures can cope with greater size variation -DDL
 
@@ -31,6 +31,8 @@ function BeginPlay()
 defaultproperties
 {
      MultiDecalLevel=2
-     Texture=Texture'HDTPItems.Skins.HDTPFlatFXtex2'
-     DrawScale=0.025000
+     HDTPTexture="HDTPItems.Skins.HDTPFlatFXtex2"
+     HDTPDrawScale=0.025000
+     Texture=Texture'DeusExItems.Skins.FlatFXTex2'
+     DrawScale=0.200000
 }
