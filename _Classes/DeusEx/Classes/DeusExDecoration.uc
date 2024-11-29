@@ -62,7 +62,6 @@ var bool bFirstTickDone;                                                        
 
 //SARGE: HDTP Model toggles
 var config int iHDTPModelToggle;
-var bool bHDTPInstalled;                                             //SARGE: Store whether HDTP is installed, otherwise we get insane lag
 var string HDTPSkin;
 var string HDTPTexture;
 var string HDTPMesh;
@@ -147,7 +146,7 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 
 function bool IsHDTP()
 {
-    return bHDTPInstalled && iHDTPModelToggle > 0;
+    return DeusExPlayer(GetPlayerPawn()).bHDTPInstalled && iHDTPModelToggle > 0;
 }
 
 //SARGE: New function to update model meshes (specifics handled in each class)
@@ -181,7 +180,6 @@ function PreBeginPlay()
 	else
 		flyGen = None;
     
-	bHDTPInstalled = class'HDTPLoader'.static.HDTPInstalled(); 
     UpdateHDTPSettings();                                                       //SARGE: Update HDTP
 }
 

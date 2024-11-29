@@ -9,17 +9,15 @@ var bool bHandToHand;  // shot that hit was hand to hand
 var bool bInstantHit;
 var Name damageType;
 var bool bForceBulletHole;
-var bool bHDTPInstalled;                                             //SARGE: Store whether HDTP is installed, otherwise we get insane lag
 
 function bool IsHDTP()
 {
-    return bHDTPInstalled;
+    return DeusExPlayer(GetPlayerPawn()).bHDTPInstalled;
 }
 
 simulated function PostBeginPlay()
 {
 	Super.PostBeginPlay();
-    bHDTPInstalled = class'HDTPLoader'.static.HDTPInstalled(); 
 
 	if (Owner == None)
 	  SetOwner(Level);

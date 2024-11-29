@@ -5,7 +5,7 @@ class SpiderBotFake extends DeusExDecoration;
 
 function bool IsHDTP()
 {
-    return bHDTPInstalled && class'SpiderBot'.default.iHDTPModelToggle > 0;
+    return DeusExPlayer(GetPlayerPawn()).bHDTPInstalled && class'SpiderBot'.default.iHDTPModelToggle > 0;
 }
 
 defaultproperties

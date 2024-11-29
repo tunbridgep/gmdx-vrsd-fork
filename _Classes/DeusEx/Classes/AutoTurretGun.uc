@@ -32,7 +32,7 @@ function bool IsHDTP()
 {
 	local AutoTurret turret;
 	turret = AutoTurret(Owner);
-    return bHDTPInstalled && (turret != None && turret.iHDTPModelToggle > 0);
+    return DeusExPlayer(GetPlayerPawn()).bHDTPInstalled && (turret != None && turret.iHDTPModelToggle > 0);
 }
 
 function ResetComputerAlignment()

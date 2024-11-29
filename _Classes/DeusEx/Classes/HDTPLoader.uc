@@ -7,22 +7,26 @@ class HDTPLoader extends Object;
 //Gets a texture
 static function Texture GetTexture(string tex)
 {
+    log("Getting firetexture: " $ tex);
 	return Texture(DynamicLoadObject(tex, class'Texture', true));
 }
 
 static function Texture GetWetTexture(string tex)
 {
+    log("Getting wettexture: " $ tex);
 	return WetTexture(DynamicLoadObject(tex, class'WetTexture', true));
 }
 
 static function Texture GetFireTexture(string tex)
 {
+    log("Getting texture: " $ tex);
 	return FireTexture(DynamicLoadObject(tex, class'FireTexture', true));
 }
 
 //Gets a mesh
 static function LodMesh GetMesh(string m)
 {
+    log("Getting mesh: " $ m);
 	return LodMesh(DynamicLoadObject(m, class'LodMesh', true));
 }
 
@@ -52,7 +56,7 @@ static function Texture GetTexture2(string tex, string alternative, bool first)
 
 static function bool HDTPInstalled()
 {
-    log("Checking HDTP installed:");
+    log("Checking HDTP installed");
 	return Texture(DynamicLoadObject("HDTPDecos.Skins.HDTPBarrel1Tex10", class'Texture', true)) != None;
 }
 

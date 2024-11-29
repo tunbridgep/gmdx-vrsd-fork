@@ -73,7 +73,7 @@ function ToggleLock(DeusExPlayer Player)
 //Base it off SubwayControlPanel
 function bool IsHDTP()
 {
-    return bHDTPInstalled && class'SubwayControlPanel'.default.iHDTPModelToggle > 0;
+    return DeusExPlayer(GetPlayerPawn()).bHDTPInstalled && class'SubwayControlPanel'.default.iHDTPModelToggle > 0;
 }
 
 

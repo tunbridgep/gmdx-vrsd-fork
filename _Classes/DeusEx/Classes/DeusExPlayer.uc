@@ -634,6 +634,11 @@ var globalconfig bool bTrickReloading;											//Sarge: Allow reloading with a
 var globalconfig bool bFemaleHandsAlways;                                      //SARGE: If true, use the Female hands on male JC. Goth JC with nail polish?
 
 var globalconfig bool bShowDataCubeRead;                                      //SARGE: If true, darken the screens on Data Cubes when they have been read.
+
+//SARGE: HDTP Model toggles
+var config int iHDTPModelToggle;
+var bool bHDTPInstalled;
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -1634,6 +1639,8 @@ exec function HDTP(optional string s)
 	local DeusExProjectile PR;                                                  //SARGE: Added for object toggles
 	local DeusExAmmo AM;                                                        //SARGE: Added for object toggles
     
+	bHDTPInstalled = class'HDTPLoader'.static.HDTPInstalled();
+	
 	foreach Allactors(Class'Scriptedpawn',P)
 		P.UpdateHDTPSettings();
 	foreach Allactors(Class'DeusexCarcass',C)

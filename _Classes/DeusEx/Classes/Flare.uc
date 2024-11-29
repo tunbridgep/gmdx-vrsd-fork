@@ -291,6 +291,9 @@ function LightFlare()
 	local Pawn P;
 	local rotator rota;
     local DeusExPlayer playa;
+    local bool bHDTPInstalled;
+
+    bHDTPInstalled = DeusExPlayer(GetPlayerPawn()).bHDTPInstalled;
 
 	if (gen == None)
 	{

@@ -10,7 +10,6 @@ var ParticleGenerator smokeGen;
 
 //SARGE: HDTP Model toggles
 var config int iHDTPModelToggle;
-var bool bHDTPInstalled;                                             //SARGE: Store whether HDTP is installed, otherwise we get insane lag
 var string HDTPSkin;
 var string HDTPTexture;
 var string HDTPMesh;
@@ -146,7 +145,6 @@ function Destroyed()
 function PostBeginPlay()
 {
 	Super.PostBeginPlay();
-	bHDTPInstalled = class'HDTPLoader'.static.HDTPInstalled(); 
     UpdateHDTPsettings();
 
 	// randomize the lifespan a bit so things don't all disappear at once
@@ -157,7 +155,7 @@ function PostBeginPlay()
 
 function bool IsHDTP()
 {
-    return bHDTPInstalled && iHDTPModelToggle > 0;
+    return DeusExPlayer(GetPlayerPawn()).bHDTPInstalled && iHDTPModelToggle > 0;
 }
 
 exec function UpdateHDTPsettings()

@@ -480,7 +480,6 @@ var(GMDX) const bool deleteIfFemale;                                            
 
 //SARGE: HDTP Model toggles
 var config int iHDTPModelToggle;
-var bool bHDTPInstalled;                                             //SARGE: Store whether HDTP is installed, otherwise we get insane lag
 var string HDTPSkin;
 var string HDTPTexture;
 var string HDTPMesh;
@@ -552,7 +551,7 @@ function PreBeginPlay()
 
 function bool IsHDTP()
 {
-    return bHDTPInstalled && iHDTPModelToggle > 0;
+    return DeusExPlayer(GetPlayerPawn()).bHDTPInstalled && iHDTPModelToggle > 0;
 }
 
 //SARGE: New function to update model meshes (specifics handled in each class)
@@ -576,7 +575,6 @@ function PostBeginPlay()
 	Super.PostBeginPlay();
 
 	//sort out HDTP settings
-	bHDTPInstalled = class'HDTPLoader'.static.HDTPInstalled(); 
 	UpdateHDTPSettings();
 	// Set up pain timer
 	if (Region.Zone.bPainZone || HeadRegion.Zone.bPainZone ||
