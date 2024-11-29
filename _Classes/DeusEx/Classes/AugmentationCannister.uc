@@ -212,7 +212,7 @@ defaultproperties
      largeIconHeight=49
      Description="An augmentation canister teems with nanoscale mecanocarbon ROM modules suspended in a carrier serum. When injected into a compatible host subject, these modules augment an individual with extra-sapient abilities. However, proper programming of augmentations must be conducted by a medical robot, otherwise terminal damage may occur. For more information, please see 'Face of the New Man' by Kelley Chance."
      beltDescription="AUG CAN"
-     Mesh=LodMesh'HDTPItems.HDTPAugCan'
+     Mesh=LodMesh'DeusExItems.AugCan'
      CollisionRadius=4.310000
      CollisionHeight=10.240000
      Mass=10.000000

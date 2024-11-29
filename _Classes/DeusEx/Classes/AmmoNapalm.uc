@@ -11,7 +11,6 @@ defaultproperties
      MaxAmmo=150
      ItemName="Napalm Canister"
      ItemArticle="a"
-     PickupViewMesh=LodMesh'HDTPItems.HDTPammoNapalm'
      LandSound=Sound'DeusExSounds.Generic.GlassDrop'
      Icon=Texture'DeusExUI.Icons.BeltIconAmmoNapalm'
      largeIcon=Texture'DeusExUI.Icons.LargeIconAmmoNapalm'
