@@ -415,10 +415,6 @@ var      int      NumCarcasses;     // number of carcasses seen
 var      float    walkAnimMult;
 var      float    runAnimMult;
 
-var bool bUsingHDTP;
-var string HDTPMeshName;
-var string HDTPMeshTex[8];
-
 //GMDX
 var bool        bBurnedUp; //CyberP: for plasma rifle gibbing
 var bool        bFlyer;    //CyberP: for pawn knockback
@@ -484,9 +480,11 @@ var(GMDX) const bool deleteIfFemale;                                            
 
 //SARGE: HDTP Model toggles
 var config int iHDTPModelToggle;
+var bool bHDTPInstalled;                                             //SARGE: Store whether HDTP is installed, otherwise we get insane lag
 var string HDTPSkin;
 var string HDTPTexture;
 var string HDTPMesh;
+var string HDTPMeshTex[8];
 
 native(2102) final function ConBindEvents();
 
@@ -554,7 +552,7 @@ function PreBeginPlay()
 
 function bool IsHDTP()
 {
-    return iHDTPModelToggle > 0 && class'HDTPLoader'.static.HDTPInstalled();
+    return bHDTPInstalled && iHDTPModelToggle > 0;
 }
 
 //SARGE: New function to update model meshes (specifics handled in each class)
@@ -578,6 +576,7 @@ function PostBeginPlay()
 	Super.PostBeginPlay();
 
 	//sort out HDTP settings
+	bHDTPInstalled = class'HDTPLoader'.static.HDTPInstalled(); 
 	UpdateHDTPSettings();
 	// Set up pain timer
 	if (Region.Zone.bPainZone || HeadRegion.Zone.bPainZone ||

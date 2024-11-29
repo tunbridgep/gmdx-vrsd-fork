@@ -49,6 +49,7 @@ var float gravMult;                                                             
 var bool bPlusOneDamage;                                                        //RSD: did our damage get boosted by 1 from decimal damage variation? So we can turn it off for movers
 
 //SARGE: HDTP Model toggles
+var bool bHDTPInstalled;                                             //SARGE: Store whether HDTP is installed, otherwise we get insane lag
 var string HDTPSkin;
 var string HDTPTexture;
 var string HDTPMesh;
@@ -65,6 +66,7 @@ replication
 function PreBeginPlay()
 {
     Super.PreBeginPlay();
+	bHDTPInstalled = class'HDTPLoader'.static.HDTPInstalled(); 
     UpdateHDTPSettings();
 }
 
@@ -78,7 +80,7 @@ function PostBeginPlay()
 
 function bool IsHDTP()
 {
-	if (!class'HDTPLoader'.static.HDTPInstalled())
+	if (!bHDTPInstalled)
 		return false;
     else if (hdtpReference != None)
         return hdtpReference.default.iHDTPModelToggle > 0;

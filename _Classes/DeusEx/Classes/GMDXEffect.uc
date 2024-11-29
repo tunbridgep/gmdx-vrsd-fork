@@ -3,6 +3,7 @@
 class GMDXEffect expands Effects abstract;
 
 //SARGE: HDTP Model toggles
+var bool bHDTPInstalled;                                             //SARGE: Store whether HDTP is installed, otherwise we get insane lag
 var string HDTPSkin;
 var string HDTPTexture;
 var string HDTPMesh;
@@ -11,7 +12,7 @@ var class<DeusExWeapon> hdtpReference;
 
 function bool IsHDTP()
 {
-    if (!class'HDTPLoader'.static.HDTPInstalled())
+    if (!bHDTPInstalled)
         return false;
     return hdtpReference == None || hdtpReference.default.iHDTPModelToggle > 0;
 }
@@ -19,6 +20,7 @@ function bool IsHDTP()
 simulated function PreBeginPlay()
 {
 	Super.PreBeginPlay();
+	bHDTPInstalled = class'HDTPLoader'.static.HDTPInstalled();
     UpdateHDTPSettings();
 }
 

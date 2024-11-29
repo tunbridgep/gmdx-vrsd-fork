@@ -32,7 +32,7 @@ function bool IsHDTP()
 {
 	local AutoTurret turret;
 	turret = AutoTurret(Owner);
-    return (turret != None && turret.iHDTPModelToggle > 0) && class'HDTPLoader'.static.HDTPInstalled();
+    return bHDTPInstalled && (turret != None && turret.iHDTPModelToggle > 0);
 }
 
 function ResetComputerAlignment()

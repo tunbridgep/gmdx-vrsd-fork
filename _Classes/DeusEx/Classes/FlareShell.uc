@@ -6,7 +6,7 @@ class FlareShell extends DeusExDecoration;
 //Depend on Flare settings
 function bool IsHDTP()
 {
-    return class'Flare'.default.iHDTPModelToggle > 0 && class'HDTPLoader'.static.HDTPInstalled();
+    return bHDTPInstalled && class'Flare'.default.iHDTPModelToggle > 0;
 }
 
 

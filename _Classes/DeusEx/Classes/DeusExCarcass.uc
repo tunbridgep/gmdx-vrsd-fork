@@ -71,6 +71,7 @@ var localized string SearchedString;                                            
 
 //SARGE: HDTP Model toggles
 var class<ScriptedPawn> hdtpReference;
+var bool bHDTPInstalled;                                             //SARGE: Store whether HDTP is installed, otherwise we get insane lag
 var string HDTPSkin;
 var string HDTPTexture;
 var string HDTPMesh;
@@ -98,7 +99,7 @@ function bool ShouldCreate(DeusExPlayer player)
 
 function bool IsHDTP()
 {
-    return hdtpReference.default.iHDTPModelToggle > 0 && class'HDTPLoader'.static.HDTPInstalled();
+    return bHDTPInstalled && hdtpReference.default.iHDTPModelToggle > 0;
 }
 
 exec function UpdateHDTPsettings()
@@ -382,6 +383,7 @@ function PostBeginPlay()
 
 	SetTimer(30.0, False);
 
+	bHDTPInstalled = class'HDTPLoader'.static.HDTPInstalled(); 
 	 UpdateHDTPSettings(); //ugly ugly function tiem
 
 	Super.PostBeginPlay();

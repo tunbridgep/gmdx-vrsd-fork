@@ -17,6 +17,7 @@ var travel bool bLooted;                                                        
 
 //SARGE: HDTP Model toggles
 var config int iHDTPModelToggle;
+var bool bHDTPInstalled;                                             //SARGE: Store whether HDTP is installed, otherwise we get insane lag
 var string HDTPSkin;
 var string HDTPTexture;
 var string HDTPMesh;
@@ -41,6 +42,7 @@ function PostBeginPlay()                                                        
     else
        MaxAmmo = default.MaxAmmo;*/
     Super.PostBeginPlay();
+	bHDTPInstalled = class'HDTPLoader'.static.HDTPInstalled(); 
     UpdateHDTPSettings();
 }
 
@@ -381,7 +383,7 @@ Dropped:
 //Whether this displays in HDTP depends on it's associated weapon's settings
 function bool IsHDTP()
 {
-	if (!class'HDTPLoader'.static.HDTPInstalled())
+	if (!bHDTPInstalled)
 		return false;
     else if (hdtpReference != None)
         return hdtpReference.default.iHDTPModelToggle > 0;

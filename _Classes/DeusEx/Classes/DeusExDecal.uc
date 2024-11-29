@@ -6,6 +6,7 @@ class DeusExDecal extends Decal
 
 //SARGE: HDTP Model toggles
 var globalconfig int iHDTPModelToggle;
+var bool bHDTPInstalled;                                             //SARGE: Store whether HDTP is installed, otherwise we get insane lag
 var string HDTPSkin;
 var string HDTPTexture;
 var string HDTPMesh;
@@ -16,6 +17,7 @@ var bool bAttached, bStartedLife, bImportant;
 simulated function PostBeginPlay()
 {
 	Super.PostBeginPlay();
+	bHDTPInstalled = class'HDTPLoader'.static.HDTPInstalled(); 
     UpdateHDTPsettings();
 	SetTimer(1.0, false);
 }
@@ -70,7 +72,7 @@ function ReattachDecal(optional vector newrot)
 
 function bool IsHDTP()
 {
-    return iHDTPModelToggle > 0 && class'HDTPLoader'.static.HDTPInstalled();
+    return bHDTPInstalled && iHDTPModelToggle > 0;
 }
 
 exec function UpdateHDTPsettings()

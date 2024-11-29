@@ -60,7 +60,7 @@ Function Bump(actor Other)
 
 function bool IsHDTP()
 {
-    return class'DeusEx.LightBulb'.default.iHDTPModelToggle > 0 && class'HDTPLoader'.static.HDTPInstalled();
+    return bHDTPInstalled && class'DeusEx.LightBulb'.default.iHDTPModelToggle > 0;
 }
 
 defaultproperties

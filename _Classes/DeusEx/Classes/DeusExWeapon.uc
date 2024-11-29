@@ -310,7 +310,7 @@ var float sleeptime;                                                            
 
 //SARGE: HDTP Model toggles
 var config int iHDTPModelToggle;
-var int bHDTPInstalled;                                             //SARGE: Store whether HDTP is installed, otherwise we get insane lag
+var bool bHDTPInstalled;                                             //SARGE: Store whether HDTP is installed, otherwise we get insane lag
 var string HDTPSkin;
 var string HDTPTexture;
 var string HDTPPlayerViewMesh;
@@ -540,6 +540,7 @@ function PreBeginPlay()
 		Default.mpPickupAmmoCount = Default.PickupAmmoCount;
 	}
 
+    bHDTPInstalled = class'HDTPLoader'.static.HDTPInstalled(); 
     UpdateHDTPSettings();
     DoWeaponOffset(DeusExPlayer(GetPlayerPawn()));
 }
@@ -1266,14 +1267,7 @@ local float p, mod;
 
 function bool IsHDTP()
 {
-    if (bHDTPInstalled == 0)
-    {
-        if (class'HDTPLoader'.static.HDTPInstalled())
-            bHDTPInstalled = 2;
-        else
-            bHDTPInstalled = 1;
-    }
-    return bHDTPInstalled == 2 && iHDTPModelToggle > 0;
+    return bHDTPInstalled && iHDTPModelToggle > 0;
 }
 
 function CheckWeaponSkins()
