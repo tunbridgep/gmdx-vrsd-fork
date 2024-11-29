@@ -375,10 +375,10 @@ if (Other != none)
 
 			if (hole != None)
 			{
-				if (mov != none && mov.bBreakable)// && (mov.minDamageThreshold <= Damage)) //SARGE: Allow glass-holes on glass objects always
+				if (mov != none)// && mov.bBreakable && mov.minDamageThreshold <= Damage) //SARGE: Allow glass-holes on glass objects always
 				{
 					// don't draw damage art on destroyed movers, or ones we can't damage
-					if (mov.bDestroyed || (mov.minDamageThreshold > Damage))
+					if (mov.bDestroyed || (mov.minDamageThreshold > Damage) || !mov.bBreakable)
 						hole.Destroy();
 					else if (mov.FragmentClass == class'GlassFragment')
 					{
