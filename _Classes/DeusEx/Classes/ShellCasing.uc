@@ -179,6 +179,7 @@ state Dying
 defaultproperties
 {
      smokeprob=0.600000
+     Fragments(0)=LodMesh'HDTPItems.HDTPShellcasing'
      HDTPMesh="HDTPItems.HDTPShellcasing"
      numFragmentTypes=1
      elasticity=0.700000

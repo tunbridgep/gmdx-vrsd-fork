@@ -39,6 +39,7 @@ defaultproperties
      HDTPMesh="HDTPDecos.HDTPShoplight"
      bPushable=False
      Physics=PHYS_None
+     Mesh=LodMesh'HDTPDecos.HDTPShoplight'
      CollisionRadius=42.500000
      CollisionHeight=4.000000
      Mass=30.000000
