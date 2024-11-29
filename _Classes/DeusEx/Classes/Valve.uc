@@ -54,9 +54,10 @@ defaultproperties
      HitPoints=40
      bInvincible=True
      ItemName="Valve"
+     HDTPMesh="HDTPDecos.HDTPValve"
      bPushable=False
      Physics=PHYS_None
-     Mesh=LodMesh'HDTPDecos.HDTPValve'
+     Mesh=LodMesh'DeusExDeco.Valve'
      SoundRadius=6
      SoundVolume=48
      SoundPitch=96

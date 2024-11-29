@@ -12,7 +12,7 @@ defaultproperties
      ImpactSound=Sound'DeusExSounds.Generic.WoodHit1'
      MiscSound=Sound'DeusExSounds.Generic.WoodHit2'
      Skin=Texture'DeusExItems.Skins.FleshFragmentTex1'
-     Mesh=LodMesh'HDTPDecos.HDTPbonefemur'
+     Mesh=LodMesh'DeusExDeco.BoneFemur'
      CollisionRadius=2.000000
      CollisionHeight=0.780000
      Mass=3.000000

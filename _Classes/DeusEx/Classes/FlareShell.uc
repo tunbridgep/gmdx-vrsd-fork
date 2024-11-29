@@ -18,7 +18,6 @@ defaultproperties
      ItemName="Used Flare"
      HDTPMesh="HDTPItems.HDTPflare"
      Mesh=LodMesh'DeusExItems.Flare'
-     :wa
      MultiSkins(1)=Texture'DeusExItems.Skins.PinkMaskTex'
      CollisionRadius=6.200000
      CollisionHeight=2.300000

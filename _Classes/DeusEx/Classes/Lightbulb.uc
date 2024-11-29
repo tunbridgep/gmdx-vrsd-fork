@@ -67,9 +67,10 @@ defaultproperties
      FragType=Class'DeusEx.GlassFragment'
      bHighlight=False
      ItemName="Light Bulb"
+     HDTPMesh="HDTPDecos.HDTPLightBulb"
      bPushable=False
      Physics=PHYS_None
-     Mesh=LodMesh'HDTPDecos.HDTPLightBulb'
+     Mesh=LodMesh'DeusExDeco.Lightbulb'
      ScaleGlow=2.000000
      bUnlit=True
      CollisionRadius=1.600000

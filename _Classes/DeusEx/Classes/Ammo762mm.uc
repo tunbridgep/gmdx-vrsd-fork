@@ -47,7 +47,7 @@ simulated function bool SimUseAmmo()
 		{
 			shell.Velocity = (FRand()*90+40) * Y + (20-FRand()*40) * X;
 			shell.Velocity.Z = 10+frand()*10;
-			Shell.mesh = lodmesh'HDTPItems.HDTPAssaultCasing';
+			shell.Mesh = class'HDTPLoader'.static.GetMesh("HDTPItems.HDTPAssaultCasing");
 			Shell.Smokeprob=0.75;
 		}
 		return True;

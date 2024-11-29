@@ -44,12 +44,10 @@ simulated function bool UpdateInfo(Object winObject)
 defaultproperties
 {
      MustBeUsedOn="Must be used on Augmentations Screen."
+     HDTPMesh="HDTPItems.HDTPAugUpCan"
      ItemName="Augmentation Override Cannister"
      ItemArticle="an"
      PlayerViewOffset=(X=30.000000,Z=-12.000000)
-     PlayerViewMesh=LodMesh'HDTPItems.HDTPAugUpCan'
-     PickupViewMesh=LodMesh'HDTPItems.HDTPAugUpCan'
-     ThirdPersonMesh=LodMesh'HDTPItems.HDTPAugUpCan'
      LandSound=Sound'DeusExSounds.Generic.PlasticHit1'
      Icon=Texture'GMDXSFX.UI.AugOverride'
      largeIcon=Texture'GMDXSFX.UI.AugOverrideBelt'

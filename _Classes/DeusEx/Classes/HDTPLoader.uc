@@ -34,6 +34,7 @@ static function LodMesh GetMesh2(string m, string m2, bool first)
         MMesh = LodMesh(DynamicLoadObject(m, class'LodMesh', true));
     if (MMesh == None)
         MMesh = LodMesh(DynamicLoadObject(m2, class'LodMesh', true));
+    log("Getting mesh: " $ m $ ", " $ m2 $ ", " $ first);
     return MMesh;
 }
 
@@ -45,11 +46,13 @@ static function Texture GetTexture2(string tex, string alternative, bool first)
         TTex = Texture(DynamicLoadObject(tex, class'Texture', true));
     if (TTex == None)
         TTex = Texture(DynamicLoadObject(alternative, class'Texture', true));
+    log("Getting tex: " $ tex $ ", " $ alternative $ ", " $ first);
 	return TTex;
 }
 
 static function bool HDTPInstalled()
 {
+    log("Checking HDTP installed:");
 	return Texture(DynamicLoadObject("HDTPDecos.Skins.HDTPBarrel1Tex10", class'Texture', true)) != None;
 }
 

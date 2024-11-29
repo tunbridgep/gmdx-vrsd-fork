@@ -81,6 +81,8 @@ defaultproperties
      ItemName="HE 20mm Shell"
      ItemArticle="a"
      gravMult=0.600000
+     HDTPMesh="HDTPItems.HDTPShotguncasing"
+     hdtpReference=Class'DeusEx.WeaponAssaultGun'
      speed=1400.000000
      MaxSpeed=1400.000000
      Damage=200.000000
@@ -88,6 +90,6 @@ defaultproperties
      SpawnSound=Sound'DeusExSounds.Generic.SmallExplosion1'
      ImpactSound=Sound'DeusExSounds.Generic.MediumExplosion2'
      ExplosionDecal=Class'DeusEx.ScorchMark'
-     Mesh=LodMesh'HDTPItems.HDTPShotguncasing'
+     Mesh=LodMesh'DeusExItems.ShellCasing'
      DrawScale=2.400000
 }

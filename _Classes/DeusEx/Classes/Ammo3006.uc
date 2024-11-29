@@ -44,11 +44,11 @@ function bool UseAmmo(int AmountNeeded)
             shell = spawn(class'ShellCasing',,, Owner.Location + offset,Pawn(Owner).viewrotation);
       }
 
-		if (shell != None)
+		if (shell != None && IsHDTP())
 		{
 			shell.Velocity = (FRand()*90+90) * Y + (20-FRand()*40) * X;
 			shell.Velocity.Z = 19+frand()*10;
-			shell.Mesh = lodmesh'HDTPItems.HDTPSniperCasing';
+			shell.Mesh = class'HDTPLoader'.static.GetMesh("HDTPItems.HDTPSniperCasing");
 			Shell.Smokeprob=0.2;
 			shell.DrawScale+=0.4;
 		}

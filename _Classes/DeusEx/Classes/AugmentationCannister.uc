@@ -201,12 +201,10 @@ defaultproperties
 {
      AugsAvailable="Can Add:"
      MustBeUsedOn="Can only be installed with the help of a MedBot."
+     HDTPMesh="HDTPItems.HDTPAugCan"
      ItemName="Augmentation Canister"
      ItemArticle="an"
      PlayerViewOffset=(X=30.000000,Z=-12.000000)
-     PlayerViewMesh=LodMesh'HDTPItems.HDTPAugCan'
-     PickupViewMesh=LodMesh'HDTPItems.HDTPAugCan'
-     ThirdPersonMesh=LodMesh'HDTPItems.HDTPAugCan'
      LandSound=Sound'DeusExSounds.Generic.PlasticHit1'
      Icon=Texture'DeusExUI.Icons.BeltIconAugmentationCannister'
      largeIcon=Texture'DeusExUI.Icons.LargeIconAugmentationCannister'

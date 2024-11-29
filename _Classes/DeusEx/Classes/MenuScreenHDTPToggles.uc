@@ -22,170 +22,202 @@ event bool ListRowActivated(window list, int rowId)
 
 defaultproperties
 {
-     items(0)=(actionText="JC Denton",consoleTarget="DeusExPlayer",variable="bHDTP_JC");
-     items(1)=(actionText="Paul Denton",consoleTarget="DeusExPlayer",variable="bHDTP_Paul");
-     items(2)=(actionText="Gunther Hermann",consoleTarget="DeusExPlayer",variable="bHDTP_Gunther");
-     items(3)=(actionText="Anna Navarre",consoleTarget="DeusExPlayer",variable="bHDTP_Anna");
-     items(4)=(actionText="Nicolette DuClare",consoleTarget="DeusExPlayer",variable="bHDTP_Nico");
-     items(5)=(actionText="NSF Terrorist",consoleTarget="DeusExPlayer",variable="bHDTP_NSF");
-     items(6)=(actionText="Riot Cop",consoleTarget="DeusExPlayer",variable="bHDTP_RiotCop");
-     items(7)=(actionText="Walton Simons",consoleTarget="DeusExPlayer",variable="bHDTP_Walton");
-     items(8)=(actionText="UNATCO Trooper",consoleTarget="DeusExPlayer",variable="bHDTP_Unatco");
      //items(9)=(actionText="MJ12 Trooper",consoleTarget="DeusExPlayer",variable="bHDTP_MJ12");
-     items(9)=(actionText="Cleaner Bot",consoleTarget="DeusEx.CleanerBot",defaultValue=1);
-     items(10)=(actionText="Military Bot",consoleTarget="DeusEx.MilitaryBot",defaultValue=1);
-     items(11)=(actionText="Medical Bot",consoleTarget="DeusEx.MedicalBot",defaultValue=1);
-     items(12)=(actionText="Repair Bot",consoleTarget="DeusEx.RepairBot",defaultValue=1);
-     items(13)=(actionText="Security Bot (Large)",consoleTarget="DeusEx.SecurityBot2",defaultValue=1);
-     items(14)=(actionText="Security Bot (Small)",consoleTarget="DeusEx.SecurityBot3",defaultValue=1);
-     items(15)=(actionText="Auto Turret",consoleTarget="DeusEx.AutoTurret",defaultValue=1);
-     items(16)=(actionText="Assault Gun",consoleTarget="DeusEx.WeaponAssaultGun",defaultValue=1);
-     items(17)=(actionText="Assault Shotgun",consoleTarget="DeusEx.WeaponAssaultShotgun",defaultValue=1);
-     items(18)=(actionText="Baton",consoleTarget="DeusEx.WeaponBaton");
-     items(19)=(actionText="Combat Knife",consoleTarget="DeusEx.WeaponCombatKnife",defaultValue=1);
-     items(20)=(actionText="Crowbar",consoleTarget="DeusEx.WeaponCrowbar",defaultValue=1);
-     items(21)=(actionText="EMP Grenade",consoleTarget="DeusEx.WeaponEMPGrenade");
-     items(22)=(actionText="Flamethrower",consoleTarget="DeusEx.WeaponFlamethrower",defaultValue=1);
-     items(23)=(actionText="Gas Grenade",consoleTarget="DeusEx.WeaponGasGrenade");
-     items(24)=(actionText="GEP Gun",consoleTarget="DeusEx.WeaponGEPGun",defaultValue=1);
-     items(25)=(actionText="LAM",consoleTarget="DeusEx.WeaponLAM");
-     items(26)=(actionText="LAW",consoleTarget="DeusEx.WeaponLAW",defaultValue=1);
-     items(27)=(actionText="Mini-Crossbow",consoleTarget="DeusEx.WeaponMiniCrossbow",defaultValue=1);
-     items(28)=(actionText="Dragons Tooth Sword",consoleTarget="DeusEx.WeaponNanoSword",defaultValue=1);
-     items(29)=(actionText="Scramble Grenade",consoleTarget="DeusEx.WeaponNanoVirusGrenade");
-     items(30)=(actionText="Pepper Spray",consoleTarget="DeusEx.WeaponPepperGun",defaultValue=1);
-     items(31)=(actionText="Pistol",consoleTarget="DeusEx.WeaponPistol",defaultValue=1);
-     items(32)=(actionText="Plasma Rifle",consoleTarget="DeusEx.WeaponPlasmaRifle",defaultValue=1);
-     items(33)=(actionText="Riot Prod",consoleTarget="DeusEx.WeaponProd");
-     items(34)=(actionText="Sniper Rifle",consoleTarget="DeusEx.WeaponRifle",defaultValue=1,valueText2="FOMOD Beta");
-     items(35)=(actionText="Sawed-Off Shotgun",consoleTarget="DeusEx.WeaponSawedOffShotgun",defaultValue=2,valueText2="FOMOD Beta");
-     items(36)=(actionText="Stealth Pistol",consoleTarget="DeusEx.WeaponStealthPistol",defaultValue=1,valueText2="FOMOD Beta");
-     items(37)=(actionText="Sword",consoleTarget="DeusEx.WeaponSword",defaultValue=1);
-     items(38)=(actionText="Throwing Knives",consoleTarget="DeusEx.WeaponShuriken",defaultValue=1);
-     items(39)=(actionText="AI Prototype",consoleTarget="DeusEx.AIPrototype",defaultValue=1);
-     items(40)=(actionText="Alarm Unit",consoleTarget="DeusEx.AlarmUnit",defaultValue=1);
-     items(41)=(actionText="Alarm Light",consoleTarget="DeusEx.AlarmLight",defaultValue=1);
-     items(42)=(actionText="Ambrosia Container",consoleTarget="DeusEx.BarrelAmbrosia",defaultValue=1);
-     items(43)=(actionText="Barrel",consoleTarget="DeusEx.Barrel1",defaultValue=1);
-     items(44)=(actionText="Barrel (Flaming)",consoleTarget="DeusEx.BarrelFire",defaultValue=1);
-     items(45)=(actionText="Binoculars",consoleTarget="DeusEx.Binoculars",defaultValue=1);
-     items(46)=(actionText="Book (Open)",consoleTarget="DeusEx.BookOpen",defaultValue=1);
-     items(47)=(actionText="Book (Closed)",consoleTarget="DeusEx.BookClosed",defaultValue=2,valueText2="HDTP (Extended Covers)");
-     items(48)=(actionText="Book (Newspaper)",consoleTarget="DeusEx.Newspaper",defaultValue=1);
-     items(49)=(actionText="Button",consoleTarget="DeusEx.Button1",defaultValue=1);
-     items(50)=(actionText="Candy Bar",consoleTarget="DeusEx.Candybar",defaultValue=1);
-     items(51)=(actionText="Cage Light",consoleTarget="DeusEx.CageLight",defaultValue=1);
-     items(52)=(actionText="Cardboard Box (Large)",consoleTarget="DeusEx.BoxLarge",defaultValue=1);
-     items(53)=(actionText="Cardboard Box (Medium)",consoleTarget="DeusEx.BoxMedium",defaultValue=1);
-     items(54)=(actionText="Cardboard Box (Small)",consoleTarget="DeusEx.BoxSmall",defaultValue=1);
-     items(55)=(actionText="Chair",consoleTarget="DeusEx.Chair1",defaultValue=1);
-     items(56)=(actionText="Chair (Leather)",consoleTarget="DeusEx.ChairLeather",defaultValue=1);
-     items(57)=(actionText="Chair (Swivel Chair)",consoleTarget="DeusEx.OfficeChair",defaultValue=1);
-     items(58)=(actionText="Cigarettes",consoleTarget="DeusEx.Cigarettes",defaultValue=1);
-     items(59)=(actionText="Cigarette Machine",consoleTarget="DeusEx.CigaretteMachine",defaultValue=1);
-     items(60)=(actionText="Computer (Personal)",consoleTarget="DeusEx.ComputerPersonal",defaultValue=1);
-     items(61)=(actionText="Computer (Security)",consoleTarget="DeusEx.ComputerSecurity",defaultValue=1);
-     items(62)=(actionText="Computer (ATM)",consoleTarget="DeusEx.ATM",defaultValue=1);
-     items(63)=(actionText="Concrete Barricade",consoleTarget="DeusEx.RoadBlock",defaultValue=1);
-     items(64)=(actionText="Control Panel",consoleTarget="DeusEx.ControlPanel",defaultValue=1);
-     items(65)=(actionText="Credit Chit",consoleTarget="DeusEx.Credits",defaultValue=1);
-     items(66)=(actionText="Data Cube",consoleTarget="DeusEx.DataCube",defaultValue=1);
-     items(67)=(actionText="Earth",consoleTarget="DeusEx.Earth",defaultValue=1);
-     items(68)=(actionText="Fan 1",consoleTarget="DeusEx.Fan1",defaultValue=1);
-     items(69)=(actionText="Fan 2",consoleTarget="DeusEx.Fan2",defaultValue=1);
-     items(70)=(actionText="Fan 3",consoleTarget="DeusEx.Fan1Vertical",defaultValue=1);
-     items(71)=(actionText="Fan (Ceiling Fan)",consoleTarget="DeusEx.CeilingFan",defaultValue=1);
-     items(72)=(actionText="Fan (Ceiling Fan Motor)",consoleTarget="DeusEx.CeilingFanMotor",defaultValue=1);
-     items(73)=(actionText="Faucet",consoleTarget="DeusEx.Faucet",defaultValue=1);
-     items(74)=(actionText="Fire Plug",consoleTarget="DeusEx.FirePlug",defaultValue=1);
-     items(75)=(actionText="Flag Pole",consoleTarget="DeusEx.FlagPole",defaultValue=1);
-     items(76)=(actionText="Flare",consoleTarget="DeusEx.Flare",defaultValue=1);
-     items(77)=(actionText="Flower Pot",consoleTarget="DeusEx.Flowers",defaultValue=1);
-     items(78)=(actionText="Keypad 1",consoleTarget="DeusEx.Keypad1",defaultValue=1);
-     items(79)=(actionText="Keypad 2",consoleTarget="DeusEx.Keypad2",defaultValue=1);
-     items(80)=(actionText="Keypad 3",consoleTarget="DeusEx.Keypad3",defaultValue=1);
-     items(81)=(actionText="Lab Flask",consoleTarget="DeusEx.Flask",defaultValue=1);
-     items(82)=(actionText="Lamp 1",consoleTarget="DeusEx.Lamp1",defaultValue=1);
-     items(83)=(actionText="Lamp 2",consoleTarget="DeusEx.Lamp2",defaultValue=1);
-     items(84)=(actionText="Lamp 3",consoleTarget="DeusEx.Lamp3",defaultValue=1);
-     items(85)=(actionText="Light Switch",consoleTarget="DeusEx.LightSwitch",defaultValue=1);
-     items(86)=(actionText="Liquor",consoleTarget="DeusEx.LiquorBottle",defaultValue=1);
-     items(87)=(actionText="Liquor (Forty)",consoleTarget="DeusEx.Liquor40oz",defaultValue=1);
-     items(88)=(actionText="Liquor (Wine)",consoleTarget="DeusEx.WineBottle",defaultValue=1);
-     items(89)=(actionText="Leather Couch",consoleTarget="DeusEx.CouchLeather",defaultValue=1);
-     items(90)=(actionText="Medical Kit",consoleTarget="DeusEx.MedKit",defaultValue=1);
-     items(91)=(actionText="Microscope",consoleTarget="DeusEx.Microscope",defaultValue=1);
-     items(92)=(actionText="Nanovirus Container",consoleTarget="DeusEx.BarrelVirus",defaultValue=1);
-     items(93)=(actionText="Pan 1",consoleTarget="DeusEx.Pan1",defaultValue=1);
-     items(94)=(actionText="Pan 2",consoleTarget="DeusEx.Pan2",defaultValue=1);
-     items(95)=(actionText="Pan 3",consoleTarget="DeusEx.Pan3",defaultValue=1);
-     items(96)=(actionText="Pan 4",consoleTarget="DeusEx.Pan4",defaultValue=1);
-     items(97)=(actionText="Pillow",consoleTarget="DeusEx.Pillow",defaultValue=1);
-     items(98)=(actionText="Pinball Machine",consoleTarget="DeusEx.Pinball",defaultValue=1);
-     items(99)=(actionText="Plant 1",consoleTarget="DeusEx.Plant1",defaultValue=1);
-     items(100)=(actionText="Plant 2",consoleTarget="DeusEx.Plant2",defaultValue=1);
-     items(101)=(actionText="Plant 3",consoleTarget="DeusEx.Plant3",defaultValue=1);
-     items(102)=(actionText="Police Boat",consoleTarget="DeusEx.NYPoliceBoat",defaultValue=1);
-     items(103)=(actionText="Pool Ball",consoleTarget="DeusEx.PoolBall",defaultValue=1);
-     items(104)=(actionText="Pot 1",consoleTarget="DeusEx.Pot1",defaultValue=1);
-     items(105)=(actionText="Pot 2",consoleTarget="DeusEx.Pot2",defaultValue=1);
-     items(106)=(actionText="Retinal Scanner",consoleTarget="DeusEx.RetinalScanner",defaultValue=1);
-     items(107)=(actionText="Satellite Dish",consoleTarget="DeusEx.SatelliteDish",defaultValue=1);
-     items(108)=(actionText="Soda Can",consoleTarget="DeusEx.SodaCan",defaultValue=1);
-     items(109)=(actionText="Soy Food",consoleTarget="DeusEx.SoyFood",defaultValue=1);
-     items(110)=(actionText="Subway Control Panel",consoleTarget="DeusEx.SubwayControlPanel",defaultValue=1);
-     items(111)=(actionText="Supply Crate (General)",consoleTarget="DeusEx.CrateBreakableMedGeneral",defaultValue=1);
-     items(112)=(actionText="Supply Crate (Combat)",consoleTarget="DeusEx.CrateBreakableMedCombat",defaultValue=1);
-     items(113)=(actionText="Supply Crate (Medical)",consoleTarget="DeusEx.CrateBreakableMedMedical",defaultValue=1);
-     items(114)=(actionText="Switch",consoleTarget="DeusEx.Switch1",defaultValue=1);
-     items(115)=(actionText="TNT Crate",consoleTarget="DeusEx.CrateExplosiveSmall",defaultValue=1);
-     items(116)=(actionText="Telephone",consoleTarget="DeusEx.Phone",defaultValue=1);
-     items(117)=(actionText="Telephone Answering Machine",consoleTarget="DeusEx.TAD",defaultValue=1);
-     items(118)=(actionText="Toilet",consoleTarget="DeusEx.Toilet",defaultValue=1);
-     items(119)=(actionText="Toilet (Urinal)",consoleTarget="DeusEx.Toilet2",defaultValue=1);
-     items(120)=(actionText="Trashcan 1",consoleTarget="DeusEx.TrashCan1",defaultValue=1);
-     items(121)=(actionText="Trashcan 2",consoleTarget="DeusEx.TrashCan2",defaultValue=1);
-     items(122)=(actionText="Trashcan 3",consoleTarget="DeusEx.TrashCan3",defaultValue=1);
-     items(123)=(actionText="Trashcan 4",consoleTarget="DeusEx.TrashCan4",defaultValue=1);
-     items(124)=(actionText="Trashbag 1",consoleTarget="DeusEx.Trashbag",defaultValue=1);
-     items(125)=(actionText="Trashbag 2",consoleTarget="DeusEx.Trashbag2",defaultValue=1);
-     items(126)=(actionText="Trash (Paper)",consoleTarget="DeusEx.TrashPaper",defaultValue=1);
-     items(127)=(actionText="Tree 1",consoleTarget="DeusEx.Tree1",defaultValue=1);
-     items(128)=(actionText="Tree 2",consoleTarget="DeusEx.Tree2",defaultValue=1);
-     items(129)=(actionText="Tree 3",consoleTarget="DeusEx.Tree3",defaultValue=1);
-     items(130)=(actionText="Tree 4",consoleTarget="DeusEx.Tree4",defaultValue=1);
-     items(131)=(actionText="Trophy",consoleTarget="DeusEx.Trophy",defaultValue=1);
-     items(132)=(actionText="Unbreakable Crate (Large)",consoleTarget="DeusEx.CrateUnbreakableLarge",defaultValue=1);
-     items(133)=(actionText="Unbreakable Crate (Medium)",consoleTarget="DeusEx.CrateUnbreakableMed",defaultValue=1);
-     items(134)=(actionText="Unbreakable Crate (Small)",consoleTarget="DeusEx.CrateUnbreakableSmall",defaultValue=1);
-     items(135)=(actionText="Utility Push-Cart",consoleTarget="DeusEx.Cart",defaultValue=1);
-     items(136)=(actionText="Vase 1",consoleTarget="DeusEx.Vase1",defaultValue=1);
-     items(137)=(actionText="Vase 2",consoleTarget="DeusEx.Vase2",defaultValue=1);
-     items(138)=(actionText="Vending Machine",consoleTarget="DeusEx.VendingMachine",defaultValue=1);
-     items(139)=(actionText="Water Cooler",consoleTarget="DeusEx.WaterCooler",defaultValue=1);
-     items(140)=(actionText="Water Fountain",consoleTarget="DeusEx.WaterFountain",defaultValue=1);
-     items(141)=(actionText="10mm Ammo",consoleTarget="DeusEx.Ammo10mm",defaultValue=1);
-     items(142)=(actionText="10mm AP Ammo",consoleTarget="DeusEx.Ammo10mmAP",defaultValue=1);
-     items(143)=(actionText="20mm Ammo",consoleTarget="DeusEx.Ammo20mm",defaultValue=1);
-     items(144)=(actionText="20mm EMP Ammo",consoleTarget="DeusEx.Ammo20mmEMP",defaultValue=1); //TODO: Add 20mm EMP skin
-     items(145)=(actionText="762mm Ammo",consoleTarget="DeusEx.Ammo762mm",defaultValue=1);
-     items(146)=(actionText="3006 Ammo",consoleTarget="DeusEx.Ammo3006",defaultValue=1);
-     items(147)=(actionText="Darts",consoleTarget="DeusEx.AmmoDart",defaultValue=1);
-     items(148)=(actionText="Darts (Flare)",consoleTarget="DeusEx.AmmoDartFlare",defaultValue=1);
-     items(149)=(actionText="Darts (Poison)",consoleTarget="DeusEx.AmmoDartPoison",defaultValue=1);
-     items(150)=(actionText="Darts (Taser)",consoleTarget="DeusEx.AmmoDartTaser",defaultValue=1);
-     items(151)=(actionText="Napalm",consoleTarget="DeusEx.AmmoNapalm",defaultValue=1);
-     items(152)=(actionText="Plasma Ammo",consoleTarget="DeusEx.AmmoPlasma",defaultValue=1); //TODO: Add superheated plasma
-     items(153)=(actionText="Prod Charger",consoleTarget="DeusEx.AmmoBattery",defaultValue=1);
-     items(154)=(actionText="Rockets",consoleTarget="DeusEx.AmmoRocket",defaultValue=1);
-     items(155)=(actionText="WP Rockets",consoleTarget="DeusEx.AmmoRocketWP",defaultValue=1);
-     items(156)=(actionText="Shells",consoleTarget="DeusEx.AmmoShell",defaultValue=1);
-     items(157)=(actionText="Shells (Sabot)",consoleTarget="DeusEx.AmmoSabot",defaultValue=1);
-     items(158)=(actionText="Shells (Rubber)",consoleTarget="DeusEx.AmmoRubber",defaultValue=1);
-     items(159)=(actionText="Blood and Decals",consoleTarget="DeusEx.DeusExDecal",defaultValue=1);
      strHeaderActionLabel="Object"
      strHeaderAssignedLabel="Model"
      HelpText="Select the model you wish to change and then press [Enter] or Double-Click to cycle through available models"
+     Items(0)=(actionText="JC Denton",variable="bHDTP_JC",consoleTarget="DeusExPlayer")
+     Items(1)=(actionText="Paul Denton",variable="bHDTP_Paul",consoleTarget="DeusExPlayer")
+     Items(2)=(actionText="Gunther Hermann",variable="bHDTP_Gunther",consoleTarget="DeusExPlayer")
+     Items(3)=(actionText="Anna Navarre",variable="bHDTP_Anna",consoleTarget="DeusExPlayer")
+     Items(4)=(actionText="Nicolette DuClare",variable="bHDTP_Nico",consoleTarget="DeusExPlayer")
+     Items(5)=(actionText="NSF Terrorist",variable="bHDTP_NSF",consoleTarget="DeusExPlayer")
+     Items(6)=(actionText="Riot Cop",variable="bHDTP_RiotCop",consoleTarget="DeusExPlayer")
+     Items(7)=(actionText="Walton Simons",variable="bHDTP_Walton",consoleTarget="DeusExPlayer")
+     Items(8)=(actionText="UNATCO Trooper",variable="bHDTP_Unatco",consoleTarget="DeusExPlayer")
+     Items(9)=(actionText="Cleaner Bot",defaultValue=1,consoleTarget="DeusEx.CleanerBot")
+     Items(10)=(actionText="Military Bot",defaultValue=1,consoleTarget="DeusEx.MilitaryBot")
+     Items(11)=(actionText="Medical Bot",defaultValue=1,consoleTarget="DeusEx.MedicalBot")
+     Items(12)=(actionText="Repair Bot",defaultValue=1,consoleTarget="DeusEx.RepairBot")
+     Items(13)=(actionText="Security Bot (Large)",defaultValue=1,consoleTarget="DeusEx.SecurityBot2")
+     Items(14)=(actionText="Security Bot (Small)",defaultValue=1,consoleTarget="DeusEx.SecurityBot3")
+     Items(15)=(actionText="Spider Bot 1",defaultValue=1,consoleTarget="DeusEx.SpiderBot")
+     Items(16)=(actionText="Spider Bot (Mini)",defaultValue=1,consoleTarget="DeusEx.SpiderBot2")
+     Items(17)=(actionText="Spider Bot (Mini #2)",defaultValue=1,consoleTarget="DeusEx.SpiderBot3")
+     Items(18)=(actionText="Spider Bot (Mini #3)",defaultValue=1,consoleTarget="DeusEx.SpiderBot4")
+     Items(19)=(actionText="Gray",defaultValue=1,consoleTarget="DeusEx.Gray")
+     Items(20)=(actionText="Greasel",defaultValue=1,consoleTarget="DeusEx.Greasel")
+     Items(21)=(actionText="Karkian",defaultValue=1,consoleTarget="DeusEx.Karkian")
+     Items(22)=(actionText="Auto Turret",defaultValue=1,consoleTarget="DeusEx.AutoTurret")
+     Items(23)=(actionText="Assault Gun",defaultValue=1,consoleTarget="DeusEx.WeaponAssaultGun")
+     Items(24)=(actionText="Assault Shotgun",defaultValue=1,consoleTarget="DeusEx.WeaponAssaultShotgun")
+     Items(25)=(actionText="Baton",consoleTarget="DeusEx.WeaponBaton")
+     Items(26)=(actionText="Combat Knife",defaultValue=1,consoleTarget="DeusEx.WeaponCombatKnife")
+     Items(27)=(actionText="Crowbar",defaultValue=1,consoleTarget="DeusEx.WeaponCrowbar")
+     Items(28)=(actionText="EMP Grenade",consoleTarget="DeusEx.WeaponEMPGrenade")
+     Items(29)=(actionText="Flamethrower",defaultValue=1,consoleTarget="DeusEx.WeaponFlamethrower")
+     Items(30)=(actionText="Gas Grenade",consoleTarget="DeusEx.WeaponGasGrenade")
+     Items(31)=(actionText="GEP Gun",defaultValue=1,consoleTarget="DeusEx.WeaponGEPGun")
+     Items(32)=(actionText="LAM",consoleTarget="DeusEx.WeaponLAM")
+     Items(33)=(actionText="LAW",defaultValue=1,consoleTarget="DeusEx.WeaponLAW")
+     Items(34)=(actionText="Mini-Crossbow",defaultValue=1,consoleTarget="DeusEx.WeaponMiniCrossbow")
+     Items(35)=(actionText="Dragons Tooth Sword",defaultValue=1,consoleTarget="DeusEx.WeaponNanoSword")
+     Items(36)=(actionText="Scramble Grenade",consoleTarget="DeusEx.WeaponNanoVirusGrenade")
+     Items(37)=(actionText="Pepper Spray",defaultValue=1,consoleTarget="DeusEx.WeaponPepperGun")
+     Items(38)=(actionText="Pistol",defaultValue=1,consoleTarget="DeusEx.WeaponPistol")
+     Items(39)=(actionText="Plasma Rifle",defaultValue=1,consoleTarget="DeusEx.WeaponPlasmaRifle")
+     Items(40)=(actionText="Riot Prod",consoleTarget="DeusEx.WeaponProd")
+     Items(41)=(actionText="Sniper Rifle",valueText2="FOMOD Beta",defaultValue=1,consoleTarget="DeusEx.WeaponRifle")
+     Items(42)=(actionText="Sawed-Off Shotgun",valueText2="FOMOD Beta",defaultValue=2,consoleTarget="DeusEx.WeaponSawedOffShotgun")
+     Items(43)=(actionText="Stealth Pistol",valueText2="FOMOD Beta",defaultValue=1,consoleTarget="DeusEx.WeaponStealthPistol")
+     Items(44)=(actionText="Sword",defaultValue=1,consoleTarget="DeusEx.WeaponSword")
+     Items(45)=(actionText="Throwing Knives",defaultValue=1,consoleTarget="DeusEx.WeaponShuriken")
+     Items(46)=(actionText="AI Prototype",defaultValue=1,consoleTarget="DeusEx.AIPrototype")
+     Items(47)=(actionText="Alarm Unit",defaultValue=1,consoleTarget="DeusEx.AlarmUnit")
+     Items(48)=(actionText="Alarm Light",defaultValue=1,consoleTarget="DeusEx.AlarmLight")
+     Items(49)=(actionText="Ambrosia Container",defaultValue=1,consoleTarget="DeusEx.BarrelAmbrosia")
+     Items(50)=(actionText="Augmentation Cannister",defaultValue=1,consoleTarget="DeusEx.AugmentationCannister")
+     Items(51)=(actionText="Augmentation Upgrade",defaultValue=1,consoleTarget="DeusEx.AugmentationUpgradeCannister")
+     Items(52)=(actionText="Augmentation Override",defaultValue=1,consoleTarget="DeusEx.AugmentationUpgradeCannisterOverdrive")
+     Items(53)=(actionText="Barrel",defaultValue=1,consoleTarget="DeusEx.Barrel1")
+     Items(54)=(actionText="Barrel (Flaming)",defaultValue=1,consoleTarget="DeusEx.BarrelFire")
+     Items(55)=(actionText="Basket",defaultValue=1,consoleTarget="DeusEx.Basket")
+     Items(56)=(actionText="Basketball",defaultValue=1,consoleTarget="DeusEx.Basketball")
+     Items(57)=(actionText="Bench 1",defaultValue=1,consoleTarget="DeusEx.WHBenchEast")
+     Items(58)=(actionText="Bench 2",defaultValue=1,consoleTarget="DeusEx.WHBenchLibrary")
+     Items(59)=(actionText="Bone (Femur)",defaultValue=1,consoleTarget="DeusEx.BoneFemur")
+     Items(60)=(actionText="Bone (Femur 2)",defaultValue=1,consoleTarget="DeusEx.BoneFemurBloody")
+     Items(61)=(actionText="Binoculars",defaultValue=1,consoleTarget="DeusEx.Binoculars")
+     Items(62)=(actionText="Book (Open)",defaultValue=1,consoleTarget="DeusEx.BookOpen")
+     Items(63)=(actionText="Book (Closed)",valueText2="HDTP (Extended Covers)",defaultValue=2,consoleTarget="DeusEx.BookClosed")
+     Items(64)=(actionText="Book (Newspaper)",defaultValue=1,consoleTarget="DeusEx.Newspaper")
+     Items(65)=(actionText="Button",defaultValue=1,consoleTarget="DeusEx.Button1")
+     Items(66)=(actionText="Candy Bar",defaultValue=1,consoleTarget="DeusEx.Candybar")
+     Items(67)=(actionText="Cage Light",defaultValue=1,consoleTarget="DeusEx.CageLight")
+     Items(68)=(actionText="Cardboard Box (Large)",defaultValue=1,consoleTarget="DeusEx.BoxLarge")
+     Items(69)=(actionText="Cardboard Box (Medium)",defaultValue=1,consoleTarget="DeusEx.BoxMedium")
+     Items(70)=(actionText="Cardboard Box (Small)",defaultValue=1,consoleTarget="DeusEx.BoxSmall")
+     Items(71)=(actionText="Cat",defaultValue=1,consoleTarget="DeusEx.Cat")
+     Items(72)=(actionText="Chair",defaultValue=1,consoleTarget="DeusEx.Chair1")
+     Items(73)=(actionText="Chair (Leather)",defaultValue=1,consoleTarget="DeusEx.ChairLeather")
+     Items(74)=(actionText="Chair (Swivel Chair)",defaultValue=1,consoleTarget="DeusEx.OfficeChair")
+     Items(75)=(actionText="Chair (Dining Chair)",defaultValue=1,consoleTarget="DeusEx.WHChairDining")
+     Items(76)=(actionText="Chair (Fancy)",defaultValue=1,consoleTarget="DeusEx.WHChairOvalOffice")
+     Items(77)=(actionText="Cigarettes",defaultValue=1,consoleTarget="DeusEx.Cigarettes")
+     Items(78)=(actionText="Cigarette Machine",defaultValue=1,consoleTarget="DeusEx.CigaretteMachine")
+     Items(79)=(actionText="Computer (Personal)",defaultValue=1,consoleTarget="DeusEx.ComputerPersonal")
+     Items(80)=(actionText="Computer (Security)",defaultValue=1,consoleTarget="DeusEx.ComputerSecurity")
+     Items(81)=(actionText="Computer (ATM)",defaultValue=1,consoleTarget="DeusEx.ATM")
+     Items(82)=(actionText="Concrete Barricade",defaultValue=1,consoleTarget="DeusEx.RoadBlock")
+     Items(83)=(actionText="Control Panel",defaultValue=1,consoleTarget="DeusEx.ControlPanel")
+     Items(84)=(actionText="Couch (Leather)",defaultValue=1,consoleTarget="DeusEx.LeatherCouch")
+     Items(85)=(actionText="Couch (Red)",defaultValue=1,consoleTarget="DeusEx.WHRedCouch")
+     Items(86)=(actionText="Credit Chit",defaultValue=1,consoleTarget="DeusEx.Credits")
+     Items(87)=(actionText="Cushion",defaultValue=1,consoleTarget="DeusEx.Cushion")
+     Items(88)=(actionText="Data Cube",defaultValue=1,consoleTarget="DeusEx.DataCube")
+     Items(89)=(actionText="Earth",defaultValue=1,consoleTarget="DeusEx.Earth")
+     Items(90)=(actionText="Fan 1",defaultValue=1,consoleTarget="DeusEx.Fan1")
+     Items(91)=(actionText="Fan 2",defaultValue=1,consoleTarget="DeusEx.Fan2")
+     Items(92)=(actionText="Fan 3",defaultValue=1,consoleTarget="DeusEx.Fan1Vertical")
+     Items(93)=(actionText="Fan (Ceiling Fan)",defaultValue=1,consoleTarget="DeusEx.CeilingFan")
+     Items(94)=(actionText="Fan (Ceiling Fan Motor)",defaultValue=1,consoleTarget="DeusEx.CeilingFanMotor")
+     Items(95)=(actionText="Faucet",defaultValue=1,consoleTarget="DeusEx.Faucet")
+     Items(96)=(actionText="Fire Plug",defaultValue=1,consoleTarget="DeusEx.FirePlug")
+     Items(97)=(actionText="Flag Pole",defaultValue=1,consoleTarget="DeusEx.FlagPole")
+     Items(98)=(actionText="Flare",defaultValue=1,consoleTarget="DeusEx.Flare")
+     Items(99)=(actionText="Flower Pot",defaultValue=1,consoleTarget="DeusEx.Flowers")
+     Items(100)=(actionText="Keypad 1",defaultValue=1,consoleTarget="DeusEx.Keypad1")
+     Items(101)=(actionText="Keypad 2",defaultValue=1,consoleTarget="DeusEx.Keypad2")
+     Items(102)=(actionText="Keypad 3",defaultValue=1,consoleTarget="DeusEx.Keypad3")
+     Items(103)=(actionText="Lab Flask",defaultValue=1,consoleTarget="DeusEx.Flask")
+     Items(104)=(actionText="Lamp 1",defaultValue=1,consoleTarget="DeusEx.Lamp1")
+     Items(105)=(actionText="Lamp 2",defaultValue=1,consoleTarget="DeusEx.Lamp2")
+     Items(106)=(actionText="Lamp 3",defaultValue=1,consoleTarget="DeusEx.Lamp3")
+     Items(107)=(actionText="Light Bulb",defaultValue=1,consoleTarget="DeusEx.LightBulb")
+     Items(108)=(actionText="Light Switch",defaultValue=1,consoleTarget="DeusEx.LightSwitch")
+     Items(109)=(actionText="Liquor",defaultValue=1,consoleTarget="DeusEx.LiquorBottle")
+     Items(110)=(actionText="Liquor (Forty)",defaultValue=1,consoleTarget="DeusEx.Liquor40oz")
+     Items(111)=(actionText="Liquor (Wine)",defaultValue=1,consoleTarget="DeusEx.WineBottle")
+     Items(112)=(actionText="Mailbox",defaultValue=1,consoleTarget="DeusEx.Mailbox")
+     Items(113)=(actionText="Medical Kit",defaultValue=1,consoleTarget="DeusEx.MedKit")
+     Items(114)=(actionText="Microscope",defaultValue=1,consoleTarget="DeusEx.Microscope")
+     Items(115)=(actionText="Nanovirus Container",defaultValue=1,consoleTarget="DeusEx.BarrelVirus")
+     Items(116)=(actionText="Pan 1",defaultValue=1,consoleTarget="DeusEx.Pan1")
+     Items(117)=(actionText="Pan 2",defaultValue=1,consoleTarget="DeusEx.Pan2")
+     Items(118)=(actionText="Pan 3",defaultValue=1,consoleTarget="DeusEx.Pan3")
+     Items(119)=(actionText="Pan 4",defaultValue=1,consoleTarget="DeusEx.Pan4")
+     Items(120)=(actionText="Pillow",defaultValue=1,consoleTarget="DeusEx.Pillow")
+     Items(121)=(actionText="Pinball Machine",defaultValue=1,consoleTarget="DeusEx.Pinball")
+     Items(122)=(actionText="Plant 1",defaultValue=1,consoleTarget="DeusEx.Plant1")
+     Items(123)=(actionText="Plant 2",defaultValue=1,consoleTarget="DeusEx.Plant2")
+     Items(124)=(actionText="Plant 3",defaultValue=1,consoleTarget="DeusEx.Plant3")
+     Items(125)=(actionText="Police Boat",defaultValue=1,consoleTarget="DeusEx.NYPoliceBoat")
+     Items(126)=(actionText="Pool Ball",defaultValue=1,consoleTarget="DeusEx.PoolBall")
+     Items(127)=(actionText="Pot 1",defaultValue=1,consoleTarget="DeusEx.Pot1")
+     Items(128)=(actionText="Pot 2",defaultValue=1,consoleTarget="DeusEx.Pot2")
+     Items(129)=(actionText="Rat",defaultValue=1,consoleTarget="DeusEx.Rat")
+     Items(130)=(actionText="Retinal Scanner",defaultValue=1,consoleTarget="DeusEx.RetinalScanner")
+     Items(131)=(actionText="Satellite Dish",defaultValue=1,consoleTarget="DeusEx.SatelliteDish")
+     Items(132)=(actionText="Ships Wheel",defaultValue=1,consoleTarget="DeusEx.ShipsWheel")
+     Items(133)=(actionText="Shop Light",defaultValue=1,consoleTarget="DeusEx.Shoplight")
+     Items(134)=(actionText="Shop Light (Hanging)",defaultValue=1,consoleTarget="DeusEx.HangingShopLight")
+     Items(135)=(actionText="Shower Faucet",defaultValue=1,consoleTarget="DeusEx.ShowerFaucet")
+     Items(136)=(actionText="Shower Head",defaultValue=1,consoleTarget="DeusEx.ShowerHead")
+     Items(137)=(actionText="Soda Can",defaultValue=1,consoleTarget="DeusEx.SodaCan")
+     Items(138)=(actionText="Soy Food",defaultValue=1,consoleTarget="DeusEx.SoyFood")
+     Items(139)=(actionText="Subway Control Panel",defaultValue=1,consoleTarget="DeusEx.SubwayControlPanel")
+     Items(140)=(actionText="Supply Crate (General)",defaultValue=1,consoleTarget="DeusEx.CrateBreakableMedGeneral")
+     Items(141)=(actionText="Supply Crate (Combat)",defaultValue=1,consoleTarget="DeusEx.CrateBreakableMedCombat")
+     Items(142)=(actionText="Supply Crate (Medical)",defaultValue=1,consoleTarget="DeusEx.CrateBreakableMedMedical")
+     Items(143)=(actionText="Switch",defaultValue=1,consoleTarget="DeusEx.Switch1")
+     Items(144)=(actionText="TNT Crate",defaultValue=1,consoleTarget="DeusEx.CrateExplosiveSmall")
+     Items(145)=(actionText="Telephone",defaultValue=1,consoleTarget="DeusEx.Phone")
+     Items(146)=(actionText="Telephone Answering Machine",defaultValue=1,consoleTarget="DeusEx.TAD")
+     Items(147)=(actionText="Toilet",defaultValue=1,consoleTarget="DeusEx.Toilet")
+     Items(148)=(actionText="Toilet (Urinal)",defaultValue=1,consoleTarget="DeusEx.Toilet2")
+     Items(149)=(actionText="Trashcan 1",defaultValue=1,consoleTarget="DeusEx.TrashCan1")
+     Items(150)=(actionText="Trashcan 2",defaultValue=1,consoleTarget="DeusEx.TrashCan2")
+     Items(151)=(actionText="Trashcan 3",defaultValue=1,consoleTarget="DeusEx.TrashCan3")
+     Items(152)=(actionText="Trashcan 4",defaultValue=1,consoleTarget="DeusEx.TrashCan4")
+     Items(153)=(actionText="Trashbag 1",defaultValue=1,consoleTarget="DeusEx.Trashbag")
+     Items(154)=(actionText="Trashbag 2",defaultValue=1,consoleTarget="DeusEx.Trashbag2")
+     Items(155)=(actionText="Trash (Paper)",defaultValue=1,consoleTarget="DeusEx.TrashPaper")
+     Items(156)=(actionText="Tree 1",defaultValue=1,consoleTarget="DeusEx.Tree1")
+     Items(157)=(actionText="Tree 2",defaultValue=1,consoleTarget="DeusEx.Tree2")
+     Items(158)=(actionText="Tree 3",defaultValue=1,consoleTarget="DeusEx.Tree3")
+     Items(159)=(actionText="Tree 4",defaultValue=1,consoleTarget="DeusEx.Tree4")
+     Items(160)=(actionText="Trophy",defaultValue=1,consoleTarget="DeusEx.Trophy")
+     Items(161)=(actionText="Tumbleweed",defaultValue=1,consoleTarget="DeusEx.Tumbleweed")
+     Items(162)=(actionText="Unbreakable Crate (Large)",defaultValue=1,consoleTarget="DeusEx.CrateUnbreakableLarge")
+     Items(163)=(actionText="Unbreakable Crate (Medium)",defaultValue=1,consoleTarget="DeusEx.CrateUnbreakableMed")
+     Items(164)=(actionText="Unbreakable Crate (Small)",defaultValue=1,consoleTarget="DeusEx.CrateUnbreakableSmall")
+     Items(165)=(actionText="Utility Push-Cart",defaultValue=1,consoleTarget="DeusEx.Cart")
+     Items(166)=(actionText="Valve",defaultValue=1,consoleTarget="DeusEx.Valve")
+     Items(167)=(actionText="Vase 1",defaultValue=1,consoleTarget="DeusEx.Vase1")
+     Items(168)=(actionText="Vase 2",defaultValue=1,consoleTarget="DeusEx.Vase2")
+     Items(169)=(actionText="Vending Machine",defaultValue=1,consoleTarget="DeusEx.VendingMachine")
+     Items(170)=(actionText="Water Cooler",defaultValue=1,consoleTarget="DeusEx.WaterCooler")
+     Items(171)=(actionText="Water Fountain",defaultValue=1,consoleTarget="DeusEx.WaterFountain")
+     Items(172)=(actionText="Wet Floot Sign",defaultValue=1,consoleTarget="DeusEx.FloorSign")
+     Items(173)=(actionText="10mm Ammo",defaultValue=1,consoleTarget="DeusEx.Ammo10mm")
+     Items(174)=(actionText="10mm AP Ammo",defaultValue=1,consoleTarget="DeusEx.Ammo10mmAP")
+     Items(175)=(actionText="20mm Ammo",defaultValue=1,consoleTarget="DeusEx.Ammo20mm")
+     Items(176)=(actionText="20mm EMP Ammo",defaultValue=1,consoleTarget="DeusEx.Ammo20mmEMP")
+     Items(177)=(actionText="762mm Ammo",defaultValue=1,consoleTarget="DeusEx.Ammo762mm")
+     Items(178)=(actionText="3006 Ammo",defaultValue=1,consoleTarget="DeusEx.Ammo3006")
+     Items(179)=(actionText="Darts",defaultValue=1,consoleTarget="DeusEx.AmmoDart")
+     Items(180)=(actionText="Darts (Flare)",defaultValue=1,consoleTarget="DeusEx.AmmoDartFlare")
+     Items(181)=(actionText="Darts (Poison)",defaultValue=1,consoleTarget="DeusEx.AmmoDartPoison")
+     Items(182)=(actionText="Darts (Taser)",defaultValue=1,consoleTarget="DeusEx.AmmoDartTaser")
+     Items(183)=(actionText="Napalm",defaultValue=1,consoleTarget="DeusEx.AmmoNapalm")
+     Items(184)=(actionText="Plasma Ammo",defaultValue=1,consoleTarget="DeusEx.AmmoPlasma")
+     Items(185)=(actionText="Prod Charger",defaultValue=1,consoleTarget="DeusEx.AmmoBattery")
+     Items(186)=(actionText="Rockets",defaultValue=1,consoleTarget="DeusEx.AmmoRocket")
+     Items(187)=(actionText="WP Rockets",defaultValue=1,consoleTarget="DeusEx.AmmoRocketWP")
+     Items(188)=(actionText="Shells",defaultValue=1,consoleTarget="DeusEx.AmmoShell")
+     Items(189)=(actionText="Shells (Sabot)",defaultValue=1,consoleTarget="DeusEx.AmmoSabot")
+     Items(190)=(actionText="Shells (Rubber)",defaultValue=1,consoleTarget="DeusEx.AmmoRubber")
+     Items(191)=(actionText="Blood and Decals",defaultValue=1,consoleTarget="DeusEx.DeusExDecal")
      Title="HDTP Model Options"
      disabledText="Vanilla"
      enabledText="HDTP"

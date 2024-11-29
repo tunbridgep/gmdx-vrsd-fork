@@ -388,7 +388,7 @@ defaultproperties
      largeIconHeight=37
      Description="Designed for wet work, the stealth pistol is manufactured to boast a notably large clip, integrated silencer and recoil compensator. Excels performance-wise in all except raw stopping power."
      beltDescription="STEALTH"
-     Mesh=LodMesh'HDTPItems.HDTPstealthpistolPickup'
+     Mesh=LodMesh'DeusExItems.StealthPistolPickup'
      CollisionRadius=8.000000
      CollisionHeight=0.800000
 }

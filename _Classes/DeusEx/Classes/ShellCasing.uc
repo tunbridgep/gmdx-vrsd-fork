@@ -179,12 +179,12 @@ state Dying
 defaultproperties
 {
      smokeprob=0.600000
-     Fragments(0)=LodMesh'HDTPItems.HDTPShellcasing'
+     HDTPMesh="HDTPItems.HDTPShellcasing"
      numFragmentTypes=1
      elasticity=0.700000
      ImpactSound=Sound'DeusExSounds.Generic.ShellHit'
      MiscSound=Sound'DeusExSounds.Generic.ShellHit'
-     Mesh=LodMesh'HDTPItems.HDTPShellcasing'
+     Mesh=LodMesh'DeusExItems.ShellCasing'
      DrawScale=1.100000
      CollisionRadius=0.600000
      CollisionHeight=0.300000

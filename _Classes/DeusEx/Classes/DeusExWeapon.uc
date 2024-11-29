@@ -310,6 +310,7 @@ var float sleeptime;                                                            
 
 //SARGE: HDTP Model toggles
 var config int iHDTPModelToggle;
+var int bHDTPInstalled;                                             //SARGE: Store whether HDTP is installed, otherwise we get insane lag
 var string HDTPSkin;
 var string HDTPTexture;
 var string HDTPPlayerViewMesh;
@@ -577,16 +578,16 @@ function texture GetWeaponHandTex()
     p = deusexplayer(owner);
 	
     //FOMOD weapons use the FOMOD hands
-    if (p != None && iHDTPModelToggle == 2)
+    if (p != None && IsHDTP() && iHDTPModelToggle == 2)
     {
         switch (p.PlayerSkin)
         {
 			//default, black, latino, ginger, albino, respectively
-			case 0: return texture'FOMOD.HandTexFinal'; break;
-			case 1: return texture'FOMOD.HandTexFinalB'; break;
-			case 2: return texture'FOMOD.HandTexFinalL'; break;
-			case 3: return texture'FOMOD.HandTexFinalG'; break;
-			case 4: return texture'FOMOD.HandTexFinalA'; break;
+			case 0: return class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinal"); break;
+			case 1: return class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinalB"); break;
+			case 2: return class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinalL"); break;
+			case 3: return class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinalG"); break;
+			case 4: return class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinalA"); break;
         }
     }
 
@@ -1265,7 +1266,14 @@ local float p, mod;
 
 function bool IsHDTP()
 {
-    return class'HDTPLoader'.static.HDTPInstalled() && iHDTPModelToggle > 0;
+    if (bHDTPInstalled == 0)
+    {
+        if (class'HDTPLoader'.static.HDTPInstalled())
+            bHDTPInstalled = 2;
+        else
+            bHDTPInstalled = 1;
+    }
+    return bHDTPInstalled == 2 && iHDTPModelToggle > 0;
 }
 
 function CheckWeaponSkins()

@@ -171,6 +171,7 @@ defaultproperties
      bIgnoresNanoDefense=True
      ItemName="Fireball"
      ItemArticle="a"
+     hdtpReference=Class'DeusEx.WeaponFlamethrower'
      speed=800.000000
      MaxSpeed=800.000000
      Damage=5.000000

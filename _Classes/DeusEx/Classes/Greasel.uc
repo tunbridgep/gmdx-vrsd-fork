@@ -275,6 +275,7 @@ defaultproperties
      InitialInventory(2)=(Inventory=Class'DeusEx.WeaponGreaselBite')
      WalkSound=Sound'DeusExSounds.Animal.GreaselFootstep'
      bSpawnBubbles=False
+     HDTPMesh="LodMesh"
      bCanSwim=True
      bCanGlide=False
      GroundSpeed=350.000000
@@ -291,7 +292,7 @@ defaultproperties
      VisibilityThreshold=0.002000
      Alliance=Greasel
      DrawType=DT_Mesh
-     Mesh=LodMesh'HDTPCharacters.HDTPgreasel'
+     Mesh=LodMesh'DeusExCharacters.Greasel'
      CollisionHeight=17.879999
      Mass=40.000000
      Buoyancy=40.000000

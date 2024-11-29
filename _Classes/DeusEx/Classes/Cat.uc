@@ -67,6 +67,7 @@ defaultproperties
      CarcassType=Class'DeusEx.CatCarcass'
      WalkingSpeed=0.111111
      InitialInventory(0)=(Inventory=Class'DeusEx.WeaponCatScratch')
+     HDTPMesh="HDTPCharacters.HDTPCat"
      GroundSpeed=180.000000
      WaterSpeed=50.000000
      AirSpeed=144.000000
@@ -81,7 +82,6 @@ defaultproperties
      Die=Sound'DeusExSounds.Animal.CatDie'
      Alliance=Cat
      DrawType=DT_Mesh
-     Mesh=LodMesh'HDTPCharacters.HDTPCat'
      CollisionRadius=17.000000
      CollisionHeight=11.300000
      bBlockActors=False
