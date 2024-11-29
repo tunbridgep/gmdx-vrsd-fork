@@ -846,6 +846,8 @@ simulated event RenderOverlays( canvas Canvas )
 	setRotation(NewRot);
 	Canvas.DrawActor(self, false);
 
+    //Reset weapon to standard display
+    DisplayWeapon(false);
 }
 
 //

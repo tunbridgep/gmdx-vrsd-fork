@@ -62,6 +62,9 @@ function DisplayWeapon(bool overlay)
             ShowWeaponAddon(5,bHasLaser);
         }
     }
+    else if (overlay)
+        multiskins[0]=Getweaponhandtex();
+
 }
 
 simulated function SwapMuzzleFlashTexture()

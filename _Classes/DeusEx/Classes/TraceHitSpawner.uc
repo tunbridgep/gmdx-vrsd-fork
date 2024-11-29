@@ -268,10 +268,15 @@ if (Other != none)
 
          if (GetFloorMaterial(texGroup)=='Glass' && hole != none)
          {
-        hole.Texture = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFlatFXTex29","FlatFXTex29",IsHDTP());
-        hole.DrawScale = 0.05625;
-	    hole.drawscale *= 1.0 + frand()*0.2;
-	    hole.ReattachDecal();
+            hole.Texture = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFlatFXTex29","DeusExItems.Skins.FlatFXTex29",IsHDTP());
+            if (IsHDTP())
+            {
+                hole.DrawScale = 0.05625;
+                hole.drawscale *= 1.0 + frand()*0.2;
+            }
+            else
+                hole.DrawScale = 0.1;
+            hole.ReattachDecal();
         }
         else if (GetFloorMaterial(texGroup)=='Brick' && hole != none)
         {
@@ -330,7 +335,7 @@ if (Other != none)
 				if (damageType == 'Sabot')                                  //if ( Level.NetMode != NM_Standalone )
 				{
                  spark.DrawScale=0.120000;
-				 spark.Skin = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPMuzzleflashLarge7","FlatFXTex29",IsHDTP());
+				 spark.Skin = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPMuzzleflashLarge7","DeusExItems.Skins.FlatFXTex29",IsHDTP());
 				 spark.LightRadius=3;
 				 spark.LightBrightness=255;
                  spark.LightSaturation=192;
@@ -359,32 +364,41 @@ if (Other != none)
 		{
 			mov = DeusExMover(Other);
 			if (hole == None) //(mov != None) && (
-		 {
-			hole = spawn(class'BulletHole', Other,, Location+Vector(Rotation), Rotation);
-			if (hole != None)
-			{
-			   hole.remoteRole = ROLE_None;
-			   hole.Texture = Texture'FlatFXTex8';
-			}
-		 }
+            {
+                hole = spawn(class'BulletHole', Other,, Location+Vector(Rotation), Rotation);
+                if (hole != None)
+                {
+                    hole.remoteRole = ROLE_None;
+                    hole.Texture = Texture'FlatFXTex8';
+                }
+            }
 
 			if (hole != None)
 			{
-				if (mov != none && mov.bBreakable && (mov.minDamageThreshold <= Damage))
+				if (mov != none && mov.bBreakable)// && (mov.minDamageThreshold <= Damage)) //SARGE: Allow glass-holes on glass objects always
 				{
-					// don't draw damage art on destroyed movers
-					if (mov.bDestroyed)
+					// don't draw damage art on destroyed movers, or ones we can't damage
+					if (mov.bDestroyed || (mov.minDamageThreshold > Damage))
 						hole.Destroy();
 					else if (mov.FragmentClass == class'GlassFragment')
 					{
 						// glass hole
-						//if (FRand() < 0.5)
-							hole.Texture = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFlatFXTex29","FlatFXTex29",IsHDTP());
-						//else
-						//	hole.Texture = Texture'FlatFXTex30';
+                        if (IsHDTP())
+							hole.Texture = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPFlatFXTex29");
+						else if (FRand() < 0.5)
+						    hole.Texture = Texture'FlatFXTex29';
+						else
+							hole.Texture = Texture'FlatFXTex30';
 
-						hole.DrawScale = 0.05625;
-						hole.drawscale *= 1.0 + frand()*0.2;
+                        if (IsHDTP())
+                        {
+                            hole.DrawScale = 0.05625;
+                            hole.drawscale *= 1.0 + frand()*0.2;
+                        }
+                        else
+                        {
+                            hole.DrawScale = 0.1;
+                        }
 						hole.ReattachDecal();
 					}
 					else
@@ -453,7 +467,7 @@ if (Other != none)
                         }
                         else if (GetFloorMaterial(texGroup)=='Glass')
                         {
-                        hole.Texture = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFlatFXTex29","FlatFXTex29",IsHDTP());
+                        hole.Texture = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFlatFXTex29","DeusExItems.Skins.FlatFXTex29",IsHDTP());
 						if (IsHDTP())
 							hole.DrawScale = 0.05;
 						else

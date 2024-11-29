@@ -5,7 +5,7 @@ class DeusExDecal extends Decal
 	abstract;
 
 //SARGE: HDTP Model toggles
-var config int iHDTPModelToggle;
+var globalconfig int iHDTPModelToggle;
 var string HDTPSkin;
 var string HDTPTexture;
 var string HDTPMesh;
@@ -75,7 +75,7 @@ function bool IsHDTP()
 
 exec function UpdateHDTPsettings()
 {
-    if (HDTPDrawScale > 0)
+    if (HDTPDrawScale > 0.0 && (HDTPTexture != "" || HDTPSkin != ""))
     {
         if (IsHDTP())
             DrawScale = HDTPDrawScale;
@@ -96,4 +96,5 @@ defaultproperties
      bImportant=True
      MultiDecalLevel=3
      HDTPDrawScale=-1
+     iHDTPModelToggle=1
 }

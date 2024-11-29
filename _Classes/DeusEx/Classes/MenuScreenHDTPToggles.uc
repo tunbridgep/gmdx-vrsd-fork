@@ -181,6 +181,7 @@ defaultproperties
      items(155)=(actionText="Shells",consoleTarget="DeusEx.AmmoShell",defaultValue=1);
      items(156)=(actionText="Shells (Sabot)",consoleTarget="DeusEx.AmmoSabot",defaultValue=1);
      items(157)=(actionText="Shells (Rubber)",consoleTarget="DeusEx.AmmoRubber",defaultValue=1);
+     items(158)=(actionText="Blood and Decals",consoleTarget="DeusEx.DeusExDecal",defaultValue=1);
      strHeaderActionLabel="Object"
      strHeaderAssignedLabel="Model"
      HelpText="Select the model you wish to change and then press [Enter] or Double-Click to cycle through available models"
