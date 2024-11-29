@@ -69,6 +69,14 @@ var bool bFoundSomething;   //Have we found anything the last time we searched? 
 
 var localized string SearchedString;                                            //SARGE: The string to append to the name when searched.
 
+//SARGE: HDTP Model toggles
+var class<ScriptedPawn> hdtpReference;
+var string HDTPSkin;
+var string HDTPTexture;
+var string HDTPMesh;
+var string HDTPMesh2;
+var string HDTPMesh3;
+
 // ----------------------------------------------------------------------
 // ShouldCreate()
 // If this returns FALSE, the object will be deleted on it's first tick
@@ -88,94 +96,23 @@ function bool ShouldCreate(DeusExPlayer player)
 }
 
 
-function UpdateHDTPsettings()
+function bool IsHDTP()
 {
-	local mesh tempmesh;
-	local texture temptex;
-	local int i, j;
-	local deusexplayer p;
-	local bool bSetHDTP;
-	local bool bSuccess;
+    return hdtpReference.default.iHDTPModelToggle > 0 && class'HDTPLoader'.static.HDTPInstalled();
+}
 
-	if(mesh == mesh2)
-		j=1;
-	else if(mesh == mesh3)
-		j=2;
-
-	P = deusexplayer(getplayerpawn());
-
-	if(P != none)
-	{
-		bSetHDTP = P.GetHDTPSettings(self);
-	}
-
-	if(bSetHDTP && !bUsingHDTP)
-	{
-		if(HDTPMeshname != "")
-		{
-			tempmesh = lodmesh(dynamicloadobject(HDTPMeshname,class'mesh',true));
-			if(tempmesh != none)
-			{
-				mesh = tempmesh;
-				bSuccess=true;
-			}
-		}
-		if(HDTPMesh2name != "")
-		{
-			tempmesh = lodmesh(dynamicloadobject(HDTPMesh2name,class'mesh',true));
-			if(tempmesh != none)
-			{
-				mesh2 = tempmesh;
-				bSuccess=true;
-			}
-		}
-		if(HDTPMesh3name != "")
-		{
-			tempmesh = lodmesh(dynamicloadobject(HDTPMesh3name,class'mesh',true));
-			if(tempmesh != none)
-			{
-				mesh3 = tempmesh;
-				bSuccess=true;
-			}
-		}
-
-		if(bSuccess)
-		{
-			if(j==1)
-				mesh = mesh2;
-			else if(j==2)
-				mesh = mesh3;
-				texture=none;
-			skin=none;
-			for(i=0;i<=7;i++)
-			{
-				if(HDTPMeshtex[i] != "")
-				{
-					temptex = texture(dynamicloadobject(HDTPMeshtex[i],class'texture',true));
-					if(temptex != none)
-						multiskins[i] = temptex;
-				}
-			}
-			bUsingHDTP=true;
-		}
-	}
-	else if(!bSetHDTP && bUsingHDTP)
-	{
-		mesh = default.mesh;
-		mesh2 = default.Mesh2;
-		mesh3 = default.Mesh3;
-		texture=default.texture;
-		skin=default.skin;
-		for(i=0; i<=7;i++)
-		{
-			multiskins[i]=default.multiskins[i];
-		}
-		if(j==1)  //safety check
-			mesh = mesh2;
-		else if(j==2)
-			mesh = mesh3;
-		bUsingHDTP=false;
-	}
+exec function UpdateHDTPsettings()
+{
+    if (HDTPMesh3 != "")
+        Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh3,string(default.Mesh3),IsHDTP());
+    if (HDTPMesh2 != "")
+        Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh2,string(default.Mesh2),IsHDTP());
+    if (HDTPMesh != "")
+        Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),IsHDTP());
+    if (HDTPSkin != "")
+        Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),IsHDTP());
+    if (HDTPTexture != "")
+        Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),IsHDTP());
 }
 
 // ----------------------------------------------------------------------

@@ -3,10 +3,23 @@
 //=============================================================================
 class BoneFemurbloodyFragment extends DeusExFragment;
 
+exec function UpdateHDTPsettings()
+{
+    super.UpdateHDTPsettings();
+    if (IsHDTP())
+    {
+        Fragments[0]=class'HDTPLoader'.static.GetMesh("HDTPDecos.HDTPbonefemur");
+        Fragments[0]=class'HDTPLoader'.static.GetMesh("HDTPDecos.HDTPbonefemur");
+    }
+    else
+    {
+        Fragments[0]=LodMesh'DeusExDeco.BoneFemur';
+        Fragments[1]=LodMesh'DeusExDeco.BoneFemur';
+    }
+}
+
 defaultproperties
 {
-     Fragments(0)=LodMesh'HDTPDecos.HDTPbonefemur'
-     Fragments(1)=LodMesh'HDTPDecos.HDTPbonefemur'
      numFragmentTypes=2
      elasticity=0.400000
      ImpactSound=Sound'DeusExSounds.Generic.WoodHit1'

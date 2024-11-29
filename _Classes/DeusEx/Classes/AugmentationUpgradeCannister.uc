@@ -43,7 +43,7 @@ defaultproperties
      largeIconHeight=41
      Description="An augmentation upgrade canister contains highly specific nanomechanisms that, when combined with a previously programmed module, can increase the efficiency of an installed augmentation. Because no programming is required, upgrade canisters may be used by trained agents in the field with minimal risk."
      beltDescription="AUG UPG"
-     Mesh=LodMesh'HDTPItems.HDTPAugUpCan'
+     Mesh=LodMesh'DeusExItems.AugUpCan'
      CollisionRadius=3.200000
      CollisionHeight=5.180000
      Mass=10.000000

@@ -275,7 +275,7 @@ defaultproperties
      InitialInventory(2)=(Inventory=Class'DeusEx.WeaponGreaselBite')
      WalkSound=Sound'DeusExSounds.Animal.GreaselFootstep'
      bSpawnBubbles=False
-     HDTPMesh="LodMesh"
+     HDTPMesh="HDTPCharacters.HDTPGreasel"
      bCanSwim=True
      bCanGlide=False
      GroundSpeed=350.000000

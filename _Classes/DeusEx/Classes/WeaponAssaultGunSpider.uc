@@ -124,7 +124,6 @@ defaultproperties
      invSlotsY=2
      Description="The 7.62x51mm assault rifle is designed for close-quarters combat, utilizing a shortened barrel and 'bullpup' design for increased maneuverability. An additional underhand 20mm HE launcher increases the rifle's effectiveness against a variety of targets."
      beltDescription="ASSAULT"
-     Mesh=LodMesh'HDTPItems.HDTPassaultGunPickup'
      CollisionRadius=15.000000
      CollisionHeight=1.100000
      Mass=30.000000

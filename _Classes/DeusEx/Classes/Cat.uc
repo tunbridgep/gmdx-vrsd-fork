@@ -82,7 +82,7 @@ defaultproperties
      Die=Sound'DeusExSounds.Animal.CatDie'
      Alliance=Cat
      DrawType=DT_Mesh
-     Mesh=LodMesh'HDTPCharacters.HDTPCat'
+     Mesh=LodMesh'DeusExCharacters.Cat'
      CollisionRadius=17.000000
      CollisionHeight=11.300000
      bBlockActors=False

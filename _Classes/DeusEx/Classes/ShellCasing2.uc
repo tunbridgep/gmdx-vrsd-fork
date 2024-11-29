@@ -181,10 +181,18 @@ state Dying
 	}
 }
 
+exec function UpdateHDTPsettings()
+{
+    super.UpdateHDTPsettings();
+    if (IsHDTP())
+        Fragments[0]=class'HDTPLoader'.static.GetMesh("HDTPItems.HDTPShotguncasing");
+    else
+        Fragments[0]=LodMesh'DeusExItems.ShellCasing2';
+}
+
 defaultproperties
 {
      smokeprob=0.400000
-     Fragments(0)=LodMesh'HDTPItems.HDTPShotguncasing'
      HDTPMesh="HDTPItems.HDTPShotguncasing"
      numFragmentTypes=1
      elasticity=0.400000

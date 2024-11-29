@@ -415,12 +415,6 @@ simulated function PreBeginPlay()
 	}
 }
 
-//203
-//locked Sound'DeusExSounds.Weapons.GEPGunLock'
-//tracking Sound'DeusExSounds.Weapons.GEPGunTrack'
-//	 PlayerViewOffset=(X=44.000000,Y=-22.000000,Z=-10.000000)
-//Mesh=LodMesh'HDTPItems.HDTPGEPgunPickup'
-
 state Reload
 {
    function BeginState()
