@@ -115,12 +115,6 @@ function OnUnEquipped()
 {
 }
 
-function LiquorTex()
-{
-  if (Owner != None)
-    {   MultiSkins[1] = Texture'FOMOD.HandTexFinal'; MultiSkins[2] = Texture'HDTPItems.HDTPLiquor40ozTex1';
-    MultiSkins[3] = Texture'HDTPItems.HDTPLiquor40ozTex2'; MultiSkins[4] = Texture'HDTPItems.HDTPLiquor40ozTex1';}
-}
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 state Idle
@@ -133,8 +127,6 @@ state Idle
 Begin:
 	//bHidden = False;
 	bOnlyOwnerSee = True;
-	if (IsA('Liquor40oz'))
-	    LiquorTex();
 	GetAugSpeed();
 	PlayAnim('Select',p, 0.1);
 DontPlaySelect:

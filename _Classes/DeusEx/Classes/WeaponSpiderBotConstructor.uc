@@ -6,7 +6,7 @@ class WeaponSpiderBotConstructor extends DeusExWeapon;
 simulated function renderoverlays(Canvas canvas)
 {
 	multiskins[0] = Getweaponhandtex();
-	multiskins[1] = Texture'HDTPItems.Skins.HDTPAugUpCanTex0';
+	multiskins[1] = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPAugUpCanTex0","DeusExItems.Skins.AugUpCanTex0",IsHDTP());
 
 	super.renderoverlays(canvas);
 
@@ -87,17 +87,21 @@ defaultproperties
      InventoryGroup=129
      ItemName=""
      PlayerViewOffset=(X=24.000000,Y=-15.000000,Z=-19.000000)
-     PlayerViewMesh=LodMesh'HDTPItems.HDTPNanoVirusGrenade'
-     PickupViewMesh=LodMesh'HDTPItems.HDTPnanovirusgrenadePickup'
-     ThirdPersonMesh=LodMesh'HDTPItems.HDTPnanovirusgrenade3rd'
+     HDTPPlayerViewMesh"HDTPItems.HDTPNanoVirusGrenade"
+     HDTPPickupViewMesh"HDTPItems.HDTPnanovirusgrenadePickup"
+     HDTPThirdPersonMesh"HDTPItems.HDTPnanovirusgrenade3rd"
+     PlayerViewMesh=LodMesh'DeusExItems.NanoVirusGrenade'
+     PickupViewMesh=LodMesh'DeusExItems.nanovirusgrenadePickup'
+     ThirdPersonMesh=LodMesh'DeusExItems.nanovirusgrenade3rd'
      Icon=Texture'DeusExUI.Icons.BeltIconWeaponNanoVirus'
      largeIcon=Texture'DeusExUI.Icons.LargeIconWeaponNanoVirus'
      largeIconWidth=24
      largeIconHeight=49
      Description="Self-assembles into a spiderbot, allied to the user. Will attack the nearest enemy, delivering electrical damage."
      beltDescription="CONSTRUCTOR"
-     Skin=Texture'HDTPItems.Skins.HDTPAugUpCanTex0'
-     Mesh=LodMesh'HDTPItems.HDTPnanovirusgrenadePickup'
+     Skin=Texture'DeusExItems.Skins.AugUpCanTex0'
+     Mesh=LodMesh'DeusExItems.NanoVirusGrenadePickup'
+	 HDTPSkin="HDTPItems.Skins.HDTPAugUpCanTex0"
      CollisionRadius=3.000000
      CollisionHeight=2.430000
      Mass=5.000000

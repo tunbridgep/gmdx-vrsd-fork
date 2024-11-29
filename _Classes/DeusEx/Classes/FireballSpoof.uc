@@ -1,13 +1,12 @@
 //=============================================================================
 // Fireball.
 //=============================================================================
-class FireballSpoof expands Effects;
+class FireballSpoof expands GMDXEffect;
 
 var string texes[5];
 var FireSmoke smoke;
 var bool bSpawned;
 var float time;
-var class<DeusExWeapon> hdtpReference;
 
 #exec OBJ LOAD FILE=Effects
 
@@ -86,15 +85,9 @@ function Destroyed()
 	Super.Destroyed();
 }
 
-function bool IsHDTP()
-{
-    if (hdtpReference != None)
-        return hdtpReference.default.iHDTPModelToggle > 0;
-    return class'HDTPLoader'.static.HDTPInstalled();
-}
-
 function UpdateHDTPSettings()
 {
+    Super.UpdateHDTPSettings();
     if (IsHDTP())
     {
         Texture = class'HDTPLoader'.static.GetWetTexture(texes[rand(5)]);
@@ -110,9 +103,6 @@ function UpdateHDTPSettings()
 simulated function PreBeginPlay()
 {
 	Super.PreBeginPlay();
-
-    UpdateHDTPSettings();
-
 	drawscale *= 1.0 + (0.3 * (frand() - 0.5)); //vary the drawscale a bit, to make the fire more organic
 	Velocity.Z = 2;
 }

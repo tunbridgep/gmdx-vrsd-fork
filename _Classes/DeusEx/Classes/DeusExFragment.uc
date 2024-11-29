@@ -8,6 +8,12 @@ var Vector lastHitLoc;
 var float smokeTime;
 var ParticleGenerator smokeGen;
 
+//SARGE: HDTP Model toggles
+var config int iHDTPModelToggle;
+var string HDTPSkin;
+var string HDTPTexture;
+var string HDTPMesh;
+
 //
 // copied from Engine.Fragment
 //
@@ -139,11 +145,27 @@ function Destroyed()
 function PostBeginPlay()
 {
 	Super.PostBeginPlay();
+    UpdateHDTPsettings();
 
 	// randomize the lifespan a bit so things don't all disappear at once
 	speed *= 1.1;
 	if (!IsA('GMDXImpactSpark') && !IsA('GMDXImpactSpark2'))
 	LifeSpan += FRand()*1.5; //CyberP: was 1.0
+}
+
+function bool IsHDTP()
+{
+    return iHDTPModelToggle > 0 && class'HDTPLoader'.static.HDTPInstalled();
+}
+
+exec function UpdateHDTPsettings()
+{
+    if (HDTPMesh != "")
+        Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),IsHDTP());
+    if (HDTPSkin != "")
+        Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),IsHDTP());
+    if (HDTPTexture != "")
+        Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),IsHDTP());
 }
 
 function SkinVariation()

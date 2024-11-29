@@ -11,8 +11,9 @@ defaultproperties
      elasticity=0.400000
      ImpactSound=Sound'DeusExSounds.Generic.WoodHit1'
      MiscSound=Sound'DeusExSounds.Generic.WoodHit2'
-     Skin=Texture'HDTPItems.Skins.HDTPFlatFXtex6'
-     Mesh=LodMesh'HDTPDecos.HDTPbonefemur'
+     HDTPSkin="HDTPItems.Skins.HDTPFlatFXtex6"
+     HDTPMesh="HDTPDecos.HDTPbonefemur"
+     Mesh=LodMesh'DeusDeco.Bonefemur'
      CollisionRadius=2.000000
      CollisionHeight=0.780000
      Mass=3.000000

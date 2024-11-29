@@ -3108,7 +3108,8 @@ function Carcass SpawnCarcass()
 					chunk.DrawScale = size / 26;
 					if (FRand() < 0.3)
 					{
-                      chunk.Skin=Texture'HDTPDecos.Skins.HDTPAlarmLightTex5';//Texture'Effects.Fire.Wepn_Prifle_SFX';
+                      //chunk.Skin=Texture'HDTPDecos.Skins.HDTPAlarmLightTex5';//Texture'Effects.Fire.Wepn_Prifle_SFX';
+					  chunk.Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.Skins.HDTPAlarmLightTex5","DeusExDeco.Skins.AlarmLightTex5",IsHDTP());
                       chunk.LightEffect=LE_FireWaver;
                       chunk.LightBrightness=255;
                       chunk.LightHue=80;
@@ -3150,7 +3151,8 @@ function Carcass SpawnCarcass()
 					chunk2.DrawScale = size / 26;
 					if (FRand() < 0.3)
 					{
-                      chunk2.Skin=Texture'HDTPDecos.Skins.HDTPAlarmLightTex5';//Texture'Effects.Fire.Wepn_Prifle_SFX';
+					  //chunk2.Skin=Texture'HDTPDecos.Skins.HDTPAlarmLightTex5';//Texture'Effects.Fire.Wepn_Prifle_SFX';
+					  chunk2.Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.Skins.HDTPAlarmLightTex5","DeusExDeco.Skins.AlarmLightTex5",IsHDTP());
                       chunk2.LightEffect=LE_FireWaver;
                       chunk2.LightBrightness=255;
                       chunk2.LightHue=80;
@@ -4390,7 +4392,7 @@ local SpoofedCorona cor;
 
 	if (bEnable && !bCloakOn && !bCloaked)
 	{
-        SetSkinStyle(STY_Translucent, Texture'HDTPAlarmLightTex6', 0.4);
+        SetSkinStyle(STY_Translucent, class'HDTPLoader'.static.GetTexture2("HDTPDecos.Skins.HDTPAlarmLightTex6","DeusExDeco.Skins.AlarmLightTex6",IsHDTP()), 0.4);
         SetTimer(0.4,False);
         cor = Spawn(class'SpoofedCorona');
         if (cor != none)
@@ -8735,19 +8737,21 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
 
 function Timer()
 {
-if (bCloakOn)           //CyberP: for new cloaking effect.
-{
-         if (IsA('SecurityBot4'))
-		    SetSkinStyle(STY_Translucent, Texture'HDTPWeaponCrowbarTex2', 0.4);
-		 else
-		    SetSkinStyle(STY_Translucent, Texture'HDTPWeaponCrowbarTex2', 0.15);
-         LightRadius = 0;
-         AmbientGlow = 0;
-}
-else
-{
-UpdateFire();
-}
+	//SARGE: Was previously using 'HDTPWeaponCrowbarTex2', vanilla used 'WhiteStatic'
+	//Imported the high-quality one from HDTP, since WhiteStatic is WAY too visible!
+	if (bCloakOn)           //CyberP: for new cloaking effect.
+	{
+			 if (IsA('SecurityBot4'))
+				SetSkinStyle(STY_Translucent, Texture'RSDCrap.Skins.CloakingTex', 0.4);
+			 else
+				SetSkinStyle(STY_Translucent, Texture'RSDCrap.Skins.CloakingTex', 0.15);
+			 LightRadius = 0;
+			 AmbientGlow = 0;
+	}
+	else
+	{
+	UpdateFire();
+	}
 }
 
 

@@ -103,7 +103,7 @@ simulated function DrawExplosionEffects(vector HitLocation, vector HitNormal)
 
 function BeginPlay()
 {
-    Skin = Texture'HDTPDecos.Skins.HDTPAlarmLightTex6';
+	Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.Skins.HDTPAlarmLightTex6","DeusExDeco.Skins.AlarmLightTex6",IsHDTP());
     //PlaySound(Sound'CloakUp', SLOT_Pain, 0.85, ,768,1.0);
     //Spawn(class'SpoofedCoronaSmall');
     Style=STY_Translucent;

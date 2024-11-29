@@ -26,29 +26,34 @@ enum ESkinColor
 var() ESkinColor SkinColor;
 var bool bJustHit;
 
-function BeginPlay()
+exec function UpdateHDTPsettings()
 {
-	Super.BeginPlay();
+    local Texture tex;
+	Super.UpdateHDTPsettings();
 
 	switch (SkinColor)
 	{
-		case SC_1:		Multiskins[1] = Texture'HDTPPoolballTex1'; break;
-		case SC_2:		Multiskins[1] = Texture'HDTPPoolballTex2'; break;
-		case SC_3:		Multiskins[1] = Texture'HDTPPoolballTex3'; break;
-		case SC_4:		Multiskins[1] = Texture'HDTPPoolballTex4'; break;
-		case SC_5:		Multiskins[1] = Texture'HDTPPoolballTex5'; break;
-		case SC_6:		Multiskins[1] = Texture'HDTPPoolballTex6'; break;
-		case SC_7:		Multiskins[1] = Texture'HDTPPoolballTex7'; break;
-		case SC_8:		Multiskins[1] = Texture'HDTPPoolballTex8'; break;
-		case SC_9:		Multiskins[1] = Texture'HDTPPoolballTex9'; break;
-		case SC_10:		Multiskins[1] = Texture'HDTPPoolballTex10'; break;
-		case SC_11:		Multiskins[1] = Texture'HDTPPoolballTex11'; break;
-		case SC_12:		Multiskins[1] = Texture'HDTPPoolballTex12'; break;
-		case SC_13:		Multiskins[1] = Texture'HDTPPoolballTex13'; break;
-		case SC_14:		Multiskins[1] = Texture'HDTPPoolballTex14'; break;
-		case SC_15:		Multiskins[1] = Texture'HDTPPoolballTex15'; break;
-		case SC_Cue:	Multiskins[1] = Texture'HDTPPoolballTex16'; break;
+		case SC_1:		tex = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPPoolballTex1","DeusExDeco.PoolballTex1",IsHDTP()); break;
+		case SC_2:		tex = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPPoolballTex2","DeusExDeco.PoolballTex2",IsHDTP()); break;
+		case SC_3:		tex = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPPoolballTex3","DeusExDeco.PoolballTex3",IsHDTP()); break;
+		case SC_4:		tex = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPPoolballTex4","DeusExDeco.PoolballTex4",IsHDTP()); break;
+		case SC_5:		tex = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPPoolballTex5","DeusExDeco.PoolballTex5",IsHDTP()); break;
+		case SC_6:		tex = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPPoolballTex6","DeusExDeco.PoolballTex6",IsHDTP()); break;
+		case SC_7:		tex = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPPoolballTex7","DeusExDeco.PoolballTex7",IsHDTP()); break;
+		case SC_8:		tex = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPPoolballTex8","DeusExDeco.PoolballTex8",IsHDTP()); break;
+		case SC_9:		tex = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPPoolballTex9","DeusExDeco.PoolballTex9",IsHDTP()); break;
+		case SC_10:		tex = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPPoolballTex10","DeusExDeco.PoolballTex10",IsHDTP()); break;
+		case SC_11:		tex = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPPoolballTex11","DeusExDeco.PoolballTex11",IsHDTP()); break;
+		case SC_12:		tex = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPPoolballTex12","DeusExDeco.PoolballTex12",IsHDTP()); break;
+		case SC_13:		tex = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPPoolballTex13","DeusExDeco.PoolballTex13",IsHDTP()); break;
+		case SC_14:		tex = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPPoolballTex14","DeusExDeco.PoolballTex14",IsHDTP()); break;
+		case SC_15:		tex = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPPoolballTex15","DeusExDeco.PoolballTex15",IsHDTP()); break;
+		case SC_Cue:	tex = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPPoolballTex16","DeusExDeco.PoolballTex16",IsHDTP()); break;
 	}
+    if (IsHDTP())
+        Multiskins[1] = tex;
+    else
+        Skin = tex;
 }
 
 function Tick(float deltaTime)
@@ -130,7 +135,8 @@ defaultproperties
      ItemName="Poolball"
      bPushable=False
      Physics=PHYS_Rolling
-     Mesh=LodMesh'HDTPDecos.HDTPPoolball'
+     HDTPMesh="HDTPDecos.HDTPPoolball"
+     Mesh=LodMesh'DeusExDeco.Poolball'
      CollisionRadius=1.700000
      CollisionHeight=1.700000
      bBounce=True

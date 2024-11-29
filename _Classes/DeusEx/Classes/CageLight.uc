@@ -37,19 +37,28 @@ function Trigger(Actor Other, Pawn Instigator)
 	}
 }
 
-function BeginPlay()
+exec function UpdateHDTPsettings()
 {
-	Super.BeginPlay();
+    local Texture tex;
+    super.UpdateHDTPsettings();
 
-	switch (SkinColor)
-	{
-		case SC_1:	Multiskins[1] = Texture'HDTPCageLightTex1'; Multiskins[2] = Texture'HDTPCageLightTex1'; break;
-		case SC_2:	Multiskins[1] = Texture'HDTPCageLightTex2'; Multiskins[2] = Texture'HDTPCageLightTex2'; break;
-		case SC_3:	Multiskins[1] = Texture'HDTPCageLightTex3'; Multiskins[2] = Texture'HDTPCageLightTex3'; break;
-		case SC_4:	Multiskins[1] = Texture'HDTPCageLightTex4'; Multiskins[2] = Texture'HDTPCageLightTex4'; break;
-		case SC_5:	Multiskins[1] = Texture'HDTPCageLightTex5'; Multiskins[2] = Texture'HDTPCageLightTex5'; break;
-		case SC_6:	Multiskins[1] = Texture'HDTPCageLightTex6'; Multiskins[2] = Texture'HDTPCageLightTex6'; break;
-	}
+    switch (SkinColor)
+    {
+        case SC_1:	tex = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPCageLightTex1","DeusExDeco.CageLightTex1",IsHDTP()); break;
+        case SC_2:	tex = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPCageLightTex2","DeusExDeco.CageLightTex2",IsHDTP()); break;
+        case SC_3:	tex = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPCageLightTex3","DeusExDeco.CageLightTex3",IsHDTP()); break;
+        case SC_4:	tex = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPCageLightTex4","DeusExDeco.CageLightTex4",IsHDTP()); break;
+        case SC_5:	tex = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPCageLightTex5","DeusExDeco.CageLightTex5",IsHDTP()); break;
+        case SC_6:	tex = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPCageLightTex6","DeusExDeco.CageLightTex6",IsHDTP()); break;
+    }
+
+    if (IsHDTP())
+    {
+        MultiSkins[1] = tex;
+        MultiSkins[2] = tex;
+    }
+    else
+        Skin = tex;
 }
 
 function PostBeginPlay()
@@ -95,7 +104,8 @@ defaultproperties
      ItemName="Light Fixture"
      bPushable=False
      Physics=PHYS_None
-     Mesh=LodMesh'HDTPDecos.HDTPCageLight'
+     HDTPMesh="HDTPDecos.HDTPCageLight"
+     Mesh=LodMesh'DeusExDeco.CageLight'
      ScaleGlow=2.000000
      CollisionRadius=17.139999
      CollisionHeight=17.139999

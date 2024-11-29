@@ -2824,14 +2824,14 @@ simulated function texture GetMuzzleTex()
 		i = rand(8);
 		switch(i)
 		{
-			case 0: tex = texture'HDTPMuzzleflashlarge1'; break;
-			case 1: tex = texture'HDTPMuzzleflashlarge2'; break;
-			case 2: tex = texture'HDTPMuzzleflashlarge3'; break;
-			case 3: tex = texture'HDTPMuzzleflashlarge4'; break;
-			case 4: tex = texture'HDTPMuzzleflashlarge5'; break;
-			case 5: tex = texture'HDTPMuzzleflashlarge6'; break;
-			case 6: tex = texture'HDTPMuzzleflashlarge7'; break;
-			case 7: tex = texture'HDTPMuzzleflashlarge8'; break;
+			case 0: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashlarge1"); break;
+			case 1: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashlarge2"); break;
+			case 2: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashlarge3"); break;
+			case 3: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashlarge4"); break;
+			case 4: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashlarge5"); break;
+			case 5: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashlarge6"); break;
+			case 6: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashlarge7"); break;
+			case 7: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashlarge8"); break;
 		}
 	}
 	else
@@ -2839,9 +2839,9 @@ simulated function texture GetMuzzleTex()
 		i = rand(3);
 		switch(i)
 		{
-			case 0: tex = texture'HDTPMuzzleflashSmall1'; break;
-			case 1: tex = texture'HDTPMuzzleflashSmall2'; break;
-			case 2: tex = texture'HDTPMuzzleflashSmall3'; break;
+			case 0: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashSmall1"); break;
+			case 1: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashSmall2"); break;
+			case 2: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashSmall3"); break;
 		}
 	}
 
@@ -2931,7 +2931,7 @@ simulated function MuzzleFlashLight()
     {
     spoof.DrawScale=0.006;
     spoof.LifeSpan=0.2;
-    spoof.Texture=Texture'HDTPItems.Skins.HDTPMuzzleflashSmall2';
+    spoof.Texture= class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashSmall2");
     spoof.Velocity=360*vector(Rotation);//vect(0,0,0);
     //spoof.Velocity.X = FRand() * 700;
     //spoof.Velocity.Z = FRand() * 60;
@@ -4249,7 +4249,7 @@ simulated function Projectile ProjectileFire(class<projectile> ProjClass, float 
     {
     spoof.DrawScale=0.005;
     spoof.LifeSpan=0.225;
-    spoof.Texture=Texture'HDTPItems.Skins.HDTPMuzzleflashSmall2';
+    spoof.Texture= class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashSmall2");
     spoof.Velocity=320*vector(Rotation);//vect(0,0,0);
     //spoof.Velocity.X = FRand() * 700;
     //spoof.Velocity.Z = FRand() * 60;

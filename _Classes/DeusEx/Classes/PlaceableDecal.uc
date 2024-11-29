@@ -19,28 +19,27 @@ enum ETextureSetup
 
 var() ETextureSetup TextureSetup;
 
-function BeginPlay()
+exec function UpdateHDTPsettings()
 {
-	Super.BeginPlay();
-
-	SetSkin(TextureSetup);
-}
-
-function SetSkin(ETextureSetup setup)
-{
-	switch(setup)
+    super.UpdateHDTPsettings();
+    if (!IsHDTP())
+    {
+        Skin = texture'PinkMaskTex'; //Go invisible
+        return;
+    }
+	switch(TextureSetup)
 	{
-			case E_Blood1:		Skin = default.Skin; break;
-			case E_Blood2:		Skin = Texture'HDTPItems.Skins.HDTPFlatFXtex3'; break;
-			case E_Blood3:		Skin = Texture'HDTPItems.Skins.HDTPFlatFXtex5'; break;
-			case E_Blood4:		Skin = Texture'HDTPItems.Skins.HDTPFlatFXtex6'; break;
-			case E_Ambrosia:	Skin = Texture'DeusExItems.Skins.FlatFXtex48'; break;
-			case E_Water:		Skin = Texture'DeusExItems.Skins.FlatFXtex47'; break;
-			case E_Burn1:		Skin = Texture'HDTPItems.Skins.HDTPFlatFXtex38'; break;
-			case E_Burn2:		Skin = Texture'HDTPItems.Skins.HDTPFlatFXtex39'; break;
-			case E_Burn3:		Skin = Texture'HDTPItems.Skins.HDTPFlatFXtex40'; break;
-			case E_Hole:		Skin = Texture'HDTPItems.Skins.HDTPFlatFXtex9'; break;
-			default:	Skin = default.skin; break;
+			//case E_Blood1:		Skin = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPFlatFXtex2"); break;
+			case E_Blood2:		Skin = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPFlatFXtex3"); break;
+			case E_Blood3:		Skin = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPFlatFXtex5"); break;
+			case E_Blood4:		Skin = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPFlatFXtex6"); break;
+			case E_Ambrosia:	Skin = class'HDTPLoader'.static.GetTexture("DeusExItems.Skins.FlatFXtex48"); break;
+			case E_Water:		Skin = class'HDTPLoader'.static.GetTexture("DeusExItems.Skins.FlatFXtex47"); break;
+			case E_Burn1:		Skin = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPFlatFXtex38"); break;
+			case E_Burn2:		Skin = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPFlatFXtex39"); break;
+			case E_Burn3:		Skin = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPFlatFXtex40"); break;
+			case E_Hole:		Skin = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPFlatFXtex9"); break;
+			default:		Skin = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPFlatFXtex2"); break;
 	}
 }
 
@@ -51,7 +50,6 @@ defaultproperties
      bStatic=True
      Physics=PHYS_None
      Style=STY_Modulated
-     Skin=Texture'HDTPItems.Skins.HDTPFlatFXtex2'
      Mesh=LodMesh'DeusExItems.FlatFX'
      DrawScale=2.000000
      ScaleGlow=1.500000

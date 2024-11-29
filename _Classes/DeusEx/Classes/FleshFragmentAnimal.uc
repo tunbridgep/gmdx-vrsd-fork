@@ -24,7 +24,7 @@ auto state Flying                      //CyberP: modified to be more gory
 		if (rand < 0.02)
 			spawn(class'BoneFemurLessBloody',,,,randRot);
         else if (rand <0.1)
-            Skin=Texture'HDTPItems.Skins.HDTPFleshFragTex1';
+            Skin=class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFleshFragTex1","DeusExItems.Skins.FleshFragmentTex1",IsHDTP());
 		else if (rand < 0.13)
             spawn(class'BoneFemurBloody',,,,randRot);
         else if (rand < 0.19)

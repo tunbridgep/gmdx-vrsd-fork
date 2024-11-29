@@ -30,7 +30,7 @@ function bool DoLeftFrob(DeusExPlayer frobber)
 
 function FlareFlame()
 {
-      Multiskins[2]=Texture'HDTPanim.HDTPFlrFlame';
+      Multiskins[2]=class'HDTPLoader'.static.GetFireTexture("HDTPanim.HDTPFlrFlame");
       AmbientSound = Sound'Ambient.Ambient.WaterRushing2';
 }
 

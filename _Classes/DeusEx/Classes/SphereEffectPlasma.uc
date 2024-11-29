@@ -1,7 +1,7 @@
 //=============================================================================
 // SphereEffect.
 //=============================================================================
-class SphereEffectPlasma extends Effects;
+class SphereEffectPlasma extends GMDXEffect;
 
 var float size;
 
@@ -17,7 +17,8 @@ defaultproperties
      LifeSpan=0.500000
      DrawType=DT_Mesh
      Style=STY_Translucent
-     Skin=Texture'HDTPDecos.Skins.HDTPAlarmLightTex4'
+     HDTPSkin"HDTPDecos.Skins.HDTPAlarmLightTex4"
+     Skin=Texture'DeusExDeco.Skins.AlarmLightTex4'
      Mesh=LodMesh'DeusExItems.SphereEffect'
      bUnlit=True
      LightType=LT_Strobe

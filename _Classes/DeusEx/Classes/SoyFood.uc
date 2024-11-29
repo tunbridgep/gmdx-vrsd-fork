@@ -28,7 +28,7 @@ defaultproperties
      largeIconHeight=46
      Description="Fine print: 'Seasoned with nanoscale mechanochemical generators, this TSP (textured soy protein) not only tastes good but also self-heats when its package is opened.'"
      beltDescription="SOY FOOD"
-     Skin=Texture'HDTPItems.Skins.HDTPSoyFoodTex1'
+     HDTPSkin="HDTPItems.Skins.HDTPSoyFoodTex1"
      Mesh=LodMesh'DeusExItems.SoyFood'
      CollisionRadius=8.000000
      CollisionHeight=0.980000

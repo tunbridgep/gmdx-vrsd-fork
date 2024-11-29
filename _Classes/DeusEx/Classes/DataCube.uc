@@ -19,9 +19,10 @@ exec function UpdateHDTPsettings()
         MultiSkins[2]=class'HDTPLoader'.static.GetTexture("DeusExItems.Skins.Datacubetex1");
 }
 
-function OnBeginRead()
+function OnBeginRead(DeusExPlayer reader)
 {
-    MultiSkins[2]=Texture'PinkMaskTex';
+    if (reader != None && reader.bShowDataCubeRead)
+        MultiSkins[2]=Texture'PinkMaskTex';
 }
 
 defaultproperties

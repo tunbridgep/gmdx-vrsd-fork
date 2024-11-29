@@ -19,15 +19,29 @@ var int numUses;
 var localized String msgEmpty;
 var() bool bFrobbable;
 
-function BeginPlay()
+function UpdateHDTPSettings()
 {
-	Super.BeginPlay();
-
+    local Texture tex, tex2;
+	Super.UpdateHDTPSettings();
 	switch (SkinColor)
 	{
-		case SC_Drink:	Multiskins[1] = Texture'HDTPvendingDrinktex1'; Multiskins[2] = Texture'HDTPvendingDrinktex2';  break;
-		case SC_Snack:	Multiskins[1] = Texture'HDTPvendingSnacktex1'; Multiskins[2] = Texture'HDTPvendingSnacktex2';  break;
+		case SC_Drink:	tex = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPvendingDrinktex1","DeusExDeco.VendingMachineTex1",IsHDTP());
+                        tex2 = class'HDTPLoader'.static.GetTexture("HDTPDecos.HDTPvendingDrinktex2"); 
+                        break;
+		case SC_Snack:	tex = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPvendingSnacktex1","DeusExDeco.VendingMachineTex2",IsHDTP());
+                        tex2 = class'HDTPLoader'.static.GetTexture("HDTPDecos.HDTPvendingSnacktex2"); 
+                        break;
 	}
+
+    if (IsHDTP())
+    {
+        MultiSkins[1] = tex;
+        MultiSkins[2] = tex2;
+    }
+    else
+    {
+        Skin = tex;
+    }
 }
 
 function Frob(actor Frobber, Inventory frobWith)
@@ -94,7 +108,8 @@ defaultproperties
      bFrobbable=True
      bCanBeBase=True
      ItemName="Vending Machine"
-     Mesh=LodMesh'HDTPDecos.HDTPVendingMachine'
+     HDTPMesh="HDTPDecos.HDTPVendingMachine"
+     Mesh=LodMesh'DeusExDeco.VendingMachine'
      SoundRadius=8
      SoundVolume=96
      AmbientSound=Sound'Ambient.Ambient.HumLow3'

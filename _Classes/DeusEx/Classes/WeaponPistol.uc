@@ -31,7 +31,7 @@ function DisplayWeapon(bool overlay)
         ShowWeaponAddon(5,bHasLaser);
     
         if (bHasLaser && bLasing)
-            multiskins[3] = texture'HDTPGlockTex4';
+            multiskins[3] = class'HDTPLoader'.static.GetTexture("HDTPGlockTex4");
         else
             multiskins[3] = texture'PinkMaskTex';
     }
@@ -89,7 +89,7 @@ function LaserOn(optional bool IgnoreSound)
     {
         Super.LaserOn(IgnoreSound);
         if (IsHDTP())                                              //RSD: Added iHDTPModelToggle
-		    Multiskins[3] = texture'HDTPGlockTex4';
+		    Multiskins[3] = class'HDTPLoader'.static.GetTexture("HDTPGlockTex4");
     }
 }
 
@@ -301,7 +301,7 @@ defaultproperties
      PickupViewMesh=LodMesh'DeusExItems.GlockPickup'
      ThirdPersonMesh=LodMesh'DeusExItems.Glock3rd'
      Icon=Texture'DeusExUI.Icons.BeltIconPistol'
-     HDTPIcon="HDTPItems.Icons.HDTPBeltIconPistol" //HDTP-styled icon
+     //HDTPIcon="HDTPItems.Icons.HDTPBeltIconPistol" //HDTP-styled icon //DISABLED as it breaks belt memory
      HDTPlargeIcon="RSDCrap.Icons.LargeIconPistol" //HDTP-styled icon
      largeIcon=Texture'DeusExUI.Icons.LargeIconPistol'
      largeIconWidth=46

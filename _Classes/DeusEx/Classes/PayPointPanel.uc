@@ -8,8 +8,6 @@ var bool bConfirmPurchase;
 var bool bPaidFor;
 var() int price;
 
-#exec obj load file=HDTPanim
-
 function Timer()
 {
    itemName = default.ItemName @ "(" $ Price $ " credits)";
@@ -71,13 +69,21 @@ function ToggleLock(DeusExPlayer Player)
    }
 }
 
+
+//Base it off SubwayControlPanel
+function bool IsHDTP()
+{
+    return class'SubwayControlPanel'.default.iHDTPModelToggle > 0 && class'HDTPLoader'.static.HDTPInstalled();
+}
+
+
 defaultproperties
 {
      bInvincible=True
      ItemName="Insert Credits"
      bPushable=False
      Physics=PHYS_None
-     Skin=Texture'HDTPanim.Animated.SubwayControlPanel01'
+     HDTPSkin="HDTPanim.Animated.SubwayControlPanel01"
      Mesh=LodMesh'DeusExDeco.SubwayControlPanel'
      DrawScale=0.750000
      CollisionRadius=4.900000

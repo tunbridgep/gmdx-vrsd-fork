@@ -23,8 +23,8 @@ var localized String AddedToDatavaultLabel;
 var travel bool bRead;
 
 // Called when the device is read
-function OnBeginRead() { }
-function OnEndRead() { }
+function OnBeginRead(DeusExPlayer reader) { }
+function OnEndRead(DeusExPlayer reader) { }
 
 // ----------------------------------------------------------------------
 // Destroyed()
@@ -51,7 +51,7 @@ function DestroyWindow()
 	// restore the crosshairs and the other hud elements
 	if (aReader != None)
 	{
-        OnEndRead();
+        OnEndRead(aReader);
         aReader.UpdateCrosshair();
 	}
 
@@ -192,7 +192,7 @@ function CreateInfoWindow()
 	rootWindow = DeusExRootWindow(aReader.rootWindow);
         
     bRead = true;
-    OnBeginRead();
+    OnBeginRead(aReader);
 
     GetText();
     

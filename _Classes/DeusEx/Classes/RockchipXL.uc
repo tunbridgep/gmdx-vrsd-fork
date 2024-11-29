@@ -26,7 +26,6 @@ auto state Flying
 		}
         if (DrawScale > 0.5)
             SetCollisionSize(Default.CollisionRadius + DrawScale, Default.CollisionHeight + DrawScale);
-		//Skin=Texture'HDTPDecos.Skins.HDTPWaterFountaintex1';
 	}
 }
 

@@ -23,7 +23,8 @@ defaultproperties
      elasticity=0.250000
      ImpactSound=Sound'DeusExSounds.Generic.PaperHit1'
      LifeSpan=30.000000
-     Skin=Texture'HDTPDecos.Skins.HDTPBoneFemurTex'
+     HDTPSkin="HDTPDecos.Skins.HDTPBoneFemurTex"
+	 Skin=Texture'DeusExDeco.Skins.BoneFemurTex'
      Mesh=LodMesh'DeusExItems.FleshFragment1'
      DrawScale=0.200000
      CollisionRadius=0.500000

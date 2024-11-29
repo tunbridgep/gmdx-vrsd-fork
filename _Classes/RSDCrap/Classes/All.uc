@@ -29,8 +29,11 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\AmmoDartTex1.pcx"			NAME="AmmoDartTex1"			GROUP="Skins"
 #exec TEXTURE IMPORT FILE="Textures\AmmoDartTex4.pcx"			NAME="AmmoDartTex4"			GROUP="Skins"
 
-// Misc Item Textures
-
+// Misc Textures
+//Cloaking Texture
+#exec TEXTURE IMPORT FILE="Textures\CloakingTex.pcx"			NAME="CloakingTex"			GROUP="Skins"
+//Was used by water fountains in HDTP, but used by some effects, is a big blow "ring" of water.
+#exec TEXTURE IMPORT FILE="Textures\Kawoosh.pcx"			NAME="Kawoosh"			GROUP="Skins"
 //HDTP Medium Box, ported so we can use it without HDTP
 #exec TEXTURE IMPORT FILE="Textures\boxmedtex1.pcx"			NAME="BoxMedTex1"			GROUP="Skins"
 //#exec TEXTURE IMPORT FILE="Textures\boxmedtex2.pcx"			NAME="BoxMedTex2"			GROUP="Skins"
@@ -40,6 +43,17 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\LargeIconRifle.pcx"			    NAME="LargeIconRifle"			GROUP="Icons"
 #exec TEXTURE IMPORT FILE="Textures\LargeIconPistol.pcx"			NAME="LargeIconPistol"			GROUP="Icons"
 #exec TEXTURE IMPORT FILE="Textures\BeltIconRifle.pcx"			    NAME="BeltIconRifle"			GROUP="Icons"
+
+//Menu Backgrounds
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\HDTPMenuOptionsBackground_1.pcx"			NAME="HDTPMenuOptionsBackground_1"			GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\HDTPMenuOptionsBackground_2.pcx"			NAME="HDTPMenuOptionsBackground_2"			GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\HDTPMenuOptionsBackground_3.pcx"			NAME="HDTPMenuOptionsBackground_3"			GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\HDTPMenuOptionsBackground_4.pcx"			NAME="HDTPMenuOptionsBackground_4"			GROUP="UserInterface"
+
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\HDTPOptionsScreen_1.pcx"			NAME="HDTPOptionsScreen_1"			GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\HDTPOptionsScreen_2.pcx"			NAME="HDTPOptionsScreen_2"			GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\HDTPOptionsScreen_3.pcx"			NAME="HDTPOptionsScreen_3"			GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\HDTPOptionsScreen_4.pcx"			NAME="HDTPOptionsScreen_4"			GROUP="UserInterface"
 
 // Hands Textures
 

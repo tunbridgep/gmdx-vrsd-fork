@@ -63,6 +63,12 @@ simulated function Destroyed()
 	Super.Destroyed();
 }
 
+function UpdateHDTPSettings()
+{
+    super.UpdateHDTPSettings();
+    MultiSkins[0]=class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPminicrossbowtex3","DeusExItems.Skins.MiniCrossbowTex3",IsHDTP());
+}
+
 defaultproperties
 {
      bExplodes=True
@@ -84,5 +90,4 @@ defaultproperties
      ExplosionDecal=Class'DeusEx.ScorchMark'
      Mesh=LodMesh'HDTPItems.HDTPShotguncasing'
      DrawScale=2.400000
-     MultiSkins(0)=Texture'HDTPItems.Skins.HDTPminicrossbowtex3'
 }

@@ -62,7 +62,7 @@ defaultproperties
      ItemName="Satellite Dish"
      bStatic=False
      Physics=PHYS_Rotating
-     Skin=Texture'HDTPDecos.Skins.HDTPSatelliteDishTex1'
+     HDTPSkin="HDTPDecos.Skins.HDTPSatelliteDishTex1"
      Mesh=LodMesh'DeusExDeco.SatelliteDish'
      SoundRadius=16
      SoundVolume=192

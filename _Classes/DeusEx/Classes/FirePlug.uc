@@ -13,22 +13,23 @@ enum ESkinColor
 
 var() ESkinColor SkinColor;
 
-function BeginPlay()
+exec function UpdateHDTPsettings()
 {
-	Super.BeginPlay();
-
-	switch (SkinColor)
+    super.UpdateHDTPsettings();
+	
+    switch (SkinColor)
 	{
-		case SC_Red:	Skin = Texture'HDTPFirePlugTex1'; break;
-		case SC_Orange:	Skin = Texture'HDTPFirePlugTex2'; break;
-		case SC_Blue:	Skin = Texture'HDTPFirePlugTex3'; break;
-		case SC_Gray:	Skin = Texture'HDTPFirePlugTex4'; break;
-	}
+		case SC_Red:	Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPFirePlugTex1","DeusExDeco.FirePlugTex1",IsHDTP()); break;
+		case SC_Orange:	Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPFirePlugTex2","DeusExDeco.FirePlugTex2",IsHDTP()); break;
+		case SC_Blue:	Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPFirePlugTex3","DeusExDeco.FirePlugTex3",IsHDTP()); break;
+		case SC_Gray:	Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPFirePlugTex4","DeusExDeco.FirePlugTex4",IsHDTP()); break;
+    }
 }
 
 defaultproperties
 {
-     Mesh=LodMesh'HDTPDecos.HDTPfireplug'
+     HDTPMesh="HDTPDecos.HDTPfireplug"
+     Mesh=LodMesh'DeusExDeco.FirePlug'
      CollisionRadius=8.000000
      CollisionHeight=16.500000
      Mass=50.000000
