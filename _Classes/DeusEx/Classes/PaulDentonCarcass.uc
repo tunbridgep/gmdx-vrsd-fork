@@ -39,7 +39,7 @@ function SetSkin(DeusExPlayer player)
     local Texture tex1, tex2;
 	if (player != None)
 	{
-		if(player.GetHDTPSettings(self))
+		if(IsHDTP())
 		{
             switch(player.PlayerSkin)
             {

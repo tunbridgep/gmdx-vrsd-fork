@@ -19,24 +19,24 @@ exec function UpdateHDTPSettings()
     switch (SkinColor)
     {
         case SC_Super45:
-            Multiskins[1]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex1","",iHDTPModelToggle > 0);
-            Multiskins[3]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex1","",iHDTPModelToggle > 0);
-            Skin=class'HDTPLoader'.static.GetTexture2("","Liquor40oztex1",iHDTPModelToggle > 0);
+            Multiskins[1]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex1","",IsHDTP());
+            Multiskins[3]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex1","",IsHDTP());
+            Skin=class'HDTPLoader'.static.GetTexture2("","Liquor40oztex1",IsHDTP());
             break;
         case SC_Bottle2:
-            Multiskins[1]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex3","",iHDTPModelToggle > 0);
-            Multiskins[3]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex3","",iHDTPModelToggle > 0);
-            Skin=class'HDTPLoader'.static.GetTexture2("","Liquor40oztex2",iHDTPModelToggle > 0);
+            Multiskins[1]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex3","",IsHDTP());
+            Multiskins[3]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex3","",IsHDTP());
+            Skin=class'HDTPLoader'.static.GetTexture2("","Liquor40oztex2",IsHDTP());
             break;
         case SC_Bottle3:
-            Multiskins[1]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex4","",iHDTPModelToggle > 0);
-            Multiskins[3]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex4","",iHDTPModelToggle > 0);
-            Skin=class'HDTPLoader'.static.GetTexture2("","Liquor40oztex3",iHDTPModelToggle > 0);
+            Multiskins[1]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex4","",IsHDTP());
+            Multiskins[3]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex4","",IsHDTP());
+            Skin=class'HDTPLoader'.static.GetTexture2("","Liquor40oztex3",IsHDTP());
             break;
         case SC_Bottle4:
-            Multiskins[1]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex5","",iHDTPModelToggle > 0);
-            Multiskins[3]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex5","",iHDTPModelToggle > 0);
-            Skin=class'HDTPLoader'.static.GetTexture2("","Liquor40oztex4",iHDTPModelToggle > 0);
+            Multiskins[1]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex5","",IsHDTP());
+            Multiskins[3]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex5","",IsHDTP());
+            Skin=class'HDTPLoader'.static.GetTexture2("","Liquor40oztex4",IsHDTP());
             break;
     }
 }

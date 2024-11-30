@@ -205,6 +205,7 @@ defaultproperties
      ItemName="Augmentation Canister"
      ItemArticle="an"
      PlayerViewOffset=(X=30.000000,Z=-12.000000)
+     PickupViewMesh=LodMesh'DeusExItems.AugmentationCannister'
      LandSound=Sound'DeusExSounds.Generic.PlasticHit1'
      Icon=Texture'DeusExUI.Icons.BeltIconAugmentationCannister'
      largeIcon=Texture'DeusExUI.Icons.LargeIconAugmentationCannister'
@@ -212,7 +213,7 @@ defaultproperties
      largeIconHeight=49
      Description="An augmentation canister teems with nanoscale mecanocarbon ROM modules suspended in a carrier serum. When injected into a compatible host subject, these modules augment an individual with extra-sapient abilities. However, proper programming of augmentations must be conducted by a medical robot, otherwise terminal damage may occur. For more information, please see 'Face of the New Man' by Kelley Chance."
      beltDescription="AUG CAN"
-     Mesh=LodMesh'DeusExItems.AugCan'
+     Mesh=LodMesh'DeusExItems.AugmentationCannister'
      CollisionRadius=4.310000
      CollisionHeight=10.240000
      Mass=10.000000

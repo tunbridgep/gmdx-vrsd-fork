@@ -38,20 +38,20 @@ function Timer()
 					PlaySound(beepSound, SLOT_Misc,,, 512);
 					if (light != None)
 						light.LightType = LT_Steady;
-					Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPTADTex2","DeusExDeco.TADTex2",iHDTPModelToggle > 0);
+					Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPTADTex2","DeusExDeco.TADTex2",IsHDTP());
 				}
 				else
 				{
 					if (light != None)
 						light.LightType = LT_None;
-					Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPTADTex1","DeusExDeco.TADTex1",iHDTPModelToggle > 0);
+					Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPTADTex1","DeusExDeco.TADTex1",IsHDTP());
 				}
 			}
 			else
 			{
 				if (light != None)
 					light.LightType = LT_None;
-                Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPTADTex1","DeusExDeco.TADTex1",iHDTPModelToggle > 0);
+                Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPTADTex1","DeusExDeco.TADTex1",IsHDTP());
 			}
 		}
 		else
@@ -59,7 +59,7 @@ function Timer()
 			// turn off the light
 			if (light != None)
 				light.Destroy();
-            Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPTADTex1","DeusExDeco.TADTex1",iHDTPModelToggle > 0);
+            Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPTADTex1","DeusExDeco.TADTex1",IsHDTP());
 			SetTimer(0.1, False);
 		}
 	}

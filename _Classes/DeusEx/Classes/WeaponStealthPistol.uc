@@ -90,7 +90,7 @@ simulated function PlaySelectiveFiring()                                        
 	//local int animNum;
 	local float mod;
     local float hhspeed;
-    if (iHDTPModelToggle != 2)
+    if (iHDTPModelToggle != 2 || !IsHDTP())
     {
         Super.PlaySelectiveFiring();
         return;
@@ -134,7 +134,7 @@ simulated function PlayIdleAnim()                                               
 {
     local float rnd;
 
-    if (iHDTPModelToggle != 2)                                                  //RSD: Special routine only for Clyzm model
+    if (iHDTPModelToggle != 2 || !IsHDTP())                                                  //RSD: Special routine only for Clyzm model
 	{
 		super.PlayIdleAnim();
 		return;

@@ -232,13 +232,13 @@ Begin:
 			if (bWasZoomed)
 				ScopeOff();
 			Owner.PlaySound(CockingSound, SLOT_None,,, 1024);		// CockingSound is reloadbegin
-			if (iHDTPModelToggle == 2)                                          //RSD: Clyzm model
+			if (iHDTPModelToggle == 2 && IsHDTP())                                          //RSD: Clyzm model
 				PlayAnim('ReloadBegin2',1-(ModReloadTime*0.8));
 			else
             	PlayAnim('ReloadBegin',1-(ModReloadTime*0.8));
 			NotifyOwner(True);
 			FinishAnim();
-			if (iHDTPModelToggle == 2)
+			if (iHDTPModelToggle == 2 && IsHDTP())
 				PlayAnim('Reload2');
 			else
 				PlayAnim('Reload');

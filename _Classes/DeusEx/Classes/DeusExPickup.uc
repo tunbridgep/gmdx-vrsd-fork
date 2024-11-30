@@ -90,6 +90,8 @@ exec function UpdateHDTPsettings()                                              
         Mesh = PlayerViewMesh;
     else
         Mesh = PickupViewMesh;
+
+	SetSkin();
 }
 
 
@@ -917,7 +919,6 @@ function PostBeginPlay()
 {
 	Super.PostBeginPlay();
     UpdateHDTPSettings();                                                       //SARGE: Update HDTP
-	setSkin();
 }
 
 function SetSkin()

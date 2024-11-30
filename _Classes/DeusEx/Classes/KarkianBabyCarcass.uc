@@ -5,6 +5,7 @@ class KarkianBabyCarcass extends DeusExCarcass;
 
 defaultproperties
 {
+     hdtpReference=class'DeusEx.Karkian'
      HDTPMesh="HDTPCharacters.HDTPKarkianCarcass"
      HDTPMesh2="HDTPCharacters.HDTPKarkianCarcass"
      HDTPMesh3="HDTPCharacters.HDTPKarkianCarcass"

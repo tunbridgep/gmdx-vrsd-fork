@@ -19,25 +19,50 @@ function Eat(DeusExPlayer player)
     PlaySound(BurpSound);
 }
 
-function postpostbeginplay()
+function SetSkin()
 {
-	super.PostPostBeginPlay();
-
+    local Texture tex;
     //Set up Meshes
-    if (iHDTPModelToggle > 0)
+    switch(textureSet)
     {
-        //check for non-standard textures, adjust accordingly. HAAACKY.
-        if(skin == texture'SodacanTex2' || multiskins[0] == texture'SodacanTex2')
-            Multiskins[1] = class'HDTPLoader'.static.GetTexture("HDTPSodacantex2");
-        else if(skin == texture'SodacanTex3' || multiskins[0] == texture'SodacanTex3')
-            Multiskins[1] = class'HDTPLoader'.static.GetTexture("HDTPSodacantex3");
-        else if(skin == texture'SodacanTex4' || multiskins[0] == texture'SodacanTex4')
-            Multiskins[1] = class'HDTPLoader'.static.GetTexture("HDTPSodacantex4");
+        case 0:
+            tex = class'HDTPLoader'.static.GetTexture2("HDTPItems.HDTPSodacantex1","DeusExItems.SodaCanTex1",IsHDTP());
+            break;
+        case 1:
+            tex = class'HDTPLoader'.static.GetTexture2("HDTPItems.HDTPSodacantex2","DeusExItems.SodaCanTex2",IsHDTP());
+            break;
+        case 2:
+            tex = class'HDTPLoader'.static.GetTexture2("HDTPItems.HDTPSodacantex3","DeusExItems.SodaCanTex3",IsHDTP());
+            break;
+        case 3:
+            tex = class'HDTPLoader'.static.GetTexture2("HDTPItems.HDTPSodacantex4","DeusExItems.SodaCanTex4",IsHDTP());
+            break;
+    }
+
+    if (IsHDTP())
+    {
+        Skin = None;
+        Multiskins[1] = tex;
     }
     else
     {
-        Multiskins[1] = default.Multiskins[1];
+        Skin = tex;
+        Multiskins[1] = None;
     }
+}
+
+function PreBeginPlay()
+{
+    //check for non-standard textures, adjust accordingly. HAAACKY.
+    //SARGE: Ugh....just use the proper skin system...
+    if(skin == texture'SodacanTex2' || multiskins[0] == texture'SodacanTex2')
+        textureSet = 1;
+    else if(skin == texture'SodacanTex3' || multiskins[0] == texture'SodacanTex3')
+        textureSet = 2;
+    else if(skin == texture'SodacanTex4' || multiskins[0] == texture'SodacanTex4')
+        textureSet = 3;
+    super.PreBeginPlay();
+
 }
 
 defaultproperties

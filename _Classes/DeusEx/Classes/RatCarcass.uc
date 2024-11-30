@@ -94,6 +94,7 @@ function ZoneChange(ZoneInfo NewZone)
 
 defaultproperties
 {
+     hdtpReference=class'DeusEx.Rat'
      Mesh=LodMesh'DeusExCharacters.RatCarcass'
      Mesh2=LodMesh'DeusExCharacters.RatCarcass'
      Mesh3=LodMesh'DeusExCharacters.RatCarcass'

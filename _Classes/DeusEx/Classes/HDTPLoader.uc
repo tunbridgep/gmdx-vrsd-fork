@@ -46,6 +46,11 @@ static function LodMesh GetMesh2(string m, string m2, bool first)
 static function Texture GetTexture2(string tex, string alternative, bool first)
 {
     local Texture TTex;
+
+    //Dirty hack
+    if (alternative == "Engine.S_Inventory")
+        alternative = "";
+
     if (first)
         TTex = Texture(DynamicLoadObject(tex, class'Texture', true));
     if (TTex == None)

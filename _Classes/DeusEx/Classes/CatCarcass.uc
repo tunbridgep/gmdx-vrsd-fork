@@ -5,6 +5,7 @@ class CatCarcass extends DeusExCarcass;
 
 defaultproperties
 {
+     hdtpReference=class'DeusEx.Cat'
      HDTPMesh="HDTPCharacters.HDTPCatCarcass"
      HDTPMesh2="HDTPCharacters.HDTPCatCarcass"
      HDTPMesh3="HDTPCharacters.HDTPCatCarcass"

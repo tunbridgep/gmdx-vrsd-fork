@@ -391,6 +391,10 @@ function bool IsHDTP()
 //SARGE: Setup the HDTP settings for this ammo
 exec function UpdateHDTPSettings()
 {
+    //Bail out for special cases like individual shotgun shells as ammo
+    if (Mesh != default.Mesh && !(string(Mesh) ~= HDTPMesh))
+        return;
+
     if (HDTPMesh != "")
     {
         if (PlayerViewMesh == Mesh || PlayerViewMesh == None)
@@ -405,6 +409,11 @@ exec function UpdateHDTPSettings()
         Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),IsHDTP());
     if (HDTPTexture != "")
         Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),IsHDTP());
+
+    if (bCarriedItem)
+        Mesh = PlayerViewMesh;
+    else
+        Mesh = PickupViewMesh;
 }
 
 defaultproperties

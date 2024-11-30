@@ -14,7 +14,9 @@ defaultproperties
      LandSound=Sound'DeusExSounds.Generic.PaperHit2'
      largeIconWidth=20
      largeIconHeight=47
-     Mesh=LodMesh'DeusExItems.AmmoDart'
+     PlayerViewMesh=LodMesh'DeusExItems.AmmoDart'
+     PickupViewMesh=LodMesh'DeusExItems.AmmoDart'
+     ThirdPersonMesh=LodMesh'DeusExItems.AmmoDart'
      CollisionRadius=8.500000
      CollisionHeight=2.000000
      bCollideActors=True
@@ -26,4 +28,5 @@ defaultproperties
      HDTPSkin="GMDXSFX.Skins.FlareAmmo"
      //HDTPSkin="HDTPItems.Skins.HDTPAmmoDartTex2"
      Skin=Texture'DeusExItems.Skins.AmmoDartTex2'
+     Mesh=LodMesh'DeusExItems.AmmoDart'
 }

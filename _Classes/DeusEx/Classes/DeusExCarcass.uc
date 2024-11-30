@@ -162,7 +162,7 @@ local DeusExPlayer player;                                                      
 		if (ScriptedPawn(Other) != None)
 			if (ScriptedPawn(Other).bBurnedToDeath)
 				CumulativeDamage = MaxDamage-1;
-
+	 
 		SetScaleGlow();
 
 		// Will this carcass spawn flies?
@@ -1512,7 +1512,12 @@ auto state Dead
                //PlaySound(Sound'FleshHit1', SLOT_Interact, 1, ,768,1.0);     //CyberP: sound when thrown
 			}
 				if (pool != None)
-					pool.maxDrawScale = CollisionRadius / 640.0;  //hah! Found you you bastard..was making HUUUGE decals. -DDL
+				{
+					if (pool.IsHDTP())
+						pool.maxDrawScale = CollisionRadius / 640.0;  //hah! Found you you bastard..was making HUUUGE decals. -DDL
+					else
+						pool.maxDrawScale = CollisionRadius / 40.0; //SARGE: No more puny vanilla blood pools
+				}
 			}
 
 			// alert NPCs that I'm food

@@ -412,10 +412,12 @@ var globalconfig bool bAugDisplayVisible;
 var localized String CantBreakDT;
 
 //HDTP
-var globalconfig bool bHDTP_JC;
-var globalconfig bool bHDTP_Walton, bHDTP_Anna, bHDTP_UNATCO, bHDTP_MJ12, bHDTP_NSF, bHDTP_RiotCop, bHDTP_Gunther, bHDTP_Paul, bHDTP_Nico;
-var string HDTPMeshName;
+var config int iHDTPModelToggle;
+var string HDTPSkin;
+var string HDTPTexture;
+var string HDTPMesh;
 var string HDTPMeshTex[8];
+var bool bHDTPInstalled;
 
 //GMDX: CyberP & dasraiser
 //SAVEOUT
@@ -635,10 +637,6 @@ var globalconfig bool bFemaleHandsAlways;                                      /
 
 var globalconfig bool bShowDataCubeRead;                                      //SARGE: If true, darken the screens on Data Cubes when they have been read.
 
-//SARGE: HDTP Model toggles
-var config int iHDTPModelToggle;
-var bool bHDTPInstalled;
-
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -763,17 +761,22 @@ function AssignSecondary(Inventory item)
     RefreshChargedPickups();
 }
 
+function bool IsHDTP()
+{
+    return bHDTPInstalled && iHDTPModelToggle > 0;
+}
+
 function UpdateHDTPsettings()
 {
 	local mesh tempmesh;
 	local texture temptex;
 	local int i;
 
-	if(GetHDTPSettings(self)) //lol recursive
+	if(IsHDTP()) //lol recursive
 	{
-		if(HDTPMeshname != "")
+		if(HDTPMesh != "")
 		{
-			tempmesh = lodmesh(dynamicloadobject(HDTPMeshname,class'mesh',true));
+			tempmesh = lodmesh(dynamicloadobject(HDTPMesh,class'mesh',true));
 			if(tempmesh != none)
 			{
 				mesh = tempmesh;
@@ -797,32 +800,6 @@ function UpdateHDTPsettings()
 			multiskins[i]=default.multiskins[i];
 		}
 	}
-}
-
-function bool GetHDTPSettings(actor Other)
-{
-    if((Other.IsA('JCDentonMaleCarcass') || Other.IsA('JCDouble') || Other.IsA('JCDentonMale')) && bHDTP_JC)     //changed self to JCdentonmale for hopefully better mod compatibility
-        return true;
-    if((Other.IsA('MJ12Troop') || Other.IsA('MJ12TroopCarcass')) && bHDTP_MJ12)
-        return true;
-    else if((Other.IsA('UNATCOTroop') || Other.IsA('UNATCOTroopCarcass')) && bHDTP_UNATCO)
-        return true;
-    else if((Other.IsA('WaltonSimons') || Other.IsA('WaltonSimonsCarcass')) && bHDTP_WALTON)
-        return true;
-    else if((Other.IsA('AnnaNavarre') || Other.IsA('AnnaNavarreCarcass')) && bHDTP_Anna)
-        return true;
-    else if((Other.IsA('GuntherHermann') || Other.IsA('GuntherHermannCarcass')) && bHDTP_Gunther)
-        return true;
-    else if((Other.IsA('RiotCop') || Other.IsA('RiotCopCarcass')) && bHDTP_RiotCop)
-        return true;
-    else if((Other.IsA('Terrorist') || Other.IsA('TerroristCarcass')) && bHDTP_NSF)
-        return true;
-    else if((Other.IsA('PaulDenton') || Other.IsA('PaulDentonCarcass')) && bHDTP_Paul)
-        return true;
-    else if((Other.IsA('NicoletteDuClare') || Other.IsA('NicoletteDuClareCarcass')) && bHDTP_Nico)
-        return true;
-    else
-        return false;
 }
 
 function setupDifficultyMod() //CyberP: scale things based on difficulty. To find all things modified by
@@ -6623,7 +6600,10 @@ state Dying
             pool = spawn(class'BloodPool',,, HitLocation, Rotator(HitNormal));
             if (pool != none)
             {
-                pool.maxDrawScale = CollisionRadius / 520.0;
+				if (pool.IsHDTP())
+					pool.maxDrawScale = CollisionRadius / 520.0;
+				else
+					pool.maxDrawScale = CollisionRadius / 20.0;
                 pool.ReattachDecal();
             }
            }
@@ -17280,16 +17260,6 @@ defaultproperties
      BurnString=" with excessive burning"
      NoneString="None"
      MPDamageMult=1.000000
-     bHDTP_JC=False
-     bHDTP_Walton=False
-     bHDTP_Anna=False
-     bHDTP_UNATCO=False
-     bHDTP_MJ12=False
-     bHDTP_NSF=False
-     bHDTP_RiotCop=False
-     bHDTP_Gunther=False
-     bHDTP_Paul=False
-     bHDTP_Nico=False
      QuickSaveTotal=10
      bTogAutoSave=True
      bColorCodedAmmo=True

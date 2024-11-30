@@ -28,7 +28,7 @@ function SetSkin()
     if (FlagBase.GetBool('LDDPJCIsFemale'))
         return;
 
-	if(GetHDTPSettings(self))
+	if(IsHDTP())
 	{
 		switch(PlayerSkin)
 		{

@@ -30,12 +30,6 @@ function SetSkin()
 	super.SetSkin();
 }
 
-function UpdateHDTPsettings()
-{
-    super.UpdateHDTPsettings();
-    SetSkin();
-}
-
 function Eat(DeusExPlayer player)
 {
     local vector loc;

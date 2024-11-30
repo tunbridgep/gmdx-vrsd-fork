@@ -73,7 +73,12 @@ function Frob(actor Frobber, Inventory frobWith)
 			loc += Location;
 
 			if (SkinColor == SC_Drink)
+            {
 				product = Spawn(class'Sodacan', None,, loc);
+                //SARGE: Randomise flavour of sodacan
+                SodaCan(product).textureSet = rand(3);
+                SodaCan(product).SetSkin();
+            }
 			else
 				product = Spawn(class'Candybar', None,, loc);
 

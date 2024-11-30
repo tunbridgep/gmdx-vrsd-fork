@@ -105,6 +105,9 @@ class All expands Object
 #exec AUDIO IMPORT FILE="Sounds\MultitoolEquip.wav"			NAME="MultitoolEquip"	    	GROUP="Misc"
 #exec AUDIO IMPORT FILE="Sounds\MultitoolUnequip.wav"	    NAME="MultitoolUnequip"		    GROUP="Misc"
 
+// Random textures imported from HDTP, so that certain maps will actually work
+#exec TEXTURE IMPORT FILE="Textures\DrainTex.pcx"			NAME="DrainTex"			GROUP="Environment"
+
 defaultproperties
 {
 }

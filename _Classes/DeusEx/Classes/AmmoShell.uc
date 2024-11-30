@@ -3,6 +3,14 @@
 //=============================================================================
 class AmmoShell extends DeusExAmmo;
 
+enum EPickupStyle
+{
+	E_Normal,
+    E_Single,
+};
+
+var(GMDX) EPickupStyle style;
+
 var bool bWaitForIt;
 
 //
@@ -33,6 +41,25 @@ var bool bWaitForIt;
 	}
 	return False;
 } */
+
+//SARGE: Allow single style
+//TODO: Properly localise this
+exec function UpdateHDTPSettings()
+{
+    Super.UpdateHDTPSettings();
+    if (style == E_Single)
+    {
+        Mesh = class'HDTPLoader'.static.GetMesh2("HDTPItems.HDTPShotguncasing","DeusExItems.ShellCasing2",IsHDTP());
+        PickupViewMesh = class'HDTPLoader'.static.GetMesh2("HDTPItems.HDTPShotguncasing","DeusExItems.ShellCasing2",IsHDTP());
+        PlayerViewMesh = class'HDTPLoader'.static.GetMesh2("HDTPItems.HDTPShotguncasing","DeusExItems.ShellCasing2",IsHDTP());
+        ThirdPersonMesh = class'HDTPLoader'.static.GetMesh2("HDTPItems.HDTPShotguncasing","DeusExItems.ShellCasing2",IsHDTP());
+        ItemArticle="a";
+        FamiliarName="Shotgun Shell";
+        UnfamiliarName="Shotgun Shell";
+        AmmoAmount=1;
+        ItemName="12 Gauge Buckshot Shell";
+    }
+}
 
 function Timer()
 {

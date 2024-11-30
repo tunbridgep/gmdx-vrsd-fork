@@ -6242,7 +6242,7 @@ Begin:
 
 			Owner.PlaySound(CockingSound, SLOT_None,,, 1024);		// CockingSound is reloadbegin
 //HDTP pistol and rifle (sigh) //CyberP: updated.
-if ((DeusExPlayer(Owner) != None) && (IsA('WeaponRifle') || IsA('WeaponPistol')) && iHDTPModelToggle == 1) //RSD: Need this off for vanilla model, added iHDTPModelToggle
+if ((DeusExPlayer(Owner) != None) && (IsA('WeaponRifle') || IsA('WeaponPistol')) && IsHDTP()) //RSD: Need this off for vanilla model, added iHDTPModelToggle
 {
     PlayAnim('Reload',default.ReloadTime/ReloadTime);
     Sleep(ReloadTime);
@@ -6264,7 +6264,7 @@ else
                 while (ClipCount < ReloadCount && AmmoType.AmmoAmount > 0 && ClipCount < AmmoType.AmmoAmount)                //RSD: Reverted Assault shotty, added GEP
                 {
                     sleeptime = 0;
-                    if (IsA('WeaponAssaultShotgun') || (IsA('WeaponSawedOffShotgun') && iHDTPModelToggle != 2)) //RSD: use normal sound routine if not using Clyzm's shotty
+                    if (IsA('WeaponAssaultShotgun') || (IsA('WeaponSawedOffShotgun') && (iHDTPModelToggle != 2||!IsHDTP()))) //RSD: use normal sound routine if not using Clyzm's shotty
                         LoadShells();
                     //Sleep(GetReloadTime());
                     //SARGE: Changed to now check during reload, so it's more responsive

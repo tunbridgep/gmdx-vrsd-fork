@@ -60,6 +60,11 @@ event InitWindow()
 function CreateChoices()
 {
 	local int i;
+
+    /*
+    if (lstItems == None)
+        return;
+    */
 	
     //Remove all existing choices
     lstItems.DeleteAllRows();
