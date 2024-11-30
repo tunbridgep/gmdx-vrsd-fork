@@ -164,5 +164,4 @@ defaultproperties
      bFlammable=True
      bCanBeBase=True
      bSelectMeleeWeapon=True
-     HDTPFailsafe=true; //Sometimes used as something weird/wacky, like big trees
 }

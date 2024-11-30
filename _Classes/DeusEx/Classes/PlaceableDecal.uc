@@ -60,4 +60,5 @@ defaultproperties
      bCollideWorld=False
      bBlockActors=False
      bBlockPlayers=False
+	 bHDTPFailsafe=False
 }

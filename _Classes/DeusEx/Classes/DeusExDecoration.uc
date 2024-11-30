@@ -65,7 +65,10 @@ var config int iHDTPModelToggle;
 var string HDTPSkin;
 var string HDTPTexture;
 var string HDTPMesh;
-var const bool HDTPFailsafe;
+var string oldSkin;
+var string oldTexture;
+var string oldMesh;
+var bool bHDTPFailsafe;
 
 //Sarge: LDDP Stuff
 var(GMDX) const bool requiresLDDP;                                              //Delete this character LDD is uninstalled
@@ -153,15 +156,43 @@ function bool IsHDTP()
 exec function UpdateHDTPsettings()
 {
     //FAILSAFE, some objects aren't what they claim to be, and have weird meshes etc!
-    if (string(Mesh) != HDTPMesh && Mesh != default.Mesh && HDTPFailsafe)
-        return;
+    //Have to use wacky inverted logic here, because Unrealscript doesn't support a case-insensitive inequality operator
+    //De-Morgans laws to the rescue!
+    if (bHDTPFailsafe)
+    {
+        if (!(string(Mesh) ~= HDTPMesh || Mesh == default.Mesh || string(Mesh) ~= oldMesh))
+        {
+            log("Failed: Mesh mismatch. Got " $ string(Mesh));
+            return;
+        }
+        
+        if (!(string(Skin) ~= HDTPSkin || Skin == default.Skin || string(Skin) ~= oldSkin))
+        {
+            log("Failed: Skin mismatch. Got " $ string(Skin));
+            return;
+        }
+        
+        if (!(string(Texture) ~= HDTPTexture || Texture == default.Texture || string(Texture) ~= oldTexture))
+        {
+            log("Failed: Texture mismatch. Got " $ string(Texture));
+            return;
+        }
+    }
+
+    //Allow changing the vanilla skins/meshes/textures/whatever
+    if (oldSkin == "")
+        oldSkin = string(default.Skin);
+    if (oldMesh == "")
+        oldMesh = string(default.Mesh);
+    if (oldTexture == "")
+        oldTexture = string(default.Texture);
 
     if (HDTPMesh != "")
-        Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),IsHDTP());
+        Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,oldMesh,IsHDTP());
     if (HDTPSkin != "")
-        Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),IsHDTP());
+        Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,oldSkin,IsHDTP());
     if (HDTPTexture != "")
-        Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),IsHDTP());
+        Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,oldTexture,IsHDTP());
 }
 
 // ----------------------------------------------------------------------
@@ -1778,5 +1809,5 @@ defaultproperties
      bBlockActors=True
      bBlockPlayers=True
      iHDTPModelToggle=1
-     HDTPFailsafe=false;
+     bHDTPFailsafe=True
 }

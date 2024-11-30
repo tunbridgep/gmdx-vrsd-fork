@@ -328,4 +328,5 @@ defaultproperties
      LightRadius=1
      Mass=10.000000
      Buoyancy=5.000000
+	 bHDTPFailsafe=False
 }

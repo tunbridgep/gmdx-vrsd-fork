@@ -494,4 +494,5 @@ defaultproperties
      AddedToDatavaultLabel="Image %s added to DataVault"
      FragType=Class'DeusEx.PaperFragment'
      bPushable=False
+	 bHDTPFailsafe=False
 }

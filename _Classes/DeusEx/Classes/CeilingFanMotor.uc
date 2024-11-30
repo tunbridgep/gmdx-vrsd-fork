@@ -34,6 +34,11 @@ function UpdateHDTPSettings()
         Skin = tex;
 }
 
+function bool IsHDTP()
+{
+    return DeusExPlayer(GetPlayerPawn()).bHDTPInstalled && class'CeilingFan'.default.iHDTPModelToggle > 0;
+}
+
 defaultproperties
 {
      SkinColor=SC_DarkWoodIron
@@ -53,4 +58,5 @@ defaultproperties
      bCollideWorld=False
      Mass=50.000000
      Buoyancy=30.000000
+     bHDTPFailsafe=False
 }

@@ -7,26 +7,26 @@ class HDTPLoader extends Object;
 //Gets a texture
 static function Texture GetTexture(string tex)
 {
-    log("Getting firetexture: " $ tex);
+    //log("Getting firetexture: " $ tex);
 	return Texture(DynamicLoadObject(tex, class'Texture', true));
 }
 
 static function Texture GetWetTexture(string tex)
 {
-    log("Getting wettexture: " $ tex);
+    //log("Getting wettexture: " $ tex);
 	return WetTexture(DynamicLoadObject(tex, class'WetTexture', true));
 }
 
 static function Texture GetFireTexture(string tex)
 {
-    log("Getting texture: " $ tex);
+    //log("Getting texture: " $ tex);
 	return FireTexture(DynamicLoadObject(tex, class'FireTexture', true));
 }
 
 //Gets a mesh
 static function LodMesh GetMesh(string m)
 {
-    log("Getting mesh: " $ m);
+    //log("Getting mesh: " $ m);
 	return LodMesh(DynamicLoadObject(m, class'LodMesh', true));
 }
 
@@ -38,7 +38,7 @@ static function LodMesh GetMesh2(string m, string m2, bool first)
         MMesh = LodMesh(DynamicLoadObject(m, class'LodMesh', true));
     if (MMesh == None)
         MMesh = LodMesh(DynamicLoadObject(m2, class'LodMesh', true));
-    log("Getting mesh: " $ m $ ", " $ m2 $ ", " $ first);
+    //log("Getting mesh: " $ m $ ", " $ m2 $ ", " $ first);
     return MMesh;
 }
 
@@ -50,7 +50,7 @@ static function Texture GetTexture2(string tex, string alternative, bool first)
         TTex = Texture(DynamicLoadObject(tex, class'Texture', true));
     if (TTex == None)
         TTex = Texture(DynamicLoadObject(alternative, class'Texture', true));
-    log("Getting tex: " $ tex $ ", " $ alternative $ ", " $ first);
+    //log("Getting tex: " $ tex $ ", " $ alternative $ ", " $ first);
 	return TTex;
 }
 

@@ -406,4 +406,5 @@ defaultproperties
      CollisionHeight=29.000000
      Mass=80.000000
      Buoyancy=90.000000
+	 bHDTPFailsafe=False
 }

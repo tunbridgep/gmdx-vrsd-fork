@@ -53,4 +53,5 @@ defaultproperties
      Mass=50.000000
      Buoyancy=30.000000
      RotationRate=(Yaw=16384)
+     bHDTPFailsafe=False
 }
