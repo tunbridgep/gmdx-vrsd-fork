@@ -27,7 +27,7 @@ defaultproperties
      InitialInventory(1)=(Inventory=Class'DeusEx.Ammo762mm',Count=12)
      InitialInventory(2)=(Inventory=Class'DeusEx.WeaponCombatKnife')
      walkAnimMult=0.780000
-     HDTPMeshName="HDTPCharacters.HDTPUNATCOTroop"
+     HDTPMesh="HDTPCharacters.HDTPUNATCOTroop"
      HDTPMeshTex(0)="HDTPCharacters.Skins.HDTPUNATCOTroopTex0"
      HDTPMeshTex(1)="HDTPCharacters.Skins.HDTPUNATCOTroopTex1"
      HDTPMeshTex(2)="HDTPCharacters.Skins.HDTPUNATCOTroopTex2"

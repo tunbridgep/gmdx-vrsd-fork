@@ -133,7 +133,7 @@ defaultproperties
      WalkingSpeed=0.120000
      bInvincible=True
      BaseAssHeight=-23.000000
-     HDTPMeshName="HDTPCharacters.HDTPGM_Trench"
+     HDTPMesh="HDTPCharacters.HDTPGM_Trench"
      HDTPMeshTex(0)="HDTPCharacters.Skins.HDTPJCFaceTex0"
      HDTPMeshTex(1)="HDTPCharacters.Skins.HDTPJCDentonTex1"
      HDTPMeshTex(2)="HDTPCharacters.Skins.HDTPJCDentonTex2"

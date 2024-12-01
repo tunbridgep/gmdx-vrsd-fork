@@ -37,12 +37,47 @@ class All expands Object
 //HDTP Medium Box, ported so we can use it without HDTP
 #exec TEXTURE IMPORT FILE="Textures\boxmedtex1.pcx"			NAME="BoxMedTex1"			GROUP="Skins"
 //#exec TEXTURE IMPORT FILE="Textures\boxmedtex2.pcx"			NAME="BoxMedTex2"			GROUP="Skins"
+#exec TEXTURE IMPORT FILE="Textures\HDTPFlatFXTex29.pcx"	NAME="HDTPFlatFXTex29"			GROUP="Skins"
+
+// Lower Res versions of HDTP and GameMedia assets, to look better vanilla
+#exec TEXTURE IMPORT FILE="Textures\MiniDiskTex0.pcx"			    NAME="MiniDiskTex0"			GROUP="Skins"
+#exec TEXTURE IMPORT FILE="Textures\MiniDiskTex1.pcx"			    NAME="MiniDiskTex1"			GROUP="Skins"
+#exec TEXTURE IMPORT FILE="Textures\Leaves\LeafTex.pcx"			    NAME="LeafTex"			GROUP="Environment"
+#exec TEXTURE IMPORT FILE="Textures\Leaves\LeafTex0.pcx"			NAME="LeafTex0"			GROUP="Environment"
+#exec TEXTURE IMPORT FILE="Textures\Leaves\LeafTex1.pcx"			NAME="LeafTex1"			GROUP="Environment"
+#exec TEXTURE IMPORT FILE="Textures\Leaves\LeafTex2.pcx"			NAME="LeafTex2"			GROUP="Environment"
+#exec TEXTURE IMPORT FILE="Textures\Leaves\LeafTex3.pcx"			NAME="LeafTex3"			GROUP="Environment"
+#exec TEXTURE IMPORT FILE="Textures\Skins\trashtex1.pcx"		    NAME="TrashTex1"	    GROUP="Skins"
+
+// Random textures imported from HDTP, so that certain maps will actually work
+#exec TEXTURE IMPORT FILE="Textures\Environment\DrainTex.pcx"			    NAME="DrainTex"			    GROUP="Environment"
+#exec TEXTURE IMPORT FILE="Textures\Environment\DirtyToiletWaterTex.pcx"	NAME="DirtyToiletWaterTex"	GROUP="Environment"
+#exec TEXTURE IMPORT FILE="Textures\Environment\InfoSign.pcx"	            NAME="InfoSign"         	GROUP="Environment"
 
 //Icons etc
 #exec TEXTURE IMPORT FILE="Textures\LargeIconCrowbar.pcx"			NAME="LargeIconCrowbar"			GROUP="Icons"
 #exec TEXTURE IMPORT FILE="Textures\LargeIconRifle.pcx"			    NAME="LargeIconRifle"			GROUP="Icons"
 #exec TEXTURE IMPORT FILE="Textures\LargeIconPistol.pcx"			NAME="LargeIconPistol"			GROUP="Icons"
 #exec TEXTURE IMPORT FILE="Textures\BeltIconRifle.pcx"			    NAME="BeltIconRifle"			GROUP="Icons"
+
+//Import the Minidisk Mesh from GameMedia.u, since otherwise we have to pollute all of our maps with references to minidisk.
+//This dependency likely won't be removed anytime soon, but it's nice to know we can get rid of it easier if we decide to.
+//TOTALLY BORKED FOR SOME REASON!!!
+/*
+#exec MESH IMPORT MESH=Minidisk ANIVFILE=MODELS\Minidisk_a.3d DATAFILE=MODELS\Minidisk_d.3d
+#exec MESH ORIGIN MESH=Minidisk X=0 Y=0 Z=0
+
+#exec MESH SEQUENCE MESH=Minidisk SEQ=All  STARTFRAME=0  NUMFRAMES=1
+
+#exec MESHMAP NEW   MESHMAP=Minidisk MESH=Minidisk
+#exec MESHMAP SCALE MESHMAP=Minidisk X=0.04 Y=0.04 Z=0.04
+
+//Import high quality versions of minidisk textures
+#exec TEXTURE IMPORT FILE="Textures\MiniDiskTexh0.pcx"			NAME="MiniDiskTexh0"			GROUP="Skins"
+#exec TEXTURE IMPORT FILE="Textures\MiniDiskTexh1.pcx"			NAME="MiniDiskTexh1"			GROUP="Skins"
+
+#exec MESHMAP SETTEXTURE MESHMAP=Minidisk NUM=1 TEXTURE=MinidiskTexh0
+*/
 
 //Menu Backgrounds
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\HDTPMenuOptionsBackground_1.pcx"			NAME="HDTPMenuOptionsBackground_1"			GROUP="UserInterface"
@@ -104,9 +139,6 @@ class All expands Object
 
 #exec AUDIO IMPORT FILE="Sounds\MultitoolEquip.wav"			NAME="MultitoolEquip"	    	GROUP="Misc"
 #exec AUDIO IMPORT FILE="Sounds\MultitoolUnequip.wav"	    NAME="MultitoolUnequip"		    GROUP="Misc"
-
-// Random textures imported from HDTP, so that certain maps will actually work
-#exec TEXTURE IMPORT FILE="Textures\DrainTex.pcx"			NAME="DrainTex"			GROUP="Environment"
 
 defaultproperties
 {

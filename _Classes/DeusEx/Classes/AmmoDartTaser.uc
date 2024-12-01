@@ -27,6 +27,9 @@ defaultproperties
      LandSound=Sound'DeusExSounds.Generic.PaperHit2'
      largeIconWidth=20
      largeIconHeight=47
+     PlayerViewMesh=LodMesh'DeusExItems.AmmoDart'
+     PickupViewMesh=LodMesh'DeusExItems.AmmoDart'
+     ThirdPersonMesh=LodMesh'DeusExItems.AmmoDart'
      Mesh=LodMesh'DeusExItems.AmmoDart'
      CollisionRadius=8.500000
      CollisionHeight=2.000000

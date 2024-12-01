@@ -557,8 +557,13 @@ function bool IsHDTP()
 //SARGE: New function to update model meshes (specifics handled in each class)
 exec function UpdateHDTPsettings()
 {
+    local int i;
     if (HDTPMesh != "")
+    {
         Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),IsHDTP());
+        for(i = 0; i < 7;i++)
+            MultiSkins[i] = class'HDTPLoader'.static.GetTexture2(HDTPMeshTex[i],string(default.MultiSkins[i]),IsHDTP());
+    }
     if (HDTPSkin != "")
         Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),IsHDTP());
     if (HDTPTexture != "")
@@ -17102,5 +17107,5 @@ defaultproperties
      FamiliarName="DEFAULT FAMILIAR NAME - REPORT THIS AS A BUG"
      UnfamiliarName="DEFAULT UNFAMILIAR NAME - REPORT THIS AS A BUG"
      fireReactTime=0.4
-     iHDTPModelToggle=1
+     iHDTPModelToggle=0
 }

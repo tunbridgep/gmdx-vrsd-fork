@@ -117,4 +117,5 @@ defaultproperties
      Mass=20.000000
      Buoyancy=10.000000
 	 bHDTPFailsafe=False
+     bHighlight=False
 }

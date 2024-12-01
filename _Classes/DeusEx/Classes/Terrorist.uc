@@ -21,7 +21,7 @@ defaultproperties
      SprintRate=0.500000
      walkAnimMult=0.780000
      runAnimMult=1.100000
-     HDTPMeshName="HDTPCharacters.HDTPTerrorist"
+     HDTPMesh="HDTPCharacters.HDTPTerrorist"
      HDTPMeshTex(0)="HDTPCharacters.Skins.HDTPTerroristTex0"
      HDTPMeshTex(1)="HDTPCharacters.Skins.HDTPTerroristTex1"
      HDTPMeshTex(2)="HDTPCharacters.Skins.HDTPTerroristTex2"

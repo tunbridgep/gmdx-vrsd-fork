@@ -124,6 +124,9 @@ defaultproperties
      beltDescription="7.62 AMMO"
      HDTPSkin="HDTPItems.Skins.HDTPAmmo762mmTex1"
      Mesh=LodMesh'DeusExItems.Ammo762mm'
+     PlayerViewMesh=LodMesh'DeusExItems.Ammo762mm'
+     PickupViewMesh=LodMesh'DeusExItems.Ammo762mm'
+     ThirdPersonMesh=LodMesh'DeusExItems.Ammo762mm'
      CollisionRadius=6.000000
      CollisionHeight=0.750000
      bCollideActors=True

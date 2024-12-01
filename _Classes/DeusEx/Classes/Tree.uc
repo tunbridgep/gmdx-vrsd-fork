@@ -29,7 +29,7 @@ function PostBeginPlay()
 exec function UpdateHDTPsettings()
 {
     super.UpdateHDTPsettings();
-    if (IsHDTP())
+    if (IsHDTP() && altmesh != "")
     {
         if(location.X + location.Y %2 > 0)
         {

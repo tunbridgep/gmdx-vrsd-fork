@@ -51,7 +51,6 @@ function GotoDisabledState(name damageType, EHitLocation hitPos)
 function UpdateHDTPSettings()
 {
 	super.UpdateHDTPsettings();
-
 	setskin(deusexplayer(getplayerpawn()));
 }
 
@@ -120,7 +119,7 @@ defaultproperties
      BurnPeriod=0.000000
      bHasCloak=True
      CloakThreshold=100
-     HDTPMeshName="HDTPCharacters.HDTPGM_Trench"
+     HDTPMesh="HDTPCharacters.HDTPGM_Trench"
      HDTPMeshTex(0)="HDTPCharacters.skins.HDTPPaulDentonTex0"
      HDTPMeshTex(1)="HDTPCharacters.skins.HDTPPaulDentonTex1"
      HDTPMeshTex(2)="HDTPCharacters.Skins.HDTPJCDentonTex2"

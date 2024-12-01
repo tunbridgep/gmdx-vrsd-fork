@@ -4,6 +4,7 @@ Begin Map
 //2. PlaceableDecal
 //3. Sodacan
 //4. AmmoShell
+
 Begin Actor Class=TrashPaper Name=TrashPaper0
     bStatic=True
     bForceStasis=True
@@ -399,7 +400,6 @@ Begin Actor Class=TrashPaper Name=TrashPaper32
     OldLocation=(X=-2180.428467,Y=10516.476563,Z=-297.900574)
     DrawScale=2.000000
     ScaleGlow=0.300000
-    //Mesh=LodMesh'GameMedia.Minidisk'
     Name=TrashPaper32
 End Actor
 Begin Actor Class=TrashPaper Name=TrashPaper35
@@ -1552,7 +1552,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal33
     Style=STY_Masked
     DrawScale=0.260000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal33
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal50
@@ -1567,7 +1567,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal50
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex2'
+    TextureSetup=E_Leaf2
     Name=PlaceableDecal50
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal62
@@ -1582,7 +1582,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal62
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal62
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal67
@@ -1597,7 +1597,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal67
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal67
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal78
@@ -1612,7 +1612,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal78
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal78
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal83
@@ -1627,7 +1627,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal83
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal83
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal101
@@ -1642,7 +1642,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal101
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal101
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal107
@@ -1657,7 +1657,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal107
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal107
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal109
@@ -1672,7 +1672,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal109
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal109
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal112
@@ -1687,7 +1687,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal112
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal112
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal118
@@ -1702,7 +1702,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal118
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal118
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal130
@@ -1717,7 +1717,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal130
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal130
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal140
@@ -1732,7 +1732,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal140
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal140
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal74
@@ -1747,7 +1747,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal74
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal74
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal75
@@ -1762,7 +1762,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal75
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal75
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal76
@@ -1777,7 +1777,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal76
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal76
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal77
@@ -1792,7 +1792,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal77
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal77
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal79
@@ -1807,7 +1807,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal79
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal79
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal80
@@ -1822,7 +1822,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal80
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal80
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal81
@@ -1837,7 +1837,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal81
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal81
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal82
@@ -1852,7 +1852,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal82
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal82
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal84
@@ -1867,7 +1867,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal84
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal84
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal85
@@ -1882,7 +1882,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal85
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex2'
+    TextureSetup=E_Leaf2
     Name=PlaceableDecal85
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal87
@@ -1897,7 +1897,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal87
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal87
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal88
@@ -1912,7 +1912,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal88
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal88
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal89
@@ -1927,7 +1927,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal89
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal89
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal91
@@ -1942,7 +1942,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal91
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal91
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal94
@@ -1957,7 +1957,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal94
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal94
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal95
@@ -1972,7 +1972,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal95
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal95
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal96
@@ -1987,7 +1987,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal96
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal96
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal97
@@ -2002,7 +2002,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal97
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal97
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal98
@@ -2017,7 +2017,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal98
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal98
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal99
@@ -2032,7 +2032,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal99
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal99
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal100
@@ -2047,7 +2047,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal100
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal100
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal102
@@ -2062,7 +2062,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal102
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal102
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal103
@@ -2077,7 +2077,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal103
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal103
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal104
@@ -2092,7 +2092,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal104
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal104
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal105
@@ -2107,7 +2107,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal105
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal105
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal106
@@ -2122,7 +2122,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal106
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal106
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal108
@@ -2137,7 +2137,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal108
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal108
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal111
@@ -2152,7 +2152,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal111
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal111
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal113
@@ -2167,7 +2167,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal113
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal113
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal114
@@ -2182,7 +2182,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal114
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal114
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal115
@@ -2197,7 +2197,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal115
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal115
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal116
@@ -2212,7 +2212,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal116
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal116
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal117
@@ -2227,7 +2227,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal117
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal117
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal119
@@ -2242,7 +2242,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal119
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal119
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal120
@@ -2257,7 +2257,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal120
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal120
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal121
@@ -2272,7 +2272,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal121
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal121
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal122
@@ -2287,7 +2287,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal122
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal122
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal123
@@ -2302,7 +2302,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal123
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal123
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal125
@@ -2317,7 +2317,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal125
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal125
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal126
@@ -2332,7 +2332,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal126
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal126
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal127
@@ -2347,7 +2347,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal127
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal127
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal128
@@ -2362,7 +2362,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal128
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal128
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal129
@@ -2377,7 +2377,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal129
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal129
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal131
@@ -2392,7 +2392,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal131
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal131
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal132
@@ -2407,7 +2407,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal132
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal132
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal133
@@ -2422,7 +2422,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal133
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal133
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal134
@@ -2437,7 +2437,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal134
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal134
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal135
@@ -2452,7 +2452,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal135
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal135
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal136
@@ -2467,7 +2467,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal136
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal136
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal137
@@ -2482,7 +2482,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal137
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal137
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal138
@@ -2497,7 +2497,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal138
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal138
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal139
@@ -2512,7 +2512,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal139
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal139
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal141
@@ -2527,7 +2527,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal141
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal141
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal142
@@ -2542,7 +2542,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal142
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal142
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal143
@@ -2557,7 +2557,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal143
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal143
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal144
@@ -2572,7 +2572,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal144
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal144
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal148
@@ -2587,7 +2587,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal148
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal148
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal149
@@ -2602,7 +2602,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal149
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal149
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal150
@@ -2617,7 +2617,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal150
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal150
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal154
@@ -2632,7 +2632,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal154
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal154
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal155
@@ -2647,7 +2647,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal155
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal155
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal156
@@ -2662,7 +2662,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal156
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal156
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal157
@@ -2677,7 +2677,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal157
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal157
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal158
@@ -2692,7 +2692,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal158
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal158
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal159
@@ -2707,7 +2707,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal159
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal159
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal160
@@ -2722,7 +2722,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal160
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal160
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal164
@@ -2737,7 +2737,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal164
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal164
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal165
@@ -2752,7 +2752,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal165
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal165
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal166
@@ -2767,7 +2767,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal166
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal166
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal170
@@ -2782,7 +2782,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal170
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal170
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal171
@@ -2797,7 +2797,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal171
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal171
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal172
@@ -2812,7 +2812,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal172
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal172
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal173
@@ -2827,7 +2827,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal173
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal173
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal174
@@ -2842,7 +2842,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal174
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal174
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal175
@@ -2857,7 +2857,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal175
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal175
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal176
@@ -2872,7 +2872,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal176
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal176
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal177
@@ -2887,7 +2887,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal177
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal177
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal178
@@ -2902,7 +2902,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal178
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal178
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal179
@@ -2917,7 +2917,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal179
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal179
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal180
@@ -2932,7 +2932,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal180
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal180
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal181
@@ -2947,7 +2947,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal181
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal181
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal182
@@ -2962,7 +2962,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal182
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal182
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal185
@@ -2977,7 +2977,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal185
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal185
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal186
@@ -2992,7 +2992,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal186
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal186
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal187
@@ -3007,7 +3007,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal187
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal187
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal188
@@ -3022,7 +3022,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal188
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal188
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal189
@@ -3038,7 +3038,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal189
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal189
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal190
@@ -3054,7 +3054,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal190
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal190
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal191
@@ -3070,7 +3070,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal191
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal191
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal192
@@ -3086,7 +3086,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal192
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal192
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal193
@@ -3102,7 +3102,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal193
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal193
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal194
@@ -3118,7 +3118,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal194
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal194
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal195
@@ -3134,7 +3134,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal195
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal195
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal197
@@ -3150,7 +3150,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal197
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal197
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal198
@@ -3166,7 +3166,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal198
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal198
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal199
@@ -3182,7 +3182,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal199
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal199
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal200
@@ -3198,7 +3198,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal200
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal200
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal202
@@ -3214,7 +3214,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal202
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal202
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal204
@@ -3230,7 +3230,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal204
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal204
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal205
@@ -3246,7 +3246,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal205
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal205
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal206
@@ -3262,7 +3262,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal206
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal206
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal207
@@ -3278,7 +3278,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal207
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal207
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal208
@@ -3294,7 +3294,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal208
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal208
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal209
@@ -3310,7 +3310,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal209
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal209
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal211
@@ -3326,7 +3326,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal211
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal211
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal212
@@ -3342,7 +3342,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal212
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal212
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal214
@@ -3358,7 +3358,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal214
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal214
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal215
@@ -3374,7 +3374,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal215
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal215
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal216
@@ -3390,7 +3390,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal216
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal216
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal217
@@ -3406,7 +3406,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal217
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal217
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal218
@@ -3422,7 +3422,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal218
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal218
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal219
@@ -3438,7 +3438,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal219
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal219
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal221
@@ -3453,7 +3453,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal221
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal221
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal222
@@ -3468,7 +3468,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal222
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal222
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal223
@@ -3483,7 +3483,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal223
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal223
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal224
@@ -3498,7 +3498,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal224
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal224
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal225
@@ -3513,7 +3513,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal225
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal225
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal226
@@ -3528,7 +3528,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal226
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal226
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal227
@@ -3543,7 +3543,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal227
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal227
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal228
@@ -3558,7 +3558,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal228
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal228
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal229
@@ -3573,7 +3573,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal229
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal229
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal230
@@ -3588,7 +3588,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal230
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal230
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal231
@@ -3603,7 +3603,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal231
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal231
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal232
@@ -3618,7 +3618,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal232
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal232
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal233
@@ -3633,7 +3633,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal233
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal233
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal234
@@ -3648,7 +3648,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal234
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal234
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal235
@@ -3663,7 +3663,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal235
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal235
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal236
@@ -3678,7 +3678,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal236
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal236
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal239
@@ -3693,7 +3693,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal239
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal239
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal240
@@ -3708,7 +3708,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal240
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal240
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal247
@@ -3723,7 +3723,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal247
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal247
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal248
@@ -3738,7 +3738,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal248
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal248
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal255
@@ -3753,7 +3753,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal255
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal255
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal256
@@ -3768,7 +3768,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal256
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal256
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal258
@@ -3783,7 +3783,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal258
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal258
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal261
@@ -3798,7 +3798,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal261
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal261
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal263
@@ -3813,7 +3813,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal263
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal263
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal264
@@ -3828,7 +3828,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal264
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal264
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal269
@@ -3843,7 +3843,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal269
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal269
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal270
@@ -3858,7 +3858,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal270
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal270
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal271
@@ -3873,7 +3873,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal271
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal271
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal272
@@ -3888,7 +3888,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal272
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal272
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal273
@@ -3903,7 +3903,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal273
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal273
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal274
@@ -3918,7 +3918,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal274
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal274
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal275
@@ -3933,7 +3933,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal275
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal275
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal276
@@ -3948,7 +3948,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal276
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal276
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal277
@@ -3963,7 +3963,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal277
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal277
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal278
@@ -3978,7 +3978,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal278
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal278
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal279
@@ -3993,7 +3993,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal279
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal279
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal280
@@ -4008,7 +4008,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal280
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal280
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal281
@@ -4023,7 +4023,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal281
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal281
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal282
@@ -4038,7 +4038,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal282
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal282
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal283
@@ -4053,7 +4053,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal283
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal283
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal284
@@ -4068,7 +4068,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal284
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal284
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal287
@@ -4083,7 +4083,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal287
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal287
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal288
@@ -4098,7 +4098,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal288
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal288
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal289
@@ -4113,7 +4113,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal289
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal289
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal290
@@ -4128,7 +4128,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal290
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal290
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal291
@@ -4143,7 +4143,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal291
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal291
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal294
@@ -4158,7 +4158,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal294
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal294
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal295
@@ -4173,7 +4173,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal295
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal295
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal296
@@ -4188,7 +4188,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal296
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal296
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal300
@@ -4203,7 +4203,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal300
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal300
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal302
@@ -4218,7 +4218,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal302
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal302
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal303
@@ -4233,7 +4233,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal303
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal303
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal304
@@ -4248,7 +4248,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal304
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal304
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal306
@@ -4263,7 +4263,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal306
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal306
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal308
@@ -4278,7 +4278,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal308
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal308
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal309
@@ -4293,7 +4293,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal309
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal309
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal311
@@ -4308,7 +4308,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal311
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal311
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal312
@@ -4323,7 +4323,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal312
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal312
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal313
@@ -4338,7 +4338,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal313
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal313
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal314
@@ -4353,7 +4353,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal314
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal314
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal315
@@ -4368,7 +4368,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal315
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal315
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal316
@@ -4383,7 +4383,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal316
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal316
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal317
@@ -4398,7 +4398,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal317
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal317
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal318
@@ -4413,7 +4413,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal318
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal318
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal319
@@ -4428,7 +4428,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal319
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal319
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal323
@@ -4443,7 +4443,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal323
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal323
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal324
@@ -4458,7 +4458,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal324
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal324
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal325
@@ -4473,7 +4473,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal325
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal325
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal326
@@ -4488,7 +4488,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal326
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal326
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal327
@@ -4503,7 +4503,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal327
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal327
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal328
@@ -4518,7 +4518,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal328
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal328
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal330
@@ -4533,7 +4533,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal330
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal330
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal331
@@ -4548,7 +4548,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal331
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal331
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal332
@@ -4563,7 +4563,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal332
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal332
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal333
@@ -4578,7 +4578,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal333
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal333
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal334
@@ -4593,7 +4593,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal334
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal334
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal335
@@ -4608,7 +4608,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal335
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal335
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal336
@@ -4623,7 +4623,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal336
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal336
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal337
@@ -4638,7 +4638,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal337
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal337
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal338
@@ -4653,7 +4653,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal338
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal338
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal342
@@ -4668,7 +4668,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal342
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal342
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal344
@@ -4683,7 +4683,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal344
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal344
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal345
@@ -4698,7 +4698,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal345
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal345
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal59
@@ -4739,7 +4739,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal65
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex2'
+    TextureSetup=E_Leaf2
     Name=PlaceableDecal65
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal66
@@ -4754,7 +4754,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal66
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal66
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal68
@@ -4769,7 +4769,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal68
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex2'
+    TextureSetup=E_Leaf2
     Name=PlaceableDecal68
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal69
@@ -4784,7 +4784,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal69
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex2'
+    TextureSetup=E_Leaf2
     Name=PlaceableDecal69
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal70
@@ -4799,7 +4799,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal70
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal70
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal71
@@ -4814,7 +4814,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal71
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex2'
+    TextureSetup=E_Leaf2
     Name=PlaceableDecal71
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal72
@@ -4829,7 +4829,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal72
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex2'
+    TextureSetup=E_Leaf2
     Name=PlaceableDecal72
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal73
@@ -4844,7 +4844,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal73
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal73
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal346
@@ -4859,7 +4859,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal346
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex2'
+    TextureSetup=E_Leaf2
     Name=PlaceableDecal346
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal347
@@ -4874,7 +4874,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal347
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex2'
+    TextureSetup=E_Leaf2
     Name=PlaceableDecal347
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal348
@@ -4889,7 +4889,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal348
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal348
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal349
@@ -4904,10 +4904,11 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal349
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex2'
+    TextureSetup=E_Leaf2
     Name=PlaceableDecal349
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal350
+    TextureSetup=E_Hole
     LastRenderTime=39.289806
     DistanceFromPlayer=8847.036133
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -4918,10 +4919,11 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal350
     OldLocation=(X=9281.138672,Y=-1831.212646,Z=-139.783463)
     DrawScale=0.500000
     ScaleGlow=0.000000
-    MultiSkins(0)=Texture'DeusExItems.Skins.FlatFXTex9'
     Name=PlaceableDecal350
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal351
+    TextureSetup=E_Hole
+    LastRenderTime=39.289806
     LastRenderTime=39.289806
     DistanceFromPlayer=8809.468750
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -4932,10 +4934,10 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal351
     OldLocation=(X=8358.274414,Y=144.282898,Z=-143.785187)
     DrawScale=0.400000
     ScaleGlow=0.000000
-    MultiSkins(0)=Texture'DeusExItems.Skins.FlatFXTex9'
     Name=PlaceableDecal351
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal352
+    TextureSetup=E_Hole
     LastRenderTime=4.898726
     DistanceFromPlayer=6777.324707
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -4946,10 +4948,10 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal352
     OldLocation=(X=8319.274414,Y=181.282898,Z=-143.785187)
     DrawScale=0.600000
     ScaleGlow=0.000000
-    MultiSkins(0)=Texture'DeusExItems.Skins.FlatFXTex9'
     Name=PlaceableDecal352
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal353
+    TextureSetup=E_Hole
     LastRenderTime=39.289806
     DistanceFromPlayer=8780.804688
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -4960,10 +4962,10 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal353
     OldLocation=(X=8319.274414,Y=181.282898,Z=-143.785187)
     DrawScale=0.450000
     ScaleGlow=0.000000
-    MultiSkins(0)=Texture'DeusExItems.Skins.FlatFXTex9'
     Name=PlaceableDecal353
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal355
+    TextureSetup=E_Hole
     LastRenderTime=39.289806
     DistanceFromPlayer=8776.736328
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -4974,54 +4976,10 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal355
     OldLocation=(X=8385.274414,Y=231.282898,Z=-143.785187)
     DrawScale=1.000000
     ScaleGlow=0.000000
-    MultiSkins(0)=Texture'DeusExItems.Skins.FlatFXTex9'
     Name=PlaceableDecal355
 End Actor
-Begin Actor Class=PlaceableDecal Name=PlaceableDecal375
-    HitPoints=40
-    FragType=Class'DeusEx.WoodFragment'
-    bCanBeBase=True
-    PushSound=Sound'DeusExSounds.Generic.PushWood'
-    LastRenderTime=495.565552
-    DistanceFromPlayer=9771.768555
-    Level=LevelInfo'MyLevel.LevelInfo0'
-    Tag=PlaceableDecal
-    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
-    Location=(X=-2103.365234,Y=9263.155273,Z=-909.440979)
-    Rotation=(Yaw=16264)
-    OldLocation=(X=-2788.410400,Y=10623.983398,Z=-303.159607)
-    Style=STY_Normal
-    DrawScale=30.000000
-    ScaleGlow=0.100000
-    bUnlit=False
-    MultiSkins(1)=Texture'CoreTexWood.Wood.DrtyPlyWood_A'
-    CollisionRadius=0.000000
-    CollisionHeight=0.000000
-    Name=PlaceableDecal375
-End Actor
-Begin Actor Class=PlaceableDecal Name=PlaceableDecal376
-    HitPoints=40
-    FragType=Class'DeusEx.WoodFragment'
-    bCanBeBase=True
-    PushSound=Sound'DeusExSounds.Generic.PushWood'
-    LastRenderTime=12.784927
-    DistanceFromPlayer=8876.114258
-    Level=LevelInfo'MyLevel.LevelInfo0'
-    Tag=PlaceableDecal
-    Region=(Zone=WaterZone'MyLevel.WaterZone1',iLeaf=8416,ZoneNumber=2)
-    Location=(X=-4604.083984,Y=7476.833984,Z=-909.440979)
-    Rotation=(Yaw=20296)
-    OldLocation=(X=-2071.365234,Y=9295.155273,Z=-909.440979)
-    Style=STY_Normal
-    DrawScale=30.000000
-    ScaleGlow=0.100000
-    bUnlit=False
-    MultiSkins(1)=Texture'CoreTexWood.Wood.DrtyPlyWood_A'
-    CollisionRadius=0.000000
-    CollisionHeight=0.000000
-    Name=PlaceableDecal376
-End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal61
+    TextureSetup=E_Hole
     LastRenderTime=60.998714
     DistanceFromPlayer=6169.506836
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -5032,10 +4990,10 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal61
     OldLocation=(X=8358.274414,Y=144.282898,Z=-143.785187)
     DrawScale=0.500000
     ScaleGlow=0.000000
-    MultiSkins(0)=Texture'DeusExItems.Skins.FlatFXTex9'
     Name=PlaceableDecal61
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal63
+    TextureSetup=E_Hole
     LastRenderTime=60.998714
     DistanceFromPlayer=6211.359863
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -5046,10 +5004,10 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal63
     OldLocation=(X=8319.274414,Y=181.282898,Z=-143.785187)
     DrawScale=0.400000
     ScaleGlow=0.000000
-    MultiSkins(0)=Texture'DeusExItems.Skins.FlatFXTex9'
     Name=PlaceableDecal63
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal64
+    TextureSetup=E_Hole
     LastRenderTime=60.998714
     DistanceFromPlayer=6226.969727
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -5060,10 +5018,10 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal64
     OldLocation=(X=8219.274414,Y=182.282898,Z=-143.785187)
     DrawScale=0.600000
     ScaleGlow=0.000000
-    MultiSkins(0)=Texture'DeusExItems.Skins.FlatFXTex9'
     Name=PlaceableDecal64
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal358
+    TextureSetup=E_Hole
     LastRenderTime=6.649540
     DistanceFromPlayer=5758.174805
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -5074,7 +5032,6 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal358
     OldLocation=(X=-1327.426392,Y=5867.587402,Z=-143.785187)
     DrawScale=0.400000
     ScaleGlow=0.000000
-    MultiSkins(0)=Texture'DeusExItems.Skins.FlatFXTex9'
     Name=PlaceableDecal358
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal359
@@ -5089,7 +5046,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal359
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex2'
+    TextureSetup=E_Leaf2
     Name=PlaceableDecal359
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal360
@@ -5104,7 +5061,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal360
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex2'
+    TextureSetup=E_Leaf2
     Name=PlaceableDecal360
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal361
@@ -5119,7 +5076,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal361
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal361
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal362
@@ -5134,7 +5091,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal362
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex2'
+    TextureSetup=E_Leaf2
     Name=PlaceableDecal362
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal357
@@ -5149,7 +5106,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal357
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal357
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal365
@@ -5165,7 +5122,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal365
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal365
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal367
@@ -5180,7 +5137,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal367
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal367
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal368
@@ -5195,7 +5152,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal368
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal368
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal370
@@ -5210,7 +5167,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal370
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal370
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal371
@@ -5225,7 +5182,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal371
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal371
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal372
@@ -5240,7 +5197,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal372
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal372
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal373
@@ -5255,7 +5212,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal373
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal373
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal374
@@ -5270,7 +5227,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal374
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal374
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal379
@@ -5285,7 +5242,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal379
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal379
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal381
@@ -5300,7 +5257,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal381
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal381
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal382
@@ -5315,7 +5272,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal382
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal382
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal383
@@ -5330,7 +5287,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal383
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal383
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal384
@@ -5345,7 +5302,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal384
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal384
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal385
@@ -5360,7 +5317,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal385
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal385
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal386
@@ -5375,7 +5332,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal386
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal386
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal387
@@ -5390,7 +5347,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal387
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal387
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal388
@@ -5405,7 +5362,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal388
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal388
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal389
@@ -5420,7 +5377,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal389
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal389
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal390
@@ -5435,7 +5392,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal390
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal390
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal391
@@ -5450,7 +5407,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal391
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal391
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal392
@@ -5465,7 +5422,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal392
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal392
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal393
@@ -5480,7 +5437,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal393
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal393
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal397
@@ -5495,7 +5452,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal397
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal397
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal398
@@ -5510,7 +5467,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal398
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal398
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal399
@@ -5525,7 +5482,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal399
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal399
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal403
@@ -5540,7 +5497,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal403
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal403
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal406
@@ -5555,7 +5512,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal406
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal406
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal407
@@ -5570,7 +5527,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal407
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal407
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal408
@@ -5585,7 +5542,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal408
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal408
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal409
@@ -5600,7 +5557,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal409
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal409
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal412
@@ -5615,7 +5572,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal412
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal412
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal413
@@ -5630,7 +5587,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal413
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal413
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal414
@@ -5645,7 +5602,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal414
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal414
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal415
@@ -5660,7 +5617,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal415
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal415
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal416
@@ -5675,7 +5632,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal416
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal416
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal417
@@ -5690,7 +5647,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal417
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal417
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal418
@@ -5705,7 +5662,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal418
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal418
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal419
@@ -5720,7 +5677,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal419
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal419
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal421
@@ -5735,7 +5692,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal421
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal421
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal422
@@ -5750,7 +5707,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal422
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal422
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal423
@@ -5765,7 +5722,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal423
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal423
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal424
@@ -5780,7 +5737,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal424
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal424
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal425
@@ -5795,7 +5752,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal425
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal425
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal426
@@ -5810,7 +5767,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal426
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal426
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal427
@@ -5825,7 +5782,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal427
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.050000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal427
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal428
@@ -5840,7 +5797,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal428
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.050000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal428
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal429
@@ -5855,7 +5812,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal429
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal429
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal430
@@ -5870,7 +5827,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal430
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.050000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal430
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal431
@@ -5885,10 +5842,11 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal431
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal431
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal432
+    TextureSetup=E_Hole
     LastRenderTime=60.998714
     DistanceFromPlayer=6280.319824
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -5899,10 +5857,10 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal432
     OldLocation=(X=8358.274414,Y=144.282898,Z=-143.785187)
     DrawScale=0.300000
     ScaleGlow=0.000000
-    MultiSkins(0)=Texture'DeusExItems.Skins.FlatFXTex9'
     Name=PlaceableDecal432
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal433
+    TextureSetup=E_Hole
     LastRenderTime=60.998714
     DistanceFromPlayer=5159.547852
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -5913,10 +5871,10 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal433
     OldLocation=(X=8318.828125,Y=180.836334,Z=-143.785187)
     DrawScale=0.350000
     ScaleGlow=0.000000
-    MultiSkins(0)=Texture'DeusExItems.Skins.FlatFXTex9'
     Name=PlaceableDecal433
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal434
+    TextureSetup=E_Hole
     LastRenderTime=6.649540
     DistanceFromPlayer=5644.935547
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -5927,10 +5885,10 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal434
     OldLocation=(X=8218.828125,Y=181.836334,Z=-143.785187)
     DrawScale=0.400000
     ScaleGlow=0.000000
-    MultiSkins(0)=Texture'DeusExItems.Skins.FlatFXTex9'
     Name=PlaceableDecal434
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal435
+    TextureSetup=E_Hole
     LastRenderTime=60.998714
     DistanceFromPlayer=6422.587402
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -5941,10 +5899,10 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal435
     OldLocation=(X=8284.828125,Y=273.836334,Z=-143.785187)
     DrawScale=0.250000
     ScaleGlow=0.000000
-    MultiSkins(0)=Texture'DeusExItems.Skins.FlatFXTex9'
     Name=PlaceableDecal435
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal436
+    TextureSetup=E_Hole
     LastRenderTime=67.120193
     DistanceFromPlayer=7093.247070
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -5955,10 +5913,10 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal436
     OldLocation=(X=8384.828125,Y=231.282898,Z=-143.785187)
     DrawScale=0.300000
     ScaleGlow=0.000000
-    MultiSkins(0)=Texture'DeusExItems.Skins.FlatFXTex9'
     Name=PlaceableDecal436
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal437
+    TextureSetup=E_Hole
     LastRenderTime=557.011108
     DistanceFromPlayer=2501.585449
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -5969,10 +5927,10 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal437
     OldLocation=(X=-1885.848145,Y=5834.063477,Z=-143.785187)
     DrawScale=0.400000
     ScaleGlow=0.000000
-    MultiSkins(0)=Texture'DeusExItems.Skins.FlatFXTex9'
     Name=PlaceableDecal437
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal438
+    TextureSetup=E_Hole
     LastRenderTime=52.291943
     DistanceFromPlayer=2213.091797
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -5983,10 +5941,10 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal438
     OldLocation=(X=-1925.294067,Y=5870.270020,Z=-143.785187)
     DrawScale=0.450000
     ScaleGlow=0.000000
-    MultiSkins(0)=Texture'DeusExItems.Skins.FlatFXTex9'
     Name=PlaceableDecal438
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal439
+    TextureSetup=E_Hole
     LastRenderTime=7.649683
     DistanceFromPlayer=2631.114258
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -5997,10 +5955,10 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal439
     OldLocation=(X=-1959.293701,Y=5963.270020,Z=-143.785187)
     DrawScale=0.450000
     ScaleGlow=0.000000
-    MultiSkins(0)=Texture'DeusExItems.Skins.FlatFXTex9'
     Name=PlaceableDecal439
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal440
+    TextureSetup=E_Hole
     LastRenderTime=7.649683
     DistanceFromPlayer=2570.227783
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -6011,7 +5969,6 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal440
     OldLocation=(X=-1859.294312,Y=5920.716797,Z=-143.785187)
     DrawScale=0.300000
     ScaleGlow=0.000000
-    MultiSkins(0)=Texture'DeusExItems.Skins.FlatFXTex9'
     Name=PlaceableDecal440
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal442
@@ -6068,7 +6025,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal26
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal26
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal441
@@ -6083,7 +6040,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal441
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal441
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal445
@@ -6098,7 +6055,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal445
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal445
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal446
@@ -6113,7 +6070,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal446
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal446
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal447
@@ -6128,7 +6085,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal447
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal447
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal448
@@ -6143,7 +6100,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal448
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal448
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal449
@@ -6158,7 +6115,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal449
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal449
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal450
@@ -6173,7 +6130,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal450
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal450
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal451
@@ -6188,7 +6145,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal451
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal451
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal452
@@ -6203,7 +6160,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal452
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal452
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal453
@@ -6218,7 +6175,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal453
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal453
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal454
@@ -6233,7 +6190,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal454
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex2'
+    TextureSetup=E_Leaf2
     Name=PlaceableDecal454
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal354
@@ -7182,7 +7139,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal493
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal493
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal494
@@ -7197,7 +7154,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal494
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal494
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal496
@@ -7212,7 +7169,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal496
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal496
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal498
@@ -7227,7 +7184,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal498
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal498
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal499
@@ -7242,7 +7199,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal499
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal499
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal500
@@ -7257,7 +7214,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal500
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal500
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal523
@@ -7272,7 +7229,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal523
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal523
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal538
@@ -7287,7 +7244,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal538
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal538
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal542
@@ -7302,7 +7259,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal542
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal542
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal544
@@ -7317,7 +7274,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal544
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal544
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal493
@@ -7332,7 +7289,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal493
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal493
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal494
@@ -7347,7 +7304,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal494
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal494
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal496
@@ -7362,7 +7319,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal496
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal496
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal498
@@ -7377,7 +7334,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal498
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal498
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal499
@@ -7392,7 +7349,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal499
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal499
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal500
@@ -7407,7 +7364,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal500
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal500
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal523
@@ -7422,7 +7379,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal523
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal523
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal538
@@ -7437,7 +7394,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal538
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal538
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal542
@@ -7452,7 +7409,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal542
     Style=STY_Masked
     DrawScale=0.200000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex'
+    TextureSetup=E_Leaf
     Name=PlaceableDecal542
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal544
@@ -7467,7 +7424,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal544
     Style=STY_Masked
     DrawScale=0.250000
     ScaleGlow=0.150000
-    MultiSkins(0)=Texture'GameMedia.Skins.LeafTex3'
+    TextureSetup=E_Leaf3
     Name=PlaceableDecal544
 End Actor
 
@@ -7560,6 +7517,7 @@ End Actor
 
 Begin Actor Class=AmmoShell Name=AmmoShell2
     Style=E_Single
+    Mesh=LodMesh'DeusExItems.ShellCasing2'
     LastRenderTime=554.343079
     DistanceFromPlayer=5557.193848
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -7587,6 +7545,7 @@ Begin Actor Class=AmmoShell Name=AmmoShell0
 End Actor
 Begin Actor Class=AmmoShell Name=AmmoShell1
     Style=E_Single
+    Mesh=LodMesh'DeusExItems.ShellCasing2'
     LastRenderTime=554.343079
     DistanceFromPlayer=5563.460449
     Level=LevelInfo'MyLevel.LevelInfo0'

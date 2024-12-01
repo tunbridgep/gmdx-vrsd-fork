@@ -1,7 +1,9 @@
 //DO NOT IMPORT THIS FILE NORMALLY!!!
-//THis is only here as it illustrates the problematic brush!
+//This is only here as it illustrates the problematic brush!
 //You should import this temporarily, then follow the red box to find the source,
 //then RELOAD THE MAP and replace the problematic texture with the equivalent from RSDCrap
+
+//Washup sink in the Med Center
 
 Begin Map
 Begin Actor Class=Brush Name=Brush616
