@@ -10,7 +10,7 @@ defaultproperties
      MaxAmmo=5
      ItemName="PS20"
      ItemArticle="a"
-     PickupViewMesh=LodMesh'DeusExItems.TestBox'
+     PickupViewMesh=LodMesh'DeusExItems.HideAGunPickup'
      Icon=Texture'DeusExUI.Icons.BeltIconHideAGun'
      beltDescription="PS20"
      Mesh=LodMesh'DeusExItems.HideAGunPickup'
