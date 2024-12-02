@@ -12,7 +12,7 @@ defaultproperties
      ItemArticle="a"
      PickupViewMesh=LodMesh'DeusExItems.TestBox'
      Icon=Texture'DeusExUI.Icons.BeltIconHideAGun'
-     beltDescription="Count:"
+     beltDescription="PS20"
      Mesh=LodMesh'HDTPItems.HDTPAmmoPlasma'
      CollisionRadius=4.300000
      CollisionHeight=8.440000
