@@ -20,8 +20,10 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX bug where Ford Schick would not give you an upgrade canister when telling you he swiped one, if ConFix isn't installed. Fixed by adding it to his desk.
     - Fixed a number of typos in various places.
     - Fixed Vanilla bug where sound volume would reset upon new game.
+    - Fixed vRSD "Meat Shotgun" and other HDTP->Vanilla weapon switching madness.
     - Fixed many other GMDX and Vanilla bugs.
 - Quality of Life Improvements:
+    - Datacubes will show a black screen after they have been read.
     - Right-Clicking an item in the belt with the Inventory Window open will clear the slot.
     - The Inventory "Show Ammo" display now always shows the total amount of ammo you can carry. Before, it was only visible when "Show Descriptions" was enabled.
     - Added a Lighting Accessibility setting, which removes some strobing and flickering in certain areas on some maps, such as the 'Ton hotel elevator shaft.
@@ -155,10 +157,10 @@ Sarge's Changes since Beta 2.2:
     - HDTP overhaul
         - HDTP is no longer integrated, it's now an optional addon.
         - When HDTP is installed, most HDTP related objects can be toggled on/off in the HDTP model settings menu
-        - Some HDTP assets were copied over where they were absolutely necessary for the mod to function properly, such as a few menu backgrounds, weapon muzzle flashes, and blood effects. These are now in RSDCrap.u and don't require HDTP.
-        - Added some vanilla-styled textures that were missing non-HDTP variants (such as the Taser Darts)
+        - Some HDTP assets were copied over where they were absolutely necessary for the mod to function properly, such as a few menu backgrounds, weapon muzzle flashes, and some textures. These are now in RSDCrap.u and don't require HDTP.
+        - Added some low-resolution vanilla-styled textures that were missing non-HDTP variants (such as the Taser Darts, Softwares, etc.) These items will use their high-resolution variants when enabled in the HDTP menu
         - Changed some textures to different ones to account for their HDTP variants better, such as the glowing areas on Security Cameras, which now have a proper blue variant.
-        - Some HDTP features that were removed from GMDX (such as alternate belt icons) have been re-added.
+        - Some HDTP features that were removed from GMDX (such as alternate inventory icons) have been re-added.
     - Added an "Alternate Start" option, which skips the first part of the game and starts at the MJ12 Lab. You will start with nothing, so this is extra hardcore.
     - The "You Found:" message when searching corpses has been removed. The actual items are still listed, only the extra message is removed.
     - The Paris Metro Police have been changed to using pistols only (from Assault Shotguns and Assault Rifles), to ensure more 10mm ammo is available in the late game, as well as to reinforce their status as the puppet regime under MJ12.
