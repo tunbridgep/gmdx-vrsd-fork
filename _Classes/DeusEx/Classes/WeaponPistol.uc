@@ -31,12 +31,14 @@ function DisplayWeapon(bool overlay)
         ShowWeaponAddon(5,bHasLaser);
     
         if (bHasLaser && bLasing)
-            multiskins[3] = class'HDTPLoader'.static.GetTexture("HDTPGlockTex4");
+            multiskins[3] = class'HDTPLoader'.static.GetTexture("HDTPItems.HDTPGlockTex4");
         else
             multiskins[3] = texture'PinkMaskTex';
     }
     else if (overlay)
+    {
         multiskins[1] = Getweaponhandtex();
+    }
 }
 
 exec function UpdateHDTPsettings()                                              //RSD: New function to update weapon model meshes (specifics handled in each class)
@@ -89,7 +91,7 @@ function LaserOn(optional bool IgnoreSound)
     {
         Super.LaserOn(IgnoreSound);
         if (IsHDTP())                                              //RSD: Added iHDTPModelToggle
-		    Multiskins[3] = class'HDTPLoader'.static.GetTexture("HDTPGlockTex4");
+		    Multiskins[3] = class'HDTPLoader'.static.GetTexture("HDTPItems.HDTPGlockTex4");
     }
 }
 
@@ -99,7 +101,7 @@ function LaserOff(bool forced)
 	{
         Super.LaserOff(forced);
 		if (IsHDTP())                                              //RSD: Added iHDTPModelToggle
-            Multiskins[3] = none;
+            multiskins[3] = texture'PinkMaskTex';
 	}
 }
 

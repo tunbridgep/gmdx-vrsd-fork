@@ -15,7 +15,8 @@ function InitFor(Actor Other)
 
 	super.InitFor(Other);
 
-	Mesh = carcassmesh[rand(6)]; //fuck you, let's have a ton of very similar but slightly different carcasses
+    if (IsHDTP())
+        Mesh = carcassmesh[rand(6)]; //fuck you, let's have a ton of very similar but slightly different carcasses
 	SetScaleGlow();
 }
 
@@ -25,7 +26,7 @@ function InitFor(Actor Other)
 
 function PostBeginPlay()
 {
-	local int i, j;
+	local int i, j, r;
 	local Inventory inv;
 
 	bCollideWorld = true;
@@ -54,16 +55,6 @@ function PostBeginPlay()
 	// use the correct mesh
 	if (Region.Zone.bWaterZone)
 	{
-        if (IsHDTP())
-        {
-            CarcassMesh[0]=class'HDTPLoader'.static.GetMesh("HDTPCharacters.HDTPRatCarcass");
-            CarcassMesh[1]=class'HDTPLoader'.static.GetMesh("HDTPCharacters.HDTPRatCarcass2");
-            CarcassMesh[2]=class'HDTPLoader'.static.GetMesh("HDTPCharacters.HDTPRatCarcass3");
-            CarcassMesh[3]=class'HDTPLoader'.static.GetMesh("HDTPCharacters.HDTPRatCarcass4");
-            CarcassMesh[4]=class'HDTPLoader'.static.GetMesh("HDTPCharacters.HDTPRatCarcass5");
-            CarcassMesh[5]=class'HDTPLoader'.static.GetMesh("HDTPCharacters.HDTPRatCarcass6");
-            Mesh = carcassmesh[rand(6)];
-        }
 		bNotDead = False;		// you will die in water every time
 	}
 
@@ -76,6 +67,18 @@ function PostBeginPlay()
 	SetTimer(30.0, False);
 
 	Super.PostBeginPlay();
+
+    //fuck you, let's have a ton of very similar but slightly different carcasses
+    if (IsHDTP())
+    {
+        CarcassMesh[0]=class'HDTPLoader'.static.GetMesh("HDTPCharacters.HDTPRatCarcass");
+        CarcassMesh[1]=class'HDTPLoader'.static.GetMesh("HDTPCharacters.HDTPRatCarcass2");
+        CarcassMesh[2]=class'HDTPLoader'.static.GetMesh("HDTPCharacters.HDTPRatCarcass3");
+        CarcassMesh[3]=class'HDTPLoader'.static.GetMesh("HDTPCharacters.HDTPRatCarcass4");
+        CarcassMesh[4]=class'HDTPLoader'.static.GetMesh("HDTPCharacters.HDTPRatCarcass5");
+        CarcassMesh[5]=class'HDTPLoader'.static.GetMesh("HDTPCharacters.HDTPRatCarcass6");
+        Mesh = carcassmesh[rand(6)];
+    }
 }
 
 // ----------------------------------------------------------------------

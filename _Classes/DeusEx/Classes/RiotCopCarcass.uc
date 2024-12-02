@@ -5,11 +5,12 @@ class RiotCopCarcass extends DeusExCarcass;
 
 defaultproperties
 {
+	 hdtpReference=class'DeusEx.RiotCop'
      Mesh2=LodMesh'DeusExCharacters.GM_Jumpsuit_CarcassB'
      Mesh3=LodMesh'DeusExCharacters.GM_Jumpsuit_CarcassC'
-     HDTPMeshName="HDTPCharacters.HDTPRiotCopCarcass"
-     HDTPMesh2Name="HDTPCharacters.HDTPRiotCopCarcassB"
-     HDTPMesh3Name="HDTPCharacters.HDTPRiotCopCarcassC"
+     HDTPMesh="HDTPCharacters.HDTPRiotCopCarcass"
+     HDTPMesh2="HDTPCharacters.HDTPRiotCopCarcassB"
+     HDTPMesh3="HDTPCharacters.HDTPRiotCopCarcassC"
      HDTPMeshTex(0)="HDTPCharacters.Skins.HDTPRiotCopTex0"
      HDTPMeshTex(1)="HDTPCharacters.Skins.HDTPRiotCopTex1"
      HDTPMeshTex(2)="HDTPCharacters.Skins.HDTPRiotCopTex2"

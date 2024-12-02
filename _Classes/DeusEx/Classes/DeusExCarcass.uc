@@ -40,10 +40,6 @@ var localized string itemName;			// human readable name
 var() bool bInvincible;
 var bool bAnimalCarcass;
 
-var bool bUsingHDTP;
-var string HDTPMeshName, HDTPMesh2Name, HDTPMesh3Name;
-var string HDTPMeshTex[8];
-
 //GMDX:
 var transient bool bDblClickStart;
 var transient float DblClickTimeout;
@@ -76,6 +72,7 @@ var string HDTPTexture;
 var string HDTPMesh;
 var string HDTPMesh2;
 var string HDTPMesh3;
+var string HDTPMeshTex[8];
 
 // ----------------------------------------------------------------------
 // ShouldCreate()
@@ -103,16 +100,22 @@ function bool IsHDTP()
 
 exec function UpdateHDTPsettings()
 {
+    local int i;
     if (HDTPMesh3 != "")
         Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh3,string(default.Mesh3),IsHDTP());
     if (HDTPMesh2 != "")
         Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh2,string(default.Mesh2),IsHDTP());
     if (HDTPMesh != "")
+    {
         Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),IsHDTP());
+        for(i = 0; i < 8;i++)
+            MultiSkins[i] = class'HDTPLoader'.static.GetTexture2(HDTPMeshTex[i],string(default.MultiSkins[i]),IsHDTP());
+    }
     if (HDTPSkin != "")
         Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),IsHDTP());
     if (HDTPTexture != "")
         Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),IsHDTP());
+
 }
 
 // ----------------------------------------------------------------------

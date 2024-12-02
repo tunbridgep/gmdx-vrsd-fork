@@ -5,11 +5,12 @@ class GuntherHermannCarcass extends DeusExCarcass;
 
 defaultproperties
 {
+	 hdtpReference=class'DeusEx.GuntherHermann'
      Mesh2=LodMesh'DeusExCharacters.GM_DressShirt_B_CarcassB'
      Mesh3=LodMesh'DeusExCharacters.GM_DressShirt_B_CarcassC'
-     HDTPMeshName="HDTPCharacters.HDTPGuntherCarcassA"
-     HDTPMesh2Name="HDTPCharacters.HDTPGuntherCarcassB"
-     HDTPMesh3Name="HDTPCharacters.HDTPGuntherCarcassC"
+     HDTPMesh="HDTPCharacters.HDTPGuntherCarcassA"
+     HDTPMesh2="HDTPCharacters.HDTPGuntherCarcassB"
+     HDTPMesh3="HDTPCharacters.HDTPGuntherCarcassC"
      HDTPMeshTex(0)="HDTPCharacters.skins.HDTPGuntherTex1"
      HDTPMeshTex(1)="HDTPCharacters.skins.HDTPGuntherTex1"
      HDTPMeshTex(2)="HDTPCharacters.skins.HDTPGuntherTex2"

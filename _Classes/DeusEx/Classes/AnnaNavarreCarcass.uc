@@ -5,11 +5,12 @@ class AnnaNavarreCarcass extends DeusExCarcass;
 
 defaultproperties
 {
+	 hdtpReference=class'DeusEx.AnnaNavarre'
      Mesh2=LodMesh'DeusExCharacters.GFM_TShirtPants_CarcassB'
      Mesh3=LodMesh'DeusExCharacters.GFM_TShirtPants_CarcassC'
-     HDTPMeshName="HDTPCharacters.HDTPAnnaCarcass"
-     HDTPMesh2Name="HDTPCharacters.HDTPAnnaCarcassB"
-     HDTPMesh3Name="HDTPCharacters.HDTPAnnaCarcassC"
+     HDTPMesh="HDTPCharacters.HDTPAnnaCarcass"
+     HDTPMesh2="HDTPCharacters.HDTPAnnaCarcassB"
+     HDTPMesh3="HDTPCharacters.HDTPAnnaCarcassC"
      HDTPMeshTex(0)="HDTPCharacters.Skins.HDTPAnnaTex0"
      HDTPMeshTex(1)="HDTPCharacters.Skins.HDTPAnnaTex1"
      HDTPMeshTex(2)="HDTPCharacters.Skins.HDTPAnnaTex2"

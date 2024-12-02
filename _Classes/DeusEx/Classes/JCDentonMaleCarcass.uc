@@ -118,11 +118,12 @@ function SetSkin(DeusExPlayer player)
 
 defaultproperties
 {
+	 hdtpReference=class'DeusEx.DeusExPlayer'
      Mesh2=LodMesh'DeusExCharacters.GM_Trench_CarcassB'
      Mesh3=LodMesh'DeusExCharacters.GM_Trench_CarcassC'
-     HDTPMeshName="HDTPCharacters.HDTPGM_TrenchCarcass"
-     HDTPMesh2Name="HDTPCharacters.HDTPGM_TrenchCarcassB"
-     HDTPMesh3Name="HDTPCharacters.HDTPGM_TrenchCarcassC"
+     HDTPMesh="HDTPCharacters.HDTPGM_TrenchCarcass"
+     HDTPMesh2="HDTPCharacters.HDTPGM_TrenchCarcassB"
+     HDTPMesh3="HDTPCharacters.HDTPGM_TrenchCarcassC"
      HDTPMeshTex(0)="HDTPCharacters.Skins.HDTPJCFaceTex0"
      HDTPMeshTex(1)="HDTPCharacters.Skins.HDTPJCDentonTex1"
      HDTPMeshTex(2)="HDTPCharacters.Skins.HDTPJCDentonTex2"

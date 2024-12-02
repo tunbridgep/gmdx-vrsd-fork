@@ -561,7 +561,7 @@ exec function UpdateHDTPsettings()
     if (HDTPMesh != "")
     {
         Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),IsHDTP());
-        for(i = 0; i < 7;i++)
+        for(i = 0; i < 8;i++)
             MultiSkins[i] = class'HDTPLoader'.static.GetTexture2(HDTPMeshTex[i],string(default.MultiSkins[i]),IsHDTP());
     }
     if (HDTPSkin != "")
