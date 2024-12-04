@@ -24,6 +24,7 @@ enum ETextureSetup
 	E_Piss, //SARGE: Added. Yes, GMDX added piss textures from HDTP to the maps....yuck....
 	E_TrashBag, //SARGE: Added. Based off the trashbag texture.
 	E_TrashPaper, //SARGE: Added. Originally used the TrashPaper texture, but now uses cardboard
+    E_WaterWall,    //Sarge: Added. Originally the urinal texture from HDTP occasionally placed on walls to make them wet.
 };
 
 var() ETextureSetup TextureSetup;
@@ -72,6 +73,7 @@ exec function UpdateHDTPsettings()
         case E_Burn2:		Skin = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFlatFXtex39","DeusExItems.Skins.FlatFXTex39",IsHDTP()); break;
         case E_Burn3:		Skin = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFlatFXtex40","DeusExItems.Skins.FlatFXTex40",IsHDTP()); break;
         case E_Hole:		Skin = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFlatFXtex9","DeusExItems.Skins.FlatFXTex9",IsHDTP()); break;
+        case E_WaterWall:	Skin = class'HDTPLoader'.static.GetTexture("RSDCrap.Environment.WaterPuddle"); break;
         
         //Turns out the vanilla glass crack doesn't really look very good in most spots, so just disable it if we're not using HDTP
         //Since GMDX uses it almost like a generic "scratch" texture
