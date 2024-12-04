@@ -53,6 +53,7 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\Environment\DrainTex.pcx"			    NAME="DrainTex"			    GROUP="Environment"
 #exec TEXTURE IMPORT FILE="Textures\Environment\DirtyToiletWaterTex.pcx"	NAME="DirtyToiletWaterTex"	GROUP="Environment"
 #exec TEXTURE IMPORT FILE="Textures\Environment\InfoSign.pcx"	            NAME="InfoSign"         	GROUP="Environment"
+#exec TEXTURE IMPORT FILE="Textures\Environment\WaterPuddle.pcx"	        NAME="WaterPuddle"         	GROUP="Environment"
 
 //Icons etc
 #exec TEXTURE IMPORT FILE="Textures\LargeIconCrowbar.pcx"			NAME="LargeIconCrowbar"			GROUP="Icons"

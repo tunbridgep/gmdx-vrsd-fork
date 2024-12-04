@@ -35,6 +35,7 @@ defaultproperties
      HDTPMesh="GameMedia.Evergreen"
      //Skin="GameMedia.Skins.Leaf3"
      Mesh=LodMesh'DeusExDeco.Tree3'
+     //Mesh=LodMesh'GameMedia.Evergreen'
      CollisionRadius=10.000000
      CollisionHeight=125.000000
 }

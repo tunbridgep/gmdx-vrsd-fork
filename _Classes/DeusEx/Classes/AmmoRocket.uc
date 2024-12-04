@@ -19,6 +19,9 @@ defaultproperties
      Description="A gyroscopically stabilized rocket with limited onboard guidance systems for in-flight course corrections. Engineered for use with the GEP gun."
      beltDescription="ROCKET"
      HDTPMesh="HDTPItems.HDTPgepammo"
+     PickupViewMesh=LodMesh'DeusExItems.GEPAmmo'
+     PlayerViewMesh=LodMesh'DeusExItems.GEPAmmo'
+     ThirdPersonMesh=LodMesh'DeusExItems.GEPAmmo'
      Mesh=LodMesh'DeusExItems.GEPAmmo'
      CollisionRadius=18.000000
      CollisionHeight=7.800000

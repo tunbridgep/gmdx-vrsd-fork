@@ -36,6 +36,9 @@ defaultproperties
      ItemName="Augmentation Upgrade Canister"
      ItemArticle="an"
      PlayerViewOffset=(X=30.000000,Z=-12.000000)
+     PickupViewMesh=LodMesh'DeusExItems.AugmentationUpgradeCannister'
+     PlayerViewMesh=LodMesh'DeusExItems.AugmentationUpgradeCannister'
+     ThirdPersonMesh=LodMesh'DeusExItems.AugmentationUpgradeCannister'
      LandSound=Sound'DeusExSounds.Generic.PlasticHit1'
      Icon=Texture'DeusExUI.Icons.BeltIconAugmentationUpgrade'
      largeIcon=Texture'DeusExUI.Icons.LargeIconAugmentationUpgrade'
@@ -43,7 +46,7 @@ defaultproperties
      largeIconHeight=41
      Description="An augmentation upgrade canister contains highly specific nanomechanisms that, when combined with a previously programmed module, can increase the efficiency of an installed augmentation. Because no programming is required, upgrade canisters may be used by trained agents in the field with minimal risk."
      beltDescription="AUG UPG"
-     Mesh=LodMesh'DeusExItems.AugUpCan'
+     Mesh=LodMesh'DeusExItems.AugmentationUpgradeCannister'
      CollisionRadius=3.200000
      CollisionHeight=5.180000
      Mass=10.000000

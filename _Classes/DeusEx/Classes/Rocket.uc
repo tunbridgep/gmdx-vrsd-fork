@@ -331,6 +331,7 @@ defaultproperties
      ItemName="GEP Rocket"
      ItemArticle="a"
      HDTPMesh="HDTPItems.HDTPRocket"
+     Mesh=LodMesh'DeusExItems.Rocket'
      hdtpReference=Class'DeusEx.WeaponGEPGun'
      speed=1300.000000
      Damage=200.000000
@@ -338,7 +339,6 @@ defaultproperties
      SpawnSound=Sound'DeusExSounds.Weapons.GEPGunFire'
      ImpactSound=Sound'DeusExSounds.Generic.MediumExplosion2'
      ExplosionDecal=Class'DeusEx.ScorchMark'
-     Mesh=LodMesh'DeusExItems.Rocket'
      DrawScale=0.250000
      SoundRadius=224
      SoundVolume=192

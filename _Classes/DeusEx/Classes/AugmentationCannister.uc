@@ -206,6 +206,8 @@ defaultproperties
      ItemArticle="an"
      PlayerViewOffset=(X=30.000000,Z=-12.000000)
      PickupViewMesh=LodMesh'DeusExItems.AugmentationCannister'
+     PlayerViewMesh=LodMesh'DeusExItems.AugmentationCannister'
+     ThirdPersonMesh=LodMesh'DeusExItems.AugmentationCannister'
      LandSound=Sound'DeusExSounds.Generic.PlasticHit1'
      Icon=Texture'DeusExUI.Icons.BeltIconAugmentationCannister'
      largeIcon=Texture'DeusExUI.Icons.LargeIconAugmentationCannister'

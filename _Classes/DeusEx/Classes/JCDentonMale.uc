@@ -263,14 +263,19 @@ function SetupOutfitManager()
     local class<OutfitManagerBase> managerBaseClass;
 
 	// create the Outfit Manager if not found
-	if (outfitManager == None)
+	if (outfitManager == None || !outfitManager.IsA('OutfitManager'))
     {
         managerBaseClass = class<OutfitManagerBase>(DynamicLoadObject("JCOutfits.OutfitManager", class'Class'));
         
         if (managerBaseClass == None)
+        {
             outfitManager = new(Self) class'OutfitManagerBase';
+        }
         else
+        {
+            //clientmessage("Making Outfit Manager");
             outfitManager = new(Self) managerBaseClass;
+        }
     }
 
     if (outfitManager != None)

@@ -30,6 +30,9 @@ defaultproperties
      beltDescription="WP ROCKET"
      Skin=Texture'DeusExItems.Skins.GEPAmmoTex2'
      HDTPSkin="HDTPItems.Skins.HDTPgepammotex2"
+     PickupViewMesh=LodMesh'DeusExItems.GEPAmmo'
+     PlayerViewMesh=LodMesh'DeusExItems.GEPAmmo'
+     ThirdPersonMesh=LodMesh'DeusExItems.GEPAmmo'
      Mesh=LodMesh'DeusExItems.GEPAmmo'
      CollisionRadius=18.000000
      CollisionHeight=7.800000

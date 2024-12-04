@@ -8,6 +8,7 @@ defaultproperties
      FragType=Class'DeusEx.PaperFragment'
      bCanBeBase=True
      ItemName="Floor Cushion"
+     HDTPSkin="HDTPDecos.Skins.HDTPcushiontex1"
      Mesh=LodMesh'DeusExDeco.Cushion'
      CollisionRadius=27.000000
      CollisionHeight=3.000000

@@ -15,6 +15,17 @@ function Eat(DeusExPlayer player)
     player.ClientMessage(bioboost);
 }
 
+function SetSkin()
+{
+    switch (textureSet)
+    {
+        case 0: break; //handled by UpdateHDTPSettings();
+        case 1:
+            Skin = Texture'DeusExItems.Skins.CandyBarTex2'; //HDTP has no alternate candybar texture
+            break;
+    }
+}
+
 defaultproperties
 {
      bioboost="Recharged 3 Bioelectrical Energy Units"
