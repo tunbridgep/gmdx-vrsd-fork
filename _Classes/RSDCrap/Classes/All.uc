@@ -57,8 +57,6 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\Skins\MiniCrossbowTex2dart3.pcx"		    NAME="MiniCrossbowTex2dart3"	    GROUP="Skins"
 
 // Lower Res versions of HDTP and GameMedia assets, to look better vanilla
-#exec TEXTURE IMPORT FILE="Textures\MiniDiskTex0.pcx"			    NAME="MiniDiskTex0"			GROUP="Skins"
-#exec TEXTURE IMPORT FILE="Textures\MiniDiskTex1.pcx"			    NAME="MiniDiskTex1"			GROUP="Skins"
 #exec TEXTURE IMPORT FILE="Textures\Leaves\LeafTex.pcx"			    NAME="LeafTex"			GROUP="Environment"
 #exec TEXTURE IMPORT FILE="Textures\Leaves\LeafTex0.pcx"			NAME="LeafTex0"			GROUP="Environment"
 #exec TEXTURE IMPORT FILE="Textures\Leaves\LeafTex1.pcx"			NAME="LeafTex1"			GROUP="Environment"
