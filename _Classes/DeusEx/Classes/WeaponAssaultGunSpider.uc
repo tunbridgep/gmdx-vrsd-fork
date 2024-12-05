@@ -109,10 +109,10 @@ defaultproperties
      ItemName=""
      ItemArticle="an"
      PlayerViewOffset=(X=16.000000,Y=-5.000000,Z=-11.500000)
-     HDTPPlayerViewMesh="HDTPeditsRSD.HDTPAssaultGunRSD"
+     HDTPPlayerViewMesh="RSDCrap.HDTPAssaultGunRSD"
      HDTPPickupViewMesh="HDTPItems.HDTPassaultGunPickup"
      HDTPThirdPersonMesh="HDTPItems.HDTPassaultGun3rd"
-     PlayerViewMesh=LodMesh'DeusExItems.AssaultGun'
+     PlayerViewMesh=LodMesh'RSDCrap.AssaultGunRSD'
      PickupViewMesh=LodMesh'DeusExItems.AssaultGunPickup'
      ThirdPersonMesh=LodMesh'DeusExItems.AssaultGun3rd'
      LandSound=Sound'DeusExSounds.Generic.DropMediumWeapon'

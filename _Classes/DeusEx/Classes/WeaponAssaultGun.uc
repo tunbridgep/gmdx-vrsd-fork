@@ -3,7 +3,7 @@
 //=============================================================================
 class WeaponAssaultGun extends DeusExWeapon;
 
-#exec OBJ LOAD FILE=HDTPeditsRSD                                                //RSD: reimported vanilla/HDTP model
+#exec OBJ LOAD FILE=RSDCrap                                                //RSD: reimported vanilla/HDTP model
 
 var float	mpRecoilStrength;
 var int muznum; //loop through muzzleflashes
@@ -44,6 +44,10 @@ simulated function PreBeginPlay()
 function DisplayWeapon(bool overlay)
 {
     super.DisplayWeapon(overlay);
+    //SARGE: We have to do this here for some reason,
+    //or the model is invisible.
+    PlayerViewMesh = class'HDTPLoader'.static.GetMesh2("RSDCrap.HDTPAssaultGunRSD","RSDCrap.AssaultGunRSD",IsHDTP());
+
     if (IsHDTP())                                                  //RSD: Need this off for vanilla model
     {
         if (overlay)
@@ -63,7 +67,10 @@ function DisplayWeapon(bool overlay)
         }
     }
     else if (overlay)
+    {
         multiskins[0]=Getweaponhandtex();
+    }
+
 
 }
 
@@ -231,10 +238,12 @@ defaultproperties
      ItemName="Assault Rifle"
      ItemArticle="an"
      PlayerViewOffset=(X=12.500000,Y=-5.000000,Z=-12.000000)
-     HDTPPlayerViewMesh="HDTPeditsRSD.HDTPAssaultGunRSD"
+     HDTPPlayerViewMesh="HDTPEditsRSD.HDTPAssaultGunRSD"
      HDTPPickupViewMesh="HDTPItems.HDTPassaultGunPickup"
      HDTPThirdPersonMesh="HDTPItems.HDTPassaultGun3rd"
-     PlayerViewMesh=LodMesh'DeusExItems.AssaultGun'
+     //PlayerViewMesh=LodMesh'DeusExItems.AssaultGun'
+     //PlayerViewMesh=LodMesh'HDTPEditsRSD.AssaultGunRSD' //Required for 3-shot burst
+     PlayerViewMesh=LodMesh'RSDCrap.AssaultGunRSD'
      PickupViewMesh=LodMesh'DeusExItems.AssaultGunPickup'
      ThirdPersonMesh=LodMesh'DeusExItems.AssaultGun3rd'
      LandSound=Sound'DeusExSounds.Generic.DropMediumWeapon'
