@@ -45,6 +45,12 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\Skins\sodacantex3.pcx"		    NAME="SodaCanTex3"	    GROUP="Skins"
 #exec TEXTURE IMPORT FILE="Textures\Skins\sodacantex4.pcx"		    NAME="SodaCanTex4"	    GROUP="Skins"
 
+// Alternate Dart colours for vanilla xbow
+#exec TEXTURE IMPORT FILE="Textures\Skins\MiniCrossbowTex2dart0.pcx"		    NAME="MiniCrossbowTex2dart0"	    GROUP="Skins"
+#exec TEXTURE IMPORT FILE="Textures\Skins\MiniCrossbowTex2dart1.pcx"		    NAME="MiniCrossbowTex2dart1"	    GROUP="Skins"
+#exec TEXTURE IMPORT FILE="Textures\Skins\MiniCrossbowTex2dart2.pcx"		    NAME="MiniCrossbowTex2dart2"	    GROUP="Skins"
+#exec TEXTURE IMPORT FILE="Textures\Skins\MiniCrossbowTex2dart3.pcx"		    NAME="MiniCrossbowTex2dart3"	    GROUP="Skins"
+
 // Lower Res versions of HDTP and GameMedia assets, to look better vanilla
 #exec TEXTURE IMPORT FILE="Textures\MiniDiskTex0.pcx"			    NAME="MiniDiskTex0"			GROUP="Skins"
 #exec TEXTURE IMPORT FILE="Textures\MiniDiskTex1.pcx"			    NAME="MiniDiskTex1"			GROUP="Skins"

@@ -68,25 +68,28 @@ function Texture GetWeaponHandTex()
 
 function DisplayWeapon(bool overlay)
 {
+    local Texture ammotex;
 	super.DisplayWeapon(overlay);
+    
+    //Display Ammo Type
+    if ((AmmoType != None) && (AmmoType.AmmoAmount > 0) && (ClipCount > 0) && !bIsCloaked && !bIsRadar) //RSD: Overhauled cloak/radar routines
+    {
+        if(AmmoType.isA('AmmoDartPoison'))
+            ammotex = class'HDTPLoader'.static.GetTexture2("HDTPItems.skins.HDTPminicrossbowtex2","RSDCrap.Skins.MiniCrossbowTex2Dart2",IsHDTP());
+        else if(Ammotype.isA('AmmoDartFlare'))
+            ammotex = class'HDTPLoader'.static.GetTexture2("HDTPItems.skins.HDTPminicrossbowtex3","RSDCrap.Skins.MiniCrossbowTex2Dart1",IsHDTP());
+        else if(Ammotype.isA('AmmoDartTaser'))
+            ammotex = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPAmmoProdTex1","RSDCrap.Skins.MiniCrossbowTex2Dart3",IsHDTP());
+        else //regular darts
+            ammotex = class'HDTPLoader'.static.GetTexture2("HDTPItems.skins.HDTPminicrossbowtex1","RSDCrap.Skins.MiniCrossbowTex2Dart0",IsHDTP());
+    }
+    else
+        ammotex = texture'pinkmasktex';
+
     if (IsHDTP())
     {
         if (overlay)
             Multiskins[0] = Getweaponhandtex();
-        //Display Ammo Type
-        if ((AmmoType != None) && (AmmoType.AmmoAmount > 0) && (ClipCount > 0) && !bIsCloaked && !bIsRadar) //RSD: Overhauled cloak/radar routines
-        {
-            if(AmmoType.isA('AmmoDartPoison'))
-                Multiskins[2] = class'HDTPLoader'.static.GetTexture("HDTPItems.skins.HDTPminicrossbowtex2");
-            else if(Ammotype.isA('AmmoDartFlare'))
-                Multiskins[2] = class'HDTPLoader'.static.GetTexture("HDTPItems.skins.HDTPminicrossbowtex3");
-            else if(Ammotype.isA('AmmoDartTaser'))
-                Multiskins[2] = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPAmmoProdTex1");
-            else
-                Multiskins[2] = class'HDTPLoader'.static.GetTexture("HDTPItems.skins.HDTPminicrossbowtex1");
-        }
-        else
-            Multiskins[2] = texture'pinkmasktex';
         
         //Show weapon addons
         if (overlay)
@@ -94,6 +97,8 @@ function DisplayWeapon(bool overlay)
             ShowWeaponAddon(3,bHasScope);
             ShowWeaponAddon(4,bHasLaser);
             ShowWeaponAddon(5,bLasing);
+            //Show Weapon Ammo
+            Multiskins[2] = ammoTex;
         }
         else
         {
@@ -103,12 +108,10 @@ function DisplayWeapon(bool overlay)
         }
 
     }
-    else                                                                        //RSD: Vanilla Model
+    else if (overlay)
     {
         //Show Darts
-        if (MultiSkins[3] != None)                                          //RSD: Copied from vanilla Tick()
-            if ((AmmoType != None) && (AmmoType.AmmoAmount > 0) && (ClipCount > 0))
-                MultiSkins[3] = None;
+        MultiSkins[3] = ammoTex;
     }
 }
 
