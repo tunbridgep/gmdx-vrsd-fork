@@ -39,6 +39,12 @@ class All expands Object
 //#exec TEXTURE IMPORT FILE="Textures\boxmedtex2.pcx"			NAME="BoxMedTex2"			GROUP="Skins"
 #exec TEXTURE IMPORT FILE="Textures\HDTPFlatFXTex29.pcx"	NAME="HDTPFlatFXTex29"			GROUP="Skins"
 
+// Sodacans with closed lids
+#exec TEXTURE IMPORT FILE="Textures\Skins\sodacantex1.pcx"		    NAME="SodaCanTex1"	    GROUP="Skins"
+#exec TEXTURE IMPORT FILE="Textures\Skins\sodacantex2.pcx"		    NAME="SodaCanTex2"	    GROUP="Skins"
+#exec TEXTURE IMPORT FILE="Textures\Skins\sodacantex3.pcx"		    NAME="SodaCanTex3"	    GROUP="Skins"
+#exec TEXTURE IMPORT FILE="Textures\Skins\sodacantex4.pcx"		    NAME="SodaCanTex4"	    GROUP="Skins"
+
 // Lower Res versions of HDTP and GameMedia assets, to look better vanilla
 #exec TEXTURE IMPORT FILE="Textures\MiniDiskTex0.pcx"			    NAME="MiniDiskTex0"			GROUP="Skins"
 #exec TEXTURE IMPORT FILE="Textures\MiniDiskTex1.pcx"			    NAME="MiniDiskTex1"			GROUP="Skins"

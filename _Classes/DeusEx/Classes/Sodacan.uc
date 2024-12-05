@@ -26,16 +26,16 @@ function SetSkin()
     switch(textureSet)
     {
         case 0:
-            tex = class'HDTPLoader'.static.GetTexture2("HDTPItems.HDTPSodacantex1","DeusExItems.SodaCanTex1",IsHDTP());
+            tex = class'HDTPLoader'.static.GetTexture2("HDTPItems.HDTPSodacantex1","RSDCrap.Skins.SodaCanTex1",IsHDTP());
             break;
         case 1:
-            tex = class'HDTPLoader'.static.GetTexture2("HDTPItems.HDTPSodacantex2","DeusExItems.SodaCanTex2",IsHDTP());
+            tex = class'HDTPLoader'.static.GetTexture2("HDTPItems.HDTPSodacantex2","RSDCrap.Skins.SodaCanTex2",IsHDTP());
             break;
         case 2:
-            tex = class'HDTPLoader'.static.GetTexture2("HDTPItems.HDTPSodacantex3","DeusExItems.SodaCanTex3",IsHDTP());
+            tex = class'HDTPLoader'.static.GetTexture2("HDTPItems.HDTPSodacantex3","RSDCrap.Skins.SodaCanTex3",IsHDTP());
             break;
         case 3:
-            tex = class'HDTPLoader'.static.GetTexture2("HDTPItems.HDTPSodacantex4","DeusExItems.SodaCanTex4",IsHDTP());
+            tex = class'HDTPLoader'.static.GetTexture2("HDTPItems.HDTPSodacantex4","RSDCrap.Skins.SodaCanTex4",IsHDTP());
             break;
     }
 
