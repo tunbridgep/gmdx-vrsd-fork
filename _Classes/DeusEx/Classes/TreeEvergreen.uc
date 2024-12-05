@@ -6,12 +6,6 @@ class TreeEvergreen extends Tree;
 var travel vector HDTPPosition;
 var travel vector VanillaPosition;
 
-function bool IsHDTP()
-{
-    //TODO: Remove this
-    return iHDTPModelToggle > 0;
-}
-
 exec function UpdateHDTPsettings()
 {
 	Super.UpdateHDTPsettings();
@@ -27,11 +21,13 @@ exec function UpdateHDTPsettings()
     {
         SetCollisionSize(Default.CollisionRadius, 1024);
         SetLocation(HDTPPosition);
+        MultiSkins[0]=Texture'GameMedia.Skins.LeafTex3';
     }
     else
     {
         SetCollisionSize(Default.CollisionRadius, 125);
         SetLocation(VanillaPosition);
+        MultiSkins[0]=None;
     }
 }
 

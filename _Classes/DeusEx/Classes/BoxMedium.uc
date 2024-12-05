@@ -3,6 +3,33 @@
 //=============================================================================
 class BoxMedium extends Containers;
 
+enum ESkinType
+{
+    E_Standard,
+    E_HongKong
+};
+
+var() ESkinType SkinType;
+
+function UpdateHDTPSettings()
+{
+    local Texture tex;
+	Super.UpdateHDTPSettings();
+
+    switch (SkinType)
+    {
+        case E_Standard: break; //Do nothing.
+        case E_HongKong: tex = class'HDTPLoader'.static.GetTexture("HK_Signs.HK_Sign_28");
+    }
+
+    if (tex != None)
+    {
+        Skin = tex;
+        MultiSkins[0] = tex;
+        MultiSkins[1] = tex;
+    }
+}
+
 defaultproperties
 {
 	 bSelectMeleeWeapon=True
