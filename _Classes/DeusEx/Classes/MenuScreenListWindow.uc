@@ -61,11 +61,6 @@ function CreateChoices()
 {
 	local int i;
 
-    /*
-    if (lstItems == None)
-        return;
-    */
-	
     //Remove all existing choices
     lstItems.DeleteAllRows();
 
@@ -272,7 +267,10 @@ event bool ListSelectionChanged(window list, int numSelections, int focusRowId)
 
     rowId = lstItems.GetSelectedRow();
     rowIndex = lstItems.RowIdToIndex(rowId);
-    ShowHelp(items[rowIndex].helpText);
+    if (rowIndex == -1)
+        ShowHelp(helpText);
+    else
+        ShowHelp(items[rowIndex].helpText);
 
     return bResult;
 }
@@ -307,7 +305,7 @@ function RemoveItem(string variable)
 
         if (items[i].variable == variable)
         {
-            for(j = i; j < arrayCount(items); j++)
+            for(j = i; j < arrayCount(items) - 1; j++)
                 items[j] = items[j+1];
             return;
         }

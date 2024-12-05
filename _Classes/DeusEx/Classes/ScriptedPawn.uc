@@ -551,7 +551,7 @@ function PreBeginPlay()
 
 function bool IsHDTP()
 {
-    return DeusExPlayer(GetPlayerPawn()).bHDTPInstalled && iHDTPModelToggle > 0;
+    return DeusExPlayer(GetPlayerPawn()) != None && DeusExPlayer(GetPlayerPawn()).bHDTPInstalled && iHDTPModelToggle > 0;
 }
 
 //SARGE: New function to update model meshes (specifics handled in each class)
@@ -729,8 +729,15 @@ function InitializeInventory()
 						inv.InitialState='Idle2';
 						inv.GiveTo(Self);
 						inv.SetBase(Self);
-						if ((firstWeapon == None) && (Weapon(inv) != None))
-							firstWeapon = Weapon(inv);
+                        if (Weapon(inv) != None)
+                        {
+                            if (firstWeapon == None)
+                                firstWeapon = Weapon(inv);
+
+                            //Sarge: Reload all weapons
+                            if (inv.IsA('DeusExWeapon'))
+                                DeusExWeapon(inv).ClipCount = DeusExWeapon(inv).ReloadCount;
+                        }
 					}
 				}
 			}

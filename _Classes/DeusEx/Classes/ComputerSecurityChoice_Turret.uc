@@ -158,7 +158,7 @@ function SetValue(int newValue)                                                 
 function UpdateText(bool bHacking)
 {
     local int disableTime;
-    if (winCamera.turret.bRebooting && !bHacking)
+    if (winCamera != None && winCamera.turret != None && winCamera.turret.bRebooting && !bHacking)
     {
         SetValue(1); //Next value goes to either Enemies or Bypassed
         disableTime = winCamera.turret.disableTime - player.saveTime;

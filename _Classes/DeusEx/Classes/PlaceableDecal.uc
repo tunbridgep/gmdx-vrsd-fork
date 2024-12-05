@@ -86,8 +86,8 @@ exec function UpdateHDTPsettings()
         //Added new low-quality Leaf textures.
         case E_Leaf:	Skin = class'HDTPLoader'.static.GetTexture2("GameMedia.Skins.LeafTex","RSDCrap.Environment.LeafTex",IsHDTP()); break;
         case E_Leaf0:	Skin = class'HDTPLoader'.static.GetTexture2("GameMedia.Skins.LeafTex0","RSDCrap.Environment.LeafTex0",IsHDTP()); break;
-        case E_Leaf0:	Skin = class'HDTPLoader'.static.GetTexture2("GameMedia.Skins.LeafTex1","RSDCrap.Environment.LeafTex1",IsHDTP()); break;
-        case E_Leaf0:	Skin = class'HDTPLoader'.static.GetTexture2("GameMedia.Skins.LeafTex2","RSDCrap.Environment.LeafTex2",IsHDTP()); break;
+        case E_Leaf1:	Skin = class'HDTPLoader'.static.GetTexture2("GameMedia.Skins.LeafTex1","RSDCrap.Environment.LeafTex1",IsHDTP()); break;
+        case E_Leaf2:	Skin = class'HDTPLoader'.static.GetTexture2("GameMedia.Skins.LeafTex2","RSDCrap.Environment.LeafTex2",IsHDTP()); break;
         case E_Leaf3:	Skin = class'HDTPLoader'.static.GetTexture2("GameMedia.Skins.LeafTex3","RSDCrap.Environment.LeafTex3",IsHDTP()); break;
         
         //For now we will use the HDTP tex, may change this later

@@ -8094,6 +8094,9 @@ exec function PutInHand(optional Inventory inv)
 		if (inv.IsA('Ammo'))
 			return;
 
+        if (inv.isA('NanoKeyRing'))
+            bUsedKeyringLast = true;
+
 		// Can't put an active charged item in hand  //cyberP: overruled for armor system
 		//if ((inv.IsA('ChargedPickup')) && (ChargedPickup(inv).IsActive()))
 		//	return;
@@ -8106,9 +8109,6 @@ exec function PutInHand(optional Inventory inv)
 		if (Binoculars(assignedWeapon).bActive)
             assignedWeapon.GotoState('DeActivated');
     SetInHandPending(inv);
-
-    if (inv.isA('NanoKeyRing'))
-        bUsedKeyringLast = true;
 
     UpdateCrosshair();
 }

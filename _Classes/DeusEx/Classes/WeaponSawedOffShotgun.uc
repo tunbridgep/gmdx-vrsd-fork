@@ -14,7 +14,7 @@ simulated function PlayIdleAnim()
 {
 	local float rnd;
 
-	if (bZoomed || bNearWall)
+	if (bZoomed || bNearWall || !IsHDTP() || iHDTPModelToggle < 2)
 		return;
 
 	rnd = FRand();
