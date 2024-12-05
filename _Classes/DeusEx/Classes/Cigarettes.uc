@@ -12,20 +12,19 @@ function SetSkin()
     Icon = default.Icon;
     LargeIcon = default.LargeIcon;
 
-    if (IsHDTP())
+    switch(textureSet)
     {
-        switch(textureSet)
-        {
-            case 0:
-                Skin = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPCigarettestex1");
-                break;
-            case 1:
-                Skin = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPCigarettestex2");
-                Description = Description2;
+        case 0: break; //Handled by UpdateHDTPSettings
+        case 1:
+            Skin = class'HDTPLoader'.static.GetTexture2("RSDCrap.Skins.HDTPCigarettestex2","RSDCrap.Skins.Cigarettestex2",IsHDTP());
+            Description = Description2;
+            //TODO: Port these across
+            if (IsHDTP())
+            {
                 Icon = class'HDTPLoader'.static.GetTexture("HDTPitems.skins.belticonCigarettes2");
                 LargeIcon = class'HDTPLoader'.static.GetTexture("HDTPitems.skins.largeiconCigarettes2");
-                break;
-        }
+            }
+            break;
     }
 	super.SetSkin();
 }

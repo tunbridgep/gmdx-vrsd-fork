@@ -45,6 +45,11 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\Skins\sodacantex3.pcx"		    NAME="SodaCanTex3"	    GROUP="Skins"
 #exec TEXTURE IMPORT FILE="Textures\Skins\sodacantex4.pcx"		    NAME="SodaCanTex4"	    GROUP="Skins"
 
+// Extra Cigarette Skins
+#exec TEXTURE IMPORT FILE="Textures\Skins\CigarettesTex2.pcx"		NAME="CigarettesTex2"	GROUP="Skins"
+//Reimport of HDTP texture with some minor touch-ups
+#exec TEXTURE IMPORT FILE="Textures\Skins\HDTPCigarettesTex2.pcx"	NAME="HDTPCigarettesTex2"	GROUP="Skins"
+
 // Alternate Dart colours for vanilla xbow
 #exec TEXTURE IMPORT FILE="Textures\Skins\MiniCrossbowTex2dart0.pcx"		    NAME="MiniCrossbowTex2dart0"	    GROUP="Skins"
 #exec TEXTURE IMPORT FILE="Textures\Skins\MiniCrossbowTex2dart1.pcx"		    NAME="MiniCrossbowTex2dart1"	    GROUP="Skins"
