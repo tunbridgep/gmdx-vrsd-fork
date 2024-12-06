@@ -22,6 +22,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed Vanilla bug where sound volume would reset upon new game.
     - Fixed vRSD "Meat Shotgun" and other HDTP->Vanilla weapon switching madness.
     - Fixed many other GMDX and Vanilla bugs.
+    - Fixed GMDX bug where most inventory items with multiple skins (such as sodacans) weren't showing their skinned variants when being held in the players hands.
 - Quality of Life Improvements:
     - Datacubes will show a black screen after they have been read.
     - Right-Clicking an item in the belt with the Inventory Window open will clear the slot.
@@ -153,14 +154,17 @@ Sarge's Changes since Beta 2.2:
         - Alcohol no longer adds to fullness when the addiction system is enabled
         - Zyme no longer removes 10HP if the addiction system is enabled.
 - Miscellaneous Changes:
+    - Vending Machines now vend random flavours of chocolate bar and soda. This change is purely visual and doesn't affect gameplay in any way.
     - Hand textures have been ported over from LDDP. This means the first-person weapon textures now have properly coloured hand textures, as well as visible augmentation markings where they align with the third person models.
     - HDTP overhaul
         - HDTP is no longer integrated, it's now an optional addon.
         - When HDTP is installed, most HDTP related objects can be toggled on/off in the HDTP model settings menu
         - Some HDTP assets were copied over where they were absolutely necessary for the mod to function properly, such as a few menu backgrounds, weapon muzzle flashes, and some textures. These are now in RSDCrap.u and don't require HDTP.
-        - Added some low-resolution vanilla-styled textures that were missing non-HDTP variants (such as the Taser Darts, Softwares, etc.) These items will use their high-resolution variants when enabled in the HDTP menu
+        - Added some low-resolution vanilla-styled textures that were missing non-HDTP variants (such as the Taser Darts, Big Top Cigarettes, Softwares, etc.) These items will use their high-resolution variants when enabled in the HDTP menu
+        - Added some extra features that were previously only available with HDTP enabled, such as color-coded crossbow darts for the crossbow viewmodel.
         - Changed some textures to different ones to account for their HDTP variants better, such as the glowing areas on Security Cameras, which now have a proper blue variant.
         - Some HDTP features that were removed from GMDX (such as alternate inventory icons) have been re-added.
+        - Vanilla Soda Cans are now sealed up, to match their HDTP counterparts.
     - Added an "Alternate Start" option, which skips the first part of the game and starts at the MJ12 Lab. You will start with nothing, so this is extra hardcore.
     - The "You Found:" message when searching corpses has been removed. The actual items are still listed, only the extra message is removed.
     - The Paris Metro Police have been changed to using pistols only (from Assault Shotguns and Assault Rifles), to ensure more 10mm ammo is available in the late game, as well as to reinforce their status as the puppet regime under MJ12.

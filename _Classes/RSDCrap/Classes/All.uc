@@ -49,6 +49,9 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\Skins\CigarettesTex2.pcx"		NAME="CigarettesTex2"	GROUP="Skins"
 //Reimport of HDTP texture with some minor touch-ups
 #exec TEXTURE IMPORT FILE="Textures\Skins\HDTPCigarettesTex2.pcx"	NAME="HDTPCigarettesTex2"	GROUP="Skins"
+//Holy Smokes
+#exec TEXTURE IMPORT FILE="Textures\Skins\CigarettesTex3.pcx"		NAME="CigarettesTex3"	GROUP="Skins"
+#exec TEXTURE IMPORT FILE="Textures\Skins\HDTPCigarettesTex3.pcx"	NAME="HDTPCigarettesTex3"	GROUP="Skins"
 
 // Alternate Dart colours for vanilla xbow
 #exec TEXTURE IMPORT FILE="Textures\Skins\MiniCrossbowTex2dart0.pcx"		    NAME="MiniCrossbowTex2dart0"	    GROUP="Skins"

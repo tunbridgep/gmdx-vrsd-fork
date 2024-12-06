@@ -15,7 +15,7 @@ function SetSkin()
     switch(textureSet)
     {
         case 0: break; //Handled by UpdateHDTPSettings
-        case 1:
+        case 1: //Big Top
             Skin = class'HDTPLoader'.static.GetTexture2("RSDCrap.Skins.HDTPCigarettestex2","RSDCrap.Skins.Cigarettestex2",IsHDTP());
             Description = Description2;
             //TODO: Port these across
@@ -25,6 +25,8 @@ function SetSkin()
                 LargeIcon = class'HDTPLoader'.static.GetTexture("HDTPitems.skins.largeiconCigarettes2");
             }
             break;
+        case 2: //Holy Smokes!
+            Skin = class'HDTPLoader'.static.GetTexture2("RSDCrap.Skins.HDTPCigarettestex3","RSDCrap.Skins.Cigarettestex3",IsHDTP());
     }
 	super.SetSkin();
 }
