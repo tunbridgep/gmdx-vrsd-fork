@@ -9517,7 +9517,8 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 	local class<DeusExCarcass> carcClass;
 	local bool bDropped;
 	local bool bRemovedFromSlots;
-	local int  itemPosX, itemPosY, tex, i;
+	local int  itemPosX, itemPosY, tex, i, amm;
+    local Ammo ammoType;
 
 	bDropped = True;
 
@@ -9655,6 +9656,41 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 				}
 			}
 		}
+        //If it's a disposable weapon, throw away only one, and deduct ammo
+        else if (DeusExWeapon(item).bDisposableWeapon && DeusExWeapon(item).ammoName != none)
+        {
+            AmmoType = Ammo(FindInventoryType(Weapon(item).AmmoName));
+            amm = ammoType.ammoAmount;
+		    if (amm > 1)
+            {
+                // put it back in our hand, but only if it was in our
+                // hand originally!!!
+                if (previousItemInHand == item)
+                    PutInHand(previousItemInHand);
+
+                item = Spawn(item.Class, Owner);
+            }
+            else
+            {
+                // Keep track of this so we can undo it
+				// if necessary
+				bRemovedFromSlots = True;
+				itemPosX = item.invPosX;
+				itemPosY = item.invPosY;
+
+				// Remove it from the inventory slot grid
+				RemoveItemFromSlot(item);
+                if (!bBeltAutofill)
+                    MakeBeltObjectPlaceholder(item); //SARGE: Disabled because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
+                else
+                    RemoveObjectFromBelt(item);
+				
+                if (DeusExWeapon(item) == assignedWeapon)                       //RSD: Reset our assigned weapon
+					AssignSecondary(None);
+            }
+            ammoType.ammoAmount -= 1;
+            UpdateAmmoBeltText(AmmoType);
+        }
 		else
 		{
 			// Keep track of this so we can undo it
@@ -9838,6 +9874,8 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 		//DEUS_EX AMSD Use the function call for this, helps multiplayer
 		PlaceItemInSlot(item, itemPosX, itemPosY);
 	}
+    else if (DeusExWeapon(item).bDisposableWeapon) //SARGE: This has to be done here for some reason
+        DeusExWeapon(item).PickupAmmoCount = 1;
 
 	return bDropped;
 }

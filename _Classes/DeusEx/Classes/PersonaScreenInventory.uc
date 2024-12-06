@@ -838,7 +838,7 @@ function DropSelectedItem()
 
 				// Remove the item, but first check to see if it was stackable
 				// and there are more than 1 copies available
-   			if ( (!anItem.IsA('DeusExPickup')) ||
+   			if ( ((!anItem.IsA('DeusExPickup')) && !(anItem.IsA('DeusExWeapon') && DeusExWeapon(anItem).bDisposableWeapon)) ||
 					 (anItem.IsA('DeusExPickup') && (numCopies <= 1)))
 				{
 					RemoveSelectedItem();

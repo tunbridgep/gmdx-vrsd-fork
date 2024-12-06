@@ -1124,11 +1124,15 @@ function Frob(Actor Frobber, Inventory frobWith)
 						// then we'll give it to him normally.  If there's *NO* room, then we
 						// want to give the player the AMMO only (as if the player already had
 						// the weapon).
-
 						if ((W != None) || ((W == None) && (!player.FindInventorySlot(item, True))))
 						{
+                            //Don't allow taking ammo from disposable weapons, if we don't have (and can't fit) the weapon
+                            if (DeusExWeapon(item).bDisposableWeapon && W == None)
+                            {
+                            }
+
 							// Don't bother with this is there's no ammo
-							if ((Weapon(item).AmmoType != None) && (Weapon(item).AmmoType.AmmoAmount > 0))
+							else if ((Weapon(item).AmmoType != None) && (Weapon(item).AmmoType.AmmoAmount > 0))
 							{
 								AmmoType = Ammo(player.FindInventoryType(Weapon(item).AmmoName));
 
@@ -1155,11 +1159,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                     //SARGE: Set weapons maximum clip size to however much left over ammo it has.
                                     DeusExWeapon(item).ClipCount = 0;
                                     //Delete grenades
-                                    if (W.IsA('WeaponNanoVirusGrenade') ||
-                                        W.IsA('WeaponGasGrenade') ||
-                                        W.IsA('WeaponEMPGrenade') ||
-                                        W.IsA('WeaponLAM') ||
-                                        W.IsA('WeaponHideAGun'))
+                                    if (W.bDisposableWeapon)
                                     {
                                         DeleteInventory(item);
                                         W = None;
@@ -1188,11 +1188,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 									         P.ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName, 'Pickup');
                                     }
                                     //Delete grenades
-                                    if (W.IsA('WeaponNanoVirusGrenade') ||
-                                        W.IsA('WeaponGasGrenade') ||
-                                        W.IsA('WeaponEMPGrenade') ||
-                                        W.IsA('WeaponLAM') ||
-                                        W.IsA('WeaponHideAGun'))
+                                    if (W.bDisposableWeapon)
                                     {
                                         DeleteInventory(item);
                                         W = None;
