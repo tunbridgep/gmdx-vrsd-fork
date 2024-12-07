@@ -401,7 +401,7 @@ function DistributePS20s()
     {
         //First, make sure they don't have one
         inv = actors[given].Inventory;
-        while (inv != None && j < 5)
+        while (inv != None)
         {
             if (inv.isA('WeaponHideAGun'))
                 break;
