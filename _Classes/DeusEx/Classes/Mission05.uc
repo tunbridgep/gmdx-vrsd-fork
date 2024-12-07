@@ -19,6 +19,7 @@ function FirstFrame()
 	local SpawnPoint SP;
 	local AnnaNavarre Anna;
     local ammocrate crate;                                                      //RSD: Added an ammo crate to store all the player's ammo (new behavior in SP for that class)
+    local Ammo Ammotype;
 
 	Super.FirstFrame();
 
