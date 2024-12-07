@@ -76,10 +76,29 @@ function FirstFrame()
 					if (item != None)
 					{
 						nextItem = item.Inventory;
-
+						
 						//== Y|y: Turn off any charged pickups we were using and remove the associated HUD.  Per Lork on the OTP forums
 						if (item.IsA('ChargedPickup'))
 							ChargedPickup(item).ChargedPickupEnd(Player);
+
+						// restore any ammo amounts for a weapon to default
+						//DDL- except the fucking lams and stuff!
+						if (item.IsA('Weapon') && (Weapon(item).AmmoType != None))
+						{
+							if(item.isA('DeusExWeapon') && !DeusExWeapon(item).bDisposableWeapon) //RSD: These need to be hardcoded since GMDX makes them stack
+								//Weapon(item).PickupAmmoCount = Weapon(item).Default.PickupAmmoCount;
+								Weapon(item).PickupAmmoCount = 0;               //RSD: Weapons will be emptied of their ammunition
+                            else if (!player.bHardcoreMode) //SARGE: Disposables will be stored as a single stack and the player will lose the ammo. Hardcore already moves the ammo into the crate.
+                            {
+                                AmmoType = Weapon(item).AmmoType;
+                                if (ammoType.ammoAmount > 0)
+                                {
+                                    Weapon(item).PickupAmmoCount = AmmoType.ammoAmount;
+                                    player.ClientMessage("Setting " $ AmmoType $ " pickup ammocount " $ item.ItemName $ " to " $ AmmoType.ammoAmount);
+                                    AmmoType.ammoAmount = 0;
+                                }
+                            }
+						}
 
 						Player.DeleteInventory(item);
 
@@ -87,16 +106,6 @@ function FirstFrame()
                         	item.DropFrom(SP.Location + item.CollisionHeight*vect(0,0,1));
                         else
 							item.DropFrom(SP.Location);
-
-						// restore any ammo amounts for a weapon to default
-						//DDL- except the fucking lams and stuff!
-						if (item.IsA('Weapon') && (Weapon(item).AmmoType != None))
-						{
-							if(!item.isA('WeaponLAM') && !item.isA('WeaponEMPGrenade') && !item.isa('WeaponNanovirusGrenade') && !item.isa('WeaponGasGrenade')
-                               && !item.IsA('WeaponShuriken') && !item.IsA('WeaponHideaGun')) //RSD: These need to be hardcoded since GMDX makes them stack
-								//Weapon(item).PickupAmmoCount = Weapon(item).Default.PickupAmmoCount;
-								Weapon(item).PickupAmmoCount = 0;               //RSD: Weapons will be emptied of their ammunition
-						}
 					}
 
 					if (nextItem == None)
