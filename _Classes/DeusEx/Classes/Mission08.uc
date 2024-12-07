@@ -43,8 +43,23 @@ function FirstFrame()
         }
 
 	}
-	else if (localURL == "08_NYC_Street")
+	else if (localURL == "08_NYC_STREET")
 	{
+        //SARGE: Fix up street light Lighting if we have Lighting Accessibility enabled
+        if (Player.bLightingAccessibility)
+        {
+            ForEach AllActors(class'Light', L)
+            {
+                //log("Light Found: [" $ L.Name $ "]");
+                if (L.Name == 'Light94')
+                {
+                    //log("Fixing light 94");
+                    L.LightPeriod = 0;
+                    L.LightType = LT_Steady;
+                }
+            }
+        }
+
 	     if (flags.GetBool('Enhancement_Detected'))
 	     {
             foreach AllActors(class'ScriptedPawn', pawn)
