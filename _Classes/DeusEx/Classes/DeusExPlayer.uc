@@ -11631,14 +11631,19 @@ function bool DeleteInventory(inventory item)
 			winInv.InventoryDeleted(item);
 
 		// Remove the item from the object belt
-		// Sarge: Keep darkened version in the belt if we have Keep Deleted Belt Items setting turn on
 		if (root != None)
-			root.DeleteInventory(item);
-	  else //In multiplayer, we often don't have a root window when creating corpse, so hand delete
-	  {
-		 item.bInObjectBelt = false;
-		 item.beltPos = -1;
-	  }
+        {
+            // Sarge: Keep darkened version in the belt if we have Keep Deleted Belt Items setting turn on
+            if (bBeltMemory)
+                MakeBeltObjectPlaceholder(item);
+            else
+                RemoveObjectFromBelt(item);
+        }
+        else //In multiplayer, we often don't have a root window when creating corpse, so hand delete
+        {
+            item.bInObjectBelt = false;
+            item.beltPos = -1;
+        }
 	}
 
 	return Super.DeleteInventory(item);
