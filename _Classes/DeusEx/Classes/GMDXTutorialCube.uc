@@ -40,6 +40,11 @@ enum EHackText
 var() EHackText HackText;
 var Localized String StringTable[25];
 
+function bool DarkenScreen()
+{
+    return bRead;
+}
+
 function GetText()
 {
 	local DeusExRootWindow rootWindow;
