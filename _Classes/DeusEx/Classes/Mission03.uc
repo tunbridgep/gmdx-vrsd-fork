@@ -119,25 +119,11 @@ function FirstFrame()
 	}
 	else if (localURL == "03_NYC_BROOKLYNBRIDGESTATION")
 	{
-        //SARGE: Fix up elevator shaft Lighting if we have Lighting Accessibility enabled
+        //SARGE: Fix up Lighting if we have Lighting Accessibility enabled
         if (Player.bLightingAccessibility)
         {
             ForEach AllActors(class'Light', L)
             {
-                /*
-                //Remove some of the more egregious ones
-                if (L.Name == 'Light19' || L.Name == 'Light300'  )
-                {
-                    L.LightPeriod = 0;
-                    L.LightType = LT_Steady;
-                }
-                
-                if (L.Name == 'Light154')
-                {
-                    //L.LightType = LT_None;
-                    L.Destroy();
-                }
-                */
                 if (L.LightType == LT_Flicker)
                     L.LightType = LT_Steady;
             }

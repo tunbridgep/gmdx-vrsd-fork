@@ -122,31 +122,9 @@ function FirstFrame()
         {
             ForEach AllActors(class'Light', L)
             {
-                //Remove some of the more egregious ones
-                if (L.Name == 'Light44' || L.Name == 'Light45'  )
-                {
-                    L.LightPeriod = 0;
-                    L.LightType = LT_Steady;
-                    //L.Destroy();
-                }
-                else if (L.Name == 'Light42')
-                {
-                    L.LightPeriod = 155;
-                    L.LightType = LT_Strobe;
-                }
-
-                //L.Destroy();
-
-
-                /*
-                if (L.LightType == LT_Flicker)
-                {
-                    clientMessage("Changing Light Period on " $ L.name $ " from " $ L.LightPeriod $ " to 0");
-                    L.LightPeriod = 100;
-                    //L.LightPeriod = Max(L.LightPeriod,255);
-                    L.LightType = LT_Blink;
-                }
-                */
+                DoLightingAccessibility(L, 'Light44');
+                DoLightingAccessibility(L, 'Light45');
+                DoLightingAccessibility(L, 'Light42', true);
             }
         }
     }

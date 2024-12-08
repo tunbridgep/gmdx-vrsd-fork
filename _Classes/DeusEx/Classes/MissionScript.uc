@@ -20,6 +20,32 @@ var bool CanQuickSave;
 var float TimeToSave;
 
 // ----------------------------------------------------------------------
+// DoLightingAccessibility()
+//
+// Modify a light to be steady, rather than strobing, or optionally delete it instead,
+// based on the players Lighting Accessibility setting
+// ----------------------------------------------------------------------
+
+function DoLightingAccessibility(Light L, name checkName, optional bool bStrobe)
+{
+    if (!player.bLightingAccessibility || L.name != checkName)
+        return;
+                
+    //log("Light Found: [" $ L.Name $ "]");
+
+    if (bStrobe)
+    {
+        L.LightPeriod = 155;
+        L.LightType = LT_Strobe;
+    }
+    else
+    {
+        L.LightPeriod = 0;
+        L.LightType = LT_Steady;
+    }
+}
+
+// ----------------------------------------------------------------------
 // PostPostBeginPlay()
 //
 // Set the timer
