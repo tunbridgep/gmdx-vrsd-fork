@@ -204,7 +204,10 @@ function DisplayWeapon(bool overlay)
         }
     }
 
-	if(ammotype.isA('AmmoRocketWP'))
+    if (ammoType == none)
+    {
+    }
+	else if(ammotype.isA('AmmoRocketWP'))
 	{
 		multiskins[4] = texture'pinkmasktex';
 		multiskins[5] = none;

@@ -1265,7 +1265,7 @@ local float p, mod;
 
 function bool IsHDTP()
 {
-    return DeusExPlayer(GetPlayerPawn()).bHDTPInstalled && iHDTPModelToggle > 0;
+    return DeusExPlayer(GetPlayerPawn()) != None && DeusExPlayer(GetPlayerPawn()).bHDTPInstalled && iHDTPModelToggle > 0;
 }
 
 function CheckWeaponSkins()

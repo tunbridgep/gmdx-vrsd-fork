@@ -484,6 +484,7 @@ var string HDTPSkin;
 var string HDTPTexture;
 var string HDTPMesh;
 var string HDTPMeshTex[8];
+var travel bool bSetupHDTP;
 
 native(2102) final function ConBindEvents();
 
@@ -519,6 +520,7 @@ function bool ShouldCreate(DeusExPlayer player)
 function PreBeginPlay()
 {
 	local float saveBaseEyeHeight;
+    local int i;
 
 	// TODO:
 	//
@@ -558,16 +560,26 @@ function bool IsHDTP()
 exec function UpdateHDTPsettings()
 {
     local int i;
+    local bool hdtp;
+
+    hdtp = IsHDTP();
+
+    //Bail out if we have no need to continue
+    if ((hdtp && bSetupHDTP) || (!hdtp && !bSetupHDTP))
+        return;
+
     if (HDTPMesh != "")
     {
-        Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),IsHDTP());
+        Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),hdtp);
+        //We have to be careful here, or we will break holo-projectors
         for(i = 0; i < 8;i++)
             MultiSkins[i] = class'HDTPLoader'.static.GetTexture2(HDTPMeshTex[i],string(default.MultiSkins[i]),IsHDTP());
     }
     if (HDTPSkin != "")
-        Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),IsHDTP());
+        Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),hdtp);
     if (HDTPTexture != "")
-        Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),IsHDTP());
+        Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),hdtp);
+    bSetupHDTP = hdtp;
 }
 
 // ----------------------------------------------------------------------
@@ -5975,7 +5987,6 @@ function PlayDying(name damageType, vector hitLoc)
 		PlayDyingSound();
 	}
 }
-
 
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------

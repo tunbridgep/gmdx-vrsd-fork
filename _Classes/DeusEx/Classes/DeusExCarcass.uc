@@ -95,7 +95,7 @@ function bool ShouldCreate(DeusExPlayer player)
 
 function bool IsHDTP()
 {
-    return DeusExPlayer(GetPlayerPawn()).bHDTPInstalled && hdtpReference.default.iHDTPModelToggle > 0;
+    return DeusExPlayer(GetPlayerPawn()) != None && DeusExPlayer(GetPlayerPawn()).bHDTPInstalled && hdtpReference.default.iHDTPModelToggle > 0;
 }
 
 exec function UpdateHDTPsettings()
