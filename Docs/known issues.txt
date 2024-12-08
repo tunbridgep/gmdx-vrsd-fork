@@ -1,0 +1,2 @@
+1. Missing Mover in HK Streets map (Tonochi Road) at top of Queens Tower
+2. Credits mesh in Cathedral map is using wrong texture, in Kitchen area.

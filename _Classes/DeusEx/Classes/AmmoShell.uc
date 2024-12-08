@@ -58,6 +58,8 @@ exec function UpdateHDTPSettings()
         UnfamiliarName="Shotgun Shell";
         AmmoAmount=1;
         ItemName="12 Gauge Buckshot Shell";
+        SetCollisionSize(2.570000, 0.620000);
+        DrawScale=1.200000;
     }
 }
 

@@ -53,6 +53,11 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\Skins\CigarettesTex3.pcx"		NAME="CigarettesTex3"	GROUP="Skins"
 #exec TEXTURE IMPORT FILE="Textures\Skins\HDTPCigarettesTex3.pcx"	NAME="HDTPCigarettesTex3"	GROUP="Skins"
 
+// Minidisks
+#exec TEXTURE IMPORT FILE="Textures\Skins\MiniDiskTex0.pcx"		    NAME="MiniDiskTex0"	    GROUP="Skins"
+#exec TEXTURE IMPORT FILE="Textures\Skins\MiniDiskTex1.pcx"		    NAME="MiniDiskTex1"	    GROUP="Skins"
+
+
 // Alternate Dart colours for vanilla xbow
 #exec TEXTURE IMPORT FILE="Textures\Skins\MiniCrossbowTex2dart0.pcx"		    NAME="MiniCrossbowTex2dart0"	    GROUP="Skins"
 #exec TEXTURE IMPORT FILE="Textures\Skins\MiniCrossbowTex2dart1.pcx"		    NAME="MiniCrossbowTex2dart1"	    GROUP="Skins"
@@ -68,9 +73,9 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\Skins\trashtex1.pcx"		    NAME="TrashTex1"	    GROUP="Skins"
 
 // Random textures imported from HDTP, so that certain maps will actually work
-#exec TEXTURE IMPORT FILE="Textures\Environment\DrainTex.pcx"			    NAME="DrainTex"			    GROUP="Environment"
+//#exec TEXTURE IMPORT FILE="Textures\Environment\DrainTex.pcx"			    NAME="DrainTex"			    GROUP="Environment"
 #exec TEXTURE IMPORT FILE="Textures\Environment\DirtyToiletWaterTex.pcx"	NAME="DirtyToiletWaterTex"	GROUP="Environment"
-#exec TEXTURE IMPORT FILE="Textures\Environment\InfoSign.pcx"	            NAME="InfoSign"         	GROUP="Environment"
+//#exec TEXTURE IMPORT FILE="Textures\Environment\InfoSign.pcx"	            NAME="InfoSign"         	GROUP="Environment"
 #exec TEXTURE IMPORT FILE="Textures\Environment\WaterPuddle.pcx"	        NAME="WaterPuddle"         	GROUP="Environment"
 
 //Icons etc
