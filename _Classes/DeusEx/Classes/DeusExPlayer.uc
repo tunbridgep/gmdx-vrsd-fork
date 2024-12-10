@@ -5965,7 +5965,7 @@ state PlayerWalking
                if (!bOnLadder && FRand() < 0.7)
                {
                     if (FlagBase.GetBool('LDDPJCIsFemale')) //Sarge: Lay-D Denton support
-                        PlaySound(Sound(DynamicLoadObject("FJCGasp", class'Sound', false)), SLOT_None, 0.8);
+                        PlaySound(Sound(DynamicLoadObject("FemJC.FJCGasp", class'Sound', false)), SLOT_None, 0.8);
                     else
                         PlaySound(sound'MaleBreathe', SLOT_None,0.8);
                }

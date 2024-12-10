@@ -55,6 +55,33 @@ function InitWindow()
 }
 
 // ----------------------------------------------------------------------
+// SARGE: RefreshRebootDuration()
+//
+// Refresh rebooting duration when closing the window
+// ----------------------------------------------------------------------
+
+function RefreshRebootDuration()
+{
+    if (winCameras[0].camera != None && winCameras[0].camera.bRebooting)
+        winCameras[0].camera.StartReboot(player);
+    if (winCameras[1].camera != None && winCameras[1].camera.bRebooting)
+        winCameras[1].camera.StartReboot(player);
+    if (winCameras[2].camera != None && winCameras[2].camera.bRebooting)
+        winCameras[2].camera.StartReboot(player);
+    if (winCameras[3].camera != None && winCameras[3].camera.bRebooting)
+        winCameras[3].camera.StartReboot(player);
+    
+    if (winCameras[0].turret != None && winCameras[0].turret.bRebooting)
+        winCameras[0].turret.StartReboot(player);
+    if (winCameras[1].turret != None && winCameras[1].turret.bRebooting)
+        winCameras[1].turret.StartReboot(player);
+    if (winCameras[2].turret != None && winCameras[2].turret.bRebooting)
+        winCameras[2].turret.StartReboot(player);
+    if (winCameras[3].turret != None && winCameras[3].turret.bRebooting)
+        winCameras[3].turret.StartReboot(player);
+}
+
+// ----------------------------------------------------------------------
 // DestroyWindow()
 //
 // Destroys the Window
@@ -62,7 +89,8 @@ function InitWindow()
 
 event DestroyWindow()
 {
-	Super.DestroyWindow();
+	
+    Super.DestroyWindow();
 
 	if (doorTimerID != -1)
 	{
@@ -75,25 +103,6 @@ event DestroyWindow()
       Removetimer(networkTimerID);
       networkTimerID = -1;
    }
-
-    //SARGE: Refresh rebooting duration when closing the window
-    if (winCameras[0].camera.bRebooting)
-        winCameras[0].camera.StartReboot(player);
-    if (winCameras[1].camera.bRebooting)
-        winCameras[1].camera.StartReboot(player);
-    if (winCameras[2].camera.bRebooting)
-        winCameras[2].camera.StartReboot(player);
-    if (winCameras[3].camera.bRebooting)
-        winCameras[3].camera.StartReboot(player);
-    
-    if (winCameras[0].turret.bRebooting)
-        winCameras[0].turret.StartReboot(player);
-    if (winCameras[1].turret.bRebooting)
-        winCameras[1].turret.StartReboot(player);
-    if (winCameras[2].turret.bRebooting)
-        winCameras[2].turret.StartReboot(player);
-    if (winCameras[3].turret.bRebooting)
-        winCameras[3].turret.StartReboot(player);
 }
 
 // -----------------------------------------------------------------------
@@ -115,6 +124,7 @@ function NetworkRefreshTimer(int timerID, int invocations, int clientData)
 // DoorRefreshTimer()
 //
 // Timer function to refresh the door status text
+// SARGE: Now updates the turrets and cameras as well
 // ----------------------------------------------------------------------
 
 function DoorRefreshTimer(int timerID, int invocations, int clientData)
@@ -122,10 +132,7 @@ function DoorRefreshTimer(int timerID, int invocations, int clientData)
 	winCameras[0].UpdateDoorStatus();
 	winCameras[1].UpdateDoorStatus();
 	winCameras[2].UpdateDoorStatus();
-}
-
-function Tick(float deltaTime)
-{
+    
     choiceWindows[0].UpdateText(winTerm.bHacked);
     choiceWindows[1].UpdateText(winTerm.bHacked);
     choiceWindows[2].UpdateText(winTerm.bHacked);
@@ -587,6 +594,7 @@ function bool ButtonActivated( Window buttonPressed )
 				break;
 
 			case btnLogout:
+                RefreshRebootDuration();
 				CloseScreen("LOGOUT");
 				break;
 

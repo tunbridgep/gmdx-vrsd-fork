@@ -280,16 +280,14 @@ function Tick(float DeltaTime)
             TimeToSave-=DeltaTime;
         else
         {
-            CanQuickSave=false;
-
-            if (localURL == "11_PARIS_EVERETT")
-                TimeToSave=0.0;
-            else if (localURL == "05_NYC_UNATCOMJ12LAB")
+            if (localURL ~= "11_PARIS_EVERETT")
+                TimeToSave=0.0; //Save before speech if we can
+            else if (localURL ~= "05_NYC_UNATCOMJ12LAB")
                 TimeToSave=0.5;
             else
                 TimeToSave=0.1;
             //TimeToSave=0.0;                                                        //RSD: Removed autosave delay
-            player.PerformAutoSave(firstTime);
+            CanQuickSave = !player.PerformAutoSave(firstTime);                      //Sarge: Keep trying until we successfully save
         }
     }
 }
