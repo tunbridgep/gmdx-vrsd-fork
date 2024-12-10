@@ -1875,6 +1875,7 @@ function bool CanSave(optional bool allowHardcore)
 	// 4) We're interpolating (playing outtro)
 	// 5) A datalink is playing
 	// 6) We're in a multiplayer game
+    // 7) SARGE: We're in a conversation
 
     if ((bHardCoreMode || bRestrictedSaving) && !allowHardcore) //Hardcore Mode
         return false;
@@ -1890,6 +1891,9 @@ function bool CanSave(optional bool allowHardcore)
 
     if (Level.Netmode != NM_Standalone) //Multiplayer Game
 	   return false;
+
+    if (InConversation())
+        return false;
 
     return true; 
 }
@@ -1996,15 +2000,19 @@ function int FindQuicksaveSlot()
     return slot;
 }
 
-function PerformAutoSave(bool allowHardcore)
+function bool PerformAutoSave(bool allowHardcore)
 {
     if (!CanSave(allowHardcore))
-        return;
+        return false;
     
     //Only allow autosaving if we have autosaves turned on,
     //or if saving restrictions is enabled.
     if (bTogAutoSave || bRestrictedSaving || bHardCoreMode)
+    {
         DoSaveGame(FindAutosaveSlot(), sprintf(AutoSaveGameTitle,TruePlayerName));
+        return true;
+    }
+    return false;
 }
 
 // ----------------------------------------------------------------------
