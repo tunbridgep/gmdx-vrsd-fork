@@ -28,12 +28,19 @@ var int lerpClamp;
 //GMDX:finish vars
 
 //SARGE: Allow laser sight and scope when we have the Heavily Tweaked perk
-//SARGE: Resize if we have the Mobile Ordnance perk
-function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
+function CheckHeavilyTweaked()
 {
     local PerkHeavilyTweaked perk;
+    local DeusExPlayer player;
+
+    log("Check Heavily Tweaked");
+
+    player = DeusExPlayer(GetPlayerPawn());
+
+    if (player == None)
+        return;
     
-    perk = PerkHeavilyTweaked(frobber.PerkManager.GetPerkWithClass(class'DeusEx.PerkHeavilyTweaked'));
+    perk = PerkHeavilyTweaked(player.PerkManager.GetPerkWithClass(class'DeusEx.PerkHeavilyTweaked'));
     if (perk != None && perk.bPerkObtained)
     {
         bCanHaveScope=True;
@@ -44,8 +51,18 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
         bCanHaveScope=False;
         bCanHaveLaser=False;
     }
-    //ResizeHeavyWeapon(frobber);
-    return super.DoRightFrob(Frobber,objectInHand);
+}
+
+function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
+{
+    CheckHeavilyTweaked();
+    return Super.DoRightFrob(frobber,objectInHand);
+}
+
+function bool DoLeftFrob(DeusExPlayer frobber)
+{
+    CheckHeavilyTweaked();
+    return Super.DoLeftFrob(frobber);
 }
 
 function SetMount(DeusExPlayer dxp)
@@ -468,7 +485,6 @@ function CheckWeaponSkins()
 simulated function PreBeginPlay()
 {
 	Super.PreBeginPlay();
-
 	// If this is a netgame, then override defaults
 	if ( Level.NetMode != NM_StandAlone )
 	{
