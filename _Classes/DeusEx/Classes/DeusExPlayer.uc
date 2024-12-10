@@ -2787,9 +2787,9 @@ function UpdateDynamicMusic(float deltaTime)
 	}
 	else if (IsInState('Conversation'))
 	{
-	    //if (info != none)
-	    //   if (info.bBarOrClub)
-        //      return;  //CyberP: no dynamic music in clubs and bars.
+	    if (info != none)
+	       if (info.bBarOrClub)
+              return;  //CyberP: no dynamic music in clubs and bars.
 		if (musicMode != MUS_Conversation)
 		{
 			// save our place in the ambient track
