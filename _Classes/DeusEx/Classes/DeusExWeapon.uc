@@ -794,57 +794,24 @@ simulated event RenderOverlays( canvas Canvas )
 	SetLocation( Owner.Location + CalcDrawOffset() );
     NewRot = Pawn(Owner).ViewRotation;
 
-
-    if (!bAimingDown)                                                           //RSD: This part is now broken by code below, so check later
-    {
-	if ( Hand == 0 )
-		newRot.Roll = -2 * Default.Rotation.Roll;
-	else
-		newRot.Roll = Default.Rotation.Roll * Hand;
-    }
-
 	if (PlayerOwner != none)
     {
-     /*if (!IsA('WeaponRifle'))  //Totalitarian: add rotation sway when the player turns
-     {
-       newRot.Roll -= smerp(1,0,(PlayerOwner.DesiredRotation.Yaw - PlayerOwner.Rotation.Yaw)*0.1);
-       if (newRot.Roll > 1536)
-           newRot.Roll = 1536;
-       else if (newRot.Roll < -1536)
-           newRot.Roll = -1536;
-     }*/
-    //ass gun iron sights: newRot.Pitch += 360; newRot.Yaw += 2280; PlayerViewOffset(X=12.500000,Y=3.300000,Z=-10.900000)
-    //pistol iron sight: {newRot.Yaw += 1400; newRot.Pitch -=1000; PlayerViewOffset=vect(1955.500000,-1170.300000,106.900000);}
+        //RSD: New adjustment to rotation without being pitch-dependent
+        rfs.Yaw=addYaw;
+        rfs.Pitch=addPitch;
+        GetAxes(rfs,dx,dy,dz);
+        dx=dx>>PlayerOwner.ViewRotation;
+        dy=dy>>PlayerOwner.ViewRotation;
+        dz=dz>>PlayerOwner.ViewRotation;
+        rfs=OrthoRotation(dx,dy,dz);
+        NewRot = rfs;
 
-    //NewRot.Pitch += addPitch;                                                 //RSD: This is not with respect to player rotation, so leads to pitch-dependent rotation!
-    //NewRot.Yaw += addYaw;
-
-    //RSD: New adjustment to rotation without being pitch-dependent
-    rfs.Yaw=addYaw;
-	rfs.Pitch=addPitch;
-	GetAxes(rfs,dx,dy,dz);
-	dx=dx>>PlayerOwner.ViewRotation;
-	dy=dy>>PlayerOwner.ViewRotation;
-	dz=dz>>PlayerOwner.ViewRotation;
-	rfs=OrthoRotation(dx,dy,dz);
-	NewRot = rfs;
-
-    /*if (class'DeusExPlayer'.default.bCloakEnabled&&!bIsCloaked)
-	{
-	  SetCloak(true);
-	} else
-	if (!class'DeusExPlayer'.default.bCloakEnabled&&bIsCloaked && !class'DeusExPlayer'.default.bRadarTran == True)
-	{
-	  SetCloak(false);
-	}*/
-
-    //RSD: Overhauled cloak/radar routines
-	SetCloakRadar(class'DeusExPlayer'.default.bCloakEnabled,class'DeusExPlayer'.default.bRadarTran);
-	}
-    //ExRot = CalcDeltaRotation(NewRot);
-    //BroadcastMessage("Rotation:"$self.Rotation);
-	setRotation(NewRot);
-	Canvas.DrawActor(self, false);
+        //RSD: Overhauled cloak/radar routines
+        SetCloakRadar(class'DeusExPlayer'.default.bCloakEnabled,class'DeusExPlayer'.default.bRadarTran);
+    }
+    
+    setRotation(NewRot);
+    Canvas.DrawActor(self, false);
 
     //Reset weapon to standard display
     DisplayWeapon(false);

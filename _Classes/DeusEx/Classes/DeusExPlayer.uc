@@ -8978,21 +8978,6 @@ exec function ToggleScope()
 	  {
 	    if (W.AnimSequence == 'Idle1' || W.AnimSequence == 'Idle2' || W.AnimSequence == 'Idle3')
         W.PlayAnim('Still');
-        if (W.bZoomed==False && GetConfig("Engine.Engine", "GameRenderDevice") != "D3D10Drv.D3D10RenderDevice")
-        {
-            W.ScopeToggle();
-        }
-	    else if (W.bZoomed==False&&W.IsA('WeaponRifle'))
-	        WeaponRifle(W).activateAn = True;
-	    else if (W.bZoomed==False&&W.IsA('WeaponPistol') && W.bHasScope)
-    	    WeaponPistol(W).activateAn = True;
-	    else if (W.bZoomed==False&&W.IsA('WeaponMiniCrossbow') && W.bHasScope)
-	        WeaponMiniCrossbow(W).activateAn = True;
-	    else if (W.bZoomed==False&&W.IsA('WeaponStealthPistol') && W.bHasScope)
-	        WeaponStealthPistol(W).activateAn = True;
-	    else if (W.bZoomed==False&&W.IsA('WeaponAssaultGun') && W.bHasScope)
-    	    WeaponAssaultGun(W).activateAn = True;
-        else
 	    	W.ScopeToggle();
 		
         if (W.bZoomed&&W.IsA('WeaponGEPGun'))
