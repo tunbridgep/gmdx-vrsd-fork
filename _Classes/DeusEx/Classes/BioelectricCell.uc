@@ -44,7 +44,7 @@ state Activated
 		player = DeusExPlayer(GetPlayerPawn());                                 //RSD: Altering this to enable generic LeftClick interact
 
 		
-		if (player != None && player.Energy == player.EnergyMax)
+		if (player != None && player.Energy == player.GetMaxEnergy())
 		{
 			player.ClientMessage(msgFullEnergy);
 			GoToState('DeActivated');
@@ -62,8 +62,8 @@ state Activated
 			player.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
 
 			player.Energy += rechargeAmount;
-			if (player.Energy > player.EnergyMax)
-				player.Energy = player.EnergyMax;
+			if (player.Energy > player.GetMaxEnergy())
+				player.Energy = player.GetMaxEnergy();
 
 			player.ClientMessage(Sprintf(msgRecharged, int(player.Energy-origEnergy+0.5))); //RSD: Tells you how much energy you actually recovered
 		}
