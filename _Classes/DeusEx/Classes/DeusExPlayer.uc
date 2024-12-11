@@ -631,6 +631,11 @@ var globalconfig bool bAugWheelDisableAll;                                      
 
 var globalconfig bool bTrickReloading;											//Sarge: Allow reloading with a full clip.
 
+
+////Collectibles Stuff
+var travel int collectiblesFound;                                               //SARGE: How many collectibles the player has found.
+var globalconfig bool bCollectiblesEnabled;                                     //SARGE: Enable the Collectibles system.
+
 //////////END GMDX
 
 // OUTFIT STUFF
