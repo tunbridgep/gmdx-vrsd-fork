@@ -1410,7 +1410,8 @@ function Frob(Actor Frobber, Inventory frobWith)
         else if (!bFoundSomething && (bSearched||!player.bEnhancedCorpseInteractions) && bDblClickStart && player.bDblClickHolster)
             player.PutInHand(none);
     }
-    else if (!bFoundSomething && (!bDblClickStart || player.inHand != None))
+    
+    if (!bFoundSomething && (!bDblClickStart || player.inHand != None))
     {
         if (!bFoundInvalid || !player.bEnhancedCorpseInteractions)
             P.ClientMessage(msgEmpty);

@@ -741,7 +741,7 @@ function SetCrouch(bool crouch, optional bool setForce)
 }
 
 // ----------------------------------------------------------------------
-// AssignSecondaryWeapon
+// AssignSecondary
 // Sarge: Now needed because we need to fix up our charged item display if it's out of date
 // ----------------------------------------------------------------------
 
@@ -7565,6 +7565,26 @@ function bool IsReallyFrobbable(Actor target)
 }
 
 // ----------------------------------------------------------------------
+// SetDoubleClickTimer()
+// Sets up the double-click holster/unholster timer
+// ----------------------------------------------------------------------
+
+function SetDoubleClickTimer()
+{
+    SetTimer(0.3,false);
+    bDoubleClickCheck=True;
+    clickCountCyber=1;
+}
+    
+function DoAutoHolster()
+{
+    if (bAutoHolster && (clickCountCyber >= 1 || !bDblClickHolster))
+        PutInHand(None);
+    else if (bAutoHolster && bDblClickHolster)
+        SetDoubleClickTimer();
+}
+
+// ----------------------------------------------------------------------
 // ParseRightClick()
 // ----------------------------------------------------------------------
 
@@ -7741,9 +7761,7 @@ exec function ParseRightClick()
 		}
 		else
 		{
-            SetTimer(0.3,false);
-            bDoubleClickCheck=True;
-            clickCountCyber=1;
+            SetDoubleClickTimer();
 		    DoRightFrob(FrobTarget); //Last minute check for things with no highlight.
         }
 	}
@@ -9268,8 +9286,8 @@ function GrabDecoration()
         {ClientMessage(HandsFull); return;}
         else if (!bAutoHolster)
         {ClientMessage(HandsFull); return;}
-        else if (bAutoHolster)
-        {PutInHand(None);}
+        else
+            DoAutoHolster();
 	}
 
 	if (carriedDecoration == None && inHand == None)
