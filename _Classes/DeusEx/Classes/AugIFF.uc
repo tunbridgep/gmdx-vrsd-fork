@@ -22,12 +22,27 @@ function Deactivate()
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
+//Set to Toggle when we have more than 1 level
+function Setup()
+{
+    if (CurrentLevel > 0)
+    {
+        AugmentationType=Aug_Toggle;
+        EnergyReserved=5;
+    }
+    else
+    {
+        AugmentationType=Aug_Passive;
+        EnergyReserved=0;
+    }
+}
+
 defaultproperties
 {
      EnergyRate=0.000000
      MaxLevel=2
      Icon=Texture'DeusExUI.UserInterface.AugIconIFF'
-     bAlwaysActive=True
+     AugmentationType=Aug_Passive
      AugmentationName="IFF"
      Description="Automatic friend or foe identification uses advanced heuristic algorithms to associate visible objects with known threat categories.|n|nTargeting reticle highlights RED over enemies, and GREEN over allies and neutrals.|n|nNO UPGRADES"
      LevelValues(0)=1.000000

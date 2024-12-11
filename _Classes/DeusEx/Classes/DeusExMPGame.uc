@@ -270,7 +270,7 @@ function bool RestartPlayer( pawn aPlayer )
     PlayerToRestart.AugmentationSystem.CreateAugmentations(PlayerToRestart);
     PlayerToRestart.AugmentationSystem.AddDefaultAugmentations();
     //Restore Bio-Energy
-    PlayerToRestart.Energy = PlayerToRestart.EnergyMax;
+    PlayerToRestart.Energy = PlayerToRestart.GetMaxEnergy();
     //Restore Skills
     PlayerToRestart.SkillSystem.CreateSkills(PlayerToRestart);
     //Replace with skill points based on game info.

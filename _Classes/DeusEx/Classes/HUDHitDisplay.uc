@@ -328,7 +328,7 @@ event Tick(float deltaSeconds)
         //if (!winBreath.IsVisible())
 		//		winBreath.Show();
 		// Calculate the energy bar percentage
-		energyPercent = 100.0 * (player.Energy / player.EnergyMax);
+		energyPercent = 100.0 * (player.Energy / player.GetMaxEnergy());
 		winEnergy.SetCurrentValue(energyPercent);
 
         breathPercent = 100.0 * player.swimTimer / player.swimDuration;

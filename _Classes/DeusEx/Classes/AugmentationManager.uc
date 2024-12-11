@@ -22,6 +22,10 @@ var Class<Augmentation> defaultAugs[3];
 var localized string AugLocationFull;
 var localized String NoAugInSlot;
 var Augmentation augie;
+
+//How much energy is currently reserved by the augmentation system
+var travel float ReservedEnergy;
+
 // ----------------------------------------------------------------------
 // Network Replication
 // ----------------------------------------------------------------------
@@ -39,6 +43,23 @@ replication
 
 }
 
+// ----------------------------------------------------------------------
+// Setup()
+// Called at the start of every game restart, map change, etc.
+// Calls Setup on every augmentation
+// ----------------------------------------------------------------------
+
+function Setup()
+{
+    local Augmentation aug;
+    aug = FirstAug;
+
+    while (aug != None)
+    {
+        aug.Setup();
+        aug = aug.next;
+    }
+}
 
 // ----------------------------------------------------------------------
 // CreateAugmentations()
@@ -117,49 +138,12 @@ simulated function RefreshAugDisplay()
 	anAug = FirstAug;
 	while(anAug != None)
 	{
-		/*// First make sure the aug is active if need be                       //RSD: Original code
-		if (anAug.bHasIt)
-		{
-			if (anAug.bIsActive)
-			{
-				anAug.GotoState('Active');
-
-				// Now, if this is an aug that isn't *always* active, then
-				// make sure it's in the augmentation display
-
-				if (!anAug.bAlwaysActive)
-					player.AddAugmentationDisplay(anAug);
-			}
-			else if ((player.bHUDShowAllAugs) && (!anAug.bAlwaysActive))
-			{
-                 player.AddAugmentationDisplay(anAug);
-			}
-		}*/
-
-        /*if (anAug.bHasIt && !anAug.bAlwaysActive) {                           //RSD: Lorenz's modification (Sorry, we're keeping the old unsanitary system)
-		    // Only show augs which can be switched on/off
-
-    	    if (anAug.bIsActive && anAug.IsInState('Inactive')) {
-    	       // This is bad design (ION Storm, this goes to you!): Even if
-        	    // bIsActive==True the aug is not necessarily in the state 'Active'
-        	    // (e.g. after a level transition).
-        	    // So make sure it is.
-        	    anAug.Activate();
-                //anAug.GotoState('Active');
-                //player.AmbientSound = anAug.LoopSound;
-            }
-
-			if (player.bHUDShowAllAugs || anAug.bIsActive) {
-			    // player wants to see all available augs even when inactive.
-			    // Otherwise show only active augs.
-				player.AddAugmentationDisplay(anAug);
-			}*/
-
 		// First make sure the aug is active if need be                         //RSD: Combined only necessary reworks from Lorenz's version
-		if (anAug.bHasIt && !anAug.bAlwaysActive)
+		if (anAug.CanBeActivated())
 		{
 			if (anAug.bIsActive)
 			{
+                //SARGE: TODO: Why is this here?
 				anAug.GotoState('Active');
 
 				// Now, if this is an aug that isn't *always* active, then
@@ -183,7 +167,7 @@ simulated function RefreshAugDisplay()
 // How many augs are currently active?
 // ----------------------------------------------------------------------
 
-simulated function int NumAugsActive()
+simulated function int NumAugsActive(optional bool countToggled)
 {
 	local Augmentation anAug;
 	local int count;
@@ -195,7 +179,7 @@ simulated function int NumAugsActive()
 	anAug = FirstAug;
 	while(anAug != None)
 	{
-		if (anAug.bHasIt && anAug.bIsActive && !anAug.bAlwaysActive)
+		if (anAug.bHasIt && anAug.bIsActive && anAug.CanBeActivated() && (anAug.AugmentationType != Aug_Toggle || countToggled))
 			count++;
 
 		anAug = anAug.next;
@@ -234,7 +218,7 @@ function BoostAugs(bool bBoostEnabled, Augmentation augBoosting)
 	while(anAug != None)
 	{
 		// Don't boost the augmentation causing the boosting! //CyberP: and don't even attempt passive augs
-		if (anAug != augBoosting && anAug.bAlwaysActive == False)
+		if (anAug != augBoosting && anAug.CanBeActivated())
 		{
 			if (bBoostEnabled)
 			{
@@ -327,6 +311,7 @@ function ActivateAll()
 	// Only allow this if the player still has
 	// Bioleectric Energy(tm)
 
+    //SARGE: TODO: Fix this for Toggle augs
 	if ((player != None) && (player.Energy > 0))
 	{
 		anAug = FirstAug;
@@ -343,9 +328,10 @@ function ActivateAll()
 // DeactivateAll()
 //
 // Loops through all the Augmentations, deactivating any that are active.
+// ActiveOnly only activates AugmentationType "Active" augs, leaves Toggle augmentations active.
 // ----------------------------------------------------------------------
 
-function DeactivateAll()
+function DeactivateAll(optional bool toggled)
 {
 	local Augmentation anAug;
 
@@ -358,8 +344,10 @@ function DeactivateAll()
 	anAug = FirstAug;
 	while(anAug != None)
 	{
-		if (anAug.bIsActive)
-			anAug.Deactivate();
+		if (anAug.bIsActive && anAug.CanBeActivated() && (anAug.AugmentationType != Aug_Toggle || toggled))
+        {
+            anAug.Deactivate();
+        }
 		anAug = anAug.next;
 	}
 }
@@ -421,7 +409,7 @@ function Augmentation GivePlayerAugmentation(Class<Augmentation> giveClass)
 
 	anAug.bHasIt = True;
 
-	if (anAug.bAlwaysActive)
+	if (anAug.AugmentationType == Aug_Passive)
 	{
 		anAug.bIsActive = True;
 		anAug.GotoState('Active');
@@ -443,7 +431,7 @@ function Augmentation GivePlayerAugmentation(Class<Augmentation> giveClass)
 
 	// Assign hot key to new aug
 	// (must be after before augCount is incremented!)
-   if (!anAug.bAlwaysActive)
+   if (anAug.CanBeActivated())
    {
    if (Level.NetMode == NM_Standalone && anAug.IsA('AugCombatStrength') || anAug.IsA('AugDrone') || anAug.IsA('AugDefense'))
    {
@@ -466,9 +454,9 @@ function Augmentation GivePlayerAugmentation(Class<Augmentation> giveClass)
    else
       anAug.HotKeyNum = anAug.MPConflictSlot + 2;
    }
-	if ((!anAug.bAlwaysActive) && (Player.bHUDShowAllAugs))
+	if ((anAug.CanBeActivated()) && (Player.bHUDShowAllAugs))
 	    Player.AddAugmentationDisplay(anAug);
-    if (!anAug.bAlwaysActive)                                                   //RSD: Otherwise we get passive augs showing up in the radial menu
+    if (anAug.CanBeActivated())                                                   //RSD: Otherwise we get passive augs showing up in the radial menu
         Player.RadialMenuAddAug(anAug);
 
 	return anAug;
@@ -544,12 +532,13 @@ simulated function Float CalcEnergyUse(float deltaTime)
       else if (anAug.IsA('AugPower'))
          PowerAug = anAug;
 
+        //SARGE: TODO: Replace with a generic "EnergyDrainTick" function
         if (Player.carriedDecoration != None)  //CyberP: drain energy when carrying inhuman-heavy objects only //RSD: re-implemented
         {
              if (Player.carriedDecoration.Mass > 60 && anAug.IsA('AugMuscle') && anAug.bHasIt)
                  energyUse += ((20./60) * deltaTime);                           //RSD: Increased from 16 bpm -> 20 bpm (vanilla)
         }
-        if (anAug.bHasIt && anAug.bIsActive && !anAug.bAlwaysActive)            //RSD: Added && !anAug.bAlwaysActive so passive augs can have energy rate listed but with no drain
+        if (anAug.bHasIt && anAug.bIsActive && anAug.CanBeActivated() && anAug.AugmentationType != Aug_Toggle)            //RSD: Added && !anAug.bAlwaysActive so passive augs can have energy rate listed but with no drain
 		{
 			if (!(anAug.IsA('AugDrone') && Player.bSpyDroneSet))
                  energyUse += ((anAug.GetEnergyRate()/60) * deltaTime);         //RSD: No drain for drone aug when on standby
@@ -594,6 +583,7 @@ simulated function Float CalcEnergyUse(float deltaTime)
 	return energyUse;
 }
 
+//Sarge: TODO: Fix this to work generically
 function AutoAugs(bool bTurnOff, bool environ)
 {
 local Augmentation anAug;

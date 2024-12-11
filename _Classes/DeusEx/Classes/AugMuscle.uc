@@ -42,7 +42,9 @@ defaultproperties
      EnergyRate=20.000000
      Icon=Texture'DeusExUI.UserInterface.AugIconMuscle'
      smallIcon=Texture'DeusExUI.UserInterface.AugIconMuscle_Small'
-     bAlwaysActive=True
+     //AugmentationType=Aug_Automatic
+     AugmentationType=Aug_Toggle
+     EnergyReserved=10
      AugmentationName="Microfibral Muscle"
      Description="Muscle strength is amplified with ionic polymeric gel myofibrils that allow the agent to push and lift extraordinarily heavy objects.|n|nTECH ONE: Strength is increased slightly.|n|nTECH TWO: Strength is increased moderately.|n|nTECH THREE: Strength is increased significantly.|n|nTECH FOUR: An agent is inhumanly strong."
      MPInfo="When active, you can pick up large crates.  Energy Drain: Low"

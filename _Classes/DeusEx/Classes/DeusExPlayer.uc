@@ -631,6 +631,8 @@ var globalconfig bool bAugWheelDisableAll;                                      
 
 var globalconfig bool bTrickReloading;											//Sarge: Allow reloading with a full clip.
 
+var localized string EnergyCantReserve;                                         //SARGE: Message when we don't have enough energy to reserve for a togglable augmentation
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -1258,11 +1260,13 @@ function InitializeSubSystems()
 		AugmentationSystem.CreateAugmentations(Self);
 		AugmentationSystem.AddDefaultAugmentations();
 		AugmentationSystem.SetOwner(Self);
+		AugmentationSystem.Setup();
 	}
 	else
 	{
 		AugmentationSystem.SetPlayer(Self);
 		AugmentationSystem.SetOwner(Self);
+		AugmentationSystem.Setup();
 	}
 
 	// install the skill system if not found
@@ -1357,7 +1361,7 @@ function PreTravel()
 	SaveSkillPoints();
 
     if (AugmentationSystem != None && AugmentationSystem.GetAugLevelValue(class'AugVision') != -1.0)
-        AugmentationSystem.DeactivateAll();
+        AugmentationSystem.DeactivateAll(true);
     else if (UsingChargedPickup(class'TechGoggles'))
         foreach AllActors(class'TechGoggles', tech)
             if ((tech.Owner == Self) && tech.bActive)
@@ -1915,7 +1919,7 @@ function DoSaveGame(int saveIndex, optional String saveDesc)
 
     //Placeholder Hackfix
     if (AugmentationSystem != None && AugmentationSystem.GetAugLevelValue(class'AugVision') != -1.0)
-        AugmentationSystem.DeactivateAll();
+        AugmentationSystem.DeactivateAll(true);
     else if (UsingChargedPickup(class'TechGoggles'))
         foreach AllActors(class'TechGoggles', tech)
             if ((tech.Owner == Self) && tech.bActive)
@@ -2149,7 +2153,7 @@ function ShowIntro(optional bool bStartNewGame, optional bool force)
 	bStartNewGameAfterIntro = bStartNewGame;
 
 	// Make sure all augmentations are OFF before going into the intro
-	AugmentationSystem.DeactivateAll();
+	AugmentationSystem.DeactivateAll(true);
 
 	if ((bSkipNewGameIntro || bPrisonStart) && !force)
 	  PostIntro();
@@ -2254,7 +2258,7 @@ function ShowMultiplayerWin( String winnerName, int winningTeam, String Killer, 
 	if (PlayerIsClient())
 	{
 	  if (AugmentationSystem != None)
-		 AugmentationSystem.DeactivateAll();
+		 AugmentationSystem.DeactivateAll(true);
 	}
 }
 
@@ -2877,6 +2881,7 @@ function UpdateDynamicMusic(float deltaTime)
 // MaintainEnergy()
 // ----------------------------------------------------------------------
 
+//SARGE: TODO: Refactor
 function MaintainEnergy(float deltaTime)
 {
 	local Float energyUse;
@@ -4856,6 +4861,19 @@ function int HealPlayer(int baseHealPoints, optional Bool bUseMedicineSkill)
 }
 
 // ----------------------------------------------------------------------
+// GetMaxEnergy()
+// Returns the max energy left after energy reservations
+// ----------------------------------------------------------------------
+
+function float GetMaxEnergy(optional bool trueMax)
+{
+    if (trueMax)
+        return EnergyMax;
+    else
+        return FMax(0.0,EnergyMax - AugmentationSystem.ReservedEnergy);
+}
+
+// ----------------------------------------------------------------------
 // ChargePlayer()
 // ----------------------------------------------------------------------
 
@@ -4863,7 +4881,7 @@ function int ChargePlayer(int baseChargePoints)
 {
 	local int chargedPoints;
 
-	chargedPoints = Min(EnergyMax - Int(Energy), baseChargePoints);
+	chargedPoints = Min(GetMaxEnergy() - Int(Energy), baseChargePoints);
 
 	Energy += chargedPoints;
 
@@ -6813,7 +6831,7 @@ Begin:
 	drugEffectTimer	= 0;
 
     if (AugmentationSystem != None)
-        AugmentationSystem.DeactivateAll(); //CyberP: deactivate augs
+        AugmentationSystem.DeactivateAll(true); //CyberP: deactivate augs
 	// Don't come back to life crouched
     SetCrouch(false,true);
 
@@ -13808,7 +13826,7 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
 	if (damageType == 'NanoVirus')
 	{
         NanoVirusTimer += float(Damage);                                        //RSD: Actually it does, it makes augs unusable for as many seconds as damage taken
-		AugmentationSystem.DeactivateAll();
+		AugmentationSystem.DeactivateAll(true);
 		NanoVirusTicks = 0;                                                     //RSD: Awful hack
 		bNanoVirusSentMessage = false;                                          //RSD: Awful hack
         return;
@@ -14439,8 +14457,12 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 			if (augLevel < 0.0 && Energy > 0.0) //this means we can't have both augs installed, and that for passive to work energy is required. //RSD: Actually it just means active overrides passive
 			{
 				augLevel = AugmentationSystem.GetAugLevelValue(class'AugBallisticPassive');
-				//augLevel = 1.0-(Energy/EnergyMax)*(1.0-augLevel);               //RSD: Now protects proportionally to current energy (up to 20/25/30/35%)
-				augLevel = 1.0 - 0.35*FClamp(Energy/(augLevel*EnergyMax),0.0,1.0);//RSD: Still proportional, but up to 35% protection depending on 100/80/60/40% of your energy bar
+                if (augLevel > 0.0) //SARGE: possible divide by zero here??????
+                {
+                    //augLevel = 1.0-(Energy/EnergyMax)*(1.0-augLevel);               //RSD: Now protects proportionally to current energy (up to 20/25/30/35%)
+                    augLevel = 1.0 - 0.35*FClamp(Energy/(augLevel*GetMaxEnergy()),0.0,1.0);//RSD: Still proportional, but up to 35% protection depending on 100/80/60/40% of your energy bar
+                    //augLevel = 1.0 - 0.35*FClamp((Energy+class'AugBallisticPassive'.default.EnergyReserved)/(augLevel*GetMaxEnergy(true)),0.0,1.0);//SARGE: As above, but also takes into account the energy reserved by the augmentation, and scales off your total max energy, not max after reserves
+                }
 			}
 			//augLevel *= AugmentationSystem.GetAugLevelValue(class'AugBallistic');//RSD: figure out stacking prots later maybe
         }
@@ -14526,7 +14548,7 @@ function Died(pawn Killer, name damageType, vector HitLocation)
 		ExtinguishFire();
 
 	if (AugmentationSystem != None)
-		AugmentationSystem.DeactivateAll();
+		AugmentationSystem.DeactivateAll(true);
 
 	if ((Level.NetMode == NM_DedicatedServer) || (Level.NetMode == NM_ListenServer))
 	  ClientDeath();
@@ -17236,6 +17258,7 @@ defaultproperties
      PrimaryGoalCompleted="Primary Goal Completed"
      SecondaryGoalCompleted="Secondary Goal Completed"
      EnergyDepleted="Bio-electric energy reserves depleted"
+     EnergyCantReserve="Not enough reserve Bio-Energy"
      AddedNanoKey="%s added to Nano Key Ring"
      HealedPointsLabel="Healed %d points"
      HealedPointLabel="Healed %d point"

@@ -12,7 +12,7 @@ var texture icon;
 var int IconWidth;
 var int IconHeight;
 var texture smallIcon;
-var bool bAlwaysActive;
+var bool bAlwaysActive; //SARGE: Unused, but we can't remove it because Augmentation is an intrinsic actor. Use AugmentationType instead.
 var travel bool bBoosted;
 var travel int HotKeyNum;
 var travel Augmentation next;
@@ -75,6 +75,20 @@ var() sound LoopSound;
 // SARGE: Has this aug been added to the augmentation wheel?
 var travel bool bAddedToWheel;
 
+//SARGE: What type of augmentation is this?
+//Added stuff for Toggle augs
+var enum EAugmentationType
+{
+    Aug_Passive,
+    Aug_Active,
+    Aug_Automatic,
+    Aug_Toggle
+} AugmentationType;
+
+var localized String EnergyReserveLabel;
+
+var int EnergyReserved;         //Amount of energy this aug uses when active. Used for Toggled augs.
+
 // ----------------------------------------------------------------------
 // network replication
 // ----------------------------------------------------------------------
@@ -131,6 +145,14 @@ auto state Inactive
     }
 }
 
+// ----------------------------------------------------------------------
+// Setup()
+// Called every time we restart the game, and whenever we install/upgrade an augmentation
+// ----------------------------------------------------------------------
+
+function Setup()
+{
+}
 
 // ----------------------------------------------------------------------
 // Activate()
@@ -145,8 +167,14 @@ function bool CanActivate(out string message)
     	message = Sprintf(player.NanoVirusLabel, int(player.NanoVirusTimer));
     	return false;
     }
+	
+    if (player.Energy < EnergyReserved)
+    {
+        message = player.EnergyCantReserve;
+        return false;
+    }
     
-	if (player.Energy == 0)
+	if (player.Energy == 0 && AugmentationType != Aug_Toggle)
     {
         message = player.EnergyDepleted;
         return false;
@@ -196,11 +224,18 @@ function Activate()
 
 	if (IsInState('Inactive'))
 	{
+        //Reserve energy
+        if (EnergyReserved > 0)
+        {
+            player.AugmentationSystem.ReservedEnergy += EnergyReserved;
+            player.Energy -= EnergyReserved;
+            //player.ClientMessage("Reserved bioenergy is " $ player.AugmentationSystem.ReservedEnergy);
+        }
+
 		// this block needs to be before bIsActive is set to True, otherwise
 		// NumAugsActive counts incorrectly and the sound won't work
-		if (!IsA('AugHeartLung') && !IsA('AugPower'))
-		   Player.PlaySound(ActivateSound, SLOT_None,0.7);
-		if (Player.AugmentationSystem.NumAugsActive() == 0)
+        Player.PlaySound(ActivateSound, SLOT_None,0.7);
+		if (Player.AugmentationSystem.NumAugsActive() == 0 && AugmentationType != Aug_Toggle)
 			Player.AmbientSound = LoopSound;
 
 		bIsActive = True;
@@ -229,16 +264,27 @@ function Deactivate()
 
 	// If the 'bAlwaysActive' flag is set, this aug can't be
 	// deactivated
-	if (bAlwaysActive)
+	if (!CanBeActivated())
 		return;
 
 	if (IsInState('Active'))
 	{
+        //Un-Reserve energy
+        if (EnergyReserved > 0)
+        {
+            player.AugmentationSystem.ReservedEnergy = FMax(player.AugmentationSystem.ReservedEnergy - EnergyReserved,0.0);
+            //player.ClientMessage("Reserved bioenergy is " $ player.AugmentationSystem.ReservedEnergy);
+
+            //Give back half of what we reserved
+            player.Energy += EnergyReserved * 0.5;
+        }
+
+
 		bIsActive = False;
 
 		Player.ClientMessage(Sprintf(AugDeactivated, AugmentationName));
 
-        if (chargeTime > 0)
+        if (chargeTime > 0 && AugmentationType != Aug_Toggle)
             currentChargeTime = chargeTime;
 
         Player.UpdateAugmentationDisplayStatus(Self);
@@ -270,6 +316,8 @@ function bool IncLevel()
 		Deactivate();
 
 	CurrentLevel++;
+
+    Setup();
 
 	Player.ClientMessage(Sprintf(AugNowHave, AugmentationName, CurrentLevel + 1));
 }
@@ -353,8 +401,13 @@ simulated function bool UpdateInfo(Object winObject)
 		winInfo.SetText(Description);
 	}
 
+    // Energy Reserve
+    if (EnergyReserved > 0 && AugmentationType == Aug_Toggle)
+        winInfo.AppendText(winInfo.CR() $ winInfo.CR() $ Sprintf(EnergyReserveLabel, EnergyReserved));
+
 	// Energy Rate
-	winInfo.AppendText(winInfo.CR() $ winInfo.CR() $ Sprintf(EnergyRateLabel, Int(EnergyRate)));
+    if (EnergyRate > 0)
+        winInfo.AppendText(winInfo.CR() $ winInfo.CR() $ Sprintf(EnergyRateLabel, Int(EnergyRate)));
 
 	// Current Level
 	strOut = Sprintf(CurrentLevelLabel, CurrentLevel + 1);
@@ -368,7 +421,7 @@ simulated function bool UpdateInfo(Object winObject)
 	winInfo.AppendText(winInfo.CR() $ winInfo.CR() $ strOut);
 
 	// Always Active?
-	if (bAlwaysActive)
+	if (!CanBeActivated())
 		winInfo.AppendText(winInfo.CR() $ winInfo.CR() $ AlwaysActiveLabel);
 
 	return True;
@@ -390,15 +443,6 @@ simulated function bool IsActive()
 function bool IsCharging()
 {
 	return currentChargeTime > 0.0;
-}
-
-// ----------------------------------------------------------------------
-// IsAlwaysActive()
-// ----------------------------------------------------------------------
-
-simulated function bool IsAlwaysActive()
-{
-	return bAlwaysActive;
 }
 
 // ----------------------------------------------------------------------
@@ -431,6 +475,17 @@ simulated function float GetEnergyRate()
 }
 
 // ----------------------------------------------------------------------
+// CanBeActivated()
+//
+// Returns true for augs that are considered "activatable" in the UI etc
+// ----------------------------------------------------------------------
+
+function bool CanBeActivated()
+{
+    return bHasIt && (AugmentationType == Aug_Active || AugmentationType == Aug_Toggle);
+}
+
+// ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
 defaultproperties
@@ -441,6 +496,7 @@ defaultproperties
      IconHeight=52
      HotKeyNum=-1
      EnergyRateLabel="Energy Rate: %d Units/Minute"
+     EnergyReserveLabel="Energy Reserved: %d Units"
      OccupiesSlotLabel="Occupies Slot: %s"
      AugLocsText(0)="Cranial"
      AugLocsText(1)="Eyes"
@@ -468,4 +524,5 @@ defaultproperties
      NetUpdateFrequency=5.000000
      bAddedToWheel=true;
      chargeTime=1.000000
+     AugmentationType=Aug_Active
 }

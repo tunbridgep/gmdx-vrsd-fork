@@ -1346,8 +1346,8 @@ function Frob(Actor Frobber, Inventory frobWith)
 	  PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
 
 	  player.Energy += 25;
-	  if (player.Energy > player.EnergyMax)
-		 player.Energy = player.EnergyMax;
+	  if (player.Energy > player.GetMaxEnergy())
+		 player.Energy = player.GetMaxEnergy();
 	}
 
     // DEUS_EX AMSD Since we don't have animations for carrying corpses, and since it has no real use in multiplayer,
