@@ -490,6 +490,7 @@ event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
 {
 	local int keyIndex;
 	local bool bKeyHandled;
+    local string KeyName, Alias;
 
 	bKeyHandled = True;
 
@@ -529,6 +530,19 @@ event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
 				bKeyHandled = False;
 		}
 	}
+
+    /*
+    //Check for Secondary key pressed
+    //SARGE: TODO: Implement this when the Secondary Weapon system isn't completely fucked
+    if (!bKeyHandled)
+    {
+        KeyName =   player.ConsoleCommand("KEYNAME "$key );
+        Alias = 	player.ConsoleCommand( "KEYBINDING "$KeyName );
+
+        if ( Alias ~= "ShowScores" && selectedItem != None)
+            player.AssignSecondary(Inventory(selectedItem.GetClientObject()));
+    }
+    */
 
 	if (!bKeyHandled)
 		return Super.VirtualKeyPressed(key, bRepeat);
