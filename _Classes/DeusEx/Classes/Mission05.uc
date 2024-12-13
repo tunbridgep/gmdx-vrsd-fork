@@ -23,10 +23,12 @@ function FirstFrame()
 
 	Super.FirstFrame();
     
+    /*
     //SARGE: Ensure all cameras are set to alarming.
     //For some reason, some were set to bNoAlarm
     foreach AllActors(class'SecurityCamera', SC)
         SC.bNoAlarm = false;
+    */
 
 	if (localURL == "05_NYC_UNATCOMJ12LAB")
 	{
