@@ -12767,7 +12767,7 @@ function bool GetExceptedCode(string code)
 	return code == "CALVO" //Alex Jacobson computer password on the wall next to his computer
         || code == "BIONICMAN" //we get our code as soon as we enter our office, but it takes a little bit. Fix it not working when we should know it
         || code == "INSURGENT" //maggie chows code can only be guessed, never found, but is designed that way.
-        || code == "2167" //Only displayed in a computer message, so we never get a note for it
+        //|| code == "2167" //Only displayed in a computer message, so we never get a note for it //NOW RANDOMISED
         || code == "718" //Can only be guessed based on cryptic information
         || code == "7243" //We are only given 3 digits, need to guess the 4th
         || code == "WYRDRED08" //We are not given the last digit
