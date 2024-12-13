@@ -5,7 +5,7 @@ class SoyFood extends RSDEdible;
 
 function Eat(DeusExPlayer player)
 {
-	PlaySound(sound'EatingChips',SLOT_None,3.0);
+	player.PlaySound(sound'EatingChips',SLOT_None,3.0);
 }
 
 defaultproperties

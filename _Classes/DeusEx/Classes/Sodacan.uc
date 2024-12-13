@@ -13,7 +13,7 @@ function Eat(DeusExPlayer player)
     else
         BurpSound = sound'MaleBurp';
 
-    PlaySound(BurpSound);
+    player.PlaySound(BurpSound);
 }
 
 function postpostbeginplay()

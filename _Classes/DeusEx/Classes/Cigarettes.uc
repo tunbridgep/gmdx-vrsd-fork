@@ -39,7 +39,7 @@ function Eat(DeusExPlayer player)
     else
         CoughSound = sound'MaleCough';
     
-    PlaySound(CoughSound);
+    player.PlaySound(CoughSound);
 
     if (!player.bAddictionSystem)                                        //RSD: Only deal damage without addiction system
     {
