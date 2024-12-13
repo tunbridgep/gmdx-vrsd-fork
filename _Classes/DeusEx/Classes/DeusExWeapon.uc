@@ -5264,6 +5264,9 @@ simulated function bool UpdateInfo(Object winObject)
 			str = str $ "|n" $ AmmoNames[i].Default.ItemName;
     if (!bHandToHand || IsA('WeaponProd'))
 	winInfo.AddAmmoTypesItem(msgInfoAmmo, str);
+    //SARGE: Add Decline Button
+    if (P.IsA('DeusExPlayer') && !DeusExPlayer(P).DeclinedItemsManager.IsDeclined(class))
+		winInfo.AddDeclineButton(class);
 
 	// base damage
 	if (AreaOfEffect == AOE_Cone)
