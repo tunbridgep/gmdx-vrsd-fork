@@ -631,6 +631,12 @@ var globalconfig bool bAugWheelDisableAll;                                      
 
 var globalconfig bool bTrickReloading;											//Sarge: Allow reloading with a full clip.
 
+//Decline Everything
+var travel DeclinedItemsManager declinedItemsManager;                                  //SARGE: Holds declined items.
+
+//Misc Strings
+var localized String DuplicateNanoKey;
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -1250,6 +1256,13 @@ function InitializeSubSystems()
 	// Spawn the Color Manager
 	CreateColorThemeManager();
 	ThemeManager.SetOwner(self);
+
+    if (DeclinedItemsManager == None)
+    {
+        DeclinedItemsManager = Spawn(class'DeclinedItemsManager', Self);
+        DeclinedItemsManager.SetOwner(Self);
+        DeclinedItemsManager.Setup(Self);
+    }
 
 	// install the augmentation system if not found
 	if (AugmentationSystem == None)
@@ -7996,13 +8009,16 @@ function NanoKeyInfo CreateNanoKeyInfo()
 
 function PickupNanoKey(NanoKey newKey)
 {
+    if (KeyRing.HasKey(newKey.KeyID))
+        ClientMessage(Sprintf(DuplicateNanoKey, newKey.Description));
+    else
+        ClientMessage(Sprintf(AddedNanoKey, newKey.Description));
 	KeyRing.GiveKey(newKey.KeyID, newKey.Description);
 	//DEUS_EX AMSD In multiplayer, propagate the key to the client if the server
 	if ((Role == ROLE_Authority) && (Level.NetMode != NM_Standalone))
 	{
 	  KeyRing.GiveClientKey(newKey.KeyID, newKey.Description);
 	}
-	ClientMessage(Sprintf(AddedNanoKey, newKey.Description));
 }
 
 // ----------------------------------------------------------------------
@@ -17298,6 +17314,7 @@ defaultproperties
      SecondaryGoalCompleted="Secondary Goal Completed"
      EnergyDepleted="Bio-electric energy reserves depleted"
      AddedNanoKey="%s added to Nano Key Ring"
+     DuplicateNanoKey="%s not added to Key Ring [Duplicate]"
      HealedPointsLabel="Healed %d points"
      HealedPointLabel="Healed %d point"
      SkillPointsAward="%d skill points awarded"

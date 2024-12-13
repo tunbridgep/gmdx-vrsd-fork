@@ -67,6 +67,8 @@ var travel bool bSearched; //Sarge: Already adjusted the weapons and everything 
 	
 var localized string SearchedString;                                            //SARGE: The string to append to the name when searched.
 var localized string IgnoredString;                                            //SARGE: Appended to searches when we don't pick something up
+var localized string MaxAmmoString;                                            //SARGE: Appended to searches when we can't pick ammo up
+var localized string DeclinedString;                                           //SARGE: Appended to searches when we find an item we've declined
 var localized string msgEmptyS;
 
 // ----------------------------------------------------------------------
@@ -1017,22 +1019,29 @@ function Frob(Actor Frobber, Inventory frobWith)
                 }
                 //== end
 				bPickedItemUp = False;
-                if (item != none && item.IsA('WeaponCombatKnife') && player != none && player.bNoKnives) //RSD: Changed to player, added failsafes
+
+                //DEBUG TEXT
+                //player.ClientMessage("Inventory Item: " $ item);
+
+                if (item != none && player != none && player.declinedItemsManager.IsDeclined(item.Class)) //RSD: Changed to player, added failsafes //SARGE: Changed to the new generic system
                 {
-                 //if (FRand() < 0.85)                                          //RSD: Do it all the time
-                 //{
                     //SARGE: No longer delete knives. Now we just ignore them
-                 //DeleteInventory(item);
-                 //item.Destroy();
-                 item = None;
-                 //}
+                    if (!bSearched)
+                    {
+                        //player.ClientMessage(sprintf(player.InventoryFull,AmmoType.ItemName));
+                        P.ClientMessage(msgSearching @ Item.itemName @ DeclinedString);
+                        bFoundSomething=True;
+                    }
+                    bFoundInvalid=true; 
+                    item = None;
                 }
-				if (item != none && (item.IsA('Ammo') || (item.IsA('WeaponSpiderBotConstructor')) || (item.IsA('WeaponAssaultGunSpider')))) //CyberP: new type weapons exclusive to pawns //RSD: Failsafe
+				else if (item != none && (item.IsA('Ammo') || (item.IsA('WeaponSpiderBotConstructor')) || (item.IsA('WeaponAssaultGunSpider')))) //CyberP: new type weapons exclusive to pawns //RSD: Failsafe
 				{
 					// Only let the player pick up ammo that's already in a weapon
 					DeleteInventory(item);
 					item.Destroy();
-					item = None;
+                    item = nextItem;
+                    continue;
 				}
 				else if (item != none && (item.IsA('DeusExWeapon')) )
 				{
@@ -1166,6 +1175,16 @@ function Frob(Actor Frobber, Inventory frobWith)
                                         item = None;
                                     }
 								}
+                                else
+                                {
+                                    if (!bSearched)
+                                    {
+                                        P.ClientMessage(msgSearching @ AmmoType.itemName @ MaxAmmoString);
+                                        bFoundSomething=True;
+                                    }
+                                    bFoundInvalid=true; 
+                                }
+
 							}
                             else if ((W != None)&&(Weapon(item).AmmoType==none)) //GMDX Fix bug that makes level carcass with weapon just crap out as it has not got spawned ammotype
 							{
@@ -1186,6 +1205,16 @@ function Frob(Actor Frobber, Inventory frobWith)
 									      P.ClientMessage(item.PickupMessage @ item.itemArticle @ item.itemName, 'Pickup');
 									      else
 									         P.ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName, 'Pickup');
+                                    }
+                                    else
+                                    {
+                                        if (!bSearched)
+                                        {
+                                            //player.ClientMessage(sprintf(player.InventoryFull,AmmoType.ItemName));
+                                            P.ClientMessage(msgSearching @ AmmoType.itemName @ MaxAmmoString);
+                                            bFoundSomething=True;
+                                        }
+                                        bFoundInvalid=true; 
                                     }
                                     //Delete grenades
                                     if (W.bDisposableWeapon)
@@ -1706,6 +1735,8 @@ defaultproperties
      ItemName="Dead Body"
      SearchedString="[Searched]"
      IgnoredString="[Not Picked Up]"
+     MaxAmmoString="[Ammo at Maximum]"
+     DeclinedString="[Declined]"
      RemoteRole=ROLE_SimulatedProxy
      LifeSpan=0.000000
      CollisionRadius=20.000000

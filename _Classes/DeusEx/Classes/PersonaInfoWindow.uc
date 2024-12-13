@@ -11,6 +11,8 @@ var PersonaNormalLargeTextWindow winText;			// Last text
 
 var int textVerticalOffset;
 var PersonaActionButtonWindow    buttonUpgradeSecond;                           //RSD
+var PersonaActionButtonWindow    buttonRemoveDecline;
+var PersonaActionButtonWindow    buttonDecline;
 var localized String UpgradeButtonLabel;
 var localized String PurchasedButtonLabel;
 var localized String UnobtainableButtonLabel;
@@ -42,6 +44,9 @@ var PersonaButtonBarWindow winActionButtons[10];
 var PersonaButtonBarWindow winActionButtonsSecondary;
 var PersonaActionButtonWindow buttonUpgrade[10];
 var Window winSkillIconP[10];
+
+var localized string msgDecline;
+var localized string msgRemoveDecline;
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -172,6 +177,7 @@ function bool ButtonActivated( Window buttonPressed )
 	local DeusExPlayer player;
     local int i, index;
     local bool boughtPerk;
+    local class<inventory> declineThis;
 
 	if (Super.ButtonActivated(buttonPressed))
 		return True;
@@ -224,6 +230,22 @@ function bool ButtonActivated( Window buttonPressed )
                    player.ClientMessage(msgAssigned);
                }
 			   break;
+
+            case buttonDecline:
+                declineThis = class<Inventory>(DynamicLoadObject(buttonDecline.tag, class'Class', true));
+                if (declineThis != None)
+                    player.declinedItemsManager.AddDeclinedItem(declineThis);
+                break;
+
+            case buttonRemoveDecline:
+                declineThis = class<Inventory>(DynamicLoadObject(buttonRemoveDecline.tag, class'Class', true));
+                if (declineThis != None)
+                {
+                    player.declinedItemsManager.RemoveDeclinedItem(declineThis);
+                    //SignalRefresh();
+                    AddDeclinedInfoWindow(declineThis);
+                }
+                break;
 
 			default:
 				bHandled = False;
@@ -423,6 +445,63 @@ function AddSecondaryButton(Inventory wep)                                      
    }
 }
 
+function AddDeclineButton(class<Inventory> wep)
+{
+    if (wep != None)
+    {
+        SetText(msgAssign);
+        winActionButtonsSecondary = PersonaButtonBarWindow(winTile.NewChild(Class'PersonaButtonBarWindow'));
+        winActionButtonsSecondary.SetWidth(32); //149
+        winActionButtonsSecondary.FillAllSpace(False);
+        buttonDecline = PersonaActionButtonWindow(winActionButtonsSecondary.NewChild(Class'PersonaActionButtonWindow'));
+        buttonDecline.SetButtonText(msgDecline);
+        buttonDecline.tag = string(wep);
+        AddLine();
+    }
+}
+
+// ----------------------------------------------------------------------
+// SARGE: AddDeclinedInfoWindow()
+// Based off the Ammo Info Window.
+// ----------------------------------------------------------------------
+
+function AddDeclinedInfoWindow(Class<Inventory> invClass)
+{
+	local AlignWindow winAmmo;
+	local PersonaNormalTextWindow winText;
+	local Window winIcon;
+
+	if (invClass != None)
+	{
+		winAmmo = AlignWindow(winTile.NewChild(Class'AlignWindow'));
+		winAmmo.SetChildVAlignment(VALIGN_Top);
+		winAmmo.SetChildSpacing(4);
+
+		// Add icon
+		winIcon = winAmmo.NewChild(Class'Window');
+		winIcon.SetBackground(invClass.default.Icon);
+		winIcon.SetBackgroundStyle(DSTY_Masked);
+		winIcon.SetSize(42, 37);
+		
+        // Add Item Name
+        winText = PersonaNormalTextWindow(winAmmo.NewChild(Class'PersonaNormalTextWindow'));
+		winText.SetWordWrap(False);
+		winText.SetTextMargins(0, 0);
+		winText.SetTextAlignments(HALIGN_Left, VALIGN_Top);
+        winText.SetText(invClass.default.itemName);
+
+        //Add "Remove From List" Button
+        //winActionButtons = PersonaButtonBarWindow(winText.NewChild(Class'PersonaButtonBarWindow'));
+        //winActionButtons.SetWidth(32); //149
+        buttonRemoveDecline = PersonaActionButtonWindow(winTile.NewChild(Class'PersonaActionButtonWindow'));
+        //buttonUpgrade.SetWidth(32);
+        buttonRemoveDecline.SetButtonText(msgRemoveDecline);
+	    buttonRemoveDecline.tag = string(invClass);
+	}
+
+	AddLine();
+}
+
 
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
@@ -440,4 +519,6 @@ defaultproperties
      msgConf="Assign"
      msgAssigned="Secondary Item Assigned"
      msgUnassigned="Secondary Item Unassigned"
+     msgDecline="Add To Decline List"
+     msgRemoveDecline="Remove From Decline List"
 }

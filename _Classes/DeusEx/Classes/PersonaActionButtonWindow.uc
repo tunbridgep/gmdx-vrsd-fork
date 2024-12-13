@@ -3,7 +3,12 @@
 //=============================================================================
 
 class PersonaActionButtonWindow extends PersonaBorderButtonWindow;
+
+//TODO: Remove this, replace with tag
 var perk ButtonPerk;
+
+//SARGE: Allows defining custom tag text for a button we can read later, for identifying buttons
+var string tag;
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 

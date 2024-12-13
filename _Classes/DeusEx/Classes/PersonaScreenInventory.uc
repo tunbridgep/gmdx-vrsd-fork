@@ -51,6 +51,8 @@ var localized String CannotBeDroppedLabel;
 var localized String AmmoInfoText;
 var localized String AmmoTitleLabel;
 var localized String NoAmmoLabel;
+var localized String DeclinedTitleLabel;
+var localized String DeclinedDesc;
 
 var Float lastRefresh;                                                          //RSD
 var Float refreshInterval;                                                      //RSD
@@ -138,6 +140,7 @@ function CreateStatusWindow()
 {
 	winStatus = PersonaStatusLineWindow(winClient.NewChild(Class'PersonaStatusLineWindow'));
 	winStatus.SetPos(337, 243);
+    UpdateDeclinedDisplay();
 }
 
 // ----------------------------------------------------------------------
@@ -551,6 +554,37 @@ event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
 }
 
 // ----------------------------------------------------------------------
+// UpdateDeclinedDisplay()
+//
+// Displays a list of Declined Items when no item is selected.
+// ----------------------------------------------------------------------
+
+function UpdateDeclinedDisplay()
+{
+	local Class<Inventory> invClass;
+    local int i;
+
+    winInfo.Clear();
+
+    if (player.declinedItemsManager.GetDeclinedNumber() == 0)
+        return;
+
+    winInfo.SetTitle(DeclinedTitleLabel);
+    winInfo.SetText(DeclinedDesc);
+    winInfo.AddLine();
+
+    for(i = 0; i < 100;i++)
+    {
+        if (player.declinedItemsManager.declinedTypes[i] != "")
+        {
+            invClass = class<Inventory>(DynamicLoadObject(player.declinedItemsManager.declinedTypes[i], class'Class', true));
+            if (invClass != None)
+                winInfo.AddDeclinedInfoWindow(invClass);
+        }
+    }
+}
+
+// ----------------------------------------------------------------------
 // UpdateAmmoDisplay()
 //
 // Displays a list of ammo inside the info window (when the user clicks
@@ -609,7 +643,7 @@ function SelectInventory(PersonaItemButton buttonPressed)
 	// Don't do extra work.
 	if (buttonPressed != None)
 	{
-		if (selectedItem != buttonPressed)
+		if (!selectedItem.bSelected || buttonPressed != selectedItem)
 		{
 			// Deselect current button
 			if (selectedItem != None)
@@ -630,6 +664,15 @@ function SelectInventory(PersonaItemButton buttonPressed)
 
 			EnableButtons();
 		}
+        //SARGE: Allow deselecting inventory items
+        else
+        {
+            selectedItem.SelectButton(False);
+			ClearSpecialHighlights();
+            //SelectInventory(None);
+            //SignalRefresh();
+            UpdateDeclinedDisplay();
+        }
 	}
 	else
 	{
@@ -802,7 +845,7 @@ function UseSelectedItem()
 		if (inv.IsA('Binoculars'))
 			player.PutInHand(inv);
 
-		inv.Activate();
+        inv.Activate();
 
 		// Check to see if this is a stackable item, and keep track of
 		// the count
@@ -1087,6 +1130,8 @@ function RefreshWindow(float DeltaTime)
             CleanBelt();
         }
     }
+
+    log("Refresh");
 
 
     Super.RefreshWindow(DeltaTime);
@@ -2357,6 +2402,8 @@ defaultproperties
      AmmoInfoText="Click icon to see a list of Ammo."
      AmmoTitleLabel="Ammunition"
      NoAmmoLabel="No Ammo Available"
+     DeclinedTitleLabel="Declined Items"
+     DeclinedDesc="Declined Items will not be picked up from corpses."
      refreshInterval=0.200000
      clientBorderOffsetY=33
      ClientWidth=585
