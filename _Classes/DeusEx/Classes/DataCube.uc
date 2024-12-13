@@ -5,7 +5,7 @@ class DataCube extends InformationDevices;
 
 function bool DarkenScreen()
 {
-    return bRead || textTag == '';
+    return bRead || (textTag == '' && imageClass == None);
 }
 
 exec function UpdateHDTPsettings()
