@@ -176,7 +176,8 @@ function FirstFrame()
             InitializeEnemySwap(1);
         }
 
-        DistributePS20s();
+        DistributeItem(class'WeaponHideAGun',0,2,class'AmmoHideAGun');
+        DistributeItem(class'Flare',1,3);
 
 		flags.SetBool(flagName, True);
 	}
@@ -369,15 +370,15 @@ function SpawnPoint GetSpawnPoint(Name spawnTag, optional bool bRandom)
 	return aPoint;
 }
 
-//Gives PS20s to 3-5 random enemies in the map.
-function DistributePS20s()
+//Gives the specified item to 0-X random enemies in the map.
+function DistributeItem(class<Inventory> itemClass, int minAmount, int maxAmount, optional class<Ammo> ammoClass)
 {
     local int i, j, swapTo;
     local ScriptedPawn actors[50], temp, SP;
-    local int actorCount, given;
+    local int actorCount, toGive, index;
     local Inventory inv;
 
-    //player.ClientMessage("Distributing PS20s...");
+    //player.ClientMessage("Distributing "$itemClass$"...");
 
     foreach AllActors(class'ScriptedPawn', SP)
     {
@@ -395,46 +396,53 @@ function DistributePS20s()
     }
 
     //Now give the first 0-2 PS20s
-    given = Player.Randomizer.GetRandomInt(2);
+    toGive = Player.Randomizer.GetRandomInt(maxAmount - minAmount) + minAmount;
+    player.ClientMessage("  To Give: "$toGive);
+    toGive = MIN(toGive,actorCount);
+    player.ClientMessage("  To Give (capped): "$toGive);
 
-    while (given > 0)
+    for(i = 0;i < actorCount;i++)
     {
-        //First, make sure they don't have one
-        inv = actors[given].Inventory;
+        //No more to give?
+        if (toGive == 0 || i > actorCount)
+            break;
+
+        //First, make sure they don't have one.
+        inv = actors[i].Inventory;
         while (inv != None)
         {
-            if (inv.isA('WeaponHideAGun'))
-                break;
+            if (inv.Class == itemClass)
+                continue;
             inv = inv.Inventory;
         }
-        if (inv != None && inv.IsA('WeaponHideAGun'))
-        {
-            given--;
-            continue;
-        }
-
-        //Spawn a PS20 and some ammo
-        inv = spawn(class'WeaponHideAGun', actors[given]);
+        
+        //Spawn the item and some ammo
+        inv = spawn(itemClass, actors[i]);
         if (inv != None)
         {
-            inv.GiveTo(actors[given]);
-            inv.SetBase(actors[given]);
+            inv.GiveTo(actors[i]);
+            inv.SetBase(actors[i]);
             inv.bHidden = True;
             inv.SetPhysics(PHYS_None);
-            actors[given].AddInventory(inv);
+            actors[i].AddInventory(inv);
+            player.ClientMessage("  Given a "$itemClass$" to "$actors[i]);
         }
-        inv = spawn(class'AmmoHideAGun', actors[given]);
-        if (inv != None)
+        if (ammoClass != None)
         {
-            inv.GiveTo(actors[given]);
-            inv.SetBase(actors[given]);
-            inv.bHidden = True;
-            inv.SetPhysics(PHYS_None);
-            actors[given].AddInventory(inv);
+            inv = spawn(ammoClass, actors[i]);
+            if (inv != None)
+            {
+                inv.GiveTo(actors[i]);
+                inv.SetBase(actors[i]);
+                inv.bHidden = True;
+                inv.SetPhysics(PHYS_None);
+                actors[i].AddInventory(inv);
+                player.ClientMessage("  Given a "$ammoClass$" to "$actors[i]);
+            }
         }
-        actors[given].SwitchToBestWeapon();
-        //Player.ClientMessage("Give " $ actors[given].FamiliarName $ " a PS20");
-        given--;
+        //Player.ClientMessage("Give " $ actors[given].FamiliarName $ " a " $ itemClass);
+        actors[i].SwitchToBestWeapon();
+        toGive--;
     }
 }
 
