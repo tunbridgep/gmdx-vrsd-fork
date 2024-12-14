@@ -8,7 +8,7 @@ class PersonaActionButtonWindow extends PersonaBorderButtonWindow;
 var perk ButtonPerk;
 
 //SARGE: Allows defining custom tag text for a button we can read later, for identifying buttons
-var string tag;
+var string tags[10];
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 

@@ -1260,7 +1260,6 @@ function InitializeSubSystems()
     {
         DeclinedItemsManager = Spawn(class'DeclinedItemsManager', Self);
         DeclinedItemsManager.SetOwner(Self);
-        DeclinedItemsManager.Setup(Self);
     }
 
 	// install the augmentation system if not found

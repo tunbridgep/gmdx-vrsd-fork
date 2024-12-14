@@ -11,7 +11,7 @@ var PersonaNormalLargeTextWindow winText;			// Last text
 
 var int textVerticalOffset;
 var PersonaActionButtonWindow    buttonUpgradeSecond;                           //RSD
-var PersonaActionButtonWindow    buttonRemoveDecline;
+var PersonaActionButtonWindow    buttonRemoveDecline[100];
 var PersonaActionButtonWindow    buttonDecline;
 var localized String UpgradeButtonLabel;
 var localized String PurchasedButtonLabel;
@@ -47,6 +47,8 @@ var Window winSkillIconP[10];
 
 var localized string msgDecline;
 var localized string msgRemoveDecline;
+var localized String DeclinedTitleLabel;
+var localized String DeclinedDesc;
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -232,25 +234,37 @@ function bool ButtonActivated( Window buttonPressed )
 			   break;
 
             case buttonDecline:
-                declineThis = class<Inventory>(DynamicLoadObject(buttonDecline.tag, class'Class', true));
+                declineThis = class<Inventory>(DynamicLoadObject(buttonDecline.tags[0], class'Class', true));
                 if (declineThis != None)
                     player.declinedItemsManager.AddDeclinedItem(declineThis);
-                break;
-
-            case buttonRemoveDecline:
-                declineThis = class<Inventory>(DynamicLoadObject(buttonRemoveDecline.tag, class'Class', true));
-                if (declineThis != None)
-                {
-                    player.declinedItemsManager.RemoveDeclinedItem(declineThis);
-                    //SignalRefresh();
-                    AddDeclinedInfoWindow(declineThis);
-                }
+                winActionButtonsSecondary.Hide();
                 break;
 
 			default:
 				bHandled = False;
 				break;
 		}
+
+        if (!bHandled)
+        {
+            //Handle the decline buttons separately
+            for(i = 0; i < player.declinedItemsManager.GetDeclinedNumber();i++)
+            {
+                if (buttonPressed == buttonRemoveDecline[i])
+                {
+                    declineThis = class<Inventory>(DynamicLoadObject(buttonRemoveDecline[i].tags[0], class'Class', true));
+                    if (declineThis != None)
+                    {
+                        player.declinedItemsManager.RemoveDeclinedItem(declineThis);
+                        AddDeclinedInfoWindow();
+                        return true;
+                        //SignalRefresh();
+                    }
+                }
+            }
+        }
+
+
 
     return bHandled;
 }
@@ -449,13 +463,13 @@ function AddDeclineButton(class<Inventory> wep)
 {
     if (wep != None)
     {
-        SetText(msgAssign);
+        //SetText(DeclinedDesc);
         winActionButtonsSecondary = PersonaButtonBarWindow(winTile.NewChild(Class'PersonaButtonBarWindow'));
         winActionButtonsSecondary.SetWidth(32); //149
         winActionButtonsSecondary.FillAllSpace(False);
         buttonDecline = PersonaActionButtonWindow(winActionButtonsSecondary.NewChild(Class'PersonaActionButtonWindow'));
         buttonDecline.SetButtonText(msgDecline);
-        buttonDecline.tag = string(wep);
+        buttonDecline.tags[0] = string(wep);
         AddLine();
     }
 }
@@ -465,41 +479,58 @@ function AddDeclineButton(class<Inventory> wep)
 // Based off the Ammo Info Window.
 // ----------------------------------------------------------------------
 
-function AddDeclinedInfoWindow(Class<Inventory> invClass)
+function AddDeclinedInfoWindow()
 {
 	local AlignWindow winAmmo;
 	local PersonaNormalTextWindow winText;
 	local Window winIcon;
+	local Class<Inventory> invClass;
+    local int i, num;
+    
+    Clear();
 
-	if (invClass != None)
-	{
-		winAmmo = AlignWindow(winTile.NewChild(Class'AlignWindow'));
-		winAmmo.SetChildVAlignment(VALIGN_Top);
-		winAmmo.SetChildSpacing(4);
+    num = player.declinedItemsManager.GetDeclinedNumber();
+    
+    if (num == 0)
+        return;
 
-		// Add icon
-		winIcon = winAmmo.NewChild(Class'Window');
-		winIcon.SetBackground(invClass.default.Icon);
-		winIcon.SetBackgroundStyle(DSTY_Masked);
-		winIcon.SetSize(42, 37);
-		
-        // Add Item Name
-        winText = PersonaNormalTextWindow(winAmmo.NewChild(Class'PersonaNormalTextWindow'));
-		winText.SetWordWrap(False);
-		winText.SetTextMargins(0, 0);
-		winText.SetTextAlignments(HALIGN_Left, VALIGN_Top);
-        winText.SetText(invClass.default.itemName);
+    SetTitle(DeclinedTitleLabel);
+    SetText(DeclinedDesc);
+    AddLine();
+    
+    for(i = 0; i < ArrayCount(player.declinedItemsManager.declinedTypes);i++)
+    {
+        invClass = class<Inventory>(DynamicLoadObject(player.declinedItemsManager.declinedTypes[i], class'Class', true));
+        if (invClass != None)
+        {
+            winAmmo = AlignWindow(winTile.NewChild(Class'AlignWindow'));
+            winAmmo.SetChildVAlignment(VALIGN_Top);
+            winAmmo.SetChildSpacing(4);
 
-        //Add "Remove From List" Button
-        //winActionButtons = PersonaButtonBarWindow(winText.NewChild(Class'PersonaButtonBarWindow'));
-        //winActionButtons.SetWidth(32); //149
-        buttonRemoveDecline = PersonaActionButtonWindow(winTile.NewChild(Class'PersonaActionButtonWindow'));
-        //buttonUpgrade.SetWidth(32);
-        buttonRemoveDecline.SetButtonText(msgRemoveDecline);
-	    buttonRemoveDecline.tag = string(invClass);
-	}
+            // Add icon
+            winIcon = winAmmo.NewChild(Class'Window');
+            winIcon.SetBackground(invClass.default.Icon);
+            winIcon.SetBackgroundStyle(DSTY_Masked);
+            winIcon.SetSize(42, 37);
+            
+            // Add Item Name
+            winText = PersonaNormalTextWindow(winAmmo.NewChild(Class'PersonaNormalTextWindow'));
+            winText.SetWordWrap(False);
+            winText.SetTextMargins(0, 0);
+            winText.SetTextAlignments(HALIGN_Left, VALIGN_Top);
+            winText.SetText(invClass.default.itemName);
 
-	AddLine();
+            //Add "Remove From List" Button
+            //winActionButtons = PersonaButtonBarWindow(winText.NewChild(Class'PersonaButtonBarWindow'));
+            //winActionButtons.SetWidth(32); //149
+            buttonRemoveDecline[i] = PersonaActionButtonWindow(winTile.NewChild(Class'PersonaActionButtonWindow'));
+            //buttonUpgrade.SetWidth(32);
+            buttonRemoveDecline[i].SetButtonText(msgRemoveDecline);
+            buttonRemoveDecline[i].tags[0] = string(invClass);
+
+            AddLine();
+        }
+    }
 }
 
 
@@ -521,4 +552,6 @@ defaultproperties
      msgUnassigned="Secondary Item Unassigned"
      msgDecline="Add To Decline List"
      msgRemoveDecline="Remove From Decline List"
+     DeclinedTitleLabel="Declined Items"
+     DeclinedDesc="Declined Items will not be picked up from corpses."
 }

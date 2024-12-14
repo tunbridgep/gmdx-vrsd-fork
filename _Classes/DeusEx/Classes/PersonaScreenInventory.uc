@@ -51,8 +51,6 @@ var localized String CannotBeDroppedLabel;
 var localized String AmmoInfoText;
 var localized String AmmoTitleLabel;
 var localized String NoAmmoLabel;
-var localized String DeclinedTitleLabel;
-var localized String DeclinedDesc;
 
 var Float lastRefresh;                                                          //RSD
 var Float refreshInterval;                                                      //RSD
@@ -561,27 +559,7 @@ event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
 
 function UpdateDeclinedDisplay()
 {
-	local Class<Inventory> invClass;
-    local int i;
-
-    winInfo.Clear();
-
-    if (player.declinedItemsManager.GetDeclinedNumber() == 0)
-        return;
-
-    winInfo.SetTitle(DeclinedTitleLabel);
-    winInfo.SetText(DeclinedDesc);
-    winInfo.AddLine();
-
-    for(i = 0; i < 100;i++)
-    {
-        if (player.declinedItemsManager.declinedTypes[i] != "")
-        {
-            invClass = class<Inventory>(DynamicLoadObject(player.declinedItemsManager.declinedTypes[i], class'Class', true));
-            if (invClass != None)
-                winInfo.AddDeclinedInfoWindow(invClass);
-        }
-    }
+    winInfo.AddDeclinedInfoWindow();
 }
 
 // ----------------------------------------------------------------------
@@ -612,7 +590,7 @@ function UpdateAmmoDisplay()
 		{
 			ammo = DeusExAmmo(inv);
 
-			if ((ammo != None) && (ammo.bShowInfo))
+			if ((ammo != None))// && (ammo.bShowInfo))
 			{
 				winInfo.AddAmmoInfoWindow(ammo, player.bShowAmmoDescriptions);
 				ammoCount++;
@@ -2402,8 +2380,6 @@ defaultproperties
      AmmoInfoText="Click icon to see a list of Ammo."
      AmmoTitleLabel="Ammunition"
      NoAmmoLabel="No Ammo Available"
-     DeclinedTitleLabel="Declined Items"
-     DeclinedDesc="Declined Items will not be picked up from corpses."
      refreshInterval=0.200000
      clientBorderOffsetY=33
      ClientWidth=585
