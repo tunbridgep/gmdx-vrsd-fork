@@ -637,10 +637,10 @@ function UpdateBioEnergyBar()
 	energyPercent = 100.0 * (player.Energy / player.GetMaxEnergy());
 	
     maxEnergy = player.GetMaxEnergy();
-	actualMaxEnergy = player.EnergyMax;
+	actualMaxEnergy = player.GetMaxEnergy(true);
 	
     if (maxEnergy != actualMaxEnergy)
-        text = Sprintf(BarStringRes,int(player.Energy),int(player.GetMaxEnergy()),int(energyPercent),int(actualMaxEnergy - maxEnergy));
+        text = Sprintf(BarStringRes,int(player.Energy),int(player.GetMaxEnergy()),int(energyPercent),int(player.AugmentationSystem.ReservedEnergy));
     else
         //text = Sprintf(BarString,int(player.Energy),int(player.GetMaxEnergy()),int(energyPercent));
         text = Sprintf(BarString,int(energyPercent));

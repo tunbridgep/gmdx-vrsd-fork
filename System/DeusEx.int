@@ -2230,7 +2230,7 @@ UnfamiliarName="Seagull"
 
 [AugPower]
 AugmentationName="Power Recirculator (Passive)"
-Description="Power consumption for all active augmentations is reduced by polyanilene circuits, plugged directly into cell membranes, that allow nanite particles to interconnect electronically without leaving their host cells.|n|nTECH ONE: Power drain of active augmentations is reduced slightly (5%).|n|nTECH TWO: Power drain of active augmentations is reduced moderately (20%).|n|nTECH THREE: Power drain of active augmentations is reduced significantly (35%).|n|nTECH FOUR: Power drain of active augmentations is halved (50%)."
+Description="Power consumption for all active augmentations is reduced by polyanilene circuits, plugged directly into cell membranes, that allow nanite particles to interconnect electronically without leaving their host cells. Additionally, battery capacity is increased, allowing for more concurrent systems to be used.|n|nTECH ONE: Power drain of active augmentations is reduced slightly (5%) and total energy is increased by 10%.|n|nTECH TWO: Power drain of active augmentations is reduced moderately (20%) and total energy is increased by 20%.|n|nTECH THREE: Power drain of active augmentations is reduced significantly (35%) and total energy is increased by 30%.|n|nTECH FOUR: Power drain of active augmentations is halved (50%) and total energy is increased by 40%."
 MPInfo="Reduces the cost of other augs.  Automatically used when needed.  Energy Drain: None"
 
 [BarrelAmbrosia]
