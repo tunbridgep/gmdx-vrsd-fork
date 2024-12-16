@@ -156,6 +156,9 @@ Sarge's Changes since Beta 2.2:
             - Blast Padding (NEW ADVANCED): An agent's ballistic vest is fitted with a protective layer that reduces susceptibility to self-damage from explosive and plasma weaponry (-75%).
             - Chameleon (NEW MASTER): An agent modifies thermoptic camo output that enables the user to pass through laser alarms undetected.
             - Thermal Imaging (REWORKED MASTER): An agent modifies tech goggle functionality, implementing short-ranged sonar scanning which enables the user to see potential threats through solid material.
+        - Heavy Perks:
+            - Heavily Tweaked (NEW ADVANCED): An agent is able to attach scopes and laser sights to the GEP gun, enabling laser guidance and fly-by-wire capabilities.
+            - Mobile Ordnance (NEW MASTER): An agent is able to modify the chassis of flame weapons, stripping away unnecessary elements. Flamethrowers are reduced in size by 3 inventory spaces.
     - Addiction System Rework
         - Alcohol no longer heals for 5 points. Instead, it temporarily gives you 5 torso HP (along with it's usual 5 extra torso Max-HP) while in effect, which is removed afterwards. This health removal cannot kill the player.
         - Alcohol no longer adds to fullness when the addiction system is enabled
