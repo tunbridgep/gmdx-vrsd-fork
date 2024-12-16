@@ -451,7 +451,15 @@ function bool ButtonActivated( Window buttonPressed )
 
 event bool ListRowActivated(window list, int rowId)
 {
-	UpgradeSkill();
+	local DeusExRootWindow root;
+	root = DeusExRootWindow(player.rootWindow);
+	if (root != None)
+	{
+		if (root.IsKeyDown(IK_Shift) || root.IsKeyDown(IK_Ctrl) || root.IsKeyDown(IK_Alt))
+            DowngradeSkill();
+        else
+            UpgradeSkill();
+    }
 	return True;
 }
 

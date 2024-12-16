@@ -958,7 +958,7 @@ function GetTargetReticleColor( Actor target, out Color xcolor )
 
 	if ( target.IsA('ScriptedPawn') )
 	{
-		if (DeusExWeapon(Player.Weapon)!=none && (DeusExWeapon(Player.Weapon).bLasing || DeusExWeapon(Player.Weapon).bAimingDown)) //RSD: Don't change hitmarker color if lasing or ADS
+		if ((DeusExWeapon(Player.Weapon)!=none && DeusExWeapon(Player.Weapon).bLasing)) //RSD: Don't change hitmarker color if lasing or ADS //SARGE: Just lasing for now, aiming down is now used for scopes
         	xcolor = colWhite;
         else if (ScriptedPawn(target).GetPawnAllianceType(Player) == ALLIANCE_Hostile) //RSD: Now else if
 			xcolor = colRed;

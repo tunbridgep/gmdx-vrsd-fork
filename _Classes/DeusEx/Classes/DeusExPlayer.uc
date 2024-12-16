@@ -402,8 +402,6 @@ var globalconfig bool bLightingAccessibility;       //SARGE: Changes lighting in
 
 var globalconfig bool bSubtitlesCutscene;			// SARGE: Allow Subtitles for Third-Person cutscenes. Should generally be left on
 
-var globalconfig bool bAlwaysShowBloom;             //SARGE: Always show weapon bloom
-
 var bool bPrisonStart;                              //SARGE: Alternate Start
 
 //Radial Aug Menu
@@ -421,13 +419,17 @@ var string HDTPMeshTex[8];
 
 //GMDX: CyberP & dasraiser
 //SAVEOUT
-var globalconfig int QuickSaveIndex; //out of some number
-var globalconfig int QuickSaveTotal;//this number
+//var globalconfig int QuickSaveIndex; //out of some number
+//var globalconfig int QuickSaveTotal;//this number
 var globalconfig bool bTogAutoSave;   //CyberP: enable/disable autosave
-var globalconfig int iQuickSaveLast;//index to last saved file
-var travel int QuickSaveLast;
-var travel int QuickSaveCurrent;
-var string     QuickSaveName;
+var globalconfig int iQuickSaveMax;//Maximum number of quicksaves
+var globalconfig int iAutoSaveMax;//Maximum number of autosaves
+var globalconfig int iLastSave;//index to last save. Used for quickloading.
+var globalconfig int iAutosaveSlots[50];//Array of autosave slots
+var globalconfig int iQuicksaveSlots[50];//Array of quicksave slots
+var localized string AutoSaveGameTitle; //Autosave names
+//var travel int QuickSaveLast;
+//var travel int QuickSaveCurrent;
 //hardcore mode
 var travel bool bHardCoreMode; //if set disable save game options.
 //misc
@@ -567,6 +569,9 @@ var bool bNanoVirusSentMessage;                                                 
 var localized String NanoVirusLabel;                                            //RSD: For deactivating augs from scrambler grenades
 var globalconfig bool bRestrictedMetabolism;                                    //RSD: Enables restricted eating and halved withdrawal delay
 
+//SARGE: Allow blocking the next weapon selection. Used by dialog number keys feature.
+var float fBlockBeltSelection;
+
 //GAMEPLAY MODIFIERS
 
 /*var travel bool bRandomizeCratesGeneralTool;
@@ -614,8 +619,6 @@ const DRUG_TOBACCO = 0;
 const DRUG_ALCOHOL = 1;
 const DRUG_CRACK = 2;
 
-var bool autosave;                                                              //Sarge: Autosave tells the Quicksave function to make an autosave instead
-
 var travel bool bLastRun;                                                       //Sarge: Stores our last running state
                                                                                 
 //Sarge: Allow Enhanced Weapon Offsets
@@ -633,7 +636,12 @@ var globalconfig bool bAugWheelDisableAll;                                      
 
 var globalconfig bool bTrickReloading;											//Sarge: Allow reloading with a full clip.
 
+//Crosshair Settings
 var globalconfig bool bFullAccuracyCrosshair;                                   //SARGE: If false, disable the "Accuracy Crosshairs" when at 100% accuracy
+
+var globalconfig bool bAlwaysShowBloom;                                         //SARGE: Always show weapon bloom
+
+var globalconfig bool bShowEnergyBarPercentages;                                //SARGE: If true, show the oxygen and bioenergy percentages below the bars.
 
 //////////END GMDX
 
@@ -1077,16 +1085,6 @@ function PostBeginPlay()
 		bCheatsEnabled = False;
 	HDTP();
 
-// SAVEOUT
-
-	//QuickSaveCurrent=int(ConsoleCommand("get DeusEx.JCDentonMale QuickSaveIndex"));
-	//QuickSaveLast=int(ConsoleCommand("get DeusEx.JCDentonMale iQuickSaveLast"));
-
-	QuickSaveCurrent=QuickSaveIndex;
-	QuickSaveLast=iQuickSaveLast;
-
-	log("MYCHK::"@QuickSaveCurrent@"::"@QuickSaveLast);
-
 	RefreshLeanKeys();
     RefreshMantleKey();
     RefreshAugWheelKey();                                                       //RSD: Hold aug wheel
@@ -1523,7 +1521,7 @@ event TravelPostAccept()
 	}
 
 	// make sure the player's eye height is correct
-	BaseEyeHeight = CollisionHeight - (GetDefaultCollisionHeight() - Default.BaseEyeHeight);
+	BaseEyeHeight = CollisionHeight - (GetBaseEyeHeight() - Default.BaseEyeHeight);
 
 	//GMDX
 
@@ -1873,7 +1871,7 @@ exec function LoadGame(int saveIndex)
 }
 
 //Sarge: Move Save Checks to a single function, rather than being everywhere
-function bool CanSave(optional bool allowHardcore, optional bool checkAutosave)
+function bool CanSave(optional bool allowHardcore)
 {
 	local DeusExLevelInfo info;
 
@@ -1887,7 +1885,7 @@ function bool CanSave(optional bool allowHardcore, optional bool checkAutosave)
 	// 4) We're interpolating (playing outtro)
 	// 5) A datalink is playing
 	// 6) We're in a multiplayer game
-    // 7) If autosaving, that we're within the autosave time limit
+    // 7) SARGE: We're in a conversation
 
     if ((bHardCoreMode || bRestrictedSaving) && !allowHardcore) //Hardcore Mode
         return false;
@@ -1904,17 +1902,30 @@ function bool CanSave(optional bool allowHardcore, optional bool checkAutosave)
     if (Level.Netmode != NM_Standalone) //Multiplayer Game
 	   return false;
 
-    if ((bRestrictedSaving || bHardCoreMode) && checkAutosave && autosaveRestrictTimer > saveTime) //Autosave timer not expired
+    if (InConversation())
         return false;
 
     return true; 
 }
 
+function GameDirectory GetSaveGameDirectory()
+{
+	local GameDirectory saveDir;
+
+	// Create our Map Directory class
+	saveDir = CreateGameDirectoryObject();
+	saveDir.SetDirType(saveDir.EGameDirectoryTypes.GD_SaveGames);
+	saveDir.GetGameDirectory();
+
+	return saveDir;
+}
+
 //We can't modify the native function, so do this here, and then call it
-function DoSaveGame(int saveIndex, optional String saveDesc)
+function int DoSaveGame(int saveIndex, optional String saveDesc)
 {
     local TechGoggles tech;
 	local DeusExRootWindow root;
+	
 	root = DeusExRootWindow(rootWindow);
 
     //Placeholder Hackfix
@@ -1924,60 +1935,111 @@ function DoSaveGame(int saveIndex, optional String saveDesc)
         foreach AllActors(class'TechGoggles', tech)
             if ((tech.Owner == Self) && tech.bActive)
                 tech.Activate();
-	
-    root.hide();
+    
+    //root.hide();
+    root.GenerateSnapshot(True);
     SaveGame(saveIndex, saveDesc);
-    root.show();
+    root.HideSnapshot();
+    //root.show();
 
-    //Sarge: actually, always do this
-    //if (autosave) 
-    //{
-        autosave = false;
-        bResetAutosaveTimer = true;
-    //}
-
+    ConsoleCommand("set DeusExPlayer iLastSave " $ saveIndex);
+    return saveIndex;
 }
 
-function PerformAutoSave()
+function int FindAutosaveSlot()
 {
-    autosave = true;
-    QuickSave();
-    autosave = false;
+    local int slot, i, last;
+	local GameDirectory saveDir;
+
+    last = iAutoSaveMax - 1;
+
+    if (last <= 0)
+        return -1; //If no slots, Use the standard quicksave slot
+
+    //pick out highest index
+    slot = iAutoSaveSlots[last];
+    
+    //If it's zero, get a new index and add it to the array
+    if (slot == 0)
+    {
+        saveDir = GetSaveGameDirectory();
+		slot=saveDir.GetNewSaveFileIndex();
+    }
+
+    //Now "rotate" the array by moving everything up (and wrapping)
+    for (i = last; i > 0;i--)
+        iAutoSaveSlots[i] = iAutoSaveSlots[i - 1];
+
+    //Set slot 0 to our current slot
+    iAutoSaveSlots[0] = slot;
+    
+    CriticalDelete(saveDir);
+
+    return slot;
+}
+
+function int FindQuicksaveSlot()
+{
+    local int slot, i, last;
+	local GameDirectory saveDir;
+
+    last = iQuickSaveMax - 1;
+
+    if (last <= 0)
+        return -1; //If no slots, Use the standard quicksave slot
+
+    //pick out highest index
+    slot = iQuicksaveSlots[last];
+    
+    //If it's zero, get a new index and add it to the array
+    if (slot == 0)
+    {
+        saveDir = GetSaveGameDirectory();
+		slot=saveDir.GetNewSaveFileIndex();
+    }
+
+    //Now "rotate" the array by moving everything up (and wrapping)
+    for (i = last; i > 0;i--)
+        iQuicksaveSlots[i] = iQuicksaveSlots[i - 1];
+
+    //Set slot 0 to our current slot
+    iQuicksaveSlots[0] = slot;
+	
+    CriticalDelete(saveDir);
+
+    return slot;
+}
+
+function bool PerformAutoSave(bool allowHardcore)
+{
+    if (!CanSave(allowHardcore))
+        return false;
+    
+    //Only allow autosaving if we have autosaves turned on,
+    //or if saving restrictions is enabled.
+    if (bTogAutoSave || bRestrictedSaving || bHardCoreMode)
+    {
+        DoSaveGame(FindAutosaveSlot(), sprintf(AutoSaveGameTitle,TruePlayerName));
+        return true;
+    }
+    return false;
 }
 
 // ----------------------------------------------------------------------
 // QuickSave()
 // ----------------------------------------------------------------------
-
 exec function QuickSave()
 {
-	local DeusExLevelInfo info;
+    Quicksave2(sprintf(QuickSaveGameTitle,TruePlayerName));
+}
 
-	info = GetLevelInfo();
-
-    if (!autosave && !CanSave())
+//Can't add an optional to the above function, so we use a separate one instead
+function QuickSave2(string SaveString, optional bool allowHardcore)
+{
+    if (!CanSave(allowHardcore))
         return;
 
-//SAVEOUT
-	ConsoleCommand("set DeusEx.JCDentonMale QuickSaveIndex "$QuickSaveCurrent);
-//   QuickSaveIndex=QuickSaveCurrent;
-
-	if (QuickSaveCurrent>=QuickSaveTotal)
-	  QuickSaveCurrent=0;
-	QuickSaveCurrent++;
-
-	QuickSaveLast=-(10+QuickSaveCurrent);
-	if (!autosave)
-	   QuickSaveName=sprintf(QuickSaveGameTitle,QuickSaveCurrent);
-	else
-       QuickSaveName=sprintf("Auto Save%d",QuickSaveCurrent);
-	log("MYCHK:DX_QuickSave: ,"@QuickSaveName@" ,Last:"@QuickSaveLast@" ,Current:"@QuickSaveCurrent);
-	DoSaveGame(QuickSaveLast, QuickSaveName);
-	ConsoleCommand("set DeusEx.JCDentonMale iQuickSaveLast "$QuickSaveLast);
-
-//	default.iQuickSaveLast=QuickSaveLast;
-
-//original	SaveGame(-1, QuickSaveGameTitle);
+	DoSaveGame(FindQuicksaveSlot(), SaveString);
 }
 
 // ----------------------------------------------------------------------
@@ -1986,9 +2048,19 @@ exec function QuickSave()
 
 exec function QuickLoad()
 {
+	local GameDirectory saveDir;
+	local DeusExSaveInfo info;
+
+    saveDir = GetSaveGameDirectory();
+
 	//Don't allow in multiplayer.
 	if (Level.Netmode != NM_Standalone)
 	  return;
+
+    //Confirm the save exists before trying to do anything
+    info = saveDir.GetSaveInfo(int(ConsoleCommand("get DeusExPlayer iLastSave")));
+    if (info == None)
+        return;
 
 	if (DeusExRootWindow(rootWindow) != None && !IsInState('dying'))
 		DeusExRootWindow(rootWindow).ConfirmQuickLoad();
@@ -2005,10 +2077,7 @@ function QuickLoadConfirmed()
 	if (Level.Netmode != NM_Standalone)
 	  return;
 
-	//log("MYCHK:DX_QuickLoadConfirmed: "@QuickSaveLast);
-//SAVEOUT
-LoadGame(QuickSaveLast); //changed so now selects last saved game, even if from menu
-//original	LoadGame(-1);
+    LoadGame(int(ConsoleCommand("get DeusExPlayer iLastSave"))); //changed so now selects last saved game, even if from menu
 }
 
 // ----------------------------------------------------------------------
@@ -2791,9 +2860,9 @@ function UpdateDynamicMusic(float deltaTime)
 	}
 	else if (IsInState('Conversation'))
 	{
-	    //if (info != none)
-	    //   if (info.bBarOrClub)
-        //      return;  //CyberP: no dynamic music in clubs and bars.
+	    if (info != none)
+	       if (info.bBarOrClub)
+              return;  //CyberP: no dynamic music in clubs and bars.
 		if (musicMode != MUS_Conversation)
 		{
 			// save our place in the ambient track
@@ -5252,7 +5321,7 @@ function bool SetBasedPawnSize(float newRadius, float newHeight)
 	}
 
 	centerDelta    = vect(0, 0, 1)*(newHeight-oldHeight);
-	deltaEyeHeight = GetDefaultCollisionHeight() - Default.BaseEyeHeight;
+	deltaEyeHeight = GetBaseEyeHeight() - Default.BaseEyeHeight;
 
 	if ( Level.NetMode != NM_Standalone )
 	{
@@ -5337,9 +5406,14 @@ function bool ResetBasedPawnSize()
 
 function float GetDefaultCollisionHeight()
 {
+	return (Default.CollisionHeight-4.5);
+}
+
+function float GetBaseEyeHeight()
+{
 	if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
 	{
-		return Default.CollisionHeight-9.0;
+		return Default.CollisionHeight;
 	}
 	return (Default.CollisionHeight-4.5);
 }
@@ -5914,7 +5988,7 @@ state PlayerWalking
                if (!bOnLadder && FRand() < 0.7)
                {
                     if (FlagBase.GetBool('LDDPJCIsFemale')) //Sarge: Lay-D Denton support
-                        PlaySound(Sound(DynamicLoadObject("FJCGasp", class'Sound', false)), SLOT_None, 0.8);
+                        PlaySound(Sound(DynamicLoadObject("FemJC.FJCGasp", class'Sound', false)), SLOT_None, 0.8);
                     else
                         PlaySound(sound'MaleBreathe', SLOT_None,0.8);
                }
@@ -7578,6 +7652,7 @@ exec function ParseRightClick()
 	// ParseRightClick deals with things in the WORLD
 	//
 	// Precedence:
+    // - Reload last save if dead
     // - Unscope/Unzoom currently held object
     // - Park Spy Drone
 	// - Pickup highlighted Inventory
@@ -7595,6 +7670,12 @@ exec function ParseRightClick()
 	local Vector loc;
 	local DeusExWeapon ExWep;
     local DeusExRootWindow root;
+
+    //SARGE: Add quickloading if pressing right click while dead.
+    if (IsInState('dying') && !bDeadLoad)
+    {
+        QuickLoad();
+    }
 
     if (RestrictInput())
 		return;
@@ -10924,6 +11005,14 @@ exec function ActivateBelt(int objectNum)
 {
 	local DeusExRootWindow root;
 
+    //SARGE: When holding the number keys in dialog, we will select a weapon
+    //upon finishing the conversation. Ignore the weapon change command.
+    if (fBlockBeltSelection > 0)
+    {
+        fBlockBeltSelection = 0;
+        return;
+    }
+
 	if (RestrictInput())
 		return;
 
@@ -11781,6 +11870,10 @@ ignores SeePlayer, HearNoise, Bump;
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
+
+        //Update belt selection timer
+        if (fBlockBeltSelection > 0)
+            fBlockBeltSelection -= deltaTime;
 	}
 
 	function LoopHeadConvoAnim()
@@ -16663,23 +16756,6 @@ function MultiplayerTick(float DeltaTime)
 	}
 	RepairInventory();
 	lastRefreshTime = 0;
-
-
-    //Update autosave restriction timer
-    if (bResetAutosaveTimer)
-    {
-	    autosaveRestrictTimer = saveTime + autosaveRestrictTimerDefault;
-        bResetAutosaveTimer = false;
-        //ClientMessage("reset autosaveRestrictTimer");
-    }
-
-    
-    /*
-    autosaveTimeRemaining = autosaveRestrictTimer - saveTime;
-    if (int(autosaveTimeRemaining % 60) == 0)
-        ClientMessage((int(autosaveTimeRemaining) / 60) @ "minutes until autosave");
-     */
-
 }
 
 // ----------------------------------------------------------------------
@@ -17171,7 +17247,6 @@ defaultproperties
      seed=-1;
      bNumberedDialog=True
      bCreditsInDialog=True
-     autosaveRestrictTimerDefault=600.0
      TruePlayerName="JC Denton"
      CombatDifficulty=1.000000
      SkillPointsTotal=5000
@@ -17244,7 +17319,8 @@ defaultproperties
      HealedPointsLabel="Healed %d points"
      HealedPointLabel="Healed %d point"
      SkillPointsAward="%d skill points awarded"
-     QuickSaveGameTitle="Quick Save"
+     QuickSaveGameTitle="Quick Save [%s]"
+     AutoSaveGameTitle="Auto Save [%s]"
      WeaponUnCloak="Weapon drawn... Uncloaking"
      TakenOverString="I've taken over the "
      HeadString="Head"
@@ -17266,7 +17342,8 @@ defaultproperties
      bHDTP_Gunther=False
      bHDTP_Paul=False
      bHDTP_Nico=False
-     QuickSaveTotal=10
+     iQuickSaveMax=5
+     iAutoSaveMax=3
      bTogAutoSave=True
      bColorCodedAmmo=True
      bHardcoreAI3=True
@@ -17366,4 +17443,5 @@ defaultproperties
      bCutsceneFOVAdjust=true
      iFrobDisplayStyle=1
      bFullAccuracyCrosshair=true;
+     bShowEnergyBarPercentages=true;
 }

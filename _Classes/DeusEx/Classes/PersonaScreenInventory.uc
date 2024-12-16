@@ -184,13 +184,17 @@ function CreateInfoWindow()
 
 function CreateObjectBelt()
 {
-    if (invBelt != None)
-        CriticalDelete(invBelt);
-
-	invBelt = PersonaInventoryObjectBelt(NewChild(Class'PersonaInventoryObjectBelt'));
-	invBelt.SetWindowAlignments(HALIGN_Right, VALIGN_Bottom, 0, 0);
-	invBelt.SetInventoryWindow(Self);
-//	invBelt.AskParentForReconfigure();
+    if (invBelt == None)
+	{
+		invBelt = PersonaInventoryObjectBelt(NewChild(Class'PersonaInventoryObjectBelt'));
+		invBelt.SetWindowAlignments(HALIGN_Right, VALIGN_Bottom, 0, 0);
+		invBelt.SetInventoryWindow(Self);
+	}
+	else
+	{
+		invBelt.CopyObjectBeltInventory();
+		invBelt.AskParentForReconfigure();
+	}
 }
 
 // ----------------------------------------------------------------------
