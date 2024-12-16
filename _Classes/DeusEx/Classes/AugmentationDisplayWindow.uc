@@ -1174,12 +1174,6 @@ function DrawTargetAugmentation(GC gc)
             }
         }
 
-    //Sarge: Set crosshair colour if we're placing a grenade on a wall
-    if (weapon != None && weapon.bNearWall && Player.bWallPlacementCrosshair)
-        crossColor = colBlue;
-    else
-        crossColor = colWhite;
-    
     //SARGE: Moved this out to a new function, and made sure to always show it if enabled
 	if ( target != None && !target.bHidden //)                                  //RSD
     	&& !(target.IsA('ScriptedPawn') && ScriptedPawn(target).bCloakOn && !(bVisionActive && visionLevel >= 1))) //RSD: no targeting info if NPCs are cloaked with no player infravision
