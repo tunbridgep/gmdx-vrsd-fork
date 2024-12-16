@@ -1145,9 +1145,11 @@ function Frob(Actor Frobber, Inventory frobWith)
                             }
 
 							// Don't bother with this is there's no ammo
-							else if ((Weapon(item).AmmoType != None) && (Weapon(item).AmmoType.AmmoAmount > 0))
+							else if ((Weapon(item).AmmoType != None) && (Weapon(item).PickupAmmoCount > 0))
 							{
 								AmmoType = Ammo(player.FindInventoryType(Weapon(item).AmmoName));
+                                    
+                                //P.ClientMessage("in ammo searching code: " $ Weapon(item).AmmoType.AmmoAmount);
 
                                 if ((AmmoType != None) && (AmmoType.AmmoAmount < DeusExPlayer(GetPlayerPawn()).GetAdjustedMaxAmmo(AmmoType)) && Weapon(item).AmmoType.AmmoAmount > 0) //RSD: Replaced AmmoType.MaxAmmo with adjusted
 								{
@@ -1155,22 +1157,26 @@ function Frob(Actor Frobber, Inventory frobWith)
                                     AmmoCount = AmmoType.AmmoAmount;                     //RSD
                                     AmmoType.AddAmmo(Weapon(item).PickupAmmoCount);
                                     intj = AmmoType.AmmoAmount - AmmoCount;              //RSD
-                                    AddReceivedItem(player, AmmoType, intj);             //RSD: Fixed amount
+                                    if (intj > 0)
+                                    {
+                                        AddReceivedItem(player, AmmoType, intj);             //RSD: Fixed amount
 
-									// Update the ammo display on the object belt
-									player.UpdateAmmoBeltText(AmmoType);
+                                        // Update the ammo display on the object belt
+                                        player.UpdateAmmoBeltText(AmmoType);
 
-									// if this is an illegal ammo type, use the weapon name to print the message
-									if (AmmoType.PickupViewMesh == Mesh'TestBox')
-										P.ClientMessage(item.PickupMessage @ item.itemArticle @ item.itemName, 'Pickup');
-									else
-										P.ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName $ " (" $ intj $ ")", 'Pickup'); //RSD: Added intj
+                                        // if this is an illegal ammo type, use the weapon name to print the message
+                                        if (AmmoType.PickupViewMesh == Mesh'TestBox')
+                                            P.ClientMessage(item.PickupMessage @ item.itemArticle @ item.itemName, 'Pickup');
+                                        else
+                                            P.ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName $ " (" $ intj $ ")", 'Pickup'); //RSD: Added intj
 
-									// Mark it as 0 to prevent it from being added twice
-									Weapon(item).AmmoType.AmmoAmount-=intj;
-									Weapon(item).PickupAmmoCount-=intj;
-                                    //SARGE: Set weapons maximum clip size to however much left over ammo it has.
-                                    DeusExWeapon(item).ClipCount = 0;
+                                        // Mark it as 0 to prevent it from being added twice
+                                        //P.ClientMessage("intj is " $ intj);
+                                        Weapon(item).AmmoType.AmmoAmount -= intj;
+                                        Weapon(item).PickupAmmoCount -= intj;
+                                        //SARGE: Set weapons maximum clip size to however much left over ammo it has.
+                                        DeusExWeapon(item).ClipCount -= intj;
+                                    }
                                     /*
                                     //Delete grenades
                                     if (W.bDisposableWeapon)
@@ -1183,9 +1189,10 @@ function Frob(Actor Frobber, Inventory frobWith)
 								}
                                 else
                                 {
+                                    //P.ClientMessage("in ammo searching code ex");
                                     if (!bSearched && (DeusExWeapon(item) == None || !DeusExWeapon(item).bDisposableWeapon))
                                     {
-                                        P.ClientMessage(msgSearching @ AmmoType.itemName @ MaxAmmoString);
+                                        P.ClientMessage(msgSearching @ AmmoType.itemName @ "(" $ Weapon(item).PickupAmmoCount $ ")"  @ MaxAmmoString);
                                         bFoundSomething=True;
                                     }
                                     bFoundInvalid=true; 
@@ -1197,6 +1204,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 								AmmoType = Ammo(player.FindInventoryType(Weapon(item).AmmoName));
 								if (AmmoType!=none && W.AmmoType.Class != class'DeusEx.AmmoNone')
 								{
+                                    //P.ClientMessage("in ammo searching code 2");
 									addedAmount=-AmmoType.AmmoAmount;
 									AmmoType.AddAmmo(Weapon(item).PickupAmmoCount);
 									addedAmount+=AmmoType.AmmoAmount;
@@ -1205,8 +1213,8 @@ function Frob(Actor Frobber, Inventory frobWith)
                                         bFoundSomething = True;
 										player.UpdateAmmoBeltText(AmmoType);
 										AddReceivedItem(player, AmmoType,addedAmount);
-										Weapon(item).PickupAmmoCount-=addedAmount;
-                                        DeusExWeapon(item).ClipCount = 0;
+										Weapon(item).PickupAmmoCount-=AddedAmount;
+                                        DeusExWeapon(item).ClipCount-=AddedAmount;
 										if (AmmoType.PickupViewMesh == Mesh'TestBox')
 									      P.ClientMessage(item.PickupMessage @ item.itemArticle @ item.itemName, 'Pickup');
 									      else
@@ -1217,7 +1225,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                         if (!bSearched && (DeusExWeapon(item) == None || !DeusExWeapon(item).bDisposableWeapon))
                                         {
                                             //player.ClientMessage(sprintf(player.InventoryFull,AmmoType.ItemName));
-                                            P.ClientMessage(msgSearching @ AmmoType.itemName @ MaxAmmoString);
+                                            P.ClientMessage(msgSearching @ AmmoType.itemName @ "(" $ Weapon(item).PickupAmmoCount $ ")"  @ MaxAmmoString);
                                             bFoundSomething=True;
                                         }
                                         bFoundInvalid=true; 
@@ -1256,7 +1264,8 @@ function Frob(Actor Frobber, Inventory frobWith)
                                     if (!bSearched)
                                     {
                                         bFoundSomething = True;
-                                        P.ClientMessage(msgSearching @ Item.itemName @ IgnoredString);
+                                        if (!W.bDisposableWeapon)
+                                            P.ClientMessage(msgSearching @ Item.itemName @ IgnoredString);
                                     }
                                     bFoundInvalid = true;
                                 }
@@ -1404,9 +1413,11 @@ function Frob(Actor Frobber, Inventory frobWith)
 							}
 							else
 							{
+                                /*
 								DeleteInventory(item);
 								item.Destroy();
 								item = None;
+                                */
 							}
 						}
 					}
