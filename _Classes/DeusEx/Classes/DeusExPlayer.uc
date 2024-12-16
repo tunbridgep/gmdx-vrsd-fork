@@ -1482,6 +1482,7 @@ event TravelPostAccept()
 	{
 		// set the player correctly
 		AugmentationSystem.SetPlayer(Self);
+		AugmentationSystem.Setup();
 		AugmentationSystem.RefreshAugDisplay();
 	}
 
@@ -14454,13 +14455,7 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 
 			if (augLevel < 0.0 && Energy > 0.0) //this means we can't have both augs installed, and that for passive to work energy is required. //RSD: Actually it just means active overrides passive
 			{
-				augLevel = AugmentationSystem.GetAugLevelValue(class'AugBallisticPassive');
-                if (augLevel > 0.0) //SARGE: possible divide by zero here??????
-                {
-                    //augLevel = 1.0-(Energy/EnergyMax)*(1.0-augLevel);               //RSD: Now protects proportionally to current energy (up to 20/25/30/35%)
-                    augLevel = 1.0 - 0.35*FClamp(Energy/(augLevel*GetMaxEnergy()),0.0,1.0);//RSD: Still proportional, but up to 35% protection depending on 100/80/60/40% of your energy bar
-                    //augLevel = 1.0 - 0.35*FClamp((Energy+class'AugBallisticPassive'.default.EnergyReserved)/(augLevel*GetMaxEnergy(true)),0.0,1.0);//SARGE: As above, but also takes into account the energy reserved by the augmentation, and scales off your total max energy, not max after reserves
-                }
+                augLevel = AugBallisticPassive(AugmentationSystem.GetAug(class'AugBallisticPassive')).GetDamageMod();
 			}
 			//augLevel *= AugmentationSystem.GetAugLevelValue(class'AugBallistic');//RSD: figure out stacking prots later maybe
         }

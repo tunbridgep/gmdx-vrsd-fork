@@ -54,6 +54,8 @@ function Setup()
     while (aug != None)
     {
         aug.Setup();
+        if (aug.bIsActive)
+            aug.GotoState('Active');
         aug = aug.next;
     }
 }
@@ -138,14 +140,6 @@ simulated function RefreshAugDisplay()
 		// First make sure the aug is active if need be                         //RSD: Combined only necessary reworks from Lorenz's version
 		if (anAug.CanBeActivated())
 		{
-			if (anAug.bIsActive)
-			{
-                //SARGE: TODO: Why is this here?
-				//anAug.GotoState('Active');
-
-				// Now, if this is an aug that isn't *always* active, then
-				// make sure it's in the augmentation display
-			}
 			if ((player.bHUDShowAllAugs) || (anAug.bIsActive))
 			{
                  player.AddAugmentationDisplay(anAug);

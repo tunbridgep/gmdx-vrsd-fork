@@ -382,16 +382,6 @@ function UsingMedBot(bool bNewUsingMedbot)
 }
 
 // ----------------------------------------------------------------------
-// GetReserveEnergyAmount()
-// Returns the reserve energy amount, factoring in the bonus from Power Recirculator and the penalty from Synthetic Heart.
-// ----------------------------------------------------------------------
-
-function int GetReserveEnergyAmount()
-{
-
-}
-
-// ----------------------------------------------------------------------
 // UpdateInfo()
 // ----------------------------------------------------------------------
 

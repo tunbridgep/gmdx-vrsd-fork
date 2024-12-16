@@ -26,18 +26,17 @@ function Deactivate()
 function Setup()
 {
     super.Setup();
-    if (CurrentLevel > 0)
+    if (CurrentLevel > 0 && AugmentationType == Aug_Passive)
     {
         AugmentationType=Aug_Toggle;
         EnergyReserved=5;
+        bActive = false;
     }
-    /*
     else
     {
         AugmentationType=Aug_Passive;
         EnergyReserved=0;
     }
-    */
 }
 
 defaultproperties
