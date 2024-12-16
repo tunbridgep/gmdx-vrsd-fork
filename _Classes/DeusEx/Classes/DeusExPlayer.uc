@@ -1519,7 +1519,7 @@ event TravelPostAccept()
 	}
 
 	// make sure the player's eye height is correct
-	BaseEyeHeight = CollisionHeight - (GetDefaultCollisionHeight() - Default.BaseEyeHeight);
+	BaseEyeHeight = CollisionHeight - (GetBaseEyeHeight() - Default.BaseEyeHeight);
 
 	//GMDX
 
@@ -5248,7 +5248,7 @@ function bool SetBasedPawnSize(float newRadius, float newHeight)
 	}
 
 	centerDelta    = vect(0, 0, 1)*(newHeight-oldHeight);
-	deltaEyeHeight = GetDefaultCollisionHeight() - Default.BaseEyeHeight;
+	deltaEyeHeight = GetBaseEyeHeight() - Default.BaseEyeHeight;
 
 	if ( Level.NetMode != NM_Standalone )
 	{
@@ -5333,9 +5333,14 @@ function bool ResetBasedPawnSize()
 
 function float GetDefaultCollisionHeight()
 {
+	return (Default.CollisionHeight-4.5);
+}
+
+function float GetBaseEyeHeight()
+{
 	if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
 	{
-		return Default.CollisionHeight-9.0;
+		return Default.CollisionHeight;
 	}
 	return (Default.CollisionHeight-4.5);
 }
