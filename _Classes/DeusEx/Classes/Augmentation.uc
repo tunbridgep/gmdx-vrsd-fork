@@ -77,17 +77,31 @@ var travel bool bAddedToWheel;
 
 //SARGE: What type of augmentation is this?
 //Added stuff for Toggle augs
-var enum EAugmentationType
+enum EAugmentationType
 {
     Aug_Passive,
     Aug_Active,
     Aug_Automatic,
     Aug_Toggle
-} AugmentationType;
+};
+
+var travel EAugmentationType AugmentationType;
+
+//Appends (Active) etc at the end of each title
+var localized String ActiveLabel;
+var localized String AutomaticLabel;
+var localized String ToggleLabel;
+var localized String PassiveLabel;
+
+//Type Descriptions, at the bottom of each augmentation
+var localized String TypeDescriptorPassive;
+var localized String TypeDescriptorActive;
+var localized String TypeDescriptorToggle;
+var localized String TypeDescriptorAutomatic;
 
 var localized String EnergyReserveLabel;
 
-var int EnergyReserved;         //Amount of energy this aug uses when active. Used for Toggled augs.
+var travel int EnergyReserved;         //Amount of energy this aug uses when active. Used for Toggled augs.
 
 // ----------------------------------------------------------------------
 // network replication
@@ -152,6 +166,7 @@ auto state Inactive
 
 function Setup()
 {
+    //log("Aug Setup: " $ GetCurrentLevel());
 }
 
 // ----------------------------------------------------------------------
@@ -168,13 +183,13 @@ function bool CanActivate(out string message)
     	return false;
     }
 	
-    if (player.Energy < EnergyReserved)
+    if (player.Energy < GetAdjustedEnergyReserve())
     {
         message = player.EnergyCantReserve;
         return false;
     }
     
-	if (player.Energy == 0 && AugmentationType != Aug_Toggle)
+	if (player.Energy == 0 && !IsToggleAug())
     {
         message = player.EnergyDepleted;
         return false;
@@ -191,7 +206,7 @@ function bool CanActivate(out string message)
 
 function string GetChargingMessage()
 {
-    return Sprintf(AugRecharging, AugmentationName);
+    return Sprintf(AugRecharging, GetName());
 }
 
 function Activate()
@@ -224,23 +239,18 @@ function Activate()
 
 	if (IsInState('Inactive'))
 	{
-        //Reserve energy
-        if (EnergyReserved > 0)
-        {
-            player.AugmentationSystem.ReservedEnergy += EnergyReserved;
-            player.Energy -= EnergyReserved;
-            //player.ClientMessage("Reserved bioenergy is " $ player.AugmentationSystem.ReservedEnergy);
-        }
+        //Deduct Reserve energy
+        if (GetAdjustedEnergyReserve() > 0)
+            player.Energy -= GetAdjustedEnergyReserve();
 
 		// this block needs to be before bIsActive is set to True, otherwise
 		// NumAugsActive counts incorrectly and the sound won't work
-        Player.PlaySound(ActivateSound, SLOT_None,0.7);
-		if (Player.AugmentationSystem.NumAugsActive() == 0 && AugmentationType != Aug_Toggle)
+		if (Player.AugmentationSystem.NumAugsActive() == 0 && !IsToggleAug())
 			Player.AmbientSound = LoopSound;
 
 		bIsActive = True;
 
-		Player.ClientMessage(Sprintf(AugActivated, AugmentationName));
+		Player.ClientMessage(Sprintf(AugActivated, GetName()));
 
 		if (Player.bHUDShowAllAugs)
 			Player.UpdateAugmentationDisplayStatus(Self);
@@ -269,22 +279,19 @@ function Deactivate()
 
 	if (IsInState('Active'))
 	{
-        //Un-Reserve energy
+        //Give back half of what we reserved
+        //SARGE: TODO: Store this so we don't get weirdness with installing heart/whatever
+        /*
         if (EnergyReserved > 0)
-        {
-            player.AugmentationSystem.ReservedEnergy = FMax(player.AugmentationSystem.ReservedEnergy - EnergyReserved,0.0);
-            //player.ClientMessage("Reserved bioenergy is " $ player.AugmentationSystem.ReservedEnergy);
-
-            //Give back half of what we reserved
-            player.Energy += EnergyReserved * 0.5;
-        }
+            player.Energy += GetReserveEnergyAmount() * 0.5;
+        */
 
 
 		bIsActive = False;
 
-		Player.ClientMessage(Sprintf(AugDeactivated, AugmentationName));
+		Player.ClientMessage(Sprintf(AugDeactivated, GetName()));
 
-        if (chargeTime > 0 && AugmentationType != Aug_Toggle)
+        if (chargeTime > 0)
             currentChargeTime = chargeTime;
 
         Player.UpdateAugmentationDisplayStatus(Self);
@@ -294,8 +301,7 @@ function Deactivate()
 
 		if (Player.AugmentationSystem.NumAugsActive() == 0)
 			Player.AmbientSound = None;
-        if (!IsA('AugHeartLung') && !IsA('AugPower'))
-		   Player.PlaySound(DeactivateSound, SLOT_None,0.7);
+		Player.PlaySound(DeactivateSound, SLOT_None,0.7);
 		GotoState('Inactive');
 	}
 }
@@ -308,7 +314,7 @@ function bool IncLevel()
 {
 	if ( !CanBeUpgraded() )
 	{
-		Player.ClientMessage(Sprintf(AugAlreadyHave, AugmentationName));
+		Player.ClientMessage(Sprintf(AugAlreadyHave, GetName()));
 		return False;
 	}
 
@@ -319,7 +325,7 @@ function bool IncLevel()
 
     Setup();
 
-	Player.ClientMessage(Sprintf(AugNowHave, AugmentationName, CurrentLevel + 1));
+	Player.ClientMessage(Sprintf(AugNowHave, GetName(), CurrentLevel + 1));
 }
 
 // ----------------------------------------------------------------------
@@ -376,6 +382,16 @@ function UsingMedBot(bool bNewUsingMedbot)
 }
 
 // ----------------------------------------------------------------------
+// GetReserveEnergyAmount()
+// Returns the reserve energy amount, factoring in the bonus from Power Recirculator and the penalty from Synthetic Heart.
+// ----------------------------------------------------------------------
+
+function int GetReserveEnergyAmount()
+{
+
+}
+
+// ----------------------------------------------------------------------
 // UpdateInfo()
 // ----------------------------------------------------------------------
 
@@ -389,25 +405,25 @@ simulated function bool UpdateInfo(Object winObject)
 		return False;
 
 	winInfo.Clear();
-	winInfo.SetTitle(AugmentationName);
+	winInfo.SetTitle(GetName());
 
 	if (bUsingMedbot)
 	{
 		winInfo.SetText(Sprintf(OccupiesSlotLabel, AugLocsText[AugmentationLocation]));
-		winInfo.AppendText(winInfo.CR() $ winInfo.CR() $ Description);
+		winInfo.AppendText(winInfo.CR() $ winInfo.CR() $ GetDescription());
 	}
 	else
 	{
-		winInfo.SetText(Description);
+		winInfo.SetText(GetDescription());
 	}
 
     // Energy Reserve
     if (EnergyReserved > 0 && AugmentationType == Aug_Toggle)
-        winInfo.AppendText(winInfo.CR() $ winInfo.CR() $ Sprintf(EnergyReserveLabel, EnergyReserved));
+        winInfo.AppendText(winInfo.CR() $ winInfo.CR() $ Sprintf(EnergyReserveLabel, Int(GetAdjustedEnergyReserve())));
 
 	// Energy Rate
     if (EnergyRate > 0)
-        winInfo.AppendText(winInfo.CR() $ winInfo.CR() $ Sprintf(EnergyRateLabel, Int(EnergyRate)));
+        winInfo.AppendText(winInfo.CR() $ winInfo.CR() $ Sprintf(EnergyRateLabel, Int(GetAdjustedEnergyRate())));
 
 	// Current Level
 	strOut = Sprintf(CurrentLevelLabel, CurrentLevel + 1);
@@ -420,9 +436,20 @@ simulated function bool UpdateInfo(Object winObject)
 
 	winInfo.AppendText(winInfo.CR() $ winInfo.CR() $ strOut);
 
-	// Always Active?
+	// Always Active? //SARGE: Replaced with aug description string, see below
+    /*
 	if (!CanBeActivated())
 		winInfo.AppendText(winInfo.CR() $ winInfo.CR() $ AlwaysActiveLabel);
+    */
+
+    winInfo.AppendText(winInfo.CR() $ winInfo.CR());
+    switch (AugmentationType)
+    {
+        case Aug_Passive: winInfo.AppendText(TypeDescriptorPassive); break;
+        case Aug_Active: winInfo.AppendText(TypeDescriptorActive); break;
+        case Aug_Toggle: winInfo.AppendText(TypeDescriptorToggle); break;
+        case Aug_Automatic: winInfo.AppendText(TypeDescriptorAutomatic); break;
+    }
 
 	return True;
 }
@@ -471,7 +498,84 @@ simulated function int GetCurrentLevel()
 
 simulated function float GetEnergyRate()
 {
-	return energyRate;
+    return EnergyRate;
+}
+
+// ----------------------------------------------------------------------
+// CanDrainEnergy()
+//
+// Allows the individual augs to override when their energy is used
+// ----------------------------------------------------------------------
+
+simulated function bool CanDrainEnergy()
+{
+    return CanBeActivated() && !IsToggleAug();
+}
+
+// ----------------------------------------------------------------------
+// GetAdjustedEnergyRate()
+//
+// Gets the actual rate of energy use for an augmentation, factoring in bonuses and penalties.
+// SARGE: This was multiplicative for recirc and heart, in that order.
+// So a 20 energy aug with level 3 recirc (-35%) and level 1 heart (+40%) would
+// cost 18.2 energy (20 * 0.65 * 1.4) which seemed unintented.
+// Replaced it with an additive bonus/penalty.
+// ----------------------------------------------------------------------
+
+function float GetAdjustedEnergyRate()
+{    
+    local Augmentation heart, recirc;
+    local float total, bonus, penalty, mult;
+
+    heart = Player.AugmentationSystem.FindAugmentation(class'AugHeartLung');
+    recirc = Player.AugmentationSystem.FindAugmentation(class'AugPower');
+
+    //Heart Penalty
+    if (heart.bHasIt)
+        penalty = heart.LevelValues[heart.CurrentLevel];
+
+    //recirc bonus
+    if (recirc.bHasIt)
+        bonus = 1.0 - recirc.LevelValues[recirc.CurrentLevel];
+
+    if (penalty > bonus)
+        mult = penalty - bonus;
+    else
+        mult = bonus - penalty;
+
+    //player.clientMessage("mult: " $ mult $ ", penalty: " $ penalty $ ", bonus: " $ bonus);
+
+    return GetEnergyRate() * mult;
+}
+
+// ----------------------------------------------------------------------
+// GetAdjustedEnergyReserve()
+//
+// Gets the actual energy reserve amount, factoring in bonuses and penalties.
+// ----------------------------------------------------------------------
+
+function float GetAdjustedEnergyReserve()
+{    
+    local Augmentation heart, recirc;
+    local float bonus, penalty, mult;
+
+    heart = Player.AugmentationSystem.FindAugmentation(class'AugHeartLung');
+    recirc = Player.AugmentationSystem.FindAugmentation(class'AugPower');
+
+    //Heart Penalty
+    if (heart.bHasIt)
+        penalty = heart.LevelValues[heart.CurrentLevel];
+
+    //recirc bonus
+    if (recirc.bHasIt)
+        bonus = 1.0 - recirc.LevelValues[recirc.CurrentLevel];
+
+    if (penalty > bonus)
+        mult = penalty - bonus;
+    else
+        mult = bonus - penalty;
+
+    return EnergyReserved * mult;
 }
 
 // ----------------------------------------------------------------------
@@ -482,7 +586,58 @@ simulated function float GetEnergyRate()
 
 function bool CanBeActivated()
 {
-    return bHasIt && (AugmentationType == Aug_Active || AugmentationType == Aug_Toggle);
+    return bHasIt && (AugmentationType == Aug_Active || IsToggleAug());
+}
+
+// ----------------------------------------------------------------------
+// IsToggleAug()
+//
+// Automatic and Toggle Augs behave very similarly, this functionality groups their behaviour
+// ----------------------------------------------------------------------
+
+function bool IsToggleAug()
+{
+    return AugmentationType == Aug_Toggle || AugmentationType == Aug_Automatic;
+}
+
+// ----------------------------------------------------------------------
+// GetName()
+//
+// Gets the Augmentation name, followed by the aug type, such as "(Automatic)"
+// ----------------------------------------------------------------------
+
+function string GetName()
+{
+    local string suffix;
+
+    switch (AugmentationType)
+    {
+        case Aug_Passive:
+            suffix = PassiveLabel;
+            break;
+        case Aug_Active:
+            suffix = ActiveLabel;
+            break;
+        case Aug_Automatic:
+            suffix = AutomaticLabel;
+            break;
+        case Aug_Toggle:
+            suffix = ToggleLabel;
+            break;
+    }
+
+    return AugmentationName @ "(" $ suffix $ ")";
+}
+
+// ----------------------------------------------------------------------
+// GetDescription()
+//
+// Gets the Augmentation description, allowing augmentations to modify their own descriptions.
+// ----------------------------------------------------------------------
+
+function string GetDescription()
+{
+    return Description;
 }
 
 // ----------------------------------------------------------------------
@@ -516,6 +671,14 @@ defaultproperties
      CanUpgradeLabel="(Can Upgrade)"
      CurrentLevelLabel="Current Level: %d"
      MaximumLabel="(Maximum)"
+     ActiveLabel="Active"
+     AutomaticLabel="Automatic"
+     ToggleLabel="Toggle"
+     PassiveLabel="Passive"
+     TypeDescriptorPassive="Passive Augmentations are always active and use no bioelectrical energy."
+     TypeDescriptorActive="Active Augmentations use bioelectrical energy at a standard rate while activated."
+     TypeDescriptorToggle="Toggled Augmentations reserve an amount of bioelectrical energy while active, but use no energy to function. The reserve amount is lost upon deactivation."
+     TypeDescriptorAutomatic="Automatic Augmentations can be activated with no bioelectrical energy cost. While active, bioelectrical energy is drained based on specific circumstances."
      ActivateSound=Sound'DeusExSounds.Augmentation.AugActivate'
      DeActivateSound=Sound'DeusExSounds.Augmentation.AugDeactivate'
      LoopSound=Sound'DeusExSounds.Augmentation.AugLoop'

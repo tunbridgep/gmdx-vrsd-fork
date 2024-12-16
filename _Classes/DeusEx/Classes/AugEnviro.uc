@@ -5,7 +5,6 @@ class AugEnviro extends Augmentation;
 
 var float mpAugValue;
 var float mpEnergyDrain;
-var Localized string AugmentationName2;
 
 state Active
 {
@@ -36,7 +35,6 @@ defaultproperties
 {
      mpAugValue=0.100000
      mpEnergyDrain=20.000000
-     AugmentationName2="Environmental Resistance (Automatic)"
      EnergyRate=20.000000
      Icon=Texture'DeusExUI.UserInterface.AugIconEnviro'
      smallIcon=Texture'DeusExUI.UserInterface.AugIconEnviro_Small'

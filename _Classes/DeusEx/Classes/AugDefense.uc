@@ -50,7 +50,9 @@ state Active
 		}
 
         //DEUS_EX AMSD Exported to function call for duplication in multiplayer.
-        minproj = FindNearestProjectile();
+        
+        if (player.Energy > GetAdjustedEnergyRate())
+            minproj = FindNearestProjectile();
             
 		// if we have a valid projectile, send it to the aug display window
 		if (minproj != None)
@@ -64,6 +66,7 @@ state Active
                 minproj.bAggressiveExploded = True;
                 minproj.aggressiveExploder = Player;
 				minproj.Explode(minproj.Location, vect(0,0,1));
+                player.Energy -= GetAdjustedEnergyRate();
 				Player.PlaySound(sound'ProdFire', SLOT_None,,,, 2.0);
 			}
             
@@ -128,6 +131,8 @@ simulated function DeusExProjectile FindNearestProjectile()
 
         //SARGE: Dirty hack to prevent scripted grenades from triggering it
         bValidProj = bValidProj && (!proj.IsA('GasGrenade') || !GasGrenade(proj).bScriptedGrenade);
+        
+        bValidProj = bValidProj && (!proj.IsA('ThrownProjectile') || !ThrownProjectile(proj).bProximityTriggered);
 
       if (bValidProj)
       {
@@ -219,9 +224,11 @@ defaultproperties
 {
      mpAugValue=500.000000
      mpEnergyDrain=35.000000
-     EnergyRate=40.000000
+     EnergyRate=5.000000 //Was 40 when Active, now per projectile
+     EnergyRateLabel="Energy Rate: %d Units/Projectile"
      Icon=Texture'DeusExUI.UserInterface.AugIconDefense'
      smallIcon=Texture'DeusExUI.UserInterface.AugIconDefense_Small'
+     AugmentationType=Aug_Automatic
      AugmentationName="Aggressive Defense System"
      Description="Aerosol nanoparticles are released upon the detection of objects fitting the electromagnetic threat profile of missiles and grenades; these nanoparticles will prematurely detonate such objects prior to reaching the agent. The particles will additionally shape the detonation away from the agent, resulting in a significant reduction in damage from detonated objects.|n|nTECH ONE: The range at which incoming rockets and grenades are detonated is short, and damage is reduced slightly.|n|nTECH TWO: The range at which detonation occurs is increased slightly and damage is reduced by a small amount.|n|nTECH THREE: The range at which detonation occurs is increased moderately and damage is reduced by a moderate amount.|n|nTECH FOUR: Rockets and grenades are detonated almost before they are fired and damage is reduces significantly."
      MPInfo="When active, enemy rockets detonate when they get close, doing reduced damage.  Some large rockets may still be close enough to do damage when they explode.  Energy Drain: Low"

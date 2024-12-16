@@ -25,16 +25,19 @@ function Deactivate()
 //Set to Toggle when we have more than 1 level
 function Setup()
 {
+    super.Setup();
     if (CurrentLevel > 0)
     {
         AugmentationType=Aug_Toggle;
         EnergyReserved=5;
     }
+    /*
     else
     {
         AugmentationType=Aug_Passive;
         EnergyReserved=0;
     }
+    */
 }
 
 defaultproperties

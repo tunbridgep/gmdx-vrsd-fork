@@ -7,7 +7,6 @@ var float mult, pct;
 
 var float mpAugValue;
 var float mpEnergyDrain;
-var localized string AugmentationName2;
 
 /*state Active                                                                  //RSD: Aqualung no longer boosts max stamina/breath, just drain/regen rate
 {
@@ -58,7 +57,6 @@ defaultproperties
 {
      mpAugValue=240.000000
      mpEnergyDrain=10.000000
-     AugmentationName2="Aqualung (Automatic)"
      EnergyRate=0.000000
      Icon=Texture'DeusExUI.UserInterface.AugIconAquaLung'
      smallIcon=Texture'DeusExUI.UserInterface.AugIconAquaLung_Small'

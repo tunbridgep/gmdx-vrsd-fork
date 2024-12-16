@@ -13,6 +13,11 @@ var bool bTimerEarly;                                                           
 var const localized string ReconstructionMessage;
 var const localized string GroundedMessage;
 
+simulated function bool CanDrainEnergy()
+{
+    return !player.bSpyDroneSet;
+}
+
 function string GetChargingMessage()
 {
     return Sprintf(ReconstructionMessage, int(currentChargeTime));

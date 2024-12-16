@@ -3515,13 +3515,6 @@ exec function ActivateAugmentation(int num)
 	if (RestrictInput())
 		return;
 
-	if (Energy == 0)
-	{
-		ClientMessage(EnergyDepleted);
-		PlaySound(AugmentationSystem.FirstAug.DeactivateSound, SLOT_None);
-		return;
-	}
-
 	if (AugmentationSystem != None)
 		AugmentationSystem.ActivateAugByKey(num);
 }
@@ -4867,12 +4860,15 @@ function int HealPlayer(int baseHealPoints, optional Bool bUseMedicineSkill)
 
 function float GetMaxEnergy(optional bool trueMax)
 {
-    local float bonus;
-    bonus = (AugmentationSystem.GetClassLevel(class'AugPower') + 1) * 10;
+    local int max;
+    max = EnergyMax - AugmentationSystem.CalcEnergyReserve();
+
+    if (Energy > max)
+        Energy = max;
+
     if (trueMax)
-        return EnergyMax + bonus;
-    else
-        return FMax(0.0,EnergyMax + bonus - AugmentationSystem.ReservedEnergy);
+        return EnergyMax;
+    return FMax(0.0,max);
 }
 
 // ----------------------------------------------------------------------

@@ -76,9 +76,19 @@ var Localized string overviewLabel;
 var Localized string activeLabel;
 var Localized string passiveLabel;
 var Localized string automaticLabel;
+var Localized string toggleLabel;
 
 var Localized string BarString;
 var Localized string BarStringRes;
+
+//SARGE: UnrealScript sucks and doesn't let us access enums from other classes
+enum EAugmentationType
+{
+    Aug_Passive,
+    Aug_Active,
+    Aug_Automatic,
+    Aug_Toggle
+};
 
 //LDDP, 10/28/21: Store this assessment for later.
 var bool bFemale;
@@ -247,9 +257,10 @@ function CreateInfoWindow()
     winInfo.SetText(" " $ overviewLabel);
     winInfo.AddLine();
 	winInfo.SetText(" " $ AugsString $ string(GetAugCount()));
-	winInfo.SetText(" " $ activeLabel @ GetActiveType());
-	winInfo.SetText(" " $ passiveLabel @ GetPassiveType());
-	winInfo.SetText(" " $ automaticLabel @ GetAutomaticType());
+	winInfo.SetText(" " $ activeLabel @ GetAugsByType(Aug_Active));
+	winInfo.SetText(" " $ passiveLabel @ GetAugsByType(Aug_Passive));
+	winInfo.SetText(" " $ automaticLabel @ GetAugsByType(Aug_Automatic));
+	winInfo.SetText(" " $ toggleLabel @ GetAugsByType(Aug_Toggle));
 	//winInfo.bStylization2 = False;
     //winInfo.bStylization3 = True;
     winInfo.AddLine();
@@ -257,7 +268,7 @@ function CreateInfoWindow()
     winInfo.AddLine();
     //winInfo.SetText("          " $ "Circuit Activity");
 	maxEnergy = player.GetMaxEnergy();
-	actualMaxEnergy = player.EnergyMax;
+	actualMaxEnergy = player.GetMaxEnergy(true);
 	if (maxEnergy != actualMaxEnergy)
 		winInfo.SetText(" " $ BioString $ int(player.Energy) $ "/" $ int(maxEnergy) $ "(" $ int(actualMaxEnergy - maxEnergy) $ " Reserved )" $ CR());
 	else
@@ -310,9 +321,10 @@ local int timeRem;
     winInfo.SetText(" " $ overviewLabel);
     winInfo.AddLine();
 	winInfo.SetText(" " $ AugsString $ string(GetAugCount()));
-	winInfo.SetText(" " $ activeLabel @ GetActiveType());
-	winInfo.SetText(" " $ passiveLabel @ GetPassiveType());
-	winInfo.SetText(" " $ automaticLabel @ GetAutomaticType());
+	winInfo.SetText(" " $ activeLabel @ GetAugsByType(Aug_Active));
+	winInfo.SetText(" " $ passiveLabel @ GetAugsByType(Aug_Passive));
+	winInfo.SetText(" " $ automaticLabel @ GetAugsByType(Aug_Automatic));
+	winInfo.SetText(" " $ toggleLabel @ GetAugsByType(Aug_Toggle));
 	//winInfo.bStylization2 = False;
     //winInfo.bStylization3 = True;
     winInfo.AddLine();
@@ -411,7 +423,7 @@ function int GetAugCount()
 	return augCount;
 }
 
-function int GetActiveType()
+function int GetAugsByType(EAugmentationType augType)
 {
 	local Augmentation anAug;
 	local int augCount;
@@ -419,45 +431,9 @@ function int GetActiveType()
 	anAug = player.AugmentationSystem.FirstAug;
 	while(anAug != None)
 	{
-		if (anAug.AugmentationName != ""  && anAug.CanBeActivated())
+		if (anAug.AugmentationName != ""  && anAug.AugmentationType == augType && anAug.bHasIt)
 		{
             augCount++;
-		}
-
-		anAug = anAug.next;
-	}
-	return augCount;
-}
-
-function int GetPassiveType()
-{
-	local Augmentation anAug;
-	local int augCount;
-
-	anAug = player.AugmentationSystem.FirstAug;
-	while(anAug != None)
-	{
-		if (anAug.AugmentationName != "" && anAug.AugmentationType == Aug_Passive && anAug.bHasIt)
-		{
-			augCount++;
-		}
-
-		anAug = anAug.next;
-	}
-	return augCount;
-}
-
-function int GetAutomaticType()
-{
-	local Augmentation anAug;
-	local int augCount;
-
-	anAug = player.AugmentationSystem.FirstAug;
-	while(anAug != None)
-	{
-		if (anAug.AugmentationName != "" && anAug.AugmentationType == Aug_Automatic && anAug.bHasIt) //Sarge: Changed this to fix wrong count in Aug screen
-		{
-			augCount++;
 		}
 
 		anAug = anAug.next;
@@ -640,7 +616,7 @@ function UpdateBioEnergyBar()
 	actualMaxEnergy = player.GetMaxEnergy(true);
 	
     if (maxEnergy != actualMaxEnergy)
-        text = Sprintf(BarStringRes,int(player.Energy),int(player.GetMaxEnergy()),int(energyPercent),int(player.AugmentationSystem.ReservedEnergy));
+        text = Sprintf(BarStringRes,int(player.Energy),int(player.GetMaxEnergy()),int(energyPercent),int(player.AugmentationSystem.CalcEnergyReserve()));
     else
         //text = Sprintf(BarString,int(player.Energy),int(player.GetMaxEnergy()),int(energyPercent));
         text = Sprintf(BarString,int(energyPercent));
@@ -1083,9 +1059,9 @@ event bool MouseButtonPressed(float pointX, float pointY, EInputKey button,
         //Add to Wheel
         SelectedAug.bAddedToWheel = !SelectedAug.bAddedToWheel;
         if (SelectedAug.bAddedToWheel)
-            player.ClientMessage(SelectedAug.AugmentationName $ " added to Augmentation Wheel");
+            player.ClientMessage(SelectedAug.GetName() $ " added to Augmentation Wheel");
         else
-            player.ClientMessage(SelectedAug.AugmentationName $ " removed from Augmentation Wheel");
+            player.ClientMessage(SelectedAug.GetName() $ " removed from Augmentation Wheel");
         bResult = True;
         player.AugmentationSystem.RefreshAugDisplay();
     }
@@ -1174,10 +1150,6 @@ function UpgradeAugmentation()
         if (selectedAug.IsA('AugAqualung') || selectedAug.IsA('AugEnviro'))
         {
             player.bBoosterUpgrade = True;
-            if (selectedAug.IsA('AugAqualung'))
-                AugAqualung(selectedAug).AugmentationName = AugAqualung(selectedAug).AugmentationName2;
-            else if (selectedAug.IsA('AugEnviro'))
-                AugEnviro(selectedAug).AugmentationName = AugEnviro(selectedAug).AugmentationName2;
         }
         else
             selectedAug.IncLevel();
@@ -1226,10 +1198,7 @@ function ActivateAugmentation()
 	if (selectedAug == None)
 		return;
 
-	if (selectedAug.IsActive())
-		selectedAug.Deactivate();
-	else
-		selectedAug.Activate();
+    player.AugmentationSystem.ActivateAug(selectedAug,!selectedAug.bIsActive);
 
 	// If the augmentation activated or deactivated, set the
 	// button appropriately.
@@ -1366,6 +1335,7 @@ defaultproperties
      activeLabel="Active:"
      passiveLabel="Passive:"
      automaticLabel="Automatic:"
+     toggleLabel="Toggle:"
      BarString="%d%%"
      BarStringRes="%d/%d (%d%%) - %d Reserved"
      clientBorderOffsetY=32
