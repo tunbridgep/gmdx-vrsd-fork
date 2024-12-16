@@ -373,7 +373,7 @@ function SpawnPoint GetSpawnPoint(Name spawnTag, optional bool bRandom)
 //Gives the specified item to 0-X random enemies in the map.
 function DistributeItem(class<Inventory> itemClass, int minAmount, int maxAmount, optional class<Ammo> ammoClass)
 {
-    local int i, j, swapTo;
+    local int i, j, swapTo, items;
     local ScriptedPawn actors[50], temp, SP;
     local int actorCount, toGive, index;
     local Inventory inv;
@@ -394,12 +394,13 @@ function DistributeItem(class<Inventory> itemClass, int minAmount, int maxAmount
         actors[i] = actors[swapTo];
         actors[swapTo] = temp;
     }
+    
 
     //Now give the first 0-2 PS20s
     toGive = Player.Randomizer.GetRandomInt(maxAmount - minAmount) + minAmount;
-    player.ClientMessage("  To Give: "$toGive);
+    //player.ClientMessage("  To Give: "$toGive);
     toGive = MIN(toGive,actorCount);
-    player.ClientMessage("  To Give (capped): "$toGive);
+    //player.ClientMessage("  To Give (capped): "$toGive);
 
     for(i = 0;i < actorCount;i++)
     {
@@ -408,14 +409,16 @@ function DistributeItem(class<Inventory> itemClass, int minAmount, int maxAmount
             break;
 
         //First, make sure they don't have one.
+        //Need to restrict this to a max of 10, otherwise some maps crash for no reason
         inv = actors[i].Inventory;
-        while (inv != None)
+        while (inv != None && items < 10)
         {
+            items++;
             if (inv.Class == itemClass)
                 continue;
             inv = inv.Inventory;
         }
-        
+    
         //Spawn the item and some ammo
         inv = spawn(itemClass, actors[i]);
         if (inv != None)
@@ -425,7 +428,7 @@ function DistributeItem(class<Inventory> itemClass, int minAmount, int maxAmount
             inv.bHidden = True;
             inv.SetPhysics(PHYS_None);
             actors[i].AddInventory(inv);
-            player.ClientMessage("  Given a "$itemClass$" to "$actors[i]);
+            //player.ClientMessage("  Given a "$itemClass$" to "$actors[i]);
         }
         if (ammoClass != None)
         {
@@ -437,7 +440,7 @@ function DistributeItem(class<Inventory> itemClass, int minAmount, int maxAmount
                 inv.bHidden = True;
                 inv.SetPhysics(PHYS_None);
                 actors[i].AddInventory(inv);
-                player.ClientMessage("  Given a "$ammoClass$" to "$actors[i]);
+                //player.ClientMessage("  Given a "$ammoClass$" to "$actors[i]);
             }
         }
         //Player.ClientMessage("Give " $ actors[given].FamiliarName $ " a " $ itemClass);
