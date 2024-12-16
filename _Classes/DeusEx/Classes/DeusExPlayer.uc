@@ -633,7 +633,6 @@ var globalconfig bool bAugWheelDisableAll;                                      
 
 var globalconfig bool bTrickReloading;											//Sarge: Allow reloading with a full clip.
 
-
 //////////END GMDX
 
 // OUTFIT STUFF
