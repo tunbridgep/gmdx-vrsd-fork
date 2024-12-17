@@ -102,6 +102,22 @@ function SetCreditsFont(Font newCreditsFont)
 		txtCredits.SetFont(newCreditsFont);
 }
 
+function HideCredits()
+{
+	if (txtCredits != None)
+        txtCredits.Hide();
+	if (txtLabel != None)
+        txtLabel.Hide();
+}
+
+function ShowCredits()
+{
+	if (txtCredits != None)
+        txtCredits.Show();
+	if (txtLabel != None)
+        txtLabel.Show();
+}
+
 defaultproperties
 {
     Credits="Credits:"
