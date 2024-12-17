@@ -23,6 +23,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX quickloading not always working correctly, and other save issues including incorrect save-game ordering in the save/load screens.
     - Fixed many other GMDX and Vanilla bugs.
 - Quality of Life Improvements:
+    - While having a grenade selected, the crosshair will turn blue when you're able to place it on a wall.
     - Right-Clicking while dead will load the last save game.
     - Right-Clicking an item in the belt with the Inventory Window open will clear the slot.
     - The Inventory "Show Ammo" display now always shows the total amount of ammo you can carry. Before, it was only visible when "Show Descriptions" was enabled.
