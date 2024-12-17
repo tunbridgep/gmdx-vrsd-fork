@@ -7129,6 +7129,11 @@ function bool RestrictInput()
 	if (IsInState('Interpolating') || IsInState('Dying') || IsInState('Paralyzed') || (FlagBase.GetBool('PlayerTraveling') ))
 		return True;
 
+    //SARGE: Disallow any sort of UI operations when the "pause" key is pressed
+    //This way, real-time UI is actually a real-time UI
+    if (DeusExRootWindow(rootWindow).bUIPaused || (Level.Pauser != ""))
+        return true;
+
 	return False;
 }
 
@@ -10574,6 +10579,9 @@ exec function ToggleRadialAugMenu()
     root = DeusExRootWindow(rootWindow);
 
     if (!root.hud.bIsVisible) return; // don't toggle menu if HUD is invis
+
+    if (RestrictInput())
+        return;
 
 	bRadialAugMenuVisible = !bRadialAugMenuVisible;
 
