@@ -289,6 +289,7 @@ function PlayLanded(float impactVel)
 {
 //	ClientMessage("PlayLanded()");
 	PlayFootStep();
+    //SARGE: TODO: Make this not always silent, it should be impact dependent
 	if (!IsCrouching())
 		PlayAnim('Land',3.0,0.1);
 	isMantling = False;
@@ -821,6 +822,7 @@ State Mantling
       Acceleration = vect(0,0,0);
       PlayAnim('Pickup',1.2,0.1);
       negaMult = 1;
+        bCrouchHack = true;
 
       if (bIcarusClimb)
 		   Velocity = Vector(ViewRotation) * 260;
@@ -899,10 +901,7 @@ State Mantling
 		decorum = None;
 		mova = None;
 
-        if (bCrouchHack)
-        {
-           SetTimer(0.6,false);
-		}
+        SetTimer(0.6,false);
 
 		if (inHand != None && inHand.IsA('DeusExWeapon'))
         {
@@ -933,12 +932,6 @@ State Mantling
 	  //MultiplayerTick(deltaTime);
       FrobTime += deltaTime;
       UpdateTimePlayed(deltaTime);
-
-      //if (bCrouchHack)
-      //{
-      //bIsCrouching = True;
-      //bDuck = 1;
-      //}
 
       velocity.X = 0;
       velocity.Y = 0;

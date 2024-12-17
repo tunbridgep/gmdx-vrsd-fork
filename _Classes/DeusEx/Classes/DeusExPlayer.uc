@@ -744,7 +744,7 @@ function HandleCrouchToggle()
 //Return if the character is crouching
 function bool IsCrouching()
 {
-    return bCrouchOn || bForceDuck || bIsCrouching;
+    return bCrouchOn || bForceDuck || bIsCrouching || bCrouchHack || IsInState('PlayerSwimming');
 }
 
 //set our crouch state to a certain value
@@ -14747,6 +14747,8 @@ function Timer()      //CyberP: my god I've turned this into a mess.
 			ExtinguishFire();
 		}
 	}
+
+    bCrouchHack = false;
 }
 
 // ----------------------------------------------------------------------
