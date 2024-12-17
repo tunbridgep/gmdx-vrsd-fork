@@ -569,6 +569,9 @@ var bool bNanoVirusSentMessage;                                                 
 var localized String NanoVirusLabel;                                            //RSD: For deactivating augs from scrambler grenades
 var globalconfig bool bRestrictedMetabolism;                                    //RSD: Enables restricted eating and halved withdrawal delay
 
+//SARGE: Allow blocking the next weapon selection. Used by dialog number keys feature.
+var float fBlockBeltSelection;
+
 //GAMEPLAY MODIFIERS
 
 /*var travel bool bRandomizeCratesGeneralTool;
@@ -10995,6 +10998,14 @@ exec function ActivateBelt(int objectNum)
 {
 	local DeusExRootWindow root;
 
+    //SARGE: When holding the number keys in dialog, we will select a weapon
+    //upon finishing the conversation. Ignore the weapon change command.
+    if (fBlockBeltSelection > 0)
+    {
+        fBlockBeltSelection = 0;
+        return;
+    }
+
 	if (RestrictInput())
 		return;
 
@@ -11852,6 +11863,10 @@ ignores SeePlayer, HearNoise, Bump;
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
+
+        //Update belt selection timer
+        if (fBlockBeltSelection > 0)
+            fBlockBeltSelection -= deltaTime;
 	}
 
 	function LoopHeadConvoAnim()
