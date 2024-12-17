@@ -639,6 +639,8 @@ var globalconfig bool bAugWheelDisableAll;                                      
 
 var globalconfig bool bTrickReloading;											//Sarge: Allow reloading with a full clip.
 
+var globalconfig int iAllowCombatMusic;                                        //SARGE: Enable/Disable combat music, or make it require 2 enemies
+
 //Crosshair Settings
 var globalconfig bool bFullAccuracyCrosshair;                                   //SARGE: If false, disable the "Accuracy Crosshairs" when at 100% accuracy
 
@@ -2818,10 +2820,10 @@ exec function PlayMusicWindow()
 
 function UpdateDynamicMusic(float deltaTime)
 {
-	local bool bCombat;
 	local ScriptedPawn npc;
 	local Pawn CurPawn;
 	local DeusExLevelInfo info;
+    local int aggro;                    //Sarge: Keep track of the number of aggro enemies. If >2, start combat music. If 0 stop combat music.
 
 	if (Level.Song == None)
 		return;
@@ -2888,63 +2890,63 @@ function UpdateDynamicMusic(float deltaTime)
 	}
 	else
 	{
+        //SARGE: Changed to only start combat music if at least 3 enemies are aggro'd
 		// only check for combat music every second //CyberP: 2 secs
 		if (musicCheckTimer >= 2.0)
 		{
 			musicCheckTimer = 0.0;
-			bCombat = False;
+			aggro = 0;
 
-			// check a 100 foot radius around me for combat
-		 // XXXDEUS_EX AMSD Slow Pawn Iterator
-		 //foreach RadiusActors(class'ScriptedPawn', npc, 1600)
-		 for (CurPawn = Level.PawnList; CurPawn != None; CurPawn = CurPawn.NextPawn)
-		 {
-			npc = ScriptedPawn(CurPawn);
-			if ((npc != None) && (VSize(npc.Location - Location) < (2000 + npc.CollisionRadius)))
-			{
-			   if ((npc.GetStateName() == 'Attacking') && (npc.Enemy == Self))
-			   {
-				  bCombat = True;
-				  break;
-			   }
-			}
-		 }
-			if (bCombat)
-			{
-				musicChangeTimer = 0.0;
+            // check a 100 foot radius around me for combat
+            // XXXDEUS_EX AMSD Slow Pawn Iterator
+            //foreach RadiusActors(class'ScriptedPawn', npc, 1600)
+            for (CurPawn = Level.PawnList; CurPawn != None; CurPawn = CurPawn.NextPawn)
+            {
+                npc = ScriptedPawn(CurPawn);
+                if ((npc != None) && (VSize(npc.Location - Location) < (2000 + npc.CollisionRadius)))
+                {
+                    if ((npc.GetStateName() == 'Attacking') && (npc.Enemy == Self) && iAllowCombatMusic > 0)
+                    {
+                        aggro++;
+                    }
+                }
+            }
+            if (aggro >= iAllowCombatMusic && iAllowCombatMusic > 0)
+            {
+                musicChangeTimer = 0.0;
 
-				if (musicMode != MUS_Combat)
-				{
-					// save our place in the ambient track
-					if (musicMode == MUS_Ambient)
-						savedSection = SongSection;
-					else
-						savedSection = 255;
+                if (musicMode != MUS_Combat)
+                {
+                    // save our place in the ambient track
+                    if (musicMode == MUS_Ambient)
+                        savedSection = SongSection;
+                    else
+                        savedSection = 255;
 
-					ClientSetMusic(Level.Song, 3, 255, MTRAN_FastFade);
-					musicMode = MUS_Combat;
-				}
-			}
-			else if (musicMode != MUS_Ambient)
-			{
-				// wait until we've been out of combat for 5 seconds before switching music
-				if (musicChangeTimer >= 5.0)
-				{
-					// use the default ambient section for this map
-					if (savedSection == 255)
-						savedSection = Level.SongSection;
+                    ClientSetMusic(Level.Song, 3, 255, MTRAN_FastFade);
+                    musicMode = MUS_Combat;
+                }
+            }
+            else if (aggro == 0 && musicMode != MUS_Ambient)
+            {
+                // wait until we've been out of combat for 5 seconds before switching music
+                if (musicChangeTimer >= 5.0)
+                {
+                    // use the default ambient section for this map
+                    if (savedSection == 255)
+                        savedSection = Level.SongSection;
 
-					// fade slower for combat transitions
-					if (musicMode == MUS_Combat)
-						ClientSetMusic(Level.Song, savedSection, 255, MTRAN_SlowFade);
-					else
-						ClientSetMusic(Level.Song, savedSection, 255, MTRAN_Fade);
+                    // fade slower for combat transitions
+                    if (musicMode == MUS_Combat)
+                        ClientSetMusic(Level.Song, savedSection, 255, MTRAN_SlowFade);
+                    else
+                        ClientSetMusic(Level.Song, savedSection, 255, MTRAN_Fade);
 
-					savedSection = 255;
-					musicMode = MUS_Ambient;
-					musicChangeTimer = 0.0;
-				}
-			}
+                    savedSection = 255;
+                    musicMode = MUS_Ambient;
+                    musicChangeTimer = 0.0;
+                }
+            }
 		}
 	}
 }
@@ -17463,6 +17465,7 @@ defaultproperties
      bDisplayClips=true
      bCutsceneFOVAdjust=true
      iFrobDisplayStyle=1
+     iAllowCombatMusic=1
      bFullAccuracyCrosshair=true;
      bShowEnergyBarPercentages=true;
 }
