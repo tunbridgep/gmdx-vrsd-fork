@@ -14580,7 +14580,7 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 			//augLevel *= AugmentationSystem.GetAugLevelValue(class'AugBallistic');//RSD: figure out stacking prots later maybe
         }
 
-		if (augLevel >= 0.0)
+		if (augLevel > 0.0)
 			newDamage *= augLevel;
 	}
 
