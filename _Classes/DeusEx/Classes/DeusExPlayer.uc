@@ -603,6 +603,8 @@ var travel bool bMoreLDDPNPCs;
 
 var travel bool bDisableConsoleAccess;                                          //SARGE: Disable console access via a modifier.
 
+var travel bool bWeaponRequirementsMatter;                                      //Sarge: Using certain weapons requires skill investments.
+
 //END GAMEPLAY MODIFIERS
 
 //Autosave Stuff
@@ -8164,6 +8166,8 @@ function DoFrob(Actor Frobber, Inventory frobWith)
 
 exec function PutInHand(optional Inventory inv)
 {
+    local DeusExWeapon weap;
+
 	if (RestrictInput())
 		return;
 
@@ -8171,6 +8175,11 @@ exec function PutInHand(optional Inventory inv)
 	// can't put anything in hand if you're using a spy drone
 	if ((inHand == None) && bSpyDroneActive && !bSpyDroneSet)                   //RSD: Allows the user to toggle between moving and controlling the drone
 		return;
+
+    //SARGE: Weapon Requirements Matter
+    weap = DeusExWeapon(inv);
+    if (weap != None && !weap.CanUseWeapon(self))
+        return;
 
 	// can't do anything if you're carrying a corpse
 	if ((inHand != None) && inHand.IsA('POVCorpse'))
