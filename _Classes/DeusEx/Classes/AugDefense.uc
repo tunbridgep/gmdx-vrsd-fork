@@ -126,6 +126,9 @@ simulated function DeusExProjectile FindNearestProjectile()
          bValidProj = (!proj.IsA('Dart')&&!proj.IsA('PlasmaBolt')&&!proj.IsA('Cloud') && !proj.IsA('Tracer') && !proj.IsA('GreaselSpit') && !proj.IsA('GraySpit')
                    && !proj.IsA('Fireball') && !proj.IsA('Shuriken') && !proj.IsA('PlasmaRobot') && !proj.IsA('RubberBullet')); //RSD: Also not these
 
+        //SARGE: Dirty hack to prevent scripted grenades from triggering it
+        bValidProj = bValidProj && (!proj.IsA('GasGrenade') || !GasGrenade(proj).bScriptedGrenade);
+
       if (bValidProj)
       {
          // make sure we don't own it

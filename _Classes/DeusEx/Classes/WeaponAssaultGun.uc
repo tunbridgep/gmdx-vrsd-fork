@@ -350,7 +350,7 @@ simulated function SwapMuzzleFlashTexture()
 {
 	local int i;
 
-    if (ClipCount == ReloadCount)
+    if (ClipCount == 0)
        PlaySound(Sound'GMDXSFX.Weapons.G36DryFire',SLOT_None);
 	else
 	   MuzzleFlashLight();
@@ -373,7 +373,7 @@ simulated function texture GetMuzzleTex()
 	local texture tex;
 
 	//i = muznum;
-	if (ClipCount == ReloadCount)
+	if (ClipCount == 0)
 	{
      return texture'pinkmasktex';
 	}
@@ -576,4 +576,5 @@ defaultproperties
      CollisionRadius=15.000000
      CollisionHeight=1.100000
      Mass=30.000000
+     minSkillRequirement=3;
 }

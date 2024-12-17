@@ -656,7 +656,7 @@ Begin:
 			PlayAnim('ReloadEnd2',1-(ModReloadTime*0.8));
 			FinishAnim();
 			NotifyOwner(False);
-			ClipCount = 0;
+			ReloadMaxAmmo();
 		}
 	}
 	if (bLasing)
@@ -746,4 +746,5 @@ defaultproperties
      CollisionRadius=26.000000
      CollisionHeight=2.000000
      Mass=30.000000
+     minSkillRequirement=2;
 }

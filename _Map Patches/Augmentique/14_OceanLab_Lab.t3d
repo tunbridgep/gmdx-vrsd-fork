@@ -1,0 +1,40 @@
+Begin Map
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner17
+    Id="diver2"
+    bDynamicLight=True
+    LastRenderTime=212.569763
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=7069,ZoneNumber=6)
+    Location=(X=473.516449,Y=275.178406,Z=-1625.900024)
+    Rotation=(Yaw=50000)
+    OldLocation=(X=447.516449,Y=365.178406,Z=-1625.900024)
+    bSelected=True
+    Name=OutfitSpawner17
+End Actor
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner4
+    Id="lamiblue"
+    bDynamicLight=True
+    LastRenderTime=430.063385
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=WaterZone'MyLevel.WaterZone0',iLeaf=5695,ZoneNumber=2)
+    Location=(X=-68.997574,Y=3270.709717,Z=-2553.857666)
+    OldLocation=(X=-68.997574,Y=3270.709717,Z=-2553.857666)
+    bSelected=True
+    Name=OutfitSpawner4
+End Actor
+Begin Actor Class=OutfitSpawner3 Name=OutfitSpawner10
+    Id="ombrehair"
+    bDynamicLight=True
+    LastRenderTime=313.446960
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner3
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=3874,ZoneNumber=3)
+    Location=(X=4059.149902,Y=722.099976,Z=-1572.710693)
+    Rotation=(Yaw=17000)
+    OldLocation=(X=4062.149902,Y=725.099976,Z=-1572.710693)
+    bSelected=True
+    Name=OutfitSpawner10
+End Actor
+End Map

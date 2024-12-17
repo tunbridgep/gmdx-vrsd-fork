@@ -1,0 +1,52 @@
+Begin Map
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner10
+    Id="mechanic"
+    bDynamicLight=True
+    LastRenderTime=179.136337
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=3670,ZoneNumber=15)
+    Location=(X=-3551.139404,Y=1450.644287,Z=-601.897339)
+    OldLocation=(X=-3551.139404,Y=1450.644287,Z=-601.897339)
+    bSelected=True
+    Name=OutfitSpawner10
+End Actor
+Begin Actor Class=OutfitSpawner3 Name=OutfitSpawner14
+    Id="HUD3"
+    bDynamicLight=True
+    LastRenderTime=132.386093
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner3
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=28,ZoneNumber=1)
+    Location=(X=-5180.400391,Y=-190.889862,Z=-250.720551)
+    Rotation=(Yaw=5000)
+    OldLocation=(X=-5180.400391,Y=-190.889862,Z=-250.720551)
+    bSelected=True
+    Name=OutfitSpawner14
+End Actor
+Begin Actor Class=OutfitSpawner3 Name=OutfitSpawner15
+    Id="shavedhair"
+    bDynamicLight=True
+    LastRenderTime=409.170441
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner3
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=2804,ZoneNumber=2)
+    Location=(X=-2574.806885,Y=466.232208,Z=4.720001)
+    OldLocation=(X=-2574.806885,Y=466.232208,Z=58.720001)
+    bSelected=True
+    Name=OutfitSpawner15
+End Actor
+Begin Actor Class=OutfitSpawner3 Name=OutfitSpawner16
+    Id="cyclopsred"
+    bDynamicLight=True
+    LastRenderTime=1575.084229
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner3
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo3',iLeaf=1495,ZoneNumber=3)
+    Location=(X=724.743713,Y=-769.822021,Z=-186.720001)
+    Rotation=(Yaw=1000)
+    OldLocation=(X=724.743713,Y=-769.822021,Z=-186.720001)
+    bSelected=True
+    Name=OutfitSpawner16
+End Actor
+End Map

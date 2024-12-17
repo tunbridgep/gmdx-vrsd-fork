@@ -370,47 +370,23 @@ simulated function Timer()
 	 EraseMuzzleFlashTexture();
 }
 
-function PistolLaserOn()
+function LaserOn(optional bool IgnoreSound)
 {
 	if (bHasLaser && !bLasing)
-	{
-		// if we don't have an emitter, then spawn one
-		// otherwise, just turn it on
-		if (Emitter == None)
-		{
-			Emitter = Spawn(class'LaserEmitter', Self, , Location, Pawn(Owner).ViewRotation);
-			if (Emitter != None)
-			{
-				Emitter.SetHiddenBeam(True);
-				Emitter.AmbientSound = None;
-				Emitter.TurnOn();
-			}
-		}
-		else
-			Emitter.TurnOn();
-			Owner.PlaySound(sound'KeyboardClick3', SLOT_None,,, 1024,1.5);
-
+    {
+        Super.LaserOn(IgnoreSound);
         if (iHDTPModelToggle == 1)                                              //RSD: Added iHDTPModelToggle
 		    Multiskins[3] = texture'HDTPGlockTex4';
-
-		bLasing = True;
-        bLaserToggle = true;
-	}
+    }
 }
 
-function PistolLaserOff(bool forced)
+function LaserOff(bool forced)
 {
 	if (bHasLaser && bLasing)
 	{
-		if (Emitter != None)
-			Emitter.TurnOff();
-            Owner.PlaySound(sound'KeyboardClick2', SLOT_Misc,,, 1024,1.5);
+        Super.LaserOff(forced);
 		if (iHDTPModelToggle == 1)                                              //RSD: Added iHDTPModelToggle
             Multiskins[3] = none;
-
-		bLasing = False;
-        if (!forced)
-            bLaserToggle = false;
 	}
 }
 
@@ -620,4 +596,5 @@ defaultproperties
      MultiSkins(6)=Texture'DeusExItems.Skins.PinkMaskTex'
      CollisionRadius=7.000000
      CollisionHeight=1.000000
+     minSkillRequirement=1;
 }

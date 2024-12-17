@@ -105,9 +105,9 @@ function PreRender2()
 	  multiskins[2] = texture'pinkmasktex';
 }
 
-function LaserOn()
+function LaserOn(optional bool IgnoreSound)
 {
-   super.LaserOn();
+   super.LaserOn(IgnoreSound);
 
    if (bHasLaser)
        LockTime=0.100000;
@@ -601,4 +601,5 @@ defaultproperties
      CollisionRadius=27.000000
      CollisionHeight=6.600000
      Mass=50.000000
+     minSkillRequirement=2;
 }

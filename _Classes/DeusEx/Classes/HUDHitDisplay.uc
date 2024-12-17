@@ -91,15 +91,19 @@ event InitWindow()
 	bodyWin.SetTileColor(colArmor);
 	bodyWin.Lower();
 
-	winEnergy = CreateProgressBar(15, 20);
-	if (player.bAnimBar1)
-	    winEnergy.bSpecialFX = True;
-	winBreath = CreateProgressBar(61, 20);
-	if (player.bAnimBar2)
-	    winBreath.bSpecialFX2 = True;
-
 	damageFlash = 0.4;  // seconds
 	healFlash   = 1.0;  // seconds
+	
+    winEnergy = CreateProgressBar(15, 20);
+	winBreath = CreateProgressBar(61, 20);
+
+    UpdateBars();
+}
+
+function UpdateBars()
+{
+    winEnergy.bSpecialFX = player.bAnimBar1;
+    winBreath.bSpecialFX2 = player.bAnimBar2;
 }
 
 // ----------------------------------------------------------------------
@@ -227,7 +231,12 @@ event DrawWindow(GC gc)
 	// Draw energy bar
 	gc.SetFont(Font'FontTiny');
 	gc.SetTextColorRGB(128,128,128);  //gc.SetTextColor(winEnergy.GetBarColor());
-	gc.DrawText(13, 74, 8, 8, EnergyText);
+
+    //SARGE: Draw the percentage
+    if (int(energyPercent) > 99 || !player.bShowEnergyBarPercentages)
+        gc.DrawText(13, 74, 8, 8, EnergyText);
+    else
+        gc.DrawText(13, 74, 8, 8, int(energyPercent));
 
 	// If we're underwater draw the breathometer
 	if ((bUnderwater && !Player.bStaminaSystem) || Player.bStaminaSystem || Player.bHardCoreMode)
@@ -250,7 +259,11 @@ event DrawWindow(GC gc)
 				colBar.r = 0;
 		}
 		gc.SetTextColor(col02);
-	    gc.DrawText(61, 74, 8, 8, O2Text);
+        //SARGE: Draw the percentage
+        if (int(breathPercent) > 99 || !player.bShowEnergyBarPercentages)
+            gc.DrawText(61, 74, 8, 8, O2Text);
+        else
+            gc.DrawText(61, 74, 8, 8, int(breathPercent));
 	}
 	if (Player.LightLevelDisplay > -1)
 	{
@@ -431,7 +444,7 @@ function UpdateAsFemale(bool NewbFemale)
 		TTex = Texture(DynamicLoadObject("FemJC.HUDHitDisplay_BodyFem", class'Texture', false));
 		if (TTex != None) bodyWin.SetBackground(TTex);
 	}
-	else
+	else if (bodyWin != None)
 	{
 		bodyWin.SetBackground(Texture'HUDHitDisplay_Body');
 	}

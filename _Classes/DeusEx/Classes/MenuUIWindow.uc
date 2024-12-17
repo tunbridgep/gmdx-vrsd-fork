@@ -708,7 +708,7 @@ function ConfirmIntro()
 	}
 	else
 	{
-		player.ShowIntro();
+		player.ShowIntro(false,true);
 	}
 }
 
@@ -869,7 +869,7 @@ event bool BoxOptionSelected(Window button, int buttonNumber)
 
 		case MB_Intro:
 			if (buttonNumber == 0)
-				player.ShowIntro();
+				player.ShowIntro(false,true);
 			break;
 
 		case MB_JoinGameWarning:

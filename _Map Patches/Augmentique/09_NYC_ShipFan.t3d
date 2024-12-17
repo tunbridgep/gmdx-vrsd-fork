@@ -1,0 +1,28 @@
+Begin Map
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner2
+    Id="mechanic2"
+    bDynamicLight=True
+    LastRenderTime=60.261414
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo1',iLeaf=631,ZoneNumber=1)
+    Location=(X=128.628311,Y=49.339306,Z=-377.899689)
+    Rotation=(Yaw=-50000)
+    OldLocation=(X=128.628311,Y=49.339306,Z=-377.899689)
+    bSelected=True
+    Name=OutfitSpawner2
+End Actor
+Begin Actor Class=OutfitSpawner3 Name=OutfitSpawner17
+    Id="crossearrings"
+    bDynamicLight=True
+    LastRenderTime=153.176346
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner3
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo2',iLeaf=282,ZoneNumber=4)
+    Location=(X=-113.312668,Y=2354.900391,Z=-506.721100)
+    Rotation=(Yaw=1000)
+    OldLocation=(X=-113.312668,Y=2354.900391,Z=-506.721100)
+    bSelected=True
+    Name=OutfitSpawner17
+End Actor
+End Map
