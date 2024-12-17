@@ -636,6 +636,11 @@ var globalconfig bool bAugWheelDisableAll;                                      
 
 var globalconfig bool bTrickReloading;											//Sarge: Allow reloading with a full clip.
 
+//Crosshair Settings
+var globalconfig bool bFullAccuracyCrosshair;                                   //SARGE: If false, disable the "Accuracy Crosshairs" when at 100% accuracy
+
+var globalconfig bool bAlwaysShowBloom;                                         //SARGE: Always show weapon bloom
+
 var globalconfig bool bShowEnergyBarPercentages;                                //SARGE: If true, show the oxygen and bioenergy percentages below the bars.
 
 //////////END GMDX
@@ -17437,5 +17442,6 @@ defaultproperties
      bDisplayClips=true
      bCutsceneFOVAdjust=true
      iFrobDisplayStyle=1
+     bFullAccuracyCrosshair=true;
      bShowEnergyBarPercentages=true;
 }
