@@ -3885,12 +3885,12 @@ function ToggleCameraState(SecurityCamera cam, ElectronicDevices compOwner, opti
 //client->server (window to player)
 function SetTurretState(AutoTurret turret, bool bActive, bool bDisabled, bool bHacked)
 {
-    if ((bDisabled && !bHacked) || !bDisabled)
+    if (!bHacked)
     {
         turret.disableTime = 0;
         turret.bRebooting = false;
     }
-    else if (bDisabled && bHacked)
+    else
     {
         turret.StartReboot(self);
     }
