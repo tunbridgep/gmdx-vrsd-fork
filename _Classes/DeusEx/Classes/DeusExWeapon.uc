@@ -310,6 +310,10 @@ var travel bool givenFreeReload;                                                
 
 var float sleeptime;                                                              //Sarge: Used by per shell reload weapons to store how long they have been sleeping during reload, to allow us to cancel mid-reload in a far more responsive way.
 
+//SARGE: Weapon Requirements Matter
+var int minSkillRequirement;                                          //SARGE: Minimum skill requirement to use this weapon
+var localized String msgRequires;                                     //Sarge: "Requires" for weapon info screen
+
 //END GMDX:
 
 //
@@ -335,6 +339,16 @@ replication
 	  RefreshScopeDisplay, ReadyClientToFire, SetClientAmmoParams, ClientDownWeapon, ClientActive, ClientReload;
 }
 
+function bool CanUseWeapon(DeusExPlayer player, optional bool noMessage)
+{
+    local int skill;
+    
+    if (player == None || player.SkillSystem == None)
+        return false;
+
+    //NOTE: Order matters here, we need to short circuit to avoid the CheckSkill message
+    return !player.bWeaponRequirementsMatter || player.SkillSystem.CheckSkill(GoverningSkill,minSkillRequirement,noMessage);
+}
 
 //SARGE: Added "Left Click Frob" and "Right Click Frob" support
 //Return true to use the default frobbing mechanism (right click), or false for custom behaviour
@@ -5714,7 +5728,11 @@ simulated function bool UpdateInfo(Object winObject)
     winInfo.AddInfoItem(msgSecondary, str);
 
 	// Governing Skill
-	winInfo.AddInfoItem(msgInfoSkill, GoverningSkill.default.SkillName);
+    //SARGE: Also Weapon requirement
+    if (minSkillRequirement > 0 && DeusExPlayer(Owner) != None && DeusExPlayer(Owner).bWeaponRequirementsMatter)
+        winInfo.AddInfoItem(msgInfoSkill, GoverningSkill.default.SkillName @ "(" $ msgRequires @  DeusExPlayer(Owner).SkillSystem.GetSkillFromClass(GoverningSkill).GetLevelString(minSkillRequirement) $ ")");
+    else
+        winInfo.AddInfoItem(msgInfoSkill, GoverningSkill.default.SkillName);
 
     if (bCanHaveModBaseAccuracy || bCanHaveModReloadCount || bCanHaveModAccurateRange || bCanHaveModReloadTime || bCanHaveModRecoilStrength || bCanHaveModShotTime || bCanHaveModDamage)
         {
@@ -7016,6 +7034,7 @@ defaultproperties
      msgClip="Clip:"
      msgDama="Damage:"
      msgRate="Rate of Fire:"
+     msgRequires="Requires"
      negTime=0.765000
      attackSpeedMult=1.000000
      abridgedName="DEFAULT NAME - REPORT BUG"

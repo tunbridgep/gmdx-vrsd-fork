@@ -960,9 +960,9 @@ function Class<DeusExAmmo> LoadAmmo()
 
 		if ((ammo != None) && (ammo != aWeapon.AmmoName))
 		{
-			if ((Player.bRealUI || Player.bHardcoreMode) && Player.inHand != aWeapon) //RSD: If we have realtime UI and not holding the weapon, actually swap to that weapon and load in realtime too
+			if ((Player.bRealUI || Player.bHardcoreMode) && Player.inHand != aWeapon && aWeapon.CanUseWeapon(player,true)) //RSD: If we have realtime UI and not holding the weapon, actually swap to that weapon and load in realtime too //SARGE: As long as we have the requirements for it
 			{
-				Player.inHandPending = aWeapon;
+                Player.inHandPending = aWeapon;
 				aWeapon.bBeginAmmoSelectLoad = true;
 				aWeapon.ammoSelectClass = ammo;
 
