@@ -46,7 +46,6 @@ var string HDTPMeshTex[8];
 
 //GMDX:
 var transient bool bDblClickStart;
-var transient bool bDblClickFrob;
 var transient float DblClickTimeout;
 var bool            bPop;
 var bool            bNotFirstFall;
@@ -575,7 +574,6 @@ function Tick(float deltaSeconds)
 			if (DblClickTimeout>0.4)
 			{
 				bDblClickStart=false;
-				bDblClickFrob=false;
 				DblClickTimeout=0;
 			}
 		}
@@ -893,7 +891,6 @@ function PickupCorpse(DeusExPlayer player)
     local int j;
 
     bDblClickStart=false;
-    bDblClickFrob=false;
     if (!bInvincible)
     {
         corpse = Spawn(class'POVCorpse');
@@ -962,9 +959,6 @@ function Frob(Actor Frobber, Inventory frobWith)
     if (PickupAmmoCount == 0)                                                   //RSD: If nothing was passed to us from the initialization from MissionScript.uc on first map load, use old random formula
     	PickupAmmoCount = Rand(4) + 1;
 
-	bDblClickStart=True;
-	DblClickTimeout=0;
-
 	bFoundSomething = False;
 	bSearchMsgPrinted = False;
 	P = Pawn(Frobber);
@@ -976,7 +970,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 		if ( (player != None) && (Level.NetMode == NM_Standalone) )
 		 DeusExRootWindow(player.rootWindow).hud.receivedItems.RemoveItems();
 
-		if (Inventory != None)
+		if (Inventory != None && !bDblClickStart)
 		{
 
             while(Inventory.Owner == Frobber)
@@ -1041,6 +1035,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 				}
 				else if (item != none && (item.IsA('DeusExWeapon')) )
 				{
+                    bFoundSomething = True;
 //log("IS A DXWEAPON");
                     // Any weapons have their ammo set to a random number of rounds (1-4)
                     // unless it's a grenade, in which case we only want to dole out one.
@@ -1087,6 +1082,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 
 				if (item != None)
 				{
+                    bFoundSomething = True;
 					if (item.IsA('NanoKey'))
 					{
 						if (player != None)
@@ -1096,7 +1092,6 @@ function Frob(Actor Frobber, Inventory frobWith)
 							DeleteInventory(item);
 							item.Destroy();
 							item = None;
-                            bFoundSomething = True;
 						}
 						bPickedItemUp = True;
 					}
@@ -1112,7 +1107,6 @@ function Frob(Actor Frobber, Inventory frobWith)
 							DeleteInventory(item);
 							item.Destroy();
 							item = None;
-                            bFoundSomething = True;
 						}
 						bPickedItemUp = True;
 					}
@@ -1146,7 +1140,6 @@ function Frob(Actor Frobber, Inventory frobWith)
                            AmmoType.AddAmmo(Weapon(item).PickupAmmoCount);
                            intj = AmmoType.AmmoAmount - AmmoCount;              //RSD
 						   AddReceivedItem(player, AmmoType, intj);             //RSD: Fixed amount
-                            bFoundSomething = True;
 
 									// Update the ammo display on the object belt
 									player.UpdateAmmoBeltText(AmmoType);
@@ -1176,7 +1169,6 @@ function Frob(Actor Frobber, Inventory frobWith)
 									{
 										player.UpdateAmmoBeltText(AmmoType);
 										AddReceivedItem(player, AmmoType,addedAmount);
-                                        bFoundSomething = True;
 										Weapon(item).PickupAmmoCount=0;
                                         DeusExWeapon(item).ClipCount = 0;
 										if (AmmoType.PickupViewMesh == Mesh'TestBox')
@@ -1194,7 +1186,6 @@ function Frob(Actor Frobber, Inventory frobWith)
 							if ((W == None) && (!player.FindInventorySlot(item, True)))
                             {
 								P.ClientMessage(Sprintf(Player.InventoryFull, item.itemName));
-                                bFoundSomething = True;
                             }
 
 							// Only destroy the weapon if the player already has it.
@@ -1255,7 +1246,6 @@ function Frob(Actor Frobber, Inventory frobWith)
 
 									P.ClientMessage(invItem.PickupMessage @ invItem.itemArticle @ invItem.itemName, 'Pickup');
 									AddReceivedItem(player, invItem, itemCount);
-                                    bFoundSomething = True;
 								}
 								else if (invItem.IsA('ChargedPickup') && invItem.Charge < invItem.default.Charge) //RSD: Charge up the player's wearable if they have max copies but are below max charge
 								{
@@ -1272,7 +1262,6 @@ function Frob(Actor Frobber, Inventory frobWith)
 
                        				P.ClientMessage(invItem.PickupMessage @ invItem.itemArticle @ invItem.itemName, 'Pickup');
                        				AddReceivedItem(player, invItem, itemCount);
-                                    bFoundSomething = True;
 //log("CHARGED MAX COPIES");                                                      //RSD: New log entry for it
 								}
 								else
@@ -1301,7 +1290,6 @@ function Frob(Actor Frobber, Inventory frobWith)
 
 								P.ClientMessage(invItem.PickupMessage @ invItem.itemArticle @ invItem.itemName, 'Pickup');
 								AddReceivedItem(player, invItem, itemCount);
-                                bFoundSomething = True;
 							}
 						}
 						else
@@ -1326,7 +1314,6 @@ function Frob(Actor Frobber, Inventory frobWith)
 									// Show the item received in the ReceivedItems window and also
 									// display a line in the Log
 									AddReceivedItem(player, item, 1);
-                                    bFoundSomething = True;
 
 									P.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
 									PlaySound(Item.PickupSound);
@@ -1368,7 +1355,7 @@ function Frob(Actor Frobber, Inventory frobWith)
     // Were you to do it, you'd need to check the respawning issue, destroy the POVcorpse it creates and point to the
     // one in inventory (like I did when giving the player starting inventory).
 
-    if (!bAnimalCarcass && ((bDblClickStart&&bDblClickFrob)||!bFoundSomething)&&
+    if (!bAnimalCarcass && (bDblClickStart||!bFoundSomething)&&
     (player != None) && (player.inHand == None) && player.carriedDecoration == None && (bSearched||!player.bEnhancedCorpseInteractions))
     {
         PickupCorpse(player);
@@ -1388,7 +1375,8 @@ function Frob(Actor Frobber, Inventory frobWith)
             
     AddSearchedString(player);
     bSearched = true; //SARGE: Once we have been searched once, go back to normal behaviour
-    if (bFoundSomething) bDblClickFrob=True;
+    bFoundSomething = false;
+    bDblClickStart=true;
 
 	Super.Frob(Frobber, frobWith);
 

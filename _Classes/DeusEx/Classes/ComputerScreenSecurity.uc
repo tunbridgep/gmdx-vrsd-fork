@@ -55,6 +55,33 @@ function InitWindow()
 }
 
 // ----------------------------------------------------------------------
+// SARGE: RefreshRebootDuration()
+//
+// Refresh rebooting duration when closing the window
+// ----------------------------------------------------------------------
+
+function RefreshRebootDuration()
+{
+    if (winCameras[0].camera != None && winCameras[0].camera.bRebooting)
+        winCameras[0].camera.StartReboot(player);
+    if (winCameras[1].camera != None && winCameras[1].camera.bRebooting)
+        winCameras[1].camera.StartReboot(player);
+    if (winCameras[2].camera != None && winCameras[2].camera.bRebooting)
+        winCameras[2].camera.StartReboot(player);
+    if (winCameras[3].camera != None && winCameras[3].camera.bRebooting)
+        winCameras[3].camera.StartReboot(player);
+    
+    if (winCameras[0].turret != None && winCameras[0].turret.bRebooting)
+        winCameras[0].turret.StartReboot(player);
+    if (winCameras[1].turret != None && winCameras[1].turret.bRebooting)
+        winCameras[1].turret.StartReboot(player);
+    if (winCameras[2].turret != None && winCameras[2].turret.bRebooting)
+        winCameras[2].turret.StartReboot(player);
+    if (winCameras[3].turret != None && winCameras[3].turret.bRebooting)
+        winCameras[3].turret.StartReboot(player);
+}
+
+// ----------------------------------------------------------------------
 // DestroyWindow()
 //
 // Destroys the Window
@@ -62,7 +89,8 @@ function InitWindow()
 
 event DestroyWindow()
 {
-	Super.DestroyWindow();
+	
+    Super.DestroyWindow();
 
 	if (doorTimerID != -1)
 	{
@@ -96,6 +124,7 @@ function NetworkRefreshTimer(int timerID, int invocations, int clientData)
 // DoorRefreshTimer()
 //
 // Timer function to refresh the door status text
+// SARGE: Now updates the turrets and cameras as well
 // ----------------------------------------------------------------------
 
 function DoorRefreshTimer(int timerID, int invocations, int clientData)
@@ -103,6 +132,11 @@ function DoorRefreshTimer(int timerID, int invocations, int clientData)
 	winCameras[0].UpdateDoorStatus();
 	winCameras[1].UpdateDoorStatus();
 	winCameras[2].UpdateDoorStatus();
+    
+    choiceWindows[0].UpdateText(winTerm.bHacked);
+    choiceWindows[1].UpdateText(winTerm.bHacked);
+    choiceWindows[2].UpdateText(winTerm.bHacked);
+    choiceWindows[3].UpdateText(winTerm.bHacked);
 }
 
 // ----------------------------------------------------------------------
@@ -121,6 +155,7 @@ function CreateControls()
 	CreateHeaders();
 	CreatePanSlider();
 	CreateInfoWindow();
+    bTickEnabled = true;
 }
 
 // ----------------------------------------------------------------------
@@ -323,10 +358,7 @@ function ToggleCameraState(optional bool bCamIsActive, optional bool bCamWasActi
 
 		if (cam != None)
 		{
-            if (winTerm.bHacked)
-                player.ToggleCameraStateHacked(cam, compOwner);
-            else
-                player.ToggleCameraState(cam, compOwner);
+            player.ToggleCameraState(cam, compOwner, winTerm.bHacked);
             selectedCamera.UpdateCameraStatus();
 		}
 	}
@@ -351,7 +383,7 @@ function AllyCamera()
 		}
       if ((selectedCamera.turret != None) && (Player.Level.Netmode != NM_Standalone))
       {
-         player.SetTurretTrackMode(ComputerSecurity(selectedCamera.compOwner),selectedCamera.turret,false,true);
+         player.SetTurretTrackMode(ComputerSecurity(selectedCamera.compOwner),selectedCamera.turret,false,true,false);
          selectedCamera.UpdateTurretStatus();
          ComputerSecurityChoice_Turret(choiceWindows[3]).SetMPEnumState();
       }
@@ -402,10 +434,7 @@ function SetTurretState(bool bActive, bool bDisabled)
 {
 	if ((selectedCamera != None) && (selectedCamera.turret != None))
 	{
-        if (winTerm.bHacked)
-            player.SetTurretStateHacked(selectedCamera.turret,bActive,bDisabled);
-        else
-            player.SetTurretState(selectedCamera.turret,bActive,bDisabled);
+        player.SetTurretState(selectedCamera.turret,bActive,bDisabled,winTerm.bHacked);
         selectedCamera.UpdateTurretStatus();
 	}
 }
@@ -418,7 +447,7 @@ function SetTurretTrackMode(bool bTrackPlayers, bool bTrackPawns)
 {
 	if ((selectedCamera != None) && (selectedCamera.turret != None))
 	{
-      player.SetTurretTrackMode(ComputerSecurity(selectedCamera.compOwner),selectedCamera.turret,bTrackPlayers,bTrackPawns);
+      player.SetTurretTrackMode(ComputerSecurity(selectedCamera.compOwner),selectedCamera.turret,bTrackPlayers,bTrackPawns,winTerm.bHacked);
 		selectedCamera.UpdateTurretStatus();
 
       if ((selectedCamera.camera != None) && (Player.Level.Netmode != NM_Standalone))
@@ -565,6 +594,7 @@ function bool ButtonActivated( Window buttonPressed )
 				break;
 
 			case btnLogout:
+                RefreshRebootDuration();
 				CloseScreen("LOGOUT");
 				break;
 
