@@ -512,7 +512,7 @@ function PerformSave()
 	{
 		gameIndex = 0;
 		newgameIndex=saveDir.GetNewSaveFileIndex();
-   }
+    }
 	saveName = editName.GetText();
 
 	localPlayer   = player;
@@ -521,36 +521,12 @@ function PerformSave()
 
 	localPlayer.DoSaveGame(gameIndex,saveName);
 
-//SAVEOUT
-
-   if (gameIndex==0)
-   {//get new Index
-      log("NEW::old:"@gameIndex);
+    if (gameIndex == 0)
       gameIndex=newgameIndex;//GetLastSave();
-   }
 
-   localPlayer.QuickSaveLast=gameIndex; //GMDX update quick load key to this
-   //localPlayer.default.iQuickSaveLast=gameIndex;
-   localPlayer.ConsoleCommand("set DeusEx.JCDentonMale iQuickSaveLast "$gameIndex);
-   log("MYCHK:MenuScreenSaveGame.PerformSave::"@saveName@"::"@gameIndex@"::"@localPlayer.iQuickSaveLast);
-/*
-   local int saveIndex;
-	local DeusExSaveInfo saveInfo;
-	local GameDirectory saveDir;
-
-//	lstGames.EnableAutoSort(False);
-//	lstGames.DeleteAllRows();
-
-//	saveDir = GetSaveGameDirectory();
-
-//hmmm along those lines   DXsi=GameDirectory.GetSaveInfoFromDirectoryIndex(0).DirectoryIndex;
-	// First check to see if the QuickLoad game exists
-//	saveInfo = saveDir.GetSaveInfo();
-
-
-//   gameIndex=int(lstGames.GetField(0, 4));
-*/
-	localRoot.Show();
+    localPlayer.iLastSave=gameIndex; //GMDX update quick load key to this
+	
+    localRoot.Show();
 }
 
 // ----------------------------------------------------------------------
