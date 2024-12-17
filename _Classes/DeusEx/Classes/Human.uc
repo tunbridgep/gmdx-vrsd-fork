@@ -697,6 +697,8 @@ function checkMantle()                                                          
                                     AugmentationSystem.AutoAugs(false,false);
                             }
                         }
+                        if (IsCrouching())
+                            bCrouchHack = true;
 						goToState('Mantling');
 					}
 				}
@@ -822,7 +824,6 @@ State Mantling
       Acceleration = vect(0,0,0);
       PlayAnim('Pickup',1.2,0.1);
       negaMult = 1;
-        bCrouchHack = true;
 
       if (bIcarusClimb)
 		   Velocity = Vector(ViewRotation) * 260;

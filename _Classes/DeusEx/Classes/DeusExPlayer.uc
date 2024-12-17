@@ -724,7 +724,10 @@ exec function cheat()
 function HandleCrouchToggle()
 {
     if (!bToggleCrouch)
+    {
+        bCrouchOn = false;
         return;
+    }
 
     if (!bIsCrouching)
         bToggledCrouch = false;
