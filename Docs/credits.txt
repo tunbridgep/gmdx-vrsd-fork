@@ -7,13 +7,15 @@ GMDX vRSD was created by RoSoDude (https://rosodudemods.wordpress.com/)
 
 This fork is possible thanks to the following awesome people:
 
-- Sarge - Programmer, Project Lead
-- Lady Trash - Programmer
-- Xriborg - Sound Design, all LDDP content
-- LupusDraconis - Perk Icons and other graphical assets
+- Sarge - Programmer, Project Lead.
+- Lady Trash - Programmer.
+- RoSoDude - Game Design advice.
+- Xriborg - Sound Design, all LDDP content.
+- LupusDraconis - Perk Icons and other graphical assets.
+- Adman32 - Art and some weapon sounds.
 
 This mod would not have been possible without these testers:
-Julian, Georg, the1truepickaxe, Xriborg, domitomi and many others.
+Julian, Georg, the1truepickaxe, Xriborg, domitomi, the1truepickaxe and many others.
 
 Special thanks to the Revision Framerowk team for some small code snippets
 which were used as inspiration for fixing the HUD aspect ratio for cinematics,

@@ -215,6 +215,7 @@ var globalconfig bool bToggleCrouch;				// True to let key toggle crouch
 var globalconfig float logTimeout;					// Log Timeout Value
 var globalconfig byte  maxLogLines;					// Maximum number of log lines visible
 var globalconfig bool bHelpMessages;				// Multiplayer help messages
+var globalconfig bool bWallPlacementCrosshair;		// SARGE: Show a blue crosshair when placing objects on walls
 
 // Overlay Options (TODO: Move to DeusExHUD.uc when serializable)
 var globalconfig byte translucencyLevel;			// 0 - 10?
@@ -393,6 +394,7 @@ var globalconfig bool bWallPlacementCrosshair;		// SARGE: Show a blue crosshair 
 var globalconfig bool bDisplayTotalAmmo;		    // SARGE: Show total ammo count, rather than MAGS
 var globalconfig bool bDisplayClips;		        // SARGE: For the weirdos who prefer Clips instead of Mags. Hidden Option
 var globalconfig bool bColourCodeFrobDisplay;       //SARGE: Colour Code the Frob display when you don't meet or only just meet the number of tools/picks required. Some people might not like the colours.
+var globalconfig int iFrobDisplayStyle;             //SARGE: Frob Display Style. 0 = "X Tools", 1 = "curr/total Tools", 2 = "total/curr Tools"
 var globalconfig bool bGameplayMenuHardcoreMsgShown;//SARGE: Stores whether or not the gameplay menu message has been displayed.
 var globalconfig bool bEnhancedCorpseInteractions;  //SARGE: Right click always searches corpses. After searching, right click picks up corpses as normal.
 var globalconfig bool bSearchedCorpseText;          //SARGE: Corpses show "[Searched]" text when interacted with for the first time.
@@ -418,13 +420,17 @@ var string HDTPMeshTex[8];
 
 //GMDX: CyberP & dasraiser
 //SAVEOUT
-var globalconfig int QuickSaveIndex; //out of some number
-var globalconfig int QuickSaveTotal;//this number
+//var globalconfig int QuickSaveIndex; //out of some number
+//var globalconfig int QuickSaveTotal;//this number
 var globalconfig bool bTogAutoSave;   //CyberP: enable/disable autosave
-var globalconfig int iQuickSaveLast;//index to last saved file
-var travel int QuickSaveLast;
-var travel int QuickSaveCurrent;
-var string     QuickSaveName;
+var globalconfig int iQuickSaveMax;//Maximum number of quicksaves
+var globalconfig int iAutoSaveMax;//Maximum number of autosaves
+var globalconfig int iLastSave;//index to last save. Used for quickloading.
+var globalconfig int iAutosaveSlots[50];//Array of autosave slots
+var globalconfig int iQuicksaveSlots[50];//Array of quicksave slots
+var localized string AutoSaveGameTitle; //Autosave names
+//var travel int QuickSaveLast;
+//var travel int QuickSaveCurrent;
 //hardcore mode
 var travel bool bHardCoreMode; //if set disable save game options.
 //misc
@@ -459,7 +465,7 @@ var globalconfig bool bXhairShrink;
 var globalconfig bool bNoKnives;
 var globalconfig bool bModdedHeadBob;
 var globalconfig bool bBeltAutofill;											//Sarge: Added new feature for auto-populating belt
-var globalconfig bool bHackLockouts;											//Sarge: Allow locking-out security terminals when hacked.
+var globalconfig bool bHackLockouts;											//Sarge: Allow locking-out security terminals when hacked, and rebooting.
 var bool bForceBeltAutofill;    	    										//Sarge: Overwrite autofill setting. Used by starting items
 var globalconfig bool bBeltMemory;  											//Sarge: Added new feature to allow belt to rember items
 var globalconfig bool bSmartKeyring;  											//Sarge: Added new feature to allow keyring to be used without belt, freeing up a slot
@@ -564,6 +570,9 @@ var bool bNanoVirusSentMessage;                                                 
 var localized String NanoVirusLabel;                                            //RSD: For deactivating augs from scrambler grenades
 var globalconfig bool bRestrictedMetabolism;                                    //RSD: Enables restricted eating and halved withdrawal delay
 
+//SARGE: Allow blocking the next weapon selection. Used by dialog number keys feature.
+var float fBlockBeltSelection;
+
 //GAMEPLAY MODIFIERS
 
 /*var travel bool bRandomizeCratesGeneralTool;
@@ -595,6 +604,8 @@ var travel bool bMoreLDDPNPCs;
 
 var travel bool bDisableConsoleAccess;                                          //SARGE: Disable console access via a modifier.
 
+var travel bool bWeaponRequirementsMatter;                                      //Sarge: Using certain weapons requires skill investments.
+
 //END GAMEPLAY MODIFIERS
 
 //Autosave Stuff
@@ -614,8 +625,6 @@ const DRUG_TOBACCO = 0;
 const DRUG_ALCOHOL = 1;
 const DRUG_CRACK = 2;
 
-var bool autosave;                                                              //Sarge: Autosave tells the Quicksave function to make an autosave instead
-
 var travel bool bLastRun;                                                       //Sarge: Stores our last running state
                                                                                 
 //Sarge: Allow Enhanced Weapon Offsets
@@ -630,6 +639,17 @@ var globalconfig bool bDialogHUDColors;                                         
 //var globalconfig bool bAdvancedAugWheel;                                        //Sarge: Allow manually assigning augmentations to the aug wheel, rather than auto-assigning all of them.
 var globalconfig bool bQuickAugWheel;                                           //Sarge: Instantly enable/disable augs when closing the menu over the selected aug, otherwise require a mouse click.
 var globalconfig bool bAugWheelDisableAll;                                      //Sarge: Show the Disable All button on the Aug Wheel
+
+var globalconfig bool bTrickReloading;											//Sarge: Allow reloading with a full clip.
+
+var globalconfig int iAllowCombatMusic;                                        //SARGE: Enable/Disable combat music, or make it require 2 enemies
+
+//Crosshair Settings
+var globalconfig bool bFullAccuracyCrosshair;                                   //SARGE: If false, disable the "Accuracy Crosshairs" when at 100% accuracy
+
+var globalconfig bool bAlwaysShowBloom;                                         //SARGE: Always show weapon bloom
+
+var globalconfig bool bShowEnergyBarPercentages;                                //SARGE: If true, show the oxygen and bioenergy percentages below the bars.
 
 //////////END GMDX
 
@@ -1073,16 +1093,6 @@ function PostBeginPlay()
 		bCheatsEnabled = False;
 	HDTP();
 
-// SAVEOUT
-
-	//QuickSaveCurrent=int(ConsoleCommand("get DeusEx.JCDentonMale QuickSaveIndex"));
-	//QuickSaveLast=int(ConsoleCommand("get DeusEx.JCDentonMale iQuickSaveLast"));
-
-	QuickSaveCurrent=QuickSaveIndex;
-	QuickSaveLast=iQuickSaveLast;
-
-	log("MYCHK::"@QuickSaveCurrent@"::"@QuickSaveLast);
-
 	RefreshLeanKeys();
     RefreshMantleKey();
     RefreshAugWheelKey();                                                       //RSD: Hold aug wheel
@@ -1519,7 +1529,7 @@ event TravelPostAccept()
 	}
 
 	// make sure the player's eye height is correct
-	BaseEyeHeight = CollisionHeight - (GetDefaultCollisionHeight() - Default.BaseEyeHeight);
+	BaseEyeHeight = CollisionHeight - (GetBaseEyeHeight() - Default.BaseEyeHeight);
 
 	//GMDX
 
@@ -1869,7 +1879,7 @@ exec function LoadGame(int saveIndex)
 }
 
 //Sarge: Move Save Checks to a single function, rather than being everywhere
-function bool CanSave(optional bool allowHardcore, optional bool checkAutosave)
+function bool CanSave(optional bool allowHardcore)
 {
 	local DeusExLevelInfo info;
 
@@ -1883,7 +1893,7 @@ function bool CanSave(optional bool allowHardcore, optional bool checkAutosave)
 	// 4) We're interpolating (playing outtro)
 	// 5) A datalink is playing
 	// 6) We're in a multiplayer game
-    // 7) If autosaving, that we're within the autosave time limit
+    // 7) SARGE: We're in a conversation
 
     if ((bHardCoreMode || bRestrictedSaving) && !allowHardcore) //Hardcore Mode
         return false;
@@ -1900,17 +1910,30 @@ function bool CanSave(optional bool allowHardcore, optional bool checkAutosave)
     if (Level.Netmode != NM_Standalone) //Multiplayer Game
 	   return false;
 
-    if ((bRestrictedSaving || bHardCoreMode) && checkAutosave && autosaveRestrictTimer > saveTime) //Autosave timer not expired
+    if (InConversation())
         return false;
 
     return true; 
 }
 
+function GameDirectory GetSaveGameDirectory()
+{
+	local GameDirectory saveDir;
+
+	// Create our Map Directory class
+	saveDir = CreateGameDirectoryObject();
+	saveDir.SetDirType(saveDir.EGameDirectoryTypes.GD_SaveGames);
+	saveDir.GetGameDirectory();
+
+	return saveDir;
+}
+
 //We can't modify the native function, so do this here, and then call it
-function DoSaveGame(int saveIndex, optional String saveDesc)
+function int DoSaveGame(int saveIndex, optional String saveDesc)
 {
     local TechGoggles tech;
 	local DeusExRootWindow root;
+	
 	root = DeusExRootWindow(rootWindow);
 
     //Placeholder Hackfix
@@ -1920,60 +1943,111 @@ function DoSaveGame(int saveIndex, optional String saveDesc)
         foreach AllActors(class'TechGoggles', tech)
             if ((tech.Owner == Self) && tech.bActive)
                 tech.Activate();
-	
-    root.hide();
+    
+    //root.hide();
+    root.GenerateSnapshot(True);
     SaveGame(saveIndex, saveDesc);
-    root.show();
+    root.HideSnapshot();
+    //root.show();
 
-    //Sarge: actually, always do this
-    //if (autosave) 
-    //{
-        autosave = false;
-        bResetAutosaveTimer = true;
-    //}
-
+    ConsoleCommand("set DeusExPlayer iLastSave " $ saveIndex);
+    return saveIndex;
 }
 
-function PerformAutoSave()
+function int FindAutosaveSlot()
 {
-    autosave = true;
-    QuickSave();
-    autosave = false;
+    local int slot, i, last;
+	local GameDirectory saveDir;
+
+    last = iAutoSaveMax - 1;
+
+    if (last <= 0)
+        return -1; //If no slots, Use the standard quicksave slot
+
+    //pick out highest index
+    slot = iAutoSaveSlots[last];
+    
+    //If it's zero, get a new index and add it to the array
+    if (slot == 0)
+    {
+        saveDir = GetSaveGameDirectory();
+		slot=saveDir.GetNewSaveFileIndex();
+    }
+
+    //Now "rotate" the array by moving everything up (and wrapping)
+    for (i = last; i > 0;i--)
+        iAutoSaveSlots[i] = iAutoSaveSlots[i - 1];
+
+    //Set slot 0 to our current slot
+    iAutoSaveSlots[0] = slot;
+    
+    CriticalDelete(saveDir);
+
+    return slot;
+}
+
+function int FindQuicksaveSlot()
+{
+    local int slot, i, last;
+	local GameDirectory saveDir;
+
+    last = iQuickSaveMax - 1;
+
+    if (last <= 0)
+        return -1; //If no slots, Use the standard quicksave slot
+
+    //pick out highest index
+    slot = iQuicksaveSlots[last];
+    
+    //If it's zero, get a new index and add it to the array
+    if (slot == 0)
+    {
+        saveDir = GetSaveGameDirectory();
+		slot=saveDir.GetNewSaveFileIndex();
+    }
+
+    //Now "rotate" the array by moving everything up (and wrapping)
+    for (i = last; i > 0;i--)
+        iQuicksaveSlots[i] = iQuicksaveSlots[i - 1];
+
+    //Set slot 0 to our current slot
+    iQuicksaveSlots[0] = slot;
+	
+    CriticalDelete(saveDir);
+
+    return slot;
+}
+
+function bool PerformAutoSave(bool allowHardcore)
+{
+    if (!CanSave(allowHardcore))
+        return false;
+    
+    //Only allow autosaving if we have autosaves turned on,
+    //or if saving restrictions is enabled.
+    if (bTogAutoSave || bRestrictedSaving || bHardCoreMode)
+    {
+        DoSaveGame(FindAutosaveSlot(), sprintf(AutoSaveGameTitle,TruePlayerName));
+        return true;
+    }
+    return false;
 }
 
 // ----------------------------------------------------------------------
 // QuickSave()
 // ----------------------------------------------------------------------
-
 exec function QuickSave()
 {
-	local DeusExLevelInfo info;
+    Quicksave2(sprintf(QuickSaveGameTitle,TruePlayerName));
+}
 
-	info = GetLevelInfo();
-
-    if (!autosave && !CanSave())
+//Can't add an optional to the above function, so we use a separate one instead
+function QuickSave2(string SaveString, optional bool allowHardcore)
+{
+    if (!CanSave(allowHardcore))
         return;
 
-//SAVEOUT
-	ConsoleCommand("set DeusEx.JCDentonMale QuickSaveIndex "$QuickSaveCurrent);
-//   QuickSaveIndex=QuickSaveCurrent;
-
-	if (QuickSaveCurrent>=QuickSaveTotal)
-	  QuickSaveCurrent=0;
-	QuickSaveCurrent++;
-
-	QuickSaveLast=-(10+QuickSaveCurrent);
-	if (!autosave)
-	   QuickSaveName=sprintf(QuickSaveGameTitle,QuickSaveCurrent);
-	else
-       QuickSaveName=sprintf("Auto Save%d",QuickSaveCurrent);
-	log("MYCHK:DX_QuickSave: ,"@QuickSaveName@" ,Last:"@QuickSaveLast@" ,Current:"@QuickSaveCurrent);
-	DoSaveGame(QuickSaveLast, QuickSaveName);
-	ConsoleCommand("set DeusEx.JCDentonMale iQuickSaveLast "$QuickSaveLast);
-
-//	default.iQuickSaveLast=QuickSaveLast;
-
-//original	SaveGame(-1, QuickSaveGameTitle);
+	DoSaveGame(FindQuicksaveSlot(), SaveString);
 }
 
 // ----------------------------------------------------------------------
@@ -1982,9 +2056,19 @@ exec function QuickSave()
 
 exec function QuickLoad()
 {
+	local GameDirectory saveDir;
+	local DeusExSaveInfo info;
+
+    saveDir = GetSaveGameDirectory();
+
 	//Don't allow in multiplayer.
 	if (Level.Netmode != NM_Standalone)
 	  return;
+
+    //Confirm the save exists before trying to do anything
+    info = saveDir.GetSaveInfo(int(ConsoleCommand("get DeusExPlayer iLastSave")));
+    if (info == None)
+        return;
 
 	if (DeusExRootWindow(rootWindow) != None && !IsInState('dying'))
 		DeusExRootWindow(rootWindow).ConfirmQuickLoad();
@@ -2001,10 +2085,7 @@ function QuickLoadConfirmed()
 	if (Level.Netmode != NM_Standalone)
 	  return;
 
-	//log("MYCHK:DX_QuickLoadConfirmed: "@QuickSaveLast);
-//SAVEOUT
-LoadGame(QuickSaveLast); //changed so now selects last saved game, even if from menu
-//original	LoadGame(-1);
+    LoadGame(int(ConsoleCommand("get DeusExPlayer iLastSave"))); //changed so now selects last saved game, even if from menu
 }
 
 // ----------------------------------------------------------------------
@@ -2130,7 +2211,7 @@ function StartTrainingMission()
 // ShowIntro()
 // ----------------------------------------------------------------------
 
-function ShowIntro(optional bool bStartNewGame)
+function ShowIntro(optional bool bStartNewGame, optional bool force)
 {
     local Inventory anItem;
 	//GMDX: fix inventory bug when player dies and starts new game
@@ -2151,7 +2232,7 @@ function ShowIntro(optional bool bStartNewGame)
 	// Make sure all augmentations are OFF before going into the intro
 	AugmentationSystem.DeactivateAll();
 
-	if (bSkipNewGameIntro || bPrisonStart)
+	if ((bSkipNewGameIntro || bPrisonStart) && !force)
 	  PostIntro();
 	  else// Reset the player
 		 Level.Game.SendPlayer(Self, "00_Intro");
@@ -2273,6 +2354,7 @@ function ResetPlayer(optional bool bTraining)
 {
 	local inventory anItem;
 	local inventory nextItem;
+    local int i;
 
 	ResetPlayerToDefaults();
 
@@ -2283,6 +2365,10 @@ function ResetPlayer(optional bool bTraining)
 		AugmentationSystem.Destroy();
 		AugmentationSystem = None;
 	}
+
+    // Reset Belt Memory
+    for(i = 0;i < 10;i++)
+        ClearPlaceholder(i);
 
 	// Give the player a pistol and a prod
 	if (!bTraining && !bPrisonStart)
@@ -2347,7 +2433,7 @@ function ResetPlayerToDefaults()
 	{
 	  log("DELETE "@anItem);
 	   nextItem=anItem.Inventory;
-		DeleteInventory(anItem);
+		DeleteInventory(anItem,true);
 	  anItem.Destroy();
 	  anItem=nextItem;
 	}
@@ -2737,10 +2823,10 @@ exec function PlayMusicWindow()
 
 function UpdateDynamicMusic(float deltaTime)
 {
-	local bool bCombat;
 	local ScriptedPawn npc;
 	local Pawn CurPawn;
 	local DeusExLevelInfo info;
+    local int aggro;                    //Sarge: Keep track of the number of aggro enemies. If >2, start combat music. If 0 stop combat music.
 
 	if (Level.Song == None)
 		return;
@@ -2782,9 +2868,9 @@ function UpdateDynamicMusic(float deltaTime)
 	}
 	else if (IsInState('Conversation'))
 	{
-	    //if (info != none)
-	    //   if (info.bBarOrClub)
-        //      return;  //CyberP: no dynamic music in clubs and bars.
+	    if (info != none)
+	       if (info.bBarOrClub)
+              return;  //CyberP: no dynamic music in clubs and bars.
 		if (musicMode != MUS_Conversation)
 		{
 			// save our place in the ambient track
@@ -2807,63 +2893,63 @@ function UpdateDynamicMusic(float deltaTime)
 	}
 	else
 	{
+        //SARGE: Changed to only start combat music if at least 3 enemies are aggro'd
 		// only check for combat music every second //CyberP: 2 secs
 		if (musicCheckTimer >= 2.0)
 		{
 			musicCheckTimer = 0.0;
-			bCombat = False;
+			aggro = 0;
 
-			// check a 100 foot radius around me for combat
-		 // XXXDEUS_EX AMSD Slow Pawn Iterator
-		 //foreach RadiusActors(class'ScriptedPawn', npc, 1600)
-		 for (CurPawn = Level.PawnList; CurPawn != None; CurPawn = CurPawn.NextPawn)
-		 {
-			npc = ScriptedPawn(CurPawn);
-			if ((npc != None) && (VSize(npc.Location - Location) < (2000 + npc.CollisionRadius)))
-			{
-			   if ((npc.GetStateName() == 'Attacking') && (npc.Enemy == Self))
-			   {
-				  bCombat = True;
-				  break;
-			   }
-			}
-		 }
-			if (bCombat)
-			{
-				musicChangeTimer = 0.0;
+            // check a 100 foot radius around me for combat
+            // XXXDEUS_EX AMSD Slow Pawn Iterator
+            //foreach RadiusActors(class'ScriptedPawn', npc, 1600)
+            for (CurPawn = Level.PawnList; CurPawn != None; CurPawn = CurPawn.NextPawn)
+            {
+                npc = ScriptedPawn(CurPawn);
+                if ((npc != None) && (VSize(npc.Location - Location) < (2000 + npc.CollisionRadius)))
+                {
+                    if ((npc.GetStateName() == 'Attacking') && (npc.Enemy == Self) && iAllowCombatMusic > 0)
+                    {
+                        aggro++;
+                    }
+                }
+            }
+            if (aggro >= iAllowCombatMusic && iAllowCombatMusic > 0)
+            {
+                musicChangeTimer = 0.0;
 
-				if (musicMode != MUS_Combat)
-				{
-					// save our place in the ambient track
-					if (musicMode == MUS_Ambient)
-						savedSection = SongSection;
-					else
-						savedSection = 255;
+                if (musicMode != MUS_Combat)
+                {
+                    // save our place in the ambient track
+                    if (musicMode == MUS_Ambient)
+                        savedSection = SongSection;
+                    else
+                        savedSection = 255;
 
-					ClientSetMusic(Level.Song, 3, 255, MTRAN_FastFade);
-					musicMode = MUS_Combat;
-				}
-			}
-			else if (musicMode != MUS_Ambient)
-			{
-				// wait until we've been out of combat for 5 seconds before switching music
-				if (musicChangeTimer >= 5.0)
-				{
-					// use the default ambient section for this map
-					if (savedSection == 255)
-						savedSection = Level.SongSection;
+                    ClientSetMusic(Level.Song, 3, 255, MTRAN_FastFade);
+                    musicMode = MUS_Combat;
+                }
+            }
+            else if (aggro == 0 && musicMode != MUS_Ambient)
+            {
+                // wait until we've been out of combat for 5 seconds before switching music
+                if (musicChangeTimer >= 5.0)
+                {
+                    // use the default ambient section for this map
+                    if (savedSection == 255)
+                        savedSection = Level.SongSection;
 
-					// fade slower for combat transitions
-					if (musicMode == MUS_Combat)
-						ClientSetMusic(Level.Song, savedSection, 255, MTRAN_SlowFade);
-					else
-						ClientSetMusic(Level.Song, savedSection, 255, MTRAN_Fade);
+                    // fade slower for combat transitions
+                    if (musicMode == MUS_Combat)
+                        ClientSetMusic(Level.Song, savedSection, 255, MTRAN_SlowFade);
+                    else
+                        ClientSetMusic(Level.Song, savedSection, 255, MTRAN_Fade);
 
-					savedSection = 255;
-					musicMode = MUS_Ambient;
-					musicChangeTimer = 0.0;
-				}
-			}
+                    savedSection = 255;
+                    musicMode = MUS_Ambient;
+                    musicChangeTimer = 0.0;
+                }
+            }
 		}
 	}
 }
@@ -3770,13 +3856,22 @@ function UpdateCameraRotation(SecurityCamera camera, Rotator rot)
 }
 
 //client->server (window to player)
-function ToggleCameraState(SecurityCamera cam, ElectronicDevices compOwner)
+function ToggleCameraState(SecurityCamera cam, ElectronicDevices compOwner, optional bool bHacked)
 {
-	if (cam.bActive)
+    //If we're active, or we were rebooting, and we logged in, then disable
+	if ((cam.bActive || cam.bRebooting) && !bHacked)
 	{
 	  cam.UnTrigger(compOwner, self);
 	  cam.team = -1;
 	}
+    //Set to reboot
+    else if (cam.bActive && bHacked)
+    {
+        cam.UnTrigger(compOwner, self);
+        cam.team = -1;
+        cam.StartReboot(self);
+    }
+    //Re-enable
 	else
 	{
       cam.bRebooting = false;
@@ -3791,43 +3886,36 @@ function ToggleCameraState(SecurityCamera cam, ElectronicDevices compOwner)
 }
 
 //client->server (window to player)
-function SetTurretState(AutoTurret turret, bool bActive, bool bDisabled)
+function SetTurretState(AutoTurret turret, bool bActive, bool bDisabled, bool bHacked)
 {
-    if (!bDisabled)
+    if ((bDisabled && !bHacked) || !bDisabled)
     {
         turret.disableTime = 0;
         turret.bRebooting = false;
+    }
+    else if (bDisabled && bHacked)
+    {
+        turret.StartReboot(self);
     }
 	turret.bActive   = bActive;
 	turret.bDisabled = bDisabled;
 	turret.bComputerReset = False;
 }
 
-//These are required because of client/server stuff making modifying the above functions impossible
-function ToggleCameraStateHacked(SecurityCamera cam, ElectronicDevices compOwner)
-{
-    ToggleCameraState(cam,compOwner);
-    if (!cam.bActive)
-    {
-        cam.bRebooting = true;
-        cam.disableTime = saveTime + (cam.disableTimeMult * MAX(1,SkillSystem.GetSkillLevel(class'SkillComputer')));
-    }
-}
-
-function SetTurretStateHacked(AutoTurret turret, bool bActive, bool bDisabled)
-{
-    SetTurretState(turret,bActive,bDisabled);
-    if (bDisabled)
-    {
-        turret.bRebooting = true;
-        turret.disableTime = saveTime + (turret.disableTimeMult * MAX(1,SkillSystem.GetSkillLevel(class'SkillComputer')));
-    }
-}
-
 //client->server (window to player)
-function SetTurretTrackMode(ComputerSecurity computer, AutoTurret turret, bool bTrackPlayers, bool bTrackPawns)
+function SetTurretTrackMode(ComputerSecurity computer, AutoTurret turret, bool bTrackPlayers, bool bTrackPawns,bool bHacked)
 {
 	local String str;
+    
+    if (bHacked)
+    {
+        turret.StartReboot(self);
+    }
+    else
+    {
+        turret.disableTime = 0;
+        turret.bRebooting = false;
+    }
 
 	turret.bTrackPlayersOnly = bTrackPlayers;
 	turret.bTrackPawnsOnly   = bTrackPawns;
@@ -5081,6 +5169,12 @@ function DoJump( optional float F )
         Velocity = Vector(Rotation) * 260;
 		Velocity.Z = JumpZ*0.75;
 		}
+	
+        // Trash: Speed Enhancement now uses energy while jumping
+        if (AugmentationSystem.GetClassLevel(class'AugSpeed') != -1)
+        {
+            Energy=MAX(Energy - AugSpeed(AugmentationSystem.GetAug(class'AugSpeed')).EnergyDrainJump,0);
+        }
 
         if (bHardCoreMode)                                                      //RSD: Running drains 1.3x on Hardcore, now jumping drains 1.25x
             swimTimer -= 1.0;
@@ -5171,6 +5265,13 @@ if (Physics == PHYS_Walking)
         else
 		Velocity.Z = JumpZ;
 
+		if (AugmentationSystem.GetClassLevel(class'AugSpeed') != -1 && Energy >= 3)	// Trash: Speed Enhancement now uses energy while jumping
+		{
+			Energy -= 3;
+			if (Energy <= 0)
+				Energy = 0;
+		}
+
         if (bHardCoreMode)                                                      //RSD: Running drains 1.3x on Hardcore, now jumping drains 1.25x
             swimTimer -= 1.0;
         else
@@ -5236,7 +5337,7 @@ function bool SetBasedPawnSize(float newRadius, float newHeight)
 	}
 
 	centerDelta    = vect(0, 0, 1)*(newHeight-oldHeight);
-	deltaEyeHeight = GetDefaultCollisionHeight() - Default.BaseEyeHeight;
+	deltaEyeHeight = GetBaseEyeHeight() - Default.BaseEyeHeight;
 
 	if ( Level.NetMode != NM_Standalone )
 	{
@@ -5321,9 +5422,14 @@ function bool ResetBasedPawnSize()
 
 function float GetDefaultCollisionHeight()
 {
+	return (Default.CollisionHeight-4.5);
+}
+
+function float GetBaseEyeHeight()
+{
 	if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
 	{
-		return Default.CollisionHeight-9.0;
+		return Default.CollisionHeight;
 	}
 	return (Default.CollisionHeight-4.5);
 }
@@ -5898,7 +6004,7 @@ state PlayerWalking
                if (!bOnLadder && FRand() < 0.7)
                {
                     if (FlagBase.GetBool('LDDPJCIsFemale')) //Sarge: Lay-D Denton support
-                        PlaySound(Sound(DynamicLoadObject("FJCGasp", class'Sound', false)), SLOT_None, 0.8);
+                        PlaySound(Sound(DynamicLoadObject("FemJC.FJCGasp", class'Sound', false)), SLOT_None, 0.8);
                     else
                         PlaySound(sound'MaleBreathe', SLOT_None,0.8);
                }
@@ -7039,6 +7145,11 @@ function bool RestrictInput()
 	if (IsInState('Interpolating') || IsInState('Dying') || IsInState('Paralyzed') || (FlagBase.GetBool('PlayerTraveling') ))
 		return True;
 
+    //SARGE: Disallow any sort of UI operations when the "pause" key is pressed
+    //This way, real-time UI is actually a real-time UI
+    if (DeusExRootWindow(rootWindow).bUIPaused || (Level.Pauser != ""))
+        return true;
+
 	return False;
 }
 
@@ -7562,6 +7673,7 @@ exec function ParseRightClick()
 	// ParseRightClick deals with things in the WORLD
 	//
 	// Precedence:
+    // - Reload last save if dead
     // - Unscope/Unzoom currently held object
     // - Park Spy Drone
 	// - Pickup highlighted Inventory
@@ -7579,6 +7691,12 @@ exec function ParseRightClick()
 	local Vector loc;
 	local DeusExWeapon ExWep;
     local DeusExRootWindow root;
+
+    //SARGE: Add quickloading if pressing right click while dead.
+    if (IsInState('dying') && !bDeadLoad)
+    {
+        QuickLoad();
+    }
 
     if (RestrictInput())
 		return;
@@ -8062,6 +8180,8 @@ function DoFrob(Actor Frobber, Inventory frobWith)
 
 exec function PutInHand(optional Inventory inv)
 {
+    local DeusExWeapon weap;
+
 	if (RestrictInput())
 		return;
 
@@ -8069,6 +8189,11 @@ exec function PutInHand(optional Inventory inv)
 	// can't put anything in hand if you're using a spy drone
 	if ((inHand == None) && bSpyDroneActive && !bSpyDroneSet)                   //RSD: Allows the user to toggle between moving and controlling the drone
 		return;
+
+    //SARGE: Weapon Requirements Matter
+    weap = DeusExWeapon(inv);
+    if (weap != None && !weap.CanUseWeapon(self))
+        return;
 
 	// can't do anything if you're carrying a corpse
 	if ((inHand != None) && inHand.IsA('POVCorpse'))
@@ -8558,6 +8683,8 @@ function Bool FindInventorySlot(Inventory anItem, optional Bool bSearchOnly)
 	invHeight = anItem.largeIconHeight;
 	anItem.invSlotsX = invY;
 	anItem.invSlotsY = invX;
+    if (anItem.isA('DeusExWeapon'))
+        DeusExWeapon(anItem).bRotated = !DeusExWeapon(anItem).bRotated;
 	anItem.largeIconWidth = invHeight;
 	anItem.largeIconHeight = invWidth;
     for (row=0; row<maxInvRows; row++)
@@ -8922,6 +9049,7 @@ exec function ToggleWalk()
 exec function ReloadWeapon()
 {
 	local DeusExWeapon W;
+    local bool full, hasAmmo;
 
 	if (RestrictInput())
 		return;
@@ -8930,9 +9058,15 @@ exec function ReloadWeapon()
 
 	W = DeusExWeapon(Weapon);  //CyberP: cannot reload when ammo in mag but none in reserves.
                                 //Sarge: Additionally fix reloading when full
-	if (W != None && (W.AmmoLeftInClip() != W.AmmoType.AmmoAmount || W.IsA('WeaponHideAGun') || W.GoverningSkill == class'DeusEx.SkillDemolition') && W.AmmoLeftInClip() < W.ReloadCount)
-		W.ReloadAmmo();
 
+    if (W != None)
+    {
+        full = W.AmmoLeftInClip() >= W.ReloadCount;
+        hasAmmo = W.AmmoType.AmmoAmount - W.ClipCount > 0;
+        if (W != None && ((!full && hasAmmo) || bTrickReloading || bHardCoreMode))
+            W.ReloadAmmo();
+
+    }
     UpdateCrosshair();
 }
 
@@ -9624,6 +9758,8 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 				RemoveItemFromSlot(item);
                 if (!bBeltAutofill)
                     MakeBeltObjectPlaceholder(item); //SARGE: Disabled because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
+                else
+                    RemoveObjectFromBelt(item);
 
 				// make sure we have one copy to throw!
 				DeusExPickup(item).NumCopies = 1;
@@ -9644,8 +9780,10 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 
 			// Remove it from the inventory slot grid
 			RemoveItemFromSlot(item);
-            if (!bBeltAutofill)
+            if (!bBeltAutofill && bBeltMemory)
                 MakeBeltObjectPlaceholder(item); //SARGE: Disabled because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
+            else
+                RemoveObjectFromBelt(item);
 		}
 
 		// if we are highlighting something, try to place the object on the target //CyberP: more lenience when dropping
@@ -10467,6 +10605,9 @@ exec function ToggleRadialAugMenu()
 
     if (!root.hud.bIsVisible) return; // don't toggle menu if HUD is invis
 
+    if (RestrictInput())
+        return;
+
 	bRadialAugMenuVisible = !bRadialAugMenuVisible;
 
 	if (bRadialAugMenuVisible) {
@@ -10897,6 +11038,14 @@ exec function ActivateBelt(int objectNum)
 {
 	local DeusExRootWindow root;
 
+    //SARGE: When holding the number keys in dialog, we will select a weapon
+    //upon finishing the conversation. Ignore the weapon change command.
+    if (fBlockBeltSelection > 0)
+    {
+        fBlockBeltSelection = 0;
+        return;
+    }
+
 	if (RestrictInput())
 		return;
 
@@ -11253,7 +11402,7 @@ function PostIntro()
         if (bPrisonStart)
             StartNewGame("05_NYC_UNATCOMJ12lab"); //SARGE: Have to hardcode this. Game crashes if we use a property
         else
-            StartNewGame(strStartMap);
+            StartNewGame(strStartMap); //SARGE: TODO: Add loadonly flag so we always reload.
 	}
 	else
 	{
@@ -11754,6 +11903,10 @@ ignores SeePlayer, HearNoise, Bump;
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
+
+        //Update belt selection timer
+        if (fBlockBeltSelection > 0)
+            fBlockBeltSelection -= deltaTime;
 	}
 
 	function LoopHeadConvoAnim()
@@ -12744,10 +12897,12 @@ function bool GetExceptedCode(string code)
 	return code == "CALVO" //Alex Jacobson computer password on the wall next to his computer
         || code == "BIONICMAN" //we get our code as soon as we enter our office, but it takes a little bit. Fix it not working when we should know it
         || code == "INSURGENT" //maggie chows code can only be guessed, never found, but is designed that way.
-        || code == "2167" //Only displayed in a computer message, so we never get a note for it
+        //|| code == "2167" //Only displayed in a computer message, so we never get a note for it //NOW RANDOMISED
         || code == "718" //Can only be guessed based on cryptic information
         || code == "7243" //We are only given 3 digits, need to guess the 4th
         || code == "WYRDRED08" //We are not given the last digit
+        //|| (code == "1966" && FlagBase.GetBool('CassandraDone')) //Only given in conversation, no note //EDIT: UNFORTUNATELY THIS IS UNRELIABLE!!
+        || code == "1966" //Only given in conversation, no note
         || code == "4321"; //We are told to "count backwards from 4"
 }
 
@@ -16634,23 +16789,6 @@ function MultiplayerTick(float DeltaTime)
 	}
 	RepairInventory();
 	lastRefreshTime = 0;
-
-
-    //Update autosave restriction timer
-    if (bResetAutosaveTimer)
-    {
-	    autosaveRestrictTimer = saveTime + autosaveRestrictTimerDefault;
-        bResetAutosaveTimer = false;
-        //ClientMessage("reset autosaveRestrictTimer");
-    }
-
-    
-    /*
-    autosaveTimeRemaining = autosaveRestrictTimer - saveTime;
-    if (int(autosaveTimeRemaining % 60) == 0)
-        ClientMessage((int(autosaveTimeRemaining) / 60) @ "minutes until autosave");
-     */
-
 }
 
 // ----------------------------------------------------------------------
@@ -17054,23 +17192,23 @@ function int GetAdjustedMaxAmmo(Ammo ammotype)
 
     if (ammotype.IsA('DeusExAmmo'))
     {
-    DXammotype = DeusExAmmo(ammotype);
-    adjustedMaxAmmo = DXammotype.default.MaxAmmo;
-    associatedSkill = DXammotype.default.ammoSkill;
-    if (AugmentationSystem != none)
-    	if (self.AugmentationSystem.GetAugLevelValue(class'AugAmmoCap') > 0.0 && (associatedSkill != class'SkillDemolition'))// || associatedSkill != class'SkillWeaponLowTech'))
-            mult += AugmentationSystem.GetAugLevelValue(class'AugAmmoCap');
-    if (associatedSkill != none && associatedSkill != class'DeusEx.SkillDemolition')
-    	mult -= 2.*SkillSystem.GetSkillLevelValue(associatedSkill);
-   	else if (associatedSkill == class'DeusEx.SkillDemolition')
-   	{
-   		mult -= 4.*SkillSystem.GetSkillLevelValue(associatedSkill);
-   		//BroadcastMessage(mult);
-    }
+        DXammotype = DeusExAmmo(ammotype);
+        adjustedMaxAmmo = DXammotype.default.MaxAmmo;
+        associatedSkill = DXammotype.default.ammoSkill;
+        if (AugmentationSystem != none)
+            if (self.AugmentationSystem.GetAugLevelValue(class'AugAmmoCap') > 0.0 && (associatedSkill != class'SkillDemolition'))// || associatedSkill != class'SkillWeaponLowTech'))
+                mult += AugmentationSystem.GetAugLevelValue(class'AugAmmoCap');
+        if (associatedSkill != none && associatedSkill != class'DeusEx.SkillDemolition')
+            mult += -2*SkillSystem.GetSkillLevelValue(associatedSkill)-0.5;
+        else if (associatedSkill == class'DeusEx.SkillDemolition')
+        {
+            mult += -4*SkillSystem.GetSkillLevelValue(associatedSkill)-0.5;
+            //BroadcastMessage(mult);
+        }
     }
     else
     {
-    adjustedMaxAmmo = ammotype.default.MaxAmmo;
+        adjustedMaxAmmo = ammotype.default.MaxAmmo;
     }
     //if (bHalveAmmo || (bHardcoreMode && bExtraHardcore))                        //RSD: Hardcore+ forces on halved max ammo
   	//	mult *= 0.5;
@@ -17142,7 +17280,6 @@ defaultproperties
      seed=-1;
      bNumberedDialog=True
      bCreditsInDialog=True
-     autosaveRestrictTimerDefault=600.0
      TruePlayerName="JC Denton"
      CombatDifficulty=1.000000
      SkillPointsTotal=5000
@@ -17161,6 +17298,7 @@ defaultproperties
      strStartMap="01_NYC_UNATCOIsland"
      bObjectNames=True
      bNPCHighlighting=True
+     bWallPlacementCrosshair=True
      bSubtitles=True
      bSubtitlesCutscene=True
      bBeltAutofill=True
@@ -17217,7 +17355,8 @@ defaultproperties
      RechargedPointsLabel="Recharged %d points"
      RechargedPointLabel="Recharged %d point"
      SkillPointsAward="%d skill points awarded"
-     QuickSaveGameTitle="Quick Save"
+     QuickSaveGameTitle="Quick Save [%s]"
+     AutoSaveGameTitle="Auto Save [%s]"
      WeaponUnCloak="Weapon drawn... Uncloaking"
      TakenOverString="I've taken over the "
      HeadString="Head"
@@ -17239,7 +17378,8 @@ defaultproperties
      bHDTP_Gunther=False
      bHDTP_Paul=False
      bHDTP_Nico=False
-     QuickSaveTotal=10
+     iQuickSaveMax=5
+     iAutoSaveMax=3
      bTogAutoSave=True
      bColorCodedAmmo=True
      bHardcoreAI3=True
@@ -17337,4 +17477,8 @@ defaultproperties
      bSearchedCorpseText=True
      bDisplayClips=true
      bCutsceneFOVAdjust=true
+     iFrobDisplayStyle=1
+     iAllowCombatMusic=1
+     bFullAccuracyCrosshair=true;
+     bShowEnergyBarPercentages=true;
 }

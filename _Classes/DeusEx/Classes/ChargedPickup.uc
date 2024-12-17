@@ -426,17 +426,17 @@ function unDimIcon() //RSD: When a biocell is used to charge an item, check if i
 
     if (bActivatable)
     {
-    if (bInObjectBelt)
-	{
-        objectNum = beltPos;
-        //hudbelt.objects[beltPos].bDimIcon = false;
-        hudbelt.RefreshHUDDisplay(0.0);
-	}
-	if (winInv != none)
-	{
-        winInv.CreateObjectBelt();
-        winInv.RefreshInventoryItemButtons();
-    }
+        if (bInObjectBelt)
+        {
+            objectNum = beltPos;
+            //hudbelt.objects[beltPos].bDimIcon = false;
+            hudbelt.RefreshHUDDisplay(0.0);
+        }
+        if (winInv != none)
+        {
+            winInv.CreateObjectBelt();
+            winInv.RefreshInventoryItemButtons();
+        }
 	}
 }
 

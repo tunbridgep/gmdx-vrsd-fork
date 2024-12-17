@@ -299,10 +299,14 @@ function DrawWindow(GC gc)
 					numTools = int((dxMover.lockStrength / player.SkillSystem.GetSkillLevelValue(class'SkillLockpicking')) + 0.99);
 					if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkLocksport').bPerkObtained == true)
 					    numTools = 1;
-                    //if (numTools == 1)
-					//	strInfo = ownedTools $ "/" $ numTools @ msgPick;
-					//else
+                    if (numTools == 1 && player.iFrobDisplayStyle == 0)
+						strInfo = numTools @ msgPick;
+                    else if (player.iFrobDisplayStyle == 0)
+						strInfo = numTools @ msgPicks;
+					else if (player.iFrobDisplayStyle == 1)
 						strInfo = ownedTools $ "/" $ numTools @ msgPicks;
+					else if (player.iFrobDisplayStyle == 2)
+						strInfo = numTools $ "/" $ ownedTools @ msgPicks;
 				    //if (dxMover.bPerkApplied)                                   //RSD: Doorsman perk
                         if (ownedTools < numTools && player.bColourCodeFrobDisplay)
 				            gc.SetTextColor(colNotEnough);
@@ -377,14 +381,20 @@ function DrawWindow(GC gc)
 				// draw the absolute number of multitools on top of the colored bar
 				if ((device.bHackable) && (device.hackStrength != 0.0))
 				{
-					numTools = int((device.hackStrength / player.SkillSystem.GetSkillLevelValue(class'SkillTech')) + 0.99);
+                    //SARGE: If we have Cracked, display 0 tools
+                    if (device.hackStrength <= 0.05 && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkCracked').bPerkObtained == true)
+                        numTools = 0;
+                    else
+                        numTools = int((device.hackStrength / player.SkillSystem.GetSkillLevelValue(class'SkillTech')) + 0.99);
 					ownedTools = player.GetInventoryCount('Multitool');
-					/*if (player.PerkNamesArray[31] == 1)                       //RSD: Changed CRACKED
-					   numTools = 1;*/
-					//if (numTools == 1)
-					//	strInfo = ownedTools $ "/" $ numTools @ msgTool;
-					//else
+                    if (numTools == 1 && player.iFrobDisplayStyle == 0)
+						strInfo = numTools @ msgTool;
+                    else if (player.iFrobDisplayStyle == 0)
+						strInfo = numTools @ msgTools;
+					else if (player.iFrobDisplayStyle == 1)
 						strInfo = ownedTools $ "/" $ numTools @ msgTools;
+					else if (player.iFrobDisplayStyle == 2)
+						strInfo = numTools $ "/" $ ownedTools @ msgTools;
                     if (ownedTools < numTools && player.bColourCodeFrobDisplay)
                         gc.SetTextColor(colNotEnough);
                     else if (ownedTools == numTools && player.bColourCodeFrobDisplay)

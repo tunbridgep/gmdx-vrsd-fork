@@ -55,6 +55,7 @@ var localized string FileSizeLabel;
 var localized string FreeSpaceLabel;
 var localized string ConfirmDeleteLabel;
 var localized string CheatsEnabledLabel;
+var localized string SaveIDLabel;
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -307,7 +308,7 @@ function CreateGamesList()
 	lstGames.SetColumnType(1, COLTYPE_String);
 	lstGames.SetColumnFont(1, Font'FontFixedWidthSmall');
 
-	lstGames.SetColumnType(2, COLTYPE_Float);
+	lstGames.SetColumnType(2, COLTYPE_String);
 	lstGames.SetSortColumn(2, bDateSortOrder);
 	lstGames.EnableAutoSort(True);
 
@@ -371,13 +372,18 @@ function UpdateSaveInfo(int rowId)
 			winSaveInfo.SetText(Sprintf(LocationLabel, saveInfo.MissionLocation));
 			winSaveInfo.AppendText(Sprintf(SaveCountLabel, saveInfo.SaveCount));
 			winSaveInfo.AppendText(Sprintf(PlayTimeLabel, BuildElapsedTimeString(saveInfo.saveTime)));
+            //SARGE: Add directory index as well
+            if (saveInfo.directoryIndex != -1)
+                winSaveInfo.AppendText(Sprintf(SaveIDLabel, saveInfo.directoryIndex));
+			//winSaveInfo.AppendText(Sprintf(PlayTimeLabel, BuildTimeJulian(saveInfo)));
 
 			// divide to GetSaveDirectorSize by 1024 to get size of directory in MB
 			// Round up by one for comfort (and so you don't end up with "0MB", only
 			// possible with really Tiny maps).
 
-			fileSize = (saveDir.GetSaveDirectorySize(Int(lstGames.GetField(rowId, 4))) / 1024) + 1;
-			winSaveInfo.AppendText(Sprintf(FileSizeLabel, fileSize));
+            //SARGE: Don't have room for this, save ID is more important!
+			//fileSize = (saveDir.GetSaveDirectorySize(Int(lstGames.GetField(rowId, 4))) / 1024) + 1;
+			//winSaveInfo.AppendText(Sprintf(FileSizeLabel, fileSize));
 
 			// Show the "Cheats Enabled" text if cheats were enabled for this savegame
 			winCheatsEnabled.Show(saveInfo.bCheatsEnabled);
@@ -715,6 +721,45 @@ function String TwoDigits(int number)
 // BuildTimeJulian()
 // ----------------------------------------------------------------------
 
+//SARGE: Do this with strings. Which suck.
+//TODO: Make it much better
+function String BuildTimeJulian(DeusExSaveInfo saveInfo)
+{
+    local string ret;
+
+    ret = ret $ saveInfo.year;
+
+    if (saveInfo.month < 10)
+        ret = ret $ "0";
+    
+    ret = ret $ saveInfo.month;
+    
+    if (saveinfo.day < 10)
+        ret = ret $ "0";
+    
+    ret = ret $ saveInfo.day;
+    ret = ret $ "---";
+
+    if (saveinfo.hour < 10)
+        ret = ret $ "0";
+    
+    ret = ret $ saveInfo.hour;
+    
+    if (saveinfo.minute < 10)
+        ret = ret $ "0";
+    
+    ret = ret $ saveInfo.minute;
+    
+    if (saveinfo.second < 10)
+        ret = ret $ "0";
+    
+    ret = ret $ saveInfo.second;
+
+    return ret;
+}
+
+/* Original Version Below
+Seems to not work. Float truncation????
 function Float BuildTimeJulian(DeusExSaveInfo saveInfo)
 {
 	local Float retValue;
@@ -737,6 +782,7 @@ function Float BuildTimeJulian(DeusExSaveInfo saveInfo)
 
 	return retValue;
 }
+*/
 
 // ----------------------------------------------------------------------
 // GetSaveGameDirectory()
@@ -801,6 +847,7 @@ defaultproperties
      PlayTimeLabel="Play Time: %s|n"
      FileSizeLabel="File Size: %dMB"
      FreeSpaceLabel="Free Space: %dMB"
+     SaveIDLabel="Save ID: %s"
      ConfirmDeleteLabel="Confirm Savegame Deletion"
      CheatsEnabledLabel="- CHEATS ENABLED -"
      actionButtons(0)=(Align=HALIGN_Right,Action=AB_Cancel)

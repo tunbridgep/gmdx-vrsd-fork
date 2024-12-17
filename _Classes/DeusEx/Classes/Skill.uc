@@ -116,6 +116,14 @@ simulated function String GetCurrentLevelString()
 	return skillLevelStrings[currentLevel];
 }
 
+//SARGE: Get the string for a particular level
+function String GetLevelString(int level)
+{
+    if (level > 3)
+        level = 3;
+	return skillLevelStrings[level];
+}
+
 // ----------------------------------------------------------------------
 // IncLevel()
 // ----------------------------------------------------------------------
