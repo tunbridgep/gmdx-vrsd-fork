@@ -9,13 +9,16 @@ var localized String shortName;
 function DisplayWeapon(bool overlay)
 {
 	super.DisplayWeapon(overlay);
-	if (IsHDTP())
-    	multiskins[0] = Getweaponhandtex();
-	else
-    {
-       multiskins[0]=GetWeaponHandTex();                                        //RSD: Fix vanilla hand tex
-       multiskins[2]=GetWeaponHandTex();
-    }
+	if (overlay)
+	{
+		if (IsHDTP())
+			multiskins[0] = handsTex;
+		else
+		{
+		   multiskins[0]=handsTex;                                        //RSD: Fix vanilla hand tex
+		   multiskins[2]=handsTex;
+		}
+	}
 }
 
 simulated function PreBeginPlay()

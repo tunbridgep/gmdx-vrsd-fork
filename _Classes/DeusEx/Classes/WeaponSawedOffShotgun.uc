@@ -84,17 +84,17 @@ function DisplayWeapon(bool overlay)
     super.DisplayWeapon(overlay);
     if (IsHDTP() && iHDTPModelToggle == 2 && overlay) //RSD: Clyzm Model
     {
-        multiskins[1] = Getweaponhandtex();
+        multiskins[1] = handstex;
     }
     /*
     else if (IsHDTP() && iHDTPModelToggle == 1 && overlay) //HDTP Model
     {
-        multiskins[0] = Getweaponhandtex();
+        multiskins[0] = handstex;
     }
     */
     else if (overlay)
     {
-        multiskins[0] = Getweaponhandtex();
+        multiskins[0] = handstex;
     }
 }
 

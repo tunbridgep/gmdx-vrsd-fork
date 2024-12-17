@@ -16,33 +16,32 @@ var float scopeTime;
 var int lerpClamp;
 
 //SARGE: This overwrites the one in DeusExWeapon.uc, we need a special one here with a strap
-function Texture GetWeaponHandTex()
+function SetWeaponHandTex()
 {
-    local Texture tex;
     local DeusExPlayer P;
 	
     P = deusexplayer(owner);
 	if(P == none)
-        return texture'MiniCrossbowTex1';
+        handsTex = texture'MiniCrossbowTex1';
 
 	if (P.FemaleEnabled() && (P.bFemaleHandsAlways || (P.FlagBase != None && P.FlagBase.GetBool('LDDPJCIsFemale'))))
     {
         switch(P.PlayerSkin)
         {
             case 0:
-                tex = Texture(DynamicLoadObject("FemJC.MiniCrossbowTex0Fem", class'Texture', false));
+                handsTex = Texture(DynamicLoadObject("FemJC.MiniCrossbowTex0Fem", class'Texture', false));
                 break;
             case 1:
-                tex = Texture(DynamicLoadObject("FemJC.MiniCrossbowTex4Fem", class'Texture', false));
+                handsTex = Texture(DynamicLoadObject("FemJC.MiniCrossbowTex4Fem", class'Texture', false));
                 break;
             case 2:
-                tex = Texture(DynamicLoadObject("FemJC.MiniCrossbowTex5Fem", class'Texture', false));
+                handsTex = Texture(DynamicLoadObject("FemJC.MiniCrossbowTex5Fem", class'Texture', false));
                 break;
             case 3:
-                tex = Texture(DynamicLoadObject("FemJC.MiniCrossbowTex6Fem", class'Texture', false));
+                handsTex = Texture(DynamicLoadObject("FemJC.MiniCrossbowTex6Fem", class'Texture', false));
                 break;
             case 4:
-                tex = Texture(DynamicLoadObject("FemJC.MiniCrossbowTex7Fem", class'Texture', false));
+                handsTex = Texture(DynamicLoadObject("FemJC.MiniCrossbowTex7Fem", class'Texture', false));
                 break;
         }
     }
@@ -52,17 +51,17 @@ function Texture GetWeaponHandTex()
 		switch(p.PlayerSkin)
 		{
 			//default, black, latino, ginger, albino, respectively
-			case 0: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.crossbowhandstex0A"); break;
-			case 1: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.crossbowhandstex1A"); break;
-			case 2: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.crossbowhandstex2A"); break;
-			case 3: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.crossbowhandstex3A"); break;
-			case 4: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.crossbowhandstex4A"); break;
+			case 0: handsTex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.crossbowhandstex0A"); break;
+			case 1: handsTex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.crossbowhandstex1A"); break;
+			case 2: handsTex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.crossbowhandstex2A"); break;
+			case 3: handsTex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.crossbowhandstex3A"); break;
+			case 4: handsTex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.crossbowhandstex4A"); break;
 		}
 	}
 
-    if (tex == None) //Final backup
-        tex = texture'minicrossbowtex1';
-	return tex;
+    if (handsTex == None) //Final backup
+        handsTex = texture'minicrossbowtex1';
+    //p.ClientMessage("Skin Tex: " $ handsTex);
 }
 
 
@@ -88,12 +87,11 @@ function DisplayWeapon(bool overlay)
 
     if (IsHDTP())
     {
-        if (overlay)
-            Multiskins[0] = Getweaponhandtex();
         
         //Show weapon addons
         if (overlay)
         {
+            Multiskins[0] = handsTex;
             ShowWeaponAddon(3,bHasScope);
             ShowWeaponAddon(4,bHasLaser);
             ShowWeaponAddon(5,bLasing);
@@ -112,6 +110,7 @@ function DisplayWeapon(bool overlay)
     {
         //Show Darts
         MultiSkins[3] = ammoTex;
+        Multiskins[0] = handsTex;
     }
 }
 

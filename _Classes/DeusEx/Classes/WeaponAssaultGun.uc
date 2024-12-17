@@ -52,7 +52,7 @@ function DisplayWeapon(bool overlay)
     {
         if (overlay)
         {
-            multiskins[7]=Getweaponhandtex();
+            multiskins[7]=handsTex;
             ShowWeaponAddon(3,bHasScope);
             ShowWeaponAddon(4,bHasSilencer);
             ShowWeaponAddon(1,bHasLaser);
@@ -68,7 +68,7 @@ function DisplayWeapon(bool overlay)
     }
     else if (overlay)
     {
-        multiskins[0]=Getweaponhandtex();
+        multiskins[0]=handsTex;
     }
 
 

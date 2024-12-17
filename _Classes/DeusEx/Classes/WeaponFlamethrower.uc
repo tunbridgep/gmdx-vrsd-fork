@@ -39,7 +39,8 @@ function PostBeginPlay()
 function DisplayWeapon(bool overlay)
 {
 	super.DisplayWeapon(overlay);
-    multiskins[0] = Getweaponhandtex();
+	if (overlay)
+		multiskins[0] = handsTex;
 }
 
 exec function UpdateHDTPsettings()

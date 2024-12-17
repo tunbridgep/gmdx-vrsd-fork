@@ -21,7 +21,7 @@ function DisplayWeapon(bool overlay)
     super.DisplayWeapon(overlay);
     if (IsHDTP() && iHDTPModelToggle == 2 && overlay) //Clyzm Model
     {
-        multiskins[1] = Getweaponhandtex();
+        multiskins[1] = handstex;
         ShowWeaponAddon(5,bHasSilencer);
         ShowWeaponAddon(6,!bHasSilencer);
         ShowWeaponAddon(4,bHasLaser);
@@ -32,7 +32,7 @@ function DisplayWeapon(bool overlay)
         if (overlay)
         {
             //MuzzleSlot = 5;
-            multiskins[6] = Getweaponhandtex();
+            multiskins[6] = handsTex;
             ShowWeaponAddon(4,bHasSilencer);
             ShowWeaponAddon(3,bHasLaser);
         }
@@ -42,7 +42,7 @@ function DisplayWeapon(bool overlay)
     }
     else if (overlay)
     {
-        multiskins[0] = Getweaponhandtex();
+        multiskins[0] = handsTex;
     }
 }
 

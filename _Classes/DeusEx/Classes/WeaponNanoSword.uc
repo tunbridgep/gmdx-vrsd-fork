@@ -28,16 +28,17 @@ function DisplayWeapon(bool overlay)
 	super.DisplayWeapon(overlay);
     if (IsHDTP())
     {
-        multiskins[5] = Getweaponhandtex();
+		if (overlay)
+			multiskins[5] = handstex;
         multiskins[2] = Texture'Effects.Electricity.WavyBlade';
         multiskins[3] = Texture'Effects.Electricity.WavyBlade';
         multiskins[4] = Texture'Effects.Electricity.WavyBlade';
         multiskins[6] = Texture'Effects.Electricity.WavyBlade';
         multiskins[7] = Texture'Effects.Electricity.WavyBlade';
     }
-    else
+    else if (overlay)
     {
-    	multiskins[0] = Getweaponhandtex();
+    	multiskins[0] = handstex;
     }
 
 }

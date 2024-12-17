@@ -318,6 +318,7 @@ var string HDTPPickupViewMesh;
 var string HDTPThirdPersonMesh;
 var string HDTPIcon;
 var string HDTPLargeIcon;
+var Texture handsTex;                                        //SARGE: Store the hands texture for performance
 
 var int MuzzleSlot;                                                 //SARGE: Slot where the muzzle tex will go
 var texture CurrentMuzzleFlash;                                     //SARGE: The current muzzle flash of this weapon
@@ -605,13 +606,14 @@ function DropFrom(vector StartLocation)
 {
 	if ( !SetLocation(StartLocation) )
 		return;
+    UpdateHDTPSettings();
 	//checkweaponskins();                                                       //RSD
     if (bIsCloaked || bIsRadar)                                                 //RSD: Overhauled cloak/radar routines
 	 SetCloakRadar(false,false,true);//SetCloak(false,true);
 	bMantlingEffect = False;
     BobDamping=default.BobDamping;
 	bAimingDown=False;
-	EraseWeaponHandTex();                                                       //RSD: To ensure we don't get hand tex on dropped weapons
+	//EraseWeaponHandTex();                                                       //RSD: To ensure we don't get hand tex on dropped weapons
      //if (IsA('WeaponFlamethrower'))
       // if (Owner.IsA('DeusExPlayer'))
        //   DeusExPlayer(Owner).UpdateSensitivity(DeusExPlayer(Owner).default.MouseSensitivity);
@@ -622,7 +624,7 @@ function DropFrom(vector StartLocation)
 }
 
 //Shorthand for accessing hands tex
-function texture GetWeaponHandTex()
+function SetWeaponHandTex()
 {
 	local deusexplayer p;
 	
@@ -634,23 +636,18 @@ function texture GetWeaponHandTex()
         switch (p.PlayerSkin)
         {
 			//default, black, latino, ginger, albino, respectively
-			case 0: return class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinal"); break;
-			case 1: return class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinalB"); break;
-			case 2: return class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinalL"); break;
-			case 3: return class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinalG"); break;
-			case 4: return class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinalA"); break;
+			case 0: handsTex = class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinal"); break;
+			case 1: handsTex = class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinalB"); break;
+			case 2: handsTex = class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinalL"); break;
+			case 3: handsTex = class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinalG"); break;
+			case 4: handsTex = class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinalA"); break;
         }
     }
-
-
-	if(p != none)
-        return p.GetWeaponHandTex();
-	return None;
-}
-
-function EraseWeaponHandTex()                                                   //RSD: Fixing weapons acquiring the hand texture in 3rd person view
-{
-    multiskins[0] = none;                                                       //RSD: most hand tex are in slot 0
+    else if(p != none)
+        handsTex = p.GetWeaponHandTex();
+    else
+        handsTex = None;
+    //p.ClientMessage("Skin Tex: " $ handsTex);
 }
 
 function SetCloakRadar(bool bEnableCloak, bool bEnableRadar, optional bool bForce) //RSD: Overhauled cloak/radar routines
@@ -753,6 +750,7 @@ function ShowCamo()
 
 function HideCamo()
 {
+    UpdateHDTPSettings();
 }
 
 function Texture GetGridTexture(Texture tex)
@@ -2880,17 +2878,6 @@ function ShowWeaponAddon(int slot, bool condition)
 }
 function DisplayWeapon(bool overlay)
 {
-    local int slot;
-    Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),IsHDTP()&&HDTPSkin != "");
-    Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),IsHDTP()&&HDTPTexture != "");
-    for (slot = 0; slot < 8;slot++)
-    {
-        //if (slot != MuzzleSlot || !overlay)
-            if (IsHDTP())
-                multiskins[slot] = none;
-            else
-                multiskins[slot] = default.multiskins[slot];
-    }
 }
 
 simulated function EraseMuzzleFlashTexture()
@@ -5947,6 +5934,13 @@ simulated function ClientReload()
 
 exec function UpdateHDTPsettings()
 {
+    local int slot;
+
+    //DeusExPlayer(GetPlayerPawn()).ClientMessage("UpdateHDTP Settings");
+
+    Skin = default.Skin;
+    Texture = default.Texture;
+
     if (HDTPLargeIcon != "")
         LargeIcon = class'HDTPLoader'.static.GetTexture2(HDTPLargeIcon,string(default.LargeIcon),IsHDTP());
     if (HDTPIcon != "")
@@ -5966,6 +5960,17 @@ exec function UpdateHDTPsettings()
         Mesh = PlayerViewMesh;
     else
         Mesh = PickupViewMesh;
+    
+    for (slot = 0; slot < 8;slot++)
+    {
+        //if (slot != MuzzleSlot || !overlay)
+            if (IsHDTP())
+                multiskins[slot] = none;
+            else
+                multiskins[slot] = default.multiskins[slot];
+    }
+
+    SetWeaponHandTex();
 
     CheckWeaponSkins();
     DoWeaponOffset(DeusExPlayer(GetPlayerPawn()));

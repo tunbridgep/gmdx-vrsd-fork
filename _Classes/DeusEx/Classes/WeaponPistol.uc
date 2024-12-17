@@ -25,7 +25,8 @@ function DisplayWeapon(bool overlay)
     
     if (IsHDTP())
     {
-        multiskins[2] = Getweaponhandtex();
+		if (overlay)
+			multiskins[2] = handstex;
         ShowWeaponAddon(4,bHasScope);
         ShowWeaponAddon(6,bHasSilencer);
         ShowWeaponAddon(5,bHasLaser);
@@ -37,7 +38,7 @@ function DisplayWeapon(bool overlay)
     }
     else if (overlay)
     {
-        multiskins[1] = Getweaponhandtex();
+        multiskins[1] = handstex;
     }
 }
 

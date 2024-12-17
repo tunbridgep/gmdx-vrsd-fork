@@ -21,13 +21,16 @@ simulated function PreBeginPlay()
 function DisplayWeapon(bool overlay)
 {
 	super.DisplayWeapon(overlay);
-	if (IsHDTP())
-        multiskins[0] = Getweaponhandtex();
-    else
-    {
-    	multiskins[0] = Getweaponhandtex();
-    	multiskins[2] = Getweaponhandtex();
-   	}
+	if (overlay)
+	{
+		if (IsHDTP())
+			multiskins[0] = handstex;
+		else
+		{
+			multiskins[0] = handstex;
+			multiskins[2] = handstex;
+		}
+	}
 }
 
 defaultproperties

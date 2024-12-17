@@ -28,7 +28,7 @@ function DisplayWeapon(bool overlay)
     {
         if (IsHDTP())
         {
-            multiskins[0] = Getweaponhandtex();
+            multiskins[0] = handstex;
         }
         else
         {
@@ -40,8 +40,8 @@ function DisplayWeapon(bool overlay)
             }
             else
             {
-                multiskins[0] = Getweaponhandtex();
-                multiskins[3] = Getweaponhandtex();
+                multiskins[0] = handstex;
+                multiskins[3] = handstex;
             }
         }
     }

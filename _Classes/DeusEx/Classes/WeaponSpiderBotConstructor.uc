@@ -5,7 +5,7 @@ class WeaponSpiderBotConstructor extends DeusExWeapon;
 
 simulated function renderoverlays(Canvas canvas)
 {
-	multiskins[0] = Getweaponhandtex();
+    multiskins[0] = handstex;
 	multiskins[1] = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPAugUpCanTex0","DeusExItems.Skins.AugUpCanTex0",IsHDTP());
 
 	super.renderoverlays(canvas);

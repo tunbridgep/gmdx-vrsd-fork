@@ -14,7 +14,7 @@ simulated function renderoverlays(Canvas canvas)
 	else
 	  multiskins[3] = texture'pinkmasktex';
 
-	multiskins[6] = Getweaponhandtex();
+	multiskins[6] = handsTex;
 
 	super.renderoverlays(canvas); //(weapon)
 

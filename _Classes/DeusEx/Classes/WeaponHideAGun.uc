@@ -6,8 +6,11 @@ class WeaponHideAGun extends DeusExWeapon;
 function DisplayWeapon(bool overlay)
 {
 	super.DisplayWeapon(overlay);
-    multiskins[0] = Getweaponhandtex();
-    multiskins[3] = Getweaponhandtex();
+	if (overlay)
+	{
+		multiskins[0] = handsTex;
+		multiskins[3] = handsTex;
+	}
 }
 
 defaultproperties

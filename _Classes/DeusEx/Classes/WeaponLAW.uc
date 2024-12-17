@@ -22,7 +22,8 @@ simulated function PreBeginPlay()
 function DisplayWeapon(bool overlay)
 {
 	super.DisplayWeapon(overlay);
-	multiskins[0] = Getweaponhandtex();
+	if (overlay)
+		multiskins[0] = handsTex;
 }
 
 function PostBeginPlay()

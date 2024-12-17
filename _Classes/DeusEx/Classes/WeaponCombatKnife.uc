@@ -21,7 +21,8 @@ simulated function PreBeginPlay()
 function DisplayWeapon(bool overlay)
 {
 	super.DisplayWeapon(overlay);
-    multiskins[1]=GetWeaponHandTex();                                        //RSD: Fix vanilla hand tex
+	if (overlay)
+		multiskins[1]=handsTex;                                        //RSD: Fix vanilla hand tex
 }
 
 defaultproperties
