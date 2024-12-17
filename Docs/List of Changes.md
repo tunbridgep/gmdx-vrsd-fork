@@ -22,8 +22,11 @@ Sarge's Changes since Beta 2.2:
     - Fixed Vanilla bug where sound volume would reset upon new game.
     - Fixed GMDX bug where tiredness effects from low stamina would reset prematurely.
     - Fixed vanilla "bug" where diving into or leaving water would give free stamina.
+    - Fixed GMDX quickloading not always working correctly, and other save issues including incorrect save-game ordering in the save/load screens.
     - Fixed many other GMDX and Vanilla bugs.
 - Quality of Life Improvements:
+    - While having a grenade selected, the crosshair will turn blue when you're able to place it on a wall.
+    - Right-Clicking while dead will load the last save game.
     - Right-Clicking an item in the belt with the Inventory Window open will clear the slot.
     - The Inventory "Show Ammo" display now always shows the total amount of ammo you can carry. Before, it was only visible when "Show Descriptions" was enabled.
     - Added a Lighting Accessibility setting, which removes some strobing and flickering in certain areas on some maps, such as the 'Ton hotel elevator shaft.
@@ -34,6 +37,7 @@ Sarge's Changes since Beta 2.2:
     - Edibles and Drugs can now be assigned as secondary items.
     - Pressing the walk/run key while crouch toggled will now uncrouch.
     - You can no longer waste medkits or biocells when at maximum health/energy
+    - The HUD now shows stamina and bioenergy percentages below the bars if enabled.
     - Added alternate weapon offsets to hide many of the visible seams or missing parts of weapon viewmodels.
     - Weapons that don't use ammo (such as melee weapons) no longer show the Ammo element on the HUD.
     - Augmentation Wheel improvements
@@ -41,6 +45,8 @@ Sarge's Changes since Beta 2.2:
         - By default all augmentations will appear on the wheel.
         - The "Disable All" button can optionally be removed using the options menu.
         - The augmentation wheel can be changed to work in Quick mode. In Quick mode, releasing the augmentation wheel key will select the currently highlighted augmentation. Use right click to cancel.
+    - Added a new setting to always show weapon bloom.
+    - Added a new setting to not show weapon bloom when at 100% accuracy, because it can obscure targets.
     - In the Inventory screen, charged items will now show their charge level on their icon. Additionally, belt slots containing charged items will show their charge level.
     - Lockpicks and Multitools will no longer be consumed if you look away from an object you're picking/bypassing. Instead, the action will be cancelled and any progress cancelled.
     - Added an optional "Dynamic Crosshair" mode, which shows a small dot-crosshair when no weapons is equipped, and some items have no crosshairs at all.
@@ -101,6 +107,8 @@ Sarge's Changes since Beta 2.2:
         - When Smart Keyring is enabled, the keyring will no longer occupy belt slot 0, allowing it to be used for regular items.
         - The keyring can be selected using Left-Click Frob on doors.
 - Gameplay Changes:
+    - Putting a scope or a laser sight on the GEP gun now requires the Heavily Tweaked perk (ADVANCED heavy weapons, 100 skill points). The scope and laser sight still provide rocket guidance capabilities.
+    - Added a new "Weapon Requirements Matter" Playthrough Modifier. When enabled, most weapons will require a minimum skill investment in order to be used.
     - Reverted GMDX change limiting Assault Rifles, Assault Shotguns and Sawed Off's to 4 damage mods. Now they can have 5 just like everything else.
         - This was done because of integer truncation. In GMDX v9, the 5th upgrade would change their base damage from 4.2 to 4.5, which was pointless as it was rounded to 4 either way.
         - With vRSD partial damage calculations were added, so this is now relevant again.
@@ -109,6 +117,8 @@ Sarge's Changes since Beta 2.2:
             - Augmentations that need to recharge after use (including the Spy Drone) will show a red icon in the Augmentations window while they are recharging.
         - EUAS
             - Swapped Level 2 and 3, because level 2 was arguably better than level 3. Now level 2 detects environmental hazards, level 3 shows visibility on the HUD.
+            - Level 2 "Hazard Detection" now detects multiple threats (not just one at random), and can also detect grenades. Only the closest gas cloud will be shown, to reduce clutter.
+                - Detection Range also increases at Level 3.
         - Aggressive Defense System:
             - Will no longer display explosives which aren't detonated, so it can't be used to detect placed grenades at long range anymore
                 - Will instead continue to display destroyed projectiles on the HUD for a second or so after they are destroyed.
@@ -148,6 +158,9 @@ Sarge's Changes since Beta 2.2:
             - Blast Padding (NEW ADVANCED): An agent's ballistic vest is fitted with a protective layer that reduces susceptibility to self-damage from explosive and plasma weaponry (-75%).
             - Chameleon (NEW MASTER): An agent modifies thermoptic camo output that enables the user to pass through laser alarms undetected.
             - Thermal Imaging (REWORKED MASTER): An agent modifies tech goggle functionality, implementing short-ranged sonar scanning which enables the user to see potential threats through solid material.
+        - Heavy Perks:
+            - Heavily Tweaked (NEW ADVANCED): An agent is able to attach scopes and laser sights to the GEP gun, enabling laser guidance and fly-by-wire capabilities.
+            - Mobile Ordnance (NEW MASTER): An agent is able to modify the chassis of flame weapons, stripping away unnecessary elements. Flamethrowers are reduced in size by 3 inventory spaces.
     - Addiction System Rework
         - Alcohol no longer heals for 5 points. Instead, it temporarily gives you 5 torso HP (along with it's usual 5 extra torso Max-HP) while in effect, which is removed afterwards. This health removal cannot kill the player.
         - Alcohol no longer adds to fullness when the addiction system is enabled

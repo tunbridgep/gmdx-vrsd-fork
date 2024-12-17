@@ -232,12 +232,15 @@ function Tick(float deltaTime)
 	}
     
     remainingTime = disableTime - DeusExPlayer(GetPlayerPawn()).saveTime;
+        
+    if (gun.hackStrength == 0.0)
+        bRebooting = false;
     
     if (bRebooting && !bConfused)
     {
         if (remainingTime <= 0)
         {
-            if (bDisabled && gun.hackStrength != 0.0)
+            if (bDisabled)
             {
                 bDisabled = False;
                 //Reset Tracking
