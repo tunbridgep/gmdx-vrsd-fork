@@ -46,6 +46,10 @@ class All expands Object
 // Stealth
 #exec TEXTURE IMPORT FILE="Textures\PerkSecurityLoophole.pcx"			NAME="PerkSecurityLoophole"			GROUP="UserInterface"
 
+//Secondary HUD
+#exec TEXTURE IMPORT FILE="Textures\HudAmmoDisplayBackgroundSecondary.pcx"			NAME="HudAmmoDisplayBackgroundSecondary"			GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\HudAmmoDisplayBorderSecondary.pcx"			NAME="HudAmmoDisplayBorderSecondary"			GROUP="UserInterface"
+
 #exec AUDIO IMPORT FILE="Sounds\PistolCaseSound.wav"			NAME="PistolCaseSound"			GROUP="Weapons"
 #exec AUDIO IMPORT FILE="Sounds\ShellCaseSound.wav"			NAME="ShellCaseSound"			GROUP="Weapons"
 

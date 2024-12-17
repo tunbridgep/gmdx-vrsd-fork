@@ -46,7 +46,6 @@ var string HDTPMeshTex[8];
 
 //GMDX:
 var transient bool bDblClickStart;
-var transient bool bDblClickFrob;
 var transient float DblClickTimeout;
 var bool            bPop;
 var bool            bNotFirstFall;
@@ -64,6 +63,11 @@ var(GMDX) const bool LDDPExtra;                                                 
 var(GMDX) const bool deleteIfMale;                                              //Delete this character if we're male
 var(GMDX) const bool deleteIfFemale;                                            //Delete this character if we're female
 
+var travel bool bSearched; //Sarge: Already adjusted the weapons and everything on here. Fixes ammo duplication glitch.
+	
+var bool bFoundSomething;   //Have we found anything the last time we searched? This was a local variable, but now it's global, so we can query it between searches
+
+var localized string SearchedString;                                            //SARGE: The string to append to the name when searched.
 
 // ----------------------------------------------------------------------
 // ShouldCreate()
@@ -570,7 +574,6 @@ function Tick(float deltaSeconds)
 			if (DblClickTimeout>0.4)
 			{
 				bDblClickStart=false;
-				bDblClickFrob=false;
 				DblClickTimeout=0;
 			}
 		}
@@ -872,6 +875,10 @@ function SetScaleGlow()
 //Enable picking up corpses regardless of inventory using left-frob
 function bool DoLeftFrob(DeusExPlayer frobber)
 {
+    //We can't pick up animal carcasses
+    if (bAnimalCarcass)
+        return false;
+
     PickupCorpse(frobber);
     return false;
 }
@@ -884,7 +891,6 @@ function PickupCorpse(DeusExPlayer player)
     local int j;
 
     bDblClickStart=false;
-    bDblClickFrob=false;
     if (!bInvincible)
     {
         corpse = Spawn(class'POVCorpse');
@@ -915,6 +921,7 @@ function PickupCorpse(DeusExPlayer player)
             corpse.Inv=Inventory; //GMDX:dbl click
             corpse.Frob(player, None);
             corpse.SetBase(player);
+            corpse.bSearched = bSearched;
             player.PutInHand(corpse);
             bQueuedDestroy=True;
             Destroy();
@@ -933,7 +940,6 @@ function Frob(Actor Frobber, Inventory frobWith)
 	local Inventory item, nextItem, startItem;
 	local Pawn P;
 	local DeusExWeapon W;
-	local bool bFoundSomething;
 	local DeusExPlayer player;
 	local ammo AmmoType;
 	local bool bPickedItemUp;
@@ -950,35 +956,8 @@ function Frob(Actor Frobber, Inventory frobWith)
 	if (bQueuedDestroy)
 		return;
 
-	// if we've already been searched, let the player pick us up
-	// don't pick up animal carcii
-	if (!bAnimalCarcass)
-	{
-	  // DEUS_EX AMSD Since we don't have animations for carrying corpses, and since it has no real use in multiplayer,
-	  // and since the PutInHand propagation doesn't just work, this is work we don't need to do.
-	  // Were you to do it, you'd need to check the respawning issue, destroy the POVcorpse it creates and point to the
-	  // one in inventory (like I did when giving the player starting inventory).
-
-		if ((((bDblClickStart)&&(bDblClickFrob))||(Inventory==none))&&
-		(player != None) && (player.inHand == None) && player.carriedDecoration == None)
-		{
-            PickupCorpse(player);
-            return;
-		}
-		else if (player != None && player.inhand != none && player.bAutoHolster && !player.inHand.IsA('POVCorpse') && player.CarriedDecoration == None)
-		{
-		      if (Inventory == None && (bDblClickStart || !player.bDblClickHolster))
-		          player.PutInHand(none);
-		      else if (Inventory != None && bDblClickStart && player.bDblClickHolster)
-                  player.PutInHand(none);
-		}
-	}
-
     if (PickupAmmoCount == 0)                                                   //RSD: If nothing was passed to us from the initialization from MissionScript.uc on first map load, use old random formula
     	PickupAmmoCount = Rand(4) + 1;
-
-	bDblClickStart=True;
-	DblClickTimeout=0;
 
 	bFoundSomething = False;
 	bSearchMsgPrinted = False;
@@ -991,7 +970,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 		if ( (player != None) && (Level.NetMode == NM_Standalone) )
 		 DeusExRootWindow(player.rootWindow).hud.receivedItems.RemoveItems();
 
-		if (Inventory != None)
+		if (Inventory != None && !bDblClickStart)
 		{
 
             while(Inventory.Owner == Frobber)
@@ -1040,8 +1019,9 @@ function Frob(Actor Frobber, Inventory frobWith)
                 {
                  //if (FRand() < 0.85)                                          //RSD: Do it all the time
                  //{
-                 DeleteInventory(item);
-                 item.Destroy();
+                    //SARGE: No longer delete knives. Now we just ignore them
+                 //DeleteInventory(item);
+                 //item.Destroy();
                  item = None;
                  //}
                 }
@@ -1055,48 +1035,54 @@ function Frob(Actor Frobber, Inventory frobWith)
 				}
 				else if (item != none && (item.IsA('DeusExWeapon')) )
 				{
+                    bFoundSomething = True;
 //log("IS A DXWEAPON");
-			   // Any weapons have their ammo set to a random number of rounds (1-4)
-			   // unless it's a grenade, in which case we only want to dole out one.
-			   // DEUS_EX AMSD In multiplayer, give everything away.
-			   W = DeusExWeapon(item);
+                    // Any weapons have their ammo set to a random number of rounds (1-4)
+                    // unless it's a grenade, in which case we only want to dole out one.
+                    // DEUS_EX AMSD In multiplayer, give everything away.
+                    W = DeusExWeapon(item);
 
-			   // Grenades and LAMs always pickup 1
-			   if (W.IsA('WeaponShuriken') && passedImpaleCount > 0)
-			   {
-			      if (passedImpaleCount > 4)
-			          passedImpaleCount = 4;
-			      w.PickupAmmoCount = passedImpaleCount;
-			      if (w.PickupAmmoCount == 0)
-			          w.PickupAmmoCount = 1;
-			      PlaySound(Sound'DeusExSounds.Generic.FleshHit1',SLOT_None,,,,0.95 + (FRand() * 0.2));
-			   }
-			   else if (W.IsA('WeaponNanoVirusGrenade') ||
-				  W.IsA('WeaponGasGrenade') ||
-				  W.IsA('WeaponEMPGrenade') ||
-				  W.IsA('WeaponLAM')  ||
-                  W.IsA('WeaponHideAGun') && player.FindInventorySlot(item, True))  //CyberP: there we go. Now need to stop 1-4 rand for nades
-				  W.PickupAmmoCount = 1;       //CyberP: I need to check if inventory is full and no nades
-			   else if (W.IsA('WeaponAssaultGun'))
-                  //W.PickupAmmoCount = Rand(5) + 1.5;                          //RSD
-                  W.PickupAmmoCount = PickupAmmoCount + 1;                      //RSD: Now 2-5 rounds with initialization in MissionScript.uc on first map load
-               else if (W.IsA('WeaponGepGun'))
-                  W.PickupAmmoCount = 2;
-			   else if (!W.IsA('WeaponNanoVirusGrenade') &&
-				  !W.IsA('WeaponGasGrenade') &&
-				  !W.IsA('WeaponEMPGrenade') &&
-				  !W.IsA('WeaponLAM') &&
-                  !W.IsA('WeaponHideAGun')) //CyberP: no grenades.
-			    //W.PickupAmmoCount = Rand(4) + 1;                              //RSD
-			    W.PickupAmmoCount = PickupAmmoCount;                            //RSD
-                else if (W.Default.PickupAmmoCount != 0)
-                W.PickupAmmoCount = 1; //CyberP: hmm
-				}
+                    if (!bSearched)     //Sarge: Attempted fix for ammo dupe bug
+                    {
+
+                        // Grenades and LAMs always pickup 1
+                        if (W.IsA('WeaponShuriken') && passedImpaleCount > 0)
+                        {
+                            if (passedImpaleCount > 4)
+                                passedImpaleCount = 4;
+                            w.PickupAmmoCount = passedImpaleCount;
+                            if (w.PickupAmmoCount == 0)
+                                w.PickupAmmoCount = 1;
+                            PlaySound(Sound'DeusExSounds.Generic.FleshHit1',SLOT_None,,,,0.95 + (FRand() * 0.2));
+                        }
+                        else if (W.IsA('WeaponNanoVirusGrenade') ||
+                            W.IsA('WeaponGasGrenade') ||
+                            W.IsA('WeaponEMPGrenade') ||
+                            W.IsA('WeaponLAM')  ||
+                            W.IsA('WeaponHideAGun') && player.FindInventorySlot(item, True))  //CyberP: there we go. Now need to stop 1-4 rand for nades
+                            W.PickupAmmoCount = 1;       //CyberP: I need to check if inventory is full and no nades
+                        else if (W.IsA('WeaponAssaultGun'))
+                            //W.PickupAmmoCount = Rand(5) + 1.5;                          //RSD
+                            W.PickupAmmoCount = PickupAmmoCount + 1;                      //RSD: Now 2-5 rounds with initialization in MissionScript.uc on first map load
+                        else if (W.IsA('WeaponGepGun'))
+                            W.PickupAmmoCount = 2;
+                        else if (!W.IsA('WeaponNanoVirusGrenade') &&
+                            !W.IsA('WeaponGasGrenade') &&
+                            !W.IsA('WeaponEMPGrenade') &&
+                            !W.IsA('WeaponLAM') &&
+                            !W.IsA('WeaponHideAGun')) //CyberP: no grenades.
+                            //W.PickupAmmoCount = Rand(4) + 1;                              //RSD
+                            W.PickupAmmoCount = PickupAmmoCount;                            //RSD
+                            else if (W.Default.PickupAmmoCount != 0)
+                            W.PickupAmmoCount = 1; //CyberP: hmm
+                    }
+                    //SARGE: Set weapons maximum clip size to however much left over ammo it has.
+                    W.ClipCount = W.PickupAmmoCount;
+                }
 
 				if (item != None)
 				{
-					bFoundSomething = True;
-
+                    bFoundSomething = True;
 					if (item.IsA('NanoKey'))
 					{
 						if (player != None)
@@ -1167,6 +1153,8 @@ function Frob(Actor Frobber, Inventory frobWith)
 									// Mark it as 0 to prevent it from being added twice
 									Weapon(item).AmmoType.AmmoAmount = 0;
 									Weapon(item).PickupAmmoCount = 0;
+                                    //SARGE: Set weapons maximum clip size to however much left over ammo it has.
+                                    DeusExWeapon(item).ClipCount = 0;
 								}
 							} else
 							if ((W != None)&&(Weapon(item).AmmoType==none)) //GMDX Fix bug that makes level carcass with weapon just crap out as it has not got spawned ammotype
@@ -1182,6 +1170,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 										player.UpdateAmmoBeltText(AmmoType);
 										AddReceivedItem(player, AmmoType,addedAmount);
 										Weapon(item).PickupAmmoCount=0;
+                                        DeusExWeapon(item).ClipCount = 0;
 										if (AmmoType.PickupViewMesh == Mesh'TestBox')
 									      P.ClientMessage(item.PickupMessage @ item.itemArticle @ item.itemName, 'Pickup');
 									      else
@@ -1195,7 +1184,9 @@ function Frob(Actor Frobber, Inventory frobWith)
 							// than he already has.
 
 							if ((W == None) && (!player.FindInventorySlot(item, True)))
+                            {
 								P.ClientMessage(Sprintf(Player.InventoryFull, item.itemName));
+                            }
 
 							// Only destroy the weapon if the player already has it.
 							if (W != None)
@@ -1344,13 +1335,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 			until ((item == None) || (item == startItem));
 		}
 
-//log("  bFoundSomething = " $ bFoundSomething);
-
-		if (!bFoundSomething)
-			P.ClientMessage(msgEmpty);
-
 //GMDX:
-		if (Inventory!=None) bDblClickFrob=True;
 	}
 //log("DONE ITERATE");
 
@@ -1365,6 +1350,34 @@ function Frob(Actor Frobber, Inventory frobWith)
 		 player.Energy = player.EnergyMax;
 	}
 
+    // DEUS_EX AMSD Since we don't have animations for carrying corpses, and since it has no real use in multiplayer,
+    // and since the PutInHand propagation doesn't just work, this is work we don't need to do.
+    // Were you to do it, you'd need to check the respawning issue, destroy the POVcorpse it creates and point to the
+    // one in inventory (like I did when giving the player starting inventory).
+
+    if (!bAnimalCarcass && (bDblClickStart||!bFoundSomething)&&
+    (player != None) && (player.inHand == None) && player.carriedDecoration == None && (bSearched||!player.bEnhancedCorpseInteractions))
+    {
+        PickupCorpse(player);
+    }
+    else if (!bAnimalCarcass && player != None && player.inhand != none && player.bAutoHolster && !player.inHand.IsA('POVCorpse') && player.CarriedDecoration == None)
+    {
+            if (!bFoundSomething && (bSearched||!player.bEnhancedCorpseInteractions) && (bDblClickStart || !player.bDblClickHolster))
+                player.PutInHand(none);
+            else if (!bFoundSomething && (bSearched||!player.bEnhancedCorpseInteractions) && bDblClickStart && player.bDblClickHolster)
+                player.PutInHand(none);
+    }
+    else if (!bFoundSomething)
+    {
+        //log("  bFoundSomething = " $ bFoundSomething);
+        P.ClientMessage(msgEmpty);
+    }
+            
+    AddSearchedString(player);
+    bSearched = true; //SARGE: Once we have been searched once, go back to normal behaviour
+    bFoundSomething = false;
+    bDblClickStart=true;
+
 	Super.Frob(Frobber, frobWith);
 
 	if ((Level.Netmode != NM_Standalone) && (Player != None))
@@ -1373,6 +1386,17 @@ function Frob(Actor Frobber, Inventory frobWith)
 	   Destroy();
 	}
 }
+
+// ----------------------------------------------------------------------
+// AddSearchedString()
+// ----------------------------------------------------------------------
+
+function AddSearchedString(DeusExPlayer player)
+{
+    if (player.bSearchedCorpseText && InStr(ItemName, SearchedString) == -1)
+        ItemName = SearchedString @ ItemName;
+}
+
 
 // ----------------------------------------------------------------------
 // AddReceivedItem()
@@ -1385,7 +1409,7 @@ function AddReceivedItem(DeusExPlayer player, Inventory item, int count)
 
 	if (!bSearchMsgPrinted)
 	{
-		player.ClientMessage(msgSearching);
+		//player.ClientMessage(msgSearching);
 		bSearchMsgPrinted = True;
 	}
 
@@ -1627,6 +1651,7 @@ defaultproperties
      msgCannotPickup="You cannot pickup the %s"
      msgRecharged="Recharged %d points"
      ItemName="Dead Body"
+     SearchedString="[Searched]"
      RemoteRole=ROLE_SimulatedProxy
      LifeSpan=0.000000
      CollisionRadius=20.000000

@@ -548,6 +548,8 @@ function HUDInformationDisplay ShowInfoWindow()
 
 function UpdateSettings( DeusExPlayer player , optional bool bNoBelt)
 {
+    local int i;
+
     if (!bNoBelt)
 	     belt.SetVisibility(player.bObjectBeltVisible);
 	hit.SetVisibility(player.bHitDisplayVisible);
@@ -558,6 +560,7 @@ function UpdateSettings( DeusExPlayer player , optional bool bNoBelt)
 	compass.SetVisibility(player.bCompassVisible);
     UpdateCrosshair(player);
 	radialAugMenu.Show(player.bRadialAugMenuVisible);
+    hit.UpdateBars();
 
 	//RSD: Also bring back any windows we may have closed in realtime UI
     if (msgLog != none)
@@ -572,6 +575,16 @@ function UpdateSettings( DeusExPlayer player , optional bool bNoBelt)
         startDisplay.SetVisibility(startDisplay.bTickEnabled);                  //RSD: Need to check if actually playing mission start text, otherwise the window will always be drawn
     if (receivedItems != none)
         receivedItems.SetVisibility(receivedItems.bTickEnabled);                //RSD: Need to check if actually receiving items, otherwise the window will always be drawn
+
+    //SARGE: If belt memory is disabled, clear any placeholders
+     
+    /*
+    if (!player.bBeltMemory)
+    {
+        for (i = 0; i < 10;i++)
+            player.ClearPlaceholder(i);
+    }
+    */
 }
 
 

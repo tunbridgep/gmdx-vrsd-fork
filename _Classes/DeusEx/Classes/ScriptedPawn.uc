@@ -3788,7 +3788,7 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
 
 	actualDamage = ModifyDamage(Damage, instigatedBy, hitLocation, offset, damageType);
 
-    if (instigatedBy != None && instigatedBy.IsA('DeusExPlayer'))
+    if (instigatedBy != None && instigatedBy.IsA('DeusExPlayer') && !bHidden && !bCloakOn)
     {
      if (DeusExPlayer(instigatedBy).bHitmarkerOn)
          DeusExPlayer(instigatedBy).hitmarkerTime = 0.2;
@@ -3903,40 +3903,43 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
         {
         Die = Sound'DeusExSounds.Generic.FleshHit1';
        player = DeusExPlayer(GetPlayerPawn());
-        if (bCanPop && player.bHDTP_ALL == -1 && FRand() < 0.8 && player.bDecap && (player.inHand.IsA('WeaponRifle') || player.inHand.IsA('WeaponAssaultShotgun') ||
+       //Sarge: Disable head popping because it looks awful, and doesn't work with HDTP
+       /*
+        if (bCanPop && FRand() < 0.8 && player.bDecap && (player.inHand.IsA('WeaponRifle') || player.inHand.IsA('WeaponAssaultShotgun') ||
      player.inHand.IsA('WeaponSawedOffShotgun'))) //CyberP: I need to change these conditions
         {
-        bSetupPop = True;
-        spawn(class'BloodSpurt',,,HitLocation);
-        PopHead();
-        if (player!=none)
-        {
-   		 dist = Abs(VSize(player.Location - Location));
-   		 if (dist < 160)
-	     {
-           player.ClientFlash(14, vect(160,0,0));
-           player.bloodTime = 4.000000;
-         }
+            bSetupPop = True;
+            spawn(class'BloodSpurt',,,HitLocation);
+            PopHead();
+            if (player!=none)
+            {
+                dist = Abs(VSize(player.Location - Location));
+                if (dist < 160)
+                {
+                    player.ClientFlash(14, vect(160,0,0));
+                    player.bloodTime = 4.000000;
+                }
+            }
+            for(i=0;i<18;i++)
+            {
+                ffs = spawn(Class'FleshFragmentSmall',,,hitLocation);
+                if (ffs!=none)
+                {
+                    ffs.Velocity.Z = FRand() * 200 + 200;
+                    ffs.Velocity.X *= 0.85;
+                    ffs.Velocity.Y *= 0.85;
+                }
+                spawn(Class'BloodDrop',,,hitLocation);
+                spawn(Class'BloodDrop',,,hitLocation);
+                spawn(Class'BloodDrop',,,hitLocation);
+                spawn(Class'BloodDrop',,,hitLocation);
+                spawn(Class'BloodDrop',,,hitLocation);
+                spawn(Class'BloodDrop',,,hitLocation);
+                spawn(Class'BloodDrop',,,hitLocation);
+                spawn(Class'BloodDrop',,,hitLocation);
+            }
         }
-        for(i=0;i<18;i++)
-        {
-        ffs = spawn(Class'FleshFragmentSmall',,,hitLocation);
-        if (ffs!=none)
-        {
-        ffs.Velocity.Z = FRand() * 200 + 200;
-        ffs.Velocity.X *= 0.85;
-        ffs.Velocity.Y *= 0.85;
-        }
-        spawn(Class'BloodDrop',,,hitLocation);
-        spawn(Class'BloodDrop',,,hitLocation);
-        spawn(Class'BloodDrop',,,hitLocation);
-        spawn(Class'BloodDrop',,,hitLocation);
-        spawn(Class'BloodDrop',,,hitLocation);
-        spawn(Class'BloodDrop',,,hitLocation);
-        spawn(Class'BloodDrop',,,hitLocation);
-        spawn(Class'BloodDrop',,,hitLocation);
-        }
-        }
+        */
         spawn(Class'BloodDrop',,,hitLocation);
         spawn(Class'BloodDrop',,,hitLocation);
         spawn(Class'BloodDrop',,,hitLocation);

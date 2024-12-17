@@ -96,8 +96,9 @@ simulated function renderoverlays(Canvas canvas)
 	   }
     }
 
-	if ((AmmoType != None) && (AmmoType.AmmoAmount > 0) && (ClipCount < ReloadCount) && !bIsCloaked && !bIsRadar) //RSD: Overhauled cloak/radar routines
+	if ((AmmoType != None) && (AmmoType.AmmoAmount > 0) && (ClipCount > 0) && !bIsCloaked && !bIsRadar) //RSD: Overhauled cloak/radar routines
 	{
+        /*
 	    if (IsInState('Reload'))
 	    {
 	       if (AnimSequence == 'ReloadEnd')
@@ -114,7 +115,8 @@ simulated function renderoverlays(Canvas canvas)
 	       else
 	        Multiskins[2] = texture'pinkmasktex';
 	    }
-		else if(AmmoType.isA('AmmoDartPoison'))
+        */
+		if(AmmoType.isA('AmmoDartPoison'))
 			Multiskins[2] = texture'HDTPItems.skins.HDTPminicrossbowtex2';
 		else if(Ammotype.isA('AmmoDartFlare'))
 			Multiskins[2] = texture'HDTPItems.skins.HDTPminicrossbowtex3';
@@ -162,7 +164,7 @@ simulated function renderoverlays(Canvas canvas)
 
 	multiskins[0] = none;
 
-	if ((AmmoType != None) && (AmmoType.AmmoAmount > 0) && (ClipCount < ReloadCount))
+	if ((AmmoType != None) && (AmmoType.AmmoAmount > 0) && (ClipCount > 0))
 	{
 		if(AmmoType.isA('AmmoDartPoison'))
 			Multiskins[1] = texture'HDTPItems.skins.HDTPminicrossbowtex2';
@@ -193,7 +195,7 @@ simulated function renderoverlays(Canvas canvas)
         if (!bIsCloaked && !bIsRadar)
         {
             if (MultiSkins[3] != None)                                          //RSD: Copied from vanilla Tick()
-			    if ((AmmoType != None) && (AmmoType.AmmoAmount > 0) && (ClipCount < ReloadCount))
+			    if ((AmmoType != None) && (AmmoType.AmmoAmount > 0) && (ClipCount > 0))
 				    MultiSkins[3] = None;
             multiskins[1] = None;                                               //RSD: So we don't get colored stripe textures when switching from HDTP -> vanilla
             multiskins[2] = None;                                               //RSD
@@ -376,7 +378,7 @@ state NormalFire
             else
                 numSkin = 3;
 
-            if (ClipCount >= ReloadCount)
+            if (ClipCount == 0)
 				MultiSkins[numSkin] = Texture'PinkMaskTex';                     //RSD: changed 2 to numSkin
 
 			if ((AmmoType != None) && (AmmoType.AmmoAmount <= 0))
@@ -384,7 +386,7 @@ state NormalFire
 		}
 		else if (iHDTPModelToggle == 1) //fuck me, A)does this get called by NPCs, and B)would anyone even notice? Fuck it: we do insano-detail here //RSD: Only if HDTP
 		{
-			if (ClipCount >= ReloadCount)
+			if (ClipCount == 0)
 				MultiSkins[1] = Texture'PinkMaskTex';
 
 			if ((AmmoType != None) && (AmmoType.AmmoAmount <= 0))
@@ -401,7 +403,7 @@ function Tick(float deltaTime)
 	if(playerpawn(owner) != none)
 	{
 		if (MultiSkins[2] == texture'pinkmasktex')
-			if ((AmmoType != None) && (AmmoType.AmmoAmount > 0) && (ClipCount < ReloadCount))
+			if ((AmmoType != None) && (AmmoType.AmmoAmount > 0) && (ClipCount > 0))
 			{
 				if(AmmoType.isA('AmmoDartPoison'))
 					Multiskins[2] = texture'HDTPItems.skins.HDTPminicrossbowtex2';

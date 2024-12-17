@@ -5,7 +5,7 @@ class PerkInventive extends Perk;
 
 defaultproperties
 {
-    PerkName="Inventive"
+    PerkName="INVENTIVE"
     PerkDescription="|nAn agent can assign melee weapons as a secondary weapon. |n|nRequires: Low-Tech: MASTER"
     PerkSkill=Class'DeusEx.SkillWeaponLowTech'
     PerkIcon=Texture'RSDCrap.UserInterface.PerkInventive'

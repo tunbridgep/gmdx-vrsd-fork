@@ -70,7 +70,7 @@ function Tick(float deltaTime)
 					       bTrigger = false;
 				          }
 					// check for adaptive armor - makes the player invisible
-					if (DeusExPlayer(emitter.HitActor).PerkManager.GetPerkWithClass(class'DeusEx.PerkTechSpecialist').bPerkObtained == true)
+					if (DeusExPlayer(emitter.HitActor).PerkManager.GetPerkWithClass(class'DeusEx.PerkChameleon').bPerkObtained == true)
 					{
 					foreach AllActors(class'AdaptiveArmor', armor)
 						if ((armor.Owner == emitter.HitActor) && armor.bActive)

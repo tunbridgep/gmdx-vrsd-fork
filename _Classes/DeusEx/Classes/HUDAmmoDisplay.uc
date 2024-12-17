@@ -16,6 +16,7 @@ var localized String NotAvailable;
 var localized String msgReloading;
 var localized String AmmoLabel;
 var localized String ClipsLabel;
+var localized String MagsLabel;
 var localized String RoundsLabel;
 
 // Used by DrawWindow
@@ -53,7 +54,12 @@ event InitWindow()
 
 event Tick(float deltaSeconds)
 {
-	if ((player.Weapon != None) && ( bVisible ))
+    local bool validWeap, hastool;
+
+    validWeap = player.Weapon != None && DeusExWeapon(player.Weapon).ReloadCount > 0;
+    hasTool = player.inHand != None && (player.inHand.isA('Multitool') || player.inHand.isA('Lockpick')) && player.iFrobDisplayStyle == 0;
+
+	if ((validweap || hastool) && bVisible )
 		Show();
 	else
 		Hide();
@@ -81,6 +87,25 @@ event DrawWindow(GC gc)
 		    weapon = DeusExWeapon(player.Weapon);
 	}
 
+    //SARGE: Draw tool info if we have one
+    //TODO: Refactor this
+    if (player.inHand != None && (player.inHand.isA('Multitool') || player.inHand.isA('Lockpick')) && player.iFrobDisplayStyle == 0)
+    {
+		// Draw the weapon icon
+		gc.SetStyle(DSTY_Masked);
+		gc.SetTileColorRGB(255, 255, 255);
+		gc.DrawTexture(22, 20, 40, 35, 0, 0, SkilledTool(player.inHand).icon);
+
+		// Draw the ammo count
+		gc.SetFont(Font'TechMedium'); //CyberP: hud scaling Font'FontTiny'
+		gc.SetAlignments(HALIGN_Center, VALIGN_Top);   //CyberP: Valignment
+		gc.EnableWordWrap(false);
+         
+        gc.SetTextColor(colAmmoText);
+        gc.DrawText(infoX, 27, 20, 9, SkilledTool(player.inHand).numCopies);
+        gc.DrawText(infoX, 39, 20, 9, NotAvailable);
+    }
+
 	if ( weapon != None )
 	{
 		// Draw the weapon icon
@@ -92,28 +117,31 @@ event DrawWindow(GC gc)
 		gc.SetFont(Font'TechMedium'); //CyberP: hud scaling Font'FontTiny'
 		gc.SetAlignments(HALIGN_Center, VALIGN_Top);   //CyberP: Valignment
 		gc.EnableWordWrap(false);
+			
+        // how much ammo is left in the current clip?
+        ammoInClip = weapon.AmmoLeftInClip();
 
 		// how much ammo of this type do we have left?
 		if (weapon.AmmoType != None)
 			ammoRemaining = weapon.AmmoType.AmmoAmount;
 		else
 			ammoRemaining = 0;
-
-		if ( ammoRemaining < weapon.LowAmmoWaterMark )
-			gc.SetTextColor(colAmmoLowText);
-		else
-			gc.SetTextColor(colAmmoText);
+                
+         gc.SetTextColor(colAmmoText);
 
 		// Ammo count drawn differently depending on user's setting
 		if (weapon.ReloadCount > 1 || weapon.IsA('WeaponGEPGun') || weapon.AmmoName == Class'Ammo20mm')
 		{
-			// how much ammo is left in the current clip?
-			ammoInClip = weapon.AmmoLeftInClip();
 
-			if (weapon.bPerShellReload)
+			if (weapon.bPerShellReload || player.bDisplayTotalAmmo)
 				clipsRemaining = weapon.NumRounds();
 			else
 				clipsRemaining = weapon.NumClips();
+		
+            if ((weapon.reloadCount > 1 && ammoInClip <= weapon.reloadCount / 2) || ammoInClip == 0)
+                gc.SetTextColor(colAmmoLowText);
+            else
+                gc.SetTextColor(colAmmoText);
 
 			if (weapon.IsInState('Reload') && weapon.bPerShellReload == false)
 				gc.DrawText(infoX, 27, 20, 9, msgReloading);
@@ -185,10 +213,15 @@ function DrawBackground(GC gc)
 
 	gc.DrawText(66, 17, 21, 8, AmmoLabel);
 
-	if (weapon.bPerShellReload || weapon.AmmoName == Class'Ammo20mm')
-		gc.DrawText(66, 48, 21, 8, RoundsLabel);
-	else
-		gc.DrawText(66, 48, 21, 8, ClipsLabel);
+    if (player != None)
+    {
+        if (weapon != None && weapon.bPerShellReload || weapon.AmmoName == Class'Ammo20mm' || player.bDisplayTotalAmmo)
+            gc.DrawText(66, 48, 21, 8, RoundsLabel);
+        else if (player.bDisplayClips)
+            gc.DrawText(66, 48, 21, 8, ClipsLabel);
+        else
+            gc.DrawText(66, 48, 21, 8, MagsLabel);
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -228,7 +261,8 @@ defaultproperties
      NotAvailable="N/A"
      msgReloading="---"
      AmmoLabel="AMMO"
-     ClipsLabel="MAGS"
+     MagsLabel="MAGS"
+     ClipsLabel="CLIPS"
 	 RoundsLabel="RDS"
      texBackground=Texture'DeusExUI.UserInterface.HUDAmmoDisplayBackground_1'
      texBorder=Texture'DeusExUI.UserInterface.HUDAmmoDisplayBorder_1'

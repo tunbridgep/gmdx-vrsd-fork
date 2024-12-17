@@ -1,0 +1,42 @@
+Begin Map
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner2
+    Id="kintsugi"
+    bDynamicLight=True
+    LastRenderTime=176.224396
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=1322,ZoneNumber=10)
+    Location=(X=-13566.400391,Y=12316.367188,Z=2072.899658)
+    Rotation=(Yaw=-50000)
+    OldLocation=(X=-13558.400391,Y=12314.367188,Z=2076.899658)
+    bSelected=True
+    Name=OutfitSpawner2
+End Actor
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner3
+    Id="greasel"
+    bDynamicLight=True
+    LastRenderTime=603.365601
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=777,ZoneNumber=3)
+    Location=(X=5969.274902,Y=-5922.497559,Z=-105.899986)
+    Rotation=(Yaw=-50000)
+    OldLocation=(X=5979.274902,Y=-5922.497559,Z=-105.899986)
+    bSelected=True
+    Name=OutfitSpawner3
+End Actor
+Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner4
+    Id="bum2"
+    bDynamicLight=True
+    LastRenderTime=841.220398
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=OutfitSpawner2
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=43,ZoneNumber=2)
+    Location=(X=505.328064,Y=-7363.405273,Z=-89.899979)
+    Rotation=(Yaw=-50000)
+    OldLocation=(X=494.328064,Y=-7373.405273,Z=-89.899979)
+    bSelected=True
+    Name=OutfitSpawner4
+End Actor
+End Map
+

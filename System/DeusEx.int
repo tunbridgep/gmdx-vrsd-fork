@@ -60,7 +60,7 @@ ItemArticle="a"
 
 [SkillManager]
 NoToolMessage="You need the %s"
-NoSkillMessage="%s skill level insufficient to use the %s"
+NoSkillMessage="Requires %s at %s"
 SuccessMessage="Success!"
 YourSkillLevelAt="Your skill level at %s is now %d"
 
@@ -279,6 +279,7 @@ LocationLabel="Location: %s|n"
 SaveCountLabel="Save Count: %d|n"
 FileSizeLabel="File Size: %dMB"
 FreeSpaceLabel="Free Space: %dMB"
+SaveIDLabel="Save ID: %s"
 Title="Load Game"
 PlayTimeLabel="Play Time: %s|n"
 ConfirmDeleteLabel="Confirm Savegame Deletion"
@@ -652,7 +653,8 @@ ButtonNormalLabel="Normal"
 NotAvailable="N/A"
 msgReloading="---"
 AmmoLabel="AMMO"
-ClipsLabel="MAGS"
+MagsLabel="MAGS"
+ClipsLabel="CLIPS"
 LaserLabel="LASER GUIDANCE"
 RemoteLabel="REMOTE GUIDANCE"
 
@@ -2863,8 +2865,11 @@ SkillName="Athletics"
 Description="An agent with extreme physical dedication can develop the skills to climb tall heights and swim great distances.|n|nTotal skill points to master: 4725|n|nUNTRAINED: An agent can swim and climb onto short ledges.|n|nTRAINED: The swimming speed and stamina of an agent increases slightly, and an agent can climb onto moderate ledges.|n|nADVANCED: The swimming speed and stamina of an agent increases moderately, and an agent can climb onto tall ledges.|n|nMASTER: An agent moves like a dolphin underwater and climbs like a jaguar."
 
 [SkillComputer]
-SkillName="Hacking"
-Description="The covert manipulation of computers and security consoles.|n|nTotal skill points to master: 6000.|n|nUNTRAINED: An agent can use terminals to read bulletins and news. |n|nTRAINED: An agent can hack computers and security consoles of intermediate security systems, can shut security systems down for 2 minutes, and siphon up to half of an ATM's funds. |n|nADVANCED: An agent can hack computers featuring advanced defense systems and siphon all credits from ATMs, and achieves a moderate increase in detection time as well as a 2 minute increase in security shutdown time.|n|nMASTER: An agent is an elite hacker that no system can withstand, gaining the ability to spoof additional credits from ATMs and evading detection for long periods, including an additional 2 minute increase in security shutdown time."
+SkillName="Computers"
+Description="The covert manipulation of computers and security consoles.|n|nTotal skill points to master: 6000.|n|nUNTRAINED: An agent can use terminals to read bulletins and news. |n|nTRAINED: An agent can hack computers and security consoles of intermediate security systems and siphon up to half of an ATM's funds. |n|nADVANCED: An agent can hack computers featuring advanced defense systems and siphon all credits from ATMs, and achieves a moderate increase in detection time.|n|nMASTER: An agent is an elite hacker that no system can withstand, gaining the ability to spoof additional credits from ATMs and evading detection for long periods."
+strHardcore="HARDCORE MODE ADDITIONS:"
+strNewHackSystem="NEW HACKING SYSTEM ADDITIONS:"
+strDescExtra="Devices will reboot after a certain time, returning to their default state. Additionally, hacking the same terminal repeatedly will result in network detection, preventing future hacking attempts.|n|nReboot Times:|n2 minutes at TRAINED, plus 1 additional minute on ADVANCED and MASTER (4 Minutes Total)|n|nMaximum Successful Hacks:|n2 plus 1 additional hack on ADVANCED and MASTER (4 Total)"
 
 [SkillTech]
 SkillName="Electronics"
@@ -2962,7 +2967,7 @@ imageDescription="Hong Kong Market"
 imageDescription="MJ12 Lab Facility"
 
 [Image05_GreaselDisection]
-imageDescription="Greasel Disection"
+imageDescription="Greasel Dissection"
 
 [Image04_UNATCONotice]
 imageDescription="UNATCO Notice"
@@ -3670,7 +3675,7 @@ GMDXText19="You Mantled from a Dolphin Jump, or found a cunning alternative to g
 GMDXText20="STORAGE INVENTORY LEDGER|n|nBatch#    Units         Product                          Date|n|n 0001      x4     Sokolo Nano-Lithium Battery       01/24/2052|n 0001      x7     Catering Container                  01/24/2052|n 0001      x1      Augmentation Upgrade Cannister   01/24/2052|n 0001      x3     GDI Combat Supply Crate           01/24/2052|n 0001      x2     GDI Medical Supply Crate           01/24/2052|n 0001      x1      GDI General Supply Crate           01/24/2052|n 0001      x5     Lab Materials Container             01/24/2052|n 0001      x1      Universal Damage Modification        01/24/2052"
 GMDXText21="Welcome to your first shift in the lockup, newbie.|n|nSo you're curious about the cannister. You want to hold it, examine it, and think of the possibilities. Don't worry, we've all been there and we're not going to fire you if you do the same. It's unrealistic to expect extreme curiosity to be kept at bay, and we're pretty laid back and fun here. HOWEVER, you're going to have to earn the right to touch it by proving you're not an utter dimwit: |n|nSolve the following problems. Solving the first will give you the first portion of the nano-containment container code. Solve the second problem for the second portion of the code. IF you manage to get it open be gentle with the thing. Lord knows how much it costs to manufacture.|n|n1. How many times does a broken mechanical 12-hour clock display an accurate readout over a period of two weeks? |n|n2. [(12*6)/2]-1 = Second Passcode|n|nIf you attempt to run off with the thing it's your funeral. The cameras are watching."
 GMDXText22="UNATCO MedDirectorate|nNano-Augmentation Guidelines|n|n...nano-augmentations, once 'installed,' irrevocably alter the physiological system they affect and in many cases cause all subsequent augmentations to be rejected; however, the exact number of augmentations each system can support varies. The various interdependencies between these systems can be seen in the following table that details possible nano-augmentation combinations.|n|nArms (1): Combat Speed or Microfibral Muscle|nArms (2): Combat Strength or Ammo Capacity|nLegs: Speed Enhancement or Run Silent|nSubdermal (1): Ballistic Protection (Active) or Ballistic Protection (Passive)|nSubdermal (2): Cloak or Radar Transparency|nTorso (1): Aqualung or Environmental Resistance|nTorso (2): Regeneration or Energy Resistance|nTorso (3): Synthetic Heart or Power Recirculator|nCranium: Aggressive Defense System or Spy Drone|nOptics: Targeting or Vision Enhancement|n|nSpecific nano-augmentations should be selected based on the mission profile of the particular agent..."
-GMDXText23=We've a request to send these up to level 1. Be careful with them as they are very expensive. Dropping one will likelybe grounds for instant dismissal.
+GMDXText23=We've a request to send these up to level 1. Be careful with them as they are very expensive. Dropping one will likely be grounds for instant dismissal.
 
 [PerkLocksport]
 PerkDescription="|nAn agent can pick any mechanical lock with a single lockpick. Additionally, any locks that are successfully picked will be added to your keyring.|n|nRequires: Lockpicking: MASTER"

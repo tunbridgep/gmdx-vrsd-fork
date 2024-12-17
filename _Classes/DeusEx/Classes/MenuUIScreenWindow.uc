@@ -47,35 +47,9 @@ function CreateChoices()
 			newChoice = MenuUIChoice(winClient.NewChild(choices[choiceIndex]));
 			newChoice.SetPos(choiceStartX, choiceStartY + (choiceCount * choiceVerticalGap) - newChoice.buttonVerticalOffset);
 			choiceCount++;
-         newChoice.SetSensitivity(true);
-
-//GMDX kill some settings based on game state
-         info = player.GetLevelInfo();
-         if(self.IsA('MenuScreenGMDXOptions') && info !=None)
-         {
-            if (newChoice.IsA('MenuChoice_HalveAmmoCapacity') && info.MissionNumber <= -1)
-               newChoice.SetSensitivity(true);
-            else if (newChoice.IsA('MenuChoice_HalveAmmoCapacity') && info.MissionNumber >= 0)
-            newChoice.SetSensitivity(false);
+            newChoice.SetSensitivity(true);
          }
-
-         if(self.IsA('MenuScreenOptions'))
-         {
-            if (newChoice.IsA('MenuChoice_WeaponAutoReload')&&(player.bHardCoreMode))
-               newChoice.SetSensitivity(false);
-            else if (newChoice.IsA('MenuChoice_AlwaysRun')&&(player.bHardCoreMode))
-               newChoice.SetSensitivity(false);
-            else if ((newChoice.IsA('MenuChoice_Crosshairs')&&
-               player!=none&&
-               player.Weapon!=none&&
-               player.Weapon.isA('WeaponNanoSword'))&&
-               (DeusExWeapon(player.Weapon).bLasing))
-                  newChoice.SetSensitivity(false);
-            else
-               newChoice.SetSensitivity(true);
-         }
-		}
-	}
+    }
 }
 
 // ----------------------------------------------------------------------

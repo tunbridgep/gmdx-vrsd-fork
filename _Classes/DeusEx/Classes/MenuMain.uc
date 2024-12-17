@@ -4,6 +4,8 @@
 
 class MenuMain expands MenuUIMenuWindow;
 
+var localized string GMDXText;
+
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -72,16 +74,13 @@ function UpdateButtonStatus()
 function ShowVersionInfo()
 {
 	local TextWindow version;
-	local string gmdxtxt;
-
-	gmdxtxt = "GMDX vRSD Beta 2.2";
 
 	version = TextWindow(NewChild(Class'TextWindow'));
 	version.SetTextMargins(0, 0);
 	version.SetWindowAlignments(HALIGN_Right, VALIGN_Bottom);
 	version.SetTextColorRGB(255, 255, 255);
 	version.SetTextAlignments(HALIGN_Right, VALIGN_Bottom);
-	version.SetText(player.GetDeusExVersion() @ gmdxtxt);
+	version.SetText(player.GetDeusExVersion() @ GMDXText);
 }
 
 // ----------------------------------------------------------------------
@@ -89,6 +88,7 @@ function ShowVersionInfo()
 
 defaultproperties
 {
+     GMDXText="GMDX vSARGE 1.0"
      ButtonNames(0)="New Game"
      ButtonNames(1)="Save Game"
      ButtonNames(2)="Load Game"
