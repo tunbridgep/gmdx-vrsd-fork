@@ -296,6 +296,7 @@ var float attackSpeedMult;                                                      
 var bool bPerShellReload;                                                       //RSD: To avoid convoluted class checking (Sawed-Off, Assault Shotgun, Mini-Crossbow, and GEP)
 var localized string abridgedName;                                              //RSD: For weapons with 30+ char names in MenuScreenHDTPToggles.uc
 var texture largeIconRot;                                                       //RSD: rotated inventory icon
+var travel bool bRotated;                                                      //Is this item rotated?
 var travel int invSlotsXtravel;                                                 //RSD: since Inventory invSlotsX doesn't travel through maps
 var travel int invSlotsYtravel;                                                 //RSD: since Inventory invSlotsY doesn't travel through maps
 var travel float previousAccuracy;                                              //Sarge: Used to limit standing accuracy bonus from increasing past your max accuracy                                                                                
@@ -353,11 +354,48 @@ function bool CanUseWeapon(DeusExPlayer player, optional bool noMessage)
 //Return true to use the default frobbing mechanism (right click), or false for custom behaviour
 function bool DoLeftFrob(DeusExPlayer frobber)
 {
+    Unrotate();
     return true;
 }
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {
+    Unrotate();
     return true;
+}
+
+function Unrotate()
+{
+    bRotated = false;
+    invSlotsX=default.invSlotsX;
+    invSlotsY=default.invSlotsy;
+    largeIcon = default.largeIcon;
+}
+
+//SARGE: Resize heavy weapons
+function ResizeHeavyWeapon(DeusExPlayer player)
+{
+    local PerkMobileOrdnance perk;
+    
+    perk = PerkMobileOrdnance(player.PerkManager.GetPerkWithClass(class'DeusEx.PerkMobileOrdnance'));
+    if (perk != None && perk.bPerkObtained)
+    {
+        //Inventory rotation hack.
+        if (!bRotated)
+        {
+            invSlotsX=3;
+            invSlotsY=1;
+            invSlotsXTravel=3;
+            invSlotsYTravel=1;
+        }
+        else
+        {
+            invSlotsX=1;
+            invSlotsY=3;
+            invSlotsXTravel=1;
+            invSlotsYTravel=3;
+            largeIcon = largeIconRot;
+        }
+    }
 }
 
 //Function to fix weapon offsets

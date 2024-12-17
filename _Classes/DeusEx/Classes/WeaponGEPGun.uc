@@ -27,6 +27,43 @@ var rotator OldRotation;
 var int lerpClamp;
 //GMDX:finish vars
 
+//SARGE: Allow laser sight and scope when we have the Heavily Tweaked perk
+function CheckHeavilyTweaked()
+{
+    local PerkHeavilyTweaked perk;
+    local DeusExPlayer player;
+
+    log("Check Heavily Tweaked");
+
+    player = DeusExPlayer(GetPlayerPawn());
+
+    if (player == None)
+        return;
+    
+    perk = PerkHeavilyTweaked(player.PerkManager.GetPerkWithClass(class'DeusEx.PerkHeavilyTweaked'));
+    if (perk != None && perk.bPerkObtained)
+    {
+        bCanHaveScope=True;
+        bCanHaveLaser=True;
+    }
+    else
+    {
+        bCanHaveScope=False;
+        bCanHaveLaser=False;
+    }
+}
+
+function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
+{
+    CheckHeavilyTweaked();
+    return Super.DoRightFrob(frobber,objectInHand);
+}
+
+function bool DoLeftFrob(DeusExPlayer frobber)
+{
+    CheckHeavilyTweaked();
+    return Super.DoLeftFrob(frobber);
+}
 
 function SetMount(DeusExPlayer dxp)
 {
@@ -448,7 +485,6 @@ function CheckWeaponSkins()
 simulated function PreBeginPlay()
 {
 	Super.PreBeginPlay();
-
 	// If this is a netgame, then override defaults
 	if ( Level.NetMode != NM_StandAlone )
 	{
@@ -529,8 +565,6 @@ defaultproperties
      maxRange=12000
      AccurateRange=7200
      BaseAccuracy=0.800000
-     bCanHaveScope=True
-     bCanHaveLaser=True
      bCanTrack=True
      LockTime=3.000000
      LockedSound=Sound'DeusExSounds.Weapons.GEPGunLock'
