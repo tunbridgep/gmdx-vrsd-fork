@@ -97,9 +97,15 @@ event Tick(float deltaSeconds)
 	Super.Tick(deltaSeconds);
 
     //Update credits counter
-    upperConWindow.SetCreditsFont(conPlay.GetCurrentSpeechFont());
-    upperConWindow.SetLabelFont(conPlay.GetCurrentNameFont());
-    upperConWindow.SetCreditsText(player.Credits);
+    if (!bForcePlay)
+    {
+        upperConWindow.ShowCredits();
+        upperConWindow.SetCreditsFont(conPlay.GetCurrentSpeechFont());
+        upperConWindow.SetLabelFont(conPlay.GetCurrentNameFont());
+        upperConWindow.SetCreditsText(player.Credits);
+    }
+    else
+        upperConWindow.HideCredits();
 
 	// Compute how much we should move the windows this frame
 	increment = deltaSeconds/movePeriod;
@@ -560,9 +566,12 @@ function bool HandleNumberKey(int number)
     //Abort if we're not using numbered replies
     if (!player.bNumberedDialog) 
         return false;
+			
+    //Block belt selection for the next 2 seconds, otherwise pressing the button will trigger it
+    player.fBlockBeltSelection = 2.0;
 
     //If there are no choices, number keys simply skip, so we can hold 2 to select GEP gun, etc.
-    else if (numChoices == 0)
+    if (numChoices == 0)
     {
     	conPlay.PlayNextEvent();
         return true;

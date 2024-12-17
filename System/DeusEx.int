@@ -279,6 +279,7 @@ LocationLabel="Location: %s|n"
 SaveCountLabel="Save Count: %d|n"
 FileSizeLabel="File Size: %dMB"
 FreeSpaceLabel="Free Space: %dMB"
+SaveIDLabel="Save ID: %s"
 Title="Load Game"
 PlayTimeLabel="Play Time: %s|n"
 ConfirmDeleteLabel="Confirm Savegame Deletion"
@@ -2864,8 +2865,11 @@ SkillName="Athletics"
 Description="An agent with extreme physical dedication can develop the skills to climb tall heights and swim great distances.|n|nTotal skill points to master: 4725|n|nUNTRAINED: An agent can swim and climb onto short ledges.|n|nTRAINED: The swimming speed and stamina of an agent increases slightly, and an agent can climb onto moderate ledges.|n|nADVANCED: The swimming speed and stamina of an agent increases moderately, and an agent can climb onto tall ledges.|n|nMASTER: An agent moves like a dolphin underwater and climbs like a jaguar."
 
 [SkillComputer]
-SkillName="Hacking"
-Description="The covert manipulation of computers and security consoles.|n|nTotal skill points to master: 6000.|n|nUNTRAINED: An agent can use terminals to read bulletins and news. |n|nTRAINED: An agent can hack computers and security consoles of intermediate security systems, can shut security systems down for 2 minutes, and siphon up to half of an ATM's funds. |n|nADVANCED: An agent can hack computers featuring advanced defense systems and siphon all credits from ATMs, and achieves a moderate increase in detection time as well as a 2 minute increase in security shutdown time.|n|nMASTER: An agent is an elite hacker that no system can withstand, gaining the ability to spoof additional credits from ATMs and evading detection for long periods, including an additional 2 minute increase in security shutdown time."
+SkillName="Computers"
+Description="The covert manipulation of computers and security consoles.|n|nTotal skill points to master: 6000.|n|nUNTRAINED: An agent can use terminals to read bulletins and news. |n|nTRAINED: An agent can hack computers and security consoles of intermediate security systems and siphon up to half of an ATM's funds. |n|nADVANCED: An agent can hack computers featuring advanced defense systems and siphon all credits from ATMs, and achieves a moderate increase in detection time.|n|nMASTER: An agent is an elite hacker that no system can withstand, gaining the ability to spoof additional credits from ATMs and evading detection for long periods."
+strHardcore="HARDCORE MODE ADDITIONS:"
+strNewHackSystem="NEW HACKING SYSTEM ADDITIONS:"
+strDescExtra="Devices will reboot after a certain time, returning to their default state. Additionally, hacking the same terminal repeatedly will result in network detection, preventing future hacking attempts.|n|nReboot Times:|n2 minutes at TRAINED, plus 1 additional minute on ADVANCED and MASTER (4 Minutes Total)|n|nMaximum Successful Hacks:|n2 plus 1 additional hack on ADVANCED and MASTER (4 Total)"
 
 [SkillTech]
 SkillName="Electronics"
