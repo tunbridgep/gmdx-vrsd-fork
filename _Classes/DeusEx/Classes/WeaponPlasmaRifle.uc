@@ -5,24 +5,14 @@ class WeaponPlasmaRifle extends DeusExWeapon;
 
 var int lerpClamp;
 
-/*simulated function Tick(float deltaTime)
+/*
+//SARGE: Resize if we have the Mobile Ordnance perk
+function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {
-super.Tick(deltaTime);
-
-    if (Owner == None || !Owner.IsA('DeusExPlayer'))
-    return;
-    else if (Owner.IsA('DeusExPlayer'))
-	{
-	  if (largeIconHeight!=34 && DeusExPlayer(Owner).PerkNamesArray[24]==1)
-	    {
-        invSlotsX=3;
-        invSlotsY=2;
-        largeIconWidth=161;
-        largeIconHeight=66;
-        largeIcon=Texture'GMDXSFX.Icons.Plasma';
-        }
-	}
-} */
+    ResizeHeavyWeapon(frobber);
+    return super.DoRightFrob(Frobber,objectInHand);
+}
+*/
 
 simulated function renderoverlays(Canvas canvas)
 {

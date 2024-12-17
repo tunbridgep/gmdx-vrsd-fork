@@ -299,7 +299,7 @@ function CreateInventoryButtons()
 
 			if ( anItem.largeIcon != None )
 			{
-				if ((anItem.default.invSlotsX != anItem.default.invSlotsY) && (anItem.invSlotsX == anItem.default.invSlotsY)) //RSD: Check if we have the right sizing (resets on load)
+				if (anItem.IsA('DeusExWeapon') && DeusExWeapon(anItem).bRotated) //RSD: Check if we have the right sizing (resets on load)
 				{
 					anItem.largeIconWidth = anItem.default.largeIconHeight;
 					anItem.largeIconHeight = anItem.default.largeIconWidth;
@@ -309,7 +309,7 @@ function CreateInventoryButtons()
 				    anItem.largeIconWidth = anItem.default.largeIconWidth;
 					anItem.largeIconHeight = anItem.default.largeIconHeight;
 				}
-                if (anItem.IsA('DeusExWeapon') && DeusExWeapon(anItem).largeIconRot != none && anItem.largeIconWidth == anItem.default.largeIconHeight) //RSD: Account for inventory rotation
+                if (anItem.IsA('DeusExWeapon') && DeusExWeapon(anItem).largeIconRot != none && DeusExWeapon(anItem).bRotated) //RSD: Account for inventory rotation
 					newButton.SetIcon(DeusExWeapon(anItem).largeIconRot);
 				else
 					newButton.SetIcon(anItem.largeIcon);
