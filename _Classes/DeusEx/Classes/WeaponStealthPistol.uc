@@ -752,4 +752,5 @@ defaultproperties
      Mesh=LodMesh'HDTPItems.HDTPstealthpistolPickup'
      CollisionRadius=8.000000
      CollisionHeight=0.800000
+     minSkillRequirement=2;
 }
