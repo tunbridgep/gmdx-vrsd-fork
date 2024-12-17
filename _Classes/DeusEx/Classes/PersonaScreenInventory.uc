@@ -590,7 +590,7 @@ function UpdateAmmoDisplay()
 		{
 			ammo = DeusExAmmo(inv);
 
-			if ((ammo != None))// && (ammo.bShowInfo))
+			if ((ammo != None) && (ammo.bShowInfo))
 			{
 				winInfo.AddAmmoInfoWindow(ammo, player.bShowAmmoDescriptions);
 				ammoCount++;
