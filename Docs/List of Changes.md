@@ -34,6 +34,7 @@ Sarge's Changes since Beta 2.2:
     - Edibles and Drugs can now be assigned as secondary items.
     - Pressing the walk/run key while crouch toggled will now uncrouch.
     - You can no longer waste medkits or biocells when at maximum health/energy
+    - The HUD now shows stamina and bioenergy percentages below the bars if enabled.
     - Added alternate weapon offsets to hide many of the visible seams or missing parts of weapon viewmodels.
     - Weapons that don't use ammo (such as melee weapons) no longer show the Ammo element on the HUD.
     - Augmentation Wheel improvements

@@ -636,6 +636,8 @@ var globalconfig bool bAugWheelDisableAll;                                      
 
 var globalconfig bool bTrickReloading;											//Sarge: Allow reloading with a full clip.
 
+var globalconfig bool bShowEnergyBarPercentages;                                //SARGE: If true, show the oxygen and bioenergy percentages below the bars.
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -17435,4 +17437,5 @@ defaultproperties
      bDisplayClips=true
      bCutsceneFOVAdjust=true
      iFrobDisplayStyle=1
+     bShowEnergyBarPercentages=true;
 }
