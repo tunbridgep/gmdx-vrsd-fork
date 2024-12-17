@@ -12,7 +12,7 @@ var localized String msgSecond;
 
 function LoadSetting()
 {
-	SetValue(player.QuickSaveTotal);
+	SetValue(player.iAutosaveMax);
 }
 
 // ----------------------------------------------------------------------
@@ -21,7 +21,7 @@ function LoadSetting()
 
 function SaveSetting()
 {
-	player.QuickSaveTotal = int(GetValue());
+	player.iAutoSaveMax = int(GetValue());
 }
 
 // ----------------------------------------------------------------------

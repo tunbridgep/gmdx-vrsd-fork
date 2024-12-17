@@ -53,8 +53,8 @@ function SetCameraView(ComputerSecurityCameraWindow newCamera)
 
 function bool ButtonActivated( Window buttonPressed )
 {
-	Super.ButtonActivated(buttonPressed);
 	securityWindow.ToggleCameraState();
+	Super.ButtonActivated(buttonPressed);
 	return True;
 }
 
@@ -64,9 +64,21 @@ function bool ButtonActivated( Window buttonPressed )
 
 function bool ButtonActivatedRight( Window buttonPressed )
 {
-	Super.ButtonActivated(buttonPressed);
 	securityWindow.ToggleCameraState();
+	Super.ButtonActivated(buttonPressed);
 	return True;
+}
+
+//SARGE: When hacked, replace Off with the Rebooting text
+function UpdateText(bool bHacking)
+{
+    local int disableTime;
+    if (winCamera.camera.bRebooting && !winCamera.camera.bActive && !bHacking)
+    {
+        SetValue(0); //If not hacked, Next choice will be Off.
+        disableTime = winCamera.camera.disableTime - player.saveTime;
+        btnInfo.SetButtonText(sprintf(strRebooting,disableTime));
+    }
 }
 
 // ----------------------------------------------------------------------

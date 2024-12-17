@@ -10,6 +10,24 @@ var int		mpBurnDamage;
 var bool usedammo, genusedammo;
 var int lerpClamp;
 
+//SARGE: Resize if we have the Mobile Ordnance perk
+function bool DoLeftFtob(DeusExPlayer frobber)
+{
+    local bool re;
+    re = super.DoLeftFrob(Frobber);
+    ResizeHeavyWeapon(frobber);
+    return re;
+}
+
+//SARGE: Resize if we have the Mobile Ordnance perk
+function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
+{
+    local bool re;
+    re = super.DoRightFrob(Frobber,objectInHand);
+    ResizeHeavyWeapon(frobber);
+    return re;
+}
+
 function PostBeginPlay()
 {
   super.PostBeginPlay();
@@ -17,27 +35,6 @@ function PostBeginPlay()
   if (!(Owner != none && Owner.IsA('DeusExPlayer')))                            //RSD: accessed none?
     FireOffset=vect(30,9,4);
 }
-
-/*simulated function Tick(float deltaTime)
-{
-super.Tick(deltaTime);
-
-    if (Owner == None || !Owner.IsA('DeusExPlayer'))
-        return;
-    else if (Owner.IsA('DeusExPlayer'))
-	{
-	  if (largeIconHeight!=34 && DeusExPlayer(Owner).PerkNamesArray[24]==1)
-	    {
-        invSlotsX=3;
-        invSlotsY=2;
-        largeIconWidth=161;
-        largeIconHeight=66;
-        largeIcon=Texture'GMDXSFX.Icons.Napalm';
-        }
-        if (FireSound == None)
-           FireSound = Sound'DeusExSounds.Weapons.FlamethrowerFire';
-	}
-} */
 
 simulated function renderoverlays(Canvas canvas)
 {

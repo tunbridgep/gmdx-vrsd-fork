@@ -114,15 +114,16 @@ const			targetPlayerYMul		= 0.79;
 
 var String	keyDropItem, keyTalk, keyTeamTalk;
 
-var Color	colRed, colGreen, colWhite;
+var Color	colRed, colGreen, colWhite, colBlue;
 //CyberP:
 var localized String msgIFFTracking;
 var localized String IFFLabel1;
 var localized String IFFLabel2;
-var bool bHazardRefresh;
 var float passedTime;
 var StaticInterlacedWindow winVisionLines;
 var ConLight lite;
+    
+var ThrownProjectile lastGrenade;
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -318,86 +319,221 @@ function RefreshMultiplayerKeys()
 //  cyberP: check for nearby environmental hazards
 ////////////////////////////
 
+//SARGE: Major rewrite. Updated to work with placed grenades.
+//Additionally, added support for seeing more than one hazard at a time.
+//TODO: Make this not suck. Also localize it.
 singular function checkForHazards(GC gc)
 {
-local DamageTrigger DT;
-local ZoneInfo ZI;
-local Cloud CL;
-local string threatType;
-local string threatDam;
-local int typecastIt;
-local Actor acti;
+    local DamageTrigger DT;
+    local ThrownProjectile PROJ;
+    local Cloud CL;
+    local Barrel1 BR;
+    local string threatType;
+    local int threatDam;
 
- ForEach Player.RadiusActors(class'DamageTrigger', DT, 512)
- {
-   if (DT.bIsOn)
-   {
-    threatType = (string(DT.damageType));
-    if (DT.damageInterval != 0)
-       typecastIt = (int(DT.damageAmount/DT.damageInterval));
-    else
-       typecastIt = (int(DT.damageAmount));
-    threatDam = (string(typecastIt));
-    acti = DT;
-   }
- }
- if (acti == none)
- {
-  ForEach Player.RadiusActors(class'Cloud', CL, 512)
-  {
-    if (CL.Damage > 0)
+    local Actor actors[20], temp;
+    local string damageTypes[20];
+    local int totalActors;
+
+    local float range, range1, range2;
+    local AugIFF aug;
+    local bool beep;
+
+    local int i;
+
+    aug = AugIFF(Player.AugmentationSystem.GetAug(class'AugIFF'));
+
+    if (aug != None && aug.bHasIt)
+    range = (aug.CurrentLevel) * aug.default.hazardsrange * 16; //Range in which hazards are detected - 50 feet at level 2, 100 at level 3
+
+    if (range <= 0)
+        return;
+
+    //First, get all the damage triggers
+    foreach Player.RadiusActors(class'DamageTrigger', DT, range)
     {
-    threatType = (string(CL.damageType));
-    if (CL.damageInterval != 0)
-        typecastIt = (int(CL.Damage/CL.damageInterval));
-    else
-        typecastIt = (int(CL.Damage));
-    threatDam = (string(typecastIt));
-    acti = CL;
+        if (totalActors >= 20)
+            break;
+
+        if (!DT.bInitiallyActive || !DT.bIsOn || DT.damageInterval == 0 || DT.damageAmount == 0)
+            continue;
+            
+        //We need to check distance, because collision is not good enough as they can be big
+        if ((VSize(DT.location - player.location)) > range)
+            continue;
+    
+        //actors[totalActors++] = DT;
+        //Get closest
+        if (temp != None)
+        {
+            range1 = VSize(DT.location - player.location);
+            range2 = VSize(temp.location - player.location);
+            if (range1 < range2)
+                temp = DT;
+        }
+        else
+            temp = DT;
     }
-  }
- }
-
- if (acti == None)
-    return;
-
-  if (threatType != "" && threatType != "shot" && threatType != "fell" && threatType != "exploded")
-  {
-    if (bHazardRefresh)
-       Player.PlaySound(sound'hazardwarn',SLOT_None);
-    Switch (threatType)
+        
+    actors[totalActors++] = temp;
+    temp = None;
+    
+    //Next, get radioactive barrels
+    foreach Player.RadiusActors(class'Barrel1', BR, range)
     {
-       case "Shocked":
-       threatType = "Electrical";
-       break;
+        if (totalActors >= 20)
+            break;
 
-       case "TearGas":
-       threatDam = "5";
-       break;
-
-       case "PoisonGas":
-       threatType = "Poison Gas";
-       break;
-
-       case "Burned":
-       threatType = "Fire";
-       break;
-
-       case "Flamed":                                                           //RSD: Added this so we don't have both "Flamed" and "Fire"
-       threatType = "Fire";
-       break;
-
+        if (BR.SkinColor != SC_RadioActive)
+            continue;
+        
+        //Get closest
+        if (temp != None)
+        {
+            range1 = VSize(BR.location - player.location);
+            range2 = VSize(temp.location - player.location);
+            if (range1 < range2)
+                temp = BR;
+        }
+        else
+            temp = BR;
     }
-    bHazardRefresh=False;
-    DrawThreatDetectionAugmentation(gc, acti, threatType, threatDam);
-  }
+    
+    actors[totalActors++] = temp;
+    temp = None;
+
+    //Next, get clouds of each type
+    foreach Player.RadiusActors(class'Cloud', CL, range)
+    {
+        if (totalActors >= 20)
+            break;
+
+        if (CL.Damage == 0)
+            continue;
+        
+        //Get closest
+        if (temp != None)
+        {
+            range1 = VSize(CL.location - player.location);
+            range2 = VSize(temp.location - player.location);
+            if (range1 < range2)
+                temp = CL;
+        }
+        else
+            temp = CL;
+    }
+    
+    actors[totalActors++] = temp;
+    temp = None;
+    
+    //Third, get closest grenade (half-range)
+    foreach Player.RadiusActors(class'ThrownProjectile', PROJ, range * 0.5)
+    {
+        //skip grenades if Defense aug is not on (it already shows them)
+        if (bDefenseActive)
+            break;
+
+        if (totalActors >= 20)
+            break;
+
+        if (!PROJ.bProximityTriggered || PROJ.bDisabled || PROJ.Damage <= 0 || PROJ.Owner == player) //Only detect mines placed on walls, etc
+            continue;
+
+        //Get closest
+        if (temp != None)
+        {
+            range1 = VSize(CL.location - player.location);
+            range2 = VSize(temp.location - player.location);
+            if (range1 < range2)
+                temp = PROJ;
+        }
+        else
+            temp = PROJ;
+    }
+    
+    beep = ThrownProjectile(temp) != None && lastGrenade != ThrownProjectile(temp);
+    lastGrenade = ThrownProjectile(temp);
+    actors[totalActors++] = temp;
+    temp = None;
+
+    //Now, get information for the actors
+    for (i = 0;i < totalActors;i++)
+    {
+        if (actors[i] == None)
+            continue;
+        
+        threatType = "";
+        if (actors[i].IsA('DamageTrigger'))
+        {
+            DT = DamageTrigger(actors[i]);
+            threatType = (string(DT.damageType));
+            if (DT.damageInterval != 0)
+                threatDam = int(DT.damageAmount/DT.damageInterval);
+            else
+                threatDam = int(DT.damageAmount);
+        }
+        else if (actors[i].IsA('Cloud'))
+        {
+            CL = Cloud(actors[i]);
+            threatType = string(CL.damageType);
+            if (DT.damageInterval != 0)
+                threatDam = int(CL.Damage/CL.damageInterval);
+            else
+                threatDam = int(CL.Damage);
+        }
+        else if (actors[i].IsA('ThrownProjectile'))
+        {
+            PROJ = ThrownProjectile(actors[i]);
+            threatType = PROJ.ItemName;
+            threatDam = int(PROJ.Damage);
+        }
+        else if (actors[i].IsA('Barrel1'))
+        {
+            BR = Barrel1(actors[i]);
+            threatType = "Radiation";
+            threatDam = 5;
+        }
+
+        //Now draw it
+        if (threatType != "" && threatType != "shot" && threatType != "fell" && threatType != "exploded")
+        {
+            Switch (threatType)
+            {
+                case "Shocked":
+                    threatType = "Electrical";
+                    break;
+
+                case "TearGas":
+                    threatType = "Tear Gas";
+                    threatDam = 5;
+                    break;
+
+                case "PoisonGas":
+                    threatType = "Poison Gas";
+                    break;
+
+                case "Burned":
+                    threatType = "Fire";
+                    break;
+
+                case "Flamed":                                                           //RSD: Added this so we don't have both "Flamed" and "Fire"
+                    threatType = "Fire";
+                    break;
+
+            }
+            DrawThreatDetectionAugmentation(gc, actors[i], threatType, threatDam);
+        }
+
+        if (beep)
+            Player.PlaySound(sound'hazardwarn',SLOT_None);
+    }
 }
 
 // ----------------------------------------------------------------------
 // DrawThreatDetectionAugmentation()
 // ----------------------------------------------------------------------
 
-function DrawThreatDetectionAugmentation(GC gc, Actor threat, string threatT, string threatD)
+function DrawThreatDetectionAugmentation(GC gc, Actor threat, string threatT, int threatD)
 {
 	local String str;
 	local float boxCX, boxCY;
@@ -414,7 +550,7 @@ function DrawThreatDetectionAugmentation(GC gc, Actor threat, string threatT, st
 			str = msgIFFTracking;
 
 		mult = VSize(threat.Location - Player.Location);
-		str = str $ CR() $ msgRange @ Int(mult/16) @ msgRangeUnits $ CR() $ IFFLabel1 @ threatT $ CR() $ IFFLabel2 @ threatD $ CR();
+		str = str $ CR() $ msgRange @ Int(mult/16) @ msgRangeUnits $ CR() $ IFFLabel1 @ threatT $ CR() $ IFFLabel2 @ sprintf("%d",threatD) $ CR();
 
 		if (!ConvertVectorToCoordinates(threat.Location, boxCX, boxCY))
 			str = "";//str @ msgBehind;
@@ -422,7 +558,14 @@ function DrawThreatDetectionAugmentation(GC gc, Actor threat, string threatT, st
 		gc.GetTextExtent(0, w, h, str);
 		x = boxCX - w/2;
 		y = boxCY - h;
-		gc.SetTextColorRGB(0,160,16);
+
+        //SARGE: Red text if we're gonna go BOOM //Okay maybe not, will be confused with Defence aug
+        /*
+        if (threatD > 50)
+            gc.SetTextColorRGB(255,0,0);
+        else
+            */
+            gc.SetTextColorRGB(0,160,16);
 		gc.DrawText(x, y, w, h, str);
 		gc.SetTextColor(colHeaderText);
 
@@ -958,7 +1101,7 @@ function GetTargetReticleColor( Actor target, out Color xcolor )
 
 	if ( target.IsA('ScriptedPawn') )
 	{
-		if (DeusExWeapon(Player.Weapon)!=none && (DeusExWeapon(Player.Weapon).bLasing || DeusExWeapon(Player.Weapon).bAimingDown)) //RSD: Don't change hitmarker color if lasing or ADS
+		if ((DeusExWeapon(Player.Weapon)!=none && DeusExWeapon(Player.Weapon).bLasing)) //RSD: Don't change hitmarker color if lasing or ADS //SARGE: Just lasing for now, aiming down is now used for scopes
         	xcolor = colWhite;
         else if (ScriptedPawn(target).GetPawnAllianceType(Player) == ALLIANCE_Hostile) //RSD: Now else if
 			xcolor = colRed;
@@ -1071,12 +1214,63 @@ function GetTargetReticleColor( Actor target, out Color xcolor )
 // DrawTargetAugmentation()
 // ----------------------------------------------------------------------
 
+//SARGE: Moved here so we can call it from multiple places
+function DrawAccuracyCrosshair(GC gc, DeusExWeapon weapon, Color crossColor, out float x, out float y, out float mult)
+{
+	local float w, h;
+    local int i;
+    w = width;
+    h = height;
+    x = int(w * 0.5)-1;
+    y = int(h * 0.5)-1;
+
+
+    //SARGE: Don't draw accuracy crosshairs at 100% accuracy
+    if (weapon.currentAccuracy <= 0.01 && !player.bFullAccuracyCrosshair)
+        return;
+
+    //if (player.bXhairShrink)
+    //{
+    //   if (weapon.currentAccuracy < 0.04)
+    //      corner = (default.corner * weapon.currentAccuracy) + 1;
+    //   else
+    //      corner = default.corner;
+    //}
+    // scale based on screen resolution - default is 640x480
+    //mult = FClamp(weapon.currentAccuracy * 80.0 * (width/640.0), corner, 80.0);
+    mult = FClamp(weapon.currentAccuracy * (width/16.0), 0, width/4.0); //RSD: New formula based on trig (see new accuracy model in TraceFire() in DeusExWeapon.uc)
+
+    // make sure it's not too close to the center unless you have a perfect accuracy
+    //RSD: Redone so that mult occurs in the inner rather than outer radius of the reticle (no more artificial limits)
+    /*mult = FMax(mult, corner);
+    if (weapon.currentAccuracy == 0.0)
+        mult = corner;*/
+
+    // draw the drop shadowed reticle
+    gc.SetTileColorRGB(0,0,0);
+    for (i=1; i>=0; i--)
+    {
+        //RSD: Redone so that accuracy indicator mult occurs in the inner rather than outer radius of the reticle (pushed everything out by pixels = corner)
+        gc.DrawBox(x+i, y-mult-corner+i, 1, corner, 0, 0, 1, Texture'Solid');
+        gc.DrawBox(x+i, y+mult+1+i, 1, corner, 0, 0, 1, Texture'Solid'); //RSD Added +1 to make reticle lengths equal
+        gc.DrawBox(x-(corner-1)/2+i, y-mult-corner+i, corner, 1, 0, 0, 1, Texture'Solid');
+        gc.DrawBox(x-(corner-1)/2+i, y+mult+corner+i, corner, 1, 0, 0, 1, Texture'Solid');
+
+        gc.DrawBox(x-mult-corner+i, y+i, corner, 1, 0, 0, 1, Texture'Solid');
+        gc.DrawBox(x+mult+1+i, y+i, corner, 1, 0, 0, 1, Texture'Solid'); //RSD Added +1 to make reticle lengths equal
+        gc.DrawBox(x-mult-corner+i, y-(corner-1)/2+i, 1, corner, 0, 0, 1, Texture'Solid');
+        gc.DrawBox(x+mult+corner+i, y-(corner-1)/2+i, 1, corner, 0, 0, 1, Texture'Solid');
+
+        //gc.DrawIcon(x*0.975, y*0.975, Texture'AugIconTarget_Small');
+        gc.SetTileColor(crossColor);
+    }
+}
+
 function DrawTargetAugmentation(GC gc)
 {
 	local String str;
 	local Actor target;
 	local float boxCX, boxCY, boxTLX, boxTLY, boxBRX, boxBRY, boxW, boxH;
-	local float x, y, w, h, mult;
 	local Vector v1, v2;
 	local int i, j, k;
 	local DeusExWeapon weapon;
@@ -1087,11 +1281,14 @@ function DrawTargetAugmentation(GC gc)
 	local int AimBodyPart, casted;
     local float visi, wepAcc, litemult, dist;                                   //RSD: Added litemult, dist
     local int ifflevel;
+    local float x,y,w,h,mult;
 
 	crossColor.R = 255; crossColor.G = 255; crossColor.B = 255;
 
 	// check 500 feet in front of the player
 	target = TraceLOS(8000,AimLocation);
+		
+    weapon = DeusExWeapon(Player.Weapon);
 
 	targetplayerhealthstring = "";
 	targetplayerlocationstring = "";
@@ -1102,7 +1299,8 @@ function DrawTargetAugmentation(GC gc)
             ifflevel = Player.AugmentationSystem.GetAugLevelValue(class'AugIFF');
 
             //Level 2 - hazard check
-            if (!bDefenseActive && ifflevel >= 2.0)
+            //if (!bDefenseActive && ifflevel >= 2.0)
+            if (ifflevel >= 2.0)
                 checkForHazards(gc);
 
             //Level 3 - visibility display
@@ -1122,6 +1320,13 @@ function DrawTargetAugmentation(GC gc)
             }
         }
 
+    //Sarge: Set crosshair colour if we're placing a grenade on a wall
+    if (weapon != None && weapon.bNearWall && Player.bWallPlacementCrosshair)
+        crossColor = colBlue;
+    else
+        crossColor = colWhite;
+
+    //SARGE: Moved this out to a new function, and made sure to always show it if enabled
 	if ( target != None && !target.bHidden //)                                  //RSD
     	&& !(target.IsA('ScriptedPawn') && ScriptedPawn(target).bCloakOn && !(bVisionActive && visionLevel >= 1))) //RSD: no targeting info if NPCs are cloaked with no player infravision
 	{
@@ -1140,58 +1345,23 @@ function DrawTargetAugmentation(GC gc)
 				TargetPlayerLocationString = "("$msgLegs$")";
 		}
 
-		weapon = DeusExWeapon(Player.Weapon);
 		if ((weapon != None) && !bUseOldTarget && player.GetCrosshairState(true)) //GMDX:remove IFF from overlaying GEP
 		{
 			// if the target is out of range, don't draw the reticle
-			if (weapon.MaxRange >= dist /*VSize(target.Location - Player.Location)*/) //RSD: replaced with dist
+			if (weapon.MaxRange >= dist || player.bAlwaysShowBloom /*VSize(target.Location - Player.Location)*/) //RSD: replaced with dist
 			{
-				w = width;
-				h = height;
-				x = int(w * 0.5)-1;
-				y = int(h * 0.5)-1;
-
-				//if (player.bXhairShrink)
-				//{
-				//   if (weapon.currentAccuracy < 0.04)
-                //      corner = (default.corner * weapon.currentAccuracy) + 1;
-                //   else
-                //      corner = default.corner;
-                //}
-				// scale based on screen resolution - default is 640x480
-				//mult = FClamp(weapon.currentAccuracy * 80.0 * (width/640.0), corner, 80.0);
-                mult = FClamp(weapon.currentAccuracy * (width/16.0), 0, width/4.0); //RSD: New formula based on trig (see new accuracy model in TraceFire() in DeusExWeapon.uc)
-
-				// make sure it's not too close to the center unless you have a perfect accuracy
-				//RSD: Redone so that mult occurs in the inner rather than outer radius of the reticle (no more artificial limits)
-				/*mult = FMax(mult, corner);
-				if (weapon.currentAccuracy == 0.0)
-					mult = corner;*/
-
-				// draw the drop shadowed reticle
-				gc.SetTileColorRGB(0,0,0);
-				for (i=1; i>=0; i--)
-				{
-                    //RSD: Redone so that accuracy indicator mult occurs in the inner rather than outer radius of the reticle (pushed everything out by pixels = corner)
-                    gc.DrawBox(x+i, y-mult-corner+i, 1, corner, 0, 0, 1, Texture'Solid');
-                    gc.DrawBox(x+i, y+mult+1+i, 1, corner, 0, 0, 1, Texture'Solid'); //RSD Added +1 to make reticle lengths equal
-                    gc.DrawBox(x-(corner-1)/2+i, y-mult-corner+i, corner, 1, 0, 0, 1, Texture'Solid');
-                    gc.DrawBox(x-(corner-1)/2+i, y+mult+corner+i, corner, 1, 0, 0, 1, Texture'Solid');
-
-                    gc.DrawBox(x-mult-corner+i, y+i, corner, 1, 0, 0, 1, Texture'Solid');
-                    gc.DrawBox(x+mult+1+i, y+i, corner, 1, 0, 0, 1, Texture'Solid'); //RSD Added +1 to make reticle lengths equal
-                    gc.DrawBox(x-mult-corner+i, y-(corner-1)/2+i, 1, corner, 0, 0, 1, Texture'Solid');
-                    gc.DrawBox(x+mult+corner+i, y-(corner-1)/2+i, 1, corner, 0, 0, 1, Texture'Solid');
-
-                    //gc.DrawIcon(x*0.975, y*0.975, Texture'AugIconTarget_Small');
-                    gc.SetTileColor(crossColor);
-				}
+                DrawAccuracyCrosshair(gc,weapon,crossColor,x,y,mult);
 			}
 		}
 		// movers are invalid targets for the aug
 		if (target.IsA('DeusExMover'))
 			target = None;
 	}
+    //SARGE: If we have always bloom turned on, just draw it regardless
+    else if (player.bAlwaysShowBloom && weapon != None && player.GetCrosshairState(true))
+    {
+        DrawAccuracyCrosshair(gc,weapon,crossColor,x,y,mult);
+    }
 
 	// let there be a 0.5 second delay before losing a target
 	if (target == None)
@@ -1484,11 +1654,13 @@ function DrawTargetAugmentation(GC gc)
 	DeusExRootWindow(player.rootWindow).hud.hitmarker.SetCrosshairColor(crossColor);
 }
 
+//SARGE: Get the text for rebooting cameras/turrets
 function string GetHackDisabledText(Actor target,bool TargetingDisplay)
 {
     local SecurityCamera cam;
     local AutoTurret turr;
-    local string str;
+    local string str, strT;
+    local int amt, min, sec;
 
     if (target.IsA('AutoTurretGun'))
         turr = AutoTurret(target.Owner);
@@ -1497,10 +1669,45 @@ function string GetHackDisabledText(Actor target,bool TargetingDisplay)
     
     cam = SecurityCamera(target);
 
+
+
     if (turr != None && turr.bRebooting)
-        str = Sprintf(msgReboot,int(turr.disableTime - player.saveTime));
+        amt = int(turr.disableTime - player.saveTime);
     else if (cam != None && cam.bRebooting)
-        str = Sprintf(msgReboot,int(cam.disableTime - player.saveTime));
+        amt = int(cam.disableTime - player.saveTime);
+
+    //ZAP!
+    if (amt == 0)
+        return "";
+    /*
+    else if (turr != None && turr.bConfused && turr.bRebooting)
+        return Sprintf(msgReboot,"-:--");
+    else if (cam != None && cam.bConfused && cam.bRebooting)
+        return Sprintf(msgReboot,"-:--");
+    */
+
+    //Now format it as minutes and seconds
+    min = amt / 60;
+    sec = amt % 60;
+
+    //minute
+    if (min > 0)
+        strT = strT $ min;
+    else
+        strT = strT $ "0";
+
+    //divider
+    strT = strT $ ":";
+
+    //seconds
+    if (sec > 0 && sec < 10)
+        strT = strT $ "0" $ sec;
+    else if (sec > 0)
+        strT = strT $ sec;
+    else
+        strT = strT $ "00";
+        
+    str = Sprintf(msgReboot,strT);
 
     //If using the targeting aug, we need to format it
     if (TargetingDisplay && str != "")
@@ -1932,7 +2139,7 @@ defaultproperties
      msgIRAmpActive="IRAmp Active"
      msgNoImage="Image Not Available"
      msgDisabled="Disabled"
-     msgReboot="Rebooting in %ds"
+     msgReboot="Rebooting in %s"
      SpottedTeamString="You have spotted a teammate!"
      YouArePoisonedString="You have been poisoned!"
      YouAreBurnedString="You are burning!"
@@ -1965,11 +2172,11 @@ defaultproperties
      TeamHackTurretString="That turret already belongs to your team!"
      KeyNotBoundString="Key Not Bound"
      OutOfAmmoString="Out of Ammo!"
+     colBlue=(B=255,G=50,R=50)
      colRed=(R=255)
      colGreen=(G=255)
      colWhite=(R=255,G=255,B=255)
      msgIFFTracking="* Environmental Hazard *"
      IFFLabel1="Type:"
      IFFLabel2="Lethality:"
-     bHazardRefresh=True
 }

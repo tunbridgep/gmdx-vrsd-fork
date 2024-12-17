@@ -73,8 +73,10 @@ var bool bRestrictedSaving;
 var bool bNoKeypadCheese;
 var bool bExtraHardcore;
 var bool bMoreLDDPNPCs;
-var bool bRestrictedMetabolism;
+//var bool bRestrictedMetabolism;
 var bool bPrisonStart;
+var bool bDisableConsoleAccess;
+var bool bWeaponRequirementsMatter;
 
 //LDDP
 var bool bFemaleEnabled;
@@ -133,7 +135,9 @@ event InitWindow()
     bRandomizeEnemies=false;                                                    //Sarge
     bExtraHardcore=false;                                                       //Sarge
     bMoreLDDPNPCs=false;                                                        //Sarge
-    //bRestrictedMetabolism=false;                                                //Sarge
+    bDisableConsoleAccess=false;                                                //Sarge
+    bWeaponRequirementsMatter=false;                                            //Sarge
+    //bRestrictedMetabolism=false;                                              //Sarge
     default.bRandomizeCrates=false;                                             //RSD: Also need default values! Otherwise get command in modifier menu takes the wrong value
     default.bRandomizeMods=false;                                               //RSD
     default.bRandomizeAugs=false;                                               //RSD
@@ -145,6 +149,8 @@ event InitWindow()
     default.bMoreLDDPNPCs=false;                                                //Sarge
     //default.bRestrictedMetabolism=false;                                      //Sarge
     default.bPrisonStart=false;                                                 //Sarge
+    default.bDisableConsoleAccess=false;                                        //Sarge
+    default.bWeaponRequirementsMatter=false;                                    //Sarge
 
 	StyleChanged();
 }
@@ -448,7 +454,15 @@ function bool ButtonActivated( Window buttonPressed )
 
 event bool ListRowActivated(window list, int rowId)
 {
-	UpgradeSkill();
+	local DeusExRootWindow root;
+	root = DeusExRootWindow(player.rootWindow);
+	if (root != None)
+	{
+		if (root.IsKeyDown(IK_Shift) || root.IsKeyDown(IK_Ctrl) || root.IsKeyDown(IK_Alt))
+            DowngradeSkill();
+        else
+            UpgradeSkill();
+    }
 	return True;
 }
 
@@ -793,7 +807,9 @@ function SaveSettings()
     player.bAddictionSystem=bAddictionSystem;
     player.bExtraHardcore=bExtraHardcore;
     //player.bRestrictedMetabolism=bRestrictedMetabolism;
-    player.bMoreLDDPNPCs=bMoreLDDPNPCs;
+    player.bMoreLDDPNPCs=bMoreLDDPNPCs;                                         //Sarge
+    player.bDisableConsoleAccess=bDisableConsoleAccess;                         //Sarge
+    player.bWeaponRequirementsMatter=bWeaponRequirementsMatter;                 //Sarge
 
     //LDDP
 	THuman = Human(Player);
