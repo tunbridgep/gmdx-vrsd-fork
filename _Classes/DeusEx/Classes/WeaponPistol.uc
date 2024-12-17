@@ -316,4 +316,5 @@ defaultproperties
      MultiSkins(6)=Texture'DeusExItems.Skins.PinkMaskTex'
      CollisionRadius=7.000000
      CollisionHeight=1.000000
+     minSkillRequirement=1;
 }

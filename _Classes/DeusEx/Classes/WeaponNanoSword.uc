@@ -156,4 +156,5 @@ defaultproperties
      LightSaturation=64
      LightRadius=4
      Mass=20.000000
+     minSkillRequirement=3;
 }

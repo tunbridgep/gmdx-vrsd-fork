@@ -391,4 +391,5 @@ defaultproperties
      Mesh=LodMesh'DeusExItems.StealthPistolPickup'
      CollisionRadius=8.000000
      CollisionHeight=0.800000
+     minSkillRequirement=2;
 }

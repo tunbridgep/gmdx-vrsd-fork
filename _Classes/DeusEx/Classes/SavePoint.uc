@@ -5,23 +5,12 @@ class SavePoint extends BoxLarge;
 
 var bool bUsedSavePoint; //stop double trigger if destroy takes its time
 var int Tcount;
-var DeusExPlayer DxPlayer;
+var DeusExPlayer player;
 var localized String msgDeducted;
 var localized String msgNotEnough;
 var localized String msgSaveName;
 
 #exec OBJ LOAD FILE=Extras
-
-function int GetSaveGameIndex(DeusExPlayer player)
-{
-	local GameDirectory saveDir;
-
-	// Create our Map Directory class
-	saveDir = player.CreateGameDirectoryObject();
-	saveDir.SetDirType(saveDir.EGameDirectoryTypes.GD_SaveGames);
-	saveDir.GetGameDirectory();
-    return saveDir.GetNewSaveFileIndex();
-}
 
 function Timer()
 {
@@ -33,58 +22,39 @@ function Timer()
    DrawScale-=0.01;
 }
 
-singular function Touch(Actor Other)
+//singular function Touch(Actor Other)
+function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {
    local DeusExLevelInfo info;
 
-   DxPlayer=DeusExPlayer(Other);
-   info=DxPlayer.GetLevelInfo();
+    if (frobber == None)
+        return true;
 
-   if ((DxPlayer != none) && (DxPlayer.Credits < 100) && (DxPlayer.bExtraHardcore))
-      DxPlayer.ClientMessage(msgNotEnough);
+    player=frobber;
+    info=frobber.GetLevelInfo();
 
-   if (DxPlayer != None && DxPlayer.Credits < 100 && DxPlayer.bExtraHardcore)
-   {
-   return;
-   }
-   else
-   {
-   if ((Pawn(Other)!=None) && (Pawn(Other).bIsPlayer) && (!bUsedSavePoint))
-   {
-      if (DxPlayer.CanSave(true))
-          GotoState('QuickSaver');
-
-//      log("Save Game touched by player "@Other);
-//      bUsedSavePoint=true;
-//      DeusExPlayer(Other).bPendingHardCoreSave=true;
-//      DeusExPlayer(Other).QuickSave();
-//      PlaySound(sound'CloakDown', SLOT_None,,,,0.5);
-     }
-   }
+    if (frobber.Credits < 100 && frobber.bExtraHardcore)
+        frobber.ClientMessage(msgNotEnough);
+    else if (!bUsedSavePoint && frobber.CanSave(true))
+        GotoState('QuickSaver');
 }
 
 State QuickSaver
 {
    function Timer()
    {
-      local DeusExLevelInfo dxInfo;
-      dxInfo=DxPlayer.GetLevelInfo();
-	
-      if (dxInfo != None && !(DxPlayer.IsInState('Dying')) && !(DxPlayer.IsInState('Paralyzed')) && !(DxPlayer.IsInState('Interpolating')) &&
-      DxPlayer.dataLinkPlay == None && Level.Netmode == NM_Standalone)
-      {
-         if (DxPlayer.bExtraHardcore)
-         {
-         DxPlayer.Credits -= 100;
-         DxPlayer.ClientMessage(msgDeducted);
-         }
-         bUsedSavePoint=true;
-         DxPlayer.DoSaveGame(GetSaveGameIndex(DxPlayer),sprintf(msgSaveName,DxPlayer.retInfo(),DxPlayer.TruePlayerName));
-         PlaySound(sound'CloakDown', SLOT_None,,,,0.5);
-         GotoState('');
-         Global.SetTimer(0.02,true);
-      } else
-         GotoState('');
+        if (player.bExtraHardcore)
+        {
+            player.Credits -= 100;
+            player.ClientMessage(msgDeducted);
+        }
+        bUsedSavePoint=true;
+        bHighlight=false;
+        //player.DoSaveGame(-1,sprintf(msgSaveName,player.retInfo(),player.TruePlayerName));
+        player.QuickSave2(sprintf(msgSaveName,player.retInfo(),player.TruePlayerName),true);
+        PlaySound(sound'CloakDown', SLOT_None,,,,0.5);
+        GotoState('');
+        Global.SetTimer(0.02,true);
    }
 
 Begin:
@@ -119,4 +89,6 @@ defaultproperties
      LightHue=96
      LightSaturation=32
      LightRadius=3
+     bHighlight=True
+     ItemName="Save Point"
 }

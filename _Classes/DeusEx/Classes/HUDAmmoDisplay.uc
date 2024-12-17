@@ -138,7 +138,7 @@ event DrawWindow(GC gc)
 			else
 				clipsRemaining = weapon.NumClips();
 		
-            if ((ammoInClip < weapon.lowAmmoWatermark && weapon.reloadCount > 1) || ammoInClip == 0)
+            if ((weapon.reloadCount > 1 && ammoInClip <= weapon.reloadCount / 2) || ammoInClip == 0)
                 gc.SetTextColor(colAmmoLowText);
             else
                 gc.SetTextColor(colAmmoText);

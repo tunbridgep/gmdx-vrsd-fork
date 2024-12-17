@@ -259,4 +259,5 @@ defaultproperties
      CollisionRadius=15.000000
      CollisionHeight=1.100000
      Mass=30.000000
+     minSkillRequirement=3;
 }
