@@ -296,6 +296,7 @@ var float attackSpeedMult;                                                      
 var bool bPerShellReload;                                                       //RSD: To avoid convoluted class checking (Sawed-Off, Assault Shotgun, Mini-Crossbow, and GEP)
 var localized string abridgedName;                                              //RSD: For weapons with 30+ char names in MenuScreenHDTPToggles.uc
 var texture largeIconRot;                                                       //RSD: rotated inventory icon
+var travel bool bRotated;                                                      //Is this item rotated?
 var travel int invSlotsXtravel;                                                 //RSD: since Inventory invSlotsX doesn't travel through maps
 var travel int invSlotsYtravel;                                                 //RSD: since Inventory invSlotsY doesn't travel through maps
 var travel float previousAccuracy;                                              //Sarge: Used to limit standing accuracy bonus from increasing past your max accuracy                                                                                
@@ -309,8 +310,13 @@ var travel bool givenFreeReload;                                                
 
 var float sleeptime;                                                              //Sarge: Used by per shell reload weapons to store how long they have been sleeping during reload, to allow us to cancel mid-reload in a far more responsive way.
 
+//SARGE: Show Modified
 var travel bool bModified;                                                             //SARGE: Keeps track of whether or not a particular weapon has been modified
 var localized string strModified;
+
+//SARGE: Weapon Requirements Matter
+var int minSkillRequirement;                                          //SARGE: Minimum skill requirement to use this weapon
+var localized String msgRequires;                                     //Sarge: "Requires" for weapon info screen
 
 //END GMDX:
 
@@ -355,15 +361,63 @@ function string GetBeltDescription(DeusExPlayer player)
         return beltDescription;
 }
 
+function bool CanUseWeapon(DeusExPlayer player, optional bool noMessage)
+{
+    local int skill;
+    
+    if (player == None || player.SkillSystem == None)
+        return false;
+
+    //NOTE: Order matters here, we need to short circuit to avoid the CheckSkill message
+    return !player.bWeaponRequirementsMatter || player.SkillSystem.CheckSkill(GoverningSkill,minSkillRequirement,noMessage);
+}
+
 //SARGE: Added "Left Click Frob" and "Right Click Frob" support
 //Return true to use the default frobbing mechanism (right click), or false for custom behaviour
 function bool DoLeftFrob(DeusExPlayer frobber)
 {
+    Unrotate();
     return true;
 }
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {
+    Unrotate();
     return true;
+}
+
+function Unrotate()
+{
+    bRotated = false;
+    invSlotsX=default.invSlotsX;
+    invSlotsY=default.invSlotsy;
+    largeIcon = default.largeIcon;
+}
+
+//SARGE: Resize heavy weapons
+function ResizeHeavyWeapon(DeusExPlayer player)
+{
+    local PerkMobileOrdnance perk;
+    
+    perk = PerkMobileOrdnance(player.PerkManager.GetPerkWithClass(class'DeusEx.PerkMobileOrdnance'));
+    if (perk != None && perk.bPerkObtained)
+    {
+        //Inventory rotation hack.
+        if (!bRotated)
+        {
+            invSlotsX=3;
+            invSlotsY=1;
+            invSlotsXTravel=3;
+            invSlotsYTravel=1;
+        }
+        else
+        {
+            invSlotsX=1;
+            invSlotsY=3;
+            invSlotsXTravel=1;
+            invSlotsYTravel=3;
+            largeIcon = largeIconRot;
+        }
+    }
 }
 
 //Function to fix weapon offsets
@@ -407,13 +461,7 @@ function DoWeaponOffset(DeusExPlayer player)
 //SARGE: Called when the item is added to the players hands
 function Draw(DeusExPlayer frobber)
 {
-    //Start with a full clip
-    if (!givenFreeReload)
-    {
-        //DeusExPlayer(owner).clientMessage("Give free reload");
-        ReloadMaxAmmo();
-        givenFreeReload = true;
-    }
+    //frobber.clientMessage("Draw!");
 
     //Fix allowing more in the clip than we have
     ClipCount = min(ClipCount,AmmoType.AmmoAmount);
@@ -1043,6 +1091,13 @@ local DeusExPlayer playa;
 	  NPCmaxRange = default.MaxRange;
     if (NPCAccurateRange == 0)
       NPCAccurateRange = default.AccurateRange;
+
+    if (!givenFreeReload)
+    {
+        ClipCount = ReloadCount;
+        givenFreeReload = true;
+    }
+
 }
 
 function ReloadMaxAmmo()
@@ -1421,7 +1476,7 @@ local float p, mod;
 	
     if (player != none && bLaserToggle) //Sarge: Add laser check to re-enable laser if we turned it on
 	{                                   //Sarge: The block for mantling checks was also removed, now it uses this directly
-	   LaserOn();
+	   LaserOn(true);
 	}
 	}
 }
@@ -2855,15 +2910,12 @@ function SwitchModes()
 // laser functions for weapons which have them
 //
 
-function LaserOn()
+function LaserOn(optional bool IgnoreSound)
 {
 	if (bHasLaser && !bLasing)
 	{
 		// if we don't have an emitter, then spawn one
 		// otherwise, just turn it on
-		if (IsA('WeaponPistol')) WeaponPistol(self).PistolLaserOn(); else
-		{
-
 		if (Emitter == None)
 		{
 			Emitter = Spawn(class'LaserEmitter', Self, , Location, Pawn(Owner).ViewRotation);
@@ -2881,13 +2933,14 @@ function LaserOn()
 		}
 		else
 			Emitter.TurnOn();
-                Owner.PlaySound(sound'KeyboardClick3', SLOT_None,,, 1024,1.5); //CyberP: suitable laser on sfx
+
+        if (!IgnoreSound)
+            Owner.PlaySound(sound'KeyboardClick3', SLOT_None,,, 1024,1.5); //CyberP: suitable laser on sfx //SARGE: Now has sound check
 		bLasing = True;
         bLaserToggle = true;
 	  }
 	  LaserYaw = (currentAccuracy) * (Rand(4096) - 2048);                       //RSD: Reset laser position when turning on
 	  LaserPitch = (currentAccuracy) * (Rand(4096) - 2048);
-	}
 }
 
 function LaserOff(bool forced)
@@ -2895,16 +2948,13 @@ function LaserOff(bool forced)
 	if (IsA('WeaponNanoSword')&&!IsInState('DownWeapon')) return;
 	if (bHasLaser && bLasing)
 	{
-	  if (IsA('WeaponPistol')) WeaponPistol(self).PistolLaserOff(forced);
-	  else
-	  {
-		 if (Emitter != None)
-			Emitter.TurnOff();
-                 Owner.PlaySound(sound'KeyboardClick2', SLOT_Misc,,, 1024,1.5); //CyberP: suitable laser off sfx
-		 bLasing = False;
-         if (!forced)
+        if (Emitter != None)
+            Emitter.TurnOff();
+        if (!forced)
+            Owner.PlaySound(sound'KeyboardClick2', SLOT_Misc,,, 1024,1.5); //CyberP: suitable laser off sfx
+        bLasing = False;
+        if (!forced)
             bLaserToggle = false;
-	  }
 	  if ((IsA('WeaponGEPGun'))&&(Owner.IsA('DeusExPlayer')))
 	  {
 	     if (DeusExPlayer(Owner).aGEPProjectile!=none)
@@ -5709,7 +5759,11 @@ simulated function bool UpdateInfo(Object winObject)
     winInfo.AddInfoItem(msgSecondary, str);
 
 	// Governing Skill
-	winInfo.AddInfoItem(msgInfoSkill, GoverningSkill.default.SkillName);
+    //SARGE: Also Weapon requirement
+    if (minSkillRequirement > 0 && DeusExPlayer(Owner) != None && DeusExPlayer(Owner).bWeaponRequirementsMatter)
+        winInfo.AddInfoItem(msgInfoSkill, GoverningSkill.default.SkillName @ "(" $ msgRequires @  DeusExPlayer(Owner).SkillSystem.GetSkillFromClass(GoverningSkill).GetLevelString(minSkillRequirement) $ ")");
+    else
+        winInfo.AddInfoItem(msgInfoSkill, GoverningSkill.default.SkillName);
 
     if (bCanHaveModBaseAccuracy || bCanHaveModReloadCount || bCanHaveModAccurateRange || bCanHaveModReloadTime || bCanHaveModRecoilStrength || bCanHaveModShotTime || bCanHaveModDamage)
         {
@@ -6395,7 +6449,7 @@ else
 			Owner.PlaySound(ReloadMidSound, SLOT_None,,, 1024);   //CyberP: ReloadMidSound is middle of a reload
 			if (bPerShellReload) //CyberP: load shells one at a time            //RSD: was IsA(...), now done with a simple bool check
 			{                                                                   //RSD: load darts one at a time too, don't load Assault Shotgun one at a time
-                while (ClipCount < ReloadCount && AmmoType.AmmoAmount > 0)                //RSD: Reverted Assault shotty, added GEP
+                while (ClipCount < ReloadCount && AmmoType.AmmoAmount > 0 && ClipCount < AmmoType.AmmoAmount)                //RSD: Reverted Assault shotty, added GEP
                 {
                     sleeptime = 0;
                     if (IsA('WeaponAssaultShotgun') || (IsA('WeaponSawedOffShotgun') && iHDTPModelToggle != 2)) //RSD: use normal sound routine if not using Clyzm's shotty
@@ -6417,8 +6471,6 @@ else
                     //Owner.BroadcastMessage(ClipCount);                           //RSD: For testing
                     /*else if (IsA('WeaponGEPGun') && Owner.IsA('DeusExPlayer')) //RSD: need a new sound for rocket reloads
                     Owner.PlaySound(CockingSound, SLOT_None,,, 1024);*/
-                    if (ClipCount == AmmoType.AmmoAmount)
-                        break;
                 }
             }
             else
@@ -7013,6 +7065,7 @@ defaultproperties
      msgClip="Clip:"
      msgDama="Damage:"
      msgRate="Rate of Fire:"
+     msgRequires="Requires"
      negTime=0.765000
      attackSpeedMult=1.000000
      abridgedName="DEFAULT NAME - REPORT BUG"

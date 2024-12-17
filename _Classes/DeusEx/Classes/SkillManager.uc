@@ -77,6 +77,8 @@ function CreateSkills(DeusExPlayer newPlayer)
 // IsSkilled()
 // ----------------------------------------------------------------------
 
+//SARGE: Cannibalising this (removing messages) to use it with the weapon requirements matter system
+//See next function "CheckSkill", which is a modification of this
 simulated function bool IsSkilled(class SkillClass, int TestLevel)
 {
 	local Skill aSkill;
@@ -99,6 +101,22 @@ simulated function bool IsSkilled(class SkillClass, int TestLevel)
 			Player.ClientMessage(Sprintf(NoToolMessage, GetItemName(String(aSkill.itemNeeded))));
 	}
 
+	return False;
+}
+
+function bool CheckSkill(class SkillClass, int TestLevel, optional bool noMessage)
+{
+	local Skill aSkill;
+
+	aSkill = GetSkillFromClass(SkillClass);
+
+	if (aSkill != None)
+	{
+        if (aSkill.CurrentLevel >= TestLevel)
+            return True;
+        else if (!noMessage)
+            Player.ClientMessage(Sprintf(NoSkillMessage, aSkill.SkillName, aSkill.GetLevelString(TestLevel)));
+	}
 	return False;
 }
 
@@ -280,7 +298,7 @@ defaultproperties
      skillClasses(10)=Class'DeusEx.SkillSwimming'
      skillClasses(11)=Class'DeusEx.SkillStealth'
      NoToolMessage="You need the %s"
-     NoSkillMessage="%s skill level insufficient to use the %s"
+     NoSkillMessage="Requires %s at %s"
      SuccessMessage="Success!"
      YourSkillLevelAt="Your skill level at %s is now %d"
      bHidden=True

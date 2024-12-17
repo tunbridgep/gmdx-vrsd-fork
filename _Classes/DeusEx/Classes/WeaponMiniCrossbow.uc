@@ -98,6 +98,7 @@ simulated function renderoverlays(Canvas canvas)
 
 	if ((AmmoType != None) && (AmmoType.AmmoAmount > 0) && (ClipCount > 0) && !bIsCloaked && !bIsRadar) //RSD: Overhauled cloak/radar routines
 	{
+        /*
 	    if (IsInState('Reload'))
 	    {
 	       if (AnimSequence == 'ReloadEnd')
@@ -114,7 +115,8 @@ simulated function renderoverlays(Canvas canvas)
 	       else
 	        Multiskins[2] = texture'pinkmasktex';
 	    }
-		else if(AmmoType.isA('AmmoDartPoison'))
+        */
+		if(AmmoType.isA('AmmoDartPoison'))
 			Multiskins[2] = texture'HDTPItems.skins.HDTPminicrossbowtex2';
 		else if(Ammotype.isA('AmmoDartFlare'))
 			Multiskins[2] = texture'HDTPItems.skins.HDTPminicrossbowtex3';

@@ -132,17 +132,13 @@ function SetItem(Inventory newItem)
 	{
 		newItem.bInObjectBelt = True;
 		newItem.beltPos       = objectNum;
+        player.SetPlaceholder(objectNum,false,newItem.icon); //Sarge: Reset placeholder status if a new item is added
 	}
 	else
 	{
 		HighlightSelect(False);
 		SetToggle(False);
 	}
-
-	if (newItem != None)
-    {
-        player.SetPlaceholder(objectNum,false,newItem.icon); //Sarge: Reset placeholder status if a new item is added
-    }
 
 	// Update the text that will be displayed above the icon (if any)
 	UpdateItemText();
@@ -326,6 +322,15 @@ local DeusExWeapon weapon;
 
 function DrawHUDIcon(GC gc)
 {
+        local texture icon;
+
+        if (item != None)
+            icon = item.icon;
+        else if (player.bBeltMemory)
+            icon = player.GetBeltIcon(objectNum);
+
+        if (icon == None)
+            return;
 
         gc.SetStyle(DSTY_Masked);
 		//gc.SetTileColorRGB(255, 255, 255);
@@ -337,7 +342,7 @@ function DrawHUDIcon(GC gc)
 		{
 			gc.SetTileColorRGB(255,255,255);
 		}
-		gc.DrawTexture(slotIconX, slotIconY, slotFillWidth, slotFillHeight, 0, 0, player.GetBeltIcon(objectNum));
+		gc.DrawTexture(slotIconX, slotIconY, slotFillWidth, slotFillHeight, 0, 0, icon);
 }
 
 function DrawHUDBackground(GC gc)
@@ -452,9 +457,15 @@ event bool MouseButtonPressed(float pointX, float pointY, EInputKey button,
 		clickY = pointY;
 		bResult = True;
 	}
-    else if (item == None && button == IK_RightMouse) //Sarge: Allow removing belt memory with right click
+    else if (button == IK_RightMouse) //Sarge: Allow removing belt memory with right click
     {
-        player.ClearPlaceholder(objectNum);
+        if (item == None)
+            player.ClearPlaceholder(objectNum);
+        else
+        {
+            player.RemoveObjectFromBelt(item);
+            SetItem(None);
+        }
         bResult = True;
     }
 	return bResult;
