@@ -3788,7 +3788,7 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
 
 	actualDamage = ModifyDamage(Damage, instigatedBy, hitLocation, offset, damageType);
 
-    if (instigatedBy != None && instigatedBy.IsA('DeusExPlayer'))
+    if (instigatedBy != None && instigatedBy.IsA('DeusExPlayer') && !bHidden && !bCloakOn)
     {
      if (DeusExPlayer(instigatedBy).bHitmarkerOn)
          DeusExPlayer(instigatedBy).hitmarkerTime = 0.2;

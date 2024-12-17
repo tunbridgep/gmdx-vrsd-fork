@@ -16,8 +16,10 @@ var DeusExPlayer Player;
 var FlagBase flags;
 var string localURL;
 var DeusExLevelInfo dxInfo;
-var bool CanQuickSave;
+var bool CanQuickSave; //SARGE: Note this is actually for Autosaves, not Quicksaves
 var float TimeToSave;
+
+var bool firstTime;     //SARGE: Set to true the first time we enter a map.
 
 // ----------------------------------------------------------------------
 // PostPostBeginPlay()
@@ -149,10 +151,6 @@ function FirstFrame()
         //Player.ClientMessage("Map seed is: " $ seed);
         Player.Randomizer.Seed(Player.seed + seed);
 
-        //Reset player Autosave timer
-        //Actually, make this per mission instead, to really be punishing
-        //Player.autosaveRestrictTimer = 0.0;
-
 		//Player.BroadcastMessage("Loading this map for the first time");
 		//Player.setupDifficultyMod();
 		InitializeRandomAmmoCounts();
@@ -180,6 +178,8 @@ function FirstFrame()
         DistributeItem(class'Flare',1,3);
 
 		flags.SetBool(flagName, True);
+
+        firstTime = true;
 	}
 
 	flagName = Player.rootWindow.StringToName("M"$dxInfo.MissionNumber$"MissionStart");
@@ -188,10 +188,6 @@ function FirstFrame()
 		// Remove completed Primary goals and all Secondary goals
 		Player.ResetGoals();
         
-        //Reset player Autosave timer
-        //Actually, make this per mission instead, to really be punishing
-        Player.autosaveRestrictTimer = 0.0;
-
 		// Remove any Conversation History.
 		Player.ResetConversationHistory();
 
@@ -281,22 +277,22 @@ function Timer()
 
 function Tick(float DeltaTime)
 {
-   if (CanQuickSave && player != none && (player.bTogAutoSave || player.bHardCoreMode)) //CyberP: toggle autosave option //RSD: TEMPORARILY remove Hardcore autosave because it's pissing me off
-   {
-      if (TimeToSave>0) TimeToSave-=DeltaTime;
-      else
-      if (player.CanSave(true,true))
-      {
-         CanQuickSave=false;
-         /*if (localURL == "05_NYC_UNATCOMJ12LAB")
-         TimeToSave=0.5;
-         else
-         TimeToSave=0.1;*/
-         TimeToSave=0.0;                                                        //RSD: Removed autosave delay
-         player.PerformAutoSave();
-      } else
-         CanQuickSave=false;
-   }
+    if (CanQuickSave && player != none) //CyberP: toggle autosave option //RSD: TEMPORARILY remove Hardcore autosave because it's pissing me off
+    {
+        if (TimeToSave>0)
+            TimeToSave-=DeltaTime;
+        else
+        {
+            if (localURL ~= "11_PARIS_EVERETT")
+                TimeToSave=0.0; //Save before speech if we can
+            else if (localURL ~= "05_NYC_UNATCOMJ12LAB")
+                TimeToSave=0.5;
+            else
+                TimeToSave=0.1;
+            //TimeToSave=0.0;                                                        //RSD: Removed autosave delay
+            CanQuickSave = !player.PerformAutoSave(firstTime);                      //Sarge: Keep trying until we successfully save
+        }
+    }
 }
 //State QuickSaver
 //{
