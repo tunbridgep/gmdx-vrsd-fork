@@ -7,6 +7,7 @@ class SkilledTool extends DeusExPickup
 var() sound			useSound;
 var bool			bBeingUsed;
 var float           p; //CyberP: combatspeedaug
+var Texture handsTex;   //SARGE: Store the hand texture for performance. TODO: Use some sort of class/object to share this between SkilledTools and Weapons
 
 function GetAugSpeed()
 	{
@@ -23,13 +24,12 @@ function GetAugSpeed()
 	}
 
 //Shorthand for accessing hands tex
-function texture GetWeaponHandTex()
+function SetWeaponHandTex()
 {
 	local deusexplayer p;
 	p = deusexplayer(owner);
 	if(p != none)
-        return p.GetWeaponHandTex();
-	return None;
+        handsTex = p.GetWeaponHandTex();
 }
 
 // ----------------------------------------------------------------------
@@ -194,13 +194,30 @@ Begin:
 simulated function PreBeginPlay()
 {
 	Super.PreBeginPlay();
-
+    
 	// Decrease the volume and radius for mp
 	if ( Level.NetMode != NM_Standalone )
 	{
 		SoundVolume = 96;
 		SoundRadius = 16;
 	}
+}
+
+exec function UpdateHDTPsettings()
+{
+    local int slot;
+
+    super.UpdateHDTPSettings();
+
+    for (slot = 0; slot < 8;slot++)
+    {
+        //if (slot != MuzzleSlot || !overlay)
+            if (IsHDTP())
+                multiskins[slot] = none;
+            else
+                multiskins[slot] = default.multiskins[slot];
+    }
+    SetWeaponHandTex();
 }
 
 // ----------------------------------------------------------------------

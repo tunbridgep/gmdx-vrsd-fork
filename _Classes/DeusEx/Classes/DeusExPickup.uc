@@ -141,6 +141,7 @@ replication
     }
 }*/
 
+//SARGE: TODO: Move this (and the version from DeusExWeapon) to a new object, and share it between SkilledTools and Weapons
 function SetCloakRadar(bool bEnableCloak, bool bEnableRadar, optional bool bForce) //RSD: Overhauled cloak/radar routines
 {
 	local bool bCheckCloak, bCheckRadar;
@@ -303,6 +304,7 @@ function DropFrom(vector StartLocation)
     if (bIsCloaked || bIsRadar)                                                 //RSD: Overhauled cloak/radar routines
 	 SetCloakRadar(false,false,true);//SetCloak(false,true);
     ScaleGlow = default.ScaleGlow;                                              //RSD: Also reset ScaleGlow so we don't get dim/bright due to cloak/radar
+    UpdateHDTPsettings();
 	super.DropFrom(StartLocation);
 }
 
