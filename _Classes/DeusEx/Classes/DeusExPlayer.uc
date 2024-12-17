@@ -8233,9 +8233,6 @@ exec function PutInHand(optional Inventory inv)
             assignedWeapon.GotoState('DeActivated');
     SetInHandPending(inv);
 
-    if (inv.isA('NanoKeyRing'))
-        bUsedKeyringLast = true;
-
     UpdateCrosshair();
 }
 
