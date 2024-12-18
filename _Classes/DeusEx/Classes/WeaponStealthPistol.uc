@@ -392,4 +392,5 @@ defaultproperties
      CollisionRadius=8.000000
      CollisionHeight=0.800000
      minSkillRequirement=2;
+     bFancyScopeAnimation=true
 }

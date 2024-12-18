@@ -301,4 +301,5 @@ defaultproperties
      CollisionRadius=8.000000
      CollisionHeight=1.000000
      Mass=15.000000
+     bFancyScopeAnimation=true
 }
