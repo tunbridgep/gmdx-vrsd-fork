@@ -911,6 +911,7 @@ simulated function DrawFancyScopeAnimation()
 	local vector dy;
 	local vector dz;
 	local vector unX,unY,unZ;
+    local int totalScopeTime;
 
 	if(!bGEPout)
 	{
@@ -934,37 +935,27 @@ simulated function DrawFancyScopeAnimation()
 	PlayerViewOffset=Default.PlayerViewOffset*100;//meh
 	SetHand(player.Handedness); //meh meh
 
-    if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkMarksman').bPerkObtained == true)                                          //RSD: Was PerkNamesArray[12], now PerkNamesArray[23] (merged Advanced with Master Rifles perk)
+    //SARGE: This probably shouldn't be hardcoded!
+    if (GoverningSkill == Class'DeusEx.SkillWeaponRifle' && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkMarksman').bPerkObtained == true)                                          //RSD: Was PerkNamesArray[12], now PerkNamesArray[23] (merged Advanced with Master Rifles perk)
     {
         PlayerViewOffset.X=Smerp(sin(FMin(1.0,GEPinout*1.5)*0.5*Pi),PlayerViewOffset.X,MountedViewOffset.X*100);
         PlayerViewOffset.Y=Smerp(1.0-cos(FMin(1.0,GEPinout*1.5)*0.5*Pi),PlayerViewOffset.Y,MountedViewOffset.Y*100);
         PlayerViewOffset.Z=Lerp(sin(FMin(1.0,GEPinout*1.25)*0.05*Pi),PlayerViewOffset.Z,cos(FMin(1.0,GEPinout)*2*Pi)*MountedViewOffset.Z*100);
+        totalScopeTime = 17;
 	}
 	else
 	{
         PlayerViewOffset.X=Smerp(sin(FMin(1.0,GEPinout)*0.5*Pi),PlayerViewOffset.X,MountedViewOffset.X*100);
         PlayerViewOffset.Y=Smerp(1.0-cos(FMin(1.0,GEPinout)*0.5*Pi),PlayerViewOffset.Y,MountedViewOffset.Y*100);
         PlayerViewOffset.Z=Lerp(sin(FMin(1.0,GEPinout)*0.05*Pi),PlayerViewOffset.Z,cos(FMin(1.0,GEPinout)*2*Pi)*MountedViewOffset.Z*100);
+        totalScopeTime = 25;
 	}
 
 	SetLocation(player.Location+ CalcDrawOffset());
 	scopeTime+=1;
 
-    if (scopeTime>=17 && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkMarksman').bPerkObtained == true)                                          //RSD: Was PerkNamesArray[12], now PerkNamesArray[23] (merged Advanced with Master Rifles perk)
-	//if (scopeTime>=17)
+	if (scopeTime>=totalScopeTime)
 	{
-        activateAn = False;
-        scopeTime = 0;
-        ScopeToggle();
-        GEPinout = 0;
-        axesX = vect(0,0,0);
-        axesY = vect(0,0,0);
-        axesZ = vect(0,0,0);
-        PlayerViewOffset=Default.PlayerViewOffset*100;
-        SetHand(player.Handedness);
-    }
-    else if (scopeTime>=25)
-    {
         activateAn = False;
         scopeTime = 0;
         ScopeToggle();
