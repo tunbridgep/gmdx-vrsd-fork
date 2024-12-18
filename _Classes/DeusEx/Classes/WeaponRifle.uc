@@ -16,84 +16,6 @@ var vector MountedViewOffset;
 var float scopeTime;
 var int lerpClamp;
 
-simulated function DrawScopeAnimation()
-{
-    local rotator rfs;
-	local vector dx;
-	local vector dy;
-	local vector dz;
-	local vector unX,unY,unZ;
-
-	if(!bGEPout)
-	{
-		if (GEPinout<1) GEPinout=Fmin(1.0,GEPinout+0.04);
-	} else
-		if (GEPinout<1) GEPinout=Fmax(0,GEPinout-0.04);//do Fmax(0,n) @ >0<=1
-
-	rfs.Yaw=6912*Fmin(1.0,GEPinout);
-	rfs.Pitch=2912*sin(Fmin(1.0,GEPinout)*Pi);
-	GetAxes(rfs,axesX,axesY,axesZ);
-    
-    player = DeusExPlayer(Owner);
-
-	dx=axesX>>player.ViewRotation;
-	dy=axesY>>player.ViewRotation;
-	dz=axesZ>>player.ViewRotation;
-	rfs=OrthoRotation(dx,dy,dz);
-
-	SetRotation(rfs);
-
-	PlayerViewOffset=Default.PlayerViewOffset*100;//meh
-	SetHand(player.Handedness); //meh meh
-
-    if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkMarksman').bPerkObtained == true)                                          //RSD: Was PerkNamesArray[12], now PerkNamesArray[23] (merged Advanced with Master Rifles perk)
-    {
-	PlayerViewOffset.X=Smerp(sin(FMin(1.0,GEPinout*1.5)*0.5*Pi),PlayerViewOffset.X,MountedViewOffset.X*100);
-	PlayerViewOffset.Y=Smerp(1.0-cos(FMin(1.0,GEPinout*1.5)*0.5*Pi),PlayerViewOffset.Y,MountedViewOffset.Y*100);
-	PlayerViewOffset.Z=Lerp(sin(FMin(1.0,GEPinout*1.25)*0.05*Pi),PlayerViewOffset.Z,cos(FMin(1.0,GEPinout)*2*Pi)*MountedViewOffset.Z*100);
-	}
-	else
-	{
-	PlayerViewOffset.X=Smerp(sin(FMin(1.0,GEPinout)*0.5*Pi),PlayerViewOffset.X,MountedViewOffset.X*100);
-	PlayerViewOffset.Y=Smerp(1.0-cos(FMin(1.0,GEPinout)*0.5*Pi),PlayerViewOffset.Y,MountedViewOffset.Y*100);
-	PlayerViewOffset.Z=Lerp(sin(FMin(1.0,GEPinout)*0.05*Pi),PlayerViewOffset.Z,cos(FMin(1.0,GEPinout)*2*Pi)*MountedViewOffset.Z*100);
-	}
-    //PlayerViewOffset.Z=Lerp(sin(FMin(1.0,GEPinout)*0.5*Pi),PlayerViewOffset.Z,cos(FMin(1.0,GEPinout)*2*Pi)*MountedViewOffset.Z*100);
-
-	//FireOffset.X=Smerp(sin(FMin(1.0,GEPinout)*0.5*Pi),Default.FireOffset.X,-MountedViewOffset.X);
-	//FireOffset.Y=Smerp(1.0-cos(FMin(1.0,GEPinout)*0.5*Pi),Default.FireOffset.Y,-MountedViewOffset.Y);
-	//FireOffset.Z=Lerp(sin(FMin(1.0,GEPinout)*0.5*Pi),Default.FireOffset.Z,-cos(FMin(1.0,GEPinout)*2*Pi)*MountedViewOffset.Z);
-
-	SetLocation(player.Location+ CalcDrawOffset());
-	scopeTime+=1;
-
-	//IsInState('DownWeapon')
-	if (scopeTime>=17)
-	{
-        activateAn = False;
-        scopeTime = 0;
-        ScopeToggle();
-        GEPinout = 0;
-        axesX = vect(0,0,0);
-        axesY = vect(0,0,0);
-        axesZ = vect(0,0,0);
-        PlayerViewOffset=Default.PlayerViewOffset*100;
-        SetHand(player.Handedness);
-    }
-    else if (scopeTime>=25)
-    {
-        activateAn = False;
-        scopeTime = 0;
-        ScopeToggle();
-        GEPinout = 0;
-        axesX = vect(0,0,0);
-        axesY = vect(0,0,0);
-        axesZ = vect(0,0,0);
-        PlayerViewOffset=Default.PlayerViewOffset*100;
-        SetHand(player.Handedness);
-    }
-}
-
 function DisplayWeapon(bool overlay)
 {
     super.DisplayWeapon(overlay);
@@ -417,5 +339,6 @@ defaultproperties
      CollisionHeight=2.000000
      Mass=30.000000
      minSkillRequirement=2;
-     bBigMuzzleFlash=true;
+     bBigMuzzleFlash=true
+     bFancyScopeAnimation=true
 }
