@@ -81,6 +81,7 @@ simulated function bool TestMPBeltSpot(int BeltSpot)
 
 defaultproperties
 {
+     bBiogenic=true
      bAutoActivate=True
      bioenergyAmount=20
      mpRechargeAmount=50

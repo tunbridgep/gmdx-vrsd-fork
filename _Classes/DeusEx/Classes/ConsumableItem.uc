@@ -13,6 +13,7 @@ var localized String CannotUse;
 
 var int healAmount;                                                 //SARGE: Put healint amoung here to make the code more generic
 var int bioenergyAmount;                                            //SARGE: Put recharge here to make code more generic
+var bool bBiogenic;                                                 //SARGE: Add +5 energy if we have the Biogenic perk
 
 //Check whether we are allowed to use this consumable
 function bool RestrictedUse(DeusExPlayer player)
@@ -34,8 +35,10 @@ function string GetDescription2(DeusExPlayer player)
 {
     local string str;
     local int heals;
+    local int bio;
 
     heals = GetHealAmount(player);
+    bio = GetBioenergyAmount(player);
 
     //Add heals amount
     if (heals == 1)
@@ -44,10 +47,10 @@ function string GetDescription2(DeusExPlayer player)
         str = AddLine(str,sprintf(HealsLabel,heals));
     
     //Add bioenergy amount
-    if (bioenergyAmount == 1)
-        str = AddLine(str,sprintf(RechargeLabel,bioenergyAmount));
-    else if (bioenergyAmount > 1)
-        str = AddLine(str,sprintf(RechargesLabel,bioenergyAmount));
+    if (bio == 1)
+        str = AddLine(str,sprintf(RechargeLabel,bio));
+    else if (bio > 1)
+        str = AddLine(str,sprintf(RechargesLabel,bio));
     
     str = AddLine(str, super.GetDescription2(player));
 
@@ -70,17 +73,30 @@ function OnActivate(DeusExPlayer player)
 function HealMe(DeusExPlayer player)
 {
     local int heal;
+    local int bio;
 
     heal = GetHealAmount(player);
+    bio = GetBioenergyAmount(player);
+
     if (heal > 0)
         player.HealPlayer(heal, False);
-    if (bioenergyAmount > 0)
-        player.ChargePlayer(bioenergyAmount,True);
+    if (bio > 0)
+        player.ChargePlayer(bio, True);
 }
 
 function int GetHealAmount(DeusExPlayer player)
 {
     return healAmount;
+}
+
+function int GetBioenergyAmount(DeusExPlayer player)
+{
+    //If we're told to use biogenic, add +5 bioenergy
+    //TODO: Get +5 from the Biogenic perk value, rather than hardcoding it
+    if (bBiogenic && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkBiogenic').bPerkObtained)
+        return bioenergyAmount + 5;
+    else
+        return bioenergyAmount;
 }
 
 state Activated
