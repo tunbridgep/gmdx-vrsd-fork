@@ -30,12 +30,10 @@ function Setup()
     super.Setup();
     if (CurrentLevel > 0)
     {
-        if (AugmentationType == Aug_Passive)
-        {
-            AugmentationType=Aug_Toggle;
-            bIsActive = false;
-            EnergyReserved=5;
-        }
+        if (AugmentationType == Aug_Passive && bIsActive)
+            Deactivate();
+        AugmentationType=Aug_Toggle;
+        EnergyReserved=5;
     }
     else
     {
@@ -57,4 +55,5 @@ defaultproperties
      LevelValues(2)=3.000000
      HazardsRange=50;
      AugmentationLocation=LOC_Default
+     bAddedToWheel=false;
 }

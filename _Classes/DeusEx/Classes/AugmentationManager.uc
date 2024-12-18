@@ -648,7 +648,10 @@ function SetAllAugsToMaxLevel()
 	while(anAug != None)
 	{
 		if (anAug.bHasIt)
+        {
 			anAug.CurrentLevel = anAug.MaxLevel;
+            anAug.Setup();
+        }
 
 		anAug = anAug.next;
 	}

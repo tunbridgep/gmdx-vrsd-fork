@@ -1369,7 +1369,7 @@ function PreTravel()
 	SaveSkillPoints();
 
     if (AugmentationSystem != None && AugmentationSystem.GetAugLevelValue(class'AugVision') != -1.0)
-        AugmentationSystem.DeactivateAll(true);
+        AugmentationSystem.DeactivateAll();
     else if (UsingChargedPickup(class'TechGoggles'))
         foreach AllActors(class'TechGoggles', tech)
             if ((tech.Owner == Self) && tech.bActive)
@@ -1941,7 +1941,7 @@ function int DoSaveGame(int saveIndex, optional String saveDesc)
 
     //Placeholder Hackfix
     if (AugmentationSystem != None && AugmentationSystem.GetAugLevelValue(class'AugVision') != -1.0)
-        AugmentationSystem.DeactivateAll(true);
+        AugmentationSystem.DeactivateAll();
     else if (UsingChargedPickup(class'TechGoggles'))
         foreach AllActors(class'TechGoggles', tech)
             if ((tech.Owner == Self) && tech.bActive)
@@ -3616,6 +3616,7 @@ exec function ActivateAllAugs()
 exec function DeactivateAllAugs()
 {
 	if (AugmentationSystem != None)
+		//AugmentationSystem.DeactivateAll(true);
 		AugmentationSystem.DeactivateAll();
 }
 

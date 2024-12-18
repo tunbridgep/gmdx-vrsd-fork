@@ -340,6 +340,13 @@ singular function checkForHazards(GC gc)
     local bool beep;
 
     local int i;
+	local DeusExRootWindow root;
+
+	root = DeusExRootWindow(player.rootWindow);
+    
+    //Disable the hazard detection text while windows are open
+    if (root != None && root.WindowStackCount() > 0)
+        return;
 
     aug = AugIFF(Player.AugmentationSystem.GetAug(class'AugIFF'));
 

@@ -510,9 +510,15 @@ simulated function bool CanDrainEnergy()
 // So a 20 energy aug with level 3 recirc (-35%) and level 1 heart (+40%) would
 // cost 18.2 energy (20 * 0.65 * 1.4) which seemed unintented.
 // Replaced it with an additive bonus/penalty.
+// Custom version allows working with any energy ratio
 // ----------------------------------------------------------------------
 
 function float GetAdjustedEnergyRate()
+{    
+    return GetCustomEnergyRate(GetEnergyRate());
+}
+
+function float GetCustomEnergyRate(float rate)
 {    
     local Augmentation heart, recirc;
     local float total, bonus, penalty, mult;
@@ -530,12 +536,14 @@ function float GetAdjustedEnergyRate()
 
     if (penalty > bonus)
         mult = penalty - bonus;
-    else
+    else if (bonus > 0 || penalty > 0)
         mult = bonus - penalty;
+    else
+        mult = 1.0;
 
     //player.clientMessage("mult: " $ mult $ ", penalty: " $ penalty $ ", bonus: " $ bonus);
 
-    return GetEnergyRate() * mult;
+    return rate * mult;
 }
 
 // ----------------------------------------------------------------------
@@ -562,8 +570,10 @@ function float GetAdjustedEnergyReserve()
 
     if (penalty > bonus)
         mult = penalty - bonus;
-    else
+    else if (bonus > 0 || penalty > 0)
         mult = bonus - penalty;
+    else
+        mult = 1.0;
 
     return EnergyReserved * mult;
 }
