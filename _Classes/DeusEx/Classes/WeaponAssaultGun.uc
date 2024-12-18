@@ -52,6 +52,7 @@ function DisplayWeapon(bool overlay)
     {
         if (overlay)
         {
+            multiskins[6]=none;
             multiskins[7]=handsTex;
             ShowWeaponAddon(3,bHasScope);
             ShowWeaponAddon(4,bHasSilencer);
