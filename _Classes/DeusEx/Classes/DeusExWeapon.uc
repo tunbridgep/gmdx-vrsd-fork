@@ -773,6 +773,8 @@ function Texture GetGridTexture(Texture tex)
 //=============================================================================
 // Weapon rendering
 // Draw first person view of inventory
+//=============================================================================
+
 simulated event RenderOverlays( canvas Canvas )
 {
 	local rotator NewRot, ExRot, rfs;                                           //RSD: Added rfs
@@ -865,6 +867,21 @@ simulated event RenderOverlays( canvas Canvas )
 
     //Reset weapon to standard display
     DisplayWeapon(false);
+
+    if (activateAn && bHasScope)
+        DrawScopeAnimation();
+    else
+        activateAn = false;
+}
+
+//
+// Draw the scope view
+//
+
+function DrawScopeAnimation()
+{
+    ScopeToggle(); 
+    activateAn = false;
 }
 
 //

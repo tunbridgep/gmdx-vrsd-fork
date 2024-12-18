@@ -9082,8 +9082,12 @@ exec function ToggleScope()
 	  {
 	    if (W.AnimSequence == 'Idle1' || W.AnimSequence == 'Idle2' || W.AnimSequence == 'Idle3')
         W.PlayAnim('Still');
-	    	W.ScopeToggle();
 		
+	    if (!W.bZoomed)
+            W.activateAn = true;
+        else
+            W.ScopeToggle();
+        
         if (W.bZoomed&&W.IsA('WeaponGEPGun'))
             SetLaser(false);
 	  }
