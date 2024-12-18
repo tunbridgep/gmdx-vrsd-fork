@@ -14471,6 +14471,8 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 	local HazMatSuit suit;
 	local BallisticArmor armor;
 	local bool bReduced;
+    local AugEnviro enviro;
+    local AugAqualung lung;
 
 	bReduced = False;
 	newDamage = Float(Damage);
@@ -14481,13 +14483,28 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 	{
 	    if (DamageType != 'Shocked')
 	    {
-	    if (bBoosterUpgrade && Energy > 0 && Damage > 0)
-		        AugmentationSystem.AutoAugs(false,true);
-		if (AugmentationSystem != None)
-			augLevel = AugmentationSystem.GetAugLevelValue(class'AugEnviro');
+            if (bBoosterUpgrade && Energy > 0 && Damage > 0)
+                    AugmentationSystem.AutoAugs(false,true);
+            if (AugmentationSystem != None)
+            {
+                enviro = AugEnviro(AugmentationSystem.GetAug(class'AugEnviro'));
+                augLevel = enviro.LevelValues[enviro.CurrentLevel];
 
-		if (augLevel >= 0.0)
-			newDamage *= augLevel;
+                //Make sure we have enough energy
+                //EDIT: This was based on damage tane, and still can be if you uncomment this. For now, use the old "20 per second" of the old aug.
+                //if (enviro.bIsActive && augLevel >= 0.0 && Energy > 0 && Energy >= enviro.GetCustomEnergyRate(newDamage * 0.1))
+                if (enviro.bIsActive && augLevel >= 0.0 && Energy > 0)
+                {
+                    //Only use energy once per 3 seconds, like the old aug
+                    if (saveTime >= enviro.lastEnergyTick)
+                    {
+                        //Energy -= MAX(int(newDamage * 0.1),1);
+                        Energy -= 1;
+                        enviro.lastEnergyTick = saveTime + 3.0;
+                    }
+                    newDamage *= augLevel;
+                }
+            }
         }
 
 		// get rid of poison if we're maxed out
@@ -14528,7 +14545,17 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 					// Trash: No stamina damage while wearing a hazmat suit and with the perk FilterUpgrade
         		}
 				else
-                	swimTimer -= (newDamage*0.4) + 3;
+                {
+                    //Aqualung now reduces stamina damage
+                    augLevel = 1.0;
+                    lung = AugAqualung(AugmentationSystem.GetAug(class'AugAqualung'));
+                    if (lung.bIsActive)
+                    {
+                        augLevel = 2.0 - lung.LevelValues[lung.CurrentLevel];
+                    }
+                	swimTimer -= ((newDamage*0.4) + 3) * augLevel;
+                    log("Stamina Damage AugLevel: " $ augLevel);
+                }
 				
                 if (swimTimer < 0)
                     swimTimer = 0;

@@ -1613,7 +1613,7 @@ MPInfo="When active, you do double damage with melee weapons.  Energy Drain: Low
 
 [AugAqualung]
 AugmentationName="Aqualung"
-Description="Soda lime exostructures embedded in the alveoli of the lungs convert CO2 to O2, extending the time an agent can stay underwater and improving stamina regeneration rate.|n|nTECH ONE: Lung efficiency is increased slightly (15%).|n|nTECH TWO: Lung efficiency is increased moderately (30%).|n|nTECH THREE: Lung efficiency is increased significantly (45%).|n|nTECH FOUR: An agent is virtually never out of breath (60%)."
+Description="Soda lime exostructures embedded in the alveoli of the lungs convert CO2 to O2, extending the time an agent can stay underwater, improving stamina regeneration rate, and reducing the amount of exhaustion caused by exposure to poison.|n|nTECH ONE: Lung efficiency is increased slightly (15%), and stamina loss from poison is reduced by a small amount.|n|nTECH TWO: Lung efficiency is increased moderately (30%), and stamina loss from poison is reduced by a moderate amount.|n|nTECH THREE: Lung efficiency is increased significantly (45%), and stamina loss from poison is reduced by a significant amount.|n|nTECH FOUR: An agent is virtually never out of breath (60%), and stamina loss from poison is almost irrelevant."
 MPInfo="When active, you can stay underwater 12 times as long and swim twice as fast.  Energy Drain: Low"
 
 [RetinalScanner]
@@ -1943,7 +1943,7 @@ ItemName="Fan"
 
 [AugEnviro]
 AugmentationName="Environmental Resistance"
-Description="Induced keratin production strengthens all epithelial tissues and reduces the agent's vulnerability to a number of possible environmental hazards such as radiation, tear gas, toxic poisoning & fire.|n|nTECH ONE: Hazard resistance is increased slightly (30%).|n|nTECH TWO: Hazard resistance is increased moderately (45%).|n|nTECH THREE: Hazard resistance is increased significantly (60%).|n|nTECH FOUR: An agent is nearly invulnerable to damage from environmental hazards (80%)."
+Description="Induced keratin production strengthens all epithelial tissues and reduces the agent's vulnerability to a number of possible environmental hazards such as radiation, tear gas, toxic poisoning & fire.|nOnly drains energy when resisting environmental damage.|n|nTECH ONE: Hazard resistance is increased slightly (30%).|n|nTECH TWO: Hazard resistance is increased moderately (45%).|n|nTECH THREE: Hazard resistance is increased significantly (60%).|n|nTECH FOUR: An agent is nearly invulnerable to damage from environmental hazards (80%)."
 MPInfo="When active, you only take 10% damage from poison and gas, and poison and gas will not affect your vision.  Energy Drain: Low"
 
 [AugIFF]

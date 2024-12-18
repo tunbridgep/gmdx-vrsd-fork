@@ -5,18 +5,7 @@ class AugEnviro extends Augmentation;
 
 var float mpAugValue;
 var float mpEnergyDrain;
-
-state Active
-{
-Begin:
-Player.PlaySound(Sound'PickupActivate', SLOT_Interact, 0.85, ,768,1.0); //CyberP: added new sound
-}
-
-function Deactivate()
-{
-	Super.Deactivate();
-        Player.PlaySound(Sound'PickupDeactivate', SLOT_Interact, 0.85, ,768,1.0); //CyberP: and deactivate sound too
-}
+var float lastEnergyTick;
 
 simulated function PreBeginPlay()
 {
@@ -31,10 +20,17 @@ simulated function PreBeginPlay()
 	}
 }
 
+//We will handle energy drain automatically
+simulated function bool CanDrainEnergy()
+{
+    return false;
+}
+
 defaultproperties
 {
      mpAugValue=0.100000
      mpEnergyDrain=20.000000
+     //EnergyRate=0.000000
      EnergyRate=20.000000
      Icon=Texture'DeusExUI.UserInterface.AugIconEnviro'
      smallIcon=Texture'DeusExUI.UserInterface.AugIconEnviro_Small'
@@ -47,4 +43,7 @@ defaultproperties
      LevelValues(3)=0.200000
      AugmentationLocation=LOC_Torso
      MPConflictSlot=3
+     AugmentationType=Aug_Automatic
+     ActivateSound=Sound'PickupActivate'
+     DeActivateSound=Sound'PickupDeactivate'
 }
