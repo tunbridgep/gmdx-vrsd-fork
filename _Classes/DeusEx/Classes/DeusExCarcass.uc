@@ -1455,7 +1455,7 @@ function Frob(Actor Frobber, Inventory frobWith)
     }
     else if (!bAnimalCarcass && player != None && player.inhand != none && player.bAutoHolster && !player.inHand.IsA('POVCorpse') && player.CarriedDecoration == None)
     {
-        if ((bSearched||!player.bEnhancedCorpseInteractions) && (bDblClickStart || !player.bDblClickHolster))
+        if ((bSearched||!player.bEnhancedCorpseInteractions) && (bDblClickStart || player.dblClickHolster == 0))
             player.PutInHand(none);
     }
     

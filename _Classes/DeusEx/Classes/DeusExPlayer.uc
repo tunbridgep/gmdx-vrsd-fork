@@ -438,7 +438,7 @@ var globalconfig bool bColorCodedAmmo;
 var globalconfig bool bExtraHardcore;
 var globalconfig bool bDecap;
 var globalconfig bool bNoTranslucency;
-var globalconfig bool bDblClickHolster;
+var globalconfig int dblClickHolster;                      //SARGE: 0 = off, 1 = double click holstering only, 2 = double click holstering and unholstering
 var globalconfig bool bHalveAmmo;
 var globalconfig bool bHardcoreUnlocked;
 var globalconfig bool bAutoHolster;
@@ -7676,9 +7676,9 @@ function SetDoubleClickTimer()
     
 function DoAutoHolster()
 {
-    if (bAutoHolster && (clickCountCyber >= 1 || !bDblClickHolster))
+    if (bAutoHolster && (clickCountCyber >= 1 || dblClickHolster == 0 ))
         PutInHand(None);
-    else if (bAutoHolster && bDblClickHolster)
+    else if (bAutoHolster && dblClickHolster > 0)
         SetDoubleClickTimer();
 }
 
@@ -7843,25 +7843,23 @@ exec function ParseRightClick()
                 beltLast = advBelt;
 			}
 		}
-		else if (clickCountCyber >= 1 || !bDblClickHolster)
-		{
-			if (inHand == None)
-			{
-				//SARGE: Added support for the unholster behaviour from the Alternate Toolbelt on both Toolbelts
-				//Additionally, unholstering is now tied to the double-click holstering setting.
-				root = DeusExRootWindow(rootWindow);
-				if (root != None && root.hud != None)
-				{
-					if (bAlternateToolbelt > 0)
-						beltLast = advBelt;
-                    root.ActivateObjectInBelt(BeltLast);
-				}
-			}
-			else
+        else if (inHand == None && (clickCountCyber >= 1 || dblClickHolster < 2))
+        {
+            //SARGE: Added support for the unholster behaviour from the Alternate Toolbelt on both Toolbelts
+            //Additionally, unholstering is now tied to the double-click holstering setting.
+            root = DeusExRootWindow(rootWindow);
+            if (root != None && root.hud != None)
             {
-				PutInHand(None);
-                NewWeaponSelected();
+                if (bAlternateToolbelt > 0)
+                    beltLast = advBelt;
+                root.ActivateObjectInBelt(BeltLast);
             }
+		    DoRightFrob(FrobTarget); //Last minute check for things with no highlight.
+        }
+		else if (inHand != None && (clickCountCyber >= 1 || dblClickHolster == 0))
+		{
+            PutInHand(None);
+            NewWeaponSelected();
 		    DoRightFrob(FrobTarget); //Last minute check for things with no highlight.
 		}
 		else
@@ -17543,4 +17541,5 @@ defaultproperties
      iAllowCombatMusic=1
      bFullAccuracyCrosshair=true;
      bShowEnergyBarPercentages=true;
+     dblClickHolster=2
 }
