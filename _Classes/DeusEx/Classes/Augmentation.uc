@@ -228,15 +228,6 @@ function Activate()
     else if (IsA('AugIcarus') && AugIcarus(self).bCooldown)
       { player.ClientMessage("Cooling Down..."); return; }
 
-    //TODO: Move this to the AugLight Activate() function
-    if (IsA('AugLight'))
-    {
-       if (CurrentLevel == 1)
-         EnergyRate=5.000000;
-       else
-         EnergyRate=10.000000;
-    }
-
 	if (IsInState('Inactive'))
 	{
         //Deduct Reserve energy
