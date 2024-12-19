@@ -104,3 +104,9 @@ function int GetDeclinedNumber()
     }
     return count;
 }
+
+defaultproperties
+{
+     bHidden=True
+     bTravel=True
+}

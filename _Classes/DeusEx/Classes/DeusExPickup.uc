@@ -770,15 +770,20 @@ simulated function bool UpdateInfo(Object winObject)
 {
 	local PersonaInfoWindow winInfo;
 	local string str;
+    local DeusExPlayer player;
+
+    player = DeusExPlayer(GetPlayerPawn());
 
 	winInfo = PersonaInfoWindow(winObject);
 	if (winInfo == None)
 		return False;
 
 	winInfo.SetTitle(itemName);
-	if (IsA('Binoculars')|| IsA('Flare'))                                       //RSD: Assign Binoculars and Flares as a secondary item
+
     if (player != None && !player.DeclinedItemsManager.IsDeclined(class))
 		winInfo.AddDeclineButton(class);
+
+	if (IsA('Binoculars')|| IsA('Flare'))                                       //RSD: Assign Binoculars and Flares as a secondary item
 		winInfo.AddSecondaryButton(self);
 
     if (IsA('RSDEdible'))                                                       //Sarge: Allow edibles as secondaries (mainly used for drugs)
