@@ -7676,7 +7676,7 @@ function SetDoubleClickTimer()
     
 function DoAutoHolster()
 {
-    if (bAutoHolster && (clickCountCyber >= 1 || dblClickHolster == 0 ))
+    if (bAutoHolster)// && (clickCountCyber >= 1 || dblClickHolster == 0 ))
         PutInHand(None);
     else if (bAutoHolster && dblClickHolster > 0)
         SetDoubleClickTimer();
