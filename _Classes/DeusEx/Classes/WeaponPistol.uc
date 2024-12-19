@@ -23,6 +23,15 @@ simulated function DrawScopeAnimation()
     local vector dz;
     local vector unX,unY,unZ;
 
+    //SARGE: TODO: For now, just skip the animation if we're not using HDTP.
+    //This should eventually be fixed to work properly.
+    //Currently the scope anim is a little bugged.
+    if (!IsHDTP())
+    {
+        super.DrawScopeAnimation();
+        return;
+    }
+
     if(!bGEPout)
     {
         if (GEPinout<1) GEPinout=Fmin(1.0,GEPinout+0.04);
