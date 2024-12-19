@@ -5,6 +5,11 @@
 //=============================================================================
 class EmptyRocketShell extends DeusExDecoration;
 
+function bool IsHDTP()
+{
+    return DeusExPlayer(GetPlayerPawn()) != None && DeusExPlayer(GetPlayerPawn()).bHDTPInstalled && class'DeusEx.WeaponGEPGun'.default.iHDTPModelToggle > 0;
+}
+
 defaultproperties
 {
      ItemName="Empty Rocket Shell"
@@ -13,7 +18,6 @@ defaultproperties
      ItemArticle="a"
      HDTPMesh="HDTPItems.HDTPRocket"
      Mesh=LodMesh'DeusExItems.Rocket'
-     hdtpReference=Class'DeusEx.WeaponGEPGun'
      DrawScale=0.250000
      CollisionRadius=8.000000
      CollisionHeight=2.000000

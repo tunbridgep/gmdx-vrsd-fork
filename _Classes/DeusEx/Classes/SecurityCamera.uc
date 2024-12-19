@@ -77,22 +77,26 @@ function Texture GetCameraLightTex(int camState)
         case 1: //Enabled (Green)
             LightType = LT_Steady;
             LightHue = 80;
-            return class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex5","DeusExDeco.AlarmLightTex5",IsHDTP());
+            //return class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex5","DeusExDeco.AlarmLightTex5",IsHDTP());
+            return Texture'GreenLightTex';
             break;
         case 2: //Beeping (Red)
             LightType = LT_Steady;
             LightHue = 0;
-            return class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex3","DeusExDeco.AlarmLightTex3",IsHDTP());
+            //return class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex3","DeusExDeco.AlarmLightTex3",IsHDTP());
+            return Texture'RedLightTex';
             break;
         case 3: //Confused (Yellow)
             LightType = LT_Steady;
             LightHue = 40;
-            return class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex9","DeusExDeco.AlarmLightTex9",IsHDTP());
+            //return class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex9","DeusExDeco.AlarmLightTex9",IsHDTP());
+            return Texture'YellowLightTex';
             break;
         case 4: //Detect Corpse (Blue)
             LightType = LT_Steady;
             LightHue = 144; //CyberP: Blue for carcasses
-            return class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex7","DeusExDeco.AlarmLightTex7",IsHDTP());
+            //return class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPAlarmLightTex7","DeusExDeco.AlarmLightTex7",IsHDTP());
+            return Texture'AlarmLightTex7';
             break;
     }
 }
