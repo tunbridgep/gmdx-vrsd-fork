@@ -215,7 +215,6 @@ var globalconfig bool bToggleCrouch;				// True to let key toggle crouch
 var globalconfig float logTimeout;					// Log Timeout Value
 var globalconfig byte  maxLogLines;					// Maximum number of log lines visible
 var globalconfig bool bHelpMessages;				// Multiplayer help messages
-var globalconfig bool bWallPlacementCrosshair;		// SARGE: Show a blue crosshair when placing objects on walls
 
 // Overlay Options (TODO: Move to DeusExHUD.uc when serializable)
 var globalconfig byte translucencyLevel;			// 0 - 10?
