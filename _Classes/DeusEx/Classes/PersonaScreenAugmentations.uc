@@ -396,7 +396,7 @@ local int timeRem;
   {
      if (selectedAug.CanBeActivated())
         if (PersonaAugmentationItemButton(selectedAugButton) != None)
-           PersonaAugmentationItemButton(selectedAugButton).SetActive(selectedAug.IsActive());
+           PersonaAugmentationItemButton(selectedAugButton).SetActive(selectedAug);
   }
   if (player.Energy == 0 && !bAllIconsReset)
   {
@@ -451,8 +451,7 @@ function RefreshAugmentationButtons()
 	{
 		if (( anAug.AugmentationName != "" ) && ( anAug.bHasIt ))
 		{
-			augItems[augCount].SetActive(anAug.IsActive());
-            augItems[augCount].SetAlwaysActive(!anAug.CanBeActivated());
+			augItems[augCount].SetActive(anAug);
 			augCount++;
 		}
 
@@ -694,8 +693,7 @@ function RefreshWindow(float DeltaTime)
     if (selectedAugButton != None)
     {
         PersonaAugmentationItemButton(selectedAugButton).SetLevel(selectedAug.GetCurrentLevel());
-        PersonaAugmentationItemButton(selectedAugButton).SetActive(selectedAug.IsActive());
-        PersonaAugmentationItemButton(selectedAugButton).SetAlwaysActive(!selectedAug.CanBeActivated());
+        PersonaAugmentationItemButton(selectedAugButton).SetActive(selectedAug);
     }
 
 
@@ -819,8 +817,7 @@ function CreateAugmentationButtons()
 			// If the augmentation is active, make sure the button draws it
 			// appropriately
 
-			augItems[augCount].SetActive(anAug.IsActive());
-            augItems[augCount].SetAlwaysActive(!anAug.CanBeActivated());
+			augItems[augCount].SetActive(anAug);
 			augCount++;
 		}
 
@@ -845,7 +842,7 @@ function PersonaAugmentationItemButton CreateAugButton(Augmentation anAug, int a
 	if (anAug.CanBeActivated())
     {
 		newButton.SetHotkeyNumber(anAug.GetHotKey());
-	    newButton.SetActive(anAug.IsActive());
+	    newButton.SetActive(anAug);
     }
 
 	newButton.SetLevel(anAug.GetCurrentLevel());
@@ -1204,8 +1201,7 @@ function ActivateAugmentation()
 	// button appropriately.
 	if (selectedAugButton != None)
 	{
-		PersonaAugmentationItemButton(selectedAugButton).SetActive(selectedAug.IsActive());
-		PersonaAugmentationItemButton(selectedAugButton).SetAlwaysActive(!selectedAug.CanBeActivated());
+		PersonaAugmentationItemButton(selectedAugButton).SetActive(selectedAug);
     }
 	selectedAug.UpdateInfo(winInfo);
 

@@ -377,11 +377,6 @@ function Augmentation GivePlayerAugmentation(Class<Augmentation> giveClass)
 	// increase the level
 	anAug = FindAugmentation(giveClass);
 
-    if (anAug != none && anAug.IsA('AugHeartLung')) //CyberP: AugHeartLung upgrades all passive augs. //RSD: Active too now, taken from HUDMedBotAddAugsScreen.uc for less specialized code architecture
-       ForEach Player.AllActors(class'Augmentation',allTheAugs)
-        if (allTheAugs.bHasIt && allTheAugs.CurrentLevel != allTheAugs.MaxLevel) //RSD: removed && allTheAugs.bAlwaysActive, no distinction between active or passive for synth heart anymore
-          allTheAugs.CurrentLevel++;                                            //RSD: changed from +=1 to ++ for no reason
-
 	if (anAug == None)
 		return None;		// shouldn't happen, but you never know!
 
@@ -396,6 +391,15 @@ function Augmentation GivePlayerAugmentation(Class<Augmentation> giveClass)
 		Player.ClientMessage(AugLocationFull);
 		return anAug;
 	}
+
+
+    if (anAug.IsA('AugHeartLung')) //CyberP: AugHeartLung upgrades all passive augs. //RSD: Active too now, taken from HUDMedBotAddAugsScreen.uc for less specialized code architecture
+       ForEach Player.AllActors(class'Augmentation',allTheAugs)
+        if (allTheAugs.bHasIt && allTheAugs.CurrentLevel != allTheAugs.MaxLevel) //RSD: removed && allTheAugs.bAlwaysActive, no distinction between active or passive for synth heart anymore
+        {
+          allTheAugs.CurrentLevel++;                                            //RSD: changed from +=1 to ++ for no reason
+          allTheAugs.Setup();
+        }
 
 	anAug.bHasIt = True;
 
@@ -449,6 +453,7 @@ function Augmentation GivePlayerAugmentation(Class<Augmentation> giveClass)
     if (anAug.CanBeActivated())                                                   //RSD: Otherwise we get passive augs showing up in the radial menu
         Player.RadialMenuAddAug(anAug);
 
+    anAug.Setup();
 	return anAug;
 }
 

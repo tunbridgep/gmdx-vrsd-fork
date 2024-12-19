@@ -103,6 +103,15 @@ var localized String EnergyReserveLabel;
 
 var travel int EnergyReserved;         //Amount of energy this aug uses when active. Used for Toggled augs.
 
+////Augmentation Colors
+var Color colActive;
+var Color colInactive;
+var Color colInactive2;
+var Color colPassive;
+var Color colToggle;
+var Color colAuto;
+var Color colRecharging;
+
 // ----------------------------------------------------------------------
 // network replication
 // ----------------------------------------------------------------------
@@ -160,13 +169,35 @@ auto state Inactive
 }
 
 // ----------------------------------------------------------------------
-// Setup()
+// SARGE: Setup()
 // Called every time we restart the game, and whenever we install/upgrade an augmentation
 // ----------------------------------------------------------------------
 
 function Setup()
 {
     //log("Aug Setup: " $ GetCurrentLevel());
+}
+
+// ----------------------------------------------------------------------
+// SARGE: GetAugColor()
+// Called by the UI code to get the augmentation color
+// ----------------------------------------------------------------------
+
+function Color GetAugColor(optional bool alternate)
+{
+    if (IsCharging())
+        return colRecharging;
+    if (bIsActive)
+    {
+        if (AugmentationType == Aug_Active) return colActive;
+        if (AugmentationType == Aug_Passive) return colPassive;
+        if (AugmentationType == Aug_Toggle) return colToggle;
+        if (AugmentationType == Aug_Automatic) return colAuto;
+    }
+
+    if (alternate)
+        return colInactive2;
+    return colInactive;
 }
 
 // ----------------------------------------------------------------------
@@ -309,7 +340,7 @@ function bool IncLevel()
 		return False;
 	}
 
-	if (bIsActive)
+	if (bIsActive && AugmentationType == Aug_Active)
 		Deactivate();
 
 	CurrentLevel++;
@@ -679,4 +710,11 @@ defaultproperties
      bAddedToWheel=true;
      chargeTime=1.000000
      AugmentationType=Aug_Active
+     colActive=(B=255)
+     colInactive=(R=255,G=255)
+     colInactive2=(R=100,G=100,B=100)
+     colPassive=(G=255)
+     colToggle=(R=25,G=140,B=255)
+     colAuto=(R=153,G=0,B=153)
+     colRecharging=(R=255)
 }
