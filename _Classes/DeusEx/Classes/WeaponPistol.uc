@@ -12,6 +12,7 @@ var bool bGEPjit;
 var float GEPinout;
 var bool bGEPout;
 var vector MountedViewOffset;
+var vector MountedViewOffset2;
 var float scopeTime;
 var int lerpClamp;
 
@@ -22,15 +23,15 @@ simulated function DrawScopeAnimation()
     local vector dy;
     local vector dz;
     local vector unX,unY,unZ;
+    local vector mvOffset;
 
-    //SARGE: TODO: For now, just skip the animation if we're not using HDTP.
-    //This should eventually be fixed to work properly.
-    //Currently the scope anim is a little bugged.
-    if (!IsHDTP())
-    {
-        super.DrawScopeAnimation();
-        return;
-    }
+    if (IsHDTP())
+        mvOffset = MountedViewOffset;
+    else
+        mvOffset = MountedViewOffset2;
+
+    rfs.Yaw=2912*Fmin(1.0,GEPinout);
+    rfs.Pitch=-62912*sin(Fmin(1.0,GEPinout)*Pi);
 
     if(!bGEPout)
     {
@@ -38,8 +39,6 @@ simulated function DrawScopeAnimation()
     } else
         if (GEPinout<1) GEPinout=Fmax(0,GEPinout-0.04);//do Fmax(0,n) @ >0<=1
     
-    rfs.Yaw=2912*Fmin(1.0,GEPinout);
-    rfs.Pitch=-62912*sin(Fmin(1.0,GEPinout)*Pi);
     GetAxes(rfs,axesX,axesY,axesZ);
     
     player = DeusExPlayer(Owner);
@@ -54,14 +53,14 @@ simulated function DrawScopeAnimation()
     PlayerViewOffset=Default.PlayerViewOffset*100;//meh
     SetHand(player.Handedness); //meh meh
 
-    PlayerViewOffset.X=Smerp(sin(FMin(1.0,GEPinout*1.5)*0.5*Pi),PlayerViewOffset.X,MountedViewOffset.X*100);
-    PlayerViewOffset.Y=Smerp(1.0-cos(FMin(1.0,GEPinout*1.5)*0.5*Pi),PlayerViewOffset.Y,MountedViewOffset.Y*100);
-    PlayerViewOffset.Z=Lerp(sin(FMin(1.0,GEPinout*1.25)*0.05*Pi),PlayerViewOffset.Z,cos(FMin(1.0,GEPinout)*2*Pi)*MountedViewOffset.Z*100);
+    PlayerViewOffset.X=Smerp(sin(FMin(1.0,GEPinout*1.5)*0.5*Pi),PlayerViewOffset.X,mvoffset.X*100);
+    PlayerViewOffset.Y=Smerp(1.0-cos(FMin(1.0,GEPinout*1.5)*0.5*Pi),PlayerViewOffset.Y,mvoffset.Y*100);
+    PlayerViewOffset.Z=Lerp(sin(FMin(1.0,GEPinout*1.25)*0.05*Pi),PlayerViewOffset.Z,cos(FMin(1.0,GEPinout)*2*Pi)*mvoffset.Z*100);
 
     SetLocation(player.Location+ CalcDrawOffset());
     scopeTime+=1;
 
-    if (scopeTime>=18 && bHasScope)
+    if (scopeTime>=18)
     {
         activateAn = False;
         scopeTime = 0;
@@ -302,6 +301,7 @@ defaultproperties
 {
      weaponOffsets=(X=18.000000,Y=-10.000000,Z=-17.000000)
      MountedViewOffset=(X=2.555000,Y=-6.703000,Z=-110.500000)
+     MountedViewOffset2=(X=2.555000,Y=0.703000,Z=-90.500000)
      LowAmmoWaterMark=4
      GoverningSkill=Class'DeusEx.SkillWeaponPistol'
      NoiseLevel=6.000000
