@@ -877,13 +877,13 @@ simulated event RenderOverlays( canvas Canvas )
     setRotation(NewRot);
     Canvas.DrawActor(self, false);
 
-    //Reset weapon to standard display
-    DisplayWeapon(false);
-
     if (activateAn && bHasScope)
         DrawScopeAnimation();
     else
         activateAn = false;
+
+    //Reset weapon to standard display
+    DisplayWeapon(false);
 }
 
 //
@@ -892,15 +892,8 @@ simulated event RenderOverlays( canvas Canvas )
 
 function DrawScopeAnimation()
 {
-    if (bFancyScopeAnimation)
-    {
-        DrawFancyScopeAnimation();
-    }
-    else
-    {
-        ScopeToggle(); 
-        activateAn = false;
-    }
+    ScopeToggle(); 
+    activateAn = false;
 }
 
 simulated function DrawFancyScopeAnimation()
