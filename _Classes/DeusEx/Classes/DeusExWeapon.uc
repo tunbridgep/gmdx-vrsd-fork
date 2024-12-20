@@ -2928,10 +2928,10 @@ simulated function texture GetMuzzleTex()
 
     if (!IsHDTP())                                                  //RSD: If using the vanilla model, use vanilla muzzle flash
     {
-    if (FRand() < 0.5)
-		tex = Texture'FlatFXTex34';
-	else
-		tex = Texture'FlatFXTex37';
+        if (FRand() < 0.5)
+            tex = Texture'FlatFXTex34';
+        else
+            tex = Texture'FlatFXTex37';
     }
 	else if(bAutomatic || bBigMuzzleFlash)
 	{
@@ -3027,33 +3027,37 @@ simulated function MuzzleFlashLight()
     smoke.ScaleGlow=0.400000;
     smoke.bRelinquished2=True;
     }*/
-    for(i=0;i<13;i++)
-    {
-    spoof = spawn(class'PlasmaParticleSpoof',,, offset, Pawn(Owner).ViewRotation);
-    if (spoof!=none)
-    {
-    spoof.DrawScale=0.006;
-    spoof.LifeSpan=0.2;
-    spoof.Texture= class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashSmall2");
-    spoof.Velocity=360*vector(Rotation);//vect(0,0,0);
-    //spoof.Velocity.X = FRand() * 700;
-    //spoof.Velocity.Z = FRand() * 60;
+	if (IsHDTP())
+	{
+		for(i=0;i<13;i++)
+		{
+			spoof = spawn(class'PlasmaParticleSpoof',,, offset, Pawn(Owner).ViewRotation);
+			if (spoof!=none)
+			{
+				log("Spoofing");
+				spoof.DrawScale=0.006;
+				spoof.LifeSpan=0.2;
+				spoof.Texture= class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashSmall2");
+				spoof.Velocity=360*vector(Rotation);//vect(0,0,0);
+				//spoof.Velocity.X = FRand() * 700;
+				//spoof.Velocity.Z = FRand() * 60;
 
-		if (FRand() < 0.3)
-		{
-		spoof.Velocity.Z += FRand() * 80;
-		spoof.Velocity.X += FRand() * 65;
-		spoof.Velocity.Y += FRand() * 65;
+				if (FRand() < 0.3)
+				{
+				spoof.Velocity.Z += FRand() * 80;
+				spoof.Velocity.X += FRand() * 65;
+				spoof.Velocity.Y += FRand() * 65;
+				}
+				else if (FRand() < 0.6)
+				{
+				spoof.Velocity.Z -= FRand() * 20;
+				spoof.Velocity.X -= FRand() * 55;
+				spoof.Velocity.Y -= FRand() * 65;
+				}
+			}
 		}
-		else if (FRand() < 0.6)
-		{
-		spoof.Velocity.Z -= FRand() * 20;
-		spoof.Velocity.X -= FRand() * 55;
-		spoof.Velocity.Y -= FRand() * 65;
-		}
     }
-    }
-    }
+	}
 	}
 }
 
@@ -4343,7 +4347,7 @@ simulated function Projectile ProjectileFire(class<projectile> ProjClass, float 
 
 	GetAxes(Pawn(owner).ViewRotation,X,Y,Z);
 	Start = ComputeProjectileStart(X, Y, Z);
-    if (IsA('WeaponFlamethrower') && Owner!=none && Owner.IsA('DeusExPlayer'))
+    if (IsA('WeaponFlamethrower') && Owner!=none && Owner.IsA('DeusExPlayer') && IsHDTP())
     {
     for(i=0;i<13;i++)
     {
