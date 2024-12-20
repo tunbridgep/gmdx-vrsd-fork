@@ -38,6 +38,7 @@ var travel bool bIsRadar;                                                       
 var bool bJustUncloaked;                                                        //RSD: for splitting cloak/radar texture functionality
 var bool bJustUnRadar;                                                          //RSD: for splitting cloak/radar texture functionality
 var bool bAutoActivate;                                                         //Sarge: Auto activate with left click, rather than placing in the players hands                                                                                
+var Texture handsTex;   //SARGE: Store the hand texture for performance. TODO: Use some sort of class/object to share this between SkilledTools and Weapons
 
 //SARGE: HDTP Model toggles
 var config int iHDTPModelToggle;
@@ -90,8 +91,19 @@ exec function UpdateHDTPsettings()                                              
         Mesh = PlayerViewMesh;
     else
         Mesh = PickupViewMesh;
-
+    
+    SetWeaponHandTex();
 	SetSkin();
+}
+
+//Shorthand for accessing hands tex
+function SetWeaponHandTex()
+{
+	local deusexplayer p;
+	p = deusexplayer(owner);
+	if(p != none)
+        handsTex = p.GetWeaponHandTex();
+    p.clientMessage("handsTex: " $ handsTex);
 }
 
 
