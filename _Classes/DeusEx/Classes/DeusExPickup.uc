@@ -103,7 +103,7 @@ function SetWeaponHandTex()
 	p = deusexplayer(owner);
 	if(p != none)
         handsTex = p.GetWeaponHandTex();
-    p.clientMessage("handsTex: " $ handsTex);
+    //p.clientMessage("handsTex: " $ handsTex);
 }
 
 
