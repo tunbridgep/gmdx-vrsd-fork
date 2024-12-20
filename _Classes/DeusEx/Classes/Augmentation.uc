@@ -183,11 +183,11 @@ function Setup()
 // Called by the UI code to get the augmentation color
 // ----------------------------------------------------------------------
 
-function Color GetAugColor(optional bool alternate)
+function Color GetAugColor(optional bool alternate, optional bool bForceActiveColor)
 {
     if (IsCharging())
         return colRecharging;
-    if (bIsActive)
+    if (bIsActive || bForceActiveColor)
     {
         if (AugmentationType == Aug_Active) return colActive;
         if (AugmentationType == Aug_Passive) return colPassive;
