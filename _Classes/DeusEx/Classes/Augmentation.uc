@@ -100,6 +100,7 @@ var localized String TypeDescriptorToggle;
 var localized String TypeDescriptorAutomatic;
 
 var localized String EnergyReserveLabel;
+var localized String ConditionalLabel;
 
 var travel int EnergyReserved;         //Amount of energy this aug uses when active. Used for Toggled augs.
 
@@ -192,7 +193,8 @@ function Color GetAugColor(optional bool alternate, optional bool bForceActiveCo
         if (AugmentationType == Aug_Active) return colActive;
         if (AugmentationType == Aug_Passive) return colPassive;
         if (AugmentationType == Aug_Toggle) return colToggle;
-        if (AugmentationType == Aug_Automatic) return colAuto;
+        if (AugmentationType == Aug_Automatic && !player.bSimpleAugSystem) return colAuto;
+        if (AugmentationType == Aug_Automatic && player.bSimpleAugSystem) return colToggle;
     }
 
     if (alternate)
@@ -430,11 +432,13 @@ simulated function bool UpdateInfo(Object winObject)
 	}
 
     // Energy Reserve
-    if (EnergyReserved > 0 && AugmentationType == Aug_Toggle)
+    if (EnergyReserved > 0)
         winInfo.AppendText(winInfo.CR() $ winInfo.CR() $ Sprintf(EnergyReserveLabel, Int(GetAdjustedEnergyReserve())));
 
 	// Energy Rate
-    if (EnergyRate > 0)
+    if (EnergyRate > 0 && IsToggleAug())
+        winInfo.AppendText(winInfo.CR() $ winInfo.CR() $ Sprintf(EnergyRateLabel, Int(GetAdjustedEnergyRate())) @ ConditionalLabel);
+    else if (EnergyRate > 0)
         winInfo.AppendText(winInfo.CR() $ winInfo.CR() $ Sprintf(EnergyRateLabel, Int(GetAdjustedEnergyRate())));
 
 	// Current Level
@@ -448,11 +452,9 @@ simulated function bool UpdateInfo(Object winObject)
 
 	winInfo.AppendText(winInfo.CR() $ winInfo.CR() $ strOut);
 
-	// Always Active? //SARGE: Replaced with aug description string, see below
-    /*
-	if (!CanBeActivated())
-		winInfo.AppendText(winInfo.CR() $ winInfo.CR() $ AlwaysActiveLabel);
-    */
+    // Always Active? //SARGE: Replaced with aug description string, see below
+    //if (!CanBeActivated())
+    //    winInfo.AppendText(winInfo.CR() $ winInfo.CR() $ AlwaysActiveLabel);
 
     winInfo.AppendText(winInfo.CR() $ winInfo.CR());
     switch (AugmentationType)
@@ -460,7 +462,12 @@ simulated function bool UpdateInfo(Object winObject)
         case Aug_Passive: winInfo.AppendText(TypeDescriptorPassive); break;
         case Aug_Active: winInfo.AppendText(TypeDescriptorActive); break;
         case Aug_Toggle: winInfo.AppendText(TypeDescriptorToggle); break;
-        case Aug_Automatic: winInfo.AppendText(TypeDescriptorAutomatic); break;
+        case Aug_Automatic:
+            if (player.bSimpleAugSystem)
+                winInfo.AppendText(TypeDescriptorToggle);
+            else
+                winInfo.AppendText(TypeDescriptorAutomatic);
+            break;
     }
 
 	return True;
@@ -641,7 +648,10 @@ function string GetName()
             suffix = ActiveLabel;
             break;
         case Aug_Automatic:
-            suffix = AutomaticLabel;
+            if (player.bSimpleAugSystem)
+                suffix = ToggleLabel;
+            else
+                suffix = AutomaticLabel;
             break;
         case Aug_Toggle:
             suffix = ToggleLabel;
@@ -673,6 +683,7 @@ defaultproperties
      IconHeight=52
      HotKeyNum=-1
      EnergyRateLabel="Energy Rate: %d Units/Minute"
+     ConditionalLabel="(Conditional)"
      EnergyReserveLabel="Energy Reserved: %d Units"
      OccupiesSlotLabel="Occupies Slot: %s"
      AugLocsText(0)="Cranial"
@@ -699,7 +710,7 @@ defaultproperties
      PassiveLabel="Passive"
      TypeDescriptorPassive="Passive Augmentations are always active and use no bioelectrical energy."
      TypeDescriptorActive="Active Augmentations use bioelectrical energy at a standard rate while activated."
-     TypeDescriptorToggle="Toggled Augmentations reserve an amount of bioelectrical energy while active, but use no energy to function. The reserve amount is lost upon deactivation."
+     TypeDescriptorToggle="Toggled Augmentations may reserve an amount of bioelectrical energy while active, but use no energy to remain active. The reserve amount is lost upon deactivation."
      TypeDescriptorAutomatic="Automatic Augmentations can be activated with no bioelectrical energy cost. While active, bioelectrical energy is drained based on specific circumstances."
      ActivateSound=Sound'DeusExSounds.Augmentation.AugActivate'
      DeActivateSound=Sound'DeusExSounds.Augmentation.AugDeactivate'

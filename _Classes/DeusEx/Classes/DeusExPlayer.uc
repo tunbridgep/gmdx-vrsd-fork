@@ -651,6 +651,8 @@ var globalconfig bool bShowEnergyBarPercentages;                                
 
 var localized string EnergyCantReserve;                                         //SARGE: Message when we don't have enough energy to reserve for a togglable augmentation
 
+var globalconfig bool bSimpleAugSystem;                                         //SARGE: Simplifies the Aug screen by merging Auto and Toggle augs into one "type". Doesn't change gameplay in any way.
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -17513,4 +17515,5 @@ defaultproperties
      iAllowCombatMusic=1
      bFullAccuracyCrosshair=true;
      bShowEnergyBarPercentages=true;
+     bSimpleAugSystem=true
 }

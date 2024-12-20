@@ -76,6 +76,7 @@ AugLocationFull="You can't add any more augmentations to that location!"
 NoAugInSlot="There is no augmentation in that slot"
 
 [Augmentation]
+ConditionalLabel="(Conditional)"
 EnergyRateLabel="Energy Rate: %d Units/Minute"
 OccupiesSlotLabel="Occupies Slot: %s"
 AugLocsText[0]="Cranial"
