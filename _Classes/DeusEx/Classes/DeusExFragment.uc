@@ -9,10 +9,8 @@ var float smokeTime;
 var ParticleGenerator smokeGen;
 
 //SARGE: HDTP Model toggles
-var config int iHDTPModelToggle;
+var globalconfig int iHDTPModelToggle;
 var string HDTPSkin;
-var string HDTPTexture;
-var string HDTPMesh;
 
 //
 // copied from Engine.Fragment
@@ -145,7 +143,7 @@ function Destroyed()
 function PostBeginPlay()
 {
 	Super.PostBeginPlay();
-    UpdateHDTPsettings();
+    //UpdateHDTPsettings();
 
 	// randomize the lifespan a bit so things don't all disappear at once
 	speed *= 1.1;
@@ -160,14 +158,15 @@ function bool IsHDTP()
 
 exec function UpdateHDTPsettings()
 {
-    if (HDTPMesh != "")
-        Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),IsHDTP());
-    if (HDTPSkin != "")
-        Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),IsHDTP());
-    if (HDTPTexture != "")
-        Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),IsHDTP());
 }
 
+exec function UpdateHDTPSkin()
+{
+    if (HDTPSkin != "")
+        Skin=class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),IsHDTP());
+}
+
+//SARGE: Unused???
 function SkinVariation()
 {
 }
@@ -203,6 +202,16 @@ simulated function Tick(float deltaTime)
 
 		ScaleGlow = LifeSpan / 2.0;
 	}
+}
+
+auto state flying
+{
+    simulated function BeginState()
+    {
+        UpdateHDTPsettings();
+        super.BeginState();
+        UpdateHDTPSkin();
+    }
 }
 
 defaultproperties

@@ -220,6 +220,7 @@ defaultproperties
      Items(190)=(actionText="Shells (Sabot)",defaultValue=1,consoleTarget="DeusEx.AmmoSabot")
      Items(191)=(actionText="Shells (Rubber)",defaultValue=1,consoleTarget="DeusEx.AmmoRubber")
      Items(192)=(actionText="Blood and Decals",defaultValue=1,consoleTarget="DeusEx.DeusExDecal")
+     Items(193)=(actionText="Fragments",defaultValue=1,consoleTarget="DeusEx.DeusExFragment")
      Title="HDTP Model Options"
      disabledText="Vanilla"
      enabledText="HDTP"

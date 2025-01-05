@@ -9,7 +9,7 @@ exec function UpdateHDTPsettings()
     if (IsHDTP())
     {
         Fragments[0]=class'HDTPLoader'.static.GetMesh("HDTPDecos.HDTPbonefemur");
-        Fragments[0]=class'HDTPLoader'.static.GetMesh("HDTPDecos.HDTPbonefemur");
+        Fragments[1]=class'HDTPLoader'.static.GetMesh("HDTPDecos.HDTPbonefemur");
     }
     else
     {
