@@ -126,20 +126,6 @@ function FirstFrame()
             }
                         
         }
-
-	     if (flags.GetBool('Enhancement_Detected'))
-	     {
-            foreach AllActors(class'ScriptedPawn', pawn)
-	        {
-               if (pawn.IsA('MJ12Troop'))
-               {
-                  if (pawn.BarkBindName == "MJ12Troop")
-                     pawn.BarkBindName = "MJ12TroopInSewer";
-                  else if (pawn.BarkBindName == "MJ12TroopB")
-                     pawn.BarkBindName = "MJ12TroopInSewerB";
-               }
-            }
-	     }
     }
 	else if (localURL == "02_NYC_HOTEL")
     {

@@ -17,17 +17,6 @@ function FirstFrame()
 
 	Super.FirstFrame();
 
-     if (flags.GetBool('Enhancement_Detected'))
-     {
-            foreach AllActors(class'ScriptedPawn', SP)
-	        {
-                  if (SP.BarkBindName == "UNATCOTroop")
-                     SP.BarkBindName = "UNATCOTroopEnemy";
-                  else if (SP.BarkBindName == "UNATCOTroopB")
-                     SP.BarkBindName = "UNATCOTroopEnemyB";
-            }
-     }
-
 	if (localURL == "09_NYC_SHIP")
 	{
 		if (flags.GetBool('ShipBreech'))

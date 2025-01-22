@@ -45,19 +45,6 @@ function FirstFrame()
 	}
 	else if (localURL == "08_NYC_Street")
 	{
-	     if (flags.GetBool('Enhancement_Detected'))
-	     {
-            foreach AllActors(class'ScriptedPawn', pawn)
-	        {
-               if (pawn.IsA('UNATCOTroop'))
-               {
-                  if (pawn.BarkBindName == "UNATCOTroop")
-                     pawn.BarkBindName = "UNATCOTroopEnemy";
-                  else if (pawn.BarkBindName == "UNATCOTroopB")
-                     pawn.BarkBindName = "UNATCOTroopEnemyB";
-               }
-            }
-	     }
     }
 	else if (localURL == "08_NYC_HOTEL")
     {
