@@ -2973,6 +2973,14 @@ function ShowWeaponAddon(int slot, bool condition)
 }
 function DisplayWeapon(bool overlay)
 {
+    local int i;
+    for (i = 0;i < 8;i++)
+    {
+        if (IsHDTP())
+            multiskins[i] = none;
+        else
+            multiskins[i] = default.multiskins[i];
+    }
 }
 
 simulated function EraseMuzzleFlashTexture()
