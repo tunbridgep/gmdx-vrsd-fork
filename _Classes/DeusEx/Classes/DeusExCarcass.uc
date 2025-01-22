@@ -1052,6 +1052,9 @@ function Frob(Actor Frobber, Inventory frobWith)
                     // unless it's a grenade, in which case we only want to dole out one.
                     // DEUS_EX AMSD In multiplayer, give everything away.
                     W = DeusExWeapon(item);
+                        
+                    //Always unrotate weapons. Hopefully fixes weapons with wrong icon
+                    W.Unrotate();
 
                     if (!bSearched)     //Sarge: Attempted fix for ammo dupe bug
                     {
@@ -1064,7 +1067,6 @@ function Frob(Actor Frobber, Inventory frobWith)
                             w.PickupAmmoCount = passedImpaleCount;
                             if (w.PickupAmmoCount == 0)
                                 w.PickupAmmoCount = 1;
-                            PlaySound(Sound'DeusExSounds.Generic.FleshHit1',SLOT_None,,,,0.95 + (FRand() * 0.2));
                         }
                         else if (W.IsA('WeaponNanoVirusGrenade') ||
                             W.IsA('WeaponGasGrenade') ||
@@ -1138,9 +1140,13 @@ function Frob(Actor Frobber, Inventory frobWith)
 						// the weapon).
 						if ((W != None) || (W == None && (bDeclined||!player.FindInventorySlot(item, True))))
 						{
+                            //Don't allow taking ammo from declined weapons
+                            if (bDeclined)
+                            {
+                            }
 
                             //Don't allow taking ammo from disposable weapons, if we don't have (and can't fit) the weapon
-                            if (DeusExWeapon(item).bDisposableWeapon && W == None)
+                            else if (DeusExWeapon(item).bDisposableWeapon && W == None)
                             {
                             }
 
@@ -1210,6 +1216,10 @@ function Frob(Actor Frobber, Inventory frobWith)
 									addedAmount+=AmmoType.AmmoAmount;
 									if (addedAmount>0)
 									{
+                                        //splat - Picking up Shuriken ammo when we already have one!
+                                        if (item.IsA('WeaponShuriken'))
+                                            PlaySound(Sound'DeusExSounds.Generic.FleshHit1',SLOT_None,,,,0.95 + (FRand() * 0.2));
+
                                         bFoundSomething = True;
 										player.UpdateAmmoBeltText(AmmoType);
 										AddReceivedItem(player, AmmoType,addedAmount);
@@ -1394,6 +1404,10 @@ function Frob(Actor Frobber, Inventory frobWith)
                                     bFoundSomething = True;
                                     if (DeusExPlayer(P).HandleItemPickup(Item) != False)
                                     {
+                                        //splat - Picking up shuriken when we don't have one!
+                                        if (item.IsA('WeaponShuriken'))
+                                            PlaySound(Sound'DeusExSounds.Generic.FleshHit1',SLOT_None,,,,0.95 + (FRand() * 0.2));
+
                                         DeleteInventory(item);
 
                                         // DEUS_EX AMSD Belt info isn't always getting cleaned up.  Clean it up.
