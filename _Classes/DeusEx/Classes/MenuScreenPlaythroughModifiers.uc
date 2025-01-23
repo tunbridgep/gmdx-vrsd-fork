@@ -51,7 +51,8 @@ defaultproperties
      items(8)=(HelpText="Start the game in the MJ12 Prison facility. Not recommended for new players! Also skips the intro cutscene.",actionText="Alternate Start",variable="bPrisonStart");
      items(9)=(HelpText="Disable the use of the console.",actionText="Disable Console Access",variable="bDisableConsoleAccess");
      items(10)=(HelpText="Most weapons will require a minimum skill investment in order to be used.",actionText="Weapon Requirements Matter",variable="bWeaponRequirementsMatter");
-     items(11)=(HelpText="Enable additional NPC's added by the Lay-D Denton mod. By default only the most relevant ones are enabled.",actionText="Add extra Lay-D Denton NPCs",variable="bMoreLDDPNPCs");
+     items(11)=(HelpText="All skill point gains will be halved.",actionText="Reduced Skill Rewards",variable="bLessSkillPoints");
+     items(12)=(HelpText="Enable additional NPC's added by the Lay-D Denton mod. By default only the most relevant ones are enabled.",actionText="Add extra Lay-D Denton NPCs",variable="bMoreLDDPNPCs");
      Title="Playthrough Modifiers"
      consoleTarget="MenuScreenNewGame"
 }

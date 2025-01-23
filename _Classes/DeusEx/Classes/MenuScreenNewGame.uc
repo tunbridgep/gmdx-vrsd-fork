@@ -77,6 +77,7 @@ var bool bMoreLDDPNPCs;
 var bool bPrisonStart;
 var bool bDisableConsoleAccess;
 var bool bWeaponRequirementsMatter;
+var bool bLessSkillPoints;
 
 //LDDP
 var bool bFemaleEnabled;
@@ -137,6 +138,7 @@ event InitWindow()
     bMoreLDDPNPCs=false;                                                        //Sarge
     bDisableConsoleAccess=false;                                                //Sarge
     bWeaponRequirementsMatter=false;                                            //Sarge
+    bLessSkillPoints=true;                                                      //Sarge
     //bRestrictedMetabolism=false;                                              //Sarge
     default.bRandomizeCrates=false;                                             //RSD: Also need default values! Otherwise get command in modifier menu takes the wrong value
     default.bRandomizeMods=false;                                               //RSD
@@ -151,6 +153,7 @@ event InitWindow()
     default.bPrisonStart=false;                                                 //Sarge
     default.bDisableConsoleAccess=false;                                        //Sarge
     default.bWeaponRequirementsMatter=false;                                    //Sarge
+    default.bLessSkillPoints=false;                                             //Sarge
 
 	StyleChanged();
 }
@@ -810,6 +813,7 @@ function SaveSettings()
     player.bMoreLDDPNPCs=bMoreLDDPNPCs;                                         //Sarge
     player.bDisableConsoleAccess=bDisableConsoleAccess;                         //Sarge
     player.bWeaponRequirementsMatter=bWeaponRequirementsMatter;                 //Sarge
+    player.bLessSkillPoints=bLessSkillPoints;
 
     //LDDP
 	THuman = Human(Player);

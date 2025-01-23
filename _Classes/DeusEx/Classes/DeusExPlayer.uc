@@ -606,6 +606,8 @@ var travel bool bDisableConsoleAccess;                                          
 
 var travel bool bWeaponRequirementsMatter;                                      //Sarge: Using certain weapons requires skill investments.
 
+var travel bool bLessSkillPoints;                                               //Sarge: Skill point rewards are halved. Testing feature to see if there's too many skill points available overall.
+
 //END GAMEPLAY MODIFIERS
 
 //Autosave Stuff
@@ -14930,6 +14932,13 @@ function PlayDeathHit(float Damage, vector HitLocation, name damageType, vector 
 function SkillPointsAdd(int numPoints)
 {
 	local int i;                                                                //RSD: For loop later
+
+    if (bLessSkillPoints && numPoints > 0)
+    {
+        numPoints *= 0.5;
+        if (numPoints == 0)
+            numPoints = 1;
+    }
 
     if (numPoints > 0)
 	{
