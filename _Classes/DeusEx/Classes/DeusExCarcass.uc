@@ -853,7 +853,7 @@ function ExpelInventory()
                     // unless it's a grenade, in which case we only want to dole out one.
                     // DEUS_EX AMSD In multiplayer, give everything away.
                     //if (DeusExWeapon(item).PickupAmmoCount != 0)              //RSD: No need for this check
-                        DeusExWeapon(item).SetDroppedAmmoCount(PickupAmmoCount);//RSD: Added PickupAmmoCount for initialization from MissionScript.uc
+                        DeusExWeapon(item).SetDroppedAmmoCount(PickupAmmoCount,bSearched);//RSD: Added PickupAmmoCount for initialization from MissionScript.uc
                 }
             }
 
@@ -945,6 +945,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 	local Inventory item, nextItem, startItem;
 	local Pawn P;
 	local DeusExWeapon W;
+    local Inventory found;
 	local DeusExPlayer player;
 	local ammo AmmoType;
 	local bool bPickedItemUp;
@@ -963,7 +964,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 	if (bQueuedDestroy)
 		return;
 
-    if (PickupAmmoCount == 0)                                                   //RSD: If nothing was passed to us from the initialization from MissionScript.uc on first map load, use old random formula
+    if (PickupAmmoCount == 0 && !bSearched)                                                   //RSD: If nothing was passed to us from the initialization from MissionScript.uc on first map load, use old random formula
     	PickupAmmoCount = Rand(4) + 1;
 
 	bSearchMsgPrinted = False;
@@ -1027,11 +1028,14 @@ function Frob(Actor Frobber, Inventory frobWith)
 
                 if (item != none && player != none && player.declinedItemsManager.IsDeclined(item.Class)) //RSD: Changed to player, added failsafes //SARGE: Changed to the new generic system
                 {
+                    found = player.FindInventoryType(item.Class);
                     //SARGE: No longer delete knives. Now we just ignore them
                     if (!bSearched)
                     {
-                        //player.ClientMessage(sprintf(player.InventoryFull,AmmoType.ItemName));
-                        P.ClientMessage(msgSearching @ Item.itemName @ DeclinedString);
+                        //If we already have a disposable weapon, ignore the message, since we will get the ammo from it, and the ammo is the weapon.
+                        if (found == None || (found.IsA('DeusExWeapon') && !DeusExWeapon(found).bDisposableWeapon))
+                            //player.ClientMessage(sprintf(player.InventoryFull,AmmoType.ItemName));
+                            P.ClientMessage(msgSearching @ Item.itemName @ DeclinedString);
                         bFoundSomething=True;
                     }
                     bDeclined=True;
@@ -1091,6 +1095,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                     }
                     //SARGE: Set weapons maximum clip size to however much left over ammo it has.
                     W.ClipCount = W.PickupAmmoCount;
+                    PickupAmmoCount = W.PickupAmmoCount;
                 }
 
 				if (item != None)
@@ -1140,13 +1145,8 @@ function Frob(Actor Frobber, Inventory frobWith)
 						// the weapon).
 						if ((W != None) || (W == None && (bDeclined||!player.FindInventorySlot(item, True))))
 						{
-                            //Don't allow taking ammo from declined weapons
-                            if (bDeclined)
-                            {
-                            }
-
                             //Don't allow taking ammo from disposable weapons, if we don't have (and can't fit) the weapon
-                            else if (DeusExWeapon(item).bDisposableWeapon && W == None)
+                            if (DeusExWeapon(item).bDisposableWeapon && W == None)
                             {
                             }
 
@@ -1180,6 +1180,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                         //P.ClientMessage("intj is " $ intj);
                                         Weapon(item).AmmoType.AmmoAmount -= intj;
                                         Weapon(item).PickupAmmoCount -= intj;
+                                        PickupAmmoCount = Weapon(item).PickupAmmoCount;
                                         //SARGE: Set weapons maximum clip size to however much left over ammo it has.
                                         DeusExWeapon(item).ClipCount -= intj;
                                     }
@@ -1225,6 +1226,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 										AddReceivedItem(player, AmmoType,addedAmount);
 										Weapon(item).PickupAmmoCount-=AddedAmount;
                                         DeusExWeapon(item).ClipCount-=AddedAmount;
+                                        PickupAmmoCount = Weapon(item).PickupAmmoCount;
 										if (AmmoType.PickupViewMesh == Mesh'TestBox')
 									      P.ClientMessage(item.PickupMessage @ item.itemArticle @ item.itemName, 'Pickup');
 									      else
@@ -1274,7 +1276,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                     if (!bSearched)
                                     {
                                         bFoundSomething = True;
-                                        if (!W.bDisposableWeapon)
+                                        if (!W.bDisposableWeapon && !bDeclined)
                                             P.ClientMessage(msgSearching @ Item.itemName @ IgnoredString);
                                     }
                                     bFoundInvalid = true;
@@ -1366,7 +1368,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                 }
 								else
 								{
-									P.ClientMessage(Sprintf(msgCannotPickup, invItem.itemName));
+                                    P.ClientMessage(Sprintf(msgCannotPickup, invItem.itemName));
                                     bFoundSomething = True;
 								}
 							}
