@@ -1298,6 +1298,14 @@ function Frob(Actor Frobber, Inventory frobWith)
 							bPickedItemUp = True;
 					}
 
+                    //Remove disposable weapons when looted
+                    if (DeusExWeapon(item) != None && DeusExWeapon(item).bDisposableWeapon && DeusExWeapon(item).AmmoType.AmmoAmount == 0)
+                    {
+                        DeleteInventory(item);
+                        item.Destroy();
+                        item = nextItem;
+                        continue;
+                    }
 
 					if (!bPickedItemUp)
 					{
