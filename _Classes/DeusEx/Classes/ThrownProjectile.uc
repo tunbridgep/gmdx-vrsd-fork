@@ -26,6 +26,7 @@ var	int				team;				// Keep track of team of owner
 var() bool          bNoHardcoreFilter;
 var bool            bRadiusSet;
 
+var travel bool bEUASDetected;              //SARGE: Set to true when this explosive is detected on the EUAS augmentation.
 replication
 {
 	reliable if ( Role == ROLE_Authority )
