@@ -433,10 +433,10 @@ singular function checkForHazards(GC gc)
     actors[totalActors++] = temp;
     temp = None;
     
-    //Third, get closest grenade (half-range)
+    //Third, get grenades (half-range)
     foreach Player.RadiusActors(class'ThrownProjectile', PROJ, range * 0.5)
     {
-        //skip grenades if Defense aug is not on (it already shows them)
+        //skip grenades if Defense aug is on (it already shows them)
         if (bDefenseActive)
             break;
 
@@ -445,24 +445,13 @@ singular function checkForHazards(GC gc)
 
         if (!PROJ.bProximityTriggered || PROJ.bDisabled || PROJ.Damage <= 0 || PROJ.Owner == player) //Only detect mines placed on walls, etc
             continue;
-
-        //Get closest
-        if (temp != None)
-        {
-            range1 = VSize(CL.location - player.location);
-            range2 = VSize(temp.location - player.location);
-            if (range1 < range2)
-                temp = PROJ;
-        }
-        else
-            temp = PROJ;
+        
+        if (!PROJ.bEUASDetected)
+            beep = true;
+        actors[totalActors++] = PROJ;
+        PROJ.bEUASDetected = true;
     }
     
-    beep = ThrownProjectile(temp) != None && lastGrenade != ThrownProjectile(temp);
-    lastGrenade = ThrownProjectile(temp);
-    actors[totalActors++] = temp;
-    temp = None;
-
     //Now, get information for the actors
     for (i = 0;i < totalActors;i++)
     {
