@@ -480,13 +480,17 @@ var float bloodTime; //CyberP:
 var float hitmarkerTime;
 var float camInterpol;
 var transient bool bThrowDecoration;
+
+////Belt Stuff
 var travel int SlotMem; //CyberP: for belt/weapon switching, so the code remembers what weapon we had before holstering
 var travel int BeltLast;                                                    //Sarge: The last item we literally selected from the belt, regardless of holstering or alternate belt behaviour
-var travel bool bUsedKeyringLast;  											//Sarge: Added new feature to allow keyring to be used without belt, freeing up a slot
 var travel bool bNumberSelect;                                              //Sarge: Whether or not our last belt selection was done with number keys (ActivateBelt) rather than Next/Prev. Used by Alternative Belt to know when to holster
 var travel bool bScrollSelect;                                              //Sarge: Whether or not our last belt selection was done with Next/Last weapon keys rather than Number Keys. Used by Alternative Belt to know when to holster
 var travel int beltScrolled;                                                //Sarge: The last item we scrolled to on the belt, if we are using Adv Toolbelt
 var travel bool selectedNumberFromEmpty;                                    //Sarge: Was the current selection made from an empty hand. Used by Alternate Toolbelt Classic Mode to not jump back to previous weapon when we select from an empty hand.
+var travel Inventory lastSelected;                                          //The last object that was put in our hands.
+var globalconfig bool bLeftClickUnholster;                                  //Enable left click unholstering
+
 var int clickCountCyber; //CyberP: for double clicking to unequip
 var bool bStunted; //CyberP: for slowing player under various conditions
 var bool bRegenStamina; //CyberP: regen when in water but head above water
@@ -724,7 +728,10 @@ exec function cheat()
 function HandleCrouchToggle()
 {
     if (!bToggleCrouch)
+    {
+        bCrouchOn = false;
         return;
+    }
 
     if (!bIsCrouching)
         bToggledCrouch = false;
@@ -744,7 +751,7 @@ function HandleCrouchToggle()
 //Return if the character is crouching
 function bool IsCrouching()
 {
-    return bCrouchOn || bForceDuck || bIsCrouching;
+    return bCrouchOn || bForceDuck || bIsCrouching || bCrouchHack || IsInState('PlayerSwimming');
 }
 
 //set our crouch state to a certain value
@@ -3885,12 +3892,12 @@ function ToggleCameraState(SecurityCamera cam, ElectronicDevices compOwner, opti
 //client->server (window to player)
 function SetTurretState(AutoTurret turret, bool bActive, bool bDisabled, bool bHacked)
 {
-    if ((bDisabled && !bHacked) || !bDisabled)
+    if (!bHacked)
     {
         turret.disableTime = 0;
         turret.bRebooting = false;
     }
-    else if (bDisabled && bHacked)
+    else
     {
         turret.StartReboot(self);
     }
@@ -7513,7 +7520,7 @@ exec function ParseLeftClick()
 	// - Detonate spy drone
 	// - Fire (handled automatically by user.ini bindings)
 	// - Use inHand
-	//
+	// - Select last weapon
 
 	if (RestrictInput())
 		return;
@@ -7568,45 +7575,71 @@ exec function ParseLeftClick()
     }
 
     //Special cases aside, now do the left hand frob behaviour
-    else if (FrobTarget != none && !bInHandTransition && (inHand == None || !inHand.IsA('POVcorpse')) && CarriedDecoration == None)
+    else if (FrobTarget != none && IsReallyFrobbable(FrobTarget) && !bInHandTransition && (inHand == None || !inHand.IsA('POVcorpse')) && CarriedDecoration == None)
 	{
         DoLeftFrob(FrobTarget);
 	}
 
-    //Handle throwing decorations/corpses
+    //Handle throwing decorations/corpses and selecting weapons
 	else
 	{
-	  if (AugmentationSystem != None)
-	  AugMuscleOn = AugmentationSystem.GetAugLevelValue(class'AugMuscle');
+        if (AugmentationSystem != None)
+            AugMuscleOn = AugmentationSystem.GetAugLevelValue(class'AugMuscle');
 		if (AugMuscleOn> -1.0)
 		{
-		 if ((inHand != None) && !bInHandTransition &&(InHand.IsA('POVcorpse')))
-		 {
-            bThrownDecor=true;
-            if (bRealisticCarc || bHardCoreMode)
-			bThrowDecoration=False;
-			else
-			bThrowDecoration=True;
-			DropItem();
-		 } else
-		 {
-		    if (Energy <= 0 && CarriedDecoration != None && carriedDecoration.Mass > 60)
-		    {
-		     PlaySound(sound'cantdrophere',SLOT_None,,,,0.7);
-		     ClientMessage(EnergyDepleted);
-		     return;
+            if ((inHand != None) && !bInHandTransition &&(InHand.IsA('POVcorpse')))
+            {
+                bThrownDecor=true;
+                if (bRealisticCarc || bHardCoreMode)
+                    bThrowDecoration=False;
+                else
+                    bThrowDecoration=True;
+                DropItem();
+                return;
             }
-		    if (CarriedDecoration != None)
-		    {
-		         bThrownDecor=true;
-			     bThrowDecoration=true;                                         //RSD: Rest of this should be in the if branch so you can't cancel footsteps
-			     DropDecoration();
-		 // play a throw anim
-			     PlayAnim('Attack',,0.1);
+            else
+            {
+                if (Energy <= 0 && CarriedDecoration != None && carriedDecoration.Mass > 60)
+                {
+                    PlaySound(sound'cantdrophere',SLOT_None,,,,0.7);
+                    ClientMessage(EnergyDepleted);
+                    return;
+                }
+                if (CarriedDecoration != None)
+                {
+                    bThrownDecor=true;
+                    bThrowDecoration=true;                                         //RSD: Rest of this should be in the if branch so you can't cancel footsteps
+                    DropDecoration();
+                    // play a throw anim
+                    PlayAnim('Attack',,0.1);
+                    return;
+                }
             }
-		   }
-	   }
+        }
+
+        //SARGE: Final option - select last weapon
+        if (inHand == None && bLeftClickUnholster)
+            SelectLastWeapon();
 	}
+}
+
+// ----------------------------------------------------------------------
+// SelectLastWeapon()
+// Sarge: Selects the last weapon we had selected, or if we're using the alternate toolbelt, selects the primary selection.
+// ----------------------------------------------------------------------
+
+function SelectLastWeapon()
+{
+    local DeusExRootWindow root;
+    root = DeusExRootWindow(rootWindow);
+    if (root != None && root.hud != None)
+    {
+        if (bAlternateToolbelt > 0)
+            root.ActivateObjectInBelt(advBelt);
+        else
+            PutInHand(lastSelected);
+        NewWeaponSelected();
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -7618,7 +7651,6 @@ function NewWeaponSelected()
 {
     bNumberSelect = false;
     bScrollSelect = false;
-    bUsedKeyringLast = false;
     clickCountCyber = 0;
     beltScrolled = advBelt;
 }
@@ -7649,6 +7681,8 @@ function bool IsReallyFrobbable(Actor target)
         return false;
     if (target.isA('DeusExMover'))
         return DeusExMover(target).bHighlight && DeusExMover(target).bFrobbable;
+    if (target.isA('ElevatorMover'))
+        return false;
     return true;
 }
 
@@ -7819,13 +7853,7 @@ exec function ParseRightClick()
 			{
 				//SARGE: Added support for the unholster behaviour from the Alternate Toolbelt on both Toolbelts
 				//Additionally, unholstering is now tied to the double-click holstering setting.
-				root = DeusExRootWindow(rootWindow);
-				if (root != None && root.hud != None)
-				{
-					if (bAlternateToolbelt > 0)
-						beltLast = advBelt;
-                    root.ActivateObjectInBelt(BeltLast);
-				}
+                SelectLastWeapon();
 			}
 			else
             {
@@ -8197,6 +8225,9 @@ exec function PutInHand(optional Inventory inv)
 		// Can't put an active charged item in hand  //cyberP: overruled for armor system
 		//if ((inv.IsA('ChargedPickup')) && (ChargedPickup(inv).IsActive()))
 		//	return;
+        
+        if (!inv.IsA('POVCorpse'))
+            lastSelected = inv;
 	}
 
 	if (CarriedDecoration != None)
@@ -8206,9 +8237,6 @@ exec function PutInHand(optional Inventory inv)
 		if (Binoculars(assignedWeapon).bActive)
             assignedWeapon.GotoState('DeActivated');
     SetInHandPending(inv);
-
-    if (inv.isA('NanoKeyRing'))
-        bUsedKeyringLast = true;
 
     UpdateCrosshair();
 }
@@ -12890,8 +12918,8 @@ function bool GetExceptedCode(string code)
         || code == "718" //Can only be guessed based on cryptic information
         || code == "7243" //We are only given 3 digits, need to guess the 4th
         || code == "WYRDRED08" //We are not given the last digit
-        //|| (code == "1966" && FlagBase.GetBool('CassandraDone')) //Only given in conversation, no note //EDIT: UNFORTUNATELY THIS IS UNRELIABLE!!
-        || code == "1966" //Only given in conversation, no note
+        || (code == "1966" && FlagBase.GetBool('GaveCassandraMoney')) //Only given in conversation, no note
+        //|| code == "1966" //Only given in conversation, no note
         || code == "4321"; //We are told to "count backwards from 4"
 }
 
@@ -14745,6 +14773,8 @@ function Timer()      //CyberP: my god I've turned this into a mess.
 			ExtinguishFire();
 		}
 	}
+
+    bCrouchHack = false;
 }
 
 // ----------------------------------------------------------------------
