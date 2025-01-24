@@ -51,6 +51,7 @@ function DrainPower()
 
 function Tick(float deltaTime)
 {
+    super.Tick(deltaTime);
     drained = MAX(0,drained - deltaTime);
 }
 

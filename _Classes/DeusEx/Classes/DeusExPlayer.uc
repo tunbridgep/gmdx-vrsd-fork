@@ -488,7 +488,6 @@ var travel bool bNumberSelect;                                              //Sa
 var travel bool bScrollSelect;                                              //Sarge: Whether or not our last belt selection was done with Next/Last weapon keys rather than Number Keys. Used by Alternative Belt to know when to holster
 var travel int beltScrolled;                                                //Sarge: The last item we scrolled to on the belt, if we are using Adv Toolbelt
 var travel bool selectedNumberFromEmpty;                                    //Sarge: Was the current selection made from an empty hand. Used by Alternate Toolbelt Classic Mode to not jump back to previous weapon when we select from an empty hand.
-var travel Inventory lastSelected;                                          //The last object that was put in our hands.
 var globalconfig bool bLeftClickUnholster;                                  //Enable left click unholstering
 
 var int clickCountCyber; //CyberP: for double clicking to unequip
@@ -7233,6 +7232,12 @@ exec function ShowScores()
             //Do nothing.
             return;
         }
+        //SARGE: Check DTS Charge Level
+        else if (assignedWeapon.IsA('WeaponNanoSword') && WeaponNanoSword(assignedWeapon).ChargeManager.GetCurrentCharge() == 0)
+        {
+            //Do nothing.
+            return;
+        }
         else if (assignedWeapon != none && assignedWeapon.IsA('RSDEdible')) //Sarge: Allow using edibles from the secondary button
 		{
             assignedWeapon.GotoState('Activated');
@@ -7251,7 +7256,6 @@ exec function ShowScores()
             {
                 if (inHand != none && inHand.IsA('DeusExWeapon'))
                 {
-                    primaryWeapon = inHand;
                     //DeusExWeapon(inHand).GotoState('DownWeapon');
                     DeusExWeapon(inHand).ScopeOff();
                     DeusExWeapon(inHand).LaserOff(true);
@@ -7259,23 +7263,17 @@ exec function ShowScores()
                 }
                 else if (inHand.IsA('SkilledTool'))
                 {
-                    primaryWeapon = inHand;
                     SkilledTool(inHand).PutDown();
                 }
                 else if (inHand.IsA('DeusExPickup'))
                 {
-                    primaryWeapon = inHand;
                     PutInHand(None);
                 }
-                else
-                    primaryWeapon = none;
                 //assignedWeapon.GotoState('Activated');
                 Binoculars(assignedWeapon).Activate();
             }
             else
             {
-                if (primaryWeapon != none)
-                    inHandPending = primaryWeapon;
                 //assignedWeapon.GotoState('DeActivated');
                 Binoculars(assignedWeapon).Activate();
             }
@@ -7300,7 +7298,6 @@ exec function ShowScores()
                  return;
              }
          }
-         primaryWeapon = inHand;
          inHandPending = assignedWeapon;
          if (inHandPending.IsA('DeusExWeapon'))
 	         DeusExWeapon(inHandPending).bBeginQuickMelee=true;
@@ -7336,7 +7333,6 @@ exec function ShowScores()
 	       if (assignedWeapon != None)
 	       {
 	           inHandPending = assignedWeapon;
-	           primaryWeapon = assignedWeapon;                                  //RSD: Will let you fire with secondary weapon button when nothing was in hand
            }
 	    }
 
@@ -7351,7 +7347,6 @@ exec function ShowScores()
              }
          }
          if (inHand.IsA('DeusExWeapon'))
-             primaryWeapon = DeusExWeapon(inHand);
          inHandPending = assignedWeapon;
          if (inHandPending.IsA('DeusExWeapon'))
 	         DeusExWeapon(inHandPending).bBeginQuickMelee=true;
@@ -7637,7 +7632,7 @@ function SelectLastWeapon()
         if (bAlternateToolbelt > 0)
             root.ActivateObjectInBelt(advBelt);
         else
-            PutInHand(lastSelected);
+            PutInHand(primaryWeapon);
         NewWeaponSelected();
     }
 }
@@ -8227,7 +8222,7 @@ exec function PutInHand(optional Inventory inv)
 		//	return;
         
         if (!inv.IsA('POVCorpse'))
-            lastSelected = inv;
+            primaryWeapon = inv;
 	}
 
 	if (CarriedDecoration != None)

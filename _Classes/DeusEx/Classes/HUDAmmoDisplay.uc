@@ -50,15 +50,30 @@ event InitWindow()
 }
 
 // ----------------------------------------------------------------------
+// GetWeapon()
+// ----------------------------------------------------------------------
+
+function Inventory GetWeapon()
+{
+    if (player.primaryWeapon != None)
+        return player.primaryWeapon;
+    else
+        return player.Weapon;
+}
+
+// ----------------------------------------------------------------------
 // Tick()
 // ----------------------------------------------------------------------
 
 event Tick(float deltaSeconds)
 {
     local bool validWeap, hastool;
+    local Inventory curr;
+    curr = GetWeapon();
+    weapon = DeusExWeapon(curr);
 
-    validWeap = player.Weapon != None && (DeusExWeapon(player.Weapon).ReloadCount > 0 || player.Weapon.IsA('WeaponNanoSword'));
-    hasTool = player.inHand != None && (player.inHand.isA('Multitool') || player.inHand.isA('Lockpick')) && player.iFrobDisplayStyle == 0;
+    validWeap = player.inHand != None && weapon != None && (weapon.ReloadCount > 0 || (weapon.IsA('WeaponNanoSword')));
+    hasTool = player.inHand != None && (curr.isA('Multitool') || curr.isA('Lockpick')) && player.iFrobDisplayStyle == 0;
 
 	if ((validweap || hastool) && bVisible )
 		Show();
@@ -72,30 +87,24 @@ event Tick(float deltaSeconds)
 
 event DrawWindow(GC gc)
 {
+    local DeusExWeapon weapon;
+    local Inventory curr;
+    curr = GetWeapon();
+    weapon = DeusExWeapon(curr);
+
 	Super.DrawWindow(gc);
 
 	// No need to draw anything if the player doesn't have
 	// a weapon selected
 
-	if (player != None)
-	{
-	    if (player.weapon != None && player.Weapon.IsA('DeusExWeapon') && DeusExWeapon(player.Weapon).bBeginQuickMelee)
-	    {
-               if (player.primaryWeapon != None && player.primaryWeapon.IsA('DeusExWeapon'))
-	              weapon = DeusExWeapon(player.primaryWeapon);
-	    }
-        else
-		    weapon = DeusExWeapon(player.Weapon);
-	}
-
     //SARGE: Draw tool info if we have one
     //TODO: Refactor this
-    if (player.inHand != None && (player.inHand.isA('Multitool') || player.inHand.isA('Lockpick')) && player.iFrobDisplayStyle == 0)
+    if (player.inHand != None && (curr.isA('Multitool') || curr.isA('Lockpick')) && player.iFrobDisplayStyle == 0)
     {
 		// Draw the weapon icon
 		gc.SetStyle(DSTY_Masked);
 		gc.SetTileColorRGB(255, 255, 255);
-		gc.DrawTexture(22, 20, 40, 35, 0, 0, SkilledTool(player.inHand).icon);
+		gc.DrawTexture(22, 20, 40, 35, 0, 0, SkilledTool(curr).icon);
 
 		// Draw the ammo count
 		gc.SetFont(Font'TechMedium'); //CyberP: hud scaling Font'FontTiny'
@@ -103,7 +112,7 @@ event DrawWindow(GC gc)
 		gc.EnableWordWrap(false);
          
         gc.SetTextColor(colAmmoText);
-        gc.DrawText(infoX, 27, 20, 9, SkilledTool(player.inHand).numCopies);
+        gc.DrawText(infoX, 27, 20, 9, SkilledTool(curr).numCopies);
         gc.DrawText(infoX, 39, 20, 9, NotAvailable);
     }
 
