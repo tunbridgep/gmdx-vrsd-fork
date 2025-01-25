@@ -5440,6 +5440,8 @@ function float GetBaseEyeHeight()
 function float GetCurrentGroundSpeed()
 {
 	local float augSpeedValue, augStealthValue, speed;                           //RSD: replaced augValue with augSpeedValue and augStealthValue
+    local float groundSpeed;
+    local PerkSprinter perk;
 
 	// Remove this later and find who's causing this to Access None MB
 	if ( AugmentationSystem == None )
@@ -5460,9 +5462,18 @@ function float GetCurrentGroundSpeed()
 		augSpeedValue = 1.0;
 
 	if (( Level.NetMode != NM_Standalone ) && Self.IsA('Human') )
-		speed = Human(Self).mpGroundSpeed * FMax(augSpeedValue,augStealthValue);
+		groundSpeed = Human(Self).mpGroundSpeed;
 	else
-		speed = Default.GroundSpeed * FMax(augSpeedValue,augStealthValue);
+		groundSpeed = self.Default.GroundSpeed;
+
+    //SARGE: Add Sprinter bonus 10% movespeed
+    perk = PerkSprinter(PerkManager.GetPerkWithClass(class'DeusEx.PerkSprinter'));
+    if (perk != None && perk.bPerkObtained && inHand == None && CarriedDecoration == None)
+        groundSpeed = groundSpeed * perk.perkValue;
+		
+    speed = GroundSpeed * FMax(augSpeedValue,augStealthValue);
+
+    //clientMessage("Speed: " $ speed);
 
 	return speed;
 }
