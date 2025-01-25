@@ -3202,7 +3202,7 @@ function UpdatePoison(float deltaTime)
 		{
 			poisonTimer = 0;
 			poisonCounter--;
-			TakeDamage(poisonDamage * 0.5, myPoisoner, Location, vect(0,0,0), 'PoisonEffect'); //CyberP: since we have more effective tranq darts, reduce poison damage to player by half. 15 dam per interval on hardcore
+			TakeDamage(poisonDamage * 0.375, myPoisoner, Location, vect(0,0,0), 'PoisonEffect'); //CyberP: since we have more effective tranq darts, reduce poison damage to player by half. 15 dam per interval on hardcore //SARGE: Reduced from 0.5 to 0.375 because it still feels like bullshit. You won't be able to regenerate stamina while poisoned, though, so it'll fuck you up.
 		}
 		if ((poisonCounter <= 0) || (Health <= 0))
 			StopPoison();
@@ -6001,10 +6001,7 @@ state PlayerWalking
                SetTimer(3,false);
                if (!bOnLadder && FRand() < 0.7)
                {
-                    if (FlagBase.GetBool('LDDPJCIsFemale')) //Sarge: Lay-D Denton support
-                        PlaySound(Sound(DynamicLoadObject("FemJC.FJCGasp", class'Sound', false)), SLOT_None, 0.8);
-                    else
-                        PlaySound(sound'MaleBreathe', SLOT_None,0.8);
+                   PlayBreatheSound();
                }
                if (bBoosterUpgrade && Energy > 0)
 	               AugmentationSystem.AutoAugs(false,false);
@@ -6439,11 +6436,16 @@ event HeadZoneChange(ZoneInfo newHeadZone)
 		Buoyancy=155.000000;
 		//if (bBoosterUpgrade && Energy > 0)
 		//    AugmentationSystem.AutoAugs(false,false);
-		if (!bHardCoreMode)
+		if (!bHardCoreMode && !bStaminaSystem)
 		   SwimTimer = swimDuration;
+        //SARGE: Disabled so we can't "dolphin dive" repeatedly for free stamina
+        /*
 		else if (SwimTimer < 10)
            SwimTimer += 2;
+        */
 		//swimTimer = swimDuration;
+
+
 		if (( Level.NetMode != NM_Standalone ) && Self.IsA('Human') )
 		{
 			if ( AugmentationSystem != None )
@@ -6459,7 +6461,15 @@ event HeadZoneChange(ZoneInfo newHeadZone)
     else
     {
     bRegenStamina = true;
-    SwimTimer += 0.5;
+
+        //SARGE: Always play a breathsound if we went below 70% breath
+        //Don't play at 25% or below though, since it already plays the 
+        //EDIT: Okay maybe not, this causes overlapping sound issues
+        /*
+	    if ((100.0 * swimTimer / swimDuration) < 70 && (100.0 * swimTimer / swimDuration) > 25)
+            PlayBreatheSound();
+        */
+
     Buoyancy=150.500000;
     if (bBoosterUpgrade)
     {
@@ -14759,7 +14769,7 @@ function Timer()      //CyberP: my god I've turned this into a mess.
           return;
 	}
 
-    bStunted = False;  //CyberP: called from takedamage.
+    //bStunted = False;  //CyberP: called from takedamage.
 
 	if (!InConversation() && bOnFire)
 	{
@@ -17257,9 +17267,23 @@ exec function AllAmmo()                                                         
             Ammo(Inv).AmmoAmount  = GetAdjustedMaxAmmo(Ammo(Inv));     //RSD: Replaced Ammo(Inv).MaxAmmo with adjusted
 }
 
+//SARGE: Plays the breathing sound based on gender
+function PlayBreatheSound()
+{
+    if (FlagBase.GetBool('LDDPJCIsFemale')) //Sarge: Lay-D Denton support
+        PlaySound(Sound(DynamicLoadObject("FemJC.FJCGasp", class'Sound', false)), SLOT_None, 0.8);
+    else
+        PlaySound(sound'MaleBreathe', SLOT_None,0.8);
+}
+
 function RegenStaminaTick(float deltaTime)                                      //RSD: New general stamina regen function for various state tick codes
 {
 	local float mult;
+    local float base;
+    
+    //SARGE: Stop regen if we're poisoned
+    if (poisonCounter > 0)
+        return;
 
     if (AugmentationSystem != none)                                             //RSD: accessed none
     {
@@ -17276,8 +17300,13 @@ function RegenStaminaTick(float deltaTime)                                      
 		mult -= 0.5;
 	if (AddictionManager.addictions[DRUG_TOBACCO].drugTimer > 0)                                                 //RSD: Zyme adds x2
 		mult += 1.0;
-
-	swimTimer += 5.0*mult*deltaTime;
+      
+    //SARGE: Increase at the same rate regardless of athletics skill
+    //Was hardcoded at 5
+    //base swimDuration is 18 seconds, 36 seconds at Master
+    base = swimDuration / 3.6;
+      
+    swimTimer += base*mult*deltaTime;
 	if (swimTimer > swimDuration)
 	{
 		swimTimer = swimDuration;
