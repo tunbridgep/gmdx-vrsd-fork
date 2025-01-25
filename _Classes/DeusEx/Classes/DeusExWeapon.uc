@@ -310,6 +310,10 @@ var travel bool givenFreeReload;                                                
 
 var float sleeptime;                                                              //Sarge: Used by per shell reload weapons to store how long they have been sleeping during reload, to allow us to cancel mid-reload in a far more responsive way.
 
+//SARGE: Show Modified
+var travel bool bModified;                                                             //SARGE: Keeps track of whether or not a particular weapon has been modified
+var localized string strModified;
+
 //SARGE: Weapon Requirements Matter
 var int minSkillRequirement;                                          //SARGE: Minimum skill requirement to use this weapon
 var localized String msgRequires;                                     //Sarge: "Requires" for weapon info screen
@@ -337,6 +341,24 @@ replication
 	// Functions Server calls in client
 	reliable if ( Role == ROLE_Authority )
 	  RefreshScopeDisplay, ReadyClientToFire, SetClientAmmoParams, ClientDownWeapon, ClientActive, ClientReload;
+}
+
+//Sarge: Update weapon frob display when we have a mod applied
+function string GetFrobString(DeusExPlayer player)
+{
+    if (bModified && player != None && player.bBeltShowModified)
+        return itemName @ strModified;
+    else
+        return itemName;
+}
+
+//Sarge: Update weapon description/display when we have a mod applied
+function string GetBeltDescription(DeusExPlayer player)
+{
+    if (bModified && player != None && player.bBeltShowModified)
+        return beltDescription $ "+";
+    else
+        return beltDescription;
 }
 
 function bool CanUseWeapon(DeusExPlayer player, optional bool noMessage)
@@ -1214,9 +1236,14 @@ function bool HandlePickupQuery(Inventory Item)
 	   //DAM mod
             if(W.ModDamage > ModDamage)
 				ModDamage = W.ModDamage;
+       
+       if (W.bModified)
+         bModified = true;
 	}
 
 	player = DeusExPlayer(Owner);
+    if (player != None)
+        player.UpdateHUD(); //SARGE: Required now because weapons can have + icons in the HUD
 
 	if (Item.Class == Class)
 	{
@@ -5215,7 +5242,11 @@ simulated function bool UpdateInfo(Object winObject)
 	if (winInfo == None)
 		return False;
 
-	winInfo.SetTitle(itemName);
+    //SARGE: Show modified weapons in title
+    if (bModified && DeusExPlayer(owner) != None && DeusExPlayer(owner).bBeltShowModified)
+        winInfo.SetTitle(itemName @ strModified);
+    else
+        winInfo.SetTitle(itemName);
 	if (bHandToHand && Owner.IsA('DeusExPlayer'))
 	{
 	   if (DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkInventive').bPerkObtained == true)
@@ -7049,6 +7080,7 @@ defaultproperties
      bRotatingPickup=False
      PickupMessage="You found"
      ItemName="DEFAULT WEAPON NAME - REPORT THIS AS A BUG"
+     strModified="(Modified)"
      BobDamping=0.840000
      LandSound=Sound'DeusExSounds.Generic.DropSmallWeapon'
      bNoSmooth=False
