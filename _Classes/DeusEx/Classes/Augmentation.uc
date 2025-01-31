@@ -721,11 +721,12 @@ defaultproperties
      bAddedToWheel=true;
      chargeTime=1.000000
      AugmentationType=Aug_Active
-     colActive=(B=255)
-     colInactive=(R=255,G=255)
+     colToggle=(R=76,G=255,B=0)
+     //colInactive=(R=255,G=255,B=255)
+     colInactive=(R=255,G=255,B=255)
      colInactive2=(R=100,G=100,B=100)
-     colPassive=(G=255)
-     colToggle=(R=25,G=140,B=255)
-     colAuto=(R=153,G=0,B=153)
      colRecharging=(R=255)
+     colPassive=(R=255,G=255)
+     colActive=(R=0,G=38,B=255)
+     colAuto=(G=255,B=255)
 }
