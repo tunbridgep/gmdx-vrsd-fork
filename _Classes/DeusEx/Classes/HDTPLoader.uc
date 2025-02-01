@@ -31,19 +31,20 @@ static function LodMesh GetMesh(string m)
 }
 
 //Gets a mesh, or a backup mesh if the first one fails
-static function LodMesh GetMesh2(string m, string m2, bool first)
+static function LodMesh GetMesh2(string m, string m2, bool first, optional bool debug)
 {
     local LodMesh MMesh;
     if (first)
-        MMesh = LodMesh(DynamicLoadObject(m, class'LodMesh', true));
+        MMesh = LodMesh(DynamicLoadObject(m, class'LodMesh', !debug));
     if (MMesh == None)
-        MMesh = LodMesh(DynamicLoadObject(m2, class'LodMesh', true));
-    //log("Getting mesh: " $ m $ ", " $ m2 $ ", " $ first);
+        MMesh = LodMesh(DynamicLoadObject(m2, class'LodMesh', !debug));
+    if (debug)
+        log("Getting mesh: " $ m $ ", " $ m2 $ ", " $ first);
     return MMesh;
 }
 
 //Gets a texture, or a backup texture if the first one fails
-static function Texture GetTexture2(string tex, string alternative, bool first)
+static function Texture GetTexture2(string tex, string alternative, bool first, optional bool debug)
 {
     local Texture TTex;
 
@@ -52,16 +53,17 @@ static function Texture GetTexture2(string tex, string alternative, bool first)
         alternative = "";
 
     if (first)
-        TTex = Texture(DynamicLoadObject(tex, class'Texture', true));
+        TTex = Texture(DynamicLoadObject(tex, class'Texture', !debug));
     if (TTex == None)
-        TTex = Texture(DynamicLoadObject(alternative, class'Texture', true));
+        TTex = Texture(DynamicLoadObject(alternative, class'Texture', !debug));
     //log("Getting tex: " $ tex $ ", " $ alternative $ ", " $ first);
 	return TTex;
 }
 
-static function bool HDTPInstalled()
+static function bool HDTPInstalled(optional bool debug)
 {
-    log("Checking HDTP installed");
+    if (debug)
+        log("Checking HDTP installed");
 	return Texture(DynamicLoadObject("HDTPDecos.Skins.HDTPBarrel1Tex10", class'Texture', true)) != None;
 }
 

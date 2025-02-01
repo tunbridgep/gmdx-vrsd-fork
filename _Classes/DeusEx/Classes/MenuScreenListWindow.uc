@@ -49,17 +49,21 @@ var S_ListItem items[255];
 event InitWindow()
 {
 	Super.InitWindow();
-
     LoadSettings();
     CreateHeaderButtons();
-	CreateOptionsList();
     CreateChoices();
     ShowHelp(helpText);
 }
-     
+
 function CreateChoices()
 {
 	local int i;
+
+    if (lstItems == None)
+    {
+        log("lstItems is none!");
+	    CreateOptionsList();
+    }
 
     //Remove all existing choices
     lstItems.DeleteAllRows();
@@ -109,6 +113,8 @@ function int GetConsoleValue(int index)
 {
     local string command;
     command = player.ConsoleCommand("get " $ items[index].consoleTarget @ items[index].variable);
+
+    //Sometimes it can return True and False, convert it to numeric
     if (command == "True")
         return 1;
     else if (command == "False")

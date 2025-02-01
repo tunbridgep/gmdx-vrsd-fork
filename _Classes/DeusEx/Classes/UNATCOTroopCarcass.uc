@@ -8,7 +8,7 @@ defaultproperties
 	 hdtpReference=class'DeusEx.UnatcoTroop'
      Mesh2=LodMesh'DeusExCharacters.GM_Jumpsuit_CarcassB'
      Mesh3=LodMesh'DeusExCharacters.GM_Jumpsuit_CarcassC'
-     HDTPMesh="HDTPCharacters.HDTPUNATCOTroopCarcass"
+     HDTPMesh="HDTPCharacters.HDTPUnatcoTroopCarcass"
      HDTPMesh2="HDTPCharacters.HDTPUnatcoTroopCarcassB"
      HDTPMesh3="HDTPCharacters.HDTPUnatcoTroopCarcassC"
      HDTPMeshTex(0)="HDTPCharacters.Skins.HDTPUNATCOTroopTex0"

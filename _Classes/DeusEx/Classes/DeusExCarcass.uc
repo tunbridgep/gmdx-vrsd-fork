@@ -102,19 +102,21 @@ exec function UpdateHDTPsettings()
 {
     local int i;
     if (HDTPMesh3 != "")
-        Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh3,string(default.Mesh3),IsHDTP());
+        Mesh3 = class'HDTPLoader'.static.GetMesh2(HDTPMesh3,string(default.Mesh3),IsHDTP());
     if (HDTPMesh2 != "")
-        Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh2,string(default.Mesh2),IsHDTP());
+        Mesh2 = class'HDTPLoader'.static.GetMesh2(HDTPMesh2,string(default.Mesh2),IsHDTP());
     if (HDTPMesh != "")
-    {
         Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),IsHDTP());
-        for(i = 0; i < 8;i++)
-            MultiSkins[i] = class'HDTPLoader'.static.GetTexture2(HDTPMeshTex[i],string(default.MultiSkins[i]),IsHDTP());
-    }
     if (HDTPSkin != "")
         Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),IsHDTP());
     if (HDTPTexture != "")
         Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),IsHDTP());
+    
+    for(i = 0; i < 8;i++)
+    {
+        if (HDTPMeshTex[i] != "")
+            MultiSkins[i] = class'HDTPLoader'.static.GetTexture2(HDTPMeshTex[i],string(default.MultiSkins[i]),IsHDTP());
+    }
 
 }
 
@@ -124,11 +126,11 @@ exec function UpdateHDTPsettings()
 
 function InitFor(Actor Other)
 {
-local FleshFragmentNub nub;
-local vector vec;
-local rotator randRot;
-local DeusExLevelInfo info;                                                     //RSD
-local DeusExPlayer player;                                                      //RSD
+    local FleshFragmentNub nub;
+    local vector vec;
+    local rotator randRot;
+    local DeusExLevelInfo info;                                                     //RSD
+    local DeusExPlayer player;                                                      //RSD
 
     player = DeusExPlayer(GetPlayerPawn());                                     //RSD
     info = player.GetLevelInfo();                                               //RSD

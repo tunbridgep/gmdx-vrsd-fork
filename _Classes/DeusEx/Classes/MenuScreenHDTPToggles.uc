@@ -17,6 +17,29 @@ event bool ListRowActivated(window list, int rowId)
     player.HDTP();
 }
 
+//We can't use console commands anymore, now we have to use player variables instead, because
+//Deus Ex doesn't actually load classes unless they are instantiated in the world, so using 'get'
+//will return "unknown class" even if the class name is correct.
+//So instead, we're going to store everything on the player like chumps.
+//We have to use DynamicLoadObject here, which abslutely fucking sucks...
+//I hate Unreal....
+function int GetConsoleValue(int index)
+{
+    local string strClassName;
+    local class<Actor> A;
+    
+    strClassName = items[index].consoleTarget;
+
+    //DISGUSTING!
+    A = class<Actor>(DynamicLoadObject(strClassName, class'Class', true));
+
+    //If we aren't a scriptedpawn, just do the default thing
+    if (A == None || class<ScriptedPawn>(A) == None)
+        return super.GetConsoleValue(index);
+        
+    return class<ScriptedPawn>(A).default.iHDTPModelToggle;
+}
+
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
@@ -26,15 +49,15 @@ defaultproperties
      strHeaderActionLabel="Object"
      strHeaderAssignedLabel="Model"
      HelpText="Select the model you wish to change and then press [Enter] or Double-Click to cycle through available models"
-     Items(0)=(actionText="JC Denton",consoleTarget="DeusExPlayer")
-     Items(1)=(actionText="Paul Denton",consoleTarget="PaulDenton")
-     Items(2)=(actionText="Gunther Hermann",consoleTarget="GuntherHermann")
-     Items(3)=(actionText="Anna Navarre",consoleTarget="AnnaNavarre")
-     Items(4)=(actionText="Nicolette DuClare",consoleTarget="NicoletteDuclare")
-     Items(5)=(actionText="NSF Terrorist",consoleTarget="Terrorist")
-     Items(6)=(actionText="Riot Cop",consoleTarget="RiotCop")
-     Items(7)=(actionText="Walton Simons",consoleTarget="WaltonSimons")
-     Items(8)=(actionText="UNATCO Trooper",consoleTarget="UnatcoTroop")
+     Items(0)=(actionText="JC Denton",consoleTarget="DeusEx.DeusExPlayer")
+     Items(1)=(actionText="Paul Denton",consoleTarget="DeusEx.PaulDenton")
+     Items(2)=(actionText="Gunther Hermann",consoleTarget="DeusEx.GuntherHermann")
+     Items(3)=(actionText="Anna Navarre",consoleTarget="DeusEx.AnnaNavarre")
+     Items(4)=(actionText="Nicolette DuClare",consoleTarget="DeusEx.NicoletteDuclare")
+     Items(5)=(actionText="NSF Terrorist",consoleTarget="DeusEx.Terrorist")
+     Items(6)=(actionText="Riot Cop",consoleTarget="DeusEx.RiotCop")
+     Items(7)=(actionText="Walton Simons",consoleTarget="DeusEx.WaltonSimons")
+     Items(8)=(actionText="UNATCO Trooper",consoleTarget="DeusEx.UnatcoTroop")
      Items(9)=(actionText="Cleaner Bot",defaultValue=1,consoleTarget="DeusEx.CleanerBot")
      Items(10)=(actionText="Military Bot",defaultValue=1,consoleTarget="DeusEx.MilitaryBot")
      Items(11)=(actionText="Medical Bot",defaultValue=1,consoleTarget="DeusEx.MedicalBot")
@@ -110,7 +133,7 @@ defaultproperties
      Items(80)=(actionText="Computer (ATM)",defaultValue=1,consoleTarget="DeusEx.ATM")
      Items(81)=(actionText="Concrete Barricade",defaultValue=1,consoleTarget="DeusEx.RoadBlock")
      Items(82)=(actionText="Control Panel",defaultValue=1,consoleTarget="DeusEx.ControlPanel")
-     Items(83)=(actionText="Couch (Leather)",defaultValue=1,consoleTarget="DeusEx.LeatherCouch")
+     Items(83)=(actionText="Couch (Leather)",defaultValue=1,consoleTarget="DeusEx.CouchLeather")
      Items(84)=(actionText="Couch (Red)",defaultValue=1,consoleTarget="DeusEx.WHRedCouch")
      Items(85)=(actionText="Credit Chit",defaultValue=1,consoleTarget="DeusEx.Credits")
      Items(86)=(actionText="Cushion",defaultValue=1,consoleTarget="DeusEx.Cushion")
@@ -200,7 +223,7 @@ defaultproperties
      Items(169)=(actionText="Vending Machine",defaultValue=1,consoleTarget="DeusEx.VendingMachine")
      Items(170)=(actionText="Water Cooler",defaultValue=1,consoleTarget="DeusEx.WaterCooler")
      Items(171)=(actionText="Water Fountain",defaultValue=1,consoleTarget="DeusEx.WaterFountain")
-     Items(172)=(actionText="Wet Floot Sign",defaultValue=1,consoleTarget="DeusEx.FloorSign")
+     Items(172)=(actionText="Wet Floor Sign",defaultValue=1,consoleTarget="DeusEx.SignFloor")
      Items(173)=(actionText="10mm Ammo",defaultValue=1,consoleTarget="DeusEx.Ammo10mm")
      Items(174)=(actionText="10mm AP Ammo",defaultValue=1,consoleTarget="DeusEx.Ammo10mmAP")
      Items(175)=(actionText="20mm Ammo",defaultValue=1,consoleTarget="DeusEx.Ammo20mm")
