@@ -74,6 +74,10 @@ var string HDTPMesh2;
 var string HDTPMesh3;
 var string HDTPMeshTex[8];
 
+//SARGE: Remember which mesh we have assigned
+//1 = mesh1, 2 = mesh2, 3 = mesh3
+var travel int assignedMesh;
+
 // ----------------------------------------------------------------------
 // ShouldCreate()
 // If this returns FALSE, the object will be deleted on it's first tick
@@ -101,6 +105,7 @@ function bool IsHDTP()
 exec function UpdateHDTPsettings()
 {
     local int i;
+
     if (HDTPMesh3 != "")
         Mesh3 = class'HDTPLoader'.static.GetMesh2(HDTPMesh3,string(default.Mesh3),IsHDTP());
     if (HDTPMesh2 != "")
@@ -117,6 +122,11 @@ exec function UpdateHDTPsettings()
         if (HDTPMeshTex[i] != "")
             MultiSkins[i] = class'HDTPLoader'.static.GetTexture2(HDTPMeshTex[i],string(default.MultiSkins[i]),IsHDTP());
     }
+
+    if (assignedMesh == 2)
+        Mesh = Mesh2;
+    else if (assignedMesh == 3)
+        Mesh = Mesh3;
 
 }
 
@@ -185,7 +195,10 @@ function InitFor(Actor Other)
 		}
 
 		if (Other.AnimSequence == 'DeathFront')
+        {
+            assignedMesh = 2;
 			Mesh = Mesh2;
+        }
 /*if (bPop && (IsA('CopCarcassBeheaded') || IsA('ThugMale2CarcassBeheaded')))
 {
 if (Mesh == Mesh2)
@@ -344,6 +357,7 @@ function PostBeginPlay()
 	local int i, j;
 	local Inventory inv;
     local DeusExPlayer DXplayer;                                                //RSD
+    assignedMesh = 1;
 
 	bCollideWorld = true;
 
@@ -380,6 +394,7 @@ function PostBeginPlay()
 	{
 		Mesh = Mesh3;
 		bNotDead = False;		// you will die in water every time
+        assignedMesh = 3;
 	}
 
 	MaxDamage = 0.8*Mass;
@@ -404,6 +419,7 @@ function ZoneChange(ZoneInfo NewZone)
 	if (NewZone.bWaterZone)
 		{
         Mesh = Mesh3;
+        assignedMesh = 3;
         if (!IsA('ScubaDiver'))
         {
         	KillUnconscious();                                                  //RSD: Proper kill
