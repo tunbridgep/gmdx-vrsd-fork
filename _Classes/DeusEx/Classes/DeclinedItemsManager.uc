@@ -6,19 +6,9 @@ class DeclinedItemsManager extends Actor config(GMDX);
 
 var globalconfig string declinedTypes[100];
 
-var private travel DeusExPlayer player;
-
-function Setup(DeusExPlayer P)
-{
-    //Log("Decline Manager Setup");
-    player = P;
-}
-
 function RemoveDeclinedItem(class<Inventory> invClass)
 {
     local int i, pos;
-
-    //player.ClientMessage("Remove Item: " $ invClass);
 
     pos = -1;
 
@@ -43,10 +33,7 @@ function RemoveDeclinedItem(class<Inventory> invClass)
             //do nothing
         }
         else if (i < 99)
-        {
-            //player.ClientMessage(declinedTypes[i] $ " is now " $ declinedTypes[i+1]);
             declinedTypes[i] = declinedTypes[i+1];
-        }
         else
             declinedTypes[i] = "";
     }
@@ -58,8 +45,6 @@ function AddDeclinedItem(class<Inventory> invClass)
 {
     local int i;
 
-    //player.clientMessage("invClass: " $ invClass $ ", " $ GetDeclinedNumber());
-    
     //First, search for existing entry
     if (IsDeclined(invClass) || invClass == None)
         return;
@@ -71,7 +56,6 @@ function AddDeclinedItem(class<Inventory> invClass)
         if (declinedTypes[i] == "")
         {
             declinedTypes[i] = string(invClass);
-            //player.ClientMessage("Adding " $ string(invClass) $ " at " $i);
             //log("declinedTypes["$i$"] set to <" $ declinedTypes[i] $ ">");
             //log("Save Config");
             SaveConfig();
@@ -84,6 +68,13 @@ function AddDeclinedItem(class<Inventory> invClass)
 function bool IsDeclined(class<Inventory> invClass)
 {
     local int i;
+
+    local DeusExPlayer player;
+    player = DeusExPlayer(Owner);
+
+    //Smart Decline - If player is holding Walk button, don't decline
+    if (player.bRun != 0 && player.bSmartDecline)
+        return false;
 
     for (i = 0;i < ArrayCount(declinedTypes);i++)
     {

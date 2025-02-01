@@ -642,6 +642,8 @@ var globalconfig int iAllowCombatMusic;                                        /
 //Decline Everything
 var travel DeclinedItemsManager declinedItemsManager;                          //SARGE: Holds declined items.
 
+var globalconfig bool bSmartDecline;                                            //SARGE: Allow not declining items when holding the walk/run key
+
 //Crosshair Settings
 var globalconfig bool bFullAccuracyCrosshair;                                   //SARGE: If false, disable the "Accuracy Crosshairs" when at 100% accuracy
 
@@ -17542,4 +17544,5 @@ defaultproperties
      bFullAccuracyCrosshair=true;
      bShowEnergyBarPercentages=true;
      dblClickHolster=2
+     bSmartDecline=True
 }

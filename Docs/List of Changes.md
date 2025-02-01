@@ -15,8 +15,6 @@ Sarge's Changes since Beta 2.2:
     - Fixed vRSD bug (feature?) where the player would not cough after using cigarettes if the addiction system was enabled.
     - Fixed Vanilla bug where picking up ammo would add it to the players current clip, rather than their reserve ammo.
     - Fixed GMDX Ammo duplication glitch when looting corpses while having a full inventory.
-    - Fixed GMDX bug where frobbing a corpse with the "Decline Knives" setting would sometimes result in no log message being displayed.
-        - Additionally, combat knives on corpses are no longer deleted, allowing "Decline Knives" to be turned on and off without preventing access to knives on existing corpses.
     - Fixed GMDX bug where Ford Schick would not give you an upgrade canister when telling you he swiped one, if ConFix isn't installed. Fixed by adding it to his desk.
     - Fixed a number of typos in various places.
     - Fixed Vanilla bug where sound volume would reset upon new game.
@@ -24,14 +22,20 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX quickloading not always working correctly, and other save issues including incorrect save-game ordering in the save/load screens.
     - Fixed many other GMDX and Vanilla bugs.
 - Quality of Life Improvements:
+    - Complete overhaul of the "Decline Knives" system
+        - "Decline Knives" setting has been removed
+        - A new Decline button has been added to items in the inventory. Clicking it will decline a specific item going forward, preventing it from being taken off corpses.
+        - The decline list is stored globally and consistent between playthroughs.
+        - Items can be removed from the decline list in the inventory screen.
+        - Holding the Walk/Run key while frobbing a corpse will pick up any declined items.
+    - Datacubes will show a black screen after they have been read.
     - While having a grenade selected, the crosshair will turn blue when you're able to place it on a wall.
     - Right-Clicking while dead will load the last save game.
     - Right-Clicking an item in the belt with the Inventory Window open will clear the slot.
     - The Inventory "Show Ammo" display now always shows the total amount of ammo you can carry. Before, it was only visible when "Show Descriptions" was enabled.
     - Added a Lighting Accessibility setting, which removes some strobing and flickering in certain areas on some maps, such as the 'Ton hotel elevator shaft.
     - Added a new corpse searching setting, "Enhanced Looting", which makes the first right-click on a corpse never pick them up, even if empty, so that you can search them reliably without accidentally picking them up.
-        - Additionally, the first time a corpse is interacted with, it will show any items which it contains that you cannot pick up (such as duplicate weapons).
-        - Weapons are no longer deleted from corpses after being interacted with once, but they are ignored after the first time.
+        - Additionally, the first time a corpse is interacted with, it will show any items which it contains that you cannot pick up (such as duplicate weapons and declined items).
     - Added a new setting to show "[Searched]" text after interacting with corpses once, to differentiate between those which have been searched and which have not.
     - Added a new keybinding to stop the currently playing infolink.
     - Completely overhauled the GMDX settings menu to make it simpler, easier to navigate, and with many more options.

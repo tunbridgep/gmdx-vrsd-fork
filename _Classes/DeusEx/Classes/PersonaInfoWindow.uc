@@ -49,6 +49,7 @@ var localized string msgDecline;
 var localized string msgRemoveDecline;
 var localized String DeclinedTitleLabel;
 var localized String DeclinedDesc;
+var localized String DeclinedDesc2;
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -495,7 +496,10 @@ function AddDeclinedInfoWindow()
         return;
 
     SetTitle(DeclinedTitleLabel);
-    SetText(DeclinedDesc);
+    if (player.bSmartDecline)
+        SetText(DeclinedDesc2);
+    else
+        SetText(DeclinedDesc);
     AddLine();
     
     for(i = 0; i < ArrayCount(player.declinedItemsManager.declinedTypes);i++)
@@ -554,4 +558,5 @@ defaultproperties
      msgRemoveDecline="Remove From Decline List"
      DeclinedTitleLabel="Declined Items"
      DeclinedDesc="Declined Items will not be picked up from corpses."
+     DeclinedDesc2="Declined Items will not be picked up from corpses, unless the Run/Walk key is held."
 }
