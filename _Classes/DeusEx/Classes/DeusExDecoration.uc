@@ -162,19 +162,19 @@ exec function UpdateHDTPsettings()
     {
         if (!(string(Mesh) ~= HDTPMesh || Mesh == default.Mesh || string(Mesh) ~= oldMesh))
         {
-            log("Failed: Mesh mismatch. Got " $ string(Mesh));
+            //log("Failed: Mesh mismatch. Got " $ string(Mesh));
             return;
         }
         
         if (!(string(Skin) ~= HDTPSkin || Skin == default.Skin || string(Skin) ~= oldSkin))
         {
-            log("Failed: Skin mismatch. Got " $ string(Skin));
+            //log("Failed: Skin mismatch. Got " $ string(Skin));
             return;
         }
         
         if (!(string(Texture) ~= HDTPTexture || Texture == default.Texture || string(Texture) ~= oldTexture))
         {
-            log("Failed: Texture mismatch. Got " $ string(Texture));
+            //log("Failed: Texture mismatch. Got " $ string(Texture));
             return;
         }
     }
