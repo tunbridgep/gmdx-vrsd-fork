@@ -345,13 +345,13 @@ singular function checkForHazards(GC gc)
 	root = DeusExRootWindow(player.rootWindow);
     
     //Disable the hazard detection text while windows are open
-    if (root != None && root.WindowStackCount() > 0)
+    if (root == None || (root != None && root.WindowStackCount() > 0))
         return;
 
     aug = AugIFF(Player.AugmentationSystem.GetAug(class'AugIFF'));
 
     if (aug != None && aug.bHasIt)
-    range = (aug.CurrentLevel) * aug.default.hazardsrange * 16; //Range in which hazards are detected - 50 feet at level 2, 100 at level 3
+        range = (aug.CurrentLevel) * aug.default.hazardsrange * 16; //Range in which hazards are detected - 50 feet at level 2, 100 at level 3
 
     if (range <= 0)
         return;
