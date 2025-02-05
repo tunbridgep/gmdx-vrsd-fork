@@ -14293,7 +14293,7 @@ Begin Actor Class=Liquor40oz Name=Liquor40oz0
     Name=Liquor40oz0
 End Actor
 Begin Actor Class=Liquor40oz Name=Liquor40oz1
-    SkinColor=SC_Bottle3
+    textureSet=2
     LastRenderTime=75.528694
     DistanceFromPlayer=2089.166748
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -14304,7 +14304,7 @@ Begin Actor Class=Liquor40oz Name=Liquor40oz1
     Name=Liquor40oz1
 End Actor
 Begin Actor Class=Liquor40oz Name=Liquor40oz2
-    SkinColor=SC_Bottle2
+    textureSet=1
     LastRenderTime=75.528694
     DistanceFromPlayer=2082.432373
     Level=LevelInfo'MyLevel.LevelInfo0'

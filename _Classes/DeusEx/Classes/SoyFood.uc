@@ -48,4 +48,7 @@ defaultproperties
      Mass=3.000000
      Buoyancy=4.000000
      fullness=8
+     //SARGE: Disabled for now. We're going to manually set these, because
+     //the Hong-Kong style ones are in Hong Kong only.
+     //totalSkins=2
 }

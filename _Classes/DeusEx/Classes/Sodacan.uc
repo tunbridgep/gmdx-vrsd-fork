@@ -89,4 +89,5 @@ defaultproperties
      Mass=5.000000
      Buoyancy=3.000000
      fullness=4
+     totalSkins=4
 }

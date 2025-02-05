@@ -2121,6 +2121,7 @@ exec function StartNewGame(String startMap)
     local int musicVol, soundVol, speechVol;
 
     bGMDXNewGame = True;
+    seed = -1;
 
 	if (DeusExRootWindow(rootWindow) != None)
 		DeusExRootWindow(rootWindow).ClearWindowStack();

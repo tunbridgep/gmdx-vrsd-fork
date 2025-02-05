@@ -27,8 +27,10 @@ function SetSkin()
             break;
         case 2: //Holy Smokes!
             Skin = class'HDTPLoader'.static.GetTexture2("RSDCrap.Skins.HDTPCigarettestex3","RSDCrap.Skins.Cigarettestex3",IsHDTP());
+            break;
         case 3: //Super 45
             Skin = class'HDTPLoader'.static.GetTexture2("RSDCrap.Skins.HDTPCigarettestex4","RSDCrap.Skins.Cigarettestex4",IsHDTP());
+            break;
     }
 	super.SetSkin();
 }
@@ -94,4 +96,5 @@ defaultproperties
      CollisionHeight=1.320000
      Mass=2.000000
      Buoyancy=3.000000
+     totalSkins=4
 }

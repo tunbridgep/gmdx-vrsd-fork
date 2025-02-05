@@ -178,6 +178,8 @@ Sarge's Changes since Beta 2.2:
         - Changed some textures to different ones to account for their HDTP variants better, such as the glowing areas on Security Cameras, which now have a proper blue variant.
         - Some HDTP features that were removed from GMDX (such as alternate inventory icons) have been re-added.
         - Vanilla Soda Cans are now sealed up, to match their HDTP counterparts.
+    - All Junk Items (soda cans, cigarettes, etc) will now have randomised skins, except for Soy Food which uses special Hong-Kong and non-Hong-Kong specific variants.
+    - Added 2 new Cigarettes skins (Holy Smokes and Super 45s) based on in-game billboards (HDTP and non-HDTP variants included).
     - Added an "Alternate Start" option, which skips the first part of the game and starts at the MJ12 Lab. You will start with nothing, so this is extra hardcore.
     - The "You Found:" message when searching corpses has been removed. The actual items are still listed, only the extra message is removed.
     - The Paris Metro Police have been changed to using pistols only (from Assault Shotguns and Assault Rifles), to ensure more 10mm ammo is available in the late game, as well as to reinforce their status as the puppet regime under MJ12.

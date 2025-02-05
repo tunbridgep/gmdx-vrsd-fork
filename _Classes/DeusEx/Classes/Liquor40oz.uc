@@ -3,42 +3,26 @@
 //=============================================================================
 class Liquor40oz extends Vice; //DeusExPickup;
 
-enum ESkinColor
+function SetSkin()
 {
-	SC_Super45,
-	SC_Bottle2,
-	SC_Bottle3,
-	SC_Bottle4
-};
+    local Texture tex;
+    Super.SetSkin();
 
-var() ESkinColor SkinColor;
-
-exec function UpdateHDTPSettings()
-{
-	Super.UpdateHDTPSettings();
-    switch (SkinColor)
+    switch(textureSet)
     {
-        case SC_Super45:
-            Multiskins[1]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex1","",IsHDTP());
-            Multiskins[3]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex1","",IsHDTP());
-            Skin=class'HDTPLoader'.static.GetTexture2("","Liquor40oztex1",IsHDTP());
-            break;
-        case SC_Bottle2:
-            Multiskins[1]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex3","",IsHDTP());
-            Multiskins[3]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex3","",IsHDTP());
-            Skin=class'HDTPLoader'.static.GetTexture2("","Liquor40oztex2",IsHDTP());
-            break;
-        case SC_Bottle3:
-            Multiskins[1]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex4","",IsHDTP());
-            Multiskins[3]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex4","",IsHDTP());
-            Skin=class'HDTPLoader'.static.GetTexture2("","Liquor40oztex3",IsHDTP());
-            break;
-        case SC_Bottle4:
-            Multiskins[1]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex5","",IsHDTP());
-            Multiskins[3]=class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex5","",IsHDTP());
-            Skin=class'HDTPLoader'.static.GetTexture2("","Liquor40oztex4",IsHDTP());
-            break;
+        case 0: tex = class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex1","DeusExItems.Skins.Liquor40oztex1",IsHDTP()); break;
+        case 1: tex = class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex3","DeusExItems.Skins.Liquor40oztex2",IsHDTP()); break;
+        case 2: tex = class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex4","DeusExItems.Skins.Liquor40oztex3",IsHDTP()); break;
+        case 3: tex = class'HDTPLoader'.static.GetTexture2("HDTPitems.skins.HDTPLiquor40oztex5","DeusExItems.Skins.Liquor40oztex4",IsHDTP()); break;
     }
+    
+    if (IsHDTP())
+    {
+        Multiskins[1]=tex;
+        Multiskins[3]=tex;
+    }
+    else
+        Skin=tex;
 }
 
 function Eat(DeusExPlayer player)
@@ -73,4 +57,5 @@ defaultproperties
      Mass=10.000000
      Buoyancy=8.000000
      fullness=4
+     totalSkins=4
 }

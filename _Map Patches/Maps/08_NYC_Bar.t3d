@@ -28280,7 +28280,7 @@ Begin Actor Class=NewAshtray Name=NewAshtray5
     Name=NewAshtray5
 End Actor
 Begin Actor Class=Liquor40oz Name=Liquor40oz4
-    SkinColor=SC_Bottle3
+    textureSet=2
     LastRenderTime=0.306806
     Level=LevelInfo'MyLevel.LevelInfo0'
     Tag=Liquor40oz

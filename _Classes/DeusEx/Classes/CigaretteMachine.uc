@@ -44,11 +44,7 @@ function Frob(actor Frobber, Inventory frobWith)
 				product.bFixedRotationDir = True;
 				product.RotationRate.Pitch = (32768 - Rand(65536)) * 4.0;
 				product.RotationRate.Yaw = (32768 - Rand(65536)) * 4.0;
-				if(frand() > 0.5)
-				{
-					Product.textureset = 1;
-					Product.setskin();
-				}
+                product.RandomiseSkin(player);
 			}
 
 			player.Credits -= 8;

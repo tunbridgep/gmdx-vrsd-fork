@@ -200,6 +200,9 @@ function FirstFrame()
             InitializeEnemySwap(1);
         }
 
+        //Randomise the crap around the level
+        RandomiseCrap();
+
 		flags.SetBool(flagName, True);
 
         firstTime = true;
@@ -405,6 +408,16 @@ function InitializeRandomAmmoCounts()                                           
 	    ammoDropCount = Player.Randomizer.GetRandomInt(4) + 1;                                            //RSD: From general randomized PickupAmmoCount in DeusExCarcass.uc
 		DC.PickupAmmoCount = ammoDropCount;
 	}
+}
+
+//Sarge: Randomise all the crap around the level (sodacans, cigs, etc) to have random skins
+function RandomiseCrap()
+{
+    local DeusExPickup P;
+    foreach AllActors(class'DeusExPickup', P)
+    {
+        P.RandomiseSkin(player);
+    }
 }
 
 //Sarge: Randomize Weapons amongs Enemies

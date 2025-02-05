@@ -40736,7 +40736,7 @@ Begin Actor Class=WineBottle Name=WineBottle11
     Name=WineBottle11
 End Actor
 Begin Actor Class=Liquor40oz Name=Liquor40oz4
-    SkinColor=SC_Bottle4
+    textureSet=3
     LastRenderTime=410.283478
     DistanceFromPlayer=921.586914
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -40750,7 +40750,7 @@ Begin Actor Class=Liquor40oz Name=Liquor40oz4
     Name=Liquor40oz4
 End Actor
 Begin Actor Class=Liquor40oz Name=Liquor40oz5
-    SkinColor=SC_Bottle2
+    textureSet=1
     LastRenderTime=410.283478
     DistanceFromPlayer=924.351868
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -40763,7 +40763,7 @@ Begin Actor Class=Liquor40oz Name=Liquor40oz5
     Name=Liquor40oz5
 End Actor
 Begin Actor Class=Liquor40oz Name=Liquor40oz6
-    SkinColor=SC_Bottle2
+    textureSet=1
     LastRenderTime=410.283478
     DistanceFromPlayer=925.210999
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -40776,7 +40776,7 @@ Begin Actor Class=Liquor40oz Name=Liquor40oz6
     Name=Liquor40oz6
 End Actor
 Begin Actor Class=Liquor40oz Name=Liquor40oz7
-    SkinColor=SC_Bottle3
+    textureSet=2
     LastRenderTime=410.283478
     DistanceFromPlayer=923.324951
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -40789,7 +40789,7 @@ Begin Actor Class=Liquor40oz Name=Liquor40oz7
     Name=Liquor40oz7
 End Actor
 Begin Actor Class=Liquor40oz Name=Liquor40oz8
-    SkinColor=SC_Bottle3
+    textureSet=2
     LastRenderTime=410.283478
     DistanceFromPlayer=923.882629
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -40814,7 +40814,7 @@ Begin Actor Class=LiquorBottle Name=LiquorBottle2
     Name=LiquorBottle2
 End Actor
 Begin Actor Class=Liquor40oz Name=Liquor40oz9
-    SkinColor=SC_Bottle4
+    textureSet=3
     LastRenderTime=410.283478
     DistanceFromPlayer=922.764648
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -40871,7 +40871,7 @@ Begin Actor Class=LiquorBottle Name=LiquorBottle4
     Name=LiquorBottle4
 End Actor
 Begin Actor Class=Liquor40oz Name=Liquor40oz11
-    SkinColor=SC_Bottle2
+    textureSet=1
     LastRenderTime=410.283478
     DistanceFromPlayer=934.951904
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -40883,7 +40883,7 @@ Begin Actor Class=Liquor40oz Name=Liquor40oz11
     Name=Liquor40oz11
 End Actor
 Begin Actor Class=Liquor40oz Name=Liquor40oz12
-    SkinColor=SC_Bottle3
+    textureSet=2
     LastRenderTime=410.283478
     DistanceFromPlayer=933.669373
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -41167,7 +41167,7 @@ Begin Actor Class=WineBottle Name=WineBottle15
     Name=WineBottle15
 End Actor
 Begin Actor Class=Liquor40oz Name=Liquor40oz13
-    SkinColor=SC_Bottle4
+    textureSet=3
     LastRenderTime=410.283478
     DistanceFromPlayer=755.303345
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -41219,7 +41219,7 @@ Begin Actor Class=LiquorBottle Name=LiquorBottle5
     Name=LiquorBottle5
 End Actor
 Begin Actor Class=Liquor40oz Name=Liquor40oz14
-    SkinColor=SC_Bottle2
+    textureSet=1
     LastRenderTime=410.283478
     DistanceFromPlayer=749.019104
     Level=LevelInfo'MyLevel.LevelInfo0'

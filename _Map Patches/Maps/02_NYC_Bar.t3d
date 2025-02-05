@@ -30539,7 +30539,7 @@ Begin Actor Class=Brush Name=Brush149
     Name=Brush149
 End Actor
 Begin Actor Class=Liquor40oz Name=Liquor40oz0
-    SkinColor=SC_Bottle2
+    textureSet=1
     LastRenderTime=0.305587
     DistanceFromPlayer=1276.019409
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -30560,7 +30560,7 @@ Begin Actor Class=Liquor40oz Name=Liquor40oz1
     Name=Liquor40oz1
 End Actor
 Begin Actor Class=Liquor40oz Name=Liquor40oz2
-    SkinColor=SC_Bottle2
+    textureSet=1
     LastRenderTime=0.305587
     DistanceFromPlayer=1286.394409
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -30571,7 +30571,7 @@ Begin Actor Class=Liquor40oz Name=Liquor40oz2
     Name=Liquor40oz2
 End Actor
 Begin Actor Class=Liquor40oz Name=Liquor40oz3
-    SkinColor=SC_Bottle3
+    textureSet=2
     LastRenderTime=0.305587
     DistanceFromPlayer=1259.881226
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -30582,7 +30582,7 @@ Begin Actor Class=Liquor40oz Name=Liquor40oz3
     Name=Liquor40oz3
 End Actor
 Begin Actor Class=Liquor40oz Name=Liquor40oz4
-    SkinColor=SC_Bottle3
+    textureSet=2
     LastRenderTime=0.305587
     DistanceFromPlayer=1252.810547
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -30889,7 +30889,7 @@ Begin Actor Class=Cigarettes Name=Cigarettes3
     Name=Cigarettes3
 End Actor
 Begin Actor Class=Liquor40oz Name=Liquor40oz6
-    SkinColor=SC_Bottle3
+    textureSet=2
     bDynamicLight=True
     LastRenderTime=0.305587
     DistanceFromPlayer=939.004578

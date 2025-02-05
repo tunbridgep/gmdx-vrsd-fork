@@ -28432,7 +28432,7 @@ Begin Actor Class=Newspaper Name=Newspaper0
     Name=Newspaper0
 End Actor
 Begin Actor Class=Liquor40oz Name=Liquor40oz0
-    SkinColor=SC_Bottle2
+    textureSet=1
     myMarker=InventorySpot'MyLevel.InventorySpot2'
     LastRenderTime=0.619330
     DistanceFromPlayer=1872.456787
@@ -28444,7 +28444,7 @@ Begin Actor Class=Liquor40oz Name=Liquor40oz0
     Name=Liquor40oz0
 End Actor
 Begin Actor Class=Liquor40oz Name=Liquor40oz1
-    SkinColor=SC_Bottle2
+    textureSet=1
     myMarker=InventorySpot'MyLevel.InventorySpot3'
     LastRenderTime=0.619330
     DistanceFromPlayer=1874.151245
@@ -28456,7 +28456,7 @@ Begin Actor Class=Liquor40oz Name=Liquor40oz1
     Name=Liquor40oz1
 End Actor
 Begin Actor Class=Liquor40oz Name=Liquor40oz2
-    SkinColor=SC_Bottle2
+    textureSet=1
     myMarker=InventorySpot'MyLevel.InventorySpot4'
     LastRenderTime=0.619330
     DistanceFromPlayer=1864.521484
@@ -28468,7 +28468,7 @@ Begin Actor Class=Liquor40oz Name=Liquor40oz2
     Name=Liquor40oz2
 End Actor
 Begin Actor Class=Liquor40oz Name=Liquor40oz3
-    SkinColor=SC_Bottle2
+    textureSet=1
     myMarker=InventorySpot'MyLevel.InventorySpot5'
     LastRenderTime=0.619330
     DistanceFromPlayer=1864.987183
@@ -51599,7 +51599,7 @@ Begin Actor Class=Light Name=Light37
     Name=Light37
 End Actor
 Begin Actor Class=Liquor40oz Name=Liquor40oz4
-    SkinColor=SC_Bottle2
+    textureSet=1
     LastRenderTime=5.610494
     DistanceFromPlayer=2537.454834
     Level=LevelInfo'MyLevel.LevelInfo0'

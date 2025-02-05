@@ -46,6 +46,23 @@ var string HDTPSkin;
 var string HDTPTexture;
 var string HDTPMesh;
 
+var int totalSkins;                                                             //Sarge: How many total skins this object has. Used to select random skins
+var(GMDX) bool dontRandomiseSkin;                                               //Sarge: Prevents individual items from having their skin randomised
+
+//SARGE: MissionScript calls this on all objects on map start.
+function RandomiseSkin(DeusExPlayer player)
+{
+    if (totalSkins <= 1 || dontRandomiseSkin)
+        return;
+
+    //Don't randomise the players items
+    if (Owner != None && Owner == player)
+        return;
+
+    textureSet = player.Randomizer.GetRandomInt(totalSkins - 1);
+    SetSkin();
+}
+
 //SARGE: Added "Left Click Frob" and "Right Click Frob" support
 //Return true to use the default frobbing mechanism (right click), or false for custom behaviour
 function bool DoLeftFrob(DeusExPlayer frobber)
