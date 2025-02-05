@@ -81,6 +81,10 @@ class All expands Object
 //#exec TEXTURE IMPORT FILE="Textures\Environment\InfoSign.pcx"	            NAME="InfoSign"         	GROUP="Environment"
 #exec TEXTURE IMPORT FILE="Textures\Environment\WaterPuddle.pcx"	        NAME="WaterPuddle"         	GROUP="Environment"
 
+//Fix visible purple on vanilla fence texture, only used on Warehouse map
+//Original is in CoreTexMetal
+#exec TEXTURE IMPORT FILE="Textures\Environment\OldeIronFence_B_fixed.pcx"	        NAME="OldeIronFence_B_Fixed"         	GROUP="Environment" MIPS=ON FLAGS=2
+
 //Icons etc
 #exec TEXTURE IMPORT FILE="Textures\LargeIconCrowbar.pcx"			NAME="LargeIconCrowbar"			GROUP="Icons"
 #exec TEXTURE IMPORT FILE="Textures\LargeIconRifle.pcx"			    NAME="LargeIconRifle"			GROUP="Icons"
