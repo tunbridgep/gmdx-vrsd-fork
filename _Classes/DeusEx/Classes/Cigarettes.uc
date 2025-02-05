@@ -27,6 +27,8 @@ function SetSkin()
             break;
         case 2: //Holy Smokes!
             Skin = class'HDTPLoader'.static.GetTexture2("RSDCrap.Skins.HDTPCigarettestex3","RSDCrap.Skins.Cigarettestex3",IsHDTP());
+        case 3: //Super 45
+            Skin = class'HDTPLoader'.static.GetTexture2("RSDCrap.Skins.HDTPCigarettestex4","RSDCrap.Skins.Cigarettestex4",IsHDTP());
     }
 	super.SetSkin();
 }

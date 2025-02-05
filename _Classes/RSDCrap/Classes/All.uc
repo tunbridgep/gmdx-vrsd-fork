@@ -52,6 +52,9 @@ class All expands Object
 //Holy Smokes
 #exec TEXTURE IMPORT FILE="Textures\Skins\CigarettesTex3.pcx"		NAME="CigarettesTex3"	GROUP="Skins"
 #exec TEXTURE IMPORT FILE="Textures\Skins\HDTPCigarettesTex3.pcx"	NAME="HDTPCigarettesTex3"	GROUP="Skins"
+//Super 45
+#exec TEXTURE IMPORT FILE="Textures\Skins\CigarettesTex4.pcx"		NAME="CigarettesTex4"	GROUP="Skins"
+#exec TEXTURE IMPORT FILE="Textures\Skins\HDTPCigarettesTex4.pcx"	NAME="HDTPCigarettesTex4"	GROUP="Skins"
 
 // Minidisks
 #exec TEXTURE IMPORT FILE="Textures\Skins\MiniDiskTex0.pcx"		    NAME="MiniDiskTex0"	    GROUP="Skins"

@@ -45,7 +45,6 @@ function int GetConsoleValue(int index)
 
 defaultproperties
 {
-     //items(9)=(actionText="MJ12 Trooper",consoleTarget="DeusExPlayer",variable="bHDTP_MJ12");
      strHeaderActionLabel="Object"
      strHeaderAssignedLabel="Model"
      HelpText="Select the model you wish to change and then press [Enter] or Double-Click to cycle through available models"
@@ -58,6 +57,7 @@ defaultproperties
      Items(6)=(actionText="Riot Cop",consoleTarget="DeusEx.RiotCop")
      Items(7)=(actionText="Walton Simons",consoleTarget="DeusEx.WaltonSimons")
      Items(8)=(actionText="UNATCO Trooper",consoleTarget="DeusEx.UnatcoTroop")
+     //items(9)=(actionText="MJ12 Trooper",consoleTarget="DeusEx.MJ12Troop");
      Items(9)=(actionText="Cleaner Bot",defaultValue=1,consoleTarget="DeusEx.CleanerBot")
      Items(10)=(actionText="Military Bot",defaultValue=1,consoleTarget="DeusEx.MilitaryBot")
      Items(11)=(actionText="Medical Bot",defaultValue=1,consoleTarget="DeusEx.MedicalBot")
