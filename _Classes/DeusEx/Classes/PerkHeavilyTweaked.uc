@@ -29,7 +29,7 @@ function OnPerkPurchase()
 defaultproperties
 {
     PerkName="HEAVILY TWEAKED"
-    PerkDescription="|nAn agent is able to attach scopes and laser sights to the GEP gun, enabling laser guidance and fly-by-wire capabilities.|n|nRequires: Heavy Weapons: ADVANCED"
+    PerkDescription="An agent is able to attach scopes and laser sights to the GEP gun, enabling laser guidance and fly-by-wire capabilities."
     PerkSkill=Class'DeusEx.SkillWeaponHeavy'
     PerkCost=100
     PerkLevelRequirement=2

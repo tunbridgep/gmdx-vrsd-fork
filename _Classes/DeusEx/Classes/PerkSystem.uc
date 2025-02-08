@@ -7,9 +7,9 @@
 
 class PerkSystem extends object;
 
-var travel Perk PerkList[50];			// Trash: Hopefully with this system, you can make this 500 and it wouldn't matter much. You still need to manually set how many perks are created here though...
-var travel int numPerks;				// Trash: UnrealScript doesn't support lists, so this is essentially the number of perks in the game
-var travel DeusExPlayer PlayerAttached;	// Trash: The player this class is attached to
+var private travel Perk PerkList[50];			// Trash: Hopefully with this system, you can make this 500 and it wouldn't matter much. You still need to manually set how many perks are created here though...
+var private travel int numPerks;				// Trash: UnrealScript doesn't support lists, so this is essentially the number of perks in the game
+var private travel DeusExPlayer PlayerAttached;	// Trash: The player this class is attached to
 
 
 // ----------------------------------------------------------------------
@@ -89,6 +89,11 @@ function InitializePerks(DeusExPlayer newPlayer)	// Trash: Add every perk in the
 	AddPerk(Class'DeusEx.PerkModder');
 	AddPerk(Class'DeusEx.PerkMisfeatureExploit');
 	AddPerk(Class'DeusEx.PerkTurretDomination');
+
+    //General Perks
+	AddPerk(Class'DeusEx.PerkFirefighter');
+	AddPerk(Class'DeusEx.PerkGlutton');
+	AddPerk(Class'DeusEx.PerkSocketJockey');
 }
 
 function AddPerk(class<Perk> perk)
@@ -181,6 +186,34 @@ function Perk GetPerkWithClass(Class<Perk> pClass)  // Trash: Get the perk by ch
 			return PerkList[index];
 		}
 	}
+}
+
+// ----------------------------------------------------------------------
+// GetPerkForSkill()
+// ----------------------------------------------------------------------
+
+function Perk GetPerkForSkill(Class<Skill> pSkill, int perkNum)  // SARGE: Get perk perkNum for skill
+{
+    local int i, count;
+    for (i = 0; i < numPerks;i++)
+    {
+        if (PerkList[i].PerkSkill == pSkill)
+        {
+            count++;
+            if (count > perkNum)
+                return PerkList[i];
+        }
+    }
+    return None;
+}
+
+// ----------------------------------------------------------------------
+// GetGeneralPerk()
+// ----------------------------------------------------------------------
+
+function Perk GetGeneralPerk(int perkNum)  // SARGE: Get general perk perkNum (no associated skill)
+{
+    return GetPerkForSkill(None,perkNum);
 }
 
 // ----------------------------------------------------------------------

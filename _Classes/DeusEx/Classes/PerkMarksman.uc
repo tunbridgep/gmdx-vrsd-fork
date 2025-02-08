@@ -6,7 +6,7 @@ class PerkMarksman extends Perk;
 defaultproperties
 {
     PerkName="MARKSMAN"
-    PerkDescription="|nAn agent aims down a rifle's scope 30% faster, handles rifle recoil efficiently, and sway when looking through a rifle's scope is reduced marginally.|n|nRequires: Rifles: MASTER"
+    PerkDescription="An agent aims down a rifle's scope 30% faster, handles rifle recoil efficiently, and sway when looking through a rifle's scope is reduced marginally."
     PerkSkill=Class'DeusEx.SkillWeaponRifle'
     PerkCost=300
     PerkLevelRequirement=3

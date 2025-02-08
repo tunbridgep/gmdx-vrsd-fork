@@ -43,6 +43,11 @@ var PersonaButtonBarWindow winActionButtonsSecondary;
 var PersonaActionButtonWindow buttonUpgrade[10];
 var Window winSkillIconP[10];
 
+//Perk Stuff
+var localized String GeneralPerksTitleText;
+var localized String PerkRequiredSkill;
+var localized String PerkRequiredPoints;
+
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -81,21 +86,21 @@ function CreateControls()
 // CreatePerkOverview()
 // ----------------------------------------------------------------------
 
-function CreatePerkOverview(Perk Perk, int index)	//Trash: Creates the description, upgrade button, etc for each perk
+function CreatePerkOverview(Skill skill, Perk Perk, int index)	//Trash: Creates the description, upgrade button, etc for each perk
 {
-	local Perk PerkInManager;
 	local DeusExPlayer player;
+    local string perkDescModified;
 
 	player = DeusExPlayer(GetPlayerPawn());
-	PerkInManager = player.PerkManager.PerkList[player.PerkManager.GetPerkIndex(Perk)];
-	PassedSkillIcon = PerkInManager.GetPerkIcon();
+
+	PassedSkillIcon = Perk.GetPerkIcon();
 
     winActionButtons1[index] = PersonaButtonBarWindow(winTile.NewChild(Class'PersonaButtonBarWindow'));
     winActionButtons1[index].SetWidth(0);
     winActionButtons1[index].SetHeight(26);
     winActionButtons1[index].FillAllSpace(false);
     WinPerkTitle[index] = TextWindow(winActionButtons1[index].NewChild(class'TextWindow'));
-	WinPerkTitle[index].SetText(Perk.PerkName);
+	WinPerkTitle[index].SetText(Caps(Perk.PerkName));
 	WinPerkTitle[index].SetFont(Font'FontMenuSmall');
     WinPerkTitle[index].SetTextColor(colText);
     WinPerkTitle[index].SetTextMargins(6,4);
@@ -104,7 +109,10 @@ function CreatePerkOverview(Perk Perk, int index)	//Trash: Creates the descripti
 	winSkillIconP[index].SetSize(24, 24);
 	winSkillIconP[index].SetBackgroundStyle(DSTY_Normal);
 	winSkillIconP[index].SetBackground(PassedSkillIcon); // CHECK THIS LATER, TRASH!
-    SetText(Perk.PerkDescription);
+    SetText(sprintf(Perk.PerkDescription,int(Perk.PerkValue * 100)));
+    SetText("");
+    if (skill != None)
+        SetText(sprintf(PerkRequiredSkill,skill.SkillName,skill.GetLevelString(Perk.PerkLevelRequirement)));
     SetText(RequiredPoints $ Perk.PerkCost);
 	winActionButtons[index] = PersonaButtonBarWindow(winTile.NewChild(Class'PersonaButtonBarWindow'));
 	winActionButtons[index].SetWidth(32); //149
@@ -136,6 +144,7 @@ function CreatePerkButtons(Skill Skill)
 {
     local int index;
 	local DeusExPlayer player;
+    local Perk currPerk;
 
     AddLine();
     SetText(PerkTitle);
@@ -144,13 +153,15 @@ function CreatePerkButtons(Skill Skill)
 	player = DeusExPlayer(GetPlayerPawn());
 
     numPerkButtons = 0;
+    currPerk = player.PerkManager.GetPerkForSkill(Skill.class,numPerkButtons);
+    while (currPerk != None)
+    {
+        CreatePerkOverview(skill, currPerk, numPerkButtons);
+        numPerkButtons++;
+        currPerk = player.PerkManager.GetPerkForSkill(Skill.class,numPerkButtons);
+    }
 
-	for (index = 0; index < player.PerkManager.numPerks; index++)
-	{
-		if (player.PerkManager.PerkList[index].PerkSkill == Skill.class)
-			CreatePerkOverview(player.PerkManager.PerkList[index], numPerkButtons++);
-	}
-
+    /*
     SetText(ob $ ": " $ player.PerkManager.GetNumObtainedPerks());
     AddLine();
 	
@@ -158,6 +169,30 @@ function CreatePerkButtons(Skill Skill)
     {
 		if (player.PerkManager.PerkList[index].bPerkObtained == true)
 			SetText(player.PerkManager.PerkList[index].PerkName);
+    }
+    */
+}
+
+//SARGE: Create general perk buttons
+function CreateGeneralPerkButtons()
+{
+	local DeusExPlayer player;
+    local Perk currPerk;
+
+    Clear();
+    SetTitle(GeneralPerksTitleText);
+    AddLine();
+    SetText(PerkTitle);
+    AddLine();
+	
+    player = DeusExPlayer(GetPlayerPawn());
+
+    numPerkButtons = 0;
+    currPerk = player.PerkManager.GetGeneralPerk(numPerkButtons);
+    while (currPerk != None)
+    {
+        CreatePerkOverview(None, currPerk, numPerkButtons);
+        currPerk = player.PerkManager.GetGeneralPerk(numPerkButtons++);
     }
 }
 
@@ -440,4 +475,6 @@ defaultproperties
      msgConf="Assign"
      msgAssigned="Secondary Item Assigned"
      msgUnassigned="Secondary Item Unassigned"
+     GeneralPerksTitleText="Perks - General"
+     PerkRequiredSkill="Requires: %s: %s"
 }

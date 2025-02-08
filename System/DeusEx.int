@@ -3676,4 +3676,4 @@ GMDXText22="UNATCO MedDirectorate|nNano-Augmentation Guidelines|n|n...nano-augme
 GMDXText23=We've a request to send these up to level 1. Be careful with them as they are very expensive. Dropping one will likely be grounds for instant dismissal.
 
 [PerkLocksport]
-PerkDescription="|nAn agent can pick any mechanical lock with a single lockpick. Additionally, any locks that are successfully picked will be added to your keyring.|n|nRequires: Lockpicking: MASTER"
+PerkDescription="An agent can pick any mechanical lock with a single lockpick. Additionally, any locks that are successfully picked will be added to your keyring."

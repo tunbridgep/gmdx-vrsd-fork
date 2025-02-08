@@ -12,7 +12,8 @@ function Timer()
 
 function Frob(actor Frobber, Inventory frobWith)
 {
-local GMDXImpactSpark AST;
+    local GMDXImpactSpark AST;
+    local DeusExPlayer player;
 
 	Super.Frob(Frobber, frobWith);
 
@@ -35,15 +36,20 @@ local GMDXImpactSpark AST;
 		  }
 	if (Frobber.IsA('Pawn'))
 	    Pawn(Frobber).TakeDamage(4, Pawn(Frobber), vect(0,0,0), vect(0,0,0), 'Shocked');
-	/*if (Frobber.IsA('DeusExPlayer'))
+	
+    player = DeusExPlayer(frobber);
+    if (player != None && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkSocketJockey').bPerkObtained)
 	{
-        DeusExPlayer(Frobber).ClientFlash(0.1,vect(0,0,96));
-        if (DeusExPlayer(Frobber).Energy < 100.000000)
+        if (player.Energy < player.GetMaxEnergy())
         {
-            DeusExPlayer(Frobber).Energy += 2;
-            DeusExPlayer(Frobber).ClientMessage("Recharged 2 Bioelectrical Energy Units");
+            player.ClientFlash(0.1,vect(0,0,96));
+            player.ChargePlayer(15,true);
+            bInvincible=False;
+            TakeDamage(9999,None,Location,vect(0,0,0),'Burned');
+            //Frag(fragType,vect(0,0,0),0.25,6);
+            //Destroy();
         }
-    }*/
+    }
 }
 
 defaultproperties

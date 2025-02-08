@@ -18,7 +18,30 @@ function bool CanAssignSecondary(DeusExPlayer player)
 //Check hunger before letting us use them
 function bool RestrictedUse(DeusExPlayer player)
 {
-    return player != none && player.fullUp >= 100 && (player.bHardCoreMode || player.bRestrictedMetabolism);
+    local int maxFullness;
+    local Perk glutton;
+
+    maxFullness = 100;
+
+    if (player != None)
+        glutton = player.PerkManager.GetPerkWithClass(class'DeusEx.PerkGlutton');
+
+    if (player != None && glutton != None && glutton.bPerkObtained)
+        maxFullness *= glutton.PerkValue;
+
+    return player != none && player.fullUp >= maxFullness && (player.bHardCoreMode || player.bRestrictedMetabolism);
+}
+
+//Set max copies based on the Glutton perk
+function SetMax()
+{
+    local DeusExPlayer player;
+    player = DeusExPlayer(Owner);
+
+	if (player != none && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkGlutton').bPerkObtained == true)
+		MaxCopies = default.MaxCopies * 2;
+    else
+        super.SetMax();
 }
 
 //Add Fullnes to description

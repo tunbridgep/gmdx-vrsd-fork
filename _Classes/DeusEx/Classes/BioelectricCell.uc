@@ -34,19 +34,8 @@ function SetMax()
 
 	if (player != none && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkCombatMedicsBag').bPerkObtained == true)
 		MaxCopies = default.MaxCopies + 5;
-}
-
-function bool DoLeftFrob(DeusExPlayer frobber)
-{
-    SetMax();
-    return super.DoLeftFrob(frobber);
-}
-
-//SARGE: Moved the Bioenergy perk-based max amount bonus here, was in DeusExPlayer
-function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
-{
-    SetMax();
-    return super.DoRightFrob(frobber,objectInHand);
+    else
+        super.SetMax();
 }
 
 function OnActivate(DeusExPlayer player)

@@ -21,7 +21,7 @@ function OnPerkPurchase()
 defaultproperties
 {
     PerkName="COMBAT MEDIC'S BAG"
-    PerkDescription="|nAn agent can carry five additional medkits and biocells each and swiftly apply them as secondary items.|n|nRequires: Medicine: MASTER"
+    PerkDescription="An agent can carry five additional medkits and biocells each and swiftly apply them as secondary items."
     PerkSkill=Class'DeusEx.SkillMedicine'
     PerkCost=250
     PerkLevelRequirement=3

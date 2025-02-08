@@ -6,7 +6,7 @@ class PerkSecurityLoophole extends Perk;
 defaultproperties
 {
     PerkName="SECURITY LOOPHOLE"
-    PerkDescription="|nAn agent easily identifies the blindspots of modern security systems, evading camera detection for a longer period of time (+50%) and tucking the legs away from laser tripwires.|n|nRequires: Stealth: ADVANCED"
+    PerkDescription="An agent easily identifies the blindspots of modern security systems, evading camera detection for a longer period of time (+50%) and tucking the legs away from laser tripwires."
     PerkSkill=Class'DeusEx.SkillStealth'
     PerkCost=200
     PerkLevelRequirement=2

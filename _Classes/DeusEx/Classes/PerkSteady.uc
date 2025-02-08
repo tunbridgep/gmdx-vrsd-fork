@@ -6,7 +6,7 @@ class PerkSteady extends Perk;
 defaultproperties
 {
     PerkName="STEADY"
-    PerkDescription="|nAn agent's standing accuracy bonus with rifles is accelerated by 50%.|n|nRequires: Rifles: TRAINED"
+    PerkDescription="An agent's standing accuracy bonus with rifles is accelerated by 50%."
     PerkSkill=Class'DeusEx.SkillWeaponRifle'
     PerkCost=200
     PerkLevelRequirement=1

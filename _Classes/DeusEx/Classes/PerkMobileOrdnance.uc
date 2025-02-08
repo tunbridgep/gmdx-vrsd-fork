@@ -28,7 +28,7 @@ function OnPerkPurchase()
 defaultproperties
 {
     PerkName="MOBILE ORDNANCE"
-    PerkDescription="|nAn agent is able to modify the chassis of flame weapons, stripping away unnecessary elements. Flamethrowers are reduced in size by 3 inventory spaces.|n|nRequires: Heavy Weapons: MASTER"
+    PerkDescription="An agent is able to modify the chassis of flame weapons, stripping away unnecessary elements. Flamethrowers are reduced in size by 3 inventory spaces."
     PerkSkill=Class'DeusEx.SkillWeaponHeavy'
     PerkCost=250
     PerkLevelRequirement=3
