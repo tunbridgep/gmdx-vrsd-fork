@@ -178,6 +178,7 @@ Sarge's Changes since Beta 2.2:
         - Changed some textures to different ones to account for their HDTP variants better, such as the glowing areas on Security Cameras, which now have a proper blue variant.
         - Some HDTP features that were removed from GMDX (such as alternate inventory icons) have been re-added.
         - Vanilla Soda Cans are now sealed up, to match their HDTP counterparts.
+        - Added an alternative version of the vanilla Security Computer texture, with a black screen. The blue screen on the regular texture "bleeds" through the model and is visible at long range. The blue screen will be shown when using the computer.
     - All Junk Items (soda cans, cigarettes, etc) will now have randomised skins, except for Soy Food which uses special Hong-Kong and non-Hong-Kong specific variants.
     - Added 2 new Cigarettes skins (Holy Smokes and Super 45s) based on in-game billboards (HDTP and non-HDTP variants included).
     - Added an "Alternate Start" option, which skips the first part of the game and starts at the MJ12 Lab. You will start with nothing, so this is extra hardcore.
