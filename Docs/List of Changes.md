@@ -20,6 +20,8 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX bug where Ford Schick would not give you an upgrade canister when telling you he swiped one, if ConFix isn't installed. Fixed by adding it to his desk.
     - Fixed a number of typos in various places.
     - Fixed Vanilla bug where sound volume would reset upon new game.
+    - Fixed GMDX bug where tiredness effects from low stamina would reset prematurely.
+    - Fixed vanilla "bug" where diving into or leaving water would give free stamina.
     - Fixed GMDX quickloading not always working correctly, and other save issues including incorrect save-game ordering in the save/load screens.
     - Fixed many other GMDX and Vanilla bugs.
 - Quality of Life Improvements:
@@ -39,6 +41,7 @@ Sarge's Changes since Beta 2.2:
     - The HUD now shows stamina and bioenergy percentages below the bars if enabled.
     - Added alternate weapon offsets to hide many of the visible seams or missing parts of weapon viewmodels.
     - Weapons that don't use ammo (such as melee weapons) no longer show the Ammo element on the HUD.
+    - Modified Weapons will appear with a "+" icon on the belt and in the inventory screen to differentiate them from unmodded ones.
     - Augmentation Wheel improvements
         - While in the augmentation screen, use middle-click on an active augmentation to add or remove it from the augmentation wheel.
         - By default all augmentations will appear on the wheel.
