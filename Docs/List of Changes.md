@@ -163,6 +163,10 @@ Sarge's Changes since Beta 2.2:
         - Heavy Perks:
             - Heavily Tweaked (NEW ADVANCED): An agent is able to attach scopes and laser sights to the GEP gun, enabling laser guidance and fly-by-wire capabilities.
             - Mobile Ordnance (NEW MASTER): An agent is able to modify the chassis of flame weapons, stripping away unnecessary elements. Flamethrowers are reduced in size by 3 inventory spaces.
+        - Added "General" perks, which require no skills to unlock and are available in a new panel inside the Skills/Perks window.
+            - Glutton: Allows holding double stacks of all food items, and can eat up to 125% hunger.
+            - Socket Jockey: Using a wall-outlet will give you 5 bioenergy in addition to zapping you.
+            - Firefighter: Fire Extinguishers will have longer range, last for longer, and will explode in a huge cloud when detonated.
     - Addiction System Rework
         - Alcohol no longer heals for 5 points. Instead, it temporarily gives you 5 torso HP (along with it's usual 5 extra torso Max-HP) while in effect, which is removed afterwards. This health removal cannot kill the player.
         - Alcohol no longer adds to fullness when the addiction system is enabled

@@ -570,7 +570,13 @@ simulated function BreakItSmashIt(class<fragment> FragType, float size)
             AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 640);
 			//SARGE: Increase radius and damage based on Firefighter perk
 			if (player != None && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkFirefighter').bPerkObtained)
-				HurtRadius(185,640,'KnockedOut',2000,Location);
+            {
+                //Do in a few bursts so that it doesn't affect movers
+				HurtRadius(40,420,'KnockedOut',2000,Location);
+				HurtRadius(40,420,'KnockedOut',2000,Location);
+				HurtRadius(40,420,'KnockedOut',2000,Location);
+				HurtRadius(40,420,'KnockedOut',2000,Location);
+            }
 			else
 				HurtRadius(15,320,'KnockedOut',2000,Location);
             hgl = spawn(class'HalonGasLarge');
