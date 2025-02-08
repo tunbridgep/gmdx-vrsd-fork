@@ -86,6 +86,18 @@ function CreateControls()
 // CreatePerkOverview()
 // ----------------------------------------------------------------------
 
+//SARGE: Using sprintf shows floats as 1.00000000000 etc,
+//So we need to remove some of the digits.
+//This is absolutely awful.
+function string TextDisplayHack(float value, int digits)
+{
+    //if it's a whole number, just return the number
+    if (int(value) == value)
+        return string(int(value));
+
+    return Left(value, digits);
+}
+
 function CreatePerkOverview(Skill skill, Perk Perk, int index)	//Trash: Creates the description, upgrade button, etc for each perk
 {
 	local DeusExPlayer player;
@@ -109,7 +121,12 @@ function CreatePerkOverview(Skill skill, Perk Perk, int index)	//Trash: Creates 
 	winSkillIconP[index].SetSize(24, 24);
 	winSkillIconP[index].SetBackgroundStyle(DSTY_Normal);
 	winSkillIconP[index].SetBackground(PassedSkillIcon); // CHECK THIS LATER, TRASH!
-    SetText(sprintf(Perk.PerkDescription,int(Perk.PerkValue * 100)));
+    if (Perk.PerkValueDisplay == Delta_Percentage)
+        SetText(sprintf(Perk.PerkDescription,int(Perk.PerkValue * 100 - 100)));
+    else if (Perk.PerkValueDisplay == Percentage)
+        SetText(sprintf(Perk.PerkDescription,int(Perk.PerkValue * 100)));
+    else
+        SetText(sprintf(Perk.PerkDescription,TextDisplayHack(Perk.PerkValue,3)));
     SetText("");
     if (skill != None)
         SetText(sprintf(PerkRequiredSkill,skill.SkillName,skill.GetLevelString(Perk.PerkLevelRequirement)));
@@ -192,7 +209,8 @@ function CreateGeneralPerkButtons()
     while (currPerk != None)
     {
         CreatePerkOverview(None, currPerk, numPerkButtons);
-        currPerk = player.PerkManager.GetGeneralPerk(numPerkButtons++);
+        numPerkButtons++;
+        currPerk = player.PerkManager.GetGeneralPerk(numPerkButtons);
     }
 }
 
@@ -227,7 +245,7 @@ function bool ButtonActivated( Window buttonPressed )
 		if (buttonPressed == buttonUpgrade[index])
 		{
             boughtPerk = true;
-			buttonUpgrade[index].ButtonPerk.PurchasePerk();
+			player.PerkManager.PurchasePerk(buttonUpgrade[index].ButtonPerk.Class);
 			buttonUpgrade[index].SetSensitivity(False);
             buttonUpgrade[index].SetButtonText(PurchasedButtonLabel);
 			SetText(buttonUpgrade[index].ButtonPerk.PerkName);

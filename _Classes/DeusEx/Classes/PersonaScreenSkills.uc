@@ -306,10 +306,12 @@ function SelectSkillButton(PersonaSkillButtonWindow buttonPressed)
 
         if(displayType == Info)                                                         //RSD: Remembers if you were navigating Levels or Perks Menu
         	selectedSkill.UpdateInfo(winInfo);
-       	else if (displayType == Perks)
+       	else if (displayType == Perks || displayType == PerksGeneral)
+        {
+            displayType = Perks;
        		InvokePerksWindow();
-       	else
-            InvokeGeneralPerksWindow();
+            btnPerks.SetButtonText(PerksButtonLabel2);
+        }
 
 		selectedSkillButton.SelectButton(True);
 

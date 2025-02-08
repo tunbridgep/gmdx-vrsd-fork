@@ -10,20 +10,21 @@ function OnPerkPurchase()
 
     foreach PerkOwner.AllActors(class'Medkit',med)
     {
-        med.MaxCopies = 20;
+        med.MaxCopies = med.default.MaxCopies + PerkValue;
     }
     foreach PerkOwner.AllActors(class'BioelectricCell',cell)
     {
-        cell.MaxCopies = 25;
+        cell.MaxCopies = cell.default.MaxCopies + PerkValue;
     }
 }
 
 defaultproperties
 {
     PerkName="COMBAT MEDIC'S BAG"
-    PerkDescription="An agent can carry five additional medkits and biocells each and swiftly apply them as secondary items."
+    PerkDescription="An agent can carry %d additional medkits and biocells each and swiftly apply them as secondary items."
     PerkSkill=Class'DeusEx.SkillMedicine'
     PerkCost=250
     PerkLevelRequirement=3
-    PerkValue=1
+    PerkValueDisplay=Standard
+    PerkValue=5
 }

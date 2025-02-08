@@ -5,6 +5,8 @@ class WallSocket extends DeusExDecoration;
 
 var bool bUsing;
 
+var int breakUsages;                                        //Plugs can be used 3 times
+
 function Timer()
 {
 	bUsing = False;
@@ -14,6 +16,7 @@ function Frob(actor Frobber, Inventory frobWith)
 {
     local GMDXImpactSpark AST;
     local DeusExPlayer player;
+    local Perk socketJockey;
 
 	Super.Frob(Frobber, frobWith);
 
@@ -35,17 +38,20 @@ function Frob(actor Frobber, Inventory frobWith)
           AST.SoundPitch=80;
 		  }
 	if (Frobber.IsA('Pawn'))
-	    Pawn(Frobber).TakeDamage(4, Pawn(Frobber), vect(0,0,0), vect(0,0,0), 'Shocked');
+	    Pawn(Frobber).TakeDamage(5, Pawn(Frobber), vect(0,0,0), vect(0,0,0), 'Shocked');
 	
     player = DeusExPlayer(frobber);
-    if (player != None && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkSocketJockey').bPerkObtained)
+    if (player != None)
 	{
-        if (player.Energy < player.GetMaxEnergy())
+        socketJockey = player.PerkManager.GetPerkWithClass(class'DeusEx.PerkSocketJockey');
+        if (player.Energy < player.GetMaxEnergy() && socketJockey != None && socketJockey.bPerkObtained)
         {
             player.ClientFlash(0.1,vect(0,0,96));
-            player.ChargePlayer(15,true);
+            player.ChargePlayer(socketJockey.PerkValue,true);
             bInvincible=False;
-            TakeDamage(9999,None,Location,vect(0,0,0),'Burned');
+            breakUsages--;
+            if (breakUsages == 0)
+                TakeDamage(9999,None,Location,vect(0,0,0),'Burned');
             //Frag(fragType,vect(0,0,0),0.25,6);
             //Destroy();
         }
@@ -69,4 +75,5 @@ defaultproperties
      CollisionHeight=5.500000
      Mass=10.000000
      Buoyancy=30.000000
+     breakUsages=3
 }

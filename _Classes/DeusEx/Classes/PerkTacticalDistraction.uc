@@ -10,5 +10,6 @@ defaultproperties
     PerkSkill=Class'DeusEx.SkillStealth'
     PerkCost=250
     PerkLevelRequirement=3
+    PerkValueDisplay=Delta_Percentage
     PerkValue=1.5
 }

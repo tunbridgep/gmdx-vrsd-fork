@@ -105,10 +105,13 @@ function int GetHealAmount(DeusExPlayer player)
 
 function int GetBioenergyAmount(DeusExPlayer player)
 {
+	local Perk perkBiogenic;
+
+	perkBiogenic = player.PerkManager.GetPerkWithClass(class'DeusEx.PerkBiogenic');
+
     //If we're told to use biogenic, add +5 bioenergy
-    //TODO: Get +5 from the Biogenic perk value, rather than hardcoding it
-    if (bBiogenic && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkBiogenic').bPerkObtained)
-        return bioenergyAmount + 5;
+    if (bBiogenic && perkBiogenic.bPerkObtained)
+        return bioenergyAmount + perkBiogenic.PerkValue;
     else
         return bioenergyAmount;
 }

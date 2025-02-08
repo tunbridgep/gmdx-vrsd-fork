@@ -540,6 +540,7 @@ function Tick(float deltaTime)
                //skillz = curplayer.SkillSystem.GetSkillLevel(class'SkillStealth'); //RSD: Removed
                if (curplayer.SkillSystem != none && curplayer.PerkManager.GetPerkWithClass(class'DeusEx.PerkSecurityLoophole').bPerkObtained == true)//skillz >= 2) //RSD: Uses Security Loophole perk now instead of Advanced Stealth
                {
+			      //SARGE: TODO: Actually make this use the perk value!
                   triggerDelay = 4.125000;                                      //RSD: Was 4.200000, misreported as +45% increase but actually was +52.73%. Now 50%!
                   bSkillApplied = True;
                }

@@ -30,10 +30,14 @@ function bool RestrictedUse(DeusExPlayer player)
 function SetMax()
 {
     local DeusExPlayer player;
+	local Perk perkMedicsBag;
+	
     player = DeusExPlayer(Owner);
+	if (player != none)
+		perkMedicsBag = player.PerkManager.GetPerkWithClass(class'DeusEx.PerkCombatMedicsBag');
 
-	if (player != none && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkCombatMedicsBag').bPerkObtained == true)
-		MaxCopies = default.MaxCopies + 5;
+	if (perkMedicsBag != None && perkMedicsBag.bPerkObtained == true)
+		MaxCopies = default.MaxCopies + perkMedicsBag.PerkValue;
     else
         super.SetMax();
 }

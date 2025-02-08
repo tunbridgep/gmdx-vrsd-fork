@@ -7,10 +7,12 @@
 
 class PerkSystem extends object;
 
-var private travel Perk PerkList[50];			// Trash: Hopefully with this system, you can make this 500 and it wouldn't matter much. You still need to manually set how many perks are created here though...
-var private travel int numPerks;				// Trash: UnrealScript doesn't support lists, so this is essentially the number of perks in the game
-var private travel DeusExPlayer PlayerAttached;	// Trash: The player this class is attached to
+var private Perk PerkList[50];			// Trash: Hopefully with this system, you can make this 500 and it wouldn't matter much. You still need to manually set how many perks are created here though...
+var private int numPerks;				// Trash: UnrealScript doesn't support lists, so this is essentially the number of perks in the game
+var private DeusExPlayer PlayerAttached;	// Trash: The player this class is attached to
 
+var private travel class<Perk> obtainedPerks[50]; //SARGE: Now we store the owned perks in this list, rather than in the perks themselves, so that we can regenerate the perk list on load.
+var private travel int numObtained;
 
 // ----------------------------------------------------------------------
 // InitializePerks()
@@ -18,10 +20,13 @@ var private travel DeusExPlayer PlayerAttached;	// Trash: The player this class 
 
 function InitializePerks(DeusExPlayer newPlayer)	// Trash: Add every perk in the game to the PerkList[] array and assign the player
 {
+    local int i;
+
 	PlayerAttached = newPlayer;
 
-	// Trash: The system automatically sorts every perk so order doesn't matter
-	// Trash: HOWEVER I'd still highly suggest placing perks under the appropriate comments
+    for (i = 0;i < 50;i++)
+        PerkList[i] = None;
+    numPerks = 0;
 
 	// Rifle Perks
 	AddPerk(Class'DeusEx.PerkSteady');
@@ -99,12 +104,49 @@ function InitializePerks(DeusExPlayer newPlayer)	// Trash: Add every perk in the
 function AddPerk(class<Perk> perk)
 {
 	local Perk perkInstance;
+    local int i;
 
 	perkInstance = new(self)Perk;
 
 	PerkList[numPerks] = perkInstance;
 	PerkList[numPerks].PerkOwner = PlayerAttached;
+
+    //If it's in the obtained list, set it to obtained
+    for (i = 0;i < numObtained;i++)
+        if (obtainedPerks[i] == Perk)
+            perkInstance.bPerkObtained = true;
+
     numPerks++;
+}
+
+// ----------------------------------------------------------------------
+// PurchasePerk()
+// ----------------------------------------------------------------------
+
+function PurchasePerk(class<Perk> perk)  // Trash: Purchase the perk if possible
+{
+    local Perk perkInstance;
+    local int i;
+
+    perkInstance = GetPerkWithClass(perk);
+
+    if (perkInstance == None)
+        return;
+
+    if (perkInstance.IsPurchasable())
+    {
+        PlayerAttached.SkillPointsAvail -= perkInstance.PerkCost;
+        PlayerAttached.PlaySound(Sound'GMDXSFX.Generic.codelearned',SLOT_None,,,,0.8);
+		perkInstance.bPerkObtained = true;
+        perkInstance.OnPerkPurchase();
+
+        //If it's not in the obtained list, add it
+        for (i = 0;i < numObtained;i++)
+            if (obtainedPerks[i] == perk)
+                return;
+
+        obtainedPerks[numObtained++] = perk;
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -113,14 +155,7 @@ function AddPerk(class<Perk> perk)
 
 function int GetNumObtainedPerks()
 {
-	local int index, num;
-
-	for (index = 0; index < numPerks; index++)
-	{
-        if (PerkList[index].bPerkObtained)
-            num++;
-	}
-    return num;
+    return numObtained;
 }
 
 // ----------------------------------------------------------------------
@@ -131,9 +166,9 @@ function ResetPerks()  // Trash: Reset every perk
 {
 	local int index;
 
-	for (index = 0; index < numPerks; index++)
+	for (index = 0; index < numObtained; index++)
 	{
-		PerkList[index].bPerkObtained = false;
+		obtainedPerks[index] = None;
 	}
 }
 
