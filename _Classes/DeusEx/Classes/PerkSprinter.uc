@@ -10,6 +10,7 @@ defaultproperties
     PerkSkill=Class'DeusEx.SkillSwimming'
     PerkCost=350
     PerkLevelRequirement=2
+    PerkValueDisplay=Delta_Percentage
     PerkValue=1.10
 }
 

@@ -365,7 +365,7 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
 		if (perkPiercing.bPerkObtained && DeusExPlayer(Enemy).inHand != none)
 			if (DeusExPlayer(Enemy).inHand.IsA('WeaponCombatKnife') || DeusExPlayer(Enemy).inHand.IsA('WeaponShuriken') ||
 			DeusExPlayer(Enemy).inHand.IsA('WeaponCrowbar') || DeusExPlayer(Enemy).inHand.IsA('WeaponNanoSword'))
-				actualDamage*=perkPiercing;
+				actualDamage*=perkPiercing.PerkValue;
 	}
 
 	if (Health <= 0)

@@ -10,6 +10,6 @@ defaultproperties
     PerkSkill=Class'DeusEx.SkillWeaponRifle'
     PerkCost=200
     PerkLevelRequirement=1
-    PerkValueDisplay=Delta_Percentage
+    PerkValueDisplay=Percentage
     PerkValue=0.25
 }
