@@ -23,6 +23,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX bug where tiredness effects from low stamina would reset prematurely.
     - Fixed vanilla "bug" where diving into or leaving water would give free stamina.
     - Fixed GMDX quickloading not always working correctly, and other save issues including incorrect save-game ordering in the save/load screens.
+    - Fixed GMDX "Create Custom Theme" menu being able to corrupt standard themes. Now the player is forced into the Custom HUD/Menu themes upon loading the custom theme creator.
     - Fixed many other GMDX and Vanilla bugs.
 - Quality of Life Improvements:
     - While having a grenade selected, the crosshair will turn blue when you're able to place it on a wall.
