@@ -108,6 +108,10 @@ Sarge's Changes since Beta 2.2:
         - When Smart Keyring is enabled, the keyring will no longer occupy belt slot 0, allowing it to be used for regular items.
         - The keyring can be selected using Left-Click Frob on doors.
 - Gameplay Changes:
+    - Destroyable Movers that aren't set to highlighting will now have 1 HP.
+        - This removes ambiguity about whether or not a surface is unbreakable, or just needs more hits to destroy.
+        - This only affects 1-2 movers in the entire game.
+        - You still need to meet the damage threshold requirements.
     - Putting a scope or a laser sight on the GEP gun now requires the Heavily Tweaked perk (ADVANCED heavy weapons, 100 skill points). The scope and laser sight still provide rocket guidance capabilities.
     - Added a new "Weapon Requirements Matter" Playthrough Modifier. When enabled, most weapons will require a minimum skill investment in order to be used.
     - Reverted GMDX change limiting Assault Rifles, Assault Shotguns and Sawed Off's to 4 damage mods. Now they can have 5 just like everything else.
