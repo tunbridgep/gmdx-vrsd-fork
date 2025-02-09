@@ -246,6 +246,11 @@ var travel BarkManager barkManager;
 // and HUD windows.
 
 var travel ColorThemeManager ThemeManager;
+//SARGE: DO NOT USE THESE!!!
+//They aren't removed because the game expects the player to be structured in a certain way
+//(See the warning below, scroll down a bit to find it).
+//But we don't want to use these because they can fuck regular Deus Ex menus if we uninstall GMDX.
+//So we're going to use equivalents
 var globalconfig String MenuThemeName;
 var globalconfig String HUDThemeName;
 
@@ -653,6 +658,10 @@ var globalconfig bool bFullAccuracyCrosshair;                                   
 var globalconfig bool bAlwaysShowBloom;                                         //SARGE: Always show weapon bloom
 
 var globalconfig bool bShowEnergyBarPercentages;                                //SARGE: If true, show the oxygen and bioenergy percentages below the bars.
+
+//Colour Theme Manager
+var globalconfig String MenuThemeNameGMDX;
+var globalconfig String HUDThemeNameGMDX;
 
 //////////END GMDX
 
@@ -1200,8 +1209,8 @@ simulated function PostNetBeginPlay()
 		ThemeManager.SetOwner(self);
 		ThemeManager.SetCurrentHUDColorTheme(ThemeManager.GetFirstTheme(1));
 		ThemeManager.SetCurrentMenuColorTheme(ThemeManager.GetFirstTheme(0));
-		ThemeManager.SetMenuThemeByName(MenuThemeName);
-		ThemeManager.SetHUDThemeByName(HUDThemeName);
+		ThemeManager.SetMenuThemeByName(MenuThemeNameGMDX);
+		ThemeManager.SetHUDThemeByName(HUDThemeNameGMDX);
 		if (DeusExRootWindow(rootWindow) != None)
 		   DeusExRootWindow(rootWindow).ChangeStyle();
 	}
@@ -1344,8 +1353,8 @@ function PostPostBeginPlay()
 
 	// Restore colors that the user selected (as opposed to those
 	// stored in the savegame)
-	ThemeManager.SetMenuThemeByName(MenuThemeName);
-	ThemeManager.SetHUDThemeByName(HUDThemeName);
+	ThemeManager.SetMenuThemeByName(MenuThemeNameGMDX);
+	ThemeManager.SetHUDThemeByName(HUDThemeNameGMDX);
 
 
 
@@ -1472,8 +1481,8 @@ event TravelPostAccept()
 	// Restore colors
 	if (ThemeManager != None)
 	{
-		ThemeManager.SetMenuThemeByName(MenuThemeName);
-		ThemeManager.SetHUDThemeByName(HUDThemeName);
+		ThemeManager.SetMenuThemeByName(MenuThemeNameGMDX);
+		ThemeManager.SetHUDThemeByName(HUDThemeNameGMDX);
 	}
 
 	// Make sure any charged pickups that were active
@@ -17541,4 +17550,6 @@ defaultproperties
      iAllowCombatMusic=1
      bFullAccuracyCrosshair=true;
      bShowEnergyBarPercentages=true;
+	 MenuThemeNameGMDX="Default"
+     HUDThemeNameGMDX="Default"
 }
