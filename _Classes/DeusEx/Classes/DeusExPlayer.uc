@@ -7580,7 +7580,7 @@ exec function ParseLeftClick()
     }
 
     //Special cases aside, now do the left hand frob behaviour
-    else if (FrobTarget != none && !bInHandTransition && (inHand == None || !inHand.IsA('POVcorpse')) && CarriedDecoration == None)
+    else if (FrobTarget != none && IsReallyFrobbable(FrobTarget,true) && !bInHandTransition && (inHand == None || !inHand.IsA('POVcorpse')) && CarriedDecoration == None)
 	{
         DoLeftFrob(FrobTarget);
 	}
@@ -7655,10 +7655,12 @@ function bool SelectInventoryItem(Name type)
 //Returns whether a given frobbable can actually be interacted with
 //So that we can skip the ones that don't highlight or can't really be used,
 //preventing them from blocking holstering with right click
-function bool IsReallyFrobbable(Actor target)
+function bool IsReallyFrobbable(Actor target, optional bool left)
 {
     if (target.isA('DeusExDecoration') && !DeusExDecoration(target).bHighlight)
         return false;
+    if (target.isA('DeusExMover') && left)
+        return DeusExMover(target).bBreakable || DeusExMover(target).bFrobbable;
     if (target.isA('DeusExMover'))
         return DeusExMover(target).bHighlight && DeusExMover(target).bFrobbable;
     return true;
