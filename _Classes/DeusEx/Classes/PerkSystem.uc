@@ -11,7 +11,7 @@ var private Perk PerkList[50];			// Trash: Hopefully with this system, you can m
 var private int numPerks;				// Trash: UnrealScript doesn't support lists, so this is essentially the number of perks in the game
 var private DeusExPlayer PlayerAttached;	// Trash: The player this class is attached to
 
-var private travel class<Perk> obtainedPerks[50]; //SARGE: Now we store the owned perks in this list, rather than in the perks themselves, so that we can regenerate the perk list on load.
+var private travel Name obtainedPerks[50]; //SARGE: Now we store the owned perks in this list, rather than in the perks themselves, so that we can regenerate the perk list on load.
 var private travel int numObtained;
 
 // ----------------------------------------------------------------------
@@ -113,7 +113,7 @@ function AddPerk(class<Perk> perk)
 
     //If it's in the obtained list, set it to obtained
     for (i = 0;i < numObtained;i++)
-        if (obtainedPerks[i] == Perk)
+        if (obtainedPerks[i] == Perk.name)
             perkInstance.bPerkObtained = true;
 
     numPerks++;
@@ -142,10 +142,10 @@ function PurchasePerk(class<Perk> perk)  // Trash: Purchase the perk if possible
 
         //If it's not in the obtained list, add it
         for (i = 0;i < numObtained;i++)
-            if (obtainedPerks[i] == perk)
+            if (obtainedPerks[i] == perk.name)
                 return;
 
-        obtainedPerks[numObtained++] = perk;
+        obtainedPerks[numObtained++] = perk.name;
     }
 }
 
@@ -168,7 +168,7 @@ function ResetPerks()  // Trash: Reset every perk
 
 	for (index = 0; index < numObtained; index++)
 	{
-		obtainedPerks[index] = None;
+		obtainedPerks[index] = '';
 	}
 }
 
