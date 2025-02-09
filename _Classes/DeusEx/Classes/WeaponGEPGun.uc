@@ -53,16 +53,11 @@ function CheckHeavilyTweaked()
     }
 }
 
-function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
+//Check Heavily Tweaked
+function PostPostBeginPlay()
 {
     CheckHeavilyTweaked();
-    return Super.DoRightFrob(frobber,objectInHand);
-}
-
-function bool DoLeftFrob(DeusExPlayer frobber)
-{
-    CheckHeavilyTweaked();
-    return Super.DoLeftFrob(frobber);
+	Super.PostPostBeginPlay();
 }
 
 function SetMount(DeusExPlayer dxp)

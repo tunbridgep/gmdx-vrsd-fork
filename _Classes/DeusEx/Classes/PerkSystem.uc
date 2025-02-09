@@ -114,7 +114,11 @@ function AddPerk(class<Perk> perk)
     //If it's in the obtained list, set it to obtained
     for (i = 0;i < numObtained;i++)
         if (obtainedPerks[i] == Perk.name)
+        {
             perkInstance.bPerkObtained = true;
+            perkInstance.OnMapLoad();
+            perkInstance.OnMapLoadAndPurchase();
+        }
 
     numPerks++;
 }
@@ -123,7 +127,7 @@ function AddPerk(class<Perk> perk)
 // PurchasePerk()
 // ----------------------------------------------------------------------
 
-function PurchasePerk(class<Perk> perk)  // Trash: Purchase the perk if possible
+function bool PurchasePerk(class<Perk> perk, optional bool free, optional bool always)  // Trash: Purchase the perk if possible
 {
     local Perk perkInstance;
     local int i;
@@ -131,22 +135,30 @@ function PurchasePerk(class<Perk> perk)  // Trash: Purchase the perk if possible
     perkInstance = GetPerkWithClass(perk);
 
     if (perkInstance == None)
-        return;
+        return false;
 
-    if (perkInstance.IsPurchasable())
+    if (perkInstance.IsPurchasable() || free)
     {
-        PlayerAttached.SkillPointsAvail -= perkInstance.PerkCost;
+        if (!free)
+            PlayerAttached.SkillPointsAvail -= perkInstance.PerkCost;
+
+        //Don't re-add it if we already have it
+        if (!always)
+        {
+            for (i = 0;i < numObtained;i++)
+                if (obtainedPerks[i] == perk.name)
+                    return false;
+        }
+
         PlayerAttached.PlaySound(Sound'GMDXSFX.Generic.codelearned',SLOT_None,,,,0.8);
 		perkInstance.bPerkObtained = true;
         perkInstance.OnPerkPurchase();
-
-        //If it's not in the obtained list, add it
-        for (i = 0;i < numObtained;i++)
-            if (obtainedPerks[i] == perk.name)
-                return;
+        perkInstance.OnMapLoadAndPurchase();
 
         obtainedPerks[numObtained++] = perk.name;
+        return true;
     }
+    return false;
 }
 
 // ----------------------------------------------------------------------

@@ -65,6 +65,23 @@ function OnPerkPurchase()    // Trash: Does purchasing this perk do something? S
 }
 
 // ----------------------------------------------------------------------
+// OnMapLoad()
+// ----------------------------------------------------------------------
+
+function OnMapLoad()    // SARGE: Does this perk do something whenever the map is loaded?
+{
+
+}
+
+// ----------------------------------------------------------------------
+// OnMapLoadAndPurchase()
+// ----------------------------------------------------------------------
+
+function OnMapLoadAndPurchase() //SARGE: do something when we buy the perk, and again on every map load when we have it.
+{
+}
+
+// ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
 defaultproperties

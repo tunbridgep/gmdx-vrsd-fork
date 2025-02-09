@@ -32,18 +32,6 @@ function bool RestrictedUse(DeusExPlayer player)
     return player != none && player.fullUp >= maxFullness && (player.bHardCoreMode || player.bRestrictedMetabolism);
 }
 
-//Set max copies based on the Glutton perk
-function SetMax()
-{
-    local DeusExPlayer player;
-    player = DeusExPlayer(Owner);
-
-	if (player != none && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkGlutton').bPerkObtained == true)
-		MaxCopies = default.MaxCopies * 2;
-    else
-        super.SetMax();
-}
-
 //Add Fullnes to description
 function string GetDescription2(DeusExPlayer player)
 {

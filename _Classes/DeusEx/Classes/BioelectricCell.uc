@@ -26,38 +26,12 @@ function bool RestrictedUse(DeusExPlayer player)
     return (player.Energy >= player.EnergyMax);
 }
 
-//Set max copies based on the Medics Bag perk
-function SetMax()
-{
-    local DeusExPlayer player;
-	local Perk perkMedicsBag;
-	
-    player = DeusExPlayer(Owner);
-	if (player != none)
-		perkMedicsBag = player.PerkManager.GetPerkWithClass(class'DeusEx.PerkCombatMedicsBag');
-
-	if (perkMedicsBag != None && perkMedicsBag.bPerkObtained == true)
-		MaxCopies = default.MaxCopies + perkMedicsBag.PerkValue;
-    else
-        super.SetMax();
-}
-
 function OnActivate(DeusExPlayer player)
 {
     super.OnActivate(player);
     player.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
 }
 
-
-// ----------------------------------------------------------------------
-// UpdateInfo()
-// ----------------------------------------------------------------------
-
-function bool UpdateInfo(Object winObject)
-{
-    SetMax();
-    Super.UpdateInfo(winObject);
-}
 
 // ----------------------------------------------------------------------
 // TestMPBeltSpot()

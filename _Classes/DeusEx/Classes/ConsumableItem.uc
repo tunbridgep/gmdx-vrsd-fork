@@ -21,23 +21,9 @@ function bool RestrictedUse(DeusExPlayer player)
     return false;
 }
 
-//Set max copies based on the perks, etc
-function SetMax()
-{
-    MaxCopies = default.MaxCopies;
-}
-
-//SARGE: Moved the Bioenergy perk-based max amount bonus here, was in DeusExPlayer
-function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
-{
-    SetMax();
-    return super.DoRightFrob(frobber,objectInHand);
-}
-
 //Auto-use when left-clicking
 function bool DoLeftFrob(DeusExPlayer frobber)
 {
-    SetMax();
     if (frobber != None && RestrictedUse(frobber))
         frobber.ClientMessage(CannotUse);
     else

@@ -19,35 +19,6 @@ function bool RestrictedUse(DeusExPlayer player)
     return (player.Health >= player.GenerateTotalMaxHealth());
 }
 
-//Set max copies based on the Medics Bag perk
-function SetMax()
-{
-    local DeusExPlayer player;
-	local Perk perkMedicsBag;
-	
-    player = DeusExPlayer(Owner);
-	if (player != none)
-		perkMedicsBag = player.PerkManager.GetPerkWithClass(class'DeusEx.PerkCombatMedicsBag');
-
-	if (perkMedicsBag != None && perkMedicsBag.bPerkObtained == true)
-		MaxCopies = default.MaxCopies + perkMedicsBag.PerkValue;
-    else
-        super.SetMax();
-}
-
-function bool DoLeftFrob(DeusExPlayer frobber)
-{
-    SetMax();
-    return super.DoLeftFrob(frobber);
-}
-
-//SARGE: Moved the Bioenergy perk-based max amount bonus here, was in DeusExPlayer
-function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
-{
-    SetMax();
-    return super.DoRightFrob(frobber,objectInHand);
-}
-
 function OnActivate(DeusExPlayer player)
 {
     super.OnActivate(player);
@@ -74,16 +45,6 @@ function HealMe(DeusExPlayer player)
 function int GetHealAmount(DeusExPlayer player)
 {
     return player.CalculateSkillHealAmount(healAmount);
-}
-
-// ----------------------------------------------------------------------
-// UpdateInfo()
-// ----------------------------------------------------------------------
-
-function bool UpdateInfo(Object winObject)
-{
-    SetMax();
-    Super.UpdateInfo(winObject);
 }
 
 // ----------------------------------------------------------------------

@@ -318,10 +318,11 @@ function PostPostBeginPlay()
 
 // ----------------------------------------------------------------------
 // by dasraiser for GMDX, replace all ref to maxCopies with this :)
+// SARGE: Changed to default.maxCopies so that everything is always consistent
 // ----------------------------------------------------------------------
 function int RetMaxCopies()
 {
-	return maxCopies;
+	return default.maxCopies;
 }
 // ----------------------------------------------------------------------
 // HandlePickupQuery()
