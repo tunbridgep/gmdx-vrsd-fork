@@ -8,8 +8,6 @@ var float mpEnergyDrain;
 
 var float lastDroneTime;
 
-var bool bTimerEarly;                                                           //RSD: bool for if you tried to use the drone too early (need for rotation shenanigans)
-
 var int EMPDrain;                                                               //SARGE: energy used for EMP attack
 
 var bool bDestroyNow;                                                           //SARGE: If set, deactivating on zero energy will destroy the drone, rather than putting it on standby
@@ -60,7 +58,8 @@ function ToggleStandbyMode(bool standby)
 {
     if (standby)
     {
-        player.aDrone.Velocity = vect(0.,0.,0.);
+        if (player.aDrone != None)
+            player.aDrone.Velocity = vect(0.,0.,0.);
         Player.bSpyDroneSet = True;                                            //RSD: Allows the user to toggle between moving and controlling the drone
         Player.DRONESAVErotation = player.ViewRotation;
         if (!Player.RestrictInput())
@@ -98,7 +97,6 @@ Begin:
     player.bSpyDroneSet = False;
     player.SAVErotation = player.ViewRotation;                                  //RSD: Set the SAVErotation the first time we activate
     player.DRONESAVErotation = player.ViewRotation;                             //RSD: Set the DRONESAVErotation the first time we activate
-	bTimerEarly = false;                                                        //RSD
     SetTimer(0.4,False);
 }
 
@@ -133,9 +131,6 @@ function Deactivate()
         ToggleStandbyMode(false);
         return;
 	}
-
-    if (!bTimerEarly)
-        Player.ViewRotation = Player.SAVErotation;
 
     Super.Deactivate();
 

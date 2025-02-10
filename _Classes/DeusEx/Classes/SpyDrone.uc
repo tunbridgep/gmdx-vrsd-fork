@@ -7,6 +7,8 @@ var bool bCloaked;                                                              
 
 var float detectionRange;                                                       //SARGE: Range at which enemies can detect the drone
 
+var bool bEMPDeath;                                                              //SARGE: Track if we were destroyed by EMP. The death is delayed, so it needs to not reset our view afterwards.
+
 auto state Flying
 {
 	function ProcessTouch (Actor Other, Vector HitLocation)
@@ -81,6 +83,8 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector HitLocation, Vector Mo
 		Style = Default.Style;
         ScaleGlow = 1;
         LightRadius = 0;
+        bEMPDeath = true;
+        ForceDroneOff();
 	}
 
 	if ( Level.NetMode != NM_Standalone )
@@ -154,13 +158,19 @@ function BeginPlay()
 	SetTimer(0.4,false);
 }
 
-function Destroyed()
+function ForceDroneOff()
 {
 	if ( DeusExPlayer(Owner) != None )
 	{
 		DeusExPlayer(Owner).aDrone = None;
         DeusExPlayer(Owner).ForceDroneOff();                                    //RSD: Added
     }
+}
+
+function Destroyed()
+{
+    if (!bEMPDeath) //EMP Death is delayed, so we need to not reset the players view, etc.
+        ForceDroneOff();
 	Super.Destroyed();
 }
 

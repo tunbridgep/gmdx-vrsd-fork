@@ -16926,7 +16926,6 @@ function ForceDroneOff(optional bool skipDeactivation)
                 SAVErotation = ViewRotation;
                 bSpyDroneSet = false;                                                 //RSD: Ensures that the Spy Drone will ACTUALLY be turned off
             }
-            anAug.bTimerEarly = true;                                                 //RSD: Hack so the drone doesn't spin us around when it gets destroyed
             if (!skipDeactivation)
                 anAug.Deactivate();
             bSpyDroneActive = false;                                                  //RSD: Prevents being forced back into drone control at the last second
