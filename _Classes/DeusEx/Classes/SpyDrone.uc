@@ -35,7 +35,6 @@ function SetCloak()
 function Tick(float deltaTime)
 {
     local ScriptedPawn pawn;
-    local float maxRange;
 
     SetCloak();
 
@@ -53,7 +52,11 @@ function Tick(float deltaTime)
         foreach VisibleActors(class'ScriptedPawn', pawn, detectionRange)
         {
             if ((pawn.bFearProjectiles || pawn.bReactProjectiles) && pawn.bLookingForProjectiles)
+            {
                 pawn.ReactToProjectiles(self);
+                //If one person knows about it, everyone knows about it
+                AISendEvent('Projectile', EAITYPE_Audio);
+            }
         }
     }
 }
