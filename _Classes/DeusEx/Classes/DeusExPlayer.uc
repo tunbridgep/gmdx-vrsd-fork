@@ -7631,10 +7631,15 @@ function SelectLastWeapon()
     root = DeusExRootWindow(rootWindow);
     if (root != None && root.hud != None)
     {
-        if (bAlternateToolbelt > 0)
-            root.ActivateObjectInBelt(advBelt);
-        else
-            PutInHand(lastSelected);
+        if (bAlternateToolbelt > 0 && root.ActivateObjectInBelt(advBelt))
+        {
+            NewWeaponSelected();
+            return;
+        }
+    }
+    if (primaryWeapon.Owner == self)
+    {
+        PutInHand(primaryWeapon);
         NewWeaponSelected();
     }
 }
