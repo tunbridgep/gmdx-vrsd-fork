@@ -9,24 +9,47 @@ var int fullness;                                                   //How much a
 //Add fullness amount to the description field
 var localized String HungerLabel;
 
+var private PerkGlutton glutton;
+
+function RefreshGlutton()
+{
+    local DeusExPlayer player;
+
+    if (glutton != None)
+        return;
+
+    player = DeusExPlayer(GetPlayerPawn());
+
+    if (player != None)
+        glutton = PerkGlutton(player.PerkManager.GetPerkWithClass(class'DeusEx.PerkGlutton'));
+}
+
 //SARGE: Edibles can always be added as secondaries
 function bool CanAssignSecondary(DeusExPlayer player)
 {
     return true;
 }
 
+//Gluttony perk lets us hold twice as much
+function int RetMaxCopies()
+{
+    RefreshGlutton();
+    if (glutton != none && glutton.bPerkObtained)
+        return default.maxCopies * 2;
+    else
+        return default.maxCopies;
+}
+
 //Check hunger before letting us use them
 function bool RestrictedUse(DeusExPlayer player)
 {
     local int maxFullness;
-    local Perk glutton;
+    
+    RefreshGlutton();
 
     maxFullness = 100;
 
-    if (player != None)
-        glutton = player.PerkManager.GetPerkWithClass(class'DeusEx.PerkGlutton');
-
-    if (player != None && glutton != None && glutton.bPerkObtained)
+    if (glutton != None && glutton.bPerkObtained)
         maxFullness *= glutton.PerkValue;
 
     return player != none && player.fullUp >= maxFullness && (player.bHardCoreMode || player.bRestrictedMetabolism);

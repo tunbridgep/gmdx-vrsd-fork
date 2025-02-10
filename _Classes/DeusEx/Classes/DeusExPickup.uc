@@ -324,6 +324,7 @@ function int RetMaxCopies()
 {
 	return default.maxCopies;
 }
+
 // ----------------------------------------------------------------------
 // HandlePickupQuery()
 //
