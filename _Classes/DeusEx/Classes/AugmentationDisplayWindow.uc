@@ -53,8 +53,9 @@ var localized String msgADSDetonating;
 var localized String msgBehind;
 var localized String msgDroneActive;
 var localized String msgDroneStandby;                                           //RSD: Added
-var localized String msgEMPEnergyLow;
+var localized String msgEMPEnergyLow;                                           //SARGE: Added
 var localized String msgEnergyLow;
+var localized String msgDroneCloaked;                                           //SARGE: Added
 var localized String msgCantLaunch;
 var localized String msgLightAmpActive;
 var localized String msgIRAmpActive;
@@ -260,9 +261,9 @@ function ConfigurationChanged()
 
 	if ((winDrone != None) || (winZoom != None))
 	{
-		w = width/4;
-		h = height/4;
-		cx = width/8 + margin;
+		w = width/3;
+		h = height/3;
+		cx = width/6 + margin;
 		cy = height/2;
 		x = cx - w/2;
 		y = cy - h/2;
@@ -802,9 +803,9 @@ function DrawSpyDroneAugmentation(GC gc)
 
 	// set the coords of the drone window
 
-    boxW = width/4;
-    boxH = height/4;
-    boxCX = width/8 + margin;
+    boxW = width/3;
+    boxH = height/3;
+    boxCX = width/6 + margin;
     boxCY = height/2;
     boxTLX = boxCX - boxW/2;
     boxTLY = boxCY - boxH/2;
@@ -870,6 +871,22 @@ function DrawSpyDroneAugmentation(GC gc)
 			gc.DrawText(x, y+ymod, w, h, str);
 			gc.SetTextColor(colHeaderText);
         }
+        
+        // print the "cloaked" text
+		if (augDrone != None && player.aDrone.bCloaked)
+        {
+            if (str != "")
+                ymod += 10;
+
+            str = msgDroneCloaked;
+			gc.GetTextExtent(0, w, h, str);
+			x = boxCX - w/2;
+			y = boxTLY + margin;
+			gc.SetTextColorRGB(0,0,255);
+			gc.DrawText(x, y+ymod, w, h, str);
+			gc.SetTextColor(colHeaderText);
+        }
+
 	}
 	// Since drone is created on server, they is a delay in when it will actually show up on the client
 	// the flags dronecreated and drone referenced negotiate this timing
@@ -2222,4 +2239,5 @@ defaultproperties
      msgIFFTracking="* Environmental Hazard *"
      IFFLabel1="Type:"
      IFFLabel2="Lethality:"
+     msgDroneCloaked="Cloak Engaged"
 }

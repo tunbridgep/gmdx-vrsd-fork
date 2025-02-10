@@ -3,24 +3,48 @@
 //=============================================================================
 class SpyDrone extends ThrownProjectile;
 
+var bool bCloaked;                                                              //SARGE: Whether or not this drone is cloaked
+
 auto state Flying
 {
 	function ProcessTouch (Actor Other, Vector HitLocation)
 	{
-		// do nothing
 	}
 	simulated function HitWall (vector HitNormal, actor HitWall)
 	{
 		// do nothing
 		// Added elasticity - DEUS_EX CNN
 	    if (HitWall == Level)
-	      Velocity = 0.8*(( Velocity dot HitNormal ) * HitNormal * (-2.0) + Velocity);   // Reflect off Wall w/damping
+	      Velocity = 0.4*(( Velocity dot HitNormal ) * HitNormal * (-2.0) + Velocity);   // Reflect off Wall w/damping
 	}
+}
+
+function SetCloak()
+{
+    local DeusExPlayer player;
+    player = DeusExPlayer(Owner);
+    
+    if (player != None && player.bSpyDroneSet || player.spyDroneLevel > 2)
+        bCloaked = true;
+    else
+        bCloaked = false;
 }
 
 function Tick(float deltaTime)
 {
-	// do nothing
+    SetCloak();
+
+	// cause enemies to search for the source if it's not cloaked.
+    if (bCloaked)
+    {
+        Style=STY_Translucent;
+        AIEndEvent('Projectile', EAITYPE_Visual);
+    }
+    else
+    {
+        Style=STY_Normal;
+        AIStartEvent('Projectile', EAITYPE_Visual);
+    }
 }
 
 function Timer()
@@ -106,7 +130,6 @@ function BeginPlay()
     Skin = Texture'HDTPDecos.Skins.HDTPAlarmLightTex6';
     //PlaySound(Sound'CloakUp', SLOT_Pain, 0.85, ,768,1.0);
     //Spawn(class'SpoofedCoronaSmall');
-    Style=STY_Translucent;
     ScaleGlow=0.1;
     LightType = LT_Strobe;
     LightBrightness = 64;
@@ -146,7 +169,7 @@ defaultproperties
      RemoteRole=ROLE_DumbProxy
      LifeSpan=0.000000
      Mesh=LodMesh'DeusExCharacters.SpyDrone'
-     DrawScale=0.750000
+     DrawScale=0.350000 //SARGE: Was 0.75
      SoundRadius=24
      SoundVolume=192
      AmbientSound=Sound'DeusExSounds.Augmentation.AugDroneLoop'
