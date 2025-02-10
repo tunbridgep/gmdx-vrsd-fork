@@ -764,6 +764,7 @@ function Augmentation GetAug(class<Augmentation> AugClass, optional bool active)
 //Attempts to activate an augmentation
 function ActivateAug(Augmentation aug, bool active)
 {
+    aug.ActivateKeyPressed();
     if (active && !aug.bIsActive)
     {
         if (player.Energy == 0 && aug.AugmentationType == Aug_Active)
