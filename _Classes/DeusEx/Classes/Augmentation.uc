@@ -263,6 +263,8 @@ function Activate()
 
 	if (IsInState('Inactive'))
 	{
+        Player.PlaySound(ActivateSound, SLOT_None,0.7);
+
         //Deduct Reserve energy
         if (GetAdjustedEnergyReserve() > 0)
             player.Energy -= GetAdjustedEnergyReserve();

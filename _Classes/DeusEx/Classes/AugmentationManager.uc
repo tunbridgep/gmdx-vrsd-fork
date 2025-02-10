@@ -775,7 +775,6 @@ function ActivateAug(Augmentation aug, bool active)
         }
 		
         aug.Activate();
-        Player.PlaySound(aug.ActivateSound, SLOT_None,0.7);
     }
     else if (!active && aug.bIsActive)
         aug.Deactivate();
