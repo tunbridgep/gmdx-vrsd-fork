@@ -133,6 +133,17 @@ auto state Inactive
 
 
 // ----------------------------------------------------------------------
+// ActivateKeyPressed()
+// Called when the activate button for an aug is pressed, regardless of whether or not it will be activated/deactivated, or can be activated.
+// Used for doing special "on button press" events regardless of the aug's state.
+// See AugDrone for an example
+// ----------------------------------------------------------------------
+
+function ActivateKeyPressed()
+{
+}
+
+// ----------------------------------------------------------------------
 // Activate()
 // ----------------------------------------------------------------------
 

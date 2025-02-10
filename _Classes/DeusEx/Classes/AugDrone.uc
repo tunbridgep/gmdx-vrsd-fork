@@ -12,8 +12,11 @@ var bool bTimerEarly;                                                           
 
 var int EMPDrain;                                                               //SARGE: energy used for EMP attack
 
+var bool bDestroyNow;                                                           //SARGE: If set, deactivating on zero energy will destroy the drone, rather than putting it on standby
+
 var const localized string ReconstructionMessage;
 var const localized string GroundedMessage;
+var const localized string GroundedMessage2;
 
 function string GetChargingMessage()
 {
@@ -31,6 +34,28 @@ function bool CanActivate(out string message)
     return Super.CanActivate(message);
 }
 
+function ToggleStandbyMode(bool standby)
+{
+    if (standby)
+    {
+        player.aDrone.Velocity = vect(0.,0.,0.);
+        Player.bSpyDroneSet = True;                                            //RSD: Allows the user to toggle between moving and controlling the drone
+		Player.SetRotation(player.SAVErotation);
+        Player.ViewRotation = player.SAVErotation;
+        Player.DRONESAVErotation = player.aDrone.Rotation;
+        Player.ConfigBigDroneView(false);
+    }
+    else
+    {
+        Player.bSpyDroneActive = True;
+        Player.bSpyDroneSet = False;                                            //RSD: Allows the user to toggle between moving and controlling the drone
+        Player.spyDroneLevel = CurrentLevel;
+        Player.spyDroneLevelValue = LevelValues[CurrentLevel];
+		Player.SetRotation(player.DRONESAVErotation);
+        Player.ConfigBigDroneView(true);
+    }
+}
+
 state Active
 {
 
@@ -38,11 +63,7 @@ function Timer()
 {
     if (IsInState('Active'))
     {
-        Player.bSpyDroneActive = True;
-        Player.bSpyDroneSet = False;                                            //RSD: Allows the user to toggle between moving and controlling the drone
-        Player.spyDroneLevel = CurrentLevel;
-        Player.spyDroneLevelValue = LevelValues[CurrentLevel];
-        Player.ConfigBigDroneView(true);
+        ToggleStandbyMode(false);
     }
 }
 Begin:
@@ -51,18 +72,35 @@ Begin:
     player.SAVErotation = player.ViewRotation;                                  //RSD: Set the SAVErotation the first time we activate
 }
 
+function ActivateKeyPressed()
+{
+    //Blow up if we activate it on zero energy
+    if (player.Energy == 0)
+    {
+        bDestroyNow = true;
+        Deactivate();
+        bDestroyNow = false;
+    }
+}
+
 function Deactivate()
 {
-	if (Player.bSpyDroneSet)                                                    //RSD: Allows the user to toggle between moving and controlling the drone
+    //If we were shut off due to energy, go into standby instead
+    if (player.Energy == 0 && !bDestroyNow)
+    {
+        ToggleStandbyMode(true);
+        return;
+    }
+
+	if (Player.bSpyDroneSet && player.Energy > 0)                                                    //RSD: Allows the user to toggle between moving and controlling the drone
 	{
 		if (IsA('AugDrone') && (player.Physics == PHYS_Falling || player.physics == PHYS_Swimming))
-        	{ player.ClientMessage("You must be grounded to resume control of the drone"); return;  }
+        {
+            player.ClientMessage(GroundedMessage2);
+            return;
+        }
 
-        Player.bSpyDroneSet = false;
-		Player.SAVErotation = Player.ViewRotation;
-		Player.ViewRotation = Player.DRONESAVErotation;
-
-        Player.ConfigBigDroneView(true);
+        ToggleStandbyMode(false);
         return;
 	}
 
@@ -72,11 +110,12 @@ function Deactivate()
     Super.Deactivate();
 
 	// record the time if we were just active
-	if (Player.bSpyDroneActive)
-		lastDroneTime = Level.TimeSeconds;
+    if (Player.bSpyDroneActive)
+        lastDroneTime = Level.TimeSeconds;
 
-	Player.bSpyDroneActive = False;
-    Player.ConfigBigDroneView(false);
+    ToggleStandbyMode(true);
+    Player.bSpyDroneSet = False;
+    Player.ForceDroneOff(true);
 }
 
 simulated function PreBeginPlay()
@@ -106,6 +145,7 @@ defaultproperties
      MPInfo="Activation creates a remote-controlled spy drone.  Deactivation disables the drone.  Firing while active detonates the drone in a massive EMP explosion.  Energy Drain: Medium"
      ReconstructionMessage="Reconstruction will be complete in %i seconds"
      GroundedMessage="You must be grounded to construct the drone"
+     GroundedMessage2="You must be grounded to resume control of the drone"
      LevelValues(0)=10.000000
      LevelValues(1)=20.000000
      LevelValues(2)=35.000000

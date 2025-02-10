@@ -7829,15 +7829,10 @@ exec function ParseRightClick()
         PlaySound(sound'RatSqueak1');
 		return;*/
 		if (aDrone != none)
-		{
-		    bSpyDroneSet = true;
-		    aDrone.Velocity = vect(0.,0.,0.);
-		    SetRotation(SAVErotation);
-            ViewRotation = SAVErotation;
-            DRONESAVErotation = aDrone.Rotation;
-            ConfigBigDroneView(false);
-		}
-        return;
+        {
+            AugDrone(AugmentationSystem.FindAugmentation(class'AugDrone')).ToggleStandbyMode(true);
+            return;
+        }
 	}
 
 	oldFirstItem = Inventory;
@@ -16900,7 +16895,7 @@ function MultiplayerTick(float DeltaTime)
 
 // ----------------------------------------------------------------------
 
-function ForceDroneOff()
+function ForceDroneOff(optional bool skipDeactivation)
 {
 	local AugDrone anAug;
 
@@ -16916,7 +16911,8 @@ function ForceDroneOff()
                 bSpyDroneSet = false;                                                 //RSD: Ensures that the Spy Drone will ACTUALLY be turned off
             }
             anAug.bTimerEarly = true;                                                 //RSD: Hack so the drone doesn't spin us around when it gets destroyed
-            anAug.Deactivate();
+            if (!skipDeactivation)
+                anAug.Deactivate();
             bSpyDroneActive = false;                                                  //RSD: Prevents being forced back into drone control at the last second
         }
     }
