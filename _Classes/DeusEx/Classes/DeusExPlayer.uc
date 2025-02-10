@@ -763,6 +763,10 @@ function ConfigBigDroneView(bool droneView)
 //Handle Crouch Toggle
 function HandleCrouchToggle()
 {
+    //SARGE: Don't let us toggle crouch while using the drone
+    if (bSpyDroneActive && !bSpyDroneSet)
+        return;
+
     if (!bToggleCrouch)
     {
         bCrouchOn = false;
@@ -10782,6 +10786,14 @@ function bool GetCrosshairState(optional bool bCheckForOuterCrosshairs)
 
 	root = DeusExRootWindow(rootWindow);
 	W = DeusExWeapon(inHand);
+
+    //If the Spy Drone is fullscreen, no crosshair
+    if (bSpyDroneActive && !bSpyDroneSet && bBigDroneView)
+        return false;
+
+    //If we have the spy drone out, no outer crosshairs.
+    if (bSpyDroneActive && !bSpyDroneSet && bCheckForOuterCrosshairs)
+        return false;
 
     if (!bCrosshairVisible)
         return false;

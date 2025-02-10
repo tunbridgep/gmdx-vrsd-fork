@@ -5,6 +5,8 @@ class SpyDrone extends ThrownProjectile;
 
 var bool bCloaked;                                                              //SARGE: Whether or not this drone is cloaked
 
+var float detectionRange;                                                       //SARGE: Range at which enemies can detect the drone
+
 auto state Flying
 {
 	function ProcessTouch (Actor Other, Vector HitLocation)
@@ -32,18 +34,27 @@ function SetCloak()
 
 function Tick(float deltaTime)
 {
+    local ScriptedPawn pawn;
+    local float maxRange;
+
     SetCloak();
 
 	// cause enemies to search for the source if it's not cloaked.
     if (bCloaked)
-    {
         Style=STY_Translucent;
-        AIEndEvent('Projectile', EAITYPE_Visual);
-    }
     else
     {
         Style=STY_Normal;
-        AIStartEvent('Projectile', EAITYPE_Visual);
+
+        //SARGE: AISendEvent has a seemingly unlimited range, and the radius variable does nothing
+        //So, we need to do this manually.
+        //This is gross, but ehh, it works.
+        //AISendEvent('Projectile', EAITYPE_Visual);
+        foreach VisibleActors(class'ScriptedPawn', pawn, detectionRange)
+        {
+            if ((pawn.bFearProjectiles || pawn.bReactProjectiles) && pawn.bLookingForProjectiles)
+                pawn.ReactToProjectiles(self);
+        }
     }
 }
 
@@ -127,8 +138,8 @@ simulated function DrawExplosionEffects(vector HitLocation, vector HitNormal)
 
 function BeginPlay()
 {
-    Skin = Texture'HDTPDecos.Skins.HDTPAlarmLightTex6';
-    //PlaySound(Sound'CloakUp', SLOT_Pain, 0.85, ,768,1.0);
+	Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.Skins.HDTPAlarmLightTex6","DeusExDeco.Skins.AlarmLightTex6",IsHDTP());
+    PlaySound(Sound'CloakUp', SLOT_Pain, 0.85, ,768,1.0);
     //Spawn(class'SpoofedCoronaSmall');
     ScaleGlow=0.1;
     LightType = LT_Strobe;
@@ -177,4 +188,5 @@ defaultproperties
      CollisionHeight=2.070000
      Mass=10.000000
      Buoyancy=2.000000
+     detectionRange=350
 }
