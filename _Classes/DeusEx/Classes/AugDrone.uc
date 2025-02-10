@@ -10,6 +10,8 @@ var float lastDroneTime;
 
 var bool bTimerEarly;                                                           //RSD: bool for if you tried to use the drone too early (need for rotation shenanigans)
 
+var int EMPDrain;                                                               //SARGE: energy used for EMP attack
+
 var const localized string ReconstructionMessage;
 var const localized string GroundedMessage;
 
@@ -40,6 +42,7 @@ function Timer()
         Player.bSpyDroneSet = False;                                            //RSD: Allows the user to toggle between moving and controlling the drone
         Player.spyDroneLevel = CurrentLevel;
         Player.spyDroneLevelValue = LevelValues[CurrentLevel];
+        Player.ConfigBigDroneView(true);
     }
 }
 Begin:
@@ -59,6 +62,7 @@ function Deactivate()
 		Player.SAVErotation = Player.ViewRotation;
 		Player.ViewRotation = Player.DRONESAVErotation;
 
+        Player.ConfigBigDroneView(true);
         return;
 	}
 
@@ -72,6 +76,7 @@ function Deactivate()
 		lastDroneTime = Level.TimeSeconds;
 
 	Player.bSpyDroneActive = False;
+    Player.ConfigBigDroneView(false);
 }
 
 simulated function PreBeginPlay()
@@ -92,7 +97,8 @@ defaultproperties
      mpAugValue=100.000000
      mpEnergyDrain=20.000000
      lastDroneTime=-30.000000
-     EnergyRate=90.000000
+     EnergyRate=30.000000
+     EMPDrain=20
      Icon=Texture'DeusExUI.UserInterface.AugIconDrone'
      smallIcon=Texture'DeusExUI.UserInterface.AugIconDrone_Small'
      AugmentationName="Spy Drone"

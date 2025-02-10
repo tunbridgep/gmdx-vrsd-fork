@@ -3441,6 +3441,12 @@ function Fire(float Value)
 	local bool bListenClient;
     local DeusExPlayer player;
 
+    player = DeusExPlayer(Owner);
+
+    //Sarge: Restrict fire if drone is active or just exploded.
+    if (player != None && !player.bSpyDroneSet && (player.bSpyDroneActive || player.bDroneExploded))
+        return;
+
     if (Pawn(Owner).IsInState('Dying') || (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).bGEPprojectileInflight))
     {
       if (bAutomatic && Pawn(Owner).IsA('DeusExPlayer'))
