@@ -654,6 +654,9 @@ var globalconfig bool bAlwaysShowBloom;                                         
 
 var globalconfig bool bShowEnergyBarPercentages;                                //SARGE: If true, show the oxygen and bioenergy percentages below the bars.
 
+//Cat/Dog protector
+var globalconfig bool bStompDomesticAnimals;                                    //SARGE: If disabled, we can't stomp cats or dogs anymore. Adopt a cute animal today!
+
 //////////END GMDX
 
 // OUTFIT STUFF
