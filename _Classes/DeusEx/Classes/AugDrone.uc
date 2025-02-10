@@ -17,6 +17,7 @@ var bool bDestroyNow;                                                           
 var const localized string ReconstructionMessage;
 var const localized string GroundedMessage;
 var const localized string GroundedMessage2;
+var const localized string BlockedMessage;
 
 function string GetChargingMessage()
 {
@@ -25,13 +26,34 @@ function string GetChargingMessage()
 
 function bool CanActivate(out string message)
 {
+    local Vector loc;
+
     if (player.Physics == PHYS_Falling || player.physics == PHYS_Swimming)
     {
         message = GroundedMessage;
         return false;
     }
 
-    return Super.CanActivate(message);
+    //Check for any other problem first, since we only
+    //want to check the drone position if we actually have
+    //a valid reason to create one in the first place;
+    if (!Super.CanActivate(message))
+        return false;
+
+    //Code copied from CreateDrone() in DeusExPlayer.uc.
+    //We need to check that we can actually make the drone, otherwise we will fuck everything up
+    loc = (2.0 + class'SpyDrone'.Default.CollisionRadius + player.CollisionRadius) * Vector(player.ViewRotation);
+    loc.Z = player.BaseEyeHeight;
+    loc += player.Location;
+
+    //SARGE: Check we actually have room for the drone, otherwise we get into a horrible state
+    if (!player.FastTrace(loc))
+    {
+        message = BlockedMessage;
+        return false;
+    }
+
+    return true;
 }
 
 function ToggleStandbyMode(bool standby)
@@ -72,10 +94,12 @@ function Timer()
     }
 }
 Begin:
-	bTimerEarly = false;                                                        //RSD
-    SetTimer(0.4,False);
+    player.bSpyDroneActive = True;
+    player.bSpyDroneSet = False;
     player.SAVErotation = player.ViewRotation;                                  //RSD: Set the SAVErotation the first time we activate
     player.DRONESAVErotation = player.ViewRotation;                             //RSD: Set the DRONESAVErotation the first time we activate
+	bTimerEarly = false;                                                        //RSD
+    SetTimer(0.4,False);
 }
 
 function ActivateKeyPressed()
@@ -152,6 +176,7 @@ defaultproperties
      ReconstructionMessage="Reconstruction will be complete in %i seconds"
      GroundedMessage="You must be grounded to construct the drone"
      GroundedMessage2="You must be grounded to resume control of the drone"
+     BlockedMessage="Insufficient space to release drone"
      LevelValues(0)=10.000000
      LevelValues(1)=20.000000
      LevelValues(2)=35.000000
