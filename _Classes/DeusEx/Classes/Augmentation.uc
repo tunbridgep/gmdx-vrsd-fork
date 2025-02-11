@@ -271,7 +271,7 @@ function Activate()
 
 		// this block needs to be before bIsActive is set to True, otherwise
 		// NumAugsActive counts incorrectly and the sound won't work
-		if (Player.AugmentationSystem.NumAugsActive() == 0 && !IsToggleAug())
+		if (Player.AugmentationSystem.NumAugsActive() == 0 && !IsToggleAug() && !player.bQuietAugs)
 			Player.AmbientSound = LoopSound;
 
 		bIsActive = True;

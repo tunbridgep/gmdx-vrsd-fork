@@ -653,6 +653,8 @@ var localized string EnergyCantReserve;                                         
 
 var globalconfig bool bSimpleAugSystem;                                         //SARGE: Simplifies the Aug screen by merging Auto and Toggle augs into one "type". Doesn't change gameplay in any way.
 
+//Remove Aug Hum Sounds
+var globalconfig bool bQuietAugs;                                               //SARGE: If enabled, augmentations won't play the "hum" sound while active
 //////////END GMDX
 
 // OUTFIT STUFF
