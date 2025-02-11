@@ -261,12 +261,12 @@ function ConfigurationChanged()
 
 	if ((winDrone != None) || (winZoom != None))
 	{
-		w = width/3;
-		h = height/3;
-		cx = width/6 + margin;
-		cy = height/2;
-		x = cx - w/2;
-		y = cy - h/2;
+		w = width/3.33;
+		h = height/3.33;
+		cx = width/6.5 + margin;
+		cy = height/2.0;
+		x = cx - w/2.0;
+		y = cy - h/2.0;
 
 		if (winDrone != None)
 			winDrone.ConfigureChild(x, y, w, h);
@@ -589,7 +589,7 @@ function Tick(float deltaTime)
 	if (Player.bSpyDroneActive && (Player.aDrone != None) && (winDrone == None) &&
 		(Player.PlayerIsClient() || (Player.Level.NetMode==NM_Standalone)) )
 	{
-		winDrone = ViewportWindow(NewChild(class'ViewportWindow'));
+		winDrone = ViewportWindow(NewChild(class'GMDXViewportWindow'));
 		if (winDrone != None)
 		{
 			winDrone.AskParentForReconfigure();
@@ -803,14 +803,14 @@ function DrawSpyDroneAugmentation(GC gc)
 
 	// set the coords of the drone window
 
-    boxW = width/3;
-    boxH = height/3;
-    boxCX = width/6 + margin;
+    boxW = width/3.33;
+    boxH = height/3.33;
+    boxCX = width/6.5 + margin;
     boxCY = height/2;
-    boxTLX = boxCX - boxW/2;
-    boxTLY = boxCY - boxH/2;
-    boxBRX = boxCX + boxW/2;
-    boxBRY = boxCY + boxH/2;
+    boxTLX = boxCX - boxW/2.0;
+    boxTLY = boxCY - boxH/2.0;
+    boxBRX = boxCX + boxW/2.0;
+    boxBRY = boxCY + boxH/2.0;
 
 	if (winDrone != None)
 	{
@@ -823,14 +823,14 @@ function DrawSpyDroneAugmentation(GC gc)
             //SARGE: Now we swap windows when the spy drone is active
             if (player.bBigDroneView)
             {
-                playerPosition = Player.Location;
-                playerPosition.Z += Player.EyeHeight;
-                playerPosition += Player.WalkBob;
+                //playerPosition = Player.Location;
+                //playerPosition.Z += Player.EyeHeight - 10;
+                //playerPosition += Player.WalkBob;
                 //Move it forward a bit so we don't see parts of the player
-                playerPosition += Vector(Player.Rotation) * 10;
-                //winDrone.SetViewportActor(Player);
-                winDrone.SetViewportLocation(playerPosition);
-                winDrone.SetRotation(Player.SAVErotation);
+                //playerPosition += Vector(Player.Rotation) * 10;
+                winDrone.SetViewportActor(Player);
+                //winDrone.SetViewportLocation(playerPosition);
+                //winDrone.SetRotation(Player.SAVErotation);
             }
 			str = msgDroneActive;
         }

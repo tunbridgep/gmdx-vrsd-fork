@@ -11863,6 +11863,7 @@ event UpdateEyeHeight(float DeltaTime)
 event PlayerCalcView( out actor ViewActor, out vector CameraLocation, out rotator CameraRotation )
 {
 	local vector unX,unY,unZ;
+    local rotator fixedRotation;
 	if (bStaticFreeze)
 	{
 		CameraLocation = SAVElocation;
@@ -11879,11 +11880,16 @@ event PlayerCalcView( out actor ViewActor, out vector CameraLocation, out rotato
 	{
 		if (aDrone != None)
 		{
+            //Fix the player rotation
+            fixedRotation = SAVErotation;
+            fixedRotation.Pitch = 0f;
+            fixedRotation.Roll = 0f;
+
             //SARGE: Added Drone-View
             if (bBigDroneView)
             {
-                // Locked player view
-                SetRotation(SAVErotation);
+                //View from the drone
+                SetRotation(fixedRotation);
                 CameraRotation = aDrone.Rotation;
                 CameraLocation = aDrone.Location;
                 //CameraLocation.Z += EyeHeight;
@@ -11893,9 +11899,9 @@ event PlayerCalcView( out actor ViewActor, out vector CameraLocation, out rotato
             }
             else
             {
-                //Drone View
-                CameraRotation = SAVErotation;
-                SetRotation(SAVErotation);
+                //View from the player
+                CameraRotation = SAVErotation;                                      //RSD: Added
+                SetRotation(fixedRotation);                                         //RSD: Added
                 CameraLocation = Location;
                 CameraLocation.Z += EyeHeight;
                 CameraLocation += WalkBob;

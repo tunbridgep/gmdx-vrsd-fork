@@ -953,20 +953,21 @@ simulated event RenderOverlays( canvas Canvas )
 	local rotator NewRot, ExRot, rfs;                                           //RSD: Added rfs
 	local bool bPlayerOwner;
 	local int Hand;
-	local PlayerPawn PlayerOwner;
+	local DeusExPlayer PlayerOwner;
     local int newPitch;
     local vector dx, dy, dz;                                                    //RSD: Added
 
 	if ( bHideWeapon || (Owner == None) )
 		return;
 
-	PlayerOwner = PlayerPawn(Owner);
+	PlayerOwner = DeusExPlayer(Owner);
 
 	if ( PlayerOwner != None )
 	{
 		//if ( PlayerOwner.DesiredFOV != PlayerOwner.DefaultFOV )
 		//	return;
-		if (bZoomed)
+		if (bZoomed || (PlayerOwner.bSpyDroneActive && !PlayerOwner.bSpyDroneSet && !PlayerOwner.bBigDroneView))
+		//if (bZoomed)
 		    return;
 		bPlayerOwner = true;
 		Hand = PlayerOwner.Handedness;
