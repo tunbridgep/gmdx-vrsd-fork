@@ -103,7 +103,7 @@ Begin:
 function ActivateKeyPressed()
 {
     //Blow up if we activate it on zero energy
-    if (player.Energy == 0 && bActive && player.aDrone != None)
+    if (player.Energy == 0 && bIsActive && player.aDrone != None)
     {
         bDestroyNow = true;
         Deactivate();

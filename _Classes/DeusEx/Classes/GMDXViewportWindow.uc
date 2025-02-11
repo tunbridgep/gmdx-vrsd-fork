@@ -19,6 +19,8 @@ event CalcView(actor originActor, actor watchActor,
 
     frameRotation = player.SAVErotation;
     frameLocation = player.Location;
+    frameLocation.Z += player.EyeHeight;
+    frameLocation += player.WalkBob;
 }
 
 defaultproperties
