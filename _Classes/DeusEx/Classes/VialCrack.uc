@@ -39,4 +39,5 @@ defaultproperties
      bBlockPlayers=True
      Mass=2.000000
      Buoyancy=3.000000
+     bGluttonous=false
 }

@@ -75,4 +75,5 @@ defaultproperties
      CollisionHeight=1.320000
      Mass=2.000000
      Buoyancy=3.000000
+     bGluttonous=false
 }

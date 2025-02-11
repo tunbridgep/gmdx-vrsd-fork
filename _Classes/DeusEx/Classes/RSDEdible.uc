@@ -11,6 +11,8 @@ var localized String HungerLabel;
 
 var private PerkGlutton glutton;
 
+var const bool bGluttonous;                                         //SARGE: Is this edible affected by gluttony
+
 function RefreshGlutton()
 {
     local DeusExPlayer player;
@@ -34,7 +36,7 @@ function bool CanAssignSecondary(DeusExPlayer player)
 function int RetMaxCopies()
 {
     RefreshGlutton();
-    if (glutton != none && glutton.bPerkObtained)
+    if (glutton != none && glutton.bPerkObtained && bGluttonous)
         return default.maxCopies * 2;
     else
         return default.maxCopies;
@@ -94,4 +96,5 @@ defaultproperties
      fullness=0
      HungerLabel="Fullness Amount: %d%%"
      CannotUse="You cannot consume any more at this time"
+     bGluttonous=true
 }
