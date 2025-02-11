@@ -23,6 +23,12 @@ function PostBeginPlay()
    bInvincible=False;
 }
 
+//SARGE: Prevent stomping those poor defenseless cleaning bots to death...
+function bool WillTakeStompDamage(Actor stomper)
+{
+    return false;
+}
+
 function Tick(float deltaSeconds)
 {
 	local pawn        fearPawn;
