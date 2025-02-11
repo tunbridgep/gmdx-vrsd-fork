@@ -222,7 +222,7 @@ function bool CanActivate(out string message)
         return false;
     }
     
-	if (player.Energy == 0 && !IsToggleAug())
+    if (player.Energy < 1 && !IsToggleAug())
     {
         message = player.EnergyDepleted;
         return false;
