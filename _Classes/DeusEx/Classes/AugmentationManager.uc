@@ -766,16 +766,7 @@ function ActivateAug(Augmentation aug, bool active)
 {
     aug.ActivateKeyPressed();
     if (active && !aug.bIsActive)
-    {
-        if (player.Energy == 0 && aug.AugmentationType == Aug_Active)
-        {
-            player.ClientMessage(player.EnergyDepleted);
-            player.PlaySound(aug.DeactivateSound, SLOT_None);
-            return;
-        }
-		
         aug.Activate();
-    }
     else if (!active && aug.bIsActive)
         aug.Deactivate();
 }
