@@ -56,6 +56,9 @@ function bool CanActivate(out string message)
 
 function ToggleStandbyMode(bool standby)
 {
+    if (!player.bSpyDroneActive)
+        return;
+
     if (standby)
     {
         if (player.aDrone != None)
@@ -76,9 +79,12 @@ function ToggleStandbyMode(bool standby)
         Player.bSpyDroneSet = False;                                            //RSD: Allows the user to toggle between moving and controlling the drone
         Player.spyDroneLevel = CurrentLevel;
         Player.spyDroneLevelValue = LevelValues[CurrentLevel];
-        Player.ViewRotation = player.DRONESAVErotation;
-        Player.ConfigBigDroneView(true);
-        Player.UpdateHUD();
+        if (!player.RestrictInput())
+        {
+            Player.ViewRotation = player.DRONESAVErotation;
+            Player.ConfigBigDroneView(true);
+            Player.UpdateHUD();
+        }
     }
 }
 
