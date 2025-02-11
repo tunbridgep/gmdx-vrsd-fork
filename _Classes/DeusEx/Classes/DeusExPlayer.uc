@@ -766,6 +766,21 @@ function SetCrouch(bool crouch, optional bool setForce)
         bForceDuck = crouch;
 }
 
+
+// ----------------------------------------------------------------------
+// ClientMessage
+// Copied over from PlayerPawnExt
+// Sarge: Extended to not show blank messages
+// ----------------------------------------------------------------------
+
+function ClientMessage(coerce string msg, optional Name type, optional bool bBeep)
+{
+    if (msg == "")
+        return;
+
+    Super.ClientMessage(msg,type,bBeep);
+}
+
 // ----------------------------------------------------------------------
 // AssignSecondaryWeapon
 // Sarge: Now needed because we need to fix up our charged item display if it's out of date
