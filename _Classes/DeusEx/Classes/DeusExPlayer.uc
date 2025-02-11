@@ -5523,6 +5523,8 @@ function CreateDrone()
 {
 	local Vector loc;
 
+    spyDroneLevelValue = AugmentationSystem.GetAugLevelValue(class'AugDrone');
+
 	loc = (2.0 + class'SpyDrone'.Default.CollisionRadius + CollisionRadius) * Vector(ViewRotation);
 	loc.Z = BaseEyeHeight;
 	loc += Location;
