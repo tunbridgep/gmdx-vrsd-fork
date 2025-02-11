@@ -27,7 +27,8 @@ Sarge's Changes since Beta 2.2:
         - A new Decline button has been added to items in the inventory. Clicking it will decline a specific item going forward, preventing it from being taken off corpses.
         - The decline list is stored globally and consistent between playthroughs.
         - Items can be removed from the decline list in the inventory screen.
-        - Holding the Walk/Run key while frobbing a corpse will pick up any declined items.
+        - Declined Items need to be double-clicked in order to be picked up in the world.
+        - Holding the Walk/Run key while interacting will always pick up any declined items.
     - Datacubes will show a black screen after they have been read.
     - While having a grenade selected, the crosshair will turn blue when you're able to place it on a wall.
     - Right-Clicking while dead will load the last save game.

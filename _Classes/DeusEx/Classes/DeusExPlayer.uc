@@ -641,8 +641,8 @@ var globalconfig int iAllowCombatMusic;                                        /
 
 //Decline Everything
 var travel DeclinedItemsManager declinedItemsManager;                          //SARGE: Holds declined items.
-
 var globalconfig bool bSmartDecline;                                            //SARGE: Allow not declining items when holding the walk/run key
+var localized string msgDeclinedPickup;                                        //SARGE: Declined message
 
 //Crosshair Settings
 var globalconfig bool bFullAccuracyCrosshair;                                   //SARGE: If false, disable the "Accuracy Crosshairs" when at 100% accuracy
@@ -7394,6 +7394,9 @@ function DoLeftFrob(Actor frobTarget)
 {
     local bool bDefaultFrob;
     
+    if (CheckFrobDeclined(frobTarget))
+        return;
+    
     if (inHand == None)
     {
         if (frobTarget.isA('DeusExPickup'))
@@ -7434,6 +7437,9 @@ function DoRightFrob(Actor frobTarget)
     if (frobTarget == None)
         return;
 
+    if (CheckFrobDeclined(frobTarget))
+        return;
+
     bDefaultFrob = true;
     bLeftClicked = false;
 
@@ -7456,6 +7462,19 @@ function DoRightFrob(Actor frobTarget)
     }
     else if (bDefaultFrob)
         DoFrob(Self, None);
+}
+
+//SARGE: Check if a frobbed item is declined, and handle it
+//Returns FALSE if an item was not declined, TRUE if it was
+function bool CheckFrobDeclined(Actor frobTarget)
+{
+    if (frobTarget.IsA('Inventory') && DeclinedItemsManager.IsDeclined(class<Inventory>(frobTarget.class)) && clickCountCyber == 0)
+    {
+        SetDoubleClickTimer();
+        ClientMessage(sprintf(msgDeclinedPickup,Inventory(frobTarget).ItemName));
+        return true;
+    }
+    return false;
 }
 
 //Sarge: Because we can only inherit from one class,
@@ -17457,6 +17476,7 @@ defaultproperties
      bModdedHeadBob=True
      fatty="You cannot consume any more at this time"
      noUsing="You cannot use it at this time"
+     msgDeclinedPickup="%s is declined. Press again to pick up."
      customColorsMenu(0)=(R=61,G=62,B=73)
      customColorsMenu(1)=(G=49,B=255)
      customColorsMenu(2)=(R=210,G=194,B=255)

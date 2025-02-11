@@ -557,6 +557,6 @@ defaultproperties
      msgDecline="Add To Decline List"
      msgRemoveDecline="Remove From Decline List"
      DeclinedTitleLabel="Declined Items"
-     DeclinedDesc="Declined Items will not be picked up from corpses."
-     DeclinedDesc2="Declined Items will not be picked up from corpses, unless the Run/Walk key is held."
+     DeclinedDesc="Declined Items will not be picked up."
+     DeclinedDesc2="Declined Items will not be picked up, unless the Run/Walk key is held."
 }
