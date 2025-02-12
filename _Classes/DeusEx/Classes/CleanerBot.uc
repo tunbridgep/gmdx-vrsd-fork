@@ -26,7 +26,9 @@ function PostBeginPlay()
 //SARGE: Prevent stomping those poor defenseless cleaning bots to death...
 function bool WillTakeStompDamage(Actor stomper)
 {
-    return false;
+    local DeusExPlayer player;
+    player = DeusExPlayer(stomper);
+    return player != None && player.bStompVacbots;
 }
 
 function Tick(float deltaSeconds)
