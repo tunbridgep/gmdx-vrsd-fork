@@ -127,6 +127,16 @@ Sarge's Changes since Beta 2.2:
             - Now only beeps as projectiles enter range, to prevent annoying earrape
             - Range increased from 340/480/640/800 to 400/600/800/1000
             - Added Player Damage Reduction for projectiles detonated by ADS. Reduces damage from projectiles by 20%/30%/40%/50%
+        - Spy Drone
+            - Energy Use reduces from 90 per minute to 30 per minute, to encourage using it like an actual spy device
+                - The drone still retains it's 0 energy use per minute while parked from vRSD
+            - The drone's EMP cost has been increased from 3 per blast to 20 per blast, so it's no longer a free bomb
+            - The drone can now be spotted by enemies at close range
+                - The drone is invisible while parked, and cannot be seen at all at level 4.
+            - The drone has been made significantly smaller
+            - The drone can now be activated while parked, which will reclaim it, allowing immediate redeployment without needing to wait for the reconstruction time.
+            - Saving and Loading the game will no longer destroy any drones in flight.
+            - The drone can now be used in full-screen (enabled by default), with the player view being relegated to the picture-in-picture window.
     - Hacking Overhaul
         - Bypassing Turrets now requires Advanced hacking, as in Vanilla.
         - Hacked Cameras and Turrets will "reboot" and become re-enabled again after 2 minutes (plus an additional 2 minutes for each level of the Hacking skill)
