@@ -33,7 +33,7 @@ function CheckHeavilyTweaked()
     local PerkHeavilyTweaked perk;
     local DeusExPlayer player;
 
-    log("Check Heavily Tweaked");
+    //log("Check Heavily Tweaked");
 
     player = DeusExPlayer(GetPlayerPawn());
 
