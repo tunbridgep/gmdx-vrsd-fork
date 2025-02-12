@@ -104,6 +104,8 @@ var localized String ConditionalLabel;
 
 var travel int EnergyReserved;         //Amount of energy this aug uses when active. Used for Toggled augs.
 
+var bool bSilentDeactivation;           //SARGE: Next time this augmentation is deactivated, it will not show a message. Used when reclaiming the spy drone.
+
 ////Augmentation Colors
 var Color colActive;
 var Color colInactive;
@@ -315,7 +317,8 @@ function Deactivate()
 
 		bIsActive = False;
 
-		Player.ClientMessage(Sprintf(AugDeactivated, GetName()));
+        if (!bSilentDeactivation)
+            Player.ClientMessage(Sprintf(AugDeactivated, GetName()));
 
         if (chargeTime > 0)
             currentChargeTime = chargeTime;
@@ -327,7 +330,11 @@ function Deactivate()
 
 		if (Player.AugmentationSystem.NumAugsActive() == 0)
 			Player.AmbientSound = None;
-		Player.PlaySound(DeactivateSound, SLOT_None,0.7);
+        
+        if (!bSilentDeactivation)
+            Player.PlaySound(DeactivateSound, SLOT_None,0.7);
+
+        bSilentDeactivation = false;
 		GotoState('Inactive');
 	}
 }
@@ -485,7 +492,17 @@ simulated function bool IsActive()
 }
 
 // ----------------------------------------------------------------------
-// IsActive()
+// GiveFullRecharge()
+// ----------------------------------------------------------------------
+
+function GiveFullRecharge()
+{
+	currentChargeTime = 0.0;
+    Player.UpdateAugmentationDisplayStatus(Self);
+}
+
+// ----------------------------------------------------------------------
+// IsCharging()
 // ----------------------------------------------------------------------
 
 function bool IsCharging()
