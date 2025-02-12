@@ -12,6 +12,8 @@ var int EMPDrain;                                                               
 
 var bool bDestroyNow;                                                           //SARGE: If set, deactivating on zero energy will destroy the drone, rather than putting it on standby
 
+var bool bRealActivation;														//SARGE: Differentiate between a "real" activation (via the button key) vs a "fake" activation via loading a save.
+
 var const localized string ReconstructionMessage;
 var const localized string GroundedMessage;
 var const localized string GroundedMessage2;
@@ -59,6 +61,8 @@ function ToggleStandbyMode(bool standby)
     if (!player.bSpyDroneActive)
         return;
 
+	bRealActivation = false;
+
     if (standby)
     {
         if (player.aDrone != None)
@@ -95,7 +99,7 @@ function Timer()
 {
     if (IsInState('Active'))
     {
-        ToggleStandbyMode(false);
+		ToggleStandbyMode(!bRealActivation);
     }
 }
 Begin:
@@ -103,7 +107,7 @@ Begin:
     player.bSpyDroneSet = False;
     player.SAVErotation = player.ViewRotation;                                  //RSD: Set the SAVErotation the first time we activate
     player.DRONESAVErotation = player.ViewRotation;                             //RSD: Set the DRONESAVErotation the first time we activate
-    SetTimer(0.4,False);
+	SetTimer(0.4,False);
 }
 
 function ActivateKeyPressed()
@@ -114,11 +118,16 @@ function ActivateKeyPressed()
         bDestroyNow = true;
         Deactivate();
         bDestroyNow = false;
+		return;
     }
+	
+	bRealActivation = true;
 }
 
 function Deactivate()
 {
+	bRealActivation = false;
+
     //If we were shut off due to energy, go into standby instead
     if (player.Energy == 0 && !bDestroyNow)
     {

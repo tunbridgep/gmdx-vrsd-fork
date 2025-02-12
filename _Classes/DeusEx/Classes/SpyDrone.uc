@@ -9,6 +9,8 @@ var float detectionRange;                                                       
 
 var bool bEMPDeath;                                                              //SARGE: Track if we were destroyed by EMP. The death is delayed, so it needs to not reset our view afterwards.
 
+var localized string msgDroneRecovered;                                         //SARGE: Message when reclaiming a drone
+
 auto state Flying
 {
 	function ProcessTouch (Actor Other, Vector HitLocation)
@@ -174,12 +176,35 @@ function Destroyed()
 	Super.Destroyed();
 }
 
+function Frob(Actor Frobber, Inventory frobWith)
+{
+    local DeusExPlayer player;
+    local Augmentation droneAug;
+
+    player = DeusExPlayer(frobber);
+
+    if (player != None && player.AugmentationSystem != None)
+    {
+        droneAug = player.AugmentationSystem.FindAugmentation(class'AugDrone');
+
+        if (droneAug != None) //This should never fail
+        {
+            player.ClientMessage(msgDroneRecovered);
+            droneAug.bSilentDeactivation = true; //Don't show message or play sound.
+            Destroy();
+            droneAug.GiveFullRecharge();
+        }
+    }
+
+    super.Frob(Frobber,frobWith);
+}
+
 defaultproperties
 {
      elasticity=0.200000
      fuseLength=0.000000
      proxRadius=128.000000
-     bHighlight=False
+     bHighlight=True
      bBlood=False
      bDebris=False
      blastRadius=128.000000
@@ -202,4 +227,5 @@ defaultproperties
      Mass=10.000000
      Buoyancy=2.000000
      detectionRange=350
+     msgDroneRecovered="Spy Drone Reclaimed"
 }

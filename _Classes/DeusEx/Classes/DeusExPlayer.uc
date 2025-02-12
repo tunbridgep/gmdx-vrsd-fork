@@ -1401,6 +1401,7 @@ function PreTravel()
 {
     local TechGoggles tech;
     local int i;                                                                //RSD
+    local SpyDrone SD;
 	// Set a flag designating that we're traveling,
 	// so MissionScript can check and not call FirstFrame() for this map.
 
@@ -1429,6 +1430,9 @@ function PreTravel()
 		DeusExWeapon(inHand).LaserOff(true);                                    //RSD: Otherwise dots will remain on the map
     ForceDroneOff();                                                            //RSD: Since we can move on standby, shut drone off
     ConsoleCommand("set DeusExCarcass bRandomModFix" @ bRandomizeMods);         //RSD: Stupid config-level hack since PostBeginPlay() can't access player pawn in DeusExCarcass.uc
+
+	foreach AllActors(class'SpyDrone',SD)                                       //RSD: Destroy all spy drones so we can't activate disabled drones on map transition
+		SD.Destroy();
 }
 
 // ----------------------------------------------------------------------
@@ -4467,6 +4471,10 @@ function bool IsHighlighted(actor A)
 
 	if (A != None)
 	{
+        //strange that we have to do this manually...
+        if (A.IsA('SpyDrone') && bSpyDroneSet)
+            return true;
+
 		if (A.bDeleteMe || A.bHidden)
 			return False;
 
@@ -16939,8 +16947,10 @@ function ForceDroneOff(optional bool skipDeactivation)
                 bSpyDroneSet = false;                                                 //RSD: Ensures that the Spy Drone will ACTUALLY be turned off
             }
             if (!skipDeactivation)
+            {
                 anAug.Deactivate();
-            bSpyDroneActive = false;                                                  //RSD: Prevents being forced back into drone control at the last second
+                bSpyDroneActive = false;                                                  //RSD: Prevents being forced back into drone control at the last second
+            }
         }
     }
 }
