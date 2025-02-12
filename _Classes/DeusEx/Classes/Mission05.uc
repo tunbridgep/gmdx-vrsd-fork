@@ -84,20 +84,19 @@ function FirstFrame()
 
 						// restore any ammo amounts for a weapon to default
 						//DDL- except the fucking lams and stuff!
-						if (item.IsA('Weapon') && (Weapon(item).AmmoType != None))
+						if (item.IsA('DeusExWeapon') && (Weapon(item).AmmoType != None))
 						{
-							if(item.isA('DeusExWeapon') && !DeusExWeapon(item).bDisposableWeapon) //RSD: These need to be hardcoded since GMDX makes them stack
-								//Weapon(item).PickupAmmoCount = Weapon(item).Default.PickupAmmoCount;
+                            //Normal weapons are easy. Just set their ammo count to nothing.
+							if(!DeusExWeapon(item).bDisposableWeapon)
 								Weapon(item).PickupAmmoCount = 0;               //RSD: Weapons will be emptied of their ammunition
-                            else if (!player.bHardcoreMode) //SARGE: Disposables will be stored as a single stack and the player will lose the ammo. Hardcore already moves the ammo into the crate.
+                            
+                            //If it's a disposable weapon, it's harder. Add our current ammo to the weapon pickup, then remove our ammo.
+                            else
                             {
                                 AmmoType = Weapon(item).AmmoType;
-                                if (ammoType.ammoAmount > 0)
-                                {
-                                    Weapon(item).PickupAmmoCount = AmmoType.ammoAmount;
-                                    player.ClientMessage("Setting " $ AmmoType $ " pickup ammocount " $ item.ItemName $ " to " $ AmmoType.ammoAmount);
-                                    AmmoType.ammoAmount = 0;
-                                }
+                                Weapon(item).PickupAmmoCount = AmmoType.ammoAmount;
+                                AmmoType.ammoAmount = 0;
+                                Player.DeleteInventory(Weapon(item).AmmoType);
                             }
 						}
 
