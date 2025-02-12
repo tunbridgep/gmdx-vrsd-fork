@@ -1078,6 +1078,8 @@ function Frob(Actor Frobber, Inventory frobWith)
                             W.IsA('WeaponLAM')  ||
                             W.IsA('WeaponHideAGun') && player.FindInventorySlot(item, True))  //CyberP: there we go. Now need to stop 1-4 rand for nades
                             W.PickupAmmoCount = 1;       //CyberP: I need to check if inventory is full and no nades
+                        else if (W.IsA('WeaponFlamethrower'))
+                            W.PickupAmmoCount = (PickupAmmoCount * 5);                    //SARGE: Now 5-25 rounds with initialization in MissionScript.uc on first map load
                         else if (W.IsA('WeaponAssaultGun'))
                             //W.PickupAmmoCount = Rand(5) + 1.5;                          //RSD
                             W.PickupAmmoCount = PickupAmmoCount + 1;                      //RSD: Now 2-5 rounds with initialization in MissionScript.uc on first map load
