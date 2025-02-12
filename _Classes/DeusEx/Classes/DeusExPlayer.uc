@@ -654,6 +654,7 @@ var globalconfig bool bAlwaysShowBloom;                                         
 
 var globalconfig bool bShowEnergyBarPercentages;                                //SARGE: If true, show the oxygen and bioenergy percentages below the bars.
 
+var bool bUsingComputer;                                                        //SARGE: Are we currently using a computer? Set so that we can restrict input while using one
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -5146,6 +5147,10 @@ function DoJump( optional float F )
 	local float scaleFactor, augLevel, augStealthValue;                         //RSD: added augStealthValue
 	local int MusLevel;
 	local Vector velocityNormal;                                                //RSD: added velocityNormal
+        
+    //SARGE: Prevent jumping if we're using a computer
+    if (bUsingComputer)
+        return;
 
 	MusLevel = AugmentationSystem.GetClassLevel(class'AugMuscle');
 
@@ -5725,6 +5730,12 @@ state PlayerWalking
         local float heavyMult;                                                  //RSD
         local float heavySkillVal;                                              //RSD
         local float mult4;                                                      //RSD
+
+        //SARGE: Prevent walking if we're using a computer
+        if (bUsingComputer)
+        {
+            newAccel = vect(0,0,0);
+        }
 
 		if (bStaticFreeze)
 		{
