@@ -1448,7 +1448,6 @@ event TravelPostAccept()
 	local SavePoint SP;
 	local rotator rofs;
     local int j;                                                                //RSD
-    local SpyDrone SD;
 
 	//local WeaponGEPGun gepTest;
 	local vector ofst;
@@ -1601,9 +1600,6 @@ event TravelPostAccept()
 
 	SetRocketWireControl();
 	//end GMDX
-
-	foreach AllActors(class'SpyDrone',SD)                                       //RSD: Destroy all spy drones so we can't activate disabled drones on map transition
-		SD.Destroy();
 }
 //GMDX: set up mounted gep spawn, as no matter what i try it still draws it on spawn :/
 function SpawnGEPmounted(bool mountIt)
