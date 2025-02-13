@@ -3,12 +3,29 @@
 //=============================================================================
 class HazMatSuit extends ChargedPickup;
 
+var localized string ItemProtect;
+
+function string GetDescription2(DeusExPlayer player)
+{
+    local string str;
+
+    //Add Defense
+    //TODO: Calculate this properly
+    str = AddLine(str,ItemProtect);
+    
+    str = AddLine(str, super.GetDescription2(player));
+    
+    return str;
+}
+
 //
 // Reduces poison gas, tear gas, and radiation damage
 //
 
 defaultproperties
 {
+     ItemProtect="Environmental Protection: 60%"
+     ChargeRemainingLabel="Durability: %d%%"
      ActivateSound=Sound'RSDCrap.Pickup.HazmatSuitEquip'
      DeactivateSound=Sound'RSDCrap.Pickup.HazmatSuitUnequip'
      skillNeeded=Class'DeusEx.SkillEnviro'

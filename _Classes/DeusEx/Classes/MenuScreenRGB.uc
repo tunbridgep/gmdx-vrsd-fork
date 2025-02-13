@@ -18,6 +18,10 @@ enum EMessageBoxModes
 };
 
 var ColorTheme currentTheme;
+var ColorTheme customHUD;
+var ColorTheme customMenu;
+
+
 var Name       currentColorName;
 var Bool       bInitializing;
 
@@ -69,15 +73,43 @@ event InitWindow()
 	bInitializing = True;
 
 	Super.InitWindow();
+    
+    /*
+    //SARGE: Force the player into the custom theme, to prevent weirdness.
+    player.MenuThemeNameGMDX = "CustomMenu";
+    player.HUDThemeNameGMDX = "CustomHUD";
+    player.ThemeManager.SetCurrentHUDColorTheme(player.ThemeManager.FindTheme("CustomHUD"));
+    player.ThemeManager.SetCurrentMenuColorTheme(player.ThemeManager.FindTheme("CustomMenu"));
+    */
 
-	player.ThemeManager.currentHUDTheme.themeName = "CustomHUD";
-	player.ThemeManager.currentMenuTheme.themeName = "CustomMenu";
+	//player.ThemeManager.currentHUDTheme.themeName = "CustomHUD";
+	//player.ThemeManager.currentMenuTheme.themeName = "CustomMenu";
+
+    //SARGE: Force the player into the custom menu theme.
+    customHUD = player.ThemeManager.FindTheme("CustomHUD");
+    customMenu = player.ThemeManager.FindTheme("CustomMenu");
+
+    player.ThemeManager.SetCurrentHUDColorTheme(customHUD);
+    player.ThemeManager.SetCurrentMenuColorTheme(customMenu);
+
 	ChangeStyle();
 
 	SetThemeMode(CTT_Menu);
 	SetMouseFocusMode(MFOCUS_Click);
 
 	bInitializing = False;
+}
+
+//SARGE: Restore the previous theme when we leave.
+//SARGE: On second thought, just keep us in this theme.
+event DestroyWindow()
+{
+    //player.ThemeManager.SetCurrentHUDColorTheme(player.ThemeManager.FindTheme(player.HUDThemeNameGMDX));
+    //player.ThemeManager.SetCurrentMenuColorTheme(player.ThemeManager.FindTheme(player.MenuThemeNameGMDX));
+    player.MenuThemeNameGMDX = "CustomMenu";
+    player.HUDThemeNameGMDX = "CustomHUD";
+    ChangeStyle();
+	Super.DestroyWindow();
 }
 
 // ----------------------------------------------------------------------
@@ -186,11 +218,11 @@ function SetThemeMode(EColorThemeTypes newThemeMode)
 
 	if (themeMode == CTT_Menu)
 	{
-		SetTheme(player.ThemeManager.GetCurrentMenuColorTheme());
+		SetTheme(customMenu);
 	}
 	else
 	{
-		SetTheme(player.ThemeManager.GetCurrentHUDColorTheme());
+		SetTheme(customHUD);
 	}
 
 	// Update tabs appopriately
@@ -217,22 +249,6 @@ function SetTheme(ColorTheme newTheme)
 		UpdateCheckBoxes();
 		ChangeStyle();
 	}
-}
-
-// ----------------------------------------------------------------------
-// SetThemeByName()
-// ----------------------------------------------------------------------
-
-function SetThemeByName(String themeStringName)
-{
-	local ColorTheme theme;
-
-	if (themeMode == CTT_Menu)
-		theme = player.ThemeManager.SetMenuThemeByName(themeStringName);
-	else
-		theme = player.ThemeManager.SetHUDThemeByName(themeStringName);
-
-	SetTheme(theme);
 }
 
 // ----------------------------------------------------------------------

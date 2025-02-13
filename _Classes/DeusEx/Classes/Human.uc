@@ -289,6 +289,7 @@ function PlayLanded(float impactVel)
 {
 //	ClientMessage("PlayLanded()");
 	PlayFootStep();
+    //SARGE: TODO: Make this not always silent, it should be impact dependent
 	if (!IsCrouching())
 		PlayAnim('Land',3.0,0.1);
 	isMantling = False;
@@ -696,6 +697,8 @@ function checkMantle()                                                          
                                     AugmentationSystem.AutoAugs(false,false);
                             }
                         }
+                        if (IsCrouching())
+                            bCrouchHack = true;
 						goToState('Mantling');
 					}
 				}
@@ -899,10 +902,7 @@ State Mantling
 		decorum = None;
 		mova = None;
 
-        if (bCrouchHack)
-        {
-           SetTimer(0.6,false);
-		}
+        SetTimer(0.6,false);
 
 		if (inHand != None && inHand.IsA('DeusExWeapon'))
         {
@@ -933,12 +933,6 @@ State Mantling
 	  //MultiplayerTick(deltaTime);
       FrobTime += deltaTime;
       UpdateTimePlayed(deltaTime);
-
-      //if (bCrouchHack)
-      //{
-      //bIsCrouching = True;
-      //bDuck = 1;
-      //}
 
       velocity.X = 0;
       velocity.Y = 0;

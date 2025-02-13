@@ -11,6 +11,7 @@ class WeaponModLaser extends WeaponMod;
 
 function ApplyMod(DeusExWeapon weapon)
 {
+	Super.ApplyMod(weapon);
 	if (weapon != None)
 	{
 		weapon.bHasLaser = True;

@@ -35,6 +35,14 @@ function PostBeginPlay()
 
 function ApplyMod(DeusExWeapon weapon)
 {
+    local DeusExPlayer player;
+    if (weapon != None)
+    {
+        weapon.bModified = true;
+        player = DeusExPlayer(GetPlayerPawn());
+        if (player != None)
+            player.UpdateHUD();
+    }
 }
 
 // ----------------------------------------------------------------------

@@ -11,6 +11,7 @@ class WeaponModRecoil extends WeaponMod;
 
 function ApplyMod(DeusExWeapon weapon)
 {
+	Super.ApplyMod(weapon);
 	if (weapon != None)
 	{
 		weapon.recoilStrength    += (weapon.Default.recoilStrength * WeaponModifier);

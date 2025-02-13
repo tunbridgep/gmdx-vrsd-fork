@@ -205,6 +205,17 @@ function Color GetAugColor(optional bool alternate, optional bool bForceActiveCo
 }
 
 // ----------------------------------------------------------------------
+// ActivateKeyPressed()
+// Called when the activate button for an aug is pressed, regardless of whether or not it will be activated/deactivated, or can be activated.
+// Used for doing special "on button press" events regardless of the aug's state.
+// See AugDrone for an example
+// ----------------------------------------------------------------------
+
+function ActivateKeyPressed()
+{
+}
+
+// ----------------------------------------------------------------------
 // Activate()
 // ----------------------------------------------------------------------
 
@@ -441,6 +452,7 @@ simulated function bool UpdateInfo(Object winObject, optional string initialText
 	else
 	{
 		winInfo.AppendText(GetDescription());
+		winInfo.SetText(GetDescription());
 	}
 
     // Energy Reserve
@@ -566,35 +578,24 @@ simulated function bool CanDrainEnergy()
 
 function float GetAdjustedEnergyRate()
 {    
-    return GetCustomEnergyRate(GetEnergyRate());
-}
-
-function float GetCustomEnergyRate(float rate)
-{    
-    local Augmentation heart, recirc;
-    local float total, bonus, penalty, mult;
-
-    heart = Player.AugmentationSystem.FindAugmentation(class'AugHeartLung');
-    recirc = Player.AugmentationSystem.FindAugmentation(class'AugPower');
+    local float bonus, penalty, mult;
 
     //Heart Penalty
-    if (heart.bHasIt)
-        penalty = heart.LevelValues[heart.CurrentLevel];
+    penalty = Player.AugmentationSystem.GetAugLevelValue(class'AugHeartLung');
 
     //recirc bonus
-    if (recirc.bHasIt)
-        bonus = 1.0 - recirc.LevelValues[recirc.CurrentLevel];
+    bonus = Player.AugmentationSystem.GetAugLevelValue(class'AugPower');
 
-    if (penalty > bonus)
-        mult = penalty - bonus;
-    else if (bonus > 0 || penalty > 0)
-        mult = bonus - penalty;
+    if (penalty > 0 && bonus > 0)
+        mult = bonus + penalty - 1.0;
+    else if (bonus > 0)
+        mult = bonus;
+    else if (penalty > 0)
+        mult = penalty;
     else
         mult = 1.0;
 
-    //player.clientMessage("mult: " $ mult $ ", penalty: " $ penalty $ ", bonus: " $ bonus);
-
-    return rate * mult;
+    return GetEnergyRate() * mult;
 }
 
 // ----------------------------------------------------------------------
@@ -605,24 +606,20 @@ function float GetCustomEnergyRate(float rate)
 
 function float GetAdjustedEnergyReserve()
 {    
-    local Augmentation heart, recirc;
     local float bonus, penalty, mult;
 
-    heart = Player.AugmentationSystem.FindAugmentation(class'AugHeartLung');
-    recirc = Player.AugmentationSystem.FindAugmentation(class'AugPower');
-
     //Heart Penalty
-    if (heart.bHasIt)
-        penalty = heart.LevelValues[heart.CurrentLevel];
+    penalty = Player.AugmentationSystem.GetAugLevelValue(class'AugHeartLung');
 
     //recirc bonus
-    if (recirc.bHasIt)
-        bonus = 1.0 - recirc.LevelValues[recirc.CurrentLevel];
+    bonus = Player.AugmentationSystem.GetAugLevelValue(class'AugPower');
 
-    if (penalty > bonus)
-        mult = penalty - bonus;
-    else if (bonus > 0 || penalty > 0)
-        mult = bonus - penalty;
+    if (penalty > 0 && bonus > 0)
+        mult = bonus + penalty - 1.0;
+    else if (bonus > 0)
+        mult = bonus;
+    else if (penalty > 0)
+        mult = penalty;
     else
         mult = 1.0;
 
