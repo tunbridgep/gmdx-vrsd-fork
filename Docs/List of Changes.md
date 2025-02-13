@@ -15,6 +15,8 @@ Sarge's Changes since Beta 2.2:
     - Fixed vRSD bug (feature?) where the player would not cough after using cigarettes if the addiction system was enabled.
     - Fixed Vanilla bug where picking up ammo would add it to the players current clip, rather than their reserve ammo.
     - Fixed GMDX Ammo duplication glitch when looting corpses while having a full inventory.
+    - Fixed GMDX Ammo duplication glitch when looting and then gibbing corpses, which would refill their weapon.
+    - Fixed GMDX bug where some items would have empty name strings.
     - Fixed GMDX bug where Ford Schick would not give you an upgrade canister when telling you he swiped one, if ConFix isn't installed. Fixed by adding it to his desk.
     - Fixed a number of typos in various places.
     - Fixed Vanilla bug where sound volume would reset upon new game.
@@ -33,6 +35,7 @@ Sarge's Changes since Beta 2.2:
         - Declined Items need to be double-clicked in order to be picked up in the world.
         - Holding the Walk/Run key while interacting will always pick up any declined items.
     - Datacubes will show a black screen after they have been read.
+    - When picking up duplicate Nanokeys, the log now lists it as a duplicate.
     - While having a grenade selected, the crosshair will turn blue when you're able to place it on a wall.
     - Right-Clicking while dead will load the last save game.
     - Right-Clicking an item in the belt with the Inventory Window open will clear the slot.
