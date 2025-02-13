@@ -5291,34 +5291,6 @@ function string DoAmmoInfoWindow(Pawn P, PersonaInventoryInfoWindow winInfo)
     local string noiseLev, msgMultiplier;
     local float prec;                                                           //RSD: Floating point precision
 
-	P = Pawn(Owner);
-	if (P == None)
-		return False;
-
-	winInfo = PersonaInventoryInfoWindow(winObject);
-	if (winInfo == None)
-		return False;
-
-    //SARGE: Show modified weapons in title
-    if (bModified && DeusExPlayer(owner) != None && DeusExPlayer(owner).bBeltShowModified)
-        winInfo.SetTitle(itemName @ strModified);
-    else
-        winInfo.SetTitle(itemName);
-	if (bHandToHand && Owner.IsA('DeusExPlayer'))
-	{
-	   if (DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkInventive').bPerkObtained == true)
-	   {
-	      winInfo.AddSecondaryButton(self);
-	   }
-	   else if (GoverningSkill != class'DeusEx.SkillDemolition' && !IsA('WeaponCombatKnife') && !IsA('WeaponHideAGun') && !IsA('WeaponShuriken'))
-	   {                                                                        //RSD: Throwing Knives now require the perk, c'mon //RSD: Or nah
-	   }
-	   else
-	       winInfo.AddSecondaryButton(self);
-	}
-	winInfo.SetText(msgInfoWeaponStats);
-	winInfo.AddLine();
-
 	// Create the ammo buttons.  Start with the AmmoNames[] array,
 	// which is used for weapons that can use more than one
 	// type of ammo.
@@ -5430,8 +5402,17 @@ simulated function bool UpdateInfo(Object winObject)
 	winInfo = PersonaInventoryInfoWindow(winObject);
 	if (winInfo == None)
 		return False;
+    
+    //SARGE: Show modified weapons in title
+    if (bModified && DeusExPlayer(owner) != None && DeusExPlayer(owner).bBeltShowModified)
+        winInfo.SetTitle(itemName @ strModified);
+    else
+        winInfo.SetTitle(itemName);
 
-    winInfo.SetTitle(itemName);
+    //SARGE: Add Decline Button
+    if (P.IsA('DeusExPlayer') && !DeusExPlayer(P).DeclinedItemsManager.IsDeclined(class))
+		winInfo.AddDeclineButton(class);
+
 	if (bHandToHand && Owner.IsA('DeusExPlayer'))
 	{
 	   if (DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkInventive').bPerkObtained == true)
@@ -5444,12 +5425,9 @@ simulated function bool UpdateInfo(Object winObject)
 	   else
 	       winInfo.AddSecondaryButton(self);
 	}
+
 	winInfo.SetText(msgInfoWeaponStats);
 	winInfo.AddLine();
-    
-    //SARGE: Add Decline Button
-    if (P.IsA('DeusExPlayer') && !DeusExPlayer(P).DeclinedItemsManager.IsDeclined(class))
-		winInfo.AddDeclineButton(class);
 
     DoAmmoInfoWindow(P,winInfo);
 
