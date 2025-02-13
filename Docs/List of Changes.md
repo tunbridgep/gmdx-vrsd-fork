@@ -177,6 +177,11 @@ Sarge's Changes since Beta 2.2:
             - The drone can now be activated while parked, which will reclaim it, allowing immediate redeployment without needing to wait for the reconstruction time.
             - Saving and Loading the game will no longer destroy any drones in flight.
             - The drone can now be used in full-screen (enabled by default), with the player view being displayed in the picture-in-picture window.
+            - The drone will bounce off walls and floors slightly less than before.
+            - The players equipped item is no longer unequipped when using the drone.
+            - Restored the drone creation sound (was removed in previous GMDX versions).
+            - When running out of bioelectrical energy, the Drone will be parked automatically instead of being destroyed.
+                - Using the Drone augmentation while at 0 bioelectrical energy can be used to forcibly destroy the drone.
     - Hacking Overhaul
         - Bypassing Turrets now requires Advanced hacking, as in Vanilla.
         - Hacked Cameras and Turrets will "reboot" and become re-enabled again after 2 minutes (plus an additional 2 minutes for each level of the Hacking skill)
