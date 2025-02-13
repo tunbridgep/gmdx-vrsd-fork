@@ -12,7 +12,7 @@ var texture icon;
 var int IconWidth;
 var int IconHeight;
 var texture smallIcon;
-var bool bAlwaysActive;
+var bool bAlwaysActive; //SARGE: Unused, but we can't remove it because Augmentation is an intrinsic actor. Use AugmentationType instead.
 var travel bool bBoosted;
 var travel int HotKeyNum;
 var travel Augmentation next;
@@ -75,6 +75,46 @@ var() sound LoopSound;
 // SARGE: Has this aug been added to the augmentation wheel?
 var travel bool bAddedToWheel;
 
+//SARGE: What type of augmentation is this?
+//Added stuff for Toggle augs
+enum EAugmentationType
+{
+    Aug_Passive,
+    Aug_Active,
+    Aug_Automatic,
+    Aug_Toggle
+};
+
+var travel EAugmentationType AugmentationType;
+
+//Appends (Active) etc at the end of each title
+var localized String ActiveLabel;
+var localized String AutomaticLabel;
+var localized String ToggleLabel;
+var localized String PassiveLabel;
+
+//Type Descriptions, at the bottom of each augmentation
+var localized String TypeDescriptorPassive;
+var localized String TypeDescriptorActive;
+var localized String TypeDescriptorToggle;
+var localized String TypeDescriptorAutomatic;
+
+var localized String EnergyReserveLabel;
+var localized String ConditionalLabel;
+
+var travel int EnergyReserved;         //Amount of energy this aug uses when active. Used for Toggled augs.
+
+var bool bSilentDeactivation;           //SARGE: Next time this augmentation is deactivated, it will not show a message. Used when reclaiming the spy drone.
+
+////Augmentation Colors
+var Color colActive;
+var Color colInactive;
+var Color colInactive2;
+var Color colPassive;
+var Color colToggle;
+var Color colAuto;
+var Color colRecharging;
+
 // ----------------------------------------------------------------------
 // network replication
 // ----------------------------------------------------------------------
@@ -131,6 +171,38 @@ auto state Inactive
     }
 }
 
+// ----------------------------------------------------------------------
+// SARGE: Setup()
+// Called every time we restart the game, and whenever we install/upgrade an augmentation
+// ----------------------------------------------------------------------
+
+function Setup()
+{
+    //log("Aug Setup: " $ GetCurrentLevel());
+}
+
+// ----------------------------------------------------------------------
+// SARGE: GetAugColor()
+// Called by the UI code to get the augmentation color
+// ----------------------------------------------------------------------
+
+function Color GetAugColor(optional bool alternate, optional bool bForceActiveColor)
+{
+    if (IsCharging())
+        return colRecharging;
+    if (bIsActive || bForceActiveColor)
+    {
+        if (AugmentationType == Aug_Active) return colActive;
+        if (AugmentationType == Aug_Passive) return colPassive;
+        if (AugmentationType == Aug_Toggle) return colToggle;
+        if (AugmentationType == Aug_Automatic && !player.bSimpleAugSystem) return colAuto;
+        if (AugmentationType == Aug_Automatic && player.bSimpleAugSystem) return colToggle;
+    }
+
+    if (alternate)
+        return colInactive2;
+    return colInactive;
+}
 
 // ----------------------------------------------------------------------
 // Activate()
@@ -145,8 +217,14 @@ function bool CanActivate(out string message)
     	message = Sprintf(player.NanoVirusLabel, int(player.NanoVirusTimer));
     	return false;
     }
+	
+    if (player.Energy < GetAdjustedEnergyReserve())
+    {
+        message = player.EnergyCantReserve;
+        return false;
+    }
     
-	if (player.Energy == 0)
+    if (player.Energy < 1 && !IsToggleAug())
     {
         message = player.EnergyDepleted;
         return false;
@@ -163,7 +241,7 @@ function bool CanActivate(out string message)
 
 function string GetChargingMessage()
 {
-    return Sprintf(AugRecharging, AugmentationName);
+    return Sprintf(AugRecharging, GetName());
 }
 
 function Activate()
@@ -185,27 +263,22 @@ function Activate()
     else if (IsA('AugIcarus') && AugIcarus(self).bCooldown)
       { player.ClientMessage("Cooling Down..."); return; }
 
-    //TODO: Move this to the AugLight Activate() function
-    if (IsA('AugLight'))
-    {
-       if (CurrentLevel == 1)
-         EnergyRate=5.000000;
-       else
-         EnergyRate=10.000000;
-    }
-
 	if (IsInState('Inactive'))
 	{
+        Player.PlaySound(ActivateSound, SLOT_None,0.7);
+
+        //Deduct Reserve energy
+        if (GetAdjustedEnergyReserve() > 0)
+            player.Energy -= GetAdjustedEnergyReserve();
+
 		// this block needs to be before bIsActive is set to True, otherwise
 		// NumAugsActive counts incorrectly and the sound won't work
-		if (!IsA('AugHeartLung') && !IsA('AugPower'))
-		   Player.PlaySound(ActivateSound, SLOT_None,0.7);
-		if (Player.AugmentationSystem.NumAugsActive() == 0)
+		if (Player.AugmentationSystem.NumAugsActive() == 0 && !IsToggleAug() && !player.bQuietAugs)
 			Player.AmbientSound = LoopSound;
 
 		bIsActive = True;
 
-		Player.ClientMessage(Sprintf(AugActivated, AugmentationName));
+		Player.ClientMessage(Sprintf(AugActivated, GetName()));
 
 		if (Player.bHUDShowAllAugs)
 			Player.UpdateAugmentationDisplayStatus(Self);
@@ -229,14 +302,23 @@ function Deactivate()
 
 	// If the 'bAlwaysActive' flag is set, this aug can't be
 	// deactivated
-	if (bAlwaysActive)
+	if (!CanBeActivated())
 		return;
 
 	if (IsInState('Active'))
 	{
+        //Give back half of what we reserved
+        //SARGE: TODO: Store this so we don't get weirdness with installing heart/whatever
+        /*
+        if (EnergyReserved > 0)
+            player.Energy += GetReserveEnergyAmount() * 0.5;
+        */
+
+
 		bIsActive = False;
 
-		Player.ClientMessage(Sprintf(AugDeactivated, AugmentationName));
+        if (!bSilentDeactivation)
+            Player.ClientMessage(Sprintf(AugDeactivated, GetName()));
 
         if (chargeTime > 0)
             currentChargeTime = chargeTime;
@@ -248,8 +330,11 @@ function Deactivate()
 
 		if (Player.AugmentationSystem.NumAugsActive() == 0)
 			Player.AmbientSound = None;
-        if (!IsA('AugHeartLung') && !IsA('AugPower'))
-		   Player.PlaySound(DeactivateSound, SLOT_None,0.7);
+        
+        if (!bSilentDeactivation)
+            Player.PlaySound(DeactivateSound, SLOT_None,0.7);
+
+        bSilentDeactivation = false;
 		GotoState('Inactive');
 	}
 }
@@ -262,16 +347,18 @@ function bool IncLevel()
 {
 	if ( !CanBeUpgraded() )
 	{
-		Player.ClientMessage(Sprintf(AugAlreadyHave, AugmentationName));
+		Player.ClientMessage(Sprintf(AugAlreadyHave, GetName()));
 		return False;
 	}
 
-	if (bIsActive)
+	if (bIsActive && AugmentationType == Aug_Active)
 		Deactivate();
 
 	CurrentLevel++;
 
-	Player.ClientMessage(Sprintf(AugNowHave, AugmentationName, CurrentLevel + 1));
+    Setup();
+
+	Player.ClientMessage(Sprintf(AugNowHave, GetName(), CurrentLevel + 1));
 }
 
 // ----------------------------------------------------------------------
@@ -341,20 +428,27 @@ simulated function bool UpdateInfo(Object winObject)
 		return False;
 
 	winInfo.Clear();
-	winInfo.SetTitle(AugmentationName);
+	winInfo.SetTitle(GetName());
 
 	if (bUsingMedbot)
 	{
 		winInfo.SetText(Sprintf(OccupiesSlotLabel, AugLocsText[AugmentationLocation]));
-		winInfo.AppendText(winInfo.CR() $ winInfo.CR() $ Description);
+		winInfo.AppendText(winInfo.CR() $ winInfo.CR() $ GetDescription());
 	}
 	else
 	{
-		winInfo.SetText(Description);
+		winInfo.SetText(GetDescription());
 	}
 
+    // Energy Reserve
+    if (EnergyReserved > 0)
+        winInfo.AppendText(winInfo.CR() $ winInfo.CR() $ Sprintf(EnergyReserveLabel, Int(GetAdjustedEnergyReserve())));
+
 	// Energy Rate
-	winInfo.AppendText(winInfo.CR() $ winInfo.CR() $ Sprintf(EnergyRateLabel, Int(EnergyRate)));
+    if (EnergyRate > 0 && IsToggleAug())
+        winInfo.AppendText(winInfo.CR() $ winInfo.CR() $ Sprintf(EnergyRateLabel, Int(GetAdjustedEnergyRate())) @ ConditionalLabel);
+    else if (EnergyRate > 0)
+        winInfo.AppendText(winInfo.CR() $ winInfo.CR() $ Sprintf(EnergyRateLabel, Int(GetAdjustedEnergyRate())));
 
 	// Current Level
 	strOut = Sprintf(CurrentLevelLabel, CurrentLevel + 1);
@@ -367,9 +461,23 @@ simulated function bool UpdateInfo(Object winObject)
 
 	winInfo.AppendText(winInfo.CR() $ winInfo.CR() $ strOut);
 
-	// Always Active?
-	if (bAlwaysActive)
-		winInfo.AppendText(winInfo.CR() $ winInfo.CR() $ AlwaysActiveLabel);
+    // Always Active? //SARGE: Replaced with aug description string, see below
+    //if (!CanBeActivated())
+    //    winInfo.AppendText(winInfo.CR() $ winInfo.CR() $ AlwaysActiveLabel);
+
+    winInfo.AppendText(winInfo.CR() $ winInfo.CR());
+    switch (AugmentationType)
+    {
+        case Aug_Passive: winInfo.AppendText(TypeDescriptorPassive); break;
+        case Aug_Active: winInfo.AppendText(TypeDescriptorActive); break;
+        case Aug_Toggle: winInfo.AppendText(TypeDescriptorToggle); break;
+        case Aug_Automatic:
+            if (player.bSimpleAugSystem)
+                winInfo.AppendText(TypeDescriptorToggle);
+            else
+                winInfo.AppendText(TypeDescriptorAutomatic);
+            break;
+    }
 
 	return True;
 }
@@ -384,21 +492,22 @@ simulated function bool IsActive()
 }
 
 // ----------------------------------------------------------------------
-// IsActive()
+// GiveFullRecharge()
+// ----------------------------------------------------------------------
+
+function GiveFullRecharge()
+{
+	currentChargeTime = 0.0;
+    Player.UpdateAugmentationDisplayStatus(Self);
+}
+
+// ----------------------------------------------------------------------
+// IsCharging()
 // ----------------------------------------------------------------------
 
 function bool IsCharging()
 {
 	return currentChargeTime > 0.0;
-}
-
-// ----------------------------------------------------------------------
-// IsAlwaysActive()
-// ----------------------------------------------------------------------
-
-simulated function bool IsAlwaysActive()
-{
-	return bAlwaysActive;
 }
 
 // ----------------------------------------------------------------------
@@ -427,7 +536,144 @@ simulated function int GetCurrentLevel()
 
 simulated function float GetEnergyRate()
 {
-	return energyRate;
+    return EnergyRate;
+}
+
+// ----------------------------------------------------------------------
+// CanDrainEnergy()
+//
+// Allows the individual augs to override when their energy is used
+// ----------------------------------------------------------------------
+
+simulated function bool CanDrainEnergy()
+{
+    return CanBeActivated() && !IsToggleAug();
+}
+
+// ----------------------------------------------------------------------
+// GetAdjustedEnergyRate()
+//
+// Gets the actual rate of energy use for an augmentation, factoring in bonuses and penalties.
+// SARGE: This was multiplicative for recirc and heart, in that order.
+// So a 20 energy aug with level 3 recirc (-35%) and level 1 heart (+40%) would
+// cost 18.2 energy (20 * 0.65 * 1.4) which seemed unintented.
+// Replaced it with an additive bonus/penalty.
+// Custom version allows working with any energy ratio
+// ----------------------------------------------------------------------
+
+function float GetAdjustedEnergyRate()
+{    
+    local float bonus, penalty, mult;
+
+    //Heart Penalty
+    penalty = Player.AugmentationSystem.GetAugLevelValue(class'AugHeartLung');
+
+    //recirc bonus
+    bonus = Player.AugmentationSystem.GetAugLevelValue(class'AugPower');
+
+    if (penalty > 0 && bonus > 0)
+        mult = bonus + penalty - 1.0;
+    else if (bonus > 0)
+        mult = bonus;
+    else if (penalty > 0)
+        mult = penalty;
+    else
+        mult = 1.0;
+
+    return GetEnergyRate() * mult;
+}
+
+// ----------------------------------------------------------------------
+// GetAdjustedEnergyReserve()
+//
+// Gets the actual energy reserve amount, factoring in bonuses and penalties.
+// ----------------------------------------------------------------------
+
+function float GetAdjustedEnergyReserve()
+{    
+    local float bonus, penalty, mult;
+
+    //Heart Penalty
+    penalty = Player.AugmentationSystem.GetAugLevelValue(class'AugHeartLung');
+
+    //recirc bonus
+    bonus = Player.AugmentationSystem.GetAugLevelValue(class'AugPower');
+
+    if (penalty > 0 && bonus > 0)
+        mult = bonus + penalty - 1.0;
+    else if (bonus > 0)
+        mult = bonus;
+    else if (penalty > 0)
+        mult = penalty;
+    else
+        mult = 1.0;
+
+    return EnergyReserved * mult;
+}
+
+// ----------------------------------------------------------------------
+// CanBeActivated()
+//
+// Returns true for augs that are considered "activatable" in the UI etc
+// ----------------------------------------------------------------------
+
+function bool CanBeActivated()
+{
+    return bHasIt && (AugmentationType == Aug_Active || IsToggleAug());
+}
+
+// ----------------------------------------------------------------------
+// IsToggleAug()
+//
+// Automatic and Toggle Augs behave very similarly, this functionality groups their behaviour
+// ----------------------------------------------------------------------
+
+function bool IsToggleAug()
+{
+    return AugmentationType == Aug_Toggle || AugmentationType == Aug_Automatic;
+}
+
+// ----------------------------------------------------------------------
+// GetName()
+//
+// Gets the Augmentation name, followed by the aug type, such as "(Automatic)"
+// ----------------------------------------------------------------------
+
+function string GetName()
+{
+    local string suffix;
+
+    switch (AugmentationType)
+    {
+        case Aug_Passive:
+            suffix = PassiveLabel;
+            break;
+        case Aug_Active:
+            suffix = ActiveLabel;
+            break;
+        case Aug_Automatic:
+            if (player.bSimpleAugSystem)
+                suffix = ToggleLabel;
+            else
+                suffix = AutomaticLabel;
+            break;
+        case Aug_Toggle:
+            suffix = ToggleLabel;
+            break;
+    }
+
+    return AugmentationName @ "(" $ suffix $ ")";
+}
+
+// ----------------------------------------------------------------------
+// GetDescription()
+//
+// Gets the Augmentation description, allowing augmentations to modify their own descriptions.
+// ----------------------------------------------------------------------
+
+function string GetDescription()
+{
+    return Description;
 }
 
 // ----------------------------------------------------------------------
@@ -441,6 +687,8 @@ defaultproperties
      IconHeight=52
      HotKeyNum=-1
      EnergyRateLabel="Energy Rate: %d Units/Minute"
+     ConditionalLabel="(Conditional)"
+     EnergyReserveLabel="Energy Reserved: %d Units"
      OccupiesSlotLabel="Occupies Slot: %s"
      AugLocsText(0)="Cranial"
      AugLocsText(1)="Eyes"
@@ -460,6 +708,14 @@ defaultproperties
      CanUpgradeLabel="(Can Upgrade)"
      CurrentLevelLabel="Current Level: %d"
      MaximumLabel="(Maximum)"
+     ActiveLabel="Active"
+     AutomaticLabel="Automatic"
+     ToggleLabel="Toggle"
+     PassiveLabel="Passive"
+     TypeDescriptorPassive="Passive Augmentations are always active and use no bioelectrical energy."
+     TypeDescriptorActive="Active Augmentations use bioelectrical energy at a standard rate while activated."
+     TypeDescriptorToggle="Toggled Augmentations may reserve an amount of bioelectrical energy while active, but use no energy to remain active. The reserve amount is lost upon deactivation."
+     TypeDescriptorAutomatic="Automatic Augmentations can be activated with no bioelectrical energy cost. While active, bioelectrical energy is drained based on specific circumstances."
      ActivateSound=Sound'DeusExSounds.Augmentation.AugActivate'
      DeActivateSound=Sound'DeusExSounds.Augmentation.AugDeactivate'
      LoopSound=Sound'DeusExSounds.Augmentation.AugLoop'
@@ -468,4 +724,13 @@ defaultproperties
      NetUpdateFrequency=5.000000
      bAddedToWheel=true;
      chargeTime=1.000000
+     AugmentationType=Aug_Active
+     colToggle=(R=76,G=255,B=0)
+     //colInactive=(R=255,G=255,B=255)
+     colInactive=(R=255,G=255,B=255)
+     colInactive2=(R=100,G=100,B=100)
+     colRecharging=(R=255)
+     colPassive=(R=255,G=255)
+     colActive=(R=0,G=38,B=255)
+     colAuto=(G=255,B=255)
 }

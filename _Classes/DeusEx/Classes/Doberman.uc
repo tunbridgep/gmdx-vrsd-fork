@@ -60,6 +60,12 @@ if (RotationRate.Yaw != 90000)
     RotationRate.Yaw = 90000; //CyberP: turn faster
 }
 
+//Allow dobermen to be stomped always.
+function bool WillTakeStompDamage(Actor stomper)
+{
+    return true;
+}
+
 defaultproperties
 {
      CarcassType=Class'DeusEx.DobermanCarcass'

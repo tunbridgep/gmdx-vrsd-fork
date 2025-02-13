@@ -115,6 +115,16 @@ function Deactivate()
 	b2 = None;
 }
 
+//Halved energy rate at level 2
+function Setup()
+{
+    super.Setup();
+    if (CurrentLevel > 0)
+        EnergyRate=default.EnergyRate * 0.5;
+    else
+        EnergyRate=default.EnergyRate;
+}
+
 defaultproperties
 {
      EnergyRate=10.000000

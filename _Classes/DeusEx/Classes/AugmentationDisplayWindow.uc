@@ -125,6 +125,8 @@ var ConLight lite;
     
 var ThrownProjectile lastGrenade;
 
+var localized String msgDisarmed;
+
 // ----------------------------------------------------------------------
 // InitWindow()
 // ----------------------------------------------------------------------
@@ -340,11 +342,18 @@ singular function checkForHazards(GC gc)
     local bool beep;
 
     local int i;
+	local DeusExRootWindow root;
+
+	root = DeusExRootWindow(player.rootWindow);
+    
+    //Disable the hazard detection text while windows are open
+    if (root == None || (root != None && root.WindowStackCount() > 0))
+        return;
 
     aug = AugIFF(Player.AugmentationSystem.GetAug(class'AugIFF'));
 
     if (aug != None && aug.bHasIt)
-    range = (aug.CurrentLevel) * aug.default.hazardsrange * 16; //Range in which hazards are detected - 50 feet at level 2, 100 at level 3
+        range = (aug.CurrentLevel) * aug.default.hazardsrange * 16; //Range in which hazards are detected - 50 feet at level 2, 100 at level 3
 
     if (range <= 0)
         return;
@@ -426,10 +435,10 @@ singular function checkForHazards(GC gc)
     actors[totalActors++] = temp;
     temp = None;
     
-    //Third, get closest grenade (half-range)
+    //Third, get grenades (half-range)
     foreach Player.RadiusActors(class'ThrownProjectile', PROJ, range * 0.5)
     {
-        //skip grenades if Defense aug is not on (it already shows them)
+        //skip grenades if Defense aug is on (it already shows them)
         if (bDefenseActive)
             break;
 
@@ -438,24 +447,13 @@ singular function checkForHazards(GC gc)
 
         if (!PROJ.bProximityTriggered || PROJ.bDisabled || PROJ.Damage <= 0 || PROJ.Owner == player) //Only detect mines placed on walls, etc
             continue;
-
-        //Get closest
-        if (temp != None)
-        {
-            range1 = VSize(CL.location - player.location);
-            range2 = VSize(temp.location - player.location);
-            if (range1 < range2)
-                temp = PROJ;
-        }
-        else
-            temp = PROJ;
+        
+        if (!PROJ.bEUASDetected)
+            beep = true;
+        actors[totalActors++] = PROJ;
+        PROJ.bEUASDetected = true;
     }
     
-    beep = ThrownProjectile(temp) != None && lastGrenade != ThrownProjectile(temp);
-    lastGrenade = ThrownProjectile(temp);
-    actors[totalActors++] = temp;
-    temp = None;
-
     //Now, get information for the actors
     for (i = 0;i < totalActors;i++)
     {
@@ -1504,6 +1502,9 @@ function DrawTargetAugmentation(GC gc)
 				
                 // print disabled camera info
                 str = str $ GetHackDisabledText(target,true);
+                
+                // print disabled grenade info
+                str = str $ GetWallGrenadeDisabledText(target,true);
 
 				gc.SetTextColor(crossColor);
 
@@ -1615,17 +1616,22 @@ function DrawTargetAugmentation(GC gc)
 				if (target.IsA('Robot') && (Robot(target).EMPHitPoints == 0))
 					str = msgDisabled;
 				
+                // print disabled wall mine info
+                if (str == "")
+                    str = GetWallGrenadeDisabledText(target,false);
+
                 // print disabled camera info
                 if (str == "")
                     str = GetHackDisabledText(target,false);
 
                 if (str != "")
                 {
-					gc.SetTextColor(crossColor);
+					gc.SetTextColor(colWhite);
 					gc.GetTextExtent(0, w, h, str);
 					x = boxCX - w/2;
 					y = boxTLY - h - margin;
 					gc.DrawText(x, y, w, h, str);
+					gc.SetTextColor(crossColor);
                 }
 			}
 		}
@@ -1652,6 +1658,23 @@ function DrawTargetAugmentation(GC gc)
 	// set the crosshair colors
 	DeusExRootWindow(player.rootWindow).hud.cross.SetCrosshairColor(crossColor);
 	DeusExRootWindow(player.rootWindow).hud.hitmarker.SetCrosshairColor(crossColor);
+}
+
+//SARGE: Get the text for wall grenades
+function string GetWallGrenadeDisabledText(Actor target, bool TargetingDisplay)
+{
+    local string str;
+    if (target.IsA('ThrownProjectile') && ThrownProjectile(target).bDisabled && ThrownProjectile(target).bProximityTriggered)
+    if (ThrownProjectile(target).bEMPDisabled)
+        str = msgDisabled;
+    else
+        str = msgDisarmed;
+    
+    //If using the targeting aug, we need to format it
+    if (TargetingDisplay && str != "")
+        str = " (" $ str $ ")";
+
+    return str;
 }
 
 //SARGE: Get the text for rebooting cameras/turrets
@@ -2139,6 +2162,7 @@ defaultproperties
      msgIRAmpActive="IRAmp Active"
      msgNoImage="Image Not Available"
      msgDisabled="Disabled"
+     msgDisarmed="Disarmed"
      msgReboot="Rebooting in %s"
      SpottedTeamString="You have spotted a teammate!"
      YouArePoisonedString="You have been poisoned!"

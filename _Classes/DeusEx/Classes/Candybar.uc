@@ -3,21 +3,15 @@
 //=============================================================================
 class Candybar extends RSDEdible;
 
-var localized string bioboost;
-
 function Eat(DeusExPlayer player)
 {
-    player.HealPlayer(2, False);
     player.PlaySound(sound'CandyEat',SLOT_None,2);
-    player.Energy += 3;
-    if (player.Energy > player.EnergyMax)
-        player.Energy = player.EnergyMax;
-    player.ClientMessage(bioboost);
 }
 
 defaultproperties
 {
-     bioboost="Recharged 3 Bioelectrical Energy Units"
+     healAmount=2
+     bioenergyAmount=3
      bBreakable=True
      FragType=Class'DeusEx.PaperFragment'
      maxCopies=20

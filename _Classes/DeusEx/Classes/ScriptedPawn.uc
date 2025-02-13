@@ -3761,6 +3761,7 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
     local int i;
     local DeusExWeapon wepa;
     local float modifier, modifier2;
+	local Perk perkAdrenalineRush;
 
 	// use the hitlocation to determine where the pawn is hit
 	// transform the worldspace hitlocation into objectspace
@@ -4003,12 +4004,15 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
              }
              }
             }
-            if (DeusExPlayer(instigatedBy).PerkManager.GetPerkWithClass(class'DeusEx.PerkAdrenalineRush').bPerkObtained == true)               //RSD: 50% Stamina return from Adrenaline perk
+			
+			perkAdrenalineRush = DeusExPlayer(instigatedBy).PerkManager.GetPerkWithClass(class'DeusEx.PerkAdrenalineRush');
+			
+            if (perkAdrenalineRush.bPerkObtained == true)               //RSD: 50% Stamina return from Adrenaline perk
             {
               if (DeusExPlayer(instigatedBy).inHand != None && (DeusExPlayer(instigatedBy).inHand.IsA('DeusExWeapon') &&
                  DeusExWeapon(DeusExPlayer(instigatedBy).inHand).bHandToHand && DeusExWeapon(DeusExPlayer(instigatedBy).inHand).AccurateRange < 200) )
               {
-              DeusExPlayer(instigatedBy).swimTimer += 0.5*DeusExPlayer(instigatedBy).swimDuration;
+              DeusExPlayer(instigatedBy).swimTimer += perkAdrenalineRush.PerkValue*DeusExPlayer(instigatedBy).swimDuration;
               if (DeusExPlayer(instigatedBy).swimTimer > DeusExPlayer(instigatedBy).swimDuration)
                    DeusExPlayer(instigatedBy).swimTimer = DeusExPlayer(instigatedBy).swimDuration;
               }

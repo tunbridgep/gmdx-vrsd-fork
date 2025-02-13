@@ -19,11 +19,6 @@ var Color colIconNormal;
 
 event DrawWindow(GC gc)
 {
-	if ((bSlotFull) || (bHasIt))
-		colIcon = colIconDisabled;
-	else
-		colIcon = colIconNormal;
-
 	Super.DrawWindow(gc);
 
 	// Draw selection border
@@ -49,6 +44,12 @@ function SetAugmentation(Augmentation newAug)
 
 	// Now check to see if this augmentation slot is full
 	bSlotFull = player.AugmentationSystem.AreSlotsFull(newAug);
+	
+    if ((bSlotFull) || (bHasIt))
+		colIcon = colIconDisabled;
+	else
+		colIcon = newAug.GetAugColor(false,true);
+
 }
 
 // ----------------------------------------------------------------------

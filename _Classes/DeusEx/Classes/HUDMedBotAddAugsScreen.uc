@@ -295,13 +295,6 @@ function InstallAugmentation()
 	augCan = HUDMedBotAugItemButton(selectedAugButton).GetAugCan();
 	aug    = HUDMedBotAugItemButton(selectedAugButton).GetAugmentation();
 
-    /*                                                                          //RSD: honestly this should all be handled in GivePlayerAugmentation() in AugmentationManager.uc
-    if (aug.IsA('AugHeartLung')) //CyberP: AugHeartLung upgrades all passive augs. //RSD: Active too now
-       ForEach Player.AllActors(class'Augmentation',allTheAugs)
-        if (allTheAugs.bHasIt && allTheAugs.CurrentLevel != allTheAugs.MaxLevel) //RSD: removed && allTheAugs.bAlwaysActive, no distinction between active or passive for synth heart anymore
-          allTheAugs.CurrentLevel++;                                            //RSD: changed from +=1 to ++ for no reason
-    */
-
 	// Add this augmentation (if we can get this far, then the augmentation
 	// to be added is a valid one, as the checks to see if we already have
 	// the augmentation and that there's enough space were done when the

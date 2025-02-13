@@ -9,7 +9,6 @@ var float AddictionIncrement;                                                   
 var float DrugIncrement;                                                        //RSD: Amount added to DrugsTimerArray element
 var float MaxDrugTimer;                                                         //RSD: Limit for how long a current drug can be active;
 var localized string AddictionDescription;                                      //RSD: Special description for if the player has the addiction system active
-var bool bUseHunger;                                                            //Sarge: Whether or not a vice uses the hunger system when we have the addiction system disabled
 
 //RSD: Superclass for all addictive drug types
 // 0 - Cigarettes (Cigarettes.uc)
@@ -20,7 +19,7 @@ var bool bUseHunger;                                                            
 //if the addiction system is disabled.
 function bool RestrictedUse(DeusExPlayer player)
 {
-    return bUseHunger && !player.bAddictionSystem && (player != none && player.fullUp >= 100 && (player.bHardCoreMode || player.bRestrictedMetabolism));
+    return !player.bAddictionSystem && (player != none && player.fullUp >= 100 && (player.bHardCoreMode || player.bRestrictedMetabolism));
 }
 
 //Add to the players FullUp bar, but only if we aren't using vices
@@ -30,58 +29,33 @@ function FillUp(DeusExPlayer player)
         Super.FillUp(player);
 }
 
-simulated function bool UpdateInfo(Object winObject)
+function Eat(DeusExPlayer player)
 {
-	local PersonaInfoWindow winInfo;
-	local string str;
-    local DeusExPlayer player;
-
-	player = DeusExPlayer(GetPlayerPawn());
-
-	winInfo = PersonaInfoWindow(winObject);
-	if (winInfo == None)
-		return False;
-
-	winInfo.SetTitle(itemName);
-    
-    winInfo.AddSecondaryButton(self);                   //Sarge: Allow drugs as secondaries
-
     if (player.bAddictionSystem)
-    	winInfo.SetText(AddictionDescription $ winInfo.CR() $ winInfo.CR());
+        HandleViceEffects(player);
+}
+
+//Allow healing, but only if we're not using the addiction system
+function int GetHealAmount(DeusExPlayer player)
+{
+    if (player.bAddictionSystem)
+        return 0;
+    else
+        return healAmount;
+}
+
+function string GetDescription(DeusExPlayer player)
+{
+    if (player.bAddictionSystem)
+        return AddictionDescription;
    	else
-		winInfo.SetText(Description $ winInfo.CR() $ winInfo.CR());
-
-	if (bCanHaveMultipleCopies)
-	{
-		// Print the number of copies
-		str = CountLabel @ String(NumCopies);
-		winInfo.AppendText(str);
-	}
-
-	return True;
+        return Description;
 }
 
-function UseOnce()
+function HandleViceEffects(DeusExPlayer player)
 {
-    local DeusExPlayer player;
-
-    super.UseOnce();
-
-    player = DeusExPlayer(GetPlayerPawn());
-    if (player.bAddictionSystem)
-        HandleViceEffects();
-}
-
-function HandleViceEffects()
-{
-    local DeusExPlayer player;
-
-    player = DeusExPlayer(GetPlayerPawn());
-
     //SARGE: New Addiction System
     player.AddictionManager.AddAddiction(AddictionType,AddictionIncrement,DrugIncrement);
-
-    return;
 }
 
 defaultproperties

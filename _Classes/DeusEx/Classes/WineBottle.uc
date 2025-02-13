@@ -5,14 +5,14 @@ class WineBottle extends Vice; //DeusExPickup;
 
 function Eat(DeusExPlayer player)
 {
-    if (!player.bAddictionSystem)                                        //RSD: Was 2, now 5 health to go alongside the addiction system bonus //SARGE: Actually just back to 2, with addiction system only giving the buff
-        player.HealPlayer(2, False);
+    super.Eat(player);
     player.drugEffectTimer += 5.0;
     player.PlaySound(sound'drinkwine',SLOT_None);
 }
 
 defaultproperties
 {
+     healAmount=2
      AddictionIncrement=5.000000
      bUseHunger=True
      bBreakable=True
