@@ -23,6 +23,10 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\HudAmmoDisplayBackgroundSecondary.pcx"			NAME="HudAmmoDisplayBackgroundSecondary"			GROUP="UserInterface"
 #exec TEXTURE IMPORT FILE="Textures\HudAmmoDisplayBorderSecondary.pcx"			NAME="HudAmmoDisplayBorderSecondary"			GROUP="UserInterface"
 
+//New Wall Socket texture to replace GMDX's janky one
+#exec TEXTURE IMPORT FILE="Textures\Skins\SocketTex1.pcx"		    NAME="SocketTex1"	        GROUP="Skins"
+#exec TEXTURE IMPORT FILE="Textures\Skins\SocketTex1_broken.pcx"    NAME="SocketTex1_broken"	GROUP="Skins"
+
 #exec AUDIO IMPORT FILE="Sounds\PistolCaseSound.wav"			NAME="PistolCaseSound"			GROUP="Weapons"
 #exec AUDIO IMPORT FILE="Sounds\ShellCaseSound.wav"			NAME="ShellCaseSound"			GROUP="Weapons"
 

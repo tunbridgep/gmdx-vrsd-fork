@@ -17,6 +17,15 @@ var const int PerkCost;                  // Trash: How much does it cost to buy 
 var const int PerkLevelRequirement;      // Trash: What's the skill requirement to buy this perk?
 var const float PerkValue;               // Trash: Optional, what's the value that you want increased when this perk is obtained? For example, 1.25 could mean you heal 25% faster
 
+enum EPerkValueDisplay
+{
+    Standard,
+    Percentage,
+    Delta_Percentage,
+};
+
+var const EPerkValueDisplay PerkValueDisplay;         // SARGE: How to display perk values when displaying in the perk menu. Standard = show the number. Percentage = multiply by 100. DeltaPercentage = multiply by 100, subtract 100;
+
 var travel DeusExPlayer PerkOwner; // Trash: Who's the perk's owner?
 var travel bool bPerkObtained;     // Trash: Do you own this perk?
 
@@ -43,22 +52,7 @@ function Texture GetPerkIcon()     // Trash: Return the perk's icon if it's alre
 
 function bool IsPurchasable() // Trash: Can you purchase this perk?
 {
-     return !bPerkObtained && PerkOwner.SkillSystem.GetSkillLevel(PerkSkill) >= PerkLevelRequirement && PerkOwner.SkillPointsAvail >= PerkCost;
-}
-
-// ----------------------------------------------------------------------
-// PurchasePerk()
-// ----------------------------------------------------------------------
-
-function PurchasePerk()  // Trash: Purchase the perk if possible
-{
-     if (IsPurchasable())
-     {
-          PerkOwner.SkillPointsAvail -= PerkCost;
-		PerkOwner.PlaySound(Sound'GMDXSFX.Generic.codelearned',SLOT_None,,,,0.8);
-		bPerkObtained = true;
-          OnPerkPurchase();
-     }
+     return !bPerkObtained && (PerkSkill == None || PerkOwner.SkillSystem.GetSkillLevel(PerkSkill) >= PerkLevelRequirement) && PerkOwner.SkillPointsAvail >= PerkCost;
 }
 
 // ----------------------------------------------------------------------
@@ -71,6 +65,23 @@ function OnPerkPurchase()    // Trash: Does purchasing this perk do something? S
 }
 
 // ----------------------------------------------------------------------
+// OnMapLoad()
+// ----------------------------------------------------------------------
+
+function OnMapLoad()    // SARGE: Does this perk do something whenever the map is loaded?
+{
+
+}
+
+// ----------------------------------------------------------------------
+// OnMapLoadAndPurchase()
+// ----------------------------------------------------------------------
+
+function OnMapLoadAndPurchase() //SARGE: do something when we buy the perk, and again on every map load when we have it.
+{
+}
+
+// ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
 defaultproperties
@@ -80,5 +91,6 @@ defaultproperties
      PerkCost=50
      PerkLevelRequirement=2
      PerkValue=1.0
+     PerkValueDisplay=Percentage
      bPerkObtained=false
 }

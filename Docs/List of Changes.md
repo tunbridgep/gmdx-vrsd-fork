@@ -15,22 +15,40 @@ Sarge's Changes since Beta 2.2:
     - Fixed vRSD bug (feature?) where the player would not cough after using cigarettes if the addiction system was enabled.
     - Fixed Vanilla bug where picking up ammo would add it to the players current clip, rather than their reserve ammo.
     - Fixed GMDX Ammo duplication glitch when looting corpses while having a full inventory.
-    - Fixed GMDX bug where frobbing a corpse with the "Decline Knives" setting would sometimes result in no log message being displayed.
-        - Additionally, combat knives on corpses are no longer deleted, allowing "Decline Knives" to be turned on and off without preventing access to knives on existing corpses.
+    - Fixed GMDX Ammo duplication glitch when looting and then gibbing corpses, which would refill their weapon.
+    - Fixed GMDX bug where some items would have empty name strings.
     - Fixed GMDX bug where Ford Schick would not give you an upgrade canister when telling you he swiped one, if ConFix isn't installed. Fixed by adding it to his desk.
     - Fixed a number of typos in various places.
     - Fixed Vanilla bug where sound volume would reset upon new game.
+    - Fixed single-use weapon weirdness, such as picking up a PS20 with no rounds in it after it was dropped and then all rounds fired from a second PS20.
+    - Fixed GMDX bug where tiredness effects from low stamina would reset prematurely.
+    - Fixed vanilla "bug" where diving into or leaving water would give free stamina.
     - Fixed GMDX quickloading not always working correctly, and other save issues including incorrect save-game ordering in the save/load screens.
+    - Fixed GMDX "Create Custom Theme" menu being able to corrupt standard themes. Now the player is forced into the Custom HUD/Menu themes upon loading the custom theme creator.
+    - Fixed GMDX bug which would make an empty subtitles box appear when interacting with things during first-person conversations, if subtitles were disabled.
+    - Fixed GMDX bug where recharging items with biocells would cause the belt view in the inventory to continually get brighter and brighter until the inventory screen was closed.
     - Fixed many other GMDX and Vanilla bugs.
 - Quality of Life Improvements:
     - The augmentation "hum" sound can be disabled.
+    - Complete overhaul of the "Decline Knives" system
+        - "Decline Knives" setting has been removed
+        - A new Decline button has been added to items in the inventory. Clicking it will decline a specific item going forward, preventing it from being taken off corpses.
+        - The decline list is stored globally and consistent between playthroughs.
+        - Items can be removed from the decline list in the inventory screen.
+        - Declined Items need to be double-clicked in order to be picked up in the world.
+        - Holding the Walk/Run key while interacting will always pick up any declined items.
+    - Datacubes will show a black screen after they have been read.
+    - When picking up duplicate Nanokeys, the log now lists it as a duplicate.
     - While having a grenade selected, the crosshair will turn blue when you're able to place it on a wall.
     - Right-Clicking while dead will load the last save game.
     - Right-Clicking an item in the belt with the Inventory Window open will clear the slot.
+    - Added QoL settings to not damage domesticated animals and cleaner bots when stepping on them.
     - The Inventory "Show Ammo" display now always shows the total amount of ammo you can carry. Before, it was only visible when "Show Descriptions" was enabled.
+    - A lot of inventory item displays have been improved to show more statistics.
     - Added a Lighting Accessibility setting, which removes some strobing and flickering in certain areas on some maps, such as the 'Ton hotel elevator shaft.
-    - Added a new corpse searching setting, "Enhanced Corpse Interactions", which makes the first right-click on a corpse never pick them up, even if empty, so that you can search them reliably without accidentally picking them up.
-        - Additionally added a new setting to show "[Searched]" text after interacting with corpses once, to differentiate between those which have been searched and which have not.
+    - Added a new corpse searching setting, "Enhanced Looting", which makes the first right-click on a corpse never pick them up, even if empty, so that you can search them reliably without accidentally picking them up.
+        - Additionally, the first time a corpse is interacted with, it will show any items which it contains that you cannot pick up (such as duplicate weapons and declined items).
+    - Added a new setting to show "[Searched]" text after interacting with corpses once, to differentiate between those which have been searched and which have not.
     - Added a new keybinding to stop the currently playing infolink.
     - Completely overhauled the GMDX settings menu to make it simpler, easier to navigate, and with many more options.
     - Edibles and Drugs can now be assigned as secondary items.
@@ -39,6 +57,7 @@ Sarge's Changes since Beta 2.2:
     - The HUD now shows stamina and bioenergy percentages below the bars if enabled.
     - Added alternate weapon offsets to hide many of the visible seams or missing parts of weapon viewmodels.
     - Weapons that don't use ammo (such as melee weapons) no longer show the Ammo element on the HUD.
+    - Modified Weapons will appear with a "+" icon on the belt and in the inventory screen to differentiate them from unmodded ones.
     - Augmentation Wheel improvements
         - While in the augmentation screen, use middle-click on an active augmentation to add or remove it from the augmentation wheel.
         - By default all augmentations will appear on the wheel.
@@ -68,6 +87,7 @@ Sarge's Changes since Beta 2.2:
     - Double-Click holstering now also works to enable Double Click Unholstering, rather than always unholstering with right-click (with IW toolbelt) or doing nothing (regular Toolbelt)
     - The number of total Lockpicks or Multitools in your inventory is now listed on lockpicking/electronics information windows, allowing you to see how many lockpicks or multitools you have compared to how many are required to bypass a given device or lock.
         - The text is also color coded, showing as yellow when you only just have the amount of tools required, and red if you don't meet the requirement.
+        - The Damage Threshold text is also red if the currently selected weapon is not able to beat the damage threshold.
         - If this setting is disabled, lockpicks and multitools will display their total count in the ammo display window, allowing you to easily see how many you have when you don't have them on your belt.
     - Belt Autofilling can now be disabled in the options.
     - Save Points no longer use Autosave slots, which can be easily overridden by accident, and now create fresh hard-saves instead.
@@ -77,6 +97,7 @@ Sarge's Changes since Beta 2.2:
         - The Dialog Menu can now use the HUD Color theme, rather than always having blue text.
         - Dialog Menu options can be configured in the option screen.
     - The Nano Keyring now tells you which key was used when locking/unlocking a door.
+    - Added a new "Left-Click Unholstering" feature, which will equip your last used weapon when left-clicking if there was nothing else to interact with.
     - Complete overhaul of "Left-click frobbing", which happens when left-clicking certain items without an item equipped.
         - Left-Clicking a datacube will pick it up and allow you to carry it.
         - Left-Clicking a breakable box, window or wall will select a melee weapon from your inventory based on a priority list.
@@ -106,8 +127,14 @@ Sarge's Changes since Beta 2.2:
         - When Smart Keyring is enabled, the keyring will no longer occupy belt slot 0, allowing it to be used for regular items.
         - The keyring can be selected using Left-Click Frob on doors.
 - Gameplay Changes:
+    - The Dragons Tooth Sword now requires Biocells to use. It starts with 100% charge, with each attack taking 2% if it hits a target, giving you 50 hits total. Biocells restore 20% (or 30% with the Field Repair perk), giving you an additional 10 (15) hits each.
+    - The GEP Gun now has limited range. After 5 seconds of flight, rockets will detonate as they run out of fuel. Each range mod increases flight time by 1 second.
     - Putting a scope or a laser sight on the GEP gun now requires the Heavily Tweaked perk (ADVANCED heavy weapons, 100 skill points). The scope and laser sight still provide rocket guidance capabilities.
     - Added a new "Weapon Requirements Matter" Playthrough Modifier. When enabled, most weapons will require a minimum skill investment in order to be used.
+    - Demolitions Skill Overhaul
+        - Demolitions Skill-based grenade timing rescaled from 0.5, 1.0, 2.5, 7.0 seconds to 0.75, 1.0, 1.5, 2.5 seconds
+        - Being able to pick up disarmed grenades is now based on skill level - Trained for Gas Grenades, Advanced for EMP and Scrambler Grenades, Master for LAMs.
+        - EMP damage will always permanently disable grenades, making them unable to be reused, regardless of skill level.
     - Reverted GMDX change limiting Assault Rifles, Assault Shotguns and Sawed Off's to 4 damage mods. Now they can have 5 just like everything else.
         - This was done because of integer truncation. In GMDX v9, the 5th upgrade would change their base damage from 4.2 to 4.5, which was pointless as it was rounded to 4 either way.
         - With vRSD partial damage calculations were added, so this is now relevant again.
@@ -138,6 +165,7 @@ Sarge's Changes since Beta 2.2:
     - Increased the sawed off shotgun's pellet count from 8 to 9, and decreased shot speed from 1.3 to 1.2.
     - Rubber shells are now hitscan with a harmless projectile.
     - Restricted Saving is now a Playthrough Modifier and is no longer restricted to Hardcore Mode. It's still enforced in Hardcore Mode.
+    - Enemies with flamethrowers now give 5-25 flamethrower ammo as loot instead of 1-5
     - Added No Console Access Playthrough Modifier, which prevents using the console (disallows cheats) while playing.
     - Added No Keypad Cheese Playthrough Modifier (called "Unknown Codes") which prevents using keypads or computer logins without having found them beforehand. Some codes which are hinted but never given are excepted.
     - AI Behaviour Changes
@@ -160,11 +188,16 @@ Sarge's Changes since Beta 2.2:
         - Heavy Perks:
             - Heavily Tweaked (NEW ADVANCED): An agent is able to attach scopes and laser sights to the GEP gun, enabling laser guidance and fly-by-wire capabilities.
             - Mobile Ordnance (NEW MASTER): An agent is able to modify the chassis of flame weapons, stripping away unnecessary elements. Flamethrowers are reduced in size by 3 inventory spaces.
+        - Added "General" perks, which require no skills to unlock and are available in a new panel inside the Skills/Perks window.
+            - Glutton: Allows holding double stacks of all food items, and can eat up to 125% hunger.
+            - Socket Jockey: Using a wall-outlet will give you 5 bioenergy in addition to zapping you.
+            - Firefighter: Fire Extinguishers will have longer range, last for longer, and will explode in a huge cloud when detonated.
     - Addiction System Rework
         - Alcohol no longer heals for 5 points. Instead, it temporarily gives you 5 torso HP (along with it's usual 5 extra torso Max-HP) while in effect, which is removed afterwards. This health removal cannot kill the player.
         - Alcohol no longer adds to fullness when the addiction system is enabled
         - Zyme no longer removes 10HP if the addiction system is enabled.
 - Miscellaneous Changes:
+    - Single-Use weapons (grenades, PS20s, etc) will now drop individually from the inventory screen, similar to pickups, rather than dropping as a single stack.
     - Added an "Alternate Start" option, which skips the first part of the game and starts at the MJ12 Lab. You will start with nothing, so this is extra hardcore.
     - The "You Found:" message when searching corpses has been removed. The actual items are still listed, only the extra message is removed.
     - The Paris Metro Police have been changed to using pistols only (from Assault Shotguns and Assault Rifles), to ensure more 10mm ammo is available in the late game, as well as to reinforce their status as the puppet regime under MJ12.

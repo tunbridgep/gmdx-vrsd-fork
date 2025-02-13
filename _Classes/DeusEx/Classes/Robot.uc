@@ -165,6 +165,7 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
     local vector loc;
     local DeusExWeapon wep;
     local DeusExPlayer theInstigator;
+	local Perk perkPiercing;
 
 	// Robots are invincible to EMP in multiplayer as well
 	if (( Level.NetMode != NM_Standalone ) && (damageType == 'EMP') && (Self.IsA('MedicalBot') || Self.IsA('RepairBot')) )
@@ -358,11 +359,14 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
 
     Enemy = instigatedBy;
 
-    if (Enemy != none && Enemy.IsA('DeusExPlayer') && DeusExPlayer(Enemy).PerkManager.GetPerkWithClass(class'DeusEx.PerkPiercing').bPerkObtained == true)
-      if (DeusExPlayer(Enemy).inHand != none)
-         if (DeusExPlayer(Enemy).inHand.IsA('WeaponCombatKnife') || DeusExPlayer(Enemy).inHand.IsA('WeaponShuriken') ||
-           DeusExPlayer(Enemy).inHand.IsA('WeaponCrowbar') || DeusExPlayer(Enemy).inHand.IsA('WeaponNanoSword'))
-             actualDamage*=1.2;
+    if (Enemy != none && Enemy.IsA('DeusExPlayer'))
+	{
+		perkPiercing = DeusExPlayer(Enemy).PerkManager.GetPerkWithClass(class'DeusEx.PerkPiercing');
+		if (perkPiercing.bPerkObtained && DeusExPlayer(Enemy).inHand != none)
+			if (DeusExPlayer(Enemy).inHand.IsA('WeaponCombatKnife') || DeusExPlayer(Enemy).inHand.IsA('WeaponShuriken') ||
+			DeusExPlayer(Enemy).inHand.IsA('WeaponCrowbar') || DeusExPlayer(Enemy).inHand.IsA('WeaponNanoSword'))
+				actualDamage*=perkPiercing.PerkValue;
+	}
 
 	if (Health <= 0)
 	{

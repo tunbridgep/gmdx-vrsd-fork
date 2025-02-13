@@ -6,7 +6,7 @@ class PerkHollowPoints extends Perk;
 defaultproperties
 {
     PerkName="HOLLOW POINTS"
-    PerkDescription="|nAn agent uses hollow-pointed rounds in his pistol, increasing damage against transgenics and animals while using 10mm ammo.|n|nRequires: Pistols: MASTER"
+    PerkDescription="An agent uses hollow-pointed rounds in his pistol, increasing damage against transgenics and animals while using 10mm ammo."
     PerkSkill=Class'DeusEx.SkillWeaponPistol'
     PerkCost=300
     PerkLevelRequirement=3

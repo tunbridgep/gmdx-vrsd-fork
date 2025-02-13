@@ -174,6 +174,9 @@ function FirstFrame()
             InitializeEnemySwap(1);
         }
 
+        DistributeItem(class'WeaponHideAGun',0,2,class'AmmoHideAGun');
+        DistributeItem(class'Flare',1,3);
+
 		flags.SetBool(flagName, True);
 
         firstTime = true;
@@ -361,6 +364,85 @@ function SpawnPoint GetSpawnPoint(Name spawnTag, optional bool bRandom)
 	}
 
 	return aPoint;
+}
+
+//Gives the specified item to 0-X random enemies in the map.
+function DistributeItem(class<Inventory> itemClass, int minAmount, int maxAmount, optional class<Ammo> ammoClass)
+{
+    local int i, j, swapTo, items;
+    local ScriptedPawn actors[50], temp, SP;
+    local int actorCount, toGive, index;
+    local Inventory inv;
+
+    //player.ClientMessage("Distributing "$itemClass$"...");
+
+    foreach AllActors(class'ScriptedPawn', SP)
+    {
+        if (!SP.bImportant && SP.GetPawnAllianceType(Player) == ALLIANCE_Hostile && !SP.isA('Robot') && !SP.isA('Animal') && !SP.isA('HumanCivilian') && !SP.bDontRandomizeWeapons && actorCount < 50)
+            actors[actorCount++] = SP;
+    }
+    
+    //Shuffle the array
+    for (i = actorCount;i > 0;i--)
+    {
+        swapTo = Player.Randomizer.GetRandomInt(i + 1);
+        temp = actors[i];
+        actors[i] = actors[swapTo];
+        actors[swapTo] = temp;
+    }
+    
+
+    //Now give the first 0-2 PS20s
+    toGive = Player.Randomizer.GetRandomInt(maxAmount - minAmount) + minAmount;
+    //player.ClientMessage("  To Give: "$toGive);
+    toGive = MIN(toGive,actorCount);
+    //player.ClientMessage("  To Give (capped): "$toGive);
+
+    for(i = 0;i < actorCount;i++)
+    {
+        //No more to give?
+        if (toGive == 0 || i > actorCount)
+            break;
+
+        //First, make sure they don't have one.
+        //Need to restrict this to a max of 10, otherwise some maps crash for no reason
+        inv = actors[i].Inventory;
+        while (inv != None && items < 10)
+        {
+            items++;
+            if (inv.Class == itemClass)
+                continue;
+            inv = inv.Inventory;
+        }
+    
+        //Spawn the item and some ammo
+        inv = spawn(itemClass, actors[i]);
+        if (inv != None)
+        {
+            inv.GiveTo(actors[i]);
+            inv.SetBase(actors[i]);
+            inv.bHidden = True;
+            inv.SetPhysics(PHYS_None);
+            actors[i].AddInventory(inv);
+            //player.ClientMessage("  Given a "$itemClass$" to "$actors[i]);
+        }
+        if (ammoClass != None)
+        {
+            inv = spawn(ammoClass, actors[i]);
+            if (inv != None)
+            {
+                inv.GiveTo(actors[i]);
+                inv.SetBase(actors[i]);
+                inv.bHidden = True;
+                inv.SetPhysics(PHYS_None);
+                actors[i].AddInventory(inv);
+                //player.ClientMessage("  Given a "$ammoClass$" to "$actors[i]);
+            }
+        }
+        //Player.ClientMessage("Give " $ actors[given].FamiliarName $ " a " $ itemClass);
+        actors[i].SwitchToBestWeapon();
+        toGive--;
+    }
 }
 
 function InitializeRandomAmmoCounts()                                           //RSD: Initializes random ammo drop counts on first map load so they can't be savescummed

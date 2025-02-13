@@ -125,6 +125,8 @@ var ConLight lite;
     
 var ThrownProjectile lastGrenade;
 
+var localized String msgDisarmed;
+
 // ----------------------------------------------------------------------
 // InitWindow()
 // ----------------------------------------------------------------------
@@ -1500,6 +1502,9 @@ function DrawTargetAugmentation(GC gc)
 				
                 // print disabled camera info
                 str = str $ GetHackDisabledText(target,true);
+                
+                // print disabled grenade info
+                str = str $ GetWallGrenadeDisabledText(target,true);
 
 				gc.SetTextColor(crossColor);
 
@@ -1611,17 +1616,22 @@ function DrawTargetAugmentation(GC gc)
 				if (target.IsA('Robot') && (Robot(target).EMPHitPoints == 0))
 					str = msgDisabled;
 				
+                // print disabled wall mine info
+                if (str == "")
+                    str = GetWallGrenadeDisabledText(target,false);
+
                 // print disabled camera info
                 if (str == "")
                     str = GetHackDisabledText(target,false);
 
                 if (str != "")
                 {
-					gc.SetTextColor(crossColor);
+					gc.SetTextColor(colWhite);
 					gc.GetTextExtent(0, w, h, str);
 					x = boxCX - w/2;
 					y = boxTLY - h - margin;
 					gc.DrawText(x, y, w, h, str);
+					gc.SetTextColor(crossColor);
                 }
 			}
 		}
@@ -1648,6 +1658,23 @@ function DrawTargetAugmentation(GC gc)
 	// set the crosshair colors
 	DeusExRootWindow(player.rootWindow).hud.cross.SetCrosshairColor(crossColor);
 	DeusExRootWindow(player.rootWindow).hud.hitmarker.SetCrosshairColor(crossColor);
+}
+
+//SARGE: Get the text for wall grenades
+function string GetWallGrenadeDisabledText(Actor target, bool TargetingDisplay)
+{
+    local string str;
+    if (target.IsA('ThrownProjectile') && ThrownProjectile(target).bDisabled && ThrownProjectile(target).bProximityTriggered)
+    if (ThrownProjectile(target).bEMPDisabled)
+        str = msgDisabled;
+    else
+        str = msgDisarmed;
+    
+    //If using the targeting aug, we need to format it
+    if (TargetingDisplay && str != "")
+        str = " (" $ str $ ")";
+
+    return str;
 }
 
 //SARGE: Get the text for rebooting cameras/turrets
@@ -2135,6 +2162,7 @@ defaultproperties
      msgIRAmpActive="IRAmp Active"
      msgNoImage="Image Not Available"
      msgDisabled="Disabled"
+     msgDisarmed="Disarmed"
      msgReboot="Rebooting in %s"
      SpottedTeamString="You have spotted a teammate!"
      YouArePoisonedString="You have been poisoned!"

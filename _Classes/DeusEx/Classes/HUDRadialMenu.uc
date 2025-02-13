@@ -35,6 +35,8 @@ var Texture powerInactive;
 var bool skipQuickToggle;            //Skip toggling augs on menu close if this is set
 var bool bClicked;                   //Skip toggling augs on menu close if this is set
 
+var bool bDoneFirst;                //Center the cursor the first time we open the wheel
+
 // ----------------------------------------------------------------------
 // InitWindow()
 // ----------------------------------------------------------------------
@@ -95,6 +97,15 @@ event VisibilityChanged(bool isVis) {
 
 	if (isVis)
     {
+    
+        //Reset cursor to center
+        if (!player.bAugWheelRememberCursor || !bDoneFirst)
+        {
+            cursorPos = center;
+            //positionMarker(mouseToMarkerPos(center+vect(0,1,0)));
+            bDoneFirst = true;
+        }
+
         positionItems();
         positionPowerIcon();
         if (!player.bQuickAugWheel)
@@ -183,7 +194,6 @@ function HUDRadialMenuItem getNearestItem(vector v) {
     else if (visible == 0)
         return orderedItems[0];
 
-
     for (i = 0; i < itemCount; i++) {
         tmp = orderedItems[i].GetRelativePos()-v;
         if (nearest == None || VSize(tmp) < VSize(minAngle)) {
@@ -212,6 +222,8 @@ function createFocusMarker() {
  * Converts a given x-y-mouse position to a point in the orbit of the marker.
  */
 function Vector mouseToMarkerPos(Vector absPos) {
+    if (player.bAugWheelFreeCursor)
+        return absPos;
     return center+markerDistanceToCenter*(radius-focusMarker.height)*Normal(absPos-center);
 }
 
