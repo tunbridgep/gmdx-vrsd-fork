@@ -25,6 +25,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed vanilla "bug" where diving into or leaving water would give free stamina.
     - Fixed GMDX quickloading not always working correctly, and other save issues including incorrect save-game ordering in the save/load screens.
     - Fixed GMDX bug which would make an empty subtitles box appear when interacting with things during first-person conversations, if subtitles were disabled.
+    - Fixed GMDX bug where recharging items with biocells would cause the belt view in the inventory to continually get brighter and brighter until the inventory screen was closed.
     - Fixed many other GMDX and Vanilla bugs.
 - Quality of Life Improvements:
     - Complete overhaul of the "Decline Knives" system
