@@ -141,6 +141,9 @@ Sarge's Changes since Beta 2.2:
         - This was done because of integer truncation. In GMDX v9, the 5th upgrade would change their base damage from 4.2 to 4.5, which was pointless as it was rounded to 4 either way.
         - With vRSD partial damage calculations were added, so this is now relevant again.
     - Augmentation Changes
+        - Augmentations can now be swapped out with the opposite choice when finding duplicate augmentation Canisters.
+            - Augmentations that are replaced this way will be reset to level 1.
+            - Augmentations cannot be freely replaced with any other augmentation occupying the same slot, it must be the opposite choice from their relevant cannister.
         - Some augmentations have been given a short cooldown on use. The Spy Drone retains it's 30 second cooldown.
             - Augmentations that need to recharge after use (including the Spy Drone) will show a red icon in the Augmentations window while they are recharging.
         - Some augs can now be "toggled".
