@@ -8,7 +8,7 @@ class PerkWirelessStrength extends Perk;
 defaultproperties
 {
     PerkName="WIRELESS STRENGTH"
-    PerkDescription="|nMultitools gain considerably increased wireless signal strength, enabling an agent to hack security systems at range.|n|nRequires: Electronics: ADVANCED"
+    PerkDescription="Multitools gain considerably increased wireless signal strength, enabling an agent to hack security systems at range."
     PerkSkill=Class'DeusEx.SkillTech'
     PerkCost=250
     PerkLevelRequirement=2

@@ -42,6 +42,7 @@ Sarge's Changes since Beta 2.2:
     - Right-Clicking an item in the belt with the Inventory Window open will clear the slot.
     - Added QoL settings to not damage domesticated animals and cleaner bots when stepping on them.
     - The Inventory "Show Ammo" display now always shows the total amount of ammo you can carry. Before, it was only visible when "Show Descriptions" was enabled.
+    - A lot of inventory item displays have been improved to show more statistics.
     - Added a Lighting Accessibility setting, which removes some strobing and flickering in certain areas on some maps, such as the 'Ton hotel elevator shaft.
     - Added a new corpse searching setting, "Enhanced Looting", which makes the first right-click on a corpse never pick them up, even if empty, so that you can search them reliably without accidentally picking them up.
         - Additionally, the first time a corpse is interacted with, it will show any items which it contains that you cannot pick up (such as duplicate weapons and declined items).
@@ -184,6 +185,10 @@ Sarge's Changes since Beta 2.2:
         - Heavy Perks:
             - Heavily Tweaked (NEW ADVANCED): An agent is able to attach scopes and laser sights to the GEP gun, enabling laser guidance and fly-by-wire capabilities.
             - Mobile Ordnance (NEW MASTER): An agent is able to modify the chassis of flame weapons, stripping away unnecessary elements. Flamethrowers are reduced in size by 3 inventory spaces.
+        - Added "General" perks, which require no skills to unlock and are available in a new panel inside the Skills/Perks window.
+            - Glutton: Allows holding double stacks of all food items, and can eat up to 125% hunger.
+            - Socket Jockey: Using a wall-outlet will give you 5 bioenergy in addition to zapping you.
+            - Firefighter: Fire Extinguishers will have longer range, last for longer, and will explode in a huge cloud when detonated.
     - Addiction System Rework
         - Alcohol no longer heals for 5 points. Instead, it temporarily gives you 5 torso HP (along with it's usual 5 extra torso Max-HP) while in effect, which is removed afterwards. This health removal cannot kill the player.
         - Alcohol no longer adds to fullness when the addiction system is enabled

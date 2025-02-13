@@ -2698,12 +2698,10 @@ simulated function Tick(float deltaTime)
 		    standingTimer += deltaTime;
 		if (player.CombatDifficulty < 1.0)  //CyberP: easy difficulty gets aiming boost
 		    standingTimer += deltaTime*2;*/
-        /*if (player.PerkNamesArray[1]==1 && GoverningSkill==Class'DeusEx.SkillWeaponPistol') //RSD: Removed Focused: Pistols
-            mult += 0.25;                                                        //RSD: Now +25% bonus
-        else */if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkSteady').bPerkObtained == true && GoverningSkill==Class'DeusEx.SkillWeaponRifle')
-            mult += 0.25;                                                        //RSD: Now +25% bonus
-        /*else if (player.PerkNamesArray[3]==1 && GoverningSkill==Class'DeusEx.SkillWeaponHeavy') //RSD: Removed Focused: Heavy
-            mult += 0.25;*/                                                        //RSD: Now +25% bonus
+        
+		if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkSteady').bPerkObtained == true && GoverningSkill==Class'DeusEx.SkillWeaponRifle')
+            mult += player.PerkManager.GetPerkWithClass(class'DeusEx.PerkSteady').PerkValue;		//RSD: Now +25% bonus
+        
 		if (player.AddictionManager.addictions[0].drugTimer > 0)                                      //RSD: Cigarettes make you aim faster
 	        mult += 1.0;
         if (player.CombatDifficulty < 1.0)                                      //RSD: Properly doubling on easy now

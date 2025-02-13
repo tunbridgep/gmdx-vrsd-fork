@@ -620,6 +620,9 @@ var travel float autosaveRestrictTimer;                                         
 var const float autosaveRestrictTimerDefault;                                   //Sarge: Timer for autosaves.
 var travel bool bResetAutosaveTimer;                                            //Sarge: This is necessary because our timer isn't set properly during the same frame as saving, for some reason.
 
+//Menu Overhaul stuff
+var localized String RechargedPointLabel;
+var localized String RechargedPointsLabel;
 
 var travel AddictionSystem AddictionManager;
 var travel PerkSystem PerkManager;
@@ -897,6 +900,7 @@ local DeusExLevelInfo dxInfo;                                                   
 local name flagName;                                                            //RSD: Added
 local bool bFirstLevelLoad;                                                     //RSD: Added
 local AlarmUnit        AU;                                                      //RSD: Added
+local Perk perkDoorsman;
 
 //log("bHardCoreMode =" @bHardCoreMode);
 //log("CombatDifficulty =" @CombatDifficulty);
@@ -986,12 +990,14 @@ local AlarmUnit        AU;                                                      
     }
     }
 
+	perkDoorsman = PerkManager.GetPerkWithClass(class'DeusEx.PerkDoorsman');
+
      ForEach AllActors(class'DeusExMover', MV)
      {
-         if (!MV.bPerkApplied && PerkManager.GetPerkWithClass(class'DeusEx.PerkDoorsman').bPerkObtained == true)
+         if (!MV.bPerkApplied && perkDoorsman.bPerkObtained == true)
          {
 		       MV.bPerkApplied = True;
-		       MV.minDamageThreshold -= 5;
+		       MV.minDamageThreshold -= perkDoorsman.PerkValue;
 		       if (MV.minDamageThreshold <= 0)
                 MV.minDamageThreshold = 1;
 		 }
@@ -1266,8 +1272,8 @@ function SetupPerkManager()
     {
         //ClientMessage("Make new Perk System");
 	    PerkManager = new(Self) class'PerkSystem';
-        PerkManager.InitializePerks(Self);
     }
+    PerkManager.InitializePerks(Self);
 }
 
 function SetupRandomizer()
@@ -3612,6 +3618,26 @@ exec function AugAdd(class<Augmentation> aWantedAug)
 	}
 }
 
+//SARGE: Add in a way to cheat perks
+exec function PerkAdd(class<Perk> aWantedPerk)
+{
+	if (!bCheatsEnabled || PerkManager == None)
+		return;
+
+    if (PerkManager.PurchasePerk(aWantedPerk,true))
+        ClientMessage("Perk Added");
+}
+
+//SARGE: Add in a way to cheat perks
+exec function PerkReAdd(class<Perk> aWantedPerk)
+{
+	if (!bCheatsEnabled || PerkManager == None)
+		return;
+
+    if (PerkManager.PurchasePerk(aWantedPerk,true,true))
+        ClientMessage("Perk Re-added");
+}
+
 exec function OPAug() //CyberP: cheat for my fucked keyboard
 {
    local AugmentationCannister cann;
@@ -4585,15 +4611,6 @@ function HighlightCenterObject()
 		minSize = 99999;
 		bFirstTarget = True;
 
-        if (IsCrouching())
-        {
-           if (PerkManager.GetPerkWithClass(class'DeusEx.PerkEndurance').bPerkObtained == true)                                           //RSD: Was PerkNamesArray[29] (Creeper), now PerkNamesArray[27] (Endurance)
-              bCrouchRegen=True;
-        }
-        else
-        {
-          bCrouchRegen=false;
-        }
      if (inHand != none && inHand.IsA('Multitool'))
      {
         foreach TraceActors(class'Actor', target, HitLoc, HitNormal, EndTrace, StartTrace)
@@ -4986,13 +5003,21 @@ function int HealPlayer(int baseHealPoints, optional Bool bUseMedicineSkill)
 // ChargePlayer()
 // ----------------------------------------------------------------------
 
-function int ChargePlayer(int baseChargePoints)
+function int ChargePlayer(int baseChargePoints, optional bool showMessage)
 {
 	local int chargedPoints;
 
 	chargedPoints = Min(EnergyMax - Int(Energy), baseChargePoints);
 
 	Energy += chargedPoints;
+
+    if (showMessage && chargedPoints > 0)
+    {
+        if (chargedPoints == 1)
+            ClientMessage(sprintf(RechargedPointLabel,chargedPoints));
+        else
+            ClientMessage(sprintf(RechargedPointsLabel,chargedPoints));
+    }
 
 	return chargedPoints;
 }
@@ -6076,6 +6101,9 @@ state PlayerWalking
                }
            }
         }
+		
+		//SARGE: Moved Endurance check to here.
+        bCrouchRegen=PerkManager.GetPerkWithClass(class'DeusEx.PerkEndurance').bPerkObtained;
 	    if ((!IsCrouching() || bCrouchRegen) && !bOnLadder) //(bIsCrouching)     //RSD: Simplified this entire logic from original crouching -> bCrouchRegen check, added !bOnLadder
 	    	RegenStaminaTick(deltaTime);                                        //RSD: Generalized stamina regen function
 	  }
@@ -17418,10 +17446,13 @@ function RegenStaminaTick(float deltaTime)                                      
 {
 	local float mult;
     local float base;
+	local Perk perkEndurance;
     
     //SARGE: Stop regen if we're poisoned
     if (poisonCounter > 0)
         return;
+
+	perkEndurance = PerkManager.GetPerkWithClass(class'DeusEx.PerkEndurance');
 
     if (AugmentationSystem != none)                                             //RSD: accessed none
     {
@@ -17432,8 +17463,8 @@ function RegenStaminaTick(float deltaTime)                                      
 	else
         mult = 1.0;
 	//RSD: base regen now 2.0, now properly multiplied with additive increases/decreases
-	if (PerkManager.GetPerkWithClass(class'DeusEx.PerkEndurance').bPerkObtained == true)                                                //RSD: endurance perk adds x2
-		mult += 1.0;
+	if (perkEndurance.bPerkObtained == true)                                                //RSD: endurance perk adds x2
+		mult += perkEndurance.PerkValue;
 	if (AddictionManager.addictions[DRUG_TOBACCO].bInWithdrawals == true)                                           //RSD: if suffering from nicotine withdrawal, subtract x0.5
 		mult -= 0.5;
 	if (AddictionManager.addictions[DRUG_TOBACCO].drugTimer > 0)                                                 //RSD: Zyme adds x2
@@ -17541,6 +17572,8 @@ defaultproperties
      DuplicateNanoKey="%s not added to Key Ring [Duplicate]"
      HealedPointsLabel="Healed %d points"
      HealedPointLabel="Healed %d point"
+     RechargedPointsLabel="Recharged %d points"
+     RechargedPointLabel="Recharged %d point"
      SkillPointsAward="%d skill points awarded"
      QuickSaveGameTitle="Quick Save [%s]"
      AutoSaveGameTitle="Auto Save [%s]"

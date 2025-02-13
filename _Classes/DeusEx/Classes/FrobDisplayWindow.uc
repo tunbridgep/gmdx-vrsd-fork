@@ -90,6 +90,7 @@ function DrawWindow(GC gc)
 	local int				numTools;
     local int               typecastIt;
 	local int				ownedTools; //Sarge: How many tools the player owns in their inventory
+	local Perk				perkCracked; //Sarge: Stores the Cracked perk
 
 	if (player != None)
 	{
@@ -406,7 +407,9 @@ function DrawWindow(GC gc)
 				if ((device.bHackable) && (device.hackStrength != 0.0))
 				{
                     //SARGE: If we have Cracked, display 0 tools
-                    if (device.hackStrength <= 0.05 && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkCracked').bPerkObtained == true)
+					perkCracked = player.PerkManager.GetPerkWithClass(class'DeusEx.PerkCracked');
+					
+					if (device.hackStrength <= perkCracked.PerkValue && perkCracked.bPerkObtained == true)
                         numTools = 0;
                     else
                         numTools = int((device.hackStrength / player.SkillSystem.GetSkillLevelValue(class'SkillTech')) + 0.99);
