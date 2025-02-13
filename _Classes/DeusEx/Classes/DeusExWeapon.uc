@@ -816,20 +816,21 @@ simulated event RenderOverlays( canvas Canvas )
 	local rotator NewRot, ExRot, rfs;                                           //RSD: Added rfs
 	local bool bPlayerOwner;
 	local int Hand;
-	local PlayerPawn PlayerOwner;
+	local DeusExPlayer PlayerOwner;
     local int newPitch;
     local vector dx, dy, dz;                                                    //RSD: Added
 
 	if ( bHideWeapon || (Owner == None) )
 		return;
 
-	PlayerOwner = PlayerPawn(Owner);
+	PlayerOwner = DeusExPlayer(Owner);
 
 	if ( PlayerOwner != None )
 	{
 		//if ( PlayerOwner.DesiredFOV != PlayerOwner.DefaultFOV )
 		//	return;
-		if (bZoomed)
+		if (bZoomed || (PlayerOwner.bSpyDroneActive && !PlayerOwner.bSpyDroneSet && !PlayerOwner.bBigDroneView))
+		//if (bZoomed)
 		    return;
 		bPlayerOwner = true;
 		Hand = PlayerOwner.Handedness;
@@ -2622,12 +2623,10 @@ simulated function Tick(float deltaTime)
 		    standingTimer += deltaTime;
 		if (player.CombatDifficulty < 1.0)  //CyberP: easy difficulty gets aiming boost
 		    standingTimer += deltaTime*2;*/
-        /*if (player.PerkNamesArray[1]==1 && GoverningSkill==Class'DeusEx.SkillWeaponPistol') //RSD: Removed Focused: Pistols
-            mult += 0.25;                                                        //RSD: Now +25% bonus
-        else */if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkSteady').bPerkObtained == true && GoverningSkill==Class'DeusEx.SkillWeaponRifle')
-            mult += 0.25;                                                        //RSD: Now +25% bonus
-        /*else if (player.PerkNamesArray[3]==1 && GoverningSkill==Class'DeusEx.SkillWeaponHeavy') //RSD: Removed Focused: Heavy
-            mult += 0.25;*/                                                        //RSD: Now +25% bonus
+        
+		if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkSteady').bPerkObtained == true && GoverningSkill==Class'DeusEx.SkillWeaponRifle')
+            mult += player.PerkManager.GetPerkWithClass(class'DeusEx.PerkSteady').PerkValue;		//RSD: Now +25% bonus
+        
 		if (player.AddictionManager.addictions[0].drugTimer > 0)                                      //RSD: Cigarettes make you aim faster
 	        mult += 1.0;
         if (player.CombatDifficulty < 1.0)                                      //RSD: Properly doubling on easy now
@@ -3420,6 +3419,12 @@ function Fire(float Value)
 	local bool bListenClient;
     local DeusExPlayer player;
     local Projectile firedProjectile;
+
+    player = DeusExPlayer(Owner);
+
+    //Sarge: Restrict fire if drone is active or just exploded.
+    if (player != None && !player.bSpyDroneSet && (player.bSpyDroneActive || player.bDroneExploded))
+        return;
 
     if (Pawn(Owner).IsInState('Dying') || (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).bGEPprojectileInflight))
     {
@@ -4971,6 +4976,10 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
 				Other.TakeDamage(finalDamage, Pawn(Owner), HitLocation, 1000.0*X, damageType); //Replaced HitDamage * mult with finalDamage
 
 			SelectiveSpawnEffects( HitLocation, HitNormal, Other, finalDamage); //Replaced HitDamage * mult with finalDamage
+
+            //SARGE: Drain energy when hitting things
+            if (IsA('WeaponNanoSword') && WeaponNanoSword(self).chargeManager != None)
+                WeaponNanoSword(self).DrainPower();
 		}
 		else if ((Other != self) && (Other != Owner))
 		{
@@ -5002,6 +5011,10 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
                 	}
 				}
                 Other.TakeDamage(finalDamage, Pawn(Owner), HitLocation, 1000.0*X, damageType); //Replaced HitDamage * mult with finalDamage
+                
+                //SARGE: Drain energy when hitting things
+                if (IsA('WeaponNanoSword') && WeaponNanoSword(self).chargeManager != None)
+                    WeaponNanoSword(self).DrainPower();
 			}
 			if (bHandToHand)
 				SelectiveSpawnEffects( HitLocation, HitNormal, Other, finalDamage); //Replaced HitDamage * mult with finalDamage
@@ -5212,50 +5225,20 @@ function Finish()
 // UpdateInfo()
 // ----------------------------------------------------------------------
 
-simulated function bool UpdateInfo(Object winObject)
+//Do the Ammo Display in the Inventory Window
+function string DoAmmoInfoWindow(Pawn P, PersonaInventoryInfoWindow winInfo)
 {
-	local PersonaInventoryInfoWindow winInfo;
-	local string str;
-	local int i, dmg, numMods;
-	local float mod, stamDrain;
-	local bool bHasAmmo;
 	local bool bAmmoAvailable;
 	local class<DeusExAmmo> ammoClass;
-	local Pawn P;
 	local Ammo weaponAmmo;
 	local int  ammoAmount;
+	local bool bHasAmmo;
+	local string str;
+    local int i;
 	local float hh;
     local DeusExPlayer player;
     local string noiseLev, msgMultiplier;
     local float prec;                                                           //RSD: Floating point precision
-
-	P = Pawn(Owner);
-	if (P == None)
-		return False;
-
-	winInfo = PersonaInventoryInfoWindow(winObject);
-	if (winInfo == None)
-		return False;
-
-    //SARGE: Show modified weapons in title
-    if (bModified && DeusExPlayer(owner) != None && DeusExPlayer(owner).bBeltShowModified)
-        winInfo.SetTitle(itemName @ strModified);
-    else
-        winInfo.SetTitle(itemName);
-	if (bHandToHand && Owner.IsA('DeusExPlayer'))
-	{
-	   if (DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkInventive').bPerkObtained == true)
-	   {
-	      winInfo.AddSecondaryButton(self);
-	   }
-	   else if (GoverningSkill != class'DeusEx.SkillDemolition' && !IsA('WeaponCombatKnife') && !IsA('WeaponHideAGun') && !IsA('WeaponShuriken'))
-	   {                                                                        //RSD: Throwing Knives now require the perk, c'mon //RSD: Or nah
-	   }
-	   else
-	       winInfo.AddSecondaryButton(self);
-	}
-	winInfo.SetText(msgInfoWeaponStats);
-	winInfo.AddLine();
 
 	// Create the ammo buttons.  Start with the AmmoNames[] array,
 	// which is used for weapons that can use more than one
@@ -5319,6 +5302,15 @@ simulated function bool UpdateInfo(Object winObject)
 		}
 	}
 
+	// If this weapon has ammo info, display it here
+    /*
+	if (ammoClass != None)
+	{
+		winInfo.AddLine();
+		winInfo.AddAmmoDescription(ammoClass.Default.ItemName $ "|n" $ ammoClass.Default.description);
+	}
+    */
+
 	// Only draw another line if we actually displayed ammo.
 	if (bAmmoAvailable)
 		winInfo.AddLine();
@@ -5337,9 +5329,56 @@ simulated function bool UpdateInfo(Object winObject)
 			str = str $ "|n" $ AmmoNames[i].Default.ItemName;
     if (!bHandToHand || IsA('WeaponProd'))
 	winInfo.AddAmmoTypesItem(msgInfoAmmo, str);
+}
+
+//SARGE: TODO: Turn this horrible mess into generic functions that work with child classes
+simulated function bool UpdateInfo(Object winObject)
+{
+	local PersonaInventoryInfoWindow winInfo;
+	local string str;
+	local int dmg, numMods;
+	local float mod, stamDrain;
+	local Pawn P;
+	local float hh;
+    local DeusExPlayer player;
+    local string noiseLev, msgMultiplier;
+    local float prec;                                                           //RSD: Floating point precision
+
+	P = Pawn(Owner);
+	if (P == None)
+		return False;
+
+	winInfo = PersonaInventoryInfoWindow(winObject);
+	if (winInfo == None)
+		return False;
+    
+    //SARGE: Show modified weapons in title
+    if (bModified && DeusExPlayer(owner) != None && DeusExPlayer(owner).bBeltShowModified)
+        winInfo.SetTitle(itemName @ strModified);
+    else
+        winInfo.SetTitle(itemName);
+
     //SARGE: Add Decline Button
     if (P.IsA('DeusExPlayer') && !DeusExPlayer(P).DeclinedItemsManager.IsDeclined(class))
 		winInfo.AddDeclineButton(class);
+
+	if (bHandToHand && Owner.IsA('DeusExPlayer'))
+	{
+	   if (DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkInventive').bPerkObtained == true)
+	   {
+	      winInfo.AddSecondaryButton(self);
+	   }
+	   else if (GoverningSkill != class'DeusEx.SkillDemolition' && !IsA('WeaponCombatKnife') && !IsA('WeaponHideAGun') && !IsA('WeaponShuriken'))
+	   {                                                                        //RSD: Throwing Knives now require the perk, c'mon //RSD: Or nah
+	   }
+	   else
+	       winInfo.AddSecondaryButton(self);
+	}
+
+	winInfo.SetText(msgInfoWeaponStats);
+	winInfo.AddLine();
+
+    DoAmmoInfoWindow(P,winInfo);
 
 	// base damage
 	if (AreaOfEffect == AOE_Cone)
@@ -5854,13 +5893,6 @@ simulated function bool UpdateInfo(Object winObject)
          }
 	winInfo.AddLine();
 	winInfo.SetText(Description);
-
-	// If this weapon has ammo info, display it here
-	if (ammoClass != None)
-	{
-		winInfo.AddLine();
-		winInfo.AddAmmoDescription(ammoClass.Default.ItemName $ "|n" $ ammoClass.Default.description);
-	}
 
 	return True;
 }

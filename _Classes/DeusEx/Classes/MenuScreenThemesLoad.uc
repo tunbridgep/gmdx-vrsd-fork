@@ -99,9 +99,6 @@ function SaveSettings()
 	if (lstThemes.GetNumSelectedRows() == 1)
 	{
 		themeName = lstThemes.GetField(lstThemes.GetSelectedRow(), 0);
-
-		if (winRGB != None)
-			winRGB.SetThemeByName(themeName);
 	}
 
 	root.PopWindow();

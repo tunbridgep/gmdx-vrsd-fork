@@ -6,7 +6,7 @@ class PerkSonicTransducerSensor extends Perk;
 defaultproperties
 {
     PerkName="SONIC-TRANSDUCER SENSOR"
-    PerkDescription="|nNearby proximity mines emit audible feedback to your infolink, revealing their location. |n|nRequires: Demolitions: TRAINED"
+    PerkDescription="Nearby proximity mines emit audible feedback to your infolink, revealing their location."
     PerkSkill=Class'DeusEx.SkillDemolition'
     PerkCost=100
     PerkLevelRequirement=1

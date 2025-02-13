@@ -245,6 +245,11 @@ var travel BarkManager barkManager;
 // and HUD windows.
 
 var travel ColorThemeManager ThemeManager;
+//SARGE: DO NOT USE THESE!!!
+//They aren't removed because the game expects the player to be structured in a certain way
+//(See the warning below, scroll down a bit to find it).
+//But we don't want to use these because they can fuck regular Deus Ex menus if we uninstall GMDX.
+//So we're going to use equivalents
 var globalconfig String MenuThemeName;
 var globalconfig String HUDThemeName;
 
@@ -488,7 +493,6 @@ var travel bool bNumberSelect;                                              //Sa
 var travel bool bScrollSelect;                                              //Sarge: Whether or not our last belt selection was done with Next/Last weapon keys rather than Number Keys. Used by Alternative Belt to know when to holster
 var travel int beltScrolled;                                                //Sarge: The last item we scrolled to on the belt, if we are using Adv Toolbelt
 var travel bool selectedNumberFromEmpty;                                    //Sarge: Was the current selection made from an empty hand. Used by Alternate Toolbelt Classic Mode to not jump back to previous weapon when we select from an empty hand.
-var travel Inventory lastSelected;                                          //The last object that was put in our hands.
 var globalconfig bool bLeftClickUnholster;                                  //Enable left click unholstering
 
 var int clickCountCyber; //CyberP: for double clicking to unequip
@@ -617,6 +621,9 @@ var travel float autosaveRestrictTimer;                                         
 var const float autosaveRestrictTimerDefault;                                   //Sarge: Timer for autosaves.
 var travel bool bResetAutosaveTimer;                                            //Sarge: This is necessary because our timer isn't set properly during the same frame as saving, for some reason.
 
+//Menu Overhaul stuff
+var localized String RechargedPointLabel;
+var localized String RechargedPointsLabel;
 
 var travel AddictionSystem AddictionManager;
 var travel PerkSystem PerkManager;
@@ -627,6 +634,10 @@ const DRUG_ALCOHOL = 1;
 const DRUG_CRACK = 2;
 
 var travel bool bLastRun;                                                       //Sarge: Stores our last running state
+
+var bool bUsingComputer;                                                        //SARGE: Are we currently using a computer? Set so that we can restrict input while using one
+
+var bool bDroneExploded;                                                        //SARGE: Was the drone exploded last tick?
                                                                                 
 //Sarge: Allow Enhanced Weapon Offsets
 var globalconfig bool bEnhancedWeaponOffsets; 									//Sarge: Allow using enhanced weapon offsets
@@ -640,6 +651,8 @@ var globalconfig bool bDialogHUDColors;                                         
 //var globalconfig bool bAdvancedAugWheel;                                        //Sarge: Allow manually assigning augmentations to the aug wheel, rather than auto-assigning all of them.
 var globalconfig bool bQuickAugWheel;                                           //Sarge: Instantly enable/disable augs when closing the menu over the selected aug, otherwise require a mouse click.
 var globalconfig bool bAugWheelDisableAll;                                      //Sarge: Show the Disable All button on the Aug Wheel
+var globalconfig bool bAugWheelFreeCursor;                                      //Sarge: Allow free cursor movement in the augmentation wheel
+var globalconfig bool bAugWheelRememberCursor;                                  //Sarge: Remember the cursor position in the Aug Wheel, otherwise it will be reset to the center position
 
 var globalconfig bool bBeltShowModified;                                        //SARGE: Shows a "+" in the belt for modified weapons.
 
@@ -662,6 +675,20 @@ var globalconfig bool bFullAccuracyCrosshair;                                   
 var globalconfig bool bAlwaysShowBloom;                                         //SARGE: Always show weapon bloom
 
 var globalconfig bool bShowEnergyBarPercentages;                                //SARGE: If true, show the oxygen and bioenergy percentages below the bars.
+
+//Drone View Switcher
+var globalconfig bool bBigDroneView;                                            //SARGE: Whether or not Drone view should take up the whole screen with the player view in the window, or not.
+
+var localized string EnergyCantReserve;                                         //SARGE: Message when we don't have enough energy to reserve for a togglable augmentation
+
+var globalconfig bool bSimpleAugSystem;                                         //SARGE: Simplifies the Aug screen by merging Auto and Toggle augs into one "type". Doesn't change gameplay in any way.
+
+//Remove Aug Hum Sounds
+var globalconfig bool bQuietAugs;                                               //SARGE: If enabled, augmentations won't play the "hum" sound while active
+
+//Colour Theme Manager
+var globalconfig String MenuThemeNameGMDX;
+var globalconfig String HUDThemeNameGMDX;
 
 //Misc Strings
 var localized String DuplicateNanoKey;
@@ -742,9 +769,43 @@ exec function cheat()
 
 }
 
+//Render the player and hide the hud.
+//These are only necessary using the "full screen drone view" setting
+function ConfigBigDroneView(bool droneView)
+{
+    local DeusExRootWindow root;
+
+    if (!bBigDroneView)
+        return;
+
+    root = DeusExRootWindow(rootWindow);
+
+    if (droneView)
+    {
+        /*
+        //This breaks horribly, we need to hide the individual elements instead.
+        if (root != None)
+            root.hud.hide();
+        */
+        bBehindView=true;
+    }
+    else
+    {
+        bBehindView=false;
+        /*
+        if (root != None)
+            root.hud.show();
+        */
+    }
+}
+
 //Handle Crouch Toggle
 function HandleCrouchToggle()
 {
+    //SARGE: Don't let us toggle crouch while using the drone
+    if (bSpyDroneActive && !bSpyDroneSet)
+        return;
+
     if (!bToggleCrouch)
     {
         bCrouchOn = false;
@@ -873,6 +934,7 @@ local DeusExLevelInfo dxInfo;                                                   
 local name flagName;                                                            //RSD: Added
 local bool bFirstLevelLoad;                                                     //RSD: Added
 local AlarmUnit        AU;                                                      //RSD: Added
+local Perk perkDoorsman;
 
 //log("bHardCoreMode =" @bHardCoreMode);
 //log("CombatDifficulty =" @CombatDifficulty);
@@ -962,12 +1024,14 @@ local AlarmUnit        AU;                                                      
     }
     }
 
+	perkDoorsman = PerkManager.GetPerkWithClass(class'DeusEx.PerkDoorsman');
+
      ForEach AllActors(class'DeusExMover', MV)
      {
-         if (!MV.bPerkApplied && PerkManager.GetPerkWithClass(class'DeusEx.PerkDoorsman').bPerkObtained == true)
+         if (!MV.bPerkApplied && perkDoorsman.bPerkObtained == true)
          {
 		       MV.bPerkApplied = True;
-		       MV.minDamageThreshold -= 5;
+		       MV.minDamageThreshold -= perkDoorsman.PerkValue;
 		       if (MV.minDamageThreshold <= 0)
                 MV.minDamageThreshold = 1;
 		 }
@@ -1210,8 +1274,8 @@ simulated function PostNetBeginPlay()
 		ThemeManager.SetOwner(self);
 		ThemeManager.SetCurrentHUDColorTheme(ThemeManager.GetFirstTheme(1));
 		ThemeManager.SetCurrentMenuColorTheme(ThemeManager.GetFirstTheme(0));
-		ThemeManager.SetMenuThemeByName(MenuThemeName);
-		ThemeManager.SetHUDThemeByName(HUDThemeName);
+		ThemeManager.SetMenuThemeByName(MenuThemeNameGMDX);
+		ThemeManager.SetHUDThemeByName(HUDThemeNameGMDX);
 		if (DeusExRootWindow(rootWindow) != None)
 		   DeusExRootWindow(rootWindow).ChangeStyle();
 	}
@@ -1242,8 +1306,8 @@ function SetupPerkManager()
     {
         //ClientMessage("Make new Perk System");
 	    PerkManager = new(Self) class'PerkSystem';
-        PerkManager.InitializePerks(Self);
     }
+    PerkManager.InitializePerks(Self);
 }
 
 function SetupRandomizer()
@@ -1290,11 +1354,13 @@ function InitializeSubSystems()
 		AugmentationSystem.CreateAugmentations(Self);
 		AugmentationSystem.AddDefaultAugmentations();
 		AugmentationSystem.SetOwner(Self);
+		AugmentationSystem.Setup();
 	}
 	else
 	{
 		AugmentationSystem.SetPlayer(Self);
 		AugmentationSystem.SetOwner(Self);
+		AugmentationSystem.Setup();
 	}
 
 	// install the skill system if not found
@@ -1360,8 +1426,8 @@ function PostPostBeginPlay()
 
 	// Restore colors that the user selected (as opposed to those
 	// stored in the savegame)
-	ThemeManager.SetMenuThemeByName(MenuThemeName);
-	ThemeManager.SetHUDThemeByName(HUDThemeName);
+	ThemeManager.SetMenuThemeByName(MenuThemeNameGMDX);
+	ThemeManager.SetHUDThemeByName(HUDThemeNameGMDX);
 
 
 
@@ -1379,6 +1445,7 @@ function PreTravel()
 {
     local TechGoggles tech;
     local int i;                                                                //RSD
+    local SpyDrone SD;
 	// Set a flag designating that we're traveling,
 	// so MissionScript can check and not call FirstFrame() for this map.
 
@@ -1407,6 +1474,9 @@ function PreTravel()
 		DeusExWeapon(inHand).LaserOff(true);                                    //RSD: Otherwise dots will remain on the map
     ForceDroneOff();                                                            //RSD: Since we can move on standby, shut drone off
     ConsoleCommand("set DeusExCarcass bRandomModFix" @ bRandomizeMods);         //RSD: Stupid config-level hack since PostBeginPlay() can't access player pawn in DeusExCarcass.uc
+
+	foreach AllActors(class'SpyDrone',SD)                                       //RSD: Destroy all spy drones so we can't activate disabled drones on map transition
+		SD.Destroy();
 }
 
 // ----------------------------------------------------------------------
@@ -1422,7 +1492,6 @@ event TravelPostAccept()
 	local SavePoint SP;
 	local rotator rofs;
     local int j;                                                                //RSD
-    local SpyDrone SD;
 
 	//local WeaponGEPGun gepTest;
 	local vector ofst;
@@ -1488,8 +1557,8 @@ event TravelPostAccept()
 	// Restore colors
 	if (ThemeManager != None)
 	{
-		ThemeManager.SetMenuThemeByName(MenuThemeName);
-		ThemeManager.SetHUDThemeByName(HUDThemeName);
+		ThemeManager.SetMenuThemeByName(MenuThemeNameGMDX);
+		ThemeManager.SetHUDThemeByName(HUDThemeNameGMDX);
 	}
 
 	// Make sure any charged pickups that were active
@@ -1510,6 +1579,7 @@ event TravelPostAccept()
 	{
 		// set the player correctly
 		AugmentationSystem.SetPlayer(Self);
+		AugmentationSystem.Setup();
 		AugmentationSystem.RefreshAugDisplay();
 	}
 
@@ -1575,9 +1645,6 @@ event TravelPostAccept()
 
 	SetRocketWireControl();
 	//end GMDX
-
-	foreach AllActors(class'SpyDrone',SD)                                       //RSD: Destroy all spy drones so we can't activate disabled drones on map transition
-		SD.Destroy();
 }
 //GMDX: set up mounted gep spawn, as no matter what i try it still draws it on spawn :/
 function SpawnGEPmounted(bool mountIt)
@@ -2267,7 +2334,7 @@ function ShowIntro(optional bool bStartNewGame, optional bool force)
 	bStartNewGameAfterIntro = bStartNewGame;
 
 	// Make sure all augmentations are OFF before going into the intro
-	AugmentationSystem.DeactivateAll();
+	AugmentationSystem.DeactivateAll(true);
 
 	if ((bSkipNewGameIntro || bPrisonStart) && !force)
 	  PostIntro();
@@ -2372,7 +2439,7 @@ function ShowMultiplayerWin( String winnerName, int winningTeam, String Killer, 
 	if (PlayerIsClient())
 	{
 	  if (AugmentationSystem != None)
-		 AugmentationSystem.DeactivateAll();
+		 AugmentationSystem.DeactivateAll(true);
 	}
 }
 
@@ -2995,6 +3062,7 @@ function UpdateDynamicMusic(float deltaTime)
 // MaintainEnergy()
 // ----------------------------------------------------------------------
 
+//SARGE: TODO: Refactor
 function MaintainEnergy(float deltaTime)
 {
 	local Float energyUse;
@@ -3603,6 +3671,26 @@ exec function AugAdd(class<Augmentation> aWantedAug)
 	}
 }
 
+//SARGE: Add in a way to cheat perks
+exec function PerkAdd(class<Perk> aWantedPerk)
+{
+	if (!bCheatsEnabled || PerkManager == None)
+		return;
+
+    if (PerkManager.PurchasePerk(aWantedPerk,true))
+        ClientMessage("Perk Added");
+}
+
+//SARGE: Add in a way to cheat perks
+exec function PerkReAdd(class<Perk> aWantedPerk)
+{
+	if (!bCheatsEnabled || PerkManager == None)
+		return;
+
+    if (PerkManager.PurchasePerk(aWantedPerk,true,true))
+        ClientMessage("Perk Re-added");
+}
+
 exec function OPAug() //CyberP: cheat for my fucked keyboard
 {
    local AugmentationCannister cann;
@@ -3628,13 +3716,6 @@ exec function ActivateAugmentation(int num)
 	if (RestrictInput())
 		return;
 
-	if (Energy == 0)
-	{
-		ClientMessage(EnergyDepleted);
-		PlaySound(AugmentationSystem.FirstAug.DeactivateSound, SLOT_None);
-		return;
-	}
-
 	if (AugmentationSystem != None)
 		AugmentationSystem.ActivateAugByKey(num);
 }
@@ -3656,6 +3737,7 @@ exec function ActivateAllAugs()
 exec function DeactivateAllAugs()
 {
 	if (AugmentationSystem != None)
+		//AugmentationSystem.DeactivateAll(true);
 		AugmentationSystem.DeactivateAll();
 }
 
@@ -4460,6 +4542,10 @@ function bool IsHighlighted(actor A)
 
 	if (A != None)
 	{
+        //strange that we have to do this manually...
+        if (A.IsA('SpyDrone') && bSpyDroneSet)
+            return true;
+
 		if (A.bDeleteMe || A.bHidden)
 			return False;
 
@@ -4576,15 +4662,6 @@ function HighlightCenterObject()
 		minSize = 99999;
 		bFirstTarget = True;
 
-        if (IsCrouching())
-        {
-           if (PerkManager.GetPerkWithClass(class'DeusEx.PerkEndurance').bPerkObtained == true)                                           //RSD: Was PerkNamesArray[29] (Creeper), now PerkNamesArray[27] (Endurance)
-              bCrouchRegen=True;
-        }
-        else
-        {
-          bCrouchRegen=false;
-        }
      if (inHand != none && inHand.IsA('Multitool'))
      {
         foreach TraceActors(class'Actor', target, HitLoc, HitNormal, EndTrace, StartTrace)
@@ -4974,16 +5051,42 @@ function int HealPlayer(int baseHealPoints, optional Bool bUseMedicineSkill)
 }
 
 // ----------------------------------------------------------------------
+// GetMaxEnergy()
+// Returns the max energy left after energy reservations
+// ----------------------------------------------------------------------
+
+function float GetMaxEnergy(optional bool trueMax)
+{
+    local int max;
+    max = EnergyMax - AugmentationSystem.CalcEnergyReserve();
+
+    if (Energy > max)
+        Energy = max;
+
+    if (trueMax)
+        return EnergyMax;
+    return FMax(0.0,max);
+}
+
+// ----------------------------------------------------------------------
 // ChargePlayer()
 // ----------------------------------------------------------------------
 
-function int ChargePlayer(int baseChargePoints)
+function int ChargePlayer(int baseChargePoints, optional bool showMessage)
 {
 	local int chargedPoints;
 
-	chargedPoints = Min(EnergyMax - Int(Energy), baseChargePoints);
+	chargedPoints = Min(GetMaxEnergy() - Int(Energy), baseChargePoints);
 
 	Energy += chargedPoints;
+
+    if (showMessage && chargedPoints > 0)
+    {
+        if (chargedPoints == 1)
+            ClientMessage(sprintf(RechargedPointLabel,chargedPoints));
+        else
+            ClientMessage(sprintf(RechargedPointsLabel,chargedPoints));
+    }
 
 	return chargedPoints;
 }
@@ -5162,6 +5265,10 @@ function DoJump( optional float F )
 	local float scaleFactor, augLevel, augStealthValue;                         //RSD: added augStealthValue
 	local int MusLevel;
 	local Vector velocityNormal;                                                //RSD: added velocityNormal
+        
+    //SARGE: Prevent jumping if we're using a computer
+    if (bUsingComputer)
+        return;
 
 	MusLevel = AugmentationSystem.GetClassLevel(class'AugMuscle');
 
@@ -5516,6 +5623,8 @@ function CreateDrone()
 {
 	local Vector loc;
 
+    spyDroneLevelValue = AugmentationSystem.GetAugLevelValue(class'AugDrone');
+
 	loc = (2.0 + class'SpyDrone'.Default.CollisionRadius + CollisionRadius) * Vector(ViewRotation);
 	loc.Z = BaseEyeHeight;
 	loc += Location;
@@ -5742,6 +5851,12 @@ state PlayerWalking
         local float heavySkillVal;                                              //RSD
         local float mult4;                                                      //RSD
 
+        //SARGE: Prevent walking if we're using a computer
+        if (bUsingComputer)
+        {
+            newAccel = vect(0,0,0);
+        }
+
 		if (bStaticFreeze)
 		{
 			SetRotation(SAVErotation);
@@ -5754,8 +5869,10 @@ state PlayerWalking
 			if ( aDrone != None )
 			{
 				// put away whatever is in our hand
+                /*
 				if (inHand != None)
 					PutInHand(None);
+                */
 
 				// make the drone's rotation match the player's view
 				if (!bRadialAugMenuVisible)
@@ -5769,6 +5886,10 @@ state PlayerWalking
 
 				// freeze the player
 				Velocity = vect(0,0,0);
+                
+                //SARGE: Stop player from sliding along the ground very slowly while the drone is active
+                SetPhysics(PHYS_None);
+                SetPhysics(PHYS_Walking);
 			}
 			return;
 		}
@@ -6067,6 +6188,9 @@ state PlayerWalking
                }
            }
         }
+		
+		//SARGE: Moved Endurance check to here.
+        bCrouchRegen=PerkManager.GetPerkWithClass(class'DeusEx.PerkEndurance').bPerkObtained;
 	    if ((!IsCrouching() || bCrouchRegen) && !bOnLadder) //(bIsCrouching)     //RSD: Simplified this entire logic from original crouching -> bCrouchRegen check, added !bOnLadder
 	    	RegenStaminaTick(deltaTime);                                        //RSD: Generalized stamina regen function
 	  }
@@ -6960,7 +7084,7 @@ Begin:
 	drugEffectTimer	= 0;
 
     if (AugmentationSystem != None)
-        AugmentationSystem.DeactivateAll(); //CyberP: deactivate augs
+        AugmentationSystem.DeactivateAll(true); //CyberP: deactivate augs
 	// Don't come back to life crouched
     SetCrouch(false,true);
 
@@ -7198,6 +7322,10 @@ function bool RestrictInput()
 	if (IsInState('Interpolating') || IsInState('Dying') || IsInState('Paralyzed') || (FlagBase.GetBool('PlayerTraveling') ))
 		return True;
 
+    //SARGE: Being in a cutscene counts as restricted input
+    if (conPlay.bConversationStarted && conPlay.displayMode == DM_ThirdPerson)
+        return true;
+
     //SARGE: Disallow any sort of UI operations when the "pause" key is pressed
     //This way, real-time UI is actually a real-time UI
     if (DeusExRootWindow(rootWindow).bUIPaused || (Level.Pauser != ""))
@@ -7209,10 +7337,18 @@ function bool RestrictInput()
 
 // ----------------------------------------------------------------------
 // DroneExplode
+// SARGE: Now requires a high amount of energy, won't detonate if energy is lacking.
 // ----------------------------------------------------------------------
-function DroneExplode()
+function bool DroneExplode()
 {
-	local AugDrone anAug;
+    local AugDrone anAug;
+    anAug = AugDrone(AugmentationSystem.FindAugmentation(class'AugDrone'));
+    if (anAug == None)
+        return false;
+
+    //Don't detonate
+    if (Energy < anAug.EMPDrain)
+        return false;
 
     if (bSpyDroneSet)
     {
@@ -7222,15 +7358,17 @@ function DroneExplode()
 	if (aDrone != None)
 	{
 		aDrone.Explode(aDrone.Location, vect(0,0,1));
-	  //DEUS_EX AMSD Don't blow up OTHER player drones...
-	  anAug = AugDrone(AugmentationSystem.FindAugmentation(class'AugDrone'));
-		//foreach AllActors(class'AugDrone', anAug)
-	  if (anAug != None)
-		 anAug.Deactivate();
-	  Energy -= 3; //CyberP: energy cost upon detonation.
-      if (Energy < 0)
-          Energy = 0;
+        anAug.Deactivate();
+        Energy -= anAug.EMPDrain; //CyberP: energy cost upon detonation.
+        if (Energy < 0)
+            Energy = 0;
+
+        bDroneExploded = true;
+
+        return true;
 	}
+
+    return false;
 }
 
 // ----------------------------------------------------------------------
@@ -7290,6 +7428,12 @@ exec function ShowScores()
             //Do nothing.
             return;
         }
+        //SARGE: Check DTS Charge Level
+        else if (assignedWeapon.IsA('WeaponNanoSword') && WeaponNanoSword(assignedWeapon).ChargeManager.GetCurrentCharge() == 0)
+        {
+            //Do nothing.
+            return;
+        }
         else if (assignedWeapon != none && assignedWeapon.IsA('RSDEdible')) //Sarge: Allow using edibles from the secondary button
 		{
             assignedWeapon.GotoState('Activated');
@@ -7308,7 +7452,6 @@ exec function ShowScores()
             {
                 if (inHand != none && inHand.IsA('DeusExWeapon'))
                 {
-                    primaryWeapon = inHand;
                     //DeusExWeapon(inHand).GotoState('DownWeapon');
                     DeusExWeapon(inHand).ScopeOff();
                     DeusExWeapon(inHand).LaserOff(true);
@@ -7316,23 +7459,17 @@ exec function ShowScores()
                 }
                 else if (inHand.IsA('SkilledTool'))
                 {
-                    primaryWeapon = inHand;
                     SkilledTool(inHand).PutDown();
                 }
                 else if (inHand.IsA('DeusExPickup'))
                 {
-                    primaryWeapon = inHand;
                     PutInHand(None);
                 }
-                else
-                    primaryWeapon = none;
                 //assignedWeapon.GotoState('Activated');
                 Binoculars(assignedWeapon).Activate();
             }
             else
             {
-                if (primaryWeapon != none)
-                    inHandPending = primaryWeapon;
                 //assignedWeapon.GotoState('DeActivated');
                 Binoculars(assignedWeapon).Activate();
             }
@@ -7357,7 +7494,6 @@ exec function ShowScores()
                  return;
              }
          }
-         primaryWeapon = inHand;
          inHandPending = assignedWeapon;
          if (inHandPending.IsA('DeusExWeapon'))
 	         DeusExWeapon(inHandPending).bBeginQuickMelee=true;
@@ -7393,7 +7529,6 @@ exec function ShowScores()
 	       if (assignedWeapon != None)
 	       {
 	           inHandPending = assignedWeapon;
-	           primaryWeapon = assignedWeapon;                                  //RSD: Will let you fire with secondary weapon button when nothing was in hand
            }
 	    }
 
@@ -7408,7 +7543,6 @@ exec function ShowScores()
              }
          }
          if (inHand.IsA('DeusExWeapon'))
-             primaryWeapon = DeusExWeapon(inHand);
          inHandPending = assignedWeapon;
          if (inHandPending.IsA('DeusExWeapon'))
 	         DeusExWeapon(inHandPending).bBeginQuickMelee=true;
@@ -7610,12 +7744,12 @@ exec function ParseLeftClick()
 	// if the spy drone augmentation is active, blow it up
 	if (bSpyDroneActive && !bSpyDroneSet && !bRadialAugMenuVisible)                                       //RSD: Allows the user to toggle between moving and controlling the drone, also added Lorenz's wheel
 	{
-		DroneExplode();
-		return;
+		if (DroneExplode());
+            return;
 	}
 
     //Blow up any GEP profectiles in flight
-	else if (bGEPprojectileInflight)
+	if (bGEPprojectileInflight)
 	{
         if (aGEPProjectile!=none && aGEPProjectile.IsA('Rocket'))
         {
@@ -7651,11 +7785,7 @@ exec function ParseLeftClick()
     }
 
     //Special cases aside, now do the left hand frob behaviour
-<<<<<<< HEAD
     else if (FrobTarget != none && IsReallyFrobbable(FrobTarget,true) && !bInHandTransition && (inHand == None || !inHand.IsA('POVcorpse')) && CarriedDecoration == None)
-=======
-    else if (FrobTarget != none && IsReallyFrobbable(FrobTarget) && !bInHandTransition && (inHand == None || !inHand.IsA('POVcorpse')) && CarriedDecoration == None)
->>>>>>> 4da83e3d1f940c24e87d8346088fe5b8a13abc44
 	{
         DoLeftFrob(FrobTarget);
 	}
@@ -7714,10 +7844,15 @@ function SelectLastWeapon()
     root = DeusExRootWindow(rootWindow);
     if (root != None && root.hud != None)
     {
-        if (bAlternateToolbelt > 0)
-            root.ActivateObjectInBelt(advBelt);
-        else
-            PutInHand(lastSelected);
+        if (bAlternateToolbelt > 0 && root.ActivateObjectInBelt(advBelt))
+        {
+            NewWeaponSelected();
+            return;
+        }
+    }
+    if (primaryWeapon.Owner == self)
+    {
+        PutInHand(primaryWeapon);
         NewWeaponSelected();
     }
 }
@@ -7862,14 +7997,10 @@ exec function ParseRightClick()
         PlaySound(sound'RatSqueak1');
 		return;*/
 		if (aDrone != none)
-		{
-		    bSpyDroneSet = true;
-		    aDrone.Velocity = vect(0.,0.,0.);
-		    SetRotation(SAVErotation);
-            ViewRotation = SAVErotation;
-            DRONESAVErotation = aDrone.Rotation;
-		}
-        return;
+        {
+            AugDrone(AugmentationSystem.FindAugmentation(class'AugDrone')).ToggleStandbyMode(true);
+            return;
+        }
 	}
 
 	oldFirstItem = Inventory;
@@ -8330,7 +8461,7 @@ exec function PutInHand(optional Inventory inv)
 		//	return;
         
         if (!inv.IsA('POVCorpse'))
-            lastSelected = inv;
+            primaryWeapon = inv;
 	}
 
 	if (CarriedDecoration != None)
@@ -10854,6 +10985,14 @@ function bool GetCrosshairState(optional bool bCheckForOuterCrosshairs)
 	root = DeusExRootWindow(rootWindow);
 	W = DeusExWeapon(inHand);
 
+    //If the Spy Drone is fullscreen, no crosshair
+    if (bSpyDroneActive && !bSpyDroneSet && bBigDroneView)
+        return false;
+
+    //If we have the spy drone out, no outer crosshairs.
+    if (bSpyDroneActive && !bSpyDroneSet && bCheckForOuterCrosshairs)
+        return false;
+
     if (!bCrosshairVisible)
         return false;
 
@@ -11923,6 +12062,7 @@ event UpdateEyeHeight(float DeltaTime)
 event PlayerCalcView( out actor ViewActor, out vector CameraLocation, out rotator CameraRotation )
 {
 	local vector unX,unY,unZ;
+    local rotator fixedRotation;
 	if (bStaticFreeze)
 	{
 		CameraLocation = SAVElocation;
@@ -11939,13 +12079,33 @@ event PlayerCalcView( out actor ViewActor, out vector CameraLocation, out rotato
 	{
 		if (aDrone != None)
 		{
-			// First-person view.
-			CameraRotation = SAVErotation;                                      //RSD: Added
-			SetRotation(SAVErotation);                                          //RSD: Added
-			CameraLocation = Location;
-			CameraLocation.Z += EyeHeight;
-			CameraLocation += WalkBob;
-			return;
+            //Fix the player rotation
+            fixedRotation = SAVErotation;
+            fixedRotation.Pitch = 0f;
+            fixedRotation.Roll = 0f;
+
+            //SARGE: Added Drone-View
+            if (bBigDroneView)
+            {
+                //View from the drone
+                SetRotation(fixedRotation);
+                CameraRotation = aDrone.Rotation;
+                CameraLocation = aDrone.Location;
+                //CameraLocation.Z += EyeHeight;
+                //CameraLocation += WalkBob;
+                ViewActor = aDrone;
+                return;
+            }
+            else
+            {
+                //View from the player
+                CameraRotation = SAVErotation;                                      //RSD: Added
+                SetRotation(fixedRotation);                                         //RSD: Added
+                CameraLocation = Location;
+                CameraLocation.Z += EyeHeight;
+                CameraLocation += WalkBob;
+                return;
+            }
 		}
 	}
 
@@ -14096,7 +14256,7 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
 	if (damageType == 'NanoVirus')
 	{
         NanoVirusTimer += float(Damage);                                        //RSD: Actually it does, it makes augs unusable for as many seconds as damage taken
-		AugmentationSystem.DeactivateAll();
+		AugmentationSystem.DeactivateAll(true);
 		NanoVirusTicks = 0;                                                     //RSD: Awful hack
 		bNanoVirusSentMessage = false;                                          //RSD: Awful hack
         return;
@@ -14621,6 +14781,8 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 	local HazMatSuit suit;
 	local BallisticArmor armor;
 	local bool bReduced;
+    local AugEnviro enviro;
+    local AugAqualung lung;
 
 	bReduced = False;
 	newDamage = Float(Damage);
@@ -14631,13 +14793,28 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 	{
 	    if (DamageType != 'Shocked')
 	    {
-	    if (bBoosterUpgrade && Energy > 0 && Damage > 0)
-		        AugmentationSystem.AutoAugs(false,true);
-		if (AugmentationSystem != None)
-			augLevel = AugmentationSystem.GetAugLevelValue(class'AugEnviro');
+            if (bBoosterUpgrade && Energy > 0 && Damage > 0)
+                    AugmentationSystem.AutoAugs(false,true);
+            if (AugmentationSystem != None)
+            {
+                enviro = AugEnviro(AugmentationSystem.GetAug(class'AugEnviro'));
+                augLevel = enviro.LevelValues[enviro.CurrentLevel];
 
-		if (augLevel >= 0.0)
-			newDamage *= augLevel;
+                //Make sure we have enough energy
+                //EDIT: This was based on damage tane, and still can be if you uncomment this. For now, use the old "20 per second" of the old aug.
+                //if (enviro.bIsActive && augLevel >= 0.0 && Energy > 0 && Energy >= enviro.GetCustomEnergyRate(newDamage * 0.1))
+                if (enviro.bIsActive && augLevel >= 0.0 && Energy > 0)
+                {
+                    //Only use energy once per 3 seconds, like the old aug
+                    if (saveTime >= enviro.lastEnergyTick)
+                    {
+                        //Energy -= MAX(int(newDamage * 0.1),1);
+                        Energy -= 1;
+                        enviro.lastEnergyTick = saveTime + 3.0;
+                    }
+                    newDamage *= augLevel;
+                }
+            }
         }
 
 		// get rid of poison if we're maxed out
@@ -14678,7 +14855,17 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 					// Trash: No stamina damage while wearing a hazmat suit and with the perk FilterUpgrade
         		}
 				else
-                	swimTimer -= (newDamage*0.4) + 3;
+                {
+                    //Aqualung now reduces stamina damage
+                    augLevel = 1.0;
+                    lung = AugAqualung(AugmentationSystem.GetAug(class'AugAqualung'));
+                    if (lung.bIsActive)
+                    {
+                        augLevel = 2.0 - lung.LevelValues[lung.CurrentLevel];
+                    }
+                	swimTimer -= ((newDamage*0.4) + 3) * augLevel;
+                    log("Stamina Damage AugLevel: " $ augLevel);
+                }
 				
                 if (swimTimer < 0)
                     swimTimer = 0;
@@ -14726,14 +14913,12 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 
 			if (augLevel < 0.0 && Energy > 0.0) //this means we can't have both augs installed, and that for passive to work energy is required. //RSD: Actually it just means active overrides passive
 			{
-				augLevel = AugmentationSystem.GetAugLevelValue(class'AugBallisticPassive');
-				//augLevel = 1.0-(Energy/EnergyMax)*(1.0-augLevel);               //RSD: Now protects proportionally to current energy (up to 20/25/30/35%)
-				augLevel = 1.0 - 0.35*FClamp(Energy/(augLevel*EnergyMax),0.0,1.0);//RSD: Still proportional, but up to 35% protection depending on 100/80/60/40% of your energy bar
+                augLevel = AugBallisticPassive(AugmentationSystem.GetAug(class'AugBallisticPassive')).GetDamageMod();
 			}
 			//augLevel *= AugmentationSystem.GetAugLevelValue(class'AugBallistic');//RSD: figure out stacking prots later maybe
         }
 
-		if (augLevel >= 0.0)
+		if (augLevel > 0.0)
 			newDamage *= augLevel;
 	}
 
@@ -14814,7 +14999,7 @@ function Died(pawn Killer, name damageType, vector HitLocation)
 		ExtinguishFire();
 
 	if (AugmentationSystem != None)
-		AugmentationSystem.DeactivateAll();
+		AugmentationSystem.DeactivateAll(true);
 
 	if ((Level.NetMode == NM_DedicatedServer) || (Level.NetMode == NM_ListenServer))
 	  ClientDeath();
@@ -16949,11 +17134,14 @@ function MultiplayerTick(float DeltaTime)
 	}
 	RepairInventory();
 	lastRefreshTime = 0;
+
+    //SARGE: Reset drone exploded flag
+    bDroneExploded = false;
 }
 
 // ----------------------------------------------------------------------
 
-function ForceDroneOff()
+function ForceDroneOff(optional bool skipDeactivation)
 {
 	local AugDrone anAug;
 
@@ -16968,9 +17156,11 @@ function ForceDroneOff()
                 SAVErotation = ViewRotation;
                 bSpyDroneSet = false;                                                 //RSD: Ensures that the Spy Drone will ACTUALLY be turned off
             }
-            anAug.bTimerEarly = true;                                                 //RSD: Hack so the drone doesn't spin us around when it gets destroyed
-            anAug.Deactivate();
-            bSpyDroneActive = false;                                                  //RSD: Prevents being forced back into drone control at the last second
+            if (!skipDeactivation)
+            {
+                anAug.Deactivate();
+                bSpyDroneActive = false;                                                  //RSD: Prevents being forced back into drone control at the last second
+            }
         }
     }
 }
@@ -17409,10 +17599,13 @@ function RegenStaminaTick(float deltaTime)                                      
 {
 	local float mult;
     local float base;
+	local Perk perkEndurance;
     
     //SARGE: Stop regen if we're poisoned
     if (poisonCounter > 0)
         return;
+
+	perkEndurance = PerkManager.GetPerkWithClass(class'DeusEx.PerkEndurance');
 
     if (AugmentationSystem != none)                                             //RSD: accessed none
     {
@@ -17423,8 +17616,8 @@ function RegenStaminaTick(float deltaTime)                                      
 	else
         mult = 1.0;
 	//RSD: base regen now 2.0, now properly multiplied with additive increases/decreases
-	if (PerkManager.GetPerkWithClass(class'DeusEx.PerkEndurance').bPerkObtained == true)                                                //RSD: endurance perk adds x2
-		mult += 1.0;
+	if (perkEndurance.bPerkObtained == true)                                                //RSD: endurance perk adds x2
+		mult += perkEndurance.PerkValue;
 	if (AddictionManager.addictions[DRUG_TOBACCO].bInWithdrawals == true)                                           //RSD: if suffering from nicotine withdrawal, subtract x0.5
 		mult -= 0.5;
 	if (AddictionManager.addictions[DRUG_TOBACCO].drugTimer > 0)                                                 //RSD: Zyme adds x2
@@ -17528,10 +17721,13 @@ defaultproperties
      PrimaryGoalCompleted="Primary Goal Completed"
      SecondaryGoalCompleted="Secondary Goal Completed"
      EnergyDepleted="Bio-electric energy reserves depleted"
+     EnergyCantReserve="Not enough reserve Bio-Energy"
      AddedNanoKey="%s added to Nano Key Ring"
      DuplicateNanoKey="%s not added to Key Ring [Duplicate]"
      HealedPointsLabel="Healed %d points"
      HealedPointLabel="Healed %d point"
+     RechargedPointsLabel="Recharged %d points"
+     RechargedPointLabel="Recharged %d point"
      SkillPointsAward="%d skill points awarded"
      QuickSaveGameTitle="Quick Save [%s]"
      AutoSaveGameTitle="Auto Save [%s]"
@@ -17652,6 +17848,7 @@ defaultproperties
      bEnhancedWeaponOffsets=false
      bQuickAugWheel=false
      bAugWheelDisableAll=true
+     bAugWheelFreeCursor=true
      bColourCodeFrobDisplay=True
      bWallPlacementCrosshair=True
      dynamicCrosshair=1
@@ -17666,6 +17863,11 @@ defaultproperties
      iAllowCombatMusic=1
      bFullAccuracyCrosshair=true;
      bShowEnergyBarPercentages=true;
+     bSimpleAugSystem=true
+     bBigDroneView=True
+     bSimpleAugSystem=true
+	 MenuThemeNameGMDX="Default"
+     HUDThemeNameGMDX="Default"
      dblClickHolster=2
      bSmartDecline=True
 }

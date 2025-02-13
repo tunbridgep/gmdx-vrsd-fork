@@ -78,6 +78,10 @@ function Bool StartConversation(DeusExPlayer newPlayer, optional Actor newInvoke
 	{
 		displayMode = DM_ThirdPerson;
 
+        // SARGE: Disable the Spy Drone (set it on standby)
+        if (newPlayer.bSpyDroneActive && !newPlayer.bSpyDroneSet)
+            AugDrone(newPlayer.AugmentationSystem.FindAugmentation(class'AugDrone')).ToggleStandbyMode(true);
+
 		// Hide the hud display if this is a third-person convo
 		rootWindow.hud.Hide();
 

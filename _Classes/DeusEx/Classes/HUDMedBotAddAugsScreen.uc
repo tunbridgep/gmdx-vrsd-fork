@@ -13,10 +13,12 @@ var Bool bSkipAnimation;
 var Localized String AvailableAugsText;
 var Localized String MedbotInterfaceText;
 var Localized String InstallButtonLabel;
+var Localized String ReplaceButtonLabel;
 var Localized String NoCansAvailableText;
 var Localized String AlreadyHasItText;
 var Localized String SlotFullText;
 var Localized String SelectAnotherText;
+var Localized String RespecText;
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -236,6 +238,9 @@ function bool ButtonActivated(Window buttonPressed)
 
 function SelectAugmentation(PersonaItemButton buttonPressed)
 {
+	local AugmentationCannister augCan;
+    local Augmentation partnerAug;
+
 	// Don't do extra work.
 	if (selectedAugButton != buttonPressed)
 	{
@@ -245,6 +250,12 @@ function SelectAugmentation(PersonaItemButton buttonPressed)
 
 		selectedAugButton = buttonPressed;
 		selectedAug       = Augmentation(selectedAugButton.GetClientObject());
+        partnerAug    = HUDMedBotAugItemButton(selectedAugButton).PartnerAug;
+        augCan = HUDMedBotAugItemButton(selectedAugButton).GetAugCan();
+
+	
+        //Reset the button text
+        btnInstall.SetButtonText(InstallButtonLabel);
 
 		// Check to see if this augmentation has already been installed
 		if (HUDMedBotAugItemButton(buttonPressed).bHasIt)
@@ -256,6 +267,14 @@ function SelectAugmentation(PersonaItemButton buttonPressed)
 			selectedAug = None;
 			selectedAugButton = None;
 		}
+        //SARGE: Check if we can respec
+		else if (HUDMedBotAugItemButton(buttonPressed).bCanRespec)
+        {
+			selectedAug.UsingMedBot(True);
+            selectedAug.UpdateInfo(winInfo,sprintf(RespecText,partnerAug.GetName()));
+			selectedAugButton.SelectButton(True);
+            btnInstall.SetButtonText(ReplaceButtonLabel);
+        }
 		else if (HUDMedBotAugItemButton(buttonPressed).bSlotFull)
 		{
 			winInfo.Clear();
@@ -283,8 +302,7 @@ function SelectAugmentation(PersonaItemButton buttonPressed)
 function InstallAugmentation()
 {
 	local AugmentationCannister augCan;
-	local Augmentation aug;
-    //local Augmentation allTheAugs;                                            //RSD: Removed
+	local Augmentation aug, aug2;
 
 	if (HUDMedBotAugItemButton(selectedAugButton) == None)
 		return;
@@ -294,13 +312,11 @@ function InstallAugmentation()
 
 	augCan = HUDMedBotAugItemButton(selectedAugButton).GetAugCan();
 	aug    = HUDMedBotAugItemButton(selectedAugButton).GetAugmentation();
+	aug2    = HUDMedBotAugItemButton(selectedAugButton).PartnerAug;
 
-    /*                                                                          //RSD: honestly this should all be handled in GivePlayerAugmentation() in AugmentationManager.uc
-    if (aug.IsA('AugHeartLung')) //CyberP: AugHeartLung upgrades all passive augs. //RSD: Active too now
-       ForEach Player.AllActors(class'Augmentation',allTheAugs)
-        if (allTheAugs.bHasIt && allTheAugs.CurrentLevel != allTheAugs.MaxLevel) //RSD: removed && allTheAugs.bAlwaysActive, no distinction between active or passive for synth heart anymore
-          allTheAugs.CurrentLevel++;                                            //RSD: changed from +=1 to ++ for no reason
-    */
+    //If we're respeccing, first remove the old aug
+    if (HUDMedBotAugItemButton(selectedAugButton).bCanRespec)
+        player.AugmentationSystem.RemoveAugmentation(aug2.class);
 
 	// Add this augmentation (if we can get this far, then the augmentation
 	// to be added is a valid one, as the checks to see if we already have
@@ -401,10 +417,12 @@ defaultproperties
      AvailableAugsText="Available Augmentations"
      MedbotInterfaceText="MEDBOT INTERFACE"
      InstallButtonLabel="|&Install"
+     ReplaceButtonLabel="|&Replace"
      NoCansAvailableText="No Augmentation Cannisters Available!"
      AlreadyHasItText="You already have this augmentation, therefore you cannot install it a second time."
      SlotFullText="The slot that this augmentation occupies is already full, therefore you cannot install it."
      SelectAnotherText="Please select another augmentation to install."
+     RespecText="WARNING: Installing this augmentation will replace %s, and any upgrades will be lost!"
      clientTextures(0)=Texture'GMDXSFX.UI.MedbotAug'
      clientTextures(1)=Texture'DeusExUI.UserInterface.HUDMedbotBackground_2'
      clientTextures(2)=Texture'DeusExUI.UserInterface.HUDMedbotBackground_3'

@@ -317,7 +317,7 @@ function UpdateInfoText()
 
       if (repairBot.chargeMaxTimes>repairBot.lowerThreshold)                    //RSD: 0 changed to lowerThreshold
       {
-		if (player.Energy >= player.EnergyMax)
+		if (player.Energy >= player.GetMaxEnergy())
 			infoText = infoText $ RepairBotYouAreHealed;
 		else if (repairBot.CanCharge())
 			infoText = infoText $ RepairBotReadyLabel;
@@ -338,7 +338,7 @@ function UpdateBioWindows()
 {
 	local float energyPercent;
 
-	energyPercent = 100.0 * (player.Energy / player.EnergyMax);
+	energyPercent = 100.0 * (player.Energy / player.GetMaxEnergy());
 	winBioBar.SetCurrentValue(energyPercent);
 
 	winBioBarText.SetText(String(Int(energyPercent)) $ "%");
@@ -537,7 +537,7 @@ function EnableButtons()
 
     if (repairBot != None)
 	{
-		if (player.Energy >= player.EnergyMax)
+		if (player.Energy >= player.GetMaxEnergy())
 			btnRecharge.EnableWindow(False);
 		else
 			btnRecharge.EnableWindow(repairBot.CanCharge());

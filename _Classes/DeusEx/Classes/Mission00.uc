@@ -163,22 +163,30 @@ function Timer()
 		}
 
 		// increase the player's skill
-		if (flags.GetBool('DL_RifleRangeShot1_Played') &&
-			!flags.GetBool('MS_SkillIncreased'))
+		if (flags.GetBool('DL_RifleRangeShot1_Played') && !flags.GetBool('MS_SkillIncreased'))
 		{
-			// max out the rifle skill    //CyberP: and the demo skill
+			// max out the rifle skill
 			if (Player.SkillSystem != None)
 			{
 				aSkill = Player.SkillSystem.GetSkillFromClass(class'SkillWeaponRifle');
 				if (aSkill != None)
 					aSkill.CurrentLevel = 3;
-				aSkill = Player.SkillSystem.GetSkillFromClass(class'SkillDemolition');
-                if (aSkill != None)
-					aSkill.CurrentLevel = 1;
 			}
-
 			flags.SetBool('MS_SkillIncreased', True);
 		}
+		
+        if (flags.GetBool('DL_DefusingEntry_Played') && !flags.GetBool('MS_DemoSkillIncreased'))
+		{
+			// max out the demo skill
+			if (Player.SkillSystem != None)
+			{
+				aSkill = Player.SkillSystem.GetSkillFromClass(class'SkillDemolition');
+                if (aSkill != None)
+					aSkill.CurrentLevel = 3;
+			}
+			flags.SetBool('MS_DemoSkillIncreased', True);
+		}
+
 	}
 	else if (localURL == "00_TRAININGFINAL")
 	{

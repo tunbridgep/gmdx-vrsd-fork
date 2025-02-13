@@ -31,7 +31,7 @@ simulated function PreBeginPlay()
 
 	// If this is a netgame, then override defaults
 	if ( Level.NetMode != NM_StandAlone )
-		MaxCopies = 5;
+		default.MaxCopies = 5;
 }
 
 function OnEquipped()

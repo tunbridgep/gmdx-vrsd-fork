@@ -50,7 +50,7 @@ simulated function bool UpdateInfo(Object winObject)
 			aug = GetAugmentation(canIndex);
 
 			if (aug != None)
-				winInfo.AppendText(aug.default.AugmentationName $ winInfo.CR());
+				winInfo.AppendText(aug.GetName() $ winInfo.CR());
 		}
 	}
 

@@ -35,7 +35,8 @@ defaultproperties
      EnergyRate=0.000000
      Icon=Texture'DeusExUI.UserInterface.AugIconEMP'
      smallIcon=Texture'DeusExUI.UserInterface.AugIconEMP_Small'
-     bAlwaysActive=True
+     AugmentationType=Aug_Toggle
+     EnergyReserved=10
      AugmentationName="EMP Shield (Passive)"
      Description="A passive augmentation, nanoscale EMP generators partially protect individual nanites and reduce bioelectrical drain by canceling incoming pulses.|n|nTECH ONE: Damage from EMP attacks is reduced slightly.|n|nTECH TWO: Damage from EMP attacks is reduced moderately.|n|nTECH THREE: Damage from EMP attacks is reduced significantly.|n|nTECH FOUR: An agent is almost invulnerable to damage from EMP attacks."
      MPInfo="When active, you only take 5% damage from EMP attacks.  Energy Drain: None"

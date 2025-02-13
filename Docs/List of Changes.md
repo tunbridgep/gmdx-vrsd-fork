@@ -25,11 +25,16 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX bug where tiredness effects from low stamina would reset prematurely.
     - Fixed vanilla "bug" where diving into or leaving water would give free stamina.
     - Fixed GMDX quickloading not always working correctly, and other save issues including incorrect save-game ordering in the save/load screens.
+    - Fixed Vanilla bug where the spy drone would be deployable inside a wall, which would make it fail to spawn but keep the augmentation running.
+    - Fixed GMDX "Create Custom Theme" menu being able to corrupt standard themes. Now the player is forced into the Custom HUD/Menu themes upon loading the custom theme creator.
     - Fixed GMDX bug which would make an empty subtitles box appear when interacting with things during first-person conversations, if subtitles were disabled.
+    - Fixed GMDX bug where recharging items with biocells would cause the belt view in the inventory to continually get brighter and brighter until the inventory screen was closed.
     - Fixed many other GMDX and Vanilla bugs.
     - Fixed GMDX bug where most inventory items with multiple skins (such as sodacans) weren't showing their skinned variants when being held in the players hands.
 - Quality of Life Improvements:
     - Datacubes will show a black screen after they have been read.
+    - The augmentation "hum" sound can be disabled.
+    - Augmentations now show their active colours in the medbot interface.
     - Complete overhaul of the "Decline Knives" system
         - "Decline Knives" setting has been removed
         - A new Decline button has been added to items in the inventory. Clicking it will decline a specific item going forward, preventing it from being taken off corpses.
@@ -44,6 +49,7 @@ Sarge's Changes since Beta 2.2:
     - Right-Clicking an item in the belt with the Inventory Window open will clear the slot.
     - Added QoL settings to not damage domesticated animals and cleaner bots when stepping on them.
     - The Inventory "Show Ammo" display now always shows the total amount of ammo you can carry. Before, it was only visible when "Show Descriptions" was enabled.
+    - A lot of inventory item displays have been improved to show more statistics.
     - Added a Lighting Accessibility setting, which removes some strobing and flickering in certain areas on some maps, such as the 'Ton hotel elevator shaft.
     - Added a new corpse searching setting, "Enhanced Looting", which makes the first right-click on a corpse never pick them up, even if empty, so that you can search them reliably without accidentally picking them up.
         - Additionally, the first time a corpse is interacted with, it will show any items which it contains that you cannot pick up (such as duplicate weapons and declined items).
@@ -86,6 +92,7 @@ Sarge's Changes since Beta 2.2:
     - Double-Click holstering now also works to enable Double Click Unholstering, rather than always unholstering with right-click (with IW toolbelt) or doing nothing (regular Toolbelt)
     - The number of total Lockpicks or Multitools in your inventory is now listed on lockpicking/electronics information windows, allowing you to see how many lockpicks or multitools you have compared to how many are required to bypass a given device or lock.
         - The text is also color coded, showing as yellow when you only just have the amount of tools required, and red if you don't meet the requirement.
+        - The Damage Threshold text is also red if the currently selected weapon is not able to beat the damage threshold.
         - If this setting is disabled, lockpicks and multitools will display their total count in the ammo display window, allowing you to easily see how many you have when you don't have them on your belt.
     - Belt Autofilling can now be disabled in the options.
     - Save Points no longer use Autosave slots, which can be easily overridden by accident, and now create fresh hard-saves instead.
@@ -95,6 +102,7 @@ Sarge's Changes since Beta 2.2:
         - The Dialog Menu can now use the HUD Color theme, rather than always having blue text.
         - Dialog Menu options can be configured in the option screen.
     - The Nano Keyring now tells you which key was used when locking/unlocking a door.
+    - Added a new "Left-Click Unholstering" feature, which will equip your last used weapon when left-clicking if there was nothing else to interact with.
     - Complete overhaul of "Left-click frobbing", which happens when left-clicking certain items without an item equipped.
         - Left-Clicking a datacube will pick it up and allow you to carry it.
         - Left-Clicking a breakable box, window or wall will select a melee weapon from your inventory based on a priority list.
@@ -128,25 +136,65 @@ Sarge's Changes since Beta 2.2:
         - This removes ambiguity about whether or not a surface is unbreakable, or just needs more hits to destroy.
         - This only affects 1-2 movers in the entire game.
         - You still need to meet the damage threshold requirements.
+    - The Dragons Tooth Sword now requires Biocells to use. It starts with 100% charge, with each attack taking 2% if it hits a target, giving you 50 hits total. Biocells restore 20% (or 30% with the Field Repair perk), giving you an additional 10 (15) hits each.
     - The GEP Gun now has limited range. After 5 seconds of flight, rockets will detonate as they run out of fuel. Each range mod increases flight time by 1 second.
     - Putting a scope or a laser sight on the GEP gun now requires the Heavily Tweaked perk (ADVANCED heavy weapons, 100 skill points). The scope and laser sight still provide rocket guidance capabilities.
     - Added a new "Weapon Requirements Matter" Playthrough Modifier. When enabled, most weapons will require a minimum skill investment in order to be used.
+    - Demolitions Skill Overhaul
+        - Demolitions Skill-based grenade timing rescaled from 0.5, 1.0, 2.5, 7.0 seconds to 0.75, 1.0, 1.5, 2.5 seconds
+        - Being able to pick up disarmed grenades is now based on skill level - Trained for Gas Grenades, Advanced for EMP and Scrambler Grenades, Master for LAMs.
+        - EMP damage will always permanently disable grenades, making them unable to be reused, regardless of skill level.
     - Reverted GMDX change limiting Assault Rifles, Assault Shotguns and Sawed Off's to 4 damage mods. Now they can have 5 just like everything else.
         - This was done because of integer truncation. In GMDX v9, the 5th upgrade would change their base damage from 4.2 to 4.5, which was pointless as it was rounded to 4 either way.
         - With vRSD partial damage calculations were added, so this is now relevant again.
     - Augmentation Changes
+        - Augmentations can now be swapped out with the opposite choice when finding duplicate augmentation Canisters.
+            - Augmentations that are replaced this way will be reset to level 1.
+            - Augmentations cannot be freely replaced with any other augmentation occupying the same slot, it must be the opposite choice from their relevant cannister.
         - Some augmentations have been given a short cooldown on use. The Spy Drone retains it's 30 second cooldown.
             - Augmentations that need to recharge after use (including the Spy Drone) will show a red icon in the Augmentations window while they are recharging.
+        - Some augs can now be "toggled".
+            - Toggled augs do not consume energy when active, but must "reserve" a portion of your total bioelectrical energy in order to activate.
+            - The reserved amount is not restored upon deactivating the augmentation.
+            - Reserve Amounts can be increased by Synthetic Heart and reduced by Power Recirculator
         - EUAS
+            - At Level 2, EUAS becomes a Toggle augmentation, reserving 5 energy to detect hazards.
             - Swapped Level 2 and 3, because level 2 was arguably better than level 3. Now level 2 detects environmental hazards, level 3 shows visibility on the HUD.
             - Level 2 "Hazard Detection" now detects multiple threats (not just one at random), and can also detect grenades. Only the closest gas cloud will be shown, to reduce clutter.
                 - Detection Range also increases at Level 3.
+        - Aqualung
+            - Is now a Toggle Augmentation, reserving 10 energy to function.
         - Aggressive Defense System:
+            - Is now an Automatic Augmentation, draining 5 energy per projectile destroyed.
             - Will no longer display explosives which aren't detonated, so it can't be used to detect placed grenades at long range anymore
                 - Will instead continue to display destroyed projectiles on the HUD for a second or so after they are destroyed.
             - Now only beeps as projectiles enter range, to prevent annoying earrape
             - Range increased from 340/480/640/800 to 400/600/800/1000
             - Added Player Damage Reduction for projectiles detonated by ADS. Reduces damage from projectiles by 20%/30%/40%/50%
+        - Ballistic Protection (Passive)
+            - Is now a Toggle Augmentation, reserving 20 energy to function. The reserved amount is discounted when calculating damage reduction.
+        - Combat Speed
+            - Is now a Toggle Augmentation, reserving 20 energy to function.
+        - Environmental Resist
+            - Is now an Automatic Augmentation, draining 20 energy per second when taking environmental damage.
+        - Spy Drone
+            - Energy Use reduced from 90 per minute to 30 per minute, to encourage using it like an actual spy device
+                - The drone still retains it's 0 energy use per minute while parked from vRSD
+            - The drone's EMP cost has been increased from 3 per blast to 20 per blast, so it's no longer a free bomb
+            - The drone can now be spotted by enemies at close range
+                - The drone is invisible while parked, and cannot be seen at all at level 4.
+            - The drone has been made significantly smaller
+            - The drone can now be activated while parked, which will reclaim it, allowing immediate redeployment without needing to wait for the reconstruction time.
+            - Saving and Loading the game will no longer destroy any drones in flight.
+            - The drone can now be used in full-screen (enabled by default), with the player view being displayed in the picture-in-picture window.
+            - The drone will bounce off walls and floors slightly less than before.
+            - The players equipped item is no longer unequipped when using the drone.
+            - Restored the drone creation sound (was removed in previous GMDX versions).
+            - The Picture-in-Picture window has been made slightly bigger.
+            - When running out of bioelectrical energy, the Drone will be parked automatically instead of being destroyed.
+                - Using the Drone augmentation while at 0 bioelectrical energy can be used to forcibly destroy the drone.
+        - Targeting
+            - The Picture-in-Picture window has been made slightly bigger.
     - Hacking Overhaul
         - Bypassing Turrets now requires Advanced hacking, as in Vanilla.
         - Hacked Cameras and Turrets will "reboot" and become re-enabled again after 2 minutes (plus an additional 2 minutes for each level of the Hacking skill)
@@ -157,6 +205,7 @@ Sarge's Changes since Beta 2.2:
         - Now they will use the same damage multiplier across all limbs, making the damage more reliable against enemies.
         - This also means you will take less damage from plasma and explosives to your torso and head.
     - Charged Objects no longer destroy themselves on use in Hardcore mode.
+    - JC can no longer move while interacting with security computers.
     - The rifle's grenade launcher doesn't require reloading to turn on, but you need to reload after each shot. It now works like a different weapon.
     - Increased the sawed off shotgun's pellet count from 8 to 9, and decreased shot speed from 1.3 to 1.2.
     - Rubber shells are now hitscan with a harmless projectile.
@@ -184,6 +233,10 @@ Sarge's Changes since Beta 2.2:
         - Heavy Perks:
             - Heavily Tweaked (NEW ADVANCED): An agent is able to attach scopes and laser sights to the GEP gun, enabling laser guidance and fly-by-wire capabilities.
             - Mobile Ordnance (NEW MASTER): An agent is able to modify the chassis of flame weapons, stripping away unnecessary elements. Flamethrowers are reduced in size by 3 inventory spaces.
+        - Added "General" perks, which require no skills to unlock and are available in a new panel inside the Skills/Perks window.
+            - Glutton: Allows holding double stacks of all food items, and can eat up to 125% hunger.
+            - Socket Jockey: Using a wall-outlet will give you 5 bioenergy in addition to zapping you.
+            - Firefighter: Fire Extinguishers will have longer range, last for longer, and will explode in a huge cloud when detonated.
     - Addiction System Rework
         - Alcohol no longer heals for 5 points. Instead, it temporarily gives you 5 torso HP (along with it's usual 5 extra torso Max-HP) while in effect, which is removed afterwards. This health removal cannot kill the player.
         - Alcohol no longer adds to fullness when the addiction system is enabled
