@@ -76,5 +76,6 @@ defaultproperties
      Mesh=LodMesh'HDTPItems.HDTPShurikenPickup'
      CollisionRadius=7.500000
      CollisionHeight=0.300000
+     bDisposableWeapon=true
      minSkillRequirement=2;
 }

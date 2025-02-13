@@ -271,7 +271,11 @@ function ClearBelt()
 	local int beltPos;
 
 	for(beltPos=0; beltPos<10; beltPos++)
+    {
+        if (player.bBeltMemory && objects[beltPos].bAllowDragging)
+            player.SetPlaceholder(beltPos,true);
 		ClearPosition(beltPos);
+    }
 }
 
 // ----------------------------------------------------------------------
