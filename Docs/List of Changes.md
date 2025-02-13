@@ -24,6 +24,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX bug where tiredness effects from low stamina would reset prematurely.
     - Fixed vanilla "bug" where diving into or leaving water would give free stamina.
     - Fixed GMDX quickloading not always working correctly, and other save issues including incorrect save-game ordering in the save/load screens.
+    - Fixed GMDX "Create Custom Theme" menu being able to corrupt standard themes. Now the player is forced into the Custom HUD/Menu themes upon loading the custom theme creator.
     - Fixed GMDX bug which would make an empty subtitles box appear when interacting with things during first-person conversations, if subtitles were disabled.
     - Fixed GMDX bug where recharging items with biocells would cause the belt view in the inventory to continually get brighter and brighter until the inventory screen was closed.
     - Fixed many other GMDX and Vanilla bugs.
@@ -42,6 +43,7 @@ Sarge's Changes since Beta 2.2:
     - Right-Clicking an item in the belt with the Inventory Window open will clear the slot.
     - Added QoL settings to not damage domesticated animals and cleaner bots when stepping on them.
     - The Inventory "Show Ammo" display now always shows the total amount of ammo you can carry. Before, it was only visible when "Show Descriptions" was enabled.
+    - A lot of inventory item displays have been improved to show more statistics.
     - Added a Lighting Accessibility setting, which removes some strobing and flickering in certain areas on some maps, such as the 'Ton hotel elevator shaft.
     - Added a new corpse searching setting, "Enhanced Looting", which makes the first right-click on a corpse never pick them up, even if empty, so that you can search them reliably without accidentally picking them up.
         - Additionally, the first time a corpse is interacted with, it will show any items which it contains that you cannot pick up (such as duplicate weapons and declined items).
@@ -84,6 +86,7 @@ Sarge's Changes since Beta 2.2:
     - Double-Click holstering now also works to enable Double Click Unholstering, rather than always unholstering with right-click (with IW toolbelt) or doing nothing (regular Toolbelt)
     - The number of total Lockpicks or Multitools in your inventory is now listed on lockpicking/electronics information windows, allowing you to see how many lockpicks or multitools you have compared to how many are required to bypass a given device or lock.
         - The text is also color coded, showing as yellow when you only just have the amount of tools required, and red if you don't meet the requirement.
+        - The Damage Threshold text is also red if the currently selected weapon is not able to beat the damage threshold.
         - If this setting is disabled, lockpicks and multitools will display their total count in the ammo display window, allowing you to easily see how many you have when you don't have them on your belt.
     - Belt Autofilling can now be disabled in the options.
     - Save Points no longer use Autosave slots, which can be easily overridden by accident, and now create fresh hard-saves instead.
@@ -123,9 +126,14 @@ Sarge's Changes since Beta 2.2:
         - When Smart Keyring is enabled, the keyring will no longer occupy belt slot 0, allowing it to be used for regular items.
         - The keyring can be selected using Left-Click Frob on doors.
 - Gameplay Changes:
+    - The Dragons Tooth Sword now requires Biocells to use. It starts with 100% charge, with each attack taking 2% if it hits a target, giving you 50 hits total. Biocells restore 20% (or 30% with the Field Repair perk), giving you an additional 10 (15) hits each.
     - The GEP Gun now has limited range. After 5 seconds of flight, rockets will detonate as they run out of fuel. Each range mod increases flight time by 1 second.
     - Putting a scope or a laser sight on the GEP gun now requires the Heavily Tweaked perk (ADVANCED heavy weapons, 100 skill points). The scope and laser sight still provide rocket guidance capabilities.
     - Added a new "Weapon Requirements Matter" Playthrough Modifier. When enabled, most weapons will require a minimum skill investment in order to be used.
+    - Demolitions Skill Overhaul
+        - Demolitions Skill-based grenade timing rescaled from 0.5, 1.0, 2.5, 7.0 seconds to 0.75, 1.0, 1.5, 2.5 seconds
+        - Being able to pick up disarmed grenades is now based on skill level - Trained for Gas Grenades, Advanced for EMP and Scrambler Grenades, Master for LAMs.
+        - EMP damage will always permanently disable grenades, making them unable to be reused, regardless of skill level.
     - Reverted GMDX change limiting Assault Rifles, Assault Shotguns and Sawed Off's to 4 damage mods. Now they can have 5 just like everything else.
         - This was done because of integer truncation. In GMDX v9, the 5th upgrade would change their base damage from 4.2 to 4.5, which was pointless as it was rounded to 4 either way.
         - With vRSD partial damage calculations were added, so this is now relevant again.
@@ -179,6 +187,10 @@ Sarge's Changes since Beta 2.2:
         - Heavy Perks:
             - Heavily Tweaked (NEW ADVANCED): An agent is able to attach scopes and laser sights to the GEP gun, enabling laser guidance and fly-by-wire capabilities.
             - Mobile Ordnance (NEW MASTER): An agent is able to modify the chassis of flame weapons, stripping away unnecessary elements. Flamethrowers are reduced in size by 3 inventory spaces.
+        - Added "General" perks, which require no skills to unlock and are available in a new panel inside the Skills/Perks window.
+            - Glutton: Allows holding double stacks of all food items, and can eat up to 125% hunger.
+            - Socket Jockey: Using a wall-outlet will give you 5 bioenergy in addition to zapping you.
+            - Firefighter: Fire Extinguishers will have longer range, last for longer, and will explode in a huge cloud when detonated.
     - Addiction System Rework
         - Alcohol no longer heals for 5 points. Instead, it temporarily gives you 5 torso HP (along with it's usual 5 extra torso Max-HP) while in effect, which is removed afterwards. This health removal cannot kill the player.
         - Alcohol no longer adds to fullness when the addiction system is enabled

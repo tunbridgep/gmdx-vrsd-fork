@@ -6,7 +6,7 @@ class PerkHumanCombustion extends Perk;
 defaultproperties
 {
     PerkName="HUMAN COMBUSTION"
-    PerkDescription="|nAn agent modifies flare darts with a napalm combustion tube which ignites upon deep penetration of materials.|n|nRequires: Pistols: MASTER"
+    PerkDescription="An agent modifies flare darts with a napalm combustion tube which ignites upon deep penetration of materials."
     PerkSkill=Class'DeusEx.SkillWeaponPistol'
     PerkCost=250
     PerkLevelRequirement=3

@@ -5,12 +5,12 @@ class SoyFood extends RSDEdible;
 
 function Eat(DeusExPlayer player)
 {
-    player.HealPlayer(5, False);
-	PlaySound(sound'EatingChips',SLOT_None,3.0);
+	player.PlaySound(sound'EatingChips',SLOT_None,3.0);
 }
 
 defaultproperties
 {
+     healAmount=5;
      bBreakable=True
      FragType=Class'DeusEx.PaperFragment'
      maxCopies=10

@@ -245,6 +245,11 @@ var travel BarkManager barkManager;
 // and HUD windows.
 
 var travel ColorThemeManager ThemeManager;
+//SARGE: DO NOT USE THESE!!!
+//They aren't removed because the game expects the player to be structured in a certain way
+//(See the warning below, scroll down a bit to find it).
+//But we don't want to use these because they can fuck regular Deus Ex menus if we uninstall GMDX.
+//So we're going to use equivalents
 var globalconfig String MenuThemeName;
 var globalconfig String HUDThemeName;
 
@@ -486,7 +491,6 @@ var travel bool bNumberSelect;                                              //Sa
 var travel bool bScrollSelect;                                              //Sarge: Whether or not our last belt selection was done with Next/Last weapon keys rather than Number Keys. Used by Alternative Belt to know when to holster
 var travel int beltScrolled;                                                //Sarge: The last item we scrolled to on the belt, if we are using Adv Toolbelt
 var travel bool selectedNumberFromEmpty;                                    //Sarge: Was the current selection made from an empty hand. Used by Alternate Toolbelt Classic Mode to not jump back to previous weapon when we select from an empty hand.
-var travel Inventory lastSelected;                                          //The last object that was put in our hands.
 var globalconfig bool bLeftClickUnholster;                                  //Enable left click unholstering
 
 var int clickCountCyber; //CyberP: for double clicking to unequip
@@ -615,6 +619,9 @@ var travel float autosaveRestrictTimer;                                         
 var const float autosaveRestrictTimerDefault;                                   //Sarge: Timer for autosaves.
 var travel bool bResetAutosaveTimer;                                            //Sarge: This is necessary because our timer isn't set properly during the same frame as saving, for some reason.
 
+//Menu Overhaul stuff
+var localized String RechargedPointLabel;
+var localized String RechargedPointsLabel;
 
 var travel AddictionSystem AddictionManager;
 var travel PerkSystem PerkManager;
@@ -638,6 +645,8 @@ var globalconfig bool bDialogHUDColors;                                         
 //var globalconfig bool bAdvancedAugWheel;                                        //Sarge: Allow manually assigning augmentations to the aug wheel, rather than auto-assigning all of them.
 var globalconfig bool bQuickAugWheel;                                           //Sarge: Instantly enable/disable augs when closing the menu over the selected aug, otherwise require a mouse click.
 var globalconfig bool bAugWheelDisableAll;                                      //Sarge: Show the Disable All button on the Aug Wheel
+var globalconfig bool bAugWheelFreeCursor;                                      //Sarge: Allow free cursor movement in the augmentation wheel
+var globalconfig bool bAugWheelRememberCursor;                                  //Sarge: Remember the cursor position in the Aug Wheel, otherwise it will be reset to the center position
 
 var globalconfig bool bBeltShowModified;                                        //SARGE: Shows a "+" in the belt for modified weapons.
 
@@ -656,6 +665,10 @@ var globalconfig bool bFullAccuracyCrosshair;                                   
 var globalconfig bool bAlwaysShowBloom;                                         //SARGE: Always show weapon bloom
 
 var globalconfig bool bShowEnergyBarPercentages;                                //SARGE: If true, show the oxygen and bioenergy percentages below the bars.
+
+//Colour Theme Manager
+var globalconfig String MenuThemeNameGMDX;
+var globalconfig String HUDThemeNameGMDX;
 
 //Misc Strings
 var localized String DuplicateNanoKey;
@@ -888,6 +901,7 @@ local DeusExLevelInfo dxInfo;                                                   
 local name flagName;                                                            //RSD: Added
 local bool bFirstLevelLoad;                                                     //RSD: Added
 local AlarmUnit        AU;                                                      //RSD: Added
+local Perk perkDoorsman;
 
 //log("bHardCoreMode =" @bHardCoreMode);
 //log("CombatDifficulty =" @CombatDifficulty);
@@ -977,12 +991,14 @@ local AlarmUnit        AU;                                                      
     }
     }
 
+	perkDoorsman = PerkManager.GetPerkWithClass(class'DeusEx.PerkDoorsman');
+
      ForEach AllActors(class'DeusExMover', MV)
      {
-         if (!MV.bPerkApplied && PerkManager.GetPerkWithClass(class'DeusEx.PerkDoorsman').bPerkObtained == true)
+         if (!MV.bPerkApplied && perkDoorsman.bPerkObtained == true)
          {
 		       MV.bPerkApplied = True;
-		       MV.minDamageThreshold -= 5;
+		       MV.minDamageThreshold -= perkDoorsman.PerkValue;
 		       if (MV.minDamageThreshold <= 0)
                 MV.minDamageThreshold = 1;
 		 }
@@ -1225,8 +1241,8 @@ simulated function PostNetBeginPlay()
 		ThemeManager.SetOwner(self);
 		ThemeManager.SetCurrentHUDColorTheme(ThemeManager.GetFirstTheme(1));
 		ThemeManager.SetCurrentMenuColorTheme(ThemeManager.GetFirstTheme(0));
-		ThemeManager.SetMenuThemeByName(MenuThemeName);
-		ThemeManager.SetHUDThemeByName(HUDThemeName);
+		ThemeManager.SetMenuThemeByName(MenuThemeNameGMDX);
+		ThemeManager.SetHUDThemeByName(HUDThemeNameGMDX);
 		if (DeusExRootWindow(rootWindow) != None)
 		   DeusExRootWindow(rootWindow).ChangeStyle();
 	}
@@ -1257,8 +1273,8 @@ function SetupPerkManager()
     {
         //ClientMessage("Make new Perk System");
 	    PerkManager = new(Self) class'PerkSystem';
-        PerkManager.InitializePerks(Self);
     }
+    PerkManager.InitializePerks(Self);
 }
 
 function SetupRandomizer()
@@ -1375,8 +1391,8 @@ function PostPostBeginPlay()
 
 	// Restore colors that the user selected (as opposed to those
 	// stored in the savegame)
-	ThemeManager.SetMenuThemeByName(MenuThemeName);
-	ThemeManager.SetHUDThemeByName(HUDThemeName);
+	ThemeManager.SetMenuThemeByName(MenuThemeNameGMDX);
+	ThemeManager.SetHUDThemeByName(HUDThemeNameGMDX);
 
 
 
@@ -1503,8 +1519,8 @@ event TravelPostAccept()
 	// Restore colors
 	if (ThemeManager != None)
 	{
-		ThemeManager.SetMenuThemeByName(MenuThemeName);
-		ThemeManager.SetHUDThemeByName(HUDThemeName);
+		ThemeManager.SetMenuThemeByName(MenuThemeNameGMDX);
+		ThemeManager.SetHUDThemeByName(HUDThemeNameGMDX);
 	}
 
 	// Make sure any charged pickups that were active
@@ -3603,6 +3619,26 @@ exec function AugAdd(class<Augmentation> aWantedAug)
 	}
 }
 
+//SARGE: Add in a way to cheat perks
+exec function PerkAdd(class<Perk> aWantedPerk)
+{
+	if (!bCheatsEnabled || PerkManager == None)
+		return;
+
+    if (PerkManager.PurchasePerk(aWantedPerk,true))
+        ClientMessage("Perk Added");
+}
+
+//SARGE: Add in a way to cheat perks
+exec function PerkReAdd(class<Perk> aWantedPerk)
+{
+	if (!bCheatsEnabled || PerkManager == None)
+		return;
+
+    if (PerkManager.PurchasePerk(aWantedPerk,true,true))
+        ClientMessage("Perk Re-added");
+}
+
 exec function OPAug() //CyberP: cheat for my fucked keyboard
 {
    local AugmentationCannister cann;
@@ -4576,15 +4612,6 @@ function HighlightCenterObject()
 		minSize = 99999;
 		bFirstTarget = True;
 
-        if (IsCrouching())
-        {
-           if (PerkManager.GetPerkWithClass(class'DeusEx.PerkEndurance').bPerkObtained == true)                                           //RSD: Was PerkNamesArray[29] (Creeper), now PerkNamesArray[27] (Endurance)
-              bCrouchRegen=True;
-        }
-        else
-        {
-          bCrouchRegen=false;
-        }
      if (inHand != none && inHand.IsA('Multitool'))
      {
         foreach TraceActors(class'Actor', target, HitLoc, HitNormal, EndTrace, StartTrace)
@@ -4977,13 +5004,21 @@ function int HealPlayer(int baseHealPoints, optional Bool bUseMedicineSkill)
 // ChargePlayer()
 // ----------------------------------------------------------------------
 
-function int ChargePlayer(int baseChargePoints)
+function int ChargePlayer(int baseChargePoints, optional bool showMessage)
 {
 	local int chargedPoints;
 
 	chargedPoints = Min(EnergyMax - Int(Energy), baseChargePoints);
 
 	Energy += chargedPoints;
+
+    if (showMessage && chargedPoints > 0)
+    {
+        if (chargedPoints == 1)
+            ClientMessage(sprintf(RechargedPointLabel,chargedPoints));
+        else
+            ClientMessage(sprintf(RechargedPointsLabel,chargedPoints));
+    }
 
 	return chargedPoints;
 }
@@ -6067,6 +6102,9 @@ state PlayerWalking
                }
            }
         }
+		
+		//SARGE: Moved Endurance check to here.
+        bCrouchRegen=PerkManager.GetPerkWithClass(class'DeusEx.PerkEndurance').bPerkObtained;
 	    if ((!IsCrouching() || bCrouchRegen) && !bOnLadder) //(bIsCrouching)     //RSD: Simplified this entire logic from original crouching -> bCrouchRegen check, added !bOnLadder
 	    	RegenStaminaTick(deltaTime);                                        //RSD: Generalized stamina regen function
 	  }
@@ -7287,6 +7325,12 @@ exec function ShowScores()
             //Do nothing.
             return;
         }
+        //SARGE: Check DTS Charge Level
+        else if (assignedWeapon.IsA('WeaponNanoSword') && WeaponNanoSword(assignedWeapon).ChargeManager.GetCurrentCharge() == 0)
+        {
+            //Do nothing.
+            return;
+        }
         else if (assignedWeapon != none && assignedWeapon.IsA('RSDEdible')) //Sarge: Allow using edibles from the secondary button
 		{
             assignedWeapon.GotoState('Activated');
@@ -7305,7 +7349,6 @@ exec function ShowScores()
             {
                 if (inHand != none && inHand.IsA('DeusExWeapon'))
                 {
-                    primaryWeapon = inHand;
                     //DeusExWeapon(inHand).GotoState('DownWeapon');
                     DeusExWeapon(inHand).ScopeOff();
                     DeusExWeapon(inHand).LaserOff(true);
@@ -7313,23 +7356,17 @@ exec function ShowScores()
                 }
                 else if (inHand.IsA('SkilledTool'))
                 {
-                    primaryWeapon = inHand;
                     SkilledTool(inHand).PutDown();
                 }
                 else if (inHand.IsA('DeusExPickup'))
                 {
-                    primaryWeapon = inHand;
                     PutInHand(None);
                 }
-                else
-                    primaryWeapon = none;
                 //assignedWeapon.GotoState('Activated');
                 Binoculars(assignedWeapon).Activate();
             }
             else
             {
-                if (primaryWeapon != none)
-                    inHandPending = primaryWeapon;
                 //assignedWeapon.GotoState('DeActivated');
                 Binoculars(assignedWeapon).Activate();
             }
@@ -7354,7 +7391,6 @@ exec function ShowScores()
                  return;
              }
          }
-         primaryWeapon = inHand;
          inHandPending = assignedWeapon;
          if (inHandPending.IsA('DeusExWeapon'))
 	         DeusExWeapon(inHandPending).bBeginQuickMelee=true;
@@ -7390,7 +7426,6 @@ exec function ShowScores()
 	       if (assignedWeapon != None)
 	       {
 	           inHandPending = assignedWeapon;
-	           primaryWeapon = assignedWeapon;                                  //RSD: Will let you fire with secondary weapon button when nothing was in hand
            }
 	    }
 
@@ -7405,7 +7440,6 @@ exec function ShowScores()
              }
          }
          if (inHand.IsA('DeusExWeapon'))
-             primaryWeapon = DeusExWeapon(inHand);
          inHandPending = assignedWeapon;
          if (inHandPending.IsA('DeusExWeapon'))
 	         DeusExWeapon(inHandPending).bBeginQuickMelee=true;
@@ -8325,7 +8359,7 @@ exec function PutInHand(optional Inventory inv)
 		//	return;
         
         if (!inv.IsA('POVCorpse'))
-            lastSelected = inv;
+            primaryWeapon = inv;
 	}
 
 	if (CarriedDecoration != None)
@@ -17409,10 +17443,13 @@ function RegenStaminaTick(float deltaTime)                                      
 {
 	local float mult;
     local float base;
+	local Perk perkEndurance;
     
     //SARGE: Stop regen if we're poisoned
     if (poisonCounter > 0)
         return;
+
+	perkEndurance = PerkManager.GetPerkWithClass(class'DeusEx.PerkEndurance');
 
     if (AugmentationSystem != none)                                             //RSD: accessed none
     {
@@ -17423,8 +17460,8 @@ function RegenStaminaTick(float deltaTime)                                      
 	else
         mult = 1.0;
 	//RSD: base regen now 2.0, now properly multiplied with additive increases/decreases
-	if (PerkManager.GetPerkWithClass(class'DeusEx.PerkEndurance').bPerkObtained == true)                                                //RSD: endurance perk adds x2
-		mult += 1.0;
+	if (perkEndurance.bPerkObtained == true)                                                //RSD: endurance perk adds x2
+		mult += perkEndurance.PerkValue;
 	if (AddictionManager.addictions[DRUG_TOBACCO].bInWithdrawals == true)                                           //RSD: if suffering from nicotine withdrawal, subtract x0.5
 		mult -= 0.5;
 	if (AddictionManager.addictions[DRUG_TOBACCO].drugTimer > 0)                                                 //RSD: Zyme adds x2
@@ -17532,6 +17569,8 @@ defaultproperties
      DuplicateNanoKey="%s not added to Key Ring [Duplicate]"
      HealedPointsLabel="Healed %d points"
      HealedPointLabel="Healed %d point"
+     RechargedPointsLabel="Recharged %d points"
+     RechargedPointLabel="Recharged %d point"
      SkillPointsAward="%d skill points awarded"
      QuickSaveGameTitle="Quick Save [%s]"
      AutoSaveGameTitle="Auto Save [%s]"
@@ -17648,6 +17687,7 @@ defaultproperties
      bEnhancedWeaponOffsets=false
      bQuickAugWheel=false
      bAugWheelDisableAll=true
+     bAugWheelFreeCursor=true
      bColourCodeFrobDisplay=True
      bWallPlacementCrosshair=True
      dynamicCrosshair=1
@@ -17661,6 +17701,8 @@ defaultproperties
      iAllowCombatMusic=1
      bFullAccuracyCrosshair=true;
      bShowEnergyBarPercentages=true;
+	 MenuThemeNameGMDX="Default"
+     HUDThemeNameGMDX="Default"
      dblClickHolster=2
      bSmartDecline=True
 }

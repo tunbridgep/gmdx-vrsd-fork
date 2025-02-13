@@ -29,6 +29,8 @@ EnergyDepleted="Bio-electric energy reserves depleted"
 AddedNanoKey="%s added to Nano Key Ring"
 HealedPointsLabel="Healed %d points"
 HealedPointLabel="Healed %d point"
+RechargedPointsLabel="Recharged %d points"
+RechargedPointLabel="Recharged %d point"
 SkillPointsAward="%d skill points awarded"
 QuickSaveGameTitle="Quick Save"
 FamiliarName="JC Denton"
@@ -977,7 +979,7 @@ ItemName="Barrel"
 msgRecharged="Recharged %d bioelectric energy units"
 RechargesLabel="Recharges %d bioelectric energy units"
 ItemName="Bioelectric Cell"
-Description="A bioelectric cell provides efficient storage of energy in a form that can be utilized by a number of different devices.|n|n<UNATCO OPS FILE NOTE JR289-VIOLET> Augmented agents have been equipped with an interface that allows them to transparently absorb energy from bioelectric cells. -- Jaime Reyes <END NOTE>|n|n"
+Description="A bioelectric cell provides efficient storage of energy in a form that can be utilized by a number of different devices.|n|n<UNATCO OPS FILE NOTE JR289-VIOLET> Augmented agents have been equipped with an interface that allows them to transparently absorb energy from bioelectric cells. -- Jaime Reyes <END NOTE>"
 beltDescription="BIOCELL"
 
 [AugmentationCannister]
@@ -1058,7 +1060,8 @@ NewNoteLabel="New Note"
 
 [FireExtinguisher]
 ItemName="Fire Extinguisher"
-Description="A chemical fire extinguisher.|n|n<UNATCO OPS FILE NOTE SC119-BLUE> In a pinch, the dry particulate spray from a fire extinguisher can be used to temporarily blind an assailant. Sometimes you have to improvise in the field. -- Sam Carter <END NOTE>"
+//Description="A chemical fire extinguisher.|n|n<UNATCO OPS FILE NOTE SC119-BLUE> In a pinch, the dry particulate spray from a fire extinguisher can be used to temporarily blind an assailant. Sometimes you have to improvise in the field. -- Sam Carter <END NOTE>"
+Description="Be cool about fire safety!|n|n<UNATCO OPS FILE NOTE SC119-BLUE> In a pinch, the dry particulate spray from a fire extinguisher can be used to temporarily blind an assailant. Sometimes you have to improvise in the field. -- Sam Carter <END NOTE>"
 beltDescription="FIRE EXT"
 
 [AugLight]
@@ -1520,15 +1523,15 @@ beltDescription="BINOCS"
 
 [Liquor40oz]
 ItemName="Forty"
-Description="'COLD SWEAT forty ounce malt liquor. Never let 'em see your COLD SWEAT.'|n|nHeals 2 points"
+Description="'COLD SWEAT forty ounce malt liquor. Never let 'em see your COLD SWEAT.'"
 AddictionDescription="'COLD SWEAT forty ounce malt liquor. Never let 'em see your COLD SWEAT.'|n|n<UNATCO OPS FILE NOTE JR155-VIOLET> An augmented agent's immune system reacts to alcohol consumption with a pseudo-anesthetic effect, notably enhancing pain tolerance. While addiction is slow to take root, it will cause increased nerve activity in withdrawal, resulting in involuntary muscle spasms colloquially known as "the shakes". -- Jaime Reyes <END NOTE>|n|nActive Buff: Max Torso Health +5 (stacks x5)|nWithdrawal Debuff: Accuracy -15%|nUse Duration: 120 seconds (stacks x5)|nAddiction Increment: 5%"
 beltDescription="FORTY"
 
 [LiquorBottle]
 ItemName="Liquor"
 ItemArticle="some"
-Description="The label is torn off, but it looks like some of the good stuff.|n|nHeals 2 points"
-AddictionDescription="The label is torn off, but it looks like some of the good stuff.|n|n<UNATCO OPS FILE NOTE JR155-VIOLET> An augmented agent's immune system reacts to alcohol consumption with a pseudo-anesthetic effect, notably enhancing pain tolerance. While addiction is slow to take root, it will cause increased nerve activity in withdrawal, resulting in involuntary muscle spasms colloquially known as "the shakes". -- Jaime Reyes <END NOTE>|n|nHeals 5 points|nActive Buff: Max Torso Health +5 (stacks x5)|nWithdrawal Debuff: Accuracy -15%|nUse Duration: 120 seconds (stacks x5)|nAddiction Increment: 5%"
+Description="The label is torn off, but it looks like some of the good stuff."
+AddictionDescription="The label is torn off, but it looks like some of the good stuff.|n|n<UNATCO OPS FILE NOTE JR155-VIOLET> An augmented agent's immune system reacts to alcohol consumption with a pseudo-anesthetic effect, notably enhancing pain tolerance. While addiction is slow to take root, it will cause increased nerve activity in withdrawal, resulting in involuntary muscle spasms colloquially known as "the shakes". -- Jaime Reyes <END NOTE>|nActive Buff: Max Torso Health +5 (stacks x5)|nWithdrawal Debuff: Accuracy -15%|nUse Duration: 120 seconds (stacks x5)|nAddiction Increment: 5%"
 beltDescription="LIQUOR"
 
 [ComputerPublic]
@@ -1623,8 +1626,8 @@ ItemName="Retinal Scanner"
 [WineBottle]
 ItemName="Wine"
 ItemArticle="some"
-Description="A nice bottle of wine.|n|nHeals 2 points"
-AddictionDescription="A nice bottle of wine.|n|n<UNATCO OPS FILE NOTE JR155-VIOLET> An augmented agent's immune system reacts to alcohol consumption with a pseudo-anesthetic effect, notably enhancing pain tolerance. While addiction is slow to take root, it will cause increased nerve activity in withdrawal, resulting in involuntary muscle spasms colloquially known as "the shakes". -- Jaime Reyes <END NOTE>|n|nHeals 5 points|nActive Buff: Max Torso Health +5 (stacks x5)|nWithdrawal Debuff: Accuracy -15%|nUse Duration: 120 seconds (stacks x5)|nAddiction Increment: 5%"
+Description="A nice bottle of wine."
+AddictionDescription="A nice bottle of wine.|n|n<UNATCO OPS FILE NOTE JR155-VIOLET> An augmented agent's immune system reacts to alcohol consumption with a pseudo-anesthetic effect, notably enhancing pain tolerance. While addiction is slow to take root, it will cause increased nerve activity in withdrawal, resulting in involuntary muscle spasms colloquially known as "the shakes". -- Jaime Reyes <END NOTE>|nActive Buff: Max Torso Health +5 (stacks x5)|nWithdrawal Debuff: Accuracy -15%|nUse Duration: 120 seconds (stacks x5)|nAddiction Increment: 5%"
 beltDescription="WINE"
 
 [Valve]
@@ -1690,13 +1693,13 @@ beltDescription="AMBROSIA"
 [SoyFood]
 ItemName="Soy Food"
 ItemArticle="some"
-Description="Fine print: 'Seasoned with nanoscale mechanochemical generators, this TSP (textured soy protein) not only tastes good but also self-heats when its package is opened.'|n|nHeals 2 points"
+Description="Fine print: 'Seasoned with nanoscale mechanochemical generators, this TSP (textured soy protein) not only tastes good but also self-heats when its package is opened.'"
 beltDescription="SOY FOOD"
 
 [Sodacan]
 ItemName="Soda"
 ItemArticle="some"
-Description="The can is blank except for the phrase 'PRODUCT PLACEMENT HERE.' It is unclear whether this is a name or an invitation.|n|nHeals 2 points"
+Description="The can is blank except for the phrase 'PRODUCT PLACEMENT HERE.' It is unclear whether this is a name or an invitation."
 beltDescription="SODA"
 
 [BookOpen]
@@ -1705,7 +1708,7 @@ ItemName="Book"
 [Candybar]
 ItemName="Candy Bar"
 bioboost="Recharged 3 bioelectric energy units"
-Description="'CHOC-O-LENT DREAM. IT'S CHOCOLATE! IT'S PEOPLE! IT'S BOTH!(tm) 85% Recycled Material.'|n|nHeals 2 points and recharges 3 bioelectric energy units"
+Description="'CHOC-O-LENT DREAM. IT'S CHOCOLATE! IT'S PEOPLE! IT'S BOTH!(tm) 85% Recycled Material.'"
 beltDescription="CANDY BAR"
 
 [Rebreather]
@@ -2259,7 +2262,7 @@ beltDescription="PEPPER"
 [WeaponNanoSword]
 ItemName="Dragon's Tooth Sword"
 ItemArticle="the"
-Description="The true weapon of a modern warrior, the Dragon's Tooth is not a sword in the traditional sense, but a nanotechnologically constructed blade that is dynamically 'forged' on command into a non-eutactic solid. Nanoscale whetting devices insure that the blade is both unbreakable and lethally sharp. |n|n<TT//UnderNet.0924.243.886> According to old schematics the sword *does* appear to have some disadvantages: |n|n-The Dragon's Tooth Sword emits a very distinct sound upon construction, so draw before moving in for the kill. |n-The sword can light your way in darkness but may also expose you to your enemies, as is its double-edged nature. |n-The sword must be honed with modification technology to reach its true potential.<END NOTE>"
+Description="The true weapon of a modern warrior, the Dragon's Tooth is not a sword in the traditional sense, but a nanotechnologically constructed blade that is dynamically 'forged' on command into a non-eutactic solid. Nanoscale whetting devices insure that the blade is both unbreakable and lethally sharp. |n|n<TT//UnderNet.0924.243.886> According to old schematics the sword *does* appear to have some disadvantages:|n|n-Due to it's molecular nature, the sword requires a constant supply of power in order to function.|n-The Dragon's Tooth Sword emits a very distinct sound upon construction, so draw before moving in for the kill. |n-The sword can light your way in darkness but may also expose you to your enemies, as is its double-edged nature. |n-The sword must be honed with modification technology to reach its true potential.<END NOTE>"
 beltDescription="DTS"
 msgSpec="Emits light, accepts damage modifications"
 
@@ -2850,7 +2853,7 @@ Description="The use of rifles, including assault rifles, sniper rifles, and sho
 
 [SkillDemolition]
 SkillName="Weapons: Demolition"
-Description="The use of thrown explosive devices, including LAMs, gas grenades, EMP grenades, and electronic scrambler grenades. |n|nTotal skill points to master: 5250|n|nUNTRAINED: An agent can throw grenades, attach them to a surface as a proximity device, or attempt to disarm and remove a previously armed proximity device (0.5 seconds fuse time). An agent can carry up to 5 grenades of each type. |n|nTRAINED: Grenade damage & blast radius increases slightly, as does the safety margin for disarming proximity devices (1 second fuse time). An agent can carry up to 7 grenades of each type.|n|nADVANCED: Grenade damage & blast radius increases moderately, as does the safety margin for disarming proximity devices (2.5 secs fuse time). An agent can carry up to 10 grenades of each type.|n|nMASTER: An agent is an expert at all forms of demolition: grenade damage, blast radius and fuse time is optimal. An agent can carry up to 15 grenades of each type."
+Description="The use of thrown explosive devices, including LAMs, gas grenades, EMP grenades, and electronic scrambler grenades. |n|nTotal skill points to master: 5250|n|nUNTRAINED: An agent can throw grenades, attach them to a surface as a proximity device, or attempt to disarm a proximity device. An agent can carry up to 2 grenades of each type. |n|nTRAINED: Grenade damage & blast radius increases slightly, and an agent can utilise their familiarity with explosive devices to rearm Gas Grenades. An agent can carry up to 4 grenades of each type.|n|nADVANCED: Grenade damage & blast radius increases moderately, and an agent can utilise their familiarity with explosive devices to rearm EMP and Scrambler grenades. An agent can carry up to 7 grenades of each type.|n|nMASTER: An agent is an expert at all forms of demolition, allowing for maximum grenade damage and blast radius. An agent can utilise their familiarity with explosive devices to rearm even the most complex grenades. An agent can carry up to 12 grenades of each type."
 
 [SkillWeaponPistol]
 SkillName="Weapons: Pistol"
@@ -2997,14 +3000,9 @@ imageDescription="Liberty Island Satellite Photo"
 imageDescription="Gun Fire Sensor"
 
 [ChargedPickup]
-ChargeRemainingLabel="Charge remaining:"
+ChargeRemainingLabel="Charge remaining: %d%%"
+ChargeRemainingLabelSmall="%d%%"
 CanOnlyBeOne="You cannot equip more than one torso armor piece" 
-DurabilityRemainingLabel=Durability: 
-PickupInfo1="Environmental Protection: 60%"
-PickupInfo2="Ballistic Protection: 35%"
-PickupInfo3="Biocell Recharge Amount: 15%"
-PickupInfo4="Biocell Recharge Amount: 30%"
-PickupInfo5="Biocell Recharge Amount:"
 
 [MenuChoice_OnOff]
 enumText[0]="Off"
@@ -3678,4 +3676,4 @@ GMDXText22="UNATCO MedDirectorate|nNano-Augmentation Guidelines|n|n...nano-augme
 GMDXText23=We've a request to send these up to level 1. Be careful with them as they are very expensive. Dropping one will likely be grounds for instant dismissal.
 
 [PerkLocksport]
-PerkDescription="|nAn agent can pick any mechanical lock with a single lockpick. Additionally, any locks that are successfully picked will be added to your keyring.|n|nRequires: Lockpicking: MASTER"
+PerkDescription="An agent can pick any mechanical lock with a single lockpick. Additionally, any locks that are successfully picked will be added to your keyring."
