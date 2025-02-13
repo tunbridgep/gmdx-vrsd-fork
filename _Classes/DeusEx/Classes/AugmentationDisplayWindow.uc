@@ -53,7 +53,9 @@ var localized String msgADSDetonating;
 var localized String msgBehind;
 var localized String msgDroneActive;
 var localized String msgDroneStandby;                                           //RSD: Added
+var localized String msgEMPEnergyLow;                                           //SARGE: Added
 var localized String msgEnergyLow;
+var localized String msgDroneCloaked;                                           //SARGE: Added
 var localized String msgCantLaunch;
 var localized String msgLightAmpActive;
 var localized String msgIRAmpActive;
@@ -261,12 +263,12 @@ function ConfigurationChanged()
 
 	if ((winDrone != None) || (winZoom != None))
 	{
-		w = width/4;
-		h = height/4;
-		cx = width/8 + margin;
-		cy = height/2;
-		x = cx - w/2;
-		y = cy - h/2;
+		w = width/3.33;
+		h = height/3.33;
+		cx = width/6.5 + margin;
+		cy = height/2.0;
+		x = cx - w/2.0;
+		y = cy - h/2.0;
 
 		if (winDrone != None)
 			winDrone.ConfigureChild(x, y, w, h);
@@ -585,7 +587,7 @@ function Tick(float deltaTime)
 	if (Player.bSpyDroneActive && (Player.aDrone != None) && (winDrone == None) &&
 		(Player.PlayerIsClient() || (Player.Level.NetMode==NM_Standalone)) )
 	{
-		winDrone = ViewportWindow(NewChild(class'ViewportWindow'));
+		winDrone = ViewportWindow(NewChild(class'GMDXViewportWindow'));
 		if (winDrone != None)
 		{
 			winDrone.AskParentForReconfigure();
@@ -791,33 +793,59 @@ function DrawSpyDroneAugmentation(GC gc)
 	local float boxCX, boxCY, boxTLX, boxTLY, boxBRX, boxBRY, boxW, boxH;
 	local float x, y, w, h, mult;
 	local Vector loc;
+    local AugDrone augDrone;
+    local float ymod;       //SARGE: Added for text offset
+    local Vector playerPosition;
+
+    augDrone = AugDrone(Player.AugmentationSystem.FindAugmentation(class'AugDrone'));
 
 	// set the coords of the drone window
-	boxW = width/4;
-	boxH = height/4;
-	boxCX = width/8 + margin;
-	boxCY = height/2;
-	boxTLX = boxCX - boxW/2;
-	boxTLY = boxCY - boxH/2;
-	boxBRX = boxCX + boxW/2;
-	boxBRY = boxCY + boxH/2;
+
+    boxW = width/3.33;
+    boxH = height/3.33;
+    boxCX = width/6.5 + margin;
+    boxCY = height/2;
+    boxTLX = boxCX - boxW/2.0;
+    boxTLY = boxCY - boxH/2.0;
+    boxBRX = boxCX + boxW/2.0;
+    boxBRY = boxCY + boxH/2.0;
 
 	if (winDrone != None)
 	{
 		DrawDropShadowBox(gc, boxTLX, boxTLY, boxW, boxH);
+			
+        winDrone.SetViewportActor(Player.aDrone);
 
         if (!Player.bSpyDroneSet)
+        {
+            //SARGE: Now we swap windows when the spy drone is active
+            if (player.bBigDroneView)
+            {
+                //playerPosition = Player.Location;
+                //playerPosition.Z += Player.EyeHeight - 10;
+                //playerPosition += Player.WalkBob;
+                //Move it forward a bit so we don't see parts of the player
+                //playerPosition += Vector(Player.Rotation) * 10;
+                winDrone.SetViewportActor(Player);
+                //winDrone.SetViewportLocation(playerPosition);
+                //winDrone.SetRotation(Player.SAVErotation);
+            }
 			str = msgDroneActive;
+        }
 		else
+        {
 			str = msgDroneStandby;                                                  //RSD: Standby message
+        }
 		gc.GetTextExtent(0, w, h, str);
 		x = boxCX - w/2;
 		y = boxTLY - h - margin;
 		gc.DrawText(x, y, w, h, str);
 
+        str = "";
+
 		// print a low energy warning message
-		if ((Player.Energy / Player.Default.Energy) < 0.2)
-		{
+		if (Player.Energy / Player.GetMaxEnergy(true) < 0.2)
+        {
 			str = msgEnergyLow;
 			gc.GetTextExtent(0, w, h, str);
 			x = boxCX - w/2;
@@ -825,7 +853,38 @@ function DrawSpyDroneAugmentation(GC gc)
 			gc.SetTextColorRGB(255,0,0);
 			gc.DrawText(x, y, w, h, str);
 			gc.SetTextColor(colHeaderText);
-		}
+        }
+		
+        // print a low energy warning message for EMP attack
+		if (augDrone != None && Player.Energy < augDrone.EMPDrain)
+        {
+            if (str != "")
+                ymod = 10;
+
+            str = msgEMPEnergyLow;
+			gc.GetTextExtent(0, w, h, str);
+			x = boxCX - w/2;
+			y = boxTLY + margin;
+			gc.SetTextColorRGB(255,0,0);
+			gc.DrawText(x, y+ymod, w, h, str);
+			gc.SetTextColor(colHeaderText);
+        }
+        
+        // print the "cloaked" text
+		if (augDrone != None && player.aDrone.bCloaked)
+        {
+            if (str != "")
+                ymod += 10;
+
+            str = msgDroneCloaked;
+			gc.GetTextExtent(0, w, h, str);
+			x = boxCX - w/2;
+			y = boxTLY + margin;
+			gc.SetTextColorRGB(0,0,255);
+			gc.DrawText(x, y+ymod, w, h, str);
+			gc.SetTextColor(colHeaderText);
+        }
+
 	}
 	// Since drone is created on server, they is a delay in when it will actually show up on the client
 	// the flags dronecreated and drone referenced negotiate this timing
@@ -2157,6 +2216,7 @@ defaultproperties
      msgDroneActive="Remote SpyDrone Active"
      msgDroneStandby="Remote SpyDrone On Standby"
      msgEnergyLow="BioElectric energy low!"
+     msgEMPEnergyLow="Not Enough Energy to Detonate!"
      msgCantLaunch="ERROR - No room for SpyDrone construction!"
      msgLightAmpActive="LightAmp Active"
      msgIRAmpActive="IRAmp Active"
@@ -2203,4 +2263,5 @@ defaultproperties
      msgIFFTracking="* Environmental Hazard *"
      IFFLabel1="Type:"
      IFFLabel2="Lethality:"
+     msgDroneCloaked="Cloak Engaged"
 }

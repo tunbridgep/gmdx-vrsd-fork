@@ -955,20 +955,21 @@ simulated event RenderOverlays( canvas Canvas )
 	local rotator NewRot, ExRot, rfs;                                           //RSD: Added rfs
 	local bool bPlayerOwner;
 	local int Hand;
-	local PlayerPawn PlayerOwner;
+	local DeusExPlayer PlayerOwner;
     local int newPitch;
     local vector dx, dy, dz;                                                    //RSD: Added
 
 	if ( bHideWeapon || (Owner == None) )
 		return;
 
-	PlayerOwner = PlayerPawn(Owner);
+	PlayerOwner = DeusExPlayer(Owner);
 
 	if ( PlayerOwner != None )
 	{
 		//if ( PlayerOwner.DesiredFOV != PlayerOwner.DefaultFOV )
 		//	return;
-		if (bZoomed)
+		if (bZoomed || (PlayerOwner.bSpyDroneActive && !PlayerOwner.bSpyDroneSet && !PlayerOwner.bBigDroneView))
+		//if (bZoomed)
 		    return;
 		bPlayerOwner = true;
 		Hand = PlayerOwner.Handedness;
@@ -3469,6 +3470,12 @@ function Fire(float Value)
 	local bool bListenClient;
     local DeusExPlayer player;
     local Projectile firedProjectile;
+
+    player = DeusExPlayer(Owner);
+
+    //Sarge: Restrict fire if drone is active or just exploded.
+    if (player != None && !player.bSpyDroneSet && (player.bSpyDroneActive || player.bDroneExploded))
+        return;
 
     if (Pawn(Owner).IsInState('Dying') || (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).bGEPprojectileInflight))
     {

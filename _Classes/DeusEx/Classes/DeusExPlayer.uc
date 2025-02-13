@@ -634,6 +634,8 @@ const DRUG_CRACK = 2;
 var travel bool bLastRun;                                                       //Sarge: Stores our last running state
 
 var bool bUsingComputer;                                                        //SARGE: Are we currently using a computer? Set so that we can restrict input while using one
+
+var bool bDroneExploded;                                                        //SARGE: Was the drone exploded last tick?
                                                                                 
 //Sarge: Allow Enhanced Weapon Offsets
 var globalconfig bool bEnhancedWeaponOffsets; 									//Sarge: Allow using enhanced weapon offsets
@@ -668,6 +670,9 @@ var globalconfig bool bAlwaysShowBloom;                                         
 
 var globalconfig bool bShowEnergyBarPercentages;                                //SARGE: If true, show the oxygen and bioenergy percentages below the bars.
 
+//Drone View Switcher
+var globalconfig bool bBigDroneView;                                            //SARGE: Whether or not Drone view should take up the whole screen with the player view in the window, or not.
+
 var localized string EnergyCantReserve;                                         //SARGE: Message when we don't have enough energy to reserve for a togglable augmentation
 
 var globalconfig bool bSimpleAugSystem;                                         //SARGE: Simplifies the Aug screen by merging Auto and Toggle augs into one "type". Doesn't change gameplay in any way.
@@ -686,6 +691,7 @@ var localized String DuplicateNanoKey;
 var globalconfig bool bStompDomesticAnimals;                                    //SARGE: If disabled, we can't stomp cats or dogs anymore. Adopt a cute animal today!
 var globalconfig bool bStompVacbots;                                            //SARGE: If disabled, we can't stomp vac-bots anymore.
 
+>>>>>>> master
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -758,9 +764,43 @@ exec function cheat()
 
 }
 
+//Render the player and hide the hud.
+//These are only necessary using the "full screen drone view" setting
+function ConfigBigDroneView(bool droneView)
+{
+    local DeusExRootWindow root;
+
+    if (!bBigDroneView)
+        return;
+
+    root = DeusExRootWindow(rootWindow);
+
+    if (droneView)
+    {
+        /*
+        //This breaks horribly, we need to hide the individual elements instead.
+        if (root != None)
+            root.hud.hide();
+        */
+        bBehindView=true;
+    }
+    else
+    {
+        bBehindView=false;
+        /*
+        if (root != None)
+            root.hud.show();
+        */
+    }
+}
+
 //Handle Crouch Toggle
 function HandleCrouchToggle()
 {
+    //SARGE: Don't let us toggle crouch while using the drone
+    if (bSpyDroneActive && !bSpyDroneSet)
+        return;
+
     if (!bToggleCrouch)
     {
         bCrouchOn = false;
@@ -1421,6 +1461,7 @@ function PreTravel()
 {
     local TechGoggles tech;
     local int i;                                                                //RSD
+    local SpyDrone SD;
 	// Set a flag designating that we're traveling,
 	// so MissionScript can check and not call FirstFrame() for this map.
 
@@ -1449,6 +1490,9 @@ function PreTravel()
 		DeusExWeapon(inHand).LaserOff(true);                                    //RSD: Otherwise dots will remain on the map
     ForceDroneOff();                                                            //RSD: Since we can move on standby, shut drone off
     ConsoleCommand("set DeusExCarcass bRandomModFix" @ bRandomizeMods);         //RSD: Stupid config-level hack since PostBeginPlay() can't access player pawn in DeusExCarcass.uc
+
+	foreach AllActors(class'SpyDrone',SD)                                       //RSD: Destroy all spy drones so we can't activate disabled drones on map transition
+		SD.Destroy();
 }
 
 // ----------------------------------------------------------------------
@@ -1464,7 +1508,6 @@ event TravelPostAccept()
 	local SavePoint SP;
 	local rotator rofs;
     local int j;                                                                //RSD
-    local SpyDrone SD;
 
 	//local WeaponGEPGun gepTest;
 	local vector ofst;
@@ -1618,9 +1661,6 @@ event TravelPostAccept()
 
 	SetRocketWireControl();
 	//end GMDX
-
-	foreach AllActors(class'SpyDrone',SD)                                       //RSD: Destroy all spy drones so we can't activate disabled drones on map transition
-		SD.Destroy();
 }
 //GMDX: set up mounted gep spawn, as no matter what i try it still draws it on spawn :/
 function SpawnGEPmounted(bool mountIt)
@@ -4503,6 +4543,10 @@ function bool IsHighlighted(actor A)
 
 	if (A != None)
 	{
+        //strange that we have to do this manually...
+        if (A.IsA('SpyDrone') && bSpyDroneSet)
+            return true;
+
 		if (A.bDeleteMe || A.bHidden)
 			return False;
 
@@ -5580,6 +5624,8 @@ function CreateDrone()
 {
 	local Vector loc;
 
+    spyDroneLevelValue = AugmentationSystem.GetAugLevelValue(class'AugDrone');
+
 	loc = (2.0 + class'SpyDrone'.Default.CollisionRadius + CollisionRadius) * Vector(ViewRotation);
 	loc.Z = BaseEyeHeight;
 	loc += Location;
@@ -5824,8 +5870,10 @@ state PlayerWalking
 			if ( aDrone != None )
 			{
 				// put away whatever is in our hand
+                /*
 				if (inHand != None)
 					PutInHand(None);
+                */
 
 				// make the drone's rotation match the player's view
 				if (!bRadialAugMenuVisible)
@@ -5839,6 +5887,10 @@ state PlayerWalking
 
 				// freeze the player
 				Velocity = vect(0,0,0);
+                
+                //SARGE: Stop player from sliding along the ground very slowly while the drone is active
+                SetPhysics(PHYS_None);
+                SetPhysics(PHYS_Walking);
 			}
 			return;
 		}
@@ -7268,6 +7320,10 @@ function bool RestrictInput()
 	if (IsInState('Interpolating') || IsInState('Dying') || IsInState('Paralyzed') || (FlagBase.GetBool('PlayerTraveling') ))
 		return True;
 
+    //SARGE: Being in a cutscene counts as restricted input
+    if (conPlay.bConversationStarted && conPlay.displayMode == DM_ThirdPerson)
+        return true;
+
     //SARGE: Disallow any sort of UI operations when the "pause" key is pressed
     //This way, real-time UI is actually a real-time UI
     if (DeusExRootWindow(rootWindow).bUIPaused || (Level.Pauser != ""))
@@ -7279,10 +7335,18 @@ function bool RestrictInput()
 
 // ----------------------------------------------------------------------
 // DroneExplode
+// SARGE: Now requires a high amount of energy, won't detonate if energy is lacking.
 // ----------------------------------------------------------------------
-function DroneExplode()
+function bool DroneExplode()
 {
-	local AugDrone anAug;
+    local AugDrone anAug;
+    anAug = AugDrone(AugmentationSystem.FindAugmentation(class'AugDrone'));
+    if (anAug == None)
+        return false;
+
+    //Don't detonate
+    if (Energy < anAug.EMPDrain)
+        return false;
 
     if (bSpyDroneSet)
     {
@@ -7292,15 +7356,17 @@ function DroneExplode()
 	if (aDrone != None)
 	{
 		aDrone.Explode(aDrone.Location, vect(0,0,1));
-	  //DEUS_EX AMSD Don't blow up OTHER player drones...
-	  anAug = AugDrone(AugmentationSystem.FindAugmentation(class'AugDrone'));
-		//foreach AllActors(class'AugDrone', anAug)
-	  if (anAug != None)
-		 anAug.Deactivate();
-	  Energy -= 3; //CyberP: energy cost upon detonation.
-      if (Energy < 0)
-          Energy = 0;
+        anAug.Deactivate();
+        Energy -= anAug.EMPDrain; //CyberP: energy cost upon detonation.
+        if (Energy < 0)
+            Energy = 0;
+
+        bDroneExploded = true;
+
+        return true;
 	}
+
+    return false;
 }
 
 // ----------------------------------------------------------------------
@@ -7676,12 +7742,12 @@ exec function ParseLeftClick()
 	// if the spy drone augmentation is active, blow it up
 	if (bSpyDroneActive && !bSpyDroneSet && !bRadialAugMenuVisible)                                       //RSD: Allows the user to toggle between moving and controlling the drone, also added Lorenz's wheel
 	{
-		DroneExplode();
-		return;
+		if (DroneExplode());
+            return;
 	}
 
     //Blow up any GEP profectiles in flight
-	else if (bGEPprojectileInflight)
+	if (bGEPprojectileInflight)
 	{
         if (aGEPProjectile!=none && aGEPProjectile.IsA('Rocket'))
         {
@@ -7929,14 +7995,10 @@ exec function ParseRightClick()
         PlaySound(sound'RatSqueak1');
 		return;*/
 		if (aDrone != none)
-		{
-		    bSpyDroneSet = true;
-		    aDrone.Velocity = vect(0.,0.,0.);
-		    SetRotation(SAVErotation);
-            ViewRotation = SAVErotation;
-            DRONESAVErotation = aDrone.Rotation;
-		}
-        return;
+        {
+            AugDrone(AugmentationSystem.FindAugmentation(class'AugDrone')).ToggleStandbyMode(true);
+            return;
+        }
 	}
 
 	oldFirstItem = Inventory;
@@ -10923,6 +10985,14 @@ function bool GetCrosshairState(optional bool bCheckForOuterCrosshairs)
 	root = DeusExRootWindow(rootWindow);
 	W = DeusExWeapon(inHand);
 
+    //If the Spy Drone is fullscreen, no crosshair
+    if (bSpyDroneActive && !bSpyDroneSet && bBigDroneView)
+        return false;
+
+    //If we have the spy drone out, no outer crosshairs.
+    if (bSpyDroneActive && !bSpyDroneSet && bCheckForOuterCrosshairs)
+        return false;
+
     if (!bCrosshairVisible)
         return false;
 
@@ -11992,6 +12062,7 @@ event UpdateEyeHeight(float DeltaTime)
 event PlayerCalcView( out actor ViewActor, out vector CameraLocation, out rotator CameraRotation )
 {
 	local vector unX,unY,unZ;
+    local rotator fixedRotation;
 	if (bStaticFreeze)
 	{
 		CameraLocation = SAVElocation;
@@ -12008,13 +12079,33 @@ event PlayerCalcView( out actor ViewActor, out vector CameraLocation, out rotato
 	{
 		if (aDrone != None)
 		{
-			// First-person view.
-			CameraRotation = SAVErotation;                                      //RSD: Added
-			SetRotation(SAVErotation);                                          //RSD: Added
-			CameraLocation = Location;
-			CameraLocation.Z += EyeHeight;
-			CameraLocation += WalkBob;
-			return;
+            //Fix the player rotation
+            fixedRotation = SAVErotation;
+            fixedRotation.Pitch = 0f;
+            fixedRotation.Roll = 0f;
+
+            //SARGE: Added Drone-View
+            if (bBigDroneView)
+            {
+                //View from the drone
+                SetRotation(fixedRotation);
+                CameraRotation = aDrone.Rotation;
+                CameraLocation = aDrone.Location;
+                //CameraLocation.Z += EyeHeight;
+                //CameraLocation += WalkBob;
+                ViewActor = aDrone;
+                return;
+            }
+            else
+            {
+                //View from the player
+                CameraRotation = SAVErotation;                                      //RSD: Added
+                SetRotation(fixedRotation);                                         //RSD: Added
+                CameraLocation = Location;
+                CameraLocation.Z += EyeHeight;
+                CameraLocation += WalkBob;
+                return;
+            }
 		}
 	}
 
@@ -17043,11 +17134,14 @@ function MultiplayerTick(float DeltaTime)
 	}
 	RepairInventory();
 	lastRefreshTime = 0;
+
+    //SARGE: Reset drone exploded flag
+    bDroneExploded = false;
 }
 
 // ----------------------------------------------------------------------
 
-function ForceDroneOff()
+function ForceDroneOff(optional bool skipDeactivation)
 {
 	local AugDrone anAug;
 
@@ -17062,9 +17156,11 @@ function ForceDroneOff()
                 SAVErotation = ViewRotation;
                 bSpyDroneSet = false;                                                 //RSD: Ensures that the Spy Drone will ACTUALLY be turned off
             }
-            anAug.bTimerEarly = true;                                                 //RSD: Hack so the drone doesn't spin us around when it gets destroyed
-            anAug.Deactivate();
-            bSpyDroneActive = false;                                                  //RSD: Prevents being forced back into drone control at the last second
+            if (!skipDeactivation)
+            {
+                anAug.Deactivate();
+                bSpyDroneActive = false;                                                  //RSD: Prevents being forced back into drone control at the last second
+            }
         }
     }
 }
@@ -17762,6 +17858,7 @@ defaultproperties
      iAllowCombatMusic=1
      bFullAccuracyCrosshair=true;
      bShowEnergyBarPercentages=true;
+     bBigDroneView=True
      bSimpleAugSystem=true
 	 MenuThemeNameGMDX="Default"
      HUDThemeNameGMDX="Default"

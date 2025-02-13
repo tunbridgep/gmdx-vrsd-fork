@@ -24,6 +24,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX bug where tiredness effects from low stamina would reset prematurely.
     - Fixed vanilla "bug" where diving into or leaving water would give free stamina.
     - Fixed GMDX quickloading not always working correctly, and other save issues including incorrect save-game ordering in the save/load screens.
+    - Fixed Vanilla bug where the spy drone would be deployable inside a wall, which would make it fail to spawn but keep the augmentation running.
     - Fixed GMDX "Create Custom Theme" menu being able to corrupt standard themes. Now the player is forced into the Custom HUD/Menu themes upon loading the custom theme creator.
     - Fixed GMDX bug which would make an empty subtitles box appear when interacting with things during first-person conversations, if subtitles were disabled.
     - Fixed GMDX bug where recharging items with biocells would cause the belt view in the inventory to continually get brighter and brighter until the inventory screen was closed.
@@ -166,6 +167,24 @@ Sarge's Changes since Beta 2.2:
             - Is now a Toggle Augmentation, reserving 20 energy to function.
         - Environmental Resist
             - Is now an Automatic Augmentation, draining 20 energy per second when taking environmental damage.
+        - Spy Drone
+            - Energy Use reduced from 90 per minute to 30 per minute, to encourage using it like an actual spy device
+                - The drone still retains it's 0 energy use per minute while parked from vRSD
+            - The drone's EMP cost has been increased from 3 per blast to 20 per blast, so it's no longer a free bomb
+            - The drone can now be spotted by enemies at close range
+                - The drone is invisible while parked, and cannot be seen at all at level 4.
+            - The drone has been made significantly smaller
+            - The drone can now be activated while parked, which will reclaim it, allowing immediate redeployment without needing to wait for the reconstruction time.
+            - Saving and Loading the game will no longer destroy any drones in flight.
+            - The drone can now be used in full-screen (enabled by default), with the player view being displayed in the picture-in-picture window.
+            - The drone will bounce off walls and floors slightly less than before.
+            - The players equipped item is no longer unequipped when using the drone.
+            - Restored the drone creation sound (was removed in previous GMDX versions).
+            - The Picture-in-Picture window has been made slightly bigger.
+            - When running out of bioelectrical energy, the Drone will be parked automatically instead of being destroyed.
+                - Using the Drone augmentation while at 0 bioelectrical energy can be used to forcibly destroy the drone.
+        - Targeting
+            - The Picture-in-Picture window has been made slightly bigger.
     - Hacking Overhaul
         - Bypassing Turrets now requires Advanced hacking, as in Vanilla.
         - Hacked Cameras and Turrets will "reboot" and become re-enabled again after 2 minutes (plus an additional 2 minutes for each level of the Hacking skill)
