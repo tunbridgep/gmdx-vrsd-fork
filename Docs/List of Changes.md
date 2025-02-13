@@ -30,6 +30,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed many other GMDX and Vanilla bugs.
 - Quality of Life Improvements:
     - The augmentation "hum" sound can be disabled.
+    - Augmentations now show their active colours in the medbot interface.
     - Complete overhaul of the "Decline Knives" system
         - "Decline Knives" setting has been removed
         - A new Decline button has been added to items in the inventory. Clicking it will decline a specific item going forward, preventing it from being taken off corpses.
@@ -141,16 +142,30 @@ Sarge's Changes since Beta 2.2:
     - Augmentation Changes
         - Some augmentations have been given a short cooldown on use. The Spy Drone retains it's 30 second cooldown.
             - Augmentations that need to recharge after use (including the Spy Drone) will show a red icon in the Augmentations window while they are recharging.
+        - Some augs can now be "toggled".
+            - Toggled augs do not consume energy when active, but must "reserve" a portion of your total bioelectrical energy in order to activate.
+            - The reserved amount is not restored upon deactivating the augmentation.
+            - Reserve Amounts can be increased by Synthetic Heart and reduced by Power Recirculator
         - EUAS
+            - At Level 2, EUAS becomes a Toggle augmentation, reserving 5 energy to detect hazards.
             - Swapped Level 2 and 3, because level 2 was arguably better than level 3. Now level 2 detects environmental hazards, level 3 shows visibility on the HUD.
             - Level 2 "Hazard Detection" now detects multiple threats (not just one at random), and can also detect grenades. Only the closest gas cloud will be shown, to reduce clutter.
                 - Detection Range also increases at Level 3.
+        - Aqualung
+            - Is now a Toggle Augmentation, reserving 10 energy to function.
         - Aggressive Defense System:
+            - Is now an Automatic Augmentation, draining 5 energy per projectile destroyed.
             - Will no longer display explosives which aren't detonated, so it can't be used to detect placed grenades at long range anymore
                 - Will instead continue to display destroyed projectiles on the HUD for a second or so after they are destroyed.
             - Now only beeps as projectiles enter range, to prevent annoying earrape
             - Range increased from 340/480/640/800 to 400/600/800/1000
             - Added Player Damage Reduction for projectiles detonated by ADS. Reduces damage from projectiles by 20%/30%/40%/50%
+        - Ballistic Protection (Passive)
+            - Is now a Toggle Augmentation, reserving 20 energy to function. The reserved amount is discounted when calculating damage reduction.
+        - Combat Speed
+            - Is now a Toggle Augmentation, reserving 20 energy to function.
+        - Environmental Resist
+            - Is now an Automatic Augmentation, draining 20 energy per second when taking environmental damage.
     - Hacking Overhaul
         - Bypassing Turrets now requires Advanced hacking, as in Vanilla.
         - Hacked Cameras and Turrets will "reboot" and become re-enabled again after 2 minutes (plus an additional 2 minutes for each level of the Hacking skill)
