@@ -22,6 +22,7 @@ var Class<Augmentation> defaultAugs[3];
 var localized string AugLocationFull;
 var localized String NoAugInSlot;
 var Augmentation augie;
+
 // ----------------------------------------------------------------------
 // Network Replication
 // ----------------------------------------------------------------------
@@ -39,6 +40,25 @@ replication
 
 }
 
+// ----------------------------------------------------------------------
+// Setup()
+// Called at the start of every game restart, map change, etc.
+// Calls Setup on every augmentation
+// ----------------------------------------------------------------------
+
+function Setup()
+{
+    local Augmentation aug;
+    aug = FirstAug;
+
+    while (aug != None)
+    {
+        aug.Setup();
+        if (aug.bIsActive)
+            aug.GotoState('Active');
+        aug = aug.next;
+    }
+}
 
 // ----------------------------------------------------------------------
 // CreateAugmentations()
@@ -117,60 +137,14 @@ simulated function RefreshAugDisplay()
 	anAug = FirstAug;
 	while(anAug != None)
 	{
-		/*// First make sure the aug is active if need be                       //RSD: Original code
-		if (anAug.bHasIt)
-		{
-			if (anAug.bIsActive)
-			{
-				anAug.GotoState('Active');
-
-				// Now, if this is an aug that isn't *always* active, then
-				// make sure it's in the augmentation display
-
-				if (!anAug.bAlwaysActive)
-					player.AddAugmentationDisplay(anAug);
-			}
-			else if ((player.bHUDShowAllAugs) && (!anAug.bAlwaysActive))
-			{
-                 player.AddAugmentationDisplay(anAug);
-			}
-		}*/
-
-        /*if (anAug.bHasIt && !anAug.bAlwaysActive) {                           //RSD: Lorenz's modification (Sorry, we're keeping the old unsanitary system)
-		    // Only show augs which can be switched on/off
-
-    	    if (anAug.bIsActive && anAug.IsInState('Inactive')) {
-    	       // This is bad design (ION Storm, this goes to you!): Even if
-        	    // bIsActive==True the aug is not necessarily in the state 'Active'
-        	    // (e.g. after a level transition).
-        	    // So make sure it is.
-        	    anAug.Activate();
-                //anAug.GotoState('Active');
-                //player.AmbientSound = anAug.LoopSound;
-            }
-
-			if (player.bHUDShowAllAugs || anAug.bIsActive) {
-			    // player wants to see all available augs even when inactive.
-			    // Otherwise show only active augs.
-				player.AddAugmentationDisplay(anAug);
-			}*/
-
 		// First make sure the aug is active if need be                         //RSD: Combined only necessary reworks from Lorenz's version
-		if (anAug.bHasIt && !anAug.bAlwaysActive)
+		if (anAug.CanBeActivated())
 		{
-			if (anAug.bIsActive)
-			{
-				anAug.GotoState('Active');
-
-				// Now, if this is an aug that isn't *always* active, then
-				// make sure it's in the augmentation display
-			}
 			if ((player.bHUDShowAllAugs) || (anAug.bIsActive))
 			{
                  player.AddAugmentationDisplay(anAug);
 			}
-			if (!anAug.bAutomatic && !anAug.IsA('AugPower'))
-			     player.RadialMenuAddAug(anAug);
+            player.RadialMenuAddAug(anAug);
 		}
 
 		anAug = anAug.next;
@@ -183,7 +157,7 @@ simulated function RefreshAugDisplay()
 // How many augs are currently active?
 // ----------------------------------------------------------------------
 
-simulated function int NumAugsActive()
+simulated function int NumAugsActive(optional bool countToggled)
 {
 	local Augmentation anAug;
 	local int count;
@@ -195,7 +169,7 @@ simulated function int NumAugsActive()
 	anAug = FirstAug;
 	while(anAug != None)
 	{
-		if (anAug.bHasIt && anAug.bIsActive && !anAug.bAlwaysActive)
+		if (anAug.bHasIt && anAug.bIsActive && anAug.CanBeActivated() && (!anAug.IsToggleAug() || countToggled))
 			count++;
 
 		anAug = anAug.next;
@@ -234,7 +208,7 @@ function BoostAugs(bool bBoostEnabled, Augmentation augBoosting)
 	while(anAug != None)
 	{
 		// Don't boost the augmentation causing the boosting! //CyberP: and don't even attempt passive augs
-		if (anAug != augBoosting && anAug.bAlwaysActive == False)
+		if (anAug != augBoosting && anAug.CanBeActivated())
 		{
 			if (bBoostEnabled)
 			{
@@ -327,13 +301,14 @@ function ActivateAll()
 	// Only allow this if the player still has
 	// Bioleectric Energy(tm)
 
-	if ((player != None) && (player.Energy > 0))
+    //SARGE: TODO: Fix this for Toggle augs
+	if ((player != None))
 	{
 		anAug = FirstAug;
 		while(anAug != None)
 		{
          if ( (Level.NetMode == NM_Standalone) || (!anAug.IsA('AugLight')) )
-            anAug.Activate();
+            ActivateAug(anAug,true);
 			anAug = anAug.next;
 		}
 	}
@@ -343,9 +318,10 @@ function ActivateAll()
 // DeactivateAll()
 //
 // Loops through all the Augmentations, deactivating any that are active.
+// ActiveOnly only activates AugmentationType "Active" augs, leaves Toggle augmentations active.
 // ----------------------------------------------------------------------
 
-function DeactivateAll()
+function DeactivateAll(optional bool toggled)
 {
 	local Augmentation anAug;
 
@@ -358,8 +334,10 @@ function DeactivateAll()
 	anAug = FirstAug;
 	while(anAug != None)
 	{
-		if (anAug.bIsActive)
-			anAug.Deactivate();
+		if (anAug.bIsActive && anAug.CanBeActivated() && (!anAug.IsToggleAug() || toggled))
+        {
+            anAug.Deactivate();
+        }
 		anAug = anAug.next;
 	}
 }
@@ -399,11 +377,6 @@ function Augmentation GivePlayerAugmentation(Class<Augmentation> giveClass)
 	// increase the level
 	anAug = FindAugmentation(giveClass);
 
-    if (anAug != none && anAug.IsA('AugHeartLung')) //CyberP: AugHeartLung upgrades all passive augs. //RSD: Active too now, taken from HUDMedBotAddAugsScreen.uc for less specialized code architecture
-       ForEach Player.AllActors(class'Augmentation',allTheAugs)
-        if (allTheAugs.bHasIt && allTheAugs.CurrentLevel != allTheAugs.MaxLevel) //RSD: removed && allTheAugs.bAlwaysActive, no distinction between active or passive for synth heart anymore
-          allTheAugs.CurrentLevel++;                                            //RSD: changed from +=1 to ++ for no reason
-
 	if (anAug == None)
 		return None;		// shouldn't happen, but you never know!
 
@@ -419,9 +392,18 @@ function Augmentation GivePlayerAugmentation(Class<Augmentation> giveClass)
 		return anAug;
 	}
 
+
+    if (anAug.IsA('AugHeartLung')) //CyberP: AugHeartLung upgrades all passive augs. //RSD: Active too now, taken from HUDMedBotAddAugsScreen.uc for less specialized code architecture
+       ForEach Player.AllActors(class'Augmentation',allTheAugs)
+        if (allTheAugs.bHasIt && allTheAugs.CurrentLevel != allTheAugs.MaxLevel) //RSD: removed && allTheAugs.bAlwaysActive, no distinction between active or passive for synth heart anymore
+        {
+          allTheAugs.CurrentLevel++;                                            //RSD: changed from +=1 to ++ for no reason
+          allTheAugs.Setup();
+        }
+
 	anAug.bHasIt = True;
 
-	if (anAug.bAlwaysActive)
+	if (anAug.AugmentationType == Aug_Passive)
 	{
 		anAug.bIsActive = True;
 		anAug.GotoState('Active');
@@ -436,14 +418,14 @@ function Augmentation GivePlayerAugmentation(Class<Augmentation> giveClass)
     	anAug.CurrentLevel++;
 
 	if ( Player.Level.Netmode == NM_Standalone )
-		Player.ClientMessage(Sprintf(anAug.AugNowHaveAtLevel, anAug.AugmentationName, anAug.CurrentLevel + 1));
+		Player.ClientMessage(Sprintf(anAug.AugNowHaveAtLevel, anAug.GetName(), anAug.CurrentLevel + 1));
 
 	// Manage our AugLocs[] array
 	AugLocs[anAug.AugmentationLocation].augCount++;
 
 	// Assign hot key to new aug
 	// (must be after before augCount is incremented!)
-   if (!anAug.bAlwaysActive)
+   if (anAug.CanBeActivated())
    {
    if (Level.NetMode == NM_Standalone && anAug.IsA('AugCombatStrength') || anAug.IsA('AugDrone') || anAug.IsA('AugDefense'))
    {
@@ -466,11 +448,12 @@ function Augmentation GivePlayerAugmentation(Class<Augmentation> giveClass)
    else
       anAug.HotKeyNum = anAug.MPConflictSlot + 2;
    }
-	if ((!anAug.bAlwaysActive) && (Player.bHUDShowAllAugs))
+	if ((anAug.CanBeActivated()) && (Player.bHUDShowAllAugs))
 	    Player.AddAugmentationDisplay(anAug);
-    if (!anAug.bAlwaysActive)                                                   //RSD: Otherwise we get passive augs showing up in the radial menu
+    if (anAug.CanBeActivated())                                                   //RSD: Otherwise we get passive augs showing up in the radial menu
         Player.RadialMenuAddAug(anAug);
 
+    anAug.Setup();
 	return anAug;
 }
 
@@ -524,76 +507,53 @@ simulated function Bool AreSlotsFull(Augmentation augToCheck)
 // CalcEnergyUse()
 //
 // Calculates energy use for all active augmentations
+// SARGE: Energy Drain Rate is now calculated per augmentation, so we can display it in the HUD
+// As a result, this function is now MUCH simpler.
 // ----------------------------------------------------------------------
 
 simulated function Float CalcEnergyUse(float deltaTime)
 {
-	local float energyUse, energyMult;
+	local float energyUse;
 	local Augmentation anAug;
-   local Augmentation PowerAug;
-   local Augmentation heartylung;
 
 	energyUse = 0;
-	energyMult = 1.0;
 
 	anAug = FirstAug;
 	while(anAug != None)
 	{
- 	 if (anAug.IsA('AugHeartLung'))
-         heartylung = anAug;
-      else if (anAug.IsA('AugPower'))
-         PowerAug = anAug;
-
-        if (Player.carriedDecoration != None)  //CyberP: drain energy when carrying inhuman-heavy objects only //RSD: re-implemented
-        {
-             if (Player.carriedDecoration.Mass > 60 && anAug.IsA('AugMuscle') && anAug.bHasIt)
-                 energyUse += ((20./60) * deltaTime);                           //RSD: Increased from 16 bpm -> 20 bpm (vanilla)
-        }
-        if (anAug.bHasIt && anAug.bIsActive && !anAug.bAlwaysActive)            //RSD: Added && !anAug.bAlwaysActive so passive augs can have energy rate listed but with no drain
-		{
-			if (!(anAug.IsA('AugDrone') && Player.bSpyDroneSet))
-                 energyUse += ((anAug.GetEnergyRate()/60) * deltaTime);         //RSD: No drain for drone aug when on standby
-			if (anAug.IsA('AugPower'))
-         {
-				energyMult = anAug.LevelValues[anAug.CurrentLevel];
-         }
-		}
+        if (anAug.bHasIt && anAug.bIsActive && anAug.CanDrainEnergy())
+            energyUse += ((anAug.GetAdjustedEnergyRate()/60) * deltaTime);
 		anAug = anAug.next;
 	}
 
-   // DEUS_EX AMSD Manage the power aug automatically in multiplayer. //cyberP: singleplayer too
-   if ((PowerAug != None) && (PowerAug.bHasIt) )
-   {
-      /*                                                                        //RSD: Power aug is now fully passive
-      //If using energy, turn on the power aug.
-      if ((energyUse > 0) && (!PowerAug.bIsActive))
-         ActivateAugByKey(PowerAug.HotKeyNum - 3);
-
-      //If not using energy, turn off the power aug.
-      if ((energyUse == 0) && (PowerAug.bIsActive))
-         ActivateAugByKey(PowerAug.HotKeyNum - 3);
-
-      if (PowerAug.bIsActive)*/
-         energyMult = PowerAug.LevelValues[PowerAug.CurrentLevel];
-   }
-	// check for the power augmentation
-	energyUse *= energyMult;
-
-  if ((heartylung != None) && (heartylung.bHasIt))   //CyberP: automatic synthetic heart too
-	{
-	  energyUse *= heartylung.LevelValues[heartylung.CurrentLevel];
-	  /*                                                                        //RSD: Synthetic Heart is now fully passive
-    //If using energy, turn on the power aug.
-      if ((energyUse > 0) && (!heartylung.bIsActive))
-         ActivateAugByKey(heartylung.HotKeyNum - 3);
-
-      //If not using energy, turn off the power aug.
-      if ((energyUse == heartylung.GetEnergyRate()/60 * deltaTime) && (heartylung.bIsActive) && (heartylung.bBoosted == False))
-         ActivateAugByKey(heartylung.HotKeyNum - 3);*/
-    }
 	return energyUse;
 }
 
+// ----------------------------------------------------------------------
+// CalcEnergyReserve()
+//
+// Calculates total reserve energy all active augmentations
+// ----------------------------------------------------------------------
+
+simulated function Float CalcEnergyReserve()
+{
+	local Augmentation anAug;
+	local float reserve;
+
+	reserve = 0;
+
+	anAug = FirstAug;
+	while(anAug != None)
+	{
+        if (anAug.bHasIt && anAug.bIsActive)
+            reserve += ((anAug.GetAdjustedEnergyReserve()));
+		anAug = anAug.next;
+	}
+
+	return reserve;
+}
+
+//Sarge: TODO: Fix this to work generically
 function AutoAugs(bool bTurnOff, bool environ)
 {
 local Augmentation anAug;
@@ -614,7 +574,6 @@ if (environ == false)
 	}
 	if (anAug != None && anAug.IsA('AugAqualung'))
 	{
-	    AugAqualung(anAug).AugmentationName = AugAqualung(anAug).AugmentationName2;
 	    if (bTurnOff)
 	    {
             if (AugAqualung(anAug).bIsActive)
@@ -643,7 +602,6 @@ else
 	}
 	if (anAug != None && anAug.IsA('AugEnviro'))
 	{
-	    AugEnviro(anAug).AugmentationName = AugEnviro(anAug).AugmentationName2;
 	    if (bTurnOff)
 	    {
             if (AugEnviro(anAug).bIsActive)
@@ -663,6 +621,7 @@ else
 	}
 }
 }
+
 // ----------------------------------------------------------------------
 // AddAllAugs()
 // ----------------------------------------------------------------------
@@ -694,7 +653,10 @@ function SetAllAugsToMaxLevel()
 	while(anAug != None)
 	{
 		if (anAug.bHasIt)
+        {
 			anAug.CurrentLevel = anAug.MaxLevel;
+            anAug.Setup();
+        }
 
 		anAug = anAug.next;
 	}
@@ -747,12 +709,7 @@ function bool ActivateAugByKey(int keyNum)
 	}
 	else
 	{
-		// Toggle
-		if (anAug.bIsActive)
-			anAug.Deactivate();
-		else
-			anAug.Activate();
-
+        ActivateAug(anAug,!anAug.bIsActive);
 		bActivated = True;
 	}
 
@@ -804,6 +761,15 @@ function Augmentation GetAug(class<Augmentation> AugClass, optional bool active)
     return None;
 }
 
+//Attempts to activate an augmentation
+function ActivateAug(Augmentation aug, bool active)
+{
+    aug.ActivateKeyPressed();
+    if (active && !aug.bIsActive)
+        aug.Activate();
+    else if (!active && aug.bIsActive)
+        aug.Deactivate();
+}
 
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------

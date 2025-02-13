@@ -215,7 +215,6 @@ var globalconfig bool bToggleCrouch;				// True to let key toggle crouch
 var globalconfig float logTimeout;					// Log Timeout Value
 var globalconfig byte  maxLogLines;					// Maximum number of log lines visible
 var globalconfig bool bHelpMessages;				// Multiplayer help messages
-var globalconfig bool bWallPlacementCrosshair;		// SARGE: Show a blue crosshair when placing objects on walls
 
 // Overlay Options (TODO: Move to DeusExHUD.uc when serializable)
 var globalconfig byte translucencyLevel;			// 0 - 10?
@@ -246,6 +245,11 @@ var travel BarkManager barkManager;
 // and HUD windows.
 
 var travel ColorThemeManager ThemeManager;
+//SARGE: DO NOT USE THESE!!!
+//They aren't removed because the game expects the player to be structured in a certain way
+//(See the warning below, scroll down a bit to find it).
+//But we don't want to use these because they can fuck regular Deus Ex menus if we uninstall GMDX.
+//So we're going to use equivalents
 var globalconfig String MenuThemeName;
 var globalconfig String HUDThemeName;
 
@@ -439,7 +443,7 @@ var globalconfig bool bColorCodedAmmo;
 var globalconfig bool bExtraHardcore;
 var globalconfig bool bDecap;
 var globalconfig bool bNoTranslucency;
-var globalconfig bool bDblClickHolster;
+var globalconfig int dblClickHolster;                      //SARGE: 0 = off, 1 = double click holstering only, 2 = double click holstering and unholstering
 var globalconfig bool bHalveAmmo;
 var globalconfig bool bHardcoreUnlocked;
 var globalconfig bool bAutoHolster;
@@ -462,7 +466,6 @@ var globalconfig bool bMantleOption;
 var globalconfig bool bUSP;
 var globalconfig bool bSkillMessage;
 var globalconfig bool bXhairShrink;
-var globalconfig bool bNoKnives;
 var globalconfig bool bModdedHeadBob;
 var globalconfig bool bBeltAutofill;											//Sarge: Added new feature for auto-populating belt
 var globalconfig bool bHackLockouts;											//Sarge: Allow locking-out security terminals when hacked, and rebooting.
@@ -488,7 +491,6 @@ var travel bool bNumberSelect;                                              //Sa
 var travel bool bScrollSelect;                                              //Sarge: Whether or not our last belt selection was done with Next/Last weapon keys rather than Number Keys. Used by Alternative Belt to know when to holster
 var travel int beltScrolled;                                                //Sarge: The last item we scrolled to on the belt, if we are using Adv Toolbelt
 var travel bool selectedNumberFromEmpty;                                    //Sarge: Was the current selection made from an empty hand. Used by Alternate Toolbelt Classic Mode to not jump back to previous weapon when we select from an empty hand.
-var travel Inventory lastSelected;                                          //The last object that was put in our hands.
 var globalconfig bool bLeftClickUnholster;                                  //Enable left click unholstering
 
 var int clickCountCyber; //CyberP: for double clicking to unequip
@@ -617,6 +619,9 @@ var travel float autosaveRestrictTimer;                                         
 var const float autosaveRestrictTimerDefault;                                   //Sarge: Timer for autosaves.
 var travel bool bResetAutosaveTimer;                                            //Sarge: This is necessary because our timer isn't set properly during the same frame as saving, for some reason.
 
+//Menu Overhaul stuff
+var localized String RechargedPointLabel;
+var localized String RechargedPointsLabel;
 
 var travel AddictionSystem AddictionManager;
 var travel PerkSystem PerkManager;
@@ -627,6 +632,10 @@ const DRUG_ALCOHOL = 1;
 const DRUG_CRACK = 2;
 
 var travel bool bLastRun;                                                       //Sarge: Stores our last running state
+
+var bool bUsingComputer;                                                        //SARGE: Are we currently using a computer? Set so that we can restrict input while using one
+
+var bool bDroneExploded;                                                        //SARGE: Was the drone exploded last tick?
                                                                                 
 //Sarge: Allow Enhanced Weapon Offsets
 var globalconfig bool bEnhancedWeaponOffsets; 									//Sarge: Allow using enhanced weapon offsets
@@ -640,12 +649,19 @@ var globalconfig bool bDialogHUDColors;                                         
 //var globalconfig bool bAdvancedAugWheel;                                        //Sarge: Allow manually assigning augmentations to the aug wheel, rather than auto-assigning all of them.
 var globalconfig bool bQuickAugWheel;                                           //Sarge: Instantly enable/disable augs when closing the menu over the selected aug, otherwise require a mouse click.
 var globalconfig bool bAugWheelDisableAll;                                      //Sarge: Show the Disable All button on the Aug Wheel
+var globalconfig bool bAugWheelFreeCursor;                                      //Sarge: Allow free cursor movement in the augmentation wheel
+var globalconfig bool bAugWheelRememberCursor;                                  //Sarge: Remember the cursor position in the Aug Wheel, otherwise it will be reset to the center position
 
 var globalconfig bool bBeltShowModified;                                        //SARGE: Shows a "+" in the belt for modified weapons.
 
 var globalconfig bool bTrickReloading;											//Sarge: Allow reloading with a full clip.
 
 var globalconfig int iAllowCombatMusic;                                        //SARGE: Enable/Disable combat music, or make it require 2 enemies
+
+//Decline Everything
+var travel DeclinedItemsManager declinedItemsManager;                          //SARGE: Holds declined items.
+var globalconfig bool bSmartDecline;                                            //SARGE: Allow not declining items when holding the walk/run key
+var localized string msgDeclinedPickup;                                        //SARGE: Declined message
 
 //Crosshair Settings
 var globalconfig bool bFullAccuracyCrosshair;                                   //SARGE: If false, disable the "Accuracy Crosshairs" when at 100% accuracy
@@ -657,7 +673,25 @@ var globalconfig bool bShowEnergyBarPercentages;                                
 //Drone View Switcher
 var globalconfig bool bBigDroneView;                                            //SARGE: Whether or not Drone view should take up the whole screen with the player view in the window, or not.
 
-var bool bDroneExploded;                                                        //SARGE: Was the drone exploded last tick?
+var localized string EnergyCantReserve;                                         //SARGE: Message when we don't have enough energy to reserve for a togglable augmentation
+
+var globalconfig bool bSimpleAugSystem;                                         //SARGE: Simplifies the Aug screen by merging Auto and Toggle augs into one "type". Doesn't change gameplay in any way.
+
+//Remove Aug Hum Sounds
+var globalconfig bool bQuietAugs;                                               //SARGE: If enabled, augmentations won't play the "hum" sound while active
+
+//Colour Theme Manager
+var globalconfig String MenuThemeNameGMDX;
+var globalconfig String HUDThemeNameGMDX;
+
+//Misc Strings
+var localized String DuplicateNanoKey;
+
+//Cat/Dog protector
+var globalconfig bool bStompDomesticAnimals;                                    //SARGE: If disabled, we can't stomp cats or dogs anymore. Adopt a cute animal today!
+var globalconfig bool bStompVacbots;                                            //SARGE: If disabled, we can't stomp vac-bots anymore.
+
+>>>>>>> master
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -804,8 +838,23 @@ function SetCrouch(bool crouch, optional bool setForce)
         bForceDuck = crouch;
 }
 
+
 // ----------------------------------------------------------------------
-// AssignSecondaryWeapon
+// ClientMessage
+// Copied over from PlayerPawnExt
+// Sarge: Extended to not show blank messages
+// ----------------------------------------------------------------------
+
+function ClientMessage(coerce string msg, optional Name type, optional bool bBeep)
+{
+    if (msg == "")
+        return;
+
+    Super.ClientMessage(msg,type,bBeep);
+}
+
+// ----------------------------------------------------------------------
+// AssignSecondary
 // Sarge: Now needed because we need to fix up our charged item display if it's out of date
 // ----------------------------------------------------------------------
 
@@ -901,6 +950,7 @@ local DeusExLevelInfo dxInfo;                                                   
 local name flagName;                                                            //RSD: Added
 local bool bFirstLevelLoad;                                                     //RSD: Added
 local AlarmUnit        AU;                                                      //RSD: Added
+local Perk perkDoorsman;
 
 //log("bHardCoreMode =" @bHardCoreMode);
 //log("CombatDifficulty =" @CombatDifficulty);
@@ -990,12 +1040,14 @@ local AlarmUnit        AU;                                                      
     }
     }
 
+	perkDoorsman = PerkManager.GetPerkWithClass(class'DeusEx.PerkDoorsman');
+
      ForEach AllActors(class'DeusExMover', MV)
      {
-         if (!MV.bPerkApplied && PerkManager.GetPerkWithClass(class'DeusEx.PerkDoorsman').bPerkObtained == true)
+         if (!MV.bPerkApplied && perkDoorsman.bPerkObtained == true)
          {
 		       MV.bPerkApplied = True;
-		       MV.minDamageThreshold -= 5;
+		       MV.minDamageThreshold -= perkDoorsman.PerkValue;
 		       if (MV.minDamageThreshold <= 0)
                 MV.minDamageThreshold = 1;
 		 }
@@ -1238,8 +1290,8 @@ simulated function PostNetBeginPlay()
 		ThemeManager.SetOwner(self);
 		ThemeManager.SetCurrentHUDColorTheme(ThemeManager.GetFirstTheme(1));
 		ThemeManager.SetCurrentMenuColorTheme(ThemeManager.GetFirstTheme(0));
-		ThemeManager.SetMenuThemeByName(MenuThemeName);
-		ThemeManager.SetHUDThemeByName(HUDThemeName);
+		ThemeManager.SetMenuThemeByName(MenuThemeNameGMDX);
+		ThemeManager.SetHUDThemeByName(HUDThemeNameGMDX);
 		if (DeusExRootWindow(rootWindow) != None)
 		   DeusExRootWindow(rootWindow).ChangeStyle();
 	}
@@ -1270,8 +1322,8 @@ function SetupPerkManager()
     {
         //ClientMessage("Make new Perk System");
 	    PerkManager = new(Self) class'PerkSystem';
-        PerkManager.InitializePerks(Self);
     }
+    PerkManager.InitializePerks(Self);
 }
 
 function SetupRandomizer()
@@ -1305,6 +1357,12 @@ function InitializeSubSystems()
 	CreateColorThemeManager();
 	ThemeManager.SetOwner(self);
 
+    if (DeclinedItemsManager == None)
+    {
+        DeclinedItemsManager = Spawn(class'DeclinedItemsManager', Self);
+        DeclinedItemsManager.SetOwner(Self);
+    }
+
 	// install the augmentation system if not found
 	if (AugmentationSystem == None)
 	{
@@ -1312,11 +1370,13 @@ function InitializeSubSystems()
 		AugmentationSystem.CreateAugmentations(Self);
 		AugmentationSystem.AddDefaultAugmentations();
 		AugmentationSystem.SetOwner(Self);
+		AugmentationSystem.Setup();
 	}
 	else
 	{
 		AugmentationSystem.SetPlayer(Self);
 		AugmentationSystem.SetOwner(Self);
+		AugmentationSystem.Setup();
 	}
 
 	// install the skill system if not found
@@ -1382,8 +1442,8 @@ function PostPostBeginPlay()
 
 	// Restore colors that the user selected (as opposed to those
 	// stored in the savegame)
-	ThemeManager.SetMenuThemeByName(MenuThemeName);
-	ThemeManager.SetHUDThemeByName(HUDThemeName);
+	ThemeManager.SetMenuThemeByName(MenuThemeNameGMDX);
+	ThemeManager.SetHUDThemeByName(HUDThemeNameGMDX);
 
 
 
@@ -1513,8 +1573,8 @@ event TravelPostAccept()
 	// Restore colors
 	if (ThemeManager != None)
 	{
-		ThemeManager.SetMenuThemeByName(MenuThemeName);
-		ThemeManager.SetHUDThemeByName(HUDThemeName);
+		ThemeManager.SetMenuThemeByName(MenuThemeNameGMDX);
+		ThemeManager.SetHUDThemeByName(HUDThemeNameGMDX);
 	}
 
 	// Make sure any charged pickups that were active
@@ -1535,6 +1595,7 @@ event TravelPostAccept()
 	{
 		// set the player correctly
 		AugmentationSystem.SetPlayer(Self);
+		AugmentationSystem.Setup();
 		AugmentationSystem.RefreshAugDisplay();
 	}
 
@@ -2274,7 +2335,7 @@ function ShowIntro(optional bool bStartNewGame, optional bool force)
 	bStartNewGameAfterIntro = bStartNewGame;
 
 	// Make sure all augmentations are OFF before going into the intro
-	AugmentationSystem.DeactivateAll();
+	AugmentationSystem.DeactivateAll(true);
 
 	if ((bSkipNewGameIntro || bPrisonStart) && !force)
 	  PostIntro();
@@ -2379,7 +2440,7 @@ function ShowMultiplayerWin( String winnerName, int winningTeam, String Killer, 
 	if (PlayerIsClient())
 	{
 	  if (AugmentationSystem != None)
-		 AugmentationSystem.DeactivateAll();
+		 AugmentationSystem.DeactivateAll(true);
 	}
 }
 
@@ -3002,6 +3063,7 @@ function UpdateDynamicMusic(float deltaTime)
 // MaintainEnergy()
 // ----------------------------------------------------------------------
 
+//SARGE: TODO: Refactor
 function MaintainEnergy(float deltaTime)
 {
 	local Float energyUse;
@@ -3610,6 +3672,26 @@ exec function AugAdd(class<Augmentation> aWantedAug)
 	}
 }
 
+//SARGE: Add in a way to cheat perks
+exec function PerkAdd(class<Perk> aWantedPerk)
+{
+	if (!bCheatsEnabled || PerkManager == None)
+		return;
+
+    if (PerkManager.PurchasePerk(aWantedPerk,true))
+        ClientMessage("Perk Added");
+}
+
+//SARGE: Add in a way to cheat perks
+exec function PerkReAdd(class<Perk> aWantedPerk)
+{
+	if (!bCheatsEnabled || PerkManager == None)
+		return;
+
+    if (PerkManager.PurchasePerk(aWantedPerk,true,true))
+        ClientMessage("Perk Re-added");
+}
+
 exec function OPAug() //CyberP: cheat for my fucked keyboard
 {
    local AugmentationCannister cann;
@@ -3635,13 +3717,6 @@ exec function ActivateAugmentation(int num)
 	if (RestrictInput())
 		return;
 
-	if (Energy == 0)
-	{
-		ClientMessage(EnergyDepleted);
-		PlaySound(AugmentationSystem.FirstAug.DeactivateSound, SLOT_None);
-		return;
-	}
-
 	if (AugmentationSystem != None)
 		AugmentationSystem.ActivateAugByKey(num);
 }
@@ -3663,6 +3738,7 @@ exec function ActivateAllAugs()
 exec function DeactivateAllAugs()
 {
 	if (AugmentationSystem != None)
+		//AugmentationSystem.DeactivateAll(true);
 		AugmentationSystem.DeactivateAll();
 }
 
@@ -4587,15 +4663,6 @@ function HighlightCenterObject()
 		minSize = 99999;
 		bFirstTarget = True;
 
-        if (IsCrouching())
-        {
-           if (PerkManager.GetPerkWithClass(class'DeusEx.PerkEndurance').bPerkObtained == true)                                           //RSD: Was PerkNamesArray[29] (Creeper), now PerkNamesArray[27] (Endurance)
-              bCrouchRegen=True;
-        }
-        else
-        {
-          bCrouchRegen=false;
-        }
      if (inHand != none && inHand.IsA('Multitool'))
      {
         foreach TraceActors(class'Actor', target, HitLoc, HitNormal, EndTrace, StartTrace)
@@ -4985,16 +5052,42 @@ function int HealPlayer(int baseHealPoints, optional Bool bUseMedicineSkill)
 }
 
 // ----------------------------------------------------------------------
+// GetMaxEnergy()
+// Returns the max energy left after energy reservations
+// ----------------------------------------------------------------------
+
+function float GetMaxEnergy(optional bool trueMax)
+{
+    local int max;
+    max = EnergyMax - AugmentationSystem.CalcEnergyReserve();
+
+    if (Energy > max)
+        Energy = max;
+
+    if (trueMax)
+        return EnergyMax;
+    return FMax(0.0,max);
+}
+
+// ----------------------------------------------------------------------
 // ChargePlayer()
 // ----------------------------------------------------------------------
 
-function int ChargePlayer(int baseChargePoints)
+function int ChargePlayer(int baseChargePoints, optional bool showMessage)
 {
 	local int chargedPoints;
 
-	chargedPoints = Min(EnergyMax - Int(Energy), baseChargePoints);
+	chargedPoints = Min(GetMaxEnergy() - Int(Energy), baseChargePoints);
 
 	Energy += chargedPoints;
+
+    if (showMessage && chargedPoints > 0)
+    {
+        if (chargedPoints == 1)
+            ClientMessage(sprintf(RechargedPointLabel,chargedPoints));
+        else
+            ClientMessage(sprintf(RechargedPointsLabel,chargedPoints));
+    }
 
 	return chargedPoints;
 }
@@ -5173,6 +5266,10 @@ function DoJump( optional float F )
 	local float scaleFactor, augLevel, augStealthValue;                         //RSD: added augStealthValue
 	local int MusLevel;
 	local Vector velocityNormal;                                                //RSD: added velocityNormal
+        
+    //SARGE: Prevent jumping if we're using a computer
+    if (bUsingComputer)
+        return;
 
 	MusLevel = AugmentationSystem.GetClassLevel(class'AugMuscle');
 
@@ -5755,6 +5852,12 @@ state PlayerWalking
         local float heavySkillVal;                                              //RSD
         local float mult4;                                                      //RSD
 
+        //SARGE: Prevent walking if we're using a computer
+        if (bUsingComputer)
+        {
+            newAccel = vect(0,0,0);
+        }
+
 		if (bStaticFreeze)
 		{
 			SetRotation(SAVErotation);
@@ -6086,6 +6189,9 @@ state PlayerWalking
                }
            }
         }
+		
+		//SARGE: Moved Endurance check to here.
+        bCrouchRegen=PerkManager.GetPerkWithClass(class'DeusEx.PerkEndurance').bPerkObtained;
 	    if ((!IsCrouching() || bCrouchRegen) && !bOnLadder) //(bIsCrouching)     //RSD: Simplified this entire logic from original crouching -> bCrouchRegen check, added !bOnLadder
 	    	RegenStaminaTick(deltaTime);                                        //RSD: Generalized stamina regen function
 	  }
@@ -6976,7 +7082,7 @@ Begin:
 	drugEffectTimer	= 0;
 
     if (AugmentationSystem != None)
-        AugmentationSystem.DeactivateAll(); //CyberP: deactivate augs
+        AugmentationSystem.DeactivateAll(true); //CyberP: deactivate augs
 	// Don't come back to life crouched
     SetCrouch(false,true);
 
@@ -7320,6 +7426,12 @@ exec function ShowScores()
             //Do nothing.
             return;
         }
+        //SARGE: Check DTS Charge Level
+        else if (assignedWeapon.IsA('WeaponNanoSword') && WeaponNanoSword(assignedWeapon).ChargeManager.GetCurrentCharge() == 0)
+        {
+            //Do nothing.
+            return;
+        }
         else if (assignedWeapon != none && assignedWeapon.IsA('RSDEdible')) //Sarge: Allow using edibles from the secondary button
 		{
             assignedWeapon.GotoState('Activated');
@@ -7338,7 +7450,6 @@ exec function ShowScores()
             {
                 if (inHand != none && inHand.IsA('DeusExWeapon'))
                 {
-                    primaryWeapon = inHand;
                     //DeusExWeapon(inHand).GotoState('DownWeapon');
                     DeusExWeapon(inHand).ScopeOff();
                     DeusExWeapon(inHand).LaserOff(true);
@@ -7346,23 +7457,17 @@ exec function ShowScores()
                 }
                 else if (inHand.IsA('SkilledTool'))
                 {
-                    primaryWeapon = inHand;
                     SkilledTool(inHand).PutDown();
                 }
                 else if (inHand.IsA('DeusExPickup'))
                 {
-                    primaryWeapon = inHand;
                     PutInHand(None);
                 }
-                else
-                    primaryWeapon = none;
                 //assignedWeapon.GotoState('Activated');
                 Binoculars(assignedWeapon).Activate();
             }
             else
             {
-                if (primaryWeapon != none)
-                    inHandPending = primaryWeapon;
                 //assignedWeapon.GotoState('DeActivated');
                 Binoculars(assignedWeapon).Activate();
             }
@@ -7387,7 +7492,6 @@ exec function ShowScores()
                  return;
              }
          }
-         primaryWeapon = inHand;
          inHandPending = assignedWeapon;
          if (inHandPending.IsA('DeusExWeapon'))
 	         DeusExWeapon(inHandPending).bBeginQuickMelee=true;
@@ -7423,7 +7527,6 @@ exec function ShowScores()
 	       if (assignedWeapon != None)
 	       {
 	           inHandPending = assignedWeapon;
-	           primaryWeapon = assignedWeapon;                                  //RSD: Will let you fire with secondary weapon button when nothing was in hand
            }
 	    }
 
@@ -7438,7 +7541,6 @@ exec function ShowScores()
              }
          }
          if (inHand.IsA('DeusExWeapon'))
-             primaryWeapon = DeusExWeapon(inHand);
          inHandPending = assignedWeapon;
          if (inHandPending.IsA('DeusExWeapon'))
 	         DeusExWeapon(inHandPending).bBeginQuickMelee=true;
@@ -7475,6 +7577,9 @@ exec function ShowScores()
 function DoLeftFrob(Actor frobTarget)
 {
     local bool bDefaultFrob;
+    
+    if (CheckFrobDeclined(frobTarget))
+        return;
     
     if (inHand == None)
     {
@@ -7516,6 +7621,9 @@ function DoRightFrob(Actor frobTarget)
     if (frobTarget == None)
         return;
 
+    if (CheckFrobDeclined(frobTarget))
+        return;
+
     bDefaultFrob = true;
     bLeftClicked = false;
 
@@ -7538,6 +7646,19 @@ function DoRightFrob(Actor frobTarget)
     }
     else if (bDefaultFrob)
         DoFrob(Self, None);
+}
+
+//SARGE: Check if a frobbed item is declined, and handle it
+//Returns FALSE if an item was not declined, TRUE if it was
+function bool CheckFrobDeclined(Actor frobTarget)
+{
+    if (frobTarget.IsA('Inventory') && DeclinedItemsManager.IsDeclined(class<Inventory>(frobTarget.class)) && clickCountCyber == 0)
+    {
+        SetDoubleClickTimer();
+        ClientMessage(sprintf(msgDeclinedPickup,Inventory(frobTarget).ItemName));
+        return true;
+    }
+    return false;
 }
 
 //Sarge: Because we can only inherit from one class,
@@ -7662,7 +7783,7 @@ exec function ParseLeftClick()
     }
 
     //Special cases aside, now do the left hand frob behaviour
-    else if (FrobTarget != none && IsReallyFrobbable(FrobTarget) && !bInHandTransition && (inHand == None || !inHand.IsA('POVcorpse')) && CarriedDecoration == None)
+    else if (FrobTarget != none && IsReallyFrobbable(FrobTarget,true) && !bInHandTransition && (inHand == None || !inHand.IsA('POVcorpse')) && CarriedDecoration == None)
 	{
         DoLeftFrob(FrobTarget);
 	}
@@ -7721,10 +7842,15 @@ function SelectLastWeapon()
     root = DeusExRootWindow(rootWindow);
     if (root != None && root.hud != None)
     {
-        if (bAlternateToolbelt > 0)
-            root.ActivateObjectInBelt(advBelt);
-        else
-            PutInHand(lastSelected);
+        if (bAlternateToolbelt > 0 && root.ActivateObjectInBelt(advBelt))
+        {
+            NewWeaponSelected();
+            return;
+        }
+    }
+    if (primaryWeapon.Owner == self)
+    {
+        PutInHand(primaryWeapon);
         NewWeaponSelected();
     }
 }
@@ -7762,15 +7888,37 @@ function bool SelectInventoryItem(Name type)
 //Returns whether a given frobbable can actually be interacted with
 //So that we can skip the ones that don't highlight or can't really be used,
 //preventing them from blocking holstering with right click
-function bool IsReallyFrobbable(Actor target)
+function bool IsReallyFrobbable(Actor target, optional bool left)
 {
     if (target.isA('DeusExDecoration') && !DeusExDecoration(target).bHighlight)
         return false;
+    if (target.isA('DeusExMover') && left)
+        return DeusExMover(target).bBreakable || DeusExMover(target).bFrobbable;
     if (target.isA('DeusExMover'))
         return DeusExMover(target).bHighlight && DeusExMover(target).bFrobbable;
     if (target.isA('ElevatorMover'))
         return false;
     return true;
+}
+
+// ----------------------------------------------------------------------
+// SetDoubleClickTimer()
+// Sets up the double-click holster/unholster timer
+// ----------------------------------------------------------------------
+
+function SetDoubleClickTimer()
+{
+    SetTimer(0.3,false);
+    bDoubleClickCheck=True;
+    clickCountCyber=1;
+}
+    
+function DoAutoHolster()
+{
+    if (bAutoHolster)// && (clickCountCyber >= 1 || dblClickHolster == 0 ))
+        PutInHand(None);
+    else if (bAutoHolster && dblClickHolster > 0)
+        SetDoubleClickTimer();
 }
 
 // ----------------------------------------------------------------------
@@ -7930,26 +8078,21 @@ exec function ParseRightClick()
                 beltLast = advBelt;
 			}
 		}
-		else if (clickCountCyber >= 1 || !bDblClickHolster)
+        else if (inHand == None && (clickCountCyber >= 1 || dblClickHolster < 2))
 		{
-			if (inHand == None)
-			{
-				//SARGE: Added support for the unholster behaviour from the Alternate Toolbelt on both Toolbelts
-				//Additionally, unholstering is now tied to the double-click holstering setting.
-                SelectLastWeapon();
-			}
-			else
-            {
-				PutInHand(None);
-                NewWeaponSelected();
-            }
+            //SARGE: Added support for the unholster behaviour from the Alternate Toolbelt on both Toolbelts
+            //Additionally, unholstering is now tied to the double-click holstering setting.
+            SelectLastWeapon();
+		}
+		else if (inHand != None && (clickCountCyber >= 1 || dblClickHolster == 0))
+		{
+            PutInHand(None);
+            NewWeaponSelected();
 		    DoRightFrob(FrobTarget); //Last minute check for things with no highlight.
 		}
 		else
 		{
-            SetTimer(0.3,false);
-            bDoubleClickCheck=True;
-            clickCountCyber=1;
+            SetDoubleClickTimer();
 		    DoRightFrob(FrobTarget); //Last minute check for things with no highlight.
         }
 	}
@@ -8184,13 +8327,16 @@ function NanoKeyInfo CreateNanoKeyInfo()
 
 function PickupNanoKey(NanoKey newKey)
 {
+    if (KeyRing.HasKey(newKey.KeyID))
+        ClientMessage(Sprintf(DuplicateNanoKey, newKey.Description));
+    else
+        ClientMessage(Sprintf(AddedNanoKey, newKey.Description));
 	KeyRing.GiveKey(newKey.KeyID, newKey.Description);
 	//DEUS_EX AMSD In multiplayer, propagate the key to the client if the server
 	if ((Role == ROLE_Authority) && (Level.NetMode != NM_Standalone))
 	{
 	  KeyRing.GiveClientKey(newKey.KeyID, newKey.Description);
 	}
-	ClientMessage(Sprintf(AddedNanoKey, newKey.Description));
 }
 
 // ----------------------------------------------------------------------
@@ -8310,7 +8456,7 @@ exec function PutInHand(optional Inventory inv)
 		//	return;
         
         if (!inv.IsA('POVCorpse'))
-            lastSelected = inv;
+            primaryWeapon = inv;
 	}
 
 	if (CarriedDecoration != None)
@@ -9483,8 +9629,8 @@ function GrabDecoration()
         {ClientMessage(HandsFull); return;}
         else if (!bAutoHolster)
         {ClientMessage(HandsFull); return;}
-        else if (bAutoHolster)
-        {PutInHand(None);}
+        else
+            DoAutoHolster();
 	}
 
 	if (carriedDecoration == None && inHand == None)
@@ -9732,7 +9878,8 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 	local class<DeusExCarcass> carcClass;
 	local bool bDropped;
 	local bool bRemovedFromSlots;
-	local int  itemPosX, itemPosY, tex, i;
+	local int  itemPosX, itemPosY, tex, i, amm;
+    local Ammo ammoType;
 
 	bDropped = True;
 
@@ -9870,6 +10017,41 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 				}
 			}
 		}
+        //If it's a disposable weapon, throw away only one, and deduct ammo
+        else if (DeusExWeapon(item).bDisposableWeapon && DeusExWeapon(item).ammoName != none)
+        {
+            AmmoType = Ammo(FindInventoryType(Weapon(item).AmmoName));
+            amm = ammoType.ammoAmount;
+		    if (amm > 1)
+            {
+                // put it back in our hand, but only if it was in our
+                // hand originally!!!
+                if (previousItemInHand == item)
+                    PutInHand(previousItemInHand);
+
+                item = Spawn(item.Class, Owner);
+            }
+            else
+            {
+                // Keep track of this so we can undo it
+				// if necessary
+				bRemovedFromSlots = True;
+				itemPosX = item.invPosX;
+				itemPosY = item.invPosY;
+
+				// Remove it from the inventory slot grid
+				RemoveItemFromSlot(item);
+                if (!bBeltAutofill)
+                    MakeBeltObjectPlaceholder(item); //SARGE: Disabled because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
+                else
+                    RemoveObjectFromBelt(item);
+				
+                if (DeusExWeapon(item) == assignedWeapon)                       //RSD: Reset our assigned weapon
+					AssignSecondary(None);
+            }
+            ammoType.ammoAmount -= 1;
+            UpdateAmmoBeltText(AmmoType);
+        }
 		else
 		{
 			// Keep track of this so we can undo it
@@ -10053,6 +10235,8 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 		//DEUS_EX AMSD Use the function call for this, helps multiplayer
 		PlaceItemInSlot(item, itemPosX, itemPosY);
 	}
+    else if (DeusExWeapon(item).bDisposableWeapon) //SARGE: This has to be done here for some reason
+        DeusExWeapon(item).PickupAmmoCount = 1;
 
 	return bDropped;
 }
@@ -11827,14 +12011,19 @@ function bool DeleteInventory(inventory item)
 			winInv.InventoryDeleted(item);
 
 		// Remove the item from the object belt
-		// Sarge: Keep darkened version in the belt if we have Keep Deleted Belt Items setting turn on
 		if (root != None)
-			root.DeleteInventory(item);
-	  else //In multiplayer, we often don't have a root window when creating corpse, so hand delete
-	  {
-		 item.bInObjectBelt = false;
-		 item.beltPos = -1;
-	  }
+        {
+            // Sarge: Keep darkened version in the belt if we have Keep Deleted Belt Items setting turn on
+            if (bBeltMemory)
+                MakeBeltObjectPlaceholder(item);
+            else
+                RemoveObjectFromBelt(item);
+        }
+        else //In multiplayer, we often don't have a root window when creating corpse, so hand delete
+        {
+            item.bInObjectBelt = false;
+            item.beltPos = -1;
+        }
 	}
 
 	return Super.DeleteInventory(item);
@@ -14067,7 +14256,7 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
 	if (damageType == 'NanoVirus')
 	{
         NanoVirusTimer += float(Damage);                                        //RSD: Actually it does, it makes augs unusable for as many seconds as damage taken
-		AugmentationSystem.DeactivateAll();
+		AugmentationSystem.DeactivateAll(true);
 		NanoVirusTicks = 0;                                                     //RSD: Awful hack
 		bNanoVirusSentMessage = false;                                          //RSD: Awful hack
         return;
@@ -14592,6 +14781,8 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 	local HazMatSuit suit;
 	local BallisticArmor armor;
 	local bool bReduced;
+    local AugEnviro enviro;
+    local AugAqualung lung;
 
 	bReduced = False;
 	newDamage = Float(Damage);
@@ -14602,13 +14793,28 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 	{
 	    if (DamageType != 'Shocked')
 	    {
-	    if (bBoosterUpgrade && Energy > 0 && Damage > 0)
-		        AugmentationSystem.AutoAugs(false,true);
-		if (AugmentationSystem != None)
-			augLevel = AugmentationSystem.GetAugLevelValue(class'AugEnviro');
+            if (bBoosterUpgrade && Energy > 0 && Damage > 0)
+                    AugmentationSystem.AutoAugs(false,true);
+            if (AugmentationSystem != None)
+            {
+                enviro = AugEnviro(AugmentationSystem.GetAug(class'AugEnviro'));
+                augLevel = enviro.LevelValues[enviro.CurrentLevel];
 
-		if (augLevel >= 0.0)
-			newDamage *= augLevel;
+                //Make sure we have enough energy
+                //EDIT: This was based on damage tane, and still can be if you uncomment this. For now, use the old "20 per second" of the old aug.
+                //if (enviro.bIsActive && augLevel >= 0.0 && Energy > 0 && Energy >= enviro.GetCustomEnergyRate(newDamage * 0.1))
+                if (enviro.bIsActive && augLevel >= 0.0 && Energy > 0)
+                {
+                    //Only use energy once per 3 seconds, like the old aug
+                    if (saveTime >= enviro.lastEnergyTick)
+                    {
+                        //Energy -= MAX(int(newDamage * 0.1),1);
+                        Energy -= 1;
+                        enviro.lastEnergyTick = saveTime + 3.0;
+                    }
+                    newDamage *= augLevel;
+                }
+            }
         }
 
 		// get rid of poison if we're maxed out
@@ -14649,7 +14855,17 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 					// Trash: No stamina damage while wearing a hazmat suit and with the perk FilterUpgrade
         		}
 				else
-                	swimTimer -= (newDamage*0.4) + 3;
+                {
+                    //Aqualung now reduces stamina damage
+                    augLevel = 1.0;
+                    lung = AugAqualung(AugmentationSystem.GetAug(class'AugAqualung'));
+                    if (lung.bIsActive)
+                    {
+                        augLevel = 2.0 - lung.LevelValues[lung.CurrentLevel];
+                    }
+                	swimTimer -= ((newDamage*0.4) + 3) * augLevel;
+                    log("Stamina Damage AugLevel: " $ augLevel);
+                }
 				
                 if (swimTimer < 0)
                     swimTimer = 0;
@@ -14697,14 +14913,12 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 
 			if (augLevel < 0.0 && Energy > 0.0) //this means we can't have both augs installed, and that for passive to work energy is required. //RSD: Actually it just means active overrides passive
 			{
-				augLevel = AugmentationSystem.GetAugLevelValue(class'AugBallisticPassive');
-				//augLevel = 1.0-(Energy/EnergyMax)*(1.0-augLevel);               //RSD: Now protects proportionally to current energy (up to 20/25/30/35%)
-				augLevel = 1.0 - 0.35*FClamp(Energy/(augLevel*EnergyMax),0.0,1.0);//RSD: Still proportional, but up to 35% protection depending on 100/80/60/40% of your energy bar
+                augLevel = AugBallisticPassive(AugmentationSystem.GetAug(class'AugBallisticPassive')).GetDamageMod();
 			}
 			//augLevel *= AugmentationSystem.GetAugLevelValue(class'AugBallistic');//RSD: figure out stacking prots later maybe
         }
 
-		if (augLevel >= 0.0)
+		if (augLevel > 0.0)
 			newDamage *= augLevel;
 	}
 
@@ -14785,7 +14999,7 @@ function Died(pawn Killer, name damageType, vector HitLocation)
 		ExtinguishFire();
 
 	if (AugmentationSystem != None)
-		AugmentationSystem.DeactivateAll();
+		AugmentationSystem.DeactivateAll(true);
 
 	if ((Level.NetMode == NM_DedicatedServer) || (Level.NetMode == NM_ListenServer))
 	  ClientDeath();
@@ -17385,10 +17599,13 @@ function RegenStaminaTick(float deltaTime)                                      
 {
 	local float mult;
     local float base;
+	local Perk perkEndurance;
     
     //SARGE: Stop regen if we're poisoned
     if (poisonCounter > 0)
         return;
+
+	perkEndurance = PerkManager.GetPerkWithClass(class'DeusEx.PerkEndurance');
 
     if (AugmentationSystem != none)                                             //RSD: accessed none
     {
@@ -17399,8 +17616,8 @@ function RegenStaminaTick(float deltaTime)                                      
 	else
         mult = 1.0;
 	//RSD: base regen now 2.0, now properly multiplied with additive increases/decreases
-	if (PerkManager.GetPerkWithClass(class'DeusEx.PerkEndurance').bPerkObtained == true)                                                //RSD: endurance perk adds x2
-		mult += 1.0;
+	if (perkEndurance.bPerkObtained == true)                                                //RSD: endurance perk adds x2
+		mult += perkEndurance.PerkValue;
 	if (AddictionManager.addictions[DRUG_TOBACCO].bInWithdrawals == true)                                           //RSD: if suffering from nicotine withdrawal, subtract x0.5
 		mult -= 0.5;
 	if (AddictionManager.addictions[DRUG_TOBACCO].drugTimer > 0)                                                 //RSD: Zyme adds x2
@@ -17504,9 +17721,13 @@ defaultproperties
      PrimaryGoalCompleted="Primary Goal Completed"
      SecondaryGoalCompleted="Secondary Goal Completed"
      EnergyDepleted="Bio-electric energy reserves depleted"
+     EnergyCantReserve="Not enough reserve Bio-Energy"
      AddedNanoKey="%s added to Nano Key Ring"
+     DuplicateNanoKey="%s not added to Key Ring [Duplicate]"
      HealedPointsLabel="Healed %d points"
      HealedPointLabel="Healed %d point"
+     RechargedPointsLabel="Recharged %d points"
+     RechargedPointLabel="Recharged %d point"
      SkillPointsAward="%d skill points awarded"
      QuickSaveGameTitle="Quick Save [%s]"
      AutoSaveGameTitle="Auto Save [%s]"
@@ -17546,6 +17767,7 @@ defaultproperties
      bModdedHeadBob=True
      fatty="You cannot consume any more at this time"
      noUsing="You cannot use it at this time"
+     msgDeclinedPickup="%s is declined. Press again to pick up."
      customColorsMenu(0)=(R=61,G=62,B=73)
      customColorsMenu(1)=(G=49,B=255)
      customColorsMenu(2)=(R=210,G=194,B=255)
@@ -17622,6 +17844,7 @@ defaultproperties
      bEnhancedWeaponOffsets=false
      bQuickAugWheel=false
      bAugWheelDisableAll=true
+     bAugWheelFreeCursor=true
      bColourCodeFrobDisplay=True
      bWallPlacementCrosshair=True
      dynamicCrosshair=1
@@ -17636,4 +17859,9 @@ defaultproperties
      bFullAccuracyCrosshair=true;
      bShowEnergyBarPercentages=true;
      bBigDroneView=True
+     bSimpleAugSystem=true
+	 MenuThemeNameGMDX="Default"
+     HUDThemeNameGMDX="Default"
+     dblClickHolster=2
+     bSmartDecline=True
 }

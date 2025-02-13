@@ -6,7 +6,7 @@ class PerkLocksport extends Perk;
 defaultproperties
 {
     PerkName="LOCKSPORT"
-    PerkDescription="|nAn agent can pick any mechanical lock with a single lockpick. |n|nRequires: Lockpicking: MASTER"
+    PerkDescription="An agent can pick any mechanical lock with a single lockpick. Additionally, any locks that are successfully picked will be added to your keyring."
     PerkSkill=Class'DeusEx.SkillLockpicking'
     PerkCost=200
     PerkLevelRequirement=3

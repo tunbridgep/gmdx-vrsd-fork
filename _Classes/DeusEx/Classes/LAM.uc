@@ -73,4 +73,5 @@ defaultproperties
      CollisionHeight=3.800000
      Mass=5.000000
      Buoyancy=2.000000
+     rearmSkillRequired=3
 }

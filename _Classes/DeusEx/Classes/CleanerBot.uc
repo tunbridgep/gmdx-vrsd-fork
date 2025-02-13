@@ -23,6 +23,14 @@ function PostBeginPlay()
    bInvincible=False;
 }
 
+//SARGE: Prevent stomping those poor defenseless cleaning bots to death...
+function bool WillTakeStompDamage(Actor stomper)
+{
+    local DeusExPlayer player;
+    player = DeusExPlayer(stomper);
+    return player != None && player.bStompVacbots;
+}
+
 function Tick(float deltaSeconds)
 {
 	local pawn        fearPawn;

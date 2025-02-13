@@ -48,6 +48,9 @@ function int CompareTo(HUDRadialMenuItem item) {
 
 function Activate() {
 
+    if (!augmentation.CanBeActivated())
+        return;
+
     // check if the augmentation needs to be activated (it can be already activated in some circumstances!)
 	if (!augmentation.IsActive())
         augmentation.Activate();
@@ -63,6 +66,9 @@ function Activate() {
 }
 
 function Deactivate() {
+    if (!augmentation.CanBeActivated())
+        return;
+
 	if (augmentation.IsActive())
 	   augmentation.Deactivate();
 

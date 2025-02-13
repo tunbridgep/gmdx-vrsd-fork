@@ -19,6 +19,11 @@ var const localized string GroundedMessage;
 var const localized string GroundedMessage2;
 var const localized string BlockedMessage;
 
+simulated function bool CanDrainEnergy()
+{
+    return !player.bSpyDroneSet;
+}
+
 function string GetChargingMessage()
 {
     return Sprintf(ReconstructionMessage, int(currentChargeTime));

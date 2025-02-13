@@ -5,13 +5,11 @@
 class PersonaScreenSkills extends PersonaScreenBaseWindow;
 
 var PersonaActionButtonWindow btnUpgrade, btnPerks; //CyberP: btnPerks
-var PersonaActionButtonWindow btnLevels;                                        //RSD: Added btnLevels
 var TileWindow                winTile;
 var Skill			          selectedSkill;
 var PersonaSkillButtonWindow  selectedSkillButton;
 var PersonaHeaderTextWindow   winSkillPoints;
 var PersonaInfoWindow         winInfo;
-var Bool                      bPerksMenu;                                       //RSD: Whether we're in the perks menu or not
 
 // Keep track so we can use the arrow keys to navigate
 var PersonaSkillButtonWindow  skillButtons[15];
@@ -19,11 +17,22 @@ var PersonaSkillButtonWindow  skillButtons[15];
 var localized String SkillsTitleText;
 var localized String UpgradeButtonLabel;
 var localized String PerksButtonLabel;  //CyberP: perks
+var localized String PerksButtonLabel2;  //SARGE: general perks
 var localized String LevelsButtonLabel;                                         //RSD: Added
 var localized String PointsNeededHeaderText;
 var localized String SkillLevelHeaderText;
 var localized String SkillPointsHeaderText;
 var localized String SkillUpgradedLevelLabel;
+
+//SARGE: Replaced bPerksMenu with an enum
+enum EDisplayType
+{
+    Info,
+    Perks,
+    PerksGeneral
+};
+
+var EDisplayType displayType;
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -104,25 +113,22 @@ function CreateButtons()
 
 	winActionButtons = PersonaButtonBarWindow(winClient.NewChild(Class'PersonaButtonBarWindow'));
 	winActionButtons.SetPos(10, 365); //338 GMDX:-
-	winActionButtons.SetWidth(149);                                             //RSD: Was 149, then 174 for separate info button
+	winActionButtons.SetWidth(149);                                             //RSD: Was 149, then 174 for separate info button //SARGE: Now 159
 	winActionButtons.FillAllSpace(False);
 
 
     btnPerks = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow')); //CyberP: perks
-    if (bPerksMenu)                                                             //RSD: Dynamically swap between perks and levels button
-    	btnLevels.SetButtonText(LevelsButtonLabel);                             //RSD: Levels Button
+    	
+    btnPerks.SetButtonText(PerksButtonLabel); //CyberP: perks
+    
+    /*
+    if (displayType == Info)                                                             //RSD: Dynamically swap between perks and levels button
+    	btnPerks.SetButtonText(LevelsButtonLabel);                             //RSD: Levels Button
+    else if (displayType == PerksGeneral)                                               //SARGE: General Perks
+    	btnPerks.SetButtonText(PerksButtonLabel2);
     else
     	btnPerks.SetButtonText(PerksButtonLabel); //CyberP: perks
-    /*if (bPerksMenu)                                                             //RSD: Gray out the active menu
-    {
-    	btnPerks.SetSensitivity(false);
-    	btnLevels.SetSensitivity(true);
-    }
-    else
-    {
-    	btnPerks.SetSensitivity(true);
-    	btnLevels.SetSensitivity(false);
-    }*/
+    */
 
 	btnUpgrade = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow'));
 	btnUpgrade.SetButtonText(UpgradeButtonLabel);
@@ -224,29 +230,25 @@ function bool ButtonActivated( Window buttonPressed )
                 UpgradeSkill();
 				break;
 
-            /*case btnLevels:                                                     //RSD: Levels button
-            	bPerksMenu=false;
-            	selectedSkill.UpdateInfo(winInfo);
-            	CreateButtons();
-            	//btnLevels.SetSensitivity(false);
-            	//btnPerks.SetSensitivity(true);
-                break;*/
-
             case btnPerks:         //CyberP: perks
-                if (bPerksMenu)                                                 //RSD: Dynamically swap between perks and levels button
+                if (displayType == Perks)                                                 //RSD: Dynamically swap between perks and levels button //SARGE: Also General Perks
                 {
-                    bPerksMenu=false;
-            	    selectedSkill.UpdateInfo(winInfo);
-            	    btnPerks.SetButtonText(PerksButtonLabel);
+                    displayType = PerksGeneral;
+                    InvokeGeneralPerksWindow();
+            	    btnPerks.SetButtonText(LevelsButtonLabel);
+                }
+                else if (displayType == Info)
+                {
+                    displayType = Perks;
+                    InvokePerksWindow();
+                    btnPerks.SetButtonText(PerksButtonLabel2);
                 }
                 else
                 {
-                    bPerksMenu=true;
-                    InvokePerksWindow();
-                    btnPerks.SetButtonText(LevelsButtonLabel);
+                    displayType = Info;
+            	    selectedSkill.UpdateInfo(winInfo);
+            	    btnPerks.SetButtonText(PerksButtonLabel);
                 }
-                //btnPerks.SetSensitivity(false);
-                //btnLevels.SetSensitivity(true);
                 break;
 
 			default:
@@ -302,10 +304,15 @@ function SelectSkillButton(PersonaSkillButtonWindow buttonPressed)
 		selectedSkillButton = buttonPressed;
 		selectedSkill       = selectedSkillButton.GetSkill();
 
-        if(!bPerksMenu)                                                         //RSD: Remembers if you were navigating Levels or Perks Menu
+        if(displayType == Info)                                                         //RSD: Remembers if you were navigating Levels or Perks Menu
         	selectedSkill.UpdateInfo(winInfo);
-       	else
+       	else if (displayType == Perks || displayType == PerksGeneral)
+        {
+            displayType = Perks;
        		InvokePerksWindow();
+            btnPerks.SetButtonText(PerksButtonLabel2);
+        }
+
 		selectedSkillButton.SelectButton(True);
 
 		EnableButtons();
@@ -384,6 +391,12 @@ function int GetSkillButtonCount()
 	return buttonIndex;
 }
 
+function InvokeGeneralPerksWindow()
+{
+	winInfo.CreateGeneralPerkButtons();
+	EnableButtons();
+}
+
 function InvokePerksWindow()
 {
 	// First make sure we have a skill selected
@@ -413,9 +426,9 @@ function UpgradeSkill()
 
 	selectedSkill.IncLevel();
 	selectedSkillButton.RefreshSkillInfo();
-	if (!bPerksMenu)                                                            //RSD: Only go to skill descriptions if not viewing perks
+	if (displayType == Info)                                                            //RSD: Only go to skill descriptions if not viewing perks
 		selectedSkill.UpdateInfo(winInfo); //CyberP: Perks
-    else                                                                        //RSD: Also make sure to update perk buttons (doh!)
+    else if (displayType == Perks)                                                       //RSD: Also make sure to update perk buttons (doh!)
     	selectedSkill.UpdatePerksInfo(winInfo);
 
 	// Send status message
@@ -475,6 +488,7 @@ defaultproperties
      SkillsTitleText="Skills"
      UpgradeButtonLabel="|&Upgrade"
      PerksButtonLabel="|&Perks"
+     PerksButtonLabel2="Perks (|&G)"
      LevelsButtonLabel="|&Info"
      PointsNeededHeaderText="Points Needed"
      SkillLevelHeaderText="Skill Level"
