@@ -84,6 +84,7 @@ Sarge's Changes since Beta 2.2:
     - Double-Click holstering now also works to enable Double Click Unholstering, rather than always unholstering with right-click (with IW toolbelt) or doing nothing (regular Toolbelt)
     - The number of total Lockpicks or Multitools in your inventory is now listed on lockpicking/electronics information windows, allowing you to see how many lockpicks or multitools you have compared to how many are required to bypass a given device or lock.
         - The text is also color coded, showing as yellow when you only just have the amount of tools required, and red if you don't meet the requirement.
+        - The Damage Threshold text is also red if the currently selected weapon is not able to beat the damage threshold.
         - If this setting is disabled, lockpicks and multitools will display their total count in the ammo display window, allowing you to easily see how many you have when you don't have them on your belt.
     - Belt Autofilling can now be disabled in the options.
     - Save Points no longer use Autosave slots, which can be easily overridden by accident, and now create fresh hard-saves instead.
