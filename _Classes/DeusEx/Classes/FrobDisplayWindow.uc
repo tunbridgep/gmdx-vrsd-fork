@@ -414,6 +414,8 @@ function DrawWindow(GC gc)
 				    strInfo = DeusExAmmo(frobTarget).itemName @ "(" $ DeusExAmmo(frobTarget).AmmoAmount $ ")";
                 else if (frobTarget.IsA('ChargedPickup'))
                     strInfo = ChargedPickup(frobTarget).ItemName @ "(" $ int(ChargedPickup(frobTarget).GetCurrentCharge()) $ "%)"; //RSD: Append the current charge
+				else if (frobTarget.IsA('DeusExWeapon'))                    //Sarge: Add "(Modified)" to weapons
+					strInfo = DeusExWeapon(frobTarget).GetFrobString(player);
 				else if (frobTarget.IsA('Inventory'))
 					strInfo = Inventory(frobTarget).itemName;
 				else if (frobTarget.IsA('DeusExDecoration'))

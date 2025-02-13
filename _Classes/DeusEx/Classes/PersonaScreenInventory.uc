@@ -138,6 +138,7 @@ function CreateStatusWindow()
 {
 	winStatus = PersonaStatusLineWindow(winClient.NewChild(Class'PersonaStatusLineWindow'));
 	winStatus.SetPos(337, 243);
+    UpdateDeclinedDisplay();
 }
 
 // ----------------------------------------------------------------------
@@ -490,6 +491,7 @@ event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
 {
 	local int keyIndex;
 	local bool bKeyHandled;
+    local string KeyName, Alias;
 
 	bKeyHandled = True;
 
@@ -530,10 +532,34 @@ event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
 		}
 	}
 
+    /*
+    //Check for Secondary key pressed
+    //SARGE: TODO: Implement this when the Secondary Weapon system isn't completely fucked
+    if (!bKeyHandled)
+    {
+        KeyName =   player.ConsoleCommand("KEYNAME "$key );
+        Alias = 	player.ConsoleCommand( "KEYBINDING "$KeyName );
+
+        if ( Alias ~= "ShowScores" && selectedItem != None)
+            player.AssignSecondary(Inventory(selectedItem.GetClientObject()));
+    }
+    */
+
 	if (!bKeyHandled)
 		return Super.VirtualKeyPressed(key, bRepeat);
 	else
 		return bKeyHandled;
+}
+
+// ----------------------------------------------------------------------
+// UpdateDeclinedDisplay()
+//
+// Displays a list of Declined Items when no item is selected.
+// ----------------------------------------------------------------------
+
+function UpdateDeclinedDisplay()
+{
+    winInfo.AddDeclinedInfoWindow();
 }
 
 // ----------------------------------------------------------------------
@@ -595,7 +621,7 @@ function SelectInventory(PersonaItemButton buttonPressed)
 	// Don't do extra work.
 	if (buttonPressed != None)
 	{
-		if (selectedItem != buttonPressed)
+		if (!selectedItem.bSelected || buttonPressed != selectedItem)
 		{
 			// Deselect current button
 			if (selectedItem != None)
@@ -616,6 +642,15 @@ function SelectInventory(PersonaItemButton buttonPressed)
 
 			EnableButtons();
 		}
+        //SARGE: Allow deselecting inventory items
+        else
+        {
+            selectedItem.SelectButton(False);
+			ClearSpecialHighlights();
+            //SelectInventory(None);
+            //SignalRefresh();
+            UpdateDeclinedDisplay();
+        }
 	}
 	else
 	{
@@ -788,7 +823,7 @@ function UseSelectedItem()
 		if (inv.IsA('Binoculars'))
 			player.PutInHand(inv);
 
-		inv.Activate();
+        inv.Activate();
 
 		// Check to see if this is a stackable item, and keep track of
 		// the count
@@ -838,7 +873,7 @@ function DropSelectedItem()
 
 				// Remove the item, but first check to see if it was stackable
 				// and there are more than 1 copies available
-   			if ( (!anItem.IsA('DeusExPickup')) ||
+   			if ( ((!anItem.IsA('DeusExPickup')) && !(anItem.IsA('DeusExWeapon') && DeusExWeapon(anItem).bDisposableWeapon)) ||
 					 (anItem.IsA('DeusExPickup') && (numCopies <= 1)))
 				{
 					RemoveSelectedItem();
@@ -1073,6 +1108,8 @@ function RefreshWindow(float DeltaTime)
             CleanBelt();
         }
     }
+
+    log("Refresh");
 
 
     Super.RefreshWindow(DeltaTime);

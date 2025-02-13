@@ -215,7 +215,6 @@ var globalconfig bool bToggleCrouch;				// True to let key toggle crouch
 var globalconfig float logTimeout;					// Log Timeout Value
 var globalconfig byte  maxLogLines;					// Maximum number of log lines visible
 var globalconfig bool bHelpMessages;				// Multiplayer help messages
-var globalconfig bool bWallPlacementCrosshair;		// SARGE: Show a blue crosshair when placing objects on walls
 
 // Overlay Options (TODO: Move to DeusExHUD.uc when serializable)
 var globalconfig byte translucencyLevel;			// 0 - 10?
@@ -439,7 +438,7 @@ var globalconfig bool bColorCodedAmmo;
 var globalconfig bool bExtraHardcore;
 var globalconfig bool bDecap;
 var globalconfig bool bNoTranslucency;
-var globalconfig bool bDblClickHolster;
+var globalconfig int dblClickHolster;                      //SARGE: 0 = off, 1 = double click holstering only, 2 = double click holstering and unholstering
 var globalconfig bool bHalveAmmo;
 var globalconfig bool bHardcoreUnlocked;
 var globalconfig bool bAutoHolster;
@@ -462,7 +461,6 @@ var globalconfig bool bMantleOption;
 var globalconfig bool bUSP;
 var globalconfig bool bSkillMessage;
 var globalconfig bool bXhairShrink;
-var globalconfig bool bNoKnives;
 var globalconfig bool bModdedHeadBob;
 var globalconfig bool bBeltAutofill;											//Sarge: Added new feature for auto-populating belt
 var globalconfig bool bHackLockouts;											//Sarge: Allow locking-out security terminals when hacked, and rebooting.
@@ -641,9 +639,16 @@ var globalconfig bool bDialogHUDColors;                                         
 var globalconfig bool bQuickAugWheel;                                           //Sarge: Instantly enable/disable augs when closing the menu over the selected aug, otherwise require a mouse click.
 var globalconfig bool bAugWheelDisableAll;                                      //Sarge: Show the Disable All button on the Aug Wheel
 
+var globalconfig bool bBeltShowModified;                                        //SARGE: Shows a "+" in the belt for modified weapons.
+
 var globalconfig bool bTrickReloading;											//Sarge: Allow reloading with a full clip.
 
 var globalconfig int iAllowCombatMusic;                                        //SARGE: Enable/Disable combat music, or make it require 2 enemies
+
+//Decline Everything
+var travel DeclinedItemsManager declinedItemsManager;                          //SARGE: Holds declined items.
+var globalconfig bool bSmartDecline;                                            //SARGE: Allow not declining items when holding the walk/run key
+var localized string msgDeclinedPickup;                                        //SARGE: Declined message
 
 //Crosshair Settings
 var globalconfig bool bFullAccuracyCrosshair;                                   //SARGE: If false, disable the "Accuracy Crosshairs" when at 100% accuracy
@@ -651,6 +656,13 @@ var globalconfig bool bFullAccuracyCrosshair;                                   
 var globalconfig bool bAlwaysShowBloom;                                         //SARGE: Always show weapon bloom
 
 var globalconfig bool bShowEnergyBarPercentages;                                //SARGE: If true, show the oxygen and bioenergy percentages below the bars.
+
+//Misc Strings
+var localized String DuplicateNanoKey;
+
+//Cat/Dog protector
+var globalconfig bool bStompDomesticAnimals;                                    //SARGE: If disabled, we can't stomp cats or dogs anymore. Adopt a cute animal today!
+var globalconfig bool bStompVacbots;                                            //SARGE: If disabled, we can't stomp vac-bots anymore.
 
 //////////END GMDX
 
@@ -728,7 +740,10 @@ exec function cheat()
 function HandleCrouchToggle()
 {
     if (!bToggleCrouch)
+    {
+        bCrouchOn = false;
         return;
+    }
 
     if (!bIsCrouching)
         bToggledCrouch = false;
@@ -748,7 +763,7 @@ function HandleCrouchToggle()
 //Return if the character is crouching
 function bool IsCrouching()
 {
-    return bCrouchOn || bForceDuck || bIsCrouching;
+    return bCrouchOn || bForceDuck || bIsCrouching || bCrouchHack || IsInState('PlayerSwimming');
 }
 
 //set our crouch state to a certain value
@@ -761,8 +776,23 @@ function SetCrouch(bool crouch, optional bool setForce)
         bForceDuck = crouch;
 }
 
+
 // ----------------------------------------------------------------------
-// AssignSecondaryWeapon
+// ClientMessage
+// Copied over from PlayerPawnExt
+// Sarge: Extended to not show blank messages
+// ----------------------------------------------------------------------
+
+function ClientMessage(coerce string msg, optional Name type, optional bool bBeep)
+{
+    if (msg == "")
+        return;
+
+    Super.ClientMessage(msg,type,bBeep);
+}
+
+// ----------------------------------------------------------------------
+// AssignSecondary
 // Sarge: Now needed because we need to fix up our charged item display if it's out of date
 // ----------------------------------------------------------------------
 
@@ -1261,6 +1291,12 @@ function InitializeSubSystems()
 	// Spawn the Color Manager
 	CreateColorThemeManager();
 	ThemeManager.SetOwner(self);
+
+    if (DeclinedItemsManager == None)
+    {
+        DeclinedItemsManager = Spawn(class'DeclinedItemsManager', Self);
+        DeclinedItemsManager.SetOwner(Self);
+    }
 
 	// install the augmentation system if not found
 	if (AugmentationSystem == None)
@@ -3197,7 +3233,7 @@ function UpdatePoison(float deltaTime)
 		{
 			poisonTimer = 0;
 			poisonCounter--;
-			TakeDamage(poisonDamage * 0.5, myPoisoner, Location, vect(0,0,0), 'PoisonEffect'); //CyberP: since we have more effective tranq darts, reduce poison damage to player by half. 15 dam per interval on hardcore
+			TakeDamage(poisonDamage * 0.375, myPoisoner, Location, vect(0,0,0), 'PoisonEffect'); //CyberP: since we have more effective tranq darts, reduce poison damage to player by half. 15 dam per interval on hardcore //SARGE: Reduced from 0.5 to 0.375 because it still feels like bullshit. You won't be able to regenerate stamina while poisoned, though, so it'll fuck you up.
 		}
 		if ((poisonCounter <= 0) || (Health <= 0))
 			StopPoison();
@@ -3889,12 +3925,12 @@ function ToggleCameraState(SecurityCamera cam, ElectronicDevices compOwner, opti
 //client->server (window to player)
 function SetTurretState(AutoTurret turret, bool bActive, bool bDisabled, bool bHacked)
 {
-    if ((bDisabled && !bHacked) || !bDisabled)
+    if (!bHacked)
     {
         turret.disableTime = 0;
         turret.bRebooting = false;
     }
-    else if (bDisabled && bHacked)
+    else
     {
         turret.StartReboot(self);
     }
@@ -5435,6 +5471,8 @@ function float GetBaseEyeHeight()
 function float GetCurrentGroundSpeed()
 {
 	local float augSpeedValue, augStealthValue, speed;                           //RSD: replaced augValue with augSpeedValue and augStealthValue
+    local float groundSpeed;
+    local PerkSprinter perk;
 
 	// Remove this later and find who's causing this to Access None MB
 	if ( AugmentationSystem == None )
@@ -5455,9 +5493,18 @@ function float GetCurrentGroundSpeed()
 		augSpeedValue = 1.0;
 
 	if (( Level.NetMode != NM_Standalone ) && Self.IsA('Human') )
-		speed = Human(Self).mpGroundSpeed * FMax(augSpeedValue,augStealthValue);
+		groundSpeed = Human(Self).mpGroundSpeed;
 	else
-		speed = Default.GroundSpeed * FMax(augSpeedValue,augStealthValue);
+		groundSpeed = self.Default.GroundSpeed;
+
+    //SARGE: Add Sprinter bonus 10% movespeed
+    perk = PerkSprinter(PerkManager.GetPerkWithClass(class'DeusEx.PerkSprinter'));
+    if (perk != None && perk.bPerkObtained && inHand == None && CarriedDecoration == None)
+        groundSpeed = groundSpeed * perk.perkValue;
+		
+    speed = GroundSpeed * FMax(augSpeedValue,augStealthValue);
+
+    //clientMessage("Speed: " $ speed);
 
 	return speed;
 }
@@ -5996,10 +6043,7 @@ state PlayerWalking
                SetTimer(3,false);
                if (!bOnLadder && FRand() < 0.7)
                {
-                    if (FlagBase.GetBool('LDDPJCIsFemale')) //Sarge: Lay-D Denton support
-                        PlaySound(Sound(DynamicLoadObject("FemJC.FJCGasp", class'Sound', false)), SLOT_None, 0.8);
-                    else
-                        PlaySound(sound'MaleBreathe', SLOT_None,0.8);
+                   PlayBreatheSound();
                }
                if (bBoosterUpgrade && Energy > 0)
 	               AugmentationSystem.AutoAugs(false,false);
@@ -6434,11 +6478,16 @@ event HeadZoneChange(ZoneInfo newHeadZone)
 		Buoyancy=155.000000;
 		//if (bBoosterUpgrade && Energy > 0)
 		//    AugmentationSystem.AutoAugs(false,false);
-		if (!bHardCoreMode)
+		if (!bHardCoreMode && !bStaminaSystem)
 		   SwimTimer = swimDuration;
+        //SARGE: Disabled so we can't "dolphin dive" repeatedly for free stamina
+        /*
 		else if (SwimTimer < 10)
            SwimTimer += 2;
+        */
 		//swimTimer = swimDuration;
+
+
 		if (( Level.NetMode != NM_Standalone ) && Self.IsA('Human') )
 		{
 			if ( AugmentationSystem != None )
@@ -6454,7 +6503,15 @@ event HeadZoneChange(ZoneInfo newHeadZone)
     else
     {
     bRegenStamina = true;
-    SwimTimer += 0.5;
+
+        //SARGE: Always play a breathsound if we went below 70% breath
+        //Don't play at 25% or below though, since it already plays the 
+        //EDIT: Okay maybe not, this causes overlapping sound issues
+        /*
+	    if ((100.0 * swimTimer / swimDuration) < 70 && (100.0 * swimTimer / swimDuration) > 25)
+            PlayBreatheSound();
+        */
+
     Buoyancy=150.500000;
     if (bBoosterUpgrade)
     {
@@ -7386,6 +7443,9 @@ function DoLeftFrob(Actor frobTarget)
 {
     local bool bDefaultFrob;
     
+    if (CheckFrobDeclined(frobTarget))
+        return;
+    
     if (inHand == None)
     {
         if (frobTarget.isA('DeusExPickup'))
@@ -7426,6 +7486,9 @@ function DoRightFrob(Actor frobTarget)
     if (frobTarget == None)
         return;
 
+    if (CheckFrobDeclined(frobTarget))
+        return;
+
     bDefaultFrob = true;
     bLeftClicked = false;
 
@@ -7448,6 +7511,19 @@ function DoRightFrob(Actor frobTarget)
     }
     else if (bDefaultFrob)
         DoFrob(Self, None);
+}
+
+//SARGE: Check if a frobbed item is declined, and handle it
+//Returns FALSE if an item was not declined, TRUE if it was
+function bool CheckFrobDeclined(Actor frobTarget)
+{
+    if (frobTarget.IsA('Inventory') && DeclinedItemsManager.IsDeclined(class<Inventory>(frobTarget.class)) && clickCountCyber == 0)
+    {
+        SetDoubleClickTimer();
+        ClientMessage(sprintf(msgDeclinedPickup,Inventory(frobTarget).ItemName));
+        return true;
+    }
+    return false;
 }
 
 //Sarge: Because we can only inherit from one class,
@@ -7572,7 +7648,7 @@ exec function ParseLeftClick()
     }
 
     //Special cases aside, now do the left hand frob behaviour
-    else if (FrobTarget != none && IsReallyFrobbable(FrobTarget) && !bInHandTransition && (inHand == None || !inHand.IsA('POVcorpse')) && CarriedDecoration == None)
+    else if (FrobTarget != none && IsReallyFrobbable(FrobTarget,true) && !bInHandTransition && (inHand == None || !inHand.IsA('POVcorpse')) && CarriedDecoration == None)
 	{
         DoLeftFrob(FrobTarget);
 	}
@@ -7677,13 +7753,37 @@ function bool SelectInventoryItem(Name type)
 //Returns whether a given frobbable can actually be interacted with
 //So that we can skip the ones that don't highlight or can't really be used,
 //preventing them from blocking holstering with right click
-function bool IsReallyFrobbable(Actor target)
+function bool IsReallyFrobbable(Actor target, optional bool left)
 {
     if (target.isA('DeusExDecoration') && !DeusExDecoration(target).bHighlight)
         return false;
+    if (target.isA('DeusExMover') && left)
+        return DeusExMover(target).bBreakable || DeusExMover(target).bFrobbable;
     if (target.isA('DeusExMover'))
         return DeusExMover(target).bHighlight && DeusExMover(target).bFrobbable;
+    if (target.isA('ElevatorMover'))
+        return false;
     return true;
+}
+
+// ----------------------------------------------------------------------
+// SetDoubleClickTimer()
+// Sets up the double-click holster/unholster timer
+// ----------------------------------------------------------------------
+
+function SetDoubleClickTimer()
+{
+    SetTimer(0.3,false);
+    bDoubleClickCheck=True;
+    clickCountCyber=1;
+}
+    
+function DoAutoHolster()
+{
+    if (bAutoHolster)// && (clickCountCyber >= 1 || dblClickHolster == 0 ))
+        PutInHand(None);
+    else if (bAutoHolster && dblClickHolster > 0)
+        SetDoubleClickTimer();
 }
 
 // ----------------------------------------------------------------------
@@ -7847,26 +7947,21 @@ exec function ParseRightClick()
                 beltLast = advBelt;
 			}
 		}
-		else if (clickCountCyber >= 1 || !bDblClickHolster)
+        else if (inHand == None && (clickCountCyber >= 1 || dblClickHolster < 2))
 		{
-			if (inHand == None)
-			{
-				//SARGE: Added support for the unholster behaviour from the Alternate Toolbelt on both Toolbelts
-				//Additionally, unholstering is now tied to the double-click holstering setting.
-                SelectLastWeapon();
-			}
-			else
-            {
-				PutInHand(None);
-                NewWeaponSelected();
-            }
+            //SARGE: Added support for the unholster behaviour from the Alternate Toolbelt on both Toolbelts
+            //Additionally, unholstering is now tied to the double-click holstering setting.
+            SelectLastWeapon();
+		}
+		else if (inHand != None && (clickCountCyber >= 1 || dblClickHolster == 0))
+		{
+            PutInHand(None);
+            NewWeaponSelected();
 		    DoRightFrob(FrobTarget); //Last minute check for things with no highlight.
 		}
 		else
 		{
-            SetTimer(0.3,false);
-            bDoubleClickCheck=True;
-            clickCountCyber=1;
+            SetDoubleClickTimer();
 		    DoRightFrob(FrobTarget); //Last minute check for things with no highlight.
         }
 	}
@@ -8101,13 +8196,16 @@ function NanoKeyInfo CreateNanoKeyInfo()
 
 function PickupNanoKey(NanoKey newKey)
 {
+    if (KeyRing.HasKey(newKey.KeyID))
+        ClientMessage(Sprintf(DuplicateNanoKey, newKey.Description));
+    else
+        ClientMessage(Sprintf(AddedNanoKey, newKey.Description));
 	KeyRing.GiveKey(newKey.KeyID, newKey.Description);
 	//DEUS_EX AMSD In multiplayer, propagate the key to the client if the server
 	if ((Role == ROLE_Authority) && (Level.NetMode != NM_Standalone))
 	{
 	  KeyRing.GiveClientKey(newKey.KeyID, newKey.Description);
 	}
-	ClientMessage(Sprintf(AddedNanoKey, newKey.Description));
 }
 
 // ----------------------------------------------------------------------
@@ -9400,8 +9498,8 @@ function GrabDecoration()
         {ClientMessage(HandsFull); return;}
         else if (!bAutoHolster)
         {ClientMessage(HandsFull); return;}
-        else if (bAutoHolster)
-        {PutInHand(None);}
+        else
+            DoAutoHolster();
 	}
 
 	if (carriedDecoration == None && inHand == None)
@@ -9649,7 +9747,8 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 	local class<DeusExCarcass> carcClass;
 	local bool bDropped;
 	local bool bRemovedFromSlots;
-	local int  itemPosX, itemPosY, tex, i;
+	local int  itemPosX, itemPosY, tex, i, amm;
+    local Ammo ammoType;
 
 	bDropped = True;
 
@@ -9787,6 +9886,41 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 				}
 			}
 		}
+        //If it's a disposable weapon, throw away only one, and deduct ammo
+        else if (DeusExWeapon(item).bDisposableWeapon && DeusExWeapon(item).ammoName != none)
+        {
+            AmmoType = Ammo(FindInventoryType(Weapon(item).AmmoName));
+            amm = ammoType.ammoAmount;
+		    if (amm > 1)
+            {
+                // put it back in our hand, but only if it was in our
+                // hand originally!!!
+                if (previousItemInHand == item)
+                    PutInHand(previousItemInHand);
+
+                item = Spawn(item.Class, Owner);
+            }
+            else
+            {
+                // Keep track of this so we can undo it
+				// if necessary
+				bRemovedFromSlots = True;
+				itemPosX = item.invPosX;
+				itemPosY = item.invPosY;
+
+				// Remove it from the inventory slot grid
+				RemoveItemFromSlot(item);
+                if (!bBeltAutofill)
+                    MakeBeltObjectPlaceholder(item); //SARGE: Disabled because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
+                else
+                    RemoveObjectFromBelt(item);
+				
+                if (DeusExWeapon(item) == assignedWeapon)                       //RSD: Reset our assigned weapon
+					AssignSecondary(None);
+            }
+            ammoType.ammoAmount -= 1;
+            UpdateAmmoBeltText(AmmoType);
+        }
 		else
 		{
 			// Keep track of this so we can undo it
@@ -9970,6 +10104,8 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 		//DEUS_EX AMSD Use the function call for this, helps multiplayer
 		PlaceItemInSlot(item, itemPosX, itemPosY);
 	}
+    else if (DeusExWeapon(item).bDisposableWeapon) //SARGE: This has to be done here for some reason
+        DeusExWeapon(item).PickupAmmoCount = 1;
 
 	return bDropped;
 }
@@ -11736,14 +11872,19 @@ function bool DeleteInventory(inventory item)
 			winInv.InventoryDeleted(item);
 
 		// Remove the item from the object belt
-		// Sarge: Keep darkened version in the belt if we have Keep Deleted Belt Items setting turn on
 		if (root != None)
-			root.DeleteInventory(item);
-	  else //In multiplayer, we often don't have a root window when creating corpse, so hand delete
-	  {
-		 item.bInObjectBelt = false;
-		 item.beltPos = -1;
-	  }
+        {
+            // Sarge: Keep darkened version in the belt if we have Keep Deleted Belt Items setting turn on
+            if (bBeltMemory)
+                MakeBeltObjectPlaceholder(item);
+            else
+                RemoveObjectFromBelt(item);
+        }
+        else //In multiplayer, we often don't have a root window when creating corpse, so hand delete
+        {
+            item.bInObjectBelt = false;
+            item.beltPos = -1;
+        }
 	}
 
 	return Super.DeleteInventory(item);
@@ -12918,8 +13059,8 @@ function bool GetExceptedCode(string code)
         || code == "718" //Can only be guessed based on cryptic information
         || code == "7243" //We are only given 3 digits, need to guess the 4th
         || code == "WYRDRED08" //We are not given the last digit
-        //|| (code == "1966" && FlagBase.GetBool('CassandraDone')) //Only given in conversation, no note //EDIT: UNFORTUNATELY THIS IS UNRELIABLE!!
-        || code == "1966" //Only given in conversation, no note
+        || (code == "1966" && FlagBase.GetBool('GaveCassandraMoney')) //Only given in conversation, no note
+        //|| code == "1966" //Only given in conversation, no note
         || code == "4321"; //We are told to "count backwards from 4"
 }
 
@@ -14757,7 +14898,7 @@ function Timer()      //CyberP: my god I've turned this into a mess.
           return;
 	}
 
-    bStunted = False;  //CyberP: called from takedamage.
+    //bStunted = False;  //CyberP: called from takedamage.
 
 	if (!InConversation() && bOnFire)
 	{
@@ -14773,6 +14914,8 @@ function Timer()      //CyberP: my god I've turned this into a mess.
 			ExtinguishFire();
 		}
 	}
+
+    bCrouchHack = false;
 }
 
 // ----------------------------------------------------------------------
@@ -17253,9 +17396,23 @@ exec function AllAmmo()                                                         
             Ammo(Inv).AmmoAmount  = GetAdjustedMaxAmmo(Ammo(Inv));     //RSD: Replaced Ammo(Inv).MaxAmmo with adjusted
 }
 
+//SARGE: Plays the breathing sound based on gender
+function PlayBreatheSound()
+{
+    if (FlagBase.GetBool('LDDPJCIsFemale')) //Sarge: Lay-D Denton support
+        PlaySound(Sound(DynamicLoadObject("FemJC.FJCGasp", class'Sound', false)), SLOT_None, 0.8);
+    else
+        PlaySound(sound'MaleBreathe', SLOT_None,0.8);
+}
+
 function RegenStaminaTick(float deltaTime)                                      //RSD: New general stamina regen function for various state tick codes
 {
 	local float mult;
+    local float base;
+    
+    //SARGE: Stop regen if we're poisoned
+    if (poisonCounter > 0)
+        return;
 
     if (AugmentationSystem != none)                                             //RSD: accessed none
     {
@@ -17272,8 +17429,13 @@ function RegenStaminaTick(float deltaTime)                                      
 		mult -= 0.5;
 	if (AddictionManager.addictions[DRUG_TOBACCO].drugTimer > 0)                                                 //RSD: Zyme adds x2
 		mult += 1.0;
-
-	swimTimer += 5.0*mult*deltaTime;
+      
+    //SARGE: Increase at the same rate regardless of athletics skill
+    //Was hardcoded at 5
+    //base swimDuration is 18 seconds, 36 seconds at Master
+    base = swimDuration / 3.6;
+      
+    swimTimer += base*mult*deltaTime;
 	if (swimTimer > swimDuration)
 	{
 		swimTimer = swimDuration;
@@ -17367,6 +17529,7 @@ defaultproperties
      SecondaryGoalCompleted="Secondary Goal Completed"
      EnergyDepleted="Bio-electric energy reserves depleted"
      AddedNanoKey="%s added to Nano Key Ring"
+     DuplicateNanoKey="%s not added to Key Ring [Duplicate]"
      HealedPointsLabel="Healed %d points"
      HealedPointLabel="Healed %d point"
      SkillPointsAward="%d skill points awarded"
@@ -17408,6 +17571,7 @@ defaultproperties
      bModdedHeadBob=True
      fatty="You cannot consume any more at this time"
      noUsing="You cannot use it at this time"
+     msgDeclinedPickup="%s is declined. Press again to pick up."
      customColorsMenu(0)=(R=61,G=62,B=73)
      customColorsMenu(1)=(G=49,B=255)
      customColorsMenu(2)=(R=210,G=194,B=255)
@@ -17489,6 +17653,7 @@ defaultproperties
      dynamicCrosshair=1
      bBeltMemory=True
      bEnhancedCorpseInteractions=True
+     bBeltShowModified=true;
      bSearchedCorpseText=True
      bDisplayClips=true
      bCutsceneFOVAdjust=true
@@ -17496,4 +17661,6 @@ defaultproperties
      iAllowCombatMusic=1
      bFullAccuracyCrosshair=true;
      bShowEnergyBarPercentages=true;
+     dblClickHolster=2
+     bSmartDecline=True
 }

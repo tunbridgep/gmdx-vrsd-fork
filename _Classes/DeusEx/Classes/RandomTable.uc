@@ -30,7 +30,7 @@ function int GetRandomInt(int max)
 
     iterateRand();
     //randOut = internal_randval % max; //RSD: biases the least significant bits for bad cycle period
-    randOut = (max*internal_randval)/m_mod;
+    randOut = ((max+1)*internal_randval)/m_mod;
 
 
     return randOut;
