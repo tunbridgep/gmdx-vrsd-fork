@@ -429,7 +429,7 @@ function UsingMedBot(bool bNewUsingMedbot)
 // UpdateInfo()
 // ----------------------------------------------------------------------
 
-simulated function bool UpdateInfo(Object winObject)
+simulated function bool UpdateInfo(Object winObject, optional string initialText)
 {
 	local PersonaInfoWindow winInfo;
 	local String strOut;
@@ -438,16 +438,20 @@ simulated function bool UpdateInfo(Object winObject)
 	if (winInfo == None)
 		return False;
 
-	winInfo.Clear();
+    winInfo.Clear();
 	winInfo.SetTitle(GetName());
-
+    if (initialText != "")
+        winInfo.SetText(initialText $ "|n|n");
+    else
+        winInfo.SetText(initialText);
 	if (bUsingMedbot)
 	{
-		winInfo.SetText(Sprintf(OccupiesSlotLabel, AugLocsText[AugmentationLocation]));
+		winInfo.AppendText(Sprintf(OccupiesSlotLabel, AugLocsText[AugmentationLocation]));
 		winInfo.AppendText(winInfo.CR() $ winInfo.CR() $ GetDescription());
 	}
 	else
 	{
+		winInfo.AppendText(GetDescription());
 		winInfo.SetText(GetDescription());
 	}
 

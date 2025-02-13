@@ -78,8 +78,10 @@ function SetCannister(AugmentationCannister newAugCan)
 	augCan = newAugCan;
 
 	winCanIcon.SetBackground(augCan.Icon);
+	btnAug1.PartnerAug = augCan.GetAugmentation(1);
 	btnAug1.SetAugmentation(augCan.GetAugmentation(0));
 	btnAug1.SetAugCan(augCan);
+	btnAug2.PartnerAug = augCan.GetAugmentation(0);
 	btnAug2.SetAugmentation(augCan.GetAugmentation(1));
 	btnAug2.SetAugCan(augCan);
 

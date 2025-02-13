@@ -691,7 +691,6 @@ var localized String DuplicateNanoKey;
 var globalconfig bool bStompDomesticAnimals;                                    //SARGE: If disabled, we can't stomp cats or dogs anymore. Adopt a cute animal today!
 var globalconfig bool bStompVacbots;                                            //SARGE: If disabled, we can't stomp vac-bots anymore.
 
->>>>>>> master
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -17858,6 +17857,7 @@ defaultproperties
      iAllowCombatMusic=1
      bFullAccuracyCrosshair=true;
      bShowEnergyBarPercentages=true;
+     bSimpleAugSystem=true
      bBigDroneView=True
      bSimpleAugSystem=true
 	 MenuThemeNameGMDX="Default"

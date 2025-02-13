@@ -24,6 +24,11 @@ simulated function bool CanDrainEnergy()
     return !player.bSpyDroneSet;
 }
 
+simulated function bool CanDrainEnergy()
+{
+    return !player.bSpyDroneSet;
+}
+
 function string GetChargingMessage()
 {
     return Sprintf(ReconstructionMessage, int(currentChargeTime));
