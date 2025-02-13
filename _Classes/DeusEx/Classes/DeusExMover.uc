@@ -130,29 +130,39 @@ function bool DoLeftFrob(DeusExPlayer frobber)
 }
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {
-    if (leftFrobTimer ~= 0.0 || !bLocked)
+
+    //Nofmal interaction if 
+    if (!bLocked || frobber.inHand == None)
         return true;
 
     //Swap between lockpicks and nanokeyring
-    if (bLocked && frobber.inHand != None)
+    if (leftFrobTimer > 0.0)
     {
         if (frobber.inHand.isA('NanoKeyRing'))
         {
             if (!frobber.SelectMeleePriority(minDamageThreshold))
                 if (!frobber.SelectInventoryItem('Lockpick'))
                     return true;
+            leftFrobTimer = leftFrobTimerMax;
         }
         else if (frobber.inHand.isA('Lockpick'))
         {
             frobber.PutInHand(frobber.KeyRing);
+            leftFrobTimer = leftFrobTimerMax;
         }
         else if (frobber.inHand.isA('DeusExWeapon') && DeusExWeapon(frobber.inHand).bHandToHand)
         {
             if (!frobber.SelectInventoryItem('Lockpick'))
                 frobber.PutInHand(frobber.KeyRing);
+            leftFrobTimer = leftFrobTimerMax;
         }
     }
-    leftFrobTimer = leftFrobTimerMax;
+    else
+    {
+        frobber.DoAutoHolster();
+        return true;
+    }
+    
     return false;
 }
 

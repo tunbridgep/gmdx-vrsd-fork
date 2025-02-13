@@ -75,7 +75,7 @@ function RefreshScopeDisplay(DeusExPlayer player, optional bool bInstant)
 defaultproperties
 {
      ScopeFOV=20
-     bBreakable=True
+     bBreakable=False
      FragType=Class'DeusEx.PlasticFragment'
      maxCopies=1
      bCanHaveMultipleCopies=True

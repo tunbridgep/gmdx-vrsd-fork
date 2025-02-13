@@ -139,7 +139,7 @@ function bool DoLeftFrob(DeusExPlayer frobber)
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {
     //Don't allow frobbing while swimming, and only allow pushable objects
-    if (bPushable && frobber.swimTimer > 1 && !objectInHand)
+    if (bPushable && frobber.swimTimer > 1)
     {
         frobber.GrabDecoration();
         return false;

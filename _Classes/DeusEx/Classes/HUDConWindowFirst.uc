@@ -27,6 +27,11 @@ var int   txtVertMargin;
 event InitWindow()
 {
 	Super.InitWindow();
+    
+    //SARGE: Bail if we have subtitles disabled,
+    //otherwise it shows up when we close menus
+    if (!player.bSubtitles)
+        return;
 
 	// Initialize some variables and stuff
 	conPlay = None;
@@ -217,6 +222,11 @@ function Clear()
 event StyleChanged()
 {
 	local ColorTheme theme;
+    
+    //SARGE: Bail if we have subtitles disabled,
+    //otherwise it shows up when we close menus
+    if (!player.bSubtitles)
+        return;
 
 	Super.StyleChanged();
 

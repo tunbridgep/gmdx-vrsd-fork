@@ -27,13 +27,30 @@ var rotator OldRotation;
 var int lerpClamp;
 //GMDX:finish vars
 
+//SARGE: Set rocket travel time before explosion based on weapon range
+function OnProjectileFired(Projectile firedProjectile)
+{
+    local float rangeMult;
+    local DeusExProjectile P;
+
+    //P = DeusExProjectile(firedProjectile);
+
+    if (P == None)
+        return;
+
+    rangeMult = 5 + (ModAccurateRange*10); //At max, ModAccurateRange is 0.5
+    P.lifespan = rangeMult; //We are controlling this manually now.
+    P.bExplodeOnDestroy = true;
+    DeusExPlayer(GetPlayerPawn()).ClientMessage("Lifespan: " $ firedProjectile.lifespan);
+}
+
 //SARGE: Allow laser sight and scope when we have the Heavily Tweaked perk
 function CheckHeavilyTweaked()
 {
     local PerkHeavilyTweaked perk;
     local DeusExPlayer player;
 
-    log("Check Heavily Tweaked");
+    //log("Check Heavily Tweaked");
 
     player = DeusExPlayer(GetPlayerPawn());
 

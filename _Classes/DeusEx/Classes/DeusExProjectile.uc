@@ -54,6 +54,9 @@ var string HDTPTexture;
 var string HDTPMesh;
 var class<DeusExWeapon> hdtpReference;                                          //SARGE: Used when we want to tell a projectile to use the HDTP settings of a particular weapon
 
+//SARGE: Explode on destroy
+var bool bExplodeOnDestroy;
+
 // network replication
 replication
 {
@@ -96,6 +99,15 @@ function UpdateHDTPSettings()
         Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),IsHDTP());
     if (HDTPTexture != "")
         Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),IsHDTP());
+}
+
+//SARGE: Let the object explode on destroy
+function Destroyed()
+{
+    if (bExplodeOnDestroy)
+        Explode(Location, vect(0,0,1));
+    else
+        Super.Destroyed();
 }
 
 //
