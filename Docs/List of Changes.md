@@ -92,6 +92,7 @@ Sarge's Changes since Beta 2.2:
         - The Dialog Menu can now use the HUD Color theme, rather than always having blue text.
         - Dialog Menu options can be configured in the option screen.
     - The Nano Keyring now tells you which key was used when locking/unlocking a door.
+    - Added a new "Left-Click Unholstering" feature, which will equip your last used weapon when left-clicking if there was nothing else to interact with.
     - Complete overhaul of "Left-click frobbing", which happens when left-clicking certain items without an item equipped.
         - Left-Clicking a datacube will pick it up and allow you to carry it.
         - Left-Clicking a breakable box, window or wall will select a melee weapon from your inventory based on a priority list.
