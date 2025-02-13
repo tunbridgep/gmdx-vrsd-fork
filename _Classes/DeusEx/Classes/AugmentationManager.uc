@@ -364,6 +364,36 @@ simulated function Augmentation FindAugmentation(Class<Augmentation> findClass)
 	return anAug;
 }
 
+// ----------------------------------------------------------------------
+// RemoveAugmentation()
+// SARGE: Takes an augmentation away from the player
+// used for respeccing
+// ----------------------------------------------------------------------
+
+function RemoveAugmentation(Class<Augmentation> takeClass)
+{
+	local Augmentation anAug;
+
+	// Checks to see if the player already has it.  If so, we want to
+	// increase the level
+	anAug = FindAugmentation(takeClass);
+
+	if (anAug == None)
+		return;		// shouldn't happen, but you never know!
+
+    if (anAug.bIsActive)
+        anAug.Deactivate();
+
+    anAug.bHasIt = false;
+    anAug.CurrentLevel = anAug.default.CurrentLevel;
+    anAug.bAddedToWheel = false;
+
+	// Manage our AugLocs[] array
+	AugLocs[anAug.AugmentationLocation].augCount--;
+
+    Player.RemoveAugmentationDisplay(anAug);
+    Player.RadialMenuUpdateAug(anAug);
+}
 
 // ----------------------------------------------------------------------
 // GivePlayerAugmentation()
