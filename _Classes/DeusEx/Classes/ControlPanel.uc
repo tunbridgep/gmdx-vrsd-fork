@@ -71,7 +71,7 @@ defaultproperties
      bInvincible=False
      FragType=Class'DeusEx.MetalFragment'
      ItemName="Electronic Control Panel"
-     Skin=Texture'HDTPDecos.Skins.HDTPControlPanelTex1'
+     HDTPSkin="HDTPDecos.Skins.HDTPControlPanelTex1"
      Mesh=LodMesh'DeusExDeco.ControlPanel'
      SoundRadius=12
      SoundVolume=255

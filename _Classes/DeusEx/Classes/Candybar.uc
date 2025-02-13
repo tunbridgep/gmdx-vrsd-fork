@@ -8,6 +8,17 @@ function Eat(DeusExPlayer player)
     player.PlaySound(sound'CandyEat',SLOT_None,2);
 }
 
+function SetSkin()
+{
+    switch (textureSet)
+    {
+        case 0: break; //handled by UpdateHDTPSettings();
+        case 1:
+            Skin = Texture'DeusExItems.Skins.CandyBarTex2'; //HDTP has no alternate candybar texture
+            break;
+    }
+}
+
 defaultproperties
 {
      healAmount=2
@@ -28,11 +39,12 @@ defaultproperties
      largeIconHeight=36
      Description="'CHOC-O-LENT DREAM. IT'S CHOCOLATE! IT'S PEOPLE! IT'S BOTH!(tm) 85% Recycled Material.'"
      beltDescription="CANDY BAR"
-     Skin=Texture'HDTPItems.Skins.HDTPCandybartex1'
+     HDTPSkin="HDTPItems.Skins.HDTPCandybartex1"
      Mesh=LodMesh'DeusExItems.Candybar'
      CollisionRadius=6.250000
      CollisionHeight=0.670000
      Mass=3.000000
      Buoyancy=4.000000
      fullness=6
+     totalSkins=2
 }

@@ -20,52 +20,20 @@ simulated function PreBeginPlay()
 	}
 }
 
-simulated function renderoverlays(Canvas canvas)
+function DisplayWeapon(bool overlay)
 {
-	if (iHDTPModelToggle == 1)
-    	multiskins[0] = Getweaponhandtex();
-	else
-    {
-       multiskins[0]=GetWeaponHandTex();                                        //RSD: Fix vanilla hand tex
-       multiskins[3]=GetWeaponHandTex();
-    }
-
-	super.renderoverlays(canvas);
-
-	if (iHDTPModelToggle == 1)
-    	multiskins[0] = none;
-	else
-    {
-       multiskins[0]=none;                                                      //RSD: Fix vanilla hand tex
-       multiskins[3]=none;
-    }
+	super.DisplayWeapon(overlay);
+	if (overlay)
+	{
+		if (IsHDTP())
+			multiskins[0] = handsTex;
+		else
+		{
+		   multiskins[0]=handsTex;                                        //RSD: Fix vanilla hand tex
+		   multiskins[3]=handsTex;
+		}
+	}
 }
-
-exec function UpdateHDTPsettings()                                              //RSD: New function to update weapon model meshes (specifics handled in each class)
-{
-     //RSD: HDTP Toggle Routine
-     //if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).inHand == self)
-     //     DeusExPlayer(Owner).BroadcastMessage(iHDTPModelToggle);
-     if (iHDTPModelToggle == 1)
-     {
-          PlayerViewMesh=LodMesh'HDTPItems.HDTPEMPGrenade';
-          PickupViewMesh=LodMesh'HDTPItems.HDTPEMPgrenadePickup';
-          ThirdPersonMesh=LodMesh'HDTPItems.HDTPEMPgrenade3rd';
-     }
-     else
-     {
-          PlayerViewMesh=LodMesh'DeusExItems.EMPGrenade';
-          PickupViewMesh=LodMesh'DeusExItems.EMPGrenadePickup';
-          ThirdPersonMesh=LodMesh'DeusExItems.EMPGrenade3rd';
-     }
-     //RSD: HDTP Toggle End
-
-     Super.UpdateHDTPsettings();
-}
-
-/*Function CheckWeaponSkins()
-{
-}*/
 
 function PostBeginPlay()
 {
@@ -128,44 +96,6 @@ simulated function TakeDamage(int Damage, Pawn instigatedBy, Vector HitLocation,
     tp.Explode(Location, vect(0,0,1));
 }
 
-/*state NormalFire
-{
- function BeginState()
- {
-		swingTime = 0;
-		Super.BeginState();
- }
- function Tick(float deltaTime)
- {
-  local float augMod;
-
-  super.Tick(deltaTime);
-
-  if (Owner.IsA('DeusExPlayer'))
-  {
-    if (AnimSequence == 'Attack' || AnimSequence == 'Attack2' || AnimSequence == 'Attack3')
-    {
-      swingTime+=deltaTime;
-      if (swingTime >= 0.7)
-         swingTime = 0;
-      augMod = DeusExPlayer(Owner).AugmentationSystem.GetAugLevelValue(class'AugCombat');
-      if (augMod < 1)
-          augMod = 1;
-      if (swingTime < 0.5 / augMod)
-      {
-          DeusExPlayer(Owner).ViewRotation.Pitch += 1+(swingTime*80);
-          DeusExPlayer(Owner).ViewRotation.Yaw += 5+(swingTime*40);
-      }
-      else
-      {
-          DeusExPlayer(Owner).ViewRotation.Pitch -= 2+(swingTime*80);
-          DeusExPlayer(Owner).ViewRotation.Yaw -= 10+(swingTime*40);
-      }
-    }
-  }
-  }
-}*/
-
 // ----------------------------------------------------------------------
 // TestMPBeltSpot()
 // Returns true if the suggested belt location is ok for the object in mp.
@@ -215,16 +145,18 @@ defaultproperties
      ItemName="Electromagnetic Pulse (EMP) Grenade"
      ItemArticle="an"
      PlayerViewOffset=(X=24.000000,Y=-15.000000,Z=-19.000000)
-     PlayerViewMesh=LodMesh'HDTPItems.HDTPEMPGrenade'
-     PickupViewMesh=LodMesh'HDTPItems.HDTPEMPgrenadePickup'
-     ThirdPersonMesh=LodMesh'HDTPItems.HDTPEMPgrenade3rd'
+     PlayerViewMesh="HDTPItems.HDTPEMPGrenade"
+     PickupViewMesh="HDTPItems.HDTPEMPgrenadePickup"
+     ThirdPersonMesh="HDTPItems.HDTPEMPgrenade3rd"
+     PlayerViewMesh=LodMesh'DeusExItems.EMPGrenade'
+     PickupViewMesh=LodMesh'DeusExItems.EMPGrenadePickup'
+     ThirdPersonMesh=LodMesh'DeusExItems.EMPGrenade3rd'
      Icon=Texture'DeusExUI.Icons.BeltIconEMPGrenade'
      largeIcon=Texture'DeusExUI.Icons.LargeIconEMPGrenade'
      largeIconWidth=31
      largeIconHeight=49
      Description="The EMP grenade creates a localized pulse that will temporarily disable all electronics within its area of effect, including cameras and security grids.|n|n<UNATCO OPS FILE NOTE JR134-VIOLET> While nanotech augmentations are largely unaffected by EMP, experiments have shown that it WILL cause the spontaneous dissipation of stored bioelectric energy. -- Jaime Reyes <END NOTE>"
      beltDescription="EMP GREN"
-     Mesh=LodMesh'HDTPItems.HDTPEMPgrenadePickup'
      CollisionRadius=3.000000
      CollisionHeight=2.430000
      Mass=5.000000

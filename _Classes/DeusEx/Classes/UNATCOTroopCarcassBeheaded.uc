@@ -5,11 +5,12 @@ class UNATCOTroopCarcassBeheaded extends DeusExCarcass;
 
 defaultproperties
 {
+	 hdtpReference=class'DeusEx.UnatcoTroop'
      Mesh2=LodMesh'DeusExCharacters.GM_Jumpsuit_CarcassB'
      Mesh3=LodMesh'DeusExCharacters.GM_Jumpsuit_CarcassC'
-     HDTPMeshName="HDTPCharacters.HDTPUNATCOTroopCarcass"
-     HDTPMesh2Name="HDTPCharacters.HDTPUnatcoTroopCarcassB"
-     HDTPMesh3Name="HDTPCharacters.HDTPUnatcoTroopCarcassC"
+     HDTPMesh="HDTPCharacters.HDTPUNATCOTroopCarcass"
+     HDTPMesh2="HDTPCharacters.HDTPUnatcoTroopCarcassB"
+     HDTPMesh3="HDTPCharacters.HDTPUnatcoTroopCarcassC"
      HDTPMeshTex(0)="HDTPCharacters.Skins.HDTPUNATCOTroopTex0"
      HDTPMeshTex(1)="HDTPCharacters.Skins.HDTPUNATCOTroopTex1"
      HDTPMeshTex(2)="HDTPCharacters.Skins.HDTPUNATCOTroopTex2"

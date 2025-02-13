@@ -3,6 +3,33 @@
 //=============================================================================
 class DataCube extends InformationDevices;
 
+function bool DarkenScreen()
+{
+    return bRead || (textTag == '' && imageClass == None);
+}
+
+exec function UpdateHDTPsettings()
+{
+    local DeusExPlayer player;
+    super.UpdateHDTPsettings();
+
+    player = DeusExPlayer(GetPlayerPawn());
+
+    //Blank the screen once it's been read
+    if (DarkenScreen() && player != None && player.bShowDataCubeRead)
+        MultiSkins[2]=Texture'PinkMaskTex';
+    else if (IsHDTP())
+        MultiSkins[2]=class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPDatacubetex1");
+    else
+        MultiSkins[2]=class'HDTPLoader'.static.GetTexture("DeusExItems.Skins.Datacubetex1");
+}
+
+function OnBeginRead(DeusExPlayer reader)
+{
+    if (reader != None && reader.bShowDataCubeRead)
+        MultiSkins[2]=Texture'PinkMaskTex';
+}
+
 defaultproperties
 {
      bLeftGrab=True
@@ -10,10 +37,10 @@ defaultproperties
      bInvincible=True
      bCanBeBase=True
      ItemName="DataCube"
-     Texture=Texture'Effects.Corona.Corona_G'
-     Skin=Texture'HDTPItems.Skins.HDTPDatacubetex1'
+     HDTPSkin="HDTPItems.Skins.HDTPDatacubetex1"
+     Skin=Texture'DeusExItems.Skins.Datacubetex1';
      Mesh=LodMesh'DeusExItems.DataCube'
-     MultiSkins(2)=Texture'HDTPItems.Skins.HDTPDatacubetex1'
+     Texture=Texture'Effects.Corona.Corona_G';
      CollisionRadius=7.000000
      CollisionHeight=1.270000
      Mass=2.000000

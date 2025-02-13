@@ -38,9 +38,32 @@ var travel bool bIsRadar;                                                       
 var bool bJustUncloaked;                                                        //RSD: for splitting cloak/radar texture functionality
 var bool bJustUnRadar;                                                          //RSD: for splitting cloak/radar texture functionality
 var bool bAutoActivate;                                                         //Sarge: Auto activate with left click, rather than placing in the players hands                                                                                
-
 var localized string StackSizeLabel;                                            //Sarge: Show the stack size in the description
 
+var Texture handsTex;   //SARGE: Store the hand texture for performance. TODO: Use some sort of class/object to share this between SkilledTools and Weapons
+
+//SARGE: HDTP Model toggles
+var config int iHDTPModelToggle;
+var string HDTPSkin;
+var string HDTPTexture;
+var string HDTPMesh;
+
+var int totalSkins;                                                             //Sarge: How many total skins this object has. Used to select random skins
+var(GMDX) bool dontRandomiseSkin;                                               //Sarge: Prevents individual items from having their skin randomised
+
+//SARGE: MissionScript calls this on all objects on map start.
+function RandomiseSkin(DeusExPlayer player)
+{
+    if (totalSkins <= 1 || dontRandomiseSkin)
+        return;
+
+    //Don't randomise the players items
+    if (Owner != None && Owner == player)
+        return;
+
+    textureSet = player.Randomizer.GetRandomInt(totalSkins - 1);
+    SetSkin();
+}
 
 //SARGE: Added "Left Click Frob" and "Right Click Frob" support
 //Return true to use the default frobbing mechanism (right click), or false for custom behaviour
@@ -61,6 +84,48 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
     return true;
 }
 
+function bool IsHDTP()
+{
+    return DeusExPlayer(GetPlayerPawn()) != None && DeusExPlayer(GetPlayerPawn()).bHDTPInstalled && iHDTPModelToggle > 0;
+}
+
+exec function UpdateHDTPsettings()                                              //SARGE: New function to update model meshes (specifics handled in each class)
+{
+    if (HDTPMesh != "")
+    {
+        if (PlayerViewMesh == Mesh || PlayerViewMesh == None)
+            PlayerViewMesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),IsHDTP());
+        if (PickupViewMesh == Mesh || PickupViewMesh == None)
+            PickupViewMesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),isHDTP());
+        if (ThirdPersonMesh == Mesh || ThirdPersonMesh == None)
+            ThirdPersonMesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),IsHDTP());
+        Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),IsHDTP());
+    }
+    if (HDTPSkin != "")
+        Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),IsHDTP());
+    if (HDTPTexture != "")
+        Skin = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),IsHDTP());
+
+    if (bCarriedItem)
+        Mesh = PlayerViewMesh;
+    else
+        Mesh = PickupViewMesh;
+    
+    SetWeaponHandTex();
+	SetSkin();
+}
+
+//Shorthand for accessing hands tex
+function SetWeaponHandTex()
+{
+	local deusexplayer p;
+	p = deusexplayer(owner);
+	if(p != none)
+        handsTex = p.GetWeaponHandTex();
+    //p.clientMessage("handsTex: " $ handsTex);
+}
+
+
 // ----------------------------------------------------------------------
 // Networking Replication
 // ----------------------------------------------------------------------
@@ -72,6 +137,7 @@ replication
 		UseOnce;
 }
 
+//SARGE: TODO: Move this (and the version from DeusExWeapon) to a new object, and share it between SkilledTools and Weapons
 function SetCloakRadar(bool bEnableCloak, bool bEnableRadar, optional bool bForce) //RSD: Overhauled cloak/radar routines
 {
 	local bool bCheckCloak, bCheckRadar;
@@ -234,6 +300,7 @@ function DropFrom(vector StartLocation)
     if (bIsCloaked || bIsRadar)                                                 //RSD: Overhauled cloak/radar routines
 	 SetCloakRadar(false,false,true);//SetCloak(false,true);
     ScaleGlow = default.ScaleGlow;                                              //RSD: Also reset ScaleGlow so we don't get dim/bright due to cloak/radar
+    UpdateHDTPsettings();
 	super.DropFrom(StartLocation);
 }
 
@@ -954,11 +1021,10 @@ function dumptexturelist() //testing function coz I is teh STOOPID today. Or som
 	}
 }
 
-function BeginPlay()
+function PostBeginPlay()
 {
-	Super.BeginPlay();
-
-	setSkin();
+	Super.PostBeginPlay();
+    UpdateHDTPSettings();                                                       //SARGE: Update HDTP
 }
 
 function SetSkin()
@@ -1049,4 +1115,5 @@ defaultproperties
      RespawnTime=30.000000
      LandSound=Sound'DeusExSounds.Generic.PaperHit1'
      bProjTarget=True
+     iHDTPModelToggle=1
 }

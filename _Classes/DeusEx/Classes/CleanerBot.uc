@@ -299,7 +299,8 @@ defaultproperties
      UnderWaterTime=20.000000
      AttitudeToPlayer=ATTITUDE_Ignore
      DrawType=DT_Mesh
-     Mesh=LodMesh'HDTPCharacters.HDTPcleanerbot'
+     HDTPMesh="HDTPCharacters.HDTPCleanerBot"
+     Mesh=LodMesh'DeusExCharacters.CleanerBot'
      SoundRadius=16
      SoundVolume=128
      AmbientSound=Sound'DeusExSounds.Robot.CleanerBotMove'

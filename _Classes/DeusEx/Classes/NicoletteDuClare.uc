@@ -10,7 +10,7 @@ defaultproperties
      bImportant=True
      BaseAssHeight=-18.000000
      walkAnimMult=1.460000
-     HDTPMeshName="HDTPCharacters.HDTPNicolette"
+     HDTPMesh="HDTPCharacters.HDTPNicolette"
      HDTPMeshTex(0)="HDTPCharacters.Skins.HDTPNicoletteTex0"
      HDTPMeshTex(1)="HDTPCharacters.Skins.HDTPNicoletteTex1"
      HDTPMeshTex(2)="HDTPCharacters.Skins.HDTPNicoletteTex2"

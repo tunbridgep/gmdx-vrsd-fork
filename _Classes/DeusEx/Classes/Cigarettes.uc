@@ -3,14 +3,35 @@
 //=============================================================================
 class Cigarettes extends Vice; //DeusExPickup;
 
+var localized string Description2;
+
 function SetSkin()
 {
-	switch(textureSet)
-	{
-			case 0:		Skin = default.skin; description = default.description; icon = default.icon; largeicon = default.largeicon; break;
-			case 1:		Skin = Texture'HDTPitems.Skins.HDTPcigarettesTex2'; Description = "Big Top Cigarettes -- Elephant tested, Lion Approved!"; icon = texture'HDTPitems.skins.belticonCigarettes2'; largeicon = texture'HDTPitems.skins.largeiconCigarettes2'; break;
-			default:	Skin = default.skin; description = default.description; icon = default.icon; largeicon = default.largeicon; break;
-	}
+    Skin = default.skin;
+    Description = default.Description;
+    Icon = default.Icon;
+    LargeIcon = default.LargeIcon;
+
+    switch(textureSet)
+    {
+        case 0: break; //Handled by UpdateHDTPSettings
+        case 1: //Big Top
+            Skin = class'HDTPLoader'.static.GetTexture2("RSDCrap.Skins.HDTPCigarettestex2","RSDCrap.Skins.Cigarettestex2",IsHDTP());
+            Description = Description2;
+            //TODO: Port these across
+            if (IsHDTP())
+            {
+                Icon = class'HDTPLoader'.static.GetTexture("HDTPitems.skins.belticonCigarettes2");
+                LargeIcon = class'HDTPLoader'.static.GetTexture("HDTPitems.skins.largeiconCigarettes2");
+            }
+            break;
+        case 2: //Holy Smokes!
+            Skin = class'HDTPLoader'.static.GetTexture2("RSDCrap.Skins.HDTPCigarettestex3","RSDCrap.Skins.Cigarettestex3",IsHDTP());
+            break;
+        case 3: //Super 45
+            Skin = class'HDTPLoader'.static.GetTexture2("RSDCrap.Skins.HDTPCigarettestex4","RSDCrap.Skins.Cigarettestex4",IsHDTP());
+            break;
+    }
 	super.SetSkin();
 }
 
@@ -68,12 +89,13 @@ defaultproperties
      largeIconWidth=29
      largeIconHeight=43
      Description="'COUGHING NAILS -- when you've just got to have a cigarette.'"
+     Description2="Big Top Cigarettes -- Elephant tested, Lion Approved!"
      beltDescription="CIGS"
-     Skin=Texture'HDTPItems.Skins.HDTPCigarettestex1'
      Mesh=LodMesh'DeusExItems.Cigarettes'
      CollisionRadius=5.200000
      CollisionHeight=1.320000
      Mass=2.000000
      Buoyancy=3.000000
+     totalSkins=4
      bGluttonous=false
 }

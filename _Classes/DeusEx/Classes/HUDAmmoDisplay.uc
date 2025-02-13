@@ -219,6 +219,9 @@ event DrawWindow(GC gc)
 
 function DrawBackground(GC gc)
 {
+    if (gc == None)
+        return;
+
 	gc.SetStyle(backgroundDrawStyle);
 	gc.SetTileColor(colBackground);
 	gc.DrawTexture(13, 13, 80, 54, 0, 0, texBackground);

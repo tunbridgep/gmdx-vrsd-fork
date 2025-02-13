@@ -8,8 +8,9 @@ defaultproperties
      HitPoints=30
      bCanBeBase=True
      ItemName="Book"
-     Skin=Texture'HDTPDecos.Skins.HDTPbookOpentex'
-     Mesh=LodMesh'HDTPDecos.HDTPBookOpen'
+     HDTPSkin="HDTPDecos.Skins.HDTPbookOpentex"
+     HDTPMesh="HDTPDecos.HDTPBookOpen"
+     Mesh=LodMesh'DeusExDeco.BookOpen'
      CollisionRadius=15.000000
      CollisionHeight=1.420000
      Mass=10.000000

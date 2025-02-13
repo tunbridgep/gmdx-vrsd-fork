@@ -47,7 +47,7 @@ simulated function bool SimUseAmmo()
 		{
 			shell.Velocity = (FRand()*90+40) * Y + (20-FRand()*40) * X;
 			shell.Velocity.Z = 10+frand()*10;
-			Shell.mesh = lodmesh'HDTPItems.HDTPAssaultCasing';
+			shell.Mesh = class'HDTPLoader'.static.GetMesh("HDTPItems.HDTPAssaultCasing");
 			Shell.Smokeprob=0.75;
 		}
 		return True;
@@ -98,7 +98,8 @@ function bool UseAmmo(int AmountNeeded)
 		{
 			shell.Velocity = (FRand()*90+40) * Y + (20-FRand()*40) * X;
 			shell.Velocity.Z = 13 + frand()*10;
-			Shell.mesh = lodmesh'HDTPItems.HDTPAssaultCasing';
+            if (IsHDTP())
+                Shell.mesh = class'HDTPLoader'.static.GetMesh("HDTPItems.HDTPAssaultCasing");
 			Shell.Smokeprob=0.75;
 		}
 		return True;
@@ -115,15 +116,17 @@ defaultproperties
      MaxAmmo=150
      ItemName="7.62x51mm Ammo"
      ItemArticle="some"
-     PickupViewMesh=LodMesh'DeusExItems.Ammo762mm'
      LandSound=Sound'DeusExSounds.Generic.MetalHit1'
      Icon=Texture'DeusExUI.Icons.BeltIconAmmo762'
      largeIconWidth=46
      largeIconHeight=34
      Description="The 7.62x51mm (NATO) round was chiefly used by anti-terrorist units equipped with assault rifles for close-quarters combat until its widespread adoption among national security forces requiring enhanced combat responsiveness made it ubiquitous."
      beltDescription="7.62 AMMO"
-     Skin=Texture'HDTPItems.Skins.HDTPAmmo762mmTex1'
+     HDTPSkin="HDTPItems.Skins.HDTPAmmo762mmTex1"
      Mesh=LodMesh'DeusExItems.Ammo762mm'
+     PlayerViewMesh=LodMesh'DeusExItems.Ammo762mm'
+     PickupViewMesh=LodMesh'DeusExItems.Ammo762mm'
+     ThirdPersonMesh=LodMesh'DeusExItems.Ammo762mm'
      CollisionRadius=6.000000
      CollisionHeight=0.750000
      bCollideActors=True

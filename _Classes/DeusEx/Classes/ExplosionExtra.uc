@@ -23,26 +23,41 @@ simulated function Tick(float deltaTime)
 
 simulated function PostBeginPlay()
 {
-local vector offs;
+    local vector offs;
 
-super.PostBeginPlay();
+    super.PostBeginPlay();
 
-Spawn(class'FireComet', None);
-offs = Location;
-offs.Z += 10;
-offs.X += 12;
-offs.Y += 12;
-//Spawn(class'RockchipXL',None,,offs);
+    Spawn(class'FireComet', None);
+    offs = Location;
+    offs.Z += 10;
+    offs.X += 12;
+    offs.Y += 12;
+    //Spawn(class'RockchipXL',None,,offs);
+
+    if (DeusExPlayer(GetPlayerPawn()) != None && DeusExPlayer(GetPlayerPawn()).bHDTPInstalled)
+    {
+        /*
+        //SARGE: Missing a frame here? Not sure if intentional. Re-did it below.
+        frames[0]=class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashLarge1");
+        frames[1]=class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashLarge5");
+        frames[3]=class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashSmall2");
+        frames[4]=class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashSmall3");
+        */
+        frames[0]=class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashLarge1");
+        frames[1]=class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashLarge5");
+        frames[2]=class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashLarge5");
+        frames[3]=class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashSmall2");
+        frames[4]=class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashSmall3");
+        Texture=class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashLarge1");
+
+    }
+    else
+        Destroy();
 }
 
 defaultproperties
 {
      numFrames=5
-     frames(0)=Texture'HDTPItems.Skins.HDTPMuzzleflashLarge1'
-     frames(1)=Texture'HDTPItems.Skins.HDTPMuzzleflashLarge5'
-     frames(3)=Texture'HDTPItems.Skins.HDTPMuzzleflashSmall2'
-     frames(4)=Texture'HDTPItems.Skins.HDTPMuzzleflashSmall3'
-     Texture=Texture'HDTPItems.Skins.HDTPMuzzleflashLarge1'
      DrawScale=0.500000
      LightType=LT_Steady
      LightEffect=LE_FireWaver

@@ -18,7 +18,8 @@ function BeginPlay()
 
 			   spawn(class'BloodPool',,, HitLocation+HitNormal, Rotator(HitNormal));
 				if (pool != None)
-					pool.maxDrawScale = 3;  //hah! Found you you bastard..was making HUUUGE decals. -DDL
+					if (pool.IsHDTP())
+						pool.maxDrawScale = 3;  //hah! Found you you bastard..was making HUUUGE decals. -DDL
 			}
     }
 

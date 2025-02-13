@@ -3,24 +3,15 @@
 //=============================================================================
 class WeaponHideAGun extends DeusExWeapon;
 
-simulated function renderoverlays(Canvas canvas)
+function DisplayWeapon(bool overlay)
 {
-	multiskins[0] = Getweaponhandtex();
-	multiskins[3] = Getweaponhandtex();
-
-	super.renderoverlays(canvas);
-
-	multiskins[0] = none;
-	multiskins[3] = none;
+	super.DisplayWeapon(overlay);
+	if (overlay)
+	{
+		multiskins[0] = handsTex;
+		multiskins[3] = handsTex;
+	}
 }
-
-/*function PostBeginPlay()
-{
-Super.PostBeginPlay();
-
-if (Owner!=None && Owner.IsA('ScriptedPawn') && FRand() < 0.85) //CyberP: pawns will sometimes use the differing fire mode
-ProjectileClass = class'DeusEx.PlasmaBolt';
-}*/
 
 defaultproperties
 {

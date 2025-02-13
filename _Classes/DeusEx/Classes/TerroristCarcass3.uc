@@ -5,11 +5,12 @@ class TerroristCarcass3 extends DeusExCarcass;
 
 defaultproperties
 {
+	 hdtpReference=class'DeusEx.Terrorist'
      Mesh2=LodMesh'DeusExCharacters.GM_Jumpsuit_CarcassB'
      Mesh3=LodMesh'DeusExCharacters.GM_Jumpsuit_CarcassC'
-     HDTPMeshName="HDTPCharacters.HDTPTerroristCarcass"
-     HDTPMesh2Name="HDTPCharacters.HDTPTerroristCarcassB"
-     HDTPMesh3Name="HDTPCharacters.HDTPTerroristCarcassC"
+     HDTPMesh="HDTPCharacters.HDTPTerroristCarcass"
+     HDTPMesh2="HDTPCharacters.HDTPTerroristCarcassB"
+     HDTPMesh3="HDTPCharacters.HDTPTerroristCarcassC"
      HDTPMeshTex(0)="HDTPCharacters.Skins.HDTPTerroristTex0"
      HDTPMeshTex(1)="HDTPCharacters.Skins.HDTPTerroristTex1"
      HDTPMeshTex(2)="HDTPCharacters.Skins.HDTPTerroristTex2"

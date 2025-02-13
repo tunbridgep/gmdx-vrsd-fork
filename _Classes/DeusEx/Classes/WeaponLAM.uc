@@ -6,52 +6,20 @@ class WeaponLAM extends DeusExWeapon;
 var float swingTime;
 var localized String shortName;
 
-simulated function renderoverlays(Canvas canvas)
+function DisplayWeapon(bool overlay)
 {
-	if (iHDTPModelToggle == 1)
-    	multiskins[0] = Getweaponhandtex();
-	else
-    {
-       multiskins[0]=GetWeaponHandTex();                                        //RSD: Fix vanilla hand tex
-       multiskins[2]=GetWeaponHandTex();
-    }
-
-	super.renderoverlays(canvas);
-
-	if (iHDTPModelToggle == 1)
-    	multiskins[0] = none;
-	else
-    {
-       multiskins[0]=none;                                                      //RSD: Fix vanilla hand tex
-       multiskins[2]=none;
-    }
+	super.DisplayWeapon(overlay);
+	if (overlay)
+	{
+		if (IsHDTP())
+			multiskins[0] = handsTex;
+		else
+		{
+		   multiskins[0]=handsTex;                                        //RSD: Fix vanilla hand tex
+		   multiskins[2]=handsTex;
+		}
+	}
 }
-
-exec function UpdateHDTPsettings()                                              //RSD: New function to update weapon model meshes (specifics handled in each class)
-{
-     //RSD: HDTP Toggle Routine
-     //if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).inHand == self)
-     //     DeusExPlayer(Owner).BroadcastMessage(iHDTPModelToggle);
-     if (iHDTPModelToggle == 1)
-     {
-          PlayerViewMesh=LodMesh'HDTPItems.HDTPLAM';
-          PickupViewMesh=LodMesh'HDTPItems.HDTPLAMPickup';
-          ThirdPersonMesh=LodMesh'HDTPItems.HDTPLAM3rd';
-     }
-     else
-     {
-          PlayerViewMesh=LodMesh'DeusExItems.LAM';
-          PickupViewMesh=LodMesh'DeusExItems.LAMPickup';
-          ThirdPersonMesh=LodMesh'DeusExItems.LAM3rd';
-     }
-     //RSD: HDTP Toggle End
-
-     Super.UpdateHDTPsettings();
-}
-
-/*Function CheckWeaponSkins()
-{
-}*/
 
 simulated function PreBeginPlay()
 {
@@ -208,16 +176,18 @@ defaultproperties
      InventoryGroup=20
      ItemName="Lightweight Attack Munitions (LAM)"
      PlayerViewOffset=(X=24.000000,Y=-15.000000,Z=-17.000000)
-     PlayerViewMesh=LodMesh'HDTPItems.HDTPLAM'
-     PickupViewMesh=LodMesh'HDTPItems.HDTPLAMPickup'
-     ThirdPersonMesh=LodMesh'HDTPItems.HDTPLAM3rd'
+     HDTPPlayerViewMesh="HDTPItems.HDTPLAM"
+     HDTPPickupViewMesh="HDTPItems.HDTPLAMPickup"
+     HDTPThirdPersonMesh="HDTPItems.HDTPLAM3rd"
+     PlayerViewMesh=LodMesh'DeusExItems.LAM'
+     PickupViewMesh=LodMesh'DeusExItems.LAMPickup'
+     ThirdPersonMesh=LodMesh'DeusExItems.LAM3rd'
      Icon=Texture'DeusExUI.Icons.BeltIconLAM'
      largeIcon=Texture'DeusExUI.Icons.LargeIconLAM'
      largeIconWidth=35
      largeIconHeight=45
      Description="A multi-functional explosive with electronic priming system that can either be thrown or attached to any surface with its polyhesive backing and used as a proximity mine.|n|n<UNATCO OPS FILE NOTE SC093-BLUE> Disarming a proximity device should only be attempted with the proper demolitions training. Trust me on this. -- Sam Carter <END NOTE>"
      beltDescription="LAM"
-     Mesh=LodMesh'HDTPItems.HDTPLAMPickup'
      CollisionRadius=3.800000
      CollisionHeight=3.500000
      bBlockPlayers=True

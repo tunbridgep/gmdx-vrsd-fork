@@ -65,7 +65,7 @@ defaultproperties
      largeIconHeight=34
      Description="A pair of military binoculars."
      beltDescription="BINOCS"
-     Skin=Texture'HDTPItems.Skins.HDTPBinocularsTex1'
+     HDTPSkin="HDTPItems.Skins.HDTPBinocularsTex1"
      Mesh=LodMesh'DeusExItems.Binoculars'
      CollisionRadius=7.000000
      CollisionHeight=2.060000

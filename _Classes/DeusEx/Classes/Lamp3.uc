@@ -7,7 +7,8 @@ defaultproperties
 {
      HitPoints=3
      ItemName="Desk Lamp"
-     Mesh=LodMesh'HDTPDecos.HDTPLamp3'
+     Mesh=LodMesh'DeusExDeco.Lamp3'
+     HDTPMesh="HDTPDecos.HDTPlamp3"
      CollisionRadius=16.389999
      CollisionHeight=10.610000
      LightBrightness=192

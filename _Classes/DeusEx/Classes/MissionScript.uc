@@ -22,6 +22,32 @@ var float TimeToSave;
 var bool firstTime;     //SARGE: Set to true the first time we enter a map.
 
 // ----------------------------------------------------------------------
+// DoLightingAccessibility()
+//
+// Modify a light to be steady, rather than strobing, or optionally delete it instead,
+// based on the players Lighting Accessibility setting
+// ----------------------------------------------------------------------
+
+function DoLightingAccessibility(Light L, name checkName, optional bool bStrobe)
+{
+    if (!player.bLightingAccessibility || L.name != checkName)
+        return;
+                
+    //log("Light Found: [" $ L.Name $ "]");
+
+    if (bStrobe)
+    {
+        L.LightPeriod = 155;
+        L.LightType = LT_Strobe;
+    }
+    else
+    {
+        L.LightPeriod = 0;
+        L.LightType = LT_Steady;
+    }
+}
+
+// ----------------------------------------------------------------------
 // PostPostBeginPlay()
 //
 // Set the timer
@@ -174,6 +200,10 @@ function FirstFrame()
             InitializeEnemySwap(1);
         }
 
+        //Randomise the crap around the level
+        RandomiseCrap();
+
+        //Distribute PS20's and Flares
         DistributeItem(class'WeaponHideAGun',0,2,class'AmmoHideAGun');
         DistributeItem(class'Flare',1,3);
 
@@ -461,6 +491,16 @@ function InitializeRandomAmmoCounts()                                           
 	    ammoDropCount = Player.Randomizer.GetRandomInt(4) + 1;                                            //RSD: From general randomized PickupAmmoCount in DeusExCarcass.uc
 		DC.PickupAmmoCount = ammoDropCount;
 	}
+}
+
+//Sarge: Randomise all the crap around the level (sodacans, cigs, etc) to have random skins
+function RandomiseCrap()
+{
+    local DeusExPickup P;
+    foreach AllActors(class'DeusExPickup', P)
+    {
+        P.RandomiseSkin(player);
+    }
 }
 
 //Sarge: Randomize Weapons amongs Enemies

@@ -125,7 +125,8 @@ defaultproperties
      bCanBeBase=True
      ItemName="Water Cooler"
      bPushable=False
-     Mesh=LodMesh'HDTPDecos.HDTPWaterCooler'
+     Mesh=LodMesh'DeusExDeco.WaterCooler'
+     HDTPMesh="HDTPDecos.HDTPWaterCooler"
      CollisionRadius=14.070000
      CollisionHeight=41.570000
      Mass=70.000000

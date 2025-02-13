@@ -47,14 +47,28 @@ var bool bContactDetonation;            //CyberP: explode upon contact
 var ScriptedPawn pawnAlreadyHit;                                                //RSD: So the the Controlled Burn perk doesn't multihit enemies as it passes through them
 var float gravMult;                                                             //RSD: Multiplier for zone gravity. 0.5 in vanilla, now 0 for non-dropping projectiles, ~0.45 for dropping
 var bool bPlusOneDamage;                                                        //RSD: did our damage get boosted by 1 from decimal damage variation? So we can turn it off for movers
+
+//SARGE: HDTP Model toggles
+var string HDTPSkin;
+var string HDTPTexture;
+var string HDTPMesh;
+var class<DeusExWeapon> hdtpReference;                                          //SARGE: Used when we want to tell a projectile to use the HDTP settings of a particular weapon
+
 //SARGE: Explode on destroy
 var bool bExplodeOnDestroy;
+
 // network replication
 replication
 {
 	//server to client
 	reliable if (Role == ROLE_Authority)
 	  bTracking, Target, bAggressiveExploded, bHasNetworkTarget, NetworkTargetLoc;
+}
+
+function PreBeginPlay()
+{
+    Super.PreBeginPlay();
+    UpdateHDTPSettings();
 }
 
 function PostBeginPlay()
@@ -65,6 +79,28 @@ function PostBeginPlay()
 		AIStartEvent('Projectile', EAITYPE_Visual);
 }
 
+function bool IsHDTP()
+{
+	if (DeusExPlayer(GetPlayerPawn()) == None || !DeusExPlayer(GetPlayerPawn()).bHDTPInstalled)
+		return false;
+    else if (hdtpReference != None)
+        return hdtpReference.default.iHDTPModelToggle > 0;
+    else if (spawnWeaponClass != None)
+        return spawnWeaponClass.default.iHDTPModelToggle > 0;
+    return false;
+}
+
+//SARGE: Setup the HDTP settings for this projectile
+function UpdateHDTPSettings()
+{
+    if (HDTPMesh != "")
+        Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),IsHDTP());
+    if (HDTPSkin != "")
+        Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),IsHDTP());
+    if (HDTPTexture != "")
+        Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),IsHDTP());
+}
+
 //SARGE: Let the object explode on destroy
 function Destroyed()
 {
@@ -73,6 +109,7 @@ function Destroyed()
     else
         Super.Destroyed();
 }
+
 //
 // Let the player pick up stuck projectiles
 //
@@ -423,7 +460,10 @@ simulated function DrawExplosionEffects(vector HitLocation, vector HitNormal)
 	else if (blastRadius < 352)
 	{
 		expeffect = Spawn(class'ExplosionMedium',,, HitLocation);
-		Spawn(class'ExplosionExtra',,, HitLocation);
+		if (IsHDTP())
+			Spawn(class'ExplosionExtra',,, HitLocation);
+		else
+			Spawn(class'ExplosionMedium',,, HitLocation);
 		light.size = 12;
 		//light2.size = 12;
 	}

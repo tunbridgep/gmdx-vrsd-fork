@@ -42,8 +42,10 @@ defaultproperties
      MomentumTransfer=50000
      ImpactSound=Sound'DeusExSounds.Weapons.NanoVirusGrenadeExplode'
      LifeSpan=0.000000
-     Skin=Texture'HDTPItems.Skins.HDTPAugUpCanTex0'
-     Mesh=LodMesh'HDTPItems.HDTPnanovirusgrenadePickup'
+     Skin=Texture'DeusExItems.Skins.AugUpCanTex0'
+     Mesh=LodMesh'DeusExItems.NanoVirusGrenadePickup'
+	 HDTPSkin="HDTPItems.Skins.HDTPAugUpCanTex0"
+     HDTPMesh="HDTPItems.HDTPnanovirusgrenadePickup"
      CollisionRadius=2.630000
      CollisionHeight=4.410000
      Mass=5.000000

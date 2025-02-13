@@ -40,10 +40,6 @@ var localized string itemName;			// human readable name
 var() bool bInvincible;
 var bool bAnimalCarcass;
 
-var bool bUsingHDTP;
-var string HDTPMeshName, HDTPMesh2Name, HDTPMesh3Name;
-var string HDTPMeshTex[8];
-
 //GMDX:
 var transient bool bDblClickStart;
 var transient float DblClickTimeout;
@@ -71,6 +67,19 @@ var localized string MaxAmmoString;                                            /
 var localized string DeclinedString;                                           //SARGE: Appended to searches when we find an item we've declined
 var localized string msgEmptyS;
 
+//SARGE: HDTP Model toggles
+var class<ScriptedPawn> hdtpReference;
+var string HDTPSkin;
+var string HDTPTexture;
+var string HDTPMesh;
+var string HDTPMesh2;
+var string HDTPMesh3;
+var string HDTPMeshTex[8];
+
+//SARGE: Remember which mesh we have assigned
+//1 = mesh1, 2 = mesh2, 3 = mesh3
+var travel int assignedMesh;
+
 // ----------------------------------------------------------------------
 // ShouldCreate()
 // If this returns FALSE, the object will be deleted on it's first tick
@@ -90,94 +99,37 @@ function bool ShouldCreate(DeusExPlayer player)
 }
 
 
-function UpdateHDTPsettings()
+function bool IsHDTP()
 {
-	local mesh tempmesh;
-	local texture temptex;
-	local int i, j;
-	local deusexplayer p;
-	local bool bSetHDTP;
-	local bool bSuccess;
+    return DeusExPlayer(GetPlayerPawn()) != None && DeusExPlayer(GetPlayerPawn()).bHDTPInstalled && hdtpReference.default.iHDTPModelToggle > 0;
+}
 
-	if(mesh == mesh2)
-		j=1;
-	else if(mesh == mesh3)
-		j=2;
+exec function UpdateHDTPsettings()
+{
+    local int i;
 
-	P = deusexplayer(getplayerpawn());
+    if (HDTPMesh3 != "")
+        Mesh3 = class'HDTPLoader'.static.GetMesh2(HDTPMesh3,string(default.Mesh3),IsHDTP());
+    if (HDTPMesh2 != "")
+        Mesh2 = class'HDTPLoader'.static.GetMesh2(HDTPMesh2,string(default.Mesh2),IsHDTP());
+    if (HDTPMesh != "")
+        Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),IsHDTP());
+    if (HDTPSkin != "")
+        Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),IsHDTP());
+    if (HDTPTexture != "")
+        Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),IsHDTP());
+    
+    for(i = 0; i < 8;i++)
+    {
+        if (HDTPMeshTex[i] != "")
+            MultiSkins[i] = class'HDTPLoader'.static.GetTexture2(HDTPMeshTex[i],string(default.MultiSkins[i]),IsHDTP());
+    }
 
-	if(P != none)
-	{
-		bSetHDTP = P.GetHDTPSettings(self);
-	}
+    if (assignedMesh == 2)
+        Mesh = Mesh2;
+    else if (assignedMesh == 3)
+        Mesh = Mesh3;
 
-	if(bSetHDTP && !bUsingHDTP)
-	{
-		if(HDTPMeshname != "")
-		{
-			tempmesh = lodmesh(dynamicloadobject(HDTPMeshname,class'mesh',true));
-			if(tempmesh != none)
-			{
-				mesh = tempmesh;
-				bSuccess=true;
-			}
-		}
-		if(HDTPMesh2name != "")
-		{
-			tempmesh = lodmesh(dynamicloadobject(HDTPMesh2name,class'mesh',true));
-			if(tempmesh != none)
-			{
-				mesh2 = tempmesh;
-				bSuccess=true;
-			}
-		}
-		if(HDTPMesh3name != "")
-		{
-			tempmesh = lodmesh(dynamicloadobject(HDTPMesh3name,class'mesh',true));
-			if(tempmesh != none)
-			{
-				mesh3 = tempmesh;
-				bSuccess=true;
-			}
-		}
-
-		if(bSuccess)
-		{
-			if(j==1)
-				mesh = mesh2;
-			else if(j==2)
-				mesh = mesh3;
-				texture=none;
-			skin=none;
-			for(i=0;i<=7;i++)
-			{
-				if(HDTPMeshtex[i] != "")
-				{
-					temptex = texture(dynamicloadobject(HDTPMeshtex[i],class'texture',true));
-					if(temptex != none)
-						multiskins[i] = temptex;
-				}
-			}
-			bUsingHDTP=true;
-		}
-	}
-	else if(!bSetHDTP && bUsingHDTP)
-	{
-		mesh = default.mesh;
-		mesh2 = default.Mesh2;
-		mesh3 = default.Mesh3;
-		texture=default.texture;
-		skin=default.skin;
-		for(i=0; i<=7;i++)
-		{
-			multiskins[i]=default.multiskins[i];
-		}
-		if(j==1)  //safety check
-			mesh = mesh2;
-		else if(j==2)
-			mesh = mesh3;
-		bUsingHDTP=false;
-	}
 }
 
 // ----------------------------------------------------------------------
@@ -186,11 +138,11 @@ function UpdateHDTPsettings()
 
 function InitFor(Actor Other)
 {
-local FleshFragmentNub nub;
-local vector vec;
-local rotator randRot;
-local DeusExLevelInfo info;                                                     //RSD
-local DeusExPlayer player;                                                      //RSD
+    local FleshFragmentNub nub;
+    local vector vec;
+    local rotator randRot;
+    local DeusExLevelInfo info;                                                     //RSD
+    local DeusExPlayer player;                                                      //RSD
 
     player = DeusExPlayer(GetPlayerPawn());                                     //RSD
     info = player.GetLevelInfo();                                               //RSD
@@ -230,7 +182,7 @@ local DeusExPlayer player;                                                      
 		if (ScriptedPawn(Other) != None)
 			if (ScriptedPawn(Other).bBurnedToDeath)
 				CumulativeDamage = MaxDamage-1;
-
+	 
 		SetScaleGlow();
 
 		// Will this carcass spawn flies?
@@ -248,7 +200,10 @@ local DeusExPlayer player;                                                      
 		}
 
 		if (Other.AnimSequence == 'DeathFront')
+        {
+            assignedMesh = 2;
 			Mesh = Mesh2;
+        }
 /*if (bPop && (IsA('CopCarcassBeheaded') || IsA('ThugMale2CarcassBeheaded')))
 {
 if (Mesh == Mesh2)
@@ -407,6 +362,7 @@ function PostBeginPlay()
 	local int i, j;
 	local Inventory inv;
     local DeusExPlayer DXplayer;                                                //RSD
+    assignedMesh = 1;
 
 	bCollideWorld = true;
 
@@ -443,6 +399,7 @@ function PostBeginPlay()
 	{
 		Mesh = Mesh3;
 		bNotDead = False;		// you will die in water every time
+        assignedMesh = 3;
 	}
 
 	MaxDamage = 0.8*Mass;
@@ -467,6 +424,7 @@ function ZoneChange(ZoneInfo NewZone)
 	if (NewZone.bWaterZone)
 		{
         Mesh = Mesh3;
+        assignedMesh = 3;
         if (!IsA('ScubaDiver'))
         {
         	KillUnconscious();                                                  //RSD: Proper kill
@@ -1698,7 +1656,12 @@ auto state Dead
                //PlaySound(Sound'FleshHit1', SLOT_Interact, 1, ,768,1.0);     //CyberP: sound when thrown
 			}
 				if (pool != None)
-					pool.maxDrawScale = CollisionRadius / 640.0;  //hah! Found you you bastard..was making HUUUGE decals. -DDL
+				{
+					if (pool.IsHDTP())
+						pool.maxDrawScale = CollisionRadius / 640.0;  //hah! Found you you bastard..was making HUUUGE decals. -DDL
+					else
+						pool.maxDrawScale = CollisionRadius / 40.0; //SARGE: No more puny vanilla blood pools
+				}
 			}
 
 			// alert NPCs that I'm food

@@ -8,6 +8,10 @@ var Vector lastHitLoc;
 var float smokeTime;
 var ParticleGenerator smokeGen;
 
+//SARGE: HDTP Model toggles
+var globalconfig int iHDTPModelToggle;
+var string HDTPSkin;
+
 //
 // copied from Engine.Fragment
 //
@@ -139,6 +143,7 @@ function Destroyed()
 function PostBeginPlay()
 {
 	Super.PostBeginPlay();
+    //UpdateHDTPsettings();
 
 	// randomize the lifespan a bit so things don't all disappear at once
 	speed *= 1.1;
@@ -146,6 +151,22 @@ function PostBeginPlay()
 	LifeSpan += FRand()*1.5; //CyberP: was 1.0
 }
 
+function bool IsHDTP()
+{
+    return DeusExPlayer(GetPlayerPawn()).bHDTPInstalled && iHDTPModelToggle > 0;
+}
+
+exec function UpdateHDTPsettings()
+{
+}
+
+exec function UpdateHDTPSkin()
+{
+    if (HDTPSkin != "")
+        Skin=class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),IsHDTP());
+}
+
+//SARGE: Unused???
 function SkinVariation()
 {
 }
@@ -181,6 +202,16 @@ simulated function Tick(float deltaTime)
 
 		ScaleGlow = LifeSpan / 2.0;
 	}
+}
+
+auto state flying
+{
+    simulated function BeginState()
+    {
+        UpdateHDTPsettings();
+        super.BeginState();
+        UpdateHDTPSkin();
+    }
 }
 
 defaultproperties

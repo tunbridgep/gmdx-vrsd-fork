@@ -80,7 +80,7 @@ defaultproperties
      largeIconHeight=46
      Description="A first-aid kit.|n|n<UNATCO OPS FILE NOTE JR095-VIOLET> The nanomachines of an augmented agent will automatically metabolize the contents of a medkit to efficiently heal damaged areas. An agent with medical training could greatly expedite this process. -- Jaime Reyes <END NOTE>"
      beltDescription="MEDKIT"
-     Skin=Texture'HDTPItems.Skins.HDTPMedKitTex1'
+     HDTPSkin="HDTPItems.Skins.HDTPMedKitTex1"
      Mesh=LodMesh'DeusExItems.MedKit'
      CollisionRadius=7.500000
      CollisionHeight=1.000000

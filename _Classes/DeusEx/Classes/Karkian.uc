@@ -270,6 +270,7 @@ defaultproperties
      InitialInventory(1)=(Inventory=Class'DeusEx.WeaponKarkianBump')
      WalkSound=Sound'DeusExSounds.Animal.KarkianFootstep'
      bSpawnBubbles=False
+     HDTPMesh="HDTPCharacters.HDTPkarkian"
      bCanSwim=True
      bCanGlide=False
      GroundSpeed=400.000000
@@ -285,7 +286,7 @@ defaultproperties
      VisibilityThreshold=0.002000
      Alliance=Karkian
      DrawType=DT_Mesh
-     Mesh=LodMesh'HDTPCharacters.HDTPkarkian'
+     Mesh=LodMesh'DeusExCharacters.Karkian'
      CollisionRadius=54.000000
      CollisionHeight=37.099998
      Mass=500.000000

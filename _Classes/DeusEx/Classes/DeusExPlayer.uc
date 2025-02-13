@@ -417,10 +417,12 @@ var globalconfig bool bAugDisplayVisible;
 var localized String CantBreakDT;
 
 //HDTP
-var globalconfig bool bHDTP_JC;
-var globalconfig bool bHDTP_Walton, bHDTP_Anna, bHDTP_UNATCO, bHDTP_MJ12, bHDTP_NSF, bHDTP_RiotCop, bHDTP_Gunther, bHDTP_Paul, bHDTP_Nico;
-var string HDTPMeshName;
+var config int iHDTPModelToggle;
+var string HDTPSkin;
+var string HDTPTexture;
+var string HDTPMesh;
 var string HDTPMeshTex[8];
+var bool bHDTPInstalled;
 
 //GMDX: CyberP & dasraiser
 //SAVEOUT
@@ -656,6 +658,10 @@ var globalconfig bool bBeltShowModified;                                        
 
 var globalconfig bool bTrickReloading;											//Sarge: Allow reloading with a full clip.
 
+var globalconfig bool bFemaleHandsAlways;                                      //SARGE: If true, use the Female hands on male JC. Goth JC with nail polish?
+
+var globalconfig bool bShowDataCubeRead;                                      //SARGE: If true, darken the screens on Data Cubes when they have been read.
+
 var globalconfig int iAllowCombatMusic;                                        //SARGE: Enable/Disable combat music, or make it require 2 enemies
 
 //Decline Everything
@@ -867,17 +873,22 @@ function AssignSecondary(Inventory item)
     RefreshChargedPickups();
 }
 
+function bool IsHDTP()
+{
+    return bHDTPInstalled && iHDTPModelToggle > 0;
+}
+
 function UpdateHDTPsettings()
 {
 	local mesh tempmesh;
 	local texture temptex;
 	local int i;
 
-	if(GetHDTPSettings(self)) //lol recursive
+	if(IsHDTP()) //lol recursive
 	{
-		if(HDTPMeshname != "")
+		if(HDTPMesh != "")
 		{
-			tempmesh = lodmesh(dynamicloadobject(HDTPMeshname,class'mesh',true));
+			tempmesh = lodmesh(dynamicloadobject(HDTPMesh,class'mesh',true));
 			if(tempmesh != none)
 			{
 				mesh = tempmesh;
@@ -901,32 +912,6 @@ function UpdateHDTPsettings()
 			multiskins[i]=default.multiskins[i];
 		}
 	}
-}
-
-function bool GetHDTPSettings(actor Other)
-{
-    if((Other.IsA('JCDentonMaleCarcass') || Other.IsA('JCDouble') || Other.IsA('JCDentonMale')) && bHDTP_JC)     //changed self to JCdentonmale for hopefully better mod compatibility
-        return true;
-    if((Other.IsA('MJ12Troop') || Other.IsA('MJ12TroopCarcass')) && bHDTP_MJ12)
-        return true;
-    else if((Other.IsA('UNATCOTroop') || Other.IsA('UNATCOTroopCarcass')) && bHDTP_UNATCO)
-        return true;
-    else if((Other.IsA('WaltonSimons') || Other.IsA('WaltonSimonsCarcass')) && bHDTP_WALTON)
-        return true;
-    else if((Other.IsA('AnnaNavarre') || Other.IsA('AnnaNavarreCarcass')) && bHDTP_Anna)
-        return true;
-    else if((Other.IsA('GuntherHermann') || Other.IsA('GuntherHermannCarcass')) && bHDTP_Gunther)
-        return true;
-    else if((Other.IsA('RiotCop') || Other.IsA('RiotCopCarcass')) && bHDTP_RiotCop)
-        return true;
-    else if((Other.IsA('Terrorist') || Other.IsA('TerroristCarcass')) && bHDTP_NSF)
-        return true;
-    else if((Other.IsA('PaulDenton') || Other.IsA('PaulDentonCarcass')) && bHDTP_Paul)
-        return true;
-    else if((Other.IsA('NicoletteDuClare') || Other.IsA('NicoletteDuClareCarcass')) && bHDTP_Nico)
-        return true;
-    else
-        return false;
 }
 
 function setupDifficultyMod() //CyberP: scale things based on difficulty. To find all things modified by
@@ -1740,13 +1725,27 @@ exec function HDTP(optional string s)
 	local scriptedpawn P;
 	local deusexcarcass C;
 	local DeusExWeapon W;                                                       //RSD: Added for weapon model toggles
-
+	local DeusExDecoration D;                                                   //SARGE: Added for object toggles
+	local DeusExPickup PK;                                                      //SARGE: Added for object toggles
+	local DeusExProjectile PR;                                                  //SARGE: Added for object toggles
+	local DeusExAmmo AM;                                                        //SARGE: Added for object toggles
+    
+	bHDTPInstalled = class'HDTPLoader'.static.HDTPInstalled();
+	
 	foreach Allactors(Class'Scriptedpawn',P)
 		P.UpdateHDTPSettings();
 	foreach Allactors(Class'DeusexCarcass',C)
 		C.UpdateHDTPsettings();
     foreach AllActors(Class'DeusExWeapon',W)                                    //RSD: Added for weapon model toggles
     	W.UpdateHDTPsettings();
+    foreach AllActors(Class'DeusExPickup',PK)                                   //SARGE: Added for object toggles
+    	PK.UpdateHDTPsettings();
+    foreach AllActors(Class'DeusExDecoration',D)                                //SARGE: Added for object toggles
+    	D.UpdateHDTPsettings();
+    foreach AllActors(Class'DeusExProjectile',PR)                               //SARGE: Added for object toggles
+    	PR.UpdateHDTPsettings();
+    foreach AllActors(Class'DeusExAmmo',AM)                                     //SARGE: Added for object toggles
+    	AM.UpdateHDTPsettings();
 
 	UpdateHDTPsettings();
 }
@@ -2230,6 +2229,7 @@ exec function StartNewGame(String startMap)
     local int musicVol, soundVol, speechVol;
 
     bGMDXNewGame = True;
+    seed = -1;
 
 	if (DeusExRootWindow(rootWindow) != None)
 		DeusExRootWindow(rootWindow).ClearWindowStack();
@@ -6869,7 +6869,10 @@ state Dying
             pool = spawn(class'BloodPool',,, HitLocation, Rotator(HitNormal));
             if (pool != none)
             {
-                pool.maxDrawScale = CollisionRadius / 520.0;
+				if (pool.IsHDTP())
+					pool.maxDrawScale = CollisionRadius / 520.0;
+				else
+					pool.maxDrawScale = CollisionRadius / 20.0;
                 pool.ReattachDecal();
             }
            }
@@ -8450,6 +8453,9 @@ exec function PutInHand(optional Inventory inv)
 		if (inv.IsA('Ammo'))
 			return;
 
+        if (inv.isA('NanoKeyRing'))
+            bUsedKeyringLast = true;
+
 		// Can't put an active charged item in hand  //cyberP: overruled for armor system
 		//if ((inv.IsA('ChargedPickup')) && (ChargedPickup(inv).IsActive()))
 		//	return;
@@ -9336,23 +9342,12 @@ exec function ToggleScope()
 	  {
 	    if (W.AnimSequence == 'Idle1' || W.AnimSequence == 'Idle2' || W.AnimSequence == 'Idle3')
         W.PlayAnim('Still');
-        if (W.bZoomed==False && GetConfig("Engine.Engine", "GameRenderDevice") != "D3D10Drv.D3D10RenderDevice")
-        {
-            W.ScopeToggle();
-        }
-	    else if (W.bZoomed==False&&W.IsA('WeaponRifle'))
-	        WeaponRifle(W).activateAn = True;
-	    else if (W.bZoomed==False&&W.IsA('WeaponPistol') && W.bHasScope)
-    	    WeaponPistol(W).activateAn = True;
-	    else if (W.bZoomed==False&&W.IsA('WeaponMiniCrossbow') && W.bHasScope)
-	        WeaponMiniCrossbow(W).activateAn = True;
-	    else if (W.bZoomed==False&&W.IsA('WeaponStealthPistol') && W.bHasScope)
-	        WeaponStealthPistol(W).activateAn = True;
-	    else if (W.bZoomed==False&&W.IsA('WeaponAssaultGun') && W.bHasScope)
-    	    WeaponAssaultGun(W).activateAn = True;
-        else
-	    	W.ScopeToggle();
 		
+	    if (!W.bZoomed)
+            W.activateAn = true;
+        else
+            W.ScopeToggle();
+        
         if (W.bZoomed&&W.IsA('WeaponGEPGun'))
             SetLaser(false);
 	  }
@@ -10754,8 +10749,14 @@ exec function ShowAcceleration(bool bShow)
 function texture GetWeaponHandTex()
 {
 	local texture tex;
+    local bool femHands;
+    
+    if (bRadarTran)
+        return Texture'Effects.Electricity.Xplsn_EMPG';
+    else if (bIsCloaked)
+        return FireTexture'GameEffects.InvisibleTex';
 
-	if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
+	if (FemaleEnabled() && (bFemaleHandsAlways || (FlagBase != None && FlagBase.GetBool('LDDPJCIsFemale'))))
     {
         switch(PlayerSkin)
         {
@@ -10782,16 +10783,16 @@ function texture GetWeaponHandTex()
 		switch(PlayerSkin)
 		{
 			//default, black, latino, ginger, albino, respectively
-			case 0: tex = texture'weaponhandstex'; break;
-			case 1: tex = texture'HDTPItems.skins.weaponhandstexblack'; break;
-			case 2: tex = texture'HDTPItems.skins.weaponhandstexlatino'; break;
-			case 3: tex = texture'HDTPItems.skins.weaponhandstexginger'; break;
-			case 4: tex = texture'HDTPItems.skins.weaponhandstexalbino'; break;
+			case 0: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.weaponhandstex0A"); break;
+			case 1: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.weaponhandstex1A"); break;
+			case 2: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.weaponhandstex2A"); break;
+			case 3: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.weaponhandstex3A"); break;
+			case 4: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.weaponhandstex4A"); break;
 		}
     }
 
-    if (tex == None)
-        tex = texture'weaponhandstex'; //White hands texture by default
+    if (tex == None) //Final backup
+        tex = texture'weaponhandstex';
 	return tex;
 }
 
@@ -17639,7 +17640,7 @@ function RegenStaminaTick(float deltaTime)                                      
 function bool FemaleEnabled()
 {
     local Texture TTex;
-	TTex = Texture(DynamicLoadObject("FemJC.MenuPlayerSetupJCDentonFemale_1", class'Texture', false));
+	TTex = Texture(DynamicLoadObject("FemJC.MenuPlayerSetupJCDentonFemale_1", class'Texture', true));
 	return TTex != None;
 }
 
@@ -17741,6 +17742,9 @@ defaultproperties
      BurnString=" with excessive burning"
      NoneString="None"
      MPDamageMult=1.000000
+<<<<<<< HEAD
+     QuickSaveTotal=10
+=======
      bHDTP_JC=False
      bHDTP_Walton=False
      bHDTP_Anna=False
@@ -17753,6 +17757,7 @@ defaultproperties
      bHDTP_Nico=False
      iQuickSaveMax=5
      iAutoSaveMax=3
+>>>>>>> master
      bTogAutoSave=True
      bColorCodedAmmo=True
      bHardcoreAI3=True
@@ -17854,6 +17859,7 @@ defaultproperties
      bDisplayClips=true
      bCutsceneFOVAdjust=true
      iFrobDisplayStyle=1
+     bShowDataCubeRead=true;
      iAllowCombatMusic=1
      bFullAccuracyCrosshair=true;
      bShowEnergyBarPercentages=true;

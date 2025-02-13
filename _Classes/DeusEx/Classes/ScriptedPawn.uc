@@ -415,10 +415,6 @@ var      int      NumCarcasses;     // number of carcasses seen
 var      float    walkAnimMult;
 var      float    runAnimMult;
 
-var bool bUsingHDTP;
-var string HDTPMeshName;
-var string HDTPMeshTex[8];
-
 //GMDX
 var bool        bBurnedUp; //CyberP: for plasma rifle gibbing
 var bool        bFlyer;    //CyberP: for pawn knockback
@@ -482,6 +478,14 @@ var(GMDX) const bool LDDPExtra;                                                 
 var(GMDX) const bool deleteIfMale;                                              //Delete this character if we're male
 var(GMDX) const bool deleteIfFemale;                                            //Delete this character if we're female
 
+//SARGE: HDTP Model toggles
+var config int iHDTPModelToggle;
+var string HDTPSkin;
+var string HDTPTexture;
+var string HDTPMesh;
+var string HDTPMeshTex[8];
+var travel bool bSetupHDTP;
+
 native(2102) final function ConBindEvents();
 
 native(2105) final function bool IsValidEnemy(Pawn TestEnemy, optional bool bCheckAlliance);
@@ -516,6 +520,7 @@ function bool ShouldCreate(DeusExPlayer player)
 function PreBeginPlay()
 {
 	local float saveBaseEyeHeight;
+    local int i;
 
 	// TODO:
 	//
@@ -546,55 +551,35 @@ function PreBeginPlay()
 	UpdateReactionCallbacks();
 }
 
-function UpdateHDTPsettings()
+function bool IsHDTP()
 {
-	local mesh tempmesh;
-	local texture temptex;
-	local int i;
-	local bool bSetHDTP;
-	local deusexplayer P;
+    return DeusExPlayer(GetPlayerPawn()) != None && DeusExPlayer(GetPlayerPawn()).bHDTPInstalled && iHDTPModelToggle > 0;
+}
 
-	P = deusexplayer(getplayerpawn());
+//SARGE: New function to update model meshes (specifics handled in each class)
+exec function UpdateHDTPsettings()
+{
+    local int i;
+    local bool hdtp;
 
-	if(P != none)  //sigh, ok so...I guess I should've thought this through. Pawns fucked with in editor etc now also reset to defaults
-	{
-		bSetHDTP = P.GetHDTPSettings(self);
+    hdtp = IsHDTP();
 
-		if(bSetHDTP && !bUsingHDTP)
-		{
-			if(HDTPMeshname != "")
-			{
-				tempmesh = lodmesh(dynamicloadobject(HDTPMeshname,class'mesh',true));
-				if(tempmesh != none)
-				{
-					mesh = tempmesh;
-					texture=none;
-					skin=none;
-					for(i=0;i<=7;i++)
-					{
-						if(HDTPMeshtex[i] != "")
-						{
-							temptex = texture(dynamicloadobject(HDTPMeshtex[i],class'texture',true));
-							if(temptex != none)
-								multiskins[i] = temptex;
-						}
-					}
-				}
-			}
-			bUsingHDTP=true;
-		}
-		else if(!bSetHDTP && bUsingHDTP)
-		{
-			mesh = default.mesh;
-			texture=default.texture;
-			skin=default.skin;
-			for(i=0; i<=7;i++)
-			{
-				multiskins[i]=default.multiskins[i];
-			}
-			bUsingHDTP=false;
-		}
-	}
+    //Bail out if we have no need to continue
+    if ((hdtp && bSetupHDTP) || (!hdtp && !bSetupHDTP))
+        return;
+
+    if (HDTPMesh != "")
+    {
+        Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),hdtp);
+        //We have to be careful here, or we will break holo-projectors
+        for(i = 0; i < 8;i++)
+            MultiSkins[i] = class'HDTPLoader'.static.GetTexture2(HDTPMeshTex[i],string(default.MultiSkins[i]),IsHDTP());
+    }
+    if (HDTPSkin != "")
+        Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),hdtp);
+    if (HDTPTexture != "")
+        Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),hdtp);
+    bSetupHDTP = hdtp;
 }
 
 // ----------------------------------------------------------------------
@@ -756,8 +741,15 @@ function InitializeInventory()
 						inv.InitialState='Idle2';
 						inv.GiveTo(Self);
 						inv.SetBase(Self);
-						if ((firstWeapon == None) && (Weapon(inv) != None))
-							firstWeapon = Weapon(inv);
+                        if (Weapon(inv) != None)
+                        {
+                            if (firstWeapon == None)
+                                firstWeapon = Weapon(inv);
+
+                            //Sarge: Reload all weapons
+                            if (inv.IsA('DeusExWeapon'))
+                                DeusExWeapon(inv).ClipCount = DeusExWeapon(inv).ReloadCount;
+                        }
 					}
 				}
 			}
@@ -3137,7 +3129,8 @@ function Carcass SpawnCarcass()
 					chunk.DrawScale = size / 26;
 					if (FRand() < 0.3)
 					{
-                      chunk.Skin=Texture'HDTPDecos.Skins.HDTPAlarmLightTex5';//Texture'Effects.Fire.Wepn_Prifle_SFX';
+                      //chunk.Skin=Texture'HDTPDecos.Skins.HDTPAlarmLightTex5';//Texture'Effects.Fire.Wepn_Prifle_SFX';
+					  chunk.Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.Skins.HDTPAlarmLightTex5","DeusExDeco.Skins.AlarmLightTex5",IsHDTP());
                       chunk.LightEffect=LE_FireWaver;
                       chunk.LightBrightness=255;
                       chunk.LightHue=80;
@@ -3179,7 +3172,8 @@ function Carcass SpawnCarcass()
 					chunk2.DrawScale = size / 26;
 					if (FRand() < 0.3)
 					{
-                      chunk2.Skin=Texture'HDTPDecos.Skins.HDTPAlarmLightTex5';//Texture'Effects.Fire.Wepn_Prifle_SFX';
+					  //chunk2.Skin=Texture'HDTPDecos.Skins.HDTPAlarmLightTex5';//Texture'Effects.Fire.Wepn_Prifle_SFX';
+					  chunk2.Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.Skins.HDTPAlarmLightTex5","DeusExDeco.Skins.AlarmLightTex5",IsHDTP());
                       chunk2.LightEffect=LE_FireWaver;
                       chunk2.LightBrightness=255;
                       chunk2.LightHue=80;
@@ -4423,7 +4417,7 @@ local SpoofedCorona cor;
 
 	if (bEnable && !bCloakOn && !bCloaked)
 	{
-        SetSkinStyle(STY_Translucent, Texture'HDTPAlarmLightTex6', 0.4);
+        SetSkinStyle(STY_Translucent, class'HDTPLoader'.static.GetTexture2("HDTPDecos.Skins.HDTPAlarmLightTex6","DeusExDeco.Skins.AlarmLightTex6",IsHDTP()), 0.4);
         SetTimer(0.4,False);
         cor = Spawn(class'SpoofedCorona');
         if (cor != none)
@@ -5997,7 +5991,6 @@ function PlayDying(name damageType, vector hitLoc)
 		PlayDyingSound();
 	}
 }
-
 
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
@@ -8768,19 +8761,21 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
 
 function Timer()
 {
-if (bCloakOn)           //CyberP: for new cloaking effect.
-{
-         if (IsA('SecurityBot4'))
-		    SetSkinStyle(STY_Translucent, Texture'HDTPWeaponCrowbarTex2', 0.4);
-		 else
-		    SetSkinStyle(STY_Translucent, Texture'HDTPWeaponCrowbarTex2', 0.15);
-         LightRadius = 0;
-         AmbientGlow = 0;
-}
-else
-{
-UpdateFire();
-}
+	//SARGE: Was previously using 'HDTPWeaponCrowbarTex2', vanilla used 'WhiteStatic'
+	//Imported the high-quality one from HDTP, since WhiteStatic is WAY too visible!
+	if (bCloakOn)           //CyberP: for new cloaking effect.
+	{
+			 if (IsA('SecurityBot4'))
+				SetSkinStyle(STY_Translucent, Texture'RSDCrap.Skins.CloakingTex', 0.4);
+			 else
+				SetSkinStyle(STY_Translucent, Texture'RSDCrap.Skins.CloakingTex', 0.15);
+			 LightRadius = 0;
+			 AmbientGlow = 0;
+	}
+	else
+	{
+	UpdateFire();
+	}
 }
 
 
@@ -17134,4 +17129,5 @@ defaultproperties
      FamiliarName="DEFAULT FAMILIAR NAME - REPORT THIS AS A BUG"
      UnfamiliarName="DEFAULT UNFAMILIAR NAME - REPORT THIS AS A BUG"
      fireReactTime=0.4
+     iHDTPModelToggle=0
 }
