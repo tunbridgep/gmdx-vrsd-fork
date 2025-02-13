@@ -666,6 +666,13 @@ var globalconfig bool bAlwaysShowBloom;                                         
 
 var globalconfig bool bShowEnergyBarPercentages;                                //SARGE: If true, show the oxygen and bioenergy percentages below the bars.
 
+var localized string EnergyCantReserve;                                         //SARGE: Message when we don't have enough energy to reserve for a togglable augmentation
+
+var globalconfig bool bSimpleAugSystem;                                         //SARGE: Simplifies the Aug screen by merging Auto and Toggle augs into one "type". Doesn't change gameplay in any way.
+
+//Remove Aug Hum Sounds
+var globalconfig bool bQuietAugs;                                               //SARGE: If enabled, augmentations won't play the "hum" sound while active
+
 //Colour Theme Manager
 var globalconfig String MenuThemeNameGMDX;
 var globalconfig String HUDThemeNameGMDX;
@@ -1321,11 +1328,13 @@ function InitializeSubSystems()
 		AugmentationSystem.CreateAugmentations(Self);
 		AugmentationSystem.AddDefaultAugmentations();
 		AugmentationSystem.SetOwner(Self);
+		AugmentationSystem.Setup();
 	}
 	else
 	{
 		AugmentationSystem.SetPlayer(Self);
 		AugmentationSystem.SetOwner(Self);
+		AugmentationSystem.Setup();
 	}
 
 	// install the skill system if not found
@@ -1541,6 +1550,7 @@ event TravelPostAccept()
 	{
 		// set the player correctly
 		AugmentationSystem.SetPlayer(Self);
+		AugmentationSystem.Setup();
 		AugmentationSystem.RefreshAugDisplay();
 	}
 
@@ -2283,7 +2293,7 @@ function ShowIntro(optional bool bStartNewGame, optional bool force)
 	bStartNewGameAfterIntro = bStartNewGame;
 
 	// Make sure all augmentations are OFF before going into the intro
-	AugmentationSystem.DeactivateAll();
+	AugmentationSystem.DeactivateAll(true);
 
 	if ((bSkipNewGameIntro || bPrisonStart) && !force)
 	  PostIntro();
@@ -2388,7 +2398,7 @@ function ShowMultiplayerWin( String winnerName, int winningTeam, String Killer, 
 	if (PlayerIsClient())
 	{
 	  if (AugmentationSystem != None)
-		 AugmentationSystem.DeactivateAll();
+		 AugmentationSystem.DeactivateAll(true);
 	}
 }
 
@@ -3011,6 +3021,7 @@ function UpdateDynamicMusic(float deltaTime)
 // MaintainEnergy()
 // ----------------------------------------------------------------------
 
+//SARGE: TODO: Refactor
 function MaintainEnergy(float deltaTime)
 {
 	local Float energyUse;
@@ -3664,13 +3675,6 @@ exec function ActivateAugmentation(int num)
 	if (RestrictInput())
 		return;
 
-	if (Energy == 0)
-	{
-		ClientMessage(EnergyDepleted);
-		PlaySound(AugmentationSystem.FirstAug.DeactivateSound, SLOT_None);
-		return;
-	}
-
 	if (AugmentationSystem != None)
 		AugmentationSystem.ActivateAugByKey(num);
 }
@@ -3692,6 +3696,7 @@ exec function ActivateAllAugs()
 exec function DeactivateAllAugs()
 {
 	if (AugmentationSystem != None)
+		//AugmentationSystem.DeactivateAll(true);
 		AugmentationSystem.DeactivateAll();
 }
 
@@ -5001,6 +5006,24 @@ function int HealPlayer(int baseHealPoints, optional Bool bUseMedicineSkill)
 }
 
 // ----------------------------------------------------------------------
+// GetMaxEnergy()
+// Returns the max energy left after energy reservations
+// ----------------------------------------------------------------------
+
+function float GetMaxEnergy(optional bool trueMax)
+{
+    local int max;
+    max = EnergyMax - AugmentationSystem.CalcEnergyReserve();
+
+    if (Energy > max)
+        Energy = max;
+
+    if (trueMax)
+        return EnergyMax;
+    return FMax(0.0,max);
+}
+
+// ----------------------------------------------------------------------
 // ChargePlayer()
 // ----------------------------------------------------------------------
 
@@ -5008,7 +5031,7 @@ function int ChargePlayer(int baseChargePoints, optional bool showMessage)
 {
 	local int chargedPoints;
 
-	chargedPoints = Min(EnergyMax - Int(Energy), baseChargePoints);
+	chargedPoints = Min(GetMaxEnergy() - Int(Energy), baseChargePoints);
 
 	Energy += chargedPoints;
 
@@ -6995,7 +7018,7 @@ Begin:
 	drugEffectTimer	= 0;
 
     if (AugmentationSystem != None)
-        AugmentationSystem.DeactivateAll(); //CyberP: deactivate augs
+        AugmentationSystem.DeactivateAll(true); //CyberP: deactivate augs
 	// Don't come back to life crouched
     SetCrouch(false,true);
 
@@ -14130,7 +14153,7 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
 	if (damageType == 'NanoVirus')
 	{
         NanoVirusTimer += float(Damage);                                        //RSD: Actually it does, it makes augs unusable for as many seconds as damage taken
-		AugmentationSystem.DeactivateAll();
+		AugmentationSystem.DeactivateAll(true);
 		NanoVirusTicks = 0;                                                     //RSD: Awful hack
 		bNanoVirusSentMessage = false;                                          //RSD: Awful hack
         return;
@@ -14655,6 +14678,8 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 	local HazMatSuit suit;
 	local BallisticArmor armor;
 	local bool bReduced;
+    local AugEnviro enviro;
+    local AugAqualung lung;
 
 	bReduced = False;
 	newDamage = Float(Damage);
@@ -14665,13 +14690,28 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 	{
 	    if (DamageType != 'Shocked')
 	    {
-	    if (bBoosterUpgrade && Energy > 0 && Damage > 0)
-		        AugmentationSystem.AutoAugs(false,true);
-		if (AugmentationSystem != None)
-			augLevel = AugmentationSystem.GetAugLevelValue(class'AugEnviro');
+            if (bBoosterUpgrade && Energy > 0 && Damage > 0)
+                    AugmentationSystem.AutoAugs(false,true);
+            if (AugmentationSystem != None)
+            {
+                enviro = AugEnviro(AugmentationSystem.GetAug(class'AugEnviro'));
+                augLevel = enviro.LevelValues[enviro.CurrentLevel];
 
-		if (augLevel >= 0.0)
-			newDamage *= augLevel;
+                //Make sure we have enough energy
+                //EDIT: This was based on damage tane, and still can be if you uncomment this. For now, use the old "20 per second" of the old aug.
+                //if (enviro.bIsActive && augLevel >= 0.0 && Energy > 0 && Energy >= enviro.GetCustomEnergyRate(newDamage * 0.1))
+                if (enviro.bIsActive && augLevel >= 0.0 && Energy > 0)
+                {
+                    //Only use energy once per 3 seconds, like the old aug
+                    if (saveTime >= enviro.lastEnergyTick)
+                    {
+                        //Energy -= MAX(int(newDamage * 0.1),1);
+                        Energy -= 1;
+                        enviro.lastEnergyTick = saveTime + 3.0;
+                    }
+                    newDamage *= augLevel;
+                }
+            }
         }
 
 		// get rid of poison if we're maxed out
@@ -14712,7 +14752,17 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 					// Trash: No stamina damage while wearing a hazmat suit and with the perk FilterUpgrade
         		}
 				else
-                	swimTimer -= (newDamage*0.4) + 3;
+                {
+                    //Aqualung now reduces stamina damage
+                    augLevel = 1.0;
+                    lung = AugAqualung(AugmentationSystem.GetAug(class'AugAqualung'));
+                    if (lung.bIsActive)
+                    {
+                        augLevel = 2.0 - lung.LevelValues[lung.CurrentLevel];
+                    }
+                	swimTimer -= ((newDamage*0.4) + 3) * augLevel;
+                    log("Stamina Damage AugLevel: " $ augLevel);
+                }
 				
                 if (swimTimer < 0)
                     swimTimer = 0;
@@ -14760,14 +14810,12 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 
 			if (augLevel < 0.0 && Energy > 0.0) //this means we can't have both augs installed, and that for passive to work energy is required. //RSD: Actually it just means active overrides passive
 			{
-				augLevel = AugmentationSystem.GetAugLevelValue(class'AugBallisticPassive');
-				//augLevel = 1.0-(Energy/EnergyMax)*(1.0-augLevel);               //RSD: Now protects proportionally to current energy (up to 20/25/30/35%)
-				augLevel = 1.0 - 0.35*FClamp(Energy/(augLevel*EnergyMax),0.0,1.0);//RSD: Still proportional, but up to 35% protection depending on 100/80/60/40% of your energy bar
+                augLevel = AugBallisticPassive(AugmentationSystem.GetAug(class'AugBallisticPassive')).GetDamageMod();
 			}
 			//augLevel *= AugmentationSystem.GetAugLevelValue(class'AugBallistic');//RSD: figure out stacking prots later maybe
         }
 
-		if (augLevel >= 0.0)
+		if (augLevel > 0.0)
 			newDamage *= augLevel;
 	}
 
@@ -14848,7 +14896,7 @@ function Died(pawn Killer, name damageType, vector HitLocation)
 		ExtinguishFire();
 
 	if (AugmentationSystem != None)
-		AugmentationSystem.DeactivateAll();
+		AugmentationSystem.DeactivateAll(true);
 
 	if ((Level.NetMode == NM_DedicatedServer) || (Level.NetMode == NM_ListenServer))
 	  ClientDeath();
@@ -17565,6 +17613,7 @@ defaultproperties
      PrimaryGoalCompleted="Primary Goal Completed"
      SecondaryGoalCompleted="Secondary Goal Completed"
      EnergyDepleted="Bio-electric energy reserves depleted"
+     EnergyCantReserve="Not enough reserve Bio-Energy"
      AddedNanoKey="%s added to Nano Key Ring"
      DuplicateNanoKey="%s not added to Key Ring [Duplicate]"
      HealedPointsLabel="Healed %d points"
@@ -17701,6 +17750,7 @@ defaultproperties
      iAllowCombatMusic=1
      bFullAccuracyCrosshair=true;
      bShowEnergyBarPercentages=true;
+     bSimpleAugSystem=true
 	 MenuThemeNameGMDX="Default"
      HUDThemeNameGMDX="Default"
      dblClickHolster=2

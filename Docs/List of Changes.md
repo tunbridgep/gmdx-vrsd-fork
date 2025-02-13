@@ -29,6 +29,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX bug where recharging items with biocells would cause the belt view in the inventory to continually get brighter and brighter until the inventory screen was closed.
     - Fixed many other GMDX and Vanilla bugs.
 - Quality of Life Improvements:
+    - The augmentation "hum" sound can be disabled.
     - Complete overhaul of the "Decline Knives" system
         - "Decline Knives" setting has been removed
         - A new Decline button has been added to items in the inventory. Clicking it will decline a specific item going forward, preventing it from being taken off corpses.

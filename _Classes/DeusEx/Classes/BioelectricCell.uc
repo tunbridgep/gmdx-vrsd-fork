@@ -23,7 +23,7 @@ function bool CanAssignSecondary(DeusExPlayer player)
 //SARGE: Cannot use if at max bioenergy
 function bool RestrictedUse(DeusExPlayer player)
 {
-    return (player.Energy >= player.EnergyMax);
+    return (player.Energy >= player.GetMaxEnergy());
 }
 
 function OnActivate(DeusExPlayer player)

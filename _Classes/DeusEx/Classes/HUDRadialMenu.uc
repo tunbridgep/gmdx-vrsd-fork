@@ -165,7 +165,7 @@ function ToggleCurrent() {
 
     if (highlightedItem == power && activeItems > 0) {
         player.DeactivateAllAugs();
-        activeItems = 0;
+        activeItems = player.augmentationSystem.NumAugsActive(); //SARGE: Was hardcoded to 0. Now that we aren't deactivating toggled augs, we need to re-read the number
         updatePowerStatus();
         return;
     }
@@ -424,11 +424,11 @@ function UpdateItemStatus(Augmentation aug) {
 	}
 	if (aug.IsActive() && !orderedItems[i].isActive) {
         orderedItems[i].Activate();
-        activeItems++;
+        activeItems = player.augmentationSystem.NumAugsActive(); //SARGE: Was hardcoded to incrementing. Now that we aren't deactivating toggled augs, we need to re-read the number
     }
 	else {
         orderedItems[i].Deactivate();
-        activeItems--;
+        activeItems = player.augmentationSystem.NumAugsActive(); //SARGE: Was hardcoded to incrementing. Now that we aren't deactivating toggled augs, we need to re-read the number
     }
 
     updatePowerStatus();

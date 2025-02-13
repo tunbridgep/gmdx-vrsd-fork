@@ -26,6 +26,8 @@ var	int				team;				// Keep track of team of owner
 var() bool          bNoHardcoreFilter;
 var bool            bRadiusSet;
 
+var travel bool bEUASDetected;              //SARGE: Set to true when this explosive is detected on the EUAS augmentation.
+
 var bool            bEMPDisabled;             //SARGE: When disabled by EMP, permanently prevent it from being re-armed
 
 var int             rearmSkillRequired;      //SARGE: Demolitions Skill required to rearm this explosive after disarming it. Only used by Proximity Triggered Grenades.
