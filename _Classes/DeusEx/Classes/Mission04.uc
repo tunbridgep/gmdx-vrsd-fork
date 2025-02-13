@@ -158,26 +158,31 @@ function PreTravel()
 			flags.SetBool('M04_Hotel_Cleared', False,, 6);
 	}
 
-	//== For looks, let's remove the items from the player's belt
-	//==  before they get sent to MJ12 HQ, rather than after.
-	//==  (the items are still in inventory though)
 	else if(localURL == "04_NYC_BATTERYPARK")
 	{
-		for(count=0; count < 10; count++)
-		{
-			if(DeusExRootWindow(Player.rootWindow).hud.belt.objects[count].GetItem() != None && !DeusExRootWindow(Player.rootWindow).hud.belt.objects[count].GetItem().IsA('NanoKeyRing'))
-			{
-				DeusExRootWindow(Player.rootWindow).hud.belt.objects[count].GetItem().bInObjectBelt = False;
-				DeusExRootWindow(Player.rootWindow).hud.belt.objects[count].GetItem().beltPos = -1;
-			}
-		}
-
-        //player.assignedWeapon = None;
-        //player.primaryWeapon = None;
-		DeusExRootWindow(Player.rootWindow).hud.belt.ClearBelt();
+        ClearBelt();
 	}
 
 	Super.PreTravel();
+}
+
+//== For looks, let's remove the items from the player's belt
+//==  before they get sent to MJ12 HQ, rather than after.
+//==  (the items are still in inventory though)
+function ClearBelt()
+{
+    local int count;
+    for(count=0; count < 10; count++)
+    {
+        if(DeusExRootWindow(Player.rootWindow).hud.belt.objects[count].GetItem() != None && !DeusExRootWindow(Player.rootWindow).hud.belt.objects[count].GetItem().IsA('NanoKeyRing'))
+        {
+            DeusExRootWindow(Player.rootWindow).hud.belt.objects[count].GetItem().bInObjectBelt = False;
+            DeusExRootWindow(Player.rootWindow).hud.belt.objects[count].GetItem().beltPos = -1;
+        }
+    }
+    //player.assignedWeapon = None;
+    //player.primaryWeapon = None;
+    DeusExRootWindow(Player.rootWindow).hud.belt.ClearBelt();
 }
 
 // ----------------------------------------------------------------------
@@ -198,7 +203,7 @@ function Timer()
 	local Actor A;
 	local PaulDenton Paul;
 	local FordSchick Ford;
-	local int count;
+    local int count;
 
 	Super.Timer();
 
@@ -224,19 +229,8 @@ function Timer()
                     if (count > 8 - int(Player.CombatDifficulty))
                        flags.SetBool('PaulDenton_Dead',True,,16);
                 }
-				//== Clear out the object belt now; otherwise the player will see their items being "confiscated" when they wake up in prison
-				for(count=0; count < 10; count++)
-				{
-					if(DeusExRootWindow(Player.rootWindow).hud.belt.objects[count].GetItem() != None && !DeusExRootWindow(Player.rootWindow).hud.belt.objects[count].GetItem().IsA('NanoKeyRing'))
-					{
-						DeusExRootWindow(Player.rootWindow).hud.belt.objects[count].GetItem().bInObjectBelt = False;
-						DeusExRootWindow(Player.rootWindow).hud.belt.objects[count].GetItem().beltPos = -1;
-					}
-				}
-				//player.assignedWeapon = None;   //CyberP: unassign
-			    //player.primaryWeapon = None;
-				DeusExRootWindow(Player.rootWindow).hud.belt.ClearBelt();
 
+                ClearBelt();
 				Player.GoalCompleted('EscapeToBatteryPark');
 				Level.Game.SendPlayer(Player, "05_NYC_UNATCOMJ12Lab?Difficulty="$Player.combatDifficulty);
 			}

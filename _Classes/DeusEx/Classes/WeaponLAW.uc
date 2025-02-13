@@ -130,4 +130,5 @@ defaultproperties
      CollisionRadius=25.000000
      CollisionHeight=6.800000
      Mass=50.000000
+     bDisposableWeapon=true
 }
