@@ -157,7 +157,12 @@ function UpdateItemText()
 
 	if (item != None)
 	{
-		if (item.IsA('DeusExWeapon'))
+		//Show Dragons Tooth charge
+		if (item.isA('WeaponNanoSword') && WeaponNanoSword(item).ChargeManager != None && !bInventorySlot)
+		{
+			itemText = Sprintf(WeaponNanoSword(item).ChargeManager.ChargeRemainingLabelSmall,WeaponNanoSword(item).ChargeManager.GetCurrentCharge());
+		}
+		else if (item.IsA('DeusExWeapon'))
 		{
 			// If this is a weapon, show the number of remaining rounds
 			weapon = DeusExWeapon(item);

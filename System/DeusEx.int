@@ -2262,7 +2262,7 @@ beltDescription="PEPPER"
 [WeaponNanoSword]
 ItemName="Dragon's Tooth Sword"
 ItemArticle="the"
-Description="The true weapon of a modern warrior, the Dragon's Tooth is not a sword in the traditional sense, but a nanotechnologically constructed blade that is dynamically 'forged' on command into a non-eutactic solid. Nanoscale whetting devices insure that the blade is both unbreakable and lethally sharp. |n|n<TT//UnderNet.0924.243.886> According to old schematics the sword *does* appear to have some disadvantages: |n|n-The Dragon's Tooth Sword emits a very distinct sound upon construction, so draw before moving in for the kill. |n-The sword can light your way in darkness but may also expose you to your enemies, as is its double-edged nature. |n-The sword must be honed with modification technology to reach its true potential.<END NOTE>"
+Description="The true weapon of a modern warrior, the Dragon's Tooth is not a sword in the traditional sense, but a nanotechnologically constructed blade that is dynamically 'forged' on command into a non-eutactic solid. Nanoscale whetting devices insure that the blade is both unbreakable and lethally sharp. |n|n<TT//UnderNet.0924.243.886> According to old schematics the sword *does* appear to have some disadvantages:|n|n-Due to it's molecular nature, the sword requires a constant supply of power in order to function.|n-The Dragon's Tooth Sword emits a very distinct sound upon construction, so draw before moving in for the kill. |n-The sword can light your way in darkness but may also expose you to your enemies, as is its double-edged nature. |n-The sword must be honed with modification technology to reach its true potential.<END NOTE>"
 beltDescription="DTS"
 msgSpec="Emits light, accepts damage modifications"
 
