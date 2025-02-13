@@ -1404,8 +1404,9 @@ function BringUp()
 
 function PlaySelect()
 {
-local DeusExPlayer player;
-local float p, mod;
+    local DeusExPlayer player;
+    local float p, mod;
+    local Projectile firedProjectile;
 
      player = DeusExPlayer(Owner);
 
@@ -1441,7 +1442,10 @@ local float p, mod;
 		GotoState('NormalFire');
 		bPointing=True;
 		if (IsA('WeaponHideAGun'))
-		   ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+        {
+            firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+            OnProjectileFired(firedProjectile);
+        }
 		if ( Owner.IsA('PlayerPawn') )
 			PlayerPawn(Owner).PlayFiring();
 		PlaySelectiveFiring();
@@ -3149,10 +3153,15 @@ simulated function MuzzleFlashLight()
 
 function ServerHandleNotify( bool bInstantHit, class<projectile> ProjClass, float ProjSpeed, bool bWarn )
 {
+    local Projectile firedProjectile;
+
 	if (bInstantHit)
 		TraceFire(0.0);
 	else
-		ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+    {
+        firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+        OnProjectileFired(firedProjectile);
+    }
 }
 
 //
@@ -3162,6 +3171,7 @@ function ServerHandleNotify( bool bInstantHit, class<projectile> ProjClass, floa
 simulated function HandToHandAttack()
 {
 	local bool bOwnerIsPlayerPawn;
+    local Projectile firedProjectile;
 
 	if (bOwnerWillNotify)
 		return;
@@ -3183,7 +3193,10 @@ simulated function HandToHandAttack()
 	if (bInstantHit)
 		TraceFire(0.0);
 	else
-		ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+    {
+        firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+        OnProjectileFired(firedProjectile);
+    }
 
 	// if we are a thrown weapon and we run out of ammo, destroy the weapon
 	if ( bHandToHand && (ReloadCount > 0) && (SimAmmoAmount <= 0))
@@ -3204,6 +3217,7 @@ simulated function HandToHandAttack()
 simulated function OwnerHandToHandAttack()
 {
 	local bool bOwnerIsPlayerPawn;
+    local Projectile firedProjectile;
 
 	if (!bOwnerWillNotify)
 		return;
@@ -3225,7 +3239,10 @@ simulated function OwnerHandToHandAttack()
 	if (bInstantHit)
 		TraceFire(0.0);
 	else
-		ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+    {
+        firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+        OnProjectileFired(firedProjectile);
+    }
 }
 
 function ForceFire()
@@ -3280,6 +3297,12 @@ function ServerForceFire()
 	Fire(0);
 }
 
+//SARGE: Handle special cases after we fire a projectile
+function OnProjectileFired(Projectile firedProjectile)
+{
+    //do nothing
+}
+
 simulated function int PlaySimSound( Sound snd, ESoundSlot Slot, float Volume, float Radius )
 {
 	if ( Owner != None )
@@ -3304,6 +3327,7 @@ simulated function bool ClientFire( float value )
 {
 	local bool bWaitOnAnim;
 	local vector shake;
+    local Projectile firedProjectile;
 
 	// check for surrounding environment
 	if ((EnviroEffective == ENVEFF_Air) || (EnviroEffective == ENVEFF_Vacuum) || (EnviroEffective == ENVEFF_AirVacuum))
@@ -3394,7 +3418,8 @@ simulated function bool ClientFire( float value )
 					bFlameOn = True;
 					StartFlame();
 				}
-				ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+				firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+                OnProjectileFired(firedProjectile);
 			}
 		}
 		else
@@ -3440,6 +3465,7 @@ function Fire(float Value)
 	local float sndVolume, mod;
 	local bool bListenClient;
     local DeusExPlayer player;
+    local Projectile firedProjectile;
 
     if (Pawn(Owner).IsInState('Dying') || (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).bGEPprojectileInflight))
     {
@@ -3511,7 +3537,10 @@ function Fire(float Value)
 		GotoState('NormalFire');
 		bPointing=True;
 		if (IsA('WeaponHideAGun'))
-		   ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+        {
+            firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+            OnProjectileFired(firedProjectile);
+        }
 		if ( Owner.IsA('PlayerPawn') )
 			PlayerPawn(Owner).PlayFiring();
 		PlaySelectiveFiring();
@@ -3550,7 +3579,8 @@ function Fire(float Value)
 				TraceFire(currentAccuracy);
 			else
 			{
-				ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+				firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+                OnProjectileFired(firedProjectile);
 				//if (IsA('WeaponFlamethrower'))
                 //{
                 // if (ReloadCount != ClipCount)
@@ -4010,6 +4040,7 @@ function name GetWallMaterial(vector HitLocation, vector HitNormal)
 	local actor target;
 	local int texFlags;
 	local name texName, texGroup;
+    local Projectile firedProjectile;
 
 	StartTrace = HitLocation + HitNormal*16;		// make sure we start far enough out
 	EndTrace = HitLocation - HitNormal;
@@ -4023,6 +4054,7 @@ function name GetWallMaterial(vector HitLocation, vector HitNormal)
 
 simulated function SimGenerateBullet()
 {
+    local Projectile firedProjectile;
 	if ( Role < ROLE_Authority )
 	{
 		if ((ClipCount > 0) && (ReloadCount != 0))
@@ -4033,7 +4065,10 @@ simulated function SimGenerateBullet()
 			if ( bInstantHit )
 				TraceFire(currentAccuracy);
 			else
-				ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+            {
+				firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+                OnProjectileFired(firedProjectile);
+            }
 
 			SimClipCount--;
 
@@ -4068,13 +4103,17 @@ function ServerGenerateBullet()
 
 function GenerateBullet()
 {
+    local Projectile firedProjectile;
 
 	if (AmmoType.UseAmmo(1))
 	{
 		if ( bInstantHit )
 			TraceFire(currentAccuracy);
         else
-			ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+        {
+            firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+            OnProjectileFired(firedProjectile);
+        }
 
 		ClipCount--;
 		if (IsA('WeaponAssaultGun'))
@@ -4678,6 +4717,7 @@ simulated function TraceFire( float Accuracy )
     local tracer trcr;                                                          //RSD: Added
     local vector EndTraceCenter, moverStartTrace;                               //RSD: Added
     local float TempAcc;                                                        //RSD: Added
+    local Projectile firedProjectile;
 
 	// make noise if we are not silenced
 	if (!bHasSilencer && !bHandToHand)
@@ -4856,7 +4896,8 @@ simulated function TraceFire( float Accuracy )
 
 	if (AmmoName == Class'AmmoRubber')
 	{
-		ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+        firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+        OnProjectileFired(firedProjectile);
 	}
 
     LaserYaw += (currentAccuracy*laserKick) * (Rand(4096) - 2048);              //RSD: Bump laser position when firing (75% of cone width)
