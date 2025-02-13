@@ -7648,11 +7648,7 @@ exec function ParseLeftClick()
     }
 
     //Special cases aside, now do the left hand frob behaviour
-<<<<<<< HEAD
     else if (FrobTarget != none && IsReallyFrobbable(FrobTarget,true) && !bInHandTransition && (inHand == None || !inHand.IsA('POVcorpse')) && CarriedDecoration == None)
-=======
-    else if (FrobTarget != none && IsReallyFrobbable(FrobTarget) && !bInHandTransition && (inHand == None || !inHand.IsA('POVcorpse')) && CarriedDecoration == None)
->>>>>>> 4da83e3d1f940c24e87d8346088fe5b8a13abc44
 	{
         DoLeftFrob(FrobTarget);
 	}
@@ -7711,10 +7707,15 @@ function SelectLastWeapon()
     root = DeusExRootWindow(rootWindow);
     if (root != None && root.hud != None)
     {
-        if (bAlternateToolbelt > 0)
-            root.ActivateObjectInBelt(advBelt);
-        else
-            PutInHand(lastSelected);
+        if (bAlternateToolbelt > 0 && root.ActivateObjectInBelt(advBelt))
+        {
+            NewWeaponSelected();
+            return;
+        }
+    }
+    if (primaryWeapon.Owner == self)
+    {
+        PutInHand(primaryWeapon);
         NewWeaponSelected();
     }
 }
