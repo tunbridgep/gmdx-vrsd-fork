@@ -176,6 +176,7 @@ Sarge's Changes since Beta 2.2:
         - Now they will use the same damage multiplier across all limbs, making the damage more reliable against enemies.
         - This also means you will take less damage from plasma and explosives to your torso and head.
     - Charged Objects no longer destroy themselves on use in Hardcore mode.
+    - JC can no longer move while interacting with security computers.
     - The rifle's grenade launcher doesn't require reloading to turn on, but you need to reload after each shot. It now works like a different weapon.
     - Increased the sawed off shotgun's pellet count from 8 to 9, and decreased shot speed from 1.3 to 1.2.
     - Rubber shells are now hitscan with a harmless projectile.
