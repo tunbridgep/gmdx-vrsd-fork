@@ -310,6 +310,8 @@ var travel bool givenFreeReload;                                                
 
 var float sleeptime;                                                              //Sarge: Used by per shell reload weapons to store how long they have been sleeping during reload, to allow us to cancel mid-reload in a far more responsive way.
 
+var bool bDisposableWeapon;                                         //SARGE: Used for disposable weapons, such as grenades, PS20s, LAWs, etc. Disposable weapons can't be reloaded, and track ammo differently to regular weapons when dropped/picked up. Their ammo doesn't show up when being looted, either - The weapon is shown instead.
+
 //SARGE: Show Modified
 var travel bool bModified;                                                             //SARGE: Keeps track of whether or not a particular weapon has been modified
 var localized string strModified;
@@ -1247,7 +1249,7 @@ function bool HandlePickupQuery(Inventory Item)
 
 	if (Item.Class == Class)
 	{
-	  if (!( (Weapon(item).bWeaponStay && (Level.NetMode == NM_Standalone)) && (!Weapon(item).bHeldItem || Weapon(item).bTossedOut)))
+	  if (!( (Weapon(item).bWeaponStay && (Level.NetMode == NM_Standalone)) && (!Weapon(item).bHeldItem || (Weapon(item).bTossedOut && !DeusExWeapon(item).bDisposableWeapon))))
 		{
 			// Only add ammo of the default type
 			// There was an easy way to get 32 20mm shells, buy picking up another assault rifle with 20mm ammo selected
@@ -1270,7 +1272,7 @@ function bool HandlePickupQuery(Inventory Item)
 					Weapon(Item).PickupAmmoCount -= intj;
                     DeusExWeapon(Item).clipcount = Weapon(Item).PickupAmmoCount;
 
-					if (!(DeusExAmmo(defAmmo) != none && (DeusExAmmo(defAmmo).ammoSkill == Class'DeusEx.SkillDemolition') || DeusExAmmo(defAmmo).IsA('ammoHideAGun'))) //RSD: Don't display ammo message for grenades or the PS20
+					if (!(DeusExWeapon(item) != none && DeusExWeapon(item).bDisposableWeapon)) //RSD: Don't display ammo message for grenades or the PS20
 					{
                         player.ClientMessage(defAmmo.PickupMessage @ defAmmo.itemArticle @ defAmmo.ItemName $ " (" $ intj $ ")", 'Pickup' );
 					}
@@ -1280,14 +1282,17 @@ function bool HandlePickupQuery(Inventory Item)
 				{
 					defAmmo.AddAmmo( Weapon(Item).PickupAmmoCount );
                     
-                    //SARGE: Tell us when we pick up empty weapons, rather than telling us
-                    //that we found 0 ammo
-                    if (Weapon(Item).PickupAmmoCount == 0)
-					    player.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.ItemName, 'Pickup' );
-					else if (!(DeusExAmmo(defAmmo) != none && (DeusExAmmo(defAmmo).ammoSkill == Class'DeusEx.SkillDemolition') || DeusExAmmo(defAmmo).IsA('ammoHideAGun'))) //RSD: Don't display ammo message for grenades or the PS20
-					{
-                        player.ClientMessage(defAmmo.PickupMessage @ defAmmo.itemArticle @ defAmmo.ItemName $ " (" $ Weapon(Item).PickupAmmoCount $ ")", 'Pickup' );
-					}
+                    if (!DeusExWeapon(Item).bDisposableWeapon) //RSD: Don't display ammo message for grenades or the PS20
+                    {
+                        //SARGE: Tell us when we pick up empty weapons, rather than telling us
+                        //that we found 0 ammo
+                        if (Weapon(Item).PickupAmmoCount == 0)
+                            player.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.ItemName, 'Pickup' );
+                        else
+                        {
+                            player.ClientMessage(defAmmo.PickupMessage @ defAmmo.itemArticle @ defAmmo.ItemName $ " (" $ Weapon(Item).PickupAmmoCount $ ")", 'Pickup' );
+                        }
+                    }
 				}
 
 				if ( Level.NetMode != NM_Standalone )
@@ -1340,14 +1345,14 @@ function bool HandlePickupQuerySuper( inventory Item )                          
 			Level.Game.LocalLog.LogPickup(Item, Pawn(Owner));
 		if (Level.Game.WorldLog != None)
 			Level.Game.WorldLog.LogPickup(Item, Pawn(Owner));
-		if (DXAmmoType != none && DXAmmoType.ammoSkill == Class'DeusEx.SkillDemolition' || Item.IsA('WeaponHideAGun')) //RSD: Only print pickup message if it's a grenade
+		if (DeusExWeapon(item) != none && DeusExWeapon(item).bDisposableWeapon) //RSD: Only print pickup message if it's a grenade
 		{
-		if (Item.PickupMessageClass == None)
-			// DEUS_EX CNN - use the itemArticle and itemName
-//			P.ClientMessage(Item.PickupMessage, 'Pickup');
-			P.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
-		else
-			P.ReceiveLocalizedMessage( Item.PickupMessageClass, 0, None, None, item.Class );
+            if (Item.PickupMessageClass == None)
+                // DEUS_EX CNN - use the itemArticle and itemName
+    //			P.ClientMessage(Item.PickupMessage, 'Pickup');
+                P.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
+            else
+                P.ReceiveLocalizedMessage( Item.PickupMessageClass, 0, None, None, item.Class );
 		}
 		Item.PlaySound(Item.PickupSound);
 		Item.SetRespawn();
@@ -1359,16 +1364,16 @@ function bool HandlePickupQuerySuper( inventory Item )                          
 	return Inventory.HandlePickupQuery(Item);
 }
 
-function float SetDroppedAmmoCount(optional int amountPassed)                   //RSD: Added optional int amountPassed for initialization in MissionScript.uc
+function float SetDroppedAmmoCount(optional int amountPassed, optional bool noOld) //RSD: Added optional int amountPassed for initialization in MissionScript.uc
 {
-    if (amountPassed == 0)                                                      //RSD: If we didn't get anything, set to old formula
+    if (amountPassed == 0 && !noOld)                                                      //RSD: If we didn't get anything, set to old formula
         amountPassed = Rand(4) + 1;
 
     // Any weapons have their ammo set to a random number of rounds (1-4)
 	// unless it's a grenade, in which case we only want to dole out one.
 	// DEUS_EX AMSD In multiplayer, give everything away.
 	// Grenades and LAMs always pickup 1
-	if (IsA('WeaponNanoVirusGrenade') || IsA('WeaponGasGrenade') || IsA('WeaponEMPGrenade') || IsA('WeaponLAM') || IsA('WeaponHideAGun'))
+	if (bDisposableWeapon)
 		PickupAmmoCount = 1;
 	else if (IsA('WeaponGepGun'))
         PickupAmmoCount = 2;
@@ -1377,7 +1382,7 @@ function float SetDroppedAmmoCount(optional int amountPassed)                   
 	else if (Level.NetMode == NM_Standalone)
         //PickupAmmoCount = Rand(4) + 1;                                        //RSD
         PickupAmmoCount = amountPassed;                                         //RSD
-    clipcount = amountPassed;
+    clipcount = PickupAmmoCount;
 }
 
 function BringUp()
@@ -1404,8 +1409,9 @@ function BringUp()
 
 function PlaySelect()
 {
-local DeusExPlayer player;
-local float p, mod;
+    local DeusExPlayer player;
+    local float p, mod;
+    local Projectile firedProjectile;
 
      player = DeusExPlayer(Owner);
 
@@ -1441,7 +1447,10 @@ local float p, mod;
 		GotoState('NormalFire');
 		bPointing=True;
 		if (IsA('WeaponHideAGun'))
-		   ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+        {
+            firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+            OnProjectileFired(firedProjectile);
+        }
 		if ( Owner.IsA('PlayerPawn') )
 			PlayerPawn(Owner).PlayFiring();
 		PlaySelectiveFiring();
@@ -1525,7 +1534,7 @@ local string msgContactOff;
 	//if ((IsA('WeaponHideAGun') || GoverningSkill==class'DeusEx.SkillDemolition') && Pawn(Owner).IsA('ScriptedPawn'))
 	//   return;
 
-	if (AmmoType.AmmoAmount > 0) //GMDX: fix the finish anim->state idle anim
+	if (AmmoType.AmmoAmount > 0 && ReloadCount > 0 && !bDisposableWeapon) //GMDX: fix the finish anim->state idle anim //SARGE: Don't allow reloading weapons with a reload count of 0 or disposables
 	{
 		if (!IsInState('Reload'))
 		{
@@ -3147,10 +3156,15 @@ simulated function MuzzleFlashLight()
 
 function ServerHandleNotify( bool bInstantHit, class<projectile> ProjClass, float ProjSpeed, bool bWarn )
 {
+    local Projectile firedProjectile;
+
 	if (bInstantHit)
 		TraceFire(0.0);
 	else
-		ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+    {
+        firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+        OnProjectileFired(firedProjectile);
+    }
 }
 
 //
@@ -3160,6 +3174,7 @@ function ServerHandleNotify( bool bInstantHit, class<projectile> ProjClass, floa
 simulated function HandToHandAttack()
 {
 	local bool bOwnerIsPlayerPawn;
+    local Projectile firedProjectile;
 
 	if (bOwnerWillNotify)
 		return;
@@ -3181,7 +3196,10 @@ simulated function HandToHandAttack()
 	if (bInstantHit)
 		TraceFire(0.0);
 	else
-		ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+    {
+        firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+        OnProjectileFired(firedProjectile);
+    }
 
 	// if we are a thrown weapon and we run out of ammo, destroy the weapon
 	if ( bHandToHand && (ReloadCount > 0) && (SimAmmoAmount <= 0))
@@ -3202,6 +3220,7 @@ simulated function HandToHandAttack()
 simulated function OwnerHandToHandAttack()
 {
 	local bool bOwnerIsPlayerPawn;
+    local Projectile firedProjectile;
 
 	if (!bOwnerWillNotify)
 		return;
@@ -3223,7 +3242,10 @@ simulated function OwnerHandToHandAttack()
 	if (bInstantHit)
 		TraceFire(0.0);
 	else
-		ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+    {
+        firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+        OnProjectileFired(firedProjectile);
+    }
 }
 
 function ForceFire()
@@ -3278,6 +3300,12 @@ function ServerForceFire()
 	Fire(0);
 }
 
+//SARGE: Handle special cases after we fire a projectile
+function OnProjectileFired(Projectile firedProjectile)
+{
+    //do nothing
+}
+
 simulated function int PlaySimSound( Sound snd, ESoundSlot Slot, float Volume, float Radius )
 {
 	if ( Owner != None )
@@ -3302,6 +3330,7 @@ simulated function bool ClientFire( float value )
 {
 	local bool bWaitOnAnim;
 	local vector shake;
+    local Projectile firedProjectile;
 
 	// check for surrounding environment
 	if ((EnviroEffective == ENVEFF_Air) || (EnviroEffective == ENVEFF_Vacuum) || (EnviroEffective == ENVEFF_AirVacuum))
@@ -3392,7 +3421,8 @@ simulated function bool ClientFire( float value )
 					bFlameOn = True;
 					StartFlame();
 				}
-				ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+				firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+                OnProjectileFired(firedProjectile);
 			}
 		}
 		else
@@ -3438,6 +3468,7 @@ function Fire(float Value)
 	local float sndVolume, mod;
 	local bool bListenClient;
     local DeusExPlayer player;
+    local Projectile firedProjectile;
 
     if (Pawn(Owner).IsInState('Dying') || (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).bGEPprojectileInflight))
     {
@@ -3509,7 +3540,10 @@ function Fire(float Value)
 		GotoState('NormalFire');
 		bPointing=True;
 		if (IsA('WeaponHideAGun'))
-		   ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+        {
+            firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+            OnProjectileFired(firedProjectile);
+        }
 		if ( Owner.IsA('PlayerPawn') )
 			PlayerPawn(Owner).PlayFiring();
 		PlaySelectiveFiring();
@@ -3548,7 +3582,8 @@ function Fire(float Value)
 				TraceFire(currentAccuracy);
 			else
 			{
-				ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+				firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+                OnProjectileFired(firedProjectile);
 				//if (IsA('WeaponFlamethrower'))
                 //{
                 // if (ReloadCount != ClipCount)
@@ -4008,6 +4043,7 @@ function name GetWallMaterial(vector HitLocation, vector HitNormal)
 	local actor target;
 	local int texFlags;
 	local name texName, texGroup;
+    local Projectile firedProjectile;
 
 	StartTrace = HitLocation + HitNormal*16;		// make sure we start far enough out
 	EndTrace = HitLocation - HitNormal;
@@ -4021,6 +4057,7 @@ function name GetWallMaterial(vector HitLocation, vector HitNormal)
 
 simulated function SimGenerateBullet()
 {
+    local Projectile firedProjectile;
 	if ( Role < ROLE_Authority )
 	{
 		if ((ClipCount > 0) && (ReloadCount != 0))
@@ -4031,7 +4068,10 @@ simulated function SimGenerateBullet()
 			if ( bInstantHit )
 				TraceFire(currentAccuracy);
 			else
-				ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+            {
+				firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+                OnProjectileFired(firedProjectile);
+            }
 
 			SimClipCount--;
 
@@ -4066,13 +4106,17 @@ function ServerGenerateBullet()
 
 function GenerateBullet()
 {
+    local Projectile firedProjectile;
 
 	if (AmmoType.UseAmmo(1))
 	{
 		if ( bInstantHit )
 			TraceFire(currentAccuracy);
         else
-			ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+        {
+            firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+            OnProjectileFired(firedProjectile);
+        }
 
 		ClipCount--;
 		if (IsA('WeaponAssaultGun'))
@@ -4676,6 +4720,7 @@ simulated function TraceFire( float Accuracy )
     local tracer trcr;                                                          //RSD: Added
     local vector EndTraceCenter, moverStartTrace;                               //RSD: Added
     local float TempAcc;                                                        //RSD: Added
+    local Projectile firedProjectile;
 
 	// make noise if we are not silenced
 	if (!bHasSilencer && !bHandToHand)
@@ -4854,7 +4899,8 @@ simulated function TraceFire( float Accuracy )
 
 	if (AmmoName == Class'AmmoRubber')
 	{
-		ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+        firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+        OnProjectileFired(firedProjectile);
 	}
 
     LaserYaw += (currentAccuracy*laserKick) * (Rand(4096) - 2048);              //RSD: Bump laser position when firing (75% of cone width)
@@ -5340,6 +5386,9 @@ simulated function bool UpdateInfo(Object winObject)
 			str = str $ "|n" $ AmmoNames[i].Default.ItemName;
     if (!bHandToHand || IsA('WeaponProd'))
 	winInfo.AddAmmoTypesItem(msgInfoAmmo, str);
+    //SARGE: Add Decline Button
+    if (P.IsA('DeusExPlayer') && !DeusExPlayer(P).DeclinedItemsManager.IsDeclined(class))
+		winInfo.AddDeclineButton(class);
 
 	// base damage
 	if (AreaOfEffect == AOE_Cone)

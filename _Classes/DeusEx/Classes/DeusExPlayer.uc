@@ -215,7 +215,6 @@ var globalconfig bool bToggleCrouch;				// True to let key toggle crouch
 var globalconfig float logTimeout;					// Log Timeout Value
 var globalconfig byte  maxLogLines;					// Maximum number of log lines visible
 var globalconfig bool bHelpMessages;				// Multiplayer help messages
-var globalconfig bool bWallPlacementCrosshair;		// SARGE: Show a blue crosshair when placing objects on walls
 
 // Overlay Options (TODO: Move to DeusExHUD.uc when serializable)
 var globalconfig byte translucencyLevel;			// 0 - 10?
@@ -439,7 +438,7 @@ var globalconfig bool bColorCodedAmmo;
 var globalconfig bool bExtraHardcore;
 var globalconfig bool bDecap;
 var globalconfig bool bNoTranslucency;
-var globalconfig bool bDblClickHolster;
+var globalconfig int dblClickHolster;                      //SARGE: 0 = off, 1 = double click holstering only, 2 = double click holstering and unholstering
 var globalconfig bool bHalveAmmo;
 var globalconfig bool bHardcoreUnlocked;
 var globalconfig bool bAutoHolster;
@@ -462,7 +461,6 @@ var globalconfig bool bMantleOption;
 var globalconfig bool bUSP;
 var globalconfig bool bSkillMessage;
 var globalconfig bool bXhairShrink;
-var globalconfig bool bNoKnives;
 var globalconfig bool bModdedHeadBob;
 var globalconfig bool bBeltAutofill;											//Sarge: Added new feature for auto-populating belt
 var globalconfig bool bHackLockouts;											//Sarge: Allow locking-out security terminals when hacked, and rebooting.
@@ -650,12 +648,24 @@ var globalconfig bool bTrickReloading;											//Sarge: Allow reloading with a
 
 var globalconfig int iAllowCombatMusic;                                        //SARGE: Enable/Disable combat music, or make it require 2 enemies
 
+//Decline Everything
+var travel DeclinedItemsManager declinedItemsManager;                          //SARGE: Holds declined items.
+var globalconfig bool bSmartDecline;                                            //SARGE: Allow not declining items when holding the walk/run key
+var localized string msgDeclinedPickup;                                        //SARGE: Declined message
+
 //Crosshair Settings
 var globalconfig bool bFullAccuracyCrosshair;                                   //SARGE: If false, disable the "Accuracy Crosshairs" when at 100% accuracy
 
 var globalconfig bool bAlwaysShowBloom;                                         //SARGE: Always show weapon bloom
 
 var globalconfig bool bShowEnergyBarPercentages;                                //SARGE: If true, show the oxygen and bioenergy percentages below the bars.
+
+//Misc Strings
+var localized String DuplicateNanoKey;
+
+//Cat/Dog protector
+var globalconfig bool bStompDomesticAnimals;                                    //SARGE: If disabled, we can't stomp cats or dogs anymore. Adopt a cute animal today!
+var globalconfig bool bStompVacbots;                                            //SARGE: If disabled, we can't stomp vac-bots anymore.
 
 //////////END GMDX
 
@@ -769,8 +779,23 @@ function SetCrouch(bool crouch, optional bool setForce)
         bForceDuck = crouch;
 }
 
+
 // ----------------------------------------------------------------------
-// AssignSecondaryWeapon
+// ClientMessage
+// Copied over from PlayerPawnExt
+// Sarge: Extended to not show blank messages
+// ----------------------------------------------------------------------
+
+function ClientMessage(coerce string msg, optional Name type, optional bool bBeep)
+{
+    if (msg == "")
+        return;
+
+    Super.ClientMessage(msg,type,bBeep);
+}
+
+// ----------------------------------------------------------------------
+// AssignSecondary
 // Sarge: Now needed because we need to fix up our charged item display if it's out of date
 // ----------------------------------------------------------------------
 
@@ -1272,6 +1297,12 @@ function InitializeSubSystems()
 	// Spawn the Color Manager
 	CreateColorThemeManager();
 	ThemeManager.SetOwner(self);
+
+    if (DeclinedItemsManager == None)
+    {
+        DeclinedItemsManager = Spawn(class'DeclinedItemsManager', Self);
+        DeclinedItemsManager.SetOwner(Self);
+    }
 
 	// install the augmentation system if not found
 	if (AugmentationSystem == None)
@@ -7440,6 +7471,9 @@ function DoLeftFrob(Actor frobTarget)
 {
     local bool bDefaultFrob;
     
+    if (CheckFrobDeclined(frobTarget))
+        return;
+    
     if (inHand == None)
     {
         if (frobTarget.isA('DeusExPickup'))
@@ -7480,6 +7514,9 @@ function DoRightFrob(Actor frobTarget)
     if (frobTarget == None)
         return;
 
+    if (CheckFrobDeclined(frobTarget))
+        return;
+
     bDefaultFrob = true;
     bLeftClicked = false;
 
@@ -7502,6 +7539,19 @@ function DoRightFrob(Actor frobTarget)
     }
     else if (bDefaultFrob)
         DoFrob(Self, None);
+}
+
+//SARGE: Check if a frobbed item is declined, and handle it
+//Returns FALSE if an item was not declined, TRUE if it was
+function bool CheckFrobDeclined(Actor frobTarget)
+{
+    if (frobTarget.IsA('Inventory') && DeclinedItemsManager.IsDeclined(class<Inventory>(frobTarget.class)) && clickCountCyber == 0)
+    {
+        SetDoubleClickTimer();
+        ClientMessage(sprintf(msgDeclinedPickup,Inventory(frobTarget).ItemName));
+        return true;
+    }
+    return false;
 }
 
 //Sarge: Because we can only inherit from one class,
@@ -7626,7 +7676,7 @@ exec function ParseLeftClick()
     }
 
     //Special cases aside, now do the left hand frob behaviour
-    else if (FrobTarget != none && IsReallyFrobbable(FrobTarget) && !bInHandTransition && (inHand == None || !inHand.IsA('POVcorpse')) && CarriedDecoration == None)
+    else if (FrobTarget != none && IsReallyFrobbable(FrobTarget,true) && !bInHandTransition && (inHand == None || !inHand.IsA('POVcorpse')) && CarriedDecoration == None)
 	{
         DoLeftFrob(FrobTarget);
 	}
@@ -7685,10 +7735,15 @@ function SelectLastWeapon()
     root = DeusExRootWindow(rootWindow);
     if (root != None && root.hud != None)
     {
-        if (bAlternateToolbelt > 0)
-            root.ActivateObjectInBelt(advBelt);
-        else
-            PutInHand(lastSelected);
+        if (bAlternateToolbelt > 0 && root.ActivateObjectInBelt(advBelt))
+        {
+            NewWeaponSelected();
+            return;
+        }
+    }
+    if (primaryWeapon.Owner == self)
+    {
+        PutInHand(primaryWeapon);
         NewWeaponSelected();
     }
 }
@@ -7726,15 +7781,37 @@ function bool SelectInventoryItem(Name type)
 //Returns whether a given frobbable can actually be interacted with
 //So that we can skip the ones that don't highlight or can't really be used,
 //preventing them from blocking holstering with right click
-function bool IsReallyFrobbable(Actor target)
+function bool IsReallyFrobbable(Actor target, optional bool left)
 {
     if (target.isA('DeusExDecoration') && !DeusExDecoration(target).bHighlight)
         return false;
+    if (target.isA('DeusExMover') && left)
+        return DeusExMover(target).bBreakable || DeusExMover(target).bFrobbable;
     if (target.isA('DeusExMover'))
         return DeusExMover(target).bHighlight && DeusExMover(target).bFrobbable;
     if (target.isA('ElevatorMover'))
         return false;
     return true;
+}
+
+// ----------------------------------------------------------------------
+// SetDoubleClickTimer()
+// Sets up the double-click holster/unholster timer
+// ----------------------------------------------------------------------
+
+function SetDoubleClickTimer()
+{
+    SetTimer(0.3,false);
+    bDoubleClickCheck=True;
+    clickCountCyber=1;
+}
+    
+function DoAutoHolster()
+{
+    if (bAutoHolster)// && (clickCountCyber >= 1 || dblClickHolster == 0 ))
+        PutInHand(None);
+    else if (bAutoHolster && dblClickHolster > 0)
+        SetDoubleClickTimer();
 }
 
 // ----------------------------------------------------------------------
@@ -7898,26 +7975,21 @@ exec function ParseRightClick()
                 beltLast = advBelt;
 			}
 		}
-		else if (clickCountCyber >= 1 || !bDblClickHolster)
+        else if (inHand == None && (clickCountCyber >= 1 || dblClickHolster < 2))
 		{
-			if (inHand == None)
-			{
-				//SARGE: Added support for the unholster behaviour from the Alternate Toolbelt on both Toolbelts
-				//Additionally, unholstering is now tied to the double-click holstering setting.
-                SelectLastWeapon();
-			}
-			else
-            {
-				PutInHand(None);
-                NewWeaponSelected();
-            }
+            //SARGE: Added support for the unholster behaviour from the Alternate Toolbelt on both Toolbelts
+            //Additionally, unholstering is now tied to the double-click holstering setting.
+            SelectLastWeapon();
+		}
+		else if (inHand != None && (clickCountCyber >= 1 || dblClickHolster == 0))
+		{
+            PutInHand(None);
+            NewWeaponSelected();
 		    DoRightFrob(FrobTarget); //Last minute check for things with no highlight.
 		}
 		else
 		{
-            SetTimer(0.3,false);
-            bDoubleClickCheck=True;
-            clickCountCyber=1;
+            SetDoubleClickTimer();
 		    DoRightFrob(FrobTarget); //Last minute check for things with no highlight.
         }
 	}
@@ -8152,13 +8224,16 @@ function NanoKeyInfo CreateNanoKeyInfo()
 
 function PickupNanoKey(NanoKey newKey)
 {
+    if (KeyRing.HasKey(newKey.KeyID))
+        ClientMessage(Sprintf(DuplicateNanoKey, newKey.Description));
+    else
+        ClientMessage(Sprintf(AddedNanoKey, newKey.Description));
 	KeyRing.GiveKey(newKey.KeyID, newKey.Description);
 	//DEUS_EX AMSD In multiplayer, propagate the key to the client if the server
 	if ((Role == ROLE_Authority) && (Level.NetMode != NM_Standalone))
 	{
 	  KeyRing.GiveClientKey(newKey.KeyID, newKey.Description);
 	}
-	ClientMessage(Sprintf(AddedNanoKey, newKey.Description));
 }
 
 // ----------------------------------------------------------------------
@@ -9451,8 +9526,8 @@ function GrabDecoration()
         {ClientMessage(HandsFull); return;}
         else if (!bAutoHolster)
         {ClientMessage(HandsFull); return;}
-        else if (bAutoHolster)
-        {PutInHand(None);}
+        else
+            DoAutoHolster();
 	}
 
 	if (carriedDecoration == None && inHand == None)
@@ -9700,7 +9775,8 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 	local class<DeusExCarcass> carcClass;
 	local bool bDropped;
 	local bool bRemovedFromSlots;
-	local int  itemPosX, itemPosY, tex, i;
+	local int  itemPosX, itemPosY, tex, i, amm;
+    local Ammo ammoType;
 
 	bDropped = True;
 
@@ -9838,6 +9914,41 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 				}
 			}
 		}
+        //If it's a disposable weapon, throw away only one, and deduct ammo
+        else if (DeusExWeapon(item).bDisposableWeapon && DeusExWeapon(item).ammoName != none)
+        {
+            AmmoType = Ammo(FindInventoryType(Weapon(item).AmmoName));
+            amm = ammoType.ammoAmount;
+		    if (amm > 1)
+            {
+                // put it back in our hand, but only if it was in our
+                // hand originally!!!
+                if (previousItemInHand == item)
+                    PutInHand(previousItemInHand);
+
+                item = Spawn(item.Class, Owner);
+            }
+            else
+            {
+                // Keep track of this so we can undo it
+				// if necessary
+				bRemovedFromSlots = True;
+				itemPosX = item.invPosX;
+				itemPosY = item.invPosY;
+
+				// Remove it from the inventory slot grid
+				RemoveItemFromSlot(item);
+                if (!bBeltAutofill)
+                    MakeBeltObjectPlaceholder(item); //SARGE: Disabled because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
+                else
+                    RemoveObjectFromBelt(item);
+				
+                if (DeusExWeapon(item) == assignedWeapon)                       //RSD: Reset our assigned weapon
+					AssignSecondary(None);
+            }
+            ammoType.ammoAmount -= 1;
+            UpdateAmmoBeltText(AmmoType);
+        }
 		else
 		{
 			// Keep track of this so we can undo it
@@ -10021,6 +10132,8 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 		//DEUS_EX AMSD Use the function call for this, helps multiplayer
 		PlaceItemInSlot(item, itemPosX, itemPosY);
 	}
+    else if (DeusExWeapon(item).bDisposableWeapon) //SARGE: This has to be done here for some reason
+        DeusExWeapon(item).PickupAmmoCount = 1;
 
 	return bDropped;
 }
@@ -11787,14 +11900,19 @@ function bool DeleteInventory(inventory item)
 			winInv.InventoryDeleted(item);
 
 		// Remove the item from the object belt
-		// Sarge: Keep darkened version in the belt if we have Keep Deleted Belt Items setting turn on
 		if (root != None)
-			root.DeleteInventory(item);
-	  else //In multiplayer, we often don't have a root window when creating corpse, so hand delete
-	  {
-		 item.bInObjectBelt = false;
-		 item.beltPos = -1;
-	  }
+        {
+            // Sarge: Keep darkened version in the belt if we have Keep Deleted Belt Items setting turn on
+            if (bBeltMemory)
+                MakeBeltObjectPlaceholder(item);
+            else
+                RemoveObjectFromBelt(item);
+        }
+        else //In multiplayer, we often don't have a root window when creating corpse, so hand delete
+        {
+            item.bInObjectBelt = false;
+            item.beltPos = -1;
+        }
 	}
 
 	return Super.DeleteInventory(item);
@@ -17442,6 +17560,7 @@ defaultproperties
      SecondaryGoalCompleted="Secondary Goal Completed"
      EnergyDepleted="Bio-electric energy reserves depleted"
      AddedNanoKey="%s added to Nano Key Ring"
+     DuplicateNanoKey="%s not added to Key Ring [Duplicate]"
      HealedPointsLabel="Healed %d points"
      HealedPointLabel="Healed %d point"
      RechargedPointsLabel="Recharged %d points"
@@ -17485,6 +17604,7 @@ defaultproperties
      bModdedHeadBob=True
      fatty="You cannot consume any more at this time"
      noUsing="You cannot use it at this time"
+     msgDeclinedPickup="%s is declined. Press again to pick up."
      customColorsMenu(0)=(R=61,G=62,B=73)
      customColorsMenu(1)=(G=49,B=255)
      customColorsMenu(2)=(R=210,G=194,B=255)
@@ -17574,4 +17694,6 @@ defaultproperties
      iAllowCombatMusic=1
      bFullAccuracyCrosshair=true;
      bShowEnergyBarPercentages=true;
+     dblClickHolster=2
+     bSmartDecline=True
 }

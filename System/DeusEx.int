@@ -2245,7 +2245,7 @@ ItemName="Tumbleweed"
 
 [WeaponGEPGun]
 ItemName="Guided Explosive Projectile (GEP) Gun"
-Description="The GEP gun is a relatively recent invention in the field of armaments: a portable, shoulder-mounted launcher that can fire rockets and laser guide them to their target with pinpoint accuracy, or alternatively guide them remotely with built in navigational systems. While suitable for high-threat combat situations, it can be bulky for those agents who have not grown familiar with it."
+Description="The GEP gun is a relatively recent invention in the field of armaments: a portable, shoulder-mounted launcher that can fire rockets and laser guide them to their target with pinpoint accuracy, or alternatively guide them remotely with built in navigational systems. While suitable for high-threat combat situations, it can be bulky for those agents who have not grown familiar with it.|n|n<UNATCO OPS FILE NOTE GEP14-BLUE> While a powerful weapon, keep a note of it's limited flight time. Rockets will run out of fuel after 5 seconds or so, be careful of them exploding prematurly. Range weapon mods can increase the flight time. -- Sam Carter <END NOTE>"
 beltDescription="GEP GUN"
 ShortName="GEP Gun"
 

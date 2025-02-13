@@ -47,7 +47,7 @@ defaultproperties
      DeactivateSound=Sound'binmiczoomout'
      ActivateSound=Sound'binmiczoomim'
      ScopeFOV=20
-     bBreakable=True
+     bBreakable=False
      FragType=Class'DeusEx.PlasticFragment'
      maxCopies=1
      bCanHaveMultipleCopies=True

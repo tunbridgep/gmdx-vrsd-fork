@@ -804,6 +804,9 @@ simulated function bool UpdateInfo(Object winObject)
     //Set title
 	winInfo.SetTitle(GetTitle(player));
 
+    if (player != None && !player.DeclinedItemsManager.IsDeclined(class))
+		winInfo.AddDeclineButton(class);
+
     if (player != None && CanAssignSecondary(player))
 		winInfo.AddSecondaryButton(self);
 
