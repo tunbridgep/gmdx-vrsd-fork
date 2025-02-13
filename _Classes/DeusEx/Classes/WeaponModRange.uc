@@ -11,6 +11,7 @@ class WeaponModRange extends WeaponMod;
 
 function ApplyMod(DeusExWeapon weapon)
 {
+	Super.ApplyMod(weapon);
 	if (weapon != None)
 	{
 		weapon.AccurateRange    += (weapon.Default.AccurateRange * WeaponModifier);

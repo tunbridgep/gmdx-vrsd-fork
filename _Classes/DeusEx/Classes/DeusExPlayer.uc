@@ -478,13 +478,17 @@ var float bloodTime; //CyberP:
 var float hitmarkerTime;
 var float camInterpol;
 var transient bool bThrowDecoration;
+
+////Belt Stuff
 var travel int SlotMem; //CyberP: for belt/weapon switching, so the code remembers what weapon we had before holstering
 var travel int BeltLast;                                                    //Sarge: The last item we literally selected from the belt, regardless of holstering or alternate belt behaviour
-var travel bool bUsedKeyringLast;  											//Sarge: Added new feature to allow keyring to be used without belt, freeing up a slot
 var travel bool bNumberSelect;                                              //Sarge: Whether or not our last belt selection was done with number keys (ActivateBelt) rather than Next/Prev. Used by Alternative Belt to know when to holster
 var travel bool bScrollSelect;                                              //Sarge: Whether or not our last belt selection was done with Next/Last weapon keys rather than Number Keys. Used by Alternative Belt to know when to holster
 var travel int beltScrolled;                                                //Sarge: The last item we scrolled to on the belt, if we are using Adv Toolbelt
 var travel bool selectedNumberFromEmpty;                                    //Sarge: Was the current selection made from an empty hand. Used by Alternate Toolbelt Classic Mode to not jump back to previous weapon when we select from an empty hand.
+var travel Inventory lastSelected;                                          //The last object that was put in our hands.
+var globalconfig bool bLeftClickUnholster;                                  //Enable left click unholstering
+
 var int clickCountCyber; //CyberP: for double clicking to unequip
 var bool bStunted; //CyberP: for slowing player under various conditions
 var bool bRegenStamina; //CyberP: regen when in water but head above water
@@ -635,6 +639,8 @@ var globalconfig bool bDialogHUDColors;                                         
 var globalconfig bool bQuickAugWheel;                                           //Sarge: Instantly enable/disable augs when closing the menu over the selected aug, otherwise require a mouse click.
 var globalconfig bool bAugWheelDisableAll;                                      //Sarge: Show the Disable All button on the Aug Wheel
 
+var globalconfig bool bBeltShowModified;                                        //SARGE: Shows a "+" in the belt for modified weapons.
+
 var globalconfig bool bTrickReloading;											//Sarge: Allow reloading with a full clip.
 
 var globalconfig int iAllowCombatMusic;                                        //SARGE: Enable/Disable combat music, or make it require 2 enemies
@@ -653,6 +659,10 @@ var globalconfig bool bShowEnergyBarPercentages;                                
 
 //Misc Strings
 var localized String DuplicateNanoKey;
+
+//Cat/Dog protector
+var globalconfig bool bStompDomesticAnimals;                                    //SARGE: If disabled, we can't stomp cats or dogs anymore. Adopt a cute animal today!
+var globalconfig bool bStompVacbots;                                            //SARGE: If disabled, we can't stomp vac-bots anymore.
 
 //////////END GMDX
 
@@ -730,7 +740,10 @@ exec function cheat()
 function HandleCrouchToggle()
 {
     if (!bToggleCrouch)
+    {
+        bCrouchOn = false;
         return;
+    }
 
     if (!bIsCrouching)
         bToggledCrouch = false;
@@ -750,7 +763,7 @@ function HandleCrouchToggle()
 //Return if the character is crouching
 function bool IsCrouching()
 {
-    return bCrouchOn || bForceDuck || bIsCrouching;
+    return bCrouchOn || bForceDuck || bIsCrouching || bCrouchHack || IsInState('PlayerSwimming');
 }
 
 //set our crouch state to a certain value
@@ -761,6 +774,21 @@ function SetCrouch(bool crouch, optional bool setForce)
     bCrouchOn = crouch;
     if (setForce)
         bForceDuck = crouch;
+}
+
+
+// ----------------------------------------------------------------------
+// ClientMessage
+// Copied over from PlayerPawnExt
+// Sarge: Extended to not show blank messages
+// ----------------------------------------------------------------------
+
+function ClientMessage(coerce string msg, optional Name type, optional bool bBeep)
+{
+    if (msg == "")
+        return;
+
+    Super.ClientMessage(msg,type,bBeep);
 }
 
 // ----------------------------------------------------------------------
@@ -3205,7 +3233,7 @@ function UpdatePoison(float deltaTime)
 		{
 			poisonTimer = 0;
 			poisonCounter--;
-			TakeDamage(poisonDamage * 0.5, myPoisoner, Location, vect(0,0,0), 'PoisonEffect'); //CyberP: since we have more effective tranq darts, reduce poison damage to player by half. 15 dam per interval on hardcore
+			TakeDamage(poisonDamage * 0.375, myPoisoner, Location, vect(0,0,0), 'PoisonEffect'); //CyberP: since we have more effective tranq darts, reduce poison damage to player by half. 15 dam per interval on hardcore //SARGE: Reduced from 0.5 to 0.375 because it still feels like bullshit. You won't be able to regenerate stamina while poisoned, though, so it'll fuck you up.
 		}
 		if ((poisonCounter <= 0) || (Health <= 0))
 			StopPoison();
@@ -3897,12 +3925,12 @@ function ToggleCameraState(SecurityCamera cam, ElectronicDevices compOwner, opti
 //client->server (window to player)
 function SetTurretState(AutoTurret turret, bool bActive, bool bDisabled, bool bHacked)
 {
-    if ((bDisabled && !bHacked) || !bDisabled)
+    if (!bHacked)
     {
         turret.disableTime = 0;
         turret.bRebooting = false;
     }
-    else if (bDisabled && bHacked)
+    else
     {
         turret.StartReboot(self);
     }
@@ -5443,6 +5471,8 @@ function float GetBaseEyeHeight()
 function float GetCurrentGroundSpeed()
 {
 	local float augSpeedValue, augStealthValue, speed;                           //RSD: replaced augValue with augSpeedValue and augStealthValue
+    local float groundSpeed;
+    local PerkSprinter perk;
 
 	// Remove this later and find who's causing this to Access None MB
 	if ( AugmentationSystem == None )
@@ -5463,9 +5493,18 @@ function float GetCurrentGroundSpeed()
 		augSpeedValue = 1.0;
 
 	if (( Level.NetMode != NM_Standalone ) && Self.IsA('Human') )
-		speed = Human(Self).mpGroundSpeed * FMax(augSpeedValue,augStealthValue);
+		groundSpeed = Human(Self).mpGroundSpeed;
 	else
-		speed = Default.GroundSpeed * FMax(augSpeedValue,augStealthValue);
+		groundSpeed = self.Default.GroundSpeed;
+
+    //SARGE: Add Sprinter bonus 10% movespeed
+    perk = PerkSprinter(PerkManager.GetPerkWithClass(class'DeusEx.PerkSprinter'));
+    if (perk != None && perk.bPerkObtained && inHand == None && CarriedDecoration == None)
+        groundSpeed = groundSpeed * perk.perkValue;
+		
+    speed = GroundSpeed * FMax(augSpeedValue,augStealthValue);
+
+    //clientMessage("Speed: " $ speed);
 
 	return speed;
 }
@@ -6004,10 +6043,7 @@ state PlayerWalking
                SetTimer(3,false);
                if (!bOnLadder && FRand() < 0.7)
                {
-                    if (FlagBase.GetBool('LDDPJCIsFemale')) //Sarge: Lay-D Denton support
-                        PlaySound(Sound(DynamicLoadObject("FemJC.FJCGasp", class'Sound', false)), SLOT_None, 0.8);
-                    else
-                        PlaySound(sound'MaleBreathe', SLOT_None,0.8);
+                   PlayBreatheSound();
                }
                if (bBoosterUpgrade && Energy > 0)
 	               AugmentationSystem.AutoAugs(false,false);
@@ -6442,11 +6478,16 @@ event HeadZoneChange(ZoneInfo newHeadZone)
 		Buoyancy=155.000000;
 		//if (bBoosterUpgrade && Energy > 0)
 		//    AugmentationSystem.AutoAugs(false,false);
-		if (!bHardCoreMode)
+		if (!bHardCoreMode && !bStaminaSystem)
 		   SwimTimer = swimDuration;
+        //SARGE: Disabled so we can't "dolphin dive" repeatedly for free stamina
+        /*
 		else if (SwimTimer < 10)
            SwimTimer += 2;
+        */
 		//swimTimer = swimDuration;
+
+
 		if (( Level.NetMode != NM_Standalone ) && Self.IsA('Human') )
 		{
 			if ( AugmentationSystem != None )
@@ -6462,7 +6503,15 @@ event HeadZoneChange(ZoneInfo newHeadZone)
     else
     {
     bRegenStamina = true;
-    SwimTimer += 0.5;
+
+        //SARGE: Always play a breathsound if we went below 70% breath
+        //Don't play at 25% or below though, since it already plays the 
+        //EDIT: Okay maybe not, this causes overlapping sound issues
+        /*
+	    if ((100.0 * swimTimer / swimDuration) < 70 && (100.0 * swimTimer / swimDuration) > 25)
+            PlayBreatheSound();
+        */
+
     Buoyancy=150.500000;
     if (bBoosterUpgrade)
     {
@@ -7544,7 +7593,7 @@ exec function ParseLeftClick()
 	// - Detonate spy drone
 	// - Fire (handled automatically by user.ini bindings)
 	// - Use inHand
-	//
+	// - Select last weapon
 
 	if (RestrictInput())
 		return;
@@ -7599,45 +7648,75 @@ exec function ParseLeftClick()
     }
 
     //Special cases aside, now do the left hand frob behaviour
+<<<<<<< HEAD
     else if (FrobTarget != none && IsReallyFrobbable(FrobTarget,true) && !bInHandTransition && (inHand == None || !inHand.IsA('POVcorpse')) && CarriedDecoration == None)
+=======
+    else if (FrobTarget != none && IsReallyFrobbable(FrobTarget) && !bInHandTransition && (inHand == None || !inHand.IsA('POVcorpse')) && CarriedDecoration == None)
+>>>>>>> 4da83e3d1f940c24e87d8346088fe5b8a13abc44
 	{
         DoLeftFrob(FrobTarget);
 	}
 
-    //Handle throwing decorations/corpses
+    //Handle throwing decorations/corpses and selecting weapons
 	else
 	{
-	  if (AugmentationSystem != None)
-	  AugMuscleOn = AugmentationSystem.GetAugLevelValue(class'AugMuscle');
+        if (AugmentationSystem != None)
+            AugMuscleOn = AugmentationSystem.GetAugLevelValue(class'AugMuscle');
 		if (AugMuscleOn> -1.0)
 		{
-		 if ((inHand != None) && !bInHandTransition &&(InHand.IsA('POVcorpse')))
-		 {
-            bThrownDecor=true;
-            if (bRealisticCarc || bHardCoreMode)
-			bThrowDecoration=False;
-			else
-			bThrowDecoration=True;
-			DropItem();
-		 } else
-		 {
-		    if (Energy <= 0 && CarriedDecoration != None && carriedDecoration.Mass > 60)
-		    {
-		     PlaySound(sound'cantdrophere',SLOT_None,,,,0.7);
-		     ClientMessage(EnergyDepleted);
-		     return;
+            if ((inHand != None) && !bInHandTransition &&(InHand.IsA('POVcorpse')))
+            {
+                bThrownDecor=true;
+                if (bRealisticCarc || bHardCoreMode)
+                    bThrowDecoration=False;
+                else
+                    bThrowDecoration=True;
+                DropItem();
+                return;
             }
-		    if (CarriedDecoration != None)
-		    {
-		         bThrownDecor=true;
-			     bThrowDecoration=true;                                         //RSD: Rest of this should be in the if branch so you can't cancel footsteps
-			     DropDecoration();
-		 // play a throw anim
-			     PlayAnim('Attack',,0.1);
+            else
+            {
+                if (Energy <= 0 && CarriedDecoration != None && carriedDecoration.Mass > 60)
+                {
+                    PlaySound(sound'cantdrophere',SLOT_None,,,,0.7);
+                    ClientMessage(EnergyDepleted);
+                    return;
+                }
+                if (CarriedDecoration != None)
+                {
+                    bThrownDecor=true;
+                    bThrowDecoration=true;                                         //RSD: Rest of this should be in the if branch so you can't cancel footsteps
+                    DropDecoration();
+                    // play a throw anim
+                    PlayAnim('Attack',,0.1);
+                    return;
+                }
             }
-		   }
-	   }
+        }
+
+        //SARGE: Final option - select last weapon
+        if (inHand == None && bLeftClickUnholster)
+            SelectLastWeapon();
 	}
+}
+
+// ----------------------------------------------------------------------
+// SelectLastWeapon()
+// Sarge: Selects the last weapon we had selected, or if we're using the alternate toolbelt, selects the primary selection.
+// ----------------------------------------------------------------------
+
+function SelectLastWeapon()
+{
+    local DeusExRootWindow root;
+    root = DeusExRootWindow(rootWindow);
+    if (root != None && root.hud != None)
+    {
+        if (bAlternateToolbelt > 0)
+            root.ActivateObjectInBelt(advBelt);
+        else
+            PutInHand(lastSelected);
+        NewWeaponSelected();
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -7649,7 +7728,6 @@ function NewWeaponSelected()
 {
     bNumberSelect = false;
     bScrollSelect = false;
-    bUsedKeyringLast = false;
     clickCountCyber = 0;
     beltScrolled = advBelt;
 }
@@ -7682,6 +7760,8 @@ function bool IsReallyFrobbable(Actor target, optional bool left)
         return DeusExMover(target).bBreakable || DeusExMover(target).bFrobbable;
     if (target.isA('DeusExMover'))
         return DeusExMover(target).bHighlight && DeusExMover(target).bFrobbable;
+    if (target.isA('ElevatorMover'))
+        return false;
     return true;
 }
 
@@ -7867,18 +7947,11 @@ exec function ParseRightClick()
 			}
 		}
         else if (inHand == None && (clickCountCyber >= 1 || dblClickHolster < 2))
-        {
+		{
             //SARGE: Added support for the unholster behaviour from the Alternate Toolbelt on both Toolbelts
             //Additionally, unholstering is now tied to the double-click holstering setting.
-            root = DeusExRootWindow(rootWindow);
-            if (root != None && root.hud != None)
-            {
-                if (bAlternateToolbelt > 0)
-                    beltLast = advBelt;
-                root.ActivateObjectInBelt(BeltLast);
-            }
-		    DoRightFrob(FrobTarget); //Last minute check for things with no highlight.
-        }
+            SelectLastWeapon();
+		}
 		else if (inHand != None && (clickCountCyber >= 1 || dblClickHolster == 0))
 		{
             PutInHand(None);
@@ -8249,6 +8322,9 @@ exec function PutInHand(optional Inventory inv)
 		// Can't put an active charged item in hand  //cyberP: overruled for armor system
 		//if ((inv.IsA('ChargedPickup')) && (ChargedPickup(inv).IsActive()))
 		//	return;
+        
+        if (!inv.IsA('POVCorpse'))
+            lastSelected = inv;
 	}
 
 	if (CarriedDecoration != None)
@@ -8258,9 +8334,6 @@ exec function PutInHand(optional Inventory inv)
 		if (Binoculars(assignedWeapon).bActive)
             assignedWeapon.GotoState('DeActivated');
     SetInHandPending(inv);
-
-    if (inv.isA('NanoKeyRing'))
-        bUsedKeyringLast = true;
 
     UpdateCrosshair();
 }
@@ -12985,8 +13058,8 @@ function bool GetExceptedCode(string code)
         || code == "718" //Can only be guessed based on cryptic information
         || code == "7243" //We are only given 3 digits, need to guess the 4th
         || code == "WYRDRED08" //We are not given the last digit
-        //|| (code == "1966" && FlagBase.GetBool('CassandraDone')) //Only given in conversation, no note //EDIT: UNFORTUNATELY THIS IS UNRELIABLE!!
-        || code == "1966" //Only given in conversation, no note
+        || (code == "1966" && FlagBase.GetBool('GaveCassandraMoney')) //Only given in conversation, no note
+        //|| code == "1966" //Only given in conversation, no note
         || code == "4321"; //We are told to "count backwards from 4"
 }
 
@@ -14824,7 +14897,7 @@ function Timer()      //CyberP: my god I've turned this into a mess.
           return;
 	}
 
-    bStunted = False;  //CyberP: called from takedamage.
+    //bStunted = False;  //CyberP: called from takedamage.
 
 	if (!InConversation() && bOnFire)
 	{
@@ -14840,6 +14913,8 @@ function Timer()      //CyberP: my god I've turned this into a mess.
 			ExtinguishFire();
 		}
 	}
+
+    bCrouchHack = false;
 }
 
 // ----------------------------------------------------------------------
@@ -17320,9 +17395,23 @@ exec function AllAmmo()                                                         
             Ammo(Inv).AmmoAmount  = GetAdjustedMaxAmmo(Ammo(Inv));     //RSD: Replaced Ammo(Inv).MaxAmmo with adjusted
 }
 
+//SARGE: Plays the breathing sound based on gender
+function PlayBreatheSound()
+{
+    if (FlagBase.GetBool('LDDPJCIsFemale')) //Sarge: Lay-D Denton support
+        PlaySound(Sound(DynamicLoadObject("FemJC.FJCGasp", class'Sound', false)), SLOT_None, 0.8);
+    else
+        PlaySound(sound'MaleBreathe', SLOT_None,0.8);
+}
+
 function RegenStaminaTick(float deltaTime)                                      //RSD: New general stamina regen function for various state tick codes
 {
 	local float mult;
+    local float base;
+    
+    //SARGE: Stop regen if we're poisoned
+    if (poisonCounter > 0)
+        return;
 
     if (AugmentationSystem != none)                                             //RSD: accessed none
     {
@@ -17339,8 +17428,13 @@ function RegenStaminaTick(float deltaTime)                                      
 		mult -= 0.5;
 	if (AddictionManager.addictions[DRUG_TOBACCO].drugTimer > 0)                                                 //RSD: Zyme adds x2
 		mult += 1.0;
-
-	swimTimer += 5.0*mult*deltaTime;
+      
+    //SARGE: Increase at the same rate regardless of athletics skill
+    //Was hardcoded at 5
+    //base swimDuration is 18 seconds, 36 seconds at Master
+    base = swimDuration / 3.6;
+      
+    swimTimer += base*mult*deltaTime;
 	if (swimTimer > swimDuration)
 	{
 		swimTimer = swimDuration;
@@ -17558,6 +17652,7 @@ defaultproperties
      dynamicCrosshair=1
      bBeltMemory=True
      bEnhancedCorpseInteractions=True
+     bBeltShowModified=true;
      bSearchedCorpseText=True
      bDisplayClips=true
      bCutsceneFOVAdjust=true

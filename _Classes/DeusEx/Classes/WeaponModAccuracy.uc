@@ -11,6 +11,7 @@ class WeaponModAccuracy extends WeaponMod;
 
 function ApplyMod(DeusExWeapon weapon)
 {
+	Super.ApplyMod(weapon);
 	if (weapon != None)
 	{
 		if (weapon.BaseAccuracy == 0.0)

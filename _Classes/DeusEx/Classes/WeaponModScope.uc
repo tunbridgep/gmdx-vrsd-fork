@@ -11,6 +11,7 @@ class WeaponModScope extends WeaponMod;
 
 function ApplyMod(DeusExWeapon weapon)
 {
+	Super.ApplyMod(weapon);
 	if (weapon != None)
 		weapon.bHasScope = True;
 }

@@ -47,6 +47,8 @@ var bool bContactDetonation;            //CyberP: explode upon contact
 var ScriptedPawn pawnAlreadyHit;                                                //RSD: So the the Controlled Burn perk doesn't multihit enemies as it passes through them
 var float gravMult;                                                             //RSD: Multiplier for zone gravity. 0.5 in vanilla, now 0 for non-dropping projectiles, ~0.45 for dropping
 var bool bPlusOneDamage;                                                        //RSD: did our damage get boosted by 1 from decimal damage variation? So we can turn it off for movers
+//SARGE: Explode on destroy
+var bool bExplodeOnDestroy;
 // network replication
 replication
 {
@@ -63,6 +65,14 @@ function PostBeginPlay()
 		AIStartEvent('Projectile', EAITYPE_Visual);
 }
 
+//SARGE: Let the object explode on destroy
+function Destroyed()
+{
+    if (bExplodeOnDestroy)
+        Explode(Location, vect(0,0,1));
+    else
+        Super.Destroyed();
+}
 //
 // Let the player pick up stuck projectiles
 //

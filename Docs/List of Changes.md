@@ -19,7 +19,10 @@ Sarge's Changes since Beta 2.2:
     - Fixed a number of typos in various places.
     - Fixed Vanilla bug where sound volume would reset upon new game.
     - Fixed single-use weapon weirdness, such as picking up a PS20 with no rounds in it after it was dropped and then all rounds fired from a second PS20.
+    - Fixed GMDX bug where tiredness effects from low stamina would reset prematurely.
+    - Fixed vanilla "bug" where diving into or leaving water would give free stamina.
     - Fixed GMDX quickloading not always working correctly, and other save issues including incorrect save-game ordering in the save/load screens.
+    - Fixed GMDX bug which would make an empty subtitles box appear when interacting with things during first-person conversations, if subtitles were disabled.
     - Fixed many other GMDX and Vanilla bugs.
 - Quality of Life Improvements:
     - Complete overhaul of the "Decline Knives" system
@@ -33,6 +36,7 @@ Sarge's Changes since Beta 2.2:
     - While having a grenade selected, the crosshair will turn blue when you're able to place it on a wall.
     - Right-Clicking while dead will load the last save game.
     - Right-Clicking an item in the belt with the Inventory Window open will clear the slot.
+    - Added QoL settings to not damage domesticated animals and cleaner bots when stepping on them.
     - The Inventory "Show Ammo" display now always shows the total amount of ammo you can carry. Before, it was only visible when "Show Descriptions" was enabled.
     - Added a Lighting Accessibility setting, which removes some strobing and flickering in certain areas on some maps, such as the 'Ton hotel elevator shaft.
     - Added a new corpse searching setting, "Enhanced Looting", which makes the first right-click on a corpse never pick them up, even if empty, so that you can search them reliably without accidentally picking them up.
@@ -46,6 +50,7 @@ Sarge's Changes since Beta 2.2:
     - The HUD now shows stamina and bioenergy percentages below the bars if enabled.
     - Added alternate weapon offsets to hide many of the visible seams or missing parts of weapon viewmodels.
     - Weapons that don't use ammo (such as melee weapons) no longer show the Ammo element on the HUD.
+    - Modified Weapons will appear with a "+" icon on the belt and in the inventory screen to differentiate them from unmodded ones.
     - Augmentation Wheel improvements
         - While in the augmentation screen, use middle-click on an active augmentation to add or remove it from the augmentation wheel.
         - By default all augmentations will appear on the wheel.
@@ -113,6 +118,7 @@ Sarge's Changes since Beta 2.2:
         - When Smart Keyring is enabled, the keyring will no longer occupy belt slot 0, allowing it to be used for regular items.
         - The keyring can be selected using Left-Click Frob on doors.
 - Gameplay Changes:
+    - The GEP Gun now has limited range. After 5 seconds of flight, rockets will detonate as they run out of fuel. Each range mod increases flight time by 1 second.
     - Putting a scope or a laser sight on the GEP gun now requires the Heavily Tweaked perk (ADVANCED heavy weapons, 100 skill points). The scope and laser sight still provide rocket guidance capabilities.
     - Added a new "Weapon Requirements Matter" Playthrough Modifier. When enabled, most weapons will require a minimum skill investment in order to be used.
     - Reverted GMDX change limiting Assault Rifles, Assault Shotguns and Sawed Off's to 4 damage mods. Now they can have 5 just like everything else.

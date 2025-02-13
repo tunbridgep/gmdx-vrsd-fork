@@ -11,6 +11,7 @@ class WeaponModAuto extends WeaponMod;
 
 function ApplyMod(DeusExWeapon weapon)
 {
+	Super.ApplyMod(weapon);
 	if (weapon != None)
 	{
 		weapon.ShotTime += (weapon.Default.ShotTime * WeaponModifier);
