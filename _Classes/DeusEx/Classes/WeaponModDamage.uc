@@ -11,6 +11,7 @@ class WeaponModDamage extends WeaponMod;
 
 function ApplyMod(DeusExWeapon weapon)
 {
+	Super.ApplyMod(weapon);
 	if (weapon != None)
 	{
 		//weapon.HitDamage += (weapon.Default.HitDamage * WeaponModifier);

@@ -257,12 +257,15 @@ local DeusExWeapon weapon;
 		gc.EnableWordWrap(false);
 		gc.SetTextColor(colObjectNum);
 
+        weapon = DeusExWeapon(item);
         // Draw the item description at the bottom
-		gc.DrawText(1, 42, 42, 7, item.beltDescription);
+        if (weapon != None)
+            gc.DrawText(1, 42, 42, 7, weapon.GetBeltDescription(player));
+        else if (item != None)
+            gc.DrawText(1, 42, 42, 7, item.beltDescription);
 
         if (player != None && player.bColorCodedAmmo) //CyberP: start
         {
-        weapon = DeusExWeapon(item);
         if ((weapon != None) && (weapon.AmmoName != class'AmmoNone') && (!weapon.bHandToHand) && (weapon.ReloadCount != 0) && (weapon.AmmoType != None))
 			{
             	itemText = weapon.AmmoType.beltDescription;

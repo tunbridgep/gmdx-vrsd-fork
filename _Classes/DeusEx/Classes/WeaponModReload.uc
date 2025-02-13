@@ -11,6 +11,7 @@ class WeaponModReload extends WeaponMod;
 
 function ApplyMod(DeusExWeapon weapon)
 {
+	Super.ApplyMod(weapon);
 	if (weapon != None)
 	{
 		weapon.ReloadTime    += (weapon.Default.ReloadTime * WeaponModifier);

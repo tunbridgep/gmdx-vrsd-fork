@@ -26,6 +26,12 @@ simulated function PreBeginPlay()
 	}
 }
 
+//SARGE: This weapon is a janky mess. Just delete it whenever it's available to be picked up.
+simulated function Tick(float deltaTime)
+{
+    if (Owner == None)
+        Destroy();
+}
 
 simulated function renderoverlays(Canvas canvas)
 {
