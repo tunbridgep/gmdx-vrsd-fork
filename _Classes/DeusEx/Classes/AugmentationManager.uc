@@ -468,13 +468,6 @@ function Augmentation GivePlayerAugmentation(Class<Augmentation> giveClass)
 	{
 		anAug.bIsActive = False;
 	}
-    if (!anAug.IsA('AugHeartLung')                                              //RSD: If we already have Synth Heart installed, give a free upgrade
-      && Player.AugmentationSystem.FindAugmentation(class'AugHeartLung').bHasIt
-      && anAug.CurrentLevel != anAug.MaxLevel)
-    {
-        anAug.CurrentLevel++;
-        anAug.heartLevels++;
-    }
 
 	if ( Player.Level.Netmode == NM_Standalone )
 		Player.ClientMessage(Sprintf(anAug.AugNowHaveAtLevel, anAug.GetName(), anAug.CurrentLevel + 1));
