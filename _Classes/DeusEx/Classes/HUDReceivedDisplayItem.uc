@@ -51,8 +51,12 @@ event SetItem(Inventory invItem, int count)
 	winLabel.SetFont(fontLabel);
 	winLabel.SetTextColor(colText);
 	winLabel.SetTextAlignments(HALIGN_Center, VALIGN_Top);
-
-	labelText = invItem.beltDescription;
+	
+    //SARGE: Add a "+" to the item name for upgraded weapons
+    if (invItem.isA('DeusExWeapon'))
+        labelText = DeusExWeapon(invItem).GetBeltDescription(player);
+    else
+        labelText = invItem.beltDescription;
 	if (count > 1)
 		labelText = labelText $ " (" $ String(count) $ ")";
 

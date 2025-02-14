@@ -14,10 +14,27 @@ function FirstFrame()
 	local NicoletteDuClare Nicolette;
 	local BlackHelicopter chopper;
 	local JaimeReyes Jaime;
+    local Light L;
 
 	Super.FirstFrame();
-
-	if (localURL == "10_PARIS_METRO")
+	
+    if (localURL == "10_PARIS_CATACOMBS")
+    {
+        //Do lighting accessibility
+        ForEach AllActors(class'Light', L)
+        {
+            //In the abandoned building
+            DoLightingAccessibility(L, 'Light413');
+            DoLightingAccessibility(L, 'Light414');
+            DoLightingAccessibility(L, 'Light243');
+            DoLightingAccessibility(L, 'Light165');
+            
+            //Metro Station
+            DoLightingAccessibility(L, 'Light344');
+            DoLightingAccessibility(L, 'Light345', true);
+        }
+    }
+	else if (localURL == "10_PARIS_METRO")
 	{
 		if (flags.GetBool('NicoletteLeftClub'))
 		{

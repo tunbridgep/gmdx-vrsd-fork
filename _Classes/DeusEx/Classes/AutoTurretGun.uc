@@ -27,6 +27,14 @@ function Destroyed()
 	Super.Destroyed();
 }
 
+//Change style based on the parent AutoTurret
+function bool IsHDTP()
+{
+	local AutoTurret turret;
+	turret = AutoTurret(Owner);
+    return DeusExPlayer(GetPlayerPawn()) != None && DeusExPlayer(GetPlayerPawn()).bHDTPInstalled && (turret != None && turret.iHDTPModelToggle > 0);
+}
+
 function ResetComputerAlignment()
 {
 	local AutoTurret turret;
@@ -183,7 +191,8 @@ defaultproperties
      FragType=Class'DeusEx.MetalFragment'
      ItemName="Autonomous Defense Turret"
      Physics=PHYS_Rotating
-     Mesh=LodMesh'HDTPDecos.HDTPAutogun'
+     HDTPMesh="HDTPDecos.HDTPAutogun"
+     Mesh=LodMesh'DeusExDeco.AutoTurretGun'
      PrePivot=(Z=-8.770000)
      SoundRadius=24
      CollisionRadius=22.500000

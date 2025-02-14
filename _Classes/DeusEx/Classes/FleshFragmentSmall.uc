@@ -18,7 +18,7 @@ auto state Flying
 		DrawScale = FRand() * 0.65;
 
 		if (FRand() < 0.04)
-            Skin=Texture'HDTPItems.Skins.HDTPFleshFragTex1';
+            Skin=class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFleshFragTex1","DeusExItems.Skins.FleshFragmentTex1",IsHDTP());
         else
             Skin=None;
 	}

@@ -60,7 +60,8 @@ defaultproperties
      MiscSound=Sound'DeusExSounds.Generic.FleshHit2'
      Physics=PHYS_None
      LifeSpan=50.000000
-     Skin=Texture'HDTPItems.Skins.HDTPFleshFragTex1'
+     HDTPSkin=Texture"HDTPItems.Skins.HDTPFleshFragTex1"
+     Skin=Texture'DeusExItems.Skins.FleshFragmentTex1'
      Mesh=LodMesh'DeusExItems.FleshFragment1'
      CollisionRadius=0.010000
      CollisionHeight=0.010000

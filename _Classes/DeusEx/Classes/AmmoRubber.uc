@@ -114,7 +114,6 @@ defaultproperties
      MaxAmmo=30
      ItemName="12 Gauge Rubber Shells"
      ItemArticle="some"
-     PickupViewMesh=LodMesh'HDTPItems.HDTPammoshell'
      Icon=Texture'GMDXSFX.Icons.BeltIconRubberShells'
      largeIcon=Texture'GMDXSFX.Icons.LargeIconRubberShells'
      largeIconWidth=34
@@ -122,7 +121,9 @@ defaultproperties
      Description="A law enforcement tool for non-lethal crowd control."
      beltDescription="RUBBER"
      Skin=Texture'RSDCrap.Items.RubberShellBox'
-     Mesh=LodMesh'HDTPItems.HDTPammoshell'
+     HDTPSkin="RSDCrap.Items.RubberShellBox"
+     Mesh=LodMesh'DeusExItems.AmmoShell'
+     HDTPMesh="HDTPItems.HDTPammoshell"
      CollisionRadius=9.300000
      CollisionHeight=10.210000
      bCollideActors=True

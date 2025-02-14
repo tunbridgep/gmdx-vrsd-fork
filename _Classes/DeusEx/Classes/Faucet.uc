@@ -95,7 +95,8 @@ defaultproperties
      ItemName="Faucet"
      bPushable=False
      Physics=PHYS_None
-     Mesh=LodMesh'HDTPDecos.HDTPFaucet'
+     HDTPMesh="HDTPDecos.HDTPFaucet"
+     Mesh=LodMesh'DeusExDeco.Faucet'
      CollisionRadius=11.200000
      CollisionHeight=4.800000
      Mass=20.000000

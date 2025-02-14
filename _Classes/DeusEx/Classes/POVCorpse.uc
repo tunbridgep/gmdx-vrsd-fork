@@ -72,6 +72,20 @@ function PreBeginPlay()
     DoWeaponOffset(DeusExPlayer(GetPlayerPawn()));
 }
 
+simulated event RenderOverlays( canvas Canvas )
+{
+    //This has to be done here for some stupid reason
+    if (handsTex == None)
+        SetWeaponHandTex();
+
+    //SARGE: TODO: Allow setting POV skins
+    //multiskins[0] = POVSkin;
+    multiskins[1] = handstex;
+    super.RenderOverlays(canvas);
+    //multiskins[0] = none;
+    multiskins[1] = none;
+}
+
 defaultproperties
 {
      weaponOffsets=(X=15.00,Y=15.00,Z=-5.00)

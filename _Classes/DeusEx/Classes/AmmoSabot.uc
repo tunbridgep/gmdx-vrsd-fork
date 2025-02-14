@@ -76,6 +76,15 @@ function bool UseAmmo(int AmountNeeded)
 	return False;
 }
 
+exec function UpdateHDTPsettings()
+{
+    super.UpdateHDTPsettings();
+    if (IsHDTP())
+        MultiSkins[1]=class'HDTPLoader'.static.GetTexture("RSDCrap.Items.SabotShellBox");
+    else
+        MultiSkins[1]=None;
+}
+
 defaultproperties
 {
      bShowInfo=True
@@ -84,16 +93,16 @@ defaultproperties
      MaxAmmo=30
      ItemName="12 Gauge Sabot Shells"
      ItemArticle="some"
-     PickupViewMesh=LodMesh'HDTPItems.HDTPammoshell'
      Icon=Texture'DeusExUI.Icons.BeltIconAmmoSabot'
      largeIcon=Texture'DeusExUI.Icons.LargeIconAmmoSabot'
      largeIconWidth=35
      largeIconHeight=46
      Description="A 12 gauge shotgun shell surrounding a solid core of tungsten that can punch through all but the thickest hardened steel armor at close range."
      beltDescription="SABOT"
-     Skin=Texture'RSDCrap.Items.SabotShellBox'
-     Mesh=LodMesh'HDTPItems.HDTPammoshell'
-     MultiSkins(1)=Texture'RSDCrap.Items.SabotShellBox'
+     Skin=Texture'DeusExItems.Skins.AmmoShellTex2'
+     HDTPSkin="RSDCrap.Items.SabotShellBox"
+     HDTPMesh="HDTPItems.HDTPammoshell"
+     Mesh=LodMesh'DeusExItems.AmmoShell'
      CollisionRadius=9.300000
      CollisionHeight=10.210000
      bCollideActors=True

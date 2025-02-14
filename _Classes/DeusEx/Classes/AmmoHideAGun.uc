@@ -10,10 +10,10 @@ defaultproperties
      MaxAmmo=5
      ItemName="PS20"
      ItemArticle="a"
-     PickupViewMesh=LodMesh'DeusExItems.TestBox'
+     PickupViewMesh=LodMesh'DeusExItems.HideAGunPickup'
      Icon=Texture'DeusExUI.Icons.BeltIconHideAGun'
      beltDescription="PS20"
-     Mesh=LodMesh'HDTPItems.HDTPAmmoPlasma'
+     Mesh=LodMesh'DeusExItems.HideAGunPickup'
      CollisionRadius=4.300000
      CollisionHeight=8.440000
      bCollideActors=True

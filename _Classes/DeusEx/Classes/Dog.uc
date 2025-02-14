@@ -77,6 +77,18 @@ function PlayBarking()
 	PlayAnimPivot('Bark');
 }
 
+// ----------------------------------------------------------------------
+// SARGE: Protect Cats and Dogs from being stomped on accidentally.
+// Poor little guys :( :( :(
+// ----------------------------------------------------------------------
+
+function bool WillTakeStompDamage(Actor stomper)
+{
+    local DeusExPlayer player;
+    player = DeusExPlayer(stomper);
+    return player != None && player.bStompDomesticAnimals;
+}
+
 defaultproperties
 {
      bPlayDying=True

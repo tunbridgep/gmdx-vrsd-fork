@@ -23,7 +23,7 @@ function LoadSetting()
 
 function SaveSetting()
 {
-	player.HUDThemeName = enumText[GetValue()];
+	player.HUDThemeNameGMDX = enumText[GetValue()];
 }
 
 // ----------------------------------------------------------------------
@@ -44,11 +44,11 @@ function ResetToDefault()
 {
 	local ColorTheme theme;
 
-	player.HUDThemeName = defaultTheme;
+	player.HUDThemeNameGMDX = defaultTheme;
 	theme = player.ThemeManager.SetHUDThemeByName(defaultTheme);
 	theme.ResetThemeToDefault();
 
-	SetValueFromString(player.HUDThemeName);
+	SetValueFromString(player.HUDThemeNameGMDX);
 
 	ChangeStyle();
 }

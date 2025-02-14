@@ -219,7 +219,7 @@ defaultproperties
      CloakThreshold=100
      walkAnimMult=1.400000
      runAnimMult=1.200000
-     HDTPMeshName="HDTPCharacters.HDTPWaltonSimons"
+     HDTPMesh="HDTPCharacters.HDTPWaltonSimons"
      HDTPMeshTex(0)="HDTPCharacters.skins.HDTPSimonsTex0"
      HDTPMeshTex(1)="HDTPCharacters.skins.HDTPSimonsTex1"
      HDTPMeshTex(2)="HDTPCharacters.skins.HDTPSimonsTex2"

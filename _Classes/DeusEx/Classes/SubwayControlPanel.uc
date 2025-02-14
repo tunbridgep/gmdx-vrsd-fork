@@ -3,15 +3,13 @@
 //=============================================================================
 class SubwayControlPanel extends DeusExDecoration;
 
-#exec obj load file=HDTPanim
-
 defaultproperties
 {
      bInvincible=True
      ItemName="Subway Control Panel"
      bPushable=False
      Physics=PHYS_None
-     Skin=Texture'HDTPanim.Animated.SubwayControlPanel01'
+     HDTPSkin="HDTPanim.Animated.SubwayControlPanel01"
      Mesh=LodMesh'DeusExDeco.SubwayControlPanel'
      SoundRadius=8
      SoundVolume=255

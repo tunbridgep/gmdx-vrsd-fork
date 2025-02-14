@@ -36,7 +36,7 @@ defaultproperties
      EnergyRate=0.000000
      Icon=Texture'DeusExUI.UserInterface.AugIconShield'
      smallIcon=Texture'DeusExUI.UserInterface.AugIconShield_Small'
-     bAlwaysActive=True
+     AugmentationType=Aug_Passive
      AugmentationName="Energy Shield (Passive)"
      Description="Polyanilene capacitors below the skin absorb heat and electricity, reducing the damage received from flame, electrical, and plasma attacks.|n|nTECH ONE: Damage from energy attacks is reduced slightly.|n|nTECH TWO: Damage from energy attacks is reduced moderately.|n|nTECH THREE: Damage from energy attacks is reduced significantly.|n|nTECH FOUR: Nanobots assemble a charged plasma shield around the body rendering an agent nearly invulnerable to damage from energy attacks."
      MPInfo="When active, you only take 50% damage from flame and plasma attacks.  Energy Drain: Low"

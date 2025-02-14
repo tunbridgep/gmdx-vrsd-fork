@@ -4,11 +4,19 @@
 class DeusExDecal extends Decal
 	abstract;
 
+//SARGE: HDTP Model toggles
+var globalconfig int iHDTPModelToggle;
+var string HDTPSkin;
+var string HDTPTexture;
+var string HDTPMesh;
+var float HDTPDrawScale; //Can resize the DrawScale for HDTP
+
 var bool bAttached, bStartedLife, bImportant;
 
 simulated function PostBeginPlay()
 {
 	Super.PostBeginPlay();
+    UpdateHDTPsettings();
 	SetTimer(1.0, false);
 }
 
@@ -60,9 +68,33 @@ function ReattachDecal(optional vector newrot)
 		AttachDecal(32);
 }
 
+function bool IsHDTP()
+{
+    return DeusExPlayer(GetPlayerPawn()).bHDTPInstalled && iHDTPModelToggle > 0;
+}
+
+exec function UpdateHDTPsettings()
+{
+    if (HDTPDrawScale > 0.0 && (HDTPTexture != "" || HDTPSkin != ""))
+    {
+        if (IsHDTP())
+            DrawScale = HDTPDrawScale;
+        else
+            DrawScale = default.DrawScale;
+    }
+    if (HDTPMesh != "")
+        Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),IsHDTP());
+    if (HDTPSkin != "")
+        Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),IsHDTP());
+    if (HDTPTexture != "")
+        Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),IsHDTP());
+}
+
 defaultproperties
 {
      bAttached=True
      bImportant=True
      MultiDecalLevel=3
+     HDTPDrawScale=-1
+     iHDTPModelToggle=1
 }

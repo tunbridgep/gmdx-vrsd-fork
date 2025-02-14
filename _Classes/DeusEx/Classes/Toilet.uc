@@ -12,20 +12,31 @@ enum ESkinColor
 var() ESkinColor SkinColor;
 var bool bUsing;
 
-function BeginPlay()
+function UpdateHDTPSettings()
 {
-	Super.BeginPlay();
+	Super.UpdateHDTPSettings();
 
-	switch (SkinColor)
-	{
-		case SC_Clean:	MultiSkins[1] = Texture'CleanHDTPToiletTex1';
-                        MultiSkins[2] = Texture'CleanHDTPToiletTex2';
-                        MultiSkins[3] = Texture'CleanToiletWaterTex'; break;
+    if (IsHDTP())
+    {
+        switch (SkinColor)
+        {
+            case SC_Clean:	MultiSkins[1] = class'HDTPLoader'.static.GetTexture("HDTPDecos.CleanHDTPToiletTex1");
+                            MultiSkins[2] = class'HDTPLoader'.static.GetTexture("HDTPDecos.CleanHDTPToiletTex2");
+                            MultiSkins[3] = class'HDTPLoader'.static.GetTexture("HDTPDecos.CleanToiletWaterTex"); break;
 
-		case SC_Filthy: MultiSkins[1] = Texture'DirtyHDTPToiletTex1';
-                        MultiSkins[2] = Texture'DirtyHDTPToiletTex2';
-                        MultiSkins[3] = Texture'DirtyToiletWaterTex'; break;
-	}
+            case SC_Filthy:	MultiSkins[1] = class'HDTPLoader'.static.GetTexture("HDTPDecos.DirtyDTPToiletTex1");
+                            MultiSkins[2] = class'HDTPLoader'.static.GetTexture("HDTPDecos.DirtyDTPToiletTex2");
+                            MultiSkins[3] = class'HDTPLoader'.static.GetTexture("HDTPDecos.DirtyToiletWaterTex"); break;
+        }
+    }
+    else
+    {
+        switch (SkinColor)
+        {
+            case SC_Clean:	Skin = class'HDTPLoader'.static.GetTexture("DeusExDeco.ToiletTex1"); break;
+            case SC_Filthy: Skin = class'HDTPLoader'.static.GetTexture("DeusExDeco.ToiletTex2"); break;
+        }
+    }
 }
 
 function Timer()
@@ -54,9 +65,11 @@ defaultproperties
      ItemName="Toilet"
      bPushable=False
      Physics=PHYS_None
-     Mesh=LodMesh'HDTPDecos.HDTPToilet'
+     HDTPMesh="HDTPDecos.HDTPToilet"
+     Mesh=LodMesh'DeusExDeco.Toilet'
      CollisionRadius=28.000000
      CollisionHeight=23.000000
      Mass=100.000000
      Buoyancy=5.000000
+	 bHDTPFailsafe=False
 }

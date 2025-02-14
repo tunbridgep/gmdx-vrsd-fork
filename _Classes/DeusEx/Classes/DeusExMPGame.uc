@@ -192,8 +192,8 @@ event PostLogin(playerpawn NewPlayer)
 		  DXPlayer.ThemeManager.SetOwner( DXPlayer );
 		  DXPlayer.ThemeManager.SetCurrentHUDColorTheme(DXPlayer.ThemeManager.GetFirstTheme(1));		
 		  DXPlayer.ThemeManager.SetCurrentMenuColorTheme(DXPlayer.ThemeManager.GetFirstTheme(0)); 
-		  DXPlayer.ThemeManager.SetMenuThemeByName(DXPlayer.MenuThemeName);
-		  DXPlayer.ThemeManager.SetHUDThemeByName(DXPlayer.HUDThemeName);
+		  DXPlayer.ThemeManager.SetMenuThemeByName(DXPlayer.MenuThemeNameGMDX);
+		  DXPlayer.ThemeManager.SetHUDThemeByName(DXPlayer.HUDThemeNameGMDX);
 		  DeusExRootWindow(DXPlayer.rootWindow).ChangeStyle();
 		}
 		DXPlayer.ReceiveFirstOptionSync(DXPlayer.AugPrefs[0], DXPlayer.AugPrefs[1], DXPlayer.AugPrefs[2], DXPlayer.AugPrefs[3], DXPlayer.AugPrefs[4]);
@@ -270,7 +270,7 @@ function bool RestartPlayer( pawn aPlayer )
     PlayerToRestart.AugmentationSystem.CreateAugmentations(PlayerToRestart);
     PlayerToRestart.AugmentationSystem.AddDefaultAugmentations();
     //Restore Bio-Energy
-    PlayerToRestart.Energy = PlayerToRestart.EnergyMax;
+    PlayerToRestart.Energy = PlayerToRestart.GetMaxEnergy();
     //Restore Skills
     PlayerToRestart.SkillSystem.CreateSkills(PlayerToRestart);
     //Replace with skill points based on game info.

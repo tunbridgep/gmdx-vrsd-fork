@@ -7,7 +7,8 @@ defaultproperties
 {
      bCanBeBase=True
      ItemName="Pot"
-     Mesh=LodMesh'HDTPDecos.HDTPPan4'
+     HDTPMesh="HDTPDecos.HDTPPan4"
+     Mesh=LodMesh'DeusExDeco.Pan4'
      CollisionRadius=11.790000
      CollisionHeight=6.750000
      Mass=26.000000

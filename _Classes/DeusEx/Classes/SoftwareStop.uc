@@ -17,6 +17,12 @@ function PostBeginPlay()
   SetRotation(rot);
 }
 
+exec function UpdateHDTPsettings()
+{
+	Super.UpdateHDTPsettings();
+    MultiSkins[1] = class'HDTPLoader'.static.GetTexture2("GMDXSFX.2027Misc.MinidiskTex0","RSDCrap.Skins.MiniDiskTex0",IsHDTP());
+}
+
 // ----------------------------------------------------------------------
 
 defaultproperties
@@ -38,7 +44,6 @@ defaultproperties
      Description="Hacking Software. This program freezes any diagnostic attempt by the network for approximately 7 seconds, granting the user precious time."
      beltDescription="STOPWORM"
      Physics=PHYS_None
-     Skin=Texture'GMDXSFX.2027Misc.MinidiskTex0'
      Mesh=LodMesh'GameMedia.Minidisk'
      CollisionRadius=3.000000
      CollisionHeight=0.500000

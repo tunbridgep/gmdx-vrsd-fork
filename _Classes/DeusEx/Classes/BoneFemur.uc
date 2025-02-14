@@ -8,7 +8,8 @@ defaultproperties
      FragType=Class'DeusEx.WoodFragment'
      bCanBeBase=True
      ItemName="Human Femur"
-     Mesh=LodMesh'HDTPDecos.HDTPbonefemur'
+     HDTPMesh="HDTPDecos.HDTPbonefemur"
+     Mesh=LodMesh'DeusExDeco.bonefemur'
      CollisionRadius=12.500000
      CollisionHeight=1.780000
      Mass=8.000000

@@ -7,6 +7,11 @@ var() bool bVisionActive;
 var() int visionLevel;
 var() int visionLevelValue;
 
+function bool CanAssignSecondary(DeusExPlayer player)
+{
+    return true;
+}
+
 // ----------------------------------------------------------------------
 // ChargedPickupBegin()
 // ----------------------------------------------------------------------

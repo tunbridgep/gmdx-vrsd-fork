@@ -44,9 +44,10 @@ defaultproperties
      HitPoints=10
      FragType=Class'DeusEx.WoodFragment'
      ItemName="Ship's Wheel"
+     HDTPMesh="HDTPDecos.HDTPshipswheel"
      bPushable=False
      Physics=PHYS_None
-     Mesh=LodMesh'HDTPDecos.HDTPshipswheel'
+     Mesh=LodMesh'DeusExDeco.ShipsWheel'
      CollisionRadius=21.000000
      CollisionHeight=21.000000
      Mass=50.000000

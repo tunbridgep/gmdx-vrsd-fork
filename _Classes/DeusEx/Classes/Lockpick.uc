@@ -5,14 +5,19 @@ class Lockpick expands SkilledTool;
 
 function renderoverlays(canvas canvas)
 {
-	Multiskins[0] = getweaponhandtex();
+	Multiskins[0] = handsTex;
 	if (bIsCloaked)                                                             //RSD: Overhauled cloak/radar routines
+    {
+	   Multiskins[0] = FireTexture'GameEffects.InvisibleTex';
 	   Multiskins[1] = FireTexture'GameEffects.InvisibleTex';
+    }
     else if (bIsRadar)
+    {
+       Multiskins[0] = Texture'Effects.Electricity.Xplsn_EMPG';
        Multiskins[1] = Texture'Effects.Electricity.Xplsn_EMPG';
+    }
     else
 	   multiskins[1]=none;//texture'HDTPItems.Skins.HDTPLockpickPOVTex1';
-	multiskins[0] = Getweaponhandtex();
 
 	super.renderoverlays(canvas);
 	multiskins[1]=none;
@@ -26,7 +31,7 @@ simulated function PreBeginPlay()
 
 	// If this is a netgame, then override defaults
 	if ( Level.NetMode != NM_StandAlone )
-		MaxCopies = 5;
+		default.MaxCopies = 5;
 }
 
 function OnEquipped()

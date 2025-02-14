@@ -36,49 +36,21 @@ function PostBeginPlay()
     FireOffset=vect(30,9,4);
 }
 
-simulated function renderoverlays(Canvas canvas)
+function DisplayWeapon(bool overlay)
 {
-	multiskins[0] = Getweaponhandtex();
-
-    if (iHDTPModelToggle == 1)                                                  //RSD: Need this off for vanilla model
-    	if (bIsCloaked || bIsRadar)
-    		multiskins[2] = none;//Texture'pinkmasktex';
-    else                                                                        //RSD: Vanilla model needs special help for animated cloak/radar
-    	if (bIsCloaked || bIsRadar)
-    		multiskins[1] = none;//Texture'pinkmasktex';
-
-	super.renderoverlays(canvas);
-
-	multiskins[0] = none;
+	super.DisplayWeapon(overlay);
+	if (overlay)
+		multiskins[0] = handsTex;
 }
 
-exec function UpdateHDTPsettings()                                              //RSD: New function to update weapon model meshes (specifics handled in each class)
+exec function UpdateHDTPsettings()
 {
-     //RSD: HDTP Toggle Routine
-     //if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).inHand == self)
-     //     DeusExPlayer(Owner).BroadcastMessage(iHDTPModelToggle);
-     if (iHDTPModelToggle == 1)
-     {
-          PlayerViewMesh=LodMesh'HDTPItems.HDTPFlamethrower';
-          PickupViewMesh=LodMesh'HDTPItems.HDTPflamethrowerPickup';
-          ThirdPersonMesh=LodMesh'HDTPItems.HDTPflamethrower3rd';
-          addPitch=-500;
-     }
-     else
-     {
-          PlayerViewMesh=LodMesh'DeusExItems.Flamethrower';
-          PickupViewMesh=LodMesh'DeusExItems.FlamethrowerPickup';
-          ThirdPersonMesh=LodMesh'DeusExItems.Flamethrower3rd';
-          addPitch=0;
-     }
-     //RSD: HDTP Toggle End
-
      Super.UpdateHDTPsettings();
+     if (IsHDTP())
+          addPitch=-500;
+     else
+          addPitch=0;
 }
-
-/*Function CheckWeaponSkins()
-{
-}*/
 
 state Reload
 {
@@ -189,9 +161,12 @@ defaultproperties
      InventoryGroup=15
      ItemName="Flamethrower"
      PlayerViewOffset=(X=15.000000,Y=-16.000000,Z=-12.000000)
-     PlayerViewMesh=LodMesh'HDTPItems.HDTPFlamethrower'
-     PickupViewMesh=LodMesh'HDTPItems.HDTPflamethrowerPickup'
-     ThirdPersonMesh=LodMesh'HDTPItems.HDTPflamethrower3rd'
+     HDTPPlayerViewMesh="HDTPItems.HDTPFlamethrower"
+     HDTPPickupViewMesh="HDTPItems.HDTPflamethrowerPickup"
+     HDTPThirdPersonMesh="HDTPItems.HDTPflamethrower3rd"
+     PlayerViewMesh=LodMesh'DeusExItems.Flamethrower'
+     PickupViewMesh=LodMesh'DeusExItems.FlamethrowerPickup'
+     ThirdPersonMesh=LodMesh'DeusExItems.Flamethrower3rd'
      LandSound=Sound'DeusExSounds.Generic.DropLargeWeapon'
      Icon=Texture'DeusExUI.Icons.BeltIconFlamethrower'
      largeIcon=Texture'GMDXSFX.Icons.Napalm'
@@ -201,7 +176,6 @@ defaultproperties
      invSlotsY=2
      Description="A portable flamethrower that discards the old and highly dangerous backpack fuel delivery system in favor of pressurized canisters of napalm. Inexperienced agents will find that a flamethrower can be difficult to maneuver, however."
      beltDescription="FLAMETHWR"
-     Mesh=LodMesh'HDTPItems.HDTPflamethrowerPickup'
      CollisionRadius=20.500000
      CollisionHeight=4.400000
      Mass=35.000000

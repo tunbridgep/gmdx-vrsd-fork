@@ -301,27 +301,19 @@ Begin:
 
 simulated function renderoverlays(Canvas canvas)
 {
-    if (!bIsCloaked)
-		    multiskins[0] = Getweaponhandtex();
-        else
-        {
-         if (class'DeusExPlayer'.default.bRadarTran==false)
-	         Multiskins[0] = FireTexture'GameEffects.InvisibleTex';
-         else
-             Multiskins[0] = Texture'Effects.Electricity.Xplsn_EMPG';
-        }
+    Multiskins[0] = handsTex;
+	if (bIsCloaked)                                                             //RSD: Overhauled cloak/radar routines
+    {
+	   Multiskins[0] = FireTexture'GameEffects.InvisibleTex';
+    }
+    else if (bIsRadar)
+    {
+       Multiskins[0] = Texture'Effects.Electricity.Xplsn_EMPG';
+    }
 
 	super.renderoverlays(canvas);
 
-	if (!bIsCloaked)
-		    multiskins[0] = None;
-        else
-        {
-         if (class'DeusExPlayer'.default.bRadarTran==false)
-	         Multiskins[0] = FireTexture'GameEffects.InvisibleTex';
-         else
-             Multiskins[0] = Texture'Effects.Electricity.Xplsn_EMPG';
-        }
+    multiskins[0] = None;
 }
 
 defaultproperties

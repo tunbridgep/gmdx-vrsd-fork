@@ -10,7 +10,8 @@ defaultproperties
      FragType=Class'DeusEx.PaperFragment'
      bGenerateFlies=True
      ItemName="Trashbag"
-     Mesh=LodMesh'HDTPDecos.HDTPtrashbag2'
+     Mesh=LodMesh'DeusExDeco.trashbag2'
+     HDTPMesh="HDTPDecos.HDTPtrashbag2"
      CollisionRadius=19.610001
      CollisionHeight=16.700001
      Mass=30.000000

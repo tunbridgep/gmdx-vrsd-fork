@@ -53,7 +53,9 @@ var localized String msgADSDetonating;
 var localized String msgBehind;
 var localized String msgDroneActive;
 var localized String msgDroneStandby;                                           //RSD: Added
+var localized String msgEMPEnergyLow;                                           //SARGE: Added
 var localized String msgEnergyLow;
+var localized String msgDroneCloaked;                                           //SARGE: Added
 var localized String msgCantLaunch;
 var localized String msgLightAmpActive;
 var localized String msgIRAmpActive;
@@ -124,6 +126,8 @@ var StaticInterlacedWindow winVisionLines;
 var ConLight lite;
     
 var ThrownProjectile lastGrenade;
+
+var localized String msgDisarmed;
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -259,12 +263,12 @@ function ConfigurationChanged()
 
 	if ((winDrone != None) || (winZoom != None))
 	{
-		w = width/4;
-		h = height/4;
-		cx = width/8 + margin;
-		cy = height/2;
-		x = cx - w/2;
-		y = cy - h/2;
+		w = width/3.33;
+		h = height/3.33;
+		cx = width/6.5 + margin;
+		cy = height/2.0;
+		x = cx - w/2.0;
+		y = cy - h/2.0;
 
 		if (winDrone != None)
 			winDrone.ConfigureChild(x, y, w, h);
@@ -340,11 +344,18 @@ singular function checkForHazards(GC gc)
     local bool beep;
 
     local int i;
+	local DeusExRootWindow root;
+
+	root = DeusExRootWindow(player.rootWindow);
+    
+    //Disable the hazard detection text while windows are open
+    if (root == None || (root != None && root.WindowStackCount() > 0))
+        return;
 
     aug = AugIFF(Player.AugmentationSystem.GetAug(class'AugIFF'));
 
     if (aug != None && aug.bHasIt)
-    range = (aug.CurrentLevel) * aug.default.hazardsrange * 16; //Range in which hazards are detected - 50 feet at level 2, 100 at level 3
+        range = (aug.CurrentLevel) * aug.default.hazardsrange * 16; //Range in which hazards are detected - 50 feet at level 2, 100 at level 3
 
     if (range <= 0)
         return;
@@ -426,10 +437,10 @@ singular function checkForHazards(GC gc)
     actors[totalActors++] = temp;
     temp = None;
     
-    //Third, get closest grenade (half-range)
+    //Third, get grenades (half-range)
     foreach Player.RadiusActors(class'ThrownProjectile', PROJ, range * 0.5)
     {
-        //skip grenades if Defense aug is not on (it already shows them)
+        //skip grenades if Defense aug is on (it already shows them)
         if (bDefenseActive)
             break;
 
@@ -438,24 +449,13 @@ singular function checkForHazards(GC gc)
 
         if (!PROJ.bProximityTriggered || PROJ.bDisabled || PROJ.Damage <= 0 || PROJ.Owner == player) //Only detect mines placed on walls, etc
             continue;
-
-        //Get closest
-        if (temp != None)
-        {
-            range1 = VSize(CL.location - player.location);
-            range2 = VSize(temp.location - player.location);
-            if (range1 < range2)
-                temp = PROJ;
-        }
-        else
-            temp = PROJ;
+        
+        if (!PROJ.bEUASDetected)
+            beep = true;
+        actors[totalActors++] = PROJ;
+        PROJ.bEUASDetected = true;
     }
     
-    beep = ThrownProjectile(temp) != None && lastGrenade != ThrownProjectile(temp);
-    lastGrenade = ThrownProjectile(temp);
-    actors[totalActors++] = temp;
-    temp = None;
-
     //Now, get information for the actors
     for (i = 0;i < totalActors;i++)
     {
@@ -587,7 +587,7 @@ function Tick(float deltaTime)
 	if (Player.bSpyDroneActive && (Player.aDrone != None) && (winDrone == None) &&
 		(Player.PlayerIsClient() || (Player.Level.NetMode==NM_Standalone)) )
 	{
-		winDrone = ViewportWindow(NewChild(class'ViewportWindow'));
+		winDrone = ViewportWindow(NewChild(class'GMDXViewportWindow'));
 		if (winDrone != None)
 		{
 			winDrone.AskParentForReconfigure();
@@ -793,33 +793,59 @@ function DrawSpyDroneAugmentation(GC gc)
 	local float boxCX, boxCY, boxTLX, boxTLY, boxBRX, boxBRY, boxW, boxH;
 	local float x, y, w, h, mult;
 	local Vector loc;
+    local AugDrone augDrone;
+    local float ymod;       //SARGE: Added for text offset
+    local Vector playerPosition;
+
+    augDrone = AugDrone(Player.AugmentationSystem.FindAugmentation(class'AugDrone'));
 
 	// set the coords of the drone window
-	boxW = width/4;
-	boxH = height/4;
-	boxCX = width/8 + margin;
-	boxCY = height/2;
-	boxTLX = boxCX - boxW/2;
-	boxTLY = boxCY - boxH/2;
-	boxBRX = boxCX + boxW/2;
-	boxBRY = boxCY + boxH/2;
+
+    boxW = width/3.33;
+    boxH = height/3.33;
+    boxCX = width/6.5 + margin;
+    boxCY = height/2;
+    boxTLX = boxCX - boxW/2.0;
+    boxTLY = boxCY - boxH/2.0;
+    boxBRX = boxCX + boxW/2.0;
+    boxBRY = boxCY + boxH/2.0;
 
 	if (winDrone != None)
 	{
 		DrawDropShadowBox(gc, boxTLX, boxTLY, boxW, boxH);
+			
+        winDrone.SetViewportActor(Player.aDrone);
 
         if (!Player.bSpyDroneSet)
+        {
+            //SARGE: Now we swap windows when the spy drone is active
+            if (player.bBigDroneView)
+            {
+                //playerPosition = Player.Location;
+                //playerPosition.Z += Player.EyeHeight - 10;
+                //playerPosition += Player.WalkBob;
+                //Move it forward a bit so we don't see parts of the player
+                //playerPosition += Vector(Player.Rotation) * 10;
+                winDrone.SetViewportActor(Player);
+                //winDrone.SetViewportLocation(playerPosition);
+                //winDrone.SetRotation(Player.SAVErotation);
+            }
 			str = msgDroneActive;
+        }
 		else
+        {
 			str = msgDroneStandby;                                                  //RSD: Standby message
+        }
 		gc.GetTextExtent(0, w, h, str);
 		x = boxCX - w/2;
 		y = boxTLY - h - margin;
 		gc.DrawText(x, y, w, h, str);
 
+        str = "";
+
 		// print a low energy warning message
-		if ((Player.Energy / Player.Default.Energy) < 0.2)
-		{
+		if (Player.Energy / Player.GetMaxEnergy(true) < 0.2)
+        {
 			str = msgEnergyLow;
 			gc.GetTextExtent(0, w, h, str);
 			x = boxCX - w/2;
@@ -827,7 +853,38 @@ function DrawSpyDroneAugmentation(GC gc)
 			gc.SetTextColorRGB(255,0,0);
 			gc.DrawText(x, y, w, h, str);
 			gc.SetTextColor(colHeaderText);
-		}
+        }
+		
+        // print a low energy warning message for EMP attack
+		if (augDrone != None && Player.Energy < augDrone.EMPDrain)
+        {
+            if (str != "")
+                ymod = 10;
+
+            str = msgEMPEnergyLow;
+			gc.GetTextExtent(0, w, h, str);
+			x = boxCX - w/2;
+			y = boxTLY + margin;
+			gc.SetTextColorRGB(255,0,0);
+			gc.DrawText(x, y+ymod, w, h, str);
+			gc.SetTextColor(colHeaderText);
+        }
+        
+        // print the "cloaked" text
+		if (augDrone != None && player.aDrone.bCloaked)
+        {
+            if (str != "")
+                ymod += 10;
+
+            str = msgDroneCloaked;
+			gc.GetTextExtent(0, w, h, str);
+			x = boxCX - w/2;
+			y = boxTLY + margin;
+			gc.SetTextColorRGB(0,0,255);
+			gc.DrawText(x, y+ymod, w, h, str);
+			gc.SetTextColor(colHeaderText);
+        }
+
 	}
 	// Since drone is created on server, they is a delay in when it will actually show up on the client
 	// the flags dronecreated and drone referenced negotiate this timing
@@ -1504,6 +1561,9 @@ function DrawTargetAugmentation(GC gc)
 				
                 // print disabled camera info
                 str = str $ GetHackDisabledText(target,true);
+                
+                // print disabled grenade info
+                str = str $ GetWallGrenadeDisabledText(target,true);
 
 				gc.SetTextColor(crossColor);
 
@@ -1615,17 +1675,22 @@ function DrawTargetAugmentation(GC gc)
 				if (target.IsA('Robot') && (Robot(target).EMPHitPoints == 0))
 					str = msgDisabled;
 				
+                // print disabled wall mine info
+                if (str == "")
+                    str = GetWallGrenadeDisabledText(target,false);
+
                 // print disabled camera info
                 if (str == "")
                     str = GetHackDisabledText(target,false);
 
                 if (str != "")
                 {
-					gc.SetTextColor(crossColor);
+					gc.SetTextColor(colWhite);
 					gc.GetTextExtent(0, w, h, str);
 					x = boxCX - w/2;
 					y = boxTLY - h - margin;
 					gc.DrawText(x, y, w, h, str);
+					gc.SetTextColor(crossColor);
                 }
 			}
 		}
@@ -1652,6 +1717,23 @@ function DrawTargetAugmentation(GC gc)
 	// set the crosshair colors
 	DeusExRootWindow(player.rootWindow).hud.cross.SetCrosshairColor(crossColor);
 	DeusExRootWindow(player.rootWindow).hud.hitmarker.SetCrosshairColor(crossColor);
+}
+
+//SARGE: Get the text for wall grenades
+function string GetWallGrenadeDisabledText(Actor target, bool TargetingDisplay)
+{
+    local string str;
+    if (target.IsA('ThrownProjectile') && ThrownProjectile(target).bDisabled && ThrownProjectile(target).bProximityTriggered)
+    if (ThrownProjectile(target).bEMPDisabled)
+        str = msgDisabled;
+    else
+        str = msgDisarmed;
+    
+    //If using the targeting aug, we need to format it
+    if (TargetingDisplay && str != "")
+        str = " (" $ str $ ")";
+
+    return str;
 }
 
 //SARGE: Get the text for rebooting cameras/turrets
@@ -2134,11 +2216,13 @@ defaultproperties
      msgDroneActive="Remote SpyDrone Active"
      msgDroneStandby="Remote SpyDrone On Standby"
      msgEnergyLow="BioElectric energy low!"
+     msgEMPEnergyLow="Not Enough Energy to Detonate!"
      msgCantLaunch="ERROR - No room for SpyDrone construction!"
      msgLightAmpActive="LightAmp Active"
      msgIRAmpActive="IRAmp Active"
      msgNoImage="Image Not Available"
      msgDisabled="Disabled"
+     msgDisarmed="Disarmed"
      msgReboot="Rebooting in %s"
      SpottedTeamString="You have spotted a teammate!"
      YouArePoisonedString="You have been poisoned!"
@@ -2179,4 +2263,5 @@ defaultproperties
      msgIFFTracking="* Environmental Hazard *"
      IFFLabel1="Type:"
      IFFLabel2="Lethality:"
+     msgDroneCloaked="Cloak Engaged"
 }
