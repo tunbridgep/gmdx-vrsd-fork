@@ -16,8 +16,36 @@ var DeusExPlayer Player;
 var FlagBase flags;
 var string localURL;
 var DeusExLevelInfo dxInfo;
-var bool CanQuickSave;
+var bool CanQuickSave; //SARGE: Note this is actually for Autosaves, not Quicksaves
 var float TimeToSave;
+
+var bool firstTime;     //SARGE: Set to true the first time we enter a map.
+
+// ----------------------------------------------------------------------
+// DoLightingAccessibility()
+//
+// Modify a light to be steady, rather than strobing, or optionally delete it instead,
+// based on the players Lighting Accessibility setting
+// ----------------------------------------------------------------------
+
+function DoLightingAccessibility(Light L, name checkName, optional bool bStrobe)
+{
+    if (!player.bLightingAccessibility || L.name != checkName)
+        return;
+                
+    //log("Light Found: [" $ L.Name $ "]");
+
+    if (bStrobe)
+    {
+        L.LightPeriod = 155;
+        L.LightType = LT_Strobe;
+    }
+    else
+    {
+        L.LightPeriod = 0;
+        L.LightType = LT_Steady;
+    }
+}
 
 // ----------------------------------------------------------------------
 // PostPostBeginPlay()
@@ -149,10 +177,6 @@ function FirstFrame()
         //Player.ClientMessage("Map seed is: " $ seed);
         Player.Randomizer.Seed(Player.seed + seed);
 
-        //Reset player Autosave timer
-        //Actually, make this per mission instead, to really be punishing
-        //Player.autosaveRestrictTimer = 0.0;
-
 		//Player.BroadcastMessage("Loading this map for the first time");
 		//Player.setupDifficultyMod();
 		InitializeRandomAmmoCounts();
@@ -176,7 +200,16 @@ function FirstFrame()
             InitializeEnemySwap(1);
         }
 
+        //Randomise the crap around the level
+        RandomiseCrap();
+
+        //Distribute PS20's and Flares
+        DistributeItem(class'WeaponHideAGun',0,2,class'AmmoHideAGun');
+        DistributeItem(class'Flare',1,3);
+
 		flags.SetBool(flagName, True);
+
+        firstTime = true;
 	}
 
 	flagName = Player.rootWindow.StringToName("M"$dxInfo.MissionNumber$"MissionStart");
@@ -185,10 +218,6 @@ function FirstFrame()
 		// Remove completed Primary goals and all Secondary goals
 		Player.ResetGoals();
         
-        //Reset player Autosave timer
-        //Actually, make this per mission instead, to really be punishing
-        Player.autosaveRestrictTimer = 0.0;
-
 		// Remove any Conversation History.
 		Player.ResetConversationHistory();
 
@@ -278,22 +307,22 @@ function Timer()
 
 function Tick(float DeltaTime)
 {
-   if (CanQuickSave && player != none && (player.bTogAutoSave || player.bHardCoreMode)) //CyberP: toggle autosave option //RSD: TEMPORARILY remove Hardcore autosave because it's pissing me off
-   {
-      if (TimeToSave>0) TimeToSave-=DeltaTime;
-      else
-      if (player.CanSave(true,true))
-      {
-         CanQuickSave=false;
-         /*if (localURL == "05_NYC_UNATCOMJ12LAB")
-         TimeToSave=0.5;
-         else
-         TimeToSave=0.1;*/
-         TimeToSave=0.0;                                                        //RSD: Removed autosave delay
-         player.PerformAutoSave();
-      } else
-         CanQuickSave=false;
-   }
+    if (CanQuickSave && player != none) //CyberP: toggle autosave option //RSD: TEMPORARILY remove Hardcore autosave because it's pissing me off
+    {
+        if (TimeToSave>0)
+            TimeToSave-=DeltaTime;
+        else
+        {
+            if (localURL ~= "11_PARIS_EVERETT")
+                TimeToSave=0.0; //Save before speech if we can
+            else if (localURL ~= "05_NYC_UNATCOMJ12LAB")
+                TimeToSave=0.5;
+            else
+                TimeToSave=0.1;
+            //TimeToSave=0.0;                                                        //RSD: Removed autosave delay
+            CanQuickSave = !player.PerformAutoSave(firstTime);                      //Sarge: Keep trying until we successfully save
+        }
+    }
 }
 //State QuickSaver
 //{
@@ -367,6 +396,85 @@ function SpawnPoint GetSpawnPoint(Name spawnTag, optional bool bRandom)
 	return aPoint;
 }
 
+//Gives the specified item to 0-X random enemies in the map.
+function DistributeItem(class<Inventory> itemClass, int minAmount, int maxAmount, optional class<Ammo> ammoClass)
+{
+    local int i, j, swapTo, items;
+    local ScriptedPawn actors[50], temp, SP;
+    local int actorCount, toGive, index;
+    local Inventory inv;
+
+    //player.ClientMessage("Distributing "$itemClass$"...");
+
+    foreach AllActors(class'ScriptedPawn', SP)
+    {
+        if (!SP.bImportant && SP.GetPawnAllianceType(Player) == ALLIANCE_Hostile && !SP.isA('Robot') && !SP.isA('Animal') && !SP.isA('HumanCivilian') && !SP.bDontRandomizeWeapons && actorCount < 50)
+            actors[actorCount++] = SP;
+    }
+    
+    //Shuffle the array
+    for (i = actorCount;i > 0;i--)
+    {
+        swapTo = Player.Randomizer.GetRandomInt(i + 1);
+        temp = actors[i];
+        actors[i] = actors[swapTo];
+        actors[swapTo] = temp;
+    }
+    
+
+    //Now give the first 0-2 PS20s
+    toGive = Player.Randomizer.GetRandomInt(maxAmount - minAmount) + minAmount;
+    //player.ClientMessage("  To Give: "$toGive);
+    toGive = MIN(toGive,actorCount);
+    //player.ClientMessage("  To Give (capped): "$toGive);
+
+    for(i = 0;i < actorCount;i++)
+    {
+        //No more to give?
+        if (toGive == 0 || i > actorCount)
+            break;
+
+        //First, make sure they don't have one.
+        //Need to restrict this to a max of 10, otherwise some maps crash for no reason
+        inv = actors[i].Inventory;
+        while (inv != None && items < 10)
+        {
+            items++;
+            if (inv.Class == itemClass)
+                continue;
+            inv = inv.Inventory;
+        }
+    
+        //Spawn the item and some ammo
+        inv = spawn(itemClass, actors[i]);
+        if (inv != None)
+        {
+            inv.GiveTo(actors[i]);
+            inv.SetBase(actors[i]);
+            inv.bHidden = True;
+            inv.SetPhysics(PHYS_None);
+            actors[i].AddInventory(inv);
+            //player.ClientMessage("  Given a "$itemClass$" to "$actors[i]);
+        }
+        if (ammoClass != None)
+        {
+            inv = spawn(ammoClass, actors[i]);
+            if (inv != None)
+            {
+                inv.GiveTo(actors[i]);
+                inv.SetBase(actors[i]);
+                inv.bHidden = True;
+                inv.SetPhysics(PHYS_None);
+                actors[i].AddInventory(inv);
+                //player.ClientMessage("  Given a "$ammoClass$" to "$actors[i]);
+            }
+        }
+        //Player.ClientMessage("Give " $ actors[given].FamiliarName $ " a " $ itemClass);
+        actors[i].SwitchToBestWeapon();
+        toGive--;
+    }
+}
+
 function InitializeRandomAmmoCounts()                                           //RSD: Initializes random ammo drop counts on first map load so they can't be savescummed
 {
 	local int ammoDropCount;
@@ -383,6 +491,16 @@ function InitializeRandomAmmoCounts()                                           
 	    ammoDropCount = Player.Randomizer.GetRandomInt(4) + 1;                                            //RSD: From general randomized PickupAmmoCount in DeusExCarcass.uc
 		DC.PickupAmmoCount = ammoDropCount;
 	}
+}
+
+//Sarge: Randomise all the crap around the level (sodacans, cigs, etc) to have random skins
+function RandomiseCrap()
+{
+    local DeusExPickup P;
+    foreach AllActors(class'DeusExPickup', P)
+    {
+        P.RandomiseSkin(player);
+    }
 }
 
 //Sarge: Randomize Weapons amongs Enemies

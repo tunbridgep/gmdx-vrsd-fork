@@ -1,6 +1,7 @@
 //=============================================================================
 // PlasmaBolt.
 //=============================================================================
+//TODO: Use this for something
 class PlasmaGamma extends DeusExProjectile;
 
 var ParticleGenerator pGen1;
@@ -27,7 +28,7 @@ simulated function DrawExplosionEffects(vector HitLocation, vector HitNormal)
 	{
 	shield.size = 5.5;
 	shield.LifeSpan= 0.4;
-	shield.Skin = Texture'HDTPDecos.Skins.HDTPAlarmLightTex6';
+	shield.Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.Skins.HDTPAlarmLightTex6","DeusExDeco.AlarmLightTex6",IsHDTP());
 	shield.LightHue=160;
 	}
 	cor = Spawn(class'SpoofedCorona',,,Location+Vector(Rotation)*1.5);
@@ -43,7 +44,7 @@ simulated function DrawExplosionEffects(vector HitLocation, vector HitNormal)
 	spoofed = Spawn(class'PlasmaParticleSpoof');
     if (spoofed != none)
     {
-    spoofed.Texture=Texture'HDTPDecos.Skins.HDTPAlarmLightTex6';
+	spoofed.Texture = class'HDTPLoader'.static.GetTexture2("HDTPDecos.Skins.HDTPAlarmLightTex6","DeusExDeco.AlarmLightTex6",IsHDTP());
     spoofed.LifeSpan=0.750000;
     spoofed.LightHue=160;
     }
@@ -163,7 +164,9 @@ defaultproperties
      SpawnSound=Sound'GMDXSFX.Weapons.newfirelaser'
      ImpactSound=Sound'DeusExSounds.Robot.MilitaryBotExplode'
      ExplosionDecal=Class'DeusEx.ScorchMark'
-     Skin=Texture'HDTPDecos.Skins.HDTPAlarmLightTex6'
+     hdtpReference=Class'DeusEx.WeaponPlasmaRifle'
+     Skin=Texture'DeusExDeco.AlarmLightTex6'
+     HDTPSkin="HDTPDecos.Skins.HDTPAlarmLightTex6"
      Mesh=LodMesh'DeusExItems.PlasmaBolt'
      DrawScale=2.000000
      ScaleGlow=0.600000

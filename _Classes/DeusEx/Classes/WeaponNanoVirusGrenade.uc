@@ -5,52 +5,20 @@ class WeaponNanoVirusGrenade extends DeusExWeapon;
 
 var float swingTime;
 
-simulated function renderoverlays(Canvas canvas)
+function DisplayWeapon(bool overlay)
 {
-	if (iHDTPModelToggle == 1)
-    	multiskins[0] = Getweaponhandtex();
-	else
-    {
-       multiskins[0]=GetWeaponHandTex();                                        //RSD: Fix vanilla hand tex
-       multiskins[3]=GetWeaponHandTex();
-    }
-
-	super.renderoverlays(canvas);
-
-	if (iHDTPModelToggle == 1)
-    	multiskins[0] = none;
-	else
-    {
-       multiskins[0]=none;                                                      //RSD: Fix vanilla hand tex
-       multiskins[3]=none;
-    }
+	super.DisplayWeapon(overlay);
+	if (overlay)
+	{
+		if (IsHDTP())
+			multiskins[0] = handsTex;
+		else
+		{
+		   multiskins[0]=handsTex;                                        //RSD: Fix vanilla hand tex
+		   multiskins[3]=handsTex;
+		}
+	}
 }
-
-exec function UpdateHDTPsettings()                                              //RSD: New function to update weapon model meshes (specifics handled in each class)
-{
-     //RSD: HDTP Toggle Routine
-     //if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).inHand == self)
-     //     DeusExPlayer(Owner).BroadcastMessage(iHDTPModelToggle);
-     if (iHDTPModelToggle == 1)
-     {
-          PlayerViewMesh=LodMesh'HDTPItems.HDTPNanoVirusGrenade';
-          PickupViewMesh=LodMesh'HDTPItems.HDTPnanovirusgrenadePickup';
-          ThirdPersonMesh=LodMesh'HDTPItems.HDTPnanovirusgrenade3rd';
-     }
-     else
-     {
-          PlayerViewMesh=LodMesh'DeusExItems.NanoVirusGrenade';
-          PickupViewMesh=LodMesh'DeusExItems.NanoVirusGrenadePickup';
-          ThirdPersonMesh=LodMesh'DeusExItems.NanoVirusGrenade3rd';
-     }
-     //RSD: HDTP Toggle End
-
-     Super.UpdateHDTPsettings();
-}
-
-/*Function CheckWeaponSkins()
-{
-}*/
 
 function Fire(float Value)
 {
@@ -166,18 +134,22 @@ defaultproperties
      InventoryGroup=23
      ItemName="Scramble Grenade"
      PlayerViewOffset=(X=24.000000,Y=-15.000000,Z=-19.000000)
-     PlayerViewMesh=LodMesh'HDTPItems.HDTPNanoVirusGrenade'
-     PickupViewMesh=LodMesh'HDTPItems.HDTPnanovirusgrenadePickup'
-     ThirdPersonMesh=LodMesh'HDTPItems.HDTPnanovirusgrenade3rd'
+     HDTPPlayerViewMesh="HDTPItems.HDTPNanovirusGrenade"
+     HDTPPickupViewMesh="HDTPItems.HDTPNanovirusGrenadePickup"
+     HDTPThirdPersonMesh="HDTPItems.HDTPNanovirusGrenade3rd"
+     PlayerViewMesh=LodMesh'DeusExItems.NanovirusGrenade'
+     PickupViewMesh=LodMesh'DeusExItems.NanovirusGrenadePickup'
+     ThirdPersonMesh=LodMesh'DeusExItems.NanovirusGrenade3rd'
      Icon=Texture'DeusExUI.Icons.BeltIconWeaponNanoVirus'
      largeIcon=Texture'DeusExUI.Icons.LargeIconWeaponNanoVirus'
      largeIconWidth=24
      largeIconHeight=49
      Description="The detonation of a GUARDIAN scramble grenade broadcasts a short-range, polymorphic broadband assault on the command frequencies used by almost all bots manufactured since 2028. The ensuing electronic storm causes bots within its radius of effect to indiscriminately attack other bots until command control can be re-established. Like a LAM, scramble grenades can be attached to any surface."
      beltDescription="SCRM GREN"
-     Mesh=LodMesh'HDTPItems.HDTPnanovirusgrenadePickup'
      CollisionRadius=3.000000
      CollisionHeight=2.430000
      Mass=5.000000
      Buoyancy=2.000000
+     bDisposableWeapon=true
+     minSkillRequirement=2;
 }

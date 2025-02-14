@@ -31,170 +31,14 @@ simulated function PreBeginPlay()
 	}
 }
 
-simulated function renderoverlays(Canvas canvas)
+simulated function DrawScopeAnimation()
 {
     local rotator rfs;
 	local vector dx;
 	local vector dy;
 	local vector dz;
-	local vector		DrawOffset, WeaponBob;
 	local vector unX,unY,unZ;
 
-    //RSD: Clyzm Model Begin
-    if (iHDTPModelToggle == 2 && DeusExPlayer(Owner) != none)
-    {
-    if(bHasScope)
-	{
-		if (!bIsCloaked && !bIsRadar)                                               //RSD: Overhauled cloak/radar routines
-		    multiskins[3] = none;
-        else
-        {
-         if (bIsRadar)
-	         Multiskins[3] = Texture'Effects.Electricity.Xplsn_EMPG';//FireTexture'GameEffects.InvisibleTex'; //RSD: Was using the wrong texture
-	     else
-             Multiskins[3] = FireTexture'GameEffects.InvisibleTex';//FireTexture'GameEffects.CamoEffect'; //RSD: Was using the wrong texture
-        }
-	}
-	else
-		multiskins[3] = texture'pinkmasktex';
-
-    if(bHasLaser)
-	{
-		if (!bIsCloaked && !bIsRadar)                                               //RSD: Overhauled cloak/radar routines
-		    multiskins[7] = none;
-		else
-        {
-         if (bIsRadar)
-	         Multiskins[7] = Texture'Effects.Electricity.Xplsn_EMPG';//FireTexture'GameEffects.InvisibleTex'; //RSD: Was using the wrong texture
-	     else
-             Multiskins[7] = FireTexture'GameEffects.InvisibleTex';//FireTexture'GameEffects.CamoEffect'; //RSD: Was using the wrong texture
-        }
-	}
-	else
-		multiskins[7] = texture'pinkmasktex';
-	if(bLasing)
-		multiskins[2] = none;
-	else
-		multiskins[2] = texture'pinkmasktex';
-	}
-	//RSD: Clyzm Model End
-    else if (iHDTPModelToggle == 1 || (iHDTPModelToggle == 2 && Mesh != PlayerViewMesh)) //RSD: HDTP stuff
-    {
-	Multiskins[0] = getweaponhandtex();
-	if (!bIsCloaked && !bIsRadar)
-	   Multiskins[1] = None;//Texture'GMDXSFX.Skins.HDTPStealthPistolTexAlt';//none;
-	else
-	{
-	   if (bIsRadar)
-	      Multiskins[1] = Texture'Effects.Electricity.Xplsn_EMPG';//FireTexture'GameEffects.InvisibleTex'; //RSD: Was using the wrong texture
-	   else
-          Multiskins[1] = FireTexture'GameEffects.InvisibleTex';//FireTexture'GameEffects.CamoEffect'; //RSD: Was using the wrong texture
-    }
-
-	if(bHasScope)
-	{
-		if (!bIsCloaked && !bIsRadar)
-		    multiskins[4] = none;
-		else
-        {
-         if (bIsRadar)
-	         Multiskins[4] = Texture'Effects.Electricity.Xplsn_EMPG';//FireTexture'GameEffects.InvisibleTex'; //RSD: Was using the wrong texture
-	     else
-             Multiskins[4] = FireTexture'GameEffects.InvisibleTex';//FireTexture'GameEffects.CamoEffect'; //RSD: Was using the wrong texture
-        }
-	}
-	else
-		multiskins[4] = texture'pinkmasktex';
-	if(bHasLaser)
-	{
-		if (!bIsCloaked && !bIsRadar)                                           //RSD: Overhauled cloak/radar routines
-		    multiskins[2] = none;
-		else
-        {
-         if (bIsRadar)
-	         Multiskins[2] = Texture'Effects.Electricity.Xplsn_EMPG';//FireTexture'GameEffects.InvisibleTex'; //RSD: Was using the wrong texture
-	     else
-             Multiskins[2] = FireTexture'GameEffects.InvisibleTex';//FireTexture'GameEffects.CamoEffect'; //RSD: Was using the wrong texture
-        }
-	}
-	else
-		multiskins[2] = texture'pinkmasktex';
-	if(bLasing)
-		multiskins[3] = none;
-	else
-		multiskins[3] = texture'pinkmasktex';
-    }
-    else
-    {
-        multiskins[0] = Getweaponhandtex();
-        multiskins[1] = Getweaponhandtex();
-        if (!bIsCloaked && !bIsRadar)
-            multiskins[3] = none;
-    }
-
-	super.renderoverlays(canvas); //(weapon)
-
-    //RSD: Clyzm Model Begin
-    if (iHDTPModelToggle == 2 && DeusExPlayer(Owner) != none)
-    {
-    if(bHasScope)
-	{
-		if (!bIsCloaked)
-		    multiskins[3] = none;
-        else
-        {
-         if (class'DeusExPlayer'.default.bRadarTran==false)
-	         Multiskins[3] = FireTexture'GameEffects.InvisibleTex';
-         else
-             Multiskins[3] = Texture'Effects.Electricity.Xplsn_EMPG';
-        }
-	}
-	else
-		multiskins[3] = texture'pinkmasktex';
-
-    if(bHasLaser)
-	{
-		if (!bIsCloaked)
-		    multiskins[7] = none;
-		else
-        {
-         if (class'DeusExPlayer'.default.bRadarTran==false)
-	         Multiskins[7] = FireTexture'GameEffects.InvisibleTex';
-	     else
-             Multiskins[7] = Texture'Effects.Electricity.Xplsn_EMPG';
-        }
-	}
-	else
-		multiskins[7] = texture'pinkmasktex';
-	if(bLasing)
-		multiskins[2] = none;
-	else
-		multiskins[2] = texture'pinkmasktex';
-	}
-	//RSD: Clyzm Model End
-    else if (iHDTPModelToggle == 0)
-    {
-        multiskins[0] = Getweaponhandtex();
-        multiskins[1] = Getweaponhandtex();
-    }
-	/*multiskins[0] = None;//Texture'GMDXSFX.Skins.HDTPStealthPistolTexAlt';//none;
-
-	if(bHasScope)
-		multiskins[1] = none;
-	else
-		multiskins[1] = texture'pinkmasktex';
-	if(bHasLaser)
-		multiskins[2] = none;
-	else
-		multiskins[2] = texture'pinkmasktex';
-	if(bLasing)
-		multiskins[3] = none;
-	else
-		multiskins[3] = texture'pinkmasktex';
-	multiskins[4]=none;*/
-
-	if (activateAn == True)
-    {
 	if(!bGEPout)
 	{
 		if (GEPinout<1) GEPinout=Fmin(1.0,GEPinout+0.04);
@@ -204,10 +48,7 @@ simulated function renderoverlays(Canvas canvas)
 	rfs.Yaw=2912*Fmin(1.0,GEPinout);
 	rfs.Pitch=-62912*sin(Fmin(1.0,GEPinout)*Pi);
 	GetAxes(rfs,axesX,axesY,axesZ);
-/*
-	if(!bStaticFreeze)
-	{
-*/
+    
     player = DeusExPlayer(Owner);
 
 	dx=axesX>>player.ViewRotation;
@@ -220,44 +61,13 @@ simulated function renderoverlays(Canvas canvas)
 	PlayerViewOffset=Default.PlayerViewOffset*100;//meh
 	SetHand(player.Handedness); //meh meh
 
-    //if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkNamesArray[12]== 1)
-    //{
 	PlayerViewOffset.X=Smerp(sin(FMin(1.0,GEPinout*1.5)*0.5*Pi),PlayerViewOffset.X,MountedViewOffset.X*100);
 	PlayerViewOffset.Y=Smerp(1.0-cos(FMin(1.0,GEPinout*1.5)*0.5*Pi),PlayerViewOffset.Y,MountedViewOffset.Y*100);
 	PlayerViewOffset.Z=Lerp(sin(FMin(1.0,GEPinout*1.25)*0.05*Pi),PlayerViewOffset.Z,cos(FMin(1.0,GEPinout)*2*Pi)*MountedViewOffset.Z*100);
-	//}
-	//else
-	//{
-	//PlayerViewOffset.X=Smerp(sin(FMin(1.0,GEPinout)*0.5*Pi),PlayerViewOffset.X,MountedViewOffset.X*100);
-	//PlayerViewOffset.Y=Smerp(1.0-cos(FMin(1.0,GEPinout)*0.5*Pi),PlayerViewOffset.Y,MountedViewOffset.Y*100);
-	//PlayerViewOffset.Z=Lerp(sin(FMin(1.0,GEPinout)*0.05*Pi),PlayerViewOffset.Z,cos(FMin(1.0,GEPinout)*2*Pi)*MountedViewOffset.Z*100);
-	//}
-    //PlayerViewOffset.Z=Lerp(sin(FMin(1.0,GEPinout)*0.5*Pi),PlayerViewOffset.Z,cos(FMin(1.0,GEPinout)*2*Pi)*MountedViewOffset.Z*100);
-
-	//FireOffset.X=Smerp(sin(FMin(1.0,GEPinout)*0.5*Pi),Default.FireOffset.X,-MountedViewOffset.X);
-	//FireOffset.Y=Smerp(1.0-cos(FMin(1.0,GEPinout)*0.5*Pi),Default.FireOffset.Y,-MountedViewOffset.Y);
-	//FireOffset.Z=Lerp(sin(FMin(1.0,GEPinout)*0.5*Pi),Default.FireOffset.Z,-cos(FMin(1.0,GEPinout)*2*Pi)*MountedViewOffset.Z);
 
 	SetLocation(player.Location+ CalcDrawOffset());
 	scopeTime+=1;
 
-	//IsInState('DownWeapon')
-    /*
-    if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkNamesArray[12]== 1)
-    {
-	if (scopeTime>=17)
-	{
-        activateAn = False;
-        scopeTime = 0;
-        ScopeToggle();
-        GEPinout = 0;
-        axesX = vect(0,0,0);
-        axesY = vect(0,0,0);
-        axesZ = vect(0,0,0);
-        PlayerViewOffset=Default.PlayerViewOffset*100;
-        SetHand(PlayerPawn(Owner).Handedness);
-    }
-    }  */
     if (scopeTime>=18)
     {
         activateAn = False;
@@ -270,70 +80,51 @@ simulated function renderoverlays(Canvas canvas)
         PlayerViewOffset=Default.PlayerViewOffset*100;
         SetHand(player.Handedness);
     }
+}
+
+function DisplayWeapon(bool overlay)
+{
+	super.DisplayWeapon(overlay);
+    
+    //RSD: Clyzm Model
+    if (IsHDTP() && iHDTPModelToggle == 2)
+    {
+        if (overlay)
+        {
+            multiskins[1] = handstex;
+            ShowWeaponAddon(3,bHasScope);
+            ShowWeaponAddon(7,bHasLaser);
+            ShowWeaponAddon(2,bLasing);
+        }
+        else
+        {
+            ShowWeaponAddon(1,bHasScope);
+            ShowWeaponAddon(2,bHasLaser);
+            ShowWeaponAddon(3,bLasing);
+        }
+    }
+    else if (IsHDTP() && iHDTPModelToggle == 1)
+    {
+        if (overlay)
+        {
+            multiskins[0] = handstex;
+            ShowWeaponAddon(4,bHasScope);
+            ShowWeaponAddon(2,bHasLaser);
+            ShowWeaponAddon(3,bLasing);
+        }
+        else
+        {
+            ShowWeaponAddon(1,bHasScope);
+            ShowWeaponAddon(2,bHasLaser);
+            ShowWeaponAddon(3,bLasing);
+        }
+    }
+    else if (overlay)
+    {
+        multiskins[1] = handstex;
     }
 }
 
-function BecomePickup()
-{
-	activateAn = False;
-        scopeTime = 0;
-        GEPinout = 0;
-        axesX = vect(0,0,0);
-        axesY = vect(0,0,0);
-        axesZ = vect(0,0,0);
-        PlayerViewOffset=Default.PlayerViewOffset*100;
-
-    multiskins[3] = texture'pinkmasktex';                                       //RSD: So we don't get lingering
-
-	super.BecomePickup();
-}
-
-function ScopeToggle()                                                          //RSD: Clyzm model
-{
-	/*if (iHDTPModelToggle != 2)                                                //RSD: Hey fellow modders. Restore this commented part and remove the Super.ScopeToggle() below to re-enable iron sights on the stealth pistol
-	{                                                                           //RSD: WARNING - the HDTP model toggle menu has issues with ADS if you switch weapon models while using it
-		super.ScopeToggle();
-		return;
-	}
-    if(IsInState('Idle') //) // If we aren't doing anything flashy.             //RSD: less restrictive conditions from ToggleScope() in DeusExPlayer.uc
-	                    || (!(bZoomed || bAimingDown) && AnimSequence == 'Shoot') || ((bZoomed || bAimingDown) && DeusExPlayer(Owner) != none && DeusExPlayer(Owner).RecoilTime==0))
-	{
-         GoToState('ADSToggle');
-	}*/
-
-	super.ScopeToggle();
-}
-state ADSToggle                                                                 //RSD: Clyzm model
-{
-	ignores Fire, AltFire, PutDown, ReloadAmmo, DropFrom; // Whee! We can't do sweet F.A. in this state! :D
-	Begin:
-		If(bAimingDown)
-		{
-		    if (bHasScope)
-		    {
-		        PlayAnim('SupressorOn',,0.1);                                   //RSD: Was mispelled 'SuperssorOn', good lord
-		        ScopeOff();
-            }
-            else
-            {
-			    PlayAnim('SupressorOn',,0.1);
-		    }
-		}
-		else
-		{
-		    if (bHasScope)
-		        PlayAnim('SuperssorOff',,0.1);
-		    else
-		    {
-			    PlayAnim('SuperssorOff',,0.1);
-		    }
-		}
-		bAimingDown=!bAimingDown;
-		FinishAnim();
-		if (bHasScope && !bZoomed && bAimingDown)
-		    ScopeOn();
-		GoToState('Idle');
-}
 simulated function StealthMag()                                                 //RSD: Clyzm model
 {
       Owner.PlaySound(Sound'GMDXSFX.Weapons.Stealth_MagInsert', SLOT_None,,, 1024);
@@ -350,7 +141,7 @@ simulated function PlaySelectiveFiring()                                        
 	//local int animNum;
 	local float mod;
     local float hhspeed;
-    if (iHDTPModelToggle != 2)
+    if (iHDTPModelToggle != 2 || !IsHDTP())
     {
         Super.PlaySelectiveFiring();
         return;
@@ -394,7 +185,7 @@ simulated function PlayIdleAnim()                                               
 {
     local float rnd;
 
-    if (iHDTPModelToggle != 2)                                                  //RSD: Special routine only for Clyzm model
+    if (iHDTPModelToggle != 2 || !IsHDTP())                                                  //RSD: Special routine only for Clyzm model
 	{
 		super.PlayIdleAnim();
 		return;
@@ -418,152 +209,48 @@ simulated function PlayIdleAnim()                                               
 
 exec function UpdateHDTPsettings()                                              //RSD: New function to update weapon model meshes (specifics handled in each class)
 {
-	 local name animToSet;
+    local name animToSet;
 
-     //RSD: HDTP Toggle Routine
-     //if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).inHand == self)
-     //     DeusExPlayer(Owner).BroadcastMessage(iHDTPModelToggle);
-     if (iHDTPModelToggle == 2)
-     {
-          if (AnimSequence == 'Idle1' || AnimSequence == 'Idle2' || AnimSequence == 'Idle3')
-          {
-               animToSet = 'Idle';
-               animSequence = '';
-          }
-          PlayerViewMesh=LodMesh'FOMOD.stealthF1st';
-          PickupViewMesh=LodMesh'HDTPItems.HDTPstealthpistolPickup';
-          ThirdPersonMesh=LodMesh'HDTPItems.HDTPstealthpistol3rd';
-          addYaw=0;
-          addPitch=0;
-     }
-     else if (iHDTPModelToggle == 1)
-     {
-          if (AnimSequence == 'Idle')
-          {
-               animToSet = 'Idle1';
-               animSequence = '';
-          }
-          PlayerViewMesh=LodMesh'HDTPItems.HDTPStealthPistol';
-          PickupViewMesh=LodMesh'HDTPItems.HDTPstealthpistolPickup';
-          ThirdPersonMesh=LodMesh'HDTPItems.HDTPstealthpistol3rd';
-          addYaw=800;
-          addPitch=-500;
-     }
-     else
-     {
-          if (AnimSequence == 'Idle')
-          {
-               animToSet = 'Idle1';
-               animSequence = '';
-          }
-          PlayerViewMesh=LodMesh'DeusExItems.StealthPistol';
-          PickupViewMesh=LodMesh'DeusExItems.StealthPistolPickup';
-          ThirdPersonMesh=LodMesh'DeusExItems.StealthPistol3rd';
-          addYaw=0;
-          addPitch=0;
-     }
-     if (animToSet != '')
-          animSequence = animToSet;
-     //RSD: HDTP Toggle End
-
-     Super.UpdateHDTPsettings();
-}
-
-function CheckWeaponSkins()
-{
-     if (iHDTPModelToggle == 2 && DeusExPlayer(Owner) != none)                       //RSD: Clyzm model
-     {
-          if (!bIsCloaked && !bIsRadar)
-          {
-               multiskins[0]=none;                                              //RSD: Needed so 3rd person mesh isn't covered with hand tex when switching from HDTP
-               multiskins[1]=none;                                              //RSD
-               multiskins[2]=none;                                              //RSD
-          }
-    if(bHasScope)
-	{
-		if (!bIsCloaked && !bIsRadar)                                           //RSD: Overhauled cloak/radar routines
-		{
-		    multiskins[3] = none;
-		}
-        else
+    if (IsHDTP())
+    {
+        if (iHDTPModelToggle == 2)                                                 //RSD: Clyzm model
         {
-         if (bIsRadar)
-         {
-	         Multiskins[3] = FireTexture'GameEffects.InvisibleTex';
-         }
-         else
-         {
-             Multiskins[3] = Texture'Effects.Electricity.Xplsn_EMPG';
-         }
+            if (AnimSequence == 'Idle1' || AnimSequence == 'Idle2' || AnimSequence == 'Idle3')
+            {
+                animToSet = 'Idle';
+                animSequence = '';
+            }
+            HDTPPlayerViewMesh="fomod.stealthF1st";
+            addYaw=0;
+            addPitch=0;
         }
-	}
-	else
-	{
-		multiskins[3] = texture'pinkmasktex';
-	}
-    if(bHasLaser)
-	{
-		if (!bIsCloaked && !bIsRadar)                                           //RSD: Overhauled cloak/radar routines
-		    multiskins[7] = none;
-		else
+        else if (iHDTPModelToggle == 1)
         {
-         if (bIsRadar)
-	         Multiskins[7] = FireTexture'GameEffects.InvisibleTex';
-	     else
-             Multiskins[7] = Texture'Effects.Electricity.Xplsn_EMPG';
+            if (AnimSequence == 'Idle')
+            {
+                animToSet = 'Idle1';
+                animSequence = '';
+            }
+            HDTPPlayerViewMesh="HDTPItems.HDTPStealthPistol";
+            addYaw=800;
+            addPitch=-500;
         }
-	}
-	else
-		multiskins[7] = texture'pinkmasktex';
-	if(bLasing)
-		multiskins[2] = none;
-	else
-		multiskins[2] = texture'pinkmasktex';
-     }
-     else if (iHDTPModelToggle == 1 || (iHDTPModelToggle == 2 && Mesh != PlayerViewMesh))
-     {
-    multiskins[0]=none;
-	if(bHasScope)
-		multiskins[1] = none;
-	else
-		multiskins[1] = texture'pinkmasktex';
-	if(bHasLaser)
-		multiskins[2] = none;
-	else
-		multiskins[2] = texture'pinkmasktex';
+    }
+    else
+    {
+        if (AnimSequence == 'Idle')
+        {
+            animToSet = 'Idle1';
+            animSequence = '';
+        }
+        addYaw=0;
+        addPitch=0;
+    }
 
-	multiskins[3] = texture'pinkmasktex';
-	multiskins[4]=none;
-     }
-     else
-     {
-          if (!bIsCloaked && !bIsRadar)
-          {
-               multiskins[0]=none;                                              //RSD: Needed so 3rd person mesh isn't covered with hand tex when switching from HDTP
-               multiskins[1]=none;                                              //RSD
-               multiskins[2]=none;                                              //RSD
-               multiskins[3]=none;                                              //RSD
-          }
-     }
-}
+    if (animToSet != '')
+        animSequence = animToSet;
 
-state DownWeapon
-{
-	function EndState()
-	{
-	    Super.EndState();
-	    activateAn = False;
-        scopeTime = 0;
-        GEPinout = 0;
-        axesX = vect(0,0,0);
-        axesY = vect(0,0,0);
-        axesZ = vect(0,0,0);
-        PlayerViewOffset=Default.PlayerViewOffset*100;
-        bAimingDown = False;                                                    //RSD: from v9 beta
-        BobDamping=default.BobDamping;                                          //RSD: from v9 beta
-        if (Owner != None && Owner.IsA('DeusExPlayer'))
-        SetHand(DeusExPlayer(Owner).Handedness);
-	}
+    Super.UpdateHDTPsettings();
 }
 
 state Reload
@@ -738,18 +425,23 @@ defaultproperties
      SelectSound=Sound'DeusExSounds.Weapons.StealthPistolSelect'
      InventoryGroup=3
      ItemName="Stealth Pistol"
-     PlayerViewOffset=(X=24.000000,Y=-10.000000,Z=-14.000000)
-     PlayerViewMesh=LodMesh'HDTPItems.HDTPStealthPistol'
      BobDamping=0.760000
-     PickupViewMesh=LodMesh'HDTPItems.HDTPstealthpistolPickup'
-     ThirdPersonMesh=LodMesh'HDTPItems.HDTPstealthpistol3rd'
+     PlayerViewOffset=(X=24.000000,Y=-10.000000,Z=-14.000000)
+     HDTPPlayerViewMesh="HDTPItems.HDTPStealthPistol"
+     HDTPPickupViewMesh="HDTPItems.HDTPstealthpistolPickup"
+     HDTPThirdPersonMesh="HDTPItems.HDTPstealthpistol3rd"
+     PlayerViewMesh=LodMesh'DeusExItems.StealthPistol'
+     PickupViewMesh=LodMesh'DeusExItems.StealthPistolPickup'
+     ThirdPersonMesh=LodMesh'DeusExItems.StealthPistol3rd'
      Icon=Texture'DeusExUI.Icons.BeltIconStealthPistol'
      largeIcon=Texture'DeusExUI.Icons.LargeIconStealthPistol'
      largeIconWidth=47
      largeIconHeight=37
      Description="Designed for wet work, the stealth pistol is manufactured to boast a notably large clip, integrated silencer and recoil compensator. Excels performance-wise in all except raw stopping power."
      beltDescription="STEALTH"
-     Mesh=LodMesh'HDTPItems.HDTPstealthpistolPickup'
+     Mesh=LodMesh'DeusExItems.StealthPistolPickup'
      CollisionRadius=8.000000
      CollisionHeight=0.800000
+     minSkillRequirement=2;
+     bFancyScopeAnimation=true
 }

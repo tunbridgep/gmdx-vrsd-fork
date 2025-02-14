@@ -30,7 +30,7 @@ struct S_ListItem
 {
 	var localized string helpText;
 	var localized string actionText;
-	var localized string values[255];
+	var localized Array<string> values;
 
     //dirty hack because I can't get arrays within structs to work in defaultproperties
     var localized string valueText0;
@@ -49,18 +49,22 @@ var S_ListItem items[255];
 event InitWindow()
 {
 	Super.InitWindow();
-
     LoadSettings();
     CreateHeaderButtons();
-	CreateOptionsList();
     CreateChoices();
     ShowHelp(helpText);
 }
-     
+
 function CreateChoices()
 {
 	local int i;
-	
+
+    if (lstItems == None)
+    {
+        log("lstItems is none!");
+	    CreateOptionsList();
+    }
+
     //Remove all existing choices
     lstItems.DeleteAllRows();
 
@@ -109,6 +113,8 @@ function int GetConsoleValue(int index)
 {
     local string command;
     command = player.ConsoleCommand("get " $ items[index].consoleTarget @ items[index].variable);
+
+    //Sometimes it can return True and False, convert it to numeric
     if (command == "True")
         return 1;
     else if (command == "False")
@@ -267,7 +273,10 @@ event bool ListSelectionChanged(window list, int numSelections, int focusRowId)
 
     rowId = lstItems.GetSelectedRow();
     rowIndex = lstItems.RowIdToIndex(rowId);
-    ShowHelp(items[rowIndex].helpText);
+    if (rowIndex == -1)
+        ShowHelp(helpText);
+    else
+        ShowHelp(items[rowIndex].helpText);
 
     return bResult;
 }
@@ -290,8 +299,6 @@ function AppendItem(S_ListItem newItem)
     }
 }
 
-//TODO: Sarge: If we ever move item 255, a bug will occur.
-//Leaving it for now!
 //EDIT: Now takes a string, because things will move around in horrible ways otherwise
 function RemoveItem(string variable)
 {
@@ -304,7 +311,7 @@ function RemoveItem(string variable)
 
         if (items[i].variable == variable)
         {
-            for(j = i; j < arrayCount(items); j++)
+            for(j = i; j < arrayCount(items) - 1; j++)
                 items[j] = items[j+1];
             return;
         }

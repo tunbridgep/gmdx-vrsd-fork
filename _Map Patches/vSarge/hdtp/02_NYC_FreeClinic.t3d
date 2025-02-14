@@ -1,0 +1,129 @@
+Begin Map
+//We need to delete all:
+//1. PlaceableDecal
+
+//See the brush file for brush/texture changes
+
+Begin Actor Class=PlaceableDecal Name=PlaceableDecal3
+    TextureSetup=E_Piss
+    LastRenderTime=15.446091
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=PlaceableDecal
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
+    Location=(X=1125.442261,Y=-16.882372,Z=-319.783051)
+    Rotation=(Pitch=16385)
+    OldLocation=(X=1219.470825,Y=-214.425781,Z=-318.899414)
+    DrawScale=1.000000
+    Name=PlaceableDecal3
+End Actor
+Begin Actor Class=PlaceableDecal Name=PlaceableDecal5
+    TextureSetup=E_Blood2
+    LastRenderTime=0.607452
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=PlaceableDecal
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
+    Location=(X=1359.784912,Y=-512.028259,Z=-263.286896)
+    OldLocation=(X=1358.900024,Y=-541.311523,Z=-276.286896)
+    DrawScale=0.300000
+    Name=PlaceableDecal5
+End Actor
+Begin Actor Class=PlaceableDecal Name=PlaceableDecal6
+    TextureSetup=E_Blood3
+    LastRenderTime=0.607452
+    DistanceFromPlayer=1126.692993
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=PlaceableDecal
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=878,ZoneNumber=1)
+    Location=(X=398.361603,Y=93.079369,Z=-319.804962)
+    Rotation=(Pitch=16400)
+    OldLocation=(X=411.520203,Y=-2078.040771,Z=-319.804962)
+    DrawScale=0.300000
+    Name=PlaceableDecal6
+End Actor
+Begin Actor Class=PlaceableDecal Name=PlaceableDecal102
+    LastRenderTime=0.607452
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=PlaceableDecal
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
+    Location=(X=919.595093,Y=205.474228,Z=-318.900787)
+    Rotation=(Pitch=16384,Yaw=14864)
+    OldLocation=(X=884.674072,Y=63.935173,Z=-318.900787)
+    MultiSkins(0)=Texture'Tester.Decal.dirt_decal'
+    Name=PlaceableDecal102
+End Actor
+Begin Actor Class=PlaceableDecal Name=PlaceableDecal103
+    LastRenderTime=0.607452
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=PlaceableDecal
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
+    Location=(X=946.307007,Y=-556.812683,Z=-318.900787)
+    Rotation=(Pitch=16384,Yaw=13024)
+    OldLocation=(X=975.952942,Y=205.854248,Z=-318.900787)
+    DrawScale=3.000000
+    MultiSkins(0)=Texture'Tester.Decal.dirt_decal'
+    Name=PlaceableDecal103
+End Actor
+Begin Actor Class=PlaceableDecal Name=PlaceableDecal104
+    LastRenderTime=0.607452
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=PlaceableDecal
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
+    Location=(X=230.176636,Y=179.500626,Z=-318.900787)
+    Rotation=(Pitch=16384,Yaw=13968)
+    OldLocation=(X=995.046814,Y=-531.875671,Z=-318.900787)
+    DrawScale=3.000000
+    MultiSkins(0)=Texture'Tester.Decal.dirt_decal'
+    Name=PlaceableDecal104
+End Actor
+Begin Actor Class=PlaceableDecal Name=PlaceableDecal105
+    LastRenderTime=0.607452
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=PlaceableDecal
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
+    Location=(X=-201.046219,Y=-104.228844,Z=-318.900787)
+    Rotation=(Pitch=16384)
+    OldLocation=(X=262.176636,Y=211.500626,Z=-318.900787)
+    DrawScale=1.000000
+    MultiSkins(0)=Texture'Tester.Decal.dirt_decal'
+    Name=PlaceableDecal105
+End Actor
+Begin Actor Class=PlaceableDecal Name=PlaceableDecal0
+    TextureSetup=E_Blood2
+    LastRenderTime=0.607452
+    DistanceFromPlayer=1104.831665
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=PlaceableDecal
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
+    Location=(X=365.760712,Y=-2159.872070,Z=-255.648712)
+    Rotation=(Yaw=16384)
+    OldLocation=(X=366.056580,Y=-2158.899902,Z=-255.648712)
+    DrawScale=0.800000
+    Name=PlaceableDecal0
+End Actor
+Begin Actor Class=PlaceableDecal Name=PlaceableDecal1
+    TextureSetup=E_Blood4
+    LastRenderTime=178.053833
+    DistanceFromPlayer=1156.151611
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=PlaceableDecal
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
+    Location=(X=319.925934,Y=-2140.253418,Z=-279.650024)
+    Rotation=(Pitch=16400)
+    OldLocation=(X=335.204285,Y=-2081.941650,Z=-278.900208)
+    DrawScale=1.000000
+    Name=PlaceableDecal1
+End Actor
+Begin Actor Class=PlaceableDecal Name=PlaceableDecal2
+    TextureSetup=E_Blood3
+    LastRenderTime=15.446091
+    DistanceFromPlayer=1126.692993
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=PlaceableDecal
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
+    Location=(X=379.520203,Y=-2110.040771,Z=-319.804962)
+    Rotation=(Pitch=16400)
+    OldLocation=(X=351.925934,Y=-2108.253418,Z=-279.650024)
+    DrawScale=0.500000
+    Name=PlaceableDecal2
+End Actor
+End Map

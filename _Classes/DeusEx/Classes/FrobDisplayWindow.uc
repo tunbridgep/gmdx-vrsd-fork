@@ -78,7 +78,7 @@ function DrawWindow(GC gc)
 {
 	local actor				frobTarget;
 	local float				infoX, infoY, infoW, infoH;
-	local string			strInfo;
+	local string			strInfo, strThreshold;
 	local DeusExMover		dxMover;
 	local Mover				M;
 	local HackableDevices	device;
@@ -90,6 +90,7 @@ function DrawWindow(GC gc)
 	local int				numTools;
     local int               typecastIt;
 	local int				ownedTools; //Sarge: How many tools the player owns in their inventory
+	local Perk				perkCracked; //Sarge: Stores the Cracked perk
 
 	if (player != None)
 	{
@@ -230,9 +231,9 @@ function DrawWindow(GC gc)
 					//{
                     strInfo = strInfo $ CR() $ msgDoorThreshold;
                     if (dxMover.bBreakable)
-                        strInfo = strInfo $ FormatString(dxMover.minDamageThreshold);
+                        strThreshold = FormatString(dxMover.minDamageThreshold);
                     else
-						strInfo = strInfo $ msgInf;
+						strThreshold = msgInf;
 					//}
 					//else strInfo = strInfo $ Cr();
 					//CyberP End
@@ -282,10 +283,21 @@ function DrawWindow(GC gc)
                 }
 
 				// draw the text
-				gc.SetTextColor(colText);
+                gc.SetTextColor(colText);
 				gc.DrawText(infoX+4, infoY+4, infoW-8, infoH-8, strInfo);
+                
+                if (dxMover.bLocked)
+                {
+                    //Draw the Door Damage Threshold
+                    if (player.bColourCodeFrobDisplay && dxMover.bLocked && DeusExWeapon(player.Weapon) != None && !player.BreaksDamageThreshold(DeusExWeapon(player.Weapon),dxMover.minDamageThreshold) && dxMover.bBreakable)
+                        gc.SetTextColor(colNotEnough);
+                    else
+                        gc.SetTextColor(colText);
+                    gc.DrawText(infoX+(infoW-barLength-2), infoY+28+(infoH-8)/4, barLength, ((infoH-8)/4)-2, strThreshold);
+                }
 
 				// draw the two highlight boxes
+				gc.SetTextColor(colText);
 				gc.SetStyle(DSTY_Translucent);
 				gc.SetTileColor(colBorder);
 				gc.DrawBox(infoX, infoY, infoW, infoH, 0, 0, 1, Texture'Solid');
@@ -335,9 +347,9 @@ function DrawWindow(GC gc)
                 	//CyberP begin:                                             //RSD: No damage thresholds on hackable objects, sorry!
                     strInfo = strInfo $ CR() $ msgObjThreshold;
                     if (device.bInvincible==False)
-                        strInfo = strInfo $ FormatString(device.minDamageThreshold);
+                        strThreshold = FormatString(device.minDamageThreshold);
                     else
-						strInfo = strInfo $ msgInf;
+						strThreshold = msgInf;
 					//CyberP End
 
 				infoX = boxTLX + 10;
@@ -370,8 +382,21 @@ function DrawWindow(GC gc)
 				// draw the text
 				gc.SetTextColor(colText);
 				gc.DrawText(infoX+4, infoY+4, infoW-8, infoH-8, strInfo);
+                
+                //Draw the Device Damage Threshold
+                if (device.hackStrength > 0.0)
+                {
+                    if (player.bColourCodeFrobDisplay && DeusExWeapon(player.Weapon) != None && !player.BreaksDamageThreshold(DeusExWeapon(player.Weapon),device.minDamageThreshold) && device.bInvincible == false)
+                        gc.SetTextColor(colNotEnough);
+                    else
+                        gc.SetTextColor(colText);
+                    gc.DrawText(infoX+(infoW-barLength-2), infoY+18+(infoH-8)/4, barLength, ((infoH-8)/4)-2+6, strThreshold);
+                }
+                else
+                    gc.DrawText(infoX+(infoW-barLength-2), infoY+10+(infoH-8)/4, barLength, ((infoH-8)/4)-2+6, strThreshold);
 
 				// draw the two highlight boxes
+				gc.SetTextColor(colText);
 				gc.SetStyle(DSTY_Translucent);
 				gc.SetTileColor(colBorder);
 				gc.DrawBox(infoX, infoY, infoW, infoH, 0, 0, 1, Texture'Solid');
@@ -381,7 +406,13 @@ function DrawWindow(GC gc)
 				// draw the absolute number of multitools on top of the colored bar
 				if ((device.bHackable) && (device.hackStrength != 0.0))
 				{
-					numTools = int((device.hackStrength / player.SkillSystem.GetSkillLevelValue(class'SkillTech')) + 0.99);
+                    //SARGE: If we have Cracked, display 0 tools
+					perkCracked = player.PerkManager.GetPerkWithClass(class'DeusEx.PerkCracked');
+					
+					if (device.hackStrength <= perkCracked.PerkValue && perkCracked.bPerkObtained == true)
+                        numTools = 0;
+                    else
+                        numTools = int((device.hackStrength / player.SkillSystem.GetSkillLevelValue(class'SkillTech')) + 0.99);
 					ownedTools = player.GetInventoryCount('Multitool');
                     if (numTools == 1 && player.iFrobDisplayStyle == 0)
 						strInfo = numTools @ msgTool;
@@ -410,6 +441,8 @@ function DrawWindow(GC gc)
 				    strInfo = DeusExAmmo(frobTarget).itemName @ "(" $ DeusExAmmo(frobTarget).AmmoAmount $ ")";
                 else if (frobTarget.IsA('ChargedPickup'))
                     strInfo = ChargedPickup(frobTarget).ItemName @ "(" $ int(ChargedPickup(frobTarget).GetCurrentCharge()) $ "%)"; //RSD: Append the current charge
+				else if (frobTarget.IsA('DeusExWeapon'))                    //Sarge: Add "(Modified)" to weapons
+					strInfo = DeusExWeapon(frobTarget).GetFrobString(player);
 				else if (frobTarget.IsA('Inventory'))
 					strInfo = Inventory(frobTarget).itemName;
 				else if (frobTarget.IsA('DeusExDecoration'))

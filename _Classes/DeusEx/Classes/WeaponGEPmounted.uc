@@ -56,7 +56,6 @@ function RenderME(Canvas canvas,bool bSetWire,optional bool bClearZ)
 	local vector dz;
 
 	if(player==none||(!player.bGEPzoomActive)) return;
-		PreRender1();
 
 	dx=axesX>>player.ViewRotation;
 	dy=axesY>>player.ViewRotation;
@@ -67,7 +66,6 @@ function RenderME(Canvas canvas,bool bSetWire,optional bool bClearZ)
   	SetLocation(player.Location+ CalcDrawOffset());// player.BaseEyeHeight*vect(0,0,1)+(PlayerViewOffset>>player.ViewRotation));
 
 	Canvas.DrawActor(self, bSetWire,bClearZ);
-	PreRender2();
 
 	if (lightFlicker!=none) lightFlicker.UpdateLocation(player);
 
@@ -80,11 +78,12 @@ defaultproperties
      bHasScope=True
      bHideWeapon=True
      PlayerViewOffset=(X=24.000000,Y=7.200000,Z=-4.600000)
-     PickupViewMesh=LodMesh'HDTPItems.HDTPGEPgun'
+     //PickupViewMesh=LodMesh'HDTPItems.HDTPGEPgun'
      bHidden=True
      bDetectable=False
      bHiddenEd=True
-     Mesh=LodMesh'HDTPItems.HDTPGEPgun'
+     //Mesh=LodMesh'HDTPItems.HDTPGEPgun'
+     Mesh=None
      bOnlyOwnerSee=True
      bCollideActors=False
      bBlockActors=False

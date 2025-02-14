@@ -18,6 +18,12 @@ class SoftwareNuke extends DeusExPickup;
   SetRotation(rot);
 }
 
+exec function UpdateHDTPsettings()
+{
+	Super.UpdateHDTPsettings();
+    MultiSkins[1] = class'HDTPLoader'.static.GetTexture2("GMDXSFX.2027Misc.MinidiskTex1","RSDCrap.Skins.MiniDiskTex1",IsHDTP());
+}
+
 // ----------------------------------------------------------------------
 
 defaultproperties
@@ -39,9 +45,7 @@ defaultproperties
      Description="Hacking Software. A virus that shuts down the local network firewall, enabling the user to attempt to hack systems above their skill level. The firewall will become active again once the user logs out."
      beltDescription="NUKEVIRUS"
      Physics=PHYS_None
-     Skin=Texture'GMDXSFX.2027Misc.MinidiskTex1'
      Mesh=LodMesh'GameMedia.Minidisk'
-     MultiSkins(1)=Texture'GMDXSFX.2027Misc.MinidiskTex1'
      CollisionRadius=3.000000
      CollisionHeight=0.500000
      Mass=4.000000

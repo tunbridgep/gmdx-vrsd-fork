@@ -21,102 +21,26 @@ simulated function PreBeginPlay()
 	}
 }
 
-simulated function renderoverlays(Canvas canvas)
+function DisplayWeapon(bool overlay)
 {
-	if (iHDTPModelToggle == 1)                                                  //RSD: Need this off for vanilla model
-    	multiskins[0] = Getweaponhandtex();
-    else
-        multiskins[1]=GetWeaponHandTex();                                       //RSD: Fix vanilla hand tex
-
-	super.renderoverlays(canvas);
-
-    if (iHDTPModelToggle == 1)                                                  //RSD: Need this off for vanilla model
-		multiskins[0] = none;
-    else
-        multiskins[1]=none;                                                     //RSD: Fix vanilla hand tex
+	super.DisplayWeapon(overlay);
+    if (overlay)
+    {
+        if (IsHDTP())
+            multiskins[0] = handsTex;
+        else
+            multiskins[1] = handsTex;
+    }
 }
 
-exec function UpdateHDTPsettings()                                              //RSD: New function to update weapon model meshes (specifics handled in each class)
+exec function UpdateHDTPsettings()
 {
-     //RSD: HDTP Toggle Routine
-     //if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).inHand == self)
-     //     DeusExPlayer(Owner).BroadcastMessage(iHDTPModelToggle);
-     if (iHDTPModelToggle == 1)
-     {
-          PlayerViewMesh=LodMesh'HDTPItems.HDTPAssaultShotgun';
-          PickupViewMesh=LodMesh'HDTPItems.HDTPAssaultShotgunPickup';
-          ThirdPersonMesh=LodMesh'HDTPItems.HDTPAssaultShotgun3rd';
+     if (IsHDTP())
           addPitch=-500;
-     }
      else
-     {
-          PlayerViewMesh=LodMesh'DeusExItems.AssaultShotgun';
-          PickupViewMesh=LodMesh'DeusExItems.AssaultShotgunPickup';
-          ThirdPersonMesh=LodMesh'DeusExItems.AssaultShotgun3rd';
           addPitch=0;
-     }
-     //RSD: HDTP Toggle End
 
      Super.UpdateHDTPsettings();
-}
-
-/*Function CheckWeaponSkins()
-{
-
-}*/
-
-//
-// called from the MESH NOTIFY
-//
-simulated function SwapMuzzleFlashTexture()
-{
-	local int i;
-
-	if (!bHasMuzzleFlash)
-		return;
-//	if(playerpawn(owner) != none)      //currently diff meshes, see
-//		i=2;
-//	else
-//		i=3;
-	//if (FRand() < 0.5)
-	MultiSkins[2] = GetMuzzleTex();
-	//else
-	//	MultiSkins[i] = Texture'FlatFXTex37';
-
-	MuzzleFlashLight();
-	SetTimer(0.1, False);
-}
-
-simulated function texture GetMuzzleTex()
-{
-	local int i;
-	local texture tex;
-
-	i = rand(8);
-	switch(i)
-	{
-		case 0: tex = texture'HDTPMuzzleflashlarge1'; break;
-		case 1: tex = texture'HDTPMuzzleflashlarge2'; break;
-		case 2: tex = texture'HDTPMuzzleflashlarge3'; break;
-		case 3: tex = texture'HDTPMuzzleflashlarge4'; break;
-		case 4: tex = texture'HDTPMuzzleflashlarge5'; break;
-		case 5: tex = texture'HDTPMuzzleflashlarge6'; break;
-		case 6: tex = texture'HDTPMuzzleflashlarge7'; break;
-		case 7: tex = texture'HDTPMuzzleflashlarge8'; break;
-	}
-	return tex;
-}
-
-simulated function EraseMuzzleFlashTexture()
-{
-	local int i;
-
-//	if(playerpawn(owner) != none)      //currently diff meshes, see
-//		i=2;
-//	else
-//		i=3;
-	if(bHasMuzzleflash)
-		MultiSkins[2] = None;
 }
 
 state Reload
@@ -227,10 +151,13 @@ defaultproperties
      ItemName="Assault Shotgun"
      ItemArticle="an"
      PlayerViewOffset=(Y=-11.000000,Z=-12.000000)
-     PlayerViewMesh=LodMesh'HDTPItems.HDTPAssaultShotgun'
+     PlayerViewMesh=LodMesh'DeusExItems.AssaultShotgun'
+     PickupViewMesh=LodMesh'DeusExItems.AssaultShotgunPickup'
+     ThirdPersonMesh=LodMesh'DeusExItems.AssaultShotgun3rd'
+     HDTPPlayerViewMesh="HDTPItems.HDTPAssaultShotgun"
+     HDTPPickupViewMesh="HDTPItems.HDTPAssaultShotgunPickup"
+     HDTPThirdPersonMesh="HDTPItems.HDTPAssaultShotgun3rd"
      BobDamping=0.750000
-     PickupViewMesh=LodMesh'HDTPItems.HDTPAssaultShotgunPickup'
-     ThirdPersonMesh=LodMesh'HDTPItems.HDTPAssaultShotgun3rd'
      LandSound=Sound'DeusExSounds.Generic.DropMediumWeapon'
      Icon=Texture'DeusExUI.Icons.BeltIconAssaultShotgun'
      largeIcon=Texture'DeusExUI.Icons.LargeIconAssaultShotgun'
@@ -240,8 +167,10 @@ defaultproperties
      invSlotsY=2
      Description="The Striker 2 (sometimes referred to as a 'street sweeper 2') combines the best traits of The original model of Striker with a rapid-loading feed that can clear an area of hostiles in a matter of seconds. Particularly effective in urban combat, the assault shotgun accepts either buckshot or sabot shells."
      beltDescription="STRIKER"
-     Mesh=LodMesh'HDTPItems.HDTPAssaultShotgunPickup'
+     Mesh=LodMesh'DeusExItems.AssaultShotgunPickup'
      CollisionRadius=15.000000
      CollisionHeight=8.000000
      Mass=30.000000
+     bBigMuzzleFlash=true
+     minSkillRequirement=1;
 }

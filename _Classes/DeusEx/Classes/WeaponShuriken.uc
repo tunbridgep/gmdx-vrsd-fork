@@ -19,13 +19,11 @@ simulated function PreBeginPlay()
 	}
 }
 
-simulated function renderoverlays(Canvas canvas)
+function DisplayWeapon(bool overlay)
 {
-	multiskins[0] = Getweaponhandtex();
-
-	super.renderoverlays(canvas);
-
-	multiskins[0] = none;
+	super.DisplayWeapon(overlay);
+    if (overlay)
+        multiskins[0] = handstex;
 }
 
 defaultproperties
@@ -64,16 +62,20 @@ defaultproperties
      ItemName="Throwing Knives"
      ItemArticle="some"
      PlayerViewOffset=(X=24.000000,Y=-12.000000,Z=-21.000000)
-     PlayerViewMesh=LodMesh'HDTPItems.HDTPShuriken'
-     PickupViewMesh=LodMesh'HDTPItems.HDTPShurikenPickup'
-     ThirdPersonMesh=LodMesh'HDTPItems.HDTPShuriken3rd'
+     HDTPPlayerViewMesh="HDTPItems.HDTPShuriken"
+     HDTPPickupViewMesh="HDTPItems.HDTPShurikenPickup"
+     HDTPThirdPersonMesh="HDTPItems.HDTPShuriken3rd"
+     PlayerViewMesh=LodMesh'DeusExItems.Shuriken'
+     PickupViewMesh=LodMesh'DeusExItems.ShurikenPickup'
+     ThirdPersonMesh=LodMesh'DeusExItems.Shuriken3rd'
      Icon=Texture'DeusExUI.Icons.BeltIconShuriken'
      largeIcon=Texture'DeusExUI.Icons.LargeIconShuriken'
      largeIconWidth=36
      largeIconHeight=45
      Description="A favorite weapon of assassins in the Far East for centuries, throwing knives can be deadly when wielded by a master but are more generally used when it becomes desirable to send a message. The message is usually 'Your death is coming on swift feet.'"
      beltDescription="THW KNIFE"
-     Mesh=LodMesh'HDTPItems.HDTPShurikenPickup'
      CollisionRadius=7.500000
      CollisionHeight=0.300000
+     bDisposableWeapon=true
+     minSkillRequirement=2;
 }

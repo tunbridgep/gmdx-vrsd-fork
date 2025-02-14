@@ -14,7 +14,7 @@ simulated function renderoverlays(Canvas canvas)
 	else
 	  multiskins[3] = texture'pinkmasktex';
 
-	multiskins[6] = Getweaponhandtex();
+	multiskins[6] = handsTex;
 
 	super.renderoverlays(canvas); //(weapon)
 
@@ -44,20 +44,7 @@ function CheckWeaponSkins()
 		multiskins[4] = texture'pinkmasktex';
 
 }
-//Texture'HDTPItems.Skins.HDTPWeaponRifleShine'
-/*
- Texture=Texture'DeusExItems.Skins.StealthPistolTex1'
-	  Mesh=LodMesh'HDTPItems.HDTPSniperPickup'
-	  MultiSkins(0)=Texture'DeusExItems.Skins.WeaponModTex4
-	  MultiSkins(1)=Texture'DeusExItems.Skins.StealthPistolTex1'
-	  MultiSkins(3)=Texture'DeusExItems.Skins.StealthPistolTex1'
-	  MultiSkins(4)=Texture'DeusExItems.Skins.StealthPistolTex1'
-	  MultiSkins(5)=Texture'DeusExItems.Skins.StealthPistolTex1'
-	  MultiSkins(6)=Texture'DeusExItems.Skins.StealthPistolTex1'
-	  MultiSkins(7)=Texture'DeusExItems.Skins.StealthPistolTex1'
 
-	  Texture'DeusExItems.Skins.PinkMaskTex'
-*/
 
 defaultproperties
 {

@@ -18,40 +18,12 @@ simulated function PreBeginPlay()
 	}
 }
 
-simulated function renderoverlays(Canvas canvas)
+function DisplayWeapon(bool overlay)
 {
-	multiskins[0] = Getweaponhandtex();
-
-	super.renderoverlays(canvas);
-
-	multiskins[0] = none;
+    super.DisplayWeapon(overlay);
+	if (overlay)
+		multiskins[0] = handstex;
 }
-
-exec function UpdateHDTPsettings()                                              //RSD: New function to update weapon model meshes (specifics handled in each class)
-{
-     //RSD: HDTP Toggle Routine
-     //if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).inHand == self)
-     //     DeusExPlayer(Owner).BroadcastMessage(iHDTPModelToggle);
-     if (iHDTPModelToggle == 1)
-     {
-          PlayerViewMesh=LodMesh'HDTPItems.HDTPPepperGun';
-          PickupViewMesh=LodMesh'HDTPItems.HDTPpeppergunpickup';
-          ThirdPersonMesh=LodMesh'HDTPItems.HDTPpeppergun3rd';
-     }
-     else
-     {
-          PlayerViewMesh=LodMesh'DeusExItems.PepperGun';
-          PickupViewMesh=LodMesh'DeusExItems.PepperGunPickup';
-          ThirdPersonMesh=LodMesh'DeusExItems.PepperGun3rd';
-     }
-     //RSD: HDTP Toggle End
-
-     Super.UpdateHDTPsettings();
-}
-
-/*Function CheckWeaponSkins()
-{
-}*/
 
 defaultproperties
 {
@@ -96,16 +68,18 @@ defaultproperties
      InventoryGroup=18
      ItemName="Pepper Gun"
      PlayerViewOffset=(X=16.000000,Y=-10.000000,Z=-16.000000)
-     PlayerViewMesh=LodMesh'HDTPItems.HDTPPepperGun'
-     PickupViewMesh=LodMesh'HDTPItems.HDTPpeppergunpickup'
-     ThirdPersonMesh=LodMesh'HDTPItems.HDTPpeppergun3rd'
+     HDTPPlayerViewMesh="HDTPItems.HDTPPepperGun"
+     HDTPPickupViewMesh="HDTPItems.HDTPpeppergunpickup"
+     HDTPThirdPersonMesh="HDTPItems.HDTPpeppergun3rd"
+     PlayerViewMesh=LodMesh'DeusExItems.PepperGun';
+     PickupViewMesh=LodMesh'DeusExItems.PepperGunPickup';
+     ThirdPersonMesh=LodMesh'DeusExItems.PepperGun3rd';
      Icon=Texture'DeusExUI.Icons.BeltIconPepperSpray'
      largeIcon=Texture'DeusExUI.Icons.LargeIconPepperSpray'
      largeIconWidth=46
      largeIconHeight=40
      Description="The pepper gun will accept a number of commercially available riot control agents in cartridge form and disperse them as a fine aerosol mist that can cause blindness or blistering at short-range."
      beltDescription="PEPPER"
-     Mesh=LodMesh'HDTPItems.HDTPpeppergunpickup'
      CollisionRadius=7.000000
      CollisionHeight=1.500000
      Mass=7.000000

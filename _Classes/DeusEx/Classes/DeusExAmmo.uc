@@ -15,6 +15,13 @@ var int altDamage; //CyberP:
 var() class<Skill> ammoSkill;                                                   //RSD: Denotes associated weapon skill
 var travel bool bLooted;                                                        //RSD: If we've already looted this and partially emptied it (for ammo spillover in world)
 
+//SARGE: HDTP Model toggles
+var config int iHDTPModelToggle;
+var string HDTPSkin;
+var string HDTPTexture;
+var string HDTPMesh;
+var class<DeusExWeapon> hdtpReference;                                          //SARGE: Used when we want to tell a projectile to use the HDTP settings of a particular weapon
+
 // ----------------------------------------------------------------------
 // PostBeginPlay()
 // ----------------------------------------------------------------------
@@ -34,6 +41,7 @@ function PostBeginPlay()                                                        
     else
        MaxAmmo = default.MaxAmmo;*/
     Super.PostBeginPlay();
+    UpdateHDTPSettings();
 }
 
 // ----------------------------------------------------------------------
@@ -370,6 +378,44 @@ Dropped:
 		CheckTouching();
 }
 
+//Whether this displays in HDTP depends on it's associated weapon's settings
+function bool IsHDTP()
+{
+	if (DeusExPlayer(GetPlayerPawn()) == None || !DeusExPlayer(GetPlayerPawn()).bHDTPInstalled)
+		return false;
+    else if (hdtpReference != None)
+        return hdtpReference.default.iHDTPModelToggle > 0;
+    return iHDTPModelToggle > 0;
+}
+
+//SARGE: Setup the HDTP settings for this ammo
+exec function UpdateHDTPSettings()
+{
+    //Bail out for special cases like individual shotgun shells as ammo
+    if (Mesh != default.Mesh && !(string(Mesh) ~= HDTPMesh))
+        return;
+
+    if (HDTPMesh != "")
+    {
+        if (PlayerViewMesh == Mesh || PlayerViewMesh == None)
+            PlayerViewMesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),IsHDTP());
+        if (PickupViewMesh == Mesh || PickupViewMesh == None)
+            PickupViewMesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),isHDTP());
+        if (ThirdPersonMesh == Mesh || ThirdPersonMesh == None)
+            ThirdPersonMesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),IsHDTP());
+        Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),IsHDTP());
+    }
+    if (HDTPSkin != "")
+        Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),IsHDTP());
+    if (HDTPTexture != "")
+        Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),IsHDTP());
+
+    if (bCarriedItem)
+        Mesh = PlayerViewMesh;
+    else
+        Mesh = PickupViewMesh;
+}
+
 defaultproperties
 {
      msgInfoRounds="%d Rounds remaining"
@@ -381,4 +427,5 @@ defaultproperties
      bCollideWorld=True
      bProjTarget=True
      Mass=30.000000
+     iHDTPModelToggle=1
 }

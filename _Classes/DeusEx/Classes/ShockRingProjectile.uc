@@ -20,7 +20,7 @@ defaultproperties
      Damage=8.000000
      LifeSpan=0.550000
      Style=STY_Translucent
-     Skin=Texture'HDTPDecos.Skins.HDTPWaterFountaintex2'
+     Skin=Texture'RDSCrap.Skins.Kawoosh'
      Mesh=LodMesh'DeusExItems.FlatFX'
      bUnlit=True
      bCollideWorld=False

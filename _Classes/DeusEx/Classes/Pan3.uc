@@ -7,7 +7,8 @@ defaultproperties
 {
      bCanBeBase=True
      ItemName="Frying Pan"
-     Mesh=LodMesh'HDTPDecos.HDTPPan3'
+     HDTPMesh="HDTPDecos.HDTPPan3"
+     Mesh=LodMesh'DeusExDeco.Pan3'
      CollisionRadius=7.460000
      CollisionHeight=1.910000
      Mass=14.000000

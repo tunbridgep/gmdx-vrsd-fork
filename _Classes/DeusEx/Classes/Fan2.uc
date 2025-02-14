@@ -9,7 +9,8 @@ defaultproperties
      ItemName="Fan"
      bPushable=False
      Physics=PHYS_Rotating
-     Mesh=LodMesh'HDTPDecos.HDTPFan2'
+     Mesh=LodMesh'DeusExDeco.Fan2'
+     HDTPMesh="HDTPDecos.HDTPFan2"
      SoundRadius=10
      AmbientSound=Sound'GMDXSFX.Ambient.fanairduct'
      CollisionRadius=17.660000

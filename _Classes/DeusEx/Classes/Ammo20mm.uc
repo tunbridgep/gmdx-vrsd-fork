@@ -35,7 +35,7 @@ defaultproperties
      largeIconHeight=37
      Description="The 20mm high-explosive round complements the standard 7.62x51mm assault rifle by adding the capability to clear small rooms, foxholes, and blind corners using an underhand launcher."
      beltDescription="20MM HE"
-     Skin=Texture'HDTPItems.Skins.HDTPAmmo20mmTex1'
+     HDTPSkin="HDTPItems.Skins.HDTPAmmo20mmTex1"
      Mesh=LodMesh'DeusExItems.Ammo20mm'
      CollisionRadius=9.500000
      CollisionHeight=4.750000

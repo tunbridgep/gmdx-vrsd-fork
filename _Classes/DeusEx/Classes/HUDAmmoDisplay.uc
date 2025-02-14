@@ -15,6 +15,7 @@ var int             infoX;
 var localized String NotAvailable;
 var localized String msgReloading;
 var localized String AmmoLabel;
+var localized String ChargeLabel;
 var localized String ClipsLabel;
 var localized String MagsLabel;
 var localized String RoundsLabel;
@@ -49,15 +50,30 @@ event InitWindow()
 }
 
 // ----------------------------------------------------------------------
+// GetWeapon()
+// ----------------------------------------------------------------------
+
+function Inventory GetWeapon()
+{
+    if (player.primaryWeapon != None)
+        return player.primaryWeapon;
+    else
+        return player.Weapon;
+}
+
+// ----------------------------------------------------------------------
 // Tick()
 // ----------------------------------------------------------------------
 
 event Tick(float deltaSeconds)
 {
     local bool validWeap, hastool;
+    local Inventory curr;
+    curr = GetWeapon();
+    weapon = DeusExWeapon(curr);
 
-    validWeap = player.Weapon != None && DeusExWeapon(player.Weapon).ReloadCount > 0;
-    hasTool = player.inHand != None && (player.inHand.isA('Multitool') || player.inHand.isA('Lockpick')) && player.iFrobDisplayStyle == 0;
+    validWeap = player.inHand != None && weapon != None && (weapon.ReloadCount > 0 || (weapon.IsA('WeaponNanoSword')));
+    hasTool = player.inHand != None && (curr.isA('Multitool') || curr.isA('Lockpick')) && player.iFrobDisplayStyle == 0;
 
 	if ((validweap || hastool) && bVisible )
 		Show();
@@ -71,30 +87,24 @@ event Tick(float deltaSeconds)
 
 event DrawWindow(GC gc)
 {
+    local DeusExWeapon weapon;
+    local Inventory curr;
+    curr = GetWeapon();
+    weapon = DeusExWeapon(curr);
+
 	Super.DrawWindow(gc);
 
 	// No need to draw anything if the player doesn't have
 	// a weapon selected
 
-	if (player != None)
-	{
-	    if (player.weapon != None && player.Weapon.IsA('DeusExWeapon') && DeusExWeapon(player.Weapon).bBeginQuickMelee)
-	    {
-               if (player.primaryWeapon != None && player.primaryWeapon.IsA('DeusExWeapon'))
-	              weapon = DeusExWeapon(player.primaryWeapon);
-	    }
-        else
-		    weapon = DeusExWeapon(player.Weapon);
-	}
-
     //SARGE: Draw tool info if we have one
     //TODO: Refactor this
-    if (player.inHand != None && (player.inHand.isA('Multitool') || player.inHand.isA('Lockpick')) && player.iFrobDisplayStyle == 0)
+    if (player.inHand != None && (curr.isA('Multitool') || curr.isA('Lockpick')) && player.iFrobDisplayStyle == 0)
     {
 		// Draw the weapon icon
 		gc.SetStyle(DSTY_Masked);
 		gc.SetTileColorRGB(255, 255, 255);
-		gc.DrawTexture(22, 20, 40, 35, 0, 0, SkilledTool(player.inHand).icon);
+		gc.DrawTexture(22, 20, 40, 35, 0, 0, SkilledTool(curr).icon);
 
 		// Draw the ammo count
 		gc.SetFont(Font'TechMedium'); //CyberP: hud scaling Font'FontTiny'
@@ -102,7 +112,7 @@ event DrawWindow(GC gc)
 		gc.EnableWordWrap(false);
          
         gc.SetTextColor(colAmmoText);
-        gc.DrawText(infoX, 27, 20, 9, SkilledTool(player.inHand).numCopies);
+        gc.DrawText(infoX, 27, 20, 9, SkilledTool(curr).numCopies);
         gc.DrawText(infoX, 39, 20, 9, NotAvailable);
     }
 
@@ -119,7 +129,7 @@ event DrawWindow(GC gc)
 		gc.EnableWordWrap(false);
 			
         // how much ammo is left in the current clip?
-        ammoInClip = weapon.AmmoLeftInClip();
+            ammoInClip = weapon.AmmoLeftInClip();
 
 		// how much ammo of this type do we have left?
 		if (weapon.AmmoType != None)
@@ -129,8 +139,15 @@ event DrawWindow(GC gc)
                 
          gc.SetTextColor(colAmmoText);
 
+        //Draw DTS Charge
+        if (weapon.IsA('WeaponNanoSword'))
+        {
+            ammoInClip = WeaponNanoSword(weapon).ChargeManager.GetCurrentCharge();
+            gc.DrawText(infoX, 27, 20, 9, ammoInClip);
+			gc.DrawText(infoX, 39, 20, 9, NotAvailable);
+        }
 		// Ammo count drawn differently depending on user's setting
-		if (weapon.ReloadCount > 1 || weapon.IsA('WeaponGEPGun') || weapon.AmmoName == Class'Ammo20mm')
+		else if (weapon.ReloadCount > 1 || weapon.IsA('WeaponGEPGun') || weapon.AmmoName == Class'Ammo20mm')
 		{
 
 			if (weapon.bPerShellReload || player.bDisplayTotalAmmo)
@@ -138,7 +155,7 @@ event DrawWindow(GC gc)
 			else
 				clipsRemaining = weapon.NumClips();
 		
-            if ((ammoInClip < weapon.lowAmmoWatermark && weapon.reloadCount > 1) || ammoInClip == 0)
+            if ((weapon.reloadCount > 1 && ammoInClip <= weapon.reloadCount / 2) || ammoInClip == 0)
                 gc.SetTextColor(colAmmoLowText);
             else
                 gc.SetTextColor(colAmmoText);
@@ -202,6 +219,9 @@ event DrawWindow(GC gc)
 
 function DrawBackground(GC gc)
 {
+    if (gc == None)
+        return;
+
 	gc.SetStyle(backgroundDrawStyle);
 	gc.SetTileColor(colBackground);
 	gc.DrawTexture(13, 13, 80, 54, 0, 0, texBackground);
@@ -211,10 +231,13 @@ function DrawBackground(GC gc)
 	gc.SetTextColor(colText);
 	gc.SetAlignments(HALIGN_Center, VALIGN_Top);
 
-	gc.DrawText(66, 17, 21, 8, AmmoLabel);
-
     if (player != None)
     {
+        if (weapon != None && weapon.IsA('WeaponNanoSword'))
+            gc.DrawText(66, 17, 21, 8, ChargeLabel);
+        else
+            gc.DrawText(66, 17, 21, 8, AmmoLabel);
+
         if (weapon != None && weapon.bPerShellReload || weapon.AmmoName == Class'Ammo20mm' || player.bDisplayTotalAmmo)
             gc.DrawText(66, 48, 21, 8, RoundsLabel);
         else if (player.bDisplayClips)
@@ -263,6 +286,7 @@ defaultproperties
      AmmoLabel="AMMO"
      MagsLabel="MAGS"
      ClipsLabel="CLIPS"
+     ChargeLabel="CHARG"
 	 RoundsLabel="RDS"
      texBackground=Texture'DeusExUI.UserInterface.HUDAmmoDisplayBackground_1'
      texBorder=Texture'DeusExUI.UserInterface.HUDAmmoDisplayBorder_1'

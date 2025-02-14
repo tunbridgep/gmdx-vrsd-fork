@@ -14,13 +14,13 @@ enum ESkinColor
 
 var() ESkinColor SkinColor;
 
-function BeginPlay()
+function UpdateHDTPSettings()
 {
-	Super.BeginPlay();
+	Super.UpdateHDTPSettings();
 
 	switch (SkinColor)
 	{
-		case SC_Black:		Skin = Texture'HDTPChairLeatherTex1'; break; //CyberP: HDTP update
+		case SC_Black:		Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPChairLeatherTex1","DeusExDeco.ChairLeatherTex1",iHDTPModelToggle > 0); break; //CyberP: HDTP update
 		case SC_Blue:		Skin = Texture'ChairLeatherTex1'; break;
 		case SC_Brown:		Skin = Texture'ChairLeatherTex1'; break;
 		case SC_LitGray:	Skin = Texture'ChairLeatherTex1'; break;
@@ -38,4 +38,5 @@ defaultproperties
      CollisionHeight=23.250000
      Mass=139.000000
      Buoyancy=110.000000
+	 bHDTPFailsafe=False
 }

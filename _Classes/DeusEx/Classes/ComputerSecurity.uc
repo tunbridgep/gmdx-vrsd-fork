@@ -82,8 +82,10 @@ function AdditionalActivation(DeusExPlayer ActivatingPlayer)
 {
    if (Level.NetMode != NM_Standalone)
       SetControlledObjectOwners(ActivatingPlayer);
-
-   Super.AdditionalDeactivation(ActivatingPlayer);
+    
+    if (!IsHDTP())
+        Skin = Texture'DeusExDeco.Skins.ComputerSecurityTex1';
+    Super.AdditionalDeactivation(ActivatingPlayer);
 }
 
 // ----------------------------------------------------------------------
@@ -95,7 +97,9 @@ function AdditionalDeactivation(DeusExPlayer DeactivatingPlayer)
    if (Level.NetMode != NM_Standalone)
       SetControlledObjectOwners(None);
 
-   Super.AdditionalDeactivation(DeactivatingPlayer);
+    if (!IsHDTP())
+        Skin = default.Skin;
+    Super.AdditionalDeactivation(DeactivatingPlayer);
 }
 
 defaultproperties
@@ -107,7 +111,8 @@ defaultproperties
      UserList(0)=(userName="SECURITY",Password="SECURITY")
      ItemName="Security Computer Terminal"
      Physics=PHYS_None
-     Skin=Texture'HDTPDecos.Skins.HDTPComputerSecurityTex1'
+     HDTPSkin="HDTPDecos.Skins.HDTPComputerSecurityTex1"
+     Skin=Texture'RSDCrap.Skins.ComputerSecurityTex1Blank'
      Mesh=LodMesh'DeusExDeco.ComputerSecurity'
      SoundRadius=8
      SoundVolume=255

@@ -7,9 +7,10 @@ defaultproperties
 {
      bInvincible=True
      ItemName="Shower Head"
+     HDTPMesh="HDTPDecos.HDTPShowerHead"
      bPushable=False
      Physics=PHYS_None
-     Mesh=LodMesh'HDTPDecos.HDTPShowerHead'
+     Mesh=LodMesh'DeusExDeco.ShowerHead'
      CollisionRadius=9.480000
      CollisionHeight=8.410000
      Mass=20.000000

@@ -304,7 +304,9 @@ defaultproperties
      SpawnSound=Sound'DeusExSounds.Weapons.PlasmaRifleFire'
      ImpactSound=Sound'DeusExSounds.Weapons.PlasmaRifleHit'
      ExplosionDecal=Class'DeusEx.ScorchMark'
-     Skin=Texture'HDTPDecos.Skins.HDTPAlarmLightTex4'
+     HDTPSkin="HDTPDecos.Skins.HDTPAlarmLightTex4"
+     Skin=Texture'DeusExDeco.AlarmLightTex4'
+     hdtpReference=Class'DeusEx.WeaponPlasmaRifle'
      Mesh=LodMesh'DeusExItems.PlasmaBolt'
      DrawScale=2.200000
      bUnlit=True

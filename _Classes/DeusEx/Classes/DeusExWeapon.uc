@@ -289,13 +289,13 @@ var bool bAmmoSelectWait;                                                       
 var float slugSpreadAcc;                                                        //RSD
 var() int		NPCMaxRange;			                                        //RSD: for NPC engagement distance and accuracy
 var() int		NPCAccurateRange;                           			        //RSD: for NPC engagement distance and accuracy
-var config int iHDTPModelToggle;                                                //RSD: 0 for vanilla model, 1 for HDTP, 2 for FOMOD or other (if applicable, otherwise revert to HDTP)
 var travel bool bIsRadar;                                                       //RSD: for splitting cloak/radar texture functionality
 var bool bJustUnRadar;                                                          //RSD: for splitting cloak/radar texture functionality
 var float attackSpeedMult;                                                      //RSD: to differentiate melee weapon attack speeds, only used on crowbar (0.8 for 20% reduction)
 var bool bPerShellReload;                                                       //RSD: To avoid convoluted class checking (Sawed-Off, Assault Shotgun, Mini-Crossbow, and GEP)
 var localized string abridgedName;                                              //RSD: For weapons with 30+ char names in MenuScreenHDTPToggles.uc
 var texture largeIconRot;                                                       //RSD: rotated inventory icon
+var travel bool bRotated;                                                      //Is this item rotated?
 var travel int invSlotsXtravel;                                                 //RSD: since Inventory invSlotsX doesn't travel through maps
 var travel int invSlotsYtravel;                                                 //RSD: since Inventory invSlotsY doesn't travel through maps
 var travel float previousAccuracy;                                              //Sarge: Used to limit standing accuracy bonus from increasing past your max accuracy                                                                                
@@ -308,6 +308,41 @@ var travel bool bOldOffsetsSet;                                                 
 var travel bool givenFreeReload;                                                //Sarge: Give a free reload when selecting the weapon for the first time, otherwise it starts empty
 
 var float sleeptime;                                                              //Sarge: Used by per shell reload weapons to store how long they have been sleeping during reload, to allow us to cancel mid-reload in a far more responsive way.
+
+//SARGE: HDTP Model toggles
+var config int iHDTPModelToggle;
+var string HDTPSkin;
+var string HDTPTexture;
+var string HDTPPlayerViewMesh;
+var string HDTPPickupViewMesh;
+var string HDTPThirdPersonMesh;
+var string HDTPIcon;
+var string HDTPLargeIcon;
+var Texture handsTex;                                        //SARGE: Store the hands texture for performance
+
+var int MuzzleSlot;                                                 //SARGE: Slot where the muzzle tex will go
+var texture CurrentMuzzleFlash;                                     //SARGE: The current muzzle flash of this weapon
+var bool bBigMuzzleFlash;                                            //SARGE: Allow non-automatic weapons to have big muzzle flashes
+
+var bool bDisposableWeapon;                                         //SARGE: Used for disposable weapons, such as grenades, PS20s, LAWs, etc. Disposable weapons can't be reloaded, and track ammo differently to regular weapons when dropped/picked up. Their ammo doesn't show up when being looted, either - The weapon is shown instead.
+
+//SARGE: Show Modified
+var travel bool bModified;                                                             //SARGE: Keeps track of whether or not a particular weapon has been modified
+var localized string strModified;
+
+//SARGE: Weapon Requirements Matter
+var int minSkillRequirement;                                          //SARGE: Minimum skill requirement to use this weapon
+var localized String msgRequires;                                     //Sarge: "Requires" for weapon info screen
+
+//SARGE: Scoping Toggle Stuff
+var float GEPinout;
+var bool bGEPout;
+var vector MountedViewOffset;
+var float scopeTime;
+var vector axesX;//fucking weapon rotation fix
+var vector axesY;
+var vector axesZ;
+var bool bFancyScopeAnimation;
 
 //END GMDX:
 
@@ -334,16 +369,81 @@ replication
 	  RefreshScopeDisplay, ReadyClientToFire, SetClientAmmoParams, ClientDownWeapon, ClientActive, ClientReload;
 }
 
+//Sarge: Update weapon frob display when we have a mod applied
+function string GetFrobString(DeusExPlayer player)
+{
+    if (bModified && player != None && player.bBeltShowModified)
+        return itemName @ strModified;
+    else
+        return itemName;
+}
+
+//Sarge: Update weapon description/display when we have a mod applied
+function string GetBeltDescription(DeusExPlayer player)
+{
+    if (bModified && player != None && player.bBeltShowModified)
+        return beltDescription $ "+";
+    else
+        return beltDescription;
+}
+
+function bool CanUseWeapon(DeusExPlayer player, optional bool noMessage)
+{
+    local int skill;
+    
+    if (player == None || player.SkillSystem == None)
+        return false;
+
+    //NOTE: Order matters here, we need to short circuit to avoid the CheckSkill message
+    return !player.bWeaponRequirementsMatter || player.SkillSystem.CheckSkill(GoverningSkill,minSkillRequirement,noMessage);
+}
 
 //SARGE: Added "Left Click Frob" and "Right Click Frob" support
 //Return true to use the default frobbing mechanism (right click), or false for custom behaviour
 function bool DoLeftFrob(DeusExPlayer frobber)
 {
+    Unrotate();
     return true;
 }
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {
+    Unrotate();
     return true;
+}
+
+function Unrotate()
+{
+    bRotated = false;
+    invSlotsX=default.invSlotsX;
+    invSlotsY=default.invSlotsy;
+    largeIcon = default.largeIcon;
+}
+
+//SARGE: Resize heavy weapons
+function ResizeHeavyWeapon(DeusExPlayer player)
+{
+    local PerkMobileOrdnance perk;
+    
+    perk = PerkMobileOrdnance(player.PerkManager.GetPerkWithClass(class'DeusEx.PerkMobileOrdnance'));
+    if (perk != None && perk.bPerkObtained)
+    {
+        //Inventory rotation hack.
+        if (!bRotated)
+        {
+            invSlotsX=3;
+            invSlotsY=1;
+            invSlotsXTravel=3;
+            invSlotsYTravel=1;
+        }
+        else
+        {
+            invSlotsX=1;
+            invSlotsY=3;
+            invSlotsXTravel=1;
+            invSlotsYTravel=3;
+            largeIcon = largeIconRot;
+        }
+    }
 }
 
 //Function to fix weapon offsets
@@ -391,6 +491,8 @@ function Draw(DeusExPlayer frobber)
 
     //Fix allowing more in the clip than we have
     ClipCount = min(ClipCount,AmmoType.AmmoAmount);
+    
+    SetWeaponHandTex();
 
     DoWeaponOffset(frobber);
 }
@@ -526,8 +628,7 @@ function PreBeginPlay()
 		Default.mpPickupAmmoCount = Default.PickupAmmoCount;
 	}
 
-    UpdateHDTPSettings();                                                       //RSD: CheckWeaponSkins() is part of UpdateHDTPSettings()
-	//CheckWeaponSkins();
+    UpdateHDTPSettings();
     DoWeaponOffset(DeusExPlayer(GetPlayerPawn()));
 }
 
@@ -541,13 +642,14 @@ function DropFrom(vector StartLocation)
 {
 	if ( !SetLocation(StartLocation) )
 		return;
+    UpdateHDTPSettings();
 	//checkweaponskins();                                                       //RSD
     if (bIsCloaked || bIsRadar)                                                 //RSD: Overhauled cloak/radar routines
 	 SetCloakRadar(false,false,true);//SetCloak(false,true);
 	bMantlingEffect = False;
     BobDamping=default.BobDamping;
 	bAimingDown=False;
-	EraseWeaponHandTex();                                                       //RSD: To ensure we don't get hand tex on dropped weapons
+	//EraseWeaponHandTex();                                                       //RSD: To ensure we don't get hand tex on dropped weapons
      //if (IsA('WeaponFlamethrower'))
       // if (Owner.IsA('DeusExPlayer'))
        //   DeusExPlayer(Owner).UpdateSensitivity(DeusExPlayer(Owner).default.MouseSensitivity);
@@ -558,109 +660,31 @@ function DropFrom(vector StartLocation)
 }
 
 //Shorthand for accessing hands tex
-function texture GetWeaponHandTex()
+function SetWeaponHandTex()
 {
 	local deusexplayer p;
-    
-    if (bIsRadar)//class'DeusExPlayer'.default.bRadarTran==True)                //RSD: Overhauled cloak/radar routines
-        return Texture'Effects.Electricity.Xplsn_EMPG';
-    else if (bIsCloaked)
-        return FireTexture'GameEffects.InvisibleTex';
-
-	p = deusexplayer(owner);
-	if(p != none)
-        return p.GetWeaponHandTex();
-	return None;
-}
-
-//SARGE: Had to add this, so that the LDDP Hand Selection works with the HDTP model selection stuff
-function Texture GetLDDPHandsTex(DeusExPlayer P)
-{
-    local Texture tex;
-
-	if ((P.FlagBase != None) && (P.FlagBase.GetBool('LDDPJCIsFemale')))
+	
+    p = deusexplayer(owner);
+	
+    //FOMOD weapons use the FOMOD hands
+    if (p != None && IsHDTP() && iHDTPModelToggle == 2)
     {
-        switch(P.PlayerSkin)
+        switch (p.PlayerSkin)
         {
-            case 0:
-                tex = Texture(DynamicLoadObject("FemJC.WeaponHandsTex0Fem", class'Texture', false));
-                break;
-            case 1:
-                tex = Texture(DynamicLoadObject("FemJC.WeaponHandsTex4Fem", class'Texture', false));
-                break;
-            case 2:
-                tex = Texture(DynamicLoadObject("FemJC.WeaponHandsTex5Fem", class'Texture', false));
-                break;
-            case 3:
-                tex = Texture(DynamicLoadObject("FemJC.WeaponHandsTex6Fem", class'Texture', false));
-                break;
-            case 4:
-                tex = Texture(DynamicLoadObject("FemJC.WeaponHandsTex7Fem", class'Texture', false));
-                break;
+			//default, black, latino, ginger, albino, respectively
+			case 0: handsTex = class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinal"); break;
+			case 1: handsTex = class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinalB"); break;
+			case 2: handsTex = class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinalL"); break;
+			case 3: handsTex = class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinalG"); break;
+			case 4: handsTex = class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinalA"); break;
         }
     }
-    //For male, return the basic ones
     else if(p != none)
-	{
-		switch(p.PlayerSkin)
-		{
-			//default, black, latino, ginger, albino, respectively
-			case 0: tex = texture'weaponhandstex'; break;
-			case 1: tex = texture'HDTPItems.skins.weaponhandstexblack'; break;
-			case 2: tex = texture'HDTPItems.skins.weaponhandstexlatino'; break;
-			case 3: tex = texture'HDTPItems.skins.weaponhandstexginger'; break;
-			case 4: tex = texture'HDTPItems.skins.weaponhandstexalbino'; break;
-		}
-	}
-
-    if (tex == None)
-        tex = texture'weaponhandstex'; //White hands texture by default
-                                       
-    return tex;
+        handsTex = p.GetWeaponHandTex();
+    else
+        handsTex = None;
+    //p.ClientMessage("Skin Tex: " $ handsTex);
 }
-
-function EraseWeaponHandTex()                                                   //RSD: Fixing weapons acquiring the hand texture in 3rd person view
-{
-    multiskins[0] = none;                                                       //RSD: most hand tex are in slot 0
-}
-
-//GMDX cloak weapon
-/*function SetCloak(bool bEnableCloak,optional bool bForce)                     //RSD: Overhauled cloak/radar routines
-{
-	if ((Owner==none)||(!Owner.IsA('DeusExPlayer'))) return;
-	if (Owner!=none && Owner.IsA('DeusExPlayer'))
-	{
-	if (bEnableCloak && class'DeusExPlayer'.default.bRadarTran == True &&(!bIsCloaked||bForce))
-	{
-	  AmbientGlow=255;
-      Style=STY_Normal;//STY_Translucent;                                       //RSD: Going for a solid texture here
-	  ScaleGlow=10.500001;
- 	  ShowCamo();
-	  bIsCloaked=true;
-	}
-    else if (bEnableCloak&&(!bIsCloaked||bForce))
-	{
-	  Style=STY_Translucent;
-	  ScaleGlow=0.500000;
-	  //AmbientGlow=255;
-	  bIsCloaked=true;
-	  ShowCamo();
-	} else
-	if(!bEnableCloak&&(bIsCloaked||bForce))
-	{
- 	 if (ScaleGlow==10.500001)
-         Style=default.Style;
-
-	  bJustUncloaked = True;
-	  if (bIsCloaked && class'DeusExPlayer'.default.bRadarTran==false && class'DeusExPlayer'.default.bCloakEnabled==false)
-	     HideCamo();
-	  bIsCloaked=false;
-	  //CheckWeaponSkins();                                                     //RSD
-	  //ScaleGlow=0.750000;
-	}
-    }
-    CheckWeaponSkins();                                                         //RSD: Moved here to properly recheck laser skins each time
-}*/
 
 function SetCloakRadar(bool bEnableCloak, bool bEnableRadar, optional bool bForce) //RSD: Overhauled cloak/radar routines
 {
@@ -701,62 +725,20 @@ function SetCloakRadar(bool bEnableCloak, bool bEnableRadar, optional bool bForc
 	{
 	  //AmbientGlow=255;                                                        //RSD: Removed ambient glow for proper stacking effect
 	  bIsRadar=true;
- 	  ShowCamo();
  	  CheckWeaponSkins();
+ 	  ShowCamo();
  	  //DeusExPlayer(Owner).BroadcastMessage("Radar On");
 	}
     if (bEnableCloak&&(!bIsCloaked||bForce||bCheckCloak))
 	{
 	  //AmbientGlow=255;
 	  bIsCloaked=true;
-	  ShowCamo();
 	  CheckWeaponSkins();
+	  ShowCamo();
 	  //DeusExPlayer(Owner).BroadcastMessage("Cloak On");
 	}
     }
 }
-
-/*function ShowCamo()
-{
-	local int     i;
-	local texture curSkin;
-
-		for (i=0; i<8; i++)
-			NormalPlayerViewSkins[i] = MultiSkins[i];
-
-		NormalPlayerViewSkins[8] = Skin;
-		NormalPlayerViewSkins[9] = Texture;
-
-		for (i=0; i<8; i++)
-		{
-			curSkin = GetMeshTexture(i);
-			CamoPlayerViewSkins[i] = GetGridTexture(curSkin);
-		}
-
-		CamoPlayerViewSkins[8] = GetGridTexture(NormalPlayerViewSkins[8]);
-		CamoPlayerViewSkins[9] = GetGridTexture(NormalPlayerViewSkins[9]);
-
-		for (i=0; i<8; i++)
-		{
-		    if (i==2 && bHasMuzzleFlash)
-		    {
-		    }
-		    else
-			    MultiSkins[i] = CamoPlayerViewSkins[i];
-        }
-
-        if (class'DeusExPlayer'.default.bRadarTran==False)
-        {
-		    Skin = FireTexture'GameEffects.InvisibleTex';
-		    Texture = FireTexture'GameEffects.InvisibleTex';
-        }
-        else
-        {
-            Skin = Texture'Effects.Electricity.Xplsn_EMPG';
-		    Texture = Texture'Effects.Electricity.Xplsn_EMPG';
-        }
-		Style = STY_Translucent;
-}*/
 
 function ShowCamo()
 {
@@ -764,23 +746,14 @@ function ShowCamo()
 	local texture curSkin;
 
 		for (i=0; i<8; i++)
-			NormalPlayerViewSkins[i] = MultiSkins[i];
-
-		NormalPlayerViewSkins[8] = Skin;
-		NormalPlayerViewSkins[9] = Texture;
-
-		for (i=0; i<8; i++)
 		{
 			curSkin = GetMeshTexture(i);
 			CamoPlayerViewSkins[i] = GetGridTexture(curSkin);
 		}
 
-		CamoPlayerViewSkins[8] = GetGridTexture(NormalPlayerViewSkins[8]);
-		CamoPlayerViewSkins[9] = GetGridTexture(NormalPlayerViewSkins[9]);
-
 		for (i=0; i<8; i++)
 		{
-		    if (i==2 && bHasMuzzleFlash)
+		    if (i==MuzzleSlot && bHasMuzzleFlash)
 		    {
 		    }
 		    else
@@ -813,45 +786,7 @@ function ShowCamo()
 
 function HideCamo()
 {
-	local int i;
-    local bool bSetFailure;
-
-		for (i=0; i<8; i++)
-			MultiSkins[i] = NormalPlayerViewSkins[i];
-
-		Skin = NormalPlayerViewSkins[8];
-		Texture = NormalPlayerViewSkins[9];
-
-        //CyberP: failsafe
-		for (i=0; i<8; i++)                                                     //RSD: was i<10 (max number of multiskins is 8)
-		{
-			if (MultiSkins[i] == Texture'Effects.Electricity.Xplsn_EMPG' || MultiSkins[i] == FireTexture'GameEffects.InvisibleTex')
-			{
-			  bSetFailure = True;
-			  break;
-			}
-		}
-		if (bSetFailure)
-		{
-		   for (i=0; i<8; i++)
-			MultiSkins[i] = default.MultiSkins[i];
-			Skin = default.Skin;
-		    Texture = default.Texture;
-		}
-
-        //RSD: Overhauled cloak/radar routines:
-		if (bJustUnradar && bIsCloaked)
-		{
-			Style=STY_Translucent;
-			ScaleGlow=0.500000;                                                 //RSD: If only cloak on, use cloak ScaleGlow
-		}
-		else if (bJustUncloaked && bIsRadar)
-		{
-		    Style=STY_Normal;
-		    ScaleGlow=10.500001;                                                //RSD: If only radar on, use radar ScaleGlow
-        }
-        else                                                                    //RSD: Note that Style normal is reset a bit after decloaking (and no radar) in Tick()
-            ScaleGlow=default.ScaleGlow;                                        //RSD: If neither on, use default ScaleGlow (otherwise too bright after radar)
+    UpdateHDTPSettings();
 }
 
 function Texture GetGridTexture(Texture tex)
@@ -874,25 +809,28 @@ function Texture GetGridTexture(Texture tex)
 //=============================================================================
 // Weapon rendering
 // Draw first person view of inventory
+//=============================================================================
+
 simulated event RenderOverlays( canvas Canvas )
 {
 	local rotator NewRot, ExRot, rfs;                                           //RSD: Added rfs
 	local bool bPlayerOwner;
 	local int Hand;
-	local PlayerPawn PlayerOwner;
+	local DeusExPlayer PlayerOwner;
     local int newPitch;
     local vector dx, dy, dz;                                                    //RSD: Added
 
 	if ( bHideWeapon || (Owner == None) )
 		return;
 
-	PlayerOwner = PlayerPawn(Owner);
+	PlayerOwner = DeusExPlayer(Owner);
 
 	if ( PlayerOwner != None )
 	{
 		//if ( PlayerOwner.DesiredFOV != PlayerOwner.DefaultFOV )
 		//	return;
-		if (bZoomed)
+		if (bZoomed || (PlayerOwner.bSpyDroneActive && !PlayerOwner.bSpyDroneSet && !PlayerOwner.bBigDroneView))
+		//if (bZoomed)
 		    return;
 		bPlayerOwner = true;
 		Hand = PlayerOwner.Handedness;
@@ -902,6 +840,16 @@ simulated event RenderOverlays( canvas Canvas )
 			bHideWeapon = true;
 			return;
 		}
+    
+        DisplayWeapon(true);
+
+        if (CurrentMuzzleFlash != None)
+            MultiSkins[MuzzleSlot] = CurrentMuzzleFlash;
+    
+        if (bIsRadar || bIsCloaked)
+        {
+            ShowCamo();
+        }
 	}
 
 	if ( !bPlayerOwner || (PlayerOwner.Player == None) )
@@ -935,59 +883,109 @@ simulated event RenderOverlays( canvas Canvas )
 	SetLocation( Owner.Location + CalcDrawOffset() );
     NewRot = Pawn(Owner).ViewRotation;
 
-
-    if (!bAimingDown)                                                           //RSD: This part is now broken by code below, so check later
-    {
-	if ( Hand == 0 )
-		newRot.Roll = -2 * Default.Rotation.Roll;
-	else
-		newRot.Roll = Default.Rotation.Roll * Hand;
-    }
-
 	if (PlayerOwner != none)
     {
-     /*if (!IsA('WeaponRifle'))  //Totalitarian: add rotation sway when the player turns
-     {
-       newRot.Roll -= smerp(1,0,(PlayerOwner.DesiredRotation.Yaw - PlayerOwner.Rotation.Yaw)*0.1);
-       if (newRot.Roll > 1536)
-           newRot.Roll = 1536;
-       else if (newRot.Roll < -1536)
-           newRot.Roll = -1536;
-     }*/
-    //ass gun iron sights: newRot.Pitch += 360; newRot.Yaw += 2280; PlayerViewOffset(X=12.500000,Y=3.300000,Z=-10.900000)
-    //pistol iron sight: {newRot.Yaw += 1400; newRot.Pitch -=1000; PlayerViewOffset=vect(1955.500000,-1170.300000,106.900000);}
+        //RSD: New adjustment to rotation without being pitch-dependent
+        rfs.Yaw=addYaw;
+        rfs.Pitch=addPitch;
+        GetAxes(rfs,dx,dy,dz);
+        dx=dx>>PlayerOwner.ViewRotation;
+        dy=dy>>PlayerOwner.ViewRotation;
+        dz=dz>>PlayerOwner.ViewRotation;
+        rfs=OrthoRotation(dx,dy,dz);
+        NewRot = rfs;
 
-    //NewRot.Pitch += addPitch;                                                 //RSD: This is not with respect to player rotation, so leads to pitch-dependent rotation!
-    //NewRot.Yaw += addYaw;
+        //RSD: Overhauled cloak/radar routines
+        SetCloakRadar(class'DeusExPlayer'.default.bCloakEnabled,class'DeusExPlayer'.default.bRadarTran);
+    }
+    
+    setRotation(NewRot);
+    Canvas.DrawActor(self, false);
 
-    //RSD: New adjustment to rotation without being pitch-dependent
-    rfs.Yaw=addYaw;
-	rfs.Pitch=addPitch;
-	GetAxes(rfs,dx,dy,dz);
-	dx=dx>>PlayerOwner.ViewRotation;
-	dy=dy>>PlayerOwner.ViewRotation;
-	dz=dz>>PlayerOwner.ViewRotation;
-	rfs=OrthoRotation(dx,dy,dz);
-	NewRot = rfs;
+    if (activateAn && bHasScope)
+        DrawScopeAnimation();
+    else
+        activateAn = false;
 
-    /*if (class'DeusExPlayer'.default.bCloakEnabled&&!bIsCloaked)
-	{
-	  SetCloak(true);
-	} else
-	if (!class'DeusExPlayer'.default.bCloakEnabled&&bIsCloaked && !class'DeusExPlayer'.default.bRadarTran == True)
-	{
-	  SetCloak(false);
-	}*/
-
-    //RSD: Overhauled cloak/radar routines
-	SetCloakRadar(class'DeusExPlayer'.default.bCloakEnabled,class'DeusExPlayer'.default.bRadarTran);
-	}
-    //ExRot = CalcDeltaRotation(NewRot);
-    //BroadcastMessage("Rotation:"$self.Rotation);
-	setRotation(NewRot);
-	Canvas.DrawActor(self, false);
-
+    //Reset weapon to standard display
+    DisplayWeapon(false);
 }
+
+//
+// Draw the scope view
+//
+
+function DrawScopeAnimation()
+{
+    ScopeToggle(); 
+    activateAn = false;
+}
+
+simulated function DrawFancyScopeAnimation()
+{
+    local DeusExPlayer player;
+    local rotator rfs;
+	local vector dx;
+	local vector dy;
+	local vector dz;
+	local vector unX,unY,unZ;
+    local int totalScopeTime;
+
+	if(!bGEPout)
+	{
+		if (GEPinout<1) GEPinout=Fmin(1.0,GEPinout+0.04);
+	} else
+		if (GEPinout<1) GEPinout=Fmax(0,GEPinout-0.04);//do Fmax(0,n) @ >0<=1
+
+	rfs.Yaw=6912*Fmin(1.0,GEPinout);
+	rfs.Pitch=2912*sin(Fmin(1.0,GEPinout)*Pi);
+	GetAxes(rfs,axesX,axesY,axesZ);
+    
+    player = DeusExPlayer(Owner);
+
+	dx=axesX>>player.ViewRotation;
+	dy=axesY>>player.ViewRotation;
+	dz=axesZ>>player.ViewRotation;
+	rfs=OrthoRotation(dx,dy,dz);
+
+	SetRotation(rfs);
+
+	PlayerViewOffset=Default.PlayerViewOffset*100;//meh
+	SetHand(player.Handedness); //meh meh
+
+    //SARGE: This probably shouldn't be hardcoded!
+    if (GoverningSkill == Class'DeusEx.SkillWeaponRifle' && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkMarksman').bPerkObtained == true)                                          //RSD: Was PerkNamesArray[12], now PerkNamesArray[23] (merged Advanced with Master Rifles perk)
+    {
+        PlayerViewOffset.X=Smerp(sin(FMin(1.0,GEPinout*1.5)*0.5*Pi),PlayerViewOffset.X,MountedViewOffset.X*100);
+        PlayerViewOffset.Y=Smerp(1.0-cos(FMin(1.0,GEPinout*1.5)*0.5*Pi),PlayerViewOffset.Y,MountedViewOffset.Y*100);
+        PlayerViewOffset.Z=Lerp(sin(FMin(1.0,GEPinout*1.25)*0.05*Pi),PlayerViewOffset.Z,cos(FMin(1.0,GEPinout)*2*Pi)*MountedViewOffset.Z*100);
+        totalScopeTime = 17;
+	}
+	else
+	{
+        PlayerViewOffset.X=Smerp(sin(FMin(1.0,GEPinout)*0.5*Pi),PlayerViewOffset.X,MountedViewOffset.X*100);
+        PlayerViewOffset.Y=Smerp(1.0-cos(FMin(1.0,GEPinout)*0.5*Pi),PlayerViewOffset.Y,MountedViewOffset.Y*100);
+        PlayerViewOffset.Z=Lerp(sin(FMin(1.0,GEPinout)*0.05*Pi),PlayerViewOffset.Z,cos(FMin(1.0,GEPinout)*2*Pi)*MountedViewOffset.Z*100);
+        totalScopeTime = 25;
+	}
+
+	SetLocation(player.Location+ CalcDrawOffset());
+	scopeTime+=1;
+
+	if (scopeTime>=totalScopeTime)
+	{
+        activateAn = False;
+        scopeTime = 0;
+        ScopeToggle();
+        GEPinout = 0;
+        axesX = vect(0,0,0);
+        axesY = vect(0,0,0);
+        axesZ = vect(0,0,0);
+        PlayerViewOffset=Default.PlayerViewOffset*100;
+        SetHand(player.Handedness);
+    }
+}
+
 
 //
 // PostBeginPlay
@@ -1162,13 +1160,18 @@ function bool HandlePickupQuery(Inventory Item)
 	   //DAM mod
             if(W.ModDamage > ModDamage)
 				ModDamage = W.ModDamage;
+       
+       if (W.bModified)
+         bModified = true;
 	}
 
 	player = DeusExPlayer(Owner);
+    if (player != None)
+        player.UpdateHUD(); //SARGE: Required now because weapons can have + icons in the HUD
 
 	if (Item.Class == Class)
 	{
-	  if (!( (Weapon(item).bWeaponStay && (Level.NetMode == NM_Standalone)) && (!Weapon(item).bHeldItem || Weapon(item).bTossedOut)))
+	  if (!( (Weapon(item).bWeaponStay && (Level.NetMode == NM_Standalone)) && (!Weapon(item).bHeldItem || (Weapon(item).bTossedOut && !DeusExWeapon(item).bDisposableWeapon))))
 		{
 			// Only add ammo of the default type
 			// There was an easy way to get 32 20mm shells, buy picking up another assault rifle with 20mm ammo selected
@@ -1191,7 +1194,7 @@ function bool HandlePickupQuery(Inventory Item)
 					Weapon(Item).PickupAmmoCount -= intj;
                     DeusExWeapon(Item).clipcount = Weapon(Item).PickupAmmoCount;
 
-					if (!(DeusExAmmo(defAmmo) != none && (DeusExAmmo(defAmmo).ammoSkill == Class'DeusEx.SkillDemolition') || DeusExAmmo(defAmmo).IsA('ammoHideAGun'))) //RSD: Don't display ammo message for grenades or the PS20
+					if (!(DeusExWeapon(item) != none && DeusExWeapon(item).bDisposableWeapon)) //RSD: Don't display ammo message for grenades or the PS20
 					{
                         player.ClientMessage(defAmmo.PickupMessage @ defAmmo.itemArticle @ defAmmo.ItemName $ " (" $ intj $ ")", 'Pickup' );
 					}
@@ -1201,14 +1204,17 @@ function bool HandlePickupQuery(Inventory Item)
 				{
 					defAmmo.AddAmmo( Weapon(Item).PickupAmmoCount );
                     
-                    //SARGE: Tell us when we pick up empty weapons, rather than telling us
-                    //that we found 0 ammo
-                    if (Weapon(Item).PickupAmmoCount == 0)
-					    player.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.ItemName, 'Pickup' );
-					else if (!(DeusExAmmo(defAmmo) != none && (DeusExAmmo(defAmmo).ammoSkill == Class'DeusEx.SkillDemolition') || DeusExAmmo(defAmmo).IsA('ammoHideAGun'))) //RSD: Don't display ammo message for grenades or the PS20
-					{
-                        player.ClientMessage(defAmmo.PickupMessage @ defAmmo.itemArticle @ defAmmo.ItemName $ " (" $ Weapon(Item).PickupAmmoCount $ ")", 'Pickup' );
-					}
+                    if (!DeusExWeapon(Item).bDisposableWeapon) //RSD: Don't display ammo message for grenades or the PS20
+                    {
+                        //SARGE: Tell us when we pick up empty weapons, rather than telling us
+                        //that we found 0 ammo
+                        if (Weapon(Item).PickupAmmoCount == 0)
+                            player.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.ItemName, 'Pickup' );
+                        else
+                        {
+                            player.ClientMessage(defAmmo.PickupMessage @ defAmmo.itemArticle @ defAmmo.ItemName $ " (" $ Weapon(Item).PickupAmmoCount $ ")", 'Pickup' );
+                        }
+                    }
 				}
 
 				if ( Level.NetMode != NM_Standalone )
@@ -1261,14 +1267,14 @@ function bool HandlePickupQuerySuper( inventory Item )                          
 			Level.Game.LocalLog.LogPickup(Item, Pawn(Owner));
 		if (Level.Game.WorldLog != None)
 			Level.Game.WorldLog.LogPickup(Item, Pawn(Owner));
-		if (DXAmmoType != none && DXAmmoType.ammoSkill == Class'DeusEx.SkillDemolition' || Item.IsA('WeaponHideAGun')) //RSD: Only print pickup message if it's a grenade
+		if (DeusExWeapon(item) != none && DeusExWeapon(item).bDisposableWeapon) //RSD: Only print pickup message if it's a grenade
 		{
-		if (Item.PickupMessageClass == None)
-			// DEUS_EX CNN - use the itemArticle and itemName
-//			P.ClientMessage(Item.PickupMessage, 'Pickup');
-			P.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
-		else
-			P.ReceiveLocalizedMessage( Item.PickupMessageClass, 0, None, None, item.Class );
+            if (Item.PickupMessageClass == None)
+                // DEUS_EX CNN - use the itemArticle and itemName
+    //			P.ClientMessage(Item.PickupMessage, 'Pickup');
+                P.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
+            else
+                P.ReceiveLocalizedMessage( Item.PickupMessageClass, 0, None, None, item.Class );
 		}
 		Item.PlaySound(Item.PickupSound);
 		Item.SetRespawn();
@@ -1280,16 +1286,16 @@ function bool HandlePickupQuerySuper( inventory Item )                          
 	return Inventory.HandlePickupQuery(Item);
 }
 
-function float SetDroppedAmmoCount(optional int amountPassed)                   //RSD: Added optional int amountPassed for initialization in MissionScript.uc
+function float SetDroppedAmmoCount(optional int amountPassed, optional bool noOld) //RSD: Added optional int amountPassed for initialization in MissionScript.uc
 {
-    if (amountPassed == 0)                                                      //RSD: If we didn't get anything, set to old formula
+    if (amountPassed == 0 && !noOld)                                                      //RSD: If we didn't get anything, set to old formula
         amountPassed = Rand(4) + 1;
 
     // Any weapons have their ammo set to a random number of rounds (1-4)
 	// unless it's a grenade, in which case we only want to dole out one.
 	// DEUS_EX AMSD In multiplayer, give everything away.
 	// Grenades and LAMs always pickup 1
-	if (IsA('WeaponNanoVirusGrenade') || IsA('WeaponGasGrenade') || IsA('WeaponEMPGrenade') || IsA('WeaponLAM') || IsA('WeaponHideAGun'))
+	if (bDisposableWeapon)
 		PickupAmmoCount = 1;
 	else if (IsA('WeaponGepGun'))
         PickupAmmoCount = 2;
@@ -1298,7 +1304,7 @@ function float SetDroppedAmmoCount(optional int amountPassed)                   
 	else if (Level.NetMode == NM_Standalone)
         //PickupAmmoCount = Rand(4) + 1;                                        //RSD
         PickupAmmoCount = amountPassed;                                         //RSD
-    clipcount = amountPassed;
+    clipcount = PickupAmmoCount;
 }
 
 function BringUp()
@@ -1325,8 +1331,9 @@ function BringUp()
 
 function PlaySelect()
 {
-local DeusExPlayer player;
-local float p, mod;
+    local DeusExPlayer player;
+    local float p, mod;
+    local Projectile firedProjectile;
 
      player = DeusExPlayer(Owner);
 
@@ -1362,7 +1369,10 @@ local float p, mod;
 		GotoState('NormalFire');
 		bPointing=True;
 		if (IsA('WeaponHideAGun'))
-		   ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+        {
+            firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+            OnProjectileFired(firedProjectile);
+        }
 		if ( Owner.IsA('PlayerPawn') )
 			PlayerPawn(Owner).PlayFiring();
 		PlaySelectiveFiring();
@@ -1402,11 +1412,14 @@ local float p, mod;
 	}
 }
 
-Function CheckWeaponSkins()
+function bool IsHDTP()
 {
-//empty placeholder :p
-	//if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).inHand == self)
-    //	DeusExPlayer(Owner).BroadcastMessage(iHDTPModelToggle);
+    return DeusExPlayer(GetPlayerPawn()) != None && DeusExPlayer(GetPlayerPawn()).bHDTPInstalled && iHDTPModelToggle > 0;
+}
+
+function CheckWeaponSkins()
+{
+    DisplayWeapon(false);
 }
 
 
@@ -1446,7 +1459,7 @@ local string msgContactOff;
 	//if ((IsA('WeaponHideAGun') || GoverningSkill==class'DeusEx.SkillDemolition') && Pawn(Owner).IsA('ScriptedPawn'))
 	//   return;
 
-	if (AmmoType.AmmoAmount > 0) //GMDX: fix the finish anim->state idle anim
+	if (AmmoType.AmmoAmount > 0 && ReloadCount > 0 && !bDisposableWeapon) //GMDX: fix the finish anim->state idle anim //SARGE: Don't allow reloading weapons with a reload count of 0 or disposables
 	{
 		if (!IsInState('Reload'))
 		{
@@ -2610,12 +2623,10 @@ simulated function Tick(float deltaTime)
 		    standingTimer += deltaTime;
 		if (player.CombatDifficulty < 1.0)  //CyberP: easy difficulty gets aiming boost
 		    standingTimer += deltaTime*2;*/
-        /*if (player.PerkNamesArray[1]==1 && GoverningSkill==Class'DeusEx.SkillWeaponPistol') //RSD: Removed Focused: Pistols
-            mult += 0.25;                                                        //RSD: Now +25% bonus
-        else */if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkSteady').bPerkObtained == true && GoverningSkill==Class'DeusEx.SkillWeaponRifle')
-            mult += 0.25;                                                        //RSD: Now +25% bonus
-        /*else if (player.PerkNamesArray[3]==1 && GoverningSkill==Class'DeusEx.SkillWeaponHeavy') //RSD: Removed Focused: Heavy
-            mult += 0.25;*/                                                        //RSD: Now +25% bonus
+        
+		if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkSteady').bPerkObtained == true && GoverningSkill==Class'DeusEx.SkillWeaponRifle')
+            mult += player.PerkManager.GetPerkWithClass(class'DeusEx.PerkSteady').PerkValue;		//RSD: Now +25% bonus
+        
 		if (player.AddictionManager.addictions[0].drugTimer > 0)                                      //RSD: Cigarettes make you aim faster
 	        mult += 1.0;
         if (player.CombatDifficulty < 1.0)                                      //RSD: Properly doubling on easy now
@@ -2932,15 +2943,13 @@ local float shakeTime, shakeRoll, shakeVert;
 //
 simulated function SwapMuzzleFlashTexture()
 {
-	if (!bHasMuzzleFlash)
-	  return;
-//	if (FRand() < 0.5)
-//		MultiSkins[2] = Texture'FlatFXTex34';
-//	else
-//		MultiSkins[2] = Texture'FlatFXTex37';
+	if(!bHasMuzzleflash || bHasSilencer)
+		return;
+	
+    //Multiskins[MuzzleSlot] = GetMuzzleTex();
+    CurrentMuzzleFlash = GetMuzzleTex();
 
-//HDTP DDL: changing to add DaveW's nice new muzzleflashes
-	Multiskins[2] = GetMuzzleTex();
+    //DeusExPlayer(GetPlayerPawn()).clientMessage("Swapping Muzzle Tex into slot " $ MuzzleSlot);
 
 	MuzzleFlashLight();
 	SetTimer(0.1, False);
@@ -2952,26 +2961,26 @@ simulated function texture GetMuzzleTex()
 	local int i;
 	local texture tex;
 
-    if (iHDTPModelToggle == 0)                                                  //RSD: If using the vanilla model, use vanilla muzzle flash
+    if (!IsHDTP())                                                  //RSD: If using the vanilla model, use vanilla muzzle flash
     {
-    if (FRand() < 0.5)
-		tex = Texture'FlatFXTex34';
-	else
-		tex = Texture'FlatFXTex37';
+        if (FRand() < 0.5)
+            tex = Texture'FlatFXTex34';
+        else
+            tex = Texture'FlatFXTex37';
     }
-	if(bAutomatic)
+	else if(bAutomatic || bBigMuzzleFlash)
 	{
 		i = rand(8);
 		switch(i)
 		{
-			case 0: tex = texture'HDTPMuzzleflashlarge1'; break;
-			case 1: tex = texture'HDTPMuzzleflashlarge2'; break;
-			case 2: tex = texture'HDTPMuzzleflashlarge3'; break;
-			case 3: tex = texture'HDTPMuzzleflashlarge4'; break;
-			case 4: tex = texture'HDTPMuzzleflashlarge5'; break;
-			case 5: tex = texture'HDTPMuzzleflashlarge6'; break;
-			case 6: tex = texture'HDTPMuzzleflashlarge7'; break;
-			case 7: tex = texture'HDTPMuzzleflashlarge8'; break;
+			case 0: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashlarge1"); break;
+			case 1: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashlarge2"); break;
+			case 2: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashlarge3"); break;
+			case 3: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashlarge4"); break;
+			case 4: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashlarge5"); break;
+			case 5: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashlarge6"); break;
+			case 6: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashlarge7"); break;
+			case 7: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashlarge8"); break;
 		}
 	}
 	else
@@ -2979,20 +2988,43 @@ simulated function texture GetMuzzleTex()
 		i = rand(3);
 		switch(i)
 		{
-			case 0: tex = texture'HDTPMuzzleflashSmall1'; break;
-			case 1: tex = texture'HDTPMuzzleflashSmall2'; break;
-			case 2: tex = texture'HDTPMuzzleflashSmall3'; break;
+			case 0: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashSmall1"); break;
+			case 1: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashSmall2"); break;
+			case 2: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashSmall3"); break;
 		}
 	}
 
 	return tex;
 }
 
+//SARGE: Lets clean up some of this shit...
+//This one sets either "none" or "pinkmasktex" for a weapon part
+function ShowWeaponAddon(int slot, bool condition)
+{
+    if (!condition)
+        multiskins[slot] = texture'pinkmasktex';
+    else
+        multiskins[slot] = none;
+}
+function DisplayWeapon(bool overlay)
+{
+    local int i;
+    for (i = 0;i < 8;i++)
+    {
+        if (IsHDTP())
+            multiskins[i] = none;
+        else
+            multiskins[i] = default.multiskins[i];
+    }
+}
 
 simulated function EraseMuzzleFlashTexture()
 {
-	if(bHasMuzzleflash)   //things like the GEP and minicrossbow use ms2 as a weaponmod
-		MultiSkins[2] = None;
+	if(!bHasMuzzleflash || bHasSilencer)
+		return;
+		
+    CurrentMuzzleFlash = None;
+    MultiSkins[MuzzleSlot] = None;
 }
 
 simulated function Timer()
@@ -3038,42 +3070,51 @@ simulated function MuzzleFlashLight()
     smoke.ScaleGlow=0.400000;
     smoke.bRelinquished2=True;
     }*/
-    for(i=0;i<13;i++)
-    {
-    spoof = spawn(class'PlasmaParticleSpoof',,, offset, Pawn(Owner).ViewRotation);
-    if (spoof!=none)
-    {
-    spoof.DrawScale=0.006;
-    spoof.LifeSpan=0.2;
-    spoof.Texture=Texture'HDTPItems.Skins.HDTPMuzzleflashSmall2';
-    spoof.Velocity=360*vector(Rotation);//vect(0,0,0);
-    //spoof.Velocity.X = FRand() * 700;
-    //spoof.Velocity.Z = FRand() * 60;
+	if (IsHDTP())
+	{
+		for(i=0;i<13;i++)
+		{
+			spoof = spawn(class'PlasmaParticleSpoof',,, offset, Pawn(Owner).ViewRotation);
+			if (spoof!=none)
+			{
+				log("Spoofing");
+				spoof.DrawScale=0.006;
+				spoof.LifeSpan=0.2;
+				spoof.Texture= class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashSmall2");
+				spoof.Velocity=360*vector(Rotation);//vect(0,0,0);
+				//spoof.Velocity.X = FRand() * 700;
+				//spoof.Velocity.Z = FRand() * 60;
 
-		if (FRand() < 0.3)
-		{
-		spoof.Velocity.Z += FRand() * 80;
-		spoof.Velocity.X += FRand() * 65;
-		spoof.Velocity.Y += FRand() * 65;
+				if (FRand() < 0.3)
+				{
+				spoof.Velocity.Z += FRand() * 80;
+				spoof.Velocity.X += FRand() * 65;
+				spoof.Velocity.Y += FRand() * 65;
+				}
+				else if (FRand() < 0.6)
+				{
+				spoof.Velocity.Z -= FRand() * 20;
+				spoof.Velocity.X -= FRand() * 55;
+				spoof.Velocity.Y -= FRand() * 65;
+				}
+			}
 		}
-		else if (FRand() < 0.6)
-		{
-		spoof.Velocity.Z -= FRand() * 20;
-		spoof.Velocity.X -= FRand() * 55;
-		spoof.Velocity.Y -= FRand() * 65;
-		}
     }
-    }
-    }
+	}
 	}
 }
 
 function ServerHandleNotify( bool bInstantHit, class<projectile> ProjClass, float ProjSpeed, bool bWarn )
 {
+    local Projectile firedProjectile;
+
 	if (bInstantHit)
 		TraceFire(0.0);
 	else
-		ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+    {
+        firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+        OnProjectileFired(firedProjectile);
+    }
 }
 
 //
@@ -3083,6 +3124,7 @@ function ServerHandleNotify( bool bInstantHit, class<projectile> ProjClass, floa
 simulated function HandToHandAttack()
 {
 	local bool bOwnerIsPlayerPawn;
+    local Projectile firedProjectile;
 
 	if (bOwnerWillNotify)
 		return;
@@ -3104,7 +3146,10 @@ simulated function HandToHandAttack()
 	if (bInstantHit)
 		TraceFire(0.0);
 	else
-		ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+    {
+        firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+        OnProjectileFired(firedProjectile);
+    }
 
 	// if we are a thrown weapon and we run out of ammo, destroy the weapon
 	if ( bHandToHand && (ReloadCount > 0) && (SimAmmoAmount <= 0))
@@ -3125,6 +3170,7 @@ simulated function HandToHandAttack()
 simulated function OwnerHandToHandAttack()
 {
 	local bool bOwnerIsPlayerPawn;
+    local Projectile firedProjectile;
 
 	if (!bOwnerWillNotify)
 		return;
@@ -3146,7 +3192,10 @@ simulated function OwnerHandToHandAttack()
 	if (bInstantHit)
 		TraceFire(0.0);
 	else
-		ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+    {
+        firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+        OnProjectileFired(firedProjectile);
+    }
 }
 
 function ForceFire()
@@ -3201,6 +3250,12 @@ function ServerForceFire()
 	Fire(0);
 }
 
+//SARGE: Handle special cases after we fire a projectile
+function OnProjectileFired(Projectile firedProjectile)
+{
+    //do nothing
+}
+
 simulated function int PlaySimSound( Sound snd, ESoundSlot Slot, float Volume, float Radius )
 {
 	if ( Owner != None )
@@ -3225,6 +3280,7 @@ simulated function bool ClientFire( float value )
 {
 	local bool bWaitOnAnim;
 	local vector shake;
+    local Projectile firedProjectile;
 
 	// check for surrounding environment
 	if ((EnviroEffective == ENVEFF_Air) || (EnviroEffective == ENVEFF_Vacuum) || (EnviroEffective == ENVEFF_AirVacuum))
@@ -3315,7 +3371,8 @@ simulated function bool ClientFire( float value )
 					bFlameOn = True;
 					StartFlame();
 				}
-				ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+				firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+                OnProjectileFired(firedProjectile);
 			}
 		}
 		else
@@ -3361,6 +3418,13 @@ function Fire(float Value)
 	local float sndVolume, mod;
 	local bool bListenClient;
     local DeusExPlayer player;
+    local Projectile firedProjectile;
+
+    player = DeusExPlayer(Owner);
+
+    //Sarge: Restrict fire if drone is active or just exploded.
+    if (player != None && !player.bSpyDroneSet && (player.bSpyDroneActive || player.bDroneExploded))
+        return;
 
     if (Pawn(Owner).IsInState('Dying') || (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).bGEPprojectileInflight))
     {
@@ -3432,7 +3496,10 @@ function Fire(float Value)
 		GotoState('NormalFire');
 		bPointing=True;
 		if (IsA('WeaponHideAGun'))
-		   ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+        {
+            firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+            OnProjectileFired(firedProjectile);
+        }
 		if ( Owner.IsA('PlayerPawn') )
 			PlayerPawn(Owner).PlayFiring();
 		PlaySelectiveFiring();
@@ -3471,7 +3538,8 @@ function Fire(float Value)
 				TraceFire(currentAccuracy);
 			else
 			{
-				ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+				firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+                OnProjectileFired(firedProjectile);
 				//if (IsA('WeaponFlamethrower'))
                 //{
                 // if (ReloadCount != ClipCount)
@@ -3931,6 +3999,7 @@ function name GetWallMaterial(vector HitLocation, vector HitNormal)
 	local actor target;
 	local int texFlags;
 	local name texName, texGroup;
+    local Projectile firedProjectile;
 
 	StartTrace = HitLocation + HitNormal*16;		// make sure we start far enough out
 	EndTrace = HitLocation - HitNormal;
@@ -3944,6 +4013,7 @@ function name GetWallMaterial(vector HitLocation, vector HitNormal)
 
 simulated function SimGenerateBullet()
 {
+    local Projectile firedProjectile;
 	if ( Role < ROLE_Authority )
 	{
 		if ((ClipCount > 0) && (ReloadCount != 0))
@@ -3954,7 +4024,10 @@ simulated function SimGenerateBullet()
 			if ( bInstantHit )
 				TraceFire(currentAccuracy);
 			else
-				ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+            {
+				firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+                OnProjectileFired(firedProjectile);
+            }
 
 			SimClipCount--;
 
@@ -3989,13 +4062,17 @@ function ServerGenerateBullet()
 
 function GenerateBullet()
 {
+    local Projectile firedProjectile;
 
 	if (AmmoType.UseAmmo(1))
 	{
 		if ( bInstantHit )
 			TraceFire(currentAccuracy);
         else
-			ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+        {
+            firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+            OnProjectileFired(firedProjectile);
+        }
 
 		ClipCount--;
 		if (IsA('WeaponAssaultGun'))
@@ -4354,7 +4431,7 @@ simulated function Projectile ProjectileFire(class<projectile> ProjClass, float 
 
 	GetAxes(Pawn(owner).ViewRotation,X,Y,Z);
 	Start = ComputeProjectileStart(X, Y, Z);
-    if (IsA('WeaponFlamethrower') && Owner!=none && Owner.IsA('DeusExPlayer'))
+    if (IsA('WeaponFlamethrower') && Owner!=none && Owner.IsA('DeusExPlayer') && IsHDTP())
     {
     for(i=0;i<13;i++)
     {
@@ -4363,7 +4440,7 @@ simulated function Projectile ProjectileFire(class<projectile> ProjClass, float 
     {
     spoof.DrawScale=0.005;
     spoof.LifeSpan=0.225;
-    spoof.Texture=Texture'HDTPItems.Skins.HDTPMuzzleflashSmall2';
+    spoof.Texture= class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashSmall2");
     spoof.Velocity=320*vector(Rotation);//vect(0,0,0);
     //spoof.Velocity.X = FRand() * 700;
     //spoof.Velocity.Z = FRand() * 60;
@@ -4599,6 +4676,7 @@ simulated function TraceFire( float Accuracy )
     local tracer trcr;                                                          //RSD: Added
     local vector EndTraceCenter, moverStartTrace;                               //RSD: Added
     local float TempAcc;                                                        //RSD: Added
+    local Projectile firedProjectile;
 
 	// make noise if we are not silenced
 	if (!bHasSilencer && !bHandToHand)
@@ -4777,7 +4855,8 @@ simulated function TraceFire( float Accuracy )
 
 	if (AmmoName == Class'AmmoRubber')
 	{
-		ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+        firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
+        OnProjectileFired(firedProjectile);
 	}
 
     LaserYaw += (currentAccuracy*laserKick) * (Rand(4096) - 2048);              //RSD: Bump laser position when firing (75% of cone width)
@@ -4897,6 +4976,10 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
 				Other.TakeDamage(finalDamage, Pawn(Owner), HitLocation, 1000.0*X, damageType); //Replaced HitDamage * mult with finalDamage
 
 			SelectiveSpawnEffects( HitLocation, HitNormal, Other, finalDamage); //Replaced HitDamage * mult with finalDamage
+
+            //SARGE: Drain energy when hitting things
+            if (IsA('WeaponNanoSword') && WeaponNanoSword(self).chargeManager != None)
+                WeaponNanoSword(self).DrainPower();
 		}
 		else if ((Other != self) && (Other != Owner))
 		{
@@ -4928,6 +5011,10 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
                 	}
 				}
                 Other.TakeDamage(finalDamage, Pawn(Owner), HitLocation, 1000.0*X, damageType); //Replaced HitDamage * mult with finalDamage
+                
+                //SARGE: Drain energy when hitting things
+                if (IsA('WeaponNanoSword') && WeaponNanoSword(self).chargeManager != None)
+                    WeaponNanoSword(self).DrainPower();
 			}
 			if (bHandToHand)
 				SelectiveSpawnEffects( HitLocation, HitNormal, Other, finalDamage); //Replaced HitDamage * mult with finalDamage
@@ -5138,46 +5225,20 @@ function Finish()
 // UpdateInfo()
 // ----------------------------------------------------------------------
 
-simulated function bool UpdateInfo(Object winObject)
+//Do the Ammo Display in the Inventory Window
+function string DoAmmoInfoWindow(Pawn P, PersonaInventoryInfoWindow winInfo)
 {
-	local PersonaInventoryInfoWindow winInfo;
-	local string str;
-	local int i, dmg, numMods;
-	local float mod, stamDrain;
-	local bool bHasAmmo;
 	local bool bAmmoAvailable;
 	local class<DeusExAmmo> ammoClass;
-	local Pawn P;
 	local Ammo weaponAmmo;
 	local int  ammoAmount;
+	local bool bHasAmmo;
+	local string str;
+    local int i;
 	local float hh;
     local DeusExPlayer player;
     local string noiseLev, msgMultiplier;
     local float prec;                                                           //RSD: Floating point precision
-
-	P = Pawn(Owner);
-	if (P == None)
-		return False;
-
-	winInfo = PersonaInventoryInfoWindow(winObject);
-	if (winInfo == None)
-		return False;
-
-	winInfo.SetTitle(itemName);
-	if (bHandToHand && Owner.IsA('DeusExPlayer'))
-	{
-	   if (DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkInventive').bPerkObtained == true)
-	   {
-	      winInfo.AddSecondaryButton(self);
-	   }
-	   else if (GoverningSkill != class'DeusEx.SkillDemolition' && !IsA('WeaponCombatKnife') && !IsA('WeaponHideAGun') && !IsA('WeaponShuriken'))
-	   {                                                                        //RSD: Throwing Knives now require the perk, c'mon //RSD: Or nah
-	   }
-	   else
-	       winInfo.AddSecondaryButton(self);
-	}
-	winInfo.SetText(msgInfoWeaponStats);
-	winInfo.AddLine();
 
 	// Create the ammo buttons.  Start with the AmmoNames[] array,
 	// which is used for weapons that can use more than one
@@ -5241,6 +5302,15 @@ simulated function bool UpdateInfo(Object winObject)
 		}
 	}
 
+	// If this weapon has ammo info, display it here
+    /*
+	if (ammoClass != None)
+	{
+		winInfo.AddLine();
+		winInfo.AddAmmoDescription(ammoClass.Default.ItemName $ "|n" $ ammoClass.Default.description);
+	}
+    */
+
 	// Only draw another line if we actually displayed ammo.
 	if (bAmmoAvailable)
 		winInfo.AddLine();
@@ -5259,6 +5329,56 @@ simulated function bool UpdateInfo(Object winObject)
 			str = str $ "|n" $ AmmoNames[i].Default.ItemName;
     if (!bHandToHand || IsA('WeaponProd'))
 	winInfo.AddAmmoTypesItem(msgInfoAmmo, str);
+}
+
+//SARGE: TODO: Turn this horrible mess into generic functions that work with child classes
+simulated function bool UpdateInfo(Object winObject)
+{
+	local PersonaInventoryInfoWindow winInfo;
+	local string str;
+	local int dmg, numMods;
+	local float mod, stamDrain;
+	local Pawn P;
+	local float hh;
+    local DeusExPlayer player;
+    local string noiseLev, msgMultiplier;
+    local float prec;                                                           //RSD: Floating point precision
+
+	P = Pawn(Owner);
+	if (P == None)
+		return False;
+
+	winInfo = PersonaInventoryInfoWindow(winObject);
+	if (winInfo == None)
+		return False;
+    
+    //SARGE: Show modified weapons in title
+    if (bModified && DeusExPlayer(owner) != None && DeusExPlayer(owner).bBeltShowModified)
+        winInfo.SetTitle(itemName @ strModified);
+    else
+        winInfo.SetTitle(itemName);
+
+    //SARGE: Add Decline Button
+    if (P.IsA('DeusExPlayer') && !DeusExPlayer(P).DeclinedItemsManager.IsDeclined(class))
+		winInfo.AddDeclineButton(class);
+
+	if (bHandToHand && Owner.IsA('DeusExPlayer'))
+	{
+	   if (DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkInventive').bPerkObtained == true)
+	   {
+	      winInfo.AddSecondaryButton(self);
+	   }
+	   else if (GoverningSkill != class'DeusEx.SkillDemolition' && !IsA('WeaponCombatKnife') && !IsA('WeaponHideAGun') && !IsA('WeaponShuriken'))
+	   {                                                                        //RSD: Throwing Knives now require the perk, c'mon //RSD: Or nah
+	   }
+	   else
+	       winInfo.AddSecondaryButton(self);
+	}
+
+	winInfo.SetText(msgInfoWeaponStats);
+	winInfo.AddLine();
+
+    DoAmmoInfoWindow(P,winInfo);
 
 	// base damage
 	if (AreaOfEffect == AOE_Cone)
@@ -5676,7 +5796,11 @@ simulated function bool UpdateInfo(Object winObject)
     winInfo.AddInfoItem(msgSecondary, str);
 
 	// Governing Skill
-	winInfo.AddInfoItem(msgInfoSkill, GoverningSkill.default.SkillName);
+    //SARGE: Also Weapon requirement
+    if (minSkillRequirement > 0 && DeusExPlayer(Owner) != None && DeusExPlayer(Owner).bWeaponRequirementsMatter)
+        winInfo.AddInfoItem(msgInfoSkill, GoverningSkill.default.SkillName @ "(" $ msgRequires @  DeusExPlayer(Owner).SkillSystem.GetSkillFromClass(GoverningSkill).GetLevelString(minSkillRequirement) $ ")");
+    else
+        winInfo.AddInfoItem(msgInfoSkill, GoverningSkill.default.SkillName);
 
     if (bCanHaveModBaseAccuracy || bCanHaveModReloadCount || bCanHaveModAccurateRange || bCanHaveModReloadTime || bCanHaveModRecoilStrength || bCanHaveModShotTime || bCanHaveModDamage)
         {
@@ -5769,13 +5893,6 @@ simulated function bool UpdateInfo(Object winObject)
          }
 	winInfo.AddLine();
 	winInfo.SetText(Description);
-
-	// If this weapon has ammo info, display it here
-	if (ammoClass != None)
-	{
-		winInfo.AddLine();
-		winInfo.AddAmmoDescription(ammoClass.Default.ItemName $ "|n" $ ammoClass.Default.description);
-	}
 
 	return True;
 }
@@ -6034,19 +6151,48 @@ simulated function ClientReload()
 	GotoState('SimReload');
 }
 
-exec function UpdateHDTPsettings()                                              //RSD: New function to update weapon model meshes (specifics handled in each class)
+exec function UpdateHDTPsettings()
 {
-	if (bCarriedItem)
-	{
-		/*if (DeusExPlayer(Owner) != none && !DeusExPlayer(Owner).bBehindView)  //RSD: This code is logical, but it turns out the engine does some backend magic to use ThirdPersonMesh, all NPCs have mesh = PlayerViewMesh too
-			mesh = PlayerViewMesh;
-		else
-        	mesh = ThirdPersonMesh;*/
-        mesh = PlayerViewMesh;
- 	}
-	else
-    	mesh = PickupViewMesh;
-	CheckWeaponSkins();
+    local int slot;
+
+    //DeusExPlayer(GetPlayerPawn()).ClientMessage("UpdateHDTP Settings");
+
+    Skin = default.Skin;
+    Texture = default.Texture;
+
+    if (HDTPLargeIcon != "")
+        LargeIcon = class'HDTPLoader'.static.GetTexture2(HDTPLargeIcon,string(default.LargeIcon),IsHDTP());
+    if (HDTPIcon != "")
+        Icon = class'HDTPLoader'.static.GetTexture2(HDTPIcon,string(default.Icon),IsHDTP());
+    if (HDTPPlayerViewMesh != "")
+        PlayerViewMesh = class'HDTPLoader'.static.GetMesh2(HDTPPlayerViewMesh,string(default.PlayerViewMesh),IsHDTP());
+    if (HDTPPickupViewMesh != "")
+        PickupViewMesh = class'HDTPLoader'.static.GetMesh2(HDTPPickupViewMesh,string(default.PickupViewMesh),isHDTP());
+    if (HDTPThirdPersonMesh != "")
+        ThirdPersonMesh = class'HDTPLoader'.static.GetMesh2(HDTPThirdPersonMesh,string(default.ThirdPersonMesh),IsHDTP());
+    if (HDTPSkin != "")
+        Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),IsHDTP());
+    if (HDTPTexture != "")
+        Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),IsHDTP());
+
+    if (bCarriedItem)
+        Mesh = PlayerViewMesh;
+    else
+        Mesh = PickupViewMesh;
+    
+    for (slot = 0; slot < 8;slot++)
+    {
+        //if (slot != MuzzleSlot || !overlay)
+            if (IsHDTP())
+                multiskins[slot] = none;
+            else
+                multiskins[slot] = default.multiskins[slot];
+    }
+
+    SetWeaponHandTex();
+
+    CheckWeaponSkins();
+    DoWeaponOffset(DeusExPlayer(GetPlayerPawn()));
 }
 
 //
@@ -6343,7 +6489,7 @@ Begin:
 
 			Owner.PlaySound(CockingSound, SLOT_None,,, 1024);		// CockingSound is reloadbegin
 //HDTP pistol and rifle (sigh) //CyberP: updated.
-if ((DeusExPlayer(Owner) != None) && (IsA('WeaponRifle') || IsA('WeaponPistol')) && iHDTPModelToggle == 1) //RSD: Need this off for vanilla model, added iHDTPModelToggle
+if ((DeusExPlayer(Owner) != None) && (IsA('WeaponRifle') || IsA('WeaponPistol')) && IsHDTP()) //RSD: Need this off for vanilla model, added iHDTPModelToggle
 {
     PlayAnim('Reload',default.ReloadTime/ReloadTime);
     Sleep(ReloadTime);
@@ -6365,7 +6511,7 @@ else
                 while (ClipCount < ReloadCount && AmmoType.AmmoAmount > 0 && ClipCount < AmmoType.AmmoAmount)                //RSD: Reverted Assault shotty, added GEP
                 {
                     sleeptime = 0;
-                    if (IsA('WeaponAssaultShotgun') || (IsA('WeaponSawedOffShotgun') && iHDTPModelToggle != 2)) //RSD: use normal sound routine if not using Clyzm's shotty
+                    if (IsA('WeaponAssaultShotgun') || (IsA('WeaponSawedOffShotgun') && (iHDTPModelToggle != 2||!IsHDTP()))) //RSD: use normal sound routine if not using Clyzm's shotty
                         LoadShells();
                     //Sleep(GetReloadTime());
                     //SARGE: Changed to now check during reload, so it's more responsive
@@ -6978,6 +7124,7 @@ defaultproperties
      msgClip="Clip:"
      msgDama="Damage:"
      msgRate="Rate of Fire:"
+     msgRequires="Requires"
      negTime=0.765000
      attackSpeedMult=1.000000
      abridgedName="DEFAULT NAME - REPORT BUG"
@@ -6992,6 +7139,7 @@ defaultproperties
      bRotatingPickup=False
      PickupMessage="You found"
      ItemName="DEFAULT WEAPON NAME - REPORT THIS AS A BUG"
+     strModified="(Modified)"
      BobDamping=0.840000
      LandSound=Sound'DeusExSounds.Generic.DropSmallWeapon'
      bNoSmooth=False
@@ -6999,4 +7147,5 @@ defaultproperties
      bProjTarget=True
      Mass=10.000000
      Buoyancy=5.000000
+     muzzleSlot=2
 }

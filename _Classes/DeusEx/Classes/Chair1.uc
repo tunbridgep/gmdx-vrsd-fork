@@ -8,7 +8,8 @@ defaultproperties
      sitPoint(0)=(X=0.000000,Y=-6.000000,Z=-4.500000)
      HitPoints=50
      ItemName="Chair"
-     Mesh=LodMesh'HDTPDecos.HDTPchair1'
+     HDTPMesh="HDTPDecos.HDTPchair1"
+     Mesh=LodMesh'DeusExDeco.Chair1'
      CollisionRadius=23.000000
      CollisionHeight=33.169998
      Mass=40.000000

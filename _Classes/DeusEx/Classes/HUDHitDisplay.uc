@@ -96,6 +96,7 @@ event InitWindow()
 	
     winEnergy = CreateProgressBar(15, 20);
 	winBreath = CreateProgressBar(61, 20);
+
     UpdateBars();
 }
 
@@ -230,7 +231,12 @@ event DrawWindow(GC gc)
 	// Draw energy bar
 	gc.SetFont(Font'FontTiny');
 	gc.SetTextColorRGB(128,128,128);  //gc.SetTextColor(winEnergy.GetBarColor());
-	gc.DrawText(13, 74, 8, 8, EnergyText);
+
+    //SARGE: Draw the percentage
+    if (int(player.Energy) == int(player.GetMaxEnergy(true)) || !player.bShowEnergyBarPercentages)
+        gc.DrawText(13, 74, 8, 8, EnergyText);
+    else
+        gc.DrawText(13, 74, 8, 8, int(player.Energy));
 
 	// If we're underwater draw the breathometer
 	if ((bUnderwater && !Player.bStaminaSystem) || Player.bStaminaSystem || Player.bHardCoreMode)
@@ -253,7 +259,11 @@ event DrawWindow(GC gc)
 				colBar.r = 0;
 		}
 		gc.SetTextColor(col02);
-	    gc.DrawText(61, 74, 8, 8, O2Text);
+        //SARGE: Draw the percentage
+        if (int(breathPercent) > 99 || !player.bShowEnergyBarPercentages)
+            gc.DrawText(61, 74, 8, 8, O2Text);
+        else
+            gc.DrawText(61, 74, 8, 8, int(breathPercent));
 	}
 	if (Player.LightLevelDisplay > -1)
 	{
@@ -328,7 +338,7 @@ event Tick(float deltaSeconds)
         //if (!winBreath.IsVisible())
 		//		winBreath.Show();
 		// Calculate the energy bar percentage
-		energyPercent = 100.0 * (player.Energy / player.EnergyMax);
+		energyPercent = 100.0 * (player.Energy / player.GetMaxEnergy());
 		winEnergy.SetCurrentValue(energyPercent);
 
         breathPercent = 100.0 * player.swimTimer / player.swimDuration;

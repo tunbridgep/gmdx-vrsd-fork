@@ -33,7 +33,7 @@ defaultproperties
      largeIconHeight=46
      Description="A portable charging unit for the riot prod."
      beltDescription="CHARGER"
-     Skin=Texture'HDTPItems.Skins.HDTPAmmoProdTex1'
+     HDTPSkin="HDTPItems.Skins.HDTPAmmoProdTex1"
      Mesh=LodMesh'DeusExItems.AmmoProd'
      CollisionRadius=2.100000
      CollisionHeight=5.600000

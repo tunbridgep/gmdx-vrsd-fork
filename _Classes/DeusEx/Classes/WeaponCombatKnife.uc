@@ -18,81 +18,24 @@ simulated function PreBeginPlay()
 	}
 }
 
-simulated function renderoverlays(Canvas canvas)
+function DisplayWeapon(bool overlay)
 {
-	if (iHDTPModelToggle == 1)
-    {
-    multiskins[1] = Getweaponhandtex();
-    if (!bIsCloaked && !bIsRadar)
-       multiskins[2] = none;
-    }
-    else
-       multiskins[1]=GetWeaponHandTex();                                        //RSD: Fix vanilla hand tex
-
-	super.renderoverlays(canvas);
-
-	if (iHDTPModelToggle == 1)
-       multiskins[1] = none;
-	else
-       multiskins[1]=none;                                                      //RSD: Fix vanilla hand tex
+	super.DisplayWeapon(overlay);
+	if (overlay)
+		multiskins[1]=handsTex;                                        //RSD: Fix vanilla hand tex
 }
-
-exec function UpdateHDTPsettings()                                              //RSD: New function to update weapon model meshes (specifics handled in each class)
-{
-     //RSD: HDTP Toggle Routine
-     //if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).inHand == self)
-     //     DeusExPlayer(Owner).BroadcastMessage(iHDTPModelToggle);
-     if (iHDTPModelToggle == 1)
-     {
-          PlayerViewMesh=LodMesh'HDTPItems.HDTPCombatKnife';
-          PickupViewMesh=LodMesh'HDTPItems.hdtpcombatknifepickup';
-          ThirdPersonMesh=LodMesh'HDTPItems.hdtpcombatknife3rd';
-     }
-     else
-     {
-          PlayerViewMesh=LodMesh'DeusExItems.CombatKnife';
-          PickupViewMesh=LodMesh'DeusExItems.CombatKnifePickup';
-          ThirdPersonMesh=LodMesh'DeusExItems.CombatKnife3rd';
-     }
-     //RSD: HDTP Toggle End
-
-     Super.UpdateHDTPsettings();
-}
-
-/*Function CheckWeaponSkins()
-{
-}*/
-
-//using a mesh with the original hand textures now, since anims synch better and the hand is barely visible anyway
-/*function texture GetWeaponHandTex()
-{
-	local deusexplayer p;
-	local texture tex;
-
-	tex = texture'HDTPCharacters.Skins.HDTPJCHandsTex0';
-
-	p = deusexplayer(owner);
-	if(p != none)
-	{
-		switch(p.PlayerSkin)
-		{
-			//default, black, latino, ginger, albino, respectively
-			case 0: tex = texture'HDTPCharacters.Skins.HDTPJCHandsTex0'; break;
-			case 1: tex = texture'HDTPCharacters.Skins.HDTPJCHandsTex1'; break;
-			case 2: tex = texture'HDTPCharacters.Skins.HDTPJCHandsTex2'; break;
-			case 3: tex = texture'HDTPCharacters.Skins.HDTPJCHandsTex3'; break;
-			case 4: tex = texture'HDTPCharacters.Skins.HDTPJCHandsTex4'; break;
-		}
-	}
-
-	return tex;
-}*/
 
 defaultproperties
 {
      weaponOffsets=(X=1.000000,Y=-8.000000,Z=-17.000000)
      LowAmmoWaterMark=0
      GoverningSkill=Class'DeusEx.SkillWeaponLowTech'
+     PlayerViewMesh=LodMesh'DeusExItems.CombatKnife'
+     PickupViewMesh=LodMesh'DeusExItems.CombatKnifePickup'
+     ThirdPersonMesh=LodMesh'DeusExItems.CombatKnife3rd'
+     HDTPPlayerViewMesh="HDTPItems.HDTPCombatKnife"
+     HDTPPickupViewMesh="HDTPItems.HDTPCombatKnifePickup"
+     HDTPThirdPersonMesh="HDTPItems.HDTPCombatKnife3rd"
      NoiseLevel=0.050000
      EnemyEffective=ENMEFF_Organic
      Concealability=CONC_Visual
@@ -128,16 +71,13 @@ defaultproperties
      InventoryGroup=11
      ItemName="Combat Knife"
      PlayerViewOffset=(X=6.000000,Y=-8.000000,Z=-15.000000)
-     PlayerViewMesh=LodMesh'HDTPItems.HDTPCombatKnife'
-     PickupViewMesh=LodMesh'HDTPItems.hdtpcombatknifepickup'
-     ThirdPersonMesh=LodMesh'HDTPItems.hdtpcombatknife3rd'
      Icon=Texture'DeusExUI.Icons.BeltIconCombatKnife'
      largeIcon=Texture'DeusExUI.Icons.LargeIconCombatKnife'
      largeIconWidth=49
      largeIconHeight=45
      Description="An ultra-high carbon stainless steel knife."
      beltDescription="KNIFE"
-     Mesh=LodMesh'HDTPItems.hdtpcombatknifepickup'
+     Mesh=LodMesh'DeusExItems.CombatKnifePickup'
      SoundPitch=96
      CollisionRadius=12.650000
      CollisionHeight=0.800000

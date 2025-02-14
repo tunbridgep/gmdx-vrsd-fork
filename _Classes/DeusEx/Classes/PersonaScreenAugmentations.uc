@@ -76,6 +76,19 @@ var Localized string overviewLabel;
 var Localized string activeLabel;
 var Localized string passiveLabel;
 var Localized string automaticLabel;
+var Localized string toggleLabel;
+
+var Localized string BarString;
+var Localized string BarStringRes;
+
+//SARGE: UnrealScript sucks and doesn't let us access enums from other classes
+enum EAugmentationType
+{
+    Aug_Passive,
+    Aug_Active,
+    Aug_Automatic,
+    Aug_Toggle
+};
 
 //LDDP, 10/28/21: Store this assessment for later.
 var bool bFemale;
@@ -225,7 +238,8 @@ function CreateOverlaysWindow()
 
 function CreateInfoWindow()
 {
-local int timeRem;
+	local int timeRem;
+	local float maxEnergy, actualMaxEnergy;
 
 	winInfo = PersonaInfoWindow(winClient.NewChild(Class'PersonaInfoWindow'));
 	winInfo.SetPos(348, 14);
@@ -243,16 +257,22 @@ local int timeRem;
     winInfo.SetText(" " $ overviewLabel);
     winInfo.AddLine();
 	winInfo.SetText(" " $ AugsString $ string(GetAugCount()));
-	winInfo.SetText(" " $ activeLabel @ GetActiveType());
-	winInfo.SetText(" " $ passiveLabel @ GetPassiveType());
-	winInfo.SetText(" " $ automaticLabel @ GetAutomaticType());
+	winInfo.SetText(" " $ activeLabel @ GetAugsByType(Aug_Active));
+	winInfo.SetText(" " $ passiveLabel @ GetAugsByType(Aug_Passive));
+	winInfo.SetText(" " $ automaticLabel @ GetAugsByType(Aug_Automatic));
+	winInfo.SetText(" " $ toggleLabel @ GetAugsByType(Aug_Toggle));
 	//winInfo.bStylization2 = False;
     //winInfo.bStylization3 = True;
     winInfo.AddLine();
     winInfo.SetText(" " $ circuitLabel);
     winInfo.AddLine();
     //winInfo.SetText("          " $ "Circuit Activity");
-	winInfo.SetText(" " $ BioString $ int(player.Energy) $ "/" $ int(player.EnergyMax) $ CR());
+	maxEnergy = player.GetMaxEnergy();
+	actualMaxEnergy = player.GetMaxEnergy(true);
+	if (maxEnergy != actualMaxEnergy)
+		winInfo.SetText(" " $ BioString $ int(player.Energy) $ "/" $ int(maxEnergy) $ "(" $ int(actualMaxEnergy - maxEnergy) $ " Reserved )" $ CR());
+	else
+		winInfo.SetText(" " $ BioString $ int(player.Energy) $ "/" $ int(maxEnergy) $ CR());
 	timeRem = player.AugmentationSystem.CalcEnergyUse(0.06*1000);
     winInfo.AppendText(Sprintf(curBioString, timeRem));
     if (timeRem != 0 && player.Energy != 0)
@@ -301,15 +321,16 @@ local int timeRem;
     winInfo.SetText(" " $ overviewLabel);
     winInfo.AddLine();
 	winInfo.SetText(" " $ AugsString $ string(GetAugCount()));
-	winInfo.SetText(" " $ activeLabel @ GetActiveType());
-	winInfo.SetText(" " $ passiveLabel @ GetPassiveType());
-	winInfo.SetText(" " $ automaticLabel @ GetAutomaticType());
+	winInfo.SetText(" " $ activeLabel @ GetAugsByType(Aug_Active));
+	winInfo.SetText(" " $ passiveLabel @ GetAugsByType(Aug_Passive));
+	winInfo.SetText(" " $ automaticLabel @ GetAugsByType(Aug_Automatic));
+	winInfo.SetText(" " $ toggleLabel @ GetAugsByType(Aug_Toggle));
 	//winInfo.bStylization2 = False;
     //winInfo.bStylization3 = True;
     winInfo.AddLine();
     winInfo.SetText(" " $ circuitLabel);
     winInfo.AddLine();
-	winInfo.SetText(" " $ BioString $ int(player.Energy) $ "/" $ int(player.EnergyMax) $ CR());
+	winInfo.SetText(" " $ BioString $ int(player.Energy) $ "/" $ int(player.GetMaxEnergy()) $ CR());
 	timeRem = player.AugmentationSystem.CalcEnergyUse(0.06*1000);
     winInfo.AppendText(Sprintf(curBioString, timeRem));
     if (timeRem != 0 && player.Energy != 0)
@@ -373,9 +394,9 @@ local int timeRem;
   //CyberP: reset the damn icons
   if (selectedAug != None)
   {
-     if (selectedAug.bAlwaysActive == False)
+     if (selectedAug.CanBeActivated())
         if (PersonaAugmentationItemButton(selectedAugButton) != None)
-           PersonaAugmentationItemButton(selectedAugButton).SetActive(selectedAug.IsActive());
+           PersonaAugmentationItemButton(selectedAugButton).SetActive(selectedAug);
   }
   if (player.Energy == 0 && !bAllIconsReset)
   {
@@ -402,7 +423,7 @@ function int GetAugCount()
 	return augCount;
 }
 
-function int GetActiveType()
+function int GetAugsByType(EAugmentationType augType)
 {
 	local Augmentation anAug;
 	local int augCount;
@@ -410,46 +431,9 @@ function int GetActiveType()
 	anAug = player.AugmentationSystem.FirstAug;
 	while(anAug != None)
 	{
-		if (anAug.AugmentationName != ""  && anAug.bAlwaysActive == False  && anAug.bHasIt)
+		if (anAug.AugmentationName != ""  && anAug.AugmentationType == augType && anAug.bHasIt)
 		{
-		    if (!anAug.IsA('AugHeartLung') && !anAug.IsA('AugPower'))
-			   augCount++;
-		}
-
-		anAug = anAug.next;
-	}
-	return augCount;
-}
-
-function int GetPassiveType()
-{
-	local Augmentation anAug;
-	local int augCount;
-
-	anAug = player.AugmentationSystem.FirstAug;
-	while(anAug != None)
-	{
-		if (( anAug.AugmentationName != "" ) && ( anAug.bAlwaysActive) && anAug.bHasIt)
-		{
-			augCount++;
-		}
-
-		anAug = anAug.next;
-	}
-	return augCount;
-}
-
-function int GetAutomaticType()
-{
-	local Augmentation anAug;
-	local int augCount;
-
-	anAug = player.AugmentationSystem.FirstAug;
-	while(anAug != None)
-	{
-		if (anAug.IsA('AugMuscle') && anAug.bHasIt) //Sarge: Changed this to fix wrong count in Aug screen
-		{
-			augCount++;
+            augCount++;
 		}
 
 		anAug = anAug.next;
@@ -467,8 +451,7 @@ function RefreshAugmentationButtons()
 	{
 		if (( anAug.AugmentationName != "" ) && ( anAug.bHasIt ))
 		{
-			augItems[augCount].SetActive(anAug.IsActive());
-            augItems[augCount].SetAlwaysActive(anAug.IsAlwaysActive());
+			augItems[augCount].SetActive(anAug);
 			augCount++;
 		}
 
@@ -623,13 +606,24 @@ function CreateBioCellBar()
 
 function UpdateBioEnergyBar()
 {
-	local float energyPercent;
+	local float energyPercent, maxEnergy, actualMaxEnergy;
+    local string text;
 
-	energyPercent = 100.0 * (player.Energy / player.EnergyMax);
+	energyPercent = 100.0 * (player.Energy / player.GetMaxEnergy());
+	
+    maxEnergy = player.GetMaxEnergy();
+	actualMaxEnergy = player.GetMaxEnergy(true);
+	
+    if (maxEnergy != actualMaxEnergy)
+        text = Sprintf(BarStringRes,int(player.Energy),int(player.GetMaxEnergy()),int(energyPercent),int(player.AugmentationSystem.CalcEnergyReserve()));
+    else
+        //text = Sprintf(BarString,int(player.Energy),int(player.GetMaxEnergy()),int(energyPercent));
+        text = Sprintf(BarString,int(energyPercent));
+
     if (winBioEnergy != None)
     {
-	winBioEnergy.SetCurrentValue(energyPercent);
-	winBioEnergyText.SetText(String(Int(energyPercent)) $ "%");
+        winBioEnergy.SetCurrentValue(energyPercent);
+        winBioEnergyText.SetText(text);
 	}
 }
 
@@ -699,8 +693,7 @@ function RefreshWindow(float DeltaTime)
     if (selectedAugButton != None)
     {
         PersonaAugmentationItemButton(selectedAugButton).SetLevel(selectedAug.GetCurrentLevel());
-        PersonaAugmentationItemButton(selectedAugButton).SetActive(selectedAug.IsActive());
-        PersonaAugmentationItemButton(selectedAugButton).SetAlwaysActive(selectedAug.IsAlwaysActive());
+        PersonaAugmentationItemButton(selectedAugButton).SetActive(selectedAug);
     }
 
 
@@ -824,8 +817,7 @@ function CreateAugmentationButtons()
 			// If the augmentation is active, make sure the button draws it
 			// appropriately
 
-			augItems[augCount].SetActive(anAug.IsActive());
-            augItems[augCount].SetAlwaysActive(anAug.IsAlwaysActive());
+			augItems[augCount].SetActive(anAug);
 			augCount++;
 		}
 
@@ -847,12 +839,12 @@ function PersonaAugmentationItemButton CreateAugButton(Augmentation anAug, int a
 	newButton.SetIcon(anAug.icon);
 
 	// set the hotkey number
-	if (!anAug.bAlwaysActive)
+	if (anAug.CanBeActivated())
+    {
 		newButton.SetHotkeyNumber(anAug.GetHotKey());
+	    newButton.SetActive(anAug);
+    }
 
-	// If the augmentation is currently active, notify the button
-	if (!anAug.bAlwaysActive)
-	   newButton.SetActive(anAug.IsActive());
 	newButton.SetLevel(anAug.GetCurrentLevel());
 
 	return newButton;
@@ -1057,14 +1049,16 @@ event bool MouseButtonPressed(float pointX, float pointY, EInputKey button,
        ActivateAugmentation();
        bResult = True;
     }
-    else if (button == IK_MiddleMouse && SelectedAug != None && !SelectedAug.bAlwaysActive)
+    //SARGE: Allow adding to wheel, or removing from wheel, using MMB.
+    else if (button == IK_MiddleMouse && SelectedAug != None && SelectedAug.CanBeActivated())
     {
+        //TODO: Localization. Also do a strict "menu log" rather than a standard client message
         //Add to Wheel
         SelectedAug.bAddedToWheel = !SelectedAug.bAddedToWheel;
         if (SelectedAug.bAddedToWheel)
-            player.ClientMessage(SelectedAug.AugmentationName $ " added to Augmentation Wheel");
+            player.ClientMessage(SelectedAug.GetName() $ " added to Augmentation Wheel");
         else
-            player.ClientMessage(SelectedAug.AugmentationName $ " removed from Augmentation Wheel");
+            player.ClientMessage(SelectedAug.GetName() $ " removed from Augmentation Wheel");
         bResult = True;
         player.AugmentationSystem.RefreshAugDisplay();
     }
@@ -1153,10 +1147,6 @@ function UpgradeAugmentation()
         if (selectedAug.IsA('AugAqualung') || selectedAug.IsA('AugEnviro'))
         {
             player.bBoosterUpgrade = True;
-            if (selectedAug.IsA('AugAqualung'))
-                AugAqualung(selectedAug).AugmentationName = AugAqualung(selectedAug).AugmentationName2;
-            else if (selectedAug.IsA('AugEnviro'))
-                AugEnviro(selectedAug).AugmentationName = AugEnviro(selectedAug).AugmentationName2;
         }
         else
             selectedAug.IncLevel();
@@ -1205,17 +1195,13 @@ function ActivateAugmentation()
 	if (selectedAug == None)
 		return;
 
-	if (selectedAug.IsActive())
-		selectedAug.Deactivate();
-	else
-		selectedAug.Activate();
+    player.AugmentationSystem.ActivateAug(selectedAug,!selectedAug.bIsActive);
 
 	// If the augmentation activated or deactivated, set the
 	// button appropriately.
 	if (selectedAugButton != None)
 	{
-		PersonaAugmentationItemButton(selectedAugButton).SetActive(selectedAug.IsActive());
-		PersonaAugmentationItemButton(selectedAugButton).SetAlwaysActive(selectedAug.IsAlwaysActive());
+		PersonaAugmentationItemButton(selectedAugButton).SetActive(selectedAug);
     }
 	selectedAug.UpdateInfo(winInfo);
 
@@ -1278,7 +1264,7 @@ function EnableButtons()
 	// 2.  The player's energy is above 0
 	// 3.  This augmentation isn't "AlwaysActive"
 
-	btnActivate.EnableWindow((selectedAug != None) && (player.Energy > 0) && (!selectedAug.IsAlwaysActive()));
+	btnActivate.EnableWindow((selectedAug != None) && (player.Energy > 0) && (selectedAug.CanBeActivated()));
     btnDeactivateAll.EnableWindow(player.AugmentationSystem.CalcEnergyUse(0.06) > 0);
 	if ( selectedAug != None )
 	{
@@ -1294,7 +1280,7 @@ function EnableButtons()
 	// BioElectricEnergy < 100%
 
 	btnUseCell.EnableWindow(
-		(player.Energy < player.EnergyMax) &&
+		(player.Energy < player.GetMaxEnergy()) &&
 		(player.FindInventoryType(Class'BioelectricCell') != None));
 }
 
@@ -1345,6 +1331,9 @@ defaultproperties
      activeLabel="Active:"
      passiveLabel="Passive:"
      automaticLabel="Automatic:"
+     toggleLabel="Toggle:"
+     BarString="%d%%"
+     BarStringRes="%d/%d (%d%%) - %d Reserved"
      clientBorderOffsetY=32
      ClientWidth=596
      ClientHeight=427

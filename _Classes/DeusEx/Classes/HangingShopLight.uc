@@ -10,7 +10,8 @@ defaultproperties
      FragType=Class'DeusEx.GlassFragment'
      bHighlight=True
      ItemName="Fluorescent Light"
-     Mesh=LodMesh'HDTPDecos.HDTPHangingShoplight'
+     HDTPMesh="HDTPDecos.HDTPHangingShoplight"
+     Mesh=LodMesh'DeusExDeco.HangingShopLight'
      PrePivot=(Z=39.450001)
      CollisionRadius=42.500000
      CollisionHeight=39.450001

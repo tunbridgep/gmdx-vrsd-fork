@@ -3,6 +3,21 @@
 //=============================================================================
 class BallisticArmor extends ChargedPickup;
 
+var localized string ItemProtect;
+
+function string GetDescription2(DeusExPlayer player)
+{
+    local string str;
+
+    //Add Defense
+    //TODO: Calculate this properly
+    str = AddLine(str,ItemProtect);
+    
+    str = AddLine(str, super.GetDescription2(player));
+
+    return str;
+}
+
 //
 // Reduces ballistic damage
 //
@@ -10,6 +25,8 @@ class BallisticArmor extends ChargedPickup;
 
 defaultproperties
 {
+     ItemProtect="Ballistic Protection: 35%"
+     ChargeRemainingLabel="Durability: %d%%"
      ActivateSound=Sound'RSDCrap.Pickup.BallisticVestEquip'
      DeactivateSound=Sound'RSDCrap.Pickup.BallisticVestUnequip'
      skillNeeded=Class'DeusEx.SkillEnviro'

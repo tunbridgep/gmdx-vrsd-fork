@@ -4,6 +4,8 @@
 class ElectronicDevices extends DeusExDecoration
 	abstract;
 
+var(GMDX) bool codeExcepted;                            //SARGE: If set, this device is completely excepted from No Keypad Cheese checks
+
 // ----------------------------------------------------------------------
 // No Keypad Cheese
 // ----------------------------------------------------------------------
@@ -11,7 +13,7 @@ class ElectronicDevices extends DeusExDecoration
 //Allows us to determine if a code should be considered discovered
 function bool IsDiscovered(DeusExPlayer player, string code)
 {
-    return !player.bNoKeypadCheese || player.GetCodeNote(code) || player.GetExceptedCode(code);
+    return codeExcepted || !player.bNoKeypadCheese || player.GetCodeNote(code) || player.GetExceptedCode(code);
 }
 
 defaultproperties

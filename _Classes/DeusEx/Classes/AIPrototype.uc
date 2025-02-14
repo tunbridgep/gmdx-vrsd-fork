@@ -9,7 +9,8 @@ defaultproperties
      ItemName="AI Prototype"
      bPushable=False
      BaseEyeHeight=50.000000
-     Mesh=LodMesh'HDTPDecos.HDTPAIPrototype'
+     Mesh=LodMesh'DeusExDeco.AIPrototype'
+     HDTPMesh="HDTPDecos.HDTPAIPrototype"
      CollisionRadius=27.280001
      CollisionHeight=21.139999
      Mass=100.000000

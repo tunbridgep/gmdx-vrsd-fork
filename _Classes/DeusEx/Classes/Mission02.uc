@@ -13,6 +13,9 @@ function FirstFrame()
 {
 	local ScriptedPawn pawn;
     local Light L;
+    local Keypad K;
+    local ComputerSecurity SC;
+    local string newPasscode;
 
 	Super.FirstFrame();
 
@@ -101,6 +104,29 @@ function FirstFrame()
 	}
 	else if (localURL == "02_NYC_UNDERGROUND") //Totalitarian: change troop barks if confix is detected
 	{
+        //Randomise the 2167 code
+        if (Player.bNoKeypadCheese)
+        {
+            newPasscode = string(Rand(8999) + 1000);
+            player.ClientMessage("New code is " $ newPasscode);
+            foreach AllActors(class'Keypad', K)
+            {
+                if (K.validCode == "2167")
+                {
+                    K.validCode = newPasscode;
+                    K.codeExcepted = true;
+                }
+            }
+
+            //Update security computer to also contain the right code
+            foreach AllActors(class'ComputerSecurity', SC)
+            {
+                if (SC.specialOptions[1].TriggerText ~= "This Week's Code: 2167")
+                    SC.specialOptions[1].TriggerText = "This week's code: " $ newPasscode;
+            }
+                        
+        }
+
 	     if (flags.GetBool('Enhancement_Detected'))
 	     {
             foreach AllActors(class'ScriptedPawn', pawn)
@@ -122,31 +148,9 @@ function FirstFrame()
         {
             ForEach AllActors(class'Light', L)
             {
-                //Remove some of the more egregious ones
-                if (L.Name == 'Light44' || L.Name == 'Light45'  )
-                {
-                    L.LightPeriod = 0;
-                    L.LightType = LT_Steady;
-                    //L.Destroy();
-                }
-                else if (L.Name == 'Light42')
-                {
-                    L.LightPeriod = 155;
-                    L.LightType = LT_Strobe;
-                }
-
-                //L.Destroy();
-
-
-                /*
-                if (L.LightType == LT_Flicker)
-                {
-                    clientMessage("Changing Light Period on " $ L.name $ " from " $ L.LightPeriod $ " to 0");
-                    L.LightPeriod = 100;
-                    //L.LightPeriod = Max(L.LightPeriod,255);
-                    L.LightType = LT_Blink;
-                }
-                */
+                DoLightingAccessibility(L, 'Light44');
+                DoLightingAccessibility(L, 'Light45');
+                DoLightingAccessibility(L, 'Light42', true);
             }
         }
     }

@@ -19,6 +19,7 @@ var Int  safeInvX;                                                              
 var Int  safeInvY;                                                              //RSD: inventory Y slots to reset to if we cancel
 var Int  safeIconWidth;                                                         //RSD: inventory icon width to reset to if we cancel
 var Int  safeIconHeight;                                                        //RSD: inventory icon height to reset to if we cancel
+var bool safeRotation;
 
 var PersonaScreenInventory winInv;		// Pointer back to the window
 
@@ -106,6 +107,19 @@ event DrawWindow(GC gc)
 			gc.GetTextExtent(0, strWidth, strHeight, anItem.beltPos);
 			gc.DrawText(width - strWidth - 3, 3, strWidth, strHeight, anItem.beltPos);
 		}
+		
+        // SARGE: If it's a weapon, and it's modified
+		// draw a small plus in the
+		// upper-left corner designating it's modification status
+        // TODO: Add a proper icon, rather than a plus
+    	if ( anItem.isA('DeusExWeapon') && DeusExWeapon(anItem).bModified && player.bBeltShowModified )
+		{
+			gc.SetFont(Font'FontMenuSmall_DS');
+			gc.SetAlignments(HALIGN_Left, VALIGN_Center);
+			gc.SetTextColor(colHeaderText);
+			gc.GetTextExtent(0, strWidth, strHeight, "+");
+			gc.DrawText(3, 3, strWidth, strHeight, "+");
+		}
 
 		// If this is an ammo or a LAM (or other thrown projectile),
 		// display the number of rounds remaining
@@ -117,6 +131,10 @@ event DrawWindow(GC gc)
 		{
 			weapon = DeusExWeapon(anItem);
 			str = "";
+
+			//SARGE: Add charge for NanoSword
+            if (anItem.isA('WeaponNanoSword') && WeaponNanoSword(anItem).chargeManager != None && WeaponNanoSword(anItem).chargeManager.GetCurrentCharge() > 0)
+                str2 = Sprintf("%d%%", WeaponNanoSword(anItem).chargeManager.GetCurrentCharge());
 
 			if ((weapon != None) && weapon.bHandToHand && (weapon.AmmoType != None) && (weapon.AmmoName != class'AmmoNone'))
 			{
@@ -484,13 +502,14 @@ function bool RotateButton()                                                    
         inv.invSlotsYtravel = invX;
         inv.invSlotsX = invY;
 		inv.invSlotsY = invX;
+        inv.bRotated = !inv.bRotated;
 		if (inv.largeIcon != none)
 		{
 			invWidth = inv.largeIconWidth;
 			invHeight = inv.largeIconHeight;
             inv.largeIconWidth = invHeight;
 			inv.largeIconHeight = invWidth;
-			if (inv.largeIconRot != none && inv.largeIconWidth != inv.default.largeIconWidth)
+			if (inv.largeIconRot != none && inv.bRotated)
 				SetIcon(inv.largeIconRot);
 			else
 				SetIcon(inv.largeIcon);
@@ -506,14 +525,18 @@ function bool RotateButton()                                                    
 
 function setSafeRotation()                                                      //RSD: When we start dragging, save the original orientation in case we cancel
 {
-    local Inventory inv;
+    local DeusExWeapon inv;
 
-    inv = Inventory(self.GetClientObject());
+    inv = DeusExWeapon(self.GetClientObject());
 
-    safeInvX = inv.invSlotsX;
-    safeInvY = inv.invSlotsY;
-    safeIconWidth = inv.largeIconWidth;
-    safeIconHeight = inv.largeIconHeight;
+    if (inv != None)
+    {
+        safeInvX = inv.invSlotsX;
+        safeInvY = inv.invSlotsY;
+        safeIconWidth = inv.largeIconWidth;
+        safeIconHeight = inv.largeIconHeight;
+        safeRotation = inv.bRotated;
+    }
 }
 
 function ResetRotation(/*float newX, float newY*/)                              //RSD: If we need to go back to our original orientation
@@ -541,7 +564,8 @@ function ResetRotation(/*float newX, float newY*/)                              
 		inv.invSlotsY = safeInvY;
 		inv.largeIconWidth = safeIconWidth;
 		inv.largeIconHeight = safeIconHeight;
-		if (inv.largeIconRot != none && inv.largeIconWidth != inv.default.largeIconWidth)
+		inv.bRotated = saferotation;
+		if (inv.largeIconRot != none && inv.bRotated)
 			SetIcon(inv.largeIconRot);
 		else
 			SetIcon(inv.largeIcon);

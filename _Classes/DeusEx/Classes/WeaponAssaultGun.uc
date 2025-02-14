@@ -3,11 +3,10 @@
 //=============================================================================
 class WeaponAssaultGun extends DeusExWeapon;
 
-#exec OBJ LOAD FILE=HDTPeditsRSD                                                //RSD: reimported vanilla/HDTP model
+#exec OBJ LOAD FILE=RSDCrap                                                //RSD: reimported vanilla/HDTP model
 
 var float	mpRecoilStrength;
 var int muznum; //loop through muzzleflashes
-var texture muztex; //sigh
 
 var vector axesX;//fucking weapon rotation fix
 var vector axesY;
@@ -20,6 +19,81 @@ var bool bGEPout;
 var vector MountedViewOffset;
 var float scopeTime;
 var int lerpClamp;
+
+simulated function DrawScopeAnimation()
+{
+    local rotator rfs;
+	local vector dx;
+	local vector dy;
+	local vector dz;
+	local vector unX,unY,unZ;
+
+    if(!bGEPout)
+	{
+		if (GEPinout<1) GEPinout=Fmin(1.0,GEPinout+0.04);
+	} else
+		if (GEPinout<1) GEPinout=Fmax(0,GEPinout-0.04);//do Fmax(0,n) @ >0<=1
+
+	rfs.Yaw=6912*Fmin(1.0,GEPinout);
+	rfs.Pitch=2912*sin(Fmin(1.0,GEPinout)*Pi);
+	GetAxes(rfs,axesX,axesY,axesZ);
+    
+    player = DeusExPlayer(Owner);
+
+	dx=axesX>>player.ViewRotation;
+	dy=axesY>>player.ViewRotation;
+	dz=axesZ>>player.ViewRotation;
+	rfs=OrthoRotation(dx,dy,dz);
+	SetRotation(rfs);
+
+	PlayerViewOffset=Default.PlayerViewOffset*100;//meh
+	SetHand(player.Handedness); //meh meh
+
+    if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkMarksman').bPerkObtained == true)                                          //RSD: Was PerkNamesArray[12], now PerkNamesArray[23] (merged Advanced with Master Rifles perk)
+    {
+        PlayerViewOffset.X=Smerp(sin(FMin(1.0,GEPinout*1.5)*0.5*Pi),PlayerViewOffset.X,MountedViewOffset.X*100);
+        PlayerViewOffset.Y=Smerp(1.0-cos(FMin(1.0,GEPinout*1.5)*0.5*Pi),PlayerViewOffset.Y,MountedViewOffset.Y*100);
+        PlayerViewOffset.Z=Lerp(sin(FMin(1.0,GEPinout)*0.2*Pi),PlayerViewOffset.Z,cos(FMin(1.0,GEPinout)*2*Pi)*MountedViewOffset.Z*100);
+	}
+	else
+	{
+        PlayerViewOffset.X=Smerp(sin(FMin(1.0,GEPinout)*0.5*Pi),PlayerViewOffset.X,MountedViewOffset.X*100);
+        PlayerViewOffset.Y=Smerp(1.0-cos(FMin(1.0,GEPinout)*0.5*Pi),PlayerViewOffset.Y,MountedViewOffset.Y*100);
+        PlayerViewOffset.Z=Lerp(sin(FMin(1.0,GEPinout)*0.05*Pi),PlayerViewOffset.Z,cos(FMin(1.0,GEPinout)*2*Pi)*MountedViewOffset.Z*100);
+	}
+
+	SetLocation(player.Location+ CalcDrawOffset());
+	scopeTime+=1;
+
+
+    if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkMarksman').bPerkObtained == true)                                          //RSD: Was PerkNamesArray[12], now PerkNamesArray[23] (merged Advanced with Master Rifles perk)
+    {
+        if (scopeTime>=17)
+        {
+            activateAn = False;
+            scopeTime = 0;
+            ScopeToggle();
+            GEPinout = 0;
+            axesX = vect(0,0,0);
+            axesY = vect(0,0,0);
+            axesZ = vect(0,0,0);
+            PlayerViewOffset=Default.PlayerViewOffset*100;
+            SetHand(player.Handedness);
+        }
+    }
+    else if (scopeTime>=25)
+    {
+        activateAn = False;
+        scopeTime = 0;
+        ScopeToggle();
+        GEPinout = 0;
+        axesX = vect(0,0,0);
+        axesY = vect(0,0,0);
+        axesZ = vect(0,0,0);
+        PlayerViewOffset=Default.PlayerViewOffset*100;
+        SetHand(player.Handedness);
+    }
+}
 
 simulated function PreBeginPlay()
 {
@@ -42,314 +116,42 @@ simulated function PreBeginPlay()
 	    bHasSilencer = True;
 }
 
-/*simulated function ScopeToggle()
+function DisplayWeapon(bool overlay)
 {
-	if (bHasScope)
-	{
-	ScopeFOV=40;
-	super.ScopeToggle();
-	}
-	else if (ScopeFOV==41)
-	{
-    ScopeFOV=40;
-    }
-    else
+    super.DisplayWeapon(overlay);
+    //SARGE: We have to do this here for some reason,
+    //or the model is invisible.
+    PlayerViewMesh = class'HDTPLoader'.static.GetMesh2("RSDCrap.HDTPAssaultGunRSD","RSDCrap.AssaultGunRSD",IsHDTP());
+
+    if (IsHDTP())                                                  //RSD: Need this off for vanilla model
     {
-    ScopeFOV=41;
-    }
-}*/
-
-simulated function renderoverlays(Canvas canvas)
-{
-    local rotator rfs;
-	local vector dx;
-	local vector dy;
-	local vector dz;
-	local vector		DrawOffset, WeaponBob;
-	local vector unX,unY,unZ;
-
-	/*if(bHasScope)
-		multiskins[3] = none;
-	else
-		multiskins[3] = texture'pinkmasktex';
-	if(bHasSilencer)
-		multiskins[4] = none;
-	else
-		multiskins[4] = texture'pinkmasktex';
-	if(bHasLaser)
-		multiskins[1] = none;
-	else
-		multiskins[1] = texture'pinkmasktex'; */
-	if (iHDTPModelToggle == 1)                                                  //RSD: Need this off for vanilla model
-    {
-	if(bLasing)
-		multiskins[5] = none;
-	else
-		multiskins[5] = texture'pinkmasktex';
-
-    if(bHasScope)
-	{
-		if (!bIsCloaked && !bIsRadar)                                           //RSD: Overhauled cloak/radar routines
-		    multiskins[3] = none;
-		else
+        if (overlay)
         {
-         if (bIsRadar)
-	         Multiskins[3] = Texture'Effects.Electricity.Xplsn_EMPG';
-	     else
-             Multiskins[3] = FireTexture'GameEffects.InvisibleTex';
+            multiskins[6]=none;
+            multiskins[7]=handsTex;
+            ShowWeaponAddon(3,bHasScope);
+            ShowWeaponAddon(4,bHasSilencer);
+            ShowWeaponAddon(1,bHasLaser);
+            ShowWeaponAddon(5,bLasing);
         }
-	}
-	else
-		multiskins[3] = texture'pinkmasktex';
-	if(bHasLaser)
-	{
-		if (!bIsCloaked && !bIsRadar)                                           //RSD: Overhauled cloak/radar routines
-		    multiskins[1] = none;
-		else
+        else
         {
-         if (bIsRadar)
-	         Multiskins[1] = Texture'Effects.Electricity.Xplsn_EMPG';
-	     else
-             Multiskins[1] = FireTexture'GameEffects.InvisibleTex';
+            //These are completely different on the third person model.
+            ShowWeaponAddon(6,bHasScope);
+            ShowWeaponAddon(2,bHasSilencer);
+            ShowWeaponAddon(5,bHasLaser);
         }
-	}
-	else
-		multiskins[1] = texture'pinkmasktex';
-	if(bHasSilencer)
-	{
-		if (!bIsCloaked && !bIsRadar)                                           //RSD: Overhauled cloak/radar routines
-		    multiskins[4] = none;
-		else
-        {
-         if (bIsRadar)
-	         Multiskins[4] = Texture'Effects.Electricity.Xplsn_EMPG';
-	     else
-             Multiskins[4] = FireTexture'GameEffects.InvisibleTex';
-        }
-	}
-	else
-		multiskins[4] = texture'pinkmasktex';
-	//assault gun uses so many differently assigned multiskins we need to keep flicking back between em or we get invisible gunz
-	multiskins[0]=none;
-	multiskins[1]=none;
-	if(muztex != none && multiskins[2] != muztex) //don't overwrite the muzzleflash..this is fucking ugly, but I think we can spare some comp cycles for shit like this
-		multiskins[2]=muztex;
-	else
-		multiskins[2]=none;
-
-	if (!bIsCloaked && !bIsRadar)                                           //RSD: Overhauled cloak/radar routines
-	   multiskins[6]=none;
-	else
-	{
-	   if (bIsRadar)
-	      multiskins[6] = Texture'Effects.Electricity.Xplsn_EMPG';
-	   else
-          multiskins[6] = FireTexture'GameEffects.InvisibleTex';
     }
-	multiskins[7]=Getweaponhandtex();
-    }
-    else
-       multiskins[0]=GetWeaponHandTex();                                        //RSD: Fix vanilla hand tex
-
-    super.renderoverlays(canvas); //(weapon)
-
-    if (iHDTPModelToggle == 1)                                                  //RSD: Need this off for vanilla model
+    else if (overlay)
     {
-	if(bHasScope)
-		multiskins[6] = none;
-	else
-		multiskins[6] = texture'pinkmasktex';
-	if(bHasSilencer)
-		multiskins[2] = none;
-	else
-		multiskins[2] = texture'pinkmasktex';
-	if(bHasLaser)
-		multiskins[5] = none;
-	else
-		multiskins[5] = texture'pinkmasktex';
-	if(bLasing)
-		multiskins[3] = none;
-	else
-		multiskins[3] = texture'pinkmasktex';
-
-	multiskins[0]=none;
-	multiskins[1]=none;
-	if(muztex != none && multiskins[4] != muztex) //and here too! Ghaaa
-		multiskins[4]=muztex;
-	else
-		multiskins[4]=none;
-	multiskins[7]=none;
+        multiskins[0]=handsTex;
     }
-    else
-       multiskins[0]=none;                                                      //RSD: Fix vanilla hand tex
 
-	if (activateAn == True)
-    {
-	if(!bGEPout)
-	{
-		if (GEPinout<1) GEPinout=Fmin(1.0,GEPinout+0.04);
-	} else
-		if (GEPinout<1) GEPinout=Fmax(0,GEPinout-0.04);//do Fmax(0,n) @ >0<=1
 
-	rfs.Yaw=6912*Fmin(1.0,GEPinout);
-	rfs.Pitch=2912*sin(Fmin(1.0,GEPinout)*Pi);
-	GetAxes(rfs,axesX,axesY,axesZ);
-/*
-	if(!bStaticFreeze)
-	{
-*/
-    player = DeusExPlayer(Owner);
-
-	dx=axesX>>player.ViewRotation;
-	dy=axesY>>player.ViewRotation;
-	dz=axesZ>>player.ViewRotation;
-	rfs=OrthoRotation(dx,dy,dz);
-	SetRotation(rfs);
-
-	PlayerViewOffset=Default.PlayerViewOffset*100;//meh
-	SetHand(player.Handedness); //meh meh
-
-    if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkMarksman').bPerkObtained == true)                                          //RSD: Was PerkNamesArray[12], now PerkNamesArray[23] (merged Advanced with Master Rifles perk)
-    {
-	PlayerViewOffset.X=Smerp(sin(FMin(1.0,GEPinout*1.5)*0.5*Pi),PlayerViewOffset.X,MountedViewOffset.X*100);
-	PlayerViewOffset.Y=Smerp(1.0-cos(FMin(1.0,GEPinout*1.5)*0.5*Pi),PlayerViewOffset.Y,MountedViewOffset.Y*100);
-	PlayerViewOffset.Z=Lerp(sin(FMin(1.0,GEPinout)*0.2*Pi),PlayerViewOffset.Z,cos(FMin(1.0,GEPinout)*2*Pi)*MountedViewOffset.Z*100);
-	}
-	else
-	{
-	PlayerViewOffset.X=Smerp(sin(FMin(1.0,GEPinout)*0.5*Pi),PlayerViewOffset.X,MountedViewOffset.X*100);
-	PlayerViewOffset.Y=Smerp(1.0-cos(FMin(1.0,GEPinout)*0.5*Pi),PlayerViewOffset.Y,MountedViewOffset.Y*100);
-	PlayerViewOffset.Z=Lerp(sin(FMin(1.0,GEPinout)*0.05*Pi),PlayerViewOffset.Z,cos(FMin(1.0,GEPinout)*2*Pi)*MountedViewOffset.Z*100);
-	}
-    //PlayerViewOffset.Z=Lerp(sin(FMin(1.0,GEPinout)*0.5*Pi),PlayerViewOffset.Z,cos(FMin(1.0,GEPinout)*2*Pi)*MountedViewOffset.Z*100);
-
-	//FireOffset.X=Smerp(sin(FMin(1.0,GEPinout)*0.5*Pi),Default.FireOffset.X,-MountedViewOffset.X);
-	//FireOffset.Y=Smerp(1.0-cos(FMin(1.0,GEPinout)*0.5*Pi),Default.FireOffset.Y,-MountedViewOffset.Y);
-	//FireOffset.Z=Lerp(sin(FMin(1.0,GEPinout)*0.5*Pi),Default.FireOffset.Z,-cos(FMin(1.0,GEPinout)*2*Pi)*MountedViewOffset.Z);
-
-	SetLocation(player.Location+ CalcDrawOffset());
-	scopeTime+=1;
-
-	//IsInState('DownWeapon')
-
-    if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkMarksman').bPerkObtained == true)                                          //RSD: Was PerkNamesArray[12], now PerkNamesArray[23] (merged Advanced with Master Rifles perk)
-    {
-	if (scopeTime>=17)
-	{
-        activateAn = False;
-        scopeTime = 0;
-        ScopeToggle();
-        GEPinout = 0;
-        axesX = vect(0,0,0);
-        axesY = vect(0,0,0);
-        axesZ = vect(0,0,0);
-        PlayerViewOffset=Default.PlayerViewOffset*100;
-        SetHand(player.Handedness);
-    }
-    }
-    else if (scopeTime>=25)
-    {
-        activateAn = False;
-        scopeTime = 0;
-        ScopeToggle();
-        GEPinout = 0;
-        axesX = vect(0,0,0);
-        axesY = vect(0,0,0);
-        axesZ = vect(0,0,0);
-        PlayerViewOffset=Default.PlayerViewOffset*100;
-        SetHand(player.Handedness);
-    }
-    }
-    /*else
-    {
-    	rfs.Yaw=1000.0;
-		rfs.Pitch=1000.0;
-		GetAxes(rfs,axesX,axesY,axesZ);
-		dx=axesX>>player.ViewRotation;
-		dy=axesY>>player.ViewRotation;
-		dz=axesZ>>player.ViewRotation;
-		rfs=OrthoRotation(dx,dy,dz);
-		SetRotation(rfs);
-		player.BroadcastMessage(axesX.X);
-    }*/
-}
-
-function BecomePickup()
-{
-	activateAn = False;
-        scopeTime = 0;
-        GEPinout = 0;
-        axesX = vect(0,0,0);
-        axesY = vect(0,0,0);
-        axesZ = vect(0,0,0);
-        PlayerViewOffset=Default.PlayerViewOffset*100;
-
-	super.BecomePickup();
-}
-
-exec function UpdateHDTPsettings()                                              //RSD: New function to update weapon model meshes (specifics handled in each class)
-{
-     //RSD: HDTP Toggle Routine
-     //if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).inHand == self)
-     //     DeusExPlayer(Owner).BroadcastMessage(iHDTPModelToggle);
-     if (iHDTPModelToggle == 1)
-     {
-          PlayerViewMesh=LodMesh'HDTPeditsRSD.HDTPAssaultGunRSD';
-          PickupViewMesh=LodMesh'HDTPItems.HDTPassaultGunPickup';
-          ThirdPersonMesh=LodMesh'HDTPItems.HDTPassaultGun3rd';
-          default.PlayerViewOffset.X=12.500000;
-          default.PlayerViewOffset.Y=-5.000000;
-          default.PlayerViewOffset.Z=-12.000000;
-          addYaw=1200;
-          addPitch=-1100;
-     }
-     else
-     {
-          PlayerViewMesh=LodMesh'HDTPeditsRSD.AssaultGunRSD';
-          PickupViewMesh=LodMesh'DeusExItems.AssaultGunPickup';
-          ThirdPersonMesh=LodMesh'DeusExItems.AssaultGun3rd';
-          default.PlayerViewOffset.X=16.000000;
-          default.PlayerViewOffset.Y=-5.000000;
-          default.PlayerViewOffset.Z=-11.500000;
-          addYaw=0;
-          addPitch=0;
-     }
-     //RSD: HDTP Toggle End
-
-     Super.UpdateHDTPsettings();
-}
-
-function CheckWeaponSkins()
-{
-     if (iHDTPModelToggle == 1)                                                 //RSD: Need this off for vanilla model
-     {
-    if(bHasScope)
-		multiskins[6] = none;
-	else
-		multiskins[6] = texture'pinkmasktex';
-	if(bHasSilencer)
-		multiskins[2] = none;
-	else
-		multiskins[2] = texture'pinkmasktex';
-	if(bHasLaser)
-		multiskins[5] = none;
-	else
-		multiskins[5] = texture'pinkmasktex';
-	if(bLasing)
-		multiskins[3] = none;
-	else
-		multiskins[3] = texture'pinkmasktex';
-	multiskins[0]=none;
-	multiskins[1]=none;
-	multiskins[4]=none;
-	multiskins[7]=none;
-	}
 }
 
 simulated function SwapMuzzleFlashTexture()
 {
-	local int i;
-
     if (ClipCount == 0)
        PlaySound(Sound'GMDXSFX.Weapons.G36DryFire',SLOT_None);
 	else
@@ -359,14 +161,15 @@ simulated function SwapMuzzleFlashTexture()
 		return;
 
 	if(playerpawn(owner) != none)      //diff meshes, see
-		i=2;
+		MuzzleSlot=2;
 	else
-		i=4;
-	Muztex = GetMuzzleTex();
-	Multiskins[i] = Muztex;
+		MuzzleSlot=4;
+    
+    CurrentMuzzleFlash = GetMuzzleTex();
 	SetTimer(0.1, False);
 }
 
+/*
 simulated function texture GetMuzzleTex()
 {
 	local int i;
@@ -383,68 +186,19 @@ simulated function texture GetMuzzleTex()
 		muznum = 0;
 	switch(muznum)
 	{
-		case 0: tex = texture'ef_HitMuzzle001'; break;//tex = texture'HDTPMuzzleflashlarge1'; break;
-		case 1: tex = texture'ef_HitMuzzle002'; break;//tex = texture'HDTPMuzzleflashlarge2'; break;
-		case 2: tex = texture'ef_HitMuzzle003'; break;//tex = texture'HDTPMuzzleflashlarge3'; break;
-		case 3: tex = texture'ef_HitMuzzle001'; break;//tex = texture'HDTPMuzzleflashlarge4'; break;
-		case 4: tex = texture'ef_HitMuzzle002'; break;//tex = texture'HDTPMuzzleflashlarge5'; break;
-		case 5: tex = texture'ef_HitMuzzle003'; break;//tex = texture'HDTPMuzzleflashlarge6'; break;
-		case 6: tex = texture'ef_HitMuzzle001'; break;//tex = texture'HDTPMuzzleflashlarge7'; break;
-		case 7: tex = texture'ef_HitMuzzle002'; break;//tex = texture'HDTPMuzzleflashlarge8'; break;
+		case 0: tex = texture'ef_HitMuzzle001'; break;
+		case 1: tex = texture'ef_HitMuzzle002'; break;
+		case 2: tex = texture'ef_HitMuzzle003'; break;
+		case 3: tex = texture'ef_HitMuzzle001'; break;
+		case 4: tex = texture'ef_HitMuzzle002'; break;
+		case 5: tex = texture'ef_HitMuzzle003'; break;
+		case 6: tex = texture'ef_HitMuzzle001'; break;
+		case 7: tex = texture'ef_HitMuzzle002'; break;
 	}
 
 	return tex;
 }
-
-simulated function EraseMuzzleFlashTexture()
-{
-	local int i;
-
-	Muztex = none; //put this before the silencer check just in case we somehow add a silencer while mid shooting (it could happen!)
-	if(!bHasMuzzleflash || bHasSilencer)
-		return;
-
-	if(playerpawn(owner) != none)      //diff meshes, see
-		i=2;
-	else
-		i=4;
-
-	MultiSkins[i] = None;
-}
-/*
-//uses actual 5-shot silencer sound now, so as to be less stupid
-simulated function PlayFiringSound()
-{
-	if (bHasSilencer)
-		PlaySimSound( Sound'HDTPItems.weapons.AssaultSilenced', SLOT_None, TransientSoundVolume, 2048 );
-	else
-	{
-		// The sniper rifle sound is heard to it's range in multiplayer
-		if ( ( Level.NetMode != NM_Standalone ) &&  Self.IsA('WeaponRifle') )
-			PlaySimSound( FireSound, SLOT_None, TransientSoundVolume, class'WeaponRifle'.Default.mpMaxRange );
-		else
-			PlaySimSound( FireSound, SLOT_None, TransientSoundVolume, 2048 );
-	}
-	UpdateRecoilShaker();
-}
 */
-
-state DownWeapon
-{
-	function EndState()
-	{
-	    Super.EndState();
-	    activateAn = False;
-        scopeTime = 0;
-        GEPinout = 0;
-        axesX = vect(0,0,0);
-        axesY = vect(0,0,0);
-        axesZ = vect(0,0,0);
-        PlayerViewOffset=Default.PlayerViewOffset*100;
-        if (Owner != None && Owner.IsA('DeusExPlayer'))
-        SetHand(DeusExPlayer(Owner).Handedness);
-	}
-}
 
 state Reload
 {
@@ -560,9 +314,14 @@ defaultproperties
      ItemName="Assault Rifle"
      ItemArticle="an"
      PlayerViewOffset=(X=12.500000,Y=-5.000000,Z=-12.000000)
-     PlayerViewMesh=LodMesh'HDTPeditsRSD.HDTPAssaultGunRSD'
-     PickupViewMesh=LodMesh'HDTPItems.HDTPassaultGunPickup'
-     ThirdPersonMesh=LodMesh'HDTPItems.HDTPassaultGun3rd'
+     HDTPPlayerViewMesh="HDTPEditsRSD.HDTPAssaultGunRSD"
+     HDTPPickupViewMesh="HDTPItems.HDTPassaultGunPickup"
+     HDTPThirdPersonMesh="HDTPItems.HDTPassaultGun3rd"
+     //PlayerViewMesh=LodMesh'DeusExItems.AssaultGun'
+     //PlayerViewMesh=LodMesh'HDTPEditsRSD.AssaultGunRSD' //Required for 3-shot burst
+     PlayerViewMesh=LodMesh'RSDCrap.AssaultGunRSD'
+     PickupViewMesh=LodMesh'DeusExItems.AssaultGunPickup'
+     ThirdPersonMesh=LodMesh'DeusExItems.AssaultGun3rd'
      LandSound=Sound'DeusExSounds.Generic.DropMediumWeapon'
      Icon=Texture'DeusExUI.Icons.BeltIconAssaultGun'
      largeIcon=Texture'DeusExUI.Icons.LargeIconAssaultGun'
@@ -572,8 +331,10 @@ defaultproperties
      invSlotsY=2
      Description="The 7.62x51mm assault rifle is designed for close-quarters combat, utilizing a shortened barrel and 'bullpup' design for increased maneuverability. An additional underhand 20mm HE launcher increases the rifle's effectiveness against a variety of targets."
      beltDescription="ASSAULT"
-     Mesh=LodMesh'HDTPItems.HDTPassaultGunPickup'
+     Mesh=LodMesh'DeusExItems.AssaultGunPickup'
      CollisionRadius=15.000000
      CollisionHeight=1.100000
      Mass=30.000000
+     minSkillRequirement=3;
+     bFancyScopeAnimation=true
 }

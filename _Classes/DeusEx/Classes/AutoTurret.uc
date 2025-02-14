@@ -46,6 +46,13 @@ var float disableTimeBase;                //Sarge: Our hacking skill is multipli
 var float disableTimeMult;                //Sarge: Our hacking skill is multiplied by this to give total disable time
 var bool bRebooting;                      //This will be set when the turret is hacked, to control rebooting
 
+//SARGE: Store the default state of the turret
+var travel bool bSetupDefaults;
+var travel bool bDefaultDisabled;
+var travel bool bDefaultActive;
+var travel bool bDefaultTrackPlayersOnly;
+var travel bool bDefaultTrackPawnsOnly;
+
 // networking replication
 replication
 {
@@ -232,19 +239,21 @@ function Tick(float deltaTime)
 	}
     
     remainingTime = disableTime - DeusExPlayer(GetPlayerPawn()).saveTime;
+        
+    if (gun.hackStrength == 0.0)
+        bRebooting = false;
     
     if (bRebooting && !bConfused)
     {
         if (remainingTime <= 0)
         {
-            if (bDisabled && gun.hackStrength != 0.0)
-            {
-                bDisabled = False;
-                //Reset Tracking
-                bTrackPlayersOnly = true;
-                bTrackPawnsOnly = false;
-            }
-            bRebooting = false;
+            bRebooting = False;
+            bDisabled = bDefaultDisabled;
+            bActive = bDefaultActive;
+
+            //Reset Tracking
+            bTrackPlayersOnly = bDefaultTrackPlayersOnly;
+            bTrackPawnsOnly = bDefaultTrackPawnsOnly;
         }
     }
 
@@ -587,7 +596,10 @@ local GMDXSparkFade fade;
 
 		// muzzle flash
 		gun.LightType = LT_Steady;
-		gun.MultiSkins[3] = GetMuzzleTex();
+		if (IsHDTP())
+			gun.MultiSkins[3] = GetHDTPMuzzleTex();
+		else
+			gun.MultiSkins[2] = Texture'FlatFXTex34';
 		SetTimer(0.1, False);
 
 		// randomly draw a tracer
@@ -669,7 +681,7 @@ local GMDXSparkFade fade;
 	}
 }
 
-simulated function texture GetMuzzleTex()
+simulated function texture GetHDTPMuzzleTex()
 {
 	local int i;
 	local texture tex;
@@ -677,14 +689,14 @@ simulated function texture GetMuzzleTex()
 	i = rand(8);
 	switch(i)
 	{
-		case 0: tex = texture'HDTPMuzzleflashlarge1'; break;
-		case 1: tex = texture'HDTPMuzzleflashlarge2'; break;
-		case 2: tex = texture'HDTPMuzzleflashlarge3'; break;
-		case 3: tex = texture'HDTPMuzzleflashlarge4'; break;
-		case 4: tex = texture'HDTPMuzzleflashlarge5'; break;
-		case 5: tex = texture'HDTPMuzzleflashlarge6'; break;
-		case 6: tex = texture'HDTPMuzzleflashlarge7'; break;
-		case 7: tex = texture'HDTPMuzzleflashlarge8'; break;
+		case 0: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.HDTPMuzzleflashlarge1"); break;
+		case 1: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.HDTPMuzzleflashlarge2"); break;
+		case 2: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.HDTPMuzzleflashlarge3"); break;
+		case 3: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.HDTPMuzzleflashlarge4"); break;
+		case 4: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.HDTPMuzzleflashlarge5"); break;
+		case 5: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.HDTPMuzzleflashlarge6"); break;
+		case 6: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.HDTPMuzzleflashlarge7"); break;
+		case 7: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.HDTPMuzzleflashlarge8"); break;
 	}
 	return tex;
 }
@@ -745,12 +757,22 @@ simulated function SpawnEffects(Vector HitLocation, Vector HitNormal, Actor Othe
 	// should we crack glass?
 	if (GetWallMaterial(HitLocation, HitNormal) == 'Glass' && hole != none)     //RSD: hole failsafe
 	{
-		//if (FRand() < 0.5)
-			hole.Texture = Texture'HDTPItems.Skins.HDTPFlatFXTex29';
-		//else
-		//	hole.Texture = Texture'FlatFXTex30';
+        if (IsHDTP())
+        {
+			hole.Texture = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPFlatFXTex29");
+            hole.DrawScale = 0.00625;
+        }
+		else if (FRand() < 0.5)
+        {
+			hole.Texture = Texture'FlatFXTex29';
+            hole.DrawScale = 0.1;
+        }
+        else
+        {
+			hole.Texture = Texture'FlatFXTex30';
+            hole.DrawScale = 0.1;
+        }
 
-		hole.DrawScale = 0.00625;
 		hole.drawscale *= 1.0 + frand()*0.2;
 		hole.ReattachDecal();
 	}
@@ -807,6 +829,7 @@ simulated function Timer()
 {
 	gun.LightType = LT_None;
 	gun.MultiSkins[3] = None;
+	gun.MultiSkins[2] = None;
 }
 
 function AlarmHeard(Name event, EAIEventState state, XAIParams params)
@@ -884,6 +907,17 @@ function PostBeginPlay()
 	prevTarget = None;
 	TargetRefreshTime = 0;
 
+    // Remember the default state so we can reset to it
+    if (!bSetupDefaults)
+    {
+        bDefaultDisabled = bDisabled;
+        bDefaultActive = bActive;
+        bDefaultTrackPlayersOnly = bTrackPlayersOnly;
+        bDefaultTrackPawnsOnly = bTrackPawnsOnly;
+        bSetupDefaults = true;
+        //log("bDisabled: " $ bDisabled $ ", bTrackPlayersOnly: " $ bTrackPlayersOnly);
+    }
+
 	Super.PostBeginPlay();
 }
 
@@ -937,7 +971,8 @@ defaultproperties
      ItemName="Turret Base"
      bPushable=False
      Physics=PHYS_None
-     Mesh=LodMesh'HDTPDecos.HDTPAutoturretbase'
+     HDTPMesh="HDTPDecos.HDTPAutoTurretBase"
+     Mesh=LodMesh'DeusExDeco.AutoTurretBase'
      SoundRadius=64
      SoundVolume=224
      AmbientSound=Sound'DeusExSounds.Generic.AutoTurretHum'
@@ -946,6 +981,6 @@ defaultproperties
      Mass=50.000000
      Buoyancy=10.000000
      bVisionImportant=True
-     disableTimeBase=120.0;
-     disableTimeMult=60.0;
+     disableTimeBase=120.0
+     disableTimeMult=60.0
 }

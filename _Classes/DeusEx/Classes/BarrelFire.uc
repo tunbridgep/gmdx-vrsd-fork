@@ -49,7 +49,8 @@ defaultproperties
      bFlammable=False
      ItemName="Burning Barrel"
      bBlockSight=True
-     Mesh=LodMesh'HDTPDecos.HDTPBarrelFire'
+     HDTPMesh="HDTPDecos.HDTPBarrelFire"
+     Mesh=LodMesh'DeusExDeco.BarrelFire'
      ScaleGlow=0.500000
      bUnlit=True
      SoundRadius=20

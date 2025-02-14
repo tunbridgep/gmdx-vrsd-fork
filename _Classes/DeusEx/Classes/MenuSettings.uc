@@ -54,9 +54,9 @@ defaultproperties
      Title="Settings"
      ClientWidth=294
      ClientHeight=335
-     clientTextures(0)=Texture'HDTPDecos.UserInterface.HDTPMenuOptionsBackground_1'
-     clientTextures(1)=Texture'HDTPDecos.UserInterface.HDTPMenuOptionsBackground_2'
-     clientTextures(2)=Texture'HDTPDecos.UserInterface.HDTPMenuOptionsBackground_3'
-     clientTextures(3)=Texture'HDTPDecos.UserInterface.HDTPMenuOptionsBackground_4'
+     clientTextures(0)=Texture'RSDCrap.UserInterface.HDTPMenuOptionsBackground_1'
+     clientTextures(1)=Texture'RSDCrap.UserInterface.HDTPMenuOptionsBackground_2'
+     clientTextures(2)=Texture'RSDCrap.UserInterface.HDTPMenuOptionsBackground_3'
+     clientTextures(3)=Texture'RSDCrap.UserInterface.HDTPMenuOptionsBackground_4'
      textureCols=2
 }

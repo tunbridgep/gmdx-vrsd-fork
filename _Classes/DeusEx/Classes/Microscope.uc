@@ -6,7 +6,8 @@ class Microscope extends DeusExDecoration;
 defaultproperties
 {
      ItemName="Microscope"
-     Mesh=LodMesh'HDTPDecos.HDTPMicroscope'
+     HDTPMesh="HDTPDecos.HDTPMicroscope"
+     Mesh=LodMesh'DeusExDeco.Microscope'
      CollisionRadius=6.420000
      CollisionHeight=10.660000
      Mass=20.000000

@@ -5,13 +5,16 @@
 class HUDMedBotAugItemButton extends PersonaItemButton;
 
 var AugmentationCannister augCan;
+var Augmentation PartnerAug;             //SARGE: The other aug provided by this can
 
 var bool bSlotFull;
 var bool bHasIt;
+var bool bCanRespec;
 
 var Color colBorder;
 var Color colIconDisabled;
 var Color colIconNormal;
+var Color colBorderRespec;
 
 // ----------------------------------------------------------------------
 // DrawWindow()
@@ -19,17 +22,15 @@ var Color colIconNormal;
 
 event DrawWindow(GC gc)
 {
-	if ((bSlotFull) || (bHasIt))
-		colIcon = colIconDisabled;
-	else
-		colIcon = colIconNormal;
-
 	Super.DrawWindow(gc);
 
 	// Draw selection border
 	if (!bSelected)
 	{
-		gc.SetTileColor(colBorder);
+        if (bCanRespec)
+            gc.SetTileColor(colBorderRespec);
+        else
+            gc.SetTileColor(colBorder);
 		gc.SetStyle(DSTY_Masked);
 		gc.DrawBorders(0, 0, borderWidth, borderHeight, 0, 0, 0, 0, texBorders);
 	}
@@ -49,6 +50,16 @@ function SetAugmentation(Augmentation newAug)
 
 	// Now check to see if this augmentation slot is full
 	bSlotFull = player.AugmentationSystem.AreSlotsFull(newAug);
+
+    //player.clientmessage("Partner Aug: " $ PartnerAug.GetName());
+
+    //Now check if we can respec
+    bCanRespec = PartnerAug.bHasIt && !bHasIt && bSlotFull;
+	
+    if ((bSlotFull || bHasIt) && !bCanRespec)
+		colIcon = colIconDisabled;
+	else
+		colIcon = newAug.GetAugColor(false,true);
 }
 
 // ----------------------------------------------------------------------
@@ -118,8 +129,10 @@ event StyleChanged()
 
 defaultproperties
 {
+     colBorderRespec=(R=255,G=0,B=100)
      colIconDisabled=(R=64,G=64,B=64)
      colIconNormal=(R=255,G=255)
+     colIconRespec=(R=255,B=255)
      iconPosWidth=32
      iconPosHeight=32
      buttonWidth=34

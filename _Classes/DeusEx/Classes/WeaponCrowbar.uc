@@ -18,56 +18,22 @@ simulated function PreBeginPlay()
 	}
 }
 
-simulated function renderoverlays(Canvas canvas)
+function DisplayWeapon(bool overlay)
 {
-	if (iHDTPModelToggle == 1)
-    {
-    multiskins[1] = Getweaponhandtex();
-    if (!bIsCloaked && !bIsRadar)
-       multiskins[2] = none;
-    }
-    else
-    {
-       multiskins[1]=GetWeaponHandTex();                                        //RSD: Fix vanilla hand tex
-       multiskins[2]=GetWeaponHandTex();
-    }
-
-	super.renderoverlays(canvas);
-
-	if (iHDTPModelToggle == 1)
-       multiskins[1] = none;
-	else
+	super.DisplayWeapon(overlay);
+	if (overlay)
 	{
-       multiskins[1]=none;                                                      //RSD: Fix vanilla hand tex
-       multiskins[2]=none;
-    }
+		if (IsHDTP())
+		{
+			multiskins[1] = handsTex;
+		}
+		else
+		{
+		   multiskins[1]=handsTex;                                        //RSD: Fix vanilla hand tex
+		   multiskins[2]=handsTex;
+		}
+	}
 }
-
-exec function UpdateHDTPsettings()                                              //RSD: New function to update weapon model meshes (specifics handled in each class)
-{
-     //RSD: HDTP Toggle Routine
-     //if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).inHand == self)
-     //     DeusExPlayer(Owner).BroadcastMessage(iHDTPModelToggle);
-     if (iHDTPModelToggle == 1)
-     {
-          PlayerViewMesh=LodMesh'HDTPItems.HDTPWeaponCrowbar';
-          PickupViewMesh=LodMesh'HDTPItems.HDTPCrowbarPickup';
-          ThirdPersonMesh=LodMesh'HDTPItems.HDTPCrowbar3rd';
-     }
-     else
-     {
-          PlayerViewMesh=LodMesh'DeusExItems.Crowbar';
-          PickupViewMesh=LodMesh'DeusExItems.CrowbarPickup';
-          ThirdPersonMesh=LodMesh'DeusExItems.Crowbar3rd';
-     }
-     //RSD: HDTP Toggle End
-
-     Super.UpdateHDTPsettings();
-}
-
-/*Function CheckWeaponSkins()
-{
-}*/
 
 defaultproperties
 {
@@ -91,7 +57,7 @@ defaultproperties
      mpAccurateRange=96
      mpMaxRange=96
      RecoilShaker=(X=4.000000,Y=0.000000,Z=4.000000)
-     msgSpec="+5 damage to doors, crates, and other static objects"
+     msgSpec="x2 damage to doors, crates, and other static objects"
      meleeStaminaDrain=1.000000
      NPCMaxRange=90
      NPCAccurateRange=90
@@ -112,20 +78,23 @@ defaultproperties
      InventoryGroup=10
      ItemName="Crowbar"
      PlayerViewOffset=(X=38.000000,Y=-15.000000,Z=-10.000000)
-     PlayerViewMesh=LodMesh'HDTPItems.HDTPWeaponCrowbar'
-     PickupViewMesh=LodMesh'HDTPItems.HDTPCrowbarPickup'
-     ThirdPersonMesh=LodMesh'HDTPItems.HDTPCrowbar3rd'
+     HDTPPlayerViewMesh="HDTPItems.HDTPWeaponCrowbar"
+     HDTPPickupViewMesh="HDTPItems.HDTPCrowbarPickup"
+     HDTPThirdPersonMesh="HDTPItems.HDTPCrowbar3rd"
+     PlayerViewMesh=LodMesh'DeusExItems.Crowbar';
+     PickupViewMesh=LodMesh'DeusExItems.CrowbarPickup';
+     ThirdPersonMesh=LodMesh'DeusExItems.Crowbar3rd';
      LandSound=Sound'DeusExSounds.Weapons.CrowbarHitHard'
      Icon=Texture'DeusExUI.Icons.BeltIconCrowbar'
-     largeIcon=Texture'HDTPItems.Skins.HDTPLargeIconCrowbar'
+     largeIcon=Texture'RSDCrap.Icons.LargeIconCrowbar'
      largeIconWidth=101
      largeIconHeight=43
      invSlotsX=2
      Description="A crowbar. Hit someone or something with it. Repeat.|n|n<UNATCO OPS FILE NOTE GH010-BLUE> Many crowbars we call 'murder of crowbars.'  Always have one for kombat. Ha. -- Gunther Hermann <END NOTE>"
      beltDescription="CROWBAR"
-     Texture=Texture'HDTPItems.Skins.HDTPWeaponCrowbarTex2'
-     Mesh=LodMesh'HDTPItems.HDTPCrowbarPickup'
+     HDTPTexture="HDTPItems.Skins.HDTPWeaponCrowbarTex2"
      CollisionRadius=19.000000
      CollisionHeight=1.050000
      Mass=16.000000
+     minSkillRequirement=1;
 }

@@ -160,6 +160,7 @@ defaultproperties
      MomentumTransfer=40000
      ImpactSound=Sound'DeusExSounds.Weapons.NanoVirusGrenadeExplode'
      ExplosionDecal=Class'DeusEx.ScorchMark'
-     Skin=Texture'HDTPItems.Skins.HDTPAugUpCanTex0'
+     Skin=Texture'DeusExItems.Skins.AugUpCanTex0'
+	 HDTPSkin="HDTPItems.Skins.HDTPAugUpCanTex0"
      DrawScale=1.500000
 }

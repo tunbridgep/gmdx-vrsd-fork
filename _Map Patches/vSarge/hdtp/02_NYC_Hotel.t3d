@@ -1,0 +1,49 @@
+Begin Map
+//We need to delete all:
+//1. Sodacan
+
+Begin Actor Class=Sodacan Name=Sodacan0
+    LastRenderTime=0.490852
+    DistanceFromPlayer=2214.434814
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=Sodacan
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
+    Location=(X=4.954305,Y=-2936.017334,Z=186.599991)
+    OldLocation=(X=4.954305,Y=-2936.017334,Z=186.599991)
+    Name=Sodacan0
+End Actor
+Begin Actor Class=Sodacan Name=Sodacan1
+    textureset=1
+    LastRenderTime=0.490852
+    DistanceFromPlayer=2215.649658
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=Sodacan
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
+    Location=(X=17.402458,Y=-2938.156494,Z=186.599823)
+    OldLocation=(X=17.402458,Y=-2938.156494,Z=186.599823)
+    Name=Sodacan1
+End Actor
+Begin Actor Class=Sodacan Name=Sodacan2
+    textureset=3
+    LastRenderTime=0.490852
+    DistanceFromPlayer=2205.609131
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=Sodacan
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
+    Location=(X=4.629792,Y=-2927.128906,Z=186.600174)
+    Rotation=(Yaw=12040)
+    OldLocation=(X=3.931575,Y=-2927.658691,Z=186.600174)
+    Name=Sodacan2
+End Actor
+Begin Actor Class=Sodacan Name=Sodacan3
+    textureset=2
+    LastRenderTime=0.490852
+    DistanceFromPlayer=2207.112793
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=Sodacan
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
+    Location=(X=21.616257,Y=-2929.883057,Z=186.600189)
+    OldLocation=(X=21.616257,Y=-2929.883057,Z=186.600189)
+    Name=Sodacan3
+End Actor
+End Map

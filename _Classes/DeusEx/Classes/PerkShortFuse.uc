@@ -6,7 +6,8 @@ class PerkShortFuse extends Perk;
 defaultproperties
 {
     PerkName="SHORT FUSE"
-    PerkDescription="|nGrenade detonation time is 1 second shorter. |n|nRequires: Demolitions: ADVANCED"
+    //Horrible dirty hardcode
+    PerkDescription="Grenade detonation time is 1 second shorter."
     PerkSkill=Class'DeusEx.SkillDemolition'
     PerkCost=200
     PerkLevelRequirement=2

@@ -129,8 +129,10 @@ defaultproperties
      MomentumTransfer=5000
      ImpactSound=Sound'DeusExSounds.Weapons.PlasmaRifleHit'
      ExplosionDecal=Class'DeusEx.ScorchMark'
-     Skin=Texture'HDTPDecos.Skins.HDTPAlarmLightTex4'
+     Skin=Texture'DeusExDeco.AlarmLightTex4'
+     HDTPSkin="HDTPDecos.Skins.HDTPAlarmLightTex4"
      Mesh=LodMesh'DeusExItems.PlasmaBolt'
+     hdtpReference=Class'DeusEx.WeaponPlasmaRifle'
      DrawScale=0.800000
      bUnlit=True
      SoundRadius=128

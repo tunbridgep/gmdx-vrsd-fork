@@ -23,6 +23,8 @@ var travel Skill next;
 // Printable skill level strings
 var Localized string skillLevelStrings[4];
 var localized string SkillAtMaximum;
+
+var localized string PerkMenuTitle;
 // ----------------------------------------------------------------------
 // network replication
 // ----------------------------------------------------------------------
@@ -114,6 +116,14 @@ simulated function int GetCurrentLevel()
 simulated function String GetCurrentLevelString()
 {
 	return skillLevelStrings[currentLevel];
+}
+
+//SARGE: Get the string for a particular level
+function String GetLevelString(int level)
+{
+    if (level > 3)
+        level = 3;
+	return skillLevelStrings[level];
 }
 
 // ----------------------------------------------------------------------
@@ -249,7 +259,7 @@ simulated function bool UpdatePerksInfo(Object winObject)    //CyberP: perks
 		return False;
 
 	winInfo.Clear();
-	winInfo.SetTitle(SkillName);
+	winInfo.SetTitle(sprintf(PerkMenuTitle,SkillName));
 	/*winInfo.SetText(PerksDescription);
 	winInfo.SetText(LineBreaker);
 	winInfo.SetText(PerksDescription2);
@@ -272,4 +282,5 @@ defaultproperties
      bHidden=True
      bTravel=True
      NetUpdateFrequency=5.000000
+     PerkMenuTitle="Perks - %s"
 }

@@ -84,7 +84,9 @@ defaultproperties
      largeIconHeight=31
      Description="10mm armour piercing ammo designed to penetrate armour. 10mm AP ammo withstands the shock of attempting to punch through thin armor only due to the very small ammo calibre."
      beltDescription="AP AMMO"
-     Skin=Texture'GMDXSFX.Skins.GMDXAmmo10mmAPTex1'
+     HDTPSkin="GMDXSFX.Skins.GMDXAmmo10mmAPTex1"
+     Skin=Texture'RSDCrap.Skins.Ammo10mmAPTex'
+     //hdtpReference=class'DeusEx.WeaponPistol'
      Mesh=LodMesh'DeusExItems.Ammo10mm'
      CollisionRadius=8.500000
      CollisionHeight=3.770000

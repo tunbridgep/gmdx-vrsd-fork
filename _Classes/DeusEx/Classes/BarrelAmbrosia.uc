@@ -10,7 +10,8 @@ defaultproperties
      bFlammable=False
      ItemName="Ambrosia Storage Container"
      bBlockSight=True
-     Mesh=LodMesh'HDTPDecos.HDTPbarrelambrosia'
+     HDTPMesh="HDTPDecos.HDTPbarrelambrosia"
+     Mesh=LodMesh'DeusExDeco.BarrelAmbrosia'
      CollisionRadius=16.000000
      CollisionHeight=28.770000
      LightType=LT_Steady

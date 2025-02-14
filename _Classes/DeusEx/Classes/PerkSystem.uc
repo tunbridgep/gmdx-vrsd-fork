@@ -7,10 +7,12 @@
 
 class PerkSystem extends object;
 
-var travel Perk PerkList[50];			// Trash: Hopefully with this system, you can make this 500 and it wouldn't matter much. You still need to manually set how many perks are created here though...
-var travel int numPerks;				// Trash: UnrealScript doesn't support lists, so this is essentially the number of perks in the game
-var travel DeusExPlayer PlayerAttached;	// Trash: The player this class is attached to
+var private Perk PerkList[50];			// Trash: Hopefully with this system, you can make this 500 and it wouldn't matter much. You still need to manually set how many perks are created here though...
+var private int numPerks;				// Trash: UnrealScript doesn't support lists, so this is essentially the number of perks in the game
+var private DeusExPlayer PlayerAttached;	// Trash: The player this class is attached to
 
+var private travel Name obtainedPerks[50]; //SARGE: Now we store the owned perks in this list, rather than in the perks themselves, so that we can regenerate the perk list on load.
+var private travel int numObtained;
 
 // ----------------------------------------------------------------------
 // InitializePerks()
@@ -18,10 +20,13 @@ var travel DeusExPlayer PlayerAttached;	// Trash: The player this class is attac
 
 function InitializePerks(DeusExPlayer newPlayer)	// Trash: Add every perk in the game to the PerkList[] array and assign the player
 {
+    local int i;
+
 	PlayerAttached = newPlayer;
 
-	// Trash: The system automatically sorts every perk so order doesn't matter
-	// Trash: HOWEVER I'd still highly suggest placing perks under the appropriate comments
+    for (i = 0;i < 50;i++)
+        PerkList[i] = None;
+    numPerks = 0;
 
 	// Rifle Perks
 	AddPerk(Class'DeusEx.PerkSteady');
@@ -42,7 +47,9 @@ function InitializePerks(DeusExPlayer newPlayer)	// Trash: Add every perk in the
 	// Heavy Perks
 	AddPerk(Class'DeusEx.PerkControlledBurn');
 	AddPerk(Class'DeusEx.PerkBlastEnergy');
+	AddPerk(Class'DeusEx.PerkHeavilyTweaked');
 	AddPerk(Class'DeusEx.PerkHERocket');
+	AddPerk(Class'DeusEx.PerkMobileOrdnance');
 
 	// Demolition Perks
 	AddPerk(Class'DeusEx.PerkSonicTransducerSensor');
@@ -74,6 +81,7 @@ function InitializePerks(DeusExPlayer newPlayer)	// Trash: Add every perk in the
 
 	// Athletics Perks
 	AddPerk(Class'DeusEx.PerkPerserverance');
+	AddPerk(Class'DeusEx.PerkSprinter');
 	AddPerk(Class'DeusEx.PerkAdrenalineRush');
 	AddPerk(Class'DeusEx.PerkEndurance');
 
@@ -86,17 +94,71 @@ function InitializePerks(DeusExPlayer newPlayer)	// Trash: Add every perk in the
 	AddPerk(Class'DeusEx.PerkModder');
 	AddPerk(Class'DeusEx.PerkMisfeatureExploit');
 	AddPerk(Class'DeusEx.PerkTurretDomination');
+
+    //General Perks
+	AddPerk(Class'DeusEx.PerkFirefighter');
+	AddPerk(Class'DeusEx.PerkGlutton');
+	AddPerk(Class'DeusEx.PerkSocketJockey');
 }
 
 function AddPerk(class<Perk> perk)
 {
 	local Perk perkInstance;
+    local int i;
 
 	perkInstance = new(self)Perk;
 
 	PerkList[numPerks] = perkInstance;
 	PerkList[numPerks].PerkOwner = PlayerAttached;
+
+    //If it's in the obtained list, set it to obtained
+    for (i = 0;i < numObtained;i++)
+        if (obtainedPerks[i] == Perk.name)
+        {
+            perkInstance.bPerkObtained = true;
+            perkInstance.OnMapLoad();
+            perkInstance.OnMapLoadAndPurchase();
+        }
+
     numPerks++;
+}
+
+// ----------------------------------------------------------------------
+// PurchasePerk()
+// ----------------------------------------------------------------------
+
+function bool PurchasePerk(class<Perk> perk, optional bool free, optional bool always)  // Trash: Purchase the perk if possible
+{
+    local Perk perkInstance;
+    local int i;
+
+    perkInstance = GetPerkWithClass(perk);
+
+    if (perkInstance == None)
+        return false;
+
+    if (perkInstance.IsPurchasable() || free)
+    {
+        if (!free)
+            PlayerAttached.SkillPointsAvail -= perkInstance.PerkCost;
+
+        //Don't re-add it if we already have it
+        if (!always)
+        {
+            for (i = 0;i < numObtained;i++)
+                if (obtainedPerks[i] == perk.name)
+                    return false;
+        }
+
+        PlayerAttached.PlaySound(Sound'GMDXSFX.Generic.codelearned',SLOT_None,,,,0.8);
+		perkInstance.bPerkObtained = true;
+        perkInstance.OnPerkPurchase();
+        perkInstance.OnMapLoadAndPurchase();
+
+        obtainedPerks[numObtained++] = perk.name;
+        return true;
+    }
+    return false;
 }
 
 // ----------------------------------------------------------------------
@@ -105,14 +167,7 @@ function AddPerk(class<Perk> perk)
 
 function int GetNumObtainedPerks()
 {
-	local int index, num;
-
-	for (index = 0; index < numPerks; index++)
-	{
-        if (PerkList[index].bPerkObtained)
-            num++;
-	}
-    return num;
+    return numObtained;
 }
 
 // ----------------------------------------------------------------------
@@ -123,9 +178,9 @@ function ResetPerks()  // Trash: Reset every perk
 {
 	local int index;
 
-	for (index = 0; index < numPerks; index++)
+	for (index = 0; index < numObtained; index++)
 	{
-		PerkList[index].bPerkObtained = false;
+		obtainedPerks[index] = '';
 	}
 }
 
@@ -178,6 +233,34 @@ function Perk GetPerkWithClass(Class<Perk> pClass)  // Trash: Get the perk by ch
 			return PerkList[index];
 		}
 	}
+}
+
+// ----------------------------------------------------------------------
+// GetPerkForSkill()
+// ----------------------------------------------------------------------
+
+function Perk GetPerkForSkill(Class<Skill> pSkill, int perkNum)  // SARGE: Get perk perkNum for skill
+{
+    local int i, count;
+    for (i = 0; i < numPerks;i++)
+    {
+        if (PerkList[i].PerkSkill == pSkill)
+        {
+            count++;
+            if (count > perkNum)
+                return PerkList[i];
+        }
+    }
+    return None;
+}
+
+// ----------------------------------------------------------------------
+// GetGeneralPerk()
+// ----------------------------------------------------------------------
+
+function Perk GetGeneralPerk(int perkNum)  // SARGE: Get general perk perkNum (no associated skill)
+{
+    return GetPerkForSkill(None,perkNum);
 }
 
 // ----------------------------------------------------------------------

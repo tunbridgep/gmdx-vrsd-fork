@@ -15,41 +15,25 @@ enum ESkinColor
 var() travel ESkinColor SkinColor;
 
 // ----------------------------------------------------------------------
-// BeginPlay()
-// ----------------------------------------------------------------------
-
-function BeginPlay()
-{
-	Super.BeginPlay();
-
-	SetSkin();
-}
-
-// ----------------------------------------------------------------------
-// TravelPostAccept()
-// ----------------------------------------------------------------------
-
-function TravelPostAccept()
-{
-	Super.TravelPostAccept();
-
-	SetSkin();
-}
-
-// ----------------------------------------------------------------------
 // SetSkin()
 // ----------------------------------------------------------------------
 
-function SetSkin()
+function UpdateHDTPsettings()
 {
+    local Texture flagTex;
+    super.UpdateHDTPsettings();
 	switch (SkinColor)
 	{
-		case SC_China:		MultiSkins[1] = Texture'HDTPFlagPoleTex1'; break;//all the same for now
-		case SC_France:		MultiSkins[1] = Texture'HDTPFlagPoleTex1'; break;
-		case SC_President:	MultiSkins[1] = Texture'HDTPFlagPoleTex1'; break;
-		case SC_UNATCO:		MultiSkins[1] = Texture'HDTPFlagPoleTex5'; break;
-		case SC_USA:		MultiSkins[1] = Texture'HDTPFlagPoleTex5'; break;
+        case SC_China: flagTex = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPFlagPoleTex1","DeusExDeco.FlagPoleTex1",IsHDTP()); break;
+        case SC_France: flagTex = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPFlagPoleTex1","DeusExDeco.FlagPoleTex2",IsHDTP()); break;
+        case SC_President: flagTex = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPFlagPoleTex1","DeusExDeco.FlagPoleTex3",IsHDTP()); break;
+        case SC_UNATCO: flagTex = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPFlagPoleTex5","DeusExDeco.FlagPoleTex4",IsHDTP()); break;
+        case SC_USA: flagTex = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPFlagPoleTex5","DeusExDeco.FlagPoleTex5",IsHDTP()); break;
 	}
+    if (IsHDTP())
+        MultiSkins[1] = flagTex;
+    else
+        Skin = flagTex;
 }
 
 // ----------------------------------------------------------------------
@@ -59,9 +43,11 @@ defaultproperties
 {
      FragType=Class'DeusEx.WoodFragment'
      ItemName="Flag Pole"
-     Mesh=LodMesh'HDTPDecos.HDTPFlagpole'
+     HDTPMesh="HDTPDecos.HDTPFlagpole"
+     Mesh=LodMesh'DeusExDeco.Flagpole'
      CollisionRadius=17.000000
      CollisionHeight=56.389999
      Mass=40.000000
      Buoyancy=30.000000
+	 bHDTPFailsafe=False
 }
