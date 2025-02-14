@@ -11,7 +11,6 @@ defaultproperties
      MaxAmmo=10
      ItemName="Rockets"
      ItemArticle="some"
-     PickupViewMesh=LodMesh'HDTPItems.HDTPgepammo'
      LandSound=Sound'DeusExSounds.Generic.WoodHit2'
      Icon=Texture'DeusExUI.Icons.BeltIconAmmoRockets'
      largeIcon=Texture'DeusExUI.Icons.LargeIconAmmoRockets'
@@ -19,7 +18,11 @@ defaultproperties
      largeIconHeight=36
      Description="A gyroscopically stabilized rocket with limited onboard guidance systems for in-flight course corrections. Engineered for use with the GEP gun."
      beltDescription="ROCKET"
-     Mesh=LodMesh'HDTPItems.HDTPgepammo'
+     HDTPMesh="HDTPItems.HDTPgepammo"
+     PickupViewMesh=LodMesh'DeusExItems.GEPAmmo'
+     PlayerViewMesh=LodMesh'DeusExItems.GEPAmmo'
+     ThirdPersonMesh=LodMesh'DeusExItems.GEPAmmo'
+     Mesh=LodMesh'DeusExItems.GEPAmmo'
      CollisionRadius=18.000000
      CollisionHeight=7.800000
      bCollideActors=True

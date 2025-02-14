@@ -19,6 +19,13 @@ var Bool bFirstParagraph;
 var localized String ImageLabel;
 var localized String AddedToDatavaultLabel;
 
+//SARGE: Set to true when we have read this once. Used for blanking datacubes
+var travel bool bRead;
+
+// Called when the device is read
+function OnBeginRead(DeusExPlayer reader) { }
+function OnEndRead(DeusExPlayer reader) { }
+
 // ----------------------------------------------------------------------
 // Destroyed()
 //
@@ -44,6 +51,7 @@ function DestroyWindow()
 	// restore the crosshairs and the other hud elements
 	if (aReader != None)
 	{
+        OnEndRead(aReader);
         aReader.UpdateCrosshair();
 	}
 
@@ -114,23 +122,16 @@ function Frob(Actor Frobber, Inventory frobWith)
 	}
 }
 
-// ----------------------------------------------------------------------
-// CreateInfoWindow()
-// ----------------------------------------------------------------------
-
-function CreateInfoWindow()
+//SARGE: Since we now support arrbitrary text, we need to get packages separately
+function GetText()
 {
 	local DeusExTextParser parser;
+    local name UseTextTag;
 	local DeusExRootWindow rootWindow;
 	local DeusExNote note;
-	local DataVaultImage image;
-	local bool bImageAdded;
+	
+    rootWindow = DeusExRootWindow(aReader.rootWindow);
 
-    local name UseTextTag;
-    local bool bWon;
-
-	rootWindow = DeusExRootWindow(aReader.rootWindow);
-    
     //LDDP, 10/25/21: Convert usage to female text flag when female.
 	if ((aReader != None) && (aReader.FlagBase != None) && (aReader.FlagBase.GetBool('LDDPJCIsFemale')))
 	{
@@ -173,6 +174,28 @@ function CreateInfoWindow()
 		CriticalDelete(parser);
 	}
 
+
+}
+
+// ----------------------------------------------------------------------
+// CreateInfoWindow()
+// ----------------------------------------------------------------------
+
+function CreateInfoWindow()
+{
+	local DeusExRootWindow rootWindow;
+	local DataVaultImage image;
+	local bool bImageAdded;
+
+    local bool bWon;
+
+	rootWindow = DeusExRootWindow(aReader.rootWindow);
+        
+    bRead = true;
+    OnBeginRead(aReader);
+
+    GetText();
+    
 	// do we have any image data to give the player?
 	if ((imageClass != None) && (aReader != None))
 	{
@@ -284,9 +307,6 @@ function ProcessTag(DeusExTextParser parser)
 
 function postbeginplay()
 {
-	local texture newtex, swaptex;
-	local string str, tempstr;
-
     local string TS;
 
     //LDDP, 10/25/21: We now have a female text tag variable. Conjure one based off our base text flag, assuming it's not blank.
@@ -295,6 +315,24 @@ function postbeginplay()
 		TS = "FemJC"$string(TextTag);
 		SetPropertyText("FemaleTextTag", TS);
 	}
+
+
+	super.postbeginplay();
+}
+
+exec function UpdateHDTPsettings()
+{
+	local texture newtex, swaptex;
+	local string str, tempstr;
+
+	Super.UpdateHDTPsettings();
+
+    //Only apply new book styles if we have HDTP enabled
+    if (!IsHDTP())
+    {
+        skin = default.Skin;
+        return;
+    }
 
 	//gah superclass badness
 	if(Newspaper(self) != none)
@@ -340,11 +378,14 @@ function postbeginplay()
 		{
 			str = "HDTPBookClosed.Books.HDTP";
 			str = str$GetString(string(texttag),true); //awful awful code
-			newtex = texture(dynamicloadobject(str,class'texture'));
+            if (iHDTPModelToggle >= 2) //SARGE: Only use "extra book covers" with the extended setting
+            {
+                newtex = texture(dynamicloadobject(str,class'texture'));
 				if(newtex != none)
 					skin = newtex;
 				else
 					log("fail!"$str,name);
+            }
 		}
 	}
 	else if(BookOpen(self) != none)
@@ -353,28 +394,31 @@ function postbeginplay()
 		{
 			str = "HDTPBookOpen.Books.HDTP";
 			str = str$string(texttag);
-			newtex = texture(dynamicloadobject(str,class'texture'));
-			if(newtex != none)
-			{
-				Multiskins[2] = newtex;
-				Multiskins[3] = newtex;
-			}
-			else
-				log("fail!"$str,name);
+            newtex = texture(dynamicloadobject(str,class'texture'));
+            if(newtex != none)
+            {
+                Multiskins[2] = newtex;
+                Multiskins[3] = newtex;
+            }
+            else
+                log("fail!"$str,name);
 			//and now backs
 			str = "HDTPBookOpen.Books.HDTP";
 			tempstr = GetString(string(texttag),false); //awful awful code
 			//if(tempstr == string(texttag)) //nothing changed
 			//{
 				str = str$tempstr$"back";
-			    newtex = texture(dynamicloadobject(str,class'texture'));
-			    if(newtex != none)
-			    {
-					Multiskins[0] = newtex;
-					Multiskins[1] = newtex;
-				}
-				else
-					log("fail!"$str,name);
+                if (iHDTPModelToggle >= 1) //SARGE: Only use "extra book covers" with the extended setting
+                {
+                    newtex = texture(dynamicloadobject(str,class'texture'));
+                    if(newtex != none)
+                    {
+                        Multiskins[0] = newtex;
+                        Multiskins[1] = newtex;
+                    }
+                    else
+                        log("fail!"$str,name);
+                }
 //			}
 //			else //special case
 //			{
@@ -391,9 +435,8 @@ function postbeginplay()
 //			}
 		}
 	}
-
-	super.postbeginplay();
 }
+
 
 function string GetString(string text, bool bClosed)
 {
@@ -451,4 +494,5 @@ defaultproperties
      AddedToDatavaultLabel="Image %s added to DataVault"
      FragType=Class'DeusEx.PaperFragment'
      bPushable=False
+	 bHDTPFailsafe=False
 }

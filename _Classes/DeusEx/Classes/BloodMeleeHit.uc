@@ -1,7 +1,7 @@
 //=============================================================================
 // BloodMeleeHit //CyberP: used when shot too, not just melee
 //=============================================================================
-class BloodMeleeHit extends Effects;
+class BloodMeleeHit extends GMDXEffect;
 
 simulated function Tick(float deltaTime)
 {
@@ -14,7 +14,8 @@ defaultproperties
      LifeSpan=0.105000
      DrawType=DT_Sprite
      Style=STY_Modulated
-     Texture=Texture'HDTPItems.Skins.HDTPFlatFXtex6'
+     HDTPTexture="HDTPItems.Skins.HDTPFlatFXtex6"
+	 Texture=Texture'DeusExItems.Skins.FlatFXtex6'
      DrawScale=0.130000
      ScaleGlow=2.000000
      bUnlit=True

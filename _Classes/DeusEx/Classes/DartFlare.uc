@@ -106,15 +106,16 @@ function Timer()
 	local Pawn P;
 	local rotator rota;
 
-	if (gen == None)
+	if (gen == None && IsHDTP())
 	{
-	flaretime=LifeSpan;
+        AmbientSound=Sound'DeusExSounds.Generic.Flare';
+        flaretime=LifeSpan;
 
 		loc2.Y += collisionradius*1.05;
 		loc = loc2 >> rotation;
 		loc += location;
 		gen = Spawn(class'ParticleGenerator', Self,, Loc, rot(16384,0,0));
-		if (gen != None)
+		if (gen != None )
 		{
 			gen.attachTag = Name;
 			gen.SetBase(Self);
@@ -151,7 +152,8 @@ function Timer()
 			flaregen.checkTime = 0.02;
 			flaregen.particleLifeSpan = 0.6*(1 + frand());
 			flaregen.particleDrawScale = 0.01 + 0.05*frand();
-			flaregen.particleTexture = Texture'HDTPAnim.effects.HDTPFlarespark';
+            //SARGE: TODO: Make this actually work
+			flaregen.particleTexture = class'HDTPLoader'.static.GetFireTexture("HDTPAnim.effects.HDTPFlarespark");
 		}
 		flamething = Spawn(class'Effects', Self,, Loc, rota);
 		if(flamething != none)
@@ -159,8 +161,8 @@ function Timer()
 			flamething.setbase(self);
 			flaregen.attachTag = Name;
 			flamething.DrawType=DT_mesh;
-			flamething.mesh=lodmesh'HDTPItems.HDTPflareflame';
-			flamething.multiskins[1]=texture'HDTPanim.effects.HDTPflrflame';
+			flamething.mesh=class'HDTPLoader'.static.GetMesh("HDTPItems.HDTPflareflame");
+			flamething.multiskins[1]=class'HDTPLoader'.static.GetFireTexture("HDTPAnim.effects.HDTPflrflame");
 			flamething.Style=STY_Translucent;
 			flamething.bUnlit=true;
 			flamething.DrawScale=0.15;
@@ -176,13 +178,13 @@ defaultproperties
      mpDamage=10.000000
      DamageType=Burned
      spawnAmmoClass=Class'DeusEx.AmmoDartFlare'
+     hdtpReference=class'DeusEx.WeaponMiniCrossbow'
      ItemName="Flare Dart"
      Damage=7.000000
      LifeSpan=160.000000
      bUnlit=True
      SoundRadius=20
      SoundVolume=128
-     AmbientSound=Sound'DeusExSounds.Generic.Flare'
      LightType=LT_Steady
      LightEffect=LE_TorchWaver
      LightBrightness=255

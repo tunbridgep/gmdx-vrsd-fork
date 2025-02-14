@@ -46,7 +46,7 @@ defaultproperties
      LandSound=Sound'DeusExSounds.Generic.PlasticHit1'
      Icon=Texture'DeusExUI.Icons.BeltIconCredits'
      beltDescription="CREDITS"
-     Skin=Texture'HDTPItems.Skins.HDTPCreditstex1'
+     HDTPSkin="HDTPItems.Skins.HDTPCreditstex1"
      Mesh=LodMesh'DeusExItems.Credits'
      CollisionRadius=7.000000
      CollisionHeight=0.550000

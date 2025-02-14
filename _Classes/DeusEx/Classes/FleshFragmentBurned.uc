@@ -45,7 +45,8 @@ defaultproperties
      ImpactSound=Sound'DeusExSounds.Generic.FleshHit1'
      MiscSound=Sound'DeusExSounds.Generic.FleshHit2'
      LifeSpan=60.000000
-     Skin=Texture'HDTPDecos.Skins.HDTPAlarmLightTex5'
+     Skin=Texture'DeusExDeco.Skins.AlarmLightTex5'
+     HDTPSkin="HDTPDecos.Skins.HDTPAlarmLightTex5"
      Mesh=LodMesh'DeusExItems.FleshFragment1'
      AmbientGlow=224
      CollisionRadius=0.500000

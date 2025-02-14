@@ -1,0 +1,87 @@
+//DO NOT IMPORT THIS FILE NORMALLY!!!
+//This is only here as it illustrates the problematic brush!
+//You should import this temporarily, then follow the red box to find the source,
+//then RELOAD THE MAP and replace the problematic texture with the equivalent from RSDCrap
+
+//The "info" box above the front desk
+
+Begin Map
+Begin Actor Class=Brush Name=Brush392
+    CsgOper=CSG_Add
+    MainScale=(SheerAxis=SHEER_ZX)
+    PostScale=(SheerAxis=SHEER_ZX)
+    DistanceFromPlayer=2653.498291
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=Brush
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
+    Location=(X=-190.000000,Y=4.000000,Z=-157.000000)
+    Rotation=(Yaw=-16384)
+    Begin Brush Name=Model345
+       Begin PolyList
+          Begin Polygon Item=OUTSIDE Texture=HDTP02_Book08 Link=0
+             Origin   -00032.000000,-00002.000000,+00008.000000
+             Normal   +00000.000000,+00000.000000,+00001.000000
+             TextureU +00000.000000,+00001.000000,-00000.000000
+             TextureV -00001.000000,+00000.000000,+00000.000000
+             Vertex   -00032.000000,-00002.000000,+00008.000000
+             Vertex   +00032.000000,-00002.000000,+00008.000000
+             Vertex   +00032.000000,+00002.000000,+00008.000000
+             Vertex   -00032.000000,+00002.000000,+00008.000000
+          End Polygon
+          Begin Polygon Item=OUTSIDE Texture=HDTP02_Book08 Link=1
+             Origin   -00032.000000,+00002.000000,-00008.000000
+             Normal   +00000.000000,+00000.000000,-00001.000000
+             TextureU -00000.000000,-00001.000000,-00000.000000
+             TextureV -00001.000000,+00000.000000,+00000.000000
+             Vertex   -00032.000000,+00002.000000,-00008.000000
+             Vertex   +00032.000000,+00002.000000,-00008.000000
+             Vertex   +00032.000000,-00002.000000,-00008.000000
+             Vertex   -00032.000000,-00002.000000,-00008.000000
+          End Polygon
+          Begin Polygon Item=OUTSIDE Texture=HDTP02_Book08 Flags=1048576 Link=2
+             Origin   -00032.000000,+00002.000000,-00008.000000
+             Normal   +00000.000000,+00001.000000,+00000.000000
+             Pan      U=-1272 V=-233
+             TextureU -00001.250000,+00000.000000,+00000.000000
+             TextureV -00000.000000,+00000.000000,+00001.428571
+             Vertex   -00032.000000,+00002.000000,-00008.000000
+             Vertex   -00032.000000,+00002.000000,+00008.000000
+             Vertex   +00032.000000,+00002.000000,+00008.000000
+             Vertex   +00032.000000,+00002.000000,-00008.000000
+          End Polygon
+          Begin Polygon Item=OUTSIDE Texture=HDTP02_Book08 Link=3
+             Origin   +00032.000000,-00002.000000,-00008.000000
+             Normal   +00000.000000,-00001.000000,+00000.000000
+             TextureU -00001.000000,-00000.000000,-00000.000000
+             TextureV +00000.000000,+00000.000000,-00001.000000
+             Vertex   +00032.000000,-00002.000000,-00008.000000
+             Vertex   +00032.000000,-00002.000000,+00008.000000
+             Vertex   -00032.000000,-00002.000000,+00008.000000
+             Vertex   -00032.000000,-00002.000000,-00008.000000
+          End Polygon
+          Begin Polygon Item=OUTSIDE Texture=HDTP02_Book08 Link=4
+             Origin   +00032.000000,+00002.000000,-00008.000000
+             Normal   +00001.000000,+00000.000000,+00000.000000
+             TextureU +00000.000000,-00001.000000,+00000.000000
+             TextureV +00000.000000,+00000.000000,-00001.000000
+             Vertex   +00032.000000,+00002.000000,-00008.000000
+             Vertex   +00032.000000,+00002.000000,+00008.000000
+             Vertex   +00032.000000,-00002.000000,+00008.000000
+             Vertex   +00032.000000,-00002.000000,-00008.000000
+          End Polygon
+          Begin Polygon Item=OUTSIDE Texture=HDTP02_Book08 Link=5
+             Origin   -00032.000000,-00002.000000,-00008.000000
+             Normal   -00001.000000,+00000.000000,+00000.000000
+             TextureU +00000.000000,+00001.000000,+00000.000000
+             TextureV +00000.000000,+00000.000000,-00001.000000
+             Vertex   -00032.000000,-00002.000000,-00008.000000
+             Vertex   -00032.000000,-00002.000000,+00008.000000
+             Vertex   -00032.000000,+00002.000000,+00008.000000
+             Vertex   -00032.000000,+00002.000000,-00008.000000
+          End Polygon
+       End PolyList
+    End Brush
+    Brush=Model'MyLevel.Model345'
+    Name=Brush392
+End Actor
+End Map

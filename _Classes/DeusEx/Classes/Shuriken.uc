@@ -125,13 +125,15 @@ defaultproperties
      ItemName="Throwing Knife"
      ItemArticle="a"
      gravMult=0.500000
+     HDTPMesh="HDTPItems.HDTPShurikenPickup"
+     hdtpReference=Class'DeusEx.WeaponShuriken'
      speed=1400.000000
      MaxSpeed=1400.000000
      Damage=16.000000
      MomentumTransfer=1000
      ImpactSound=Sound'DeusExSounds.Generic.BulletHitFlesh'
      LifeSpan=560.000000
-     Mesh=LodMesh'HDTPItems.HDTPShurikenPickup'
+     Mesh=LodMesh'DeusExItems.ShurikenPickup'
      CollisionRadius=3.500000
      CollisionHeight=0.300000
 }

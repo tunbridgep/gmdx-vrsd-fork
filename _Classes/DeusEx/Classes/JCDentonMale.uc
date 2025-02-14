@@ -16,41 +16,30 @@ function UpdateHDTPSettings()
 
 	super.UpdateHDTPsettings();
 
-	for(i=2;i<6;i++)
-	{
-		texstr = "HDTPCharacters.Skins.HDTPJCFaceTex";
-		texstr = texstr $ i;
-		newtex = texture(dynamicloadobject(texstr,class'texture'));
-	}
-	for(i=1;i<5;i++)
-	{
-		texstr = "HDTPCharacters.Skins.HDTPJCHandsTex";
-		texstr = texstr $ i;
-		newtex = texture(dynamicloadobject(texstr,class'texture'));
-	}
-
 	SetSkin();
 }
 
 //Set HDTP Skin
 function SetSkin()
 {
-    local LodMesh HDTPMesh;
+    local Texture tex1, tex2;
 
     //If we're femJC, abort
     if (FlagBase.GetBool('LDDPJCIsFemale'))
         return;
 
-	if(GetHDTPSettings(self))
+	if(IsHDTP())
 	{
 		switch(PlayerSkin)
 		{
-			case 0:	MultiSkins[0] = Texture'HDTPCharacters.Skins.HDTPJCFaceTex0'; MultiSkins[3] = Texture'HDTPCharacters.Skins.HDTPJCHandsTex0'; break;
-			case 1:	MultiSkins[0] = Texture'HDTPCharacters.Skins.HDTPJCFaceTex1'; MultiSkins[3] = Texture'HDTPCharacters.Skins.HDTPJCHandsTex1'; break;
-			case 2:	MultiSkins[0] = Texture'HDTPCharacters.Skins.HDTPJCFaceTex2'; MultiSkins[3] = Texture'HDTPCharacters.Skins.HDTPJCHandsTex2'; break;
-			case 3:	MultiSkins[0] = Texture'HDTPCharacters.Skins.HDTPJCFaceTex3'; MultiSkins[3] = Texture'HDTPCharacters.Skins.HDTPJCHandsTex3'; break;
-			case 4:	MultiSkins[0] = Texture'HDTPCharacters.Skins.HDTPJCFaceTex4'; MultiSkins[3] = Texture'HDTPCharacters.Skins.HDTPJCHandsTex4'; break;
+			case 0:	tex1 = class'HDTPLoader'.static.GetTexture("HDTPCharacters.Skins.HDTPJCFaceTex0"); tex2 = class'HDTPLoader'.static.GetTexture("HDTPCharacters.Skins.HDTPJCHandsTex0"); break;
+			case 1:	tex1 = class'HDTPLoader'.static.GetTexture("HDTPCharacters.Skins.HDTPJCFaceTex1"); tex2 = class'HDTPLoader'.static.GetTexture("HDTPCharacters.Skins.HDTPJCHandsTex1"); break;
+			case 2:	tex1 = class'HDTPLoader'.static.GetTexture("HDTPCharacters.Skins.HDTPJCFaceTex2"); tex2 = class'HDTPLoader'.static.GetTexture("HDTPCharacters.Skins.HDTPJCHandsTex2"); break;
+			case 3:	tex1 = class'HDTPLoader'.static.GetTexture("HDTPCharacters.Skins.HDTPJCFaceTex3"); tex2 = class'HDTPLoader'.static.GetTexture("HDTPCharacters.Skins.HDTPJCHandsTex3"); break;
+			case 4:	tex1 = class'HDTPLoader'.static.GetTexture("HDTPCharacters.Skins.HDTPJCFaceTex4"); tex2 = class'HDTPLoader'.static.GetTexture("HDTPCharacters.Skins.HDTPJCHandsTex4"); break;
 		}
+        multiskins[0] = tex1;
+        multiskins[3] = tex2;
 	}
 	else
 	{
@@ -274,14 +263,19 @@ function SetupOutfitManager()
     local class<OutfitManagerBase> managerBaseClass;
 
 	// create the Outfit Manager if not found
-	if (outfitManager == None)
+	if (outfitManager == None || !outfitManager.IsA('OutfitManager'))
     {
         managerBaseClass = class<OutfitManagerBase>(DynamicLoadObject("JCOutfits.OutfitManager", class'Class'));
         
         if (managerBaseClass == None)
+        {
             outfitManager = new(Self) class'OutfitManagerBase';
+        }
         else
+        {
+            //clientmessage("Making Outfit Manager");
             outfitManager = new(Self) managerBaseClass;
+        }
     }
 
     if (outfitManager != None)
@@ -304,7 +298,7 @@ function SetupOutfitManager()
 
 defaultproperties
 {
-     HDTPMeshName="HDTPCharacters.HDTPGM_Trench"
+     HDTPMesh="HDTPCharacters.HDTPGM_Trench"
      HDTPMeshTex(0)="HDTPCharacters.Skins.HDTPJCFaceTex0"
      HDTPMeshTex(1)="HDTPCharacters.Skins.HDTPJCDentonTex1"
      HDTPMeshTex(2)="HDTPCharacters.Skins.HDTPJCDentonTex2"

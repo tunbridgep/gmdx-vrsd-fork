@@ -152,7 +152,8 @@ defaultproperties
      SpawnSound=Sound'GMDXSFX.Weapons.newfirelaser'
      ImpactSound=Sound'DeusExSounds.Robot.MilitaryBotExplode'
      ExplosionDecal=Class'DeusEx.ScorchMark'
-     Skin=Texture'HDTPDecos.Skins.HDTPAlarmLightTex6'
+     HDTPSkin="HDTPDecos.Skins.HDTPAlarmLightTex6"
+     Skin=Texture'DeusExDeco.AlarmLightTex6'
      Mesh=LodMesh'DeusExItems.PlasmaBolt'
      DrawScale=2.500000
      ScaleGlow=0.300000

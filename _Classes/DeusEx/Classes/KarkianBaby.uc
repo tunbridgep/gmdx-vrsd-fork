@@ -3,6 +3,11 @@
 //=============================================================================
 class KarkianBaby extends Karkian;
 
+function bool IsHDTP()
+{
+    return DeusExPlayer(GetPlayerPawn()).bHDTPInstalled && class'DeusEx.Karkian'.default.iHDTPModelToggle > 0;
+}
+
 defaultproperties
 {
      CarcassType=Class'DeusEx.KarkianBabyCarcass'

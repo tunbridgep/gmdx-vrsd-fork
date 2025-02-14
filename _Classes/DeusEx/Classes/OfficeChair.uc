@@ -13,16 +13,16 @@ enum ESkinColor
 
 var() ESkinColor SkinColor;
 
-function BeginPlay()
+function UpdateHDTPsettings()
 {
-	Super.BeginPlay();
+	Super.UpdateHDTPsettings();
 
 	switch (SkinColor)
 	{
-		case SC_GrayLeather:	Skin = Texture'HDTPOfficeChairTex1'; break;
-		case SC_BrownLeather:	Skin = Texture'HDTPOfficeChairTex2'; break;
-		case SC_BrownCloth:		Skin = Texture'HDTPOfficeChairTex3'; break;
-		case SC_GrayCloth:		Skin = Texture'HDTPOfficeChairTex4'; break;
+		case SC_GrayLeather:	Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPOfficeChairTex1","DeusExDeco.OfficeChairTex1",IsHDTP()); break;
+		case SC_BrownLeather:	Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPOfficeChairTex2","DeusExDeco.OfficeChairTex2",IsHDTP()); break;
+		case SC_BrownCloth: 	Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPOfficeChairTex3","DeusExDeco.OfficeChairTex3",IsHDTP()); break;
+		case SC_GrayCloth:   	Skin = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPOfficeChairTex4","DeusExDeco.OfficeChairTex4",IsHDTP()); break;
 	}
 }
 
@@ -31,9 +31,11 @@ defaultproperties
      sitPoint(0)=(X=0.000000,Y=-4.000000,Z=0.000000)
      HitPoints=30
      ItemName="Swivel Chair"
-     Mesh=LodMesh'HDTPDecos.HDTPOfficeChair'
+     HDTPMesh="HDTPDecos.HDTPOfficeChair"
+     Mesh=LodMesh'DeusExDeco.OfficeChair'
      CollisionRadius=16.000000
      CollisionHeight=25.549999
      Mass=40.000000
      Buoyancy=5.000000
+	 bHDTPFailsafe=False
 }

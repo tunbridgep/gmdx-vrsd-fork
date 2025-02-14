@@ -5,10 +5,13 @@ class GrayCarcass extends DeusExCarcass;
 
 defaultproperties
 {
-     Mesh2=LodMesh'HDTPCharacters.HDTPGrayCarcass2'
-     Mesh3=LodMesh'HDTPCharacters.HDTPGrayCarcass2'
+     HDTPMesh="HDTPCharacters.HDTPGrayCarcass"
+     HDTPMesh2="HDTPCharacters.HDTPGrayCarcass2"
+     HDTPMesh3="HDTPCharacters.HDTPGrayCarcass2"
+     Mesh=LodMesh'DeusExCharacters.GrayCarcass'
+     Mesh2=LodMesh'DeusExCharacters.GrayCarcass2'
+     Mesh3=LodMesh'DeusExCharacters.GrayCarcass2'
      bAnimalCarcass=True
-     Mesh=LodMesh'HDTPCharacters.HDTPGrayCarcass'
      AmbientGlow=12
      CollisionRadius=36.000000
      CollisionHeight=6.240000

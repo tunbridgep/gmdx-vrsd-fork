@@ -127,7 +127,7 @@ defaultproperties
      CloakThreshold=300
      walkAnimMult=1.000000
      runAnimMult=1.075000
-     HDTPMeshName="HDTPCharacters.HDTPAnna"
+     HDTPMesh="HDTPCharacters.HDTPAnna"
      HDTPMeshTex(0)="HDTPCharacters.Skins.HDTPAnnaTex0"
      HDTPMeshTex(1)="HDTPCharacters.Skins.HDTPAnnaTex1"
      HDTPMeshTex(2)="HDTPCharacters.Skins.HDTPAnnaTex2"

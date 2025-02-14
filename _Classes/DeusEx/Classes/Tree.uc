@@ -4,7 +4,7 @@
 class Tree extends OutdoorThings
 	abstract;
 
-var mesh Altmesh;
+var string Altmesh;
 
 var() float soundFreq;		// chance of making a sound every 5 seconds
 
@@ -20,22 +20,25 @@ function Timer()
 	}
 }
 
-function beginplay()
-{
-	if(location.X + location.Y %2 > 0)
-		mesh = altmesh;
-	if(location.X * location.Y %2 > 0)
-		multiskins[2] = texture'HDTPDecos.HDTPTreeTex3';
-	else
-		multiskins[2] = texture'HDTPDecos.HDTPTreeTex2';
-
-	super.BeginPlay();
-}
-
 function PostBeginPlay()
 {
 	Super.PostBeginPlay();
 	SetTimer(4.0 + 2.0 * FRand(), True);
+}
+
+exec function UpdateHDTPsettings()
+{
+    super.UpdateHDTPsettings();
+    if (IsHDTP() && altmesh != "")
+    {
+        if(location.X + location.Y %2 > 0)
+        {
+            mesh = class'HDTPLoader'.static.GetMesh(altmesh);
+            multiskins[2] = class'HDTPLoader'.static.GetTexture("HDTPDecos.HDTPTreeTex3");
+        }
+        else
+            multiskins[2] = class'HDTPLoader'.static.GetTexture("HDTPDecos.HDTPTreeTex2");
+    }
 }
 
 defaultproperties
@@ -45,4 +48,5 @@ defaultproperties
      bStatic=False
      Mass=2000.000000
      Buoyancy=5.000000
+	 bHDTPFailsafe=False
 }

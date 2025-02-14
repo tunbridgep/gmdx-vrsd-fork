@@ -1,7 +1,7 @@
 //=============================================================================
 // AirBubble.
 //=============================================================================
-class PlasmaParticleSpoof expands Effects;
+class PlasmaParticleSpoof expands GMDXEffect;
 
 auto state Flying
 {
@@ -33,7 +33,8 @@ defaultproperties
      LifeSpan=0.650000
      DrawType=DT_Sprite
      Style=STY_Translucent
-     Texture=Texture'HDTPDecos.Skins.HDTPAlarmLightTex4'
+     HDTPTexture="HDTPDecos.Skins.HDTPAlarmLightTex4"
+     Texture=Texture'DeusExDeco.AlarmLightTex4'
      DrawScale=0.050000
      LightBrightness=255
      LightHue=80

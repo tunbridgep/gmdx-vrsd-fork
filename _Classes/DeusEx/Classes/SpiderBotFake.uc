@@ -3,13 +3,19 @@
 //=============================================================================
 class SpiderBotFake extends DeusExDecoration;
 
+function bool IsHDTP()
+{
+    return DeusExPlayer(GetPlayerPawn()).bHDTPInstalled && class'SpiderBot'.default.iHDTPModelToggle > 0;
+}
+
 defaultproperties
 {
      bInvincible=True
      bHighlight=False
+     HDTPMesh="HDTPCharacters.HDTPspiderbot2"
      bPushable=False
      Physics=PHYS_None
-     Mesh=LodMesh'HDTPCharacters.HDTPspiderbot2'
+     Mesh=LodMesh'DeusExCharacters.SpiderBot2'
      bAlwaysRelevant=True
      bCollideActors=False
      bCollideWorld=False

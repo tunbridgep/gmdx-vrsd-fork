@@ -8,7 +8,8 @@ defaultproperties
      FragType=Class'DeusEx.PaperFragment'
      bCanBeBase=True
      ItemName="Pillow"
-     Mesh=LodMesh'HDTPDecos.HDTPPillow'
+     Mesh=LodMesh'DeusExDeco.Pillow'
+     HDTPMesh="HDTPDecos.HDTPPillow"
      CollisionRadius=17.000000
      CollisionHeight=4.130000
      Mass=5.000000

@@ -28,9 +28,25 @@ function Tick(float deltaTime)
 	}
 }
 
+exec function UpdateHDTPsettings()
+{
+    super.UpdateHDTPsettings();
+    if (IsHDTP())
+    {
+        spreadTime=4.000000;
+        maxDrawScale=0.095750;
+    }
+    else
+    {
+        spreadTime=5.000000;
+        maxDrawScale=1.500000;
+    }
+}
+
 defaultproperties
 {
-     spreadTime=4.000000
-     maxDrawScale=0.095750
-     Texture=Texture'HDTPItems.Skins.HDTPFlatFXtex1'
+     spreadTime=5.000000
+     maxDrawScale=1.5
+     HDTPTexture="HDTPItems.Skins.HDTPFlatFXtex1"
+     Texture=Texture'DeusExItems.Skins.FlatFXTex1'
 }

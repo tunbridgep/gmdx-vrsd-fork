@@ -181,15 +181,24 @@ state Dying
 	}
 }
 
+exec function UpdateHDTPsettings()
+{
+    super.UpdateHDTPsettings();
+    if (IsHDTP())
+        Fragments[0]=class'HDTPLoader'.static.GetMesh("HDTPItems.HDTPShotguncasing");
+    else
+        Fragments[0]=LodMesh'DeusExItems.ShellCasing2';
+}
+
 defaultproperties
 {
      smokeprob=0.400000
-     Fragments(0)=LodMesh'HDTPItems.HDTPShotguncasing'
+     HDTPMesh="HDTPItems.HDTPShotguncasing"
      numFragmentTypes=1
      elasticity=0.400000
      ImpactSound=Sound'DeusExSounds.Generic.ShellHit'
      MiscSound=Sound'DeusExSounds.Generic.ShellHit'
-     Mesh=LodMesh'HDTPItems.HDTPShotguncasing'
+     Mesh=LodMesh'DeusExItems.ShellCasing2'
      DrawScale=1.400000
      CollisionRadius=2.870000
      CollisionHeight=0.920000

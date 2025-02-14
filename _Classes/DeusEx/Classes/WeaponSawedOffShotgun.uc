@@ -5,32 +5,6 @@ class WeaponSawedOffShotgun extends DeusExWeapon;
 
 var int lerpClamp;
 
-function ScopeToggle()
-{
-    return;       //CyberP: Hey fellow modders. Remove comments and the return call to renable iron sights on the shotgun.
-	//if(IsInState('Idle'))
-	//{
-	//	GoToState('ADSToggle');
-	//}
-}
-
-state ADSToggle
-{
-	ignores Fire, AltFire, PutDown, ReloadAmmo, DropFrom; // Whee! We can't do sweet F.A. in this state! :D
-	Begin:
-		If(bAimingDown)
-		{
-			PlayAnim('SupressorOn',,0.1);
-		}
-		else
-		{
-			PlayAnim('SuperssorOff',,0.1);
-		}
-		bAimingDown=!bAimingDown;
-		FinishAnim();
-		GoToState('Idle');
-}
-
 simulated function SawedPump()
 {
       SawedOffCockSound();
@@ -40,26 +14,13 @@ simulated function PlayIdleAnim()
 {
 	local float rnd;
 
-	if (bZoomed || bNearWall)
+	if (bZoomed || bNearWall || !IsHDTP() || iHDTPModelToggle < 2)
 		return;
 
 	rnd = FRand();
-	If(bAimingDown)
-	{
-      PlayAnim('still2',,0.1);
-	}
-	else
-    {
-		if (rnd < 0.03)
-			PlayAnim('Idle',,0.2);
-        //else if (rnd < 0.04)
-        //    PlayAnim('Idle3',,0.1);
-	}
+    if (rnd < 0.03)
+        PlayAnim('Idle',,0.2);
 }
-//Function Timer()
-//{
-//    SawedOffCockSound();
-//}
 
 simulated function PlaySelectiveFiring()
 {
@@ -70,16 +31,13 @@ simulated function PlaySelectiveFiring()
 	local float mod;
     local float hhspeed;
 
-    if (iHDTPModelToggle != 2)                                                  //RSD: Special routine only for Clyzm model
+    if (IsHDTP() && iHDTPModelToggle != 2)                                                  //RSD: Special routine only for Clyzm model
     {
         Super.PlaySelectiveFiring();
         return;
     }
 
-	if(!bAimingDown)
-		anim = 'Shoot';
-	else
-		anim = 'Shoot2';
+    anim = 'Shoot';
 
 	if (( Level.NetMode == NM_Standalone ) || ( DeusExPlayer(Owner) == DeusExPlayer(GetPlayerPawn())) )
 	{
@@ -121,103 +79,37 @@ simulated function PreBeginPlay()
 	}
 }
 
-simulated function renderoverlays(Canvas canvas)                                //RSD: Reinstated for HDTP/vanilla models
+function DisplayWeapon(bool overlay)
 {
-	if (iHDTPModelToggle == 1)
-    	multiskins[0] = Getweaponhandtex();
-	else if (iHDTPModelToggle == 0)
+    super.DisplayWeapon(overlay);
+    if (IsHDTP() && iHDTPModelToggle == 2 && overlay) //RSD: Clyzm Model
     {
-       multiskins[0]=GetWeaponHandTex();                                        //RSD: Fix vanilla hand tex
-       multiskins[3]=GetWeaponHandTex();
+        multiskins[1] = handstex;
     }
-
-	super.renderoverlays(canvas);
-
-	if (iHDTPModelToggle == 1)
-    	multiskins[0] = none;
-	else if (iHDTPModelToggle == 0)
+    /*
+    else if (IsHDTP() && iHDTPModelToggle == 1 && overlay) //HDTP Model
     {
-       multiskins[0]=none;                                                      //RSD: Fix vanilla hand tex
-       multiskins[3]=none;
+        multiskins[0] = handstex;
+    }
+    */
+    else if (overlay)
+    {
+        multiskins[0] = handstex;
     }
 }
 
 exec function UpdateHDTPsettings()                                              //RSD: New function to update weapon model meshes (specifics handled in each class)
 {
-    //RSD: HDTP Toggle Routine
-     //if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).inHand == self)
-     //     DeusExPlayer(Owner).BroadcastMessage(iHDTPModelToggle);
-     if (iHDTPModelToggle == 2)
-     {
-          PlayerViewMesh=LodMesh'FOMOD.sawed1st';
-          PickupViewMesh=LodMesh'DeusExItems.ShotgunPickup';
-          ThirdPersonMesh=LodMesh'DeusExItems.Shotgun3rd';
-     }
-     else if (iHDTPModelToggle == 1)
-     {
-          PlayerViewMesh=LodMesh'HDTPItems.HDTPShotgun';
-          PickupViewMesh=LodMesh'HDTPItems.HDTPsawedoff3rd';
-          ThirdPersonMesh=LodMesh'HDTPItems.HDTPsawedoffpickup';
-     }
-     else
-     {
-          PlayerViewMesh=LodMesh'DeusExItems.Shotgun';
-          PickupViewMesh=LodMesh'DeusExItems.ShotgunPickup';
-          ThirdPersonMesh=LodMesh'DeusExItems.Shotgun3rd';
-     }
-     //RSD: HDTP Toggle End
-
-     Super.UpdateHDTPsettings();
-}
-
-Function CheckWeaponSkins()
-{
-    //RSD: HDTP Toggle Routine
-     //if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).inHand == self)
-     //     DeusExPlayer(Owner).BroadcastMessage(iHDTPModelToggle);
-     if (iHDTPModelToggle == 2)                                                 //RSD: Clyzm model
-     {
-    if (owner != None && Owner.IsA('DeusExPlayer'))
+    if (IsHDTP())
     {
-       if (DeusExPlayer(Owner).inHand != None && DeusExPlayer(Owner).inHand == self)
-           multiskins[1] = GetWeaponHandTex();
-       else
-           multiskins[1] = None;
+        if (iHDTPModelToggle == 2)
+        {
+            HDTPPlayerViewMesh="FOMOD.sawed1st";
+        }
+        else if (iHDTPModelToggle == 1)
+            HDTPPlayerViewMesh="HDTPItems.HDTPShotgun";
     }
-    else
-       multiskins[1] = None;
-     }
-}
-
-function texture GetWeaponHandTex()
-{
-	local deusexplayer p;
-	local texture tex;
-
-    if (iHDTPModelToggle != 2)
-    	return Super.GetWeaponHandTex();
-
-    if (bIsRadar)//class'DeusExPlayer'.default.bRadarTran==True)                //RSD: Overhauled cloak/radar routines
-        return Texture'Effects.Electricity.Xplsn_EMPG';
-    else if (bIsCloaked)
-        return FireTexture'GameEffects.InvisibleTex';
-
-	tex = texture'weaponhandstex';
-
-	p = deusexplayer(owner);
-	if(p != none)
-	{
-		switch(p.PlayerSkin)
-		{
-			//default, black, latino, ginger, albino, respectively
-			case 0: tex = texture'FOMOD.HandTexFinal'; break;
-			case 1: tex = texture'FOMOD.HandTexFinalB'; break;
-			case 2: tex = texture'FOMOD.HandTexFinalL'; break;
-			case 3: tex = texture'FOMOD.HandTexFinalG'; break;
-			case 4: tex = texture'FOMOD.HandTexFinalA'; break;
-		}
-	}
-	return tex;
+    Super.UpdateHDTPsettings();
 }
 
 //
@@ -229,47 +121,18 @@ simulated function SwapMuzzleFlashTexture()
 
 	if (!bHasMuzzleFlash)
 		return;
-	if(playerpawn(owner) != none)      //currently diff meshes, see
-		i=2;
+	
+    if(playerpawn(owner) != none)      //diff meshes, see
+		MuzzleSlot=2;
 	else
-		i=1;
-
-	MultiSkins[i] = GetMuzzleTex();
+		MuzzleSlot=4;
+    
+    CurrentMuzzleFlash = GetMuzzleTex();
 
 	MuzzleFlashLight();
 	SetTimer(0.1, False);
 }
 
-
-simulated function EraseMuzzleFlashTexture()
-{
-	local int i;
-
-	if(playerpawn(owner) != none)      //currently diff meshes, see
-		i=2;
-	else
-		i=1;
-	if(bHasMuzzleflash)
-		MultiSkins[i] = None;
-}
-
-function EraseWeaponHandTex()
-{
-	multiskins[1] = None;                                                       //RSD: hand tex is slot 1
-}
-
-/*function Landed(Vector HitNormal)
-{
-	local Rotator rot;
-
-	Super.Landed(HitNormal);
-
-	bFixedRotationDir = False;
-    rot = Rotation;
-    rot.Pitch = 0;
-    rot.Roll = 16384;                                                           //RSD
-    SetRotation(rot);
-}*/
 
 state Reload
 {
@@ -278,7 +141,6 @@ state Reload
     Super.BeginState();
 
     lerpClamp = 0;
-    bAimingDown=False;
     BobDamping=default.BobDamping;
    }
 
@@ -340,11 +202,7 @@ state Idle
 	function Timer()
 	{
 		PlayIdleAnim();
-		 If(bAimingDown)
-	    {
-            BobDamping=0.9825;
-	    }
-		else if (!bNearWall && !activateAn)
+		if (!bNearWall && !activateAn)
 		{
             BobDamping=default.BobDamping;
         }
@@ -359,12 +217,7 @@ Begin:
 	}
 	else
 	{
-	    If(bAimingDown)
-	    {
-            PlayAnim('still2',,0.1);
-            BobDamping=0.9825;
-	    }
-		else if (!bNearWall && !activateAn)
+		if (!bNearWall && !activateAn)
 		{
 		    PlayAnim('STILL',,0.1);
             BobDamping=default.BobDamping;
@@ -392,17 +245,9 @@ local float p;
 		TweenAnim( AnimSequence, AnimFrame * 0.4 );
 	else
 	{
-		if(!bAimingDown)
-		{
-				PlayAnim('Down', p, 0.05);
-		}
-		else
-		{
-				PlayAnim('Down2', p, 0.05);
-		}
+            PlayAnim('Down', p, 0.05);
 	}
 	BobDamping=default.BobDamping;
-	bAimingDown=False; // Supresson defaults to off on deselect.
 }
 
 }
@@ -410,6 +255,7 @@ local float p;
 defaultproperties
 {
      weaponOffsets=(X=4.000000,Y=-4.000000,Z=-15.000000)
+     //weaponOffsets=(X=9.000000,Y=-4.000000,Z=-15.000000)
      LowAmmoWaterMark=4
      GoverningSkill=Class'DeusEx.SkillWeaponRifle'
      NoiseLevel=8.000000
@@ -466,9 +312,15 @@ defaultproperties
      InventoryGroup=6
      ItemName="Sawed-off Shotgun"
      PlayerViewOffset=(X=11.000000,Y=-4.000000,Z=-13.000000)
-     PlayerViewMesh=LodMesh'FOMOD.sawed1st'
+     PlayerViewMesh=LodMesh'DeusExItems.Shotgun'
      PickupViewMesh=LodMesh'DeusExItems.ShotgunPickup'
      ThirdPersonMesh=LodMesh'DeusExItems.Shotgun3rd'
+     HDTPPlayerViewMesh="HDTPItems.HDTPShotgun"
+     //SARGE: Use the vanilla models, so things aren't misaligned
+     //HDTPPickupViewMesh="HDTPItems.HDTPsawedoff3rd"
+     //HDTPThirdPersonMesh="HDTPItems.HDTPsawedoffpickup"
+     HDTPPickupViewMesh="DeusExItems.ShotgunPickup"
+     HDTPThirdPersonMesh="DeusExItems.Shotgun3rd"
      LandSound=Sound'DeusExSounds.Generic.DropMediumWeapon'
      Icon=Texture'DeusExUI.Icons.BeltIconShotgun'
      largeIcon=Texture'DeusExUI.Icons.LargeIconShotgun'

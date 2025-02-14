@@ -7,9 +7,6 @@ var PersonaLevelIconWindow winLevels;
 var bool  bActive;
 var int   hotkeyNumber;
 var bool  onWheel;
-var Color colIconActive;
-var Color colIconNormal;
-var Color colIconAlwaysActive;
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -18,8 +15,7 @@ var Color colIconAlwaysActive;
 event InitWindow()
 {
 	Super.InitWindow();
-
-	SetActive(False);
+    colIcon = class'Augmentation'.default.colInactive;
 }
 
 // ----------------------------------------------------------------------
@@ -68,22 +64,10 @@ function SetHotkeyNumber(int num)
 // SetActive()
 // ----------------------------------------------------------------------
 
-function SetActive(bool bNewActive)
+function SetActive(Augmentation aug)
 {
-	bActive = bNewActive;
-
-	if (bActive)
-		colIcon = colIconActive;
-	else
-		colIcon = colIconNormal;
-}
-
-function SetAlwaysActive(bool bNewActive)
-{
-	bActive = bNewActive;
-
-	if (bActive)
-		colIcon = colIconAlwaysActive;
+	bActive = aug.IsActive();
+    colIcon = aug.GetAugColor();
 }
 
 // ----------------------------------------------------------------------
@@ -101,8 +85,5 @@ function SetLevel(int newLevel)
 
 defaultproperties
 {
-     colIconActive=(B=255)
-     colIconNormal=(R=255,G=255)
-     colIconAlwaysActive=(G=255)
      buttonHeight=59
 }

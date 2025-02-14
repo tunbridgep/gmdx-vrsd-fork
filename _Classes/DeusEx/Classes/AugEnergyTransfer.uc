@@ -35,7 +35,7 @@ defaultproperties
      EnergyRate=0.000000
      Icon=Texture'GameMedia.UserInterface.AugIconEMP'
      smallIcon=Texture'GameMedia.UserInterface.AugIconEMPSmall'
-     bAlwaysActive=True
+     AugmentationType=Aug_Passive
      AugmentationName="Energy Transference (Passive)"
      Description="Nanoconducters in the arms absorb energy upon sustained contact with a perished organic lifeform.|nAs a measure to prevent abuse of power, the augmentation's manufacturer designed it to only function if the IFF identifies the victim to be a hostile threat.|n|nTECH ONE: Stamina and bioelectrical energy are transfered from the victim to the host when the victim is killed or knocked out through physical contact (10% Stamina, 3% Bioenergy). Knocking an unaware target out will result in additional energy transference (+50%).|n|nTECH TWO: Energy transference is increased moderately (20%, 6%).|n|nTECH THREE: Energy transference is increased significantly (30%, 9%).|n|nTECH FOUR: Energy transference is optimal (40%, 12%)."
      MPInfo="When active, you do double damage with melee weapons.  Energy Drain: Low"

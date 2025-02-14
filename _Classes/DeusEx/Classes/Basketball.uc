@@ -39,7 +39,8 @@ defaultproperties
      minDamageThreshold=40
      FragType=Class'DeusEx.PaperFragment'
      ItemName="Basketball"
-     Mesh=LodMesh'HDTPDecos.HDTPBasketBall'
+     HDTPMesh="HDTPDecos.HDTPBasketBall"
+     Mesh=LodMesh'DeusExDeco.Basketball'
      CollisionRadius=10.000000
      CollisionHeight=10.000000
      bBounce=True

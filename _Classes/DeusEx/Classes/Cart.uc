@@ -83,7 +83,8 @@ defaultproperties
      HitPoints=60
      bCanBeBase=True
      ItemName="Utility Push-Cart"
-     Mesh=LodMesh'HDTPDecos.HDTPCart'
+     HDTPMesh="HDTPDecos.HDTPCart"
+     Mesh=LodMesh'DeusExDeco.Cart'
      SoundRadius=24
      CollisionRadius=28.000000
      CollisionHeight=26.780001

@@ -1,172 +1,50 @@
 //=============================================================================
 // MedKit.
 //=============================================================================
-class MedKit extends DeusExPickup;
+class MedKit extends ConsumableItem;
 
 //
 // Healing order is head, torso, legs, then arms (critical -> less critical)
 //
 var int healAmount;
-var bool bNoPrintMustBeUsed;
 
-var localized string MustBeUsedOn;
-var localized String HealsLabel;                                                //RSD: Added
-var localized String FullHealth;
-
-//SARGE: Moved the Bioenergy perk-based max amount bonus here, was in DeusExPlayer
-function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
+function bool CanAssignSecondary(DeusExPlayer player)
 {
-    if (frobber.PerkManager.GetPerkWithClass(class'DeusEx.PerkCombatMedicsBag').bPerkObtained == true)
-        MaxCopies = 20;
-    return super.DoRightFrob(frobber,objectInHand);
+    return player.PerkManager.GetPerkWithClass(class'DeusEx.PerkCombatMedicsBag').bPerkObtained;
 }
 
-// ----------------------------------------------------------------------
-state Activated
+//SARGE: Cannot use if at max health
+function bool RestrictedUse(DeusExPlayer player)
 {
-	function Activate()
-	{
-		// can't turn it off
-	}
-
-	function BeginState()
-	{
-		local DeusExPlayer player;
-      local int MedSkillLevel;
-
-		Super.BeginState();
-
-		//player = DeusExPlayer(Owner);
-		player = DeusExPlayer(GetPlayerPawn());                                 //RSD: Altering this to enable generic LeftClick interact
-
-		if (player != None && player.Health == player.GenerateTotalMaxHealth())
-		{
-			player.ClientMessage(FullHealth);
-			GoToState('DeActivated');
-			return;
-		}
-
-		if (player != None)
-		{
-			
-			player.HealPlayer(healAmount, True);
-			if (player.SkillSystem!=None)
-			   MedSkillLevel=player.SkillSystem.GetSkillLevel(class'SkillMedicine');
-
-			// Medkits kill all status effects when used in multiplayer removed (player.Level.NetMode != NM_Standalone )||
-			if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkToxicologist').bPerkObtained == true)
-			{
-				player.StopPoison();
-				player.myPoisoner = None;
-	            player.poisonCounter = 0;
-                player.poisonTimer   = 0;
-            	player.poisonDamage  = 0;
-				player.drugEffectTimer = 0;	// stop the drunk effect
-			}
-		}
-
-		UseOnce();
-	}
-Begin:
+    return (player.Health >= player.GenerateTotalMaxHealth());
 }
 
-
-// ----------------------------------------------------------------------
-// UpdateInfo()
-// ----------------------------------------------------------------------
-
-function bool UpdateInfo(Object winObject)
+function OnActivate(DeusExPlayer player)
 {
-	local PersonaInfoWindow winInfo;
-	local DeusExPlayer player;
-	local String outText;
+    super.OnActivate(player);
 
-	winInfo = PersonaInfoWindow(winObject);
-	if (winInfo == None)
-		return False;
-
-	player = DeusExPlayer(Owner);
-
-	if (player != none && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkCombatMedicsBag').bPerkObtained == true)
-		MaxCopies = 25;
-
-	if (player != None)
-	{
-		winInfo.SetTitle(itemName);
-		if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkCombatMedicsBag').bPerkObtained == true)
-			winInfo.AddSecondaryButton(self);                                   //RSD: Can now equip medkits as secondaries with the Combat Medic's Bag perk
-		winInfo.SetText(Description $ winInfo.CR() $ winInfo.CR());
-        winInfo.AppendText(Sprintf(healsLabel,player.CalculateSkillHealAmount(30)) $ winInfo.CR()); //RSD Display heal amount
-		if (!bNoPrintMustBeUsed)
-		{
-			winInfo.AppendText(winInfo.CR() $ MustBeUsedOn $ winInfo.CR());
-		}
-		else
-		{
-			bNoPrintMustBeUsed = False;
-		}
-
-		// Print the number of copies
-		outText = CountLabel @ String(NumCopies);
-
-		winInfo.AppendText(winInfo.CR() $ outText);
-	}
-
-	return True;
+    // Medkits kill all status effects when used in multiplayer removed (player.Level.NetMode != NM_Standalone )||
+    if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkToxicologist').bPerkObtained == true)
+    {
+        player.StopPoison();
+        player.myPoisoner = None;
+        player.poisonCounter = 0;
+        player.poisonTimer   = 0;
+        player.poisonDamage  = 0;
+        player.drugEffectTimer = 0;	// stop the drunk effect
+    }
 }
 
-// ----------------------------------------------------------------------
-// NoPrintMustBeUsed()
-// ----------------------------------------------------------------------
-
-function NoPrintMustBeUsed()
+//Override this to use medicine skill
+//lazy hack
+function HealMe(DeusExPlayer player)
 {
-	bNoPrintMustBeUsed = True;
+    player.HealPlayer(healAmount, True);
 }
 
-// ----------------------------------------------------------------------
-// GetHealAmount()
-//
-// Arms and legs get healing bonuses
-// ----------------------------------------------------------------------
-
-function float GetHealAmount(int bodyPart, optional float pointsToHeal)
+function int GetHealAmount(DeusExPlayer player)
 {
-	local float amt;
-
-	if (pointsToHeal == 0)
-		pointsToHeal = healAmount;
-
-	// CNN - just make all body parts equal to avoid confusion
-	return pointsToHeal;
-/*
-	switch (bodyPart)
-	{
-		case 0:		// head
-			amt = pointsToHeal * 2; break;
-			break;
-
-		case 1:		// torso
-			amt = pointstoHeal;
-			break;
-
-		case 2:		// right arm
-			amt = pointsToHeal * 1.5; break;
-
-		case 3:		// left arm
-			amt = pointsToHeal * 1.5; break;
-
-		case 4:		// right leg
-			amt = pointsToHeal * 1.5; break;
-
-		case 5:		// left leg
-			amt = pointsToHeal * 1.5; break;
-
-		default:
-			amt = pointstoHeal;
-	}
-
-	return amt;*/
+    return player.CalculateSkillHealAmount(healAmount);
 }
 
 // ----------------------------------------------------------------------
@@ -186,9 +64,7 @@ defaultproperties
 {
      bAutoActivate=True
      healAmount=30
-     MustBeUsedOn="Use to heal critical body parts, or use on character screen to direct healing at a certain body part."
-	 FullHealth="You're already at full Health"
-     HealsLabel="Heals %d points"
+	 CannotUse="You're already at full Health"
      maxCopies=15
      bCanHaveMultipleCopies=True
      bActivatable=True
@@ -204,7 +80,7 @@ defaultproperties
      largeIconHeight=46
      Description="A first-aid kit.|n|n<UNATCO OPS FILE NOTE JR095-VIOLET> The nanomachines of an augmented agent will automatically metabolize the contents of a medkit to efficiently heal damaged areas. An agent with medical training could greatly expedite this process. -- Jaime Reyes <END NOTE>"
      beltDescription="MEDKIT"
-     Skin=Texture'HDTPItems.Skins.HDTPMedKitTex1'
+     HDTPSkin="HDTPItems.Skins.HDTPMedKitTex1"
      Mesh=LodMesh'DeusExItems.MedKit'
      CollisionRadius=7.500000
      CollisionHeight=1.000000

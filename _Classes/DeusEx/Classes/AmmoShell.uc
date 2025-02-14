@@ -3,6 +3,14 @@
 //=============================================================================
 class AmmoShell extends DeusExAmmo;
 
+enum EPickupStyle
+{
+	E_Normal,
+    E_Single,
+};
+
+var(GMDX) EPickupStyle style;
+
 var bool bWaitForIt;
 
 //
@@ -33,6 +41,27 @@ var bool bWaitForIt;
 	}
 	return False;
 } */
+
+//SARGE: Allow single style
+//TODO: Properly localise this
+exec function UpdateHDTPSettings()
+{
+    Super.UpdateHDTPSettings();
+    if (style == E_Single)
+    {
+        Mesh = class'HDTPLoader'.static.GetMesh2("HDTPItems.HDTPShotguncasing","DeusExItems.ShellCasing2",IsHDTP());
+        PickupViewMesh = class'HDTPLoader'.static.GetMesh2("HDTPItems.HDTPShotguncasing","DeusExItems.ShellCasing2",IsHDTP());
+        PlayerViewMesh = class'HDTPLoader'.static.GetMesh2("HDTPItems.HDTPShotguncasing","DeusExItems.ShellCasing2",IsHDTP());
+        ThirdPersonMesh = class'HDTPLoader'.static.GetMesh2("HDTPItems.HDTPShotguncasing","DeusExItems.ShellCasing2",IsHDTP());
+        ItemArticle="a";
+        FamiliarName="Shotgun Shell";
+        UnfamiliarName="Shotgun Shell";
+        AmmoAmount=1;
+        ItemName="12 Gauge Buckshot Shell";
+        SetCollisionSize(2.570000, 0.620000);
+        DrawScale=1.200000;
+    }
+}
 
 function Timer()
 {
@@ -116,14 +145,14 @@ defaultproperties
      MaxAmmo=30
      ItemName="12 Gauge Buckshot Shells"
      ItemArticle="some"
-     PickupViewMesh=LodMesh'HDTPItems.HDTPammoshell'
      Icon=Texture'DeusExUI.Icons.BeltIconAmmoShells'
      largeIcon=Texture'DeusExUI.Icons.LargeIconAmmoShells'
      largeIconWidth=34
      largeIconHeight=45
      Description="Standard 12 gauge shotgun shell; very effective for close-quarters combat against soft targets, but useless against body armor."
      beltDescription="BUCKSHOT"
-     Mesh=LodMesh'HDTPItems.HDTPammoshell'
+     HDTPMesh="HDTPItems.HDTPammoshell"
+     Mesh=LodMesh'DeusExItems.AmmoShell'
      CollisionRadius=9.300000
      CollisionHeight=10.210000
      bCollideActors=True

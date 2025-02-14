@@ -1,7 +1,7 @@
 //=============================================================================
 // SphereEffect.
 //=============================================================================
-class SphereEffectShield2 extends Effects;
+class SphereEffectShield2 extends GMDXEffect;
 
 //simulated function Tick(float deltaTime)
 //{
@@ -13,7 +13,8 @@ defaultproperties
      LifeSpan=0.060000
      DrawType=DT_Mesh
      Style=STY_Translucent
-     Skin=Texture'HDTPDecos.Skins.HDTPAlarmLightTex6'
+     HDTPSkin"HDTPDecos.Skins.HDTPAlarmLightTex6"
+     Skin=Texture'DeusExDeco.Skins.AlarmLightTex6'
      Mesh=LodMesh'DeusExItems.SphereEffect'
      DrawScale=7.500000
      ScaleGlow=2.000000

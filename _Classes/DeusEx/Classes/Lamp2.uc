@@ -7,7 +7,8 @@ defaultproperties
 {
      HitPoints=3
      ItemName="Halogen Lamp"
-     Mesh=LodMesh'HDTPDecos.HDTPlamp2'
+     Mesh=LodMesh'DeusExDeco.Lamp2'
+     HDTPMesh="HDTPDecos.HDTPlamp2"
      CollisionRadius=14.000000
      CollisionHeight=47.000000
      LightHue=140

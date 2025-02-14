@@ -5,26 +5,31 @@ class PerkCombatMedicsBag extends Perk;
 
 function OnPerkPurchase()
 {
-    local Medkit med;
-    local BioelectricCell cell;
-
-    foreach PerkOwner.AllActors(class'Medkit',med)
-    {
-        med.MaxCopies = 20;
-    }
-    foreach PerkOwner.AllActors(class'BioelectricCell',cell)
-    {
-        cell.MaxCopies = 25;
-    }
+    class'BioelectricCell'.default.MaxCopies += 5;
+    class'Medkit'.default.MaxCopies += 5;
 }
+
+/*
+function OnMapLoadAndPurchase()
+{
+    local Medkit MK;
+    local BioelectricCell BE;
+
+    foreach PerkOwner.AllActors(class'Medkit',MK)
+        MK.MaxCopies = MK.default.MaxCopies;
+    foreach PerkOwner.AllActors(class'BioelectricCell',BE)
+        BE.MaxCopies = BE.default.MaxCopies;
+}
+*/
 
 defaultproperties
 {
     PerkName="COMBAT MEDIC'S BAG"
-    PerkDescription="|nAn agent can carry five additional medkits and biocells each and swiftly apply them as secondary items.|n|nRequires: Medicine: MASTER"
+    PerkDescription="An agent can carry %d additional medkits and biocells each and swiftly apply them as secondary items."
     PerkSkill=Class'DeusEx.SkillMedicine'
     PerkIcon=Texture'RSDCrap.UserInterface.PerkCombatMedicsBag'
     PerkCost=250
     PerkLevelRequirement=3
-    PerkValue=1
+    PerkValueDisplay=Standard
+    PerkValue=5
 }

@@ -14,15 +14,37 @@ enum ESkinColor
 
 var() ESkinColor SkinColor;
 
-function BeginPlay()
+exec function UpdateHDTPsettings()
 {
-
-	Super.BeginPlay();
+	Super.UpdateHDTPsettings();
 
 	switch (SkinColor)
 	{
-		case SC_UNATCO:       Skin = Texture'HDTPCharacters.Skins.HDTPMilbottex1';     Multiskins[1] = Texture'HDTPCharacters.Skins.HDTPMilbottex2'; break;
-		case SC_Chinese:      Skin = Texture'HDTPCharacters.Skins.HDTPMilbottex1HK';   Multiskins[1] = Texture'HDTPCharacters.Skins.HDTPMilbottex2HK'; break;
+		case SC_UNATCO:
+            if (IsHDTP())
+            {
+                Skin = class'HDTPLoader'.static.GetTexture("HDTPCharacters.Skins.HDTPMilbottex1");
+                Multiskins[1] = class'HDTPLoader'.static.GetTexture("HDTPCharacters.Skins.HDTPMilbottex2");
+            }
+            else
+            {
+                Skin = class'HDTPLoader'.static.GetTexture("DeusExCharacters.MilitaryBotTex1");
+                Multiskins[1] = None;
+            }
+            break;
+
+		case SC_Chinese:
+            if (IsHDTP())
+            {
+                Skin = class'HDTPLoader'.static.GetTexture("HDTPCharacters.Skins.HDTPMilbottex1HK");
+                Multiskins[1] = class'HDTPLoader'.static.GetTexture("HDTPCharacters.Skins.HDTPMilbottex2HK");
+            }
+            else
+            {
+                Skin = class'HDTPLoader'.static.GetTexture("DeusExCharacters.MilitaryBotTex2");
+                Multiskins[1] = None;
+            }
+            break;
 	}
 }
 
@@ -111,7 +133,8 @@ defaultproperties
      UnderWaterTime=20.000000
      AttitudeToPlayer=ATTITUDE_Ignore
      DrawType=DT_Mesh
-     Mesh=LodMesh'HDTPCharacters.HDTPMilbot'
+     HDTPMesh="HDTPCharacters.HDTPMilbot"
+     Mesh=LodMesh'DeusExCharacters.MilitaryBot'
      SoundRadius=224
      SoundVolume=224
      CollisionRadius=80.000000

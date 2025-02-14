@@ -14,18 +14,29 @@ enum ESkinColor
 
 var() ESkinColor SkinColor;
 
-function BeginPlay()
+function UpdateHDTPSettings()
 {
-	Super.BeginPlay();
+    local Texture tex;
+	Super.UpdateHDTPSettings();
 
 	switch (SkinColor)
 	{
-		case SC_WoodBrass:		Multiskins[1] = Texture'HDTPCeilingFanTex1'; break;
-		case SC_DarkWoodIron:	Multiskins[1] = Texture'HDTPCeilingFanTex2'; break;
-		case SC_White:			Multiskins[1] = Texture'HDTPCeilingFanTex3'; break;
-		case SC_WoodBrassFancy:	Multiskins[1] = Texture'HDTPCeilingFanTex4'; break;
-		case SC_WoodPlastic:	Multiskins[1] = Texture'HDTPCeilingFanTex5'; break;
+		case SC_WoodBrass:		tex = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPCeilingFanTex1","DeusExDeco.CeilingFanTex1",IsHDTP()); break;
+		case SC_DarkWoodIron:	tex = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPCeilingFanTex2","DeusExDeco.CeilingFanTex2",IsHDTP()); break;
+		case SC_White:      	tex = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPCeilingFanTex3","DeusExDeco.CeilingFanTex3",IsHDTP()); break;
+		case SC_WoodBrassFancy: tex = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPCeilingFanTex4","DeusExDeco.CeilingFanTex4",IsHDTP()); break;
+		case SC_WoodPlastic:    tex = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPCeilingFanTex5","DeusExDeco.CeilingFanTex5",IsHDTP()); break;
 	}
+
+    if (IsHDTP())
+        Multiskins[1] = tex;
+    else
+        Skin = tex;
+}
+
+function bool IsHDTP()
+{
+    return DeusExPlayer(GetPlayerPawn()) != None && DeusExPlayer(GetPlayerPawn()).bHDTPInstalled && class'CeilingFan'.default.iHDTPModelToggle > 0;
 }
 
 defaultproperties
@@ -37,7 +48,8 @@ defaultproperties
      ItemName="Ceiling Fan Motor"
      bPushable=False
      Physics=PHYS_None
-     Mesh=LodMesh'HDTPDecos.HDTPceilingfanmotor'
+     Mesh=LodMesh'DeusExDeco.CeilingFanMotor'
+     HDTPMesh="HDTPDecos.HDTPceilingfanMotor"
      SoundRadius=12
      SoundVolume=160
      AmbientSound=Sound'DeusExSounds.Generic.MotorHum'
@@ -46,4 +58,5 @@ defaultproperties
      bCollideWorld=False
      Mass=50.000000
      Buoyancy=30.000000
+     bHDTPFailsafe=False
 }

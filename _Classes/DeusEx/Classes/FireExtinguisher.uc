@@ -59,48 +59,55 @@ state Activated
 		local ProjectileGenerator gen;
 		local Vector loc;
 		local Rotator rot;
+        local DeusExPlayer player;
+        local bool bFirefighter;
+        local int burnTime, ejectSpeed;
+        local float projLife;
 
 		Super.BeginState();
 
+        player = DeusExPlayer(GetPlayerPawn());
+		
+        bFirefighter = player != None && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkFirefighter').bPerkObtained;
+
+        if (bFirefighter)
+        {
+            burnTime = 5;
+            projLife = 1.8;
+            ejectSpeed = 380;
+        }
+        else
+        {
+            burnTime = 4;
+            projLife = 1.5;
+            ejectSpeed = 320;
+        }
+
 		// force-extinguish the player
-		if (DeusExPlayer(Owner) != None)
-			if (DeusExPlayer(Owner).bOnFire)
-				DeusExPlayer(Owner).ExtinguishFire();
+		if (Owner == player && player.bOnFire)
+				player.ExtinguishFire();
 
 		// spew halon gas
 		if (bAltActivate)
 		{
-		gen = Spawn(class'ProjectileGenerator', None,, Location);
+            gen = Spawn(class'ProjectileGenerator', None,, Location);
+        }
+        else
+        {
+            rot = Pawn(Owner).ViewRotation;
+            loc = Vector(rot) * Owner.CollisionRadius;
+            loc.Z += Owner.CollisionHeight * 0.9;
+            loc += Owner.Location;
+            gen = Spawn(class'ProjectileGenerator', None,, loc, rot);
+        }
+
 		if (gen != None)
-		{
+        {
 			gen.ProjectileClass = class'HalonGas';
 			gen.SetBase(Owner);//(Owner);
-			gen.LifeSpan = 4;
-			gen.ejectSpeed = 380;//300;
-			gen.projectileLifeSpan = 1.5; //2.0;
-			gen.frequency = 0.4; //0.13;   //CyberP: modded values
-			gen.checkTime = 0.03; //0.06;
-			gen.bAmbientSound = True;
-			gen.DrawScale = 1.15;
-			gen.AmbientSound = sound'SteamVent'; //CyberP: better sound
-			gen.SoundVolume = 192;
-			gen.SoundPitch = 32;
-		}
-		}
-		else
-		{
-		rot = Pawn(Owner).ViewRotation;
-		loc = Vector(rot) * Owner.CollisionRadius;
-		loc.Z += Owner.CollisionHeight * 0.9;
-		loc += Owner.Location;
-		gen = Spawn(class'ProjectileGenerator', None,, loc, rot);
-		if (gen != None)
-		{
-			gen.ProjectileClass = class'HalonGas';
-			gen.SetBase(Owner);//(Owner);
-			gen.LifeSpan = 4;
-			gen.ejectSpeed = 320;//300;
-			gen.projectileLifeSpan = 1.5; //2.0;
+			gen.LifeSpan = burnTime;
+			gen.ejectSpeed = ejectSpeed;
+			gen.projectileLifeSpan = projLife;
 			gen.frequency = 0.3; //0.13;   //CyberP: modded values
 			gen.checkTime = 0.03; //0.06;
 			gen.bAmbientSound = True;
@@ -108,10 +115,10 @@ state Activated
 			gen.AmbientSound = sound'SteamVent'; //CyberP: better sound
 			gen.SoundVolume = 192;
 			gen.SoundPitch = 32;
-		}
         }
-		// blast for 3 seconds, then destroy
-		SetTimer(4.0, False);
+		// blast for 3 seconds, then destroy //SARGE: Actually 4
+        // or, for 8 seconds, if the player has the Firefighter perk
+        SetTimer(burnTime, False);
 	}
 Begin:
 }

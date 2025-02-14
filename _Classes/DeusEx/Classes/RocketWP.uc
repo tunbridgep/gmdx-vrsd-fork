@@ -66,8 +66,10 @@ defaultproperties
      blastRadius=224.000000
      DamageType=Flamed
      ItemName="WP Rocket"
+     HDTPMesh="HDTPItems.HDTPRocketHE"
+     hdtpReference=Class'DeusEx.WeaponGEPGun'
      Damage=60.000000
      ImpactSound=Sound'DeusExSounds.Generic.SmallExplosion2'
-     Mesh=LodMesh'HDTPItems.HDTPRocketHE'
+     Mesh=LodMesh'DeusExItems.RocketHE'
      AmbientSound=Sound'DeusExSounds.Weapons.WPApproach'
 }

@@ -73,6 +73,7 @@ function Timer()
     local ParticleGenerator PG;
     local SavePoint SP;
     Local DeusExMover DM;
+    local Light L;
 
 	Super.Timer();
 
@@ -102,6 +103,15 @@ function Timer()
 	}
 	else if (localURL == "14_OCEANLAB_LAB")
 	{
+        //SARGE: Do Lighting Accessibility
+        if (Player.bLightingAccessibility)
+        {
+            ForEach AllActors(class'Light', L)
+            {
+                DoLightingAccessibility(L, 'Light73');
+            }
+        }
+
 		// when the mission is complete, unhide the minisub and the diver team
 		if (!flags.GetBool('MS_UnhideSub'))
 		{

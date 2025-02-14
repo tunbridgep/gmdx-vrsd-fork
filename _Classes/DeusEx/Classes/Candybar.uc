@@ -3,21 +3,26 @@
 //=============================================================================
 class Candybar extends RSDEdible;
 
-var localized string bioboost;
-
 function Eat(DeusExPlayer player)
 {
-    player.HealPlayer(2, False);
     player.PlaySound(sound'CandyEat',SLOT_None,2);
-    player.Energy += 3;
-    if (player.Energy > player.EnergyMax)
-        player.Energy = player.EnergyMax;
-    player.ClientMessage(bioboost);
+}
+
+function SetSkin()
+{
+    switch (textureSet)
+    {
+        case 0: break; //handled by UpdateHDTPSettings();
+        case 1:
+            Skin = Texture'DeusExItems.Skins.CandyBarTex2'; //HDTP has no alternate candybar texture
+            break;
+    }
 }
 
 defaultproperties
 {
-     bioboost="Recharged 3 Bioelectrical Energy Units"
+     healAmount=2
+     bioenergyAmount=3
      bBreakable=True
      FragType=Class'DeusEx.PaperFragment'
      maxCopies=20
@@ -34,11 +39,12 @@ defaultproperties
      largeIconHeight=36
      Description="'CHOC-O-LENT DREAM. IT'S CHOCOLATE! IT'S PEOPLE! IT'S BOTH!(tm) 85% Recycled Material.'"
      beltDescription="CANDY BAR"
-     Skin=Texture'HDTPItems.Skins.HDTPCandybartex1'
+     HDTPSkin="HDTPItems.Skins.HDTPCandybartex1"
      Mesh=LodMesh'DeusExItems.Candybar'
      CollisionRadius=6.250000
      CollisionHeight=0.670000
      Mass=3.000000
      Buoyancy=4.000000
      fullness=6
+     totalSkins=2
 }

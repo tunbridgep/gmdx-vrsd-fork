@@ -2,28 +2,72 @@
 // RSDEdible
 // SARGE: Base Class to handle Edible objects (candy bars, sodas, etc)
 //=============================================================================
-class RSDEdible extends DeusExPickup abstract;
+class RSDEdible extends ConsumableItem abstract;
 
 var int fullness;                                                   //How much a given food item should fill up the player
 
-//SARGE: Move hunger/etc checks into separate function, so they can be used from the left frob button as well
+//Add fullness amount to the description field
+var localized String HungerLabel;
+
+var private PerkGlutton glutton;
+
+var const bool bGluttonous;                                         //SARGE: Is this edible affected by gluttony
+
+function RefreshGlutton()
+{
+    local DeusExPlayer player;
+
+    if (glutton != None)
+        return;
+
+    player = DeusExPlayer(GetPlayerPawn());
+
+    if (player != None)
+        glutton = PerkGlutton(player.PerkManager.GetPerkWithClass(class'DeusEx.PerkGlutton'));
+}
+
+//SARGE: Edibles can always be added as secondaries
+function bool CanAssignSecondary(DeusExPlayer player)
+{
+    return true;
+}
+
+//Gluttony perk lets us hold twice as much
+function int RetMaxCopies()
+{
+    RefreshGlutton();
+    if (glutton != none && glutton.bPerkObtained && bGluttonous)
+        return default.maxCopies * 2;
+    else
+        return default.maxCopies;
+}
+
+//Check hunger before letting us use them
 function bool RestrictedUse(DeusExPlayer player)
 {
-    return player != none && player.fullUp >= 100 && (player.bHardCoreMode || player.bRestrictedMetabolism);
+    local int maxFullness;
+    
+    RefreshGlutton();
+
+    maxFullness = 100;
+
+    if (glutton != None && glutton.bPerkObtained)
+        maxFullness *= glutton.PerkValue;
+
+    return player != none && player.fullUp >= maxFullness && (player.bHardCoreMode || player.bRestrictedMetabolism);
 }
 
-function bool DoLeftFrob(DeusExPlayer frobber)
+//Add Fullnes to description
+function string GetDescription2(DeusExPlayer player)
 {
-    if (!RestrictedUse(frobber)) //SARGE: We have to check this here rather than simply going to Activate because frobbing breaks otherwise
-        GotoState('Activated');
-    else
-        frobber.ClientMessage(frobber.fatty);
-    return false;
-}
+    local string str;
 
-//What happens when we eat this.
-function Eat(DeusExPlayer player)
-{
+    str = super.GetDescription2(player);
+
+    if (fullness > 0)
+        str = AddLine(str,sprintf(HungerLabel,fullness));
+
+    return str;
 }
 
 //Add to the players FullUp bar
@@ -34,40 +78,23 @@ function FillUp(DeusExPlayer player)
         player.fullUp = 200;
 }
 
-state Activated
+//What happens when we eat this consumable
+function Eat(DeusExPlayer player)
 {
-	function Activate()
-	{
-		// can't turn it off
-	}
+}
 
-	function BeginState()
-	{
-		local DeusExPlayer player;
-
-		Super.BeginState();
-
-		player = DeusExPlayer(GetPlayerPawn());
-
-        if (RestrictedUse(player))
-		{
-            GotoState('Deactivated');                                               //RSD: Otherwise we try to activate again on map transition
-            player.ClientMessage(player.fatty);
-            return;
-		}
-
-		if (player != None)
-		{
-            FillUp(player);
-            Eat(player);
-        }
-
-		UseOnce();
-	}
-Begin:
+//What happens when we eat this.
+function OnActivate(DeusExPlayer player)
+{
+    Super.OnActivate(player);
+    Eat(player);
+    FillUp(player);
 }
 
 defaultproperties
 {
      fullness=0
+     HungerLabel="Fullness Amount: %d%%"
+     CannotUse="You cannot consume any more at this time"
+     bGluttonous=true
 }
