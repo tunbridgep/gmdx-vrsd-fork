@@ -2034,6 +2034,7 @@ function GameDirectory GetSaveGameDirectory()
 //We can't modify the native function, so do this here, and then call it
 function int DoSaveGame(int saveIndex, optional String saveDesc)
 {
+	local GameDirectory saveDir;
     local TechGoggles tech;
 	local DeusExRootWindow root;
 	
