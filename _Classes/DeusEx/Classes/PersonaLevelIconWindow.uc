@@ -92,7 +92,7 @@ event StyleChanged()
 	else
 		colText = theme.GetColorFromName('HUDColor_ButtonTextNormal');
 
-    //colHeart = theme.GetColorFromName('HUDColor_ButtonTextDisabled');
+    colHeart = theme.GetColorFromName('HUDColor_ButtonTextNormal');
 }
 
 // ----------------------------------------------------------------------
