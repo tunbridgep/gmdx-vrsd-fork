@@ -2047,6 +2047,12 @@ function int DoSaveGame(int saveIndex, optional String saveDesc)
             if ((tech.Owner == Self) && tech.bActive)
                 tech.Activate();
     
+    if (saveIndex == 0)
+    {
+        saveDir = GetSaveGameDirectory();
+		saveIndex=saveDir.GetNewSaveFileIndex();
+    }
+    
     //root.hide();
     root.GenerateSnapshot(True);
     SaveGame(saveIndex, saveDesc);
