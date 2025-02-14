@@ -693,7 +693,7 @@ function RefreshWindow(float DeltaTime)
     if (selectedAugButton != None)
     {
         PersonaAugmentationItemButton(selectedAugButton).SetLevel(selectedAug.GetCurrentLevel());
-        PersonaAugmentationItemButton(selectedAugButton).SetHeartUpgraded(selectedAug.bHeartUpgraded);
+        PersonaAugmentationItemButton(selectedAugButton).SetHeartUpgraded(selectedAug.heartUpgraded);
         PersonaAugmentationItemButton(selectedAugButton).SetActive(selectedAug);
     }
 
@@ -847,7 +847,7 @@ function PersonaAugmentationItemButton CreateAugButton(Augmentation anAug, int a
     }
 
 	newButton.SetLevel(anAug.GetCurrentLevel());
-    newButton.SetHeartUpgraded(anAug.bHeartUpgraded);
+    newButton.SetHeartUpgraded(anAug.heartUpgraded);
 
 	return newButton;
 }
@@ -1164,7 +1164,7 @@ function UpgradeAugmentation()
 		if (selectedAugButton != None)
         {
 			PersonaAugmentationItemButton(selectedAugButton).SetLevel(selectedAug.GetCurrentLevel());
-			PersonaAugmentationItemButton(selectedAugButton).SetHeartUpgraded(selectedAug.bHeartUpgraded);
+			PersonaAugmentationItemButton(selectedAugButton).SetHeartUpgraded(selectedAug.heartUpgraded);
         }
 	}
 	else if (augCan != None)
@@ -1182,7 +1182,7 @@ function UpgradeAugmentation()
 		if (selectedAugButton != None)
         {
 			PersonaAugmentationItemButton(selectedAugButton).SetLevel(selectedAug.GetCurrentLevel());
-			PersonaAugmentationItemButton(selectedAugButton).SetHeartUpgraded(selectedAug.bHeartUpgraded);
+			PersonaAugmentationItemButton(selectedAugButton).SetHeartUpgraded(selectedAug.heartUpgraded);
         }
 
 	}

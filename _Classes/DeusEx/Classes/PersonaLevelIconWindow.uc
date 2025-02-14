@@ -7,7 +7,7 @@ class PersonaLevelIconWindow extends PersonaBaseWindow;
 var int     currentLevel;
 var Texture texLevel;
 var Bool    bSelected;
-var Bool    bHeart;
+var int    heart;
 
 var int iconSizeX;
 var int iconSizeY;
@@ -41,9 +41,9 @@ function SetSelected(bool bNewSelected)
 // SetHeart()
 // ----------------------------------------------------------------------
 
-function SetHeart(bool bNewHeart)
+function SetHeart(int newHeart)
 {
-	bHeart = bNewHeart;
+	heart = newHeart;
 	StyleChanged();
 }
 
@@ -60,7 +60,7 @@ event DrawWindow(GC gc)
 
 	for(levelCount=0; levelCount<=currentLevel; levelCount++)
 	{
-        if (levelCount == currentLevel && bHeart)
+        if (levelCount > currentLevel - heart)
             gc.SetTileColor(colHeart);
 
 		gc.DrawTexture(levelCount * (iconSizeX + 1), 0, iconSizeX, iconSizeY,
@@ -92,7 +92,7 @@ event StyleChanged()
 	else
 		colText = theme.GetColorFromName('HUDColor_ButtonTextNormal');
 
-    colHeart = theme.GetColorFromName('HUDColor_ButtonTextDisabled');
+    //colHeart = theme.GetColorFromName('HUDColor_ButtonTextDisabled');
 }
 
 // ----------------------------------------------------------------------
@@ -103,4 +103,5 @@ defaultproperties
      texLevel=Texture'DeusExUI.UserInterface.PersonaSkillsChicklet'
      iconSizeX=5
      iconSizeY=5
+     colHeart=(R=255,G=20,B=20)
 }
