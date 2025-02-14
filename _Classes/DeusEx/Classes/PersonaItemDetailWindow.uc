@@ -140,10 +140,10 @@ function SetIgnoreCount(bool bIgnore)
 // SetCount()
 // ----------------------------------------------------------------------
 
-function SetCount(int newCount)
+function SetCount(int newCount, optional int newCount2)
 {
 	if (winIcon != None)
-		winIcon.SetCount(newCount);
+		winIcon.SetCount(newCount,newCount2);
 }
 
 // ----------------------------------------------------------------------

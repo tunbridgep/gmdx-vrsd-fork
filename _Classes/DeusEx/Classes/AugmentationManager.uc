@@ -23,6 +23,8 @@ var localized string AugLocationFull;
 var localized String NoAugInSlot;
 var Augmentation augie;
 
+var travel int heartLevels;             //SARGE: How many free upgrades are provided by Synthetic Heart
+
 // ----------------------------------------------------------------------
 // Network Replication
 // ----------------------------------------------------------------------
@@ -393,10 +395,10 @@ function bool RemoveAugmentation(Class<Augmentation> takeClass)
     {
         ForEach Player.AllActors(class'Augmentation',allTheAugs)
         {
-            if (allTheAugs.bHasIt && allTheAugs.CurrentLevel != 0 && allTheAugs.bHeartUpgraded)
+            if (allTheAugs.bHasIt && allTheAugs.CurrentLevel != 0)
             {
-                allTheAugs.CurrentLevel--;
-                allTheAugs.bHeartUpgraded = false;
+                allTheAugs.CurrentLevel -= allTheAugs.heartLevels;
+                allTheAugs.heartLevels = 0;
                 allTheAugs.Setup();
             }
         }
@@ -438,15 +440,21 @@ function Augmentation GivePlayerAugmentation(Class<Augmentation> giveClass)
 		return anAug;
 	}
 
+    if (anAug.IsA('AugHeartLung')) //SARGE: Now, HeartLung gives us virtual upgrade canisters
+    {
+        heartLevels = 11;
+    }
 
+    /*
     if (anAug.IsA('AugHeartLung')) //CyberP: AugHeartLung upgrades all passive augs. //RSD: Active too now, taken from HUDMedBotAddAugsScreen.uc for less specialized code architecture
        ForEach Player.AllActors(class'Augmentation',allTheAugs)
         if (allTheAugs.bHasIt && allTheAugs.CurrentLevel != allTheAugs.MaxLevel) //RSD: removed && allTheAugs.bAlwaysActive, no distinction between active or passive for synth heart anymore
         {
-          allTheAugs.CurrentLevel++;                                            //RSD: changed from +=1 to ++ for no reason
-          allTheAugs.bHeartUpgraded = true;
+          allTheAugs.CurrentLevel++;
+          allTheAugs.heartLevels++;
           allTheAugs.Setup();
         }
+        */
 
 	anAug.bHasIt = True;
 
@@ -464,7 +472,7 @@ function Augmentation GivePlayerAugmentation(Class<Augmentation> giveClass)
       && anAug.CurrentLevel != anAug.MaxLevel)
     {
         anAug.CurrentLevel++;
-        anAug.bHeartUpgraded = true;
+        anAug.heartLevels++;
     }
 
 	if ( Player.Level.Netmode == NM_Standalone )

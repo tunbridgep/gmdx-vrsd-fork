@@ -8,8 +8,10 @@ var DeusExPickup item;
 var Bool         bIgnoreCount;
 var Bool         bDisabledByDefault;
 var int          itemCount;
+var int          count2;
 
 var localized String CountLabel;
+var localized String CountLabel2;
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -40,7 +42,10 @@ event DrawWindow(GC gc)
 	// Don't draw count if we're ignoring
 	if (!bIgnoreCount)
 	{
-		str = Sprintf(CountLabel, itemCount);
+        if (count2 > 0)
+            str = Sprintf(CountLabel2, itemCount, count2);
+        else
+            str = Sprintf(CountLabel, itemCount);
 
 		gc.SetFont(Font'FontMenuSmall_DS');
 		gc.SetAlignments(HALIGN_Center, VALIGN_Top);
@@ -73,7 +78,7 @@ function SetItem(DeusExPickup newItem)
 function UpdateIconColor()
 {
 	// Show the icon in half intensity if the player doesn't have it!
-	if ((item != None) || (bIgnoreCount) || ((!bIgnoreCount) && (itemCount > 0)))
+	if ((item != None) || (bIgnoreCount) || ((!bIgnoreCount) && (itemCount > 0 || count2 > 0)))
 	{
 		colIcon = Default.colIcon;
 	}
@@ -100,9 +105,10 @@ function SetIgnoreCount(bool bIgnore)
 // SetCount()
 // ----------------------------------------------------------------------
 
-function SetCount(int newCount)
+function SetCount(int newCount, optional int newCount2)
 {
 	itemCount = newCount;
+    count2 = newCount2;
 
 	UpdateIconColor();
 }
@@ -123,6 +129,7 @@ defaultproperties
 {
      bDisabledByDefault=True
      CountLabel="Count: %d"
+     CountLabel2="Count: %d+%d"
      iconPosWidth=53
      iconPosHeight=53
      buttonWidth=55

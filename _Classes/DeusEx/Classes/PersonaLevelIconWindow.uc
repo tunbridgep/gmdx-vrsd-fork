@@ -7,7 +7,7 @@ class PersonaLevelIconWindow extends PersonaBaseWindow;
 var int     currentLevel;
 var Texture texLevel;
 var Bool    bSelected;
-var Bool    bHeart;
+var int    heartLevels;
 
 var int iconSizeX;
 var int iconSizeY;
@@ -41,9 +41,9 @@ function SetSelected(bool bNewSelected)
 // SetHeart()
 // ----------------------------------------------------------------------
 
-function SetHeart(bool bNewHeart)
+function SetHeart(int newHeart)
 {
-	bHeart = bNewHeart;
+	heartLevels = newHeart;
 	StyleChanged();
 }
 
@@ -60,7 +60,7 @@ event DrawWindow(GC gc)
 
 	for(levelCount=0; levelCount<=currentLevel; levelCount++)
 	{
-        if (levelCount == currentLevel && bHeart)
+        if (levelCount > currentLevel - heartLevels)
             gc.SetTileColor(colHeart);
 
 		gc.DrawTexture(levelCount * (iconSizeX + 1), 0, iconSizeX, iconSizeY,

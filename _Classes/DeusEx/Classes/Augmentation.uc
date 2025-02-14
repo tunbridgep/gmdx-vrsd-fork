@@ -18,7 +18,7 @@ var travel int HotKeyNum;
 var travel Augmentation next;
 var bool bUsingMedbot;
 
-var bool bHeartUpgraded;    //SARGE: Stores if an aug was upgraded via heart. Used for downgrading if we remove heart.
+var travel int heartLevels;    //SARGE: Stores the number of levels we have been given from heart upgrades.
 
 var localized String EnergyRateLabel;
 var localized string OccupiesSlotLabel;
@@ -382,7 +382,7 @@ function bool IncLevel()
 // at full strength.
 // ----------------------------------------------------------------------
 
-simulated function bool CanBeUpgraded()
+simulated function bool CanBeUpgraded(optional out int upgradeType)
 {
 	local bool bCanUpgrade;
 	local Augmentation anAug;
@@ -395,6 +395,7 @@ simulated function bool CanBeUpgraded()
 	// the maximum level
 	if ( CurrentLevel < MaxLevel )
 	{
+
 		// Now check to see if the player has a cannister that can
 		// be used to upgrade this Augmentation
         augCan2 = AugmentationUpgradeCannisterOverdrive(player.FindInventoryType(Class'AugmentationUpgradeCannisterOverdrive'));
@@ -403,15 +404,24 @@ simulated function bool CanBeUpgraded()
         {
            bCanUpgrade = True;
            player.bSpecialUpgrade = True;
+           upgradeType = 1;
         }
 		else
         {
-          augCan = AugmentationUpgradeCannister(player.FindInventoryType(Class'AugmentationUpgradeCannister'));
-          if (augCan != None)
-          {
-			bCanUpgrade = True;
-			player.bSpecialUpgrade = False;
-		  }
+            augCan = AugmentationUpgradeCannister(player.FindInventoryType(Class'AugmentationUpgradeCannister'));
+            if (augCan != None)
+            {
+                bCanUpgrade = True;
+                player.bSpecialUpgrade = False;
+                upgradeType = 0;
+            }
+
+            else if (player.AugmentationSystem != None && player.AugmentationSystem.heartLevels > 0 && !IsA('AugHeartLung'))
+            {
+                bCanUpgrade = True;
+                upgradeType = 2;
+                player.bSpecialUpgrade = False;
+            }
         }
 	}
 

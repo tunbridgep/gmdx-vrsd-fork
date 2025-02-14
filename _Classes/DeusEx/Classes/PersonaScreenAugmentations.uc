@@ -635,10 +635,14 @@ function UpdateAugCans()
 {
 	local Inventory anItem;
 	local int augCanCount;
+    local int heartLevels;
 
 	if (winAugCans != None)
 	{
 		winAugCans.SetText(AugCanUseText);
+
+        if (!selectedAug.IsA('AugHeartLung'))
+            heartLevels = player.AugmentationSystem.heartLevels;
 
 		// Loop through the player's inventory and count how many upgrade cans
 		// the player has
@@ -653,7 +657,7 @@ function UpdateAugCans()
 			anItem = anItem.Inventory;
 		}
 
-		winAugCans.SetCount(augCanCount);
+		winAugCans.SetCount(augCanCount,heartLevels);
 	}
 }
 
@@ -693,7 +697,7 @@ function RefreshWindow(float DeltaTime)
     if (selectedAugButton != None)
     {
         PersonaAugmentationItemButton(selectedAugButton).SetLevel(selectedAug.GetCurrentLevel());
-        PersonaAugmentationItemButton(selectedAugButton).SetHeartUpgraded(selectedAug.bHeartUpgraded);
+        PersonaAugmentationItemButton(selectedAugButton).SetHeartUpgraded(selectedAug.heartLevels);
         PersonaAugmentationItemButton(selectedAugButton).SetActive(selectedAug);
     }
 
@@ -847,7 +851,7 @@ function PersonaAugmentationItemButton CreateAugButton(Augmentation anAug, int a
     }
 
 	newButton.SetLevel(anAug.GetCurrentLevel());
-    newButton.SetHeartUpgraded(anAug.bHeartUpgraded);
+    newButton.SetHeartUpgraded(anAug.heartLevels);
 
 	return newButton;
 }
@@ -893,6 +897,7 @@ function bool ButtonActivated(Window buttonPressed)
 		{
 			case btnUpgrade:
 				UpgradeAugmentation();
+                UpdateAugCans();
 				break;
 
 			case btnActivate:
@@ -1124,6 +1129,7 @@ function SelectAugmentation(PersonaItemButton buttonPressed)
 		selectedAugButton.SelectButton(True);
         selectedAugButton.bTickEnabled = True;
 		EnableButtons();
+        UpdateAugCans();
 	}
 }
 
@@ -1156,16 +1162,6 @@ function UpgradeAugmentation()
 		selectedAug.UpdateInfo(winInfo);
 		player.PlaySound(sound'medkituse',SLOT_None,,,,1.3);
 		augCan2.UseOnce();
-        if (winAugCans != None)
-        {
-          winAugCans.SetIcon(Texture'DeusExUI.Icons.LargeIconAugmentationUpgrade');
-        }
-		// Update the level icons
-		if (selectedAugButton != None)
-        {
-			PersonaAugmentationItemButton(selectedAugButton).SetLevel(selectedAug.GetCurrentLevel());
-			PersonaAugmentationItemButton(selectedAugButton).SetHeartUpgraded(selectedAug.bHeartUpgraded);
-        }
 	}
 	else if (augCan != None)
 	{
@@ -1178,17 +1174,27 @@ function UpgradeAugmentation()
 
 		augCan.UseOnce();
 
-		// Update the level icons
-		if (selectedAugButton != None)
-        {
-			PersonaAugmentationItemButton(selectedAugButton).SetLevel(selectedAug.GetCurrentLevel());
-			PersonaAugmentationItemButton(selectedAugButton).SetHeartUpgraded(selectedAug.bHeartUpgraded);
-        }
-
 	}
+    //SARGE: Allow upgrading via synthetic heart virtual upgrades
+    else if (player.AugmentationSystem.heartLevels > 0)
+    {
+		selectedAug.IncLevel();
+        selectedAug.heartLevels++;
+		selectedAug.UpdateInfo(winInfo);
+        player.AugmentationSystem.heartLevels--;
+		player.PlaySound(sound'medkituse',SLOT_None);
+    }
 
     //if (SelectedAug.IsA('AugAmmoCap'))                                          //RSD: Update MaxAmmo
     //   player.ChangeAllMaxAmmo();
+		
+    // Update the level icons
+    if (selectedAugButton != None)
+    {
+        PersonaAugmentationItemButton(selectedAugButton).SetLevel(selectedAug.GetCurrentLevel());
+        PersonaAugmentationItemButton(selectedAugButton).SetHeartUpgraded(selectedAug.heartLevels);
+    }
+
 
 	UpdateAugCans();
 	EnableButtons();
@@ -1245,25 +1251,36 @@ function EnableButtons()
 	// Upgrade can only be enabled if the player has an
 	// AugmentationUpgradeCannister that allows this augmentation to
 	// be upgraded
+    local DeusExPickup augCan, augCan2;
+
+    augCan = DeusExPickup(player.FindInventoryType(Class'AugmentationUpgradeCannister'));
+    augCan2 = DeusExPickup(player.FindInventoryType(Class'AugmentationUpgradeCannisterOverdrive'));
+	
+    //Reset the aug can display to default
+    if (winAugCans != None)
+    {
+        winAugCans.SetIconSize( Class'AugmentationUpgradeCannister'.Default.largeIconWidth, Class'AugmentationUpgradeCannister'.Default.largeIconHeight);
+        //winAugCans.StyleChanged();
+    }
 
 	if (selectedAug != None)
 		btnUpgrade.EnableWindow(selectedAug.CanBeUpgraded());
 	else
 		btnUpgrade.EnableWindow(False);
 
-	if (player.bSpecialUpgrade)
+    if (augCan2.NumCopies > 0 && winAugCans != None)
     {
-       if (winAugCans != None)
-       {
-          winAugCans.SetIcon(Texture'GMDXSFX.UI.AugOverrideBelt');
-       }
+        winAugCans.SetIcon(Texture'GMDXSFX.UI.AugOverrideBelt');
     }
-    else
+	else if ((augCan.NumCopies >= 1 || player.AugmentationSystem.heartLevels == 0 || selectedAug == None || selectedAug.IsA('AugHeartLung')) && winAugCans != None)
     {
-       if (winAugCans != None)
-       {
-          winAugCans.SetIcon(Texture'DeusExUI.Icons.LargeIconAugmentationUpgrade');
-       }
+        winAugCans.SetIcon(Texture'DeusExUI.Icons.LargeIconAugmentationUpgrade');
+    }
+    else if (winAugCans != None)
+    {
+        //winAugCans.colText = Augmentation.default.colPassive;
+        winAugCans.SetIcon(Texture'DeusExUI.UserInterface.AugIconHeartLung');
+        winAugCans.SetIconSize( Class'AugHeartLung'.Default.IconWidth, Class'AugHeartLung'.Default.IconHeight);
     }
 
 	// Only allow btnActivate to be active if
