@@ -872,9 +872,15 @@ log("  event.toActor    = " $ event.toActor );
 				
 				//SARGE: Add some ammo, too
 				if (invItemTo.IsA('WeaponMiniCrossbow'))
+                {
 					DeusExWeapon(invItemTo).AmmoType.AddAmmo(8);
+                    conWinThird.ShowReceivedItem(DeusExWeapon(invItemTo).AmmoType, 8);
+                }
 				else if (invItemTo.IsA('WeaponRifle'))
+                {
 					DeusExWeapon(invItemTo).AmmoType.AddAmmo(5);
+                    conWinThird.ShowReceivedItem(DeusExWeapon(invItemTo).AmmoType, 5);
+                }
 			 }
             }
             else if (invokeActor != none && invokeActor.IsA('Male2'))           //RSD: accessed none?
