@@ -810,11 +810,26 @@ function UseSelectedItem()
 {
 	local Inventory inv;
 	local int numCopies;
+	local Class<PersonaScreenBaseWindow> winClass;
+
+    winClass = Class'PersonaScreenAugmentations';
 
 	inv = Inventory(selectedItem.GetClientObject());
 
 	if (inv != None)
 	{
+        //SARGE: Special handling for aug canister
+		if (inv.IsA('AugmentationUpgradeCannister'))
+        {
+            winClass = Class'PersonaScreenAugmentations';
+            if (root != None && winClass != None)
+            {
+                PersonaScreenBaseWindow(GetParent()).SaveSettings();
+                root.InvokeUIScreen(winClass,Player.bRealUI || Player.bHardCoreMode);
+                return;
+            }
+        }
+
 		// If this item was equipped in the inventory screen,
 		// make sure we set inHandPending to None so it's not
 		// drawn when we exit the Inventory screen
@@ -1291,9 +1306,10 @@ function EnableButtons()
 			}
 			// Augmentation Upgrade Cannisters cannot be used
 			// on this screen
+            // SARGE: Now they can!
 			else if ( inv.IsA('AugmentationUpgradeCannister') )
 			{
-				btnUse.DisableWindow();
+				//btnUse.DisableWindow();
 				btnChangeAmmo.DisableWindow();
 			}
 			// Ammo can't be used or equipped
