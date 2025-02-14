@@ -6,7 +6,7 @@ class PerkSabotage extends Perk;
 defaultproperties
 {
     PerkName="SABOTAGE"
-    PerkDescription="|nBypassed alarm units deliver a non-lethal electric shock to whoever may attempt to trigger them.|n|nRequires: Electronics: TRAINED"
+    PerkDescription="Bypassed alarm units deliver a non-lethal electric shock to whoever may attempt to trigger them."
     PerkSkill=Class'DeusEx.SkillTech'
     PerkCost=50
     PerkLevelRequirement=1

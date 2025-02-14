@@ -38,6 +38,8 @@ var travel bool bIsRadar;                                                       
 var bool bJustUncloaked;                                                        //RSD: for splitting cloak/radar texture functionality
 var bool bJustUnRadar;                                                          //RSD: for splitting cloak/radar texture functionality
 var bool bAutoActivate;                                                         //Sarge: Auto activate with left click, rather than placing in the players hands                                                                                
+var localized string StackSizeLabel;                                            //Sarge: Show the stack size in the description
+
 var Texture handsTex;   //SARGE: Store the hand texture for performance. TODO: Use some sort of class/object to share this between SkilledTools and Weapons
 
 //SARGE: HDTP Model toggles
@@ -134,41 +136,6 @@ replication
 	reliable if ((Role < ROLE_Authority) && (bNetOwner))
 		UseOnce;
 }
-
-//GMDX cloak weapon
-/*function SetCloak(bool bEnableCloak,optional bool bForce)                     Overhauled cloak/radar routines
-{
-	if ((Owner==none)||(!Owner.IsA('DeusExPlayer'))) return;
-	if (Owner!=none && Owner.IsA('DeusExPlayer'))
-	{
-	if (bEnableCloak && class'DeusExPlayer'.default.bRadarTran == True &&(!bIsCloaked||bForce))
-	{
- 	  ShowCamo();
-	  bIsCloaked=true;
-	  AmbientGlow=255;
-      Style=STY_Normal;//STY_Translucent;                                       //RSD: Going for a solid texture here
-	  ScaleGlow=1.000000;
-	}
-    else if (bEnableCloak&&(!bIsCloaked||bForce))
-	{
-	  bIsCloaked=true;
-	  ShowCamo();
-      Style=STY_Translucent;
-	  ScaleGlow=0.500000;
-	  //AmbientGlow=255;
-	} else
-	if(!bEnableCloak&&(bIsCloaked||bForce))
-	{
-	  class'DeusExPlayer'.default.bRadarTran=false;
-	  AmbientGlow=default.AmbientGlow;
-	  Style=default.Style;
-	  ScaleGlow=default.ScaleGlow;
-	  if (bIsCloaked)
-	     HideCamo();
-	  bIsCloaked=false;
-	}
-    }
-}*/
 
 //SARGE: TODO: Move this (and the version from DeusExWeapon) to a new object, and share it between SkilledTools and Weapons
 function SetCloakRadar(bool bEnableCloak, bool bEnableRadar, optional bool bForce) //RSD: Overhauled cloak/radar routines
@@ -418,11 +385,13 @@ function PostPostBeginPlay()
 
 // ----------------------------------------------------------------------
 // by dasraiser for GMDX, replace all ref to maxCopies with this :)
+// SARGE: Changed to default.maxCopies so that everything is always consistent
 // ----------------------------------------------------------------------
 function int RetMaxCopies()
 {
-	return maxCopies;
+	return default.maxCopies;
 }
+
 // ----------------------------------------------------------------------
 // HandlePickupQuery()
 //
@@ -668,7 +637,17 @@ simulated function BreakItSmashIt(class<fragment> FragType, float size)
             {
             PlaySound(sound'SmallExplosion2', SLOT_None,2.0,, 2048);
             AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 640);
-            HurtRadius(15,320,'KnockedOut',2000,Location);
+			//SARGE: Increase radius and damage based on Firefighter perk
+			if (player != None && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkFirefighter').bPerkObtained)
+            {
+                //Do in a few bursts so that it doesn't affect movers
+				HurtRadius(40,420,'KnockedOut',2000,Location);
+				HurtRadius(40,420,'KnockedOut',2000,Location);
+				HurtRadius(40,420,'KnockedOut',2000,Location);
+				HurtRadius(40,420,'KnockedOut',2000,Location);
+            }
+			else
+				HurtRadius(15,320,'KnockedOut',2000,Location);
             hgl = spawn(class'HalonGasLarge');
             if (hgl != None)
             {
@@ -825,9 +804,53 @@ auto state Pickup
 	}
 }
 
-state DeActivated
+//SARGE: OnActivate() and OnDeactivate() are called when we successfully enter each state.
+//Used by child objects to define custom activation/deactivation behaviour
+function OnActivate(DeusExPlayer player)
 {
 }
+function OnDeActivate(DeusExPlayer player)
+{
+}
+
+state Activated
+{
+	function Activate()
+	{
+		Super.Activate();
+	}
+
+	function BeginState()
+	{
+		local DeusExPlayer player;
+
+		Super.BeginState();
+
+		player = DeusExPlayer(Owner);
+        if (player != None)
+            OnActivate(player);
+	}
+Begin:
+}
+
+// ----------------------------------------------------------------------
+// state DeActivated
+// ----------------------------------------------------------------------
+
+state DeActivated
+{
+	function BeginState()
+	{
+		local DeusExPlayer player;
+
+		Super.BeginState();
+
+		player = DeusExPlayer(Owner);
+		if (player != None)
+            OnDeActivate(player);
+	}
+}
+
 
 // ----------------------------------------------------------------------
 // UpdateInfo()
@@ -837,28 +860,80 @@ simulated function bool UpdateInfo(Object winObject)
 {
 	local PersonaInfoWindow winInfo;
 	local string str;
+    local DeusExPlayer player;
+
+    player = DeusExPlayer(Owner);
 
 	winInfo = PersonaInfoWindow(winObject);
-	if (winInfo == None)
+	if (winInfo == None || player == None)
 		return False;
 
-	winInfo.SetTitle(itemName);
-	if (IsA('Binoculars')|| IsA('Flare'))                                       //RSD: Assign Binoculars and Flares as a secondary item
+    //Set title
+	winInfo.SetTitle(GetTitle(player));
+
+    if (player != None && !player.DeclinedItemsManager.IsDeclined(class))
+		winInfo.AddDeclineButton(class);
+
+    if (player != None && CanAssignSecondary(player))
 		winInfo.AddSecondaryButton(self);
 
-    if (IsA('RSDEdible'))                                                       //Sarge: Allow edibles as secondaries (mainly used for drugs)
-		winInfo.AddSecondaryButton(self);
+	winInfo.SetText(GetDescription(player));
+		
+    winInfo.AppendText(winInfo.CR());
 
-	winInfo.SetText(Description $ winInfo.CR() $ winInfo.CR());
-
-	if (bCanHaveMultipleCopies)
-	{
-		// Print the number of copies
-		str = CountLabel @ String(NumCopies);
-		winInfo.AppendText(str);
-	}
+	winInfo.SetText(GetDescription2(player));
 
 	return True;
+}
+
+// ----------------------------------------------------------------------
+// AddLine()
+// Adds a newlineline if we already have some text, otherwise adds nothing and returns the original
+// ----------------------------------------------------------------------
+function string AddLine(string str, string newStr)
+{
+    if (str != "")
+        return str $ "|n" $ newStr;
+    else
+        return newStr;
+}
+
+// ----------------------------------------------------------------------
+// CanAssignSecondary()
+// ----------------------------------------------------------------------
+
+//SARGE: Now each object can define it's own function for whether it can be a secondary or not.
+function bool CanAssignSecondary(DeusExPlayer player)
+{
+    return false;
+}
+
+// ----------------------------------------------------------------------
+// Get Description
+// ----------------------------------------------------------------------
+
+//SARGE: Now each object can define it's own title, description etc.
+function string GetTitle(DeusExPlayer player)
+{
+    return itemName;
+}
+
+function string GetDescription(DeusExPlayer player)
+{
+    return Description;
+}
+
+//Added after a double line spacing on the Description panel.
+//Usually used for stats and other things.
+function string GetDescription2(DeusExPlayer player)
+{
+    local string str;
+
+	if (bCanHaveMultipleCopies )//&& MaxCopies > 1)
+		//return CountLabel @ String(NumCopies);
+        str = AddLine(str,sprintf(StackSizeLabel,NumCopies,RetMaxCopies()));
+
+    return str;
 }
 
 // ----------------------------------------------------------------------
@@ -1033,6 +1108,7 @@ defaultproperties
      FragType=Class'DeusEx.GlassFragment'
      CountLabel="x"
      msgTooMany="You can't carry any more of those"
+     StackSizeLabel="Amount Held: %d/%d"
      NumCopies=1
      PickupMessage="You found"
      ItemName="DEFAULT PICKUP NAME - REPORT THIS AS A BUG"

@@ -5,8 +5,20 @@ class SoyFood extends RSDEdible;
 
 function Eat(DeusExPlayer player)
 {
-    player.HealPlayer(5, False);
-	PlaySound(sound'EatingChips',SLOT_None,3.0);
+	player.PlaySound(sound'EatingChips',SLOT_None,3.0);
+}
+
+function SetSkin()
+{
+    local Texture tex;
+    Super.SetSkin();
+
+    //Set up Meshes
+    switch(textureSet)
+    {
+        case 0: tex = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPSoyFoodTex1","",IsHDTP()); break;
+        case 1: tex = class'HDTPLoader'.static.GetTexture("HK_Signs.HK_Sign_28"); break;
+    }
 }
 
 function SetSkin()
@@ -24,6 +36,7 @@ function SetSkin()
 
 defaultproperties
 {
+     healAmount=5;
      bBreakable=True
      FragType=Class'DeusEx.PaperFragment'
      maxCopies=10

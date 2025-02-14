@@ -139,7 +139,7 @@ function bool DoLeftFrob(DeusExPlayer frobber)
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {
     //Don't allow frobbing while swimming, and only allow pushable objects
-    if (bPushable && frobber.swimTimer > 1 && !objectInHand)
+    if (bPushable && frobber.swimTimer > 1)
     {
         frobber.GrabDecoration();
         return false;
@@ -1245,8 +1245,8 @@ auto state Active
        massMult+=0.1;  //CyberP: bPushable check above means objects are trivial (e.g no hackable devices) which is
        damMult=4;      //CyberP: relevant as we don't want to deal extra dam to turrets etc nor send them flying, of course!
       }
-      else if (EventInstigator != none && EventInstigator.Weapon != none && EventInstigator.Weapon.IsA('WeaponCrowbar')) //RSD: New special effect for the crowbar: additional 5 damage vs inanimate objects
-       damage += 5;
+      else if (EventInstigator != none && EventInstigator.Weapon != none && EventInstigator.Weapon.IsA('WeaponCrowbar')) //RSD: New special effect for the crowbar: additional 5 damage vs inanimate objects //SARGE: Now 2x
+       damage *= 2;
     }
 
     if (IsA('Basketball'))

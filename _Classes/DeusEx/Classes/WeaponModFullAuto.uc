@@ -11,6 +11,7 @@ class WeaponModFullAuto extends WeaponMod;
 
 function ApplyMod(DeusExWeapon weapon)
 {
+	Super.ApplyMod(weapon);
 	if (weapon != None)
 	{
 	    if (weapon.IsA('WeaponStealthPistol'))

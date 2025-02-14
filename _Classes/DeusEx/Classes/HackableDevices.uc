@@ -166,14 +166,18 @@ function Tick(float deltaTime)
 //
 function StopHacking(optional bool aborted)
 {
+	local Perk perkCracked;
+
 	// alert NPCs that I'm not messing with stuff anymore
 	AIEndEvent('MegaFutz', EAITYPE_Visual);
 	bHacking = False;
 	if (curTool != None)
 	{
+		perkCracked = hackPlayer.PerkManager.GetPerkWithClass(class'DeusEx.PerkCracked');
+	
 		curTool.StopUseAnim();
 		curTool.bBeingUsed = False;
-		if (!aborted && !(initialHackStrength <= 0.05 && hackPlayer.PerkManager.GetPerkWithClass(class'DeusEx.PerkCracked').bPerkObtained == true)) //RSD: Changed CRACKED perk to hack <=5% devices for free
+		if (!aborted && !(initialHackStrength <= perkCracked.PerkValue && perkCracked.bPerkObtained)) //RSD: Changed CRACKED perk to hack <=5% devices for free
             curTool.UseOnce();
 	}
 	curTool = None;

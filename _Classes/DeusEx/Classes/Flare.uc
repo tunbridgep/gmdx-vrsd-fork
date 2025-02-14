@@ -21,6 +21,12 @@ var float quickThrowCombo;
 //but since that's still miles off release point, what the hell
 ////HDTP
 
+//SARGE: Always allow as secondary
+function bool CanAssignSecondary(DeusExPlayer player)
+{
+    return true;
+}
+
 function bool DoLeftFrob(DeusExPlayer frobber)
 {
     blClicked=true;

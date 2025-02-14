@@ -130,29 +130,39 @@ function bool DoLeftFrob(DeusExPlayer frobber)
 }
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {
-    if (leftFrobTimer ~= 0.0 || !bLocked)
+
+    //Nofmal interaction if 
+    if (!bLocked || frobber.inHand == None)
         return true;
 
     //Swap between lockpicks and nanokeyring
-    if (bLocked && frobber.inHand != None)
+    if (leftFrobTimer > 0.0)
     {
         if (frobber.inHand.isA('NanoKeyRing'))
         {
             if (!frobber.SelectMeleePriority(minDamageThreshold))
                 if (!frobber.SelectInventoryItem('Lockpick'))
                     return true;
+            leftFrobTimer = leftFrobTimerMax;
         }
         else if (frobber.inHand.isA('Lockpick'))
         {
             frobber.PutInHand(frobber.KeyRing);
+            leftFrobTimer = leftFrobTimerMax;
         }
         else if (frobber.inHand.isA('DeusExWeapon') && DeusExWeapon(frobber.inHand).bHandToHand)
         {
             if (!frobber.SelectInventoryItem('Lockpick'))
                 frobber.PutInHand(frobber.KeyRing);
+            leftFrobTimer = leftFrobTimerMax;
         }
     }
-    leftFrobTimer = leftFrobTimerMax;
+    else
+    {
+        frobber.DoAutoHolster();
+        return true;
+    }
+    
     return false;
 }
 
@@ -476,8 +486,8 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
 	if ((DamageType == 'EMP') || (DamageType == 'NanoVirus') || (DamageType == 'Shocked'))
 		return;
 
-    if (InstigatedBy != none && InstigatedBy.Weapon != none && InstigatedBy.Weapon.IsA('WeaponCrowbar')) //RSD: New special effect for the crowbar: additional 5 damage vs inanimate objects
-       damage += 5;
+    if (InstigatedBy != none && InstigatedBy.Weapon != none && InstigatedBy.Weapon.IsA('WeaponCrowbar')) //RSD: New special effect for the crowbar: additional 5 damage vs inanimate objects //SARGE: Now 2x
+       damage *= 2;
 
    //log("TakeDamage "@Damage@" "@instigatedBy@" "@bBreakable);
 	if (bBreakable)

@@ -3,7 +3,11 @@
 //=============================================================================
 class WeaponNanoSword extends DeusExWeapon;
 
-var bool bWasCrosshair;
+//SARGE: Make DTS require Bioenergy to function
+var travel ChargeManager chargeManager;
+var int chargePerUse;                           //How much charge we use per hit
+var int totalCharge;                           //How much charge we use per hit
+var float drained;                              //Prevent draining within a short time, in case we hit multiple targets.
 
 simulated function PreBeginPlay()
 {
@@ -18,10 +22,77 @@ simulated function PreBeginPlay()
 		AccurateRange = mpAccurateRange;
 		MaxRange = mpMaxRange;
 	}
-//	if (!bLasing&&(Owner!=none)&&(Owner.IsA('DeusExPlayer')))
-//	  DeusExPlayer.LaserToggle();
+
+    SetupChargeManager();
 }
 
+function DrainPower()
+{
+    local DeusExPlayer player;
+    local int skillValue;
+
+    if (owner == None || drained > 0)
+        return;
+
+    player = DeusExPlayer(owner);
+
+    /*
+    if (player != None)
+		skillValue = player.SkillSystem.GetSkillLevel(governingSkill);
+
+    //player.clientmessage("SkillValue: " $ skillValue);
+
+    chargeManager.Drain(25 * (4.0 - skillValue));
+    */
+    //SARGE: No longer based on weapon skill
+    chargeManager.Drain(chargePerUse);
+    drained = 0.5;
+}
+
+function Tick(float deltaTime)
+{
+    super.Tick(deltaTime);
+    drained = MAX(0,drained - deltaTime);
+}
+
+//Initialise charge manager and link the player to it
+function SetupChargeManager()
+{
+    if (chargeManager == None)
+    {
+	    chargeManager = new(Self) class'ChargeManager';
+        chargeManager.SetMaxCharge(totalCharge,true);
+        chargeManager.chargeMult = 0.3;
+    }
+        
+    if (owner.IsA('DeusExPlayer'))
+        ChargeManager.Setup(DeusExPlayer(owner),self);
+}
+
+function string DoAmmoInfoWindow(Pawn P, PersonaInventoryInfoWindow winInfo)
+{
+	winInfo.SetText(sprintf(chargeManager.ChargeRemainingLabel,chargeManager.GetCurrentCharge()));
+    winInfo.SetText(sprintf(chargeManager.BiocellRechargeAmountLabel,chargeManager.GetRechargeAmountDisplay()));
+    winInfo.AddLine();
+}
+
+function bool CanUseWeapon(DeusExPlayer player, optional bool noMessage)
+{
+    if (ChargeManager != None && chargeManager.IsUsedUp())
+    {
+        if (!noMessage)
+            player.ClientMessage("Dragon's Tooth Sword is not charged");
+        return false;
+    }
+
+    return super.CanUseWeapon(player,noMessage);
+}
+
+//Stops the game crashing with a "Destroyed != 0" message when loading savegames or transitioning maps
+event Destroyed()
+{
+    CriticalDelete(chargeManager);
+}
 
 function DisplayWeapon(bool overlay)
 {
@@ -47,8 +118,6 @@ state DownWeapon
 {
 	function BeginState()
 	{
-//	   if (bLasing&&(Owner!=none)&&(Owner.IsA('DeusExPlayer')))
-//         DeusExPlayer(Owner).ToggleLaser();
 		Super.BeginState();
 		LightType = LT_None;
 	}
@@ -61,10 +130,18 @@ state Idle
 		Super.BeginState();
 		LightType = LT_Steady;
        AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 416);  //CyberP: drawing the sword makes noise
-//		if (!bLasing&&(Owner!=none)&&(Owner.IsA('DeusExPlayer')))
-//         DeusExPlayer(Owner).ToggleLaser();
-//      if (Owner.IsA('DeusExPlayer')) LaserOn();
 	}
+
+    //Put away weapon when it runs out of juice
+    function Tick(float deltaTime)
+    {
+        Super.Tick(deltaTime);
+        if (owner.IsA('DeusExPlayer') && ChargeManager != None)
+        {
+            if (ChargeManager.IsUsedUp())
+                DeusExPlayer(Owner).PutInHand(none);
+        }
+    }
 }
 
 auto state Pickup
@@ -73,26 +150,9 @@ auto state Pickup
 	{
 		Super.EndState();
 		LightType = LT_None;
+        SetupChargeManager();
 	}
 }
-/*
-state Active
-{
-   function BeginState()
-   {
-      if (!bLasing&&(Owner!=none)&&(Owner.IsA('DeusExPlayer')))
-         DeusExPlayer(Owner).ToggleLaser();
-      super.BeginState();
-   }
-   function EndState()
-   {
-      if (bLasing&&(Owner!=none)&&(Owner.IsA('DeusExPlayer')))
-         DeusExPlayer(Owner).ToggleLaser();
-      super.EndState();
-   }
-}
-
-*/
 
 defaultproperties
 {
@@ -100,7 +160,7 @@ defaultproperties
      LowAmmoWaterMark=0
      GoverningSkill=Class'DeusEx.SkillWeaponLowTech'
      reloadTime=0.000000
-     HitDamage=20
+     HitDamage=25
      maxRange=100
      AccurateRange=100
      BaseAccuracy=1.000000
@@ -146,7 +206,7 @@ defaultproperties
      largeIconWidth=205
      largeIconHeight=46
      invSlotsX=4
-     Description="The true weapon of a modern warrior, the Dragon's Tooth is not a sword in the traditional sense, but a nanotechnologically constructed blade that is dynamically 'forged' on command into a non-eutactic solid. Nanoscale whetting devices insure that the blade is both unbreakable and lethally sharp."
+     Description="The true weapon of a modern warrior, the Dragon's Tooth is not a sword in the traditional sense, but a nanotechnologically constructed blade that is dynamically 'forged' on command into a non-eutactic solid. Nanoscale whetting devices insure that the blade is both unbreakable and lethally sharp. Due to it's molecular nature, it requires a constant energy supply to function."
      beltDescription="DRAGON"
      CollisionRadius=32.000000
      CollisionHeight=2.400000
@@ -158,4 +218,6 @@ defaultproperties
      LightRadius=4
      Mass=20.000000
      minSkillRequirement=3;
+     chargePerUse=4
+     totalCharge=100
 }

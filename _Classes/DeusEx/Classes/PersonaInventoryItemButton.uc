@@ -107,6 +107,19 @@ event DrawWindow(GC gc)
 			gc.GetTextExtent(0, strWidth, strHeight, anItem.beltPos);
 			gc.DrawText(width - strWidth - 3, 3, strWidth, strHeight, anItem.beltPos);
 		}
+		
+        // SARGE: If it's a weapon, and it's modified
+		// draw a small plus in the
+		// upper-left corner designating it's modification status
+        // TODO: Add a proper icon, rather than a plus
+    	if ( anItem.isA('DeusExWeapon') && DeusExWeapon(anItem).bModified && player.bBeltShowModified )
+		{
+			gc.SetFont(Font'FontMenuSmall_DS');
+			gc.SetAlignments(HALIGN_Left, VALIGN_Center);
+			gc.SetTextColor(colHeaderText);
+			gc.GetTextExtent(0, strWidth, strHeight, "+");
+			gc.DrawText(3, 3, strWidth, strHeight, "+");
+		}
 
 		// If this is an ammo or a LAM (or other thrown projectile),
 		// display the number of rounds remaining
@@ -118,6 +131,10 @@ event DrawWindow(GC gc)
 		{
 			weapon = DeusExWeapon(anItem);
 			str = "";
+
+			//SARGE: Add charge for NanoSword
+            if (anItem.isA('WeaponNanoSword') && WeaponNanoSword(anItem).chargeManager != None && WeaponNanoSword(anItem).chargeManager.GetCurrentCharge() > 0)
+                str2 = Sprintf("%d%%", WeaponNanoSword(anItem).chargeManager.GetCurrentCharge());
 
 			if ((weapon != None) && weapon.bHandToHand && (weapon.AmmoType != None) && (weapon.AmmoName != class'AmmoNone'))
 			{

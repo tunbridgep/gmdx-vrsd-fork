@@ -46,6 +46,13 @@ var float disableTimeBase;                //Sarge: Our hacking skill is multipli
 var float disableTimeMult;                //Sarge: Our hacking skill is multiplied by this to give total disable time
 var bool bRebooting;                      //This will be set when the turret is hacked, to control rebooting
 
+//SARGE: Store the default state of the turret
+var travel bool bSetupDefaults;
+var travel bool bDefaultDisabled;
+var travel bool bDefaultActive;
+var travel bool bDefaultTrackPlayersOnly;
+var travel bool bDefaultTrackPawnsOnly;
+
 // networking replication
 replication
 {
@@ -240,14 +247,13 @@ function Tick(float deltaTime)
     {
         if (remainingTime <= 0)
         {
-            if (bDisabled)
-            {
-                bDisabled = False;
-                //Reset Tracking
-                bTrackPlayersOnly = true;
-                bTrackPawnsOnly = false;
-            }
-            bRebooting = false;
+            bRebooting = False;
+            bDisabled = bDefaultDisabled;
+            bActive = bDefaultActive;
+
+            //Reset Tracking
+            bTrackPlayersOnly = bDefaultTrackPlayersOnly;
+            bTrackPawnsOnly = bDefaultTrackPawnsOnly;
         }
     }
 
@@ -901,6 +907,17 @@ function PostBeginPlay()
 	prevTarget = None;
 	TargetRefreshTime = 0;
 
+    // Remember the default state so we can reset to it
+    if (!bSetupDefaults)
+    {
+        bDefaultDisabled = bDisabled;
+        bDefaultActive = bActive;
+        bDefaultTrackPlayersOnly = bTrackPlayersOnly;
+        bDefaultTrackPawnsOnly = bTrackPawnsOnly;
+        bSetupDefaults = true;
+        //log("bDisabled: " $ bDisabled $ ", bTrackPlayersOnly: " $ bTrackPlayersOnly);
+    }
+
 	Super.PostBeginPlay();
 }
 
@@ -964,6 +981,6 @@ defaultproperties
      Mass=50.000000
      Buoyancy=10.000000
      bVisionImportant=True
-     disableTimeBase=120.0;
-     disableTimeMult=60.0;
+     disableTimeBase=120.0
+     disableTimeMult=60.0
 }

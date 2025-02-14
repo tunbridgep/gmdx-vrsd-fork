@@ -16,57 +16,26 @@ var Texture ChargedIcon;
 var travel bool bIsActive;
 var localized String ChargeRemainingLabel;
 var localized String ChargeRemainingLabelSmall;
-var localized String DurabilityRemainingLabel;
+var localized String BiocellRechargeAmountLabel;
 var localized String CanOnlyBeOne;
 var localized String PickupInfo1;
 var localized String PickupInfo2;
-//var localized String PickupInfo3;                                             //RSD: Removed
-//var localized String PickupInfo4;                                             //RSD: Removed
 var localized String PickupInfo5;                                               //RSD: Added to make system generic
 var float chargeMult;                                                           //RSD: Mult for how much of total charge you get back from biocells
 
-// ----------------------------------------------------------------------
-// UpdateInfo()
-// ----------------------------------------------------------------------
-
-simulated function bool UpdateInfo(Object winObject)
+function string GetDescription2(DeusExPlayer player)
 {
-	local PersonaInfoWindow winInfo;
-	local DeusExPlayer player;
-	local String outText;
+    local string str;
 
-	winInfo = PersonaInfoWindow(winObject);
-	//winInfo = PersonaInventoryInfoWindow(winObject);
-	if (winInfo == None)
-		return False;
+    //Add Charge Amount
+    str = AddLine(str,sprintf(ChargeRemainingLabel,int(GetCurrentCharge())));
 
-	player = DeusExPlayer(Owner);
-
-	if (player != None)
-	{
-		winInfo.SetTitle(itemName);
-		if (IsA('TechGoggles'))
-			winInfo.AddSecondaryButton(self);                                   //RSD: Can now equip Tech Goggles as secondaries
-		winInfo.SetText(Description $ winInfo.CR() $ winInfo.CR());
-        if (IsA('HazMatSuit') || IsA('BallisticArmor'))
-        outText = DurabilityRemainingLabel $ Int(GetCurrentCharge()) $ "%";
-        else
-		outText = ChargeRemainingLabel @ Int(GetCurrentCharge()) $ "%";
-		if (IsA('HazMatSuit'))
-		outText = outText $ winInfo.CR() $ PickupInfo1;
-		else if (IsA('BallisticArmor'))
-		outText = outText $ winInfo.CR() $ PickupInfo2;
-		/*if (IsA('AdaptiveArmor') || IsA('Rebreather'))
-		outText = outText $ winInfo.CR() $ PickupInfo3;
-		else
-		outText = outText $ winInfo.CR() $ PickupInfo3;*/
-		if (DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkFieldRepair').bPerkObtained == true)                         //RSD: New Repairman perk
-			outText = outText $ winInfo.CR() $ PickupInfo5 @ int(150*(default.chargeMult))$"%";
-		else
-			outText = outText $ winInfo.CR() $ PickupInfo5 @ int(100*default.chargeMult)$"%"; //RSD: Generic now that chargeMult is stored in each class, not hacked
-		winInfo.AppendText(outText);
-	}
-	return True;
+    //Add Biocell Recharge Amount
+    str = AddLine(str,sprintf(BiocellRechargeAmountLabel,GetRechargeAmount()));
+    
+    str = AddLine(str, super.GetDescription2(player));
+    
+    return str;
 }
 
 // ----------------------------------------------------------------------
@@ -76,6 +45,15 @@ simulated function bool UpdateInfo(Object winObject)
 simulated function Float GetCurrentCharge()
 {
 	return (Float(Charge) / Float(Default.Charge)) * 100.0;
+}
+
+//Gets the recharge amount per biocell
+function int GetRechargeAmount()
+{
+    if (DeusExPlayer(Owner) != None && DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkFieldRepair').bPerkObtained == true)                         //RSD: New Repairman perk
+        return 150*default.chargeMult;
+    else 
+        return 100*default.chargeMult;
 }
 
 // ----------------------------------------------------------------------
@@ -510,13 +488,13 @@ defaultproperties
 {
      ActivateSound=Sound'DeusExSounds.Pickup.PickupActivate'
      UsedUpSound=Sound'DeusExSounds.Pickup.PickupDeactivate'
-     ChargeRemainingLabel="Charge remaining:"
+     ChargeRemainingLabel="Charge remaining: %d%%"
      ChargeRemainingLabelSmall="%d%%"
-     DurabilityRemainingLabel="Durability:"
+     //DurabilityRemainingLabel="Durability:"
      CanOnlyBeOne="You cannot equip more than one torso armor piece"
-     PickupInfo1="Environmental Protection: 60%"
-     PickupInfo2="Ballistic Protection: 35%"
-     PickupInfo5="Biocell Recharge Amount:"
+     //PickupInfo1="Environmental Protection: 60%"
+     //PickupInfo2="Ballistic Protection: 35%"
+     BiocellRechargeAmountLabel="Biocell Recharge Amount: %d%%"
      chargeMult=0.200000
      CountLabel="Uses:"
      bCanHaveMultipleCopies=True

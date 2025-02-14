@@ -57,7 +57,7 @@ defaultproperties
      mpAccurateRange=96
      mpMaxRange=96
      RecoilShaker=(X=4.000000,Y=0.000000,Z=4.000000)
-     msgSpec="+5 damage to doors, crates, and other static objects"
+     msgSpec="x2 damage to doors, crates, and other static objects"
      meleeStaminaDrain=1.000000
      NPCMaxRange=90
      NPCAccurateRange=90
