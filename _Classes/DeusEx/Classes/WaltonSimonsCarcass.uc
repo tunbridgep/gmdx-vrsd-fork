@@ -5,11 +5,12 @@ class WaltonSimonsCarcass extends DeusExCarcass;
 
 defaultproperties
 {
+	 hdtpReference=class'DeusEx.WaltonSimons'
      Mesh2=LodMesh'DeusExCharacters.GM_Trench_CarcassB'
      Mesh3=LodMesh'DeusExCharacters.GM_Trench_CarcassC'
-     HDTPMeshName="HDTPCharacters.HDTPWaltonSimonsCarcass"
-     HDTPMesh2Name="HDTPCharacters.HDTPWaltonSimonsCarcassB"
-     HDTPMesh3Name="HDTPCharacters.HDTPWaltonSimonsCarcassC"
+     HDTPMesh="HDTPCharacters.HDTPWaltonSimonsCarcass"
+     HDTPMesh2="HDTPCharacters.HDTPWaltonSimonsCarcassB"
+     HDTPMesh3="HDTPCharacters.HDTPWaltonSimonsCarcassC"
      HDTPMeshTex(0)="HDTPCharacters.skins.HDTPSimonsTex0"
      HDTPMeshTex(1)="HDTPCharacters.skins.HDTPSimonsTex1"
      HDTPMeshTex(2)="HDTPCharacters.skins.HDTPSimonsTex2"

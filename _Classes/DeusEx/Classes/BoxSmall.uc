@@ -18,7 +18,8 @@ defaultproperties
      FragType=Class'DeusEx.PaperFragment'
      ItemName="Cardboard Box"
      bBlockSight=True
-     Mesh=LodMesh'HDTPDecos.HDTPboxSmall'
+     HDTPMesh="HDTPDecos.HDTPboxSmall"
+     Mesh=LodMesh'DeusExDeco.BoxSmall'
      CollisionRadius=13.000000
      CollisionHeight=5.180000
      Mass=12.000000

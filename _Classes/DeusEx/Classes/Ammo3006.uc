@@ -44,11 +44,11 @@ function bool UseAmmo(int AmountNeeded)
             shell = spawn(class'ShellCasing',,, Owner.Location + offset,Pawn(Owner).viewrotation);
       }
 
-		if (shell != None)
+		if (shell != None && IsHDTP())
 		{
 			shell.Velocity = (FRand()*90+90) * Y + (20-FRand()*40) * X;
 			shell.Velocity.Z = 19+frand()*10;
-			shell.Mesh = lodmesh'HDTPItems.HDTPSniperCasing';
+			shell.Mesh = class'HDTPLoader'.static.GetMesh("HDTPItems.HDTPSniperCasing");
 			Shell.Smokeprob=0.2;
 			shell.DrawScale+=0.4;
 		}
@@ -66,13 +66,13 @@ defaultproperties
      MaxAmmo=20
      ItemName="30.06 Ammo"
      ItemArticle="some"
-     PickupViewMesh=LodMesh'HDTPItems.HDTPammo3006'
      Icon=Texture'DeusExUI.Icons.BeltIconAmmo3006'
      largeIconWidth=43
      largeIconHeight=31
      Description="Its high velocity and accuracy have made sniper rifles using the 30.06 round the preferred tool of individuals requiring 'one shot, one kill' for over fifty years."
      beltDescription="3006 AMMO"
-     Mesh=LodMesh'HDTPItems.HDTPammo3006'
+     HDTPMesh="HDTPItems.HDTPammo3006"
+     Mesh=LodMesh'DeusExItems.Ammo3006'
      CollisionRadius=8.000000
      CollisionHeight=3.860000
      bCollideActors=True

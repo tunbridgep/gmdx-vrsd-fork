@@ -8,7 +8,8 @@ defaultproperties
      HitPoints=15
      FragType=Class'DeusEx.PlasticFragment'
      ItemName="Houseplant"
-     Mesh=LodMesh'HDTPDecos.HDTPPlant1'
+     Mesh=LodMesh'DeusExDeco.Plant1'
+     HDTPMesh="HDTPDecos.HDTPPlant1"
      CollisionRadius=11.000000
      CollisionHeight=34.500000
      Mass=36.000000

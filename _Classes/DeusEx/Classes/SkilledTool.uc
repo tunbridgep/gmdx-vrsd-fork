@@ -22,16 +22,6 @@ function GetAugSpeed()
      }
 	}
 
-//Shorthand for accessing hands tex
-function texture GetWeaponHandTex()
-{
-	local deusexplayer p;
-	p = deusexplayer(owner);
-	if(p != none)
-        return p.GetWeaponHandTex();
-	return None;
-}
-
 // ----------------------------------------------------------------------
 // PlayUseAnim()
 // ----------------------------------------------------------------------
@@ -115,12 +105,6 @@ function OnUnEquipped()
 {
 }
 
-function LiquorTex()
-{
-  if (Owner != None)
-    {   MultiSkins[1] = Texture'FOMOD.HandTexFinal'; MultiSkins[2] = Texture'HDTPItems.HDTPLiquor40ozTex1';
-    MultiSkins[3] = Texture'HDTPItems.HDTPLiquor40ozTex2'; MultiSkins[4] = Texture'HDTPItems.HDTPLiquor40ozTex1';}
-}
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 state Idle
@@ -133,8 +117,6 @@ state Idle
 Begin:
 	//bHidden = False;
 	bOnlyOwnerSee = True;
-	if (IsA('Liquor40oz'))
-	    LiquorTex();
 	GetAugSpeed();
 	PlayAnim('Select',p, 0.1);
 DontPlaySelect:
@@ -202,13 +184,29 @@ Begin:
 simulated function PreBeginPlay()
 {
 	Super.PreBeginPlay();
-
+    
 	// Decrease the volume and radius for mp
 	if ( Level.NetMode != NM_Standalone )
 	{
 		SoundVolume = 96;
 		SoundRadius = 16;
 	}
+}
+
+exec function UpdateHDTPsettings()
+{
+    local int slot;
+
+    super.UpdateHDTPSettings();
+
+    for (slot = 0; slot < 8;slot++)
+    {
+        //if (slot != MuzzleSlot || !overlay)
+            if (IsHDTP())
+                multiskins[slot] = none;
+            else
+                multiskins[slot] = default.multiskins[slot];
+    }
 }
 
 // ----------------------------------------------------------------------

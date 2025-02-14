@@ -22,6 +22,7 @@ defaultproperties
      walkAnimMult=1.500000
      runAnimMult=1.500000
      bTank=True
+     HDTPMesh="HDTPCharacters.HDTPspiderbot"
      GroundSpeed=200.000000
      WaterSpeed=50.000000
      AirSpeed=144.000000
@@ -31,7 +32,7 @@ defaultproperties
      AttitudeToPlayer=ATTITUDE_Ignore
      HitSound1=Sound'GMDXSFX.Generic.bouncemetal'
      DrawType=DT_Mesh
-     Mesh=LodMesh'HDTPCharacters.HDTPspiderbot'
+     Mesh=LodMesh'DeusExCharacters.SpiderBot'
      CollisionRadius=111.930000
      CollisionHeight=50.790001
      Mass=1000.000000

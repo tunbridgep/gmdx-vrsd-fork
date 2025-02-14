@@ -361,6 +361,7 @@ defaultproperties
      WalkSound=Sound'DeusExSounds.Animal.GrayFootstep'
      BurnPeriod=0.000000
      runAnimMult=1.300000
+     HDTPMesh="HDTPCharacters.HDTPGray"
      GroundSpeed=550.000000
      WaterSpeed=50.000000
      AirSpeed=144.000000
@@ -382,7 +383,7 @@ defaultproperties
      HealthArmRight=400
      Alliance=Gray
      DrawType=DT_Mesh
-     Mesh=LodMesh'HDTPCharacters.HDTPGray'
+     Mesh=LodMesh'DeusExCharacters.Gray'
      ScaleGlow=0.500000
      AmbientGlow=12
      SoundRadius=48

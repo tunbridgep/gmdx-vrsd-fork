@@ -123,8 +123,9 @@ function Trigger(Actor Other, Pawn Instigator)
 			    emitter.bBlueBeam = False;
 			else
 			{
-			MultiSkins[1] = Texture'LaserSpot2';
-			Skin = Texture'HDTPlaserEmitterTex2';
+                MultiSkins[1] = Texture'LaserSpot2';
+                if (class'HDTPLoader'.static.HDTPInstalled())
+                    Skin = class'HDTPLoader'.static.GetTexture("HDTPDecos.HDTPlaserEmitterTex2");
 			}
 		}
 	}
@@ -146,7 +147,8 @@ function UnTrigger(Actor Other, Pawn Instigator)
 			bIsOn = False;
 			LastHitActor = None;
 			MultiSkins[1] = Texture'BlackMaskTex';
-			Skin = Texture'HDTPlaserEmitterTex0';
+            if (class'HDTPLoader'.static.HDTPInstalled())
+                Skin = class'HDTPLoader'.static.GetTexture("HDTPDecos.HDTPlaserEmitterTex0");
 		}
 	}
 
@@ -226,8 +228,9 @@ defaultproperties
      bHidden=False
      bDirectional=True
      DrawType=DT_Mesh
-     Skin=Texture'HDTPDecos.Skins.HDTPlaseremittertex0'
-     Mesh=LodMesh'HDTPDecos.HDTPlaseremitter'
+     HDTPSkin"HDTPDecos.Skins.HDTPlaseremittertex0"
+     HDTPMesh="HDTPDecos.HDTPlaseremitter"
+     Mesh=LodMesh'DeusExDeco.LaserEmitter'
      MultiSkins(1)=FireTexture'Effects.Laser.LaserSpot2'
      CollisionRadius=2.500000
      CollisionHeight=2.500000

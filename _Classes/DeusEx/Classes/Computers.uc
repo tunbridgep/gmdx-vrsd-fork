@@ -202,6 +202,7 @@ Begin:
 	if (!bOn)
 	{
       AdditionalActivation(curFrobber);
+        curFrobber.bUsingComputer = true;
 		bAnimating = True;
 		if (IsA('ComputerSecurity'))
 		    PlayAnim('Activate',2.0); //CyberP; faster anim rate so cannot run away from comp before hacking
@@ -227,6 +228,7 @@ Begin:
 	if (bOn)
 	{
       AdditionalDeactivation(curFrobber);
+        curFrobber.bUsingComputer = false;
 		ChangePlayerVisibility(True);
 		bAnimating = True;
 		PlayAnim('Deactivate');
@@ -323,9 +325,10 @@ function Frob(Actor Frobber, Inventory frobWith)
    // Don't allow someone else to use the computer when already in use.
    if (curFrobber != None)
    {
-      if (DeusExPlayer(Frobber) != None)
-         DeusExPlayer(Frobber).ClientMessage(Sprintf(CompInUseMsg,curFrobber.PlayerReplicationInfo.PlayerName));
-      return;
+        
+        //if (DeusExPlayer(Frobber) != None)
+        //DeusExPlayer(Frobber).ClientMessage(Sprintf(CompInUseMsg,curFrobber.PlayerReplicationInfo.PlayerName));
+        return;
    }
 
 	Super.Frob(Frobber, frobWith);
@@ -346,10 +349,10 @@ function Frob(Actor Frobber, Inventory frobWith)
 				bLockedOut = False;
 		}
 		if (!bAnimating && !bLockedOut)
-      {
-         curFrobber = player;
+        {
+            curFrobber = player;
 			GotoState('On');
-      }
+        }
 	}
 }
 

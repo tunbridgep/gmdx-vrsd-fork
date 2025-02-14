@@ -10,7 +10,8 @@ defaultproperties
      ItemName="Fan"
      bPushable=False
      Physics=PHYS_Rotating
-     Mesh=LodMesh'HDTPDecos.HDTPFan1'
+     Mesh=LodMesh'DeusExDeco.Fan1'
+     HDTPMesh="HDTPDecos.HDTPFan1"
      CollisionRadius=326.000000
      CollisionHeight=103.000000
      bCollideWorld=False

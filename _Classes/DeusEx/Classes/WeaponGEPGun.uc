@@ -27,13 +27,30 @@ var rotator OldRotation;
 var int lerpClamp;
 //GMDX:finish vars
 
+//SARGE: Set rocket travel time before explosion based on weapon range
+function OnProjectileFired(Projectile firedProjectile)
+{
+    local float rangeMult;
+    local DeusExProjectile P;
+
+    //P = DeusExProjectile(firedProjectile);
+
+    if (P == None)
+        return;
+
+    rangeMult = 5 + (ModAccurateRange*10); //At max, ModAccurateRange is 0.5
+    P.lifespan = rangeMult; //We are controlling this manually now.
+    P.bExplodeOnDestroy = true;
+    DeusExPlayer(GetPlayerPawn()).ClientMessage("Lifespan: " $ firedProjectile.lifespan);
+}
+
 //SARGE: Allow laser sight and scope when we have the Heavily Tweaked perk
 function CheckHeavilyTweaked()
 {
     local PerkHeavilyTweaked perk;
     local DeusExPlayer player;
 
-    log("Check Heavily Tweaked");
+    //log("Check Heavily Tweaked");
 
     player = DeusExPlayer(GetPlayerPawn());
 
@@ -53,16 +70,11 @@ function CheckHeavilyTweaked()
     }
 }
 
-function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
+//Check Heavily Tweaked
+function PostPostBeginPlay()
 {
     CheckHeavilyTweaked();
-    return Super.DoRightFrob(frobber,objectInHand);
-}
-
-function bool DoLeftFrob(DeusExPlayer frobber)
-{
-    CheckHeavilyTweaked();
-    return Super.DoLeftFrob(frobber);
+	Super.PostPostBeginPlay();
 }
 
 function SetMount(DeusExPlayer dxp)
@@ -89,43 +101,8 @@ function SetMount(DeusExPlayer dxp)
 	  }
 	}*/
 }
-function PreRender1()
-{
-	if(bHasScope)
-	{
-		if (!bIsCloaked && !bIsRadar)                                           //RSD: Overhauled cloak/radar routines
-		    multiskins[1] = none;
-		else
-        {
-         if (bIsRadar)
-	         Multiskins[1] = Texture'Effects.Electricity.Xplsn_EMPG';
-	     else
-             Multiskins[1] = FireTexture'GameEffects.InvisibleTex';
-        }
-	}
-	else
-		multiskins[1] = texture'pinkmasktex';
-	if(bHasLaser)
-	{
-		if (!bIsCloaked && !bIsRadar)                                           //RSD: Overhauled cloak/radar routines
-		    multiskins[2] = none;
-		else
-        {
-         if (bIsRadar)
-	         Multiskins[2] = Texture'Effects.Electricity.Xplsn_EMPG';
-	     else
-             Multiskins[2] = FireTexture'GameEffects.InvisibleTex';
-        }
-	}
-	else
-		multiskins[2] = texture'pinkmasktex';
-	if(bLasing)
-		multiskins[3] = none;
-	else
-		multiskins[3] = texture'pinkmasktex';
 
-}
-
+/*
 function PreRender2()
 {
 	if(bHasScope)
@@ -141,6 +118,7 @@ function PreRender2()
 	else
 	  multiskins[2] = texture'pinkmasktex';
 }
+*/
 
 function LaserOn(optional bool IgnoreSound)
 {
@@ -239,9 +217,46 @@ function RenderME(Canvas canvas,bool bSetWire,optional bool bClearZ)
 
 simulated function renderoverlays(Canvas canvas)
 {
-	PreRender1();
+    super.renderoverlays(canvas);
+	if(GEPinout==0.0)
+	{
+		PlayerViewOffset=Default.PlayerViewOffset*100;
+		FireOffset=Default.FireOffset;
+		SetHand(PlayerPawn(Owner).Handedness);
+		if (player!=none)
+		{
+			player.GEPmounted=none;
+			player=none;
+		}
+	} else
+	     RenderMe(canvas,false);
 
-	if(ammotype.isA('AmmoRocketWP'))
+	if (GEPinout>=1) RenderPortal(canvas);
+
+}
+function DisplayWeapon(bool overlay)
+{
+    super.DisplayWeapon(overlay);
+    if (IsHDTP())
+    {
+        if (overlay)
+        {
+            ShowWeaponAddon(1,bHasScope);
+            ShowWeaponAddon(2,bHasLaser);
+            ShowWeaponAddon(3,bLasing);
+        }
+        else
+        {
+            ShowWeaponAddon(1,bHasLaser);
+            ShowWeaponAddon(2,bLasing);
+            ShowWeaponAddon(3,bHasScope);
+        }
+    }
+
+    if (ammoType == none)
+    {
+    }
+	else if(ammotype.isA('AmmoRocketWP'))
 	{
 		multiskins[4] = texture'pinkmasktex';
 		multiskins[5] = none;
@@ -260,23 +275,6 @@ simulated function renderoverlays(Canvas canvas)
 //		multiskins[6] = texture'pinkmasktex';
 //	}
 
-	if(GEPinout==0.0)
-	{
-		PlayerViewOffset=Default.PlayerViewOffset*100;
-		FireOffset=Default.FireOffset;
-		SetHand(PlayerPawn(Owner).Handedness);
-		if (player!=none)
-		{
-			player.GEPmounted=none;
-			player=none;
-		}
-	  super.renderoverlays(canvas);
-	} else
-	     RenderMe(canvas,false);
-
-	PreRender2();
-
-	if (GEPinout>=1) RenderPortal(canvas);
 }
 
 function BecomePickup()
@@ -442,44 +440,14 @@ simulated function ScopeToggle()
 	//log("End: ScopeToggle()InState="@GetStateName());
 }
 
-exec function UpdateHDTPsettings()                                              //RSD: New function to update weapon model meshes (specifics handled in each class)
+exec function UpdateHDTPsettings()
 {
-	 //RSD: HDTP Toggle Routine
-     //if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).inHand == self)
-     //     DeusExPlayer(Owner).BroadcastMessage(iHDTPModelToggle);
-     if (iHDTPModelToggle == 1)
-     {
-          PlayerViewMesh=LodMesh'HDTPItems.HDTPGEPgun';
-          PickupViewMesh=LodMesh'HDTPItems.HDTPGEPgunPickup';
-          ThirdPersonMesh=LodMesh'HDTPItems.HDTPGEPgun3rd';
+     if (IsHDTP())
           addPitch=600;
-     }
      else
-     {
-          PlayerViewMesh=LodMesh'DeusExItems.GEPgun';
-          PickupViewMesh=LodMesh'DeusExItems.GEPgunPickup';
-          ThirdPersonMesh=LodMesh'DeusExItems.GEPgun3rd';
           addPitch=0;
-     }
-     //RSD: HDTP Toggle End
 
      Super.UpdateHDTPsettings();
-}
-
-function CheckWeaponSkins()
-{
-    if(bHasScope)
-	  multiskins[3] = none;
-	else
-	  multiskins[3] = texture'pinkmasktex';
-	if(bHasLaser)
-	  multiskins[1] = none;
-	else
-	  multiskins[1] = texture'pinkmasktex';
-	if(bLasing)
-	  multiskins[2] = none;
-	else
-	  multiskins[2] = texture'pinkmasktex';
 }
 
 simulated function PreBeginPlay()
@@ -497,12 +465,6 @@ simulated function PreBeginPlay()
 	  bHasScope = True;
 	}
 }
-
-//203
-//locked Sound'DeusExSounds.Weapons.GEPGunLock'
-//tracking Sound'DeusExSounds.Weapons.GEPGunTrack'
-//	 PlayerViewOffset=(X=44.000000,Y=-22.000000,Z=-10.000000)
-//Mesh=LodMesh'HDTPItems.HDTPGEPgunPickup'
 
 state Reload
 {
@@ -614,9 +576,12 @@ defaultproperties
      InventoryGroup=17
      ItemName="Guided Explosive Projectile (GEP) Gun"
      PlayerViewOffset=(X=42.000000,Y=-22.000000,Z=-10.000000)
-     PlayerViewMesh=LodMesh'HDTPItems.HDTPGEPgun'
-     PickupViewMesh=LodMesh'HDTPItems.HDTPGEPgunPickup'
-     ThirdPersonMesh=LodMesh'HDTPItems.HDTPGEPgun3rd'
+     HDTPPlayerViewMesh="HDTPItems.HDTPGEPgun"
+     HDTPPickupViewMesh="HDTPItems.HDTPGEPgunPickup"
+     HDTPThirdPersonMesh="HDTPItems.HDTPGEPgun3rd"
+     PlayerViewMesh=LodMesh'DeusExItems.GEPgun'
+     PickupViewMesh=LodMesh'DeusExItems.GEPgunPickup'
+     ThirdPersonMesh=LodMesh'DeusExItems.GEPgun3rd'
      LandSound=Sound'DeusExSounds.Generic.DropLargeWeapon'
      Icon=Texture'DeusExUI.Icons.BeltIconGEPGun'
      largeIcon=Texture'GMDXSFX.Icons.GEP'
@@ -626,12 +591,6 @@ defaultproperties
      invSlotsY=2
      Description="The GEP gun is a relatively recent invention in the field of armaments: a portable, shoulder-mounted launcher that can fire rockets and laser guide them to their target with pinpoint accuracy. While suitable for high-threat combat situations, it can be bulky for those agents who have not grown familiar with it."
      beltDescription="GEP GUN"
-     Mesh=LodMesh'HDTPItems.HDTPGEPgunPickup'
-     MultiSkins(1)=Texture'DeusExItems.Skins.PinkMaskTex'
-     MultiSkins(2)=Texture'DeusExItems.Skins.PinkMaskTex'
-     MultiSkins(3)=Texture'DeusExItems.Skins.PinkMaskTex'
-     MultiSkins(5)=Texture'DeusExItems.Skins.PinkMaskTex'
-     MultiSkins(6)=Texture'DeusExItems.Skins.PinkMaskTex'
      CollisionRadius=27.000000
      CollisionHeight=6.600000
      Mass=50.000000

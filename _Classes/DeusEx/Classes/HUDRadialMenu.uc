@@ -35,6 +35,8 @@ var Texture powerInactive;
 var bool skipQuickToggle;            //Skip toggling augs on menu close if this is set
 var bool bClicked;                   //Skip toggling augs on menu close if this is set
 
+var bool bDoneFirst;                //Center the cursor the first time we open the wheel
+
 // ----------------------------------------------------------------------
 // InitWindow()
 // ----------------------------------------------------------------------
@@ -95,6 +97,15 @@ event VisibilityChanged(bool isVis) {
 
 	if (isVis)
     {
+    
+        //Reset cursor to center
+        if (!player.bAugWheelRememberCursor || !bDoneFirst)
+        {
+            cursorPos = center;
+            //positionMarker(mouseToMarkerPos(center+vect(0,1,0)));
+            bDoneFirst = true;
+        }
+
         positionItems();
         positionPowerIcon();
         if (!player.bQuickAugWheel)
@@ -154,7 +165,7 @@ function ToggleCurrent() {
 
     if (highlightedItem == power && activeItems > 0) {
         player.DeactivateAllAugs();
-        activeItems = 0;
+        activeItems = player.augmentationSystem.NumAugsActive(); //SARGE: Was hardcoded to 0. Now that we aren't deactivating toggled augs, we need to re-read the number
         updatePowerStatus();
         return;
     }
@@ -182,7 +193,6 @@ function HUDRadialMenuItem getNearestItem(vector v) {
         return GetFirstVisibleItem();
     else if (visible == 0)
         return orderedItems[0];
-
 
     for (i = 0; i < itemCount; i++) {
         tmp = orderedItems[i].GetRelativePos()-v;
@@ -212,6 +222,8 @@ function createFocusMarker() {
  * Converts a given x-y-mouse position to a point in the orbit of the marker.
  */
 function Vector mouseToMarkerPos(Vector absPos) {
+    if (player.bAugWheelFreeCursor)
+        return absPos;
     return center+markerDistanceToCenter*(radius-focusMarker.height)*Normal(absPos-center);
 }
 
@@ -412,11 +424,11 @@ function UpdateItemStatus(Augmentation aug) {
 	}
 	if (aug.IsActive() && !orderedItems[i].isActive) {
         orderedItems[i].Activate();
-        activeItems++;
+        activeItems = player.augmentationSystem.NumAugsActive(); //SARGE: Was hardcoded to incrementing. Now that we aren't deactivating toggled augs, we need to re-read the number
     }
 	else {
         orderedItems[i].Deactivate();
-        activeItems--;
+        activeItems = player.augmentationSystem.NumAugsActive(); //SARGE: Was hardcoded to incrementing. Now that we aren't deactivating toggled augs, we need to re-read the number
     }
 
     updatePowerStatus();

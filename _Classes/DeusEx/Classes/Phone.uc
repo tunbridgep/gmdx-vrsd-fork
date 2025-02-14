@@ -98,7 +98,8 @@ defaultproperties
      FragType=Class'DeusEx.MetalFragment'
      bCanBeBase=True
      ItemName="Telephone"
-     Mesh=LodMesh'HDTPDecos.HDTPphone'
+     Mesh=LodMesh'DeusExDeco.Phone'
+     HDTPMesh="HDTPDecos.HDTPphone"
      CollisionRadius=11.870000
      CollisionHeight=3.780000
      Mass=20.000000

@@ -198,7 +198,8 @@ defaultproperties
      msgLockedOut="Terminal is locked out for %d more seconds"
      ItemName="Public Banking Terminal"
      Physics=PHYS_None
-     Mesh=LodMesh'HDTPDecos.HDTPATM'
+     HDTPMesh="HDTPDecos.HDTPATM"
+     Mesh=LodMesh'DeusExDeco.ATM'
      SoundRadius=8
      SoundVolume=255
      AmbientSound=Sound'DeusExSounds.Generic.ElectronicsHum'

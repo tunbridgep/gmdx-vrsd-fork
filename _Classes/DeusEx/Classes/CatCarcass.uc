@@ -5,10 +5,14 @@ class CatCarcass extends DeusExCarcass;
 
 defaultproperties
 {
-     Mesh2=LodMesh'HDTPCharacters.HDTPCatCarcass'
-     Mesh3=LodMesh'HDTPCharacters.HDTPCatCarcass'
+     hdtpReference=class'DeusEx.Cat'
+     HDTPMesh="HDTPCharacters.HDTPCatCarcass"
+     HDTPMesh2="HDTPCharacters.HDTPCatCarcass"
+     HDTPMesh3="HDTPCharacters.HDTPCatCarcass"
+     Mesh=LodMesh'DeusExCharacters.CatCarcass'
+     Mesh2=LodMesh'DeusExCharacters.CatCarcass'
+     Mesh3=LodMesh'DeusExCharacters.CatCarcass'
      bAnimalCarcass=True
-     Mesh=LodMesh'HDTPCharacters.HDTPCatCarcass'
      CollisionRadius=17.000000
      CollisionHeight=3.600000
 }

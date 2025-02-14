@@ -8,7 +8,7 @@ class PerkHardened extends Perk;
 defaultproperties
 {
     PerkName="HARDENED"
-    PerkDescription="|nIf the bloodstream is exposed to toxic poisoning, an agent's vision is not distorted and internal damage is reduced marginally. |n|nRequires: Environmental Training: ADVANCED"
+    PerkDescription="If the bloodstream is exposed to toxic poisoning, an agent's vision is not distorted and internal damage is reduced marginally."
     PerkSkill=Class'DeusEx.SkillEnviro'
     PerkCost=175
     PerkLevelRequirement=2

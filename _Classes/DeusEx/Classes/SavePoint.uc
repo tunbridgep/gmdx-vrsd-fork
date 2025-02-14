@@ -78,6 +78,7 @@ defaultproperties
      Physics=PHYS_None
      Style=STY_Translucent
      bUnlit=True
+     Skin=Texture'Extras.Eggs.Matrix_A00';
      MultiSkins(1)=Texture'Extras.Eggs.Matrix_A00'
      MultiSkins(2)=Texture'Extras.Eggs.Matrix_A00'
      bCollideWorld=False

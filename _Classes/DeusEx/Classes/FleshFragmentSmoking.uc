@@ -33,7 +33,7 @@ auto state Flying                      //CyberP: modified to be more gory
 		randRot.Yaw=FRand()*30000;
 
 		if (FRand() < 0.02)
-             Skin=Texture'HDTPItems.Skins.HDTPFleshFragTex1';
+             Skin=class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFleshFragTex1","DeusExItems.Skins.FleshFragmentTex1",IsHDTP());
 	}
 }
 

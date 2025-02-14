@@ -8,7 +8,8 @@ defaultproperties
      HitPoints=30
      FragType=Class'DeusEx.PaperFragment'
      ItemName="Wicker Basket"
-     Mesh=LodMesh'HDTPDecos.HDTPbasket'
+     HDTPMesh="HDTPDecos.HDTPbasket"
+     Mesh=LodMesh'DeusExDeco.Basket'
      CollisionRadius=27.530001
      CollisionHeight=9.500000
      Mass=25.000000

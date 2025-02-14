@@ -3,13 +3,18 @@
 //=============================================================================
 class Earth expands OutdoorThings;
 
+exec function UpdateHDTPsettings()
+{
+    super.UpdateHDTPsettings();
+    MultiSkins[0]=class'HDTPLoader'.static.GetTexture2("HDTPDecos.Skins.HDTPEarthTex1","",IsHDTP());
+    MultiSkins[1]=class'HDTPLoader'.static.GetTexture2("HDTPDecos.Skins.HDTPEarthTex2","",IsHDTP());
+}
+
 defaultproperties
 {
      bStatic=False
      Physics=PHYS_Rotating
      Mesh=LodMesh'DeusExDeco.Earth'
-     MultiSkins(0)=Texture'HDTPDecos.Skins.HDTPEarthTex1'
-     MultiSkins(1)=Texture'HDTPDecos.Skins.HDTPEarthTex2'
      CollisionRadius=48.000000
      CollisionHeight=48.000000
      bCollideActors=False

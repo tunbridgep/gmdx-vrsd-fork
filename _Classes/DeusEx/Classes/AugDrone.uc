@@ -8,10 +8,21 @@ var float mpEnergyDrain;
 
 var float lastDroneTime;
 
-var bool bTimerEarly;                                                           //RSD: bool for if you tried to use the drone too early (need for rotation shenanigans)
+var int EMPDrain;                                                               //SARGE: energy used for EMP attack
+
+var bool bDestroyNow;                                                           //SARGE: If set, deactivating on zero energy will destroy the drone, rather than putting it on standby
+
+var bool bRealActivation;														//SARGE: Differentiate between a "real" activation (via the button key) vs a "fake" activation via loading a save.
 
 var const localized string ReconstructionMessage;
 var const localized string GroundedMessage;
+var const localized string GroundedMessage2;
+var const localized string BlockedMessage;
+
+simulated function bool CanDrainEnergy()
+{
+    return !player.bSpyDroneSet;
+}
 
 function string GetChargingMessage()
 {
@@ -20,13 +31,70 @@ function string GetChargingMessage()
 
 function bool CanActivate(out string message)
 {
+    local Vector loc;
+
     if (player.Physics == PHYS_Falling || player.physics == PHYS_Swimming)
     {
         message = GroundedMessage;
         return false;
     }
 
-    return Super.CanActivate(message);
+    //Check for any other problem first, since we only
+    //want to check the drone position if we actually have
+    //a valid reason to create one in the first place;
+    if (!Super.CanActivate(message))
+        return false;
+
+    //Code copied from CreateDrone() in DeusExPlayer.uc.
+    //We need to check that we can actually make the drone, otherwise we will fuck everything up
+    loc = (2.0 + class'SpyDrone'.Default.CollisionRadius + player.CollisionRadius) * Vector(player.ViewRotation);
+    loc.Z = player.BaseEyeHeight;
+    loc += player.Location;
+
+    //SARGE: Check we actually have room for the drone, otherwise we get into a horrible state
+    if (!player.FastTrace(loc))
+    {
+        message = BlockedMessage;
+        return false;
+    }
+
+    return true;
+}
+
+function ToggleStandbyMode(bool standby)
+{
+    if (!player.bSpyDroneActive)
+        return;
+
+	bRealActivation = false;
+
+    if (standby)
+    {
+        if (player.aDrone != None)
+            player.aDrone.Velocity = vect(0.,0.,0.);
+        Player.bSpyDroneSet = True;                                            //RSD: Allows the user to toggle between moving and controlling the drone
+        Player.DRONESAVErotation = player.ViewRotation;
+        if (!Player.RestrictInput())
+        {
+            Player.ViewRotation = player.SAVErotation;
+            Player.ConfigBigDroneView(false);
+            Player.UpdateHUD();
+        }
+    }
+    else
+    {
+        player.SAVErotation = player.ViewRotation;
+        Player.bSpyDroneActive = True;
+        Player.bSpyDroneSet = False;                                            //RSD: Allows the user to toggle between moving and controlling the drone
+        Player.spyDroneLevel = CurrentLevel;
+        Player.spyDroneLevelValue = LevelValues[CurrentLevel];
+        if (!player.RestrictInput())
+        {
+            Player.ViewRotation = player.DRONESAVErotation;
+            Player.ConfigBigDroneView(true);
+            Player.UpdateHUD();
+        }
+    }
 }
 
 state Active
@@ -36,42 +104,63 @@ function Timer()
 {
     if (IsInState('Active'))
     {
-        Player.bSpyDroneActive = True;
-        Player.bSpyDroneSet = False;                                            //RSD: Allows the user to toggle between moving and controlling the drone
-        Player.spyDroneLevel = CurrentLevel;
-        Player.spyDroneLevelValue = LevelValues[CurrentLevel];
+		ToggleStandbyMode(!bRealActivation);
     }
 }
 Begin:
-	bTimerEarly = false;                                                        //RSD
-    SetTimer(0.4,False);
+    player.bSpyDroneActive = True;
+    player.bSpyDroneSet = False;
     player.SAVErotation = player.ViewRotation;                                  //RSD: Set the SAVErotation the first time we activate
+    player.DRONESAVErotation = player.ViewRotation;                             //RSD: Set the DRONESAVErotation the first time we activate
+	SetTimer(0.4,False);
+}
+
+function ActivateKeyPressed()
+{
+    //Blow up if we activate it on zero energy
+    if (player.Energy == 0 && bIsActive && player.aDrone != None)
+    {
+        bDestroyNow = true;
+        Deactivate();
+        bDestroyNow = false;
+		return;
+    }
+	
+	bRealActivation = true;
 }
 
 function Deactivate()
 {
-	if (Player.bSpyDroneSet)                                                    //RSD: Allows the user to toggle between moving and controlling the drone
+	bRealActivation = false;
+
+    //If we were shut off due to energy, go into standby instead
+    if (player.Energy == 0 && !bDestroyNow)
+    {
+        ToggleStandbyMode(true);
+        return;
+    }
+
+	if (Player.bSpyDroneSet && player.Energy > 0)                                                    //RSD: Allows the user to toggle between moving and controlling the drone
 	{
 		if (IsA('AugDrone') && (player.Physics == PHYS_Falling || player.physics == PHYS_Swimming))
-        	{ player.ClientMessage("You must be grounded to resume control of the drone"); return;  }
+        {
+            player.ClientMessage(GroundedMessage2);
+            return;
+        }
 
-        Player.bSpyDroneSet = false;
-		Player.SAVErotation = Player.ViewRotation;
-		Player.ViewRotation = Player.DRONESAVErotation;
-
+        ToggleStandbyMode(false);
         return;
 	}
-
-    if (!bTimerEarly)
-        Player.ViewRotation = Player.SAVErotation;
 
     Super.Deactivate();
 
 	// record the time if we were just active
-	if (Player.bSpyDroneActive)
-		lastDroneTime = Level.TimeSeconds;
+    if (Player.bSpyDroneActive)
+        lastDroneTime = Level.TimeSeconds;
 
-	Player.bSpyDroneActive = False;
+    ToggleStandbyMode(true);
+    Player.bSpyDroneSet = False;
+    Player.ForceDroneOff(true);
 }
 
 simulated function PreBeginPlay()
@@ -92,7 +181,8 @@ defaultproperties
      mpAugValue=100.000000
      mpEnergyDrain=20.000000
      lastDroneTime=-30.000000
-     EnergyRate=90.000000
+     EnergyRate=30.000000
+     EMPDrain=20
      Icon=Texture'DeusExUI.UserInterface.AugIconDrone'
      smallIcon=Texture'DeusExUI.UserInterface.AugIconDrone_Small'
      AugmentationName="Spy Drone"
@@ -100,6 +190,8 @@ defaultproperties
      MPInfo="Activation creates a remote-controlled spy drone.  Deactivation disables the drone.  Firing while active detonates the drone in a massive EMP explosion.  Energy Drain: Medium"
      ReconstructionMessage="Reconstruction will be complete in %i seconds"
      GroundedMessage="You must be grounded to construct the drone"
+     GroundedMessage2="You must be grounded to resume control of the drone"
+     BlockedMessage="Insufficient space to release drone"
      LevelValues(0)=10.000000
      LevelValues(1)=20.000000
      LevelValues(2)=35.000000

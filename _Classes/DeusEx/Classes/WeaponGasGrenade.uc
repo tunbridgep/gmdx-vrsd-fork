@@ -20,52 +20,20 @@ simulated function PreBeginPlay()
 	}
 }
 
-simulated function renderoverlays(Canvas canvas)
+function DisplayWeapon(bool overlay)
 {
-	if (iHDTPModelToggle == 1)
-    	multiskins[0] = Getweaponhandtex();
-	else
-    {
-       multiskins[0]=GetWeaponHandTex();                                        //RSD: Fix vanilla hand tex
-       multiskins[1]=GetWeaponHandTex();
-    }
-
-	super.renderoverlays(canvas);
-
-	if (iHDTPModelToggle == 1)
-    	multiskins[0] = none;
-	else
-    {
-       multiskins[0]=none;                                                      //RSD: Fix vanilla hand tex
-       multiskins[1]=none;
-    }
+	super.DisplayWeapon(overlay);
+	if (overlay)
+	{
+		if (IsHDTP())
+			multiskins[0] = handsTex;
+		else
+		{
+		   multiskins[0]=handsTex;                                        //RSD: Fix vanilla hand tex
+		   multiskins[1]=handsTex;
+		}
+	}
 }
-
-exec function UpdateHDTPsettings()                                              //RSD: New function to update weapon model meshes (specifics handled in each class)
-{
-     //RSD: HDTP Toggle Routine
-     //if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).inHand == self)
-     //     DeusExPlayer(Owner).BroadcastMessage(iHDTPModelToggle);
-     if (iHDTPModelToggle == 1)
-     {
-          PlayerViewMesh=LodMesh'HDTPItems.HDTPGasGrenade';
-          PickupViewMesh=LodMesh'HDTPItems.HDTPGasgrenadePickup';
-          ThirdPersonMesh=LodMesh'HDTPItems.HDTPGasgrenade3rd';
-     }
-     else
-     {
-          PlayerViewMesh=LodMesh'DeusExItems.GasGrenade';
-          PickupViewMesh=LodMesh'DeusExItems.GasGrenadePickup';
-          ThirdPersonMesh=LodMesh'DeusExItems.GasGrenade3rd';
-     }
-     //RSD: HDTP Toggle End
-
-     Super.UpdateHDTPsettings();
-}
-
-/*Function CheckWeaponSkins()
-{
-}*/
 
 function PostBeginPlay()
 {
@@ -206,19 +174,22 @@ defaultproperties
      InventoryGroup=21
      ItemName="Gas Grenade"
      PlayerViewOffset=(Y=-13.000000,Z=-19.000000)
-     PlayerViewMesh=LodMesh'HDTPItems.HDTPGasGrenade'
-     PickupViewMesh=LodMesh'HDTPItems.HDTPGasgrenadePickup'
-     ThirdPersonMesh=LodMesh'HDTPItems.HDTPGasgrenade3rd'
+     HDTPPlayerViewMesh="HDTPItems.HDTPGasGrenade"
+     HDTPPickupViewMesh="HDTPItems.HDTPGasGrenadePickup"
+     HDTPThirdPersonMesh="HDTPItems.HDTPGasGrenade3rd"
+     PlayerViewMesh=LodMesh'DeusExItems.GasGrenade'
+     PickupViewMesh=LodMesh'DeusExItems.GasGrenadePickup'
+     ThirdPersonMesh=LodMesh'DeusExItems.GasGrenade3rd'
      Icon=Texture'DeusExUI.Icons.BeltIconGasGrenade'
      largeIcon=Texture'DeusExUI.Icons.LargeIconGasGrenade'
      largeIconWidth=23
      largeIconHeight=46
      Description="Upon detonation, the gas grenade releases a large amount of CS (a military-grade 'tear gas' agent) over its area of effect. CS will cause irritation to all exposed mucous membranes leading to temporary blindness and uncontrolled coughing. Like a LAM, gas grenades can be attached to any surface."
      beltDescription="GAS GREN"
-     Mesh=LodMesh'HDTPItems.HDTPGasgrenadePickup'
      CollisionRadius=2.300000
      CollisionHeight=3.300000
      Mass=5.000000
      Buoyancy=2.000000
+     bDisposableWeapon=true
      minSkillRequirement=1;
 }

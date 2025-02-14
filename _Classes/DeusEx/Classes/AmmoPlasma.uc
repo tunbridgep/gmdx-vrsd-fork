@@ -26,14 +26,14 @@ defaultproperties
      MaxAmmo=30
      ItemName="Plasma Clip"
      ItemArticle="a"
-     PickupViewMesh=LodMesh'HDTPItems.HDTPAmmoPlasma'
      LandSound=Sound'DeusExSounds.Generic.PlasticHit2'
      Icon=Texture'DeusExUI.Icons.BeltIconAmmoPlasma'
      largeIconWidth=22
      largeIconHeight=46
      Description="A clip of extruded, magnetically-doped plastic slugs that can be heated and delivered with devastating effect using the plasma gun."
      beltDescription="PMA CLIP"
-     Mesh=LodMesh'HDTPItems.HDTPAmmoPlasma'
+     HDTPMesh="HDTPItems.HDTPAmmoPlasma"
+     Mesh=LodMesh'DeusExItems.AmmoPlasma'
      CollisionRadius=4.300000
      CollisionHeight=8.440000
      bCollideActors=True

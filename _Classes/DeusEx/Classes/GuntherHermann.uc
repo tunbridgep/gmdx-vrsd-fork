@@ -197,7 +197,7 @@ defaultproperties
      BurnPeriod=0.000000
      walkAnimMult=0.750000
      runAnimMult=1.100000
-     HDTPMeshName="HDTPCharacters.HDTPGunther"
+     HDTPMesh="HDTPCharacters.HDTPGunther"
      HDTPMeshTex(0)="HDTPCharacters.skins.HDTPGuntherTex1"
      HDTPMeshTex(1)="HDTPCharacters.skins.HDTPGuntherTex1"
      HDTPMeshTex(2)="HDTPCharacters.skins.HDTPGuntherTex2"

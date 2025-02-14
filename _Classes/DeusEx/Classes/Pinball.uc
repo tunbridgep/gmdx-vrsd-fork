@@ -31,7 +31,8 @@ defaultproperties
      FragType=Class'DeusEx.MetalFragment'
      bCanBeBase=True
      ItemName="Pinball Machine"
-     Mesh=LodMesh'HDTPDecos.HDTPpinball'
+     HDTPMesh="HDTPDecos.HDTPpinball"
+     Mesh=LodMesh'DeusExDeco.Pinball'
      CollisionRadius=37.000000
      CollisionHeight=45.000000
      Mass=100.000000

@@ -31,7 +31,8 @@ defaultproperties
      largeIconHeight=37
      Description="20mm EMP Grenade that explodes upon contact. It's moderately weak due to a combination of it's size and method of detonation."
      beltDescription="20MM EMP"
-     Skin=Texture'HDTPItems.Skins.HDTPEMPGrenadeTex1'
+     //TODO: Add non-HDTP EMP Grenade skin
+     HDTPSkin="HDTPItems.Skins.HDTPEMPGrenadeTex1"
      Mesh=LodMesh'DeusExItems.Ammo20mm'
      CollisionRadius=9.500000
      CollisionHeight=4.750000

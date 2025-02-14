@@ -36,8 +36,10 @@ defaultproperties
      sitPoint(1)=(X=18.000000,Y=-8.000000,Z=0.000000)
      HitPoints=75
      ItemName="Leather Couch"
-     Skin=Texture'HDTPDecos.Skins.HDTPCouchLeatherTex1'
-     Mesh=LodMesh'HDTPDecos.HDTPcouchleather'
+     HDTPSkin="HDTPDecos.Skins.HDTPCouchLeatherTex1"
+     HDTPMesh="HDTPDecos.HDTPcouchleather"
+     Mesh=LodMesh'DeusExDeco.CouchLeather'
+     Skin=Texture'DeusExDeco.Skins.CouchLeather1'
      CollisionRadius=47.880001
      CollisionHeight=23.250000
      Mass=218.000000

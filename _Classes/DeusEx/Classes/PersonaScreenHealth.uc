@@ -579,7 +579,7 @@ function DisplayCommonInfo()
         winInfo.SetText(accuracyLabel $ "N/A");
 
      //winInfo.SetText(StaminaStr $ int(player.swimTimer*100) $ "/" $ int(player.swimDuration*100));
-     //winInfo.SetText(BioStr $ int(player.Energy) $ "/" $ int(player.EnergyMax));
+     //winInfo.SetText(BioStr $ int(player.Energy) $ "/" $ int(player.GetMaxEnergy()));
      winInfo.SetText(LocStr $ player.retInfo());
 }
 

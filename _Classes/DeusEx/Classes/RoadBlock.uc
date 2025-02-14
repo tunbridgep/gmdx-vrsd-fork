@@ -10,7 +10,8 @@ defaultproperties
      FragType=Class'DeusEx.Rockchip'
      bCanBeBase=True
      ItemName="Concrete Barricade"
-     Mesh=LodMesh'HDTPDecos.HDTProadblock'
+     Mesh=LodMesh'DeusExDeco.RoadBlock'
+     HDTPMesh="HDTPDecos.HDTProadblock"
      CollisionRadius=33.000000
      CollisionHeight=23.400000
      Mass=200.000000

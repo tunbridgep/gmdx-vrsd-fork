@@ -6,7 +6,7 @@ class PerkNimble extends Perk;
 defaultproperties
 {
     PerkName="NIMBLE"
-    PerkDescription="|nAn agent is silent whilst mantling and climbing ladders. |n|nRequires: Stealth: TRAINED"
+    PerkDescription="An agent is silent whilst mantling and climbing ladders."
     PerkSkill=Class'DeusEx.SkillStealth'
     PerkCost=150
     PerkLevelRequirement=1
