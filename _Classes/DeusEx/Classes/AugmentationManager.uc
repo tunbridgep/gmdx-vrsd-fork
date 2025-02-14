@@ -440,32 +440,32 @@ function AssignOverflowTo(class<Augmentation> augClass)
 function AssignOverflow()
 {
     //Chest first
-    AssignOverflowTo(class'AugEnviro');
+    AssignOverflowTo(class'AugShield');
     AssignOverflowTo(class'AugEMP');
     AssignOverflowTo(class'AugAqualung');
-    AssignOverflowTo(class'AugShield');
+    AssignOverflowTo(class'AugEnviro');
     AssignOverflowTo(class'AugHealing');
     AssignOverflowTo(class'AugPower');
     
     //Then Head
-    AssignOverflowTo(class'AugDrone');
     AssignOverflowTo(class'AugDefense');
+    AssignOverflowTo(class'AugDrone');
     
     //Then Eyes
     AssignOverflowTo(class'AugVision');
     AssignOverflowTo(class'AugTarget');
     
     //Then Subdermal
-    AssignOverflowTo(class'AugRadarTrans');
     AssignOverflowTo(class'AugCloak');
-    AssignOverflowTo(class'AugBallistic');
+    AssignOverflowTo(class'AugRadarTrans');
     AssignOverflowTo(class'AugBallisticPassive');
+    AssignOverflowTo(class'AugBallistic');
     
     //Then Arms
-    AssignOverflowTo(class'AugMuscle');
     AssignOverflowTo(class'AugAmmoCap');
     AssignOverflowTo(class'AugCombatStrength');
     AssignOverflowTo(class'AugCombat');
+    AssignOverflowTo(class'AugMuscle');
 
     //Then Legs
     AssignOverflowTo(class'AugSpeed');
