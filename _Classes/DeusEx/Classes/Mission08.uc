@@ -43,8 +43,25 @@ function FirstFrame()
         }
 
 	}
-	else if (localURL == "08_NYC_Street")
+	else if (localURL == "08_NYC_STREET")
 	{
+        //SARGE: Fix up street light Lighting if we have Lighting Accessibility enabled
+        ForEach AllActors(class'Light', L)
+            DoLightingAccessibility(L, 'Light94');
+
+	     if (flags.GetBool('Enhancement_Detected'))
+	     {
+            foreach AllActors(class'ScriptedPawn', pawn)
+	        {
+               if (pawn.IsA('UNATCOTroop'))
+               {
+                  if (pawn.BarkBindName == "UNATCOTroop")
+                     pawn.BarkBindName = "UNATCOTroopEnemy";
+                  else if (pawn.BarkBindName == "UNATCOTroopB")
+                     pawn.BarkBindName = "UNATCOTroopEnemyB";
+               }
+            }
+	     }
     }
 	else if (localURL == "08_NYC_HOTEL")
     {

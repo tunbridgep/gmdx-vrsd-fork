@@ -16,7 +16,8 @@ defaultproperties
      bFlammable=False
      ItemName="Metal Crate"
      bBlockSight=True
-     Mesh=LodMesh'HDTPDecos.HDTPcrateUnbreakableMed'
+     HDTPMesh="HDTPDecos.HDTPcrateUnbreakableMed"
+     Mesh=LodMesh'DeusExDeco.CrateUnbreakableMed'
      ScaleGlow=0.500000
      CollisionRadius=45.200001
      CollisionHeight=32.000000

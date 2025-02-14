@@ -23,6 +23,14 @@ var bool bMaster; //so the HDTP deco has a tendency to do that 'go all black' me
 //but...obviously you don't want to do this for every alarm unit, every time (I've tried, it causes
 //fairly noticable stuttering on slower comps): hence slavery! -DDL
 
+exec function UpdateHDTPsettings()
+{
+    //if (MultiSkins[1] == Texture'PinkMaskTex' && MultiSkins[2] == Texture'PinkMaskTex')
+        SetHDTPTex(1);
+    super.UpdateHDTPsettings();
+}
+
+
 function UpdateAIEvents()
 {
 	local SecurityCamera SC;
@@ -74,8 +82,7 @@ function HackAction(Actor Hacker, bool bHacked)
 			UnTrigger(Hacker, Pawn(Hacker));
 			bDisabled = True;
 			LightType = LT_None;
-			MultiSkins[1] = Texture'HDTPAlarmUnittex1';
-			MultiSkins[2] = Texture'PinkMaskTex';
+            SetHDTPTex(1);
 
 		}
 /*		else		// don't actually ever set off the alarm
@@ -83,8 +90,7 @@ function HackAction(Actor Hacker, bool bHacked)
 			Trigger(Hacker, Pawn(Hacker));
 			bDisabled = False;
 			LightType = LT_None;
-			MultiSkins[1] = Texture'HDTPAlarmUnittex1';
-			MultiSkins[2] = Texture'PinkMaskTex';
+            SetHDTPTex(1);
 		}*/
 		else
 		    UpdateAIEvents();                                                   //RSD
@@ -106,24 +112,19 @@ function Tick(float deltaTime)
 		// randomly flash the light
 		if (FRand() > 0.95)
 		{
-			MultiSkins[1] = Texture'HDTPAlarmUnittex2';
-			MultiSkins[2] = Texture'HDTPAlarmUnittex2';
+            SetHDTPTex(2);
 
 		}
 		else
 		{
-			MultiSkins[1] = Texture'HDTPAlarmUnittex1';
-			MultiSkins[2] = Texture'PinkMaskTex';
-
+            SetHDTPTex(1);
 		}
 
 		if (confusionTimer > confusionDuration)
 		{
 			bConfused = False;
 			confusionTimer = 0;
-			MultiSkins[1] = Texture'HDTPAlarmUnittex2';
-			MultiSkins[2] = Texture'HDTPAlarmUnittex2';
-
+            SetHDTPTex(1); //SARGE: Was 2, which seemed wrong
 		}
 
 		return;
@@ -144,11 +145,7 @@ function Tick(float deltaTime)
 			if(LightType != LT_Steady)  //I see no reason to do this _every_ tick that the above is valid
 			{
 				LightType = LT_Steady;
-				MultiSkins[1] = Texture'HDTPAlarmUnittex2';
-				if(Multiskins[2] != Texture'HDTPAlarmUnittex2')
-				{
-					MultiSkins[2] = Texture'HDTPAlarmUnittex2';
-				}
+                SetHDTPTex(2);
 				//if(bMaster)
 				//	deusexplayer(getPlayerPawn()).ConsoleCommand("FLUSH");
 			}
@@ -158,11 +155,7 @@ function Tick(float deltaTime)
 			if(LightType != LT_None)
 			{
 				LightType = LT_None;
-				MultiSkins[1] = Texture'HDTPAlarmUnittex1';
-				if(Multiskins[2] != Texture'pinkmasktex')
-				{
-					MultiSkins[2] = Texture'pinkmasktex';
-				}
+                SetHDTPTex(1);
 				//if(bMaster)
 				//		deusexplayer(getPlayerPawn()).ConsoleCommand("FLUSH");
 			}
@@ -200,8 +193,7 @@ function Trigger(Actor Other, Pawn Instigator)
 		SoundVolume = 96;  //CyberP: less volume
 		curTime = 0;
 		LightType = LT_Steady;
-		MultiSkins[1] = Texture'HDTPAlarmUnittex2';
-		MultiSkins[2] = Texture'HDTPAlarmUnittex2';
+        SetHDTPTex(2);
 		//if(bMaster)
 		//	deusexplayer(getPlayerPawn()).ConsoleCommand("FLUSH");
 		alarmInstigator = Instigator;
@@ -243,8 +235,7 @@ function UnTrigger(Actor Other, Pawn Instigator)
 		SoundVolume = 192;
 		curTime = 0;
 		LightType = LT_None;
-		MultiSkins[1] = Texture'HDTPAlarmUnittex1';
-		MultiSkins[2] = Texture'PinkMaskTex';
+        SetHDTPTex(1);
 		//if(bMaster)
 		//	deusexplayer(getPlayerPawn()).ConsoleCommand("FLUSH");
 
@@ -282,6 +273,38 @@ auto state Active
 	}
 }
 
+//HDTP Crap
+function SetHDTPTex(int texID)
+{
+    switch (texID)
+    {
+        case 1:
+            if (IsHDTP())
+            {
+                MultiSkins[1] = class'HDTPLoader'.static.GetTexture("HDTPAlarmUnittex1");
+                MultiSkins[2] = Texture'PinkMaskTex';
+            }
+            else
+            {
+                MultiSkins[1] = Texture'BlackMaskTex';
+                MultiSkins[2] = Texture'PinkMaskTex';
+            }
+            break;
+        case 2:
+            if (IsHDTP())
+            {
+                MultiSkins[1] = class'HDTPLoader'.static.GetTexture("HDTPAlarmUnittex2");
+                MultiSkins[2] = class'HDTPLoader'.static.GetTexture("HDTPAlarmUnittex2");
+            }
+            else
+            {
+                MultiSkins[1] = class'HDTPLoader'.static.GetTexture("AlarmUnitTex2");
+                MultiSkins[2] = Texture'PinkMaskTex';
+            }
+        break;
+    }
+}
+
 defaultproperties
 {
      alarmTimeout=30
@@ -293,7 +316,9 @@ defaultproperties
      minDamageThreshold=50
      bInvincible=False
      ItemName="Alarm Sounder Panel"
-     Mesh=LodMesh'HDTPDecos.HDTPalarmunit'
+     HDTPMesh="HDTPDecos.HDTPalarmunit"
+     Mesh=LodMesh'DeusExDeco.AlarmUnit'
+     MultiSkins(1)=Texture'DeusExItems.Skins.PinkMaskTex'
      MultiSkins(2)=Texture'DeusExItems.Skins.PinkMaskTex'
      SoundRadius=14
      AmbientSound=Sound'DeusExSounds.Generic.AlarmUnitHum'
@@ -303,4 +328,5 @@ defaultproperties
      LightRadius=1
      Mass=10.000000
      Buoyancy=5.000000
+	 bHDTPFailsafe=False
 }

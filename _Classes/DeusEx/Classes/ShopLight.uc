@@ -36,9 +36,11 @@ defaultproperties
      HitPoints=3
      FragType=Class'DeusEx.GlassFragment'
      ItemName="Fluorescent Light"
+     HDTPMesh="HDTPDecos.HDTPShoplight"
      bPushable=False
      Physics=PHYS_None
-     Mesh=LodMesh'HDTPDecos.HDTPShoplight'
+     HDTPMesh="HDTPDecos.HDTPShoplight"
+     Mesh=LodMesh'DeusExDeco.ShopLight'
      CollisionRadius=42.500000
      CollisionHeight=4.000000
      Mass=30.000000

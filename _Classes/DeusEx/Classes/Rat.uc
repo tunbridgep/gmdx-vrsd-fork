@@ -201,6 +201,7 @@ defaultproperties
      MinHealth=2.000000
      CarcassType=Class'DeusEx.RatCarcass'
      WalkingSpeed=0.360000
+     HDTPMesh="HDTPCharacters.HDTPrat"
      GroundSpeed=250.000000
      WaterSpeed=24.000000
      AirSpeed=150.000000
@@ -223,7 +224,7 @@ defaultproperties
      Alliance=Rat
      bIgnore=True
      DrawType=DT_Mesh
-     Mesh=LodMesh'HDTPCharacters.HDTPrat'
+     Mesh=LodMesh'DeusExCharacters.Rat'
      SoundRadius=32
      SoundVolume=32
      CollisionRadius=5.000000

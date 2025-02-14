@@ -22,7 +22,7 @@ defaultproperties
      CarcassType=Class'DeusEx.RiotCopCarcass'
      WalkingSpeed=0.296000
      walkAnimMult=0.780000
-     HDTPMeshName="HDTPCharacters.HDTPRiotCop"
+     HDTPMesh="HDTPCharacters.HDTPRiotCop"
      HDTPMeshTex(0)="HDTPCharacters.Skins.HDTPRiotCopTex0"
      HDTPMeshTex(1)="HDTPCharacters.Skins.HDTPRiotCopTex1"
      HDTPMeshTex(2)="HDTPCharacters.Skins.HDTPRiotCopTex2"

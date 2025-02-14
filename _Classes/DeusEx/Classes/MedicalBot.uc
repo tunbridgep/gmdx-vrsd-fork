@@ -189,7 +189,8 @@ defaultproperties
      UnderWaterTime=20.000000
      AttitudeToPlayer=ATTITUDE_Ignore
      DrawType=DT_Mesh
-     Mesh=LodMesh'HDTPCharacters.HDTPMedicalBot'
+     HDTPMesh="HDTPCharacters.HDTPMedicalBot"
+     Mesh=LodMesh'DeusExCharacters.MedicalBot'
      SoundRadius=16
      SoundVolume=128
      AmbientSound=Sound'DeusExSounds.Robot.MedicalBotMove'

@@ -124,9 +124,10 @@ defaultproperties
      sprayOffsets(3)=(Y=2.000000)
      bInvincible=True
      ItemName="Shower Faucet"
+     HDTPMesh="HDTPDecos.HDTPShowerFaucet"
      bPushable=False
      Physics=PHYS_None
-     Mesh=LodMesh'HDTPDecos.HDTPShowerFaucet'
+     Mesh=LodMesh'DeusExDeco.ShowerFaucet'
      CollisionRadius=6.800000
      CollisionHeight=6.410000
      Mass=20.000000

@@ -126,10 +126,8 @@ defaultproperties
      clientTextures(2)=Texture'DeusExUI.UserInterface.MenuControlsBackground_3'
      textureRows=1
      helpPosY=174
-     /*
-     texturesSetting="ini:Engine.Engine.GameRenderDevice UseS3TC"
-     reflectionsSetting="ini:Engine.Engine.GameRenderDevice ShinySurfaces"
-     precacheSetting="ini:Engine.Engine.GameRenderDevice UsePrecache"
-     classicLighting="ini:Engine.Engine.GameRenderDevice ClassicLighting"
-     */
+     //texturesSetting="ini:Engine.Engine.GameRenderDevice UseS3TC"
+     //reflectionsSetting="ini:Engine.Engine.GameRenderDevice ShinySurfaces"
+     //precacheSetting="ini:Engine.Engine.GameRenderDevice UsePrecache"
+     //classicLighting="ini:Engine.Engine.GameRenderDevice ClassicLighting"
 }

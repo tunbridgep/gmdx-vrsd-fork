@@ -8,7 +8,7 @@ defaultproperties
      FragType=Class'DeusEx.WoodFragment'
      bCanBeBase=True
      ItemName="Human Skull"
-     Skin=Texture'HDTPDecos.Skins.HDTPBoneSkull'
+     HDTPSkin="HDTPDecos.Skins.HDTPBoneSkull"
      Mesh=LodMesh'DeusExDeco.BoneSkull'
      CollisionRadius=5.800000
      CollisionHeight=4.750000

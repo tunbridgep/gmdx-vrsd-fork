@@ -8,7 +8,7 @@ defaultproperties
      bFloating=True
      ItemName="Police Boat"
      Texture=Texture'DeusExItems.Skins.ReflectionMapTex1'
-     Skin=Texture'HDTPDecos.Skins.HDTPNYPoliceBoatTex1'
+     HDTPSkin="HDTPDecos.Skins.HDTPNYPoliceBoatTex1"
      Mesh=LodMesh'DeusExDeco.NYPoliceBoat'
      SoundRadius=64
      SoundVolume=192

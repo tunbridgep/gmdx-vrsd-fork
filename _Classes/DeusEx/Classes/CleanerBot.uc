@@ -23,6 +23,14 @@ function PostBeginPlay()
    bInvincible=False;
 }
 
+//SARGE: Prevent stomping those poor defenseless cleaning bots to death...
+function bool WillTakeStompDamage(Actor stomper)
+{
+    local DeusExPlayer player;
+    player = DeusExPlayer(stomper);
+    return player != None && player.bStompVacbots;
+}
+
 function Tick(float deltaSeconds)
 {
 	local pawn        fearPawn;
@@ -291,7 +299,8 @@ defaultproperties
      UnderWaterTime=20.000000
      AttitudeToPlayer=ATTITUDE_Ignore
      DrawType=DT_Mesh
-     Mesh=LodMesh'HDTPCharacters.HDTPcleanerbot'
+     HDTPMesh="HDTPCharacters.HDTPCleanerBot"
+     Mesh=LodMesh'DeusExCharacters.CleanerBot'
      SoundRadius=16
      SoundVolume=128
      AmbientSound=Sound'DeusExSounds.Robot.CleanerBotMove'

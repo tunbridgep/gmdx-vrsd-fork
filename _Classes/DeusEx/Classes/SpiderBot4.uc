@@ -16,6 +16,7 @@ defaultproperties
      InitialInventory(0)=(Inventory=Class'DeusEx.WeaponSpiderBot3')
      InitialInventory(1)=(Inventory=Class'DeusEx.AmmoBattery',Count=99)
      WalkSound=Sound'DeusExSounds.Robot.SpiderBot2Walk'
+     HDTPMesh="HDTPCharacters.HDTPspiderbot2"
      GroundSpeed=230.000000
      WaterSpeed=50.000000
      AirSpeed=144.000000
@@ -26,7 +27,7 @@ defaultproperties
      HitSound1=Sound'GMDXSFX.Generic.bouncemetal'
      Alliance=Player
      DrawType=DT_Mesh
-     Mesh=LodMesh'HDTPCharacters.HDTPspiderbot2'
+     Mesh=LodMesh'DeusExCharacters.SpiderBot2'
      DrawScale=0.500000
      CollisionRadius=16.790001
      CollisionHeight=7.600000

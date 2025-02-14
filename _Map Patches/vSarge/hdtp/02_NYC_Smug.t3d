@@ -1,0 +1,27 @@
+Begin Map
+//We need to delete all:
+//1. Cigarettes
+
+Begin Actor Class=Cigarettes Name=Cigarettes0
+    textureSet=1
+    LastRenderTime=0.408059
+    DistanceFromPlayer=2188.223145
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=Cigarettes
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=148,ZoneNumber=1)
+    Location=(X=489.812744,Y=-316.247955,Z=17.420332)
+    OldLocation=(X=489.812744,Y=-316.247955,Z=17.420332)
+    Name=Cigarettes0
+End Actor
+Begin Actor Class=Cigarettes Name=Cigarettes1
+    textureSet=1
+    LastRenderTime=0.393476
+    DistanceFromPlayer=678.456421
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=Cigarettes
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
+    Location=(X=-821.823425,Y=1362.813477,Z=-14.580057)
+    OldLocation=(X=-821.823425,Y=1362.813477,Z=-14.580057)
+    Name=Cigarettes1
+End Actor
+End Map

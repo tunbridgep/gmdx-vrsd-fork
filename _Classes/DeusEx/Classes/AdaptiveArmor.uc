@@ -8,6 +8,16 @@ class AdaptiveArmor extends ChargedPickup;
 //
 //     Charge=500
 
+//SARGE: Change skin based on it's charge level
+simulated function Tick(float deltaTime)
+{
+    super.Tick(deltaTime);
+    if (Charge == 0)
+        Multiskins[1] = Texture'BlackMaskTex';
+    else
+        Multiskins[1] = default.Multiskins[1];
+}
+
 defaultproperties
 {
      skillNeeded=Class'DeusEx.SkillEnviro'

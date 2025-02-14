@@ -39,8 +39,9 @@ defaultproperties
      bCanBeBase=True
      ItemName="Human Femur"
      LifeSpan=30.000000
-     Skin=Texture'HDTPItems.Skins.HDTPFlatFXtex6'
-     Mesh=LodMesh'HDTPDecos.HDTPbonefemur'
+     HDTPSkin="HDTPItems.Skins.HDTPFlatFXtex6"
+     HDTPMesh="HDTPDecos.HDTPbonefemur"
+     Mesh=LodMesh'DeusDeco.Bonefemur'
      CollisionRadius=2.000000
      CollisionHeight=0.780000
      bCollideActors=False

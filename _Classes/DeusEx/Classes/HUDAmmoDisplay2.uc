@@ -63,7 +63,6 @@ event DrawWindow(GC gc)
 {
     local int amount, chargeLevel;
     local Texture icon;
-    local ChargedPickup charged;
 
 	Super.DrawWindow(gc);
 
@@ -88,11 +87,9 @@ event DrawWindow(GC gc)
     gc.SetTileColorRGB(255, 255, 255);
     
     if (item != None && item.isA('ChargedPickup'))
-    {
-        //gc.SetFont(Font'TechMedium'); //CyberP: hud scaling Font'FontTiny'
-        charged = ChargedPickup(item);
-        chargeLevel = int(charged.GetCurrentCharge());
-    }
+        chargeLevel = int(ChargedPickup(item).GetCurrentCharge());
+    else if (weapon != None && weapon.isA('WeaponNanoSword'))
+        chargeLevel = WeaponNanoSword(weapon).ChargeManager.GetCurrentCharge();
 
 	if ( weapon != None || item != None)
 	{
@@ -103,7 +100,7 @@ event DrawWindow(GC gc)
 		gc.SetStyle(DSTY_Masked);
 		gc.DrawTexture(22, 20, 40, 35, 0, 0, icon);
 
-        if (amount > 0 && (item == None || !item.isA('Binoculars')))
+        if ((amount > 0 || chargeLevel > 0) && (item == None || !item.isA('Binoculars')))
         {
             // Draw the ammo count
             gc.SetFont(Font'TechMedium'); //CyberP: hud scaling Font'FontTiny'
@@ -112,7 +109,7 @@ event DrawWindow(GC gc)
             gc.SetFont(Font'FontTiny');
             gc.SetTextColor(colText);
 
-            if (charged == None || chargeLevel > 0)
+            if (amount > 0)
                 gc.DrawText(28, 56, 32, 8, InvLabel @ amount); //Position below icon
             //gc.DrawText(28, 48, 32, 8, InvLabel @ amount); //Position at bottom of icon
         
@@ -135,6 +132,8 @@ function bool IsCharged(DeusExPickup item)
 
         return (charged.numCopies > 1 || chargeLevel > 0);
     }
+    else if (weapon != None && weapon.isA('WeaponNanoSword'))
+        return WeaponNanoSword(weapon).ChargeManager.GetCurrentCharge() > 0;
 
     //Otherwise, it's charged
     return true;

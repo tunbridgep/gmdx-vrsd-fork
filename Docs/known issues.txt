@@ -1,0 +1,5 @@
+1. Missing Mover in HK Streets map (Tonochi Road) at top of Queens Tower
+2. Credits mesh in Cathedral map is using wrong texture, in Kitchen area.
+3. Default Texture on floor and ceiling of Mover3 in the Vandenberg Sub Base mission (14_Vandenberg_Sub)
+4. Default Texture on TV in Versalife labs, near bum and greasel prison.
+5. Nuke Silo map (14_OceanLab_Silo) has walk-through-able fences.

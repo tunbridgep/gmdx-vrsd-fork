@@ -37,9 +37,9 @@ defaultproperties
      bHighlight=False
      bCanBeBase=True
      ItemName="Human Femur"
+     HDTPMesh="HDTPDecos.HDTPbonefemur"
      LifeSpan=30.000000
      Skin=Texture'DeusExItems.Skins.FleshFragmentTex1'
-     Mesh=LodMesh'HDTPDecos.HDTPbonefemur'
      CollisionRadius=2.000000
      CollisionHeight=0.780000
      bCollideActors=False

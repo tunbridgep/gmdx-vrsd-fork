@@ -12,6 +12,7 @@ class WeaponModClip extends WeaponMod;
 function ApplyMod(DeusExWeapon weapon)
 {
 	local int diff;
+	Super.ApplyMod(weapon);
 
 	if (weapon != None)
 	{

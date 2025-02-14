@@ -9,7 +9,8 @@ defaultproperties
      FragType=Class'DeusEx.GlassFragment'
      bCanBeBase=True
      ItemName="Lab Flask"
-     Mesh=LodMesh'HDTPDecos.HDTPFlask'
+     Mesh=LodMesh'DeusExDeco.Flask'
+     HDTPMesh="HDTPDecos.HDTPFlask"
      CollisionRadius=4.300000
      CollisionHeight=7.470000
      Mass=5.000000

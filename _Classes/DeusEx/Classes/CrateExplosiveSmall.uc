@@ -11,7 +11,8 @@ defaultproperties
      explosionRadius=512.000000
      ItemName="TNT Crate"
      bBlockSight=True
-     Mesh=LodMesh'HDTPDecos.HDTPcrateExplosive'
+     Mesh=LodMesh'DeusExDeco.CrateExplosiveSmall'
+     HDTPMesh="HDTPDecos.HDTPcrateExplosive";
      CollisionRadius=22.500000
      CollisionHeight=16.000000
      Mass=40.000000

@@ -5,11 +5,12 @@ class NicoletteDuClareCarcass extends DeusExCarcass;
 
 defaultproperties
 {
+	 hdtpReference=class'DeusEx.NicoletteDuClare'
      Mesh2=LodMesh'DeusExCharacters.GFM_Dress_CarcassB'
      Mesh3=LodMesh'DeusExCharacters.GFM_Dress_CarcassC'
-     HDTPMeshName="HDTPCharacters.HDTPNicoletteCarcass"
-     HDTPMesh2Name="HDTPCharacters.HDTPNicoletteCarcassB"
-     HDTPMesh3Name="HDTPCharacters.HDTPNicoletteCarcassC"
+     HDTPMesh="HDTPCharacters.HDTPNicoletteCarcass"
+     HDTPMesh2="HDTPCharacters.HDTPNicoletteCarcassB"
+     HDTPMesh3="HDTPCharacters.HDTPNicoletteCarcassC"
      HDTPMeshTex(0)="HDTPCharacters.Skins.HDTPNicoletteTex0"
      HDTPMeshTex(1)="HDTPCharacters.Skins.HDTPNicoletteTex1"
      HDTPMeshTex(2)="HDTPCharacters.Skins.HDTPNicoletteTex2"

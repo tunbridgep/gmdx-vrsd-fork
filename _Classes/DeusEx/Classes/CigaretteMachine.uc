@@ -44,11 +44,7 @@ function Frob(actor Frobber, Inventory frobWith)
 				product.bFixedRotationDir = True;
 				product.RotationRate.Pitch = (32768 - Rand(65536)) * 4.0;
 				product.RotationRate.Yaw = (32768 - Rand(65536)) * 4.0;
-				if(frand() > 0.5)
-				{
-					Product.textureset = 1;
-					Product.setskin();
-				}
+                product.RandomiseSkin(player);
 			}
 
 			player.Credits -= 8;
@@ -68,7 +64,8 @@ defaultproperties
      msgEmpty="It's empty"
      ItemName="Cigarette Machine"
      Physics=PHYS_None
-     Mesh=LodMesh'HDTPDecos.HDTPcigarettemachine'
+     HDTPMesh="HDTPDecos.HDTPcigarettemachine"
+     Mesh=LodMesh'DeusExDeco.CigaretteMachine'
      SoundRadius=8
      SoundVolume=96
      AmbientSound=Sound'Ambient.Ambient.HumLight3'

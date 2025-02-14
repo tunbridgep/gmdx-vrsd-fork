@@ -39,7 +39,8 @@ defaultproperties
      SpawnSound=Sound'GMDXSFX.Weapons.ShotgunFire'
      ImpactSound=Sound'DeusExSounds.Generic.BasketballBounce'
      LifeSpan=0.000000
-     Skin=Texture'HDTPDecos.Skins.HDTPPoolballtex16'
+     HDTPSkin"HDTPDecos.Skins.HDTPPoolballtex16"
+     Skin=Texture'DeusExDeco.Skins.Poolballtex16'
      Mesh=LodMesh'DeusExDeco.Basketball'
      DrawScale=0.200000
      CollisionRadius=1.650000
