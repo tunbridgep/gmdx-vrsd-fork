@@ -18,7 +18,7 @@ var travel int HotKeyNum;
 var travel Augmentation next;
 var bool bUsingMedbot;
 
-var bool bHeartUpgraded;    //SARGE: Stores if an aug was upgraded via heart. Used for downgrading if we remove heart.
+var travel bool bHeartUpgraded;    //SARGE: Stores if an aug was upgraded via heart. Used for downgrading if we remove heart.
 
 var localized String EnergyRateLabel;
 var localized string OccupiesSlotLabel;

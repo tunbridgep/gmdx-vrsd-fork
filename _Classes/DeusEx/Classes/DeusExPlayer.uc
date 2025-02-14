@@ -3669,6 +3669,16 @@ exec function AugAdd(class<Augmentation> aWantedAug)
 	}
 }
 
+//SARGE: Add in a way to remove augs
+exec function AugRemove(class<Augmentation> aWantedAug)
+{
+	if (!bCheatsEnabled)
+		return;
+
+	if (AugmentationSystem != None)
+		AugmentationSystem.RemoveAugmentation(aWantedAug);
+}
+
 //SARGE: Add in a way to cheat perks
 exec function PerkAdd(class<Perk> aWantedPerk)
 {
