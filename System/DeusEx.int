@@ -1358,7 +1358,7 @@ msgSpec="5% chance to block bullets"
 ItemName="Crowbar"
 Description="A crowbar. Hit someone or something with it. Repeat.|n|n<UNATCO OPS FILE NOTE GH010-BLUE> Many crowbars we call 'murder of crowbars.'  Always have one for kombat. Ha. -- Gunther Hermann <END NOTE>"
 beltDescription="CROWBAR"
-msgSpec="+5 damage to doors, crates, and other static objects"
+msgSpec="x2 damage to doors, crates, and other static objects"
 
 [TracerTong]
 FamiliarName="Tracer Tong"
