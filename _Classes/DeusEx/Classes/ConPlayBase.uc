@@ -864,23 +864,18 @@ log("  event.toActor    = " $ event.toActor );
 
 			if (invokeActor != none && invokeActor.IsA('PaulDenton'))    //CyberP: have paul offer you balanced choices //RSD: accessed none?
             {
-             /*if (invItemTo.IsA('WeaponMiniCrossbow'))
-             {
-                WeaponMiniCrossbow(invItemTo).BaseAccuracy -= 0.1;
-                WeaponMiniCrossbow(invItemTo).ModBaseAccuracy += 0.1;
-                //WeaponMiniCrossbow(invItemTo).PickupAmmoCount = 8;
-             }
-             else if (invItemTo.IsA('WeaponRifle'))
-             {
-                WeaponRifle(invItemTo).BaseAccuracy -= 0.1;
-                WeaponRifle(invItemTo).ModBaseAccuracy += 0.1;
-             }*/
-             if (invItemTo.IsA('WeaponMiniCrossbow') || invItemTo.IsA('WeaponRifle'))
-             {
-                wepMod = Spawn(class'WeaponModAccuracy');
-                wepMod.ApplyMod(DeusExWeapon(invItemTo));
-                wepMod.Destroy();
-             }
+			 if (invItemTo.IsA('WeaponMiniCrossbow') || invItemTo.IsA('WeaponRifle'))
+			 {
+				wepMod = Spawn(class'WeaponModAccuracy');
+				wepMod.ApplyMod(DeusExWeapon(invItemTo));
+				wepMod.Destroy();
+				
+				//SARGE: Add some ammo, too
+				if (invItemTo.IsA('WeaponMiniCrossbow'))
+					DeusExWeapon(invItemTo).AmmoType.AddAmmo(8);
+				else if (invItemTo.IsA('WeaponRifle'))
+					DeusExWeapon(invItemTo).AmmoType.AddAmmo(5);
+			 }
             }
             else if (invokeActor != none && invokeActor.IsA('Male2'))           //RSD: accessed none?
             {
