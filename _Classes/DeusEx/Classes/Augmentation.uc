@@ -454,7 +454,6 @@ simulated function bool UpdateInfo(Object winObject, optional string initialText
 	else
 	{
 		winInfo.AppendText(GetDescription());
-		winInfo.SetText(GetDescription());
 	}
 
     // Energy Reserve
@@ -567,10 +566,11 @@ simulated function bool CanDrainEnergy()
     return CanBeActivated() && !IsToggleAug();
 }
 
+
 // ----------------------------------------------------------------------
-// GetAdjustedEnergyRate()
+// GetAdjustedEnergy()
 //
-// Gets the actual rate of energy use for an augmentation, factoring in bonuses and penalties.
+// Modifies an energy value, factoring in bonuses and penalties.
 // SARGE: This was multiplicative for recirc and heart, in that order.
 // So a 20 energy aug with level 3 recirc (-35%) and level 1 heart (+40%) would
 // cost 18.2 energy (20 * 0.65 * 1.4) which seemed unintented.
@@ -578,7 +578,7 @@ simulated function bool CanDrainEnergy()
 // Custom version allows working with any energy ratio
 // ----------------------------------------------------------------------
 
-function float GetAdjustedEnergyRate()
+function float GetAdjustedEnergy(float amount)
 {    
     local float bonus, penalty, mult;
 
@@ -597,7 +597,18 @@ function float GetAdjustedEnergyRate()
     else
         mult = 1.0;
 
-    return GetEnergyRate() * mult;
+    return amount * mult;
+}
+
+// ----------------------------------------------------------------------
+// GetAdjustedEnergyRate()
+//
+// Gets the actual rate of energy use for an augmentation, factoring in bonuses and penalties.
+// ----------------------------------------------------------------------
+
+function float GetAdjustedEnergyRate()
+{    
+    return GetAdjustedEnergy(GetEnergyRate());
 }
 
 // ----------------------------------------------------------------------
@@ -608,24 +619,7 @@ function float GetAdjustedEnergyRate()
 
 function float GetAdjustedEnergyReserve()
 {    
-    local float bonus, penalty, mult;
-
-    //Heart Penalty
-    penalty = Player.AugmentationSystem.GetAugLevelValue(class'AugHeartLung');
-
-    //recirc bonus
-    bonus = Player.AugmentationSystem.GetAugLevelValue(class'AugPower');
-
-    if (penalty > 0 && bonus > 0)
-        mult = bonus + penalty - 1.0;
-    else if (bonus > 0)
-        mult = bonus;
-    else if (penalty > 0)
-        mult = penalty;
-    else
-        mult = 1.0;
-
-    return EnergyReserved * mult;
+    return GetAdjustedEnergy(EnergyReserved);
 }
 
 // ----------------------------------------------------------------------
