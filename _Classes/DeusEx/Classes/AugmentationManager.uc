@@ -393,6 +393,7 @@ function bool RemoveAugmentation(Class<Augmentation> takeClass)
     //If removing HeartLung, downgrade everything
     if (anAug.IsA('AugHeartLung'))
     {
+        heartLevels = 0;
         ForEach Player.AllActors(class'Augmentation',allTheAugs)
         {
             if (allTheAugs.bHasIt && allTheAugs.CurrentLevel != 0)
