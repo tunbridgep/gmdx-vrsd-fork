@@ -202,6 +202,10 @@ class All expands Object
 #exec AUDIO IMPORT FILE="Sounds\MultitoolEquip.wav"			NAME="MultitoolEquip"	    	GROUP="Misc"
 #exec AUDIO IMPORT FILE="Sounds\MultitoolUnequip.wav"	    NAME="MultitoolUnequip"		    GROUP="Misc"
 
+//Weapon pickup sounds
+
+#exec AUDIO IMPORT FILE="Sounds\Pickups\PickupAmmo10mm.wav"			NAME="Pickup10mmAmmo"	    	GROUP="Pickups"
+
 defaultproperties
 {
 }
