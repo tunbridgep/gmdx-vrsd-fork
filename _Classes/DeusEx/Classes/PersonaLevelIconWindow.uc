@@ -7,9 +7,12 @@ class PersonaLevelIconWindow extends PersonaBaseWindow;
 var int     currentLevel;
 var Texture texLevel;
 var Bool    bSelected;
+var Bool    bHeart;
 
 var int iconSizeX;
 var int iconSizeY;
+
+var Color colHeart;
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -35,6 +38,16 @@ function SetSelected(bool bNewSelected)
 }
 
 // ----------------------------------------------------------------------
+// SetHeart()
+// ----------------------------------------------------------------------
+
+function SetHeart(bool bNewHeart)
+{
+	bHeart = bNewHeart;
+	StyleChanged();
+}
+
+// ----------------------------------------------------------------------
 // DrawWindow()
 // ----------------------------------------------------------------------
 
@@ -47,6 +60,9 @@ event DrawWindow(GC gc)
 
 	for(levelCount=0; levelCount<=currentLevel; levelCount++)
 	{
+        if (levelCount == currentLevel && bHeart)
+            gc.SetTileColor(colHeart);
+
 		gc.DrawTexture(levelCount * (iconSizeX + 1), 0, iconSizeX, iconSizeY,
 			0, 0, texLevel);
 	}
@@ -75,6 +91,8 @@ event StyleChanged()
 		colText = theme.GetColorFromName('HUDColor_ButtonTextFocus');
 	else
 		colText = theme.GetColorFromName('HUDColor_ButtonTextNormal');
+
+    colHeart = theme.GetColorFromName('HUDColor_ButtonTextDisabled');
 }
 
 // ----------------------------------------------------------------------

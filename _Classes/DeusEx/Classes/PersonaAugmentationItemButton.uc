@@ -81,6 +81,17 @@ function SetLevel(int newLevel)
 }
 
 // ----------------------------------------------------------------------
+// SetHeartUpgraded()
+// SARGE: Set red icons when upgraded by heart.
+// ----------------------------------------------------------------------
+
+function SetHeartUpgraded(bool heart)
+{
+	if (winLevels != None)
+		winLevels.SetHeart(heart);
+}
+
+// ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
 defaultproperties

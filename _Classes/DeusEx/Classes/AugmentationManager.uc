@@ -370,16 +370,16 @@ simulated function Augmentation FindAugmentation(Class<Augmentation> findClass)
 // used for respeccing
 // ----------------------------------------------------------------------
 
-function RemoveAugmentation(Class<Augmentation> takeClass)
+function bool RemoveAugmentation(Class<Augmentation> takeClass)
 {
-	local Augmentation anAug;
+	local Augmentation anAug, allTheAugs;
 
 	// Checks to see if the player already has it.  If so, we want to
 	// increase the level
 	anAug = FindAugmentation(takeClass);
 
-	if (anAug == None)
-		return;		// shouldn't happen, but you never know!
+	if (anAug == None || !anAug.bHasIt)
+		return false;		// shouldn't happen, but you never know!
 
     if (anAug.bIsActive)
         anAug.Deactivate();
@@ -388,11 +388,27 @@ function RemoveAugmentation(Class<Augmentation> takeClass)
     anAug.CurrentLevel = anAug.default.CurrentLevel;
     anAug.bAddedToWheel = false;
 
+    //If removing HeartLung, downgrade everything
+    if (anAug.IsA('AugHeartLung'))
+    {
+        ForEach Player.AllActors(class'Augmentation',allTheAugs)
+        {
+            if (allTheAugs.bHasIt && allTheAugs.CurrentLevel != 0 && allTheAugs.bHeartUpgraded)
+            {
+                allTheAugs.CurrentLevel--;
+                allTheAugs.bHeartUpgraded = false;
+                allTheAugs.Setup();
+            }
+        }
+    }
+
 	// Manage our AugLocs[] array
 	AugLocs[anAug.AugmentationLocation].augCount--;
 
     Player.RemoveAugmentationDisplay(anAug);
     Player.RadialMenuUpdateAug(anAug);
+
+    return true;
 }
 
 // ----------------------------------------------------------------------
@@ -428,6 +444,7 @@ function Augmentation GivePlayerAugmentation(Class<Augmentation> giveClass)
         if (allTheAugs.bHasIt && allTheAugs.CurrentLevel != allTheAugs.MaxLevel) //RSD: removed && allTheAugs.bAlwaysActive, no distinction between active or passive for synth heart anymore
         {
           allTheAugs.CurrentLevel++;                                            //RSD: changed from +=1 to ++ for no reason
+          allTheAugs.bHeartUpgraded = true;
           allTheAugs.Setup();
         }
 
@@ -445,7 +462,10 @@ function Augmentation GivePlayerAugmentation(Class<Augmentation> giveClass)
     if (!anAug.IsA('AugHeartLung')                                              //RSD: If we already have Synth Heart installed, give a free upgrade
       && Player.AugmentationSystem.FindAugmentation(class'AugHeartLung').bHasIt
       && anAug.CurrentLevel != anAug.MaxLevel)
-    	anAug.CurrentLevel++;
+    {
+        anAug.CurrentLevel++;
+        anAug.bHeartUpgraded = true;
+    }
 
 	if ( Player.Level.Netmode == NM_Standalone )
 		Player.ClientMessage(Sprintf(anAug.AugNowHaveAtLevel, anAug.GetName(), anAug.CurrentLevel + 1));
