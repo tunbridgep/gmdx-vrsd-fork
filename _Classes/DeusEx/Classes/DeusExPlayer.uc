@@ -17744,16 +17744,6 @@ defaultproperties
      BurnString=" with excessive burning"
      NoneString="None"
      MPDamageMult=1.000000
-     bHDTP_JC=False
-     bHDTP_Walton=False
-     bHDTP_Anna=False
-     bHDTP_UNATCO=False
-     bHDTP_MJ12=False
-     bHDTP_NSF=False
-     bHDTP_RiotCop=False
-     bHDTP_Gunther=False
-     bHDTP_Paul=False
-     bHDTP_Nico=False
      iQuickSaveMax=5
      iAutoSaveMax=3
      bTogAutoSave=True
