@@ -80,19 +80,6 @@ var string HDTPMeshTex[8];
 //1 = mesh1, 2 = mesh2, 3 = mesh3
 var travel int assignedMesh;
 
-//SARGE: HDTP Model toggles
-var class<ScriptedPawn> hdtpReference;
-var string HDTPSkin;
-var string HDTPTexture;
-var string HDTPMesh;
-var string HDTPMesh2;
-var string HDTPMesh3;
-var string HDTPMeshTex[8];
-
-//SARGE: Remember which mesh we have assigned
-//1 = mesh1, 2 = mesh2, 3 = mesh3
-var travel int assignedMesh;
-
 // ----------------------------------------------------------------------
 // ShouldCreate()
 // If this returns FALSE, the object will be deleted on it's first tick
