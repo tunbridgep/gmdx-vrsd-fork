@@ -35,6 +35,7 @@ Sarge's Changes since Beta 2.2:
     - Datacubes will show a black screen after they have been read.
     - The augmentation "hum" sound can be disabled.
     - Augmentations now show their active colours in the medbot interface.
+    - Picking up a weapon from a carcass for the first time will show you how much ammo it has.
     - Complete overhaul of the "Decline Knives" system
         - "Decline Knives" setting has been removed
         - A new Decline button has been added to items in the inventory. Clicking it will decline a specific item going forward, preventing it from being taken off corpses.
