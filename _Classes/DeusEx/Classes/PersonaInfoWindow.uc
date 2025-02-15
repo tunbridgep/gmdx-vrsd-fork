@@ -585,7 +585,10 @@ function AddDeclinedInfoWindow()
             winIcon = winAmmo.NewChild(Class'Window');
             winIcon.SetBackground(invClass.default.Icon);
             winIcon.SetBackgroundStyle(DSTY_Masked);
-            winIcon.SetBackgroundStretching(true);
+
+            //SARGE: Holy dirty hack batman!
+            if (invClass == class'SoftwareNuke' || invClass == class'SoftwareStop')
+                winIcon.SetBackgroundStretching(true);
             winIcon.SetSize(42, 37);
             //winIcon.SetSize(invClass.default.largeIconWidth, invClass.default.largeIconHeight);
             
