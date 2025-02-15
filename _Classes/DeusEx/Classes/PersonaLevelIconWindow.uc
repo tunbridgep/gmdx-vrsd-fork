@@ -8,6 +8,7 @@ var int     currentLevel;
 var Texture texLevel;
 var Bool    bSelected;
 var int    heart;
+var bool   bShowHeart;
 
 var int iconSizeX;
 var int iconSizeY;
@@ -41,8 +42,9 @@ function SetSelected(bool bNewSelected)
 // SetHeart()
 // ----------------------------------------------------------------------
 
-function SetHeart(int newHeart)
+function SetHeart(int newHeart, bool bShow)
 {
+	bShowHeart = bShow;
 	heart = newHeart;
 	StyleChanged();
 }
@@ -88,10 +90,17 @@ event StyleChanged()
 	theme = player.ThemeManager.GetCurrentHUDColorTheme();
 
 	if (bSelected)
+	{
 		colText = theme.GetColorFromName('HUDColor_ButtonTextFocus');
+		colHeart = theme.GetColorFromName('HUDColor_ButtonTextFocus');
+	}
 	else
+	{
 		colText = theme.GetColorFromName('HUDColor_ButtonTextNormal');
+		colHeart = theme.GetColorFromName('HUDColor_ButtonTextNormal');
+	}
 
+	if (bShowHeart)
     colHeart = theme.GetColorFromName('HUDColor_ButtonTextNormal');
 }
 

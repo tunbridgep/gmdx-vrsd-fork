@@ -416,9 +416,10 @@ function bool RemoveAugmentation(Class<Augmentation> takeClass)
 // ----------------------------------------------------------------------
 // AssignOverflow()
 // SARGE: Assigns a specific priority list for heart augmentation overflow
+// Focuses exclusively on augs that are at or below the max level
 // ----------------------------------------------------------------------
 
-function AssignOverflowTo(class<Augmentation> augClass)
+function AssignOverflowTo(class<Augmentation> augClass, int maxLevel)
 {
     local Augmentation aug;
 
@@ -427,9 +428,9 @@ function AssignOverflowTo(class<Augmentation> augClass)
 
     aug = GetAug(augClass);
 
-    if (aug != None && aug.bHasIt && aug.CurrentLevel < aug.MaxLevel)
+    if (aug != None && aug.bHasIt && aug.CurrentLevel < aug.MaxLevel && aug.CurrentLevel <= maxLevel)
     {
-        player.clientMessage("Overflow to " $ aug.GetName() $ ": " $ heartOverflow);
+        //player.clientMessage("Overflow to " $ aug.GetName() $ ": " $ heartOverflow);
         heartOverflow--;
         aug.CurrentLevel++;
         aug.heartUpgraded++;
@@ -439,42 +440,51 @@ function AssignOverflowTo(class<Augmentation> augClass)
 
 function AssignOverflow()
 {
-    //Chest first
-    AssignOverflowTo(class'AugShield');
-    AssignOverflowTo(class'AugEMP');
-    AssignOverflowTo(class'AugAqualung');
-    AssignOverflowTo(class'AugEnviro');
-    AssignOverflowTo(class'AugHealing');
-    AssignOverflowTo(class'AugPower');
-    
-    //Then Head
-    AssignOverflowTo(class'AugDefense');
-    AssignOverflowTo(class'AugDrone');
-    
-    //Then Eyes
-    AssignOverflowTo(class'AugVision');
-    AssignOverflowTo(class'AugTarget');
-    
-    //Then Subdermal
-    AssignOverflowTo(class'AugCloak');
-    AssignOverflowTo(class'AugRadarTrans');
-    AssignOverflowTo(class'AugBallisticPassive');
-    AssignOverflowTo(class'AugBallistic');
-    
-    //Then Arms
-    AssignOverflowTo(class'AugAmmoCap');
-    AssignOverflowTo(class'AugCombatStrength');
-    AssignOverflowTo(class'AugCombat');
-    AssignOverflowTo(class'AugMuscle');
+    local int level;
 
-    //Then Legs
-    AssignOverflowTo(class'AugSpeed');
-    AssignOverflowTo(class'AugStealth');
-    AssignOverflowTo(class'AugIcarus');
-    
-    //Then Default
-    AssignOverflowTo(class'AugIFF');
-    AssignOverflowTo(class'AugLight');
+    level = 1;
+
+    while (level <= 4 && heartOverflow > 0)
+    {
+        //Chest first
+        AssignOverflowTo(class'AugShield',level);
+        AssignOverflowTo(class'AugEMP',level);
+        AssignOverflowTo(class'AugAqualung',level);
+        AssignOverflowTo(class'AugEnviro',level);
+        AssignOverflowTo(class'AugHealing',level);
+        AssignOverflowTo(class'AugPower',level);
+        
+        //Then Head
+        AssignOverflowTo(class'AugDefense',level);
+        AssignOverflowTo(class'AugDrone',level);
+        
+        //Then Eyes
+        AssignOverflowTo(class'AugVision',level);
+        AssignOverflowTo(class'AugTarget',level);
+        
+        //Then Subdermal
+        AssignOverflowTo(class'AugCloak',level);
+        AssignOverflowTo(class'AugRadarTrans',level);
+        AssignOverflowTo(class'AugBallisticPassive',level);
+        AssignOverflowTo(class'AugBallistic',level);
+        
+        //Then Arms
+        AssignOverflowTo(class'AugAmmoCap',level);
+        AssignOverflowTo(class'AugCombatStrength',level);
+        AssignOverflowTo(class'AugCombat',level);
+        AssignOverflowTo(class'AugMuscle',level);
+
+        //Then Legs
+        AssignOverflowTo(class'AugSpeed',level);
+        AssignOverflowTo(class'AugStealth',level);
+        AssignOverflowTo(class'AugIcarus',level);
+        
+        //Then Default
+        AssignOverflowTo(class'AugIFF',level);
+        AssignOverflowTo(class'AugLight',level);
+
+        level++;
+    }
 }
 
 

@@ -28,6 +28,7 @@ var Localized String RespecText;
 
 event InitWindow()
 {
+    bMedbot = true;
 	Super.InitWindow();
 
 	HUDMedBotNavBarWindow(winNavBar).btnAugs.SetSensitivity(False);

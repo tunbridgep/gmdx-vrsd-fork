@@ -90,6 +90,8 @@ enum EAugmentationType
     Aug_Toggle
 };
 
+var bool bMedbot;                                     //SARGE: Set to TRUE if we're viewing the medbot aug screen.
+
 //LDDP, 10/28/21: Store this assessment for later.
 var bool bFemale;
 
@@ -693,7 +695,7 @@ function RefreshWindow(float DeltaTime)
     if (selectedAugButton != None)
     {
         PersonaAugmentationItemButton(selectedAugButton).SetLevel(selectedAug.GetCurrentLevel());
-        PersonaAugmentationItemButton(selectedAugButton).SetHeartUpgraded(selectedAug.heartUpgraded);
+        PersonaAugmentationItemButton(selectedAugButton).SetHeartUpgraded(selectedAug.heartUpgraded,bMedBot);
         PersonaAugmentationItemButton(selectedAugButton).SetActive(selectedAug);
     }
 
@@ -847,7 +849,7 @@ function PersonaAugmentationItemButton CreateAugButton(Augmentation anAug, int a
     }
 
 	newButton.SetLevel(anAug.GetCurrentLevel());
-    newButton.SetHeartUpgraded(anAug.heartUpgraded);
+    newButton.SetHeartUpgraded(anAug.heartUpgraded,bMedBot);
 
 	return newButton;
 }
@@ -1164,7 +1166,7 @@ function UpgradeAugmentation()
 		if (selectedAugButton != None)
         {
 			PersonaAugmentationItemButton(selectedAugButton).SetLevel(selectedAug.GetCurrentLevel());
-			PersonaAugmentationItemButton(selectedAugButton).SetHeartUpgraded(selectedAug.heartUpgraded);
+			PersonaAugmentationItemButton(selectedAugButton).SetHeartUpgraded(selectedAug.heartUpgraded,bMedBot);
         }
 	}
 	else if (augCan != None)
@@ -1182,7 +1184,7 @@ function UpgradeAugmentation()
 		if (selectedAugButton != None)
         {
 			PersonaAugmentationItemButton(selectedAugButton).SetLevel(selectedAug.GetCurrentLevel());
-			PersonaAugmentationItemButton(selectedAugButton).SetHeartUpgraded(selectedAug.heartUpgraded);
+			PersonaAugmentationItemButton(selectedAugButton).SetHeartUpgraded(selectedAug.heartUpgraded,bMedBot);
         }
 
 	}
