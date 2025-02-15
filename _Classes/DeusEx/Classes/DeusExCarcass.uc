@@ -913,7 +913,6 @@ function Frob(Actor Frobber, Inventory frobWith)
     local int ammoCount, intj;                                                  //RSD: Added
     local bool bFoundSomething;                                                 //SARGE: Did we find something
     local bool bFoundInvalid;                                                 //SARGE: Did we find something we can't use?
-    local int ammoGiven;
     local bool bDeclined;
 
 	// Can we assume only the *PLAYER* would actually be frobbing carci?
@@ -1340,6 +1339,16 @@ function Frob(Actor Frobber, Inventory frobWith)
 								DeusExPlayer(P).FrobTarget = item;
                                 if (!bDeclined)
                                 {
+                                    //SARGE: If a weapon, track the ammo for calling AddReceivedWeapon, which we need to do AFTER handling pickup below.
+                                    ammoCount = 0;
+                                    if (item.IsA('DeusExWeapon'))
+                                    {
+                                        ammoType = Ammo(player.FindInventoryType(DeusExWeapon(item).AmmoName));
+                                        if (ammoType != None && ammoType.isA('DeusExAmmo'))
+                                            ammoCount = ammoType.AmmoAmount;
+                                    }
+
+
                                     bFoundSomething = True;
                                     if (DeusExPlayer(P).HandleItemPickup(Item) != False)
                                     {
@@ -1358,6 +1367,8 @@ function Frob(Actor Frobber, Inventory frobWith)
                                         // Show the item received in the ReceivedItems window and also
                                         // display a line in the Log
                                         AddReceivedItem(player, item, 1);
+                                        if (item.IsA('DeusExWeapon'))
+                                            AddReceivedWeapon(player,DeusExWeapon(item),ammoCount);
 
                                         P.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
                                         PlaySound(Item.PickupSound);
@@ -1447,6 +1458,45 @@ function AddSearchedString(DeusExPlayer player)
     }
 }
 
+// ----------------------------------------------------------------------
+// AddReceivedWeapon()
+// SARGE: Adds an ammo display for a weapon.
+// You still need to call AddReceivedItem for the actual weapon.
+// ----------------------------------------------------------------------
+
+function AddReceivedWeapon(DeusExPlayer player, DeusExWeapon w, int previousAmmo)
+{
+    local int maxAmmo, intj;
+    local Ammo playerAmmo;
+    local bool beyondMax;
+    local string msg;
+
+    // SARGE: When picking up a new weapon, show it's ammo as well
+    // TODO: This needs a refactor. Ideally the ammo-searching code in Frob should use the same code as this, rather than duplicating it.
+    if (DeusExAmmo(w.AmmoType) != None && w.PickupAmmoCount > 0 && !w.bDisposableWeapon && DeusExAmmo(w.AmmoType).bShowInfo)
+    {
+        maxAmmo = player.GetAdjustedMaxAmmo(w.AmmoType);
+        intj = w.PickupAmmoCount;
+
+        while (maxAmmo < previousAmmo + intj && intj > 0)
+        {
+            intj -= 1;
+            beyondMax = true;
+        }
+        
+        if (intj > 0)
+        {
+            DeusExRootWindow(player.rootWindow).hud.receivedItems.AddItem(w.AmmoType, intj);
+            player.UpdateAmmoBeltText(w.AmmoType);
+            msg = w.PickupMessage @ w.AmmoType.itemArticle @ w.AmmoType.itemName @ "(" $ intj $ ")";
+        }
+        
+        if (beyondMax)
+            msg = msg @ MaxAmmoString;
+
+        player.ClientMessage(msg, 'Pickup');
+    }
+}
 
 // ----------------------------------------------------------------------
 // AddReceivedItem()

@@ -5359,7 +5359,7 @@ simulated function bool UpdateInfo(Object winObject)
         winInfo.SetTitle(itemName);
 
     //SARGE: Add Decline Button
-    if (P.IsA('DeusExPlayer') && !DeusExPlayer(P).DeclinedItemsManager.IsDeclined(class))
+    if (P.IsA('DeusExPlayer'))
 		winInfo.AddDeclineButton(class);
 
 	if (bHandToHand && Owner.IsA('DeusExPlayer'))
