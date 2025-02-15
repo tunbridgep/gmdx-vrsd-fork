@@ -584,14 +584,14 @@ function ReplaceEnemyWeapon(ScriptedPawn first, ScriptedPawn second)
     //Now actually swap the ammo between pawns
     for (k=0;k < i;k++)
     {
-        Player.ClientMessage("Give " $ first.FamiliarName $ " " $weaps1[k].ItemName $ " to " $ second.FamiliarName);
+        //Player.ClientMessage("Give " $ first.FamiliarName $ " " $weaps1[k].ItemName $ " to " $ second.FamiliarName);
         weaps1[k].GiveTo(second);
         weaps1[k].SetBase(second);
     }
 
     for (k=0;k < j;k++)
     {
-        Player.ClientMessage("Give " $ second.FamiliarName $ " " $ weaps2[k].ItemName $ " to " $ first.FamiliarName);
+        //Player.ClientMessage("Give " $ second.FamiliarName $ " " $ weaps2[k].ItemName $ " to " $ first.FamiliarName);
         weaps2[k].GiveTo(first);
         weaps2[k].SetBase(first);
     }
@@ -627,7 +627,7 @@ function ReplaceEnemyWeapon(ScriptedPawn first, ScriptedPawn second)
     //Now actually swap the weapons between pawns
     for (k=0;k < i;k++)
     {
-        Player.ClientMessage("Give " $ first.FamiliarName $ " " $weaps1[k].ItemName $ " to " $ second.FamiliarName);
+        //Player.ClientMessage("Give " $ first.FamiliarName $ " " $weaps1[k].ItemName $ " to " $ second.FamiliarName);
         weaps1[k].GiveTo(second);
         weaps1[k].SetBase(second);
         wep = DeusExWeapon(weaps1[k]);
@@ -637,7 +637,7 @@ function ReplaceEnemyWeapon(ScriptedPawn first, ScriptedPawn second)
 
     for (k=0;k < j;k++)
     {
-        Player.ClientMessage("Give " $ second.FamiliarName $ " " $ weaps2[k].ItemName $ " to " $ first.FamiliarName);
+        //Player.ClientMessage("Give " $ second.FamiliarName $ " " $ weaps2[k].ItemName $ " to " $ first.FamiliarName);
         weaps2[k].GiveTo(first);
         weaps2[k].SetBase(first);
         wep = DeusExWeapon(weaps2[k]);
