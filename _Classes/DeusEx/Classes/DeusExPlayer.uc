@@ -10164,6 +10164,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 							Carc.UpdateHDTPSettings();
 							Carc.Inventory = PovCorpse(item).Inv; //GMDX
 							Carc.bSearched = POVCorpse(item).bSearched;
+							Carc.PickupAmmoCount = POVCorpse(item).PickupAmmoCount;
                             //if (FRand() < 0.3)
                             //PlaySound(Sound'DeusExSounds.Player.MaleLand', SLOT_None, 0.9, false, 800, 0.85);
 

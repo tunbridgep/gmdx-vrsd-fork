@@ -885,6 +885,7 @@ function PickupCorpse(DeusExPlayer player)
             corpse.Frob(player, None);
             corpse.SetBase(player);
             corpse.bSearched = bSearched;
+            corpse.PickupAmmoCount = PickupAmmoCount;
             player.PutInHand(corpse);
             bQueuedDestroy=True;
             Destroy();
@@ -1030,12 +1031,8 @@ function Frob(Actor Frobber, Inventory frobWith)
                             if (w.PickupAmmoCount == 0)
                                 w.PickupAmmoCount = 1;
                         }
-                        else if (W.IsA('WeaponNanoVirusGrenade') ||
-                            W.IsA('WeaponGasGrenade') ||
-                            W.IsA('WeaponEMPGrenade') ||
-                            W.IsA('WeaponLAM')  ||
-                            W.IsA('WeaponHideAGun') && player.FindInventorySlot(item, True))  //CyberP: there we go. Now need to stop 1-4 rand for nades
-                            W.PickupAmmoCount = 1;       //CyberP: I need to check if inventory is full and no nades
+                        else if (W.bDisposableWeapon)
+                            W.PickupAmmoCount = 1;
                         else if (W.IsA('WeaponFlamethrower'))
                             W.PickupAmmoCount = (PickupAmmoCount * 5);                    //SARGE: Now 5-25 rounds with initialization in MissionScript.uc on first map load
                         else if (W.IsA('WeaponAssaultGun'))
@@ -1043,19 +1040,13 @@ function Frob(Actor Frobber, Inventory frobWith)
                             W.PickupAmmoCount = PickupAmmoCount + 1;                      //RSD: Now 2-5 rounds with initialization in MissionScript.uc on first map load
                         else if (W.IsA('WeaponGepGun'))
                             W.PickupAmmoCount = 2;
-                        else if (!W.IsA('WeaponNanoVirusGrenade') &&
-                            !W.IsA('WeaponGasGrenade') &&
-                            !W.IsA('WeaponEMPGrenade') &&
-                            !W.IsA('WeaponLAM') &&
-                            !W.IsA('WeaponHideAGun')) //CyberP: no grenades.
-                            //W.PickupAmmoCount = Rand(4) + 1;                              //RSD
+                        else if (!W.bDisposableWeapon)
                             W.PickupAmmoCount = PickupAmmoCount;                            //RSD
-                            else if (W.Default.PickupAmmoCount != 0)
+                        else if (W.Default.PickupAmmoCount != 0)
                             W.PickupAmmoCount = 1; //CyberP: hmm
                     }
                     //SARGE: Set weapons maximum clip size to however much left over ammo it has.
                     W.ClipCount = W.PickupAmmoCount;
-                    PickupAmmoCount = W.PickupAmmoCount;
                 }
 
 				if (item != None)
@@ -1092,6 +1083,14 @@ function Frob(Actor Frobber, Inventory frobWith)
 					}
 					else if (item.IsA('DeusExWeapon'))   // I *really* hate special cases
 					{
+                        //Remove empty disposable weapons when looted
+                        if (DeusExWeapon(item) != None && DeusExWeapon(item).bDisposableWeapon && DeusExWeapon(item).PickupAmmoCount == 0)
+                        {
+                            DeleteInventory(item);
+                            item.Destroy();
+                            item = None;
+                        }
+                            
 						// Okay, check to see if the player already has this weapon.  If so,
 						// then just give the ammo and not the weapon.  Otherwise give
 						// the weapon normally.
@@ -1140,19 +1139,9 @@ function Frob(Actor Frobber, Inventory frobWith)
                                         //P.ClientMessage("intj is " $ intj);
                                         Weapon(item).AmmoType.AmmoAmount -= intj;
                                         Weapon(item).PickupAmmoCount -= intj;
-                                        PickupAmmoCount = Weapon(item).PickupAmmoCount;
                                         //SARGE: Set weapons maximum clip size to however much left over ammo it has.
                                         DeusExWeapon(item).ClipCount -= intj;
                                     }
-                                    /*
-                                    //Delete grenades
-                                    if (W.bDisposableWeapon)
-                                    {
-                                        DeleteInventory(item);
-                                        W = None;
-                                        item = None;
-                                    }
-                                    */
 								}
                                 else
                                 {
@@ -1186,7 +1175,6 @@ function Frob(Actor Frobber, Inventory frobWith)
 										AddReceivedItem(player, AmmoType,addedAmount);
 										Weapon(item).PickupAmmoCount-=AddedAmount;
                                         DeusExWeapon(item).ClipCount-=AddedAmount;
-                                        PickupAmmoCount = Weapon(item).PickupAmmoCount;
 										if (AmmoType.PickupViewMesh == Mesh'TestBox')
 									      P.ClientMessage(item.PickupMessage @ item.itemArticle @ item.itemName, 'Pickup');
 									      else
@@ -1202,16 +1190,6 @@ function Frob(Actor Frobber, Inventory frobWith)
                                         }
                                         bFoundInvalid=true; 
                                     }
-                                    /*
-                                    //Delete grenades
-                                    if (W.bDisposableWeapon)
-                                    {
-                                        DeleteInventory(item);
-                                        W = None;
-                                        item = None;
-                                        bPickedItemUp = True;
-                                    }
-                                    */
 								}
                                 //TODO: Handle Dragons Tooth custom charge
 							}
@@ -1257,15 +1235,6 @@ function Frob(Actor Frobber, Inventory frobWith)
 						if (DeusExAmmo(item).AmmoAmount == 0)
 							bPickedItemUp = True;
 					}
-
-                    //Remove disposable weapons when looted
-                    if (DeusExWeapon(item) != None && DeusExWeapon(item).bDisposableWeapon && DeusExWeapon(item).AmmoType.AmmoAmount == 0)
-                    {
-                        DeleteInventory(item);
-                        item.Destroy();
-                        item = nextItem;
-                        continue;
-                    }
 
 					if (!bPickedItemUp)
 					{
