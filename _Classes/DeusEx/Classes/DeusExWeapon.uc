@@ -843,7 +843,7 @@ simulated event RenderOverlays( canvas Canvas )
     
         DisplayWeapon(true);
 
-        if (CurrentMuzzleFlash != None)
+        if (CurrentMuzzleFlash != None && MuzzleSlot < 8 && MuzzleSlot > -1)
             MultiSkins[MuzzleSlot] = CurrentMuzzleFlash;
     
         if (bIsRadar || bIsCloaked)
@@ -3024,6 +3024,7 @@ simulated function EraseMuzzleFlashTexture()
 		return;
 		
     CurrentMuzzleFlash = None;
+    if (MuzzleSlot > -1 && muzzleSlot < 8)
     MultiSkins[MuzzleSlot] = None;
 }
 
