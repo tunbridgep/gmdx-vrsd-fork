@@ -107,7 +107,7 @@ event DrawWindow(GC gc)
 		gc.DrawTexture(22, 20, 40, 35, 0, 0, SkilledTool(curr).icon);
 
 		// Draw the ammo count
-		gc.SetFont(Font'TechMedium'); //CyberP: hud scaling Font'FontTiny'
+		gc.SetFont(player.FontManager.GetFont(TT_AmmoCount)); //CyberP: hud scaling Font'FontTiny'
 		gc.SetAlignments(HALIGN_Center, VALIGN_Top);   //CyberP: Valignment
 		gc.EnableWordWrap(false);
          
@@ -124,7 +124,7 @@ event DrawWindow(GC gc)
 		gc.DrawTexture(22, 20, 40, 35, 0, 0, weapon.icon);
 
 		// Draw the ammo count
-		gc.SetFont(Font'TechMedium'); //CyberP: hud scaling Font'FontTiny'
+		gc.SetFont(player.FontManager.GetFont(TT_AmmoCount)); //CyberP: hud scaling Font'FontTiny'
 		gc.SetAlignments(HALIGN_Center, VALIGN_Top);   //CyberP: Valignment
 		gc.EnableWordWrap(false);
 			
