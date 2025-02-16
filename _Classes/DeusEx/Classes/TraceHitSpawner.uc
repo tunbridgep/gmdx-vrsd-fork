@@ -12,7 +12,7 @@ var bool bForceBulletHole;
 
 function bool IsHDTP()
 {
-    return DeusExPlayer(GetPlayerPawn()).bHDTPInstalled;
+    return DeusExPlayer(GetPlayerPawn()).IsHDTPInstalled();
 }
 
 simulated function PostBeginPlay()

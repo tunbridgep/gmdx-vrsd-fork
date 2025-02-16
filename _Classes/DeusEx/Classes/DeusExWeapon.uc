@@ -1410,7 +1410,7 @@ function PlaySelect()
 
 function bool IsHDTP()
 {
-    return DeusExPlayer(GetPlayerPawn()) != None && DeusExPlayer(GetPlayerPawn()).bHDTPInstalled && iHDTPModelToggle > 0;
+    return DeusExPlayer(GetPlayerPawn()) != None && DeusExPlayer(GetPlayerPawn()).IsHDTPInstalled() && iHDTPModelToggle > 0;
 }
 
 function CheckWeaponSkins()

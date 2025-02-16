@@ -11,7 +11,7 @@ var class<DeusExWeapon> hdtpReference;
 
 function bool IsHDTP()
 {
-    if (!DeusExPlayer(GetPlayerPawn()).bHDTPInstalled)
+    if (!DeusExPlayer(GetPlayerPawn()).IsHDTPInstalled())
         return false;
     return hdtpReference == None || hdtpReference.default.iHDTPModelToggle > 0;
 }

@@ -81,7 +81,7 @@ function PostBeginPlay()
 
 function bool IsHDTP()
 {
-	if (DeusExPlayer(GetPlayerPawn()) == None || !DeusExPlayer(GetPlayerPawn()).bHDTPInstalled)
+	if (DeusExPlayer(GetPlayerPawn()) == None || !DeusExPlayer(GetPlayerPawn()).IsHDTPInstalled())
 		return false;
     else if (hdtpReference != None)
         return hdtpReference.default.iHDTPModelToggle > 0;

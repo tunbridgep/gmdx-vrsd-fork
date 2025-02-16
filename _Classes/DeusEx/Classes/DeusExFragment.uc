@@ -153,7 +153,7 @@ function PostBeginPlay()
 
 function bool IsHDTP()
 {
-    return DeusExPlayer(GetPlayerPawn()).bHDTPInstalled && iHDTPModelToggle > 0;
+    return DeusExPlayer(GetPlayerPawn()).IsHDTPInstalled() && iHDTPModelToggle > 0;
 }
 
 exec function UpdateHDTPsettings()

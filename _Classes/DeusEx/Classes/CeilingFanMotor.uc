@@ -36,7 +36,7 @@ function UpdateHDTPSettings()
 
 function bool IsHDTP()
 {
-    return DeusExPlayer(GetPlayerPawn()) != None && DeusExPlayer(GetPlayerPawn()).bHDTPInstalled && class'CeilingFan'.default.iHDTPModelToggle > 0;
+    return DeusExPlayer(GetPlayerPawn()) != None && DeusExPlayer(GetPlayerPawn()).IsHDTPInstalled() && class'CeilingFan'.default.iHDTPModelToggle > 0;
 }
 
 defaultproperties

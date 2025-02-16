@@ -60,7 +60,7 @@ Function Bump(actor Other)
 
 function bool IsHDTP()
 {
-    return DeusExPlayer(GetPlayerPawn()).bHDTPInstalled && class'DeusEx.LightBulb'.default.iHDTPModelToggle > 0;
+    return DeusExPlayer(GetPlayerPawn()).IsHDTPInstalled() && class'DeusEx.LightBulb'.default.iHDTPModelToggle > 0;
 }
 
 defaultproperties

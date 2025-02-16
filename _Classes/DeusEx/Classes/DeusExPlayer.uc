@@ -423,6 +423,7 @@ var string HDTPTexture;
 var string HDTPMesh;
 var string HDTPMeshTex[8];
 var bool bHDTPInstalled;
+var globalconfig bool bHDTPEnabled;                      //SARGE: Master switch to enable or disable HDTP
 
 //GMDX: CyberP & dasraiser
 //SAVEOUT
@@ -873,9 +874,14 @@ function AssignSecondary(Inventory item)
     RefreshChargedPickups();
 }
 
+function bool IsHDTPInstalled()
+{
+    return bHDTPInstalled && bHDTPEnabled;
+}
+
 function bool IsHDTP()
 {
-    return bHDTPInstalled && iHDTPModelToggle > 0;
+    return IsHDTPInstalled() && iHDTPModelToggle > 0;
 }
 
 function UpdateHDTPsettings()
@@ -17861,4 +17867,5 @@ defaultproperties
      HUDThemeNameGMDX="Default"
      dblClickHolster=2
      bSmartDecline=True
+     bHDTPEnabled=True
 }
