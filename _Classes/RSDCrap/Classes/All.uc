@@ -114,7 +114,8 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\Environment\OldeIronFence_B_fixed.pcx"	        NAME="OldeIronFence_B_Fixed"         	GROUP="Environment" MIPS=ON FLAGS=2
 
 //Icons etc
-#exec TEXTURE IMPORT FILE="Textures\LargeIconCrowbar.pcx"			NAME="LargeIconCrowbar"			GROUP="Icons"
+#exec TEXTURE IMPORT FILE="Textures\LargeIconCrowbarRot.pcx"	    NAME="LargeIconCrowbarRot"	    GROUP="Icons"
+#exec TEXTURE IMPORT FILE="Textures\LargeIconCrowbarHDTP.pcx"		NAME="LargeIconCrowbarHDTP"		GROUP="Icons"
 #exec TEXTURE IMPORT FILE="Textures\LargeIconRifle.pcx"			    NAME="LargeIconRifle"			GROUP="Icons"
 #exec TEXTURE IMPORT FILE="Textures\LargeIconPistol.pcx"			NAME="LargeIconPistol"			GROUP="Icons"
 #exec TEXTURE IMPORT FILE="Textures\BeltIconRifle.pcx"			    NAME="BeltIconRifle"			GROUP="Icons"

@@ -295,6 +295,7 @@ var float attackSpeedMult;                                                      
 var bool bPerShellReload;                                                       //RSD: To avoid convoluted class checking (Sawed-Off, Assault Shotgun, Mini-Crossbow, and GEP)
 var localized string abridgedName;                                              //RSD: For weapons with 30+ char names in MenuScreenHDTPToggles.uc
 var texture largeIconRot;                                                       //RSD: rotated inventory icon
+var texture largeIconUnrot;                                                     //RSD: unrotated inventory icon
 var travel bool bRotated;                                                      //Is this item rotated?
 var travel int invSlotsXtravel;                                                 //RSD: since Inventory invSlotsX doesn't travel through maps
 var travel int invSlotsYtravel;                                                 //RSD: since Inventory invSlotsY doesn't travel through maps
@@ -318,6 +319,7 @@ var string HDTPPickupViewMesh;
 var string HDTPThirdPersonMesh;
 var string HDTPIcon;
 var string HDTPLargeIcon;
+var string HDTPLargeIconRot;
 var Texture handsTex;                                        //SARGE: Store the hands texture for performance
 
 var int MuzzleSlot;                                                 //SARGE: Slot where the muzzle tex will go
@@ -417,6 +419,16 @@ function Unrotate()
     invSlotsX=default.invSlotsX;
     invSlotsY=default.invSlotsy;
     largeIcon = default.largeIcon;
+    UpdateLargeIcon();
+}
+
+//Updates the LargeIcon based on whether or not we're rotated
+function UpdateLargeIcon()
+{
+    if (bRotated)
+        largeIcon = largeIconRot;
+    else
+        largeIcon = largeIconUnrot;
 }
 
 //SARGE: Resize heavy weapons
@@ -6164,9 +6176,12 @@ exec function UpdateHDTPsettings()
 
     Skin = default.Skin;
     Texture = default.Texture;
+    largeIconUnrot = default.largeIcon;
 
     if (HDTPLargeIcon != "")
-        LargeIcon = class'HDTPLoader'.static.GetTexture2(HDTPLargeIcon,string(default.LargeIcon),IsHDTP());
+        LargeIconUnrot = class'HDTPLoader'.static.GetTexture2(HDTPLargeIcon,string(default.LargeIcon),IsHDTP());
+    if (HDTPLargeIconRot != "")
+        LargeIconRot = class'HDTPLoader'.static.GetTexture2(HDTPLargeIconRot,string(default.LargeIconRot),IsHDTP());
     if (HDTPIcon != "")
         Icon = class'HDTPLoader'.static.GetTexture2(HDTPIcon,string(default.Icon),IsHDTP());
     if (HDTPPlayerViewMesh != "")
@@ -6195,7 +6210,7 @@ exec function UpdateHDTPsettings()
     }
 
     SetWeaponHandTex();
-
+    UpdateLargeIcon();
     CheckWeaponSkins();
     DoWeaponOffset(DeusExPlayer(GetPlayerPawn()));
 }

@@ -8946,7 +8946,10 @@ function Bool FindInventorySlot(Inventory anItem, optional Bool bSearchOnly)
 	anItem.invSlotsX = invY;
 	anItem.invSlotsY = invX;
     if (anItem.isA('DeusExWeapon'))
+	{
         DeusExWeapon(anItem).bRotated = !DeusExWeapon(anItem).bRotated;
+		DeusExWeapon(anItem).UpdateLargeIcon();
+	}
 	anItem.largeIconWidth = invHeight;
 	anItem.largeIconHeight = invWidth;
     for (row=0; row<maxInvRows; row++)

@@ -503,16 +503,14 @@ function bool RotateButton()                                                    
         inv.invSlotsX = invY;
 		inv.invSlotsY = invX;
         inv.bRotated = !inv.bRotated;
+		inv.UpdateLargeIcon();
 		if (inv.largeIcon != none)
 		{
 			invWidth = inv.largeIconWidth;
 			invHeight = inv.largeIconHeight;
             inv.largeIconWidth = invHeight;
 			inv.largeIconHeight = invWidth;
-			if (inv.largeIconRot != none && inv.bRotated)
-				SetIcon(inv.largeIconRot);
-			else
-				SetIcon(inv.largeIcon);
+			SetIcon(inv.largeIcon);
 			SetIconSize(inv.largeIconWidth, inv.largeIconHeight);
 		}
 		SetSize((invButtonWidth  * inv.invSlotsX) + 1,
@@ -565,10 +563,8 @@ function ResetRotation(/*float newX, float newY*/)                              
 		inv.largeIconWidth = safeIconWidth;
 		inv.largeIconHeight = safeIconHeight;
 		inv.bRotated = saferotation;
-		if (inv.largeIconRot != none && inv.bRotated)
-			SetIcon(inv.largeIconRot);
-		else
-			SetIcon(inv.largeIcon);
+		inv.UpdateLargeIcon();
+		SetIcon(inv.largeIcon);
 		SetIconSize(inv.largeIconWidth, inv.largeIconHeight);
 		SetSize((invButtonWidth  * inv.invSlotsX) + 1,
     		(invButtonHeight * inv.invSlotsY) + 1);

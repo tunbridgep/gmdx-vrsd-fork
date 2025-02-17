@@ -314,10 +314,7 @@ function CreateInventoryButtons()
 				    anItem.largeIconWidth = anItem.default.largeIconWidth;
 					anItem.largeIconHeight = anItem.default.largeIconHeight;
 				}
-                if (anItem.IsA('DeusExWeapon') && DeusExWeapon(anItem).largeIconRot != none && DeusExWeapon(anItem).bRotated) //RSD: Account for inventory rotation
-					newButton.SetIcon(DeusExWeapon(anItem).largeIconRot);
-				else
-					newButton.SetIcon(anItem.largeIcon);
+				newButton.SetIcon(anItem.largeIcon);
 				newButton.SetIconSize(anItem.largeIconWidth, anItem.largeIconHeight);
 			}
 			else
