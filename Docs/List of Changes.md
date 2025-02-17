@@ -205,6 +205,10 @@ Sarge's Changes since Beta 2.2:
             - All dynamically-applied energy drain from using Augmentations (such as the energy drain from the Muscle aug) now properly accounts for the bonuses and penalties given from Synthetic Heart and Power Recirculator.
             - Synthetic Heart and Power Recirculator energy use is now combined additively, rather than multiplicatively.
                 - This means if the heart gives a 10% penalty and recirculator gives a 30% bonus, you will have a 20% bonus.
+            - Upgrades can now "spill over" when acquiring the Heart augmentation. 
+                - In vRSD, acquiring the heart for the first time would upgrade all augs the player currently has. This means any max-level augs miss out on the bonus.
+                - Now, any bonuses that would have been given to a fully-upgraded augmentation will "spill over" into other augmentations, allowing them to be upgraded twice.
+                - The order in which augmentations is upgraded is pre-set and cannot be changed, starting with the Torso, then the head, the eyes, and then moving to the skin, arms and legs.
         - Targeting
             - The Picture-in-Picture window has been made slightly bigger.
     - Hacking Overhaul
