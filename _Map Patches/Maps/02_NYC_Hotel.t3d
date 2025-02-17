@@ -63217,6 +63217,7 @@ Begin Actor Class=AmmoDartPoison Name=AmmoDartPoison0
     Name=AmmoDartPoison0
 End Actor
 Begin Actor Class=WeaponModSilencer Name=WeaponModSilencer0
+	bNoRandomSwap=True
     LastRenderTime=0.259577
     DistanceFromPlayer=2395.236816
     Level=LevelInfo'MyLevel.LevelInfo0'

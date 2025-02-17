@@ -11,6 +11,7 @@ class Mission01 expands MissionScript;
 
 function FirstFrame()
 {
+	local CrateBreakableMedCombat LaserCrate;
 	local PaulDenton Paul;
 	local UNATCOTroop troop;
 	local TerroristCommander cmdr;
@@ -23,6 +24,15 @@ function FirstFrame()
 
 	if (localURL == "01_NYC_UNATCOISLAND")
 	{
+        //SARGE: If hardcore mode, swap out the laser sight
+        //for the recoil mod.
+        if (player.bHardcoreMode)
+        {
+            foreach AllActors(class'CrateBreakableMedCombat', LaserCrate, 'LaserCrate')
+                if (LaserCrate.Contents == class'WeaponModLaser') //Make sure we haven't been randomised
+                    LaserCrate.Contents = class'WeaponModRecoil';
+        }
+
 		// delete Paul and company after final briefing
 		if (flags.GetBool('M02Briefing_Played'))
 		{
