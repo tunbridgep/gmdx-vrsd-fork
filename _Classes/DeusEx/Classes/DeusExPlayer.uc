@@ -2034,6 +2034,7 @@ function GameDirectory GetSaveGameDirectory()
 //We can't modify the native function, so do this here, and then call it
 function int DoSaveGame(int saveIndex, optional String saveDesc)
 {
+	local GameDirectory saveDir;
     local TechGoggles tech;
 	local DeusExRootWindow root;
 	
@@ -2046,6 +2047,12 @@ function int DoSaveGame(int saveIndex, optional String saveDesc)
         foreach AllActors(class'TechGoggles', tech)
             if ((tech.Owner == Self) && tech.bActive)
                 tech.Activate();
+    
+    if (saveIndex == 0)
+    {
+        saveDir = GetSaveGameDirectory();
+		saveIndex=saveDir.GetNewSaveFileIndex();
+    }
     
     //root.hide();
     root.GenerateSnapshot(True);
