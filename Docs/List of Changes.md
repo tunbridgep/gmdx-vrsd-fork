@@ -242,6 +242,10 @@ Sarge's Changes since Beta 2.2:
         - Alcohol no longer heals for 5 points. Instead, it temporarily gives you 5 torso HP (along with it's usual 5 extra torso Max-HP) while in effect, which is removed afterwards. This health removal cannot kill the player.
         - Alcohol no longer adds to fullness when the addiction system is enabled
         - Zyme no longer removes 10HP if the addiction system is enabled.
+- Map Changes:
+    - The Laser Sight on Liberty Island is replaced with a Recoil Mod on Hardcore mode
+    - A Laser Sight has been added to Smuggler's safe in the first NY visit (replaces a recoil mod)
+    - The Silencer in Paul's Apartment, Full-Auto Mod in Tong's Lab, and Laser Sight in Smugglers Safe are all guaranteed to appear even with the weapon mod shuffle turned on.
 - Miscellaneous Changes:
     - Vending Machines now vend random flavours of chocolate bar and soda. This change is purely visual and doesn't affect gameplay in any way.
     - Hand textures have been ported over from LDDP. This means the first-person weapon textures now have properly coloured hand textures, as well as visible augmentation markings where they align with the third person models.
