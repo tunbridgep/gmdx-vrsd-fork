@@ -1175,6 +1175,9 @@ function UpgradeAugmentation()
 		selectedAug.IncLevel();
 		selectedAug.UpdateInfo(winInfo);
 		player.PlaySound(sound'medkituse',SLOT_None);
+        
+        //SARGE: Reset players accuracy bonus.
+        player.ResetAim();
 
 		augCan.UseOnce();
 
@@ -1227,7 +1230,12 @@ function UseCell()
 	bioCell = BioelectricCell(player.FindInventoryType(Class'BioelectricCell'));
 
 	if (bioCell != None)
+    {
 		bioCell.Activate();
+        
+        //SARGE: Reset players accuracy bonus.
+        player.ResetAim();
+    }
 
 	if (bAllIconsReset)
         bAllIconsReset = False;
