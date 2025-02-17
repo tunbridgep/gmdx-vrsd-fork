@@ -18,8 +18,6 @@ enum TextType
     TT_AmmoCount,
     TT_DamageAbsorb,
     TT_AugHotKey,
-    TT_SecondaryDisplay,
-    TT_MessageBox,
 };
 
 function Font GetFont(TextType TT)
@@ -29,8 +27,6 @@ function Font GetFont(TextType TT)
         case TT_AmmoCount: if (bClassicFont) return Font'FontTiny'; else return Font'TechMedium'; break;
         case TT_DamageAbsorb: if (bClassicFont) return Font'FontTiny'; else return Font'TechMedium'; break;
         case TT_AugHotKey: if (bClassicFont) return Font'FontTiny'; else return Font'FontMenuSmall'; break;
-        case TT_SecondaryDisplay: if (bClassicFont) return Font'FontTiny'; else return Font'TechMedium'; break;
-        case TT_MessageBox: if (bClassicFont) return Font'FontMenuHeaders_DS'; else return Font'FontMenuSmall'; break;
     }
 }
 

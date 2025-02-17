@@ -103,7 +103,6 @@ event DrawWindow(GC gc)
         if ((amount > 0 || chargeLevel > 0) && (item == None || !item.isA('Binoculars')))
         {
             // Draw the ammo count
-            gc.SetFont(player.FontManager.GetFont(TT_SecondaryDisplay)); //CyberP: hud scaling Font'FontTiny'
             gc.SetAlignments(HALIGN_Center, VALIGN_Top);   //CyberP: Valignment
             gc.EnableWordWrap(false);
             gc.SetFont(Font'FontTiny');
