@@ -5,7 +5,7 @@ class ComputerScreenHack extends HUDBaseWindow;
 
 var PersonaNormalTextWindow   winDigits;
 var PersonaHeaderTextWindow   winHackMessage;
-var PersonaActionButtonWindow btnHack;
+var PersonaActionButtonWindowMenu btnHack;
 var ProgressBarWindow         barHackProgress;
 
 var NetworkTerminal           winTerm;
@@ -42,8 +42,8 @@ var localized String HackDetectedLabel;
 var localized String MPHackInitializingLabel;
 
 var int passedSecLevel; //CyberP:
-var PersonaActionButtonWindow btnWorm;
-var PersonaActionButtonWindow btnNuke;
+var PersonaActionButtonWindowMenu btnWorm;
+var PersonaActionButtonWindowMenu btnNuke;
 var bool bTimePaused;
 var float wormTime;
 var localized String hackRequirement1;
@@ -151,7 +151,7 @@ function CreateHackButton()
 	winActionButtons.SetWidth(90);
 	winActionButtons.FillAllSpace(True);
 
-	btnHack = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow'));
+	btnHack = PersonaActionButtonWindowMenu(winActionButtons.NewChild(Class'PersonaActionButtonWindowMenu'));
 	btnHack.SetButtonText(HackButtonLabel);
 }
 
@@ -165,7 +165,7 @@ function CreateWormButton()
         winActionButtons2.SetPos(116, 86);
         winActionButtons2.SetWidth(76);
         winActionButtons2.FillAllSpace(True);
-        btnWorm = PersonaActionButtonWindow(winActionButtons2.NewChild(Class'PersonaActionButtonWindow'));
+        btnWorm = PersonaActionButtonWindowMenu(winActionButtons2.NewChild(Class'PersonaActionButtonWindowMenu'));
         btnWorm.SetButtonText("Use Worm");
     }
 }
@@ -180,7 +180,7 @@ function CreateNukeButton()
         winActionButtons3.SetPos(116, 86);
         winActionButtons3.SetWidth(72);
         winActionButtons3.FillAllSpace(True);
-        btnNuke = PersonaActionButtonWindow(winActionButtons3.NewChild(Class'PersonaActionButtonWindow'));
+        btnNuke = PersonaActionButtonWindowMenu(winActionButtons3.NewChild(Class'PersonaActionButtonWindowMenu'));
         btnNuke.SetButtonText("Use Virus");
     }
 }
@@ -449,6 +449,7 @@ function SetHackMessage(String newHackMessage)
 	else
 		winHackMessage.Show();
 
+    winHackMessage.SetTextColor(colText);
 	winHackMessage.SetText(newHackMessage);
 }
 
@@ -721,6 +722,36 @@ function Float GetDetectionTime()                                               
 
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
+
+// ----------------------------------------------------------------------
+// StyleChanged()
+// SARGE: Use the Menu theme instead of the HUD Theme
+// ----------------------------------------------------------------------
+
+event StyleChanged()
+{
+	local ColorTheme theme;
+
+	theme = player.ThemeManager.GetCurrentMenuColorTheme();
+
+	coLBackground = theme.GetColorFromName('MenuColor_Background');
+	colBorder     = theme.GetColorFromName('MenuColor_ButtonFace');
+	colText       = theme.GetColorFromName('MenuColor_ButtonTextFocus');
+	colHeaderText = theme.GetColorFromName('MenuColor_HeaderText');
+
+	//bDrawBorder            = player.GetHUDBordersVisible();
+    bDrawBorder = true;                     //SARGE: No setting for menus
+
+	if (player.GetMenuTranslucency())
+		borderDrawStyle = DSTY_Translucent;
+	else
+		borderDrawStyle = DSTY_Masked;
+
+	if (player.GetMenuTranslucency())
+		backgroundDrawStyle = DSTY_Translucent;
+	else
+		backgroundDrawStyle = DSTY_Masked;
+}
 
 defaultproperties
 {
