@@ -138,6 +138,8 @@ Sarge's Changes since Beta 2.2:
         - You still need to meet the damage threshold requirements.
     - The Dragons Tooth Sword now requires Biocells to use. It starts with 100% charge, with each attack taking 2% if it hits a target, giving you 50 hits total. Biocells restore 20% (or 30% with the Field Repair perk), giving you an additional 10 (15) hits each.
     - The GEP Gun now has limited range. After 5 seconds of flight, rockets will detonate as they run out of fuel. Each range mod increases flight time by 1 second.
+    - Selecting the Mini Crossbow or Sniper Rifle from Paul at the start of the game will give you extra ammo (8 tranq darts or 5 .3006 ammo).
+        - Both weapons still come with an Accuracy mod (which was added in vRSD)
     - Putting a scope or a laser sight on the GEP gun now requires the Heavily Tweaked perk (ADVANCED heavy weapons, 100 skill points). The scope and laser sight still provide rocket guidance capabilities.
     - Added a new "Weapon Requirements Matter" Playthrough Modifier. When enabled, most weapons will require a minimum skill investment in order to be used.
     - Demolitions Skill Overhaul
@@ -244,6 +246,7 @@ Sarge's Changes since Beta 2.2:
         - Zyme no longer removes 10HP if the addiction system is enabled.
 - Miscellaneous Changes:
     - Added a new DataCube to explain cameras not detecting unconscious enemies.
+    - The players total kills are now shown in the Health screen, similar to older versions of GMDX. Morality info (pacifist, killer, etc) is not shown.
     - Vending Machines now vend random flavours of chocolate bar and soda. This change is purely visual and doesn't affect gameplay in any way.
     - Hand textures have been ported over from LDDP. This means the first-person weapon textures now have properly coloured hand textures, as well as visible augmentation markings where they align with the third person models.
     - HDTP overhaul

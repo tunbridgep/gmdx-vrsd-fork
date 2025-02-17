@@ -477,10 +477,6 @@ function DoWeaponOffset(DeusExPlayer player)
             default.PlayerViewOffset.y = oldOffsets.y;
             default.PlayerViewOffset.z = oldOffsets.z;
         }
-
-        default.FireOffset.x = -(default.PlayerViewOffset.x);
-        default.FireOffset.y = -(default.PlayerViewOffset.y);
-        default.FireOffset.z = -(default.PlayerViewOffset.z);
     }
 }
 
@@ -843,7 +839,7 @@ simulated event RenderOverlays( canvas Canvas )
     
         DisplayWeapon(true);
 
-        if (CurrentMuzzleFlash != None)
+        if (CurrentMuzzleFlash != None && MuzzleSlot < 8 && MuzzleSlot > -1)
             MultiSkins[MuzzleSlot] = CurrentMuzzleFlash;
     
         if (bIsRadar || bIsCloaked)
@@ -3024,6 +3020,7 @@ simulated function EraseMuzzleFlashTexture()
 		return;
 		
     CurrentMuzzleFlash = None;
+    if (MuzzleSlot > -1 && muzzleSlot < 8)
     MultiSkins[MuzzleSlot] = None;
 }
 
@@ -4181,7 +4178,15 @@ simulated function Vector ComputeProjectileStart(Vector X, Vector Y, Vector Z)
 	if (bInstantHit)
 		Start = Owner.Location + Pawn(Owner).BaseEyeHeight * vect(0,0,1);// - Vector(Pawn(Owner).ViewRotation)*(0.9*Pawn(Owner).CollisionRadius);
 	else
+    {
+        //SARGE: Filthy. dirty hack!!
+        //We need to reset our offsets because otherwise projectiles can
+        //spawn too close to the player, and collide with him!
+        if (bOldOffsetsSet)
+            default.PlayerViewOffset = oldOffsets;
 		Start = Owner.Location + CalcDrawOffset() + FireOffset.X * X + FireOffset.Y * Y + FireOffset.Z * Z;
+        DoWeaponOffset(DeusExPlayer(Owner));
+    }
 
 	return Start;
 }

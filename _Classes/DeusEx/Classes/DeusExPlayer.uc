@@ -3669,6 +3669,16 @@ exec function AugAdd(class<Augmentation> aWantedAug)
 	}
 }
 
+//SARGE: Add in a way to remove augs
+exec function AugRemove(class<Augmentation> aWantedAug)
+{
+	if (!bCheatsEnabled)
+		return;
+
+	if (AugmentationSystem != None)
+		AugmentationSystem.RemoveAugmentation(aWantedAug);
+}
+
 //SARGE: Add in a way to cheat perks
 exec function PerkAdd(class<Perk> aWantedPerk)
 {
@@ -8450,9 +8460,6 @@ exec function PutInHand(optional Inventory inv)
 		// can't put ammo in hand
 		if (inv.IsA('Ammo'))
 			return;
-
-        if (inv.isA('NanoKeyRing'))
-            bUsedKeyringLast = true;
 
 		// Can't put an active charged item in hand  //cyberP: overruled for armor system
 		//if ((inv.IsA('ChargedPickup')) && (ChargedPickup(inv).IsActive()))
