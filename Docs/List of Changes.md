@@ -55,6 +55,7 @@ Sarge's Changes since Beta 2.2:
         - Additionally, the first time a corpse is interacted with, it will show any items which it contains that you cannot pick up (such as duplicate weapons and declined items).
     - Added a new setting to show "[Searched]" text after interacting with corpses once, to differentiate between those which have been searched and which have not.
     - Added a new keybinding to stop the currently playing infolink.
+    - Using an Augmentation Upgrade cannister (via right-click or the Use button) will now open the Augmentations screen.
     - Completely overhauled the GMDX settings menu to make it simpler, easier to navigate, and with many more options.
     - Edibles and Drugs can now be assigned as secondary items.
     - Pressing the walk/run key while crouch toggled will now uncrouch.
@@ -138,6 +139,8 @@ Sarge's Changes since Beta 2.2:
         - You still need to meet the damage threshold requirements.
     - The Dragons Tooth Sword now requires Biocells to use. It starts with 100% charge, with each attack taking 2% if it hits a target, giving you 50 hits total. Biocells restore 20% (or 30% with the Field Repair perk), giving you an additional 10 (15) hits each.
     - The GEP Gun now has limited range. After 5 seconds of flight, rockets will detonate as they run out of fuel. Each range mod increases flight time by 1 second.
+    - Selecting the Mini Crossbow or Sniper Rifle from Paul at the start of the game will give you extra ammo (8 tranq darts or 5 .3006 ammo).
+        - Both weapons still come with an Accuracy mod (which was added in vRSD)
     - Putting a scope or a laser sight on the GEP gun now requires the Heavily Tweaked perk (ADVANCED heavy weapons, 100 skill points). The scope and laser sight still provide rocket guidance capabilities.
     - Added a new "Weapon Requirements Matter" Playthrough Modifier. When enabled, most weapons will require a minimum skill investment in order to be used.
     - Demolitions Skill Overhaul
@@ -178,6 +181,10 @@ Sarge's Changes since Beta 2.2:
             - Is now a Toggle Augmentation, reserving 20 energy to function.
         - Environmental Resist
             - Is now an Automatic Augmentation, draining 20 energy per second when taking environmental damage.
+        - Power Recirculator
+            - All dynamically-applied energy drain from using Augmentations (such as the energy drain from the Muscle aug) now properly accounts for the bonuses and penalties given from Synthetic Heart and Power Recirculator.
+            - Synthetic Heart and Power Recirculator energy use is now combined additively, rather than multiplicatively.
+                - This means if the heart gives a 10% penalty and recirculator gives a 30% bonus, you will have a 20% bonus.
         - Spy Drone
             - Energy Use reduced from 90 per minute to 30 per minute, to encourage using it like an actual spy device
                 - The drone still retains it's 0 energy use per minute while parked from vRSD
@@ -198,7 +205,8 @@ Sarge's Changes since Beta 2.2:
             - All dynamically-applied energy drain from using Augmentations (such as the energy drain from the Muscle aug) now properly accounts for the bonuses and penalties given from Synthetic Heart and Power Recirculator.
             - Synthetic Heart and Power Recirculator energy use is now combined additively, rather than multiplicatively.
                 - This means if the heart gives a 10% penalty and recirculator gives a 30% bonus, you will have a 20% bonus.
-            - In vRSD, acquiring the heart for the first time would upgrade all augs the player currently has. This means any max-level augs miss out on the bonus.
+            - Upgrades can now "spill over" when acquiring the Heart augmentation. 
+                - In vRSD, acquiring the heart for the first time would upgrade all augs the player currently has. This means any max-level augs miss out on the bonus.
                 - Now, any bonuses that would have been given to a fully-upgraded augmentation will "spill over" into other augmentations, allowing them to be upgraded twice.
                 - The order in which augmentations is upgraded is pre-set and cannot be changed, starting with the Torso, then the head, the eyes, and then moving to the skin, arms and legs.
         - Targeting
@@ -249,7 +257,13 @@ Sarge's Changes since Beta 2.2:
         - Alcohol no longer heals for 5 points. Instead, it temporarily gives you 5 torso HP (along with it's usual 5 extra torso Max-HP) while in effect, which is removed afterwards. This health removal cannot kill the player.
         - Alcohol no longer adds to fullness when the addiction system is enabled
         - Zyme no longer removes 10HP if the addiction system is enabled.
+- Map Changes:
+    - The Laser Sight on Liberty Island is replaced with a Recoil Mod on Hardcore mode
+    - A Laser Sight has been added to Smuggler's safe in the first NY visit (replaces a recoil mod)
+    - The Silencer in Paul's Apartment, Full-Auto Mod in Tong's Lab, and Laser Sight in Smugglers Safe are all guaranteed to appear even with the weapon mod shuffle turned on.
 - Miscellaneous Changes:
+    - Added a new DataCube to explain cameras not detecting unconscious enemies.
+    - The players total kills are now shown in the Health screen, similar to older versions of GMDX. Morality info (pacifist, killer, etc) is not shown.
     - Vending Machines now vend random flavours of chocolate bar and soda. This change is purely visual and doesn't affect gameplay in any way.
     - Hand textures have been ported over from LDDP. This means the first-person weapon textures now have properly coloured hand textures, as well as visible augmentation markings where they align with the third person models.
     - HDTP overhaul

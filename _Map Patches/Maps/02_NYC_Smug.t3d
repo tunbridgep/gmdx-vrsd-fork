@@ -44581,14 +44581,15 @@ Begin Actor Class=CageLight Name=CageLight13
     LightBrightness=64
     Name=CageLight13
 End Actor
-Begin Actor Class=WeaponModRecoil Name=WeaponModRecoil1
+Begin Actor Class=WeaponModLaser Name=WeaponModLaser1
+    bNoRandomSwap=True
     LastRenderTime=0.259688
     Level=LevelInfo'MyLevel.LevelInfo0'
-    Tag=WeaponModRecoil
+    Tag=WeaponModLaser
     Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
     Location=(X=-870.653748,Y=1691.150513,Z=-9.479994)
     OldLocation=(X=-870.148743,Y=1687.108765,Z=-9.479994)
-    Name=WeaponModRecoil1
+    Name=WeaponModLaser1
 End Actor
 Begin Actor Class=Ammo10mm Name=Ammo10mm1
     LastRenderTime=0.259688
