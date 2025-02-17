@@ -222,7 +222,7 @@ function DrawWindow(GC gc)
 		col.B = 0;
 		gc.EnableTranslucentText(True);
 		gc.SetTextColor(col);
-		gc.SetFont(Font'TechMedium');     //(Font'TechSmall'); //CyberP: for hud scaling
+		gc.SetFont(player.FontManager.GetFont(TT_DamageAbsorb));     //(Font'TechSmall'); //CyberP: for hud scaling
 		strInfo = Sprintf(msgAbsorbed, Int(absorptionPercent * 100.0));
 		gc.GetTextExtent(0, strW, strH, strInfo);
 		strX = (width - strW) / 2;

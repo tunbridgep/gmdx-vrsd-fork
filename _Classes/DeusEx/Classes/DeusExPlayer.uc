@@ -628,6 +628,7 @@ var localized String RechargedPointsLabel;
 var travel AddictionSystem AddictionManager;
 var travel PerkSystem PerkManager;
 var travel RandomTable Randomizer;
+var travel FontManager FontManager;
 
 const DRUG_TOBACCO = 0;
 const DRUG_ALCOHOL = 1;
@@ -1310,6 +1311,16 @@ function SetupPerkManager()
     PerkManager.InitializePerks(Self);
 }
 
+function SetupFontManager()
+{
+	// install the Perk Manager if not found
+	if (FontManager == None)
+    {
+        //ClientMessage("Make new Font System");
+	    FontManager = new(Self) class'FontManager';
+    }
+}
+
 function SetupRandomizer()
 {
 	// install the Addiction Manager if not found
@@ -1384,6 +1395,7 @@ function InitializeSubSystems()
     SetupRandomizer();
     SetupAddictionManager();
 	SetupPerkManager();
+	SetupFontManager();
 }
 
 //SARGE: Helper function to get the count of an item type
@@ -1505,6 +1517,7 @@ event TravelPostAccept()
     SetupRandomizer();
     SetupAddictionManager();
 	SetupPerkManager();
+    SetupFontManager();
 
 	// reset the keyboard
 	ResetKeyboard();
