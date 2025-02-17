@@ -581,6 +581,8 @@ function DisplayCommonInfo()
      //winInfo.SetText(StaminaStr $ int(player.swimTimer*100) $ "/" $ int(player.swimDuration*100));
      //winInfo.SetText(BioStr $ int(player.Energy) $ "/" $ int(player.GetMaxEnergy()));
      winInfo.SetText(LocStr $ player.retInfo());
+    
+    winInfo.SetText(KillerStr $ player.Killercount); //SARGE: We don't want the morality stuff, but we do want to track kills
 }
 
 function UpdateAddictionText()
@@ -1078,7 +1080,7 @@ defaultproperties
      SatiatedStr=" (Satiated)"
      MoralityStr=" Morality: "
      PacifistStr="Pacifist"
-     killerStr="Killer"
+     killerStr=" Total Kills: "
      MassMurdererStr="Mass Murderer"
      LocStr=" Location: "
      HungryStr=" (Hungry)"
