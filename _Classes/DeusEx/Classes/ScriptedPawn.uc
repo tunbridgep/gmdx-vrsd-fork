@@ -14321,7 +14321,7 @@ ContinueFire:
 	   if (Abs(VSize(Enemy.Location - Location)) < 112)
        {
 	   Enemy.TakeDamage(8,self,Enemy.Location,vect(0,0,0),'Shot');
-	   if (Enemy.IsA('DeusExPlayer'))
+	   if (Enemy.IsA('DeusExPlayer') && !DeusExPlayer(Enemy).RestrictInput())
 	   {
            DeusExPlayer(Enemy).ShakeView(0.2,512,12);
            if (Enemy.Weapon != None && Enemy.Weapon.IsA('DeusExWeapon') && DeusExWeapon(Enemy.Weapon).bAimingDown)

@@ -2613,6 +2613,10 @@ function CreateKeyRing()
 
 singular function RecoilShaker(vector shakeAmount)  //CyberP: Cosmetic effects when shooting
 {
+	//SARGE: Don't do recoil effects when we're out of control, to stop shaking in cutscenes etc
+	if (RestrictInput())
+		return;
+
     if (inHand != none && inHand.IsA('Binoculars') && Binoculars(inHand).bActive) //RSD: To make sure zoom isn't messed up
        return;
     else if (assignedWeapon != none && assignedWeapon.IsA('Binoculars') && Binoculars(assignedWeapon).bActive)
@@ -2691,6 +2695,11 @@ function RecoilEffectTick(float deltaTime)
 		if (RecoilTime<=0.0)
 		{
 			RecoilTime=0;
+			
+			//SARGE: Don't do recoil effects when we're out of control, to stop shaking in cutscenes etc
+			if (RestrictInput())
+				return;
+			
 			if ((DeusExWeapon(inHand) != None) && (DeusExWeapon(inHand).bZoomed))
 			   DesiredFOV = DeusExWeapon(inHand).ScopeFOV;
             else if (inHand != none && inHand.IsA('Binoculars') && Binoculars(inHand).bActive) //RSD: To make sure zoom isn't messed up
@@ -2863,8 +2872,8 @@ simulated function DrugEffects(float deltaTime)
 				if (inHand.IsA('DeusExWeapon') && DeusExWeapon(inHand).bZoomed)
 				{
 				}
-				else
-				DesiredFOV = Default.DesiredFOV;
+				else if (!RestrictInput())
+					DesiredFOV = Default.DesiredFOV;
 			}
 		}
 	}
@@ -7333,13 +7342,13 @@ simulated event RenderOverlays( canvas Canvas )
 // Are we in a state which doesn't allow certain exec functions?
 // ----------------------------------------------------------------------
 
-function bool RestrictInput()
+function bool RestrictInput(optional bool bDontCheckConversation)
 {
 	if (IsInState('Interpolating') || IsInState('Dying') || IsInState('Paralyzed') || (FlagBase.GetBool('PlayerTraveling') ))
 		return True;
 
     //SARGE: Being in a cutscene counts as restricted input
-    if (conPlay.bConversationStarted && conPlay.displayMode == DM_ThirdPerson)
+    if (!bDontCheckConversation && conPlay.bConversationStarted && conPlay.displayMode == DM_ThirdPerson)
         return true;
 
     //SARGE: Disallow any sort of UI operations when the "pause" key is pressed
@@ -8446,7 +8455,7 @@ exec function PutInHand(optional Inventory inv)
 {
     local DeusExWeapon weap;
 
-	if (RestrictInput())
+	if (RestrictInput(true))
 		return;
 
 	if (bGEPprojectileInflight) return;
@@ -9890,7 +9899,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 
 	bDropped = True;
 
-	if (RestrictInput())
+	if (RestrictInput(true))
 		return False;
 
 	if (inv == None)
