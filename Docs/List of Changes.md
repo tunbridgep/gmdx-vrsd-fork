@@ -55,6 +55,7 @@ Sarge's Changes since Beta 2.2:
         - Additionally, the first time a corpse is interacted with, it will show any items which it contains that you cannot pick up (such as duplicate weapons and declined items).
     - Added a new setting to show "[Searched]" text after interacting with corpses once, to differentiate between those which have been searched and which have not.
     - Added a new keybinding to stop the currently playing infolink.
+    - Using an Augmentation Upgrade cannister (via right-click or the Use button) will now open the Augmentations screen.
     - Completely overhauled the GMDX settings menu to make it simpler, easier to navigate, and with many more options.
     - Edibles and Drugs can now be assigned as secondary items.
     - Pressing the walk/run key while crouch toggled will now uncrouch.
@@ -180,6 +181,10 @@ Sarge's Changes since Beta 2.2:
             - Is now a Toggle Augmentation, reserving 20 energy to function.
         - Environmental Resist
             - Is now an Automatic Augmentation, draining 20 energy per second when taking environmental damage.
+        - Power Recirculator
+            - All dynamically-applied energy drain from using Augmentations (such as the energy drain from the Muscle aug) now properly accounts for the bonuses and penalties given from Synthetic Heart and Power Recirculator.
+            - Synthetic Heart and Power Recirculator energy use is now combined additively, rather than multiplicatively.
+                - This means if the heart gives a 10% penalty and recirculator gives a 30% bonus, you will have a 20% bonus.
         - Spy Drone
             - Energy Use reduced from 90 per minute to 30 per minute, to encourage using it like an actual spy device
                 - The drone still retains it's 0 energy use per minute while parked from vRSD
@@ -196,6 +201,10 @@ Sarge's Changes since Beta 2.2:
             - The Picture-in-Picture window has been made slightly bigger.
             - When running out of bioelectrical energy, the Drone will be parked automatically instead of being destroyed.
                 - Using the Drone augmentation while at 0 bioelectrical energy can be used to forcibly destroy the drone.
+        - Synthetic Heart
+            - All dynamically-applied energy drain from using Augmentations (such as the energy drain from the Muscle aug) now properly accounts for the bonuses and penalties given from Synthetic Heart and Power Recirculator.
+            - Synthetic Heart and Power Recirculator energy use is now combined additively, rather than multiplicatively.
+                - This means if the heart gives a 10% penalty and recirculator gives a 30% bonus, you will have a 20% bonus.
         - Targeting
             - The Picture-in-Picture window has been made slightly bigger.
     - Hacking Overhaul

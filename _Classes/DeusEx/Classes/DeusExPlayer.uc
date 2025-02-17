@@ -5280,12 +5280,14 @@ function DoJump( optional float F )
 	local float scaleFactor, augLevel, augStealthValue;                         //RSD: added augStealthValue
 	local int MusLevel;
 	local Vector velocityNormal;                                                //RSD: added velocityNormal
+    local AugSpeed SpeedAug;
         
     //SARGE: Prevent jumping if we're using a computer
     if (bUsingComputer)
         return;
 
 	MusLevel = AugmentationSystem.GetClassLevel(class'AugMuscle');
+    SpeedAug = AugSpeed(AugmentationSystem.GetAug(class'AugSpeed'));
 
 	if (MusLevel==-1) MusLevel=30;
 	  else MusLevel=(MusLevel+3)*50;
@@ -5322,9 +5324,9 @@ function DoJump( optional float F )
 		}
 	
         // Trash: Speed Enhancement now uses energy while jumping
-        if (AugmentationSystem.GetClassLevel(class'AugSpeed') != -1)
+        if (SpeedAug.CurrentLevel > -1)
         {
-            Energy=MAX(Energy - AugSpeed(AugmentationSystem.GetAug(class'AugSpeed')).EnergyDrainJump,0);
+            Energy=MAX(Energy - SpeedAug.GetAdjustedEnergy(SpeedAug.EnergyDrainJump),0);
         }
 
         if (bHardCoreMode)                                                      //RSD: Running drains 1.3x on Hardcore, now jumping drains 1.25x
@@ -5416,12 +5418,11 @@ if (Physics == PHYS_Walking)
         else
 		Velocity.Z = JumpZ;
 
-		if (AugmentationSystem.GetClassLevel(class'AugSpeed') != -1 && Energy >= 3)	// Trash: Speed Enhancement now uses energy while jumping
-		{
-			Energy -= 3;
-			if (Energy <= 0)
-				Energy = 0;
-		}
+        // Trash: Speed Enhancement now uses energy while jumping
+        if (SpeedAug.CurrentLevel > -1)
+        {
+            Energy=MAX(Energy - SpeedAug.GetAdjustedEnergy(SpeedAug.EnergyDrainJump),0);
+        }
 
         if (bHardCoreMode)                                                      //RSD: Running drains 1.3x on Hardcore, now jumping drains 1.25x
             swimTimer -= 1.0;
@@ -7361,8 +7362,8 @@ function bool DroneExplode()
     if (anAug == None)
         return false;
 
-    //Don't detonate
-    if (Energy < anAug.EMPDrain)
+    //Don't detonate without Energy
+    if (Energy < anAug.GetAdjustedEnergy(anAug.EMPDrain))
         return false;
 
     if (bSpyDroneSet)
@@ -7374,7 +7375,7 @@ function bool DroneExplode()
 	{
 		aDrone.Explode(aDrone.Location, vect(0,0,1));
         anAug.Deactivate();
-        Energy -= anAug.EMPDrain; //CyberP: energy cost upon detonation.
+        Energy -= anAug.GetAdjustedEnergy(anAug.EMPDrain); //CyberP: energy cost upon detonation.
         if (Energy < 0)
             Energy = 0;
 

@@ -45,7 +45,12 @@ function float GetDamageMod()
 
 function string GetDescription()
 {
-    return Description $ "|n|n" $ sprintf(DamageModDesc,int(100 * (1.0 - GetDamageMod())));
+    local int damageMod;
+    damageMod = int(100 * (1.0 - GetDamageMod()));
+    if (damageMod == 100) //Awful, terrible, gawdy, unsanitary, gross, disgusting hack!
+        return Description $ "|n|n" $ sprintf(DamageModDesc,0);
+    else
+        return Description $ "|n|n" $ sprintf(DamageModDesc,damageMod);
 }
 
 defaultproperties
