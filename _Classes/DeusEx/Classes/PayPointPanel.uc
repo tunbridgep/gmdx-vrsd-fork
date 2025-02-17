@@ -71,9 +71,9 @@ function ToggleLock(DeusExPlayer Player)
 
 
 //Base it off SubwayControlPanel
-function bool IsHDTP()
+static function bool IsHDTP()
 {
-    return DeusExPlayer(GetPlayerPawn()).IsHDTPInstalled() && class'SubwayControlPanel'.default.iHDTPModelToggle > 0;
+    return class'DeusExPlayer'.static.IsHDTPInstalled() && class'SubwayControlPanel'.default.iHDTPModelToggle > 0;
 }
 
 

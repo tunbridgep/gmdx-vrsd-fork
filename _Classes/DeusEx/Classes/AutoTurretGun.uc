@@ -28,11 +28,9 @@ function Destroyed()
 }
 
 //Change style based on the parent AutoTurret
-function bool IsHDTP()
+static function bool IsHDTP()
 {
-	local AutoTurret turret;
-	turret = AutoTurret(Owner);
-    return DeusExPlayer(GetPlayerPawn()) != None && DeusExPlayer(GetPlayerPawn()).IsHDTPInstalled() && (turret != None && turret.iHDTPModelToggle > 0);
+	return class'DeusExPlayer'.static.IsHDTPInstalled() && class'AutoTurret'.default.iHDTPModelToggle > 0;
 }
 
 function ResetComputerAlignment()

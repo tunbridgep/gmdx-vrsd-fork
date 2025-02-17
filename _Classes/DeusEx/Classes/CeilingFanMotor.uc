@@ -34,9 +34,9 @@ function UpdateHDTPSettings()
         Skin = tex;
 }
 
-function bool IsHDTP()
+static function bool IsHDTP()
 {
-    return DeusExPlayer(GetPlayerPawn()) != None && DeusExPlayer(GetPlayerPawn()).IsHDTPInstalled() && class'CeilingFan'.default.iHDTPModelToggle > 0;
+    return class'DeusExPlayer'.static.IsHDTPInstalled() && class'CeilingFan'.default.iHDTPModelToggle > 0;
 }
 
 defaultproperties

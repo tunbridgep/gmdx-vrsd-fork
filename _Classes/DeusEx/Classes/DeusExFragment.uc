@@ -151,9 +151,9 @@ function PostBeginPlay()
 	LifeSpan += FRand()*1.5; //CyberP: was 1.0
 }
 
-function bool IsHDTP()
+static function bool IsHDTP()
 {
-    return DeusExPlayer(GetPlayerPawn()).IsHDTPInstalled() && iHDTPModelToggle > 0;
+    return class'DeusExPlayer'.static.IsHDTPInstalled() && default.iHDTPModelToggle > 0;
 }
 
 exec function UpdateHDTPsettings()

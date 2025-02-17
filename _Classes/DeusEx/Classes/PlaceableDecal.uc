@@ -29,9 +29,9 @@ enum ETextureSetup
 
 var() ETextureSetup TextureSetup;
 
-function bool IsHDTP()
+static function bool IsHDTP()
 {
-    return DeusExPlayer(GetPlayerPawn()) != None && DeusExPlayer(GetPlayerPawn()).IsHDTPInstalled() && class'DeusExDecal'.default.iHDTPModelToggle > 0;
+    return class'DeusExPlayer'.static.IsHDTPInstalled() && class'DeusExDecal'.default.iHDTPModelToggle > 0;
 }
 
 exec function UpdateHDTPsettings()

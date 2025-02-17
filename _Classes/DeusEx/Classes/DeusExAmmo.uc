@@ -16,10 +16,14 @@ var() class<Skill> ammoSkill;                                                   
 var travel bool bLooted;                                                        //RSD: If we've already looted this and partially emptied it (for ammo spillover in world)
 
 //SARGE: HDTP Model toggles
+//SARGE: TODO: Make these arrays so that ammo can have multi skins,
+//so we can have traditional HDTP darts as well as GMDX darts, for instance
 var config int iHDTPModelToggle;
 var string HDTPSkin;
 var string HDTPTexture;
 var string HDTPMesh;
+var string HDTPIcon;
+var string HDTPLargeIcon;
 var class<DeusExWeapon> hdtpReference;                                          //SARGE: Used when we want to tell a projectile to use the HDTP settings of a particular weapon
 
 // ----------------------------------------------------------------------
@@ -379,13 +383,14 @@ Dropped:
 }
 
 //Whether this displays in HDTP depends on it's associated weapon's settings
-function bool IsHDTP()
+static function bool IsHDTP()
 {
-	if (DeusExPlayer(GetPlayerPawn()) == None || !DeusExPlayer(GetPlayerPawn()).IsHDTPInstalled())
+	
+	if (!class'DeusExPlayer'.static.IsHDTPInstalled())
 		return false;
-    else if (hdtpReference != None)
-        return hdtpReference.default.iHDTPModelToggle > 0;
-    return iHDTPModelToggle > 0;
+    else if (default.hdtpReference != None)
+        return default.hdtpReference.default.iHDTPModelToggle > 0;
+    return default.iHDTPModelToggle > 0;
 }
 
 //SARGE: Setup the HDTP settings for this ammo
@@ -395,6 +400,10 @@ exec function UpdateHDTPSettings()
     if (Mesh != default.Mesh && !(string(Mesh) ~= HDTPMesh))
         return;
 
+    if (HDTPIcon != "")
+        Icon = class'HDTPLoader'.static.GetTexture2(HDTPIcon,string(default.Icon),IsHDTP());
+    if (HDTPLargeIcon != "")
+        LargeIcon = class'HDTPLoader'.static.GetTexture2(HDTPLargeIcon,string(default.LargeIcon),IsHDTP());
     if (HDTPMesh != "")
     {
         if (PlayerViewMesh == Mesh || PlayerViewMesh == None)
@@ -414,6 +423,17 @@ exec function UpdateHDTPSettings()
         Mesh = PlayerViewMesh;
     else
         Mesh = PickupViewMesh;
+}
+
+//Static functions to get the icons.
+//Used by the ammo screen
+static function Texture GetHDTPIcon()
+{
+    return class'HDTPLoader'.static.GetTexture2(default.HDTPIcon,string(default.Icon),IsHDTP());
+}
+static function Texture GetHDTPLargeIcon()
+{
+    return class'HDTPLoader'.static.GetTexture2(default.HDTPLargeIcon,string(default.LargeIcon),IsHDTP());
 }
 
 defaultproperties

@@ -23,8 +23,10 @@ defaultproperties
      ItemArticle="some"
      PickupViewMesh=LodMesh'DeusExItems.AmmoDart'
      LandSound=Sound'DeusExSounds.Generic.PaperHit2'
-     Icon=Texture'GMDXSFX.Icons.BeltIconSteelDart'
-     largeIcon=Texture'GMDXSFX.Icons.LargeIconSteelDart'
+     HDTPIcon="GMDXSFX.Icons.BeltIconSteelDart"
+     HDTPLargeIcon="GMDXSFX.Icons.LargeIconSteelDart"
+     Icon=Texture'DeusExUI.Icons.BeltIconAmmoDartsNormal'
+     largeIcon=Texture'DeusExUI.Icons.LargeIconAmmoDartsNormal'
      largeIconWidth=20
      largeIconHeight=47
      Description="The mini-crossbow dart is a favored weapon for many 'wet' operations; however, silent kills require a high degree of skill."

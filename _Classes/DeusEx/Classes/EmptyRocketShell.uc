@@ -5,9 +5,9 @@
 //=============================================================================
 class EmptyRocketShell extends DeusExDecoration;
 
-function bool IsHDTP()
+static function bool IsHDTP()
 {
-    return DeusExPlayer(GetPlayerPawn()) != None && DeusExPlayer(GetPlayerPawn()).IsHDTPInstalled() && class'DeusEx.WeaponGEPGun'.default.iHDTPModelToggle > 0;
+    return class'DeusExPlayer'.static.IsHDTPInstalled() && class'DeusEx.WeaponGEPGun'.default.iHDTPModelToggle > 0;
 }
 
 defaultproperties

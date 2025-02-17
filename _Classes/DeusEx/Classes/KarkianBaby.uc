@@ -3,9 +3,9 @@
 //=============================================================================
 class KarkianBaby extends Karkian;
 
-function bool IsHDTP()
+static function bool IsHDTP()
 {
-    return DeusExPlayer(GetPlayerPawn()).IsHDTPInstalled() && class'DeusEx.Karkian'.default.iHDTPModelToggle > 0;
+    return class'DeusExPlayer'.static.IsHDTPInstalled() && class'DeusEx.Karkian'.default.iHDTPModelToggle > 0;
 }
 
 defaultproperties

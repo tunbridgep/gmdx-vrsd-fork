@@ -874,14 +874,14 @@ function AssignSecondary(Inventory item)
     RefreshChargedPickups();
 }
 
-function bool IsHDTPInstalled()
+static function bool IsHDTPInstalled()
 {
-    return bHDTPInstalled && bHDTPEnabled;
+    return class'DeusExPlayer'.default.bHDTPInstalled && default.bHDTPEnabled;
 }
 
-function bool IsHDTP()
+static function bool IsHDTP()
 {
-    return IsHDTPInstalled() && iHDTPModelToggle > 0;
+    return IsHDTPInstalled() && default.iHDTPModelToggle > 0;
 }
 
 function UpdateHDTPsettings()
@@ -1736,7 +1736,8 @@ exec function HDTP(optional string s)
 	local DeusExProjectile PR;                                                  //SARGE: Added for object toggles
 	local DeusExAmmo AM;                                                        //SARGE: Added for object toggles
     
-	bHDTPInstalled = class'HDTPLoader'.static.HDTPInstalled();
+    //SARGE: Yes, using the class name is necessary. Statics are weird.
+	class'DeusExPlayer'.default.bHDTPInstalled = class'HDTPLoader'.static.HDTPInstalled();
 	
 	foreach Allactors(Class'Scriptedpawn',P)
 		P.UpdateHDTPSettings();
