@@ -27,7 +27,6 @@ defaultproperties
      LoopSound=Sound'DeusExSounds.Pickup.SuitLoop'
      ChargedIcon=Texture'DeusExUI.Icons.ChargedIconArmorAdaptive'
      chargeMult=0.100000
-     ExpireMessage="Thermoptic camo power supply used up"
      ItemName="Thermoptic Camo"
      ItemArticle="some"
      PlayerViewOffset=(X=30.000000,Z=-12.000000)

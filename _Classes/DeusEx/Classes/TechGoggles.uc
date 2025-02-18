@@ -81,7 +81,6 @@ defaultproperties
      skillNeeded=Class'DeusEx.SkillEnviro'
      LoopSound=Sound'DeusExSounds.Pickup.TechGogglesLoop'
      ChargedIcon=Texture'DeusExUI.Icons.ChargedIconGoggles'
-     ExpireMessage="TechGoggles power supply used up"
      ItemName="Tech Goggles"
      ItemArticle="some"
      PlayerViewOffset=(X=20.000000,Z=-6.000000)
