@@ -13,7 +13,7 @@ var Window                        winItems;
 var PersonaInventoryInfoWindow    winInfo;
 var PersonaItemButton             selectedItem;			// Currently Selected Inventory item
 var PersonaInventoryCreditsWindow winCredits;
-var PersonaItemDetailWindow       winNanoKeyRing;
+var NanoKeyWindow                 winNanoKeyRing;       //SARGE: Changed to NanoKeyWindow
 var PersonaItemDetailWindow       winAmmo;
 
 var Bool bUpdatingAmmoDisplay;
@@ -216,12 +216,12 @@ function CreateCreditsWindow()
 
 function CreateNanoKeyRingWindow()
 {
-	winNanoKeyRing = PersonaItemDetailWindow(winClient.NewChild(Class'PersonaItemDetailWindow'));
+	winNanoKeyRing = NanoKeyWindow(winClient.NewChild(Class'NanoKeyWindow'));
 	winNanoKeyRing.SetPos(335, 285);
 	winNanoKeyRing.SetWidth(121);
 	winNanoKeyRing.SetIcon(Class'NanoKeyRing'.Default.LargeIcon);
 	winNanoKeyRing.SetItem(player.KeyRing);
-	winNanoKeyRing.SetText(NanoKeyRingInfoText);
+    winNanoKeyRing.SetText(NanoKeyRingInfoText);
 	winNanoKeyRing.SetTextAlignments(HALIGN_Center, VALIGN_Center);
 	winNanoKeyRing.SetCountLabel(NanoKeyRingLabel);
 	winNanoKeyRing.SetCount(player.KeyRing.GetKeyCount());
