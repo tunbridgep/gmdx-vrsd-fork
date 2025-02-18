@@ -12,10 +12,13 @@ class AdaptiveArmor extends ChargedPickup;
 simulated function Tick(float deltaTime)
 {
     super.Tick(deltaTime);
-    if (Charge == 0)
-        Multiskins[1] = Texture'BlackMaskTex';
-    else
-        Multiskins[1] = default.Multiskins[1];
+    if (!bActive)
+    {
+        if (Charge == 0)
+            Multiskins[1] = Texture'BlackMaskTex';
+        else
+            Multiskins[1] = default.Multiskins[1];
+    }
 }
 
 defaultproperties
