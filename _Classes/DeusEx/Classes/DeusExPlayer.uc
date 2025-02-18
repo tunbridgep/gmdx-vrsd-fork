@@ -499,7 +499,7 @@ var int clickCountCyber; //CyberP: for double clicking to unequip
 var bool bStunted; //CyberP: for slowing player under various conditions
 var bool bRegenStamina; //CyberP: regen when in water but head above water
 var bool bCrouchRegen;  //CyberP: regen when crouched and has skill
-var bool bDoubleClickCheck; //CyberP: to return from double clicking.
+var float doubleClickCheck; //CyberP: to return from double clicking.
 var travel Inventory assignedWeapon;
 var Inventory primaryWeapon;
 var float augEffectTime;
@@ -6557,6 +6557,17 @@ state PlayerWalking
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
 
+        //Stop double click timer
+        if (doubleClickCheck > 0)
+        {
+            doubleClickCheck -= deltaTime;
+            if (doubleClickCheck <= 0)
+            {
+                doubleClickCheck = 0;
+                clickCountCyber=0;
+            }
+        }
+
 		Super.PlayerTick(deltaTime);
 	}
 }
@@ -7948,8 +7959,7 @@ function bool IsReallyFrobbable(Actor target, optional bool left)
 
 function SetDoubleClickTimer()
 {
-    SetTimer(0.3,false);
-    bDoubleClickCheck=True;
+    doubleClickCheck=0.4;
     clickCountCyber=1;
 }
     
@@ -15103,12 +15113,6 @@ function Timer()      //CyberP: my god I've turned this into a mess.
 
     if (bBoosterUpgrade && !HeadRegion.Zone.bWaterZone)
         AugmentationSystem.AutoAugs(true,false);
-    
-    if (bDoubleClickCheck)
-    {
-      clickCountCyber = 0;
-      bDoubleClickCheck=False;
-    }
 
     if (Physics == PHYS_Flying)
     {
