@@ -518,7 +518,7 @@ function UseOnce()
 	NumCopies--;
 	UpdateSkinStatus();
 
-	if (!IsA('SkilledTool'))
+	if (!IsA('SkilledTool') && IsInState('Activated'))
 		GotoState('DeActivated');
 
 	if (NumCopies <= 0)
