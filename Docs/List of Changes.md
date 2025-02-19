@@ -84,7 +84,7 @@ Sarge's Changes since Beta 2.2:
     - "One-shot-at-a-time" weapons now have "RDS" instead of "MAGS" on the ammo HUD.
     - "One-shot-at-a-time" weapons have a different formula for calculating reload speed (RDS/SEC).
     - "One-shot-at-a-time" reload cancelling has been made far more responsive.
-    - Added an option to display the total amount of ammo remaining, rather than the number of magazines.
+    - Added an option to display the total amount of ammo remaining, rather than the number of magazines. Disabled on Hardcore Mode.
     - Different shotgun shells have different textures, and the boxes were reworked to have a different texture for easier identification.
         - Shells also have different sounds when they hit the floor
     - Equipping/Unequipping Environmental Training items gives you a unique sound depending on the item.
