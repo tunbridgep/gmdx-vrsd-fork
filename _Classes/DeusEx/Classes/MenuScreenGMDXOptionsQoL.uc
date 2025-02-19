@@ -62,5 +62,6 @@ defaultproperties
      items(45)=(HelpText="Prevent accidentally killing domesticated animals by stomping on them.",actionText="Player: Stomp Domestic Animals",variable="bStompDomesticAnimals",defaultValue=0);
      items(46)=(HelpText="Prevent accidentally killing vac-bots by stomping on them.",actionText="Player: Stomp Vac Bots",variable="bStompDomesticAnimals",defaultValue=0);
      items(47)=(HelpText="Always use the female hands with male JC. This setting does nothing if LDDP is not installed.",actionText="Player: Use Female Hands",variable="bFemaleHandsAlways",defaultValue=0);
+     items(39)=(HelpText="When using a medical bot, automatically switch to the Health screen after using the last Aug canister.",actionText="Interaction: Medbot Auto Switch",variable="bMedbotAutoswitch",defaultValue=1);
      Title="GMDX Quality of Life Options"
 }

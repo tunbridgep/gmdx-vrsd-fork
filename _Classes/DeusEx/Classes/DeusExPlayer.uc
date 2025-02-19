@@ -698,6 +698,8 @@ var localized String DuplicateNanoKey;
 var globalconfig bool bStompDomesticAnimals;                                    //SARGE: If disabled, we can't stomp cats or dogs anymore. Adopt a cute animal today!
 var globalconfig bool bStompVacbots;                                            //SARGE: If disabled, we can't stomp vac-bots anymore.
 
+var globalconfig bool bMedbotAutoswitch;                                        //SARGE: Autoswitch to Health screen when installing the last augmentation at a med bot.
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -17891,4 +17893,5 @@ defaultproperties
      HUDThemeNameGMDX="Default"
      dblClickHolster=2
      bSmartDecline=True
+     bMedbotAutoswitch=True
 }
