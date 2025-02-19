@@ -698,6 +698,11 @@ var localized String DuplicateNanoKey;
 var globalconfig bool bStompDomesticAnimals;                                    //SARGE: If disabled, we can't stomp cats or dogs anymore. Adopt a cute animal today!
 var globalconfig bool bStompVacbots;                                            //SARGE: If disabled, we can't stomp vac-bots anymore.
 
+//Music Stuff
+var travel transient string currentSong;                                                 //SARGE: The "Song" variable is notoriously unreliable...
+var travel transient byte currentSection;                                              //SARGE: We need to track this for conversations/combat/etc
+var globalconfig int bEnhancedMusicSystem;                                             //SARGE: Should the music system be a bit smarter about playing tracks?
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -2938,6 +2943,27 @@ exec function PlayMusicWindow()
 		return;
 
 	InvokeUIScreen(Class'PlayMusicWindow');
+}
+
+// ----------------------------------------------------------------------
+// ClientSetMusic()
+//
+// SARGE: Copied over from Engine/PlayerPawn.uc
+// Modified to not restart music if the new song is the same as the current song, and the
+// sections are the same (section 0 is always used on map-change, so we set it to that if we're using the "remembered" section).
+// ----------------------------------------------------------------------
+function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusicTransition NewTransition )
+{
+    //ClientMessage("Switching music: " $ Song $ "->" $ NewSong $ " (current: " $ currentSong $ ")");
+    if (currentSong != string(NewSong) || currentSection != NewSection || bEnhancedMusicSystem == 0)
+    {
+        super.ClientSetMusic(NewSong,NewSection,NewCdTrack,NewTransition);
+        currentSong = string(NewSong);
+        if (NewSection == savedSection)
+            currentSection = 0;
+        else
+            currentSection = NewSection;
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -17891,4 +17917,5 @@ defaultproperties
      HUDThemeNameGMDX="Default"
      dblClickHolster=2
      bSmartDecline=True
+     bEnhancedMusicSystem=1
 }

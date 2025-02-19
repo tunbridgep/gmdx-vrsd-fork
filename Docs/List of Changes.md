@@ -32,6 +32,8 @@ Sarge's Changes since Beta 2.2:
     - Fixed many other GMDX and Vanilla bugs.
     - Fixed GMDX bug where most inventory items with multiple skins (such as sodacans) weren't showing their skinned variants when being held in the players hands.
 - Quality of Life Improvements:
+    - Music will now continue when loading different areas that use the same music track, rather than restarting.
+    - Optionally, bars and clubs can be made to continue their standard music during conversations, rather than restarting.
     - Datacubes will show a black screen after they have been read.
     - Added the option to use the original HUD fonts instead of the GMDX ones.
     - The augmentation "hum" sound can be disabled.
