@@ -3025,9 +3025,9 @@ function UpdateDynamicMusic(float deltaTime)
 	}
 	else if (IsInState('Conversation'))
 	{
-	    if (info != none)
-	       if (info.bBarOrClub && bEnhancedMusicSystem >= 2)
-              return;  //CyberP: no dynamic music in clubs and bars.
+        //CyberP: no dynamic music in clubs and bars.
+	    if (info != none && info.bBarOrClub && bEnhancedMusicSystem >= 2)
+              return;
 		if (musicMode != MUS_Conversation)
 		{
 			// save our place in the ambient track
@@ -3042,6 +3042,8 @@ function UpdateDynamicMusic(float deltaTime)
 	}
 	else if (IsInState('Dying'))
 	{
+	    if (info != none && info.bBarOrClub && bEnhancedMusicSystem >= 2)
+              return;
 		if (musicMode != MUS_Dying)
 		{
 			ClientSetMusic(Level.Song, 1, 255, MTRAN_Fade);
@@ -3050,6 +3052,8 @@ function UpdateDynamicMusic(float deltaTime)
 	}
 	else
 	{
+	    if (info != none && info.bBarOrClub && bEnhancedMusicSystem >= 2)
+              return;
         //SARGE: Changed to only start combat music if at least 3 enemies are aggro'd
 		// only check for combat music every second //CyberP: 2 secs
 		if (musicCheckTimer >= 2.0)
