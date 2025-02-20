@@ -497,9 +497,21 @@ function InitializeRandomAmmoCounts()                                           
 function RandomiseCrap()
 {
     local DeusExPickup P;
+    local OfficeChair C;
+    local int chairSkin;
+        
     foreach AllActors(class'DeusExPickup', P)
     {
         P.RandomiseSkin(player);
+    }
+    
+    //Roll once, so that all the chairs in the level get the same style.
+    chairSkin=Player.Randomizer.GetRandomInt(3);
+    log("Applying chair skin to all chairs: " $ chairSkin);
+    foreach AllActors(class'OfficeChair', C)
+    {
+        C.SkinColor = chairSkin;
+        C.UpdateHDTPsettings();
     }
 }
 
