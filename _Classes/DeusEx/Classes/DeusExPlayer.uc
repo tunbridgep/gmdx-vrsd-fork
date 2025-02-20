@@ -698,6 +698,10 @@ var localized String DuplicateNanoKey;
 var globalconfig bool bStompDomesticAnimals;                                    //SARGE: If disabled, we can't stomp cats or dogs anymore. Adopt a cute animal today!
 var globalconfig bool bStompVacbots;                                            //SARGE: If disabled, we can't stomp vac-bots anymore.
 
+//Killswitch Engaged
+var travel bool bRealKillswitch;                                                        //SARGE: Playthrough Modifier for a real killswitch
+var travel float killswitchTimer;                                                       //SARGE: Killswitch timer in seconds.
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -3771,11 +3775,11 @@ exec function ActivateAllAugs()
 // DeactivateAllAugs()
 // ----------------------------------------------------------------------
 
-exec function DeactivateAllAugs()
+exec function DeactivateAllAugs(optional bool toggle)
 {
 	if (AugmentationSystem != None)
 		//AugmentationSystem.DeactivateAll(true);
-		AugmentationSystem.DeactivateAll();
+		AugmentationSystem.DeactivateAll(toggle);
 }
 
 // ----------------------------------------------------------------------
@@ -6556,6 +6560,14 @@ state PlayerWalking
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
+
+        //Tick down killswitch
+        if (killswitchTimer > 0)
+        {
+            killswitchTimer -= deltaTime;
+            if (killswitchTimer < 0)
+                killswitchTimer = 0;
+        }
 
 		Super.PlayerTick(deltaTime);
 	}
@@ -17170,6 +17182,13 @@ function MultiplayerTick(float DeltaTime)
 	RepairInventory();
 	lastRefreshTime = 0;
 
+    //Tick down killswitch
+    if (bRealKillswitch && killswitchTimer == 0)
+    {
+        killswitchTimer = 1;
+        TakeDamage(1,None,Location,vect(0,0,0),'Poison');
+    }
+
     //SARGE: Reset drone exploded flag
     bDroneExploded = false;
 }
@@ -17891,4 +17910,5 @@ defaultproperties
      HUDThemeNameGMDX="Default"
      dblClickHolster=2
      bSmartDecline=True
+     killswitchTimer=-1
 }

@@ -30,7 +30,17 @@ function FirstFrame()
 
 	Super.FirstFrame();
 
-	if (localURL == "06_HONGKONG_VERSALIFE")
+	if (localURL == "06_HONGKONG_HELIBASE")
+    {
+        //SARGE: If we're using the "Killswitch Engaged" playthrough mod,
+        //then reduce the killswitch by 10 hours
+        if (player.bRealKillswitch && !flags.GetBool('GMDXKillswitchReduced'))
+        {
+            player.killswitchTimer -= (10*60)*60;
+            flags.SetBool('GMDXKillswitchReduced', True,, 6);
+        }
+    }
+	else if (localURL == "06_HONGKONG_VERSALIFE")
 	{
 		if (flags.GetBool('M07Briefing_Played'))
 		{
