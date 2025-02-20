@@ -2954,7 +2954,7 @@ exec function PlayMusicWindow()
 // ----------------------------------------------------------------------
 function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusicTransition NewTransition )
 {
-    ClientMessage("Switching music: " $ Song $ "->" $ NewSong $ ":" $ NewSection $ " (current: " $ default.currentSong $ ", " $ default.currentSection $ ")");
+    //ClientMessage("Switching music: " $ Song $ "->" $ NewSong $ ":" $ NewSection $ " (current: " $ default.currentSong $ ", " $ default.currentSection $ ")");
     if (default.currentSong != string(NewSong) || default.currentSection != NewSection || bEnhancedMusicSystem == 0)
     {
         super.ClientSetMusic(NewSong,NewSection,NewCdTrack,NewTransition);
