@@ -17910,5 +17910,5 @@ defaultproperties
      HUDThemeNameGMDX="Default"
      dblClickHolster=2
      bSmartDecline=True
-     killswitchTimer=-1
+     killswitchTimer=-2
 }

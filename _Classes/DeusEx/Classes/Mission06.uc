@@ -37,7 +37,7 @@ function FirstFrame()
         if (player.bRealKillswitch && !flags.GetBool('GMDXKillswitchReduced'))
         {
             player.killswitchTimer -= (10*60)*60;
-            flags.SetBool('GMDXKillswitchReduced', True,, 6);
+            flags.SetBool('GMDXKillswitchReduced', True,, 7);
         }
     }
 	else if (localURL == "06_HONGKONG_VERSALIFE")
@@ -709,6 +709,17 @@ function Timer()
 			flags.SetBool('MS_DrugDealersAttacking', True,, 8);
 		}
 	}
+	else if (localURL == "06_HONGKONG_TONGBASE")
+    {
+        //SARGE: If we're using the "Killswitch Engaged" playthrough mod,
+        //then disable the killswitch when Tong tells us it's done
+        if (player.bRealKillswitch && !flags.GetBool('GMDXKillswitchStopped') && flags.GetBool('DL_TongFixesKillswitch2_Played'))
+        {
+            player.killswitchTimer = -1;
+            //player.bRealKillswitch = false;
+            flags.SetBool('GMDXKillswitchStopped', True,, 0);
+        }
+    }
 }
 
 function FireMissilesAt(name targetTag)
