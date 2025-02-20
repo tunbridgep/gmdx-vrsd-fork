@@ -699,8 +699,8 @@ var globalconfig bool bStompDomesticAnimals;                                    
 var globalconfig bool bStompVacbots;                                            //SARGE: If disabled, we can't stomp vac-bots anymore.
 
 //Music Stuff
-var travel transient string currentSong;                                                 //SARGE: The "Song" variable is notoriously unreliable...
-var travel transient byte currentSection;                                              //SARGE: We need to track this for conversations/combat/etc
+var transient string currentSong;                                                 //SARGE: The "Song" variable is notoriously unreliable...
+var transient byte currentSection;                                              //SARGE: We need to track this for conversations/combat/etc
 var globalconfig int bEnhancedMusicSystem;                                             //SARGE: Should the music system be a bit smarter about playing tracks?
 
 //////////END GMDX
@@ -2954,15 +2954,15 @@ exec function PlayMusicWindow()
 // ----------------------------------------------------------------------
 function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusicTransition NewTransition )
 {
-    //ClientMessage("Switching music: " $ Song $ "->" $ NewSong $ " (current: " $ currentSong $ ")");
-    if (currentSong != string(NewSong) || currentSection != NewSection || bEnhancedMusicSystem == 0)
+    ClientMessage("Switching music: " $ Song $ "->" $ NewSong $ ":" $ NewSection $ " (current: " $ default.currentSong $ ", " $ default.currentSection $ ")");
+    if (default.currentSong != string(NewSong) || default.currentSection != NewSection || bEnhancedMusicSystem == 0)
     {
         super.ClientSetMusic(NewSong,NewSection,NewCdTrack,NewTransition);
-        currentSong = string(NewSong);
+        default.currentSong = string(NewSong);
         if (NewSection == savedSection)
-            currentSection = 0;
+            default.currentSection = 0;
         else
-            currentSection = NewSection;
+            default.currentSection = NewSection;
     }
 }
 
@@ -3026,7 +3026,7 @@ function UpdateDynamicMusic(float deltaTime)
 	else if (IsInState('Conversation'))
 	{
 	    if (info != none)
-	       if (info.bBarOrClub)
+	       if (info.bBarOrClub && bEnhancedMusicSystem >= 2)
               return;  //CyberP: no dynamic music in clubs and bars.
 		if (musicMode != MUS_Conversation)
 		{
