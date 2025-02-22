@@ -108,6 +108,8 @@ var bool bSilentDeactivation;           //SARGE: Next time this augmentation is 
 
 var travel int heartUpgraded;    //SARGE: Stores if an aug was upgraded via heart. Used for downgrading if we remove heart.
 
+var const bool bHasChargeBar;   //SARGE: Display a bar in the Active Augs window when this is charging.
+
 ////Augmentation Colors
 var Color colActive;
 var Color colInactive;
@@ -744,4 +746,5 @@ defaultproperties
      colPassive=(R=255,G=255)
      colActive=(R=0,G=38,B=255)
      colAuto=(G=255,B=255)
+     bHasChargeBar=True
 }
