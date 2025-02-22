@@ -13504,7 +13504,7 @@ State Attacking
 		{
 			if (DeusExWeapon(Weapon) != None)
 			{
-				if (DeusExWeapon(Weapon).bHandToHand && !DeusExWeapon(Weapon).IsA('WeaponHideAGun'))
+				if (DeusExWeapon(Weapon).bHandToHand && !DeusExWeapon(Weapon).IsA('WeaponHideAGun') && !DeusExWeapon(Weapon).IsA('WeaponLAW'))
 					return true;
 				else
 					return false;

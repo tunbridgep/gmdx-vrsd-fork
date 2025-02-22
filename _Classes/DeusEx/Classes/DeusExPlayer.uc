@@ -11065,7 +11065,7 @@ function bool GetCrosshairState(optional bool bCheckForOuterCrosshairs)
         //Accuracy Crosshair stuff
         if (bCheckForOuterCrosshairs)
         {
-            if (!W.isA('WeaponShuriken') && (W.bHandToHand || W.GoverningSkill == class'DeusEx.SkillDemolition')) //Melee weapons and grenades have no accuracy crosshairs
+            if (!W.isA('WeaponShuriken') && !W.isA('WeaponLAW') && (W.bHandToHand || W.GoverningSkill == class'DeusEx.SkillDemolition')) //Melee weapons and grenades have no accuracy crosshairs
                 return false;
             else if (bHardcoreMode && W.IsInState('Reload')) //RSD: Remove the accuracy indicators if reloading on Hardcore
                 return false;
@@ -17572,10 +17572,21 @@ function int GetAdjustedMaxAmmo(Ammo ammotype)
     local float mult;
     local class associatedSkill;
     local DeusExAmmo DXammotype;
+    local Perk lawfare;
 
     mult = 1.0;
 
-    if (ammotype.IsA('DeusExAmmo'))
+    //SARGE: Special case for LAW ammo
+    if (ammoType.IsA('AmmoLAW'))
+    {
+        lawfare = PerkManager.GetPerkWithClass(class'PerkLawfare');
+        if (lawfare != None && lawfare.bPerkObtained)
+            return lawfare.PerkValue;
+        else
+            return 1;
+    }
+
+    else if (ammotype.IsA('DeusExAmmo'))
     {
         DXammotype = DeusExAmmo(ammotype);
         adjustedMaxAmmo = DXammotype.default.MaxAmmo;

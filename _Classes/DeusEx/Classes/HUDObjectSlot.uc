@@ -171,13 +171,8 @@ function UpdateItemText()
 			if ((weapon.AmmoName != class'AmmoNone') && (!weapon.bHandToHand) && (weapon.ReloadCount != 0) && (weapon.AmmoType != None))
 			itemText = weapon.AmmoType.beltDescription;
 
-            // If this is a grenade
-			if (weapon.IsA('WeaponNanoVirusGrenade') ||
-				weapon.IsA('WeaponGasGrenade') ||
-				weapon.IsA('WeaponEMPGrenade') ||
-				weapon.IsA('WeaponHideAGun')   || //Sarge: Added
-				weapon.IsA('WeaponShuriken')   || //Sarge: Added
-				weapon.IsA('WeaponLAM'))
+            // If this is a disposable weapon
+			if (weapon.bDisposableWeapon)
 			{
 				if (weapon.AmmoType != none && weapon.AmmoType.AmmoAmount > 1)  //RSD: accessed none?
 					itemText = CountLabel @ weapon.AmmoType.AmmoAmount;

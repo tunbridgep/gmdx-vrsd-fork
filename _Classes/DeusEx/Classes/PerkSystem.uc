@@ -97,6 +97,7 @@ function InitializePerks(DeusExPlayer newPlayer)	// Trash: Add every perk in the
 
     //General Perks
 	AddPerk(Class'DeusEx.PerkFirefighter');
+	AddPerk(Class'DeusEx.PerkLawfare');
 	AddPerk(Class'DeusEx.PerkGlutton');
 	AddPerk(Class'DeusEx.PerkSocketJockey');
 }

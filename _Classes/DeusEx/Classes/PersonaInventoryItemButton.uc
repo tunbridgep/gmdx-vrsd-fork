@@ -136,7 +136,7 @@ event DrawWindow(GC gc)
             if (anItem.isA('WeaponNanoSword') && WeaponNanoSword(anItem).chargeManager != None && WeaponNanoSword(anItem).chargeManager.GetCurrentCharge() > 0)
                 str2 = Sprintf("%d%%", WeaponNanoSword(anItem).chargeManager.GetCurrentCharge());
 
-			if ((weapon != None) && weapon.bHandToHand && (weapon.AmmoType != None) && (weapon.AmmoName != class'AmmoNone'))
+			if ((weapon != None) && weapon.bDisposableWeapon)
 			{
 				str = String(weapon.AmmoType.AmmoAmount);
 				if (str == "1")
