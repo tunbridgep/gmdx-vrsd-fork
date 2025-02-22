@@ -698,6 +698,10 @@ var localized String DuplicateNanoKey;
 var globalconfig bool bStompDomesticAnimals;                                    //SARGE: If disabled, we can't stomp cats or dogs anymore. Adopt a cute animal today!
 var globalconfig bool bStompVacbots;                                            //SARGE: If disabled, we can't stomp vac-bots anymore.
 
+
+//SARGE: Minimise Targeting Window
+var travel bool bMinimiseTargetingWindow;
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -10901,6 +10905,16 @@ exec function ToggleAugDisplay()
 	root = DeusExRootWindow(rootWindow);
 	if (root != None)
 		root.UpdateHud();
+}
+
+// ----------------------------------------------------------------------
+// MinimiseTargetingWindow
+// SARGE: Minimise the targeting window, since it's not always useful.
+// ----------------------------------------------------------------------
+
+exec function MinimiseTargetingWindow()
+{
+    bMinimiseTargetingWindow = !bMinimiseTargetingWindow;
 }
 
 // ----------------------------------------------------------------------
