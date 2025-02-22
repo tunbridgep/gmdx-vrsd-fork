@@ -54,6 +54,7 @@ function InitializePerks(DeusExPlayer newPlayer)	// Trash: Add every perk in the
 	// Demolition Perks
 	AddPerk(Class'DeusEx.PerkSonicTransducerSensor');
 	AddPerk(Class'DeusEx.PerkShortFuse');
+	AddPerk(Class'DeusEx.PerkSensorBurnout');
 	AddPerk(Class'DeusEx.PerkKnockoutGas');
 
 	// Lockpicking Perks

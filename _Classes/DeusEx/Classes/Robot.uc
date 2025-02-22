@@ -19,6 +19,34 @@ var float crazedTimer;
 var(Sounds) sound explosionSound;
 var bool bPlayedCritical;
 
+//Sarge: Nanovirus disable time
+var float rebootTime;                    //Sarge: timer before we are enabled again after nanovirus.
+
+function StartReboot()
+{
+    local Perk sensorBurn;
+    local DeusExPlayer player;
+
+    player = DeusExPlayer(GetPlayerPawn());
+
+    if (player == None)
+        return;
+
+    sensorBurn = player.PerkManager.GetPerkWithClass(class'DeusEx.PerkSensorBurnout');
+
+    if (sensorBurn.bPerkObtained)
+    {
+        rebootTime = player.saveTime + sensorBurn.PerkValue;
+        if (GetStateName() != 'Disabled')
+            GotoState('Disabled');
+    }
+}
+
+function bool HasRebooted()
+{
+    return rebootTime == 0 || rebootTime - DeusExPlayer(GetPlayerPawn()).saveTime <= 0;
+}
+
 function InitGenerator()
 {
 	local Vector loc;
@@ -72,11 +100,21 @@ function Tick(float deltaTime)
 	if (CrazedTimer > 0)
 	{
 		CrazedTimer -= deltaTime;
-		if (CrazedTimer < 0)
+		if (CrazedTimer <= 0)
+        {
+            StartReboot();
 			CrazedTimer = 0;
+        }
 	}
+    
+    if (rebootTime > 0 && rebootTime - DeusExPlayer(GetPlayerPawn()).saveTime < 0 && IsInState('Disabled'))
+    {
+        rebootTime = 0;
+        GotoState(Orders);
+    }
 
-	if (CrazedTimer > 0)
+
+	if (CrazedTimer > 0 || rebootTime > 0)
 		bReverseAlliances = true;
 	else
 		bReverseAlliances = false;
@@ -146,7 +184,7 @@ function bool IgnoreDamageType(Name damageType)
 
 function SetOrders(Name orderName, optional Name newOrderTag, optional bool bImmediate)
 {
-	if (EMPHitPoints > 0)  // ignore orders if disabled
+	if (EMPHitPoints > 0 && HasRebooted())  // ignore orders if disabled
 		Super.SetOrders(orderName, newOrderTag, bImmediate);
 }
 
