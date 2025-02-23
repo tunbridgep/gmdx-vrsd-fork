@@ -8590,6 +8590,24 @@ function SetInHandPending(Inventory newInHandPending)
 }
 
 // ----------------------------------------------------------------------
+// SARGE: Shorthand function for Resetting Aim of current weapon
+// ResetAim()
+// ----------------------------------------------------------------------
+
+function ResetAim()
+{
+    local DeusExWeapon weap;
+    weap = DeusExWeapon(inHand);
+
+    if (weap != None)
+    {
+        weap.standingTimer = 0;
+        savedStandingTimer = 0;
+    }
+
+}
+
+// ----------------------------------------------------------------------
 // UpdateInHand()
 //
 // Called every frame
