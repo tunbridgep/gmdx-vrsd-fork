@@ -17736,7 +17736,7 @@ function LipSynch(float deltaTime)
 	animTimer[2] += deltaTime;
         
     if (iEnhancedLipSync == 1)
-        tweentime = 0.3;
+        tweentime = 0.2;
     else if (iEnhancedLipSync == 2)
         tweentime = 0;
     else if (Level.TimeSeconds - animTimer[3]  < 0.05)
@@ -17764,6 +17764,13 @@ function LipSynch(float deltaTime)
 			animseq = 'MouthU';
 		else if (nextPhoneme == "X")
 			animseq = 'MouthClosed';
+
+        /*
+        if (lastPhoneme == "E" && nextPhoneme == "E")
+            nextPhoneme = "A";
+        else if (lastPhoneme == "A" && nextPhoneme == "A")
+            nextPhoneme = "E";
+        */
 
 		if (animseq != '')
 		{
