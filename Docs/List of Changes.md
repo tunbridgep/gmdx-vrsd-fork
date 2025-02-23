@@ -266,6 +266,7 @@ Sarge's Changes since Beta 2.2:
     - Right-Clicking on the Nano-Keyring icon in the inventory will select it.
         - This is useful when you have Smart Keyring enabled, and want to select the keyring before reaching a door, such as if it's being watched by a camera.
     - Added a new DataCube to explain cameras not detecting unconscious enemies.
+    - Swivel Chair skins are now randomised upon loading a map for the first time. All of the chairs in the map will share the same skin, to maintain consistency.
     - The players total kills are now shown in the Health screen, similar to older versions of GMDX. Morality info (pacifist, killer, etc) is not shown.
     - Vending Machines now vend random flavours of chocolate bar and soda. This change is purely visual and doesn't affect gameplay in any way.
     - Hand textures have been ported over from LDDP. This means the first-person weapon textures now have properly coloured hand textures, as well as visible augmentation markings where they align with the third person models.
