@@ -137,6 +137,7 @@ Sarge's Changes since Beta 2.2:
         - This only affects 1-2 movers in the entire game.
         - You still need to meet the damage threshold requirements.
     - The Dragons Tooth Sword now requires Biocells to use. It starts with 100% charge, with each attack taking 2% if it hits a target, giving you 50 hits total. Biocells restore 20% (or 30% with the Field Repair perk), giving you an additional 10 (15) hits each.
+    - Aim Stabilisation is now reset when using Medkits/Biocells from the health/augs screens, or using items from the inventory.
     - The GEP Gun now has limited range. After 5 seconds of flight, rockets will detonate as they run out of fuel. Each range mod increases flight time by 1 second.
     - Selecting the Mini Crossbow or Sniper Rifle from Paul at the start of the game will give you extra ammo (8 tranq darts or 5 .3006 ammo).
         - Both weapons still come with an Accuracy mod (which was added in vRSD)
