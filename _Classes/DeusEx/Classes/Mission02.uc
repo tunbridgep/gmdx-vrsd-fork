@@ -198,7 +198,7 @@ function Timer()
 	local GuntherHermann Gunther;
 	local Actor A;
 	local SandraRenton Sandra;
-	local int count;
+	local int count, unconscious;
 	local Male3 GenericMale;
 
 	Super.Timer();
@@ -255,6 +255,14 @@ function Timer()
 
 				Player.GoalCompleted('LiberateBatteryParkSubway');
 				flags.SetBool('SubTerroristsDead', True,, 6);
+							
+				// count the number of unconscious terrorists
+				foreach AllActors(class'TerroristCarcass', carc, 'SubTerrorist')
+					if (carc.bNotDead || carc.itemName == "Unconscious")// || carc.KillerBindName != "JCDenton")
+						unconscious++;
+				
+				if (unconscious <= 6)
+					flags.SetBool('SubTerroristsKilledLethal', True,, 6);
 			}
 		}
 
