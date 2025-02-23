@@ -698,6 +698,10 @@ var localized String DuplicateNanoKey;
 var globalconfig bool bStompDomesticAnimals;                                    //SARGE: If disabled, we can't stomp cats or dogs anymore. Adopt a cute animal today!
 var globalconfig bool bStompVacbots;                                            //SARGE: If disabled, we can't stomp vac-bots anymore.
 
+//SARGE: Enhanced Lip Sync
+var globalconfig int iEnhancedLipSync; //0 = disabled, 1 = nice and smooth, 2 = intentionally chunky
+var globalconfig bool bEnableBlinking; //Allows characters to blink
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -17680,6 +17684,91 @@ function bool FemaleEnabled()
 }
 
 // ----------------------------------------------------------------------
+// LipSynch()
+// Copied over from Engine/Pawn.uc
+// SARGE: Attempts to fix the janky DX lipsynching
+// Based on the idea from https://www.youtube.com/watch?v=oxTWU2YgzfQ, but
+// doesn't use any code from it.
+// ----------------------------------------------------------------------
+
+function HandleBlink()
+{
+	// blink randomly
+	if (animTimer[0] > 3.5)
+	{
+		if (FRand() < 0.4 && bEnableBlinking)
+        {
+            animTimer[0] = 0;
+			PlayBlendAnim('Blink', 0.2, 0.1, 1);
+        }
+        else
+            animTimer[0] = 2; //Make us more likely to blink again sooner
+	}
+}
+
+function LipSynch(float deltaTime)
+{
+	local name animseq;
+	local float rnd;
+	local float tweentime;
+
+	// update the animation timers that we are using
+	animTimer[0] += deltaTime;
+	animTimer[1] += deltaTime;
+	animTimer[2] += deltaTime;
+        
+    if (iEnhancedLipSync == 1)
+        tweentime = 0.3;
+    else if (iEnhancedLipSync == 2)
+        tweentime = 0;
+    else if (Level.TimeSeconds - animTimer[3]  < 0.05)
+        tweentime = 0.1;
+
+    // the last animTimer slot is used to check framerate
+    animTimer[3] = Level.TimeSeconds;
+
+	if (bIsSpeaking)
+	{
+
+		if (nextPhoneme == "A")
+			animseq = 'MouthA';
+		else if (nextPhoneme == "E")
+			animseq = 'MouthE';
+		else if (nextPhoneme == "F")
+			animseq = 'MouthF';
+		else if (nextPhoneme == "M")
+			animseq = 'MouthM';
+		else if (nextPhoneme == "O")
+			animseq = 'MouthO';
+		else if (nextPhoneme == "T")
+			animseq = 'MouthT';
+		else if (nextPhoneme == "U")
+			animseq = 'MouthU';
+		else if (nextPhoneme == "X")
+			animseq = 'MouthClosed';
+
+		if (animseq != '')
+		{
+			if (lastPhoneme != nextPhoneme)
+			{
+				lastPhoneme = nextPhoneme;
+				TweenBlendAnim(animseq, tweentime);
+			}
+		}
+	}
+	else if (bWasSpeaking)
+	{
+		bWasSpeaking = False;
+		TweenBlendAnim('MouthClosed', tweentime);
+	}
+
+    HandleBlink();
+	LoopHeadConvoAnim();
+	LoopBaseConvoAnim();
+}
+
+
+// ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
 defaultproperties
@@ -17891,4 +17980,6 @@ defaultproperties
      HUDThemeNameGMDX="Default"
      dblClickHolster=2
      bSmartDecline=True
+     iEnhancedLipSync=1
+     bEnableBlinking=True
 }
