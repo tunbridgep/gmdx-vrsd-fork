@@ -7,7 +7,8 @@ class PersonaLevelIconWindow extends PersonaBaseWindow;
 var int     currentLevel;
 var Texture texLevel;
 var Bool    bSelected;
-var Bool    bHeart;
+var int    heart;
+var bool   bShowHeart;
 
 var int iconSizeX;
 var int iconSizeY;
@@ -41,9 +42,10 @@ function SetSelected(bool bNewSelected)
 // SetHeart()
 // ----------------------------------------------------------------------
 
-function SetHeart(bool bNewHeart)
+function SetHeart(int newHeart, bool bShow)
 {
-	bHeart = bNewHeart;
+	bShowHeart = bShow;
+	heart = newHeart;
 	StyleChanged();
 }
 
@@ -60,7 +62,7 @@ event DrawWindow(GC gc)
 
 	for(levelCount=0; levelCount<=currentLevel; levelCount++)
 	{
-        if (levelCount == currentLevel && bHeart)
+        if (levelCount > currentLevel - heart)
             gc.SetTileColor(colHeart);
 
 		gc.DrawTexture(levelCount * (iconSizeX + 1), 0, iconSizeX, iconSizeY,
@@ -88,11 +90,18 @@ event StyleChanged()
 	theme = player.ThemeManager.GetCurrentHUDColorTheme();
 
 	if (bSelected)
+	{
 		colText = theme.GetColorFromName('HUDColor_ButtonTextFocus');
+		colHeart = theme.GetColorFromName('HUDColor_ButtonTextFocus');
+	}
 	else
+	{
 		colText = theme.GetColorFromName('HUDColor_ButtonTextNormal');
+		colHeart = theme.GetColorFromName('HUDColor_ButtonTextNormal');
+	}
 
-    colHeart = theme.GetColorFromName('HUDColor_ButtonTextDisabled');
+	if (bShowHeart)
+    colHeart = theme.GetColorFromName('HUDColor_ButtonTextNormal');
 }
 
 // ----------------------------------------------------------------------
@@ -103,4 +112,5 @@ defaultproperties
      texLevel=Texture'DeusExUI.UserInterface.PersonaSkillsChicklet'
      iconSizeX=5
      iconSizeY=5
+     colHeart=(R=255,G=20,B=20)
 }

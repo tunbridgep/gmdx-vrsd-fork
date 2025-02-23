@@ -13,7 +13,7 @@ var Window                        winItems;
 var PersonaInventoryInfoWindow    winInfo;
 var PersonaItemButton             selectedItem;			// Currently Selected Inventory item
 var PersonaInventoryCreditsWindow winCredits;
-var PersonaItemDetailWindow       winNanoKeyRing;
+var NanoKeyWindow                 winNanoKeyRing;       //SARGE: Changed to NanoKeyWindow
 var PersonaItemDetailWindow       winAmmo;
 
 var Bool bUpdatingAmmoDisplay;
@@ -216,12 +216,12 @@ function CreateCreditsWindow()
 
 function CreateNanoKeyRingWindow()
 {
-	winNanoKeyRing = PersonaItemDetailWindow(winClient.NewChild(Class'PersonaItemDetailWindow'));
+	winNanoKeyRing = NanoKeyWindow(winClient.NewChild(Class'NanoKeyWindow'));
 	winNanoKeyRing.SetPos(335, 285);
 	winNanoKeyRing.SetWidth(121);
 	winNanoKeyRing.SetIcon(Class'NanoKeyRing'.Default.LargeIcon);
 	winNanoKeyRing.SetItem(player.KeyRing);
-	winNanoKeyRing.SetText(NanoKeyRingInfoText);
+    winNanoKeyRing.SetText(NanoKeyRingInfoText);
 	winNanoKeyRing.SetTextAlignments(HALIGN_Center, VALIGN_Center);
 	winNanoKeyRing.SetCountLabel(NanoKeyRingLabel);
 	winNanoKeyRing.SetCount(player.KeyRing.GetKeyCount());
@@ -807,11 +807,26 @@ function UseSelectedItem()
 {
 	local Inventory inv;
 	local int numCopies;
+	local Class<PersonaScreenBaseWindow> winClass;
+
+    winClass = Class'PersonaScreenAugmentations';
 
 	inv = Inventory(selectedItem.GetClientObject());
 
 	if (inv != None)
 	{
+        //SARGE: Special handling for aug canister
+		if (inv.IsA('AugmentationUpgradeCannister'))
+        {
+            winClass = Class'PersonaScreenAugmentations';
+            if (root != None && winClass != None)
+            {
+                PersonaScreenBaseWindow(GetParent()).SaveSettings();
+                root.InvokeUIScreen(winClass,Player.bRealUI || Player.bHardCoreMode);
+                return;
+            }
+        }
+
 		// If this item was equipped in the inventory screen,
 		// make sure we set inHandPending to None so it's not
 		// drawn when we exit the Inventory screen
@@ -832,6 +847,9 @@ function UseSelectedItem()
 			numCopies = DeusExPickup(inv).NumCopies - 1;
 		else
 			numCopies = 0;
+		
+        //SARGE: Reset players accuracy bonus.
+        player.ResetAim();
 
 		// Update the object belt
 		invBelt.UpdateBeltText(inv);
@@ -1288,9 +1306,10 @@ function EnableButtons()
 			}
 			// Augmentation Upgrade Cannisters cannot be used
 			// on this screen
+            // SARGE: Now they can!
 			else if ( inv.IsA('AugmentationUpgradeCannister') )
 			{
-				btnUse.DisableWindow();
+				//btnUse.DisableWindow();
 				btnChangeAmmo.DisableWindow();
 			}
 			// Ammo can't be used or equipped

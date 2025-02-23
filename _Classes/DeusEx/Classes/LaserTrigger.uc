@@ -121,14 +121,7 @@ function Tick(float deltaTime)
                        if (player.AugmentationSystem.GetAugLevelValue(class'AugRadarTrans') > 0) //RSD: changed to player
 					      {
 					       bTrigger = false;
-					       mult1 = 1.0;
-					       mult2 = player.AugmentationSystem.GetAugLevelValue(class'AugPower');
-					       if (mult2 > 0)
-					         mult1 *= mult2;
-					       mult2 = player.AugmentationSystem.GetAugLevelValue(class'AugHeartLung');
-					       if (mult2 > 0)
-					         mult1 *= mult2;
-					       player.Energy -= mult1*player.AugmentationSystem.FindAugmentation(class'AugRadarTrans').GetEnergyRate()/15 * deltaTime; //RSD: quadrupled cost for hitting laser triggers
+					       player.Energy -= player.AugmentationSystem.FindAugmentation(class'AugRadarTrans').GetAdjustedEnergyRate()/15 * deltaTime; //RSD: quadrupled cost for hitting laser triggers
 					       if (player.Energy < 0)
 					         player.Energy = 0;
 					       return;

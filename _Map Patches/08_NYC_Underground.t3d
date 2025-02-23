@@ -41374,8 +41374,9 @@ Begin Actor Class=ChildMaleCarcass Name=ChildMaleCarcass0
     Name=ChildMaleCarcass0
 End Actor
 Begin Actor Class=LAM Name=LAM0
+    fuseLength=0.100000
     bProximityTriggered=True
-    proxRadius=820.000000
+    proxRadius=512.000000
     bArmed=True
     bHighlight=False
     Physics=PHYS_None
@@ -41738,6 +41739,7 @@ Begin Actor Class=CrateBreakableMedGeneral Name=CrateBreakableMedGeneral0
     Name=CrateBreakableMedGeneral0
 End Actor
 Begin Actor Class=CrateExplosiveSmall Name=CrateExplosiveSmall0
+    explosionRadius=50.000000
     LastRenderTime=0.245649
     Level=LevelInfo'MyLevel.LevelInfo0'
     Tag=tin

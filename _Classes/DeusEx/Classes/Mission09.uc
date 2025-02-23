@@ -14,8 +14,18 @@ function FirstFrame()
 	local DeusExMover M;
 	local BlackHelicopter chopper;
     local ScriptedPawn SP;
+    local SecurityCamera SC;
 
 	Super.FirstFrame();
+
+    //SARGE: Ensure all cameras are set to alarming.
+    //For some reason, some were set to bNoAlarm
+    foreach AllActors(class'SecurityCamera', SC)
+    {
+        //Vinnie camera remains bNoAlarm
+        if (SC.Name != 'SecurityCamera2')
+            SC.bNoAlarm = false;
+    }
 
      if (flags.GetBool('Enhancement_Detected'))
      {

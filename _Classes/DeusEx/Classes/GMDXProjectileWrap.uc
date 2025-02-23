@@ -29,6 +29,7 @@ function bool WrapWithDecoration()
 {
 	local vector lookDir, upDir;
 	local float velscale, size, mult;
+	local Augmentation muscleAug;
 
 
    //log("GMDX PROJECTILE OWNER "@Owner);
@@ -48,12 +49,14 @@ function bool WrapWithDecoration()
    // throw velocity is based on augmentation Level, not level value!
    if (DxPlayer.AugmentationSystem != None)
    {
-	  mult = 2.5+DxPlayer.AugmentationSystem.GetClassLevel(class'AugMuscle'); //CyberP: increased 1+
+        muscleAug = DxPlayer.AugmentationSystem.GetAug(class'AugMuscle');
+   
+	  mult = 2.5+muscleAug.CurrentLevel; //CyberP: increased 1+
 	  //log("AUG LEVEL "@mult);
 	  if (trackingDeco.Mass > 100)
-	      DxPlayer.Energy -= 3.0;
+	      DxPlayer.Energy -= muscleAug.GetAdjustedEnergy(3.0);
 	  else if (trackingDeco.Mass > 60)
-	      DxPlayer.Energy -= 2.0;
+	      DxPlayer.Energy -= muscleAug.GetAdjustedEnergy(2.0);
 	  if (DxPlayer.Energy < 0)
 	     DxPlayer.Energy = 0;
 	  if (mult == 0.0)

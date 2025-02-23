@@ -108,7 +108,7 @@ function FirstFrame()
         if (Player.bNoKeypadCheese)
         {
             newPasscode = string(Rand(8999) + 1000);
-            player.ClientMessage("New code is " $ newPasscode);
+            //player.ClientMessage("New code is " $ newPasscode);
             foreach AllActors(class'Keypad', K)
             {
                 if (K.validCode == "2167")
