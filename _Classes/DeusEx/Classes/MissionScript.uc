@@ -507,7 +507,7 @@ function RandomiseCrap()
     }
     
     //Roll once, so that all the chairs in the level get the same style.
-    chairSkin=Player.Randomizer.GetRandomInt(4);
+    chairSkin=Player.Randomizer.GetRandomInt(5);
     log("Applying chair skin to all chairs: " $ chairSkin);
     foreach AllActors(class'OfficeChair', C)
     {
