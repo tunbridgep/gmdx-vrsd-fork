@@ -3,31 +3,29 @@
 //=============================================================================
 class CouchLeather extends Seat;
 
-enum ESkinColor
+var int skinColor;
+
+function UpdateHDTPsettings()
 {
-	SC_Black,
-	SC_Blue,
-	SC_Brown,
-	SC_LitGray,
-	SC_Tan
-};
+    local Texture sk;
+	Super.UpdateHDTPsettings();
 
-var() ESkinColor SkinColor;
+    if (!IsHDTP()) //The HDTP office chair skins are all the same
+    {
+        switch (SkinColor)
+        {
+            case 0:		sk = Texture'CouchLeatherTex1'; break;
+            case 1:		sk = Texture'CouchLeatherTex2'; break;
+            case 2:		sk = Texture'CouchLeatherTex3'; break;
+            case 3:	    sk = Texture'CouchLeatherTex4'; break;
+            case 4:		sk = Texture'CouchLeatherTex5'; break;
+        }
 
-function BeginPlay()
-{
-	Super.BeginPlay();
+        skin = sk;
+        //log("Chair skin is " $ SkinColor); 
+        //texture = sk;
+    }
 
-	//blank this for now: when Phas or whoever makes HDTP versions of the other texes, then put back in
-
-	//switch (SkinColor)
-	//{
-	//	case SC_Black:		Skin = Texture'CouchLeatherTex1'; break;
-	//	case SC_Blue:		Skin = Texture'CouchLeatherTex1'; break;
-	//	case SC_Brown:		Skin = Texture'CouchLeatherTex1'; break;
-	//	case SC_LitGray:	Skin = Texture'CouchLeatherTex1'; break;
-	//	case SC_Tan:		Skin = Texture'CouchLeatherTex1'; break;
-	//}
 }
 
 defaultproperties
