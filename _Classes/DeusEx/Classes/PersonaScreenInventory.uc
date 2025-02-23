@@ -850,6 +850,9 @@ function UseSelectedItem()
 			numCopies = DeusExPickup(inv).NumCopies - 1;
 		else
 			numCopies = 0;
+		
+        //SARGE: Reset players accuracy bonus.
+        player.ResetAim();
 
 		// Update the object belt
 		invBelt.UpdateBeltText(inv);
