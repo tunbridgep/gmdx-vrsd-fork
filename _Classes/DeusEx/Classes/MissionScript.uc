@@ -499,6 +499,7 @@ function RandomiseCrap()
     local DeusExPickup P;
     local OfficeChair C;
     local CouchLeather L;
+    local ChairLeather L2;
     local int chairSkin;
         
     foreach AllActors(class'DeusExPickup', P)
@@ -508,7 +509,7 @@ function RandomiseCrap()
     
     //Roll once, so that all the chairs in the level get the same style.
     chairSkin=Player.Randomizer.GetRandomInt(5);
-    log("Applying chair skin to all chairs: " $ chairSkin);
+    //log("Applying chair skin to all swivel chairs: " $ chairSkin);
     foreach AllActors(class'OfficeChair', C)
     {
         C.SkinColor = chairSkin;
@@ -517,11 +518,19 @@ function RandomiseCrap()
     
     //Roll once, so that all the couches in the level get the same style.
     chairSkin=Player.Randomizer.GetRandomInt(4);
-    log("Applying chair skin to all leather couches: " $ chairSkin);
+    //log("Applying chair skin to all leather couches: " $ chairSkin);
     foreach AllActors(class'CouchLeather', L)
     {
         L.SkinColor = chairSkin;
         L.UpdateHDTPsettings();
+    }
+    
+    //And chairs
+    //log("Applying chair skin to all leather chairs: " $ chairSkin);
+    foreach AllActors(class'ChairLeather', L2)
+    {
+        L2.SkinColor = chairSkin;
+        L2.UpdateHDTPsettings();
     }
 }
 
