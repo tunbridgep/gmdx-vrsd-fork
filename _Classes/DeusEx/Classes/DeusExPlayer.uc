@@ -7364,12 +7364,12 @@ function bool RestrictInput(optional bool bDontCheckConversation)
 		return True;
 
     //SARGE: Being in a cutscene counts as restricted input
-    if (!bDontCheckConversation && conPlay.bConversationStarted && conPlay.displayMode == DM_ThirdPerson)
+    if (!bDontCheckConversation && conPlay != None && conPlay.bConversationStarted && conPlay.displayMode == DM_ThirdPerson)
         return true;
 
     //SARGE: Disallow any sort of UI operations when the "pause" key is pressed
     //This way, real-time UI is actually a real-time UI
-    if (DeusExRootWindow(rootWindow).bUIPaused || (Level.Pauser != ""))
+    if (DeusExRootWindow(rootWindow) != None && DeusExRootWindow(rootWindow).bUIPaused || (Level.Pauser != ""))
         return true;
 
 	return False;
