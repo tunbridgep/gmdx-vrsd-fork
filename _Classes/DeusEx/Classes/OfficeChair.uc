@@ -18,6 +18,7 @@ function UpdateHDTPsettings()
             case 1: sk = Texture'DeusExDeco.OfficeChairTex2'; break;
             case 2: sk = Texture'DeusExDeco.OfficeChairTex3'; break;
             case 3: sk = Texture'DeusExDeco.OfficeChairTex4'; break;
+            case 4: sk = Texture'RSDCrap.Skins.OfficeChairTex4'; break; //New skin!
             //case 0:	Sk = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPOfficeChairTex1","DeusExDeco.OfficeChairTex1",IsHDTP()); break;
             //case 1:	Sk = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPOfficeChairTex2","DeusExDeco.OfficeChairTex2",IsHDTP()); break;
             //case 2:	Sk = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPOfficeChairTex3","DeusExDeco.OfficeChairTex3",IsHDTP()); break;
