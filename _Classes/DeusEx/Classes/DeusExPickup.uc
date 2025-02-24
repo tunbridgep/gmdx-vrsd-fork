@@ -40,6 +40,8 @@ var bool bJustUnRadar;                                                          
 var bool bAutoActivate;                                                         //Sarge: Auto activate with left click, rather than placing in the players hands                                                                                
 var localized string StackSizeLabel;                                            //Sarge: Show the stack size in the description
 
+var localized string RechargeMessage;                                            //Sarge: Show a message when recharging using an item in the world
+
 var Texture handsTex;   //SARGE: Store the hand texture for performance. TODO: Use some sort of class/object to share this between SkilledTools and Weapons
 
 //SARGE: HDTP Model toggles
@@ -433,6 +435,11 @@ function bool HandlePickupQuery( inventory Item )
                        anItem.Charge += DeusExPickup(item).Charge;
                        if (anItem.Charge >= anItem.default.Charge)
                            anItem.Charge = anItem.default.Charge;
+
+                        //SARGE: Play the bioelectric hiss when recharging this way
+                        player.ClientMessage(RechargeMessage @ item.itemName);
+                        player.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
+
                        item.Destroy();
 
                        if (anItem.Charge > 0)
@@ -1111,6 +1118,7 @@ defaultproperties
      StackSizeLabel="Amount Held: %d/%d"
      NumCopies=1
      PickupMessage="You found"
+     RechargeMessage="You recharged your"
      ItemName="DEFAULT PICKUP NAME - REPORT THIS AS A BUG"
      RespawnTime=30.000000
      LandSound=Sound'DeusExSounds.Generic.PaperHit1'
