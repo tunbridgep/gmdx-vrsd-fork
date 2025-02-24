@@ -17611,15 +17611,13 @@ function int GetAdjustedMaxAmmo(Ammo ammotype)
         adjustedMaxAmmo = DXammotype.default.MaxAmmo;
         associatedSkill = DXammotype.default.ammoSkill;
         if (AugmentationSystem != none)
-            if (self.AugmentationSystem.GetAugLevelValue(class'AugAmmoCap') > 0.0 && (associatedSkill != class'SkillDemolition'))// || associatedSkill != class'SkillWeaponLowTech'))
+            if (self.AugmentationSystem.GetAugLevelValue(class'AugAmmoCap') > 0.0 && !DXAmmotype.default.bHarderScaling)// || associatedSkill != class'SkillWeaponLowTech'))
                 mult += AugmentationSystem.GetAugLevelValue(class'AugAmmoCap');
-        if (associatedSkill != none && associatedSkill != class'DeusEx.SkillDemolition')
+
+        if (!DXAmmotype.default.bHarderScaling)
             mult += -2*SkillSystem.GetSkillLevelValue(associatedSkill)-0.5;
-        else if (associatedSkill == class'DeusEx.SkillDemolition')
-        {
+        else
             mult += -4*SkillSystem.GetSkillLevelValue(associatedSkill)-0.5;
-            //BroadcastMessage(mult);
-        }
     }
     else
     {

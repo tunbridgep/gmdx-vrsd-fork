@@ -22,9 +22,9 @@ defaultproperties
 {
      bShowInfo=True
      altDamage=200
-     ammoSkill=Class'DeusEx.SkillWeaponRifle'
+     ammoSkill=Class'DeusEx.SkillDemolition'
      AmmoAmount=3
-     MaxAmmo=10
+     MaxAmmo=4
      ItemName="20mm HE Ammo"
      ItemArticle="some"
      PickupViewMesh=LodMesh'DeusExItems.Ammo20mm'
@@ -40,4 +40,5 @@ defaultproperties
      CollisionRadius=9.500000
      CollisionHeight=4.750000
      bCollideActors=True
+     bHarderScaling=True
 }
