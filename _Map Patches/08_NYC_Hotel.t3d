@@ -58336,7 +58336,7 @@ Begin Actor Class=RiotCop Name=RiotCop8
     InitialAlliances(2)=(AllianceName=Cleaner,AllianceLevel=1.000000,bPermanent=True)
     InitialInventory(0)=(Inventory=Class'DeusEx.WeaponPistol')
     InitialInventory(1)=(Inventory=Class'DeusEx.Ammo10mm',Count=8)
-    InitialInventory(2)=(Inventory=Class'DeusEx.WeaponCombatKnife')
+    InitialInventory(2)=(Inventory=Class'DeusEx.WeaponBaton')
     FootRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=436,ZoneNumber=1)
     HeadRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=450,ZoneNumber=1)
     HearingThreshold=0.100000
@@ -58373,7 +58373,7 @@ Begin Actor Class=RiotCop Name=RiotCop9
     InitialAlliances(2)=(AllianceName=Cleaner,AllianceLevel=1.000000,bPermanent=True)
     InitialInventory(0)=(Inventory=Class'DeusEx.WeaponPistol')
     InitialInventory(1)=(Inventory=Class'DeusEx.Ammo10mm',Count=8)
-    InitialInventory(2)=(Inventory=Class'DeusEx.WeaponCombatKnife')
+    InitialInventory(2)=(Inventory=Class'DeusEx.WeaponBaton')
     FootRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=1878,ZoneNumber=1)
     HeadRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=1878,ZoneNumber=1)
     HearingThreshold=0.100000
@@ -62293,7 +62293,7 @@ Begin Actor Class=RiotCop Name=RiotCop0
     InitialAlliances(2)=(AllianceName=Cleaner,AllianceLevel=1.000000,bPermanent=True)
     InitialInventory(0)=(Inventory=Class'DeusEx.WeaponPistol')
     InitialInventory(1)=(Inventory=Class'DeusEx.Ammo10mm',Count=8)
-    InitialInventory(2)=(Inventory=Class'DeusEx.WeaponCombatKnife')
+    InitialInventory(2)=(Inventory=Class'DeusEx.WeaponBaton')
     FootRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=596,ZoneNumber=1)
     HeadRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=594,ZoneNumber=1)
     HearingThreshold=0.100000
@@ -62330,7 +62330,7 @@ Begin Actor Class=RiotCop Name=RiotCop1
     InitialAlliances(2)=(AllianceName=Cleaner,AllianceLevel=1.000000,bPermanent=True)
     InitialInventory(0)=(Inventory=Class'DeusEx.WeaponPistol')
     InitialInventory(1)=(Inventory=Class'DeusEx.Ammo10mm',Count=8)
-    InitialInventory(2)=(Inventory=Class'DeusEx.WeaponCombatKnife')
+    InitialInventory(2)=(Inventory=Class'DeusEx.WeaponBaton')
     bHardcoreOnly=True
     FootRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=635,ZoneNumber=1)
     HeadRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=646,ZoneNumber=1)
@@ -62412,7 +62412,7 @@ Begin Actor Class=RiotCop Name=RiotCop2
     InitialAlliances(2)=(AllianceName=Cleaner,AllianceLevel=1.000000,bPermanent=True)
     InitialInventory(0)=(Inventory=Class'DeusEx.WeaponPistol')
     InitialInventory(1)=(Inventory=Class'DeusEx.Ammo10mm',Count=8)
-    InitialInventory(2)=(Inventory=Class'DeusEx.WeaponCombatKnife')
+    InitialInventory(2)=(Inventory=Class'DeusEx.WeaponBaton')
     FootRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=179,ZoneNumber=1)
     HeadRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=179,ZoneNumber=1)
     HearingThreshold=0.100000
