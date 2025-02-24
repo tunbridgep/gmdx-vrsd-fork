@@ -638,9 +638,8 @@ const DRUG_CRACK = 2;
 var travel bool bLastRun;                                                       //Sarge: Stores our last running state
 
 var bool bUsingComputer;                                                        //SARGE: Are we currently using a computer? Set so that we can restrict input while using one
+var bool bBlockNextFire;                                                        //SARGE: Set to TRUE to block the next weapon firing attempt. Used when blowing up the spy drone.
 
-var bool bDroneExploded;                                                        //SARGE: Was the drone exploded last tick?
-                                                                                
 //Sarge: Allow Enhanced Weapon Offsets
 var globalconfig bool bEnhancedWeaponOffsets; 									//Sarge: Allow using enhanced weapon offsets
 
@@ -7793,6 +7792,7 @@ exec function ParseLeftClick()
 	// if the spy drone augmentation is active, blow it up
 	if (bSpyDroneActive && !bSpyDroneSet && !bRadialAugMenuVisible)                                       //RSD: Allows the user to toggle between moving and controlling the drone, also added Lorenz's wheel
 	{
+        bBlockNextFire = true;
 		if (DroneExplode());
             return;
 	}
@@ -17202,8 +17202,6 @@ function MultiplayerTick(float DeltaTime)
 	RepairInventory();
 	lastRefreshTime = 0;
 
-    //SARGE: Reset drone exploded flag
-    bDroneExploded = false;
 }
 
 // ----------------------------------------------------------------------
