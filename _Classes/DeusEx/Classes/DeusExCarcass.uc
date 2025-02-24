@@ -1709,7 +1709,12 @@ function UpdateName()
     {
         itemName = default.itemName;
         if (savedName != "")
-            itemName = itemName $ " (" $ savedName $ ")";
+        {
+            if (bNotDead)
+                itemName = msgNotDead $ " (" $ savedName $ ")";
+            else
+                itemName = itemName $ " (" $ savedName $ ")";
+        }
     }
     else
         itemName = msgAnimalCarcass;
