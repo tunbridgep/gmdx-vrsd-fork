@@ -45824,7 +45824,7 @@ Begin Actor Class=Candybar Name=Candybar0
     Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
     Location=(X=1130.596313,Y=-521.833862,Z=498.768677)
     OldLocation=(X=1130.596313,Y=-521.833862,Z=498.768677)
-    MultiSkins(0)=Texture'DeusExItems.Skins.CandybarTex2'
+    textureSet=1
     Name=Candybar0
 End Actor
 Begin Actor Class=Binoculars Name=Binoculars0

@@ -32289,7 +32289,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal1
     Location=(X=-2748.363525,Y=138.083557,Z=-31.734331)
     Rotation=(Pitch=16385)
     OldLocation=(X=-3012.651855,Y=-183.726883,Z=-30.900244)
-    MultiSkins(0)=Texture'HDTPDecos.Skins.DirtyToiletWaterTex'
+    TextureSetup=E_Piss
     Name=PlaceableDecal1
 End Actor
 Begin Actor Class=Brush Name=Brush201

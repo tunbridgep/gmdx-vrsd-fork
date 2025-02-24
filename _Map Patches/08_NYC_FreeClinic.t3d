@@ -36913,7 +36913,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal7
     Rotation=(Pitch=16385)
     OldLocation=(X=1171.701416,Y=-71.153778,Z=-318.899597)
     DrawScale=1.000000
-    MultiSkins(0)=Texture'HDTPDecos.Skins.DirtyToiletWaterTex'
+    TextureSetup=E_Piss
     Name=PlaceableDecal7
 End Actor
 Begin Actor Class=Brush Name=Brush393

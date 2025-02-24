@@ -71805,7 +71805,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal0
     Location=(X=1612.655151,Y=-1035.111572,Z=64.172775)
     Rotation=(Pitch=16384)
     OldLocation=(X=1614.597534,Y=-1082.467285,Z=65.101021)
-    MultiSkins(0)=Texture'KZTextures.Decal.moss_decal2'
+    TextureSetup=E_Moss2
     Name=PlaceableDecal0
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal1
@@ -71865,7 +71865,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal2
     Rotation=(Pitch=16384)
     OldLocation=(X=1644.655151,Y=-1003.111572,Z=64.172775)
     DrawScale=1.000000
-    MultiSkins(0)=Texture'KZTextures.Decal.moss_decal2'
+    TextureSetup=E_Moss2
     Name=PlaceableDecal2
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal3

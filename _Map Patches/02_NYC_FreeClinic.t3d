@@ -46673,7 +46673,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal102
     Location=(X=919.595093,Y=205.474228,Z=-318.900787)
     Rotation=(Pitch=16384,Yaw=14864)
     OldLocation=(X=884.674072,Y=63.935173,Z=-318.900787)
-    MultiSkins(0)=Texture'Tester.Decal.dirt_decal'
+    TextureSetup=E_Dirt
     Name=PlaceableDecal102
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal103
@@ -46685,7 +46685,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal103
     Rotation=(Pitch=16384,Yaw=13024)
     OldLocation=(X=975.952942,Y=205.854248,Z=-318.900787)
     DrawScale=3.000000
-    MultiSkins(0)=Texture'Tester.Decal.dirt_decal'
+    TextureSetup=E_Dirt
     Name=PlaceableDecal103
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal104
@@ -46697,7 +46697,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal104
     Rotation=(Pitch=16384,Yaw=13968)
     OldLocation=(X=995.046814,Y=-531.875671,Z=-318.900787)
     DrawScale=3.000000
-    MultiSkins(0)=Texture'Tester.Decal.dirt_decal'
+    TextureSetup=E_Dirt
     Name=PlaceableDecal104
 End Actor
 Begin Actor Class=PlaceableDecal Name=PlaceableDecal105
@@ -46709,7 +46709,7 @@ Begin Actor Class=PlaceableDecal Name=PlaceableDecal105
     Rotation=(Pitch=16384)
     OldLocation=(X=262.176636,Y=211.500626,Z=-318.900787)
     DrawScale=1.000000
-    MultiSkins(0)=Texture'Tester.Decal.dirt_decal'
+    TextureSetup=E_Dirt
     Name=PlaceableDecal105
 End Actor
 Begin Actor Class=Light Name=Light154
