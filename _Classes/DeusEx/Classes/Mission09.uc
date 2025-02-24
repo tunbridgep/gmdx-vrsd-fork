@@ -99,7 +99,7 @@ function Timer()
 	local int count;
 	local DeusExMover M;
 	local BlackHelicopter chopper;
-	local MJ12Troop troop;
+	local MJ12Elite2 troop;
 	local Trigger trig;
 	local MJ12Commando commando;
 	local WaltonSimons Walton;
@@ -184,7 +184,7 @@ function Timer()
 
 				Player.StartDataLinkTransmission("DL_ComingIn");
 
-				foreach AllActors(class'MJ12Troop', troop, 'TroopSupport')
+				foreach AllActors(class'MJ12Elite2', troop, 'TroopSupport')
 					troop.EnterWorld();
 
 				flags.SetBool('MS_UnhideHelicopter', True,, 10);
@@ -199,7 +199,7 @@ function Timer()
 			foreach AllActors(class'Trigger', trig, 'TunnelTrigger')
 				trig.SetCollision(True);
 
-			foreach AllActors(class'MJ12Troop', troop, 'TroopInsertion')
+			foreach AllActors(class'MJ12Elite2', troop, 'TroopInsertion')
 				troop.EnterWorld();
 
 			flags.SetBool('MS_TriggerOn', True,, 10);

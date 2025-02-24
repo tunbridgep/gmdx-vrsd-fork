@@ -45928,38 +45928,18 @@ Begin Actor Class=InterpolationPoint Name=InterpolationPoint63
     OldLocation=(X=6.555157,Y=-116.898880,Z=14.070720)
     Name=InterpolationPoint63
 End Actor
-Begin Actor Class=MJ12Troop Name=MJ12Troop16
-    BaseAccuracy=0.060000
-    MinHealth=0.000000
-    CarcassType=Class'DeusEx.MJ12TroopCarcassElite2'
+Begin Actor Class=MJ12Elite2 Name=MJ12Troop16
     bKeepWeaponDrawn=True
-    bHateWeapon=True
-    bHateDistress=True
-    bReactLoudNoise=True
-    bReactShot=True
-    bReactDistress=True
     InitialAlliances(0)=(AllianceName=Player,AllianceLevel=-1.000000,bPermanent=True)
     InitialAlliances(1)=(AllianceName=StantonDowd,AllianceLevel=-1.000000,bPermanent=True)
     InitialAlliances(2)=(AllianceName=mj12,AllianceLevel=1.000000,bPermanent=True)
-    EnemyTimeout=12.000000
     bInWorld=False
     InitialInventory(0)=(Inventory=Class'DeusEx.WeaponStealthPistol')
     InitialInventory(1)=(Inventory=Class'DeusEx.Ammo10mm',Count=50)
     InitialInventory(3)=(Inventory=Class'DeusEx.WeaponHideAGun')
     FootRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
     HeadRegion=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=734,ZoneNumber=1)
-    HearingThreshold=0.100000
     ViewRotation=(Yaw=600)
-    FovAngle=120.000000
-    Health=200
-    Die=Sound'GMDXSFX.Human.Death06'
-    HealthHead=200
-    HealthTorso=200
-    HealthLegLeft=200
-    HealthLegRight=200
-    HealthArmLeft=200
-    HealthArmRight=200
-    VisibilityThreshold=0.002500
     Alliance=mj12
     LastRenderTime=148.605499
     DistanceFromPlayer=604.629272
@@ -45970,45 +45950,19 @@ Begin Actor Class=MJ12Troop Name=MJ12Troop16
     Location=(X=-963.572998,Y=-594.907776,Z=47.599480)
     Rotation=(Yaw=600)
     OldLocation=(X=-842.598877,Y=-581.399658,Z=47.599480)
-    MultiSkins(3)=Texture'DeusExCharacters.Skins.MiscTex1'
-    MultiSkins(6)=Texture'GMDXSFX.Skins.hMJ12TroopTex3'
-    RotationRate=(Yaw=90000)
-    BindName=""
-    FamiliarName="MJ12 Elite"
-    UnfamiliarName="MJ12 Elite"
     Name=MJ12Troop16
 End Actor
-Begin Actor Class=MJ12Troop Name=MJ12Troop18
-    BaseAccuracy=0.060000
-    MinHealth=0.000000
-    CarcassType=Class'DeusEx.MJ12TroopCarcassElite2'
+Begin Actor Class=MJ12Elite2 Name=MJ12Troop18
     bKeepWeaponDrawn=True
-    bHateWeapon=True
-    bHateDistress=True
-    bReactLoudNoise=True
-    bReactShot=True
-    bReactDistress=True
     InitialAlliances(0)=(AllianceName=Player,AllianceLevel=-1.000000,bPermanent=True)
     InitialAlliances(1)=(AllianceName=StantonDowd,AllianceLevel=-1.000000,bPermanent=True)
     InitialAlliances(2)=(AllianceName=mj12,AllianceLevel=1.000000,bPermanent=True)
-    EnemyTimeout=12.000000
     bInWorld=False
     InitialInventory(0)=(Inventory=Class'DeusEx.WeaponStealthPistol')
     InitialInventory(1)=(Inventory=Class'DeusEx.Ammo10mm',Count=50)
     FootRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
     HeadRegion=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=723,ZoneNumber=1)
-    HearingThreshold=0.100000
     ViewRotation=(Yaw=2248)
-    FovAngle=120.000000
-    Health=200
-    Die=Sound'GMDXSFX.Human.Death06'
-    HealthHead=200
-    HealthTorso=200
-    HealthLegLeft=200
-    HealthLegRight=200
-    HealthArmLeft=200
-    HealthArmRight=200
-    VisibilityThreshold=0.002500
     Alliance=mj12
     LastRenderTime=147.957458
     DistanceFromPlayer=918.886597
@@ -46019,47 +45973,19 @@ Begin Actor Class=MJ12Troop Name=MJ12Troop18
     Location=(X=-976.806396,Y=-1043.842896,Z=47.599480)
     Rotation=(Yaw=2248)
     OldLocation=(X=-801.572998,Y=-545.907776,Z=70.157204)
-    MultiSkins(3)=Texture'DeusExCharacters.Skins.MiscTex1'
-    MultiSkins(6)=Texture'GMDXSFX.Skins.hMJ12TroopTex3'
-    RotationRate=(Yaw=90000)
-    BindName=""
-    FamiliarName="MJ12 Elite"
-    UnfamiliarName="MJ12 Elite"
     Name=MJ12Troop18
 End Actor
-Begin Actor Class=MJ12Troop Name=MJ12Troop20
-    BaseAccuracy=0.060000
-    MinHealth=0.000000
-    CarcassType=Class'DeusEx.MJ12TroopCarcassElite2'
+Begin Actor Class=MJ12Elite2 Name=MJ12Troop20
     bKeepWeaponDrawn=True
-    bHateWeapon=True
-    bHateDistress=True
-    bReactLoudNoise=True
-    bReactShot=True
-    bReactDistress=True
     InitialAlliances(0)=(AllianceName=Player,AllianceLevel=-1.000000,bPermanent=True)
     InitialAlliances(1)=(AllianceName=StantonDowd,AllianceLevel=-1.000000,bPermanent=True)
     InitialAlliances(2)=(AllianceName=mj12,AllianceLevel=1.000000,bPermanent=True)
-    EnemyTimeout=12.000000
     bInWorld=False
     InitialInventory(0)=(Inventory=Class'DeusEx.WeaponStealthPistol')
     InitialInventory(1)=(Inventory=Class'DeusEx.Ammo10mm',Count=50)
     FootRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
     HeadRegion=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=508,ZoneNumber=1)
-    HearingThreshold=0.100000
     ViewRotation=(Yaw=-2144)
-    FovAngle=120.000000
-    Health=200
-    HitSound1=Sound'GMDXSFX.Human.PainSmall07'
-    HitSound2=Sound'GMDXSFX.Human.PainBig01'
-    Die=None
-    HealthHead=200
-    HealthTorso=200
-    HealthLegLeft=200
-    HealthLegRight=200
-    HealthArmLeft=200
-    HealthArmRight=200
-    VisibilityThreshold=0.002500
     Alliance=mj12
     LastRenderTime=145.483337
     DistanceFromPlayer=753.848511
@@ -46073,43 +45999,21 @@ Begin Actor Class=MJ12Troop Name=MJ12Troop20
     MultiSkins(3)=Texture'DeusExCharacters.Skins.MiscTex1'
     MultiSkins(6)=Texture'GMDXSFX.Skins.hMJ12TroopTex3'
     RotationRate=(Yaw=90000)
-    BindName=""
-    FamiliarName="MJ12 Elite"
-    UnfamiliarName="MJ12 Elite"
     Name=MJ12Troop20
 End Actor
-Begin Actor Class=MJ12Troop Name=MJ12Troop22
-    BaseAccuracy=0.060000
-    MinHealth=0.000000
-    CarcassType=Class'DeusEx.MJ12TroopCarcassElite2'
+Begin Actor Class=MJ12Elite2 Name=MJ12Troop22
     Orders=Standing
     HomeTag=Start
     bKeepWeaponDrawn=True
-    bHateWeapon=True
-    bHateDistress=True
-    bReactLoudNoise=True
-    bReactShot=True
-    bReactDistress=True
     InitialAlliances(0)=(AllianceName=Player,AllianceLevel=-1.000000,bPermanent=True)
     InitialAlliances(1)=(AllianceName=StantonDowd,AllianceLevel=-1.000000,bPermanent=True)
     InitialAlliances(2)=(AllianceName=mj12,AllianceLevel=1.000000,bPermanent=True)
-    EnemyTimeout=12.000000
     bInWorld=False
     InitialInventory(0)=(Inventory=Class'DeusEx.WeaponMiniCrossbow')
     InitialInventory(1)=(Inventory=Class'DeusEx.AmmoDartPoison')
     FootRegion=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=884,ZoneNumber=1)
     HeadRegion=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=885,ZoneNumber=1)
-    HearingThreshold=0.100000
     ViewRotation=(Yaw=-7088)
-    FovAngle=120.000000
-    Health=200
-    HealthHead=200
-    HealthTorso=200
-    HealthLegLeft=200
-    HealthLegRight=200
-    HealthArmLeft=200
-    HealthArmRight=200
-    VisibilityThreshold=0.002500
     Alliance=mj12
     LastRenderTime=147.194443
     DistanceFromPlayer=1121.950439
@@ -46120,47 +46024,19 @@ Begin Actor Class=MJ12Troop Name=MJ12Troop22
     Location=(X=390.234802,Y=334.467285,Z=47.599480)
     Rotation=(Yaw=-7088)
     OldLocation=(X=-776.679382,Y=921.827881,Z=47.599480)
-    MultiSkins(3)=Texture'DeusExCharacters.Skins.MiscTex1'
-    MultiSkins(6)=Texture'GMDXSFX.Skins.hMJ12TroopTex3'
-    RotationRate=(Yaw=90000)
-    BindName=""
-    FamiliarName="MJ12 Elite"
-    UnfamiliarName="MJ12 Elite"
     Name=MJ12Troop22
 End Actor
-Begin Actor Class=MJ12Troop Name=MJ12Troop25
-    BaseAccuracy=0.060000
-    MinHealth=0.000000
-    CarcassType=Class'DeusEx.MJ12TroopCarcassElite2'
+Begin Actor Class=MJ12Elite2 Name=MJ12Troop25
     Orders=Standing
     HomeTag=Start
     bKeepWeaponDrawn=True
-    bHateWeapon=True
-    bHateDistress=True
-    bReactLoudNoise=True
-    bReactShot=True
-    bReactDistress=True
     InitialAlliances(0)=(AllianceName=Player,AllianceLevel=-1.000000,bPermanent=True)
     InitialAlliances(1)=(AllianceName=StantonDowd,AllianceLevel=-1.000000,bPermanent=True)
     InitialAlliances(2)=(AllianceName=mj12,AllianceLevel=1.000000,bPermanent=True)
-    EnemyTimeout=12.000000
     bInWorld=False
     FootRegion=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=884,ZoneNumber=1)
     HeadRegion=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=885,ZoneNumber=1)
-    HearingThreshold=0.100000
     ViewRotation=(Yaw=-18040)
-    FovAngle=120.000000
-    Health=200
-    HitSound1=Sound'GMDXSFX.Human.PainSmall07'
-    HitSound2=Sound'GMDXSFX.Human.PainBig01'
-    Die=None
-    HealthHead=200
-    HealthTorso=200
-    HealthLegLeft=200
-    HealthLegRight=200
-    HealthArmLeft=200
-    HealthArmRight=200
-    VisibilityThreshold=0.002500
     Alliance=mj12
     LastRenderTime=147.194443
     DistanceFromPlayer=1220.595947
@@ -46171,45 +46047,20 @@ Begin Actor Class=MJ12Troop Name=MJ12Troop25
     Location=(X=482.917328,Y=378.249298,Z=47.599648)
     Rotation=(Yaw=-18040)
     OldLocation=(X=-741.763794,Y=877.280579,Z=47.599648)
-    MultiSkins(3)=Texture'DeusExCharacters.Skins.MiscTex1'
-    MultiSkins(6)=Texture'GMDXSFX.Skins.hMJ12TroopTex3'
-    RotationRate=(Yaw=90000)
-    BindName=""
-    FamiliarName="MJ12 Elite"
-    UnfamiliarName="MJ12 Elite"
     Name=MJ12Troop25
 End Actor
-Begin Actor Class=MJ12Troop Name=MJ12Troop26
-    BaseAccuracy=0.000000
+Begin Actor Class=MJ12Elite2 Name=MJ12Troop26
     maxRange=800.000000
-    MinHealth=0.000000
-    CarcassType=Class'DeusEx.MJ12TroopCarcassElite2'
     bKeepWeaponDrawn=True
-    bHateWeapon=True
-    bHateDistress=True
-    bReactLoudNoise=True
-    bReactShot=True
-    bReactDistress=True
     InitialAlliances(0)=(AllianceName=Player,AllianceLevel=-1.000000,bPermanent=True)
     InitialAlliances(1)=(AllianceName=StantonDowd,AllianceLevel=-1.000000,bPermanent=True)
     InitialAlliances(2)=(AllianceName=mj12,AllianceLevel=1.000000,bPermanent=True)
-    EnemyTimeout=12.000000
     bInWorld=False
     InitialInventory(0)=(Inventory=Class'DeusEx.WeaponAssaultShotgun')
     InitialInventory(1)=(Inventory=Class'DeusEx.AmmoShell')
     FootRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
     HeadRegion=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=1312,ZoneNumber=1)
-    HearingThreshold=0.100000
     ViewRotation=(Yaw=-2144)
-    FovAngle=120.000000
-    Health=200
-    HealthHead=200
-    HealthTorso=200
-    HealthLegLeft=200
-    HealthLegRight=200
-    HealthArmLeft=200
-    HealthArmRight=200
-    VisibilityThreshold=0.002500
     Alliance=mj12
     LastRenderTime=150.881760
     DistanceFromPlayer=723.698914
@@ -46220,46 +46071,19 @@ Begin Actor Class=MJ12Troop Name=MJ12Troop26
     Location=(X=-759.841492,Y=326.511353,Z=47.599480)
     Rotation=(Yaw=-2144)
     OldLocation=(X=-776.679382,Y=921.827881,Z=47.599480)
-    MultiSkins(3)=Texture'DeusExCharacters.Skins.MiscTex1'
-    MultiSkins(6)=Texture'GMDXSFX.Skins.hMJ12TroopTex3'
-    RotationRate=(Yaw=90000)
-    BindName=""
-    FamiliarName="MJ12 Elite"
-    UnfamiliarName="MJ12 Elite"
     Name=MJ12Troop26
 End Actor
-Begin Actor Class=MJ12Troop Name=MJ12Troop27
-    BaseAccuracy=0.060000
-    MinHealth=0.000000
-    CarcassType=Class'DeusEx.MJ12TroopCarcassElite2'
+Begin Actor Class=MJ12Elite2 Name=MJ12Troop27
     bKeepWeaponDrawn=True
-    bHateWeapon=True
-    bHateDistress=True
-    bReactLoudNoise=True
-    bReactShot=True
-    bReactDistress=True
     InitialAlliances(0)=(AllianceName=Player,AllianceLevel=-1.000000,bPermanent=True)
     InitialAlliances(1)=(AllianceName=StantonDowd,AllianceLevel=-1.000000,bPermanent=True)
     InitialAlliances(2)=(AllianceName=mj12,AllianceLevel=1.000000,bPermanent=True)
-    EnemyTimeout=12.000000
     bInWorld=False
     InitialInventory(0)=(Inventory=Class'DeusEx.WeaponStealthPistol')
     InitialInventory(1)=(Inventory=Class'DeusEx.Ammo10mm',Count=50)
     FootRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
     HeadRegion=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=701,ZoneNumber=1)
-    HearingThreshold=0.100000
     ViewRotation=(Yaw=1936)
-    FovAngle=120.000000
-    Health=200
-    HitSound1=Sound'GMDXSFX.Human.PainSmall07'
-    HitSound2=Sound'GMDXSFX.Human.Death01'
-    HealthHead=200
-    HealthTorso=200
-    HealthLegLeft=200
-    HealthLegRight=200
-    HealthArmLeft=200
-    HealthArmRight=200
-    VisibilityThreshold=0.002500
     Alliance=mj12
     LastRenderTime=145.483337
     DistanceFromPlayer=649.761658
@@ -46270,49 +46094,21 @@ Begin Actor Class=MJ12Troop Name=MJ12Troop27
     Location=(X=-219.463196,Y=-828.945557,Z=47.599648)
     Rotation=(Yaw=1936)
     OldLocation=(X=-27.925903,Y=728.964050,Z=47.599648)
-    MultiSkins(3)=Texture'DeusExCharacters.Skins.MiscTex1'
-    MultiSkins(6)=Texture'GMDXSFX.Skins.hMJ12TroopTex3'
-    RotationRate=(Yaw=90000)
-    BindName=""
-    FamiliarName="MJ12 Elite"
-    UnfamiliarName="MJ12 Elite"
     Name=MJ12Troop27
 End Actor
-Begin Actor Class=MJ12Troop Name=MJ12Troop28
-    BaseAccuracy=0.060000
-    MinHealth=0.000000
-    CarcassType=Class'DeusEx.MJ12TroopCarcassElite2'
+Begin Actor Class=MJ12Elite2 Name=MJ12Troop28
     Orders=Standing
     HomeTag=Start
     bKeepWeaponDrawn=True
-    bHateWeapon=True
-    bHateDistress=True
-    bReactLoudNoise=True
-    bReactShot=True
-    bReactDistress=True
     InitialAlliances(0)=(AllianceName=Player,AllianceLevel=-1.000000,bPermanent=True)
     InitialAlliances(1)=(AllianceName=StantonDowd,AllianceLevel=-1.000000,bPermanent=True)
     InitialAlliances(2)=(AllianceName=mj12,AllianceLevel=1.000000,bPermanent=True)
-    EnemyTimeout=12.000000
     bInWorld=False
     InitialInventory(0)=(Inventory=Class'DeusEx.WeaponStealthPistol')
     InitialInventory(1)=(Inventory=Class'DeusEx.Ammo10mm',Count=50)
     FootRegion=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
     HeadRegion=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=668,ZoneNumber=1)
-    HearingThreshold=0.100000
     ViewRotation=(Yaw=480)
-    FovAngle=120.000000
-    Health=200
-    HitSound1=Sound'GMDXSFX.Human.PainSmall07'
-    HitSound2=Sound'GMDXSFX.Human.PainBig01'
-    Die=None
-    HealthHead=200
-    HealthTorso=200
-    HealthLegLeft=200
-    HealthLegRight=200
-    HealthArmLeft=200
-    HealthArmRight=200
-    VisibilityThreshold=0.002500
     Alliance=mj12
     LastRenderTime=148.605499
     DistanceFromPlayer=350.620300
@@ -46323,12 +46119,6 @@ Begin Actor Class=MJ12Troop Name=MJ12Troop28
     Location=(X=-743.368713,Y=-300.491882,Z=47.599480)
     Rotation=(Yaw=480)
     OldLocation=(X=-62.841484,Y=773.511353,Z=47.599480)
-    MultiSkins(3)=Texture'DeusExCharacters.Skins.MiscTex1'
-    MultiSkins(6)=Texture'GMDXSFX.Skins.hMJ12TroopTex3'
-    RotationRate=(Yaw=90000)
-    BindName=""
-    FamiliarName="MJ12 Elite"
-    UnfamiliarName="MJ12 Elite"
     Name=MJ12Troop28
 End Actor
 Begin Actor Class=PathNode Name=PathNode94
