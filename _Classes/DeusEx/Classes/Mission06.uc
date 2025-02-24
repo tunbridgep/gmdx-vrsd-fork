@@ -481,7 +481,10 @@ function Timer()
 	else if (localURL == "06_HONGKONG_WANCHAI_MARKET")
 	{
 		// release rats
-		if (flags.GetBool('TeaHouseDrama_Played') &&
+        //SARGE: Changed from TeaHouseDrama_Played to
+        //CatererConvo_Played, because it fits so much better
+        //this way
+		if (flags.GetBool('CatererConvo_Played') &&
 			!flags.GetBool('MS_RatsReleased'))
 		{
 			foreach AllActors(class'RatGenerator', gen)
