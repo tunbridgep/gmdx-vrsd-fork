@@ -20,6 +20,8 @@ var bool    bHasSkins;
 
 //GMDX
 
+var string savedName;                                                           //SARGE: vRSD seemingly forgot to add this?
+
 //SARGE: Weapon Offset Stuff
 //TODO: Replace this with a generic implementation
 var const vector weaponOffsets;                                                 //Sarge: Our weapon offsets. Leave at (0,0,0) to disable using offsets

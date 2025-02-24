@@ -16,7 +16,7 @@ var String hotKeyString;
 function DrawHotKey(GC gc)
 {
 	gc.SetAlignments(HALIGN_Right, VALIGN_Top);
-	gc.SetFont(Font'FontMenuSmall');  //'FontTiny' //CyberP: for hud scaling
+	gc.SetFont(player.FontManager.GetFont(TT_AugHotKey));  //'FontTiny' //CyberP: for hud scaling
 
 	// Draw Dropshadow
 	gc.SetTextColor(colBlack);

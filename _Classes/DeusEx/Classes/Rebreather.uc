@@ -20,7 +20,6 @@ defaultproperties
      LoopSound=Sound'DeusExSounds.Pickup.RebreatherLoop'
      ChargedIcon=Texture'DeusExUI.Icons.ChargedIconRebreather'
      chargeMult=0.100000
-     ExpireMessage="Rebreather power supply used up"
      ItemName="Rebreather"
      PlayerViewOffset=(X=30.000000,Z=-6.000000)
      PlayerViewMesh=LodMesh'DeusExItems.Rebreather'

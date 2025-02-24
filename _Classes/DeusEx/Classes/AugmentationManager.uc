@@ -23,6 +23,8 @@ var localized string AugLocationFull;
 var localized String NoAugInSlot;
 var Augmentation augie;
 
+var travel int heartOverflow;
+
 // ----------------------------------------------------------------------
 // Network Replication
 // ----------------------------------------------------------------------
@@ -393,10 +395,10 @@ function bool RemoveAugmentation(Class<Augmentation> takeClass)
     {
         ForEach Player.AllActors(class'Augmentation',allTheAugs)
         {
-            if (allTheAugs.bHasIt && allTheAugs.CurrentLevel != 0 && allTheAugs.bHeartUpgraded)
+            if (allTheAugs.bHasIt && allTheAugs.CurrentLevel != 0 && allTheAugs.heartUpgraded > 0)
             {
-                allTheAugs.CurrentLevel--;
-                allTheAugs.bHeartUpgraded = false;
+                allTheAugs.CurrentLevel -= allTheAugs.heartUpgraded;
+                allTheAugs.heartUpgraded = 0;;
                 allTheAugs.Setup();
             }
         }
@@ -410,6 +412,81 @@ function bool RemoveAugmentation(Class<Augmentation> takeClass)
 
     return true;
 }
+
+// ----------------------------------------------------------------------
+// AssignOverflow()
+// SARGE: Assigns a specific priority list for heart augmentation overflow
+// Focuses exclusively on augs that are at or below the max level
+// ----------------------------------------------------------------------
+
+function AssignOverflowTo(class<Augmentation> augClass, int maxLevel)
+{
+    local Augmentation aug;
+
+    if (heartOverflow <= 0)
+        return;
+
+    aug = GetAug(augClass);
+
+    if (aug != None && aug.bHasIt && aug.CurrentLevel < aug.MaxLevel && aug.CurrentLevel <= maxLevel)
+    {
+        //player.clientMessage("Overflow to " $ aug.GetName() $ ": " $ heartOverflow);
+        heartOverflow--;
+        aug.CurrentLevel++;
+        aug.heartUpgraded++;
+        aug.Setup();
+    }
+}
+
+function AssignOverflow()
+{
+    local int level;
+
+    level = 1;
+
+    while (level <= 4 && heartOverflow > 0)
+    {
+        //Chest first
+        AssignOverflowTo(class'AugShield',level);
+        AssignOverflowTo(class'AugEMP',level);
+        AssignOverflowTo(class'AugAqualung',level);
+        AssignOverflowTo(class'AugEnviro',level);
+        AssignOverflowTo(class'AugHealing',level);
+        AssignOverflowTo(class'AugPower',level);
+        
+        //Then Head
+        AssignOverflowTo(class'AugDefense',level);
+        AssignOverflowTo(class'AugDrone',level);
+        
+        //Then Eyes
+        AssignOverflowTo(class'AugVision',level);
+        AssignOverflowTo(class'AugTarget',level);
+        
+        //Then Subdermal
+        AssignOverflowTo(class'AugCloak',level);
+        AssignOverflowTo(class'AugRadarTrans',level);
+        AssignOverflowTo(class'AugBallisticPassive',level);
+        AssignOverflowTo(class'AugBallistic',level);
+        
+        //Then Arms
+        AssignOverflowTo(class'AugAmmoCap',level);
+        AssignOverflowTo(class'AugCombatStrength',level);
+        AssignOverflowTo(class'AugCombat',level);
+        AssignOverflowTo(class'AugMuscle',level);
+
+        //Then Legs
+        AssignOverflowTo(class'AugSpeed',level);
+        AssignOverflowTo(class'AugStealth',level);
+        AssignOverflowTo(class'AugIcarus',level);
+        
+        //Then Default
+        AssignOverflowTo(class'AugIFF',level);
+        AssignOverflowTo(class'AugLight',level);
+
+        level++;
+    }
+}
+
 
 // ----------------------------------------------------------------------
 // GivePlayerAugmentation()
@@ -440,13 +517,27 @@ function Augmentation GivePlayerAugmentation(Class<Augmentation> giveClass)
 
 
     if (anAug.IsA('AugHeartLung')) //CyberP: AugHeartLung upgrades all passive augs. //RSD: Active too now, taken from HUDMedBotAddAugsScreen.uc for less specialized code architecture
-       ForEach Player.AllActors(class'Augmentation',allTheAugs)
-        if (allTheAugs.bHasIt && allTheAugs.CurrentLevel != allTheAugs.MaxLevel) //RSD: removed && allTheAugs.bAlwaysActive, no distinction between active or passive for synth heart anymore
+    {
+        heartOverflow = 0;
+        //SARGE: Now we try to assign 11 augs worth (1 for each slot), and bubble over any overflow.
+        ForEach Player.AllActors(class'Augmentation',allTheAugs)
         {
-          allTheAugs.CurrentLevel++;                                            //RSD: changed from +=1 to ++ for no reason
-          allTheAugs.bHeartUpgraded = true;
-          allTheAugs.Setup();
+            //Find any augs that are fully upgraded, which means we're wasting the aug upgrade.
+            if (allTheAugs.bHasIt && allTheAugs.CurrentLevel == allTheAugs.MaxLevel && allTheAugs.CurrentLevel > 0)
+            {
+                heartOverflow++;
+                player.clientMessage("Overflow from " $ allTheAugs.GetName() $ ": " $ heartOverflow);
+            }
+
+            else if (allTheAugs.bHasIt && allTheAugs.CurrentLevel != allTheAugs.MaxLevel)
+            {
+                allTheAugs.CurrentLevel++;
+                allTheAugs.heartUpgraded++;
+                allTheAugs.Setup();
+            }
         }
+        AssignOverflow();
+    }
 
 	anAug.bHasIt = True;
 
@@ -464,7 +555,7 @@ function Augmentation GivePlayerAugmentation(Class<Augmentation> giveClass)
       && anAug.CurrentLevel != anAug.MaxLevel)
     {
         anAug.CurrentLevel++;
-        anAug.bHeartUpgraded = true;
+        anAug.heartUpgraded++;
     }
 
 	if ( Player.Level.Netmode == NM_Standalone )

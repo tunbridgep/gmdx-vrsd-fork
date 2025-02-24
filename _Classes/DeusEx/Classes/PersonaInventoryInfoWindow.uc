@@ -52,7 +52,7 @@ function AddAmmoInfoWindow(DeusExAmmo ammo, bool bShowDescriptions)
 
 		// Add icon
 		winIcon = winAmmo.NewChild(Class'Window');
-		winIcon.SetBackground(ammo.Icon);
+		winIcon.SetBackground(ammo.static.GetHDTPIcon());
 		winIcon.SetBackgroundStyle(DSTY_Masked);
 		winIcon.SetSize(42, 37);
 

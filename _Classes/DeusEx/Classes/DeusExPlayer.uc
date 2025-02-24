@@ -423,6 +423,7 @@ var string HDTPTexture;
 var string HDTPMesh;
 var string HDTPMeshTex[8];
 var bool bHDTPInstalled;
+var globalconfig bool bHDTPEnabled;                      //SARGE: Master switch to enable or disable HDTP
 
 //GMDX: CyberP & dasraiser
 //SAVEOUT
@@ -628,6 +629,7 @@ var localized String RechargedPointsLabel;
 var travel AddictionSystem AddictionManager;
 var travel PerkSystem PerkManager;
 var travel RandomTable Randomizer;
+var travel FontManager FontManager;
 
 const DRUG_TOBACCO = 0;
 const DRUG_ALCOHOL = 1;
@@ -636,9 +638,8 @@ const DRUG_CRACK = 2;
 var travel bool bLastRun;                                                       //Sarge: Stores our last running state
 
 var bool bUsingComputer;                                                        //SARGE: Are we currently using a computer? Set so that we can restrict input while using one
+var bool bBlockNextFire;                                                        //SARGE: Set to TRUE to block the next weapon firing attempt. Used when blowing up the spy drone.
 
-var bool bDroneExploded;                                                        //SARGE: Was the drone exploded last tick?
-                                                                                
 //Sarge: Allow Enhanced Weapon Offsets
 var globalconfig bool bEnhancedWeaponOffsets; 									//Sarge: Allow using enhanced weapon offsets
 
@@ -696,6 +697,10 @@ var localized String DuplicateNanoKey;
 //Cat/Dog protector
 var globalconfig bool bStompDomesticAnimals;                                    //SARGE: If disabled, we can't stomp cats or dogs anymore. Adopt a cute animal today!
 var globalconfig bool bStompVacbots;                                            //SARGE: If disabled, we can't stomp vac-bots anymore.
+
+//SARGE: Enhanced Lip Sync
+var globalconfig int iEnhancedLipSync; //0 = disabled, 1 = nice and smooth, 2 = intentionally chunky
+var globalconfig bool bEnableBlinking; //Allows characters to blink
 
 //////////END GMDX
 
@@ -873,9 +878,14 @@ function AssignSecondary(Inventory item)
     RefreshChargedPickups();
 }
 
-function bool IsHDTP()
+static function bool IsHDTPInstalled()
 {
-    return bHDTPInstalled && iHDTPModelToggle > 0;
+    return class'DeusExPlayer'.default.bHDTPInstalled && default.bHDTPEnabled;
+}
+
+static function bool IsHDTP()
+{
+    return IsHDTPInstalled() && default.iHDTPModelToggle > 0;
 }
 
 function UpdateHDTPsettings()
@@ -1310,6 +1320,16 @@ function SetupPerkManager()
     PerkManager.InitializePerks(Self);
 }
 
+function SetupFontManager()
+{
+	// install the Perk Manager if not found
+	if (FontManager == None)
+    {
+        //ClientMessage("Make new Font System");
+	    FontManager = new(Self) class'FontManager';
+    }
+}
+
 function SetupRandomizer()
 {
 	// install the Addiction Manager if not found
@@ -1384,6 +1404,7 @@ function InitializeSubSystems()
     SetupRandomizer();
     SetupAddictionManager();
 	SetupPerkManager();
+	SetupFontManager();
 }
 
 //SARGE: Helper function to get the count of an item type
@@ -1505,6 +1526,7 @@ event TravelPostAccept()
     SetupRandomizer();
     SetupAddictionManager();
 	SetupPerkManager();
+    SetupFontManager();
 
 	// reset the keyboard
 	ResetKeyboard();
@@ -1730,7 +1752,8 @@ exec function HDTP(optional string s)
 	local DeusExProjectile PR;                                                  //SARGE: Added for object toggles
 	local DeusExAmmo AM;                                                        //SARGE: Added for object toggles
     
-	bHDTPInstalled = class'HDTPLoader'.static.HDTPInstalled();
+    //SARGE: Yes, using the class name is necessary. Statics are weird.
+	class'DeusExPlayer'.default.bHDTPInstalled = class'HDTPLoader'.static.HDTPInstalled();
 	
 	foreach Allactors(Class'Scriptedpawn',P)
 		P.UpdateHDTPSettings();
@@ -2034,6 +2057,7 @@ function GameDirectory GetSaveGameDirectory()
 //We can't modify the native function, so do this here, and then call it
 function int DoSaveGame(int saveIndex, optional String saveDesc)
 {
+	local GameDirectory saveDir;
     local TechGoggles tech;
 	local DeusExRootWindow root;
 	
@@ -2046,6 +2070,12 @@ function int DoSaveGame(int saveIndex, optional String saveDesc)
         foreach AllActors(class'TechGoggles', tech)
             if ((tech.Owner == Self) && tech.bActive)
                 tech.Activate();
+    
+    if (saveIndex == 0)
+    {
+        saveDir = GetSaveGameDirectory();
+		saveIndex=saveDir.GetNewSaveFileIndex();
+    }
     
     //root.hide();
     root.GenerateSnapshot(True);
@@ -2606,6 +2636,10 @@ function CreateKeyRing()
 
 singular function RecoilShaker(vector shakeAmount)  //CyberP: Cosmetic effects when shooting
 {
+	//SARGE: Don't do recoil effects when we're out of control, to stop shaking in cutscenes etc
+	if (RestrictInput())
+		return;
+
     if (inHand != none && inHand.IsA('Binoculars') && Binoculars(inHand).bActive) //RSD: To make sure zoom isn't messed up
        return;
     else if (assignedWeapon != none && assignedWeapon.IsA('Binoculars') && Binoculars(assignedWeapon).bActive)
@@ -2684,6 +2718,11 @@ function RecoilEffectTick(float deltaTime)
 		if (RecoilTime<=0.0)
 		{
 			RecoilTime=0;
+			
+			//SARGE: Don't do recoil effects when we're out of control, to stop shaking in cutscenes etc
+			if (RestrictInput())
+				return;
+			
 			if ((DeusExWeapon(inHand) != None) && (DeusExWeapon(inHand).bZoomed))
 			   DesiredFOV = DeusExWeapon(inHand).ScopeFOV;
             else if (inHand != none && inHand.IsA('Binoculars') && Binoculars(inHand).bActive) //RSD: To make sure zoom isn't messed up
@@ -2856,8 +2895,8 @@ simulated function DrugEffects(float deltaTime)
 				if (inHand.IsA('DeusExWeapon') && DeusExWeapon(inHand).bZoomed)
 				{
 				}
-				else
-				DesiredFOV = Default.DesiredFOV;
+				else if (!RestrictInput())
+					DesiredFOV = Default.DesiredFOV;
 			}
 		}
 	}
@@ -5273,12 +5312,14 @@ function DoJump( optional float F )
 	local float scaleFactor, augLevel, augStealthValue;                         //RSD: added augStealthValue
 	local int MusLevel;
 	local Vector velocityNormal;                                                //RSD: added velocityNormal
+    local AugSpeed SpeedAug;
         
     //SARGE: Prevent jumping if we're using a computer
     if (bUsingComputer)
         return;
 
 	MusLevel = AugmentationSystem.GetClassLevel(class'AugMuscle');
+    SpeedAug = AugSpeed(AugmentationSystem.GetAug(class'AugSpeed'));
 
 	if (MusLevel==-1) MusLevel=30;
 	  else MusLevel=(MusLevel+3)*50;
@@ -5315,9 +5356,9 @@ function DoJump( optional float F )
 		}
 	
         // Trash: Speed Enhancement now uses energy while jumping
-        if (AugmentationSystem.GetClassLevel(class'AugSpeed') != -1)
+        if (SpeedAug.CurrentLevel > -1)
         {
-            Energy=MAX(Energy - AugSpeed(AugmentationSystem.GetAug(class'AugSpeed')).EnergyDrainJump,0);
+            Energy=MAX(Energy - SpeedAug.GetAdjustedEnergy(SpeedAug.EnergyDrainJump),0);
         }
 
         if (bHardCoreMode)                                                      //RSD: Running drains 1.3x on Hardcore, now jumping drains 1.25x
@@ -5409,12 +5450,11 @@ if (Physics == PHYS_Walking)
         else
 		Velocity.Z = JumpZ;
 
-		if (AugmentationSystem.GetClassLevel(class'AugSpeed') != -1 && Energy >= 3)	// Trash: Speed Enhancement now uses energy while jumping
-		{
-			Energy -= 3;
-			if (Energy <= 0)
-				Energy = 0;
-		}
+        // Trash: Speed Enhancement now uses energy while jumping
+        if (SpeedAug.CurrentLevel > -1)
+        {
+            Energy=MAX(Energy - SpeedAug.GetAdjustedEnergy(SpeedAug.EnergyDrainJump),0);
+        }
 
         if (bHardCoreMode)                                                      //RSD: Running drains 1.3x on Hardcore, now jumping drains 1.25x
             swimTimer -= 1.0;
@@ -7325,13 +7365,13 @@ simulated event RenderOverlays( canvas Canvas )
 // Are we in a state which doesn't allow certain exec functions?
 // ----------------------------------------------------------------------
 
-function bool RestrictInput()
+function bool RestrictInput(optional bool bDontCheckConversation)
 {
 	if (IsInState('Interpolating') || IsInState('Dying') || IsInState('Paralyzed') || (FlagBase.GetBool('PlayerTraveling') ))
 		return True;
 
     //SARGE: Being in a cutscene counts as restricted input
-    if (conPlay.bConversationStarted && conPlay.displayMode == DM_ThirdPerson)
+    if (!bDontCheckConversation && conPlay.bConversationStarted && conPlay.displayMode == DM_ThirdPerson)
         return true;
 
     //SARGE: Disallow any sort of UI operations when the "pause" key is pressed
@@ -7354,8 +7394,8 @@ function bool DroneExplode()
     if (anAug == None)
         return false;
 
-    //Don't detonate
-    if (Energy < anAug.EMPDrain)
+    //Don't detonate without Energy
+    if (Energy < anAug.GetAdjustedEnergy(anAug.EMPDrain))
         return false;
 
     if (bSpyDroneSet)
@@ -7367,11 +7407,9 @@ function bool DroneExplode()
 	{
 		aDrone.Explode(aDrone.Location, vect(0,0,1));
         anAug.Deactivate();
-        Energy -= anAug.EMPDrain; //CyberP: energy cost upon detonation.
+        Energy -= anAug.GetAdjustedEnergy(anAug.EMPDrain); //CyberP: energy cost upon detonation.
         if (Energy < 0)
             Energy = 0;
-
-        bDroneExploded = true;
 
         return true;
 	}
@@ -7752,6 +7790,7 @@ exec function ParseLeftClick()
 	// if the spy drone augmentation is active, blow it up
 	if (bSpyDroneActive && !bSpyDroneSet && !bRadialAugMenuVisible)                                       //RSD: Allows the user to toggle between moving and controlling the drone, also added Lorenz's wheel
 	{
+        bBlockNextFire = true;
 		if (DroneExplode());
             return;
 	}
@@ -8438,7 +8477,7 @@ exec function PutInHand(optional Inventory inv)
 {
     local DeusExWeapon weap;
 
-	if (RestrictInput())
+	if (RestrictInput(true))
 		return;
 
 	if (bGEPprojectileInflight) return;
@@ -8557,6 +8596,24 @@ function SetInHandPending(Inventory newInHandPending)
 		root.hud.belt.UpdateInHand();
     
     UpdateCrosshair();
+}
+
+// ----------------------------------------------------------------------
+// SARGE: Shorthand function for Resetting Aim of current weapon
+// ResetAim()
+// ----------------------------------------------------------------------
+
+function ResetAim()
+{
+    local DeusExWeapon weap;
+    weap = DeusExWeapon(inHand);
+
+    if (weap != None)
+    {
+        weap.standingTimer = 0;
+        savedStandingTimer = 0;
+    }
+
 }
 
 // ----------------------------------------------------------------------
@@ -8940,7 +8997,10 @@ function Bool FindInventorySlot(Inventory anItem, optional Bool bSearchOnly)
 	anItem.invSlotsX = invY;
 	anItem.invSlotsY = invX;
     if (anItem.isA('DeusExWeapon'))
+	{
         DeusExWeapon(anItem).bRotated = !DeusExWeapon(anItem).bRotated;
+		DeusExWeapon(anItem).UpdateLargeIcon();
+	}
 	anItem.largeIconWidth = invHeight;
 	anItem.largeIconHeight = invWidth;
     for (row=0; row<maxInvRows; row++)
@@ -9882,7 +9942,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 
 	bDropped = True;
 
-	if (RestrictInput())
+	if (RestrictInput(true))
 		return False;
 
 	if (inv == None)
@@ -10165,6 +10225,9 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 							Carc.Inventory = PovCorpse(item).Inv; //GMDX
 							Carc.bSearched = POVCorpse(item).bSearched;
 							Carc.PickupAmmoCount = POVCorpse(item).PickupAmmoCount;
+							Carc.savedName = POVCorpse(item).savedName;
+                            Carc.UpdateName();
+
                             //if (FRand() < 0.3)
                             //PlaySound(Sound'DeusExSounds.Player.MaleLand', SLOT_None, 0.9, false, 800, 0.85);
 
@@ -17141,8 +17204,6 @@ function MultiplayerTick(float DeltaTime)
 	RepairInventory();
 	lastRefreshTime = 0;
 
-    //SARGE: Reset drone exploded flag
-    bDroneExploded = false;
 }
 
 // ----------------------------------------------------------------------
@@ -17651,6 +17712,98 @@ function bool FemaleEnabled()
 }
 
 // ----------------------------------------------------------------------
+// LipSynch()
+// Copied over from Engine/Pawn.uc
+// SARGE: Attempts to fix the janky DX lipsynching
+// Based on the idea from https://www.youtube.com/watch?v=oxTWU2YgzfQ, but
+// doesn't use any code from it.
+// ----------------------------------------------------------------------
+
+function HandleBlink()
+{
+	// blink randomly
+	if (animTimer[0] > 3.5)
+	{
+		if (FRand() < 0.4 && bEnableBlinking)
+        {
+            animTimer[0] = 0;
+			PlayBlendAnim('Blink', 0.2, 0.1, 1);
+        }
+        else
+            animTimer[0] = 2; //Make us more likely to blink again sooner
+	}
+}
+
+function LipSynch(float deltaTime)
+{
+	local name animseq;
+	local float rnd;
+	local float tweentime;
+
+	// update the animation timers that we are using
+	animTimer[0] += deltaTime;
+	animTimer[1] += deltaTime;
+	animTimer[2] += deltaTime;
+        
+    if (iEnhancedLipSync == 1)
+        tweentime = 0.2;
+    else if (iEnhancedLipSync == 2)
+        tweentime = 0;
+    else if (Level.TimeSeconds - animTimer[3]  < 0.05)
+        tweentime = 0.1;
+
+    // the last animTimer slot is used to check framerate
+    animTimer[3] = Level.TimeSeconds;
+
+	if (bIsSpeaking)
+	{
+
+		if (nextPhoneme == "A")
+			animseq = 'MouthA';
+		else if (nextPhoneme == "E")
+			animseq = 'MouthE';
+		else if (nextPhoneme == "F")
+			animseq = 'MouthF';
+		else if (nextPhoneme == "M")
+			animseq = 'MouthM';
+		else if (nextPhoneme == "O")
+			animseq = 'MouthO';
+		else if (nextPhoneme == "T")
+			animseq = 'MouthT';
+		else if (nextPhoneme == "U")
+			animseq = 'MouthU';
+		else if (nextPhoneme == "X")
+			animseq = 'MouthClosed';
+
+        /*
+        if (lastPhoneme == "E" && nextPhoneme == "E")
+            nextPhoneme = "A";
+        else if (lastPhoneme == "A" && nextPhoneme == "A")
+            nextPhoneme = "E";
+        */
+
+		if (animseq != '')
+		{
+			if (lastPhoneme != nextPhoneme)
+			{
+				lastPhoneme = nextPhoneme;
+				TweenBlendAnim(animseq, tweentime);
+			}
+		}
+	}
+	else if (bWasSpeaking)
+	{
+		bWasSpeaking = False;
+		TweenBlendAnim('MouthClosed', tweentime);
+	}
+
+    HandleBlink();
+	LoopHeadConvoAnim();
+	LoopBaseConvoAnim();
+}
+
+
+// ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
 defaultproperties
@@ -17862,4 +18015,7 @@ defaultproperties
      HUDThemeNameGMDX="Default"
      dblClickHolster=2
      bSmartDecline=True
+     bHDTPEnabled=True
+     iEnhancedLipSync=1
+     bEnableBlinking=True
 }

@@ -334,6 +334,9 @@ function bool ButtonActivated(Window buttonPressed)
 		pointsHealed = HealPart(regionWindows[PersonaHealthActionButtonWindow(buttonPressed).GetPartIndex()]);
 		player.PopHealth( playerHealth[0],playerHealth[1],playerHealth[2],playerHealth[3],playerHealth[4],playerHealth[5]);
 		winStatus.AddText(Sprintf(PointsHealedLabel, pointsHealed));
+        
+        //SARGE: Reset players accuracy bonus.
+        player.ResetAim();
 
 		EnableButtons();
 	}
@@ -581,6 +584,8 @@ function DisplayCommonInfo()
      //winInfo.SetText(StaminaStr $ int(player.swimTimer*100) $ "/" $ int(player.swimDuration*100));
      //winInfo.SetText(BioStr $ int(player.Energy) $ "/" $ int(player.GetMaxEnergy()));
      winInfo.SetText(LocStr $ player.retInfo());
+    
+    winInfo.SetText(KillerStr $ player.Killercount); //SARGE: We don't want the morality stuff, but we do want to track kills
 }
 
 function UpdateAddictionText()
@@ -750,6 +755,11 @@ function int HealAllParts()
 	RemoveMedKits(healPointsAvailable - healPointsRemaining);
 
 	player.PopHealth( playerHealth[0],playerHealth[1],playerHealth[2],playerHealth[3],playerHealth[4],playerHealth[5]);
+       
+    //SARGE: Reset players accuracy bonus.
+    if (healPointsAvailable > 0)
+        player.ResetAim();
+
 
 	EnableButtons();
 
@@ -1078,7 +1088,7 @@ defaultproperties
      SatiatedStr=" (Satiated)"
      MoralityStr=" Morality: "
      PacifistStr="Pacifist"
-     killerStr="Killer"
+     killerStr=" Total Kills: "
      MassMurdererStr="Mass Murderer"
      LocStr=" Location: "
      HungryStr=" (Hungry)"
