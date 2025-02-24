@@ -494,7 +494,12 @@ var Sound randomDeathSoundsM[10];
 var Sound randomPainSoundsM[10];
 var Sound randomDeathSoundsF[10];
 var Sound randomPainSoundsF[10];
-var bool bSetupRandomSounds;
+var bool bSetupRandomSounds; //Have we set up a random sound?
+var Sound randomDeathSoundChoice; //These three variables hold the references to
+var Sound randomPainSoundChoice1; //our randomly rolled sounds.
+var Sound randomPainSoundChoice2; //Used by the GetDeathSound and GetPainSound functions.
+var Sound deathSoundOverride;            //If this is set, we will use this instead of our rolled death sounds.
+var bool bDontChangeDeathPainSounds; //If set, we don't randomise death or pain sounds for this actor
 
 
 native(2102) final function ConBindEvents();
@@ -3909,7 +3914,7 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
 
         if (HealthHead < 0 && (DamageType == 'Shot' || DamageType == 'Sabot'))
         {
-        Die = Sound'DeusExSounds.Generic.FleshHit1';
+        deathSoundOverride = Sound'DeusExSounds.Generic.FleshHit1';
        player = DeusExPlayer(GetPlayerPawn());
        //Sarge: Disable head popping because it looks awful, and doesn't work with HDTP
        /*
@@ -3955,9 +3960,6 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
 		// gib us if we get blown up
 		if (DamageType == 'Exploded') //|| (DamageType == 'Burned' && !bOnFire))
 			{
-			Die = none; //CyberP: no death sounds if blown up.
-            HitSound1 = none;  //CyberP: or pain sounds
-            HitSound2 = none;
             Health = -10000;
             //if (DamageType == 'Burned')
               // bBurnedUp = True;
@@ -4514,7 +4516,7 @@ function PlayDyingSound()
 {
 	SetDistressTimer();
 
-	PlaySound(Die, SLOT_Pain,,,, RandomPitch());
+	PlaySound(GetDeathSound(), SLOT_Pain,,,, RandomPitch());
 	if (bEmitDistress)
 		AISendEvent('Distress', EAITYPE_Audio,0.25,336); //CyberP: radius was 490 //RSD: psshh, only 224? We going to 336 baby
 	AISendEvent('LoudNoise', EAITYPE_Audio,0.25,224);                           //RSD: was 320, to make it line up more with vanilla ratio it's now 224
@@ -4825,18 +4827,19 @@ function PlayTakeHitSound(int Damage, name damageType, int Mult)
 		return;
 
 	LastPainSound = Level.TimeSeconds;
+	
+    if (damageType != 'Exploded')
+        hitSound = GetRandomHitSound();
 
-    if (FRand() < 0.15)
-		hitSound = HitSound2;
-    else
-		hitSound = HitSound1;            //CyberP: more lax conditions for hitsound2
 	volume = FMax(Mult*TransientSoundVolume, Mult*2.0);
 
 	SetDistressTimer();
-	if (damageType != 'Exploded')
-	    PlaySound(hitSound, SLOT_Pain, volume,,, RandomPitch());
-	if ((hitSound != None) && bEmitDistress)
-		AISendEvent('Distress', EAITYPE_Audio, volume,224); //CyberP: added radius param
+    if (hitSound != None)
+    {
+        PlaySound(hitSound, SLOT_Pain, volume,,, RandomPitch());
+        if (bEmitDistress)
+            AISendEvent('Distress', EAITYPE_Audio, volume,224); //CyberP: added radius param
+    }
 }
 
 
@@ -6001,7 +6004,8 @@ function PlayDying(name damageType, vector hitLoc)
 	else
 	{
 		bStunned = False;
-		PlayDyingSound();
+		if (DamageType != 'Exploded') //|| (DamageType == 'Burned' && !bOnFire))
+            PlayDyingSound();
 	}
 }
 
@@ -17159,7 +17163,7 @@ function LipSynch(float deltaTime)
 // them less hard-coded, by allowing us to pick from a list
 // ----------------------------------------------------------------------
 
-function Sound GetDeathSound(int index)
+function Sound GetDeathSoundFromIndex(int index)
 {
     if (bIsFemale && index < ArrayCount(randomDeathSoundsF))
         return randomDeathSoundsF[index];
@@ -17169,7 +17173,7 @@ function Sound GetDeathSound(int index)
     return None;
 }
 
-function Sound GetPainSound(int index)
+function Sound GetPainSoundFromIndex(int index)
 {
     if (bIsFemale && index < ArrayCount(randomPainSoundsF))
         return randomPainSoundsF[index];
@@ -17179,12 +17183,98 @@ function Sound GetPainSound(int index)
     return None;
 }
 
+//Gets this characters death sound, based on our settings
+function Sound GetDeathSound()
+{
+    //If sound has been set to something else, get it instead
+    if (deathSoundOverride != None)
+        return deathSoundOverride;
+
+    //If we're using our original sound, or not valid, use the default
+    else if (Class'DeusExPlayer'.default.iDeathSoundMode == 1 || !bIsHuman)
+        return default.Die;
+
+    //Otherwise do vanilla sounds, if set
+    else if (Class'DeusExPlayer'.default.iDeathSoundMode == 0)
+    {
+        // change the sounds for chicks
+        if (bIsFemale)
+            return Sound'FemaleDeath';
+        // change the sounds for kids
+        else if (IsA('ChildMale') || IsA('ChildMale2'))
+            return Sound'ChildDeath';
+        else
+            return Sound'DeusExSounds.Player.MaleDeath';
+    }
+
+    else
+        return randomDeathSoundChoice;
+}
+
+//Gets one of this characters two hit sounds
+function Sound GetRandomHitSound()
+{
+    if (FRand() < 0.15)
+		return GetHitSound(true);
+    else
+		return GetHitSound();            //CyberP: more lax conditions for hitsound2
+}
+
+//Gets on of this characters his sounds, based on our settings
+function Sound GetHitSound(optional bool sound2)
+{
+    //If we're using our original sound, or not valid, use the default
+    if (Class'DeusExPlayer'.default.iDeathSoundMode == 1 || !bIsHuman || bDontChangeDeathPainSounds)
+    {
+        if (sound2)
+            return default.HitSound2;
+        else
+            return default.HitSound1;
+    }
+
+    //Otherwise do vanilla sounds, if set
+    else if (Class'DeusExPlayer'.default.iDeathSoundMode == 0)
+    {
+        // change the sounds for chicks
+        if (bIsFemale)
+        {
+            if (sound2)
+                return Sound'FemalePainSmall';
+            else
+                return Sound'FemalePainMedium';
+        }
+        // change the sounds for kids
+        else if (IsA('ChildMale') || IsA('ChildMale2'))
+        {
+            if (sound2)
+                return Sound'ChildPainMedium';
+            else
+                return Sound'ChildPainLarge';
+        }
+        else
+        {
+            if (sound2)
+                return Sound'DeusExSounds.Player.MalePainMedium';
+            else
+                return Sound'DeusExSounds.Player.MalePainSmall';
+        }
+    }
+
+    //Otherwise, use our pain sound choices
+    if (sound2)
+        return randomPainSoundChoice2;
+    else
+        return randomPainSoundChoice1;
+
+}
+
 function RandomiseSounds()
 {
     local int dyingSounds, painSounds, i;
     
     //hack
-    if (HitSound1 == Sound'DeusExSounds.Generic.ArmorRicochet')
+    //if (HitSound1 == Sound'DeusExSounds.Generic.ArmorRicochet')
+    if (bDontChangeDeathPainSounds)
         return;
 
     if (bSetupRandomSounds || !bIsHuman)
@@ -17192,59 +17282,20 @@ function RandomiseSounds()
     
     bSetupRandomSounds = true;
     
-    //First, handle GMDX preset sounds
-    if (Class'DeusExPlayer'.default.iDeathSoundMode == 1)
-        return;
-
-    //Then, handle vanilla sounds.
-    else if (Class'DeusExPlayer'.default.iDeathSoundMode == 0)
-    {
-        // change the sounds for chicks
-        if (bIsFemale)
-        {
-            HitSound1 = Sound'FemalePainMedium';
-            HitSound2 = Sound'FemalePainSmall';
-            Die = Sound'FemaleDeath';
-        }
-
-        // change the sounds for kids
-        else if (IsA('ChildMale') || IsA('ChildMale2'))
-        {
-            HitSound1 = Sound'ChildPainMedium';
-            HitSound2 = Sound'ChildPainLarge';
-            Die = Sound'ChildDeath';
-        }
-
-        else
-        {
-            HitSound1=Sound'DeusExSounds.Player.MalePainSmall';
-            HitSound2=Sound'DeusExSounds.Player.MalePainMedium';
-            Die=Sound'DeusExSounds.Player.MaleDeath';
-        }
-
-        return;
-    }
-
-
-    //Otherwise, handle randomised sounds
-
-    log("Death sound is " $ Die);
-
-    while (GetDeathSound(dyingSounds) != None)
+    while (GetDeathSoundFromIndex(dyingSounds) != None)
         dyingSounds++;
-    while (GetPainSound(painSounds) != None)
+    while (GetPainSoundFromIndex(painSounds) != None)
         painSounds++;
 
     if (dyingSounds > 0)
     {
-        Die=GetDeathSound(int(FRand() * (dyingSounds-1)));
+        randomDeathSoundChoice = GetDeathSoundFromIndex(int(FRand() * (dyingSounds-1)));
     }
     if (painSounds > 0)
     {
-        HitSound1 = GetPainSound(int(FRand() * (painSounds-1)));
-        HitSound2 = GetPainSound(int(FRand() * (painSounds-1)));
+        randomPainSoundChoice1 = GetPainSoundFromIndex(int(FRand() * (painSounds-1)));
+        randomPainSoundChoice2 = GetPainSoundFromIndex(int(FRand() * (painSounds-1)));
     }
-    log("Death sound set for " $ FamiliarName $ " to " $ Die);
 }
 
 // ----------------------------------------------------------------------

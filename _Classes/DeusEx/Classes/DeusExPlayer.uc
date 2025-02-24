@@ -18022,4 +18022,5 @@ defaultproperties
      bHDTPEnabled=True
      iEnhancedLipSync=1
      bEnableBlinking=True
+     iDeathSoundMode=2
 }
