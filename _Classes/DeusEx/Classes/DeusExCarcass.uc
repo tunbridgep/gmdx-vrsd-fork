@@ -153,28 +153,15 @@ function InitFor(Actor Other)
         {
 		    bEmitCarcass = true; //CyberP: AI is aware of carcasses whether dead or unconscious!
 			if (Other.IsA('ScriptedPawn'))                                      //RSD
-			{
-            savedName = ScriptedPawn(Other).FamiliarName;
-            if (bNotDead)
-				itemName = msgNotDead $ " (" $ savedName $ ")";                 //RSD: use savedName
-			else
-				itemName = itemName $ " (" $ savedName $ ")";                   //RSD: use savedName
-			}
+                savedName = ScriptedPawn(Other).FamiliarName;
 		}
         else
         {
             if (Other.IsA('ScriptedPawn'))                                      //RSD
-			{
-            savedName = ScriptedPawn(Other).BindName;
-            if (bNotDead)
-                itemName = msgNotDead $ " (" $ savedName $ ")";                 //RSD: use savedName
-            else
-		        itemName = msgAnimalCarcass;
-            }
+                savedName = ScriptedPawn(Other).BindName;
         }
 
-        //SARGE: Update with our search string
-        AddSearchedString(player);
+        UpdateName();
 
 		Mass           = Other.Mass;
 		Buoyancy       = Mass * 1.2;
@@ -882,9 +869,11 @@ function PickupCorpse(DeusExPlayer player)
             corpse.bEmitCarcass = False; //CyberP: don't emit carc when in player hand
             corpse.CarcassTag = Tag; //CyberP: don't wipe the tag
             corpse.Inv=Inventory; //GMDX:dbl click
+            corpse.bSearched = bSearched;
+            corpse.PickupAmmoCount = PickupAmmoCount;
+            corpse.savedName = savedName;
             corpse.Frob(player, None);
             corpse.SetBase(player);
-            corpse.bSearched = bSearched;
             player.PutInHand(corpse);
             bQueuedDestroy=True;
             Destroy();
@@ -1713,21 +1702,27 @@ function Landed(vector HitNormal)
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
+//SARGE: Added to fix name being reset when pickup up corpses
+function UpdateName()
+{
+    if (!bAnimalCarcass)
+    {
+        itemName = default.itemName;
+        if (savedName != "")
+            itemName = itemName $ " (" $ savedName $ ")";
+    }
+    else
+        itemName = msgAnimalCarcass;
+
+    //SARGE: Add searched string
+    AddSearchedString(DeusExPlayer(GetPlayerPawn()));
+}
+
 function KillUnconscious()                                                      //RSD: To properly fix corpse names and trigger any other death effects like MIB explosion
 {
         bNotDead = false;
 
-        if (!bAnimalCarcass)
-        {
-            itemName = default.itemName;
-            if (savedName != "")
-				itemName = itemName $ " (" $ savedName $ ")";
-		}
-        else
-		    itemName = msgAnimalCarcass;
-    
-        //SARGE: Add searched string
-        AddSearchedString(DeusExPlayer(GetPlayerPawn()));
+        UpdateName();
 }
 
 defaultproperties

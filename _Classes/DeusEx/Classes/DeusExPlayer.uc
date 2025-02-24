@@ -7411,8 +7411,6 @@ function bool DroneExplode()
         if (Energy < 0)
             Energy = 0;
 
-        bDroneExploded = true;
-
         return true;
 	}
 
@@ -10226,6 +10224,9 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 							Carc.UpdateHDTPSettings();
 							Carc.Inventory = PovCorpse(item).Inv; //GMDX
 							Carc.bSearched = POVCorpse(item).bSearched;
+							Carc.PickupAmmoCount = POVCorpse(item).PickupAmmoCount;
+							Carc.savedName = POVCorpse(item).savedName;
+                            Carc.UpdateName();
                             //if (FRand() < 0.3)
                             //PlaySound(Sound'DeusExSounds.Player.MaleLand', SLOT_None, 0.9, false, 800, 0.85);
 
