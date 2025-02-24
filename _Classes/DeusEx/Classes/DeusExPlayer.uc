@@ -703,6 +703,10 @@ var globalconfig bool bStompVacbots;                                            
 var globalconfig int iEnhancedLipSync; //0 = disabled, 1 = nice and smooth, 2 = intentionally chunky
 var globalconfig bool bEnableBlinking; //Allows characters to blink
 
+
+//SARGE: Randomised Death/Pain Sounds
+var globalconfig int iDeathSoundMode; //0 = vanilla sounds, 1 = preset GMDX sounds, 2 = random sounds.
+
 //////////END GMDX
 
 // OUTFIT STUFF
