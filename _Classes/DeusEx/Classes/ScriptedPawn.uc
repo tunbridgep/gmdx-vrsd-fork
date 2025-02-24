@@ -17191,7 +17191,7 @@ function Sound GetDeathSound()
         return deathSoundOverride;
 
     //If we're using our original sound, or not valid, use the default
-    else if (Class'DeusExPlayer'.default.iDeathSoundMode == 1 || !bIsHuman)
+    else if (Class'DeusExPlayer'.default.iDeathSoundMode == 1 || !bIsHuman || bDontChangeDeathPainSounds)
         return default.Die;
 
     //Otherwise do vanilla sounds, if set
@@ -17200,9 +17200,6 @@ function Sound GetDeathSound()
         // change the sounds for chicks
         if (bIsFemale)
             return Sound'FemaleDeath';
-        // change the sounds for kids
-        else if (IsA('ChildMale') || IsA('ChildMale2'))
-            return Sound'ChildDeath';
         else
             return Sound'DeusExSounds.Player.MaleDeath';
     }
@@ -17242,14 +17239,6 @@ function Sound GetHitSound(optional bool sound2)
                 return Sound'FemalePainSmall';
             else
                 return Sound'FemalePainMedium';
-        }
-        // change the sounds for kids
-        else if (IsA('ChildMale') || IsA('ChildMale2'))
-        {
-            if (sound2)
-                return Sound'ChildPainMedium';
-            else
-                return Sound'ChildPainLarge';
         }
         else
         {
