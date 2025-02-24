@@ -63,7 +63,6 @@ defaultproperties
      NPCAccurateRange=90
      iHDTPModelToggle=1
      attackSpeedMult=0.800000
-     largeIconRot=Texture'GMDXSFX.Icons.HDTPLargeIconRotCrowbar'
      invSlotsXtravel=2
      AmmoName=Class'DeusEx.AmmoNone'
      ReloadCount=0
@@ -86,7 +85,10 @@ defaultproperties
      ThirdPersonMesh=LodMesh'DeusExItems.Crowbar3rd';
      LandSound=Sound'DeusExSounds.Weapons.CrowbarHitHard'
      Icon=Texture'DeusExUI.Icons.BeltIconCrowbar'
-     largeIcon=Texture'RSDCrap.Icons.LargeIconCrowbar'
+     largeIcon=Texture'DeusExUI.Icons.LargeIconCrowbar'
+     largeIconRot=Texture'RSDCrap.Icons.LargeIconCrowbarRot'
+     HDTPlargeIcon="RSDCrap.Icons.LargeIconCrowbarHDTP"
+     HDTPlargeIconRot="GMDXSFX.Icons.HDTPLargeIconRotCrowbar"
      largeIconWidth=101
      largeIconHeight=43
      invSlotsX=2

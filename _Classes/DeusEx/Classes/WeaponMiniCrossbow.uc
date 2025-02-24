@@ -72,43 +72,43 @@ function SetWeaponHandTex()
     local DeusExPlayer P;
 	
     P = deusexplayer(owner);
-	if(P == none)
-        handsTex = texture'MiniCrossbowTex1';
-
-	if (P.FemaleEnabled() && (P.bFemaleHandsAlways || (P.FlagBase != None && P.FlagBase.GetBool('LDDPJCIsFemale'))))
+	if(P != none)
     {
-        switch(P.PlayerSkin)
+        if (P.FemaleEnabled() && (P.bFemaleHandsAlways || (P.FlagBase != None && P.FlagBase.GetBool('LDDPJCIsFemale'))))
         {
-            case 0:
-                handsTex = Texture(DynamicLoadObject("FemJC.MiniCrossbowTex0Fem", class'Texture', false));
-                break;
-            case 1:
-                handsTex = Texture(DynamicLoadObject("FemJC.MiniCrossbowTex4Fem", class'Texture', false));
-                break;
-            case 2:
-                handsTex = Texture(DynamicLoadObject("FemJC.MiniCrossbowTex5Fem", class'Texture', false));
-                break;
-            case 3:
-                handsTex = Texture(DynamicLoadObject("FemJC.MiniCrossbowTex6Fem", class'Texture', false));
-                break;
-            case 4:
-                handsTex = Texture(DynamicLoadObject("FemJC.MiniCrossbowTex7Fem", class'Texture', false));
-                break;
+            switch(P.PlayerSkin)
+            {
+                case 0:
+                    handsTex = Texture(DynamicLoadObject("FemJC.MiniCrossbowTex0Fem", class'Texture', false));
+                    break;
+                case 1:
+                    handsTex = Texture(DynamicLoadObject("FemJC.MiniCrossbowTex4Fem", class'Texture', false));
+                    break;
+                case 2:
+                    handsTex = Texture(DynamicLoadObject("FemJC.MiniCrossbowTex5Fem", class'Texture', false));
+                    break;
+                case 3:
+                    handsTex = Texture(DynamicLoadObject("FemJC.MiniCrossbowTex6Fem", class'Texture', false));
+                    break;
+                case 4:
+                    handsTex = Texture(DynamicLoadObject("FemJC.MiniCrossbowTex7Fem", class'Texture', false));
+                    break;
+            }
+        }
+        //For male, return the basic ones
+        else
+        {
+            switch(p.PlayerSkin)
+            {
+                //default, black, latino, ginger, albino, respectively
+                case 0: handsTex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.crossbowhandstex0A"); break;
+                case 1: handsTex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.crossbowhandstex1A"); break;
+                case 2: handsTex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.crossbowhandstex2A"); break;
+                case 3: handsTex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.crossbowhandstex3A"); break;
+                case 4: handsTex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.crossbowhandstex4A"); break;
+            }
         }
     }
-    //For male, return the basic ones
-    else if(p != none)
-	{
-		switch(p.PlayerSkin)
-		{
-			//default, black, latino, ginger, albino, respectively
-			case 0: handsTex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.crossbowhandstex0A"); break;
-			case 1: handsTex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.crossbowhandstex1A"); break;
-			case 2: handsTex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.crossbowhandstex2A"); break;
-			case 3: handsTex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.crossbowhandstex3A"); break;
-			case 4: handsTex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.crossbowhandstex4A"); break;
-		}
-	}
 
     if (handsTex == None) //Final backup
         handsTex = texture'minicrossbowtex1';

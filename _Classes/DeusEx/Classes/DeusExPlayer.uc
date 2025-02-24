@@ -423,6 +423,7 @@ var string HDTPTexture;
 var string HDTPMesh;
 var string HDTPMeshTex[8];
 var bool bHDTPInstalled;
+var globalconfig bool bHDTPEnabled;                      //SARGE: Master switch to enable or disable HDTP
 
 //GMDX: CyberP & dasraiser
 //SAVEOUT
@@ -878,9 +879,14 @@ function AssignSecondary(Inventory item)
     RefreshChargedPickups();
 }
 
-function bool IsHDTP()
+static function bool IsHDTPInstalled()
 {
-    return bHDTPInstalled && iHDTPModelToggle > 0;
+    return class'DeusExPlayer'.default.bHDTPInstalled && default.bHDTPEnabled;
+}
+
+static function bool IsHDTP()
+{
+    return IsHDTPInstalled() && default.iHDTPModelToggle > 0;
 }
 
 function UpdateHDTPsettings()
@@ -1747,7 +1753,8 @@ exec function HDTP(optional string s)
 	local DeusExProjectile PR;                                                  //SARGE: Added for object toggles
 	local DeusExAmmo AM;                                                        //SARGE: Added for object toggles
     
-	bHDTPInstalled = class'HDTPLoader'.static.HDTPInstalled();
+    //SARGE: Yes, using the class name is necessary. Statics are weird.
+	class'DeusExPlayer'.default.bHDTPInstalled = class'HDTPLoader'.static.HDTPInstalled();
 	
 	foreach Allactors(Class'Scriptedpawn',P)
 		P.UpdateHDTPSettings();
@@ -8992,7 +8999,10 @@ function Bool FindInventorySlot(Inventory anItem, optional Bool bSearchOnly)
 	anItem.invSlotsX = invY;
 	anItem.invSlotsY = invX;
     if (anItem.isA('DeusExWeapon'))
+	{
         DeusExWeapon(anItem).bRotated = !DeusExWeapon(anItem).bRotated;
+		DeusExWeapon(anItem).UpdateLargeIcon();
+	}
 	anItem.largeIconWidth = invHeight;
 	anItem.largeIconHeight = invWidth;
     for (row=0; row<maxInvRows; row++)
@@ -18005,6 +18015,7 @@ defaultproperties
      HUDThemeNameGMDX="Default"
      dblClickHolster=2
      bSmartDecline=True
+     bHDTPEnabled=True
      iEnhancedLipSync=1
      bEnableBlinking=True
 }

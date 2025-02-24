@@ -114,10 +114,13 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\Environment\OldeIronFence_B_fixed.pcx"	        NAME="OldeIronFence_B_Fixed"         	GROUP="Environment" MIPS=ON FLAGS=2
 
 //Icons etc
-#exec TEXTURE IMPORT FILE="Textures\LargeIconCrowbar.pcx"			NAME="LargeIconCrowbar"			GROUP="Icons"
+#exec TEXTURE IMPORT FILE="Textures\LargeIconCrowbarRot.pcx"	    NAME="LargeIconCrowbarRot"	    GROUP="Icons"
+#exec TEXTURE IMPORT FILE="Textures\LargeIconCrowbarHDTP.pcx"		NAME="LargeIconCrowbarHDTP"		GROUP="Icons"
 #exec TEXTURE IMPORT FILE="Textures\LargeIconRifle.pcx"			    NAME="LargeIconRifle"			GROUP="Icons"
 #exec TEXTURE IMPORT FILE="Textures\LargeIconPistol.pcx"			NAME="LargeIconPistol"			GROUP="Icons"
 #exec TEXTURE IMPORT FILE="Textures\BeltIconRifle.pcx"			    NAME="BeltIconRifle"			GROUP="Icons"
+#exec TEXTURE IMPORT FILE="Textures\LargeIconAmmoDartsTaser.pcx"	NAME="LargeIconAmmoDartsTaser"  GROUP="Icons"
+#exec TEXTURE IMPORT FILE="Textures\BeltIconAmmoDartsTaser.pcx"	    NAME="BeltIconAmmoDartsTaser"   GROUP="Icons"
 
 //Import the Minidisk Mesh from GameMedia.u, since otherwise we have to pollute all of our maps with references to minidisk.
 //This dependency likely won't be removed anytime soon, but it's nice to know we can get rid of it easier if we decide to.
