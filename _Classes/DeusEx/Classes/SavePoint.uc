@@ -12,6 +12,38 @@ var localized String msgSaveName;
 
 #exec OBJ LOAD FILE=Extras
 
+//SARGE: Allow save points to activate themselves based on flags
+var() Name requiredFlag;
+var float flagCheckTimer;
+
+//Called every 3 seconds or so
+function CheckFlag()
+{
+    if (bHidden && player != None && player.FlagBase != None && player.FlagBase.GetBool(requiredFlag))
+        bHidden = false;
+}
+
+function PostBeginPlay()
+{
+    super.PostBeginPlay();
+    if (requiredFlag != '')
+        bHidden = true;
+}
+
+function Tick(float deltaTime)
+{
+    if (player == None)
+        player = DeusExPlayer(GetPlayerPawn());
+
+    if (requiredFlag == '')
+        return;
+
+    if (flagCheckTimer < 3)
+        flagCheckTimer += deltaTime;
+    else
+        CheckFlag();
+}
+
 function Timer()
 {
    Tcount--;
@@ -30,7 +62,6 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
     if (frobber == None)
         return true;
 
-    player=frobber;
     info=frobber.GetLevelInfo();
 
     if (frobber.Credits < 100 && frobber.bExtraHardcore)
@@ -43,6 +74,9 @@ State QuickSaver
 {
    function Timer()
    {
+        if (player == None)
+            return;
+
         if (player.bExtraHardcore)
         {
             player.Credits -= 100;
