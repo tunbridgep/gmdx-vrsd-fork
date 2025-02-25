@@ -342,17 +342,6 @@ function Tick(float DeltaTime)
 //}
 
 
-//GMDX: unhide savepoints, will add reactivate at some point
-function PutInWorld_SavePoint(Optional name MatchTag)
-{
-   local SavePoint SP;
-   foreach AllActors(class'SavePoint',SP,MatchTag)
-   {
-      if (SP.bHidden)
-         SP.bHidden=false;
-   }
-}
-
 // ----------------------------------------------------------------------
 // GetPatrolPoint()
 // ----------------------------------------------------------------------
