@@ -121,10 +121,10 @@ event InitWindow()
 //with the larger belt option
 function RecreateBelt()
 {
-    if (belt != None)
-        CriticalDelete(belt);
-
-	belt = HUDObjectBelt(NewChild(Class'HUDObjectBelt'));
+    if (belt == None)
+        belt = HUDObjectBelt(NewChild(Class'HUDObjectBelt'));
+    else
+        belt.RecreateBelt();
 }
 
 // ----------------------------------------------------------------------

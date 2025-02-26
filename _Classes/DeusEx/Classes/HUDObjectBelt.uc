@@ -18,6 +18,8 @@ var Texture texBorder[3];
 var int numSlots;
 var int extraSize;
 var Texture texBorderBig;
+	
+var RadioBoxWindow winRadio;                //SARGE: Made global so we can delete and recreate it
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -26,7 +28,11 @@ var Texture texBorderBig;
 event InitWindow()
 {
 	Super.InitWindow();
+    RecreateBelt();
+}
 
+function RecreateBelt()
+{
     if (player.bBiggerBelt)
     {
         keyringSlot = 11;
@@ -39,11 +45,11 @@ event InitWindow()
         extraSize = 0;
         numSlots = 10;
     }
+	
+    CreateSlots();
+    
+    ConfigureSlots();
 
-	// Hardcoded size, baby!
-    SetSize(541+extraSize, 69);
-
-	CreateSlots();
 	CreateNanoKeySlot();
 
 	PopulateBelt();
@@ -68,14 +74,14 @@ function SetInventoryBelt(bool option)
 function CreateSlots()
 {
 	local int i;
-	local RadioBoxWindow winRadio;
+
+    if (winRadio != None || winSlots != None)
+        return;
 
 	// Radio window used to contain objects so they can be selected
 	// with the mouse on the inventory screen.
 
 	winRadio = RadioBoxWindow(NewChild(Class'RadioBoxWindow'));
-    winRadio.SetSize(504+extraSize+extraSize, 54);
-    winRadio.SetPos(10-extraSize, 6);
 	winRadio.bOneCheck = False;
 
 	winSlots = TileWindow(winRadio.NewChild(Class'TileWindow'));
@@ -83,7 +89,7 @@ function CreateSlots()
 	winSlots.SetMinorSpacing(0);
 	winSlots.SetOrder(ORDER_LeftThenUp);
 
-	for (i=0; i<numSlots; i++)
+	for (i=0; i<12; i++)
 	{
 		objects[i] = HUDObjectSlot(winSlots.NewChild(Class'HUDObjectSlot'));
 		objects[i].SetObjectNumber(i);
@@ -99,18 +105,36 @@ function CreateSlots()
 		objects[i].Lower();
 
 	}
+}
+
+function ConfigureSlots()
+{
+
+	// Hardcoded size, baby!
+    SetSize(541+extraSize, 69);
     
+    winRadio.SetSize(504+extraSize+extraSize, 54);
+    winRadio.SetPos(10-extraSize, 6);
+
     //SARGE: DIRTY HACK!
     if (player.bBiggerBelt)
     {
         // Last item is a little shorter
+        objects[9].SetWidth(50);
         objects[11].SetWidth(44);
+        objects[10].Show();
+        objects[11].Show();
     }
     else
     {
         // Last item is a little shorter
+        objects[11].SetWidth(50);
         objects[9].SetWidth(44);
+        //hide the extras
+        objects[10].Hide();
+        objects[11].Hide();
     }
+
 }
 
 // ----------------------------------------------------------------------
@@ -163,7 +187,7 @@ function DrawBackground(GC gc)
 
     //SARGE: No idea why this needs adjusting...
     if (player.bBiggerBelt)
-        gc.DrawTexture(  2, 6, 7, 54, 0, 0, texBackgroundLeft);
+        gc.DrawTexture(  2, 6, 8, 54, 0, 0, texBackgroundLeft);
     else
         gc.DrawTexture(  2, 6, 9, 54, 0, 0, texBackgroundLeft);
 
