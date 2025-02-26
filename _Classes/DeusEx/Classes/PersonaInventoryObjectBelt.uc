@@ -24,7 +24,7 @@ event InitWindow()
 
     //SARGE: ugh, just hardcode it here for now :(
     if (player != None && player.bBiggerBelt)
-        SetSize(731, 69);
+        SetSize(631+100-2, 69);
     else
         SetSize(631, 69);
 

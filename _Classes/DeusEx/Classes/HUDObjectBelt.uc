@@ -161,9 +161,9 @@ function DrawBackground(GC gc)
 		gc.SetTileColor(colBackground);
 
 
-    //SARGE: I have no idea why we need to move this slightly...
-	if (player.bBiggerBelt)
-        gc.DrawTexture(  0, 6, 9, 54, 0, 0, texBackgroundLeft);
+    //SARGE: No idea why this needs adjusting...
+    if (player.bBiggerBelt)
+        gc.DrawTexture(  2, 6, 7, 54, 0, 0, texBackgroundLeft);
     else
         gc.DrawTexture(  2, 6, 9, 54, 0, 0, texBackgroundLeft);
 
