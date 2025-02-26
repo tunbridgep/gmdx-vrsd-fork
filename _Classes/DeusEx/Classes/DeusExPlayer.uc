@@ -490,7 +490,6 @@ var transient bool bThrowDecoration;
 ////Belt Stuff
 var travel int SlotMem; //CyberP: for belt/weapon switching, so the code remembers what weapon we had before holstering
 var travel int BeltLast;                                                    //Sarge: The last item we literally selected from the belt, regardless of holstering or alternate belt behaviour
-var travel bool bNumberSelect;                                              //Sarge: Whether or not our last belt selection was done with number keys (ActivateBelt) rather than Next/Prev. Used by Alternative Belt to know when to holster
 var travel bool bScrollSelect;                                              //Sarge: Whether or not our last belt selection was done with Next/Last weapon keys rather than Number Keys. Used by Alternative Belt to know when to holster
 var travel int beltScrolled;                                                //Sarge: The last item we scrolled to on the belt, if we are using Adv Toolbelt
 var travel bool selectedNumberFromEmpty;                                    //Sarge: Was the current selection made from an empty hand. Used by Alternate Toolbelt Classic Mode to not jump back to previous weapon when we select from an empty hand.
@@ -7914,7 +7913,6 @@ function SelectLastWeapon()
 
 function NewWeaponSelected()
 {
-    bNumberSelect = false;
     bScrollSelect = false;
     clickCountCyber = 0;
     beltScrolled = advBelt;
@@ -11412,6 +11410,7 @@ exec function ShowRGBDialog()
 exec function ActivateBelt(int objectNum)
 {
 	local DeusExRootWindow root;
+    local Inventory beltItem;
 
     //SARGE: When holding the number keys in dialog, we will select a weapon
     //upon finishing the conversation. Ignore the weapon change command.
@@ -11445,14 +11444,21 @@ exec function ActivateBelt(int objectNum)
 	if (CarriedDecoration == None)
 	{
 		root = DeusExRootWindow(rootWindow);
-		if (root != None)
+		if (root != None && root.hud != None)
 		{
-			//SARGE: If already selected in IW Belt mode (except classic), an additional press will set our primary weapon to that slot.
-			if (bAlternateToolbelt >= 1 && BeltLast == objectNum && bNumberSelect && root.hud.belt.GetObjectFromBelt(objectNum) != None)
+            beltItem = root.hud.belt.GetObjectFromBelt(objectNum);
+			
+            //we're not selecting anything!
+            if (beltItem == None)
+                return;
+
+            //SARGE: If already selected in IW Belt mode, an additional press will set our primary weapon to that slot.
+			if (bAlternateToolbelt >= 1 && beltItem == inHandPending)
 			{
 				advBelt = objectNum;
 				root.hud.belt.RefreshAlternateToolbelt();
 			}
+
                 
             //Did we select from empty?
             selectedNumberFromEmpty = inHand == None;
@@ -11460,7 +11466,6 @@ exec function ActivateBelt(int objectNum)
 			root.ActivateObjectInBelt(objectNum);
 			BeltLast = objectNum;
             NewWeaponSelected();
-			bNumberSelect = true;
 		}
 	}
 }

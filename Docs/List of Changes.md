@@ -38,12 +38,13 @@ Sarge's Changes since Beta 2.2:
         - The Belt now has 12 slots, insead of 10.
             - The extra belt slots will automatically assign the - and = keys if unbound.
         - Belt Autofilling can now be disabled in the options.
+        - Selecting an empty belt slot will no longer put away your current item.
         - Right-Clicking an item in the belt with the Inventory Window open will clear the slot.
         - Added "Belt Memory". When belt memory is enabled, using the last item in a belt slot will keep a darkened version of the item's icon in the toolbelt
             - Regardless of the Autofill setting, no other items will be added to the item's slot automatically.
             - Regardless of the Autofill setting, all items of the remembered type will be automatically added to the belt slot when picked up.
             - Belt memory can be overridden by manually adding an item to a given belt slot at any time, and can be cleared by right-clicking on a belt slot.
-            - Items dropped from the inventory or via the drop key will not be remembered, to allow easily throwing away unwanted junk without affecting the belt.
+            - Items dropped from the inventory or via the drop key will not be remembered on the belt if Autofill is turned on, to make it easier to discard unwanted junk.
         - Invisible War Toolbelt improvements and bugfixes
             - Fixed GMDX bug where you could scroll to empty slots when using the IW toolbelt.
             - Fixed bug where selected icon in the belt was forgotten between game sessions.
