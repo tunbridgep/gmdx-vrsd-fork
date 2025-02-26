@@ -125,34 +125,34 @@ function AssignObjectBeltByKey(Inventory invItem, EInputKey key)
 	switch( key )
 	{
 		case IK_1:
-			objectNum = 1;
+			objectNum = 0;
 			break;
 		case IK_2:
-			objectNum = 2;
+			objectNum = 1;
 			break;
 		case IK_3:
-			objectNum = 3;
+			objectNum = 2;
 			break;
 		case IK_4:
-			objectNum = 4;
+			objectNum = 3;
 			break;
 		case IK_5:
-			objectNum = 5;
+			objectNum = 4;
 			break;
 		case IK_6:
-			objectNum = 6;
+			objectNum = 5;
 			break;
 		case IK_7:
-			objectNum = 7;
+			objectNum = 6;
 			break;
 		case IK_8:
-			objectNum = 8;
+			objectNum = 7;
 			break;
 		case IK_9:
-			objectNum = 9;
+			objectNum = 8;
 			break;
 		case IK_0: //SARGE: Needed now because we can assign slot 0
-			objectNum = 0;
+			objectNum = 9;
             break;
 		case IK_Minus: //SARGE: Needed now because we can assign slot 10
 			objectNum = 10;

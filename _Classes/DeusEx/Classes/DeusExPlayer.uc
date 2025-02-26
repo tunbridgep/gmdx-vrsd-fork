@@ -11424,6 +11424,14 @@ exec function ActivateBelt(int objectNum)
 	if (RestrictInput())
 		return;
 
+    //SARGE: We need to do some wacky stuff here,
+    //now that the belt slots go from 0-9 and are offset in the HUD,
+    //rather than going from 1-10
+    if (objectNum == 0)
+        objectNum = 9;
+    else if (objectNum <= 9)
+        objectNum -= 1;
+
 	if ((Level.NetMode != NM_Standalone) && bBuySkills)
 	{
 		root = DeusExRootWindow(rootWindow);
@@ -11534,22 +11542,11 @@ exec function NextBeltItem()
 
 			do
 			{
-                //SARGE: Convoluted logic incoming!
-                //If it's about to go to 10, we need to go to either 1 or 10, depending
-                //on our belt size.
-                //Why oh why did they have to put slot 0 at the end...
-                //Now it's not quite at the end...
-                if (bBiggerBelt)
-                {
-                    slot++;
-                    if (slot == 10)
-                        slot = 0;
-                    else if (slot == 1)
-                        slot = 10;
-                    else if (slot == 12)
-                        slot = 1;
-                }
-                else if (++slot >= 10)
+                //SARGE: UnrealScript doesn't short-circuit, aparrently
+                slot++;
+                if (bBiggerBelt && slot >= 12)
+                    slot = 0;
+                else if (!bBiggerBelt && slot >= 10)
                     slot = 0;
 			}
 			until (root.ActivateObjectInBelt(slot) || (startSlot == slot));
@@ -11584,22 +11581,11 @@ exec function NextBeltItem()
             startSlot = advBelt;
 			do
 			{
-                //SARGE: Convoluted logic incoming!
-                //If it's about to go to 10, we need to go to either 1 or 10, depending
-                //on our belt size.
-                //Why oh why did they have to put slot 0 at the end...
-                //Now it's not quite at the end...
-                if (bBiggerBelt)
-                {
-                    advBelt++;
-                    if (advBelt == 10)
-                        advBelt = 0;
-                    else if (advBelt == 1)
-                        advBelt = 10;
-                    else if (advBelt == 12)
-                        advBelt = 1;
-                }
-                else if (++advBelt >= 10)
+                //SARGE: UnrealScript doesn't short-circuit, aparrently
+                advBelt++;
+                if (bBiggerBelt && advBelt >= 12)
+                    advBelt = 0;
+                else if (!bBiggerBelt && advBelt >= 10)
                     advBelt = 0;
 			}
 			until (root.hud.belt.GetObjectFromBelt(advBelt) != None || advBelt == startSlot);
@@ -11686,22 +11672,11 @@ exec function PrevBeltItem()
 			startSlot = slot;
 			do
 			{
-                //SARGE: Convoluted logic incoming!
-                //If it's about to go to 10, we need to go to either 1 or 10, depending
-                //on our belt size.
-                //Why oh why did they have to put slot 0 at the end...
-                //Now it's not quite at the end...
-                if (bBiggerBelt)
-                {
-                    slot--;
-                    if (slot <= -1)
-                        slot = 9;
-                    else if (slot == 0)
-                        slot = 11;
-                    else if (slot == 9)
-                        slot = 0;
-                }
-				else if (--slot <= -1)
+                //SARGE: UnrealScript doesn't short-circuit, aparrently
+                slot--;
+                if (bBiggerBelt && slot <= -1)
+					slot = 11;
+				else if (!bBiggerBelt && slot <= -1)
 					slot = 9;
 			}
 			until (root.ActivateObjectInBelt(slot) || (startSlot == slot));
@@ -11736,22 +11711,11 @@ exec function PrevBeltItem()
 			startSlot = advBelt;
 			do
 			{
-                //SARGE: Convoluted logic incoming!
-                //If it's about to go to 10, we need to go to either 1 or 10, depending
-                //on our belt size.
-                //Why oh why did they have to put slot 0 at the end...
-                //Now it's not quite at the end...
-                if (bBiggerBelt)
-                {
-                    advBelt--;
-                    if (advBelt <= -1)
-                        advBelt = 9;
-                    else if (advBelt == 0)
-                        advBelt = 11;
-                    else if (advBelt == 9)
-                        advBelt = 0;
-                }
-				else if (--advBelt <= -1)
+                //SARGE: UnrealScript doesn't short-circuit, aparrently
+                advBelt--;
+                if (bBiggerBelt && advBelt <= -1)
+					advBelt = 11;
+				else if (!bBiggerBelt && advBelt <= -1)
 					advBelt = 9;
 			}
 			until (root.hud.belt.GetObjectFromBelt(advBelt) != None || advBelt == startSlot);

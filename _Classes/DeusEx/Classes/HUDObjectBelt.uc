@@ -35,7 +35,7 @@ event InitWindow()
     }
     else
     {
-        keyringSlot = 0;
+        keyringSlot = 9;
         extraSize = 0;
         numSlots = 10;
     }
@@ -87,8 +87,11 @@ function CreateSlots()
 	{
 		objects[i] = HUDObjectSlot(winSlots.NewChild(Class'HUDObjectSlot'));
 		objects[i].SetObjectNumber(i);
-        if (i < 10)
-            objects[i].beltText = string(i);
+        //Some annoying logic here
+        if (i < 9)
+            objects[i].beltText = string(i + 1);
+        else if (i == 9)
+            objects[i].beltText = "0";
         else if (i == 10)
             objects[i].beltText = "-";
         else
@@ -96,22 +99,17 @@ function CreateSlots()
 		objects[i].Lower();
 
 	}
-	objects[0].Lower();
     
     //SARGE: DIRTY HACK!
     if (player.bBiggerBelt)
     {
         // Last item is a little shorter
         objects[11].SetWidth(44);
-
-        //SARGE: Unlike some other popular mods, lets make the numbers actually line up!
-        objects[10].Lower();
-        objects[11].Lower();
     }
     else
     {
         // Last item is a little shorter
-        objects[0].SetWidth(44);
+        objects[9].SetWidth(44);
     }
 }
 
@@ -374,12 +372,11 @@ function UpdateObjectText(int pos)
 
 function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
 {
-	local int  i, slot;
+	local int  i;
     local bool FoundPlaceholder;
 	local bool retval;
 
 	retval = true;
-	slot = -1;
 
 	if ((newItem != None ) && (newItem.Icon != None))
 	{
@@ -410,7 +407,6 @@ function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
                     {
                         if (player.bBeltMemory)
                         {
-							slot = i;
                             FoundPlaceholder = true;
                             break;
                         }
@@ -423,52 +419,25 @@ function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
             //No placeholder slot found, check for an empty one
             if (!FoundPlaceholder && (player.bBeltAutofill || player.bForceBeltAutofill))
             {
-                for (i=1; IsValidPos(i) && i < 10; i++)
+                for (i=0; IsValidPos(i) && i < numSlots; i++)
                 {
                     if (( (Player.Level.NetMode == NM_Standalone) || (!Player.bBeltIsMPInventory) || (newItem.TestMPBeltSpot(i))))
                     {
                         //First, always allow empty slots if we have autofill turned on
                         if (objects[i].GetItem() == None && (!player.GetPlaceholder(i) || !player.bBeltMemory) && objects[i].bAllowDragging)
-						{
-							slot = i;
                             break;
-						}
                     }
                 }
-
-                //SARGE: We need to check the 0 slot LAST, so we don't fill it first, otherwise new items appear at the end of the players belt
-                if (!IsValidPos(slot) && objects[0].GetItem() == None && !player.GetPlaceholder(0) && objects[0].bAllowDragging)
-                    slot = 0;
-					
-				//SARGE: If we're using the extended belt, THEN we need to do the last two slots last
-				//This is awful code!
-				if (player.bBiggerBelt && !IsValidPos(slot))
-				{
-					for (i=10; IsValidPos(i); i++)
-					{
-						if (( (Player.Level.NetMode == NM_Standalone) || (!Player.bBeltIsMPInventory) || (newItem.TestMPBeltSpot(i))))
-						{						
-							//First, always allow empty slots if we have autofill turned on
-							if (objects[i].GetItem() == None && (!player.GetPlaceholder(i) || !player.bBeltMemory) && objects[i].bAllowDragging)
-							{
-								slot = i;
-								break;
-							}
-						}
-					}
-				}
             }
 
             //Now check if we found a valid slot
-            if (!IsValidPos(slot))
+            if (!IsValidPos(i))
 			{
 				if (bOverride)
-					pos = slot;
+					pos = i;
 			}
 			else
-			{
-				pos = slot;
-			}
+				pos = i;
 		}
 
 		if (IsValidPos(pos))
