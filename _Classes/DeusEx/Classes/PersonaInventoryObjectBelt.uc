@@ -17,10 +17,16 @@ event InitWindow()
 {
 	local DeusExRootWindow root;
 	local float hudBeltWidth, hudBeltHeight;
+    local DeusExPlayer player;
 
 	Super.InitWindow();
+    player = DeusExPlayer(GetRootWindow().ParentPawn);
 
-	SetSize(631, 69);
+    //SARGE: ugh, just hardcode it here for now :(
+    if (player != None && player.bBiggerBelt)
+        SetSize(731, 69);
+    else
+        SetSize(631, 69);
 
 	hudBelt = DeusExRootWindow(GetRootWindow()).hud.belt;
 
@@ -99,9 +105,16 @@ function SetInventoryWindow( PersonaScreenInventory newWinInventory )
 function AssignObjectBeltByKey(Inventory invItem, EInputKey key)
 {
 	local int objectNum;
+    local DeusExPlayer player;
 
-	if ((key < IK_0) || ( key > IK_9 ))
+	if (((key < IK_0) || ( key > IK_9 )) && key != IK_Minus && key != IK_Equals)
 		return;
+
+    player = DeusExPlayer(GetRootWindow().ParentPawn);
+
+    //don't let us assign to slots that aren't usable
+    if ((key != IK_Minus || key != IK_Equals) && (player != None && !player.bBiggerBelt))
+        return;
 
 	// Typecasting EInputKey to int doesn't seem to work.
 	// All I have to say to that is BAH.
@@ -140,6 +153,12 @@ function AssignObjectBeltByKey(Inventory invItem, EInputKey key)
 			break;
 		case IK_0: //SARGE: Needed now because we can assign slot 0
 			objectNum = 0;
+            break;
+		case IK_Minus: //SARGE: Needed now because we can assign slot 10
+			objectNum = 10;
+            break;
+		case IK_Equals: //SARGE: Needed now because we can assign slot 11
+			objectNum = 11;
 			break;
 	}
 

@@ -62,7 +62,8 @@ event InitWindow()
 	hit				= HUDHitDisplay(NewChild(Class'HUDHitDisplay'));
 	cross			= Crosshair(NewChild(Class'Crosshair'));
 	hitmarker		= Crosshair(NewChild(Class'Crosshair'));
-	belt			= HUDObjectBelt(NewChild(Class'HUDObjectBelt'));
+	//belt			= HUDObjectBelt(NewChild(Class'HUDObjectBelt'));
+    RecreateBelt();
 	activeItems		= HUDActiveItemsDisplay(NewChild(Class'HUDActiveItemsDisplay'));
 	damageDisplay	= DamageHUDDisplay(NewChild(Class'DamageHUDDisplay'));
 	compass     	= HUDCompassDisplay(NewChild(Class'HUDCompassDisplay'));
@@ -113,6 +114,17 @@ event InitWindow()
 	    player.ThemeManager.currentHUDTheme.colors[13] = player.customColorsHUD[13];
 	    ChangeStyle();
 	}
+}
+
+
+//SARGE: Recreates the belt. Used for refreshing it
+//with the larger belt option
+function RecreateBelt()
+{
+    if (belt != None)
+        CriticalDelete(belt);
+
+	belt = HUDObjectBelt(NewChild(Class'HUDObjectBelt'));
 }
 
 // ----------------------------------------------------------------------

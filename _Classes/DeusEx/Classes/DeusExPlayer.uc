@@ -476,7 +476,7 @@ var bool bForceBeltAutofill;    	    										//Sarge: Overwrite autofill setti
 var globalconfig bool bBeltMemory;  											//Sarge: Added new feature to allow belt to rember items
 var globalconfig bool bSmartKeyring;  											//Sarge: Added new feature to allow keyring to be used without belt, freeing up a slot
 var globalconfig int dynamicCrosshair;       									//Sarge: Allow using a special interaction crosshair
-var travel BeltInfo beltInfos[10];                                              //Sarge: Holds information about belt slots
+var travel BeltInfo beltInfos[12];                                              //Sarge: Holds information about belt slots
 var travel float fullUp; //CyberP: eat/drink limit.                             //RSD: was int, now float
 var localized string fatty; //CyberP: eat/drink limit.
 var localized string noUsing;  //CyberP: left click interaction
@@ -701,6 +701,9 @@ var globalconfig bool bStompVacbots;                                            
 //SARGE: Enhanced Lip Sync
 var globalconfig int iEnhancedLipSync; //0 = disabled, 1 = nice and smooth, 2 = intentionally chunky
 var globalconfig bool bEnableBlinking; //Allows characters to blink
+
+//SARGE: Bigger Belt. Inspired by Revisions one, but less sucky.
+var globalconfig bool bBiggerBelt;
 
 //////////END GMDX
 
@@ -2501,7 +2504,7 @@ function ResetPlayer(optional bool bTraining)
 	}
 
     // Reset Belt Memory
-    for(i = 0;i < 10;i++)
+    for(i = 0;i < 12;i++)
         ClearPlaceholder(i);
 
 	// Give the player a pistol and a prod
@@ -11202,6 +11205,18 @@ function UpdateHUD()
 	local DeusExRootWindow root;
 	root = DeusExRootWindow(rootWindow);
 
+    //SARGE: Hack to autobind belt keys - and =
+    //TODO: Write a proper keybind handler class, for this and leaning,
+    //the wheel, and any other keys you care to bind dynamically.
+    if (bBiggerBelt)
+    {
+        //SARGE: TODO: Check these slots aren't already bound
+        if(ConsoleCommand( "KEYBINDING Minus" ) == "")
+            ConsoleCommand("SET InputExt Minus ActivateBelt 10");
+        if(ConsoleCommand( "KEYBINDING Equals" ) == "")
+            ConsoleCommand("SET InputExt Equals ActivateBelt 11");
+    }
+
     if (root != None)
         root.UpdateHUD();
 }
@@ -11446,10 +11461,17 @@ exec function ActivateBelt(int objectNum)
 // NextBeltItem()
 // ----------------------------------------------------------------------
 
+//SARGE: TODO: Rewrite this crappy code.
+//I don't know who wrote it, but I want to punch them.
 exec function NextBeltItem()
 {
 	local DeusExRootWindow root;
-	local int slot, startSlot, tries;
+	local int slot, startSlot, totalSlots;
+
+    if (bBiggerBelt)
+        totalSlots = 12;
+    else
+        totalSlots = 10;
 
 	if (RestrictInput())
 		return;
@@ -11512,10 +11534,26 @@ exec function NextBeltItem()
 
 			do
 			{
-				if (++slot >= 10)
-					slot = 0;
+                //SARGE: Convoluted logic incoming!
+                //If it's about to go to 10, we need to go to either 1 or 10, depending
+                //on our belt size.
+                //Why oh why did they have to put slot 0 at the end...
+                //Now it's not quite at the end...
+                if (bBiggerBelt)
+                {
+                    slot++;
+                    if (slot == 10)
+                        slot = 0;
+                    else if (slot == 1)
+                        slot = 10;
+                    else if (slot == 12)
+                        slot = 1;
+                }
+                else if (++slot >= 10)
+                    slot = 0;
 			}
 			until (root.ActivateObjectInBelt(slot) || (startSlot == slot));
+            advBelt = slot;
 
 			clientInHandPending = root.hud.belt.GetObjectFromBelt(slot);
 
@@ -11543,13 +11581,28 @@ exec function NextBeltItem()
 		root = DeusExRootWindow(rootWindow);
 		if (root != None)
 		{
+            startSlot = advBelt;
 			do
 			{
-				if (++advBelt >= 10)
-					advBelt = 0;
-                tries++;
+                //SARGE: Convoluted logic incoming!
+                //If it's about to go to 10, we need to go to either 1 or 10, depending
+                //on our belt size.
+                //Why oh why did they have to put slot 0 at the end...
+                //Now it's not quite at the end...
+                if (bBiggerBelt)
+                {
+                    advBelt++;
+                    if (advBelt == 10)
+                        advBelt = 0;
+                    else if (advBelt == 1)
+                        advBelt = 10;
+                    else if (advBelt == 12)
+                        advBelt = 1;
+                }
+                else if (++advBelt >= 10)
+                    advBelt = 0;
 			}
-			until (root.hud.belt.GetObjectFromBelt(advBelt) != None || tries == 10);
+			until (root.hud.belt.GetObjectFromBelt(advBelt) != None || advBelt == startSlot);
 			root.hud.belt.RefreshAlternateToolbelt();
             NewWeaponSelected();
 			bScrollSelect = true;
@@ -11566,10 +11619,12 @@ exec function NextBeltItem()
 // PrevBeltItem()
 // ----------------------------------------------------------------------
 
+//SARGE: TODO: Rewrite this crappy code.
+//I don't know who wrote it, but I want to punch them.
 exec function PrevBeltItem()
 {
 	local DeusExRootWindow root;
-	local int slot, startSlot, tries;
+	local int slot, startSlot;
 
 	if (RestrictInput())
 		return;
@@ -11631,11 +11686,27 @@ exec function PrevBeltItem()
 			startSlot = slot;
 			do
 			{
-				if (--slot <= -1)
+                //SARGE: Convoluted logic incoming!
+                //If it's about to go to 10, we need to go to either 1 or 10, depending
+                //on our belt size.
+                //Why oh why did they have to put slot 0 at the end...
+                //Now it's not quite at the end...
+                if (bBiggerBelt)
+                {
+                    slot--;
+                    if (slot <= -1)
+                        slot = 9;
+                    else if (slot == 0)
+                        slot = 11;
+                    else if (slot == 9)
+                        slot = 0;
+                }
+				else if (--slot <= -1)
 					slot = 9;
 			}
 			until (root.ActivateObjectInBelt(slot) || (startSlot == slot));
 
+            advBelt = slot;
 			clientInHandPending = root.hud.belt.GetObjectFromBelt(slot);
 			
 			switch( inHandPending.beltPos )
@@ -11662,13 +11733,28 @@ exec function PrevBeltItem()
 		root = DeusExRootWindow(rootWindow);
 		if (root != None)
 		{	
+			startSlot = advBelt;
 			do
 			{
-				if (--advBelt <= -1)
+                //SARGE: Convoluted logic incoming!
+                //If it's about to go to 10, we need to go to either 1 or 10, depending
+                //on our belt size.
+                //Why oh why did they have to put slot 0 at the end...
+                //Now it's not quite at the end...
+                if (bBiggerBelt)
+                {
+                    advBelt--;
+                    if (advBelt <= -1)
+                        advBelt = 9;
+                    else if (advBelt == 0)
+                        advBelt = 11;
+                    else if (advBelt == 9)
+                        advBelt = 0;
+                }
+				else if (--advBelt <= -1)
 					advBelt = 9;
-                tries++;
 			}
-			until (root.hud.belt.GetObjectFromBelt(advBelt) != None || tries == 10);
+			until (root.hud.belt.GetObjectFromBelt(advBelt) != None || advBelt == startSlot);
             root.hud.belt.RefreshAlternateToolbelt();
 			bScrollSelect = true;
 			clientInHandPending = root.hud.belt.GetObjectFromBelt(advBelt);
@@ -18017,4 +18103,5 @@ defaultproperties
      bHDTPEnabled=True
      iEnhancedLipSync=1
      bEnableBlinking=True
+     bBiggerBelt=True
 }

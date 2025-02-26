@@ -4,7 +4,7 @@
 class HUDObjectBelt expands HUDBaseWindow;
 
 var TileWindow winSlots;				// Window containing slots
-var HUDObjectSlot objects[10];
+var HUDObjectSlot objects[12];
 
 var int	KeyRingSlot;
 var Bool bInteractive;
@@ -14,6 +14,11 @@ var Texture texBackgroundLeft;
 var Texture texBackgroundRight;
 var Texture texBorder[3];
 
+//SARGE: Allow up to 12 slots now
+var int numSlots;
+var int extraSize;
+var Texture texBorderBig;
+
 // ----------------------------------------------------------------------
 // InitWindow()
 // ----------------------------------------------------------------------
@@ -22,8 +27,21 @@ event InitWindow()
 {
 	Super.InitWindow();
 
+    if (player.bBiggerBelt)
+    {
+        keyringSlot = 11;
+        extraSize = 100;
+        numSlots = 12;
+    }
+    else
+    {
+        keyringSlot = 0;
+        extraSize = 0;
+        numSlots = 10;
+    }
+
 	// Hardcoded size, baby!
-	SetSize(541, 69);
+    SetSize(541+extraSize, 69);
 
 	CreateSlots();
 	CreateNanoKeySlot();
@@ -37,7 +55,7 @@ event InitWindow()
 function SetInventoryBelt(bool option)
 {
     local int i;
-	for (i=0; i<10; i++)
+	for (i=0; i<numSlots; i++)
         objects[i].bInventorySlot = option;
 }
 
@@ -56,8 +74,8 @@ function CreateSlots()
 	// with the mouse on the inventory screen.
 
 	winRadio = RadioBoxWindow(NewChild(Class'RadioBoxWindow'));
-	winRadio.SetSize(504, 54);
-	winRadio.SetPos(10, 6);
+    winRadio.SetSize(504+extraSize+extraSize, 54);
+    winRadio.SetPos(10-extraSize, 6);
 	winRadio.bOneCheck = False;
 
 	winSlots = TileWindow(winRadio.NewChild(Class'TileWindow'));
@@ -65,18 +83,36 @@ function CreateSlots()
 	winSlots.SetMinorSpacing(0);
 	winSlots.SetOrder(ORDER_LeftThenUp);
 
-	for (i=0; i<10; i++)
+	for (i=0; i<numSlots; i++)
 	{
 		objects[i] = HUDObjectSlot(winSlots.NewChild(Class'HUDObjectSlot'));
 		objects[i].SetObjectNumber(i);
+        if (i < 10)
+            objects[i].beltText = string(i);
+        else if (i == 10)
+            objects[i].beltText = "-";
+        else
+            objects[i].beltText = "=";
 		objects[i].Lower();
 
-		// Last item is a little shorter
-		if ( i == 0 )
-			objects[i].SetWidth(44);
 	}
 	objects[0].Lower();
+    
+    //SARGE: DIRTY HACK!
+    if (player.bBiggerBelt)
+    {
+        // Last item is a little shorter
+        objects[11].SetWidth(44);
 
+        //SARGE: Unlike some other popular mods, lets make the numbers actually line up!
+        objects[10].Lower();
+        objects[11].Lower();
+    }
+    else
+    {
+        // Last item is a little shorter
+        objects[0].SetWidth(44);
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -126,8 +162,14 @@ function DrawBackground(GC gc)
 	else
 		gc.SetTileColor(colBackground);
 
-	gc.DrawTexture(  2, 6, 9, 54, 0, 0, texBackgroundLeft);
-	gc.DrawTexture(514, 6, 8, 54, 0, 0, texBackgroundRight);
+
+    //SARGE: I have no idea why we need to move this slightly...
+	if (player.bBiggerBelt)
+        gc.DrawTexture(  0, 6, 9, 54, 0, 0, texBackgroundLeft);
+    else
+        gc.DrawTexture(  2, 6, 9, 54, 0, 0, texBackgroundLeft);
+
+    gc.DrawTexture(514+extraSize, 6, 8, 54, 0, 0, texBackgroundRight);
 }
 
 // ----------------------------------------------------------------------
@@ -152,8 +194,16 @@ function DrawBorder(GC gc)
 			gc.SetTileColor(colBorder);
 
 		gc.DrawTexture(  0, 0, 256, 69, 0, 0, texBorder[0]);
-		gc.DrawTexture(256, 0, 256, 69, 0, 0, texBorder[1]);
-		gc.DrawTexture(512, 0,  29, 69, 0, 0, texBorder[2]);
+        if (player.bBiggerBelt)
+        {
+            gc.DrawTexture(256, 0, 512, 69, 0, 0, texBorderBig);
+            gc.DrawTexture(612, 0,  29, 69, 0, 0, texBorder[2]);
+        }
+        else
+        {
+            gc.DrawTexture(256, 0, 256, 69, 0, 0, texBorder[1]);
+            gc.DrawTexture(512, 0,  29, 69, 0, 0, texBorder[2]);
+        }
 	}
 }
 
@@ -244,7 +294,7 @@ function SetInteractive(bool bNewInteractive)
 function bool IsValidPos(int pos)
 {
 	// Don't allow NanoKeySlot to be used
-	if ((pos >= 0) && (pos < 10))
+	if ((pos >= 0) && (pos < numSlots))
 		return true;
 	else
 		return false;
@@ -270,7 +320,7 @@ function ClearBelt()
 {
 	local int beltPos;
 
-	for(beltPos=0; beltPos<10; beltPos++)
+	for(beltPos=0; beltPos<numSlots; beltPos++)
     {
         if (player.bBeltMemory && objects[beltPos].bAllowDragging)
             player.SetPlaceholder(beltPos,true);
@@ -324,11 +374,12 @@ function UpdateObjectText(int pos)
 
 function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
 {
-	local int  i;
+	local int  i, slot;
     local bool FoundPlaceholder;
 	local bool retval;
 
 	retval = true;
+	slot = -1;
 
 	if ((newItem != None ) && (newItem.Icon != None))
 	{
@@ -359,6 +410,7 @@ function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
                     {
                         if (player.bBeltMemory)
                         {
+							slot = i;
                             FoundPlaceholder = true;
                             break;
                         }
@@ -367,33 +419,55 @@ function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
                     }
                 }
             }
+			
             //No placeholder slot found, check for an empty one
             if (!FoundPlaceholder && (player.bBeltAutofill || player.bForceBeltAutofill))
             {
-                for (i=1; IsValidPos(i); i++)
+                for (i=1; IsValidPos(i) && i < 10; i++)
                 {
                     if (( (Player.Level.NetMode == NM_Standalone) || (!Player.bBeltIsMPInventory) || (newItem.TestMPBeltSpot(i))))
                     {
                         //First, always allow empty slots if we have autofill turned on
                         if (objects[i].GetItem() == None && (!player.GetPlaceholder(i) || !player.bBeltMemory) && objects[i].bAllowDragging)
+						{
+							slot = i;
                             break;
+						}
                     }
                 }
 
                 //SARGE: We need to check the 0 slot LAST, so we don't fill it first, otherwise new items appear at the end of the players belt
-                if (!IsValidPos(i) && objects[KeyRingSlot].GetItem() == None && !player.GetPlaceholder(KeyRingSlot) && objects[KeyRingSlot].bAllowDragging)
-                    pos = KeyRingSlot;
+                if (!IsValidPos(slot) && objects[0].GetItem() == None && !player.GetPlaceholder(0) && objects[0].bAllowDragging)
+                    slot = 0;
+					
+				//SARGE: If we're using the extended belt, THEN we need to do the last two slots last
+				//This is awful code!
+				if (player.bBiggerBelt && !IsValidPos(slot))
+				{
+					for (i=10; IsValidPos(i); i++)
+					{
+						if (( (Player.Level.NetMode == NM_Standalone) || (!Player.bBeltIsMPInventory) || (newItem.TestMPBeltSpot(i))))
+						{						
+							//First, always allow empty slots if we have autofill turned on
+							if (objects[i].GetItem() == None && (!player.GetPlaceholder(i) || !player.bBeltMemory) && objects[i].bAllowDragging)
+							{
+								slot = i;
+								break;
+							}
+						}
+					}
+				}
             }
 
             //Now check if we found a valid slot
-            if (!IsValidPos(i))
+            if (!IsValidPos(slot))
 			{
 				if (bOverride)
-					pos = 1;
+					pos = slot;
 			}
 			else
 			{
-				pos = i;
+				pos = slot;
 			}
 		}
 
@@ -505,7 +579,7 @@ function AssignWinInv(PersonaScreenInventory newWinInventory)
 	local Int slotIndex;
 
 	// Update the individual slots
-	for (slotIndex=0; slotIndex<10; slotIndex++)
+	for (slotIndex=0; slotIndex<numSlots; slotIndex++)
 		objects[slotIndex].AssignWinInv(newWinInventory);
 
 	UpdateInHand();
@@ -521,4 +595,5 @@ defaultproperties
      texBorder(0)=Texture'DeusExUI.UserInterface.HUDObjectBeltBorder_1'
      texBorder(1)=Texture'DeusExUI.UserInterface.HUDObjectBeltBorder_2'
      texBorder(2)=Texture'DeusExUI.UserInterface.HUDObjectBeltBorder_3'
+     texBorderBig=Texture'RSDCrap.UserInterface.HUDObjectBeltBorder_2_big'
 }
