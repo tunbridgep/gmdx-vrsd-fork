@@ -42,6 +42,9 @@ function Setup()
 
 simulated function SetTargetingAugStatus(int Level, bool IsActive)
 {
+	if (player == None || player.rootWindow == None)
+		return;
+
 	DeusExRootWindow(Player.rootWindow).hud.augDisplay.bTargetActive = IsActive;
 	DeusExRootWindow(Player.rootWindow).hud.augDisplay.targetLevel = Level;
 }

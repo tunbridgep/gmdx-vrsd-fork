@@ -6560,6 +6560,9 @@ state PlayerWalking
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
 
+        //Fire blocking is only valid for 1 frame
+        bBlockNextFire = False;
+
 		Super.PlayerTick(deltaTime);
 	}
 }
