@@ -987,7 +987,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                         //If we already have a disposable weapon, ignore the message, since we will get the ammo from it, and the ammo is the weapon.
                         if (found == None || (found.IsA('DeusExWeapon') && !DeusExWeapon(found).bDisposableWeapon))
                             //player.ClientMessage(sprintf(player.InventoryFull,AmmoType.ItemName));
-                            P.ClientMessage(msgSearching @ Item.itemName @ DeclinedString);
+                            P.ClientMessage(item.PickupMessage @ item.itemArticle @ Item.itemName @ DeclinedString);
                         bFoundSomething=True;
                     }
                     bDeclined=True;
@@ -1076,14 +1076,6 @@ function Frob(Actor Frobber, Inventory frobWith)
 					}
 					else if (item.IsA('DeusExWeapon'))   // I *really* hate special cases
 					{
-                        //Remove empty disposable weapons when looted
-                        if (DeusExWeapon(item) != None && DeusExWeapon(item).bDisposableWeapon && DeusExWeapon(item).PickupAmmoCount == 0)
-                        {
-                            DeleteInventory(item);
-                            item.Destroy();
-                            item = None;
-                        }
-                            
 						// Okay, check to see if the player already has this weapon.  If so,
 						// then just give the ammo and not the weapon.  Otherwise give
 						// the weapon normally.
@@ -1097,13 +1089,8 @@ function Frob(Actor Frobber, Inventory frobWith)
 						// the weapon).
 						if ((W != None) || (W == None && (bDeclined||!player.FindInventorySlot(item, True))))
 						{
-                            //Don't allow taking ammo from disposable weapons, if we don't have (and can't fit) the weapon
-                            if (DeusExWeapon(item).bDisposableWeapon && W == None)
-                            {
-                            }
-
 							// Don't bother with this is there's no ammo
-							else if ((Weapon(item).AmmoType != None) && (Weapon(item).PickupAmmoCount > 0))
+							if ((Weapon(item).AmmoType != None) && (Weapon(item).PickupAmmoCount > 0))
 							{
 								AmmoType = Ammo(player.FindInventoryType(Weapon(item).AmmoName));
                                     
@@ -1139,9 +1126,13 @@ function Frob(Actor Frobber, Inventory frobWith)
                                 else
                                 {
                                     //P.ClientMessage("in ammo searching code ex");
-                                    if (!bSearched && (DeusExWeapon(item) == None || !DeusExWeapon(item).bDisposableWeapon))
+                                    if (!bSearched)
                                     {
-                                        P.ClientMessage(msgSearching @ AmmoType.itemName @ "(" $ Weapon(item).PickupAmmoCount $ ")"  @ MaxAmmoString);
+                                        if (DeusExWeapon(item).bDisposableWeapon)
+                                            P.ClientMessage(item.PickupMessage @ item.itemArticle @ item.itemName @ MaxAmmoString);
+                                        else
+                                            P.ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName @ "(" $ Weapon(item).PickupAmmoCount $ ")"  @ MaxAmmoString);
+                                        //P.ClientMessage(msgSearching @ AmmoType.itemName @ "(" $ Weapon(item).PickupAmmoCount $ ")"  @ MaxAmmoString);
                                         bFoundSomething=True;
                                     }
                                     bFoundInvalid=true; 
@@ -1175,10 +1166,13 @@ function Frob(Actor Frobber, Inventory frobWith)
                                     }
                                     else
                                     {
-                                        if (!bSearched && (DeusExWeapon(item) == None || !DeusExWeapon(item).bDisposableWeapon))
+                                        if (!bSearched)
                                         {
                                             //player.ClientMessage(sprintf(player.InventoryFull,AmmoType.ItemName));
-                                            P.ClientMessage(msgSearching @ AmmoType.itemName @ "(" $ Weapon(item).PickupAmmoCount $ ")"  @ MaxAmmoString);
+                                            if (DeusExWeapon(item).bDisposableWeapon)
+                                                P.ClientMessage(item.PickupMessage @ item.itemArticle @ item.itemName @ MaxAmmoString);
+                                            else
+                                                P.ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName @ "(" $ Weapon(item).PickupAmmoCount $ ")"  @ MaxAmmoString);
                                             bFoundSomething=True;
                                         }
                                         bFoundInvalid=true; 
@@ -1186,6 +1180,14 @@ function Frob(Actor Frobber, Inventory frobWith)
 								}
                                 //TODO: Handle Dragons Tooth custom charge
 							}
+
+                            //Destroy disposable weapons after taking their ammo.
+                            if (DeusExWeapon(item).bDisposableWeapon && Weapon(item).PickupAmmoCount <= 0)
+                            {
+                                DeleteInventory(item);
+                                item.Destroy();
+                                item = None;
+                            }
 
 							// Print a message "Cannot pickup blah blah blah" if inventory is full
 							// and the player can't pickup this weapon, so the player at least knows
@@ -1208,7 +1210,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                     {
                                         bFoundSomething = True;
                                         if (!W.bDisposableWeapon && !bDeclined)
-                                            P.ClientMessage(msgSearching @ Item.itemName @ IgnoredString);
+                                            P.ClientMessage(item.PickupMessage @ item.itemArticle @ Item.itemName @ IgnoredString);
                                     }
                                     bFoundInvalid = true;
                                 }
@@ -1229,7 +1231,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 							bPickedItemUp = True;
 					}
 
-					if (!bPickedItemUp)
+					if (!bPickedItemUp && item != None)
 					{
 						// Special case if this is a DeusExPickup(), it can have multiple copies
 						// and the player already has it.
@@ -1269,7 +1271,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                     //SARGE: Inform the player when they missed out on some items due to full stack size
                                     if (DeusExPickup(item).numCopies > 0)
                                     {
-                                        player.ClientMessage(sprintf(player.InventoryFull,item.itemName));
+                                        player.ClientMessage(sprintf(player.InventoryFull,item.class));
                                     }
 								}
 								else if (invItem.IsA('ChargedPickup') && invItem.Charge < invItem.default.Charge) //RSD: Charge up the player's wearable if they have max copies but are below max charge
@@ -1292,7 +1294,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                 //SARGE: Inform us if our inventory is too full (max stack) to pick these items up.
 								else if (DeusExPickup(item).numCopies + invItem.numCopies >= invItem.RetMaxCopies())  //GMDX
                                 {
-                                    player.ClientMessage(sprintf(player.InventoryFull,item.itemName));
+                                    player.ClientMessage(sprintf(player.InventoryFull,item.class));
                                     bFoundSomething = True;
 
                                 }
