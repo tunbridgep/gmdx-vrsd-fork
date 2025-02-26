@@ -150,9 +150,12 @@ defaultproperties
      MinHealth=0.000000
      CarcassType=Class'DeusEx.MJ12TroopCarcassElite'
      WalkingSpeed=0.296000
+     bHateWeapon=True
+     bHateDistress=True
      bReactLoudNoise=True
      bReactShot=True
      bReactDistress=True
+     bReactCarcass=True
      SurprisePeriod=0.400000
      InitialInventory(0)=(Inventory=Class'DeusEx.WeaponAssaultGun')
      InitialInventory(1)=(Inventory=Class'DeusEx.Ammo762mm',Count=24)
@@ -192,4 +195,6 @@ defaultproperties
      FamiliarName="MJ12 Elite"
      UnfamiliarName="MJ12 Elite"
      fireReactTime=0.25
+     BaseAccuracy=0.200000
+     maxRange=9000.000000
 }

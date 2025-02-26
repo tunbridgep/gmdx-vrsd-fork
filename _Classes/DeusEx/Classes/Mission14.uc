@@ -11,12 +11,27 @@ class Mission14 expands MissionScript;
 
 function FirstFrame()
 {
+    local ComputerSecurity SC;
 	Super.FirstFrame();
 
 	if (localURL == "14_OCEANLAB_LAB")
 	{
 		Player.GoalCompleted('StealSub');
 	}
+
+	else if (localURL == "14_VANDENBERG_SUB")
+    {
+        //Remove the Hallway security computer login.
+        //Tech/Sharkman can now ONLY be used to access the sub bay.
+        //Hackers can still bypass the security.
+        if (player.bHardCoreMode && !flags.GetBool('GMDX_RemoveComputer'))
+        {
+            foreach AllActors(class'ComputerSecurity', SC, 'HallwayComputer')
+                SC.UserList[0]=SC.default.UserList[0];
+                
+            flags.SetBool('GMDX_RemoveComputer',True,, 15);
+        }
+    }
 
 CanQuickSave=true;
 }
