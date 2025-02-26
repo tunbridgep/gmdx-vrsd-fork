@@ -45,11 +45,12 @@ Sarge's Changes since Beta 2.2:
             - Belt memory can be overridden by manually adding an item to a given belt slot at any time, and can be cleared by right-clicking on a belt slot.
             - Items dropped from the inventory or via the drop key will not be remembered, to allow easily throwing away unwanted junk without affecting the belt.
         - Invisible War Toolbelt improvements and bugfixes
+            - Fixed GMDX bug where you could scroll to empty slots when using the IW toolbelt.
             - Fixed bug where selected icon in the belt was forgotten between game sessions.
             - With Double Click Unholstering enabled, a single-rightclick will unholster a weapon if the selection was changed.
             - Pressing a number key again while its slot is selected will set it as the primary selection.
-            - Added "Classic Mode". In Classic Mode, right-clicking while having a belt item selected which is not the primary selection will select the primary selection, similar to GMDX v9.
-            - Fixed GMDX bug where you could scroll to empty slots when using the IW toolbelt.
+            - In previous versions of GMDX, when selecting a belt item using the number keys, right-clicking would switch back to your primary belt selection. Now, it holsters instead.
+                - Setting The IW Toolbelt to "classic mode" will revert this behaviour, and will once again make right-clicking select the primary belt selection.
         - "Smart Keyring" support added.
             - When Smart Keyring is enabled, the keyring will no longer occupy belt slot 0 (or belt slot =, if the large belt is enabled), allowing these slots to be used for regular items.
             - The keyring can still be selected using Left-Click Frob on doors or by right-clicking the Nano-Keyring icon in the inventory screen.
