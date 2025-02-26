@@ -158,7 +158,13 @@ function InitFor(Actor Other)
         else
         {
             if (Other.IsA('ScriptedPawn'))                                      //RSD
+            {
+                //if (ScriptedPawn(Other).UnfamiliarName == "")
+                //    savedName = ScriptedPawn(Other).ClassName;
+                //else
+                //    savedName = ScriptedPawn(Other).UnfamiliarName;
                 savedName = ScriptedPawn(Other).BindName;
+            }
         }
 
         UpdateName();
@@ -1421,7 +1427,8 @@ function Frob(Actor Frobber, Inventory frobWith)
 
     //log("  bFoundSomething = " $ bFoundSomething);
     bSearched = true; //SARGE: Once we have been searched once, go back to normal behaviour
-    AddSearchedString(player);
+    //AddSearchedString(player);
+    UpdateName();
     bFoundSomething = false;
     bDblClickStart=true;
 
@@ -1723,22 +1730,20 @@ function Landed(vector HitNormal)
 //SARGE: Added to fix name being reset when pickup up corpses
 function UpdateName()
 {
-    if (!bAnimalCarcass)
+    itemName = default.itemName;
+    if (savedName != "")
     {
-        itemName = default.itemName;
-        if (savedName != "")
-        {
-            if (bNotDead)
-                itemName = msgNotDead $ " (" $ savedName $ ")";
-            else
-                itemName = itemName $ " (" $ savedName $ ")";
-        }
+        if (bNotDead)
+            itemName = msgNotDead $ " (" $ savedName $ ")";
+        else if (bAnimalCarcass)
+            itemName = msgAnimalCarcass $ " (" $ savedName $ ")";
+        else
+            itemName = itemName $ " (" $ savedName $ ")";
     }
-    else
-        itemName = msgAnimalCarcass;
 
     //SARGE: Add searched string
-    AddSearchedString(DeusExPlayer(GetPlayerPawn()));
+    if (!bAnimalCarcass)
+        AddSearchedString(DeusExPlayer(GetPlayerPawn()));
 }
 
 function KillUnconscious()                                                      //RSD: To properly fix corpse names and trigger any other death effects like MIB explosion
