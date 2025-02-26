@@ -40,8 +40,6 @@ var bool bJustUnRadar;                                                          
 var bool bAutoActivate;                                                         //Sarge: Auto activate with left click, rather than placing in the players hands                                                                                
 var localized string StackSizeLabel;                                            //Sarge: Show the stack size in the description
 
-var localized string RechargeMessage;                                            //Sarge: Show a message when recharging using an item in the world
-
 var Texture handsTex;   //SARGE: Store the hand texture for performance. TODO: Use some sort of class/object to share this between SkilledTools and Weapons
 
 //SARGE: HDTP Model toggles
@@ -428,37 +426,35 @@ function bool HandlePickupQuery( inventory Item )
 			if ((RetMaxCopies()> 0) && (NumCopies > RetMaxCopies()))
 			{
 				NumCopies = RetMaxCopies();
-				if (item.IsA('ChargedPickup'))
+				if (item.IsA('ChargedPickup') && anItem.Charge < anItem.default.Charge)
                 {
-                   if (anItem.Charge < anItem.default.Charge)
-                   {
-                       anItem.Charge += DeusExPickup(item).Charge;
-                       if (anItem.Charge >= anItem.default.Charge)
-                           anItem.Charge = anItem.default.Charge;
+                    //SARGE: Let us know we're charging the thing...
+                    player.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
+                    
+                    anItem.Charge += DeusExPickup(item).Charge;
+                    if (anItem.Charge >= anItem.default.Charge)
+                        anItem.Charge = anItem.default.Charge;
 
-                        //SARGE: Play the bioelectric hiss when recharging this way
-                        player.ClientMessage(RechargeMessage @ item.itemName);
-                        player.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
-
-                       item.Destroy();
-
-                       if (anItem.Charge > 0)
-                       {
-                           ChargedPickup(anItem).bActivatable=true;             //RSD: Since now you can hold one at 0%
-                           ChargedPickup(anItem).unDimIcon();
-                       }
-                       return true;
-                   }
+                    if (anItem.Charge > 0)
+                    {
+                        ChargedPickup(anItem).bActivatable=true;             //RSD: Since now you can hold one at 0%
+                        ChargedPickup(anItem).unDimIcon();
+                    }
                 }
-				player.ClientMessage(msgTooMany);
-				if (NumCopies > startCopies)    //CyberP: bugfix
-				{
-				    UpdateBeltText();
-				    player.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
-                    DeusExPickup(item).NumCopies -= (NumCopies - startcopies);
+                else
+                {
+                    if (NumCopies > startCopies)    //CyberP: bugfix
+                    {
+                        UpdateBeltText();
+                        player.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
+                        DeusExPickup(item).NumCopies -= (NumCopies - startcopies);
+                    }
+                    else //SARGE: Now only display a message if we actually pickup none of the things.
+                        player.ClientMessage(msgTooMany);
+
+                    // abort the pickup
+                    return True;
                 }
-				// abort the pickup
-				return True;
 			}
             else if (item.IsA('ChargedPickup'))                                 //RSD: New branch to fix ChargedPickup stacking //RSD: why was this not else before??
 			{
@@ -466,7 +462,12 @@ function bool HandlePickupQuery( inventory Item )
 				if (tempCharge > anItem.default.Charge)
 		  			tempCharge -= anItem.default.Charge;                        //RSD: Add one to the stack and put the leftover charge on top
  			    else
+                {
+                    //SARGE: Let us know we're charging the thing...
+                    player.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
+
  			    	NumCopies--;                                                //RSD: Keep the stack number the same as before but add the pickup charge
+                }
 
  			    anItem.Charge = tempCharge;
  			    if (anItem.Charge > 0)
@@ -482,7 +483,7 @@ function bool HandlePickupQuery( inventory Item )
 
 		if (bResult)
 		{
-			player.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
+            player.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
 
 			// Destroy me!
 			// DEUS_EX AMSD In multiplayer, we don't want to destroy the item, we want it to set to respawn
@@ -1118,7 +1119,6 @@ defaultproperties
      StackSizeLabel="Amount Held: %d/%d"
      NumCopies=1
      PickupMessage="You found"
-     RechargeMessage="You recharged your"
      ItemName="DEFAULT PICKUP NAME - REPORT THIS AS A BUG"
      RespawnTime=30.000000
      LandSound=Sound'DeusExSounds.Generic.PaperHit1'
