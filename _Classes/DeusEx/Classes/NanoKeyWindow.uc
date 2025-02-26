@@ -15,6 +15,6 @@ event bool MouseButtonPressed(float pointX, float pointY, EInputKey button, int 
         if (player.inHand == player.KeyRing)
             player.SelectLastWeapon();
         else
-            player.PutInHand(player.KeyRing);
+            player.PutInHand(player.KeyRing,true);
     }
 }

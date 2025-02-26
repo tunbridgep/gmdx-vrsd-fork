@@ -46,7 +46,7 @@ function bool DoLeftFrob(DeusExPlayer frobber)
     {
         if (item.IsA('Multitool'))
         {
-            frobber.PutInHand(item);
+            frobber.PutInHand(item,true);
             return false;
         }
     }

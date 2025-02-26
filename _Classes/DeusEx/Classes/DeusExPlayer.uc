@@ -494,6 +494,7 @@ var travel bool bNumberSelect;                                              //Sa
 var travel bool bScrollSelect;                                              //Sarge: Whether or not our last belt selection was done with Next/Last weapon keys rather than Number Keys. Used by Alternative Belt to know when to holster
 var travel int beltScrolled;                                                //Sarge: The last item we scrolled to on the belt, if we are using Adv Toolbelt
 var travel bool selectedNumberFromEmpty;                                    //Sarge: Was the current selection made from an empty hand. Used by Alternate Toolbelt Classic Mode to not jump back to previous weapon when we select from an empty hand.
+var travel bool bBeltSkipNextPrimary;                                       //SARGE: Don't assign the next weapon we select as our primary.
 var globalconfig bool bLeftClickUnholster;                                  //Enable left click unholstering
 
 var int clickCountCyber; //CyberP: for double clicking to unequip
@@ -2788,7 +2789,7 @@ function bool SelectMeleePriority(int damageThreshold)	// Trash: Used to automat
     else
         return false;
 	
-    PutInHand(meleeWeapon);
+    PutInHand(meleeWeapon,true);
     return true;
 }
 
@@ -7918,7 +7919,7 @@ function NewWeaponSelected()
 }
 
 //Select Inventory Item
-function bool SelectInventoryItem(Name type)
+function bool SelectInventoryItem(Name type, optional bool bNoPrimary)
 {
     local Inventory item;
     item = Inventory;
@@ -7926,7 +7927,7 @@ function bool SelectInventoryItem(Name type)
     {
         if (item.IsA(type))
         {
-            PutInHand(item);
+            PutInHand(item,bNoPrimary);
             return true;
         }
         item = item.Inventory;
@@ -8473,7 +8474,7 @@ function DoFrob(Actor Frobber, Inventory frobWith)
 // put the object in the player's hand and draw it in front of the player
 // ----------------------------------------------------------------------
 
-exec function PutInHand(optional Inventory inv)
+exec function PutInHand(optional Inventory inv, optional bool bNoPrimary)
 {
     local DeusExWeapon weap;
 
@@ -8503,9 +8504,7 @@ exec function PutInHand(optional Inventory inv)
 		// Can't put an active charged item in hand  //cyberP: overruled for armor system
 		//if ((inv.IsA('ChargedPickup')) && (ChargedPickup(inv).IsActive()))
 		//	return;
-        
-        if (!inv.IsA('POVCorpse'))
-            primaryWeapon = inv;
+
 	}
 
 	if (CarriedDecoration != None)
@@ -8515,6 +8514,7 @@ exec function PutInHand(optional Inventory inv)
 		if (Binoculars(assignedWeapon).bActive)
             assignedWeapon.GotoState('DeActivated');
     SetInHandPending(inv);
+    bBeltSkipNextPrimary = bNoPrimary;
 
     UpdateCrosshair();
 }
@@ -8631,6 +8631,8 @@ function UpdateInHand()
 {
 	local bool bSwitch;
     local rotator rot;
+    local DeusExRootWindow root;
+	root = DeusExRootWindow(rootWindow);
 
 	//sync up clientinhandpending.
 	if (inHandPending != inHand)
@@ -8692,6 +8694,9 @@ function UpdateInHand()
 		{
 			SetInHand(inHandPending);
 			SelectedItem = inHandPending;
+        
+            if (inHandPending != None && !inHandPending.IsA('POVCorpse') && !bBeltSkipNextPrimary)
+                primaryWeapon = selectedItem;
 
 			if (inHand != None)
 			{
@@ -8699,7 +8704,11 @@ function UpdateInHand()
 					SkilledTool(inHand).BringUp();
 				else if (inHand.IsA('DeusExWeapon'))
 					SwitchWeapon(DeusExWeapon(inHand).InventoryGroup);
+                NewWeaponSelected();
 			}
+            // Notify the hud
+            if (root != None)
+                root.hud.belt.UpdateInHand();
 		}
 	}
 	else
@@ -8722,9 +8731,17 @@ function UpdateInHand()
 				if (inHand.IsInState('DownWeapon') && (Weapon == None))
 					SwitchWeapon(DeusExWeapon(inHand).InventoryGroup);
 			}
+
+
+        // Notify the hud
+        if (root != None)
+            root.hud.belt.UpdateInHand();
+
 		}
 
 	}
+
+    bBeltSkipNextPrimary = false;
 
 	UpdateCarcassEvent();
 }
@@ -10270,7 +10287,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 		{
 			if (((inHand == None) || (inHandPending == None)) && (item.Physics != PHYS_Falling))
 			{
-				PutInHand(item);
+				PutInHand(item,true);
 				ClientMessage(CannotDropHere);
 				bDropped = False;
 			}

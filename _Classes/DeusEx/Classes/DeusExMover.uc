@@ -98,30 +98,30 @@ function bool DoLeftFrob(DeusExPlayer frobber)
     //When not on hardcore, always select the keyring if we have the key
     if (!frobber.bHardcoreMode && CanToggleLock(frobber,frobber.KeyRing))
     {
-        frobber.PutInHand(frobber.KeyRing);
+        frobber.PutInHand(frobber.KeyRing,true);
         return false;
     }
     else if (bLocked && frobber.bHardcoreMode) //Hardcore Mode: Always select picks. If we don't have one, always select keyring
     {
-        if (bPickable && frobber.SelectInventoryItem('Lockpick'))
+        if (bPickable && frobber.SelectInventoryItem('Lockpick',true))
             return false;
         //else if (bBreakable && frobber.SelectMeleePriority(minDamageThreshold))
         //    return false;
         else
-            frobber.PutInHand(frobber.KeyRing);
+            frobber.PutInHand(frobber.KeyRing,true);
         return false;
     }
     else if (bLocked) //Non-Hardcore. See if we have a melee weapon to bust the mover. Otherwise, select picks
     {
         if (bBreakable && frobber.SelectMeleePriority(minDamageThreshold))
 			return false;
-        else if (!bPickable || !frobber.SelectInventoryItem('Lockpick'))
-            frobber.PutInHand(frobber.KeyRing);
+        else if (!bPickable || !frobber.SelectInventoryItem('Lockpick',true))
+            frobber.PutInHand(frobber.KeyRing,true);
         return false;
     }
     else if (CanToggleLock(frobber,frobber.KeyRing)) //Keyring check for Hardcore mode
     {
-        frobber.PutInHand(frobber.KeyRing);
+        frobber.PutInHand(frobber.KeyRing,true);
         return false;
     }
     
@@ -141,19 +141,19 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
         if (frobber.inHand.isA('NanoKeyRing'))
         {
             if (!frobber.SelectMeleePriority(minDamageThreshold))
-                if (!frobber.SelectInventoryItem('Lockpick'))
+                if (!frobber.SelectInventoryItem('Lockpick',true))
                     return true;
             leftFrobTimer = leftFrobTimerMax;
         }
         else if (frobber.inHand.isA('Lockpick'))
         {
-            frobber.PutInHand(frobber.KeyRing);
+            frobber.PutInHand(frobber.KeyRing,true);
             leftFrobTimer = leftFrobTimerMax;
         }
         else if (frobber.inHand.isA('DeusExWeapon') && DeusExWeapon(frobber.inHand).bHandToHand)
         {
-            if (!frobber.SelectInventoryItem('Lockpick'))
-                frobber.PutInHand(frobber.KeyRing);
+            if (!frobber.SelectInventoryItem('Lockpick',true))
+                frobber.PutInHand(frobber.KeyRing,true);
             leftFrobTimer = leftFrobTimerMax;
         }
     }
