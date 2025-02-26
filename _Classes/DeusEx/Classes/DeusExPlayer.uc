@@ -6568,6 +6568,11 @@ state PlayerWalking
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
 
+        
+        //Update belt selection timer
+        if (fBlockBeltSelection > 0)
+            fBlockBeltSelection -= deltaTime;
+
 		Super.PlayerTick(deltaTime);
 	}
 }
@@ -12307,10 +12312,6 @@ ignores SeePlayer, HearNoise, Bump;
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
-
-        //Update belt selection timer
-        if (fBlockBeltSelection > 0)
-            fBlockBeltSelection -= deltaTime;
 	}
 
 	function LoopHeadConvoAnim()
@@ -17763,7 +17764,7 @@ function LipSynch(float deltaTime)
 	animTimer[2] += deltaTime;
         
     if (iEnhancedLipSync == 1)
-        tweentime = 0.2;
+        tweentime = 0.225;
     else if (iEnhancedLipSync == 2)
         tweentime = 0;
     else if (Level.TimeSeconds - animTimer[3]  < 0.05)
