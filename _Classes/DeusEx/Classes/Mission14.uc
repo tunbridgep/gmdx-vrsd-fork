@@ -167,10 +167,6 @@ function Timer()
                  // DM.bFrobbable = False;
                 }
 
-                if (Player.bHardCoreMode)
-                    foreach AllActors(class'SavePoint', SP)
-                        SP.bHidden = False;
-
 				flags.SetBool('MS_UnhideSub', True,, 15);
 			}
 		}
