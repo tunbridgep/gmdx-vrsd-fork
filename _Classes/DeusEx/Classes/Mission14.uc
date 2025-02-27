@@ -96,6 +96,7 @@ function Timer()
 	{
 		// when the mission is complete, unhide the chopper and Gary Savage,
 		// and destroy the minisub and the welding parts
+        // SARGE: Also add some divers
 		if (!flags.GetBool('MS_DestroySub'))
 		{
 			if (flags.GetBool('DL_downloaded_Played'))
@@ -113,6 +114,9 @@ function Timer()
 					Gary.EnterWorld();
 
 				flags.SetBool('MS_DestroySub', True,, 15);
+				
+                foreach AllActors(class'ScubaDiver', diver, 'ReturnAmbush')
+					diver.EnterWorld();
 			}
 		}
 	}
