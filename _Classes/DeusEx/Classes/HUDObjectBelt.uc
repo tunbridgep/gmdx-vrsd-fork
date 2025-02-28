@@ -404,12 +404,15 @@ function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
 
 	if ((newItem != None ) && (newItem.Icon != None))
 	{
-		// If this is the NanoKeyRing, force it into slot 0
-		if (newItem.IsA('NanoKeyRing'))
+		// If this is the NanoKeyRing, force it into slot 0 //SARGE: Or slot 11
+		if (newItem.IsA('NanoKeyRing') && !player.bSmartKeyring)
 		{
-			ClearPosition(0);
-			pos = 0;
+			ClearPosition(KeyRingSlot);
+			pos = KeyRingSlot;
 		}
+        //SARGE: Don't put it on the belt at all if we have smart keyring on
+        else if (newItem.IsA('NanoKeyRing'))
+            return true;
 
 		if (  (!IsValidPos(pos)) ||
             (  (Player.Level.NetMode != NM_Standalone) &&
