@@ -499,7 +499,7 @@ function ValidateCode(bool checkDiscovery)
 
 		player.PlaySound(keypadOwner.successSound, SLOT_None);
 		winText.SetTextColor(colGreen);
-        if (bDigitDisplay)
+        if (bDigitDisplay && !bInstantSuccess)
             winText.SetText(inputCode);
         else
             winText.SetText(msgAccessGranted);
