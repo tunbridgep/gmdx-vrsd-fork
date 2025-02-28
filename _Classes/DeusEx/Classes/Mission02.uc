@@ -105,9 +105,9 @@ function FirstFrame()
 	else if (localURL == "02_NYC_UNDERGROUND") //Totalitarian: change troop barks if confix is detected
 	{
         //Randomise the 2167 code
-        if (Player.bNoKeypadCheese)
+        if (Player.iNoKeypadCheese > 0)
         {
-            newPasscode = string(Rand(8999) + 1000);
+            newPasscode = string(Rand(899999) + 1000);
             //player.ClientMessage("New code is " $ newPasscode);
             foreach AllActors(class'Keypad', K)
             {

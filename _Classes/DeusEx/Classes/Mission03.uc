@@ -163,6 +163,7 @@ function Timer()
 	local Terrorist T;
 	local int count;
 	local DeusExMover M;
+    local BumMale2 bum;
 	local bool bCarcFound, bJuanFound;
 
 	Super.Timer();
@@ -378,6 +379,34 @@ function Timer()
 			if (count < 3)
 				flags.SetBool('MoleTerroristsDefeated', True,, 4);
 		}
+
+        //SARGE: Stop us from using the brick if we don't know about it
+        if (player.iNoKeypadCheese >= 2)
+        {
+			foreach AllActors(class'DeusExMover', M, 'SecretBrick')
+            {
+                M.bFrobbable = flags.GetBool('M03PlayerKnowsAboutTerroristLeaderHideout');
+                M.bHighlight = flags.GetBool('M03PlayerKnowsAboutTerroristLeaderHideout');
+            }
+
+            /*
+		    if (!flags.GetBool('GMDXModifiedKevin'))
+            {
+                //Also change Kevin Bradley to use generic barks
+                foreach AllActors(class'BumMale2', bum)
+                {
+                    if (bum.BindName == "KevinBradley")
+                    {
+                        bum.BindName = "MolePerson"; //SARGE: This doesn't work, aparrently
+                        bum.BarkBindName = "MolePerson"; //SARGE: This doesn't work, aparrently
+                        //bum.LeaveWorld();
+                        //bum.Destroy();
+                        flags.SetBool('GMDXModifiedKevin', True,, 4);
+                    }
+                }
+            }
+            */
+        }
 	}
 	else if (localURL == "03_NYC_BROOKLYNBRIDGESTATION")
 	{

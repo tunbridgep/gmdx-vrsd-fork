@@ -318,6 +318,9 @@ event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
             //Handle removing characters with Backspace and Delete
             case IK_Backspace:      DoBackspace(); break;
             case IK_Delete:         DoDelete(); break;
+
+            //Use ENTER to manually validate the code when using No Keypad Cheese
+            case IK_Enter:          DoEnter(); break;
             
 			default:
 				bKeyHandled = False;
@@ -369,6 +372,24 @@ function DoBackspace(optional bool skipButton)
     FinishSendKey(sound'Touchtone10');
 }
 
+//SARGE: Allow text confirmation
+function DoEnter(optional bool skipButton)
+{
+    if (player.iNoKeypadCheese < 3)
+        return;
+
+    //Press the keypad key if we have the keys showing
+    //HOLY HARDCODE BATMAN!
+    if (!skipButton)
+    {
+        bIgnore = true;
+        btnKeys[11].PressButton();
+    }
+
+    FinishSendKey(sound'Touchtone11');
+    ValidateCode(true);
+}
+
 // ----------------------------------------------------------------------
 // PressButton()
 //
@@ -382,10 +403,16 @@ function PressButton(int num)
 	if (bWait)
 		return;
 
-    //Deletion and Backspace is handled manually
+    //Deletion, Enter and Backspace are handled manually
+    //This code fucking sucks.
     if (bReplaceSymbols && num == 9)
     {
         DoBackspace(true);
+        return;
+    }
+    else if (player.iNoKeypadCheese >= 3 && num == 11)
+    {
+        DoEnter(true);
         return;
     }
     else if (bReplaceSymbols && num == 11)
@@ -433,7 +460,7 @@ function FinishSendKey(Sound tone)
 	winText.SetTextColor(colHeaderText);
 	winText.SetText(msgEnterCode);
 
-	if (Len(inputCode) == Len(keypadOwner.validCode))
+	if (Len(inputCode) == Len(keypadOwner.validCode) && player.iNoKeypadCheese < 3)
 		ValidateCode(true);
 }
 
@@ -490,7 +517,7 @@ function ValidateCode(bool checkDiscovery)
         //SARGE: Easter egg from my childhood....
         //...damn I'm getting old...
         if (inputCode == "*10#")
-            player.ClientMessage("Your Telstra call waiting feature is on");
+            player.ClientMessage("Call Waiting has been turned on");
 
         if (bDigitDisplay)
             winText.SetText(inputCode);
@@ -551,7 +578,9 @@ function string IndexToString(int num, optional bool forceOldSymbols)
             break;
 		case 10:	str = "0"; break;
 		case 11:
-            if (bReplaceSymbols && !forceOldSymbols)
+            if (player.iNoKeypadCheese >= 3 && !forceOldSymbols)
+                str = ">";
+            else if (bReplaceSymbols && !forceOldSymbols)
                 str = "C";
             else
                 str = "#";
@@ -574,7 +603,7 @@ function string IndexToString(int num, optional bool forceOldSymbols)
 
 function GenerateKeypadDisplay()
 {
-	local int i;
+	local int i, count;
     local string c;         //SARGE: The character we are comparing. Unrealscript doesn't give us access to the characters of a string...what a shitty engine!
 
     //SARGE: Instead of doing all blue squares, and making them white as we enter.
@@ -584,9 +613,14 @@ function GenerateKeypadDisplay()
     else
         msgEnterCode = "";
 
-	for (i=0; i<Len(keypadOwner.validCode); i++)
+    if (Len(keypadOwner.validCode) > Len(inputCode))
+        count = Len(keypadOwner.validCode);
+    else
+        count = Len(inputCode);
+
+	for (i=0; i<count; i++)
 	{
-        if (i == Len(inputCode) && !bDigitDisplay)
+        if ((i == Len(inputCode) || player.iNoKeypadCheese >= 3) && !bDigitDisplay)
             msgEnterCode = msgEnterCode $ "|p1";
 
         c = Mid(inputCode,i,1);
@@ -596,7 +630,7 @@ function GenerateKeypadDisplay()
             msgEnterCode = msgEnterCode $ c;
         //else if (bDigitDisplay)
         //    msgEnterCode = msgEnterCode $ "-";
-        else
+        else if (player.iNoKeypadCheese < 3 || i < Len(inputCode))
             msgEnterCode = msgEnterCode $ "~";
 	}
 }
