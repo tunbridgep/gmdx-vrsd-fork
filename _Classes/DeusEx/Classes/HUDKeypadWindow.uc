@@ -424,7 +424,7 @@ function PressButton(int num)
     //Allow for manual asterisks/hashes, by inverting the number
     num = abs(num);
 
-	if (Len(inputCode) < 16)
+	if (Len(inputCode) < 12)
 	{
         num = TransposeNumber(num);
         inputCode = inputCode $ IndexToString(num,true);
