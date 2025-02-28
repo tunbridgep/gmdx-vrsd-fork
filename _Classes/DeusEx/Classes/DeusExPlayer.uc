@@ -10983,6 +10983,10 @@ exec function ToggleRadialAugMenu()
     if (RestrictInput())
         return;
 
+    //No wheel while drone is active
+    if (bSpyDroneActive && !bSpyDroneSet)
+        return;
+
 	bRadialAugMenuVisible = !bRadialAugMenuVisible;
 
 	if (bRadialAugMenuVisible) {
@@ -11076,10 +11080,6 @@ function bool GetCrosshairState(optional bool bCheckForOuterCrosshairs)
 	root = DeusExRootWindow(rootWindow);
 	W = DeusExWeapon(inHand);
 
-    //If the Spy Drone is fullscreen, no crosshair
-    if (bSpyDroneActive && !bSpyDroneSet && bBigDroneView)
-        return false;
-
     //If we have the spy drone out, no outer crosshairs.
     if (bSpyDroneActive && !bSpyDroneSet && bCheckForOuterCrosshairs)
         return false;
@@ -11150,11 +11150,19 @@ function bool GetBracketsState()
 	root = DeusExRootWindow(rootWindow);
 	W = DeusExWeapon(inHand);
 
+    //SARGE: No brackets during fullscreen drone
+    if (bSpyDroneActive && !bSpyDroneSet && bBigDroneView)
+        return False;
+
     if (IsInState('Dying')) //No brackets while dying
         return false;
 
     if (root != None && root.WindowStackCount() > 0) //No brackets while windows are open
         return false;
+    
+    //No brackets on cloaked enemies
+    if (frobTarget != None && frobTarget.isA('ScriptedPawn') && ScriptedPawn(frobTarget).bHasCloak)
+        return False;
 
     //No brackets while reading books/datacubes/etc
     if (frobTarget != None && frobTarget.isA('InformationDevices') && InformationDevices(frobTarget).aReader == Self)
@@ -11193,7 +11201,7 @@ function UpdateCrosshairStyle()
     {
         cross = root.hud.cross;
 
-        if (inHand != None && inHand.isA('DeusExWeapon') || dynamicCrosshair == 0)
+        if ((bSpyDroneActive && !bSpyDroneSet && bBigDroneView) || (inHand != None && inHand.isA('DeusExWeapon')) || dynamicCrosshair == 0)
     		root.hud.cross.SetBackground(Texture'CrossSquare');
         else if (dynamicCrosshair == 3)
     		root.hud.cross.SetBackground(Texture'RSDCrap.UserInterface.CrossDot3');

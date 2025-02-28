@@ -178,13 +178,22 @@ function Actor TraceLOS(float checkDist, out vector HitLocation)
        return target;
        }
     } */
-	// figure out how far ahead we should trace
-	StartTrace = Player.Location;
-	EndTrace = Player.Location + (Vector(Player.ViewRotation) * checkDist);
+    if (player.bSpyDroneActive && !player.bSpyDroneSet && player.bBigDroneView && player.aDrone != None)
+    {
+        // figure out how far ahead we should trace
+        StartTrace = Player.aDrone.Location;
+        EndTrace = Player.aDrone.Location + (Vector(player.aDrone.Rotation) * checkDist);
+    }
+    else
+    {
+        // figure out how far ahead we should trace
+        StartTrace = Player.Location;
+        EndTrace = Player.Location + (Vector(Player.ViewRotation) * checkDist);
 
-	// adjust for the eye height
-	StartTrace.Z += Player.BaseEyeHeight;
-	EndTrace.Z += Player.BaseEyeHeight;
+        // adjust for the eye height
+        StartTrace.Z += Player.BaseEyeHeight;
+        EndTrace.Z += Player.BaseEyeHeight;
+    }
 
 	// find the object that we are looking at
 	// make sure we don't select the object that we're carrying
