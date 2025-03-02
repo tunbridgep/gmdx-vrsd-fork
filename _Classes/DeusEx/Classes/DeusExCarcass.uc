@@ -1123,7 +1123,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                         DeusExWeapon(item).ClipCount -= intj;
                                     }
 								}
-                                else
+                                else if (AmmoType != None)
                                 {
                                     //P.ClientMessage("in ammo searching code ex");
                                     if (!bSearched)
