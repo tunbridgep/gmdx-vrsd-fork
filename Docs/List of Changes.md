@@ -283,6 +283,7 @@ Sarge's Changes since Beta 2.2:
     - A Laser Sight has been added to Smuggler's safe in the first NY visit (replaces a recoil mod)
     - The Silencer in Paul's Apartment, Full-Auto Mod in Tong's Lab, and Laser Sight in Smugglers Safe are all guaranteed to appear even with the weapon mod shuffle turned on.
 - Miscellaneous Changes:
+    - The Hacking Window in the Computer UI now uses the Menu theme, to match the computer's theme, rather than the HUD Theme.
     - Right-Clicking on the Nano-Keyring icon in the inventory will select it.
         - This is useful when you have Smart Keyring enabled, and want to select the keyring before reaching a door, such as if it's being watched by a camera.
     - Added a new DataCube to explain cameras not detecting unconscious enemies.
