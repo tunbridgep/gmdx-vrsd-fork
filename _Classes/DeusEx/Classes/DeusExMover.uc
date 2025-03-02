@@ -131,8 +131,17 @@ function bool DoLeftFrob(DeusExPlayer frobber)
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {
 
-    //Nofmal interaction if 
-    if (!bLocked || frobber.inHand == None)
+    //Normal interaction if unlocked
+    if (!bLocked)
+        return true;
+
+    //SARGE: If left frob timer is 0 (ie, we have not left-frobbed),
+    //then use the "right-click to autoselect" revision-style interaction, if enabled
+    if (frobber.bRightClickToolSelection && leftFrobTimer == 0 && !frobber.inHand.IsA('Lockpick') && !frobber.InHand.IsA('NanoKeyRing'))
+        return DoLeftFrob(frobber);
+
+    //don't continue if our hands are full, just do the default interaction
+    if (frobber.inHand == None)
         return true;
 
     //Swap between lockpicks and nanokeyring

@@ -704,6 +704,9 @@ var globalconfig bool bStompVacbots;                                            
 var globalconfig int iEnhancedLipSync; //0 = disabled, 1 = nice and smooth, 2 = intentionally chunky
 var globalconfig bool bEnableBlinking; //Allows characters to blink
 
+
+var globalconfig bool bRightClickToolSelection;                                         //SARGE: Right-Click Selection for Picks and Tools. Inspired by similar feature from Revision, but less sucky.
+
 //////////END GMDX
 
 // OUTFIT STUFF

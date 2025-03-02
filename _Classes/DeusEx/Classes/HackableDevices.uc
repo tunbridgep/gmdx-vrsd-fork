@@ -32,6 +32,8 @@ var bool bBeenHacked; //RSD: For having been hacked at least once
 
 var float               previousStrength;        //Sarge: What was the strength before we started bypassing?
 
+var const bool          bAllowRightClickToolSelection; //Sarge: Used to prevent right-click tool selection on keypads
+
 //SARGE: Added "Left Click Frob" and "Right Click Frob" support
 //Return true to use the default frobbing mechanism, or false for custom behaviour
 function bool DoLeftFrob(DeusExPlayer frobber)
@@ -54,6 +56,10 @@ function bool DoLeftFrob(DeusExPlayer frobber)
 }
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {
+    //SARGE: Use the "right-click to autoselect" revision-style interaction, if enabled
+    if (bAllowRightClickToolSelection && frobber.bRightClickToolSelection && !frobber.inHand.IsA('Multitool'))
+        return DoLeftFrob(frobber);
+
     return true;
 }
 
@@ -303,4 +309,5 @@ defaultproperties
      msgAlreadyHacked="It's already bypassed"
      Physics=PHYS_None
      bCollideWorld=False
+     bAllowRightClickToolSelection=True
 }
