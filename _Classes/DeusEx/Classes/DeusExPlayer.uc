@@ -3090,14 +3090,15 @@ function UpdateDynamicMusic(float deltaTime)
 	}
 	else
 	{
-	    if (info != none && info.bBarOrClub && bEnhancedMusicSystem >= 2)
-              return;
         //SARGE: Changed to only start combat music if at least 3 enemies are aggro'd
 		// only check for combat music every second //CyberP: 2 secs
 		if (musicCheckTimer >= 2.0)
 		{
 			musicCheckTimer = 0.0;
 			aggro = 0;
+
+            if (info != none && info.bBarOrClub && bEnhancedMusicSystem >= 2)
+                return;
 
             // check a 100 foot radius around me for combat
             // XXXDEUS_EX AMSD Slow Pawn Iterator
