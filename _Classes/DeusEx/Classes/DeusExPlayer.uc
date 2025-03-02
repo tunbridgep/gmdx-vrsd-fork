@@ -696,6 +696,11 @@ var localized String DuplicateNanoKey;
 var globalconfig bool bStompDomesticAnimals;                                    //SARGE: If disabled, we can't stomp cats or dogs anymore. Adopt a cute animal today!
 var globalconfig bool bStompVacbots;                                            //SARGE: If disabled, we can't stomp vac-bots anymore.
 
+//Music Stuff
+var transient string currentSong;                                                 //SARGE: The "Song" variable is notoriously unreliable...
+var transient byte currentSection;                                              //SARGE: We need to track this for conversations/combat/etc
+var globalconfig int bEnhancedMusicSystem;                                             //SARGE: Should the music system be a bit smarter about playing tracks?
+
 //SARGE: Autoswitch to Health screen when installing the last augmentation at a med bot.
 var globalconfig bool bMedbotAutoswitch;
 
@@ -2965,6 +2970,27 @@ exec function PlayMusicWindow()
 }
 
 // ----------------------------------------------------------------------
+// ClientSetMusic()
+//
+// SARGE: Copied over from Engine/PlayerPawn.uc
+// Modified to not restart music if the new song is the same as the current song, and the
+// sections are the same (section 0 is always used on map-change, so we set it to that if we're using the "remembered" section).
+// ----------------------------------------------------------------------
+function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusicTransition NewTransition )
+{
+    //ClientMessage("Switching music: " $ Song $ "->" $ NewSong $ ":" $ NewSection $ " (current: " $ default.currentSong $ ", " $ default.currentSection $ ")");
+    if (default.currentSong != string(NewSong) || default.currentSection != NewSection || bEnhancedMusicSystem == 0)
+    {
+        super.ClientSetMusic(NewSong,NewSection,NewCdTrack,NewTransition);
+        default.currentSong = string(NewSong);
+        if (NewSection == savedSection)
+            default.currentSection = 0;
+        else
+            default.currentSection = NewSection;
+    }
+}
+
+// ----------------------------------------------------------------------
 // UpdateDynamicMusic()
 //
 // Pattern definitions:
@@ -3023,9 +3049,9 @@ function UpdateDynamicMusic(float deltaTime)
 	}
 	else if (IsInState('Conversation'))
 	{
-	    if (info != none)
-	       if (info.bBarOrClub)
-              return;  //CyberP: no dynamic music in clubs and bars.
+        //CyberP: no dynamic music in clubs and bars.
+	    if (info != none && info.bBarOrClub && bEnhancedMusicSystem >= 2)
+              return;
 		if (musicMode != MUS_Conversation)
 		{
 			// save our place in the ambient track
@@ -3040,6 +3066,8 @@ function UpdateDynamicMusic(float deltaTime)
 	}
 	else if (IsInState('Dying'))
 	{
+	    if (info != none && info.bBarOrClub && bEnhancedMusicSystem >= 2)
+              return;
 		if (musicMode != MUS_Dying)
 		{
 			ClientSetMusic(Level.Song, 1, 255, MTRAN_Fade);
@@ -3048,6 +3076,8 @@ function UpdateDynamicMusic(float deltaTime)
 	}
 	else
 	{
+	    if (info != none && info.bBarOrClub && bEnhancedMusicSystem >= 2)
+              return;
         //SARGE: Changed to only start combat music if at least 3 enemies are aggro'd
 		// only check for combat music every second //CyberP: 2 secs
 		if (musicCheckTimer >= 2.0)
@@ -18094,6 +18124,7 @@ defaultproperties
      HUDThemeNameGMDX="Default"
      dblClickHolster=2
      bSmartDecline=True
+     bEnhancedMusicSystem=1
      bMedbotAutoswitch=True
      bHDTPEnabled=True
      iEnhancedLipSync=1
