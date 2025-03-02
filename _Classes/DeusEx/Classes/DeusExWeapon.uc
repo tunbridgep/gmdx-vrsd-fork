@@ -5172,7 +5172,7 @@ function Finish()
 				     return;
 				  }
                   if (DeusExPlayer(Owner).CarriedDecoration == None)
-                     DeusExPlayer(Owner).inHandPending = DeusExPlayer(Owner).primaryWeapon;
+                     DeusExPlayer(Owner).SelectLastWeapon(true);
                   GotoState('idle');
                   return;
                //}

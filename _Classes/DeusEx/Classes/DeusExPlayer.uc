@@ -504,6 +504,7 @@ var bool bCrouchRegen;  //CyberP: regen when crouched and has skill
 var bool bDoubleClickCheck; //CyberP: to return from double clicking.
 var travel Inventory assignedWeapon;
 var Inventory primaryWeapon;
+var bool bLastWasEmpty;                                                     //SARGE: Whether or not we were empty before being switched to this weapon.
 var float augEffectTime;
 var vector vecta;
 var rotator rota;
@@ -7546,7 +7547,7 @@ exec function ShowScores()
                  return;
              }
          }
-         inHandPending = assignedWeapon;
+         PutInHand(assignedWeapon,true);
          if (inHandPending.IsA('DeusExWeapon'))
 	         DeusExWeapon(inHandPending).bBeginQuickMelee=true;
          if (inHandPending.IsA('Flare'))
@@ -7580,7 +7581,7 @@ exec function ShowScores()
 	    {
 	       if (assignedWeapon != None)
 	       {
-	           inHandPending = assignedWeapon;
+	           PutInHand(assignedWeapon,true);
            }
 	    }
 
@@ -7595,7 +7596,7 @@ exec function ShowScores()
              }
          }
          if (inHand.IsA('DeusExWeapon'))
-         inHandPending = assignedWeapon;
+         PutInHand(assignedWeapon,true);
          if (inHandPending.IsA('DeusExWeapon'))
 	         DeusExWeapon(inHandPending).bBeginQuickMelee=true;
 	    }
@@ -7891,10 +7892,21 @@ exec function ParseLeftClick()
 // Sarge: Selects the last weapon we had selected, or if we're using the alternate toolbelt, selects the primary selection.
 // ----------------------------------------------------------------------
 
-function SelectLastWeapon()
+function SelectLastWeapon(optional bool allowEmpty)
 {
     local DeusExRootWindow root;
     root = DeusExRootWindow(rootWindow);
+
+    if (bLastWasEmpty)
+    {
+        bLastWasEmpty = false;
+        if (allowEmpty)
+        {
+            PutInHand(None);
+            return;
+        }
+    }
+
     if (root != None && root.hud != None)
     {
         if (bAlternateToolbelt > 0 && root.ActivateObjectInBelt(advBelt))
@@ -7903,6 +7915,7 @@ function SelectLastWeapon()
             return;
         }
     }
+    
     if (primaryWeapon.Owner == self)
     {
         PutInHand(primaryWeapon);
@@ -8518,8 +8531,15 @@ exec function PutInHand(optional Inventory inv, optional bool bNoPrimary)
 	if (assignedWeapon != none && assignedWeapon.IsA('Binoculars'))             //RSD: Make sure we aren't in binocs view
 		if (Binoculars(assignedWeapon).bActive)
             assignedWeapon.GotoState('DeActivated');
+    if (inHandPending != inv && inHand != inv)
+        bBeltSkipNextPrimary = bNoPrimary;
+
+    if (!bNoPrimary)
+        bLastWasEmpty = inv == None;
+    
     SetInHandPending(inv);
-    bBeltSkipNextPrimary = bNoPrimary;
+                
+    //clientMessage("PutInHand called for : " $ inv $ ", bBeltSkipNextPrimary=" $ bBeltSkipNextPrimary);
 
     UpdateCrosshair();
 }
@@ -8701,7 +8721,11 @@ function UpdateInHand()
 			SelectedItem = inHandPending;
         
             if (inHandPending != None && !inHandPending.IsA('POVCorpse') && !bBeltSkipNextPrimary)
+            {
+                //clientMessage("Update Primary to: " $ selectedItem);
                 primaryWeapon = selectedItem;
+                bBeltSkipNextPrimary = false;
+            }
 
 			if (inHand != None)
 			{
@@ -8745,8 +8769,6 @@ function UpdateInHand()
 		}
 
 	}
-
-    bBeltSkipNextPrimary = false;
 
 	UpdateCarcassEvent();
 }
