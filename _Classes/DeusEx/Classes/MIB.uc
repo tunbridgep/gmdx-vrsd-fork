@@ -328,9 +328,7 @@ function DifficultyMod(float CombatDifficulty, bool bHardCoreMode, bool bExtraHa
 	SurprisePeriod=0.200000;
 	GroundSpeed=350.000000;
 	}
-	Die = None;
-
-        bNotFirstDiffMod = true;
+    bNotFirstDiffMod = true;
 }
 
 defaultproperties
@@ -347,6 +345,8 @@ defaultproperties
      Health=900
      HitSound1=Sound'GMDXSFX.Human.MiBPain'
      HitSound2=Sound'GMDXSFX.Human.MiBPain'
+     Die=None
+     bDontChangeDeathPainSounds=True
      HealthHead=900
      HealthTorso=900
      HealthLegLeft=900

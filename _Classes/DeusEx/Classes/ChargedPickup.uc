@@ -101,9 +101,6 @@ function ChargedPickupEnd(DeusExPlayer Player)
 	if (LoopSound != None)
 		AmbientSound = None;
 
-	// remove it from our inventory if none left
-	if (NumCopies<=0)
-		Player.DeleteInventory(Self);
 	/*else
 	{//remove from hands, should really never get here!
 		if (player.inHand == Self)
@@ -188,7 +185,7 @@ function UsedUp()
 	if ( Pawn(Owner) != None )
 	{
 	    //bActivatable = false;
-		Pawn(Owner).ClientMessage(ExpireMessage);
+		Pawn(Owner).ClientMessage(sprintf(ExpireMessage,ItemName));
 	}
 	Owner.PlaySound(UsedUpSound);
 	Player = DeusExPlayer(Owner);
@@ -499,5 +496,6 @@ defaultproperties
      CountLabel="Uses:"
      bCanHaveMultipleCopies=True
      bActivatable=True
+	 ExpireMessage="%s power supply used up"
      Charge=2000
 }

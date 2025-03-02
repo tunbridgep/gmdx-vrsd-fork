@@ -379,7 +379,10 @@ function ShowHud(bool bShow)
 function UpdateHud()
 {
 	if (hud != None)
+    {
+        hud.RecreateBelt();
 		hud.UpdateSettings(DeusExPlayer(parentPawn), WindowStackCount() != 0);
+    }
 }
 
 function UpdateCrosshair()
