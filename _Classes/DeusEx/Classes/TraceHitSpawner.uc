@@ -10,9 +10,9 @@ var bool bInstantHit;
 var Name damageType;
 var bool bForceBulletHole;
 
-function bool IsHDTP()
+static function bool IsHDTP()
 {
-    return DeusExPlayer(GetPlayerPawn()).bHDTPInstalled;
+    return class'DeusExPlayer'.static.IsHDTPInstalled() && class'DeusExDecal'.default.iHDTPModelToggle > 0;
 }
 
 simulated function PostBeginPlay()

@@ -35,8 +35,10 @@ defaultproperties
      CollisionHeight=2.000000
      bCollideActors=True
      ItemName="Taser Darts"
-     Icon=Texture'GMDXSFX.Icons.BeltIconTaserDart'
-     largeIcon=Texture'GMDXSFX.Icons.LargeIconTaserDart'
+     Icon=Texture'RSDCrap.Icons.BeltIconAmmoDartsTaser'
+     largeIcon=Texture'RSDCrap.Icons.LargeIconAmmoDartsTaser'
+     HDTPIcon="GMDXSFX.Icons.BeltIconTaserDart"
+     HDTPLargeIcon="GMDXSFX.Icons.LargeIconTaserDart"
      Description="A dart that once has penetrated the skin delivers a high-voltage electrical current via an internal electrode, causing involuntary muscle spasms and effectively incapacitating the target in a non-lethal manner."
      beltDescription="TASER"
      HDTPSkin="GMDXSFX.Skins.TaserAmmo"
