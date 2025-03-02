@@ -568,7 +568,6 @@ var vector SAVElocation;
 var bool bStaticFreeze;
 
 //RSD Stuff
-var rotator DRONESAVErotation;                                                  //RSD: For Drone camera switching
 var rotator WHEELSAVErotation;                                                  //RSD: For Lorenz's wheel so it doesn't interfere with drone stuff
 
 var float savedStandingTimer;                                                   //RSD: For transferring the standingTimer between weapons (Sidearm perk)
@@ -696,6 +695,9 @@ var localized String DuplicateNanoKey;
 //Cat/Dog protector
 var globalconfig bool bStompDomesticAnimals;                                    //SARGE: If disabled, we can't stomp cats or dogs anymore. Adopt a cute animal today!
 var globalconfig bool bStompVacbots;                                            //SARGE: If disabled, we can't stomp vac-bots anymore.
+
+//SARGE: Minimise Targeting Window
+var travel bool bMinimiseTargetingWindow;
 
 //SARGE: Enhanced Lip Sync
 var globalconfig int iEnhancedLipSync; //0 = disabled, 1 = nice and smooth, 2 = intentionally chunky
@@ -6576,6 +6578,9 @@ state PlayerWalking
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
 
+        //Fire blocking is only valid for 1 frame
+        bBlockNextFire = False;
+
 		Super.PlayerTick(deltaTime);
 	}
 }
@@ -7380,12 +7385,12 @@ function bool RestrictInput(optional bool bDontCheckConversation)
 		return True;
 
     //SARGE: Being in a cutscene counts as restricted input
-    if (!bDontCheckConversation && conPlay.bConversationStarted && conPlay.displayMode == DM_ThirdPerson)
+    if (!bDontCheckConversation && conPlay != None && conPlay.bConversationStarted && conPlay.displayMode == DM_ThirdPerson)
         return true;
 
     //SARGE: Disallow any sort of UI operations when the "pause" key is pressed
     //This way, real-time UI is actually a real-time UI
-    if (DeusExRootWindow(rootWindow).bUIPaused || (Level.Pauser != ""))
+    if (DeusExRootWindow(rootWindow) != None && DeusExRootWindow(rootWindow).bUIPaused || (Level.Pauser != ""))
         return true;
 
 	return False;
@@ -10942,6 +10947,16 @@ exec function ToggleAugDisplay()
 	root = DeusExRootWindow(rootWindow);
 	if (root != None)
 		root.UpdateHud();
+}
+
+// ----------------------------------------------------------------------
+// MinimiseTargetingWindow
+// SARGE: Minimise the targeting window, since it's not always useful.
+// ----------------------------------------------------------------------
+
+exec function MinimiseTargetingWindow()
+{
+    bMinimiseTargetingWindow = !bMinimiseTargetingWindow;
 }
 
 // ----------------------------------------------------------------------

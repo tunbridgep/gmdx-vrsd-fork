@@ -166,6 +166,7 @@ Sarge's Changes since Beta 2.2:
         - With vRSD partial damage calculations were added, so this is now relevant again.
     - Crowbar has been changed from +5 damage vs breakables to instead having 2x damage against breakables, to scale better with low-tech.
     - Augmentation Changes
+        - Augmentations with a long recharge (like the Spy Drone) now have a progress bar in the augmentation display in the HUD to show when they will be ready.
         - Augmentations can now be swapped out with the opposite choice when finding duplicate augmentation Canisters.
             - Augmentations that are replaced this way will be reset to level 1.
             - Augmentations cannot be freely replaced with any other augmentation occupying the same slot, it must be the opposite choice from their relevant cannister.
@@ -213,6 +214,7 @@ Sarge's Changes since Beta 2.2:
             - The players equipped item is no longer unequipped when using the drone.
             - Restored the drone creation sound (was removed in previous GMDX versions).
             - The Picture-in-Picture window has been made slightly bigger.
+            - The Picture-in-Picture window can now be minimised, which hides it and only displays textual info.
             - When running out of bioelectrical energy, the Drone will be parked automatically instead of being destroyed.
                 - Using the Drone augmentation while at 0 bioelectrical energy can be used to forcibly destroy the drone.
         - Synthetic Heart
@@ -224,7 +226,11 @@ Sarge's Changes since Beta 2.2:
                 - Now, any bonuses that would have been given to a fully-upgraded augmentation will "spill over" into other augmentations, allowing them to be upgraded twice.
                 - The order in which augmentations is upgraded is pre-set and cannot be changed, starting with the Torso, then the head, the eyes, and then moving to the skin, arms and legs.
         - Targeting
+            - Is now a Toggle Augmentation, reserving 20 energy to function.
+            - Will now automatically update when levelled up, as it's a toggle so you will leave it on all the time.
+            - No longer shows the `DEFAULT NAME - REPORT AS A BUG` text when looking at objects with no name.
             - The Picture-in-Picture window has been made slightly bigger.
+            - The Picture-in-Picture window can now be minimised, which hides it and only displays textual info.
     - Hacking Overhaul
         - Bypassing Turrets now requires Advanced hacking, as in Vanilla.
         - Hacked Cameras and Turrets will "reboot" and become re-enabled again after 2 minutes (plus an additional 2 minutes for each level of the Hacking skill)
