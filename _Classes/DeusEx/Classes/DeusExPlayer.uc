@@ -497,9 +497,10 @@ var globalconfig bool bLeftClickUnholster;                                  //En
 
 var int clickCountCyber; //CyberP: for double clicking to unequip
 var bool bStunted; //CyberP: for slowing player under various conditions
+var float stuntedTime; //SARGE: Replaces the SetTimer calls with a stuntedTime variable; Operates independently of bStunted, which is designed for stamina loss. This allows "temporary" stunting
 var bool bRegenStamina; //CyberP: regen when in water but head above water
 var bool bCrouchRegen;  //CyberP: regen when crouched and has skill
-var bool bDoubleClickCheck; //CyberP: to return from double clicking.
+var float doubleClickCheck; //CyberP: to return from double clicking.
 var travel Inventory assignedWeapon;
 var Inventory primaryWeapon;
 var float augEffectTime;
@@ -5391,7 +5392,7 @@ function DoJump( optional float F )
         //if (JumpZ > 650)      //CyberP: fix super jump exploit.
         //JumpZ = default.JumpZ;
         SetPhysics(PHYS_Flying);
-        if (bStunted)
+        if (IsStunted())
         {
         Velocity = Vector(Rotation) * 200;
         Velocity.Z = JumpZ*0.5;
@@ -5492,7 +5493,7 @@ if (Physics == PHYS_Walking)
         //if (JumpZ > 650)      //CyberP: fix super jump exploit.
         //JumpZ = default.JumpZ;
 
-        if (bStunted)
+        if (IsStunted())
         Velocity.Z = JumpZ*0.75;                                                 //RSD: Was 0.75
         else
 		Velocity.Z = JumpZ;
@@ -6115,7 +6116,7 @@ state PlayerWalking
 
 
        //CyberP: slow the player under certain conditions
-       if (bStunted)
+       if (IsStunted())
        {
          if (Physics == PHYS_Walking && !bOnLadder)
          {
@@ -6256,7 +6257,6 @@ state PlayerWalking
             if (bStaminaSystem || bHardCoreMode)
             {
                bStunted = true;
-               SetTimer(3,false);
                if (!bOnLadder && FRand() < 0.7)
                {
                    PlayBreatheSound();
@@ -6272,17 +6272,6 @@ state PlayerWalking
       {
       if (bIsWalking || (Velocity.X == 0 && Velocity.Y == 0))
 	  {
-	    if (bBoosterUpgrade)
-        {
-           if (Energy > 0 && SwimTimer < SwimDuration * 0.25)
-           {
-               if (!bStunted && SwimTimer > 1)
-               {
-               SetTimer(1.5,false);
-               AugmentationSystem.AutoAugs(false,false);
-               }
-           }
-        }
 		
 		//SARGE: Moved Endurance check to here.
         bCrouchRegen=PerkManager.GetPerkWithClass(class'DeusEx.PerkEndurance').bPerkObtained;
@@ -6614,6 +6603,20 @@ state PlayerWalking
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
 
+        //Stop double click timer
+        if (doubleClickCheck > 0)
+        {
+            doubleClickCheck -= deltaTime;
+            if (doubleClickCheck <= 0)
+            {
+                doubleClickCheck = 0;
+                clickCountCyber=0;
+            }
+        }
+
+        //Stop being stunted if we elapse the stunted timer
+        if (stuntedTime > 0)
+            stuntedTime -= deltaTime;
         //Fire blocking is only valid for 1 frame
         bBlockNextFire = False;
 
@@ -8006,8 +8009,7 @@ function bool IsReallyFrobbable(Actor target, optional bool left)
 
 function SetDoubleClickTimer()
 {
-    SetTimer(0.3,false);
-    bDoubleClickCheck=True;
+    doubleClickCheck=0.4;
     clickCountCyber=1;
 }
     
@@ -14566,8 +14568,9 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
        {
          if (AugmentationSystem.GetAugLevelValue(class'AugShield') == -1.0)// && PerkNamesArray[6] != 1) //RSD: Meh, no more steady-footed perk (who got this?)
          {
-           bStunted = True;
-           SetTimer(0.4,false);
+           //SetTimer(0.4,false); //SARGE: Replaced with stuntedTime variable
+            if (stuntedTime < 0.4)
+                stuntedTime = 0.4;
          }
        }
     }
@@ -15249,22 +15252,13 @@ function Timer()      //CyberP: my god I've turned this into a mess.
 
     if (bBoosterUpgrade && !HeadRegion.Zone.bWaterZone)
         AugmentationSystem.AutoAugs(true,false);
-    
-    if (bDoubleClickCheck)
-    {
-      clickCountCyber = 0;
-      bDoubleClickCheck=False;
-    }
 
     if (Physics == PHYS_Flying)
     {
      SetPhysics(PHYS_Falling);
-     bStunted = False;
      if (!bOnFire)
           return;
 	}
-
-    //bStunted = False;  //CyberP: called from takedamage.
 
 	if (!InConversation() && bOnFire)
 	{
@@ -15280,8 +15274,6 @@ function Timer()      //CyberP: my god I've turned this into a mess.
 			ExtinguishFire();
 		}
 	}
-
-    bCrouchHack = false;
 }
 
 // ----------------------------------------------------------------------
@@ -17822,6 +17814,14 @@ function bool FemaleEnabled()
 	TTex = Texture(DynamicLoadObject("FemJC.MenuPlayerSetupJCDentonFemale_1", class'Texture', true));
 	return TTex != None;
 }
+
+//SARGE: We can be stunted through stamina, which needs to be recharged (bStunted), or through
+//specific events like explosions (stuntedtime)
+function bool IsStunted()
+{
+    return bStunted || stuntedTime > 0;
+}
+
 
 // ----------------------------------------------------------------------
 // LipSynch()

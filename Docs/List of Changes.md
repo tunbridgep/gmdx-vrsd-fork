@@ -31,6 +31,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX "Create Custom Theme" menu being able to corrupt standard themes. Now the player is forced into the Custom HUD/Menu themes upon loading the custom theme creator.
     - Fixed GMDX bug which would make an empty subtitles box appear when interacting with things during first-person conversations, if subtitles were disabled.
     - Fixed GMDX bug where recharging items with biocells would cause the belt view in the inventory to continually get brighter and brighter until the inventory screen was closed.
+    - Fixed GMDX slowdowns related to calling timers many times repeatedly.
     - Fixed many other GMDX and Vanilla bugs.
     - Fixed GMDX bug where most inventory items with multiple skins (such as sodacans) weren't showing their skinned variants when being held in the players hands.
 - Quality of Life Improvements:
