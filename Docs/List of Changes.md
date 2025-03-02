@@ -153,6 +153,7 @@ Sarge's Changes since Beta 2.2:
         - With vRSD partial damage calculations were added, so this is now relevant again.
     - Crowbar has been changed from +5 damage vs breakables to instead having 2x damage against breakables, to scale better with low-tech.
     - Augmentation Changes
+        - Augmentations with a long recharge (like the Spy Drone) now have a progress bar in the augmentation display in the HUD to show when they will be ready.
         - Augmentations can now be swapped out with the opposite choice when finding duplicate augmentation Canisters.
             - Augmentations that are replaced this way will be reset to level 1.
             - Augmentations cannot be freely replaced with any other augmentation occupying the same slot, it must be the opposite choice from their relevant cannister.
