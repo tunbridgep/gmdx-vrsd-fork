@@ -35,6 +35,7 @@ var() localized String CanUpgradeLabel;
 var() localized String CurrentLevelLabel;
 var() localized String MaximumLabel;
 var() localized String AugRecharging;
+var localized String AugKillswitch;
 
 // which player am I attached to?
 var DeusExPlayer Player;
@@ -107,6 +108,8 @@ var travel int EnergyReserved;         //Amount of energy this aug uses when act
 var bool bSilentDeactivation;           //SARGE: Next time this augmentation is deactivated, it will not show a message. Used when reclaiming the spy drone.
 
 var travel int heartUpgraded;    //SARGE: Stores if an aug was upgraded via heart. Used for downgrading if we remove heart.
+
+var const bool bHasChargeBar;   //SARGE: Display a bar in the Active Augs window when this is charging.
 
 ////Augmentation Colors
 var Color colActive;
@@ -224,6 +227,13 @@ function ActivateKeyPressed()
 //Sarge: Added a boolean so that individual augs can define their own activation conditions
 function bool CanActivate(out string message)
 {
+   
+    //SARGE: If the players killswitch is engaged, their augmentations are disabled
+    if (player.killswitchTimer > 0)
+    {
+        message = AugKillswitch;
+        return false;
+    }
 
     if (player.NanoVirusTimer > 0)                                              //RSD: If hit by nanovirus grenade, can't activate augs for seconds = damage
     {
@@ -708,6 +718,7 @@ defaultproperties
      AugLocsText(4)="Legs"
      AugLocsText(5)="Subdermal"
      AugLocsText(6)="Default"
+     AugKillswitch="Augmentation System has been disabled by user MJ12//SIMONS-W"
      AugActivated="%s activated"
      AugRecharging="%s is recharging"
      AugDeactivated="%s deactivated"
@@ -744,4 +755,5 @@ defaultproperties
      colPassive=(R=255,G=255)
      colActive=(R=0,G=38,B=255)
      colAuto=(G=255,B=255)
+     bHasChargeBar=True
 }

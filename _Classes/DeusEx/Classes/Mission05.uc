@@ -163,6 +163,17 @@ function FirstFrame()
 
 				player.AssignSecondary(None);
 				player.primaryWeapon = None;
+
+                //SARGE: If we're using the "Killswitch Engaged" playthrough mod,
+                //then set the killswitch to ~23 hours, as mentioned by Simons
+                if (player.bRealKillswitch && !flags.GetBool('GMDXKillswitchSet'))
+                {
+                    player.killswitchTimer = (23*60)*60;
+                    player.killswitchTimer += Player.Randomizer.GetRandomInt(3600);
+                    player.DeactivateAllAugs(true);
+                    //player.killSwitchTimer = 20; //For testing, set it to 20 seconds.
+                    flags.SetBool('GMDXKillswitchSet', True,, 6);
+                }
 			}
 
 			flags.SetBool('MS_InventoryRemoved', True,, 6);

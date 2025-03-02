@@ -501,7 +501,7 @@ event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
 
 	// If a number key was pressed and we have a selected inventory item,
 	// then assign the hotkey
-	if (( key >= IK_0 ) && ( key <= IK_9 ) && (selectedItem != None) && (Inventory(selectedItem.GetClientObject()) != None))
+	if ((( key >= IK_0 ) && ( key <= IK_9 ) || key == IK_Minus || key == IK_Equals) && (selectedItem != None) && (Inventory(selectedItem.GetClientObject()) != None))
 	{
 		invBelt.AssignObjectBeltByKey(Inventory(selectedItem.GetClientObject()), key);
 	}
@@ -2456,7 +2456,8 @@ defaultproperties
      clientBorderTextures(0)=Texture'DeusExUI.UserInterface.InventoryBorder_1'
      clientBorderTextures(1)=Texture'DeusExUI.UserInterface.InventoryBorder_2'
      clientBorderTextures(2)=Texture'DeusExUI.UserInterface.InventoryBorder_3'
-     clientBorderTextures(3)=Texture'DeusExUI.UserInterface.InventoryBorder_4'
+     //clientBorderTextures(3)=Texture'DeusExUI.UserInterface.InventoryBorder_4'
+     clientBorderTextures(3)=Texture'RSDCrap.UserInterface.InventoryBorder_4_big'
      clientBorderTextures(4)=Texture'DeusExUI.UserInterface.InventoryBorder_5'
      clientBorderTextures(5)=Texture'DeusExUI.UserInterface.InventoryBorder_6'
      clientTextureRows=2

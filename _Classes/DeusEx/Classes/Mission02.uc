@@ -105,9 +105,9 @@ function FirstFrame()
 	else if (localURL == "02_NYC_UNDERGROUND") //Totalitarian: change troop barks if confix is detected
 	{
         //Randomise the 2167 code
-        if (Player.bNoKeypadCheese)
+        if (Player.iNoKeypadCheese > 0)
         {
-            newPasscode = string(Rand(8999) + 1000);
+            newPasscode = string(Rand(899999) + 1000);
             //player.ClientMessage("New code is " $ newPasscode);
             foreach AllActors(class'Keypad', K)
             {
@@ -126,20 +126,6 @@ function FirstFrame()
             }
                         
         }
-
-	     if (flags.GetBool('Enhancement_Detected'))
-	     {
-            foreach AllActors(class'ScriptedPawn', pawn)
-	        {
-               if (pawn.IsA('MJ12Troop'))
-               {
-                  if (pawn.BarkBindName == "MJ12Troop")
-                     pawn.BarkBindName = "MJ12TroopInSewer";
-                  else if (pawn.BarkBindName == "MJ12TroopB")
-                     pawn.BarkBindName = "MJ12TroopInSewerB";
-               }
-            }
-	     }
     }
 	else if (localURL == "02_NYC_HOTEL")
     {
@@ -212,7 +198,7 @@ function Timer()
 	local GuntherHermann Gunther;
 	local Actor A;
 	local SandraRenton Sandra;
-	local int count;
+	local int count, unconscious;
 	local Male3 GenericMale;
 
 	Super.Timer();
@@ -269,6 +255,14 @@ function Timer()
 
 				Player.GoalCompleted('LiberateBatteryParkSubway');
 				flags.SetBool('SubTerroristsDead', True,, 6);
+							
+				// count the number of unconscious terrorists
+				foreach AllActors(class'TerroristCarcass', carc, 'SubTerrorist')
+					if (carc.bNotDead || carc.itemName == "Unconscious")// || carc.KillerBindName != "JCDenton")
+						unconscious++;
+				
+				if (unconscious <= 6)
+					flags.SetBool('SubTerroristsKilledLethal', True,, 6);
 			}
 		}
 

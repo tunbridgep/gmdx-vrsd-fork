@@ -29,6 +29,10 @@ function FirstFrame()
 				if (pawn.IsA('Jock') || pawn.IsA('TracerTong'))
 					pawn.EnterWorld();
 		}
+
+        //Remove the free password on Hardcore mode
+        if (player.bHardcoreMode)
+            flags.SetBool('VandenbergSkipPassword', True,, 14);
 	}
 	else if (localURL == "12_VANDENBERG_GAS")
 	{

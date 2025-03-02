@@ -70,13 +70,14 @@ var bool bRandomizeAugs;
 var bool bRandomizeEnemies;
 var bool bAddictionSystem;
 var bool bRestrictedSaving;
-var bool bNoKeypadCheese;
+var int iNoKeypadCheese;
 var bool bExtraHardcore;
 var bool bMoreLDDPNPCs;
 //var bool bRestrictedMetabolism;
 var bool bPrisonStart;
 var bool bDisableConsoleAccess;
 var bool bWeaponRequirementsMatter;
+var bool bRealKillswitch;
 
 //LDDP
 var bool bFemaleEnabled;
@@ -131,19 +132,20 @@ event InitWindow()
     bRandomizeAugs=false;                                                       //RSD
     bAddictionSystem=false;                                                     //RSD
     bRestrictedSaving=false;                                                    //Sarge
-    bNoKeypadCheese=false;                                                      //Sarge
+    iNoKeypadCheese=0;      	                                                //Sarge
     bRandomizeEnemies=false;                                                    //Sarge
     bExtraHardcore=false;                                                       //Sarge
     bMoreLDDPNPCs=false;                                                        //Sarge
     bDisableConsoleAccess=false;                                                //Sarge
     bWeaponRequirementsMatter=false;                                            //Sarge
+    bRealKillswitch=false;                                                      //Sarge
     //bRestrictedMetabolism=false;                                              //Sarge
     default.bRandomizeCrates=false;                                             //RSD: Also need default values! Otherwise get command in modifier menu takes the wrong value
     default.bRandomizeMods=false;                                               //RSD
     default.bRandomizeAugs=false;                                               //RSD
     default.bAddictionSystem=false;                                             //RSD
     default.bRestrictedSaving=false;                                            //Sarge
-    default.bNoKeypadCheese=false;                                              //Sarge
+    default.iNoKeypadCheese=0;                                                  //Sarge
     default.bRandomizeEnemies=false;                                            //Sarge
     default.bExtraHardcore=false;                                               //Sarge
     default.bMoreLDDPNPCs=false;                                                //Sarge
@@ -151,6 +153,7 @@ event InitWindow()
     default.bPrisonStart=false;                                                 //Sarge
     default.bDisableConsoleAccess=false;                                        //Sarge
     default.bWeaponRequirementsMatter=false;                                    //Sarge
+    default.bRealKillswitch=false;                                              //Sarge
 
 	StyleChanged();
 }
@@ -799,7 +802,7 @@ function SaveSettings()
     player.bRandomizeMods=bRandomizeMods;                                       //RSD
     player.bRandomizeAugs=bRandomizeAugs;                                       //RSD
     player.bRestrictedSaving=bRestrictedSaving;                                 //Sarge
-    player.bNoKeypadCheese=bNoKeypadCheese;                                     //Sarge
+    player.iNoKeypadCheese=iNoKeypadCheese;                                     //Sarge
     player.bRandomizeEnemies=bRandomizeEnemies;                                 //Sarge
     player.bPrisonStart=bPrisonStart;                                           //Sarge
     if (player.bRandomizeAugs)                                                  //RSD: New aug randomization feature
@@ -810,6 +813,7 @@ function SaveSettings()
     player.bMoreLDDPNPCs=bMoreLDDPNPCs;                                         //Sarge
     player.bDisableConsoleAccess=bDisableConsoleAccess;                         //Sarge
     player.bWeaponRequirementsMatter=bWeaponRequirementsMatter;                 //Sarge
+    player.bRealKillswitch=bRealKillswitch;                                     //Sarge
 
     //LDDP
 	THuman = Human(Player);

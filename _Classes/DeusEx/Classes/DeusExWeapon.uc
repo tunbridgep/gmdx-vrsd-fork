@@ -1376,7 +1376,7 @@ function PlaySelect()
 		bReadyToFire = False;
 		GotoState('NormalFire');
 		bPointing=True;
-		if (IsA('WeaponHideAGun'))
+		if (IsA('WeaponHideAGun') || IsA('WeaponLAW'))
         {
             firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
             OnProjectileFired(firedProjectile);
@@ -1453,7 +1453,7 @@ local string msgContactOn;
 local string msgContactOff;
 
 	// single use or hand to hand weapon if ReloadCount == 0
-	if (ReloadCount == 0)
+	if (ReloadCount == 0 || bDisposableWeapon)
 	{
 	    if (Owner.IsA('DeusExPlayer'))
 		    DeusExPlayer(Owner).ClientMessage(msgCannotBeReloaded);
@@ -2320,7 +2320,7 @@ simulated function Tick(float deltaTime)
 	if (ClipCount > 0)
 	{
 		// check for LAM or other placed mine placement
-		if (bHandToHand && (ProjectileClass != None) && (!Self.IsA('WeaponShuriken')))
+		if (bHandToHand && (ProjectileClass != None) && (!Self.IsA('WeaponShuriken')) && (!Self.IsA('WeaponLAW')))
 		{
 			if (NearWallCheck())
 			{
@@ -3507,7 +3507,7 @@ function Fire(float Value)
 		bReadyToFire = False;
 		GotoState('NormalFire');
 		bPointing=True;
-		if (IsA('WeaponHideAGun'))
+		if (IsA('WeaponHideAGun') || IsA('WeaponLAW'))
         {
             firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
             OnProjectileFired(firedProjectile);
@@ -3643,7 +3643,7 @@ simulated function PlaySelectiveFiring()
 	if (bHandToHand)
 	{
 		rnd = FRand();
-		if (IsA('WeaponHideAGun'))
+		if (IsA('WeaponHideAGun') || IsA('WeaponLAW'))
             anim = 'Shoot';
 		else if (rnd < 0.33)
 			anim = 'Attack';
@@ -3692,7 +3692,7 @@ simulated function PlaySelectiveFiring()
 		       LoopAnim(anim,1 * mod, 0.1);
 		      //PlayAnim(anim,1 * mod, 0.1);
 		}
-		else if (bHandToHand && !IsA('WeaponHideAGun'))
+		else if (bHandToHand && !IsA('WeaponHideAGun') && !IsA('WeaponLAW'))
 		{
 			if (hhspeed < 1.0)
 				hhspeed = 1.0;
@@ -5650,7 +5650,7 @@ simulated function bool UpdateInfo(Object winObject)
 	winInfo.AddInfoItem(msgInfoMaxRange, str,HasRangeMod());                    //RSD: Added HasRangeMod()
 
 	//Noise level
-	if (!bHandToHand || IsA('WeaponProd') || IsA('WeaponHideAGun') || IsA('WeaponPepperGun'))
+	if (!bHandToHand || IsA('WeaponProd') || IsA('WeaponHideAGun') || IsA('WeaponPepperGun') ||  IsA('WeaponLAW'))
 	{
 	noiseLev="dB";
 
@@ -6364,15 +6364,6 @@ Begin:
 	{
 	    FinishAnim();
     }
-	// if ReloadCount is 0 and we're not hand to hand, then this is a
-	// single-use weapon so destroy it after firing once
-
-	if (IsA('WeaponLAW'))
-	{
-		if (DeusExPlayer(Owner) != None)
-			DeusExPlayer(Owner).RemoveItemFromSlot(Self);   // remove it from the inventory grid
-		DestroyMe();
-	}
 	ReadyToFire();
 Done:
 	bFiring = False;

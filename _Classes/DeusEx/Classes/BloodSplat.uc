@@ -11,9 +11,9 @@ function BeginPlay()
 		Destroy();
 		return;
 	}
-
 	Super.BeginPlay();
 }
+
 exec function UpdateHDTPsettings()
 {
 	local Rotator rot;
@@ -22,13 +22,13 @@ exec function UpdateHDTPsettings()
     super.UpdateHDTPsettings();
 	rnd = FRand();
 	if (rnd < 0.25)
-		Texture = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFlatFXTex2","DeusExItems.Skins.FlatFXTex2",IsHDTP());
+		Texture = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFlatFXtex3","DeusExItems.Skins.FlatFXTex3",IsHDTP());
 	else if (rnd < 0.5)
-		Texture = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFlatFXTex5","DeusExItems.Skins.FlatFXTex5",IsHDTP());
+		Texture = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFlatFXtex5","DeusExItems.Skins.FlatFXTex5",IsHDTP());
 	else if (rnd < 0.75)
-		Texture = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFlatFXTex6","DeusExItems.Skins.FlatFXTex6",IsHDTP());
+		Texture = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFlatFXtex6","DeusExItems.Skins.FlatFXTex6",IsHDTP());
 
-    if (IsHDTP())
+    //if (IsHDTP()) //SARGE: Turns out the crappy texture can cope too!
         DrawScale += FRand() * 0.12;  //better textures can cope with greater size variation -DDL
 
 }
