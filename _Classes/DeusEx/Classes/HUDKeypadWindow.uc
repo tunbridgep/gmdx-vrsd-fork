@@ -34,6 +34,12 @@ var localized string msgAccessGranted;
 
 var bool jumpOut;
 
+var globalconfig bool bNumberPadStyle;                                               //SARGE: False for standard (phone pad) style, true for number pad style
+var globalconfig bool bDigitDisplay;                                                 //SARGE: Show numbers as we enter them.
+var globalconfig bool bReplaceSymbols;                                               //SARGE: Replace the * and # keys with < and C, which remove 1 character or all characters
+
+var bool bIgnore;                                                                    //SARGE: Ignore the next button press
+
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -156,6 +162,23 @@ function DrawBorder(GC gc)
 }
 
 // ----------------------------------------------------------------------
+// SARGE: TransposeNumber()
+// Now that the keys can be out of order, we need to
+// be able to transpose the numbers from the top row to the bottom row
+// ----------------------------------------------------------------------
+
+function int TransposeNumber(int number)
+{
+    if (number < 3 && bNumberPadStyle)
+        return 6 + number;
+    else if (number > 8 || number < 6 || !bNumberPadStyle)
+        return number;
+    else
+        return number - 6;
+
+}
+
+// ----------------------------------------------------------------------
 // CreateKeypadButtons()
 // ----------------------------------------------------------------------
 
@@ -163,6 +186,23 @@ function CreateKeypadButtons()
 {
 	local int i, x, y;
 
+    //SARGE: Rewritten to work as a keypad or a number pad
+
+    //place the buttons
+	for (y=0; y<4; y++)
+	{
+		for (x=0; x<3; x++)
+		{
+			i = x + y * 3;
+			btnKeys[i] = HUDKeypadButton(NewChild(Class'HUDKeypadButton'));
+			btnKeys[i].SetPos((x * 26) + 16, (y * 28) + 35);
+            btnKeys[i].num = TransposeNumber(i);
+		}
+	}
+
+    //Vanilla code is below - the non-numberpad version
+
+    /*
 	for (y=0; y<4; y++)
 	{
 		for (x=0; x<3; x++)
@@ -173,6 +213,7 @@ function CreateKeypadButtons()
 			btnKeys[i].num = i;
 		}
 	}
+    */
 }
 
 // ----------------------------------------------------------------------
@@ -206,7 +247,9 @@ function bool ButtonActivated( Window buttonPressed )
 	{
 		if (buttonPressed == btnKeys[i])
 		{
-			PressButton(i);
+            if (!bIgnore)
+                PressButton(i);
+            bIgnore = false;
 			bHandled = True;
 			break;
 		}
@@ -227,37 +270,58 @@ function bool ButtonActivated( Window buttonPressed )
 event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
 {
 	local bool bKeyHandled;
+    local int n;               //SARGE: Holds our pressed number, so we can manipulate it.
 
 	bKeyHandled = True;
 
-	if (IsKeyDown(IK_Alt) || IsKeyDown(IK_Ctrl))
+	if (IsKeyDown(IK_Alt) || IsKeyDown(IK_Ctrl) || bRepeat)
 		return False;
 
-	if (!bRepeat)
+    n = -1;
+
+    //SARGE: Allow shift-keying the asterisk and hash keys
+    if (IsKeyDown(IK_Shift) && key == IK_3)
+        n = -11;
+    else if (IsKeyDown(IK_Shift) && key == IK_8)
+        n = -9;
+    else
 	{
 		switch(key)
 		{
 			case IK_0:
-			case IK_NUMPAD0:	btnKeys[10].PressButton(); break;
+			case IK_NUMPAD0:    	n = 10; break;
 			case IK_1:
-			case IK_NUMPAD1:	btnKeys[0].PressButton(); break;
+			case IK_NUMPAD1:    	n = 0; break;
 			case IK_2:
-			case IK_NUMPAD2:	btnKeys[1].PressButton(); break;
+			case IK_NUMPAD2:    	n = 1; break;
 			case IK_3:
-			case IK_NUMPAD3:	btnKeys[2].PressButton(); break;
+			case IK_NUMPAD3:    	n = 2; break;
 			case IK_4:
-			case IK_NUMPAD4:	btnKeys[3].PressButton(); break;
+			case IK_NUMPAD4:    	n = 3; break;
 			case IK_5:
-			case IK_NUMPAD5:	btnKeys[4].PressButton(); break;
+			case IK_NUMPAD5:    	n = 4; break;
 			case IK_6:
-			case IK_NUMPAD6:	btnKeys[5].PressButton(); break;
+			case IK_NUMPAD6:    	n = 5; break;
 			case IK_7:
-			case IK_NUMPAD7:	btnKeys[6].PressButton(); break;
+			case IK_NUMPAD7:    	n = 6; break;
 			case IK_8:
-			case IK_NUMPAD8:	btnKeys[7].PressButton(); break;
+			case IK_NUMPAD8:    	n = 7; break;
 			case IK_9:
-			case IK_NUMPAD9:	btnKeys[8].PressButton(); break;
+			case IK_NUMPAD9:    	n = 8; break;
 
+            //Handle Asterisks and Stars
+            //These need to be handled specially, because we still need to
+            //differentiate between them, regardless of our keypad button settings
+            case IK_GreyStar:   	n = -9; break; //SARGE: Add number pad star
+			case IK_SingleQuote:	n = -11; break; //SARGE: Add number pad Hash
+            
+            //Handle removing characters with Backspace and Delete
+            case IK_Backspace:      DoBackspace(); break;
+            case IK_Delete:         DoDelete(); break;
+
+            //Use ENTER to manually validate the code when using No Keypad Cheese
+            case IK_Enter:          DoEnter(); break;
+            
 			default:
 				bKeyHandled = False;
 		}
@@ -265,8 +329,65 @@ event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
 
 	if (!bKeyHandled)
 		return Super.VirtualKeyPressed(key, bRepeat);
-	else
-		return bKeyHandled;
+	else if (n > -1)
+    {
+        n = TransposeNumber(n);        
+        btnKeys[n].PressButton();
+    }
+    else if (n != -1)
+        PressButton(n);
+    return bKeyHandled;
+}
+
+//SARGE: Allow text deletion
+function DoDelete(optional bool skipButton)
+{
+    //Press the keypad key if we have the keys showing
+    //HOLY HARDCODE BATMAN!
+    if (bReplaceSymbols && !skipButton)
+    {
+        bIgnore = true;
+        btnKeys[11].PressButton();
+    }
+
+    inputCode = "";
+
+    FinishSendKey(sound'Touchtone11');
+}
+
+//SARGE: Allow text deletion
+function DoBackspace(optional bool skipButton)
+{
+    //Press the keypad key if we have the keys showing
+    //HOLY HARDCODE BATMAN!
+    if (bReplaceSymbols && !skipButton)
+    {
+        bIgnore = true;
+        btnKeys[9].PressButton();
+    }
+
+    if (Len(inputCode) > 0)
+        inputCode = Left(inputCode,Len(inputCode) - 1);
+
+    FinishSendKey(sound'Touchtone10');
+}
+
+//SARGE: Allow text confirmation
+function DoEnter(optional bool skipButton)
+{
+    if (player.iNoKeypadCheese < 3)
+        return;
+
+    //Press the keypad key if we have the keys showing
+    //HOLY HARDCODE BATMAN!
+    if (!skipButton)
+    {
+        bIgnore = true;
+        btnKeys[11].PressButton();
+    }
+
+    FinishSendKey(sound'Touchtone11');
+    ValidateCode(true);
 }
 
 // ----------------------------------------------------------------------
@@ -282,9 +403,32 @@ function PressButton(int num)
 	if (bWait)
 		return;
 
-	if (Len(inputCode) < 16)
+    //Deletion, Enter and Backspace are handled manually
+    //This code fucking sucks.
+    if (bReplaceSymbols && num == 9)
+    {
+        DoBackspace(true);
+        return;
+    }
+    else if (player.iNoKeypadCheese >= 3 && num == 11)
+    {
+        DoEnter(true);
+        return;
+    }
+    else if (bReplaceSymbols && num == 11)
+    {
+        DoDelete(true);
+        return;
+    }
+
+    //Allow for manual asterisks/hashes, by inverting the number
+    num = abs(num);
+
+	if (Len(inputCode) < 12)
 	{
-		inputCode = inputCode $ IndexToString(num);
+        num = TransposeNumber(num);
+        inputCode = inputCode $ IndexToString(num,true);
+
 		switch (num)
 		{
 			case 0:		tone = sound'Touchtone1'; break;
@@ -301,14 +445,22 @@ function PressButton(int num)
 			case 11:	tone = sound'Touchtone11'; break;
 		}
 
-		player.PlaySound(tone, SLOT_None);
 	}
+
+    FinishSendKey(tone);
+}
+
+
+function FinishSendKey(Sound tone)
+{
+    if (tone != None)
+		player.PlaySound(tone, SLOT_None);
 
 	GenerateKeypadDisplay();
 	winText.SetTextColor(colHeaderText);
 	winText.SetText(msgEnterCode);
 
-	if (Len(inputCode) == Len(keypadOwner.validCode))
+	if (Len(inputCode) == Len(keypadOwner.validCode) && player.iNoKeypadCheese < 3)
 		ValidateCode(true);
 }
 
@@ -347,7 +499,10 @@ function ValidateCode(bool checkDiscovery)
 
 		player.PlaySound(keypadOwner.successSound, SLOT_None);
 		winText.SetTextColor(colGreen);
-		winText.SetText(msgAccessGranted);
+        if (bDigitDisplay && !bInstantSuccess)
+            winText.SetText(inputCode);
+        else
+            winText.SetText(msgAccessGranted);
         jumpOut = true;
 	}
 	else
@@ -358,7 +513,16 @@ function ValidateCode(bool checkDiscovery)
 
 		player.PlaySound(keypadOwner.failureSound, SLOT_None);
 		winText.SetTextColor(colRed);
-		winText.SetText(msgAccessDenied);
+
+        //SARGE: Easter egg from my childhood....
+        //...damn I'm getting old...
+        if (inputCode == "*10#")
+            player.ClientMessage("Call Waiting has been turned on");
+
+        if (bDigitDisplay)
+            winText.SetText(inputCode);
+        else
+            winText.SetText(msgAccessDenied);
         jumpOut = false;
 	}
 
@@ -396,7 +560,7 @@ function KeypadDelay(int timerID, int invocations, int clientData)
 // Convert the numbered button to a character
 // ----------------------------------------------------------------------
 
-function string IndexToString(int num)
+function string IndexToString(int num, optional bool forceOldSymbols)
 {
 	local string str;
 
@@ -406,9 +570,21 @@ function string IndexToString(int num)
 	// button 11 is #
 	switch (num)
 	{
-		case 9:		str = "*"; break;
+		case 9:
+            if (bReplaceSymbols && !forceOldSymbols)
+                str = "<";
+            else
+                str = "*";
+            break;
 		case 10:	str = "0"; break;
-		case 11:	str = "#"; break;
+		case 11:
+            if (player.iNoKeypadCheese >= 3 && !forceOldSymbols)
+                str = ">";
+            else if (bReplaceSymbols && !forceOldSymbols)
+                str = "C";
+            else
+                str = "#";
+            break;
 		default:	str = String(num+1); break;
 	}
 
@@ -419,19 +595,43 @@ function string IndexToString(int num)
 // GenerateKeypadDisplay()
 //
 // Generate the keypad's display
+// SARGE: Modified in the following ways:
+// 1. Show numbers instead of dots, if the setting is enabled.
+// 2. Reverse the dots from vanilla, because it looks better (white -> as we enter, instead of blue -> white)
+// 3. Disable all colours if we're using numbers mode
 // ----------------------------------------------------------------------
 
 function GenerateKeypadDisplay()
 {
-	local int i;
+	local int i, count;
+    local string c;         //SARGE: The character we are comparing. Unrealscript doesn't give us access to the characters of a string...what a shitty engine!
 
-	msgEnterCode = "";
+    //SARGE: Instead of doing all blue squares, and making them white as we enter.
+    //instead, start with white squares and make them blue as we enter...
+    if (!bDigitDisplay)
+        msgEnterCode = "|p5"; //p5 = dark blue. p4 = yellow and p7 = cyan both look great too.
+    else
+        msgEnterCode = "";
 
-	for (i=0; i<Len(keypadOwner.validCode); i++)
+    if (Len(keypadOwner.validCode) > Len(inputCode))
+        count = Len(keypadOwner.validCode);
+    else
+        count = Len(inputCode);
+
+	for (i=0; i<count; i++)
 	{
-		if (i == Len(inputCode))
-			msgEnterCode = msgEnterCode $ "|p5";
-		msgEnterCode = msgEnterCode $ "~";
+        if ((i == Len(inputCode) || player.iNoKeypadCheese >= 3) && !bDigitDisplay)
+            msgEnterCode = msgEnterCode $ "|p1";
+
+        c = Mid(inputCode,i,1);
+        
+        //SARGE: Now we show the actual numbers...
+        if (c != "" && bDigitDisplay)
+            msgEnterCode = msgEnterCode $ c;
+        //else if (bDigitDisplay)
+        //    msgEnterCode = msgEnterCode $ "-";
+        else if (player.iNoKeypadCheese < 3 || i < Len(inputCode))
+            msgEnterCode = msgEnterCode $ "~";
 	}
 }
 
@@ -464,4 +664,7 @@ defaultproperties
      texBorder=Texture'DeusExUI.UserInterface.HUDKeypadBorder'
      msgAccessDenied="~~DENIED~~"
      msgAccessGranted="~~GRANTED~~"
+     bNumberPadStyle=true
+     bDigitDisplay=true
+     bReplaceSymbols=true
 }

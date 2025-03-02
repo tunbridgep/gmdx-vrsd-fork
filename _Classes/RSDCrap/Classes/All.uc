@@ -50,6 +50,10 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\HudAmmoDisplayBackgroundSecondary.pcx"			NAME="HudAmmoDisplayBackgroundSecondary"			GROUP="UserInterface"
 #exec TEXTURE IMPORT FILE="Textures\HudAmmoDisplayBorderSecondary.pcx"			NAME="HudAmmoDisplayBorderSecondary"			GROUP="UserInterface"
 
+//Big Belt
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDObjectBeltBorder_2_big.pcx"			NAME="HUDOBjectBeltBorder_2_big"			GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\InventoryBorder_4_big.pcx"			    NAME="InventoryBorder_4_big"	           	GROUP="UserInterface"
+
 // Ammo
 #exec TEXTURE IMPORT FILE="Textures\Ammo10mmAPTex.pcx"			NAME="Ammo10mmAPTex"			GROUP="Skins"
 #exec TEXTURE IMPORT FILE="Textures\AmmoDartTex1.pcx"			NAME="AmmoDartTex1"			GROUP="Skins"
@@ -181,6 +185,10 @@ class All expands Object
 //New Wall Socket texture to replace GMDX's janky one
 #exec TEXTURE IMPORT FILE="Textures\Skins\SocketTex1.pcx"		    NAME="SocketTex1"	        GROUP="Skins"
 #exec TEXTURE IMPORT FILE="Textures\Skins\SocketTex1_broken.pcx"    NAME="SocketTex1_broken"	GROUP="Skins"
+
+//New Office Chair textures to match HDTP's style
+#exec TEXTURE IMPORT FILE="Textures\Skins\OfficeChairTex5.pcx"		NAME="OfficeChairTex5"	    GROUP="Skins"
+#exec TEXTURE IMPORT FILE="Textures\Skins\OfficeChairTex6.pcx"		NAME="OfficeChairTex6"	    GROUP="Skins"
 
 // New Sounds
 #exec AUDIO IMPORT FILE="Sounds\PistolCaseSound.wav"			NAME="PistolCaseSound"			GROUP="Weapons"
