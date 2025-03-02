@@ -1751,6 +1751,7 @@ exec function HDTP(optional string s)
 	local DeusExPickup PK;                                                      //SARGE: Added for object toggles
 	local DeusExProjectile PR;                                                  //SARGE: Added for object toggles
 	local DeusExAmmo AM;                                                        //SARGE: Added for object toggles
+	local DeusExDecal DC;                                                        //SARGE: Added for object toggles
     
     //SARGE: Yes, using the class name is necessary. Statics are weird.
 	class'DeusExPlayer'.default.bHDTPInstalled = class'HDTPLoader'.static.HDTPInstalled();
@@ -1769,6 +1770,12 @@ exec function HDTP(optional string s)
     	PR.UpdateHDTPsettings();
     foreach AllActors(Class'DeusExAmmo',AM)                                     //SARGE: Added for object toggles
     	AM.UpdateHDTPsettings();
+    //SARGE: These don't draw properly if we update them... What a shame!
+    //It was a good feature, what a rotten way to die!
+    /*
+    foreach AllActors(Class'DeusExDecal',DC)                                     //SARGE: Added for object toggles
+    	DC.UpdateHDTPsettings();
+    */
 
 	UpdateHDTPsettings();
 }
