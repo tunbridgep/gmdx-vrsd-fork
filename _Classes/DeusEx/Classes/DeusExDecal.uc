@@ -13,10 +13,14 @@ var float HDTPDrawScale; //Can resize the DrawScale for HDTP
 
 var bool bAttached, bStartedLife, bImportant;
 
+function BeginPlay()
+{
+    UpdateHDTPsettings();
+    super.BeginPlay();
+}
 simulated function PostBeginPlay()
 {
 	Super.PostBeginPlay();
-    UpdateHDTPsettings();
 	SetTimer(1.0, false);
 }
 
@@ -68,9 +72,9 @@ function ReattachDecal(optional vector newrot)
 		AttachDecal(32);
 }
 
-function bool IsHDTP()
+static function bool IsHDTP()
 {
-    return DeusExPlayer(GetPlayerPawn()).bHDTPInstalled && iHDTPModelToggle > 0;
+    return class'DeusExPlayer'.static.IsHDTPInstalled() && default.iHDTPModelToggle > 0;
 }
 
 exec function UpdateHDTPsettings()

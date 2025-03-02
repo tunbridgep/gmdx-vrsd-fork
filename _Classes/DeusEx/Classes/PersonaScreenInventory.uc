@@ -314,10 +314,7 @@ function CreateInventoryButtons()
 				    anItem.largeIconWidth = anItem.default.largeIconWidth;
 					anItem.largeIconHeight = anItem.default.largeIconHeight;
 				}
-                if (anItem.IsA('DeusExWeapon') && DeusExWeapon(anItem).largeIconRot != none && DeusExWeapon(anItem).bRotated) //RSD: Account for inventory rotation
-					newButton.SetIcon(DeusExWeapon(anItem).largeIconRot);
-				else
-					newButton.SetIcon(anItem.largeIcon);
+				newButton.SetIcon(anItem.largeIcon);
 				newButton.SetIconSize(anItem.largeIconWidth, anItem.largeIconHeight);
 			}
 			else
@@ -504,7 +501,7 @@ event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
 
 	// If a number key was pressed and we have a selected inventory item,
 	// then assign the hotkey
-	if (( key >= IK_0 ) && ( key <= IK_9 ) && (selectedItem != None) && (Inventory(selectedItem.GetClientObject()) != None))
+	if ((( key >= IK_0 ) && ( key <= IK_9 ) || key == IK_Minus || key == IK_Equals) && (selectedItem != None) && (Inventory(selectedItem.GetClientObject()) != None))
 	{
 		invBelt.AssignObjectBeltByKey(Inventory(selectedItem.GetClientObject()), key);
 	}
@@ -850,6 +847,9 @@ function UseSelectedItem()
 			numCopies = DeusExPickup(inv).NumCopies - 1;
 		else
 			numCopies = 0;
+		
+        //SARGE: Reset players accuracy bonus.
+        player.ResetAim();
 
 		// Update the object belt
 		invBelt.UpdateBeltText(inv);
@@ -2456,7 +2456,8 @@ defaultproperties
      clientBorderTextures(0)=Texture'DeusExUI.UserInterface.InventoryBorder_1'
      clientBorderTextures(1)=Texture'DeusExUI.UserInterface.InventoryBorder_2'
      clientBorderTextures(2)=Texture'DeusExUI.UserInterface.InventoryBorder_3'
-     clientBorderTextures(3)=Texture'DeusExUI.UserInterface.InventoryBorder_4'
+     //clientBorderTextures(3)=Texture'DeusExUI.UserInterface.InventoryBorder_4'
+     clientBorderTextures(3)=Texture'RSDCrap.UserInterface.InventoryBorder_4_big'
      clientBorderTextures(4)=Texture'DeusExUI.UserInterface.InventoryBorder_5'
      clientBorderTextures(5)=Texture'DeusExUI.UserInterface.InventoryBorder_6'
      clientTextureRows=2

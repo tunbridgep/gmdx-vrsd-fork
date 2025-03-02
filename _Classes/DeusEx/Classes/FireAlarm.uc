@@ -37,6 +37,7 @@ defaultproperties
      bCollideWorld=False
      bCollideActors=False
      bCanBeBase=False
-     bHighlight=False
+     bHighlight=True
      bFlammable=False
+	 bHDTPFailsafe=False
 }
