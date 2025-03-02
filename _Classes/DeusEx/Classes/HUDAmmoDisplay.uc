@@ -89,10 +89,14 @@ event DrawWindow(GC gc)
 {
     local DeusExWeapon weapon;
     local Inventory curr;
+    local float ammopostop, ammoposbtm;             //SARGE: Added
     curr = GetWeapon();
     weapon = DeusExWeapon(curr);
 
 	Super.DrawWindow(gc);
+
+    ammopostop = player.FontManager.GetTextPosition(27,26);
+    ammoposbtm = player.FontManager.GetTextPosition(39,38);
 
 	// No need to draw anything if the player doesn't have
 	// a weapon selected
@@ -107,13 +111,13 @@ event DrawWindow(GC gc)
 		gc.DrawTexture(22, 20, 40, 35, 0, 0, SkilledTool(curr).icon);
 
 		// Draw the ammo count
-		gc.SetFont(Font'TechMedium'); //CyberP: hud scaling Font'FontTiny'
+		gc.SetFont(player.FontManager.GetFont(TT_AmmoCount)); //CyberP: hud scaling Font'FontTiny'
 		gc.SetAlignments(HALIGN_Center, VALIGN_Top);   //CyberP: Valignment
 		gc.EnableWordWrap(false);
          
         gc.SetTextColor(colAmmoText);
-        gc.DrawText(infoX, 27, 20, 9, SkilledTool(curr).numCopies);
-        gc.DrawText(infoX, 39, 20, 9, NotAvailable);
+        gc.DrawText(infoX, ammopostop, 20, 9, SkilledTool(curr).numCopies);
+        gc.DrawText(infoX, ammoposbtm, 20, 9, NotAvailable);
     }
 
 	if ( weapon != None )
@@ -124,7 +128,7 @@ event DrawWindow(GC gc)
 		gc.DrawTexture(22, 20, 40, 35, 0, 0, weapon.icon);
 
 		// Draw the ammo count
-		gc.SetFont(Font'TechMedium'); //CyberP: hud scaling Font'FontTiny'
+		gc.SetFont(player.FontManager.GetFont(TT_AmmoCount)); //CyberP: hud scaling Font'FontTiny'
 		gc.SetAlignments(HALIGN_Center, VALIGN_Top);   //CyberP: Valignment
 		gc.EnableWordWrap(false);
 			
@@ -143,14 +147,14 @@ event DrawWindow(GC gc)
         if (weapon.IsA('WeaponNanoSword'))
         {
             ammoInClip = WeaponNanoSword(weapon).ChargeManager.GetCurrentCharge();
-            gc.DrawText(infoX, 27, 20, 9, ammoInClip);
-			gc.DrawText(infoX, 39, 20, 9, NotAvailable);
+            gc.DrawText(infoX, ammopostop, 20, 9, ammoInClip);
+			gc.DrawText(infoX, ammoposbtm, 20, 9, NotAvailable);
         }
 		// Ammo count drawn differently depending on user's setting
 		else if (weapon.ReloadCount > 1 || weapon.IsA('WeaponGEPGun') || weapon.AmmoName == Class'Ammo20mm')
 		{
 
-			if (weapon.bPerShellReload || player.bDisplayTotalAmmo)
+			if (weapon.bPerShellReload || (player.bDisplayTotalAmmo && !player.bHardCoreMode))
 				clipsRemaining = weapon.NumRounds();
 			else
 				clipsRemaining = weapon.NumClips();
@@ -161,9 +165,9 @@ event DrawWindow(GC gc)
                 gc.SetTextColor(colAmmoText);
 
 			if (weapon.IsInState('Reload') && weapon.bPerShellReload == false)
-				gc.DrawText(infoX, 27, 20, 9, msgReloading);
+				gc.DrawText(infoX, ammopostop, 20, 9, msgReloading);
 			else
-				gc.DrawText(infoX, 27, 20, 9, ammoInClip);
+				gc.DrawText(infoX, ammopostop, 20, 9, ammoInClip);
 
 			// if there are no clips (or a partial clip) remaining, color me red
 			if (( clipsRemaining == 0 ) || (( clipsRemaining == 1 ) && ( ammoRemaining < 2 * weapon.ReloadCount )))
@@ -172,24 +176,24 @@ event DrawWindow(GC gc)
 				gc.SetTextColor(colAmmoText);
 
 			if (weapon.IsInState('Reload') && weapon.bPerShellReload == false)
-				gc.DrawText(infoX, 39, 20, 9, msgReloading);
+				gc.DrawText(infoX, ammoposbtm, 20, 9, msgReloading);
 			else
-				gc.DrawText(infoX, 39, 20, 9, clipsRemaining);
+				gc.DrawText(infoX, ammoposbtm, 20, 9, clipsRemaining);
 		}
 		else
 		{
-			gc.DrawText(infoX, 39, 20, 9, NotAvailable);
+			gc.DrawText(infoX, ammoposbtm, 20, 9, NotAvailable);
 
 			if (weapon.ReloadCount == 0)
 			{
-				gc.DrawText(infoX, 27, 20, 9, NotAvailable);
+				gc.DrawText(infoX, ammopostop, 20, 9, NotAvailable);
 			}
 			else
 			{
 				if (weapon.IsInState('Reload') && weapon.bPerShellReload == false)
-					gc.DrawText(infoX, 27, 20, 9, msgReloading);
+					gc.DrawText(infoX, ammopostop, 20, 9, msgReloading);
 				else
-					gc.DrawText(infoX, 27, 20, 9, ammoRemaining);
+					gc.DrawText(infoX, ammopostop, 20, 9, ammoRemaining);
 			}
 		}
 
@@ -238,7 +242,7 @@ function DrawBackground(GC gc)
         else
             gc.DrawText(66, 17, 21, 8, AmmoLabel);
 
-        if (weapon != None && weapon.bPerShellReload || weapon.AmmoName == Class'Ammo20mm' || player.bDisplayTotalAmmo)
+        if (weapon != None && weapon.bPerShellReload || weapon.AmmoName == Class'Ammo20mm' || (player.bDisplayTotalAmmo && !player.bHardCoreMode))
             gc.DrawText(66, 48, 21, 8, RoundsLabel);
         else if (player.bDisplayClips)
             gc.DrawText(66, 48, 21, 8, ClipsLabel);

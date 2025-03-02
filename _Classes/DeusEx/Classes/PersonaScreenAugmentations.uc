@@ -90,6 +90,8 @@ enum EAugmentationType
     Aug_Toggle
 };
 
+var bool bMedbot;                                     //SARGE: Set to TRUE if we're viewing the medbot aug screen.
+
 //LDDP, 10/28/21: Store this assessment for later.
 var bool bFemale;
 
@@ -693,6 +695,7 @@ function RefreshWindow(float DeltaTime)
     if (selectedAugButton != None)
     {
         PersonaAugmentationItemButton(selectedAugButton).SetLevel(selectedAug.GetCurrentLevel());
+        PersonaAugmentationItemButton(selectedAugButton).SetHeartUpgraded(selectedAug.heartUpgraded,bMedBot);
         PersonaAugmentationItemButton(selectedAugButton).SetActive(selectedAug);
     }
 
@@ -846,6 +849,7 @@ function PersonaAugmentationItemButton CreateAugButton(Augmentation anAug, int a
     }
 
 	newButton.SetLevel(anAug.GetCurrentLevel());
+    newButton.SetHeartUpgraded(anAug.heartUpgraded,bMedBot);
 
 	return newButton;
 }
@@ -1160,7 +1164,10 @@ function UpgradeAugmentation()
         }
 		// Update the level icons
 		if (selectedAugButton != None)
+        {
 			PersonaAugmentationItemButton(selectedAugButton).SetLevel(selectedAug.GetCurrentLevel());
+			PersonaAugmentationItemButton(selectedAugButton).SetHeartUpgraded(selectedAug.heartUpgraded,bMedBot);
+        }
 	}
 	else if (augCan != None)
 	{
@@ -1170,12 +1177,18 @@ function UpgradeAugmentation()
 		selectedAug.IncLevel();
 		selectedAug.UpdateInfo(winInfo);
 		player.PlaySound(sound'medkituse',SLOT_None);
+        
+        //SARGE: Reset players accuracy bonus.
+        player.ResetAim();
 
 		augCan.UseOnce();
 
 		// Update the level icons
 		if (selectedAugButton != None)
+        {
 			PersonaAugmentationItemButton(selectedAugButton).SetLevel(selectedAug.GetCurrentLevel());
+			PersonaAugmentationItemButton(selectedAugButton).SetHeartUpgraded(selectedAug.heartUpgraded,bMedBot);
+        }
 
 	}
 
@@ -1219,7 +1232,12 @@ function UseCell()
 	bioCell = BioelectricCell(player.FindInventoryType(Class'BioelectricCell'));
 
 	if (bioCell != None)
+    {
 		bioCell.Activate();
+        
+        //SARGE: Reset players accuracy bonus.
+        player.ResetAim();
+    }
 
 	if (bAllIconsReset)
         bAllIconsReset = False;

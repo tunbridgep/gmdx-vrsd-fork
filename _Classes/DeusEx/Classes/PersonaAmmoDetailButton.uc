@@ -122,7 +122,7 @@ function SetAmmo(Class<Ammo> newAmmo, bool bNewHasIt, optional int newRounds)
 	rounds = newRounds;
 
 	SetClientObject(ammo);
-	SetIcon(Class<DeusExAmmo>(ammo).Default.Icon);
+	SetIcon(Class<DeusExAmmo>(ammo).static.GetHDTPIcon());
 	UpdateIconColor(bHasIt);
 	SetSensitivity(bHasIt);
 }

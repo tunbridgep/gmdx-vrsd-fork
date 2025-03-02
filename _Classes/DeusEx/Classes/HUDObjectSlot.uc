@@ -70,6 +70,10 @@ var localized String RoundLabel;
 var localized String RoundsLabel;
 var localized String CountLabel;
 
+//GMDX
+
+var string beltText;            //SARGE: The number printed on the belt. Set to - and = for belt slots 11 and 12.
+
 // ----------------------------------------------------------------------
 // InitWindow()
 // ----------------------------------------------------------------------
@@ -322,7 +326,7 @@ local DeusExWeapon weapon;
 	// Draw the Object Slot Number in upper-right corner
 	gc.SetAlignments(HALIGN_Right, VALIGN_Center);
 	gc.SetTextColor(colObjectNum);
-	gc.DrawText(slotNumberX - 1, slotNumberY, 6, 7, objectNum);
+	gc.DrawText(slotNumberX - 1, slotNumberY, 6, 7, beltText);
 }
 
 function DrawHUDIcon(GC gc)

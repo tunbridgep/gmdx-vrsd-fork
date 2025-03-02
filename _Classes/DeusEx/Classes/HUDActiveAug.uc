@@ -9,6 +9,8 @@ var Color colBlack;
 var int    hotKeyNum;
 var String hotKeyString;
 
+var bool bHasChargeBar;
+
 // ----------------------------------------------------------------------
 // DrawHotKey()
 // ----------------------------------------------------------------------
@@ -16,7 +18,7 @@ var String hotKeyString;
 function DrawHotKey(GC gc)
 {
 	gc.SetAlignments(HALIGN_Right, VALIGN_Top);
-	gc.SetFont(Font'FontMenuSmall');  //'FontTiny' //CyberP: for hud scaling
+	gc.SetFont(player.FontManager.GetFont(TT_AugHotKey));  //'FontTiny' //CyberP: for hud scaling
 
 	// Draw Dropshadow
 	gc.SetTextColor(colBlack);
@@ -39,6 +41,11 @@ function SetObject(object newClientObject)
 	{
 		// Get the function key and set the text
 		SetKeyNum(Augmentation(newClientObject).GetHotKey());
+        bHasChargeBar = Augmentation(newClientObject).bHasChargeBar;
+
+        if (bHasChargeBar)
+            CreateEnergyBar();
+        bTickEnabled = bHasChargeBar;
 		UpdateAugIconStatus();
 	}
 }
@@ -66,6 +73,27 @@ function UpdateAugIconStatus()
 
 	if (aug != None)
         colItemIcon = aug.GetAugColor(true);
+}
+
+// ----------------------------------------------------------------------
+// Tick()
+//
+// Used to update the energy bar
+// SARGE: Copied from HudActiveItem
+// ----------------------------------------------------------------------
+
+event Tick(float deltaSeconds)
+{
+    local Augmentation aug;
+    aug = Augmentation(GetClientObject());
+
+	if (aug != None && bHasChargeBar)
+    {
+        if (aug.IsCharging())
+            winEnergy.SetCurrentValue(((aug.chargeTime - aug.currentChargeTime) / aug.chargeTime) * 100);
+        else
+            winEnergy.SetCurrentValue(0);
+    }
 }
 
 // ----------------------------------------------------------------------

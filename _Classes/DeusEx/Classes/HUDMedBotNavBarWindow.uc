@@ -33,6 +33,35 @@ function CreateButtonWindows()
 }
 
 // ----------------------------------------------------------------------
+// InvokeHealthScreen()
+// SARGE: Now a function, so we can call it from our children
+// ----------------------------------------------------------------------
+
+function InvokeHealthScreen()
+{
+	local HUDMedBotHealthScreen healthScreen;
+	local HUDMedBotAddAugsScreen augScreen;
+	local MedicalBot medBot;
+			
+    // Need to be sure the MedBot variable is set in the 
+    // Health Screen when we bring it up
+
+    augScreen = HUDMedBotAddAugsScreen(GetParent());
+    if (augScreen != None)
+    {
+        augScreen.SkipAnimation(True);
+        medBot = augScreen.medBot;
+    }
+
+    // Invoke the health screen
+    healthScreen = HUDMedBotHealthScreen(root.InvokeUIScreen(Class'HUDMedBotHealthScreen', True));
+
+    // Now set the medBot if it's not none
+    if (medBot != None)
+        healthScreen.SetMedicalBot(medBot);
+}
+
+// ----------------------------------------------------------------------
 // ButtonActivated()
 // ----------------------------------------------------------------------
 
@@ -48,23 +77,7 @@ function bool ButtonActivated(Window buttonPressed)
 	switch(buttonPressed)
 	{
 		case btnHealth:
-			// Need to be sure the MedBot variable is set in the 
-			// Health Screen when we bring it up
-
-			augScreen = HUDMedBotAddAugsScreen(GetParent());
-			if (augScreen != None)
-			{
-				augScreen.SkipAnimation(True);
-				medBot = augScreen.medBot;
-			}
-
-			// Invoke the health screen
-			healthScreen = HUDMedBotHealthScreen(root.InvokeUIScreen(Class'HUDMedBotHealthScreen', True));
-
-			// Now set the medBot if it's not none
-			if (medBot != None)
-				healthScreen.SetMedicalBot(medBot);
-
+            InvokeHealthScreen();
 			break;
 
 		case btnAugs:

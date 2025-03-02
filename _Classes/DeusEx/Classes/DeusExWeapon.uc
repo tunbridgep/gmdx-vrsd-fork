@@ -295,6 +295,7 @@ var float attackSpeedMult;                                                      
 var bool bPerShellReload;                                                       //RSD: To avoid convoluted class checking (Sawed-Off, Assault Shotgun, Mini-Crossbow, and GEP)
 var localized string abridgedName;                                              //RSD: For weapons with 30+ char names in MenuScreenHDTPToggles.uc
 var texture largeIconRot;                                                       //RSD: rotated inventory icon
+var texture largeIconUnrot;                                                     //RSD: unrotated inventory icon
 var travel bool bRotated;                                                      //Is this item rotated?
 var travel int invSlotsXtravel;                                                 //RSD: since Inventory invSlotsX doesn't travel through maps
 var travel int invSlotsYtravel;                                                 //RSD: since Inventory invSlotsY doesn't travel through maps
@@ -318,6 +319,7 @@ var string HDTPPickupViewMesh;
 var string HDTPThirdPersonMesh;
 var string HDTPIcon;
 var string HDTPLargeIcon;
+var string HDTPLargeIconRot;
 var Texture handsTex;                                        //SARGE: Store the hands texture for performance
 
 var int MuzzleSlot;                                                 //SARGE: Slot where the muzzle tex will go
@@ -417,6 +419,16 @@ function Unrotate()
     invSlotsX=default.invSlotsX;
     invSlotsY=default.invSlotsy;
     largeIcon = default.largeIcon;
+    UpdateLargeIcon();
+}
+
+//Updates the LargeIcon based on whether or not we're rotated
+function UpdateLargeIcon()
+{
+    if (bRotated)
+        largeIcon = largeIconRot;
+    else
+        largeIcon = largeIconUnrot;
 }
 
 //SARGE: Resize heavy weapons
@@ -477,10 +489,6 @@ function DoWeaponOffset(DeusExPlayer player)
             default.PlayerViewOffset.y = oldOffsets.y;
             default.PlayerViewOffset.z = oldOffsets.z;
         }
-
-        default.FireOffset.x = -(default.PlayerViewOffset.x);
-        default.FireOffset.y = -(default.PlayerViewOffset.y);
-        default.FireOffset.z = -(default.PlayerViewOffset.z);
     }
 }
 
@@ -843,7 +851,7 @@ simulated event RenderOverlays( canvas Canvas )
     
         DisplayWeapon(true);
 
-        if (CurrentMuzzleFlash != None)
+        if (CurrentMuzzleFlash != None && MuzzleSlot < 8 && MuzzleSlot > -1)
             MultiSkins[MuzzleSlot] = CurrentMuzzleFlash;
     
         if (bIsRadar || bIsCloaked)
@@ -1412,9 +1420,9 @@ function PlaySelect()
 	}
 }
 
-function bool IsHDTP()
+static function bool IsHDTP()
 {
-    return DeusExPlayer(GetPlayerPawn()) != None && DeusExPlayer(GetPlayerPawn()).bHDTPInstalled && iHDTPModelToggle > 0;
+    return class'DeusExPlayer'.static.IsHDTPInstalled() && default.iHDTPModelToggle > 0;
 }
 
 function CheckWeaponSkins()
@@ -3024,6 +3032,7 @@ simulated function EraseMuzzleFlashTexture()
 		return;
 		
     CurrentMuzzleFlash = None;
+    if (MuzzleSlot > -1 && muzzleSlot < 8)
     MultiSkins[MuzzleSlot] = None;
 }
 
@@ -3422,9 +3431,12 @@ function Fire(float Value)
 
     player = DeusExPlayer(Owner);
 
-    //Sarge: Restrict fire if drone is active or just exploded.
-    if (player != None && !player.bSpyDroneSet && (player.bSpyDroneActive || player.bDroneExploded))
+    //Sarge: Restrict fire if firing is blocked (used when detonating drone).
+    if (player != None && player.bBlockNextFire)
+    {
+        player.bBlockNextFire = false;
         return;
+    }
 
     if (Pawn(Owner).IsInState('Dying') || (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).bGEPprojectileInflight))
     {
@@ -4181,7 +4193,15 @@ simulated function Vector ComputeProjectileStart(Vector X, Vector Y, Vector Z)
 	if (bInstantHit)
 		Start = Owner.Location + Pawn(Owner).BaseEyeHeight * vect(0,0,1);// - Vector(Pawn(Owner).ViewRotation)*(0.9*Pawn(Owner).CollisionRadius);
 	else
+    {
+        //SARGE: Filthy. dirty hack!!
+        //We need to reset our offsets because otherwise projectiles can
+        //spawn too close to the player, and collide with him!
+        if (bOldOffsetsSet)
+            default.PlayerViewOffset = oldOffsets;
 		Start = Owner.Location + CalcDrawOffset() + FireOffset.X * X + FireOffset.Y * Y + FireOffset.Z * Z;
+        DoWeaponOffset(DeusExPlayer(Owner));
+    }
 
 	return Start;
 }
@@ -6159,9 +6179,12 @@ exec function UpdateHDTPsettings()
 
     Skin = default.Skin;
     Texture = default.Texture;
+    largeIconUnrot = default.largeIcon;
 
     if (HDTPLargeIcon != "")
-        LargeIcon = class'HDTPLoader'.static.GetTexture2(HDTPLargeIcon,string(default.LargeIcon),IsHDTP());
+        LargeIconUnrot = class'HDTPLoader'.static.GetTexture2(HDTPLargeIcon,string(default.LargeIcon),IsHDTP());
+    if (HDTPLargeIconRot != "")
+        LargeIconRot = class'HDTPLoader'.static.GetTexture2(HDTPLargeIconRot,string(default.LargeIconRot),IsHDTP());
     if (HDTPIcon != "")
         Icon = class'HDTPLoader'.static.GetTexture2(HDTPIcon,string(default.Icon),IsHDTP());
     if (HDTPPlayerViewMesh != "")
@@ -6190,7 +6213,7 @@ exec function UpdateHDTPsettings()
     }
 
     SetWeaponHandTex();
-
+    UpdateLargeIcon();
     CheckWeaponSkins();
     DoWeaponOffset(DeusExPlayer(GetPlayerPawn()));
 }

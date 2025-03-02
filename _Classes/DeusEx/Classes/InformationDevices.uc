@@ -331,6 +331,10 @@ exec function UpdateHDTPsettings()
     if (!IsHDTP())
     {
         skin = default.Skin;
+        Multiskins[0] = default.Multiskins[0];
+        Multiskins[1] = default.Multiskins[1];
+        Multiskins[2] = default.Multiskins[2];
+        Multiskins[3] = default.Multiskins[3];
         return;
     }
 

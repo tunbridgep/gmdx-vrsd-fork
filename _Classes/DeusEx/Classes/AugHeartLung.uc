@@ -3,6 +3,8 @@
 //=============================================================================
 class AugHeartLung extends Augmentation;
 
+var localized string CombinedDesc;
+
 //CyberP: now automatic w/ use of a silly hack. Be wary of modifiying aug drain rates.
 state Active
 {
@@ -28,6 +30,18 @@ simulated function float GetEnergyRate()
 	return energyRate * LevelValues[CurrentLevel];
 }
 
+//SARGE: If we have Heart and Power, display the total energy penalty/savings
+function string GetDescription()
+{
+    local int energyMod;
+
+    if (!player.AugmentationSystem.GetAug(class'AugPower').bHasIt || !bHasIt)
+        return Description;
+
+    energyMod = int(GetAdjustedEnergy(100));
+    return Description $ "|n|n" $ sprintf(CombinedDesc,energyMod);
+}
+
 defaultproperties
 {
      EnergyRate=0.000000
@@ -36,6 +50,7 @@ defaultproperties
      AugmentationType=Aug_Passive
      AugmentationName="Synthetic Heart"
      Description="This synthetic heart circulates not only blood but a steady concentration of mechanochemical power cells, smart phagocytes, and liposomes containing prefab diamondoid machine parts, resulting in upgraded performance for all installed augmentations.|n|n<UNATCO OPS FILE NOTE JR133-VIOLET> However, this will not enhance any augmentation past its maximum upgrade level. -- Jaime Reyes <END NOTE>|n|nNO UPGRADES"
+     CombinedDesc="When combined with Power Recirculator, the energy bonus and penalty are added together. Current energy rate: %d%%"
      LevelValues(0)=1.400000
      LevelValues(1)=1.300000
      LevelValues(2)=1.200000

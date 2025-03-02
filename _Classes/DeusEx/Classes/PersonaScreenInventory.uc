@@ -13,7 +13,7 @@ var Window                        winItems;
 var PersonaInventoryInfoWindow    winInfo;
 var PersonaItemButton             selectedItem;			// Currently Selected Inventory item
 var PersonaInventoryCreditsWindow winCredits;
-var PersonaItemDetailWindow       winNanoKeyRing;
+var NanoKeyWindow                 winNanoKeyRing;       //SARGE: Changed to NanoKeyWindow
 var PersonaItemDetailWindow       winAmmo;
 
 var Bool bUpdatingAmmoDisplay;
@@ -216,12 +216,12 @@ function CreateCreditsWindow()
 
 function CreateNanoKeyRingWindow()
 {
-	winNanoKeyRing = PersonaItemDetailWindow(winClient.NewChild(Class'PersonaItemDetailWindow'));
+	winNanoKeyRing = NanoKeyWindow(winClient.NewChild(Class'NanoKeyWindow'));
 	winNanoKeyRing.SetPos(335, 285);
 	winNanoKeyRing.SetWidth(121);
 	winNanoKeyRing.SetIcon(Class'NanoKeyRing'.Default.LargeIcon);
 	winNanoKeyRing.SetItem(player.KeyRing);
-	winNanoKeyRing.SetText(NanoKeyRingInfoText);
+    winNanoKeyRing.SetText(NanoKeyRingInfoText);
 	winNanoKeyRing.SetTextAlignments(HALIGN_Center, VALIGN_Center);
 	winNanoKeyRing.SetCountLabel(NanoKeyRingLabel);
 	winNanoKeyRing.SetCount(player.KeyRing.GetKeyCount());
@@ -314,10 +314,7 @@ function CreateInventoryButtons()
 				    anItem.largeIconWidth = anItem.default.largeIconWidth;
 					anItem.largeIconHeight = anItem.default.largeIconHeight;
 				}
-                if (anItem.IsA('DeusExWeapon') && DeusExWeapon(anItem).largeIconRot != none && DeusExWeapon(anItem).bRotated) //RSD: Account for inventory rotation
-					newButton.SetIcon(DeusExWeapon(anItem).largeIconRot);
-				else
-					newButton.SetIcon(anItem.largeIcon);
+				newButton.SetIcon(anItem.largeIcon);
 				newButton.SetIconSize(anItem.largeIconWidth, anItem.largeIconHeight);
 			}
 			else
@@ -504,7 +501,7 @@ event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
 
 	// If a number key was pressed and we have a selected inventory item,
 	// then assign the hotkey
-	if (( key >= IK_0 ) && ( key <= IK_9 ) && (selectedItem != None) && (Inventory(selectedItem.GetClientObject()) != None))
+	if ((( key >= IK_0 ) && ( key <= IK_9 ) || key == IK_Minus || key == IK_Equals) && (selectedItem != None) && (Inventory(selectedItem.GetClientObject()) != None))
 	{
 		invBelt.AssignObjectBeltByKey(Inventory(selectedItem.GetClientObject()), key);
 	}
@@ -810,11 +807,26 @@ function UseSelectedItem()
 {
 	local Inventory inv;
 	local int numCopies;
+	local Class<PersonaScreenBaseWindow> winClass;
+
+    winClass = Class'PersonaScreenAugmentations';
 
 	inv = Inventory(selectedItem.GetClientObject());
 
 	if (inv != None)
 	{
+        //SARGE: Special handling for aug canister
+		if (inv.IsA('AugmentationUpgradeCannister'))
+        {
+            winClass = Class'PersonaScreenAugmentations';
+            if (root != None && winClass != None)
+            {
+                PersonaScreenBaseWindow(GetParent()).SaveSettings();
+                root.InvokeUIScreen(winClass,Player.bRealUI || Player.bHardCoreMode);
+                return;
+            }
+        }
+
 		// If this item was equipped in the inventory screen,
 		// make sure we set inHandPending to None so it's not
 		// drawn when we exit the Inventory screen
@@ -835,6 +847,9 @@ function UseSelectedItem()
 			numCopies = DeusExPickup(inv).NumCopies - 1;
 		else
 			numCopies = 0;
+		
+        //SARGE: Reset players accuracy bonus.
+        player.ResetAim();
 
 		// Update the object belt
 		invBelt.UpdateBeltText(inv);
@@ -1291,9 +1306,10 @@ function EnableButtons()
 			}
 			// Augmentation Upgrade Cannisters cannot be used
 			// on this screen
+            // SARGE: Now they can!
 			else if ( inv.IsA('AugmentationUpgradeCannister') )
 			{
-				btnUse.DisableWindow();
+				//btnUse.DisableWindow();
 				btnChangeAmmo.DisableWindow();
 			}
 			// Ammo can't be used or equipped
@@ -2440,7 +2456,8 @@ defaultproperties
      clientBorderTextures(0)=Texture'DeusExUI.UserInterface.InventoryBorder_1'
      clientBorderTextures(1)=Texture'DeusExUI.UserInterface.InventoryBorder_2'
      clientBorderTextures(2)=Texture'DeusExUI.UserInterface.InventoryBorder_3'
-     clientBorderTextures(3)=Texture'DeusExUI.UserInterface.InventoryBorder_4'
+     //clientBorderTextures(3)=Texture'DeusExUI.UserInterface.InventoryBorder_4'
+     clientBorderTextures(3)=Texture'RSDCrap.UserInterface.InventoryBorder_4_big'
      clientBorderTextures(4)=Texture'DeusExUI.UserInterface.InventoryBorder_5'
      clientBorderTextures(5)=Texture'DeusExUI.UserInterface.InventoryBorder_6'
      clientTextureRows=2
