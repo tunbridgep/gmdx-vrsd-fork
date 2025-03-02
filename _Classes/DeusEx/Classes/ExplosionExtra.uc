@@ -34,7 +34,7 @@ simulated function PostBeginPlay()
     offs.Y += 12;
     //Spawn(class'RockchipXL',None,,offs);
 
-    if (DeusExPlayer(GetPlayerPawn()) != None && DeusExPlayer(GetPlayerPawn()).bHDTPInstalled)
+    if (DeusExPlayer(GetPlayerPawn()) != None && DeusExPlayer(GetPlayerPawn()).IsHDTPInstalled())
     {
         /*
         //SARGE: Missing a frame here? Not sure if intentional. Re-did it below.

@@ -13,7 +13,7 @@ var(GMDX) bool codeExcepted;                            //SARGE: If set, this de
 //Allows us to determine if a code should be considered discovered
 function bool IsDiscovered(DeusExPlayer player, string code)
 {
-    return codeExcepted || !player.bNoKeypadCheese || player.GetCodeNote(code) || player.GetExceptedCode(code);
+    return codeExcepted || player.iNoKeypadCheese == 0 || player.GetCodeNote(code) || player.GetExceptedCode(code);
 }
 
 defaultproperties

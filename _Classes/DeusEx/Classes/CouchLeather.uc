@@ -3,31 +3,30 @@
 //=============================================================================
 class CouchLeather extends Seat;
 
-enum ESkinColor
+var int skinColor;
+
+function UpdateHDTPsettings()
 {
-	SC_Black,
-	SC_Blue,
-	SC_Brown,
-	SC_LitGray,
-	SC_Tan
-};
+    local Texture sk;
+	Super.UpdateHDTPsettings();
 
-var() ESkinColor SkinColor;
+    //For alternate skins, use the non-HDTP mesh
+    if (IsHDTP() && SkinColor > 0)
+        mesh=default.mesh;
 
-function BeginPlay()
-{
-	Super.BeginPlay();
+    switch (SkinColor)
+    {
+        case 0:		sk = class'HDTPLoader'.static.GetTexture2("HDTPDecos.HDTPCouchLeatherTex1","DeusExDeco.CouchLeatherTex1",IsHDTP()); break; //CyberP: HDTP update
+        case 1:		sk = Texture'CouchLeatherTex2'; break;
+        case 2:		sk = Texture'CouchLeatherTex3'; break;
+        case 3:	    sk = Texture'CouchLeatherTex4'; break;
+        case 4:		sk = Texture'CouchLeatherTex5'; break;
+    }
 
-	//blank this for now: when Phas or whoever makes HDTP versions of the other texes, then put back in
+    skin = sk;
+    //log("Chair skin is " $ SkinColor); 
+    //texture = sk;
 
-	//switch (SkinColor)
-	//{
-	//	case SC_Black:		Skin = Texture'CouchLeatherTex1'; break;
-	//	case SC_Blue:		Skin = Texture'CouchLeatherTex1'; break;
-	//	case SC_Brown:		Skin = Texture'CouchLeatherTex1'; break;
-	//	case SC_LitGray:	Skin = Texture'CouchLeatherTex1'; break;
-	//	case SC_Tan:		Skin = Texture'CouchLeatherTex1'; break;
-	//}
 }
 
 defaultproperties
@@ -39,9 +38,10 @@ defaultproperties
      HDTPSkin="HDTPDecos.Skins.HDTPCouchLeatherTex1"
      HDTPMesh="HDTPDecos.HDTPcouchleather"
      Mesh=LodMesh'DeusExDeco.CouchLeather'
-     Skin=Texture'DeusExDeco.Skins.CouchLeather1'
+     Skin=Texture'DeusExDeco.Skins.CouchLeatherTex1'
      CollisionRadius=47.880001
      CollisionHeight=23.250000
      Mass=218.000000
      Buoyancy=110.000000
+     bHDTPFailsafe=False
 }

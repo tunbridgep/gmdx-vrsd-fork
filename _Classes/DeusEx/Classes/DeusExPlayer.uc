@@ -423,6 +423,7 @@ var string HDTPTexture;
 var string HDTPMesh;
 var string HDTPMeshTex[8];
 var bool bHDTPInstalled;
+var globalconfig bool bHDTPEnabled;                      //SARGE: Master switch to enable or disable HDTP
 
 //GMDX: CyberP & dasraiser
 //SAVEOUT
@@ -475,7 +476,7 @@ var bool bForceBeltAutofill;    	    										//Sarge: Overwrite autofill setti
 var globalconfig bool bBeltMemory;  											//Sarge: Added new feature to allow belt to rember items
 var globalconfig bool bSmartKeyring;  											//Sarge: Added new feature to allow keyring to be used without belt, freeing up a slot
 var globalconfig int dynamicCrosshair;       									//Sarge: Allow using a special interaction crosshair
-var travel BeltInfo beltInfos[10];                                              //Sarge: Holds information about belt slots
+var travel BeltInfo beltInfos[12];                                              //Sarge: Holds information about belt slots
 var travel float fullUp; //CyberP: eat/drink limit.                             //RSD: was int, now float
 var localized string fatty; //CyberP: eat/drink limit.
 var localized string noUsing;  //CyberP: left click interaction
@@ -489,7 +490,6 @@ var transient bool bThrowDecoration;
 ////Belt Stuff
 var travel int SlotMem; //CyberP: for belt/weapon switching, so the code remembers what weapon we had before holstering
 var travel int BeltLast;                                                    //Sarge: The last item we literally selected from the belt, regardless of holstering or alternate belt behaviour
-var travel bool bNumberSelect;                                              //Sarge: Whether or not our last belt selection was done with number keys (ActivateBelt) rather than Next/Prev. Used by Alternative Belt to know when to holster
 var travel bool bScrollSelect;                                              //Sarge: Whether or not our last belt selection was done with Next/Last weapon keys rather than Number Keys. Used by Alternative Belt to know when to holster
 var travel int beltScrolled;                                                //Sarge: The last item we scrolled to on the belt, if we are using Adv Toolbelt
 var travel bool selectedNumberFromEmpty;                                    //Sarge: Was the current selection made from an empty hand. Used by Alternate Toolbelt Classic Mode to not jump back to previous weapon when we select from an empty hand.
@@ -497,9 +497,10 @@ var globalconfig bool bLeftClickUnholster;                                  //En
 
 var int clickCountCyber; //CyberP: for double clicking to unequip
 var bool bStunted; //CyberP: for slowing player under various conditions
+var float stuntedTime; //SARGE: Replaces the SetTimer calls with a stuntedTime variable; Operates independently of bStunted, which is designed for stamina loss. This allows "temporary" stunting
 var bool bRegenStamina; //CyberP: regen when in water but head above water
 var bool bCrouchRegen;  //CyberP: regen when crouched and has skill
-var bool bDoubleClickCheck; //CyberP: to return from double clicking.
+var float doubleClickCheck; //CyberP: to return from double clicking.
 var travel Inventory assignedWeapon;
 var Inventory primaryWeapon;
 var float augEffectTime;
@@ -568,7 +569,6 @@ var vector SAVElocation;
 var bool bStaticFreeze;
 
 //RSD Stuff
-var rotator DRONESAVErotation;                                                  //RSD: For Drone camera switching
 var rotator WHEELSAVErotation;                                                  //RSD: For Lorenz's wheel so it doesn't interfere with drone stuff
 
 var float savedStandingTimer;                                                   //RSD: For transferring the standingTimer between weapons (Sidearm perk)
@@ -602,7 +602,7 @@ var travel bool bRandomizeMods;
 var travel bool bRandomizeAugs;
 var travel bool bRandomizeEnemies;
 var travel bool bRestrictedSaving;												//Sarge: This used to be tied to hardcore, now it's a config option
-var travel bool bNoKeypadCheese;												//Sarge: Prevent using keycodes that we don't know
+var travel int iNoKeypadCheese;													//Sarge: 1 = Prevent using keycodes that we don't know, 2 = additionally prevent plot skips, 3 = additionally obscure keypad code length.
 var travel int seed;                                                            //Sarge: When using randomisation playthrough modifiers, this is our generated seed for the playthrough, to prevent autosave abuse and the like
 var travel int augOrderNums[21];                                                //RSD: New aug can order for scrambling
 var const augBinary augOrderList[21];                                           //RSD: List of all aug cans in the game in order (to be scrambled)
@@ -637,9 +637,8 @@ const DRUG_CRACK = 2;
 var travel bool bLastRun;                                                       //Sarge: Stores our last running state
 
 var bool bUsingComputer;                                                        //SARGE: Are we currently using a computer? Set so that we can restrict input while using one
+var bool bBlockNextFire;                                                        //SARGE: Set to TRUE to block the next weapon firing attempt. Used when blowing up the spy drone.
 
-var bool bDroneExploded;                                                        //SARGE: Was the drone exploded last tick?
-                                                                                
 //Sarge: Allow Enhanced Weapon Offsets
 var globalconfig bool bEnhancedWeaponOffsets; 									//Sarge: Allow using enhanced weapon offsets
 
@@ -698,9 +697,31 @@ var localized String DuplicateNanoKey;
 var globalconfig bool bStompDomesticAnimals;                                    //SARGE: If disabled, we can't stomp cats or dogs anymore. Adopt a cute animal today!
 var globalconfig bool bStompVacbots;                                            //SARGE: If disabled, we can't stomp vac-bots anymore.
 
+
 //Killswitch Engaged
 var travel bool bRealKillswitch;                                                        //SARGE: Playthrough Modifier for a real killswitch
 var travel float killswitchTimer;                                                       //SARGE: Killswitch timer in seconds.
+
+//Music Stuff
+var transient string currentSong;                                                 //SARGE: The "Song" variable is notoriously unreliable...
+var transient byte currentSection;                                              //SARGE: We need to track this for conversations/combat/etc
+var globalconfig int bEnhancedMusicSystem;                                             //SARGE: Should the music system be a bit smarter about playing tracks?
+
+//SARGE: Autoswitch to Health screen when installing the last augmentation at a med bot.
+var globalconfig bool bMedbotAutoswitch;
+
+//SARGE: Minimise Targeting Window
+var travel bool bMinimiseTargetingWindow;
+
+//SARGE: Enhanced Lip Sync
+var globalconfig int iEnhancedLipSync; //0 = disabled, 1 = nice and smooth, 2 = intentionally chunky
+var globalconfig bool bEnableBlinking; //Allows characters to blink
+
+//SARGE: Randomised Death/Pain Sounds
+var globalconfig int iDeathSoundMode; //0 = vanilla sounds, 1 = preset GMDX sounds, 2 = random sounds.
+
+//SARGE: Bigger Belt. Inspired by Revisions one, but less sucky.
+var globalconfig bool bBiggerBelt;
 
 //////////END GMDX
 
@@ -878,9 +899,14 @@ function AssignSecondary(Inventory item)
     RefreshChargedPickups();
 }
 
-function bool IsHDTP()
+static function bool IsHDTPInstalled()
 {
-    return bHDTPInstalled && iHDTPModelToggle > 0;
+    return class'DeusExPlayer'.default.bHDTPInstalled && default.bHDTPEnabled;
+}
+
+static function bool IsHDTP()
+{
+    return IsHDTPInstalled() && default.iHDTPModelToggle > 0;
 }
 
 function UpdateHDTPsettings()
@@ -1746,8 +1772,10 @@ exec function HDTP(optional string s)
 	local DeusExPickup PK;                                                      //SARGE: Added for object toggles
 	local DeusExProjectile PR;                                                  //SARGE: Added for object toggles
 	local DeusExAmmo AM;                                                        //SARGE: Added for object toggles
+	local DeusExDecal DC;                                                        //SARGE: Added for object toggles
     
-	bHDTPInstalled = class'HDTPLoader'.static.HDTPInstalled();
+    //SARGE: Yes, using the class name is necessary. Statics are weird.
+	class'DeusExPlayer'.default.bHDTPInstalled = class'HDTPLoader'.static.HDTPInstalled();
 	
 	foreach Allactors(Class'Scriptedpawn',P)
 		P.UpdateHDTPSettings();
@@ -1763,6 +1791,12 @@ exec function HDTP(optional string s)
     	PR.UpdateHDTPsettings();
     foreach AllActors(Class'DeusExAmmo',AM)                                     //SARGE: Added for object toggles
     	AM.UpdateHDTPsettings();
+    //SARGE: These don't draw properly if we update them... What a shame!
+    //It was a good feature, what a rotten way to die!
+    /*
+    foreach AllActors(Class'DeusExDecal',DC)                                     //SARGE: Added for object toggles
+    	DC.UpdateHDTPsettings();
+    */
 
 	UpdateHDTPsettings();
 }
@@ -2495,7 +2529,7 @@ function ResetPlayer(optional bool bTraining)
 	}
 
     // Reset Belt Memory
-    for(i = 0;i < 10;i++)
+    for(i = 0;i < 12;i++)
         ClearPlaceholder(i);
 
 	// Give the player a pistol and a prod
@@ -2945,6 +2979,27 @@ exec function PlayMusicWindow()
 }
 
 // ----------------------------------------------------------------------
+// ClientSetMusic()
+//
+// SARGE: Copied over from Engine/PlayerPawn.uc
+// Modified to not restart music if the new song is the same as the current song, and the
+// sections are the same (section 0 is always used on map-change, so we set it to that if we're using the "remembered" section).
+// ----------------------------------------------------------------------
+function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusicTransition NewTransition )
+{
+    //ClientMessage("Switching music: " $ Song $ "->" $ NewSong $ ":" $ NewSection $ " (current: " $ default.currentSong $ ", " $ default.currentSection $ ")");
+    if (default.currentSong != string(NewSong) || default.currentSection != NewSection || bEnhancedMusicSystem == 0)
+    {
+        super.ClientSetMusic(NewSong,NewSection,NewCdTrack,NewTransition);
+        default.currentSong = string(NewSong);
+        if (NewSection == savedSection)
+            default.currentSection = 0;
+        else
+            default.currentSection = NewSection;
+    }
+}
+
+// ----------------------------------------------------------------------
 // UpdateDynamicMusic()
 //
 // Pattern definitions:
@@ -3003,9 +3058,9 @@ function UpdateDynamicMusic(float deltaTime)
 	}
 	else if (IsInState('Conversation'))
 	{
-	    if (info != none)
-	       if (info.bBarOrClub)
-              return;  //CyberP: no dynamic music in clubs and bars.
+        //CyberP: no dynamic music in clubs and bars.
+	    if (info != none && info.bBarOrClub && bEnhancedMusicSystem >= 2)
+              return;
 		if (musicMode != MUS_Conversation)
 		{
 			// save our place in the ambient track
@@ -3020,6 +3075,8 @@ function UpdateDynamicMusic(float deltaTime)
 	}
 	else if (IsInState('Dying'))
 	{
+	    if (info != none && info.bBarOrClub && bEnhancedMusicSystem >= 2)
+              return;
 		if (musicMode != MUS_Dying)
 		{
 			ClientSetMusic(Level.Song, 1, 255, MTRAN_Fade);
@@ -3028,6 +3085,8 @@ function UpdateDynamicMusic(float deltaTime)
 	}
 	else
 	{
+	    if (info != none && info.bBarOrClub && bEnhancedMusicSystem >= 2)
+              return;
         //SARGE: Changed to only start combat music if at least 3 enemies are aggro'd
 		// only check for combat music every second //CyberP: 2 secs
 		if (musicCheckTimer >= 2.0)
@@ -5338,7 +5397,7 @@ function DoJump( optional float F )
         //if (JumpZ > 650)      //CyberP: fix super jump exploit.
         //JumpZ = default.JumpZ;
         SetPhysics(PHYS_Flying);
-        if (bStunted)
+        if (IsStunted())
         {
         Velocity = Vector(Rotation) * 200;
         Velocity.Z = JumpZ*0.5;
@@ -5439,7 +5498,7 @@ if (Physics == PHYS_Walking)
         //if (JumpZ > 650)      //CyberP: fix super jump exploit.
         //JumpZ = default.JumpZ;
 
-        if (bStunted)
+        if (IsStunted())
         Velocity.Z = JumpZ*0.75;                                                 //RSD: Was 0.75
         else
 		Velocity.Z = JumpZ;
@@ -6062,7 +6121,7 @@ state PlayerWalking
 
 
        //CyberP: slow the player under certain conditions
-       if (bStunted)
+       if (IsStunted())
        {
          if (Physics == PHYS_Walking && !bOnLadder)
          {
@@ -6203,7 +6262,6 @@ state PlayerWalking
             if (bStaminaSystem || bHardCoreMode)
             {
                bStunted = true;
-               SetTimer(3,false);
                if (!bOnLadder && FRand() < 0.7)
                {
                    PlayBreatheSound();
@@ -6219,17 +6277,6 @@ state PlayerWalking
       {
       if (bIsWalking || (Velocity.X == 0 && Velocity.Y == 0))
 	  {
-	    if (bBoosterUpgrade)
-        {
-           if (Energy > 0 && SwimTimer < SwimDuration * 0.25)
-           {
-               if (!bStunted && SwimTimer > 1)
-               {
-               SetTimer(1.5,false);
-               AugmentationSystem.AutoAugs(false,false);
-               }
-           }
-        }
 		
 		//SARGE: Moved Endurance check to here.
         bCrouchRegen=PerkManager.GetPerkWithClass(class'DeusEx.PerkEndurance').bPerkObtained;
@@ -6568,6 +6615,24 @@ state PlayerWalking
             if (killswitchTimer < 0)
                 killswitchTimer = 0;
         }
+
+        //Stop double click timer
+        if (doubleClickCheck > 0)
+        {
+            doubleClickCheck -= deltaTime;
+            if (doubleClickCheck <= 0)
+            {
+                doubleClickCheck = 0;
+                clickCountCyber=0;
+            }
+        }
+
+        //Stop being stunted if we elapse the stunted timer
+        if (stuntedTime > 0)
+            stuntedTime -= deltaTime;
+            
+        //Fire blocking is only valid for 1 frame
+        bBlockNextFire = False;
 
 		Super.PlayerTick(deltaTime);
 	}
@@ -7373,12 +7438,12 @@ function bool RestrictInput(optional bool bDontCheckConversation)
 		return True;
 
     //SARGE: Being in a cutscene counts as restricted input
-    if (!bDontCheckConversation && conPlay.bConversationStarted && conPlay.displayMode == DM_ThirdPerson)
+    if (!bDontCheckConversation && conPlay != None && conPlay.bConversationStarted && conPlay.displayMode == DM_ThirdPerson)
         return true;
 
     //SARGE: Disallow any sort of UI operations when the "pause" key is pressed
     //This way, real-time UI is actually a real-time UI
-    if (DeusExRootWindow(rootWindow).bUIPaused || (Level.Pauser != ""))
+    if (DeusExRootWindow(rootWindow) != None && DeusExRootWindow(rootWindow).bUIPaused || (Level.Pauser != ""))
         return true;
 
 	return False;
@@ -7412,8 +7477,6 @@ function bool DroneExplode()
         Energy -= anAug.GetAdjustedEnergy(anAug.EMPDrain); //CyberP: energy cost upon detonation.
         if (Energy < 0)
             Energy = 0;
-
-        bDroneExploded = true;
 
         return true;
 	}
@@ -7794,6 +7857,7 @@ exec function ParseLeftClick()
 	// if the spy drone augmentation is active, blow it up
 	if (bSpyDroneActive && !bSpyDroneSet && !bRadialAugMenuVisible)                                       //RSD: Allows the user to toggle between moving and controlling the drone, also added Lorenz's wheel
 	{
+        bBlockNextFire = true;
 		if (DroneExplode());
             return;
 	}
@@ -7914,7 +7978,6 @@ function SelectLastWeapon()
 
 function NewWeaponSelected()
 {
-    bNumberSelect = false;
     bScrollSelect = false;
     clickCountCyber = 0;
     beltScrolled = advBelt;
@@ -7960,8 +8023,7 @@ function bool IsReallyFrobbable(Actor target, optional bool left)
 
 function SetDoubleClickTimer()
 {
-    SetTimer(0.3,false);
-    bDoubleClickCheck=True;
+    doubleClickCheck=0.4;
     clickCountCyber=1;
 }
     
@@ -8602,6 +8664,24 @@ function SetInHandPending(Inventory newInHandPending)
 }
 
 // ----------------------------------------------------------------------
+// SARGE: Shorthand function for Resetting Aim of current weapon
+// ResetAim()
+// ----------------------------------------------------------------------
+
+function ResetAim()
+{
+    local DeusExWeapon weap;
+    weap = DeusExWeapon(inHand);
+
+    if (weap != None)
+    {
+        weap.standingTimer = 0;
+        savedStandingTimer = 0;
+    }
+
+}
+
+// ----------------------------------------------------------------------
 // UpdateInHand()
 //
 // Called every frame
@@ -8982,7 +9062,10 @@ function Bool FindInventorySlot(Inventory anItem, optional Bool bSearchOnly)
 	anItem.invSlotsX = invY;
 	anItem.invSlotsY = invX;
     if (anItem.isA('DeusExWeapon'))
+	{
         DeusExWeapon(anItem).bRotated = !DeusExWeapon(anItem).bRotated;
+		DeusExWeapon(anItem).UpdateLargeIcon();
+	}
 	anItem.largeIconWidth = invHeight;
 	anItem.largeIconHeight = invWidth;
     for (row=0; row<maxInvRows; row++)
@@ -10206,6 +10289,9 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 							Carc.UpdateHDTPSettings();
 							Carc.Inventory = PovCorpse(item).Inv; //GMDX
 							Carc.bSearched = POVCorpse(item).bSearched;
+							Carc.PickupAmmoCount = POVCorpse(item).PickupAmmoCount;
+							Carc.savedName = POVCorpse(item).savedName;
+                            Carc.UpdateName();
                             //if (FRand() < 0.3)
                             //PlaySound(Sound'DeusExSounds.Player.MaleLand', SLOT_None, 0.9, false, 800, 0.85);
 
@@ -10916,6 +11002,16 @@ exec function ToggleAugDisplay()
 }
 
 // ----------------------------------------------------------------------
+// MinimiseTargetingWindow
+// SARGE: Minimise the targeting window, since it's not always useful.
+// ----------------------------------------------------------------------
+
+exec function MinimiseTargetingWindow()
+{
+    bMinimiseTargetingWindow = !bMinimiseTargetingWindow;
+}
+
+// ----------------------------------------------------------------------
 // SkipMessages
 // ----------------------------------------------------------------------
 
@@ -11181,6 +11277,18 @@ function UpdateHUD()
 	local DeusExRootWindow root;
 	root = DeusExRootWindow(rootWindow);
 
+    //SARGE: Hack to autobind belt keys - and =
+    //TODO: Write a proper keybind handler class, for this and leaning,
+    //the wheel, and any other keys you care to bind dynamically.
+    if (bBiggerBelt)
+    {
+        //SARGE: TODO: Check these slots aren't already bound
+        if(ConsoleCommand( "KEYBINDING Minus" ) == "")
+            ConsoleCommand("SET InputExt Minus ActivateBelt 10");
+        if(ConsoleCommand( "KEYBINDING Equals" ) == "")
+            ConsoleCommand("SET InputExt Equals ActivateBelt 11");
+    }
+
     if (root != None)
         root.UpdateHUD();
 }
@@ -11376,6 +11484,7 @@ exec function ShowRGBDialog()
 exec function ActivateBelt(int objectNum)
 {
 	local DeusExRootWindow root;
+    local Inventory beltItem;
 
     //SARGE: When holding the number keys in dialog, we will select a weapon
     //upon finishing the conversation. Ignore the weapon change command.
@@ -11387,6 +11496,14 @@ exec function ActivateBelt(int objectNum)
 
 	if (RestrictInput())
 		return;
+
+    //SARGE: We need to do some wacky stuff here,
+    //now that the belt slots go from 0-9 and are offset in the HUD,
+    //rather than going from 1-10
+    if (objectNum == 0)
+        objectNum = 9;
+    else if (objectNum <= 9)
+        objectNum -= 1;
 
 	if ((Level.NetMode != NM_Standalone) && bBuySkills)
 	{
@@ -11401,14 +11518,21 @@ exec function ActivateBelt(int objectNum)
 	if (CarriedDecoration == None)
 	{
 		root = DeusExRootWindow(rootWindow);
-		if (root != None)
+		if (root != None && root.hud != None)
 		{
-			//SARGE: If already selected in IW Belt mode (except classic), an additional press will set our primary weapon to that slot.
-			if (bAlternateToolbelt >= 1 && BeltLast == objectNum && bNumberSelect && root.hud.belt.GetObjectFromBelt(objectNum) != None)
+            beltItem = root.hud.belt.GetObjectFromBelt(objectNum);
+			
+            //we're not selecting anything!
+            if (beltItem == None)
+                return;
+
+            //SARGE: If already selected in IW Belt mode, an additional press will set our primary weapon to that slot.
+			if (bAlternateToolbelt >= 1 && beltItem == inHandPending)
 			{
 				advBelt = objectNum;
 				root.hud.belt.RefreshAlternateToolbelt();
 			}
+
                 
             //Did we select from empty?
             selectedNumberFromEmpty = inHand == None;
@@ -11416,7 +11540,6 @@ exec function ActivateBelt(int objectNum)
 			root.ActivateObjectInBelt(objectNum);
 			BeltLast = objectNum;
             NewWeaponSelected();
-			bNumberSelect = true;
 		}
 	}
 }
@@ -11425,10 +11548,17 @@ exec function ActivateBelt(int objectNum)
 // NextBeltItem()
 // ----------------------------------------------------------------------
 
+//SARGE: TODO: Rewrite this crappy code.
+//I don't know who wrote it, but I want to punch them.
 exec function NextBeltItem()
 {
 	local DeusExRootWindow root;
-	local int slot, startSlot, tries;
+	local int slot, startSlot, totalSlots;
+
+    if (bBiggerBelt)
+        totalSlots = 12;
+    else
+        totalSlots = 10;
 
 	if (RestrictInput())
 		return;
@@ -11491,10 +11621,15 @@ exec function NextBeltItem()
 
 			do
 			{
-				if (++slot >= 10)
-					slot = 0;
+                //SARGE: UnrealScript doesn't short-circuit, aparrently
+                slot++;
+                if (bBiggerBelt && slot >= 12)
+                    slot = 0;
+                else if (!bBiggerBelt && slot >= 10)
+                    slot = 0;
 			}
 			until (root.ActivateObjectInBelt(slot) || (startSlot == slot));
+            advBelt = slot;
 
 			clientInHandPending = root.hud.belt.GetObjectFromBelt(slot);
 
@@ -11522,13 +11657,17 @@ exec function NextBeltItem()
 		root = DeusExRootWindow(rootWindow);
 		if (root != None)
 		{
+            startSlot = advBelt;
 			do
 			{
-				if (++advBelt >= 10)
-					advBelt = 0;
-                tries++;
+                //SARGE: UnrealScript doesn't short-circuit, aparrently
+                advBelt++;
+                if (bBiggerBelt && advBelt >= 12)
+                    advBelt = 0;
+                else if (!bBiggerBelt && advBelt >= 10)
+                    advBelt = 0;
 			}
-			until (root.hud.belt.GetObjectFromBelt(advBelt) != None || tries == 10);
+			until (root.hud.belt.GetObjectFromBelt(advBelt) != None || advBelt == startSlot);
 			root.hud.belt.RefreshAlternateToolbelt();
             NewWeaponSelected();
 			bScrollSelect = true;
@@ -11545,10 +11684,12 @@ exec function NextBeltItem()
 // PrevBeltItem()
 // ----------------------------------------------------------------------
 
+//SARGE: TODO: Rewrite this crappy code.
+//I don't know who wrote it, but I want to punch them.
 exec function PrevBeltItem()
 {
 	local DeusExRootWindow root;
-	local int slot, startSlot, tries;
+	local int slot, startSlot;
 
 	if (RestrictInput())
 		return;
@@ -11610,11 +11751,16 @@ exec function PrevBeltItem()
 			startSlot = slot;
 			do
 			{
-				if (--slot <= -1)
+                //SARGE: UnrealScript doesn't short-circuit, aparrently
+                slot--;
+                if (bBiggerBelt && slot <= -1)
+					slot = 11;
+				else if (!bBiggerBelt && slot <= -1)
 					slot = 9;
 			}
 			until (root.ActivateObjectInBelt(slot) || (startSlot == slot));
 
+            advBelt = slot;
 			clientInHandPending = root.hud.belt.GetObjectFromBelt(slot);
 			
 			switch( inHandPending.beltPos )
@@ -11641,13 +11787,17 @@ exec function PrevBeltItem()
 		root = DeusExRootWindow(rootWindow);
 		if (root != None)
 		{	
+			startSlot = advBelt;
 			do
 			{
-				if (--advBelt <= -1)
+                //SARGE: UnrealScript doesn't short-circuit, aparrently
+                advBelt--;
+                if (bBiggerBelt && advBelt <= -1)
+					advBelt = 11;
+				else if (!bBiggerBelt && advBelt <= -1)
 					advBelt = 9;
-                tries++;
 			}
-			until (root.hud.belt.GetObjectFromBelt(advBelt) != None || tries == 10);
+			until (root.hud.belt.GetObjectFromBelt(advBelt) != None || advBelt == startSlot);
             root.hud.belt.RefreshAlternateToolbelt();
 			bScrollSelect = true;
 			clientInHandPending = root.hud.belt.GetObjectFromBelt(advBelt);
@@ -13277,7 +13427,7 @@ function bool GetExceptedCode(string code)
 //So anything with security as the username needs to be ignored
 function bool EvilUsernameHack(string username)
 {
-    return (Caps(username) == "SECURITY") && bNoKeypadCheese;
+    return (Caps(username) == "SECURITY") && iNoKeypadCheese > 0;
 }
 
 // ----------------------------------------------------------------------
@@ -14432,8 +14582,9 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
        {
          if (AugmentationSystem.GetAugLevelValue(class'AugShield') == -1.0)// && PerkNamesArray[6] != 1) //RSD: Meh, no more steady-footed perk (who got this?)
          {
-           bStunted = True;
-           SetTimer(0.4,false);
+           //SetTimer(0.4,false); //SARGE: Replaced with stuntedTime variable
+            if (stuntedTime < 0.4)
+                stuntedTime = 0.4;
          }
        }
     }
@@ -15115,22 +15266,13 @@ function Timer()      //CyberP: my god I've turned this into a mess.
 
     if (bBoosterUpgrade && !HeadRegion.Zone.bWaterZone)
         AugmentationSystem.AutoAugs(true,false);
-    
-    if (bDoubleClickCheck)
-    {
-      clickCountCyber = 0;
-      bDoubleClickCheck=False;
-    }
 
     if (Physics == PHYS_Flying)
     {
      SetPhysics(PHYS_Falling);
-     bStunted = False;
      if (!bOnFire)
           return;
 	}
-
-    //bStunted = False;  //CyberP: called from takedamage.
 
 	if (!InConversation() && bOnFire)
 	{
@@ -15146,8 +15288,6 @@ function Timer()      //CyberP: my god I've turned this into a mess.
 			ExtinguishFire();
 		}
 	}
-
-    bCrouchHack = false;
 }
 
 // ----------------------------------------------------------------------
@@ -17188,9 +17328,6 @@ function MultiplayerTick(float DeltaTime)
         killswitchTimer = 1;
         TakeDamage(1,None,Location,vect(0,0,0),'Poison');
     }
-
-    //SARGE: Reset drone exploded flag
-    bDroneExploded = false;
 }
 
 // ----------------------------------------------------------------------
@@ -17698,6 +17835,106 @@ function bool FemaleEnabled()
 	return TTex != None;
 }
 
+//SARGE: We can be stunted through stamina, which needs to be recharged (bStunted), or through
+//specific events like explosions (stuntedtime)
+function bool IsStunted()
+{
+    return bStunted || stuntedTime > 0;
+}
+
+
+// ----------------------------------------------------------------------
+// LipSynch()
+// Copied over from Engine/Pawn.uc
+// SARGE: Attempts to fix the janky DX lipsynching
+// Based on the idea from https://www.youtube.com/watch?v=oxTWU2YgzfQ, but
+// doesn't use any code from it.
+// ----------------------------------------------------------------------
+
+function HandleBlink()
+{
+	// blink randomly
+	if (animTimer[0] > 3.5)
+	{
+		if (FRand() < 0.4 && bEnableBlinking)
+        {
+            animTimer[0] = 0;
+			PlayBlendAnim('Blink', 0.2, 0.1, 1);
+        }
+        else
+            animTimer[0] = 2; //Make us more likely to blink again sooner
+	}
+}
+
+function LipSynch(float deltaTime)
+{
+	local name animseq;
+	local float rnd;
+	local float tweentime;
+
+	// update the animation timers that we are using
+	animTimer[0] += deltaTime;
+	animTimer[1] += deltaTime;
+	animTimer[2] += deltaTime;
+        
+    if (iEnhancedLipSync == 1)
+        tweentime = 0.2;
+    else if (iEnhancedLipSync == 2)
+        tweentime = 0;
+    else if (Level.TimeSeconds - animTimer[3]  < 0.05)
+        tweentime = 0.1;
+
+    // the last animTimer slot is used to check framerate
+    animTimer[3] = Level.TimeSeconds;
+
+	if (bIsSpeaking)
+	{
+
+		if (nextPhoneme == "A")
+			animseq = 'MouthA';
+		else if (nextPhoneme == "E")
+			animseq = 'MouthE';
+		else if (nextPhoneme == "F")
+			animseq = 'MouthF';
+		else if (nextPhoneme == "M")
+			animseq = 'MouthM';
+		else if (nextPhoneme == "O")
+			animseq = 'MouthO';
+		else if (nextPhoneme == "T")
+			animseq = 'MouthT';
+		else if (nextPhoneme == "U")
+			animseq = 'MouthU';
+		else if (nextPhoneme == "X")
+			animseq = 'MouthClosed';
+
+        /*
+        if (lastPhoneme == "E" && nextPhoneme == "E")
+            nextPhoneme = "A";
+        else if (lastPhoneme == "A" && nextPhoneme == "A")
+            nextPhoneme = "E";
+        */
+
+		if (animseq != '')
+		{
+			if (lastPhoneme != nextPhoneme)
+			{
+				lastPhoneme = nextPhoneme;
+				TweenBlendAnim(animseq, tweentime);
+			}
+		}
+	}
+	else if (bWasSpeaking)
+	{
+		bWasSpeaking = False;
+		TweenBlendAnim('MouthClosed', tweentime);
+	}
+
+    HandleBlink();
+	LoopHeadConvoAnim();
+	LoopBaseConvoAnim();
+}
+
+
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
@@ -17911,4 +18148,11 @@ defaultproperties
      dblClickHolster=2
      bSmartDecline=True
      killswitchTimer=-2
+     bEnhancedMusicSystem=1
+     bMedbotAutoswitch=True
+     bHDTPEnabled=True
+     iEnhancedLipSync=1
+     bEnableBlinking=True
+     iDeathSoundMode=2
+     bBiggerBelt=True
 }

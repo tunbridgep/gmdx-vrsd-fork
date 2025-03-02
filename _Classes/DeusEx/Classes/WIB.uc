@@ -100,7 +100,9 @@ defaultproperties
      GroundSpeed=200.000000
      Health=300
      HitSound1=None
+     HitSound2=None
      Die=None
+     bDontChangeDeathPainSounds=True
      HealthHead=300
      HealthTorso=300
      HealthLegLeft=300

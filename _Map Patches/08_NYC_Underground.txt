@@ -1,0 +1,2 @@
+Build with BSP cuts bar at 50, Optimal.
+Otherwise a giant BSP hole appears in the center of the map.

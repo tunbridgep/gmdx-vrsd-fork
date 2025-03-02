@@ -252,6 +252,7 @@ defaultproperties
      HitSound1=None
      HitSound2=None
      Die=Sound'DeusExSounds.Augmentation.CloakDown'
+     bDontChangeDeathPainSounds=True
      HealthHead=450
      HealthTorso=450
      HealthLegLeft=450

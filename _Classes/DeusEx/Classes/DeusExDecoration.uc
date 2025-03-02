@@ -65,9 +65,6 @@ var config int iHDTPModelToggle;
 var string HDTPSkin;
 var string HDTPTexture;
 var string HDTPMesh;
-var string oldSkin;
-var string oldTexture;
-var string oldMesh;
 var bool bHDTPFailsafe;
 
 //Sarge: LDDP Stuff
@@ -147,9 +144,9 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
     return true;
 }
 
-function bool IsHDTP()
+static function bool IsHDTP()
 {
-    return DeusExPlayer(GetPlayerPawn()) != None && DeusExPlayer(GetPlayerPawn()).bHDTPInstalled && iHDTPModelToggle > 0;
+    return class'DeusExPlayer'.static.IsHDTPInstalled() && default.iHDTPModelToggle > 0;
 }
 
 //SARGE: New function to update model meshes (specifics handled in each class)
@@ -160,39 +157,31 @@ exec function UpdateHDTPsettings()
     //De-Morgans laws to the rescue!
     if (bHDTPFailsafe)
     {
-        if (!(string(Mesh) ~= HDTPMesh || Mesh == default.Mesh || string(Mesh) ~= oldMesh))
+        if (!(string(Mesh) ~= HDTPMesh || Mesh == default.Mesh || string(Mesh) ~= string(default.Mesh)))
         {
             //log("Failed: Mesh mismatch. Got " $ string(Mesh));
             return;
         }
         
-        if (!(string(Skin) ~= HDTPSkin || Skin == default.Skin || string(Skin) ~= oldSkin))
+        if (!(string(Skin) ~= HDTPSkin || Skin == default.Skin || string(Skin) ~= string(default.Skin)))
         {
             //log("Failed: Skin mismatch. Got " $ string(Skin));
             return;
         }
         
-        if (!(string(Texture) ~= HDTPTexture || Texture == default.Texture || string(Texture) ~= oldTexture))
+        if (!(string(Texture) ~= HDTPTexture || Texture == default.Texture || string(Texture) ~= string(default.Texture)))
         {
             //log("Failed: Texture mismatch. Got " $ string(Texture));
             return;
         }
     }
 
-    //Allow changing the vanilla skins/meshes/textures/whatever
-    if (oldSkin == "")
-        oldSkin = string(default.Skin);
-    if (oldMesh == "")
-        oldMesh = string(default.Mesh);
-    if (oldTexture == "")
-        oldTexture = string(default.Texture);
-
     if (HDTPMesh != "")
-        Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,oldMesh,IsHDTP());
+        Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),IsHDTP());
     if (HDTPSkin != "")
-        Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,oldSkin,IsHDTP());
+        Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),IsHDTP());
     if (HDTPTexture != "")
-        Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,oldTexture,IsHDTP());
+        Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),IsHDTP());
 }
 
 // ----------------------------------------------------------------------

@@ -335,6 +335,9 @@ function bool ButtonActivated(Window buttonPressed)
 		pointsHealed = HealPart(regionWindows[PersonaHealthActionButtonWindow(buttonPressed).GetPartIndex()]);
 		player.PopHealth( playerHealth[0],playerHealth[1],playerHealth[2],playerHealth[3],playerHealth[4],playerHealth[5]);
 		winStatus.AddText(Sprintf(PointsHealedLabel, pointsHealed));
+        
+        //SARGE: Reset players accuracy bonus.
+        player.ResetAim();
 
 		EnableButtons();
 	}
@@ -781,6 +784,11 @@ function int HealAllParts()
 	RemoveMedKits(healPointsAvailable - healPointsRemaining);
 
 	player.PopHealth( playerHealth[0],playerHealth[1],playerHealth[2],playerHealth[3],playerHealth[4],playerHealth[5]);
+       
+    //SARGE: Reset players accuracy bonus.
+    if (healPointsAvailable > 0)
+        player.ResetAim();
+
 
 	EnableButtons();
 
