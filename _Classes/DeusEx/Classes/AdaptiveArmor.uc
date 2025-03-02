@@ -12,10 +12,13 @@ class AdaptiveArmor extends ChargedPickup;
 simulated function Tick(float deltaTime)
 {
     super.Tick(deltaTime);
-    if (Charge == 0)
-        Multiskins[1] = Texture'BlackMaskTex';
-    else
-        Multiskins[1] = default.Multiskins[1];
+    if (!bActive)
+    {
+        if (Charge == 0)
+            Multiskins[1] = Texture'BlackMaskTex';
+        else
+            Multiskins[1] = default.Multiskins[1];
+    }
 }
 
 defaultproperties
@@ -24,7 +27,6 @@ defaultproperties
      LoopSound=Sound'DeusExSounds.Pickup.SuitLoop'
      ChargedIcon=Texture'DeusExUI.Icons.ChargedIconArmorAdaptive'
      chargeMult=0.100000
-     ExpireMessage="Thermoptic camo power supply used up"
      ItemName="Thermoptic Camo"
      ItemArticle="some"
      PlayerViewOffset=(X=30.000000,Z=-12.000000)

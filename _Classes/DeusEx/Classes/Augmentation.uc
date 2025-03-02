@@ -18,8 +18,6 @@ var travel int HotKeyNum;
 var travel Augmentation next;
 var bool bUsingMedbot;
 
-var travel int heartUpgraded;    //SARGE: Stores if an aug was upgraded via heart. Used for downgrading if we remove heart.
-
 var localized String EnergyRateLabel;
 var localized string OccupiesSlotLabel;
 var localized string AugLocsText[7];
@@ -107,6 +105,10 @@ var localized String ConditionalLabel;
 var travel int EnergyReserved;         //Amount of energy this aug uses when active. Used for Toggled augs.
 
 var bool bSilentDeactivation;           //SARGE: Next time this augmentation is deactivated, it will not show a message. Used when reclaiming the spy drone.
+
+var travel int heartUpgraded;    //SARGE: Stores if an aug was upgraded via heart. Used for downgrading if we remove heart.
+
+var const bool bHasChargeBar;   //SARGE: Display a bar in the Active Augs window when this is charging.
 
 ////Augmentation Colors
 var Color colActive;
@@ -744,4 +746,5 @@ defaultproperties
      colPassive=(R=255,G=255)
      colActive=(R=0,G=38,B=255)
      colAuto=(G=255,B=255)
+     bHasChargeBar=True
 }

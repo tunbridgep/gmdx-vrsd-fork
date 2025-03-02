@@ -13,6 +13,9 @@ var int iconHeight;
 var Texture icon;
 var Texture texBackground;
 
+var ProgressBarWindow winEnergy; //SARGE: Moved to the base class, so augs can use it too.
+
+
 // ----------------------------------------------------------------------
 // InitWindow()
 // ----------------------------------------------------------------------
@@ -91,6 +94,22 @@ function SetIconMasked(bool bNewMask)
 
 function SetObject(object newClientObject)
 {
+}
+
+// ----------------------------------------------------------------------
+// CreateEnergyBar()
+// SARGE: Moved to Base Class
+// ----------------------------------------------------------------------
+
+function CreateEnergyBar()
+{
+	winEnergy = ProgressBarWindow(NewChild(Class'ProgressBarWindow'));
+	winEnergy.SetSize(32, 2);
+	winEnergy.UseScaledColor(True);
+	winEnergy.SetPos(1, 30);
+	winEnergy.SetValues(0, 100);
+	winEnergy.SetCurrentValue(0);
+	winEnergy.SetVertical(False);
 }
 
 // ----------------------------------------------------------------------

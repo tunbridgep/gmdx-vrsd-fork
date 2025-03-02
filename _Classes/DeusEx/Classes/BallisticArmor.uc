@@ -31,7 +31,6 @@ defaultproperties
      DeactivateSound=Sound'RSDCrap.Pickup.BallisticVestUnequip'
      skillNeeded=Class'DeusEx.SkillEnviro'
      ChargedIcon=Texture'DeusExUI.Icons.ChargedIconArmorBallistic'
-     ExpireMessage="Ballistic Armor power supply used up"
      ItemName="Ballistic Armor"
      ItemArticle="some"
      PlayerViewOffset=(X=30.000000,Z=-12.000000)

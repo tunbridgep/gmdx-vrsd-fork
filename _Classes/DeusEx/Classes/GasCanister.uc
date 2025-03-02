@@ -11,14 +11,9 @@ exec function UpdateHDTPsettings()
 {
     super.UpdateHDTPsettings();
     if (IsHDTP())
-    {
         MultiSkins[1]=Texture'CoreTexMetal.Metal.MetlStorBarrl_E';
-        Skin=Texture'CoreTexMetal.Metal.MetlStorBarrl_E';
-    }
     else
-    {
-        Skin=Texture'CoreTexMetal.Metal.MetlStorBarrl_E';
-    }
+		MultiSkins[1]=None;
 }
 
 defaultproperties
@@ -26,6 +21,7 @@ defaultproperties
      bBlockSight=True
      HDTPMesh="HDTPItems.HDTPammoNapalm"
      Mesh=LodMesh'DeusExItems.AmmoNapalm'
+	 Skin=Texture'CoreTexMetal.Metal.MetlStorBarrl_E'
      Buoyancy=90.000000
      minDamageThreshold=2
      bFlammable=True

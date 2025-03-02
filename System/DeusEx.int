@@ -1424,7 +1424,6 @@ Description="Its high velocity and accuracy have made sniper rifles using the 30
 beltDescription="3006 AMMO"
 
 [TechGoggles]
-ExpireMessage="TechGoggles power supply used up"
 ItemName="Tech Goggles"
 ItemArticle="some"
 Description="Tech goggles are used by many special ops forces throughout the world under a number of different brand names, but they all provide some form of portable light amplification in a disposable package."
@@ -1482,7 +1481,6 @@ FamiliarName="Thug"
 UnfamiliarName="Thug"
 
 [AdaptiveArmor]
-ExpireMessage="Thermoptic camo power supply used up"
 ItemName="Thermoptic Camo"
 ItemArticle="some"
 Description="Integrating woven fiber-optics and an advanced computing system, thermoptic camo can render an agent invisible to both humans and bots by dynamically refracting light and radar waves; however, the high power drain makes it impractial for more than short-term use, after which the circuitry is fused and it becomes useless."
@@ -1551,7 +1549,6 @@ AddictionDescription="A vial of zyme, likely brewed up in some basement lab.|n|n
 beltDescription="ZYME"
 
 [HazMatSuit]
-ExpireMessage="HazMatSuit power supply used up"
 ItemName="Hazmat Suit"
 Description="A standard hazardous materials suit that protects against a full range of environmental hazards including radiation, fire, biochemical toxins, electricity, and EMP. Hazmat suits contain an integrated bacterial oxygen scrubber that degrades with use and thus should not be reused."
 beltDescription="HAZMAT"
@@ -1565,7 +1562,6 @@ beltDescription="MOD RANGE"
 NewLegendLabel=" = New Image"
 
 [BallisticArmor]
-ExpireMessage="Ballistic Armor power supply used up"
 ItemName="Ballistic Armor"
 ItemArticle="some"
 Description="Ballistic armor is manufactured from electrically sensitive polymer sheets that intrinsically react to the violent impact of a bullet or an explosion by 'stiffening' in response and absorbing the majority of the damage. These polymer sheets lose their reflexive properties with sustained damage and must be recharged before they become totally inert."
@@ -1713,7 +1709,6 @@ Description="'CHOC-O-LENT DREAM. IT'S CHOCOLATE! IT'S PEOPLE! IT'S BOTH!(tm) 85%
 beltDescription="CANDY BAR"
 
 [Rebreather]
-ExpireMessage="Rebreather power supply used up"
 ItemName="Rebreather"
 Description="A disposable chemical scrubber that can extract oxygen from water during brief submerged operations."
 beltDescription="REBREATHR"

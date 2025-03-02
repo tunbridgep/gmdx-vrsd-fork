@@ -4,8 +4,6 @@
 
 class HUDActiveItem extends HUDActiveItemBase;
 
-var ProgressBarWindow winEnergy;
-
 // ----------------------------------------------------------------------
 // InitWindow()
 // ----------------------------------------------------------------------
@@ -13,7 +11,6 @@ var ProgressBarWindow winEnergy;
 event InitWindow()
 {
 	Super.InitWindow();
-
 	CreateEnergyBar();
 
 	bTickEnabled = TRUE;
@@ -44,21 +41,6 @@ event Tick(float deltaSeconds)
 		winEnergy.SetCurrentValue(item.GetCurrentCharge());
 	}
 
-}
-
-// ----------------------------------------------------------------------
-// CreateEnergyBar()
-// ----------------------------------------------------------------------
-
-function CreateEnergyBar()
-{
-	winEnergy = ProgressBarWindow(NewChild(Class'ProgressBarWindow'));
-	winEnergy.SetSize(32, 2);
-	winEnergy.UseScaledColor(True);
-	winEnergy.SetPos(1, 30);
-	winEnergy.SetValues(0, 100);
-	winEnergy.SetCurrentValue(0);
-	winEnergy.SetVertical(False);
 }
 
 // ----------------------------------------------------------------------

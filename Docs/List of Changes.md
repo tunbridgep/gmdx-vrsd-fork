@@ -25,6 +25,8 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX bug where tiredness effects from low stamina would reset prematurely.
     - Fixed vanilla "bug" where diving into or leaving water would give free stamina.
     - Fixed GMDX quickloading not always working correctly, and other save issues including incorrect save-game ordering in the save/load screens.
+    - Fixed Vanilla bug where lip syncing would only tween sometimes, resulting in stiff mouth movements.
+    - Fixed Vanilla bug where NPCs wouldn't blink. Technically they did (only during conversations), but it was too quick to notice. Now they blink properly, and don't need to be in a conversation.
     - Fixed Vanilla bug where the spy drone would be deployable inside a wall, which would make it fail to spawn but keep the augmentation running.
     - Fixed GMDX "Create Custom Theme" menu being able to corrupt standard themes. Now the player is forced into the Custom HUD/Menu themes upon loading the custom theme creator.
     - Fixed GMDX bug which would make an empty subtitles box appear when interacting with things during first-person conversations, if subtitles were disabled.
@@ -32,8 +34,36 @@ Sarge's Changes since Beta 2.2:
     - Fixed many other GMDX and Vanilla bugs.
     - Fixed GMDX bug where most inventory items with multiple skins (such as sodacans) weren't showing their skinned variants when being held in the players hands.
 - Quality of Life Improvements:
+    - Keypads have been improved:
+        - Keypads are now displayed in Number Pad format, instead of Dial Pad format.
+        - Keypads show numbers when digits are entered, rather than dots.
+        - The unused `*` and `#` buttons have been replaced with Backspace `<` and Clear `C` buttons.
+        - The Delete and Backspace keyboard keys can be used as well as the buttons.
+        - The `Shift-3` and `Shift-8` key combinations can be used to manually input `*` and `#` into the keypad.
+    - Belt Improvements:
+        - The Belt now has 12 slots, insead of 10.
+            - The extra belt slots will automatically assign the - and = keys if unbound.
+        - Belt Autofilling can now be disabled in the options.
+        - Selecting an empty belt slot will no longer put away your current item.
+        - Right-Clicking an item in the belt with the Inventory Window open will clear the slot.
+        - Added "Belt Memory". When belt memory is enabled, using the last item in a belt slot will keep a darkened version of the item's icon in the toolbelt
+            - Regardless of the Autofill setting, no other items will be added to the item's slot automatically.
+            - Regardless of the Autofill setting, all items of the remembered type will be automatically added to the belt slot when picked up.
+            - Belt memory can be overridden by manually adding an item to a given belt slot at any time, and can be cleared by right-clicking on a belt slot.
+            - Items dropped from the inventory or via the drop key will not be remembered on the belt if Autofill is turned on, to make it easier to discard unwanted junk.
+        - Invisible War Toolbelt improvements and bugfixes
+            - Fixed GMDX bug where you could scroll to empty slots when using the IW toolbelt.
+            - Fixed bug where selected icon in the belt was forgotten between game sessions.
+            - With Double Click Unholstering enabled, a single-rightclick will unholster a weapon if the selection was changed.
+            - Pressing a number key again while its slot is selected will set it as the primary selection.
+            - In previous versions of GMDX, when selecting a belt item using the number keys, right-clicking would switch back to your primary belt selection. Now, it holsters instead.
+                - Setting The IW Toolbelt to "classic mode" will revert this behaviour, and will once again make right-clicking select the primary belt selection.
+        - "Smart Keyring" support added.
+            - When Smart Keyring is enabled, the keyring will no longer occupy belt slot 0 (or belt slot =, if the large belt is enabled), allowing these slots to be used for regular items.
+            - The keyring can still be selected using Left-Click Frob on doors or by right-clicking the Nano-Keyring icon in the inventory screen.
     - Datacubes will show a black screen after they have been read.
     - Added the option to use the original HUD fonts instead of the GMDX ones.
+    - When using a medical bot, using the last augmentation cannister in the Augs screen will automatically switch to the Health screen.
     - The augmentation "hum" sound can be disabled.
     - Augmentations now show their active colours in the medbot interface.
     - Complete overhaul of the "Decline Knives" system
@@ -47,7 +77,6 @@ Sarge's Changes since Beta 2.2:
     - When picking up duplicate Nanokeys, the log now lists it as a duplicate.
     - While having a grenade selected, the crosshair will turn blue when you're able to place it on a wall.
     - Right-Clicking while dead will load the last save game.
-    - Right-Clicking an item in the belt with the Inventory Window open will clear the slot.
     - Added QoL settings to not damage domesticated animals and cleaner bots when stepping on them.
     - The Inventory "Show Ammo" display now always shows the total amount of ammo you can carry. Before, it was only visible when "Show Descriptions" was enabled.
     - A lot of inventory item displays have been improved to show more statistics.
@@ -84,7 +113,7 @@ Sarge's Changes since Beta 2.2:
     - "One-shot-at-a-time" weapons now have "RDS" instead of "MAGS" on the ammo HUD.
     - "One-shot-at-a-time" weapons have a different formula for calculating reload speed (RDS/SEC).
     - "One-shot-at-a-time" reload cancelling has been made far more responsive.
-    - Added an option to display the total amount of ammo remaining, rather than the number of magazines.
+    - Added an option to display the total amount of ammo remaining, rather than the number of magazines. Disabled on Hardcore Mode.
     - Different shotgun shells have different textures, and the boxes were reworked to have a different texture for easier identification.
         - Shells also have different sounds when they hit the floor
     - Equipping/Unequipping Environmental Training items gives you a unique sound depending on the item.
@@ -96,7 +125,6 @@ Sarge's Changes since Beta 2.2:
         - The text is also color coded, showing as yellow when you only just have the amount of tools required, and red if you don't meet the requirement.
         - The Damage Threshold text is also red if the currently selected weapon is not able to beat the damage threshold.
         - If this setting is disabled, lockpicks and multitools will display their total count in the ammo display window, allowing you to easily see how many you have when you don't have them on your belt.
-    - Belt Autofilling can now be disabled in the options.
     - Save Points no longer use Autosave slots, which can be easily overridden by accident, and now create fresh hard-saves instead.
     - The Dialog Screen has been significantly improved
         - A display showing your current credits balance has been added to the upper panel of the Conversation window.
@@ -118,27 +146,13 @@ Sarge's Changes since Beta 2.2:
     - Right-Clicking with the Keyring equipped will select your last used weapon.
     - The Pedometer can now be viewed in the Health screen when using the Addiction system.
     - Subtitles are now enabled in third-person cutscenes regardless of Subtitles setting, allowing text to show instead of useless black bars while also not displaying in-game barks. This can be disabled using the `bSubtitlesCutscene` option in `DeusEx.ini`
-    - Added "Belt Memory". When belt memory is enabled, using the last item in a belt slot will keep a darkened version of the item's icon in the toolbelt
-        - Regardless of the Autofill setting, no other items will be added to the item's slot automatically.
-        - Regardless of the Autofill setting, all items of the remembered type will be automatically added to the belt slot when picked up.
-        - Belt memory can be overridden by manually adding an item to a given belt slot at any time, and can be cleared by right-clicking on a belt slot.
-        - Items dropped from the inventory or via the drop key will not be remembered, to allow easily throwing away unwanted junk without affecting the belt.
-    - Right-Clicking items in the belt while the inventory screen is open will clear the belt slot.
-    - Invisible War Toolbelt improvements and bugfixes
-        - Fixed bug where selected icon in the belt was forgotten between game sessions.
-        - With Double Click Unholstering enabled, a single-rightclick will unholster a weapon if the selection was changed.
-        - Pressing a number key again while its slot is selected will set it as the primary selection.
-        - Added "Classic Mode". In Classic Mode, right-clicking while having a belt item selected which is not the primary selection will select the primary selection, similar to GMDX v9.
-        - Fixed GMDX bug where you could scroll to empty slots when using the IW toolbelt.
-    - "Smart Keyring" support added.
-        - When Smart Keyring is enabled, the keyring will no longer occupy belt slot 0, allowing it to be used for regular items.
-        - The keyring can be selected using Left-Click Frob on doors.
 - Gameplay Changes:
     - Destroyable Movers that aren't set to highlighting will now have 1 HP.
         - This removes ambiguity about whether or not a surface is unbreakable, or just needs more hits to destroy.
         - This only affects 1-2 movers in the entire game.
         - You still need to meet the damage threshold requirements.
     - The Dragons Tooth Sword now requires Biocells to use. It starts with 100% charge, with each attack taking 2% if it hits a target, giving you 50 hits total. Biocells restore 20% (or 30% with the Field Repair perk), giving you an additional 10 (15) hits each.
+    - Aim Stabilisation is now reset when using Medkits/Biocells from the health/augs screens, or using items from the inventory.
     - The GEP Gun now has limited range. After 5 seconds of flight, rockets will detonate as they run out of fuel. Each range mod increases flight time by 1 second.
     - Selecting the Mini Crossbow or Sniper Rifle from Paul at the start of the game will give you extra ammo (8 tranq darts or 5 .3006 ammo).
         - Both weapons still come with an Accuracy mod (which was added in vRSD)
@@ -153,6 +167,7 @@ Sarge's Changes since Beta 2.2:
         - With vRSD partial damage calculations were added, so this is now relevant again.
     - Crowbar has been changed from +5 damage vs breakables to instead having 2x damage against breakables, to scale better with low-tech.
     - Augmentation Changes
+        - Augmentations with a long recharge (like the Spy Drone) now have a progress bar in the augmentation display in the HUD to show when they will be ready.
         - Augmentations can now be swapped out with the opposite choice when finding duplicate augmentation Canisters.
             - Augmentations that are replaced this way will be reset to level 1.
             - Augmentations cannot be freely replaced with any other augmentation occupying the same slot, it must be the opposite choice from their relevant cannister.
@@ -200,6 +215,7 @@ Sarge's Changes since Beta 2.2:
             - The players equipped item is no longer unequipped when using the drone.
             - Restored the drone creation sound (was removed in previous GMDX versions).
             - The Picture-in-Picture window has been made slightly bigger.
+            - The Picture-in-Picture window can now be minimised, which hides it and only displays textual info.
             - When running out of bioelectrical energy, the Drone will be parked automatically instead of being destroyed.
                 - Using the Drone augmentation while at 0 bioelectrical energy can be used to forcibly destroy the drone.
         - Synthetic Heart
@@ -211,7 +227,11 @@ Sarge's Changes since Beta 2.2:
                 - Now, any bonuses that would have been given to a fully-upgraded augmentation will "spill over" into other augmentations, allowing them to be upgraded twice.
                 - The order in which augmentations is upgraded is pre-set and cannot be changed, starting with the Torso, then the head, the eyes, and then moving to the skin, arms and legs.
         - Targeting
+            - Is now a Toggle Augmentation, reserving 20 energy to function.
+            - Will now automatically update when levelled up, as it's a toggle so you will leave it on all the time.
+            - No longer shows the `DEFAULT NAME - REPORT AS A BUG` text when looking at objects with no name.
             - The Picture-in-Picture window has been made slightly bigger.
+            - The Picture-in-Picture window can now be minimised, which hides it and only displays textual info.
     - Hacking Overhaul
         - Bypassing Turrets now requires Advanced hacking, as in Vanilla.
         - Hacked Cameras and Turrets will "reboot" and become re-enabled again after 2 minutes (plus an additional 2 minutes for each level of the Hacking skill)
@@ -263,7 +283,9 @@ Sarge's Changes since Beta 2.2:
     - A Laser Sight has been added to Smuggler's safe in the first NY visit (replaces a recoil mod)
     - The Silencer in Paul's Apartment, Full-Auto Mod in Tong's Lab, and Laser Sight in Smugglers Safe are all guaranteed to appear even with the weapon mod shuffle turned on.
 - Miscellaneous Changes:
-    - The Hacking Screen in the Computer UI now uses the Menu theme, to match the computer's theme, rather than the HUD Theme.
+    - The Hacking Window in the Computer UI now uses the Menu theme, to match the computer's theme, rather than the HUD Theme.
+    - Right-Clicking on the Nano-Keyring icon in the inventory will select it.
+        - This is useful when you have Smart Keyring enabled, and want to select the keyring before reaching a door, such as if it's being watched by a camera.
     - Added a new DataCube to explain cameras not detecting unconscious enemies.
     - The players total kills are now shown in the Health screen, similar to older versions of GMDX. Morality info (pacifist, killer, etc) is not shown.
     - Vending Machines now vend random flavours of chocolate bar and soda. This change is purely visual and doesn't affect gameplay in any way.

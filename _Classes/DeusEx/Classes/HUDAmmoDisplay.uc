@@ -154,7 +154,7 @@ event DrawWindow(GC gc)
 		else if (weapon.ReloadCount > 1 || weapon.IsA('WeaponGEPGun') || weapon.AmmoName == Class'Ammo20mm')
 		{
 
-			if (weapon.bPerShellReload || player.bDisplayTotalAmmo)
+			if (weapon.bPerShellReload || (player.bDisplayTotalAmmo && !player.bHardCoreMode))
 				clipsRemaining = weapon.NumRounds();
 			else
 				clipsRemaining = weapon.NumClips();
@@ -242,7 +242,7 @@ function DrawBackground(GC gc)
         else
             gc.DrawText(66, 17, 21, 8, AmmoLabel);
 
-        if (weapon != None && weapon.bPerShellReload || weapon.AmmoName == Class'Ammo20mm' || player.bDisplayTotalAmmo)
+        if (weapon != None && weapon.bPerShellReload || weapon.AmmoName == Class'Ammo20mm' || (player.bDisplayTotalAmmo && !player.bHardCoreMode))
             gc.DrawText(66, 48, 21, 8, RoundsLabel);
         else if (player.bDisplayClips)
             gc.DrawText(66, 48, 21, 8, ClipsLabel);

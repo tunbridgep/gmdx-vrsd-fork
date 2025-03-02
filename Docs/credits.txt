@@ -14,6 +14,7 @@ This fork is possible thanks to the following awesome people:
 - LupusDraconis - Perk Icons and other graphical assets.
 - Adman32 - Art and some weapon sounds.
 - Flippers - LDDP+ConFix Conversation files, various art assets and icons.
+- Joe Wintergreen (https://www.joewintergreen.com/) - for help with the Lip Synch and Blinking issue.
 
 This mod would not have been possible without these testers:
 Julian, Georg, the1truepickaxe, Xriborg, domitomi, the1truepickaxe and many others.
