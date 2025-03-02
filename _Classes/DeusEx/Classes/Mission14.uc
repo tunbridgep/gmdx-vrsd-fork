@@ -18,6 +18,14 @@ function FirstFrame()
 		Player.GoalCompleted('StealSub');
 	}
 
+    //prevent the "Antennapedia" password on hardcore,
+    //since it trivialises the security setup.
+	else if (localURL == "14_VANDENBERG_SUB")
+    {
+        if (player.bHardCoreMode)
+            flags.SetBool('OceanLabSkipPassword',True,, 1);
+    }
+
 CanQuickSave=true;
 }
 

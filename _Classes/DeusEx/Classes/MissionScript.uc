@@ -240,15 +240,17 @@ function FirstFrame()
 		flags.SetBool(flagName, True);
 	}
 
-	if (Flags.GetBool('Enhancement_Detected'))
+	//SARGE: Remove the MJ12 Elite vocoded voices, they don't work properly for LDDP,
+	//and have some other issues.
+	foreach AllActors(class'ScriptedPawn', P)
 	{
-	    ForEach AllActors(class'HumanMilitary', HumM)
-	    {
-	        if (humM.IsA('MJ12Elite') || humM.IsA('MJ12Troop'))
-	        if (HumM.UnfamiliarName == "MJ12 Elite" || HumM.MultiSkins[3]==Texture'DeusExCharacters.Skins.MiscTex1'
-            || HumM.MultiSkins[3]==Texture'DeusExCharacters.Skins.TerroristTex0' || HumM.MultiSkins[3]==Texture'GMDXSFX.Skins.MJ12EliteTex0')
-	            HumM.BarkBindName = "MJ12Elite";
-        }
+	   if (P.IsA('MJ12TroopElite'))
+	   {
+		    if (Rand(2) == 0)
+				P.BarkBindName = "MJ12Troop";
+			else
+				P.BarkBindName = "MJ12TroopB";
+	   }
 	}
 
 	//HDTP DDL: make the trees not unlit, because seriously WTF people

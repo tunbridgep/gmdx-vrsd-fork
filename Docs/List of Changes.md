@@ -312,6 +312,7 @@ Sarge's Changes since Beta 2.2:
     - Added several new high-quality sounds in cases where interactions didn't have sounds, or used the same sounds for multiple interactions.
         - Added equip/unequip sounds for the Lockpick, Nanokey and Multitool, which were previously silent.
         - Additionally replaced some sounds with higher quality versions, such as the lockpicking sound.
+    - Combined LDDP conversation files with ConFix, making many of ConFixes changes and corrections also apply to LDDP.
     - Implemented optional Lay-D Denton support. If installed, Lay-D Denton support will be automatically activated.
         - Added an option to the QoL menu to allow male JC to use female hands, for cosplaying as "goth JC" with nail polish.
         - The Lay-D Denton colour scheme is included and can be selected from the Colors menu.

@@ -95,21 +95,6 @@ function FirstFrame()
 					pawn.EnterWorld();
 			}
 		}
-
-		if (flags.GetBool('TriadCeremony_Played'))
-        {
-         if (flags.GetBool('Enhancement_Detected'))
-	     {
-            foreach AllActors(class'ScriptedPawn', pawn)
-	        {
-               if (pawn.IsA('TriadLumPath') || pawn.IsA('TriadLumPath2'))
-               {
-                  if (pawn.BarkBindName == "TriadLumPath")
-                     pawn.BarkBindName = "TriadLumPathPeace";
-               }
-            }
-	     }
-        }
 	}
 	else if (localURL == "06_HONGKONG_WANCHAI_UNDERWORLD")
 	{
