@@ -58,9 +58,9 @@ Function Bump(actor Other)
      super.Bump(other);
 }
 
-function bool IsHDTP()
+static function bool IsHDTP()
 {
-    return DeusExPlayer(GetPlayerPawn()).bHDTPInstalled && class'DeusEx.LightBulb'.default.iHDTPModelToggle > 0;
+    return class'DeusExPlayer'.static.IsHDTPInstalled() && class'DeusEx.LightBulb'.default.iHDTPModelToggle > 0;
 }
 
 defaultproperties

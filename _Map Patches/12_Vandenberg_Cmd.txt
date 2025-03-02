@@ -1,0 +1,1 @@
+Run with BSP Optimisations on Optimised and the Minimise Cuts slider set to 50.

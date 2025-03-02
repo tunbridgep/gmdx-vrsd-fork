@@ -145,9 +145,9 @@ defaultproperties
      ItemName="Electromagnetic Pulse (EMP) Grenade"
      ItemArticle="an"
      PlayerViewOffset=(X=24.000000,Y=-15.000000,Z=-19.000000)
-     PlayerViewMesh="HDTPItems.HDTPEMPGrenade"
-     PickupViewMesh="HDTPItems.HDTPEMPgrenadePickup"
-     ThirdPersonMesh="HDTPItems.HDTPEMPgrenade3rd"
+     HDTPPlayerViewMesh="HDTPItems.HDTPEMPGrenade"
+     HDTPPickupViewMesh="HDTPItems.HDTPEMPgrenadePickup"
+     HDTPThirdPersonMesh="HDTPItems.HDTPEMPgrenade3rd"
      PlayerViewMesh=LodMesh'DeusExItems.EMPGrenade'
      PickupViewMesh=LodMesh'DeusExItems.EMPGrenadePickup'
      ThirdPersonMesh=LodMesh'DeusExItems.EMPGrenade3rd'

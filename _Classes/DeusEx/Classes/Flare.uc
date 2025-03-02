@@ -299,7 +299,7 @@ function LightFlare()
     local DeusExPlayer playa;
     local bool bHDTPInstalled;
 
-    bHDTPInstalled = DeusExPlayer(GetPlayerPawn()).bHDTPInstalled;
+    bHDTPInstalled = DeusExPlayer(GetPlayerPawn()).IsHDTPInstalled();
 
 	if (gen == None)
 	{

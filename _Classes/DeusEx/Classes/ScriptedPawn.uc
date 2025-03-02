@@ -486,6 +486,9 @@ var string HDTPMesh;
 var string HDTPMeshTex[8];
 var travel bool bSetupHDTP;
 
+//SARGE: Blink timer
+var float blinkTimer;
+
 native(2102) final function ConBindEvents();
 
 native(2105) final function bool IsValidEnemy(Pawn TestEnemy, optional bool bCheckAlliance);
@@ -551,9 +554,9 @@ function PreBeginPlay()
 	UpdateReactionCallbacks();
 }
 
-function bool IsHDTP()
+static function bool IsHDTP()
 {
-    return DeusExPlayer(GetPlayerPawn()) != None && DeusExPlayer(GetPlayerPawn()).bHDTPInstalled && iHDTPModelToggle > 0;
+    return class'DeusExPlayer'.static.IsHDTPInstalled() && default.iHDTPModelToggle > 0;
 }
 
 //SARGE: New function to update model meshes (specifics handled in each class)
@@ -8727,6 +8730,9 @@ function Tick(float deltaTime)
 
 	// Handle poison damage
 	UpdatePoison(deltaTime);
+
+    //SARGE: Handle Blinking
+    HandleBlink(deltaTime);
 
     bFirstTickDone = true;
 }
@@ -17040,6 +17046,100 @@ function JumpOffPawn()
 	SetFall();
 	*/
 	//log("ERROR - JumpOffPawn should not be called!");
+}
+
+// ----------------------------------------------------------------------
+// LipSynch()
+// Copied over from Engine/Pawn.uc
+// SARGE: Attempts to fix the janky DX lipsynching
+// Based on the idea from https://www.youtube.com/watch?v=oxTWU2YgzfQ, but
+// doesn't use any code from it.
+// Also split out the Blink functionality
+// ----------------------------------------------------------------------
+
+//Blink is handled slightly differently for scriptedpawns.
+//They can blink outside of conversations, and so have to have a separate blink timer
+function HandleBlink(float deltaTime)
+{
+    if (!bIsHuman)
+        return;
+    
+    blinkTimer += deltaTime;
+
+	// blink randomly
+	if (blinkTimer > 3.5)
+	{
+		if (FRand() < 0.4 && class'DeusExPlayer'.default.bEnableBlinking)
+        {
+			PlayBlendAnim('Blink', 0.2, 0.1, 1);
+            blinkTimer = 0;
+        }
+        else
+            blinkTimer = 2; //Make them more likely to blink again sooner
+	}
+}
+
+function LipSynch(float deltaTime)
+{
+	local name animseq;
+	local float rnd;
+	local float tweentime;
+
+    local int iEnhancedLipSync;
+    iEnhancedLipSync = class'DeusExPlayer'.default.iEnhancedLipSync;
+    
+	// update the animation timers that we are using
+	animTimer[0] += deltaTime;
+	animTimer[1] += deltaTime;
+	animTimer[2] += deltaTime;
+        
+    if (iEnhancedLipSync == 1)
+        tweentime = 0.2;
+    else if (iEnhancedLipSync == 2)
+        tweentime = 0;
+    else if (Level.TimeSeconds - animTimer[3]  < 0.05)
+        tweentime = 0.1;
+
+    // the last animTimer slot is used to check framerate
+    animTimer[3] = Level.TimeSeconds;
+
+	if (bIsSpeaking)
+	{
+
+		if (nextPhoneme == "A")
+			animseq = 'MouthA';
+		else if (nextPhoneme == "E")
+			animseq = 'MouthE';
+		else if (nextPhoneme == "F")
+			animseq = 'MouthF';
+		else if (nextPhoneme == "M")
+			animseq = 'MouthM';
+		else if (nextPhoneme == "O")
+			animseq = 'MouthO';
+		else if (nextPhoneme == "T")
+			animseq = 'MouthT';
+		else if (nextPhoneme == "U")
+			animseq = 'MouthU';
+		else if (nextPhoneme == "X")
+			animseq = 'MouthClosed';
+
+		if (animseq != '')
+		{
+			if (lastPhoneme != nextPhoneme)
+			{
+				lastPhoneme = nextPhoneme;
+				TweenBlendAnim(animseq, tweentime);
+			}
+		}
+	}
+	else if (bWasSpeaking)
+	{
+		bWasSpeaking = False;
+		TweenBlendAnim('MouthClosed', tweentime);
+	}
+
+	LoopHeadConvoAnim();
+	LoopBaseConvoAnim();
 }
 
 // ----------------------------------------------------------------------
