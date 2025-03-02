@@ -75,8 +75,13 @@ function CreateSlots()
 {
 	local int i;
 
-    if (winRadio != None || winSlots != None)
+    //If the belt exists, simply update the hotkeys
+    if (winRadio != None && winSlots != None)
+    {
+        for (i=0; i<12; i++)
+            objects[i].SetObjectNumber(i,i == KeyRingSlot);
         return;
+    }
 
 	// Radio window used to contain objects so they can be selected
 	// with the mouse on the inventory screen.
@@ -92,18 +97,8 @@ function CreateSlots()
 	for (i=0; i<12; i++)
 	{
 		objects[i] = HUDObjectSlot(winSlots.NewChild(Class'HUDObjectSlot'));
-		objects[i].SetObjectNumber(i);
-        //Some annoying logic here
-        if (i < 9)
-            objects[i].beltText = string(i + 1);
-        else if (i == 9)
-            objects[i].beltText = "0";
-        else if (i == 10)
-            objects[i].beltText = "-";
-        else
-            objects[i].beltText = "=";
+		objects[i].SetObjectNumber(i,i == KeyRingSlot);
 		objects[i].Lower();
-
 	}
 }
 
