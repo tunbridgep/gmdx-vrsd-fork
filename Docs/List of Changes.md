@@ -233,6 +233,14 @@ Sarge's Changes since Beta 2.2:
     - Enemies with flamethrowers now give 5-25 flamethrower ammo as loot instead of 1-5
     - Added No Console Access Playthrough Modifier, which prevents using the console (disallows cheats) while playing.
     - Added No Keypad Cheese Playthrough Modifier (called "Unknown Codes") which prevents using keypads or computer logins without having found them beforehand. Some codes which are hinted but never given are excepted.
+        - This setting has 3 levels. Initially it only prevents typing codes you don't know. Codes typed this way will always fail, as if the wrong code was entered.
+        - Additionally, at the "Enabled + No Plot Skips" level, it also prevents sequence-breaking in certain areas, such as accessing the hidden NSF commanders quarters in the mole people level before being told about the secret brick. Using this modifier will essentially force you to play the game as you would on your first playthrough, which may introduce new gameplay opportunities.
+        - Additionally, at the "Enabled + NPS + Keypad Length Unknown" level, it will also remove the small dots showing the length of keypad codes, and you will need to press ENTER (or click the confirm button on the keypad) to "lock in" a code.
+            - Codes of any length can be typed, up to 10 characters.
+            - This essentially makes it impossible to know how long the expected code is for a given keypad.
+    - Computer Code changes:
+        - The Vandenberg `command`/`zebra42` login is not given to the player in Hardcore mode. Combined with the "Unknown Codes" modifier, this makes it impossible to access the security computers without hacking them.
+        - The `tech`/`sharkman` login has been removed from one of the hallway security computers in the Ocean lab map on Hardcore mode. This means that the only way to bypass security for the areas leading up to the sub pen will require hacking. The sub pen terminal still uses this login.
     - AI Behaviour Changes
         - Enemies will now have a small delay (usually between 0.1 and 0.6) seconds before firing after losing sight of the player.
             - This has almost no effect on normal gameplay, other than reducing enemies ability to instantly shoot as they strafe around corners, resulting in frustrating one-shots.
