@@ -159,6 +159,7 @@ Sarge's Changes since Beta 2.2:
     - The GEP Gun now has limited range. After 5 seconds of flight, rockets will detonate as they run out of fuel. Each range mod increases flight time by 1 second.
     - Selecting the Mini Crossbow or Sniper Rifle from Paul at the start of the game will give you extra ammo (8 tranq darts or 5 .3006 ammo).
         - Both weapons still come with an Accuracy mod (which was added in vRSD)
+    - The LAW has been changed to be 3x1 instead of 4x1 inventory spaces.
     - Putting a scope or a laser sight on the GEP gun now requires the Heavily Tweaked perk (ADVANCED heavy weapons, 100 skill points). The scope and laser sight still provide rocket guidance capabilities.
     - Added a new "Killswitch Engaged" Playthrough Modifier. When enabled, all augmentations will be disabled and a countdown timer will be active while your killswitch is enabled.
     - Added a new "Weapon Requirements Matter" Playthrough Modifier. When enabled, most weapons will require a minimum skill investment in order to be used.
@@ -278,6 +279,7 @@ Sarge's Changes since Beta 2.2:
             - Glutton: Allows holding double stacks of all food items, and can eat up to 125% hunger.
             - Socket Jockey: Using a wall-outlet will give you 5 bioenergy in addition to zapping you.
             - Firefighter: Fire Extinguishers will have longer range, last for longer, and will explode in a huge cloud when detonated.
+            - Lawfare Expert: Allows you to carry 3 LAWs, and makes them stack in the inventory.
     - Addiction System Rework
         - Alcohol no longer heals for 5 points. Instead, it temporarily gives you 5 torso HP (along with it's usual 5 extra torso Max-HP) while in effect, which is removed afterwards. This health removal cannot kill the player.
         - Alcohol no longer adds to fullness when the addiction system is enabled
