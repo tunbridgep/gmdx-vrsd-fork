@@ -7452,8 +7452,11 @@ function bool RestrictInput(optional bool bDontCheckConversation)
 
     //SARGE: Disallow any sort of UI operations when the "pause" key is pressed
     //This way, real-time UI is actually a real-time UI
-    if (DeusExRootWindow(rootWindow) != None && DeusExRootWindow(rootWindow).bUIPaused || (Level.Pauser != ""))
-        return true;
+    if (bHardCoreMode || bRealUI)
+    {
+        if (DeusExRootWindow(rootWindow) != None && DeusExRootWindow(rootWindow).bUIPaused || Level.Pauser != "")
+            return true;
+    }
 
 	return False;
 }
