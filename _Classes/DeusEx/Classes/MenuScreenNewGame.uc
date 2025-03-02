@@ -70,7 +70,7 @@ var bool bRandomizeAugs;
 var bool bRandomizeEnemies;
 var bool bAddictionSystem;
 var bool bRestrictedSaving;
-var bool bNoKeypadCheese;
+var int iNoKeypadCheese;
 var bool bExtraHardcore;
 var bool bMoreLDDPNPCs;
 //var bool bRestrictedMetabolism;
@@ -131,7 +131,7 @@ event InitWindow()
     bRandomizeAugs=false;                                                       //RSD
     bAddictionSystem=false;                                                     //RSD
     bRestrictedSaving=false;                                                    //Sarge
-    bNoKeypadCheese=false;                                                      //Sarge
+    iNoKeypadCheese=0;      	                                                //Sarge
     bRandomizeEnemies=false;                                                    //Sarge
     bExtraHardcore=false;                                                       //Sarge
     bMoreLDDPNPCs=false;                                                        //Sarge
@@ -143,7 +143,7 @@ event InitWindow()
     default.bRandomizeAugs=false;                                               //RSD
     default.bAddictionSystem=false;                                             //RSD
     default.bRestrictedSaving=false;                                            //Sarge
-    default.bNoKeypadCheese=false;                                              //Sarge
+    default.iNoKeypadCheese=0;                                                  //Sarge
     default.bRandomizeEnemies=false;                                            //Sarge
     default.bExtraHardcore=false;                                               //Sarge
     default.bMoreLDDPNPCs=false;                                                //Sarge
@@ -799,7 +799,7 @@ function SaveSettings()
     player.bRandomizeMods=bRandomizeMods;                                       //RSD
     player.bRandomizeAugs=bRandomizeAugs;                                       //RSD
     player.bRestrictedSaving=bRestrictedSaving;                                 //Sarge
-    player.bNoKeypadCheese=bNoKeypadCheese;                                     //Sarge
+    player.iNoKeypadCheese=iNoKeypadCheese;                                     //Sarge
     player.bRandomizeEnemies=bRandomizeEnemies;                                 //Sarge
     player.bPrisonStart=bPrisonStart;                                           //Sarge
     if (player.bRandomizeAugs)                                                  //RSD: New aug randomization feature

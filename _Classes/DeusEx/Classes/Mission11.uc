@@ -17,15 +17,7 @@ function FirstFrame()
 
 	if (localURL == "11_PARIS_CATHEDRAL")
 	{
- 	     if (flags.GetBool('Enhancement_Detected') && flags.GetBool('AnnaNavarre_Dead'))
-	     {
-            foreach AllActors(class'GuntherHermann', gunt)
-	        {
-                if (gunt.BarkBindName == "GuntherHermann")
-                   gunt.BarkBindName = "GuntherHermannPissed";
-            }
-	     }
-	     //CanQuickSave=false;                                                  //RSD: Why was autosaving disabled?
+	    //CanQuickSave=false;                                                  //RSD: Why was autosaving disabled?
 	}
     /*else if (localURL != "11_PARIS_EVERETT")                                  //RSD: No seriously, why was autosaving disabled?
       CanQuickSave=true;

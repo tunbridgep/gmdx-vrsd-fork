@@ -73,7 +73,6 @@ function ToggleStandbyMode(bool standby)
         if (player.aDrone != None)
             player.aDrone.Velocity = vect(0.,0.,0.);
         Player.bSpyDroneSet = True;                                            //RSD: Allows the user to toggle between moving and controlling the drone
-        Player.DRONESAVErotation = player.ViewRotation;
         if (!Player.RestrictInput())
         {
             Player.ViewRotation = player.SAVErotation;
@@ -90,7 +89,7 @@ function ToggleStandbyMode(bool standby)
         Player.spyDroneLevelValue = LevelValues[CurrentLevel];
         if (!player.RestrictInput())
         {
-            Player.ViewRotation = player.DRONESAVErotation;
+            Player.ViewRotation = player.aDrone.Rotation;
             Player.ConfigBigDroneView(true);
             Player.UpdateHUD();
         }
@@ -111,7 +110,6 @@ Begin:
     player.bSpyDroneActive = True;
     player.bSpyDroneSet = False;
     player.SAVErotation = player.ViewRotation;                                  //RSD: Set the SAVErotation the first time we activate
-    player.DRONESAVErotation = player.ViewRotation;                             //RSD: Set the DRONESAVErotation the first time we activate
 	SetTimer(0.4,False);
 }
 
@@ -158,9 +156,9 @@ function Deactivate()
     if (Player.bSpyDroneActive)
         lastDroneTime = Level.TimeSeconds;
 
-    ToggleStandbyMode(true);
     Player.bSpyDroneSet = False;
     Player.ForceDroneOff(true);
+    ToggleStandbyMode(true);
 }
 
 simulated function PreBeginPlay()
