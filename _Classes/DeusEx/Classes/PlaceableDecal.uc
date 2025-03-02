@@ -25,13 +25,30 @@ enum ETextureSetup
 	E_TrashBag, //SARGE: Added. Based off the trashbag texture.
 	E_TrashPaper, //SARGE: Added. Originally used the TrashPaper texture, but now uses cardboard
     E_WaterWall,    //Sarge: Added. Originally the urinal texture from HDTP occasionally placed on walls to make them wet.
+    E_Moss,    //Sarge: Added.
+    E_Moss2,    //Sarge: Added.
+    E_Dirt,    //Sarge: Added.
+    E_Stain1,    //Sarge: Added.
+    E_Stain3,    //Sarge: Added.
+    E_Stain4,    //Sarge: Added.
+    E_Crack1,    //Sarge: Added.
+    E_Crack2,    //Sarge: Added.
+    E_Crack3,    //Sarge: Added.
+    E_Crack4,    //Sarge: Added.
+    E_SmallHole,    //Sarge: Added.
+    E_EDecall4,    //Sarge: Added.
+    E_Unknown,    //Sarge: Added.
+	E_GlassCrack2, //SARGE: Added
+	E_GlassCrack3, //SARGE: Added
+	E_ScratchLine, //SARGE: Added
+	E_BulletHit3, //SARGE: Added
 };
 
 var() ETextureSetup TextureSetup;
 
-function bool IsHDTP()
+static function bool IsHDTP()
 {
-    return DeusExPlayer(GetPlayerPawn()) != None && DeusExPlayer(GetPlayerPawn()).bHDTPInstalled && class'DeusExDecal'.default.iHDTPModelToggle > 0;
+    return class'DeusExPlayer'.static.IsHDTPInstalled() && class'DeusExDecal'.default.iHDTPModelToggle > 0;
 }
 
 exec function UpdateHDTPsettings()
@@ -74,6 +91,23 @@ exec function UpdateHDTPsettings()
         case E_Burn3:		Skin = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFlatFXtex40","DeusExItems.Skins.FlatFXTex40",IsHDTP()); break;
         case E_Hole:		Skin = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFlatFXtex9","DeusExItems.Skins.FlatFXTex9",IsHDTP()); break;
         case E_WaterWall:	Skin = class'HDTPLoader'.static.GetTexture("RSDCrap.Environment.WaterPuddle"); break;
+        case E_Moss:	    Skin = class'HDTPLoader'.static.GetTexture("KZTextures.Decal.moss_decal"); break;
+        case E_Moss2:	    Skin = class'HDTPLoader'.static.GetTexture("KZTextures.Decal.moss_decal2"); break;
+        case E_Dirt:	    Skin = class'HDTPLoader'.static.GetTexture("Tester.Decal.dirt_decal"); break;
+        case E_Stain1:	    Skin = class'HDTPLoader'.static.GetTexture("Tester.Decal.GMDXStain1"); break;
+        case E_Stain3:	    Skin = class'HDTPLoader'.static.GetTexture("Tester.Decal.GMDXStain3"); break;
+        case E_Stain4:	    Skin = class'HDTPLoader'.static.GetTexture("Tester.Decal.GMDXStain4"); break;
+        case E_Crack1:	    Skin = class'HDTPLoader'.static.GetTexture("GMDXSFX.Decals.FlatFXTex8a"); break;
+        case E_Crack2:	    Skin = class'HDTPLoader'.static.GetTexture("GMDXSFX.Decals.FlatFXTex7a"); break;
+        case E_Crack3:	    Skin = class'HDTPLoader'.static.GetTexture("GMDXSFX.Decals.FlatFXTex8b"); break;
+        case E_Crack4:	    Skin = class'HDTPLoader'.static.GetTexture("GMDXSFX.Decals.FlatFXTex9a"); break;
+        case E_SmallHole:	Skin = class'HDTPLoader'.static.GetTexture("DeusExItems.Skins.FlatFXtex4"); break;
+
+        //Wall gunge and stuff
+        case E_EDecall4:	Skin = class'HDTPLoader'.static.GetTexture("GMDXSFX.Decals.EDecal14"); break;
+
+        //No fuckin idea what this is
+        case E_Unknown:	    Skin = class'HDTPLoader'.static.GetTexture("KZTextures.Decal.decal_yvi1"); break;
         
         //Turns out the vanilla glass crack doesn't really look very good in most spots, so just disable it if we're not using HDTP
         //Since GMDX uses it almost like a generic "scratch" texture
@@ -82,6 +116,13 @@ exec function UpdateHDTPsettings()
         //case E_GlassCrack:	Skin = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFlatFXtex29","DeusExItems.Skins.FlatFXTex29",IsHDTP()); break;
         //case E_GlassCrack:	Skin = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFlatFXtex29","DeusExItems.Skins.FlatFXTex7",IsHDTP()); break;
         case E_GlassCrack:	Skin = Texture'RSDCrap.Skins.HDTPFlatFXtex29'; break;
+        case E_GlassCrack2:	Skin = Texture'DeusExItems.Skins.FlatFXTex8'; break;
+        case E_GlassCrack3:	Skin = class'HDTPLoader'.static.GetTexture("GMDXSFX.Decals.FlatFXTex3o"); break;
+        
+
+        //More GMDX Crap
+        case E_ScratchLine:	Skin = class'HDTPLoader'.static.GetTexture("GMDXSFX.Decals.FlatFXTexS"); break;
+        case E_BulletHit3:	Skin = class'HDTPLoader'.static.GetTexture("GMDXSFX.Effects.BulletHit_3"); break;
 
         //Added new low-quality Leaf textures.
         case E_Leaf:	Skin = class'HDTPLoader'.static.GetTexture2("GameMedia.Skins.LeafTex","RSDCrap.Environment.LeafTex",IsHDTP()); break;
