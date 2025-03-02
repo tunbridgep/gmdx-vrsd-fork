@@ -285,6 +285,10 @@ Sarge's Changes since Beta 2.2:
     - A Laser Sight has been added to Smuggler's safe in the first NY visit (replaces a recoil mod)
     - The Silencer in Paul's Apartment, Full-Auto Mod in Tong's Lab, and Laser Sight in Smugglers Safe are all guaranteed to appear even with the weapon mod shuffle turned on.
 - Miscellaneous Changes:
+    - Death and Hurt Sounds Randomisation added
+        - In Vanilla mode, all enemies only use vanilla pain and hurt sounds.
+        - In Pre-Set mode, all enemies use pre-set hurt and pain sounds that are always the same
+        - In Randomised mode, all enemies will randomise their hurt and death sounds.
     - The Hacking Window in the Computer UI now uses the Menu theme, to match the computer's theme, rather than the HUD Theme.
     - Right-Clicking on the Nano-Keyring icon in the inventory will select it.
         - This is useful when you have Smart Keyring enabled, and want to select the keyring before reaching a door, such as if it's being watched by a camera.

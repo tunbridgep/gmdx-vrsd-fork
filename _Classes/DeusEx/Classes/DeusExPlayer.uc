@@ -711,6 +711,9 @@ var travel bool bMinimiseTargetingWindow;
 var globalconfig int iEnhancedLipSync; //0 = disabled, 1 = nice and smooth, 2 = intentionally chunky
 var globalconfig bool bEnableBlinking; //Allows characters to blink
 
+//SARGE: Randomised Death/Pain Sounds
+var globalconfig int iDeathSoundMode; //0 = vanilla sounds, 1 = preset GMDX sounds, 2 = random sounds.
+
 //SARGE: Bigger Belt. Inspired by Revisions one, but less sucky.
 var globalconfig bool bBiggerBelt;
 
@@ -18129,5 +18132,6 @@ defaultproperties
      bHDTPEnabled=True
      iEnhancedLipSync=1
      bEnableBlinking=True
+     iDeathSoundMode=2
      bBiggerBelt=True
 }

@@ -489,6 +489,19 @@ var travel bool bSetupHDTP;
 //SARGE: Blink timer
 var float blinkTimer;
 
+//SARGE: Allow randomised pain and death sounds
+var Sound randomDeathSoundsM[10];
+var Sound randomPainSoundsM[10];
+var Sound randomDeathSoundsF[10];
+var Sound randomPainSoundsF[10];
+var bool bSetupRandomSounds; //Have we set up a random sound?
+var Sound randomDeathSoundChoice; //These three variables hold the references to
+var Sound randomPainSoundChoice1; //our randomly rolled sounds.
+var Sound randomPainSoundChoice2; //Used by the GetDeathSound and GetPainSound functions.
+var Sound deathSoundOverride;            //If this is set, we will use this instead of our rolled death sounds.
+var bool bDontChangeDeathPainSounds; //If set, we don't randomise death or pain sounds for this actor
+
+
 native(2102) final function ConBindEvents();
 
 native(2105) final function bool IsValidEnemy(Pawn TestEnemy, optional bool bCheckAlliance);
@@ -593,6 +606,8 @@ function PostBeginPlay()
 {
 
 	Super.PostBeginPlay();
+
+    RandomiseSounds();
 
 	//sort out HDTP settings
 	UpdateHDTPSettings();
@@ -3899,7 +3914,7 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
 
         if (HealthHead < 0 && (DamageType == 'Shot' || DamageType == 'Sabot'))
         {
-        Die = Sound'DeusExSounds.Generic.FleshHit1';
+        deathSoundOverride = Sound'DeusExSounds.Generic.FleshHit1';
        player = DeusExPlayer(GetPlayerPawn());
        //Sarge: Disable head popping because it looks awful, and doesn't work with HDTP
        /*
@@ -3945,9 +3960,6 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
 		// gib us if we get blown up
 		if (DamageType == 'Exploded') //|| (DamageType == 'Burned' && !bOnFire))
 			{
-			Die = none; //CyberP: no death sounds if blown up.
-            HitSound1 = none;  //CyberP: or pain sounds
-            HitSound2 = none;
             Health = -10000;
             //if (DamageType == 'Burned')
               // bBurnedUp = True;
@@ -4504,7 +4516,7 @@ function PlayDyingSound()
 {
 	SetDistressTimer();
 
-	PlaySound(Die, SLOT_Pain,,,, RandomPitch());
+	PlaySound(GetDeathSound(), SLOT_Pain,,,, RandomPitch());
 	if (bEmitDistress)
 		AISendEvent('Distress', EAITYPE_Audio,0.25,336); //CyberP: radius was 490 //RSD: psshh, only 224? We going to 336 baby
 	AISendEvent('LoudNoise', EAITYPE_Audio,0.25,224);                           //RSD: was 320, to make it line up more with vanilla ratio it's now 224
@@ -4815,18 +4827,19 @@ function PlayTakeHitSound(int Damage, name damageType, int Mult)
 		return;
 
 	LastPainSound = Level.TimeSeconds;
+	
+    if (damageType != 'Exploded')
+        hitSound = GetRandomHitSound();
 
-    if (FRand() < 0.15)
-		hitSound = HitSound2;
-    else
-		hitSound = HitSound1;            //CyberP: more lax conditions for hitsound2
 	volume = FMax(Mult*TransientSoundVolume, Mult*2.0);
 
 	SetDistressTimer();
-	if (damageType != 'Exploded')
-	    PlaySound(hitSound, SLOT_Pain, volume,,, RandomPitch());
-	if ((hitSound != None) && bEmitDistress)
-		AISendEvent('Distress', EAITYPE_Audio, volume,224); //CyberP: added radius param
+    if (hitSound != None)
+    {
+        PlaySound(hitSound, SLOT_Pain, volume,,, RandomPitch());
+        if (bEmitDistress)
+            AISendEvent('Distress', EAITYPE_Audio, volume,224); //CyberP: added radius param
+    }
 }
 
 
@@ -5991,7 +6004,8 @@ function PlayDying(name damageType, vector hitLoc)
 	else
 	{
 		bStunned = False;
-		PlayDyingSound();
+		if (DamageType != 'Exploded') //|| (DamageType == 'Burned' && !bOnFire))
+            PlayDyingSound();
 	}
 }
 
@@ -17143,6 +17157,137 @@ function LipSynch(float deltaTime)
 }
 
 // ----------------------------------------------------------------------
+// RandomiseSounds()
+// SARGE: GMDX Adds many new death sounds,
+// This attempts to give some more variety and make
+// them less hard-coded, by allowing us to pick from a list
+// ----------------------------------------------------------------------
+
+function Sound GetDeathSoundFromIndex(int index)
+{
+    if (bIsFemale && index < ArrayCount(randomDeathSoundsF))
+        return randomDeathSoundsF[index];
+    else if (!bIsFemale && index < ArrayCount(randomDeathSoundsM))
+        return randomDeathSoundsM[index];
+
+    return None;
+}
+
+function Sound GetPainSoundFromIndex(int index)
+{
+    if (bIsFemale && index < ArrayCount(randomPainSoundsF))
+        return randomPainSoundsF[index];
+    else if (!bIsFemale && index < ArrayCount(randomPainSoundsM))
+        return randomPainSoundsM[index];
+
+    return None;
+}
+
+//Gets this characters death sound, based on our settings
+function Sound GetDeathSound()
+{
+    //If sound has been set to something else, get it instead
+    if (deathSoundOverride != None)
+        return deathSoundOverride;
+
+    //If we're using our original sound, or not valid, use the default
+    else if (Class'DeusExPlayer'.default.iDeathSoundMode == 1 || !bIsHuman || bDontChangeDeathPainSounds)
+        return default.Die;
+
+    //Otherwise do vanilla sounds, if set
+    else if (Class'DeusExPlayer'.default.iDeathSoundMode == 0)
+    {
+        // change the sounds for chicks
+        if (bIsFemale)
+            return Sound'FemaleDeath';
+        else
+            return Sound'DeusExSounds.Player.MaleDeath';
+    }
+
+    else
+        return randomDeathSoundChoice;
+}
+
+//Gets one of this characters two hit sounds
+function Sound GetRandomHitSound()
+{
+    if (FRand() < 0.15)
+		return GetHitSound(true);
+    else
+		return GetHitSound();            //CyberP: more lax conditions for hitsound2
+}
+
+//Gets on of this characters his sounds, based on our settings
+function Sound GetHitSound(optional bool sound2)
+{
+    //If we're using our original sound, or not valid, use the default
+    if (Class'DeusExPlayer'.default.iDeathSoundMode == 1 || !bIsHuman || bDontChangeDeathPainSounds)
+    {
+        if (sound2)
+            return default.HitSound2;
+        else
+            return default.HitSound1;
+    }
+
+    //Otherwise do vanilla sounds, if set
+    else if (Class'DeusExPlayer'.default.iDeathSoundMode == 0)
+    {
+        // change the sounds for chicks
+        if (bIsFemale)
+        {
+            if (sound2)
+                return Sound'FemalePainSmall';
+            else
+                return Sound'FemalePainMedium';
+        }
+        else
+        {
+            if (sound2)
+                return Sound'DeusExSounds.Player.MalePainMedium';
+            else
+                return Sound'DeusExSounds.Player.MalePainSmall';
+        }
+    }
+
+    //Otherwise, use our pain sound choices
+    if (sound2)
+        return randomPainSoundChoice2;
+    else
+        return randomPainSoundChoice1;
+
+}
+
+function RandomiseSounds()
+{
+    local int dyingSounds, painSounds, i;
+    
+    //hack
+    //if (HitSound1 == Sound'DeusExSounds.Generic.ArmorRicochet')
+    if (bDontChangeDeathPainSounds)
+        return;
+
+    if (bSetupRandomSounds || !bIsHuman)
+        return;
+    
+    bSetupRandomSounds = true;
+    
+    while (GetDeathSoundFromIndex(dyingSounds) != None)
+        dyingSounds++;
+    while (GetPainSoundFromIndex(painSounds) != None)
+        painSounds++;
+
+    if (dyingSounds > 0)
+    {
+        randomDeathSoundChoice = GetDeathSoundFromIndex(int(FRand() * (dyingSounds-1)));
+    }
+    if (painSounds > 0)
+    {
+        randomPainSoundChoice1 = GetPainSoundFromIndex(int(FRand() * (painSounds-1)));
+        randomPainSoundChoice2 = GetPainSoundFromIndex(int(FRand() * (painSounds-1)));
+    }
+}
+
+// ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
 defaultproperties
@@ -17230,4 +17375,47 @@ defaultproperties
      UnfamiliarName="DEFAULT UNFAMILIAR NAME - REPORT THIS AS A BUG"
      fireReactTime=0.4
      iHDTPModelToggle=0
+     randomDeathSoundsF(0)=Sound'DeusExSounds.Player.FemaleDeath';
+     randomDeathSoundsF(1)=Sound'DeusExSounds.Player.FemaleUnconscious';
+     randomDeathSoundsF(2)=Sound'GMDXSFX.Player.fem1grunt1';
+     //
+     randomDeathSoundsM(0)=Sound'DeusExSounds.Player.MaleDeath';
+     randomDeathSoundsM(1)=Sound'DeusExSounds.Player.MaleUnconscious';
+     randomDeathSoundsM(2)=Sound'GMDXSFX.Human.Death01';
+     randomDeathSoundsM(3)=Sound'GMDXSFX.Human.Death02';
+     randomDeathSoundsM(4)=Sound'GMDXSFX.Human.Death03';
+     randomDeathSoundsM(5)=Sound'GMDXSFX.Human.Death05';
+     randomDeathSoundsM(6)=Sound'GMDXSFX.Human.Death06';
+     randomDeathSoundsM(7)=Sound'GMDXSFX.Human.Death07';
+     randomDeathSoundsM(8)=Sound'GMDXSFX.Human.Death09';
+     randomDeathSoundsM(9)=Sound'GMDXSFX.Human.Death11';
+     randomDeathSoundsM(10)=Sound'GMDXSFX.Player.male1grunt2';
+     //
+     randomPainSoundsF(0)=Sound'DeusExSounds.Player.FemalePainSmall'
+     randomPainSoundsF(1)=Sound'DeusExSounds.Player.FemalePainMedium'
+     randomPainSoundsF(2)=Sound'DeusExSounds.Player.FemalePainLarge'
+     randomPainSoundsF(3)=Sound'GMDXSFX.Player.fem2grunt1'
+     randomPainSoundsF(4)=Sound'GMDXSFX.Player.fem2grunt2'
+     //
+     randomPainSoundsM(0)=Sound'DeusExSounds.Player.MalePainSmall'
+     randomPainSoundsM(1)=Sound'DeusExSounds.Player.MalePainMedium'
+     randomPainSoundsM(2)=Sound'DeusExSounds.Player.MalePainBig'
+     randomPainSoundsM(3)=Sound'GMDXSFX.Human.PainSmall01'
+     randomPainSoundsM(4)=Sound'GMDXSFX.Human.PainSmall02'
+     randomPainSoundsM(5)=Sound'GMDXSFX.Human.PainSmall03'
+     randomPainSoundsM(6)=Sound'GMDXSFX.Human.PainSmall04'
+     randomPainSoundsM(7)=Sound'GMDXSFX.Human.PainSmall06'
+     randomPainSoundsM(8)=Sound'GMDXSFX.Human.PainSmall07'
+     randomPainSoundsM(9)=Sound'GMDXSFX.Human.PainSmall08'
+     randomPainSoundsM(10)=Sound'GMDXSFX.Human.PainBig01'
+     randomPainSoundsM(11)=Sound'GMDXSFX.Human.PainBig02'
+     randomPainSoundsM(12)=Sound'GMDXSFX.Human.PainBig04'
+     randomPainSoundsM(13)=Sound'GMDXSFX.Human.PainBig05'
+     randomPainSoundsM(14)=Sound'GMDXSFX.Human.PainBig06'
+     randomPainSoundsM(15)=Sound'GMDXSFX.Human.MGrunt1'
+     randomPainSoundsM(16)=Sound'GMDXSFX.Human.MGrunt3'
+     randomPainSoundsM(17)=Sound'GMDXSFX.Player.malegrunt2'
+     randomPainSoundsM(18)=Sound'GMDXSFX.Player.malegrunt3'
+     randomPainSoundsM(19)=Sound'DeusExSounds.Player.MaleLand' //WTF?
+     randomPainSoundsM(19)=Sound'DeusExSounds.Player.MaleGrunt'
 }
