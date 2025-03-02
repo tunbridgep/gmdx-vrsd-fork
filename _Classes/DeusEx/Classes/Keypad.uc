@@ -150,4 +150,5 @@ defaultproperties
      ItemName="Security Keypad"
      Mass=10.000000
      Buoyancy=5.000000
+     bAllowRightClickToolSelection=False
 }

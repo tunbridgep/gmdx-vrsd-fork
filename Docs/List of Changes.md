@@ -69,6 +69,7 @@ Sarge's Changes since Beta 2.2:
     - When using a medical bot, using the last augmentation cannister in the Augs screen will automatically switch to the Health screen.
     - The augmentation "hum" sound can be disabled.
     - Augmentations now show their active colours in the medbot interface.
+    - Picking up a weapon from a carcass for the first time will show you how much ammo it has.
     - Complete overhaul of the "Decline Knives" system
         - "Decline Knives" setting has been removed
         - A new Decline button has been added to items in the inventory. Clicking it will decline a specific item going forward, preventing it from being taken off corpses.
@@ -80,6 +81,14 @@ Sarge's Changes since Beta 2.2:
     - When picking up duplicate Nanokeys, the log now lists it as a duplicate.
     - While having a grenade selected, the crosshair will turn blue when you're able to place it on a wall.
     - Right-Clicking while dead will load the last save game.
+    - Right-Clicking an item in the belt with the Inventory Window open will clear the slot.
+    - Right-Click Unholstering has been completely overhauled.
+        - Previously, right-clicking would not unholster at all when using the regular toolbelt, and would always select the primary belt selection when using the IW toolbelt.
+        - The "Double-Click holstering" setting can now also be used to enable Double Click Unholstering.
+        - Now, your last selected item is remembered, and right-clicking will unholster it when using the regular toolbelt.
+            - The IW toolbelt still uses your primary selection, but will use the last selected item if the primary selection is invalid (such as if the belt slot becomes empty)
+            - "Forced" item changes, such as left-frobbing a door to select a lockpick, won't be set as your last selected weapon, allowing you to easily reselect your previous selection.
+            - When using the standard toolbelt, your last belt selection is highlighted when your hands are empty, rather then showing nothing.
     - Added QoL settings to not damage domesticated animals and cleaner bots when stepping on them.
     - The Inventory "Show Ammo" display now always shows the total amount of ammo you can carry. Before, it was only visible when "Show Descriptions" was enabled.
     - A lot of inventory item displays have been improved to show more statistics.
@@ -123,7 +132,6 @@ Sarge's Changes since Beta 2.2:
     - Pressing the Reload key will no longer reload weapons that have a full clip, unless Trick Reloading is enabled (always enabled on Hardcore).
     - Laser Attachments now re-enable themselves automatically if a weapon is holstered and reselected.
     - Hardcore Mode difficulty selection and Gameplay Settings menu are no longer locked behind completing the game, however they strongly warn against changing them.
-    - Double-Click holstering now also works to enable Double Click Unholstering, rather than always unholstering with right-click (with IW toolbelt) or doing nothing (regular Toolbelt)
     - The number of total Lockpicks or Multitools in your inventory is now listed on lockpicking/electronics information windows, allowing you to see how many lockpicks or multitools you have compared to how many are required to bypass a given device or lock.
         - The text is also color coded, showing as yellow when you only just have the amount of tools required, and red if you don't meet the requirement.
         - The Damage Threshold text is also red if the currently selected weapon is not able to beat the damage threshold.
@@ -157,6 +165,7 @@ Sarge's Changes since Beta 2.2:
     - The Dragons Tooth Sword now requires Biocells to use. It starts with 100% charge, with each attack taking 2% if it hits a target, giving you 50 hits total. Biocells restore 20% (or 30% with the Field Repair perk), giving you an additional 10 (15) hits each.
     - Aim Stabilisation is now reset when using Medkits/Biocells from the health/augs screens, or using items from the inventory.
     - The GEP Gun now has limited range. After 5 seconds of flight, rockets will detonate as they run out of fuel. Each range mod increases flight time by 1 second.
+    - Stamina no longer regenerates while holding a corpse.
     - Selecting the Mini Crossbow or Sniper Rifle from Paul at the start of the game will give you extra ammo (8 tranq darts or 5 .3006 ammo).
         - Both weapons still come with an Accuracy mod (which was added in vRSD)
     - The LAW has been changed to be 3x1 instead of 4x1 inventory spaces.
@@ -289,6 +298,7 @@ Sarge's Changes since Beta 2.2:
     - A Laser Sight has been added to Smuggler's safe in the first NY visit (replaces a recoil mod)
     - The Silencer in Paul's Apartment, Full-Auto Mod in Tong's Lab, and Laser Sight in Smugglers Safe are all guaranteed to appear even with the weapon mod shuffle turned on.
 - Miscellaneous Changes:
+    - Added a message and a sound when picking up a charged item that is then used to immediately recharge an existing item, to let you know what happened to it. Previously the item just disappeared with no message.
     - Death and Hurt Sounds Randomisation added
         - In Vanilla mode, all enemies only use vanilla pain and hurt sounds.
         - In Pre-Set mode, all enemies use pre-set hurt and pain sounds that are always the same

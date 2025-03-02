@@ -77,6 +77,7 @@ function ToggleStandbyMode(bool standby)
         {
             Player.ViewRotation = player.SAVErotation;
             Player.ConfigBigDroneView(false);
+            Player.UpdateCrosshairStyle();
             Player.UpdateHUD();
         }
     }
@@ -91,6 +92,7 @@ function ToggleStandbyMode(bool standby)
         {
             Player.ViewRotation = player.aDrone.Rotation;
             Player.ConfigBigDroneView(true);
+            Player.UpdateCrosshairStyle();
             Player.UpdateHUD();
         }
     }

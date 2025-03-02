@@ -5172,7 +5172,7 @@ function Finish()
 				     return;
 				  }
                   if (DeusExPlayer(Owner).CarriedDecoration == None)
-                     DeusExPlayer(Owner).inHandPending = DeusExPlayer(Owner).primaryWeapon;
+                     DeusExPlayer(Owner).SelectLastWeapon(true);
                   GotoState('idle');
                   return;
                //}
@@ -5379,7 +5379,7 @@ simulated function bool UpdateInfo(Object winObject)
         winInfo.SetTitle(itemName);
 
     //SARGE: Add Decline Button
-    if (P.IsA('DeusExPlayer') && !DeusExPlayer(P).DeclinedItemsManager.IsDeclined(class))
+    if (P.IsA('DeusExPlayer'))
 		winInfo.AddDeclineButton(class);
 
 	if (bHandToHand && Owner.IsA('DeusExPlayer'))

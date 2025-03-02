@@ -493,6 +493,7 @@ var travel int BeltLast;                                                    //Sa
 var travel bool bScrollSelect;                                              //Sarge: Whether or not our last belt selection was done with Next/Last weapon keys rather than Number Keys. Used by Alternative Belt to know when to holster
 var travel int beltScrolled;                                                //Sarge: The last item we scrolled to on the belt, if we are using Adv Toolbelt
 var travel bool selectedNumberFromEmpty;                                    //Sarge: Was the current selection made from an empty hand. Used by Alternate Toolbelt Classic Mode to not jump back to previous weapon when we select from an empty hand.
+var travel bool bBeltSkipNextPrimary;                                       //SARGE: Don't assign the next weapon we select as our primary.
 var globalconfig bool bLeftClickUnholster;                                  //Enable left click unholstering
 
 var int clickCountCyber; //CyberP: for double clicking to unequip
@@ -503,6 +504,7 @@ var bool bCrouchRegen;  //CyberP: regen when crouched and has skill
 var float doubleClickCheck; //CyberP: to return from double clicking.
 var travel Inventory assignedWeapon;
 var Inventory primaryWeapon;
+var bool bLastWasEmpty;                                                     //SARGE: Whether or not we were empty before being switched to this weapon.
 var float augEffectTime;
 var vector vecta;
 var rotator rota;
@@ -722,6 +724,9 @@ var globalconfig int iDeathSoundMode; //0 = vanilla sounds, 1 = preset GMDX soun
 
 //SARGE: Bigger Belt. Inspired by Revisions one, but less sucky.
 var globalconfig bool bBiggerBelt;
+
+//SARGE: Right-Click Selection for Picks and Tools. Inspired by similar feature from Revision, but less sucky.
+var globalconfig bool bRightClickToolSelection;
 
 //////////END GMDX
 
@@ -2816,7 +2821,7 @@ function bool SelectMeleePriority(int damageThreshold)	// Trash: Used to automat
     else
         return false;
 	
-    PutInHand(meleeWeapon);
+    PutInHand(meleeWeapon,true);
     return true;
 }
 
@@ -6280,7 +6285,7 @@ state PlayerWalking
 		
 		//SARGE: Moved Endurance check to here.
         bCrouchRegen=PerkManager.GetPerkWithClass(class'DeusEx.PerkEndurance').bPerkObtained;
-	    if ((!IsCrouching() || bCrouchRegen) && !bOnLadder) //(bIsCrouching)     //RSD: Simplified this entire logic from original crouching -> bCrouchRegen check, added !bOnLadder
+	    if ((!IsCrouching() || bCrouchRegen) && !bOnLadder && (inHand == None || !inHand.IsA('POVCorpse'))) //(bIsCrouching)     //RSD: Simplified this entire logic from original crouching -> bCrouchRegen check, added !bOnLadder //SARGE: Added corpse carrying
 	    	RegenStaminaTick(deltaTime);                                        //RSD: Generalized stamina regen function
 	  }
       }
@@ -6607,6 +6612,10 @@ state PlayerWalking
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
+       
+        //Update belt selection timer
+        if (fBlockBeltSelection > 0)
+            fBlockBeltSelection -= deltaTime;
 
         //Tick down killswitch
         if (killswitchTimer > 0)
@@ -7607,7 +7616,7 @@ exec function ShowScores()
                  return;
              }
          }
-         inHandPending = assignedWeapon;
+         PutInHand(assignedWeapon,true);
          if (inHandPending.IsA('DeusExWeapon'))
 	         DeusExWeapon(inHandPending).bBeginQuickMelee=true;
          if (inHandPending.IsA('Flare'))
@@ -7641,7 +7650,7 @@ exec function ShowScores()
 	    {
 	       if (assignedWeapon != None)
 	       {
-	           inHandPending = assignedWeapon;
+	           PutInHand(assignedWeapon,true);
            }
 	    }
 
@@ -7656,7 +7665,7 @@ exec function ShowScores()
              }
          }
          if (inHand.IsA('DeusExWeapon'))
-         inHandPending = assignedWeapon;
+         PutInHand(assignedWeapon,true);
          if (inHandPending.IsA('DeusExWeapon'))
 	         DeusExWeapon(inHandPending).bBeginQuickMelee=true;
 	    }
@@ -7952,10 +7961,21 @@ exec function ParseLeftClick()
 // Sarge: Selects the last weapon we had selected, or if we're using the alternate toolbelt, selects the primary selection.
 // ----------------------------------------------------------------------
 
-function SelectLastWeapon()
+function SelectLastWeapon(optional bool allowEmpty)
 {
     local DeusExRootWindow root;
     root = DeusExRootWindow(rootWindow);
+
+    if (bLastWasEmpty)
+    {
+        bLastWasEmpty = false;
+        if (allowEmpty)
+        {
+            PutInHand(None);
+            return;
+        }
+    }
+
     if (root != None && root.hud != None)
     {
         if (bAlternateToolbelt > 0 && root.ActivateObjectInBelt(advBelt))
@@ -7964,6 +7984,7 @@ function SelectLastWeapon()
             return;
         }
     }
+    
     if (primaryWeapon.Owner == self)
     {
         PutInHand(primaryWeapon);
@@ -7984,7 +8005,7 @@ function NewWeaponSelected()
 }
 
 //Select Inventory Item
-function bool SelectInventoryItem(Name type)
+function bool SelectInventoryItem(Name type, optional bool bNoPrimary)
 {
     local Inventory item;
     item = Inventory;
@@ -7992,7 +8013,7 @@ function bool SelectInventoryItem(Name type)
     {
         if (item.IsA(type))
         {
-            PutInHand(item);
+            PutInHand(item,bNoPrimary);
             return true;
         }
         item = item.Inventory;
@@ -8538,7 +8559,7 @@ function DoFrob(Actor Frobber, Inventory frobWith)
 // put the object in the player's hand and draw it in front of the player
 // ----------------------------------------------------------------------
 
-exec function PutInHand(optional Inventory inv)
+exec function PutInHand(optional Inventory inv, optional bool bNoPrimary)
 {
     local DeusExWeapon weap;
 
@@ -8568,9 +8589,7 @@ exec function PutInHand(optional Inventory inv)
 		// Can't put an active charged item in hand  //cyberP: overruled for armor system
 		//if ((inv.IsA('ChargedPickup')) && (ChargedPickup(inv).IsActive()))
 		//	return;
-        
-        if (!inv.IsA('POVCorpse'))
-            primaryWeapon = inv;
+
 	}
 
 	if (CarriedDecoration != None)
@@ -8579,7 +8598,15 @@ exec function PutInHand(optional Inventory inv)
 	if (assignedWeapon != none && assignedWeapon.IsA('Binoculars'))             //RSD: Make sure we aren't in binocs view
 		if (Binoculars(assignedWeapon).bActive)
             assignedWeapon.GotoState('DeActivated');
+    if (inHandPending != inv && inHand != inv)
+        bBeltSkipNextPrimary = bNoPrimary;
+
+    if (!bNoPrimary)
+        bLastWasEmpty = inv == None;
+    
     SetInHandPending(inv);
+                
+    //clientMessage("PutInHand called for : " $ inv $ ", bBeltSkipNextPrimary=" $ bBeltSkipNextPrimary);
 
     UpdateCrosshair();
 }
@@ -8696,6 +8723,8 @@ function UpdateInHand()
 {
 	local bool bSwitch;
     local rotator rot;
+    local DeusExRootWindow root;
+	root = DeusExRootWindow(rootWindow);
 
 	//sync up clientinhandpending.
 	if (inHandPending != inHand)
@@ -8757,6 +8786,13 @@ function UpdateInHand()
 		{
 			SetInHand(inHandPending);
 			SelectedItem = inHandPending;
+        
+            if (inHandPending != None && !inHandPending.IsA('POVCorpse') && !bBeltSkipNextPrimary)
+            {
+                //clientMessage("Update Primary to: " $ selectedItem);
+                primaryWeapon = selectedItem;
+                bBeltSkipNextPrimary = false;
+            }
 
 			if (inHand != None)
 			{
@@ -8764,7 +8800,11 @@ function UpdateInHand()
 					SkilledTool(inHand).BringUp();
 				else if (inHand.IsA('DeusExWeapon'))
 					SwitchWeapon(DeusExWeapon(inHand).InventoryGroup);
+                NewWeaponSelected();
 			}
+            // Notify the hud
+            if (root != None)
+                root.hud.belt.UpdateInHand();
 		}
 	}
 	else
@@ -8787,6 +8827,12 @@ function UpdateInHand()
 				if (inHand.IsInState('DownWeapon') && (Weapon == None))
 					SwitchWeapon(DeusExWeapon(inHand).InventoryGroup);
 			}
+
+
+        // Notify the hud
+        if (root != None)
+            root.hud.belt.UpdateInHand();
+
 		}
 
 	}
@@ -10292,6 +10338,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 							Carc.PickupAmmoCount = POVCorpse(item).PickupAmmoCount;
 							Carc.savedName = POVCorpse(item).savedName;
                             Carc.UpdateName();
+
                             //if (FRand() < 0.3)
                             //PlaySound(Sound'DeusExSounds.Player.MaleLand', SLOT_None, 0.9, false, 800, 0.85);
 
@@ -10334,7 +10381,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 		{
 			if (((inHand == None) || (inHandPending == None)) && (item.Physics != PHYS_Falling))
 			{
-				PutInHand(item);
+				PutInHand(item,true);
 				ClientMessage(CannotDropHere);
 				bDropped = False;
 			}
@@ -11035,6 +11082,10 @@ exec function ToggleRadialAugMenu()
     if (RestrictInput())
         return;
 
+    //No wheel while drone is active
+    if (bSpyDroneActive && !bSpyDroneSet)
+        return;
+
 	bRadialAugMenuVisible = !bRadialAugMenuVisible;
 
 	if (bRadialAugMenuVisible) {
@@ -11128,10 +11179,6 @@ function bool GetCrosshairState(optional bool bCheckForOuterCrosshairs)
 	root = DeusExRootWindow(rootWindow);
 	W = DeusExWeapon(inHand);
 
-    //If the Spy Drone is fullscreen, no crosshair
-    if (bSpyDroneActive && !bSpyDroneSet && bBigDroneView)
-        return false;
-
     //If we have the spy drone out, no outer crosshairs.
     if (bSpyDroneActive && !bSpyDroneSet && bCheckForOuterCrosshairs)
         return false;
@@ -11202,11 +11249,19 @@ function bool GetBracketsState()
 	root = DeusExRootWindow(rootWindow);
 	W = DeusExWeapon(inHand);
 
+    //SARGE: No brackets during fullscreen drone
+    if (bSpyDroneActive && !bSpyDroneSet && bBigDroneView)
+        return False;
+
     if (IsInState('Dying')) //No brackets while dying
         return false;
 
     if (root != None && root.WindowStackCount() > 0) //No brackets while windows are open
         return false;
+    
+    //No brackets on cloaked enemies
+    if (frobTarget != None && frobTarget.isA('ScriptedPawn') && ScriptedPawn(frobTarget).bHasCloak)
+        return False;
 
     //No brackets while reading books/datacubes/etc
     if (frobTarget != None && frobTarget.isA('InformationDevices') && InformationDevices(frobTarget).aReader == Self)
@@ -11245,7 +11300,7 @@ function UpdateCrosshairStyle()
     {
         cross = root.hud.cross;
 
-        if (inHand != None && inHand.isA('DeusExWeapon') || dynamicCrosshair == 0)
+        if ((bSpyDroneActive && !bSpyDroneSet && bBigDroneView) || (inHand != None && inHand.isA('DeusExWeapon')) || dynamicCrosshair == 0)
     		root.hud.cross.SetBackground(Texture'CrossSquare');
         else if (dynamicCrosshair == 3)
     		root.hud.cross.SetBackground(Texture'RSDCrap.UserInterface.CrossDot3');
@@ -12418,10 +12473,6 @@ ignores SeePlayer, HearNoise, Bump;
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
-
-        //Update belt selection timer
-        if (fBlockBeltSelection > 0)
-            fBlockBeltSelection -= deltaTime;
 	}
 
 	function LoopHeadConvoAnim()
@@ -17889,7 +17940,7 @@ function LipSynch(float deltaTime)
 	animTimer[2] += deltaTime;
         
     if (iEnhancedLipSync == 1)
-        tweentime = 0.2;
+        tweentime = 0.225;
     else if (iEnhancedLipSync == 2)
         tweentime = 0;
     else if (Level.TimeSeconds - animTimer[3]  < 0.05)

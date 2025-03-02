@@ -291,10 +291,15 @@ function bool ButtonActivated( Window buttonPressed )
             case buttonDecline:
                 declineThis = class<Inventory>(DynamicLoadObject(buttonDecline.tags[0], class'Class', true));
                 if (declineThis != None)
-                    player.declinedItemsManager.AddDeclinedItem(declineThis);
-                winActionButtonsSecondary.Hide();
+                {
+                    if (player.declinedItemsManager.IsDeclined(declineThis))
+                        player.declinedItemsManager.RemoveDeclinedItem(declineThis);
+                    else
+                        player.declinedItemsManager.AddDeclinedItem(declineThis);
+                    UpdateDeclineButton(declineThis);
+                }
                 break;
-
+            
 			default:
 				bHandled = False;
 				break;
@@ -514,6 +519,18 @@ function AddSecondaryButton(Inventory wep)                                      
    }
 }
 
+function UpdateDeclineButton(class<Inventory> wep)
+{
+    if (wep != None)
+    {
+        buttonDecline.tags[0] = string(wep);
+        if (player.declinedItemsManager.IsDeclined(wep))
+            buttonDecline.SetButtonText(msgRemoveDecline);
+        else
+            buttonDecline.SetButtonText(msgDecline);
+    }
+}
+
 function AddDeclineButton(class<Inventory> wep)
 {
     if (wep != None)
@@ -523,8 +540,7 @@ function AddDeclineButton(class<Inventory> wep)
         winActionButtonsSecondary.SetWidth(32); //149
         winActionButtonsSecondary.FillAllSpace(False);
         buttonDecline = PersonaActionButtonWindow(winActionButtonsSecondary.NewChild(Class'PersonaActionButtonWindow'));
-        buttonDecline.SetButtonText(msgDecline);
-        buttonDecline.tags[0] = string(wep);
+        UpdateDeclineButton(wep);
         AddLine();
     }
 }
@@ -569,7 +585,12 @@ function AddDeclinedInfoWindow()
             winIcon = winAmmo.NewChild(Class'Window');
             winIcon.SetBackground(invClass.default.Icon);
             winIcon.SetBackgroundStyle(DSTY_Masked);
+
+            //SARGE: Holy dirty hack batman!
+            if (invClass == class'SoftwareNuke' || invClass == class'SoftwareStop')
+                winIcon.SetBackgroundStretching(true);
             winIcon.SetSize(42, 37);
+            //winIcon.SetSize(invClass.default.largeIconWidth, invClass.default.largeIconHeight);
             
             // Add Item Name
             winText = PersonaNormalTextWindow(winAmmo.NewChild(Class'PersonaNormalTextWindow'));
