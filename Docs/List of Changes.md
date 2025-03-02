@@ -63,6 +63,7 @@ Sarge's Changes since Beta 2.2:
             - The keyring can still be selected using Left-Click Frob on doors or by right-clicking the Nano-Keyring icon in the inventory screen.
     - Datacubes will show a black screen after they have been read.
     - Added the option to use the original HUD fonts instead of the GMDX ones.
+    - When using a medical bot, using the last augmentation cannister in the Augs screen will automatically switch to the Health screen.
     - The augmentation "hum" sound can be disabled.
     - Augmentations now show their active colours in the medbot interface.
     - Complete overhaul of the "Decline Knives" system
