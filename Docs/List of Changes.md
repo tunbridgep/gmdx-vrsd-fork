@@ -162,6 +162,9 @@ Sarge's Changes since Beta 2.2:
         - This removes ambiguity about whether or not a surface is unbreakable, or just needs more hits to destroy.
         - This only affects 1-2 movers in the entire game.
         - You still need to meet the damage threshold requirements.
+    - 20MM HE Ammo is now limited to 4 (from 10), and the ammo count scales with Demolitions, rather then Rifles.
+        - It is also no longer affected by the Ammo Capacity augmentation.
+        - Ammo amounts should be from 2-6 depending on skill.
     - The Dragons Tooth Sword now requires Biocells to use. It starts with 100% charge, with each attack taking 2% if it hits a target, giving you 50 hits total. Biocells restore 20% (or 30% with the Field Repair perk), giving you an additional 10 (15) hits each.
     - Aim Stabilisation is now reset when using Medkits/Biocells from the health/augs screens, or using items from the inventory.
     - The GEP Gun now has limited range. After 5 seconds of flight, rockets will detonate as they run out of fuel. Each range mod increases flight time by 1 second.

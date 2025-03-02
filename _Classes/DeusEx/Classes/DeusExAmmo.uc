@@ -15,6 +15,8 @@ var int altDamage; //CyberP:
 var() class<Skill> ammoSkill;                                                   //RSD: Denotes associated weapon skill
 var travel bool bLooted;                                                        //RSD: If we've already looted this and partially emptied it (for ammo spillover in world)
 
+var const bool bHarderScaling;                                                  //SARGE: If set, ammo will scale much harsher when untrained, up to the same value at Master.
+
 //SARGE: HDTP Model toggles
 //SARGE: TODO: Make these arrays so that ammo can have multi skins,
 //so we can have traditional HDTP darts as well as GMDX darts, for instance
