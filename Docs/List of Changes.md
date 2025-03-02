@@ -279,6 +279,8 @@ Sarge's Changes since Beta 2.2:
     - When using Restricted Saving (and Hardcore Mode), Autosaves are now only created the first time upon entering a new level, or if no save has been performed in the last 15 minutes. This is designed to mitigate save-abuse by crossing between maps.
     - Weapon Mod, Enemy Weapon and Container Randomisation gameplay modifiers now use a table of predetermined random numbers, generated at the start of the game, rather than randomising on map load. This means that you can no longer reroll randomisation for a given map by loading a save before a transition to a new map.
     - Perk System Rework
+        - Demolitions Perks:
+            - Sensor Overload (NEW ADVANCED): After being manipulated by scrambler grenades, affected robots will reboot over 30 seconds.
         - Environmental Training Perks:
             - Filter Upgrade (NEW TRAINED): An agent uses an upgraded hazmat suit that filters out harmful chemicals, removing stamina damage from poison and tear gas entirely.
             - Blast Padding (NEW ADVANCED): An agent's ballistic vest is fitted with a protective layer that reduces susceptibility to self-damage from explosive and plasma weaponry (-75%).

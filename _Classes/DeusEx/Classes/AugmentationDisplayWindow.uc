@@ -1880,15 +1880,16 @@ function string GetHackDisabledText(Actor target,bool TargetingDisplay)
     
     cam = SecurityCamera(target);
 
-
-
     if (turr != None && turr.bRebooting)
         amt = int(turr.disableTime - player.saveTime);
     else if (cam != None && cam.bRebooting)
         amt = int(cam.disableTime - player.saveTime);
 
+    if (target.IsA('Robot'))
+        amt = int(Robot(target).rebootTime - player.saveTime);
+
     //ZAP!
-    if (amt == 0)
+    if (amt <= 0)
         return "";
     /*
     else if (turr != None && turr.bConfused && turr.bRebooting)
