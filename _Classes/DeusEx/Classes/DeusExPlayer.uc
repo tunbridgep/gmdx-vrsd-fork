@@ -11588,6 +11588,10 @@ exec function ActivateBelt(int objectNum)
 				root.hud.belt.RefreshAlternateToolbelt();
 			}
 
+            //If we're not in IW belt mode, set our IW belt to match our current belt.
+            else if (bAlternateToolbelt == 0)
+                advBelt = objectNum;
+
                 
             //Did we select from empty?
             selectedNumberFromEmpty = inHand == None;
