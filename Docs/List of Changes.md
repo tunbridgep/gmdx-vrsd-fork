@@ -34,6 +34,12 @@ Sarge's Changes since Beta 2.2:
     - Fixed many other GMDX and Vanilla bugs.
     - Fixed GMDX bug where most inventory items with multiple skins (such as sodacans) weren't showing their skinned variants when being held in the players hands.
 - Quality of Life Improvements:
+    - Keypads have been improved:
+        - Keypads are now displayed in Number Pad format, instead of Dial Pad format.
+        - Keypads show numbers when digits are entered, rather than dots.
+        - The unused `*` and `#` buttons have been replaced with Backspace `<` and Clear `C` buttons.
+        - The Delete and Backspace keyboard keys can be used as well as the buttons.
+        - The `Shift-3` and `Shift-8` key combinations can be used to manually input `*` and `#` into the keypad.
     - Belt Improvements:
         - The Belt now has 12 slots, insead of 10.
             - The extra belt slots will automatically assign the - and = keys if unbound.
