@@ -476,7 +476,7 @@ var bool bForceBeltAutofill;    	    										//Sarge: Overwrite autofill setti
 var globalconfig bool bBeltMemory;  											//Sarge: Added new feature to allow belt to rember items
 var globalconfig bool bSmartKeyring;  											//Sarge: Added new feature to allow keyring to be used without belt, freeing up a slot
 var globalconfig int dynamicCrosshair;       									//Sarge: Allow using a special interaction crosshair
-var travel BeltInfo beltInfos[10];                                              //Sarge: Holds information about belt slots
+var travel BeltInfo beltInfos[12];                                              //Sarge: Holds information about belt slots
 var travel float fullUp; //CyberP: eat/drink limit.                             //RSD: was int, now float
 var localized string fatty; //CyberP: eat/drink limit.
 var localized string noUsing;  //CyberP: left click interaction
@@ -490,7 +490,6 @@ var transient bool bThrowDecoration;
 ////Belt Stuff
 var travel int SlotMem; //CyberP: for belt/weapon switching, so the code remembers what weapon we had before holstering
 var travel int BeltLast;                                                    //Sarge: The last item we literally selected from the belt, regardless of holstering or alternate belt behaviour
-var travel bool bNumberSelect;                                              //Sarge: Whether or not our last belt selection was done with number keys (ActivateBelt) rather than Next/Prev. Used by Alternative Belt to know when to holster
 var travel bool bScrollSelect;                                              //Sarge: Whether or not our last belt selection was done with Next/Last weapon keys rather than Number Keys. Used by Alternative Belt to know when to holster
 var travel int beltScrolled;                                                //Sarge: The last item we scrolled to on the belt, if we are using Adv Toolbelt
 var travel bool selectedNumberFromEmpty;                                    //Sarge: Was the current selection made from an empty hand. Used by Alternate Toolbelt Classic Mode to not jump back to previous weapon when we select from an empty hand.
@@ -701,6 +700,9 @@ var globalconfig bool bStompVacbots;                                            
 //SARGE: Enhanced Lip Sync
 var globalconfig int iEnhancedLipSync; //0 = disabled, 1 = nice and smooth, 2 = intentionally chunky
 var globalconfig bool bEnableBlinking; //Allows characters to blink
+
+//SARGE: Bigger Belt. Inspired by Revisions one, but less sucky.
+var globalconfig bool bBiggerBelt;
 
 //////////END GMDX
 
@@ -1751,6 +1753,7 @@ exec function HDTP(optional string s)
 	local DeusExPickup PK;                                                      //SARGE: Added for object toggles
 	local DeusExProjectile PR;                                                  //SARGE: Added for object toggles
 	local DeusExAmmo AM;                                                        //SARGE: Added for object toggles
+	local DeusExDecal DC;                                                        //SARGE: Added for object toggles
     
     //SARGE: Yes, using the class name is necessary. Statics are weird.
 	class'DeusExPlayer'.default.bHDTPInstalled = class'HDTPLoader'.static.HDTPInstalled();
@@ -1769,6 +1772,12 @@ exec function HDTP(optional string s)
     	PR.UpdateHDTPsettings();
     foreach AllActors(Class'DeusExAmmo',AM)                                     //SARGE: Added for object toggles
     	AM.UpdateHDTPsettings();
+    //SARGE: These don't draw properly if we update them... What a shame!
+    //It was a good feature, what a rotten way to die!
+    /*
+    foreach AllActors(Class'DeusExDecal',DC)                                     //SARGE: Added for object toggles
+    	DC.UpdateHDTPsettings();
+    */
 
 	UpdateHDTPsettings();
 }
@@ -2501,7 +2510,7 @@ function ResetPlayer(optional bool bTraining)
 	}
 
     // Reset Belt Memory
-    for(i = 0;i < 10;i++)
+    for(i = 0;i < 12;i++)
         ClearPlaceholder(i);
 
 	// Give the player a pistol and a prod
@@ -7911,7 +7920,6 @@ function SelectLastWeapon()
 
 function NewWeaponSelected()
 {
-    bNumberSelect = false;
     bScrollSelect = false;
     clickCountCyber = 0;
     beltScrolled = advBelt;
@@ -11202,6 +11210,18 @@ function UpdateHUD()
 	local DeusExRootWindow root;
 	root = DeusExRootWindow(rootWindow);
 
+    //SARGE: Hack to autobind belt keys - and =
+    //TODO: Write a proper keybind handler class, for this and leaning,
+    //the wheel, and any other keys you care to bind dynamically.
+    if (bBiggerBelt)
+    {
+        //SARGE: TODO: Check these slots aren't already bound
+        if(ConsoleCommand( "KEYBINDING Minus" ) == "")
+            ConsoleCommand("SET InputExt Minus ActivateBelt 10");
+        if(ConsoleCommand( "KEYBINDING Equals" ) == "")
+            ConsoleCommand("SET InputExt Equals ActivateBelt 11");
+    }
+
     if (root != None)
         root.UpdateHUD();
 }
@@ -11397,6 +11417,7 @@ exec function ShowRGBDialog()
 exec function ActivateBelt(int objectNum)
 {
 	local DeusExRootWindow root;
+    local Inventory beltItem;
 
     //SARGE: When holding the number keys in dialog, we will select a weapon
     //upon finishing the conversation. Ignore the weapon change command.
@@ -11408,6 +11429,14 @@ exec function ActivateBelt(int objectNum)
 
 	if (RestrictInput())
 		return;
+
+    //SARGE: We need to do some wacky stuff here,
+    //now that the belt slots go from 0-9 and are offset in the HUD,
+    //rather than going from 1-10
+    if (objectNum == 0)
+        objectNum = 9;
+    else if (objectNum <= 9)
+        objectNum -= 1;
 
 	if ((Level.NetMode != NM_Standalone) && bBuySkills)
 	{
@@ -11422,14 +11451,21 @@ exec function ActivateBelt(int objectNum)
 	if (CarriedDecoration == None)
 	{
 		root = DeusExRootWindow(rootWindow);
-		if (root != None)
+		if (root != None && root.hud != None)
 		{
-			//SARGE: If already selected in IW Belt mode (except classic), an additional press will set our primary weapon to that slot.
-			if (bAlternateToolbelt >= 1 && BeltLast == objectNum && bNumberSelect && root.hud.belt.GetObjectFromBelt(objectNum) != None)
+            beltItem = root.hud.belt.GetObjectFromBelt(objectNum);
+			
+            //we're not selecting anything!
+            if (beltItem == None)
+                return;
+
+            //SARGE: If already selected in IW Belt mode, an additional press will set our primary weapon to that slot.
+			if (bAlternateToolbelt >= 1 && beltItem == inHandPending)
 			{
 				advBelt = objectNum;
 				root.hud.belt.RefreshAlternateToolbelt();
 			}
+
                 
             //Did we select from empty?
             selectedNumberFromEmpty = inHand == None;
@@ -11437,7 +11473,6 @@ exec function ActivateBelt(int objectNum)
 			root.ActivateObjectInBelt(objectNum);
 			BeltLast = objectNum;
             NewWeaponSelected();
-			bNumberSelect = true;
 		}
 	}
 }
@@ -11446,10 +11481,17 @@ exec function ActivateBelt(int objectNum)
 // NextBeltItem()
 // ----------------------------------------------------------------------
 
+//SARGE: TODO: Rewrite this crappy code.
+//I don't know who wrote it, but I want to punch them.
 exec function NextBeltItem()
 {
 	local DeusExRootWindow root;
-	local int slot, startSlot, tries;
+	local int slot, startSlot, totalSlots;
+
+    if (bBiggerBelt)
+        totalSlots = 12;
+    else
+        totalSlots = 10;
 
 	if (RestrictInput())
 		return;
@@ -11512,10 +11554,15 @@ exec function NextBeltItem()
 
 			do
 			{
-				if (++slot >= 10)
-					slot = 0;
+                //SARGE: UnrealScript doesn't short-circuit, aparrently
+                slot++;
+                if (bBiggerBelt && slot >= 12)
+                    slot = 0;
+                else if (!bBiggerBelt && slot >= 10)
+                    slot = 0;
 			}
 			until (root.ActivateObjectInBelt(slot) || (startSlot == slot));
+            advBelt = slot;
 
 			clientInHandPending = root.hud.belt.GetObjectFromBelt(slot);
 
@@ -11543,13 +11590,17 @@ exec function NextBeltItem()
 		root = DeusExRootWindow(rootWindow);
 		if (root != None)
 		{
+            startSlot = advBelt;
 			do
 			{
-				if (++advBelt >= 10)
-					advBelt = 0;
-                tries++;
+                //SARGE: UnrealScript doesn't short-circuit, aparrently
+                advBelt++;
+                if (bBiggerBelt && advBelt >= 12)
+                    advBelt = 0;
+                else if (!bBiggerBelt && advBelt >= 10)
+                    advBelt = 0;
 			}
-			until (root.hud.belt.GetObjectFromBelt(advBelt) != None || tries == 10);
+			until (root.hud.belt.GetObjectFromBelt(advBelt) != None || advBelt == startSlot);
 			root.hud.belt.RefreshAlternateToolbelt();
             NewWeaponSelected();
 			bScrollSelect = true;
@@ -11566,10 +11617,12 @@ exec function NextBeltItem()
 // PrevBeltItem()
 // ----------------------------------------------------------------------
 
+//SARGE: TODO: Rewrite this crappy code.
+//I don't know who wrote it, but I want to punch them.
 exec function PrevBeltItem()
 {
 	local DeusExRootWindow root;
-	local int slot, startSlot, tries;
+	local int slot, startSlot;
 
 	if (RestrictInput())
 		return;
@@ -11631,11 +11684,16 @@ exec function PrevBeltItem()
 			startSlot = slot;
 			do
 			{
-				if (--slot <= -1)
+                //SARGE: UnrealScript doesn't short-circuit, aparrently
+                slot--;
+                if (bBiggerBelt && slot <= -1)
+					slot = 11;
+				else if (!bBiggerBelt && slot <= -1)
 					slot = 9;
 			}
 			until (root.ActivateObjectInBelt(slot) || (startSlot == slot));
 
+            advBelt = slot;
 			clientInHandPending = root.hud.belt.GetObjectFromBelt(slot);
 			
 			switch( inHandPending.beltPos )
@@ -11662,13 +11720,17 @@ exec function PrevBeltItem()
 		root = DeusExRootWindow(rootWindow);
 		if (root != None)
 		{	
+			startSlot = advBelt;
 			do
 			{
-				if (--advBelt <= -1)
+                //SARGE: UnrealScript doesn't short-circuit, aparrently
+                advBelt--;
+                if (bBiggerBelt && advBelt <= -1)
+					advBelt = 11;
+				else if (!bBiggerBelt && advBelt <= -1)
 					advBelt = 9;
-                tries++;
 			}
-			until (root.hud.belt.GetObjectFromBelt(advBelt) != None || tries == 10);
+			until (root.hud.belt.GetObjectFromBelt(advBelt) != None || advBelt == startSlot);
             root.hud.belt.RefreshAlternateToolbelt();
 			bScrollSelect = true;
 			clientInHandPending = root.hud.belt.GetObjectFromBelt(advBelt);
@@ -18017,4 +18079,5 @@ defaultproperties
      bHDTPEnabled=True
      iEnhancedLipSync=1
      bEnableBlinking=True
+     bBiggerBelt=True
 }

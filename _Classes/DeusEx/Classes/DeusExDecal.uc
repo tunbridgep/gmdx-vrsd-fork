@@ -13,10 +13,14 @@ var float HDTPDrawScale; //Can resize the DrawScale for HDTP
 
 var bool bAttached, bStartedLife, bImportant;
 
+function BeginPlay()
+{
+    UpdateHDTPsettings();
+    super.BeginPlay();
+}
 simulated function PostBeginPlay()
 {
 	Super.PostBeginPlay();
-    UpdateHDTPsettings();
 	SetTimer(1.0, false);
 }
 
