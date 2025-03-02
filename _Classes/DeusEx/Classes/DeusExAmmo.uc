@@ -220,7 +220,7 @@ function bool HandlePickupQuery( inventory Item )                               
 			Ammo(item).AmmoAmount -= intj;
 			if (item.IsA('DeusExAmmo'))
             	DeusExAmmo(item).bLooted = true;                                //RSD: so we don't add free ammo to containers we've partially looted
-            if (ammoSkill != Class'DeusEx.SkillDemolition' && !IsA('AmmoHideAGun')) //RSD: Don't display ammo message for grenades or the PS20
+            if (bShowInfo) //RSD: Don't display ammo message for grenades or the PS20 //SARGE: Changed to all ammo we can actually see in the inventory
 		    {
 			Pawn(Owner).ClientMessage( Item.PickupMessage @ Item.itemArticle @ Item.ItemName $ " (" $ intj $ ")", 'Pickup' );
 			}
@@ -235,7 +235,7 @@ function bool HandlePickupQuery( inventory Item )                               
 			Level.Game.LocalLog.LogPickup(Item, Pawn(Owner));
 		if (Level.Game.WorldLog != None)
 			Level.Game.WorldLog.LogPickup(Item, Pawn(Owner));
-		if (ammoSkill != Class'DeusEx.SkillDemolition' && !IsA('AmmoHideAGun'))  //RSD: Don't display ammo message for grenades or the PS20
+		if (bShowInfo)  //RSD: Don't display ammo message for grenades or the PS20 //SARGE: Show all ammo we can actually see in the inventory
 		{
 		if (Item.PickupMessageClass == None)
 			// DEUS_EX CNN - use the itemArticle and itemName
