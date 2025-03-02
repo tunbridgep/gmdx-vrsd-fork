@@ -697,6 +697,11 @@ var localized String DuplicateNanoKey;
 var globalconfig bool bStompDomesticAnimals;                                    //SARGE: If disabled, we can't stomp cats or dogs anymore. Adopt a cute animal today!
 var globalconfig bool bStompVacbots;                                            //SARGE: If disabled, we can't stomp vac-bots anymore.
 
+
+//Killswitch Engaged
+var travel bool bRealKillswitch;                                                        //SARGE: Playthrough Modifier for a real killswitch
+var travel float killswitchTimer;                                                       //SARGE: Killswitch timer in seconds.
+
 //Music Stuff
 var transient string currentSong;                                                 //SARGE: The "Song" variable is notoriously unreliable...
 var transient byte currentSection;                                              //SARGE: We need to track this for conversations/combat/etc
@@ -3829,11 +3834,11 @@ exec function ActivateAllAugs()
 // DeactivateAllAugs()
 // ----------------------------------------------------------------------
 
-exec function DeactivateAllAugs()
+exec function DeactivateAllAugs(optional bool toggle)
 {
 	if (AugmentationSystem != None)
 		//AugmentationSystem.DeactivateAll(true);
-		AugmentationSystem.DeactivateAll();
+		AugmentationSystem.DeactivateAll(toggle);
 }
 
 // ----------------------------------------------------------------------
@@ -6603,6 +6608,14 @@ state PlayerWalking
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
 
+        //Tick down killswitch
+        if (killswitchTimer > 0)
+        {
+            killswitchTimer -= deltaTime;
+            if (killswitchTimer < 0)
+                killswitchTimer = 0;
+        }
+
         //Stop double click timer
         if (doubleClickCheck > 0)
         {
@@ -6617,6 +6630,7 @@ state PlayerWalking
         //Stop being stunted if we elapse the stunted timer
         if (stuntedTime > 0)
             stuntedTime -= deltaTime;
+            
         //Fire blocking is only valid for 1 frame
         bBlockNextFire = False;
 
@@ -17308,6 +17322,12 @@ function MultiplayerTick(float DeltaTime)
 	RepairInventory();
 	lastRefreshTime = 0;
 
+    //Tick down killswitch
+    if (bRealKillswitch && killswitchTimer == 0)
+    {
+        killswitchTimer = 1;
+        TakeDamage(1,None,Location,vect(0,0,0),'Poison');
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -18127,6 +18147,7 @@ defaultproperties
      HUDThemeNameGMDX="Default"
      dblClickHolster=2
      bSmartDecline=True
+     killswitchTimer=-2
      bEnhancedMusicSystem=1
      bMedbotAutoswitch=True
      bHDTPEnabled=True
