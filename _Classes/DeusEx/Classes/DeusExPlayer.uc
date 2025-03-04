@@ -6417,7 +6417,8 @@ state PlayerWalking
 			if (Velocity.Z < -440)  //CyberP: effects for jumping in water from height.
 			{
 			PlaySound(sound'SplashLarge', SLOT_Pain);
-            ClientFlash(12,vect(160,200,255));
+            //SARGE: Disabled as we already have a water zone change in HeadZoneChange
+            //ClientFlash(12,vect(160,200,255));
 			for (i=0;i<38;i++)
 			{
 			    loc = Location + VRand() * 35;
@@ -6706,6 +6707,14 @@ event HeadZoneChange(ZoneInfo newHeadZone)
 		newHeadZone.SoundRadius = 255;
 	if (HeadRegion.Zone.AmbientSound != None)
 		HeadRegion.Zone.SoundRadius = 0;
+
+    //SARGE: Do fog stuff for current head zone.
+    if (VSize(newHeadZone.default.ViewFog) > 0.01)
+    {
+        DesiredFlashFog   = newHeadZone.default.ViewFog;
+        DesiredFlashScale = 0.01;
+        ViewFlash(1.0);
+    }
 
 	if (newheadZone != none && newHeadZone.bWaterZone && !HeadRegion.Zone.bWaterZone) //RSD: accessed none?
 	{
