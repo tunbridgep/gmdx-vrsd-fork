@@ -2543,12 +2543,14 @@ function ResetPlayer(optional bool bTraining)
 
         //SARGE: Hack to make the starting items always appear in the belt, regardless of autofill setting
         bForceBeltAutofill = true;
-		anItem = Spawn(class'WeaponPistol');
-		anItem.Frob(Self, None);
-		anItem.bInObjectBelt = True;
+        //SARGE: Now give Prod first, and set Pistol as primary belt selection
 		anItem = Spawn(class'WeaponProd');
 		anItem.Frob(Self, None);
 		anItem.bInObjectBelt = True;
+		anItem = Spawn(class'WeaponPistol');
+		anItem.Frob(Self, None);
+		anItem.bInObjectBelt = True;
+        advBelt = 1;
 		anItem = Spawn(class'MedKit');
 		anItem.Frob(Self, None);
 		anItem.bInObjectBelt = True;
@@ -8048,7 +8050,7 @@ function bool IsReallyFrobbable(Actor target, optional bool left)
 
 function SetDoubleClickTimer()
 {
-    doubleClickCheck=0.4;
+    doubleClickCheck=0.75;
     clickCountCyber=1;
 }
     
@@ -8217,6 +8219,11 @@ exec function ParseRightClick()
                 beltLast = advBelt;
 			}
 		}
+        //SARGE: When we have a forced weapon selection in hand (like a lockpick after left-frobbing, then select our last weapon instead.
+        else if (inHand != None && inHand != primaryWeapon)
+        {
+            SelectLastWeapon(true);
+        }
         else if (inHand == None && (clickCountCyber >= 1 || dblClickHolster < 2))
 		{
             //SARGE: Added support for the unholster behaviour from the Alternate Toolbelt on both Toolbelts
