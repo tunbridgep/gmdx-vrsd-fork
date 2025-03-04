@@ -8220,7 +8220,7 @@ exec function ParseRightClick()
 			}
 		}
         //SARGE: When we have a forced weapon selection in hand (like a lockpick after left-frobbing, then select our last weapon instead.
-        else if (inHand != None && inHand != primaryWeapon)
+        else if (inHand != None && inHand != primaryWeapon && (clickCountCyber >= 1 || dblClickHolster == 0 || !bLastWasEmpty))
         {
             SelectLastWeapon(true);
         }
@@ -18230,4 +18230,5 @@ defaultproperties
      bEnableBlinking=True
      iDeathSoundMode=2
      bBiggerBelt=True
+     //bRightClickToolSelection=True
 }
