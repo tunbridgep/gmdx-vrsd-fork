@@ -728,6 +728,9 @@ var globalconfig bool bBiggerBelt;
 //SARGE: Right-Click Selection for Picks and Tools. Inspired by similar feature from Revision, but less sucky.
 var globalconfig bool bRightClickToolSelection;
 
+//SARGE: Bigger weapon effect sparks
+var globalconfig bool bJohnWooSparks;
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -18223,4 +18226,5 @@ defaultproperties
      bEnableBlinking=True
      iDeathSoundMode=2
      bBiggerBelt=True
+     //bJohnWooSparks=True
 }

@@ -2981,14 +2981,14 @@ simulated function texture GetMuzzleTex()
 		i = rand(8);
 		switch(i)
 		{
-			case 0: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashlarge1"); break;
-			case 1: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashlarge2"); break;
-			case 2: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashlarge3"); break;
-			case 3: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashlarge4"); break;
-			case 4: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashlarge5"); break;
-			case 5: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashlarge6"); break;
-			case 6: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashlarge7"); break;
-			case 7: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashlarge8"); break;
+			case 0: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashlarge1"); break;
+			case 1: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashlarge2"); break;
+			case 2: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashlarge3"); break;
+			case 3: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashlarge4"); break;
+			case 4: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashlarge5"); break;
+			case 5: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashlarge6"); break;
+			case 6: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashlarge7"); break;
+			case 7: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashlarge8"); break;
 		}
 	}
 	else
@@ -2996,9 +2996,9 @@ simulated function texture GetMuzzleTex()
 		i = rand(3);
 		switch(i)
 		{
-			case 0: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashSmall1"); break;
-			case 1: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashSmall2"); break;
-			case 2: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashSmall3"); break;
+			case 0: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashSmall1"); break;
+			case 1: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashSmall2"); break;
+			case 2: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashSmall3"); break;
 		}
 	}
 

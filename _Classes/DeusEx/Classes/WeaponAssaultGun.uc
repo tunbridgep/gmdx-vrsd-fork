@@ -157,6 +157,7 @@ simulated function SwapMuzzleFlashTexture()
 		return;
 
 	if(playerpawn(owner) != none)      //diff meshes, see
+        //SARGE NOTE: HDTP Muzzle Flash was Broken by RSD HDTP 3-round-burst edit
 		MuzzleSlot=2;
 	else
 		MuzzleSlot=4;
@@ -311,6 +312,7 @@ defaultproperties
      ItemArticle="an"
      PlayerViewOffset=(X=12.500000,Y=-5.000000,Z=-12.000000)
      HDTPPlayerViewMesh="RSDCrap.HDTPAssaultGunRSD"
+     //HDTPPlayerViewMesh="HDTPItems.HDTPAssaultGun"
      HDTPPickupViewMesh="HDTPItems.HDTPassaultGunPickup"
      HDTPThirdPersonMesh="HDTPItems.HDTPassaultGun3rd"
      //PlayerViewMesh=LodMesh'DeusExItems.AssaultGun'

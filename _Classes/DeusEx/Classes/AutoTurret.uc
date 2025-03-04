@@ -599,7 +599,7 @@ local GMDXSparkFade fade;
 		if (IsHDTP())
 			gun.MultiSkins[3] = GetHDTPMuzzleTex();
 		else
-			gun.MultiSkins[2] = Texture'FlatFXTex34';
+			gun.MultiSkins[2] = GetHDTPMuzzleTex();
 		SetTimer(0.1, False);
 
 		// randomly draw a tracer
@@ -686,18 +686,28 @@ simulated function texture GetHDTPMuzzleTex()
 	local int i;
 	local texture tex;
 
-	i = rand(8);
-	switch(i)
-	{
-		case 0: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.HDTPMuzzleflashlarge1"); break;
-		case 1: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.HDTPMuzzleflashlarge2"); break;
-		case 2: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.HDTPMuzzleflashlarge3"); break;
-		case 3: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.HDTPMuzzleflashlarge4"); break;
-		case 4: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.HDTPMuzzleflashlarge5"); break;
-		case 5: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.HDTPMuzzleflashlarge6"); break;
-		case 6: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.HDTPMuzzleflashlarge7"); break;
-		case 7: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.HDTPMuzzleflashlarge8"); break;
-	}
+    if (!IsHDTP())                                                  //RSD: If using the vanilla model, use vanilla muzzle flash
+    {
+        if (FRand() < 0.5)
+            tex = Texture'FlatFXTex34';
+        else
+            tex = Texture'FlatFXTex37';
+    }
+    else
+    {
+        i = rand(8);
+        switch(i)
+        {
+            case 0: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashlarge1"); break;
+            case 1: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashlarge2"); break;
+            case 2: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashlarge3"); break;
+            case 3: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashlarge4"); break;
+            case 4: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashlarge5"); break;
+            case 5: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashlarge6"); break;
+            case 6: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashlarge7"); break;
+            case 7: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashlarge8"); break;
+        }
+    }
 	return tex;
 }
 

@@ -11,7 +11,8 @@ auto state Flying
 		Velocity.Z = -300;
 		DrawScale = FRand() * 0.09;
 		SetRotation(Rotator(Velocity));
-		LifeSpan = FRand()*0.09;
+        if (!class'DeusExPlayer'.default.bJohnWooSparks)
+            LifeSpan = FRand()*0.09;
 		Style=STY_Translucent;
 		if (FRand() < 0.2)
 		Velocity.Z = FRand() * 20;
