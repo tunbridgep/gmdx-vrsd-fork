@@ -728,6 +728,10 @@ var globalconfig bool bBiggerBelt;
 //SARGE: Right-Click Selection for Picks and Tools. Inspired by similar feature from Revision, but less sucky.
 var globalconfig bool bRightClickToolSelection;
 
+
+//SARGE: Ladder Fix. Stores if we just jumped from a ladder.
+//Used to reset our physics when the timer fails (for whatever reason).
+var float iLadderJumpTimer;
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -6641,6 +6645,20 @@ state PlayerWalking
         if (stuntedTime > 0)
             stuntedTime -= deltaTime;
             
+        
+        //SARGE: Backup fix for dealing with ladder climbing physics
+        if (iLadderJumpTimer > 0)
+        {
+            iLadderJumpTimer -= deltaTime;
+            if (iLadderJumpTimer <= 0)
+            {
+                if (Physics == PHYS_Flying)
+                {
+                    SetPhysics(PHYS_Falling);
+                    bOnLadder = false;
+                }
+            }
+        }
         //Fire blocking is only valid for 1 frame
         bBlockNextFire = False;
 
@@ -6688,13 +6706,6 @@ state PlayerFlying
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
-
-        //SARGE: Stupid ladder hack fix
-        if (bOnLadder && WallMaterial != 'Ladder')
-        {
-            bOnLadder = false;
-            SetPhysics(PHYS_Falling);
-        }
 
 		Super.PlayerTick(deltaTime);
 	}
