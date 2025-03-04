@@ -2796,19 +2796,24 @@ simulated function ScopeToggle()
 simulated function RefreshScopeDisplay(DeusExPlayer player, bool bInstant, bool bScopeOn)
 {
 	local bool bIsGEP;
-	if (player == None) return;
+    local DeusExRootWindow root;
+    local DeusExScopeView scope;
+
+    if (player == None) return;
+
+	root = DeusExRootWindow(player.rootWindow);
+    if (root == None) return;
+    
+    scope = root.scopeView;
+    if (scope == None) return;
 
 	bIsGEP=bHasScope&&(IsA('WeaponGEPGun'))&&(player.RocketTarget!=none);
 
 	if (bScopeOn)
-	{
 		// Show the Scope View
-		DeusExRootWindow(player.rootWindow).scopeView.ActivateViewType(ScopeFOV, False, bInstant,bIsGEP);
-	}
+		scope.ActivateViewType(ScopeFOV, False, bInstant,bIsGEP);
 	else
-	{
-	  DeusExrootWindow(player.rootWindow).scopeView.DeactivateView();
-	}
+	    scope.DeactivateView();
 
     player.UpdateCrosshair();
 }
