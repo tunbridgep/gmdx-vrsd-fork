@@ -5406,6 +5406,7 @@ function DoJump( optional float F )
 
         //if (JumpZ > 650)      //CyberP: fix super jump exploit.
         //JumpZ = default.JumpZ;
+        iLadderJumpTimer = 0.15;
         SetPhysics(PHYS_Flying);
         if (IsStunted())
         {
