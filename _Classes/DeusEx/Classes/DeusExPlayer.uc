@@ -6689,6 +6689,13 @@ state PlayerFlying
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
 
+        //SARGE: Stupid ladder hack fix
+        if (bOnLadder && WallMaterial != 'Ladder')
+        {
+            bOnLadder = false;
+            SetPhysics(PHYS_Falling);
+        }
+
 		Super.PlayerTick(deltaTime);
 	}
 }
