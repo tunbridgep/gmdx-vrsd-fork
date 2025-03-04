@@ -8050,7 +8050,7 @@ function bool IsReallyFrobbable(Actor target, optional bool left)
 
 function SetDoubleClickTimer()
 {
-    doubleClickCheck=0.75;
+    doubleClickCheck=0.4;
     clickCountCyber=1;
 }
     
