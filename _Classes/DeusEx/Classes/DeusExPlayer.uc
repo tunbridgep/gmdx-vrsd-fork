@@ -492,7 +492,6 @@ var travel int SlotMem; //CyberP: for belt/weapon switching, so the code remembe
 var travel int BeltLast;                                                    //Sarge: The last item we literally selected from the belt, regardless of holstering or alternate belt behaviour
 var travel bool bScrollSelect;                                              //Sarge: Whether or not our last belt selection was done with Next/Last weapon keys rather than Number Keys. Used by Alternative Belt to know when to holster
 var travel int beltScrolled;                                                //Sarge: The last item we scrolled to on the belt, if we are using Adv Toolbelt
-var travel bool selectedNumberFromEmpty;                                    //Sarge: Was the current selection made from an empty hand. Used by Alternate Toolbelt Classic Mode to not jump back to previous weapon when we select from an empty hand.
 var travel bool bBeltSkipNextPrimary;                                       //SARGE: Don't assign the next weapon we select as our primary.
 var globalconfig bool bLeftClickUnholster;                                  //Enable left click unholstering
 
@@ -8209,7 +8208,7 @@ exec function ParseRightClick()
 			PutInHand(None);
 		}
         //If we are using a different items to our belt item, and classic mode is on or we scrolled, select it instantly
-		else if ((bAlternateToolbelt > 1 || bScrollSelect) && beltScrolled != beltLast && inHand != None && !selectedNumberFromEmpty)
+		else if ((bAlternateToolbelt > 1 || bScrollSelect) && beltScrolled != beltLast /*&& inHand != None && !selectedNumberFromEmpty */)
 		{
 			root = DeusExRootWindow(rootWindow);
 			if (root != None && root.hud != None)
@@ -11602,10 +11601,6 @@ exec function ActivateBelt(int objectNum)
             //If we're not in IW belt mode, set our IW belt to match our current belt.
             else if (bAlternateToolbelt == 0)
                 advBelt = objectNum;
-
-                
-            //Did we select from empty?
-            selectedNumberFromEmpty = inHand == None;
 		
 			root.ActivateObjectInBelt(objectNum);
 			BeltLast = objectNum;
@@ -11746,7 +11741,6 @@ exec function NextBeltItem()
 		}
 	}
     beltScrolled = slot;
-    selectedNumberFromEmpty = false;
 	}
 }
 
@@ -11875,7 +11869,6 @@ exec function PrevBeltItem()
 		}
 	}
     beltScrolled = slot;
-    selectedNumberFromEmpty = false;
 	}
 }
 
