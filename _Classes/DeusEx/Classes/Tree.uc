@@ -12,7 +12,6 @@ class Tree extends OutdoorThings
 var DeusExPlayer player;
 var bool closeEnough;
 var bool previouslyCloseEnough;
-var globalconfig bool bHDTPOptimisation;                                 //SARGE: Optimises the tree models by replacing them with vanilla models at range, massively improving performance.
 
 var string Altmesh;
 
@@ -59,9 +58,12 @@ simulated function Tick(float deltaTime)
     if (player != None)
     {
         //Get distances, if it's less than 3500 units, or we're in a different zone, change to the HDTP model
-        closeEnough = !bHDTPOptimisation || (player.headregion.zoneNumber == region.zoneNumber && VSize(player.Location - Location) < 3500);
+        //NOTE: HDTP Model Toggle 1 is "optimised" mode, model 2 is the standard model but without the janky LOD system.
+        closeEnough = iHDTPModelToggle != 1 || (player.headregion.zoneNumber == region.zoneNumber && VSize(player.Location - Location) < 3500);
         if (closeEnough != previouslyCloseEnough)
             UpdateHDTPSettings();
+
+        bUnlit = !closeEnough || !IsHDTP();
 
         previouslyCloseEnough = closeEnough;
     }
