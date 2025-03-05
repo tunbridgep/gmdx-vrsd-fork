@@ -5406,7 +5406,7 @@ function DoJump( optional float F )
 
         //if (JumpZ > 650)      //CyberP: fix super jump exploit.
         //JumpZ = default.JumpZ;
-        iLadderJumpTimer = 0.15;
+        iLadderJumpTimer = 0.15;  //SARGE: Hack to fix flying forever when leaving ladders sometimes.
         SetPhysics(PHYS_Flying);
         if (IsStunted())
         {
