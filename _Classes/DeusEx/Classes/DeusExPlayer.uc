@@ -502,7 +502,7 @@ var bool bRegenStamina; //CyberP: regen when in water but head above water
 var bool bCrouchRegen;  //CyberP: regen when crouched and has skill
 var float doubleClickCheck; //CyberP: to return from double clicking.
 var travel Inventory assignedWeapon;
-var Inventory primaryWeapon;
+var travel Inventory primaryWeapon;
 var bool bLastWasEmpty;                                                     //SARGE: Whether or not we were empty before being switched to this weapon.
 var float augEffectTime;
 var vector vecta;
@@ -8219,7 +8219,7 @@ exec function ParseRightClick()
 			}
 		}
         //SARGE: When we have a forced weapon selection in hand (like a lockpick after left-frobbing, then select our last weapon instead.
-        else if (inHand != None && inHand != primaryWeapon && (clickCountCyber >= 1 || dblClickHolster == 0 || !bLastWasEmpty))
+        else if (inHand != None && primaryWeapon != None && inHand != primaryWeapon && (clickCountCyber >= 1 || dblClickHolster == 0 || !bLastWasEmpty))
         {
             SelectLastWeapon(true);
         }
