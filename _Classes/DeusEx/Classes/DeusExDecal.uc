@@ -38,6 +38,8 @@ simulated function Timer()
 	{
 		RemoteRole = ROLE_None;
 		bStartedLife = true;
+        if (class'DeusExPlayer'.default.bPersistentDebris) //SARGE: Stick around forever, if we've enabled the setting.
+            return;
 		if ( Level.bDropDetail )
 			SetTimer(5.0 + 2 * FRand(), false);
 		else

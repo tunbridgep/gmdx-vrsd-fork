@@ -145,10 +145,13 @@ function PostBeginPlay()
 	Super.PostBeginPlay();
     //UpdateHDTPsettings();
 
-	// randomize the lifespan a bit so things don't all disappear at once
 	speed *= 1.1;
-	if (!IsA('GMDXImpactSpark') && !IsA('GMDXImpactSpark2'))
-	LifeSpan += FRand()*1.5; //CyberP: was 1.0
+
+    if (class'DeusExPlayer'.default.bPersistentDebris) //SARGE: Stick around forever, if we've enabled the setting.
+        LifeSpan = 0;
+    else if (!IsA('GMDXImpactSpark') && !IsA('GMDXImpactSpark2'))
+        // randomize the lifespan a bit so things don't all disappear at once
+        LifeSpan += FRand()*1.5; //CyberP: was 1.0
 }
 
 static function bool IsHDTP()
@@ -195,7 +198,7 @@ simulated function Tick(float deltaTime)
 		AddSmoke();
 
 	// fade out the object smoothly 2 seconds before it dies completely
-	if (LifeSpan <= 2 && !IsA('GMDXImpactSpark') && !IsA('GMDXImpactSpark2'))
+	if (LifeSpan <= 2 && LifeSpan != 0 && !IsA('GMDXImpactSpark') && !IsA('GMDXImpactSpark2'))
 	{
 		if (Style != STY_Translucent)
 			Style = STY_Translucent;
