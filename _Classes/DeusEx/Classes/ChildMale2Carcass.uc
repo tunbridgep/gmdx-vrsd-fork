@@ -16,6 +16,4 @@ defaultproperties
      MultiSkins(5)=Texture'DeusExCharacters.Skins.ChildMale2Tex1'
      MultiSkins(6)=Texture'DeusExItems.Skins.GrayMaskTex'
      MultiSkins(7)=Texture'DeusExItems.Skins.BlackMaskTex'
-     CollisionRadius=34.000000
-     CollisionHeight=5.000000
 }
