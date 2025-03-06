@@ -1755,7 +1755,10 @@ function Landed(vector HitNormal)
 
     //SARGE: Even a medium height fall will kill you if you don't brace for it
     if (bNotDead && Velocity.Z < -600)
+    {
+		PlaySound(Sound'BodyHit', SLOT_Interact, 1, ,768,1.0);     //Bone cracking sound
         KillUnconscious();
+    }
 }
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
