@@ -176,6 +176,7 @@ function SaveSettings()
 {
 	ProcessPending();
     player.KeybindManager.Setup(player);
+    player.UpdateHUD();
 }
 
 // ----------------------------------------------------------------------
