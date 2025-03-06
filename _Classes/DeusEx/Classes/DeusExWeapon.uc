@@ -312,6 +312,7 @@ var float sleeptime;                                                            
 
 //SARGE: HDTP Model toggles
 var config int iHDTPModelToggle;
+var globalconfig bool bHDTPMuzzleFlashes;                                       //SARGE: If set, all weapons will use HDTP muzzle flashes all the time
 var string HDTPSkin;
 var string HDTPTexture;
 var string HDTPPlayerViewMesh;
@@ -1423,6 +1424,11 @@ function PlaySelect()
 static function bool IsHDTP()
 {
     return class'DeusExPlayer'.static.IsHDTPInstalled() && default.iHDTPModelToggle > 0;
+}
+
+function bool IsHDTPMuzzle()
+{
+    return class'DeusExPlayer'.static.IsHDTPInstalled() && (default.iHDTPModelToggle > 0 || bHDTPMuzzleFlashes);
 }
 
 function CheckWeaponSkins()
@@ -2969,7 +2975,7 @@ simulated function texture GetMuzzleTex()
 	local int i;
 	local texture tex;
 
-    if (!IsHDTP())                                                  //RSD: If using the vanilla model, use vanilla muzzle flash
+    if (!IsHDTPMuzzle())                                                  //RSD: If using the vanilla model, use vanilla muzzle flash
     {
         if (FRand() < 0.5)
             tex = Texture'FlatFXTex34';
@@ -4829,9 +4835,9 @@ simulated function TraceFire( float Accuracy )
 				if (VSize(HitLocation - StartTrace) > 250)
 				{
 					rot = Rotator(EndTrace - StartTrace);
-			   //if (Owner.IsA('DeusExPlayer') && ((AmmoName == Class'Ammo762mm') || AmmoName == Class'Ammo3006'))
-			//	  Spawn(class'Tracer',,, Owner.Location+FireOffset, rot);
-			  // else
+			   if (Owner.IsA('DeusExPlayer') && AmmoName == Class'Ammo3006')
+				  trcr = Spawn(class'SniperTracer',,, StartTrace + 96 * Vector(rot), rot);
+			   else
 				  trcr = Spawn(class'Tracer',,, StartTrace + 96 * Vector(rot), rot);   //StartTrace + 96 * Vector(rot) //RSD: Added pointer
 				  if (bZoomed)                                                  //RSD: Invisible tracers if we're zoomed, woohoo
                   	trcr.DrawType = DT_None;
