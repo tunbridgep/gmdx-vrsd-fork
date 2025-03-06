@@ -37,7 +37,8 @@ function Tick(float deltaTime)
 
 function Timer()
 {
-	Destroy();
+    if (!class'DeusExPlayer'.default.bPersistentDebris)
+        Destroy();
 }
 
 function StopMoving()
