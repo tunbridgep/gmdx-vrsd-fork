@@ -133,6 +133,7 @@ function BindKey(EKeybind bindName, string key, optional int offset)
         return;
 
     bindings[bindName].keys[bindIndex] = key;
+    //player.clientmessage("Binding " $ key $ " to " $ bindings[bindName + offset].alias);
     player.ConsoleCommand("SET InputExt" @ key @ bindings[bindName + offset].alias);
     player.SaveConfig();
 }
