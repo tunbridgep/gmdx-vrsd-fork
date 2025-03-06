@@ -73,6 +73,8 @@ function string GetBindName(string keyName)
         case "LeftBracket": return "[";
         case "RightBracket": return "]";
         case "SingleQuote": return "'";
+        case "Comma": return ",";
+        case "Period": return ".";
         default: return keyName;
     }
 }
