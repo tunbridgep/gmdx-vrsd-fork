@@ -56,6 +56,36 @@ var localized String RoundsLabel;
 
 var Color colDropSwap; //CyberP:
 var Color colIconDimmed; //RSD
+
+// ----------------------------------------------------------------------
+// SetObjectNumber()
+// ----------------------------------------------------------------------
+
+function string GetBeltNumText(Inventory item)
+{
+    local int objectNum;
+    objectNum = item.beltPos;
+
+    //SARGE: mildly annoying.
+    //belt numbers are offset by 1 in the ActivateBelt code,
+    //since belt slot 0 is now on the far left.
+    //So we need to display the binding for the next belt slot,
+    //but only between 1 and 10
+    if (objectNum == 9)
+        return player.KeybindManager.GetBindingString(KB_Belt0,0);
+    else if (objectNum >= 0 && objectNum < 9)
+        return player.KeybindManager.GetBindingString(KB_Belt0,objectNum + 1);
+    else
+        return player.KeybindManager.GetBindingString(KB_Belt0,objectNum);
+
+    /*
+    //SARGE: This looks pretty bad, so disable for now
+    if (nanoKeySlot && beltText != "")
+        beltText = player.KeybindManager.GetBinding(KB_Keyring) $ ", " $ beltText;
+    */
+}
+
+
 // ----------------------------------------------------------------------
 // DrawWindow()
 // ----------------------------------------------------------------------
@@ -105,7 +135,7 @@ event DrawWindow(GC gc)
 			gc.SetAlignments(HALIGN_Right, VALIGN_Center);
 			gc.SetTextColor(colHeaderText);
 			gc.GetTextExtent(0, strWidth, strHeight, anItem.beltPos);
-			gc.DrawText(width - strWidth - 3, 3, strWidth, strHeight, anItem.beltPos);
+			gc.DrawText(width - strWidth - 3, 3, strWidth, strHeight, GetBeltNumText(anItem));
 		}
 		
         // SARGE: If it's a weapon, and it's modified
