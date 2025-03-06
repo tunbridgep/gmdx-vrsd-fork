@@ -134,7 +134,7 @@ event DrawWindow(GC gc)
 			gc.SetFont(Font'FontMenuSmall_DS');
 			gc.SetAlignments(HALIGN_Right, VALIGN_Center);
 			gc.SetTextColor(colHeaderText);
-			gc.GetTextExtent(0, strWidth, strHeight, anItem.beltPos);
+			gc.GetTextExtent(0, strWidth, strHeight, GetBeltNumText(anItem));
 			gc.DrawText(width - strWidth - 3, 3, strWidth, strHeight, GetBeltNumText(anItem));
 		}
 		
