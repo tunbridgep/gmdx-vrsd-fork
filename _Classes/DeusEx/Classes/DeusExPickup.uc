@@ -680,7 +680,8 @@ simulated function BreakItSmashIt(class<fragment> FragType, float size)
             }
             //else if (i > 4)
             //    HurtRadius(1,256,'HalonGas',2000,Location);
-            s.LifeSpan += 20.0;
+            if (!class'DeusExPlayer'.default.bPersistentDebris)
+                s.LifeSpan += 20.0;
 		}
 			if ((IsA('WineBottle') || IsA('Liquor40oz') || IsA('LiquorBottle')) && (!Region.Zone.bWaterZone))
 			{

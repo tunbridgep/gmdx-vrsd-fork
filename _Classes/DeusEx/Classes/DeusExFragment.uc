@@ -176,6 +176,9 @@ function SkinVariation()
 
 simulated function AddSmoke()
 {
+    if (smokeTime == -1 && class'DeusExPlayer'.default.bPersistentDebris)
+        return;
+
 	smokeGen = Spawn(class'ParticleGenerator', Self);
 	if (smokeGen != None)
 	{
@@ -189,6 +192,10 @@ simulated function AddSmoke()
 		smokeGen.bRandomEject = True;
 		smokeGen.bFade = True;
 		smokeGen.SetBase(Self);
+        if (class'DeusExPlayer'.default.bPersistentDebris)
+            smokeTime = 30 + (FRand() * 10); //Sarge: only smoke for 30 seconds, now that we can have permanent gore.
+        else
+            smokeTime = -1;
 	}
 }
 
@@ -205,6 +212,22 @@ simulated function Tick(float deltaTime)
 
 		ScaleGlow = LifeSpan / 2.0;
 	}
+
+    //Sarge: only smoke for 30 seconds, now that we can have permanent gore.
+    if (smokeTime > 0)
+    {
+        smokeTime -= deltaTime;
+        
+        //slow down the smoke as we get to the end
+        smokeGen.frequency = 6.0 / (30 - smokeTime);
+
+        if (smokeTime <= 0)
+        {
+            smokeTime = -1;
+            if (smokeGen != none)
+                smokeGen.Destroy();
+        }
+    }
 }
 
 auto state flying
