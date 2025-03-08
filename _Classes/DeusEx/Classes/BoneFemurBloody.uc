@@ -13,7 +13,7 @@ simulated function BeginState()
 		Velocity.Z += FRand()+10 * 10;
 		SetRotation(Rotator(Velocity));
 
-        if (class'DeusExPlayer'.default.bPersistentDebris) //SARGE: Stick around forever, if we've enabled the setting.
+        if (class'DeusExPlayer'.default.iPersistentDebris >= 2) //SARGE: Stick around forever, if we've enabled the setting.
             LifeSpan = 0;
 	}
 

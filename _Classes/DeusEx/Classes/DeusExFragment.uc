@@ -147,7 +147,7 @@ function PostBeginPlay()
 
 	speed *= 1.1;
 
-    if (class'DeusExPlayer'.default.bPersistentDebris) //SARGE: Stick around forever, if we've enabled the setting.
+    if (class'DeusExPlayer'.default.iPersistentDebris >= 2) //SARGE: Stick around forever, if we've enabled the setting.
         LifeSpan = 0;
     else if (!IsA('GMDXImpactSpark') && !IsA('GMDXImpactSpark2'))
         // randomize the lifespan a bit so things don't all disappear at once
@@ -176,7 +176,7 @@ function SkinVariation()
 
 simulated function AddSmoke()
 {
-    if (smokeTime == -1 && class'DeusExPlayer'.default.bPersistentDebris)
+    if (smokeTime == -1 && class'DeusExPlayer'.default.iPersistentDebris >= 2)
         return;
 
 	smokeGen = Spawn(class'ParticleGenerator', Self);
@@ -192,7 +192,7 @@ simulated function AddSmoke()
 		smokeGen.bRandomEject = True;
 		smokeGen.bFade = True;
 		smokeGen.SetBase(Self);
-        if (class'DeusExPlayer'.default.bPersistentDebris)
+        if (class'DeusExPlayer'.default.iPersistentDebris >= 2)
             smokeTime = 30 + (FRand() * 10); //Sarge: only smoke for 30 seconds, now that we can have permanent gore.
         else
             smokeTime = -1;

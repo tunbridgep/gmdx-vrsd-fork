@@ -21,8 +21,8 @@ struct DecalInfo
 
 var private int totalDecals;
 var private int currentDecal;
-var private DecalInfo decalInfos[8192];
-const MAX_DECALS = 8192;
+var private DecalInfo decalInfos[16384];
+const MAX_DECALS = 16384;
 
 var private DeusExPlayer player;
 
@@ -33,6 +33,10 @@ function AddDecal(DeusExDecal decal)
 
     //player.ClientMessage("Adding decal " $ decal $ ", " $ totalDecals);
 
+
+    if (decal == None || decal.bHidden)
+        return;
+    
     decalInfos[currentDecal].decalClass = decal.Class;
     decalInfos[currentDecal].decalPos = decal.Location;
     decalInfos[currentDecal].decalRot = decal.Rotation;
@@ -40,10 +44,12 @@ function AddDecal(DeusExDecal decal)
     decalInfos[currentDecal].owner = decal.Owner;
     decalInfos[currentDecal].lifespan = decal.lifespan;
         
-    if (decal.IsA('BloodPool'))
-        decalInfos[currentDecal].maxDrawScale = BloodPool(decal).maxDrawScale;
+    if (decal.IsA('ScaledDecal'))
+        decalInfos[currentDecal].maxDrawScale = ScaledDecal(decal).GetMaxDrawScale();
 
     re = currentDecal;
+
+    log ("Decal added: " $ decal.Class);
 
     if (totalDecals < MAX_DECALS)
         totalDecals++;
@@ -54,8 +60,8 @@ function AddDecal(DeusExDecal decal)
     }
     else
     {
-        player.ClientMessage("WRAP AROUND!");
-        player.ClientMessage("totalDecals: " $ totalDecals $ ", currentDecal: " $ currentDecal $ ", MAX: " $ MAX_DECALS);
+        //player.ClientMessage("WRAP AROUND!");
+        //player.ClientMessage("totalDecals: " $ totalDecals $ ", currentDecal: " $ currentDecal $ ", MAX: " $ MAX_DECALS);
         currentDecal = 0;
     }
     //player.ClientMessage("totalDecals: " $ totalDecals $ ", currentDecal: " $ currentDecal $ ", MAX: " $ MAX_DECALS);
@@ -63,7 +69,7 @@ function AddDecal(DeusExDecal decal)
 
 function ClearList()
 {
-    player.ClientMessage("List Cleared");
+    //player.ClientMessage("List Cleared");
     totalDecals = 0;
     currentDecal = 0;
     //player.clientmessage("numbers: " $ totalDecals $ ", " $ currentDecal);
@@ -75,15 +81,19 @@ function Setup(DeusExPlayer P)
     player = P;
     
     foreach AllActors(class'DeusExDecal', decal)
-        decal.Destroy();
+        //decal.Destroy();
+        decal.bHidden = true; //DO NOT USE DESTROY, it randomly breaks the game and stops games from loading!
 }
 
-function PopulateDecalsList()
+function PopulateDecalsList(bool poolsOnly)
 {
     local DeusExDecal decal;
     ClearList();
     foreach AllActors(class'DeusExDecal', decal)
-        AddDecal(decal);
+    {
+        if (!poolsOnly || decal.IsA('BloodPool'))
+            AddDecal(decal);
+    }
 }
 
 function int GetTotalDecals()
@@ -106,7 +116,9 @@ function RecreateDecals(optional int startAt, optional int num)
     if (num > totalDecals)
         num = totalDecals;
 
-    player.clientmessage("Recreating decals: " $ startAt $ "-" $ num);
+    //player.clientmessage("Recreating decals: " $ startAt $ "-" $ num);
+
+    //log("RecreateDecals: " $ startAt $ ", " $ num);
 
     for(index = startAt;index < num;index++)
     {
@@ -114,18 +126,20 @@ function RecreateDecals(optional int startAt, optional int num)
         decal = spawn(decalInfos[index].decalClass,decalInfos[index].owner,, decalInfos[index].decalPos, decalInfos[index].decalRot);
         decal.drawScale = decalInfos[index].drawScale;
         decal.lifespan = decalInfos[index].lifespan;
+        decal.bInitialHDTPUpdate = false;
         
-        log("Recreating decal " $ index $ ": " $ decal.class);
+        //log("Recreating decal " $ index $ ": " $ decal.class);
         //player.clientmessage("Recreating decal " $ decal.class);
 
-        if (decal.IsA('BloodPool'))
+        if (decal.IsA('ScaledDecal'))
         {
             //Make them redraw at full size instantly
-            BloodPool(decal).maxDrawScale = decalInfos[index].maxDrawScale;
-            BloodPool(decal).spreadTime = 0.00001;
+            ScaledDecal(decal).SetMaxDrawScale(decalInfos[index].maxDrawScale);
+            ScaledDecal(decal).spreadTime = 0.00001;
         }
 
-        decal.ReattachDecal();
+        //decal.ReattachDecal();
+        decal.UpdateHDTPsettings();
     }
     //player.clientmessage("numbers: " $ totalDecals $ ", " $ currentDecal);
 }

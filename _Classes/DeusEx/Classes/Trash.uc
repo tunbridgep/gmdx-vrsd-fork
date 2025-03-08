@@ -37,7 +37,7 @@ function Tick(float deltaTime)
 
 function Timer()
 {
-    if (!class'DeusExPlayer'.default.bPersistentDebris)
+    if (class'DeusExPlayer'.default.iPersistentDebris < 2)
         Destroy();
 }
 

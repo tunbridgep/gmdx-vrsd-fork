@@ -730,7 +730,7 @@ var globalconfig bool bBiggerBelt;
 var globalconfig bool bRightClickToolSelection;
 
 
-var globalconfig bool bPersistentDebris;                               //SARGE: Fragments, Decals, etc, last forever. Probably really horrible for performance!
+var globalconfig int iPersistentDebris;                               //SARGE: Fragments, Decals, etc, last forever. Probably really horrible for performance!
 
 
 //SARGE: Decal Handling
@@ -1546,8 +1546,8 @@ function PreTravel()
     ConsoleCommand("set DeusExCarcass bRandomModFix" @ bRandomizeMods);         //RSD: Stupid config-level hack since PostBeginPlay() can't access player pawn in DeusExCarcass.uc
     
     //SARGE: Store all the decals
-    if (bPersistentDebris && DecalManager != None)
-        DecalManager.PopulateDecalsList();
+    if (DecalManager != None && iPersistentDebris > 0)
+        DecalManager.PopulateDecalsList(iPersistentDebris < 3);
 
 	foreach AllActors(class'SpyDrone',SD)                                       //RSD: Destroy all spy drones so we can't activate disabled drones on map transition
 		SD.Destroy();
@@ -2137,8 +2137,8 @@ function int DoSaveGame(int saveIndex, optional String saveDesc)
                 tech.Activate();
     
     //SARGE: Store all the decals
-    if (bPersistentDebris && DecalManager != None)
-        DecalManager.PopulateDecalsList();
+    if (DecalManager != None && iPersistentDebris > 0)
+        DecalManager.PopulateDecalsList(iPersistentDebris < 3);
 
     if (saveIndex == 0)
     {
@@ -18268,4 +18268,5 @@ defaultproperties
      bEnableBlinking=True
      iDeathSoundMode=2
      bBiggerBelt=True
+     iPersistentDebris=1
 }
