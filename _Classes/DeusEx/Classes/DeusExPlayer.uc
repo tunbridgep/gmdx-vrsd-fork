@@ -731,6 +731,9 @@ var globalconfig bool bRightClickToolSelection;
 //SARGE: Bigger weapon effect sparks
 var globalconfig bool bJohnWooSparks;
 
+
+var globalconfig bool bConsistentBloodPools;                            //SARGE: If set to true, blood pools will always be the same consistent size, regardless of corpse size. If set to false, it does the vanilla behaviour of making blood pools depend on the carcasses collision size.
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -18225,4 +18228,5 @@ defaultproperties
      iDeathSoundMode=2
      bBiggerBelt=True
      //bJohnWooSparks=True
+     bConsistentBloodPools=True
 }

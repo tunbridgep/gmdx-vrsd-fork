@@ -63,7 +63,9 @@ simulated function Tick(float deltaTime)
         if (closeEnough != previouslyCloseEnough)
             UpdateHDTPSettings();
 
-        bUnlit = !closeEnough || !IsHDTP();
+        //bUnlit = !closeEnough || !IsHDTP();
+        //bUnlit = true;
+        bUnlit = false;
 
         previouslyCloseEnough = closeEnough;
     }
