@@ -30,9 +30,9 @@ var private DeusExPlayer player;
 function AddDecal(DeusExDecal decal)
 {
     local int re;
+    local int max;
 
     //player.ClientMessage("Adding decal " $ decal $ ", " $ totalDecals);
-
 
     if (decal == None || decal.bHidden)
         return;
@@ -49,12 +49,25 @@ function AddDecal(DeusExDecal decal)
 
     re = currentDecal;
 
-    log ("Decal added: " $ decal.Class);
+    //log ("Decal added: " $ decal.Class);
 
-    if (totalDecals < MAX_DECALS)
+    //Set the max number of decals based on our decals setting
+    if (player.iPersistentDebris == 0)
+        return;
+    else if (player.iPersistentDebris <= 2)
+        max = 2048;
+    else if (player.iPersistentDebris == 3)
+        max = 4096;
+    else if (player.iPersistentDebris == 4)
+        max = 8192;
+    else if (player.iPersistentDebris == 5)
+        max = MAX_DECALS;
+
+
+    if (totalDecals < max)
         totalDecals++;
 
-    if (currentDecal < MAX_DECALS - 1)
+    if (currentDecal < max - 1)
     {
         currentDecal++;
     }
@@ -77,21 +90,24 @@ function ClearList()
 
 function Setup(DeusExPlayer P)
 {
-    local DeusExDecal decal;
     player = P;
-    
+}
+
+function HideAllDecals()
+{
+    local DeusExDecal decal;
     foreach AllActors(class'DeusExDecal', decal)
         //decal.Destroy();
         decal.bHidden = true; //DO NOT USE DESTROY, it randomly breaks the game and stops games from loading!
 }
 
-function PopulateDecalsList(bool poolsOnly)
+function PopulateDecalsList()
 {
     local DeusExDecal decal;
     ClearList();
     foreach AllActors(class'DeusExDecal', decal)
     {
-        if (!poolsOnly || decal.IsA('BloodPool'))
+        if (player.iPersistentDebris > 1 || decal.IsA('BloodPool'))
             AddDecal(decal);
     }
 }
@@ -135,11 +151,14 @@ function RecreateDecals(optional int startAt, optional int num)
         {
             //Make them redraw at full size instantly
             ScaledDecal(decal).SetMaxDrawScale(decalInfos[index].maxDrawScale);
+            ScaledDecal(decal).UpdateHDTPsettings();
             ScaledDecal(decal).spreadTime = 0.00001;
         }
-
-        //decal.ReattachDecal();
-        decal.UpdateHDTPsettings();
+        else
+        {
+            //decal.ReattachDecal();
+            decal.UpdateHDTPsettings();
+        }
     }
     //player.clientmessage("numbers: " $ totalDecals $ ", " $ currentDecal);
 }

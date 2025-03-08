@@ -1344,7 +1344,7 @@ function SetupAddictionManager()
 
 }
 
-function SetupDecalManager()
+function SetupDecalManager(optional bool bDontHide)
 {
 	// install the Decal Manager if not found
 	if (DecalManager != None)
@@ -1352,6 +1352,8 @@ function SetupDecalManager()
         //ClientMessage("Make new Perk System");
 	    //DecalManager = new(Self) class'DecalManager';
         DecalManager.Setup(self);
+        if (!bDontHide)
+            DecalManager.HideAllDecals();
         bCreatingDecals = true;
         //DecalManager.RecreateDecals();
     }
@@ -2138,7 +2140,7 @@ function int DoSaveGame(int saveIndex, optional String saveDesc)
     
     //SARGE: Store all the decals
     if (DecalManager != None && iPersistentDebris > 0)
-        DecalManager.PopulateDecalsList(iPersistentDebris < 3);
+        DecalManager.PopulateDecalsList();
 
     if (saveIndex == 0)
     {
