@@ -38,6 +38,7 @@ struct S_ListItem
     var localized string valueText2;
     var localized string valueText3;
     var localized string valueText4;
+    var localized string valueText5;
 	var string variable;
     var int value;
     var int defaultValue; //TODO: Find a way to reset to default value via console
@@ -150,6 +151,9 @@ function string GetValueString(int index)
             break;
         case 4:
             return item.valueText4;
+            break;
+        case 5:
+            return item.valueText5;
             break;
     }
 
