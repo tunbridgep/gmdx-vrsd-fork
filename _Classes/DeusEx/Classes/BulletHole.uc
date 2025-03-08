@@ -7,7 +7,7 @@ class BulletHole extends DeusExDecal;
 //HDTP DDL- OVERRULED!
 exec function UpdateHDTPsettings()
 {
-    super.UpdateHDTPsettings();
+    DoHDTP();
 	drawscale *= 1.0 + frand()*0.2;
 
 	//if(!AttachDecal(32, vect(0.1,0.1,0)))

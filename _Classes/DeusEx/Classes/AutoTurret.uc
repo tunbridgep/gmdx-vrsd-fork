@@ -736,7 +736,6 @@ simulated function SpawnEffects(Vector HitLocation, Vector HitNormal, Actor Othe
 {
 	local SmokeTrail puff;
 	local int i;
-	local BulletHole hole;
 	local Rotator rot;
 
 	if ((DeusExMPGame(Level.Game) != None) && (!DeusExMPGame(Level.Game).bSpawnEffects))
@@ -762,30 +761,12 @@ simulated function SpawnEffects(Vector HitLocation, Vector HitNormal, Actor Othe
 			if (FRand() < 0.8)
 				spawn(class'Rockchip',,,HitLocation+HitNormal);
 
-	hole = spawn(class'BulletHole', Other,, HitLocation, Rotator(HitNormal));
 
 	// should we crack glass?
-	if (GetWallMaterial(HitLocation, HitNormal) == 'Glass' && hole != none)     //RSD: hole failsafe
-	{
-        if (IsHDTP())
-        {
-			hole.Texture = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPFlatFXTex29");
-            hole.DrawScale = 0.00625;
-        }
-		else if (FRand() < 0.5)
-        {
-			hole.Texture = Texture'FlatFXTex29';
-            hole.DrawScale = 0.1;
-        }
-        else
-        {
-			hole.Texture = Texture'FlatFXTex30';
-            hole.DrawScale = 0.1;
-        }
-
-		hole.drawscale *= 1.0 + frand()*0.2;
-		hole.ReattachDecal();
-	}
+	if (GetWallMaterial(HitLocation, HitNormal) == 'Glass')
+        spawn(class'BulletHoleGlass', Other,, HitLocation, Rotator(HitNormal));
+	else
+		spawn(class'BulletHole', Other,, HitLocation, Rotator(HitNormal));
 }
 
 function name GetWallMaterial(vector HitLocation, vector HitNormal)

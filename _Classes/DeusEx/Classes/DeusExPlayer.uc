@@ -1771,7 +1771,7 @@ function Typing( bool bTyping )
 
 /////
 
-exec function HDTP(optional string s)
+exec function HDTP(optional bool updateDecals)
 {
 	local scriptedpawn P;
 	local deusexcarcass C;
@@ -1799,12 +1799,12 @@ exec function HDTP(optional string s)
     	PR.UpdateHDTPsettings();
     foreach AllActors(Class'DeusExAmmo',AM)                                     //SARGE: Added for object toggles
     	AM.UpdateHDTPsettings();
-    //SARGE: These don't draw properly if we update them... What a shame!
-    //It was a good feature, what a rotten way to die!
-    /*
-    foreach AllActors(Class'DeusExDecal',DC)                                     //SARGE: Added for object toggles
-    	DC.UpdateHDTPsettings();
-    */
+    if (updateDecals)
+    {
+        foreach AllActors(Class'DeusExDecal',DC)                                     //SARGE: Added for object toggles
+            if (!DC.bHidden)
+                DC.UpdateHDTPsettings();
+    }
 
 	UpdateHDTPsettings();
 }
@@ -6997,10 +6997,7 @@ state Dying
             pool = spawn(class'BloodPool',,, HitLocation, Rotator(HitNormal));
             if (pool != none)
             {
-				if (pool.IsHDTP())
-					pool.maxDrawScale = CollisionRadius / 520.0;
-				else
-					pool.maxDrawScale = CollisionRadius / 20.0;
+                pool.SetMaxDrawScale(CollisionRadius);
                 pool.ReattachDecal();
             }
            }

@@ -14,7 +14,7 @@ function SaveSettings()
 event bool ListRowActivated(window list, int rowId)
 {
     Super.ListRowActivated(list,rowId);
-    player.HDTP();
+    player.HDTP(true);
 }
 
 //We can't use console commands anymore, now we have to use player variables instead, because

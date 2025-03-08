@@ -620,7 +620,7 @@ simulated function BreakItSmashIt(class<fragment> FragType, float size)
         PlaySound(sound'SplashSmall', SLOT_None,3.0,, 1280);
         if (pool != None)
         {
-			pool.maxDrawScale = CollisionRadius / 16.0;
+			pool.SetMaxDrawScale(CollisionRadius / 16.0);
             pool.spreadTime = 0.5;
         }
 	}
