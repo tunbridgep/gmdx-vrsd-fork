@@ -266,11 +266,15 @@ function Interpolate(GC gc, float fromX, float fromY, float toX, float toY, int 
 // ----------------------------------------------------------------------
 // IsMinimised()
 // SARGE: Is the drone window minimised?
+// SARGE: Add optional param for Targeting aug
 // ----------------------------------------------------------------------
 
-function bool IsMinimised()
+function bool IsMinimised(optional bool targeting)
 {
-    return player.bMinimiseTargetingWindow && (!player.bSpyDroneActive || player.bSpyDroneSet);
+    if (targeting)
+        return player.bMinimiseTargetingWindow && (player.inHand != None || !player.bOnlyShowTargetingWindowWithWeaponOut);
+    else
+        return player.bMinimiseTargetingWindow && (!player.bSpyDroneActive || player.bSpyDroneSet);
 }
 
 // ----------------------------------------------------------------------
@@ -1610,7 +1614,7 @@ function DrawTargetAugmentation(GC gc)
 					}
 					// window construction now happens in Tick()
 				}
-				else if (!IsMinimised())
+				else if (!IsMinimised(true))
 				{
 					// black out the zoom window and draw a "no image" message
 					gc.SetStyle(DSTY_Normal);
@@ -1746,7 +1750,7 @@ function DrawTargetAugmentation(GC gc)
 
                 //If we're minimised, draw everything in a list
                 //This is a horrible mess!
-                if (IsMinimised())
+                if (IsMinimised(true))
                 {
 
                     gc.GetTextExtent(0, w, h, str$CR()$str2$CR()$str3$CR()$str4);

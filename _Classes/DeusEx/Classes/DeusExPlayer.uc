@@ -713,6 +713,7 @@ var globalconfig bool bMedbotAutoswitch;
 
 //SARGE: Minimise Targeting Window
 var travel bool bMinimiseTargetingWindow;
+var globalconfig bool bOnlyShowTargetingWindowWithWeaponOut;
 
 //SARGE: Enhanced Lip Sync
 var globalconfig int iEnhancedLipSync; //0 = disabled, 1 = nice and smooth, 2 = intentionally chunky
@@ -18223,5 +18224,6 @@ defaultproperties
      bEnableBlinking=True
      iDeathSoundMode=2
      bBiggerBelt=True
+     bOnlyShowTargetingWindowWithWeaponOut=True
      //bRightClickToolSelection=True
 }
