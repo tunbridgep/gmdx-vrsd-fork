@@ -272,7 +272,7 @@ function Interpolate(GC gc, float fromX, float fromY, float toX, float toY, int 
 function bool IsMinimised(optional bool targeting)
 {
     if (targeting)
-        return player.bMinimiseTargetingWindow && (player.inHand != None || !player.bOnlyShowTargetingWindowWithWeaponOut);
+        return player.bMinimiseTargetingWindow && ((player.inHand != None && player.inHand.isA('Weapon')) || !player.bOnlyShowTargetingWindowWithWeaponOut);
     else
         return player.bMinimiseTargetingWindow && (!player.bSpyDroneActive || player.bSpyDroneSet);
 }
