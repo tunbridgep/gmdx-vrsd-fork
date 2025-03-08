@@ -272,7 +272,7 @@ function Interpolate(GC gc, float fromX, float fromY, float toX, float toY, int 
 function bool IsMinimised(optional bool targeting)
 {
     if (targeting)
-        return player.bMinimiseTargetingWindow && ((player.inHand != None && player.inHand.isA('Weapon')) || !player.bOnlyShowTargetingWindowWithWeaponOut);
+        return player.bMinimiseTargetingWindow || ((player.inHand == None || !player.inHand.isA('Weapon')) && player.bOnlyShowTargetingWindowWithWeaponOut);
     else
         return player.bMinimiseTargetingWindow && (!player.bSpyDroneActive || player.bSpyDroneSet);
 }
@@ -281,9 +281,9 @@ function bool IsMinimised(optional bool targeting)
 // GetDroneWindowSize()
 // SARGE: Gets the drone window size,
 // ----------------------------------------------------------------------
-function GetDroneWindowSize(out float W, out float H, out float CX, out float CY)
+function GetDroneWindowSize(out float W, out float H, out float CX, out float CY,optional bool targeting)
 {
-    if (IsMinimised())
+    if (IsMinimised(targeting))
     {
         W = (width/3.33)*0.1;
         H = (height/3.33)*0.1;
@@ -301,12 +301,11 @@ function GetDroneWindowSize(out float W, out float H, out float CX, out float CY
     }
 }
 
-function DrawDroneWindow(GC gc, ViewportWindow win, out float W, out float H, out float CX, out float CY)
+function DrawDroneWindow(GC gc, ViewportWindow win, out float W, out float H, out float CX, out float CY, optional bool targeting)
 {
     local float boxTLX,boxTLY,boxBRY,boxBRX;
-    local int bMinimised;
 
-    GetDroneWindowSize(W,H,CX,CY);
+    GetDroneWindowSize(W,H,CX,CY,targeting);
 
     boxTLX = CX - W/2.0;
     boxTLY = CY - H/2.0;
@@ -315,7 +314,7 @@ function DrawDroneWindow(GC gc, ViewportWindow win, out float W, out float H, ou
 	
     if (win != None)
     {
-        if (IsMinimised())
+        if (IsMinimised(targeting))
         {
             win.Hide();
         }
@@ -1590,7 +1589,7 @@ function DrawTargetAugmentation(GC gc)
 				w = width/4;
 				h = height/4;
 
-                DrawDroneWindow(gc,winZoom,boxW,boxH,boxCX,boxCY);
+                DrawDroneWindow(gc,winZoom,boxW,boxH,boxCX,boxCY,true);
 
 				boxTLX = boxCX - BoxW/2.0;
 				boxTLY = boxCY - BoxH/2.0;
