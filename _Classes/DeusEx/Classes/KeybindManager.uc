@@ -60,7 +60,7 @@ struct Binding
 };
 
 //holds our actual keybindings.
-var private Binding bindings[255];
+var private transient Binding bindings[255];
 
 //Now things get annoying...
 function string GetBindName(string keyName)
