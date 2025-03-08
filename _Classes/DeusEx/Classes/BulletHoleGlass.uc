@@ -31,6 +31,9 @@ function DoHDTP()
     }
 
 	drawscale *= 1.0 + frand()*0.2;
+
+    if (class'DeusExPlayer'.default.bJohnWooSparks)
+        drawScale *= 1.5;
 }
 
 defaultproperties
