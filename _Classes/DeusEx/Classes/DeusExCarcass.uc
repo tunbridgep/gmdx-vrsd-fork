@@ -81,7 +81,10 @@ var string HDTPMeshTex[8];
 var travel int assignedMesh;
 
 //SARGE: Remember when we first create a blood pool
-var bool bFirstBloodPool;
+var travel bool bFirstBloodPool;
+
+var bool bMadePool;     //SARGE: Stores the state of our current blood pool. Deliberately not remembered between creations of corpses.
+
 
 // ----------------------------------------------------------------------
 // ShouldCreate()
@@ -169,6 +172,9 @@ function InitFor(Actor Other)
                 savedName = ScriptedPawn(Other).BindName;
             }
         }
+
+        //SARGE: Set us to the exact size of our corresponding actor.
+        SetCollisionSize(Other.CollisionRadius, default.CollisionHeight);
 
         UpdateName();
 
@@ -658,9 +664,9 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitLocation, Vector mo
 		 {
 		    vec = HitLocation;
 		    vec.z += 2;
-			for(i=0;i<24;i++) //SARGE: was 18.
+			for(i=0;i<18;i++)
             {
-                if (FRand() < 0.3) //SARGE: Now, we determine number of blood splats by random, not the chance of having any.
+                if (FRand() < 0.5) //SARGE: Now, we determine number of blood splats by random, not the chance of having any.
                     continue;
             spawn(class'BloodDrop',,, HitLocation);
             drop = spawn(class'BloodDrop',,,vec);
@@ -1656,33 +1662,7 @@ auto state Dead
 
 	function HandleLanding()
 	{
-		if (!bNotDead) //SARGE: Comment this to reinstate Vanilla behaviour where we can create multiple blood pools
-		{ 
-            CreateBloodPool();
-			// alert NPCs that I'm food
-			AIStartEvent('Food', EAITYPE_Visual);
-		}
-
-		// by default, the collision radius is small so there won't be as
-		// many problems spawning carcii
-		// expand the collision radius back to where it's supposed to be
-		// don't change animal carcass collisions
-		if (!bAnimalCarcass)
-			SetCollisionSize(40.0, Default.CollisionHeight);
-
-		// alert NPCs that I'm really disgusting
-		if (bEmitCarcass)
-			AIStartEvent('Carcass', EAITYPE_Visual);
-
-        if (bNotFirstFall && !bHidden)
-        {
-        PlaySound(sound'PaperHit2', SLOT_None,,,1024);
-        AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 512); //CyberP: this applies to when corpses are thrown.
-        }
-        else
-        {
-        AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 96); //CyberP: this applies to when corpses are spawned upon pawn death/K.O.
-        }
+        SetupCarcass(true);
 	}
 
 Begin:
@@ -1695,12 +1675,59 @@ Begin:
 
 }
 
+//SARGE: Moved HandleLanding code to a new function, so that the carcasses placed in the map can be consistent with the ones that are dynamically created
+function SetupCarcass(bool bAlert)
+{
+		if (!bNotDead) //SARGE: Comment this to reinstate Vanilla behaviour where we can create multiple blood pools
+		{ 
+            CreateBloodPool();
+			// alert NPCs that I'm food
+            if (bAlert)
+                AIStartEvent('Food', EAITYPE_Visual);
+		}
+
+        // by default, the collision radius is small so there won't be as
+        // many problems spawning carcii
+        // expand the collision radius back to where it's supposed to be
+        // don't change animal carcass collisions
+        if (!bAnimalCarcass)
+            SetCollisionSize(40.0, Default.CollisionHeight);
+
+        if (bAlert)
+        {
+            // alert NPCs that I'm really disgusting
+            if (bEmitCarcass)
+                AIStartEvent('Carcass', EAITYPE_Visual);
+
+            if (bNotFirstFall && !bHidden)
+            {
+            PlaySound(sound'PaperHit2', SLOT_None,,,1024);
+            AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 512); //CyberP: this applies to when corpses are thrown.
+            }
+            else
+            {
+            AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 96); //CyberP: this applies to when corpses are spawned upon pawn death/K.O.
+            }
+        }
+}
+
 //SARGE: Moved blood pool code to a new function, now we can call it when we kill unconscious bodies.
 function CreateBloodPool()
 {
 		local Vector HitLocation, HitNormal, EndTrace;
 		local Actor hit;
 		local BloodPool pool;
+        local float drawSize;
+
+        if (bMadePool)
+            return;
+
+        if (class'DeusExPlayer'.default.bConsistentBloodPools)
+            drawSize = 35;
+        else
+            drawSize = default.CollisionRadius;
+
+        //DeusExPlayer(GetPlayerPawn()).ClientMessage("Making pool");
 
         // trace down about 20 feet if we're not in water
         if (!Region.Zone.bWaterZone)
@@ -1720,27 +1747,20 @@ function CreateBloodPool()
 
             if (pool != None)
             {
-                if (pool.IsHDTP())
+                if (!bAnimalCarcass)
                 {
-                    if (collisionRadius == default.collisionRadius) //SARGE: Make the regular blood pools a bit bigger
-                        pool.maxDrawScale = (CollisionRadius + 18) / 640.0;  //hah! Found you you bastard..was making HUUUGE decals. -DDL
-                    else
-                        pool.maxDrawScale = CollisionRadius / 640.0;  //hah! Found you you bastard..was making HUUUGE decals. -DDL
+                    pool.SetMaxDrawScale(drawSize);
+                    if(bFirstBloodPool)
+                        pool.SetMaxDrawScale(drawSize * 0.5);
                 }
                 else
-                {
-                    if (collisionRadius == default.collisionRadius) //SARGE: Make the regular blood pools a bit bigger
-                        pool.maxDrawScale = (CollisionRadius + 18) / 40.0; //SARGE: No more puny vanilla blood pools
-                    else
-                        pool.maxDrawScale = CollisionRadius / 40.0; //SARGE: No more puny vanilla blood pools
-                }
-
-                if(bFirstBloodPool)
-                    pool.maxDrawScale *= 0.3;
+                    pool.SetMaxDrawScale(CollisionRadius);
 
                 bFirstBloodPool = true;
             }
         }
+
+        bMadePool = true;
 }
 
 //Lork: Corpses take falling damage
