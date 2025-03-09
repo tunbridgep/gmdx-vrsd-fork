@@ -96,9 +96,12 @@ function Setup(DeusExPlayer P)
 function HideAllDecals()
 {
     local DeusExDecal decal;
+
+    //player.ClientMessage("Hiding decals");
     foreach AllActors(class'DeusExDecal', decal)
-        //decal.Destroy();
-        decal.bHidden = true; //DO NOT USE DESTROY, it randomly breaks the game and stops games from loading!
+    {
+        decal.Destroy();
+    }
 }
 
 function PopulateDecalsList()

@@ -1344,16 +1344,14 @@ function SetupAddictionManager()
 
 }
 
-function SetupDecalManager(optional bool bDontHide)
+function SetupDecalManager()
 {
 	// install the Decal Manager if not found
 	if (DecalManager != None)
     {
-        //ClientMessage("Make new Perk System");
+        //clientmessage("DecalManager Setup Called");
 	    //DecalManager = new(Self) class'DecalManager';
         DecalManager.Setup(self);
-        if (!bDontHide)
-            DecalManager.HideAllDecals();
         bCreatingDecals = true;
         //DecalManager.RecreateDecals();
     }
@@ -1549,7 +1547,7 @@ function PreTravel()
     
     //SARGE: Store all the decals
     if (DecalManager != None && iPersistentDebris > 0)
-        DecalManager.PopulateDecalsList(iPersistentDebris < 3);
+        DecalManager.PopulateDecalsList();
 
 	foreach AllActors(class'SpyDrone',SD)                                       //RSD: Destroy all spy drones so we can't activate disabled drones on map transition
 		SD.Destroy();
@@ -6684,6 +6682,10 @@ state PlayerWalking
         //crashing when changing maps
         if (bCreatingDecals && DecalManager != None)
         {
+            //First time, destroy the decals
+            if (currentDecalBatch == 0)
+                DecalManager.HideAllDecals();
+
             DecalManager.RecreateDecals(currentDecalBatch,500);
             currentDecalBatch += 500;
             bCreatingDecals = DecalManager.GetTotalDecals() > currentDecalBatch;

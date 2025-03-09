@@ -156,7 +156,7 @@ function FirstFrame()
     {
         D = Spawn(class'DecalManager');
         player.DecalManager = D;
-        player.SetupDecalManager(true);
+        D.Setup(player);
     }
 
 	// Check to see which NPCs should be dead from prevous missions
