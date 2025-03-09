@@ -728,6 +728,9 @@ var globalconfig bool bBiggerBelt;
 //SARGE: Right-Click Selection for Picks and Tools. Inspired by similar feature from Revision, but less sucky.
 var globalconfig bool bRightClickToolSelection;
 
+
+var transient float pickupCooldown;                                     //SARGE: Add a very short cooldown after picking something up, so that we can't duplicate items while they replicate to the server.
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -6639,6 +6642,10 @@ state PlayerWalking
             }
         }
 
+        //Tick down our item pickup prevention (stops item dupes)
+        if (pickupCooldown > 0)
+            pickupCooldown -= deltaTime;
+
         //Stop being stunted if we elapse the stunted timer
         if (stuntedTime > 0)
             stuntedTime -= deltaTime;
@@ -8277,6 +8284,11 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly)
 	bSlotSearchNeeded = True;
 	bCanPickup = True;
 
+    //If we picked up something in the last 0.25 seconds, prevent pickup again.
+    //This should prevent the item dupe glitch.
+    if (pickupCooldown > 0.01)
+        return false;
+
 	// Special checks for objects that do not require phsyical inventory
 	// in order to be picked up:
 	//
@@ -8426,6 +8438,9 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly)
 		if (FrobTarget.IsA('WeaponShuriken'))
 			WeaponShuriken(FrobTarget).ItemName = WeaponShuriken(FrobTarget).default.ItemName;
 	}
+
+    if (bCanPickup)
+        pickupCooldown = 0.15;
 
 	return bCanPickup;
 }
