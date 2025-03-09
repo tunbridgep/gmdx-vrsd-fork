@@ -1825,7 +1825,7 @@ defaultproperties
      DeclinedString="[Declined]"
      RemoteRole=ROLE_SimulatedProxy
      LifeSpan=0.000000
-     CollisionRadius=20.000000
+     CollisionRadius=30.000000
      CollisionHeight=7.000000
      bCollideWorld=False
      Mass=150.000000

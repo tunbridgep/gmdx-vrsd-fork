@@ -6994,6 +6994,8 @@ state Dying
         {
            KillShadow();
            EndTrace = Location - vect(0,0,320);
+            /*
+            //SARGE: Removed this as it was aparrently causing a double blood pool.
            if (!HeadRegion.Zone.bWaterZone)
            {
             hit = Trace(HitLocation, HitNormal, EndTrace, Location, False);
@@ -7004,6 +7006,7 @@ state Dying
                 pool.ReattachDecal();
             }
            }
+           */
         }
       ClientDeath();
 	}
