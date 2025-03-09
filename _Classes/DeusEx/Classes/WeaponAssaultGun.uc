@@ -146,6 +146,7 @@ function DisplayWeapon(bool overlay)
 
 }
 
+//TODO: Use the base class version
 simulated function SwapMuzzleFlashTexture()
 {
     if (ClipCount == 0)
@@ -162,7 +163,8 @@ simulated function SwapMuzzleFlashTexture()
 	else
 		MuzzleSlot=4;
     
-    CurrentMuzzleFlash = GetMuzzleTex();
+    if (GetMuzzleTex() != None && MuzzleSlot < 8 && MuzzleSlot > -1)
+        MultiSkins[MuzzleSlot] = GetMuzzleTex();
 	SetTimer(0.1, False);
 }
 

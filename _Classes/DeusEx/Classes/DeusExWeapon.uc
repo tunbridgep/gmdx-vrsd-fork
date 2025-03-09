@@ -324,7 +324,6 @@ var string HDTPLargeIconRot;
 var Texture handsTex;                                        //SARGE: Store the hands texture for performance
 
 var int MuzzleSlot;                                                 //SARGE: Slot where the muzzle tex will go
-var texture CurrentMuzzleFlash;                                     //SARGE: The current muzzle flash of this weapon
 var bool bBigMuzzleFlash;                                            //SARGE: Allow non-automatic weapons to have big muzzle flashes
 
 var bool bDisposableWeapon;                                         //SARGE: Used for disposable weapons, such as grenades, PS20s, LAWs, etc. Disposable weapons can't be reloaded, and track ammo differently to regular weapons when dropped/picked up. Their ammo doesn't show up when being looted, either - The weapon is shown instead.
@@ -851,9 +850,6 @@ simulated event RenderOverlays( canvas Canvas )
 		}
     
         DisplayWeapon(true);
-
-        if (CurrentMuzzleFlash != None && MuzzleSlot < 8 && MuzzleSlot > -1)
-            MultiSkins[MuzzleSlot] = CurrentMuzzleFlash;
     
         if (bIsRadar || bIsCloaked)
         {
@@ -2961,7 +2957,8 @@ simulated function SwapMuzzleFlashTexture()
 		return;
 	
     //Multiskins[MuzzleSlot] = GetMuzzleTex();
-    CurrentMuzzleFlash = GetMuzzleTex();
+    if (GetMuzzleTex() != None && MuzzleSlot < 8 && MuzzleSlot > -1)
+        MultiSkins[MuzzleSlot] = GetMuzzleTex();
 
     //DeusExPlayer(GetPlayerPawn()).clientMessage("Swapping Muzzle Tex into slot " $ MuzzleSlot);
 
@@ -3025,6 +3022,12 @@ function DisplayWeapon(bool overlay)
     local int i;
     for (i = 0;i < 8;i++)
     {
+        if (bHasMuzzleFlash && i == muzzleslot && !bHasSilencer)
+        {
+            //DeusExPlayer(GetPlayerPawn()).ClientMessage("Display Weapon: Not clearing slot " $ i);
+            continue;
+        }
+
         if (IsHDTP())
             multiskins[i] = none;
         else
@@ -3037,9 +3040,8 @@ simulated function EraseMuzzleFlashTexture()
 	if(!bHasMuzzleflash || bHasSilencer)
 		return;
 		
-    CurrentMuzzleFlash = None;
     if (MuzzleSlot > -1 && muzzleSlot < 8)
-    MultiSkins[MuzzleSlot] = None;
+        MultiSkins[MuzzleSlot] = None;
 }
 
 simulated function Timer()
