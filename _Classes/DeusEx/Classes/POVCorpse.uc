@@ -20,12 +20,15 @@ var bool    bHasSkins;
 
 //GMDX
 
+var string savedName;                                                           //SARGE: vRSD seemingly forgot to add this?
+
 //SARGE: Weapon Offset Stuff
 //TODO: Replace this with a generic implementation
 var const vector weaponOffsets;                                                 //Sarge: Our weapon offsets. Leave at (0,0,0) to disable using offsets
 var travel vector oldOffsets;                                                   //Sarge: Stores our old default offsets
 var travel bool bOldOffsetsSet;                                                 //Sarge: Stores whether or not old default offsets have been remembered
 var travel bool bSearched;                                                      //Sarge: Carried over from Carcasses so they are retained when we make a new one by putting the corpse down
+var travel int PickupAmmoCount;                                                 //Sarge: Carried over from Carcasses so they are retained when we make a new one by putting the corpse down
 
 //END GMDX:
 

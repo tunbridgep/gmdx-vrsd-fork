@@ -159,7 +159,7 @@ simulated function RefreshAugDisplay()
 // How many augs are currently active?
 // ----------------------------------------------------------------------
 
-simulated function int NumAugsActive(optional bool countToggled)
+simulated function int NumAugsActive(optional bool countEverything)
 {
 	local Augmentation anAug;
 	local int count;
@@ -171,7 +171,10 @@ simulated function int NumAugsActive(optional bool countToggled)
 	anAug = FirstAug;
 	while(anAug != None)
 	{
-		if (anAug.bHasIt && anAug.bIsActive && anAug.CanBeActivated() && (!anAug.IsToggleAug() || countToggled))
+        //SARGE: Don't count the spy drone as active if it's set, unless we're counting everything
+        if (anAug.IsA('AugDrone') && player.bSpyDroneSet && !countEverything)
+        { /*do nothing*/ }
+		else if (anAug.bHasIt && anAug.bIsActive && anAug.CanBeActivated() && (!anAug.IsToggleAug() || countEverything))
 			count++;
 
 		anAug = anAug.next;
@@ -323,20 +326,25 @@ function ActivateAll()
 // ActiveOnly only activates AugmentationType "Active" augs, leaves Toggle augmentations active.
 // ----------------------------------------------------------------------
 
-function DeactivateAll(optional bool toggled)
+function DeactivateAll(optional bool forced)
 {
 	local Augmentation anAug;
 
-    if (Player.bSpyDroneSet)
+    /*
+    if (Player.bSpyDroneSet && forced)
     {
     	Player.SAVErotation = Player.ViewRotation;
         Player.bSpyDroneSet = false;                                            //RSD: Ensures that the Spy Drone will ACTUALLY be turned off
     }
+    */
 
 	anAug = FirstAug;
 	while(anAug != None)
 	{
-		if (anAug.bIsActive && anAug.CanBeActivated() && (!anAug.IsToggleAug() || toggled))
+        //SARGE: If we have a spy drone out, just put it on standby mode instead.
+        if (anAug.IsA('AugDrone'))
+            AugDrone(anAug).ToggleStandbyMode(true);
+		else if (anAug.bIsActive && anAug.CanBeActivated() && (!anAug.IsToggleAug() || forced))
         {
             anAug.Deactivate();
         }

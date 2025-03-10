@@ -503,6 +503,8 @@ exec function UpdateHDTPsettings()
 {
     Super.UpdateHDTPsettings();
     PlayerViewMesh=class'HDTPLoader'.static.GetMesh2("FOMOD.flare1st","DeusExItems.Flare",IsHDTP());
+    if (bCarriedItem)
+        Mesh = PlayerViewMesh;
 }
 
 defaultproperties

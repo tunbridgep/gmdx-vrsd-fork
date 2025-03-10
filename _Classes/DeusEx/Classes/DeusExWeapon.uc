@@ -1376,7 +1376,7 @@ function PlaySelect()
 		bReadyToFire = False;
 		GotoState('NormalFire');
 		bPointing=True;
-		if (IsA('WeaponHideAGun'))
+		if (IsA('WeaponHideAGun') || IsA('WeaponLAW'))
         {
             firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
             OnProjectileFired(firedProjectile);
@@ -1453,7 +1453,7 @@ local string msgContactOn;
 local string msgContactOff;
 
 	// single use or hand to hand weapon if ReloadCount == 0
-	if (ReloadCount == 0)
+	if (ReloadCount == 0 || bDisposableWeapon)
 	{
 	    if (Owner.IsA('DeusExPlayer'))
 		    DeusExPlayer(Owner).ClientMessage(msgCannotBeReloaded);
@@ -2320,7 +2320,7 @@ simulated function Tick(float deltaTime)
 	if (ClipCount > 0)
 	{
 		// check for LAM or other placed mine placement
-		if (bHandToHand && (ProjectileClass != None) && (!Self.IsA('WeaponShuriken')))
+		if (bHandToHand && (ProjectileClass != None) && (!Self.IsA('WeaponShuriken')) && (!Self.IsA('WeaponLAW')))
 		{
 			if (NearWallCheck())
 			{
@@ -2643,7 +2643,7 @@ simulated function Tick(float deltaTime)
             standingTimer += mult*deltaTime;
 		if (standingTimer > 15.0) //CyberP: the devs forgot to cap the timer
 		    standingTimer = 15.0;
-        if (player.bHardcoreMode && IsInState('Reload'))                        //RSD: reset accuracy when reloading in Hardcore
+        if ((player.bHardcoreMode || player.bReloadingResetsAim) && IsInState('Reload'))                        //RSD: reset accuracy when reloading in Hardcore //SARGE: Added new gameplay setting
             standingTimer = 0.0;
     }
 	else	// otherwise, decrease it slowly based on velocity
@@ -3431,9 +3431,12 @@ function Fire(float Value)
 
     player = DeusExPlayer(Owner);
 
-    //Sarge: Restrict fire if drone is active or just exploded.
-    if (player != None && !player.bSpyDroneSet && (player.bSpyDroneActive || player.bDroneExploded))
+    //Sarge: Restrict fire if firing is blocked (used when detonating drone).
+    if (player != None && player.bBlockNextFire)
+    {
+        player.bBlockNextFire = false;
         return;
+    }
 
     if (Pawn(Owner).IsInState('Dying') || (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).bGEPprojectileInflight))
     {
@@ -3504,7 +3507,7 @@ function Fire(float Value)
 		bReadyToFire = False;
 		GotoState('NormalFire');
 		bPointing=True;
-		if (IsA('WeaponHideAGun'))
+		if (IsA('WeaponHideAGun') || IsA('WeaponLAW'))
         {
             firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
             OnProjectileFired(firedProjectile);
@@ -3640,7 +3643,7 @@ simulated function PlaySelectiveFiring()
 	if (bHandToHand)
 	{
 		rnd = FRand();
-		if (IsA('WeaponHideAGun'))
+		if (IsA('WeaponHideAGun') || IsA('WeaponLAW'))
             anim = 'Shoot';
 		else if (rnd < 0.33)
 			anim = 'Attack';
@@ -3689,7 +3692,7 @@ simulated function PlaySelectiveFiring()
 		       LoopAnim(anim,1 * mod, 0.1);
 		      //PlayAnim(anim,1 * mod, 0.1);
 		}
-		else if (bHandToHand && !IsA('WeaponHideAGun'))
+		else if (bHandToHand && !IsA('WeaponHideAGun') && !IsA('WeaponLAW'))
 		{
 			if (hhspeed < 1.0)
 				hhspeed = 1.0;
@@ -4541,7 +4544,7 @@ simulated function Projectile ProjectileFire(class<projectile> ProjClass, float 
 			proj = DeusExProjectile(Spawn(ProjClass, Owner,, Start, AdjustedAim));
 			if (proj != None)
 			{
-				if (proj.IsA('DartPoison') && DeusExPlayer(GetPlayerPawn()).bHardCoreMode)
+				if (proj.IsA('DartPoison') && (DeusExPlayer(GetPlayerPawn()).bHardCoreMode || DeusExPlayer(GetPlayerPawn()).bFragileDarts)) //SARGE: Added new gameplay setting
                 	proj.bSticktoWall = false;                      //RSD: Tranq darts won't stick to walls (for recovery) in Hardcore
                 //proj.Damage *= mult;                                          //RSD
                 finalDamage = proj.Damage*mult;                                 //RSD: final input to TakeDamage is a truncated int
@@ -5169,7 +5172,7 @@ function Finish()
 				     return;
 				  }
                   if (DeusExPlayer(Owner).CarriedDecoration == None)
-                     DeusExPlayer(Owner).inHandPending = DeusExPlayer(Owner).primaryWeapon;
+                     DeusExPlayer(Owner).SelectLastWeapon(true);
                   GotoState('idle');
                   return;
                //}
@@ -5376,7 +5379,7 @@ simulated function bool UpdateInfo(Object winObject)
         winInfo.SetTitle(itemName);
 
     //SARGE: Add Decline Button
-    if (P.IsA('DeusExPlayer') && !DeusExPlayer(P).DeclinedItemsManager.IsDeclined(class))
+    if (P.IsA('DeusExPlayer'))
 		winInfo.AddDeclineButton(class);
 
 	if (bHandToHand && Owner.IsA('DeusExPlayer'))
@@ -5647,7 +5650,7 @@ simulated function bool UpdateInfo(Object winObject)
 	winInfo.AddInfoItem(msgInfoMaxRange, str,HasRangeMod());                    //RSD: Added HasRangeMod()
 
 	//Noise level
-	if (!bHandToHand || IsA('WeaponProd') || IsA('WeaponHideAGun') || IsA('WeaponPepperGun'))
+	if (!bHandToHand || IsA('WeaponProd') || IsA('WeaponHideAGun') || IsA('WeaponPepperGun') ||  IsA('WeaponLAW'))
 	{
 	noiseLev="dB";
 
@@ -6361,15 +6364,6 @@ Begin:
 	{
 	    FinishAnim();
     }
-	// if ReloadCount is 0 and we're not hand to hand, then this is a
-	// single-use weapon so destroy it after firing once
-
-	if (IsA('WeaponLAW'))
-	{
-		if (DeusExPlayer(Owner) != None)
-			DeusExPlayer(Owner).RemoveItemFromSlot(Self);   // remove it from the inventory grid
-		DestroyMe();
-	}
 	ReadyToFire();
 Done:
 	bFiring = False;

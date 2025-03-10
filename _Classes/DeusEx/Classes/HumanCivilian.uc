@@ -10,25 +10,6 @@ function PostBeginPlay()
 
 	// Eventually, these will all be unique sounds per NPC specified in
 	// the defaultproperties
-
-	// change the sounds for chicks
-	if (bIsFemale)
-	{
-		HitSound1 = Sound'FemalePainMedium';
-		HitSound2 = Sound'FemalePainSmall';
-		if (FRand() < 0.5)
-        Die = Sound'FemaleDeath';
-        else
-        Die = Sound'FemaleUnconscious';
-	}
-
-	// change the sounds for kids
-	if (IsA('ChildMale') || IsA('ChildMale2'))
-	{
-		HitSound1 = Sound'ChildPainMedium';
-		HitSound2 = Sound'ChildPainLarge';
-		Die = Sound'ChildDeath';
-	}
 }
 
 function bool WillTakeStompDamage(actor stomper)

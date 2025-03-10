@@ -115,9 +115,6 @@ defaultproperties
      BaseEyeHeight=40.000000
      UnderWaterTime=20.000000
      AttitudeToPlayer=ATTITUDE_Ignore
-     HitSound1=Sound'DeusExSounds.Player.MalePainSmall'
-     HitSound2=Sound'GMDXSFX.Human.PainSmall04'
-     Die=Sound'DeusExSounds.Player.MaleDeath'
      VisibilityThreshold=0.003000
      DrawType=DT_Mesh
      Mass=150.000000

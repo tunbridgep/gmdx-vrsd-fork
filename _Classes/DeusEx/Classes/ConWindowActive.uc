@@ -568,7 +568,8 @@ function bool HandleNumberKey(int number)
         return false;
 			
     //Block belt selection for the next 2 seconds, otherwise pressing the button will trigger it
-    player.fBlockBeltSelection = 2.0;
+	//SARGE: Actually lets make it 1.25 seconds
+    player.fBlockBeltSelection = 1.25;
 
     //If there are no choices, number keys simply skip, so we can hold 2 to select GEP gun, etc.
     if (numChoices == 0)

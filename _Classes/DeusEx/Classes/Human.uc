@@ -9,6 +9,7 @@ var float mpWaterSpeed;
 var float humanAnimRate;
 var bool isMantling;
 var float mantleTimer;
+var float mantleFinishTimer; //SARGE: I could probably just reuse the mantle timer, but I have no idea what it does. This replaces the 0.6 second timer call at the end of EndState() when mantling.
 var float negaTime;          //CyberP: mantling camera effect timer
 var float CollisionDiff;
 var float mantleBeginZ;
@@ -639,7 +640,7 @@ function checkMantle()                                                          
         local float shakeTime, shakeRoll, shakeVert, mult;                      //RSD: added mult
 
         //Justice: Mantling system.  Code shamelessly stolen from CheckWaterJump() in ScriptedPawn
-		if (isMantling && !bOnLadder && !bStunted) //CyberP: PHYS_Falling && != 0 //RSD: PlayerFlying had velocity.Z != 0 ??? also added !bStunted
+		if (isMantling && !bOnLadder && !IsStunted()) //CyberP: PHYS_Falling && != 0 //RSD: PlayerFlying had velocity.Z != 0 ??? also added !bStunted
 		{
 		    EndTrace = Location + CollisionHeight * 1.1 * vect(0,0,1);
 		    HitActor = Trace(HitLocation, HitNormal, EndTrace,,True);
@@ -690,9 +691,8 @@ function checkMantle()                                                          
                             if (bStaminaSystem || bHardCoreMode)
                             {
                                 bStunted = true;
-                                SetTimer(3,false);
                                 if (!bOnLadder && FRand() < 0.7)
-                                    PlaySound(sound'MaleBreathe', SLOT_None,0.8);
+                                    PlayBreatheSound();
                                 if (bBoosterUpgrade && Energy > 0)
                                     AugmentationSystem.AutoAugs(false,false);
                             }
@@ -728,6 +728,17 @@ state PlayerFlying
            else
                LockPawn = None;
         }*/
+
+        if (mantleFinishTimer > 0)
+        {
+            mantleFinishTimer -= deltaTime;
+            if (mantleFinishTimer <= 0)
+            {
+                bCrouchHack = false;
+                mantleFinishTimer = 0;
+            }
+        }
+
 		if(mantleTimer <= 1)
 		{
 			if(mantleTimer > -1)
@@ -768,6 +779,17 @@ state PlayerWalking
             else
                 LockPawn = None;
         }*/
+        
+        if (mantleFinishTimer > 0)
+        {
+            mantleFinishTimer -= deltaTime;
+            if (mantleFinishTimer <= 0)
+            {
+                bCrouchHack = false;
+                mantleFinishTimer = 0;
+            }
+        }
+
 		if(mantleTimer <= 1)
 		{
 			if(mantleTimer > -1)
@@ -902,7 +924,9 @@ State Mantling
 		decorum = None;
 		mova = None;
 
-        SetTimer(0.6,false);
+        //SetTimer(0.6,false); //Replaced with the mantleFinishTimer var
+        mantleFinishTimer = 0.3; //0.6->0.3, 0.6 feels like too long.
+        stuntedTime += 0.3;
 
 		if (inHand != None && inHand.IsA('DeusExWeapon'))
         {

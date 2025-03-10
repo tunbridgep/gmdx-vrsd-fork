@@ -30,7 +30,17 @@ function FirstFrame()
 
 	Super.FirstFrame();
 
-	if (localURL == "06_HONGKONG_VERSALIFE")
+	if (localURL == "06_HONGKONG_HELIBASE")
+    {
+        //SARGE: If we're using the "Killswitch Engaged" playthrough mod,
+        //then reduce the killswitch by 10 hours
+        if (player.bRealKillswitch && !flags.GetBool('GMDXKillswitchReduced'))
+        {
+            player.killswitchTimer -= (10*60)*60;
+            flags.SetBool('GMDXKillswitchReduced', True,, 7);
+        }
+    }
+	else if (localURL == "06_HONGKONG_VERSALIFE")
 	{
 		if (flags.GetBool('M07Briefing_Played'))
 		{
@@ -95,21 +105,6 @@ function FirstFrame()
 					pawn.EnterWorld();
 			}
 		}
-
-		if (flags.GetBool('TriadCeremony_Played'))
-        {
-         if (flags.GetBool('Enhancement_Detected'))
-	     {
-            foreach AllActors(class'ScriptedPawn', pawn)
-	        {
-               if (pawn.IsA('TriadLumPath') || pawn.IsA('TriadLumPath2'))
-               {
-                  if (pawn.BarkBindName == "TriadLumPath")
-                     pawn.BarkBindName = "TriadLumPathPeace";
-               }
-            }
-	     }
-        }
 	}
 	else if (localURL == "06_HONGKONG_WANCHAI_UNDERWORLD")
 	{
@@ -702,6 +697,17 @@ function Timer()
 			flags.SetBool('MS_DrugDealersAttacking', True,, 8);
 		}
 	}
+	else if (localURL == "06_HONGKONG_TONGBASE")
+    {
+        //SARGE: If we're using the "Killswitch Engaged" playthrough mod,
+        //then disable the killswitch when Tong tells us it's done
+        if (player.bRealKillswitch && !flags.GetBool('GMDXKillswitchStopped') && flags.GetBool('DL_TongFixesKillswitch2_Played'))
+        {
+            player.killswitchTimer = -1;
+            //player.bRealKillswitch = false;
+            flags.SetBool('GMDXKillswitchStopped', True,, 0);
+        }
+    }
 }
 
 function FireMissilesAt(name targetTag)

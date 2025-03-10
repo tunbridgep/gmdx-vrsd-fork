@@ -32,4 +32,8 @@ defaultproperties
      BindName="Child2"
      FamiliarName="Child"
      UnfamiliarName="Child"
+     HitSound1=Sound'ChildPainMedium'
+     HitSound2=Sound'ChildPainLarge'
+     Die=Sound'ChildDeath'
+     bDontChangeDeathPainSounds=True
 }

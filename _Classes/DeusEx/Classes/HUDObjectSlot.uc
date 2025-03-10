@@ -70,6 +70,10 @@ var localized String RoundLabel;
 var localized String RoundsLabel;
 var localized String CountLabel;
 
+//GMDX
+
+var string beltText;            //SARGE: The number printed on the belt. Set to - and = for belt slots 11 and 12.
+
 // ----------------------------------------------------------------------
 // InitWindow()
 // ----------------------------------------------------------------------
@@ -171,13 +175,8 @@ function UpdateItemText()
 			if ((weapon.AmmoName != class'AmmoNone') && (!weapon.bHandToHand) && (weapon.ReloadCount != 0) && (weapon.AmmoType != None))
 			itemText = weapon.AmmoType.beltDescription;
 
-            // If this is a grenade
-			if (weapon.IsA('WeaponNanoVirusGrenade') ||
-				weapon.IsA('WeaponGasGrenade') ||
-				weapon.IsA('WeaponEMPGrenade') ||
-				weapon.IsA('WeaponHideAGun')   || //Sarge: Added
-				weapon.IsA('WeaponShuriken')   || //Sarge: Added
-				weapon.IsA('WeaponLAM'))
+            // If this is a disposable weapon
+			if (weapon.bDisposableWeapon)
 			{
 				if (weapon.AmmoType != none && weapon.AmmoType.AmmoAmount > 1)  //RSD: accessed none?
 					itemText = CountLabel @ weapon.AmmoType.AmmoAmount;
@@ -322,7 +321,7 @@ local DeusExWeapon weapon;
 	// Draw the Object Slot Number in upper-right corner
 	gc.SetAlignments(HALIGN_Right, VALIGN_Center);
 	gc.SetTextColor(colObjectNum);
-	gc.DrawText(slotNumberX - 1, slotNumberY, 6, 7, objectNum);
+	gc.DrawText(slotNumberX - 1, slotNumberY, 6, 7, beltText);
 }
 
 function DrawHUDIcon(GC gc)

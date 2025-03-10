@@ -30,12 +30,21 @@ function Deactivate()
    SetTargetingAugStatus(CurrentLevel,False);
 }
 
+//SARGE: Handle being levelled-up while the aug is turned on
+function Setup()
+{
+    SetTargetingAugStatus(CurrentLevel,bIsActive);
+}
+
 // ----------------------------------------------------------------------
 // SetTargetingAugStatus()
 // ----------------------------------------------------------------------
 
 simulated function SetTargetingAugStatus(int Level, bool IsActive)
 {
+	if (player == None || player.rootWindow == None)
+		return;
+
 	DeusExRootWindow(Player.rootWindow).hud.augDisplay.bTargetActive = IsActive;
 	DeusExRootWindow(Player.rootWindow).hud.augDisplay.targetLevel = Level;
 }
@@ -57,7 +66,10 @@ defaultproperties
 {
      mpAugValue=-0.125000
      mpEnergyDrain=40.000000
-     EnergyRate=35.000000
+     //EnergyRate=35.000000
+     EnergyRate=0.000000
+     EnergyReserved=20
+     AugmentationType=Aug_Toggle
      Icon=Texture'DeusExUI.UserInterface.AugIconTarget'
      smallIcon=Texture'DeusExUI.UserInterface.AugIconTarget_Small'
      AugmentationName="Targeting"

@@ -4,7 +4,7 @@
 class HUDObjectBelt expands HUDBaseWindow;
 
 var TileWindow winSlots;				// Window containing slots
-var HUDObjectSlot objects[10];
+var HUDObjectSlot objects[12];
 
 var int	KeyRingSlot;
 var Bool bInteractive;
@@ -14,6 +14,13 @@ var Texture texBackgroundLeft;
 var Texture texBackgroundRight;
 var Texture texBorder[3];
 
+//SARGE: Allow up to 12 slots now
+var int numSlots;
+var int extraSize;
+var Texture texBorderBig;
+	
+var RadioBoxWindow winRadio;                //SARGE: Made global so we can delete and recreate it
+
 // ----------------------------------------------------------------------
 // InitWindow()
 // ----------------------------------------------------------------------
@@ -21,11 +28,28 @@ var Texture texBorder[3];
 event InitWindow()
 {
 	Super.InitWindow();
+    RecreateBelt();
+}
 
-	// Hardcoded size, baby!
-	SetSize(541, 69);
+function RecreateBelt()
+{
+    if (player.bBiggerBelt)
+    {
+        keyringSlot = 11;
+        extraSize = 100;
+        numSlots = 12;
+    }
+    else
+    {
+        keyringSlot = 9;
+        extraSize = 0;
+        numSlots = 10;
+    }
+	
+    CreateSlots();
+    
+    ConfigureSlots();
 
-	CreateSlots();
 	CreateNanoKeySlot();
 
 	PopulateBelt();
@@ -37,7 +61,7 @@ event InitWindow()
 function SetInventoryBelt(bool option)
 {
     local int i;
-	for (i=0; i<10; i++)
+	for (i=0; i<numSlots; i++)
         objects[i].bInventorySlot = option;
 }
 
@@ -50,14 +74,14 @@ function SetInventoryBelt(bool option)
 function CreateSlots()
 {
 	local int i;
-	local RadioBoxWindow winRadio;
+
+    if (winRadio != None || winSlots != None)
+        return;
 
 	// Radio window used to contain objects so they can be selected
 	// with the mouse on the inventory screen.
 
 	winRadio = RadioBoxWindow(NewChild(Class'RadioBoxWindow'));
-	winRadio.SetSize(504, 54);
-	winRadio.SetPos(10, 6);
 	winRadio.bOneCheck = False;
 
 	winSlots = TileWindow(winRadio.NewChild(Class'TileWindow'));
@@ -65,17 +89,51 @@ function CreateSlots()
 	winSlots.SetMinorSpacing(0);
 	winSlots.SetOrder(ORDER_LeftThenUp);
 
-	for (i=0; i<10; i++)
+	for (i=0; i<12; i++)
 	{
 		objects[i] = HUDObjectSlot(winSlots.NewChild(Class'HUDObjectSlot'));
 		objects[i].SetObjectNumber(i);
+        //Some annoying logic here
+        if (i < 9)
+            objects[i].beltText = string(i + 1);
+        else if (i == 9)
+            objects[i].beltText = "0";
+        else if (i == 10)
+            objects[i].beltText = "-";
+        else
+            objects[i].beltText = "=";
 		objects[i].Lower();
 
-		// Last item is a little shorter
-		if ( i == 0 )
-			objects[i].SetWidth(44);
 	}
-	objects[0].Lower();
+}
+
+function ConfigureSlots()
+{
+
+	// Hardcoded size, baby!
+    SetSize(541+extraSize, 69);
+    
+    winRadio.SetSize(504+extraSize+extraSize, 54);
+    winRadio.SetPos(10-extraSize, 6);
+
+    //SARGE: DIRTY HACK!
+    if (player.bBiggerBelt)
+    {
+        // Last item is a little shorter
+        objects[9].SetWidth(50);
+        objects[11].SetWidth(44);
+        objects[10].Show();
+        objects[11].Show();
+    }
+    else
+    {
+        // Last item is a little shorter
+        objects[11].SetWidth(50);
+        objects[9].SetWidth(44);
+        //hide the extras
+        objects[10].Hide();
+        objects[11].Hide();
+    }
 
 }
 
@@ -126,8 +184,14 @@ function DrawBackground(GC gc)
 	else
 		gc.SetTileColor(colBackground);
 
-	gc.DrawTexture(  2, 6, 9, 54, 0, 0, texBackgroundLeft);
-	gc.DrawTexture(514, 6, 8, 54, 0, 0, texBackgroundRight);
+
+    //SARGE: No idea why this needs adjusting...
+    if (player.bBiggerBelt)
+        gc.DrawTexture(  2, 6, 8, 54, 0, 0, texBackgroundLeft);
+    else
+        gc.DrawTexture(  2, 6, 9, 54, 0, 0, texBackgroundLeft);
+
+    gc.DrawTexture(514+extraSize, 6, 8, 54, 0, 0, texBackgroundRight);
 }
 
 // ----------------------------------------------------------------------
@@ -152,8 +216,16 @@ function DrawBorder(GC gc)
 			gc.SetTileColor(colBorder);
 
 		gc.DrawTexture(  0, 0, 256, 69, 0, 0, texBorder[0]);
-		gc.DrawTexture(256, 0, 256, 69, 0, 0, texBorder[1]);
-		gc.DrawTexture(512, 0,  29, 69, 0, 0, texBorder[2]);
+        if (player.bBiggerBelt)
+        {
+            gc.DrawTexture(256, 0, 512, 69, 0, 0, texBorderBig);
+            gc.DrawTexture(612, 0,  29, 69, 0, 0, texBorder[2]);
+        }
+        else
+        {
+            gc.DrawTexture(256, 0, 256, 69, 0, 0, texBorder[1]);
+            gc.DrawTexture(512, 0,  29, 69, 0, 0, texBorder[2]);
+        }
 	}
 }
 
@@ -184,12 +256,7 @@ function UpdateInHand()
             if (objects[slotIndex].item != None)
             {
                 // Grey Backpack for last equipped object in the player's hand
-                if ((player.inHand != None) && (objects[slotIndex].item == player.inHand))
-                    objects[slotIndex].HighlightSelect(True);
-                else if (player.inHand == None && player.bAlternateToolbelt == 0 && slotIndex == player.BeltLast)
-                    objects[slotIndex].HighlightSelect(True);
-                else
-                    objects[slotIndex].HighlightSelect(False);
+                objects[slotIndex].HighlightSelect(objects[slotIndex].item == player.primaryWeapon);
 
                 if ((player.inHandPending != None) && //(player.inHandPending != player.inHand) &&
                     (objects[slotIndex].item == player.inHandPending))
@@ -244,7 +311,7 @@ function SetInteractive(bool bNewInteractive)
 function bool IsValidPos(int pos)
 {
 	// Don't allow NanoKeySlot to be used
-	if ((pos >= 0) && (pos < 10))
+	if ((pos >= 0) && (pos < numSlots))
 		return true;
 	else
 		return false;
@@ -270,7 +337,7 @@ function ClearBelt()
 {
 	local int beltPos;
 
-	for(beltPos=0; beltPos<10; beltPos++)
+	for(beltPos=0; beltPos<numSlots; beltPos++)
     {
         if (player.bBeltMemory && objects[beltPos].bAllowDragging)
             player.SetPlaceholder(beltPos,true);
@@ -332,12 +399,15 @@ function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
 
 	if ((newItem != None ) && (newItem.Icon != None))
 	{
-		// If this is the NanoKeyRing, force it into slot 0
-		if (newItem.IsA('NanoKeyRing'))
+		// If this is the NanoKeyRing, force it into slot 0 //SARGE: Or slot 11
+		if (newItem.IsA('NanoKeyRing') && !player.bSmartKeyring)
 		{
-			ClearPosition(0);
-			pos = 0;
+			ClearPosition(KeyRingSlot);
+			pos = KeyRingSlot;
 		}
+        //SARGE: Don't put it on the belt at all if we have smart keyring on
+        else if (newItem.IsA('NanoKeyRing'))
+            return true;
 
 		if (  (!IsValidPos(pos)) ||
             (  (Player.Level.NetMode != NM_Standalone) &&
@@ -367,10 +437,11 @@ function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
                     }
                 }
             }
+			
             //No placeholder slot found, check for an empty one
             if (!FoundPlaceholder && (player.bBeltAutofill || player.bForceBeltAutofill))
             {
-                for (i=1; IsValidPos(i); i++)
+                for (i=0; IsValidPos(i) && i < numSlots; i++)
                 {
                     if (( (Player.Level.NetMode == NM_Standalone) || (!Player.bBeltIsMPInventory) || (newItem.TestMPBeltSpot(i))))
                     {
@@ -379,22 +450,16 @@ function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
                             break;
                     }
                 }
-
-                //SARGE: We need to check the 0 slot LAST, so we don't fill it first, otherwise new items appear at the end of the players belt
-                if (!IsValidPos(i) && objects[KeyRingSlot].GetItem() == None && !player.GetPlaceholder(KeyRingSlot) && objects[KeyRingSlot].bAllowDragging)
-                    pos = KeyRingSlot;
             }
 
             //Now check if we found a valid slot
             if (!IsValidPos(i))
 			{
 				if (bOverride)
-					pos = 1;
+					pos = i;
 			}
 			else
-			{
 				pos = i;
-			}
 		}
 
 		if (IsValidPos(pos))
@@ -505,7 +570,7 @@ function AssignWinInv(PersonaScreenInventory newWinInventory)
 	local Int slotIndex;
 
 	// Update the individual slots
-	for (slotIndex=0; slotIndex<10; slotIndex++)
+	for (slotIndex=0; slotIndex<numSlots; slotIndex++)
 		objects[slotIndex].AssignWinInv(newWinInventory);
 
 	UpdateInHand();
@@ -521,4 +586,5 @@ defaultproperties
      texBorder(0)=Texture'DeusExUI.UserInterface.HUDObjectBeltBorder_1'
      texBorder(1)=Texture'DeusExUI.UserInterface.HUDObjectBeltBorder_2'
      texBorder(2)=Texture'DeusExUI.UserInterface.HUDObjectBeltBorder_3'
+     texBorderBig=Texture'RSDCrap.UserInterface.HUDObjectBeltBorder_2_big'
 }

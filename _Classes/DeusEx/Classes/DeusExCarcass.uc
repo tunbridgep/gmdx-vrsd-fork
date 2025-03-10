@@ -153,28 +153,21 @@ function InitFor(Actor Other)
         {
 		    bEmitCarcass = true; //CyberP: AI is aware of carcasses whether dead or unconscious!
 			if (Other.IsA('ScriptedPawn'))                                      //RSD
-			{
-            savedName = ScriptedPawn(Other).FamiliarName;
-            if (bNotDead)
-				itemName = msgNotDead $ " (" $ savedName $ ")";                 //RSD: use savedName
-			else
-				itemName = itemName $ " (" $ savedName $ ")";                   //RSD: use savedName
-			}
+                savedName = ScriptedPawn(Other).FamiliarName;
 		}
         else
         {
             if (Other.IsA('ScriptedPawn'))                                      //RSD
-			{
-            savedName = ScriptedPawn(Other).BindName;
-            if (bNotDead)
-                itemName = msgNotDead $ " (" $ savedName $ ")";                 //RSD: use savedName
-            else
-		        itemName = msgAnimalCarcass;
+            {
+                //if (ScriptedPawn(Other).UnfamiliarName == "")
+                //    savedName = ScriptedPawn(Other).ClassName;
+                //else
+                //    savedName = ScriptedPawn(Other).UnfamiliarName;
+                savedName = ScriptedPawn(Other).BindName;
             }
         }
 
-        //SARGE: Update with our search string
-        AddSearchedString(player);
+        UpdateName();
 
 		Mass           = Other.Mass;
 		Buoyancy       = Mass * 1.2;
@@ -882,9 +875,11 @@ function PickupCorpse(DeusExPlayer player)
             corpse.bEmitCarcass = False; //CyberP: don't emit carc when in player hand
             corpse.CarcassTag = Tag; //CyberP: don't wipe the tag
             corpse.Inv=Inventory; //GMDX:dbl click
+            corpse.bSearched = bSearched;
+            corpse.PickupAmmoCount = PickupAmmoCount;
+            corpse.savedName = savedName;
             corpse.Frob(player, None);
             corpse.SetBase(player);
-            corpse.bSearched = bSearched;
             player.PutInHand(corpse);
             bQueuedDestroy=True;
             Destroy();
@@ -912,7 +907,6 @@ function Frob(Actor Frobber, Inventory frobWith)
     local int ammoCount, intj;                                                  //RSD: Added
     local bool bFoundSomething;                                                 //SARGE: Did we find something
     local bool bFoundInvalid;                                                 //SARGE: Did we find something we can't use?
-    local int ammoGiven;
     local bool bDeclined;
 
 	// Can we assume only the *PLAYER* would actually be frobbing carci?
@@ -993,7 +987,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                         //If we already have a disposable weapon, ignore the message, since we will get the ammo from it, and the ammo is the weapon.
                         if (found == None || (found.IsA('DeusExWeapon') && !DeusExWeapon(found).bDisposableWeapon))
                             //player.ClientMessage(sprintf(player.InventoryFull,AmmoType.ItemName));
-                            P.ClientMessage(msgSearching @ Item.itemName @ DeclinedString);
+                            P.ClientMessage(item.PickupMessage @ item.itemArticle @ Item.itemName @ DeclinedString);
                         bFoundSomething=True;
                     }
                     bDeclined=True;
@@ -1030,12 +1024,8 @@ function Frob(Actor Frobber, Inventory frobWith)
                             if (w.PickupAmmoCount == 0)
                                 w.PickupAmmoCount = 1;
                         }
-                        else if (W.IsA('WeaponNanoVirusGrenade') ||
-                            W.IsA('WeaponGasGrenade') ||
-                            W.IsA('WeaponEMPGrenade') ||
-                            W.IsA('WeaponLAM')  ||
-                            W.IsA('WeaponHideAGun') && player.FindInventorySlot(item, True))  //CyberP: there we go. Now need to stop 1-4 rand for nades
-                            W.PickupAmmoCount = 1;       //CyberP: I need to check if inventory is full and no nades
+                        else if (W.bDisposableWeapon)
+                            W.PickupAmmoCount = 1;
                         else if (W.IsA('WeaponFlamethrower'))
                             W.PickupAmmoCount = (PickupAmmoCount * 5);                    //SARGE: Now 5-25 rounds with initialization in MissionScript.uc on first map load
                         else if (W.IsA('WeaponAssaultGun'))
@@ -1043,19 +1033,13 @@ function Frob(Actor Frobber, Inventory frobWith)
                             W.PickupAmmoCount = PickupAmmoCount + 1;                      //RSD: Now 2-5 rounds with initialization in MissionScript.uc on first map load
                         else if (W.IsA('WeaponGepGun'))
                             W.PickupAmmoCount = 2;
-                        else if (!W.IsA('WeaponNanoVirusGrenade') &&
-                            !W.IsA('WeaponGasGrenade') &&
-                            !W.IsA('WeaponEMPGrenade') &&
-                            !W.IsA('WeaponLAM') &&
-                            !W.IsA('WeaponHideAGun')) //CyberP: no grenades.
-                            //W.PickupAmmoCount = Rand(4) + 1;                              //RSD
+                        else if (!W.bDisposableWeapon)
                             W.PickupAmmoCount = PickupAmmoCount;                            //RSD
-                            else if (W.Default.PickupAmmoCount != 0)
+                        else if (W.Default.PickupAmmoCount != 0)
                             W.PickupAmmoCount = 1; //CyberP: hmm
                     }
                     //SARGE: Set weapons maximum clip size to however much left over ammo it has.
                     W.ClipCount = W.PickupAmmoCount;
-                    PickupAmmoCount = W.PickupAmmoCount;
                 }
 
 				if (item != None)
@@ -1105,13 +1089,8 @@ function Frob(Actor Frobber, Inventory frobWith)
 						// the weapon).
 						if ((W != None) || (W == None && (bDeclined||!player.FindInventorySlot(item, True))))
 						{
-                            //Don't allow taking ammo from disposable weapons, if we don't have (and can't fit) the weapon
-                            if (DeusExWeapon(item).bDisposableWeapon && W == None)
-                            {
-                            }
-
 							// Don't bother with this is there's no ammo
-							else if ((Weapon(item).AmmoType != None) && (Weapon(item).PickupAmmoCount > 0))
+							if ((Weapon(item).AmmoType != None) && (Weapon(item).PickupAmmoCount > 0))
 							{
 								AmmoType = Ammo(player.FindInventoryType(Weapon(item).AmmoName));
                                     
@@ -1140,26 +1119,20 @@ function Frob(Actor Frobber, Inventory frobWith)
                                         //P.ClientMessage("intj is " $ intj);
                                         Weapon(item).AmmoType.AmmoAmount -= intj;
                                         Weapon(item).PickupAmmoCount -= intj;
-                                        PickupAmmoCount = Weapon(item).PickupAmmoCount;
                                         //SARGE: Set weapons maximum clip size to however much left over ammo it has.
                                         DeusExWeapon(item).ClipCount -= intj;
                                     }
-                                    /*
-                                    //Delete grenades
-                                    if (W.bDisposableWeapon)
-                                    {
-                                        DeleteInventory(item);
-                                        W = None;
-                                        item = None;
-                                    }
-                                    */
 								}
-                                else
+                                else if (AmmoType != None)
                                 {
                                     //P.ClientMessage("in ammo searching code ex");
-                                    if (!bSearched && (DeusExWeapon(item) == None || !DeusExWeapon(item).bDisposableWeapon))
+                                    if (!bSearched)
                                     {
-                                        P.ClientMessage(msgSearching @ AmmoType.itemName @ "(" $ Weapon(item).PickupAmmoCount $ ")"  @ MaxAmmoString);
+                                        if (DeusExWeapon(item).bDisposableWeapon)
+                                            P.ClientMessage(item.PickupMessage @ item.itemArticle @ item.itemName @ MaxAmmoString);
+                                        else
+                                            P.ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName @ "(" $ Weapon(item).PickupAmmoCount $ ")"  @ MaxAmmoString);
+                                        //P.ClientMessage(msgSearching @ AmmoType.itemName @ "(" $ Weapon(item).PickupAmmoCount $ ")"  @ MaxAmmoString);
                                         bFoundSomething=True;
                                     }
                                     bFoundInvalid=true; 
@@ -1186,7 +1159,6 @@ function Frob(Actor Frobber, Inventory frobWith)
 										AddReceivedItem(player, AmmoType,addedAmount);
 										Weapon(item).PickupAmmoCount-=AddedAmount;
                                         DeusExWeapon(item).ClipCount-=AddedAmount;
-                                        PickupAmmoCount = Weapon(item).PickupAmmoCount;
 										if (AmmoType.PickupViewMesh == Mesh'TestBox')
 									      P.ClientMessage(item.PickupMessage @ item.itemArticle @ item.itemName, 'Pickup');
 									      else
@@ -1194,27 +1166,28 @@ function Frob(Actor Frobber, Inventory frobWith)
                                     }
                                     else
                                     {
-                                        if (!bSearched && (DeusExWeapon(item) == None || !DeusExWeapon(item).bDisposableWeapon))
+                                        if (!bSearched)
                                         {
                                             //player.ClientMessage(sprintf(player.InventoryFull,AmmoType.ItemName));
-                                            P.ClientMessage(msgSearching @ AmmoType.itemName @ "(" $ Weapon(item).PickupAmmoCount $ ")"  @ MaxAmmoString);
+                                            if (DeusExWeapon(item).bDisposableWeapon)
+                                                P.ClientMessage(item.PickupMessage @ item.itemArticle @ item.itemName @ MaxAmmoString);
+                                            else
+                                                P.ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName @ "(" $ Weapon(item).PickupAmmoCount $ ")"  @ MaxAmmoString);
                                             bFoundSomething=True;
                                         }
                                         bFoundInvalid=true; 
                                     }
-                                    /*
-                                    //Delete grenades
-                                    if (W.bDisposableWeapon)
-                                    {
-                                        DeleteInventory(item);
-                                        W = None;
-                                        item = None;
-                                        bPickedItemUp = True;
-                                    }
-                                    */
 								}
                                 //TODO: Handle Dragons Tooth custom charge
 							}
+
+                            //Destroy disposable weapons after taking their ammo.
+                            if (DeusExWeapon(item).bDisposableWeapon && Weapon(item).PickupAmmoCount <= 0)
+                            {
+                                DeleteInventory(item);
+                                item.Destroy();
+                                item = None;
+                            }
 
 							// Print a message "Cannot pickup blah blah blah" if inventory is full
 							// and the player can't pickup this weapon, so the player at least knows
@@ -1237,7 +1210,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                     {
                                         bFoundSomething = True;
                                         if (!W.bDisposableWeapon && !bDeclined)
-                                            P.ClientMessage(msgSearching @ Item.itemName @ IgnoredString);
+                                            P.ClientMessage(item.PickupMessage @ item.itemArticle @ Item.itemName @ IgnoredString);
                                     }
                                     bFoundInvalid = true;
                                 }
@@ -1258,16 +1231,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 							bPickedItemUp = True;
 					}
 
-                    //Remove disposable weapons when looted
-                    if (DeusExWeapon(item) != None && DeusExWeapon(item).bDisposableWeapon && DeusExWeapon(item).AmmoType.AmmoAmount == 0)
-                    {
-                        DeleteInventory(item);
-                        item.Destroy();
-                        item = nextItem;
-                        continue;
-                    }
-
-					if (!bPickedItemUp)
+					if (!bPickedItemUp && item != None)
 					{
 						// Special case if this is a DeusExPickup(), it can have multiple copies
 						// and the player already has it.
@@ -1307,7 +1271,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                     //SARGE: Inform the player when they missed out on some items due to full stack size
                                     if (DeusExPickup(item).numCopies > 0)
                                     {
-                                        player.ClientMessage(sprintf(player.InventoryFull,item.itemName));
+                                        player.ClientMessage(sprintf(player.InventoryFull,item.class));
                                     }
 								}
 								else if (invItem.IsA('ChargedPickup') && invItem.Charge < invItem.default.Charge) //RSD: Charge up the player's wearable if they have max copies but are below max charge
@@ -1330,7 +1294,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                 //SARGE: Inform us if our inventory is too full (max stack) to pick these items up.
 								else if (DeusExPickup(item).numCopies + invItem.numCopies >= invItem.RetMaxCopies())  //GMDX
                                 {
-                                    player.ClientMessage(sprintf(player.InventoryFull,item.itemName));
+                                    player.ClientMessage(sprintf(player.InventoryFull,item.class));
                                     bFoundSomething = True;
 
                                 }
@@ -1371,6 +1335,16 @@ function Frob(Actor Frobber, Inventory frobWith)
 								DeusExPlayer(P).FrobTarget = item;
                                 if (!bDeclined)
                                 {
+                                    //SARGE: If a weapon, track the ammo for calling AddReceivedWeapon, which we need to do AFTER handling pickup below.
+                                    ammoCount = 0;
+                                    if (item.IsA('DeusExWeapon'))
+                                    {
+                                        ammoType = Ammo(player.FindInventoryType(DeusExWeapon(item).AmmoName));
+                                        if (ammoType != None && ammoType.isA('DeusExAmmo'))
+                                            ammoCount = ammoType.AmmoAmount;
+                                    }
+
+
                                     bFoundSomething = True;
                                     if (DeusExPlayer(P).HandleItemPickup(Item) != False)
                                     {
@@ -1389,6 +1363,8 @@ function Frob(Actor Frobber, Inventory frobWith)
                                         // Show the item received in the ReceivedItems window and also
                                         // display a line in the Log
                                         AddReceivedItem(player, item, 1);
+                                        if (item.IsA('DeusExWeapon'))
+                                            AddReceivedWeapon(player,DeusExWeapon(item),ammoCount);
 
                                         P.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
                                         PlaySound(Item.PickupSound);
@@ -1453,7 +1429,8 @@ function Frob(Actor Frobber, Inventory frobWith)
 
     //log("  bFoundSomething = " $ bFoundSomething);
     bSearched = true; //SARGE: Once we have been searched once, go back to normal behaviour
-    AddSearchedString(player);
+    //AddSearchedString(player);
+    UpdateName();
     bFoundSomething = false;
     bDblClickStart=true;
 
@@ -1478,6 +1455,45 @@ function AddSearchedString(DeusExPlayer player)
     }
 }
 
+// ----------------------------------------------------------------------
+// AddReceivedWeapon()
+// SARGE: Adds an ammo display for a weapon.
+// You still need to call AddReceivedItem for the actual weapon.
+// ----------------------------------------------------------------------
+
+function AddReceivedWeapon(DeusExPlayer player, DeusExWeapon w, int previousAmmo)
+{
+    local int maxAmmo, intj;
+    local Ammo playerAmmo;
+    local bool beyondMax;
+    local string msg;
+
+    // SARGE: When picking up a new weapon, show it's ammo as well
+    // TODO: This needs a refactor. Ideally the ammo-searching code in Frob should use the same code as this, rather than duplicating it.
+    if (DeusExAmmo(w.AmmoType) != None && w.PickupAmmoCount > 0 && !w.bDisposableWeapon && DeusExAmmo(w.AmmoType).bShowInfo)
+    {
+        maxAmmo = player.GetAdjustedMaxAmmo(w.AmmoType);
+        intj = w.PickupAmmoCount;
+
+        while (maxAmmo < previousAmmo + intj && intj > 0)
+        {
+            intj -= 1;
+            beyondMax = true;
+        }
+        
+        if (intj > 0)
+        {
+            DeusExRootWindow(player.rootWindow).hud.receivedItems.AddItem(w.AmmoType, intj);
+            player.UpdateAmmoBeltText(w.AmmoType);
+            msg = w.PickupMessage @ w.AmmoType.itemArticle @ w.AmmoType.itemName @ "(" $ intj $ ")";
+        }
+        
+        if (beyondMax)
+            msg = msg @ MaxAmmoString;
+
+        player.ClientMessage(msg, 'Pickup');
+    }
+}
 
 // ----------------------------------------------------------------------
 // AddReceivedItem()
@@ -1713,21 +1729,30 @@ function Landed(vector HitNormal)
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
+//SARGE: Added to fix name being reset when pickup up corpses
+function UpdateName()
+{
+    itemName = default.itemName;
+    if (savedName != "")
+    {
+        if (bNotDead)
+            itemName = msgNotDead $ " (" $ savedName $ ")";
+        else if (bAnimalCarcass)
+            itemName = msgAnimalCarcass $ " (" $ savedName $ ")";
+        else
+            itemName = itemName $ " (" $ savedName $ ")";
+    }
+
+    //SARGE: Add searched string
+    if (!bAnimalCarcass)
+        AddSearchedString(DeusExPlayer(GetPlayerPawn()));
+}
+
 function KillUnconscious()                                                      //RSD: To properly fix corpse names and trigger any other death effects like MIB explosion
 {
         bNotDead = false;
 
-        if (!bAnimalCarcass)
-        {
-            itemName = default.itemName;
-            if (savedName != "")
-				itemName = itemName $ " (" $ savedName $ ")";
-		}
-        else
-		    itemName = msgAnimalCarcass;
-    
-        //SARGE: Add searched string
-        AddSearchedString(DeusExPlayer(GetPlayerPawn()));
+        UpdateName();
 }
 
 defaultproperties

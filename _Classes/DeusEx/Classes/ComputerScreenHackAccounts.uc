@@ -1,9 +1,9 @@
 //=============================================================================
 // ComputerScreenHackAccounts
 //=============================================================================
-class ComputerScreenHackAccounts extends HUDBaseWindow;
+class ComputerScreenHackAccounts extends HUDBaseWindowMenu;
 
-var PersonaActionButtonWindow btnChangeAccount;
+var PersonaActionButtonWindowMenu btnChangeAccount;
 var PersonaHeaderTextWindow   winCurrentUser;
 var PersonaListWindow         lstAccounts;
 var NetworkTerminal           winTerm;
@@ -56,8 +56,9 @@ function CreateChangeAccountButton()
 	winActionButtons.SetPos(12, 169);
 	winActionButtons.SetWidth(174);
 	winActionButtons.FillAllSpace(False);
+    winActionButtons.winFiller.SetTileColor(theme.GetColorFromName('MenuColor_Background'));
 
-	btnChangeAccount = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow'));
+	btnChangeAccount = PersonaActionButtonWindowMenu(winActionButtons.NewChild(Class'PersonaActionButtonWindowMenu'));
 	btnChangeAccount.SetButtonText(ChangeAccountButtonLabel);
 }
 
@@ -70,6 +71,7 @@ function CreateCurrentUserWindow()
 	winCurrentUser = PersonaHeaderTextWindow(NewChild(Class'PersonaHeaderTextWindow'));
 	winCurrentUser.SetPos(16, 29);
 	winCurrentUser.SetSize(170, 12);
+    winCurrentUser.SetTextColor(theme.GetColorFromName('MenuColor_ButtonTextFocus'));
 }
 
 // ----------------------------------------------------------------------
@@ -84,7 +86,7 @@ function CreateAccountsList()
 	winScroll.SetPos(14, 69);
 	winScroll.SetSize(170, 97);
 
-	lstAccounts = PersonaListWindow(winScroll.clipWindow.NewChild(Class'PersonaListWindow'));
+	lstAccounts = PersonaListWindow(winScroll.clipWindow.NewChild(Class'PersonaListWindowMenu'));
 	lstAccounts.EnableMultiSelect(False);
 	lstAccounts.EnableAutoExpandColumns(False);
 	lstAccounts.EnableHotKeys(False);

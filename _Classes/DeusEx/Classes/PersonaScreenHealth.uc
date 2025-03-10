@@ -54,6 +54,7 @@ var localized string PedometerButtonLabel;
 var PersonaActionButtonWindow buttonStats;
 var localized string accuracyLabel;
 var localized string speedLabel;
+var localized string killswitchTime;
 
 //RSD: Stuff for addiction status
 var localized string drugLabels[3];
@@ -495,6 +496,8 @@ function DisplayCommonInfo()
     local string suffix;
     local float accuracyPenalty;
     local float speedPenalty;
+    local int hours,mins,seconds;                            //SARGE: Added for Killswitch stuff
+    local string killswitchTimeString;
 
     winInfo.bStylization = False;
     winInfo.bStylization2 = True;
@@ -586,6 +589,32 @@ function DisplayCommonInfo()
      winInfo.SetText(LocStr $ player.retInfo());
     
     winInfo.SetText(KillerStr $ player.Killercount); //SARGE: We don't want the morality stuff, but we do want to track kills
+
+    //SARGE: Display the killswitch timer
+    if (player.bRealKillswitch && player.killswitchtimer > 0)
+    {
+        hours = int(player.killswitchTimer / 3600.0);
+        mins = int((player.killswitchTimer % 3600.0) / 60.0);
+        seconds = int(player.killswitchTimer % 60.0);
+        
+        //awful, awful code!
+        killswitchTimeString = "";
+        killswitchTimeString = killswitchTimeString $ hours;
+        killswitchTimeString = killswitchTimeString $ ":";
+
+        if (mins < 10)
+            killswitchTimeString = killswitchTimeString $ "0";
+
+        killswitchTimeString = killswitchTimeString $ mins;
+        killswitchTimeString = killswitchTimeString $ ":";
+        
+        if (seconds < 10)
+            killswitchTimeString = killswitchTimeString $ "0";
+        
+        killswitchTimeString = killswitchTimeString $ seconds;
+
+        winInfo.SetText(sprintf(killswitchTime,killswitchTimeString));
+    }
 }
 
 function UpdateAddictionText()
@@ -1121,6 +1150,7 @@ defaultproperties
      drugWithdrawalLabel="Withdrawal"
      drugInactiveLabel="Inactive"
      drugEffectLabel=" Effects: "
+     killswitchTime=" Killswitch Activated: %d"
      clientBorderOffsetY=32
      ClientWidth=596
      ClientHeight=427

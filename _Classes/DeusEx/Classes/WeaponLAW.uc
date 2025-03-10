@@ -56,6 +56,7 @@ defaultproperties
      NoiseLevel=8.000000
      EnviroEffective=ENVEFF_Air
      ShotTime=0.300000
+     bHandToHand=True
      reloadTime=0.000000
      HitDamage=100
      maxRange=12000
@@ -76,9 +77,10 @@ defaultproperties
      NPCAccurateRange=14400
      iHDTPModelToggle=1
      largeIconRot=Texture'GMDXSFX.Icons.LargeIconRotLAW'
-     invSlotsXtravel=4
-     AmmoName=Class'DeusEx.AmmoNone'
-     ReloadCount=0
+     invSlotsXtravel=3
+     AmmoName=Class'DeusEx.AmmoLAW'
+     ReloadCount=1
+     PickupAmmoCount=1
      FireOffset=(X=26.000000,Y=12.000000,Z=4.000000)
      ProjectileClass=Class'DeusEx.RocketLAW'
      shakemag=500.000000
@@ -98,7 +100,7 @@ defaultproperties
      largeIcon=Texture'DeusExUI.Icons.LargeIconLAW'
      largeIconWidth=166
      largeIconHeight=47
-     invSlotsX=4
+     invSlotsX=3
      Description="The LAW provides cheap, dependable anti-armor capability in the form of an integrated one-shot rocket and delivery system, though at the expense of any laser guidance. Like other heavy weapons, the LAW can slow agents who have not trained with it extensively."
      beltDescription="LAW"
      CollisionRadius=25.000000
