@@ -23515,7 +23515,7 @@ End Actor
 Begin Actor Class=Keypad2 Name=Keypad0
     validCode="2153"
     bToggleLock=False
-    hackStrength=0.250000
+    hackStrength=0.50000
     LastRenderTime=1140.979004
     DistanceFromPlayer=1609.365601
     Level=LevelInfo'MyLevel.LevelInfo0'
