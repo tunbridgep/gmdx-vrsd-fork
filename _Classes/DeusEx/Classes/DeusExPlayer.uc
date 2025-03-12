@@ -6642,7 +6642,7 @@ state PlayerWalking
             }
         }
 
-        //Tick down our item pickup prevention (stops item dupes)
+        //SARGE: Tick down our item pickup prevention (stops item dupes)
         if (pickupCooldown > 0)
             pickupCooldown -= deltaTime;
 
@@ -6697,6 +6697,10 @@ state PlayerFlying
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
+        
+        //SARGE: Tick down our item pickup prevention (stops item dupes)
+        if (pickupCooldown > 0)
+            pickupCooldown -= deltaTime;
 
 		Super.PlayerTick(deltaTime);
 	}
@@ -6892,6 +6896,10 @@ state PlayerSwimming
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
+        
+        //SARGE: Tick down our item pickup prevention (stops item dupes)
+        if (pickupCooldown > 0)
+            pickupCooldown -= deltaTime;
 
 		Super.PlayerTick(deltaTime);
 	}
