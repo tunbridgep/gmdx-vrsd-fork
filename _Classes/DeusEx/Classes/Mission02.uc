@@ -199,6 +199,7 @@ function Timer()
 	local Actor A;
 	local SandraRenton Sandra;
 	local int count, unconscious;
+    local bool bumDead;
 	local Male3 GenericMale;
 
 	Super.Timer();
@@ -433,6 +434,21 @@ function Timer()
 	}
 	else if (localURL == "02_NYC_FREECLINIC")
 	{
+		//SARGE: Detect if the bum has been killed and set a flag,
+        //so that confix can go ahead and cancel the conversation with the doctor
+		if (!flags.GetBool('ClinicArguingBumDead'))
+        {
+            bumDead = true;
+            foreach AllActors(class'BumMale', bum, 'ArguingBum')
+            {
+                bumDead = false;
+                break;
+            }
+
+            if (bumDead)
+                flags.SetBool('ClinicArguingBumDead', True,, 3);
+        }
+
 		// make the bum disappear when he gets to his destination
 		if (flags.GetBool('MS_BumLeaving') &&
 			!flags.GetBool('MS_BumRemoved'))
