@@ -18232,7 +18232,7 @@ defaultproperties
      iAllowCombatMusic=1
      bFullAccuracyCrosshair=true;
      bShowEnergyBarPercentages=true;
-     bSimpleAugSystem=true
+     bSimpleAugSystem=false
      bBigDroneView=True
      bSimpleAugSystem=true
 	 MenuThemeNameGMDX="Default"
