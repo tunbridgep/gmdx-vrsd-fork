@@ -62,8 +62,10 @@ function Destroyed()
 		if (FRand() < 0.01)
 		Spawn(class'BoxSmall');
 
+        /*
 		if (FRand() < 0.001)
 		Spawn(class'VialCrack');  //CyberP: rare chances to spawn more useless stuff
+        */
 
 		for (i=0; i<8; i++)        //CyberP: increased chance to spawn trash.
 		{
