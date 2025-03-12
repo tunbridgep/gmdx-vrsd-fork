@@ -12518,7 +12518,7 @@ ignores SeePlayer, HearNoise, Bump;
 		ConversationActor = None;
 
         //SARGE: Reset eye height
-        player.ResetBaseEyeHeight();
+        ResetBaseEyeHeight();
 	}
 
 	function int retLevelInfo()
