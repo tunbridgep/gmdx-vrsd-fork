@@ -29,6 +29,10 @@ function BuildModifierList()
     //Remove LDDP Option when LDDP is not installed
     if (!player.FemaleEnabled())
         RemoveItem("bMoreLDDPNPCs");
+
+    //Remove Shenanigans until we finish the game
+    if (!player.bHardcoreUnlocked)
+        RemoveItem("bShenanigans");
 	
     CreateChoices();
 }
@@ -53,6 +57,7 @@ defaultproperties
      items(10)=(HelpText="Most weapons will require a minimum skill investment in order to be used.",actionText="Weapon Requirements Matter",variable="bWeaponRequirementsMatter");
      items(11)=(HelpText="When imprisoned by UNATCO, your killswitch will be activated, exactly how it's described by Paul",actionText="Killswitch Engaged",variable="bRealKillswitch");
      items(12)=(HelpText="Enable additional NPC's added by the Lay-D Denton mod. By default only the most relevant ones are enabled.",actionText="Add extra Lay-D Denton NPCs",variable="bMoreLDDPNPCs");
+     items(13)=(HelpText="???",actionText="Shenanigans",variable="bMoreLDDPNPCs");
      Title="Playthrough Modifiers"
      consoleTarget="MenuScreenNewGame"
 }

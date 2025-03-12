@@ -733,6 +733,10 @@ var globalconfig bool bFragileDarts;                                    //SARGE:
 
 var globalconfig bool bReloadingResetsAim;                              //SARGE: Allow the "reloading resets aim" hardcore behaviour outside of hardcore.
 
+
+//SARGE: ??? - I wonder what this does :P
+var travel bool bShenanigans;
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -996,6 +1000,8 @@ local Perk perkDoorsman;
       else if (P.bHardcoreRemove && (bHardCoreMode == True || bHardcoreFilterOption == True))
           P.Destroy();
       P.DifficultyMod(CombatDifficulty,bHardCoreMode,bExtraHardcore,bFirstLevelLoad); //RSD: Replaced ALL NPC stat modulation with a compact function implementation
+      if (bFirstLevelLoad)
+        P.Shenanigans(bShenanigans);
     }
 
     if (bHardCoreMode == False)

@@ -13,6 +13,15 @@ var bool bPsychicAttack;
 var bool bPsychicConfirm;
 var float psychoTime;
 
+function Shenanigans(bool bEnabled)
+{
+    if (FRand() < 0.1 && bEnabled)
+    {
+        FamiliarName="Gary";
+        UnfamiliarName="Gary";
+    }
+}
+
 // check every damageInterval seconds and damage any player near the gray
 function Tick(float deltaTime)
 {
