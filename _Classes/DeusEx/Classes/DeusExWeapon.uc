@@ -2833,6 +2833,7 @@ function SwitchModes()
 		LowAmmoWaterMark = 1;
 
 		p.ClientMessage(msgRifleModeActivated);
+        PlaySound(Sound'GMDXSFX.Weapons.M4ClipOut');
     }
     else
     {
@@ -2843,6 +2844,7 @@ function SwitchModes()
 		LowAmmoWaterMark = 16;
 
 		p.ClientMessage(msgGLModeActivated);
+        PlaySound(Sound'GMDXSFX.Weapons.M4ClipOut');
     }
 }
 
