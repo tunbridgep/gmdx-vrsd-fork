@@ -503,7 +503,8 @@ var bool bCrouchRegen;  //CyberP: regen when crouched and has skill
 var float doubleClickCheck; //CyberP: to return from double clicking.
 var travel Inventory assignedWeapon;
 var travel Inventory primaryWeapon;
-var bool bLastWasEmpty;                                                     //SARGE: Whether or not we were empty before being switched to this weapon.
+var travel bool bLastWasEmpty;                                                     //SARGE: Whether or not we were empty before being switched to this weapon.
+var travel bool bSelectedFromMainBeltSelection;                                    //SARGE: Whether or not we selected our main belt slot before going to this item, since our last holster. IW belt only. Determines if we should switch back to our main selection, or .
 var float augEffectTime;
 var vector vecta;
 var rotator rota;
@@ -5420,7 +5421,7 @@ function DoJump( optional float F )
 		}
 	
         // Trash: Speed Enhancement now uses energy while jumping
-        if (SpeedAug.CurrentLevel > -1)
+        if (SpeedAug.CurrentLevel > -1 && SpeedAug.bIsActive)
         {
             Energy=MAX(Energy - SpeedAug.GetAdjustedEnergy(SpeedAug.EnergyDrainJump),0);
         }
@@ -5515,7 +5516,7 @@ if (Physics == PHYS_Walking)
 		Velocity.Z = JumpZ;
 
         // Trash: Speed Enhancement now uses energy while jumping
-        if (SpeedAug.CurrentLevel > -1)
+        if (SpeedAug.CurrentLevel > -1 && speedAug.bIsActive)
         {
             Energy=MAX(Energy - SpeedAug.GetAdjustedEnergy(SpeedAug.EnergyDrainJump),0);
         }
@@ -7973,7 +7974,7 @@ exec function ParseLeftClick()
 
         //SARGE: Final option - select last weapon
         if (inHand == None && bLeftClickUnholster)
-            SelectLastWeapon();
+            SelectLastWeapon(false,true);
 	}
 }
 
@@ -7982,7 +7983,7 @@ exec function ParseLeftClick()
 // Sarge: Selects the last weapon we had selected, or if we're using the alternate toolbelt, selects the primary selection.
 // ----------------------------------------------------------------------
 
-function SelectLastWeapon(optional bool allowEmpty)
+function SelectLastWeapon(optional bool allowEmpty, optional bool bBeltLast)
 {
     local DeusExRootWindow root;
     root = DeusExRootWindow(rootWindow);
@@ -7997,10 +7998,13 @@ function SelectLastWeapon(optional bool allowEmpty)
         }
     }
 
-    if (root != None && root.hud != None)
+    //If Belt last, and using Invisible War toolbelt,
+    //select our primary belt slot, rather than using our actual last weapon
+    if (root != None && root.hud != None && bBeltLast)
     {
         if (bAlternateToolbelt > 0 && root.ActivateObjectInBelt(advBelt))
         {
+            bSelectedFromMainBeltSelection = true;
             NewWeaponSelected();
             return;
         }
@@ -8223,30 +8227,26 @@ exec function ParseRightClick()
 		{
 			PutInHand(None);
 		}
-        //If we are using a different items to our belt item, and classic mode is on or we scrolled, select it instantly
-		else if ((bAlternateToolbelt > 1 || bScrollSelect) && beltScrolled != beltLast /*&& inHand != None && !selectedNumberFromEmpty */)
-		{
-			root = DeusExRootWindow(rootWindow);
-			if (root != None && root.hud != None)
-			{
-				root.ActivateObjectInBelt(advBelt);
-                NewWeaponSelected();
-                beltLast = advBelt;
-			}
-		}
         //SARGE: When we have a forced weapon selection in hand (like a lockpick after left-frobbing, then select our last weapon instead.
         else if (inHand != None && primaryWeapon != None && inHand != primaryWeapon && (clickCountCyber >= 1 || dblClickHolster == 0 || !bLastWasEmpty))
         {
             SelectLastWeapon(true);
         }
+        //If we are using a different items to our belt item, and classic mode is on or we scrolled, select it instantly
+		else if ((bAlternateToolbelt > 1 || bScrollSelect) && (bAlternateToolbelt < 3 || bSelectedFromMainBeltSelection || bScrollSelect) && (beltScrolled != beltLast || bLastWasEmpty) && inHand != None)
+		{
+            SelectLastWeapon(false,true);
+            beltLast = advBelt;
+		}
         else if (inHand == None && (clickCountCyber >= 1 || dblClickHolster < 2))
 		{
             //SARGE: Added support for the unholster behaviour from the Alternate Toolbelt on both Toolbelts
-            //Additionally, unholstering is now tied to the double-click holstering setting.
-            SelectLastWeapon();
+            bSelectedFromMainBeltSelection = true;
+            SelectLastWeapon(false,true);
 		}
 		else if (inHand != None && (clickCountCyber >= 1 || dblClickHolster == 0))
 		{
+            bSelectedFromMainBeltSelection = false;
             PutInHand(None);
             NewWeaponSelected();
 		    DoRightFrob(FrobTarget); //Last minute check for things with no highlight.
@@ -8699,7 +8699,7 @@ function SetInHand(Inventory newInHand)
 	// Notify the hud
 	root = DeusExRootWindow(rootWindow);
 	if (root != None)
-		root.hud.belt.UpdateInHand();
+        root.hud.ammo.UpdateVisibility();
 
     UpdateCrosshair();
 }
@@ -8767,6 +8767,13 @@ function UpdateInHand()
 	//DEUS_EX AMSD  Don't let clients do this.
 	if (Role < ROLE_Authority)
 	  return;
+
+    //SARGE: Added a new check to update the HUD when our in-hand is no longer valid (ie, we used the last ammo of a disposable weapon)
+    if (inHand != None && inHand.Owner != Self && root != None)
+    {
+        root.hud.belt.UpdateInHand();
+        root.hud.ammo.UpdateVisibility();
+    }
 
 	if (inHand != inHandPending)
 	{
@@ -8838,7 +8845,10 @@ function UpdateInHand()
 			}
             // Notify the hud
             if (root != None)
+            {
                 root.hud.belt.UpdateInHand();
+                root.hud.ammo.UpdateVisibility();
+            }
 		}
 	}
 	else
@@ -11614,6 +11624,10 @@ exec function ActivateBelt(int objectNum)
             //we're not selecting anything!
             if (beltItem == None)
                 return;
+            
+            //We're reselecting our main slot.
+            if (bAlternateToolbelt >= 1 && advBelt == objectNum)
+                bSelectedFromMainBeltSelection = true;
 
             //SARGE: If already selected in IW Belt mode, an additional press will set our primary weapon to that slot.
 			if (bAlternateToolbelt >= 1 && beltItem == inHandPending)

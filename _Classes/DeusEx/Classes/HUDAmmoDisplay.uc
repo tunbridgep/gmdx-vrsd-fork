@@ -24,6 +24,9 @@ var localized String RoundsLabel;
 var int clipsRemaining;
 var int ammoRemaining;
 var int ammoInClip;
+
+//Stores a reference to our currently relevant weapon
+var Inventory curr;
 var DeusExWeapon weapon;
 
 // Defaults
@@ -50,15 +53,54 @@ event InitWindow()
 }
 
 // ----------------------------------------------------------------------
+// UpdateVisibility()
+// ----------------------------------------------------------------------
+
+function UpdateVisibility()
+{
+    local bool validWeap, hastool;
+
+    curr = GetWeapon();
+    weapon = DeusExWeapon(curr);
+    
+    //player.ClientMessage("UpdateVisibility: " $ curr $ ", " $ weapon);
+
+    //it's visible if we have a valid weapon
+    validWeap = player.inHand != None && weapon != None && (weapon.ReloadCount > 0 || (weapon.IsA('WeaponNanoSword')));
+    hasTool = curr != None && weapon == None;
+
+	if (curr != None && curr.Owner == player && (validweap || hastool) && bVisible )
+		Show();
+	else
+		Hide();
+
+}
+
+// ----------------------------------------------------------------------
 // GetWeapon()
 // ----------------------------------------------------------------------
 
+//SARGE: This is slightly complicated...
+//That's the price we pay for having it feel """nice"""
 function Inventory GetWeapon()
 {
-    if (player.primaryWeapon != None)
-        return player.primaryWeapon;
-    else
-        return player.Weapon;
+    if (player.inHandPending != None && player.inHandPending.IsA('DeusExPickup') && !player.inHandPending.IsA('SkilledTool'))
+        return None;
+
+    //SARGE: Hack...
+    if (player.inHandPending == player.assignedWeapon && player.bLastWasEmpty) //If we're using our secondary weapon, hide the ammo display.
+        //return player.assignedWeapon;
+        return None;
+    //SARGE: ...Even worse hack...
+    if (player.inHand != None && (player.inHand.isA('Multitool') || player.inHand.isA('Lockpick')) && player.iFrobDisplayStyle != 0 && player.bLastWasEmpty) //Hide the ammo counter when we have tools, unless we're using the classic tool window display.
+        return None;
+    //SARGE: ...And again...
+    if (player.inHandPending == None) //Hide the empty ammo counter when we have nothing selected
+        return None;
+    //SARGE: ...Oh god it just keeps going!...
+    if (player.inHand != None && (player.inHand.isA('Multitool') || player.inHand.isA('Lockpick')) && player.iFrobDisplayStyle == 0) //Return our current tool rather than our primary weapon, if we're using the classic tool window display.
+        return player.inHand;
+    return player.primaryWeapon;
 }
 
 // ----------------------------------------------------------------------
@@ -67,25 +109,6 @@ function Inventory GetWeapon()
 
 event Tick(float deltaSeconds)
 {
-    local bool validWeap, hastool;
-    local Inventory curr;
-    curr = GetWeapon();
-    weapon = DeusExWeapon(curr);
-
-    validWeap = player.inHand != None && weapon != None && (weapon.ReloadCount > 0 || (weapon.IsA('WeaponNanoSword')));
-    hasTool = player.inHand != None && (curr.isA('Multitool') || curr.isA('Lockpick')) && player.iFrobDisplayStyle == 0;
-
-    //SARGE: Dirty Hack
-    if (player.inHand != None && player.InHand.IsA('POVCorpse'))
-    {
-        Hide();
-        return;
-    }
-
-	if ((validweap || hastool) && bVisible )
-		Show();
-	else
-		Hide();
 }
 
 // ----------------------------------------------------------------------
@@ -94,23 +117,22 @@ event Tick(float deltaSeconds)
 
 event DrawWindow(GC gc)
 {
-    local DeusExWeapon weapon;
-    local Inventory curr;
     local float ammopostop, ammoposbtm;             //SARGE: Added
-    curr = GetWeapon();
-    weapon = DeusExWeapon(curr);
 
 	Super.DrawWindow(gc);
+
+    if (!IsVisible() || curr.Owner != player)
+        return;
 
     ammopostop = player.FontManager.GetTextPosition(27,26);
     ammoposbtm = player.FontManager.GetTextPosition(39,38);
 
 	// No need to draw anything if the player doesn't have
 	// a weapon selected
-
+    
     //SARGE: Draw tool info if we have one
     //TODO: Refactor this
-    if (player.inHand != None && (curr.isA('Multitool') || curr.isA('Lockpick')) && player.iFrobDisplayStyle == 0)
+    if (curr != None && curr.IsA('SkilledTool'))
     {
 		// Draw the weapon icon
 		gc.SetStyle(DSTY_Masked);
@@ -126,8 +148,7 @@ event DrawWindow(GC gc)
         gc.DrawText(infoX, ammopostop, 20, 9, SkilledTool(curr).numCopies);
         gc.DrawText(infoX, ammoposbtm, 20, 9, NotAvailable);
     }
-
-	if ( weapon != None )
+	else if ( weapon != None )
 	{
 		// Draw the weapon icon
 		gc.SetStyle(DSTY_Masked);
@@ -279,6 +300,8 @@ function DrawBorder(GC gc)
 function SetVisibility( bool bNewVisibility )
 {
 	bVisible = bNewVisibility;
+    if (bNewVisibility)
+        UpdateVisibility();
 }
 
 // ----------------------------------------------------------------------
