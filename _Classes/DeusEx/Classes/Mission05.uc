@@ -107,7 +107,7 @@ function FirstFrame()
                             //If it's a disposable weapon, it's harder. Add our current ammo to the weapon pickup, then remove our ammo.
                             else
                             {
-                                player.ClientMessage("Mission05 crap: " $ AmmoType.itemName $ " - " $ ammoCount);
+                                //player.ClientMessage("Mission05 crap: " $ AmmoType.itemName $ " - " $ ammoCount);
                                 Weapon(item).PickupAmmoCount = ammoCount;
                                 AmmoType.ammoAmount = 0;
                             }
