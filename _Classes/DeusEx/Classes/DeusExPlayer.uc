@@ -730,6 +730,9 @@ var globalconfig bool bBiggerBelt;
 var globalconfig bool bRightClickToolSelection;
 
 
+var globalconfig bool bShowItemPickupCounts;                            //SARGE: If set to true, Pickup counts for stacked items above 1 will be shown in the item pickup tooltips, such as "Medkit (5)"
+
+
 var transient float pickupCooldown;                                     //SARGE: Add a very short cooldown after picking something up, so that we can't duplicate items while they replicate to the server.
 
 //////////END GMDX
