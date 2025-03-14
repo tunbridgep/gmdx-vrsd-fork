@@ -18266,4 +18266,5 @@ defaultproperties
      bBiggerBelt=True
      bOnlyShowTargetingWindowWithWeaponOut=True
      //bRightClickToolSelection=True
+     bShowItemPickupCounts=True
 }
