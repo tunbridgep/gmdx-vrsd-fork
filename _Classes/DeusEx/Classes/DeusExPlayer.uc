@@ -729,6 +729,8 @@ var globalconfig bool bBiggerBelt;
 //SARGE: Right-Click Selection for Picks and Tools. Inspired by similar feature from Revision, but less sucky.
 var globalconfig bool bRightClickToolSelection;
 
+var globalconfig bool bAllowSaveWhileInfolinkPlaying;                   //SARGE: Allow saving while infolinks are playing. Will end the infolink.
+
 
 var globalconfig bool bShowItemPickupCounts;                            //SARGE: If set to true, Pickup counts for stacked items above 1 will be shown in the item pickup tooltips, such as "Medkit (5)"
 
@@ -2071,7 +2073,7 @@ function bool CanSave(optional bool allowHardcore)
 	if ((IsInState('Dying')) || (IsInState('Paralyzed')) || (IsInState('Interpolating'))) //Dead or Interpolating
         return false;
 
-	if (dataLinkPlay != None) //Datalink playing
+	if (dataLinkPlay != None && !bAllowSaveWhileInfolinkPlaying) //Datalink playing
         return false;
 
     if (Level.Netmode != NM_Standalone) //Multiplayer Game
@@ -2118,6 +2120,10 @@ function int DoSaveGame(int saveIndex, optional String saveDesc)
 		saveIndex=saveDir.GetNewSaveFileIndex();
     }
     
+    //If a datalink is playing, cancel it
+    if (dataLinkPlay != None)
+        dataLinkPlay.AbortAndSaveHistory();
+
     //root.hide();
     root.GenerateSnapshot(True);
     SaveGame(saveIndex, saveDesc);
@@ -18268,5 +18274,6 @@ defaultproperties
      bOnlyShowTargetingWindowWithWeaponOut=True
      //bRightClickToolSelection=True
      bShowItemPickupCounts=True
+     bAllowSaveWhileInfolinkPlaying=True
      bShowAmmoTypeInAmmoHUD=True
 }
