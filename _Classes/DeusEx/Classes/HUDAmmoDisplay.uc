@@ -112,6 +112,19 @@ event Tick(float deltaSeconds)
 }
 
 // ----------------------------------------------------------------------
+// GetAmmoTextColor()
+// SARGE: Get the ammo color()
+// ----------------------------------------------------------------------
+
+function Color GetAmmoTextColor()
+{
+    if (weapon != None && DeusExAmmo(weapon.AmmoType) != None && DeusExAmmo(weapon.AmmoType).HasCustomAmmoColor() && player.bColorCodedAmmo)
+        return DeusExAmmo(weapon.AmmoType).ammoHUDColor;
+    else
+        return colText;
+}
+
+// ----------------------------------------------------------------------
 // DrawWindow()
 // ----------------------------------------------------------------------
 
@@ -174,6 +187,7 @@ event DrawWindow(GC gc)
         //Draw DTS Charge
         if (weapon.IsA('WeaponNanoSword'))
         {
+            gc.SetTextColor(colAmmoText);
             ammoInClip = WeaponNanoSword(weapon).ChargeManager.GetCurrentCharge();
             gc.DrawText(infoX, ammopostop, 20, 9, ammoInClip);
 			gc.DrawText(infoX, ammoposbtm, 20, 9, NotAvailable);
@@ -201,7 +215,7 @@ event DrawWindow(GC gc)
 			if (( clipsRemaining == 0 ) || (( clipsRemaining == 1 ) && ( ammoRemaining < 2 * weapon.ReloadCount )))
 				gc.SetTextColor(colAmmoLowText);
 			else
-				gc.SetTextColor(colAmmoText);
+                gc.SetTextColor(colAmmoText);
 
 			if (weapon.IsInState('Reload') && weapon.bPerShellReload == false)
 				gc.DrawText(infoX, ammoposbtm, 20, 9, msgReloading);
@@ -242,6 +256,14 @@ event DrawWindow(GC gc)
             else
 			    gc.DrawText(25, 56, 65, 8, weapon.TargetMessage);
 		}
+        //SARGE: Otherwise, print the ammo type. This is useful when we "use" items from the inventory
+        //that aren't on our belt, which normally would give us no idea what is in our weapon if we change ammo types,
+        //especially if an infolink is playing.
+        else if (player.bShowAmmoTypeInAmmoHUD)
+        {
+            gc.SetTextColor(GetAmmoTextColor());
+            gc.DrawText(25, 56, 65, 8, DeusExAmmo(weapon.AmmoType).beltDescription);
+        }
 	}
 }
 
