@@ -83,6 +83,8 @@ var travel int assignedMesh;
 //SARGE: Remember when we first create a blood pool
 var travel bool bFirstBloodPool;
 
+var BloodPool pool;     //SARGE: Stores our last created blood pool.
+
 var bool bMadePool;     //SARGE: Stores the state of our current blood pool. Deliberately not remembered between creations of corpses.
 
 
@@ -508,6 +510,15 @@ function Destroyed()
 	Super.Destroyed();
 }
 
+//SARGE: Destroys the corpse and it's blood pool.
+//Used by missionscript
+function DestroyWithPool()
+{
+    if (pool != None)
+        pool.Destroy();
+    Destroy();
+}
+
 function Touch(Actor Other)
 {
 if (Other.IsA('MilitaryBot') && Velocity == vect(0,0,0))
@@ -524,7 +535,7 @@ function Tick(float deltaSeconds)
 		bInit = true;
         //If we shouldn't be created, abort
         if (!ShouldCreate(DeusExPlayer(GetPlayerPawn())))
-            Destroy();
+            DestroyWithPool();
 
         else if (bEmitCarcass)
 		{
@@ -1716,7 +1727,6 @@ function CreateBloodPool()
 {
 		local Vector HitLocation, HitNormal, EndTrace;
 		local Actor hit;
-		local BloodPool pool;
         local float drawSize;
 
         if (bMadePool)

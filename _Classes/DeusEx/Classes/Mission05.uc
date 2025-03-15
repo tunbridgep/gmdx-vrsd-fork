@@ -32,7 +32,7 @@ function FirstFrame()
 		if (!flags.GetBool('PaulDenton_Dead'))
 		{
 			foreach AllActors(class'PaulDentonCarcass', carc)
-				carc.Destroy();
+				carc.DestroyWithPool();
 		}
 
 		// if the player has already talked to Paul, delete him
