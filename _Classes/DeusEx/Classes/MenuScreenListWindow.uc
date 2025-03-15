@@ -39,6 +39,14 @@ struct S_ListItem
     var localized string valueText3;
     var localized string valueText4;
     var localized string valueText5;
+    //dirty hack because I can't get arrays within structs to work in defaultproperties
+    //These are appended to the help for the specific entry, so we can create "additive" help
+    var localized string helpText0;
+    var localized string helpText1;
+    var localized string helpText2;
+    var localized string helpText3;
+    var localized string helpText4;
+    var localized string helpText5;
 	var string variable;
     var int value;
     var int defaultValue; //TODO: Find a way to reset to default value via console
@@ -162,6 +170,38 @@ function string GetValueString(int index)
     return "";
 }
 
+function string GetHelpString(int index)
+{
+    local S_ListItem item;
+    item = items[index];
+
+    //This hack is required because defaultproperties sucks
+    switch(item.value)
+    {
+        case 0:
+            return item.helpText0;
+            break;
+        case 1:
+            return item.helpText1;
+            break;
+        case 2:
+            return item.helpText2;
+            break;
+        case 3:
+            return item.helpText3;
+            break;
+        case 4:
+            return item.helpText4;
+            break;
+        case 5:
+            return item.helpText5;
+            break;
+    }
+
+    //Otherwise, just return nothing
+    return "";
+}
+
 // ----------------------------------------------------------------------
 // ResetToDefaults()
 // ----------------------------------------------------------------------
@@ -223,6 +263,8 @@ event bool ListRowActivated(window list, int rowId)
     if (GetValueString(id) == "")
         items[id].value = 0;
 
+    ShowHelp(items[id].helpText @ GetHelpString(id));
+
     SetConsoleValue(id,items[id].value);
 
     //Refresh List
@@ -280,7 +322,7 @@ event bool ListSelectionChanged(window list, int numSelections, int focusRowId)
     if (rowIndex == -1)
         ShowHelp(helpText);
     else
-        ShowHelp(items[rowIndex].helpText);
+        ShowHelp(items[rowIndex].helpText @ GetHelpString(rowIndex));
 
     return bResult;
 }
