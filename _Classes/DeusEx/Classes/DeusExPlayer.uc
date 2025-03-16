@@ -5670,16 +5670,18 @@ function bool ResetBasedPawnSize()
 
 function float GetDefaultCollisionHeight()
 {
+	if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
+	{
+		return Default.CollisionHeight-9.0;
+	}
 	return (Default.CollisionHeight-4.5);
 }
 
+//SARGE: Added
+//SARGE: TODO: Adjust this so that we can have the same collision height for both Male and Female JC
 function float GetBaseEyeHeight()
 {
-	if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
-	{
-		return Default.CollisionHeight;
-	}
-	return (Default.CollisionHeight-4.5);
+    return GetDefaultCollisionHeight();
 }
 
 // ----------------------------------------------------------------------
