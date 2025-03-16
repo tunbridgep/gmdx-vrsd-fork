@@ -106,19 +106,22 @@ state Dying
 			if (Physics == PHYS_None)
 				bBounce = false;
 		}
-        if (ImpactSound==Sound'DeusExSounds.Generic.FleshHit1')
+        if (!region.zone.bWaterZone) //SARGE: Prevent endless sounds when in water
         {
-        if (FRand()<0.2)
-			PlaySound(ImpactSound, SLOT_None, 0.5+FRand()*0.5,, 512, 0.85+FRand()*0.3);
-		else if (FRand()<0.4)
-			PlaySound(MiscSound, SLOT_None, 0.5+FRand()*0.5,, 512, 0.85+FRand()*0.3);
-        }
-        else
-        {
-		if (FRand()<0.5)
-			PlaySound(ImpactSound, SLOT_None, 0.5+FRand()*0.5,, 512, 0.85+FRand()*0.3);
-		else
-			PlaySound(MiscSound, SLOT_None, 0.5+FRand()*0.5,, 512, 0.85+FRand()*0.3);
+            if (ImpactSound==Sound'DeusExSounds.Generic.FleshHit1')
+            {
+                if (FRand()<0.2)
+                    PlaySound(ImpactSound, SLOT_None, 0.5+FRand()*0.5,, 512, 0.85+FRand()*0.3);
+                else if (FRand()<0.4)
+                    PlaySound(MiscSound, SLOT_None, 0.5+FRand()*0.5,, 512, 0.85+FRand()*0.3);
+            }
+            else
+            {
+                if (FRand()<0.5)
+                    PlaySound(ImpactSound, SLOT_None, 0.5+FRand()*0.5,, 512, 0.85+FRand()*0.3);
+                else
+                    PlaySound(MiscSound, SLOT_None, 0.5+FRand()*0.5,, 512, 0.85+FRand()*0.3);
+            }
         }
 		lastHitLoc = Location;
 	}
