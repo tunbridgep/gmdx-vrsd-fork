@@ -87,6 +87,7 @@ var BloodPool pool;     //SARGE: Stores our last created blood pool.
 
 var bool bMadePool;     //SARGE: Stores the state of our current blood pool. Deliberately not remembered between creations of corpses.
 
+var bool bDontRemovePool; //SARGE: If set, the blood pool isn't removed when deleting the carcass. Used when Frobbing.
 
 // ----------------------------------------------------------------------
 // ShouldCreate()
@@ -167,11 +168,11 @@ function InitFor(Actor Other)
         {
             if (Other.IsA('ScriptedPawn'))                                      //RSD
             {
-                //if (ScriptedPawn(Other).UnfamiliarName == "")
-                //    savedName = ScriptedPawn(Other).ClassName;
-                //else
-                //    savedName = ScriptedPawn(Other).UnfamiliarName;
-                savedName = ScriptedPawn(Other).BindName;
+                if (ScriptedPawn(Other).UnfamiliarName == "")
+                    savedName = ScriptedPawn(Other).BindName;
+                else
+                    savedName = ScriptedPawn(Other).UnfamiliarName;
+                //savedName = ScriptedPawn(Other).BindName;
             }
         }
 
@@ -506,17 +507,12 @@ function Destroyed()
 		flyGen.StopGenerator();
 		flyGen = None;
 	}
+    
+    //Destroy blood pool
+    if (pool != None && !bDontRemovePool)
+        pool.Destroy();
 
 	Super.Destroyed();
-}
-
-//SARGE: Destroys the corpse and it's blood pool.
-//Used by missionscript
-function DestroyWithPool()
-{
-    if (pool != None)
-        pool.Destroy();
-    Destroy();
 }
 
 function Touch(Actor Other)
@@ -535,7 +531,7 @@ function Tick(float deltaSeconds)
 		bInit = true;
         //If we shouldn't be created, abort
         if (!ShouldCreate(DeusExPlayer(GetPlayerPawn())))
-            DestroyWithPool();
+            Destroy();
 
         else if (bEmitCarcass)
 		{
@@ -583,6 +579,8 @@ function ChunkUp(int Damage)
 	local FleshFragment chunk;
     local DeusExPlayer player;   //CyberP: for screenflash if near gibs
     local float dist;            //CyberP: for screenflash if near gibs
+
+    bDontRemovePool = true;
 
 	// gib the carcass
 	size = (CollisionRadius + CollisionHeight) / 2;
@@ -905,6 +903,7 @@ function PickupCorpse(DeusExPlayer player)
             corpse.Frob(player, None);
             corpse.SetBase(player);
             player.PutInHand(corpse);
+            bDontRemovePool = true;
             bQueuedDestroy=True;
             Destroy();
         }
