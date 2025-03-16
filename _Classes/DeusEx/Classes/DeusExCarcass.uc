@@ -1738,16 +1738,15 @@ function Landed(vector HitNormal)
 //SARGE: Added to fix name being reset when pickup up corpses
 function UpdateName()
 {
-    itemName = default.itemName;
+    if (bAnimalCarcass)
+        itemName = msgAnimalCarcass;
+    else if (bNotDead)
+        itemName = msgNotDead;
+    else
+        itemName = default.itemName;
+
     if (savedName != "")
-    {
-        if (bNotDead)
-            itemName = msgNotDead $ " (" $ savedName $ ")";
-        else if (bAnimalCarcass)
-            itemName = msgAnimalCarcass $ " (" $ savedName $ ")";
-        else
-            itemName = itemName $ " (" $ savedName $ ")";
-    }
+        itemName = itemName $ " (" $ savedName $ ")";
 
     //SARGE: Add searched string
     if (!bAnimalCarcass)
