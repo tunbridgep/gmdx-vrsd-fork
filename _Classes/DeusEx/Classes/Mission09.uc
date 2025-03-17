@@ -56,6 +56,13 @@ function FirstFrame()
 	}
 	else if (localURL == "09_NYC_DOCKYARD")
 	{
+        //In hardcore mode, we don't get the USFEMA login so easily...
+        if (player.bHardCoreMode)
+        {
+            foreach AllActors(class'DeusExMover', M, 'USFEMA_Locker')
+                M.bLocked = false;
+        }
+
 		if (flags.GetBool('MS_ShipBreeched'))
 		{
 			foreach AllActors(class'BlackHelicopter', chopper, 'BlackHelicopter')
