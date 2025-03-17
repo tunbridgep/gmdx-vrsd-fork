@@ -8,20 +8,34 @@ var float burnAmount;
 function PostBeginPlay()
 {
     super.PostBeginPlay();
+    SetupSkin();
+}
 
-    if (MultiSkins[6]==Texture'DeusExCharacters.Skins.MJ12TroopTex4'
+function SetupSkin()
+{
+    bHasHelmet = MultiSkins[6]==Texture'DeusExCharacters.Skins.MJ12TroopTex4'
         || MultiSkins[6]==Texture'DeusExCharacters.Skins.MJ12TroopTex3'
-        || MultiSkins[6]==Texture'GMDXSFX.Skins.hMJ12TroopTex3')
-    {
-        bHasHelmet = True;
-    }
+        || MultiSkins[6]==Texture'GMDXSFX.Skins.hMJ12TroopTex3'
+        || MultiSkins[6]==Texture'GMDXSFX.Skins.MJ12TroopTex9';
 
     if (BaseAccuracy == 0.000000) //Shotgunners and xbow dudes look different.
     {
-        //MultiSkins[5]=Texture'DeusExItems.Skins.GrayMaskTex';
-        //MultiSkins[6]=Texture'GMDXSFX.Skins.MJ12TroopTex9';
-        //CarcassType=Class'DeusEx.MJ12TroopCarcassElite2';
+        MultiSkins[5]=Texture'DeusExItems.Skins.GrayMaskTex';
+        MultiSkins[6]=Texture'GMDXSFX.Skins.MJ12TroopTex9';
+        CarcassType=Class'DeusEx.MJ12TroopCarcassElite2';
     }
+    else
+    {
+        MultiSkins[5]=default.MultiSkins[5];
+        MultiSkins[6]=default.MultiSkins[6];
+        CarcassType=default.CarcassType;
+    }
+}
+
+//SARGE: Called when the Weapon Swap gameplay modifier for this entity has been called
+function WeaponSwap(ScriptedPawn SwappedFrom)
+{
+    SetupSkin();
 }
 
 function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector momentum, name damageType)

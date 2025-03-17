@@ -17287,6 +17287,10 @@ function RandomiseSounds()
     }
 }
 
+//SARGE: Called when the Weapon Swap gameplay modifier for this entity has been called
+function WeaponSwap(ScriptedPawn SwappedFrom)
+{
+}
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
