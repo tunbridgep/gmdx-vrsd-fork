@@ -578,6 +578,7 @@ function ReplaceEnemyWeapon(ScriptedPawn first, ScriptedPawn second)
     local Inventory inv;
     local DeusExWeapon wep;
     local int i,j,k;
+    local float tempAcc;
 
 
     //Do the ammos first, so we can assign them to weapons properly
@@ -666,6 +667,15 @@ function ReplaceEnemyWeapon(ScriptedPawn first, ScriptedPawn second)
         if (wep != None)
             wep.AmmoType = Ammo(first.FindInventoryType(wep.AmmoName));
     }
+
+    //Swap BaseAccuracy between the two pawns.
+    //Shotgunners and Crossbow Guys generally always have 0 base accuracy.
+    tempAcc = first.BaseAccuracy;
+    first.BaseAccuracy = second.BaseAccuracy;
+    second.BaseAccuracy = tempAcc;
+        
+    first.WeaponSwap(second);
+    second.WeaponSwap(first);
 
     first.SetupWeapon(false);
     second.SetupWeapon(false);
