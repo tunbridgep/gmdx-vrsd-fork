@@ -6,8 +6,6 @@ class Containers extends DeusExDecoration
 
 var() int numThings;
 var() bool bGenerateTrash;
-var() bool bLowDifficultyOnly; //Remove on realistic and hardcore
-var() bool bHardcoreRemoveIt; //Remove on hardcore only
 var   bool bSelectMeleeWeapon; //Select a melee weapon when we left-frob this container
 
 function bool DoLeftFrob(DeusExPlayer frobber)

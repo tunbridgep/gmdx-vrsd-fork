@@ -969,7 +969,7 @@ local Medkit           MK;
 local BioelectricCell  BC;
 local inventory        anItem;
 local int              i;
-local Containers       CO;
+local DeusExDecoration DC;
 local actor            AR;
 local DeusExLevelInfo dxInfo;                                                   //RSD: Added
 local name flagName;                                                            //RSD: Added
@@ -1007,13 +1007,13 @@ local Perk perkDoorsman;
             else
                 TP.proxRadius=156.000000;  //Also lower radius if not hardcore
         }
-        ForEach AllActors(class'Containers', CO)
+        ForEach AllActors(class'DeusExDecoration', DC)
         {
-           if (CO.bLowDifficultyOnly && CombatDifficulty >= 3.0)
+           if (DC.bLowDifficultyOnly && CombatDifficulty >= 3.0)
            {
-              CO.DrawScale = 0.00001;
-              CO.SetCollision(false,false,false);
-              CO.SetCollisionSize(0,0);
+              DC.DrawScale = 0.00001;
+              DC.SetCollision(false,false,false);
+              DC.SetCollisionSize(0,0);
 	       }
         }
         if (SkillSystem != None && CombatDifficulty <= 1)
@@ -1037,13 +1037,13 @@ local Perk perkDoorsman;
              AM.AmmoAmount = 3;
            }
        }
-       ForEach AllActors(class'Containers', CO)
+       ForEach AllActors(class'DeusExDecoration', DC)
        {
-           if (CO.bLowDifficultyOnly || CO.bHardcoreRemoveIt)
+           if (DC.bLowDifficultyOnly || DC.bHardcoreRemoveIt)
            {
-              CO.DrawScale = 0.00001;
-              CO.SetCollision(false,false,false);
-              CO.SetCollisionSize(0,0);
+              DC.DrawScale = 0.00001;
+              DC.SetCollision(false,false,false);
+              DC.SetCollisionSize(0,0);
 	       }
        }
        if (SkillSystem != None)

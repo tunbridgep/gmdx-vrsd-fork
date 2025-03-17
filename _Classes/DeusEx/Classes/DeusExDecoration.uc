@@ -60,6 +60,10 @@ var bool bHitMarkers;             //Sarge: Show hitmarkers when damaged. For thi
 
 var bool bFirstTickDone;                                                        //SARGE: Set to true after the first tick. Allows us to do stuff on the first frame
 
+//SARGE: Moved from Containers, now affects all DeusExDecorations
+var() bool bLowDifficultyOnly; //Remove on realistic and hardcore
+var() bool bHardcoreRemoveIt; //Remove on hardcore only
+
 //SARGE: HDTP Model toggles
 var config int iHDTPModelToggle;
 var string HDTPSkin;
