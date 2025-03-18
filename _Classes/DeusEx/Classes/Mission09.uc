@@ -270,9 +270,11 @@ function ShipExplosionEffects(bool bFragments)
 		// shake the view
 		Player.ShakeView(shakeTime, shakeRoll, shakeVert);
 
-		// bobble the player around
+		// bobble the player around //SARGE: Holy SHIT this is annoying! Begone!
+        /*
 		bobble = vect(300.0,300.0,200.0) + 500.0 * size * VRand();
 		Player.Velocity += bobble;
+        */
 
 		// make all the hanging decorations sway randomly
 		foreach AllActors(class'HangingDecoration', deco)
