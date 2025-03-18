@@ -13,6 +13,15 @@ function bool DoLeftFrob(DeusExPlayer frobber)
     return false;
 }
 
+function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
+{
+    if (frobber.bRightClickToolSelection && objectInHand && frobber.inHand == frobber.primaryWeapon)
+        return DoLeftFrob(frobber);
+
+    return Super.DoRightFrob(frobber,objectInHand);
+}
+
+
 function BlowItUp(Pawn instigatedBy)
 {
     local ScriptedPawn P;
