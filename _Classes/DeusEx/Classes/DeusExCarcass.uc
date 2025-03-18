@@ -1735,10 +1735,10 @@ function Landed(vector HitNormal)
 //SARGE: Added to fix name being reset when pickup up corpses
 function UpdateName()
 {
-    if (bAnimalCarcass)
-        itemName = msgAnimalCarcass;
-    else if (bNotDead)
+    if (bNotDead)
         itemName = msgNotDead;
+    else if (bAnimalCarcass)
+        itemName = msgAnimalCarcass;
     else
         itemName = default.itemName;
 
