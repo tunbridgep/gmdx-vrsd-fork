@@ -62,7 +62,7 @@ function SetupChargeManager()
     {
 	    chargeManager = new(Self) class'ChargeManager';
         chargeManager.SetMaxCharge(totalCharge,true);
-        chargeManager.chargeMult = 0.3;
+        chargeManager.chargeMult = 0.2;
     }
         
     if (owner.IsA('DeusExPlayer'))
@@ -76,22 +76,75 @@ function string DoAmmoInfoWindow(Pawn P, PersonaInventoryInfoWindow winInfo)
     winInfo.AddLine();
 }
 
-function bool CanUseWeapon(DeusExPlayer player, optional bool noMessage)
-{
-    if (ChargeManager != None && chargeManager.IsUsedUp())
-    {
-        if (!noMessage)
-            player.ClientMessage("Dragon's Tooth Sword is not charged");
-        return false;
-    }
-
-    return super.CanUseWeapon(player,noMessage);
-}
-
 //Stops the game crashing with a "Destroyed != 0" message when loading savegames or transitioning maps
 event Destroyed()
 {
     CriticalDelete(chargeManager);
+}
+
+
+//SARGE: Restrict fire if we're using the Dragons Tooth with no charge
+function Fire(float Value)
+{
+    if (chargeManager != None && chargeManager.IsUsedUp())
+    {
+        GotoState('Idle');
+        return;
+    }
+
+    super.Fire(Value);
+}
+
+//SARGE: Don't play a sound when drawing if we're out of charge
+function PlaySelect()
+{
+    if (chargeManager != None && chargeManager.IsUsedUp())
+        SelectSound=None;
+    else
+        SelectSound=default.SelectSound;
+    Super.PlaySelect();
+}
+
+
+//SARGE: Sets and unsets textures based on our charge amount
+function SetWeaponSkin(bool hdtp)
+{
+    if (hdtp)
+    {
+        if (chargeManager.IsUsedUp())
+        {
+            LightType = LT_None;
+            multiskins[2] = Texture'PinkMaskTex';
+            multiskins[3] = Texture'PinkMaskTex';
+            multiskins[4] = Texture'PinkMaskTex';
+            multiskins[6] = Texture'PinkMaskTex';
+            multiskins[7] = Texture'PinkMaskTex';
+            Texture = Texture'PinkMaskTex';
+        }
+        else
+        {
+            LightType = LT_Steady;
+            multiskins[2] = Texture'Effects.Electricity.WavyBlade';
+            multiskins[3] = Texture'Effects.Electricity.WavyBlade';
+            multiskins[4] = Texture'Effects.Electricity.WavyBlade';
+            multiskins[6] = Texture'Effects.Electricity.WavyBlade';
+            multiskins[7] = Texture'Effects.Electricity.WavyBlade';
+        }
+    }
+    else if (chargeManager.IsUsedUp())
+    {
+		LightType = LT_None;
+        multiskins[1] = Texture'PinkMaskTex';
+        multiskins[2] = Texture'BlackMaskTex';
+        //multiskins[3] = Texture'PinkMaskTex';
+        multiskins[4] = Texture'PinkMaskTex';
+        multiskins[5] = Texture'PinkMaskTex';
+        multiskins[6] = Texture'PinkMaskTex';
+        multiskins[7] = Texture'PinkMaskTex';
+    }
+    else
+        LightType = LT_Steady;
+
 }
 
 function DisplayWeapon(bool overlay)
@@ -101,17 +154,13 @@ function DisplayWeapon(bool overlay)
     {
 		if (overlay)
 			multiskins[5] = handstex;
-        multiskins[2] = Texture'Effects.Electricity.WavyBlade';
-        multiskins[3] = Texture'Effects.Electricity.WavyBlade';
-        multiskins[4] = Texture'Effects.Electricity.WavyBlade';
-        multiskins[6] = Texture'Effects.Electricity.WavyBlade';
-        multiskins[7] = Texture'Effects.Electricity.WavyBlade';
     }
     else if (overlay)
     {
     	multiskins[0] = handstex;
     }
 
+    SetWeaponSkin(IsHDTP());
 }
 
 state DownWeapon
@@ -128,20 +177,12 @@ state Idle
 	function BeginState()
 	{
 		Super.BeginState();
-		LightType = LT_Steady;
-       AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 416);  //CyberP: drawing the sword makes noise
-	}
-
-    //Put away weapon when it runs out of juice
-    function Tick(float deltaTime)
-    {
-        Super.Tick(deltaTime);
-        if (owner.IsA('DeusExPlayer') && ChargeManager != None)
+        if (chargeManager != None && !chargeManager.IsUsedUp())
         {
-            if (ChargeManager.IsUsedUp())
-                DeusExPlayer(Owner).PutInHand(none);
-        }
-    }
+            LightType = LT_Steady;
+            AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 416);  //CyberP: drawing the sword makes noise
+       }
+	}
 }
 
 auto state Pickup
@@ -218,6 +259,6 @@ defaultproperties
      LightRadius=4
      Mass=20.000000
      minSkillRequirement=3;
-     chargePerUse=4
+     chargePerUse=5
      totalCharge=100
 }

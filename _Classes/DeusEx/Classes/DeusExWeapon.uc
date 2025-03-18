@@ -3480,7 +3480,6 @@ function Fire(float Value)
 		}
 	}
 
-
 	if (bHandToHand)
 	{
 		if (ReloadCount > 0)
@@ -6961,7 +6960,7 @@ local float p;
      if (p < 1.0)
      p = 1.0;
 
-        if (IsA('WeaponNanoSword'))
+        if (IsA('WeaponNanoSword') && WeaponNanoSword(Self).chargeManager != None && !WeaponNanoSword(self).chargeManager.IsUsedUp()) //SARGE: Added sword energy level checks
             PlaySound(sound'GMDXSFX.Weapons.energybladeunequip2',SLOT_None);
         else if (IsA('WeaponProd'))
             PlaySound(sound'GMDXSFX.Weapons.produnequip',SLOT_None);
