@@ -184,7 +184,7 @@ function UpdateItemText()
         else if (item.IsA('ChargedPickup'))
         {
             CP = ChargedPickup(item);
-            if (CP.bActivatable)
+            if (!CP.bActivatable)
                 bDimIcon = true;
             if (CP.GetCurrentCharge() > 0)
                 itemText = Sprintf(CP.ChargeRemainingLabelSmall,(int(CP.GetCurrentCharge())));
