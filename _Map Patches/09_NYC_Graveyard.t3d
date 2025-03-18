@@ -33975,7 +33975,7 @@ Begin Actor Class=Keypad3 Name=Keypad1
     LastRenderTime=146.410141
     DistanceFromPlayer=1736.207520
     Level=LevelInfo'MyLevel.LevelInfo0'
-    Tag=Keypad3
+    Tag=SecretKeypad
     Event=Bookcase
     Region=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=869,ZoneNumber=1)
     Location=(X=912.982422,Y=689.429993,Z=102.704178)
@@ -33992,7 +33992,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover4
     PostScale=(SheerAxis=SHEER_ZX)
     DistanceFromPlayer=1756.441895
     Level=LevelInfo'MyLevel.LevelInfo0'
-    Tag=DeusExMover
+    Tag=SecretPainting
     Region=(Zone=ZoneInfo'MyLevel.ZoneInfo0',iLeaf=871,ZoneNumber=1)
     Location=(X=936.000000,Y=696.000000,Z=124.000000)
     Rotation=(Yaw=12288)

@@ -94,6 +94,7 @@ function Timer()
 {
 	local int count;
 	local DeusExMover M;
+	local HackableDevices E;
 	local BlackHelicopter chopper;
 	local MJ12Elite2 troop;
 	local Trigger trig;
@@ -169,6 +170,22 @@ function Timer()
 	}
 	else if (localURL == "09_NYC_GRAVEYARD")
 	{
+
+        //SARGE: Stop us from using finding the little device if we don't know about it
+        if (player.iNoKeypadCheese >= 2)
+        {
+			foreach AllActors(class'DeusExMover', M, 'SecretPainting')
+            {
+                M.bFrobbable = flags.GetBool('M09MeetStantonDowd_Played');
+                M.bHighlight = flags.GetBool('M09MeetStantonDowd_Played');
+            }
+			foreach AllActors(class'HackableDevices', E, 'SecretKeypad')
+            {
+                E.bHackable = flags.GetBool('M09MeetStantonDowd_Played');
+                E.bHighlight = flags.GetBool('M09MeetStantonDowd_Played');
+            }
+        }
+
 		// unhide the helicopter when the "little device" is destroyed
 		if (!flags.GetBool('MS_UnhideHelicopter'))
 		{
