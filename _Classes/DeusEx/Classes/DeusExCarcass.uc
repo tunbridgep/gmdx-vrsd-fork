@@ -182,7 +182,6 @@ function InitFor(Actor Other)
 		if (bAnimalCarcass && !bNotDead)
 		{
 		    MaxDamage      = Mass; //CyberP: less carc health for animals
-			itemName = msgAnimalCarcass;
 			if (FRand() < 0.2 && !(info != none && info.bNoSpawnFlies))         //RSD: Now check map for whether we should spawn flies
 				bGenerateFlies = true;
 		}
@@ -360,9 +359,7 @@ function PostBeginPlay()
 	bCollideWorld = true;
 
 	// Use the carcass name by default
-	CarcassName = Name;
-	If (bAnimalCarcass && !bNotDead)
-	   itemName = msgAnimalCarcass;
+    UpdateName();
 
     //RSD: Before we do anything, check for random loot
     //DXplayer = DeusExPlayer(GetPlayerPawn());
@@ -1747,6 +1744,12 @@ function UpdateName()
 
     if (savedName != "")
         itemName = itemName $ " (" $ savedName $ ")";
+
+    /*
+    //SARGE: Allow in-map caarcasses to have names
+    else if (hdtpReference != None && hdtpReference.default.UnfamiliarName != "")
+        itemName = itemName $ " (" $ hdtpReference.default.UnfamiliarName $ ")";
+    */
 
     //SARGE: Add searched string
     if (!bAnimalCarcass)
