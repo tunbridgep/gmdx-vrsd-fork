@@ -13431,16 +13431,56 @@ function DeusExNote AddNote( optional String strNote, optional Bool bUserNote, o
 }
 
 // ----------------------------------------------------------------------
-// GetCodeNote()
+// SARGE: GetCodeNote()
 //
 // Loops through the notes and searches for the code in any note.
 // Ignores user notes, so we can't add some equivalent of "The code's 0451" and instantly know a code
 // Also makes sure to check the original text of notes, not user-added text, so we can't cheat by appending 0451 to an existing non-user note.
 // ----------------------------------------------------------------------
 
+//SARGE: This exists because we can't use Locs in pre-UT2K3 Unrealscript
+//This was taken from the UnrealWiki: https://beyondunrealwiki.github.io/pages/useful-string-functions.html
+static final function string Locs(coerce string Text)
+{
+    local int IndexChar;
+ 
+    for (IndexChar = 0; IndexChar < Len(Text); IndexChar++)
+        if (Mid(Text, IndexChar, 1) >= "A" &&
+            Mid(Text, IndexChar, 1) <= "Z")
+            Text = Left(Text, IndexChar) $ Chr(Asc(Mid(Text, IndexChar, 1)) + 32) $ Mid(Text, IndexChar + 1);
+
+    return Text;
+}
+
+//SARGE: Strip off the "FROM: xxx TO: xxx" line in notes,
+//because these are often in all-caps, and will confuse the algorithm.
+function string StripFromTo(string text)
+{
+    local int newlinePos;
+    local bool bFoundNewline;
+    
+    if(InStr(text,"FROM: ") == 0)
+    {
+        //find the first ascii 10 (newline)
+        for (newlinePos = 0; newlinePos < Len(text); newlinePos++)
+        {
+            if (Asc(Mid(text,newlinePos,1)) == 10)
+            {
+                bFoundNewline = true;
+                break;
+            }
+        }
+        if (bFoundNewline)
+            return Mid(text, newlinePos);
+    }
+
+    return text;
+}
+
 function bool GetCodeNote(string code)
 {
 	local DeusExNote note;
+    local string noteText;
 
 	note = FirstNote;
 
@@ -13453,18 +13493,57 @@ function bool GetCodeNote(string code)
             //handle any notes we were given which might not have "original" text for whatever reason
             if (note.originalText == "")
                 note.originalText = note.text;
-
-            //Check note contents for the code
-            if (InStr(Caps(note.originalText),Caps(code)) != -1)
-                return true;
+            
+            //noteText = note.originalText;
 
             //log("NOTE: " $ note.text);
+
+            //SARGE: This is some WEIRD logic!
+            //Because we need to dynamically check the notes for codes,
+            //HOWEVER We DON'T want to be able to login if the words simply exist in notes,
+            //because some logins are common words, like SECURITY,
+            //or WALTON and SIMONS, which means we need to check more thoroughly.
+            //Generally, though, Passwords follow these rules:
+            //1. Normally they are either in ALL CAPS or all lower case.
+            //2. There's a few times where they will have Login: Somename, Password: Somename, which are in camel caps (becase of course....)
+            //3. Lots of notes also have allcaps FROM and TO text in them, like an email,
+            //such as FROM: WALTON SIMONS TO: SOME GUY
+            //So we need to account for all of these.
+            
+            //First, strip off the first line if there's FROM: and TO: text...
+            noteText = StripFromTo(note.originalText);
+
+            //Next, Check note contents for the code
+            //Start by checking that our code matches CAPS in the note...
+            if (InStr(noteText,Caps(code)) != -1)
+            {
+                //log("NOTE: " $ noteText);
+                //log("NOTE CODE " $code$ " FOUND (CAPS)");
+                return true;
+            }
+            
+            //Then check that our code matches all lower case in the note...
+            else if (InStr(noteText,Locs(code)) != -1)
+            {
+                //log("NOTE: " $ noteText);
+                //log("NOTE CODE " $code$ " FOUND (LOCS)");
+                return true;
+            }
+
+            //Some notes have Login: Username and Password: Whatever in them, so handle them.
+            else if (InStr(Caps(noteText),Caps("LOGIN: " $ code)) != -1)
+                return true;
+            else if (InStr(Caps(noteText),Caps("PASSWORD: " $ code)) != -1)
+                return true;
+            else if (InStr(Caps(noteText),Caps("LOGIN/PASSWORD: " $ code)) != -1)
+                return true;
             
         }
 
 		note = note.next;
 	}
 
+    log("NOTE CODE " $code$ " NOT FOUND");
 	return false;
 }
 
@@ -13474,11 +13553,13 @@ function bool GetExceptedCode(string code)
 {
     code = Caps(code);
 	return code == "CALVO" //Alex Jacobson computer password on the wall next to his computer
+        || code == "NSF" //NSF/Righteous, but the Righteous is given out and the NSF is reasonably guessable.
         || code == "BIONICMAN" //we get our code as soon as we enter our office, but it takes a little bit. Fix it not working when we should know it
         || code == "INSURGENT" //maggie chows code can only be guessed, never found, but is designed that way.
         //|| code == "2167" //Only displayed in a computer message, so we never get a note for it //NOW RANDOMISED
         || code == "718" //Can only be guessed based on cryptic information
         || code == "7243" //We are only given 3 digits, need to guess the 4th
+        || code == "CAPTAIN" //Login/Password: KZHao, Captain, am too lazy to check for the Captain in that string.
         || code == "WYRDRED08" //We are not given the last digit
         || (code == "1966" && FlagBase.GetBool('GaveCassandraMoney')) //Only given in conversation, no note
         //|| code == "1966" //Only given in conversation, no note
