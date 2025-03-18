@@ -5643,7 +5643,7 @@ function bool SetBasedPawnSize(float newRadius, float newHeight)
 			{
 				PrePivot.Z -= 4.5;
 			}
-			BaseEyeHeight -= 2;
+            BaseEyeHeight -= 6; //SARGE: Was -=2, but that clips too close to ceilings.
 		}
 
 		// Complaints that eye height doesn't seem like your crouching in multiplayer

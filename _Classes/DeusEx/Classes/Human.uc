@@ -1101,7 +1101,7 @@ Begin:
             {
                 AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 544);
                 if (FlagBase.GetBool('LDDPJCIsFemale'))
-                    PlaySound(Sound(DynamicLoadObject("FJCLand", class'Sound', false)), SLOT_None, 1.5, true, 1024);
+                    PlaySound(Sound(DynamicLoadObject("FemJC.FJCLand", class'Sound', false)), SLOT_None, 1.5, true, 1024);
                 else
                     PlaySound(sound'MaleLand', SLOT_None, 1.5, true, 1024);
             }
