@@ -290,7 +290,7 @@ function DrawDoorHudInformation(GC gc, actor frobTarget)
 	DrawDarkBackground(gc, infoX, infoY, infoW, infoH);
 
 	// draw the info text
-	gc.SetTextColor(colText);
+	gc.SetTextColor(colText);	
 	gc.DrawText(infoX+4, infoY+4, infoW-8, infoH-8, strInfo);
 	
 	// draw the two highlight boxes
@@ -363,6 +363,8 @@ function DrawDoorHudInformation(GC gc, actor frobTarget)
 		}
 		else
 		{
+			gc.SetTextColor(colText);
+			
 			// draw the absolute number of lockpicks on top of the colored bar
 			strInfo = strMessInf;			
 			gc.DrawText(infoX+(infoW-barSize), infoY+4+(infoH-8)/4, barSize, ((infoH-8)/4)-2, strInfo);
@@ -373,9 +375,8 @@ function DrawDoorHudInformation(GC gc, actor frobTarget)
 			else
 			{
 				strInfo = strMessInf;				
-			}
-			
-			gc.SetTextColor(colText);			
+			}			
+						
 			gc.DrawText(infoX+(infoW-barSize), infoY+4+2*(infoH-8)/4, barSize, ((infoH-8)/4)-2, strInfo);
 		}
 	}
@@ -384,7 +385,7 @@ function DrawDoorHudInformation(GC gc, actor frobTarget)
 //Ygll: new function to handle window target for hacking device classes
 function DrawDeviceHudInformation(GC gc, actor frobTarget)
 {
-	local float				infoX, infoY, infoW, infoH, barSize;
+	local float				infoX, infoY, infoW, infoH, infoHtemp, barSize;
 	local string			strInfo, strThreshold;
 	local HackableDevices	device;	
 	local Color				col;
@@ -401,7 +402,7 @@ function DrawDeviceHudInformation(GC gc, actor frobTarget)
 	//CyberP begin:                                             //RSD: No damage thresholds on hackable objects, sorry!
 	strInfo = strInfo $ CR() $ " " $ msgObjThreshold;
 	
-	if (device.bInvincible == False)
+	if (!device.bInvincible)
 		strThreshold = "[ " $ FormatString(device.minDamageThreshold) $ " ]";
 	else
 		strThreshold = "[ " $ msgInf $ " ]";
@@ -411,10 +412,10 @@ function DrawDeviceHudInformation(GC gc, actor frobTarget)
 	infoY = boxTLY + 10;
 
 	gc.SetFont(Font'FontMenuSmall_DS');
-	gc.GetTextExtent(0, infoW, infoH, strInfo);
+	gc.GetTextExtent(0, infoW, infoH, strInfo);	
 	
+	infoH += 8;
 	infoW += 8;
-	
 	if (device.hackStrength != 0.0)
 	{
 		infoW += barSize + 6;
@@ -422,51 +423,55 @@ function DrawDeviceHudInformation(GC gc, actor frobTarget)
 	else //Ygll: case when the devise has not hack strength - prevent 'Inf' text misplace on specific situation
 	{
 		barSize = 50.00000;
-		infoW += barSize + 2;
-	}
+		infoW += barSize + 6;
+	}	
 	
-	infoH += 8;
 	infoX = FClamp(infoX, infoW/2+10, width-10-infoW/2);
 	infoY = FClamp(infoY, infoH/2+10, height-10-infoH/2);
-
+	
 	// draw a dark background
 	DrawDarkBackground(gc, infoX, infoY, infoW, infoH);
 	
-	// Draw the current text information
+	// Draw the current text information	
 	gc.SetTextColor(colText);
 	gc.DrawText(infoX+4, infoY+4, infoW-8, infoH-8, strInfo);
+	
+	gc.GetTextExtent(0, infoW, infoHtemp, msgObjThreshold);
+	
+	infoW += 8;	
+	if (device.hackStrength != 0.0)
+	{
+		infoW += barSize + 6;
+	}
+	else //Ygll: case when the devise has not hack strength - prevent 'Inf' text misplace on specific situation
+	{
+		barSize = 50.00000;
+		infoW += barSize + 6;
+	}
 	
 	// draw the two highlight boxes
 	DrawHightlightBox(gc, infoX, infoY, infoW, infoH);
 	
 	// Draw the Device Damage Threshold
-	if (device.hackStrength > 0.0)
+	if ( device.bInvincible || ( player.bColourCodeFrobDisplay && !device.bInvincible &&
+			( DeusExWeapon(player.Weapon) == None || ( DeusExWeapon(player.Weapon) != None && !player.BreaksDamageThreshold(DeusExWeapon(player.Weapon),device.minDamageThreshold) ) ) ) )
+	{
+		gc.SetTextColor(colNotEnough);
+	}
+	else
+		gc.SetTextColor(colText);
+
+	gc.DrawText(infoX+(infoW-barSize), infoY+19+(infoH-8)/4, barSize, ((infoH-8)/4)-2+6, strThreshold);
+
+	// draw the absolute number of multitools on top of the colored bar
+	if ((device.bHackable) && (device.hackStrength != 0.0))
 	{
 		// draw a colored bar
 		gc.SetStyle(DSTY_Translucent);
 		col = GetColorScaled(device.hackStrength);
 		gc.SetTileColor(col);
-		gc.DrawPattern(infoX+(infoW-barSize-9), infoY-1+infoH/2.7, barSize*device.hackStrength, infoH/2.7-6, 0, 0, Texture'ConWindowBackground'); //CyberP: //RSD: reverted
+		gc.DrawPattern(infoX+(infoW-barSize-4), infoY-1+infoH/2.7, barSize*device.hackStrength, infoH/2.7-6, 0, 0, Texture'ConWindowBackground'); //CyberP: //RSD: reverted
 		
-		if ( device.bInvincible || ( player.bColourCodeFrobDisplay && !device.bInvincible &&
-				( DeusExWeapon(player.Weapon) == None || ( DeusExWeapon(player.Weapon) != None && !player.BreaksDamageThreshold(DeusExWeapon(player.Weapon),device.minDamageThreshold) ) ) ) )
-		{
-			gc.SetTextColor(colNotEnough);
-		}
-		else
-			gc.SetTextColor(colText);
-
-		gc.DrawText(infoX+(infoW-barSize-6), infoY+19+(infoH-8)/4, barSize, ((infoH-8)/4)-2+6, strThreshold);
-	}
-	else
-	{
-		gc.SetTextColor(colNotEnough);
-		gc.DrawText(infoX+(infoW-barSize-6), infoY+19+(infoH-8)/4, barSize, ((infoH-8)/4)-2+6, strThreshold);
-	}	
-
-	// draw the absolute number of multitools on top of the colored bar
-	if ((device.bHackable) && (device.hackStrength != 0.0))
-	{
 		//SARGE: If we have Cracked, display 0 tools
 		perkCracked = player.PerkManager.GetPerkWithClass(class'DeusEx.PerkCracked');
 		ownedTools = player.GetInventoryCount('Multitool');
@@ -497,7 +502,7 @@ function DrawDeviceHudInformation(GC gc, actor frobTarget)
 		
 		strInfo = FormatString(device.hackStrength * 100.0) $ "% - " $ strInfo;
 		
-		gc.DrawText(infoX+(infoW-barSize-6), infoY+infoH/2.7, barSize, infoH/2.7-6, strInfo);
+		gc.DrawText(infoX+(infoW-barSize), infoY+infoH/2.7, barSize, infoH/2.7-6, strInfo);
 	}
 	else
 	{
@@ -511,7 +516,7 @@ function DrawDeviceHudInformation(GC gc, actor frobTarget)
 		}
 		
 		gc.SetTextColor(colText);
-		gc.DrawText(infoX+(infoW-barSize-6), infoY+infoH/2.7, barSize, infoH/2.7-6, strInfo);
+		gc.DrawText(infoX+(infoW-barSize), infoY+infoH/2.7, barSize, infoH/2.7-6, strInfo);
 	}	
 }
 
