@@ -32,6 +32,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX bug which would make an empty subtitles box appear when interacting with things during first-person conversations, if subtitles were disabled.
     - Fixed GMDX bug where recharging items with biocells would cause the belt view in the inventory to continually get brighter and brighter until the inventory screen was closed.
     - Fixed GMDX slowdowns related to calling timers many times repeatedly.
+    - Fixed vanilla bug where the HUD would be re-enabled while dead if opening the main-menu.
     - Fixed many other GMDX and Vanilla bugs.
     - Fixed GMDX bug where most inventory items with multiple skins (such as sodacans) weren't showing their skinned variants when being held in the players hands.
 - Quality of Life Improvements:
@@ -81,6 +82,7 @@ Sarge's Changes since Beta 2.2:
     - When picking up duplicate Nanokeys, the log now lists it as a duplicate.
     - While having a grenade selected, the crosshair will turn blue when you're able to place it on a wall.
     - Right-Clicking while dead will load the last save game.
+        - You won't be automatically returned to the menu either, so you can watch the camera slowly rise for as long as you want.
     - Right-Clicking an item in the belt with the Inventory Window open will clear the slot.
     - Right-Click Unholstering has been completely overhauled.
         - Previously, right-clicking would not unholster at all when using the regular toolbelt, and would always select the primary belt selection when using the IW toolbelt.

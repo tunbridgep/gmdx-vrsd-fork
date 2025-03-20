@@ -728,6 +728,7 @@ var globalconfig bool bBiggerBelt;
 //SARGE: Right-Click Selection for Picks and Tools. Inspired by similar feature from Revision, but less sucky.
 var globalconfig bool bRightClickToolSelection;
 
+var globalconfig bool bMenuAfterDeath;                                   //SARGE: Whether or not to automatically go to the menu after dying.
 
 var globalconfig bool bFragileDarts;                                    //SARGE: Allow the "darts don't stick to walls" hardcore behaviour outside of hardcore.
 
@@ -7048,7 +7049,7 @@ state Dying
 				CameraLocation = Location;
 				CameraRotation = Rotator(ViewVect);
 			}
-			else if (time < 8.0)
+			else if (time < 8.0 || !bMenuAfterDeath)
 			{
 				whiteVec.X = time / 16.0;
 				whiteVec.Y = time / 16.0;
@@ -7073,7 +7074,7 @@ state Dying
 				{
 					// Don't fade to black in multiplayer
 				}
-				else
+				else if (bMenuAfterDeath)
 				{
 					// then, fade out to black in four seconds and bring up
 					// the main menu automatically
