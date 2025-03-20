@@ -1188,6 +1188,8 @@ function PostBeginPlay()
 	local int levelInfoCount;
     local float mult;
 
+    SetupRendererSettings();
+
 	Super.PostBeginPlay();
 
 	class'DeusExPlayer'.default.DefaultFOV=DefaultFOV;
@@ -1286,6 +1288,30 @@ function ServerSetAutoReload( bool bAuto )
 function SetServerTimeDiff( float sTime )
 {
 	ServerTimeDiff = (sTime - Level.Timeseconds);
+}
+
+// ----------------------------------------------------------------------
+// SetupRendererSettings()
+//
+// SARGE: Handle some basic rendering issues with certain renderers (like the d3d9 renderer)
+// ----------------------------------------------------------------------
+
+function SetupRendererSettings()
+{
+    //Force S3TC textures on. We need them for various graphics, including the scope.
+    //The game will crash otherwise!
+    if (ConsoleCommand("get D3D9Drv.D3D9RenderDevice UseS3TC") ~= "false")
+    {
+        //ClientMessage("High-Resolution Texture Support enabled. A game restart may be required!");
+        ConsoleCommand("set ini:D3D9Drv.D3D9RenderDevice UseS3TC true");
+        ConsoleCommand("set D3D9Drv.D3D9RenderDevice UseS3TC true");
+        //GetConfig("Engine.Engine", "GameRenderDevice") != "D3D10Drv.D3D10RenderDevice"
+    }
+    if (ConsoleCommand("get OpenGLDrv.OpenGLRenderDevice UseS3TC") ~= "false")
+    {
+        ConsoleCommand("set ini:OpenGLDrv.OpenGLRenderDevice UseS3TC true");
+        ConsoleCommand("set OpenGLDrv.OpenGLRenderDevice UseS3TC true");
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -1987,6 +2013,7 @@ exec function RestartLevel()
 
 exec function LoadGame(int saveIndex)
 {
+    SetupRendererSettings();
 
 //   log("MYCHK:LoadGame: ,"@saveIndex);
 	// Reset the FOV
@@ -2330,6 +2357,8 @@ exec function StartNewGame(String startMap)
     //If Addiction System is enabled, set it as our default screen in the Health display
     if (bAddictionSystem)
         bShowStatus = false;
+    
+    SetupRendererSettings();
 
     //SARGE: Fix audio volume being incorrectly set on new game
     //TODO: Make this an option
@@ -2352,6 +2381,8 @@ function StartTrainingMission()
     local Inventory anItem;
 	//if (DeusExRootWindow(rootWindow) != None)
 	//	DeusExRootWindow(rootWindow).ClearWindowStack();
+    
+    SetupRendererSettings();
 
 	// Make sure the player isn't asked to do this more than
 	// once if prompted on the main menu.
