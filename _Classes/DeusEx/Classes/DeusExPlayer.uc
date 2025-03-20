@@ -402,7 +402,7 @@ var globalconfig int iFrobDisplayStyle;             //SARGE: Frob Display Style.
 var globalconfig bool bGameplayMenuHardcoreMsgShown;//SARGE: Stores whether or not the gameplay menu message has been displayed.
 var globalconfig bool bEnhancedCorpseInteractions;  //SARGE: Right click always searches corpses. After searching, right click picks up corpses as normal.
 var globalconfig bool bSearchedCorpseText;          //SARGE: Corpses show "[Searched]" text when interacted with for the first time.
-var globalconfig bool bCutsceneFOVAdjust;           //SARGE: Enforce 75 FOV in cutscenes
+var globalconfig int iCutsceneFOVAdjust;           //SARGE: Enforce 75 FOV in cutscenes
 var globalconfig bool bLightingAccessibility;       //SARGE: Changes lighting in some areas to reduce strobing/flashing, as it may hurt eyes or cause seizures.
 
 var globalconfig bool bSubtitlesCutscene;			// SARGE: Allow Subtitles for Third-Person cutscenes. Should generally be left on
@@ -18313,7 +18313,7 @@ defaultproperties
      bBeltShowModified=true;
      bSearchedCorpseText=True
      bDisplayClips=true
-     bCutsceneFOVAdjust=true
+     iCutsceneFOVAdjust=2
      iFrobDisplayStyle=1
      bShowDataCubeRead=true;
      iAllowCombatMusic=1
