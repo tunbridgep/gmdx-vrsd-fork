@@ -265,6 +265,7 @@ Sarge's Changes since Beta 2.2:
     - Increased the sawed off shotgun's pellet count from 8 to 9, and decreased shot speed from 1.3 to 1.2.
     - Rubber shells are now hitscan with a harmless projectile.
     - Restricted Saving is now a Playthrough Modifier and is no longer restricted to Hardcore Mode. It's still enforced in Hardcore Mode.
+    - Non-recoverable darts and reloading resetting aim hardcore features added in vRSD are now gameplay options (still always enabled on Hardcore)
     - Enemies with flamethrowers now give 5-25 flamethrower ammo as loot instead of 1-5
     - Added No Console Access Playthrough Modifier, which prevents using the console (disallows cheats) while playing.
     - Added No Keypad Cheese Playthrough Modifier (called "Unknown Codes") which prevents using keypads or computer logins without having found them beforehand. Some codes which are hinted but never given are excepted.
