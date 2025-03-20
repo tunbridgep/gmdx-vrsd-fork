@@ -144,8 +144,20 @@ function FirstFrame()
     local bool bRandomCrates;                                                   //RSD
     local bool bRandomItems;                                                    //RSD
     local int seed;
+    local DecalManager D;                                                       //SARGE
 
 	flags.DeleteFlag('PlayerTraveling', FLAG_Bool);
+
+    //Recreate/Setup our decal manager
+	foreach AllActors(class'DecalManager', D)
+        break;
+
+    if (D == None)
+    {
+        D = Spawn(class'DecalManager');
+        player.DecalManager = D;
+        D.Setup(player);
+    }
 
 	// Check to see which NPCs should be dead from prevous missions
 	foreach AllActors(class'ScriptedPawn', P)
