@@ -728,6 +728,10 @@ var globalconfig bool bBiggerBelt;
 //SARGE: Right-Click Selection for Picks and Tools. Inspired by similar feature from Revision, but less sucky.
 var globalconfig bool bRightClickToolSelection;
 
+//SARGE: Ladder Fix. Stores if we just jumped from a ladder.
+//Used to reset our physics when the timer fails (for whatever reason).
+var float iLadderJumpTimer;
+
 var globalconfig bool bMenuAfterDeath;                                   //SARGE: Whether or not to automatically go to the menu after dying.
 
 var globalconfig bool bFragileDarts;                                    //SARGE: Allow the "darts don't stick to walls" hardcore behaviour outside of hardcore.
@@ -5439,6 +5443,7 @@ function DoJump( optional float F )
 
         //if (JumpZ > 650)      //CyberP: fix super jump exploit.
         //JumpZ = default.JumpZ;
+        iLadderJumpTimer = 0.15;  //SARGE: Hack to fix flying forever when leaving ladders sometimes.
         SetPhysics(PHYS_Flying);
         if (IsStunted())
         {
@@ -6679,6 +6684,20 @@ state PlayerWalking
         if (stuntedTime > 0)
             stuntedTime -= deltaTime;
             
+        
+        //SARGE: Backup fix for dealing with ladder climbing physics
+        if (iLadderJumpTimer > 0)
+        {
+            iLadderJumpTimer -= deltaTime;
+            if (iLadderJumpTimer <= 0)
+            {
+                if (Physics == PHYS_Flying)
+                {
+                    SetPhysics(PHYS_Falling);
+                    bOnLadder = false;
+                }
+            }
+        }
         //Fire blocking is only valid for 1 frame
         bBlockNextFire = False;
 
