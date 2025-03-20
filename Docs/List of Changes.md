@@ -2,7 +2,7 @@ Sarge's Changes since Beta 2.2:
 
 - Moved DeusEx.Int to the mod's System folder, so as to not overwrite any vanilla files. The int file will be handled automatically when using Kentie's Deus Exe.
 - Numerous Bug Fixes
-    - Fixed GMDX bug where Intro Cinematic didn't have subtitles bars, and fixed all cinematics to have a FOV of 75, making them always look accurate to the original game.
+    - Fixed GMDX bug where Intro Cinematic didn't have subtitles bars, and fixed all cinematics to have a FOV of 75-90 (adjustible, defaults to 80), making them always look accurate to the original game.
     - Fixed a bug where the Nuke and Worm software buttons were completely white squares on the Hacking menu.
     - Fixed GMDX vRSD bug where you could pick up and carry heavy objects while out of energy with the Muscle Augmentation
     - Fixed GMDX vRSD bug allowing using Tech Goggles in the secondary slot for half a second or so when out of charge
@@ -32,6 +32,8 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX bug which would make an empty subtitles box appear when interacting with things during first-person conversations, if subtitles were disabled.
     - Fixed GMDX bug where recharging items with biocells would cause the belt view in the inventory to continually get brighter and brighter until the inventory screen was closed.
     - Fixed GMDX slowdowns related to calling timers many times repeatedly.
+    - Fixed GMDX bug where jumping from a ladder while partially submerged in water would cause JC to fly forever.
+    - Fixed vanilla bug where the HUD would be re-enabled while dead if opening the main-menu.
     - Fixed many other GMDX and Vanilla bugs.
     - Fixed GMDX bug where most inventory items with multiple skins (such as sodacans) weren't showing their skinned variants when being held in the players hands.
 - Quality of Life Improvements:
@@ -68,6 +70,7 @@ Sarge's Changes since Beta 2.2:
     - Added the option to use the original HUD fonts instead of the GMDX ones.
     - When using a medical bot, using the last augmentation cannister in the Augs screen will automatically switch to the Health screen.
     - The augmentation "hum" sound can be disabled.
+    - Added a new setting to make debris, blood pools, and other decals permanent, as well as persistent between map loads.
     - Augmentations now show their active colours in the medbot interface.
     - Picking up a weapon from a carcass for the first time will show you how much ammo it has.
     - Complete overhaul of the "Decline Knives" system
@@ -80,7 +83,9 @@ Sarge's Changes since Beta 2.2:
     - Datacubes will show a black screen after they have been read.
     - When picking up duplicate Nanokeys, the log now lists it as a duplicate.
     - While having a grenade selected, the crosshair will turn blue when you're able to place it on a wall.
+    - The stamina bar now shows as red when the player is exhausted.
     - Right-Clicking while dead will load the last save game.
+        - You won't be automatically returned to the menu either, so you can watch the camera slowly rise for as long as you want.
     - Right-Clicking an item in the belt with the Inventory Window open will clear the slot.
     - Right-Click Unholstering has been completely overhauled.
         - Previously, right-clicking would not unholster at all when using the regular toolbelt, and would always select the primary belt selection when using the IW toolbelt.
@@ -158,6 +163,7 @@ Sarge's Changes since Beta 2.2:
     - The Pedometer can now be viewed in the Health screen when using the Addiction system.
     - Subtitles are now enabled in third-person cutscenes regardless of Subtitles setting, allowing text to show instead of useless black bars while also not displaying in-game barks. This can be disabled using the `bSubtitlesCutscene` option in `DeusEx.ini`
 - Gameplay Changes:
+    - The NUKE! Virus can now be used at Untrained hacking.
     - Destroyable Movers that aren't set to highlighting will now have 1 HP.
         - This removes ambiguity about whether or not a surface is unbreakable, or just needs more hits to destroy.
         - This only affects 1-2 movers in the entire game.
@@ -264,6 +270,7 @@ Sarge's Changes since Beta 2.2:
     - Increased the sawed off shotgun's pellet count from 8 to 9, and decreased shot speed from 1.3 to 1.2.
     - Rubber shells are now hitscan with a harmless projectile.
     - Restricted Saving is now a Playthrough Modifier and is no longer restricted to Hardcore Mode. It's still enforced in Hardcore Mode.
+    - Non-recoverable darts and reloading resetting aim hardcore features added in vRSD are now gameplay options (still always enabled on Hardcore)
     - Enemies with flamethrowers now give 5-25 flamethrower ammo as loot instead of 1-5
     - Added No Console Access Playthrough Modifier, which prevents using the console (disallows cheats) while playing.
     - Added No Keypad Cheese Playthrough Modifier (called "Unknown Codes") which prevents using keypads or computer logins without having found them beforehand. Some codes which are hinted but never given are excepted.
@@ -303,6 +310,7 @@ Sarge's Changes since Beta 2.2:
     - A Laser Sight has been added to Smuggler's safe in the first NY visit (replaces a recoil mod)
     - The Silencer in Paul's Apartment, Full-Auto Mod in Tong's Lab, and Laser Sight in Smugglers Safe are all guaranteed to appear even with the weapon mod shuffle turned on.
 - Miscellaneous Changes:
+    - Added a blue screen effect when entering bodies of water.
     - Added a message and a sound when picking up a charged item that is then used to immediately recharge an existing item, to let you know what happened to it. Previously the item just disappeared with no message.
     - Death and Hurt Sounds Randomisation added
         - In Vanilla mode, all enemies only use vanilla pain and hurt sounds.

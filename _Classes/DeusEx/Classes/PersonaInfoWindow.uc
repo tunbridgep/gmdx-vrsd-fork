@@ -187,16 +187,15 @@ function CreatePerkButtons(Skill Skill)
         currPerk = player.PerkManager.GetPerkForSkill(Skill.class,numPerkButtons);
     }
 
-    /*
-    SetText(ob $ ": " $ player.PerkManager.GetNumObtainedPerks());
+    //SetText(ob $ ": " $ player.PerkManager.GetNumObtainedPerks());
+    SetText(ob);
     AddLine();
 	
-    for (index = 0; index < player.PerkManager.numPerks; index++)
+    for (index = 0; index < player.PerkManager.GetNumPerks(); index++)
     {
-		if (player.PerkManager.PerkList[index].bPerkObtained == true)
-			SetText(player.PerkManager.PerkList[index].PerkName);
+		if (player.PerkManager.GetPerkAtIndex(index).bPerkObtained == true)
+			SetText(player.PerkManager.GetPerkAtIndex(index).PerkName);
     }
-    */
 }
 
 //SARGE: Create general perk buttons

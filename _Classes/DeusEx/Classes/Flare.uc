@@ -115,6 +115,7 @@ function UpdateGens()
 {
 	local vector loc, loc2;
 	local rotator rota;
+    local FlareShell shell;
 
 	if(gen != none)
 	{
@@ -176,17 +177,21 @@ function UpdateGens()
 		if(lifespan > 2)
 			flamething.DrawScale = 0.1 + 0.3*lifespan/flaretime;
 		else
-		{
 			flamething.Destroy();
-			Spawn(class'FlareShell',,,Location,Rotation);
-			Destroy();
-		}
 	}
 	if (attachedBeam != none)
 	{
 	    attachedBeam.setlocation(Location + vect(0,0,3));
         if (lifespan < 3)
              attachedBeam.Destroy();
+    }
+    
+    if(lifespan < 2)
+    {
+        shell = Spawn(class'FlareShell',,,Location,Rotation);
+        if (class'DeusExPlayer'.default.iPersistentDebris < 2)
+            shell.LifeSpan = 30;
+        Destroy();
     }
 }
 
