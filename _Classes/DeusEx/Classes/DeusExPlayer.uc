@@ -631,6 +631,7 @@ var travel AddictionSystem AddictionManager;
 var travel PerkSystem PerkManager;
 var travel RandomTable Randomizer;
 var travel FontManager FontManager;
+var DecalManager DecalManager;
 
 const DRUG_TOBACCO = 0;
 const DRUG_ALCOHOL = 1;
@@ -727,6 +728,12 @@ var globalconfig bool bBiggerBelt;
 
 //SARGE: Right-Click Selection for Picks and Tools. Inspired by similar feature from Revision, but less sucky.
 var globalconfig bool bRightClickToolSelection;
+
+var globalconfig int iPersistentDebris;                               //SARGE: Fragments, Decals, etc, last forever. Probably really horrible for performance!
+
+//SARGE: Decal Handling
+var transient bool bCreatingDecals;                                     //SARGE: Stores if we're making decals right now.
+var transient int currentDecalBatch;                                    //SARGE: Current decal batch number.
 
 //SARGE: Ladder Fix. Stores if we just jumped from a ladder.
 //Used to reset our physics when the timer fails (for whatever reason).
@@ -1371,6 +1378,19 @@ function SetupAddictionManager()
 
 }
 
+function SetupDecalManager()
+{
+	// install the Decal Manager if not found
+	if (DecalManager != None)
+    {
+        //clientmessage("DecalManager Setup Called");
+	    //DecalManager = new(Self) class'DecalManager';
+        DecalManager.Setup(self);
+        bCreatingDecals = true;
+        //DecalManager.RecreateDecals();
+    }
+}
+
 function SetupPerkManager()
 {
 	// install the Perk Manager if not found
@@ -1467,6 +1487,7 @@ function InitializeSubSystems()
     SetupAddictionManager();
 	SetupPerkManager();
 	SetupFontManager();
+	SetupDecalManager();
 }
 
 //SARGE: Helper function to get the count of an item type
@@ -1557,6 +1578,10 @@ function PreTravel()
 		DeusExWeapon(inHand).LaserOff(true);                                    //RSD: Otherwise dots will remain on the map
     ForceDroneOff();                                                            //RSD: Since we can move on standby, shut drone off
     ConsoleCommand("set DeusExCarcass bRandomModFix" @ bRandomizeMods);         //RSD: Stupid config-level hack since PostBeginPlay() can't access player pawn in DeusExCarcass.uc
+    
+    //SARGE: Store all the decals
+    if (DecalManager != None && iPersistentDebris > 0)
+        DecalManager.PopulateDecalsList();
 
 	foreach AllActors(class'SpyDrone',SD)                                       //RSD: Destroy all spy drones so we can't activate disabled drones on map transition
 		SD.Destroy();
@@ -1589,6 +1614,7 @@ event TravelPostAccept()
     SetupAddictionManager();
 	SetupPerkManager();
     SetupFontManager();
+	SetupDecalManager();
 
 	// reset the keyboard
 	ResetKeyboard();
@@ -2090,6 +2116,7 @@ function bool CanSave(optional bool allowHardcore)
 	// 5) A datalink is playing
 	// 6) We're in a multiplayer game
     // 7) SARGE: We're in a conversation
+    // 8) SARGE: We're currently recreating decals
 
     if ((bHardCoreMode || bRestrictedSaving) && !allowHardcore) //Hardcore Mode
         return false;
@@ -2107,6 +2134,9 @@ function bool CanSave(optional bool allowHardcore)
 	   return false;
 
     if (InConversation())
+        return false;
+
+    if (bCreatingDecals)
         return false;
 
     return true; 
@@ -2141,6 +2171,10 @@ function int DoSaveGame(int saveIndex, optional String saveDesc)
             if ((tech.Owner == Self) && tech.bActive)
                 tech.Activate();
     
+    //SARGE: Store all the decals
+    if (DecalManager != None && iPersistentDebris > 0)
+        DecalManager.PopulateDecalsList();
+
     if (saveIndex == 0)
     {
         saveDir = GetSaveGameDirectory();
@@ -6684,6 +6718,18 @@ state PlayerWalking
         if (stuntedTime > 0)
             stuntedTime -= deltaTime;
             
+        //SARGE: Recreate decals slowly over a few frames, to avoid
+        //crashing when changing maps
+        if (bCreatingDecals && DecalManager != None)
+        {
+            //First time, destroy the decals
+            if (currentDecalBatch == 0)
+                DecalManager.HideAllDecals();
+
+            DecalManager.RecreateDecals(currentDecalBatch,500);
+            currentDecalBatch += 500;
+            bCreatingDecals = DecalManager.GetTotalDecals() > currentDecalBatch;
+        }
         
         //SARGE: Backup fix for dealing with ladder climbing physics
         if (iLadderJumpTimer > 0)
@@ -18288,4 +18334,5 @@ defaultproperties
      bEnableBlinking=True
      iDeathSoundMode=2
      bBiggerBelt=True
+     iPersistentDebris=1
 }

@@ -70,6 +70,7 @@ Sarge's Changes since Beta 2.2:
     - Added the option to use the original HUD fonts instead of the GMDX ones.
     - When using a medical bot, using the last augmentation cannister in the Augs screen will automatically switch to the Health screen.
     - The augmentation "hum" sound can be disabled.
+    - Added a new setting to make debris, blood pools, and other decals permanent, as well as persistent between map loads.
     - Augmentations now show their active colours in the medbot interface.
     - Picking up a weapon from a carcass for the first time will show you how much ammo it has.
     - Complete overhaul of the "Decline Knives" system
