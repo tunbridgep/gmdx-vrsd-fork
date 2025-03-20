@@ -733,8 +733,6 @@ var globalconfig bool bFragileDarts;                                    //SARGE:
 
 var globalconfig bool bReloadingResetsAim;                              //SARGE: Allow the "reloading resets aim" hardcore behaviour outside of hardcore.
 
-var travel float BaseEyeHeightAdjust;                                   //SARGE: How much we need to adjust the eye height for cutscenes.
-
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -5646,7 +5644,6 @@ function bool SetBasedPawnSize(float newRadius, float newHeight)
 				PrePivot.Z -= 4.5;
 			}
 			BaseEyeHeight -= 2;
-            BaseEyeHeightAdjust = 2; //SARGE: Added.
 		}
 
 		// Complaints that eye height doesn't seem like your crouching in multiplayer
@@ -5656,16 +5653,6 @@ function bool SetBasedPawnSize(float newRadius, float newHeight)
 			EyeHeight		-= centerDelta.Z;
 	}
 	return (bSuccess);
-}
-
-// ----------------------------------------------------------------------
-// ResetBaseEyeHeight()
-// SARGE: Added so we can set it when we need to.
-// ----------------------------------------------------------------------
-
-function ResetBaseEyeHeight()
-{
-	BaseEyeHeight = CollisionHeight - (GetBaseEyeHeight() - Default.BaseEyeHeight);
 }
 
 // ----------------------------------------------------------------------
@@ -12516,9 +12503,6 @@ ignores SeePlayer, HearNoise, Bump;
 		bBehindView = false;
 		StopBlendAnims();
 		ConversationActor = None;
-
-        //SARGE: Reset eye height
-        ResetBaseEyeHeight();
 	}
 
 	function int retLevelInfo()
@@ -12543,11 +12527,6 @@ Begin:
 	Velocity.X = 0;
 	Velocity.Y = 0;
 	Velocity.Z = 0;
-
-    //SARGE: HACK! Since we adjust FemJC's eye height, we need to reset it here,
-    //otherwise conversations tend to focus on her chest, rather than her face.
-    ResetBaseEyeHeight();
-    BaseEyeHeight = BaseEyeHeight + BaseEyeHeightAdjust;
 
 	Acceleration = Velocity;
 
@@ -12699,9 +12678,6 @@ function EndConversation()
 	local DeusExLevelInfo info;
 
 	Super.EndConversation();
-
-    //SARGE: Reset eye height
-    ResetBaseEyeHeight();
 
 	// If we're in a bForcePlay (cinematic) conversation,
 	// force the CinematicWindow to be displayd
