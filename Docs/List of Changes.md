@@ -32,6 +32,8 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX bug which would make an empty subtitles box appear when interacting with things during first-person conversations, if subtitles were disabled.
     - Fixed GMDX bug where recharging items with biocells would cause the belt view in the inventory to continually get brighter and brighter until the inventory screen was closed.
     - Fixed GMDX slowdowns related to calling timers many times repeatedly.
+    - Fixed GMDX bug where jumping from a ladder while partially submerged in water would cause JC to fly forever.
+    - Fixed vanilla bug where the HUD would be re-enabled while dead if opening the main-menu.
     - Fixed many other GMDX and Vanilla bugs.
     - Fixed GMDX bug where most inventory items with multiple skins (such as sodacans) weren't showing their skinned variants when being held in the players hands.
 - Quality of Life Improvements:
@@ -82,6 +84,7 @@ Sarge's Changes since Beta 2.2:
     - When picking up duplicate Nanokeys, the log now lists it as a duplicate.
     - While having a grenade selected, the crosshair will turn blue when you're able to place it on a wall.
     - Right-Clicking while dead will load the last save game.
+        - You won't be automatically returned to the menu either, so you can watch the camera slowly rise for as long as you want.
     - Right-Clicking an item in the belt with the Inventory Window open will clear the slot.
     - Right-Click Unholstering has been completely overhauled.
         - Previously, right-clicking would not unholster at all when using the regular toolbelt, and would always select the primary belt selection when using the IW toolbelt.
@@ -265,6 +268,7 @@ Sarge's Changes since Beta 2.2:
     - Increased the sawed off shotgun's pellet count from 8 to 9, and decreased shot speed from 1.3 to 1.2.
     - Rubber shells are now hitscan with a harmless projectile.
     - Restricted Saving is now a Playthrough Modifier and is no longer restricted to Hardcore Mode. It's still enforced in Hardcore Mode.
+    - Non-recoverable darts and reloading resetting aim hardcore features added in vRSD are now gameplay options (still always enabled on Hardcore)
     - Enemies with flamethrowers now give 5-25 flamethrower ammo as loot instead of 1-5
     - Added No Console Access Playthrough Modifier, which prevents using the console (disallows cheats) while playing.
     - Added No Keypad Cheese Playthrough Modifier (called "Unknown Codes") which prevents using keypads or computer logins without having found them beforehand. Some codes which are hinted but never given are excepted.
@@ -304,6 +308,7 @@ Sarge's Changes since Beta 2.2:
     - A Laser Sight has been added to Smuggler's safe in the first NY visit (replaces a recoil mod)
     - The Silencer in Paul's Apartment, Full-Auto Mod in Tong's Lab, and Laser Sight in Smugglers Safe are all guaranteed to appear even with the weapon mod shuffle turned on.
 - Miscellaneous Changes:
+    - Added a blue screen effect when entering bodies of water.
     - Added a message and a sound when picking up a charged item that is then used to immediately recharge an existing item, to let you know what happened to it. Previously the item just disappeared with no message.
     - Death and Hurt Sounds Randomisation added
         - In Vanilla mode, all enemies only use vanilla pain and hurt sounds.
