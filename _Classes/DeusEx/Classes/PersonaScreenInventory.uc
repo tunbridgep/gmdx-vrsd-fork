@@ -1701,7 +1701,7 @@ function StartButtonDrag(ButtonWindow newDragButton)
 
 	if (dragButton.IsA('PersonaInventoryItemButton'))
 	{
-		SelectInventory(None);
+		//SelectInventory(None);
 
         PersonaInventoryItemButton(dragButton).setSafeRotation();               //RSD: can now rotate, so save the working values before we start dragging
         SetHomeButton(PersonaInventoryItemButton(dragButton));
