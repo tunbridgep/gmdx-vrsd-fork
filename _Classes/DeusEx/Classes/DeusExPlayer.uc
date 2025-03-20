@@ -729,6 +729,11 @@ var globalconfig bool bBiggerBelt;
 //SARGE: Right-Click Selection for Picks and Tools. Inspired by similar feature from Revision, but less sucky.
 var globalconfig bool bRightClickToolSelection;
 
+//SARGE: Bigger weapon effect sparks
+var globalconfig bool bJohnWooSparks;
+
+var globalconfig bool bConsistentBloodPools;                            //SARGE: If set to true, blood pools will always be the same consistent size, regardless of corpse size. If set to false, it does the vanilla behaviour of making blood pools depend on the carcasses collision size.
+
 var globalconfig int iPersistentDebris;                               //SARGE: Fragments, Decals, etc, last forever. Probably really horrible for performance!
 
 //SARGE: Decal Handling
@@ -1830,7 +1835,7 @@ function Typing( bool bTyping )
 
 /////
 
-exec function HDTP(optional string s)
+exec function HDTP(optional bool updateDecals)
 {
 	local scriptedpawn P;
 	local deusexcarcass C;
@@ -1858,12 +1863,12 @@ exec function HDTP(optional string s)
     	PR.UpdateHDTPsettings();
     foreach AllActors(Class'DeusExAmmo',AM)                                     //SARGE: Added for object toggles
     	AM.UpdateHDTPsettings();
-    //SARGE: These don't draw properly if we update them... What a shame!
-    //It was a good feature, what a rotten way to die!
-    /*
-    foreach AllActors(Class'DeusExDecal',DC)                                     //SARGE: Added for object toggles
-    	DC.UpdateHDTPsettings();
-    */
+    if (updateDecals)
+    {
+        foreach AllActors(Class'DeusExDecal',DC)                                     //SARGE: Added for object toggles
+            if (!DC.bHidden)
+                DC.UpdateHDTPsettings();
+    }
 
 	UpdateHDTPsettings();
 }
@@ -7099,19 +7104,19 @@ state Dying
         {
            KillShadow();
            EndTrace = Location - vect(0,0,320);
+            /*
+            //SARGE: Removed this as it was aparrently causing a double blood pool.
            if (!HeadRegion.Zone.bWaterZone)
            {
             hit = Trace(HitLocation, HitNormal, EndTrace, Location, False);
             pool = spawn(class'BloodPool',,, HitLocation, Rotator(HitNormal));
             if (pool != none)
             {
-				if (pool.IsHDTP())
-					pool.maxDrawScale = CollisionRadius / 520.0;
-				else
-					pool.maxDrawScale = CollisionRadius / 20.0;
+                pool.SetMaxDrawScale(CollisionRadius);
                 pool.ReattachDecal();
             }
            }
+           */
         }
       ClientDeath();
 	}
@@ -10452,6 +10457,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 							Carc.bSearched = POVCorpse(item).bSearched;
 							Carc.PickupAmmoCount = POVCorpse(item).PickupAmmoCount;
 							Carc.savedName = POVCorpse(item).savedName;
+                            Carc.bFirstBloodPool = POVCorpse(item).bFirstBloodPool; //SARGE: Added.
                             Carc.UpdateName();
 
                             //if (FRand() < 0.3)
@@ -18334,5 +18340,7 @@ defaultproperties
      bEnableBlinking=True
      iDeathSoundMode=2
      bBiggerBelt=True
+     //bJohnWooSparks=True
+     bConsistentBloodPools=True
      iPersistentDebris=1
 }
