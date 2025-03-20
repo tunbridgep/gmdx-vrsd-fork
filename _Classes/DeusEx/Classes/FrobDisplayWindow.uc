@@ -19,9 +19,7 @@ var localized string msgPick;
 var localized string msgPicks;
 var localized string msgTool;
 var localized string msgTools;
-var localized string msgReboot;
-var localized string msgConfused;
-var localized string msgTargetting;
+var localized string msgDisabled;
 
 // Default Colors
 var Color colBackground;
@@ -395,9 +393,17 @@ function DrawDeviceHudInformation(GC gc, actor frobTarget)
 	
 	// get the devices hack strength info
 	device = HackableDevices(frobTarget);
-	barSize = barLength;
+	barSize = barLength;	
 	
-	strInfo = DeusExDecoration(frobTarget).itemName $ CR() $ " " $ msgHackStr;	
+	strInfo = DeusExDecoration(frobTarget).itemName;
+	
+	if( ( frobTarget.IsA('AutoTurretGun') && frobTarget.Owner != None && frobTarget.Owner.IsA('AutoTurret') && AutoTurret(frobTarget.Owner).bRebooting )
+			|| ( frobTarget.IsA('SecurityCamera') && SecurityCamera(frobTarget).bRebooting ) )
+	{
+		strInfo = strInfo $ " (" $ msgDisabled $ ")";
+	}
+	
+	strInfo = strInfo $ CR() $ " " $ msgHackStr;
 	
 	//CyberP begin:                                             //RSD: No damage thresholds on hackable objects, sorry!
 	strInfo = strInfo $ CR() $ " " $ msgObjThreshold;
@@ -527,21 +533,17 @@ function DrawOtherHudInformation(GC gc, actor frobTarget)
 	local string			strInfo;
 	local int 				typecastIt;
 	
-	// TODO: Check familiar vs. unfamiliar flags
+	// TODO: Check familiar vs. unfamiliar flags	
 	if (frobTarget.IsA('Pawn'))
 		strInfo = player.GetDisplayName(frobTarget);
 	else if (frobTarget.IsA('DeusExCarcass'))
 		strInfo = DeusExCarcass(frobTarget).itemName;
 	else if (frobTarget.IsA('DeusExAmmo'))                          //RSD: Append the ammo count
 		strInfo = DeusExAmmo(frobTarget).itemName @ "(" $ DeusExAmmo(frobTarget).AmmoAmount $ ")";
-	else if (frobTarget.IsA('ChargedPickup') && ChargedPickup(frobTarget).numCopies > 1 && player.bShowItemPickupCounts)
-		strInfo = ChargedPickup(frobTarget).ItemName @ "(" $ int(ChargedPickup(frobTarget).GetCurrentCharge()) $ "%) (" $ ChargedPickup(frobTarget).numCopies $ ")"; //SARGE: Append the current charge and num copies
 	else if (frobTarget.IsA('ChargedPickup'))
 		strInfo = ChargedPickup(frobTarget).ItemName @ "(" $ int(ChargedPickup(frobTarget).GetCurrentCharge()) $ "%)"; //RSD: Append the current charge
 	else if (frobTarget.IsA('DeusExWeapon'))                    //Sarge: Add "(Modified)" to weapons
 		strInfo = DeusExWeapon(frobTarget).GetFrobString(player);
-	else if (frobTarget.IsA('DeusExPickup') && DeusExPickup(frobTarget).numCopies > 1 && player.bShowItemPickupCounts)
-		strInfo = Inventory(frobTarget).itemName @ "(" $ DeusExPickup(frobTarget).numCopies $ ")"; //SARGE: Append number of copies, if more than 1
 	else if (frobTarget.IsA('Inventory'))
 		strInfo = Inventory(frobTarget).itemName;
 	else if (frobTarget.IsA('DeusExDecoration'))
@@ -646,4 +648,5 @@ defaultproperties
      msgHP2="Hitpoints: 3"
      colNotEnough=(R=255,G=50,B=50)
      colJustEnough=(R=255,G=255,B=50)
+	 msgDisabled="Disabled"
 }
