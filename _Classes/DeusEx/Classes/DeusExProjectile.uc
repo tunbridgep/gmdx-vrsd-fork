@@ -196,7 +196,7 @@ function CreateTaserDartHitLight()
 		if( sparkEffect1 != none  )
 		{
 			//Ygll: change the value to advert some sound issue because it's starting too soon, previously at 1.
-			if(i == 3)
+			if(i == 6)
 			{
 				sparkEffect1.AmbientSound = Sound'Ambient.Ambient.Electricity3';
 				sparkEffect1.SoundRadius=64;
@@ -1013,7 +1013,7 @@ auto simulated state Flying
 				}
 			}
 		}
-        else if( IsA('DartPoison') || IsA('DartTaser') )                        //RSD: Still do hit effects for Tranquilizer Darts on Hardcore (bSticktoWall=false)
+        else if( IsA('Dart') )                        //RSD: Still do hit effects for Darts on Hardcore or fragile dart enable (bSticktoWall=false)
         {
 			// Ygll : Adding Taser dart to handle them with new the hardcore rule and 'Fragile Dart' gameplay option enable.			
 			ImpactSound = Sound'DeusExSounds.Weapons.BatonHitSoft';	//RSD: Weaker sound effect to help sell the illusion of dart breaking			
