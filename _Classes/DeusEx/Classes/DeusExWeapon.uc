@@ -2643,7 +2643,7 @@ simulated function Tick(float deltaTime)
             standingTimer += mult*deltaTime;
 		if (standingTimer > 15.0) //CyberP: the devs forgot to cap the timer
 		    standingTimer = 15.0;
-        if (player.bHardcoreMode && IsInState('Reload'))                        //RSD: reset accuracy when reloading in Hardcore
+        if ((player.bHardcoreMode || player.bReloadingResetsAim) && IsInState('Reload'))                        //RSD: reset accuracy when reloading in Hardcore //SARGE: Added new gameplay setting
             standingTimer = 0.0;
     }
 	else	// otherwise, decrease it slowly based on velocity
@@ -4544,7 +4544,7 @@ simulated function Projectile ProjectileFire(class<projectile> ProjClass, float 
 			proj = DeusExProjectile(Spawn(ProjClass, Owner,, Start, AdjustedAim));
 			if (proj != None)
 			{
-				if (proj.IsA('DartPoison') && DeusExPlayer(GetPlayerPawn()).bHardCoreMode)
+				if (proj.IsA('DartPoison') && (DeusExPlayer(GetPlayerPawn()).bHardCoreMode || DeusExPlayer(GetPlayerPawn()).bFragileDarts)) //SARGE: Added new gameplay setting
                 	proj.bSticktoWall = false;                      //RSD: Tranq darts won't stick to walls (for recovery) in Hardcore
                 //proj.Damage *= mult;                                          //RSD
                 finalDamage = proj.Damage*mult;                                 //RSD: final input to TakeDamage is a truncated int
