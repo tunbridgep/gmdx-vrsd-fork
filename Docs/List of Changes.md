@@ -83,6 +83,7 @@ Sarge's Changes since Beta 2.2:
     - Datacubes will show a black screen after they have been read.
     - When picking up duplicate Nanokeys, the log now lists it as a duplicate.
     - While having a grenade selected, the crosshair will turn blue when you're able to place it on a wall.
+    - The stamina bar now shows as red when the player is exhausted.
     - Right-Clicking while dead will load the last save game.
         - You won't be automatically returned to the menu either, so you can watch the camera slowly rise for as long as you want.
     - Right-Clicking an item in the belt with the Inventory Window open will clear the slot.
