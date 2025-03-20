@@ -17,7 +17,7 @@ exec function UpdateHDTPsettings()
         VanillaPosition = Location;
         HDTPPosition.z += 50;
     }
-    if (IsHDTP())
+    if (IsHDTP() && closeEnough)
     {
         SetCollisionSize(Default.CollisionRadius, 1024);
         SetLocation(HDTPPosition);
