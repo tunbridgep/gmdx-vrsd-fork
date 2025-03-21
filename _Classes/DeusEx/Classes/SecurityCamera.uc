@@ -112,8 +112,8 @@ function BeginPlay()
 
 	if (bSwing == false)
 	{
-	bSwing = true;  //CyberP: hack so non-swinging cameras reset to default rot after tagging player/corpse.
-	swingAngle = 2;
+		bSwing = true;  //CyberP: hack so non-swinging cameras reset to default rot after tagging player/corpse.
+		swingAngle = 2;
     }
 	SoundRadius=96;
 	default.SoundRadius=96;
@@ -249,18 +249,17 @@ function TriggerEvent(bool bTrigger)
 	if (bTrigger)
 	{
 	    player = DeusExPlayer(GetPlayerPawn());
-	    //if (player != None && player.bHardcoreAI3)
-	       AmbientSound = Sound'alarms';
-	    //else
-		  // AmbientSound = Sound'Klaxon2';
-
+	    
 		if (bAlarmEvent && event != '' && player != None)
+		{
 			foreach AllActors(class'Actor', A, Event)
 				A.Trigger(Self, player);
-
+		}
+		
+		AmbientSound = Sound'alarms';
 		SoundVolume = 80;  //lowered volume, increased radius
 		SoundRadius = 112;
-                SoundPitch = 64; //CyberP: set back to default pitch
+        SoundPitch = 64; //CyberP: set back to default pitch
         MultiSkins[2] = GetCameraLightTex(2);
 		AIStartEvent('Alarm', EAITYPE_Audio, SoundVolume/255.0, 24*(SoundRadius+2));
 
@@ -282,13 +281,25 @@ function TriggerEvent(bool bTrigger)
 
 function TriggerCarcassEvent(bool bTrigger)
 {
+	local DeusExPlayer player;
+    local actor A;
+	
 	bEventTriggered = bTrigger; // change to carcass specific?
 	bTrackCarcass = bTrigger;
 	carcassTriggerTimer = 0;
 
 	// now, the camera sounds its own alarm
 	if (bTrigger)
-	{	
+	{
+		lastSeenTimer = 0.000000;
+		player = DeusExPlayer(GetPlayerPawn());
+
+		if (bAlarmEvent && event != '' && player != None)
+		{
+			foreach AllActors(class'Actor', A, Event)
+				A.Trigger(Self, player);
+		}
+		
 		AmbientSound = Sound'Klaxon2';
 		SoundVolume = 80;
 		SoundRadius = 112;
@@ -363,14 +374,14 @@ function CheckPlayerVisibility(DeusExPlayer player)
 				if (bTrackPlayer)
 					DesiredRotation = rot;
 
-				lastSeenTimer = 0;
+				lastSeenTimer = 0.000000;
 				bPlayerSeen = true;
 				bTrackPlayer = true;
 				bFoundCurPlayer = true;
                 if (minDamageThreshold >= 70 && bTrigSound == false)
 		       {
-               bTrigSound = true;
-               PlaySound(Sound'TurretSwitch',,0.9,, 2560, 0.9);
+				   bTrigSound = true;
+				   PlaySound(Sound'TurretSwitch',,0.9,, 2560, 0.9);
                }
 				playerLocation = player.Location - vect(0,0,1)*(player.CollisionHeight-5);
 
@@ -395,11 +406,10 @@ function CheckCarcassVisibility(DeusExCarcass carcass)
 	if (carcass == None)
 		return;
 
+	if (carcass.bAnimalCarcass)                         //RSD: No unconscious bodies either //Ygll: revert this, for more realism.
+		return;  //CyberP: No animals
 
-        if (carcass.bAnimalCarcass || carcass.bNotDead)                         //RSD: No unconscious bodies either
-                return;  //CyberP: No animals
-
-        dist = Abs(VSize(carcass.Location - Location));
+	dist = Abs(VSize(carcass.Location - Location));
 
 	if (dist <= cameraRange && carcass.Alliance != 'None' && carcass.KillerAlliance == 'Player')
 	{
@@ -425,12 +435,12 @@ function CheckCarcassVisibility(DeusExCarcass carcass)
 				if (bTrackCarcass)
 					DesiredRotation = rot;
 
-				lastSeenTimer = 0;
-				bCarcassSeen = true;
-                if (minDamageThreshold >= 70 && bTrigSound == false)
+			   bCarcassSeen = true;
+				
+               if (minDamageThreshold >= 70 && bTrigSound == false)
 		       {
-               bTrigSound = true;
-               PlaySound(Sound'TurretSwitch',,0.9,, 2560, 0.9);
+				   bTrigSound = true;
+				   PlaySound(Sound'TurretSwitch',,0.9,, 2560, 0.9);
                }
 				// trigger the event if we haven't yet for this sighting
 				if (!bEventTriggered && (carcassTriggerTimer >= triggerDelay) && (Level.Netmode == NM_Standalone))
@@ -489,7 +499,7 @@ function Tick(float deltaTime)
         {
             if (hackStrength != 0.0 && !bActive)
                 EnableCamera();
-        }
+        }		
     }
 
 	// if this camera is not active, get out
@@ -500,6 +510,7 @@ function Tick(float deltaTime)
 
         if (!bRebooting) //We will handle our own textures
             MultiSkins[2] = GetCameraLightTex(0);
+			
 		return;
 	}
 
@@ -534,6 +545,7 @@ function Tick(float deltaTime)
 
 		return;
 	}
+	
     if (!bPlayerSeen && !bCarcassSeen && minDamageThreshold >= 70)
     {
         if (bTrigSound)
@@ -541,6 +553,7 @@ function Tick(float deltaTime)
         bTrigSound=false;
         MultiSkins[2] = GetCameraLightTex(1);
     }
+	
 	// Check visibility every 0.1 seconds
 	if (!bNoAlarm)
 	{
@@ -599,15 +612,19 @@ function Tick(float deltaTime)
 		{
 			if (bPlayerSeen)
 				triggerTimer += deltaTime;
+			
 			if (bCarcassSeen)
+			{
 				carcassTriggerTimer += deltaTime;
 				SoundPitch = 96;
-
+			}
+			
 			if (triggerTimer % 0.5 > 0.4 || carcassTriggerTimer % 0.5 > 0.4)
 			{
                 MultiSkins[2] = GetCameraLightTex(2);
                 if (minDamageThreshold < 70)
 				   PlaySound(Sound'Beep6',,0.9,, 2560, 0.9);
+			   
 				if ((bPlayerSeen) && (curplayer != None) && ( curplayer.bHardCoreMode || curplayer.bHardcoreAI1 ) )  //CyberP: AI notice cameras beeping and hunt in the direction they are facing (player pos). bit of a hack.
 				{
 					curplayer.AISendEvent('LoudNoise', EAITYPE_Audio,,1024);
@@ -620,7 +637,7 @@ function Tick(float deltaTime)
 			else
 			{
 				if (minDamageThreshold < 70)
-                MultiSkins[2] = GetCameraLightTex(1);
+					MultiSkins[2] = GetCameraLightTex(1);
 			}
 		}
 
@@ -634,16 +651,15 @@ function Tick(float deltaTime)
 		    bPlayerSeen = false;
 			bCarcassSeen = false;
 			bStasis = default.bStasis;
-			lastSeenTimer = 0;
+			lastSeenTimer = 0.000000;
 			// untrigger events
 			TriggerEvent(false);
 			TriggerCarcassEvent(false);
 		}
-
+		
 		return;
 	}
-
-
+	
 	swingTimer += deltaTime;
     MultiSkins[2] = GetCameraLightTex(1);
 
@@ -780,16 +796,16 @@ function Actor AcquireMultiplayerTarget()
 
 function TriggerAlarmOverride()                                                 //RSD: used by AlarmUnit.uc to shut off any active camera alarms
 {
-        if (bActive)
-		{
-			bPlayerSeen = false;
-			bCarcassSeen = false;
-			bStasis = default.bStasis;
-			lastSeenTimer = 0;
-			// untrigger events
-			TriggerEvent(false);
-			TriggerCarcassEvent(false);
-		}
+	if (bActive)
+	{
+		bPlayerSeen = false;
+		bCarcassSeen = false;
+		bStasis = default.bStasis;
+		lastSeenTimer = 0.000000;
+		// untrigger events
+		TriggerEvent(false);
+		TriggerCarcassEvent(false);
+	}
 }
 
 defaultproperties
@@ -829,4 +845,5 @@ defaultproperties
      bVisionImportant=true
      disableTimeBase=120.0;
      disableTimeMult=60.0;
+	 lastSeenTimer=0.000000;
 }
