@@ -10,7 +10,7 @@ var() int cameraFOV;
 var() int cameraRange;
 var float memoryTime;
 var() bool bActive;
-var() bool bNoAlarm;			// if True, does NOT sound alarm
+var() bool bNoAlarm;			// if true, does NOT sound alarm
 var Rotator origRot;
 var Rotator ReplicatedRotation; // for net propagation
 var bool bTrackPlayer;
@@ -110,16 +110,16 @@ function BeginPlay()
 
 	playerLocation = Location;
 
-	if (bSwing == False)
+	if (bSwing == false)
 	{
-	bSwing = True;  //CyberP: hack so non-swinging cameras reset to default rot after tagging player/corpse.
+	bSwing = true;  //CyberP: hack so non-swinging cameras reset to default rot after tagging player/corpse.
 	swingAngle = 2;
     }
 	SoundRadius=96;
 	default.SoundRadius=96;
 	if (Level.NetMode != NM_Standalone)
 	{
-		bInvincible=True;
+		bInvincible=true;
 		HackStrength = 0.6;
 	}
 }
@@ -180,7 +180,7 @@ function HackAction(Actor Hacker, bool bHacked)
 				//Turn off the associated turret as well
 				if ( (Hacker.IsA('DeusExPlayer')) && (Turret != None))
 				{
-					Turret.bDisabled = True;
+					Turret.bDisabled = true;
 					Turret.gun.HackStrength = 0.6;
 				}
 			}
@@ -190,7 +190,7 @@ function HackAction(Actor Hacker, bool bHacked)
 
 function EnableCamera()
 {
-    bActive = True;
+    bActive = true;
     MultiSkins[2] = GetCameraLightTex(1);
     AmbientSound = None;
     bRebooting = false;
@@ -198,9 +198,9 @@ function EnableCamera()
 
 function DisableCamera()
 {
-    TriggerEvent(False);
-    TriggerCarcassEvent(False); // eshkrm
-    bActive = False;
+    TriggerEvent(false);
+    TriggerCarcassEvent(false); // eshkrm
+    bActive = false;
     AmbientSound = None;
     DesiredRotation = origRot;
     bRebooting = false;
@@ -265,7 +265,7 @@ function TriggerEvent(bool bTrigger)
 		AIStartEvent('Alarm', EAITYPE_Audio, SoundVolume/255.0, 24*(SoundRadius+2));
 
 		// make sure we can't go into stasis while we're alarming
-		bStasis = False;
+		bStasis = false;
 	}
 	else
 	{
@@ -288,7 +288,7 @@ function TriggerCarcassEvent(bool bTrigger)
 
 	// now, the camera sounds its own alarm
 	if (bTrigger)
-	{
+	{	
 		AmbientSound = Sound'Klaxon2';
 		SoundVolume = 80;
 		SoundRadius = 112;
@@ -297,7 +297,7 @@ function TriggerCarcassEvent(bool bTrigger)
 		AIStartEvent('Alarm', EAITYPE_Audio, SoundVolume/255.0, 24*(SoundRadius+2));
 
 		// make sure we can't go into stasis while we're alarming
-		bStasis = False;
+		bStasis = false;
 	}
 	else
 	{
@@ -328,7 +328,7 @@ function CheckPlayerVisibility(DeusExPlayer player)
 	// if the player is in range
 	if (player.bDetectable && !player.bIgnore && (dist <= cameraRange))
 	{
-		hit = Trace(HitLocation, HitNormal, player.Location, Location, True);
+		hit = Trace(HitLocation, HitNormal, player.Location, Location, true);
 		if (hit == player)
 		{
 			// If the player's RadarTrans aug is on, the camera can't see him
@@ -364,19 +364,19 @@ function CheckPlayerVisibility(DeusExPlayer player)
 					DesiredRotation = rot;
 
 				lastSeenTimer = 0;
-				bPlayerSeen = True;
-				bTrackPlayer = True;
-				bFoundCurPlayer = True;
-                if (minDamageThreshold >= 70 && bTrigSound == False)
+				bPlayerSeen = true;
+				bTrackPlayer = true;
+				bFoundCurPlayer = true;
+                if (minDamageThreshold >= 70 && bTrigSound == false)
 		       {
-               bTrigSound = True;
+               bTrigSound = true;
                PlaySound(Sound'TurretSwitch',,0.9,, 2560, 0.9);
                }
 				playerLocation = player.Location - vect(0,0,1)*(player.CollisionHeight-5);
 
 				// trigger the event if we haven't yet for this sighting
 				if (!bEventTriggered && (triggerTimer >= triggerDelay) && (Level.Netmode == NM_Standalone))
-					TriggerEvent(True);
+					TriggerEvent(true);
 
 				return;
 			}
@@ -403,7 +403,7 @@ function CheckCarcassVisibility(DeusExCarcass carcass)
 
 	if (dist <= cameraRange && carcass.Alliance != 'None' && carcass.KillerAlliance == 'Player')
 	{
-		hit = Trace(HitLocation, HitNormal, carcass.Location, Location, True);
+		hit = Trace(HitLocation, HitNormal, carcass.Location, Location, true);
 		if (hit == carcass)
 		{
 			// figure out if we can see the carcass
@@ -426,16 +426,16 @@ function CheckCarcassVisibility(DeusExCarcass carcass)
 					DesiredRotation = rot;
 
 				lastSeenTimer = 0;
-				bCarcassSeen = True;
-                if (minDamageThreshold >= 70 && bTrigSound == False)
+				bCarcassSeen = true;
+                if (minDamageThreshold >= 70 && bTrigSound == false)
 		       {
-               bTrigSound = True;
+               bTrigSound = true;
                PlaySound(Sound'TurretSwitch',,0.9,, 2560, 0.9);
                }
 				// trigger the event if we haven't yet for this sighting
 				if (!bEventTriggered && (carcassTriggerTimer >= triggerDelay) && (Level.Netmode == NM_Standalone))
 				{
-					TriggerCarcassEvent(True);
+					TriggerCarcassEvent(true);
 				}
 
 				return;
@@ -472,7 +472,7 @@ function Tick(float deltaTime)
 
     if (bRebooting && !bConfused)
     {
-        bActive = False;
+        bActive = false;
         remainingTimeInt = int(remainingTime);
         MultiSkins[2] = GetCameraLightTex(0);
 
@@ -521,7 +521,7 @@ function Tick(float deltaTime)
 
 		if (confusionTimer > confusionDuration)
 		{
-			bConfused = False;
+			bConfused = false;
 			confusionTimer = 0;
 			confusionDuration = Default.confusionDuration;
             if (!bRebooting)
@@ -538,7 +538,7 @@ function Tick(float deltaTime)
     {
         if (bTrigSound)
            PlaySound(Sound'TurretSwitch',,0.9,, 2560, 0.5);
-        bTrigSound=False;
+        bTrigSound=false;
         MultiSkins[2] = GetCameraLightTex(1);
     }
 	// Check visibility every 0.1 seconds
@@ -568,7 +568,7 @@ function Tick(float deltaTime)
                {
 			      //SARGE: TODO: Actually make this use the perk value!
                   triggerDelay = 4.125000;                                      //RSD: Was 4.200000, misreported as +45% increase but actually was +52.73%. Now 50%!
-                  bSkillApplied = True;
+                  bSkillApplied = true;
                }
              }
             }
@@ -608,11 +608,11 @@ function Tick(float deltaTime)
                 MultiSkins[2] = GetCameraLightTex(2);
                 if (minDamageThreshold < 70)
 				   PlaySound(Sound'Beep6',,0.9,, 2560, 0.9);
-				if ((bPlayerSeen) && (curplayer != None) && ((curplayer.bHardCoreMode==True) || (curplayer.bHardcoreAI1==true)))  //CyberP: AI notice cameras beeping and hunt in the direction they are facing (player pos). bit of a hack.
+				if ((bPlayerSeen) && (curplayer != None) && ( curplayer.bHardCoreMode || curplayer.bHardcoreAI1 ) )  //CyberP: AI notice cameras beeping and hunt in the direction they are facing (player pos). bit of a hack.
 				{
 					curplayer.AISendEvent('LoudNoise', EAITYPE_Audio,,1024);
 				}
-				else if ((bCarcassSeen) && (curplayer != None) && (curplayer.bHardCoreMode==True))
+				else if ((bCarcassSeen) && (curplayer != None) && ( curplayer.bHardCoreMode || curplayer.bHardcoreAI1 ) )
 				{
 					carcass.AISendEvent('LoudNoise', EAITYPE_Audio,,1024);
 				}
@@ -627,17 +627,17 @@ function Tick(float deltaTime)
 		if (lastSeenTimer < memoryTime)
 		{
 			lastSeenTimer += deltaTime;
-			bStasis = False;
+			bStasis = false;
 		}
 		else
 		{
-		    bPlayerSeen = False;
-			bCarcassSeen = False;
+		    bPlayerSeen = false;
+			bCarcassSeen = false;
 			bStasis = default.bStasis;
 			lastSeenTimer = 0;
 			// untrigger events
-			TriggerEvent(False);
-			TriggerCarcassEvent(False);
+			TriggerEvent(false);
+			TriggerCarcassEvent(false);
 		}
 
 		return;
@@ -696,7 +696,7 @@ auto state Active
 			confusionTimer = 0;
 			if (!bConfused)
 			{
-				bConfused = True;
+				bConfused = true;
                 MultiSkins[2] = GetCameraLightTex(3);
 				SoundPitch = 128;
 				PlaySound(sound'EMPZap', SLOT_None,,, 1280);
@@ -782,25 +782,25 @@ function TriggerAlarmOverride()                                                 
 {
         if (bActive)
 		{
-			bPlayerSeen = False;
-			bCarcassSeen = False;
+			bPlayerSeen = false;
+			bCarcassSeen = false;
 			bStasis = default.bStasis;
 			lastSeenTimer = 0;
 			// untrigger events
-			TriggerEvent(False);
-			TriggerCarcassEvent(False);
+			TriggerEvent(false);
+			TriggerCarcassEvent(false);
 		}
 }
 
 defaultproperties
 {
-     bEMPHitMarkers=True
+     bEMPHitMarkers=true
      swingAngle=8192
      swingPeriod=8.000000
      cameraFOV=4096
      cameraRange=2048
      memoryTime=5.000000
-     bActive=True
+     bActive=true
      confusionDuration=10.000000
      triggerDelay=2.750000
      msgActivated="Camera activated"
@@ -808,7 +808,7 @@ defaultproperties
      Team=-1
      HitPoints=50
      minDamageThreshold=55
-     bInvincible=False
+     bInvincible=false
      FragType=Class'DeusEx.MetalFragment'
      ItemName="Surveillance Camera"
      Physics=PHYS_Rotating
@@ -822,11 +822,11 @@ defaultproperties
      LightBrightness=224
      LightHue=80
      LightRadius=1
-     bRotateToDesired=True
+     bRotateToDesired=true
      Mass=20.000000
      Buoyancy=5.000000
      RotationRate=(Pitch=65535,Yaw=65535)
-     bVisionImportant=True
+     bVisionImportant=true
      disableTimeBase=120.0;
      disableTimeMult=60.0;
 }
