@@ -249,22 +249,21 @@ function TriggerEvent(bool bTrigger)
 	if (bTrigger)
 	{
 	    player = DeusExPlayer(GetPlayerPawn());
-	    
-		if (bAlarmEvent && event != '' && player != None)
+		bAlarmEvent = true;
+		AmbientSound = Sound'alarms';
+		SoundVolume = 80;  //lowered volume, increased radius
+		SoundRadius = 150;
+        SoundPitch = 64; //CyberP: set back to default pitch
+        MultiSkins[2] = GetCameraLightTex(2);
+		AIStartEvent('Alarm', EAITYPE_Audio, SoundVolume/255.0, 24*(SoundRadius+4));
+		// make sure we can't go into stasis while we're alarming
+		bStasis = false;
+		
+		if (bAlarmEvent && Event != '' && player != None)
 		{
 			foreach AllActors(class'Actor', A, Event)
 				A.Trigger(Self, player);
 		}
-		
-		AmbientSound = Sound'alarms';
-		SoundVolume = 80;  //lowered volume, increased radius
-		SoundRadius = 112;
-        SoundPitch = 64; //CyberP: set back to default pitch
-        MultiSkins[2] = GetCameraLightTex(2);
-		AIStartEvent('Alarm', EAITYPE_Audio, SoundVolume/255.0, 24*(SoundRadius+2));
-
-		// make sure we can't go into stasis while we're alarming
-		bStasis = false;
 	}
 	else
 	{
@@ -273,7 +272,7 @@ function TriggerEvent(bool bTrigger)
 		SoundVolume = 32;
         MultiSkins[2] = GetCameraLightTex(1);
 		AIEndEvent('Alarm', EAITYPE_Audio);
-
+		bAlarmEvent = false;
 		// reset our stasis info
 		bStasis = Default.bStasis;
 	}
@@ -291,24 +290,23 @@ function TriggerCarcassEvent(bool bTrigger)
 	// now, the camera sounds its own alarm
 	if (bTrigger)
 	{
-		lastSeenTimer = 0.000000;
-		player = DeusExPlayer(GetPlayerPawn());
-
-		if (bAlarmEvent && event != '' && player != None)
+		lastSeenTimer = -5.000000;
+		player = DeusExPlayer(GetPlayerPawn());		
+		bAlarmEvent = true;
+		AmbientSound = Sound'Klaxon2';
+		SoundVolume = 80;
+		SoundRadius = 150;
+        SoundPitch = 32; //CyberP: Different pitch for carcasses
+        MultiSkins[2] = GetCameraLightTex(4);
+		AIStartEvent('Alarm', EAITYPE_Audio, SoundVolume/255.0, 24*(SoundRadius+2));
+		// make sure we can't go into stasis while we're alarming
+		bStasis = false;
+		
+		if (bAlarmEvent && Event != '' && player != None)
 		{
 			foreach AllActors(class'Actor', A, Event)
 				A.Trigger(Self, player);
 		}
-		
-		AmbientSound = Sound'Klaxon2';
-		SoundVolume = 80;
-		SoundRadius = 112;
-        SoundPitch = 32; //CyberP: Different pitch for carcasses
-        MultiSkins[2] = GetCameraLightTex(4);
-		AIStartEvent('Alarm', EAITYPE_Audio, SoundVolume/255.0, 24*(SoundRadius+2));
-
-		// make sure we can't go into stasis while we're alarming
-		bStasis = false;
 	}
 	else
 	{
@@ -317,7 +315,7 @@ function TriggerCarcassEvent(bool bTrigger)
 		SoundVolume = 32;
         MultiSkins[2] = GetCameraLightTex(1);
 		AIEndEvent('Alarm', EAITYPE_Audio);
-
+		bAlarmEvent = false;
 		// reset our stasis info
 		bStasis = Default.bStasis;
 	}
@@ -351,8 +349,10 @@ function CheckPlayerVisibility(DeusExPlayer player)
 					return;
 
                 foreach AllActors(class'AdaptiveArmor', armor) //CyberP: thermoptic camo hides us from cameras
-						if ((armor.Owner == player) && armor.bActive)
-                        	    return;
+				{
+					if ((armor.Owner == player) && armor.bActive)
+							return;
+				}
 			}
 
 			// figure out if we can see the player
@@ -379,16 +379,19 @@ function CheckPlayerVisibility(DeusExPlayer player)
 				bTrackPlayer = true;
 				bFoundCurPlayer = true;
                 if (minDamageThreshold >= 70 && bTrigSound == false)
-		       {
-				   bTrigSound = true;
-				   PlaySound(Sound'TurretSwitch',,0.9,, 2560, 0.9);
-               }
+		        {
+				    bTrigSound = true;
+					PlaySound(Sound'TurretSwitch',,0.9,, 2560, 0.9);
+                }
+				
 				playerLocation = player.Location - vect(0,0,1)*(player.CollisionHeight-5);
 
 				// trigger the event if we haven't yet for this sighting
 				if (!bEventTriggered && (triggerTimer >= triggerDelay) && (Level.Netmode == NM_Standalone))
+				{
 					TriggerEvent(true);
-
+				}
+				
 				return;
 			}
 		}
@@ -435,13 +438,14 @@ function CheckCarcassVisibility(DeusExCarcass carcass)
 				if (bTrackCarcass)
 					DesiredRotation = rot;
 
-			   bCarcassSeen = true;
+			    bCarcassSeen = true;
 				
-               if (minDamageThreshold >= 70 && bTrigSound == false)
-		       {
-				   bTrigSound = true;
-				   PlaySound(Sound'TurretSwitch',,0.9,, 2560, 0.9);
-               }
+                if (minDamageThreshold >= 70 && bTrigSound == false)
+		        {
+					bTrigSound = true;
+				    PlaySound(Sound'TurretSwitch',,0.9,, 2560, 0.9);
+                }
+				
 				// trigger the event if we haven't yet for this sighting
 				if (!bEventTriggered && (carcassTriggerTimer >= triggerDelay) && (Level.Netmode == NM_Standalone))
 				{
