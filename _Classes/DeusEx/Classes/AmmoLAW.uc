@@ -1,20 +1,20 @@
 //=============================================================================
-// AmmoGasGrenade.
+// AmmoLAW.
 //=============================================================================
-class AmmoGasGrenade extends DeusExAmmo;
+class AmmoLAW extends DeusExAmmo;
 
 defaultproperties
 {
-     ammoSkill=Class'DeusEx.SkillDemolition'
+     ammoSkill=Class'DeusEx.SkillWeaponHeavy'
      AmmoAmount=1
-     MaxAmmo=5
-     ItemName="Gas Grenade"
-     PickupViewMesh=LodMesh'DeusExItems.TestBox'
-     Icon=Texture'DeusExUI.Icons.BeltIconGasGrenade'
-     beltDescription="GAS GREN"
+     MaxAmmo=3
+     ItemName="Light Anti-Tank Weapon (LAW)"
+     PickupViewMesh=LodMesh'DeusExItems.LAWPickup'
+     Mesh=LodMesh'DeusExItems.LAWPickup'
+     Icon=Texture'DeusExUI.Icons.BeltIconLAW'
+     beltDescription="LAW"
      Mesh=LodMesh'DeusExItems.TestBox'
      CollisionRadius=22.500000
      CollisionHeight=16.000000
      bCollideActors=True
-     bHarderScaling=True
 }

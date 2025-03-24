@@ -20,6 +20,7 @@ function FirstFrame()
 	local AnnaNavarre Anna;
     local ammocrate crate;                                                      //RSD: Added an ammo crate to store all the player's ammo (new behavior in SP for that class)
     local Ammo Ammotype;
+    local int ammoCount;
 
 	Super.FirstFrame();
 
@@ -77,10 +78,23 @@ function FirstFrame()
 					if (item != None)
 					{
 						nextItem = item.Inventory;
+                        if (item.IsA('Weapon'))
+                        {
+                            AmmoType = Ammo(player.FindInventoryType(Weapon(item).AmmoName));
+                            ammoCount = ammoType.AmmoAmount;
+                        }
 						
 						//== Y|y: Turn off any charged pickups we were using and remove the associated HUD.  Per Lork on the OTP forums
 						if (item.IsA('ChargedPickup'))
 							ChargedPickup(item).ChargedPickupEnd(Player);
+
+						Player.DeleteInventory(item);
+
+                        if (item.IsA('WeaponGEPGun'))                           //RSD: To try to help with the GEP gun not showing up?
+                        	item.DropFrom(SP.Location + item.CollisionHeight*vect(0,0,1));
+                        else
+							item.DropFrom(SP.Location);
+							//item.DropFrom(player.Location); //SARGE: Enable this for testing, then disable it after!
 
 						// restore any ammo amounts for a weapon to default
 						//DDL- except the fucking lams and stuff!
@@ -93,19 +107,11 @@ function FirstFrame()
                             //If it's a disposable weapon, it's harder. Add our current ammo to the weapon pickup, then remove our ammo.
                             else
                             {
-                                AmmoType = Weapon(item).AmmoType;
-                                Weapon(item).PickupAmmoCount = AmmoType.ammoAmount;
+                                player.ClientMessage("Mission05 crap: " $ AmmoType.itemName $ " - " $ ammoCount);
+                                Weapon(item).PickupAmmoCount = ammoCount;
                                 AmmoType.ammoAmount = 0;
-                                Player.DeleteInventory(Weapon(item).AmmoType);
                             }
 						}
-
-						Player.DeleteInventory(item);
-
-                        if (item.IsA('WeaponGEPGun'))                           //RSD: To try to help with the GEP gun not showing up?
-                        	item.DropFrom(SP.Location + item.CollisionHeight*vect(0,0,1));
-                        else
-							item.DropFrom(SP.Location);
 					}
 
 					if (nextItem == None)
@@ -157,6 +163,17 @@ function FirstFrame()
 
 				player.AssignSecondary(None);
 				player.primaryWeapon = None;
+
+                //SARGE: If we're using the "Killswitch Engaged" playthrough mod,
+                //then set the killswitch to ~23 hours, as mentioned by Simons
+                if (player.bRealKillswitch && !flags.GetBool('GMDXKillswitchSet'))
+                {
+                    player.killswitchTimer = (23*60)*60;
+                    player.killswitchTimer += Player.Randomizer.GetRandomInt(3600);
+                    player.DeactivateAllAugs(true);
+                    //player.killSwitchTimer = 20; //For testing, set it to 20 seconds.
+                    flags.SetBool('GMDXKillswitchSet', True,, 6);
+                }
 			}
 
 			flags.SetBool('MS_InventoryRemoved', True,, 6);

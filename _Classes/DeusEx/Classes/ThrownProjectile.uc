@@ -187,7 +187,8 @@ simulated function Tick(float deltaTime)
 					if (Owner == None)
 					{
                         //Fix bug with pre-placed grenades not opening
-                        PlayAnim('Open');
+                        if (HasAnim('Open'))
+                            PlayAnim('Open');
 						blastRadius=512.000000;
 						foreach RadiusActors(class'DeusExPlayer', Player, proxRadius*4)
 						{
@@ -355,20 +356,24 @@ function Frob(Actor Frobber, Inventory frobWith)
 
     if (Player == None)
         return;
+        
+
+    skill = Player.SkillSystem.GetSkillLevel(class'SkillDemolition');
 
 	// if the player frobs it and it's disabled, the player can grab it
 	if (bDisabled)
     {
-        skill = Player.SkillSystem.GetSkillLevel(class'SkillDemolition');
-		// if the player frobs it and has the demolition skill, collect the explosive
-        if (skill >= rearmSkillRequired || Owner == Player)
-            Super.Frob(Frobber, frobWith);
+        Super.Frob(Frobber, frobWith);
     }
 	else if (bProximityTriggered && bArmed && (skillTime >= 0))
 	{
         PlaySound(sound'Beep4',SLOT_None,,, 1280, 0.5);
         bDisabled = True;
         AmbientSound = None;
+
+        //SARGE: If the player lacks the skills to properly disarm it, disable it completely.
+        if (skill < rearmSkillRequired && Owner != Player)
+            bEMPDisabled = true;
 	}
 }
 

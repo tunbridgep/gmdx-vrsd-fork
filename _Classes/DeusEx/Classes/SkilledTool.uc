@@ -86,6 +86,7 @@ function BringUp()
 
 function OnEquipped()
 {
+    SetWeaponHandTex();
 }
 
 // ----------------------------------------------------------------------

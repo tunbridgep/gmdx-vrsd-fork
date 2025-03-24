@@ -144,8 +144,21 @@ function FirstFrame()
     local bool bRandomCrates;                                                   //RSD
     local bool bRandomItems;                                                    //RSD
     local int seed;
+    local DeusExCarcass C;                                                      //SARGE
+    local DecalManager D;                                                       //SARGE
 
 	flags.DeleteFlag('PlayerTraveling', FLAG_Bool);
+
+    //Recreate/Setup our decal manager
+	foreach AllActors(class'DecalManager', D)
+        break;
+
+    if (D == None)
+    {
+        D = Spawn(class'DecalManager');
+        player.DecalManager = D;
+        D.Setup(player);
+    }
 
 	// Check to see which NPCs should be dead from prevous missions
 	foreach AllActors(class'ScriptedPawn', P)
@@ -198,6 +211,13 @@ function FirstFrame()
         {
             InitializeEnemySwap(0);
             InitializeEnemySwap(1);
+        }
+
+        //Make the placed corpses bleed
+        foreach AllActors(class'DeusExCarcass', C)
+        {
+            if (!C.bHidden && !C.bNotDead)
+                C.SetupCarcass(false);
         }
 
         //Randomise the crap around the level
@@ -499,9 +519,40 @@ function InitializeRandomAmmoCounts()                                           
 function RandomiseCrap()
 {
     local DeusExPickup P;
+    local OfficeChair C;
+    local CouchLeather L;
+    local ChairLeather L2;
+    local int chairSkin;
+        
     foreach AllActors(class'DeusExPickup', P)
     {
         P.RandomiseSkin(player);
+    }
+    
+    //Roll once, so that all the chairs in the level get the same style.
+    chairSkin=Player.Randomizer.GetRandomInt(5);
+    //log("Applying chair skin to all swivel chairs: " $ chairSkin);
+    foreach AllActors(class'OfficeChair', C)
+    {
+        C.SkinColor = chairSkin;
+        C.UpdateHDTPsettings();
+    }
+    
+    //Roll once, so that all the couches in the level get the same style.
+    chairSkin=Player.Randomizer.GetRandomInt(4);
+    //log("Applying chair skin to all leather couches: " $ chairSkin);
+    foreach AllActors(class'CouchLeather', L)
+    {
+        L.SkinColor = chairSkin;
+        L.UpdateHDTPsettings();
+    }
+    
+    //And chairs
+    //log("Applying chair skin to all leather chairs: " $ chairSkin);
+    foreach AllActors(class'ChairLeather', L2)
+    {
+        L2.SkinColor = chairSkin;
+        L2.UpdateHDTPsettings();
     }
 }
 
@@ -556,13 +607,15 @@ function ReplaceEnemyWeapon(ScriptedPawn first, ScriptedPawn second)
 {
     local Inventory weaps1[5], weaps2[5];
     local Inventory inv;
+    local DeusExWeapon wep;
     local int i,j,k;
 
-    //Get a list of all the weapons in each inventory
+
+    //Do the ammos first, so we can assign them to weapons properly
     inv = first.Inventory;
     while (inv != None && i < 5)
     {
-        if (inv.isA('DeusExWeapon') || inv.isA('Ammo'))
+        if (inv.isA('Ammo'))
         {
             weaps1[i] = inv;
             i++;
@@ -573,7 +626,50 @@ function ReplaceEnemyWeapon(ScriptedPawn first, ScriptedPawn second)
     inv = second.Inventory;
     while (inv != None && j < 5)
     {
-        if (inv.isA('DeusExWeapon') || inv.isA('Ammo'))
+        if (inv.isA('Ammo'))
+        {
+            weaps2[j] = inv;
+            j++;
+        }
+        inv = inv.Inventory;
+    }
+    
+    //Now actually swap the ammo between pawns
+    for (k=0;k < i;k++)
+    {
+        //Player.ClientMessage("Give " $ first.FamiliarName $ " " $weaps1[k].ItemName $ " to " $ second.FamiliarName);
+        weaps1[k].GiveTo(second);
+        weaps1[k].SetBase(second);
+    }
+
+    for (k=0;k < j;k++)
+    {
+        //Player.ClientMessage("Give " $ second.FamiliarName $ " " $ weaps2[k].ItemName $ " to " $ first.FamiliarName);
+        weaps2[k].GiveTo(first);
+        weaps2[k].SetBase(first);
+    }
+
+    //Now do the weapons
+    i = 0;
+    j = 0;
+    k = 0;
+
+    //Get a list of all the weapons in each inventory
+    inv = first.Inventory;
+    while (inv != None && i < 5)
+    {
+        if (inv.isA('DeusExWeapon'))
+        {
+            weaps1[i] = inv;
+            i++;
+        }
+        inv = inv.Inventory;
+    }
+    
+    inv = second.Inventory;
+    while (inv != None && j < 5)
+    {
+        if (inv.isA('DeusExWeapon'))
         {
             weaps2[j] = inv;
             j++;
@@ -586,25 +682,24 @@ function ReplaceEnemyWeapon(ScriptedPawn first, ScriptedPawn second)
     {
         //Player.ClientMessage("Give " $ first.FamiliarName $ " " $weaps1[k].ItemName $ " to " $ second.FamiliarName);
         weaps1[k].GiveTo(second);
+        weaps1[k].SetBase(second);
+        wep = DeusExWeapon(weaps1[k]);
+        if (wep != None)
+            wep.AmmoType = Ammo(second.FindInventoryType(wep.AmmoName));
     }
 
     for (k=0;k < j;k++)
     {
         //Player.ClientMessage("Give " $ second.FamiliarName $ " " $ weaps2[k].ItemName $ " to " $ first.FamiliarName);
         weaps2[k].GiveTo(first);
+        weaps2[k].SetBase(first);
+        wep = DeusExWeapon(weaps2[k]);
+        if (wep != None)
+            wep.AmmoType = Ammo(first.FindInventoryType(wep.AmmoName));
     }
 
-    first.SwitchToBestWeapon();
-    second.SwitchToBestWeapon();
-
-    /*
-    if (weap != None && weap2 != None)
-    {
-        weap.GiveTo(second);
-        weap2.GiveTo(first);
-        Player.ClientMessage("Swapping " $ first.bindName $ " with " $ second.bindName);
-    }
-    */
+    first.SetupWeapon(false);
+    second.SetupWeapon(false);
 }
 
 function InitializeRandomCrateContents()                                        //RSD: Randomizes crate contents depdending on new loot table classes

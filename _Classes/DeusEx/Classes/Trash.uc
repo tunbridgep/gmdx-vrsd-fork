@@ -37,7 +37,8 @@ function Tick(float deltaTime)
 
 function Timer()
 {
-	Destroy();
+    if (class'DeusExPlayer'.default.iPersistentDebris < 2)
+        Destroy();
 }
 
 function StopMoving()
@@ -79,6 +80,9 @@ function BeginPlay()
 	lastLoc = Location + vect(100,0,0);
 	if (IsA('TrashPaper') && !bStatic)
 		LoopAnim('Blowing');
+     
+    if (class'DeusExPlayer'.default.iPersistentDebris >= 2)
+        LifeSpan=0;
 
 }
 

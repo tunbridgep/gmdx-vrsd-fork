@@ -62,6 +62,9 @@ event InitWindow()
 
 	CreateControls();
 
+    if(Player.SkillSystem.GetSkillLevel(class'SkillComputer') == 0)
+        UpdateSoftwareNuke();
+
 	SetHackMessage(HackReadyLabel);
 }
 
@@ -319,49 +322,28 @@ local int compSkill;
 
 function UpdateSoftwareWorm()
 {
-	local Inventory anItem;
-	local int softCount;
+	local Inventory worm;
 
-		anItem = player.Inventory;
+	worm = player.FindInventoryType(class'SoftwareStop');
 
-		while(anItem != None)
-		{
-			if (anItem.IsA('SoftwareStop'))
-				softCount++;
+    if (worm != None && btnWorm == None)
+        CreateWormButton();
 
-            if (softCount == 1)
-			CreateWormButton();
-
-			anItem = anItem.Inventory;
-		}
-
-        if (softCount == 0 && btnWorm != none)
-            btnWorm.SetSensitivity(false);
-        else if (softCount > 0 && btnWorm != None)
-            btnWorm.SetSensitivity(True);
-		//winAugCans.SetCount(augCanCount);
+    if (worm == None && btnWorm != none)
+        btnWorm.SetSensitivity(false);
 }
 
 function UpdateSoftwareNuke()
 {
-	local Inventory anItem;
-	local int softCount;
+	local Inventory nuke;
 
-		anItem = player.Inventory;
+	nuke = player.FindInventoryType(class'SoftwareNuke');
 
-		while(anItem != None)
-		{
-			if (anItem.IsA('SoftwareNuke'))
-				softCount++;
+    if (nuke != None && btnNuke == None)
+        CreateNukeButton();
 
-            if (softCount == 1)
-			CreateNukeButton();
-
-			anItem = anItem.Inventory;
-		}
-        if (softCount == 0 && btnNuke != none)
-            btnNuke.SetSensitivity(false);
-		//winAugCans.SetCount(augCanCount);
+    if (nuke == None && btnNuke != none)
+        btnNuke.SetSensitivity(false);
 }
 
 function decrementSoftwareWorm()

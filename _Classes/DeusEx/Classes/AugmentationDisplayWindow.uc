@@ -179,13 +179,22 @@ function Actor TraceLOS(float checkDist, out vector HitLocation)
        return target;
        }
     } */
-	// figure out how far ahead we should trace
-	StartTrace = Player.Location;
-	EndTrace = Player.Location + (Vector(Player.ViewRotation) * checkDist);
+    if (player.bSpyDroneActive && !player.bSpyDroneSet && player.bBigDroneView && player.aDrone != None)
+    {
+        // figure out how far ahead we should trace
+        StartTrace = Player.aDrone.Location;
+        EndTrace = Player.aDrone.Location + (Vector(player.aDrone.Rotation) * checkDist);
+    }
+    else
+    {
+        // figure out how far ahead we should trace
+        StartTrace = Player.Location;
+        EndTrace = Player.Location + (Vector(Player.ViewRotation) * checkDist);
 
-	// adjust for the eye height
-	StartTrace.Z += Player.BaseEyeHeight;
-	EndTrace.Z += Player.BaseEyeHeight;
+        // adjust for the eye height
+        StartTrace.Z += Player.BaseEyeHeight;
+        EndTrace.Z += Player.BaseEyeHeight;
+    }
 
 	// find the object that we are looking at
 	// make sure we don't select the object that we're carrying
@@ -1188,11 +1197,7 @@ function DrawMiscStatusMessages( GC gc )
 	weap = DeusExWeapon(Player.inHand);
 	if (( weap != None ) && ( weap.AmmoLeftInClip() == 0 ) && (weap.NumClips() == 0) )
 	{
-		if ( weap.IsA('WeaponLAM') ||
-			  weap.IsA('WeaponGasGrenade') ||
-			  weap.IsA('WeaponEMPGrenade') ||
-			  weap.IsA('WeaponShuriken') ||
-			  weap.IsA('WeaponLAW') )
+		if (weap.bDisposableWeapon)
 		{
 		}
 		else
@@ -1875,15 +1880,16 @@ function string GetHackDisabledText(Actor target,bool TargetingDisplay)
     
     cam = SecurityCamera(target);
 
-
-
     if (turr != None && turr.bRebooting)
         amt = int(turr.disableTime - player.saveTime);
     else if (cam != None && cam.bRebooting)
         amt = int(cam.disableTime - player.saveTime);
 
+    if (target.IsA('Robot'))
+        amt = int(Robot(target).rebootTime - player.saveTime);
+
     //ZAP!
-    if (amt == 0)
+    if (amt <= 0)
         return "";
     /*
     else if (turr != None && turr.bConfused && turr.bRebooting)

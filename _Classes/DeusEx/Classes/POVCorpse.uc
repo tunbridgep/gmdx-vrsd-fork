@@ -28,6 +28,9 @@ var const vector weaponOffsets;                                                 
 var travel vector oldOffsets;                                                   //Sarge: Stores our old default offsets
 var travel bool bOldOffsetsSet;                                                 //Sarge: Stores whether or not old default offsets have been remembered
 var travel bool bSearched;                                                      //Sarge: Carried over from Carcasses so they are retained when we make a new one by putting the corpse down
+var travel int PickupAmmoCount;                                                 //Sarge: Carried over from Carcasses so they are retained when we make a new one by putting the corpse down
+
+var travel bool bFirstBloodPool;                                                //SARGE: Stores whether or not the carcass has created a blood pool yet.
 
 //END GMDX:
 

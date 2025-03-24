@@ -24,6 +24,7 @@ var BodyPart armor;
 
 var Color    colArmor;
 var Color    col02;
+var Color    colRed;
 
 var float    damageFlash;
 var float    healFlash;
@@ -244,6 +245,16 @@ event DrawWindow(GC gc)
 	    breathPercent = 100.0 * player.swimTimer / player.swimDuration;
 	    breathPercent = FClamp(breathPercent, 0.0, 100.0);
         winBreath.SetCurrentValue(breathPercent);
+
+        //SARGE: Show a red bar when we're stunted
+        if (player.bStunted)
+        {
+            winBreath.UseScaledColor(false);
+            winBreath.SetColors(colRed,colRed);
+        }
+        else
+            winBreath.UseScaledColor(true);
+
 		ypos = breathPercent * 0.55;
 
 		// draw the breath bar
@@ -461,4 +472,5 @@ defaultproperties
      percentTxt="%"
      colLight=(R=255,G=255)
      colLightDark=(R=140,G=140)
+     colRed=(R=255)
 }

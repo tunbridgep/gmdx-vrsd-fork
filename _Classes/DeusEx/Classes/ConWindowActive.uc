@@ -50,11 +50,20 @@ event InitWindow()
 
     //Set the players FOV to 75 so that cutscenes appear mostly normal
     //TODO: Fix this to work properly on other aspect ratios
-    if (player.bCutsceneFOVAdjust)
-    {
-        player.desiredFOV = 75;
-        player.SetFOVAngle(75);
-    }
+    if (player.iCutsceneFOVAdjust == 1)
+        AdjustFOV(75);
+    else if (player.iCutsceneFOVAdjust == 2)
+        AdjustFOV(80);
+    else if (player.iCutsceneFOVAdjust == 3)
+        AdjustFOV(85);
+    else if (player.iCutsceneFOVAdjust == 4)
+        AdjustFOV(90);
+}
+
+function AdjustFOV(float value)
+{
+    player.desiredFOV = value;
+    player.SetFOVAngle(value);
 }
 
 // ----------------------------------------------------------------------
@@ -67,7 +76,7 @@ event DestroyWindow()
 	root.ShowCursor(True);
 
     //reset players fov
-    if (player.bCutsceneFOVAdjust)
+    if (player.iCutsceneFOVAdjust != 0)
     {
         player.desiredFOV = player.default.desiredFOV;
         player.SetFOVAngle(player.default.desiredFOV);
@@ -568,7 +577,8 @@ function bool HandleNumberKey(int number)
         return false;
 			
     //Block belt selection for the next 2 seconds, otherwise pressing the button will trigger it
-    player.fBlockBeltSelection = 2.0;
+	//SARGE: Actually lets make it 1.25 seconds
+    player.fBlockBeltSelection = 1.25;
 
     //If there are no choices, number keys simply skip, so we can hold 2 to select GEP gun, etc.
     if (numChoices == 0)

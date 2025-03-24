@@ -13,8 +13,8 @@ event bool MouseButtonPressed(float pointX, float pointY, EInputKey button, int 
     if (button == IK_RightMouse) //Sarge: Allow selecting NanoKey with right click.
     {
         if (player.inHand == player.KeyRing)
-            player.SelectLastWeapon();
+            player.SelectLastWeapon(true);
         else
-            player.PutInHand(player.KeyRing);
+            player.PutInHand(player.KeyRing,true);
     }
 }

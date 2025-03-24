@@ -75,6 +75,13 @@ event Tick(float deltaSeconds)
     validWeap = player.inHand != None && weapon != None && (weapon.ReloadCount > 0 || (weapon.IsA('WeaponNanoSword')));
     hasTool = player.inHand != None && (curr.isA('Multitool') || curr.isA('Lockpick')) && player.iFrobDisplayStyle == 0;
 
+    //SARGE: Dirty Hack
+    if (player.inHand != None && player.InHand.IsA('POVCorpse'))
+    {
+        Hide();
+        return;
+    }
+
 	if ((validweap || hastool) && bVisible )
 		Show();
 	else
