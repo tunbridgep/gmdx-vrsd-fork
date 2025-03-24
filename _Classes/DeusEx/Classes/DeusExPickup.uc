@@ -438,6 +438,7 @@ function bool HandlePickupQuery( inventory Item )
                     if (anItem.Charge > 0)
                     {
                         ChargedPickup(anItem).bActivatable=true;             //RSD: Since now you can hold one at 0%
+                        ChargedPickup(anItem).bDrained=false;                //SARGE: Since now you can keep it equipped while empty
                         ChargedPickup(anItem).unDimIcon();
                     }
                 }
@@ -465,7 +466,7 @@ function bool HandlePickupQuery( inventory Item )
                 {
                     //SARGE: Let us know we're charging the thing...
                     player.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
-
+                    
  			    	NumCopies--;                                                //RSD: Keep the stack number the same as before but add the pickup charge
                 }
 
@@ -473,6 +474,7 @@ function bool HandlePickupQuery( inventory Item )
  			    if (anItem.Charge > 0)
  			    {
                     ChargedPickup(anItem).bActivatable=true;                    //RSD: Since now you can hold one at 0%
+                    ChargedPickup(anItem).bDrained=false;                       //SARGE: Since now you can keep it equipped while empty
                     ChargedPickup(anItem).unDimIcon();
                 }
             }
