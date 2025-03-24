@@ -39,6 +39,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed many other GMDX and Vanilla bugs.
 - Quality of Life Improvements:
     - Music will now continue when loading different areas that use the same music track, rather than restarting.
+    - The current ammo type is now displayed in the Ammo display as well as on the belt, to facilitate selecting weapons that aren't currently on the belt.
     - Optionally, bars and clubs can be made to continue their standard music during conversations, rather than restarting.
     - Items in the world now show their pickup count in their name tag if stacked, such as `Lockpick (2)`.
         - This should be exceptionally rare as items are normally dropped one-at-a-time, so this should only really be relevant in the MJ12 prison escape mission.
