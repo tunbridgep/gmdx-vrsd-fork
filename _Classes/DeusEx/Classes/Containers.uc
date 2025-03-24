@@ -20,6 +20,14 @@ function bool DoLeftFrob(DeusExPlayer frobber)
     return true;
 }
 
+function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
+{
+    if (frobber.bRightClickToolSelection && objectInHand && bSelectMeleeWeapon && frobber.inHand == frobber.primaryWeapon)
+        return DoLeftFrob(frobber);
+
+    return Super.DoRightFrob(frobber,objectInHand);
+}
+
 //
 // copied from Engine.Decoration
 //
