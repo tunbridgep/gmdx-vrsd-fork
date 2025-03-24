@@ -20,14 +20,20 @@ var float flagCheckTimer;
 function CheckFlag()
 {
     if (bHidden && player != None && player.FlagBase != None && player.FlagBase.GetBool(requiredFlag))
+    {
         bHidden = false;
+        LightRadius = default.LightRadius;
+    }
 }
 
 function PostBeginPlay()
 {
     super.PostBeginPlay();
     if (requiredFlag != '')
+    {
         bHidden = true;
+        LightRadius = 0;
+    }
 }
 
 function Tick(float deltaTime)
