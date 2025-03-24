@@ -16,9 +16,6 @@ var Color		colDropBad;
 var Color		colNone;
 var Color		colSelected;
 var Color       colSelectionBorder;
-var Color	    colAmmoTranqText; //cyber
-var Color	    colAmmoFlareText; //cyber
-var Color       colAmmoEMPText; //
 var int			slotFillWidth;
 var int			slotFillHeight;
 var int         borderWidth;
@@ -162,7 +159,7 @@ function UpdateItemText()
 	if (item != None)
 	{
 		//Show Dragons Tooth charge
-		if (item.isA('WeaponNanoSword') && WeaponNanoSword(item).ChargeManager != None && !bInventorySlot)
+		if (item.isA('WeaponNanoSword') && WeaponNanoSword(item).ChargeManager != None)
 		{
 			itemText = Sprintf(WeaponNanoSword(item).ChargeManager.ChargeRemainingLabelSmall,WeaponNanoSword(item).ChargeManager.GetCurrentCharge());
 		}
@@ -187,7 +184,9 @@ function UpdateItemText()
         else if (item.IsA('ChargedPickup'))
         {
             CP = ChargedPickup(item);
-            if (CP.GetCurrentCharge() > 0 && !bInventorySlot)
+            if (!CP.bActivatable)
+                bDimIcon = true;
+            if (CP.GetCurrentCharge() > 0)
                 itemText = Sprintf(CP.ChargeRemainingLabelSmall,(int(CP.GetCurrentCharge())));
 			if (CP.NumCopies > 1)
             {
@@ -225,6 +224,7 @@ function Inventory GetItem()
 event DrawWindow(GC gc)
 {
 local DeusExWeapon weapon;
+    local DeusExAmmo DXammo;
 	// First draw the background
    DrawHUDBackground(gc);
 
@@ -267,14 +267,13 @@ local DeusExWeapon weapon;
         {
         if ((weapon != None) && (weapon.AmmoName != class'AmmoNone') && (!weapon.bHandToHand) && (weapon.ReloadCount != 0) && (weapon.AmmoType != None))
 			{
-            	itemText = weapon.AmmoType.beltDescription;
-            if (weapon.AmmoName == class'AmmoDartPoison' || weapon.AmmoName == class'AmmoRubber')
-            gc.SetTextColor(colAmmoTranqText);
-            else if (weapon.AmmoName == class'AmmoDartFlare' || weapon.AmmoName == class'Ammo10mmAP' || weapon.AmmoName == class'AmmoSabot' ||
-            weapon.AmmoName == class'AmmoRocketWP' || weapon.AmmoName == class'Ammo20mm')
-			gc.SetTextColor(colAmmoFlareText);
-			else if (weapon.AmmoName == class'Ammo20mmEMP' || weapon.AmmoName == class'AmmoPlasmaSuperheated' || weapon.AmmoName == class'AmmoSabot' || weapon.AmmoName == class'AmmoDartTaser')
-			gc.SetTextColor(colAmmoEMPText);
+                DXAmmo = DeusExAmmo(weapon.AmmoType);
+                if (DXAmmo != None)
+                {
+                    itemText = DXAmmo.beltDescription;
+                    if (DXAmmo.HasCustomAmmoColor())
+                    gc.SetTextColor(DXAmmo.ammoHUDColor);
+                }
 			}
         //Sarge: Disabled because it looks weird on the belt
         /*
@@ -643,9 +642,6 @@ defaultproperties
      colDropBad=(R=128,G=32,B=32)
      colSelected=(R=60,G=60,B=60)
      colSelectionBorder=(R=255,G=255,B=255)
-     colAmmoTranqText=(G=255)
-     colAmmoFlareText=(R=255,G=64)
-     colAmmoEMPText=(G=80,B=255)
      slotFillWidth=42
      slotFillHeight=37
      borderWidth=44

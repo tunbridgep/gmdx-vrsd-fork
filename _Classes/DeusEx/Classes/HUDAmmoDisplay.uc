@@ -24,6 +24,9 @@ var localized String RoundsLabel;
 var int clipsRemaining;
 var int ammoRemaining;
 var int ammoInClip;
+
+//Stores a reference to our currently relevant weapon
+var Inventory curr;
 var DeusExWeapon weapon;
 
 // Defaults
@@ -50,15 +53,54 @@ event InitWindow()
 }
 
 // ----------------------------------------------------------------------
+// UpdateVisibility()
+// ----------------------------------------------------------------------
+
+function UpdateVisibility()
+{
+    local bool validWeap, hastool;
+
+    curr = GetWeapon();
+    weapon = DeusExWeapon(curr);
+    
+    //player.ClientMessage("UpdateVisibility: " $ curr $ ", " $ weapon);
+
+    //it's visible if we have a valid weapon
+    validWeap = player.inHand != None && weapon != None && (weapon.ReloadCount > 0 || (weapon.IsA('WeaponNanoSword')));
+    hasTool = curr != None && weapon == None;
+
+	if (curr != None && curr.Owner == player && (validweap || hastool) && bVisible )
+		Show();
+	else
+		Hide();
+
+}
+
+// ----------------------------------------------------------------------
 // GetWeapon()
 // ----------------------------------------------------------------------
 
+//SARGE: This is slightly complicated...
+//That's the price we pay for having it feel """nice"""
 function Inventory GetWeapon()
 {
-    if (player.primaryWeapon != None)
-        return player.primaryWeapon;
-    else
-        return player.Weapon;
+    if (player.inHandPending != None && player.inHandPending.IsA('DeusExPickup') && !player.inHandPending.IsA('SkilledTool'))
+        return None;
+
+    //SARGE: Hack...
+    if (player.inHandPending == player.assignedWeapon && player.bLastWasEmpty) //If we're using our secondary weapon, hide the ammo display.
+        //return player.assignedWeapon;
+        return None;
+    //SARGE: ...Even worse hack...
+    if (player.inHand != None && (player.inHand.isA('Multitool') || player.inHand.isA('Lockpick')) && player.iFrobDisplayStyle != 0 && player.bLastWasEmpty) //Hide the ammo counter when we have tools, unless we're using the classic tool window display.
+        return None;
+    //SARGE: ...And again...
+    if (player.inHandPending == None) //Hide the empty ammo counter when we have nothing selected
+        return None;
+    //SARGE: ...Oh god it just keeps going!...
+    if (player.inHand != None && (player.inHand.isA('Multitool') || player.inHand.isA('Lockpick')) && player.iFrobDisplayStyle == 0) //Return our current tool rather than our primary weapon, if we're using the classic tool window display.
+        return player.inHand;
+    return player.primaryWeapon;
 }
 
 // ----------------------------------------------------------------------
@@ -67,25 +109,19 @@ function Inventory GetWeapon()
 
 event Tick(float deltaSeconds)
 {
-    local bool validWeap, hastool;
-    local Inventory curr;
-    curr = GetWeapon();
-    weapon = DeusExWeapon(curr);
+}
 
-    validWeap = player.inHand != None && weapon != None && (weapon.ReloadCount > 0 || (weapon.IsA('WeaponNanoSword')));
-    hasTool = player.inHand != None && (curr.isA('Multitool') || curr.isA('Lockpick')) && player.iFrobDisplayStyle == 0;
+// ----------------------------------------------------------------------
+// GetAmmoTextColor()
+// SARGE: Get the ammo color()
+// ----------------------------------------------------------------------
 
-    //SARGE: Dirty Hack
-    if (player.inHand != None && player.InHand.IsA('POVCorpse'))
-    {
-        Hide();
-        return;
-    }
-
-	if ((validweap || hastool) && bVisible )
-		Show();
-	else
-		Hide();
+function Color GetAmmoTextColor()
+{
+    if (weapon != None && DeusExAmmo(weapon.AmmoType) != None && DeusExAmmo(weapon.AmmoType).HasCustomAmmoColor() && player.bColorCodedAmmo)
+        return DeusExAmmo(weapon.AmmoType).ammoHUDColor;
+    else
+        return colText;
 }
 
 // ----------------------------------------------------------------------
@@ -94,23 +130,22 @@ event Tick(float deltaSeconds)
 
 event DrawWindow(GC gc)
 {
-    local DeusExWeapon weapon;
-    local Inventory curr;
     local float ammopostop, ammoposbtm;             //SARGE: Added
-    curr = GetWeapon();
-    weapon = DeusExWeapon(curr);
 
 	Super.DrawWindow(gc);
+
+    if (!IsVisible() || curr.Owner != player)
+        return;
 
     ammopostop = player.FontManager.GetTextPosition(27,26);
     ammoposbtm = player.FontManager.GetTextPosition(39,38);
 
 	// No need to draw anything if the player doesn't have
 	// a weapon selected
-
+    
     //SARGE: Draw tool info if we have one
     //TODO: Refactor this
-    if (player.inHand != None && (curr.isA('Multitool') || curr.isA('Lockpick')) && player.iFrobDisplayStyle == 0)
+    if (curr != None && curr.IsA('SkilledTool'))
     {
 		// Draw the weapon icon
 		gc.SetStyle(DSTY_Masked);
@@ -126,8 +161,7 @@ event DrawWindow(GC gc)
         gc.DrawText(infoX, ammopostop, 20, 9, SkilledTool(curr).numCopies);
         gc.DrawText(infoX, ammoposbtm, 20, 9, NotAvailable);
     }
-
-	if ( weapon != None )
+	else if ( weapon != None )
 	{
 		// Draw the weapon icon
 		gc.SetStyle(DSTY_Masked);
@@ -153,6 +187,7 @@ event DrawWindow(GC gc)
         //Draw DTS Charge
         if (weapon.IsA('WeaponNanoSword'))
         {
+            gc.SetTextColor(colAmmoText);
             ammoInClip = WeaponNanoSword(weapon).ChargeManager.GetCurrentCharge();
             gc.DrawText(infoX, ammopostop, 20, 9, ammoInClip);
 			gc.DrawText(infoX, ammoposbtm, 20, 9, NotAvailable);
@@ -180,7 +215,7 @@ event DrawWindow(GC gc)
 			if (( clipsRemaining == 0 ) || (( clipsRemaining == 1 ) && ( ammoRemaining < 2 * weapon.ReloadCount )))
 				gc.SetTextColor(colAmmoLowText);
 			else
-				gc.SetTextColor(colAmmoText);
+                gc.SetTextColor(colAmmoText);
 
 			if (weapon.IsInState('Reload') && weapon.bPerShellReload == false)
 				gc.DrawText(infoX, ammoposbtm, 20, 9, msgReloading);
@@ -221,6 +256,14 @@ event DrawWindow(GC gc)
             else
 			    gc.DrawText(25, 56, 65, 8, weapon.TargetMessage);
 		}
+        //SARGE: Otherwise, print the ammo type. This is useful when we "use" items from the inventory
+        //that aren't on our belt, which normally would give us no idea what is in our weapon if we change ammo types,
+        //especially if an infolink is playing.
+        else if (player.bShowAmmoTypeInAmmoHUD)
+        {
+            gc.SetTextColor(GetAmmoTextColor());
+            gc.DrawText(25, 56, 65, 8, DeusExAmmo(weapon.AmmoType).beltDescription);
+        }
 	}
 }
 
@@ -279,6 +322,8 @@ function DrawBorder(GC gc)
 function SetVisibility( bool bNewVisibility )
 {
 	bVisible = bNewVisibility;
+    if (bNewVisibility)
+        UpdateVisibility();
 }
 
 // ----------------------------------------------------------------------
