@@ -44,7 +44,7 @@ defaultproperties
      LifeSpan=30.000000
      HDTPSkin="HDTPItems.Skins.HDTPFlatFXtex6"
      HDTPMesh="HDTPDecos.HDTPbonefemur"
-     Mesh=LodMesh'DeusDeco.Bonefemur'
+     Mesh=LodMesh'DeusDeco.BoneFemur'
      CollisionRadius=2.000000
      CollisionHeight=0.780000
      bCollideActors=False

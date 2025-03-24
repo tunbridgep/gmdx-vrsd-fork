@@ -80,6 +80,15 @@ var string HDTPMeshTex[8];
 //1 = mesh1, 2 = mesh2, 3 = mesh3
 var travel int assignedMesh;
 
+//SARGE: Remember when we first create a blood pool
+var travel bool bFirstBloodPool;
+
+var BloodPool pool;     //SARGE: Stores our last created blood pool.
+
+var bool bMadePool;     //SARGE: Stores the state of our current blood pool. Deliberately not remembered between creations of corpses.
+
+var bool bDontRemovePool; //SARGE: If set, the blood pool isn't removed when deleting the carcass. Used when Frobbing.
+
 // ----------------------------------------------------------------------
 // ShouldCreate()
 // If this returns FALSE, the object will be deleted on it's first tick
@@ -159,13 +168,16 @@ function InitFor(Actor Other)
         {
             if (Other.IsA('ScriptedPawn'))                                      //RSD
             {
-                //if (ScriptedPawn(Other).UnfamiliarName == "")
-                //    savedName = ScriptedPawn(Other).ClassName;
-                //else
-                //    savedName = ScriptedPawn(Other).UnfamiliarName;
-                savedName = ScriptedPawn(Other).BindName;
+                if (ScriptedPawn(Other).UnfamiliarName == "")
+                    savedName = ScriptedPawn(Other).BindName;
+                else
+                    savedName = ScriptedPawn(Other).UnfamiliarName;
+                //savedName = ScriptedPawn(Other).BindName;
             }
         }
+
+        //SARGE: Set us to the exact size of our corresponding actor.
+        SetCollisionSize(Other.CollisionRadius, default.CollisionHeight);
 
         UpdateName();
 
@@ -492,6 +504,10 @@ function Destroyed()
 		flyGen.StopGenerator();
 		flyGen = None;
 	}
+    
+    //Destroy blood pool
+    if (pool != None && !bDontRemovePool)
+        pool.Destroy();
 
 	Super.Destroyed();
 }
@@ -560,6 +576,8 @@ function ChunkUp(int Damage)
 	local FleshFragment chunk;
     local DeusExPlayer player;   //CyberP: for screenflash if near gibs
     local float dist;            //CyberP: for screenflash if near gibs
+
+    bDontRemovePool = true;
 
 	// gib the carcass
 	size = (CollisionRadius + CollisionHeight) / 2;
@@ -642,18 +660,20 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitLocation, Vector mo
 	if ((damageType == 'Shot') || (damageType == 'Sabot') || (damageType == 'Exploded') || (damageType == 'Munch') ||
 	    (damageType == 'Tantalus') || (damageType=='throw') || (damageType == 'Burned'))  //Burned damage also
 	{
-		if (damageType != 'Tantalus' && FRand() < 0.4)
+		if (damageType != 'Tantalus')// && FRand() < 0.4) //SARGE: Removed chance to spawn blood (see below)
 		{
 		PlaySound(Sound'BodyHit', SLOT_Interact, 1, ,768,1.0);     //CyberP: sound for attacking carc
 		 if ((DeusExMPGame(Level.Game) != None) && (!DeusExMPGame(Level.Game).bSpawnEffects))
 		 {
 		 }
-		 else
+		 else if (damageType != 'throw') //SARGE: No blood splats for thrown bodies.
 		 {
 		    vec = HitLocation;
 		    vec.z += 2;
 			for(i=0;i<18;i++)
             {
+                if (FRand() < 0.5) //SARGE: Now, we determine number of blood splats by random, not the chance of having any.
+                    continue;
             spawn(class'BloodDrop',,, HitLocation);
             drop = spawn(class'BloodDrop',,,vec);
             if (drop!=none)
@@ -677,6 +697,7 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitLocation, Vector mo
 		if (bNotDead && (FRand() < 0.4 || Damage > 18)) //CyberP: don't be lazy self, check for headshots...
 		{
 		    KillUnconscious();                                                  //RSD: Proper kill
+            CreateBloodPool();
 			if (instigatedBy.IsA('DeusExPlayer'))
 			    DeusExPlayer(instigatedBy).KillCount++;
 		}
@@ -704,7 +725,7 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitLocation, Vector mo
 		  if ((damageType == 'Exploded') || (damageType == 'Munch') || (damageType == 'Burned'))
              CumulativeDamage += Damage;
         }
-        else
+        else if (damageType == 'throw') //SARGE: No body damage when throwing
         {
              CumulativeDamage += Damage;
         }
@@ -875,9 +896,11 @@ function PickupCorpse(DeusExPlayer player)
             corpse.bSearched = bSearched;
             corpse.PickupAmmoCount = PickupAmmoCount;
             corpse.savedName = savedName;
+            corpse.bFirstBloodPool = bFirstBloodPool; //SARGE: Remember if we've made a blood pool.
             corpse.Frob(player, None);
             corpse.SetBase(player);
             player.PutInHand(corpse);
+            bDontRemovePool = true;
             bQueuedDestroy=True;
             Destroy();
         }
@@ -1652,61 +1675,7 @@ auto state Dead
 
 	function HandleLanding()
 	{
-		local Vector HitLocation, HitNormal, EndTrace;
-		local Actor hit;
-		local BloodPool pool;
-
-		if (!bNotDead)
-		{
-
-			// trace down about 20 feet if we're not in water
-			if (!Region.Zone.bWaterZone && !bNotFirstFall)
-			{
-				EndTrace = Location - vect(0,0,320);
-				hit = Trace(HitLocation, HitNormal, EndTrace, Location, False);
-
-			if ((DeusExMPGame(Level.Game) != None) && (!DeusExMPGame(Level.Game).bSpawnEffects))
-			{
-			   pool = None;
-			}
-			else
-			{
-			   pool = spawn(class'BloodPool',,, HitLocation+HitNormal, Rotator(HitNormal));
-               //PlaySound(Sound'FleshHit1', SLOT_Interact, 1, ,768,1.0);     //CyberP: sound when thrown
-			}
-				if (pool != None)
-				{
-					if (pool.IsHDTP())
-						pool.maxDrawScale = CollisionRadius / 640.0;  //hah! Found you you bastard..was making HUUUGE decals. -DDL
-					else
-						pool.maxDrawScale = CollisionRadius / 40.0; //SARGE: No more puny vanilla blood pools
-				}
-			}
-
-			// alert NPCs that I'm food
-			AIStartEvent('Food', EAITYPE_Visual);
-		}
-
-		// by default, the collision radius is small so there won't be as
-		// many problems spawning carcii
-		// expand the collision radius back to where it's supposed to be
-		// don't change animal carcass collisions
-		if (!bAnimalCarcass)
-			SetCollisionSize(40.0, Default.CollisionHeight);
-
-		// alert NPCs that I'm really disgusting
-		if (bEmitCarcass)
-			AIStartEvent('Carcass', EAITYPE_Visual);
-
-        if (bNotFirstFall && !bHidden)
-        {
-        PlaySound(sound'PaperHit2', SLOT_None,,,1024);
-        AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 512); //CyberP: this applies to when corpses are thrown.
-        }
-        else
-        {
-        AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 96); //CyberP: this applies to when corpses are spawned upon pawn death/K.O.
-        }
+        SetupCarcass(true);
 	}
 
 Begin:
@@ -1719,6 +1688,93 @@ Begin:
 
 }
 
+//SARGE: Moved HandleLanding code to a new function, so that the carcasses placed in the map can be consistent with the ones that are dynamically created
+function SetupCarcass(bool bAlert)
+{
+		if (!bNotDead) //SARGE: Comment this to reinstate Vanilla behaviour where we can create multiple blood pools
+		{ 
+            CreateBloodPool();
+			// alert NPCs that I'm food
+            if (bAlert)
+                AIStartEvent('Food', EAITYPE_Visual);
+		}
+
+        // by default, the collision radius is small so there won't be as
+        // many problems spawning carcii
+        // expand the collision radius back to where it's supposed to be
+        // don't change animal carcass collisions
+        if (!bAnimalCarcass)
+            SetCollisionSize(40.0, Default.CollisionHeight);
+
+        if (bAlert)
+        {
+            // alert NPCs that I'm really disgusting
+            if (bEmitCarcass)
+                AIStartEvent('Carcass', EAITYPE_Visual);
+
+            if (bNotFirstFall && !bHidden)
+            {
+            PlaySound(sound'PaperHit2', SLOT_None,,,1024);
+            AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 512); //CyberP: this applies to when corpses are thrown.
+            }
+            else
+            {
+            AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 96); //CyberP: this applies to when corpses are spawned upon pawn death/K.O.
+            }
+        }
+}
+
+//SARGE: Moved blood pool code to a new function, now we can call it when we kill unconscious bodies.
+function CreateBloodPool()
+{
+		local Vector HitLocation, HitNormal, EndTrace;
+		local Actor hit;
+        local float drawSize;
+
+        if (bMadePool)
+            return;
+
+        if (class'DeusExPlayer'.default.bConsistentBloodPools)
+            drawSize = 35;
+        else
+            drawSize = default.CollisionRadius;
+
+        //DeusExPlayer(GetPlayerPawn()).ClientMessage("Making pool");
+
+        // trace down about 20 feet if we're not in water
+        if (!Region.Zone.bWaterZone)
+        {
+            EndTrace = Location - vect(0,0,320);
+            hit = Trace(HitLocation, HitNormal, EndTrace, Location, False);
+        
+            if ((DeusExMPGame(Level.Game) != None) && (!DeusExMPGame(Level.Game).bSpawnEffects))
+            {
+                pool = None;
+            }
+            else
+            {
+                pool = spawn(class'BloodPool',,, HitLocation+HitNormal, Rotator(HitNormal));
+                //PlaySound(Sound'FleshHit1', SLOT_Interact, 1, ,768,1.0);     //CyberP: sound when thrown
+            }
+
+            if (pool != None)
+            {
+                if (!bAnimalCarcass)
+                {
+                    pool.SetMaxDrawScale(drawSize);
+                    if(bFirstBloodPool)
+                        pool.SetMaxDrawScale(drawSize * 0.5);
+                }
+                else
+                    pool.SetMaxDrawScale(CollisionRadius);
+
+                bFirstBloodPool = true;
+            }
+        }
+
+        bMadePool = true;
+}
+
 //Lork: Corpses take falling damage
 function Landed(vector HitNormal)
 {
@@ -1727,7 +1783,14 @@ function Landed(vector HitNormal)
     if (Velocity.Z < -1750)
         TakeDamage(1000, None, Location, Velocity, 'Exploded');
     else if (Velocity.Z < -1000)
-        TakeDamage(5, None, Location, Velocity, 'Shot');
+        TakeDamage(5, None, Location, Velocity, 'Shot'); //Sarge: Changed from Shot to Throw
+
+    //SARGE: Even a medium height fall will kill you if you don't brace for it
+    if (bNotDead && Velocity.Z < -600)
+    {
+		PlaySound(Sound'BodyHit', SLOT_Interact, 1, ,768,1.0);     //Bone cracking sound
+        KillUnconscious();
+    }
 }
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
@@ -1758,9 +1821,8 @@ function UpdateName()
 
 function KillUnconscious()                                                      //RSD: To properly fix corpse names and trigger any other death effects like MIB explosion
 {
-        bNotDead = false;
-
-        UpdateName();
+    bNotDead = false;
+    UpdateName();
 }
 
 defaultproperties
@@ -1780,7 +1842,7 @@ defaultproperties
      DeclinedString="[Declined]"
      RemoteRole=ROLE_SimulatedProxy
      LifeSpan=0.000000
-     CollisionRadius=20.000000
+     CollisionRadius=30.000000
      CollisionHeight=7.000000
      bCollideWorld=False
      Mass=150.000000

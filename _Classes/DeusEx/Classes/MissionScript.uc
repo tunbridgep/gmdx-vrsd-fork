@@ -144,6 +144,7 @@ function FirstFrame()
     local bool bRandomCrates;                                                   //RSD
     local bool bRandomItems;                                                    //RSD
     local int seed;
+    local DeusExCarcass C;                                                      //SARGE
     local DecalManager D;                                                       //SARGE
 
 	flags.DeleteFlag('PlayerTraveling', FLAG_Bool);
@@ -210,6 +211,13 @@ function FirstFrame()
         {
             InitializeEnemySwap(0);
             InitializeEnemySwap(1);
+        }
+
+        //Make the placed corpses bleed
+        foreach AllActors(class'DeusExCarcass', C)
+        {
+            if (!C.bHidden && !C.bNotDead)
+                C.SetupCarcass(false);
         }
 
         //Randomise the crap around the level

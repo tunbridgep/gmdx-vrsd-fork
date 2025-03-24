@@ -90,10 +90,12 @@ function DisplayWeapon(bool overlay)
         ShowWeaponAddon(6,bHasSilencer);
         ShowWeaponAddon(5,bHasLaser);
     
+        /*
         if (bHasLaser && bLasing)
             multiskins[3] = class'HDTPLoader'.static.GetTexture("HDTPItems.HDTPGlockTex4");
         else
             multiskins[3] = texture'PinkMaskTex';
+        */
     }
     else if (overlay)
     {
@@ -185,6 +187,14 @@ simulated function MuzzleFlashLight()
 		  if (flash != None)
 			   flash.SetBase(Owner);
 	 }
+}
+
+//wtf, laser and muzzle flash uses the same texture slot??
+simulated function EraseMuzzleFlashTexture()
+{
+    super.EraseMuzzleFlashTexture();
+    if (IsHDTP() && bHasLaser && bLasing)
+        multiskins[3] = class'HDTPLoader'.static.GetTexture("HDTPItems.HDTPGlockTex4");
 }
 
 state DownWeapon
