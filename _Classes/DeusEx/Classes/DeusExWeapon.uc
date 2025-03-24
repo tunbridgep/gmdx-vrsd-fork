@@ -374,7 +374,11 @@ replication
 //Sarge: Update weapon frob display when we have a mod applied
 function string GetFrobString(DeusExPlayer player)
 {
-    if (bModified && player != None && player.bBeltShowModified)
+    //Disposable weapons show their ammo count, if above 1 (which should only ever happen in the MJ12 prison facility)
+    if (bDisposableWeapon && PickupAmmoCount > 1 && player.bShowItemPickupCounts)
+        return itemName @ "(" $ PickupAmmoCount $ ")";
+    //Modified weapons show their modified state
+    else if (bModified && player != None && player.bBeltShowModified)
         return itemName @ strModified;
     else
         return itemName;
@@ -2840,6 +2844,7 @@ function SwitchModes()
 		LowAmmoWaterMark = 1;
 
 		p.ClientMessage(msgRifleModeActivated);
+        PlaySound(Sound'GMDXSFX.Weapons.M4ClipOut');
     }
     else
     {
@@ -2850,6 +2855,7 @@ function SwitchModes()
 		LowAmmoWaterMark = 16;
 
 		p.ClientMessage(msgGLModeActivated);
+        PlaySound(Sound'GMDXSFX.Weapons.M4ClipOut');
     }
 }
 
@@ -5017,7 +5023,7 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
 		  offset.Z += Owner.CollisionHeight * 0.7;
 		  offset += Y * Owner.CollisionRadius * 0.65;
           tra= Spawn(class'Tracer',,, offset, (Rotator(HitLocation - offset)));
-          if (tra != None && (AmmoType.IsA('Ammo762mm') || AmmoType.IsA('AmmoShell') || bZoomed)) //RSD: Added bZoomed here so we still get a tracer for water splashing
+          if (tra != None && bZoomed) //RSD: Added bZoomed here so we still get a tracer for water splashing
               tra.DrawType = DT_None;
 		  }
 		}
