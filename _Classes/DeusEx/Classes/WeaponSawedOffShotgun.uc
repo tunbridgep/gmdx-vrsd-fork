@@ -117,20 +117,12 @@ exec function UpdateHDTPsettings()                                              
 //
 simulated function SwapMuzzleFlashTexture()
 {
-	local int i;
-
-	if (!bHasMuzzleFlash)
-		return;
-	
-    if(playerpawn(owner) != none)      //diff meshes, see
+    //if(playerpawn(owner) != none)      //diff meshes, see
 		MuzzleSlot=2;
-	else
-		MuzzleSlot=4;
+	//else
+	//	MuzzleSlot=4;
     
-    CurrentMuzzleFlash = GetMuzzleTex();
-
-	MuzzleFlashLight();
-	SetTimer(0.1, False);
+    super.SwapMuzzleFlashTexture();
 }
 
 
