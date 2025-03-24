@@ -31,4 +31,5 @@ defaultproperties
      //HDTPSkin="HDTPItems.Skins.HDTPAmmoDartTex2"
      Skin=Texture'DeusExItems.Skins.AmmoDartTex2'
      Mesh=LodMesh'DeusExItems.AmmoDart'
+     ammoHUDColor=(R=255,G=64)
 }
