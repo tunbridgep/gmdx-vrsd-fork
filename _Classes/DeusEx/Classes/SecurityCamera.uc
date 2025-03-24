@@ -399,7 +399,7 @@ function CheckPlayerVisibility(DeusExPlayer player)
 }
 
 // Emulates the CheckPlayerVisibility() method but for carcasses -- eshkrm
-function CheckCarcassVisibility(DeusExCarcass carcass)
+function CheckCarcassVisibility(DeusExCarcass carcass, DeusExPlayer player)
 {
 	local float yaw, pitch, dist;
 	local Actor hit;
@@ -409,7 +409,7 @@ function CheckCarcassVisibility(DeusExCarcass carcass)
 	if (carcass == None)
 		return;
 
-	if (carcass.bAnimalCarcass)                         //RSD: No unconscious bodies either //Ygll: revert this, for more realism.
+	if (carcass.bAnimalCarcass || ( carcass.bNotDead && !player.bCameraDetectUnconscious ) )                         //RSD: No unconscious bodies either //Ygll: add a new modifiers to make unconscious body visible.
 		return;  //CyberP: No animals
 
 	dist = Abs(VSize(carcass.Location - Location));
@@ -601,7 +601,7 @@ function Tick(float deltaTime)
 			{
 				foreach RadiusActors(Class'DeusExCarcass', carcass, CameraRange)
 				{
-					CheckCarcassVisibility(carcass);
+					CheckCarcassVisibility(carcass, curplayer);
 				}
 			}
 		}

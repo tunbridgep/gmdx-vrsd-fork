@@ -616,6 +616,8 @@ var travel bool bDisableConsoleAccess;                                          
 
 var travel bool bWeaponRequirementsMatter;                                      //Sarge: Using certain weapons requires skill investments.
 
+var travel bool bCameraDetectUnconscious;                                      //Ygll: Unconscious body will now be detected by camera.
+
 //END GAMEPLAY MODIFIERS
 
 //Autosave Stuff
