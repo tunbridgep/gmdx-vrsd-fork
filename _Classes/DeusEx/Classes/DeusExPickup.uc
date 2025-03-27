@@ -71,7 +71,8 @@ function bool DoLeftFrob(DeusExPlayer frobber)
 {
     if (bAutoActivate)
     {
-        GotoState('Activated');
+        //GotoState('Activated');
+        Activate();
         return false;
     }
     else
