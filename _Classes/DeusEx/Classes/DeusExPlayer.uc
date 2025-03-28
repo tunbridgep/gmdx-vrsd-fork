@@ -8139,6 +8139,8 @@ function SelectLastWeapon(optional bool allowEmpty, optional bool bBeltLast)
         PutInHand(primaryWeapon);
         NewWeaponSelected();
     }
+    else
+        PutInHand(None);
 }
 
 // ----------------------------------------------------------------------
