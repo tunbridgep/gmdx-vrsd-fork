@@ -340,7 +340,7 @@ function ClearBelt()
 	for(beltPos=0; beltPos<numSlots; beltPos++)
     {
         if (player.bBeltMemory && objects[beltPos].bAllowDragging)
-            player.SetPlaceholder(beltPos,true);
+            player.SetPlaceholder(beltPos,objects[beltPos].item.icon);
 		ClearPosition(beltPos);
     }
 }
@@ -363,7 +363,7 @@ function RemoveObjectFromBelt(Inventory item, optional bool Placeholder)
 		if (objects[i].GetItem() == item && objects[i].bAllowDragging)
 		{
             if (placeholder)
-                player.SetPlaceholder(i,true);
+                player.SetPlaceholder(i,objects[i].item.icon);
 
 			objects[i].SetItem(None);
 			item.bInObjectBelt = False;
@@ -422,12 +422,12 @@ function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
             //Then, if we don't find one, check for an empty slot if we have autofill enabled.
             for (i=0; IsValidPos(i); i++)
             {
-                if (( (Player.Level.NetMode == NM_Standalone) || (!Player.bBeltIsMPInventory) || (newItem.TestMPBeltSpot(i))))
+                if (( (Player.Level.NetMode == NM_Standalone) || (newItem.TestMPBeltSpot(i))))
                 {
                     //Additionally, allow slots with the same icon if we have a placeholder
-                    if (player.GetBeltIcon(i) == newItem.icon && player.GetPlaceholder(i))
+                    if (player.GetPlaceholderIcon(i) == newItem.default.icon)
                     {
-                        if (player.bBeltMemory)
+                        if (player.bBeltMemory && !player.bBeltIsMPInventory)
                         {
                             FoundPlaceholder = true;
                             break;

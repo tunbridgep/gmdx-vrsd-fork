@@ -390,7 +390,6 @@ struct augBinary                                                                
 //Holds information about the reserved items on the belt
 struct BeltInfo
 {
-    var bool		bPlaceholder;		    //Sarge. Allow "empty" slots that show the old icon
     var texture		icon;				    //Sarge. Disconnect the icon from the inventory item, so we can keep it when the item disappears.
 };
 
@@ -9460,25 +9459,23 @@ function AddObjectToBelt(Inventory item, int pos, bool bOverride)
 ////Sarge: Functions for dealing with belt memory
 
 // Set Placeholder
-function SetPlaceholder(int objectNum, bool value, optional texture icon)
+function SetPlaceholder(int objectNum, texture icon)
 {
-    beltInfos[objectNum].bPlaceholder = value;
     if (icon != None)
         beltInfos[objectNum].icon = icon;
 }
 
 function ClearPlaceholder(int objectNum)
 {
-    beltInfos[objectNum].bPlaceholder = false;
     beltInfos[objectNum].icon = None;
 }
 
 function bool GetPlaceholder(int objectNum)
 {
-    return beltInfos[objectNum].bPlaceholder;
+    return beltInfos[objectNum].icon != None;
 }
 
-function texture GetBeltIcon(int objectNum)
+function texture GetPlaceholderIcon(int objectNum)
 {
     return beltInfos[objectNum].icon;
 }
