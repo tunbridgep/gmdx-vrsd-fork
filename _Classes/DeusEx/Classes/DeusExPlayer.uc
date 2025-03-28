@@ -9446,11 +9446,8 @@ function RemoveObjectFromBelt(Inventory item)
 
 function MakeBeltObjectPlaceholder(Inventory item)
 {
-    if (bBeltIsMPInventory)
-        return;
-
 	if (DeusExRootWindow(rootWindow) != None)
-	  DeusExRootWindow(rootWindow).hud.belt.RemoveObjectFromBelt(item,true);
+	  DeusExRootWindow(rootWindow).hud.belt.RemoveObjectFromBelt(item,Level.NetMode == NM_Standalone || !bBeltIsMPInventory);
 }
 
 function AddObjectToBelt(Inventory item, int pos, bool bOverride)
@@ -9464,9 +9461,6 @@ function AddObjectToBelt(Inventory item, int pos, bool bOverride)
 // Set Placeholder
 function SetPlaceholder(int objectNum, texture icon)
 {
-    if (bBeltIsMPInventory)
-        return;
-
     if (icon != None)
         beltInfos[objectNum].icon = icon;
 }
