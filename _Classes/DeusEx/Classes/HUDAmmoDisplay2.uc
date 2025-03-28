@@ -26,6 +26,11 @@ var Texture texBorder;
 
 var Color colIconDimmed;
 
+//SARGE: Cache the players secondary
+var Inventory assigned;
+var class<Inventory> assignedClass;
+var bool bUpdateAssigned;
+
 // ----------------------------------------------------------------------
 // InitWindow()
 // ----------------------------------------------------------------------
@@ -40,7 +45,19 @@ event InitWindow()
 
 	player = DeusExPlayer(DeusExRootWindow(GetRootWindow()).parentPawn);
 
+    UpdateAssigned();
+
 	SetSize(95, 77);
+}
+
+//SARGE: Update our assigned weapon
+function UpdateAssigned()
+{
+    bUpdateAssigned = true;
+    /*
+    if (player != None)
+        assigned = player.GetSecondary();
+    */
 }
 
 // ----------------------------------------------------------------------
@@ -49,7 +66,14 @@ event InitWindow()
 
 event Tick(float deltaSeconds)
 {
-	if ((player.assignedWeapon != None) && ( bVisible ))
+    if (player != None && bUpdateAssigned)
+    {
+        assigned = player.GetSecondary();
+        assignedClass = player.GetSecondaryClass();
+        bUpdateAssigned = false;
+    }
+
+	if (player != None && assignedClass != None && bVisible)
 		Show();
 	else
 		Hide();
@@ -66,19 +90,26 @@ event DrawWindow(GC gc)
 
 	Super.DrawWindow(gc);
 
+    if (player == None || assignedClass == None)
+        return;
+
 	// No need to draw anything if the player doesn't have
 	// a weapon selected
 
-	if (player != None && player.assignedWeapon != none && player.assignedWeapon.IsA('DeusExWeapon')) //RSD: Added IsA weapon check
+    if (assigned == None)
+    {
+        icon = assignedClass.default.icon;
+    }
+	else if (assigned.IsA('DeusExWeapon')) //RSD: Added IsA weapon check
 	{
-		weapon = DeusExWeapon(player.assignedWeapon);
+		weapon = DeusExWeapon(assigned);
 		item = none;                                                            //RSD: Fix for the last weapon assigned icon always showing up
         amount = weapon.AmmoType.AmmoAmount;
         icon = weapon.icon;
 	}
-    else if (player != None && player.assignedWeapon != none && player.assignedWeapon.IsA('DeusExPickup')) //RSD: Extended to include general inventory items
+    else if (assigned.IsA('DeusExPickup')) //RSD: Extended to include general inventory items
     {
-    	item = DeusExPickup(player.assignedWeapon);
+    	item = DeusExPickup(assigned);
     	weapon = none;                                                          //RSD: Fix for the last weapon assigned icon always showing up
         amount = item.numCopies;
         icon = item.icon;
@@ -91,7 +122,14 @@ event DrawWindow(GC gc)
     else if (weapon != None && weapon.isA('WeaponNanoSword'))
         chargeLevel = WeaponNanoSword(weapon).ChargeManager.GetCurrentCharge();
 
-	if ( weapon != None || item != None)
+    //if we don't have the item, just draw a dimmed version
+    if (assigned == None)
+    {
+        gc.SetTileColor(colIconDimmed);
+		gc.SetStyle(DSTY_Masked);
+		gc.DrawTexture(22, 20, 40, 35, 0, 0, icon);
+    }
+	else if ( weapon != None || item != None)
 	{
         if (!IsCharged(item))
             gc.SetTileColor(colIconDimmed);

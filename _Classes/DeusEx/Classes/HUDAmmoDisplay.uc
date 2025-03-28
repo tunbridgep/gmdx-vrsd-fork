@@ -88,7 +88,7 @@ function Inventory GetWeapon()
         return None;
 
     //SARGE: Hack...
-    if (player.inHandPending == player.assignedWeapon && player.bLastWasEmpty) //If we're using our secondary weapon, hide the ammo display.
+    if (string(player.inHandPending.Class) == player.assignedWeapon && player.bLastWasEmpty) //If we're using our secondary weapon, hide the ammo display.
         //return player.assignedWeapon;
         return None;
     //SARGE: ...Even worse hack...

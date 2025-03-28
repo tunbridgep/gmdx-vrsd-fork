@@ -5186,7 +5186,6 @@ function Finish()
                   if (bHandToHand && (ReloadCount > 0) && (AmmoType.AmmoAmount <= 0))
                   {
                      bBeginQuickMelee = False;
-                     DeusExPlayer(Owner).assignedWeapon = None;
 				     DestroyMe();
 				     return;
 				  }
@@ -6275,8 +6274,6 @@ state NormalFire
 			// if we are a thrown weapon and we run out of ammo, destroy the weapon
 			if (bHandToHand && (ReloadCount > 0) && (AmmoType.AmmoAmount <= 0))
 			{
-			   if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).assignedWeapon != None && DeusExPlayer(Owner).assignedWeapon == self)
-			      DeusExPlayer(Owner).assignedWeapon = None;
 				DestroyMe();
 			}
 		}

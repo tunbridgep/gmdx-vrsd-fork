@@ -500,7 +500,7 @@ var float stuntedTime; //SARGE: Replaces the SetTimer calls with a stuntedTime v
 var bool bRegenStamina; //CyberP: regen when in water but head above water
 var bool bCrouchRegen;  //CyberP: regen when crouched and has skill
 var float doubleClickCheck; //CyberP: to return from double clicking.
-var travel Inventory assignedWeapon;
+var travel string assignedWeapon;                                                   //SARGE: Changed from a hard object reference to an object class. Needs to be a string or the game crashes
 var travel Inventory primaryWeapon;
 var travel bool bLastWasEmpty;                                                     //SARGE: Whether or not we were empty before being switched to this weapon.
 var travel bool bSelectedFromMainBeltSelection;                                    //SARGE: Whether or not we selected our main belt slot before going to this item, since our last holster. IW belt only. Determines if we should switch back to our main selection, or .
@@ -926,13 +926,42 @@ function ClientMessage(coerce string msg, optional Name type, optional bool bBee
 
 function AssignSecondary(Inventory item)
 {
+    /*
     if (assignedWeapon.isA('ChargedPickup'))
         RemoveChargedDisplay(ChargedPickup(assignedWeapon));
+    */
 
-    assignedWeapon = item;
+    if (item == None)
+        assignedWeapon = "";
+    else
+        assignedWeapon = string(item.Class);
 
     RefreshChargedPickups();
+    UpdateSecondaryDisplay();
 }
+
+// ----------------------------------------------------------------------
+// GetSecondary()
+// GetSecondaryClass()
+// Sarge: Now needed because we are using a class rather than a specific item.
+// ----------------------------------------------------------------------
+
+function Inventory GetSecondary()
+{
+	return FindInventoryType(GetSecondaryClass());
+}
+
+function Class<Inventory> GetSecondaryClass()
+{
+    local class<Inventory> assignedClass;
+    assignedClass = class<Inventory>(DynamicLoadObject(assignedWeapon, class'Class'));
+    //ClientMessage("Get Secondary Class: " $ assignedClass $ " (" $ assignedWeapon $ ")");
+    return assignedClass;
+}
+
+// ----------------------------------------------------------------------
+// HDTP Stuff
+// ----------------------------------------------------------------------
 
 static function bool IsHDTPInstalled()
 {
@@ -1924,8 +1953,10 @@ function RefreshChargedPickups()
 			if (anItem.IsA('TechGoggles') && anItem.IsActive())
 				TechGoggles(anItem).UpdateHUDDisplay(Self);
 
-            if ((anItem.IsActive() || assignedWeapon == anItem) && anItem.GetCurrentCharge() > 0)
+            if ((anItem.IsActive() || assignedWeapon == string(anItem.Class)) && (anItem.GetCurrentCharge() > 0 || !anItem.bUnequipWhenDrained)) //SARGE: Modified get current charge check, since we can now have chargedpickups at 0 charge
     			AddChargedDisplay(anItem);
+            else
+                RemoveChargedDisplay(anItem);
 		}
 	}
 }
@@ -2625,6 +2656,9 @@ function ResetPlayer(optional bool bTraining)
 		AugmentationSystem = None;
 	}
 
+    //SARGE: Remove secondary weapon
+    AssignSecondary(None);
+
     // Reset Belt Memory
     for(i = 0;i < 12;i++)
         ClearPlaceholder(i);
@@ -2763,13 +2797,16 @@ function CreateKeyRing()
 
 singular function RecoilShaker(vector shakeAmount)  //CyberP: Cosmetic effects when shooting
 {
+    local Inventory assigned;
+    assigned = GetSecondary();
+
 	//SARGE: Don't do recoil effects when we're out of control, to stop shaking in cutscenes etc
 	if (RestrictInput())
 		return;
 
     if (inHand != none && inHand.IsA('Binoculars') && Binoculars(inHand).bActive) //RSD: To make sure zoom isn't messed up
        return;
-    else if (assignedWeapon != none && assignedWeapon.IsA('Binoculars') && Binoculars(assignedWeapon).bActive)
+    else if (assigned != none && assigned.IsA('Binoculars') && Binoculars(assigned).bActive)
        return;
 
     RecoilDesired.X=RecoilShake.X+((1.0*shakeAmount.X)-shakeAmount.X);//2.0)-shakeAmount.X);
@@ -2829,6 +2866,7 @@ singular function RecoilShaker(vector shakeAmount)  //CyberP: Cosmetic effects w
 function RecoilEffectTick(float deltaTime)
 {
 	local float invTime;
+    local Inventory assigned;
 
 	if ((RecoilTime>0)||(VSize(RecoilShake)>0.0))
 	{
@@ -2849,12 +2887,14 @@ function RecoilEffectTick(float deltaTime)
 			//SARGE: Don't do recoil effects when we're out of control, to stop shaking in cutscenes etc
 			if (RestrictInput())
 				return;
+    
+            assigned = GetSecondary();
 			
 			if ((DeusExWeapon(inHand) != None) && (DeusExWeapon(inHand).bZoomed))
 			   DesiredFOV = DeusExWeapon(inHand).ScopeFOV;
             else if (inHand != none && inHand.IsA('Binoculars') && Binoculars(inHand).bActive) //RSD: To make sure zoom isn't messed up
             {}
-			else if (assignedWeapon != none && assignedWeapon.IsA('Binoculars') && Binoculars(assignedWeapon).bActive)
+			else if (assigned != none && assigned.IsA('Binoculars') && Binoculars(assigned).bActive)
 			{}
 			else
 			{
@@ -7680,43 +7720,44 @@ function ClientTurnOffScores()
 
 exec function ShowScores()
 {
+    local Inventory assigned;
+    assigned = GetSecondary();
+
 	if ( bBuySkills && !bShowScores )
 		BuySkills();
 	if (Level.NetMode == NM_Standalone)
 	{
         if (RestrictInput())
-		return;
+            return;
 
         if (CarriedDecoration != none)                                          //RSD: just don't screw around with this, it didn't make any sense anyway
-        return;
+            return;
+
+        //SARGE: Do nothing if we have nothing assigned
+        if (assigned == None)
+            return;
 
         //Sarge: Now we check for ChargedPickup charge level
-        if (assignedWeapon.IsA('ChargedPickup') && ChargedPickup(assignedWeapon).GetCurrentCharge() == 0)
+        if (assigned.IsA('ChargedPickup') && ChargedPickup(assigned).GetCurrentCharge() == 0)
         {
             //Do nothing.
             return;
         }
         //SARGE: Check DTS Charge Level
-        else if (assignedWeapon.IsA('WeaponNanoSword') && WeaponNanoSword(assignedWeapon).ChargeManager.GetCurrentCharge() == 0)
+        else if (assigned.IsA('WeaponNanoSword') && WeaponNanoSword(assigned).ChargeManager.GetCurrentCharge() == 0)
         {
             //Do nothing.
             return;
         }
-        else if (assignedWeapon != none && assignedWeapon.IsA('RSDEdible')) //Sarge: Allow using edibles from the secondary button
+        else if (assigned.IsA('ConsumableItem') || assigned.IsA('ChargedPickup')) //Sarge: Allow using edibles from the secondary button
 		{
-            assignedWeapon.GotoState('Activated');
+            assigned.Activate();
             return;
 		}
-        else if (assignedWeapon != none && (assignedWeapon.IsA('Medkit') || assignedWeapon.IsA('BioelectricCell') || (assignedWeapon.IsA('ChargedPickup'))))
-		{
-            if(assignedWeapon.IsInState('Activated'))
-                assignedWeapon.GotoState('DeActivated');
-            else assignedWeapon.GotoState('Activated');
-            return;
-		}
-		if (!(inHand != none && inHand.IsA('Binoculars')) && CarriedDecoration == None &&assignedWeapon != none && assignedWeapon.IsA('Binoculars')) //RSD: Added Binoculars as secondary items (when not holding Binocs)
+
+		if (!(inHand != none && inHand.IsA('Binoculars')) && assigned.IsA('Binoculars')) //RSD: Added Binoculars as secondary items (when not holding Binocs)
         {
-            if(!Binoculars(assignedWeapon).bActive)
+            if(!Binoculars(assigned).bActive)
             {
                 if (inHand != none && inHand.IsA('DeusExWeapon'))
                 {
@@ -7733,42 +7774,36 @@ exec function ShowScores()
                 {
                     PutInHand(None);
                 }
-                //assignedWeapon.GotoState('Activated');
-                Binoculars(assignedWeapon).Activate();
+                Binoculars(assigned).Activate();
             }
             else
             {
-                //assignedWeapon.GotoState('DeActivated');
-                Binoculars(assignedWeapon).Activate();
+                Binoculars(assigned).Activate();
             }
             return;
         }
-        else if (inHand != none && inHand.IsA('Binoculars') && assignedWeapon != none && assignedWeapon.IsA('Binoculars')) //RSD: Added Binoculars as secondary items (when holding Binocs)
+        else if (inHand != none && inHand.IsA('Binoculars') && assigned != none && assigned.IsA('Binoculars')) //RSD: Added Binoculars as secondary items (when holding Binocs)
         {
-            if(!Binoculars(inHand).bActive)
-                //inHand.GotoState('Activated');
-                Binoculars(assignedWeapon).Activate();
-            else
-                //inHand.GotoState('DeActivated');
-                Binoculars(assignedWeapon).Activate();
+            Binoculars(assigned).Activate();
         }
-        if (/*inHand != none && */assignedWeapon != None && assignedWeapon != inHand) //RSD: Always do quickdraw even if nothing in hand
+
+        if (/*inHand != none && */assigned != inHand) //RSD: Always do quickdraw even if nothing in hand
         {
          if (Region.Zone.bWaterZone)
          {
-             if (assignedWeapon.IsA('WeaponShuriken'))
+             if (assigned.IsA('WeaponShuriken'))
              {
-                 ClientMessage(WeaponShuriken(assignedWeapon).msgNotWorking);
+                 ClientMessage(WeaponShuriken(assigned).msgNotWorking);
                  return;
              }
          }
-         PutInHand(assignedWeapon,true);
+         PutInHand(assigned,true);
          if (inHandPending.IsA('DeusExWeapon'))
 	         DeusExWeapon(inHandPending).bBeginQuickMelee=true;
          if (inHandPending.IsA('Flare'))
              Flare(inHandPending).bBeginQuickThrow=true;
 	    }
-	    else if (inHand != none && assignedWeapon != None && assignedWeapon == inHand)
+	    else if (inHand != none && assigned == inHand)
 	    {
 	      if (inHand.IsA('DeusExWeapon') && DeusExWeapon(inHand).bBeginQuickMelee)
 	      {
@@ -7784,7 +7819,7 @@ exec function ShowScores()
           {
                Flare(inHand).quickThrowCombo = 0.4;
           }
-          else// if (primaryWeapon == None || primaryWeapon == assignedWeapon)  //RSD: Don't actually need this stuff?
+          else// if (primaryWeapon == None || primaryWeapon == assigned)  //RSD: Don't actually need this stuff?
           {
                if (inHand.IsA('DeusExWeapon'))
                   DeusExWeapon(inHand).Fire(0);
@@ -7792,50 +7827,13 @@ exec function ShowScores()
                   Flare(inHand).Activate();
           }
 	    }
-	    else if (inHand == none && inHandPending == None && CarriedDecoration == None)
+	    else if (inHand == none && inHandPending == None)
 	    {
-	       if (assignedWeapon != None)
-	       {
-	           PutInHand(assignedWeapon,true);
-           }
+	           PutInHand(assigned,true);
 	    }
 
-        /*if (Weapon != None && inHand != none && assignedWeapon != None && assignedWeapon != inHand)
-        {
-         if (Region.Zone.bWaterZone)
-         {
-             if (assignedWeapon.IsA('WeaponShuriken'))
-             {
-                 ClientMessage(WeaponShuriken(assignedWeapon).msgNotWorking);
-                 return;
-             }
-         }
-         if (inHand.IsA('DeusExWeapon'))
-         PutInHand(assignedWeapon,true);
-         if (inHandPending.IsA('DeusExWeapon'))
-	         DeusExWeapon(inHandPending).bBeginQuickMelee=true;
-	    }
-	    else if (inHand != none && assignedWeapon != None && assignedWeapon == inHand)
-	    {
-	      if (inHand.IsA('DeusExWeapon') && DeusExWeapon(inHand).bBeginQuickMelee)
-	      {
-	              if (DeusExWeapon(inHand).AccurateRange > 200 && DeusExWeapon(inHand).AmmoLeftInClip() == 0 ) //CyberP/|Totalitarian|: hack fix bug
-	                 return;
-	              else
-                     DeusExWeapon(inHand).quickMeleeCombo = 0.4;
-          }
-          else if (primaryWeapon == None || primaryWeapon == assignedWeapon)
-          {
-               if (inHand.IsA('DeusExWeapon'))
-                  DeusExWeapon(inHand).Fire(0);
-          }
-	    }
-	    else if (inHand == none && inHandPending == None && CarriedDecoration == None)
-	    {
-	       if (assignedWeapon != None)
-	           inHandPending = assignedWeapon;
-	    }*/
     }
+
 	bShowScores = !bShowScores;
 }
 
@@ -8722,6 +8720,9 @@ function DoFrob(Actor Frobber, Inventory frobWith)
 exec function PutInHand(optional Inventory inv, optional bool bNoPrimary)
 {
     local DeusExWeapon weap;
+    local Inventory assigned;
+
+    assigned = GetSecondary();
 
 	if (RestrictInput(true))
 		return;
@@ -8755,9 +8756,9 @@ exec function PutInHand(optional Inventory inv, optional bool bNoPrimary)
 	if (CarriedDecoration != None)
 		DropDecoration();
     bLeftClicked = False; //CyberP: fail safe
-	if (assignedWeapon != none && assignedWeapon.IsA('Binoculars'))             //RSD: Make sure we aren't in binocs view
-		if (Binoculars(assignedWeapon).bActive)
-            assignedWeapon.GotoState('DeActivated');
+	if (assigned != none && assigned.IsA('Binoculars') && Binoculars(assigned).bActive)             //RSD: Make sure we aren't in binocs view
+            assigned.Activate();
+
     if (inHandPending != inv && inHand != inv)
         bBeltSkipNextPrimary = bNoPrimary;
 
@@ -9188,6 +9189,7 @@ function RemoveItemFromSlot(Inventory anItem)
 		SetInvSlots(anItem, 0);
 		anItem.invPosX = -1;
 		anItem.invPosY = -1;
+        UpdateSecondaryDisplay();
 	}
 }
 
@@ -10264,8 +10266,6 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 				   DeusExWeapon(item).HideCamo();
 				   DeusExWeapon(item).AmbientGlow=DeusExWeapon(item).default.AmbientGlow;
 				}
-                if (DeusExWeapon(item) == assignedWeapon)
-				    assignedWeapon = None;
 			}
 		}
 
@@ -10348,11 +10348,6 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 
 				// make sure we have one copy to throw!
 				DeusExPickup(item).NumCopies = 1;
-
-				if (DeusExPickup(item) == assignedWeapon)                       //RSD: Reset our assigned weapon
-				{
-					AssignSecondary(None);
-				}
 			}
 		}
         //If it's a disposable weapon, throw away only one, and deduct ammo
@@ -10383,9 +10378,6 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
                     MakeBeltObjectPlaceholder(item); //SARGE: Disabled because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
                 else
                     RemoveObjectFromBelt(item);
-				
-                if (DeusExWeapon(item) == assignedWeapon)                       //RSD: Reset our assigned weapon
-					AssignSecondary(None);
             }
             ammoType.ammoAmount -= 1;
             UpdateAmmoBeltText(AmmoType);
@@ -11521,6 +11513,17 @@ function UpdateHUD()
         root.UpdateHUD();
 }
 
+function UpdateSecondaryDisplay()
+{
+	local DeusExRootWindow root;
+	root = DeusExRootWindow(rootWindow);
+
+    //ClientMessage("Updating Secondary Display");
+
+    if (root != None)
+        root.UpdateSecondaryDisplay();
+}
+
 // ----------------------------------------------------------------------
 // ShowInventoryWindow()
 // ----------------------------------------------------------------------
@@ -11786,6 +11789,9 @@ exec function NextBeltItem()
 {
 	local DeusExRootWindow root;
 	local int slot, startSlot, totalSlots;
+    local Inventory assigned;
+    
+    assigned = GetSecondary();
 
     if (bBiggerBelt)
         totalSlots = 12;
@@ -11819,17 +11825,14 @@ exec function NextBeltItem()
 	       return;
 	   }
 	}
-	else if (assignedWeapon != none && assignedWeapon.IsA('Binoculars'))        //RSD: Scrolling during secondary Binoc zoom
+	else if (assigned != none && assigned.IsA('Binoculars') && Binoculars(assigned).bActive)        //RSD: Scrolling during secondary Binoc zoom
 	{
-	   if (Binoculars(assignedWeapon).bActive)
-	   {
-	       if (FovAngle < 60)
-	       {
-	           Binoculars(assignedWeapon).ScopeFov += 2;
-	           Binoculars(assignedWeapon).RefreshScopeDisplay(Self,FALSE);
-	       }
-	       return;
-	   }
+        if (FovAngle < 60)
+        {
+            Binoculars(assigned).ScopeFov += 2;
+            Binoculars(assigned).RefreshScopeDisplay(Self,FALSE);
+        }
+        return;
 	}
 
    if (bAlternateToolbelt == 0)
@@ -11921,6 +11924,9 @@ exec function PrevBeltItem()
 {
 	local DeusExRootWindow root;
 	local int slot, startSlot;
+    local Inventory assigned;
+
+    assigned = GetSecondary();
 
 	if (RestrictInput())
 		return;
@@ -11949,17 +11955,14 @@ exec function PrevBeltItem()
 	       return;
 	   }
 	}
-	else if (assignedWeapon != none && assignedWeapon.IsA('Binoculars'))        //RSD: Scrolling during secondary Binoc zoom
+	else if (assigned != none && assigned.IsA('Binoculars') && Binoculars(assigned).bActive)        //RSD: Scrolling during secondary Binoc zoom
 	{
-	   if (Binoculars(assignedWeapon).bActive)
-	   {
-	       if (FovAngle > 20)
-	       {
-	           Binoculars(assignedWeapon).ScopeFov -= 2;
-	           Binoculars(assignedWeapon).RefreshScopeDisplay(Self,FALSE);
-	       }
-	       return;
-	   }
+        if (FovAngle > 20)
+        {
+            Binoculars(assigned).ScopeFov -= 2;
+            Binoculars(assigned).RefreshScopeDisplay(Self,FALSE);
+        }
+        return;
 	}
 
    if (bAlternateToolbelt == 0)
