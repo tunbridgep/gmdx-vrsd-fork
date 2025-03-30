@@ -759,6 +759,9 @@ var globalconfig bool bFragileDarts;                                    //SARGE:
 
 var globalconfig bool bReloadingResetsAim;                              //SARGE: Allow the "reloading resets aim" hardcore behaviour outside of hardcore.
 
+//Ygll: Healing flash screen
+var globalconfig int iHealingScreen;                            //Ygll: can disable the flash screen when healing or changing it to green color.
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -5184,10 +5187,14 @@ function int HealPlayer(int baseHealPoints, optional Bool bUseMedicineSkill)
 	if (adjustedHealAmount > 0)
 	{
 		if (bUseMedicineSkill)
-			{
-            PlaySound(sound'MedicalHiss', SLOT_None,,, 256);
-            ClientFlash(1,vect(0,0,200));     //CyberP: flash when using medkits.
-            }
+		{
+			PlaySound(sound'MedicalHiss', SLOT_None,,, 256);
+			if(iHealingScreen == 1)
+				ClientFlash(1,vect(0,0,200));     //CyberP: flash when using medkits.
+			else if(iHealingScreen == 2)
+				ClientFlash(1,vect(71,236,0));     //Ygll: new green flash color.
+		}
+		
 		// Heal by 3 regions via multiplayer game
 		if (( Level.NetMode == NM_DedicatedServer ) || ( Level.NetMode == NM_ListenServer ))
 		{

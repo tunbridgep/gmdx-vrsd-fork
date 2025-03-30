@@ -66,5 +66,6 @@ defaultproperties
      items(39)=(HelpText="When using a medical bot, automatically switch to the Health screen after using the last Aug canister.",actionText="Interaction: Medbot Auto Switch",variable="bMedbotAutoswitch",defaultValue=1);
      items(9)=(HelpText="Smooths out the lip-synching animations in conversations. Setting it to 'chunky' intentionally removes blending.",actionText="Conversations: Improved Lip Synch",variable="iEnhancedLipSync",defaultValue=1,valueText2="Chunky");
      items(14)=(HelpText="If enabled, characters (including the player) will blink randomly.",actionText="Game: Enable Blinking",variable="bEnableBlinking",defaultValue=1);
+	 items(48)=(HelpText="Disable the blue flash effect when healing or change it to green color.",actionText="Player: Healing Screen Effect",variable="iHealingScreen",defaultValue=1,valueText2="Green");
      Title="GMDX Quality of Life Options"
 }
