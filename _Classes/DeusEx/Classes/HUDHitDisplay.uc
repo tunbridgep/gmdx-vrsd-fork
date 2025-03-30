@@ -52,6 +52,8 @@ var Texture texBorder;
 var localized string O2Text;
 var localized string EnergyText;
 var localized string noted;
+var localized string walking;
+var localized string crouching;
 var string percentTxt;
 var Color colLight;
 var color colLightDark;
@@ -276,6 +278,7 @@ event DrawWindow(GC gc)
         else
             gc.DrawText(61, 74, 8, 8, int(breathPercent));
 	}
+	
 	if (Player.LightLevelDisplay > -1)
 	{
 		noted = Player.LightLevelDisplay $ percentTxt;
@@ -294,8 +297,26 @@ event DrawWindow(GC gc)
         }
         gc.SetFont(Font'FontConversationBold');
         gc.SetTextColor(colMult);
-        gc.DrawText(31, 72, 36, 12, noted);
-     }
+		gc.DrawText(31, 72, 36, 12, noted);
+    }	
+	
+	if(player.iStanceHud > 0)
+	{
+		if(player.iStanceHud > 1 && player.bIsCrouching)
+		{
+			gc.SetFont(Font'FontMenuSmall');
+			gc.SetStyle(DSTY_Normal);
+			gc.SetTextColor(col02);
+			gc.DrawText(18, 94, 70, 12, crouching);
+		}
+		else if(player.bIsWalking)
+		{
+			gc.SetFont(Font'FontMenuSmall');
+			gc.SetStyle(DSTY_Normal);
+			gc.SetTextColor(col02);
+			gc.DrawText(18, 94, 70, 12, walking);
+		}
+	}
 }
 
 // ----------------------------------------------------------------------
@@ -401,7 +422,7 @@ event Tick(float deltaSeconds)
 		    if (!winBreath.IsVisible())
 				winBreath.Show();
 		}
-
+		
 		Show();
 	}
 	else
@@ -470,6 +491,8 @@ defaultproperties
      O2Text="O2"
      EnergyText="BE"
      percentTxt="%"
+	 crouching="CROUCHING";
+	 walking="WALKING";
      colLight=(R=255,G=255)
      colLightDark=(R=140,G=140)
      colRed=(R=255)

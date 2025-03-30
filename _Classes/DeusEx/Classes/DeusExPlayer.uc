@@ -759,6 +759,8 @@ var globalconfig bool bFragileDarts;                                    //SARGE:
 
 var globalconfig bool bReloadingResetsAim;                              //SARGE: Allow the "reloading resets aim" hardcore behaviour outside of hardcore.
 
+var globalconfig int iStanceHud;					//Ygll: Display the current player stance in the hud
+
 //////////END GMDX
 
 // OUTFIT STUFF
