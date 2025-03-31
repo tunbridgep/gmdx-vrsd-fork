@@ -17,10 +17,6 @@ var PersonaLevelIconWindow       winIcons;
 var PersonaActionButtonWindow    buttonUpgrade;
 var PersonaButtonBarWindow       winActionButtons;
 var Inventory                    assignThis;
-var localized string msgAssign;
-var localized string msgConf;
-var localized string msgAssigned;
-var localized string msgUnassigned;
 /*function CreateWin()
 {
 local AlignWindow winIco;
@@ -286,10 +282,18 @@ function AddSecondaryButton(Inventory wep)                                      
 	winActionButtons.SetWidth(32); //149
 	winActionButtons.FillAllSpace(False);
 	buttonUpgrade = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow'));
-	buttonUpgrade.SetButtonText(msgConf);
 	assignThis = wep;
+    UpdateSecondaryButton(wep.Class);
    AddLine();
    }
+}
+
+function UpdateSecondaryButton(class<Inventory> item)
+{
+    if (player.GetSecondaryClass() != item)
+        buttonUpgrade.SetButtonText(msgDoAssign);
+    else
+        buttonUpgrade.SetButtonText(msgDoUnassign);
 }
 
 function bool ButtonActivated( Window buttonPressed )
@@ -309,16 +313,17 @@ function bool ButtonActivated( Window buttonPressed )
 		{
 			case buttonUpgrade:
 
-               if (assignThis != None && player.assignedWeapon != None && player.assignedWeapon == assignThis)
+               if (assignThis != None && player.GetSecondaryClass() == assignThis.Class)
                {
                    player.AssignSecondary(none);
-                   player.ClientMessage(msgUnassigned);
+                   //player.ClientMessage(msgUnassigned);
                }
                else if (assignThis != None)
                {
                    player.AssignSecondary(assignThis);
-                   player.ClientMessage(msgAssigned);
+                   //player.ClientMessage(msgAssigned);
                }
+               UpdateSecondaryButton(assignThis.class);
 			   break;
 
 			default:
@@ -345,8 +350,4 @@ defaultproperties
      AmmoLabel="Ammo:"
      AmmoRoundsLabel="Rounds:"
      ShowAmmoDescriptionsLabel="Show Ammo Descriptions"
-     msgAssign="Assign as Secondary Item:"
-     msgConf="Assign"
-     msgAssigned="Secondary Item Assigned"
-     msgUnassigned="Secondary Item Unassigned"
 }

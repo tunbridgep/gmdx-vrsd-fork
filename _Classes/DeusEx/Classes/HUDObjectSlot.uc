@@ -133,7 +133,7 @@ function SetItem(Inventory newItem)
 	{
 		newItem.bInObjectBelt = True;
 		newItem.beltPos       = objectNum;
-        player.SetPlaceholder(objectNum,false,newItem.icon); //Sarge: Reset placeholder status if a new item is added
+        player.ClearPlaceholder(objectNum); //Sarge: Reset placeholder status if a new item is added
 	}
 	else
 	{
@@ -246,7 +246,7 @@ local DeusExWeapon weapon;
 	}
 
 	// Don't draw any of this if we're dragging
-	if ((item != None || player.GetPlaceholder(objectNum)) && (player.GetBeltIcon(objectNum) != None) && (!bDragging))
+	if ((item != None || player.GetPlaceholder(objectNum)) && (!bDragging))
 	{
 		// Draw the icon
 		DrawHUDIcon(gc);
@@ -329,8 +329,8 @@ function DrawHUDIcon(GC gc)
 
         if (item != None)
             icon = item.icon;
-        else if (player.bBeltMemory)
-            icon = player.GetBeltIcon(objectNum);
+        else
+            icon = player.GetPlaceholderIcon(objectNum);
 
         if (icon == None)
             return;
@@ -556,11 +556,11 @@ event texture CursorRequested(window win, float pointX, float pointY,
 			newColor.B = 64;
 		}
 
-		return player.GetBeltIcon(objectNum);
+        return item.icon;
 	}
 	else
 	{
-		return None;
+        return player.GetPlaceholderIcon(objectNum);
 	}
 }
 

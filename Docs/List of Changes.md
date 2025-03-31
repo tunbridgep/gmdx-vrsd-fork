@@ -39,6 +39,8 @@ Sarge's Changes since Beta 2.2:
     - Fixed many other GMDX and Vanilla bugs.
 - Quality of Life Improvements:
     - Music will now continue when loading different areas that use the same music track, rather than restarting.
+    - GMDX "Secondary Item" system updated to use a type, rather than a specific item. This means that dropping/losing your secondary items will no longer unassign your secondary item.
+    - Taking ammo from weapons in the world will now make an "ammo retrieval" sound.
     - Saving is now possible while an infolink is playing. The infolink will be aborted.
     - The current ammo type is now displayed in the Ammo display as well as on the belt, to facilitate selecting weapons that aren't currently on the belt.
     - Optionally, bars and clubs can be made to continue their standard music during conversations, rather than restarting.

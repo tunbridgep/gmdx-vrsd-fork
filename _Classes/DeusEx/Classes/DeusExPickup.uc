@@ -534,8 +534,6 @@ function UseOnce()
 	{
 		if (player.inHand == Self)
 			player.PutInHand(None);
-		if (player.assignedWeapon == Self)                                      //RSD: Reset our assigned weapon
-			player.assignedWeapon = None;
 		DestroyMe();
 	}
 	else
