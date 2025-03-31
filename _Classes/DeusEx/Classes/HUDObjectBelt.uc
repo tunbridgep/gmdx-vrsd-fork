@@ -470,7 +470,7 @@ function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
 
 			objects[pos].SetItem(newItem);
 
-			if (newItem.IsA('ChargedPickup') && !ChargedPickup(newItem).bActivatable)
+			if (newItem.IsA('ChargedPickup') && (!ChargedPickup(newItem).bActivatable || ChargedPickup(newItem).Charge == 0))
 			{
 				objects[pos].bDimIcon = true;                                   //RSD: Dim ChargedPickups if they're at 0%
 			}

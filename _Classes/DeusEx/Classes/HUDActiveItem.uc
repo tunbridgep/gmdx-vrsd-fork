@@ -28,19 +28,31 @@ event Tick(float deltaSeconds)
 
 	item = ChargedPickup(GetClientObject());
 
-   if ((item != None) && (Player.PlayerIsRemoteClient()))
-      if (!VerifyItemCarried())
-      {
-        Player.RemoveChargedDisplay(item);
-        item = None;
-      }
+    if ((item != None) && (Player.PlayerIsRemoteClient()))
+        if (!VerifyItemCarried())
+        {
+            Player.RemoveChargedDisplay(item);
+            item = None;
+        }
 
 
 	if ((item != None) && (winEnergy != None))
 	{
-		winEnergy.SetCurrentValue(item.GetCurrentCharge());
+        if (item.bDrained) //SARGE: If it's drained, don't show the power level for the next one.
+            winEnergy.SetCurrentValue(0);
+        else
+            winEnergy.SetCurrentValue(item.GetCurrentCharge());
 	}
 
+}
+
+//SARGE: Draw dim if a charged pickup is drained
+function bool DrawDim()
+{
+	local ChargedPickup item;
+	item = ChargedPickup(GetClientObject());
+
+    return (item != None && item.bDrained);
 }
 
 // ----------------------------------------------------------------------

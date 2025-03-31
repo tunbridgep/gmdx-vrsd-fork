@@ -1964,10 +1964,10 @@ function RefreshChargedPickups()
 			if (anItem.IsA('TechGoggles') && anItem.IsActive())
 				TechGoggles(anItem).UpdateHUDDisplay(Self);
 
-            if ((anItem.IsActive() || assignedWeapon == string(anItem.Class)) && (anItem.GetCurrentCharge() > 0 || !anItem.bUnequipWhenDrained)) //SARGE: Modified get current charge check, since we can now have chargedpickups at 0 charge
-    			AddChargedDisplay(anItem);
-            else
-                RemoveChargedDisplay(anItem);
+      if ((anItem.IsActive() || assignedWeapon == string(anItem.Class)) && (anItem.GetCurrentCharge() > 0 || !anItem.bUnequipWhenDrained)) //SARGE: Modified get current charge check, since we can now have chargedpickups at 0 charge
+    	    AddChargedDisplay(anItem);
+      else
+          RemoveChargedDisplay(anItem);
 		}
 	}
 }
@@ -17309,14 +17309,16 @@ exec function IAmWarren()
 function bool UsingChargedPickup(class<ChargedPickup> itemclass)
 {
 	local inventory CurrentItem;
+	local ChargedPickup CurrentPickup;
 	local bool bFound;
 
 	bFound = false;
 
 	for (CurrentItem = Inventory; ((CurrentItem != None) && (!bFound)); CurrentItem = CurrentItem.inventory)
 	{
-	  if ((CurrentItem.class == itemclass) && (CurrentItem.bActive))
-		 bFound = true;
+        CurrentPickup = ChargedPickup(CurrentItem);
+        if (CurrentPickup != None && CurrentPickup.class == itemclass && CurrentPickup.bActive && !CurrentPickup.bDrained) //SARGE: Added bDrained check
+            bFound = true;
 	}
 
 	return bFound;

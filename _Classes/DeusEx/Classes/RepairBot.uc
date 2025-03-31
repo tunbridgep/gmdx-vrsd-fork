@@ -183,6 +183,7 @@ function ChargeEquipment(ChargedPickup EquipToCharge, DeusExPlayer EquipOwner) /
 		if (EquipToCharge.Charge > EquipToCharge.default.Charge)
 		    EquipToCharge.Charge = EquipToCharge.default.Charge;
 
+        EquipToCharge.bDrained=false;                                           //SARGE: Since you can now equip empty equipment.
         EquipToCharge.bActivatable=true;                                        //RSD: Since you can now hold one at 0%
         EquipToCharge.unDimIcon();                                              //RSD
 		lastChargeTime = Level.TimeSeconds;
