@@ -439,10 +439,14 @@ function DrawWindow(GC gc)
 					strInfo = DeusExCarcass(frobTarget).itemName;
 				else if (frobTarget.IsA('DeusExAmmo'))                          //RSD: Append the ammo count
 				    strInfo = DeusExAmmo(frobTarget).itemName @ "(" $ DeusExAmmo(frobTarget).AmmoAmount $ ")";
+                else if (frobTarget.IsA('ChargedPickup') && ChargedPickup(frobTarget).numCopies > 1 && player.bShowItemPickupCounts)
+                    strInfo = ChargedPickup(frobTarget).ItemName @ "(" $ int(ChargedPickup(frobTarget).GetCurrentCharge()) $ "%) (" $ ChargedPickup(frobTarget).numCopies $ ")"; //SARGE: Append the current charge and num copies
                 else if (frobTarget.IsA('ChargedPickup'))
                     strInfo = ChargedPickup(frobTarget).ItemName @ "(" $ int(ChargedPickup(frobTarget).GetCurrentCharge()) $ "%)"; //RSD: Append the current charge
 				else if (frobTarget.IsA('DeusExWeapon'))                    //Sarge: Add "(Modified)" to weapons
 					strInfo = DeusExWeapon(frobTarget).GetFrobString(player);
+				else if (frobTarget.IsA('DeusExPickup') && DeusExPickup(frobTarget).numCopies > 1 && player.bShowItemPickupCounts)
+					strInfo = Inventory(frobTarget).itemName @ "(" $ DeusExPickup(frobTarget).numCopies $ ")"; //SARGE: Append number of copies, if more than 1
 				else if (frobTarget.IsA('Inventory'))
 					strInfo = Inventory(frobTarget).itemName;
 				else if (frobTarget.IsA('DeusExDecoration'))

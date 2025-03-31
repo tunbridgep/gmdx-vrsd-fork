@@ -71,7 +71,8 @@ function bool DoLeftFrob(DeusExPlayer frobber)
 {
     if (bAutoActivate)
     {
-        GotoState('Activated');
+        //GotoState('Activated');
+        Activate();
         return false;
     }
     else
@@ -620,7 +621,7 @@ simulated function BreakItSmashIt(class<fragment> FragType, float size)
         PlaySound(sound'SplashSmall', SLOT_None,3.0,, 1280);
         if (pool != None)
         {
-			pool.maxDrawScale = CollisionRadius / 16.0;
+			pool.SetMaxDrawScale(CollisionRadius / 16.0);
             pool.spreadTime = 0.5;
         }
 	}
@@ -680,7 +681,8 @@ simulated function BreakItSmashIt(class<fragment> FragType, float size)
             }
             //else if (i > 4)
             //    HurtRadius(1,256,'HalonGas',2000,Location);
-            s.LifeSpan += 20.0;
+            if (class'DeusExPlayer'.default.iPersistentDebris < 2)
+                s.LifeSpan += 20.0;
 		}
 			if ((IsA('WineBottle') || IsA('Liquor40oz') || IsA('LiquorBottle')) && (!Region.Zone.bWaterZone))
 			{

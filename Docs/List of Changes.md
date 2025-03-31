@@ -2,7 +2,7 @@ Sarge's Changes since Beta 2.2:
 
 - Moved DeusEx.Int to the mod's System folder, so as to not overwrite any vanilla files. The int file will be handled automatically when using Kentie's Deus Exe.
 - Numerous Bug Fixes
-    - Fixed GMDX bug where Intro Cinematic didn't have subtitles bars, and fixed all cinematics to have a FOV of 75, making them always look accurate to the original game.
+    - Fixed GMDX bug where Intro Cinematic didn't have subtitles bars, and fixed all cinematics to have a FOV of 75-90 (adjustible, defaults to 80), making them always look accurate to the original game.
     - Fixed a bug where the Nuke and Worm software buttons were completely white squares on the Hacking menu.
     - Fixed GMDX vRSD bug where you could pick up and carry heavy objects while out of energy with the Muscle Augmentation
     - Fixed GMDX vRSD bug allowing using Tech Goggles in the secondary slot for half a second or so when out of charge
@@ -32,11 +32,18 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX bug which would make an empty subtitles box appear when interacting with things during first-person conversations, if subtitles were disabled.
     - Fixed GMDX bug where recharging items with biocells would cause the belt view in the inventory to continually get brighter and brighter until the inventory screen was closed.
     - Fixed GMDX slowdowns related to calling timers many times repeatedly.
-    - Fixed many other GMDX and Vanilla bugs.
+    - Fixed GMDX bug where jumping from a ladder while partially submerged in water would cause JC to fly forever.
+    - Fixed vanilla bug where the HUD would be re-enabled while dead if opening the main-menu.
     - Fixed GMDX bug where most inventory items with multiple skins (such as sodacans) weren't showing their skinned variants when being held in the players hands.
+    - Fixed vanilla item-duplication bug (caused by repeatedly dropping and repeatedly picking up items quickly)
+    - Fixed many other GMDX and Vanilla bugs.
 - Quality of Life Improvements:
     - Music will now continue when loading different areas that use the same music track, rather than restarting.
+    - Saving is now possible while an infolink is playing. The infolink will be aborted.
+    - The current ammo type is now displayed in the Ammo display as well as on the belt, to facilitate selecting weapons that aren't currently on the belt.
     - Optionally, bars and clubs can be made to continue their standard music during conversations, rather than restarting.
+    - Items in the world now show their pickup count in their name tag if stacked, such as `Lockpick (2)`.
+        - This should be exceptionally rare as items are normally dropped one-at-a-time, so this should only really be relevant in the MJ12 prison escape mission.
     - Keypads have been improved:
         - Keypads are now displayed in Number Pad format, instead of Dial Pad format.
         - Keypads show numbers when digits are entered, rather than dots.
@@ -46,9 +53,11 @@ Sarge's Changes since Beta 2.2:
     - Belt Improvements:
         - The Belt now has 12 slots, insead of 10.
             - The extra belt slots will automatically assign the - and = keys if unbound.
+        - At the start of the game, the prod will be palced in slot 1, the pistol in slot 2, and the medkit in slot 3
         - Belt Autofilling can now be disabled in the options.
         - Selecting an empty belt slot will no longer put away your current item.
         - Right-Clicking an item in the belt with the Inventory Window open will clear the slot.
+        - Charged Items now show their charge percentage.
         - Added "Belt Memory". When belt memory is enabled, using the last item in a belt slot will keep a darkened version of the item's icon in the toolbelt
             - Regardless of the Autofill setting, no other items will be added to the item's slot automatically.
             - Regardless of the Autofill setting, all items of the remembered type will be automatically added to the belt slot when picked up.
@@ -61,6 +70,7 @@ Sarge's Changes since Beta 2.2:
             - Pressing a number key again while its slot is selected will set it as the primary selection.
             - In previous versions of GMDX, when selecting a belt item using the number keys, right-clicking would switch back to your primary belt selection. Now, it holsters instead.
                 - Setting The IW Toolbelt to "classic mode" will revert this behaviour, and will once again make right-clicking select the primary belt selection.
+                - Setting the IW Toolbelt to "hybrid" mode will only switch back to your primary belt selection if you were unholstered before selecting the current item, otherwise it does nothing.
         - "Smart Keyring" support added.
             - When Smart Keyring is enabled, the keyring will no longer occupy belt slot 0 (or belt slot =, if the large belt is enabled), allowing these slots to be used for regular items.
             - The keyring can still be selected using Left-Click Frob on doors or by right-clicking the Nano-Keyring icon in the inventory screen.
@@ -68,6 +78,7 @@ Sarge's Changes since Beta 2.2:
     - Added the option to use the original HUD fonts instead of the GMDX ones.
     - When using a medical bot, using the last augmentation cannister in the Augs screen will automatically switch to the Health screen.
     - The augmentation "hum" sound can be disabled.
+    - Added a new setting to make debris, blood pools, and other decals permanent, as well as persistent between map loads.
     - Augmentations now show their active colours in the medbot interface.
     - Picking up a weapon from a carcass for the first time will show you how much ammo it has.
     - Complete overhaul of the "Decline Knives" system
@@ -80,7 +91,9 @@ Sarge's Changes since Beta 2.2:
     - Datacubes will show a black screen after they have been read.
     - When picking up duplicate Nanokeys, the log now lists it as a duplicate.
     - While having a grenade selected, the crosshair will turn blue when you're able to place it on a wall.
+    - The stamina bar now shows as red when the player is exhausted.
     - Right-Clicking while dead will load the last save game.
+        - You won't be automatically returned to the menu either, so you can watch the camera slowly rise for as long as you want.
     - Right-Clicking an item in the belt with the Inventory Window open will clear the slot.
     - Right-Click Unholstering has been completely overhauled.
         - Previously, right-clicking would not unholster at all when using the regular toolbelt, and would always select the primary belt selection when using the IW toolbelt.
@@ -154,10 +167,13 @@ Sarge's Changes since Beta 2.2:
             - This behaviour is disabled in Hardcore mode
             - In Hardcore, Left-Clicking on a door will always pull out a lockpick (or the keyring if the lock is unpickable or you have no lockpicks). Right-clicking will then swap between the keyring and lockpicks.
         - Left-Clicking on a corpse will always pick it up regardless of inventory. Double-Rightclick still works.
-    - Right-Clicking with the Keyring equipped will select your last used weapon.
+    - Added a new "Right-Click Tool Interaction" option. While having a weapon out, right-clicking on a breakable container or a locked or bypassable item (except keypads) will pull out the appropriate tool.
+        - Right-Clicking again after selecting a tool in this manner will switch back to your previous weapon.
+        - When holstered, you should use the standard left-frobbing system instead.
     - The Pedometer can now be viewed in the Health screen when using the Addiction system.
     - Subtitles are now enabled in third-person cutscenes regardless of Subtitles setting, allowing text to show instead of useless black bars while also not displaying in-game barks. This can be disabled using the `bSubtitlesCutscene` option in `DeusEx.ini`
 - Gameplay Changes:
+    - The NUKE! Virus can now be used at Untrained hacking.
     - Destroyable Movers that aren't set to highlighting will now have 1 HP.
         - This removes ambiguity about whether or not a surface is unbreakable, or just needs more hits to destroy.
         - This only affects 1-2 movers in the entire game.
@@ -168,7 +184,7 @@ Sarge's Changes since Beta 2.2:
     - The Dragons Tooth Sword now requires Biocells to use. It starts with 100% charge, with each attack taking 2% if it hits a target, giving you 50 hits total. Biocells restore 20% (or 30% with the Field Repair perk), giving you an additional 10 (15) hits each.
     - Aim Stabilisation is now reset when using Medkits/Biocells from the health/augs screens, or using items from the inventory.
     - The GEP Gun now has limited range. After 5 seconds of flight, rockets will detonate as they run out of fuel. Each range mod increases flight time by 1 second.
-    - Stamina no longer regenerates while holding a corpse.
+    - Stamina no longer regenerates while holding an object or corpse.
     - Selecting the Mini Crossbow or Sniper Rifle from Paul at the start of the game will give you extra ammo (8 tranq darts or 5 .3006 ammo).
         - Both weapons still come with an Accuracy mod (which was added in vRSD)
     - The LAW has been changed to be 3x1 instead of 4x1 inventory spaces.
@@ -249,6 +265,7 @@ Sarge's Changes since Beta 2.2:
             - No longer shows the `DEFAULT NAME - REPORT AS A BUG` text when looking at objects with no name.
             - The Picture-in-Picture window has been made slightly bigger.
             - The Picture-in-Picture window can now be minimised, which hides it and only displays textual info.
+            - The Picture-in-Picture window is also minimised by default when you don't have a weapon selected.
     - Hacking Overhaul
         - Bypassing Turrets now requires Advanced hacking, as in Vanilla.
         - Hacked Cameras and Turrets will "reboot" and become re-enabled again after 2 minutes (plus an additional 2 minutes for each level of the Hacking skill)
@@ -313,6 +330,8 @@ Sarge's Changes since Beta 2.2:
     - A Laser Sight has been added to Smuggler's safe in the first NY visit (replaces a recoil mod)
     - The Silencer in Paul's Apartment, Full-Auto Mod in Tong's Lab, and Laser Sight in Smugglers Safe are all guaranteed to appear even with the weapon mod shuffle turned on.
 - Miscellaneous Changes:
+    - Corpses placed within maps will now have proper blood pools.
+    - Added a blue screen effect when entering bodies of water.
     - Added a message and a sound when picking up a charged item that is then used to immediately recharge an existing item, to let you know what happened to it. Previously the item just disappeared with no message.
     - Death and Hurt Sounds Randomisation added
         - In Vanilla mode, all enemies only use vanilla pain and hurt sounds.
