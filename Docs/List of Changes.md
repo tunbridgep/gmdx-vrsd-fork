@@ -38,6 +38,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed vanilla item-duplication bug (caused by repeatedly dropping and repeatedly picking up items quickly)
     - Fixed many other GMDX and Vanilla bugs.
 - Quality of Life Improvements:
+    - Medical Bots will now display your total health on the status screen, as well as the total amount of health that will be healed.
     - Music will now continue when loading different areas that use the same music track, rather than restarting.
     - GMDX "Secondary Item" system updated to use a type, rather than a specific item. This means that dropping/losing your secondary items will no longer unassign your secondary item.
     - Taking ammo from weapons in the world will now make an "ammo retrieval" sound.
