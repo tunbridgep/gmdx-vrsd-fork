@@ -27,8 +27,8 @@ var Texture texBorder;
 var Color colIconDimmed;
 
 //SARGE: Cache the players secondary
-var Inventory assigned;
-var class<Inventory> assignedClass;
+var transient Inventory assigned;
+var transient class<Inventory> assignedClass;
 var bool bUpdateAssigned;
 
 // ----------------------------------------------------------------------
@@ -90,17 +90,27 @@ event DrawWindow(GC gc)
 
 	Super.DrawWindow(gc);
 
+    /*
+    if (assigned == None || assigned.Owner != player)
+        return;
+    */
+
     if (player == None || assignedClass == None)
         return;
 
 	// No need to draw anything if the player doesn't have
 	// a weapon selected
 
-    if (assigned == None)
+    if (assigned == None || assigned.Owner != player)
     {
-        icon = assignedClass.default.icon;
+        gc.SetTileColor(colIconDimmed);
+		gc.SetStyle(DSTY_Masked);
+		gc.DrawTexture(22, 20, 40, 35, 0, 0, assignedClass.default.icon);
+        return;
     }
-	else if (assigned.IsA('DeusExWeapon')) //RSD: Added IsA weapon check
+
+
+	if (assigned.IsA('DeusExWeapon')) //RSD: Added IsA weapon check
 	{
 		weapon = DeusExWeapon(assigned);
 		item = none;                                                            //RSD: Fix for the last weapon assigned icon always showing up
@@ -121,15 +131,8 @@ event DrawWindow(GC gc)
         chargeLevel = int(ChargedPickup(item).GetCurrentCharge());
     else if (weapon != None && weapon.isA('WeaponNanoSword'))
         chargeLevel = WeaponNanoSword(weapon).ChargeManager.GetCurrentCharge();
-
-    //if we don't have the item, just draw a dimmed version
-    if (assigned == None)
-    {
-        gc.SetTileColor(colIconDimmed);
-		gc.SetStyle(DSTY_Masked);
-		gc.DrawTexture(22, 20, 40, 35, 0, 0, icon);
-    }
-	else if ( weapon != None || item != None)
+	
+    if ( weapon != None || item != None)
 	{
         if (!IsCharged(item))
             gc.SetTileColor(colIconDimmed);

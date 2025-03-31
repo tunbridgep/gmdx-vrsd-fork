@@ -8132,7 +8132,7 @@ function SelectLastWeapon(optional bool allowEmpty, optional bool bBeltLast)
         }
     }
     
-    if (primaryWeapon.Owner == self)
+    if (primaryWeapon != None && primaryWeapon.Owner == self)
     {
         PutInHand(primaryWeapon);
         NewWeaponSelected();
@@ -9186,6 +9186,8 @@ function RemoveItemFromSlot(Inventory anItem)
 {
 	if (anItem != None)
 	{
+        if (anItem == primaryWeapon)
+            primaryWeapon = None;
 		SetInvSlots(anItem, 0);
 		anItem.invPosX = -1;
 		anItem.invPosY = -1;
