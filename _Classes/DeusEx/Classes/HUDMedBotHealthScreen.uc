@@ -21,6 +21,9 @@ var Localized String ReadyLabel;
 var Localized String NotReadyLabel;
 var Localized String MedBotOutOfJuice;
 
+var Localized String TotalHealthStr;
+var Localized String TotalRestoreAmount;
+
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -66,6 +69,7 @@ event DestroyWindow()
 function Tick(float deltaTime)
 {
 	UpdateMedBotDisplay();
+    UpdateStatusText();                                                     //Sarge: Added the ability for the Status button to toggle addictions, rather than on/off empty page
 }
 
 // ----------------------------------------------------------------------
@@ -341,10 +345,62 @@ function SkipAnimation(bool bNewSkipAnimation)
 }
 
 // ----------------------------------------------------------------------
+// UpdateStatusText()
+// SARGE: Updated for Med Bot display
+// ----------------------------------------------------------------------
+
+function UpdateStatusText()
+{
+    local int totalHealth, maxHealth, restored;
+
+    winInfo.bStylization = False;
+    winInfo.bStylization2 = True;
+    winInfo.SetTitle(StatusTitle);
+    //winInfo.SetBackground(Texture'DeusExUI.UserInterface.GridTex64x64');
+    
+    //Show total health loss
+    totalHealth = player.GetTotalHealth();
+    maxHealth = player.GetTotalMaxHealth();
+    
+
+    restored = maxHealth - totalHealth;
+    if (restored > 250)
+        restored = 250;
+
+    winInfo.SetText(TotalRestoreAmount $ restored);
+
+    //Display total health
+    player.GenerateTotalHealth();
+    winInfo.SetText(TotalHealthStr $ player.Health $ "% (" $ totalHealth $ "/" $ maxHealth $ ")");
+    
+    //Show body part health
+    GenerateInfoString(1,HealthLocationHead,player.HealthHead);
+    GenerateInfoString(1,HealthLocationTorso,player.HealthTorso);
+    GenerateInfoString(1,HealthLocationLeftArm,player.HealthArmLeft);
+    GenerateInfoString(1,HealthLocationRightArm,player.HealthArmRight);
+    GenerateInfoString(1,HealthLocationLeftLeg,player.HealthLegLeft);
+    GenerateInfoString(1,HealthLocationRightLeg,player.HealthLegRight);
+}
+
+function string GenerateInfoString(int indentLevel,string label, coerce string value)
+{
+    local int i;
+
+    while (i < indentLevel)
+    {
+        label = " " $ label;
+        i++;
+    }
+
+    winInfo.SetText(label $ ": " $ value);
+}
+
+// ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
 defaultproperties
 {
+     TotalHealthStr="Total Health: "
      MedbotInterfaceText="MEDBOT INTERFACE"
      HealthInfoTextLabel="The MedBot will heal up to %d units, which are distributed evenly among your damaged body regions."
      MedBotRechargingLabel="|nThe MedBot is currently Recharging.  Please Wait."
@@ -357,6 +413,7 @@ defaultproperties
      MedBotOutOfJuice="|nThis medical unit has no charge left."
      bShowHealButtons=False
      HealAllButtonLabel="  H|&eal All  "
+     TotalRestoreAmount="Total Restoration Amount: "
      clientTextures(0)=Texture'DeusExUI.UserInterface.HUDMedbotHealthBackground_1'
      clientTextures(1)=Texture'DeusExUI.UserInterface.HUDMedbotHealthBackground_2'
      clientTextures(2)=Texture'DeusExUI.UserInterface.HUDMedbotHealthBackground_3'

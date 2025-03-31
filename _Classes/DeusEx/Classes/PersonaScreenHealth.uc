@@ -633,10 +633,10 @@ function UpdateAddictionText()
         if (player.AddictionManager.addictions[i].drugTimer > 0.0)
         {
             winInfo.SetText(drugStatusLabel $ drugActiveLabel $ int(player.AddictionManager.addictions[i].drugTimer) $ "s");
-            if (i == 1 && player.AddictionManager.stacks[i] > 1)
-                winInfo.SetText(drugEffectLabel $ sprintf(drugActiveEffects[i], 5*player.AddictionManager.stacks[i]) @ sprintf(drugStacks,player.AddictionManager.stacks[i],player.AddictionManager.maxStacks[i]));
+            if (i == 1 && player.AddictionManager.addictions[i].stacks > 1)
+                winInfo.SetText(drugEffectLabel $ sprintf(drugActiveEffects[i], 5*player.AddictionManager.addictions[i].stacks) @ sprintf(drugStacks,player.AddictionManager.addictions[i].stacks,player.AddictionManager.addictions[i].maxStacks));
             else if (i == 1)
-                winInfo.SetText(drugEffectLabel $ sprintf(drugActiveEffects[i], 5*player.AddictionManager.stacks[i]));
+                winInfo.SetText(drugEffectLabel $ sprintf(drugActiveEffects[i], 5*player.AddictionManager.addictions[i].stacks));
             else
                 winInfo.SetText(drugEffectLabel $ drugActiveEffects[i]);
         }

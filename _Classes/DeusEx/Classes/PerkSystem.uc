@@ -164,6 +164,15 @@ function bool PurchasePerk(class<Perk> perk, optional bool free, optional bool a
 }
 
 // ----------------------------------------------------------------------
+// GetNumPerks()
+// ----------------------------------------------------------------------
+
+function int GetNumPerks()
+{
+    return numPerks;
+}
+
+// ----------------------------------------------------------------------
 // GetNumObtainedPerks()
 // ----------------------------------------------------------------------
 
@@ -201,6 +210,18 @@ function int GetPerkIndex(Perk Perk)  // Trash: Get the index of the perk by che
 			return index;
 		}
 	}
+}
+
+// ----------------------------------------------------------------------
+// GetPerkAtIndex()
+// ----------------------------------------------------------------------
+
+function Perk GetPerkAtIndex(int index)  // Trash: Get the perk at a certain index
+{
+    if (index < numPerks)
+        return PerkList[index];
+    else
+        return None;
 }
 
 // ----------------------------------------------------------------------
