@@ -22,11 +22,11 @@ function DrawHotKey(GC gc)
 
 	// Draw Dropshadow
 	gc.SetTextColor(colBlack);
-	gc.DrawText(16, 1, 15, 8, hotKeyString);
+	gc.DrawText(6, 1, 25, 8, hotKeyString);
 
 	// Draw Dropshadow
 	gc.SetTextColor(colText);
-	gc.DrawText(17, 0, 15, 8, hotKeyString);
+	gc.DrawText(7, 0, 25, 8, hotKeyString);
 }
 
 // ----------------------------------------------------------------------
@@ -56,9 +56,10 @@ function SetObject(object newClientObject)
 
 function SetKeyNum(int newNumber)
 {
-	// Get the function key and set the text
 	hotKeyNum    = newNumber;
-	hotKeyString = "F" $ String(hotKeyNum);
+
+	// Get the function key
+    hotKeyString = player.KeybindManager.GetBindingString(KB_Aug0,newNumber-3);
 }
 
 // ----------------------------------------------------------------------

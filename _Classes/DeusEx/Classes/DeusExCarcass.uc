@@ -1372,7 +1372,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 
 
                                     bFoundSomething = True;
-                                    if (DeusExPlayer(P).HandleItemPickup(Item) != False)
+                                    if (DeusExPlayer(P).HandleItemPickup(Item,false,true) != False)
                                     {
                                         //splat - Picking up shuriken when we don't have one!
                                         if (item.IsA('WeaponShuriken'))
