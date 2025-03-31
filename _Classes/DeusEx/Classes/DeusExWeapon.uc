@@ -4382,27 +4382,34 @@ function GetAIVolume(out float volume, out float radius)
 //Ygll: utility function to test the behaviour of the dart with Fragile dart gameplay option enabled
 function DartStickToWall(DeusExProjectile proj)
 {
+    local DeusExPlayer player;
+
+    player = DeusExPlayer(GetPlayerPawn());
+
+    if (player == None)
+        return;
+
 	//SARGE: Added new gameplay setting
 	//Ygll: must test the class type of the projectile before testing the option value. proj.IsA('Dart') test can be true for all Dart type.
 	if ( proj.IsA('DartPoison'))
 	{
 		//Poison Dart should be destroyable in hardcore even with the fragile option disabled
-		if( DeusExPlayer(GetPlayerPawn()).bHardCoreMode || DeusExPlayer(GetPlayerPawn()).iFragileDarts >= 1 )
+		if( player.bHardCoreMode || player.iFragileDarts >= 1 )
 			proj.bSticktoWall = false;                      //RSD: Tranq darts won't stick to walls (for recovery) in Hardcore
 	}
 	else if (proj.IsA('DartTaser'))
 	{
-		if(DeusExPlayer(GetPlayerPawn()).iFragileDarts >= 2)
+		if(player.iFragileDarts >= 2)
 			proj.bSticktoWall = false;
 	}	
 	else if (proj.IsA('DartFlare'))
 	{
-		if(DeusExPlayer(GetPlayerPawn()).iFragileDarts >= 4)
+		if(player.iFragileDarts >= 4)
 			proj.bSticktoWall = false;
 	}
 	else
 	{
-		if (proj.IsA('Dart') && DeusExPlayer(GetPlayerPawn()).iFragileDarts >= 3)
+		if (proj.IsA('Dart') && player.iFragileDarts >= 3)
 			proj.bSticktoWall = false;
 	}
 }
