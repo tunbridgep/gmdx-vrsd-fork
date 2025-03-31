@@ -54,6 +54,7 @@ var localized string EnergyText;
 var localized string noted;
 var localized string walking;
 var localized string crouching;
+var localized string running;
 var string percentTxt;
 var Color colLight;
 var color colLightDark;
@@ -223,10 +224,30 @@ function SetHitColor(out BodyPart part, float deltaSeconds, bool bHide, int hitV
 	}
 }
 
+//Ygll: utility function to display the current player stance into hud
+function DisplayStanceInfo(GC gc)
+{
+	gc.SetFont(Font'FontMenuSmall');
+	gc.SetStyle(DSTY_Normal);		
+	gc.SetTextColor(col02);
+	
+	if(player.bIsCrouching && player.iStanceHud > 1) //crouching display is an option specific
+	{			
+		gc.DrawText(19, 94, 70, 10, crouching);
+	}
+	else if(player.bIsWalking)
+	{	
+		gc.DrawText(19, 94, 70, 10, walking);
+	}
+	else if(!player.bIsWalking)
+	{	
+		gc.DrawText(19, 94, 70, 10, running);
+	}
+}
+
 // ----------------------------------------------------------------------
 // DrawWindow()
 // ----------------------------------------------------------------------
-
 event DrawWindow(GC gc)
 {
 	Super.DrawWindow(gc);
@@ -300,22 +321,10 @@ event DrawWindow(GC gc)
 		gc.DrawText(31, 72, 36, 12, noted);
     }	
 	
+	//Ygll: new tooltip feature to display the current player stance into hud
 	if(player.iStanceHud > 0)
 	{
-		if(player.iStanceHud > 1 && player.bIsCrouching)
-		{
-			gc.SetFont(Font'FontMenuSmall');
-			gc.SetStyle(DSTY_Normal);
-			gc.SetTextColor(col02);
-			gc.DrawText(18, 94, 70, 12, crouching);
-		}
-		else if(player.bIsWalking)
-		{
-			gc.SetFont(Font'FontMenuSmall');
-			gc.SetStyle(DSTY_Normal);
-			gc.SetTextColor(col02);
-			gc.DrawText(18, 94, 70, 12, walking);
-		}
+		DisplayStanceInfo(gc);
 	}
 }
 
@@ -484,16 +493,17 @@ function UpdateAsFemale(bool NewbFemale)
 
 defaultproperties
 {
-     colArmor=(R=255,G=255,B=255)
-     col02=(G=128,B=255)
-     texBackground=Texture'DeusExUI.UserInterface.HUDHitDisplayBackground_1'
-     texBorder=Texture'DeusExUI.UserInterface.HUDHitDisplayBorder_1'
-     O2Text="O2"
-     EnergyText="BE"
-     percentTxt="%"
+     colArmor=(R=255,G=255,B=255);
+     col02=(G=128,B=255);
+     texBackground=Texture'DeusExUI.UserInterface.HUDHitDisplayBackground_1';
+     texBorder=Texture'DeusExUI.UserInterface.HUDHitDisplayBorder_1';
+     O2Text="O2";
+     EnergyText="BE";
+     percentTxt="%";
 	 crouching="CROUCHING";
 	 walking="WALKING";
-     colLight=(R=255,G=255)
-     colLightDark=(R=140,G=140)
-     colRed=(R=255)
+	 running="RUNNING";
+     colLight=(R=255,G=255);
+     colLightDark=(R=140,G=140);
+     colRed=(R=255);
 }
