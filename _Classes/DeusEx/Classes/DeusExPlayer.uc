@@ -14251,6 +14251,38 @@ function int GenerateTotalMaxHealth()                                           
 	return maxHealth;
 }
 
+//SARGE: Gets our actual health points
+function int GetTotalHealth()
+{
+    return HealthHead
+    + HealthTorso
+    + HealthArmLeft
+    + HealthArmRight
+    + HealthLegLeft
+    + HealthLegRight;
+}
+
+//SARGE: Gets our total max health points
+function int GetTotalMaxHealth()
+{
+    local int maxHealth;
+    maxHealth   = default.HealthHead
+                  + default.HealthTorso
+                  + default.HealthArmLeft
+                  + default.HealthArmRight
+                  + default.HealthLegLeft
+                  + default.HealthLegRight;
+    
+    //Medicine affects torso and head health
+	if (SkillSystem != None)
+        maxHealth += SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine').CurrentLevel*20;
+
+    if (AddictionManager != None)
+        maxHealth += AddictionManager.GetTorsoHealthBonus();
+    
+    return maxHealth;
+}
+
 // ----------------------------------------------------------------------
 // MultiplayerDeathMsg()
 // ----------------------------------------------------------------------
