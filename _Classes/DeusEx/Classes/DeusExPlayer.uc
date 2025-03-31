@@ -7923,7 +7923,7 @@ function DoRightFrob(Actor frobTarget)
 //Returns FALSE if an item was not declined, TRUE if it was
 function bool CheckFrobDeclined(Actor frobTarget)
 {
-    if (frobTarget.IsA('Inventory') && DeclinedItemsManager.IsDeclined(class<Inventory>(frobTarget.class)) && clickCountCyber == 0)
+    if (frobTarget.IsA('Inventory') && DeclinedItemsManager.IsDeclined(class<Inventory>(frobTarget.class)) && clickCountCyber == 0 && Inventory(frobTarget).ItemName != "")
     {
         SetDoubleClickTimer();
         ClientMessage(sprintf(msgDeclinedPickup,Inventory(frobTarget).ItemName));
