@@ -1783,7 +1783,7 @@ function bool LoadAmmo(int ammoNum)
             else if ( Ammo762mm(newAmmo) != None)
             {
                 if (bHasSilencer)    //CyberP: revert back to norm
-                   FireSilentSound=Sound'GMDXSFX.Weapons.MP5_1p_Fired1';
+                   FireSilentSound=default.FireSilentSound;
                 else
                    FireSound=default.FireSound;
             }
@@ -3764,7 +3764,13 @@ simulated function UpdateRecoilShaker()
 simulated function PlayFiringSound()
 {
 	if (bHasSilencer)
-		PlaySimSound(FireSilentSound, SLOT_None, TransientSoundVolume, 2048 );
+    {
+        //SARGE: Very silly rat squeak silencers!
+        if (Owner != None && Owner.IsA('DeusExPlayer') && DeusExPlayer(owner).bShenanigans)
+            PlaySimSound(Sound'RatSqueak2', SLOT_None, TransientSoundVolume, 2048 );
+        else
+            PlaySimSound(FireSilentSound, SLOT_None, TransientSoundVolume, 2048 );
+    }
 	else
 	{
 		// The sniper rifle sound is heard to it's range in multiplayer
