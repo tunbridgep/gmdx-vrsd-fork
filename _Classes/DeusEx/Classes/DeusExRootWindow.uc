@@ -358,7 +358,7 @@ function ShowHud(bool bShow)
 {
 	if (hud != None)
 	{
-		if (bShow)
+		if (bShow && !parentPawn.IsInState('Dying')) //SARGE: Added check so we stop re-enabling the HUD while dead
 		{
 			hud.UpdateSettings(DeusExPlayer(parentPawn));
 			hud.Show();
@@ -699,7 +699,7 @@ function UnPauseGame()
 	SetBackgroundStyle(DSTY_None);
 
 	HideSnapshot();
-	ShowHud(True);
+    ShowHud(True);
 
 	parentPawn.bShowMenu = false;
 	parentPawn.Player.Console.GotoState('');

@@ -28,6 +28,15 @@ var string HDTPIcon;
 var string HDTPLargeIcon;
 var class<DeusExWeapon> hdtpReference;                                          //SARGE: Used when we want to tell a projectile to use the HDTP settings of a particular weapon
 
+//SARGE: For the GMDX v9 Color Coded Ammo setting, we now store the setting per ammo,
+//rather than hardcoding it, so that it can be used in other places, like the ammo display.
+var const Color ammoHUDColor;
+
+function bool HasCustomAmmoColor()
+{
+    return default.ammoHUDColor != class'DeusExAmmo'.default.ammoHUDColor;
+}
+
 // ----------------------------------------------------------------------
 // PostBeginPlay()
 // ----------------------------------------------------------------------

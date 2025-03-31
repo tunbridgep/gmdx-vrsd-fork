@@ -12,6 +12,9 @@ simulated function BeginState()
 		Velocity = VRand() * 220;
 		Velocity.Z += FRand()+10 * 10;
 		SetRotation(Rotator(Velocity));
+
+        if (class'DeusExPlayer'.default.iPersistentDebris >= 2) //SARGE: Stick around forever, if we've enabled the setting.
+            LifeSpan = 0;
 	}
 
 simulated function Tick(float deltaTime)
@@ -21,7 +24,7 @@ simulated function Tick(float deltaTime)
 
 
 	// fade out the object smoothly 2 seconds before it dies completely
-	if (LifeSpan <= 2)
+	if (LifeSpan <= 2 && LifeSpan != 0)
 	{
 		if (Style != STY_Translucent)
 			Style = STY_Translucent;

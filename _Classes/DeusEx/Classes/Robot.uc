@@ -263,6 +263,8 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
             if (bHasCloak)
                 bHasCloak=False; //CyberP: no cloaking when disabled.
 			EMPHitPoints = 0;
+            rebootTime = 0; //SARGE: Disable the reboot timer when disabled
+
 			if (oldEMPHitPoints > 0)
 			{
 				PlaySound(sound'EMPZap', SLOT_None,,, (CollisionRadius+CollisionHeight)*8, 2.0);

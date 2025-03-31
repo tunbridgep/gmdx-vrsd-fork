@@ -17287,6 +17287,11 @@ function RandomiseSounds()
     }
 }
 
+//SARGE: Set up the Shenanigans gameplay modifier for this entity
+function Shenanigans(bool bEnabled)
+{
+}
+
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 

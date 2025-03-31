@@ -1,21 +1,7 @@
 //=============================================================================
 // WaterPool.
 //=============================================================================
-class WaterPool extends DeusExDecal;
-
-var float spreadTime;
-var float maxDrawScale;
-var float time;
-
-simulated function Tick(float deltaTime)
-{
-	time += deltaTime;
-	if (time <= spreadTime)
-	{
-		DrawScale = maxDrawScale * time / spreadTime;
-		ReattachDecal(vect(0.1,0.1,0));
-	}
-}
+class WaterPool extends ScaledDecal;
 
 defaultproperties
 {

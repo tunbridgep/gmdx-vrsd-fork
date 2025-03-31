@@ -312,6 +312,7 @@ var float sleeptime;                                                            
 
 //SARGE: HDTP Model toggles
 var config int iHDTPModelToggle;
+var globalconfig bool bHDTPMuzzleFlashes;                                       //SARGE: If set, all weapons will use HDTP muzzle flashes all the time
 var string HDTPSkin;
 var string HDTPTexture;
 var string HDTPPlayerViewMesh;
@@ -323,7 +324,6 @@ var string HDTPLargeIconRot;
 var Texture handsTex;                                        //SARGE: Store the hands texture for performance
 
 var int MuzzleSlot;                                                 //SARGE: Slot where the muzzle tex will go
-var texture CurrentMuzzleFlash;                                     //SARGE: The current muzzle flash of this weapon
 var bool bBigMuzzleFlash;                                            //SARGE: Allow non-automatic weapons to have big muzzle flashes
 
 var bool bDisposableWeapon;                                         //SARGE: Used for disposable weapons, such as grenades, PS20s, LAWs, etc. Disposable weapons can't be reloaded, and track ammo differently to regular weapons when dropped/picked up. Their ammo doesn't show up when being looted, either - The weapon is shown instead.
@@ -374,7 +374,11 @@ replication
 //Sarge: Update weapon frob display when we have a mod applied
 function string GetFrobString(DeusExPlayer player)
 {
-    if (bModified && player != None && player.bBeltShowModified)
+    //Disposable weapons show their ammo count, if above 1 (which should only ever happen in the MJ12 prison facility)
+    if (bDisposableWeapon && PickupAmmoCount > 1 && player.bShowItemPickupCounts)
+        return itemName @ "(" $ PickupAmmoCount $ ")";
+    //Modified weapons show their modified state
+    else if (bModified && player != None && player.bBeltShowModified)
         return itemName @ strModified;
     else
         return itemName;
@@ -850,9 +854,6 @@ simulated event RenderOverlays( canvas Canvas )
 		}
     
         DisplayWeapon(true);
-
-        if (CurrentMuzzleFlash != None && MuzzleSlot < 8 && MuzzleSlot > -1)
-            MultiSkins[MuzzleSlot] = CurrentMuzzleFlash;
     
         if (bIsRadar || bIsCloaked)
         {
@@ -1425,6 +1426,11 @@ static function bool IsHDTP()
     return class'DeusExPlayer'.static.IsHDTPInstalled() && default.iHDTPModelToggle > 0;
 }
 
+function bool IsHDTPMuzzle()
+{
+    return class'DeusExPlayer'.static.IsHDTPInstalled() && (default.iHDTPModelToggle > 0 || bHDTPMuzzleFlashes);
+}
+
 function CheckWeaponSkins()
 {
     DisplayWeapon(false);
@@ -1777,7 +1783,7 @@ function bool LoadAmmo(int ammoNum)
             else if ( Ammo762mm(newAmmo) != None)
             {
                 if (bHasSilencer)    //CyberP: revert back to norm
-                   FireSilentSound=Sound'GMDXSFX.Weapons.MP5_1p_Fired1';
+                   FireSilentSound=default.FireSilentSound;
                 else
                    FireSound=default.FireSound;
             }
@@ -2796,19 +2802,24 @@ simulated function ScopeToggle()
 simulated function RefreshScopeDisplay(DeusExPlayer player, bool bInstant, bool bScopeOn)
 {
 	local bool bIsGEP;
-	if (player == None) return;
+    local DeusExRootWindow root;
+    local DeusExScopeView scope;
+
+    if (player == None) return;
+
+	root = DeusExRootWindow(player.rootWindow);
+    if (root == None) return;
+    
+    scope = root.scopeView;
+    if (scope == None) return;
 
 	bIsGEP=bHasScope&&(IsA('WeaponGEPGun'))&&(player.RocketTarget!=none);
 
 	if (bScopeOn)
-	{
 		// Show the Scope View
-		DeusExRootWindow(player.rootWindow).scopeView.ActivateViewType(ScopeFOV, False, bInstant,bIsGEP);
-	}
+		scope.ActivateViewType(ScopeFOV, False, bInstant,bIsGEP);
 	else
-	{
-	  DeusExrootWindow(player.rootWindow).scopeView.DeactivateView();
-	}
+	    scope.DeactivateView();
 
     player.UpdateCrosshair();
 }
@@ -2833,6 +2844,7 @@ function SwitchModes()
 		LowAmmoWaterMark = 1;
 
 		p.ClientMessage(msgRifleModeActivated);
+        PlaySound(Sound'GMDXSFX.Weapons.M4ClipOut');
     }
     else
     {
@@ -2843,6 +2855,7 @@ function SwitchModes()
 		LowAmmoWaterMark = 16;
 
 		p.ClientMessage(msgGLModeActivated);
+        PlaySound(Sound'GMDXSFX.Weapons.M4ClipOut');
     }
 }
 
@@ -2955,7 +2968,8 @@ simulated function SwapMuzzleFlashTexture()
 		return;
 	
     //Multiskins[MuzzleSlot] = GetMuzzleTex();
-    CurrentMuzzleFlash = GetMuzzleTex();
+    if (GetMuzzleTex() != None && MuzzleSlot < 8 && MuzzleSlot > -1)
+        MultiSkins[MuzzleSlot] = GetMuzzleTex();
 
     //DeusExPlayer(GetPlayerPawn()).clientMessage("Swapping Muzzle Tex into slot " $ MuzzleSlot);
 
@@ -2969,7 +2983,7 @@ simulated function texture GetMuzzleTex()
 	local int i;
 	local texture tex;
 
-    if (!IsHDTP())                                                  //RSD: If using the vanilla model, use vanilla muzzle flash
+    if (!IsHDTPMuzzle())                                                  //RSD: If using the vanilla model, use vanilla muzzle flash
     {
         if (FRand() < 0.5)
             tex = Texture'FlatFXTex34';
@@ -2981,14 +2995,14 @@ simulated function texture GetMuzzleTex()
 		i = rand(8);
 		switch(i)
 		{
-			case 0: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashlarge1"); break;
-			case 1: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashlarge2"); break;
-			case 2: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashlarge3"); break;
-			case 3: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashlarge4"); break;
-			case 4: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashlarge5"); break;
-			case 5: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashlarge6"); break;
-			case 6: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashlarge7"); break;
-			case 7: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashlarge8"); break;
+			case 0: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashlarge1"); break;
+			case 1: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashlarge2"); break;
+			case 2: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashlarge3"); break;
+			case 3: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashlarge4"); break;
+			case 4: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashlarge5"); break;
+			case 5: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashlarge6"); break;
+			case 6: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashlarge7"); break;
+			case 7: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashlarge8"); break;
 		}
 	}
 	else
@@ -2996,9 +3010,9 @@ simulated function texture GetMuzzleTex()
 		i = rand(3);
 		switch(i)
 		{
-			case 0: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashSmall1"); break;
-			case 1: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashSmall2"); break;
-			case 2: tex = class'HDTPLoader'.static.GetTexture("HDTPMuzzleflashSmall3"); break;
+			case 0: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashSmall1"); break;
+			case 1: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashSmall2"); break;
+			case 2: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashSmall3"); break;
 		}
 	}
 
@@ -3019,6 +3033,12 @@ function DisplayWeapon(bool overlay)
     local int i;
     for (i = 0;i < 8;i++)
     {
+        if (bHasMuzzleFlash && i == muzzleslot && !bHasSilencer)
+        {
+            //DeusExPlayer(GetPlayerPawn()).ClientMessage("Display Weapon: Not clearing slot " $ i);
+            continue;
+        }
+
         if (IsHDTP())
             multiskins[i] = none;
         else
@@ -3031,9 +3051,8 @@ simulated function EraseMuzzleFlashTexture()
 	if(!bHasMuzzleflash || bHasSilencer)
 		return;
 		
-    CurrentMuzzleFlash = None;
     if (MuzzleSlot > -1 && muzzleSlot < 8)
-    MultiSkins[MuzzleSlot] = None;
+        MultiSkins[MuzzleSlot] = None;
 }
 
 simulated function Timer()
@@ -3745,7 +3764,13 @@ simulated function UpdateRecoilShaker()
 simulated function PlayFiringSound()
 {
 	if (bHasSilencer)
-		PlaySimSound(FireSilentSound, SLOT_None, TransientSoundVolume, 2048 );
+    {
+        //SARGE: Very silly rat squeak silencers!
+        if (Owner != None && Owner.IsA('DeusExPlayer') && DeusExPlayer(owner).bShenanigans)
+            PlaySimSound(Sound'RatSqueak2', SLOT_None, TransientSoundVolume, 2048 );
+        else
+            PlaySimSound(FireSilentSound, SLOT_None, TransientSoundVolume, 2048 );
+    }
 	else
 	{
 		// The sniper rifle sound is heard to it's range in multiplayer
@@ -4829,9 +4854,9 @@ simulated function TraceFire( float Accuracy )
 				if (VSize(HitLocation - StartTrace) > 250)
 				{
 					rot = Rotator(EndTrace - StartTrace);
-			   //if (Owner.IsA('DeusExPlayer') && ((AmmoName == Class'Ammo762mm') || AmmoName == Class'Ammo3006'))
-			//	  Spawn(class'Tracer',,, Owner.Location+FireOffset, rot);
-			  // else
+			   if (Owner.IsA('DeusExPlayer') && AmmoName == Class'Ammo3006')
+				  trcr = Spawn(class'SniperTracer',,, StartTrace + 96 * Vector(rot), rot);
+			   else
 				  trcr = Spawn(class'Tracer',,, StartTrace + 96 * Vector(rot), rot);   //StartTrace + 96 * Vector(rot) //RSD: Added pointer
 				  if (bZoomed)                                                  //RSD: Invisible tracers if we're zoomed, woohoo
                   	trcr.DrawType = DT_None;
@@ -4976,7 +5001,7 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
 		  offset.Z += Owner.CollisionHeight * 0.7;
 		  offset += Y * Owner.CollisionRadius * 0.65;
           tra= Spawn(class'Tracer',,, offset, (Rotator(HitLocation - offset)));
-          if (tra != None && (AmmoType.IsA('Ammo762mm') || AmmoType.IsA('AmmoShell') || bZoomed)) //RSD: Added bZoomed here so we still get a tracer for water splashing
+          if (tra != None && bZoomed) //RSD: Added bZoomed here so we still get a tracer for water splashing
               tra.DrawType = DT_None;
 		  }
 		}
