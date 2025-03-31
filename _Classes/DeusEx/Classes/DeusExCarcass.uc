@@ -506,10 +506,14 @@ function Destroyed()
 	}
     
     //Destroy blood pool
+    DestroyPool();
+	Super.Destroyed();
+}
+
+function DestroyPool()
+{
     if (pool != None && !bDontRemovePool)
         pool.Destroy();
-
-	Super.Destroyed();
 }
 
 function Touch(Actor Other)
