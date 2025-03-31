@@ -346,6 +346,11 @@ var vector axesY;
 var vector axesZ;
 var bool bFancyScopeAnimation;
 
+//SARGE: Sounds for various things
+
+//Retrieve Ammo from Weapon
+var const Sound RetrieveAmmoSound;
+
 //END GMDX:
 
 //
@@ -1206,6 +1211,7 @@ function bool HandlePickupQuery(Inventory Item)
 					if (!(DeusExWeapon(item) != none && DeusExWeapon(item).bDisposableWeapon)) //RSD: Don't display ammo message for grenades or the PS20
 					{
                         player.ClientMessage(defAmmo.PickupMessage @ defAmmo.itemArticle @ defAmmo.ItemName $ " (" $ intj $ ")", 'Pickup' );
+                        PlaySound(RetrieveAmmoSound, SLOT_None, 0.5+FRand()*0.25, , 256, 0.95+FRand()*0.1);
 					}
 					return true;
 				}
@@ -1222,6 +1228,7 @@ function bool HandlePickupQuery(Inventory Item)
                         else
                         {
                             player.ClientMessage(defAmmo.PickupMessage @ defAmmo.itemArticle @ defAmmo.ItemName $ " (" $ Weapon(Item).PickupAmmoCount $ ")", 'Pickup' );
+                            PlaySound(RetrieveAmmoSound, SLOT_None, 0.5+FRand()*0.25, , 256, 0.95+FRand()*0.1);
                         }
                     }
 				}
@@ -7178,4 +7185,5 @@ defaultproperties
      Mass=10.000000
      Buoyancy=5.000000
      muzzleSlot=2
+     RetrieveAmmoSound=Sound'WeaponPickup'
 }
