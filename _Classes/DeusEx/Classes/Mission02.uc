@@ -15,11 +15,19 @@ function FirstFrame()
     local Light L;
     local Keypad K;
     local ComputerSecurity SC;
+    local DeusExCarcass C;
     local string newPasscode;
 
 	Super.FirstFrame();
 
-	if (localURL == "02_NYC_STREET")
+	if (localURL == "02_NYC_FREECLINIC")
+    {
+        //SARGE: Carcasses already in the map won't bleed
+        foreach AllActors(class'DeusExCarcass', C)
+            C.DestroyPool();
+
+    }
+	else if (localURL == "02_NYC_STREET")
 	{
 		flags.SetBool('M02StreetLoaded', True,, 3);
 
