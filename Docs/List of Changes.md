@@ -321,6 +321,7 @@ Sarge's Changes since Beta 2.2:
     - A Laser Sight has been added to Smuggler's safe in the first NY visit (replaces a recoil mod)
     - The Silencer in Paul's Apartment, Full-Auto Mod in Tong's Lab, and Laser Sight in Smugglers Safe are all guaranteed to appear even with the weapon mod shuffle turned on.
 - Miscellaneous Changes:
+    - A small light has been added to the flamethrower, to simulate the light created by the small pilot light.
     - Corpses placed within maps will now have proper blood pools.
     - Added a blue screen effect when entering bodies of water.
     - Added a message and a sound when picking up a charged item that is then used to immediately recharge an existing item, to let you know what happened to it. Previously the item just disappeared with no message.
