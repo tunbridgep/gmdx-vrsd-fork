@@ -759,6 +759,7 @@ var globalconfig bool bFragileDarts;                                    //SARGE:
 
 var globalconfig bool bReloadingResetsAim;                              //SARGE: Allow the "reloading resets aim" hardcore behaviour outside of hardcore.
 
+const FemJCEyeHeightAdjust = -6;                                    //SARGE: Now the femJC eye height adjustment is handled by a const, so we can easily change it //SARGE: Was -2 originally, but that clips too much with ceilings.
 
 //SARGE: ??? - I wonder what this does :P
 var travel bool bShenanigans;
@@ -1251,6 +1252,9 @@ function PostBeginPlay()
 	RefreshLeanKeys();
     RefreshMantleKey();
     RefreshAugWheelKey();                                                       //RSD: Hold aug wheel
+
+    //SARGE: Account for FemJC eye height changes
+    ResetBasedPawnSize();
 
     //RSD: log item distribution on map load
     //logItemsInCrates();
@@ -5740,7 +5744,7 @@ function bool SetBasedPawnSize(float newRadius, float newHeight)
 			{
 				PrePivot.Z -= 4.5;
 			}
-			BaseEyeHeight -= 2;
+            BaseEyeHeight += FemJCEyeHeightAdjust;
 		}
 
 		// Complaints that eye height doesn't seem like your crouching in multiplayer
@@ -5767,16 +5771,18 @@ function bool ResetBasedPawnSize()
 
 function float GetDefaultCollisionHeight()
 {
+	if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
+	{
+		return Default.CollisionHeight-9.0;
+	}
 	return (Default.CollisionHeight-4.5);
 }
 
+//SARGE: Added
+//SARGE: TODO: Adjust this so that we can have the same collision height for both Male and Female JC
 function float GetBaseEyeHeight()
 {
-	if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
-	{
-		return Default.CollisionHeight;
-	}
-	return (Default.CollisionHeight-4.5);
+    return GetDefaultCollisionHeight();
 }
 
 // ----------------------------------------------------------------------
@@ -12672,6 +12678,11 @@ ignores SeePlayer, HearNoise, Bump;
 		bBehindView = false;
 		StopBlendAnims();
 		ConversationActor = None;
+
+        //SARGE: Now this is needed because we're changing eyeheight
+		if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
+            BaseEyeHeight += FemJCEyeHeightAdjust;
+        //ResetBasedPawnSize();
 	}
 
 	function int retLevelInfo()
@@ -12734,6 +12745,10 @@ Begin:
 		    PutInHand(None);
 		}
         UpdateInHand();
+            
+        //SARGE: Reset the players eyeheight
+        if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
+            BaseEyeHeight = default.BaseEyeHeight;
 
 		if ( conPlay.GetDisplayMode() == DM_ThirdPerson )
 			bBehindView = true;
