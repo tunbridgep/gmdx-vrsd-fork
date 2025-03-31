@@ -954,7 +954,8 @@ function Inventory GetSecondary()
 function Class<Inventory> GetSecondaryClass()
 {
     local class<Inventory> assignedClass;
-    assignedClass = class<Inventory>(DynamicLoadObject(assignedWeapon, class'Class'));
+    if (assignedWeapon != "")
+        assignedClass = class<Inventory>(DynamicLoadObject(assignedWeapon, class'Class'));
     //ClientMessage("Get Secondary Class: " $ assignedClass $ " (" $ assignedWeapon $ ")");
     return assignedClass;
 }
@@ -7846,9 +7847,6 @@ function DoLeftFrob(Actor frobTarget)
 {
     local bool bDefaultFrob;
     
-    if (CheckFrobDeclined(frobTarget))
-        return;
-    
     if (inHand == None)
     {
         if (frobTarget.isA('DeusExPickup'))
@@ -7869,11 +7867,15 @@ function DoLeftFrob(Actor frobTarget)
     //This can't be done in Inventory classes. Ugh. I really wish we could access this class!
     if (bDefaultFrob && frobTarget.IsA('Inventory'))
     {
+        /*
         if (HandleItemPickup(FrobTarget, True))
         { 
             bLeftClicked = true;
             FindInventorySlot(Inventory(FrobTarget));
         }
+        */
+        bLeftClicked = true;
+        HandleItemPickup(FrobTarget);
     }
 }
 
@@ -7887,9 +7889,6 @@ function DoRightFrob(Actor frobTarget)
     local bool bDefaultFrob;
 
     if (frobTarget == None)
-        return;
-
-    if (CheckFrobDeclined(frobTarget))
         return;
 
     bDefaultFrob = true;
@@ -7907,11 +7906,15 @@ function DoRightFrob(Actor frobTarget)
         bDefaultFrob = DeusExDecoration(frobTarget).DoRightFrob(Self,inHand != None);
 
     //Handle Inventory classes. Ugh. I really wish we could access this class!
+    /*
     if (bDefaultFrob && frobTarget.IsA('Inventory'))
     {
         if (HandleItemPickup(FrobTarget, True))
             FindInventorySlot(Inventory(FrobTarget));
     }
+    */
+    if (bDefaultFrob && frobTarget.IsA('Inventory'))
+        HandleItemPickup(FrobTarget);
     else if (bDefaultFrob)
         DoFrob(Self, None);
 }
@@ -8404,7 +8407,7 @@ function PlayPickupAnim(Vector locPickup)
 // HandleItemPickup()
 // ----------------------------------------------------------------------
 
-function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly)
+function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, optional bool bSkipDeclineCheck)
 {
 	local bool bCanPickup;
 	local bool bSlotSearchNeeded;
@@ -8412,6 +8415,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly)
     local DeusExAmmo foundAmmo;
     local DeusExAmmo assignedAmmo;
     local int intj;
+    local bool bDeclined;
 
 	bSlotSearchNeeded = True;
 	bCanPickup = True;
@@ -8513,10 +8517,9 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly)
 	if (bSlotSearchNeeded && bCanPickup)
 	{
 //	  log("MYCHK::DXPlayer::HIP::ADD TO::"@FrobTarget);
-		if (FindInventorySlot(Inventory(FrobTarget), bSearchOnly) == False)
+		if (FindInventorySlot(Inventory(FrobTarget), true) == False)
 		{
 //		 log("MYCHK::DXPlayer::HIP::ADD TO FAILED::"@foundItem);
-			ClientMessage(Sprintf(InventoryFull, Inventory(FrobTarget).itemName));
 			bCanPickup = False;
 			ServerConditionalNotifyMsg( MPMSG_DropItem );
             if (frobTarget != None && frobTarget.IsA('DeusExWeapon'))
@@ -8541,18 +8544,31 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly)
                         DeusExWeapon(frobTarget).PickupAmmoCount = 0;
                     }
                }
+               else
+                ClientMessage(Sprintf(InventoryFull, Inventory(FrobTarget).itemName));
             }
+            else
+                ClientMessage(Sprintf(InventoryFull, Inventory(FrobTarget).itemName));
 		}
 	}
+	
+    //SARGE: Decline checking.
+    if (bSlotSearchNeeded && bCanPickup)
+    {
+        if (!bSkipDeclineCheck)
+            bDeclined = CheckFrobDeclined(FrobTarget);
+        if (!bDeclined && !bSearchOnly)
+            FindInventorySlot(Inventory(FrobTarget), false);
+    }
 
-	if (bCanPickup)
+	if (bCanPickup && !bDeclined)
 	{
 		if (FrobTarget.IsA('WeaponShuriken'))
 			WeaponShuriken(FrobTarget).ItemName = WeaponShuriken(FrobTarget).default.ItemName @ "(" $ WeaponShuriken(FrobTarget).PickupAmmoCount $ ")";
 
         //if (FrobTarget.IsA('WeaponLAW'))
 		//	PlaySound(sound'WeaponPickup', SLOT_Interact, 0.5+FRand()*0.25, , 256, 0.95+FRand()*0.1);
-		DoFrob(Self, inHand);
+        DoFrob(Self, inHand);
         /*if ( FrobTarget.IsA('DeusExWeapon') && bLeftClicked) //CyberP: for left click interaction //RSD: This is actually in FindInventorySlot() already, and the conflict made the player equip nothing
         {
         PutInHand(FoundItem);
@@ -8571,10 +8587,20 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly)
 			WeaponShuriken(FrobTarget).ItemName = WeaponShuriken(FrobTarget).default.ItemName;
 	}
 
-    if (bCanPickup)
+    if (bCanPickup && !bDeclined)
+    {
         pickupCooldown = 0.15;
+        
+        //SARGE: Moved left-click interaction to here.
+        if (bLeftClicked && inHand == None)
+        {
+            //PutInHand(anItem); //CyberP: left click interaction //SARGE: This breaks stacked items
+            SelectInventoryItem(FrobTarget.Class.name);
+            bLeftClicked = False;
+        }
+    }
 
-	return bCanPickup;
+	return bCanPickup && !bDeclined;
 }
 
 // ----------------------------------------------------------------------
@@ -9336,15 +9362,7 @@ function Bool FindInventorySlot(Inventory anItem, optional Bool bSearchOnly)
 	}
 
 	if ((bPositionFound) && (!bSearchOnly))
-	{
-		PlaceItemInSlot(anItem, col, row);
-		if (bLeftClicked && inHand == None)
-		{
-            //PutInHand(anItem); //CyberP: left click interaction //SARGE: This breaks stacked items
-            SelectInventoryItem(anItem.Class.name);
-            bLeftClicked = False;
-		}
-	}
+        PlaceItemInSlot(anItem, col, row);
 
 	return bPositionFound;
 }
