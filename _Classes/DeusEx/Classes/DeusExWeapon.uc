@@ -4391,6 +4391,40 @@ function GetAIVolume(out float volume, out float radius)
 	}
 }
 
+//Ygll: utility function to test the behaviour of the dart with Fragile dart gameplay option enabled
+function DartStickToWall(DeusExProjectile proj)
+{
+    local DeusExPlayer player;
+
+    player = DeusExPlayer(GetPlayerPawn());
+
+    if (player == None)
+        return;
+
+	//SARGE: Added new gameplay setting
+	//Ygll: must test the class type of the projectile before testing the option value. proj.IsA('Dart') test can be true for all Dart type.
+	if ( proj.IsA('DartPoison'))
+	{
+		//Poison Dart should be destroyable in hardcore even with the fragile option disabled
+		if( player.bHardCoreMode || player.iFragileDarts >= 1 )
+			proj.bSticktoWall = false;                      //RSD: Tranq darts won't stick to walls (for recovery) in Hardcore
+	}
+	else if (proj.IsA('DartTaser'))
+	{
+		if(player.iFragileDarts >= 2)
+			proj.bSticktoWall = false;
+	}	
+	else if (proj.IsA('DartFlare'))
+	{
+		if(player.iFragileDarts >= 4)
+			proj.bSticktoWall = false;
+	}
+	else
+	{
+		if (proj.IsA('Dart') && player.iFragileDarts >= 3)
+			proj.bSticktoWall = false;
+	}
+}
 
 //
 // copied from Weapon.uc
@@ -4575,8 +4609,9 @@ simulated function Projectile ProjectileFire(class<projectile> ProjClass, float 
 			proj = DeusExProjectile(Spawn(ProjClass, Owner,, Start, AdjustedAim));
 			if (proj != None)
 			{
-				if (proj.IsA('DartPoison') && (DeusExPlayer(GetPlayerPawn()).bHardCoreMode || DeusExPlayer(GetPlayerPawn()).bFragileDarts)) //SARGE: Added new gameplay setting
-                	proj.bSticktoWall = false;                      //RSD: Tranq darts won't stick to walls (for recovery) in Hardcore
+				//SARGE: Added new gameplay setting //Ygll: Add more option to the fragile dart option
+				DartStickToWall(proj);
+					
                 //proj.Damage *= mult;                                          //RSD
                 finalDamage = proj.Damage*mult;                                 //RSD: final input to TakeDamage is a truncated int
                 if (FRand() < (proj.Damage*mult-finalDamage))                   //RSD: So randomly add +1 damage with probability equal to the remainder (0.0-1.0)
