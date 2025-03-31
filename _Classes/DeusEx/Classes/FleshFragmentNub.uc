@@ -16,10 +16,8 @@ function BeginPlay()
 				EndTrace = Location - vect(0,0,320);
 				hit = Trace(HitLocation, HitNormal, EndTrace, Location, False);
 
-			   spawn(class'BloodPool',,, HitLocation+HitNormal, Rotator(HitNormal));
-				if (pool != None)
-					if (pool.IsHDTP())
-						pool.maxDrawScale = 3;  //hah! Found you you bastard..was making HUUUGE decals. -DDL
+			    pool = spawn(class'BloodPool',,, HitLocation+HitNormal, Rotator(HitNormal));
+				pool.SetMaxDrawScale(10);
 			}
     }
 

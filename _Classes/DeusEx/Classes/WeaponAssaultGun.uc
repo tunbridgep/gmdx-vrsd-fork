@@ -146,6 +146,7 @@ function DisplayWeapon(bool overlay)
 
 }
 
+//TODO: Use the base class version
 simulated function SwapMuzzleFlashTexture()
 {
     if (ClipCount == 0)
@@ -157,11 +158,13 @@ simulated function SwapMuzzleFlashTexture()
 		return;
 
 	if(playerpawn(owner) != none)      //diff meshes, see
+        //SARGE NOTE: HDTP Muzzle Flash was Broken by RSD HDTP 3-round-burst edit
 		MuzzleSlot=2;
 	else
 		MuzzleSlot=4;
     
-    CurrentMuzzleFlash = GetMuzzleTex();
+    if (GetMuzzleTex() != None && MuzzleSlot < 8 && MuzzleSlot > -1)
+        MultiSkins[MuzzleSlot] = GetMuzzleTex();
 	SetTimer(0.1, False);
 }
 
@@ -311,6 +314,7 @@ defaultproperties
      ItemArticle="an"
      PlayerViewOffset=(X=12.500000,Y=-5.000000,Z=-12.000000)
      HDTPPlayerViewMesh="RSDCrap.HDTPAssaultGunRSD"
+     //HDTPPlayerViewMesh="HDTPItems.HDTPAssaultGun"
      HDTPPickupViewMesh="HDTPItems.HDTPassaultGunPickup"
      HDTPThirdPersonMesh="HDTPItems.HDTPassaultGun3rd"
      //PlayerViewMesh=LodMesh'DeusExItems.AssaultGun'

@@ -135,9 +135,13 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
     if (!bLocked)
         return true;
 
+    //we're no longer in the "forced" weapon state, so clear the left-frob timer
+    if (frobber.inHand == frobber.primaryWeapon)
+        leftFrobTimer = 0;
+
     //SARGE: If left frob timer is 0 (ie, we have not left-frobbed),
     //then use the "right-click to autoselect" revision-style interaction, if enabled
-    if (frobber.bRightClickToolSelection && leftFrobTimer == 0 && !frobber.inHand.IsA('Lockpick') && !frobber.InHand.IsA('NanoKeyRing'))
+    if (frobber.bRightClickToolSelection && bLocked && frobber.inHand != None && leftFrobTimer == 0 && !frobber.inHand.IsA('Lockpick') && !frobber.InHand.IsA('NanoKeyRing'))
         return DoLeftFrob(frobber);
 
     //don't continue if our hands are full, just do the default interaction

@@ -30,6 +30,8 @@ var travel bool bOldOffsetsSet;                                                 
 var travel bool bSearched;                                                      //Sarge: Carried over from Carcasses so they are retained when we make a new one by putting the corpse down
 var travel int PickupAmmoCount;                                                 //Sarge: Carried over from Carcasses so they are retained when we make a new one by putting the corpse down
 
+var travel bool bFirstBloodPool;                                                //SARGE: Stores whether or not the carcass has created a blood pool yet.
+
 //END GMDX:
 
 //Function to fix weapon offsets

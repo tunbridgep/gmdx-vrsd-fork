@@ -402,7 +402,7 @@ var globalconfig int iFrobDisplayStyle;             //SARGE: Frob Display Style.
 var globalconfig bool bGameplayMenuHardcoreMsgShown;//SARGE: Stores whether or not the gameplay menu message has been displayed.
 var globalconfig bool bEnhancedCorpseInteractions;  //SARGE: Right click always searches corpses. After searching, right click picks up corpses as normal.
 var globalconfig bool bSearchedCorpseText;          //SARGE: Corpses show "[Searched]" text when interacted with for the first time.
-var globalconfig bool bCutsceneFOVAdjust;           //SARGE: Enforce 75 FOV in cutscenes
+var globalconfig int iCutsceneFOVAdjust;           //SARGE: Enforce 75 FOV in cutscenes
 var globalconfig bool bLightingAccessibility;       //SARGE: Changes lighting in some areas to reduce strobing/flashing, as it may hurt eyes or cause seizures.
 
 var globalconfig bool bSubtitlesCutscene;			// SARGE: Allow Subtitles for Third-Person cutscenes. Should generally be left on
@@ -492,7 +492,6 @@ var travel int SlotMem; //CyberP: for belt/weapon switching, so the code remembe
 var travel int BeltLast;                                                    //Sarge: The last item we literally selected from the belt, regardless of holstering or alternate belt behaviour
 var travel bool bScrollSelect;                                              //Sarge: Whether or not our last belt selection was done with Next/Last weapon keys rather than Number Keys. Used by Alternative Belt to know when to holster
 var travel int beltScrolled;                                                //Sarge: The last item we scrolled to on the belt, if we are using Adv Toolbelt
-var travel bool selectedNumberFromEmpty;                                    //Sarge: Was the current selection made from an empty hand. Used by Alternate Toolbelt Classic Mode to not jump back to previous weapon when we select from an empty hand.
 var travel bool bBeltSkipNextPrimary;                                       //SARGE: Don't assign the next weapon we select as our primary.
 var globalconfig bool bLeftClickUnholster;                                  //Enable left click unholstering
 
@@ -503,8 +502,9 @@ var bool bRegenStamina; //CyberP: regen when in water but head above water
 var bool bCrouchRegen;  //CyberP: regen when crouched and has skill
 var float doubleClickCheck; //CyberP: to return from double clicking.
 var travel Inventory assignedWeapon;
-var Inventory primaryWeapon;
-var bool bLastWasEmpty;                                                     //SARGE: Whether or not we were empty before being switched to this weapon.
+var travel Inventory primaryWeapon;
+var travel bool bLastWasEmpty;                                                     //SARGE: Whether or not we were empty before being switched to this weapon.
+var travel bool bSelectedFromMainBeltSelection;                                    //SARGE: Whether or not we selected our main belt slot before going to this item, since our last holster. IW belt only. Determines if we should switch back to our main selection, or .
 var float augEffectTime;
 var vector vecta;
 var rotator rota;
@@ -631,6 +631,7 @@ var travel AddictionSystem AddictionManager;
 var travel PerkSystem PerkManager;
 var travel RandomTable Randomizer;
 var travel FontManager FontManager;
+var DecalManager DecalManager;
 
 const DRUG_TOBACCO = 0;
 const DRUG_ALCOHOL = 1;
@@ -714,6 +715,7 @@ var globalconfig bool bMedbotAutoswitch;
 
 //SARGE: Minimise Targeting Window
 var travel bool bMinimiseTargetingWindow;
+var globalconfig bool bOnlyShowTargetingWindowWithWeaponOut;
 
 //SARGE: Enhanced Lip Sync
 var globalconfig int iEnhancedLipSync; //0 = disabled, 1 = nice and smooth, 2 = intentionally chunky
@@ -728,6 +730,30 @@ var globalconfig bool bBiggerBelt;
 //SARGE: Right-Click Selection for Picks and Tools. Inspired by similar feature from Revision, but less sucky.
 var globalconfig bool bRightClickToolSelection;
 
+var globalconfig bool bAllowSaveWhileInfolinkPlaying;                   //SARGE: Allow saving while infolinks are playing. Will end the infolink.
+
+var globalconfig bool bShowItemPickupCounts;                            //SARGE: If set to true, Pickup counts for stacked items above 1 will be shown in the item pickup tooltips, such as "Medkit (5)"
+
+var globalconfig bool bShowAmmoTypeInAmmoHUD;                           //SARGE: If true, show the selected ammo type in the Ammo HUD, where the lock on text would normally be.
+
+var transient float pickupCooldown;                                     //SARGE: Add a very short cooldown after picking something up, so that we can't duplicate items while they replicate to the server.
+
+//SARGE: Bigger weapon effect sparks
+var globalconfig bool bJohnWooSparks;
+
+var globalconfig bool bConsistentBloodPools;                            //SARGE: If set to true, blood pools will always be the same consistent size, regardless of corpse size. If set to false, it does the vanilla behaviour of making blood pools depend on the carcasses collision size.
+
+var globalconfig int iPersistentDebris;                               //SARGE: Fragments, Decals, etc, last forever. Probably really horrible for performance!
+
+//SARGE: Decal Handling
+var transient bool bCreatingDecals;                                     //SARGE: Stores if we're making decals right now.
+var transient int currentDecalBatch;                                    //SARGE: Current decal batch number.
+
+//SARGE: Ladder Fix. Stores if we just jumped from a ladder.
+//Used to reset our physics when the timer fails (for whatever reason).
+var float iLadderJumpTimer;
+
+var globalconfig bool bMenuAfterDeath;                                   //SARGE: Whether or not to automatically go to the menu after dying.
 
 var globalconfig bool bFragileDarts;                                    //SARGE: Allow the "darts don't stick to walls" hardcore behaviour outside of hardcore.
 
@@ -1187,6 +1213,8 @@ function PostBeginPlay()
 	local int levelInfoCount;
     local float mult;
 
+    SetupRendererSettings();
+
 	Super.PostBeginPlay();
 
 	class'DeusExPlayer'.default.DefaultFOV=DefaultFOV;
@@ -1288,6 +1316,30 @@ function SetServerTimeDiff( float sTime )
 }
 
 // ----------------------------------------------------------------------
+// SetupRendererSettings()
+//
+// SARGE: Handle some basic rendering issues with certain renderers (like the d3d9 renderer)
+// ----------------------------------------------------------------------
+
+function SetupRendererSettings()
+{
+    //Force S3TC textures on. We need them for various graphics, including the scope.
+    //The game will crash otherwise!
+    if (ConsoleCommand("get D3D9Drv.D3D9RenderDevice UseS3TC") ~= "false")
+    {
+        //ClientMessage("High-Resolution Texture Support enabled. A game restart may be required!");
+        ConsoleCommand("set ini:D3D9Drv.D3D9RenderDevice UseS3TC true");
+        ConsoleCommand("set D3D9Drv.D3D9RenderDevice UseS3TC true");
+        //GetConfig("Engine.Engine", "GameRenderDevice") != "D3D10Drv.D3D10RenderDevice"
+    }
+    if (ConsoleCommand("get OpenGLDrv.OpenGLRenderDevice UseS3TC") ~= "false")
+    {
+        ConsoleCommand("set ini:OpenGLDrv.OpenGLRenderDevice UseS3TC true");
+        ConsoleCommand("set OpenGLDrv.OpenGLRenderDevice UseS3TC true");
+    }
+}
+
+// ----------------------------------------------------------------------
 // PostNetBeginPlay()
 //
 // Take care of the theme manager
@@ -1338,6 +1390,19 @@ function SetupAddictionManager()
     }
     AddictionManager.SetPlayer(Self);
 
+}
+
+function SetupDecalManager()
+{
+	// install the Decal Manager if not found
+	if (DecalManager != None)
+    {
+        //clientmessage("DecalManager Setup Called");
+	    //DecalManager = new(Self) class'DecalManager';
+        DecalManager.Setup(self);
+        bCreatingDecals = true;
+        //DecalManager.RecreateDecals();
+    }
 }
 
 function SetupPerkManager()
@@ -1436,6 +1501,7 @@ function InitializeSubSystems()
     SetupAddictionManager();
 	SetupPerkManager();
 	SetupFontManager();
+	SetupDecalManager();
 }
 
 //SARGE: Helper function to get the count of an item type
@@ -1526,6 +1592,10 @@ function PreTravel()
 		DeusExWeapon(inHand).LaserOff(true);                                    //RSD: Otherwise dots will remain on the map
     ForceDroneOff();                                                            //RSD: Since we can move on standby, shut drone off
     ConsoleCommand("set DeusExCarcass bRandomModFix" @ bRandomizeMods);         //RSD: Stupid config-level hack since PostBeginPlay() can't access player pawn in DeusExCarcass.uc
+    
+    //SARGE: Store all the decals
+    if (DecalManager != None && iPersistentDebris > 0)
+        DecalManager.PopulateDecalsList();
 
 	foreach AllActors(class'SpyDrone',SD)                                       //RSD: Destroy all spy drones so we can't activate disabled drones on map transition
 		SD.Destroy();
@@ -1558,6 +1628,7 @@ event TravelPostAccept()
     SetupAddictionManager();
 	SetupPerkManager();
     SetupFontManager();
+	SetupDecalManager();
 
 	// reset the keyboard
 	ResetKeyboard();
@@ -1773,7 +1844,7 @@ function Typing( bool bTyping )
 
 /////
 
-exec function HDTP(optional string s)
+exec function HDTP(optional bool updateDecals)
 {
 	local scriptedpawn P;
 	local deusexcarcass C;
@@ -1801,12 +1872,12 @@ exec function HDTP(optional string s)
     	PR.UpdateHDTPsettings();
     foreach AllActors(Class'DeusExAmmo',AM)                                     //SARGE: Added for object toggles
     	AM.UpdateHDTPsettings();
-    //SARGE: These don't draw properly if we update them... What a shame!
-    //It was a good feature, what a rotten way to die!
-    /*
-    foreach AllActors(Class'DeusExDecal',DC)                                     //SARGE: Added for object toggles
-    	DC.UpdateHDTPsettings();
-    */
+    if (updateDecals)
+    {
+        foreach AllActors(Class'DeusExDecal',DC)                                     //SARGE: Added for object toggles
+            if (!DC.bHidden)
+                DC.UpdateHDTPsettings();
+    }
 
 	UpdateHDTPsettings();
 }
@@ -1986,6 +2057,7 @@ exec function RestartLevel()
 
 exec function LoadGame(int saveIndex)
 {
+    SetupRendererSettings();
 
 //   log("MYCHK:LoadGame: ,"@saveIndex);
 	// Reset the FOV
@@ -2058,6 +2130,7 @@ function bool CanSave(optional bool allowHardcore)
 	// 5) A datalink is playing
 	// 6) We're in a multiplayer game
     // 7) SARGE: We're in a conversation
+    // 8) SARGE: We're currently recreating decals
 
     if ((bHardCoreMode || bRestrictedSaving) && !allowHardcore) //Hardcore Mode
         return false;
@@ -2068,13 +2141,16 @@ function bool CanSave(optional bool allowHardcore)
 	if ((IsInState('Dying')) || (IsInState('Paralyzed')) || (IsInState('Interpolating'))) //Dead or Interpolating
         return false;
 
-	if (dataLinkPlay != None) //Datalink playing
+	if (dataLinkPlay != None && !bAllowSaveWhileInfolinkPlaying) //Datalink playing
         return false;
 
     if (Level.Netmode != NM_Standalone) //Multiplayer Game
 	   return false;
 
     if (InConversation())
+        return false;
+
+    if (bCreatingDecals)
         return false;
 
     return true; 
@@ -2109,12 +2185,20 @@ function int DoSaveGame(int saveIndex, optional String saveDesc)
             if ((tech.Owner == Self) && tech.bActive)
                 tech.Activate();
     
+    //SARGE: Store all the decals
+    if (DecalManager != None && iPersistentDebris > 0)
+        DecalManager.PopulateDecalsList();
+
     if (saveIndex == 0)
     {
         saveDir = GetSaveGameDirectory();
 		saveIndex=saveDir.GetNewSaveFileIndex();
     }
     
+    //If a datalink is playing, cancel it
+    if (dataLinkPlay != None)
+        dataLinkPlay.AbortAndSaveHistory();
+
     //root.hide();
     root.GenerateSnapshot(True);
     SaveGame(saveIndex, saveDesc);
@@ -2329,6 +2413,8 @@ exec function StartNewGame(String startMap)
     //If Addiction System is enabled, set it as our default screen in the Health display
     if (bAddictionSystem)
         bShowStatus = false;
+    
+    SetupRendererSettings();
 
     //SARGE: Fix audio volume being incorrectly set on new game
     //TODO: Make this an option
@@ -2351,6 +2437,8 @@ function StartTrainingMission()
     local Inventory anItem;
 	//if (DeusExRootWindow(rootWindow) != None)
 	//	DeusExRootWindow(rootWindow).ClearWindowStack();
+    
+    SetupRendererSettings();
 
 	// Make sure the player isn't asked to do this more than
 	// once if prompted on the main menu.
@@ -2548,12 +2636,14 @@ function ResetPlayer(optional bool bTraining)
 
         //SARGE: Hack to make the starting items always appear in the belt, regardless of autofill setting
         bForceBeltAutofill = true;
-		anItem = Spawn(class'WeaponPistol');
-		anItem.Frob(Self, None);
-		anItem.bInObjectBelt = True;
+        //SARGE: Now give Prod first, and set Pistol as primary belt selection
 		anItem = Spawn(class'WeaponProd');
 		anItem.Frob(Self, None);
 		anItem.bInObjectBelt = True;
+		anItem = Spawn(class'WeaponPistol');
+		anItem.Frob(Self, None);
+		anItem.bInObjectBelt = True;
+        advBelt = 1;
 		anItem = Spawn(class'MedKit');
 		anItem.Frob(Self, None);
 		anItem.bInObjectBelt = True;
@@ -5407,6 +5497,7 @@ function DoJump( optional float F )
 
         //if (JumpZ > 650)      //CyberP: fix super jump exploit.
         //JumpZ = default.JumpZ;
+        iLadderJumpTimer = 0.15;  //SARGE: Hack to fix flying forever when leaving ladders sometimes.
         SetPhysics(PHYS_Flying);
         if (IsStunted())
         {
@@ -5420,7 +5511,7 @@ function DoJump( optional float F )
 		}
 	
         // Trash: Speed Enhancement now uses energy while jumping
-        if (SpeedAug.CurrentLevel > -1)
+        if (SpeedAug.CurrentLevel > -1 && SpeedAug.bIsActive)
         {
             Energy=MAX(Energy - SpeedAug.GetAdjustedEnergy(SpeedAug.EnergyDrainJump),0);
         }
@@ -5515,7 +5606,7 @@ if (Physics == PHYS_Walking)
 		Velocity.Z = JumpZ;
 
         // Trash: Speed Enhancement now uses energy while jumping
-        if (SpeedAug.CurrentLevel > -1)
+        if (SpeedAug.CurrentLevel > -1 && speedAug.bIsActive)
         {
             Energy=MAX(Energy - SpeedAug.GetAdjustedEnergy(SpeedAug.EnergyDrainJump),0);
         }
@@ -6291,7 +6382,7 @@ state PlayerWalking
 		
 		//SARGE: Moved Endurance check to here.
         bCrouchRegen=PerkManager.GetPerkWithClass(class'DeusEx.PerkEndurance').bPerkObtained;
-	    if ((!IsCrouching() || bCrouchRegen) && !bOnLadder && (inHand == None || !inHand.IsA('POVCorpse'))) //(bIsCrouching)     //RSD: Simplified this entire logic from original crouching -> bCrouchRegen check, added !bOnLadder //SARGE: Added corpse carrying
+	    if ((!IsCrouching() || bCrouchRegen) && !bOnLadder && (inHand == None || !inHand.IsA('POVCorpse')) && CarriedDecoration == None) //(bIsCrouching)     //RSD: Simplified this entire logic from original crouching -> bCrouchRegen check, added !bOnLadder //SARGE: Added corpse carrying //SARGE: And decoration carrying
 	    	RegenStaminaTick(deltaTime);                                        //RSD: Generalized stamina regen function
 	  }
       }
@@ -6422,7 +6513,8 @@ state PlayerWalking
 			if (Velocity.Z < -440)  //CyberP: effects for jumping in water from height.
 			{
 			PlaySound(sound'SplashLarge', SLOT_Pain);
-            ClientFlash(12,vect(160,200,255));
+            //SARGE: Disabled as we already have a water zone change in HeadZoneChange
+            //ClientFlash(12,vect(160,200,255));
 			for (i=0;i<38;i++)
 			{
 			    loc = Location + VRand() * 35;
@@ -6642,10 +6734,40 @@ state PlayerWalking
             }
         }
 
+        //SARGE: Tick down our item pickup prevention (stops item dupes)
+        if (pickupCooldown > 0)
+            pickupCooldown -= deltaTime;
+
         //Stop being stunted if we elapse the stunted timer
         if (stuntedTime > 0)
             stuntedTime -= deltaTime;
             
+        //SARGE: Recreate decals slowly over a few frames, to avoid
+        //crashing when changing maps
+        if (bCreatingDecals && DecalManager != None)
+        {
+            //First time, destroy the decals
+            if (currentDecalBatch == 0)
+                DecalManager.HideAllDecals();
+
+            DecalManager.RecreateDecals(currentDecalBatch,500);
+            currentDecalBatch += 500;
+            bCreatingDecals = DecalManager.GetTotalDecals() > currentDecalBatch;
+        }
+        
+        //SARGE: Backup fix for dealing with ladder climbing physics
+        if (iLadderJumpTimer > 0)
+        {
+            iLadderJumpTimer -= deltaTime;
+            if (iLadderJumpTimer <= 0)
+            {
+                if (Physics == PHYS_Flying)
+                {
+                    SetPhysics(PHYS_Falling);
+                    bOnLadder = false;
+                }
+            }
+        }
         //Fire blocking is only valid for 1 frame
         bBlockNextFire = False;
 
@@ -6693,6 +6815,10 @@ state PlayerFlying
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
+        
+        //SARGE: Tick down our item pickup prevention (stops item dupes)
+        if (pickupCooldown > 0)
+            pickupCooldown -= deltaTime;
 
 		Super.PlayerTick(deltaTime);
 	}
@@ -6711,6 +6837,14 @@ event HeadZoneChange(ZoneInfo newHeadZone)
 		newHeadZone.SoundRadius = 255;
 	if (HeadRegion.Zone.AmbientSound != None)
 		HeadRegion.Zone.SoundRadius = 0;
+
+    //SARGE: Do fog stuff for current head zone.
+    if (VSize(newHeadZone.default.ViewFog) > 0.01)
+    {
+        DesiredFlashFog   = newHeadZone.default.ViewFog;
+        DesiredFlashScale = 0.01;
+        ViewFlash(1.0);
+    }
 
 	if (newheadZone != none && newHeadZone.bWaterZone && !HeadRegion.Zone.bWaterZone) //RSD: accessed none?
 	{
@@ -6888,6 +7022,10 @@ state PlayerSwimming
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
+        
+        //SARGE: Tick down our item pickup prevention (stops item dupes)
+        if (pickupCooldown > 0)
+            pickupCooldown -= deltaTime;
 
 		Super.PlayerTick(deltaTime);
 	}
@@ -6993,19 +7131,19 @@ state Dying
         {
            KillShadow();
            EndTrace = Location - vect(0,0,320);
+            /*
+            //SARGE: Removed this as it was aparrently causing a double blood pool.
            if (!HeadRegion.Zone.bWaterZone)
            {
             hit = Trace(HitLocation, HitNormal, EndTrace, Location, False);
             pool = spawn(class'BloodPool',,, HitLocation, Rotator(HitNormal));
             if (pool != none)
             {
-				if (pool.IsHDTP())
-					pool.maxDrawScale = CollisionRadius / 520.0;
-				else
-					pool.maxDrawScale = CollisionRadius / 20.0;
+                pool.SetMaxDrawScale(CollisionRadius);
                 pool.ReattachDecal();
             }
            }
+           */
         }
       ClientDeath();
 	}
@@ -7048,7 +7186,7 @@ state Dying
 				CameraLocation = Location;
 				CameraRotation = Rotator(ViewVect);
 			}
-			else if (time < 8.0)
+			else if (time < 8.0 || !bMenuAfterDeath)
 			{
 				whiteVec.X = time / 16.0;
 				whiteVec.Y = time / 16.0;
@@ -7073,7 +7211,7 @@ state Dying
 				{
 					// Don't fade to black in multiplayer
 				}
-				else
+				else if (bMenuAfterDeath)
 				{
 					// then, fade out to black in four seconds and bring up
 					// the main menu automatically
@@ -7961,7 +8099,7 @@ exec function ParseLeftClick()
 
         //SARGE: Final option - select last weapon
         if (inHand == None && bLeftClickUnholster)
-            SelectLastWeapon();
+            SelectLastWeapon(false,true);
 	}
 }
 
@@ -7970,7 +8108,7 @@ exec function ParseLeftClick()
 // Sarge: Selects the last weapon we had selected, or if we're using the alternate toolbelt, selects the primary selection.
 // ----------------------------------------------------------------------
 
-function SelectLastWeapon(optional bool allowEmpty)
+function SelectLastWeapon(optional bool allowEmpty, optional bool bBeltLast)
 {
     local DeusExRootWindow root;
     root = DeusExRootWindow(rootWindow);
@@ -7985,10 +8123,13 @@ function SelectLastWeapon(optional bool allowEmpty)
         }
     }
 
-    if (root != None && root.hud != None)
+    //If Belt last, and using Invisible War toolbelt,
+    //select our primary belt slot, rather than using our actual last weapon
+    if (root != None && root.hud != None && bBeltLast)
     {
         if (bAlternateToolbelt > 0 && root.ActivateObjectInBelt(advBelt))
         {
+            bSelectedFromMainBeltSelection = true;
             NewWeaponSelected();
             return;
         }
@@ -8211,25 +8352,26 @@ exec function ParseRightClick()
 		{
 			PutInHand(None);
 		}
+        //SARGE: When we have a forced weapon selection in hand (like a lockpick after left-frobbing, then select our last weapon instead.
+        else if (inHand != None && primaryWeapon != None && inHand != primaryWeapon && (clickCountCyber >= 1 || dblClickHolster == 0 || !bLastWasEmpty))
+        {
+            SelectLastWeapon(true);
+        }
         //If we are using a different items to our belt item, and classic mode is on or we scrolled, select it instantly
-		else if ((bAlternateToolbelt > 1 || bScrollSelect) && beltScrolled != beltLast && inHand != None && !selectedNumberFromEmpty)
+		else if ((bAlternateToolbelt > 1 || bScrollSelect) && (bAlternateToolbelt < 3 || bSelectedFromMainBeltSelection || bScrollSelect) && (beltScrolled != beltLast || bLastWasEmpty) && inHand != None)
 		{
-			root = DeusExRootWindow(rootWindow);
-			if (root != None && root.hud != None)
-			{
-				root.ActivateObjectInBelt(advBelt);
-                NewWeaponSelected();
-                beltLast = advBelt;
-			}
+            SelectLastWeapon(false,true);
+            beltLast = advBelt;
 		}
         else if (inHand == None && (clickCountCyber >= 1 || dblClickHolster < 2))
 		{
             //SARGE: Added support for the unholster behaviour from the Alternate Toolbelt on both Toolbelts
-            //Additionally, unholstering is now tied to the double-click holstering setting.
-            SelectLastWeapon();
+            bSelectedFromMainBeltSelection = true;
+            SelectLastWeapon(false,true);
 		}
 		else if (inHand != None && (clickCountCyber >= 1 || dblClickHolster == 0))
 		{
+            bSelectedFromMainBeltSelection = false;
             PutInHand(None);
             NewWeaponSelected();
 		    DoRightFrob(FrobTarget); //Last minute check for things with no highlight.
@@ -8274,6 +8416,11 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly)
 
 	bSlotSearchNeeded = True;
 	bCanPickup = True;
+
+    //If we picked up something in the last 0.25 seconds, prevent pickup again.
+    //This should prevent the item dupe glitch.
+    if (pickupCooldown > 0.01)
+        return false;
 
 	// Special checks for objects that do not require phsyical inventory
 	// in order to be picked up:
@@ -8424,6 +8571,9 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly)
 		if (FrobTarget.IsA('WeaponShuriken'))
 			WeaponShuriken(FrobTarget).ItemName = WeaponShuriken(FrobTarget).default.ItemName;
 	}
+
+    if (bCanPickup)
+        pickupCooldown = 0.15;
 
 	return bCanPickup;
 }
@@ -8674,7 +8824,7 @@ function SetInHand(Inventory newInHand)
 	// Notify the hud
 	root = DeusExRootWindow(rootWindow);
 	if (root != None)
-		root.hud.belt.UpdateInHand();
+        root.hud.ammo.UpdateVisibility();
 
     UpdateCrosshair();
 }
@@ -8742,6 +8892,13 @@ function UpdateInHand()
 	//DEUS_EX AMSD  Don't let clients do this.
 	if (Role < ROLE_Authority)
 	  return;
+
+    //SARGE: Added a new check to update the HUD when our in-hand is no longer valid (ie, we used the last ammo of a disposable weapon)
+    if (inHand != None && inHand.Owner != Self && root != None)
+    {
+        root.hud.belt.UpdateInHand();
+        root.hud.ammo.UpdateVisibility();
+    }
 
 	if (inHand != inHandPending)
 	{
@@ -8813,7 +8970,10 @@ function UpdateInHand()
 			}
             // Notify the hud
             if (root != None)
+            {
                 root.hud.belt.UpdateInHand();
+                root.hud.ammo.UpdateVisibility();
+            }
 		}
 	}
 	else
@@ -10346,6 +10506,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 							Carc.bSearched = POVCorpse(item).bSearched;
 							Carc.PickupAmmoCount = POVCorpse(item).PickupAmmoCount;
 							Carc.savedName = POVCorpse(item).savedName;
+                            Carc.bFirstBloodPool = POVCorpse(item).bFirstBloodPool; //SARGE: Added.
                             Carc.UpdateName();
 
                             //if (FRand() < 0.3)
@@ -10368,7 +10529,11 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 								}
 							}
 							else
+                            {
+                                ClientMessage(CannotDropHere);
 								carc.bHidden = True;
+                                carc.Destroy();
+                            }
 						}
 					}
 				}
@@ -11589,6 +11754,10 @@ exec function ActivateBelt(int objectNum)
             //we're not selecting anything!
             if (beltItem == None)
                 return;
+            
+            //We're reselecting our main slot.
+            if (bAlternateToolbelt >= 1 && advBelt == objectNum)
+                bSelectedFromMainBeltSelection = true;
 
             //SARGE: If already selected in IW Belt mode, an additional press will set our primary weapon to that slot.
 			if (bAlternateToolbelt >= 1 && beltItem == inHandPending)
@@ -11600,10 +11769,6 @@ exec function ActivateBelt(int objectNum)
             //If we're not in IW belt mode, set our IW belt to match our current belt.
             else if (bAlternateToolbelt == 0)
                 advBelt = objectNum;
-
-                
-            //Did we select from empty?
-            selectedNumberFromEmpty = inHand == None;
 		
 			root.ActivateObjectInBelt(objectNum);
 			BeltLast = objectNum;
@@ -11744,7 +11909,6 @@ exec function NextBeltItem()
 		}
 	}
     beltScrolled = slot;
-    selectedNumberFromEmpty = false;
 	}
 }
 
@@ -11873,7 +12037,6 @@ exec function PrevBeltItem()
 		}
 	}
     beltScrolled = slot;
-    selectedNumberFromEmpty = false;
 	}
 }
 
@@ -15256,7 +15419,7 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 
 			if (augLevel < 0.0 && Energy > 0.0) //this means we can't have both augs installed, and that for passive to work energy is required. //RSD: Actually it just means active overrides passive
 			{
-                augLevel = AugBallisticPassive(AugmentationSystem.GetAug(class'AugBallisticPassive')).GetDamageMod();
+                augLevel = AugBallisticPassive(AugmentationSystem.GetAug(class'AugBallisticPassive')).GetDamageMod(true);
 			}
 			//augLevel *= AugmentationSystem.GetAugLevelValue(class'AugBallistic');//RSD: figure out stacking prots later maybe
         }
@@ -18288,13 +18451,13 @@ defaultproperties
      bBeltShowModified=true;
      bSearchedCorpseText=True
      bDisplayClips=true
-     bCutsceneFOVAdjust=true
+     iCutsceneFOVAdjust=2
      iFrobDisplayStyle=1
      bShowDataCubeRead=true;
      iAllowCombatMusic=1
      bFullAccuracyCrosshair=true;
      bShowEnergyBarPercentages=true;
-     bSimpleAugSystem=true
+     bSimpleAugSystem=false
      bBigDroneView=True
      bSimpleAugSystem=true
 	 MenuThemeNameGMDX="Default"
@@ -18309,4 +18472,12 @@ defaultproperties
      bEnableBlinking=True
      iDeathSoundMode=2
      bBiggerBelt=True
+     bOnlyShowTargetingWindowWithWeaponOut=True
+     //bRightClickToolSelection=True
+     bShowItemPickupCounts=True
+     bAllowSaveWhileInfolinkPlaying=True
+     bShowAmmoTypeInAmmoHUD=True
+     //bJohnWooSparks=True
+     bConsistentBloodPools=True
+     iPersistentDebris=1
 }

@@ -349,13 +349,15 @@ function CreateHackWindow()
 {
 	local Float hackTime;
 	local Float skillLevelValue;
+    local Inventory nuke;
 
 	skillLevelValue = player.SkillSystem.GetSkillLevelValue(class'SkillComputer');
 	skillLevel      = player.SkillSystem.GetSkillLevel(class'SkillComputer');
+	nuke            = player.FindInventoryType(class'SoftwareNuke');
 
 	// Check to see if the player is skilled in Hacking before
 	// creating the window
-	if ((skillLevel > 0) && (bUsesHackWindow))
+	if ((skillLevel > 0 || nuke != None) && (bUsesHackWindow))
 	{
 	    //if (skillLevel <= 1 && IsA('NetworkTerminalATM'))
 	    //return;         //CyberP: ATM's need advanced hacking
@@ -369,20 +371,13 @@ function CreateHackWindow()
 		winHack = ComputerScreenHack(NewChild(Class'ComputerScreenHack'));
 		winHack.SetNetworkTerminal(Self);
 		winHack.SetDetectionTime(detectionTime, hackTime);
+				
+        winHack.SetDetectionProbability(1.0);  //CyberP: set all to 1.0 to essentially remove this functionality
 
-		// Set detection probability, determined by computer skill -- eshkrm
-		switch( skillLevel )
-		{
-			case 1:
-				winHack.SetDetectionProbability(1.0);  //CyberP: set all to 1.0 to essentially remove this functionality
-				break;
-			case 2:
-				winHack.SetDetectionProbability(1.0);
-				break;
-			case 3:
-				winHack.SetDetectionProbability(1.0);
-				break;
-		}
+        //disable the "Hack" button if our skill level is untrained,
+        //which means we're using a nuke
+        if (skillLevel == 0)
+            winHack.btnHack.SetSensitivity(false);
 	}
 }
 

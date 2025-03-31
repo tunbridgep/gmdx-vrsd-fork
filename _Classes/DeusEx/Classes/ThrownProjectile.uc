@@ -187,7 +187,8 @@ simulated function Tick(float deltaTime)
 					if (Owner == None)
 					{
                         //Fix bug with pre-placed grenades not opening
-                        PlayAnim('Open');
+                        if (HasAnim('Open'))
+                            PlayAnim('Open');
 						blastRadius=512.000000;
 						foreach RadiusActors(class'DeusExPlayer', Player, proxRadius*4)
 						{

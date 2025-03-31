@@ -410,7 +410,7 @@ simulated function SpawnEffects(Vector HitLocation, Vector HitNormal, Actor Othe
 		mark = DeusExDecal(Spawn(ExplosionDecal, Self,, HitLocation, Rotator(HitNormal)));
 		if (mark != None)
 		{
-			mark.DrawScale *= FClamp(damage/24, 0.5, 4.0); //CyberP: was divided by 30, last param was 3
+			mark.DrawScaleMult = FClamp(damage/24, 0.5, 4.0); //CyberP: was divided by 30, last param was 3
 			mark.ReattachDecal();
 		}
 
