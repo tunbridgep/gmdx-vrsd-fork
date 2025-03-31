@@ -13692,6 +13692,14 @@ function bool GetCodeNote(string code)
                 //log("NOTE CODE " $code$ " FOUND (LOCS)");
                 return true;
             }
+            
+            //Some codes are in quotes, so always allows things in quotes
+            if (InStr(Caps(noteText),"\""$Caps(code)$"\"") != -1)
+            {
+                //log("NOTE: " $ noteText);
+                //log("NOTE CODE " $code$ " FOUND (CAPS)");
+                return true;
+            }
 
             //Some notes have Login: Username and Password: Whatever in them, so handle them.
             else if (InStr(Caps(noteText),Caps("LOGIN: " $ code)) != -1)
@@ -13716,8 +13724,11 @@ function bool GetExceptedCode(string code)
 {
     code = Caps(code);
 	return code == "CALVO" //Alex Jacobson computer password on the wall next to his computer
+        || code == "AJACOBSON" //Alex Jacobson computer password on the wall next to his computer
         || code == "NSF" //NSF/Righteous, but the Righteous is given out and the NSF is reasonably guessable.
+        || code == "JCD" //we get our code as soon as we enter our office, but it takes a little bit. Fix it not working when we should know it
         || code == "BIONICMAN" //we get our code as soon as we enter our office, but it takes a little bit. Fix it not working when we should know it
+        || code == "MCHOW" //maggie chows code can only be guessed, never found, but is designed that way.
         || code == "INSURGENT" //maggie chows code can only be guessed, never found, but is designed that way.
         //|| code == "2167" //Only displayed in a computer message, so we never get a note for it //NOW RANDOMISED
         || code == "718" //Can only be guessed based on cryptic information
