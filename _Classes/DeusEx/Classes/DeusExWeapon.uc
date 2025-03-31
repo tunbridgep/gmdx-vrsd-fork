@@ -346,6 +346,11 @@ var vector axesY;
 var vector axesZ;
 var bool bFancyScopeAnimation;
 
+//SARGE: Sounds for various things
+
+//Retrieve Ammo from Weapon
+var const Sound RetrieveAmmoSound;
+
 //END GMDX:
 
 //
@@ -1206,6 +1211,7 @@ function bool HandlePickupQuery(Inventory Item)
 					if (!(DeusExWeapon(item) != none && DeusExWeapon(item).bDisposableWeapon)) //RSD: Don't display ammo message for grenades or the PS20
 					{
                         player.ClientMessage(defAmmo.PickupMessage @ defAmmo.itemArticle @ defAmmo.ItemName $ " (" $ intj $ ")", 'Pickup' );
+                        PlaySound(RetrieveAmmoSound, SLOT_None, 0.5+FRand()*0.25, , 256, 0.95+FRand()*0.1);
 					}
 					return true;
 				}
@@ -1222,6 +1228,7 @@ function bool HandlePickupQuery(Inventory Item)
                         else
                         {
                             player.ClientMessage(defAmmo.PickupMessage @ defAmmo.itemArticle @ defAmmo.ItemName $ " (" $ Weapon(Item).PickupAmmoCount $ ")", 'Pickup' );
+                            PlaySound(RetrieveAmmoSound, SLOT_None, 0.5+FRand()*0.25, , 256, 0.95+FRand()*0.1);
                         }
                     }
 				}
@@ -1783,7 +1790,7 @@ function bool LoadAmmo(int ammoNum)
             else if ( Ammo762mm(newAmmo) != None)
             {
                 if (bHasSilencer)    //CyberP: revert back to norm
-                   FireSilentSound=Sound'GMDXSFX.Weapons.MP5_1p_Fired1';
+                   FireSilentSound=default.FireSilentSound;
                 else
                    FireSound=default.FireSound;
             }
@@ -3764,7 +3771,13 @@ simulated function UpdateRecoilShaker()
 simulated function PlayFiringSound()
 {
 	if (bHasSilencer)
-		PlaySimSound(FireSilentSound, SLOT_None, TransientSoundVolume, 2048 );
+    {
+        //SARGE: Very silly rat squeak silencers!
+        if (Owner != None && Owner.IsA('DeusExPlayer') && DeusExPlayer(owner).bShenanigans)
+            PlaySimSound(Sound'RatSqueak2', SLOT_None, TransientSoundVolume, 2048 );
+        else
+            PlaySimSound(FireSilentSound, SLOT_None, TransientSoundVolume, 2048 );
+    }
 	else
 	{
 		// The sniper rifle sound is heard to it's range in multiplayer
@@ -5186,7 +5199,6 @@ function Finish()
                   if (bHandToHand && (ReloadCount > 0) && (AmmoType.AmmoAmount <= 0))
                   {
                      bBeginQuickMelee = False;
-                     DeusExPlayer(Owner).assignedWeapon = None;
 				     DestroyMe();
 				     return;
 				  }
@@ -6275,8 +6287,6 @@ state NormalFire
 			// if we are a thrown weapon and we run out of ammo, destroy the weapon
 			if (bHandToHand && (ReloadCount > 0) && (AmmoType.AmmoAmount <= 0))
 			{
-			   if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).assignedWeapon != None && DeusExPlayer(Owner).assignedWeapon == self)
-			      DeusExPlayer(Owner).assignedWeapon = None;
 				DestroyMe();
 			}
 		}
@@ -7181,4 +7191,5 @@ defaultproperties
      Mass=10.000000
      Buoyancy=5.000000
      muzzleSlot=2
+     RetrieveAmmoSound=Sound'WeaponPickup'
 }

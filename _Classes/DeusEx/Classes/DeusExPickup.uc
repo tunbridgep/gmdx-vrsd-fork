@@ -71,7 +71,8 @@ function bool DoLeftFrob(DeusExPlayer frobber)
 {
     if (bAutoActivate)
     {
-        GotoState('Activated');
+        //GotoState('Activated');
+        Activate();
         return false;
     }
     else
@@ -535,8 +536,6 @@ function UseOnce()
 	{
 		if (player.inHand == Self)
 			player.PutInHand(None);
-		if (player.assignedWeapon == Self)                                      //RSD: Reset our assigned weapon
-			player.assignedWeapon = None;
 		DestroyMe();
 	}
 	else

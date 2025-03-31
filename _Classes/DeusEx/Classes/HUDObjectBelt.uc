@@ -340,7 +340,7 @@ function ClearBelt()
 	for(beltPos=0; beltPos<numSlots; beltPos++)
     {
         if (player.bBeltMemory && objects[beltPos].bAllowDragging)
-            player.SetPlaceholder(beltPos,true);
+            player.SetPlaceholder(beltPos,objects[beltPos].item.icon);
 		ClearPosition(beltPos);
     }
 }
@@ -363,7 +363,7 @@ function RemoveObjectFromBelt(Inventory item, optional bool Placeholder)
 		if (objects[i].GetItem() == item && objects[i].bAllowDragging)
 		{
             if (placeholder)
-                player.SetPlaceholder(i,true);
+                player.SetPlaceholder(i,objects[i].item.icon);
 
 			objects[i].SetItem(None);
 			item.bInObjectBelt = False;
@@ -420,23 +420,23 @@ function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
             //only allow a position to be valid if the object in it is draggable.
             //Sarge: First, check for an existing placeholder slot
             //Then, if we don't find one, check for an empty slot if we have autofill enabled.
-            for (i=0; IsValidPos(i); i++)
-            {
-                if (( (Player.Level.NetMode == NM_Standalone) || (!Player.bBeltIsMPInventory) || (newItem.TestMPBeltSpot(i))))
+                if (Player.Level.NetMode == NM_Standalone)
                 {
-                    //Additionally, allow slots with the same icon if we have a placeholder
-                    if (player.GetBeltIcon(i) == newItem.icon && player.GetPlaceholder(i))
+                    for (i=0; IsValidPos(i); i++)
                     {
-                        if (player.bBeltMemory)
+                        //Additionally, allow slots with the same icon if we have a placeholder
+                        if (player.GetPlaceholderIcon(i) == newItem.default.icon)
                         {
-                            FoundPlaceholder = true;
-                            break;
+                            if (player.bBeltMemory)
+                            {
+                                FoundPlaceholder = true;
+                                break;
+                            }
+                            else
+                                player.ClearPlaceholder(i); //Since we're not using placeholders, clear any that exist so we don't get belt weirdness.
                         }
-                        else
-                            player.ClearPlaceholder(i); //Since we're not using placeholders, clear any that exist so we don't get belt weirdness.
                     }
                 }
-            }
 			
             //No placeholder slot found, check for an empty one
             if (!FoundPlaceholder && (player.bBeltAutofill || player.bForceBeltAutofill))

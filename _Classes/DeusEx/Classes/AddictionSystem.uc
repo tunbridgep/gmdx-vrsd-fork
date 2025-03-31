@@ -16,23 +16,17 @@ struct Addiction
     var bool                    bInWithdrawals;                     //Are we currently in withdrawals?
     var bool                    bAddicted;                          //Are we currently addicted?
     var const float             maxTimer;                           //Maximum possible length this drug can last
-    //var int                     stacks;                             //how many times have we taken this drug? Resets to zero when the effect wears off
-    //var const int             maxStacks;                           //Maximum number of times we can take this drug
-    //var localised string        drugName;                           //Drug Name
+    var travel int stacks;
+    var const int maxStacks;
+    var localized string        drugName;                           //Drug Name
 };
 
 var localized string MsgWithdrawal;                                             //RSD: Addiction system: Message saying you're now suffering from withdrawal
 var localized string MsgAddicted;                                               //RSD: Addiction system: Message saying you're now addicted
 var localized string MsgNotAddicted;                                            //RSD: Addiction system: Message saying you're no longer addicted
 var localized string MsgDrugWornOff;                                            //RSD: Addiction system: Message saying the drug wore off
-var localized string drugLabels[3];                                             //RSD: Addiction system: Name of each drug
 
 var travel Addiction addictions[3];
-
-//TODO: Add these back into the struct.
-//It was only removed because it was blowing up a save.
-var travel int stacks[3];
-var const int maxStacks[3];
 
 const DRUG_TOBACCO = 0;
 const DRUG_ALCOHOL = 1;
@@ -49,7 +43,7 @@ function int GetTorsoHealthBonus()
 {
     local int healthBonus;
     if (addictions[DRUG_ALCOHOL].drugTimer > 0)
-        healthBonus += 5*stacks[DRUG_ALCOHOL];                         //RSD: Get 5 bonus health for every stack
+        healthBonus += 5 * addictions[DRUG_ALCOHOL].stacks;                         //RSD: Get 5 bonus health for every stack
     if (addictions[DRUG_CRACK].bInWithdrawals)
         healthBonus -= 10;
 
@@ -79,12 +73,12 @@ function TickAddictions(float deltaTime)
     {
         info = player.AddictionManager.addictions[i];
 
-        stackSize = int(info.maxTimer) / maxStacks[i];
-        currentStackTime = stackSize * (stacks[i] - 1);
+        stackSize = int(info.maxTimer) / info.maxStacks;
+        currentStackTime = stackSize * (info.stacks - 1);
 
-        if (int(info.drugTimer) <= currentStackTime && stacks[i] > 0)
+        if (int(info.drugTimer) <= currentStackTime && info.stacks > 0)
         {
-            stacks[i]--;
+            info.stacks--;
             
             //Do stack removal effects
             switch (i)
@@ -113,7 +107,7 @@ function TickAddictions(float deltaTime)
             {
                 info.drugTimer = 0;
 
-                player.ClientMessage(Sprintf(MsgDrugWornOff,DrugLabels[i]));               //RSD: Tell the player the drug wore off
+                player.ClientMessage(Sprintf(MsgDrugWornOff,info.drugName));               //RSD: Tell the player the drug wore off
             
                 //If drug just wore off, set a timer for the withdrawals to kick in
                 if (player.bHardCoreMode || player.bRestrictedMetabolism)
@@ -135,7 +129,7 @@ function TickAddictions(float deltaTime)
                 {
                     //Tell player they are in withdrawals
                     player.PlaySound(Sound'GMDXSFX.Player.withdrawal_notice_loud',SLOT_None);
-                    player.ClientMessage(Sprintf(MsgWithdrawal,DrugLabels[i]));
+                    player.ClientMessage(Sprintf(MsgWithdrawal,info.drugName));
                     info.bInWithdrawals = true;
                 
                     //Do withdrawal effects
@@ -174,7 +168,7 @@ function TickAddictions(float deltaTime)
         //Set addicted status
         if (!info.bAddicted && info.level >= info.threshold)
         {
-            player.ClientMessage(Sprintf(MsgAddicted,DrugLabels[i]));
+            player.ClientMessage(Sprintf(MsgAddicted,info.drugName));
             info.bAddicted = true;
 
             //Do addiction addition effects
@@ -193,7 +187,7 @@ function TickAddictions(float deltaTime)
         }
         else if (info.bAddicted && info.level < info.threshold)
         {
-            player.ClientMessage(Sprintf(MsgNotAddicted,DrugLabels[i]));
+            player.ClientMessage(Sprintf(MsgNotAddicted,info.drugName));
             info.bAddicted = false;
 
             //Do addiction removal effects
@@ -260,23 +254,24 @@ function AddAddiction(int type, float addictionIncrease, float timerIncrease)
     if (addictions[type].drugTimer > 0.0)
         bJustAdded = true;
 
-    //addictions[type].stacks++;
-    if (stacks[type] < maxStacks[type])
-        stacks[type]++;
-
-    //Do drug adding effects
-    switch (type)
+    if (addictions[type].stacks < addictions[type].maxStacks)
     {
-        case DRUG_TOBACCO:
-            //player.ClientMessage("Tobacco Buff Added");
-            break;
-        case DRUG_ALCOHOL:
-            player.HealthTorso+=5;
-            //player.ClientMessage("Alcohol Buff Added");
-            break;
-        case DRUG_CRACK:
-            //player.ClientMessage("Zyme Buff Added");
-            break;
+        addictions[type].stacks++;
+
+        //Do drug adding effects
+        switch (type)
+        {
+            case DRUG_TOBACCO:
+                //player.ClientMessage("Tobacco Buff Added");
+                break;
+            case DRUG_ALCOHOL:
+                    player.HealthTorso+=5;
+                //player.ClientMessage("Alcohol Buff Added");
+                break;
+            case DRUG_CRACK:
+                //player.ClientMessage("Zyme Buff Added");
+                break;
+        }
     }
 }
 
@@ -303,17 +298,11 @@ function RemoveAddictions(float amount, float timer)
 
 defaultproperties
 {
-    addictions(0)=(threshold=50.00,withdrawalDelay=1200.00,maxTimer=600.00,drugName="Tobacco")
-    addictions(1)=(threshold=50.00,withdrawalDelay=1800.00,maxTimer=600.00,drugName="Alcohol")
-    addictions(2)=(threshold=50.00,withdrawalDelay=600.00,maxTimer=600.00,drugName="Zyme")
-    maxStacks(0)=1
-    maxStacks(1)=5
-    maxStacks(2)=1
+    addictions(0)=(threshold=50.00,withdrawalDelay=1200.00,maxTimer=600.00,maxStacks=1,drugName="Tobacco")
+    addictions(1)=(threshold=50.00,withdrawalDelay=1800.00,maxTimer=600.00,maxStacks=5,drugName="Alcohol")
+    addictions(2)=(threshold=50.00,withdrawalDelay=600.00,maxTimer=600.00,maxStacks=1,drugName="Zyme")
     MsgWithdrawal="You are now suffering from %s withdrawal"
     MsgAddicted="You are now addicted to %s"
     MsgNotAddicted="You are no longer addicted to %s"
     MsgDrugWornOff="%s has worn off"
-    drugLabels(0)="Nicotine"
-    drugLabels(1)="Alcohol"
-    drugLabels(2)="Zyme"
 }
