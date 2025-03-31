@@ -508,11 +508,6 @@ var float augEffectTime;
 var vector vecta;
 var rotator rota;
 var bool bOnLadder;
-//var bool bBoosty;  //CyberP: low-tech speed boost
-//Alias=LeanLeft,LeanRight
-//Aliases[18]=(Command="Button bLeanRightHook",Alias=LeanRH)
-//Aliases[19]=(Command="Button bLeanLeftHook",Alias=LeanLH)
-var transient bool bLeanKeysDefined;
 var globalconfig color customColorsMenu[14]; //CyberP: custom color theme
 var globalconfig color customColorsHUD[14];
 var bool bTiptoes; //based on left+right lean
@@ -626,10 +621,12 @@ var travel bool bResetAutosaveTimer;                                            
 var localized String RechargedPointLabel;
 var localized String RechargedPointsLabel;
 
+//Subsystems
 var travel AddictionSystem AddictionManager;
 var travel PerkSystem PerkManager;
 var travel RandomTable Randomizer;
 var travel FontManager FontManager;
+var travel KeybindManager KeybindManager;
 var DecalManager DecalManager;
 
 const DRUG_TOBACCO = 0;
@@ -1278,10 +1275,6 @@ function PostBeginPlay()
 		bCheatsEnabled = False;
 	HDTP();
 
-	RefreshLeanKeys();
-    RefreshMantleKey();
-    RefreshAugWheelKey();                                                       //RSD: Hold aug wheel
-
     //SARGE: Account for FemJC eye height changes
     ResetBasedPawnSize();
 
@@ -1455,6 +1448,17 @@ function SetupPerkManager()
     PerkManager.InitializePerks(Self);
 }
 
+function SetupKeybindManager()
+{
+	// install the Keybind Manager if not found
+	if (KeybindManager == None)
+    {
+        //ClientMessage("Make new Keybind System");
+	    KeybindManager = new(Self) class'KeybindManager';
+    }
+    KeybindManager.Setup(Self);
+}
+
 function SetupFontManager()
 {
 	// install the Perk Manager if not found
@@ -1540,6 +1544,7 @@ function InitializeSubSystems()
     SetupAddictionManager();
 	SetupPerkManager();
 	SetupFontManager();
+    SetupKeybindManager();
 	SetupDecalManager();
 }
 
@@ -1657,9 +1662,6 @@ event TravelPostAccept()
 	//local WeaponGEPGun gepTest;
 	local vector ofst;
 
-    //Update HUD
-    UpdateHUD();
-
 	Super.TravelPostAccept();
 
     //Setup player subcomponents
@@ -1667,17 +1669,18 @@ event TravelPostAccept()
     SetupAddictionManager();
 	SetupPerkManager();
     SetupFontManager();
+    SetupKeybindManager();
 	SetupDecalManager();
 
 	// reset the keyboard
 	ResetKeyboard();
 
+    //Update HUD
+    UpdateHUD();
+
     //Reset Crosshair
     UpdateCrosshair();
 
-	RefreshLeanKeys();
-    RefreshMantleKey();
-    RefreshAugWheelKey();                                                       //RSD: Hold aug wheel
 	info = GetLevelInfo();
 
 //   log("MYCHK:PostTravel: ,"@info.Name);
@@ -2037,6 +2040,15 @@ function DeusExLevelInfo GetLevelInfo()
 	return info;
 }
 
+//SARGE: Dedicated Nanokey Button
+exec function SelectNanokey()
+{
+    if (inHand == KeyRing)
+        SelectLastWeapon(true);
+    else
+        PutInHand(KeyRing,true);
+}
+
 //
 // If player chose to dual map the F keys
 //
@@ -2050,6 +2062,20 @@ exec function DualmapF9() { if ( AugmentationSystem != None) AugmentationSystem.
 exec function DualmapF10() { if ( AugmentationSystem != None) AugmentationSystem.ActivateAugByKey(7); }
 exec function DualmapF11() { if ( AugmentationSystem != None) AugmentationSystem.ActivateAugByKey(8); }
 exec function DualmapF12() { if ( AugmentationSystem != None) AugmentationSystem.ActivateAugByKey(9); }
+
+//SARGE: Let the player dual-map belt slots.
+exec function AltBelt0() { ActivateBelt(0); }
+exec function AltBelt1() { ActivateBelt(1); }
+exec function AltBelt2() { ActivateBelt(2); }
+exec function AltBelt3() { ActivateBelt(3); }
+exec function AltBelt4() { ActivateBelt(4); }
+exec function AltBelt5() { ActivateBelt(5); }
+exec function AltBelt6() { ActivateBelt(6); }
+exec function AltBelt7() { ActivateBelt(7); }
+exec function AltBelt8() { ActivateBelt(8); }
+exec function AltBelt9() { ActivateBelt(9); }
+exec function AltBelt10() { ActivateBelt(10); }
+exec function AltBelt11() { ActivateBelt(11); }
 
 //
 // Team Say
@@ -5106,10 +5132,6 @@ local actor     acti;
   }
 }
 
-//exec function startMantling()
-//{
-//}
-
 // ----------------------------------------------------------------------
 // SupportActor()
 //
@@ -5941,128 +5963,9 @@ function ServerUpdateLean( Vector desiredLoc )
 //	SetRotation( rot );
 }
 
-
-// ----------------------------------------------------------------------
-// GMDX:dasraiser insert lean to Tiptoes
-// RefreshKey copied from HUDMultiSkill.uc for Tiptoes Lean
-// ----------------------------------------------------------------------
-
-function RefreshLeanKeys()
-{
-	local String KeyName, Alias,KeyLeanLeft,AliasLeanLeft,KeyLeanRight,AliasLeanRight;
-//	local int EI_KL,EI_KR;
-	local int i;
-	local int Nfound;
-
-//GMDX as EInputKey enum not same as Actor!
-//^^var int LeanLeftKey, LeanRightKey;
-
-
-	bLeanKeysDefined=false;
-
-	for ( i=0; i<255; i++ )
-	{
-		KeyName = ConsoleCommand ( "KEYNAME "$i );
-		if ( KeyName != "" )
-		{
-			Alias = ConsoleCommand( "KEYBINDING "$KeyName );
-			if ( InStr(Alias,"LeanRight" )!=-1)
-			{
-			   //EI_KR=i;
-			   KeyLeanRight=KeyName;
-			   AliasLeanRight=Alias;
-			   Nfound++;
-			} else
-			if ( InStr(Alias,"LeanLeft" )!=-1)
-			{
-			   //EI_KL=i;
-			KeyLeanLeft=KeyName;
-			   AliasLeanLeft=Alias;
-			   Nfound++;
-			}
-			if (Nfound==2) break;
-		}
-	}
-	if (Nfound==2)
-	{
-	  bLeanKeysDefined=true;
-//	  log("Set InputExt "$KeyLeanRight$" "$AliasLeanRight$" | bLeanRightHook 1 | OnRelease bLeanRightHook 0");
-//	  log("Set InputExt "$KeyLeanLeft$" "$AliasLeanLeft$" | bLeanLeftHook 1 | OnRelease bLeanLeftHook 0");
- 	  ConsoleCommand("SET InputExt "$KeyLeanRight$" LeanRight | SetTiptoesRight 1 | OnRelease SetTiptoesRight 0");
-	  ConsoleCommand("SET InputExt "$KeyLeanLeft$" LeanLeft | SetTiptoesLeft 1 | OnRelease SetTiptoesLeft 0");
-	} else log("Lean Keys UNDEFINED, disabling tiptoes");
-
-}
-
-function RefreshMantleKey()
-{
-	local String KeyName, Alias,KeyJump,AliasJump;
-	local int i;
-	local int Nfound;
-
-//GMDX as EInputKey enum not same as Actor!
-//^^var int LeanLeftKey, LeanRightKey;
-
-	for ( i=0; i<255; i++ )
-	{
-		KeyName = ConsoleCommand ( "KEYNAME "$i );
-		if ( KeyName != "" )
-		{
-			Alias = ConsoleCommand( "KEYBINDING "$KeyName );
-			if ( InStr(Alias,"Jump" )!=-1)
-			{
-			   //EI_KR=i;
-			   KeyJump=KeyName;
-			   AliasJump=Alias;
-			   Nfound++;
-			}
-			if (Nfound==1) break;
-		}
-	}
-	if (Nfound==1)
-	{
-//	  log("Set InputExt "$KeyLeanRight$" "$AliasLeanRight$" | bLeanRightHook 1 | OnRelease bLeanRightHook 0");
-//	  log("Set InputExt "$KeyLeanLeft$" "$AliasLeanLeft$" | bLeanLeftHook 1 | OnRelease bLeanLeftHook 0");
- 	  ConsoleCommand("SET InputExt "$KeyJump$" Jump | StartMantling 1 | OnRelease StopMantling 1");
-	  //ConsoleCommand("SET InputExt "$KeyLeanLeft$" LeanLeft | SetTiptoesLeft 1 | OnRelease SetTiptoesLeft 0");
-	}
-}
-
-function RefreshAugWheelKey()                                                   //RSD: Hold aug wheel
-{
-local String KeyName, Alias,KeyHold,AliasHold;
-	local int i;
-	local int Nfound;
-
-//GMDX as EInputKey enum not same as Actor!
-//^^var int LeanLeftKey, LeanRightKey;
-
-	for ( i=0; i<255; i++ )
-	{
-		KeyName = ConsoleCommand ( "KEYNAME "$i );
-		if ( KeyName != "" )
-		{
-			Alias = ConsoleCommand( "KEYBINDING "$KeyName );
-			if ( InStr(Alias,"HoldRadialAugMenu" )!=-1)
-			{
-			   //EI_KR=i;
-			   KeyHold=KeyName;
-			   AliasHold=Alias;
-			   Nfound++;
-			}
-			if (Nfound==1) break;
-		}
-	}
-	if (Nfound==1)
-	{
- 	  ConsoleCommand("SET InputExt "$KeyHold$" HoldRadialAugMenu | ToggleRadialAugMenu 1 | OnRelease ToggleRadialAugMenu 1");
-	}
-}
-
 exec function SetTiptoesLeft(bool B)
 {
-	if (bLeanKeysDefined)
-	  bLeftToe=B; else bLeftToe=false;
+    bLeftToe=B;;
 
 	if (bLeftToe&&bRightToe) bPreTiptoes=true;
 	  else bPreTiptoes=false;
@@ -6072,8 +5975,7 @@ exec function SetTiptoesLeft(bool B)
 
 exec function SetTiptoesRight(bool B)
 {
-	if (bLeanKeysDefined)
-	  bRightToe=B; else bLeftToe=false;
+    bRightToe=B;
 
 	if (bLeftToe&&bRightToe) bPreTiptoes=true;
 	  else bPreTiptoes=false;
@@ -11528,18 +11430,6 @@ function UpdateHUD()
 {
 	local DeusExRootWindow root;
 	root = DeusExRootWindow(rootWindow);
-
-    //SARGE: Hack to autobind belt keys - and =
-    //TODO: Write a proper keybind handler class, for this and leaning,
-    //the wheel, and any other keys you care to bind dynamically.
-    if (bBiggerBelt)
-    {
-        //SARGE: TODO: Check these slots aren't already bound
-        if(ConsoleCommand( "KEYBINDING Minus" ) == "")
-            ConsoleCommand("SET InputExt Minus ActivateBelt 10");
-        if(ConsoleCommand( "KEYBINDING Equals" ) == "")
-            ConsoleCommand("SET InputExt Equals ActivateBelt 11");
-    }
 
     if (root != None)
         root.UpdateHUD();

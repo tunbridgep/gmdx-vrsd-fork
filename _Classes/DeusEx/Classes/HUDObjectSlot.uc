@@ -117,9 +117,27 @@ event bool ToggleChanged(Window button, bool bNewToggle)
 // SetObjectNumber()
 // ----------------------------------------------------------------------
 
-function SetObjectNumber(int newNumber)
+function SetObjectNumber(int newNumber, bool nanoKeySlot)
 {
 	objectNum = newNumber;
+
+    //SARGE: mildly annoying.
+    //belt numbers are offset by 1 in the ActivateBelt code,
+    //since belt slot 0 is now on the far left.
+    //So we need to display the binding for the next belt slot,
+    //but only between 1 and 10
+    if (objectNum == 9)
+        beltText = player.KeybindManager.GetBindingString(KB_Belt0,0);
+    else if (objectNum >= 0 && objectNum < 9)
+        beltText = player.KeybindManager.GetBindingString(KB_Belt0,objectNum + 1);
+    else
+        beltText = player.KeybindManager.GetBindingString(KB_Belt0,objectNum);
+
+    /*
+    //SARGE: This looks pretty bad, so disable for now
+    if (nanoKeySlot && beltText != "")
+        beltText = player.KeybindManager.GetBinding(KB_Keyring) $ ", " $ beltText;
+    */
 }
 
 // ----------------------------------------------------------------------
@@ -320,7 +338,7 @@ local DeusExWeapon weapon;
 	// Draw the Object Slot Number in upper-right corner
 	gc.SetAlignments(HALIGN_Right, VALIGN_Center);
 	gc.SetTextColor(colObjectNum);
-	gc.DrawText(slotNumberX - 1, slotNumberY, 6, 7, beltText);
+	gc.DrawText(slotNumberX - 11, slotNumberY, 16, 7, beltText);
 }
 
 function DrawHUDIcon(GC gc)
