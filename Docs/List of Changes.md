@@ -40,7 +40,7 @@ Sarge's Changes since Beta 2.2:
 - Quality of Life Improvements:
     - Ballistic Armour and Hazmat Suits are now kept equipped when drained, but will have no effect.
         - Recharging them in any way (such as through biocells or a repair bot) will make them active again
-        - Items in a stack will still need to be equipped manually, if you have 2 or more they won't equip automatically.
+        - If multiple items are stacked, the item will remain drained even though a new one is available, and will require re-activation.
     - Music will now continue when loading different areas that use the same music track, rather than restarting.
     - Saving is now possible while an infolink is playing. The infolink will be aborted.
     - The current ammo type is now displayed in the Ammo display as well as on the belt, to facilitate selecting weapons that aren't currently on the belt.
