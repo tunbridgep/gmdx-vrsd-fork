@@ -86,9 +86,10 @@ function Timer()
 	local Actor part, A;
 	local BobPage Bob;
     local ParticleGenerator PG;
-    local SavePoint SP;
     Local DeusExMover DM;
     local Light L;
+	local Karkian K;
+	local Greasel G;
 
 	Super.Timer();
 
@@ -136,6 +137,13 @@ function Timer()
 		{
 			if (flags.GetBool('DL_downloaded_Played'))
 			{
+                //SARGE: We need to remove the remaining greasels/karkians
+                //otherwise Walton Simons does a T-pose
+				foreach AllActors(class'Karkian', K)
+                    K.LeaveWorld();
+				foreach AllActors(class'Greasel', G)
+                    G.LeaveWorld();
+
 				foreach AllActors(class'WaltonSimons', Walton)
 					Walton.EnterWorld();
 
