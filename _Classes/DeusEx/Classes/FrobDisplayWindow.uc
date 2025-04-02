@@ -67,7 +67,7 @@ function InitWindow()
 	boxTLY = 0.0; 
 	boxBRX = 0.0; 
 	boxBRY = 0.0;
-
+	
 	StyleChanged();
 }
 
@@ -232,8 +232,8 @@ function DrawTargettingBox(GC gc, actor frobTarget)
 //Ygll: new function to handle window target for door classes
 function DrawDoorHudInformation(GC gc, actor frobTarget)
 {
-	local float				infoX, infoY, infoW, infoH, barSize;
-	local string			strInfo, strThreshold, strMessInf;
+	local float				infoX, infoY, infoW, infoH, infoHtemp, barSize; //Ygll: infoHtemp is only used to stock a value we don't want to use for the H value of the window
+	local string			strInfo, strThreshold, strMessInf, strColInfo;
 	local DeusExMover		dxMover;	
 	local Color				col;
 	local int				numTools;
@@ -257,9 +257,15 @@ function DrawDoorHudInformation(GC gc, actor frobTarget)
 		else
 			strThreshold = "[ " $ strMessInf $ " ]";
 		//CyberP End
+		
+		strColInfo = " " $ msgLockStr $ CR() $ " " $ msgDoorStr $ CR() $ " " $ msgDoorThreshold; //Ygll: text block corresponding to the info lines of the object, to place properly value colone later
+		
+		if(!dxMover.bPickable && !dxMover.bBreakable)
+			barSize = 35.000000;
 	}
 	else
 	{
+		barSize = -8.000000;
 		strInfo = msgUnlocked;
 		strThreshold = "";
 	}
@@ -269,43 +275,35 @@ function DrawDoorHudInformation(GC gc, actor frobTarget)
 
 	gc.SetFont(Font'FontMenuSmall_DS');
 	gc.GetTextExtent(0, infoW, infoH, strInfo);
-	
-	infoW += 8;
-	
-	if ((dxMover != None) && dxMover.bLocked)
-	{
-		if(!dxMover.bPickable && !dxMover.bBreakable)
-			barSize = 35.000000;
-		
-		infoW += barSize + 6;
-	}		
-	
 	infoH += 8;
+	infoW += barSize + 16;
 	infoX = FClamp(infoX, infoW/2+10, width-10-infoW/2);
 	infoY = FClamp(infoY, infoH/2+10, height-10-infoH/2);
 
 	// draw a dark background
 	DrawDarkBackground(gc, infoX, infoY, infoW, infoH);
+	// draw the two highlight boxes
+	DrawHightlightBox(gc, infoX, infoY, infoW, infoH);
 
 	// draw the info text
 	gc.SetTextColor(colText);	
 	gc.DrawText(infoX+4, infoY+4, infoW-8, infoH-8, strInfo);
-	
-	// draw the two highlight boxes
-	DrawHightlightBox(gc, infoX, infoY, infoW, infoH);	
 		
 	if ((dxMover != None) && dxMover.bLocked)
 	{
+		gc.GetTextExtent(0, infoW, infoHtemp, strColInfo);
+		infoW += barSize + 16;
+	
 		// draw colored bars for each value
 		gc.SetStyle(DSTY_Translucent);
 		
 		col = GetColorScaled(dxMover.lockStrength);
 		gc.SetTileColor(col);
-		gc.DrawPattern(infoX+(infoW-barSize-4), infoY+3+(infoH-8)/4, barSize*dxMover.lockStrength, ((infoH-8)/4)-2, 0, 0, Texture'ConWindowBackground');
+		gc.DrawPattern(infoX+(infoW-barSize-7), infoY+3+(infoH-8)/4, barSize*dxMover.lockStrength, ((infoH-8)/4)-2, 0, 0, Texture'ConWindowBackground');
 		
 		col = GetColorScaled(dxMover.doorStrength);
 		gc.SetTileColor(col);
-		gc.DrawPattern(infoX+(infoW-barSize-4), infoY+3+2*(infoH-8)/4, barSize*dxMover.doorStrength, ((infoH-8)/4)-2, 0, 0, Texture'ConWindowBackground');
+		gc.DrawPattern(infoX+(infoW-barSize-7), infoY+3+2*(infoH-8)/4, barSize*dxMover.doorStrength, ((infoH-8)/4)-2, 0, 0, Texture'ConWindowBackground');
 		
 		//Draw the info Door Damage Threshold number
 		if ( !dxMover.bBreakable || ( player.bColourCodeFrobDisplay && dxMover.bBreakable &&
@@ -316,7 +314,7 @@ function DrawDoorHudInformation(GC gc, actor frobTarget)
 		else
 			gc.SetTextColor(colText);
 
-		gc.DrawText(infoX+(infoW-barSize-2), infoY+28+(infoH-8)/4, barSize, ((infoH-8)/4)-2, strThreshold);
+		gc.DrawText(infoX+(infoW-barSize-6), infoY+28+(infoH-8)/4, barSize, ((infoH-8)/4)-2, strThreshold);
 		
 		// draw the absolute number of lockpicks on top of the colored bar
 		if (dxMover.bPickable)
@@ -348,7 +346,7 @@ function DrawDoorHudInformation(GC gc, actor frobTarget)
 			
 			strInfo = FormatString(dxMover.lockStrength * 100.0) $ "% - " $ strInfo;
 			
-			gc.DrawText(infoX+(infoW-barSize), infoY+4+(infoH-8)/4, barSize, ((infoH-8)/4)-2, strInfo);
+			gc.DrawText(infoX+(infoW-barSize-3), infoY+4+(infoH-8)/4, barSize, ((infoH-8)/4)-2, strInfo);
 				
 			// draw the door strenght value
 			if (dxMover.bBreakable)
@@ -357,7 +355,7 @@ function DrawDoorHudInformation(GC gc, actor frobTarget)
 				strInfo = strMessInf;			
 			
 			gc.SetTextColor(colText);
-			gc.DrawText(infoX+(infoW-barSize), infoY+4+2*(infoH-8)/4, barSize, ((infoH-8)/4)-2, strInfo);
+			gc.DrawText(infoX+(infoW-barSize-3), infoY+4+2*(infoH-8)/4, barSize, ((infoH-8)/4)-2, strInfo);
 		}
 		else
 		{
@@ -365,7 +363,7 @@ function DrawDoorHudInformation(GC gc, actor frobTarget)
 			
 			// draw the absolute number of lockpicks on top of the colored bar
 			strInfo = strMessInf;			
-			gc.DrawText(infoX+(infoW-barSize), infoY+4+(infoH-8)/4, barSize, ((infoH-8)/4)-2, strInfo);
+			gc.DrawText(infoX+(infoW-barSize-3), infoY+4+(infoH-8)/4, barSize, ((infoH-8)/4)-2, strInfo);
 				
 			// draw the door strenght value
 			if (dxMover.bBreakable)
@@ -375,7 +373,7 @@ function DrawDoorHudInformation(GC gc, actor frobTarget)
 				strInfo = strMessInf;				
 			}			
 						
-			gc.DrawText(infoX+(infoW-barSize), infoY+4+2*(infoH-8)/4, barSize, ((infoH-8)/4)-2, strInfo);
+			gc.DrawText(infoX+(infoW-barSize-3), infoY+4+2*(infoH-8)/4, barSize, ((infoH-8)/4)-2, strInfo);
 		}
 	}
 }
@@ -393,8 +391,14 @@ function DrawDeviceHudInformation(GC gc, actor frobTarget)
 	
 	// get the devices hack strength info
 	device = HackableDevices(frobTarget);
-	barSize = barLength;	
 	
+	barSize = barLength;
+	//Ygll: case when the devise has not hack strength - prevent 'Inf' text misplace on specific situation
+	if (device.hackStrength == 0.0)
+	{
+		barSize = 50.00000;		
+	}
+
 	strInfo = DeusExDecoration(frobTarget).itemName;
 	
 	if( ( frobTarget.IsA('AutoTurretGun') && frobTarget.Owner != None && frobTarget.Owner.IsA('AutoTurret') && AutoTurret(frobTarget.Owner).bRebooting )
@@ -412,51 +416,29 @@ function DrawDeviceHudInformation(GC gc, actor frobTarget)
 		strThreshold = "[ " $ FormatString(device.minDamageThreshold) $ " ]";
 	else
 		strThreshold = "[ " $ msgInf $ " ]";
-	//CyberP End				
+	//CyberP End
 	
 	infoX = boxTLX + 10;
 	infoY = boxTLY + 10;
 
 	gc.SetFont(Font'FontMenuSmall_DS');
-	gc.GetTextExtent(0, infoW, infoH, strInfo);	
-	
+	gc.GetTextExtent(0, infoW, infoH, strInfo);		
 	infoH += 8;
-	infoW += 8;
-	if (device.hackStrength != 0.0)
-	{
-		infoW += barSize + 6;
-	}
-	else //Ygll: case when the devise has not hack strength - prevent 'Inf' text misplace on specific situation
-	{
-		barSize = 50.00000;
-		infoW += barSize + 6;
-	}	
-	
+	infoW += barSize + 16;
 	infoX = FClamp(infoX, infoW/2+10, width-10-infoW/2);
 	infoY = FClamp(infoY, infoH/2+10, height-10-infoH/2);
 	
 	// draw a dark background
 	DrawDarkBackground(gc, infoX, infoY, infoW, infoH);
+	// draw the two highlight boxes
+	DrawHightlightBox(gc, infoX, infoY, infoW, infoH);
 	
 	// Draw the current text information	
 	gc.SetTextColor(colText);
 	gc.DrawText(infoX+4, infoY+4, infoW-8, infoH-8, strInfo);
 	
-	gc.GetTextExtent(0, infoW, infoHtemp, msgObjThreshold);
-	
-	infoW += 8;	
-	if (device.hackStrength != 0.0)
-	{
-		infoW += barSize + 6;
-	}
-	else //Ygll: case when the devise has not hack strength - prevent 'Inf' text misplace on specific situation
-	{
-		barSize = 50.00000;
-		infoW += barSize + 6;
-	}
-	
-	// draw the two highlight boxes
-	DrawHightlightBox(gc, infoX, infoY, infoW, infoH);
+	gc.GetTextExtent(0, infoW, infoHtemp, " " $ msgHackStr $ CR() $ " " $ msgObjThreshold);	//Ygll: text block corresponding to the info lines of the object, to place properly value text	
+	infoW += barSize + 16;
 	
 	// Draw the Device Damage Threshold
 	if ( device.bInvincible || ( player.bColourCodeFrobDisplay && !device.bInvincible &&
@@ -467,7 +449,7 @@ function DrawDeviceHudInformation(GC gc, actor frobTarget)
 	else
 		gc.SetTextColor(colText);
 
-	gc.DrawText(infoX+(infoW-barSize), infoY+19+(infoH-8)/4, barSize, ((infoH-8)/4)-2+6, strThreshold);
+	gc.DrawText(infoX+(infoW-barSize-6), infoY+19+(infoH-8)/4, barSize, ((infoH-8)/4)+4, strThreshold);
 
 	// draw the absolute number of multitools on top of the colored bar
 	if ((device.bHackable) && (device.hackStrength != 0.0))
@@ -476,7 +458,7 @@ function DrawDeviceHudInformation(GC gc, actor frobTarget)
 		gc.SetStyle(DSTY_Translucent);
 		col = GetColorScaled(device.hackStrength);
 		gc.SetTileColor(col);
-		gc.DrawPattern(infoX+(infoW-barSize-4), infoY-1+infoH/2.7, barSize*device.hackStrength, infoH/2.7-6, 0, 0, Texture'ConWindowBackground'); //CyberP: //RSD: reverted
+		gc.DrawPattern(infoX+(infoW-barSize-7), infoY-1+infoH/2.7, barSize*device.hackStrength, ((infoH-8)/4)+1, 0, 0, Texture'ConWindowBackground'); //CyberP: //RSD: reverted
 		
 		//SARGE: If we have Cracked, display 0 tools
 		perkCracked = player.PerkManager.GetPerkWithClass(class'DeusEx.PerkCracked');
@@ -508,7 +490,7 @@ function DrawDeviceHudInformation(GC gc, actor frobTarget)
 		
 		strInfo = FormatString(device.hackStrength * 100.0) $ "% - " $ strInfo;
 		
-		gc.DrawText(infoX+(infoW-barSize), infoY+infoH/2.7, barSize, infoH/2.7-6, strInfo);
+		gc.DrawText(infoX+(infoW-barSize-3), infoY+infoH/2.7, barSize, ((infoH-8)/4)+4, strInfo);
 	}
 	else
 	{
@@ -522,7 +504,7 @@ function DrawDeviceHudInformation(GC gc, actor frobTarget)
 		}
 		
 		gc.SetTextColor(colText);
-		gc.DrawText(infoX+(infoW-barSize), infoY+infoH/2.7, barSize, infoH/2.7-6, strInfo);
+		gc.DrawText(infoX+(infoW-barSize-7), infoY+infoH/2.7, barSize, ((infoH-8)/4)+4, strInfo);
 	}	
 }
 
@@ -562,14 +544,14 @@ function DrawOtherHudInformation(GC gc, actor frobTarget)
 		if (frobTarget.IsA('DeusExDecoration') || frobTarget.IsA('DeusExPickup'))
 		{
 		   if (frobTarget.IsA('DeusExDecoration') && DeusExDecoration(frobTarget).bInvincible == False)
-				strInfo = strInfo $ CR() $ msgHP $ string(DeusExDecoration(frobTarget).HitPoints);
+				strInfo = strInfo $ CR() $ " " $ msgHP $ string(DeusExDecoration(frobTarget).HitPoints);
 		   else if (frobTarget.IsA('DeusExPickup') && DeusExPickup(frobTarget).bBreakable)
-				strInfo = strInfo $ CR() $ msgHP2;
+				strInfo = strInfo $ CR() $ " " $ msgHP2;
 			
 		   if (frobTarget.IsA('DeusExDecoration') && DeusExDecoration(frobTarget).bPushable)
 		   {
 			  typecastIt = (int(frobTarget.Mass));
-			  strInfo = strInfo $ CR() $ msgMass $ string(typecastIt) $ " lbs";
+			  strInfo = strInfo $ CR() $ " " $ msgMass $ string(typecastIt) $ " lbs";
 		   }
 		}
 	}
@@ -608,6 +590,20 @@ function DrawWindow(GC gc)
 		
 		if (frobTarget != None && player.IsHighlighted(frobTarget))
 		{
+			boxTLX = 0.0; 
+			boxTLY = 0.0; 
+			boxBRX = 0.0; 
+			boxBRY = 0.0;
+	
+			if(player.iFrobDisplayStyle > 0)
+			{
+				barLength = 82.000000;
+			}
+			else
+			{
+				barLength = 72.000000;
+			}
+			
 			// draw a cornered targetting box
 			DrawTargettingBox(gc, frobTarget);
 
@@ -632,25 +628,25 @@ function DrawWindow(GC gc)
 // ----------------------------------------------------------------------
 defaultproperties
 {
-     margin=70.000000
-     barLength=78.000000
-     msgLocked="Locked"
-     msgUnlocked="Unlocked"
-     msgLockStr="Lock Str: "
-     msgDoorStr="Door Str: "
-     msgHackStr="Bypass Str: "
-     msgInf="INF"
-     msgHacked="Bypassed"
-     msgPick="pick"
-     msgPicks="picks"
-     msgTool="tool"
-     msgTools="tools"
-     msgDoorThreshold="Damage Threshold: "
-     msgObjThreshold="Damage Threshold: "
-     msgMass="Mass: "
-     msgHP="Hitpoints: "
-     msgHP2="Hitpoints: 3"
-     colNotEnough=(R=255,G=50,B=50)
-     colJustEnough=(R=255,G=255,B=50)
-	 msgDisabled="Disabled"
+     margin=70.000000;
+     barLength=78.000000;
+     msgLocked="Locked";
+     msgUnlocked="Unlocked";
+     msgLockStr="Lock Str: ";
+     msgDoorStr="Door Str: ";
+     msgHackStr="Bypass Str: ";
+     msgInf="INF";
+     msgHacked="Bypassed";
+     msgPick="pick";
+     msgPicks="picks";
+     msgTool="tool";
+     msgTools="tools";
+     msgDoorThreshold="Damage Threshold: ";
+     msgObjThreshold="Damage Threshold: ";
+     msgMass="Mass: ";
+     msgHP="Hitpoints: ";
+     msgHP2="Hitpoints: 3";
+     colNotEnough=(R=255,G=50,B=50);
+     colJustEnough=(R=255,G=255,B=50);
+	 msgDisabled="Disabled";
 }
