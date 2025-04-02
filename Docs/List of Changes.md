@@ -35,6 +35,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX bug where jumping from a ladder while partially submerged in water would cause JC to fly forever.
     - Fixed vanilla bug where the HUD would be re-enabled while dead if opening the main-menu.
     - Fixed GMDX bug where most inventory items with multiple skins (such as sodacans) weren't showing their skinned variants when being held in the players hands.
+    - Fixed GMDX bugs where knocked-out scuba-divers would die immediately upon reaching the surface of water.
     - Fixed vanilla item-duplication bug (caused by repeatedly dropping and repeatedly picking up items quickly)
     - Fixed many other GMDX and Vanilla bugs.
 - Quality of Life Improvements:
