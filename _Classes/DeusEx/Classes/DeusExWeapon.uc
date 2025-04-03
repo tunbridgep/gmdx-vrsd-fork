@@ -1302,9 +1302,9 @@ function bool HandlePickupQuerySuper( inventory Item )                          
 	return Inventory.HandlePickupQuery(Item);
 }
 
-function float SetDroppedAmmoCount(int amountPassed) //RSD: Added optional int amountPassed for initialization in MissionScript.uc
+function float SetDroppedAmmoCount(int amountPassed, bool bSearched) //RSD: Added optional int amountPassed for initialization in MissionScript.uc
 {
-    if (amountPassed == 0)                                                      //RSD: If we didn't get anything, set to old formula //Ygll: change the test to advert empty weapon bug
+    if (amountPassed == 0 && !bSearched)                                                      //RSD: If we didn't get anything, set to old formula //Ygll: change the test to advert empty weapon bug
         amountPassed = Rand(4) + 1;
 
     // Any weapons have their ammo set to a random number of rounds (1-4)
@@ -2076,9 +2076,7 @@ simulated function int NumClips()
 	{
 		clips = (rnds / reloadcount);
 		
-		if(clips < 1)
-			return 1;
-		else if(clips*reloadcount < rnds)
+		if(clips*reloadcount < rnds)
 			return clips+1;
 		else
 			return clips;

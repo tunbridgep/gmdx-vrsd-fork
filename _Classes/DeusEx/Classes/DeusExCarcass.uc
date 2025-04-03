@@ -822,7 +822,7 @@ function ExpelInventory()
                     // unless it's a grenade, in which case we only want to dole out one.
                     // DEUS_EX AMSD In multiplayer, give everything away.
                     //if (DeusExWeapon(item).PickupAmmoCount != 0)              //RSD: No need for this check
-                        DeusExWeapon(item).SetDroppedAmmoCount(PickupAmmoCount);//RSD: Added PickupAmmoCount for initialization from MissionScript.uc
+					DeusExWeapon(item).SetDroppedAmmoCount(PickupAmmoCount, bSearched);//RSD: Added PickupAmmoCount for initialization from MissionScript.uc
                 }
             }
 

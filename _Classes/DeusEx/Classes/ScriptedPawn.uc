@@ -2693,7 +2693,7 @@ function DropWeapon()
 		{
 			SetWeapon(None);
 			if (Weapon.IsA('DeusExWeapon'))  //CyberP: Dropped weapons onto the floor should really give ammo...
-                dxWeapon.SetDroppedAmmoCount(PickupAmmoCount);   //RSD: Added PickupAmmoCount for initialization from MissionScript.uc
+                dxWeapon.SetDroppedAmmoCount(PickupAmmoCount, false);   //RSD: Added PickupAmmoCount for initialization from MissionScript.uc
 			if (Weapon.IsA('WeaponAssaultGunSpider')) //CyberP: make sure these are destroyed
 			    Weapon.Destroy();
 			else
@@ -3288,7 +3288,6 @@ function Carcass SpawnCarcass()
 // G-Flex: so if the NPC is gibbed, items won't be lost
 // G-Flex: uses some logic from SpawnCarcass()
 // ----------------------------------------------------------------------
-
 function ExpelInventory()
 {
 	local Vector loc;
@@ -3322,7 +3321,7 @@ function ExpelInventory()
 
 					//G-Flex: get the same ammo as from the carcass or a dropped weapon
 					if (item.IsA('DeusExWeapon'))
-						DeusExWeapon(item).SetDroppedAmmoCount(PickupAmmoCount);//RSD: Added PickupAmmoCount for initialization from MissionScript.uc
+						DeusExWeapon(item).SetDroppedAmmoCount(PickupAmmoCount, false);//RSD: Added PickupAmmoCount for initialization from MissionScript.uc
 				}
 
 				item = nextItem;
