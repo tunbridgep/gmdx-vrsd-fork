@@ -2682,25 +2682,22 @@ function SetupWeapon(bool bDrawWeapon, optional bool bForce)
 // ----------------------------------------------------------------------
 // DropWeapon()
 // ----------------------------------------------------------------------
-
 function DropWeapon()
 {
 	local DeusExWeapon dxWeapon;
-	local Weapon       oldWeapon;
 
 	if (Weapon != None && !Weapon.IsA('WeaponRifle'))
 	{
 		dxWeapon = DeusExWeapon(Weapon);
 		if ((dxWeapon == None) || !dxWeapon.bNativeAttack)
 		{
-			oldWeapon = Weapon;
 			SetWeapon(None);
-			if (oldWeapon.IsA('DeusExWeapon'))  //CyberP: Dropped weapons onto the floor should really give ammo...
-                DeusExWeapon(oldWeapon).SetDroppedAmmoCount(PickupAmmoCount);   //RSD: Added PickupAmmoCount for initialization from MissionScript.uc
-			if (oldWeapon.IsA('WeaponAssaultGunSpider')) //CyberP: make sure these are destroyed
-			    oldWeapon.Destroy();
+			if (Weapon.IsA('DeusExWeapon'))  //CyberP: Dropped weapons onto the floor should really give ammo...
+                dxWeapon.SetDroppedAmmoCount(PickupAmmoCount);   //RSD: Added PickupAmmoCount for initialization from MissionScript.uc
+			if (Weapon.IsA('WeaponAssaultGunSpider')) //CyberP: make sure these are destroyed
+			    Weapon.Destroy();
 			else
-			    oldWeapon.DropFrom(Location);
+			    Weapon.DropFrom(Location);
 		}
 	}
 }
@@ -3907,7 +3904,7 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
         Velocity = (Momentum*0.25)*(25*128);  // damage*128
     Velocity.Z = 6; //6
     bFixedRotationDir = True;
-    if (FRand() < 0.3 && instigator != None && instigator != self && ShouldDropWeapon())
+    if (FRand() < 0.5 && instigator != None && instigator != self && ShouldDropWeapon())
        DropWeapon();
     }
     }
