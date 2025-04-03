@@ -5,8 +5,12 @@ class FrobDisplayWindow extends Window;
 
 var float margin;
 var float barLength;
-
 var DeusExPlayer player;
+//Ygll var to use for alternate frob display
+var string strSpace;
+var string strDoubleDot;
+var string strOpenValue;
+var string strCloseValue;
 
 var localized string msgLocked;
 var localized string msgUnlocked;
@@ -246,19 +250,19 @@ function DrawDoorHudInformation(GC gc, actor frobTarget)
 	
 	if ((dxMover != None) && dxMover.bLocked)
 	{		
-		strInfo = msgLocked $ CR() $ " " $ msgLockStr;
-		strInfo = strInfo $ CR() $ " " $ msgDoorStr;
+		strInfo = msgLocked $ strDoubleDot $ CR() $ strSpace $ msgLockStr;
+		strInfo = strInfo $ CR() $ strSpace $ msgDoorStr;
 
 		//CyberP begin:                                             //RSD: Cool, but only do it if we have the Doorsman perk
-		strInfo = strInfo $ CR() $ " " $ msgDoorThreshold;
+		strInfo = strInfo $ CR() $ strSpace $ msgDoorThreshold;
 		
 		if (dxMover.bBreakable)
-			strThreshold = "[ " $ FormatString(dxMover.minDamageThreshold) $ " ]";
+			strThreshold = strOpenValue $ FormatString(dxMover.minDamageThreshold) $ strCloseValue;
 		else
-			strThreshold = "[ " $ strMessInf $ " ]";
+			strThreshold = strOpenValue $ strMessInf $ strCloseValue;
 		//CyberP End
 		
-		strColInfo = " " $ msgLockStr $ CR() $ " " $ msgDoorStr $ CR() $ " " $ msgDoorThreshold; //Ygll: text block corresponding to the info lines of the object, to place properly value colone later
+		strColInfo = strSpace $ msgLockStr $ CR() $ strSpace $ msgDoorStr $ CR() $ strSpace $ msgDoorThreshold; //Ygll: text block corresponding to the info lines of the object, to place properly value colone later
 		
 		if(!dxMover.bPickable && !dxMover.bBreakable)
 			barSize = 35.000000;
@@ -344,7 +348,14 @@ function DrawDoorHudInformation(GC gc, actor frobTarget)
 			else
 				gc.SetTextColor(colText);
 			
-			strInfo = FormatString(dxMover.lockStrength * 100.0) $ "% - " $ strInfo;
+			if(!player.bAltFrobDisplay)
+			{
+				strInfo = FormatString(dxMover.lockStrength * 100.0) $ "% - " $ strInfo;
+			}
+			else
+			{
+				strInfo =  strInfo $ " (" $ FormatString(dxMover.lockStrength * 100.0) $ "%)";
+			}
 			
 			gc.DrawText(infoX+(infoW-barSize-3), infoY+4+(infoH-8)/4, barSize, ((infoH-8)/4)-2, strInfo);
 				
@@ -399,7 +410,7 @@ function DrawDeviceHudInformation(GC gc, actor frobTarget)
 		barSize = 50.00000;		
 	}
 
-	strInfo = DeusExDecoration(frobTarget).itemName;
+	strInfo = DeusExDecoration(frobTarget).itemName $ strDoubleDot;
 	
 	if( ( frobTarget.IsA('AutoTurretGun') && frobTarget.Owner != None && frobTarget.Owner.IsA('AutoTurret') && AutoTurret(frobTarget.Owner).bRebooting )
 			|| ( frobTarget.IsA('SecurityCamera') && SecurityCamera(frobTarget).bRebooting ) )
@@ -407,15 +418,15 @@ function DrawDeviceHudInformation(GC gc, actor frobTarget)
 		strInfo = strInfo $ " (" $ msgDisabled $ ")";
 	}
 	
-	strInfo = strInfo $ CR() $ " " $ msgHackStr;
+	strInfo = strInfo $ CR() $ strSpace $ msgHackStr;
 	
 	//CyberP begin:                                             //RSD: No damage thresholds on hackable objects, sorry!
-	strInfo = strInfo $ CR() $ " " $ msgObjThreshold;
+	strInfo = strInfo $ CR() $ strSpace $ msgObjThreshold;
 	
 	if (!device.bInvincible)
-		strThreshold = "[ " $ FormatString(device.minDamageThreshold) $ " ]";
+		strThreshold = strOpenValue $ FormatString(device.minDamageThreshold) $ strCloseValue;
 	else
-		strThreshold = "[ " $ msgInf $ " ]";
+		strThreshold = strOpenValue $ msgInf $ strCloseValue;
 	//CyberP End
 	
 	infoX = boxTLX + 10;
@@ -437,7 +448,7 @@ function DrawDeviceHudInformation(GC gc, actor frobTarget)
 	gc.SetTextColor(colText);
 	gc.DrawText(infoX+4, infoY+4, infoW-8, infoH-8, strInfo);
 	
-	gc.GetTextExtent(0, infoW, infoHtemp, " " $ msgHackStr $ CR() $ " " $ msgObjThreshold);	//Ygll: text block corresponding to the info lines of the object, to place properly value text	
+	gc.GetTextExtent(0, infoW, infoHtemp, strSpace $ msgHackStr $ CR() $ strSpace $ msgObjThreshold);	//Ygll: text block corresponding to the info lines of the object, to place properly value text	
 	infoW += barSize + 16;
 	
 	// Draw the Device Damage Threshold
@@ -488,7 +499,14 @@ function DrawDeviceHudInformation(GC gc, actor frobTarget)
 		else
 			gc.SetTextColor(colText);
 		
-		strInfo = FormatString(device.hackStrength * 100.0) $ "% - " $ strInfo;
+		if(!player.bAltFrobDisplay)
+		{
+			strInfo = FormatString(device.hackStrength * 100.0) $ "% - " $ strInfo;
+		}
+		else
+		{
+			strInfo =  strInfo $ " (" $ FormatString(device.hackStrength * 100.0) $ "%)";
+		}
 		
 		gc.DrawText(infoX+(infoW-barSize-3), infoY+infoH/2.7, barSize, ((infoH-8)/4)+4, strInfo);
 	}
@@ -544,14 +562,14 @@ function DrawOtherHudInformation(GC gc, actor frobTarget)
 		if (frobTarget.IsA('DeusExDecoration') || frobTarget.IsA('DeusExPickup'))
 		{
 		   if (frobTarget.IsA('DeusExDecoration') && DeusExDecoration(frobTarget).bInvincible == False)
-				strInfo = strInfo $ CR() $ " " $ msgHP $ string(DeusExDecoration(frobTarget).HitPoints);
+				strInfo = strInfo $ strDoubleDot $ CR() $ strSpace $ msgHP $ string(DeusExDecoration(frobTarget).HitPoints);
 		   else if (frobTarget.IsA('DeusExPickup') && DeusExPickup(frobTarget).bBreakable)
-				strInfo = strInfo $ CR() $ " " $ msgHP2;
+				strInfo = strInfo $ strDoubleDot $ CR() $ strSpace $ msgHP2;
 			
 		   if (frobTarget.IsA('DeusExDecoration') && DeusExDecoration(frobTarget).bPushable)
 		   {
 			  typecastIt = (int(frobTarget.Mass));
-			  strInfo = strInfo $ CR() $ " " $ msgMass $ string(typecastIt) $ " lbs";
+			  strInfo = strInfo $ CR() $ strSpace $ msgMass $ string(typecastIt) $ " lbs";
 		   }
 		}
 	}
@@ -577,6 +595,42 @@ function DrawOtherHudInformation(GC gc, actor frobTarget)
 	DrawHightlightBox(gc, infoX, infoY, infoW, infoH);	
 }
 
+//Ygll utility function
+function SetBarLength(DeusExPlayer player)
+{
+	boxTLX = 0.0; 
+	boxTLY = 0.0; 
+	boxBRX = 0.0; 
+	boxBRY = 0.0;
+			
+	if(player.iFrobDisplayStyle > 0)
+	{
+		barLength = 82.000000;
+	}
+	else
+	{
+		barLength = 72.000000;
+	}
+}
+
+function SetAtlDisplay(DeusExPlayer player)
+{
+	if(player.bAltFrobDisplay)
+	{
+		strSpace = "-";
+		strDoubleDot = ":";
+		strOpenValue = "[ ";
+		strCloseValue = " ]";
+	}
+	else
+	{
+		strSpace = "";
+		strDoubleDot = "";
+		strOpenValue = "";
+		strCloseValue = "";
+	}
+}
+
 // ----------------------------------------------------------------------
 // DrawWindow()
 // ----------------------------------------------------------------------
@@ -590,19 +644,8 @@ function DrawWindow(GC gc)
 		
 		if (frobTarget != None && player.IsHighlighted(frobTarget))
 		{
-			boxTLX = 0.0; 
-			boxTLY = 0.0; 
-			boxBRX = 0.0; 
-			boxBRY = 0.0;
-	
-			if(player.iFrobDisplayStyle > 0)
-			{
-				barLength = 82.000000;
-			}
-			else
-			{
-				barLength = 72.000000;
-			}
+			SetBarLength(player);
+			SetAtlDisplay(player);
 			
 			// draw a cornered targetting box
 			DrawTargettingBox(gc, frobTarget);
@@ -628,25 +671,29 @@ function DrawWindow(GC gc)
 // ----------------------------------------------------------------------
 defaultproperties
 {
-     margin=70.000000;
-     barLength=78.000000;
-     msgLocked="Locked";
-     msgUnlocked="Unlocked";
-     msgLockStr="Lock Str: ";
-     msgDoorStr="Door Str: ";
-     msgHackStr="Bypass Str: ";
-     msgInf="INF";
-     msgHacked="Bypassed";
-     msgPick="pick";
-     msgPicks="picks";
-     msgTool="tool";
-     msgTools="tools";
-     msgDoorThreshold="Damage Threshold: ";
-     msgObjThreshold="Damage Threshold: ";
-     msgMass="Mass: ";
-     msgHP="Hitpoints: ";
-     msgHP2="Hitpoints: 3";
-     colNotEnough=(R=255,G=50,B=50);
-     colJustEnough=(R=255,G=255,B=50);
-	 msgDisabled="Disabled";
+	strSpace="";
+	strDoubleDot="";
+	strOpenValue="";
+	strCloseValue="";
+    margin=70.000000;
+    barLength=78.000000;
+    msgLocked="Locked";
+    msgUnlocked="Unlocked";
+    msgLockStr="Lock Str: ";
+    msgDoorStr="Door Str: ";
+    msgHackStr="Bypass Str: ";
+	msgInf="INF";
+	msgHacked="Bypassed";
+	msgPick="pick";
+	msgPicks="picks";
+	msgTool="tool";
+	msgTools="tools";
+	msgDoorThreshold="Damage Threshold: ";
+	msgObjThreshold="Damage Threshold: ";
+	msgMass="Mass: ";
+	msgHP="Hitpoints: ";
+	msgHP2="Hitpoints: 3";
+	colNotEnough=(R=255,G=50,B=50);
+	colJustEnough=(R=255,G=255,B=50);
+	msgDisabled="Disabled";	 
 }

@@ -61,6 +61,7 @@ defaultproperties
      //items(44)=(HelpText="Augmentation descriptions will be simplified. Disable to show the difference between Energy Reserving (toggle) augmentations and conditional energy using (Automatic) augmentations.",actionText="HUD: Simplified Aug Categories",variable="bSimpleAugSystem",defaultValue=1);
      items(44)=(HelpText="Use smaller fonts for some HUD Elements.",actionText="HUD: Use Classic Fonts",variable="bClassicFont",consoleTarget="DeusEx.FontManager",defaultValue=0);
      items(45)=(HelpText="If enabled, the crosshair will turn blue when attempting to attach a mine to a surface.",actionText="HUD: Wall Placement Helper",variable="bWallPlacementCrosshair",defaultValue=1);
+	 items(65)=(HelpText="Alternate frob window display. Some text change and spacing.",actionText="Player: Alternate Frob Display",variable="bAltFrobDisplay",defaultValue=0);
      items(46)=(HelpText="If enabled, attempting to pick up carryable objects will automatically holster your held weapon, enabling you to pick up the object.",actionText="Interaction: Auto-Holster",variable="bAutoHolster");
      items(47)=(HelpText="If enabled, Data Cubes will show when they have been interacted with.",actionText="Interaction: Darken Data-Cube Screens",variable="bShowDataCubeRead",defaultValue=1);
      items(48)=(HelpText="If enabled, double-right click to holster/unholster items in hand. Prevents accidentally putting away items when attempting to interact with the world.",actionText="Interaction: Double-Click Holstering",variable="dblClickHolster",valueText2="Holstering and Unholstering",defaultValue=2);
@@ -79,6 +80,6 @@ defaultproperties
      items(61)=(HelpText="Alternate realistic headbobbing effect. To disable headbobbing outright, see the standard Settings menu.",actionText="Player: Realistic Head-Bobbing",variable="bModdedHeadBob",defaultValue=1);
      items(62)=(HelpText="Prevent accidentally killing domesticated animals by stomping on them.",actionText="Player: Stomp Domestic Animals",variable="bStompDomesticAnimals",defaultValue=0);
      items(63)=(HelpText="Prevent accidentally killing vac-bots by stomping on them.",actionText="Player: Stomp Vac Bots",variable="bStompDomesticAnimals",defaultValue=0);
-     items(64)=(HelpText="Always use the female hands with male JC. This setting does nothing if LDDP is not installed.",actionText="Player: Use Female Hands",variable="bFemaleHandsAlways",defaultValue=0);
+     items(64)=(HelpText="Always use the female hands with male JC. This setting does nothing if LDDP is not installed.",actionText="Player: Use Female Hands",variable="bFemaleHandsAlways",defaultValue=0);	 
      Title="GMDX Quality of Life Options"
 }

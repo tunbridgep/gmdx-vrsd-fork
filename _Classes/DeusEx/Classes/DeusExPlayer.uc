@@ -760,6 +760,9 @@ const FemJCEyeHeightAdjust = -6;                                    //SARGE: Now
 //SARGE: ??? - I wonder what this does :P
 var travel bool bShenanigans;
 
+//Ygll: New QoL Options
+var globalconfig bool bAltFrobDisplay;                              //Ygll: Alternate frob display option.
+
 //////////END GMDX
 
 // OUTFIT STUFF
