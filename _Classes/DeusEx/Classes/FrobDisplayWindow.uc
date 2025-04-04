@@ -116,7 +116,7 @@ function DrawHightlightBox(GC gc, float infoX, float infoY, float infoW, float i
 }
 
 //Ygll: some refactoring...! new function to handle window target hud draw
-function DrawTargettingBox(GC gc, actor frobTarget)
+function DrawTargetingBox(GC gc, actor frobTarget)
 {
 	local Mover 	M;
 	local int		i, j, k, offset;
@@ -647,8 +647,8 @@ function DrawWindow(GC gc)
 			SetBarLength(player);
 			SetAtlDisplay(player);
 			
-			// draw a cornered targetting box
-			DrawTargettingBox(gc, frobTarget);
+			// draw a cornered targeting box
+			DrawTargetingBox(gc, frobTarget);
 
 			// draw object-specific info
 			if (frobTarget.IsA('Mover'))
