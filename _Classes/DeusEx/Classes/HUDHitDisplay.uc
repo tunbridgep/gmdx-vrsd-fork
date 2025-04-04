@@ -235,7 +235,7 @@ function DisplayStanceInfo(GC gc)
 	
 	gc.SetFont(Font'FontMenuSmall');
 	gc.SetStyle(DSTY_Normal);		
-	gc.SetTextColor(col02);
+	gc.SetTextColor(colText);
 	
 	alignH = 12.0;
 	alignW = 75.0;
