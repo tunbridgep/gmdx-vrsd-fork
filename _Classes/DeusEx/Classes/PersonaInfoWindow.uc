@@ -24,8 +24,9 @@ var localized string RequiredPoints;
 var localized string PerkTitle;
 var localized string ob;
 var localized string msgAssign;                                                 //RSD: Added
-var localized string msgConf;                                                   //RSD: Added
 var localized string msgAssigned;                                               //RSD: Added
+var localized string msgDoAssign;
+var localized string msgDoUnassign;
 var localized string msgUnassigned;                                             //RSD: Added
 
 var bool bStylization;
@@ -275,16 +276,17 @@ function bool ButtonActivated( Window buttonPressed )
 		{
             case buttonUpgradeSecond:
 
-               if (assignThis != None && player.assignedWeapon != None && player.assignedWeapon == assignThis)
+               if (assignThis != None && player.GetSecondaryClass() == assignThis.Class)
                {
                    player.AssignSecondary(None);
-                   player.ClientMessage(msgUnassigned);
+                   //player.ClientMessage(msgUnassigned);
                }
                else if (assignThis != None)
                {
                    player.AssignSecondary(assignThis);
-                   player.ClientMessage(msgAssigned);
+                   //player.ClientMessage(msgAssigned);
                }
+               UpdateSecondaryButton(assignThis.class);
 			   break;
 
             case buttonDecline:
@@ -512,10 +514,18 @@ function AddSecondaryButton(Inventory wep)                                      
 	winActionButtonsSecondary.SetWidth(32); //149
 	winActionButtonsSecondary.FillAllSpace(False);
 	buttonUpgradeSecond = PersonaActionButtonWindow(winActionButtonsSecondary.NewChild(Class'PersonaActionButtonWindow'));
-	buttonUpgradeSecond.SetButtonText(msgConf);
 	assignThis = wep;
+    UpdateSecondaryButton(wep.Class);
    AddLine();
    }
+}
+
+function UpdateSecondaryButton(class<Inventory> item)
+{
+    if (player.GetSecondaryClass() != item)
+        buttonUpgradeSecond.SetButtonText(msgDoAssign);
+    else
+        buttonUpgradeSecond.SetButtonText(msgDoUnassign);
 }
 
 function UpdateDeclineButton(class<Inventory> wep)
@@ -624,10 +634,6 @@ defaultproperties
      RequiredPoints="Points Needed: "
      PerkTitle="PERKS"
      ob="OBTAINED PERKS"
-     msgAssign="Assign as secondary item:"
-     msgConf="Assign"
-     msgAssigned="Secondary Item Assigned"
-     msgUnassigned="Secondary Item Unassigned"
      GeneralPerksTitleText="Perks - General"
      PerkRequiredSkill="Requires: %s: %s"
      msgDecline="Add To Decline List"
@@ -635,4 +641,9 @@ defaultproperties
      DeclinedTitleLabel="Declined Items"
      DeclinedDesc="Declined Items will not be picked up."
      DeclinedDesc2="Declined Items will not be picked up, unless the Run/Walk key is held."
+     msgAssign="Assign as Secondary Item:"
+     msgDoAssign="Assign"
+     msgDoUnassign="Unassign"
+     msgAssigned="Secondary Item Assigned"
+     msgUnassigned="Secondary Item Unassigned"
 }
