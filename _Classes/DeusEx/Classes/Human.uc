@@ -593,13 +593,14 @@ simulated function PreBeginPlay()
 	}
 }
 
-function DoJump( optional float F )
+function DoJump(optional float F)
 {
+	if ((Physics == PHYS_Falling || (HealthLegLeft < 1 && HealthLegRight < 1)) && Base==none && !isMantling && bMantleOption && CarriedDecoration == None)
+	{      
+		startMantling();
+	}
 
-if ((Physics == PHYS_Falling || (HealthLegLeft < 1 && HealthLegRight < 1))  && Base==none && !isMantling && bMantleOption && CarriedDecoration == None)
-{      startMantling();    }
-
-super.DoJump();
+	super.DoJump();
 }
 
 //CyberP: Shitty lock-on. *Grumble Moan*. Programmed for "neologicx1992" for their mod. Keep commented out. This shit should NOT be in Deus Ex/GMDX.
@@ -638,17 +639,17 @@ exec function ShowScores()
 
 function checkMantle()                                                          //RSD: Unified function for PlayerWalking and PlayerFlying
 {
-		local actor HitActor;
-		local vector HitLocation, HitNormal, checkpoint, start, checkNorm, EndTrace, Extent;
-        local float shakeTime, shakeRoll, shakeVert, mult;                      //RSD: added mult
+	local actor HitActor;
+	local vector HitLocation, HitNormal, checkpoint, start, checkNorm, EndTrace, Extent;
+	local float shakeTime, shakeRoll, shakeVert, mult;                      //RSD: added mult
 
-        //Justice: Mantling system.  Code shamelessly stolen from CheckWaterJump() in ScriptedPawn
-		if (isMantling && !bOnLadder && !IsStunted()) //CyberP: PHYS_Falling && != 0 //RSD: PlayerFlying had velocity.Z != 0 ??? also added !bStunted
+	//Justice: Mantling system.  Code shamelessly stolen from CheckWaterJump() in ScriptedPawn
+	if (isMantling && !bOnLadder && !IsStunted()) //CyberP: PHYS_Falling && != 0 //RSD: PlayerFlying had velocity.Z != 0 ??? also added !bStunted
+	{
+		EndTrace = Location + CollisionHeight * 1.1 * vect(0,0,1);
+		HitActor = Trace(HitLocation, HitNormal, EndTrace,,True);
+		if (HitActor == None)
 		{
-		    EndTrace = Location + CollisionHeight * 1.1 * vect(0,0,1);
-		    HitActor = Trace(HitLocation, HitNormal, EndTrace,,True);
-		    if (HitActor == None)
-		    {
 			if (CarriedDecoration == None && velocity.Z > -1000)
 			{
 				checkpoint = vector(Rotation);
@@ -659,24 +660,33 @@ function checkMantle()                                                          
 				if (bIcarusClimb)
 				   Extent = CollisionRadius * vect(1.2,1.2,0); //0.3
 				else
-                   Extent = CollisionRadius * vect(0.3,0.3,0);
+				   Extent = CollisionRadius * vect(0.3,0.3,0);
+			   
 				Extent.Z = CollisionHeight*0.67;
 				if (bIcarusClimb)
 				   Extent.Z = CollisionHeight*0.8;
+			   
 				HitActor = Trace(HitLocation, HitNormal, checkpoint, Location, True, Extent);
 				if ( (HitActor != None) && (HitActor.IsA('Mover') || HitActor == Level || HitActor.IsA('DeusExDecoration')))
 				{
-				    if (HitActor.IsA('DeusExDecoration') && (HitActor.CollisionHeight < 20 || DeusExDecoration(HitActor).bCanBeBase == False))
-				        return;
-				    else if (HitActor.IsA('DeusExDecoration'))
-                    {    bSpecialCase = True; decorum = DeusExDecoration(HitActor);}
-                    else if (HitActor.IsA('DeusExMover'))
-                    {   bSpecialCase2 = True; mova = DeusExMover(HitActor);}
+					if (HitActor.IsA('DeusExDecoration') && (HitActor.CollisionHeight < 20 || DeusExDecoration(HitActor).bCanBeBase == False))
+						return;
+					else if (HitActor.IsA('DeusExDecoration'))
+					{    
+						bSpecialCase = True; 
+						decorum = DeusExDecoration(HitActor);
+					}
+					else if (HitActor.IsA('DeusExMover'))
+					{   
+						bSpecialCase2 = True; 
+						mova = DeusExMover(HitActor);
+					}
+					
 					WallNormal = -1 * HitNormal;
 					/*mult = SkillSystem.GetSkillLevelValue(class'SkillSwimming');//RSD: Get skill value (0.9/1.2/1.7/2.25)
 					if (mult > 2.25)
-		  			    mult = 2.25;*/                                            //RSD: Capping multiplier at 2.25
-                    mult = 0.6*(self.SkillSystem.GetSkillLevel(class'SkillSwimming')); //RSD: Actually it will just be 0.0/0.5/1.0/1.5 x CollisionHeight
+						mult = 2.25;*/                                            //RSD: Capping multiplier at 2.25
+					mult = 0.6*(self.SkillSystem.GetSkillLevel(class'SkillSwimming')); //RSD: Actually it will just be 0.0/0.5/1.0/1.5 x CollisionHeight
 					start = Location;
 					//start.Z += 1.1 * MaxStepHeight + CollisionHeight;         //RSD: Old mantling formula
 					start.Z += 0.6 * MaxStepHeight + mult*CollisionHeight;      //RSD: Mantling height affected by Athletics skill (SkillSwimming)
@@ -684,30 +694,35 @@ function checkMantle()                                                          
 					HitActor = Trace(HitLocation, HitNormal, checkpoint, start, true, Extent);
 					if (HitActor == None)
 					{
-                        if (bHardCoreMode)                                      //RSD: Stamina drain
-                            swimTimer -= 1.0;
-                        else
-                            swimTimer -= 0.8;
-                        if (swimTimer < 0)                                      //RSD: Can run out of breath
-                        {
-                            swimTimer = 0;
-                            if (bStaminaSystem || bHardCoreMode)
-                            {
-                                bStunted = true;
-                                if (!bOnLadder && FRand() < 0.7)
-                                    PlayBreatheSound();
-                                if (bBoosterUpgrade && Energy > 0)
-                                    AugmentationSystem.AutoAugs(false,false);
-                            }
-                        }
-                        if (IsCrouching())
-                            bCrouchHack = true;
+						if (bHardCoreMode)                                      //RSD: Stamina drain
+							swimTimer -= 1.0;
+						else
+							swimTimer -= 0.8;
+						
+						if (swimTimer < 0)                                      //RSD: Can run out of breath
+						{
+							swimTimer = 0;
+							if (bStaminaSystem || bHardCoreMode)
+							{
+								bStunted = true;
+								if (!bOnLadder && FRand() < 0.7)
+									PlayBreatheSound();
+								
+								if (bBoosterUpgrade && Energy > 0)
+									AugmentationSystem.AutoAugs(false,false);
+							}
+						}
+						
+						if (IsCrouching())
+							bCrouchHack = true;
+						
+						bIsMantlingStance = true;
 						goToState('Mantling');
 					}
 				}
 			}
-			}
 		}
+	}
 }
 
 state PlayerFlying
@@ -738,6 +753,7 @@ state PlayerFlying
             if (mantleFinishTimer <= 0)
             {
                 bCrouchHack = false;
+				bIsMantlingStance = false;
                 mantleFinishTimer = 0;
             }
         }
@@ -774,6 +790,7 @@ state PlayerWalking
 
         if (bOnKeyHold && Physics == PHYS_Falling)
            DoJump();
+	   
 		checkMantle();
 	}
 
@@ -793,6 +810,7 @@ state PlayerWalking
             if (mantleFinishTimer <= 0)
             {
                 bCrouchHack = false;
+				bIsMantlingStance = false;
                 mantleFinishTimer = 0;
             }
         }
@@ -836,16 +854,6 @@ State PlayerSwimming
 
 State Mantling
 {
-    /*function ProcessMove ( float DeltaTime, vector newAccel, eDodgeDir DodgeMove, rotator DeltaRot)
-	{
-	   super.ProcessMove(DeltaTime, newAccel, DodgeMove, DeltaRot);
-	}
-
-	function DoJump( optional float F )
-    {
-      BroadcastMessage("DoJump");
-    } */
-
     function BeginState()
     {
       local vector HitLocation, Hitnormal, StartTrace, EndTrace, Extent;
@@ -1108,17 +1116,16 @@ Begin:
 		bIsMantlingStance = false;
 		mantleTimer = -1;
 		setPhysics(Phys_Falling);
-		if (FRand() < 0.6)
+
+		if (PerkManager.GetPerkWithClass(class'DeusEx.PerkNimble').bPerkObtained == false)
 		{
-            if (PerkManager.GetPerkWithClass(class'DeusEx.PerkNimble').bPerkObtained == false)
-            {
-                AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 544);
-                if (FlagBase.GetBool('LDDPJCIsFemale'))
-                    PlaySound(Sound(DynamicLoadObject("FemJC.FJCLand", class'Sound', false)), SLOT_None, 1.5, true, 1024);
-                else
-                    PlaySound(sound'MaleLand', SLOT_None, 1.5, true, 1024);
-            }
-        }
+			AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 544);
+			if (FlagBase.GetBool('LDDPJCIsFemale'))
+				PlaySound(Sound(DynamicLoadObject("FemJC.FJCLand", class'Sound', false)), SLOT_None, 1.5, true, 1024);
+			else
+				PlaySound(sound'MaleLand', SLOT_None, 1.5, true, 1024);
+		}
+
         swimTimer -= 0.5;
 	}
 }
@@ -1126,9 +1133,11 @@ Begin:
 exec function startMantling(optional float F)
 {
     if (F > 0)
-       bOnKeyHold = true;
-   
-    if ( ( velocity.Z <= -1 && ( camInterpol > 0 && camInterpol <= 0.35 ) ) && !isMantling && bMantleOption && CarriedDecoration == None)
+       bOnKeyHold = True;
+    if ((velocity.Z > -1 && (camInterpol <= 0 || camInterpol > 0.35)) || isMantling || !bMantleOption || CarriedDecoration != None)
+    {
+    }
+    else
 	{
 		isMantling = true;
 		bIsMantlingStance = true;
