@@ -252,7 +252,7 @@ function DisplayStanceInfo(GC gc)
 	
 	if(player.iStanceHud == 1)
 	{
-		if( !player.IsCrouching() && !player.bIsTipToes && !player.IsLeaning() && !Human(player).isMantling && !Human(player).IsInState('Mantling') )
+		if( !player.IsCrouching() && !player.bIsTipToes && !player.IsLeaning() && !player.bIsMantlingStance )
 		{
 			if(player.bIsWalking)
 				gc.DrawText(alignX, alignY, alignW, alignH, "[-" $ walking $ "-]");
@@ -274,7 +274,7 @@ function DisplayStanceInfo(GC gc)
 		{			
 			gc.DrawText(alignX, alignY, alignW, alignH, "[-" $ leaning $ "-]");
 		}
-		else if( ( Human(player).isMantling || Human(player).IsInState('Mantling') ) || player.bCrouchHack )
+		else if(player.bIsMantlingStance)
 		{			
 			gc.DrawText(alignX, alignY, alignW, alignH, "[-" $ mantling $ "-]");
 		}

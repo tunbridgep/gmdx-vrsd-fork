@@ -252,7 +252,8 @@ function PlayWaiting()
 			LoopAnim('TreadShoot');
 		else
 			LoopAnim('Tread');
-		isMantling = False;
+		isMantling = false;
+		bIsMantlingStance = false;
 	    mantleTimer = -1;
 	}
 	else if (IsLeaning() || IsCrouching())
@@ -293,7 +294,9 @@ function PlayLanded(float impactVel)
     //SARGE: TODO: Make this not always silent, it should be impact dependent
 	if (!IsCrouching())
 		PlayAnim('Land',3.0,0.1);
-	isMantling = False;
+	
+	isMantling = false;
+	bIsMantlingStance = false;
 }
 
 function PlayDuck()
@@ -744,10 +747,14 @@ state PlayerFlying
 			if(mantleTimer > -1)
 			{
 				isMantling = true;
+				bIsMantlingStance = true;
 				mantleTimer = -1;
 			}
 			else
+			{
 			    isMantling = false;
+				bIsMantlingStance = false;
+			}
 		}
 		else
 			mantleTimer -= deltaTime;
@@ -795,10 +802,14 @@ state PlayerWalking
 			if(mantleTimer > -1)
 			{
 				isMantling = true;
+				bIsMantlingStance = true;
 				mantleTimer = -1;
 			}
 			else
+			{
 			    isMantling = false;
+				bIsMantlingStance = false;
+			}
 		}
 		else
 			mantleTimer -= deltaTime;
@@ -923,6 +934,7 @@ State Mantling
 		bOnKeyHold = False;
 		decorum = None;
 		mova = None;
+		bIsMantlingStance = false;
 
         //SetTimer(0.6,false); //Replaced with the mantleFinishTimer var
         mantleFinishTimer = 0.3; //0.6->0.3, 0.6 feels like too long.
@@ -1092,7 +1104,8 @@ Begin:
 	if(isMantling)
 	{
 	    negaTime = 0.5;
-		isMantling = False;
+		isMantling = false;
+		bIsMantlingStance = false;
 		mantleTimer = -1;
 		setPhysics(Phys_Falling);
 		if (FRand() < 0.6)
@@ -1113,14 +1126,13 @@ Begin:
 exec function startMantling(optional float F)
 {
     if (F > 0)
-       bOnKeyHold = True;
-    if ((velocity.Z > -1 && (camInterpol <= 0 || camInterpol > 0.35)) || isMantling || !bMantleOption || CarriedDecoration != None)
-    {
-    }
-    else
+       bOnKeyHold = true;
+   
+    if ( ( velocity.Z <= -1 && ( camInterpol > 0 && camInterpol <= 0.35 ) ) && !isMantling && bMantleOption && CarriedDecoration == None)
 	{
-	isMantling = True;
-	mantleTimer = 0.5; //0.001
+		isMantling = true;
+		bIsMantlingStance = true;
+		mantleTimer = 0.5; //0.001
 	}
 }
 
@@ -1128,17 +1140,19 @@ exec function stopMantling(optional float F)
 {
     if (IsInState('Mantling') && location.Z > mantleBeginZ+18.5)
     {
-	isMantling = False;
-	bOnKeyHold = False;
-	mantleTimer = -1;
-	if (f > 0 && IsInState('Mantling'))
-	   GoToState('PlayerWalking');
+		isMantling = false;
+		bIsMantlingStance = false;
+		bOnKeyHold = false;
+		mantleTimer = -1;
+		if (f > 0 && IsInState('Mantling'))
+		   GoToState('PlayerWalking');
 	}
 	else if (!IsInState('Mantling'))
 	{
-	bOnKeyHold = False;
-	mantleTimer = -1;
-	isMantling = False;
+		bOnKeyHold = false;
+		mantleTimer = -1;
+		isMantling = false;
+		bIsMantlingStance = false;
 	}
 }
 

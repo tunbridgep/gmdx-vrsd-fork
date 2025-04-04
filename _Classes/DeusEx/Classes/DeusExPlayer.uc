@@ -552,6 +552,9 @@ var bool bHardDrug;
 var bool bCrouchHack;
 var bool bToggledCrouch;		        // used by toggle crouch
 
+//Mantling stance
+var bool bIsMantlingStance;
+
 //Recoil shockwave
 var() vector RecoilSimLimit; //plus/minus
 var() float RecoilDrain;
@@ -18461,4 +18464,5 @@ defaultproperties
      bConsistentBloodPools=True
      iPersistentDebris=1;
 	 iStanceHud=3;   //Ygll = Every stance
+	 bIsMantlingStance=false; //Ygll: new var to know if we are currently mantling
 }
