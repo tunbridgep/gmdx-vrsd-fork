@@ -760,6 +760,8 @@ const FemJCEyeHeightAdjust = -6;                                    //SARGE: Now
 //SARGE: ??? - I wonder what this does :P
 var travel bool bShenanigans;
 
+var globalconfig int iHealingScreen;                            //Ygll: can disable the flash screen when healing or changing it to green color.
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -5256,10 +5258,15 @@ function int HealPlayer(int baseHealPoints, optional Bool bUseMedicineSkill)
 	if (adjustedHealAmount > 0)
 	{
 		if (bUseMedicineSkill)
-			{
-            PlaySound(sound'MedicalHiss', SLOT_None,,, 256);
-            ClientFlash(1,vect(0,0,200));     //CyberP: flash when using medkits.
-            }
+		{
+			PlaySound(sound'MedicalHiss', SLOT_None,,, 256);
+			
+			if(iHealingScreen == 1)
+				ClientFlash(1,vect(71,236,0));     //Ygll: new green flash color.
+			else if(iHealingScreen == 2)
+				ClientFlash(1,vect(0,0,200));     //CyberP: flash when using medkits.
+		}
+		
 		// Heal by 3 regions via multiplayer game
 		if (( Level.NetMode == NM_DedicatedServer ) || ( Level.NetMode == NM_ListenServer ))
 		{
@@ -18457,5 +18464,6 @@ defaultproperties
      bShowAmmoTypeInAmmoHUD=True
      //bJohnWooSparks=True
      bConsistentBloodPools=True
-     iPersistentDebris=1
+     iPersistentDebris=1;
+	 iHealingScreen=1;
 }
