@@ -55,6 +55,10 @@ var localized string noted;
 var localized string walking;
 var localized string crouching;
 var localized string running;
+var localized string leaning;
+var localized string swimming;
+var localized string tiptoes;
+var localized string mantling;
 var string percentTxt;
 var Color colLight;
 var color colLightDark;
@@ -227,12 +231,14 @@ function SetHitColor(out BodyPart part, float deltaSeconds, bool bHide, int hitV
 //Ygll: utility function to display the current player stance into hud
 function DisplayStanceInfo(GC gc)
 {
-	local float alignX, alignY;
+	local float alignX, alignY, alignH, alignW;
 	
 	gc.SetFont(Font'FontMenuSmall');
 	gc.SetStyle(DSTY_Normal);		
 	gc.SetTextColor(col02);
 	
+	alignH = 12.0;
+	alignW = 75.0;
 	if(player.bHUDBordersVisible)
 	{
 		alignX = 19.0;
@@ -244,17 +250,48 @@ function DisplayStanceInfo(GC gc)
 		alignY = 90.0;
 	}
 	
-	if(player.IsCrouching() && player.iStanceHud > 1) //crouching display is an option specific
-	{			
-		gc.DrawText(alignX, alignY, 75.0, 12.0, "[-" $ crouching $ "-]");
+	if(player.iStanceHud == 1)
+	{
+		if( !player.IsCrouching() && !player.bIsTipToes && !player.IsLeaning() && !Human(player).isMantling && !Human(player).IsInState('Mantling') )
+		{
+			if(player.bIsWalking)
+				gc.DrawText(alignX, alignY, alignW, alignH, "[-" $ walking $ "-]");
+			else if(!player.bIsWalking)
+				gc.DrawText(alignX, alignY, alignW, alignH, "[-" $ running $ "-]");
+		}
 	}
-	else if(player.bIsWalking)
-	{	
-		gc.DrawText(alignX, alignY, 75.0, 12.0, "[-" $ walking $ "-]");
-	}
-	else if(!player.bIsWalking)
-	{	
-		gc.DrawText(alignX, alignY, 75.0, 12.0, "[-" $ running $ "-]");
+	else
+	{
+		if(player.IsInState('PlayerSwimming'))
+		{			
+			gc.DrawText(alignX, alignY, alignW, alignH, "[-" $ swimming $ "-]");
+		}
+		else if(player.bIsTipToes)
+		{			
+			gc.DrawText(alignX, alignY, alignW, alignH, "[-" $ tiptoes $ "-]");
+		}
+		else if(player.IsLeaning())
+		{			
+			gc.DrawText(alignX, alignY, alignW, alignH, "[-" $ leaning $ "-]");
+		}
+		else if( ( Human(player).isMantling || Human(player).IsInState('Mantling') ) || player.bCrouchHack )
+		{			
+			gc.DrawText(alignX, alignY, alignW, alignH, "[-" $ mantling $ "-]");
+		}
+		else if( !player.bCrouchHack && ( player.bCrouchOn || player.bForceDuck || player.bIsCrouching ))
+		{			
+			gc.DrawText(alignX, alignY, alignW, alignH, "[-" $ crouching $ "-]");
+		}
+		else if(player.bIsWalking)
+		{
+			if(player.iStanceHud == 3 || (player.iStanceHud == 2 && player.bAlwaysRun) )		
+				gc.DrawText(alignX, alignY, alignW, alignH, "[-" $ walking $ "-]");
+		}
+		else if(!player.bIsWalking)
+		{
+			if(player.iStanceHud == 3 || (player.iStanceHud == 2 && !player.bAlwaysRun) )	
+				gc.DrawText(alignX, alignY, alignW, alignH, "[-" $ running $ "-]");
+		}	
 	}
 }
 
@@ -512,11 +549,15 @@ defaultproperties
      texBorder=Texture'DeusExUI.UserInterface.HUDHitDisplayBorder_1';
      O2Text="O2";
      EnergyText="BE";
-     percentTxt="%";
-	 crouching="Crouching";
-	 walking="Walking";
-	 running="Running";
+     percentTxt="%";	 
      colLight=(R=255,G=255);
      colLightDark=(R=140,G=140);
      colRed=(R=255);
+	 crouching="Crouching";
+	 walking="Walking";
+	 running="Running";
+	 leaning="Leaning";
+	 swimming="Swimming";
+	 tiptoes="Tiptoes";
+	 mantling="Mantling";
 }
