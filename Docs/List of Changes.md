@@ -35,10 +35,21 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX bug where jumping from a ladder while partially submerged in water would cause JC to fly forever.
     - Fixed vanilla bug where the HUD would be re-enabled while dead if opening the main-menu.
     - Fixed GMDX bug where most inventory items with multiple skins (such as sodacans) weren't showing their skinned variants when being held in the players hands.
+    - Fixed GMDX bugs where knocked-out scuba-divers would die immediately upon reaching the surface of water.
     - Fixed vanilla item-duplication bug (caused by repeatedly dropping and repeatedly picking up items quickly)
     - Fixed many other GMDX and Vanilla bugs.
 - Quality of Life Improvements:
+    - Ballistic Armour and Hazmat Suits are now kept equipped when drained, but will have no effect.
+        - Recharging them in any way (such as through biocells or a repair bot) will make them active again
+        - If multiple items are stacked, the item will remain drained even though a new one is available, and will require re-activation.
+    - Medical Bots will now display your total health on the status screen, as well as the total amount of health that will be healed.
+    - Keybinding Improvements
+        - A "Select Nanokey" button has been added to the options, which switches between the nanokey and the previously used weapon.
+        - Alternative binds for belt slots have been added, and will display on the belt
+        - Alternate binds for Augmentations will be displayed on the Active Augs window.
     - Music will now continue when loading different areas that use the same music track, rather than restarting.
+    - GMDX "Secondary Item" system updated to use a type, rather than a specific item. This means that dropping/losing your secondary items will no longer unassign your secondary item.
+    - Taking ammo from weapons in the world will now make an "ammo retrieval" sound.
     - Saving is now possible while an infolink is playing. The infolink will be aborted.
     - The current ammo type is now displayed in the Ammo display as well as on the belt, to facilitate selecting weapons that aren't currently on the belt.
     - Optionally, bars and clubs can be made to continue their standard music during conversations, rather than restarting.

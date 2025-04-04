@@ -427,7 +427,7 @@ function ZoneChange(ZoneInfo NewZone)
 		{
         Mesh = Mesh3;
         assignedMesh = 3;
-        if (!IsA('ScubaDiver'))
+        if (!IsA('ScubaDiverCarcass'))
         {
         	KillUnconscious();                                                  //RSD: Proper kill
 		}
@@ -1372,7 +1372,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 
 
                                     bFoundSomething = True;
-                                    if (DeusExPlayer(P).HandleItemPickup(Item) != False)
+                                    if (DeusExPlayer(P).HandleItemPickup(Item,false,true) != False)
                                     {
                                         //splat - Picking up shuriken when we don't have one!
                                         if (item.IsA('WeaponShuriken'))

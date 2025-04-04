@@ -78,6 +78,7 @@ var bool bPrisonStart;
 var bool bDisableConsoleAccess;
 var bool bWeaponRequirementsMatter;
 var bool bRealKillswitch;
+var bool bShenanigans;
 
 //LDDP
 var bool bFemaleEnabled;
@@ -139,6 +140,7 @@ event InitWindow()
     bDisableConsoleAccess=false;                                                //Sarge
     bWeaponRequirementsMatter=false;                                            //Sarge
     bRealKillswitch=false;                                                      //Sarge
+    bShenanigans=false;                                                         //Sarge
     //bRestrictedMetabolism=false;                                              //Sarge
     default.bRandomizeCrates=false;                                             //RSD: Also need default values! Otherwise get command in modifier menu takes the wrong value
     default.bRandomizeMods=false;                                               //RSD
@@ -154,6 +156,7 @@ event InitWindow()
     default.bDisableConsoleAccess=false;                                        //Sarge
     default.bWeaponRequirementsMatter=false;                                    //Sarge
     default.bRealKillswitch=false;                                              //Sarge
+    default.bShenanigans=false;                                                 //Sarge
 
 	StyleChanged();
 }
@@ -814,6 +817,7 @@ function SaveSettings()
     player.bDisableConsoleAccess=bDisableConsoleAccess;                         //Sarge
     player.bWeaponRequirementsMatter=bWeaponRequirementsMatter;                 //Sarge
     player.bRealKillswitch=bRealKillswitch;                                     //Sarge
+    player.bShenanigans=bShenanigans;                                           //Sarge
 
     //LDDP
 	THuman = Human(Player);
