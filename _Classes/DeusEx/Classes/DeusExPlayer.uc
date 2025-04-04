@@ -760,6 +760,8 @@ const FemJCEyeHeightAdjust = -6;                                    //SARGE: Now
 //SARGE: ??? - I wonder what this does :P
 var travel bool bShenanigans;
 
+var globalconfig int iStanceHud;					//Ygll: Display the current player stance in the hud
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -18457,5 +18459,6 @@ defaultproperties
      bShowAmmoTypeInAmmoHUD=True
      //bJohnWooSparks=True
      bConsistentBloodPools=True
-     iPersistentDebris=1
+     iPersistentDebris=1;
+	 iStanceHud=3;   //Ygll = Every stance
 }
