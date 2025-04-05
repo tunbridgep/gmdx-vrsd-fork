@@ -274,7 +274,7 @@ function DisplayStanceInfo(GC gc)
 		{			
 			gc.DrawText(alignX, alignY, alignW, alignH, "[-" $ leaning $ "-]");
 		}
-		else if( player.bIsMantlingStance || player.IsInState('Mantling') )
+		else if( (player.bIsMantlingStance || player.IsInState('Mantling') ) && ( player.velocity.X >= 0.0 && player.velocity.X <= 0.1 ) && ( player.velocity.Y >= 0.0 && player.velocity.Y <= 0.1 )  )
 		{			
 			gc.DrawText(alignX, alignY, alignW, alignH, "[-" $ mantling $ "-]");
 		}
