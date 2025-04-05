@@ -461,7 +461,9 @@ function Timer()
 				count++;
 
 			// if two or less are still alive
-			if (count <= 2)
+            // SARGE: deduct an extra one since there's one out of bounds,
+            // so we need to increase it to 3
+			if (count <= 2 + 1)
 				flags.SetBool('MostWarehouseTroopsDead', True);
 		}
 	}
