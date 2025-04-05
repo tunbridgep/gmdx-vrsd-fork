@@ -293,14 +293,14 @@ function bool ButtonActivated(Window buttonPressed)
 
 function MedBotHealPlayer()
 {
-    local DeusExPlayer P;
-
-    P = DeusExPlayer(GetPlayerPawn());
-
 	medBot.HealPlayer(player);
 	UpdateMedBotDisplay();
 	UpdateRegionWindows();
-	P.ClientFlash(8,vect(0,0,300));     //CyberP: flash when using medbots.
+	
+	if(player.iHealingScreen == 1)
+		player.ClientFlash(8,vect(71.0,236.0,0.0));     //Ygll: new green flash color.
+	else if(player.iHealingScreen == 2)
+		player.ClientFlash(8,vect(0.0,0.0,200.0));     //CyberP: flash when using medbots.
 }
 
 // ----------------------------------------------------------------------
