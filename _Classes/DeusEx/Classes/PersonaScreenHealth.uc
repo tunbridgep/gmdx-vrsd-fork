@@ -504,7 +504,11 @@ function DisplayCommonInfo()
     //winInfo.SetBackground(Texture'DeusExUI.UserInterface.GridTex64x64');
 	player.GenerateTotalHealth();
 	winInfo.SetTitle(StatusTitle);
-    winInfo.SetText(AvgHealthStr $ player.Health $ "%");
+    
+    //Display total health
+    player.GenerateTotalHealth();
+    winInfo.SetText(AvgHealthStr $ player.Health $ "% (" $ player.GetTotalHealth() $ "/" $ player.GetTotalMaxHealth() $ ")");
+
     /*if (player.KillerCount > 300)
        winInfo.SetText(MoralityStr $ MassMurdererStr);
     else if (player.KillerCount > 4)
