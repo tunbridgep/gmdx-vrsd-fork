@@ -1070,8 +1070,8 @@ function Frob(Actor Frobber, Inventory frobWith)
                         bFoundSomething = True;
 						if (player != None)
 						{
-							player.PickupNanoKey(NanoKey(item));
-							AddReceivedItem(player, item, 1);
+							if (player.PickupNanoKey(NanoKey(item)))
+                                AddReceivedItem(player, item, 1);
 							DeleteInventory(item);
 							item.Destroy();
 							item = None;

@@ -8558,10 +8558,13 @@ function NanoKeyInfo CreateNanoKeyInfo()
 // 2. Destroy NanoKey (since the user can't have it in his/her inventory)
 // ----------------------------------------------------------------------
 
-function PickupNanoKey(NanoKey newKey)
+function bool PickupNanoKey(NanoKey newKey)
 {
     if (KeyRing.HasKey(newKey.KeyID))
+    {
         ClientMessage(Sprintf(DuplicateNanoKey, newKey.Description));
+        return false;
+    }
     else
         ClientMessage(Sprintf(AddedNanoKey, newKey.Description));
 	KeyRing.GiveKey(newKey.KeyID, newKey.Description);
@@ -8570,6 +8573,7 @@ function PickupNanoKey(NanoKey newKey)
 	{
 	  KeyRing.GiveClientKey(newKey.KeyID, newKey.Description);
 	}
+    return true;
 }
 
 // ----------------------------------------------------------------------
