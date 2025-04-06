@@ -68,8 +68,8 @@ function InitializePerks(DeusExPlayer newPlayer)	// Trash: Add every perk in the
 	AddPerk(Class'DeusEx.PerkCracked');
 
 	// Medicine Perks
-	AddPerk(Class'DeusEx.PerkBiogenic');
 	AddPerk(Class'DeusEx.PerkToxicologist');
+	AddPerk(Class'DeusEx.PerkBiogenic');
 	AddPerk(Class'DeusEx.PerkCombatMedicsBag');
 
 	// Enviro TrainPerks
