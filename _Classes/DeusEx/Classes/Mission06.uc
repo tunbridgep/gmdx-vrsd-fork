@@ -26,6 +26,7 @@ function FirstFrame()
     local Hooker1 Mercedes;
 	local LowerClassFemale Tessa;
     local ScriptedPawn SP;
+    local Light L;
 
 
 	Super.FirstFrame();
@@ -38,6 +39,16 @@ function FirstFrame()
         {
             player.killswitchTimer -= (10*60)*60;
             flags.SetBool('GMDXKillswitchReduced', True,, 7);
+        }
+
+        //SARGE: Fix up Lighting if we have Lighting Accessibility enabled
+        if (Player.bLightingAccessibility)
+        {
+            ForEach AllActors(class'Light', L)
+            {
+                if (L.LightType == LT_Flicker && (L.Name == 'Light5' || L.Name == 'Light61' || L.Name == 'Light7' || L.Name == 'Light6'))
+                    L.LightType = LT_Steady;
+            }
         }
     }
 	else if (localURL == "06_HONGKONG_VERSALIFE")
@@ -188,6 +199,16 @@ function FirstFrame()
 	}
 	else if (localURL == "06_HONGKONG_WANCHAI_MARKET")
 	{
+        //SARGE: Fix up Lighting if we have Lighting Accessibility enabled
+        if (Player.bLightingAccessibility)
+        {
+            ForEach AllActors(class'Light', L)
+            {
+                if (L.Name == 'Light157')
+                    L.LightType = LT_Steady;
+            }
+        }
+
 		// prepare for the ceremony
 		if (flags.GetBool('Have_ROM') &&
 			flags.GetBool('MeetTracerTong_Played') &&
