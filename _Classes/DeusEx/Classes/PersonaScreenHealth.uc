@@ -828,12 +828,7 @@ function int GetMedKitHealPoints()
 		player.drugEffectTimer = 0;	// stop the drunk effect
 	    }
 		
-	    player.PlaySound(sound'MedicalHiss', SLOT_None,,, 256);
-		
-		if(player.iHealingScreen == 1)
-			player.ClientFlash(4,vect(71.0,236.0,0.0));     //Ygll: new green flash color.
-		else if(player.iHealingScreen == 2)
-			player.ClientFlash(4,vect(0.0,0.0,200.0));  //CyberP: reduced flash scale (0.5).
+	    player.HealScreenEffect(false);
         
         ncl = 1;
     	return player.CalculateSkillHealAmount(ncl * medKit.healAmount);  //medKit.NumCopies
@@ -1022,12 +1017,7 @@ MedSkillLevel=player.SkillSystem.GetSkillLevel(class'SkillMedicine');
 			player.drugEffectTimer = 0;
 	    }
 		
-	    player.PlaySound(sound'MedicalHiss', SLOT_None,,, 256);
-		
-        if(player.iHealingScreen == 1)
-			player.ClientFlash(4,vect(71.0,236.0,0.0));     //Ygll: new green flash color.
-		else if(player.iHealingScreen == 2)
-			player.ClientFlash(4,vect(0.0,0.0,200.0));  //CyberP: reduced flash scale (0.5).
+	    player.HealScreenEffect(false);
 		
 		medKit.UseOnce();
 		UpdateMedKits();

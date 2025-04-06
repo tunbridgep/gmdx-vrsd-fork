@@ -297,10 +297,7 @@ function MedBotHealPlayer()
 	UpdateMedBotDisplay();
 	UpdateRegionWindows();
 	
-	if(player.iHealingScreen == 1)
-		player.ClientFlash(8,vect(71.0,236.0,0.0));     //Ygll: new green flash color.
-	else if(player.iHealingScreen == 2)
-		player.ClientFlash(8,vect(0.0,0.0,200.0));     //CyberP: flash when using medbots.
+	player.HealScreenEffect(false);
 }
 
 // ----------------------------------------------------------------------

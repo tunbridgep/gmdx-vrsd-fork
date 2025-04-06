@@ -34,12 +34,7 @@ state Active
 		else
 			Deactivate();
 		
-		Player.PlaySound(sound'biomodregenerate',SLOT_None);
-		
-		if(Player.iHealingScreen == 1)
-			Player.ClientFlash(0.2,vect(71.0,236.0,0.0));     //Ygll: new green flash color.
-		else if(Player.iHealingScreen == 2)
-			Player.ClientFlash(0.2,vect(0.0,0.0,200.0));  //CyberP: reduced flash scale (0.5).
+		Player.HealScreenEffect(true);
 		
 		Goto('Loop');
 }
