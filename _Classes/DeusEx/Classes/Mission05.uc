@@ -21,8 +21,60 @@ function FirstFrame()
     local ammocrate crate;                                                      //RSD: Added an ammo crate to store all the player's ammo (new behavior in SP for that class)
     local Ammo Ammotype;
     local int ammoCount;
+    local DeusExWeapon MiguelWeapon;
+    local DeusExAmmo MiguelAmmo;
 
 	Super.FirstFrame();
+
+    //On all maps except the lab map, give Miguel the correct weapon
+    if (localURL != "05_NYC_UNATCOMJ12LAB" && firstTime && flags.GetBool('MiguelFollowing'))
+    {
+        foreach AllActors(class'Terrorist', T)
+        {
+            if (flags.GetBool('MiguelGiveCrossbow'))
+            {
+                MiguelWeapon = spawn(class'WeaponMiniCrossbow', T);
+                MiguelAmmo = spawn(class'AmmoDartPoison', T);
+            }
+            else if (flags.GetBool('MiguelGivePistol'))
+            {
+                MiguelWeapon = spawn(class'WeaponPistol', T);
+                MiguelAmmo = spawn(class'Ammo10mm', T);
+            }
+            else if (flags.GetBool('MiguelGiveShotgun'))
+            {
+                MiguelWeapon = spawn(class'WeaponAssaultShotgun', T);
+                MiguelAmmo = spawn(class'AmmoShell', T);
+            }
+            else if (flags.GetBool('MiguelGiveStealthPistol'))
+            {
+                MiguelWeapon = spawn(class'WeaponStealthPistol', T);
+                MiguelAmmo = spawn(class'Ammo10mm', T);
+            }
+            
+            if (MiguelAmmo != None)
+            {
+                MiguelAmmo.GiveTo(T);
+                MiguelAmmo.SetBase(T);
+                MiguelAmmo.bHidden = True;
+                MiguelAmmo.SetPhysics(PHYS_None);
+                T.AddInventory(MiguelAmmo);
+            }
+
+            if (MiguelWeapon != None)
+            {
+                if (MiguelAmmo != None)
+                    MiguelWeapon.AmmoType = MiguelAmmo;
+                MiguelWeapon.GiveTo(T);
+                MiguelWeapon.SetBase(T);
+                MiguelWeapon.bHidden = True;
+                MiguelWeapon.SetPhysics(PHYS_None);
+                T.AddInventory(MiguelWeapon);
+                T.SetWeapon(MiguelWeapon);
+            }
+
+        }    
+    }
 
 	if (localURL == "05_NYC_UNATCOMJ12LAB")
 	{
