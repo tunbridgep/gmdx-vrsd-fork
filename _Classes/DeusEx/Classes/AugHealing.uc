@@ -34,7 +34,7 @@ state Active
 		else
 			Deactivate();
 		
-		Player.HealScreenEffect(true);
+		Player.HealScreenEffect(0.2, true);
 		
 		Goto('Loop');
 }

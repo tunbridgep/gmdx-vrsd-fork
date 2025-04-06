@@ -5235,7 +5235,7 @@ function DoneReloading(DeusExWeapon weapon)
 }
 
 //Ygll: utility function to create the healing flash effect
-function HealScreenEffect(bool isRegen)
+function HealScreenEffect(float scale, bool isRegen)
 {
 	if(!isRegen)
 		PlaySound(sound'MedicalHiss', SLOT_None,,, 256);
@@ -5243,9 +5243,9 @@ function HealScreenEffect(bool isRegen)
 		PlaySound(sound'biomodregenerate',SLOT_None);
 			
 	if(iHealingScreen == 1)
-		ClientFlash(1,vect(71.0,236.0,0.0));     //Ygll: new green flash color.
+		ClientFlash(scale,vect(71.0,236.0,0.0));     //Ygll: new green flash color.
 	else if(iHealingScreen == 2)
-		ClientFlash(1,vect(0.0,0.0,200.0));     //CyberP: flash when using medkits.
+		ClientFlash(scale,vect(0.0,0.0,200.0));     //CyberP: flash when using medkits.
 }
 
 // ----------------------------------------------------------------------
@@ -5272,7 +5272,7 @@ function int HealPlayer(int baseHealPoints, optional bool bUseMedicineSkill)
 	{
 		if (bUseMedicineSkill)
 		{
-			HealScreenEffect(false);
+			HealScreenEffect(1.0, false);
 		}
 		
 		// Heal by 3 regions via multiplayer game

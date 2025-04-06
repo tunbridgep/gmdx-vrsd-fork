@@ -297,7 +297,7 @@ function MedBotHealPlayer()
 	UpdateMedBotDisplay();
 	UpdateRegionWindows();
 	
-	player.HealScreenEffect(false);
+	player.HealScreenEffect(8.0, false);
 }
 
 // ----------------------------------------------------------------------

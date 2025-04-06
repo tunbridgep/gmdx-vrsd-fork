@@ -828,7 +828,7 @@ function int GetMedKitHealPoints()
 		player.drugEffectTimer = 0;	// stop the drunk effect
 	    }
 		
-	    player.HealScreenEffect(false);
+	    player.HealScreenEffect(4.0, false);
         
         ncl = 1;
     	return player.CalculateSkillHealAmount(ncl * medKit.healAmount);  //medKit.NumCopies
@@ -1017,7 +1017,7 @@ MedSkillLevel=player.SkillSystem.GetSkillLevel(class'SkillMedicine');
 			player.drugEffectTimer = 0;
 	    }
 		
-	    player.HealScreenEffect(false);
+	    player.HealScreenEffect(4.0, false);
 		
 		medKit.UseOnce();
 		UpdateMedKits();
