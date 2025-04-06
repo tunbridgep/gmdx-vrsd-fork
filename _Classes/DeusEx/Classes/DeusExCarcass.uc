@@ -1005,7 +1005,8 @@ function Frob(Actor Frobber, Inventory frobWith)
                     if (!bSearched)
                     {
                         //If we already have a disposable weapon, ignore the message, since we will get the ammo from it, and the ammo is the weapon.
-                        if (found == None || (found.IsA('DeusExWeapon') && !DeusExWeapon(found).bDisposableWeapon))
+                        //if (found == None || (found.IsA('DeusExWeapon') && !DeusExWeapon(found).bDisposableWeapon))
+                        if (found == None)
                             //player.ClientMessage(sprintf(player.InventoryFull,AmmoType.ItemName));
                             P.ClientMessage(item.PickupMessage @ item.itemArticle @ Item.itemName @ DeclinedString);
                         bFoundSomething=True;
@@ -1229,7 +1230,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                     if (!bSearched)
                                     {
                                         bFoundSomething = True;
-                                        if (!W.bDisposableWeapon && !bDeclined)
+                                        if (!W.bDisposableWeapon)
                                             P.ClientMessage(item.PickupMessage @ item.itemArticle @ Item.itemName @ IgnoredString);
                                     }
                                     bFoundInvalid = true;
