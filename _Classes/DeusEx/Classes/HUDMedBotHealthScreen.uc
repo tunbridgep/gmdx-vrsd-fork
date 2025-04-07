@@ -364,8 +364,8 @@ function UpdateStatusText()
     
 
     restored = maxHealth - totalHealth;
-    if (restored > 250)
-        restored = 250;
+    if (restored > medBot.healAmount)
+        restored = medBot.healAmount;
 
     winInfo.SetText(TotalRestoreAmount $ restored);
 
