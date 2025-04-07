@@ -57710,19 +57710,6 @@ Begin Actor Class=AmmoDart Name=AmmoDart1
     OldLocation=(X=290.121094,Y=832.144226,Z=19.099840)
     Name=AmmoDart1
 End Actor
-Begin Actor Class=SoftwareNuke Name=SoftwareNuke2
-    LastRenderTime=0.348555
-    DistanceFromPlayer=3854.750977
-    Level=LevelInfo'MyLevel.LevelInfo0'
-    Tag=SoftwareNuke
-    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
-    Location=(X=1798.596436,Y=584.824707,Z=-196.539291)
-    Rotation=(Pitch=16400,Yaw=6000)
-    OldLocation=(X=471.609650,Y=-103.003944,Z=53.613949)
-    ScaleGlow=0.600000
-    bUnlit=True
-    Name=SoftwareNuke2
-End Actor
 Begin Actor Class=Light Name=Light76
     LastRenderTime=0.348555
     DistanceFromPlayer=1506.064575
