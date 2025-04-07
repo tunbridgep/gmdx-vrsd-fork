@@ -271,6 +271,7 @@ function TriggerEvent(bool bTrigger)
 		SoundVolume = 32;
         MultiSkins[2] = GetCameraLightTex(1);
 		AIEndEvent('Alarm', EAITYPE_Audio);
+		bAlarmEvent = false;
 		// reset our stasis info
 		bStasis = Default.bStasis;
 	}
@@ -311,6 +312,7 @@ function TriggerCarcassEvent(bool bTrigger)
 		SoundVolume = 32;
         MultiSkins[2] = GetCameraLightTex(1);
 		AIEndEvent('Alarm', EAITYPE_Audio);
+		bAlarmEvent = false;
 		// reset our stasis info
 		bStasis = Default.bStasis;
 	}
