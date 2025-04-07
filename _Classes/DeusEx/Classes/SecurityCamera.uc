@@ -54,6 +54,8 @@ var float disableTimeBase;                //Sarge: Our hacking skill is multipli
 var float disableTimeMult;                //Sarge: Our hacking skill is multiplied by this to give total disable time
 var bool bRebooting;                      //This will be set when the camera is hacked, to control rebooting
 
+var bool bAlarmedOnce;                    //SARGE: Don't re-activate movers after the first alarm
+
 // ------------------------------------------------------------------------------------
 // Network replication
 // ------------------------------------------------------------------------------------
@@ -261,8 +263,11 @@ function TriggerEvent(bool bTrigger)
 		if (bAlarmEvent && Event != '' && player != None)
 		{
 			foreach AllActors(class'Actor', A, Event)
-				A.Trigger(Self, player);
+                if (!bAlarmedOnce || !A.IsA('DeusExMover'))
+                    A.Trigger(Self, player);
 		}
+        
+        bAlarmedOnce = true;
 	}
 	else
 	{
@@ -271,7 +276,6 @@ function TriggerEvent(bool bTrigger)
 		SoundVolume = 32;
         MultiSkins[2] = GetCameraLightTex(1);
 		AIEndEvent('Alarm', EAITYPE_Audio);
-		bAlarmEvent = false;
 		// reset our stasis info
 		bStasis = Default.bStasis;
 	}
@@ -302,8 +306,11 @@ function TriggerCarcassEvent(bool bTrigger)
 		if (bAlarmEvent && Event != '' && player != None)
 		{
 			foreach AllActors(class'Actor', A, Event)
-				A.Trigger(Self, player);
+                if (!bAlarmedOnce || !A.IsA('DeusExMover'))
+                    A.Trigger(Self, player);
 		}
+
+        bAlarmedOnce = true;
 	}
 	else
 	{
@@ -312,7 +319,6 @@ function TriggerCarcassEvent(bool bTrigger)
 		SoundVolume = 32;
         MultiSkins[2] = GetCameraLightTex(1);
 		AIEndEvent('Alarm', EAITYPE_Audio);
-		bAlarmEvent = false;
 		// reset our stasis info
 		bStasis = Default.bStasis;
 	}
@@ -402,6 +408,7 @@ function CheckCarcassVisibility(DeusExCarcass carcass, DeusExPlayer player)
 	local Actor hit;
 	local Vector HitLocation, HitNormal;
 	local Rotator rot;
+    local Actor A;
 
 	if (carcass == None)
 		return;
@@ -449,6 +456,14 @@ function CheckCarcassVisibility(DeusExCarcass carcass, DeusExPlayer player)
 				{
 					TriggerCarcassEvent(true);
 				}
+
+                //SARGE: if we've triggered the event, reset every Alarm Unit to the minimum time so they keep blaring forever.
+                else if (bEventTriggered)
+                {
+                    foreach AllActors(class'Actor', A, Event)
+                        if (A.IsA('AlarmUnit') && AlarmUnit(A).bActive)
+                            AlarmUnit(A).curTime=0;
+                }
 
 				return;
 			}
