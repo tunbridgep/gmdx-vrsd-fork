@@ -31,6 +31,7 @@ var travel bool bSearched;                                                      
 var travel int PickupAmmoCount;                                                 //Sarge: Carried over from Carcasses so they are retained when we make a new one by putting the corpse down
 
 var travel bool bFirstBloodPool;                                                //SARGE: Stores whether or not the carcass has created a blood pool yet.
+var travel bool bNoDefaultPools;                                                //SARGE: If set, don't make pools at all, unless we receive gunshot wounds or the corpse is otherwise damaged.
 
 //END GMDX:
 

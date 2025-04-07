@@ -89,6 +89,8 @@ var bool bMadePool;     //SARGE: Stores the state of our current blood pool. Del
 
 var bool bDontRemovePool; //SARGE: If set, the blood pool isn't removed when deleting the carcass. Used when Frobbing.
 
+var bool bNoDefaultPools;        //SARGE: If set, don't make pools at all, unless we receive gunshot wounds or the corpse is otherwise damaged.
+
 // ----------------------------------------------------------------------
 // ShouldCreate()
 // If this returns FALSE, the object will be deleted on it's first tick
@@ -506,13 +508,14 @@ function Destroyed()
 	}
     
     //Destroy blood pool
-    DestroyPool();
+    if (!bDontRemovePool)
+        DestroyPool();
 	Super.Destroyed();
 }
 
 function DestroyPool()
 {
-    if (pool != None && !bDontRemovePool)
+    if (pool != None)
         pool.Destroy();
 }
 
@@ -701,6 +704,7 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitLocation, Vector mo
 		if (bNotDead && (FRand() < 0.4 || Damage > 18)) //CyberP: don't be lazy self, check for headshots...
 		{
 		    KillUnconscious();                                                  //RSD: Proper kill
+            bNoDefaultPools = false;                                            //SARGE: Allow creating pools once we take damage.
             CreateBloodPool();
 			if (instigatedBy.IsA('DeusExPlayer'))
 			    DeusExPlayer(instigatedBy).KillCount++;
@@ -901,6 +905,7 @@ function PickupCorpse(DeusExPlayer player)
             corpse.PickupAmmoCount = PickupAmmoCount;
             corpse.savedName = savedName;
             corpse.bFirstBloodPool = bFirstBloodPool; //SARGE: Remember if we've made a blood pool.
+            corpse.bNoDefaultPools = bNoDefaultPools; //SARGE: Remember if we should be making pools or not.
             corpse.Frob(player, None);
             corpse.SetBase(player);
             player.PutInHand(corpse);
@@ -1735,7 +1740,7 @@ function CreateBloodPool()
 		local Actor hit;
         local float drawSize;
 
-        if (bMadePool)
+        if (bMadePool || bNoDefaultPools)
             return;
 
         if (class'DeusExPlayer'.default.bConsistentBloodPools)
