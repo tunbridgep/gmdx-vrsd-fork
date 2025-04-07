@@ -61431,4 +61431,16 @@ Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner3
     bSelected=True
     Name=OutfitSpawner3
 End Actor
+Begin Actor Class=SavePoint Name=SavePoint1
+    requiredFlag=Has_ROM
+    bDynamicLight=True
+    LastRenderTime=51.803444
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=SavePoint
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=1523,ZoneNumber=1)
+    Location=(X=-37.556488,Y=352.996674,Z=50.099693)
+    OldLocation=(X=-37.556488,Y=352.996674,Z=50.099693)
+    bSelected=True
+    Name=SavePoint1
+End Actor
 End Map
