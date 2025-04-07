@@ -249,7 +249,6 @@ function TriggerEvent(bool bTrigger)
 	if (bTrigger)
 	{
 	    player = DeusExPlayer(GetPlayerPawn());
-		bAlarmEvent = true;
 		AmbientSound = Sound'alarms';
 		SoundVolume = 80;  //lowered volume, increased radius
 		SoundRadius = 150;
@@ -272,7 +271,6 @@ function TriggerEvent(bool bTrigger)
 		SoundVolume = 32;
         MultiSkins[2] = GetCameraLightTex(1);
 		AIEndEvent('Alarm', EAITYPE_Audio);
-		bAlarmEvent = false;
 		// reset our stasis info
 		bStasis = Default.bStasis;
 	}
@@ -290,9 +288,7 @@ function TriggerCarcassEvent(bool bTrigger)
 	// now, the camera sounds its own alarm
 	if (bTrigger)
 	{
-		lastSeenTimer = -5.000000;
 		player = DeusExPlayer(GetPlayerPawn());		
-		bAlarmEvent = true;
 		AmbientSound = Sound'Klaxon2';
 		SoundVolume = 80;
 		SoundRadius = 150;
@@ -315,7 +311,6 @@ function TriggerCarcassEvent(bool bTrigger)
 		SoundVolume = 32;
         MultiSkins[2] = GetCameraLightTex(1);
 		AIEndEvent('Alarm', EAITYPE_Audio);
-		bAlarmEvent = false;
 		// reset our stasis info
 		bStasis = Default.bStasis;
 	}
@@ -438,6 +433,7 @@ function CheckCarcassVisibility(DeusExCarcass carcass, DeusExPlayer player)
 				if (bTrackCarcass)
 					DesiredRotation = rot;
 
+				lastSeenTimer = 0.000000;
 			    bCarcassSeen = true;
 				
                 if (minDamageThreshold >= 70 && bTrigSound == false)
