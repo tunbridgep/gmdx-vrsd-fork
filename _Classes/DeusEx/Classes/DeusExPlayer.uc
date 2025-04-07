@@ -10507,6 +10507,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 							Carc.PickupAmmoCount = POVCorpse(item).PickupAmmoCount;
 							Carc.savedName = POVCorpse(item).savedName;
                             Carc.bFirstBloodPool = POVCorpse(item).bFirstBloodPool; //SARGE: Added.
+                            Carc.bNoDefaultPools = POVCorpse(item).bNoDefaultPools;
                             Carc.UpdateName();
 
                             //if (FRand() < 0.3)
