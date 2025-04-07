@@ -4,6 +4,8 @@
 class MissionIntro extends MissionScript;
 
 var byte savedSoundVolume;
+var byte savedMusicVolume;
+var byte savedSpeechVolume;
 
 // ----------------------------------------------------------------------
 // InitStateMachine()
@@ -31,6 +33,7 @@ function InitStateMachine()
 function FirstFrame()
 {
 	local BobPage bob;
+    local DeusExCarcass C;
 
 	Super.FirstFrame();
 
@@ -50,9 +53,25 @@ function FirstFrame()
 		}
 
 		// turn down the sound so we can hear the speech
-		savedSoundVolume = SoundVolume;
-		SoundVolume = 32;
+		savedSoundVolume = byte(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice SoundVolume"));
+		savedMusicVolume = byte(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice MusicVolume"));
+		savedSpeechVolume = byte(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice SpeechVolume"));
+		SoundVolume = 16; //SARGE: Was 32
 		Player.SetInstantSoundVolume(SoundVolume);
+        
+        //SARGE: Force the music on, too
+		Player.SetInstantMusicVolume(32);
+
+        //Bump up the speech volume if we have to
+        if (savedSpeechVolume < 64)
+            Player.SetInstantSpeechVolume(64);
+
+        //SARGE: Make the corpses not bleed anymore (except for the thug in the Paris scene)
+        Foreach AllActors(class'DeusExCarcass', C)
+        {
+            If (!C.IsA('ThugMaleCarcass'))
+                C.DestroyPool();
+        }
 	}
 }
 
@@ -65,8 +84,9 @@ function FirstFrame()
 function PreTravel()
 {
 	// restore the sound volume
-	SoundVolume = savedSoundVolume;
-	Player.SetInstantSoundVolume(SoundVolume);
+	Player.SetInstantSoundVolume(savedSoundVolume);
+	Player.SetInstantMusicVolume(savedMusicVolume);
+	Player.SetInstantSpeechVolume(savedSpeechVolume);
 
 	Super.PreTravel();
 }

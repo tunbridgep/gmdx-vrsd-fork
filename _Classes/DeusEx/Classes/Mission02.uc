@@ -24,7 +24,10 @@ function FirstFrame()
     {
         //SARGE: Carcasses already in the map won't bleed
         foreach AllActors(class'DeusExCarcass', C)
+        {
             C.DestroyPool();
+            C.bNoDefaultPools=true;
+        }
 
     }
 	else if (localURL == "02_NYC_STREET")
