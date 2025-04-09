@@ -11084,11 +11084,11 @@ function texture GetWeaponHandTex()
 		switch(PlayerSkin)
 		{
 			//default, black, latino, ginger, albino, respectively
-			case 0: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.weaponhandstex0A"); break;
-			case 1: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.weaponhandstex1A"); break;
-			case 2: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.weaponhandstex2A"); break;
-			case 3: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.weaponhandstex3A"); break;
-			case 4: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.weaponhandstex4A"); break;
+			case 0: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.Skins.weaponhandstex0A"); break;
+			case 1: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.Skins.weaponhandstex1A"); break;
+			case 2: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.Skins.weaponhandstex2A"); break;
+			case 3: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.Skins.weaponhandstex3A"); break;
+			case 4: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.Skins.weaponhandstex4A"); break;
 		}
     }
 
