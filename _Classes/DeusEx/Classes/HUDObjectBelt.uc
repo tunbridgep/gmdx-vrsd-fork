@@ -75,8 +75,13 @@ function CreateSlots()
 {
 	local int i;
 
-    if (winRadio != None || winSlots != None)
+    //If the belt exists, simply update the hotkeys
+    if (winRadio != None && winSlots != None)
+    {
+        for (i=0; i<12; i++)
+            objects[i].SetObjectNumber(i,i == KeyRingSlot);
         return;
+    }
 
 	// Radio window used to contain objects so they can be selected
 	// with the mouse on the inventory screen.
@@ -92,18 +97,8 @@ function CreateSlots()
 	for (i=0; i<12; i++)
 	{
 		objects[i] = HUDObjectSlot(winSlots.NewChild(Class'HUDObjectSlot'));
-		objects[i].SetObjectNumber(i);
-        //Some annoying logic here
-        if (i < 9)
-            objects[i].beltText = string(i + 1);
-        else if (i == 9)
-            objects[i].beltText = "0";
-        else if (i == 10)
-            objects[i].beltText = "-";
-        else
-            objects[i].beltText = "=";
+		objects[i].SetObjectNumber(i,i == KeyRingSlot);
 		objects[i].Lower();
-
 	}
 }
 
@@ -340,7 +335,7 @@ function ClearBelt()
 	for(beltPos=0; beltPos<numSlots; beltPos++)
     {
         if (player.bBeltMemory && objects[beltPos].bAllowDragging)
-            player.SetPlaceholder(beltPos,true);
+            player.SetPlaceholder(beltPos,objects[beltPos].item.icon);
 		ClearPosition(beltPos);
     }
 }
@@ -363,7 +358,7 @@ function RemoveObjectFromBelt(Inventory item, optional bool Placeholder)
 		if (objects[i].GetItem() == item && objects[i].bAllowDragging)
 		{
             if (placeholder)
-                player.SetPlaceholder(i,true);
+                player.SetPlaceholder(i,objects[i].item.icon);
 
 			objects[i].SetItem(None);
 			item.bInObjectBelt = False;
@@ -420,23 +415,23 @@ function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
             //only allow a position to be valid if the object in it is draggable.
             //Sarge: First, check for an existing placeholder slot
             //Then, if we don't find one, check for an empty slot if we have autofill enabled.
-            for (i=0; IsValidPos(i); i++)
-            {
-                if (( (Player.Level.NetMode == NM_Standalone) || (!Player.bBeltIsMPInventory) || (newItem.TestMPBeltSpot(i))))
+                if (Player.Level.NetMode == NM_Standalone)
                 {
-                    //Additionally, allow slots with the same icon if we have a placeholder
-                    if (player.GetBeltIcon(i) == newItem.icon && player.GetPlaceholder(i))
+                    for (i=0; IsValidPos(i); i++)
                     {
-                        if (player.bBeltMemory)
+                        //Additionally, allow slots with the same icon if we have a placeholder
+                        if (player.GetPlaceholderIcon(i) == newItem.default.icon)
                         {
-                            FoundPlaceholder = true;
-                            break;
+                            if (player.bBeltMemory)
+                            {
+                                FoundPlaceholder = true;
+                                break;
+                            }
+                            else
+                                player.ClearPlaceholder(i); //Since we're not using placeholders, clear any that exist so we don't get belt weirdness.
                         }
-                        else
-                            player.ClearPlaceholder(i); //Since we're not using placeholders, clear any that exist so we don't get belt weirdness.
                     }
                 }
-            }
 			
             //No placeholder slot found, check for an empty one
             if (!FoundPlaceholder && (player.bBeltAutofill || player.bForceBeltAutofill))
@@ -470,7 +465,7 @@ function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
 
 			objects[pos].SetItem(newItem);
 
-			if (newItem.IsA('ChargedPickup') && !ChargedPickup(newItem).bActivatable)
+			if (newItem.IsA('ChargedPickup') && (!ChargedPickup(newItem).bActivatable || ChargedPickup(newItem).Charge == 0))
 			{
 				objects[pos].bDimIcon = true;                                   //RSD: Dim ChargedPickups if they're at 0%
 			}

@@ -504,7 +504,11 @@ function DisplayCommonInfo()
     //winInfo.SetBackground(Texture'DeusExUI.UserInterface.GridTex64x64');
 	player.GenerateTotalHealth();
 	winInfo.SetTitle(StatusTitle);
-    winInfo.SetText(AvgHealthStr $ player.Health $ "%");
+    
+    //Display total health
+    player.GenerateTotalHealth();
+    winInfo.SetText(AvgHealthStr $ player.Health $ "% (" $ player.GetTotalHealth() $ "/" $ player.GetTotalMaxHealth() $ ")");
+
     /*if (player.KillerCount > 300)
        winInfo.SetText(MoralityStr $ MassMurdererStr);
     else if (player.KillerCount > 4)
@@ -633,10 +637,10 @@ function UpdateAddictionText()
         if (player.AddictionManager.addictions[i].drugTimer > 0.0)
         {
             winInfo.SetText(drugStatusLabel $ drugActiveLabel $ int(player.AddictionManager.addictions[i].drugTimer) $ "s");
-            if (i == 1 && player.AddictionManager.stacks[i] > 1)
-                winInfo.SetText(drugEffectLabel $ sprintf(drugActiveEffects[i], 5*player.AddictionManager.stacks[i]) @ sprintf(drugStacks,player.AddictionManager.stacks[i],player.AddictionManager.maxStacks[i]));
+            if (i == 1 && player.AddictionManager.addictions[i].stacks > 1)
+                winInfo.SetText(drugEffectLabel $ sprintf(drugActiveEffects[i], 5*player.AddictionManager.addictions[i].stacks) @ sprintf(drugStacks,player.AddictionManager.addictions[i].stacks,player.AddictionManager.addictions[i].maxStacks));
             else if (i == 1)
-                winInfo.SetText(drugEffectLabel $ sprintf(drugActiveEffects[i], 5*player.AddictionManager.stacks[i]));
+                winInfo.SetText(drugEffectLabel $ sprintf(drugActiveEffects[i], 5*player.AddictionManager.addictions[i].stacks));
             else
                 winInfo.SetText(drugEffectLabel $ drugActiveEffects[i]);
         }
@@ -823,8 +827,9 @@ function int GetMedKitHealPoints()
        	player.poisonDamage  = 0;
 		player.drugEffectTimer = 0;	// stop the drunk effect
 	    }
-	    player.PlaySound(sound'MedicalHiss', SLOT_None,,, 256);
-        player.ClientFlash(4,vect(0,0,200));
+		
+	    player.HealScreenEffect(4.0, false);
+        
         ncl = 1;
     	return player.CalculateSkillHealAmount(ncl * medKit.healAmount);  //medKit.NumCopies
     }
@@ -1004,15 +1009,16 @@ MedSkillLevel=player.SkillSystem.GetSkillLevel(class'SkillMedicine');
 	{
 	    if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkToxicologist').bPerkObtained == true)
 	    {
-	    player.StopPoison();
-	    player.myPoisoner = None;
-        player.poisonCounter = 0;
-        player.poisonTimer   = 0;
-       	player.poisonDamage  = 0;
-	    player.drugEffectTimer = 0;
+			player.StopPoison();
+			player.myPoisoner = None;
+			player.poisonCounter = 0;
+			player.poisonTimer   = 0;
+			player.poisonDamage  = 0;
+			player.drugEffectTimer = 0;
 	    }
-	    player.PlaySound(sound'MedicalHiss', SLOT_None,,, 256);
-        player.ClientFlash(4,vect(0,0,200));
+		
+	    player.HealScreenEffect(4.0, false);
+		
 		medKit.UseOnce();
 		UpdateMedKits();
 

@@ -381,8 +381,15 @@ function UpdateHud()
 	if (hud != None)
     {
         hud.RecreateBelt();
+		hud.UpdateAssigned();
 		hud.UpdateSettings(DeusExPlayer(parentPawn), WindowStackCount() != 0);
     }
+}
+
+function UpdateSecondaryDisplay()
+{
+	if (hud != None)
+		hud.UpdateAssigned();
 }
 
 function UpdateCrosshair()

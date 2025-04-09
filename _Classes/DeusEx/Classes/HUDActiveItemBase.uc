@@ -40,10 +40,22 @@ event DrawWindow(GC gc)
 		// Now draw the icon
 		gc.SetStyle(iconDrawStyle);
 		gc.SetTileColor(colItemIcon);
+        if (DrawDim())
+            gc.SetTileColorRGB(64,64,64);
 		gc.DrawTexture(2, 2, 32, 32, 0, 0, icon);
 	}
 
 	DrawHotKey(gc);
+}
+
+// ----------------------------------------------------------------------
+// SARGE: DrawDim()
+// Whether or not to dim the icon
+// ----------------------------------------------------------------------
+
+function bool DrawDim()
+{
+    return false;
 }
 
 // ----------------------------------------------------------------------

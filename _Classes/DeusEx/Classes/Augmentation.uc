@@ -744,7 +744,6 @@ defaultproperties
      bHidden=True
      bTravel=True
      NetUpdateFrequency=5.000000
-     bAddedToWheel=true;
      chargeTime=1.000000
      AugmentationType=Aug_Active
      colToggle=(R=76,G=255,B=0)
