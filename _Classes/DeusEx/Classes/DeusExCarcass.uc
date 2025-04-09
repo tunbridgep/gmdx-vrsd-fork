@@ -429,7 +429,7 @@ function ZoneChange(ZoneInfo NewZone)
 		{
         Mesh = Mesh3;
         assignedMesh = 3;
-        if (!IsA('ScubaDiver'))
+        if (!IsA('ScubaDiverCarcass'))
         {
         	KillUnconscious();                                                  //RSD: Proper kill
 		}

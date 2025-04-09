@@ -346,6 +346,11 @@ var vector axesY;
 var vector axesZ;
 var bool bFancyScopeAnimation;
 
+//SARGE: Sounds for various things
+
+//Retrieve Ammo from Weapon
+var const Sound RetrieveAmmoSound;
+
 //END GMDX:
 
 //
@@ -1206,6 +1211,7 @@ function bool HandlePickupQuery(Inventory Item)
 					if (!(DeusExWeapon(item) != none && DeusExWeapon(item).bDisposableWeapon)) //RSD: Don't display ammo message for grenades or the PS20
 					{
                         player.ClientMessage(defAmmo.PickupMessage @ defAmmo.itemArticle @ defAmmo.ItemName $ " (" $ intj $ ")", 'Pickup' );
+                        PlaySound(RetrieveAmmoSound, SLOT_None, 0.5+FRand()*0.25, , 256, 0.95+FRand()*0.1);
 					}
 					return true;
 				}
@@ -1222,6 +1228,7 @@ function bool HandlePickupQuery(Inventory Item)
                         else
                         {
                             player.ClientMessage(defAmmo.PickupMessage @ defAmmo.itemArticle @ defAmmo.ItemName $ " (" $ Weapon(Item).PickupAmmoCount $ ")", 'Pickup' );
+                            PlaySound(RetrieveAmmoSound, SLOT_None, 0.5+FRand()*0.25, , 256, 0.95+FRand()*0.1);
                         }
                     }
 				}
@@ -1783,7 +1790,7 @@ function bool LoadAmmo(int ammoNum)
             else if ( Ammo762mm(newAmmo) != None)
             {
                 if (bHasSilencer)    //CyberP: revert back to norm
-                   FireSilentSound=Sound'GMDXSFX.Weapons.MP5_1p_Fired1';
+                   FireSilentSound=default.FireSilentSound;
                 else
                    FireSound=default.FireSound;
             }
@@ -2310,8 +2317,8 @@ simulated function Tick(float deltaTime)
 	//GMDX: ADD PROJECTILE TEST INFLIGHT
 	if ((player!=none)&&player.bGEPprojectileInflight)//(player.aGEPProjectile!=none)) //RSD: Changed so it still updates laser position
 		return;
-    //CyberP: moves held guns back if facing & standing next to a wall
-   if (player != none && !bHandToHand && IsInState('Idle'))
+    //CyberP: moves held item back if facing & standing next to a wall
+   if (player != none && IsInState('Idle'))
    {
       if (NearWallCheck() && player.Physics != PHYS_Falling)
       {
@@ -3499,7 +3506,6 @@ function Fire(float Value)
 		}
 	}
 
-
 	if (bHandToHand)
 	{
 		if (ReloadCount > 0)
@@ -3764,7 +3770,13 @@ simulated function UpdateRecoilShaker()
 simulated function PlayFiringSound()
 {
 	if (bHasSilencer)
-		PlaySimSound(FireSilentSound, SLOT_None, TransientSoundVolume, 2048 );
+    {
+        //SARGE: Very silly rat squeak silencers!
+        if (Owner != None && Owner.IsA('DeusExPlayer') && DeusExPlayer(owner).bShenanigans)
+            PlaySimSound(Sound'RatSqueak2', SLOT_None, TransientSoundVolume, 2048 );
+        else
+            PlaySimSound(FireSilentSound, SLOT_None, TransientSoundVolume, 2048 );
+    }
 	else
 	{
 		// The sniper rifle sound is heard to it's range in multiplayer
@@ -4379,6 +4391,40 @@ function GetAIVolume(out float volume, out float radius)
 	}
 }
 
+//Ygll: utility function to test the behaviour of the dart with Fragile dart gameplay option enabled
+function DartStickToWall(DeusExProjectile proj)
+{
+    local DeusExPlayer player;
+
+    player = DeusExPlayer(GetPlayerPawn());
+
+    if (player == None)
+        return;
+
+	//SARGE: Added new gameplay setting
+	//Ygll: must test the class type of the projectile before testing the option value. proj.IsA('Dart') test can be true for all Dart type.
+	if ( proj.IsA('DartPoison'))
+	{
+		//Poison Dart should be destroyable in hardcore even with the fragile option disabled
+		if( player.bHardCoreMode || player.iFragileDarts >= 1 )
+			proj.bSticktoWall = false;                      //RSD: Tranq darts won't stick to walls (for recovery) in Hardcore
+	}
+	else if (proj.IsA('DartTaser'))
+	{
+		if(player.iFragileDarts >= 2)
+			proj.bSticktoWall = false;
+	}	
+	else if (proj.IsA('DartFlare'))
+	{
+		if(player.iFragileDarts >= 4)
+			proj.bSticktoWall = false;
+	}
+	else
+	{
+		if (proj.IsA('Dart') && player.iFragileDarts >= 3)
+			proj.bSticktoWall = false;
+	}
+}
 
 //
 // copied from Weapon.uc
@@ -4563,8 +4609,9 @@ simulated function Projectile ProjectileFire(class<projectile> ProjClass, float 
 			proj = DeusExProjectile(Spawn(ProjClass, Owner,, Start, AdjustedAim));
 			if (proj != None)
 			{
-				if (proj.IsA('DartPoison') && (DeusExPlayer(GetPlayerPawn()).bHardCoreMode || DeusExPlayer(GetPlayerPawn()).bFragileDarts)) //SARGE: Added new gameplay setting
-                	proj.bSticktoWall = false;                      //RSD: Tranq darts won't stick to walls (for recovery) in Hardcore
+				//SARGE: Added new gameplay setting //Ygll: Add more option to the fragile dart option
+				DartStickToWall(proj);
+					
                 //proj.Damage *= mult;                                          //RSD
                 finalDamage = proj.Damage*mult;                                 //RSD: final input to TakeDamage is a truncated int
                 if (FRand() < (proj.Damage*mult-finalDamage))                   //RSD: So randomly add +1 damage with probability equal to the remainder (0.0-1.0)
@@ -5057,7 +5104,7 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
 			}
 			if (bHandToHand)
 				SelectiveSpawnEffects( HitLocation, HitNormal, Other, finalDamage); //Replaced HitDamage * mult with finalDamage
-            else if (bPenetrating && Other.IsA('DeusExDecoration'))
+            else if (Other.IsA('DeusExDecoration'))
                  SpawnGMDXEffects(HitLocation, HitNormal);
 
 			if ((bPenetrating || bHandToHand) && Other.IsA('ScriptedPawn') && !Other.IsA('Robot'))
@@ -5186,7 +5233,6 @@ function Finish()
                   if (bHandToHand && (ReloadCount > 0) && (AmmoType.AmmoAmount <= 0))
                   {
                      bBeginQuickMelee = False;
-                     DeusExPlayer(Owner).assignedWeapon = None;
 				     DestroyMe();
 				     return;
 				  }
@@ -6275,8 +6321,6 @@ state NormalFire
 			// if we are a thrown weapon and we run out of ammo, destroy the weapon
 			if (bHandToHand && (ReloadCount > 0) && (AmmoType.AmmoAmount <= 0))
 			{
-			   if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).assignedWeapon != None && DeusExPlayer(Owner).assignedWeapon == self)
-			      DeusExPlayer(Owner).assignedWeapon = None;
 				DestroyMe();
 			}
 		}
@@ -6980,7 +7024,7 @@ local float p;
      if (p < 1.0)
      p = 1.0;
 
-        if (IsA('WeaponNanoSword'))
+        if (IsA('WeaponNanoSword') && WeaponNanoSword(Self).chargeManager != None && !WeaponNanoSword(self).chargeManager.IsUsedUp()) //SARGE: Added sword energy level checks
             PlaySound(sound'GMDXSFX.Weapons.energybladeunequip2',SLOT_None);
         else if (IsA('WeaponProd'))
             PlaySound(sound'GMDXSFX.Weapons.produnequip',SLOT_None);
@@ -7181,4 +7225,5 @@ defaultproperties
      Mass=10.000000
      Buoyancy=5.000000
      muzzleSlot=2
+     RetrieveAmmoSound=Sound'WeaponPickup'
 }

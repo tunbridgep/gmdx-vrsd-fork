@@ -84,11 +84,14 @@ function UpdateVisibility()
 //That's the price we pay for having it feel """nice"""
 function Inventory GetWeapon()
 {
+    if (player == None)
+        return None;
+
     if (player.inHandPending != None && player.inHandPending.IsA('DeusExPickup') && !player.inHandPending.IsA('SkilledTool'))
         return None;
 
     //SARGE: Hack...
-    if (player.inHandPending == player.assignedWeapon && player.bLastWasEmpty) //If we're using our secondary weapon, hide the ammo display.
+    if (player.inHandPending != None && string(player.inHandPending.Class) == player.assignedWeapon && player.bLastWasEmpty) //If we're using our secondary weapon, hide the ammo display.
         //return player.assignedWeapon;
         return None;
     //SARGE: ...Even worse hack...
@@ -134,7 +137,7 @@ event DrawWindow(GC gc)
 
 	Super.DrawWindow(gc);
 
-    if (!IsVisible() || curr.Owner != player)
+    if (curr == None || !IsVisible() || curr.Owner != player)
         return;
 
     ammopostop = player.FontManager.GetTextPosition(27,26);

@@ -292,7 +292,7 @@ function CreateInventoryButtons()
 			newButton.SetClientObject(anItem);
 			newButton.SetInventoryWindow(Self);
 
-			if (anItem.IsA('ChargedPickup') && !ChargedPickup(anItem).bActivatable)
+			if (anItem.IsA('ChargedPickup') && (!ChargedPickup(anItem).bActivatable || ChargedPickup(anItem).Charge == 0))
 				newButton.bDimIcon = true;                                      //RSD: Dim ChargedPickups if they're at 0%
 
 			//Dim Nanosword if it's at 0%
@@ -1885,6 +1885,7 @@ function FinishButtonDrag()
                 }
                 else
                    winStatus.AddText("Recharged by"@int(100*mult)$"%");
+                ChargedTarget.bDrained=false;                                   //SARGE: Since now it can remain equipped when empty.
                 ChargedTarget.bActivatable=true;                                //RSD: Since now you can hold one at 0%
                 ChargedTarget.unDimIcon();                                      //RSD
 
@@ -2149,7 +2150,7 @@ function MoveItemButton(PersonaInventoryItemButton anItemButton, int col, int ro
 	player.PlaceItemInSlot(Inventory(anItemButton.GetClientObject()), col, row );
 	SetItemButtonPos(anItemButton, col, row);
 
-	if (Inventory(anItemButton.GetClientObject()).IsA('ChargedPickup') && !ChargedPickup(Inventory(anItemButton.GetClientObject())).bActivatable)
+	if (Inventory(anItemButton.GetClientObject()).IsA('ChargedPickup') && (!ChargedPickup(anItemButton.GetClientObject()).bActivatable || ChargedPickup(anItemButton.GetClientObject()).Charge == 0))
         anItemButton.bDimIcon = true;                                           //RSD: Dim ChargedPickups if they're at 0%
 
     resetHomeButton();                                                          //RSD: item rotation
@@ -2173,7 +2174,7 @@ function ReturnButton(PersonaInventoryItemButton anItemButton)
 	player.PlaceItemInSlot(inv, inv.invPosX, inv.invPosY);
 	SetItemButtonPos(anItemButton, inv.invPosX, inv.invPosY);
 
-    if (inv.IsA('ChargedPickup') && !ChargedPickup(inv).bActivatable)
+    if (inv.IsA('ChargedPickup') && (!ChargedPickup(inv).bActivatable || ChargedPickup(inv).Charge == 0))
     {
         anItemButton.bDimIcon = true;                                           //RSD: Dim ChargedPickups if they're at 0%
     }

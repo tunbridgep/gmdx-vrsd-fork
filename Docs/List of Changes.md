@@ -35,10 +35,24 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX bug where jumping from a ladder while partially submerged in water would cause JC to fly forever.
     - Fixed vanilla bug where the HUD would be re-enabled while dead if opening the main-menu.
     - Fixed GMDX bug where most inventory items with multiple skins (such as sodacans) weren't showing their skinned variants when being held in the players hands.
+    - Fixed GMDX bug where cameras would not properly trigger alarm events when spotting carcasses.
+    - Fixed GMDX bugs where knocked-out scuba-divers would die immediately upon reaching the surface of water.
     - Fixed vanilla item-duplication bug (caused by repeatedly dropping and repeatedly picking up items quickly)
     - Fixed many other GMDX and Vanilla bugs.
 - Quality of Life Improvements:
+    - Ballistic Armour and Hazmat Suits are now kept equipped when drained, but will have no effect.
+        - Recharging them in any way (such as through biocells or a repair bot) will make them active again
+        - If multiple items are stacked, the item will remain drained even though a new one is available, and will require re-activation.
+    - Medical Bots will now display your total health on the status screen, as well as the total amount of health that will be healed.
+    - The Healing Screen Flash effect has been changed to green, to prevent clashes with the water flash. This can be reverted to the old Blue colour by using the "Classic" option.
+    - Keybinding Improvements
+        - A "Select Nanokey" button has been added to the options, which switches between the nanokey and the previously used weapon.
+        - Alternative binds for belt slots have been added, and will display on the belt
+        - Alternate binds for Augmentations will be displayed on the Active Augs window.
+    - The players current stance (Walking/Running, etc) is now displayed on the HUD.
     - Music will now continue when loading different areas that use the same music track, rather than restarting.
+    - GMDX "Secondary Item" system updated to use a type, rather than a specific item. This means that dropping/losing your secondary items will no longer unassign your secondary item.
+    - Taking ammo from weapons in the world will now make an "ammo retrieval" sound.
     - Saving is now possible while an infolink is playing. The infolink will be aborted.
     - The current ammo type is now displayed in the Ammo display as well as on the belt, to facilitate selecting weapons that aren't currently on the belt.
     - Optionally, bars and clubs can be made to continue their standard music during conversations, rather than restarting.
@@ -121,7 +135,7 @@ Sarge's Changes since Beta 2.2:
     - Modified Weapons will appear with a "+" icon on the belt and in the inventory screen to differentiate them from unmodded ones.
     - Augmentation Wheel improvements
         - While in the augmentation screen, use middle-click on an active augmentation to add or remove it from the augmentation wheel.
-        - By default all augmentations will appear on the wheel.
+        - By default only active augmentations will appear on the wheel. This can be changed to Everything or Nothing. Augs can always be added and removed with middle-click.
         - The "Disable All" button can optionally be removed using the options menu.
         - The augmentation wheel can be changed to work in Quick mode. In Quick mode, releasing the augmentation wheel key will select the currently highlighted augmentation. Use right click to cancel.
     - Added a new setting to always show weapon bloom.
@@ -174,6 +188,7 @@ Sarge's Changes since Beta 2.2:
     - Subtitles are now enabled in third-person cutscenes regardless of Subtitles setting, allowing text to show instead of useless black bars while also not displaying in-game barks. This can be disabled using the `bSubtitlesCutscene` option in `DeusEx.ini`
 - Gameplay Changes:
     - The NUKE! Virus can now be used at Untrained hacking.
+    - Cameras will set off more alarm events in Hardcore mode, which will result in them opening doors, releasing bots, etc more often.
     - Destroyable Movers that aren't set to highlighting will now have 1 HP.
         - This removes ambiguity about whether or not a surface is unbreakable, or just needs more hits to destroy.
         - This only affects 1-2 movers in the entire game.
@@ -330,6 +345,7 @@ Sarge's Changes since Beta 2.2:
     - A Laser Sight has been added to Smuggler's safe in the first NY visit (replaces a recoil mod)
     - The Silencer in Paul's Apartment, Full-Auto Mod in Tong's Lab, and Laser Sight in Smugglers Safe are all guaranteed to appear even with the weapon mod shuffle turned on.
 - Miscellaneous Changes:
+    - A small light has been added to the flamethrower, to simulate the light created by the small pilot light.
     - Corpses placed within maps will now have proper blood pools.
     - Added a blue screen effect when entering bodies of water.
     - Added a message and a sound when picking up a charged item that is then used to immediately recharge an existing item, to let you know what happened to it. Previously the item just disappeared with no message.

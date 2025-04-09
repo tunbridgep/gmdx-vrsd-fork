@@ -117,9 +117,27 @@ event bool ToggleChanged(Window button, bool bNewToggle)
 // SetObjectNumber()
 // ----------------------------------------------------------------------
 
-function SetObjectNumber(int newNumber)
+function SetObjectNumber(int newNumber, bool nanoKeySlot)
 {
 	objectNum = newNumber;
+
+    //SARGE: mildly annoying.
+    //belt numbers are offset by 1 in the ActivateBelt code,
+    //since belt slot 0 is now on the far left.
+    //So we need to display the binding for the next belt slot,
+    //but only between 1 and 10
+    if (objectNum == 9)
+        beltText = player.KeybindManager.GetBindingString(KB_Belt0,0);
+    else if (objectNum >= 0 && objectNum < 9)
+        beltText = player.KeybindManager.GetBindingString(KB_Belt0,objectNum + 1);
+    else
+        beltText = player.KeybindManager.GetBindingString(KB_Belt0,objectNum);
+
+    /*
+    //SARGE: This looks pretty bad, so disable for now
+    if (nanoKeySlot && beltText != "")
+        beltText = player.KeybindManager.GetBinding(KB_Keyring) $ ", " $ beltText;
+    */
 }
 
 // ----------------------------------------------------------------------
@@ -133,7 +151,7 @@ function SetItem(Inventory newItem)
 	{
 		newItem.bInObjectBelt = True;
 		newItem.beltPos       = objectNum;
-        player.SetPlaceholder(objectNum,false,newItem.icon); //Sarge: Reset placeholder status if a new item is added
+        player.ClearPlaceholder(objectNum); //Sarge: Reset placeholder status if a new item is added
 	}
 	else
 	{
@@ -184,7 +202,7 @@ function UpdateItemText()
         else if (item.IsA('ChargedPickup'))
         {
             CP = ChargedPickup(item);
-            if (!CP.bActivatable)
+            if (!CP.bActivatable || CP.Charge == 0)
                 bDimIcon = true;
             if (CP.GetCurrentCharge() > 0)
                 itemText = Sprintf(CP.ChargeRemainingLabelSmall,(int(CP.GetCurrentCharge())));
@@ -246,7 +264,7 @@ local DeusExWeapon weapon;
 	}
 
 	// Don't draw any of this if we're dragging
-	if ((item != None || player.GetPlaceholder(objectNum)) && (player.GetBeltIcon(objectNum) != None) && (!bDragging))
+	if ((item != None || player.GetPlaceholder(objectNum)) && (!bDragging))
 	{
 		// Draw the icon
 		DrawHUDIcon(gc);
@@ -320,7 +338,7 @@ local DeusExWeapon weapon;
 	// Draw the Object Slot Number in upper-right corner
 	gc.SetAlignments(HALIGN_Right, VALIGN_Center);
 	gc.SetTextColor(colObjectNum);
-	gc.DrawText(slotNumberX - 1, slotNumberY, 6, 7, beltText);
+	gc.DrawText(slotNumberX - 11, slotNumberY, 16, 7, beltText);
 }
 
 function DrawHUDIcon(GC gc)
@@ -329,8 +347,8 @@ function DrawHUDIcon(GC gc)
 
         if (item != None)
             icon = item.icon;
-        else if (player.bBeltMemory)
-            icon = player.GetBeltIcon(objectNum);
+        else
+            icon = player.GetPlaceholderIcon(objectNum);
 
         if (icon == None)
             return;
@@ -556,11 +574,11 @@ event texture CursorRequested(window win, float pointX, float pointY,
 			newColor.B = 64;
 		}
 
-		return player.GetBeltIcon(objectNum);
+        return item.icon;
 	}
 	else
 	{
-		return None;
+        return player.GetPlaceholderIcon(objectNum);
 	}
 }
 
