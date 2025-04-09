@@ -763,7 +763,7 @@ const FemJCEyeHeightAdjust = -6;                                    //SARGE: Now
 //SARGE: ??? - I wonder what this does :P
 var travel bool bShenanigans;
 
-var globalconfig int iStanceHud;					//Ygll: Display the current player stance in the hud
+var globalconfig int iStanceHud;					                //Ygll: Display the current player stance in the hud. 0 = none, 1 = stance changes only, 2 = all stances.
 
 //////////END GMDX
 
