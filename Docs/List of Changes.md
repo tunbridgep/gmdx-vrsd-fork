@@ -132,7 +132,7 @@ Sarge's Changes since Beta 2.2:
     - Modified Weapons will appear with a "+" icon on the belt and in the inventory screen to differentiate them from unmodded ones.
     - Augmentation Wheel improvements
         - While in the augmentation screen, use middle-click on an active augmentation to add or remove it from the augmentation wheel.
-        - By default all augmentations will appear on the wheel.
+        - By default only active augmentations will appear on the wheel. This can be changed to Everything or Nothing. Augs can always be added and removed with middle-click.
         - The "Disable All" button can optionally be removed using the options menu.
         - The augmentation wheel can be changed to work in Quick mode. In Quick mode, releasing the augmentation wheel key will select the currently highlighted augmentation. Use right click to cancel.
     - Added a new setting to always show weapon bloom.
