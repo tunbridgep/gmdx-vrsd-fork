@@ -35,6 +35,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX bug where jumping from a ladder while partially submerged in water would cause JC to fly forever.
     - Fixed vanilla bug where the HUD would be re-enabled while dead if opening the main-menu.
     - Fixed GMDX bug where most inventory items with multiple skins (such as sodacans) weren't showing their skinned variants when being held in the players hands.
+    - Fixed GMDX bug where cameras would not properly trigger alarm events when spotting carcasses.
     - Fixed GMDX bugs where knocked-out scuba-divers would die immediately upon reaching the surface of water.
     - Fixed vanilla item-duplication bug (caused by repeatedly dropping and repeatedly picking up items quickly)
     - Fixed many other GMDX and Vanilla bugs.
@@ -187,6 +188,7 @@ Sarge's Changes since Beta 2.2:
     - Subtitles are now enabled in third-person cutscenes regardless of Subtitles setting, allowing text to show instead of useless black bars while also not displaying in-game barks. This can be disabled using the `bSubtitlesCutscene` option in `DeusEx.ini`
 - Gameplay Changes:
     - The NUKE! Virus can now be used at Untrained hacking.
+    - Cameras will set off more alarm events in Hardcore mode, which will result in them opening doors, releasing bots, etc more often.
     - Destroyable Movers that aren't set to highlighting will now have 1 HP.
         - This removes ambiguity about whether or not a surface is unbreakable, or just needs more hits to destroy.
         - This only affects 1-2 movers in the entire game.
