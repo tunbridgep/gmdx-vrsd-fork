@@ -116,6 +116,13 @@ event InitWindow()
 	}
 }
 
+//SARGE: Updates the Assigned Weapon
+//Used for refreshing it when the HUD needs to change
+function UpdateAssigned()
+{
+    if (ammo2 != None)
+        ammo2.UpdateAssigned();
+}
 
 //SARGE: Recreates the belt. Used for refreshing it
 //with the larger belt option
