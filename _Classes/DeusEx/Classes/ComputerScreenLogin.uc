@@ -199,7 +199,7 @@ function ProcessLogin()
 
 	if (userIndex != -1)
 	{
-        discovered = compOwner.IsDiscovered(player,Computers(compOwner).GetPassword(compIndex));
+        discovered = compOwner.IsDiscovered(player,Computers(compOwner).GetUsername(compIndex),Computers(compOwner).GetPassword(compIndex));
 		if (discovered && Caps(editPassword.GetText()) == Caps(Computers(compOwner).GetPassword(userIndex)))
 		{
 			bSuccessfulLogin = True;

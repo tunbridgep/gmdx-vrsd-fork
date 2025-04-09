@@ -23,6 +23,8 @@ var bool bMaster; //so the HDTP deco has a tendency to do that 'go all black' me
 //but...obviously you don't want to do this for every alarm unit, every time (I've tried, it causes
 //fairly noticable stuttering on slower comps): hence slavery! -DDL
 
+var bool bAlarmedOnce;                    //SARGE: Don't re-activate movers after the first alarm
+
 exec function UpdateHDTPsettings()
 {
     //if (MultiSkins[1] == Texture'PinkMaskTex' && MultiSkins[2] == Texture'PinkMaskTex')
@@ -209,7 +211,10 @@ function Trigger(Actor Other, Pawn Instigator)
 		// trigger the event
 		if (Event != '')
 			foreach AllActors(class'Actor', A, Event)
-				A.Trigger(Self, Instigator);
+                if (!bAlarmedOnce || !A.IsA('DeusExMover'))
+                    A.Trigger(Self, player);
+
+        bAlarmedOnce = True;
 
 		// make sure we can't go into stasis while we're alarming
 		bStasis = False;

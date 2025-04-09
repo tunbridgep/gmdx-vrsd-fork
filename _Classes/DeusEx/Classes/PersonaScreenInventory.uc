@@ -292,7 +292,7 @@ function CreateInventoryButtons()
 			newButton.SetClientObject(anItem);
 			newButton.SetInventoryWindow(Self);
 
-			if (anItem.IsA('ChargedPickup') && !ChargedPickup(anItem).bActivatable)
+			if (anItem.IsA('ChargedPickup') && (!ChargedPickup(anItem).bActivatable || ChargedPickup(anItem).Charge == 0))
 				newButton.bDimIcon = true;                                      //RSD: Dim ChargedPickups if they're at 0%
 
 			//Dim Nanosword if it's at 0%
@@ -404,14 +404,14 @@ function bool ButtonActivated( Window buttonPressed )
 	else if ((buttonPressed.IsA('PersonaItemDetailButton')) &&
 	         (PersonaItemDetailButton(buttonPressed).icon == Class'AmmoShell'.Default.LargeIcon))
 	{
-		SelectInventory(PersonaItemButton(buttonPressed));
+		SelectInventory(PersonaItemButton(buttonPressed),true);
 		UpdateAmmoDisplay();
 	}
 	// Now check to see if it's an Inventory button
 	else if (buttonPressed.IsA('PersonaItemButton'))
 	{
 		winStatus.ClearText();
-		SelectInventory(PersonaItemButton(buttonPressed));
+		SelectInventory(PersonaItemButton(buttonPressed),true);
 	}
 	// Otherwise must be one of our action buttons
 	else
@@ -615,14 +615,14 @@ function UpdateAmmoDisplay()
 // SelectInventory()
 // ----------------------------------------------------------------------
 
-function SelectInventory(PersonaItemButton buttonPressed)
+function SelectInventory(PersonaItemButton buttonPressed, optional bool bAllowDeselect)
 {
 	local Inventory anItem;
 
 	// Don't do extra work.
 	if (buttonPressed != None)
 	{
-		if (!selectedItem.bSelected || buttonPressed != selectedItem)
+		if (selectedItem == None || !selectedItem.bSelected || buttonPressed != selectedItem)
 		{
 			// Deselect current button
 			if (selectedItem != None)
@@ -644,7 +644,7 @@ function SelectInventory(PersonaItemButton buttonPressed)
 			EnableButtons();
 		}
         //SARGE: Allow deselecting inventory items
-        else
+        else if (bAllowDeselect)
         {
             selectedItem.SelectButton(False);
 			ClearSpecialHighlights();
@@ -1833,11 +1833,11 @@ function FinishButtonDrag()
             {
                 WeaponNanoSword(dragTarget.GetClientObject()).chargeManager.Recharge(msg);
                 winStatus.AddText(msg);
-                Player.RemoveObjectFromBelt(dragInv);
                 BioelectricCell(draginv).UseOnce();
                 Player.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
                 WeaponNanoSword(dragTarget.GetClientObject()).chargeManager.unDimIcon();
                 dragTarget.bDimIcon = false;
+                invBelt.objBelt.RecreateBelt();                                  //SARGE: Update the inventory belt
             }
 		}
         else if ( (dragInv.IsA('BioelectricCell')) && (dragTarget != None) && (dragTarget.GetClientObject().IsA('ChargedPickup')) )
@@ -1885,18 +1885,18 @@ function FinishButtonDrag()
                 }
                 else
                    winStatus.AddText("Recharged by"@int(100*mult)$"%");
+                ChargedTarget.bDrained=false;                                   //SARGE: Since now it can remain equipped when empty.
                 ChargedTarget.bActivatable=true;                                //RSD: Since now you can hold one at 0%
                 ChargedTarget.unDimIcon();                                      //RSD
 
-            Player.RemoveObjectFromBelt(dragInv);
-            //invBelt.objBelt.RemoveObjectFromBelt(dragInv);
+                invBelt.objBelt.RecreateBelt();                                  //SARGE: Update the inventory belt
 
 				// Send status message
 				//rechargedMsg = string(int(ChargedPickup(dragTarget.GetClientObject()).default.Charge*0.3));
 
-            //DEUS_EX AMSD done here for multiplayer propagation.
-            BioelectricCell(draginv).UseOnce();
-            Player.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
+                //DEUS_EX AMSD done here for multiplayer propagation.
+                BioelectricCell(draginv).UseOnce();
+                Player.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
 				//player.DeleteInventory(dragInv);
 
 				dragButton = None;
@@ -2150,7 +2150,7 @@ function MoveItemButton(PersonaInventoryItemButton anItemButton, int col, int ro
 	player.PlaceItemInSlot(Inventory(anItemButton.GetClientObject()), col, row );
 	SetItemButtonPos(anItemButton, col, row);
 
-	if (Inventory(anItemButton.GetClientObject()).IsA('ChargedPickup') && !ChargedPickup(Inventory(anItemButton.GetClientObject())).bActivatable)
+	if (Inventory(anItemButton.GetClientObject()).IsA('ChargedPickup') && (!ChargedPickup(anItemButton.GetClientObject()).bActivatable || ChargedPickup(anItemButton.GetClientObject()).Charge == 0))
         anItemButton.bDimIcon = true;                                           //RSD: Dim ChargedPickups if they're at 0%
 
     resetHomeButton();                                                          //RSD: item rotation
@@ -2174,7 +2174,7 @@ function ReturnButton(PersonaInventoryItemButton anItemButton)
 	player.PlaceItemInSlot(inv, inv.invPosX, inv.invPosY);
 	SetItemButtonPos(anItemButton, inv.invPosX, inv.invPosY);
 
-    if (inv.IsA('ChargedPickup') && !ChargedPickup(inv).bActivatable)
+    if (inv.IsA('ChargedPickup') && (!ChargedPickup(inv).bActivatable || ChargedPickup(inv).Charge == 0))
     {
         anItemButton.bDimIcon = true;                                           //RSD: Dim ChargedPickups if they're at 0%
     }

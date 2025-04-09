@@ -57,7 +57,7 @@ function bool DoLeftFrob(DeusExPlayer frobber)
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {
     //SARGE: Use the "right-click to autoselect" revision-style interaction, if enabled
-    if (bAllowRightClickToolSelection && frobber.bRightClickToolSelection && !frobber.inHand.IsA('Multitool'))
+    if (bAllowRightClickToolSelection && bHackable && hackStrength > 0.0 && frobber.bRightClickToolSelection && frobber.inHand != None && !frobber.inHand.IsA('Multitool'))
         return DoLeftFrob(frobber);
 
     return true;

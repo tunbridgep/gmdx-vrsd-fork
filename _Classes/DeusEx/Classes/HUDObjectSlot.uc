@@ -16,9 +16,6 @@ var Color		colDropBad;
 var Color		colNone;
 var Color		colSelected;
 var Color       colSelectionBorder;
-var Color	    colAmmoTranqText; //cyber
-var Color	    colAmmoFlareText; //cyber
-var Color       colAmmoEMPText; //
 var int			slotFillWidth;
 var int			slotFillHeight;
 var int         borderWidth;
@@ -120,9 +117,27 @@ event bool ToggleChanged(Window button, bool bNewToggle)
 // SetObjectNumber()
 // ----------------------------------------------------------------------
 
-function SetObjectNumber(int newNumber)
+function SetObjectNumber(int newNumber, bool nanoKeySlot)
 {
 	objectNum = newNumber;
+
+    //SARGE: mildly annoying.
+    //belt numbers are offset by 1 in the ActivateBelt code,
+    //since belt slot 0 is now on the far left.
+    //So we need to display the binding for the next belt slot,
+    //but only between 1 and 10
+    if (objectNum == 9)
+        beltText = player.KeybindManager.GetBindingString(KB_Belt0,0);
+    else if (objectNum >= 0 && objectNum < 9)
+        beltText = player.KeybindManager.GetBindingString(KB_Belt0,objectNum + 1);
+    else
+        beltText = player.KeybindManager.GetBindingString(KB_Belt0,objectNum);
+
+    /*
+    //SARGE: This looks pretty bad, so disable for now
+    if (nanoKeySlot && beltText != "")
+        beltText = player.KeybindManager.GetBinding(KB_Keyring) $ ", " $ beltText;
+    */
 }
 
 // ----------------------------------------------------------------------
@@ -136,7 +151,7 @@ function SetItem(Inventory newItem)
 	{
 		newItem.bInObjectBelt = True;
 		newItem.beltPos       = objectNum;
-        player.SetPlaceholder(objectNum,false,newItem.icon); //Sarge: Reset placeholder status if a new item is added
+        player.ClearPlaceholder(objectNum); //Sarge: Reset placeholder status if a new item is added
 	}
 	else
 	{
@@ -162,7 +177,7 @@ function UpdateItemText()
 	if (item != None)
 	{
 		//Show Dragons Tooth charge
-		if (item.isA('WeaponNanoSword') && WeaponNanoSword(item).ChargeManager != None && !bInventorySlot)
+		if (item.isA('WeaponNanoSword') && WeaponNanoSword(item).ChargeManager != None)
 		{
 			itemText = Sprintf(WeaponNanoSword(item).ChargeManager.ChargeRemainingLabelSmall,WeaponNanoSword(item).ChargeManager.GetCurrentCharge());
 		}
@@ -187,7 +202,9 @@ function UpdateItemText()
         else if (item.IsA('ChargedPickup'))
         {
             CP = ChargedPickup(item);
-            if (CP.GetCurrentCharge() > 0 && !bInventorySlot)
+            if (!CP.bActivatable || CP.Charge == 0)
+                bDimIcon = true;
+            if (CP.GetCurrentCharge() > 0)
                 itemText = Sprintf(CP.ChargeRemainingLabelSmall,(int(CP.GetCurrentCharge())));
 			if (CP.NumCopies > 1)
             {
@@ -225,6 +242,7 @@ function Inventory GetItem()
 event DrawWindow(GC gc)
 {
 local DeusExWeapon weapon;
+    local DeusExAmmo DXammo;
 	// First draw the background
    DrawHUDBackground(gc);
 
@@ -246,7 +264,7 @@ local DeusExWeapon weapon;
 	}
 
 	// Don't draw any of this if we're dragging
-	if ((item != None || player.GetPlaceholder(objectNum)) && (player.GetBeltIcon(objectNum) != None) && (!bDragging))
+	if ((item != None || player.GetPlaceholder(objectNum)) && (!bDragging))
 	{
 		// Draw the icon
 		DrawHUDIcon(gc);
@@ -267,14 +285,13 @@ local DeusExWeapon weapon;
         {
         if ((weapon != None) && (weapon.AmmoName != class'AmmoNone') && (!weapon.bHandToHand) && (weapon.ReloadCount != 0) && (weapon.AmmoType != None))
 			{
-            	itemText = weapon.AmmoType.beltDescription;
-            if (weapon.AmmoName == class'AmmoDartPoison' || weapon.AmmoName == class'AmmoRubber')
-            gc.SetTextColor(colAmmoTranqText);
-            else if (weapon.AmmoName == class'AmmoDartFlare' || weapon.AmmoName == class'Ammo10mmAP' || weapon.AmmoName == class'AmmoSabot' ||
-            weapon.AmmoName == class'AmmoRocketWP' || weapon.AmmoName == class'Ammo20mm')
-			gc.SetTextColor(colAmmoFlareText);
-			else if (weapon.AmmoName == class'Ammo20mmEMP' || weapon.AmmoName == class'AmmoPlasmaSuperheated' || weapon.AmmoName == class'AmmoSabot' || weapon.AmmoName == class'AmmoDartTaser')
-			gc.SetTextColor(colAmmoEMPText);
+                DXAmmo = DeusExAmmo(weapon.AmmoType);
+                if (DXAmmo != None)
+                {
+                    itemText = DXAmmo.beltDescription;
+                    if (DXAmmo.HasCustomAmmoColor())
+                    gc.SetTextColor(DXAmmo.ammoHUDColor);
+                }
 			}
         //Sarge: Disabled because it looks weird on the belt
         /*
@@ -321,7 +338,7 @@ local DeusExWeapon weapon;
 	// Draw the Object Slot Number in upper-right corner
 	gc.SetAlignments(HALIGN_Right, VALIGN_Center);
 	gc.SetTextColor(colObjectNum);
-	gc.DrawText(slotNumberX - 1, slotNumberY, 6, 7, beltText);
+	gc.DrawText(slotNumberX - 11, slotNumberY, 16, 7, beltText);
 }
 
 function DrawHUDIcon(GC gc)
@@ -330,8 +347,8 @@ function DrawHUDIcon(GC gc)
 
         if (item != None)
             icon = item.icon;
-        else if (player.bBeltMemory)
-            icon = player.GetBeltIcon(objectNum);
+        else
+            icon = player.GetPlaceholderIcon(objectNum);
 
         if (icon == None)
             return;
@@ -557,11 +574,11 @@ event texture CursorRequested(window win, float pointX, float pointY,
 			newColor.B = 64;
 		}
 
-		return player.GetBeltIcon(objectNum);
+        return item.icon;
 	}
 	else
 	{
-		return None;
+        return player.GetPlaceholderIcon(objectNum);
 	}
 }
 
@@ -643,9 +660,6 @@ defaultproperties
      colDropBad=(R=128,G=32,B=32)
      colSelected=(R=60,G=60,B=60)
      colSelectionBorder=(R=255,G=255,B=255)
-     colAmmoTranqText=(G=255)
-     colAmmoFlareText=(R=255,G=64)
-     colAmmoEMPText=(G=80,B=255)
      slotFillWidth=42
      slotFillHeight=37
      borderWidth=44
