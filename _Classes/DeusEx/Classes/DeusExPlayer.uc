@@ -552,6 +552,9 @@ var bool bHardDrug;
 var bool bCrouchHack;
 var bool bToggledCrouch;		        // used by toggle crouch
 
+//Mantling stance
+var bool bIsMantlingStance;
+
 //Recoil shockwave
 var() vector RecoilSimLimit; //plus/minus
 var() float RecoilDrain;
@@ -760,6 +763,8 @@ const FemJCEyeHeightAdjust = -6;                                    //SARGE: Now
 
 //SARGE: ??? - I wonder what this does :P
 var travel bool bShenanigans;
+
+var globalconfig int iStanceHud;					                //Ygll: Display the current player stance in the hud. 0 = none, 1 = stance changes only, 2 = all stances.
 
 var globalconfig int iHealingScreen;                            //Ygll: can disable the flash screen when healing or changing it to green color.
 
@@ -18475,6 +18480,8 @@ defaultproperties
      bShowAmmoTypeInAmmoHUD=True
      //bJohnWooSparks=True
      bConsistentBloodPools=True
-     iPersistentDebris=1;
-	 iHealingScreen=1;
+     iPersistentDebris=1
+  	 iStanceHud=3   //Ygll = Every stance
+	   bIsMantlingStance=false //Ygll: new var to know if we are currently mantling
+	   iHealingScreen=1
 }
