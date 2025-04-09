@@ -2208,6 +2208,7 @@ function bool CanSave(optional bool allowHardcore)
 	if ((IsInState('Dying')) || (IsInState('Paralyzed')) || (IsInState('Interpolating'))) //Dead or Interpolating
         return false;
 
+    //SARGE: Allow saving while infolinks are playing
 	if (dataLinkPlay != None && !bAllowSaveWhileInfolinkPlaying) //Datalink playing
         return false;
 
@@ -2262,7 +2263,7 @@ function int DoSaveGame(int saveIndex, optional String saveDesc)
 		saveIndex=saveDir.GetNewSaveFileIndex();
     }
     
-    //If a datalink is playing, cancel it
+    //If a datalink is playing, abort it
     if (dataLinkPlay != None)
         dataLinkPlay.AbortAndSaveHistory();
 
@@ -11164,7 +11165,7 @@ exec function MinimiseTargetingWindow()
 exec function SkipMessages()
 {
     if (dataLinkPlay != None)
-        dataLinkPlay.AbortAndSaveHistory();
+        dataLinkPlay.AbortAndSaveHistory(true);
 }
 
 // ----------------------------------------------------------------------
