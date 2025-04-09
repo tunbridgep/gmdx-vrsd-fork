@@ -764,9 +764,13 @@ const FemJCEyeHeightAdjust = -6;                                    //SARGE: Now
 //SARGE: ??? - I wonder what this does :P
 var travel bool bShenanigans;
 
+//Ygll: New QoL Options
+var globalconfig bool bAltFrobDisplay;                              //Ygll: Alternate frob display option.
+
 var globalconfig int iStanceHud;					                //Ygll: Display the current player stance in the hud. 0 = none, 1 = stance changes only, 2 = all stances.
 
 var globalconfig int iHealingScreen;                            //Ygll: can disable the flash screen when healing or changing it to green color.
+
 
 //////////END GMDX
 
