@@ -80,6 +80,5 @@ defaultproperties
      items(62)=(HelpText="Prevent accidentally killing domesticated animals by stomping on them.",actionText="Player: Stomp Domestic Animals",variable="bStompDomesticAnimals",defaultValue=0);
      items(63)=(HelpText="Prevent accidentally killing vac-bots by stomping on them.",actionText="Player: Stomp Vac Bots",variable="bStompDomesticAnimals",defaultValue=0);
      items(64)=(HelpText="Always use the female hands with male JC. This setting does nothing if LDDP is not installed.",actionText="Player: Use Female Hands",variable="bFemaleHandsAlways",defaultValue=0);
-	 items(65)=(HelpText="Disable the flash effect when healing or change the color.",actionText="Player: Healing Screen Effect",variable="iHealingScreen",defaultValue=1,valueText2="Classic");
      Title="GMDX Quality of Life Options"
 }

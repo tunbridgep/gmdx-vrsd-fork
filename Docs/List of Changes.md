@@ -43,6 +43,7 @@ Sarge's Changes since Beta 2.2:
         - Recharging them in any way (such as through biocells or a repair bot) will make them active again
         - If multiple items are stacked, the item will remain drained even though a new one is available, and will require re-activation.
     - Medical Bots will now display your total health on the status screen, as well as the total amount of health that will be healed.
+    - The Healing Screen Flash effect has been changed to green, to prevent clashes with the water flash. This can be reverted to the old Blue colour by using the "Classic" option.
     - Keybinding Improvements
         - A "Select Nanokey" button has been added to the options, which switches between the nanokey and the previously used weapon.
         - Alternative binds for belt slots have been added, and will display on the belt
