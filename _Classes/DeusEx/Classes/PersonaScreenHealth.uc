@@ -827,8 +827,9 @@ function int GetMedKitHealPoints()
        	player.poisonDamage  = 0;
 		player.drugEffectTimer = 0;	// stop the drunk effect
 	    }
-	    player.PlaySound(sound'MedicalHiss', SLOT_None,,, 256);
-        player.ClientFlash(4,vect(0,0,200));
+		
+	    player.HealScreenEffect(4.0, false);
+        
         ncl = 1;
     	return player.CalculateSkillHealAmount(ncl * medKit.healAmount);  //medKit.NumCopies
     }
@@ -1008,15 +1009,16 @@ MedSkillLevel=player.SkillSystem.GetSkillLevel(class'SkillMedicine');
 	{
 	    if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkToxicologist').bPerkObtained == true)
 	    {
-	    player.StopPoison();
-	    player.myPoisoner = None;
-        player.poisonCounter = 0;
-        player.poisonTimer   = 0;
-       	player.poisonDamage  = 0;
-	    player.drugEffectTimer = 0;
+			player.StopPoison();
+			player.myPoisoner = None;
+			player.poisonCounter = 0;
+			player.poisonTimer   = 0;
+			player.poisonDamage  = 0;
+			player.drugEffectTimer = 0;
 	    }
-	    player.PlaySound(sound'MedicalHiss', SLOT_None,,, 256);
-        player.ClientFlash(4,vect(0,0,200));
+		
+	    player.HealScreenEffect(4.0, false);
+		
 		medKit.UseOnce();
 		UpdateMedKits();
 

@@ -200,8 +200,8 @@ var String		mpMsgOptionalString;
 
 // Variables used when starting new game to show the intro first.
 var String      strStartMap;
-var travel Bool bStartNewGameAfterIntro;
-var travel Bool bIgnoreNextShowMenu;
+var travel bool bStartNewGameAfterIntro;
+var travel bool bIgnoreNextShowMenu;
 
 // map that we're about to travel to after we finish interpolating
 var String NextMap;
@@ -760,6 +760,8 @@ const FemJCEyeHeightAdjust = -6;                                    //SARGE: Now
 
 //SARGE: ??? - I wonder what this does :P
 var travel bool bShenanigans;
+
+var globalconfig int iHealingScreen;                            //Ygll: can disable the flash screen when healing or changing it to green color.
 
 //////////END GMDX
 
@@ -5234,11 +5236,24 @@ function DoneReloading(DeusExWeapon weapon)
     UpdateCrosshair();
 }
 
+//Ygll: utility function to create the healing flash effect
+function HealScreenEffect(float scale, bool isRegen)
+{
+	if(!isRegen)
+		PlaySound(sound'MedicalHiss', SLOT_None,,, 256);
+	else
+		PlaySound(sound'biomodregenerate',SLOT_None);
+			
+	if(iHealingScreen == 1)
+		ClientFlash(scale,vect(71.0,236.0,0.0));     //Ygll: new green flash color.
+	else if(iHealingScreen == 2)
+		ClientFlash(scale,vect(0.0,0.0,200.0));     //CyberP: flash when using medkits.
+}
+
 // ----------------------------------------------------------------------
 // HealPlayer()
 // ----------------------------------------------------------------------
-
-function int HealPlayer(int baseHealPoints, optional Bool bUseMedicineSkill)
+function int HealPlayer(int baseHealPoints, optional bool bUseMedicineSkill)
 {
 	local float mult;
 	local int adjustedHealAmount, aha2, tempaha;
@@ -5258,10 +5273,10 @@ function int HealPlayer(int baseHealPoints, optional Bool bUseMedicineSkill)
 	if (adjustedHealAmount > 0)
 	{
 		if (bUseMedicineSkill)
-			{
-            PlaySound(sound'MedicalHiss', SLOT_None,,, 256);
-            ClientFlash(1,vect(0,0,200));     //CyberP: flash when using medkits.
-            }
+		{
+			HealScreenEffect(1.0, false);
+		}
+		
 		// Heal by 3 regions via multiplayer game
 		if (( Level.NetMode == NM_DedicatedServer ) || ( Level.NetMode == NM_ListenServer ))
 		{
@@ -18460,5 +18475,6 @@ defaultproperties
      bShowAmmoTypeInAmmoHUD=True
      //bJohnWooSparks=True
      bConsistentBloodPools=True
-     iPersistentDebris=1
+     iPersistentDebris=1;
+	 iHealingScreen=1;
 }
