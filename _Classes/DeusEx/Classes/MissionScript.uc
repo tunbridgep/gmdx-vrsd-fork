@@ -146,6 +146,7 @@ function FirstFrame()
     local int seed;
     local DeusExCarcass C;                                                      //SARGE
     local DecalManager D;                                                       //SARGE
+    local SecurityCamera Cam;                                                      //SARGE
 
 	flags.DeleteFlag('PlayerTraveling', FLAG_Bool);
 
@@ -228,6 +229,11 @@ function FirstFrame()
         DistributeItem(class'Flare',1,3);
 
 		flags.SetBool(flagName, True);
+
+        //SARGE: HARDCORE ONLY, force all cameras to set off alarms etc,
+        if (player.bHardCoreMode)
+            foreach AllActors(class'SecurityCamera', Cam)
+                Cam.bAlarmEvent = true;
 
         firstTime = true;
 	}
