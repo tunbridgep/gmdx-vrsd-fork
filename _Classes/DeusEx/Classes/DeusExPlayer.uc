@@ -18462,7 +18462,7 @@ defaultproperties
      bShowAmmoTypeInAmmoHUD=True
      //bJohnWooSparks=True
      bConsistentBloodPools=True
-     iPersistentDebris=1;
-	 iStanceHud=3;   //Ygll = Every stance
-	 bIsMantlingStance=false; //Ygll: new var to know if we are currently mantling
+     iPersistentDebris=1
+	 iStanceHud=3   //Ygll = Every stance
+	 bIsMantlingStance=false //Ygll: new var to know if we are currently mantling
 }
