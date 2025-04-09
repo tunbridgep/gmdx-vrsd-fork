@@ -16,25 +16,33 @@ var HUDRadialMenuItemHighlight highlt;
 
 event InitWindow() {
 	Super.InitWindow();
+    bTickEnabled = false;
 	SetSize(iconSize, iconSize);
 	SetBackgroundStyle(iconMask);
+    SetTileColor(colInactive);
 
-	if (augmentation !=none && augmentation.IsActive())                         //RSD: ensure we are actually using the correct color
-	{
-		SetTileColor(colActive);
-		isActive = true;
-	}
-	else
-	{
-		SetTileColor(colInactive);
-        isActive = false;
-	}
+	if (augmentation != none)                         //RSD: ensure we are actually using the correct color
+    {
+        UpdateDisplayColor();
+		isActive = augmentation.IsActive();
+    }
 
 	highlt = HUDRadialMenuItemHighlight(NewChild(Class'HUDRadialMenuItemHighlight'));
 	highlt.SetSize(iconSize, iconSize);
 	highlt.Hide();
 }
 
+//SARGE: New function to update the display colour independently.
+//Called every tick while the menu is open, since we can now have augs changing
+//colors independently (ie via recharging)
+function UpdateDisplayColor()
+{
+	if (augmentation != none)                         //RSD: ensure we are actually using the correct color
+    {
+        //DeusExPlayer(GetPlayerPawn()).ClientMessage("Updating Aug " $ Augmentation.Name);
+        SetTileColor(Augmentation.GetAugColor());
+    }
+}
 
 function int CompareTo(HUDRadialMenuItem item) {
 	local int hk1, hk2;
@@ -60,7 +68,7 @@ function Activate() {
     if (!augmentation.bIsActive)                                                //RSD: So check bIsActive instead
         return;
 
-    SetTileColor(colActive);
+    UpdateDisplayColor();
     isActive=true;
 
 }
@@ -75,7 +83,7 @@ function Deactivate() {
     if (augmentation.bIsActive)                                                 //RSD: If still active after attempting to deactivate (e.g. reactivating Spy Drone from being set), abort
         return;
 
-	SetTileColor(colInactive);
+    UpdateDisplayColor();
 	isActive=false;
 }
 
@@ -104,8 +112,11 @@ function drawIcon() {
 
 
 function SetItem(Augmentation aug) {
-	augmentation = aug;
-	drawIcon();
+    if (aug != None)
+    {
+        augmentation = aug;
+        drawIcon();
+    }
 }
 
 /**
@@ -123,6 +134,15 @@ function SetRelativePos(Vector pos) {
 	SetPos(pos.X-iconSize/2, pos.Y-iconSize/2);
 }
 
+function Tick()
+{
+    UpdateDisplayColor();
+}
+
+event VisibilityChanged(bool isVis)
+{
+	bTickEnabled = isVis;
+}
 
 function Vector GetRelativePos() {
 	local Vector v;

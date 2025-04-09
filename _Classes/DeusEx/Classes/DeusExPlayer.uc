@@ -200,8 +200,8 @@ var String		mpMsgOptionalString;
 
 // Variables used when starting new game to show the intro first.
 var String      strStartMap;
-var travel Bool bStartNewGameAfterIntro;
-var travel Bool bIgnoreNextShowMenu;
+var travel bool bStartNewGameAfterIntro;
+var travel bool bIgnoreNextShowMenu;
 
 // map that we're about to travel to after we finish interpolating
 var String NextMap;
@@ -552,6 +552,9 @@ var bool bHardDrug;
 var bool bCrouchHack;
 var bool bToggledCrouch;		        // used by toggle crouch
 
+//Mantling stance
+var bool bIsMantlingStance;
+
 //Recoil shockwave
 var() vector RecoilSimLimit; //plus/minus
 var() float RecoilDrain;
@@ -652,6 +655,7 @@ var globalconfig bool bQuickAugWheel;                                           
 var globalconfig bool bAugWheelDisableAll;                                      //Sarge: Show the Disable All button on the Aug Wheel
 var globalconfig bool bAugWheelFreeCursor;                                      //Sarge: Allow free cursor movement in the augmentation wheel
 var globalconfig bool bAugWheelRememberCursor;                                  //Sarge: Remember the cursor position in the Aug Wheel, otherwise it will be reset to the center position
+var globalconfig int iAugWheelAutoAdd;                                          //SARGE: Automatically add items to the augmentation wheel. 0 = Don't add. 1 = Active Augs only. 2 = Everything.
 
 var globalconfig bool bBeltShowModified;                                        //SARGE: Shows a "+" in the belt for modified weapons.
 
@@ -762,6 +766,11 @@ var travel bool bShenanigans;
 
 //Ygll: New QoL Options
 var globalconfig bool bAltFrobDisplay;                              //Ygll: Alternate frob display option.
+
+var globalconfig int iStanceHud;					                //Ygll: Display the current player stance in the hud. 0 = none, 1 = stance changes only, 2 = all stances.
+
+var globalconfig int iHealingScreen;                            //Ygll: can disable the flash screen when healing or changing it to green color.
+
 
 //////////END GMDX
 
@@ -2211,6 +2220,7 @@ function bool CanSave(optional bool allowHardcore)
 	if ((IsInState('Dying')) || (IsInState('Paralyzed')) || (IsInState('Interpolating'))) //Dead or Interpolating
         return false;
 
+    //SARGE: Allow saving while infolinks are playing
 	if (dataLinkPlay != None && !bAllowSaveWhileInfolinkPlaying) //Datalink playing
         return false;
 
@@ -2265,7 +2275,7 @@ function int DoSaveGame(int saveIndex, optional String saveDesc)
 		saveIndex=saveDir.GetNewSaveFileIndex();
     }
     
-    //If a datalink is playing, cancel it
+    //If a datalink is playing, abort it
     if (dataLinkPlay != None)
         dataLinkPlay.AbortAndSaveHistory();
 
@@ -5235,11 +5245,24 @@ function DoneReloading(DeusExWeapon weapon)
     UpdateCrosshair();
 }
 
+//Ygll: utility function to create the healing flash effect
+function HealScreenEffect(float scale, bool isRegen)
+{
+	if(!isRegen)
+		PlaySound(sound'MedicalHiss', SLOT_None,,, 256);
+	else
+		PlaySound(sound'biomodregenerate',SLOT_None);
+			
+	if(iHealingScreen == 1)
+		ClientFlash(scale,vect(71.0,236.0,0.0));     //Ygll: new green flash color.
+	else if(iHealingScreen == 2)
+		ClientFlash(scale,vect(0.0,0.0,200.0));     //CyberP: flash when using medkits.
+}
+
 // ----------------------------------------------------------------------
 // HealPlayer()
 // ----------------------------------------------------------------------
-
-function int HealPlayer(int baseHealPoints, optional Bool bUseMedicineSkill)
+function int HealPlayer(int baseHealPoints, optional bool bUseMedicineSkill)
 {
 	local float mult;
 	local int adjustedHealAmount, aha2, tempaha;
@@ -5259,10 +5282,10 @@ function int HealPlayer(int baseHealPoints, optional Bool bUseMedicineSkill)
 	if (adjustedHealAmount > 0)
 	{
 		if (bUseMedicineSkill)
-			{
-            PlaySound(sound'MedicalHiss', SLOT_None,,, 256);
-            ClientFlash(1,vect(0,0,200));     //CyberP: flash when using medkits.
-            }
+		{
+			HealScreenEffect(1.0, false);
+		}
+		
 		// Heal by 3 regions via multiplayer game
 		if (( Level.NetMode == NM_DedicatedServer ) || ( Level.NetMode == NM_ListenServer ))
 		{
@@ -11065,11 +11088,11 @@ function texture GetWeaponHandTex()
 		switch(PlayerSkin)
 		{
 			//default, black, latino, ginger, albino, respectively
-			case 0: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.weaponhandstex0A"); break;
-			case 1: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.weaponhandstex1A"); break;
-			case 2: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.weaponhandstex2A"); break;
-			case 3: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.weaponhandstex3A"); break;
-			case 4: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.weaponhandstex4A"); break;
+			case 0: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.Skins.weaponhandstex0A"); break;
+			case 1: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.Skins.weaponhandstex1A"); break;
+			case 2: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.Skins.weaponhandstex2A"); break;
+			case 3: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.Skins.weaponhandstex3A"); break;
+			case 4: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.Skins.weaponhandstex4A"); break;
 		}
     }
 
@@ -11167,7 +11190,7 @@ exec function MinimiseTargetingWindow()
 exec function SkipMessages()
 {
     if (dataLinkPlay != None)
-        dataLinkPlay.AbortAndSaveHistory();
+        dataLinkPlay.AbortAndSaveHistory(true);
 }
 
 // ----------------------------------------------------------------------
@@ -18424,6 +18447,7 @@ defaultproperties
      bQuickAugWheel=false
      bAugWheelDisableAll=true
      bAugWheelFreeCursor=true
+     iAugWheelAutoAdd=1
      bColourCodeFrobDisplay=True
      bWallPlacementCrosshair=True
      dynamicCrosshair=1
@@ -18461,4 +18485,7 @@ defaultproperties
      //bJohnWooSparks=True
      bConsistentBloodPools=True
      iPersistentDebris=1
+  	 iStanceHud=3   //Ygll = Every stance
+	   bIsMantlingStance=false //Ygll: new var to know if we are currently mantling
+	   iHealingScreen=1
 }
