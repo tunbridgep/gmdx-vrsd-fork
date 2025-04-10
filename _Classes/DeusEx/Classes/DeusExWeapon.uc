@@ -1020,8 +1020,7 @@ local DeusExPlayer playa;
 	  }
 	}
     playa = DeusExPlayer(GetPlayerPawn());
-    if (playa != None)
-        if (playa.bExtraHardcore && playa.bHardCoreMode && Owner == None)
+    if (playa != None && playa.bExtraHardcore && playa.bHardCoreMode && Owner == None)
             BaseAccuracy = default.BaseAccuracy + 0.2;
 
     //RSD: Failsafe in case we don't have these set; use the original ranges for NPC AI
@@ -1030,9 +1029,9 @@ local DeusExPlayer playa;
     if (NPCAccurateRange == 0)
       NPCAccurateRange = default.AccurateRange;
 
-    if (!givenFreeReload)
+    if (!givenFreeReload && Owner != None && Owner.IsA('ScriptedPawn'))
     {
-        ClipCount = ReloadCount;
+        ReloadMaxAmmo();
         givenFreeReload = true;
     }
 
