@@ -134,6 +134,12 @@ function RecreateBelt()
         belt.RecreateBelt();
 }
 
+//SARGE: Update the aug display window
+function RefreshActiveAugs()
+{
+    activeItems.UpdateAllIcons();
+}
+
 // ----------------------------------------------------------------------
 // DescendantRemoved()
 // ----------------------------------------------------------------------

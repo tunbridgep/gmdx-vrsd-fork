@@ -1972,7 +1972,19 @@ function RefreshChargedPickups()
 
 	// Loop through all the ChargedPicksups and look for charged pickups
 	// that are active.  If we find one, add to the user-interface.
+	
+    //SARGE: First, remove everything
+    foreach AllActors(class'ChargedPickup', anItem)
+        RemoveChargedDisplay(anItem);
 
+    //SARGE: Always show assigned item first
+    anItem = ChargedPickup(GetSecondary());
+    if (anItem != None && (anItem.GetCurrentCharge() > 0 || !anItem.bUnequipWhenDrained))
+        AddChargedDisplay(anItem);
+    else if (anItem != None)
+        RemoveChargedDisplay(anItem);
+
+    //SARGE: Then, show all other items.
 	foreach AllActors(class'ChargedPickup', anItem)
 	{
 		if (anItem.Owner == Self)
@@ -1981,10 +1993,8 @@ function RefreshChargedPickups()
 			if (anItem.IsA('TechGoggles') && anItem.IsActive())
 				TechGoggles(anItem).UpdateHUDDisplay(Self);
 
-      if ((anItem.IsActive() || assignedWeapon == string(anItem.Class)) && (anItem.GetCurrentCharge() > 0 || !anItem.bUnequipWhenDrained)) //SARGE: Modified get current charge check, since we can now have chargedpickups at 0 charge
-    	    AddChargedDisplay(anItem);
-      else
-          RemoveChargedDisplay(anItem);
+            if (anItem.IsActive() && assignedWeapon != string(anItem.Class) && (anItem.GetCurrentCharge() > 0 || !anItem.bUnequipWhenDrained)) //SARGE: Modified get current charge check, since we can now have chargedpickups at 0 charge
+                AddChargedDisplay(anItem);
 		}
 	}
 }
