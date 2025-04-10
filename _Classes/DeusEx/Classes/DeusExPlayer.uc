@@ -5613,7 +5613,7 @@ function DoJump( optional float F )
         // Trash: Speed Enhancement now uses energy while jumping
         if (SpeedAug.CurrentLevel > -1 && SpeedAug.bIsActive)
         {
-            Energy=MAX(Energy - SpeedAug.GetAdjustedEnergy(SpeedAug.EnergyDrainJump),0);
+            Energy=FMAX(Energy - SpeedAug.GetAdjustedEnergy(SpeedAug.EnergyDrainJump),0);
         }
 
         if (bHardCoreMode)                                                      //RSD: Running drains 1.3x on Hardcore, now jumping drains 1.25x
@@ -5708,7 +5708,7 @@ if (Physics == PHYS_Walking)
         // Trash: Speed Enhancement now uses energy while jumping
         if (SpeedAug.CurrentLevel > -1 && speedAug.bIsActive)
         {
-            Energy=MAX(Energy - SpeedAug.GetAdjustedEnergy(SpeedAug.EnergyDrainJump),0);
+            Energy=FMAX(Energy - SpeedAug.GetAdjustedEnergy(SpeedAug.EnergyDrainJump),0);
         }
 
         if (bHardCoreMode)                                                      //RSD: Running drains 1.3x on Hardcore, now jumping drains 1.25x
@@ -15319,7 +15319,7 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
                     if (saveTime >= enviro.lastEnergyTick)
                     {
                         //Energy -= MAX(int(newDamage * 0.1),1);
-                        Energy -= 1;
+                        Energy = FMAX(Energy - enviro.GetAdjustedEnergy(1),0);
                         enviro.lastEnergyTick = saveTime + 3.0;
                     }
                     newDamage *= augLevel;
