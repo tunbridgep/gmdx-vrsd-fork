@@ -351,6 +351,9 @@ var bool bFancyScopeAnimation;
 //Retrieve Ammo from Weapon
 var const Sound RetrieveAmmoSound;
 
+//SARGE: Store if we have deducted Targeting Aug energy for this weapon yet (for burst weapons)
+var bool bDeductedTargetingAug;
+
 //END GMDX:
 
 //
@@ -1388,6 +1391,7 @@ function PlaySelect()
         {
             firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
             OnProjectileFired(firedProjectile);
+            DeductTargetingAugEnergy();
         }
 		if ( Owner.IsA('PlayerPawn') )
 			PlayerPawn(Owner).PlayFiring();
@@ -3149,6 +3153,7 @@ function ServerHandleNotify( bool bInstantHit, class<projectile> ProjClass, floa
     {
         firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
         OnProjectileFired(firedProjectile);
+        DeductTargetingAugEnergy();
     }
 }
 
@@ -3184,6 +3189,7 @@ simulated function HandToHandAttack()
     {
         firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
         OnProjectileFired(firedProjectile);
+        DeductTargetingAugEnergy();
     }
 
 	// if we are a thrown weapon and we run out of ammo, destroy the weapon
@@ -3230,6 +3236,7 @@ simulated function OwnerHandToHandAttack()
     {
         firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
         OnProjectileFired(firedProjectile);
+        DeductTargetingAugEnergy();
     }
 }
 
@@ -3262,6 +3269,7 @@ simulated function ClientReFire( float value )
 	bLooping = True;
 	bInProcess = False;
 	ClientFire(0);
+    bDeductedTargetingAug = false;
 }
 
 function StartFlame()
@@ -3408,6 +3416,7 @@ simulated function bool ClientFire( float value )
 				}
 				firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
                 OnProjectileFired(firedProjectile);
+                DeductTargetingAugEnergy();
 			}
 		}
 		else
@@ -3456,6 +3465,8 @@ function Fire(float Value)
     local Projectile firedProjectile;
 
     player = DeusExPlayer(Owner);
+    
+    bDeductedTargetingAug = false;
 
     //Sarge: Restrict fire if firing is blocked (used when detonating drone).
     if (player != None && player.bBlockNextFire)
@@ -3536,6 +3547,7 @@ function Fire(float Value)
         {
             firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
             OnProjectileFired(firedProjectile);
+            DeductTargetingAugEnergy();
         }
 		if ( Owner.IsA('PlayerPawn') )
 			PlayerPawn(Owner).PlayFiring();
@@ -3577,6 +3589,7 @@ function Fire(float Value)
 			{
 				firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
                 OnProjectileFired(firedProjectile);
+                DeductTargetingAugEnergy();
 				//if (IsA('WeaponFlamethrower'))
                 //{
                 // if (ReloadCount != ClipCount)
@@ -4070,6 +4083,7 @@ simulated function SimGenerateBullet()
             {
 				firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
                 OnProjectileFired(firedProjectile);
+                DeductTargetingAugEnergy();
             }
 
 			SimClipCount--;
@@ -4115,6 +4129,7 @@ function GenerateBullet()
         {
             firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
             OnProjectileFired(firedProjectile);
+            DeductTargetingAugEnergy();
         }
 
 		ClipCount--;
@@ -4745,6 +4760,23 @@ simulated function Projectile ProjectileFire(class<projectile> ProjClass, float 
 
 	return proj;
 }
+    
+function DeductTargetingAugEnergy()
+{
+    local AugTarget targeting;
+
+    if (bDeductedTargetingAug)
+        return;
+
+    //SARGE: If we're using the Targeting aug, deduct energy.
+	if (Owner != None && owner.IsA('DeusExPlayer'))
+    {
+        targeting = AugTarget(DeusExPlayer(Owner).AugmentationSystem.GetAug(class'AugTarget',true));
+        if (targeting != None)
+            DeusExPlayer(Owner).Energy = FMAX(DeusExPlayer(Owner).Energy - targeting.GetAdjustedEnergyRate(),0);
+        bDeductedTargetingAug = true;
+    }
+}
 
 //
 // copied from Weapon.uc so we can add range information
@@ -4763,6 +4795,9 @@ simulated function TraceFire( float Accuracy )
     local vector EndTraceCenter, moverStartTrace;                               //RSD: Added
     local float TempAcc;                                                        //RSD: Added
     local Projectile firedProjectile;
+
+    //Deduct Energy if we are using the Targeting aug
+    DeductTargetingAugEnergy();
 
 	// make noise if we are not silenced
 	if (!bHasSilencer && !bHandToHand)
@@ -4943,6 +4978,7 @@ simulated function TraceFire( float Accuracy )
 	{
         firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
         OnProjectileFired(firedProjectile);
+        DeductTargetingAugEnergy();
 	}
 
     LaserYaw += (currentAccuracy*laserKick) * (Rand(4096) - 2048);              //RSD: Bump laser position when firing (75% of cone width)

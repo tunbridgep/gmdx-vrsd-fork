@@ -67,9 +67,12 @@ defaultproperties
      mpAugValue=-0.125000
      mpEnergyDrain=40.000000
      //EnergyRate=35.000000
-     EnergyRate=0.000000
-     EnergyReserved=20
-     AugmentationType=Aug_Toggle
+     EnergyRate=2.000000
+     //EnergyDrainFire=2
+     //EnergyReserved=20
+     //AugmentationType=Aug_Toggle
+     EnergyRateLabel="Energy Rate: %d Units/Shot"
+     AugmentationType=Aug_Automatic
      Icon=Texture'DeusExUI.UserInterface.AugIconTarget'
      smallIcon=Texture'DeusExUI.UserInterface.AugIconTarget_Small'
      AugmentationName="Targeting"
