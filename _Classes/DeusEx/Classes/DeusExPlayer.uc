@@ -4274,16 +4274,14 @@ function ToggleCameraState(SecurityCamera cam, ElectronicDevices compOwner, opti
 	{
 	  cam.UnTrigger(compOwner, self);
 	  cam.team = -1;
-	}
-    //Set to reboot
-    else if (cam.bActive && bHacked)
+	}    
+    else if (cam.bActive && bHacked) //Set to reboot
     {
-        cam.UnTrigger(compOwner, self);
+        cam.CameraReboot(compOwner, self);
         cam.team = -1;
         cam.StartReboot(self);
-    }
-    //Re-enable
-	else
+    }    
+	else //Re-enable
 	{
       cam.bRebooting = false;
       cam.disableTime = 0;

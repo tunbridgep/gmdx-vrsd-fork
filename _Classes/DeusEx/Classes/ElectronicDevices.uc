@@ -22,7 +22,7 @@ function bool IsDiscovered(DeusExPlayer player, string code, optional string cod
 
 defaultproperties
 {
-     bInvincible=True
-     FragType=Class'DeusEx.PlasticFragment'
-     bPushable=False
+     bInvincible=true;
+     FragType=Class'DeusEx.PlasticFragment';
+     bPushable=false;
 }

@@ -1,7 +1,7 @@
 //=============================================================================
 // AutoTurret.
 //=============================================================================
-class AutoTurret extends DeusExDecoration;
+class AutoTurret extends HackableDevices;
 
 var AutoTurretGun gun;
 
@@ -53,6 +53,8 @@ var travel bool bDefaultActive;
 var travel bool bDefaultTrackPlayersOnly;
 var travel bool bDefaultTrackPawnsOnly;
 
+var bool bWasDisabledOnce;  //Ygll: var to set at true one, to not have the 'hum' sound anymore in case of bypassed turret
+
 // networking replication
 replication
 {
@@ -66,11 +68,16 @@ function Trigger(Actor Other, Pawn Instigator)
 {
 	if (!bActive)
 	{
-		bActive = True;
-		AmbientSound = Default.AmbientSound;
+		bActive = true;
+		if(!bWasDisabledOnce)
+			AmbientSound = Default.AmbientSound;
+		else
+			AmbientSound = None;
 	}
 
     bDisabled = false;
+	bHackable = true;
+	bDisabledByComputer = false;
 	Super.Trigger(Other, Instigator);
 }
 
@@ -79,11 +86,16 @@ function UnTrigger(Actor Other, Pawn Instigator)
 {
 	if (bActive)
 	{
-		bActive = False;
+		bActive = false;
 		AmbientSound = None;
 	}
+	
+	if(!bWasDisabledOnce)
+		bWasDisabledOnce = true;
     
-    bDisabled = true;
+    bDisabled = true;	
+	bHackable = false;
+	bDisabledByComputer = true;
 	Super.UnTrigger(Other, Instigator);
 }
 
@@ -102,7 +114,7 @@ function UpdateSwitch()
 {
 	if ( Level.Timeseconds > SwitchTime )
 	{
-		bSwitching = False;
+		bSwitching = false;
 		//safeTarget = savedTarget;
 		SwitchTime = 0;
 		beepTime = 0;
@@ -121,7 +133,7 @@ function SetSafeTarget( Pawn newSafeTarget )
 {
 	local DeusExPlayer aplayer;
 
-	bSwitching = True;
+	bSwitching = true;
 	SwitchTime = Level.Timeseconds + 2.5;
 	beepTime = 0.0;
 	safeTarget = newSafeTarget;
@@ -230,7 +242,7 @@ function Tick(float deltaTime)
 
 	Super.Tick(deltaTime);
 
-	bSwitched = False;
+	bSwitched = false;
 
 	if ( bSwitching )
 	{
@@ -247,7 +259,7 @@ function Tick(float deltaTime)
     {
         if (remainingTime <= 0)
         {
-            bRebooting = False;
+            bRebooting = false;
             bDisabled = bDefaultDisabled;
             bActive = bDefaultActive;
 
@@ -264,23 +276,23 @@ function Tick(float deltaTime)
 	{
 		if ( safeTarget == None )
 		{
-			bDisabled = True;
-			bComputerReset = False;
+			bDisabled = true;
+			bComputerReset = false;
 		}
 		else
 		{
 			if ( DeusExPlayer(safeTarget) != None )
 			{
 				if ((TeamDMGame(DeusExPlayer(safeTarget).DXGame) != None) && (DeusExPlayer(safeTarget).PlayerReplicationInfo.team != team))
-					bSwitched = True;
+					bSwitched = true;
 				else if ((DeathMatchGame(DeusExPlayer(safeTarget).DXGame) != None ) && (DeusExPlayer(safeTarget).PlayerReplicationInfo.PlayerID != team))
-					bSwitched = True;
+					bSwitched = true;
 
 				if ( bSwitched )
 				{
-					bDisabled = True;
+					bDisabled = true;
 					safeTarget = None;
-					bComputerReset = False;
+					bComputerReset = false;
 				}
 			}
 		}
@@ -292,7 +304,7 @@ function Tick(float deltaTime)
 		if ( !bComputerReset )
 		{
 			gun.ResetComputerAlignment();
-			bComputerReset = True;
+			bComputerReset = true;
 		}
 	}
 
@@ -312,7 +324,7 @@ function Tick(float deltaTime)
 		}
 		if (confusionTimer > confusionDuration)
 		{
-			bConfused = False;
+			bConfused = false;
 			confusionTimer = 0;
 			confusionDuration = Default.confusionDuration;
 		}
@@ -539,7 +551,7 @@ auto state Active
 			confusionTimer = 0;
 			if (!bConfused)
 			{
-				bConfused = True;
+				bConfused = true;
 				PlaySound(sound'EMPZap', SLOT_None,,, 1280);
 			}
 			return;
@@ -576,7 +588,7 @@ local GMDXSparkFade fade;
 		StartTrace = gun.Location+X*32;
 		EndTrace = StartTrace + gunAccuracy * (FRand()-0.5)*Y*1000 + gunAccuracy * (FRand()-0.5)*Z*1000 ;
 		EndTrace += 10000 * X;
-		hit = Trace(HitLocation, HitNormal, EndTrace, StartTrace, True);
+		hit = Trace(HitLocation, HitNormal, EndTrace, StartTrace, true);
 
 		// spawn some effects
 	  if ((DeusExMPGame(Level.Game) != None) && (!DeusExMPGame(Level.Game).bSpawnEffects))
@@ -600,7 +612,7 @@ local GMDXSparkFade fade;
 			gun.MultiSkins[3] = GetHDTPMuzzleTex();
 		else
 			gun.MultiSkins[2] = GetHDTPMuzzleTex();
-		SetTimer(0.1, False);
+		SetTimer(0.1, false);
 
 		// randomly draw a tracer
 		if (FRand() < 0.5)
@@ -832,7 +844,7 @@ local DeusExPlayer player;
 		if (!bActive)
 		{
 			bPreAlarmActiveState = bActive;
-			bActive = True;
+			bActive = true;
 			//PlaySound(Sound'TurretSwitch', SLOT_None, 1.0,, 2048); //CyberP: added new sound
 		}
 	}
@@ -841,7 +853,7 @@ local DeusExPlayer player;
 	    /*player = DeusExPlayer(GetPlayerPawn());
 	    if (player.bPermTurrets) //CyberP: alarms permanent once triggered if option is enabled.
 	    {
-	        bActive = True;
+	        bActive = true;
 	    }
 		else if (bActive)
 			bActive = bPreAlarmActiveState;
@@ -887,7 +899,7 @@ function PreBeginPlay()
 	{
 		maxRange = mpTurretRange;
 		gunDamage = mpTurretDamage;
-		bInvincible = True;
+		bInvincible = true;
 	  bDisabled = !bActive;
 	}
 }
@@ -922,7 +934,7 @@ function bool checkForObstruction()                                             
     GetAxes(gun.Rotation, X, Y, Z);
 	StartTrace = gun.Location+X*32;
 	EndTrace = StartTrace + 10000*X;
-	hit = Trace(HitLocation, HitNormal, EndTrace, StartTrace, True);
+	hit = Trace(HitLocation, HitNormal, EndTrace, StartTrace, true);
 
     if (gun.DesiredRotation.Pitch > 0)                                          //RSD: If aiming up, current rotation (+25% of collision height)  to check is good
     	collisionMult = 0.;
@@ -941,37 +953,38 @@ function bool checkForObstruction()                                             
 
 defaultproperties
 {
-     titleString="AutoTurret"
-     bHitMarkers=True
-     bEMPHitMarkers=True
-     bTrackPlayersOnly=True
-     bActive=True
-     maxRange=4000
-     fireRate=0.240000
-     gunAccuracy=0.500000
-     gunDamage=4
-     AmmoAmount=100
-     confusionDuration=10.000000
-     pitchLimit=11000.000000
-     Team=-1
-     mpTurretDamage=20
-     mpTurretRange=1024
-     HitPoints=60
-     minDamageThreshold=60
-     bHighlight=False
-     ItemName="Turret Base"
-     bPushable=False
-     Physics=PHYS_None
-     HDTPMesh="HDTPDecos.HDTPAutoTurretBase"
-     Mesh=LodMesh'DeusExDeco.AutoTurretBase'
-     SoundRadius=64
-     SoundVolume=224
-     AmbientSound=Sound'DeusExSounds.Generic.AutoTurretHum'
-     CollisionRadius=14.000000
-     CollisionHeight=20.200001
-     Mass=50.000000
-     Buoyancy=10.000000
-     bVisionImportant=True
-     disableTimeBase=120.0
-     disableTimeMult=60.0
+     titleString="AutoTurret";
+     bHitMarkers=true;
+     bEMPHitMarkers=true;
+     bTrackPlayersOnly=true;
+     bActive=true;
+     maxRange=4000;
+     fireRate=0.240000;
+     gunAccuracy=0.500000;
+     gunDamage=4;
+     AmmoAmount=100;
+     confusionDuration=10.000000;
+     pitchLimit=11000.000000;
+     Team=-1;
+     mpTurretDamage=20;
+     mpTurretRange=1024;
+     HitPoints=60;
+     minDamageThreshold=60;
+     bHighlight=false;
+     ItemName="Turret Base";
+     bPushable=false;
+     Physics=PHYS_None;
+     HDTPMesh="HDTPDecos.HDTPAutoTurretBase";
+     Mesh=LodMesh'DeusExDeco.AutoTurretBase';
+     SoundRadius=64;
+     SoundVolume=224;
+     AmbientSound=Sound'DeusExSounds.Generic.AutoTurretHum';
+     CollisionRadius=14.000000;
+     CollisionHeight=20.200001;
+     Mass=50.000000;
+     Buoyancy=10.000000;
+     bVisionImportant=true;
+     disableTimeBase=120.0;
+     disableTimeMult=60.0;
+	 bWasDisabledOnce=false;
 }

@@ -4,10 +4,11 @@
 class HackableDevices extends ElectronicDevices
 	abstract;
 
-var() bool				bHackable;				// can this device be hacked?
+var bool				bHackable;				// can this device be hacked?
 var() float 			hackStrength;			// "toughness" of the hack on this device - 0.0 is easy, 1.0 is hard
 var() float          initialhackStrength; // for multiplayer hack resets, this is the initial value
 var() name				UnTriggerEvent[4];		// event to UnTrigger when hacked
+var bool 			bDisabledByComputer;
 
 var bool				   bHacking;				// a multitool is currently being used
 var float				hackValue;				// how much this multitool is currently hacking
@@ -98,9 +99,15 @@ function HackAction(Actor Hacker, bool bHacked)
 	if (bHacked)
 	{
 		for (i=0; i<ArrayCount(UnTriggerEvent); i++)
+		{
 			if (UnTriggerEvent[i] != '')
+			{
 				foreach AllActors(class'Actor', A, UnTriggerEvent[i])
+				{
 					A.UnTrigger(Hacker, Pawn(Hacker));
+				}
+			}
+		}
    }
 }
 
@@ -113,38 +120,32 @@ function Timer()
 	{
 		curTool.PlayUseAnim();
 
-	  TicksSinceLastHack += (Level.TimeSeconds - LastTickTime) * 10;
-	  LastTickTime = Level.TimeSeconds;
-      //TicksSinceLastHack = TicksSinceLastHack + 1;
-      while (TicksSinceLastHack > TicksPerHack)
-      {
-         numHacks--;
-         hackStrength -= 0.01;
-         TicksSinceLastHack = TicksSinceLastHack - TicksPerHack;
-         hackStrength = FClamp(hackStrength, 0.0, 1.0);
-      }
-
+		TicksSinceLastHack += (Level.TimeSeconds - LastTickTime) * 10;
+		LastTickTime = Level.TimeSeconds;
+		//TicksSinceLastHack = TicksSinceLastHack + 1;
+		while (TicksSinceLastHack > TicksPerHack)
+		{
+			numHacks--;
+			hackStrength -= 0.01;
+			TicksSinceLastHack = TicksSinceLastHack - TicksPerHack;
+			hackStrength = FClamp(hackStrength, 0.0, 1.0);
+		}
+		
 		// did we hack it?
 		if (hackStrength ~= 0.0)
 		{
 			hackStrength = 0.0;
 			hackPlayer.ClientMessage(msgMultitoolSuccess);
-         // Start reset counter from the time you finish hacking it.
-         TimeSinceReset = 0;
+			// Start reset counter from the time you finish hacking it.
+			TimeSinceReset = 0;
 			StopHacking();
-			HackAction(hackPlayer, True);
-		}
-
-		// are we done with this tool?
-		else if (numHacks <= 0)
-			StopHacking();
-
-		// check to see if we've moved too far away from the device to continue
-		else if (hackPlayer.frobTarget != Self)
-			StopHacking(true);
-
-		// check to see if we've put the multitool away
-		else if (hackPlayer.inHand != curTool)
+			HackAction(hackPlayer, true);
+		}		
+		else if (numHacks <= 0) // are we done with this tool?
+			StopHacking();		
+		else if (hackPlayer.frobTarget != Self) // check to see if we've moved too far away from the device to continue
+			StopHacking(true);		
+		else if (hackPlayer.inHand != curTool) // check to see if we've put the multitool away
 			StopHacking(true);
 	}
 }
@@ -176,18 +177,18 @@ function StopHacking(optional bool aborted)
 
 	// alert NPCs that I'm not messing with stuff anymore
 	AIEndEvent('MegaFutz', EAITYPE_Visual);
-	bHacking = False;
+	bHacking = false;
 	if (curTool != None)
 	{
 		perkCracked = hackPlayer.PerkManager.GetPerkWithClass(class'DeusEx.PerkCracked');
 	
 		curTool.StopUseAnim();
-		curTool.bBeingUsed = False;
+		curTool.bBeingUsed = false;
 		if (!aborted && !(initialHackStrength <= perkCracked.PerkValue && perkCracked.bPerkObtained)) //RSD: Changed CRACKED perk to hack <=5% devices for free
             curTool.UseOnce();
 	}
 	curTool = None;
-	SetTimer(0.1, False);
+	SetTimer(0.1, false);
 
     if (aborted)
         hackStrength = previousStrength;
@@ -207,8 +208,8 @@ function Frob(Actor Frobber, Inventory frobWith)
 
 	P = Pawn(Frobber);
 	Player = DeusExPlayer(P);
-	bHackIt = False;
-	bDone = False;
+	bHackIt = false;
+	bDone = false;
 	msg = msgNotHacked;
 
 	// make sure someone is trying to hack the device
@@ -218,16 +219,16 @@ function Frob(Actor Frobber, Inventory frobWith)
 	// Let any non-player pawn hack the device for now
 	if (Player == None)
 	{
-		bHackIt = True;
+		bHackIt = true;
 		msg = "";
-		bDone = True;
+		bDone = true;
 	}
 
 	// If we are already trying to hack it, print a message
 	if (bHacking)
 	{
 		msg = msgHacking;
-		bDone = True;
+		bDone = true;
 	}
 
 	if (!bDone)
@@ -251,27 +252,28 @@ function Frob(Actor Frobber, Inventory frobWith)
 					/*if (Player.PerkNamesArray[31]==1)                         //RSD: Changed CRACKED
 					hackValue = 1;*/
 					curTool = Multitool(frobWith);
-					curTool.bBeingUsed = True;
+					curTool.bBeingUsed = true;
 					curTool.PlayUseAnim();
-					bHacking = True;
+					bHacking = true;
 					if (!bBeenHacked)                                           //RSD: For first time hack, store initial hack strength for new CRACKED perk effect
 					{
 						bBeenHacked = true;
 						initialHackStrength = hackStrength;
 					}
-               //Number of percentage points to remove
-               numHacks = hackValue * 100;
-               if (Level.Netmode != NM_Standalone)
-                  hackTime = default.hackTime / (hackValue * hackValue);
-               TicksPerHack = (hackTime * 10.0) / numHacks;
-			   LastTickTime = Level.TimeSeconds;
-               TicksSinceLastHack = 0;
-               SetTimer(0.1, True);
+					//Number of percentage points to remove
+					numHacks = hackValue * 100;
+					if (Level.Netmode != NM_Standalone)
+					  hackTime = default.hackTime / (hackValue * hackValue);
+
+					TicksPerHack = (hackTime * 10.0) / numHacks;
+					LastTickTime = Level.TimeSeconds;
+					TicksSinceLastHack = 0;
+					SetTimer(0.1, true);
 					msg = msgHacking;
 				}
 				else
 				{
-					bHackIt = True;
+					bHackIt = true;
 					msg = msgAlreadyHacked;
 				}
 			}
@@ -279,7 +281,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 		else if (hackStrength == 0.0)
 		{
 			// if it's open
-			bHackIt = True;
+			bHackIt = true;
 			msg = "";
 		}
 	}
@@ -299,15 +301,16 @@ function Frob(Actor Frobber, Inventory frobWith)
 
 defaultproperties
 {
-     bHackable=True
-     hackStrength=0.200000
-     HackTime=3.000000
-     TimeToReset=28.000000
-     msgMultitoolSuccess="You bypassed the device"
-     msgNotHacked="It's secure"
-     msgHacking="Bypassing the device..."
-     msgAlreadyHacked="It's already bypassed"
-     Physics=PHYS_None
-     bCollideWorld=False
-     bAllowRightClickToolSelection=True
+     bHackable=true;
+     hackStrength=0.200000;
+     HackTime=3.000000;
+     TimeToReset=28.000000;
+     msgMultitoolSuccess="You bypassed the device";
+     msgNotHacked="It's secure";
+     msgHacking="Bypassing the device...";
+     msgAlreadyHacked="It's already bypassed";
+     Physics=PHYS_None;
+     bCollideWorld=false;
+     bAllowRightClickToolSelection=true;
+	 bDisabledByComputer=false;
 }

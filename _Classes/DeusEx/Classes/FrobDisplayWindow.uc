@@ -24,6 +24,9 @@ var localized string msgPicks;
 var localized string msgTool;
 var localized string msgTools;
 var localized string msgDisabled;
+var localized string msgTrackAll;
+var localized string msgTrackAllies;
+var localized string msgTrackEnemies;
 
 // Default Colors
 var Color colBackground;
@@ -392,23 +395,21 @@ function DrawDoorHudInformation(GC gc, actor frobTarget)
 //Ygll: new function to handle window target for hacking device classes
 function DrawDeviceHudInformation(GC gc, actor frobTarget)
 {
-	local float				infoX, infoY, infoW, infoH, infoHtemp, barSize;
-	local string			strInfo, strThreshold;
+	local float				infoX, infoY, infoW, infoH, infoHtemp, barSize, extendWName, extendHName, extendWInfo, extendHInfo, marginTextValue;
+	local string			strInfo, strThreshold, strInfoBlock;
 	local HackableDevices	device;	
 	local Color				col;
-	local int				numTools;
-	local int				ownedTools; //Sarge: How many tools the player owns in their inventory
+	local int				numTools, ownedTools; //Sarge: How many tools the player owns in their inventory
 	local Perk				perkCracked; //Sarge: Stores the Cracked perk
 	
 	// get the devices hack strength info
 	device = HackableDevices(frobTarget);
 	
 	barSize = barLength;
+	marginTextValue = barSize/3.0;
 	//Ygll: case when the devise has not hack strength - prevent 'Inf' text misplace on specific situation
-	if (device.hackStrength == 0.0)
-	{
-		barSize = 50.00000;		
-	}
+	if (!device.bHackable || device.hackStrength == 0.0)
+		barSize = 45.00000;		
 
 	strInfo = DeusExDecoration(frobTarget).itemName $ strDoubleDot;
 	
@@ -416,12 +417,34 @@ function DrawDeviceHudInformation(GC gc, actor frobTarget)
 			|| ( frobTarget.IsA('SecurityCamera') && SecurityCamera(frobTarget).bRebooting ) )
 	{
 		strInfo = strInfo $ " (" $ msgDisabled $ ")";
+		
+		if (!device.bHackable || device.hackStrength == 0.0)
+			marginTextValue = barSize/4.2;
+		else
+			marginTextValue = barSize/3.4;
+	}	
+	else if( frobTarget.IsA('AutoTurretGun') && frobTarget.Owner != None && frobTarget.Owner.IsA('AutoTurret') && !AutoTurret(frobTarget.Owner).bRebooting && AutoTurret(frobTarget.Owner).bActive && !AutoTurret(frobTarget.Owner).bDisabled)			
+	{
+		if( !AutoTurret(frobTarget.Owner).bTrackPlayersOnly && !AutoTurret(frobTarget.Owner).bTrackPawnsOnly )    //Ygll: the turret is actually tracking everyone
+			strInfo = strInfo $ " (" $ msgTrackAll $ ")";
+		else if( AutoTurret(frobTarget.Owner).bTrackPlayersOnly && !AutoTurret(frobTarget.Owner).bTrackPawnsOnly ) //Ygll: the turret track the player
+			strInfo = strInfo $ " (" $ msgTrackAllies $ ")";
+		else if( !AutoTurret(frobTarget.Owner).bTrackPlayersOnly && AutoTurret(frobTarget.Owner).bTrackPawnsOnly ) //Ygll: the turret track enemies
+			strInfo = strInfo $ " (" $ msgTrackEnemies $ ")";
+
+		if (!device.bHackable || device.hackStrength == 0.0)
+			marginTextValue = barSize/1.6;
+		else
+			marginTextValue = barSize/3.0;
 	}
 	
-	strInfo = strInfo $ CR() $ strSpace $ msgHackStr;
+	//We check the extend value for this text
+	gc.GetTextExtent(0, extendWName, extendHName, strInfo);
+	
+	strInfoBlock = strSpace $ msgHackStr $ CR() $ strSpace $ msgObjThreshold;
 	
 	//CyberP begin:                                             //RSD: No damage thresholds on hackable objects, sorry!
-	strInfo = strInfo $ CR() $ strSpace $ msgObjThreshold;
+	strInfo = strInfo $ CR() $ strInfoBlock;
 	
 	if (!device.bInvincible)
 		strThreshold = strOpenValue $ FormatString(device.minDamageThreshold) $ strCloseValue;
@@ -434,8 +457,17 @@ function DrawDeviceHudInformation(GC gc, actor frobTarget)
 
 	gc.SetFont(Font'FontMenuSmall_DS');
 	gc.GetTextExtent(0, infoW, infoH, strInfo);		
-	infoH += 8;
-	infoW += barSize + 16;
+	infoH += 8;	
+	
+	//We check the extend value for this text
+	gc.GetTextExtent(0, extendWInfo, extendHInfo, strInfoBlock);
+	
+	infoW = extendWInfo + barSize + 14;
+	if( infoW <= extendWName ) //here we test extendWName + 4 to think about margin
+	{
+		infoW = extendWName - marginTextValue;
+	}
+	
 	infoX = FClamp(infoX, infoW/2+10, width-10-infoW/2);
 	infoY = FClamp(infoY, infoH/2+10, height-10-infoH/2);
 	
@@ -446,10 +478,10 @@ function DrawDeviceHudInformation(GC gc, actor frobTarget)
 	
 	// Draw the current text information	
 	gc.SetTextColor(colText);
-	gc.DrawText(infoX+4, infoY+4, infoW-8, infoH-8, strInfo);
-	
-	gc.GetTextExtent(0, infoW, infoHtemp, strSpace $ msgHackStr $ CR() $ strSpace $ msgObjThreshold);	//Ygll: text block corresponding to the info lines of the object, to place properly value text	
-	infoW += barSize + 16;
+	gc.DrawText(infoX+4, infoY+4, infoW, infoH-8, strInfo);
+
+	//Ygll: text block corresponding to the info lines of the object, to place properly value text next to it
+	infoW = extendWInfo + barSize + 4;
 	
 	// Draw the Device Damage Threshold
 	if ( device.bInvincible || ( player.bColourCodeFrobDisplay && !device.bInvincible &&
@@ -460,16 +492,16 @@ function DrawDeviceHudInformation(GC gc, actor frobTarget)
 	else
 		gc.SetTextColor(colText);
 
-	gc.DrawText(infoX+(infoW-barSize-6), infoY+19+(infoH-8)/4, barSize, ((infoH-8)/4)+4, strThreshold);
+	gc.DrawText(infoX+(infoW-barSize+5), infoY+19+(infoH-8)/4, barSize, ((infoH-8)/4)+5, strThreshold);
 
 	// draw the absolute number of multitools on top of the colored bar
-	if ((device.bHackable) && (device.hackStrength != 0.0))
+	if ( device.bHackable && device.hackStrength > 0.0 )
 	{
 		// draw a colored bar
 		gc.SetStyle(DSTY_Translucent);
 		col = GetColorScaled(device.hackStrength);
 		gc.SetTileColor(col);
-		gc.DrawPattern(infoX+(infoW-barSize-7), infoY-1+infoH/2.7, barSize*device.hackStrength, ((infoH-8)/4)+1, 0, 0, Texture'ConWindowBackground'); //CyberP: //RSD: reverted
+		gc.DrawPattern(infoX+(infoW-barSize+4), infoY-1+infoH/2.7, barSize*device.hackStrength, ((infoH-8)/4), 0, 0, Texture'ConWindowBackground'); //CyberP: //RSD: reverted
 		
 		//SARGE: If we have Cracked, display 0 tools
 		perkCracked = player.PerkManager.GetPerkWithClass(class'DeusEx.PerkCracked');
@@ -508,11 +540,11 @@ function DrawDeviceHudInformation(GC gc, actor frobTarget)
 			strInfo =  strInfo $ " (" $ FormatString(device.hackStrength * 100.0) $ "%)";
 		}
 		
-		gc.DrawText(infoX+(infoW-barSize-3), infoY+infoH/2.7, barSize, ((infoH-8)/4)+4, strInfo);
+		gc.DrawText(infoX+(infoW-barSize+8), infoY+infoH/2.7, barSize, ((infoH-8)/4)+4, strInfo);
 	}
 	else
 	{
-		if (device.bHackable)
+		if (device.bHackable || ( !device.bHackable && device.bDisabledByComputer ) )
 		{
 			strInfo = msgHacked;
 		}
@@ -522,7 +554,7 @@ function DrawDeviceHudInformation(GC gc, actor frobTarget)
 		}
 		
 		gc.SetTextColor(colText);
-		gc.DrawText(infoX+(infoW-barSize-7), infoY+infoH/2.7, barSize, ((infoH-8)/4)+4, strInfo);
+		gc.DrawText(infoX+(infoW-barSize+4), infoY+infoH/2.8, barSize, ((infoH-8)/4)+4, strInfo);
 	}	
 }
 
@@ -695,5 +727,8 @@ defaultproperties
 	msgHP2="Hitpoints: 3";
 	colNotEnough=(R=255,G=50,B=50);
 	colJustEnough=(R=255,G=255,B=50);
-	msgDisabled="Disabled";	 
+	msgDisabled="Disabled";
+	msgTrackAll="Target: All";
+	msgTrackAllies="Target: Allies";
+	msgTrackEnemies="Target: Enemies";
 }
