@@ -587,27 +587,33 @@ simulated function bool CanDrainEnergy()
 // Replaced it with an additive bonus/penalty.
 // Custom version allows working with any energy ratio
 // ----------------------------------------------------------------------
-
 function float GetAdjustedEnergy(float amount)
 {    
     local float bonus, penalty, mult;
 
-    //Heart Penalty
-    penalty = Player.AugmentationSystem.GetAugLevelValue(class'AugHeartLung');
+	if(amount > 0.0)
+	{
+		mult = 1.0;
+	
+		//Heart Penalty
+		if(Player != none)
+		{
+			penalty = Player.AugmentationSystem.GetAugLevelValue(class'AugHeartLung');
+			//recirc bonus
+			bonus = Player.AugmentationSystem.GetAugLevelValue(class'AugPower');
+			
+			if (penalty > 0 && bonus > 0)
+				mult = bonus + penalty - 1.0;
+			else if (bonus > 0)
+				mult = bonus;
+			else if (penalty > 0)
+				mult = penalty;
+		}        
 
-    //recirc bonus
-    bonus = Player.AugmentationSystem.GetAugLevelValue(class'AugPower');
-
-    if (penalty > 0 && bonus > 0)
-        mult = bonus + penalty - 1.0;
-    else if (bonus > 0)
-        mult = bonus;
-    else if (penalty > 0)
-        mult = penalty;
-    else
-        mult = 1.0;
-
-    return amount * mult;
+		return amount * mult;	
+	}
+	else
+		return 0.0;	
 }
 
 // ----------------------------------------------------------------------
@@ -702,57 +708,57 @@ function string GetDescription()
 
 defaultproperties
 {
-     EnergyRate=50.000000
-     MaxLevel=3
-     IconWidth=52
-     IconHeight=52
-     HotKeyNum=-1
-     EnergyRateLabel="Energy Rate: %d Units/Minute"
-     ConditionalLabel="(Conditional)"
-     EnergyReserveLabel="Energy Reserved: %d Units"
-     OccupiesSlotLabel="Occupies Slot: %s"
-     AugLocsText(0)="Cranial"
-     AugLocsText(1)="Eyes"
-     AugLocsText(2)="Torso"
-     AugLocsText(3)="Arms"
-     AugLocsText(4)="Legs"
-     AugLocsText(5)="Subdermal"
-     AugLocsText(6)="Default"
-     AugKillswitch="Augmentation System has been disabled by user MJ12//SIMONS-W"
-     AugActivated="%s activated"
-     AugRecharging="%s is recharging"
-     AugDeactivated="%s deactivated"
-     MPInfo="DEFAULT AUG MP INFO - REPORT THIS AS A BUG"
-     AugAlreadyHave="You already have the %s at the maximum level"
-     AugNowHave="%s upgraded to level %d"
-     AugNowHaveAtLevel="Augmentation %s at level %d"
-     AlwaysActiveLabel="[Always Active]"
-     CanUpgradeLabel="(Can Upgrade)"
-     CurrentLevelLabel="Current Level: %d"
-     MaximumLabel="(Maximum)"
-     ActiveLabel="Active"
-     AutomaticLabel="Automatic"
-     ToggleLabel="Toggle"
-     PassiveLabel="Passive"
-     TypeDescriptorPassive="Passive Augmentations are always active and use no bioelectrical energy."
-     TypeDescriptorActive="Active Augmentations use bioelectrical energy at a standard rate while activated."
-     TypeDescriptorToggle="Toggled Augmentations may reserve an amount of bioelectrical energy while active, but use no energy to remain active. The reserve amount is lost upon deactivation."
-     TypeDescriptorAutomatic="Automatic Augmentations can be activated with no bioelectrical energy cost. While active, bioelectrical energy is drained based on specific circumstances."
-     ActivateSound=Sound'DeusExSounds.Augmentation.AugActivate'
-     DeActivateSound=Sound'DeusExSounds.Augmentation.AugDeactivate'
-     LoopSound=Sound'DeusExSounds.Augmentation.AugLoop'
-     bHidden=True
-     bTravel=True
-     NetUpdateFrequency=5.000000
-     chargeTime=1.000000
-     AugmentationType=Aug_Active
-     colToggle=(R=76,G=255,B=0)
+     EnergyRate=50.000000;
+     MaxLevel=3;
+     IconWidth=52;
+     IconHeight=52;
+     HotKeyNum=-1;
+     EnergyRateLabel="Energy Rate: %d Units/Minute";
+     ConditionalLabel="(Conditional)";
+     EnergyReserveLabel="Energy Reserved: %d Units";
+     OccupiesSlotLabel="Occupies Slot: %s";
+     AugLocsText(0)="Cranial";
+     AugLocsText(1)="Eyes";
+     AugLocsText(2)="Torso";
+     AugLocsText(3)="Arms";
+     AugLocsText(4)="Legs";
+     AugLocsText(5)="Subdermal";
+     AugLocsText(6)="Default";
+     AugKillswitch="Augmentation System has been disabled by user MJ12//SIMONS-W";
+     AugActivated="%s activated";
+     AugRecharging="%s is recharging";
+     AugDeactivated="%s deactivated";
+     MPInfo="DEFAULT AUG MP INFO - REPORT THIS AS A BUG";
+     AugAlreadyHave="You already have the %s at the maximum level";
+     AugNowHave="%s upgraded to level %d";
+     AugNowHaveAtLevel="Augmentation %s at level %d";
+     AlwaysActiveLabel="[Always Active]";
+     CanUpgradeLabel="(Can Upgrade)";
+     CurrentLevelLabel="Current Level: %d";
+     MaximumLabel="(Maximum)";
+     ActiveLabel="Active";
+     AutomaticLabel="Automatic";
+     ToggleLabel="Toggle";
+     PassiveLabel="Passive";
+     TypeDescriptorPassive="Passive Augmentations are always active and use no bioelectrical energy.";
+     TypeDescriptorActive="Active Augmentations use bioelectrical energy at a standard rate while activated.";
+     TypeDescriptorToggle="Toggled Augmentations may reserve an amount of bioelectrical energy while active, but use no energy to remain active. The reserve amount is lost upon deactivation.";
+     TypeDescriptorAutomatic="Automatic Augmentations can be activated with no bioelectrical energy cost. While active, bioelectrical energy is drained based on specific circumstances.";
+     ActivateSound=Sound'DeusExSounds.Augmentation.AugActivate';
+     DeActivateSound=Sound'DeusExSounds.Augmentation.AugDeactivate';
+     LoopSound=Sound'DeusExSounds.Augmentation.AugLoop';
+     bHidden=True;
+     bTravel=True;
+     NetUpdateFrequency=5.000000;
+     chargeTime=1.000000;
+     AugmentationType=Aug_Active;
+     colToggle=(R=76,G=255,B=0);
      //colInactive=(R=255,G=255,B=255)
-     colInactive=(R=255,G=255,B=255)
-     colInactive2=(R=100,G=100,B=100)
-     colRecharging=(R=255)
-     colPassive=(R=255,G=255)
-     colActive=(R=0,G=38,B=255)
-     colAuto=(G=255,B=255)
-     bHasChargeBar=True
+     colInactive=(R=255,G=255,B=255);
+     colInactive2=(R=100,G=100,B=100);
+     colRecharging=(R=255);
+     colPassive=(R=255,G=255);
+     colActive=(R=0,G=38,B=255);
+     colAuto=(G=255,B=255);
+     bHasChargeBar=True;
 }

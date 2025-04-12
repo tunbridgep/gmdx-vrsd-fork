@@ -16,6 +16,7 @@ var float lastAlarmTime;		// last time the alarm was sounded
 var int alarmTimeout;			// how long before the alarm silences itself
 var actor triggerActor;			// actor which last triggered the alarm
 var vector actorLocation;		// last known location of actor that triggered alarm
+var string HDTPMesh;
 
 singular function Touch(Actor Other)
 {
@@ -282,18 +283,18 @@ function Destroyed()
 
 defaultproperties
 {
-     bIsOn=True
-     confusionDuration=10.000000
-     HitPoints=50
-     minDamageThreshold=50
-     alarmTimeout=30
-     TriggerType=TT_AnyProximity
-     bHidden=False
-     bDirectional=True
-     DrawType=DT_Mesh
-     HDTPSkin"HDTPDecos.Skins.HDTPlaseremittertex0"
-     HDTPMesh="HDTPDecos.HDTPlaseremitter"
-     Mesh=LodMesh'DeusExDeco.LaserEmitter'
-     CollisionRadius=2.500000
-     CollisionHeight=2.500000
+     bIsOn=true;
+     confusionDuration=10.000000;
+     HitPoints=50;
+     minDamageThreshold=50;
+     alarmTimeout=30;
+     TriggerType=TT_AnyProximity;
+     bHidden=false;
+     bDirectional=true;
+     DrawType=DT_Mesh;
+     HDTPSkin"HDTPDecos.Skins.HDTPlaseremittertex0";
+     HDTPMesh="HDTPDecos.HDTPlaseremitter";
+     Mesh=LodMesh'DeusExDeco.LaserEmitter';
+     CollisionRadius=2.500000;
+     CollisionHeight=2.500000;
 }

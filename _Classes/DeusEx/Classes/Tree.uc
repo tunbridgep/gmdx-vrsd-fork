@@ -12,6 +12,7 @@ class Tree extends OutdoorThings
 var DeusExPlayer player;
 var bool closeEnough;
 var bool previouslyCloseEnough;
+var bool bHDTPOptimisation;
 
 var string Altmesh;
 
@@ -92,11 +93,11 @@ function PostBeginPlay()
 
 defaultproperties
 {
-     soundFreq=0.200000
-     ItemName="Tree"
-     bStatic=False
-     Mass=2000.000000
-     Buoyancy=5.000000
-	 bHDTPFailsafe=False
-     bHDTPOptimisation=True
+     soundFreq=0.200000;
+     ItemName="Tree";
+     bStatic=false;
+     Mass=2000.000000;
+     Buoyancy=5.000000;
+	 bHDTPFailsafe=false;
+     bHDTPOptimisation=true;
 }

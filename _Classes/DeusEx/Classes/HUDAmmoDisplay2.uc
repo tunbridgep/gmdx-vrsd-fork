@@ -218,9 +218,9 @@ function SetVisibility( bool bNewVisibility )
 
 defaultproperties
 {
-     infoX=66
-     InvLabel="COUNT:"
-     texBackground=Texture'RSDCrap.UserInterface.HudAmmoDisplayBackgroundSecondary'
-     texBorder=Texture'RSDCrap.UserInterface.HudAmmoDisplayBorderSecondary'
-     colIconDimmed=(R=64,G=64,B=64)
+     infoX=66;
+     InvLabel="COUNT:";
+     texBackground=Texture'RSDCrap.UserInterface.HudAmmoDisplayBackgroundSecondary';
+     texBorder=Texture'RSDCrap.UserInterface.HudAmmoDisplayBorderSecondary';
+     colIconDimmed=(R=64,G=64,B=64);
 }

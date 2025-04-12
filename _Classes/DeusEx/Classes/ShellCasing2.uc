@@ -6,6 +6,7 @@ class ShellCasing2 extends DeusExFragment;
 var particlegenerator gen;
 var float smoketimer;
 var float smokeprob;
+var string HDTPMesh;
 
 
 function postbeginplay()
@@ -14,7 +15,7 @@ function postbeginplay()
 	{
 		smoketimer = 0.1+frand()*0.2;
 	}
-
+	
 	super.postbeginplay();
 }
 
@@ -192,14 +193,14 @@ exec function UpdateHDTPsettings()
 
 defaultproperties
 {
-     smokeprob=0.400000
-     HDTPMesh="HDTPItems.HDTPShotguncasing"
-     numFragmentTypes=1
-     elasticity=0.400000
-     ImpactSound=Sound'DeusExSounds.Generic.ShellHit'
-     MiscSound=Sound'DeusExSounds.Generic.ShellHit'
-     Mesh=LodMesh'DeusExItems.ShellCasing2'
-     DrawScale=1.400000
-     CollisionRadius=2.870000
-     CollisionHeight=0.920000
+     smokeprob=0.400000;
+     HDTPMesh="HDTPItems.HDTPShotguncasing";
+     numFragmentTypes=1;
+     elasticity=0.400000;
+     ImpactSound=Sound'DeusExSounds.Generic.ShellHit';
+     MiscSound=Sound'DeusExSounds.Generic.ShellHit';
+     Mesh=LodMesh'DeusExItems.ShellCasing2';
+     DrawScale=1.400000;
+     CollisionRadius=2.870000;
+     CollisionHeight=0.920000;
 }
