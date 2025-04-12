@@ -1031,7 +1031,7 @@ local DeusExPlayer playa;
 
     if (!givenFreeReload && Owner != None && Owner.IsA('ScriptedPawn'))
     {
-        ReloadMaxAmmo();
+        ClipCount = ReloadCount;
         givenFreeReload = true;
     }
 
