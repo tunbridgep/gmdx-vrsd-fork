@@ -13698,7 +13698,9 @@ function bool GetExceptedCode(string code)
         || code == "WYRDRED08" //We are not given the last digit
         || (code == "1966" && FlagBase.GetBool('GaveCassandraMoney')) //Only given in conversation, no note
         //|| code == "1966" //Only given in conversation, no note
-        || code == "4321"; //We are told to "count backwards from 4"
+        || code == "4321" //We are told to "count backwards from 4"
+        || code == "NICOLETTE" //Given in conversation
+        || code == "CHAD"; //Given in conversation
 }
 
 //"Security" is a commonly used word in many logs.
