@@ -234,12 +234,14 @@ function ConfigurationChanged()
 	{
 		if (ammo.IsVisible())
 		{
-            ammo.SetRightSide(bRightSide);
+            ammo.SetRightSide(bRightSide);                      //SARGE: Added
 			ammo.QueryPreferredSize(ammoWidth, ammoHeight);
+            //SARGE: Move the ammo display down by 1 unit because it's misaligned,
+            //and was annoying me too much
             if (bRightSide)
-                ammo.ConfigureChild(width-ammowidth, height-ammoHeight, ammoWidth, ammoHeight);
+                ammo.ConfigureChild(width-ammowidth, height-ammoHeight+1, ammoWidth, ammoHeight);
             else
-                ammo.ConfigureChild(0, height-ammoHeight, ammoWidth, ammoHeight);
+                ammo.ConfigureChild(0, height-ammoHeight+1, ammoWidth, ammoHeight);
 		}
 		else
 		{
