@@ -166,6 +166,16 @@ function Timer()
 
 				foreach AllActors(class'ScubaDiver', diver, 'scubateam')
 					diver.EnterWorld();
+				
+
+                //SARGE: Now that we may or may not get the oceanguard/kraken password,
+                //based on our difficulty, we need to force the sub door open.
+                if (!flags.GetBool('door_open'))
+                {
+                    foreach AllActors(class'DeusExMover', DM, 'subDoor')
+                        DM.Trigger(DM,player);
+                    flags.SetBool('door_open', True,, 15);
+                }
 
 				foreach AllActors(class'DeusExMover', DM, 'simonsDoor')
                 {
