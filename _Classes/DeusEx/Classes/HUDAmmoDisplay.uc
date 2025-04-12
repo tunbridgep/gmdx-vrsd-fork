@@ -264,6 +264,7 @@ event DrawWindow(GC gc)
         //especially if an infolink is playing.
         else if (player.bShowAmmoTypeInAmmoHUD)
         {
+			gc.SetFont(Font'FontTiny'); //CyberP: hud scaling Font'FontTiny'
             gc.SetTextColor(GetAmmoTextColor());
             gc.DrawText(25, 56, 65, 8, DeusExAmmo(weapon.AmmoType).beltDescription);
         }
