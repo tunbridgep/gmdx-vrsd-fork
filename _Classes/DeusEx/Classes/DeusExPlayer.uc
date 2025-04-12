@@ -18467,8 +18467,8 @@ defaultproperties
      bSimpleAugSystem=false
      bBigDroneView=True
      bSimpleAugSystem=true
-	 MenuThemeNameGMDX="Default"
-     HUDThemeNameGMDX="Default"
+	 MenuThemeNameGMDX="MJ12"
+     HUDThemeNameGMDX="Amber"
      dblClickHolster=2
      bSmartDecline=True
      killswitchTimer=-2
