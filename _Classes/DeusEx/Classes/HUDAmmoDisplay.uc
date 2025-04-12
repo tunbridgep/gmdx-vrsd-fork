@@ -1,7 +1,7 @@
 //=============================================================================
 // HUDAmmoDisplay
 //=============================================================================
-class HUDAmmoDisplay expands HUDBaseWindow;
+class HUDAmmoDisplay expands HUDRightSidedWindow;
 
 var Bool			bVisible;
 var Color			colAmmoText;		// Ammo count text color
@@ -32,6 +32,7 @@ var DeusExWeapon weapon;
 // Defaults
 var Texture texBackground;
 var Texture texBorder;
+var Texture texBorderRight;
 var localized String LaserLabel;
 var localized String RemoteLabel;
 
@@ -42,6 +43,8 @@ var localized String RemoteLabel;
 event InitWindow()
 {
 	Super.InitWindow();
+
+    SetRightSide(false);
 
 	bTickEnabled = TRUE;
 
@@ -153,7 +156,7 @@ event DrawWindow(GC gc)
 		// Draw the weapon icon
 		gc.SetStyle(DSTY_Masked);
 		gc.SetTileColorRGB(255, 255, 255);
-		gc.DrawTexture(22, 20, 40, 35, 0, 0, SkilledTool(curr).icon);
+		gc.DrawTexture(9+offset, 20, 40, 35, 0, 0, SkilledTool(curr).icon);
 
 		// Draw the ammo count
 		gc.SetFont(player.FontManager.GetFont(TT_AmmoCount)); //CyberP: hud scaling Font'FontTiny'
@@ -161,15 +164,15 @@ event DrawWindow(GC gc)
 		gc.EnableWordWrap(false);
          
         gc.SetTextColor(colAmmoText);
-        gc.DrawText(infoX, ammopostop, 20, 9, SkilledTool(curr).numCopies);
-        gc.DrawText(infoX, ammoposbtm, 20, 9, NotAvailable);
+        gc.DrawText(infoX+offset, ammopostop, 20, 9, SkilledTool(curr).numCopies);
+        gc.DrawText(infoX+offset, ammoposbtm, 20, 9, NotAvailable);
     }
 	else if ( weapon != None )
 	{
 		// Draw the weapon icon
 		gc.SetStyle(DSTY_Masked);
 		gc.SetTileColorRGB(255, 255, 255);
-		gc.DrawTexture(22, 20, 40, 35, 0, 0, weapon.icon);
+		gc.DrawTexture(9+offset, 20, 40, 35, 0, 0, weapon.icon);
 
 		// Draw the ammo count
 		gc.SetFont(player.FontManager.GetFont(TT_AmmoCount)); //CyberP: hud scaling Font'FontTiny'
@@ -192,8 +195,8 @@ event DrawWindow(GC gc)
         {
             gc.SetTextColor(colAmmoText);
             ammoInClip = WeaponNanoSword(weapon).ChargeManager.GetCurrentCharge();
-            gc.DrawText(infoX, ammopostop, 20, 9, ammoInClip);
-			gc.DrawText(infoX, ammoposbtm, 20, 9, NotAvailable);
+            gc.DrawText(infoX+offset, ammopostop, 20, 9, ammoInClip);
+			gc.DrawText(infoX+offset, ammoposbtm, 20, 9, NotAvailable);
         }
 		// Ammo count drawn differently depending on user's setting
 		else if (weapon.ReloadCount > 1 || weapon.IsA('WeaponGEPGun') || weapon.AmmoName == Class'Ammo20mm')
@@ -210,9 +213,9 @@ event DrawWindow(GC gc)
                 gc.SetTextColor(colAmmoText);
 
 			if (weapon.IsInState('Reload') && weapon.bPerShellReload == false)
-				gc.DrawText(infoX, ammopostop, 20, 9, msgReloading);
+				gc.DrawText(infoX+offset, ammopostop, 20, 9, msgReloading);
 			else
-				gc.DrawText(infoX, ammopostop, 20, 9, ammoInClip);
+				gc.DrawText(infoX+offset, ammopostop, 20, 9, ammoInClip);
 
 			// if there are no clips (or a partial clip) remaining, color me red
 			if (( clipsRemaining == 0 ) || (( clipsRemaining == 1 ) && ( ammoRemaining < 2 * weapon.ReloadCount )))
@@ -221,24 +224,24 @@ event DrawWindow(GC gc)
                 gc.SetTextColor(colAmmoText);
 
 			if (weapon.IsInState('Reload') && weapon.bPerShellReload == false)
-				gc.DrawText(infoX, ammoposbtm, 20, 9, msgReloading);
+				gc.DrawText(infoX+offset, ammoposbtm, 20, 9, msgReloading);
 			else
-				gc.DrawText(infoX, ammoposbtm, 20, 9, clipsRemaining);
+				gc.DrawText(infoX+offset, ammoposbtm, 20, 9, clipsRemaining);
 		}
 		else
 		{
-			gc.DrawText(infoX, ammoposbtm, 20, 9, NotAvailable);
+			gc.DrawText(infoX+offset, ammoposbtm, 20, 9, NotAvailable);
 
 			if (weapon.ReloadCount == 0)
 			{
-				gc.DrawText(infoX, ammopostop, 20, 9, NotAvailable);
+				gc.DrawText(infoX+offset, ammopostop, 20, 9, NotAvailable);
 			}
 			else
 			{
 				if (weapon.IsInState('Reload') && weapon.bPerShellReload == false)
-					gc.DrawText(infoX, ammopostop, 20, 9, msgReloading);
+					gc.DrawText(infoX+offset, ammopostop, 20, 9, msgReloading);
 				else
-					gc.DrawText(infoX, ammopostop, 20, 9, ammoRemaining);
+					gc.DrawText(infoX+offset, ammopostop, 20, 9, ammoRemaining);
 			}
 		}
 
@@ -253,11 +256,11 @@ event DrawWindow(GC gc)
 				gc.SetTextColor(colNormalText);
 			gc.SetFont(Font'FontTiny'); //CyberP: hud scaling Font'FontTiny'
 			if (weapon.bLasing)
-		        gc.DrawText(25, 56, 65, 8, LaserLabel);
+		        gc.DrawText(12+offset, 56, 65, 8, LaserLabel);
             else if (weapon.bZoomed)
-                gc.DrawText(25, 56, 65, 8, RemoteLabel);
+                gc.DrawText(12+offset, 56, 65, 8, RemoteLabel);
             else
-			    gc.DrawText(25, 56, 65, 8, weapon.TargetMessage);
+			    gc.DrawText(12+offset, 56, 65, 8, weapon.TargetMessage);
 		}
         //SARGE: Otherwise, print the ammo type. This is useful when we "use" items from the inventory
         //that aren't on our belt, which normally would give us no idea what is in our weapon if we change ammo types,
@@ -265,7 +268,7 @@ event DrawWindow(GC gc)
         else if (player.bShowAmmoTypeInAmmoHUD)
         {
             gc.SetTextColor(GetAmmoTextColor());
-            gc.DrawText(25, 56, 65, 8, DeusExAmmo(weapon.AmmoType).beltDescription);
+            gc.DrawText(12+offset, 56, 65, 8, DeusExAmmo(weapon.AmmoType).beltDescription);
         }
 	}
 }
@@ -281,7 +284,7 @@ function DrawBackground(GC gc)
 
 	gc.SetStyle(backgroundDrawStyle);
 	gc.SetTileColor(colBackground);
-	gc.DrawTexture(13, 13, 80, 54, 0, 0, texBackground);
+    gc.DrawTexture(offset, 13, 80, 54, 0, 0, texBackground);
 
 	// Draw the Ammo and Clips text labels
 	gc.SetFont(Font'FontTiny');
@@ -291,16 +294,16 @@ function DrawBackground(GC gc)
     if (player != None)
     {
         if (weapon != None && weapon.IsA('WeaponNanoSword'))
-            gc.DrawText(66, 17, 21, 8, ChargeLabel);
+            gc.DrawText(53+offset, 17, 21, 8, ChargeLabel);
         else
-            gc.DrawText(66, 17, 21, 8, AmmoLabel);
+            gc.DrawText(53+offset, 17, 21, 8, AmmoLabel);
 
         if (weapon != None && weapon.bPerShellReload || weapon.AmmoName == Class'Ammo20mm' || (player.bDisplayTotalAmmo && !player.bHardCoreMode))
-            gc.DrawText(66, 48, 21, 8, RoundsLabel);
+            gc.DrawText(53+offset, 48, 21, 8, RoundsLabel);
         else if (player.bDisplayClips)
-            gc.DrawText(66, 48, 21, 8, ClipsLabel);
+            gc.DrawText(53+offset, 48, 21, 8, ClipsLabel);
         else
-            gc.DrawText(66, 48, 21, 8, MagsLabel);
+            gc.DrawText(53+offset, 48, 21, 8, MagsLabel);
     }
 }
 
@@ -314,7 +317,10 @@ function DrawBorder(GC gc)
 	{
 		gc.SetStyle(borderDrawStyle);
 		gc.SetTileColor(colBorder);
-		gc.DrawTexture(0, 0, 95, 77, 0, 0, texBorder);
+        if (bRightSided)
+            gc.DrawTexture(0, 0, 95, 77, 0, 0, texBorderRight);
+        else
+            gc.DrawTexture(0, 0, 95, 77, 0, 0, texBorder);
 	}
 }
 
@@ -339,7 +345,7 @@ defaultproperties
      colNormalText=(G=255)
      colTrackingText=(R=255,G=255)
      colLockedText=(R=255)
-     infoX=66
+     infoX=53
      NotAvailable="N/A"
      msgReloading="---"
      AmmoLabel="AMMO"
@@ -349,6 +355,9 @@ defaultproperties
 	 RoundsLabel="RDS"
      texBackground=Texture'DeusExUI.UserInterface.HUDAmmoDisplayBackground_1'
      texBorder=Texture'DeusExUI.UserInterface.HUDAmmoDisplayBorder_1'
+     texBorderRight=Texture'RSDCrap.UserInterface.HUDAmmoDisplayBorder_1F'
      LaserLabel="LASER GUIDANCE"
      RemoteLabel="REMOTE GUIDANCE"
+     leftSideOffset=13
+     rightSideOffset=2
 }
