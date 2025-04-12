@@ -6,6 +6,8 @@ class AugTarget extends Augmentation;
 var float mpAugValue;
 var float mpEnergyDrain;
 
+var float damageMod[4];
+
 // ----------------------------------------------------------------------------
 // Network Replication
 // ----------------------------------------------------------------------------
@@ -25,9 +27,14 @@ Begin:
 
 function Deactivate()
 {
+    //SARGE: Fuck up the players accuracy bonus.
+    player.savedStandingTimer = 0.0;
+    if (player.inHand != None && player.inHand.IsA('DeusExWeapon'))
+        DeusExWeapon(player.inHand).standingTimer = 0.0;
+
 	Super.Deactivate();
 
-   SetTargetingAugStatus(CurrentLevel,False);
+    SetTargetingAugStatus(CurrentLevel,False);
 }
 
 //SARGE: Handle being levelled-up while the aug is turned on
@@ -58,8 +65,16 @@ simulated function PreBeginPlay()
 	{
 		LevelValues[3] = mpAugValue;
 		EnergyRate = mpEnergyDrain;
-      AugmentationLocation = LOC_Subdermal;
+        AugmentationLocation = LOC_Subdermal;
 	}
+}
+
+function float GetDamageMod()
+{
+    if (bHasIt && bIsActive && CurrentLevel <= 3 && damageMod[CurrentLevel] >= 1.0)
+        return damageMod[CurrentLevel];
+    
+    return 1.0;
 }
 
 defaultproperties
@@ -82,6 +97,10 @@ defaultproperties
      LevelValues(1)=-0.100000
      LevelValues(2)=-0.125000
      LevelValues(3)=-0.150000
+     DamageMod(0)=1.2;
+     DamageMod(1)=1.3;
+     DamageMod(2)=1.4;
+     DamageMod(3)=1.5;
      AugmentationLocation=LOC_Eye
      MPConflictSlot=4
 }

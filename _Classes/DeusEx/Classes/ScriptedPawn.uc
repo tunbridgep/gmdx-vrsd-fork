@@ -655,6 +655,7 @@ function PostPostBeginPlay()
 simulated function Destroyed()
 {
 	local DeusExPlayer player;
+    local AugAutoaim aA;
 
 	// Pass a message to conPlay, if it exists in the player, that
 	// this pawn has been destroyed.  This is used to prevent
@@ -664,6 +665,16 @@ simulated function Destroyed()
 
 	if ((player != None) && (player.conPlay != None))
 		player.conPlay.ActorDestroyed(Self);
+
+    if (player != None && player.AugmentationSystem != None)
+    {
+        aA = AugAutoaim(player.AugmentationSystem.GetAug(class'AugAutoaim'));
+        if (aA != None)
+        {
+            if (aA.target == self || aA.potentialTarget == self)
+                aA.ClearTarget();
+        }
+    }
 
 	Super.Destroyed();
 }

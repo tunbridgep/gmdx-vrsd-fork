@@ -352,7 +352,10 @@ var bool bFancyScopeAnimation;
 var const Sound RetrieveAmmoSound;
 
 //SARGE: Store if we have deducted Targeting Aug energy for this weapon yet (for burst weapons)
-var bool bDeductedTargetingAug;
+var bool bDeductedAutoaimAug;
+
+//SARGE: Only some weapons are compatible with the targeting aug
+var const bool bAutoaimAugCompatible;
 
 //END GMDX:
 
@@ -1391,7 +1394,7 @@ function PlaySelect()
         {
             firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
             OnProjectileFired(firedProjectile);
-            DeductTargetingAugEnergy();
+            DeductAutoaimAugEnergy();
         }
 		if ( Owner.IsA('PlayerPawn') )
 			PlayerPawn(Owner).PlayFiring();
@@ -1497,7 +1500,7 @@ local string msgContactOff;
 //
 // Note we need to control what's calling this...but I'll get rid of the access nones for now
 //
-simulated function float GetWeaponSkill()
+simulated function float GetWeaponSkill(optional bool bNoTargetAug)
 {
 	local DeusExPlayer player;
 	local float value;
@@ -1511,11 +1514,6 @@ simulated function float GetWeaponSkill()
 		{
 			if ((player.AugmentationSystem != None ) && ( player.SkillSystem != None ))
 			{
-				// get the target augmentation
-				value = player.AugmentationSystem.GetAugLevelValue(class'AugTarget');
-				if (value == -1.0)
-					value = 0;
-
 				// get the skill
 				value += player.SkillSystem.GetSkillLevelValue(GoverningSkill);
 			}
@@ -1524,11 +1522,36 @@ simulated function float GetWeaponSkill()
 	return value;
 }
 
+//SARGE: We're now adding the damage independently of the accuracy
+function float GetTargetingDamageMod()
+{
+	local DeusExPlayer player;
+    local AugTarget targeting;
+
+	if (Owner != None)
+	{
+		player = DeusExPlayer(Owner);
+		if (player != None)
+		{
+            targeting = AugTarget(player.AugmentationSystem.GetAug(class'AugTarget'));
+            return targeting.GetDamageMod();
+        }
+    }
+
+    return 1.0;
+}
+
 function int CalculateTrueDamage()
 {
 	local int trueDamage;
 
-	trueDamage = HitDamage * (1.0 - (2.0 * GetWeaponSkill()) + ModDamage);
+	trueDamage = HitDamage * (1.0 - (2.0 * GetWeaponSkill(true)) + ModDamage);
+	//trueDamage *= GetTargetingDamageMod(); //SARGE: No targeting damage when getting damage thresholds
+
+    /*
+	if (Owner != None && owner.IsA('DeusExPlayer'))
+        DeusExPlayer(Owner).ClientMessage("TrueDamage: " $ trueDamage);
+    */
 
 	return trueDamage;
 }
@@ -2256,7 +2279,8 @@ function PlaceGrenade()
 		// up the damage based on the skill
 		// returned value from GetWeaponSkill is negative, so negate it to make it positive
 		// dmgX value ranges from 1.0 to 2.4 (max demo skill and max target aug)
-		dmgX = -2.0 * GetWeaponSkill() + 1.0;
+		dmgX = -2.0 * GetWeaponSkill(true) + 1.0;
+		dmgX *= GetTargetingDamageMod();
 		gren.Damage *= dmgX;
 
 		// Update ammo count on object belt
@@ -2442,9 +2466,9 @@ simulated function Tick(float deltaTime)
 				  if (LockTimer == 0)
 				  {
 				     if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).bHardCoreMode)
-				         LockTime = FMax(Default.LockTime + 5.0 * GetWeaponSkill(), 0.0);
+				         LockTime = FMax(Default.LockTime + 5.0 * GetWeaponSkill(true), 0.0);
                      else
-					     LockTime = FMax(Default.LockTime + 3.0 * GetWeaponSkill(), 0.0);
+					     LockTime = FMax(Default.LockTime + 3.0 * GetWeaponSkill(true), 0.0);
 					 if ((Level.Netmode != NM_Standalone) && (LockTime < 0.25))
 						LockTime = 0.25;
 				  }
@@ -3153,7 +3177,7 @@ function ServerHandleNotify( bool bInstantHit, class<projectile> ProjClass, floa
     {
         firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
         OnProjectileFired(firedProjectile);
-        DeductTargetingAugEnergy();
+        DeductAutoaimAugEnergy();
     }
 }
 
@@ -3189,7 +3213,7 @@ simulated function HandToHandAttack()
     {
         firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
         OnProjectileFired(firedProjectile);
-        DeductTargetingAugEnergy();
+        DeductAutoaimAugEnergy();
     }
 
 	// if we are a thrown weapon and we run out of ammo, destroy the weapon
@@ -3236,7 +3260,7 @@ simulated function OwnerHandToHandAttack()
     {
         firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
         OnProjectileFired(firedProjectile);
-        DeductTargetingAugEnergy();
+        DeductAutoaimAugEnergy();
     }
 }
 
@@ -3269,7 +3293,7 @@ simulated function ClientReFire( float value )
 	bLooping = True;
 	bInProcess = False;
 	ClientFire(0);
-    bDeductedTargetingAug = false;
+    bDeductedAutoaimAug = false;
 }
 
 function StartFlame()
@@ -3416,7 +3440,7 @@ simulated function bool ClientFire( float value )
 				}
 				firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
                 OnProjectileFired(firedProjectile);
-                DeductTargetingAugEnergy();
+                DeductAutoaimAugEnergy();
 			}
 		}
 		else
@@ -3466,7 +3490,7 @@ function Fire(float Value)
 
     player = DeusExPlayer(Owner);
     
-    bDeductedTargetingAug = false;
+    bDeductedAutoaimAug = false;
 
     //Sarge: Restrict fire if firing is blocked (used when detonating drone).
     if (player != None && player.bBlockNextFire)
@@ -3547,7 +3571,7 @@ function Fire(float Value)
         {
             firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
             OnProjectileFired(firedProjectile);
-            DeductTargetingAugEnergy();
+            DeductAutoaimAugEnergy();
         }
 		if ( Owner.IsA('PlayerPawn') )
 			PlayerPawn(Owner).PlayFiring();
@@ -3589,7 +3613,7 @@ function Fire(float Value)
 			{
 				firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
                 OnProjectileFired(firedProjectile);
-                DeductTargetingAugEnergy();
+                DeductAutoaimAugEnergy();
 				//if (IsA('WeaponFlamethrower'))
                 //{
                 // if (ReloadCount != ClipCount)
@@ -4083,7 +4107,7 @@ simulated function SimGenerateBullet()
             {
 				firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
                 OnProjectileFired(firedProjectile);
-                DeductTargetingAugEnergy();
+                DeductAutoaimAugEnergy();
             }
 
 			SimClipCount--;
@@ -4129,7 +4153,7 @@ function GenerateBullet()
         {
             firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
             OnProjectileFired(firedProjectile);
-            DeductTargetingAugEnergy();
+            DeductAutoaimAugEnergy();
         }
 
 		ClipCount--;
@@ -4497,7 +4521,7 @@ simulated function Projectile ProjectileFire(class<projectile> ProjClass, float 
 
 	// skill also affects our damage
 	// GetWeaponSkill returns 0.0 to -0.7 (max skill/aug)
-	mult += -2.0 * GetWeaponSkill() + ModDamage; //CyberP: damage mod
+	mult += -2.0 * GetWeaponSkill(true) + ModDamage; //CyberP: damage mod
 
     if (IsA('WeaponSawedoffShotgun') && projClass == class'RubberBullet')       //RSD: doing Sawed-Off damage increase properly
     	mult += 0.30;
@@ -4628,6 +4652,7 @@ simulated function Projectile ProjectileFire(class<projectile> ProjClass, float 
 				DartStickToWall(proj);
 					
                 //proj.Damage *= mult;                                          //RSD
+				proj.Damage *= GetTargetingDamageMod();							//SARGE: Separate damage calc for Targeting
                 finalDamage = proj.Damage*mult;                                 //RSD: final input to TakeDamage is a truncated int
                 if (FRand() < (proj.Damage*mult-finalDamage))                   //RSD: So randomly add +1 damage with probability equal to the remainder (0.0-1.0)
                 {
@@ -4761,11 +4786,11 @@ simulated function Projectile ProjectileFire(class<projectile> ProjClass, float 
 	return proj;
 }
     
-function DeductTargetingAugEnergy()
+function DeductAutoaimAugEnergy()
 {
     local AugTarget targeting;
 
-    if (bDeductedTargetingAug)
+    if (bDeductedAutoaimAug)
         return;
 
     //SARGE: If we're using the Targeting aug, deduct energy.
@@ -4774,8 +4799,17 @@ function DeductTargetingAugEnergy()
         targeting = AugTarget(DeusExPlayer(Owner).AugmentationSystem.GetAug(class'AugTarget',true));
         if (targeting != None)
             DeusExPlayer(Owner).Energy = FMAX(DeusExPlayer(Owner).Energy - targeting.GetAdjustedEnergyRate(),0);
-        bDeductedTargetingAug = true;
+        bDeductedAutoaimAug = true;
     }
+}
+
+function ScriptedPawn GetAutoaimObject()
+{
+    local DeusExPlayer P;
+    P = DeusExPlayer(Owner);
+    if (P != None)
+        return P.GetAutoaimObject();
+    return None;
 }
 
 //
@@ -4795,9 +4829,12 @@ simulated function TraceFire( float Accuracy )
     local vector EndTraceCenter, moverStartTrace;                               //RSD: Added
     local float TempAcc;                                                        //RSD: Added
     local Projectile firedProjectile;
+    local ScriptedPawn autoaimObject;                                          //SARGE: Added
 
     //Deduct Energy if we are using the Targeting aug
-    DeductTargetingAugEnergy();
+    DeductAutoaimAugEnergy();
+
+    autoaimObject = GetAutoaimObject();
 
 	// make noise if we are not silenced
 	if (!bHasSilencer && !bHandToHand)
@@ -4834,8 +4871,9 @@ simulated function TraceFire( float Accuracy )
 	//	}
 	// if the laser sight is on, make this shot dead on
 	// also, if the scope is on, zero the accuracy so the shake makes the shot inaccurate
+    // SARGE: Additionally give full accuracy when using the Target aug
 	//else
-    if (bLasing || bZoomed)
+    if (bLasing || bZoomed || autoaimObject != None)
 		Accuracy = 0.0;
 
 	if (Owner.IsA('ScriptedPawn') && !Owner.IsA('Robot')) //CyberP: pawns are slightly innaccurate if player is moving
@@ -4870,7 +4908,13 @@ simulated function TraceFire( float Accuracy )
 		 StartTrace = StartTrace + (numSlugs/2 - i) * SwingOffset;
 	  }
 
-      if (bLasing && Emitter != None && !bZoomed)                               //RSD: If we're using a laser but not scoped, shoot at the location of the laser
+      if (autoaimObject != None)
+      {
+  	      EndTrace = autoaimObject.Location;
+          //EndTrace.Z += (autoaimObject.CollisionHeight * 0.7)/2.0;
+          EndTrace.Z += autoaimObject.CollisionHeight * 0.7;
+      }
+      else if (bLasing && Emitter != None && !bZoomed)                               //RSD: If we're using a laser but not scoped, shoot at the location of the laser
   	      EndTrace = StartTrace + (FMax(1024.0, MaxRange)*vector(Emitter.Rotation));
       else if (numSlugs > 1 && Owner.IsA('DeusExPlayer'))                       //RSD: If we're using a shotgun, spread slugs from the defined aim center
       {
@@ -4978,7 +5022,7 @@ simulated function TraceFire( float Accuracy )
 	{
         firedProjectile = ProjectileFire(ProjectileClass, ProjectileSpeed, bWarnTarget);
         OnProjectileFired(firedProjectile);
-        DeductTargetingAugEnergy();
+        DeductAutoaimAugEnergy();
 	}
 
     LaserYaw += (currentAccuracy*laserKick) * (Rand(4096) - 2048);              //RSD: Bump laser position when firing (75% of cone width)
@@ -5028,7 +5072,7 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
 
 		// skill also affects our damage
 		// GetWeaponSkill returns 0.0 to -0.7 (max skill/aug)
-		mult += -2.0 * GetWeaponSkill() + ModDamage;   //CyberP: damage mod
+		mult += -2.0 * GetWeaponSkill(true) + ModDamage;   //CyberP: damage mod
 
         //RSD: check our range
         dist = Abs(VSize(HitLocation - Owner.Location));
@@ -5057,12 +5101,17 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
         if (bDoExtraSlugDamage)                                                 //RSD: Do two slug's worth of extra damage
             mult *= 3.;
 
-        finalDamage = HitDamage*mult;                                           //RSD: multiplication by int HitDamage results in a truncated int
+        finalDamage = HitDamage*mult*GetTargetingDamageMod();                           //RSD: multiplication by int HitDamage results in a truncated int
         if (Other.IsA('ScriptedPawn') && FRand() < (float(HitDamage)*mult-finalDamage)) //RSD: So randomly add +1 damage with probability equal to the remainder (0.0-1.0)
             finalDamage++;
 
 		if (Other.IsA('Animal') && Ammo10mm(ammoType) != none &&DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkHollowPoints').bPerkObtained == true)
 			finalDamage *= DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkHollowPoints').PerkValue;
+
+        /*
+		if (Owner != None && owner.IsA('DeusExPlayer'))
+			DeusExPlayer(Owner).ClientMessage("FinalDamage: " $ finalDamage);
+        */
 
         if (DeusExPlayer(Owner) != None) //cyberP: spawn a tracer               //RSD: != none instead of IsA
         {
@@ -5575,13 +5624,13 @@ simulated function bool UpdateInfo(Object winObject)
     	hh += 0.5;
 
 	//G-Flex: display the correct damage bonus
-	mod = 1.0 - (2.0 * GetWeaponSkill()) + ModDamage;  //CyberP: damage mods
+	mod = 1.0 - (2.0 * GetWeaponSkill(true)) + ModDamage;  //CyberP: damage mods
 	if (IsA('WeaponSawedoffShotgun') && AmmoName==class'AmmoRubber')            //RSD: Sawed-off gets +30% damage on rubber bullets
 	   mod += 0.30;
 	if (bHandToHand)
-       mod = 1.0 - (2.0 * GetWeaponSkill()) + hh;
+       mod = 1.0 - (2.0 * GetWeaponSkill(true)) + hh;
 	if (IsA('WeaponNanoSword'))                                                 //RSD: Can mod damage of DTS now
-       mod = 1.0 - (2.0 * GetWeaponSkill()) + hh + ModDamage;
+       mod = 1.0 - (2.0 * GetWeaponSkill(true)) + hh + ModDamage;
     if (mod != 1.0 || HasDAMMod())
 	{
 		str = str @ BuildPercentString(mod - 1.0);
@@ -6516,7 +6565,7 @@ ignores Fire, AltFire;
 		else if (DeusExPlayer(Owner) != None)
 		{
 			// check for skill use if we are the player
-			val = GetWeaponSkill();
+			val = GetWeaponSkill(true);
 			val = ReloadTime + (val*ReloadTime);
 			/*if (AmmoType.IsA('AmmoRubber'))                                   //RSD: Rubber rounds no longer load more quickly (huh?)
 			   val *= 0.75;*/
@@ -6864,7 +6913,7 @@ ignores Fire, AltFire, ClientFire, ClientReFire;
 		else if (DeusExPlayer(Owner) != None)
 		{
 			// check for skill use if we are the player
-			val = GetWeaponSkill();
+			val = GetWeaponSkill(true);
 			val = ReloadTime + (val*ReloadTime);
 		}
 		return val;

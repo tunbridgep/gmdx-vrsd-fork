@@ -29,6 +29,12 @@ var int visionLevel;
 var float visionLevelValue;
 var int activeCount;
 
+//SARGE: Added Autoaim aug
+var bool bAutoaimActive;
+var ScriptedPawn autoaimTarget;
+var ScriptedPawn autoaimPotentialTarget;
+var bool autoaimValidWeapon;
+
 var localized String msgRange;
 var localized String msgRangeUnits;
 var localized String msgHigh;
@@ -788,13 +794,17 @@ function PostDrawWindow(GC gc)
 
 	if (bDefenseActive)
 		DrawDefenseAugmentation(gc);
+    
+    //SARGE: Added new targeting aug display
+    if (bAutoaimActive)
+		DrawAutoaimAugmentation(gc);
 
 	if (Player.bSpyDroneActive)
 		DrawSpyDroneAugmentation(gc);
 
 	// draw IFF and accuracy information all the time, return False if target aug is not active
-	DrawTargetAugmentation(gc);
-
+	DrawIFF(gc);
+	
 	gc.SetFont(Font'FontMenuSmall_DS');
 	gc.SetTextColor(colHeaderText);
 	gc.SetStyle(DSTY_Normal);
@@ -807,6 +817,75 @@ function PostDrawWindow(GC gc)
 		else if ( TeamDMGame(Player.DXGame) != None )
 			TeamDMGame(Player.DXGame).ShowTeamDMScoreboard( Player, gc, width, height );
 	}
+}
+
+// ----------------------------------------------------------------------
+// DrawAutoaimAugmentation()
+// ----------------------------------------------------------------------
+
+function DrawAutoaimAugmentation(GC gc)
+{
+    local int i;
+    local float W,H,TLX,TLY,CX,CY,targetCX,targetCY;
+    local string str, str2;
+    local ScriptedPawn targ;
+
+    W = width/2;
+    H = height/2;
+    TLX = (width/2)-W/2;
+    TLY = (height/2)-H/2;
+    CX = W/2;
+    CY = H/2;
+
+    DrawDropShadowBox(gc,TLX,TLY,W,H);
+    
+
+    if (autoaimValidWeapon)
+    {
+        str = "Tracking Targets";
+        gc.SetTextColorRGB(0,255,0);
+    }
+    else
+    {
+        str = "No Compatible Weapon Found";
+        gc.SetTextColorRGB(255,0,0);
+    }
+
+    gc.GetTextExtent(0, w, h, str);
+    gc.DrawText(CX, CY, w, h, str);
+
+
+    if (autoaimTarget != None)
+    {
+        targ = autoaimTarget;
+        str2 = autoaimTarget.UnfamiliarName;
+        gc.SetTextColorRGB(0,160,16);
+    }
+    else if (autoaimPotentialTarget != None)
+    {
+        targ = autoaimPotentialTarget;
+        str2 = "Acquiring Target";
+        gc.SetTextColorRGB(150,160,16);
+    }
+
+    if (targ != None)
+    {
+		if (ConvertVectorToCoordinates(targ.Location, targetCX, targetCY))
+        {
+            gc.GetTextExtent(0, w, h, str2);
+            CX = targetCX - w/2;
+            CY = targetCX - h;
+
+            //draw target information
+            gc.DrawText(targetCX, targetCY, w, h, str2);
+            gc.SetTextColor(colHeaderText);
+
+            //Draw line
+			gc.SetTileColorRGB(255,0,0);
+			Interpolate(gc, width/2, height/2, targetCX, targetCY, 64);
+			gc.SetTileColor(colHeaderText);
+        }
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -1405,10 +1484,10 @@ function DrawAccuracyCrosshair(GC gc, DeusExWeapon weapon, Color crossColor, out
 }
 
 // ----------------------------------------------------------------------
-// DrawTargetAugmentation()
+// SARGE: DrawTargetAugmentation changed to DrawIFF, Targeting is now done elsewhere()
 // ----------------------------------------------------------------------
 
-function DrawTargetAugmentation(GC gc)
+function DrawIFF(GC gc)
 {
 	local String str,str2,str3,str4;
 	local Actor target;
@@ -1505,347 +1584,6 @@ function DrawTargetAugmentation(GC gc)
         DrawAccuracyCrosshair(gc,weapon,crossColor,x,y,mult);
     }
 
-	// let there be a 0.5 second delay before losing a target
-	if (target == None)
-	{
-		if ((Player.Level.TimeSeconds - lastTargetTime < 0.5) && IsActorValid(lastTarget))
-		{
-			target = lastTarget;
-			bUseOldTarget = True;
-		}
-		else
-		{
-			RemoveActorRef(lastTarget);
-			lastTarget = None;
-		}
-	}
-	else
-	{
-		lastTargetTime = Player.Level.TimeSeconds;
-		bUseOldTarget = False;
-		if (lastTarget != target)
-		{
-			RemoveActorRef(lastTarget);
-			lastTarget = target;
-			AddActorRef(lastTarget);
-		}
-	}
-
-	if (target != None)
-	{
-		// draw a cornered targetting box
-		v1.X = target.CollisionRadius;
-		v1.Y = target.CollisionRadius;
-		v1.Z = target.CollisionHeight;
-
-		if (ConvertVectorToCoordinates(target.Location, boxCX, boxCY))
-		{
-			boxTLX = boxCX;
-			boxTLY = boxCY;
-			boxBRX = boxCX;
-			boxBRY = boxCY;
-
-			// get the smallest box to enclose actor
-			// modified from Scott's ActorDisplayWindow
-			for (i=-1; i<=1; i+=2)
-			{
-				for (j=-1; j<=1; j+=2)
-				{
-					for (k=-1; k<=1; k+=2)
-					{
-						v2 = v1;
-						v2.X *= i;
-						v2.Y *= j;
-						v2.Z *= k;
-						v2.X += target.Location.X;
-						v2.Y += target.Location.Y;
-						v2.Z += target.Location.Z;
-
-						if (ConvertVectorToCoordinates(v2, x, y))
-						{
-							boxTLX = FMin(boxTLX, x);
-							boxTLY = FMin(boxTLY, y);
-							boxBRX = FMax(boxBRX, x);
-							boxBRY = FMax(boxBRY, y);
-						}
-					}
-				}
-			}
-
-			boxTLX = FClamp(boxTLX, margin, width-margin);
-			boxTLY = FClamp(boxTLY, margin, height-margin);
-			boxBRX = FClamp(boxBRX, margin, width-margin);
-			boxBRY = FClamp(boxBRY, margin, height-margin);
-
-			boxW = boxBRX - boxTLX;
-			boxH = boxBRY - boxTLY;
-
-			if ((bTargetActive) && (Player.Level.Netmode == NM_Standalone) && winDrone == None)
-			{
-				// set the coords of the zoom window, and draw the box
-				// even if we don't have a zoom window
-				x = width/8 + margin;
-				y = height/2;
-				w = width/4;
-				h = height/4;
-
-                DrawDroneWindow(gc,winZoom,boxW,boxH,boxCX,boxCY,true);
-
-				boxTLX = boxCX - BoxW/2.0;
-				boxTLY = boxCY - BoxH/2.0;
-				boxTRX = boxCX + BoxW/2.0;
-				boxTRY = boxCY - BoxH/2.0;
-				boxBRX = boxCX + BoxW/2.0;
-				boxBRY = boxCY + BoxH/2.0;
-				boxBLX = boxCX - BoxW/2.0;
-				boxBLY = boxCY + BoxH/2.0;
-
-				if (targetLevel > 2)
-				{
-					if (winZoom != None)
-					{
-						mult = (target.CollisionRadius + target.CollisionHeight);
-						v1 = Player.Location;
-						v1.Z += Player.BaseEyeHeight;
-						v2 = 1.5 * Player.Normal(target.Location - v1);
-						winZoom.SetViewportLocation(target.Location - mult * v2);
-						winZoom.SetWatchActor(target);
-					}
-					// window construction now happens in Tick()
-				}
-				else if (!IsMinimised(true))
-				{
-					// black out the zoom window and draw a "no image" message
-					gc.SetStyle(DSTY_Normal);
-					gc.SetTileColorRGB(0,0,0);
-					gc.DrawPattern(boxTLX, boxTLY, boxW, boxH, 0, 0, Texture'Solid');
-
-					gc.SetTextColorRGB(255,255,255);
-					gc.GetTextExtent(0, w, h, msgNoImage);
-					x = boxCX - w/2;
-					y = boxCY - h/2;
-					gc.DrawText(x, y, w, h, msgNoImage);
-				}
-
-				// print the name of the target above the box
-				if (target.IsA('Pawn'))
-				{
-				    if (target.FamiliarName != "")
-				        str = target.FamiliarName;
-                    else
-					    str = target.BindName;
-				}
-				else if (target.IsA('DeusExDecoration'))
-                {
-					str = DeusExDecoration(target).itemName;
-                    //SARGE: No more "DEFAULT NAME" shit
-                    if (str == class'DeusExDecoration'.default.itemName)
-                        str = "";
-                }
-				else if (target.IsA('DeusExProjectile'))
-					str = DeusExProjectile(target).itemName;
-				else
-					str = target.GetItemName(String(target.Class));
-
-				// print disabled robot info
-				if (target.IsA('Robot') && (Robot(target).EMPHitPoints == 0))
-					str = str $ " (" $ msgDisabled $ ")";
-				
-                // print disabled camera info
-                str = str $ GetHackDisabledText(target,true);
-                
-                // print disabled grenade info
-                str = str $ GetWallGrenadeDisabledText(target,true);
-
-				gc.SetTextColor(crossColor);
-
-				// print the range to target
-				//mult = VSize(target.Location - Player.Location);              //RSD
-                if (str != "")
-                    str = str $ CR();
-				str = str $ msgRange @ Int(dist/16) @ msgRangeUnits;     //RSD: replaced mult with dist
-                if (targetLevel > 0)
-                {
-                     weapon = DeusExWeapon(Player.Weapon);
-                     if (weapon != None)
-                     {
-                        wepAcc = 100 - int(weapon.currentAccuracy*50);          //RSD: Was *100, which is incorrect. Nominal accuracy is (1-0.5*currentaccuracy)*100% everywhere else since accuracy ranges from 0.0 (most) to 2.0 (least)
-                        if (wepAcc < 0)
-                           wepacc = 0;
-                        str2 = msgCurrentAccuracy $ int(wepAcc) $ msgPercent;
-                     }
-				}
-
-				// level zero gives very basic health info
-				if (target.IsA('Pawn'))
-					mult = Float(Pawn(target).Health) / Float(Pawn(target).Default.Health);
-				else if (target.IsA('DeusExDecoration'))
-					mult = Float(DeusExDecoration(target).HitPoints) / Float(DeusExDecoration(target).Default.HitPoints);
-				else
-					mult = 1.0;
-
-				if (targetLevel == 0)
-				{
-					// level zero only gives us general health readings
-					if (mult >= 0.66)
-					{
-						str3 = msgHigh;
-						mult = 1.0;
-					}
-					else if (mult >= 0.33)
-					{
-						str3 = msgMedium;
-						mult = 0.5;
-					}
-					else
-					{
-						str3 = msgLow;
-						mult = 0.05;
-					}
-
-					str3 = str3 @ msgHealth;
-				}
-				else
-				{
-					// level one gives exact health readings
-					str3 = Int(mult * 100.0) $ msgPercent;
-					if (target.IsA('Pawn') && !target.IsA('Robot') && !target.IsA('Animal'))
-					{
-						x = mult;		// save this for color calc
-						str3 = str3 @ msgOverall;
-						mult = Float(Pawn(target).HealthHead) / Float(Pawn(target).Default.HealthHead);
-						str3 = str3 $ CR() $ Int(mult * 100.0) $ msgPercent @ msgHead;
-						mult = Float(Pawn(target).HealthTorso) / Float(Pawn(target).Default.HealthTorso);
-						str3 = str3 $ CR() $ Int(mult * 100.0) $ msgPercent @ msgTorso;
-						mult = Float(Pawn(target).HealthArmLeft) / Float(Pawn(target).Default.HealthArmLeft);
-						str3 = str3 $ CR() $ Int(mult * 100.0) $ msgPercent @ msgLeftArm;
-						mult = Float(Pawn(target).HealthArmRight) / Float(Pawn(target).Default.HealthArmRight);
-						str3 = str3 $ CR() $ Int(mult * 100.0) $ msgPercent @ msgRightArm;
-						mult = Float(Pawn(target).HealthLegLeft) / Float(Pawn(target).Default.HealthLegLeft);
-						str3 = str3 $ CR() $ Int(mult * 100.0) $ msgPercent @ msgLeftLeg;
-						mult = Float(Pawn(target).HealthLegRight) / Float(Pawn(target).Default.HealthLegRight);
-						str3 = str3 $ CR() $ Int(mult * 100.0) $ msgPercent @ msgRightLeg;
-						mult = x;
-					}
-					else
-					{
-						str3 = str3 @ msgHealth;
-					}
-				}
-
-				if (targetLevel > 1)
-				{
-					// level two gives us weapon info as well
-					if (target.IsA('Pawn'))
-					{
-						str4 = msgWeapon;
-
-						if (Pawn(target) != none && Pawn(target).Weapon != None && Pawn(target).Weapon.ItemName != "")
-							str4 = str4 @ Pawn(target).Weapon.ItemName; //target.GetItemName(String(Pawn(target).Weapon.Class)); //RSD: Fixed it using the class name instead of the display name
-						else
-							str4 = str4 @ msgNone;
-					}
-				}
-
-                //If we're minimised, draw everything in a list
-                //This is a horrible mess!
-                if (IsMinimised(true))
-                {
-
-                    gc.GetTextExtent(0, w, h, str$CR()$str2$CR()$str3$CR()$str4);
-                    if (str4 != "") //Add extra space for the Weapon info, if it's there
-                        str3 = CR() $ str3;
-                    str2 = CR() $ CR() $ str2;
-                    str4 = CR() $ CR() $ CR() $ str4;
-                    str3 = CR() $ CR() $ CR() $ str3;
-
-                    x = boxCX;
-                    y = boxCY - h/2;
-                    gc.DrawText(x, y, w, h, str);
-                    gc.SetTextColor(colHeaderText);
-                    gc.DrawText(x, y, w, h, str2);
-                    gc.SetTextColor(colHeaderText);
-                    gc.DrawText(x, y, w, h, str4);
-                    gc.SetTextColor(GetColorScaled(mult));
-                    gc.DrawText(x, y, w, h, str3);
-                    gc.SetTextColor(colHeaderText);
-                }
-                else
-                {
-                    //Draw name and range
-                    gc.GetTextExtent(0, w, h, str);
-                    x = boxTLX + margin;
-                    y = boxTLY + margin;
-                    gc.DrawText(x, y, w, h, str);
-
-                    //Draw current accuracy
-                    gc.SetTextColor(colHeaderText);
-                    gc.GetTextExtent(0, w, h, str2);
-                    x = boxTRX - w - margin;
-                    y = boxTRY + margin;
-                    gc.DrawText(x, y, w, h, str2);
-
-                    //Draw Health Info
-                    gc.GetTextExtent(0, w, h, str3);
-                    x = boxBLX + margin;
-                    y = boxBLY - h - margin;
-                    gc.SetTextColor(GetColorScaled(mult));
-                    gc.DrawText(x, y, w, h, str3);
-                    gc.SetTextColor(colHeaderText);
-
-                    //Draw weapon info
-                    gc.GetTextExtent(0, w, h, str4);
-                    x = boxBRX - w - margin;
-                    y = boxBRY - h - margin;
-                    gc.DrawText(x, y, w, h, str4);
-                }
-
-			}
-			else
-			{
-				// display disabled robots
-				if (target.IsA('Robot') && (Robot(target).EMPHitPoints == 0))
-					str = msgDisabled;
-				
-                // print disabled wall mine info
-                if (str == "")
-                    str = GetWallGrenadeDisabledText(target,false);
-
-                // print disabled camera info
-                if (str == "")
-                    str = GetHackDisabledText(target,false);
-
-                if (str != "")
-                {
-					gc.SetTextColor(colWhite);
-					gc.GetTextExtent(0, w, h, str);
-					x = boxCX - w/2;
-					y = boxTLY - h - margin;
-					gc.DrawText(x, y, w, h, str);
-					gc.SetTextColor(crossColor);
-                }
-			}
-		}
-	}
-	else if ((bTargetActive) && (Player.Level.NetMode == NM_Standalone) && winDrone == None)
-	{
-		if (Player.Level.TimeSeconds % 1.5 > 0.75)
-			str = msgScanning1;
-		else
-			str = msgScanning2;
-		weapon = DeusExWeapon(Player.Weapon);
-        if (weapon != None)
-        {
-           wepAcc = 100 - int(weapon.currentAccuracy*100);
-           if (wepAcc < 0)
-               wepacc = 0;
-           str = str $ CR() $ msgCurrentAccuracy $ int(wepAcc) $ msgPercent;
-        }
-		gc.GetTextExtent(0, w, h, str);
-        x = margin;
-        y = (height/2 - h);
-		gc.DrawText(x, y, w, h, str);
-	}
 	// set the crosshair colors
 	DeusExRootWindow(player.rootWindow).hud.cross.SetCrosshairColor(crossColor);
 	DeusExRootWindow(player.rootWindow).hud.hitmarker.SetCrosshairColor(crossColor);
@@ -1860,10 +1598,6 @@ function string GetWallGrenadeDisabledText(Actor target, bool TargetingDisplay)
         str = msgDisabled;
     else
         str = msgDisarmed;
-    
-    //If using the targeting aug, we need to format it
-    if (TargetingDisplay && str != "")
-        str = " (" $ str $ ")";
 
     return str;
 }
@@ -1923,10 +1657,6 @@ function string GetHackDisabledText(Actor target,bool TargetingDisplay)
         strT = strT $ "00";
         
     str = Sprintf(msgReboot,strT);
-
-    //If using the targeting aug, we need to format it
-    if (TargetingDisplay && str != "")
-        str = " (" $ str $ ")";
 
     return str;
 }
