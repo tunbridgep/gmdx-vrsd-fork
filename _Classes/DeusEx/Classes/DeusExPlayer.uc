@@ -12615,6 +12615,9 @@ ignores SeePlayer, HearNoise, Bump;
 		bBehindView = false;
 		StopBlendAnims();
 		ConversationActor = None;
+
+        //SARGE: This is needed otherwise the belt doesn't update properly if we lose an item during a convo
+        UpdateHUD();
 	}
 
 	function int retLevelInfo()
