@@ -106,6 +106,7 @@ function Inventory GetWeapon()
     //SARGE: ...Oh god it just keeps going!...
     if (player.inHand != None && (player.inHand.isA('Multitool') || player.inHand.isA('Lockpick')) && player.iFrobDisplayStyle == 0) //Return our current tool rather than our primary weapon, if we're using the classic tool window display.
         return player.inHand;
+		
     return player.primaryWeapon;
 }
 
@@ -136,7 +137,7 @@ function Color GetAmmoTextColor()
 
 event DrawWindow(GC gc)
 {
-    local float ammopostop, ammoposbtm;             //SARGE: Added
+    local float ammopostop, ammoposbtm, posX, posY;             //SARGE: Added
 
 	Super.DrawWindow(gc);
 
@@ -243,7 +244,13 @@ event DrawWindow(GC gc)
 				else
 					gc.DrawText(infoX+offset, ammopostop, 20, 9, ammoRemaining);
 			}
-		}
+		}		
+		
+		gc.SetFont(Font'FontTiny'); //CyberP: hud scaling Font'FontTiny' //SARGE: always force the tiny font for this text display section
+		gc.SetAlignments(HALIGN_Left, VALIGN_Top);   //Ygll: make the text alignment to the left for a consistant display
+		
+		posX = offset+9;
+		posY = 57;
 
 		// Now, let's draw the targetting information
 		if (weapon.bCanTrack)
@@ -254,13 +261,13 @@ event DrawWindow(GC gc)
 				gc.SetTextColor(colTrackingText);
 			else
 				gc.SetTextColor(colNormalText);
-			gc.SetFont(Font'FontTiny'); //CyberP: hud scaling Font'FontTiny'
+			
 			if (weapon.bLasing)
-		        gc.DrawText(12+offset, 56, 65, 8, LaserLabel);
+		        gc.DrawText(posX, posY, 65, 8, LaserLabel);
             else if (weapon.bZoomed)
-                gc.DrawText(12+offset, 56, 65, 8, RemoteLabel);
+                gc.DrawText(posX, posY, 65, 8, RemoteLabel);
             else
-			    gc.DrawText(12+offset, 56, 65, 8, weapon.TargetMessage);
+			    gc.DrawText(posX, posY, 65, 8, weapon.TargetMessage);
 		}
         //SARGE: Otherwise, print the ammo type. This is useful when we "use" items from the inventory
         //that aren't on our belt, which normally would give us no idea what is in our weapon if we change ammo types,
@@ -268,7 +275,7 @@ event DrawWindow(GC gc)
         else if (player.bShowAmmoTypeInAmmoHUD)
         {
             gc.SetTextColor(GetAmmoTextColor());
-            gc.DrawText(12+offset, 56, 65, 8, DeusExAmmo(weapon.AmmoType).beltDescription);
+            gc.DrawText(posX, posY, 65, 8, DeusExAmmo(weapon.AmmoType).beltDescription);
         }
 	}
 }
@@ -276,7 +283,6 @@ event DrawWindow(GC gc)
 // ----------------------------------------------------------------------
 // DrawBackground()
 // ----------------------------------------------------------------------
-
 function DrawBackground(GC gc)
 {
     if (gc == None)
@@ -340,24 +346,24 @@ function SetVisibility( bool bNewVisibility )
 
 defaultproperties
 {
-     colAmmoText=(G=255)
-     colAmmoLowText=(R=255,G=32)
-     colNormalText=(G=255)
-     colTrackingText=(R=255,G=255)
-     colLockedText=(R=255)
-     infoX=53
-     NotAvailable="N/A"
-     msgReloading="---"
-     AmmoLabel="AMMO"
-     MagsLabel="MAGS"
-     ClipsLabel="CLIPS"
-     ChargeLabel="CHARG"
-	 RoundsLabel="RDS"
-     texBackground=Texture'DeusExUI.UserInterface.HUDAmmoDisplayBackground_1'
-     texBorder=Texture'DeusExUI.UserInterface.HUDAmmoDisplayBorder_1'
-     texBorderRight=Texture'RSDCrap.UserInterface.HUDAmmoDisplayBorder_1F'
-     LaserLabel="LASER GUIDANCE"
-     RemoteLabel="REMOTE GUIDANCE"
-     leftSideOffset=13
-     rightSideOffset=2
+     colAmmoText=(G=255);
+     colAmmoLowText=(R=255,G=32);
+     colNormalText=(G=255);
+     colTrackingText=(R=255,G=255);
+     colLockedText=(R=255);
+     infoX=53;
+     NotAvailable="N/A";
+     msgReloading="---";
+     AmmoLabel="AMMO";
+     MagsLabel="MAGS";
+     ClipsLabel="CLIPS";
+     ChargeLabel="CHARG";
+	 RoundsLabel="RDS";
+     texBackground=Texture'DeusExUI.UserInterface.HUDAmmoDisplayBackground_1';
+     texBorder=Texture'DeusExUI.UserInterface.HUDAmmoDisplayBorder_1';
+     texBorderRight=Texture'RSDCrap.UserInterface.HUDAmmoDisplayBorder_1F';
+     LaserLabel="LASER GUIDANCE";
+     RemoteLabel="REMOTE GUIDANCE";
+     leftSideOffset=13;
+     rightSideOffset=2;
 }
