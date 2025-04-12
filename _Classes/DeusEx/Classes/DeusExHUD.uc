@@ -303,7 +303,7 @@ function ConfigurationChanged()
 		belt.QueryPreferredSize(beltWidth, beltHeight);
         belt.SetRightSide(!bRightSide);
         if (bRightSide)
-            belt.ConfigureChild(0, height - beltHeight, beltWidth, beltHeight);
+            belt.ConfigureChild(5, height - beltHeight, beltWidth, beltHeight);
         else
             belt.ConfigureChild(width - beltWidth, height - beltHeight, beltWidth, beltHeight);
 
