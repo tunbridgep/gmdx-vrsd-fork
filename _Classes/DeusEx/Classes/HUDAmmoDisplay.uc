@@ -247,7 +247,7 @@ event DrawWindow(GC gc)
 		}		
 		
 		gc.SetFont(Font'FontTiny'); //CyberP: hud scaling Font'FontTiny' //SARGE: always force the tiny font for this text display section
-		gc.SetAlignments(HALIGN_Left, VALIGN_Top);   //Ygll: make the text alignment to the left for a consistant display
+		gc.SetAlignments(HALIGN_Center, VALIGN_Top);   //Ygll: make the text alignment to the left for a consistant display
 		
 		posX = offset+9;
 		posY = 57;
