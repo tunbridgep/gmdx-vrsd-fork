@@ -56,11 +56,12 @@ function FirstFrame()
 		savedSoundVolume = byte(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice SoundVolume"));
 		savedMusicVolume = byte(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice MusicVolume"));
 		savedSpeechVolume = byte(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice SpeechVolume"));
-		SoundVolume = 16; //SARGE: Was 32
+		SoundVolume = 32;
 		Player.SetInstantSoundVolume(SoundVolume);
         
         //SARGE: Force the music on, too
-		Player.SetInstantMusicVolume(32);
+        if (savedMusicVolume < 32)
+            Player.SetInstantMusicVolume(32);
 
         //Bump up the speech volume if we have to
         if (savedSpeechVolume < 64)
