@@ -8491,11 +8491,13 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
                         assignedAmmo.AmmoAmount = GetAdjustedMaxAmmo(assignedAmmo); //RSD: Replaced assignedAmmo.MaxAmmo with adjusted
                         ClientMessage(assignedAmmo.PickupMessage $ " " $ assignedAmmo.ItemName $ " (" $ intj $ ")");
                         DeusExWeapon(frobTarget).PickupAmmoCount -= intj;
+                        DeusExWeapon(frobTarget).PlaySound(DeusExWeapon(frobTarget).RetrieveAmmoSound, SLOT_None, 0.5+FRand()*0.25, , 256, 0.95+FRand()*0.1);
                     }
                     else
                     {
                         ClientMessage(assignedAmmo.PickupMessage $ " " $ assignedAmmo.ItemName $ " (" $ DeusExWeapon(frobTarget).PickupAmmoCount $ ")");
                         DeusExWeapon(frobTarget).PickupAmmoCount = 0;
+                        DeusExWeapon(frobTarget).PlaySound(DeusExWeapon(frobTarget).RetrieveAmmoSound, SLOT_None, 0.5+FRand()*0.25, , 256, 0.95+FRand()*0.1);
                     }
                }
                else
