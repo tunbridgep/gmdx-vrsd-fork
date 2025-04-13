@@ -1993,6 +1993,10 @@ function RefreshChargedPickups()
 	{
 		if (anItem.Owner == Self)
 		{
+            //If it's active, reset it's base
+            if (anItem.bIsActive && anItem.AmbientSound != None)
+                anItem.SetBase(self);
+
 			// Make sure tech goggles display is refreshed
 			if (anItem.IsA('TechGoggles') && anItem.IsActive())
 				TechGoggles(anItem).UpdateHUDDisplay(Self);

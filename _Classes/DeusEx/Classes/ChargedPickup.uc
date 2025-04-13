@@ -93,7 +93,7 @@ function ChargedPickupBegin(DeusExPlayer Player)
 		BeltPos=default.BeltPos;
 	}
     if (IsA('AdaptiveArmor'))
-    class'DeusExPlayer'.default.bCloakEnabled=true;
+        class'DeusExPlayer'.default.bCloakEnabled=true;
 
 	bIsActive = True;
 
