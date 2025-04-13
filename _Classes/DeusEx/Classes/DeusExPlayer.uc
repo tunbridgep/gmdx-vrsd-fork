@@ -1047,6 +1047,7 @@ local name flagName;                                                            
 local bool bFirstLevelLoad;                                                     //RSD: Added
 local AlarmUnit        AU;                                                      //RSD: Added
 local Perk perkDoorsman;
+local DeusExPickup     PU;                                                      //SARGE: Added
 
 //log("bHardCoreMode =" @bHardCoreMode);
 //log("CombatDifficulty =" @CombatDifficulty);
@@ -1056,6 +1057,17 @@ local Perk perkDoorsman;
    	 bFirstLevelLoad = !flagBase.GetBool(flagName);                             //RSD: Tells us if this is the first time loading a map
 //log("flagName =" @flagName);
 //log("bFirstLevelLoad =" @bFirstLevelLoad);
+
+
+    //SARGE: Set up shenanigans
+    if (bFirstLevelLoad)
+    {
+        ForEach AllActors(class'ScriptedPawn', P)
+            P.Shenanigans(bShenanigans);
+        ForEach AllActors(class'DeusExPickup', PU)
+            PU.Shenanigans(bShenanigans);
+    }
+    
 
      bStunted = False; //CyberP: failsafe
      if (CarriedDecoration != None && CarriedDecoration.IsA('Barrel1'))
@@ -1067,8 +1079,6 @@ local Perk perkDoorsman;
       else if (P.bHardcoreRemove && (bHardCoreMode == True || bHardcoreFilterOption == True))
           P.Destroy();
       P.DifficultyMod(CombatDifficulty,bHardCoreMode,bExtraHardcore,bFirstLevelLoad); //RSD: Replaced ALL NPC stat modulation with a compact function implementation
-      if (bFirstLevelLoad)
-        P.Shenanigans(bShenanigans);
     }
 
     if (bHardCoreMode == False)

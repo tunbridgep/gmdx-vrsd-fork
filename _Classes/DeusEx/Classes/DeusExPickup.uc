@@ -1060,6 +1060,12 @@ function Draw(DeusExPlayer frobber)
 {
 }
 
+//SARGE: Set up the Shenanigans gameplay modifier for this entity
+function Shenanigans(bool bEnabled)
+{
+}
+
+
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
