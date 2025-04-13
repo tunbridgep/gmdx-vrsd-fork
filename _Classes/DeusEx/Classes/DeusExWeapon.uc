@@ -1117,6 +1117,12 @@ function TakeDamage(int Damage, Pawn EventInstigator, vector HitLocation, vector
 	}
 }
 
+function PlayRetrievedAmmoSound()
+{
+    //PlaySound(RetrieveAmmoSound, SLOT_None, 0.5+FRand()*0.25, , 256, 0.95+FRand()*0.1);
+    PlaySound(RetrieveAmmoSound, SLOT_None, 1.5+FRand()*0.25, , 256, 0.95+FRand()*0.1);
+}
+
 function bool HandlePickupQuery(Inventory Item)
 {
 	local DeusExWeapon W;
@@ -1210,7 +1216,8 @@ function bool HandlePickupQuery(Inventory Item)
 					if (!(DeusExWeapon(item) != none && DeusExWeapon(item).bDisposableWeapon)) //RSD: Don't display ammo message for grenades or the PS20
 					{
                         player.ClientMessage(defAmmo.PickupMessage @ defAmmo.itemArticle @ defAmmo.ItemName $ " (" $ intj $ ")", 'Pickup' );
-                        PlaySound(RetrieveAmmoSound, SLOT_None, 0.5+FRand()*0.25, , 256, 0.95+FRand()*0.1);
+                        player.AddReceivedItem(defAmmo,intj);
+                        PlayRetrievedAmmoSound();
 					}
 					return true;
 				}
@@ -1227,7 +1234,8 @@ function bool HandlePickupQuery(Inventory Item)
                         else
                         {
                             player.ClientMessage(defAmmo.PickupMessage @ defAmmo.itemArticle @ defAmmo.ItemName $ " (" $ Weapon(Item).PickupAmmoCount $ ")", 'Pickup' );
-                            PlaySound(RetrieveAmmoSound, SLOT_None, 0.5+FRand()*0.25, , 256, 0.95+FRand()*0.1);
+                            player.AddReceivedItem(defAmmo,Weapon(Item).PickupAmmoCount);
+                            PlayRetrievedAmmoSound();
                         }
                     }
 				}

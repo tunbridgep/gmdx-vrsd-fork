@@ -776,6 +776,8 @@ var globalconfig int iHealingScreen;                            //Ygll: can disa
 
 var globalconfig bool bReversedAltBeltColours;                      //SARGE: Make it like how it was in vSarge beta.
 
+var globalconfig bool bAlwaysShowReceivedItemsWindow;               //SARGE: Always show the retrieved items window when picking up ammo from a weapon.
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -8490,14 +8492,16 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
                     {
                         assignedAmmo.AmmoAmount = GetAdjustedMaxAmmo(assignedAmmo); //RSD: Replaced assignedAmmo.MaxAmmo with adjusted
                         ClientMessage(assignedAmmo.PickupMessage $ " " $ assignedAmmo.ItemName $ " (" $ intj $ ")");
+                        AddReceivedItem(assignedAmmo,intj);
                         DeusExWeapon(frobTarget).PickupAmmoCount -= intj;
-                        DeusExWeapon(frobTarget).PlaySound(DeusExWeapon(frobTarget).RetrieveAmmoSound, SLOT_None, 0.5+FRand()*0.25, , 256, 0.95+FRand()*0.1);
+                        DeusExWeapon(frobTarget).PlayRetrievedAmmoSound();
                     }
                     else
                     {
                         ClientMessage(assignedAmmo.PickupMessage $ " " $ assignedAmmo.ItemName $ " (" $ DeusExWeapon(frobTarget).PickupAmmoCount $ ")");
+                        AddReceivedItem(assignedAmmo,DeusExWeapon(frobTarget).PickupAmmoCount);
                         DeusExWeapon(frobTarget).PickupAmmoCount = 0;
-                        DeusExWeapon(frobTarget).PlaySound(DeusExWeapon(frobTarget).RetrieveAmmoSound, SLOT_None, 0.5+FRand()*0.25, , 256, 0.95+FRand()*0.1);
+                        DeusExWeapon(frobTarget).PlayRetrievedAmmoSound();
                     }
                }
                else
@@ -8558,6 +8562,41 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 
 	return bCanPickup && !bDeclined;
 }
+
+function AddReceivedItem(Inventory item, int count, optional bool bAlwaysShow)
+{
+    //clientMessage("item: " $ item $ ", count: " $ count);
+    if (item == None || count == 0)
+        return;
+
+    if (!bAlwaysShowReceivedItemsWindow && !bAlwaysShow)
+        return;
+
+    /*
+    //If count is -1, try to figure it out by magic.
+    if (count == -1)
+    {
+        if (item.isA('DeusExPickup'))
+            count = DeusExPickup(item).numCopies;
+        else if (item.isA('DeusExWeapon') && DeusExWeapon(item).bDisposableWeapon && DeusExWeapon(item).AmmoType != None)
+            count = DeusExWeapon(item).AmmoType.AmmoAmount;
+        else
+            count = 1;
+    }
+    */
+
+    if (rootWindow != None && DeusExRootWindow(rootWindow).hud != None)
+    {
+        DeusExRootWindow(rootWindow).hud.receivedItems.AddItem(item, count);
+
+        // Make sure the object belt is updated
+        if (item.IsA('Ammo'))
+            UpdateAmmoBeltText(Ammo(item));
+        else
+            UpdateBeltText(item);
+    }
+}
+
 
 // ----------------------------------------------------------------------
 // GetNanoKeyDesc(Name)
@@ -18504,4 +18543,5 @@ defaultproperties
   	 iStanceHud=3   //Ygll = Every stance
 	   bIsMantlingStance=false //Ygll: new var to know if we are currently mantling
 	   iHealingScreen=1
+     bAlwaysShowReceivedItemsWindow=true
 }

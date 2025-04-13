@@ -1516,8 +1516,7 @@ function AddReceivedWeapon(DeusExPlayer player, DeusExWeapon w, int previousAmmo
         
         if (intj > 0)
         {
-            DeusExRootWindow(player.rootWindow).hud.receivedItems.AddItem(w.AmmoType, intj);
-            player.UpdateAmmoBeltText(w.AmmoType);
+            player.AddReceivedItem(w.AmmoType,intj,true);
             msg = w.PickupMessage @ w.AmmoType.itemArticle @ w.AmmoType.itemName @ "(" $ intj $ ")";
         }
         
@@ -1543,13 +1542,7 @@ function AddReceivedItem(DeusExPlayer player, Inventory item, int count)
 		bSearchMsgPrinted = True;
 	}
 
-	DeusExRootWindow(player.rootWindow).hud.receivedItems.AddItem(item, count); //CyberP: count was 1
-
-	// Make sure the object belt is updated
-	if (item.IsA('Ammo'))
-		player.UpdateAmmoBeltText(Ammo(item));
-	else
-		player.UpdateBeltText(item);
+    player.AddReceivedItem(item,count,true);
 
 	// Deny 20mm and WP rockets off of bodies in multiplayer
 	if ( Level.NetMode != NM_Standalone )
