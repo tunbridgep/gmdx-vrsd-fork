@@ -415,6 +415,7 @@ state Activated
             DeselectInHand(player);
             if (bDrained && bActive && Charge > 0)
             {
+                Player.PlaySound(ActivateSound, SLOT_Pain);
                 ChargedPickupBegin(Player);
                 return;
             }
@@ -430,7 +431,7 @@ state Activated
 // ----------------------------------------------------------------------
 function DeselectInHand(DeusExPlayer player)
 {
-    if (player.inHand == Self && !bUnequipWhenDrained)
+    if (player.inHand == Self)// && !bUnequipWhenDrained)
         player.PutInHand(None);
 }
 
