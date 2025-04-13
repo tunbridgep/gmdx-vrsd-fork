@@ -194,7 +194,6 @@ function InitFor(Actor Other)
 		if (bAnimalCarcass && !bNotDead)
 		{
 		    MaxDamage      = Mass; //CyberP: less carc health for animals
-			itemName = msgAnimalCarcass;
 			if (FRand() < 0.2 && !(info != none && info.bNoSpawnFlies))         //RSD: Now check map for whether we should spawn flies
 				bGenerateFlies = true;
 		}
@@ -372,9 +371,7 @@ function PostBeginPlay()
 	bCollideWorld = true;
 
 	// Use the carcass name by default
-	CarcassName = Name;
-	If (bAnimalCarcass && !bNotDead)
-	   itemName = msgAnimalCarcass;
+    UpdateName();
 
     //RSD: Before we do anything, check for random loot
     //DXplayer = DeusExPlayer(GetPlayerPawn());
@@ -430,7 +427,7 @@ function ZoneChange(ZoneInfo NewZone)
 		{
         Mesh = Mesh3;
         assignedMesh = 3;
-        if (!IsA('ScubaDiver'))
+        if (!IsA('ScubaDiverCarcass'))
         {
         	KillUnconscious();                                                  //RSD: Proper kill
 		}
@@ -1352,6 +1349,12 @@ function Frob(Actor Frobber, Inventory frobWith)
 						}
 						else
 						{
+                            //SARGE: Dirty Hack Alert!
+                            //We restrict the players ability to pickup for a few frames when picking stuff up,
+                            //because it prevents the item dupe glitch, but now we have to turn it off,
+                            //otherwise they can only pick up 1 item from each corpse at a time.
+                            player.pickupCooldown = 0;
+
 							// check if the pawn is allowed to pick this up
 							if ((P.Inventory == None) || (Level.Game.PickupQuery(P, item)))
 							{
@@ -1369,7 +1372,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 
 
                                     bFoundSomething = True;
-                                    if (DeusExPlayer(P).HandleItemPickup(Item) != False)
+                                    if (DeusExPlayer(P).HandleItemPickup(Item,false,true) != False)
                                     {
                                         //splat - Picking up shuriken when we don't have one!
                                         if (item.IsA('WeaponShuriken'))
@@ -1795,16 +1798,21 @@ function Landed(vector HitNormal)
 //SARGE: Added to fix name being reset when pickup up corpses
 function UpdateName()
 {
-    itemName = default.itemName;
+    if (bNotDead)
+        itemName = msgNotDead;
+    else if (bAnimalCarcass)
+        itemName = msgAnimalCarcass;
+    else
+        itemName = default.itemName;
+
     if (savedName != "")
-    {
-        if (bNotDead)
-            itemName = msgNotDead $ " (" $ savedName $ ")";
-        else if (bAnimalCarcass)
-            itemName = msgAnimalCarcass $ " (" $ savedName $ ")";
-        else
-            itemName = itemName $ " (" $ savedName $ ")";
-    }
+        itemName = itemName $ " (" $ savedName $ ")";
+
+    /*
+    //SARGE: Allow in-map caarcasses to have names
+    else if (hdtpReference != None && hdtpReference.default.UnfamiliarName != "")
+        itemName = itemName $ " (" $ hdtpReference.default.UnfamiliarName $ ")";
+    */
 
     //SARGE: Add searched string
     if (!bAnimalCarcass)

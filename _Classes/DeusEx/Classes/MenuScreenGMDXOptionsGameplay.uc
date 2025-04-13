@@ -49,8 +49,8 @@ defaultproperties
      items(0)=(HelpText="Cameras detect downed NPCs in their field of view and sound an alarm.",actionText="Advanced Camera Detection",variable="bCameraSensors");
      items(1)=(HelpText="All cameras behave as those encountered in Area 51: beep only once upon target aquisition, and are more durable.",actionText="Advanced Camera Security",variable="bA51Camera");
      items(2)=(HelpText="Nearby human AI notice when a camera is beeping at you and seek in the direction it is facing.",actionText="Advanced Enemy Detection",variable="bHardcoreAI1");
-     items(3)=(HelpText="Security Terminals will disable access after being hacked a certain number of times, and Cameras and Turrets will reboot after a short time.",actionText="New Hacking System",variable="bHackLockouts");
-     items(4)=(HelpText="Poison Darts are no longer recoverable when hitting walls.",actionText="Fragile Darts",variable="bFragileDarts");
+     items(3)=(HelpText="Security Terminals will disable access after being hacked a certain number of times, and Cameras and Turrets will reboot after a short time.",actionText="Advanced Security System",variable="bHackLockouts");
+     items(4)=(HelpText="Crossbow Darts are no longer recoverable after hitting walls.",actionText="Fragile Darts",variable="iFragileDarts",valueText1="Tranquiliser Darts",valueText2="Tranquiliser and Taser Darts",valueText3="All Darts except Flare Darts",valueText4="Everything");
      items(5)=(HelpText="Immersion/simulation option. If enabled, carried objects are no longer translucent.",actionText="Immersive Carryables",variable="bNoTranslucency");
      items(6)=(HelpText="In hardcore mode you face enemies in greater numbers. Enable this option to have this feature in other difficulty modes.",actionText="Overwhelming Odds",variable="bHardcoreFilterOption");
      items(7)=(HelpText="Corpses can only be destroyed by realistic means and do not deal throw damage with the muscle aug.",actionText="Persistent Corpses",variable="bRealisticCarc");

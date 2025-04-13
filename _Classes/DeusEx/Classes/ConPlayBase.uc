@@ -918,6 +918,11 @@ log("  event.toActor    = " $ event.toActor );
 			DeusExRootWindow(player.rootWindow).hud.receivedItems.AddItem(invItemTo, itemsTransferred);
 		player.PlaySound(sound'objpickup3',SLOT_None,0.7);
 	}
+	
+    // SARGE: Update secondary display
+	if (event.toActor.IsA('DeusExPlayer'))
+        DeusExPlayer(event.toActor).UpdateSecondaryDisplay();
+
 
 	nextAction = EA_NextEvent;
 	nextLabel = "";

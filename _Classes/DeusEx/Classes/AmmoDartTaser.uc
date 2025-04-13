@@ -43,4 +43,5 @@ defaultproperties
      beltDescription="TASER"
      HDTPSkin="GMDXSFX.Skins.TaserAmmo"
      Skin=Texture'RSDCrap.Skins.AmmoDartTex4'
+     ammoHUDColor=(G=80,B=255)
 }

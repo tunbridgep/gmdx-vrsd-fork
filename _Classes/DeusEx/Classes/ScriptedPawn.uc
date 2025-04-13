@@ -493,10 +493,10 @@ var bool bForcedCloak;
 var float blinkTimer;
 
 //SARGE: Allow randomised pain and death sounds
-var Sound randomDeathSoundsM[10];
-var Sound randomPainSoundsM[10];
-var Sound randomDeathSoundsF[10];
-var Sound randomPainSoundsF[10];
+var Sound randomDeathSoundsM[22];
+var Sound randomPainSoundsM[22];
+var Sound randomDeathSoundsF[22];
+var Sound randomPainSoundsF[22];
 var bool bSetupRandomSounds; //Have we set up a random sound?
 var Sound randomDeathSoundChoice; //These three variables hold the references to
 var Sound randomPainSoundChoice1; //our randomly rolled sounds.
@@ -17288,6 +17288,11 @@ function RandomiseSounds()
         randomPainSoundChoice1 = GetPainSoundFromIndex(int(FRand() * (painSounds-1)));
         randomPainSoundChoice2 = GetPainSoundFromIndex(int(FRand() * (painSounds-1)));
     }
+}
+
+//SARGE: Set up the Shenanigans gameplay modifier for this entity
+function Shenanigans(bool bEnabled)
+{
 }
 
 // ----------------------------------------------------------------------

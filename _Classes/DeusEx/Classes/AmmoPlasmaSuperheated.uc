@@ -27,4 +27,5 @@ defaultproperties
      CollisionRadius=4.300000
      CollisionHeight=8.440000
      bCollideActors=True
+     ammoHUDColor=(G=80,B=255)
 }

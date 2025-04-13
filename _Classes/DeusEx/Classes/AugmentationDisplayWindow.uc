@@ -266,20 +266,24 @@ function Interpolate(GC gc, float fromX, float fromY, float toX, float toY, int 
 // ----------------------------------------------------------------------
 // IsMinimised()
 // SARGE: Is the drone window minimised?
+// SARGE: Add optional param for Targeting aug
 // ----------------------------------------------------------------------
 
-function bool IsMinimised()
+function bool IsMinimised(optional bool targeting)
 {
-    return player.bMinimiseTargetingWindow && (!player.bSpyDroneActive || player.bSpyDroneSet);
+    if (targeting)
+        return player.bMinimiseTargetingWindow || ((player.inHand == None || !player.inHand.isA('Weapon')) && player.bOnlyShowTargetingWindowWithWeaponOut);
+    else
+        return player.bMinimiseTargetingWindow && (!player.bSpyDroneActive || player.bSpyDroneSet);
 }
 
 // ----------------------------------------------------------------------
 // GetDroneWindowSize()
 // SARGE: Gets the drone window size,
 // ----------------------------------------------------------------------
-function GetDroneWindowSize(out float W, out float H, out float CX, out float CY)
+function GetDroneWindowSize(out float W, out float H, out float CX, out float CY,optional bool targeting)
 {
-    if (IsMinimised())
+    if (IsMinimised(targeting))
     {
         W = (width/3.33)*0.1;
         H = (height/3.33)*0.1;
@@ -297,12 +301,11 @@ function GetDroneWindowSize(out float W, out float H, out float CX, out float CY
     }
 }
 
-function DrawDroneWindow(GC gc, ViewportWindow win, out float W, out float H, out float CX, out float CY)
+function DrawDroneWindow(GC gc, ViewportWindow win, out float W, out float H, out float CX, out float CY, optional bool targeting)
 {
     local float boxTLX,boxTLY,boxBRY,boxBRX;
-    local int bMinimised;
 
-    GetDroneWindowSize(W,H,CX,CY);
+    GetDroneWindowSize(W,H,CX,CY,targeting);
 
     boxTLX = CX - W/2.0;
     boxTLY = CY - H/2.0;
@@ -311,7 +314,7 @@ function DrawDroneWindow(GC gc, ViewportWindow win, out float W, out float H, ou
 	
     if (win != None)
     {
-        if (IsMinimised())
+        if (IsMinimised(targeting))
         {
             win.Hide();
         }
@@ -1586,7 +1589,7 @@ function DrawTargetAugmentation(GC gc)
 				w = width/4;
 				h = height/4;
 
-                DrawDroneWindow(gc,winZoom,boxW,boxH,boxCX,boxCY);
+                DrawDroneWindow(gc,winZoom,boxW,boxH,boxCX,boxCY,true);
 
 				boxTLX = boxCX - BoxW/2.0;
 				boxTLY = boxCY - BoxH/2.0;
@@ -1610,7 +1613,7 @@ function DrawTargetAugmentation(GC gc)
 					}
 					// window construction now happens in Tick()
 				}
-				else if (!IsMinimised())
+				else if (!IsMinimised(true))
 				{
 					// black out the zoom window and draw a "no image" message
 					gc.SetStyle(DSTY_Normal);
@@ -1746,7 +1749,7 @@ function DrawTargetAugmentation(GC gc)
 
                 //If we're minimised, draw everything in a list
                 //This is a horrible mess!
-                if (IsMinimised())
+                if (IsMinimised(true))
                 {
 
                     gc.GetTextExtent(0, w, h, str$CR()$str2$CR()$str3$CR()$str4);
