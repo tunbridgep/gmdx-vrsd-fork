@@ -40,6 +40,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed vanilla item-duplication bug (caused by repeatedly dropping and repeatedly picking up items quickly)
     - Fixed many other GMDX and Vanilla bugs.
 - Quality of Life Improvements:
+    - Duplicate Nano-Keys are no longer shown in the "Received Items" window when picked up from carcasses.
     - Ballistic Armour and Hazmat Suits are now kept equipped when drained, but will have no effect.
         - Recharging them in any way (such as through biocells or a repair bot) will make them active again
         - If multiple items are stacked, the item will remain drained even though a new one is available, and will require re-activation.

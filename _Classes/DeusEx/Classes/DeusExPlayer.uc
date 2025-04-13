@@ -8413,24 +8413,11 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 				}
 			}
 //GMDX: hmm
-			// If this is a grenade or LAM (what a pain in the ass) then also check
-			// to make sure we don't have too many grenades already
-			else if ((foundItem.IsA('WeaponEMPGrenade')) ||
-			    (foundItem.IsA('WeaponGasGrenade')) ||
-				(foundItem.IsA('WeaponNanoVirusGrenade')) ||
-				(foundItem.IsA('WeaponLAM')))
-			{
-				if (DeusExWeapon(foundItem).AmmoType.AmmoAmount >= GetAdjustedMaxAmmo(DeusExWeapon(foundItem).AmmoType)) //RSD: replaced DeusExWeapon(foundItem).AmmoType.MaxAmmo with adjusted
-			{
-					ClientMessage(TooMuchAmmo);
-					bCanPickup = False;
-				}
-			}
 
 			// Otherwise, if this is a single-use weapon, prevent the player
 			// from picking up  //CyberP: also check if ammo is full when picking up weapons
 
-			else if (foundItem.IsA('Weapon'))
+			else if (foundItem.IsA('DeusExWeapon'))
 			{
 				// If these fields are set as checked, then this is a
 				// single use weapon, and if we already have one in our
@@ -8448,7 +8435,9 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 				//DeusExWeapon(foundItem).SetMaxAmmo();                           //RSD: No longer needed
 			  	if (Weapon(foundItem).AmmoType != none && Weapon(foundItem).AmmoType.AmmoAmount >= GetAdjustedMaxAmmo(Weapon(foundItem).AmmoType)) //RSD: removed DeusExWeapon(foundItem).MaxiAmmo for adjusted, changed DeusExWeapon to Weapon, added none check
 				{
-                    if (Weapon(foundItem).AmmoName != class'AmmoNone')   //RSD: So we don't get this for melee weapons
+                    if (DeusExWeapon(foundItem).bDisposableWeapon) //SARGE: Disposable weapons have a different message
+                    	ClientMessage(class'DeusExPickup'.default.msgTooMany);
+                    else if (Weapon(foundItem).AmmoName != class'AmmoNone')   //RSD: So we don't get this for melee weapons
                     	ClientMessage(TooMuchAmmo);
 					bCanPickup = False;
 				}
@@ -8587,10 +8576,13 @@ function NanoKeyInfo CreateNanoKeyInfo()
 // 2. Destroy NanoKey (since the user can't have it in his/her inventory)
 // ----------------------------------------------------------------------
 
-function PickupNanoKey(NanoKey newKey)
+function bool PickupNanoKey(NanoKey newKey)
 {
     if (KeyRing.HasKey(newKey.KeyID))
+    {
         ClientMessage(Sprintf(DuplicateNanoKey, newKey.Description));
+        return false;
+    }
     else
         ClientMessage(Sprintf(AddedNanoKey, newKey.Description));
 	KeyRing.GiveKey(newKey.KeyID, newKey.Description);
@@ -8599,6 +8591,7 @@ function PickupNanoKey(NanoKey newKey)
 	{
 	  KeyRing.GiveClientKey(newKey.KeyID, newKey.Description);
 	}
+    return true;
 }
 
 // ----------------------------------------------------------------------
