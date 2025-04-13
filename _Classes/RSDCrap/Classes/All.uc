@@ -47,8 +47,8 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\PerkSecurityLoophole.pcx"			NAME="PerkSecurityLoophole"			GROUP="UserInterface"
 
 //Secondary HUD
-#exec TEXTURE IMPORT FILE="Textures\HudAmmoDisplayBackgroundSecondary.pcx"			NAME="HudAmmoDisplayBackgroundSecondary"			GROUP="UserInterface"
-#exec TEXTURE IMPORT FILE="Textures\HudAmmoDisplayBorderSecondary.pcx"			NAME="HudAmmoDisplayBorderSecondary"			GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\HudAmmoDisplayBackgroundSecondary.pcx"			NAME="HudAmmoDisplayBackgroundSecondary"			GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\HudAmmoDisplayBorderSecondary.pcx"			NAME="HudAmmoDisplayBorderSecondary"			GROUP="UserInterface"
 
 //Big Belt
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDObjectBeltBorder_2_big.pcx"			NAME="HUDOBjectBeltBorder_2_big"			GROUP="UserInterface"
@@ -155,6 +155,11 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\HDTPOptionsScreen_2.pcx"			NAME="HDTPOptionsScreen_2"			GROUP="UserInterface"
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\HDTPOptionsScreen_3.pcx"			NAME="HDTPOptionsScreen_3"			GROUP="UserInterface"
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\HDTPOptionsScreen_4.pcx"			NAME="HDTPOptionsScreen_4"			GROUP="UserInterface"
+
+//Flipped HUD Elements
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDAmmoDisplayBorder_1F.pcx"			NAME="HUDAmmoDisplayBorder_1F"			GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDAmmoDisplayBorderSecondaryF.pcx"	NAME="HudAmmoDisplayBorderSecondaryF"	GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDObjectBeltBorder_3F.pcx"			NAME="HUDObjectBeltBorder_3F"			GROUP="UserInterface"
 
 // Hands Textures
 

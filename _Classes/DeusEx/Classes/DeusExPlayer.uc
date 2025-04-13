@@ -773,6 +773,7 @@ var globalconfig int iStanceHud;					                //Ygll: Display the current
 
 var globalconfig int iHealingScreen;                            //Ygll: can disable the flash screen when healing or changing it to green color.
 
+var globalconfig bool bAmmoDisplayOnRight;                          //SARGE: If enabled, make the ammo display appear on the right (with the belt on the left)
 
 //////////END GMDX
 
