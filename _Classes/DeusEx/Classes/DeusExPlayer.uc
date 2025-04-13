@@ -774,6 +774,8 @@ var globalconfig int iStanceHud;					                //Ygll: Display the current
 var globalconfig int iHealingScreen;                            //Ygll: can disable the flash screen when healing or changing it to green color.
 
 
+var globalconfig bool bStreamlinedRepairBotInterface;               //SARGE: Don't bother showing the repair bot interface at all if it's not charged.
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -18492,4 +18494,5 @@ defaultproperties
   	 iStanceHud=3   //Ygll = Every stance
 	   bIsMantlingStance=false //Ygll: new var to know if we are currently mantling
 	   iHealingScreen=1
+     bStreamlinedRepairBotInterface=true
 }
