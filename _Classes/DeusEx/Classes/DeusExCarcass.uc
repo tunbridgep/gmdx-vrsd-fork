@@ -1101,13 +1101,20 @@ function Frob(Actor Frobber, Inventory frobWith)
 						// the weapon normally.
 						W = DeusExWeapon(player.FindInventoryType(item.Class));
 
+                        //SARGE: Disposable weapons don't give ammo if we don't have space for them, or if declined
+                        if (W == None && DeusExWeapon(item).bDisposableWeapon && (!player.FindInventorySlot(item, True) || bDeclined))
+                        {
+                            if (!bDeclined)
+                                bFoundSomething=True;
+                        }
+
 						// If the player already has this item in his inventory, piece of cake,
 						// we just give him the ammo.  However, if the Weapon is *not* in the
 						// player's inventory, first check to see if there's room for it.  If so,
 						// then we'll give it to him normally.  If there's *NO* room, then we
 						// want to give the player the AMMO only (as if the player already had
 						// the weapon).
-						if ((W != None) || (W == None && (bDeclined||!player.FindInventorySlot(item, True))))
+						else if ((W != None) || (W == None && (bDeclined||!player.FindInventorySlot(item, True))))
 						{
 							// Don't bother with this is there's no ammo
 							if ((Weapon(item).AmmoType != None) && (Weapon(item).PickupAmmoCount > 0))
@@ -1291,7 +1298,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                     //SARGE: Inform the player when they missed out on some items due to full stack size
                                     if (DeusExPickup(item).numCopies > 0)
                                     {
-                                        player.ClientMessage(sprintf(player.InventoryFull,item.class));
+                                        player.ClientMessage(sprintf(player.InventoryFull,item.itemName));
                                     }
 								}
 								else if (invItem.IsA('ChargedPickup') && invItem.Charge < invItem.default.Charge) //RSD: Charge up the player's wearable if they have max copies but are below max charge
@@ -1314,7 +1321,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                 //SARGE: Inform us if our inventory is too full (max stack) to pick these items up.
 								else if (DeusExPickup(item).numCopies + invItem.numCopies >= invItem.RetMaxCopies())  //GMDX
                                 {
-                                    player.ClientMessage(sprintf(player.InventoryFull,item.class));
+                                    player.ClientMessage(sprintf(player.InventoryFull,item.itemName));
                                     bFoundSomething = True;
 
                                 }
