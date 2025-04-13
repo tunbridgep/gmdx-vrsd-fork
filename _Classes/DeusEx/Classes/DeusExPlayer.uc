@@ -774,6 +774,8 @@ var globalconfig int iStanceHud;					                //Ygll: Display the current
 var globalconfig int iHealingScreen;                            //Ygll: can disable the flash screen when healing or changing it to green color.
 
 
+var globalconfig bool bReversedAltBeltColours;                      //SARGE: Make it like how it was in vSarge beta.
+
 //////////END GMDX
 
 // OUTFIT STUFF
