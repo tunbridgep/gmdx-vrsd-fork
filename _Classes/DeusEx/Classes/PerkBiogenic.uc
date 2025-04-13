@@ -10,7 +10,7 @@ defaultproperties
     PerkSkill=Class'DeusEx.SkillMedicine'
     PerkIcon=Texture'RSDCrap.UserInterface.PerkBiogenic'
     PerkCost=175
-    PerkLevelRequirement=1
+    PerkLevelRequirement=2
     PerkValueDisplay=Standard
     PerkValue=5
 }
