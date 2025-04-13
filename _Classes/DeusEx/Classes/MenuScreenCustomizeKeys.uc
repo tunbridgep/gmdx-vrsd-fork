@@ -15,10 +15,10 @@ struct S_KeyDisplayItem
 	var localized String DisplayName;
 };
 
-var localized string	FunctionText[65];  		 //CyberP: 61
-var string				MenuValues1[65]; //CyberP: 61
-var string				MenuValues2[65]; //CyberP: 61
-var string				AliasNames[65];  //CyberP: 61
+var localized string	FunctionText[78];  		 //CyberP: 61
+var string				MenuValues1[78]; //CyberP: 61
+var string				MenuValues2[78]; //CyberP: 61
+var string				AliasNames[78];  //CyberP: 61
 var string				PendingCommands[100];
 var localized S_KeyDisplayItem    keyDisplayNames[71];
 var localized string			  NoneText;
@@ -175,6 +175,8 @@ function WaitingForInput(bool bWaiting)
 function SaveSettings()
 {
 	ProcessPending();
+    player.KeybindManager.Setup(player);
+    player.UpdateHUD();
 }
 
 // ----------------------------------------------------------------------
@@ -279,9 +281,6 @@ function ProcessPending()
 		log(PendingCommands[i]);
 	}
 	Pending = 0;
-    player.RefreshMantleKey();
-	player.RefreshLeanKeys();
-	player.RefreshAugWheelKey();                                                //RSD
 //	RefreshKey();
 }
 
@@ -631,6 +630,19 @@ defaultproperties
      FunctionText(62)="Hold Augmentation Wheel"
      FunctionText(63)="Stop Current Infolink"
      FunctionText(64)="Minimise Targeting/Drone Screen"
+     FunctionText(65)="Select/Deselect Nano Keyring"
+     FunctionText(66)="Belt Slot 1"
+     FunctionText(67)="Belt Slot 2"
+     FunctionText(68)="Belt Slot 3"
+     FunctionText(69)="Belt Slot 4"
+     FunctionText(70)="Belt Slot 5"
+     FunctionText(71)="Belt Slot 6"
+     FunctionText(72)="Belt Slot 7"
+     FunctionText(73)="Belt Slot 8"
+     FunctionText(74)="Belt Slot 9"
+     FunctionText(75)="Belt Slot 10"
+     FunctionText(76)="Belt Slot 11"
+     FunctionText(77)="Belt Slot 12"
      AliasNames(0)="ParseLeftClick|Fire"
      AliasNames(1)="ParseRightClick"
      AliasNames(2)="DropItem"
@@ -696,6 +708,19 @@ defaultproperties
      AliasNames(62)="HoldRadialAugMenu"
      AliasNames(63)="SkipMessages"
      AliasNames(64)="MinimiseTargetingWindow"
+     AliasNames(65)="SelectNanoKey"
+     AliasNames(66)="AltBelt1"
+     AliasNames(67)="AltBelt2"
+     AliasNames(68)="AltBelt3"
+     AliasNames(69)="AltBelt4"
+     AliasNames(70)="AltBelt5"
+     AliasNames(71)="AltBelt6"
+     AliasNames(72)="AltBelt7"
+     AliasNames(73)="AltBelt8"
+     AliasNames(74)="AltBelt9"
+     AliasNames(75)="AltBelt0"
+     AliasNames(76)="AltBelt10"
+     AliasNames(77)="AltBelt11"
      keyDisplayNames(0)=(inputKey=IK_LeftMouse,displayName="Left Mouse Button")
      keyDisplayNames(1)=(inputKey=IK_RightMouse,displayName="Right Mouse Button")
      keyDisplayNames(2)=(inputKey=IK_MiddleMouse,displayName="Middle Mouse Button")

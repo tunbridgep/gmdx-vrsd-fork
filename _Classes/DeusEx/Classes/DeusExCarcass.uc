@@ -427,7 +427,7 @@ function ZoneChange(ZoneInfo NewZone)
 		{
         Mesh = Mesh3;
         assignedMesh = 3;
-        if (!IsA('ScubaDiver'))
+        if (!IsA('ScubaDiverCarcass'))
         {
         	KillUnconscious();                                                  //RSD: Proper kill
 		}
@@ -1005,7 +1005,8 @@ function Frob(Actor Frobber, Inventory frobWith)
                     if (!bSearched)
                     {
                         //If we already have a disposable weapon, ignore the message, since we will get the ammo from it, and the ammo is the weapon.
-                        if (found == None || (found.IsA('DeusExWeapon') && !DeusExWeapon(found).bDisposableWeapon))
+                        //if (found == None || (found.IsA('DeusExWeapon') && !DeusExWeapon(found).bDisposableWeapon))
+                        if (found == None)
                             //player.ClientMessage(sprintf(player.InventoryFull,AmmoType.ItemName));
                             P.ClientMessage(item.PickupMessage @ item.itemArticle @ Item.itemName @ DeclinedString);
                         bFoundSomething=True;
@@ -1070,8 +1071,8 @@ function Frob(Actor Frobber, Inventory frobWith)
                         bFoundSomething = True;
 						if (player != None)
 						{
-							player.PickupNanoKey(NanoKey(item));
-							AddReceivedItem(player, item, 1);
+							if (player.PickupNanoKey(NanoKey(item)))
+                                AddReceivedItem(player, item, 1);
 							DeleteInventory(item);
 							item.Destroy();
 							item = None;
@@ -1229,7 +1230,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                     if (!bSearched)
                                     {
                                         bFoundSomething = True;
-                                        if (!W.bDisposableWeapon && !bDeclined)
+                                        if (!W.bDisposableWeapon)
                                             P.ClientMessage(item.PickupMessage @ item.itemArticle @ Item.itemName @ IgnoredString);
                                     }
                                     bFoundInvalid = true;
@@ -1372,7 +1373,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 
 
                                     bFoundSomething = True;
-                                    if (DeusExPlayer(P).HandleItemPickup(Item) != False)
+                                    if (DeusExPlayer(P).HandleItemPickup(Item,false,true) != False)
                                     {
                                         //splat - Picking up shuriken when we don't have one!
                                         if (item.IsA('WeaponShuriken'))

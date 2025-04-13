@@ -49,4 +49,5 @@ defaultproperties
      CollisionHeight=11.520000
      Mass=20.000000
      Buoyancy=12.000000
+     bUnequipWhenDrained=false
 }

@@ -17,11 +17,22 @@ var travel bool bIsActive;
 var localized String ChargeRemainingLabel;
 var localized String ChargeRemainingLabelSmall;
 var localized String BiocellRechargeAmountLabel;
+var localized String EquipWhenEmptyLabel;                                       //SARGE: Added.
 var localized String CanOnlyBeOne;
 var localized String PickupInfo1;
 var localized String PickupInfo2;
 var localized String PickupInfo5;                                               //RSD: Added to make system generic
 var float chargeMult;                                                           //RSD: Mult for how much of total charge you get back from biocells
+
+//SARGE: Allow keeping this equipped when drained.
+//This is only used for items that don't constantly drain.
+//This means we don't keep constantly unequipping armour etc when it runs out.
+//Instead, we keep it on, but it's drained, and once we charge it, it's available
+//automatically.
+//NOTE: When stacked, we still need to re-equip any additional ones, it won't auto-equip
+//any other items in the stack by default.
+var const bool bUnequipWhenDrained;
+var travel bool bDrained;                                                              //SARGE: Stores if it was drained without a new one being equipped, even if the next one in the stack is at 100%. This means we no longer have to unequip
 
 function string GetDescription2(DeusExPlayer player)
 {
@@ -34,6 +45,10 @@ function string GetDescription2(DeusExPlayer player)
     str = AddLine(str,sprintf(BiocellRechargeAmountLabel,GetRechargeAmount()));
     
     str = AddLine(str, super.GetDescription2(player));
+
+    //Add "Wearable when drained" text
+    if (!bUnequipWhenDrained)
+        str = AddLine(str,EquipWhenEmptyLabel);
     
     return str;
 }
@@ -83,6 +98,9 @@ function ChargedPickupBegin(DeusExPlayer Player)
     class'DeusExPlayer'.default.bCloakEnabled=true;
 
 	bIsActive = True;
+
+    if (Charge > 0)
+        bDrained = false;
 }
 
 // ----------------------------------------------------------------------
@@ -93,10 +111,10 @@ function ChargedPickupEnd(DeusExPlayer Player)
 {
 	Player.RemoveChargedDisplay(Self);
 
-	if (Charge > 0 && DeactivateSound != None)	// Trash: If charge is more than 0 and there's a deactivation sound, play it instead
-		Player.PlaySound(DeactivateSound, SLOT_Pain);
-	else
-		Player.PlaySound(UsedUpSound, SLOT_None);
+    if ((Charge > 0 || bDrained) && DeactivateSound != None)	// Trash: If charge is more than 0 and there's a deactivation sound, play it instead
+        Player.PlaySound(DeactivateSound, SLOT_Pain);
+    else
+        Player.PlaySound(UsedUpSound, SLOT_None);
 	
 	if (LoopSound != None)
 		AmbientSound = None;
@@ -182,12 +200,12 @@ function UsedUp()
 
 	NumCopies--;   //GMDX
 
-	if ( Pawn(Owner) != None )
+	if ( Pawn(Owner) != None && !bDrained)
 	{
 	    //bActivatable = false;
 		Pawn(Owner).ClientMessage(sprintf(ExpireMessage,ItemName));
+        Owner.PlaySound(UsedUpSound);
 	}
-	Owner.PlaySound(UsedUpSound);
 	Player = DeusExPlayer(Owner);
 
 	if (Player != None)
@@ -199,17 +217,23 @@ function UsedUp()
 	}
 	if (NumCopies<=0)
 	{
-		bActivatable = false;
 		//Destroy();  //GMDX                                                    //RSD: Bottom one left at 0% mostly so new repair bot features aren't hell
 		NumCopies=1;                                                            //RSD: Stuff
 		Charge = 0;                                                             //RSD: To ensure we don't have slightly negative charges
-		GotoState('DeActivated');
+        bDrained = true;
 		UpdateBeltText();
+        if (bUnequipWhenDrained)												//SARGE: No longer unequip. Now we allow wearing drained items.
+        {
+            GotoState('DeActivated');
+            bActivatable = false;
+        }
 		DimIcon();
 	}
 	else
 	{
-		GotoState('DeActivated');                                               //RSD: Deactivate when the top one in the stack runs out (default)
+        bDrained = true;
+        if (bUnequipWhenDrained)												//SARGE: No longer unequip. Now we allow wearing drained items.
+            GotoState('DeActivated');
 		//GotoState('Activated');                                                 //RSD: Automatically activate the next one in the stack
 		Charge=default.Charge;  //give back charge and make activatable
 		UpdateBeltText();
@@ -288,6 +312,10 @@ state Activated
 		if (Player != None)
 		{
 			ChargedPickupUpdate(Player);
+            
+            if (bDrained) //SARGE: Don't bother doing anything if it's drained
+                return;
+
 			if (!IsA('HazMatSuit') && !IsA('BallisticArmor')) //CyberP: start to make new armor system
 			Charge -= CalcChargeDrain(Player);
             if (IsA('AdaptiveArmor'))
@@ -356,15 +384,27 @@ state Activated
 
 	function Activate()
 	{
+		local DeusExPlayer Player;
+
 		//do not allow re-activation if no copies or one is active
 		//if ((NumCopies<=0)||(bIsActive))
 		if (bOneUseOnly)
             return;
+		
+        Player = DeusExPlayer(Owner);
 
-		Super.Activate();
+        //SARGE:Simply set us as undrained if we're re-activated while active.
+        if (player != None)
+        {
+            if (bDrained && bActive && Charge > 0)
+            {
+                ChargedPickupBegin(Player);
+                return;
+            }
+        }
+        Super.Activate();
 	}
 }
-
 
 // --------------------------------------------------------------------
 // maxCopies
@@ -392,7 +432,7 @@ function DimIcon() //RSD: When an item runs out of charge, dim the inv/belt icon
 	winInv = PersonaScreenInventory(root.GetTopWindow());                       //RSD: Might be none
 	hudBelt = root.hud.belt;
 
-    if (!bActivatable)
+    if (!bActivatable || Charge == 0)
     {
     if (bInObjectBelt)
 	{
@@ -469,7 +509,8 @@ event TravelPostAccept()
 {
     if (Charge <= 0)                                                            //RSD: bActivatable in Inventory.uc is not a traveling var, need to reset every map load
     {
-        bActivatable = false;
+        if (bUnequipWhenDrained)
+            bActivatable = false;
         UpdateBeltText();
 		DimIcon();
     }
@@ -479,7 +520,6 @@ event TravelPostAccept()
 
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
-//Charge=2000
 
 defaultproperties
 {
@@ -497,5 +537,7 @@ defaultproperties
      bCanHaveMultipleCopies=True
      bActivatable=True
 	 ExpireMessage="%s power supply used up"
+     EquipWhenEmptyLabel="Remains Equipped when drained."
      Charge=2000
+     bUnequipWhenDrained=true
 }
