@@ -1,7 +1,7 @@
 //=============================================================================
 // HUDAmmoDisplay
 //=============================================================================
-class HUDAmmoDisplay2 expands HUDBaseWindow;
+class HUDAmmoDisplay2 expands HUDRightSidedWindow;
 
 var Bool			bVisible;
 var DeusExPlayer	player;
@@ -23,6 +23,7 @@ var DeusExPickup item;                                                          
 // Defaults
 var Texture texBackground;
 var Texture texBorder;
+var Texture texBorderRight;
 
 var Color colIconDimmed;
 
@@ -38,6 +39,8 @@ var bool bUpdateAssigned;
 event InitWindow()
 {
 	Super.InitWindow();
+
+    SetRightSide(false);
 
 	bTickEnabled = TRUE;
 
@@ -105,7 +108,7 @@ event DrawWindow(GC gc)
     {
         gc.SetTileColor(colIconDimmed);
 		gc.SetStyle(DSTY_Masked);
-		gc.DrawTexture(22, 20, 40, 35, 0, 0, assignedClass.default.icon);
+		gc.DrawTexture(9+offset, 20, 40, 35, 0, 0, assignedClass.default.icon);
         return;
     }
 
@@ -139,7 +142,7 @@ event DrawWindow(GC gc)
 
 		// Draw the weapon icon
 		gc.SetStyle(DSTY_Masked);
-		gc.DrawTexture(22, 20, 40, 35, 0, 0, icon);
+		gc.DrawTexture(9+offset, 20, 40, 35, 0, 0, icon);
 
         if ((amount > 0 || chargeLevel > 0) && (item == None || !item.isA('Binoculars')))
         {
@@ -150,11 +153,11 @@ event DrawWindow(GC gc)
             gc.SetTextColor(colText);
 
             if (amount > 0)
-                gc.DrawText(28, 56, 32, 8, InvLabel @ amount); //Position below icon
-            //gc.DrawText(28, 48, 32, 8, InvLabel @ amount); //Position at bottom of icon
+                gc.DrawText(15+offset, 56, 32, 8, InvLabel @ amount); //Position below icon
+            //gc.DrawText(15+offset, 48, 32, 8, InvLabel @ amount); //Position at bottom of icon
         
             if (chargeLevel > 0)
-                gc.DrawText(28, 34, 32, 8, Sprintf("%d%%", chargeLevel)); //Position center of icon
+                gc.DrawText(15+offset, 34, 32, 8, Sprintf("%d%%", chargeLevel)); //Position center of icon
         }
 	}
 }
@@ -187,7 +190,7 @@ function DrawBackground(GC gc)
 {
 	gc.SetStyle(backgroundDrawStyle);
 	gc.SetTileColor(colBackground);
-	gc.DrawTexture(13, 13, 80, 54, 0, 0, texBackground);
+	gc.DrawTexture(offset, 13, 80, 54, 0, 0, texBackground);
 }
 
 // ----------------------------------------------------------------------
@@ -200,7 +203,10 @@ function DrawBorder(GC gc)
 	{
 		gc.SetStyle(borderDrawStyle);
 		gc.SetTileColor(colBorder);
-		gc.DrawTexture(0, 0, 95, 77, 0, 0, texBorder);
+        if (bRightSided)
+            gc.DrawTexture(0, 0, 95, 77, 0, 0, texBorderRight);
+        else
+            gc.DrawTexture(0, 0, 95, 77, 0, 0, texBorder);
 	}
 }
 
@@ -222,5 +228,8 @@ defaultproperties
      InvLabel="COUNT:"
      texBackground=Texture'RSDCrap.UserInterface.HudAmmoDisplayBackgroundSecondary'
      texBorder=Texture'RSDCrap.UserInterface.HudAmmoDisplayBorderSecondary'
+     texBorderRight=Texture'RSDCrap.UserInterface.HudAmmoDisplayBorderSecondaryF'
      colIconDimmed=(R=64,G=64,B=64)
+     leftSideOffset=13
+     rightSideOffset=2
 }

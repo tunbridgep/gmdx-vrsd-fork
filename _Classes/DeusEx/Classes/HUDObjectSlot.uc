@@ -241,17 +241,17 @@ function Inventory GetItem()
 
 event DrawWindow(GC gc)
 {
-local DeusExWeapon weapon;
+	local DeusExWeapon weapon;
     local DeusExAmmo DXammo;
+	
 	// First draw the background
-   DrawHUDBackground(gc);
+    DrawHUDBackground(gc);
 
 	// Now fill the area under the icon, which can be different
 	// colors based on the state of the item.
 	//
 	// Don't waste time drawing the fill if the fillMode is set
 	// to None
-
 	if (fillMode != FM_None)
 	{
 		SetFillColor();
@@ -264,11 +264,11 @@ local DeusExWeapon weapon;
 	}
 
 	// Don't draw any of this if we're dragging
-	if ((item != None || player.GetPlaceholder(objectNum)) && (!bDragging))
+	if ( ( item != None || ( player != None && player.GetPlaceholder(objectNum) ) ) && !bDragging)
 	{
 		// Draw the icon
 		DrawHUDIcon(gc);
-
+		
 		// Text defaults
 		gc.SetAlignments(HALIGN_Center, VALIGN_Center);
 		gc.EnableWordWrap(false);
@@ -281,9 +281,9 @@ local DeusExWeapon weapon;
         else if (item != None)
             gc.DrawText(1, 42, 42, 7, item.beltDescription);
 
-        if (player != None && player.bColorCodedAmmo) //CyberP: start
+        if (player.bColorCodedAmmo) //CyberP: start
         {
-        if ((weapon != None) && (weapon.AmmoName != class'AmmoNone') && (!weapon.bHandToHand) && (weapon.ReloadCount != 0) && (weapon.AmmoType != None))
+			if ((weapon != None) && (weapon.AmmoName != class'AmmoNone') && (!weapon.bHandToHand) && (weapon.ReloadCount != 0) && (weapon.AmmoType != None))
 			{
                 DXAmmo = DeusExAmmo(weapon.AmmoType);
                 if (DXAmmo != None)
@@ -314,8 +314,8 @@ local DeusExWeapon weapon;
 			gc.DrawBorders(slotIconX - 1, slotIconY - 1, borderWidth, borderHeight, 0, 0, 0, 0, texBorders);
 		}
 	}
-   else if ((item == None) && (player != None) && (player.Level.NetMode != NM_Standalone) && (player.bBeltIsMPInventory))
-   {
+    else if ((item == None) && (player != None) && (player.Level.NetMode != NM_Standalone) && (player.bBeltIsMPInventory))
+    {
 		// Text defaults
 		gc.SetAlignments(HALIGN_Center, VALIGN_Center);
 		gc.EnableWordWrap(false);
@@ -333,7 +333,7 @@ local DeusExWeapon weapon;
       {
          gc.DrawText(1, 42, 42, 7, "TOOLS");
       }
-   }
+    }
 
 	// Draw the Object Slot Number in upper-right corner
 	gc.SetAlignments(HALIGN_Right, VALIGN_Center);
@@ -489,6 +489,7 @@ event bool MouseButtonPressed(float pointX, float pointY, EInputKey button,
         }
         bResult = True;
     }
+	
 	return bResult;
 }
 
@@ -576,7 +577,7 @@ event texture CursorRequested(window win, float pointX, float pointY,
 
         return item.icon;
 	}
-	else
+	else if(!player.bBeltMemory) //Ygll: actually, calling this part of code with the bBeltMemory enable make a visual bug when hovering the belt placeholder
 	{
         return player.GetPlaceholderIcon(objectNum);
 	}

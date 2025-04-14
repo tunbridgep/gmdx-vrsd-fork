@@ -33,7 +33,8 @@ function Setup()
         if (AugmentationType == Aug_Passive && bIsActive)
             Deactivate();
         AugmentationType=Aug_Toggle;
-        EnergyReserved=5;
+        //EnergyReserved=5;
+        EnergyReserved=0; //SARGE: Just remove it....ugh
     }
     else
     {
