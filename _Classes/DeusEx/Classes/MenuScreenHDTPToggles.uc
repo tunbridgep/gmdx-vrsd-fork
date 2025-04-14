@@ -101,7 +101,7 @@ defaultproperties
      Items(49)=(actionText="Throwing Knives",defaultValue=1,consoleTarget="DeusEx.WeaponShuriken")
      Items(50)=(actionText="AI Prototype",defaultValue=1,consoleTarget="DeusEx.AIPrototype")
      Items(51)=(actionText="Alarm Unit",defaultValue=1,consoleTarget="DeusEx.AlarmUnit")
-     Items(52)=(actionText="Alarm Light",defaultValue=1,consoleTarget="DeusEx.AlarmLight")	 
+     Items(52)=(actionText="Alarm Light",defaultValue=1,consoleTarget="DeusEx.AlarmLight")
      Items(53)=(actionText="Ambrosia Container",defaultValue=1,consoleTarget="DeusEx.BarrelAmbrosia")
      Items(54)=(actionText="Augmentation Canister",defaultValue=1,consoleTarget="DeusEx.AugmentationCannister")
      Items(55)=(actionText="Augmentation Upgrade",defaultValue=1,consoleTarget="DeusEx.AugmentationUpgradeCannister")
