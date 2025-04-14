@@ -774,6 +774,8 @@ var globalconfig int iStanceHud;					                //Ygll: Display the current
 var globalconfig int iHealingScreen;                            //Ygll: can disable the flash screen when healing or changing it to green color.
 
 
+var globalconfig bool bCutsceneVolumeEqualiser;                     //SARGE: If true, cutscenes will have their sound, voice and music volumes adjusted to be as clear as possible, with the sound and music relatively quiet and the speech quite loud.
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -1605,9 +1607,9 @@ function PostPostBeginPlay()
 	ThemeManager.SetMenuThemeByName(MenuThemeNameGMDX);
 	ThemeManager.SetHUDThemeByName(HUDThemeNameGMDX);
 
-
-
-
+    //Set our FOV if we have FOV adjustments enabled
+    //Should "fix" the intro
+    DesiredFOV = default.DesiredFOV;
 
 	if ((Level.NetMode != NM_Standalone) && ( killProfile == None ))
 		killProfile = Spawn(class'KillerProfile', Self);
@@ -18491,4 +18493,5 @@ defaultproperties
   	 iStanceHud=3   //Ygll = Every stance
 	   bIsMantlingStance=false //Ygll: new var to know if we are currently mantling
 	   iHealingScreen=1
+     bCutsceneVolumeEqualiser=true
 }

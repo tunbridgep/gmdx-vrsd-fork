@@ -3,10 +3,6 @@
 //=============================================================================
 class MissionIntro extends MissionScript;
 
-var byte savedSoundVolume;
-var byte savedMusicVolume;
-var byte savedSpeechVolume;
-
 // ----------------------------------------------------------------------
 // InitStateMachine()
 // ----------------------------------------------------------------------
@@ -53,19 +49,7 @@ function FirstFrame()
 		}
 
 		// turn down the sound so we can hear the speech
-		savedSoundVolume = byte(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice SoundVolume"));
-		savedMusicVolume = byte(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice MusicVolume"));
-		savedSpeechVolume = byte(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice SpeechVolume"));
-		SoundVolume = 32;
-		Player.SetInstantSoundVolume(SoundVolume);
-        
-        //SARGE: Force the music on, too
-        if (savedMusicVolume < 32)
-            Player.SetInstantMusicVolume(32);
-
-        //Bump up the speech volume if we have to
-        if (savedSpeechVolume < 64)
-            Player.SetInstantSpeechVolume(64);
+        SetMinimumVolume();
 
         //SARGE: Make the corpses not bleed anymore (except for the thug in the Paris scene)
         Foreach AllActors(class'DeusExCarcass', C)
@@ -85,9 +69,7 @@ function FirstFrame()
 function PreTravel()
 {
 	// restore the sound volume
-	Player.SetInstantSoundVolume(savedSoundVolume);
-	Player.SetInstantMusicVolume(savedMusicVolume);
-	Player.SetInstantSpeechVolume(savedSpeechVolume);
+    RestorePreviousVolume();
 
 	Super.PreTravel();
 }

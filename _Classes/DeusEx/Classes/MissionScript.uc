@@ -21,6 +21,42 @@ var float TimeToSave;
 
 var bool firstTime;     //SARGE: Set to true the first time we enter a map.
 
+var byte savedSoundVolume;
+var byte savedMusicVolume;
+var byte savedSpeechVolume;
+
+// ----------------------------------------------------------------------
+// SARGE: SetMinimumVolume()
+//
+// Force the players Music, Sound and Speech volume to be a certain minimum amount.
+// Used for cutscenes because they sound awkward/weird without music
+// Saves the values so we can use RestorePreviousVolume to restore it to what it was. Used for cutscenes.
+// ----------------------------------------------------------------------
+
+function SetMinimumVolume()
+{
+    savedSoundVolume = byte(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice SoundVolume"));
+    savedMusicVolume = byte(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice MusicVolume"));
+    savedSpeechVolume = byte(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice SpeechVolume"));
+ 
+    if (!player.bCutsceneVolumeEqualiser)
+        return;
+
+    //Reduce the overall sound volume
+    SoundVolume = savedSpeechVolume / 8;
+    Player.SetInstantSoundVolume(savedSpeechVolume / 8);
+
+    //Force the music on
+    Player.SetInstantMusicVolume(savedSpeechVolume / 2);
+}
+
+function RestorePreviousVolume()
+{
+	Player.SetInstantSoundVolume(savedSoundVolume);
+	Player.SetInstantMusicVolume(savedMusicVolume);
+	Player.SetInstantSpeechVolume(savedSpeechVolume);
+}
+
 // ----------------------------------------------------------------------
 // DoLightingAccessibility()
 //
