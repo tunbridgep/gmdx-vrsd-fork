@@ -11444,7 +11444,7 @@ function bool GetBracketsState()
         return false;
     
     //No brackets on cloaked enemies
-    if (frobTarget != None && frobTarget.isA('ScriptedPawn') && ScriptedPawn(frobTarget).bHasCloak && ScriptedPawn(FrobTarget).bCloaked)
+    if (frobTarget != None && frobTarget.isA('ScriptedPawn') && ScriptedPawn(frobTarget).bHasCloak && ScriptedPawn(FrobTarget).bCloakOn)
         return False;
 
     //No brackets while reading books/datacubes/etc
