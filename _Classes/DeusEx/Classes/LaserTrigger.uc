@@ -16,10 +16,48 @@ var float lastAlarmTime;		// last time the alarm was sounded
 var int alarmTimeout;			// how long before the alarm silences itself
 var actor triggerActor;			// actor which last triggered the alarm
 var vector actorLocation;		// last known location of actor that triggered alarm
+var string HDTPMesh;
+var string HDTPSkin;
+var string HDTPTexture;
+var config int iHDTPModelToggle;
+
 
 singular function Touch(Actor Other)
 {
 	// does nothing when touched
+}
+
+static function bool IsHDTP()
+{
+    return class'DeusExPlayer'.static.IsHDTPInstalled() && default.iHDTPModelToggle > 0;
+}
+
+//Ygll: Setup the HDTP settings for this projectile
+function UpdateHDTPSettings()
+{
+	if( IsHDTP() )
+	{	
+		if(HDTPMesh != "")
+			Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),IsHDTP());
+		
+		if(HDTPSkin != "")			
+			Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),IsHDTP());
+			
+		if(HDTPTexture != "")
+			Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),IsHDTP());
+	}
+	else
+	{
+		Mesh = default.Mesh;
+		Skin = default.Skin;
+		Texture = default.Texture;
+	}	
+}
+
+function PostBeginPlay()
+{
+	Super.PostBeginPlay();
+	UpdateHDTPSettings();
 }
 
 function BeginAlarm()
@@ -282,18 +320,19 @@ function Destroyed()
 
 defaultproperties
 {
-     bIsOn=True
-     confusionDuration=10.000000
-     HitPoints=50
-     minDamageThreshold=50
-     alarmTimeout=30
-     TriggerType=TT_AnyProximity
-     bHidden=False
-     bDirectional=True
-     DrawType=DT_Mesh
-     HDTPSkin"HDTPDecos.Skins.HDTPlaseremittertex0"
-     HDTPMesh="HDTPDecos.HDTPlaseremitter"
-     Mesh=LodMesh'DeusExDeco.LaserEmitter'
-     CollisionRadius=2.500000
-     CollisionHeight=2.500000
+     bIsOn=true;
+     confusionDuration=10.000000;
+     HitPoints=50;
+     minDamageThreshold=50;
+     alarmTimeout=30;
+     TriggerType=TT_AnyProximity;
+     bHidden=false;
+     bDirectional=true;
+     DrawType=DT_Mesh;
+     HDTPSkin"HDTPDecos.Skins.HDTPlaseremittertex0";
+     HDTPMesh="HDTPDecos.HDTPlaseremitter";
+     Mesh=LodMesh'DeusExDeco.LaserEmitter';
+     CollisionRadius=2.500000;
+     CollisionHeight=2.500000;
+	 iHDTPModelToggle=1;
 }
