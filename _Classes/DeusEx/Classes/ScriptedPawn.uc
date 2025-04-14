@@ -488,6 +488,7 @@ var travel bool bSetupHDTP;
 
 //SARGE: Blink timer
 var float blinkTimer;
+var() const bool bCanBlink;                                                     //SARGE: Whether or not this human can blink. Defaults to true. Set to false for Bob Page in the intro so he doesn't ruin his eye-zoom.
 
 //SARGE: Allow randomised pain and death sounds
 var Sound randomDeathSoundsM[22];
@@ -17075,7 +17076,7 @@ function JumpOffPawn()
 //They can blink outside of conversations, and so have to have a separate blink timer
 function HandleBlink(float deltaTime)
 {
-    if (!bIsHuman)
+    if (!bIsHuman || !bCanBlink)
         return;
     
     blinkTimer += deltaTime;
@@ -17429,4 +17430,5 @@ defaultproperties
      randomPainSoundsM(18)=Sound'GMDXSFX.Player.malegrunt3'
      randomPainSoundsM(19)=Sound'DeusExSounds.Player.MaleLand' //WTF?
      randomPainSoundsM(19)=Sound'DeusExSounds.Player.MaleGrunt'
+     bCanBlink=true
 }
