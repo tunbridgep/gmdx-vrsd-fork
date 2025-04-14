@@ -110,157 +110,15 @@ function Destroyed()
 		Super.Destroyed();
 }
 
-function LoadPoisonSmokeTexture(SFXExp puff)
+//Ygll: interface function used in each dart classe to create visual effect
+function DoProjectileHitEffects(bool bWallHit)
 {
-	puff.Texture = Texture'RSDCrap.Skins.ef_PoisonSmoke001';
-		
-	puff.frames[0] = Texture'RSDCrap.Skins.ef_PoisonSmoke001';
-	puff.frames[1] = Texture'RSDCrap.Skins.ef_PoisonSmoke002';
-	puff.frames[2] = Texture'RSDCrap.Skins.ef_PoisonSmoke003';
-	puff.frames[3] = Texture'RSDCrap.Skins.ef_PoisonSmoke004';
-	puff.frames[4] = Texture'RSDCrap.Skins.ef_PoisonSmoke005';
-	puff.frames[5] = Texture'RSDCrap.Skins.ef_PoisonSmoke006';
-	puff.frames[6] = Texture'RSDCrap.Skins.ef_PoisonSmoke007';
-	puff.frames[7] = Texture'RSDCrap.Skins.ef_PoisonSmoke008';
-	puff.frames[8] = Texture'RSDCrap.Skins.ef_PoisonSmoke009';
-	puff.frames[9] = Texture'RSDCrap.Skins.ef_PoisonSmoke010';
-	puff.frames[10] = Texture'RSDCrap.Skins.ef_PoisonSmoke011';
-	puff.frames[11] = Texture'RSDCrap.Skins.ef_PoisonSmoke012';
-}
-
-//Ygll: new utility function to create spark effect on impact
-function CreateSparkHitWallEffect()
-{
-	local GMDXSparkFade fade;
-	local GMDXImpactSpark s;
-	local GMDXImpactSpark2 t;
-	local int i;
-	
-	//hit location little spark	explosion
-	fade = spawn(class'GMDXSparkFade');
-	if (fade != None)
-	{
-		fade.DrawScale = 0.16;
-		fade.LightBrightness = 15;		
-	}	
-	
-	//flying spark
-	for (i=0; i<4; i++)
-	{
-		s = spawn(class'GMDXImpactSpark');
-		if( s != none  )
-		{
-			s.LifeSpan=FRand()*0.12;
-			s.DrawScale = FRand() * 0.06;
-		}
-		
-		t = spawn(class'GMDXImpactSpark2');
-		if( t != none )
-		{			
-			t.LifeSpan=FRand()*0.12;
-			t.DrawScale = FRand() * 0.06;
-		}		
-	}	
-}
-
-//Ygll: new utility function to create poison dart effect on impact
-function CreatePoisonDartHitEffect()
-{
-	local SFXExp puff;
-	puff = spawn(class'SFXExp');
-	
-	if ( puff != None )
-	{
-		LoadPoisonSmokeTexture(puff);
-		
-		puff.scaleFactor = 0.06;
-		puff.scaleFactor2 = 0.16;
-		puff.GlowFactor = 0.2;
-		puff.animSpeed = 0.24;	//Best value for a smooth animation not too long
-		puff.RemoteRole = ROLE_None;
-	}
-}
-
-//Ygll: new utility function to create taser light effect on impact
-function CreateTaserDartHitLight()
-{
-	local GMDXImpactSpark sparkEffect1;
-	local GMDXImpactSpark2 sparkEffect2;
-	local int i;
-
-	for (i = 0; i < 8; i++)
-	{
-		sparkEffect1 = spawn(class'GMDXImpactSpark');
-		sparkEffect2 = spawn(class'GMDXImpactSpark2');
-		
-		if( sparkEffect1 != none  )
-		{
-			//Ygll: change the value to advert some sound issue because it's starting too soon, previously at 1.
-			if(i == 6)
-			{
-				sparkEffect1.AmbientSound = Sound'Ambient.Ambient.Electricity3';
-				sparkEffect1.SoundRadius=64;
-				sparkEffect1.SoundVolume=160;
-				sparkEffect1.SoundPitch=64;
-			}
-		
-			sparkEffect1.Texture = Texture'Effects.Fire.Spark_Electric';
-			sparkEffect1.LifeSpan = FRand()*0.2;		
-			sparkEffect1.LightBrightness = 255;
-			sparkEffect1.LightSaturation = 60;
-			sparkEffect1.LightHue = 146;
-			sparkEffect1.LightRadius = 1;
-			sparkEffect1.LightType = LT_Steady;
-		}
-		
-		if( sparkEffect2 != none )
-		{			
-			sparkEffect2.Texture = Texture'Effects.Fire.Spark_Electric';
-			sparkEffect2.LifeSpan = FRand()*0.4;
-			sparkEffect2.LightBrightness = 200;
-			sparkEffect2.LightSaturation = 60;
-			sparkEffect2.LightHue = 146;
-			sparkEffect2.LightRadius = 1;
-			sparkEffect2.LightType = LT_Steady;
-		}
-	}
-}
-
-//Ygll: new utility function to call special effect on impact
-function CreateSpecialDartEffect(int dartClass, bool bWallHit)
-{	
-	if( dartClass == 2 )
-	{				
-		CreateTaserDartHitLight();
-	}
-	else
-	{					
-		CreatePoisonDartHitEffect();
-	}
-	
-	//Ygll: Spark effect when hitting hard surface
-	if(bWallHit)
-	{
-		CreateSparkHitWallEffect();
-	}
 }
 
 //Ygll: new utility function to generate base wall hit effect for darts item
-function CreateDartHitBaseEffect()
+function CreateDartHitBaseEffect(bool bWallHit)
 {
-	// Ygll : new hit effect effect for poison and taser dart
-	if( IsA('DartPoison') )
-	{
-		CreateSpecialDartEffect(1, true);
-	}
-	else if(IsA('DartTaser'))
-	{		
-		CreateSpecialDartEffect(2, true);
-	}
-	else //all other dart
-	{
-		CreateSparkHitWallEffect();
-	}
+	DoProjectileHitEffects(bWallHit);
 }
 
 //
@@ -395,17 +253,11 @@ function CreateDartBloodDropHit(Vector vec)
 	maxBloodDrop = 0;
 	
 	if(hitEffectDamage < 2.0)
-	{
 		maxBloodDrop = 2;
-	}
 	else if(hitEffectDamage > 6.0)
-	{
 		maxBloodDrop = 6;
-	}
 	else
-	{
 		maxBloodDrop = hitEffectDamage;
-	}
 
 	for(i=0; i<maxBloodDrop; i++)
 	{			
@@ -423,28 +275,19 @@ function SpawnBlood(Vector HitLocation, Vector HitNormal)
 	local BloodSpurt spurt;
 
 	if ((DeusExMPGame(Level.Game) != None) && (!DeusExMPGame(Level.Game).bSpawnEffects))
-	{
 	  return;
-	}
 	
 	//for all projectile
 	spurt = spawn(class'BloodSpurt',,, HitLocation+HitNormal);
 		
-	//Ygll: new behaviour for Taser Dart, they are now the same behaviour than poison dart
-	//Ygll: adding the special hit effect for flesh hit
+	//Ygll: new for Taser Dart, they are now the same behaviour than poison dart
+	//Ygll: adding the hit visual effect for flesh hit
 	if (IsA('DartPoison') || IsA('DartTaser') )
 	{	
 		spurt.LifeSpan *= 0.7;
 		spurt.DrawScale *= 1.0;
 		
-		if( IsA('DartPoison') )
-		{
-			CreateSpecialDartEffect(1, false);
-		}
-		else
-		{
-			CreateSpecialDartEffect(2, false);
-		}
+		CreateDartHitBaseEffect(false);
 	}
 	else if( bBlood ) //Ygll: if the current projectile is set to generate blood	
 	{
@@ -991,7 +834,7 @@ auto simulated state Flying
 			{
 				ImpactSound = Sound'DeusExSounds.Weapons.CrowbarHitSoft';
 				
-				CreateDartHitBaseEffect();
+				CreateDartHitBaseEffect(true);
 				
 				// MBCODE: Do this only on server side
 				if ( Role == ROLE_Authority )
@@ -1017,7 +860,8 @@ auto simulated state Flying
         {
 			// Ygll : Adding Taser dart to handle them with new the hardcore rule and 'Fragile Dart' gameplay option enable.			
 			ImpactSound = Sound'DeusExSounds.Weapons.BatonHitSoft';	//RSD: Weaker sound effect to help sell the illusion of dart breaking			
-			CreateDartHitBaseEffect();
+			CreateDartHitBaseEffect(true);
+			bStuck = false;
         }
 		
 		// MBCODE: Do this only on server side
@@ -1124,7 +968,7 @@ auto simulated state Flying
 				}
 			}
 			
-			//Ygll: just a comment, here we gonna to destroy all item classe with the paramater at false (from hardcore or gamepla option settings or item parameter)
+			//Ygll: just a comment, here we gonna to destroy all item classe with the paramater at false (from hardcore or gameplay option settings or item parameter)
 			if (!bStuck)
 				bDestroy = true;
 		}
