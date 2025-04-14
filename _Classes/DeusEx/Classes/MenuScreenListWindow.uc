@@ -5,11 +5,11 @@
 
 class MenuScreenListWindow expands MenuUIScreenWindow;
 
-var MenuUIListHeaderButtonWindow btnHeaderAction;
-var MenuUIListHeaderButtonWindow btnHeaderAssigned;
+var MenuUIListHeaderButtonWindow btnHeaderSetting;
+var MenuUIListHeaderButtonWindow btnHeaderValue;
 
-var localized string strHeaderActionLabel;
-var localized string strHeaderAssignedLabel;
+var localized string strHeaderSettingLabel;
+var localized string strHeaderValueLabel;
 
 var MenuUIScrollAreaWindow winScroll;
 var MenuUIListWindow lstItems;
@@ -25,6 +25,11 @@ var Window messagebox;
 var string consoleTarget;   //The entity we are changing variables on. This should normally be the player.
 var string variable;        //The default value for variables. Usually is nothing
 var string helpText;        //The default value for help text. Displayed if there's nothing defined for an entry.
+
+var const int colWidths[2];
+
+var bool bSortOrder;
+var bool bLastPressedHeaderWasSetting;             //SARGE: If the last pressed header was the "Setting" header. Used to control if we should change the sort order.
 
 struct S_ListItem
 {
@@ -51,6 +56,7 @@ struct S_ListItem
     var int value;
     var int defaultValue; //TODO: Find a way to reset to default value via console
     var string consoleTarget; //If not set, use the global one instead
+    var string sortCategory;  //Will be prepended to the name in the third col, for sorting
 };
 
 var S_ListItem items[255];
@@ -100,8 +106,10 @@ function CreateChoices()
             if (items[i].helpText == "")
                 items[i].helpText = helpText;
 
-            lstItems.AddRow(items[i].actionText $ ";" $ GetValueString(i));
+            lstItems.AddRow(items[i].actionText $ ";" $ GetValueString(i) $ ";" $ i $ ";" $ items[i].sortCategory $ items[i].actionText);
             //lstItems.AddRow(items[i].actionText @ items[i].variable $ ";" $ GetValueString(i) $ ", " $ items[i].value);
+
+            //Add sort info
         }
     }
 }
@@ -255,7 +263,8 @@ event bool ListRowActivated(window list, int rowId)
 {
     local int id;
     local S_ListItem choice;
-	id = lstItems.RowIdToIndex(rowId);
+    
+    id = int(lstItems.GetFieldValue(rowId, 2));
 
     items[id].value += 1;
 
@@ -280,11 +289,46 @@ event bool ListRowActivated(window list, int rowId)
 
 function CreateHeaderButtons()
 {
-	btnHeaderAction   = CreateHeaderButton(10,  3, 162, strHeaderActionLabel,   winClient);
-	btnHeaderAssigned = CreateHeaderButton(175, 3, 157, strHeaderAssignedLabel, winClient);
+	btnHeaderSetting   = CreateHeaderButton(10,  3, colWidths[0], strHeaderSettingLabel,   winClient);
+	btnHeaderValue = CreateHeaderButton(colWidths[0]+10, 3, colWidths[1], strHeaderValueLabel, winClient);
 
-	btnHeaderAction.SetSensitivity(False);
-	btnHeaderAssigned.SetSensitivity(False);
+	//btnHeaderSetting.SetSensitivity(False);
+	//btnHeaderValue.SetSensitivity(False);
+}
+
+function bool ButtonActivated( Window buttonPressed )
+{
+	local bool bHandled;
+
+	bHandled = True;
+
+	if (Super.ButtonActivated(buttonPressed))
+		return True;
+
+	switch( buttonPressed )
+	{
+		case btnHeaderSetting:
+            if (bLastPressedHeaderWasSetting)
+                bSortOrder = !bSortOrder;
+			lstItems.SetSortColumn(3, bSortOrder);
+			lstItems.Sort();
+            bLastPressedHeaderWasSetting = true;
+			break;
+
+		case btnHeaderValue:
+            if (!bLastPressedHeaderWasSetting)
+                bSortOrder = !bSortOrder;
+			lstItems.SetSortColumn(1, bSortOrder);
+			lstItems.Sort();
+            bLastPressedHeaderWasSetting = false;
+			break;
+
+		default:
+			bHandled = False;
+			break;
+	}
+
+	return bHandled;
 }
 
 
@@ -301,24 +345,34 @@ function CreateOptionsList()
 	lstItems.EnableAutoExpandColumns(False);
 	lstItems.EnableHotKeys(False);
 
-	lstItems.SetNumColumns(2);
+	lstItems.SetNumColumns(4);
 
-	lstItems.SetColumnWidth(0, 164);
+	lstItems.SetColumnWidth(0, colWidths[0]);
 	lstItems.SetColumnType(0, COLTYPE_String);
-	lstItems.SetColumnWidth(1, 205);
+	lstItems.SetColumnWidth(1, colWidths[1]);
 	lstItems.SetColumnType(1, COLTYPE_String);
+    
+    //Third Column is ID
+	lstItems.SetColumnType(2, COLTYPE_Float);
+	lstItems.HideColumn(2);
+
+    //Fourth Column is for sorting
+	lstItems.HideColumn(3);
+	lstItems.SetColumnType(3, COLTYPE_String);
+	lstItems.SetSortColumn(3, bSortOrder);
+	lstItems.EnableAutoSort(True);
+    bLastPressedHeaderWasSetting = true;
+
 }
 
 event bool ListSelectionChanged(window list, int numSelections, int focusRowId)
 {
 	local bool bResult;
-    local int rowId;
     local int rowIndex;
 
     bResult = Super.ListSelectionChanged(list, numSelections, focusRowId);
+    rowIndex = int(lstItems.GetFieldValue(focusRowId, 2));
 
-    rowId = lstItems.GetSelectedRow();
-    rowIndex = lstItems.RowIdToIndex(rowId);
     if (rowIndex == -1)
         ShowHelp(helpText);
     else
@@ -366,8 +420,8 @@ function RemoveItem(string variable)
 
 defaultproperties
 {
-     strHeaderActionLabel="Setting"
-     strHeaderAssignedLabel="Value"
+     strHeaderSettingLabel="Setting"
+     strHeaderValueLabel="Value"
      ClientWidth=384
      ClientHeight=366
      clientTextures(0)=Texture'DeusExUI.UserInterface.MenuCustomizeKeysBackground_1'
@@ -385,4 +439,7 @@ defaultproperties
      actionButtons(1)=(Align=HALIGN_Right,Action=AB_OK)
      actionButtons(2)=(Action=AB_Reset)
      consoleTarget="DeusExPlayer"
+     colWidths(0)=164
+     colWidths(1)=205
+     defaultHelpHeight=27
 }
