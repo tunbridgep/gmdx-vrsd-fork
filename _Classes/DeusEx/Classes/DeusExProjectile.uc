@@ -103,9 +103,9 @@ function UpdateHDTPSettings()
 
 //SARGE: Let the object explode on destroy
 function Destroyed()
-{	
+{
     if (bExplodeOnDestroy)
-        Explode(Location, vect(0,0,1));       
+        Explode(Location, vect(0,0,1));
 	else
 		Super.Destroyed();
 }
@@ -245,13 +245,13 @@ simulated function vector AcquireMPTargetLocation()
 //Ygll: new utility function to generate blood drop on hit vector
 function CreateDartBloodDropHit(Vector vec)
 {
-	local int i, maxBloodDrop;	
+	local int i, maxBloodDrop;
 	local float hitEffectDamage;
 	local BloodDrop drop;
-	
-	hitEffectDamage = Damage/2;		
+
+	hitEffectDamage = Damage/2;
 	maxBloodDrop = 0;
-	
+
 	if(hitEffectDamage < 2.0)
 		maxBloodDrop = 2;
 	else if(hitEffectDamage > 6.0)
@@ -260,7 +260,7 @@ function CreateDartBloodDropHit(Vector vec)
 		maxBloodDrop = hitEffectDamage;
 
 	for(i=0; i<maxBloodDrop; i++)
-	{			
+	{
 		drop = spawn(class'BloodDrop',,, vec);
 		if (drop!=none)
 		{
@@ -283,17 +283,17 @@ function SpawnBlood(Vector HitLocation, Vector HitNormal)
 	//Ygll: new for Taser Dart, they are now the same behaviour than poison dart
 	//Ygll: adding the hit visual effect for flesh hit
 	if (IsA('DartPoison') || IsA('DartTaser') )
-	{	
+	{
 		spurt.LifeSpan *= 0.7;
 		spurt.DrawScale *= 1.0;
-		
+
 		CreateDartHitBaseEffect(false);
 	}
-	else if( bBlood ) //Ygll: if the current projectile is set to generate blood	
+	else if( bBlood ) //Ygll: if the current projectile is set to generate blood
 	{
 		spurt.LifeSpan *= 0.8;
 		spurt.DrawScale *= 1.1;
-	
+
 		CreateDartBloodDropHit(HitLocation+HitNormal);
 	}
 }
@@ -545,16 +545,16 @@ function PlayImpactSound()
 	local float rad;
     local GMDXImpactSpark AST;
 
-		rad = Max(blastRadius*28, 2048); //CyberP: was *4
-        if (IsA('Dart'))
-			PlaySound(ImpactSound, SLOT_None, 2.0,, rad,1.15);
-        else if (IsA('RubberBullet')) //Special case for rubber bullets as they can be problematic
-        {
-          if (FRand() < 0.6)
-              PlaySound(ImpactSound, SLOT_Interact, 1.5,, 512);
-        }
-        else
-			PlaySound(ImpactSound, SLOT_None, 2.0,, rad);
+	rad = Max(blastRadius*28, 2048); //CyberP: was *4
+	if (IsA('Dart'))
+		PlaySound(ImpactSound, SLOT_None, 2.0,, rad,1.15);
+	else if (IsA('RubberBullet')) //Special case for rubber bullets as they can be problematic
+	{
+	  if (FRand() < 0.6)
+		  PlaySound(ImpactSound, SLOT_Interact, 1.5,, 512);
+	}
+	else
+		PlaySound(ImpactSound, SLOT_None, 2.0,, rad);
 }
 
 function bool CheckHelmetCollision(int actualDamage, Vector hitLocation, name damageType, Pawn helmetPawn) //RSD: Adapted from HandleDamage() in ScriptedPawn.uc
@@ -576,14 +576,10 @@ function bool CheckHelmetCollision(int actualDamage, Vector hitLocation, name da
 		    if (offset.z > HelmetPawn.CollisionHeight * 0.85 && !(abs(offset.y) < headOffsetY && offset.x > 0.0 && offset.z < CollisionHeight*0.93) //RSD: Was CollisionHeight*0.93, I'm making it *0.85, and NOT from the front
             	&& (damageType == 'Shot' || damageType == 'Poison' || damageType == 'Stunned'))
             {
-                    if (actualDamage >= 25)
-                    {
-                          return false;
-                    }
-                    else
-                    {
-                          return true;
-                    }
+				if (actualDamage >= 25)
+					return false;
+				else
+					return true;
             }
 		}
 	}
@@ -716,10 +712,8 @@ auto simulated state Flying
 	simulated function ProcessTouch (Actor Other, Vector HitLocation)
 	{
 		if (bStuck)
-		{
 			return;
-		}
-		
+
         //G-Flex: let's try sticking projectiles in decorations
 		//G-Flex: or not, collision cylinders make it look terrible and weird and ugly //CyberP: overruled! We'll have special cases
 		if ( ( bStickToWall && DeusExDecoration(Other) != none && DeusExDecoration(Other).bInvincible && DeusExDecoration(Other).bPushable == False ) 
@@ -735,10 +729,10 @@ auto simulated state Flying
 		if( (Other != instigator) && (DeusExProjectile(Other) == None) && (Other != Owner) )
 		{
 			if (IsA('ThrownProjectile') && (Other.IsA('DeusExCarcass') || Other.IsA('Pickup')))
-			{	
+			{
 		        return;    //CyberP: don't explode when hitting carci or pickups
 			}
-			
+
 			damagee = Other;
 
 			Explode(HitLocation, Normal(HitLocation-damagee.Location));
@@ -759,11 +753,11 @@ auto simulated state Flying
             Explode(HitLocation, Normal(HitLocation-damagee.Location));
 		}
 	}
-	
+
 	simulated function HitWall(vector HitNormal, actor Wall)
 	{
-		local float speed2;	
-		
+		local float speed2;
+
 		if (Wall.IsA('Mover')) //CyberP A.K.A Totalitarian: since movers seem to ignore plasma...
 		{
 			if (bPlusOneDamage)                                                     //RSD: remove random damage variation
@@ -811,17 +805,17 @@ auto simulated state Flying
 					PlaySound(sound'bouncemetal',SLOT_None,,,2048,1.3);
 				else
 					PlaySound(sound'BulletHitFlesh',SLOT_None,,,2048,1.1);
-			
+
 				if (bPlusOneDamage)                                              //RSD: remove random damage variation
 					Damage=Damage-1.0;
-				  
+
 				Wall.TakeDamage(Damage,Pawn(Owner),Location,MomentumTransfer*Normal(Velocity)*0.001,damageType);
 				GoToState('Ricocheted');
 	        }
 			else
             {
 				if (IsA('Dart') || IsA('Shuriken'))
-				{	
+				{
 					SetCollisionSize(4.0,3.0);
 				}
 				Velocity = vect(0,0,0);
@@ -829,13 +823,13 @@ auto simulated state Flying
 				SetPhysics(PHYS_None);
 				bStuck = True;
 		    }
-		   
+
 			if (!IsA('RubberBullet'))
 			{
 				ImpactSound = Sound'DeusExSounds.Weapons.CrowbarHitSoft';
-				
+
 				CreateDartHitBaseEffect(true);
-				
+
 				// MBCODE: Do this only on server side
 				if ( Role == ROLE_Authority )
 				{
@@ -848,7 +842,7 @@ auto simulated state Flying
 						if (bPlusOneDamage)                                         //RSD: remove random damage variation
 							Damage=Damage-1.0;
 						Wall.TakeDamage(Damage, Pawn(Owner), Wall.Location, MomentumTransfer*Normal(Velocity), damageType);
-						
+
 						//Sarge: Don't allow knives to be retrieved if they damaged a locked object
 						if (IsA('Shuriken') && DeusExMover(Wall).bLocked && Damage >= DeusExMover(Wall).minDamagethreshold)
 							Destroy();
@@ -858,12 +852,12 @@ auto simulated state Flying
 		}
         else if( IsA('Dart') )                        //RSD: Still do hit effects for Darts on Hardcore or fragile dart enable (bSticktoWall=false)
         {
-			// Ygll : Adding Taser dart to handle them with new the hardcore rule and 'Fragile Dart' gameplay option enable.			
-			ImpactSound = Sound'DeusExSounds.Weapons.BatonHitSoft';	//RSD: Weaker sound effect to help sell the illusion of dart breaking			
+			// Ygll : Adding Taser dart to handle them with new the hardcore rule and 'Fragile Dart' gameplay option enable.
+			ImpactSound = Sound'DeusExSounds.Weapons.BatonHitSoft';	//RSD: Weaker sound effect to help sell the illusion of dart breaking
 			CreateDartHitBaseEffect(true);
 			bStuck = false;
         }
-		
+
 		// MBCODE: Do this only on server side
 		if ( Role == ROLE_Authority )
 		{
@@ -875,7 +869,7 @@ auto simulated state Flying
 				SetBase(Wall);
 				if (bPlusOneDamage)                                         //RSD: remove random damage variation
 					Damage=Damage-1.0;
-					
+
 				Wall.TakeDamage(Damage, Pawn(Owner), Wall.Location, MomentumTransfer*Normal(Velocity), damageType);
 			}
 		}
@@ -888,10 +882,10 @@ auto simulated state Flying
         {
 			SpawnEffects(Location, HitNormal, Wall);
         }
-		
+
 		Super.HitWall(HitNormal, Wall);
 	}
-	
+
 	simulated function Explode(vector HitLocation, vector HitNormal)
 	{
 		local bool bDestroy;
@@ -942,7 +936,7 @@ auto simulated state Flying
                     	}
                         else
                         	ScriptedPawn(damagee).extraMult = 0;                //RSD: pretty sure this was missing from original implementation! Agh!
-						
+
                        	if (ScriptedPawn(damagee).extraMult != 0)               //RSD: Ensuring that no extraMult is added in edge cases
  			        		ScriptedPawn(damagee).bHeadshotAltered = true;
 			        	else
@@ -967,8 +961,8 @@ auto simulated state Flying
 					//log("Damage =" $Damage);
 				}
 			}
-			
-			//Ygll: just a comment, here we gonna to destroy all item classe with the paramater at false (from hardcore or gameplay option settings or item parameter)
+
+			//Ygll: just a comment, here we gonna to destroy all item classe with the parameter at false (from hardcore or gameplay option settings or item parameter)
 			if (!bStuck)
 				bDestroy = true;
 		}
@@ -1004,13 +998,13 @@ auto simulated state Flying
 	  
 	  if (IsA('RubberBullet') || IsA('ShockRingProjectile'))
 		bDestroy=False;
-	
+
         if (IsA('Fireball') && damagee != none && damagee.IsA('ScriptedPawn') && Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkControlledBurn').bPerkObtained == true)
         {
             bDestroy=False;
             pawnAlreadyHit = ScriptedPawn(damagee);
         }
-		
+
 	    if (IsA('Fireball') && FRand()< 0.3)
 	    {
 	        if (damagee != None && damagee.IsA('DeusExPlayer'))
@@ -1031,14 +1025,12 @@ auto simulated state Flying
 	        exp.Velocity.Z = 2;
 	        }
 	        }
-        }		
-		
+        }
+
 		if (bDestroy)
-		{
 			Destroy();
-		}
 	}
-	
+
 	simulated function BeginState()
 	{
 		local DeusExWeapon W;
@@ -1187,13 +1179,13 @@ simulated function Tick(float deltaTime)
     }
     else if (Owner != none && Owner.IsA('ScriptedPawn'))                        //RSD: NPCs retain old drop formula
     {
-    	if (dist > AccurateRange/100 && IsA('SpiderConstructorLaunched'))
+		if (dist > AccurateRange/100 && IsA('SpiderConstructorLaunched'))
 			Acceleration = Region.Zone.ZoneGravity / 2.2;
         else if (dist > AccurateRange)
-        	Acceleration = Region.Zone.ZoneGravity / 2;
+			Acceleration = Region.Zone.ZoneGravity / 2;
     }
     else if (gravMult > 0) //RSD: New simple and effective formula for gravity, multiplier determined individually with MATH and SCIENCE
-    	Acceleration = gravMult*Region.Zone.ZoneGravity;
+		Acceleration = gravMult*Region.Zone.ZoneGravity;
 
     if ((Role < ROLE_Authority) && (bAggressiveExploded))
 	  Explode(Location, vect(0,0,1));
