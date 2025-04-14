@@ -2325,8 +2325,8 @@ simulated function Tick(float deltaTime)
 	//GMDX: ADD PROJECTILE TEST INFLIGHT
 	if ((player!=none)&&player.bGEPprojectileInflight)//(player.aGEPProjectile!=none)) //RSD: Changed so it still updates laser position
 		return;
-    //CyberP: moves held guns back if facing & standing next to a wall
-   if (player != none && !bHandToHand && IsInState('Idle'))
+    //CyberP: moves held item back if facing & standing next to a wall
+   if (player != none && IsInState('Idle'))
    {
       if (NearWallCheck() && player.Physics != PHYS_Falling)
       {
@@ -5112,7 +5112,7 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
 			}
 			if (bHandToHand)
 				SelectiveSpawnEffects( HitLocation, HitNormal, Other, finalDamage); //Replaced HitDamage * mult with finalDamage
-            else if (bPenetrating && Other.IsA('DeusExDecoration'))
+            else if (Other.IsA('DeusExDecoration'))
                  SpawnGMDXEffects(HitLocation, HitNormal);
 
 			if ((bPenetrating || bHandToHand) && Other.IsA('ScriptedPawn') && !Other.IsA('Robot'))

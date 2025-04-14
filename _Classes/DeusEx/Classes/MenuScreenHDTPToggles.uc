@@ -246,6 +246,7 @@ defaultproperties
      Items(192)=(actionText="Shells",defaultValue=1,consoleTarget="DeusEx.AmmoShell")
      Items(193)=(actionText="Shells (Sabot)",defaultValue=1,consoleTarget="DeusEx.AmmoSabot")
      Items(194)=(actionText="Shells (Rubber)",defaultValue=1,consoleTarget="DeusEx.AmmoRubber")
+	 Items(195)=(actionText="Laser Tripwire",defaultValue=1,consoleTarget="DeusEx.LaserTrigger")
      Title="HDTP Model Options"
      disabledText="Vanilla"
      enabledText="HDTP"

@@ -107,6 +107,24 @@ State NormalFire
   }
 }
 
+state DownWeapon
+{
+	function BeginState()
+	{
+		Super.BeginState();
+		LightType = LT_None;
+	}
+}
+
+state Idle
+{
+	function BeginState()
+	{
+		Super.BeginState();
+        LightType = LT_Steady;
+	}
+}
+
 defaultproperties
 {
      weaponOffsets=(X=12.000000,Y=-14.000000,Z=-12.000000)
@@ -179,4 +197,9 @@ defaultproperties
      CollisionRadius=20.500000
      CollisionHeight=4.400000
      Mass=35.000000
+     LightType=LT_None
+     LightBrightness=48
+     LightHue=22
+     LightSaturation=96
+     LightRadius=10
 }

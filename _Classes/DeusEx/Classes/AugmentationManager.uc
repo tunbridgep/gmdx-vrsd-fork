@@ -154,6 +154,25 @@ simulated function RefreshAugDisplay()
 }
 
 // ----------------------------------------------------------------------
+// AddToWheel()
+//
+// SARGE: Add an augmentation to the wheel, conditionally.
+// ----------------------------------------------------------------------
+
+function AddToWheel(Augmentation anAug)
+{
+    //If auto-add is turned off, don't add it
+    if (player.iAugWheelAutoAdd == 0)
+        return;
+
+    //If auto add is turned on for active only, and it's not active, don't add it
+    if (player.iAugWheelAutoAdd == 1 && anAug.AugmentationType != Aug_Active)
+        return;
+
+    anAug.bAddedToWheel = true;
+}
+
+// ----------------------------------------------------------------------
 // NumAugsActive()
 //
 // How many augs are currently active?
@@ -523,6 +542,8 @@ function Augmentation GivePlayerAugmentation(Class<Augmentation> giveClass)
 		return anAug;
 	}
 
+    //Add it to the aug wheel permanently, depending on settings.
+    AddToWheel(anAug);
 
     if (anAug.IsA('AugHeartLung')) //CyberP: AugHeartLung upgrades all passive augs. //RSD: Active too now, taken from HUDMedBotAddAugsScreen.uc for less specialized code architecture
     {
@@ -600,7 +621,7 @@ function Augmentation GivePlayerAugmentation(Class<Augmentation> giveClass)
 	if ((anAug.CanBeActivated()) && (Player.bHUDShowAllAugs))
 	    Player.AddAugmentationDisplay(anAug);
     if (anAug.CanBeActivated())                                                   //RSD: Otherwise we get passive augs showing up in the radial menu
-        Player.RadialMenuAddAug(anAug);
+        player.RadialMenuAddAug(anAug);
 
     anAug.Setup();
 	return anAug;

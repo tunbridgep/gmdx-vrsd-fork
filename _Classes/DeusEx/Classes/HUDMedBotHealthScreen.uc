@@ -293,14 +293,11 @@ function bool ButtonActivated(Window buttonPressed)
 
 function MedBotHealPlayer()
 {
-    local DeusExPlayer P;
-
-    P = DeusExPlayer(GetPlayerPawn());
-
 	medBot.HealPlayer(player);
 	UpdateMedBotDisplay();
 	UpdateRegionWindows();
-	P.ClientFlash(8,vect(0,0,300));     //CyberP: flash when using medbots.
+	
+	player.HealScreenEffect(8.0, false);
 }
 
 // ----------------------------------------------------------------------
@@ -364,8 +361,8 @@ function UpdateStatusText()
     
 
     restored = maxHealth - totalHealth;
-    if (restored > 250)
-        restored = 250;
+    if (restored > medBot.healAmount)
+        restored = medBot.healAmount;
 
     winInfo.SetText(TotalRestoreAmount $ restored);
 

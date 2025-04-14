@@ -78,6 +78,7 @@ var bool bPrisonStart;
 var bool bDisableConsoleAccess;
 var bool bWeaponRequirementsMatter;
 var bool bRealKillswitch;
+var bool bCameraDetectUnconscious;
 var bool bShenanigans;
 
 //LDDP
@@ -140,6 +141,7 @@ event InitWindow()
     bDisableConsoleAccess=false;                                                //Sarge
     bWeaponRequirementsMatter=false;                                            //Sarge
     bRealKillswitch=false;                                                      //Sarge
+  	bCameraDetectUnconscious=false;
     bShenanigans=false;                                                         //Sarge
     //bRestrictedMetabolism=false;                                              //Sarge
     default.bRandomizeCrates=false;                                             //RSD: Also need default values! Otherwise get command in modifier menu takes the wrong value
@@ -156,6 +158,7 @@ event InitWindow()
     default.bDisableConsoleAccess=false;                                        //Sarge
     default.bWeaponRequirementsMatter=false;                                    //Sarge
     default.bRealKillswitch=false;                                              //Sarge
+	  default.bCameraDetectUnconscious=false;
     default.bShenanigans=false;                                                 //Sarge
 
 	StyleChanged();
@@ -817,6 +820,7 @@ function SaveSettings()
     player.bDisableConsoleAccess=bDisableConsoleAccess;                         //Sarge
     player.bWeaponRequirementsMatter=bWeaponRequirementsMatter;                 //Sarge
     player.bRealKillswitch=bRealKillswitch;                                     //Sarge
+  	player.bCameraDetectUnconscious = bCameraDetectUnconscious;
     player.bShenanigans=bShenanigans;                                           //Sarge
 
     //LDDP

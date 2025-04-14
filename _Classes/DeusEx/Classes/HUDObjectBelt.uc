@@ -1,7 +1,7 @@
 //=============================================================================
 // HUDObjectBelt
 //=============================================================================
-class HUDObjectBelt expands HUDBaseWindow;
+class HUDObjectBelt expands HUDRightSidedWindow;
 
 var TileWindow winSlots;				// Window containing slots
 var HUDObjectSlot objects[12];
@@ -18,6 +18,7 @@ var Texture texBorder[3];
 var int numSlots;
 var int extraSize;
 var Texture texBorderBig;
+var Texture reversedBorder;
 	
 var RadioBoxWindow winRadio;                //SARGE: Made global so we can delete and recreate it
 
@@ -28,6 +29,7 @@ var RadioBoxWindow winRadio;                //SARGE: Made global so we can delet
 event InitWindow()
 {
 	Super.InitWindow();
+    SetRightSide(true);
     RecreateBelt();
 }
 
@@ -105,11 +107,18 @@ function CreateSlots()
 function ConfigureSlots()
 {
 
+    local int slotoffset;
+
+    if (bRightSided)
+        slotoffset = 10;
+    else
+        slotoffset = 20;
+
 	// Hardcoded size, baby!
     SetSize(541+extraSize, 69);
     
     winRadio.SetSize(504+extraSize+extraSize, 54);
-    winRadio.SetPos(10-extraSize, 6);
+    winRadio.SetPos(offset+10-extraSize, 6);
 
     //SARGE: DIRTY HACK!
     if (player.bBiggerBelt)
@@ -182,11 +191,11 @@ function DrawBackground(GC gc)
 
     //SARGE: No idea why this needs adjusting...
     if (player.bBiggerBelt)
-        gc.DrawTexture(  2, 6, 8, 54, 0, 0, texBackgroundLeft);
+        gc.DrawTexture(offset+2, 6, 8, 54, 0, 0, texBackgroundLeft);
     else
-        gc.DrawTexture(  2, 6, 9, 54, 0, 0, texBackgroundLeft);
+        gc.DrawTexture(offset+2, 6, 9, 54, 0, 0, texBackgroundLeft);
 
-    gc.DrawTexture(514+extraSize, 6, 8, 54, 0, 0, texBackgroundRight);
+    gc.DrawTexture(offset+514+extraSize, 6, 8, 54, 0, 0, texBackgroundRight);
 }
 
 // ----------------------------------------------------------------------
@@ -196,9 +205,17 @@ function DrawBackground(GC gc)
 function DrawBorder(GC gc)
 {
 	local Color newCol;
+    local Texture rightBorder;
 
 	if (bDrawBorder)
 	{
+
+        //Use a different border for the right side
+        if (bRightSided)
+            rightBorder = texBorder[2];
+        else
+            rightBorder = reversedBorder;
+
 		gc.SetStyle(borderDrawStyle);
 		if (( player != None ) && ( player.bBuySkills ))
 		{
@@ -210,16 +227,16 @@ function DrawBorder(GC gc)
 		else
 			gc.SetTileColor(colBorder);
 
-		gc.DrawTexture(  0, 0, 256, 69, 0, 0, texBorder[0]);
+		gc.DrawTexture(offset, 0, 256, 69, 0, 0, texBorder[0]);
         if (player.bBiggerBelt)
         {
-            gc.DrawTexture(256, 0, 512, 69, 0, 0, texBorderBig);
-            gc.DrawTexture(612, 0,  29, 69, 0, 0, texBorder[2]);
+            gc.DrawTexture(offset+256, 0, 512, 69, 0, 0, texBorderBig);
+            gc.DrawTexture(offset+612, 0,  29, 69, 0, 0, rightBorder);
         }
         else
         {
-            gc.DrawTexture(256, 0, 256, 69, 0, 0, texBorder[1]);
-            gc.DrawTexture(512, 0,  29, 69, 0, 0, texBorder[2]);
+            gc.DrawTexture(offset+256, 0, 256, 69, 0, 0, texBorder[1]);
+            gc.DrawTexture(offset+512, 0,  29, 69, 0, 0, rightBorder);
         }
 	}
 }
@@ -580,6 +597,9 @@ defaultproperties
      texBackgroundRight=Texture'DeusExUI.UserInterface.HUDObjectBeltBackground_Right'
      texBorder(0)=Texture'DeusExUI.UserInterface.HUDObjectBeltBorder_1'
      texBorder(1)=Texture'DeusExUI.UserInterface.HUDObjectBeltBorder_2'
-     texBorder(2)=Texture'DeusExUI.UserInterface.HUDObjectBeltBorder_3'
+     texBorder(2)=Texture'RSDCrap.UserInterface.HUDObjectBeltBorder_3'
      texBorderBig=Texture'RSDCrap.UserInterface.HUDObjectBeltBorder_2_big'
+     reversedBorder=Texture'DeusExUI.UserInterface.HUDObjectBeltBorder_3F'
+     leftSideOffset=5
+     rightSideOffset=0
 }
