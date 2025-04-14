@@ -258,7 +258,7 @@ function PlayCriticalDamageSound()
 
 function Shenanigans(bool bEnabled)
 {
-    if (FRand() < 0.001 && bEnabled)
+    if (FRand() < 0.1 && bEnabled)
     {
         FamiliarName="Beasel the Greasel";
         UnfamiliarName="Beasel the Greasel";
