@@ -193,14 +193,14 @@ exec function UpdateHDTPsettings()
 
 defaultproperties
 {
-     smokeprob=0.400000;
-     HDTPMesh="HDTPItems.HDTPShotguncasing";
-     numFragmentTypes=1;
-     elasticity=0.400000;
-     ImpactSound=Sound'DeusExSounds.Generic.ShellHit';
-     MiscSound=Sound'DeusExSounds.Generic.ShellHit';
-     Mesh=LodMesh'DeusExItems.ShellCasing2';
-     DrawScale=1.400000;
-     CollisionRadius=2.870000;
-     CollisionHeight=0.920000;
+     smokeprob=0.400000
+     HDTPMesh="HDTPItems.HDTPShotguncasing"
+     numFragmentTypes=1
+     elasticity=0.400000
+     ImpactSound=Sound'DeusExSounds.Generic.ShellHit'
+     MiscSound=Sound'DeusExSounds.Generic.ShellHit'
+     Mesh=LodMesh'DeusExItems.ShellCasing2'
+     DrawScale=1.400000
+     CollisionRadius=2.870000
+     CollisionHeight=0.920000
 }

@@ -221,18 +221,18 @@ function Destroyed()
 
 defaultproperties
 {
-     bIsOn=true;
-     confusionDuration=10.000000;
-     HitPoints=50;
-     minDamageThreshold=50;
-     TriggerType=TT_AnyProximity;
-     bHidden=false;
-     bDirectional=true;
-     DrawType=DT_Mesh;
-     HDTPSkin"HDTPDecos.Skins.HDTPlaseremittertex0";
-     HDTPMesh="HDTPDecos.HDTPlaseremitter";
-     Mesh=LodMesh'DeusExDeco.LaserEmitter';
-     MultiSkins(1)=FireTexture'Effects.Laser.LaserSpot2';
-     CollisionRadius=2.500000;
-     CollisionHeight=2.500000;
+     bIsOn=true
+     confusionDuration=10.000000
+     HitPoints=50
+     minDamageThreshold=50
+     TriggerType=TT_AnyProximity
+     bHidden=false
+     bDirectional=true
+     DrawType=DT_Mesh
+     HDTPSkin"HDTPDecos.Skins.HDTPlaseremittertex0"
+     HDTPMesh="HDTPDecos.HDTPlaseremitter"
+     Mesh=LodMesh'DeusExDeco.LaserEmitter'
+     MultiSkins(1)=FireTexture'Effects.Laser.LaserSpot2'
+     CollisionRadius=2.500000
+     CollisionHeight=2.500000
 }

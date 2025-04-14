@@ -241,26 +241,26 @@ function ActivateSpecialOption(MenuUIChoiceButton buttonPressed)
 
 defaultproperties
 {
-     buttonLeftMargin=25;
-     firstButtonPosY=17;
-     specialOffsetY=16;
-     statusPosYOffset=50;
-     TopTextureHeight=12;
-     MiddleTextureHeight=30;
-     BottomTextureHeight=75;
-     SecurityButtonLabel="|&Security";
-     EmailButtonLabel="|&Email";
-     classClient=Class'DeusEx.ComputerUIScaleClientWindow';
-     escapeAction="LOGOUT";
-     Title="Special Options";
-     ClientWidth=331;
-     clientTextures(0)=Texture'DeusExUI.UserInterface.ComputerSpecialOptionsBackgroundTop_1';
-     clientTextures(1)=Texture'DeusExUI.UserInterface.ComputerSpecialOptionsBackgroundTop_2';
-     clientTextures(2)=Texture'DeusExUI.UserInterface.ComputerSpecialOptionsBackgroundMiddle_1';
-     clientTextures(3)=Texture'DeusExUI.UserInterface.ComputerSpecialOptionsBackgroundMiddle_2';
-     clientTextures(4)=Texture'DeusExUI.UserInterface.ComputerSpecialOptionsBackgroundBottom_1';
-     clientTextures(5)=Texture'DeusExUI.UserInterface.ComputerSpecialOptionsBackgroundBottom_2';
-     textureCols=2;
-     bAlwaysCenter=true;
-     ComputerNodeFunctionLabel="SpecialOptions";
+     buttonLeftMargin=25
+     firstButtonPosY=17
+     specialOffsetY=16
+     statusPosYOffset=50
+     TopTextureHeight=12
+     MiddleTextureHeight=30
+     BottomTextureHeight=75
+     SecurityButtonLabel="|&Security"
+     EmailButtonLabel="|&Email"
+     classClient=Class'DeusEx.ComputerUIScaleClientWindow'
+     escapeAction="LOGOUT"
+     Title="Special Options"
+     ClientWidth=331
+     clientTextures(0)=Texture'DeusExUI.UserInterface.ComputerSpecialOptionsBackgroundTop_1'
+     clientTextures(1)=Texture'DeusExUI.UserInterface.ComputerSpecialOptionsBackgroundTop_2'
+     clientTextures(2)=Texture'DeusExUI.UserInterface.ComputerSpecialOptionsBackgroundMiddle_1'
+     clientTextures(3)=Texture'DeusExUI.UserInterface.ComputerSpecialOptionsBackgroundMiddle_2'
+     clientTextures(4)=Texture'DeusExUI.UserInterface.ComputerSpecialOptionsBackgroundBottom_1'
+     clientTextures(5)=Texture'DeusExUI.UserInterface.ComputerSpecialOptionsBackgroundBottom_2'
+     textureCols=2
+     bAlwaysCenter=true
+     ComputerNodeFunctionLabel="SpecialOptions"
 }
