@@ -407,4 +407,5 @@ defaultproperties
      Mass=80.000000
      Buoyancy=90.000000
 	 bHDTPFailsafe=False
+     bSelectMeleeWeapon=False
 }

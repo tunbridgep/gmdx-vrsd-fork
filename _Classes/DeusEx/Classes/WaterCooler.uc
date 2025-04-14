@@ -108,7 +108,7 @@ function Destroyed()
         PlaySound(sound'SplashSmall', SLOT_None,3.0,, 1280);
         if (pool != None)
         {
-			pool.maxDrawScale = CollisionRadius / 8.0; //CyberP: 20
+			pool.SetMaxDrawScale(CollisionRadius / 8.0); //CyberP: 20
             pool.spreadTime = 0.7;
         }
 	}

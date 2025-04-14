@@ -358,7 +358,7 @@ function ShowHud(bool bShow)
 {
 	if (hud != None)
 	{
-		if (bShow)
+		if (bShow && !parentPawn.IsInState('Dying')) //SARGE: Added check so we stop re-enabling the HUD while dead
 		{
 			hud.UpdateSettings(DeusExPlayer(parentPawn));
 			hud.Show();
@@ -381,8 +381,15 @@ function UpdateHud()
 	if (hud != None)
     {
         hud.RecreateBelt();
+		hud.UpdateAssigned();
 		hud.UpdateSettings(DeusExPlayer(parentPawn), WindowStackCount() != 0);
     }
+}
+
+function UpdateSecondaryDisplay()
+{
+	if (hud != None)
+		hud.UpdateAssigned();
 }
 
 function UpdateCrosshair()
@@ -699,7 +706,7 @@ function UnPauseGame()
 	SetBackgroundStyle(DSTY_None);
 
 	HideSnapshot();
-	ShowHud(True);
+    ShowHud(True);
 
 	parentPawn.bShowMenu = false;
 	parentPawn.Player.Console.GotoState('');

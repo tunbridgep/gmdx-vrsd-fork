@@ -10,12 +10,15 @@ var string HDTPSkin;
 var string HDTPTexture;
 var string HDTPMesh;
 var float HDTPDrawScale; //Can resize the DrawScale for HDTP
+var float drawScaleMult; //Can modify the drawscale in code and have it apply to both HDTP and non-hdtp versions.
+var bool bInitialHDTPUpdate;            //SARGE: Is true when we're initially updating HDTP on object creation, rather than doing it later via changing HDTP settings.
 
 var bool bAttached, bStartedLife, bImportant;
 
 function BeginPlay()
 {
     UpdateHDTPsettings();
+    bInitialHDTPUpdate = false;
     super.BeginPlay();
 }
 simulated function PostBeginPlay()
@@ -38,6 +41,8 @@ simulated function Timer()
 	{
 		RemoteRole = ROLE_None;
 		bStartedLife = true;
+        if (class'DeusExPlayer'.default.iPersistentDebris >= 2) //SARGE: Stick around forever, if we've enabled the setting.
+            return;
 		if ( Level.bDropDetail )
 			SetTimer(5.0 + 2 * FRand(), false);
 		else
@@ -77,21 +82,29 @@ static function bool IsHDTP()
     return class'DeusExPlayer'.static.IsHDTPInstalled() && default.iHDTPModelToggle > 0;
 }
 
-exec function UpdateHDTPsettings()
+//Need a new function so we can override while still doing the Reattach last;
+function DoHDTP()
 {
-    if (HDTPDrawScale > 0.0 && (HDTPTexture != "" || HDTPSkin != ""))
-    {
-        if (IsHDTP())
-            DrawScale = HDTPDrawScale;
-        else
-            DrawScale = default.DrawScale;
-    }
+    DrawScale = default.DrawScale;
+    if (IsHDTP() && HDTPDrawScale > 0.0 && (HDTPTexture != "" || HDTPSkin != ""))
+        DrawScale = HDTPDrawScale;
+
+    if (DrawScaleMult != 0.0)
+        DrawScale *= DrawScaleMult;
+
     if (HDTPMesh != "")
         Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),IsHDTP());
     if (HDTPSkin != "")
         Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),IsHDTP());
     if (HDTPTexture != "")
         Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),IsHDTP());
+
+}
+
+exec function UpdateHDTPsettings()
+{
+    DoHDTP();
+    ReattachDecal();
 }
 
 defaultproperties
@@ -101,4 +114,5 @@ defaultproperties
      MultiDecalLevel=3
      HDTPDrawScale=-1
      iHDTPModelToggle=1
+     bInitialHDTPUpdate=true
 }

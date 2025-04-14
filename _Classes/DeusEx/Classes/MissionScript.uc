@@ -144,8 +144,22 @@ function FirstFrame()
     local bool bRandomCrates;                                                   //RSD
     local bool bRandomItems;                                                    //RSD
     local int seed;
+    local DeusExCarcass C;                                                      //SARGE
+    local DecalManager D;                                                       //SARGE
+    local SecurityCamera Cam;                                                      //SARGE
 
 	flags.DeleteFlag('PlayerTraveling', FLAG_Bool);
+
+    //Recreate/Setup our decal manager
+	foreach AllActors(class'DecalManager', D)
+        break;
+
+    if (D == None)
+    {
+        D = Spawn(class'DecalManager');
+        player.DecalManager = D;
+        D.Setup(player);
+    }
 
 	// Check to see which NPCs should be dead from prevous missions
 	foreach AllActors(class'ScriptedPawn', P)
@@ -200,6 +214,13 @@ function FirstFrame()
             InitializeEnemySwap(1);
         }
 
+        //Make the placed corpses bleed
+        foreach AllActors(class'DeusExCarcass', C)
+        {
+            if (!C.bHidden && !C.bNotDead)
+                C.SetupCarcass(false);
+        }
+
         //Randomise the crap around the level
         RandomiseCrap();
 
@@ -208,6 +229,11 @@ function FirstFrame()
         DistributeItem(class'Flare',1,3);
 
 		flags.SetBool(flagName, True);
+
+        //SARGE: HARDCORE ONLY, force all cameras to set off alarms etc,
+        if (player.bHardCoreMode)
+            foreach AllActors(class'SecurityCamera', Cam)
+                Cam.bAlarmEvent = true;
 
         firstTime = true;
 	}

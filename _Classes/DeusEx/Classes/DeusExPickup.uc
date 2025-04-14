@@ -71,7 +71,8 @@ function bool DoLeftFrob(DeusExPlayer frobber)
 {
     if (bAutoActivate)
     {
-        GotoState('Activated');
+        //GotoState('Activated');
+        Activate();
         return false;
     }
     else
@@ -438,6 +439,7 @@ function bool HandlePickupQuery( inventory Item )
                     if (anItem.Charge > 0)
                     {
                         ChargedPickup(anItem).bActivatable=true;             //RSD: Since now you can hold one at 0%
+                        ChargedPickup(anItem).bDrained=false;                //SARGE: Since now you can keep it equipped while empty
                         ChargedPickup(anItem).unDimIcon();
                     }
                 }
@@ -465,7 +467,7 @@ function bool HandlePickupQuery( inventory Item )
                 {
                     //SARGE: Let us know we're charging the thing...
                     player.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
-
+                    
  			    	NumCopies--;                                                //RSD: Keep the stack number the same as before but add the pickup charge
                 }
 
@@ -473,6 +475,7 @@ function bool HandlePickupQuery( inventory Item )
  			    if (anItem.Charge > 0)
  			    {
                     ChargedPickup(anItem).bActivatable=true;                    //RSD: Since now you can hold one at 0%
+                    ChargedPickup(anItem).bDrained=false;                       //SARGE: Since now you can keep it equipped while empty
                     ChargedPickup(anItem).unDimIcon();
                 }
             }
@@ -533,8 +536,6 @@ function UseOnce()
 	{
 		if (player.inHand == Self)
 			player.PutInHand(None);
-		if (player.assignedWeapon == Self)                                      //RSD: Reset our assigned weapon
-			player.assignedWeapon = None;
 		DestroyMe();
 	}
 	else
@@ -620,7 +621,7 @@ simulated function BreakItSmashIt(class<fragment> FragType, float size)
         PlaySound(sound'SplashSmall', SLOT_None,3.0,, 1280);
         if (pool != None)
         {
-			pool.maxDrawScale = CollisionRadius / 16.0;
+			pool.SetMaxDrawScale(CollisionRadius / 16.0);
             pool.spreadTime = 0.5;
         }
 	}
@@ -680,7 +681,8 @@ simulated function BreakItSmashIt(class<fragment> FragType, float size)
             }
             //else if (i > 4)
             //    HurtRadius(1,256,'HalonGas',2000,Location);
-            s.LifeSpan += 20.0;
+            if (class'DeusExPlayer'.default.iPersistentDebris < 2)
+                s.LifeSpan += 20.0;
 		}
 			if ((IsA('WineBottle') || IsA('Liquor40oz') || IsA('LiquorBottle')) && (!Region.Zone.bWaterZone))
 			{

@@ -200,8 +200,8 @@ var String		mpMsgOptionalString;
 
 // Variables used when starting new game to show the intro first.
 var String      strStartMap;
-var travel Bool bStartNewGameAfterIntro;
-var travel Bool bIgnoreNextShowMenu;
+var travel bool bStartNewGameAfterIntro;
+var travel bool bIgnoreNextShowMenu;
 
 // map that we're about to travel to after we finish interpolating
 var String NextMap;
@@ -390,7 +390,6 @@ struct augBinary                                                                
 //Holds information about the reserved items on the belt
 struct BeltInfo
 {
-    var bool		bPlaceholder;		    //Sarge. Allow "empty" slots that show the old icon
     var texture		icon;				    //Sarge. Disconnect the icon from the inventory item, so we can keep it when the item disappears.
 };
 
@@ -402,7 +401,7 @@ var globalconfig int iFrobDisplayStyle;             //SARGE: Frob Display Style.
 var globalconfig bool bGameplayMenuHardcoreMsgShown;//SARGE: Stores whether or not the gameplay menu message has been displayed.
 var globalconfig bool bEnhancedCorpseInteractions;  //SARGE: Right click always searches corpses. After searching, right click picks up corpses as normal.
 var globalconfig bool bSearchedCorpseText;          //SARGE: Corpses show "[Searched]" text when interacted with for the first time.
-var globalconfig bool bCutsceneFOVAdjust;           //SARGE: Enforce 75 FOV in cutscenes
+var globalconfig int iCutsceneFOVAdjust;           //SARGE: Enforce 75 FOV in cutscenes
 var globalconfig bool bLightingAccessibility;       //SARGE: Changes lighting in some areas to reduce strobing/flashing, as it may hurt eyes or cause seizures.
 
 var globalconfig bool bSubtitlesCutscene;			// SARGE: Allow Subtitles for Third-Person cutscenes. Should generally be left on
@@ -492,7 +491,6 @@ var travel int SlotMem; //CyberP: for belt/weapon switching, so the code remembe
 var travel int BeltLast;                                                    //Sarge: The last item we literally selected from the belt, regardless of holstering or alternate belt behaviour
 var travel bool bScrollSelect;                                              //Sarge: Whether or not our last belt selection was done with Next/Last weapon keys rather than Number Keys. Used by Alternative Belt to know when to holster
 var travel int beltScrolled;                                                //Sarge: The last item we scrolled to on the belt, if we are using Adv Toolbelt
-var travel bool selectedNumberFromEmpty;                                    //Sarge: Was the current selection made from an empty hand. Used by Alternate Toolbelt Classic Mode to not jump back to previous weapon when we select from an empty hand.
 var travel bool bBeltSkipNextPrimary;                                       //SARGE: Don't assign the next weapon we select as our primary.
 var globalconfig bool bLeftClickUnholster;                                  //Enable left click unholstering
 
@@ -502,18 +500,14 @@ var float stuntedTime; //SARGE: Replaces the SetTimer calls with a stuntedTime v
 var bool bRegenStamina; //CyberP: regen when in water but head above water
 var bool bCrouchRegen;  //CyberP: regen when crouched and has skill
 var float doubleClickCheck; //CyberP: to return from double clicking.
-var travel Inventory assignedWeapon;
-var Inventory primaryWeapon;
-var bool bLastWasEmpty;                                                     //SARGE: Whether or not we were empty before being switched to this weapon.
+var travel string assignedWeapon;                                                   //SARGE: Changed from a hard object reference to an object class. Needs to be a string or the game crashes
+var travel Inventory primaryWeapon;
+var travel bool bLastWasEmpty;                                                     //SARGE: Whether or not we were empty before being switched to this weapon.
+var travel bool bSelectedFromMainBeltSelection;                                    //SARGE: Whether or not we selected our main belt slot before going to this item, since our last holster. IW belt only. Determines if we should switch back to our main selection, or .
 var float augEffectTime;
 var vector vecta;
 var rotator rota;
 var bool bOnLadder;
-//var bool bBoosty;  //CyberP: low-tech speed boost
-//Alias=LeanLeft,LeanRight
-//Aliases[18]=(Command="Button bLeanRightHook",Alias=LeanRH)
-//Aliases[19]=(Command="Button bLeanLeftHook",Alias=LeanLH)
-var transient bool bLeanKeysDefined;
 var globalconfig color customColorsMenu[14]; //CyberP: custom color theme
 var globalconfig color customColorsHUD[14];
 var bool bTiptoes; //based on left+right lean
@@ -557,6 +551,9 @@ var bool bHardDrug;
 //Crouch Stuff
 var bool bCrouchHack;
 var bool bToggledCrouch;		        // used by toggle crouch
+
+//Mantling stance
+var bool bIsMantlingStance;
 
 //Recoil shockwave
 var() vector RecoilSimLimit; //plus/minus
@@ -616,6 +613,8 @@ var travel bool bDisableConsoleAccess;                                          
 
 var travel bool bWeaponRequirementsMatter;                                      //Sarge: Using certain weapons requires skill investments.
 
+var travel bool bCameraDetectUnconscious;                                      //Ygll: Unconscious body will now be detected by camera.
+
 //END GAMEPLAY MODIFIERS
 
 //Autosave Stuff
@@ -627,10 +626,13 @@ var travel bool bResetAutosaveTimer;                                            
 var localized String RechargedPointLabel;
 var localized String RechargedPointsLabel;
 
+//Subsystems
 var travel AddictionSystem AddictionManager;
 var travel PerkSystem PerkManager;
 var travel RandomTable Randomizer;
 var travel FontManager FontManager;
+var travel KeybindManager KeybindManager;
+var DecalManager DecalManager;
 
 const DRUG_TOBACCO = 0;
 const DRUG_ALCOHOL = 1;
@@ -655,6 +657,7 @@ var globalconfig bool bQuickAugWheel;                                           
 var globalconfig bool bAugWheelDisableAll;                                      //Sarge: Show the Disable All button on the Aug Wheel
 var globalconfig bool bAugWheelFreeCursor;                                      //Sarge: Allow free cursor movement in the augmentation wheel
 var globalconfig bool bAugWheelRememberCursor;                                  //Sarge: Remember the cursor position in the Aug Wheel, otherwise it will be reset to the center position
+var globalconfig int iAugWheelAutoAdd;                                          //SARGE: Automatically add items to the augmentation wheel. 0 = Don't add. 1 = Active Augs only. 2 = Everything.
 
 var globalconfig bool bBeltShowModified;                                        //SARGE: Shows a "+" in the belt for modified weapons.
 
@@ -714,6 +717,7 @@ var globalconfig bool bMedbotAutoswitch;
 
 //SARGE: Minimise Targeting Window
 var travel bool bMinimiseTargetingWindow;
+var globalconfig bool bOnlyShowTargetingWindowWithWeaponOut;
 
 //SARGE: Enhanced Lip Sync
 var globalconfig int iEnhancedLipSync; //0 = disabled, 1 = nice and smooth, 2 = intentionally chunky
@@ -728,10 +732,48 @@ var globalconfig bool bBiggerBelt;
 //SARGE: Right-Click Selection for Picks and Tools. Inspired by similar feature from Revision, but less sucky.
 var globalconfig bool bRightClickToolSelection;
 
+var globalconfig bool bAllowSaveWhileInfolinkPlaying;                   //SARGE: Allow saving while infolinks are playing. Will end the infolink.
 
-var globalconfig bool bFragileDarts;                                    //SARGE: Allow the "darts don't stick to walls" hardcore behaviour outside of hardcore.
+var globalconfig bool bShowItemPickupCounts;                            //SARGE: If set to true, Pickup counts for stacked items above 1 will be shown in the item pickup tooltips, such as "Medkit (5)"
+
+var globalconfig bool bShowAmmoTypeInAmmoHUD;                           //SARGE: If true, show the selected ammo type in the Ammo HUD, where the lock on text would normally be.
+
+var transient float pickupCooldown;                                     //SARGE: Add a very short cooldown after picking something up, so that we can't duplicate items while they replicate to the server.
+
+//SARGE: Bigger weapon effect sparks
+var globalconfig bool bJohnWooSparks;
+
+var globalconfig bool bConsistentBloodPools;                            //SARGE: If set to true, blood pools will always be the same consistent size, regardless of corpse size. If set to false, it does the vanilla behaviour of making blood pools depend on the carcasses collision size.
+
+var globalconfig int iPersistentDebris;                               //SARGE: Fragments, Decals, etc, last forever. Probably really horrible for performance!
+
+//SARGE: Decal Handling
+var transient bool bCreatingDecals;                                     //SARGE: Stores if we're making decals right now.
+var transient int currentDecalBatch;                                    //SARGE: Current decal batch number.
+
+//SARGE: Ladder Fix. Stores if we just jumped from a ladder.
+//Used to reset our physics when the timer fails (for whatever reason).
+var float iLadderJumpTimer;
+
+var globalconfig bool bMenuAfterDeath;                                   //SARGE: Whether or not to automatically go to the menu after dying.
+
+var globalconfig int iFragileDarts;                                    //SARGE: Allow the "darts don't stick to walls" hardcore behaviour outside of hardcore.
 
 var globalconfig bool bReloadingResetsAim;                              //SARGE: Allow the "reloading resets aim" hardcore behaviour outside of hardcore.
+
+const FemJCEyeHeightAdjust = -6;                                    //SARGE: Now the femJC eye height adjustment is handled by a const, so we can easily change it //SARGE: Was -2 originally, but that clips too much with ceilings.
+
+//SARGE: ??? - I wonder what this does :P
+var travel bool bShenanigans;
+
+//Ygll: New QoL Options
+var globalconfig bool bAltFrobDisplay;                              //Ygll: Alternate frob display option.
+
+var globalconfig int iStanceHud;					                //Ygll: Display the current player stance in the hud. 0 = none, 1 = stance changes only, 2 = all stances.
+
+var globalconfig int iHealingScreen;                            //Ygll: can disable the flash screen when healing or changing it to green color.
+
+var globalconfig bool bAmmoDisplayOnRight;                          //SARGE: If enabled, make the ammo display appear on the right (with the belt on the left)
 
 //////////END GMDX
 
@@ -901,13 +943,43 @@ function ClientMessage(coerce string msg, optional Name type, optional bool bBee
 
 function AssignSecondary(Inventory item)
 {
+    /*
     if (assignedWeapon.isA('ChargedPickup'))
         RemoveChargedDisplay(ChargedPickup(assignedWeapon));
+    */
 
-    assignedWeapon = item;
+    if (item == None)
+        assignedWeapon = "";
+    else
+        assignedWeapon = string(item.Class);
 
     RefreshChargedPickups();
+    UpdateSecondaryDisplay();
 }
+
+// ----------------------------------------------------------------------
+// GetSecondary()
+// GetSecondaryClass()
+// Sarge: Now needed because we are using a class rather than a specific item.
+// ----------------------------------------------------------------------
+
+function Inventory GetSecondary()
+{
+	return FindInventoryType(GetSecondaryClass());
+}
+
+function Class<Inventory> GetSecondaryClass()
+{
+    local class<Inventory> assignedClass;
+    if (assignedWeapon != "")
+        assignedClass = class<Inventory>(DynamicLoadObject(assignedWeapon, class'Class'));
+    //ClientMessage("Get Secondary Class: " $ assignedClass $ " (" $ assignedWeapon $ ")");
+    return assignedClass;
+}
+
+// ----------------------------------------------------------------------
+// HDTP Stuff
+// ----------------------------------------------------------------------
 
 static function bool IsHDTPInstalled()
 {
@@ -996,6 +1068,8 @@ local Perk perkDoorsman;
       else if (P.bHardcoreRemove && (bHardCoreMode == True || bHardcoreFilterOption == True))
           P.Destroy();
       P.DifficultyMod(CombatDifficulty,bHardCoreMode,bExtraHardcore,bFirstLevelLoad); //RSD: Replaced ALL NPC stat modulation with a compact function implementation
+      if (bFirstLevelLoad)
+        P.Shenanigans(bShenanigans);
     }
 
     if (bHardCoreMode == False)
@@ -1187,6 +1261,8 @@ function PostBeginPlay()
 	local int levelInfoCount;
     local float mult;
 
+    SetupRendererSettings();
+
 	Super.PostBeginPlay();
 
 	class'DeusExPlayer'.default.DefaultFOV=DefaultFOV;
@@ -1214,9 +1290,8 @@ function PostBeginPlay()
 		bCheatsEnabled = False;
 	HDTP();
 
-	RefreshLeanKeys();
-    RefreshMantleKey();
-    RefreshAugWheelKey();                                                       //RSD: Hold aug wheel
+    //SARGE: Account for FemJC eye height changes
+    ResetBasedPawnSize();
 
     //RSD: log item distribution on map load
     //logItemsInCrates();
@@ -1288,6 +1363,30 @@ function SetServerTimeDiff( float sTime )
 }
 
 // ----------------------------------------------------------------------
+// SetupRendererSettings()
+//
+// SARGE: Handle some basic rendering issues with certain renderers (like the d3d9 renderer)
+// ----------------------------------------------------------------------
+
+function SetupRendererSettings()
+{
+    //Force S3TC textures on. We need them for various graphics, including the scope.
+    //The game will crash otherwise!
+    if (ConsoleCommand("get D3D9Drv.D3D9RenderDevice UseS3TC") ~= "false")
+    {
+        //ClientMessage("High-Resolution Texture Support enabled. A game restart may be required!");
+        ConsoleCommand("set ini:D3D9Drv.D3D9RenderDevice UseS3TC true");
+        ConsoleCommand("set D3D9Drv.D3D9RenderDevice UseS3TC true");
+        //GetConfig("Engine.Engine", "GameRenderDevice") != "D3D10Drv.D3D10RenderDevice"
+    }
+    if (ConsoleCommand("get OpenGLDrv.OpenGLRenderDevice UseS3TC") ~= "false")
+    {
+        ConsoleCommand("set ini:OpenGLDrv.OpenGLRenderDevice UseS3TC true");
+        ConsoleCommand("set OpenGLDrv.OpenGLRenderDevice UseS3TC true");
+    }
+}
+
+// ----------------------------------------------------------------------
 // PostNetBeginPlay()
 //
 // Take care of the theme manager
@@ -1340,6 +1439,19 @@ function SetupAddictionManager()
 
 }
 
+function SetupDecalManager()
+{
+	// install the Decal Manager if not found
+	if (DecalManager != None)
+    {
+        //clientmessage("DecalManager Setup Called");
+	    //DecalManager = new(Self) class'DecalManager';
+        DecalManager.Setup(self);
+        bCreatingDecals = true;
+        //DecalManager.RecreateDecals();
+    }
+}
+
 function SetupPerkManager()
 {
 	// install the Perk Manager if not found
@@ -1349,6 +1461,17 @@ function SetupPerkManager()
 	    PerkManager = new(Self) class'PerkSystem';
     }
     PerkManager.InitializePerks(Self);
+}
+
+function SetupKeybindManager()
+{
+	// install the Keybind Manager if not found
+	if (KeybindManager == None)
+    {
+        //ClientMessage("Make new Keybind System");
+	    KeybindManager = new(Self) class'KeybindManager';
+    }
+    KeybindManager.Setup(Self);
 }
 
 function SetupFontManager()
@@ -1436,6 +1559,8 @@ function InitializeSubSystems()
     SetupAddictionManager();
 	SetupPerkManager();
 	SetupFontManager();
+    SetupKeybindManager();
+	SetupDecalManager();
 }
 
 //SARGE: Helper function to get the count of an item type
@@ -1526,6 +1651,10 @@ function PreTravel()
 		DeusExWeapon(inHand).LaserOff(true);                                    //RSD: Otherwise dots will remain on the map
     ForceDroneOff();                                                            //RSD: Since we can move on standby, shut drone off
     ConsoleCommand("set DeusExCarcass bRandomModFix" @ bRandomizeMods);         //RSD: Stupid config-level hack since PostBeginPlay() can't access player pawn in DeusExCarcass.uc
+    
+    //SARGE: Store all the decals
+    if (DecalManager != None && iPersistentDebris > 0)
+        DecalManager.PopulateDecalsList();
 
 	foreach AllActors(class'SpyDrone',SD)                                       //RSD: Destroy all spy drones so we can't activate disabled drones on map transition
 		SD.Destroy();
@@ -1548,9 +1677,6 @@ event TravelPostAccept()
 	//local WeaponGEPGun gepTest;
 	local vector ofst;
 
-    //Update HUD
-    UpdateHUD();
-
 	Super.TravelPostAccept();
 
     //Setup player subcomponents
@@ -1558,16 +1684,18 @@ event TravelPostAccept()
     SetupAddictionManager();
 	SetupPerkManager();
     SetupFontManager();
+    SetupKeybindManager();
+	SetupDecalManager();
 
 	// reset the keyboard
 	ResetKeyboard();
 
+    //Update HUD
+    UpdateHUD();
+
     //Reset Crosshair
     UpdateCrosshair();
 
-	RefreshLeanKeys();
-    RefreshMantleKey();
-    RefreshAugWheelKey();                                                       //RSD: Hold aug wheel
 	info = GetLevelInfo();
 
 //   log("MYCHK:PostTravel: ,"@info.Name);
@@ -1773,7 +1901,7 @@ function Typing( bool bTyping )
 
 /////
 
-exec function HDTP(optional string s)
+exec function HDTP(optional bool updateDecals)
 {
 	local scriptedpawn P;
 	local deusexcarcass C;
@@ -1801,12 +1929,12 @@ exec function HDTP(optional string s)
     	PR.UpdateHDTPsettings();
     foreach AllActors(Class'DeusExAmmo',AM)                                     //SARGE: Added for object toggles
     	AM.UpdateHDTPsettings();
-    //SARGE: These don't draw properly if we update them... What a shame!
-    //It was a good feature, what a rotten way to die!
-    /*
-    foreach AllActors(Class'DeusExDecal',DC)                                     //SARGE: Added for object toggles
-    	DC.UpdateHDTPsettings();
-    */
+    if (updateDecals)
+    {
+        foreach AllActors(Class'DeusExDecal',DC)                                     //SARGE: Added for object toggles
+            if (!DC.bHidden)
+                DC.UpdateHDTPsettings();
+    }
 
 	UpdateHDTPsettings();
 }
@@ -1854,8 +1982,10 @@ function RefreshChargedPickups()
 			if (anItem.IsA('TechGoggles') && anItem.IsActive())
 				TechGoggles(anItem).UpdateHUDDisplay(Self);
 
-            if ((anItem.IsActive() || assignedWeapon == anItem) && anItem.GetCurrentCharge() > 0)
-    			AddChargedDisplay(anItem);
+      if ((anItem.IsActive() || assignedWeapon == string(anItem.Class)) && (anItem.GetCurrentCharge() > 0 || !anItem.bUnequipWhenDrained)) //SARGE: Modified get current charge check, since we can now have chargedpickups at 0 charge
+    	    AddChargedDisplay(anItem);
+      else
+          RemoveChargedDisplay(anItem);
 		}
 	}
 }
@@ -1925,6 +2055,15 @@ function DeusExLevelInfo GetLevelInfo()
 	return info;
 }
 
+//SARGE: Dedicated Nanokey Button
+exec function SelectNanokey()
+{
+    if (inHand == KeyRing)
+        SelectLastWeapon(true);
+    else
+        PutInHand(KeyRing,true);
+}
+
 //
 // If player chose to dual map the F keys
 //
@@ -1938,6 +2077,20 @@ exec function DualmapF9() { if ( AugmentationSystem != None) AugmentationSystem.
 exec function DualmapF10() { if ( AugmentationSystem != None) AugmentationSystem.ActivateAugByKey(7); }
 exec function DualmapF11() { if ( AugmentationSystem != None) AugmentationSystem.ActivateAugByKey(8); }
 exec function DualmapF12() { if ( AugmentationSystem != None) AugmentationSystem.ActivateAugByKey(9); }
+
+//SARGE: Let the player dual-map belt slots.
+exec function AltBelt0() { ActivateBelt(0); }
+exec function AltBelt1() { ActivateBelt(1); }
+exec function AltBelt2() { ActivateBelt(2); }
+exec function AltBelt3() { ActivateBelt(3); }
+exec function AltBelt4() { ActivateBelt(4); }
+exec function AltBelt5() { ActivateBelt(5); }
+exec function AltBelt6() { ActivateBelt(6); }
+exec function AltBelt7() { ActivateBelt(7); }
+exec function AltBelt8() { ActivateBelt(8); }
+exec function AltBelt9() { ActivateBelt(9); }
+exec function AltBelt10() { ActivateBelt(10); }
+exec function AltBelt11() { ActivateBelt(11); }
 
 //
 // Team Say
@@ -1986,6 +2139,7 @@ exec function RestartLevel()
 
 exec function LoadGame(int saveIndex)
 {
+    SetupRendererSettings();
 
 //   log("MYCHK:LoadGame: ,"@saveIndex);
 	// Reset the FOV
@@ -2058,6 +2212,7 @@ function bool CanSave(optional bool allowHardcore)
 	// 5) A datalink is playing
 	// 6) We're in a multiplayer game
     // 7) SARGE: We're in a conversation
+    // 8) SARGE: We're currently recreating decals
 
     if ((bHardCoreMode || bRestrictedSaving) && !allowHardcore) //Hardcore Mode
         return false;
@@ -2068,13 +2223,17 @@ function bool CanSave(optional bool allowHardcore)
 	if ((IsInState('Dying')) || (IsInState('Paralyzed')) || (IsInState('Interpolating'))) //Dead or Interpolating
         return false;
 
-	if (dataLinkPlay != None) //Datalink playing
+    //SARGE: Allow saving while infolinks are playing
+	if (dataLinkPlay != None && !bAllowSaveWhileInfolinkPlaying) //Datalink playing
         return false;
 
     if (Level.Netmode != NM_Standalone) //Multiplayer Game
 	   return false;
 
     if (InConversation())
+        return false;
+
+    if (bCreatingDecals)
         return false;
 
     return true; 
@@ -2109,12 +2268,20 @@ function int DoSaveGame(int saveIndex, optional String saveDesc)
             if ((tech.Owner == Self) && tech.bActive)
                 tech.Activate();
     
+    //SARGE: Store all the decals
+    if (DecalManager != None && iPersistentDebris > 0)
+        DecalManager.PopulateDecalsList();
+
     if (saveIndex == 0)
     {
         saveDir = GetSaveGameDirectory();
 		saveIndex=saveDir.GetNewSaveFileIndex();
     }
     
+    //If a datalink is playing, abort it
+    if (dataLinkPlay != None)
+        dataLinkPlay.AbortAndSaveHistory();
+
     //root.hide();
     root.GenerateSnapshot(True);
     SaveGame(saveIndex, saveDesc);
@@ -2329,6 +2496,8 @@ exec function StartNewGame(String startMap)
     //If Addiction System is enabled, set it as our default screen in the Health display
     if (bAddictionSystem)
         bShowStatus = false;
+    
+    SetupRendererSettings();
 
     //SARGE: Fix audio volume being incorrectly set on new game
     //TODO: Make this an option
@@ -2351,6 +2520,8 @@ function StartTrainingMission()
     local Inventory anItem;
 	//if (DeusExRootWindow(rootWindow) != None)
 	//	DeusExRootWindow(rootWindow).ClearWindowStack();
+    
+    SetupRendererSettings();
 
 	// Make sure the player isn't asked to do this more than
 	// once if prompted on the main menu.
@@ -2538,6 +2709,9 @@ function ResetPlayer(optional bool bTraining)
 		AugmentationSystem = None;
 	}
 
+    //SARGE: Remove secondary weapon
+    AssignSecondary(None);
+
     // Reset Belt Memory
     for(i = 0;i < 12;i++)
         ClearPlaceholder(i);
@@ -2548,12 +2722,14 @@ function ResetPlayer(optional bool bTraining)
 
         //SARGE: Hack to make the starting items always appear in the belt, regardless of autofill setting
         bForceBeltAutofill = true;
-		anItem = Spawn(class'WeaponPistol');
-		anItem.Frob(Self, None);
-		anItem.bInObjectBelt = True;
+        //SARGE: Now give Prod first, and set Pistol as primary belt selection
 		anItem = Spawn(class'WeaponProd');
 		anItem.Frob(Self, None);
 		anItem.bInObjectBelt = True;
+		anItem = Spawn(class'WeaponPistol');
+		anItem.Frob(Self, None);
+		anItem.bInObjectBelt = True;
+        advBelt = 1;
 		anItem = Spawn(class'MedKit');
 		anItem.Frob(Self, None);
 		anItem.bInObjectBelt = True;
@@ -2674,13 +2850,16 @@ function CreateKeyRing()
 
 singular function RecoilShaker(vector shakeAmount)  //CyberP: Cosmetic effects when shooting
 {
+    local Inventory assigned;
+    assigned = GetSecondary();
+
 	//SARGE: Don't do recoil effects when we're out of control, to stop shaking in cutscenes etc
 	if (RestrictInput())
 		return;
 
     if (inHand != none && inHand.IsA('Binoculars') && Binoculars(inHand).bActive) //RSD: To make sure zoom isn't messed up
        return;
-    else if (assignedWeapon != none && assignedWeapon.IsA('Binoculars') && Binoculars(assignedWeapon).bActive)
+    else if (assigned != none && assigned.IsA('Binoculars') && Binoculars(assigned).bActive)
        return;
 
     RecoilDesired.X=RecoilShake.X+((1.0*shakeAmount.X)-shakeAmount.X);//2.0)-shakeAmount.X);
@@ -2740,6 +2919,7 @@ singular function RecoilShaker(vector shakeAmount)  //CyberP: Cosmetic effects w
 function RecoilEffectTick(float deltaTime)
 {
 	local float invTime;
+    local Inventory assigned;
 
 	if ((RecoilTime>0)||(VSize(RecoilShake)>0.0))
 	{
@@ -2760,12 +2940,14 @@ function RecoilEffectTick(float deltaTime)
 			//SARGE: Don't do recoil effects when we're out of control, to stop shaking in cutscenes etc
 			if (RestrictInput())
 				return;
+    
+            assigned = GetSecondary();
 			
 			if ((DeusExWeapon(inHand) != None) && (DeusExWeapon(inHand).bZoomed))
 			   DesiredFOV = DeusExWeapon(inHand).ScopeFOV;
             else if (inHand != none && inHand.IsA('Binoculars') && Binoculars(inHand).bActive) //RSD: To make sure zoom isn't messed up
             {}
-			else if (assignedWeapon != none && assignedWeapon.IsA('Binoculars') && Binoculars(assignedWeapon).bActive)
+			else if (assigned != none && assigned.IsA('Binoculars') && Binoculars(assigned).bActive)
 			{}
 			else
 			{
@@ -4966,10 +5148,6 @@ local actor     acti;
   }
 }
 
-//exec function startMantling()
-//{
-//}
-
 // ----------------------------------------------------------------------
 // SupportActor()
 //
@@ -5070,11 +5248,24 @@ function DoneReloading(DeusExWeapon weapon)
     UpdateCrosshair();
 }
 
+//Ygll: utility function to create the healing flash effect
+function HealScreenEffect(float scale, bool isRegen)
+{
+	if(!isRegen)
+		PlaySound(sound'MedicalHiss', SLOT_None,,, 256);
+	else
+		PlaySound(sound'biomodregenerate',SLOT_None);
+			
+	if(iHealingScreen == 1)
+		ClientFlash(scale,vect(71.0,236.0,0.0));     //Ygll: new green flash color.
+	else if(iHealingScreen == 2)
+		ClientFlash(scale,vect(0.0,0.0,200.0));     //CyberP: flash when using medkits.
+}
+
 // ----------------------------------------------------------------------
 // HealPlayer()
 // ----------------------------------------------------------------------
-
-function int HealPlayer(int baseHealPoints, optional Bool bUseMedicineSkill)
+function int HealPlayer(int baseHealPoints, optional bool bUseMedicineSkill)
 {
 	local float mult;
 	local int adjustedHealAmount, aha2, tempaha;
@@ -5094,10 +5285,10 @@ function int HealPlayer(int baseHealPoints, optional Bool bUseMedicineSkill)
 	if (adjustedHealAmount > 0)
 	{
 		if (bUseMedicineSkill)
-			{
-            PlaySound(sound'MedicalHiss', SLOT_None,,, 256);
-            ClientFlash(1,vect(0,0,200));     //CyberP: flash when using medkits.
-            }
+		{
+			HealScreenEffect(1.0, false);
+		}
+		
 		// Heal by 3 regions via multiplayer game
 		if (( Level.NetMode == NM_DedicatedServer ) || ( Level.NetMode == NM_ListenServer ))
 		{
@@ -5407,6 +5598,7 @@ function DoJump( optional float F )
 
         //if (JumpZ > 650)      //CyberP: fix super jump exploit.
         //JumpZ = default.JumpZ;
+        iLadderJumpTimer = 0.15;  //SARGE: Hack to fix flying forever when leaving ladders sometimes.
         SetPhysics(PHYS_Flying);
         if (IsStunted())
         {
@@ -5420,9 +5612,9 @@ function DoJump( optional float F )
 		}
 	
         // Trash: Speed Enhancement now uses energy while jumping
-        if (SpeedAug.CurrentLevel > -1)
+        if (SpeedAug.CurrentLevel > -1 && SpeedAug.bIsActive)
         {
-            Energy=MAX(Energy - SpeedAug.GetAdjustedEnergy(SpeedAug.EnergyDrainJump),0);
+            Energy=FMAX(Energy - SpeedAug.GetAdjustedEnergy(SpeedAug.EnergyDrainJump),0);
         }
 
         if (bHardCoreMode)                                                      //RSD: Running drains 1.3x on Hardcore, now jumping drains 1.25x
@@ -5515,9 +5707,9 @@ if (Physics == PHYS_Walking)
 		Velocity.Z = JumpZ;
 
         // Trash: Speed Enhancement now uses energy while jumping
-        if (SpeedAug.CurrentLevel > -1)
+        if (SpeedAug.CurrentLevel > -1 && speedAug.bIsActive)
         {
-            Energy=MAX(Energy - SpeedAug.GetAdjustedEnergy(SpeedAug.EnergyDrainJump),0);
+            Energy=FMAX(Energy - SpeedAug.GetAdjustedEnergy(SpeedAug.EnergyDrainJump),0);
         }
 
         if (bHardCoreMode)                                                      //RSD: Running drains 1.3x on Hardcore, now jumping drains 1.25x
@@ -5643,7 +5835,7 @@ function bool SetBasedPawnSize(float newRadius, float newHeight)
 			{
 				PrePivot.Z -= 4.5;
 			}
-			BaseEyeHeight -= 2;
+            BaseEyeHeight += FemJCEyeHeightAdjust;
 		}
 
 		// Complaints that eye height doesn't seem like your crouching in multiplayer
@@ -5670,16 +5862,18 @@ function bool ResetBasedPawnSize()
 
 function float GetDefaultCollisionHeight()
 {
+	if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
+	{
+		return Default.CollisionHeight-9.0;
+	}
 	return (Default.CollisionHeight-4.5);
 }
 
+//SARGE: Added
+//SARGE: TODO: Adjust this so that we can have the same collision height for both Male and Female JC
 function float GetBaseEyeHeight()
 {
-	if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
-	{
-		return Default.CollisionHeight;
-	}
-	return (Default.CollisionHeight-4.5);
+    return GetDefaultCollisionHeight();
 }
 
 // ----------------------------------------------------------------------
@@ -5798,128 +5992,9 @@ function ServerUpdateLean( Vector desiredLoc )
 //	SetRotation( rot );
 }
 
-
-// ----------------------------------------------------------------------
-// GMDX:dasraiser insert lean to Tiptoes
-// RefreshKey copied from HUDMultiSkill.uc for Tiptoes Lean
-// ----------------------------------------------------------------------
-
-function RefreshLeanKeys()
-{
-	local String KeyName, Alias,KeyLeanLeft,AliasLeanLeft,KeyLeanRight,AliasLeanRight;
-//	local int EI_KL,EI_KR;
-	local int i;
-	local int Nfound;
-
-//GMDX as EInputKey enum not same as Actor!
-//^^var int LeanLeftKey, LeanRightKey;
-
-
-	bLeanKeysDefined=false;
-
-	for ( i=0; i<255; i++ )
-	{
-		KeyName = ConsoleCommand ( "KEYNAME "$i );
-		if ( KeyName != "" )
-		{
-			Alias = ConsoleCommand( "KEYBINDING "$KeyName );
-			if ( InStr(Alias,"LeanRight" )!=-1)
-			{
-			   //EI_KR=i;
-			   KeyLeanRight=KeyName;
-			   AliasLeanRight=Alias;
-			   Nfound++;
-			} else
-			if ( InStr(Alias,"LeanLeft" )!=-1)
-			{
-			   //EI_KL=i;
-			KeyLeanLeft=KeyName;
-			   AliasLeanLeft=Alias;
-			   Nfound++;
-			}
-			if (Nfound==2) break;
-		}
-	}
-	if (Nfound==2)
-	{
-	  bLeanKeysDefined=true;
-//	  log("Set InputExt "$KeyLeanRight$" "$AliasLeanRight$" | bLeanRightHook 1 | OnRelease bLeanRightHook 0");
-//	  log("Set InputExt "$KeyLeanLeft$" "$AliasLeanLeft$" | bLeanLeftHook 1 | OnRelease bLeanLeftHook 0");
- 	  ConsoleCommand("SET InputExt "$KeyLeanRight$" LeanRight | SetTiptoesRight 1 | OnRelease SetTiptoesRight 0");
-	  ConsoleCommand("SET InputExt "$KeyLeanLeft$" LeanLeft | SetTiptoesLeft 1 | OnRelease SetTiptoesLeft 0");
-	} else log("Lean Keys UNDEFINED, disabling tiptoes");
-
-}
-
-function RefreshMantleKey()
-{
-	local String KeyName, Alias,KeyJump,AliasJump;
-	local int i;
-	local int Nfound;
-
-//GMDX as EInputKey enum not same as Actor!
-//^^var int LeanLeftKey, LeanRightKey;
-
-	for ( i=0; i<255; i++ )
-	{
-		KeyName = ConsoleCommand ( "KEYNAME "$i );
-		if ( KeyName != "" )
-		{
-			Alias = ConsoleCommand( "KEYBINDING "$KeyName );
-			if ( InStr(Alias,"Jump" )!=-1)
-			{
-			   //EI_KR=i;
-			   KeyJump=KeyName;
-			   AliasJump=Alias;
-			   Nfound++;
-			}
-			if (Nfound==1) break;
-		}
-	}
-	if (Nfound==1)
-	{
-//	  log("Set InputExt "$KeyLeanRight$" "$AliasLeanRight$" | bLeanRightHook 1 | OnRelease bLeanRightHook 0");
-//	  log("Set InputExt "$KeyLeanLeft$" "$AliasLeanLeft$" | bLeanLeftHook 1 | OnRelease bLeanLeftHook 0");
- 	  ConsoleCommand("SET InputExt "$KeyJump$" Jump | StartMantling 1 | OnRelease StopMantling 1");
-	  //ConsoleCommand("SET InputExt "$KeyLeanLeft$" LeanLeft | SetTiptoesLeft 1 | OnRelease SetTiptoesLeft 0");
-	}
-}
-
-function RefreshAugWheelKey()                                                   //RSD: Hold aug wheel
-{
-local String KeyName, Alias,KeyHold,AliasHold;
-	local int i;
-	local int Nfound;
-
-//GMDX as EInputKey enum not same as Actor!
-//^^var int LeanLeftKey, LeanRightKey;
-
-	for ( i=0; i<255; i++ )
-	{
-		KeyName = ConsoleCommand ( "KEYNAME "$i );
-		if ( KeyName != "" )
-		{
-			Alias = ConsoleCommand( "KEYBINDING "$KeyName );
-			if ( InStr(Alias,"HoldRadialAugMenu" )!=-1)
-			{
-			   //EI_KR=i;
-			   KeyHold=KeyName;
-			   AliasHold=Alias;
-			   Nfound++;
-			}
-			if (Nfound==1) break;
-		}
-	}
-	if (Nfound==1)
-	{
- 	  ConsoleCommand("SET InputExt "$KeyHold$" HoldRadialAugMenu | ToggleRadialAugMenu 1 | OnRelease ToggleRadialAugMenu 1");
-	}
-}
-
 exec function SetTiptoesLeft(bool B)
 {
-	if (bLeanKeysDefined)
-	  bLeftToe=B; else bLeftToe=false;
+    bLeftToe=B;;
 
 	if (bLeftToe&&bRightToe) bPreTiptoes=true;
 	  else bPreTiptoes=false;
@@ -5929,8 +6004,7 @@ exec function SetTiptoesLeft(bool B)
 
 exec function SetTiptoesRight(bool B)
 {
-	if (bLeanKeysDefined)
-	  bRightToe=B; else bLeftToe=false;
+    bRightToe=B;
 
 	if (bLeftToe&&bRightToe) bPreTiptoes=true;
 	  else bPreTiptoes=false;
@@ -6291,7 +6365,7 @@ state PlayerWalking
 		
 		//SARGE: Moved Endurance check to here.
         bCrouchRegen=PerkManager.GetPerkWithClass(class'DeusEx.PerkEndurance').bPerkObtained;
-	    if ((!IsCrouching() || bCrouchRegen) && !bOnLadder && (inHand == None || !inHand.IsA('POVCorpse'))) //(bIsCrouching)     //RSD: Simplified this entire logic from original crouching -> bCrouchRegen check, added !bOnLadder //SARGE: Added corpse carrying
+	    if ((!IsCrouching() || bCrouchRegen) && !bOnLadder && (inHand == None || !inHand.IsA('POVCorpse')) && CarriedDecoration == None) //(bIsCrouching)     //RSD: Simplified this entire logic from original crouching -> bCrouchRegen check, added !bOnLadder //SARGE: Added corpse carrying //SARGE: And decoration carrying
 	    	RegenStaminaTick(deltaTime);                                        //RSD: Generalized stamina regen function
 	  }
       }
@@ -6422,7 +6496,8 @@ state PlayerWalking
 			if (Velocity.Z < -440)  //CyberP: effects for jumping in water from height.
 			{
 			PlaySound(sound'SplashLarge', SLOT_Pain);
-            ClientFlash(12,vect(160,200,255));
+            //SARGE: Disabled as we already have a water zone change in HeadZoneChange
+            //ClientFlash(12,vect(160,200,255));
 			for (i=0;i<38;i++)
 			{
 			    loc = Location + VRand() * 35;
@@ -6642,10 +6717,40 @@ state PlayerWalking
             }
         }
 
+        //SARGE: Tick down our item pickup prevention (stops item dupes)
+        if (pickupCooldown > 0)
+            pickupCooldown -= deltaTime;
+
         //Stop being stunted if we elapse the stunted timer
         if (stuntedTime > 0)
             stuntedTime -= deltaTime;
             
+        //SARGE: Recreate decals slowly over a few frames, to avoid
+        //crashing when changing maps
+        if (bCreatingDecals && DecalManager != None)
+        {
+            //First time, destroy the decals
+            if (currentDecalBatch == 0)
+                DecalManager.HideAllDecals();
+
+            DecalManager.RecreateDecals(currentDecalBatch,500);
+            currentDecalBatch += 500;
+            bCreatingDecals = DecalManager.GetTotalDecals() > currentDecalBatch;
+        }
+        
+        //SARGE: Backup fix for dealing with ladder climbing physics
+        if (iLadderJumpTimer > 0)
+        {
+            iLadderJumpTimer -= deltaTime;
+            if (iLadderJumpTimer <= 0)
+            {
+                if (Physics == PHYS_Flying)
+                {
+                    SetPhysics(PHYS_Falling);
+                    bOnLadder = false;
+                }
+            }
+        }
         //Fire blocking is only valid for 1 frame
         bBlockNextFire = False;
 
@@ -6693,6 +6798,10 @@ state PlayerFlying
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
+        
+        //SARGE: Tick down our item pickup prevention (stops item dupes)
+        if (pickupCooldown > 0)
+            pickupCooldown -= deltaTime;
 
 		Super.PlayerTick(deltaTime);
 	}
@@ -6711,6 +6820,14 @@ event HeadZoneChange(ZoneInfo newHeadZone)
 		newHeadZone.SoundRadius = 255;
 	if (HeadRegion.Zone.AmbientSound != None)
 		HeadRegion.Zone.SoundRadius = 0;
+
+    //SARGE: Do fog stuff for current head zone.
+    if (VSize(newHeadZone.default.ViewFog) > 0.01)
+    {
+        DesiredFlashFog   = newHeadZone.default.ViewFog;
+        DesiredFlashScale = 0.01;
+        ViewFlash(1.0);
+    }
 
 	if (newheadZone != none && newHeadZone.bWaterZone && !HeadRegion.Zone.bWaterZone) //RSD: accessed none?
 	{
@@ -6888,6 +7005,10 @@ state PlayerSwimming
 
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
+        
+        //SARGE: Tick down our item pickup prevention (stops item dupes)
+        if (pickupCooldown > 0)
+            pickupCooldown -= deltaTime;
 
 		Super.PlayerTick(deltaTime);
 	}
@@ -6993,19 +7114,19 @@ state Dying
         {
            KillShadow();
            EndTrace = Location - vect(0,0,320);
+            /*
+            //SARGE: Removed this as it was aparrently causing a double blood pool.
            if (!HeadRegion.Zone.bWaterZone)
            {
             hit = Trace(HitLocation, HitNormal, EndTrace, Location, False);
             pool = spawn(class'BloodPool',,, HitLocation, Rotator(HitNormal));
             if (pool != none)
             {
-				if (pool.IsHDTP())
-					pool.maxDrawScale = CollisionRadius / 520.0;
-				else
-					pool.maxDrawScale = CollisionRadius / 20.0;
+                pool.SetMaxDrawScale(CollisionRadius);
                 pool.ReattachDecal();
             }
            }
+           */
         }
       ClientDeath();
 	}
@@ -7048,7 +7169,7 @@ state Dying
 				CameraLocation = Location;
 				CameraRotation = Rotator(ViewVect);
 			}
-			else if (time < 8.0)
+			else if (time < 8.0 || !bMenuAfterDeath)
 			{
 				whiteVec.X = time / 16.0;
 				whiteVec.Y = time / 16.0;
@@ -7073,7 +7194,7 @@ state Dying
 				{
 					// Don't fade to black in multiplayer
 				}
-				else
+				else if (bMenuAfterDeath)
 				{
 					// then, fade out to black in four seconds and bring up
 					// the main menu automatically
@@ -7543,43 +7664,44 @@ function ClientTurnOffScores()
 
 exec function ShowScores()
 {
+    local Inventory assigned;
+    assigned = GetSecondary();
+
 	if ( bBuySkills && !bShowScores )
 		BuySkills();
 	if (Level.NetMode == NM_Standalone)
 	{
         if (RestrictInput())
-		return;
+            return;
 
         if (CarriedDecoration != none)                                          //RSD: just don't screw around with this, it didn't make any sense anyway
-        return;
+            return;
+
+        //SARGE: Do nothing if we have nothing assigned
+        if (assigned == None)
+            return;
 
         //Sarge: Now we check for ChargedPickup charge level
-        if (assignedWeapon.IsA('ChargedPickup') && ChargedPickup(assignedWeapon).GetCurrentCharge() == 0)
+        if (assigned.IsA('ChargedPickup') && ChargedPickup(assigned).GetCurrentCharge() == 0)
         {
             //Do nothing.
             return;
         }
         //SARGE: Check DTS Charge Level
-        else if (assignedWeapon.IsA('WeaponNanoSword') && WeaponNanoSword(assignedWeapon).ChargeManager.GetCurrentCharge() == 0)
+        else if (assigned.IsA('WeaponNanoSword') && WeaponNanoSword(assigned).ChargeManager.GetCurrentCharge() == 0)
         {
             //Do nothing.
             return;
         }
-        else if (assignedWeapon != none && assignedWeapon.IsA('RSDEdible')) //Sarge: Allow using edibles from the secondary button
+        else if (assigned.IsA('ConsumableItem') || assigned.IsA('ChargedPickup')) //Sarge: Allow using edibles from the secondary button
 		{
-            assignedWeapon.GotoState('Activated');
+            assigned.Activate();
             return;
 		}
-        else if (assignedWeapon != none && (assignedWeapon.IsA('Medkit') || assignedWeapon.IsA('BioelectricCell') || (assignedWeapon.IsA('ChargedPickup'))))
-		{
-            if(assignedWeapon.IsInState('Activated'))
-                assignedWeapon.GotoState('DeActivated');
-            else assignedWeapon.GotoState('Activated');
-            return;
-		}
-		if (!(inHand != none && inHand.IsA('Binoculars')) && CarriedDecoration == None &&assignedWeapon != none && assignedWeapon.IsA('Binoculars')) //RSD: Added Binoculars as secondary items (when not holding Binocs)
+
+		if (!(inHand != none && inHand.IsA('Binoculars')) && assigned.IsA('Binoculars')) //RSD: Added Binoculars as secondary items (when not holding Binocs)
         {
-            if(!Binoculars(assignedWeapon).bActive)
+            if(!Binoculars(assigned).bActive)
             {
                 if (inHand != none && inHand.IsA('DeusExWeapon'))
                 {
@@ -7596,42 +7718,36 @@ exec function ShowScores()
                 {
                     PutInHand(None);
                 }
-                //assignedWeapon.GotoState('Activated');
-                Binoculars(assignedWeapon).Activate();
+                Binoculars(assigned).Activate();
             }
             else
             {
-                //assignedWeapon.GotoState('DeActivated');
-                Binoculars(assignedWeapon).Activate();
+                Binoculars(assigned).Activate();
             }
             return;
         }
-        else if (inHand != none && inHand.IsA('Binoculars') && assignedWeapon != none && assignedWeapon.IsA('Binoculars')) //RSD: Added Binoculars as secondary items (when holding Binocs)
+        else if (inHand != none && inHand.IsA('Binoculars') && assigned != none && assigned.IsA('Binoculars')) //RSD: Added Binoculars as secondary items (when holding Binocs)
         {
-            if(!Binoculars(inHand).bActive)
-                //inHand.GotoState('Activated');
-                Binoculars(assignedWeapon).Activate();
-            else
-                //inHand.GotoState('DeActivated');
-                Binoculars(assignedWeapon).Activate();
+            Binoculars(assigned).Activate();
         }
-        if (/*inHand != none && */assignedWeapon != None && assignedWeapon != inHand) //RSD: Always do quickdraw even if nothing in hand
+
+        if (/*inHand != none && */assigned != inHand) //RSD: Always do quickdraw even if nothing in hand
         {
          if (Region.Zone.bWaterZone)
          {
-             if (assignedWeapon.IsA('WeaponShuriken'))
+             if (assigned.IsA('WeaponShuriken'))
              {
-                 ClientMessage(WeaponShuriken(assignedWeapon).msgNotWorking);
+                 ClientMessage(WeaponShuriken(assigned).msgNotWorking);
                  return;
              }
          }
-         PutInHand(assignedWeapon,true);
+         PutInHand(assigned,true);
          if (inHandPending.IsA('DeusExWeapon'))
 	         DeusExWeapon(inHandPending).bBeginQuickMelee=true;
          if (inHandPending.IsA('Flare'))
              Flare(inHandPending).bBeginQuickThrow=true;
 	    }
-	    else if (inHand != none && assignedWeapon != None && assignedWeapon == inHand)
+	    else if (inHand != none && assigned == inHand)
 	    {
 	      if (inHand.IsA('DeusExWeapon') && DeusExWeapon(inHand).bBeginQuickMelee)
 	      {
@@ -7647,7 +7763,7 @@ exec function ShowScores()
           {
                Flare(inHand).quickThrowCombo = 0.4;
           }
-          else// if (primaryWeapon == None || primaryWeapon == assignedWeapon)  //RSD: Don't actually need this stuff?
+          else// if (primaryWeapon == None || primaryWeapon == assigned)  //RSD: Don't actually need this stuff?
           {
                if (inHand.IsA('DeusExWeapon'))
                   DeusExWeapon(inHand).Fire(0);
@@ -7655,50 +7771,13 @@ exec function ShowScores()
                   Flare(inHand).Activate();
           }
 	    }
-	    else if (inHand == none && inHandPending == None && CarriedDecoration == None)
+	    else if (inHand == none && inHandPending == None)
 	    {
-	       if (assignedWeapon != None)
-	       {
-	           PutInHand(assignedWeapon,true);
-           }
+	           PutInHand(assigned,true);
 	    }
 
-        /*if (Weapon != None && inHand != none && assignedWeapon != None && assignedWeapon != inHand)
-        {
-         if (Region.Zone.bWaterZone)
-         {
-             if (assignedWeapon.IsA('WeaponShuriken'))
-             {
-                 ClientMessage(WeaponShuriken(assignedWeapon).msgNotWorking);
-                 return;
-             }
-         }
-         if (inHand.IsA('DeusExWeapon'))
-         PutInHand(assignedWeapon,true);
-         if (inHandPending.IsA('DeusExWeapon'))
-	         DeusExWeapon(inHandPending).bBeginQuickMelee=true;
-	    }
-	    else if (inHand != none && assignedWeapon != None && assignedWeapon == inHand)
-	    {
-	      if (inHand.IsA('DeusExWeapon') && DeusExWeapon(inHand).bBeginQuickMelee)
-	      {
-	              if (DeusExWeapon(inHand).AccurateRange > 200 && DeusExWeapon(inHand).AmmoLeftInClip() == 0 ) //CyberP/|Totalitarian|: hack fix bug
-	                 return;
-	              else
-                     DeusExWeapon(inHand).quickMeleeCombo = 0.4;
-          }
-          else if (primaryWeapon == None || primaryWeapon == assignedWeapon)
-          {
-               if (inHand.IsA('DeusExWeapon'))
-                  DeusExWeapon(inHand).Fire(0);
-          }
-	    }
-	    else if (inHand == none && inHandPending == None && CarriedDecoration == None)
-	    {
-	       if (assignedWeapon != None)
-	           inHandPending = assignedWeapon;
-	    }*/
     }
+
 	bShowScores = !bShowScores;
 }
 
@@ -7710,9 +7789,6 @@ exec function ShowScores()
 function DoLeftFrob(Actor frobTarget)
 {
     local bool bDefaultFrob;
-    
-    if (CheckFrobDeclined(frobTarget))
-        return;
     
     if (inHand == None)
     {
@@ -7734,11 +7810,15 @@ function DoLeftFrob(Actor frobTarget)
     //This can't be done in Inventory classes. Ugh. I really wish we could access this class!
     if (bDefaultFrob && frobTarget.IsA('Inventory'))
     {
+        /*
         if (HandleItemPickup(FrobTarget, True))
         { 
             bLeftClicked = true;
             FindInventorySlot(Inventory(FrobTarget));
         }
+        */
+        bLeftClicked = true;
+        HandleItemPickup(FrobTarget);
     }
 }
 
@@ -7752,9 +7832,6 @@ function DoRightFrob(Actor frobTarget)
     local bool bDefaultFrob;
 
     if (frobTarget == None)
-        return;
-
-    if (CheckFrobDeclined(frobTarget))
         return;
 
     bDefaultFrob = true;
@@ -7772,11 +7849,15 @@ function DoRightFrob(Actor frobTarget)
         bDefaultFrob = DeusExDecoration(frobTarget).DoRightFrob(Self,inHand != None);
 
     //Handle Inventory classes. Ugh. I really wish we could access this class!
+    /*
     if (bDefaultFrob && frobTarget.IsA('Inventory'))
     {
         if (HandleItemPickup(FrobTarget, True))
             FindInventorySlot(Inventory(FrobTarget));
     }
+    */
+    if (bDefaultFrob && frobTarget.IsA('Inventory'))
+        HandleItemPickup(FrobTarget);
     else if (bDefaultFrob)
         DoFrob(Self, None);
 }
@@ -7785,7 +7866,7 @@ function DoRightFrob(Actor frobTarget)
 //Returns FALSE if an item was not declined, TRUE if it was
 function bool CheckFrobDeclined(Actor frobTarget)
 {
-    if (frobTarget.IsA('Inventory') && DeclinedItemsManager.IsDeclined(class<Inventory>(frobTarget.class)) && clickCountCyber == 0)
+    if (frobTarget.IsA('Inventory') && DeclinedItemsManager.IsDeclined(class<Inventory>(frobTarget.class)) && clickCountCyber == 0 && Inventory(frobTarget).ItemName != "")
     {
         SetDoubleClickTimer();
         ClientMessage(sprintf(msgDeclinedPickup,Inventory(frobTarget).ItemName));
@@ -7961,7 +8042,7 @@ exec function ParseLeftClick()
 
         //SARGE: Final option - select last weapon
         if (inHand == None && bLeftClickUnholster)
-            SelectLastWeapon();
+            SelectLastWeapon(false,true);
 	}
 }
 
@@ -7970,7 +8051,7 @@ exec function ParseLeftClick()
 // Sarge: Selects the last weapon we had selected, or if we're using the alternate toolbelt, selects the primary selection.
 // ----------------------------------------------------------------------
 
-function SelectLastWeapon(optional bool allowEmpty)
+function SelectLastWeapon(optional bool allowEmpty, optional bool bBeltLast)
 {
     local DeusExRootWindow root;
     root = DeusExRootWindow(rootWindow);
@@ -7985,20 +8066,25 @@ function SelectLastWeapon(optional bool allowEmpty)
         }
     }
 
-    if (root != None && root.hud != None)
+    //If Belt last, and using Invisible War toolbelt,
+    //select our primary belt slot, rather than using our actual last weapon
+    if (root != None && root.hud != None && bBeltLast)
     {
         if (bAlternateToolbelt > 0 && root.ActivateObjectInBelt(advBelt))
         {
+            bSelectedFromMainBeltSelection = true;
             NewWeaponSelected();
             return;
         }
     }
     
-    if (primaryWeapon.Owner == self)
+    if (primaryWeapon != None && primaryWeapon.Owner == self)
     {
         PutInHand(primaryWeapon);
         NewWeaponSelected();
     }
+    else
+        PutInHand(None);
 }
 
 // ----------------------------------------------------------------------
@@ -8211,25 +8297,26 @@ exec function ParseRightClick()
 		{
 			PutInHand(None);
 		}
+        //SARGE: When we have a forced weapon selection in hand (like a lockpick after left-frobbing, then select our last weapon instead.
+        else if (inHand != None && primaryWeapon != None && inHand != primaryWeapon && (clickCountCyber >= 1 || dblClickHolster == 0 || !bLastWasEmpty))
+        {
+            SelectLastWeapon(true);
+        }
         //If we are using a different items to our belt item, and classic mode is on or we scrolled, select it instantly
-		else if ((bAlternateToolbelt > 1 || bScrollSelect) && beltScrolled != beltLast && inHand != None && !selectedNumberFromEmpty)
+		else if ((bAlternateToolbelt > 1 || bScrollSelect) && (bAlternateToolbelt < 3 || bSelectedFromMainBeltSelection || bScrollSelect) && (beltScrolled != beltLast || bLastWasEmpty) && inHand != None)
 		{
-			root = DeusExRootWindow(rootWindow);
-			if (root != None && root.hud != None)
-			{
-				root.ActivateObjectInBelt(advBelt);
-                NewWeaponSelected();
-                beltLast = advBelt;
-			}
+            SelectLastWeapon(false,true);
+            beltLast = advBelt;
 		}
         else if (inHand == None && (clickCountCyber >= 1 || dblClickHolster < 2))
 		{
             //SARGE: Added support for the unholster behaviour from the Alternate Toolbelt on both Toolbelts
-            //Additionally, unholstering is now tied to the double-click holstering setting.
-            SelectLastWeapon();
+            bSelectedFromMainBeltSelection = true;
+            SelectLastWeapon(false,true);
 		}
 		else if (inHand != None && (clickCountCyber >= 1 || dblClickHolster == 0))
 		{
+            bSelectedFromMainBeltSelection = false;
             PutInHand(None);
             NewWeaponSelected();
 		    DoRightFrob(FrobTarget); //Last minute check for things with no highlight.
@@ -8263,7 +8350,7 @@ function PlayPickupAnim(Vector locPickup)
 // HandleItemPickup()
 // ----------------------------------------------------------------------
 
-function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly)
+function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, optional bool bSkipDeclineCheck)
 {
 	local bool bCanPickup;
 	local bool bSlotSearchNeeded;
@@ -8271,9 +8358,15 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly)
     local DeusExAmmo foundAmmo;
     local DeusExAmmo assignedAmmo;
     local int intj;
+    local bool bDeclined;
 
 	bSlotSearchNeeded = True;
 	bCanPickup = True;
+
+    //If we picked up something in the last 0.25 seconds, prevent pickup again.
+    //This should prevent the item dupe glitch.
+    if (pickupCooldown > 0.01)
+        return false;
 
 	// Special checks for objects that do not require phsyical inventory
 	// in order to be picked up:
@@ -8320,24 +8413,11 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly)
 				}
 			}
 //GMDX: hmm
-			// If this is a grenade or LAM (what a pain in the ass) then also check
-			// to make sure we don't have too many grenades already
-			else if ((foundItem.IsA('WeaponEMPGrenade')) ||
-			    (foundItem.IsA('WeaponGasGrenade')) ||
-				(foundItem.IsA('WeaponNanoVirusGrenade')) ||
-				(foundItem.IsA('WeaponLAM')))
-			{
-				if (DeusExWeapon(foundItem).AmmoType.AmmoAmount >= GetAdjustedMaxAmmo(DeusExWeapon(foundItem).AmmoType)) //RSD: replaced DeusExWeapon(foundItem).AmmoType.MaxAmmo with adjusted
-			{
-					ClientMessage(TooMuchAmmo);
-					bCanPickup = False;
-				}
-			}
 
 			// Otherwise, if this is a single-use weapon, prevent the player
 			// from picking up  //CyberP: also check if ammo is full when picking up weapons
 
-			else if (foundItem.IsA('Weapon'))
+			else if (foundItem.IsA('DeusExWeapon'))
 			{
 				// If these fields are set as checked, then this is a
 				// single use weapon, and if we already have one in our
@@ -8355,7 +8435,9 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly)
 				//DeusExWeapon(foundItem).SetMaxAmmo();                           //RSD: No longer needed
 			  	if (Weapon(foundItem).AmmoType != none && Weapon(foundItem).AmmoType.AmmoAmount >= GetAdjustedMaxAmmo(Weapon(foundItem).AmmoType)) //RSD: removed DeusExWeapon(foundItem).MaxiAmmo for adjusted, changed DeusExWeapon to Weapon, added none check
 				{
-                    if (Weapon(foundItem).AmmoName != class'AmmoNone')   //RSD: So we don't get this for melee weapons
+                    if (DeusExWeapon(foundItem).bDisposableWeapon) //SARGE: Disposable weapons have a different message
+                    	ClientMessage(class'DeusExPickup'.default.msgTooMany);
+                    else if (Weapon(foundItem).AmmoName != class'AmmoNone')   //RSD: So we don't get this for melee weapons
                     	ClientMessage(TooMuchAmmo);
 					bCanPickup = False;
 				}
@@ -8367,10 +8449,9 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly)
 	if (bSlotSearchNeeded && bCanPickup)
 	{
 //	  log("MYCHK::DXPlayer::HIP::ADD TO::"@FrobTarget);
-		if (FindInventorySlot(Inventory(FrobTarget), bSearchOnly) == False)
+		if (FindInventorySlot(Inventory(FrobTarget), true) == False)
 		{
 //		 log("MYCHK::DXPlayer::HIP::ADD TO FAILED::"@foundItem);
-			ClientMessage(Sprintf(InventoryFull, Inventory(FrobTarget).itemName));
 			bCanPickup = False;
 			ServerConditionalNotifyMsg( MPMSG_DropItem );
             if (frobTarget != None && frobTarget.IsA('DeusExWeapon'))
@@ -8395,18 +8476,31 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly)
                         DeusExWeapon(frobTarget).PickupAmmoCount = 0;
                     }
                }
+               else
+                ClientMessage(Sprintf(InventoryFull, Inventory(FrobTarget).itemName));
             }
+            else
+                ClientMessage(Sprintf(InventoryFull, Inventory(FrobTarget).itemName));
 		}
 	}
+	
+    //SARGE: Decline checking.
+    if (bSlotSearchNeeded && bCanPickup)
+    {
+        if (!bSkipDeclineCheck)
+            bDeclined = CheckFrobDeclined(FrobTarget);
+        if (!bDeclined && !bSearchOnly)
+            FindInventorySlot(Inventory(FrobTarget), false);
+    }
 
-	if (bCanPickup)
+	if (bCanPickup && !bDeclined)
 	{
 		if (FrobTarget.IsA('WeaponShuriken'))
 			WeaponShuriken(FrobTarget).ItemName = WeaponShuriken(FrobTarget).default.ItemName @ "(" $ WeaponShuriken(FrobTarget).PickupAmmoCount $ ")";
 
         //if (FrobTarget.IsA('WeaponLAW'))
 		//	PlaySound(sound'WeaponPickup', SLOT_Interact, 0.5+FRand()*0.25, , 256, 0.95+FRand()*0.1);
-		DoFrob(Self, inHand);
+        DoFrob(Self, inHand);
         /*if ( FrobTarget.IsA('DeusExWeapon') && bLeftClicked) //CyberP: for left click interaction //RSD: This is actually in FindInventorySlot() already, and the conflict made the player equip nothing
         {
         PutInHand(FoundItem);
@@ -8425,7 +8519,20 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly)
 			WeaponShuriken(FrobTarget).ItemName = WeaponShuriken(FrobTarget).default.ItemName;
 	}
 
-	return bCanPickup;
+    if (bCanPickup && !bDeclined)
+    {
+        pickupCooldown = 0.15;
+        
+        //SARGE: Moved left-click interaction to here.
+        if (bLeftClicked && inHand == None)
+        {
+            //PutInHand(anItem); //CyberP: left click interaction //SARGE: This breaks stacked items
+            SelectInventoryItem(FrobTarget.Class.name);
+            bLeftClicked = False;
+        }
+    }
+
+	return bCanPickup && !bDeclined;
 }
 
 // ----------------------------------------------------------------------
@@ -8469,10 +8576,13 @@ function NanoKeyInfo CreateNanoKeyInfo()
 // 2. Destroy NanoKey (since the user can't have it in his/her inventory)
 // ----------------------------------------------------------------------
 
-function PickupNanoKey(NanoKey newKey)
+function bool PickupNanoKey(NanoKey newKey)
 {
     if (KeyRing.HasKey(newKey.KeyID))
+    {
         ClientMessage(Sprintf(DuplicateNanoKey, newKey.Description));
+        return false;
+    }
     else
         ClientMessage(Sprintf(AddedNanoKey, newKey.Description));
 	KeyRing.GiveKey(newKey.KeyID, newKey.Description);
@@ -8481,6 +8591,7 @@ function PickupNanoKey(NanoKey newKey)
 	{
 	  KeyRing.GiveClientKey(newKey.KeyID, newKey.Description);
 	}
+    return true;
 }
 
 // ----------------------------------------------------------------------
@@ -8571,6 +8682,9 @@ function DoFrob(Actor Frobber, Inventory frobWith)
 exec function PutInHand(optional Inventory inv, optional bool bNoPrimary)
 {
     local DeusExWeapon weap;
+    local Inventory assigned;
+
+    assigned = GetSecondary();
 
 	if (RestrictInput(true))
 		return;
@@ -8604,9 +8718,9 @@ exec function PutInHand(optional Inventory inv, optional bool bNoPrimary)
 	if (CarriedDecoration != None)
 		DropDecoration();
     bLeftClicked = False; //CyberP: fail safe
-	if (assignedWeapon != none && assignedWeapon.IsA('Binoculars'))             //RSD: Make sure we aren't in binocs view
-		if (Binoculars(assignedWeapon).bActive)
-            assignedWeapon.GotoState('DeActivated');
+	if (assigned != none && assigned.IsA('Binoculars') && Binoculars(assigned).bActive)             //RSD: Make sure we aren't in binocs view
+            assigned.Activate();
+
     if (inHandPending != inv && inHand != inv)
         bBeltSkipNextPrimary = bNoPrimary;
 
@@ -8674,7 +8788,7 @@ function SetInHand(Inventory newInHand)
 	// Notify the hud
 	root = DeusExRootWindow(rootWindow);
 	if (root != None)
-		root.hud.belt.UpdateInHand();
+        root.hud.ammo.UpdateVisibility();
 
     UpdateCrosshair();
 }
@@ -8742,6 +8856,13 @@ function UpdateInHand()
 	//DEUS_EX AMSD  Don't let clients do this.
 	if (Role < ROLE_Authority)
 	  return;
+
+    //SARGE: Added a new check to update the HUD when our in-hand is no longer valid (ie, we used the last ammo of a disposable weapon)
+    if (inHand != None && inHand.Owner != Self && root != None)
+    {
+        root.hud.belt.UpdateInHand();
+        root.hud.ammo.UpdateVisibility();
+    }
 
 	if (inHand != inHandPending)
 	{
@@ -8813,7 +8934,10 @@ function UpdateInHand()
 			}
             // Notify the hud
             if (root != None)
+            {
                 root.hud.belt.UpdateInHand();
+                root.hud.ammo.UpdateVisibility();
+            }
 		}
 	}
 	else
@@ -9024,9 +9148,12 @@ function RemoveItemFromSlot(Inventory anItem)
 {
 	if (anItem != None)
 	{
+        if (anItem == primaryWeapon)
+            primaryWeapon = None;
 		SetInvSlots(anItem, 0);
 		anItem.invPosX = -1;
 		anItem.invPosY = -1;
+        UpdateSecondaryDisplay();
 	}
 }
 
@@ -9171,15 +9298,7 @@ function Bool FindInventorySlot(Inventory anItem, optional Bool bSearchOnly)
 	}
 
 	if ((bPositionFound) && (!bSearchOnly))
-	{
-		PlaceItemInSlot(anItem, col, row);
-		if (bLeftClicked && inHand == None)
-		{
-            //PutInHand(anItem); //CyberP: left click interaction //SARGE: This breaks stacked items
-            SelectInventoryItem(anItem.Class.name);
-            bLeftClicked = False;
-		}
-	}
+        PlaceItemInSlot(anItem, col, row);
 
 	return bPositionFound;
 }
@@ -9288,7 +9407,7 @@ function RemoveObjectFromBelt(Inventory item)
 function MakeBeltObjectPlaceholder(Inventory item)
 {
 	if (DeusExRootWindow(rootWindow) != None)
-	  DeusExRootWindow(rootWindow).hud.belt.RemoveObjectFromBelt(item,true);
+	  DeusExRootWindow(rootWindow).hud.belt.RemoveObjectFromBelt(item,Level.NetMode == NM_Standalone || !bBeltIsMPInventory);
 }
 
 function AddObjectToBelt(Inventory item, int pos, bool bOverride)
@@ -9300,25 +9419,23 @@ function AddObjectToBelt(Inventory item, int pos, bool bOverride)
 ////Sarge: Functions for dealing with belt memory
 
 // Set Placeholder
-function SetPlaceholder(int objectNum, bool value, optional texture icon)
+function SetPlaceholder(int objectNum, texture icon)
 {
-    beltInfos[objectNum].bPlaceholder = value;
     if (icon != None)
         beltInfos[objectNum].icon = icon;
 }
 
 function ClearPlaceholder(int objectNum)
 {
-    beltInfos[objectNum].bPlaceholder = false;
     beltInfos[objectNum].icon = None;
 }
 
 function bool GetPlaceholder(int objectNum)
 {
-    return beltInfos[objectNum].bPlaceholder;
+    return beltInfos[objectNum].icon != None;
 }
 
-function texture GetBeltIcon(int objectNum)
+function texture GetPlaceholderIcon(int objectNum)
 {
     return beltInfos[objectNum].icon;
 }
@@ -10105,8 +10222,6 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 				   DeusExWeapon(item).HideCamo();
 				   DeusExWeapon(item).AmbientGlow=DeusExWeapon(item).default.AmbientGlow;
 				}
-                if (DeusExWeapon(item) == assignedWeapon)
-				    assignedWeapon = None;
 			}
 		}
 
@@ -10189,11 +10304,6 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 
 				// make sure we have one copy to throw!
 				DeusExPickup(item).NumCopies = 1;
-
-				if (DeusExPickup(item) == assignedWeapon)                       //RSD: Reset our assigned weapon
-				{
-					AssignSecondary(None);
-				}
 			}
 		}
         //If it's a disposable weapon, throw away only one, and deduct ammo
@@ -10224,9 +10334,6 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
                     MakeBeltObjectPlaceholder(item); //SARGE: Disabled because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
                 else
                     RemoveObjectFromBelt(item);
-				
-                if (DeusExWeapon(item) == assignedWeapon)                       //RSD: Reset our assigned weapon
-					AssignSecondary(None);
             }
             ammoType.ammoAmount -= 1;
             UpdateAmmoBeltText(AmmoType);
@@ -10346,6 +10453,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 							Carc.bSearched = POVCorpse(item).bSearched;
 							Carc.PickupAmmoCount = POVCorpse(item).PickupAmmoCount;
 							Carc.savedName = POVCorpse(item).savedName;
+                            Carc.bFirstBloodPool = POVCorpse(item).bFirstBloodPool; //SARGE: Added.
                             Carc.UpdateName();
 
                             //if (FRand() < 0.3)
@@ -10368,7 +10476,11 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 								}
 							}
 							else
+                            {
+                                ClientMessage(CannotDropHere);
 								carc.bHidden = True;
+                                carc.Destroy();
+                            }
 						}
 					}
 				}
@@ -10972,11 +11084,11 @@ function texture GetWeaponHandTex()
 		switch(PlayerSkin)
 		{
 			//default, black, latino, ginger, albino, respectively
-			case 0: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.weaponhandstex0A"); break;
-			case 1: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.weaponhandstex1A"); break;
-			case 2: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.weaponhandstex2A"); break;
-			case 3: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.weaponhandstex3A"); break;
-			case 4: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.skins.weaponhandstex4A"); break;
+			case 0: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.Skins.weaponhandstex0A"); break;
+			case 1: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.Skins.weaponhandstex1A"); break;
+			case 2: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.Skins.weaponhandstex2A"); break;
+			case 3: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.Skins.weaponhandstex3A"); break;
+			case 4: tex = class'HDTPLoader'.static.GetTexture("RSDCrap.Skins.weaponhandstex4A"); break;
 		}
     }
 
@@ -11074,7 +11186,7 @@ exec function MinimiseTargetingWindow()
 exec function SkipMessages()
 {
     if (dataLinkPlay != None)
-        dataLinkPlay.AbortAndSaveHistory();
+        dataLinkPlay.AbortAndSaveHistory(true);
 }
 
 // ----------------------------------------------------------------------
@@ -11341,20 +11453,19 @@ function UpdateHUD()
 	local DeusExRootWindow root;
 	root = DeusExRootWindow(rootWindow);
 
-    //SARGE: Hack to autobind belt keys - and =
-    //TODO: Write a proper keybind handler class, for this and leaning,
-    //the wheel, and any other keys you care to bind dynamically.
-    if (bBiggerBelt)
-    {
-        //SARGE: TODO: Check these slots aren't already bound
-        if(ConsoleCommand( "KEYBINDING Minus" ) == "")
-            ConsoleCommand("SET InputExt Minus ActivateBelt 10");
-        if(ConsoleCommand( "KEYBINDING Equals" ) == "")
-            ConsoleCommand("SET InputExt Equals ActivateBelt 11");
-    }
-
     if (root != None)
         root.UpdateHUD();
+}
+
+function UpdateSecondaryDisplay()
+{
+	local DeusExRootWindow root;
+	root = DeusExRootWindow(rootWindow);
+
+    //ClientMessage("Updating Secondary Display");
+
+    if (root != None)
+        root.UpdateSecondaryDisplay();
 }
 
 // ----------------------------------------------------------------------
@@ -11589,6 +11700,10 @@ exec function ActivateBelt(int objectNum)
             //we're not selecting anything!
             if (beltItem == None)
                 return;
+            
+            //We're reselecting our main slot.
+            if (bAlternateToolbelt >= 1 && advBelt == objectNum)
+                bSelectedFromMainBeltSelection = true;
 
             //SARGE: If already selected in IW Belt mode, an additional press will set our primary weapon to that slot.
 			if (bAlternateToolbelt >= 1 && beltItem == inHandPending)
@@ -11600,10 +11715,6 @@ exec function ActivateBelt(int objectNum)
             //If we're not in IW belt mode, set our IW belt to match our current belt.
             else if (bAlternateToolbelt == 0)
                 advBelt = objectNum;
-
-                
-            //Did we select from empty?
-            selectedNumberFromEmpty = inHand == None;
 		
 			root.ActivateObjectInBelt(objectNum);
 			BeltLast = objectNum;
@@ -11622,6 +11733,9 @@ exec function NextBeltItem()
 {
 	local DeusExRootWindow root;
 	local int slot, startSlot, totalSlots;
+    local Inventory assigned;
+    
+    assigned = GetSecondary();
 
     if (bBiggerBelt)
         totalSlots = 12;
@@ -11655,17 +11769,14 @@ exec function NextBeltItem()
 	       return;
 	   }
 	}
-	else if (assignedWeapon != none && assignedWeapon.IsA('Binoculars'))        //RSD: Scrolling during secondary Binoc zoom
+	else if (assigned != none && assigned.IsA('Binoculars') && Binoculars(assigned).bActive)        //RSD: Scrolling during secondary Binoc zoom
 	{
-	   if (Binoculars(assignedWeapon).bActive)
-	   {
-	       if (FovAngle < 60)
-	       {
-	           Binoculars(assignedWeapon).ScopeFov += 2;
-	           Binoculars(assignedWeapon).RefreshScopeDisplay(Self,FALSE);
-	       }
-	       return;
-	   }
+        if (FovAngle < 60)
+        {
+            Binoculars(assigned).ScopeFov += 2;
+            Binoculars(assigned).RefreshScopeDisplay(Self,FALSE);
+        }
+        return;
 	}
 
    if (bAlternateToolbelt == 0)
@@ -11744,7 +11855,6 @@ exec function NextBeltItem()
 		}
 	}
     beltScrolled = slot;
-    selectedNumberFromEmpty = false;
 	}
 }
 
@@ -11758,6 +11868,9 @@ exec function PrevBeltItem()
 {
 	local DeusExRootWindow root;
 	local int slot, startSlot;
+    local Inventory assigned;
+
+    assigned = GetSecondary();
 
 	if (RestrictInput())
 		return;
@@ -11786,17 +11899,14 @@ exec function PrevBeltItem()
 	       return;
 	   }
 	}
-	else if (assignedWeapon != none && assignedWeapon.IsA('Binoculars'))        //RSD: Scrolling during secondary Binoc zoom
+	else if (assigned != none && assigned.IsA('Binoculars') && Binoculars(assigned).bActive)        //RSD: Scrolling during secondary Binoc zoom
 	{
-	   if (Binoculars(assignedWeapon).bActive)
-	   {
-	       if (FovAngle > 20)
-	       {
-	           Binoculars(assignedWeapon).ScopeFov -= 2;
-	           Binoculars(assignedWeapon).RefreshScopeDisplay(Self,FALSE);
-	       }
-	       return;
-	   }
+        if (FovAngle > 20)
+        {
+            Binoculars(assigned).ScopeFov -= 2;
+            Binoculars(assigned).RefreshScopeDisplay(Self,FALSE);
+        }
+        return;
 	}
 
    if (bAlternateToolbelt == 0)
@@ -11873,7 +11983,6 @@ exec function PrevBeltItem()
 		}
 	}
     beltScrolled = slot;
-    selectedNumberFromEmpty = false;
 	}
 }
 
@@ -12503,6 +12612,11 @@ ignores SeePlayer, HearNoise, Bump;
 		bBehindView = false;
 		StopBlendAnims();
 		ConversationActor = None;
+
+        //SARGE: Now this is needed because we're changing eyeheight
+		if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
+            BaseEyeHeight += FemJCEyeHeightAdjust;
+        //ResetBasedPawnSize();
 	}
 
 	function int retLevelInfo()
@@ -12565,6 +12679,10 @@ Begin:
 		    PutInHand(None);
 		}
         UpdateInHand();
+            
+        //SARGE: Reset the players eyeheight
+        if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
+            BaseEyeHeight = default.BaseEyeHeight;
 
 		if ( conPlay.GetDisplayMode() == DM_ThirdPerson )
 			bBehindView = true;
@@ -13431,16 +13549,56 @@ function DeusExNote AddNote( optional String strNote, optional Bool bUserNote, o
 }
 
 // ----------------------------------------------------------------------
-// GetCodeNote()
+// SARGE: GetCodeNote()
 //
 // Loops through the notes and searches for the code in any note.
 // Ignores user notes, so we can't add some equivalent of "The code's 0451" and instantly know a code
 // Also makes sure to check the original text of notes, not user-added text, so we can't cheat by appending 0451 to an existing non-user note.
 // ----------------------------------------------------------------------
 
+//SARGE: This exists because we can't use Locs in pre-UT2K3 Unrealscript
+//This was taken from the UnrealWiki: https://beyondunrealwiki.github.io/pages/useful-string-functions.html
+static final function string Locs(coerce string Text)
+{
+    local int IndexChar;
+ 
+    for (IndexChar = 0; IndexChar < Len(Text); IndexChar++)
+        if (Mid(Text, IndexChar, 1) >= "A" &&
+            Mid(Text, IndexChar, 1) <= "Z")
+            Text = Left(Text, IndexChar) $ Chr(Asc(Mid(Text, IndexChar, 1)) + 32) $ Mid(Text, IndexChar + 1);
+
+    return Text;
+}
+
+//SARGE: Strip off the "FROM: xxx TO: xxx" line in notes,
+//because these are often in all-caps, and will confuse the algorithm.
+function string StripFromTo(string text)
+{
+    local int newlinePos;
+    local bool bFoundNewline;
+    
+    if(InStr(text,"FROM: ") == 0)
+    {
+        //find the first ascii 10 (newline)
+        for (newlinePos = 0; newlinePos < Len(text); newlinePos++)
+        {
+            if (Asc(Mid(text,newlinePos,1)) == 10)
+            {
+                bFoundNewline = true;
+                break;
+            }
+        }
+        if (bFoundNewline)
+            return Mid(text, newlinePos);
+    }
+
+    return text;
+}
+
 function bool GetCodeNote(string code)
 {
 	local DeusExNote note;
+    local string noteText;
 
 	note = FirstNote;
 
@@ -13453,18 +13611,65 @@ function bool GetCodeNote(string code)
             //handle any notes we were given which might not have "original" text for whatever reason
             if (note.originalText == "")
                 note.originalText = note.text;
-
-            //Check note contents for the code
-            if (InStr(Caps(note.originalText),Caps(code)) != -1)
-                return true;
+            
+            //noteText = note.originalText;
 
             //log("NOTE: " $ note.text);
+
+            //SARGE: This is some WEIRD logic!
+            //Because we need to dynamically check the notes for codes,
+            //HOWEVER We DON'T want to be able to login if the words simply exist in notes,
+            //because some logins are common words, like SECURITY,
+            //or WALTON and SIMONS, which means we need to check more thoroughly.
+            //Generally, though, Passwords follow these rules:
+            //1. Normally they are either in ALL CAPS or all lower case.
+            //2. There's a few times where they will have Login: Somename, Password: Somename, which are in camel caps (becase of course....)
+            //3. Lots of notes also have allcaps FROM and TO text in them, like an email,
+            //such as FROM: WALTON SIMONS TO: SOME GUY
+            //So we need to account for all of these.
+            
+            //First, strip off the first line if there's FROM: and TO: text...
+            noteText = StripFromTo(note.originalText);
+
+            //Next, Check note contents for the code
+            //Start by checking that our code matches CAPS in the note...
+            if (InStr(noteText,Caps(code)) != -1)
+            {
+                //log("NOTE: " $ noteText);
+                //log("NOTE CODE " $code$ " FOUND (CAPS)");
+                return true;
+            }
+            
+            //Then check that our code matches all lower case in the note...
+            else if (InStr(noteText,Locs(code)) != -1)
+            {
+                //log("NOTE: " $ noteText);
+                //log("NOTE CODE " $code$ " FOUND (LOCS)");
+                return true;
+            }
+            
+            //Some codes are in quotes, so always allows things in quotes
+            if (InStr(Caps(noteText),"\""$Caps(code)$"\"") != -1)
+            {
+                //log("NOTE: " $ noteText);
+                //log("NOTE CODE " $code$ " FOUND (CAPS)");
+                return true;
+            }
+
+            //Some notes have Login: Username and Password: Whatever in them, so handle them.
+            else if (InStr(Caps(noteText),Caps("LOGIN: " $ code)) != -1)
+                return true;
+            else if (InStr(Caps(noteText),Caps("PASSWORD: " $ code)) != -1)
+                return true;
+            else if (InStr(Caps(noteText),Caps("LOGIN/PASSWORD: " $ code)) != -1)
+                return true;
             
         }
 
 		note = note.next;
 	}
 
+    log("NOTE CODE " $code$ " NOT FOUND");
 	return false;
 }
 
@@ -13474,15 +13679,22 @@ function bool GetExceptedCode(string code)
 {
     code = Caps(code);
 	return code == "CALVO" //Alex Jacobson computer password on the wall next to his computer
+        || code == "AJACOBSON" //Alex Jacobson computer password on the wall next to his computer
+        || code == "NSF" //NSF/Righteous, but the Righteous is given out and the NSF is reasonably guessable.
+        || code == "JCD" //we get our code as soon as we enter our office, but it takes a little bit. Fix it not working when we should know it
         || code == "BIONICMAN" //we get our code as soon as we enter our office, but it takes a little bit. Fix it not working when we should know it
+        || code == "MCHOW" //maggie chows code can only be guessed, never found, but is designed that way.
         || code == "INSURGENT" //maggie chows code can only be guessed, never found, but is designed that way.
         //|| code == "2167" //Only displayed in a computer message, so we never get a note for it //NOW RANDOMISED
         || code == "718" //Can only be guessed based on cryptic information
         || code == "7243" //We are only given 3 digits, need to guess the 4th
+        || code == "CAPTAIN" //Login/Password: KZHao, Captain, am too lazy to check for the Captain in that string.
         || code == "WYRDRED08" //We are not given the last digit
         || (code == "1966" && FlagBase.GetBool('GaveCassandraMoney')) //Only given in conversation, no note
         //|| code == "1966" //Only given in conversation, no note
-        || code == "4321"; //We are told to "count backwards from 4"
+        || code == "4321" //We are told to "count backwards from 4"
+        || code == "NICOLETTE" //Given in conversation
+        || code == "CHAD"; //Given in conversation
 }
 
 //"Security" is a commonly used word in many logs.
@@ -14043,6 +14255,38 @@ function int GenerateTotalMaxHealth()                                           
 	else
 		maxHealth = (ave + avecrit) / 2.0; //GMDX: TODO: check mini display for colouring etc, max value=115
 	return maxHealth;
+}
+
+//SARGE: Gets our actual health points
+function int GetTotalHealth()
+{
+    return HealthHead
+    + HealthTorso
+    + HealthArmLeft
+    + HealthArmRight
+    + HealthLegLeft
+    + HealthLegRight;
+}
+
+//SARGE: Gets our total max health points
+function int GetTotalMaxHealth()
+{
+    local int maxHealth;
+    maxHealth   = default.HealthHead
+                  + default.HealthTorso
+                  + default.HealthArmLeft
+                  + default.HealthArmRight
+                  + default.HealthLegLeft
+                  + default.HealthLegRight;
+    
+    //Medicine affects torso and head health
+	if (SkillSystem != None)
+        maxHealth += SkillSystem.GetSkillFromClass(Class'DeusEx.SkillMedicine').CurrentLevel*20;
+
+    if (AddictionManager != None)
+        maxHealth += AddictionManager.GetTorsoHealthBonus();
+    
+    return maxHealth;
 }
 
 // ----------------------------------------------------------------------
@@ -15071,7 +15315,7 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
                     if (saveTime >= enviro.lastEnergyTick)
                     {
                         //Energy -= MAX(int(newDamage * 0.1),1);
-                        Energy -= 1;
+                        Energy = FMAX(Energy - enviro.GetAdjustedEnergy(1),0);
                         enviro.lastEnergyTick = saveTime + 3.0;
                     }
                     newDamage *= augLevel;
@@ -15175,7 +15419,7 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 
 			if (augLevel < 0.0 && Energy > 0.0) //this means we can't have both augs installed, and that for passive to work energy is required. //RSD: Actually it just means active overrides passive
 			{
-                augLevel = AugBallisticPassive(AugmentationSystem.GetAug(class'AugBallisticPassive')).GetDamageMod();
+                augLevel = AugBallisticPassive(AugmentationSystem.GetAug(class'AugBallisticPassive')).GetDamageMod(true);
 			}
 			//augLevel *= AugmentationSystem.GetAugLevelValue(class'AugBallistic');//RSD: figure out stacking prots later maybe
         }
@@ -16979,14 +17223,16 @@ exec function IAmWarren()
 function bool UsingChargedPickup(class<ChargedPickup> itemclass)
 {
 	local inventory CurrentItem;
+	local ChargedPickup CurrentPickup;
 	local bool bFound;
 
 	bFound = false;
 
 	for (CurrentItem = Inventory; ((CurrentItem != None) && (!bFound)); CurrentItem = CurrentItem.inventory)
 	{
-	  if ((CurrentItem.class == itemclass) && (CurrentItem.bActive))
-		 bFound = true;
+        CurrentPickup = ChargedPickup(CurrentItem);
+        if (CurrentPickup != None && CurrentPickup.class == itemclass && CurrentPickup.bActive && !CurrentPickup.bDrained) //SARGE: Added bDrained check
+            bFound = true;
 	}
 
 	return bFound;
@@ -18199,6 +18445,7 @@ defaultproperties
      bQuickAugWheel=false
      bAugWheelDisableAll=true
      bAugWheelFreeCursor=true
+     iAugWheelAutoAdd=1
      bColourCodeFrobDisplay=True
      bWallPlacementCrosshair=True
      dynamicCrosshair=1
@@ -18207,17 +18454,17 @@ defaultproperties
      bBeltShowModified=true;
      bSearchedCorpseText=True
      bDisplayClips=true
-     bCutsceneFOVAdjust=true
+     iCutsceneFOVAdjust=2
      iFrobDisplayStyle=1
      bShowDataCubeRead=true;
      iAllowCombatMusic=1
      bFullAccuracyCrosshair=true;
      bShowEnergyBarPercentages=true;
-     bSimpleAugSystem=true
+     bSimpleAugSystem=false
      bBigDroneView=True
      bSimpleAugSystem=true
-	 MenuThemeNameGMDX="Default"
-     HUDThemeNameGMDX="Default"
+	 MenuThemeNameGMDX="MJ12"
+     HUDThemeNameGMDX="Amber"
      dblClickHolster=2
      bSmartDecline=True
      killswitchTimer=-2
@@ -18228,4 +18475,15 @@ defaultproperties
      bEnableBlinking=True
      iDeathSoundMode=2
      bBiggerBelt=True
+     bOnlyShowTargetingWindowWithWeaponOut=True
+     //bRightClickToolSelection=True
+     bShowItemPickupCounts=True
+     bAllowSaveWhileInfolinkPlaying=True
+     bShowAmmoTypeInAmmoHUD=True
+     //bJohnWooSparks=True
+     bConsistentBloodPools=True
+     iPersistentDebris=1
+  	 iStanceHud=3   //Ygll = Every stance
+	   bIsMantlingStance=false //Ygll: new var to know if we are currently mantling
+	   iHealingScreen=1
 }

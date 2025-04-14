@@ -24,6 +24,7 @@ var BodyPart armor;
 
 var Color    colArmor;
 var Color    col02;
+var Color    colRed;
 
 var float    damageFlash;
 var float    healFlash;
@@ -51,6 +52,13 @@ var Texture texBorder;
 var localized string O2Text;
 var localized string EnergyText;
 var localized string noted;
+var localized string walking;
+var localized string crouching;
+var localized string running;
+var localized string leaning;
+var localized string swimming;
+var localized string tiptoes;
+var localized string mantling;
 var string percentTxt;
 var Color colLight;
 var color colLightDark;
@@ -220,10 +228,76 @@ function SetHitColor(out BodyPart part, float deltaSeconds, bool bHide, int hitV
 	}
 }
 
+//Ygll: utility function to display the current player stance into hud
+function DisplayStanceInfo(GC gc)
+{
+	local float alignX, alignY, alignH, alignW;
+	
+	gc.SetFont(Font'FontMenuSmall');
+	gc.SetStyle(DSTY_Normal);		
+	gc.SetTextColor(colText);
+	
+	alignH = 12.0;
+	alignW = 75.0;
+	if(player.bHUDBordersVisible)
+	{
+		alignX = 19.0;
+		alignY = 95.0;
+	}
+	else
+	{
+		alignX = 12.0;
+		alignY = 90.0;
+	}
+	
+	if(player.iStanceHud == 1)
+	{
+		if( !player.IsCrouching() && !player.bIsTipToes && !player.IsLeaning() && !player.bIsMantlingStance )
+		{
+			if(player.bIsWalking)
+				gc.DrawText(alignX, alignY, alignW, alignH, "[-" $ walking $ "-]");
+			else if(!player.bIsWalking)
+				gc.DrawText(alignX, alignY, alignW, alignH, "[-" $ running $ "-]");
+		}
+	}
+	else
+	{
+		if(player.IsInState('PlayerSwimming'))
+		{			
+			gc.DrawText(alignX, alignY, alignW, alignH, "[-" $ swimming $ "-]");
+		}
+		else if(player.bIsTipToes)
+		{			
+			gc.DrawText(alignX, alignY, alignW, alignH, "[-" $ tiptoes $ "-]");
+		}
+		else if(player.IsLeaning())
+		{			
+			gc.DrawText(alignX, alignY, alignW, alignH, "[-" $ leaning $ "-]");
+		}
+		else if( (player.bIsMantlingStance || player.IsInState('Mantling') ) && ( player.velocity.X >= 0.0 && player.velocity.X <= 0.1 ) && ( player.velocity.Y >= 0.0 && player.velocity.Y <= 0.1 )  )
+		{			
+			gc.DrawText(alignX, alignY, alignW, alignH, "[-" $ mantling $ "-]");
+		}
+		else if( !player.bCrouchHack && ( player.bCrouchOn || player.bForceDuck || player.bIsCrouching ))
+		{			
+			gc.DrawText(alignX, alignY, alignW, alignH, "[-" $ crouching $ "-]");
+		}
+		else if(player.bIsWalking)
+		{
+			if(player.iStanceHud == 3 || (player.iStanceHud == 2 && player.bAlwaysRun) )		
+				gc.DrawText(alignX, alignY, alignW, alignH, "[-" $ walking $ "-]");
+		}
+		else if(!player.bIsWalking)
+		{
+			if(player.iStanceHud == 3 || (player.iStanceHud == 2 && !player.bAlwaysRun) )	
+				gc.DrawText(alignX, alignY, alignW, alignH, "[-" $ running $ "-]");
+		}	
+	}
+}
+
 // ----------------------------------------------------------------------
 // DrawWindow()
 // ----------------------------------------------------------------------
-
 event DrawWindow(GC gc)
 {
 	Super.DrawWindow(gc);
@@ -244,6 +318,16 @@ event DrawWindow(GC gc)
 	    breathPercent = 100.0 * player.swimTimer / player.swimDuration;
 	    breathPercent = FClamp(breathPercent, 0.0, 100.0);
         winBreath.SetCurrentValue(breathPercent);
+
+        //SARGE: Show a red bar when we're stunted
+        if (player.bStunted)
+        {
+            winBreath.UseScaledColor(false);
+            winBreath.SetColors(colRed,colRed);
+        }
+        else
+            winBreath.UseScaledColor(true);
+
 		ypos = breathPercent * 0.55;
 
 		// draw the breath bar
@@ -265,6 +349,7 @@ event DrawWindow(GC gc)
         else
             gc.DrawText(61, 74, 8, 8, int(breathPercent));
 	}
+	
 	if (Player.LightLevelDisplay > -1)
 	{
 		noted = Player.LightLevelDisplay $ percentTxt;
@@ -283,8 +368,14 @@ event DrawWindow(GC gc)
         }
         gc.SetFont(Font'FontConversationBold');
         gc.SetTextColor(colMult);
-        gc.DrawText(31, 72, 36, 12, noted);
-     }
+		gc.DrawText(31, 72, 36, 12, noted);
+    }
+
+	//Ygll: new tooltip feature to display the current player stance into hud
+	if(player.iStanceHud > 0)
+	{
+		DisplayStanceInfo(gc);
+	}
 }
 
 // ----------------------------------------------------------------------
@@ -390,7 +481,7 @@ event Tick(float deltaSeconds)
 		    if (!winBreath.IsVisible())
 				winBreath.Show();
 		}
-
+		
 		Show();
 	}
 	else
@@ -452,13 +543,21 @@ function UpdateAsFemale(bool NewbFemale)
 
 defaultproperties
 {
-     colArmor=(R=255,G=255,B=255)
-     col02=(G=128,B=255)
-     texBackground=Texture'DeusExUI.UserInterface.HUDHitDisplayBackground_1'
-     texBorder=Texture'DeusExUI.UserInterface.HUDHitDisplayBorder_1'
-     O2Text="O2"
-     EnergyText="BE"
-     percentTxt="%"
-     colLight=(R=255,G=255)
-     colLightDark=(R=140,G=140)
+     colArmor=(R=255,G=255,B=255);
+     col02=(G=128,B=255);
+     texBackground=Texture'DeusExUI.UserInterface.HUDHitDisplayBackground_1';
+     texBorder=Texture'DeusExUI.UserInterface.HUDHitDisplayBorder_1';
+     O2Text="O2";
+     EnergyText="BE";
+     percentTxt="%";	 
+     colLight=(R=255,G=255);
+     colLightDark=(R=140,G=140);
+     colRed=(R=255);
+	 crouching="Crouching";
+	 walking="Walking";
+	 running="Running";
+	 leaning="Leaning";
+	 swimming="Swimming";
+	 tiptoes="Tiptoes";
+	 mantling="Mantling";
 }

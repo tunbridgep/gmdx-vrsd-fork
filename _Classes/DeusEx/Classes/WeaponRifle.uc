@@ -417,4 +417,5 @@ defaultproperties
      minSkillRequirement=2;
      bBigMuzzleFlash=true
      bFancyScopeAnimation=true
+     muzzleSlot=-1 //doesn't have one
 }

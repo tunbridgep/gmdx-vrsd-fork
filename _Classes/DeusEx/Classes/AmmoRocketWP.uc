@@ -38,4 +38,5 @@ defaultproperties
      CollisionHeight=7.800000
      bCollideActors=True
      //bHarderScaling=True
+     ammoHUDColor=(R=255,G=64)
 }

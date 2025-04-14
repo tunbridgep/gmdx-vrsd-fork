@@ -31,4 +31,5 @@ defaultproperties
      HDTPSkin="GMDXSFX.Skins.TranqAmmo"
      //HDTPSkin="HDTPItems.Skins.HDTPAmmoDartTex3"
      Skin=Texture'DeusExItems.Skins.AmmoDartTex3'
+     ammoHUDColor=(G=255)
 }
