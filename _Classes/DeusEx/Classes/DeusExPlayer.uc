@@ -1597,9 +1597,10 @@ function int GetInventoryCount(Name item)
 
 function PostPostBeginPlay()
 {
-
-
 	Super.PostPostBeginPlay();
+
+    //Fix all inventory item positions
+    SetAllBase();
 
 	// Bind any conversation events to this DeusExPlayer
 	ConBindEvents();
@@ -1993,10 +1994,6 @@ function RefreshChargedPickups()
 	{
 		if (anItem.Owner == Self)
 		{
-            //If it's active, reset it's base
-            if (anItem.bIsActive && anItem.AmbientSound != None)
-                anItem.SetBase(self);
-
 			// Make sure tech goggles display is refreshed
 			if (anItem.IsA('TechGoggles') && anItem.IsActive())
 				TechGoggles(anItem).UpdateHUDDisplay(Self);
@@ -2862,6 +2859,7 @@ function CreateKeyRing()
 		KeyRing.InitialState='Idle2';
 		KeyRing.GiveTo(Self);
 		KeyRing.SetBase(Self);
+		KeyRing.SetLocation(Self.Location);
 	}
 }
 
@@ -3491,6 +3489,22 @@ simulated function RefreshSystems(float DeltaTime)
 
 	LastRefreshTime = 0;
 
+}
+
+//SARGE: Attempt to fix weird issues (like ChargedPickups not making the right sounds)
+//by always using SetBase on everything
+function SetAllBase()
+{
+	local Inventory curInv;
+	if (Inventory != None)
+	{
+        for (curInv = Inventory; curInv != None; curInv = curInv.Inventory)
+        {
+            curInv.SetBase(self);
+            if (curInv != inHand)
+                curInv.SetLocation(Location);
+        }
+    }
 }
 
 function RepairInventory()
@@ -8733,7 +8747,10 @@ function DoFrob(Actor Frobber, Inventory frobWith)
 
 	// set the base so the inventory follows us around correctly
 	if (FrobTarget.IsA('Inventory'))
+    {
 		FrobTarget.SetBase(Frobber);
+        FrobTarget.SetLocation(Frobber.Location);
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -8793,6 +8810,9 @@ exec function PutInHand(optional Inventory inv, optional bool bNoPrimary)
     SetInHandPending(inv);
                 
     //clientMessage("PutInHand called for : " $ inv $ ", bBeltSkipNextPrimary=" $ bBeltSkipNextPrimary);
+
+    //SARGE: Hopefully fix issues with items not making sounds, etc.
+    SetAllBase();
 
     UpdateCrosshair();
 }
