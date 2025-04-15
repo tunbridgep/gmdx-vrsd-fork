@@ -1029,7 +1029,7 @@ local DeusExPlayer playa;
     if (NPCAccurateRange == 0)
       NPCAccurateRange = default.AccurateRange;
 
-    if (!givenFreeReload && (Owner == None || Owner.IsA('ScriptedPawn')))
+    if (!givenFreeReload && (bDisposableWeapon || Owner == None || Owner.IsA('ScriptedPawn')))
     {
         ClipCount = ReloadCount;
         givenFreeReload = true;
