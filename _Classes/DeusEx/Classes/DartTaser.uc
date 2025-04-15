@@ -22,10 +22,10 @@ function CreateTaserDartHitLight()
 		sparkEffect1 = spawn(class'GMDXImpactSpark');
 		sparkEffect2 = spawn(class'GMDXImpactSpark2');
 
-		if( sparkEffect1 != none  )
+		if( sparkEffect1 != None  )
 		{
 			//Ygll: change the value to advert some sound issue because it's starting too soon, previously at 1.
-			if(i == 6)
+			if(i == 2)
 			{
 				sparkEffect1.AmbientSound = Sound'Ambient.Ambient.Electricity3';
 				sparkEffect1.SoundRadius=64;
@@ -42,7 +42,7 @@ function CreateTaserDartHitLight()
 			sparkEffect1.LightType = LT_Steady;
 		}
 
-		if( sparkEffect2 != none )
+		if( sparkEffect2 != None )
 		{
 			sparkEffect2.Texture = Texture'Effects.Fire.Spark_Electric';
 			sparkEffect2.LifeSpan = FRand()*0.4;

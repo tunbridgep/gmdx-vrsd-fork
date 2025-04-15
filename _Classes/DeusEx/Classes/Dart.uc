@@ -26,14 +26,14 @@ function CreateSparkHitWallEffect()
 	for (i=0; i<4; i++)
 	{
 		s = spawn(class'GMDXImpactSpark');
-		if( s != none  )
+		if( s != None  )
 		{
 			s.LifeSpan=FRand()*0.12;
 			s.DrawScale = FRand() * 0.06;
 		}
 
 		t = spawn(class'GMDXImpactSpark2');
-		if( t != none )
+		if( t != None )
 		{
 			t.LifeSpan=FRand()*0.12;
 			t.DrawScale = FRand() * 0.06;
@@ -66,7 +66,7 @@ function Timer()
 
     player = DeusExPlayer(GetPlayerPawn());
 
-    if (player != none)
+    if (player != None)
     {
 		if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkSharpEyed').bPerkObtained)
 		{
