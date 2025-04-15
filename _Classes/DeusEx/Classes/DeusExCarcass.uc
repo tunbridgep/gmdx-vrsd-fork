@@ -683,6 +683,10 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitLocation, Vector mo
             }
             }
 		 }
+         else
+         {
+            KillUnconscious();
+         }
 		}
 
 		// this section copied from Carcass::TakeDamage() and modified a little
@@ -723,10 +727,6 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitLocation, Vector mo
 		if ((player.bRealisticCarc || player.bHardCoreMode) && !bAnimalCarcass)  //CyberP: with this option enabled carcasses can only be damaged by explosions, plasma rifle and being eaten
         {
 		  if ((damageType == 'Exploded') || (damageType == 'Munch') || (damageType == 'Burned'))
-             CumulativeDamage += Damage;
-        }
-        else if (damageType == 'throw') //SARGE: No body damage when throwing
-        {
              CumulativeDamage += Damage;
         }
 		if (CumulativeDamage >= MaxDamage)
@@ -1783,14 +1783,9 @@ function Landed(vector HitNormal)
     if (Velocity.Z < -1750)
         TakeDamage(1000, None, Location, Velocity, 'Exploded');
     else if (Velocity.Z < -1000)
-        TakeDamage(5, None, Location, Velocity, 'Shot'); //Sarge: Changed from Shot to Throw
-
-    //SARGE: Even a medium height fall will kill you if you don't brace for it
-    if (bNotDead && Velocity.Z < -600)
-    {
-		PlaySound(Sound'BodyHit', SLOT_Interact, 1, ,768,1.0);     //Bone cracking sound
-        KillUnconscious();
-    }
+        TakeDamage(20, None, Location, Velocity, 'Shot');
+    else if (Velocity.Z < -600) //SARGE: Extra check, even a low fall will kill you, you just won't bleed everywhere.
+        TakeDamage(5, None, Location, Velocity, 'Throw'); //Sarge: Changed from Shot to Throw
 }
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
@@ -1821,6 +1816,15 @@ function UpdateName()
 
 function KillUnconscious()                                                      //RSD: To properly fix corpse names and trigger any other death effects like MIB explosion
 {
+    local DeusExPlayer player;
+
+    if (!bNotDead)
+        return;
+
+    player = DeusExPlayer(GetPlayerPawn());
+    if (player != None && !bAnimalCarcass)
+        player.killerCount++;
+
     bNotDead = false;
     UpdateName();
 }
