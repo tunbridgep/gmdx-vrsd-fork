@@ -529,8 +529,8 @@ simulated function SpawnEffects(Vector HitLocation, Vector HitNormal, Actor Othe
 		mark = DeusExDecal(Spawn(ExplosionDecal, Self,, HitLocation, Rotator(HitNormal)));
 		if (mark != None)
 		{
-			mark.DrawScale *= FClamp(damage/28, 0.1, 3.5);
-			mark.ReattachDecal();
+			mark.DrawScaleMult = FClamp(damage/28, 0.1, 3.5);
+			mark.UpdateHDTPSettings();
 		 if (!bDamaged)
 			mark.RemoteRole = ROLE_None;
 		}
