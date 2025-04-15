@@ -31,6 +31,10 @@ var const int colWidths[2];
 var bool bSortOrder;
 var bool bLastPressedHeaderWasSetting;             //SARGE: If the last pressed header was the "Setting" header. Used to control if we should change the sort order.
 
+var const bool bNoSort;                             //SARGE: If true, the contents of the list won't be sortable or sorted at all.
+
+var const bool bShortHeaderButtons;                 //SARGE: The vanilla lists have a shortened header button on the right side to make both the header buttons equal length.
+
 struct S_ListItem
 {
 	var localized string helpText;
@@ -108,8 +112,6 @@ function CreateChoices()
 
             lstItems.AddRow(items[i].actionText $ ";" $ GetValueString(i) $ ";" $ i $ ";" $ items[i].sortCategory $ items[i].actionText);
             //lstItems.AddRow(items[i].actionText @ items[i].variable $ ";" $ GetValueString(i) $ ", " $ items[i].value);
-
-            //Add sort info
         }
     }
 }
@@ -289,11 +291,18 @@ event bool ListRowActivated(window list, int rowId)
 
 function CreateHeaderButtons()
 {
-	btnHeaderSetting   = CreateHeaderButton(10,  3, colWidths[0], strHeaderSettingLabel,   winClient);
-	btnHeaderValue = CreateHeaderButton(colWidths[0]+10, 3, colWidths[1], strHeaderValueLabel, winClient);
+	btnHeaderSetting   = CreateHeaderButton(10,  3, colWidths[0]-2, strHeaderSettingLabel,   winClient);
+    if (bShortHeaderButtons)
+        btnHeaderValue = CreateHeaderButton(colWidths[0]+11, 3, 157, strHeaderValueLabel, winClient);
+    else
+        btnHeaderValue = CreateHeaderButton(colWidths[0]+11, 3, 380-(colWidths[0]+26), strHeaderValueLabel, winClient);
 
-	//btnHeaderSetting.SetSensitivity(False);
-	//btnHeaderValue.SetSensitivity(False);
+    //Header buttons are disabled if we can't sort.
+    if (bNoSort)
+    {
+        btnHeaderSetting.SetSensitivity(False);
+        btnHeaderValue.SetSensitivity(False);
+    }
 }
 
 function bool ButtonActivated( Window buttonPressed )
@@ -359,8 +368,11 @@ function CreateOptionsList()
     //Fourth Column is for sorting
 	lstItems.HideColumn(3);
 	lstItems.SetColumnType(3, COLTYPE_String);
-	lstItems.SetSortColumn(3, bSortOrder);
-	lstItems.EnableAutoSort(True);
+    if (!bNoSort)
+    {
+        lstItems.SetSortColumn(3, bSortOrder);
+        lstItems.EnableAutoSort(True);
+    }
     bLastPressedHeaderWasSetting = true;
 
 }
@@ -431,6 +443,7 @@ defaultproperties
      textureCols=2
      bHelpAlwaysOn=True
      helpPosY=312
+     defaultHelpHeight=27
      disabledText="Disabled"
      enabledText="Enabled"
      confirmDefaultsTitle="Reset to default settings?"
@@ -441,5 +454,5 @@ defaultproperties
      consoleTarget="DeusExPlayer"
      colWidths(0)=164
      colWidths(1)=205
-     defaultHelpHeight=27
+     bShortHeaderButtons=true
 }

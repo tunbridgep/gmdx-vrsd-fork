@@ -61,4 +61,5 @@ defaultproperties
      items(14)=(HelpText="???",actionText="Shenanigans",variable="bShenanigans");
      Title="Playthrough Modifiers"
      consoleTarget="MenuScreenNewGame"
+     bNoSort=true
 }
