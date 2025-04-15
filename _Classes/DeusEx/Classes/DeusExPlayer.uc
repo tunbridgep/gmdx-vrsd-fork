@@ -10180,7 +10180,6 @@ function DropDecoration()
 // or places it on your currently highlighted object
 // if None is passed in, it drops what's inHand
 // ----------------------------------------------------------------------
-
 exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 {
 	local Inventory item, previtem;
@@ -10208,7 +10207,10 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 	{
 		item = inv;
 	}
-	if ((item!=none)&&(!item.IsA('POVcorpse'))) bThrowDecoration=false;
+
+	if ((item != None) && (!item.IsA('POVcorpse')))
+		bThrowDecoration=false;
+
 	if (item != None)
 	{
 		GetAxes(Rotation, X, Y, Z);
@@ -10282,13 +10284,13 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 				previtem = item;
 
 				item = Spawn(item.Class, Owner);
-				if (item.IsA('ChargedPickup'))                                  //RSD: Simulates dropping the top ChargedPickup from the stack
+				if (item != None && item.IsA('ChargedPickup'))                                  //RSD: Simulates dropping the top ChargedPickup from the stack
 				{
 					item.Charge = previtem.Charge;
 					previtem.Charge = previtem.default.Charge;
 				}
 
-				if(item != none)
+				if(item != None)
 				{
 					if(deusExPickUp(item).bhasMultipleSkins)
 					{
@@ -10324,7 +10326,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 			}
 		}
         //If it's a disposable weapon, throw away only one, and deduct ammo
-        else if (DeusExWeapon(item).bDisposableWeapon && DeusExWeapon(item).ammoName != none)
+        else if (DeusExWeapon(item).bDisposableWeapon && DeusExWeapon(item).ammoName != None)
         {
             AmmoType = Ammo(FindInventoryType(Weapon(item).AmmoName));
             amm = ammoType.ammoAmount;
@@ -10404,7 +10406,8 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 				if (mult == -1.0)
 					mult = 1.0;                                                 //RSD: Was 0.7 in GMDX, back to 1.0 from vanilla
 			}
-			//mult = 1.0;                                                         //RSD: Screw it, no more having fun
+			else
+				mult = 1.0;                                                         //RSD: Screw it, no more having fun //Ygll: need to initialze the float value, use vanilla value
 
 			if (bDrop)
 			{
@@ -10531,9 +10534,8 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 	}
 	else if (CarriedDecoration != None)
 	{
-	  bThrowDecoration=false;
-	  DropDecoration();
-
+		bThrowDecoration=false;
+		DropDecoration();
 		// play a throw anim
 		PlayAnim('Attack',,0.1);
 	}
@@ -10541,13 +10543,12 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 	// If the drop failed and we removed the item from the inventory
 	// grid, then we need to stick it back where it came from so
 	// the inventory doesn't get fucked up.
-
 	if ((bRemovedFromSlots) && (item != None) && (!bDropped))
 	{
 		//DEUS_EX AMSD Use the function call for this, helps multiplayer
 		PlaceItemInSlot(item, itemPosX, itemPosY);
 	}
-    else if (DeusExWeapon(item).bDisposableWeapon) //SARGE: This has to be done here for some reason
+    else if (item != None && DeusExWeapon(item).bDisposableWeapon) //SARGE: This has to be done here for some reason
         DeusExWeapon(item).PickupAmmoCount = 1;
 
 	return bDropped;

@@ -3801,24 +3801,34 @@ simulated function PlayIdleAnim()
 	rnd = FRand();
 	if (Owner.IsA('DeusExPlayer'))
 	{
-    if (DeusExPlayer(Owner).IsCrouching() == False && (DeusExPlayer(Owner).Velocity.X != 0 || DeusExPlayer(Owner).Velocity.Y != 0))
-    {
-	if (rnd < 0.1)
-		PlayAnim('Idle1',1.5,0.1);
-	else if (rnd < 0.2)
-		PlayAnim('Idle2',1.5,0.1);
-	else if (!DeusExPlayer(Owner).InHand.IsA('WeaponCrowbar') && rnd < 0.3)
-		PlayAnim('Idle3',1.5,0.1);
-	}
-    else
-    {
-    if (rnd < 0.1)
-		PlayAnim('Idle1',,0.1);
-	else if (rnd < 0.2)
-		PlayAnim('Idle2',,0.1);
-	else if (rnd < 0.3)
-		PlayAnim('Idle3',,0.1);
-    }
+		if (DeusExPlayer(Owner).IsCrouching() == False && (DeusExPlayer(Owner).Velocity.X != 0 || DeusExPlayer(Owner).Velocity.Y != 0))
+		{
+			if (rnd < 0.1)
+			{
+				if (iHDTPModelToggle == 2) //RSD: Clyzm model
+					PlayAnim('Idle',1.5,0.1);
+				else
+					PlayAnim('Idle1',1.5,0.1);
+			}
+			else if (rnd < 0.2)
+				PlayAnim('Idle2',1.5,0.1);
+			else if (!DeusExPlayer(Owner).InHand.IsA('WeaponCrowbar') && rnd < 0.3)
+				PlayAnim('Idle3',1.5,0.1);
+		}
+		else
+		{
+			if (rnd < 0.1)
+			{
+				if (iHDTPModelToggle == 2) //RSD: Clyzm model
+					PlayAnim('Idle',,0.1);
+				else
+					PlayAnim('Idle1',,0.1);
+			}
+			else if (rnd < 0.2)
+				PlayAnim('Idle2',,0.1);
+			else if (rnd < 0.3)
+				PlayAnim('Idle3',,0.1);
+		}
     }
 }
 
@@ -5238,7 +5248,7 @@ function Finish()
 				  }
                   if (DeusExPlayer(Owner).CarriedDecoration == None)
                      DeusExPlayer(Owner).SelectLastWeapon(true);
-                  GotoState('idle');
+                  GotoState('Idle');
                   return;
                //}
             }
@@ -6753,11 +6763,17 @@ simulated state SimIdle
 	{
 		PlayIdleAnim();
 	}
+	
 Begin:
 	bInProcess = False;
 	bFiring = False;
 	if (!bNearWall)
-		PlayAnim('Idle1',,0.1);
+	{
+		if (iHDTPModelToggle == 2) //RSD: Clyzm model
+			PlayAnim('Idle',,0.1);
+		else
+			PlayAnim('Idle1',,0.1);
+	}
 	SetTimer(3.0, True);
 }
 
@@ -6902,10 +6918,20 @@ Begin:
            if (FRand() < 0.5)
               PlayAnim('Idle2',,0.1);
            else
-              PlayAnim('Idle1',,0.1);
+			{
+				if (iHDTPModelToggle == 2) //RSD: Clyzm model
+					PlayAnim('Idle',,0.1);
+				else
+					PlayAnim('Idle1',,0.1);
+			}
         }
         else if (!bNearWall && !activateAn)
-			PlayAnim('Idle1',,0.1);
+		{
+			if (iHDTPModelToggle == 2) //RSD: Clyzm model
+				PlayAnim('Idle',,0.1);
+			else
+				PlayAnim('Idle1',,0.1);
+		}
 		SetTimer(3.0, True);
 	}
 }
