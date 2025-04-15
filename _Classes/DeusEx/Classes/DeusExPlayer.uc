@@ -453,7 +453,7 @@ var globalconfig bool bRealUI;
 var globalconfig bool bHardcoreAI1;
 var globalconfig bool bHardcoreAI2;
 var globalconfig bool bHardcoreAI3;
-var globalconfig int bAlternateToolbelt;
+var globalconfig int iAlternateToolbelt;
 var globalconfig bool bAnimBar1;
 var globalconfig bool bAnimBar2;
 var globalconfig bool bExtraObjectDetails;
@@ -8087,7 +8087,7 @@ function SelectLastWeapon(optional bool allowEmpty, optional bool bBeltLast)
     //select our primary belt slot, rather than using our actual last weapon
     if (root != None && root.hud != None && bBeltLast)
     {
-        if (bAlternateToolbelt > 0 && root.ActivateObjectInBelt(advBelt))
+        if (iAlternateToolbelt > 0 && root.ActivateObjectInBelt(advBelt))
         {
             bSelectedFromMainBeltSelection = true;
             NewWeaponSelected();
@@ -8320,7 +8320,7 @@ exec function ParseRightClick()
             SelectLastWeapon(true);
         }
         //If we are using a different items to our belt item, and classic mode is on or we scrolled, select it instantly
-		else if ((bAlternateToolbelt > 1 || bScrollSelect) && (bAlternateToolbelt < 3 || bSelectedFromMainBeltSelection || bScrollSelect) && (beltScrolled != beltLast || bLastWasEmpty) && inHand != None)
+		else if ((iAlternateToolbelt > 1 || bScrollSelect) && (iAlternateToolbelt < 3 || bSelectedFromMainBeltSelection || bScrollSelect) && (beltScrolled != beltLast || bLastWasEmpty) && inHand != None)
 		{
             SelectLastWeapon(false,true);
             beltLast = advBelt;
@@ -11765,18 +11765,18 @@ exec function ActivateBelt(int objectNum)
                 return;
             
             //We're reselecting our main slot.
-            if (bAlternateToolbelt >= 1 && advBelt == objectNum)
+            if (iAlternateToolbelt >= 1 && advBelt == objectNum)
                 bSelectedFromMainBeltSelection = true;
 
             //SARGE: If already selected in IW Belt mode, an additional press will set our primary weapon to that slot.
-			if (bAlternateToolbelt >= 1 && beltItem == inHandPending)
+			if (iAlternateToolbelt >= 1 && beltItem == inHandPending)
 			{
 				advBelt = objectNum;
 				root.hud.belt.RefreshAlternateToolbelt();
 			}
 
             //If we're not in IW belt mode, set our IW belt to match our current belt.
-            else if (bAlternateToolbelt == 0)
+            else if (iAlternateToolbelt == 0)
                 advBelt = objectNum;
 		
 			root.ActivateObjectInBelt(objectNum);
@@ -11842,7 +11842,7 @@ exec function NextBeltItem()
         return;
 	}
 
-   if (bAlternateToolbelt == 0)
+   if (iAlternateToolbelt == 0)
    {
 	if (CarriedDecoration == None)
 	{
@@ -11972,7 +11972,7 @@ exec function PrevBeltItem()
         return;
 	}
 
-   if (bAlternateToolbelt == 0)
+   if (iAlternateToolbelt == 0)
    {
 	if (CarriedDecoration == None)
 	{
