@@ -5575,28 +5575,41 @@ function DoJump( optional float F )
     //SARGE: Prevent jumping if we're using a computer
     if (bUsingComputer)
         return;
-
-	MusLevel = AugmentationSystem.GetClassLevel(class'AugMuscle');
-    SpeedAug = AugSpeed(AugmentationSystem.GetAug(class'AugSpeed'));
-
-	if (MusLevel==-1) MusLevel=30;
-	  else MusLevel=(MusLevel+3)*50;
-
+	
 	if ((CarriedDecoration != None) && (CarriedDecoration.Mass > MusLevel))
 		return;
 	else if (bForceDuck || IsLeaning())
 		return;
 
+	MusLevel = AugmentationSystem.GetClassLevel(class'AugMuscle');
+    SpeedAug = AugSpeed(AugmentationSystem.GetAug(class'AugSpeed'));
+
+	if (AugmentationSystem == None)
+	{
+		MusLevel = -1;
+		SpeedAug = None;
+	}
+	else
+	{
+		MusLevel = AugmentationSystem.GetClassLevel(class'AugMuscle');
+		SpeedAug = AugSpeed(AugmentationSystem.GetAug(class'AugSpeed'));
+	}		
+
+	if (MusLevel == -1)
+		MusLevel = 30;
+	else
+		MusLevel = (MusLevel+3)*50;
+
     if (bOnLadder && WallMaterial != 'Ladder')
     {
-        //BroadcastMessage("new dojump");
-
 	    if (camInterpol == 0)
 	        camInterpol = 0.4; //do not change this value. its used by mantling code
-		if ((Role == ROLE_Authority )&&(FRand()<0.33))
+
+		if ( (Role == ROLE_Authority ) && (FRand() < 0.6) )
 			PlaySound(JumpSound, SLOT_None, 1.5, true, 1200, 1.0 - 0.2*FRand() );
 		if ( (Level.Game != None) && (Level.Game.Difficulty > 0) )
 			MakeNoise(0.1 * Level.Game.Difficulty);
+
 		PlayInAir();
 
         //if (JumpZ > 650)      //CyberP: fix super jump exploit.
@@ -5615,7 +5628,7 @@ function DoJump( optional float F )
 		}
 	
         // Trash: Speed Enhancement now uses energy while jumping
-        if (SpeedAug.CurrentLevel > -1 && SpeedAug.bIsActive)
+        if (SpeedAug != None && SpeedAug.CurrentLevel > -1 && SpeedAug.bIsActive)
         {
             Energy=FMAX(Energy - SpeedAug.GetAdjustedEnergy(SpeedAug.EnergyDrainJump),0);
         }
@@ -5624,14 +5637,17 @@ function DoJump( optional float F )
             swimTimer -= 1.0;
         else
             swimTimer -= 0.8;
+		
         if (swimTimer < 0)
-		swimTimer = 0;
+			swimTimer = 0;
+		
 		if ( Level.NetMode != NM_Standalone )
 		{
-		 if (AugmentationSystem == None)
-			augLevel = -1.0;
-		 else
-			augLevel = AugmentationSystem.GetAugLevelValue(class'AugSpeed');
+			 if (AugmentationSystem == None)
+				augLevel = -1.0;
+			 else
+				augLevel = AugmentationSystem.GetAugLevelValue(class'AugSpeed');
+			
 			w = DeusExWeapon(InHand);
 			if ((augLevel != -1.0) && ( w != None ) && ( w.Mass > 30.0))
 			{
@@ -5640,77 +5656,76 @@ function DoJump( optional float F )
 			}
 		}
 
-		// reduce the jump velocity if you are crouching
-//		if (IsCrouching())
-//			Velocity.Z *= 0.9;
-
-		//if ( Base != Level )
-		//	Velocity.Z += Base.Velocity.Z;
 		SetTimer(0.15,false);
-		//SetPhysics(PHYS_Falling);
+
 		if ( bCountJumps && (Role == ROLE_Authority) )
 			Inventory.OwnerJumped();
+		
 		return;
 	}
 
         //CyberP: effect when jumping
-if (Physics == PHYS_Walking)
-{
-   RecoilTime=default.RecoilTime + 0.9;
+	if (Physics == PHYS_Walking)
+	{
+	   RecoilTime=default.RecoilTime + 0.9;
 
-   if (Weapon != none && inHand != none)
-   {
-     if (weapon.IsA('DeusExWeapon') && (DeusExWeapon(weapon).bAimingDown || AnimSequence == 'Shoot'))
-     {
-         RecoilShake.Z-=lerp(min(Abs(30),4.0*30)/(4.0*30),1,2.0);
-		 RecoilShaker(vect(0,0,1));
-     }
-     else if (Weapon.IsA('WeaponPlasmaRifle') || Weapon.IsA('WeaponGEPGun') || Weapon.IsA('WeaponFlamethrower') || inHand.IsA('DeusExPickup'))
-     {
-        RecoilShake.Z-=lerp(min(Abs(4),4.0*4)/(4.0*4),2,4.0);
-        RecoilShaker(vect(0,0,2));
-     }
-     else
-     {
-        RecoilShake.Z-=lerp(min(Abs(30),4.0*30)/(4.0*30),5,11.0);
-		RecoilShaker(vect(0,0,3));
-     }
-   }
-   else
-   {
-   RecoilShake.Z-=lerp(min(Abs(10),4.0*10)/(4.0*10),1,2.0);
-   RecoilShaker(vect(0,0,1));
-   }
-}
-
+	   if (Weapon != none && inHand != none)
+	   {
+		 if (weapon.IsA('DeusExWeapon') && (DeusExWeapon(weapon).bAimingDown || AnimSequence == 'Shoot'))
+		 {
+			 RecoilShake.Z-=lerp(min(Abs(30),4.0*30)/(4.0*30),1,2.0);
+			 RecoilShaker(vect(0,0,1));
+		 }
+		 else if (Weapon.IsA('WeaponPlasmaRifle') || Weapon.IsA('WeaponGEPGun') || Weapon.IsA('WeaponFlamethrower') || inHand.IsA('DeusExPickup'))
+		 {
+			RecoilShake.Z-=lerp(min(Abs(4),4.0*4)/(4.0*4),2,4.0);
+			RecoilShaker(vect(0,0,2));
+		 }
+		 else
+		 {
+			RecoilShake.Z-=lerp(min(Abs(30),4.0*30)/(4.0*30),5,11.0);
+			RecoilShaker(vect(0,0,3));
+		 }
+	   }
+	   else
+	   {
+			RecoilShake.Z-=lerp(min(Abs(10),4.0*10)/(4.0*10),1,2.0);
+			RecoilShaker(vect(0,0,1));
+	   }
+	}
+	
 	if (Physics == PHYS_Walking && !bOnLadder)
 	{
 	    if (camInterpol == 0)
 	        camInterpol = 0.4; //do not change this value. its used by mantling code
-		if ((Role == ROLE_Authority )&&(FRand()<0.33))
+		
+		if ((Role == ROLE_Authority )&&(FRand()<0.6))
 			PlaySound(JumpSound, SLOT_None, 1.5, true, 1200, 1.0 - 0.2*FRand() );
 		if ( (Level.Game != None) && (Level.Game.Difficulty > 0) )
 			MakeNoise(0.1 * Level.Game.Difficulty);
+
 		PlayInAir();
 
         //RSD: reset ground speed to default if Run Silent is on
-        augStealthValue = AugmentationSystem.GetAugLevelValue(class'AugStealth');
+		if (AugmentationSystem == None)
+			augStealthValue = -1.0;
+		else
+			augStealthValue = AugmentationSystem.GetAugLevelValue(class'AugStealth');
+
         if(augStealthValue != -1.0)
         {
         	velocityNormal = Normal(Velocity);
         	Velocity.X = Default.GroundSpeed*velocityNormal.X;
         	Velocity.Y = Default.GroundSpeed*velocityNormal.Y;
         }
-        //if (JumpZ > 650)      //CyberP: fix super jump exploit.
-        //JumpZ = default.JumpZ;
 
         if (IsStunted())
-        Velocity.Z = JumpZ*0.75;                                                 //RSD: Was 0.75
+			Velocity.Z = JumpZ*0.75;                                                 //RSD: Was 0.75
         else
-		Velocity.Z = JumpZ;
+			Velocity.Z = JumpZ;
 
         // Trash: Speed Enhancement now uses energy while jumping
-        if (SpeedAug.CurrentLevel > -1 && speedAug.bIsActive)
+        if (SpeedAug != None && SpeedAug.CurrentLevel > -1 && speedAug.bIsActive)
         {
             Energy=FMAX(Energy - SpeedAug.GetAdjustedEnergy(SpeedAug.EnergyDrainJump),0);
         }
@@ -5719,14 +5734,17 @@ if (Physics == PHYS_Walking)
             swimTimer -= 1.0;
         else
             swimTimer -= 0.8;
+		
         if (swimTimer < 0)
-		swimTimer = 0;
+			swimTimer = 0;
+		
 		if ( Level.NetMode != NM_Standalone )
 		{
-		 if (AugmentationSystem == None)
-			augLevel = -1.0;
-		 else
-			augLevel = AugmentationSystem.GetAugLevelValue(class'AugSpeed');
+			if (AugmentationSystem == None)
+				augLevel = -1.0;
+			else
+				augLevel = AugmentationSystem.GetAugLevelValue(class'AugSpeed');
+			
 			w = DeusExWeapon(InHand);
 			if ((augLevel != -1.0) && ( w != None ) && ( w.Mass > 30.0))
 			{
@@ -5735,16 +5753,12 @@ if (Physics == PHYS_Walking)
 			}
 		}
 
-		// reduce the jump velocity if you are crouching
-//		if (IsCrouching())
-//			Velocity.Z *= 0.9;
-
 		if ( Base != Level )
 			Velocity.Z += Base.Velocity.Z;
+		
 		SetPhysics(PHYS_Falling);
 		if ( bCountJumps && (Role == ROLE_Authority) )
 			Inventory.OwnerJumped();
-		//BroadcastMessage("default dojump");
 	}
 }
 
