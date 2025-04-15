@@ -45,8 +45,8 @@ function int GetConsoleValue(int index)
 
 defaultproperties
 {
-     strHeaderActionLabel="Object"
-     strHeaderAssignedLabel="Model"
+     strHeaderSettingLabel="Object"
+     strHeaderValueLabel="Model"
      HelpText="Select the model you wish to change and then press [Enter] or Double-Click to cycle through available models"
      Items(0)=(actionText="HDTP Enabled",variable="bHDTPEnabled",consoleTarget="DeusEx.DeusExPlayer",HelpText="Global toggle for HDTP models and textures.",defaultValue=1,valueText0="Off",valueText1="On",sortcategory="00TOP0")
      Items(1)=(actionText="Force HDTP Muzzle Flashes",helpText="Use HDTP muzzle flashes on Vanilla Weapons",valueText0="Disabled",valueText1="Enabled",consoleTarget="DeusEx.DeusExWeapon",variable="bHDTPMuzzleFlashes",sortcategory="00TOP1")

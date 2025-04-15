@@ -42,8 +42,7 @@ function BuildModifierList()
 
 defaultproperties
 {
-     strHeaderActionLabel="Modifier"
-     strHeaderAssignedLabel="Setting"
+     strHeaderSettingLabel="Modifier"
      items(0)=(HelpText="Hardcore mode's save points require 100 credits to use, among other new rules such as -10% base accuracy for all weapons. For veterans only.",actionText="Hardcore Mode+",variable="bExtraHardcore");
      items(1)=(HelpText="Randomizes crate contents. Items are swapped for other items of the same class (e.g. 10mm ammo for steel darts) based on in-game item distribution.",actionText="Crate Randomization",variable="bRandomizeCrates");
      items(2)=(HelpText="Randomizes weapon mods. Mods are swapped for related types (e.g. accuracy for range) based on in-game item distribution.",actionText="Weapon Mod Randomization",variable="bRandomizeMods");
