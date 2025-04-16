@@ -430,7 +430,7 @@ function DistributeItem(class<Inventory> itemClass, int minAmount, int maxAmount
     local int i, j, swapTo, items;
     local ScriptedPawn actors[50], temp, SP;
     local int actorCount, toGive, index;
-    local Inventory inv;
+    local Inventory inv, inv2;
 
     //player.ClientMessage("Distributing "$itemClass$"...");
 
@@ -486,14 +486,16 @@ function DistributeItem(class<Inventory> itemClass, int minAmount, int maxAmount
         }
         if (ammoClass != None)
         {
-            inv = spawn(ammoClass, actors[i]);
-            if (inv != None)
+            inv2 = spawn(ammoClass, actors[i]);
+            if (inv2 != None)
             {
-                inv.GiveTo(actors[i]);
-                inv.SetBase(actors[i]);
-                inv.bHidden = True;
-                inv.SetPhysics(PHYS_None);
-                actors[i].AddInventory(inv);
+                inv2.GiveTo(actors[i]);
+                inv2.SetBase(actors[i]);
+                inv2.bHidden = True;
+                inv2.SetPhysics(PHYS_None);
+                actors[i].AddInventory(inv2);
+                if(inv.IsA('DeusExWeapon') && inv2.isA('Ammo'))
+                    DeusExWeapon(inv).AmmoType = Ammo(inv2);
                 //player.ClientMessage("  Given a "$ammoClass$" to "$actors[i]);
             }
         }
