@@ -909,6 +909,84 @@ function PickupCorpse(DeusExPlayer player)
 }
 
 // ----------------------------------------------------------------------
+// LootWeaponAmmo()
+//
+// SARGE: Refactored this out of the Frob function so it was hopefully less horribly long
+// ----------------------------------------------------------------------
+function bool LootWeaponAmmo(DeusExPlayer P, DeusExWeapon item, bool bDisplayMsg)
+{
+    local int AmmoCount;
+    local Ammo AmmoType;
+    local int intj, maxAmmo, prevAmmo;
+
+    if (P == None || item == None)
+        return false;
+
+    //hack
+    if (item.AmmoName == None || item.AmmoName == class'AmmoNone' || item.PickupAmmoCount <= 0)
+        return false;
+
+    //P.ClientMessage("AmmoName: " $ item.AmmoName);
+    //P.ClientMessage("in ammo searching code: " $ item.AmmoType.AmmoAmount);
+
+    AmmoType = Ammo(P.FindInventoryType(item.AmmoName));
+    
+    if (AmmoType == None)
+    {
+        item.GiveAmmo(P);
+        AmmoType = Ammo(P.FindInventoryType(item.AmmoName));
+        if (AmmoType == None)
+            return false;
+        AmmoType.AmmoAmount = 0;
+    }
+
+
+    MaxAmmo = P.GetAdjustedMaxAmmo(AmmoType);
+    prevAmmo = AmmoType.AmmoAmount;
+    AmmoCount = MIN(AmmoType.AmmoAmount + item.PickupAmmoCount,maxAmmo);
+
+    intj = AmmoCount - prevAmmo;
+
+    if (intj > 0)
+    {
+        AmmoType.AddAmmo(intj);
+        AddReceivedItem(P, AmmoType, intj);             //RSD: Fixed amount
+
+        // Update the ammo display on the object belt
+        P.UpdateAmmoBeltText(AmmoType);
+
+        if (bDisplayMsg)
+        {
+            // if this is an illegal ammo type, use the weapon name to print the message
+            if (AmmoType.PickupViewMesh == Mesh'TestBox' || item.bDisposableWeapon)
+                P.ClientMessage(item.PickupMessage @ item.itemArticle @ item.itemName, 'Pickup');
+            else
+                P.ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName $ " (" $ intj $ ")", 'Pickup'); //RSD: Added intj
+        }
+
+        // Mark it as 0 to prevent it from being added twice
+        //P.ClientMessage("intj is " $ intj);
+        //Weapon(item).AmmoType.AmmoAmount -= intj;
+        item.PickupAmmoCount -= intj;
+        //SARGE: Set weapons maximum clip size to however much left over ammo it has.
+        item.ClipCount -= intj;
+        PickupAmmoCount -= intj;
+        return true;
+    }
+    else
+    {
+        if (bDisplayMsg)
+        {
+            if (item.bDisposableWeapon)
+                P.ClientMessage(item.PickupMessage @ item.itemArticle @ item.itemName @ MaxAmmoString);
+            else
+                P.ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName @ "(" $ item.PickupAmmoCount $ ")"  @ MaxAmmoString);
+        }
+    }
+    return false;
+}
+
+// ----------------------------------------------------------------------
 // Frob()
 //
 // search the body for inventory items and give them to the frobber
@@ -929,6 +1007,7 @@ function Frob(Actor Frobber, Inventory frobWith)
     local bool bFoundSomething;                                                 //SARGE: Did we find something
     local bool bFoundInvalid;                                                 //SARGE: Did we find something we can't use?
     local bool bDeclined;
+    local bool bLootResult;
 
 	// Can we assume only the *PLAYER* would actually be frobbing carci?
 	player = DeusExPlayer(Frobber);
@@ -1049,6 +1128,8 @@ function Frob(Actor Frobber, Inventory frobWith)
                             W.PickupAmmoCount = 1;
                         else if (W.IsA('WeaponFlamethrower'))
                             W.PickupAmmoCount = (PickupAmmoCount * 5);                    //SARGE: Now 5-25 rounds with initialization in MissionScript.uc on first map load
+                        else if (W.IsA('WeaponPepperGun'))
+                            W.PickupAmmoCount = 34 + (PickupAmmoCount * 4);               //SARGE: Now 35-50 rounds with initialization in MissionScript.uc on first map load
                         else if (W.IsA('WeaponAssaultGun'))
                             //W.PickupAmmoCount = Rand(5) + 1.5;                          //RSD
                             W.PickupAmmoCount = PickupAmmoCount + 1;                      //RSD: Now 2-5 rounds with initialization in MissionScript.uc on first map load
@@ -1117,97 +1198,9 @@ function Frob(Actor Frobber, Inventory frobWith)
 						// the weapon).
 						else if ((W != None) || (W == None && (bDeclined||!player.FindInventorySlot(item, True))))
 						{
-							// Don't bother with this is there's no ammo
-							if ((Weapon(item).AmmoType != None) && (Weapon(item).PickupAmmoCount > 0))
-							{
-								AmmoType = Ammo(player.FindInventoryType(Weapon(item).AmmoName));
-                                    
-
-                                if ((AmmoType != None) && (AmmoType.AmmoAmount < DeusExPlayer(GetPlayerPawn()).GetAdjustedMaxAmmo(AmmoType)) && Weapon(item).AmmoType.AmmoAmount > 0) //RSD: Replaced AmmoType.MaxAmmo with adjusted
-								{
-                                    //P.ClientMessage("in ammo searching code: " $ Weapon(item).AmmoType.AmmoAmount);
-                                    bFoundSomething = True;
-                                    AmmoCount = AmmoType.AmmoAmount;                     //RSD
-                                    AmmoType.AddAmmo(Weapon(item).PickupAmmoCount);
-                                    intj = AmmoType.AmmoAmount - AmmoCount;              //RSD
-                                    if (intj > 0)
-                                    {
-                                        AddReceivedItem(player, AmmoType, intj);             //RSD: Fixed amount
-
-                                        // Update the ammo display on the object belt
-                                        player.UpdateAmmoBeltText(AmmoType);
-
-                                        // if this is an illegal ammo type, use the weapon name to print the message
-                                        if (AmmoType.PickupViewMesh == Mesh'TestBox' || DeusExWeapon(item).bDisposableWeapon)
-                                            P.ClientMessage(item.PickupMessage @ item.itemArticle @ item.itemName, 'Pickup');
-                                        else
-                                            P.ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName $ " (" $ intj $ ")", 'Pickup'); //RSD: Added intj
-
-                                        // Mark it as 0 to prevent it from being added twice
-                                        //P.ClientMessage("intj is " $ intj);
-                                        Weapon(item).AmmoType.AmmoAmount -= intj;
-                                        Weapon(item).PickupAmmoCount -= intj;
-                                        //SARGE: Set weapons maximum clip size to however much left over ammo it has.
-                                        DeusExWeapon(item).ClipCount -= intj;
-                                    }
-								}
-                                else if (AmmoType != None)
-                                {
-                                    //P.ClientMessage("in ammo searching code ex");
-                                    if (!bSearched)
-                                    {
-                                        if (DeusExWeapon(item).bDisposableWeapon)
-                                            P.ClientMessage(item.PickupMessage @ item.itemArticle @ item.itemName @ MaxAmmoString);
-                                        else
-                                            P.ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName @ "(" $ Weapon(item).PickupAmmoCount $ ")"  @ MaxAmmoString);
-                                        //P.ClientMessage(msgSearching @ AmmoType.itemName @ "(" $ Weapon(item).PickupAmmoCount $ ")"  @ MaxAmmoString);
-                                        bFoundSomething=True;
-                                    }
-                                    bFoundInvalid=true; 
-                                }
-
-							}
-                            else if ((W != None)&&(Weapon(item).AmmoType==none)) //GMDX Fix bug that makes level carcass with weapon just crap out as it has not got spawned ammotype
-							{
-								AmmoType = Ammo(player.FindInventoryType(Weapon(item).AmmoName));
-								if (AmmoType!=none && W.AmmoType.Class != class'DeusEx.AmmoNone')
-								{
-                                    //P.ClientMessage("in ammo searching code 2");
-									addedAmount=-AmmoType.AmmoAmount;
-									AmmoType.AddAmmo(Weapon(item).PickupAmmoCount);
-									addedAmount+=AmmoType.AmmoAmount;
-									if (addedAmount>0)
-									{
-                                        //splat - Picking up Shuriken ammo when we already have one!
-                                        if (item.IsA('WeaponShuriken'))
-                                            PlaySound(Sound'DeusExSounds.Generic.FleshHit1',SLOT_None,,,,0.95 + (FRand() * 0.2));
-
-                                        bFoundSomething = True;
-										player.UpdateAmmoBeltText(AmmoType);
-										AddReceivedItem(player, AmmoType,addedAmount);
-										Weapon(item).PickupAmmoCount-=AddedAmount;
-                                        DeusExWeapon(item).ClipCount-=AddedAmount;
-										if (AmmoType.PickupViewMesh == Mesh'TestBox')
-									      P.ClientMessage(item.PickupMessage @ item.itemArticle @ item.itemName, 'Pickup');
-									      else
-									         P.ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName, 'Pickup');
-                                    }
-                                    else
-                                    {
-                                        if (!bSearched)
-                                        {
-                                            //player.ClientMessage(sprintf(player.InventoryFull,AmmoType.ItemName));
-                                            if (DeusExWeapon(item).bDisposableWeapon)
-                                                P.ClientMessage(item.PickupMessage @ item.itemArticle @ item.itemName @ MaxAmmoString);
-                                            else
-                                                P.ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName @ "(" $ Weapon(item).PickupAmmoCount $ ")"  @ MaxAmmoString);
-                                            bFoundSomething=True;
-                                        }
-                                        bFoundInvalid=true; 
-                                    }
-								}
-                                //TODO: Handle Dragons Tooth custom charge
-							}
+                            bLootResult = LootWeaponAmmo(DeusExPlayer(P),DeusExWeapon(item),!bSearched);
+                            bFoundSomething = bFoundSomething || bLootResult;
+                            bFoundInvalid = bFoundInvalid || PickupAmmoCount > 0;
 
                             //Destroy disposable weapons after taking their ammo.
                             if (DeusExWeapon(item).bDisposableWeapon && Weapon(item).PickupAmmoCount <= 0)
@@ -1229,7 +1222,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                             }
 
 							// Only destroy the weapon if the player already has it.
-                            //SARGE: Keep weapons, just ignore them
+                            //SARGE: Keep weapons, just ignore them.
 							if (W != None)
 							{
                                 if (player.bEnhancedCorpseInteractions)
@@ -1369,16 +1362,6 @@ function Frob(Actor Frobber, Inventory frobWith)
 								DeusExPlayer(P).FrobTarget = item;
                                 if (!bDeclined)
                                 {
-                                    //SARGE: If a weapon, track the ammo for calling AddReceivedWeapon, which we need to do AFTER handling pickup below.
-                                    ammoCount = 0;
-                                    if (item.IsA('DeusExWeapon'))
-                                    {
-                                        ammoType = Ammo(player.FindInventoryType(DeusExWeapon(item).AmmoName));
-                                        if (ammoType != None && ammoType.isA('DeusExAmmo'))
-                                            ammoCount = ammoType.AmmoAmount;
-                                    }
-
-
                                     bFoundSomething = True;
                                     if (DeusExPlayer(P).HandleItemPickup(Item,false,true) != False)
                                     {
@@ -1392,16 +1375,17 @@ function Frob(Actor Frobber, Inventory frobWith)
                                         item.bInObjectBelt=False;
                                         item.BeltPos=-1;
 
-                                        item.SpawnCopy(P);
-
                                         // Show the item received in the ReceivedItems window and also
                                         // display a line in the Log
                                         AddReceivedItem(player, item, 1);
-                                        if (item.IsA('DeusExWeapon'))
-                                            AddReceivedWeapon(player,DeusExWeapon(item),ammoCount);
 
                                         P.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
                                         PlaySound(Item.PickupSound);
+                                        
+                                        if (item.IsA('DeusExWeapon') && !DeusExWeapon(item).bDisposableWeapon)
+                                            LootWeaponAmmo(DeusExPlayer(P),DeusExWeapon(item),!bSearched);
+
+                                        item.SpawnCopy(P);
                                     }
                                 }
 							}
@@ -1486,45 +1470,6 @@ function AddSearchedString(DeusExPlayer player)
     if (player != None && bSearched && player.bSearchedCorpseText && InStr(ItemName, SearchedString) == -1)
     {
         itemName = SearchedString @ itemName;
-    }
-}
-
-// ----------------------------------------------------------------------
-// AddReceivedWeapon()
-// SARGE: Adds an ammo display for a weapon.
-// You still need to call AddReceivedItem for the actual weapon.
-// ----------------------------------------------------------------------
-
-function AddReceivedWeapon(DeusExPlayer player, DeusExWeapon w, int previousAmmo)
-{
-    local int maxAmmo, intj;
-    local Ammo playerAmmo;
-    local bool beyondMax;
-    local string msg;
-
-    // SARGE: When picking up a new weapon, show it's ammo as well
-    // TODO: This needs a refactor. Ideally the ammo-searching code in Frob should use the same code as this, rather than duplicating it.
-    if (DeusExAmmo(w.AmmoType) != None && w.PickupAmmoCount > 0 && !w.bDisposableWeapon && DeusExAmmo(w.AmmoType).bShowInfo)
-    {
-        maxAmmo = player.GetAdjustedMaxAmmo(w.AmmoType);
-        intj = w.PickupAmmoCount;
-
-        while (maxAmmo < previousAmmo + intj && intj > 0)
-        {
-            intj -= 1;
-            beyondMax = true;
-        }
-        
-        if (intj > 0)
-        {
-            player.AddReceivedItem(w.AmmoType,intj,true);
-            msg = w.PickupMessage @ w.AmmoType.itemArticle @ w.AmmoType.itemName @ "(" $ intj $ ")";
-        }
-        
-        if (beyondMax)
-            msg = msg @ MaxAmmoString;
-
-        player.ClientMessage(msg, 'Pickup');
     }
 }
 
