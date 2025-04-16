@@ -780,6 +780,8 @@ var globalconfig bool bAlwaysShowReceivedItemsWindow;               //SARGE: Alw
 
 
 var globalconfig bool bShowTotalRoundsCount;                        //SARGE: Show the total number of rounds we can carry for disposable items in the inventory screen.
+
+var globalconfig bool bGMDXDebug;                                   //SARGE: Allows extra debug info/messages. Not for regular players!
 //////////END GMDX
 
 // OUTFIT STUFF
