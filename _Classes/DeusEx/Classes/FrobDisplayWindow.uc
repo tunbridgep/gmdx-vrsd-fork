@@ -7,7 +7,7 @@ var float margin;
 var float barLength;
 var DeusExPlayer player;
 //Ygll var to use for alternate frob display
-var string strSpace;
+var string strDash;
 var string strDoubleDot;
 var string strOpenValue;
 var string strCloseValue;
@@ -253,11 +253,11 @@ function DrawDoorHudInformation(GC gc, actor frobTarget)
 	
 	if ((dxMover != None) && dxMover.bLocked)
 	{		
-		strInfo = msgLocked $ strDoubleDot $ CR() $ strSpace $ msgLockStr;
-		strInfo = strInfo $ CR() $ strSpace $ msgDoorStr;
+		strInfo = msgLocked $ strDoubleDot $ CR() $ strDash $ msgLockStr;
+		strInfo = strInfo $ CR() $ strDash $ msgDoorStr;
 
 		//CyberP begin:                                             //RSD: Cool, but only do it if we have the Doorsman perk
-		strInfo = strInfo $ CR() $ strSpace $ msgDoorThreshold;
+		strInfo = strInfo $ CR() $ strDash $ msgDoorThreshold;
 		
 		if (dxMover.bBreakable)
 			strThreshold = strOpenValue $ FormatString(dxMover.minDamageThreshold) $ strCloseValue;
@@ -265,7 +265,7 @@ function DrawDoorHudInformation(GC gc, actor frobTarget)
 			strThreshold = strOpenValue $ strMessInf $ strCloseValue;
 		//CyberP End
 		
-		strColInfo = strSpace $ msgLockStr $ CR() $ strSpace $ msgDoorStr $ CR() $ strSpace $ msgDoorThreshold; //Ygll: text block corresponding to the info lines of the object, to place properly value colone later
+		strColInfo = strDash $ msgLockStr $ CR() $ strDash $ msgDoorStr $ CR() $ strDash $ msgDoorThreshold; //Ygll: text block corresponding to the info lines of the object, to place properly value colone later
 		
 		if(!dxMover.bPickable && !dxMover.bBreakable)
 			barSize = 35.000000;
@@ -570,6 +570,8 @@ function DrawOtherHudInformation(GC gc, actor frobTarget)
 		strInfo = player.GetDisplayName(frobTarget);
 	else if (frobTarget.IsA('DeusExCarcass'))
 		strInfo = DeusExCarcass(frobTarget).itemName;
+    else if (frobTarget.IsA('AugmentationCannister'))                          //SARGE: Append the Augs to the display
+        strInfo = GetAugCanInformation(AugmentationCannister(frobTarget));
 	else if (frobTarget.IsA('DeusExAmmo'))                          //RSD: Append the ammo count
 		strInfo = DeusExAmmo(frobTarget).itemName @ "(" $ DeusExAmmo(frobTarget).AmmoAmount $ ")";
 	else if (frobTarget.IsA('ChargedPickup') && ChargedPickup(frobTarget).numCopies > 1 && player.bShowItemPickupCounts)
@@ -594,14 +596,14 @@ function DrawOtherHudInformation(GC gc, actor frobTarget)
 		if (frobTarget.IsA('DeusExDecoration') || frobTarget.IsA('DeusExPickup'))
 		{
 		   if (frobTarget.IsA('DeusExDecoration') && DeusExDecoration(frobTarget).bInvincible == False)
-				strInfo = strInfo $ strDoubleDot $ CR() $ strSpace $ msgHP $ string(DeusExDecoration(frobTarget).HitPoints);
+				strInfo = strInfo $ strDoubleDot $ CR() $ strDash $ msgHP $ string(DeusExDecoration(frobTarget).HitPoints);
 		   else if (frobTarget.IsA('DeusExPickup') && DeusExPickup(frobTarget).bBreakable)
-				strInfo = strInfo $ strDoubleDot $ CR() $ strSpace $ msgHP2;
+				strInfo = strInfo $ strDoubleDot $ CR() $ strDash $ msgHP2;
 			
 		   if (frobTarget.IsA('DeusExDecoration') && DeusExDecoration(frobTarget).bPushable)
 		   {
 			  typecastIt = (int(frobTarget.Mass));
-			  strInfo = strInfo $ CR() $ strSpace $ msgMass $ string(typecastIt) $ " lbs";
+			  strInfo = strInfo $ CR() $ strDash $ msgMass $ string(typecastIt) $ " lbs";
 		   }
 		}
 	}
@@ -627,6 +629,28 @@ function DrawOtherHudInformation(GC gc, actor frobTarget)
 	DrawHightlightBox(gc, infoX, infoY, infoW, infoH);	
 }
 
+//SARGE: Draw Augmentation Cannister Information
+function string GetAugCanInformation(AugmentationCannister can)
+{
+    local Augmentation aug;
+	local Int canIndex;
+    local string retStr;
+
+    if (can == None)
+        return "";
+   
+    retStr = can.itemName $ strDoubleDot;
+
+	for(canIndex=0; canIndex<ArrayCount(can.AddAugs); canIndex++)
+    {
+        aug = can.GetAugGeneric(canIndex,player);
+        retStr = retStr $ CR() $ strDash $ strDash $ aug.GetName();
+    }
+
+    return retStr;
+}
+
+
 //Ygll utility function
 function SetBarLength(DeusExPlayer player)
 {
@@ -649,14 +673,14 @@ function SetAtlDisplay(DeusExPlayer player)
 {
 	if(player.bAltFrobDisplay)
 	{
-		strSpace = "-";
+		strDash = "-";
 		strDoubleDot = ":";
 		strOpenValue = "[ ";
 		strCloseValue = " ]";
 	}
 	else
 	{
-		strSpace = "";
+		strDash = "";
 		strDoubleDot = "";
 		strOpenValue = "";
 		strCloseValue = "";
@@ -703,7 +727,7 @@ function DrawWindow(GC gc)
 // ----------------------------------------------------------------------
 defaultproperties
 {
-	strSpace="";
+	strDash="";
 	strDoubleDot="";
 	strOpenValue="";
 	strCloseValue="";
