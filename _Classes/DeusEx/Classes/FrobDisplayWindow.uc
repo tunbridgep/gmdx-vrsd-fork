@@ -300,18 +300,18 @@ function DrawDoorHudInformation(GC gc, actor frobTarget)
 	{
 		gc.GetTextExtent(0, infoW, infoHtemp, strColInfo);
 		infoW += barSize + 16;
-	
+
 		// draw colored bars for each value
 		gc.SetStyle(DSTY_Translucent);
-		
+
 		col = GetColorScaled(dxMover.lockStrength);
 		gc.SetTileColor(col);
 		gc.DrawPattern(infoX+(infoW-barSize-7), infoY+3+(infoH-8)/4, barSize*dxMover.lockStrength, ((infoH-8)/4)-2, 0, 0, Texture'ConWindowBackground');
-		
+
 		col = GetColorScaled(dxMover.doorStrength);
 		gc.SetTileColor(col);
 		gc.DrawPattern(infoX+(infoW-barSize-7), infoY+3+2*(infoH-8)/4, barSize*dxMover.doorStrength, ((infoH-8)/4)-2, 0, 0, Texture'ConWindowBackground');
-		
+
 		//Draw the info Door Damage Threshold number
 		if ( !dxMover.bBreakable || ( player.bColourCodeFrobDisplay && dxMover.bBreakable &&
 				( DeusExWeapon(player.Weapon) == None || ( DeusExWeapon(player.Weapon) != None && !player.BreaksDamageThreshold(DeusExWeapon(player.Weapon),dxMover.minDamageThreshold) ) ) ) )							
@@ -322,16 +322,16 @@ function DrawDoorHudInformation(GC gc, actor frobTarget)
 			gc.SetTextColor(colText);
 
 		gc.DrawText(infoX+(infoW-barSize-6), infoY+28+(infoH-8)/4, barSize, ((infoH-8)/4)-2, strThreshold);
-		
+
 		// draw the absolute number of lockpicks on top of the colored bar
 		if (dxMover.bPickable)
 		{
 			ownedTools = player.GetInventoryCount('Lockpick');
 			numTools = int((dxMover.lockStrength / player.SkillSystem.GetSkillLevelValue(class'SkillLockpicking')) + 0.99);
-			
+
 			if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkLocksport').bPerkObtained == true)
 				numTools = 1;
-			
+
 			if (player.iFrobDisplayStyle == 1)
 				strInfo = ownedTools $ "/" $ numTools @ msgPicks;
 			else if (player.iFrobDisplayStyle == 2)
@@ -350,24 +350,24 @@ function DrawDoorHudInformation(GC gc, actor frobTarget)
 				gc.SetTextColor(colJustEnough);
 			else
 				gc.SetTextColor(colText);
-			
-			if(!player.bAltFrobDisplay)
-			{
-				strInfo = FormatString(dxMover.lockStrength * 100.0) $ "% - " $ strInfo;
-			}
-			else
+
+			if(player.iAltFrobDisplay == 2)
 			{
 				strInfo =  strInfo $ " (" $ FormatString(dxMover.lockStrength * 100.0) $ "%)";
 			}
-			
+			else
+			{
+				strInfo = FormatString(dxMover.lockStrength * 100.0) $ "% - " $ strInfo;
+			}
+
 			gc.DrawText(infoX+(infoW-barSize-3), infoY+4+(infoH-8)/4, barSize, ((infoH-8)/4)-2, strInfo);
-				
+
 			// draw the door strenght value
 			if (dxMover.bBreakable)
 				strInfo = FormatString(dxMover.doorStrength * 100.0) $ "%";
 			else
 				strInfo = strMessInf;			
-			
+
 			gc.SetTextColor(colText);
 			gc.DrawText(infoX+(infoW-barSize-3), infoY+4+2*(infoH-8)/4, barSize, ((infoH-8)/4)-2, strInfo);
 		}
@@ -441,7 +441,7 @@ function DrawDeviceHudInformation(GC gc, actor frobTarget)
 	//We check the extend value for this text
 	gc.GetTextExtent(0, extendWName, extendHName, strInfo);
 	
-	strInfoBlock = strSpace $ msgHackStr $ CR() $ strSpace $ msgObjThreshold;
+	strInfoBlock = strDash $ msgHackStr $ CR() $ strDash $ msgObjThreshold;
 	
 	//CyberP begin:                                             //RSD: No damage thresholds on hackable objects, sorry!
 	strInfo = strInfo $ CR() $ strInfoBlock;
@@ -502,11 +502,11 @@ function DrawDeviceHudInformation(GC gc, actor frobTarget)
 		col = GetColorScaled(device.hackStrength);
 		gc.SetTileColor(col);
 		gc.DrawPattern(infoX+(infoW-barSize+4), infoY-1+infoH/2.7, barSize*device.hackStrength, ((infoH-8)/4), 0, 0, Texture'ConWindowBackground'); //CyberP: //RSD: reverted
-		
+
 		//SARGE: If we have Cracked, display 0 tools
 		perkCracked = player.PerkManager.GetPerkWithClass(class'DeusEx.PerkCracked');
 		ownedTools = player.GetInventoryCount('Multitool');
-		
+
 		if (device.hackStrength <= perkCracked.PerkValue && perkCracked.bPerkObtained == true)
 			numTools = 0;
 		else
@@ -523,23 +523,23 @@ function DrawDeviceHudInformation(GC gc, actor frobTarget)
 			else
 				strInfo = numTools @ msgTools;
 		}
-		
+
 		if (ownedTools < numTools && player.bColourCodeFrobDisplay)
 			gc.SetTextColor(colNotEnough);
 		else if (ownedTools == numTools && player.bColourCodeFrobDisplay)
 			gc.SetTextColor(colJustEnough);
 		else
 			gc.SetTextColor(colText);
-		
-		if(!player.bAltFrobDisplay)
-		{
-			strInfo = FormatString(device.hackStrength * 100.0) $ "% - " $ strInfo;
-		}
-		else
+
+		if(player.iAltFrobDisplay == 2)
 		{
 			strInfo =  strInfo $ " (" $ FormatString(device.hackStrength * 100.0) $ "%)";
 		}
-		
+		else
+		{
+			strInfo = FormatString(device.hackStrength * 100.0) $ "% - " $ strInfo;
+		}
+
 		gc.DrawText(infoX+(infoW-barSize+8), infoY+infoH/2.7, barSize, ((infoH-8)/4)+4, strInfo);
 	}
 	else
@@ -632,19 +632,19 @@ function DrawOtherHudInformation(GC gc, actor frobTarget)
 //SARGE: Draw Augmentation Cannister Information
 function string GetAugCanInformation(AugmentationCannister can)
 {
-    local Augmentation aug;
+	local Augmentation aug;
 	local Int canIndex;
-    local string retStr;
+	local string retStr;
 
     if (can == None)
         return "";
-   
+
     retStr = can.itemName $ strDoubleDot;
 
 	for(canIndex=0; canIndex<ArrayCount(can.AddAugs); canIndex++)
     {
         aug = can.GetAugGeneric(canIndex,player);
-        retStr = retStr $ CR() $ strDash $ strDash $ aug.GetName();
+        retStr = retStr $ CR() $ strDash $ aug.GetName();
     }
 
     return retStr;
@@ -671,7 +671,7 @@ function SetBarLength(DeusExPlayer player)
 
 function SetAtlDisplay(DeusExPlayer player)
 {
-	if(player.bAltFrobDisplay)
+	if(player.iAltFrobDisplay == 2)
 	{
 		strDash = "-";
 		strDoubleDot = ":";
@@ -680,7 +680,11 @@ function SetAtlDisplay(DeusExPlayer player)
 	}
 	else
 	{
-		strDash = "";
+		if(player.iAltFrobDisplay == 1)
+			strDash = " ";
+		else
+			strDash = "";
+		
 		strDoubleDot = "";
 		strOpenValue = "";
 		strCloseValue = "";
