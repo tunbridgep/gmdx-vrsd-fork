@@ -156,6 +156,12 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\HDTPOptionsScreen_3.pcx"			NAME="HDTPOptionsScreen_3"			GROUP="UserInterface"
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\HDTPOptionsScreen_4.pcx"			NAME="HDTPOptionsScreen_4"			GROUP="UserInterface"
 
+// QoL Menu
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\MenuQolBackground_1.pcx"			NAME="MenuQoLBackground_1"			GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\MenuQolBackground_2.pcx"			NAME="MenuQoLBackground_2"			GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\MenuQolBackground_3.pcx"			NAME="MenuQoLBackground_3"			GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\MenuQolBackground_4.pcx"			NAME="MenuQoLBackground_4"			GROUP="UserInterface"
+
 //Flipped HUD Elements
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDAmmoDisplayBorder_1F.pcx"			NAME="HUDAmmoDisplayBorder_1F"			GROUP="UserInterface"
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDAmmoDisplayBorderSecondaryF.pcx"	NAME="HudAmmoDisplayBorderSecondaryF"	GROUP="UserInterface"
