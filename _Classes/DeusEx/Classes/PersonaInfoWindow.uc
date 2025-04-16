@@ -175,7 +175,12 @@ function CreateObtainedPerkList(DeusExPlayer player)
     for (index = 0; index < player.PerkManager.GetNumPerks(); index++)
     {
 		if (player.PerkManager.GetPerkAtIndex(index).bPerkObtained)
-			SetText( "+" $ player.PerkManager.GetPerkAtIndex(index).PerkName );
+		{
+			if(player.bAltFrobDisplay)
+				SetText("+" $ player.PerkManager.GetPerkAtIndex(index).PerkName);
+			else
+				SetText(player.PerkManager.GetPerkAtIndex(index).PerkName);
+		}
     }
 
 	AddLine();
@@ -259,7 +264,11 @@ function bool ButtonActivated( Window buttonPressed )
 			player.PerkManager.PurchasePerk(buttonUpgrade[index].ButtonPerk.Class);
 			buttonUpgrade[index].SetSensitivity(False);
             buttonUpgrade[index].SetButtonText(PurchasedButtonLabel);
-			SetText( "+" $ buttonUpgrade[index].ButtonPerk.PerkName);
+			if(player.bAltFrobDisplay)
+				SetText( "+" $ buttonUpgrade[index].ButtonPerk.PerkName);
+			else
+				SetText(buttonUpgrade[index].ButtonPerk.PerkName);
+			
 			if ( TopWin!=None )
 				TopWin.RefreshWindow( 0.0 );
 		}
