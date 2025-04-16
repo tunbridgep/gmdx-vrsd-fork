@@ -1029,7 +1029,7 @@ local DeusExPlayer playa;
     if (NPCAccurateRange == 0)
       NPCAccurateRange = default.AccurateRange;
 
-    if (!givenFreeReload && (bDisposableWeapon || Owner == None || Owner.IsA('ScriptedPawn')))
+    if (!givenFreeReload && (Owner == None || Owner.IsA('ScriptedPawn')))
     {
         ClipCount = ReloadCount;
         givenFreeReload = true;
@@ -1043,19 +1043,43 @@ function ReloadMaxAmmo()
         ClipCount = Min(ReloadCount,AmmoType.AmmoAmount);
 }
 
+//SARGE: Fix a really horrible ammo giving bug where weapons won't give ammo if there's not
+//enough room to spawn their corresponding ammo actor.
+//Copied from Weapon.uc
+function GiveAmmo( Pawn Other )
+{
+	if ( AmmoName == None )
+		return;
+	AmmoType = Ammo(Other.FindInventoryType(AmmoName));
+	if ( AmmoType != None )
+		AmmoType.AddAmmo(PickUpAmmoCount);
+	else
+	{
+        //SARGE: Here's the nasty bug!
+        //Spawn will fail if there's not enough room to spawn the relevant ammo...
+		AmmoType = Spawn(AmmoName);	// Create ammo type required		
+        
+        //...So we do a filthy hack by making the ammo type no longer collide with the world temporarily
+        if (AmmoType == None && AmmoName.default.bCollideWorld == true)
+        {
+            AmmoName.default.bCollideWorld = false;
+            AmmoType = Spawn(AmmoName);	// Create ammo type required...again!
+            AmmoName.default.bCollideWorld = true;
+        }
+
+		Other.AddInventory(AmmoType);		// and add to player's inventory
+		AmmoType.BecomeItem();
+		AmmoType.AmmoAmount = PickUpAmmoCount; 
+		AmmoType.GotoState('Idle2');
+	}
+}	
+
 function PostPostBeginPlay()
 {
 	Super.PostPostBeginPlay();
 
     if (!bUnlit && ScaleGlow > 0.5)
         ScaleGlow = 0.5;
-
-    //Give NPCs a full clip to start
-    if (!givenFreeReload && Owner != None && Owner.IsA('ScriptedPawn'))
-    {
-        ReloadMaxAmmo();
-        givenFreeReload = true;
-    }
 }
 
 singular function BaseChange()
