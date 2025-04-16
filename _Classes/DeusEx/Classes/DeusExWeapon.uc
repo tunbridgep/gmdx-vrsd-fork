@@ -1259,7 +1259,6 @@ function bool HandlePickupQuery(Inventory Item)
                         {
                             player.ClientMessage(defAmmo.PickupMessage @ defAmmo.itemArticle @ defAmmo.ItemName $ " (" $ Weapon(Item).PickupAmmoCount $ ")", 'Pickup' );
                             player.AddReceivedItem(defAmmo,Weapon(Item).PickupAmmoCount);
-                            PlayRetrievedAmmoSound();
                         }
                     }
 				}
