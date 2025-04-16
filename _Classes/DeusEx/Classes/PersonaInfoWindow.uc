@@ -268,7 +268,7 @@ function bool ButtonActivated( Window buttonPressed )
 				SetText( "+" $ buttonUpgrade[index].ButtonPerk.PerkName);
 			else
 				SetText(buttonUpgrade[index].ButtonPerk.PerkName);
-			
+
 			if ( TopWin!=None )
 				TopWin.RefreshWindow( 0.0 );
 		}
