@@ -639,6 +639,7 @@ function ChunkUp(int Damage)
 	}
 	if (!bAnimalCarcass)
        ExpelInventory();
+    KillUnconscious();
 	Super.ChunkUp(Damage);
 }
 
@@ -1121,10 +1122,10 @@ function Frob(Actor Frobber, Inventory frobWith)
 							{
 								AmmoType = Ammo(player.FindInventoryType(Weapon(item).AmmoName));
                                     
-                                //P.ClientMessage("in ammo searching code: " $ Weapon(item).AmmoType.AmmoAmount);
 
                                 if ((AmmoType != None) && (AmmoType.AmmoAmount < DeusExPlayer(GetPlayerPawn()).GetAdjustedMaxAmmo(AmmoType)) && Weapon(item).AmmoType.AmmoAmount > 0) //RSD: Replaced AmmoType.MaxAmmo with adjusted
 								{
+                                    //P.ClientMessage("in ammo searching code: " $ Weapon(item).AmmoType.AmmoAmount);
                                     bFoundSomething = True;
                                     AmmoCount = AmmoType.AmmoAmount;                     //RSD
                                     AmmoType.AddAmmo(Weapon(item).PickupAmmoCount);
@@ -1137,7 +1138,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                         player.UpdateAmmoBeltText(AmmoType);
 
                                         // if this is an illegal ammo type, use the weapon name to print the message
-                                        if (AmmoType.PickupViewMesh == Mesh'TestBox')
+                                        if (AmmoType.PickupViewMesh == Mesh'TestBox' || DeusExWeapon(item).bDisposableWeapon)
                                             P.ClientMessage(item.PickupMessage @ item.itemArticle @ item.itemName, 'Pickup');
                                         else
                                             P.ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName $ " (" $ intj $ ")", 'Pickup'); //RSD: Added intj
@@ -1823,7 +1824,11 @@ function KillUnconscious()                                                      
 
     player = DeusExPlayer(GetPlayerPawn());
     if (player != None && !bAnimalCarcass)
+    {
+        killerBindName = player.BindName;
+        killerAlliance = player.Alliance;
         player.killerCount++;
+    }
 
     bNotDead = false;
     UpdateName();
