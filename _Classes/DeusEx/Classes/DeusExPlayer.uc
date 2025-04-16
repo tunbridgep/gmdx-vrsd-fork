@@ -778,6 +778,8 @@ var globalconfig bool bReversedAltBeltColours;                      //SARGE: Mak
 
 var globalconfig bool bAlwaysShowReceivedItemsWindow;               //SARGE: Always show the retrieved items window when picking up ammo from a weapon.
 
+
+var globalconfig bool bShowTotalRoundsCount;                        //SARGE: Show the total number of rounds we can carry for disposable items in the inventory screen.
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -18568,4 +18570,5 @@ defaultproperties
 	   bIsMantlingStance=false //Ygll: new var to know if we are currently mantling
 	   iHealingScreen=1
      bAlwaysShowReceivedItemsWindow=true
+     bShowTotalRoundsCount=true
 }
