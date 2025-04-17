@@ -775,6 +775,8 @@ var globalconfig int iHealingScreen;                            //Ygll: can disa
 
 var globalconfig bool bAmmoDisplayOnRight;                          //SARGE: If enabled, make the ammo display appear on the right (with the belt on the left)
 
+var globalconfig bool bPistolStartTrained;                          //SARGE: If false, pistols no longer start the game trained, and the player will instead be given skill points equivalent to it's value
+
 var globalconfig bool bStreamlinedRepairBotInterface;               //SARGE: Don't bother showing the repair bot interface at all if it's not charged.
 
 //////////END GMDX
@@ -18501,5 +18503,6 @@ defaultproperties
   	 iStanceHud=3   //Ygll = Every stance
 	   bIsMantlingStance=false //Ygll: new var to know if we are currently mantling
 	   iHealingScreen=1
+     bPistolStartTrained=true
      bStreamlinedRepairBotInterface=true
 }
