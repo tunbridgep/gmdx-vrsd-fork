@@ -56,7 +56,7 @@ function Explode()
 	if (s != None)
 	{
 		s.DrawScaleMult = FClamp(explosionDamage/28, 0.1, 3.0);
-		s.ReattachDecal();
+		s.UpdateHDTPSettings();
 	}
 
 	for (i=0; i<22; i++) //CyberP: was /1.2
