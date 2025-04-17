@@ -3,8 +3,6 @@
 //=============================================================================
 class WineBottle extends Vice; //DeusExPickup;
 
-var bool bUseHunger;
-
 function Eat(DeusExPlayer player)
 {
     super.Eat(player);
@@ -16,7 +14,6 @@ defaultproperties
 {
      healAmount=2
      AddictionIncrement=5.000000
-     bUseHunger=true
      bBreakable=true
      ItemName="Wine"
      ItemArticle="some"

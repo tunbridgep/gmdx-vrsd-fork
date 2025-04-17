@@ -14,6 +14,9 @@ var int minDamageThreshold;
 var bool bAlreadyTriggered;
 var() bool bUseRedBeam;
 var string HDTPMesh;
+var string HDTPSkin;
+var string HDTPTexture;
+var config int iHDTPModelToggle;
 
 singular function Touch(Actor Other)
 {
@@ -217,6 +220,30 @@ function Destroyed()
 	}
 
 	Super.Destroyed();
+}
+
+static function bool IsHDTP()
+{
+    return class'DeusExPlayer'.static.IsHDTPInstalled() && default.iHDTPModelToggle > 0;
+}
+
+//Ygll: Setup the HDTP settings for this classe
+function UpdateHDTPSettings()
+{
+	if(HDTPMesh != "")
+        Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),IsHDTP());
+
+    if(HDTPSkin != "")
+        Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),IsHDTP());
+
+    if(HDTPTexture != "")
+        Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),IsHDTP());	
+}
+
+function PostBeginPlay()
+{
+	Super.PostBeginPlay();
+	UpdateHDTPSettings();
 }
 
 defaultproperties

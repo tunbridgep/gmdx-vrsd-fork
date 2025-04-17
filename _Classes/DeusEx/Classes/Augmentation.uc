@@ -593,22 +593,20 @@ function float GetAdjustedEnergy(float amount)
 
 	if(amount > 0.0)
 	{
-		mult = 1.0;
+		if(Player == None)
+			return amount;
 
 		//Heart Penalty
-		if(Player != none)
-		{
-			penalty = Player.AugmentationSystem.GetAugLevelValue(class'AugHeartLung');
-			//recirc bonus
-			bonus = Player.AugmentationSystem.GetAugLevelValue(class'AugPower');
-
-			if (penalty > 0 && bonus > 0)
-				mult = bonus + penalty - 1.0;
-			else if (bonus > 0)
-				mult = bonus;
-			else if (penalty > 0)
-				mult = penalty;
-		}
+		penalty = Player.AugmentationSystem.GetAugLevelValue(class'AugHeartLung');
+		//recirc bonus
+		bonus = Player.AugmentationSystem.GetAugLevelValue(class'AugPower');
+		mult = 1.0;
+		if (penalty > 0 && bonus > 0)
+			mult = bonus + penalty - 1.0;
+		else if (bonus > 0)
+			mult = bonus;
+		else if (penalty > 0)
+			mult = penalty;
 
 		return amount * mult;
 	}

@@ -12,10 +12,7 @@ class Tree extends OutdoorThings
 var DeusExPlayer player;
 var bool closeEnough;
 var bool previouslyCloseEnough;
-var bool bHDTPOptimisation;
-
 var string Altmesh;
-
 var() float soundFreq;		// chance of making a sound every 5 seconds
 
 //Account for our janky LOD system...
@@ -99,5 +96,4 @@ defaultproperties
      Mass=2000.000000
      Buoyancy=5.000000
 	 bHDTPFailsafe=false
-     bHDTPOptimisation=true
 }

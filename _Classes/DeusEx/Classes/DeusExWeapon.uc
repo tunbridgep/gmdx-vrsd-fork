@@ -3805,7 +3805,7 @@ simulated function PlayIdleAnim()
 		{
 			if (rnd < 0.1)
 			{
-				if (iHDTPModelToggle == 2) //RSD: Clyzm model
+				if (IsHDTP() && iHDTPModelToggle == 2) //RSD: Clyzm model
 					PlayAnim('Idle',1.5,0.1);
 				else
 					PlayAnim('Idle1',1.5,0.1);
@@ -3819,7 +3819,7 @@ simulated function PlayIdleAnim()
 		{
 			if (rnd < 0.1)
 			{
-				if (iHDTPModelToggle == 2) //RSD: Clyzm model
+				if (IsHDTP() && iHDTPModelToggle == 2) //RSD: Clyzm model
 					PlayAnim('Idle',,0.1);
 				else
 					PlayAnim('Idle1',,0.1);
@@ -6769,7 +6769,7 @@ Begin:
 	bFiring = False;
 	if (!bNearWall)
 	{
-		if (iHDTPModelToggle == 2) //RSD: Clyzm model
+		if (IsHDTP() && iHDTPModelToggle == 2) //RSD: Clyzm model
 			PlayAnim('Idle',,0.1);
 		else
 			PlayAnim('Idle1',,0.1);
@@ -6919,7 +6919,7 @@ Begin:
               PlayAnim('Idle2',,0.1);
            else
 			{
-				if (iHDTPModelToggle == 2) //RSD: Clyzm model
+				if (IsHDTP() && iHDTPModelToggle == 2) //RSD: Clyzm model
 					PlayAnim('Idle',,0.1);
 				else
 					PlayAnim('Idle1',,0.1);
@@ -6927,7 +6927,7 @@ Begin:
         }
         else if (!bNearWall && !activateAn)
 		{
-			if (iHDTPModelToggle == 2) //RSD: Clyzm model
+			if (IsHDTP() && iHDTPModelToggle == 2) //RSD: Clyzm model
 				PlayAnim('Idle',,0.1);
 			else
 				PlayAnim('Idle1',,0.1);
