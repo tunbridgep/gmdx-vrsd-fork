@@ -5,9 +5,13 @@ class BulletHoleGlass extends DeusExDecal;
 
 var int crackTex;
 
+var float randomScale;
+
 function BeginPlay()
 {
         
+	randomScale = frand()*0.2;
+		
     if (FRand() < 0.5)
         crackTex = 0;
     else
@@ -30,7 +34,7 @@ function DoHDTP()
             Texture = Texture'FlatFXTex30';
     }
 
-	drawscale *= 1.0 + frand()*0.2;
+	drawscale *= 1.0 + randomScale;
 
     if (class'DeusExPlayer'.default.bJohnWooSparks)
         drawScale *= 1.5;

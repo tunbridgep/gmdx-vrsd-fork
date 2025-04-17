@@ -177,6 +177,7 @@ defaultproperties
      HDTPPlayerViewMesh="HDTPItems.HDTPGasGrenade"
      HDTPPickupViewMesh="HDTPItems.HDTPGasGrenadePickup"
      HDTPThirdPersonMesh="HDTPItems.HDTPGasGrenade3rd"
+     Mesh=LodMesh'DeusExItems.GasGrenadePickup'
      PlayerViewMesh=LodMesh'DeusExItems.GasGrenade'
      PickupViewMesh=LodMesh'DeusExItems.GasGrenadePickup'
      ThirdPersonMesh=LodMesh'DeusExItems.GasGrenade3rd'
@@ -191,5 +192,5 @@ defaultproperties
      Mass=5.000000
      Buoyancy=2.000000
      bDisposableWeapon=true
-     minSkillRequirement=1;
+     minSkillRequirement=1
 }

@@ -493,7 +493,7 @@ function Finish()                                                               
             //if (DeusExPlayer(Owner).primaryWeapon != None)                    //RSD: Always quickdraw
             //{
               if (DeusExPlayer(Owner).CarriedDecoration == None)
-                 DeusExPlayer(Owner).inHandPending = DeusExPlayer(Owner).primaryWeapon;
+                 DeusExPlayer(Owner).SelectLastWeapon(true,false);
               GotoState('idle');
               return;
             //}
