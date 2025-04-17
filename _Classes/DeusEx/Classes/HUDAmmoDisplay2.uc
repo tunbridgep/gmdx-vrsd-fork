@@ -150,8 +150,8 @@ event DrawWindow(GC gc)
             gc.SetTextColor(colText);
 
             if (amount > 0)
-                gc.DrawText(28, 56, 32, 8, InvLabel @ amount); //Position below icon
-            //gc.DrawText(28, 48, 32, 8, InvLabel @ amount); //Position at bottom of icon
+                gc.DrawText(offset-3, 56, 64, 8, InvLabel @ amount); //Position below icon
+            //gc.DrawText(15+offset, 48, 32, 8, InvLabel @ amount); //Position at bottom of icon
         
             if (chargeLevel > 0)
                 gc.DrawText(28, 34, 32, 8, Sprintf("%d%%", chargeLevel)); //Position center of icon
