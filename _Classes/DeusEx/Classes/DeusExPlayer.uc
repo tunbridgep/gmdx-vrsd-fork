@@ -3196,12 +3196,13 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
     if (default.currentSong != string(NewSong) || default.currentSection != NewSection || bEnhancedMusicSystem == 0)
     {
         super.ClientSetMusic(NewSong,NewSection,NewCdTrack,NewTransition);
-        default.currentSong = string(NewSong);
-        if (NewSection == savedSection)
-            default.currentSection = 0;
-        else
-            default.currentSection = NewSection;
     }
+    
+    default.currentSong = string(NewSong);
+    if (NewSection == savedSection)
+        default.currentSection = 0;
+    else
+        default.currentSection = NewSection;
 }
 
 // ----------------------------------------------------------------------
