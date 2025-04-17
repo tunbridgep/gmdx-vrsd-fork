@@ -52,6 +52,7 @@ Sarge's Changes since Beta 2.2:
         - Alternate binds for Augmentations will be displayed on the Active Augs window.
     - The players current stance (Walking/Running, etc) is now displayed on the HUD.
     - Music will now continue when loading different areas that use the same music track, rather than restarting.
+    - Added a new option to always start a new game with Pistols set to Untrained instead of Trained by default. This has no gameplay impact and you will always have the same total number of skill points.
     - GMDX "Secondary Item" system updated to use a type, rather than a specific item. This means that dropping/losing your secondary items will no longer unassign your secondary item.
     - Taking ammo from weapons in the world will now make an "ammo retrieval" sound.
     - Saving is now possible while an infolink is playing. The infolink will be aborted.
