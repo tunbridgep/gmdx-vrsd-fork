@@ -316,7 +316,7 @@ function SpawnEffects(Vector HitLocation, Vector HitNormal, Actor Other)
 		if (mark != None)
 		{
 			mark.DrawScaleMult = FClamp(Damage/24, 0.5, 4.0); //CyberP: was divided by 30, last param was 3
-			mark.ReattachDecal();
+			mark.UpdateHDTPSettings();
 		}
 
 		ExplosionDecal = None;
