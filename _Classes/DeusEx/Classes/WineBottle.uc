@@ -14,8 +14,7 @@ defaultproperties
 {
      healAmount=2
      AddictionIncrement=5.000000
-     bUseHunger=True
-     bBreakable=True
+     bBreakable=true
      ItemName="Wine"
      ItemArticle="some"
      PlayerViewOffset=(X=30.000000,Z=-12.000000)
@@ -31,8 +30,8 @@ defaultproperties
      Mesh=LodMesh'DeusExItems.WineBottle'
      CollisionRadius=5.060000
      CollisionHeight=16.180000
-     bCollideWorld=True
-     bBlockPlayers=True
+     bCollideWorld=true
+     bBlockPlayers=true
      Mass=10.000000
      Buoyancy=8.000000
      fullness=4
