@@ -80,6 +80,7 @@ var bool bWeaponRequirementsMatter;
 var bool bRealKillswitch;
 var bool bCameraDetectUnconscious;
 var bool bShenanigans;
+var bool bRandomizeCrap;
 
 //LDDP
 var bool bFemaleEnabled;
@@ -143,6 +144,7 @@ event InitWindow()
     bRealKillswitch=false;                                                      //Sarge
   	bCameraDetectUnconscious=false;
     bShenanigans=false;                                                         //Sarge
+    bRandomizeCrap=false;                                                       //Sarge
     //bRestrictedMetabolism=false;                                              //Sarge
     default.bRandomizeCrates=false;                                             //RSD: Also need default values! Otherwise get command in modifier menu takes the wrong value
     default.bRandomizeMods=false;                                               //RSD
@@ -158,8 +160,9 @@ event InitWindow()
     default.bDisableConsoleAccess=false;                                        //Sarge
     default.bWeaponRequirementsMatter=false;                                    //Sarge
     default.bRealKillswitch=false;                                              //Sarge
-	  default.bCameraDetectUnconscious=false;
+	default.bCameraDetectUnconscious=false;
     default.bShenanigans=false;                                                 //Sarge
+    default.bRandomizeCrap=false;                                               //Sarge
 
 	StyleChanged();
 }
@@ -811,6 +814,7 @@ function SaveSettings()
     player.iNoKeypadCheese=iNoKeypadCheese;                                     //Sarge
     player.bRandomizeEnemies=bRandomizeEnemies;                                 //Sarge
     player.bPrisonStart=bPrisonStart;                                           //Sarge
+    player.bRandomizeCrap=bRandomizeCrap;                                       //Sarge
     if (player.bRandomizeAugs)                                                  //RSD: New aug randomization feature
         ScrambleAugOrderList();
     player.bAddictionSystem=bAddictionSystem;
