@@ -1332,9 +1332,9 @@ function bool HandlePickupQuerySuper( inventory Item )                          
 	return Inventory.HandlePickupQuery(Item);
 }
 
-function float SetDroppedAmmoCount(optional int amountPassed, optional bool noOld) //RSD: Added optional int amountPassed for initialization in MissionScript.uc
+function float SetDroppedAmmoCount(int amountPassed, bool bSearched) //RSD: Added optional int amountPassed for initialization in MissionScript.uc
 {
-    if (amountPassed == 0 && !noOld)                                                      //RSD: If we didn't get anything, set to old formula
+    if (amountPassed == 0 && !bSearched)                                                      //RSD: If we didn't get anything, set to old formula //Ygll: change the test to advert empty weapon bug
         amountPassed = Rand(4) + 1;
 
     // Any weapons have their ammo set to a random number of rounds (1-4)
@@ -2087,16 +2087,6 @@ simulated function int AmmoLeftInClip()
     return ClipCount;
 }
 
-simulated function int NumClips()
-{
-    local int rnds;
-    rnds = NumRounds();
-    if (rnds > 0)
-        return (rnds / reloadcount) + 1;
-    else
-        return 0;
-}
-
 simulated function int NumRounds()
 {
 	if (ReloadCount == 0)  // if this weapon is not reloadable
@@ -2105,6 +2095,24 @@ simulated function int NumRounds()
 		return 0;
 	else  // compute remaining ammo
 		return AmmoType.AmmoAmount - AmmoLeftInClip();
+}
+
+simulated function int NumClips()
+{
+    local int rnds;
+	local int clips;
+    rnds = NumRounds();
+    if (rnds > 0)
+	{
+		clips = (rnds / reloadcount);
+		
+		if(clips*reloadcount < rnds)
+			return clips+1;
+		else
+			return clips;
+	}
+    else
+        return 0;
 }
 
 simulated function int AmmoAvailable(int ammoNum)
