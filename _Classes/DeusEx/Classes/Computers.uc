@@ -30,6 +30,8 @@ var localized String msgLockedOut;
 var travel int timesHacked;			// How many times has this computer been hacked?
 var const bool allowHackingLockout;       // Can the player be locked out of this terminal after hacking?
 
+var(GMDX) name ActivationFlag;      //SARGE: Set a flag when this computer is activated.
+
 enum EAccessLevel
 {
 	AL_Untrained,
@@ -450,6 +452,8 @@ function Texture GetNodeTexture()
 
 function AdditionalActivation(DeusExPlayer ActivatingPlayer)
 {
+    if (ActivationFlag != '')
+        ActivatingPlayer.FlagBase.SetBool(ActivationFlag,true);
 }
 
 // ----------------------------------------------------------------------

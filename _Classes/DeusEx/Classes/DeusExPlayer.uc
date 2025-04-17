@@ -13797,6 +13797,7 @@ function bool GetExceptedCode(string code)
         || code == "4321" //We are told to "count backwards from 4"
         || code == "NICOLETTE" //Given in conversation
         || code == "CHAD" //Given in conversation
+        || (code == "2167" && FlagBase.GetBool('NYCUndergroundCodeObtained')) //Allow us to use it after we access the computer. Also adds a note from a datacube.
         || code == "JCDENTON"; //Uses Base: JCDenton instead of Username: JCDenton.
         || code == "CHAD"; //Given in conversation
 }

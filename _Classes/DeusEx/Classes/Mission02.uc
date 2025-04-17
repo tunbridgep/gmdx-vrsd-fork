@@ -113,31 +113,6 @@ function FirstFrame()
 			flags.SetBool('SchickThankedPlayer', True);
 		}
 	}
-	else if (localURL == "02_NYC_UNDERGROUND") //Totalitarian: change troop barks if confix is detected
-	{
-        //Randomise the 2167 code
-        if (Player.iNoKeypadCheese > 0)
-        {
-            newPasscode = string(Rand(899999) + 1000);
-            //player.ClientMessage("New code is " $ newPasscode);
-            foreach AllActors(class'Keypad', K)
-            {
-                if (K.validCode == "2167")
-                {
-                    K.validCode = newPasscode;
-                    K.codeExcepted = true;
-                }
-            }
-
-            //Update security computer to also contain the right code
-            foreach AllActors(class'ComputerSecurity', SC)
-            {
-                if (SC.specialOptions[1].TriggerText ~= "This Week's Code: 2167")
-                    SC.specialOptions[1].TriggerText = "This week's code: " $ newPasscode;
-            }
-                        
-        }
-    }
 	else if (localURL == "02_NYC_HOTEL")
     {
         //SARGE: Fix up elevator shaft Lighting if we have Lighting Accessibility enabled
