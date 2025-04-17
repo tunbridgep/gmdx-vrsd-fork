@@ -53,6 +53,7 @@ var localized String CountLabel;
 var localized String ChargeLabel;
 var localized String RoundLabel;
 var localized String RoundsLabel;
+var localized String RoundsLabel2;
 
 var Color colDropSwap; //CyberP:
 var Color colIconDimmed; //RSD
@@ -169,7 +170,9 @@ event DrawWindow(GC gc)
 			if ((weapon != None) && weapon.bDisposableWeapon)
 			{
 				str = String(weapon.AmmoType.AmmoAmount);
-				if (str == "1")
+                if (player.bShowTotalRoundsCount)
+                    str = Sprintf(RoundsLabel2, str, player.GetAdjustedMaxAmmo(weapon.AmmoType));
+				else if (str == "1")
 					str = Sprintf(RoundLabel, str);
 				else
 					str = Sprintf(RoundsLabel, str);
@@ -177,7 +180,9 @@ event DrawWindow(GC gc)
 			else if (anItem.IsA('DeusExAmmo'))
 			{
 				str = String(DeusExAmmo(anItem).AmmoAmount);
-				if (str == "1")
+                if (player.bShowTotalRoundsCount)
+                    str = Sprintf(RoundsLabel, str, player.GetAdjustedMaxAmmo(DeusExAmmo(anItem)));
+				else if (str == "1")
 					str = Sprintf(RoundLabel, str);
 				else
 					str = Sprintf(RoundsLabel, str);
@@ -619,6 +624,7 @@ defaultproperties
      ChargeLabel="Charge: %d%%"
      RoundLabel="%d Rd"
      RoundsLabel="%d Rds"
+     RoundsLabel2="%d/%d Rds"
      colDropSwap=(R=16,G=32,B=128)
      colIconDimmed=(R=64,G=64,B=64)
      colCharge=(R=255,G=243,B=109)

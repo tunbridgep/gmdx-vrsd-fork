@@ -24,8 +24,8 @@ auto simulated state Flying
 		mark = spawn(class'BurnMark',,, Location, Rotator(HitNormal));
 		if (mark != None)
 		{
-			mark.DrawScale *= 0.4*DrawScale;
-			mark.ReattachDecal();
+			mark.DrawScaleMult = 0.4*DrawScale;
+			mark.UpdateHDTPSettings();
 		}
 		if (smokeGen != None)
 		smokeGen.DelayedDestroy();
@@ -93,8 +93,8 @@ simulated function Tick(float deltaTime)
 		mark = spawn(class'BurnMark',,, Location, rot(16384,0,0));
 		if (mark != None)
 		{
-			mark.DrawScale *= 0.4*DrawScale;
-			mark.ReattachDecal();
+			mark.DrawScaleMult = 0.4*DrawScale;
+			mark.UpdateHDTPSettings();
 		}
 		if (smokeGen != None)
 		smokeGen.DelayedDestroy();

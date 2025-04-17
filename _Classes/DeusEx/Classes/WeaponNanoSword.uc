@@ -109,6 +109,10 @@ function PlaySelect()
 //SARGE: Sets and unsets textures based on our charge amount
 function SetWeaponSkin(bool hdtp)
 {
+    //Stop light re-appearing when holstered
+    if (!IsInState('Idle'))
+        return;
+
     if (hdtp)
     {
         if (chargeManager.IsUsedUp())
