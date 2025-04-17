@@ -5659,7 +5659,7 @@ function DoJump( optional float F )
 	    if (camInterpol == 0)
 	        camInterpol = 0.4; //do not change this value. its used by mantling code
 
-		if ( (Role == ROLE_Authority ) && (FRand() < 0.6) )
+		if ( (Role == ROLE_Authority ) && (FRand() < 0.33) )
 			PlaySound(JumpSound, SLOT_None, 1.5, true, 1200, 1.0 - 0.2*FRand() );
 		if ( (Level.Game != None) && (Level.Game.Difficulty > 0) )
 			MakeNoise(0.1 * Level.Game.Difficulty);
@@ -5753,7 +5753,7 @@ function DoJump( optional float F )
 	    if (camInterpol == 0)
 	        camInterpol = 0.4; //do not change this value. its used by mantling code
 		
-		if ((Role == ROLE_Authority )&&(FRand()<0.6))
+		if ((Role == ROLE_Authority )&&(FRand()<0.33))
 			PlaySound(JumpSound, SLOT_None, 1.5, true, 1200, 1.0 - 0.2*FRand() );
 		if ( (Level.Game != None) && (Level.Game.Difficulty > 0) )
 			MakeNoise(0.1 * Level.Game.Difficulty);
