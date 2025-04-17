@@ -256,6 +256,15 @@ function PlayCriticalDamageSound()
 	PlaySound(sound'GreaselFlee', SLOT_None);
 }
 
+function Shenanigans(bool bEnabled)
+{
+    if (FRand() < 0.1 && bEnabled)
+    {
+        FamiliarName="Beasel the Greasel";
+        UnfamiliarName="Beasel the Greasel";
+    }
+}
+
 defaultproperties
 {
      bPlayDying=True
