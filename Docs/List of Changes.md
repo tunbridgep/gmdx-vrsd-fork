@@ -353,8 +353,10 @@ Sarge's Changes since Beta 2.2:
     - Right-Clicking on the Nano-Keyring icon in the inventory will select it.
         - This is useful when you have Smart Keyring enabled, and want to select the keyring before reaching a door, such as if it's being watched by a camera.
     - Added a new DataCube to explain cameras not detecting unconscious enemies.
-    - Swivel Chair and Leather Couch skins are now randomised upon loading a map for the first time. All of the chairs in the map will share the same skin, to maintain consistency.
+    - Added a new "Randomise Decorations" playthrough modifier
+        - Swivel Chair and Leather Couch skins will be randomised upon loading a map for the first time. All of the chairs in the map will share the same skin, to maintain consistency.
         - Additionally, added 2 new vanilla swivel chair textures, inspired by the "cushiony" design of the HDTP swivel chair.
+        - All Junk Items (soda cans, cigarettes, etc) will now have randomised skins, except for Soy Food which uses special Hong-Kong and non-Hong-Kong specific variants.
     - The players total kills are now shown in the Health screen, similar to older versions of GMDX. Morality info (pacifist, killer, etc) is not shown.
     - Vending Machines now vend random flavours of chocolate bar and soda. This change is purely visual and doesn't affect gameplay in any way.
     - Hand textures have been ported over from LDDP. This means the first-person weapon textures now have properly coloured hand textures, as well as visible augmentation markings where they align with the third person models.
@@ -368,7 +370,6 @@ Sarge's Changes since Beta 2.2:
         - Some HDTP features that were removed from GMDX (such as alternate inventory icons) have been re-added.
         - Vanilla Soda Cans are now sealed up, to match their HDTP counterparts.
         - Added an alternative version of the vanilla Security Computer texture, with a black screen. The blue screen on the regular texture "bleeds" through the model and is visible at long range. The blue screen will be shown when using the computer.
-    - All Junk Items (soda cans, cigarettes, etc) will now have randomised skins, except for Soy Food which uses special Hong-Kong and non-Hong-Kong specific variants.
     - Added 2 new Cigarettes skins (Holy Smokes and Super 45s) based on in-game billboards (HDTP and non-HDTP variants included).
     - Single-Use weapons (grenades, PS20s, etc) will now drop individually from the inventory screen, similar to pickups, rather than dropping as a single stack.
     - Added an "Alternate Start" option, which skips the first part of the game and starts at the MJ12 Lab. You will start with nothing, so this is extra hardcore.
