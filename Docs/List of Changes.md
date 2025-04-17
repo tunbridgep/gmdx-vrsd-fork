@@ -41,6 +41,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed a vanilla game bug that would prevent weapons from spawning with ammo available if there wasn't enough room to spawn the ammo when being picked up.
     - Fixed many other GMDX and Vanilla bugs.
 - Quality of Life Improvements:
+    - Duplicate Nano-Keys are no longer shown in the "Received Items" window when picked up from carcasses.
     - Ballistic Armour and Hazmat Suits are now kept equipped when drained, but will have no effect.
         - Recharging them in any way (such as through biocells or a repair bot) will make them active again
         - If multiple items are stacked, the item will remain drained even though a new one is available, and will require re-activation.
@@ -51,7 +52,9 @@ Sarge's Changes since Beta 2.2:
         - Alternative binds for belt slots have been added, and will display on the belt
         - Alternate binds for Augmentations will be displayed on the Active Augs window.
     - The players current stance (Walking/Running, etc) is now displayed on the HUD.
+    - By default, Repair Bots will no longer open the repair interface if they are recharging or out of charges.
     - Music will now continue when loading different areas that use the same music track, rather than restarting.
+    - Added a new option to always start a new game with Pistols set to Untrained instead of Trained by default. This has no gameplay impact and you will always have the same total number of skill points.
     - GMDX "Secondary Item" system updated to use a type, rather than a specific item. This means that dropping/losing your secondary items will no longer unassign your secondary item.
     - Taking ammo from weapons in the world will now make an "ammo retrieval" sound.
     - Saving is now possible while an infolink is playing. The infolink will be aborted.
@@ -87,6 +90,7 @@ Sarge's Changes since Beta 2.2:
             - In previous versions of GMDX, when selecting a belt item using the number keys, right-clicking would switch back to your primary belt selection. Now, it holsters instead.
                 - Setting The IW Toolbelt to "classic mode" will revert this behaviour, and will once again make right-clicking select the primary belt selection.
                 - Setting the IW Toolbelt to "hybrid" mode will only switch back to your primary belt selection if you were unholstered before selecting the current item, otherwise it does nothing.
+        - Added a new setting to move the Belt to the left and the Ammo Display to the right.
         - "Smart Keyring" support added.
             - When Smart Keyring is enabled, the keyring will no longer occupy belt slot 0 (or belt slot =, if the large belt is enabled), allowing these slots to be used for regular items.
             - The keyring can still be selected using Left-Click Frob on doors or by right-clicking the Nano-Keyring icon in the inventory screen.
@@ -345,6 +349,7 @@ Sarge's Changes since Beta 2.2:
 - Miscellaneous Changes:
     - Many default "<item> Activated" messages have been removed as these would pollute the log.
     - Added miscelanous sounds when interacting with certain things, such as the Bioelectric "hiss" sound when using repair bots.
+    - Fixed misaligned HUD elements (ammo display and belt) by moving the Ammo display down slightly.
     - A small light has been added to the flamethrower, to simulate the light created by the small pilot light.
     - Corpses placed within maps will now have proper blood pools.
     - Added a blue screen effect when entering bodies of water.
@@ -357,8 +362,10 @@ Sarge's Changes since Beta 2.2:
     - Right-Clicking on the Nano-Keyring icon in the inventory will select it.
         - This is useful when you have Smart Keyring enabled, and want to select the keyring before reaching a door, such as if it's being watched by a camera.
     - Added a new DataCube to explain cameras not detecting unconscious enemies.
-    - Swivel Chair and Leather Couch skins are now randomised upon loading a map for the first time. All of the chairs in the map will share the same skin, to maintain consistency.
+    - Added a new "Randomise Decorations" playthrough modifier
+        - Swivel Chair and Leather Couch skins will be randomised upon loading a map for the first time. All of the chairs in the map will share the same skin, to maintain consistency.
         - Additionally, added 2 new vanilla swivel chair textures, inspired by the "cushiony" design of the HDTP swivel chair.
+        - All Junk Items (soda cans, cigarettes, etc) will now have randomised skins, except for Soy Food which uses special Hong-Kong and non-Hong-Kong specific variants.
     - The players total kills are now shown in the Health screen, similar to older versions of GMDX. Morality info (pacifist, killer, etc) is not shown.
     - Vending Machines now vend random flavours of chocolate bar and soda. This change is purely visual and doesn't affect gameplay in any way.
     - Hand textures have been ported over from LDDP. This means the first-person weapon textures now have properly coloured hand textures, as well as visible augmentation markings where they align with the third person models.
@@ -372,7 +379,6 @@ Sarge's Changes since Beta 2.2:
         - Some HDTP features that were removed from GMDX (such as alternate inventory icons) have been re-added.
         - Vanilla Soda Cans are now sealed up, to match their HDTP counterparts.
         - Added an alternative version of the vanilla Security Computer texture, with a black screen. The blue screen on the regular texture "bleeds" through the model and is visible at long range. The blue screen will be shown when using the computer.
-    - All Junk Items (soda cans, cigarettes, etc) will now have randomised skins, except for Soy Food which uses special Hong-Kong and non-Hong-Kong specific variants.
     - Added 2 new Cigarettes skins (Holy Smokes and Super 45s) based on in-game billboards (HDTP and non-HDTP variants included).
     - Single-Use weapons (grenades, PS20s, etc) will now drop individually from the inventory screen, similar to pickups, rather than dropping as a single stack.
     - Added an "Alternate Start" option, which skips the first part of the game and starts at the MJ12 Lab. You will start with nothing, so this is extra hardcore.

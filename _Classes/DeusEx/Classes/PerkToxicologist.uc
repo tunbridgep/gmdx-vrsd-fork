@@ -10,6 +10,6 @@ defaultproperties
     PerkSkill=Class'DeusEx.SkillMedicine'
     PerkIcon=Texture'RSDCrap.UserInterface.PerkToxicologist'
     PerkCost=75
-    PerkLevelRequirement=2
+    PerkLevelRequirement=1
     PerkValue=1
 }

@@ -11,6 +11,9 @@ var Float lastchargeTime;
 var int chargeMaxTimes;
 var int lowerThreshold;                                                         //RSD: Added
 
+var localized string msgCharging;
+var localized string msgDepleted;
+
 // ----------------------------------------------------------------------
 // Network replication
 // ----------------------------------------------------------------------
@@ -56,7 +59,9 @@ function StandStill()
    if (player != none && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkMisfeatureExploit').bPerkObtained == true)
    chargeAmount = 90;
 
-    if (player != none && player.CombatDifficulty >= 3.0)                       //RSD: Realistic/Hardcore get 2 charges max
+    if (player != none && player.bHardCoreMode)                                 //SARGE: Hardcore gets 1 charge
+        lowerThreshold = 2;
+    else if (player != none && player.CombatDifficulty >= 3.0)                  //RSD: Realistic/Hardcore get 2 charges max
         lowerThreshold = 1;
     else                                                                        //RSD: Medium/Hard get 3 charges max
         lowerThreshold = 0;
@@ -79,7 +84,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 
    // DEUS_EX AMSD  In multiplayer, don't pop up the window, just use them
    // In singleplayer, do the old thing.
-   if (Level.NetMode == NM_Standalone)
+   if (Level.NetMode == NM_Standalone && (CanCharge(true) || !class'DeusExPlayer'.default.bStreamlinedRepairBotInterface))
    {
       ActivateRepairBotScreens(DeusExPlayer(Frobber));
    }
@@ -93,10 +98,10 @@ function Frob(Actor Frobber, Inventory frobWith)
       }
       else
       {
-         if(chargeMaxTimes>lowerThreshold)                                      //RSD: 0 changed to lowerThreshold
-         Pawn(Frobber).ClientMessage("Repairbot still charging, "$int(chargeRefreshTime - (Level.TimeSeconds - lastChargetime))$" seconds to go.");
-            else
-            Pawn(Frobber).ClientMessage("Repairbot charge depleted");
+         if(CanCharge(true))                                      //RSD: 0 changed to lowerThreshold
+            Pawn(Frobber).ClientMessage(sprintf(msgCharging, int(chargeRefreshTime - (Level.TimeSeconds - lastChargetime))));
+        else
+            Pawn(Frobber).ClientMessage(msgDepleted);
 
       }
    }
@@ -145,8 +150,10 @@ function int ChargePlayer(DeusExPlayer PlayerToCharge)
 // Returns whether or not the bot can charge the player
 // ----------------------------------------------------------------------
 
-simulated function bool CanCharge()
+simulated function bool CanCharge(optional bool checkChargesOnly)
 {
+    if (checkChargesOnly)
+        return chargeMaxTimes > lowerThreshold;
 	return (( (Level.TimeSeconds - int(lastChargeTime)) > chargeRefreshTime)&&(chargeMaxTimes>lowerThreshold)); //RSD: 0 changed to lowerThreshold
 }
 
@@ -220,4 +227,6 @@ defaultproperties
      BindName="RepairBot"
      FamiliarName="Repair Bot"
      UnfamiliarName="Repair Bot"
+     msgCharging="Recharging... %d seconds remaining"
+     msgDepleted="Charges depleted"
 }

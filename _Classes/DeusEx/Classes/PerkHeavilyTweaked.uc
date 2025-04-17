@@ -4,7 +4,7 @@
 class PerkHeavilyTweaked extends Perk;
 
 //Make all GEP Guns in the players inventory accept laser and scope mods
-function OnPerkPurchase()
+function OnMapLoadAndPurchase()
 {
 	local Inventory item;
     local WeaponGEPGun gep;

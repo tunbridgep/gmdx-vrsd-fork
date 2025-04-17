@@ -532,6 +532,9 @@ function RandomiseCrap()
     local ChairLeather L2;
     local int chairSkin;
         
+    if (!player.bRandomizeCrap)
+        return;
+
     foreach AllActors(class'DeusExPickup', P)
     {
         P.RandomiseSkin(player);

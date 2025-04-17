@@ -127,6 +127,12 @@ state DeActivated
 {
 }
 
+function Shenanigans(bool bEnabled)
+{
+    if (bEnabled)
+        ItemName="Fire Ex-tin-gui-sher";
+}
+
 defaultproperties
 {
      bBreakable=True
