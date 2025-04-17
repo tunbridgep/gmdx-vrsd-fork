@@ -160,6 +160,23 @@ function UpdateAugIconStatus(Augmentation aug)
 }
 
 // ----------------------------------------------------------------------
+// UpdateAllIcons()
+// ----------------------------------------------------------------------
+
+function UpdateAllIcons()
+{
+	local HUDActiveAug iconWindow;
+
+	// First make sure this object isn't already in the window
+	iconWindow = HUDActiveAug(winIcons.GetTopChild());
+	while(iconWindow != None)
+	{
+        iconWindow.UpdateAugIconStatus();
+		iconWindow = HUDActiveAug(iconWindow.GetLowerSibling());
+	}
+}
+
+// ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
 defaultproperties

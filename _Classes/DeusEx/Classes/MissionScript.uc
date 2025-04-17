@@ -182,6 +182,7 @@ function FirstFrame()
     local int seed;
     local DeusExCarcass C;                                                      //SARGE
     local DecalManager D;                                                       //SARGE
+    local SecurityCamera Cam;                                                      //SARGE
 
 	flags.DeleteFlag('PlayerTraveling', FLAG_Bool);
 
@@ -264,6 +265,11 @@ function FirstFrame()
         DistributeItem(class'Flare',1,3);
 
 		flags.SetBool(flagName, True);
+
+        //SARGE: HARDCORE ONLY, force all cameras to set off alarms etc,
+        if (player.bHardCoreMode)
+            foreach AllActors(class'SecurityCamera', Cam)
+                Cam.bAlarmEvent = true;
 
         firstTime = true;
 	}
@@ -449,7 +455,7 @@ function DistributeItem(class<Inventory> itemClass, int minAmount, int maxAmount
     local int i, j, swapTo, items;
     local ScriptedPawn actors[50], temp, SP;
     local int actorCount, toGive, index;
-    local Inventory inv;
+    local Inventory inv, inv2;
 
     //player.ClientMessage("Distributing "$itemClass$"...");
 
@@ -505,14 +511,16 @@ function DistributeItem(class<Inventory> itemClass, int minAmount, int maxAmount
         }
         if (ammoClass != None)
         {
-            inv = spawn(ammoClass, actors[i]);
-            if (inv != None)
+            inv2 = spawn(ammoClass, actors[i]);
+            if (inv2 != None)
             {
-                inv.GiveTo(actors[i]);
-                inv.SetBase(actors[i]);
-                inv.bHidden = True;
-                inv.SetPhysics(PHYS_None);
-                actors[i].AddInventory(inv);
+                inv2.GiveTo(actors[i]);
+                inv2.SetBase(actors[i]);
+                inv2.bHidden = True;
+                inv2.SetPhysics(PHYS_None);
+                actors[i].AddInventory(inv2);
+                if(inv.IsA('DeusExWeapon') && inv2.isA('Ammo'))
+                    DeusExWeapon(inv).AmmoType = Ammo(inv2);
                 //player.ClientMessage("  Given a "$ammoClass$" to "$actors[i]);
             }
         }
@@ -549,6 +557,9 @@ function RandomiseCrap()
     local ChairLeather L2;
     local int chairSkin;
         
+    if (!player.bRandomizeCrap)
+        return;
+
     foreach AllActors(class'DeusExPickup', P)
     {
         P.RandomiseSkin(player);

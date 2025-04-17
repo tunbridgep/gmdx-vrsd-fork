@@ -209,6 +209,7 @@ beltDescription="IMAGE"
 CountLabel="Count: %d"
 RoundLabel="%d Rd"
 RoundsLabel="%d Rds"
+RoundsLabel2="%d/%d Rds"
 
 [Computers]
 msgLockedOut="Terminal is locked out for %d more seconds"

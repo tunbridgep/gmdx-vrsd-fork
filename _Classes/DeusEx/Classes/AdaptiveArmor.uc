@@ -25,7 +25,8 @@ defaultproperties
 {
      skillNeeded=Class'DeusEx.SkillEnviro'
      LoopSound=Sound'DeusExSounds.Pickup.SuitLoop'
-     ChargedIcon=Texture'DeusExUI.Icons.ChargedIconArmorAdaptive'
+     //ChargedIcon=Texture'DeusExUI.Icons.ChargedIconArmorAdaptive'
+     ChargedIcon=Texture'RSDCrap.Icons.ChargedIconArmorAdaptive' //SARGE: Changed to new icon since the charged icon seems outdated/weird
      chargeMult=0.100000
      ItemName="Thermoptic Camo"
      ItemArticle="some"

@@ -1088,7 +1088,7 @@ function Explode(vector HitLocation)
 	if (s != None)
 	{
 		s.DrawScaleMult = FClamp(explosionDamage/26, 0.1, 3.5); //CyberP: was 1st param was /30, 3rd was 3.0
-		s.ReattachDecal();
+		s.UpdateHDTPSettings();
 	}
     /*ForEach RadiusActors(class'Actor',acti,explosionRadius*0.2)
     {

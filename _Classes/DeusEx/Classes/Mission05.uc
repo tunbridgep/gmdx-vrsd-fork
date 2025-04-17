@@ -161,7 +161,6 @@ function FirstFrame()
 	       			}
        			}
 
-				player.AssignSecondary(None);
 				player.primaryWeapon = None;
 
                 //SARGE: If we're using the "Killswitch Engaged" playthrough mod,

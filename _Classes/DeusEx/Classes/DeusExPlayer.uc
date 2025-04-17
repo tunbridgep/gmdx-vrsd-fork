@@ -453,7 +453,7 @@ var globalconfig bool bRealUI;
 var globalconfig bool bHardcoreAI1;
 var globalconfig bool bHardcoreAI2;
 var globalconfig bool bHardcoreAI3;
-var globalconfig int bAlternateToolbelt;
+var globalconfig int iAlternateToolbelt;
 var globalconfig bool bAnimBar1;
 var globalconfig bool bAnimBar2;
 var globalconfig bool bExtraObjectDetails;
@@ -600,6 +600,7 @@ var travel bool bRandomizeCrates;
 var travel bool bRandomizeMods;
 var travel bool bRandomizeAugs;
 var travel bool bRandomizeEnemies;
+var travel bool bRandomizeCrap;                                                 //Sarge: Randomize the crap around the level, like couch skins, etc.
 var travel bool bRestrictedSaving;												//Sarge: This used to be tied to hardcore, now it's a config option
 var travel int iNoKeypadCheese;													//Sarge: 1 = Prevent using keycodes that we don't know, 2 = additionally prevent plot skips, 3 = additionally obscure keypad code length.
 var travel int seed;                                                            //Sarge: When using randomisation playthrough modifiers, this is our generated seed for the playthrough, to prevent autosave abuse and the like
@@ -773,8 +774,21 @@ var globalconfig int iStanceHud;					                //Ygll: Display the current
 
 var globalconfig int iHealingScreen;                            //Ygll: can disable the flash screen when healing or changing it to green color.
 
+var globalconfig bool bAmmoDisplayOnRight;                          //SARGE: If enabled, make the ammo display appear on the right (with the belt on the left)
 
 var globalconfig bool bCutsceneVolumeEqualiser;                     //SARGE: If true, cutscenes will have their sound, voice and music volumes adjusted to be as clear as possible, with the sound and music relatively quiet and the speech quite loud.
+
+var globalconfig bool bPistolStartTrained;                          //SARGE: If false, pistols no longer start the game trained, and the player will instead be given skill points equivalent to it's value
+
+var globalconfig bool bStreamlinedRepairBotInterface;               //SARGE: Don't bother showing the repair bot interface at all if it's not charged.
+
+var globalconfig bool bReversedAltBeltColours;                      //SARGE: Make it like how it was in vSarge beta.
+
+var globalconfig bool bAlwaysShowReceivedItemsWindow;               //SARGE: Always show the retrieved items window when picking up ammo from a weapon.
+
+var globalconfig bool bShowTotalRoundsCount;                        //SARGE: Show the total number of rounds we can carry for disposable items in the inventory screen.
+
+var globalconfig bool bGMDXDebug;                                   //SARGE: Allows extra debug info/messages. Not for regular players!
 
 //////////END GMDX
 
@@ -1049,6 +1063,7 @@ local name flagName;                                                            
 local bool bFirstLevelLoad;                                                     //RSD: Added
 local AlarmUnit        AU;                                                      //RSD: Added
 local Perk perkDoorsman;
+local DeusExPickup     PU;                                                      //SARGE: Added
 
 //log("bHardCoreMode =" @bHardCoreMode);
 //log("CombatDifficulty =" @CombatDifficulty);
@@ -1058,6 +1073,17 @@ local Perk perkDoorsman;
    	 bFirstLevelLoad = !flagBase.GetBool(flagName);                             //RSD: Tells us if this is the first time loading a map
 //log("flagName =" @flagName);
 //log("bFirstLevelLoad =" @bFirstLevelLoad);
+
+
+    //SARGE: Set up shenanigans
+    if (bFirstLevelLoad)
+    {
+        ForEach AllActors(class'ScriptedPawn', P)
+            P.Shenanigans(bShenanigans);
+        ForEach AllActors(class'DeusExPickup', PU)
+            PU.Shenanigans(bShenanigans);
+    }
+    
 
      bStunted = False; //CyberP: failsafe
      if (CarriedDecoration != None && CarriedDecoration.IsA('Barrel1'))
@@ -1069,8 +1095,6 @@ local Perk perkDoorsman;
       else if (P.bHardcoreRemove && (bHardCoreMode == True || bHardcoreFilterOption == True))
           P.Destroy();
       P.DifficultyMod(CombatDifficulty,bHardCoreMode,bExtraHardcore,bFirstLevelLoad); //RSD: Replaced ALL NPC stat modulation with a compact function implementation
-      if (bFirstLevelLoad)
-        P.Shenanigans(bShenanigans);
     }
 
     if (bHardCoreMode == False)
@@ -1595,9 +1619,10 @@ function int GetInventoryCount(Name item)
 
 function PostPostBeginPlay()
 {
-
-
 	Super.PostPostBeginPlay();
+
+    //Fix all inventory item positions
+    SetAllBase();
 
 	// Bind any conversation events to this DeusExPlayer
 	ConBindEvents();
@@ -1911,7 +1936,8 @@ exec function HDTP(optional bool updateDecals)
 	local DeusExPickup PK;                                                      //SARGE: Added for object toggles
 	local DeusExProjectile PR;                                                  //SARGE: Added for object toggles
 	local DeusExAmmo AM;                                                        //SARGE: Added for object toggles
-	local DeusExDecal DC;                                                        //SARGE: Added for object toggles
+	local DeusExDecal DC;                                                       //SARGE: Added for object toggles
+	local LaserTrigger LT;                                                       //SARGE: Added for object toggles
     
     //SARGE: Yes, using the class name is necessary. Statics are weird.
 	class'DeusExPlayer'.default.bHDTPInstalled = class'HDTPLoader'.static.HDTPInstalled();
@@ -1936,6 +1962,8 @@ exec function HDTP(optional bool updateDecals)
             if (!DC.bHidden)
                 DC.UpdateHDTPsettings();
     }
+	foreach AllActors(Class'LaserTrigger',LT)                                     //SARGE: Added for object toggles
+    	LT.UpdateHDTPsettings();
 
 	UpdateHDTPsettings();
 }
@@ -1974,7 +2002,19 @@ function RefreshChargedPickups()
 
 	// Loop through all the ChargedPicksups and look for charged pickups
 	// that are active.  If we find one, add to the user-interface.
+	
+    //SARGE: First, remove everything
+    foreach AllActors(class'ChargedPickup', anItem)
+        RemoveChargedDisplay(anItem);
 
+    //SARGE: Always show assigned item first
+    anItem = ChargedPickup(GetSecondary());
+    if (anItem != None && (anItem.GetCurrentCharge() > 0 || !anItem.bUnequipWhenDrained))
+        AddChargedDisplay(anItem);
+    else if (anItem != None)
+        RemoveChargedDisplay(anItem);
+
+    //SARGE: Then, show all other items.
 	foreach AllActors(class'ChargedPickup', anItem)
 	{
 		if (anItem.Owner == Self)
@@ -1983,10 +2023,8 @@ function RefreshChargedPickups()
 			if (anItem.IsA('TechGoggles') && anItem.IsActive())
 				TechGoggles(anItem).UpdateHUDDisplay(Self);
 
-      if ((anItem.IsActive() || assignedWeapon == string(anItem.Class)) && (anItem.GetCurrentCharge() > 0 || !anItem.bUnequipWhenDrained)) //SARGE: Modified get current charge check, since we can now have chargedpickups at 0 charge
-    	    AddChargedDisplay(anItem);
-      else
-          RemoveChargedDisplay(anItem);
+            if (anItem.IsActive() && assignedWeapon != string(anItem.Class) && (anItem.GetCurrentCharge() > 0 || !anItem.bUnequipWhenDrained)) //SARGE: Modified get current charge check, since we can now have chargedpickups at 0 charge
+                AddChargedDisplay(anItem);
 		}
 	}
 }
@@ -2846,6 +2884,7 @@ function CreateKeyRing()
 		KeyRing.InitialState='Idle2';
 		KeyRing.GiveTo(Self);
 		KeyRing.SetBase(Self);
+		KeyRing.SetLocation(Self.Location);
 	}
 }
 
@@ -3475,6 +3514,22 @@ simulated function RefreshSystems(float DeltaTime)
 
 	LastRefreshTime = 0;
 
+}
+
+//SARGE: Attempt to fix weird issues (like ChargedPickups not making the right sounds)
+//by always using SetBase on everything
+function SetAllBase()
+{
+	local Inventory curInv;
+	if (Inventory != None)
+	{
+        for (curInv = Inventory; curInv != None; curInv = curInv.Inventory)
+        {
+            curInv.SetBase(self);
+            if (curInv != inHand)
+                curInv.SetLocation(Location);
+        }
+    }
 }
 
 function RepairInventory()
@@ -5615,7 +5670,7 @@ function DoJump( optional float F )
         // Trash: Speed Enhancement now uses energy while jumping
         if (SpeedAug.CurrentLevel > -1 && SpeedAug.bIsActive)
         {
-            Energy=MAX(Energy - SpeedAug.GetAdjustedEnergy(SpeedAug.EnergyDrainJump),0);
+            Energy=FMAX(Energy - SpeedAug.GetAdjustedEnergy(SpeedAug.EnergyDrainJump),0);
         }
 
         if (bHardCoreMode)                                                      //RSD: Running drains 1.3x on Hardcore, now jumping drains 1.25x
@@ -5710,7 +5765,7 @@ if (Physics == PHYS_Walking)
         // Trash: Speed Enhancement now uses energy while jumping
         if (SpeedAug.CurrentLevel > -1 && speedAug.bIsActive)
         {
-            Energy=MAX(Energy - SpeedAug.GetAdjustedEnergy(SpeedAug.EnergyDrainJump),0);
+            Energy=FMAX(Energy - SpeedAug.GetAdjustedEnergy(SpeedAug.EnergyDrainJump),0);
         }
 
         if (bHardCoreMode)                                                      //RSD: Running drains 1.3x on Hardcore, now jumping drains 1.25x
@@ -8071,7 +8126,7 @@ function SelectLastWeapon(optional bool allowEmpty, optional bool bBeltLast)
     //select our primary belt slot, rather than using our actual last weapon
     if (root != None && root.hud != None && bBeltLast)
     {
-        if (bAlternateToolbelt > 0 && root.ActivateObjectInBelt(advBelt))
+        if (iAlternateToolbelt > 0 && root.ActivateObjectInBelt(advBelt))
         {
             bSelectedFromMainBeltSelection = true;
             NewWeaponSelected();
@@ -8304,7 +8359,7 @@ exec function ParseRightClick()
             SelectLastWeapon(true);
         }
         //If we are using a different items to our belt item, and classic mode is on or we scrolled, select it instantly
-		else if ((bAlternateToolbelt > 1 || bScrollSelect) && (bAlternateToolbelt < 3 || bSelectedFromMainBeltSelection || bScrollSelect) && (beltScrolled != beltLast || bLastWasEmpty) && inHand != None)
+		else if ((iAlternateToolbelt > 1 || bScrollSelect) && (iAlternateToolbelt < 3 || bSelectedFromMainBeltSelection || bScrollSelect) && (beltScrolled != beltLast || bLastWasEmpty) && inHand != None)
 		{
             SelectLastWeapon(false,true);
             beltLast = advBelt;
@@ -8414,24 +8469,11 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 				}
 			}
 //GMDX: hmm
-			// If this is a grenade or LAM (what a pain in the ass) then also check
-			// to make sure we don't have too many grenades already
-			else if ((foundItem.IsA('WeaponEMPGrenade')) ||
-			    (foundItem.IsA('WeaponGasGrenade')) ||
-				(foundItem.IsA('WeaponNanoVirusGrenade')) ||
-				(foundItem.IsA('WeaponLAM')))
-			{
-				if (DeusExWeapon(foundItem).AmmoType.AmmoAmount >= GetAdjustedMaxAmmo(DeusExWeapon(foundItem).AmmoType)) //RSD: replaced DeusExWeapon(foundItem).AmmoType.MaxAmmo with adjusted
-			{
-					ClientMessage(TooMuchAmmo);
-					bCanPickup = False;
-				}
-			}
 
 			// Otherwise, if this is a single-use weapon, prevent the player
 			// from picking up  //CyberP: also check if ammo is full when picking up weapons
 
-			else if (foundItem.IsA('Weapon'))
+			else if (foundItem.IsA('DeusExWeapon'))
 			{
 				// If these fields are set as checked, then this is a
 				// single use weapon, and if we already have one in our
@@ -8449,7 +8491,9 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 				//DeusExWeapon(foundItem).SetMaxAmmo();                           //RSD: No longer needed
 			  	if (Weapon(foundItem).AmmoType != none && Weapon(foundItem).AmmoType.AmmoAmount >= GetAdjustedMaxAmmo(Weapon(foundItem).AmmoType)) //RSD: removed DeusExWeapon(foundItem).MaxiAmmo for adjusted, changed DeusExWeapon to Weapon, added none check
 				{
-                    if (Weapon(foundItem).AmmoName != class'AmmoNone')   //RSD: So we don't get this for melee weapons
+                    if (DeusExWeapon(foundItem).bDisposableWeapon) //SARGE: Disposable weapons have a different message
+                    	ClientMessage(class'DeusExPickup'.default.msgTooMany);
+                    else if (Weapon(foundItem).AmmoName != class'AmmoNone')   //RSD: So we don't get this for melee weapons
                     	ClientMessage(TooMuchAmmo);
 					bCanPickup = False;
 				}
@@ -8480,12 +8524,16 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
                     {
                         assignedAmmo.AmmoAmount = GetAdjustedMaxAmmo(assignedAmmo); //RSD: Replaced assignedAmmo.MaxAmmo with adjusted
                         ClientMessage(assignedAmmo.PickupMessage $ " " $ assignedAmmo.ItemName $ " (" $ intj $ ")");
+                        AddReceivedItem(assignedAmmo,intj);
                         DeusExWeapon(frobTarget).PickupAmmoCount -= intj;
+                        DeusExWeapon(frobTarget).PlayRetrievedAmmoSound();
                     }
                     else
                     {
                         ClientMessage(assignedAmmo.PickupMessage $ " " $ assignedAmmo.ItemName $ " (" $ DeusExWeapon(frobTarget).PickupAmmoCount $ ")");
+                        AddReceivedItem(assignedAmmo,DeusExWeapon(frobTarget).PickupAmmoCount);
                         DeusExWeapon(frobTarget).PickupAmmoCount = 0;
+                        DeusExWeapon(frobTarget).PlayRetrievedAmmoSound();
                     }
                }
                else
@@ -8547,6 +8595,41 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 	return bCanPickup && !bDeclined;
 }
 
+function AddReceivedItem(Inventory item, int count, optional bool bAlwaysShow)
+{
+    //clientMessage("item: " $ item $ ", count: " $ count);
+    if (item == None || count == 0)
+        return;
+
+    if (!bAlwaysShowReceivedItemsWindow && !bAlwaysShow)
+        return;
+
+    /*
+    //If count is -1, try to figure it out by magic.
+    if (count == -1)
+    {
+        if (item.isA('DeusExPickup'))
+            count = DeusExPickup(item).numCopies;
+        else if (item.isA('DeusExWeapon') && DeusExWeapon(item).bDisposableWeapon && DeusExWeapon(item).AmmoType != None)
+            count = DeusExWeapon(item).AmmoType.AmmoAmount;
+        else
+            count = 1;
+    }
+    */
+
+    if (rootWindow != None && DeusExRootWindow(rootWindow).hud != None)
+    {
+        DeusExRootWindow(rootWindow).hud.receivedItems.AddItem(item, count);
+
+        // Make sure the object belt is updated
+        if (item.IsA('Ammo'))
+            UpdateAmmoBeltText(Ammo(item));
+        else
+            UpdateBeltText(item);
+    }
+}
+
+
 // ----------------------------------------------------------------------
 // GetNanoKeyDesc(Name)
 // Returns the description for the NanoKey matching the specified name
@@ -8588,10 +8671,13 @@ function NanoKeyInfo CreateNanoKeyInfo()
 // 2. Destroy NanoKey (since the user can't have it in his/her inventory)
 // ----------------------------------------------------------------------
 
-function PickupNanoKey(NanoKey newKey)
+function bool PickupNanoKey(NanoKey newKey)
 {
     if (KeyRing.HasKey(newKey.KeyID))
+    {
         ClientMessage(Sprintf(DuplicateNanoKey, newKey.Description));
+        return false;
+    }
     else
         ClientMessage(Sprintf(AddedNanoKey, newKey.Description));
 	KeyRing.GiveKey(newKey.KeyID, newKey.Description);
@@ -8600,6 +8686,7 @@ function PickupNanoKey(NanoKey newKey)
 	{
 	  KeyRing.GiveClientKey(newKey.KeyID, newKey.Description);
 	}
+    return true;
 }
 
 // ----------------------------------------------------------------------
@@ -8678,7 +8765,10 @@ function DoFrob(Actor Frobber, Inventory frobWith)
 
 	// set the base so the inventory follows us around correctly
 	if (FrobTarget.IsA('Inventory'))
+    {
 		FrobTarget.SetBase(Frobber);
+        FrobTarget.SetLocation(Frobber.Location);
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -8738,6 +8828,9 @@ exec function PutInHand(optional Inventory inv, optional bool bNoPrimary)
     SetInHandPending(inv);
                 
     //clientMessage("PutInHand called for : " $ inv $ ", bBeltSkipNextPrimary=" $ bBeltSkipNextPrimary);
+
+    //SARGE: Hopefully fix issues with items not making sounds, etc.
+    SetAllBase();
 
     UpdateCrosshair();
 }
@@ -11390,7 +11483,7 @@ function bool GetBracketsState()
         return false;
     
     //No brackets on cloaked enemies
-    if (frobTarget != None && frobTarget.isA('ScriptedPawn') && ScriptedPawn(frobTarget).bHasCloak)
+    if (frobTarget != None && frobTarget.isA('ScriptedPawn') && ScriptedPawn(frobTarget).bHasCloak && ScriptedPawn(FrobTarget).bCloakOn)
         return False;
 
     //No brackets while reading books/datacubes/etc
@@ -11711,18 +11804,18 @@ exec function ActivateBelt(int objectNum)
                 return;
             
             //We're reselecting our main slot.
-            if (bAlternateToolbelt >= 1 && advBelt == objectNum)
+            if (iAlternateToolbelt >= 1 && advBelt == objectNum)
                 bSelectedFromMainBeltSelection = true;
 
             //SARGE: If already selected in IW Belt mode, an additional press will set our primary weapon to that slot.
-			if (bAlternateToolbelt >= 1 && beltItem == inHandPending)
+			if (iAlternateToolbelt >= 1 && beltItem == inHandPending)
 			{
 				advBelt = objectNum;
 				root.hud.belt.RefreshAlternateToolbelt();
 			}
 
             //If we're not in IW belt mode, set our IW belt to match our current belt.
-            else if (bAlternateToolbelt == 0)
+            else if (iAlternateToolbelt == 0)
                 advBelt = objectNum;
 		
 			root.ActivateObjectInBelt(objectNum);
@@ -11788,7 +11881,7 @@ exec function NextBeltItem()
         return;
 	}
 
-   if (bAlternateToolbelt == 0)
+   if (iAlternateToolbelt == 0)
    {
 	if (CarriedDecoration == None)
 	{
@@ -11918,7 +12011,7 @@ exec function PrevBeltItem()
         return;
 	}
 
-   if (bAlternateToolbelt == 0)
+   if (iAlternateToolbelt == 0)
    {
 	if (CarriedDecoration == None)
 	{
@@ -13701,7 +13794,11 @@ function bool GetExceptedCode(string code)
         || code == "WYRDRED08" //We are not given the last digit
         || (code == "1966" && FlagBase.GetBool('GaveCassandraMoney')) //Only given in conversation, no note
         //|| code == "1966" //Only given in conversation, no note
-        || code == "4321"; //We are told to "count backwards from 4"
+        || code == "4321" //We are told to "count backwards from 4"
+        || code == "NICOLETTE" //Given in conversation
+        || code == "CHAD" //Given in conversation
+        || code == "JCDENTON"; //Uses Base: JCDenton instead of Username: JCDenton.
+        || code == "CHAD"; //Given in conversation
 }
 
 //"Security" is a commonly used word in many logs.
@@ -15322,7 +15419,7 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
                     if (saveTime >= enviro.lastEnergyTick)
                     {
                         //Energy -= MAX(int(newDamage * 0.1),1);
-                        Energy -= 1;
+                        Energy = FMAX(Energy - enviro.GetAdjustedEnergy(1),0);
                         enviro.lastEnergyTick = saveTime + 3.0;
                     }
                     newDamage *= augLevel;
@@ -18470,8 +18567,8 @@ defaultproperties
      bSimpleAugSystem=false
      bBigDroneView=True
      bSimpleAugSystem=true
-	 MenuThemeNameGMDX="Default"
-     HUDThemeNameGMDX="Default"
+	 MenuThemeNameGMDX="MJ12"
+     HUDThemeNameGMDX="Amber"
      dblClickHolster=2
      bSmartDecline=True
      killswitchTimer=-2
@@ -18494,4 +18591,8 @@ defaultproperties
 	   bIsMantlingStance=false //Ygll: new var to know if we are currently mantling
 	   iHealingScreen=1
      bCutsceneVolumeEqualiser=true
+     bAlwaysShowReceivedItemsWindow=true
+     bShowTotalRoundsCount=true
+     bPistolStartTrained=true
+     bStreamlinedRepairBotInterface=true
 }
