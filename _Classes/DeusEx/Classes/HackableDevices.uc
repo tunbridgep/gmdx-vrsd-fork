@@ -301,16 +301,16 @@ function Frob(Actor Frobber, Inventory frobWith)
 
 defaultproperties
 {
-     bHackable=true;
-     hackStrength=0.200000;
-     HackTime=3.000000;
-     TimeToReset=28.000000;
-     msgMultitoolSuccess="You bypassed the device";
-     msgNotHacked="It's secure";
-     msgHacking="Bypassing the device...";
-     msgAlreadyHacked="It's already bypassed";
-     Physics=PHYS_None;
-     bCollideWorld=false;
-     bAllowRightClickToolSelection=true;
-	 bDisabledByComputer=false;
+     bHackable=true
+     hackStrength=0.200000
+     HackTime=3.000000
+     TimeToReset=28.000000
+     msgMultitoolSuccess="You bypassed the device"
+     msgNotHacked="It's secure"
+     msgHacking="Bypassing the device..."
+     msgAlreadyHacked="It's already bypassed"
+     Physics=PHYS_None
+     bCollideWorld=false
+     bAllowRightClickToolSelection=true
+     bDisabledByComputer=false
 }

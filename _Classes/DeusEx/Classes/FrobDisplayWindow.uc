@@ -731,32 +731,32 @@ function DrawWindow(GC gc)
 // ----------------------------------------------------------------------
 defaultproperties
 {
-	strDash="";
-	strDoubleDot="";
-	strOpenValue="";
-	strCloseValue="";
-    margin=70.000000;
-    barLength=78.000000;
-    msgLocked="Locked";
-    msgUnlocked="Unlocked";
-    msgLockStr="Lock Str: ";
-    msgDoorStr="Door Str: ";
-    msgHackStr="Bypass Str: ";
-	msgInf="INF";
-	msgHacked="Bypassed";
-	msgPick="pick";
-	msgPicks="picks";
-	msgTool="tool";
-	msgTools="tools";
-	msgDoorThreshold="Damage Threshold: ";
-	msgObjThreshold="Damage Threshold: ";
-	msgMass="Mass: ";
-	msgHP="Hitpoints: ";
-	msgHP2="Hitpoints: 3";
-	colNotEnough=(R=255,G=50,B=50);
-	colJustEnough=(R=255,G=255,B=50);
-	msgDisabled="Disabled";
-	msgTrackAll="Target: All";
-	msgTrackAllies="Target: Allies";
-	msgTrackEnemies="Target: Enemies";
+	strDash=""
+	strDoubleDot=""
+	strOpenValue=""
+	strCloseValue=""
+    margin=70.000000
+    barLength=78.000000
+    msgLocked="Locked"
+    msgUnlocked="Unlocked"
+    msgLockStr="Lock Str: "
+    msgDoorStr="Door Str: "
+    msgHackStr="Bypass Str: "
+	msgInf="INF"
+	msgHacked="Bypassed"
+	msgPick="pick"
+	msgPicks="picks"
+	msgTool="tool"
+	msgTools="tools"
+	msgDoorThreshold="Damage Threshold: "
+	msgObjThreshold="Damage Threshold: "
+	msgMass="Mass: "
+	msgHP="Hitpoints: "
+	msgHP2="Hitpoints: 3"
+	colNotEnough=(R=255,G=50,B=50)
+	colJustEnough=(R=255,G=255,B=50)
+	msgDisabled="Disabled"
+	msgTrackAll="Target: All"
+	msgTrackAllies="Target: Allies"
+	msgTrackEnemies="Target: Enemies"
 }

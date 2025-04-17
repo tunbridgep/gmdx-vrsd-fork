@@ -844,40 +844,40 @@ function TriggerAlarmOverride()                                                 
 
 defaultproperties
 {
-     bEMPHitMarkers=true;
-     swingAngle=8192;
-     swingPeriod=8.000000;
-     cameraFOV=4096;
-     cameraRange=2048;
-     memoryTime=5.000000;
-     bActive=true;
-     confusionDuration=10.000000;
-     triggerDelay=2.750000;
-     msgActivated="Camera activated";
-     msgDeactivated="Camera deactivated";
-     Team=-1;
-     HitPoints=50;
-     minDamageThreshold=55;
-     bInvincible=false;
-     FragType=Class'DeusEx.MetalFragment';
-     ItemName="Surveillance Camera";
-     Physics=PHYS_Rotating;
-     Texture=Texture'DeusExDeco.Skins.SecurityCameraTex2';
-     Mesh=LodMesh'DeusExDeco.SecurityCamera';
-     SoundRadius=96;
-     SoundVolume=32;
-     CollisionRadius=10.720000;
-     CollisionHeight=11.000000;
-     LightType=LT_Steady;
-     LightBrightness=224;
-     LightHue=80;
-     LightRadius=1;
-     bRotateToDesired=true;
-     Mass=20.000000;
-     Buoyancy=5.000000;
-     RotationRate=(Pitch=65535,Yaw=65535);
-     bVisionImportant=true;
-     disableTimeBase=120.0;
-     disableTimeMult=60.0;
-	 lastSeenTimer=0.000000;
+     bEMPHitMarkers=true
+     swingAngle=8192
+     swingPeriod=8.000000
+     cameraFOV=4096
+     cameraRange=2048
+     memoryTime=5.000000
+     bActive=true
+     confusionDuration=10.000000
+     triggerDelay=2.750000
+     msgActivated="Camera activated"
+     msgDeactivated="Camera deactivated"
+     Team=-1
+     HitPoints=50
+     minDamageThreshold=55
+     bInvincible=false
+     FragType=Class'DeusEx.MetalFragment'
+     ItemName="Surveillance Camera"
+     Physics=PHYS_Rotating
+     Texture=Texture'DeusExDeco.Skins.SecurityCameraTex2'
+     Mesh=LodMesh'DeusExDeco.SecurityCamera'
+     SoundRadius=96
+     SoundVolume=32
+     CollisionRadius=10.720000
+     CollisionHeight=11.000000
+     LightType=LT_Steady
+     LightBrightness=224
+     LightHue=80
+     LightRadius=1
+     bRotateToDesired=true
+     Mass=20.000000
+     Buoyancy=5.000000
+     RotationRate=(Pitch=65535,Yaw=65535)
+     bVisionImportant=true
+     disableTimeBase=120.0
+     disableTimeMult=60.0
+	 lastSeenTimer=0.000000
 }
