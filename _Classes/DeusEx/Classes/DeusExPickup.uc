@@ -1132,4 +1132,7 @@ defaultproperties
      LandSound=Sound'DeusExSounds.Generic.PaperHit1'
      bProjTarget=True
      iHDTPModelToggle=1
+     //SARGE: Suppress the default Activation and Deactivation messages, we will handle them ourselves
+     M_Activated=""
+     M_Deactivated=""
 }

@@ -68,6 +68,8 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\boxmedtex1.pcx"			NAME="BoxMedTex1"			GROUP="Skins"
 //#exec TEXTURE IMPORT FILE="Textures\boxmedtex2.pcx"			NAME="BoxMedTex2"			GROUP="Skins"
 #exec TEXTURE IMPORT FILE="Textures\HDTPFlatFXTex29.pcx"	NAME="HDTPFlatFXTex29"			GROUP="Skins"
+//Burned out vanilla flare
+#exec TEXTURE IMPORT FILE="Textures\Skins\FlareTex2.pcx"			NAME="FlareTex2"			GROUP="Skins"
 
 // Sodacans with closed lids
 #exec TEXTURE IMPORT FILE="Textures\Skins\sodacantex1.pcx"		    NAME="SodaCanTex1"	    GROUP="Skins"
@@ -125,6 +127,7 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\BeltIconRifle.pcx"			    NAME="BeltIconRifle"			GROUP="Icons"
 #exec TEXTURE IMPORT FILE="Textures\LargeIconAmmoDartsTaser.pcx"	NAME="LargeIconAmmoDartsTaser"  GROUP="Icons"
 #exec TEXTURE IMPORT FILE="Textures\BeltIconAmmoDartsTaser.pcx"	    NAME="BeltIconAmmoDartsTaser"   GROUP="Icons"
+#exec TEXTURE IMPORT FILE="Textures\ChargedIconArmorAdaptive.pcx"	NAME="ChargedIconArmorAdaptive" GROUP="Icons"
 
 //Crap
 #exec TEXTURE IMPORT FILE="Textures\Skins\SpartaSign.pcx"	        NAME="SpartaSign" GROUP="Skins"

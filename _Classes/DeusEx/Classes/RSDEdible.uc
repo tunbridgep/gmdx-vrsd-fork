@@ -97,4 +97,5 @@ defaultproperties
      HungerLabel="Fullness Amount: %d%%"
      CannotUse="You cannot consume any more at this time"
      bGluttonous=true
+     M_Activated=" consumed"
 }

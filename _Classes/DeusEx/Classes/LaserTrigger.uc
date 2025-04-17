@@ -133,6 +133,15 @@ function Tick(float deltaTime)
 		{
 			if ((emitter.HitActor != None) && (LastHitActor != emitter.HitActor))
 			{
+                //SARGE: Don't emit alarms when hitting medical or repair bots
+                //Fixes really annoying/stupid issue on Vandenberg where a med-bot keeps setting off the
+                //alarms repeatedly
+                if (emitter.HitActor.IsA('MedicalBot') || emitter.HitActor.IsA('RepairBot'))
+                {
+                    bTrigger = false;
+                    return;
+                }
+
 				// TT_PlayerProximity actually works with decorations, too
 				if (IsRelevant(emitter.HitActor) ||
 					((TriggerType == TT_PlayerProximity) && emitter.HitActor.IsA('Decoration')))

@@ -138,6 +138,7 @@ function int ChargePlayer(DeusExPlayer PlayerToCharge)
 	    if (playerToCharge.CombatDifficulty > 1.0)                              //RSD: Changed from 2.5 to 1.0, now affects Medium and Hard as well as Realistic/Hardcore
 	        chargeMaxTimes--;
 		chargedPoints = PlayerToCharge.ChargePlayer( chargeAmount );
+        PlayerToCharge.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
 		lastChargeTime = Level.TimeSeconds;
 	}
    return chargedPoints;
@@ -190,6 +191,7 @@ function ChargeEquipment(ChargedPickup EquipToCharge, DeusExPlayer EquipOwner) /
 		if (EquipToCharge.Charge > EquipToCharge.default.Charge)
 		    EquipToCharge.Charge = EquipToCharge.default.Charge;
 
+        EquipOwner.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
         EquipToCharge.bDrained=false;                                           //SARGE: Since you can now equip empty equipment.
         EquipToCharge.bActivatable=true;                                        //RSD: Since you can now hold one at 0%
         EquipToCharge.unDimIcon();                                              //RSD

@@ -38,6 +38,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX bug where cameras would not properly trigger alarm events when spotting carcasses.
     - Fixed GMDX bugs where knocked-out scuba-divers would die immediately upon reaching the surface of water.
     - Fixed vanilla item-duplication bug (caused by repeatedly dropping and repeatedly picking up items quickly)
+    - Fixed a vanilla game bug that would prevent weapons from spawning with ammo available if there wasn't enough room to spawn the ammo when being picked up.
     - Fixed many other GMDX and Vanilla bugs.
 - Quality of Life Improvements:
     - Duplicate Nano-Keys are no longer shown in the "Received Items" window when picked up from carcasses.
@@ -58,6 +59,7 @@ Sarge's Changes since Beta 2.2:
     - Taking ammo from weapons in the world will now make an "ammo retrieval" sound.
     - Saving is now possible while an infolink is playing. The infolink will be aborted.
     - The current ammo type is now displayed in the Ammo display as well as on the belt, to facilitate selecting weapons that aren't currently on the belt.
+    - The Toolbelt and Augmentation Icons will show multiple hotkeys, if multiple are assigned.
     - Optionally, bars and clubs can be made to continue their standard music during conversations, rather than restarting.
     - Items in the world now show their pickup count in their name tag if stacked, such as `Lockpick (2)`.
         - This should be exceptionally rare as items are normally dropped one-at-a-time, so this should only really be relevant in the MJ12 prison escape mission.
@@ -129,6 +131,8 @@ Sarge's Changes since Beta 2.2:
     - Added a new setting to show "[Searched]" text after interacting with corpses once, to differentiate between those which have been searched and which have not.
     - Added a new keybinding to stop the currently playing infolink.
     - Using an Augmentation Upgrade cannister (via right-click or the Use button) will now open the Augmentations screen.
+    - Picking up weapons now shows their ammo in the "Received Items" window.
+    - Disposable weapons now show `X/X Rds` in the inventory screen, so you can see the maximum amount you can carry.
     - Completely overhauled the GMDX settings menu to make it simpler, easier to navigate, and with many more options.
     - Edibles and Drugs can now be assigned as secondary items.
     - Pressing the walk/run key while crouch toggled will now uncrouch.
@@ -191,6 +195,9 @@ Sarge's Changes since Beta 2.2:
     - The Pedometer can now be viewed in the Health screen when using the Addiction system.
     - Subtitles are now enabled in third-person cutscenes regardless of Subtitles setting, allowing text to show instead of useless black bars while also not displaying in-game barks. This can be disabled using the `bSubtitlesCutscene` option in `DeusEx.ini`
 - Gameplay Changes:
+    - JC can now carry 30 Zyme instead of 20, to facilitate selling every one you find to Renault.
+    - Laser Triggers can no longer be set off by medical and repair bots.
+    - Karkians and other transgenics will no longer drown when unconscious.
     - The NUKE! Virus can now be used at Untrained hacking.
     - Cameras will set off more alarm events in Hardcore mode, which will result in them opening doors, releasing bots, etc more often.
     - Destroyable Movers that aren't set to highlighting will now have 1 HP.
@@ -340,6 +347,8 @@ Sarge's Changes since Beta 2.2:
     - A Laser Sight has been added to Smuggler's safe in the first NY visit (replaces a recoil mod)
     - The Silencer in Paul's Apartment, Full-Auto Mod in Tong's Lab, and Laser Sight in Smugglers Safe are all guaranteed to appear even with the weapon mod shuffle turned on.
 - Miscellaneous Changes:
+    - Many default "<item> Activated" messages have been removed as these would pollute the log.
+    - Added miscelanous sounds when interacting with certain things, such as the Bioelectric "hiss" sound when using repair bots.
     - Fixed misaligned HUD elements (ammo display and belt) by moving the Ammo display down slightly.
     - A small light has been added to the flamethrower, to simulate the light created by the small pilot light.
     - Corpses placed within maps will now have proper blood pools.
