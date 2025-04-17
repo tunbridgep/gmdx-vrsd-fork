@@ -26,6 +26,7 @@ var PersonaNavButtonWindow btnOutfits;
 
 var localized String ConsButtonLabelShort; //Sarge: Added
 var localized String OutfitsButtonLabel;
+var localized String ImgButtonLabelShort; //Ygll: Added
 
 // ----------------------------------------------------------------------
 // CreateButtons()
@@ -61,6 +62,7 @@ function CreateOutfitsButton()
     {
     	btnOutfits   = CreateNavButton(winNavButtons, OutfitsButtonLabel);
         btnCons.SetButtonText(ConsButtonLabelShort);
+		btnImages.SetButtonText(ImgButtonLabelShort);
     }
 }
 
@@ -123,9 +125,9 @@ function bool ButtonActivated( Window buttonPressed )
 	{
 		PersonaScreenBaseWindow(GetParent()).SaveSettings();
 		if (Player.bRealUI || Player.bHardCoreMode)    //CyberP: no pause
-		root.InvokeUIScreen(winClass,true);
+			root.InvokeUIScreen(winClass,true);
 		else
-		root.InvokeUIScreen(winClass);
+			root.InvokeUIScreen(winClass);
 		return bHandled;
 	}
 	else
@@ -149,4 +151,5 @@ defaultproperties
      LogsButtonLabel="|&Logs"
      OutfitsButtonLabel="|&Outfits"
      ConsButtonLabelShort="|&Conv."
+	 ImgButtonLabelShort="|&Img."
 }

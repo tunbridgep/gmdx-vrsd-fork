@@ -77,7 +77,7 @@ function CreateButtonWindows()
 	winNavButtons = PersonaButtonBarWindow(NewChild(Class'PersonaButtonBarWindow'));
 
 	winNavButtons.SetPos(23, 8);
-	winNavButtons.SetSize(534, 16);
+	winNavButtons.SetSize(539, 16);
 	winNavButtons.Lower();
 
 	// Create the Inventory Items window

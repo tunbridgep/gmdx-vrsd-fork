@@ -111,58 +111,58 @@ function string TextDisplayHack(float value, int digits)
 function CreatePerkOverview(Skill skill, Perk Perk, int index)	//Trash: Creates the description, upgrade button, etc for each perk
 {
 	local DeusExPlayer player;
-    local string perkDescModified;
-
 	player = DeusExPlayer(GetPlayerPawn());
 
 	PassedSkillIcon = Perk.GetPerkIcon();
 
 	AddLine();
-	winActionButtons1[index] = PersonaButtonBarWindow(winTile.NewChild(Class'PersonaButtonBarWindow'));
+	winActionButtons1[index] = PersonaButtonBarWindow(winTile.NewChild(class'PersonaButtonBarWindow'));
 	winActionButtons1[index].SetWidth(0);
-	winActionButtons1[index].SetHeight(26);
+	winActionButtons1[index].SetHeight(28);
 	winActionButtons1[index].FillAllSpace(false);
 	WinPerkTitle[index] = TextWindow(winActionButtons1[index].NewChild(class'TextWindow'));
 	WinPerkTitle[index].SetText(Caps(Perk.PerkName));
 	WinPerkTitle[index].SetFont(Font'FontMenuSmall');
 	WinPerkTitle[index].SetTextColor(colText);
 	WinPerkTitle[index].SetTextMargins(6,4);
-	winSkillIconP[index] = winActionButtons1[index].NewChild(Class'Window');
-	winSkillIconP[index].SetPos(192, 0);
+	winSkillIconP[index] = winActionButtons1[index].NewChild(class'Window');
+	winSkillIconP[index].SetPos(191, 3);
 	winSkillIconP[index].SetSize(24, 24);
 	winSkillIconP[index].SetBackgroundStyle(DSTY_Normal);
 	winSkillIconP[index].SetBackground(PassedSkillIcon); // CHECK THIS LATER, TRASH!
+	AddLine();
 	if (Perk.PerkValueDisplay == Delta_Percentage)
 		SetText(sprintf(Perk.PerkDescription,int(Perk.PerkValue * 100 - 100)));
 	else if (Perk.PerkValueDisplay == Percentage)
 		SetText(sprintf(Perk.PerkDescription,int(Perk.PerkValue * 100)));
 	else
 		SetText(sprintf(Perk.PerkDescription,TextDisplayHack(Perk.PerkValue,3)));
+
 	SetText("");
 	if (skill != None)
 		SetText(sprintf(PerkRequiredSkill,skill.SkillName,skill.GetLevelString(Perk.PerkLevelRequirement)));
+
 	SetText(RequiredPoints $ Perk.PerkCost);
+	SetText("");
 	winActionButtons[index] = PersonaButtonBarWindow(winTile.NewChild(Class'PersonaButtonBarWindow'));
 	winActionButtons[index].SetWidth(32); //149
 	winActionButtons[index].FillAllSpace(false);
-	buttonUpgrade[index] = PersonaActionButtonWindow(winActionButtons[index].NewChild(Class'PersonaActionButtonWindow'));
+	buttonUpgrade[index] = PersonaActionButtonWindow(winActionButtons[index].NewChild(class'PersonaActionButtonWindow'));
 	buttonUpgrade[index].ButtonPerk = Perk;
+	UpdateButton(buttonUpgrade[index], Perk);
 	AddLine();
-
-    UpdateButton(buttonUpgrade[index], Perk);
 }
 
 function UpdateButton(PersonaActionButtonWindow button, Perk P)
 {
+	button.SetSensitivity(P.IsPurchasable());
+
     if (P.bPerkObtained)
         button.SetButtonText(PurchasedButtonLabel);
     else if (P.IsPurchasable())
         button.SetButtonText(UpgradeButtonLabel);
     else
         button.SetButtonText(UnobtainableButtonLabel);
-
-    button.SetSensitivity(P.IsPurchasable());
-
 }
 
 function CreateObtainedPerkList(DeusExPlayer player)
@@ -176,8 +176,8 @@ function CreateObtainedPerkList(DeusExPlayer player)
     {
 		if (player.PerkManager.GetPerkAtIndex(index).bPerkObtained)
 		{
-			if(player.bAltFrobDisplay)
-				SetText("+" $ player.PerkManager.GetPerkAtIndex(index).PerkName);
+			if(player.iAltFrobDisplay == 2)
+				SetText("+-" $ player.PerkManager.GetPerkAtIndex(index).PerkName);
 			else
 				SetText(player.PerkManager.GetPerkAtIndex(index).PerkName);
 		}
@@ -262,10 +262,9 @@ function bool ButtonActivated( Window buttonPressed )
 		{
             boughtPerk = true;
 			player.PerkManager.PurchasePerk(buttonUpgrade[index].ButtonPerk.Class);
-			buttonUpgrade[index].SetSensitivity(False);
-            buttonUpgrade[index].SetButtonText(PurchasedButtonLabel);
-			if(player.bAltFrobDisplay)
-				SetText( "+" $ buttonUpgrade[index].ButtonPerk.PerkName);
+
+			if(player.iAltFrobDisplay == 2)
+				SetText( "+-" $ buttonUpgrade[index].ButtonPerk.PerkName);
 			else
 				SetText(buttonUpgrade[index].ButtonPerk.PerkName);
 

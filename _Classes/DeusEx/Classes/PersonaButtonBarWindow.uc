@@ -126,7 +126,7 @@ function ConfigurationChanged()
 
 function bool ChildRequestedReconfiguration(window child)
 {
-	return FALSE;
+	return false;
 }
 
 // ----------------------------------------------------------------------
