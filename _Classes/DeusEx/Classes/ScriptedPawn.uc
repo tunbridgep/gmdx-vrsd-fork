@@ -3903,7 +3903,7 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
         Velocity = (Momentum*0.25)*(25*128);  // damage*128
     Velocity.Z = 6; //6
     bFixedRotationDir = True;
-    if (FRand() < 0.5 && instigator != None && instigator != self && ShouldDropWeapon())
+    if (FRand() < 0.3 && instigator != None && instigator != self && ShouldDropWeapon())
        DropWeapon();
     }
     }
