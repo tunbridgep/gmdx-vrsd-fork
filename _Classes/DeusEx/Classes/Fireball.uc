@@ -95,8 +95,8 @@ simulated function SpawnEffects(Vector HitLocation, Vector HitNormal, Actor Othe
 		if (mark != None)
 		{
 			//rejigged for bigger decals
-			mark.DrawScale = mark.default.drawscale * FClamp(default.damage/3, 0.5, 4.0);
-			mark.ReattachDecal();
+			mark.DrawScaleMult = FClamp(default.damage/3, 0.5, 4.0);
+			mark.UpdateHDTPSettings();
 		}
 
 		ExplosionDecal = None;

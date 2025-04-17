@@ -68,6 +68,8 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\boxmedtex1.pcx"			NAME="BoxMedTex1"			GROUP="Skins"
 //#exec TEXTURE IMPORT FILE="Textures\boxmedtex2.pcx"			NAME="BoxMedTex2"			GROUP="Skins"
 #exec TEXTURE IMPORT FILE="Textures\HDTPFlatFXTex29.pcx"	NAME="HDTPFlatFXTex29"			GROUP="Skins"
+//Burned out vanilla flare
+#exec TEXTURE IMPORT FILE="Textures\Skins\FlareTex2.pcx"			NAME="FlareTex2"			GROUP="Skins"
 
 // Sodacans with closed lids
 #exec TEXTURE IMPORT FILE="Textures\Skins\sodacantex1.pcx"		    NAME="SodaCanTex1"	    GROUP="Skins"
@@ -125,6 +127,11 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\BeltIconRifle.pcx"			    NAME="BeltIconRifle"			GROUP="Icons"
 #exec TEXTURE IMPORT FILE="Textures\LargeIconAmmoDartsTaser.pcx"	NAME="LargeIconAmmoDartsTaser"  GROUP="Icons"
 #exec TEXTURE IMPORT FILE="Textures\BeltIconAmmoDartsTaser.pcx"	    NAME="BeltIconAmmoDartsTaser"   GROUP="Icons"
+#exec TEXTURE IMPORT FILE="Textures\ChargedIconArmorAdaptive.pcx"	NAME="ChargedIconArmorAdaptive" GROUP="Icons"
+
+//Crap
+#exec TEXTURE IMPORT FILE="Textures\Skins\SpartaSign.pcx"	        NAME="SpartaSign" GROUP="Skins"
+#exec TEXTURE IMPORT FILE="Textures\Skins\HDTPSpartaSign.pcx"	    NAME="HDTPSpartaSign" GROUP="Skins"
 
 //Import the Minidisk Mesh from GameMedia.u, since otherwise we have to pollute all of our maps with references to minidisk.
 //This dependency likely won't be removed anytime soon, but it's nice to know we can get rid of it easier if we decide to.
@@ -155,6 +162,12 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\HDTPOptionsScreen_2.pcx"			NAME="HDTPOptionsScreen_2"			GROUP="UserInterface"
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\HDTPOptionsScreen_3.pcx"			NAME="HDTPOptionsScreen_3"			GROUP="UserInterface"
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\HDTPOptionsScreen_4.pcx"			NAME="HDTPOptionsScreen_4"			GROUP="UserInterface"
+
+// QoL Menu
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\MenuQolBackground_1.pcx"			NAME="MenuQoLBackground_1"			GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\MenuQolBackground_2.pcx"			NAME="MenuQoLBackground_2"			GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\MenuQolBackground_3.pcx"			NAME="MenuQoLBackground_3"			GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\MenuQolBackground_4.pcx"			NAME="MenuQoLBackground_4"			GROUP="UserInterface"
 
 //Flipped HUD Elements
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDAmmoDisplayBorder_1F.pcx"			NAME="HUDAmmoDisplayBorder_1F"			GROUP="UserInterface"

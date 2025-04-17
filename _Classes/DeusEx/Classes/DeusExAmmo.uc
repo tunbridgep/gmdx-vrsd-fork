@@ -32,6 +32,9 @@ var class<DeusExWeapon> hdtpReference;                                          
 //rather than hardcoding it, so that it can be used in other places, like the ammo display.
 var const Color ammoHUDColor;
 
+//SARGE: Partial ammo pickup
+var const Sound PartialAmmoSound;
+
 function bool HasCustomAmmoColor()
 {
     return default.ammoHUDColor != class'DeusExAmmo'.default.ammoHUDColor;
@@ -212,6 +215,12 @@ function bool AddAmmo(int AmmoToAdd)                                            
 	return true;
 }
 
+//SARGE: Same as PlayRetrieveAmmoSound in DeusExWeapon.uc
+function PlayPartialAmmoSound()
+{
+    PlaySound(PartialAmmoSound, SLOT_None, 1.5+FRand()*0.25, , 256, 0.95+FRand()*0.1);
+}
+
 function bool HandlePickupQuery( inventory Item )                               //RSD: Function to override Ammo.uc in Engine classes for adjusted ammo counts
 {
 	local int tempMaxAmmo, intj;
@@ -235,7 +244,10 @@ function bool HandlePickupQuery( inventory Item )                               
 		    {
 			Pawn(Owner).ClientMessage( Item.PickupMessage @ Item.itemArticle @ Item.ItemName $ " (" $ intj $ ")", 'Pickup' );
 			}
-			item.PlaySound( item.PickupSound );
+            if (item.IsA('DeusExAmmo'))
+                DeusExAmmo(item).PlayPartialAmmoSound();
+            else
+			    item.PlaySound( item.PickupSound );
 			if (Ammo(item).AmmoAmount <= 0)                                     //RSD: If the box is emptied, destroy it
 				item.SetRespawn();
 			return true;
@@ -267,8 +279,6 @@ function bool HandlePickupQuery( inventory Item )                               
 
 	return Inventory.HandlePickupQuery(Item);
 }
-
-
 
 auto state Pickup                                                               //RSD: State to override Inventory.uc in Engine classes for proper ammo count numbers. Holy fuck this is bad
 {
@@ -459,4 +469,5 @@ defaultproperties
      bProjTarget=True
      Mass=30.000000
      iHDTPModelToggle=1
+     PartialAmmoSound=Sound'WeaponPickup'
 }
