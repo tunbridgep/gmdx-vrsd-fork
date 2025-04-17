@@ -14,7 +14,7 @@ function bool CanAssignSecondary(DeusExPlayer player)
 function OnDeActivate(DeusExPlayer player)
 {
     player.DesiredFOV = player.Default.DesiredFOV;
-    //player.PlaySound(Sound'binmiczoomout', SLOT_None);
+    player.PlaySound(Sound'binmiczoomout', SLOT_None);
     // Hide the Scope View
     DeusExRootWindow(player.rootWindow).scopeView.DeactivateView();
 }
@@ -22,7 +22,7 @@ function OnDeActivate(DeusExPlayer player)
 
 function OnActivate(DeusExPlayer player)
 {
-    //PlaySound(Sound'binmiczoomin', SLOT_None);
+    PlaySound(Sound'binmiczoomin', SLOT_None);
     RefreshScopeDisplay(player, FALSE);
 }
 

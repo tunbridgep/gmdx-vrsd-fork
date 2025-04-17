@@ -21,7 +21,7 @@ defaultproperties
      items(4)=(HelpText="Enable/Disable the 'Disable All' button on the Augmentaiton Wheel.",actionText="Augmentation Wheel: Show 'Disable All'",variable="bAugWheelDisableAll",defaultValue=1);
      items(5)=(HelpText="Automtically add newly-acquired items to the toolbelt.",actionText="Belt: Autofill Belt",variable="bBeltAutofill",defaultValue=1);
      items(6)=(HelpText="After consuming the last item in a belt slot, it's position will be preserved.|nIf Autofill is off, dropped items will also be preserved. Right-Click to clear.",actionText="Belt: Belt Memory",variable="bBeltMemory",defaultValue=1);
-     items(7)=(HelpText="Right-click confirms belt selection, removing the need to cycle through items to reach desired slot.",actionText="Belt: Invisible War Toolbelt",variable="bAlternateToolbelt",valueText2="Classic",valueText3="Hybrid",helpText2="Classic mode makes right-click switch back after using the number keys.",helpText3="Hybrid mode only switches back to the primary selection if the primary belt selection was initially unholstered.");
+     items(7)=(HelpText="Right-click confirms belt selection, removing the need to cycle through items to reach desired slot.",actionText="Belt: Invisible War Toolbelt",variable="iAlternateToolbelt",valueText2="Classic",valueText3="Hybrid",helpText2="Classic mode makes right-click switch back after using the number keys.",helpText3="Hybrid mode only switches back to the primary selection if the primary belt selection was initially unholstered.");
      items(8)=(HelpText="Belt size is extended to 12 items. The - and = keys will be rebound to use the new belt slots.",actionText="Belt: Larger Belt",variable="bBiggerBelt",defaultValue=1);
      items(9)=(HelpText="Removes the keyring from the toolbelt, making it's slot available to general items. The keyring is always selectable via left-clicking on a locked object.",actionText="Belt: Usable Keyring Slot",variable="bSmartKeyring");
      items(10)=(HelpText="Adjust the Field-of-View during dialog scenes to more closely match the original game.",actionText="Conversations: FOV Adjustment",variable="iCutsceneFOVAdjust",valueText1="75 FOV",valueText2="80 FOV",valueText3="85 FOV",valueText4="90 FOV",defaultValue=2);
@@ -85,6 +85,16 @@ defaultproperties
      items(67)=(HelpText="Alternate realistic headbobbing effect. To disable headbobbing outright, see the standard Settings menu.",actionText="Player: Realistic Head-Bobbing",variable="bModdedHeadBob",defaultValue=1);
      items(68)=(HelpText="Prevent accidentally killing domesticated animals by stomping on them.",actionText="Player: Stomp Domestic Animals",variable="bStompDomesticAnimals",defaultValue=0);
      items(69)=(HelpText="Prevent accidentally killing vac-bots by stomping on them.",actionText="Player: Stomp Vac Bots",variable="bStompDomesticAnimals",defaultValue=0);
-     items(70)=(HelpText="Always use the female hands with male JC. This setting does nothing if LDDP is not installed.",actionText="Player: Use Female Hands",variable="bFemaleHandsAlways",defaultValue=0);	 
+     items(70)=(HelpText="Always use the female hands with male JC. This setting does nothing if LDDP is not installed.",actionText="Player: Use Female Hands",variable="bFemaleHandsAlways",defaultValue=0)
+     items(71)=(HelpText="If enabled, the New Game screen will automatically start with Pistols upgraded to Trained.",actionText="Player: Start with Pistols at Trained",variable="bPistolStartTrained",defaultValue=1)
      Title="GMDX Quality of Life Options"
+     colWidths(0)=214
+     colWidths(1)=155
+     helpPosY=307
+     bShortHeaderButtons=false
+     defaultHelpHeight=37
+     clientTextures(0)=Texture'RSDCrap.UserInterface.MenuQoLBackground_1'
+     clientTextures(1)=Texture'RSDCrap.UserInterface.MenuQoLBackground_2'
+     clientTextures(2)=Texture'RSDCrap.UserInterface.MenuQoLBackground_3'
+     clientTextures(3)=Texture'RSDCrap.UserInterface.MenuQoLBackground_4'
 }

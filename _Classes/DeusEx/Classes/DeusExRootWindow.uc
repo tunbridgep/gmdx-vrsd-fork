@@ -383,6 +383,7 @@ function UpdateHud()
         hud.RecreateBelt();
 		hud.UpdateAssigned();
 		hud.UpdateSettings(DeusExPlayer(parentPawn), WindowStackCount() != 0);
+        hud.RefreshActiveAugs();
     }
 }
 
