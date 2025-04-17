@@ -5581,9 +5581,6 @@ function DoJump( optional float F )
 	else if (bForceDuck || IsLeaning())
 		return;
 
-	MusLevel = AugmentationSystem.GetClassLevel(class'AugMuscle');
-    SpeedAug = AugSpeed(AugmentationSystem.GetAug(class'AugSpeed'));
-
 	if (AugmentationSystem == None)
 	{
 		MusLevel = -1;
