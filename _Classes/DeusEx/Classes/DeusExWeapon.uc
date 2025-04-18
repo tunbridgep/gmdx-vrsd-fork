@@ -399,7 +399,7 @@ function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, op
     if (defAmmoClass == class'AmmoNone' || self.PickupAmmoCount <= 0)
         return false;
 
-    intj = P.LootAmmo(defAmmoClass,PickupAmmoCount,bDisplayMsg,bDisplayWindow,bLootSound,!bDisposableWeapon);
+    intj = P.LootAmmo(defAmmoClass,PickupAmmoCount,bDisplayMsg,bDisplayWindow,bLootSound,!bDisposableWeapon,bDisposableWeapon);
 
     if (intj > 0)
     {
@@ -1241,16 +1241,28 @@ function bool HandlePickupQuery(Inventory Item)
     if (player != None)
     {
         player.UpdateHUD(); //SARGE: Required now because weapons can have + icons in the HUD
+		
     }
+    
+    //SARGE: Hacky shurikan name fix
+    if (IsA('WeaponShuriken'))
+        WeaponShuriken(Self).SetFrobNameHack(W.PickupAmmoCount == 1);
 
 	if (Item.Class == Class)
 	{
 	  if (!( (Weapon(item).bWeaponStay && (Level.NetMode == NM_Standalone)) && (!Weapon(item).bHeldItem || (Weapon(item).bTossedOut))))
 		{
+        
             //Block picking it up if we don't have ammo to do so.
-            W.LootAmmo(player,!W.bDisposableWeapon,false,true);
+            W.LootAmmo(player,true,false,true);
             if (W.PickupAmmoCount > 0)
+            {
+                //SARGE: Hacky shurikan name fix
+                if (IsA('WeaponShuriken'))
+                    WeaponShuriken(Self).SetFrobNameHack(false);
+
                 return true;
+            }
 
             if ( Level.NetMode != NM_Standalone )
             {
@@ -1280,6 +1292,7 @@ function bool HandlePickupQuerySuper( inventory Item )                          
     local bool bResult;
 	if (Item.Class == Class)
 	{
+
 		if ( Weapon(item).bWeaponStay && (!Weapon(item).bHeldItem || Weapon(item).bTossedOut) )
 			return true;
 		P = Pawn(Owner);
@@ -1302,6 +1315,7 @@ function bool HandlePickupQuerySuper( inventory Item )                          
 			Level.Game.LocalLog.LogPickup(Item, Pawn(Owner));
 		if (Level.Game.WorldLog != None)
 			Level.Game.WorldLog.LogPickup(Item, Pawn(Owner));
+        /*
 		if (DeusExWeapon(item) != none && DeusExWeapon(item).bDisposableWeapon) //RSD: Only print pickup message if it's a grenade
 		{
             if (Item.PickupMessageClass == None)
@@ -1312,13 +1326,19 @@ function bool HandlePickupQuerySuper( inventory Item )                          
             else
                 P.ReceiveLocalizedMessage( Item.PickupMessageClass, 0, None, None, item.Class );
 		}
+        */
 		Item.PlaySound(Item.PickupSound);
 		Item.SetRespawn();
-		return true;
+    
+        //SARGE: Hacky shurikan name fix
+        if (IsA('WeaponShuriken'))
+            WeaponShuriken(Self).SetFrobNameHack(false);
+		
+        return true;
 	}
 	if ( Inventory == None )
 		return false;
-
+        
 	return Inventory.HandlePickupQuery(Item);
 }
 

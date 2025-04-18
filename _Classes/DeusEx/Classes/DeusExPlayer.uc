@@ -8392,7 +8392,7 @@ function PlayPickupAnim(Vector locPickup)
 //
 // Returns the number of rounds they were able to pick up.
 // ----------------------------------------------------------------------
-function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool bWindowAlways, optional bool bLootSound, optional bool bNoGroup)
+function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool bWindowAlways, optional bool bLootSound, optional bool bNoGroup,optional bool bNoOnes)
 {
     local int MaxAmmo, prevAmmo, ammoCount, intj;
     local DeusExAmmo AmmoType;
@@ -8440,10 +8440,16 @@ function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool
         
         if (bDisplayMsg)
         {
-            ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName $ " (" $ intj $ ")", 'Pickup');
+            //VERY DIRTY HACK
+            if (AmmoType.IsA('AmmoShuriken') && intj == 1)
+                ClientMessage(AmmoType.PickupMessage @ class'Shuriken'.default.itemArticle @ class'Shuriken'.default.itemName, 'Pickup');
+            else if (intj > 1 || !bNoOnes)
+                ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName $ " (" $ intj $ ")", 'Pickup');
+            else
+                ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName, 'Pickup');
         }
             
-        if (bDisplayMsg || bWindowAlways)
+        if (bAlwaysShowReceivedItemsWindow || bWindowAlways)
         {
             AddReceivedItem(AmmoType, intj, intj < max || bWindowAlways, bNoGroup);
         }
@@ -8594,6 +8600,9 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     //SARGE: Decline checking.
     if (bSlotSearchNeeded && bCanPickup)
     {
+		if (FrobTarget.IsA('WeaponShuriken'))
+			WeaponShuriken(FrobTarget).SetFrobNameHack(WeaponShuriken(FrobTarget).PickupAmmoCount == 1);
+
         if (!bSkipDeclineCheck)
             bDeclined = CheckFrobDeclined(FrobTarget);
         if (!bDeclined && !bSearchOnly)
@@ -8618,9 +8627,6 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 				DeusExWeapon(FrobTarget).PickupAmmoCount = DeusExWeapon(FrobTarget).Default.mpPickupAmmoCount * 3;
 			}
 		}
-
-		if (FrobTarget.IsA('WeaponShuriken'))
-			WeaponShuriken(FrobTarget).ItemName = WeaponShuriken(FrobTarget).default.ItemName;
 	}
 
     if (bCanPickup && !bDeclined)
@@ -8635,6 +8641,10 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
             bLeftClicked = False;
         }
     }
+
+    //Hacky Shuriken fix
+    if (FrobTarget.IsA('WeaponShuriken'))
+        WeaponShuriken(FrobTarget).SetFrobNameHack(false);
 
 	return bCanPickup && !bDeclined;
 }
