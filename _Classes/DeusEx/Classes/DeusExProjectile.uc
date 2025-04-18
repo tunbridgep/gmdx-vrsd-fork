@@ -330,17 +330,20 @@ function SpawnEffects(Vector HitLocation, Vector HitNormal, Actor Other)
 	{
 		for (i=0; i<Damage/5; i++)
 		{
-			chip = spawn(class'Rockchip',,,HitLocation+HitNormal);
+			if (FRand() < 0.8)
+			{
+				chip = spawn(class'Rockchip',,,HitLocation+HitNormal);
 
-			//DEUS_EX AMSD In multiplayer, don't propagate these to
-			//other players (or from the listen server to clients).
-			if (chip != None)
-			   chip.RemoteRole = ROLE_None;
+				//DEUS_EX AMSD In multiplayer, don't propagate these to
+				//other players (or from the listen server to clients).
+				if (chip != None)
+				   chip.RemoteRole = ROLE_None;
+			}
 		}
 	}
 }
 
-function DrawExplosionEffects(vector HitLocation, vector HitNormal)
+simulated function DrawExplosionEffects(vector HitLocation, vector HitNormal)
 {
 	local ShockRing ring;
 	local SphereEffect sphere;
@@ -604,7 +607,7 @@ function HurtRadiusGMDX( float DamageAmount, float DamageRadius, name DamageName
 			if( Victims != self)
 			{
 				//SARGE: Reduce damage dealt when exploded by ADS
-				if ( Victims == aggressiveExploder )
+				if ( aggressiveExploder != None && aggressiveExploder.AugmentationSystem != None && Victims == aggressiveExploder )
 				{
 					mult = 0.2 + (aggressiveExploder.AugmentationSystem.GetClassLevel(class'AugDefense') * 0.1);
 					damageAmount = mult * damageAmount;
@@ -698,7 +701,7 @@ function HurtRadiusGMDX( float DamageAmount, float DamageRadius, name DamageName
 }
 
 
-auto state Flying
+auto simulated state Flying
 {
 	simulated function ProcessTouch (Actor Other, Vector HitLocation)
 	{

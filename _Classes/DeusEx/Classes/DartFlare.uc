@@ -22,7 +22,7 @@ function ExtinguishFlare()
 	AmbientSound = None;
 	if (gen != None)
 		gen.DelayedDestroy();
-	if (flaregen != None)
+	if (flaregen != None && flamething != None)
 	{
 		flaregen.DelayedDestroy();
 		flamething.LifeSpan=1;
@@ -147,7 +147,7 @@ function Timer()
 			gen.particleLifeSpan = 2.8;
 			gen.particleDrawScale = 0.11;			
 		}
-		
+
 		loc2.Y = collisionradius*0.8;    //I hate coordinate shifting
 		loc = loc2 >> rotation;
 		loc += location;
@@ -157,9 +157,7 @@ function Timer()
 		flaregen = Spawn(class'ParticleGenerator',Self,, loc, rota);
 		if (flaregen != None)
 		{
-			//SARGE: TODO: Make this actually work
 			flaregen.particleTexture = class'HDTPLoader'.static.GetFireTexture("HDTPAnim.Effects.HDTPFlarespark");
-				
 			flaregen.LifeSpan = LifeSpan;
 			flaregen.attachTag = Name;
 			flaregen.SetBase(Self);
@@ -175,7 +173,7 @@ function Timer()
 			flaregen.particleLifeSpan = 0.2*(1 + frand());
 			flaregen.particleDrawScale = 0.01 + 0.04*frand();            
 		}
-		
+
 		rota.Yaw = 0;
 		flamething = Spawn(class'Effects', Self,, Loc, rota);
 		if(flamething != none)
