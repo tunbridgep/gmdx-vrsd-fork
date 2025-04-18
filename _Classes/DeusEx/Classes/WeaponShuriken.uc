@@ -17,7 +17,23 @@ simulated function PreBeginPlay()
 		MaxRange = mpMaxRange;
       PickupAmmoCount = 7;
 	}
+    
 }
+
+// ----------------------------------------------------------------------
+// SARGE: Name hack stuff
+// ----------------------------------------------------------------------
+
+//Sarge: Update weapon frob display when we have 1
+function string GetFrobString(DeusExPlayer player)
+{
+    if (PickupAmmoCount == 1)
+        return class'Shuriken'.default.itemName;
+    else
+        return super.GetFrobString(player);
+}
+
+/////////////////////////////////
 
 function DisplayWeapon(bool overlay)
 {
@@ -68,6 +84,7 @@ defaultproperties
      PlayerViewMesh=LodMesh'DeusExItems.Shuriken'
      PickupViewMesh=LodMesh'DeusExItems.ShurikenPickup'
      ThirdPersonMesh=LodMesh'DeusExItems.Shuriken3rd'
+     Mesh=LodMesh'DeusExItems.ShurikenPickup'
      Icon=Texture'DeusExUI.Icons.BeltIconShuriken'
      largeIcon=Texture'DeusExUI.Icons.LargeIconShuriken'
      largeIconWidth=36
