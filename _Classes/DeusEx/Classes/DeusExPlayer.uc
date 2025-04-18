@@ -8418,6 +8418,87 @@ function PlayPickupAnim(Vector locPickup)
 }
 
 // ----------------------------------------------------------------------
+// SARGE: LootAmmo()
+// Replaces the numerous instances of duplicated code
+// between the weapon, carcass and ammo classes.
+//
+// Picks up the specified max amount of a given ammo
+// type that the player can pick up, and optionally
+// presents messages, plays sounds, etc, to let the player know what's going on.
+//
+// Returns the number of rounds they were able to pick up.
+// ----------------------------------------------------------------------
+function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool bWindowAlways, optional bool bLootSound, optional bool bNoGroup)
+{
+    local int MaxAmmo, prevAmmo, ammoCount, intj;
+    local DeusExAmmo AmmoType;
+    
+    /*
+    ClientMessage("----LOOTAMMO CALLED----"); 
+    ClientMessage("Max" @ max); 
+    ClientMessage("LootAmmoClass" @ LootAmmoClass); 
+    */
+    
+    if (LootAmmoClass == None || LootAmmoClass == class'AmmoNone')
+        return 0;
+
+    //The actual ammo type in our inventory
+    AmmoType = DeusExAmmo(FindInventoryType(LootAmmoClass));
+        
+    if (AmmoType == None)
+    {
+        //If we don't have it, spawn it
+        AmmoType = DeusExAmmo(Spawn(LootAmmoClass));	// Create ammo type required
+        if (AmmoType == None)
+            return 0;
+
+		AddInventory(AmmoType);		// and add to player's inventory
+		AmmoType.BecomeItem();
+		AmmoType.AmmoAmount = 0; 
+		AmmoType.GotoState('Idle2');
+    }
+
+    MaxAmmo = GetAdjustedMaxAmmo(AmmoType);
+    prevAmmo = AmmoType.AmmoAmount;
+    AmmoCount = MIN(AmmoType.AmmoAmount + max,maxAmmo);
+
+    intj = AmmoCount - prevAmmo;
+
+    //ClientMessage("intj is" @ intj); 
+
+    if (intj > 0)
+    {
+        //Add to our ammo stockpile
+        AmmoType.AddAmmo(intj);
+
+        // Update the ammo display on the object belt
+        UpdateAmmoBeltText(AmmoType);
+        
+        if (bDisplayMsg)
+        {
+            ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName $ " (" $ intj $ ")", 'Pickup');
+        }
+            
+        if (bDisplayMsg || bWindowAlways)
+        {
+            AddReceivedItem(AmmoType, intj, intj < max || bWindowAlways, bNoGroup);
+        }
+
+        //If we only took a partial amount, make a special sound.
+        if (intj < max && bLootSound)
+            AmmoType.PlayPartialAmmoSound();
+
+        return intj;
+    }
+    else
+    {
+        if (bDisplayMsg)
+            ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName $ " (" $ intj $ ")" @ AmmoType.MaxAmmoString, 'Pickup');
+    }
+    return 0;
+}
+
+// ----------------------------------------------------------------------
 // HandleItemPickup()
 // ----------------------------------------------------------------------
 
@@ -8525,37 +8606,13 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 //		 log("MYCHK::DXPlayer::HIP::ADD TO FAILED::"@foundItem);
 			bCanPickup = False;
 			ServerConditionalNotifyMsg( MPMSG_DropItem );
+            
             if (frobTarget != None && frobTarget.IsA('DeusExWeapon'))
             {
-               forEach AllActors(class'DeusExAmmo',foundAmmo)
-                   if (foundAmmo.Owner != None && foundAmmo.Owner.IsA('DeusExPlayer') && foundAmmo.default.ItemName == DeusExWeapon(frobTarget).AmmoTag)
-                   { assignedAmmo = foundAmmo; break; }
-
-               if (assignedAmmo != None && assignedAmmo.AmmoAmount < GetAdjustedMaxAmmo(assignedAmmo) && DeusExWeapon(frobTarget).PickupAmmoCount != 0)
-               {                                                                //RSD: Replaced assignedAmmo.MaxAmmo with adjusted
-                   intj = GetAdjustedMaxAmmo(assignedAmmo) - assignedAmmo.AmmoAmount; //RSD: Replaced assignedAmmo.MaxAmmo with adjusted
-                   assignedAmmo.AmmoAmount += DeusExWeapon(frobTarget).PickupAmmoCount;
-                    if (assignedAmmo.AmmoAmount > GetAdjustedMaxAmmo(assignedAmmo)) //RSD: Replaced assignedAmmo.MaxAmmo with adjusted
-                    {
-                        assignedAmmo.AmmoAmount = GetAdjustedMaxAmmo(assignedAmmo); //RSD: Replaced assignedAmmo.MaxAmmo with adjusted
-                        ClientMessage(assignedAmmo.PickupMessage $ " " $ assignedAmmo.ItemName $ " (" $ intj $ ")");
-                        AddReceivedItem(assignedAmmo,intj);
-                        DeusExWeapon(frobTarget).PickupAmmoCount -= intj;
-                        DeusExWeapon(frobTarget).PlayRetrievedAmmoSound();
-                    }
-                    else
-                    {
-                        ClientMessage(assignedAmmo.PickupMessage $ " " $ assignedAmmo.ItemName $ " (" $ DeusExWeapon(frobTarget).PickupAmmoCount $ ")");
-                        AddReceivedItem(assignedAmmo,DeusExWeapon(frobTarget).PickupAmmoCount);
-                        DeusExWeapon(frobTarget).PickupAmmoCount = 0;
-                        DeusExWeapon(frobTarget).PlayRetrievedAmmoSound();
-                    }
-               }
-               else
-                ClientMessage(Sprintf(InventoryFull, Inventory(FrobTarget).itemName));
+                if (!DeusExWeapon(frobTarget).LootAmmo(self,false,true))
+                    ClientMessage(Sprintf(InventoryFull, Inventory(FrobTarget).itemName));
             }
-            else
-                ClientMessage(Sprintf(InventoryFull, Inventory(FrobTarget).itemName));
+
 		}
 	}
 	
@@ -8570,9 +8627,6 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 
 	if (bCanPickup && !bDeclined)
 	{
-		if (FrobTarget.IsA('WeaponShuriken'))
-			WeaponShuriken(FrobTarget).ItemName = WeaponShuriken(FrobTarget).default.ItemName @ "(" $ WeaponShuriken(FrobTarget).PickupAmmoCount $ ")";
-
         //if (FrobTarget.IsA('WeaponLAW'))
 		//	PlaySound(sound'WeaponPickup', SLOT_Interact, 0.5+FRand()*0.25, , 256, 0.95+FRand()*0.1);
         DoFrob(Self, inHand);
@@ -8610,8 +8664,10 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 	return bCanPickup && !bDeclined;
 }
 
-function AddReceivedItem(Inventory item, int count, optional bool bAlwaysShow)
+function AddReceivedItem(Inventory item, int count, optional bool bAlwaysShow, optional bool bNoGroup)
 {
+    local int i;
+
     //clientMessage("item: " $ item $ ", count: " $ count);
     if (item == None || count == 0)
         return;
@@ -8619,22 +8675,20 @@ function AddReceivedItem(Inventory item, int count, optional bool bAlwaysShow)
     if (!bAlwaysShowReceivedItemsWindow && !bAlwaysShow)
         return;
 
-    /*
-    //If count is -1, try to figure it out by magic.
-    if (count == -1)
-    {
-        if (item.isA('DeusExPickup'))
-            count = DeusExPickup(item).numCopies;
-        else if (item.isA('DeusExWeapon') && DeusExWeapon(item).bDisposableWeapon && DeusExWeapon(item).AmmoType != None)
-            count = DeusExWeapon(item).AmmoType.AmmoAmount;
-        else
-            count = 1;
-    }
-    */
-
     if (rootWindow != None && DeusExRootWindow(rootWindow).hud != None)
     {
-        DeusExRootWindow(rootWindow).hud.receivedItems.AddItem(item, count);
+        //Carcasses always spawn individual copies of their inventory items,
+        //rather than spawning them as a stack. So when things ARE stacked, (usually
+        //disposable weapons), we display them the same way.
+        if (!bNoGroup && count < 5)
+        {
+            for (i = 0; i < count; i++)
+                DeusExRootWindow(rootWindow).hud.receivedItems.AddItem(item, 1);
+        }
+        else
+        {
+            DeusExRootWindow(rootWindow).hud.receivedItems.AddItem(item, count);
+        }
 
         // Make sure the object belt is updated
         if (item.IsA('Ammo'))

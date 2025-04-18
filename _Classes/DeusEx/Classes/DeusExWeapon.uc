@@ -348,9 +348,6 @@ var bool bFancyScopeAnimation;
 
 //SARGE: Sounds for various things
 
-//Retrieve Ammo from Weapon
-var const Sound RetrieveAmmoSound;
-
 //END GMDX:
 
 //
@@ -374,6 +371,44 @@ replication
 	// Functions Server calls in client
 	reliable if ( Role == ROLE_Authority )
 	  RefreshScopeDisplay, ReadyClientToFire, SetClientAmmoParams, ClientDownWeapon, ClientActive, ClientReload;
+}
+
+// ----------------------------------------------------------------------
+// LootWeaponAmmo()
+//
+// SARGE: Refactored this out of the Carcass Frob function so it was hopefully less horribly long,
+// and it was repeated everywhere, all over the codebase. For shame, GMDX!!!
+// ----------------------------------------------------------------------
+function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, optional bool bLootSound)
+{
+    local class<Ammo> defAmmoClass;
+    local int intj;
+
+    if (P == None)
+        return false;
+			
+    // Only add ammo of the default type
+    // There was an easy way to get 32 20mm shells, buy picking up another assault rifle with 20mm ammo selected
+    // Add to default ammo only
+    if ( AmmoNames[0] == None )
+        defAmmoClass = AmmoName;
+    else
+        defAmmoClass = AmmoNames[0];
+
+    //hack
+    if (defAmmoClass == class'AmmoNone' || self.PickupAmmoCount <= 0)
+        return false;
+
+    intj = P.LootAmmo(defAmmoClass,PickupAmmoCount,bDisplayMsg,bDisplayWindow,bLootSound,!bDisposableWeapon);
+
+    if (intj > 0)
+    {
+        self.ClipCount -= intj;
+        PickupAmmoCount -= intj;
+        //P.ClientMessage("intj is > 0: " $ intj $ ", with pickupammocount: " $ pickupammocount);
+        return true;
+    }
+    return false;
 }
 
 //Sarge: Update weapon frob display when we have a mod applied
@@ -1141,12 +1176,6 @@ function TakeDamage(int Damage, Pawn EventInstigator, vector HitLocation, vector
 	}
 }
 
-function PlayRetrievedAmmoSound()
-{
-    //PlaySound(RetrieveAmmoSound, SLOT_None, 0.5+FRand()*0.25, , 256, 0.95+FRand()*0.1);
-    PlaySound(RetrieveAmmoSound, SLOT_None, 1.5+FRand()*0.25, , 256, 0.95+FRand()*0.1);
-}
-
 function bool HandlePickupQuery(Inventory Item)
 {
 	local DeusExWeapon W;
@@ -1207,71 +1236,30 @@ function bool HandlePickupQuery(Inventory Item)
        if (W.bModified)
          bModified = true;
 	}
-
+    
 	player = DeusExPlayer(Owner);
     if (player != None)
+    {
         player.UpdateHUD(); //SARGE: Required now because weapons can have + icons in the HUD
+    }
 
 	if (Item.Class == Class)
 	{
-	  if (!( (Weapon(item).bWeaponStay && (Level.NetMode == NM_Standalone)) && (!Weapon(item).bHeldItem || (Weapon(item).bTossedOut && !DeusExWeapon(item).bDisposableWeapon))))
+	  if (!( (Weapon(item).bWeaponStay && (Level.NetMode == NM_Standalone)) && (!Weapon(item).bHeldItem || (Weapon(item).bTossedOut))))
 		{
-			// Only add ammo of the default type
-			// There was an easy way to get 32 20mm shells, buy picking up another assault rifle with 20mm ammo selected
-			if ( AmmoType != None )
-			{
-				// Add to default ammo only
-				if ( AmmoNames[0] == None )
-					defAmmoClass = AmmoName;
-				else
-					defAmmoClass = AmmoNames[0];
+            //Block picking it up if we don't have ammo to do so.
+            W.LootAmmo(player,!W.bDisposableWeapon,false,true);
+            if (W.PickupAmmoCount > 0)
+                return true;
 
-				defAmmo = Ammo(player.FindInventoryType(defAmmoClass));
-				//defAmmo.AddAmmo( Weapon(Item).PickupAmmoCount );
-				//RSD: Check for spillover ammo to leave the gun on the ground with it, and also tell the player how much they picked up
-				tempMaxAmmo = player.GetAdjustedMaxAmmo(defAmmo);
-				if (defAmmo.AmmoAmount + Weapon(Item).PickupAmmoCount > tempMaxAmmo)
+            if ( Level.NetMode != NM_Standalone )
+            {
+                if (( player != None ) && ( player.InHand != None ))
                 {
-					intj = tempMaxAmmo - defAmmo.AmmoAmount;
-					defAmmo.AddAmmo(intj);
-					Weapon(Item).PickupAmmoCount -= intj;
-                    DeusExWeapon(Item).clipcount = Weapon(Item).PickupAmmoCount;
-
-					if (!(DeusExWeapon(item) != none && DeusExWeapon(item).bDisposableWeapon)) //RSD: Don't display ammo message for grenades or the PS20
-					{
-                        player.ClientMessage(defAmmo.PickupMessage @ defAmmo.itemArticle @ defAmmo.ItemName $ " (" $ intj $ ")", 'Pickup' );
-                        player.AddReceivedItem(defAmmo,intj);
-                        PlayRetrievedAmmoSound();
-					}
-					return true;
-				}
-				else                                                            //RSD: Add ammo and TELL the player about it!
-				{
-					defAmmo.AddAmmo( Weapon(Item).PickupAmmoCount );
-                    
-                    if (!DeusExWeapon(Item).bDisposableWeapon) //RSD: Don't display ammo message for grenades or the PS20
-                    {
-                        //SARGE: Tell us when we pick up empty weapons, rather than telling us
-                        //that we found 0 ammo
-                        if (Weapon(Item).PickupAmmoCount == 0)
-                            player.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.ItemName, 'Pickup' );
-                        else
-                        {
-                            player.ClientMessage(defAmmo.PickupMessage @ defAmmo.itemArticle @ defAmmo.ItemName $ " (" $ Weapon(Item).PickupAmmoCount $ ")", 'Pickup' );
-                            player.AddReceivedItem(defAmmo,Weapon(Item).PickupAmmoCount);
-                        }
-                    }
-				}
-
-				if ( Level.NetMode != NM_Standalone )
-				{
-					if (( player != None ) && ( player.InHand != None ))
-					{
-						if ( DeusExWeapon(item).class == DeusExWeapon(player.InHand).class )
-							ReadyToFire();
-					}
-				}
-			}
+                    if ( DeusExWeapon(item).class == DeusExWeapon(player.InHand).class )
+                        ReadyToFire();
+                }
+            }
 		}
 	}
 
@@ -1281,7 +1269,7 @@ function bool HandlePickupQuery(Inventory Item)
 	// Notify the object belt of the new ammo
 	if (player != None)
 		player.UpdateBeltText(Self);
-
+            
 	return bResult;
 }
 
@@ -1289,6 +1277,7 @@ function bool HandlePickupQuerySuper( inventory Item )                          
 {
 	local Pawn P;
     local DeusExAmmo DXAmmoType;
+    local bool bResult;
 	if (Item.Class == Class)
 	{
 		if ( Weapon(item).bWeaponStay && (!Weapon(item).bHeldItem || Weapon(item).bTossedOut) )
@@ -1316,9 +1305,10 @@ function bool HandlePickupQuerySuper( inventory Item )                          
 		if (DeusExWeapon(item) != none && DeusExWeapon(item).bDisposableWeapon) //RSD: Only print pickup message if it's a grenade
 		{
             if (Item.PickupMessageClass == None)
+            {
                 // DEUS_EX CNN - use the itemArticle and itemName
-    //			P.ClientMessage(Item.PickupMessage, 'Pickup');
-                P.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
+                P.ClientMessage(PickupMessage @ itemArticle @ itemName, 'Pickup');
+            }
             else
                 P.ReceiveLocalizedMessage( Item.PickupMessageClass, 0, None, None, item.Class );
 		}
@@ -7289,5 +7279,4 @@ defaultproperties
      Mass=10.000000
      Buoyancy=5.000000
      muzzleSlot=2
-     RetrieveAmmoSound=Sound'WeaponPickup'
 }

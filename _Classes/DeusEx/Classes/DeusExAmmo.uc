@@ -35,6 +35,9 @@ var const Color ammoHUDColor;
 //SARGE: Partial ammo pickup
 var const Sound PartialAmmoSound;
 
+//SARGE: Ammo handling moved to ammo class
+var localized string MaxAmmoString;                                            //SARGE: Appended to searches when we can't pick ammo up
+
 function bool HasCustomAmmoColor()
 {
     return default.ammoHUDColor != class'DeusExAmmo'.default.ammoHUDColor;
@@ -470,4 +473,5 @@ defaultproperties
      Mass=30.000000
      iHDTPModelToggle=1
      PartialAmmoSound=Sound'WeaponPickup'
+     MaxAmmoString="[Ammo at Maximum]"
 }
