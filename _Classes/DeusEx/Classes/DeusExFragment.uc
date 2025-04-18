@@ -11,6 +11,7 @@ var ParticleGenerator smokeGen;
 //SARGE: HDTP Model toggles
 var globalconfig int iHDTPModelToggle;
 var string HDTPSkin;
+var string HDTPMesh;
 
 //
 // copied from Engine.Fragment
@@ -146,7 +147,7 @@ function Destroyed()
 function PostBeginPlay()
 {
 	Super.PostBeginPlay();
-    //UpdateHDTPsettings();
+    UpdateHDTPsettings();
 
 	speed *= 1.1;
 
@@ -164,6 +165,8 @@ static function bool IsHDTP()
 
 exec function UpdateHDTPsettings()
 {
+	if(HDTPMesh != "")
+		Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),IsHDTP());
 }
 
 exec function UpdateHDTPSkin()
