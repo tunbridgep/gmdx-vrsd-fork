@@ -89,7 +89,7 @@ function bool DoLeftFrob(DeusExPlayer frobber)
 
     //If not highlightable, not locked, and having a threshold, just select melee
     //This is a fallback for glass panes that aren't actually defined as BreakableGlass
-    if (!bLocked && minDamageThreshold > 0 && !bHighlight)
+    if (!bLocked && minDamageThreshold > 0 && !bHighlight && bBreakable)
     {
         frobber.SelectMeleePriority(minDamageThreshold);
         return false;
@@ -132,7 +132,7 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {
 
     //Normal interaction if unlocked
-    if (!bLocked)
+    if (!bLocked && bFrobbable)
         return true;
 
     //we're no longer in the "forced" weapon state, so clear the left-frob timer
@@ -141,7 +141,7 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 
     //SARGE: If left frob timer is 0 (ie, we have not left-frobbed),
     //then use the "right-click to autoselect" revision-style interaction, if enabled
-    if (frobber.bRightClickToolSelection && bLocked && frobber.inHand != None && leftFrobTimer == 0 && !frobber.inHand.IsA('Lockpick') && !frobber.InHand.IsA('NanoKeyRing'))
+    if (frobber.bRightClickToolSelection && (bLocked||!bFrobbable) && frobber.inHand != None && leftFrobTimer == 0 && !frobber.inHand.IsA('Lockpick') && !frobber.InHand.IsA('NanoKeyRing'))
         return DoLeftFrob(frobber);
 
     //don't continue if our hands are full, just do the default interaction
