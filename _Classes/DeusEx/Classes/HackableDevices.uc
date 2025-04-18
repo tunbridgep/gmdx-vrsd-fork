@@ -4,7 +4,7 @@
 class HackableDevices extends ElectronicDevices
 	abstract;
 
-var bool				bHackable;				// can this device be hacked?
+var() bool				bHackable;				// can this device be hacked?
 var() float 			hackStrength;			// "toughness" of the hack on this device - 0.0 is easy, 1.0 is hard
 var() float          initialhackStrength; // for multiplayer hack resets, this is the initial value
 var() name				UnTriggerEvent[4];		// event to UnTrigger when hacked

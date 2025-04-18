@@ -1,7 +1,7 @@
 //=============================================================================
 // AutoTurret.
 //=============================================================================
-class AutoTurret extends HackableDevices;
+class AutoTurret extends DeusExDecoration;
 
 var AutoTurretGun gun;
 
