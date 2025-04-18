@@ -978,5 +978,4 @@ defaultproperties
      bVisionImportant=true
      disableTimeBase=120.0
      disableTimeMult=60.0
-     bWasDisabledOnce=false
 }
