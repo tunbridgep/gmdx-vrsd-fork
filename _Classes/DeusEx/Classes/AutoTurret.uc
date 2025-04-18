@@ -53,8 +53,6 @@ var travel bool bDefaultActive;
 var travel bool bDefaultTrackPlayersOnly;
 var travel bool bDefaultTrackPawnsOnly;
 
-var bool bWasDisabledOnce;  //Ygll: var to set at true one, to not have the 'hum' sound anymore in case of bypassed turret
-
 // networking replication
 replication
 {
@@ -69,12 +67,9 @@ function Trigger(Actor Other, Pawn Instigator)
 	if (!bActive)
 	{
 		bActive = true;
-		if(!bWasDisabledOnce)
-			AmbientSound = Default.AmbientSound;
-		else
-			AmbientSound = None;
 	}
 
+	AmbientSound = Default.AmbientSound;
     bDisabled = false;
 	bHackable = true;
 	bDisabledByComputer = false;
@@ -86,13 +81,10 @@ function UnTrigger(Actor Other, Pawn Instigator)
 {
 	if (bActive)
 	{
-		bActive = false;
-		AmbientSound = None;
+		bActive = false;		
 	}
 	
-	if(!bWasDisabledOnce)
-		bWasDisabledOnce = true;
-    
+	AmbientSound = None;
     bDisabled = true;	
 	bHackable = false;
 	bDisabledByComputer = true;
