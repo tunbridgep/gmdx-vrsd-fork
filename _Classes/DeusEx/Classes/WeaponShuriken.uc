@@ -17,7 +17,8 @@ simulated function PreBeginPlay()
 		MaxRange = mpMaxRange;
       PickupAmmoCount = 7;
 	}
-    
+
+    SetFrobNameHack(true);
 }
 
 // ----------------------------------------------------------------------
@@ -29,8 +30,29 @@ function string GetFrobString(DeusExPlayer player)
 {
     if (PickupAmmoCount == 1)
         return class'Shuriken'.default.itemName;
+    else if (player.bShowItemPickupCounts)
+        return default.itemName @ "(" $ PickupAmmoCount $ ")";
     else
-        return super.GetFrobString(player);
+        return default.itemName;
+}
+
+function string SetFrobNameHack(bool frobbing, optional int num)
+{
+    if (frobbing)
+    {
+        itemName = class'Shuriken'.default.itemName;
+        itemArticle = class'Shuriken'.default.itemArticle;
+    }
+    else if (num > 0)
+    {
+        itemName = default.itemName @ num;
+        itemArticle = default.itemArticle;
+    }
+    else
+    {
+        itemName = default.itemName;
+        itemArticle = default.itemArticle;
+    }
 }
 
 /////////////////////////////////

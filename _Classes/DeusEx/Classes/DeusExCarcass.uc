@@ -1292,8 +1292,6 @@ function Frob(Actor Frobber, Inventory frobWith)
                                         item.bInObjectBelt=False;
                                         item.BeltPos=-1;
 
-                                        // Show the item received in the ReceivedItems window and also
-                                        AddReceivedItem(player, item, 1);
 
                                         PlaySound(Item.PickupSound);
                                         
@@ -1301,7 +1299,14 @@ function Frob(Actor Frobber, Inventory frobWith)
                                         {
                                             LootWeaponAmmo(DeusExPlayer(P),DeusExWeapon(item));
                                         }
-                                        P.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
+                                        
+                                        if (!item.IsA('DeusExWeapon') || !DeusExWeapon(item).bDisposableWeapon)
+                                        // Show the item received in the ReceivedItems window and also
+                                        {
+
+                                            AddReceivedItem(player, item, 1);
+                                            P.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
+                                        }
                                         
                                         item.SpawnCopy(P);
                                     }
