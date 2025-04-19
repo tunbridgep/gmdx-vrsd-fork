@@ -382,55 +382,39 @@ function SetTitle(String newTitle)
 function PersonaNormalLargeTextWindow SetText(String newText)
 {
 	winText = PersonaNormalLargeTextWindow(winTile.NewChild(Class'PersonaNormalLargeTextWindow'));
-    //winText.SetBackground(Texture'DeusExUI.UserInterface.ComputerSpecialOptionsBackgroundTop_1');
+
+	if(winText == None)
+		return None;
+
     if (bStylization)
     {
-       if (winScroll != None)
-       {
-          winScroll.EnableScrolling(false,false);
-          winScroll.EnableWindow(false);
-       }
        winText.SetTextColorRGB(224,224,244);
        winText.SetVerticalSpacing(3);
        winText.SetFont(Font'Engine.SmallFont');
        winText.SetBackgroundStyle(DSTY_Masked);
-       //winText.SetBackground(Texture'DeusExUI.UserInterface.ComputerHackBorder');
        winText.SetBackground(Texture'GMDXSFX.UI.pedometerTex1');
     }
     else if (bStylization2)
     {
-       if (winScroll != None)
-       {
-          winScroll.EnableScrolling(false,false);
-          winScroll.EnableWindow(false);
-       }
-       //winText.SetTextColorRGB(224,224,244);
        winText.SetFont(Font'FontMenuSmall');
-       //winText.SetFont(Font'FontConversation');
-       //winText.SetBackgroundStyle(DSTY_Translucent);
-       //winText.SetBackground(Texture'DeusExUI.UserInterface.GoalsBackground_5');
-       //winText.SetBackground(Texture'DeusExUI.UserInterface.HealthButtonNormal_Center');
-       //winText.SetBackground(Texture'DeusExUI.UserInterface.HUDInfolinkBackground_1');
-       winScroll.EnableScrolling(false,false);
     }
     else if (bStylization3)
     {
-       if (winScroll != None)
-       {
-          winScroll.EnableScrolling(false,false);
-          winScroll.EnableWindow(false);
-       }
        winText.SetTextColorRGB(224,224,244);
        winText.SetFont(Font'FontComputer8x20_B');
-       //winText.SetBackgroundStyle(DSTY_Masked);
-       //winText.SetBackground(Texture'DeusExUI.UserInterface.ComputerHackBorder');
-       //winText.SetBackground(Texture'GMDXSFX.UI.pedometerTex1');
     }
     else
     {
        winText.SetFont(Font'FontMenuSmall');
        winText.SetBackground(None);
     }
+
+	if (winScroll != None && ( bStylization || bStylization2 || bStylization3 ) )
+	{
+		winScroll.EnableScrolling(false,false);
+		winScroll.EnableWindow(false);
+	}
+
 	winText.SetTextMargins(0, 0);
 	winText.SetWordWrap(True);
 	winText.SetTextAlignments(HALIGN_Left, VALIGN_Top);
@@ -494,14 +478,6 @@ function Clear()
 {
 	winTitle.SetText("");
 	winTile.DestroyAllChildren();
-
-	//Totalitarian: destroy perk upgrade buttons
-	/*if (winActionButtons != None)
-	    winActionButtons.DestroyAllChildren();
-	if (winActionButtons2 != None)
-	    winActionButtons2.DestroyAllChildren();
-    if (winActionButtons3 != None)
-	    winActionButtons3.DestroyAllChildren();      */
 }
 
 // ----------------------------------------------------------------------
@@ -629,9 +605,8 @@ function AddDeclinedInfoWindow()
             //SARGE: Holy dirty hack batman!
             if (invClass == class'SoftwareNuke' || invClass == class'SoftwareStop')
                 winIcon.SetBackgroundStretching(true);
+
             winIcon.SetSize(42, 37);
-            //winIcon.SetSize(invClass.default.largeIconWidth, invClass.default.largeIconHeight);
-            
             // Add Item Name
             winText = PersonaNormalTextWindow(winAmmo.NewChild(Class'PersonaNormalTextWindow'));
             winText.SetWordWrap(False);
@@ -640,10 +615,7 @@ function AddDeclinedInfoWindow()
             winText.SetText(invClass.default.itemName);
 
             //Add "Remove From List" Button
-            //winActionButtons = PersonaButtonBarWindow(winText.NewChild(Class'PersonaButtonBarWindow'));
-            //winActionButtons.SetWidth(32); //149
             buttonRemoveDecline[i] = PersonaActionButtonWindow(winTile.NewChild(Class'PersonaActionButtonWindow'));
-            //buttonUpgrade.SetWidth(32);
             buttonRemoveDecline[i].SetButtonText(msgRemoveDecline);
             buttonRemoveDecline[i].tags[0] = string(invClass);
 
