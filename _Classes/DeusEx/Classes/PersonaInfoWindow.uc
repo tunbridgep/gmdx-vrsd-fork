@@ -58,6 +58,8 @@ var localized String DeclinedTitleLabel;
 var localized String DeclinedDesc;
 var localized String DeclinedDesc2;
 
+var string strDash;
+
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -67,6 +69,11 @@ var localized String DeclinedDesc2;
 event InitWindow()
 {
 	Super.InitWindow();
+
+	if(player.iAltFrobDisplay == 2)
+		strDash = "+ ";
+	else
+		strDash = "";
 
 	CreateControls();
 }
@@ -128,7 +135,7 @@ function CreatePerkOverview(Skill skill, Perk Perk, int index)	//Trash: Creates 
 	WinPerkTitle[index].SetTextColor(colText);
 	WinPerkTitle[index].SetTextMargins(6,4);
 	winSkillIconP[index] = winActionButtons1[index].NewChild(class'Window');
-	winSkillIconP[index].SetPos(191, 3);
+	winSkillIconP[index].SetPos(191, 2);
 	winSkillIconP[index].SetSize(24, 24);
 	winSkillIconP[index].SetBackgroundStyle(DSTY_Normal);
 	winSkillIconP[index].SetBackground(PassedSkillIcon); // CHECK THIS LATER, TRASH!
@@ -185,12 +192,7 @@ function UpdateObtainedPerkList(DeusExPlayer player, string perkName)
 	if(count <= 1)
 		CreateObtainedPerkList(player);
 	else
-	{
-		if(player.iAltFrobDisplay == 2)
-			SetText( "+-" $ perkName );
-		else
-			SetText(perkName);
-	}
+		SetText(strDash $ perkName);
 }
 
 function CreateObtainedPerkList(DeusExPlayer player)
@@ -211,10 +213,7 @@ function CreateObtainedPerkList(DeusExPlayer player)
 				bSetTitle = true;
 			}
 
-			if(player.iAltFrobDisplay == 2)
-				SetText( "+-" $ player.PerkManager.GetPerkAtIndex(index).PerkName );
-			else
-				SetText(player.PerkManager.GetPerkAtIndex(index).PerkName);
+			SetText(strDash $ player.PerkManager.GetPerkAtIndex(index).PerkName);
 		}
     }
 
@@ -678,4 +677,5 @@ defaultproperties
      msgDoUnassign="Unassign"
      msgAssigned="Secondary Item Assigned"
      msgUnassigned="Secondary Item Unassigned"
+     strDash=""
 }
