@@ -115,7 +115,9 @@ function CreatePerkOverview(Skill skill, Perk Perk, int index)	//Trash: Creates 
 
 	PassedSkillIcon = Perk.GetPerkIcon();
 
-	AddLine();
+	if(player.iAltFrobDisplay == 2) //Ygll: French LOVE their line :D
+		AddLine();
+
 	winActionButtons1[index] = PersonaButtonBarWindow(winTile.NewChild(class'PersonaButtonBarWindow'));
 	winActionButtons1[index].SetWidth(0);
 	winActionButtons1[index].SetHeight(28);
@@ -165,25 +167,59 @@ function UpdateButton(PersonaActionButtonWindow button, Perk P)
         button.SetButtonText(UnobtainableButtonLabel);
 }
 
+function UpdateObtainedPerkList(DeusExPlayer player, string perkName)
+{
+	local int index, count;
+
+	count = 0;
+
+    for(index = 0; index < player.PerkManager.GetNumPerks(); index++)
+    {
+		if(player.PerkManager.GetPerkAtIndex(index).bPerkObtained)
+			count++;
+
+		if(count > 1) //don't need to check more obtained perk for the next step
+			break;
+    }
+
+	if(count <= 1)
+		CreateObtainedPerkList(player);
+	else
+	{
+		if(player.iAltFrobDisplay == 2)
+			SetText( "+-" $ perkName );
+		else
+			SetText(perkName);
+	}
+}
+
 function CreateObtainedPerkList(DeusExPlayer player)
 {
 	local int index;
+	local bool bSetTitle;
 
-    SetText( CR() $ ob );
-    AddLine();
+	bSetTitle = false;
 
     for (index = 0; index < player.PerkManager.GetNumPerks(); index++)
     {
 		if (player.PerkManager.GetPerkAtIndex(index).bPerkObtained)
 		{
+			if(!bSetTitle)
+			{
+				SetText( CR() $ ob );
+				AddLine();
+				bSetTitle = true;
+			}
+
 			if(player.iAltFrobDisplay == 2)
-				SetText("+-" $ player.PerkManager.GetPerkAtIndex(index).PerkName);
+				SetText( "+-" $ player.PerkManager.GetPerkAtIndex(index).PerkName );
 			else
 				SetText(player.PerkManager.GetPerkAtIndex(index).PerkName);
 		}
     }
 
-	AddLine();
+	if(bSetTitle)
+		AddLine();
 }
 
 //////////////////////////////////////////////////
@@ -262,13 +298,8 @@ function bool ButtonActivated( Window buttonPressed )
 		{
             boughtPerk = true;
 			player.PerkManager.PurchasePerk(buttonUpgrade[index].ButtonPerk.Class);
-
-			if(player.iAltFrobDisplay == 2)
-				SetText( "+-" $ buttonUpgrade[index].ButtonPerk.PerkName);
-			else
-				SetText(buttonUpgrade[index].ButtonPerk.PerkName);
-
-			if ( TopWin!=None )
+			UpdateObtainedPerkList(player, buttonUpgrade[index].ButtonPerk.PerkName);
+			if ( TopWin != None )
 				TopWin.RefreshWindow( 0.0 );
 		}
 	}
