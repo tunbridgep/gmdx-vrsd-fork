@@ -442,4 +442,5 @@ defaultproperties
      iHDTPModelToggle=1
      PartialAmmoSound=Sound'WeaponPickup'
      MaxAmmoString="[Ammo at Maximum]"
+     PickupSound=sound'objpickup2'
 }

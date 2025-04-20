@@ -117,4 +117,5 @@ defaultproperties
      CollisionHeight=0.300000
      bDisposableWeapon=true
      minSkillRequirement=2;
+     PickupSound=Sound'DeusExSounds.Weapons.CombatKnifeSelect'
 }
