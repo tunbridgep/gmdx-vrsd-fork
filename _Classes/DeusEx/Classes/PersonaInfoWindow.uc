@@ -21,7 +21,6 @@ var Inventory                    assignThis;                                    
 
 var localized String PassedSkillName;
 var localized string RequiredPoints;
-var localized string PerkTitle;
 var localized string ob;
 var localized string msgAssign;                                                 //RSD: Added
 var localized string msgAssigned;                                               //RSD: Added
@@ -99,10 +98,6 @@ function CreateControls()
 	winTile.SetWindowAlignments(HALIGN_Full, VALIGN_Top);
 }
 
-// ----------------------------------------------------------------------
-// CreatePerkOverview()
-// ----------------------------------------------------------------------
-
 //SARGE: Using sprintf shows floats as 1.00000000000 etc,
 //So we need to remove some of the digits.
 //This is absolutely awful.
@@ -115,6 +110,9 @@ function string TextDisplayHack(float value, int digits)
     return Left(value, digits);
 }
 
+// ----------------------------------------------------------------------
+// CreatePerkOverview()
+// ----------------------------------------------------------------------
 function CreatePerkOverview(Skill skill, Perk Perk, int index)	//Trash: Creates the description, upgrade button, etc for each perk
 {
 	local DeusExPlayer player;
@@ -236,6 +234,9 @@ function CreatePerkButtons(Skill Skill)
 	{
 		numPerkButtons = 0;
 		currPerk = player.PerkManager.GetPerkForSkill(Skill.class,numPerkButtons);
+		if(player.iAltFrobDisplay < 2)
+			AddLine();
+
 		while (currPerk != None)
 		{
 			CreatePerkOverview(skill, currPerk, numPerkButtons);
@@ -261,6 +262,9 @@ function CreateGeneralPerkButtons()
 	{
 		numPerkButtons = 0;
 		currPerk = player.PerkManager.GetGeneralPerk(numPerkButtons);
+		if(player.iAltFrobDisplay < 2)
+			AddLine();
+
 		while (currPerk != None)
 		{
 			CreatePerkOverview(None, currPerk, numPerkButtons);
@@ -637,7 +641,6 @@ defaultproperties
      PurchasedButtonLabel="|&Already Purchased"
      UnobtainableButtonLabel="|&Cannot Purchase"
      RequiredPoints="Points Needed: "
-     PerkTitle="PERKS"
      ob="OBTAINED PERKS"
      GeneralPerksTitleText="Perks - General"
      PerkRequiredSkill="Requires: %s: %s"
