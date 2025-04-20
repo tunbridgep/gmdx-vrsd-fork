@@ -788,6 +788,8 @@ var globalconfig bool bAlwaysShowReceivedItemsWindow;               //SARGE: Alw
 var globalconfig int iShowTotalCounts;                        //SARGE: Show the total number of rounds we can carry for disposable items in the inventory screen. 1 = charged items and disposable weapons/grenades only, 2 = everything.
 
 var globalconfig bool bGMDXDebug;                                   //SARGE: Allows extra debug info/messages. Not for regular players!
+
+var globalconfig bool bAllowSelectingOffAdvBelt;               //SARGE: When selecting an item that isn't on the alternate toolbelt, clear the primary belt selection.
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -8934,7 +8936,13 @@ exec function PutInHand(optional Inventory inv, optional bool bNoPrimary)
     if (!bNoPrimary)
         bLastWasEmpty = inv == None;
     
+    if (!bNoPrimary && advBelt == -1 && inv.bInObjectBelt)
+        advBelt = inv.beltPos;
+
     SetInHandPending(inv);
+
+    if (inv != None && !inv.bInObjectBelt && !bNoPrimary && bAllowSelectingOffAdvBelt)
+        advBelt = -1;
                 
     //clientMessage("PutInHand called for : " $ inv $ ", bBeltSkipNextPrimary=" $ bBeltSkipNextPrimary);
 
@@ -11924,7 +11932,7 @@ exec function ActivateBelt(int objectNum)
 			}
 
             //If we're not in IW belt mode, set our IW belt to match our current belt.
-            else if (iAlternateToolbelt == 0)
+            else if (iAlternateToolbelt == 0 || advBelt == -1)
                 advBelt = objectNum;
 		
 			root.ActivateObjectInBelt(objectNum);
@@ -18704,4 +18712,5 @@ defaultproperties
      bStreamlinedRepairBotInterface=true
      iShowTotalCounts=1
      iSmartKeyring=1
+     bAllowSelectingOffAdvBelt=true
 }
