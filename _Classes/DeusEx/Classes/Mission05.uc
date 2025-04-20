@@ -27,26 +27,26 @@ function FirstFrame()
 	Super.FirstFrame();
 
     //On all maps except the lab map, give Miguel the correct weapon
-    if (localURL != "05_NYC_UNATCOMJ12LAB" && firstTime && flags.GetBool('MiguelFollowing'))
+    if (localURL != "05_NYC_UNATCOMJ12LAB" && firstTime && flags.GetBool('MiguelArmed'))
     {
         foreach AllActors(class'Terrorist', T)
         {
-            if (flags.GetBool('MiguelGiveCrossbow'))
+            if (flags.GetBool('MiguelArmedCrossbow'))
             {
                 MiguelWeapon = spawn(class'WeaponMiniCrossbow', T);
                 MiguelAmmo = spawn(class'AmmoDartPoison', T);
             }
-            else if (flags.GetBool('MiguelGivePistol'))
+            else if (flags.GetBool('MiguelArmedPistol'))
             {
                 MiguelWeapon = spawn(class'WeaponPistol', T);
                 MiguelAmmo = spawn(class'Ammo10mm', T);
             }
-            else if (flags.GetBool('MiguelGiveShotgun'))
+            else if (flags.GetBool('MiguelArmedShotgun'))
             {
                 MiguelWeapon = spawn(class'WeaponAssaultShotgun', T);
                 MiguelAmmo = spawn(class'AmmoShell', T);
             }
-            else if (flags.GetBool('MiguelGiveStealthPistol'))
+            else if (flags.GetBool('MiguelArmedStealthPistol'))
             {
                 MiguelWeapon = spawn(class'WeaponStealthPistol', T);
                 MiguelAmmo = spawn(class'Ammo10mm', T);
@@ -285,6 +285,13 @@ function Timer()
 	local BlackHelicopter B;
 
 	Super.Timer();
+    
+    //SARGE: When miguel is following, make sure he's always got his weapon drawn.
+    if (flags.GetBool('MiguelFollowing'))
+    {
+        foreach AllActors(class'Terrorist', T)
+            T.bKeepWeaponDrawn = true;
+    }
 
 	if (localURL == "05_NYC_UNATCOHQ")
 	{
