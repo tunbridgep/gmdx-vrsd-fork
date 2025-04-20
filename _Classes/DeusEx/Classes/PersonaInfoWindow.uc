@@ -194,7 +194,7 @@ function UpdateObtainedPerkList(DeusExPlayer player, string perkName)
 	if(count <= 1)
 		CreateObtainedPerkList(player);
 	else
-		SetText(strDash $ perkName);
+		SetText(strDash $ Caps(perkName));
 }
 
 function CreateObtainedPerkList(DeusExPlayer player)
@@ -215,7 +215,7 @@ function CreateObtainedPerkList(DeusExPlayer player)
 				bSetTitle = true;
 			}
 
-			SetText(strDash $ player.PerkManager.GetPerkAtIndex(index).PerkName);
+			SetText(strDash $ Caps(player.PerkManager.GetPerkAtIndex(index).PerkName));
 		}
     }
 
