@@ -207,6 +207,8 @@ beltDescription="IMAGE"
 
 [PersonaInventoryItemButton]
 CountLabel="Count: %d"
+CountLabel2="Count: %d/%d"
+QtyLabel="Qty: %d/%d"
 RoundLabel="%d Rd"
 RoundsLabel="%d Rds"
 RoundsLabel2="%d/%d Rds"

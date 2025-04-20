@@ -785,7 +785,7 @@ var globalconfig bool bReversedAltBeltColours;                      //SARGE: Mak
 var globalconfig bool bAlwaysShowReceivedItemsWindow;               //SARGE: Always show the retrieved items window when picking up ammo from a weapon.
 
 
-var globalconfig bool bShowTotalRoundsCount;                        //SARGE: Show the total number of rounds we can carry for disposable items in the inventory screen.
+var globalconfig int iShowTotalCounts;                        //SARGE: Show the total number of rounds we can carry for disposable items in the inventory screen. 1 = charged items and disposable weapons/grenades only, 2 = everything.
 
 var globalconfig bool bGMDXDebug;                                   //SARGE: Allows extra debug info/messages. Not for regular players!
 //////////END GMDX
@@ -18699,5 +18699,6 @@ defaultproperties
      bShowTotalRoundsCount=true
      bPistolStartTrained=true
      bStreamlinedRepairBotInterface=true
+     iShowTotalCounts=1
      iSmartKeyring=1
 }
