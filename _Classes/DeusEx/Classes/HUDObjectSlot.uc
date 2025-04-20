@@ -488,6 +488,7 @@ event bool MouseButtonPressed(float pointX, float pointY, EInputKey button,
             SetItem(None);
         }
         bResult = True;
+        winInv.UpdateBelt();
     }
 	
 	return bResult;
@@ -577,10 +578,6 @@ event texture CursorRequested(window win, float pointX, float pointY,
 
         return item.icon;
 	}
-	else if(!player.bBeltMemory) //Ygll: actually, calling this part of code with the bBeltMemory enable make a visual bug when hovering the belt placeholder
-	{
-        return player.GetPlaceholderIcon(objectNum);
-	}
 }
 
 // ----------------------------------------------------------------------
@@ -590,9 +587,12 @@ event texture CursorRequested(window win, float pointX, float pointY,
 function StartButtonDrag()
 {
 	bDragStart = False;
-	bDragging  = True;
 
-	winInv.StartButtonDrag(Self);
+    if (!item.IsA('NanoKeyRing'))
+    {
+        bDragging  = True;
+        winInv.StartButtonDrag(Self);
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -605,6 +605,8 @@ function FinishButtonDrag()
 
 	bDragStart = False;
 	bDragging  = False;
+    
+    winInv.UpdateBelt();
 }
 
 // ----------------------------------------------------------------------

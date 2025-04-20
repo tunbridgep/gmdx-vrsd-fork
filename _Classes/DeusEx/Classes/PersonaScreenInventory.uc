@@ -1208,7 +1208,19 @@ function DeferDestroy(Window newDestroyWindow)
 	destroyWindow = newDestroyWindow;
 
 	if (destroyWindow != None)
+    {
+        UpdateBelt();
 		bTickEnabled = True;
+    }
+}
+
+function UpdateBelt()
+{
+    if (invBelt != None && invBelt.hudBelt != None)
+    {
+        invBelt.hudBelt.RecreateBelt();
+        invBelt.objBelt.RecreateBelt();
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -1418,7 +1430,7 @@ function UpdateDragMouse(float newX, float newY)
 			bValidDrop = True;
 
 			if (HUDObjectSlot(findWin).item != None)
-				if (HUDObjectSlot(findWin).item.IsA('NanoKeyRing'))
+				if (HUDObjectSlot(findWin).item.IsA('NanoKeyRing') && player.iSmartKeyring == 0)
 					bValidDrop = False;
 
 			HUDObjectSlot(findWin).SetDropFill(bValidDrop);

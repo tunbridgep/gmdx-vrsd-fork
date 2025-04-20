@@ -80,7 +80,7 @@ function CopyObjectBeltInventory()
 	local int objectIndex;
 
 	// Now copy the items
-	for (objectIndex=0;objectIndex<10;objectIndex++)
+	for (objectIndex=0;objectIndex<12;objectIndex++)
     {
 		objBelt.AddObjectToBelt(hudBelt.GetObjectFromBelt(objectIndex), objectIndex, True);
     }
