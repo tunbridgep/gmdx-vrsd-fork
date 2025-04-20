@@ -475,7 +475,11 @@ function bool HandlePickupQuery( inventory Item )
  			    if (anItem.Charge > 0)
  			    {
                     ChargedPickup(anItem).bActivatable=true;                    //RSD: Since now you can hold one at 0%
-                    ChargedPickup(anItem).bDrained=false;                       //SARGE: Since now you can keep it equipped while empty
+					
+					//SARGE: Only automatically un-drain if we're picking up the first one.
+					//Feels strange otherwise...
+					if (NumCopies == 1)
+						ChargedPickup(anItem).bDrained=false;                       //SARGE: Since now you can keep it equipped while empty
                     ChargedPickup(anItem).unDimIcon();
                 }
             }
