@@ -8922,6 +8922,10 @@ exec function PutInHand(optional Inventory inv, optional bool bNoPrimary)
 		//if ((inv.IsA('ChargedPickup')) && (ChargedPickup(inv).IsActive()))
 		//	return;
 
+        //SARGE: Adding charged pickups as your last used weapon feels bad.
+		if (inv.IsA('ChargedPickup'))
+            bNoPrimary = true;
+
 	}
 
 	if (CarriedDecoration != None)

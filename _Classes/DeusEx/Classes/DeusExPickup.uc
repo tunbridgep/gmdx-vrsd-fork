@@ -450,6 +450,7 @@ function bool HandlePickupQuery( inventory Item )
                         UpdateBeltText();
                         player.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
                         DeusExPickup(item).NumCopies -= (NumCopies - startcopies);
+                        Item.PlaySound(Item.PickupSound);
                     }
                     else //SARGE: Now only display a message if we actually pickup none of the things.
                         player.ClientMessage(msgTooMany);
@@ -491,6 +492,8 @@ function bool HandlePickupQuery( inventory Item )
 		if (bResult)
 		{
             player.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
+            
+            Item.PlaySound(Item.PickupSound);
 
 			// Destroy me!
 			// DEUS_EX AMSD In multiplayer, we don't want to destroy the item, we want it to set to respawn
