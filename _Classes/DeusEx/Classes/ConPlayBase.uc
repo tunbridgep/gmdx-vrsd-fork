@@ -529,13 +529,27 @@ function EEventAction SetupEventCheckObject( ConEventCheckObject event, out Stri
 	else
 	{
 		bHasObject = (player.FindInventoryType(event.checkObject) != None);
-		  if (bHasObject && player.FindInventoryType(event.checkObject).IsA('DeusExWeapon')) //CyberP: ignore the wep if it is modded
-		   {
-           wep = DeusExWeapon(player.FindInventoryType(event.checkObject));
-           if (wep.bHasScope || wep.bHasLaser || wep.HasClipMod() || wep.HasDAMMod() || wep.HasROFMod() ||
-               wep.HasAccuracyMod() || wep.HasRangeMod() || wep.HasRecoilMod() || wep.HasReloadMod())
-		            bHasObject = False;
-		   }
+
+        if (bHasObject && player.FindInventoryType(event.checkObject).IsA('DeusExWeapon')) //CyberP: ignore the wep if it is modded
+        {
+            wep = DeusExWeapon(player.FindInventoryType(event.checkObject));
+            
+            //SARGE: This had a bug in vRSD where you couldn't tell Max Chen you had the DTS if you modded it before telling him about it.
+            //So we're going to ignore the DTS for now. I don't think any other convo checks for it, so it shouldn't be a big deal.
+            //EDIT: Same with the Sniper. Kaplan has a special line for it that players will never hear because they start with a modded one.
+            //Anyway, if anything breaks due to this, then you can point at me and laugh.
+            if (!wep.IsA('WeaponNanoSword') && !wep.IsA('WeaponRifle') && wep.bModified)
+            {
+                bHasObject = False;
+            }
+        }
+
+        if (bHasObject && player.FindInventoryType(event.checkObject).IsA('ChargedPickup')) //SARGE: Ignore the item if it's not charged.
+        {
+            P = ChargedPickup(player.FindInventoryType(event.checkObject));
+            if (P != None && P.GetCurrentCharge() == 0)
+                bHasObject = False;
+        }
 	}
 
 	// Now branch appropriately
