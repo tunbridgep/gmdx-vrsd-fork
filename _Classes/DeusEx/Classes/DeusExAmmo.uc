@@ -240,8 +240,12 @@ function bool HandlePickupQuery( inventory Item )                               
         }
         else if (item.IsA('DeusExAmmo'))
         {
-            //We have to play the sound manually here so that it only plays when we're grabbing a partial amount.
+            //SARGE: We have to play the sound manually here so that it only plays when we're grabbing a partial amount.
             player.PlayPartialAmmoSound(item,class<Ammo>(item.class));
+            
+            //SARGE: We have to do this here too, yucky!
+            if (player.bAlwaysShowReceivedItemsWindow)
+                player.AddReceivedItem(item, intj, true);
         }
         return true;
 	}

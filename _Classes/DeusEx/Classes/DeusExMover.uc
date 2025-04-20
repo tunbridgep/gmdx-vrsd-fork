@@ -82,6 +82,10 @@ function bool DoLeftFrob(DeusExPlayer frobber)
 {
     local Inventory item;
     
+    //No interaction if locked but not highlightable (used by some elevator doors)
+    if (bLocked && !bHighlight)
+        return false;
+    
     //Give us 3 seconds to use the right-click options after left-frobbing
     //This is so we don't accudentally change weapons in the middle of gameplay, by
     //right clicking on a mover
@@ -130,9 +134,16 @@ function bool DoLeftFrob(DeusExPlayer frobber)
 }
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {
-
     //Normal interaction if unlocked
     if (!bLocked && bFrobbable)
+        return true;
+    
+    //No interaction if locked but not highlightable (used by some elevator doors)
+    if (bLocked && !bHighlight)
+        return false;
+
+    //If it's open, normal interaction
+    if (KeyNum != 0)
         return true;
 
     //we're no longer in the "forced" weapon state, so clear the left-frob timer

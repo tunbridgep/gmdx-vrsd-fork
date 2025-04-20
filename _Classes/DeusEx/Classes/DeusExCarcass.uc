@@ -1124,7 +1124,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 						// the weapon).
 						else if ((W != None) || (W == None && (bDeclined||!player.FindInventorySlot(item, True))))
 						{
-                            bLootResult = LootWeaponAmmo(DeusExPlayer(P),DeusExWeapon(item),!bSearched);
+                            bLootResult = LootWeaponAmmo(DeusExPlayer(P),DeusExWeapon(item));
                             bFoundSomething = bFoundSomething || bLootResult;
                             bFoundInvalid = bFoundInvalid || PickupAmmoCount > 0;
                             bPickedSomethingUp = bPickedSomethingUp || bLootResult;
@@ -1220,7 +1220,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                     //SARGE: Inform the player when they missed out on some items due to full stack size
                                     if (DeusExPickup(item).numCopies > 0)
                                     {
-                                        player.ClientMessage(sprintf(player.InventoryFull,item.itemName));
+                                        player.ClientMessage(invItem.PickupMessage @ invItem.itemArticle @ invItem.itemName @ msgTooMany, 'Pickup');
                                     }
 								}
 								else if (invItem.IsA('ChargedPickup') && invItem.Charge < invItem.default.Charge) //RSD: Charge up the player's wearable if they have max copies but are below max charge
@@ -1244,7 +1244,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                 //SARGE: Inform us if our inventory is too full (max stack) to pick these items up.
 								else if (DeusExPickup(item).numCopies + invItem.numCopies >= invItem.RetMaxCopies())  //GMDX
                                 {
-                                    player.ClientMessage(sprintf(player.InventoryFull,item.itemName));
+                                    player.ClientMessage(invItem.PickupMessage @ invItem.itemArticle @ invItem.itemName @ msgTooMany, 'Pickup');
                                     bFoundSomething = True;
 
                                 }
@@ -1293,7 +1293,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                 if (!bDeclined)
                                 {
                                     bFoundSomething = True;
-                                    if (DeusExPlayer(P).HandleItemPickup(Item,false,true,true) != False)
+                                    if (DeusExPlayer(P).HandleItemPickup(Item,false,true,true,!bSearched) != False)
                                     {
                                         DeleteInventory(item);
 
@@ -1301,8 +1301,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                         item.bInObjectBelt=False;
                                         item.BeltPos=-1;
 
-
-                                        PlaySound(Item.PickupSound);
+                                        //PlaySound(Item.PickupSound);
                                             
                                         bPickedSomethingUp = True;
                                         
@@ -1432,7 +1431,7 @@ function AddSearchedString(DeusExPlayer player)
 
 function AddReceivedItem(DeusExPlayer player, Inventory item, int count, optional bool bNoGroup)
 {
-    player.AddReceivedItem(item,count,true,bNoGroup);
+    player.AddReceivedItem(item,count,bNoGroup);
 }
 
 //-----------------------------------------------------------------------
@@ -1736,6 +1735,7 @@ defaultproperties
      SearchedString="[Searched]"
      IgnoredString="[Not Picked Up]"
      DeclinedString="[Declined]"
+     msgTooMany="[Stack Full]"
      RemoteRole=ROLE_SimulatedProxy
      LifeSpan=0.000000
      CollisionRadius=30.000000

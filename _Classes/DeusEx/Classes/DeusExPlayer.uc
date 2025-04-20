@@ -7889,7 +7889,7 @@ function DoLeftFrob(Actor frobTarget)
         }
         */
         bLeftClicked = true;
-        HandleItemPickup(FrobTarget);
+        HandleItemPickup(FrobTarget,false,false,false,true);
     }
 }
 
@@ -7928,7 +7928,7 @@ function DoRightFrob(Actor frobTarget)
     }
     */
     if (bDefaultFrob && frobTarget.IsA('Inventory'))
-        HandleItemPickup(FrobTarget);
+        HandleItemPickup(FrobTarget,false,false,false,true);
     else if (bDefaultFrob)
         DoFrob(Self, None);
 }
@@ -8428,7 +8428,7 @@ function PlayPickupAnim(Vector locPickup)
 //
 // Returns the number of rounds they were able to pick up.
 // ----------------------------------------------------------------------
-function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool bWindowAlways, optional bool bLootSound, optional bool bNoGroup, optional bool bNoOnes, optional bool bShowOverflowMsg)
+function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool bShowWindow, optional bool bLootSound, optional bool bNoGroup, optional bool bNoOnes, optional bool bShowOverflowMsg)
 {
     local int MaxAmmo, prevAmmo, ammoCount, intj, over, ret;
     local DeusExAmmo AmmoType;
@@ -8496,9 +8496,9 @@ function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool
                 ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName, 'Pickup');
         }
             
-        if (bAlwaysShowReceivedItemsWindow || bWindowAlways)
+        if (bShowWindow)
         {
-            AddReceivedItem(AmmoType, intj, intj < max || bWindowAlways, bNoGroup);
+            AddReceivedItem(AmmoType, intj, bNoGroup);
         }
 
         //If we only took a partial amount, make a special sound.
@@ -8532,7 +8532,7 @@ function PlayPartialAmmoSound(Actor source, class<Ammo> ammoName)
 // HandleItemPickup()
 // ----------------------------------------------------------------------
 
-function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, optional bool bSkipDeclineCheck, optional bool bFromCorpse)
+function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, optional bool bSkipDeclineCheck, optional bool bFromCorpse, optional bool bShowOverflow)
 {
 	local bool bCanPickup;
 	local bool bSlotSearchNeeded;
@@ -8639,9 +8639,11 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
             
             if (frobTarget != None && frobTarget.IsA('DeusExWeapon'))
             {
-                if (frobTarget.Owner != None || DeusExWeapon(frobTarget).bDisposableWeapon || !DeusExWeapon(frobTarget).LootAmmo(self,true,false,true))
+                if (DeusExWeapon(frobTarget).bDisposableWeapon || !DeusExWeapon(frobTarget).LootAmmo(self,true,bAlwaysShowReceivedItemsWindow,true,false,bShowOverflow))
                     ClientMessage(Sprintf(InventoryFull, Inventory(FrobTarget).itemName));
             }
+            else if (frobTarget != None)
+                ClientMessage(Sprintf(InventoryFull, Inventory(FrobTarget).itemName));
 		}
 	}
 	
@@ -8657,13 +8659,17 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
             FindInventorySlot(Inventory(FrobTarget), false);
     }
 
+    if (bCanPickup)
+    {
+        //SARGE: Report on the ammo inside the weapon
+        if (frobTarget != None && frobTarget.IsA('DeusExWeapon') && (bFromCorpse || !DeusExWeapon(frobTarget).bDisposableWeapon))
+            DeusExWeapon(frobTarget).LootAmmo(self,true,bAlwaysShowReceivedItemsWindow || bFromCorpse,false,bShowOverflow);
+    }
+
 	if (bCanPickup && !bDeclined)
 	{
         //if (FrobTarget.IsA('WeaponLAW'))
 		//	PlaySound(sound'WeaponPickup', SLOT_Interact, 0.5+FRand()*0.25, , 256, 0.95+FRand()*0.1);
-        //SARGE: Report on the ammo inside the weapon
-        if (frobTarget != None && frobTarget.IsA('DeusExWeapon') && (bFromCorpse || !DeusExWeapon(frobTarget).bDisposableWeapon))
-            DeusExWeapon(frobTarget).LootAmmo(self,!bSlotSearchNeeded,bFromCorpse,false,true);
 
         DoFrob(Self, inHand);
         /*if ( FrobTarget.IsA('DeusExWeapon') && bLeftClicked) //CyberP: for left click interaction //RSD: This is actually in FindInventorySlot() already, and the conflict made the player equip nothing
@@ -8701,15 +8707,12 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 	return bCanPickup && !bDeclined;
 }
 
-function AddReceivedItem(Inventory item, int count, optional bool bAlwaysShow, optional bool bNoGroup)
+function AddReceivedItem(Inventory item, int count, optional bool bNoGroup)
 {
     local int i;
 
     //clientMessage("item: " $ item $ ", count: " $ count);
     if (item == None || count == 0)
-        return;
-
-    if (!bAlwaysShowReceivedItemsWindow && !bAlwaysShow)
         return;
 
     if (rootWindow != None && DeusExRootWindow(rootWindow).hud != None)
