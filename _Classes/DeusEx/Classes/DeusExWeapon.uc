@@ -346,7 +346,11 @@ var vector axesY;
 var vector axesZ;
 var bool bFancyScopeAnimation;
 
+//SARGE: String when weapon mods are copies from another weapon
+var localized String msgModsCopied;
+
 //SARGE: Sounds for various things
+var const Sound CopyModsSound;
 
 //END GMDX:
 
@@ -1177,6 +1181,65 @@ function TakeDamage(int Damage, Pawn EventInstigator, vector HitLocation, vector
 	}
 }
 
+//SARGE: Moved this to a new function so that it can be used
+//even at full ammo.
+function CopyModsFrom(DeusExWeapon W, optional bool bNotify)
+{
+    if (W.ModBaseAccuracy > ModBaseAccuracy)
+        ModBaseAccuracy = W.ModBaseAccuracy;
+    if (W.ModReloadCount > ModReloadCount)
+        ModReloadCount = W.ModReloadCount;
+    if (W.ModAccurateRange > ModAccurateRange)
+        ModAccurateRange = W.ModAccurateRange;
+
+    // these are negative
+    if (W.ModReloadTime < ModReloadTime)
+        ModReloadTime = W.ModReloadTime;
+    if (W.ModRecoilStrength < ModRecoilStrength)
+        ModRecoilStrength = W.ModRecoilStrength;
+
+    if (W.bHasLaser)
+        bHasLaser = True;
+    if (W.bHasSilencer)
+        bHasSilencer = True;
+    if (W.bHasScope)
+        bHasScope = True;
+    if (W.bFullAuto)     //CyberP:
+        bFullAuto = True;
+
+    // copy the actual stats as well
+    if (W.ReloadCount > ReloadCount)
+        ReloadCount = W.ReloadCount;
+    if (W.AccurateRange > AccurateRange)
+        AccurateRange = W.AccurateRange;
+
+    // these are negative
+    if (W.BaseAccuracy < BaseAccuracy)
+        BaseAccuracy = W.BaseAccuracy;
+    if (W.ReloadTime < ReloadTime)
+        ReloadTime = W.ReloadTime;
+    if (W.RecoilStrength < RecoilStrength)
+        RecoilStrength = W.RecoilStrength;
+
+    //ROF mod
+        if(W.ModShotTime < ModShotTime)
+            ModShotTime = W.ModShotTime;
+    //DAM mod
+        if(W.ModDamage > ModDamage)
+            ModDamage = W.ModDamage;
+    
+    if (W.bModified && !bModified && bNotify)
+    {
+        if (Owner != None && Owner.IsA('DeusExPlayer'))
+            DeusExPlayer(Owner).ClientMessage(sprintf(msgModsCopied,W.ItemName));
+        PlaySound(CopyModsSound,SLOT_None,0.8);
+    }
+
+    if (W.bModified)
+        bModified = true;
+
+}
+
 function bool HandlePickupQuery(Inventory Item)
 {
 	local DeusExWeapon W;
@@ -1191,51 +1254,7 @@ function bool HandlePickupQuery(Inventory Item)
 	W = DeusExWeapon(Item);
 	if ((W != None) && (W.Class == Class))
 	{
-		if (W.ModBaseAccuracy > ModBaseAccuracy)
-			ModBaseAccuracy = W.ModBaseAccuracy;
-		if (W.ModReloadCount > ModReloadCount)
-			ModReloadCount = W.ModReloadCount;
-		if (W.ModAccurateRange > ModAccurateRange)
-			ModAccurateRange = W.ModAccurateRange;
-
-		// these are negative
-		if (W.ModReloadTime < ModReloadTime)
-			ModReloadTime = W.ModReloadTime;
-		if (W.ModRecoilStrength < ModRecoilStrength)
-			ModRecoilStrength = W.ModRecoilStrength;
-
-		if (W.bHasLaser)
-			bHasLaser = True;
-		if (W.bHasSilencer)
-			bHasSilencer = True;
-		if (W.bHasScope)
-			bHasScope = True;
-		if (W.bFullAuto)     //CyberP:
-            bFullAuto = True;
-
-		// copy the actual stats as well
-		if (W.ReloadCount > ReloadCount)
-			ReloadCount = W.ReloadCount;
-		if (W.AccurateRange > AccurateRange)
-			AccurateRange = W.AccurateRange;
-
-		// these are negative
-		if (W.BaseAccuracy < BaseAccuracy)
-			BaseAccuracy = W.BaseAccuracy;
-		if (W.ReloadTime < ReloadTime)
-			ReloadTime = W.ReloadTime;
-		if (W.RecoilStrength < RecoilStrength)
-			RecoilStrength = W.RecoilStrength;
-
-		//ROF mod
-			if(W.ModShotTime < ModShotTime)
-				ModShotTime = W.ModShotTime;
-	   //DAM mod
-            if(W.ModDamage > ModDamage)
-				ModDamage = W.ModDamage;
-       
-       if (W.bModified)
-         bModified = true;
+        CopyModsFrom(W,true);
 	}
     
 	player = DeusExPlayer(Owner);
@@ -7303,4 +7322,7 @@ defaultproperties
      Mass=10.000000
      Buoyancy=5.000000
      muzzleSlot=2
+     //CopyModsSound=sound'weaponmodinstall'
+     CopyModsSound=sound'M4ClipOut'
+     msgModsCopied="Weapon Modifications applied from %d"
 }
