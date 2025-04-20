@@ -138,8 +138,10 @@ function CreatePerkOverview(Skill skill, Perk Perk, int index)	//Trash: Creates 
 	winSkillIconP[index].SetPos(191, 2);
 	winSkillIconP[index].SetSize(24, 24);
 	winSkillIconP[index].SetBackgroundStyle(DSTY_Normal);
-	winSkillIconP[index].SetBackground(PassedSkillIcon); // CHECK THIS LATER, TRASH!
-	AddLine();
+	winSkillIconP[index].SetBackground(PassedSkillIcon);
+	if(player.iAltFrobDisplay == 2) //Ygll: French LOVE their line :D
+		AddLine();
+		
 	if (Perk.PerkValueDisplay == Delta_Percentage)
 		SetText(sprintf(Perk.PerkDescription,int(Perk.PerkValue * 100 - 100)));
 	else if (Perk.PerkValueDisplay == Percentage)
