@@ -71,7 +71,6 @@ function Trigger(Actor Other, Pawn Instigator)
 
 	AmbientSound = Default.AmbientSound;
     bDisabled = false;
-	bHackable = true;
 	bDisabledByComputer = false;
 	Super.Trigger(Other, Instigator);
 }
@@ -86,7 +85,6 @@ function UnTrigger(Actor Other, Pawn Instigator)
 	
 	AmbientSound = None;
     bDisabled = true;	
-	bHackable = false;
 	bDisabledByComputer = true;
 	Super.UnTrigger(Other, Instigator);
 }
