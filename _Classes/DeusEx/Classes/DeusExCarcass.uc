@@ -66,6 +66,9 @@ var localized string IgnoredString;                                            /
 var localized string DeclinedString;                                           //SARGE: Appended to searches when we find an item we've declined
 var localized string msgEmptyS;
 
+var localized string msgTooMany;                                           //SARGE: Appended to searches when we find an item we're full of
+
+
 //SARGE: HDTP Model toggles
 var class<ScriptedPawn> hdtpReference;
 var string HDTPSkin;
@@ -158,12 +161,23 @@ function InitFor(Actor Other)
     info = player.GetLevelInfo();                                               //RSD
 	if (Other != None)
 	{
+        if (player != None)
+            savedName = player.GetDisplayName(Other);
+         else if (Other.IsA('ScriptedPawn'))
+            savedName = ScriptedPawn(Other).UnfamiliarName;
+
+        /*
 		// set as unconscious or add the pawns name to the description
         if (!bAnimalCarcass)
         {
 		    bEmitCarcass = true; //CyberP: AI is aware of carcasses whether dead or unconscious!
 			if (Other.IsA('ScriptedPawn'))                                      //RSD
-                savedName = ScriptedPawn(Other).FamiliarName;
+            {
+                if (ScriptedPawn(Other).FamiliarName == "" && (Other.LastConEndTime > 0)
+                    savedName = ScriptedPawn(Other).UnfamiliarName;
+                else
+                    savedName = ScriptedPawn(Other).FamiliarName;
+            }
 		}
         else
         {
@@ -176,6 +190,7 @@ function InitFor(Actor Other)
                 //savedName = ScriptedPawn(Other).BindName;
             }
         }
+        */
 
         //SARGE: Set us to the exact size of our corresponding actor.
         SetCollisionSize(Other.CollisionRadius, default.CollisionHeight);
