@@ -32,7 +32,7 @@ event InitWindow()
 	// Get a pointer to the root window
 	root = DeusExRootWindow(GetRootWindow());
 
-	SetSize(640, 64);
+	SetSize(645, 64);
 
 	CreateButtonWindows();
 	CreateButtons();
@@ -76,8 +76,8 @@ function CreateButtonWindows()
 	// Create the Inventory Items window
 	winNavButtons = PersonaButtonBarWindow(NewChild(Class'PersonaButtonBarWindow'));
 
-	winNavButtons.SetPos(23, 8);
-	winNavButtons.SetSize(539, 16);
+	winNavButtons.SetPos(21, 8);
+	winNavButtons.SetSize(540, 16);
 	winNavButtons.Lower();
 
 	// Create the Inventory Items window

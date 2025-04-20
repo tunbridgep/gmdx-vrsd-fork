@@ -159,5 +159,5 @@ event StyleChanged()
 defaultproperties
 {
      defaultBarHeight=16
-     bFillAllSpace=True
+     bFillAllSpace=true
 }

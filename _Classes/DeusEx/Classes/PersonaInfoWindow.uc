@@ -57,7 +57,9 @@ var localized String DeclinedTitleLabel;
 var localized String DeclinedDesc;
 var localized String DeclinedDesc2;
 
+//Ygll new var
 var string strDash;
+var PersonaButtonBarWindow winActionButtonRemove;
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -91,8 +93,8 @@ function CreateControls()
 	winTile = TileWindow(winScroll.ClipWindow.NewChild(Class'TileWindow'));
 	winTile.SetOrder(ORDER_Down);
 	winTile.SetChildAlignments(HALIGN_Full, VALIGN_Top);
-	winTile.MakeWidthsEqual(True);
-	winTile.MakeHeightsEqual(False);
+	winTile.MakeWidthsEqual(true);
+	winTile.MakeHeightsEqual(false);
 	winTile.SetMargins(4, 1);
 	winTile.SetMinorSpacing(0);
 	winTile.SetWindowAlignments(HALIGN_Full, VALIGN_Top);
@@ -290,9 +292,9 @@ function bool ButtonActivated( Window buttonPressed )
     local class<inventory> declineThis;
 
 	if (Super.ButtonActivated(buttonPressed))
-		return True;
+		return true;
 
-	bHandled   = True;
+	bHandled = true;
 	player = DeusExPlayer(GetPlayerPawn());
 
     topWin = DeusExRootWindow(GetRootWindow()).GetTopWindow();
@@ -344,7 +346,7 @@ function bool ButtonActivated( Window buttonPressed )
 			}
 			break;		
 		default:
-			bHandled = False;
+			bHandled = false;
 			break;
 	}
 
@@ -522,14 +524,14 @@ function AddSecondaryButton(Inventory wep)                                      
 {
    if (wep != None)
    {
-    SetText(msgAssign);
-    winActionButtonsSecondary = PersonaButtonBarWindow(winTile.NewChild(Class'PersonaButtonBarWindow'));
-	winActionButtonsSecondary.SetWidth(32); //149
-	winActionButtonsSecondary.FillAllSpace(False);
-	buttonUpgradeSecond = PersonaActionButtonWindow(winActionButtonsSecondary.NewChild(Class'PersonaActionButtonWindow'));
-	assignThis = wep;
-    UpdateSecondaryButton(wep.Class);
-   AddLine();
+		SetText(msgAssign);
+		winActionButtonsSecondary = PersonaButtonBarWindow(winTile.NewChild(Class'PersonaButtonBarWindow'));
+		winActionButtonsSecondary.SetWidth(32); //149
+		winActionButtonsSecondary.FillAllSpace(false);
+		buttonUpgradeSecond = PersonaActionButtonWindow(winActionButtonsSecondary.NewChild(Class'PersonaActionButtonWindow'));
+		assignThis = wep;
+		UpdateSecondaryButton(wep.Class);
+		AddLine();
    }
 }
 
@@ -557,10 +559,10 @@ function AddDeclineButton(class<Inventory> wep)
 {
     if (wep != None)
     {
-        //SetText(DeclinedDesc);
+        AddLine();
         winActionButtonsSecondary = PersonaButtonBarWindow(winTile.NewChild(Class'PersonaButtonBarWindow'));
         winActionButtonsSecondary.SetWidth(32); //149
-        winActionButtonsSecondary.FillAllSpace(False);
+        winActionButtonsSecondary.FillAllSpace(false);
         buttonDecline = PersonaActionButtonWindow(winActionButtonsSecondary.NewChild(Class'PersonaActionButtonWindow'));
         UpdateDeclineButton(wep);
         AddLine();
@@ -587,45 +589,51 @@ function AddDeclinedInfoWindow()
     if (num == 0)
         return;
 
-    SetTitle(DeclinedTitleLabel);
-    if (player.bSmartDecline)
-        SetText(DeclinedDesc2);
-    else
-        SetText(DeclinedDesc);
-    AddLine();
+	SetTitle(DeclinedTitleLabel);
+	AddLine();
+	if (player.bSmartDecline)
+		SetText(DeclinedDesc2);
+	else
+		SetText(DeclinedDesc);
+
+	SetText("");
+	AddLine();
     
     for(i = 0; i < ArrayCount(player.declinedItemsManager.declinedTypes);i++)
     {
         invClass = class<Inventory>(DynamicLoadObject(player.declinedItemsManager.declinedTypes[i], class'Class', true));
         if (invClass != None)
         {
-            winAmmo = AlignWindow(winTile.NewChild(Class'AlignWindow'));
-            winAmmo.SetChildVAlignment(VALIGN_Top);
-            winAmmo.SetChildSpacing(4);
+			winAmmo = AlignWindow(winTile.NewChild(Class'AlignWindow'));
+			winAmmo.SetChildVAlignment(VALIGN_Top);
+			winAmmo.SetChildSpacing(4);
 
-            // Add icon
-            winIcon = winAmmo.NewChild(Class'Window');
-            winIcon.SetBackground(invClass.default.Icon);
-            winIcon.SetBackgroundStyle(DSTY_Masked);
+			// Add icon
+			winIcon = winAmmo.NewChild(Class'Window');
+			winIcon.SetBackground(invClass.default.Icon);
+			winIcon.SetBackgroundStyle(DSTY_Masked);
 
-            //SARGE: Holy dirty hack batman!
-            if (invClass == class'SoftwareNuke' || invClass == class'SoftwareStop')
-                winIcon.SetBackgroundStretching(true);
+			//SARGE: Holy dirty hack batman!
+			if (invClass == class'SoftwareNuke' || invClass == class'SoftwareStop')
+				winIcon.SetBackgroundStretching(true);
 
-            winIcon.SetSize(42, 37);
-            // Add Item Name
-            winText = PersonaNormalTextWindow(winAmmo.NewChild(Class'PersonaNormalTextWindow'));
-            winText.SetWordWrap(False);
-            winText.SetTextMargins(0, 0);
-            winText.SetTextAlignments(HALIGN_Left, VALIGN_Top);
-            winText.SetText(invClass.default.itemName);
+			winIcon.SetSize(42, 37);
+			// Add Item Name
+			winText = PersonaNormalTextWindow(winAmmo.NewChild(Class'PersonaNormalTextWindow'));
+			winText.SetWordWrap(False);
+			winText.SetTextMargins(0, 0);
+			winText.SetTextAlignments(HALIGN_Left, VALIGN_Top);
+			winText.SetText(invClass.default.itemName);
 
-            //Add "Remove From List" Button
-            buttonRemoveDecline[i] = PersonaActionButtonWindow(winTile.NewChild(Class'PersonaActionButtonWindow'));
-            buttonRemoveDecline[i].SetButtonText(msgRemoveDecline);
-            buttonRemoveDecline[i].tags[0] = string(invClass);
+			//Add "Remove From List" Button
+			winActionButtonRemove = PersonaButtonBarWindow(winTile.NewChild(Class'PersonaButtonBarWindow'));
+			winActionButtonRemove.SetWidth(32); //149
+			winActionButtonRemove.FillAllSpace(false);
+			buttonRemoveDecline[i] = PersonaActionButtonWindow(winActionButtonRemove.NewChild(Class'PersonaActionButtonWindow'));
+			buttonRemoveDecline[i].SetButtonText(msgRemoveDecline);
+			buttonRemoveDecline[i].tags[0] = string(invClass);
 
-            AddLine();
+			AddLine();
         }
     }
 }

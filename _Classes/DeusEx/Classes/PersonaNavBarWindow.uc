@@ -151,5 +151,5 @@ defaultproperties
      LogsButtonLabel="|&Logs"
      OutfitsButtonLabel="|&Outfits"
      ConsButtonLabelShort="|&Conv."
-	 ImgButtonLabelShort="|&Img."
+     ImgButtonLabelShort="|&Img."
 }

@@ -27,7 +27,6 @@ event StyleChanged()
 	colText[3]    = theme.GetColorFromName('HUDColor_ButtonTextFocus');
 }
 
-
 defaultproperties
 {
      Left_Textures(0)=(Tex=Texture'DeusExUI.UserInterface.PersonaActionButtonNormal_Left',Width=4)
@@ -38,6 +37,6 @@ defaultproperties
      Center_Textures(1)=(Tex=Texture'DeusExUI.UserInterface.PersonaActionButtonPressed_Center',Width=2)
      buttonHeight=16
      minimumButtonWidth=20
-	 bBaseWidthOnText=True
-     bCenterText=True
+     bBaseWidthOnText=true
+     bCenterText=true
 }
