@@ -8428,9 +8428,9 @@ function PlayPickupAnim(Vector locPickup)
 //
 // Returns the number of rounds they were able to pick up.
 // ----------------------------------------------------------------------
-function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool bWindowAlways, optional bool bLootSound, optional bool bNoGroup,optional bool bNoOnes)
+function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool bWindowAlways, optional bool bLootSound, optional bool bNoGroup, optional bool bNoOnes, optional bool bShowOverflowMsg)
 {
-    local int MaxAmmo, prevAmmo, ammoCount, intj;
+    local int MaxAmmo, prevAmmo, ammoCount, intj, over, ret;
     local DeusExAmmo AmmoType;
     
     /*
@@ -8448,7 +8448,17 @@ function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool
     if (AmmoType == None)
     {
         //If we don't have it, spawn it
+        //Spawn will fail if there's not enough room to spawn the relevant ammo...
         AmmoType = DeusExAmmo(Spawn(LootAmmoClass));	// Create ammo type required
+        
+        //...So we do a filthy hack by making the ammo type no longer collide with the world temporarily
+        if (AmmoType == None && LootAmmoClass.default.bCollideWorld == true)
+        {
+            LootAmmoClass.default.bCollideWorld = false;
+            AmmoType = DeusExAmmo(Spawn(LootAmmoClass));	// Create ammo type required...again!
+            LootAmmoClass.default.bCollideWorld = true;
+        }
+        
         if (AmmoType == None)
             return 0;
 
@@ -8462,7 +8472,8 @@ function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool
     prevAmmo = AmmoType.AmmoAmount;
     AmmoCount = MIN(AmmoType.AmmoAmount + max,maxAmmo);
 
-    intj = AmmoCount - prevAmmo;
+    intj = AmmoCount - prevAmmo; //the amount taken
+    over = max - intj; //the amount of "overflow" above our max ammo.
 
     //ClientMessage("intj is" @ intj); 
 
@@ -8491,24 +8502,37 @@ function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool
         }
 
         //If we only took a partial amount, make a special sound.
-        if (intj < max && bLootSound)
-            AmmoType.PlayPartialAmmoSound();
+        if (bLootSound)
+            PlayPartialAmmoSound(AmmoType,AmmoType.Class);
 
-        return intj;
+        ret = intj;
     }
-    else
+
+    if (over > 0 && bDisplayMsg && bShowOverflowMsg)
     {
-        if (bDisplayMsg)
-            ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName $ " (" $ intj $ ")" @ AmmoType.MaxAmmoString, 'Pickup');
+        ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName $ " (" $ over $ ")" @ AmmoType.MaxAmmoString, 'Pickup');
     }
-    return 0;
+    return ret;
+}
+
+//SARGE: Same as PlayRetrieveAmmoSound in DeusExWeapon.uc
+function PlayPartialAmmoSound(Actor source, class<Ammo> ammoName)
+{
+    local class<DeusExAmmo> dxAmmoClass;
+
+    dxAmmoClass = class<DeusExAmmo>(ammoName);
+
+    if (dxAmmoClass == None)
+        return;
+
+    source.PlaySound(dxAmmoClass.default.PartialAmmoSound, SLOT_None, 1.5+FRand()*0.25, , 256, 0.95+FRand()*0.1);
 }
 
 // ----------------------------------------------------------------------
 // HandleItemPickup()
 // ----------------------------------------------------------------------
 
-function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, optional bool bSkipDeclineCheck)
+function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, optional bool bSkipDeclineCheck, optional bool bFromCorpse)
 {
 	local bool bCanPickup;
 	local bool bSlotSearchNeeded;
@@ -8615,10 +8639,9 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
             
             if (frobTarget != None && frobTarget.IsA('DeusExWeapon'))
             {
-                if (!DeusExWeapon(frobTarget).LootAmmo(self,false,true))
+                if (frobTarget.Owner != None || DeusExWeapon(frobTarget).bDisposableWeapon || !DeusExWeapon(frobTarget).LootAmmo(self,true,false,true))
                     ClientMessage(Sprintf(InventoryFull, Inventory(FrobTarget).itemName));
             }
-
 		}
 	}
 	
@@ -8638,6 +8661,10 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 	{
         //if (FrobTarget.IsA('WeaponLAW'))
 		//	PlaySound(sound'WeaponPickup', SLOT_Interact, 0.5+FRand()*0.25, , 256, 0.95+FRand()*0.1);
+        //SARGE: Report on the ammo inside the weapon
+        if (frobTarget != None && frobTarget.IsA('DeusExWeapon') && (bFromCorpse || !DeusExWeapon(frobTarget).bDisposableWeapon))
+            DeusExWeapon(frobTarget).LootAmmo(self,!bSlotSearchNeeded,bFromCorpse,false,true);
+
         DoFrob(Self, inHand);
         /*if ( FrobTarget.IsA('DeusExWeapon') && bLeftClicked) //CyberP: for left click interaction //RSD: This is actually in FindInventorySlot() already, and the conflict made the player equip nothing
         {

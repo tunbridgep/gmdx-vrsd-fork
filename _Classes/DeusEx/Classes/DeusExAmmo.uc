@@ -218,12 +218,6 @@ function bool AddAmmo(int AmmoToAdd)                                            
 	return true;
 }
 
-//SARGE: Same as PlayRetrieveAmmoSound in DeusExWeapon.uc
-function PlayPartialAmmoSound()
-{
-    PlaySound(PartialAmmoSound, SLOT_None, 1.5+FRand()*0.25, , 256, 0.95+FRand()*0.1);
-}
-
 function bool HandlePickupQuery( inventory Item )                               //RSD: Function to override Ammo.uc in Engine classes for adjusted ammo counts
 {
 	local int tempMaxAmmo, intj;
@@ -235,47 +229,21 @@ function bool HandlePickupQuery( inventory Item )                               
     if ( (class == item.class) ||
 		(ClassIsChildOf(item.class, class'Ammo') && (class == Ammo(item).parentammo)) )
 	{
-        if (AmmoAmount>=tempMaxAmmo) return true;                               //RSD: Made >= in case of errors
-		else if (AmmoAmount + Ammo(item).AmmoAmount > tempMaxAmmo)              //RSD: New branch to leave spillover ammo in the world
-		{
-			intj = tempMaxAmmo - AmmoAmount;
-			AddAmmo(intj);
-			Ammo(item).AmmoAmount -= intj;
-			if (item.IsA('DeusExAmmo'))
-            	DeusExAmmo(item).bLooted = true;                                //RSD: so we don't add free ammo to containers we've partially looted
-            if (bShowInfo) //RSD: Don't display ammo message for grenades or the PS20 //SARGE: Changed to all ammo we can actually see in the inventory
-		    {
-			Pawn(Owner).ClientMessage( Item.PickupMessage @ Item.itemArticle @ Item.ItemName $ " (" $ intj $ ")", 'Pickup' );
-			}
-            if (item.IsA('DeusExAmmo'))
-                DeusExAmmo(item).PlayPartialAmmoSound();
-            else
-			    item.PlaySound( item.PickupSound );
-			if (Ammo(item).AmmoAmount <= 0)                                     //RSD: If the box is emptied, destroy it
-				item.SetRespawn();
-			return true;
-		}
-		else
-		{
-		if (Level.Game.LocalLog != None)
-			Level.Game.LocalLog.LogPickup(Item, Pawn(Owner));
-		if (Level.Game.WorldLog != None)
-			Level.Game.WorldLog.LogPickup(Item, Pawn(Owner));
-		if (bShowInfo)  //RSD: Don't display ammo message for grenades or the PS20 //SARGE: Show all ammo we can actually see in the inventory
-		{
-		if (Item.PickupMessageClass == None)
-			// DEUS_EX CNN - use the itemArticle and itemName
-//			Pawn(Owner).ClientMessage( Item.PickupMessage, 'Pickup' );
-			//Pawn(Owner).ClientMessage( Item.PickupMessage @ Item.itemArticle @ Item.ItemName, 'Pickup' );
-			Pawn(Owner).ClientMessage( Item.PickupMessage @ Item.itemArticle @ Item.ItemName $ " (" $ Ammo(item).AmmoAmount $ ")", 'Pickup' ); //RSD
-		else
-			Pawn(Owner).ReceiveLocalizedMessage( Item.PickupMessageClass, 0, None, None, item.Class );
-		}
-		item.PlaySound( item.PickupSound );
-		AddAmmo(Ammo(item).AmmoAmount);
-		item.SetRespawn();
-		return true;
-		}
+        intj = player.LootAmmo(class<DeusExAmmo>(item.class),Ammo(item).AmmoAmount,true,false,false,true,false);
+        
+        Ammo(item).AmmoAmount = MAX(Ammo(item).AmmoAmount - intj,0);
+
+        if (Ammo(item).AmmoAmount == 0)
+        {
+            item.PlaySound( item.PickupSound );
+            item.SetRespawn();
+        }
+        else if (item.IsA('DeusExAmmo'))
+        {
+            //We have to play the sound manually here so that it only plays when we're grabbing a partial amount.
+            player.PlayPartialAmmoSound(item,class<Ammo>(item.class));
+        }
+        return true;
 	}
 	if ( Inventory == None )
 		return false;

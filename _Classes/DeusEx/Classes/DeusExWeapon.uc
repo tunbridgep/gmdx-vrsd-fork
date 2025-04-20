@@ -379,7 +379,7 @@ replication
 // SARGE: Refactored this out of the Carcass Frob function so it was hopefully less horribly long,
 // and it was repeated everywhere, all over the codebase. For shame, GMDX!!!
 // ----------------------------------------------------------------------
-function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, optional bool bLootSound)
+function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, optional bool bLootSound, optional bool bNoRemoveClipAmmo, optional bool bOverflow)
 {
     local class<Ammo> defAmmoClass;
     local int intj;
@@ -399,12 +399,13 @@ function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, op
     if (defAmmoClass == class'AmmoNone' || self.PickupAmmoCount <= 0)
         return false;
 
-    intj = P.LootAmmo(defAmmoClass,PickupAmmoCount,bDisplayMsg,bDisplayWindow,bLootSound,!bDisposableWeapon,bDisposableWeapon);
+    intj = P.LootAmmo(defAmmoClass,PickupAmmoCount,bDisplayMsg,bDisplayWindow,bLootSound,!bDisposableWeapon,bDisposableWeapon,bOverflow);
 
     if (intj > 0)
     {
-        self.ClipCount -= intj;
-        PickupAmmoCount -= intj;
+        if (!bNoRemoveClipAmmo)
+            self.ClipCount = MAX(self.ClipCount - intj,0);
+        PickupAmmoCount = MAX(PickupAmmoCount - intj,0);
         //P.ClientMessage("intj is > 0: " $ intj $ ", with pickupammocount: " $ pickupammocount);
         return true;
     }
@@ -1254,12 +1255,15 @@ function bool HandlePickupQuery(Inventory Item)
 		{
         
             //Block picking it up if we don't have ammo to do so.
-            W.LootAmmo(player,true,false,true);
+            W.LootAmmo(player,true,false,false);
             if (W.PickupAmmoCount > 0)
             {
                 //SARGE: Hacky shurikan name fix
                 if (IsA('WeaponShuriken'))
                     WeaponShuriken(Self).SetFrobNameHack(false);
+
+                //We have to play the sound manually here so that it only plays when we're grabbing a partial amount.
+                player.PlayPartialAmmoSound(W,W.AmmoName);
 
                 return true;
             }

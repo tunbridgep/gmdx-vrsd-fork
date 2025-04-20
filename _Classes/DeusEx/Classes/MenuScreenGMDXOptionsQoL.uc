@@ -87,6 +87,7 @@ defaultproperties
      items(69)=(HelpText="Prevent accidentally killing vac-bots by stomping on them.",actionText="Player: Stomp Vac Bots",variable="bStompDomesticAnimals",defaultValue=0);
      items(70)=(HelpText="Always use the female hands with male JC. This setting does nothing if LDDP is not installed.",actionText="Player: Use Female Hands",variable="bFemaleHandsAlways",defaultValue=0)
      items(71)=(HelpText="If enabled, the New Game screen will automatically start with Pistols upgraded to Trained.",actionText="Player: Start with Pistols at Trained",variable="bPistolStartTrained",defaultValue=1)
+     items(72)=(HelpText="If enabled, the Items Received window will be shown when looting partial ammo counts from weapons or ammo pickups without picking them up.",actionText="HUD: Show Items Window When Looting Ammo",variable="bAlwaysShowReceivedItemsWindow",defaultValue=0)
      Title="GMDX Quality of Life Options"
      colWidths(0)=214
      colWidths(1)=155
