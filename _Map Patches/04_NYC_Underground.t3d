@@ -53007,4 +53007,17 @@ Begin Actor Class=OutfitSpawner3 Name=OutfitSpawner18
     bSelected=True
     Name=OutfitSpawner18
 End Actor
+Begin Actor Class=ControlPanel Name=ControlPanel3
+    hackStrength=0.000000
+    bDynamicLight=True
+    LastRenderTime=244.870941
+    DistanceFromPlayer=2809.308838
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=ControlPanel
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo1',iLeaf=877,ZoneNumber=6)
+    Location=(X=2633.714844,Y=-642.848633,Z=-786.348450)
+    Rotation=(Yaw=16408,Roll=1890)
+    OldLocation=(X=2107.714844,Y=-546.848633,Z=-786.348450)
+    Name=ControlPanel3
+End Actor
 End Map
