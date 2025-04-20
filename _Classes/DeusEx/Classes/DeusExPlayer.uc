@@ -13813,7 +13813,6 @@ function bool GetExceptedCode(string code)
         || code == "NICOLETTE" //Given in conversation
         || code == "CHAD" //Given in conversation
         || code == "JCDENTON"; //Uses Base: JCDenton instead of Username: JCDenton.
-        || code == "CHAD"; //Given in conversation
 }
 
 //"Security" is a commonly used word in many logs.
