@@ -121,7 +121,7 @@ replication
 function bool DoLeftFrob(DeusExPlayer frobber)
 {
     //Don't allow frobbing while swimming, and only allow objects grabbable via left click
-    if (bLeftGrab && frobber.swimTimer > 1)
+    if (bLeftGrab && !frobber.IsInState('PlayerSwimming'))
     {
         frobber.GrabDecoration();
         return false;
@@ -136,7 +136,7 @@ function bool DoLeftFrob(DeusExPlayer frobber)
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {
     //Don't allow frobbing while swimming, and only allow pushable objects
-    if (bPushable && frobber.swimTimer > 1)
+    if (bPushable && !frobber.IsInState('PlayerSwimming'))
     {
         frobber.GrabDecoration();
         return false;
