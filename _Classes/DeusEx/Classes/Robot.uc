@@ -178,6 +178,10 @@ function bool IgnoreDamageType(Name damageType)
 		return True;
 	//else if (damageType == 'KnockedOut')
 	//	return True;
+	
+    //SARGE: Bleeding
+    else if ((damageType == 'Bleed') || (damageType == 'BleedEffect'))
+		return True;
 	else
 		return False;
 }

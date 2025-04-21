@@ -225,8 +225,11 @@ function FirstFrame()
         RandomiseCrap();
 
         //Distribute PS20's and Flares
-        DistributeItem(class'WeaponHideAGun',0,2,class'AmmoHideAGun');
-        DistributeItem(class'Flare',1,3);
+        DistributeItem('ScriptedPawn',class'WeaponHideAGun',0,2,class'AmmoHideAGun');
+        DistributeItem('ScriptedPawn',class'Flare',1,3);
+
+        //SARGE: Give Shurikens to Elites
+        DistributeItem('MJ12Elite',class'WeaponShuriken',1,3);
 
 		flags.SetBool(flagName, True);
 
@@ -425,7 +428,7 @@ function SpawnPoint GetSpawnPoint(Name spawnTag, optional bool bRandom)
 }
 
 //Gives the specified item to 0-X random enemies in the map.
-function DistributeItem(class<Inventory> itemClass, int minAmount, int maxAmount, optional class<Ammo> ammoClass)
+function DistributeItem(name actorClass, class<Inventory> itemClass, int minAmount, int maxAmount, optional class<Ammo> ammoClass)
 {
     local int i, j, swapTo, items;
     local ScriptedPawn actors[50], temp, SP;
@@ -436,7 +439,7 @@ function DistributeItem(class<Inventory> itemClass, int minAmount, int maxAmount
 
     foreach AllActors(class'ScriptedPawn', SP)
     {
-        if (!SP.bImportant && SP.GetPawnAllianceType(Player) == ALLIANCE_Hostile && !SP.isA('Robot') && !SP.isA('Animal') && !SP.isA('HumanCivilian') && !SP.bDontRandomizeWeapons && actorCount < 50)
+        if (!SP.bImportant && SP.GetPawnAllianceType(Player) == ALLIANCE_Hostile && !SP.isA('Robot') && !SP.isA('Animal') && !SP.isA('HumanCivilian') && !SP.bDontRandomizeWeapons && actorCount < 50 && SP.IsA(actorClass))
             actors[actorCount++] = SP;
     }
     

@@ -670,7 +670,7 @@ function bool CheckHelmetCollision(int actualDamage, Vector hitLocation, name da
 		if (offset.z > headOffsetZ)		// head
 		{
 		    if (offset.z > HelmetPawn.CollisionHeight * 0.85 && !(abs(offset.y) < headOffsetY && offset.x > 0.0 && offset.z < CollisionHeight*0.93) //RSD: Was CollisionHeight*0.93, I'm making it *0.85, and NOT from the front
-            	&& (damageType == 'Shot' || damageType == 'Poison' || damageType == 'Stunned'))
+            	&& (damageType == 'Shot' || damageType == 'Poison' || damageType == 'Stunned') || damageType == 'Bleed')
             {
                     if (actualDamage >= 25)
                     {
@@ -1106,6 +1106,10 @@ local DeusExPlayer player;                                                      
 					if (!(damagee.IsA('ScriptedPawn') && pawnAlreadyHit != none && ScriptedPawn(damagee) == pawnAlreadyHit)) //RSD: Don't multihit enemies with the Controlled Burn perk
 					damagee.TakeDamage(Damage, Pawn(Owner), HitLocation, MomentumTransfer*Normal(Velocity), damageType);
 					//log("Damage =" $Damage);
+                    
+                    //SARGE: Add bleed damage to Shurikens
+                    if (IsA('Shuriken') && Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkHemmorhage').bPerkObtained && Damage > 0)
+                        damagee.TakeDamage(Damage*0.5, Pawn(Owner), HitLocation, MomentumTransfer*Normal(Velocity), 'Bleed');
 				}
 			}
 			if (!bStuck)

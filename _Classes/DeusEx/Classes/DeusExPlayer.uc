@@ -3034,10 +3034,10 @@ function bool SelectMeleePriority(int damageThreshold)	// Trash: Used to automat
 		return false;
 
 
-	if (sword != None && (bHardCoreMode || BreaksDamageThreshold(sword, damageThreshold)))
-		meleeWeapon = sword;
-	else if (crowbar != None && (bHardCoreMode || BreaksDamageThreshold(crowbar, damageThreshold)))
+	if (crowbar != None && (bHardCoreMode || BreaksDamageThreshold(crowbar, damageThreshold)))
 		meleeWeapon = crowbar;
+	else if (sword != None && (bHardCoreMode || BreaksDamageThreshold(sword, damageThreshold)))
+		meleeWeapon = sword;
 	else if (knife != None && (bHardCoreMode || BreaksDamageThreshold(knife, damageThreshold)))
 		meleeWeapon = knife;
 	else if (baton != None && (bHardCoreMode || BreaksDamageThreshold(baton, damageThreshold)))
