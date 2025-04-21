@@ -1081,6 +1081,10 @@ local DeusExPlayer player;                                                      
                         	//if (FRand() < 0.7)                                  //RSD: This part is relocated too
                				//	ScriptedPawn(damagee).impaleCount++;
                				ScriptedPawn(damagee).impaleCount = 1;              //RSD: max of one TK return, but it's 100% chance
+                    
+                             //SARGE: Add bleed damage to Shurikens
+                            if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkHemmorhage').bPerkObtained)
+                                damageType = 'Bleed';
                     	}
                         else
                         	ScriptedPawn(damagee).extraMult = 0;                //RSD: pretty sure this was missing from original implementation! Agh!
@@ -1106,10 +1110,6 @@ local DeusExPlayer player;                                                      
 					if (!(damagee.IsA('ScriptedPawn') && pawnAlreadyHit != none && ScriptedPawn(damagee) == pawnAlreadyHit)) //RSD: Don't multihit enemies with the Controlled Burn perk
 					damagee.TakeDamage(Damage, Pawn(Owner), HitLocation, MomentumTransfer*Normal(Velocity), damageType);
 					//log("Damage =" $Damage);
-                    
-                    //SARGE: Add bleed damage to Shurikens
-                    if (IsA('Shuriken') && Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkHemmorhage').bPerkObtained && Damage > 0)
-                        damagee.TakeDamage(Damage*0.5, Pawn(Owner), HitLocation, MomentumTransfer*Normal(Velocity), 'Bleed');
 				}
 			}
 			if (!bStuck)
