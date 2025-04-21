@@ -138,12 +138,14 @@ function Deactivate()
     //If we were shut off due to energy, go into standby instead
     if (player.Energy == 0 && !bDestroyNow)
     {
-        ToggleStandbyMode(true);
+        if (!Player.bSpyDroneSet)
+            ToggleStandbyMode(true);
         return;
     }
 
 	if (Player.bSpyDroneSet && player.Energy > 0)                                                    //RSD: Allows the user to toggle between moving and controlling the drone
 	{
+        player.clientmessage("2");
 		if (IsA('AugDrone') && (player.Physics == PHYS_Falling || player.physics == PHYS_Swimming))
         {
             player.ClientMessage(GroundedMessage2);
@@ -154,15 +156,16 @@ function Deactivate()
         return;
 	}
 
+    player.clientmessage("3");
     Super.Deactivate();
 
 	// record the time if we were just active
     if (Player.bSpyDroneActive)
         lastDroneTime = Level.TimeSeconds;
 
-    Player.bSpyDroneSet = False;
-    Player.ForceDroneOff(true);
     ToggleStandbyMode(true);
+    Player.bSpyDroneSet = False;
+    Player.bSpyDroneActive = False;
 }
 
 simulated function PreBeginPlay()
