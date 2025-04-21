@@ -3251,8 +3251,8 @@ function UpdateDynamicMusic(float deltaTime)
         return;
 
 
-	musicCheckTimer += deltaTime;
-	musicChangeTimer += deltaTime;
+	default.musicCheckTimer += deltaTime;
+	default.musicChangeTimer += deltaTime;
 
 	if (IsInState('Interpolating'))
 	{
@@ -3299,9 +3299,9 @@ function UpdateDynamicMusic(float deltaTime)
 	{
         //SARGE: Changed to only start combat music if at least 3 enemies are aggro'd
 		// only check for combat music every second //CyberP: 2 secs
-		if (musicCheckTimer >= 2.0)
+		if (default.musicCheckTimer >= 2.0)
 		{
-			musicCheckTimer = 0.0;
+			default.musicCheckTimer = 0.0;
 			aggro = 0;
 
             if (info != none && info.bBarOrClub && bEnhancedMusicSystem >= 2)
@@ -3323,7 +3323,7 @@ function UpdateDynamicMusic(float deltaTime)
             }
             if (aggro >= iAllowCombatMusic && iAllowCombatMusic > 0)
             {
-                musicChangeTimer = 0.0;
+                default.musicChangeTimer = 0.0;
 
                 if (musicMode != MUS_Combat)
                 {
@@ -3338,7 +3338,7 @@ function UpdateDynamicMusic(float deltaTime)
             else if (aggro == 0)
             {
                 // wait until we've been out of combat for 5 seconds before switching music
-                if (musicChangeTimer >= 5.0)
+                if (default.musicChangeTimer >= 5.0)
                 {
                     // use the default ambient section for this map
                     if (default.savedSection == 255)
@@ -3353,7 +3353,7 @@ function UpdateDynamicMusic(float deltaTime)
                     //if (bEnhancedMusicSystem == 0)
                     //    default.savedSection = 255;
                     musicMode = MUS_Ambient;
-                    musicChangeTimer = 0.0;
+                    default.musicChangeTimer = 0.0;
 
                     //SARGE: Final failsafe
                     default.savedSection = Level.SongSection;
