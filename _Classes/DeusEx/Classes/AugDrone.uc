@@ -109,6 +109,8 @@ function Timer()
     }
 }
 Begin:
+    if (player.bRadialAugMenuVisible)
+        player.ToggleRadialAugMenu(true,true);
     player.bSpyDroneActive = True;
     player.bSpyDroneSet = False;
     player.SAVErotation = player.ViewRotation;                                  //RSD: Set the SAVErotation the first time we activate
