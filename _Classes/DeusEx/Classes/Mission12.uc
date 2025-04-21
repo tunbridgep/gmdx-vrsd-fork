@@ -38,7 +38,9 @@ function FirstFrame()
 	{
 		flags.SetBool('RescueBegan', True,, 14);
 		
-        flags.SetBool('NPC_Stealth_Enabled', True,, 14); //SARGE: Allow Tiffany to take Thermoptic Camo
+        //SARGE: Enable Cut Content interactions
+        if (player.bCutInteractions && firstTime)
+            flags.SetBool('NPC_Stealth_Enabled', True);
 
 		if (flags.GetBool('SandraWentToCalifornia'))
 		{

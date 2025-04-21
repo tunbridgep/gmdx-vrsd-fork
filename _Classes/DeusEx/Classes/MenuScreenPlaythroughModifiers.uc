@@ -52,13 +52,14 @@ defaultproperties
      items(6)=(HelpText="Replaces drug effects with temporary buffs on use and debuffs on withdrawal. Addiction accumulates with use and depreciates through play.",actionText="Addiction System",variable="bAddictionSystem");
      items(7)=(HelpText="Prevents manually saving and adds single-use save points to the level. Autosaves still occur as normal. Always enabled in Hardcore mode.",actionText="Restricted Saving",variable="bRestrictedSaving");
      items(8)=(HelpText="Prevents using keypads and logins unless you have them in your notes. No Plot Skips setting also prevents certain sequence breaks.",actionText="Undiscovered Codes",variable="iNoKeypadCheese",valueText2="Enabled + No Plot Skips",valueText3="Enabled + NPS + Keypad Length Unknown");
-     items(9)=(HelpText="Start the game in the MJ12 Prison facility. Not recommended for new players! Also skips the intro cutscene.",actionText="Alternate Start",variable="bPrisonStart");
-     items(10)=(HelpText="Disable the use of the console.",actionText="Disable Console Access",variable="bDisableConsoleAccess");
-     items(11)=(HelpText="Most weapons will require a minimum skill investment in order to be used.",actionText="Weapon Requirements Matter",variable="bWeaponRequirementsMatter");
-     items(12)=(HelpText="When imprisoned by UNATCO, your killswitch will be activated, exactly how it's described by Paul",actionText="Killswitch Engaged",variable="bRealKillswitch");
-	 items(13)=(HelpText="Enable cameras to detect unconscious bodies. Realism option - Not recommended for normal play.",actionText="Cameras Detect Unconscious",variable="bCameraDetectUnconscious");
-     items(14)=(HelpText="Enable additional NPC's added by the Lay-D Denton mod. By default only the most relevant ones are enabled.",actionText="Add extra Lay-D Denton NPCs",variable="bMoreLDDPNPCs");
-     items(15)=(HelpText="We shall partake in a miniscule amount of tomfoolery.",actionText="Shenanigans",variable="bShenanigans");
+     items(9)=(HelpText="Allow cut content, such as arming Miguel and giving Tiffany thermoptic camo.",actionText="Cut Content Interactions",variable="bCutInteractions");
+     items(10)=(HelpText="Start the game in the MJ12 Prison facility. Not recommended for new players! Also skips the intro cutscene.",actionText="Alternate Start",variable="bPrisonStart");
+     items(11)=(HelpText="Disable the use of the console.",actionText="Disable Console Access",variable="bDisableConsoleAccess");
+     items(12)=(HelpText="Most weapons will require a minimum skill investment in order to be used.",actionText="Weapon Requirements Matter",variable="bWeaponRequirementsMatter");
+     items(13)=(HelpText="When imprisoned by UNATCO, your killswitch will be activated, exactly how it's described by Paul",actionText="Killswitch Engaged",variable="bRealKillswitch");
+	 items(14)=(HelpText="Enable cameras to detect unconscious bodies. Realism option - Not recommended for normal play.",actionText="Cameras Detect Unconscious",variable="bCameraDetectUnconscious");
+     items(15)=(HelpText="Enable additional NPC's added by the Lay-D Denton mod. By default only the most relevant ones are enabled.",actionText="Add extra Lay-D Denton NPCs",variable="bMoreLDDPNPCs");
+     items(16)=(HelpText="We shall partake in a miniscule amount of tomfoolery.",actionText="Shenanigans",variable="bShenanigans");
      Title="Playthrough Modifiers"
      consoleTarget="MenuScreenNewGame"
      bNoSort=true

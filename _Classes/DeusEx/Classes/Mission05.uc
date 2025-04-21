@@ -25,6 +25,10 @@ function FirstFrame()
     local DeusExAmmo MiguelAmmo;
 
 	Super.FirstFrame();
+    
+    //SARGE: Disable cut content without the modifier
+    if (!player.bCutInteractions && firstTime)
+		flags.SetBool('Miguel_No_Arming', True);
 
     //On all maps except the lab map, give Miguel the correct weapon
     if (localURL != "05_NYC_UNATCOMJ12LAB" && firstTime && flags.GetBool('MiguelArmed'))
