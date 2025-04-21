@@ -30,10 +30,10 @@ event InitWindow()
 {
 	Super.InitWindow();
     SetRightSide(true);
-    RecreateBelt();
+    RecreateBelt(true);
 }
 
-function RecreateBelt()
+function RecreateBelt(optional bool bDontRecreateKeyring)
 {
     if (player.bBiggerBelt)
     {
@@ -54,7 +54,10 @@ function RecreateBelt()
 
 	PopulateBelt();
 
-	CreateNanoKeySlot();
+    //SARGE: I don't know why it's necessary to restrict this on the first time...
+    //but if we don't, the nanokey overrides our last slot's belt memory.
+    if (!bDontRecreateKeyring)
+        CreateNanoKeySlot();
 }
 
 // Set belt mode
@@ -169,7 +172,7 @@ function CreateNanoKeySlot()
                 RemoveObjectFromBelt(objects[KeyRingSlot].item);
                 //player.ClientMessage("aaaaahhh");
             }
-            else if (player.iSmartKeyring == 1 && objects[KeyRingSlot].item == None && !player.GetPlaceholder(KeyRingslot)) //Smart Keyring is 1 - update the slot if it's empty
+            else if (player.iSmartKeyring == 1 && objects[KeyRingSlot].item == None && !player.GetPlaceholder(KeyRingSlot)) //Smart Keyring is 1 - update the slot if it's empty
             {
     			objects[KeyRingSlot].SetItem(player.KeyRing);
                 objects[KeyRingSlot].bDimIcon = false;
