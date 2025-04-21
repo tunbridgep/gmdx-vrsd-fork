@@ -61432,7 +61432,7 @@ Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner3
     Name=OutfitSpawner3
 End Actor
 Begin Actor Class=SavePoint Name=SavePoint1
-    requiredFlag=Has_ROM
+    requiredFlag=Have_ROM
     bDynamicLight=True
     LastRenderTime=51.803444
     Level=LevelInfo'MyLevel.LevelInfo0'
