@@ -156,7 +156,6 @@ function Deactivate()
         return;
 	}
 
-    player.clientmessage("3");
     Super.Deactivate();
 
 	// record the time if we were just active
