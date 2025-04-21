@@ -3200,7 +3200,7 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
         //Playing the ambient section, and trying to play it again
         if ((NewSection > 5 || NewSection == 0) && default.currentSection == 0)
         {
-            //ClientMessage("Skipped music playback");
+            //ClientMessage("Skipped music playback: " $ NewSection $ ", " $ default.currentSection);
         }
         else if (NewSection == 0 && default.savedSection != 255) //Trying to play from the start from some other section
         {
@@ -3343,6 +3343,10 @@ function UpdateDynamicMusic(float deltaTime)
                     // use the default ambient section for this map
                     if (default.savedSection == 255)
                         default.savedSection = Level.SongSection;
+
+                    //Don't change the music constantly if we're not in the enhanced mode.
+                    if (bEnhancedMusicSystem == 0 && musicMode == MUS_Ambient)
+                        return;                        
 
                     // fade slower for combat transitions
                     if (musicMode == MUS_Combat)
