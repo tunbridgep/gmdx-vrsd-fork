@@ -9620,16 +9620,25 @@ function ClearBelt()
 	  DeusExRootWindow(rootWindow).hud.belt.ClearBelt();
 }
 
-function RemoveObjectFromBelt(Inventory item)
+//SARGE: Extended to allow placeholders
+function RemoveObjectFromBelt(Inventory item, optional bool bNoPlaceholder)
 {
-	if (DeusExRootWindow(rootWindow) != None)
-	  DeusExRootWindow(rootWindow).hud.belt.RemoveObjectFromBelt(item);
-}
+    local int beltPos;
 
-function MakeBeltObjectPlaceholder(Inventory item)
-{
+    beltPos = item.beltPos;
+
+    //placeholders are NOT allowed in multiplayer, they fuck the belt
+    if (Level.NetMode != NM_Standalone && bBeltIsMPInventory)
+        bNoPlaceholder = true;
+
 	if (DeusExRootWindow(rootWindow) != None)
-	  DeusExRootWindow(rootWindow).hud.belt.RemoveObjectFromBelt(item,Level.NetMode == NM_Standalone || !bBeltIsMPInventory);
+    {
+        DeusExRootWindow(rootWindow).hud.belt.RemoveObjectFromBelt(item,!bNoPlaceholder && bBeltMemory);
+
+        //SARGE: Smart Keyring needs to be updated if we just removed from it's slot.
+        if ((bNoPlaceholder || !bBeltMemory) && beltPos == DeusExRootWindow(rootWindow).hud.belt.KeyringSlot)
+            DeusExRootWindow(rootWindow).hud.belt.CreateNanoKeySlot();
+    }
 }
 
 function AddObjectToBelt(Inventory item, int pos, bool bOverride)
@@ -10521,10 +10530,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 
 				// Remove it from the inventory slot grid
 				RemoveItemFromSlot(item);
-                if (!bBeltAutofill)
-                    MakeBeltObjectPlaceholder(item); //SARGE: Disabled because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
-                else
-                    RemoveObjectFromBelt(item);
+                RemoveObjectFromBelt(item,bBeltAutofill); //SARGE: Disabled placeholders because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
 
 				// make sure we have one copy to throw!
 				DeusExPickup(item).NumCopies = 1;
@@ -10554,10 +10560,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 
 				// Remove it from the inventory slot grid
 				RemoveItemFromSlot(item);
-                if (!bBeltAutofill)
-                    MakeBeltObjectPlaceholder(item); //SARGE: Disabled because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
-                else
-                    RemoveObjectFromBelt(item);
+                RemoveObjectFromBelt(item,bBeltAutofill); //SARGE: Disabled placeholders because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
             }
             ammoType.ammoAmount -= 1;
             UpdateAmmoBeltText(AmmoType);
@@ -10572,10 +10575,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 
 			// Remove it from the inventory slot grid
 			RemoveItemFromSlot(item);
-            if (!bBeltAutofill && bBeltMemory)
-                MakeBeltObjectPlaceholder(item); //SARGE: Disabled because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
-            else
-                RemoveObjectFromBelt(item);
+            RemoveObjectFromBelt(item,bBeltAutofill); //SARGE: Disabled placeholders because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
 		}
 
 		// if we are highlighting something, try to place the object on the target //CyberP: more lenience when dropping
@@ -11673,8 +11673,16 @@ function UpdateCrosshair()
 
 function UpdateHUD()
 {
+    local int i;
 	local DeusExRootWindow root;
 	root = DeusExRootWindow(rootWindow);
+
+    // Reset Belt Memory
+    if (!bBeltMemory)
+    {
+        for(i = 0;i < 12;i++)
+            ClearPlaceholder(i);
+    }
 
     if (root != None)
         root.UpdateHUD();
@@ -12610,11 +12618,7 @@ function bool DeleteInventory(inventory item)
 		// Remove the item from the object belt
 		if (root != None)
         {
-            // Sarge: Keep darkened version in the belt if we have Keep Deleted Belt Items setting turn on
-            if (bBeltMemory)
-                MakeBeltObjectPlaceholder(item);
-            else
-                RemoveObjectFromBelt(item);
+            RemoveObjectFromBelt(item);
         }
         else //In multiplayer, we often don't have a root window when creating corpse, so hand delete
         {

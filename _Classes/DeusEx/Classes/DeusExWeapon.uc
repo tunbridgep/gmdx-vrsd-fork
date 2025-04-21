@@ -7204,7 +7204,7 @@ function DestroyMe()
 	local DeusExPlayer player;
 	player = DeusExPlayer(GetPlayerPawn());
 
-    player.MakeBeltObjectPlaceholder(self);
+    player.RemoveObjectFromBelt(self);
     Destroy();
 }
 

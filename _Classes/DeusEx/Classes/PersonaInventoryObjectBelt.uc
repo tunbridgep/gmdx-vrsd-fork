@@ -176,7 +176,7 @@ function AddObject(Inventory inv, int objectNum)
 	if (inv != None && objBelt.objects[objectNum].bAllowDragging)
 	{
       //DEUS_EX AMSD Changed so hudbelt call propagates through player
-      DeusExPlayer(GetRootWindow().ParentPawn).RemoveObjectFromBelt(inv);
+      DeusExPlayer(GetRootWindow().ParentPawn).RemoveObjectFromBelt(inv,true);
 		//hudBelt.RemoveObjectFromBelt(inv);
       DeusExPlayer(GetRootWindow().ParentPawn).AddObjectToBelt(inv, objectNum, True);
 		//hudBelt.objects[objectNum].SetItem(inv);
@@ -192,7 +192,7 @@ function AddObject(Inventory inv, int objectNum)
 function RemoveObject(Inventory inv)
 {
 	objBelt.RemoveObjectFromBelt(inv);
-   DeusExPlayer(GetRootWindow().ParentPawn).RemoveObjectFromBelt(inv);
+   DeusExPlayer(GetRootWindow().ParentPawn).RemoveObjectFromBelt(inv,true);
 	//hudBelt.RemoveObjectFromBelt(inv);
 }
 

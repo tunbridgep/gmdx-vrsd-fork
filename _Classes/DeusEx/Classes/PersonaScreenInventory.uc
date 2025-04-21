@@ -1817,7 +1817,7 @@ function FinishButtonDrag()
 
 				WeaponMod(dragInv).ApplyMod(DeusExWeapon(dragTarget.GetClientObject()));
 
-            Player.RemoveObjectFromBelt(dragInv);
+            Player.RemoveObjectFromBelt(dragInv,true);
             //invBelt.objBelt.RemoveObjectFromBelt(dragInv);
 
 				// Send status message
