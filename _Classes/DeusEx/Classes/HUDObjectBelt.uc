@@ -257,7 +257,7 @@ function UpdateInHand()
 	// highlight the slot and unhighlight the other slots
 	if ((player != None) && (!bInteractive))
 	{
-		if (player.bAlternateToolbelt > 0)
+		if (player.iAlternateToolbelt > 0)
 		{
 			RefreshAlternateToolbelt();
 			return;
@@ -294,15 +294,23 @@ function RefreshAlternateToolbelt()
 		for (slotIndex=0; slotIndex<ArrayCount(objects); slotIndex++)
 		{
             placeholderSlot = player.GetPlaceholder(slotIndex);
-
-			//Grey background follows
-			objects[slotIndex].HighlightSelect(slotIndex == player.advBelt && !placeholderSlot && objects[slotIndex].item != None);
 			
-			//White outline stays with our selcted weapon
-			if (player.inHandPending != None)
-				objects[slotIndex].SetToggle(slotIndex == player.inHandPending.beltPos);
-			else
-				objects[slotIndex].SetToggle(false);
+            if (player.bReversedAltBeltColours)
+            {
+                //Grey background follows our primary selection
+                objects[slotIndex].SetToggle(player.inHandPending != None && slotIndex == player.inHandPending.beltPos);
+                
+                //White outline stays with our current weapon
+                objects[slotIndex].HighlightSelect(slotIndex == player.advBelt && !placeholderSlot && objects[slotIndex].item != None);
+            }
+            else
+            {
+                //Grey background follows our current weapon
+                objects[slotIndex].HighlightSelect(player.inHandPending != None && slotIndex == player.inHandPending.beltPos);
+                
+                //White outline stays with our primary selection
+                objects[slotIndex].SetToggle(slotIndex == player.advBelt && !placeholderSlot && objects[slotIndex].item != None);
+            }
 		}
 	}
 }

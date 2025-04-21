@@ -88,7 +88,7 @@ function ShowVersionInfo()
 
 defaultproperties
 {
-     GMDXText="GMDX vSARGE 1.0"
+     GMDXText="Give Me Deus Ex: Augmented Edition BETA"
      ButtonNames(0)="New Game"
      ButtonNames(1)="Save Game"
      ButtonNames(2)="Load Game"
@@ -109,7 +109,7 @@ defaultproperties
      buttonDefaults(5)=(Y=193,Action=MA_Intro)
      buttonDefaults(6)=(Y=229,Action=MA_MenuScreen,Invoke=Class'DeusEx.CreditsWindow')
      buttonDefaults(7)=(Y=265,Action=MA_Previous)
-     buttonDefaults(8)=(Y=301,Action=MA_MenuScreen,Invoke=Class'DeusEx.MenuScreenHDTP')
+     buttonDefaults(8)=(Y=301,Action=MA_MenuScreen,Invoke=Class'DeusEx.MenuMPMain')
      buttonDefaults(9)=(Y=359,Action=MA_Quit)
      Title="Give Me Deus Ex"
      ClientWidth=258

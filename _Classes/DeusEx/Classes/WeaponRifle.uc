@@ -134,8 +134,9 @@ simulated function PlayIdleAnim()                                               
 
 	if (bZoomed || bNearWall)
 		return;
+
 	rnd = FRand();
-    if (rnd < 0.03)
+    if (rnd < 0.4)
         PlayAnim('Idle',,0.2);
 }
 
@@ -162,7 +163,7 @@ exec function UpdateHDTPsettings()                                              
     {
         if (iHDTPModelToggle == 2)                                                 //RSD: Clyzm model
         {
-            if (AnimSequence == 'Idle1' || AnimSequence == 'Idle2' || AnimSequence == 'Idle3')
+            if (AnimSequence == 'Idle' || AnimSequence == 'Idle1' || AnimSequence == 'Idle2' || AnimSequence == 'Idle3')
             {
                 animToSet = 'Idle';
                 animSequence = '';

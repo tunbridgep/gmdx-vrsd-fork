@@ -587,27 +587,31 @@ simulated function bool CanDrainEnergy()
 // Replaced it with an additive bonus/penalty.
 // Custom version allows working with any energy ratio
 // ----------------------------------------------------------------------
-
 function float GetAdjustedEnergy(float amount)
 {    
     local float bonus, penalty, mult;
 
-    //Heart Penalty
-    penalty = Player.AugmentationSystem.GetAugLevelValue(class'AugHeartLung');
+	if(amount > 0.0)
+	{
+		if(Player == None)
+			return amount;
 
-    //recirc bonus
-    bonus = Player.AugmentationSystem.GetAugLevelValue(class'AugPower');
+		//Heart Penalty
+		penalty = Player.AugmentationSystem.GetAugLevelValue(class'AugHeartLung');
+		//recirc bonus
+		bonus = Player.AugmentationSystem.GetAugLevelValue(class'AugPower');
+		mult = 1.0;
+		if (penalty > 0 && bonus > 0)
+			mult = bonus + penalty - 1.0;
+		else if (bonus > 0)
+			mult = bonus;
+		else if (penalty > 0)
+			mult = penalty;
 
-    if (penalty > 0 && bonus > 0)
-        mult = bonus + penalty - 1.0;
-    else if (bonus > 0)
-        mult = bonus;
-    else if (penalty > 0)
-        mult = penalty;
-    else
-        mult = 1.0;
-
-    return amount * mult;
+		return amount * mult;
+	}
+	else
+		return 0.0;
 }
 
 // ----------------------------------------------------------------------
@@ -741,8 +745,8 @@ defaultproperties
      ActivateSound=Sound'DeusExSounds.Augmentation.AugActivate'
      DeActivateSound=Sound'DeusExSounds.Augmentation.AugDeactivate'
      LoopSound=Sound'DeusExSounds.Augmentation.AugLoop'
-     bHidden=True
-     bTravel=True
+     bHidden=true
+     bTravel=true
      NetUpdateFrequency=5.000000
      chargeTime=1.000000
      AugmentationType=Aug_Active
@@ -754,5 +758,5 @@ defaultproperties
      colPassive=(R=255,G=255)
      colActive=(R=0,G=38,B=255)
      colAuto=(G=255,B=255)
-     bHasChargeBar=True
+     bHasChargeBar=true
 }

@@ -1020,8 +1020,7 @@ local DeusExPlayer playa;
 	  }
 	}
     playa = DeusExPlayer(GetPlayerPawn());
-    if (playa != None)
-        if (playa.bExtraHardcore && playa.bHardCoreMode && Owner == None)
+    if (playa != None && playa.bExtraHardcore && playa.bHardCoreMode && Owner == None)
             BaseAccuracy = default.BaseAccuracy + 0.2;
 
     //RSD: Failsafe in case we don't have these set; use the original ranges for NPC AI
@@ -1030,7 +1029,7 @@ local DeusExPlayer playa;
     if (NPCAccurateRange == 0)
       NPCAccurateRange = default.AccurateRange;
 
-    if (!givenFreeReload)
+    if (!givenFreeReload && (Owner == None || Owner.IsA('ScriptedPawn')))
     {
         ClipCount = ReloadCount;
         givenFreeReload = true;
@@ -1044,19 +1043,43 @@ function ReloadMaxAmmo()
         ClipCount = Min(ReloadCount,AmmoType.AmmoAmount);
 }
 
+//SARGE: Fix a really horrible ammo giving bug where weapons won't give ammo if there's not
+//enough room to spawn their corresponding ammo actor.
+//Copied from Weapon.uc
+function GiveAmmo( Pawn Other )
+{
+	if ( AmmoName == None )
+		return;
+	AmmoType = Ammo(Other.FindInventoryType(AmmoName));
+	if ( AmmoType != None )
+		AmmoType.AddAmmo(PickUpAmmoCount);
+	else
+	{
+        //SARGE: Here's the nasty bug!
+        //Spawn will fail if there's not enough room to spawn the relevant ammo...
+		AmmoType = Spawn(AmmoName);	// Create ammo type required		
+        
+        //...So we do a filthy hack by making the ammo type no longer collide with the world temporarily
+        if (AmmoType == None && AmmoName.default.bCollideWorld == true)
+        {
+            AmmoName.default.bCollideWorld = false;
+            AmmoType = Spawn(AmmoName);	// Create ammo type required...again!
+            AmmoName.default.bCollideWorld = true;
+        }
+
+		Other.AddInventory(AmmoType);		// and add to player's inventory
+		AmmoType.BecomeItem();
+		AmmoType.AmmoAmount = PickUpAmmoCount; 
+		AmmoType.GotoState('Idle2');
+	}
+}	
+
 function PostPostBeginPlay()
 {
 	Super.PostPostBeginPlay();
 
     if (!bUnlit && ScaleGlow > 0.5)
         ScaleGlow = 0.5;
-
-    //Give NPCs a full clip to start
-    if (!givenFreeReload && Owner != None && Owner.IsA('ScriptedPawn'))
-    {
-        ReloadMaxAmmo();
-        givenFreeReload = true;
-    }
 }
 
 singular function BaseChange()
@@ -1116,6 +1139,12 @@ function TakeDamage(int Damage, Pawn EventInstigator, vector HitLocation, vector
 	RotationRate.Yaw = (32768 - Rand(65536)) * dammult;
 	}
 	}
+}
+
+function PlayRetrievedAmmoSound()
+{
+    //PlaySound(RetrieveAmmoSound, SLOT_None, 0.5+FRand()*0.25, , 256, 0.95+FRand()*0.1);
+    PlaySound(RetrieveAmmoSound, SLOT_None, 1.5+FRand()*0.25, , 256, 0.95+FRand()*0.1);
 }
 
 function bool HandlePickupQuery(Inventory Item)
@@ -1211,7 +1240,8 @@ function bool HandlePickupQuery(Inventory Item)
 					if (!(DeusExWeapon(item) != none && DeusExWeapon(item).bDisposableWeapon)) //RSD: Don't display ammo message for grenades or the PS20
 					{
                         player.ClientMessage(defAmmo.PickupMessage @ defAmmo.itemArticle @ defAmmo.ItemName $ " (" $ intj $ ")", 'Pickup' );
-                        PlaySound(RetrieveAmmoSound, SLOT_None, 0.5+FRand()*0.25, , 256, 0.95+FRand()*0.1);
+                        player.AddReceivedItem(defAmmo,intj);
+                        PlayRetrievedAmmoSound();
 					}
 					return true;
 				}
@@ -1228,7 +1258,7 @@ function bool HandlePickupQuery(Inventory Item)
                         else
                         {
                             player.ClientMessage(defAmmo.PickupMessage @ defAmmo.itemArticle @ defAmmo.ItemName $ " (" $ Weapon(Item).PickupAmmoCount $ ")", 'Pickup' );
-                            PlaySound(RetrieveAmmoSound, SLOT_None, 0.5+FRand()*0.25, , 256, 0.95+FRand()*0.1);
+                            player.AddReceivedItem(defAmmo,Weapon(Item).PickupAmmoCount);
                         }
                     }
 				}
@@ -1302,9 +1332,9 @@ function bool HandlePickupQuerySuper( inventory Item )                          
 	return Inventory.HandlePickupQuery(Item);
 }
 
-function float SetDroppedAmmoCount(optional int amountPassed, optional bool noOld) //RSD: Added optional int amountPassed for initialization in MissionScript.uc
+function float SetDroppedAmmoCount(int amountPassed, bool bSearched) //RSD: Added optional int amountPassed for initialization in MissionScript.uc
 {
-    if (amountPassed == 0 && !noOld)                                                      //RSD: If we didn't get anything, set to old formula
+    if (amountPassed == 0 && !bSearched)                                                      //RSD: If we didn't get anything, set to old formula //Ygll: change the test to advert empty weapon bug
         amountPassed = Rand(4) + 1;
 
     // Any weapons have their ammo set to a random number of rounds (1-4)
@@ -2057,16 +2087,6 @@ simulated function int AmmoLeftInClip()
     return ClipCount;
 }
 
-simulated function int NumClips()
-{
-    local int rnds;
-    rnds = NumRounds();
-    if (rnds > 0)
-        return (rnds / reloadcount) + 1;
-    else
-        return 0;
-}
-
 simulated function int NumRounds()
 {
 	if (ReloadCount == 0)  // if this weapon is not reloadable
@@ -2075,6 +2095,24 @@ simulated function int NumRounds()
 		return 0;
 	else  // compute remaining ammo
 		return AmmoType.AmmoAmount - AmmoLeftInClip();
+}
+
+simulated function int NumClips()
+{
+    local int rnds;
+	local int clips;
+    rnds = NumRounds();
+    if (rnds > 0)
+	{
+		clips = (rnds / reloadcount);
+		
+		if(clips*reloadcount < rnds)
+			return clips+1;
+		else
+			return clips;
+	}
+    else
+        return 0;
 }
 
 simulated function int AmmoAvailable(int ammoNum)
@@ -3801,24 +3839,34 @@ simulated function PlayIdleAnim()
 	rnd = FRand();
 	if (Owner.IsA('DeusExPlayer'))
 	{
-    if (DeusExPlayer(Owner).IsCrouching() == False && (DeusExPlayer(Owner).Velocity.X != 0 || DeusExPlayer(Owner).Velocity.Y != 0))
-    {
-	if (rnd < 0.1)
-		PlayAnim('Idle1',1.5,0.1);
-	else if (rnd < 0.2)
-		PlayAnim('Idle2',1.5,0.1);
-	else if (!DeusExPlayer(Owner).InHand.IsA('WeaponCrowbar') && rnd < 0.3)
-		PlayAnim('Idle3',1.5,0.1);
-	}
-    else
-    {
-    if (rnd < 0.1)
-		PlayAnim('Idle1',,0.1);
-	else if (rnd < 0.2)
-		PlayAnim('Idle2',,0.1);
-	else if (rnd < 0.3)
-		PlayAnim('Idle3',,0.1);
-    }
+		if (DeusExPlayer(Owner).IsCrouching() == False && (DeusExPlayer(Owner).Velocity.X != 0 || DeusExPlayer(Owner).Velocity.Y != 0))
+		{
+			if (rnd < 0.1)
+			{
+				if (IsHDTP() && iHDTPModelToggle == 2) //RSD: Clyzm model
+					PlayAnim('Idle',1.5,0.1);
+				else
+					PlayAnim('Idle1',1.5,0.1);
+			}
+			else if (rnd < 0.2)
+				PlayAnim('Idle2',1.5,0.1);
+			else if (!DeusExPlayer(Owner).InHand.IsA('WeaponCrowbar') && rnd < 0.3)
+				PlayAnim('Idle3',1.5,0.1);
+		}
+		else
+		{
+			if (rnd < 0.1)
+			{
+				if (IsHDTP() && iHDTPModelToggle == 2) //RSD: Clyzm model
+					PlayAnim('Idle',,0.1);
+				else
+					PlayAnim('Idle1',,0.1);
+			}
+			else if (rnd < 0.2)
+				PlayAnim('Idle2',,0.1);
+			else if (rnd < 0.3)
+				PlayAnim('Idle3',,0.1);
+		}
     }
 }
 
@@ -5238,7 +5286,7 @@ function Finish()
 				  }
                   if (DeusExPlayer(Owner).CarriedDecoration == None)
                      DeusExPlayer(Owner).SelectLastWeapon(true);
-                  GotoState('idle');
+                  GotoState('Idle');
                   return;
                //}
             }
@@ -6753,11 +6801,17 @@ simulated state SimIdle
 	{
 		PlayIdleAnim();
 	}
+	
 Begin:
 	bInProcess = False;
 	bFiring = False;
 	if (!bNearWall)
-		PlayAnim('Idle1',,0.1);
+	{
+		if (IsHDTP() && iHDTPModelToggle == 2) //RSD: Clyzm model
+			PlayAnim('Idle',,0.1);
+		else
+			PlayAnim('Idle1',,0.1);
+	}
 	SetTimer(3.0, True);
 }
 
@@ -6902,10 +6956,20 @@ Begin:
            if (FRand() < 0.5)
               PlayAnim('Idle2',,0.1);
            else
-              PlayAnim('Idle1',,0.1);
+			{
+				if (IsHDTP() && iHDTPModelToggle == 2) //RSD: Clyzm model
+					PlayAnim('Idle',,0.1);
+				else
+					PlayAnim('Idle1',,0.1);
+			}
         }
         else if (!bNearWall && !activateAn)
-			PlayAnim('Idle1',,0.1);
+		{
+			if (IsHDTP() && iHDTPModelToggle == 2) //RSD: Clyzm model
+				PlayAnim('Idle',,0.1);
+			else
+				PlayAnim('Idle1',,0.1);
+		}
 		SetTimer(3.0, True);
 	}
 }

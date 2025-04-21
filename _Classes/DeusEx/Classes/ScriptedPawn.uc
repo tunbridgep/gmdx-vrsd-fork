@@ -2685,25 +2685,22 @@ function SetupWeapon(bool bDrawWeapon, optional bool bForce)
 // ----------------------------------------------------------------------
 // DropWeapon()
 // ----------------------------------------------------------------------
-
 function DropWeapon()
 {
 	local DeusExWeapon dxWeapon;
-	local Weapon       oldWeapon;
 
 	if (Weapon != None && !Weapon.IsA('WeaponRifle'))
 	{
 		dxWeapon = DeusExWeapon(Weapon);
 		if ((dxWeapon == None) || !dxWeapon.bNativeAttack)
 		{
-			oldWeapon = Weapon;
 			SetWeapon(None);
-			if (oldWeapon.IsA('DeusExWeapon'))  //CyberP: Dropped weapons onto the floor should really give ammo...
-                DeusExWeapon(oldWeapon).SetDroppedAmmoCount(PickupAmmoCount);   //RSD: Added PickupAmmoCount for initialization from MissionScript.uc
-			if (oldWeapon.IsA('WeaponAssaultGunSpider')) //CyberP: make sure these are destroyed
-			    oldWeapon.Destroy();
+			if (Weapon.IsA('DeusExWeapon'))  //CyberP: Dropped weapons onto the floor should really give ammo...
+                dxWeapon.SetDroppedAmmoCount(PickupAmmoCount, false);   //RSD: Added PickupAmmoCount for initialization from MissionScript.uc
+			if (Weapon.IsA('WeaponAssaultGunSpider')) //CyberP: make sure these are destroyed
+			    Weapon.Destroy();
 			else
-			    oldWeapon.DropFrom(Location);
+			    Weapon.DropFrom(Location);
 		}
 	}
 }
@@ -3294,7 +3291,6 @@ function Carcass SpawnCarcass()
 // G-Flex: so if the NPC is gibbed, items won't be lost
 // G-Flex: uses some logic from SpawnCarcass()
 // ----------------------------------------------------------------------
-
 function ExpelInventory()
 {
 	local Vector loc;
@@ -3328,7 +3324,7 @@ function ExpelInventory()
 
 					//G-Flex: get the same ammo as from the carcass or a dropped weapon
 					if (item.IsA('DeusExWeapon'))
-						DeusExWeapon(item).SetDroppedAmmoCount(PickupAmmoCount);//RSD: Added PickupAmmoCount for initialization from MissionScript.uc
+						DeusExWeapon(item).SetDroppedAmmoCount(PickupAmmoCount, false);//RSD: Added PickupAmmoCount for initialization from MissionScript.uc
 				}
 
 				item = nextItem;

@@ -74,6 +74,10 @@ function UpdateAugIconStatus()
 
 	if (aug != None)
         colItemIcon = aug.GetAugColor(true);
+
+
+    //refresh hotkey
+    SetKeyNum(hotKeyNum);
 }
 
 // ----------------------------------------------------------------------

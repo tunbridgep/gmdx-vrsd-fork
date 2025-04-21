@@ -79,8 +79,6 @@ function ChargedPickupBegin(DeusExPlayer Player)
 {
 	local int DisplayCount;
 
-	Player.AddChargedDisplay(Self);
-	Player.PlaySound(ActivateSound, SLOT_Pain);
 	if (LoopSound != None)
 		AmbientSound = LoopSound;
 
@@ -95,7 +93,7 @@ function ChargedPickupBegin(DeusExPlayer Player)
 		BeltPos=default.BeltPos;
 	}
     if (IsA('AdaptiveArmor'))
-    class'DeusExPlayer'.default.bCloakEnabled=true;
+        class'DeusExPlayer'.default.bCloakEnabled=true;
 
 	bIsActive = True;
 
@@ -109,8 +107,6 @@ function ChargedPickupBegin(DeusExPlayer Player)
 
 function ChargedPickupEnd(DeusExPlayer Player)
 {
-	Player.RemoveChargedDisplay(Self);
-
     if ((Charge > 0 || bDrained) && DeactivateSound != None)	// Trash: If charge is more than 0 and there's a deactivation sound, play it instead
         Player.PlaySound(DeactivateSound, SLOT_Pain);
     else
@@ -210,10 +206,12 @@ function UsedUp()
 
 	if (Player != None)
 	{
+        /*
 		if (Player.inHand == Self)
 		{
 			ChargedPickupEnd(Player);
 		}
+        */
 	}
 	if (NumCopies<=0)
 	{
@@ -296,6 +294,15 @@ local int x;
 
 state DeActivated
 {
+	function Activate()
+    {
+		local DeusExPlayer Player;
+		Player = DeusExPlayer(Owner);
+
+        if (player != None)
+            DeselectInHand(player);
+        super.Activate();
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -358,12 +365,21 @@ state Activated
 		if (Player != None)
 		{
 
-			if (player.inHand == Self)
-			   player.PutInHand(None);
-
 			//SetOwner(Player);  //CyberP: did I comment this out, and if so, why? :/
+            if (bUnequipWhenDrained)
+                bDrained = false;
 
-			ChargedPickupBegin(Player);
+            Player.PlaySound(ActivateSound, SLOT_Pain);
+
+			if (!bDrained && Charge > 0)
+				ChargedPickupBegin(Player);
+            else if (bUnequipWhenDrained)
+                return;
+            else
+                bIsActive = True;
+
+            Player.RefreshChargedPickups();
+            DeselectInHand(player);
 			SetTimer(0.1, True);
 		}
 	}
@@ -396,14 +412,27 @@ state Activated
         //SARGE:Simply set us as undrained if we're re-activated while active.
         if (player != None)
         {
+            DeselectInHand(player);
             if (bDrained && bActive && Charge > 0)
             {
+                Player.PlaySound(ActivateSound, SLOT_Pain);
                 ChargedPickupBegin(Player);
                 return;
             }
         }
         Super.Activate();
 	}
+}
+
+
+// --------------------------------------------------------------------
+// DeselectInHand()
+// SARGE: Made the Hand Deselection generic
+// ----------------------------------------------------------------------
+function DeselectInHand(DeusExPlayer player)
+{
+    if (player.inHand == Self)// && !bUnequipWhenDrained)
+        player.PutInHand(None);
 }
 
 // --------------------------------------------------------------------
