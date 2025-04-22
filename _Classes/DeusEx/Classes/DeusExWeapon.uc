@@ -1531,8 +1531,8 @@ local string msgContactOff;
 	// single use or hand to hand weapon if ReloadCount == 0
 	if (ReloadCount == 0 || bDisposableWeapon)
 	{
-	    if (Owner.IsA('DeusExPlayer'))
-		    DeusExPlayer(Owner).ClientMessage(msgCannotBeReloaded);
+	    //if (Owner.IsA('DeusExPlayer'))
+		//    DeusExPlayer(Owner).ClientMessage(msgCannotBeReloaded); //SARGE: Disabled. This message is annoying as fuck!
 		return;
 	}
 	else if (activateAn == True)
