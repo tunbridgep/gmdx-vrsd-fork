@@ -41,6 +41,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed a vanilla game bug that would prevent weapons from spawning with ammo available if there wasn't enough room to spawn the ammo when being picked up.
     - Fixed many other GMDX and Vanilla bugs.
 - Quality of Life Improvements:
+    - Data Cubes containing images will now show the image rather than simply saying you received an image.
     - Duplicate Nano-Keys are no longer shown in the "Received Items" window when picked up from carcasses.
     - Ballistic Armour and Hazmat Suits are now kept equipped when drained, but will have no effect.
         - Recharging them in any way (such as through biocells or a repair bot) will make them active again

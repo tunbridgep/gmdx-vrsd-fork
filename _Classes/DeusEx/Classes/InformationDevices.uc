@@ -10,6 +10,7 @@ var() class<DataVaultImage>	imageClass;
 
 var transient HUDInformationDisplay infoWindow;		// Window to display the information in
 var transient TextWindow winText;				// Last text window we added
+var transient PersonaImageWindow winImages;     // Last image window we added
 var Bool bSetText;
 var Bool bAddToVault;					// True if we need to add this text to the DataVault
 var String vaultString;
@@ -63,6 +64,7 @@ function DestroyWindow()
 
 	infoWindow = None;
 	winText = None;
+    winImages = None;
 	aReader = None;
 }
 
@@ -213,6 +215,14 @@ function CreateInfoWindow()
 				infoWindow = rootWindow.hud.ShowInfoWindow();
 				winText = infoWindow.AddTextWindow();
 				winText.SetText(Sprintf(ImageLabel, image.imageDescription));
+                winText.SetTextAlignments(HALIGN_Center, VALIGN_Top);               //SARGE: Added.
+
+                //SARGE: Show data cube images.
+                if (aReader.bShowDataCubeImages)
+                {
+                    winImages = infoWindow.AddImageWindow();
+                    winImages.SetImage(image);
+                }
 			}
 
 			// Log the fact that the user just got an image.
