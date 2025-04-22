@@ -2003,7 +2003,7 @@ function DrawVisionAugmentation(GC gc)
 		{
 			if (A.bVisionImportant)
 			{
-				if (IsHeatSource(A) || ( (Player.Level.Netmode != NM_Standalone) && ((A.IsA('AutoTurret')) || (A.IsA('AutoTurretGun')) || (A.IsA('SecurityCamera')) ) ))
+				if (IsHeatSource(A))
 				{
 					dist = VSize(A.Location - loc);
 					//If within range of vision aug bit
@@ -2134,12 +2134,18 @@ function DrawVisionAugmentation(GC gc)
 
 function bool IsHeatSource(Actor A)
 {
+    //SARGE: No cloaked enemies on lower levels
 	if ((A.bHidden))
 		return False;
 	if (A.IsA('Pawn'))
 	{
 		if (A.IsA('ScriptedPawn'))
+        {
+            //SARGE: No longer reveal cloaked enemies at level 1 (or with unupgraded tech goggles)
+            if (ScriptedPawn(A).bHasCloak && ScriptedPawn(A).bCloakOn && visionLevel <= 1)
+                return False;
 			return True;
+        }
 		else if ( (A.IsA('DeusExPlayer')) && (A != Player) )//DEUS_EX AMSD For multiplayer.
 			return True;
 		return False;
@@ -2148,6 +2154,13 @@ function bool IsHeatSource(Actor A)
 		return True;
 	else if (A.IsA('FleshFragment'))
 		return True;
+    //SARGE: Added turrets and cameras, previously multiplayer only
+    else if (A.IsA('AutoTurret'))
+        return true;
+    else if (A.IsA('AutoTurretGun'))
+        return true;
+    else if (A.IsA('SecurityCamera'))
+        return true;
 	else
 		return False;
 }
@@ -2168,6 +2181,8 @@ function Texture GetGridTexture(Texture tex)
 		return Texture'BlackMaskTex';
 	else if (tex == Texture'PinkMaskTex')
 		return Texture'BlackMaskTex';
+    else if (visionlevel <= 1) //SARGE: Low level vision only shows green
+		return Texture'RSDCrap.NVGTex';
 	else if (VisionTargetStatus == VISIONENEMY)
 		return Texture'Virus_SFX';
 	else if (VisionTargetStatus == VISIONALLY)
