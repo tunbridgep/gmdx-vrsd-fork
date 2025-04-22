@@ -2693,15 +2693,17 @@ function DropWeapon()
 		if ((dxWeapon == None) || !dxWeapon.bNativeAttack)
 		{
 			if (Weapon.IsA('WeaponAssaultGunSpider')) //CyberP: make sure these are destroyed
+            {
 			    Weapon.Destroy();
+                return;
+            }
 			else
 			    Weapon.DropFrom(Location);
 			
             if (dxWeapon != None)  //CyberP: Dropped weapons onto the floor should really give ammo...
                 dxWeapon.SetDroppedAmmoCount(PickupAmmoCount);   //RSD: Added PickupAmmoCount for initialization from MissionScript.uc
-    
-			SetWeapon(None);
-
+			
+            SetWeapon(None);
 		}
 	}
 }
