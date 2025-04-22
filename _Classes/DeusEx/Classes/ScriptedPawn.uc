@@ -2681,6 +2681,7 @@ function SetupWeapon(bool bDrawWeapon, optional bool bForce)
 
 // ----------------------------------------------------------------------
 // DropWeapon()
+// SARGE: This function needed a rewrite, so I rewrote it...
 // ----------------------------------------------------------------------
 function DropWeapon()
 {
@@ -2691,13 +2692,16 @@ function DropWeapon()
 		dxWeapon = DeusExWeapon(Weapon);
 		if ((dxWeapon == None) || !dxWeapon.bNativeAttack)
 		{
-			SetWeapon(None);
-			if (Weapon.IsA('DeusExWeapon'))  //CyberP: Dropped weapons onto the floor should really give ammo...
-                dxWeapon.SetDroppedAmmoCount(PickupAmmoCount, false);   //RSD: Added PickupAmmoCount for initialization from MissionScript.uc
 			if (Weapon.IsA('WeaponAssaultGunSpider')) //CyberP: make sure these are destroyed
 			    Weapon.Destroy();
 			else
 			    Weapon.DropFrom(Location);
+			
+            if (dxWeapon != None)  //CyberP: Dropped weapons onto the floor should really give ammo...
+                dxWeapon.SetDroppedAmmoCount(PickupAmmoCount);   //RSD: Added PickupAmmoCount for initialization from MissionScript.uc
+    
+			SetWeapon(None);
+
 		}
 	}
 }
