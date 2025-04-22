@@ -2182,7 +2182,8 @@ function Texture GetGridTexture(Texture tex)
 	else if (tex == Texture'PinkMaskTex')
 		return Texture'BlackMaskTex';
     else if (visionlevel <= 1) //SARGE: Low level vision only shows green
-		return Texture'RSDCrap.NVGTex';
+		//return Texture'RSDCrap.Skins.NVGTex';
+		return Texture'SolidGreen';
 	else if (VisionTargetStatus == VISIONENEMY)
 		return Texture'Virus_SFX';
 	else if (VisionTargetStatus == VISIONALLY)
@@ -2229,6 +2230,19 @@ function ResetSkins(Actor actor, Texture oldSkins[9])
 	for (i=0; i<8; i++)
 		actor.MultiSkins[i] = oldSkins[i];
 	actor.Skin = oldSkins[i];
+	//actor.Texture = oldSkins[i+1];
+    //actor.Style = ERenderStyle(oldStyle); //SARGE: Doesn't compile???
+    //So we have to do this fucking bullshit...
+    /*
+    switch (oldStyle)
+    {
+        case 0: actor.Style = STY_None; break;
+        case 1: actor.Style = STY_Normal; break;
+        case 2: actor.Style = STY_Masked; break;
+        case 3: actor.Style = STY_Translucent; break;
+        case 4: actor.Style = STY_Modulated; break;
+    }
+    */
 }
 
 // ----------------------------------------------------------------------
