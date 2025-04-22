@@ -405,13 +405,14 @@ function bool HandlePickupQuery( inventory Item )
 	local DeusExPlayer player;
 	local Inventory anItem;
 	local Bool bAlreadyHas;
-	local Bool bResult;
+	local Bool bResult, bSound;
 	local int i, startcopies, tempCharge;                                       //RSD: Added tempCharge
 
 	if ( Item.Class == Class )
 	{
 		player = DeusExPlayer(Owner);
 		bResult = False;
+        bSound = true;
 
 		// Check to see if the player already has one of these in
 		// his inventory
@@ -431,6 +432,8 @@ function bool HandlePickupQuery( inventory Item )
                 {
                     //SARGE: Let us know we're charging the thing...
                     player.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
+                    
+                    bSound = false;
                     
                     anItem.Charge += DeusExPickup(item).Charge;
                     if (anItem.Charge >= anItem.default.Charge)
@@ -469,6 +472,8 @@ function bool HandlePickupQuery( inventory Item )
                     //SARGE: Let us know we're charging the thing...
                     player.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
                     
+                    bSound = false;
+                    
  			    	NumCopies--;                                                //RSD: Keep the stack number the same as before but add the pickup charge
                 }
 
@@ -493,7 +498,8 @@ function bool HandlePickupQuery( inventory Item )
 		{
             player.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
             
-            Item.PlaySound(Item.PickupSound);
+            if (bSound)
+                Item.PlaySound(Item.PickupSound);
 
 			// Destroy me!
 			// DEUS_EX AMSD In multiplayer, we don't want to destroy the item, we want it to set to respawn

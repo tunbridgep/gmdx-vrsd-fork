@@ -1088,17 +1088,19 @@ function Frob(Actor Frobber, Inventory frobWith)
                     //log("Found Something");
 					if (item.IsA('NanoKey'))
 					{
-                        bFoundSomething = True;
 						if (player != None)
 						{
 							if (player.PickupNanoKey(NanoKey(item)))
+                            {
                                 AddReceivedItem(player, item, 1);
+                                bFoundSomething = True;
+                                bPickedSomethingUp = True;
+                            }
 							DeleteInventory(item);
 							item.Destroy();
 							item = None;
 						}
 						bPickedItemUp = True;
-                        bPickedSomethingUp = True;
 					}
 					else if (item.IsA('Credits'))		// I hate special cases
 					{
