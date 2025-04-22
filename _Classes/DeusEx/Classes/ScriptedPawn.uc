@@ -2695,6 +2695,7 @@ function DropWeapon()
 			if (Weapon.IsA('WeaponAssaultGunSpider')) //CyberP: make sure these are destroyed
             {
 			    Weapon.Destroy();
+                SetWeapon(None);
                 return;
             }
 			else
