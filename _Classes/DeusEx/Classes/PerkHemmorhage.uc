@@ -5,8 +5,8 @@ class PerkHemmorhage extends Perk;
 
 defaultproperties
 {
-    PerkName="HEMMORHAGE"
-    PerkDescription="An agent is adept at finding vital weak spots, causing organic targets to bleed profusely over time when struck by bladed weapons."
+    PerkName="HEMORRHAGE"
+    PerkDescription="An agent is adept at finding vital weak spots, causing organic targets to bleed profusely over time when struck by throwing knives."
     PerkSkill=Class'DeusEx.SkillWeaponLowTech'
     PerkCost=450
     PerkLevelRequirement=3

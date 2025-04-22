@@ -3904,9 +3904,17 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
 		    (damageType != 'Poison') && (damageType != 'PoisonEffect'))
 			bleedRate += (origHealth-Health)/(0.3*Default.Health);  // 1/3 of default health = bleed profusely
 
-    //bleed even more profusely
-    if (damageType == 'Bleed')
-        bleedRate *= 2.0;
+    //bleed like crazy every time we take a blood tick
+    if (damageType == 'BleedEffect' && actualDamage > 0 && bCanBleed)
+    {
+        for(i=0;i<10;i++)
+        {
+            if (FRand() < 0.5) //SARGE: Now, we determine number of blood splats by random, not the chance of having any.
+                continue;
+            spawn(class'BloodDrop',,, HitLocation);
+        }
+    }
+
 
 	if (CarriedDecoration != None)
 		DropDecoration();
