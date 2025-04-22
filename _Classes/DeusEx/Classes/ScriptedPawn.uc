@@ -1884,7 +1884,7 @@ function UpdateBleed(float deltaTime)
 	if (bleedCounter > 0)
 	{
 		bleedTimer += deltaTime;
-		if (bleedTimer >= 2.0)  // pain every two seconds
+		if (bleedTimer >= 1.0)  // pain every second
 		{
 			bleedTimer = 0;
 			bleedCounter--;
@@ -1909,7 +1909,7 @@ function StartBleed(int Damage, Pawn newBleedSource)
 	bleedTimer   = 0;    // reset pain timer
 	BleedSource  = newBleedSource;
 	//if (poisonDamage < Damage)  // set damage amount
-		bleedDamage = Damage*0.25; //was *0.5
+		bleedDamage = Damage*0.1; //was *0.5
 }
 
 

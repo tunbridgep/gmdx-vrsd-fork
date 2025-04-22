@@ -180,7 +180,7 @@ function bool IgnoreDamageType(Name damageType)
 	//	return True;
 	
     //SARGE: Bleeding
-    else if ((damageType == 'Bleed') || (damageType == 'BleedEffect'))
+    else if (damageType == 'BleedEffect')
 		return True;
 	else
 		return False;
@@ -329,7 +329,7 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
 
 	// robots don't have soft, squishy bodies like humans do, so they're less
 	// susceptible to gunshots...
-	if (damageType == 'Shot')
+	if (damageType == 'Shot' || damageType == 'Bleed') //SARGE: Added bleed check for shurikens
 	{
 	    if (theInstigator != None && theInstigator.inHand != None && theInstigator.inHand.IsA('WeaponNanoSword'))
 	    {
