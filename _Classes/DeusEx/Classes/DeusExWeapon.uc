@@ -1592,25 +1592,29 @@ function int CalculateTrueDamage()
 {
 	local int trueDamage;
     local DeusExPlayer P;
-    local float mult, temp;
-
-	trueDamage = HitDamage * (1.0 - (2.0 * GetWeaponSkill()) + ModDamage);
+    local float mult;
 
     P = DeusExPlayer(Owner);
 
     //SARGE: Factor in Targeting and Combat Strength
     //SARGE: NOTE: Targeting is handled in GetWeaponSkill, so not needed here.
-    if (P != None && P.AugmentationSystem != None)
+    if (P != None)
     {
-        mult = 0.0;
-        temp = P.AugmentationSystem.GetAugLevelValue(class'AugCombatStrength');
-        if (temp > 0)
-            mult += temp;
-    }
+        if (P.AugmentationSystem != None)
+            mult = P.AugmentationSystem.GetAugLevelValue(class'AugCombatStrength');
 
-    if (mult == 0)
-        mult = 1.0;
+        if (mult < 1.0)
+            mult = 0.0;
+        else
+            mult -= 1.0;
+        
+        if (P.AddictionManager.addictions[2].drugTimer > 0) //RSD: Zyme gives its own +50% boost
+            mult += 0.5;
+	}
 
+    trueDamage = HitDamage * (1.0 - (2.0 * GetWeaponSkill()) + mult + ModDamage);
+
+    //P.ClientMessage("Damage: " $ trueDamage @ "(" $ mult @ GetWeaponSkill() @ ")");
 	return trueDamage * mult;
 }
 
