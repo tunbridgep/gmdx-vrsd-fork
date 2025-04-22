@@ -762,6 +762,9 @@ var globalconfig int iFragileDarts;                                    //SARGE: 
 
 var globalconfig bool bReloadingResetsAim;                              //SARGE: Allow the "reloading resets aim" hardcore behaviour outside of hardcore.
 
+
+//SARGE: Fix the inventory bug on map load????? I have no idea if this actually works or not.
+var travel bool bDelayInventoryFix;
 const FemJCEyeHeightAdjust = -6;                                    //SARGE: Now the femJC eye height adjustment is handled by a const, so we can easily change it //SARGE: Was -2 originally, but that clips too much with ceilings.
 
 //SARGE: ??? - I wonder what this does :P
@@ -1658,6 +1661,8 @@ function PreTravel()
     drugEffectTimer = 0;
 	SaveSkillPoints();
 
+    bDelayInventoryFix = true;
+
     if (AugmentationSystem != None && AugmentationSystem.GetAugLevelValue(class'AugVision') != -1.0)
         AugmentationSystem.DeactivateAll();
     else if (UsingChargedPickup(class'TechGoggles'))
@@ -1851,6 +1856,10 @@ event TravelPostAccept()
 	   RocketTarget=spawn(class'DeusEx.GEPDummyTarget');
 
 	SetRocketWireControl();
+    
+    bDelayInventoryFix = false;
+
+
 	//end GMDX
 }
 //GMDX: set up mounted gep spawn, as no matter what i try it still draws it on spawn :/
@@ -3545,6 +3554,9 @@ function RepairInventory()
 	local int slotsCol;
 	local int slotsRow;
 	local Inventory curInv;
+
+    if (bDelayInventoryFix)
+        return;
 
 	if ((Level.NetMode != NM_Standalone) && (bBeltIsMPInventory))
 	  return;
@@ -8586,6 +8598,12 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 		if (foundItem != None)
 		{
 			bSlotSearchNeeded = False;
+
+            /*
+            //Absolute first thing, copy over any mods it has.
+            if (foundItem.IsA('DeusExWeapon') && FrobTarget.IsA('DeusExWeapon'))
+                DeusExWeapon(foundItem).CopyModsFrom(DeusExWeapon(FrobTarget),true);
+            */
 
 			// if this is an ammo, and we're full of it, abort the pickup
 			if (foundItem.IsA('Ammo'))
