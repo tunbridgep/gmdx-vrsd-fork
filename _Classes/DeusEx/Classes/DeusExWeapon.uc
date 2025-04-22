@@ -1583,13 +1583,35 @@ simulated function float GetWeaponSkill()
 	return value;
 }
 
+//SARGE: Terrible function, this needs a rewrite.
+//This is only used for updating the frob info in the tool window,
+//and for picking a melee weapon to use for left-frobbing.
+//It has absolutely no bearing on actually doing any damage,
+//which is why it needs a rework.
 function int CalculateTrueDamage()
 {
 	local int trueDamage;
+    local DeusExPlayer P;
+    local float mult, temp;
 
 	trueDamage = HitDamage * (1.0 - (2.0 * GetWeaponSkill()) + ModDamage);
 
-	return trueDamage;
+    P = DeusExPlayer(Owner);
+
+    //SARGE: Factor in Targeting and Combat Strength
+    //SARGE: NOTE: Targeting is handled in GetWeaponSkill, so not needed here.
+    if (P != None && P.AugmentationSystem != None)
+    {
+        mult = 0.0;
+        temp = P.AugmentationSystem.GetAugLevelValue(class'AugCombatStrength');
+        if (temp > 0)
+            mult += temp;
+    }
+
+    if (mult == 0)
+        mult = 1.0;
+
+	return trueDamage * mult;
 }
 
 // calculate the accuracy for this weapon and the owner's damage
