@@ -1365,24 +1365,44 @@ function bool HandlePickupQuerySuper( inventory Item )                          
 	return Inventory.HandlePickupQuery(Item);
 }
 
-function float SetDroppedAmmoCount(int amountPassed, bool bSearched) //RSD: Added optional int amountPassed for initialization in MissionScript.uc
+function float SetDroppedAmmoCount(int amountPassed, optional int impaleCount) //RSD: Added optional int amountPassed for initialization in MissionScript.uc //SARGE: Generified this for corpses too, now takes an optional impale count
 {
-    if (amountPassed == 0 && !bSearched)                                                      //RSD: If we didn't get anything, set to old formula //Ygll: change the test to advert empty weapon bug
+    if (amountPassed == 0) //RSD: If we didn't get anything, set to old formula
         amountPassed = Rand(4) + 1;
 
     // Any weapons have their ammo set to a random number of rounds (1-4)
 	// unless it's a grenade, in which case we only want to dole out one.
 	// DEUS_EX AMSD In multiplayer, give everything away.
 	// Grenades and LAMs always pickup 1
-	if (bDisposableWeapon)
-		PickupAmmoCount = 1;
-	else if (IsA('WeaponGepGun'))
+                        
+    //Handle impales.
+    if (IsA('WeaponShuriken') && impaleCount > 0)
+    {
+        if (impaleCount > 1)
+            impaleCount = 1; //Cap impales at one
+        PickupAmmoCount = impaleCount;
+        if (PickupAmmoCount == 0)
+            PickupAmmoCount = 1;
+    }
+
+    // Grenades and LAMs always pickup 1
+    else if (bDisposableWeapon && !IsA('WeaponShuriken'))
+        PickupAmmoCount = 1;
+    else if (IsA('WeaponFlamethrower'))
+        PickupAmmoCount = (amountPassed * 5);                    //SARGE: Now 5-25 rounds with initialization in MissionScript.uc on first map load
+    else if (IsA('WeaponPepperGun'))
+        PickupAmmoCount = 34 + (amountPassed * 4);               //SARGE: Now 35-50 rounds with initialization in MissionScript.uc on first map load
+    else if (IsA('WeaponAssaultGun'))
+        //PickupAmmoCount = Rand(5) + 1.5;                          //RSD
+        PickupAmmoCount = amountPassed + 1;                      //RSD: Now 2-5 rounds with initialization in MissionScript.uc on first map load
+    else if (IsA('WeaponGepGun'))
         PickupAmmoCount = 2;
-    else if (IsA('WeaponAssaultGun'))                                           //RSD: Now 2-5 rounds
-        PickupAmmoCount = amountPassed + 1;
-	else if (Level.NetMode == NM_Standalone)
-        //PickupAmmoCount = Rand(4) + 1;                                        //RSD
-        PickupAmmoCount = amountPassed;                                         //RSD
+    else if (amountPassed > 0)
+        PickupAmmoCount = amountPassed;                            //RSD
+    //SARGE: Failsafe??? Originally CyberP's code but made no sense
+    else if (default.PickupAmmoCount != 0)
+        PickupAmmoCount = 1; //CyberP: hmm
+
     clipcount = PickupAmmoCount;
 }
 

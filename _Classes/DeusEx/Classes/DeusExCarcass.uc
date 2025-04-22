@@ -839,8 +839,8 @@ function ExpelInventory()
                     // Any weapons have their ammo set to a random number of rounds (1-4)
                     // unless it's a grenade, in which case we only want to dole out one.
                     // DEUS_EX AMSD In multiplayer, give everything away.
-                    //if (DeusExWeapon(item).PickupAmmoCount != 0)              //RSD: No need for this check
-					DeusExWeapon(item).SetDroppedAmmoCount(PickupAmmoCount, bSearched);//RSD: Added PickupAmmoCount for initialization from MissionScript.uc
+                    if (PickupAmmoCount > 0)
+                        DeusExWeapon(item).SetDroppedAmmoCount(PickupAmmoCount, passedImpaleCount);//RSD: Added PickupAmmoCount for initialization from MissionScript.uc
                 }
             }
 
@@ -1052,35 +1052,9 @@ function Frob(Actor Frobber, Inventory frobWith)
 
                     if (!bSearched)     //Sarge: Attempted fix for ammo dupe bug
                     {
-
-                        //Handle impales.
-                        if (W.IsA('WeaponShuriken') && passedImpaleCount > 0)
-                        {
-                            if (passedImpaleCount > 4)
-                                passedImpaleCount = 4;
-                            w.PickupAmmoCount = passedImpaleCount;
-                            if (w.PickupAmmoCount == 0)
-                                w.PickupAmmoCount = 1;
-                        }
-                        // Grenades and LAMs always pickup 1
-                        else if (W.bDisposableWeapon && !W.IsA('WeaponShuriken'))
-                            W.PickupAmmoCount = 1;
-                        else if (W.IsA('WeaponFlamethrower'))
-                            W.PickupAmmoCount = (PickupAmmoCount * 5);                    //SARGE: Now 5-25 rounds with initialization in MissionScript.uc on first map load
-                        else if (W.IsA('WeaponPepperGun'))
-                            W.PickupAmmoCount = 34 + (PickupAmmoCount * 4);               //SARGE: Now 35-50 rounds with initialization in MissionScript.uc on first map load
-                        else if (W.IsA('WeaponAssaultGun'))
-                            //W.PickupAmmoCount = Rand(5) + 1.5;                          //RSD
-                            W.PickupAmmoCount = PickupAmmoCount + 1;                      //RSD: Now 2-5 rounds with initialization in MissionScript.uc on first map load
-                        else if (W.IsA('WeaponGepGun'))
-                            W.PickupAmmoCount = 2;
-                        else if (PickupAmmoCount > 0)
-                            W.PickupAmmoCount = PickupAmmoCount;                            //RSD
-                        else if (W.Default.PickupAmmoCount != 0)
-                            W.PickupAmmoCount = 1; //CyberP: hmm
+                        W.SetDroppedAmmoCount(PickupAmmoCount,passedImpaleCount);
+                        PickupAmmoCount = 0;
                     }
-                    //SARGE: Set weapons maximum clip size to however much left over ammo it has.
-                    W.ClipCount = W.PickupAmmoCount;
                 }
 
 				if (item != None)

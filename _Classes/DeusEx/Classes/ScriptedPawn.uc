@@ -3321,7 +3321,7 @@ function ExpelInventory()
 
 					//G-Flex: get the same ammo as from the carcass or a dropped weapon
 					if (item.IsA('DeusExWeapon'))
-						DeusExWeapon(item).SetDroppedAmmoCount(PickupAmmoCount, false);//RSD: Added PickupAmmoCount for initialization from MissionScript.uc
+						DeusExWeapon(item).SetDroppedAmmoCount(PickupAmmoCount);//RSD: Added PickupAmmoCount for initialization from MissionScript.uc
 				}
 
 				item = nextItem;
