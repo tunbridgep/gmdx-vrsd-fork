@@ -69,6 +69,7 @@ function DoWeaponOffset(DeusExPlayer player)
 function Draw(DeusExPlayer frobber)
 {
     DoWeaponOffset(frobber);
+    SetWeaponHandTex();
 }
 
 function PreBeginPlay()
@@ -79,15 +80,16 @@ function PreBeginPlay()
 
 simulated event RenderOverlays( canvas Canvas )
 {
-    //This has to be done here for some stupid reason
-    if (handsTex == None)
-        SetWeaponHandTex();
-
     //SARGE: TODO: Allow setting POV skins
     //multiskins[0] = POVSkin;
     multiskins[1] = handstex;
+    
+    if (bIsRadar || bIsCloaked)
+    {
+        ShowCamo();
+    }
+    
     super.RenderOverlays(canvas);
-    //multiskins[0] = none;
     multiskins[1] = none;
 }
 
