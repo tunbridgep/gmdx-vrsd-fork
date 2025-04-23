@@ -14,6 +14,7 @@ var travel int    CumulativeDamage;
 var travel int    MaxDamage;
 var travel string CorpseItemName;
 var travel Name   CarcassName;
+var travel int    passedImpaleCount;
 var travel Inventory Inv;
 var Texture pMultitex[8];
 var bool    bHasSkins;

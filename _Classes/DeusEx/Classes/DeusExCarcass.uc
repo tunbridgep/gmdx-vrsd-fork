@@ -913,6 +913,7 @@ function PickupCorpse(DeusExPlayer player)
             corpse.Inv=Inventory; //GMDX:dbl click
             corpse.bSearched = bSearched;
             corpse.PickupAmmoCount = PickupAmmoCount;
+            corpse.passedImpaleCount = passedImpaleCount;
             corpse.savedName = savedName;
             corpse.bFirstBloodPool = bFirstBloodPool; //SARGE: Remember if we've made a blood pool.
             corpse.Frob(player, None);
