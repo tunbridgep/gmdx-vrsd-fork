@@ -1635,7 +1635,7 @@ function int CalculateTrueDamage()
     trueDamage = HitDamage * (1.0 - (2.0 * GetWeaponSkill()) + mult + ModDamage);
 
     //P.ClientMessage("Damage: " $ trueDamage @ "(" $ mult @ GetWeaponSkill() @ ")");
-	return trueDamage * mult;
+	return trueDamage;
 }
 
 // calculate the accuracy for this weapon and the owner's damage
