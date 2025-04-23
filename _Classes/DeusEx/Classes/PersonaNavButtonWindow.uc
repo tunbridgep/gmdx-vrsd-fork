@@ -37,6 +37,6 @@ event StyleChanged()
 
 defaultproperties
 {
-     bBaseWidthOnText=True
-     bCenterText=True
+     bBaseWidthOnText=true
+     bCenterText=true
 }
