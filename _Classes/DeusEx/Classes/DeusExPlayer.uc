@@ -956,6 +956,14 @@ function ClientMessage(coerce string msg, optional Name type, optional bool bBee
     Super.ClientMessage(msg,type,bBeep);
 }
 
+//SARGE: Allow printing when debug mode is enabled
+function DebugMessage(coerce string msg)
+{
+    if (bGMDXDebug)
+        ClientMessage(msg);
+}
+
+
 // ----------------------------------------------------------------------
 // AssignSecondary
 // Sarge: Now needed because we need to fix up our charged item display if it's out of date
@@ -8444,10 +8452,11 @@ function PlayPickupAnim(Vector locPickup)
 //
 // Returns the number of rounds they were able to pick up.
 // ----------------------------------------------------------------------
-function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool bShowWindow, optional bool bLootSound, optional bool bNoGroup, optional bool bNoOnes, optional bool bShowOverflowMsg)
+function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool bShowWindow, optional bool bLootSound, optional bool bNoGroup, optional bool bNoOnes, optional bool bShowOverflowMsg, optional Texture overrideTexture)
 {
     local int MaxAmmo, prevAmmo, ammoCount, intj, over, ret;
     local DeusExAmmo AmmoType;
+    local Texture prevTexture;
     
     /*
     ClientMessage("----LOOTAMMO CALLED----"); 
@@ -8514,7 +8523,17 @@ function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool
             
         if (bShowWindow)
         {
-            AddReceivedItem(AmmoType, intj, bNoGroup);
+            //SARGE: This is a hack to allow us to change icons for ammo.
+            //Used for bloody shurikens.
+            if (overrideTexture != None)
+            {
+                prevTexture = AmmoType.Icon;
+                AmmoType.Icon = overrideTexture;
+                AddReceivedItem(AmmoType, intj, bNoGroup);
+                AmmoType.Icon = prevTexture;
+            }
+            else
+                AddReceivedItem(AmmoType, intj, bNoGroup);
         }
 
         //If we only took a partial amount, make a special sound.
@@ -8553,10 +8572,11 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 	local bool bCanPickup;
 	local bool bSlotSearchNeeded;
 	local Inventory foundItem;
-    local DeusExAmmo foundAmmo;
+    local Ammo foundAmmo;
     local DeusExAmmo assignedAmmo;
     local int intj;
     local bool bDeclined;
+    local bool bLootedAmmo;
 
 	bSlotSearchNeeded = True;
 	bCanPickup = True;
@@ -8636,8 +8656,12 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 
 				if (!bCanPickup)
 					ClientMessage(Sprintf(CanCarryOnlyOne, foundItem.itemName));
+
+                /*
 				//DeusExWeapon(foundItem).SetMaxAmmo();                           //RSD: No longer needed
-			  	if (Weapon(foundItem).AmmoType != none && Weapon(foundItem).AmmoType.AmmoAmount >= GetAdjustedMaxAmmo(Weapon(foundItem).AmmoType)) //RSD: removed DeusExWeapon(foundItem).MaxiAmmo for adjusted, changed DeusExWeapon to Weapon, added none check
+			  	//if (Weapon(foundItem).AmmoType != none && Weapon(foundItem).AmmoType.AmmoAmount >= GetAdjustedMaxAmmo(Weapon(foundItem).AmmoType)) //RSD: removed DeusExWeapon(foundItem).MaxiAmmo for adjusted, changed DeusExWeapon to Weapon, added none check
+		        foundAmmo = Ammo(FindInventoryType(DeusExWeapon(foundItem).GetPrimaryAmmoType()));
+			  	if (foundAmmo != none && foundAmmo.AmmoAmount >= GetAdjustedMaxAmmo(foundAmmo)) //SARGE: Completely rewrote this because it was breaking when we're using secondary ammo types.
 				{
                     if (DeusExWeapon(foundItem).bDisposableWeapon) //SARGE: Disposable weapons have a different message
                     	ClientMessage(class'DeusExPickup'.default.msgTooMany);
@@ -8645,11 +8669,30 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
                     	ClientMessage(TooMuchAmmo);
 					bCanPickup = False;
 				}
-
+                */
 			}
 		}
 	}
 
+    //SARGE: Always try looting non-disposable weapons of their ammo
+    if (bCanPickup && FrobTarget.IsA('DeusExWeapon') && !bFromCorpse && !DeusExWeapon(frobTarget).bDisposableWeapon)
+    {
+        bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,true,bAlwaysShowReceivedItemsWindow,false,false,bShowOverflow);
+
+        //Make a noise if we picked up partial ammo
+        if (bLootedAmmo && DeusExWeapon(frobTarget).PickupAmmoCount > 0)
+            PlayPartialAmmoSound(frobTarget,DeusExWeapon(frobTarget).GetPrimaryAmmoType());
+        
+        //Don't pick up a weapon if there's ammo in it and we already have one
+        if (!bSlotSearchNeeded && DeusExWeapon(frobTarget).PickupAmmoCount > 0 && bCanPickup)
+        {
+            //if (!bLootedAmmo)
+            //    ClientMessage(TooMuchAmmo);
+            bCanPickup = False;
+        }
+
+    }
+	
 	if (bSlotSearchNeeded && bCanPickup)
 	{
 //	  log("MYCHK::DXPlayer::HIP::ADD TO::"@FrobTarget);
@@ -8659,39 +8702,33 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 			bCanPickup = False;
 			ServerConditionalNotifyMsg( MPMSG_DropItem );
             
-            if (frobTarget != None && frobTarget.IsA('DeusExWeapon'))
-            {
-                if (DeusExWeapon(frobTarget).bDisposableWeapon || !DeusExWeapon(frobTarget).LootAmmo(self,true,bAlwaysShowReceivedItemsWindow,true,false,bShowOverflow))
-                    ClientMessage(Sprintf(InventoryFull, Inventory(FrobTarget).itemName));
-            }
+            if (frobTarget != None && frobTarget.IsA('DeusExWeapon') && !bLootedAmmo)
+                ClientMessage(Sprintf(InventoryFull, Inventory(FrobTarget).itemName));
             else if (frobTarget != None)
                 ClientMessage(Sprintf(InventoryFull, Inventory(FrobTarget).itemName));
 		}
 	}
-	
-    //SARGE: Decline checking.
+
     if (bSlotSearchNeeded && bCanPickup)
     {
 		if (FrobTarget.IsA('WeaponShuriken'))
 			WeaponShuriken(FrobTarget).SetFrobNameHack(WeaponShuriken(FrobTarget).PickupAmmoCount == 1);
 
+        //SARGE: Decline checking.
         if (!bSkipDeclineCheck)
             bDeclined = CheckFrobDeclined(FrobTarget);
         if (!bDeclined && !bSearchOnly)
             FindInventorySlot(Inventory(FrobTarget), false);
     }
 
-    if (bCanPickup)
-    {
-        //SARGE: Report on the ammo inside the weapon
-        if (frobTarget != None && frobTarget.IsA('DeusExWeapon') && (bFromCorpse || !DeusExWeapon(frobTarget).bDisposableWeapon))
-            DeusExWeapon(frobTarget).LootAmmo(self,true,bAlwaysShowReceivedItemsWindow || bFromCorpse,false,bShowOverflow);
-    }
-
 	if (bCanPickup && !bDeclined)
 	{
         //if (FrobTarget.IsA('WeaponLAW'))
 		//	PlaySound(sound'WeaponPickup', SLOT_Interact, 0.5+FRand()*0.25, , 256, 0.95+FRand()*0.1);
+        
+        //SARGE: Since we haven't looted Disposable weapons yet, do so now.
+        if (FrobTarget.IsA('DeusExWeapon') && DeusExWeapon(frobTarget).bDisposableWeapon)
+            DeusExWeapon(frobTarget).LootAmmo(self,foundItem != None || bFromCorpse,bFromCorpse,false,false,false);
 
         DoFrob(Self, inHand);
         /*if ( FrobTarget.IsA('DeusExWeapon') && bLeftClicked) //CyberP: for left click interaction //RSD: This is actually in FindInventorySlot() already, and the conflict made the player equip nothing

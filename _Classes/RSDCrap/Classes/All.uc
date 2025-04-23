@@ -129,6 +129,9 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\BeltIconAmmoDartsTaser.pcx"	    NAME="BeltIconAmmoDartsTaser"   GROUP="Icons"
 #exec TEXTURE IMPORT FILE="Textures\ChargedIconArmorAdaptive.pcx"	NAME="ChargedIconArmorAdaptive" GROUP="Icons"
 
+//Bloody Shuriken
+#exec TEXTURE IMPORT FILE="Textures\BeltIconShurikenBloody.pcx"	    NAME="BeltIconShurikenBloody"   GROUP="Icons"   FLAGS=2
+
 //Crap
 #exec TEXTURE IMPORT FILE="Textures\Skins\SpartaSign.pcx"	        NAME="SpartaSign" GROUP="Skins"
 #exec TEXTURE IMPORT FILE="Textures\Skins\HDTPSpartaSign.pcx"	    NAME="HDTPSpartaSign" GROUP="Skins"

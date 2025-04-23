@@ -93,6 +93,9 @@ var bool bDontRemovePool; //SARGE: If set, the blood pool isn't removed when del
 
 var sound LootPickupSound;            //SARGE: Sound played if we pick up anything from this corpse.
 
+//SARGE: Since now enemies can have knives independently of impales, we need to track if impales are done.
+var int impalesProcessed;
+
 // ----------------------------------------------------------------------
 // ShouldCreate()
 // If this returns FALSE, the object will be deleted on it's first tick
@@ -839,7 +842,7 @@ function ExpelInventory()
                     // Any weapons have their ammo set to a random number of rounds (1-4)
                     // unless it's a grenade, in which case we only want to dole out one.
                     // DEUS_EX AMSD In multiplayer, give everything away.
-                    if (PickupAmmoCount > 0)
+                    if (PickupAmmoCount > 0 && !bSearched)
                         DeusExWeapon(item).SetDroppedAmmoCount(PickupAmmoCount, passedImpaleCount);//RSD: Added PickupAmmoCount for initialization from MissionScript.uc
                 }
             }
@@ -949,6 +952,7 @@ function Frob(Actor Frobber, Inventory frobWith)
     local bool bPickedSomethingUp;                                              //SARGE: Did we pick anything up from this corpse?
     local bool bDeclined;
     local bool bLootResult;
+    local bool bProcessedImpale;
 
 	// Can we assume only the *PLAYER* would actually be frobbing carci?
 	player = DeusExPlayer(Frobber);
@@ -1054,7 +1058,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                     if (!bSearched)     //Sarge: Attempted fix for ammo dupe bug
                     {
                         W.SetDroppedAmmoCount(PickupAmmoCount,passedImpaleCount);
-                        PickupAmmoCount = 0;
+                        PickupAmmoCount = 0; //SARGE: WTF, why does this work??
                     }
                 }
 
@@ -1116,10 +1120,14 @@ function Frob(Actor Frobber, Inventory frobWith)
 						// the weapon).
 						else if ((W != None) || (W == None && (bDeclined||!player.FindInventorySlot(item, True))))
 						{
-                            bLootResult = LootWeaponAmmo(DeusExPlayer(P),DeusExWeapon(item));
+
+                            bLootResult = LootWeaponAmmo(DeusExPlayer(P),DeusExWeapon(item),!bSearched);
                             bFoundSomething = bFoundSomething || bLootResult;
                             bFoundInvalid = bFoundInvalid || PickupAmmoCount > 0;
                             bPickedSomethingUp = bPickedSomethingUp || bLootResult;
+
+                            if (item.IsA('WeaponShuriken') && bLootResult)
+                                impalesProcessed++;
 
                             //Destroy disposable weapons after taking their ammo.
                             if (DeusExWeapon(item).bDisposableWeapon && Weapon(item).PickupAmmoCount <= 0)
@@ -1296,6 +1304,9 @@ function Frob(Actor Frobber, Inventory frobWith)
                                         //PlaySound(Item.PickupSound);
                                             
                                         bPickedSomethingUp = True;
+
+                                        if (item.IsA('WeaponShuriken'))
+                                            impalesProcessed++;
                                         
                                         if (!item.IsA('DeusExWeapon') || !DeusExWeapon(item).bDisposableWeapon)
                                         // Show the item received in the ReceivedItems window and also
@@ -1322,7 +1333,6 @@ function Frob(Actor Frobber, Inventory frobWith)
 						}
 					}
 				}
-
                 //log("Processed Item: " $ item.name $ ", bFoundSomething: " $ bFoundSomething);
 				item = nextItem;
 			}
@@ -1393,7 +1403,21 @@ function Frob(Actor Frobber, Inventory frobWith)
 //Plays the "splat" sound when we loot throwing knives from enemies.
 function bool LootWeaponAmmo(DeusExPlayer P, DeusExWeapon item, optional bool bShowOverflow)
 {
-    if(item.LootAmmo(P,true,true,false,false,bShowOverflow))
+    local Texture replaceTexture;
+    local bool bResult;
+
+    //SARGE: Hack to make Shurikens appear bloody
+    //SARGE: TODO: Make this actually work with more than 1 impale,
+    //which is kinda annoying. We need to track how many of each we take and etc...
+    //WARNING: Impales processed is basically a lie.
+    //It's actually the number of WeaponShurikens processed, not the total amount of Shuriken ammo.
+    if (item.isA('WeaponShuriken') && passedImpaleCount > 0 && impalesProcessed < passedImpaleCount)
+    {
+        replaceTexture = Texture'RSDCrap.Icons.BeltIconShurikenBloody';
+        //P.ClientMessage("Bloody Shuriken:" @ impalesProcessed @ "of" @ passedImpaleCount);
+    }
+
+    if(item.LootAmmo(P,true,true,false,false,bShowOverflow,replaceTexture))
     {
         //SARGE: HACK splat - Picking up shuriken that was impaled into an enemy!
         if (passedImpaleCount > 0 && item.IsA('WeaponShuriken'))
@@ -1402,6 +1426,7 @@ function bool LootWeaponAmmo(DeusExPlayer P, DeusExWeapon item, optional bool bS
 
         return true;
     }
+
     return false;
 }
 

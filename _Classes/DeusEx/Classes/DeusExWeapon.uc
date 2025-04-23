@@ -378,12 +378,26 @@ replication
 }
 
 // ----------------------------------------------------------------------
+// GetPrimaryAmmoType()
+//
+// SARGE: Returns the main ammo type of the weapon, since we can't pick up secondaries usually
+// ----------------------------------------------------------------------
+function class<Ammo> GetPrimaryAmmoType()
+{
+    if ( AmmoNames[0] == None )
+        return AmmoName;
+    else
+        return AmmoNames[0];
+
+}
+
+// ----------------------------------------------------------------------
 // LootWeaponAmmo()
 //
 // SARGE: Refactored this out of the Carcass Frob function so it was hopefully less horribly long,
 // and it was repeated everywhere, all over the codebase. For shame, GMDX!!!
 // ----------------------------------------------------------------------
-function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, optional bool bLootSound, optional bool bNoRemoveClipAmmo, optional bool bOverflow)
+function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, optional bool bLootSound, optional bool bNoRemoveClipAmmo, optional bool bOverflow, optional Texture overrideTexture)
 {
     local class<Ammo> defAmmoClass;
     local int intj;
@@ -394,20 +408,17 @@ function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, op
     // Only add ammo of the default type
     // There was an easy way to get 32 20mm shells, buy picking up another assault rifle with 20mm ammo selected
     // Add to default ammo only
-    if ( AmmoNames[0] == None )
-        defAmmoClass = AmmoName;
-    else
-        defAmmoClass = AmmoNames[0];
+    defAmmoClass = GetPrimaryAmmoType();
 
     //hack
     if (defAmmoClass == class'AmmoNone' || self.PickupAmmoCount <= 0)
         return false;
 
-    intj = P.LootAmmo(defAmmoClass,PickupAmmoCount,bDisplayMsg,bDisplayWindow,bLootSound,!bDisposableWeapon,bDisposableWeapon,bOverflow);
+    intj = P.LootAmmo(defAmmoClass,PickupAmmoCount,bDisplayMsg,bDisplayWindow,bLootSound,!bDisposableWeapon,bDisposableWeapon,bOverflow,overrideTexture);
 
     if (intj > 0)
     {
-        if (!bNoRemoveClipAmmo)
+        if (!bNoRemoveClipAmmo && !bDisposableWeapon)
             self.ClipCount = MAX(self.ClipCount - intj,0);
         PickupAmmoCount = MAX(PickupAmmoCount - intj,0);
         //P.ClientMessage("intj is > 0: " $ intj $ ", with pickupammocount: " $ pickupammocount);
@@ -1282,30 +1293,11 @@ function bool HandlePickupQuery(Inventory Item)
         player.UpdateHUD(); //SARGE: Required now because weapons can have + icons in the HUD
 		
     }
-    
-    //SARGE: Hacky shurikan name fix
-    if (IsA('WeaponShuriken'))
-        WeaponShuriken(Self).SetFrobNameHack(W.PickupAmmoCount == 1);
 
 	if (Item.Class == Class)
 	{
 	  if (!( (Weapon(item).bWeaponStay && (Level.NetMode == NM_Standalone)) && (!Weapon(item).bHeldItem || (Weapon(item).bTossedOut))))
 		{
-        
-            //Block picking it up if we don't have ammo to do so.
-            W.LootAmmo(player,true,false,false);
-            if (W.PickupAmmoCount > 0)
-            {
-                //SARGE: Hacky shurikan name fix
-                if (IsA('WeaponShuriken'))
-                    WeaponShuriken(Self).SetFrobNameHack(false);
-
-                //We have to play the sound manually here so that it only plays when we're grabbing a partial amount.
-                player.PlayPartialAmmoSound(W,W.AmmoName);
-
-                return true;
-            }
-
             if ( Level.NetMode != NM_Standalone )
             {
                 if (( player != None ) && ( player.InHand != None ))
@@ -1371,10 +1363,6 @@ function bool HandlePickupQuerySuper( inventory Item )                          
         */
 		Item.PlaySound(Item.PickupSound);
 		Item.SetRespawn();
-    
-        //SARGE: Hacky shurikan name fix
-        if (IsA('WeaponShuriken'))
-            WeaponShuriken(Self).SetFrobNameHack(false);
 		
         return true;
 	}
