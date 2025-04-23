@@ -89,6 +89,7 @@ defaultproperties
      items(71)=(HelpText="If enabled, the New Game screen will automatically start with Pistols upgraded to Trained.",actionText="Player: Start with Pistols at Trained",variable="bPistolStartTrained",defaultValue=1)
      items(72)=(HelpText="If enabled, the Items Received window will be shown when looting partial ammo counts from weapons or ammo pickups without picking them up.",actionText="HUD: Show Items Window When Looting Ammo",variable="bAlwaysShowReceivedItemsWindow",defaultValue=0)
      items(73)=(HelpText="If enabled, the maximum number of a given item type will be shown on the inventory icon, instead of just the count.",actionText="HUD: Show Max Stacks",variable="iShowTotalCounts",defaultValue=1,valueText1="Limited",valueText2="Everything")
+     items(75)=(HelpText="If enabled, killed enemies will drop their current weapon as they die. Realism option, not intended for general use.",actionText="Game: Enemies Drop Weapons on Death",variable="bDropWeaponsOnDeath",defaultValue=0)
      Title="GMDX Quality of Life Options"
      colWidths(0)=214
      colWidths(1)=155

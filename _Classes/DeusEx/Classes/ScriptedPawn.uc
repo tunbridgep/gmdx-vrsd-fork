@@ -2686,23 +2686,28 @@ function SetupWeapon(bool bDrawWeapon, optional bool bForce)
 function DropWeapon()
 {
 	local DeusExWeapon dxWeapon;
+    local vector loc;
 
 	if (Weapon != None && !Weapon.IsA('WeaponRifle'))
 	{
 		dxWeapon = DeusExWeapon(Weapon);
-		if ((dxWeapon == None) || !dxWeapon.bNativeAttack)
+		if (dxWeapon != None && !dxWeapon.bNativeAttack)
 		{
-			if (Weapon.IsA('WeaponAssaultGunSpider')) //CyberP: make sure these are destroyed
+			if (dxWeapon.IsA('WeaponAssaultGunSpider')) //CyberP: make sure these are destroyed
             {
-			    Weapon.Destroy();
+			    dxWeapon.Destroy();
                 SetWeapon(None);
                 return;
             }
 			else
-			    Weapon.DropFrom(Location);
+            {
+                //SARGE: Get a spot to our right based on our rotation.
+                loc = Location + (CollisionRadius * Vect(0,1,0) >> Rotation);
+                if (!dxWeapon.CheckDropFrom(loc,Location))
+                    return;
+            }
 			
-            if (dxWeapon != None)  //CyberP: Dropped weapons onto the floor should really give ammo...
-                dxWeapon.SetDroppedAmmoCount(PickupAmmoCount);   //RSD: Added PickupAmmoCount for initialization from MissionScript.uc
+            dxWeapon.SetDroppedAmmoCount(PickupAmmoCount);   //RSD: Added PickupAmmoCount for initialization from MissionScript.uc
 			
             SetWeapon(None);
 		}
@@ -16773,6 +16778,10 @@ state Dying
 	}
 
 Begin:
+    //SARGE: Drop weapons on death.
+    if (class'DeusExPlayer'.default.bDropWeaponsOnDeath && Health > -100 && !IsA('Robot'))
+        DropWeapon();
+
 	WaitForLanding();
 	MoveFallingBody();
 

@@ -793,6 +793,8 @@ var globalconfig int iShowTotalCounts;                        //SARGE: Show the 
 var globalconfig bool bGMDXDebug;                                   //SARGE: Allows extra debug info/messages. Not for regular players!
 
 var globalconfig bool bAllowSelectingOffAdvBelt;               //SARGE: When selecting an item that isn't on the alternate toolbelt, clear the primary belt selection.
+var globalconfig bool bDropWeaponsOnDeath;                      //SARGE: If enabled, NPCs will drop weapons on death.
+
 //////////END GMDX
 
 // OUTFIT STUFF

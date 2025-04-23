@@ -695,6 +695,25 @@ function SupportActor( actor StandingActor )
 	StandingActor.SetBase( self );
 }
 
+//SARGE: Proper version of DropFrom that actually returns a value.
+
+function bool CheckDropFrom(vector StartLocation, optional vector fallback)
+{
+    local vector loc;
+
+    loc = StartLocation;
+
+	if (!SetLocation(loc))
+    {
+        loc = fallback;
+        if (!SetLocation(loc))
+            return false;
+    }
+
+     DropFrom(loc);
+     return true;
+}
+
 function DropFrom(vector StartLocation)
 {
 	if ( !SetLocation(StartLocation) )
