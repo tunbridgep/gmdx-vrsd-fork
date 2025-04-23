@@ -3743,7 +3743,8 @@ simulated function PlaySelectiveFiring()
 		{
 		    if (IsA('WeaponAssaultGun'))
 		    {
-	           mod = 1.000000;
+	           //mod = 1.000000;
+	           mod = 2.000000; // SARGE: 3/5 speed increase, convert 5 round burst to 3 round burst
 	           PlayAnim(anim,1 * (mod-2*ModShotTime), 0.1);
 		    }
 		    else if (IsA('WeaponStealthPistol'))
