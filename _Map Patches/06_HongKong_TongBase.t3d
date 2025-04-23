@@ -733,7 +733,7 @@ Begin Actor Class=Brush Name=Brush243
              Vertex   +00064.000000,-00064.000000,-00064.000000
              Vertex   -00064.000000,-00064.000000,-00064.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=ClenBrownWood_A Link=2
+          Begin Polygon Item=OUTSIDE Texture=Floor3 Link=2
              Origin   -00064.000008,+00064.000000,-00064.000000
              Normal   +00000.000000,+00001.000000,+00000.000000
              Pan      U=-16 V=14
@@ -744,7 +744,7 @@ Begin Actor Class=Brush Name=Brush243
              Vertex   +00064.000000,+00064.000000,+00064.000000
              Vertex   +00064.000000,+00064.000000,-00064.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=ClenBrownWood_A Link=3
+          Begin Polygon Item=OUTSIDE Texture=Floor3 Link=3
              Origin   +00064.000008,-00064.000000,-00064.000000
              Normal   +00000.000000,-00001.000000,+00000.000000
              Pan      U=-16 V=14
@@ -755,7 +755,7 @@ Begin Actor Class=Brush Name=Brush243
              Vertex   -00064.000000,-00064.000000,+00064.000000
              Vertex   -00064.000000,-00064.000000,-00064.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=ClenBrownWood_A Link=4
+          Begin Polygon Item=OUTSIDE Texture=Floor3 Link=4
              Origin   +00064.000008,+00064.000000,-00064.000000
              Normal   +00001.000000,+00000.000000,+00000.000000
              Pan      U=-16 V=14
@@ -766,7 +766,7 @@ Begin Actor Class=Brush Name=Brush243
              Vertex   +00064.000000,-00064.000000,+00064.000000
              Vertex   +00064.000000,-00064.000000,-00064.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=ClenBrownWood_A Link=5
+          Begin Polygon Item=OUTSIDE Texture=Floor3 Link=5
              Origin   -00064.000008,-00064.000000,-00064.000000
              Normal   -00001.000000,+00000.000000,+00000.000000
              Pan      U=-16 V=14
