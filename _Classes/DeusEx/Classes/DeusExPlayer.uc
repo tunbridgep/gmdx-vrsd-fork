@@ -792,7 +792,6 @@ var globalconfig int iShowTotalCounts;                        //SARGE: Show the 
 
 var globalconfig bool bGMDXDebug;                                   //SARGE: Allows extra debug info/messages. Not for regular players!
 
-var globalconfig bool bAllowSelectingOffAdvBelt;               //SARGE: When selecting an item that isn't on the alternate toolbelt, clear the primary belt selection.
 var globalconfig bool bDropWeaponsOnDeath;                      //SARGE: If enabled, NPCs will drop weapons on death.
 
 //////////END GMDX
@@ -8980,8 +8979,11 @@ exec function PutInHand(optional Inventory inv, optional bool bNoPrimary)
 		//	return;
 
         //SARGE: Adding charged pickups as your last used weapon feels bad.
-		if (inv.IsA('ChargedPickup'))
+        //SARGE: Overruled!
+        /*
+		if (inv.IsA('ChargedPickup') && !inv.bInObjectBelt)
             bNoPrimary = true;
+        */
 
 	}
 
@@ -8997,13 +8999,11 @@ exec function PutInHand(optional Inventory inv, optional bool bNoPrimary)
     if (!bNoPrimary)
         bLastWasEmpty = inv == None;
     
+    //SARGE: If we don't have a valid advBelt selection, the first selection is valid.
     if (!bNoPrimary && advBelt == -1 && inv.bInObjectBelt)
         advBelt = inv.beltPos;
 
     SetInHandPending(inv);
-
-    if (inv != None && !inv.bInObjectBelt && !bNoPrimary && bAllowSelectingOffAdvBelt)
-        advBelt = -1;
                 
     //clientMessage("PutInHand called for : " $ inv $ ", bBeltSkipNextPrimary=" $ bBeltSkipNextPrimary);
 
@@ -18778,5 +18778,4 @@ defaultproperties
      bStreamlinedRepairBotInterface=true
      iShowTotalCounts=1
      iSmartKeyring=1
-     bAllowSelectingOffAdvBelt=true
 }
