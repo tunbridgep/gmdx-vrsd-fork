@@ -8246,6 +8246,24 @@ function DoAutoHolster()
 }
 
 // ----------------------------------------------------------------------
+// SARGE: Holster()
+// Replaces the "Put away item" key in the options
+// ----------------------------------------------------------------------
+exec function Holster()
+{
+    if (inHand != None)
+    {
+        bSelectedFromMainBeltSelection = false;
+        PutInHand(None);
+    }
+    else
+    {
+        bSelectedFromMainBeltSelection = true;
+        SelectLastWeapon(false,true);
+    }
+}
+
+// ----------------------------------------------------------------------
 // ParseRightClick()
 // ----------------------------------------------------------------------
 
