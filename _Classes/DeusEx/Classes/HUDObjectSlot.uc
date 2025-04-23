@@ -277,9 +277,9 @@ event DrawWindow(GC gc)
         weapon = DeusExWeapon(item);
         // Draw the item description at the bottom
         if (weapon != None)
-            gc.DrawText(1, 42, 42, 7, weapon.GetBeltDescription(player));
+            gc.DrawText(1+1, 42, 42, 7, weapon.GetBeltDescription(player));
         else if (item != None)
-            gc.DrawText(1, 42, 42, 7, item.beltDescription);
+            gc.DrawText(1+1, 42, 42, 7, item.beltDescription);
 
         if (player.bColorCodedAmmo) //CyberP: start
         {
@@ -323,15 +323,15 @@ event DrawWindow(GC gc)
 
 		if ((objectNum >=1) && (objectNum <=3))
 		{
-			gc.DrawText(1, 42, 42, 7, "WEAPONS");
+			gc.DrawText(1+1, 42, 42, 7, "WEAPONS");
 		}
 		else if ((objectNum >=4) && (objectNum <=6))
 		{
-			gc.DrawText(1, 42, 42, 7, "GRENADES");
+			gc.DrawText(1+1, 42, 42, 7, "GRENADES");
 		}
 		else if ( ((objectNum >=7) && (objectNum <=9)) || (objectNum == 0) )
 		{
-			gc.DrawText(1, 42, 42, 7, "TOOLS");
+			gc.DrawText(1+1, 42, 42, 7, "TOOLS");
 		}
     }
 
