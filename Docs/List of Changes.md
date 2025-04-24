@@ -41,6 +41,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed a vanilla game bug that would prevent weapons from spawning with ammo available if there wasn't enough room to spawn the ammo when being picked up.
     - Fixed many other GMDX and Vanilla bugs.
 - Quality of Life Improvements:
+    - Data Cubes containing images will now show the image rather than simply saying you received an image.
     - Duplicate Nano-Keys are no longer shown in the "Received Items" window when picked up from carcasses.
     - Ballistic Armour and Hazmat Suits are now kept equipped when drained, but will have no effect.
         - Recharging them in any way (such as through biocells or a repair bot) will make them active again
@@ -195,6 +196,12 @@ Sarge's Changes since Beta 2.2:
     - The Pedometer can now be viewed in the Health screen when using the Addiction system.
     - Subtitles are now enabled in third-person cutscenes regardless of Subtitles setting, allowing text to show instead of useless black bars while also not displaying in-game barks. This can be disabled using the `bSubtitlesCutscene` option in `DeusEx.ini`
 - Gameplay Changes:
+    - Tech Goggles and Vision Enhancement Changes
+        - Battery increased by 30% (from 500 to 650)
+        - Tech Goggles and Level 1 Vision now show all targets in green, rather than being targeted in various colours based on IFF info
+        - Tech Goggles and Level 1 Vision can no longer see cloaked enemies
+        - Upgraded tech goggles (via the Thermal Imaging perk) and Vision level 3+ work as they did before, with full thermal vision and the ability to see cloaked enemies and enemies through walls.
+        - Tech Goggles and the Vision Augmentation are now able to highlight turrets and cameras (was previously only available in multiplayer).
     - JC can now carry 30 Zyme instead of 20, to facilitate selling every one you find to Renault.
     - Laser Triggers can no longer be set off by medical and repair bots.
     - Karkians and other transgenics will no longer drown when unconscious.
@@ -225,6 +232,9 @@ Sarge's Changes since Beta 2.2:
         - This was done because of integer truncation. In GMDX v9, the 5th upgrade would change their base damage from 4.2 to 4.5, which was pointless as it was rounded to 4 either way.
         - With vRSD partial damage calculations were added, so this is now relevant again.
     - Crowbar has been changed from +5 damage vs breakables to instead having 2x damage against breakables, to scale better with low-tech.
+    - Added a new playthrough modifier for adding some cut interactions, namely:
+        - JC can arm Miguel with various weapons, including a crossbow, stealth pistol, and others. Miguel will keep them with him thoughout the UNATCO escape.
+        - JC can give Thermoptic Camo to Tiffany Savage, during the Gas Station rescue, which will allow her to escape to the helicopter while cloaked.
     - Augmentation Changes
         - Augmentations with a long recharge (like the Spy Drone) now have a progress bar in the augmentation display in the HUD to show when they will be ready.
         - Augmentations can now be swapped out with the opposite choice when finding duplicate augmentation Canisters.
@@ -346,7 +356,10 @@ Sarge's Changes since Beta 2.2:
     - The Laser Sight on Liberty Island is replaced with a Recoil Mod on Hardcore mode
     - A Laser Sight has been added to Smuggler's safe in the first NY visit (replaces a recoil mod)
     - The Silencer in Paul's Apartment, Full-Auto Mod in Tong's Lab, and Laser Sight in Smugglers Safe are all guaranteed to appear even with the weapon mod shuffle turned on.
+    - Vandenberg:
+        - The security code is no longer given by the research team on Hardcore. You will need to use your hacking skill if you wish to access the security system!
 - Miscellaneous Changes:
+    - MJ12 Elites have had their voices reset to the default troop voices, because they don't have female-appropriate voice lines and the voices sound strange and broken in many ways.
     - Many default "<item> Activated" messages have been removed as these would pollute the log.
     - Added miscelanous sounds when interacting with certain things, such as the Bioelectric "hiss" sound when using repair bots.
     - Fixed misaligned HUD elements (ammo display and belt) by moving the Ammo display down slightly.

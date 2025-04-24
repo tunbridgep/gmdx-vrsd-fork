@@ -516,6 +516,7 @@ function EEventAction SetupEventCheckObject( ConEventCheckObject event, out Stri
 	local Name keyName;
 	local bool bHasObject;
 	local DeusExWeapon wep;
+    local ChargedPickup P;
 
 	// Okay this is some HackyHack stuff here.  We want the ability to
 	// check if the player has a particular nanokey.  Sooooooo.
@@ -528,7 +529,7 @@ function EEventAction SetupEventCheckObject( ConEventCheckObject event, out Stri
 	}
 	else
 	{
-		bHasObject = (player.FindInventoryType(event.checkObject) != None);
+	      bHasObject = (player.FindInventoryType(event.checkObject) != None);
 
         if (bHasObject && player.FindInventoryType(event.checkObject).IsA('DeusExWeapon')) //CyberP: ignore the wep if it is modded
         {

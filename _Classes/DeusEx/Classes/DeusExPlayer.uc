@@ -601,6 +601,7 @@ var travel bool bRandomizeMods;
 var travel bool bRandomizeAugs;
 var travel bool bRandomizeEnemies;
 var travel bool bRandomizeCrap;                                                 //Sarge: Randomize the crap around the level, like couch skins, etc.
+var travel bool bCutInteractions;                                               //Sarge: Allow cut-content interactions like arming Miguel and giving Tiffany Thermoptic Camo
 var travel bool bRestrictedSaving;												//Sarge: This used to be tied to hardcore, now it's a config option
 var travel int iNoKeypadCheese;													//Sarge: 1 = Prevent using keycodes that we don't know, 2 = additionally prevent plot skips, 3 = additionally obscure keypad code length.
 var travel int seed;                                                            //Sarge: When using randomisation playthrough modifiers, this is our generated seed for the playthrough, to prevent autosave abuse and the like
@@ -668,6 +669,8 @@ var globalconfig bool bFemaleHandsAlways;                                      /
 
 var globalconfig bool bShowDataCubeRead;                                      //SARGE: If true, darken the screens on Data Cubes when they have been read.
 
+var globalconfig bool bShowDataCubeImages;                                    //SARGE: If true, Images will be shown when reading a data cube.
+
 var globalconfig int iAllowCombatMusic;                                        //SARGE: Enable/Disable combat music, or make it require 2 enemies
 
 //Decline Everything
@@ -709,9 +712,8 @@ var travel bool bRealKillswitch;                                                
 var travel float killswitchTimer;                                                       //SARGE: Killswitch timer in seconds.
 
 //Music Stuff
-var transient string currentSong;                                                 //SARGE: The "Song" variable is notoriously unreliable...
-var transient byte currentSection;                                              //SARGE: We need to track this for conversations/combat/etc
-var globalconfig int bEnhancedMusicSystem;                                             //SARGE: Should the music system be a bit smarter about playing tracks?
+var transient string currentSong;                                                 //SARGE: The "Song" variable is kept in savegames...
+var globalconfig int iEnhancedMusicSystem;                                             //SARGE: Should the music system be a bit smarter about playing tracks?
 
 //SARGE: Autoswitch to Health screen when installing the last augmentation at a med bot.
 var globalconfig bool bMedbotAutoswitch;
@@ -771,7 +773,7 @@ const FemJCEyeHeightAdjust = -6;                                    //SARGE: Now
 var travel bool bShenanigans;
 
 //Ygll: New QoL Options
-var globalconfig bool bAltFrobDisplay;                              //Ygll: Alternate frob display option.
+var globalconfig int iAltFrobDisplay;                              //Ygll: Alternate frob display option.
 
 var globalconfig int iStanceHud;					                //Ygll: Display the current player stance in the hud. 0 = none, 1 = stance changes only, 2 = all stances.
 
@@ -3238,20 +3240,58 @@ exec function PlayMusicWindow()
 // ClientSetMusic()
 //
 // SARGE: Copied over from Engine/PlayerPawn.uc
-// Modified to not restart music if the new song is the same as the current song, and the
-// sections are the same (section 0 is always used on map-change, so we set it to that if we're using the "remembered" section).
+// Modified to not restart music if the new song is the same as the current song, and also goes to
+// our remembered section instead of restarting the song when trying to restart it, such as
+// on map transition to a new map with the same song.
+// This is a scraggly horrible mess and it abuses the fuck out of default variables being
+// remembered between savegames and level loads.
+// Anyone who wishes to modify this: Beware Ye! Here be dragons!
 // ----------------------------------------------------------------------
 function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusicTransition NewTransition )
 {
-    //ClientMessage("Switching music: " $ Song $ "->" $ NewSong $ ":" $ NewSection $ " (current: " $ default.currentSong $ ", " $ default.currentSection $ ")");
-    if (default.currentSong != string(NewSong) || default.currentSection != NewSection || bEnhancedMusicSystem == 0)
+    local bool bChange;
+	local DeusExLevelInfo info;
+    
+    info = GetLevelInfo();
+
+    if (string(NewSong) != default.currentSong) //We always want to allow song changes
+    {
+        bChange = true;
+        DebugMessage("Changing Music - Song Change" @ default.currentSong);
+        default.savedSection = Level.SongSection; //And reset the saved section
+    }
+    else if (iEnhancedMusicSystem == 0) //Always change with the old system
+    {
+        bChange = true;
+        DebugMessage("Changing Music - Old System");
+    }
+    else if (SongSection != NewSection) //Don't let us replay the same bit we're already playing.
+    {
+        if (NewSection == default.savedSection && default.musicMode != MUS_Ambient) //allow changing to our saved section if we're not already playing it
+        {
+            bChange = true;
+            DebugMessage("Changing Music - Saved Section: " $ default.musicMode);
+        }
+        else if (NewSection != Level.SongSection) //We want to allow changes to different patterns (except ambient)
+        {
+            if (info == none || !info.bBarOrClub || iEnhancedMusicSystem != 2) //Don't allow music changes in clubs or bars with the extended option.
+            {
+                bChange = true;
+                DebugMessage("Changing Music - Non-Default Section");
+            }
+        }
+        else if (NewSection == Level.SongSection && default.musicMode != MUS_Ambient) //If we ARE changing to our default section and not in ambient, then instead change to our saved section
+        {
+            NewSection = default.savedSection;
+            bChange = true;
+            DebugMessage("Changing Music - Default Section - Setting to Saved Section");
+        }
+    }
+
+    if (bChange)
     {
         super.ClientSetMusic(NewSong,NewSection,NewCdTrack,NewTransition);
         default.currentSong = string(NewSong);
-        if (NewSection == savedSection)
-            default.currentSection = 0;
-        else
-            default.currentSection = NewSection;
     }
 }
 
@@ -3279,20 +3319,6 @@ function UpdateDynamicMusic(float deltaTime)
 
     info = GetLevelInfo();
 
-	// DEUS_EX AMSD In singleplayer, do the old thing.
-	// In multiplayer, we can come out of dying.
-	if (!PlayerIsClient())
-	{
-	  if ((musicMode == MUS_Dying) || (musicMode == MUS_Outro))
-		 return;
-	}
-	else
-	{
-	  if (musicMode == MUS_Outro)
-		 return;
-	}
-
-
 	musicCheckTimer += deltaTime;
 	musicChangeTimer += deltaTime;
 
@@ -3302,41 +3328,30 @@ function UpdateDynamicMusic(float deltaTime)
 		info = GetLevelInfo();
 		if ((info != None) && (info.MissionNumber < 0))
 		{
-			musicMode = MUS_Outro;
+			default.musicMode = MUS_Outro;
 			return;
 		}
 
-		if (musicMode != MUS_Outro)
+		if (default.musicMode != MUS_Outro)
 		{
 			ClientSetMusic(Level.Song, 5, 255, MTRAN_FastFade);
-			musicMode = MUS_Outro;
+			default.musicMode = MUS_Outro;
 		}
 	}
 	else if (IsInState('Conversation'))
 	{
-        //CyberP: no dynamic music in clubs and bars.
-	    if (info != none && info.bBarOrClub && bEnhancedMusicSystem >= 2)
-              return;
-		if (musicMode != MUS_Conversation)
+		if (default.musicMode != MUS_Conversation)
 		{
-			// save our place in the ambient track
-			if (musicMode == MUS_Ambient)
-				savedSection = SongSection;
-			else
-				savedSection = 255;
-
 			ClientSetMusic(Level.Song, 4, 255, MTRAN_Fade);
-			musicMode = MUS_Conversation;
+			default.musicMode = MUS_Conversation;
 		}
 	}
 	else if (IsInState('Dying'))
 	{
-	    if (info != none && info.bBarOrClub && bEnhancedMusicSystem >= 2)
-              return;
-		if (musicMode != MUS_Dying)
+		if (default.musicMode != MUS_Dying)
 		{
 			ClientSetMusic(Level.Song, 1, 255, MTRAN_Fade);
-			musicMode = MUS_Dying;
+			default.musicMode = MUS_Dying;
 		}
 	}
 	else
@@ -3345,11 +3360,8 @@ function UpdateDynamicMusic(float deltaTime)
 		// only check for combat music every second //CyberP: 2 secs
 		if (musicCheckTimer >= 2.0)
 		{
-			musicCheckTimer = 0.0;
 			aggro = 0;
-
-            if (info != none && info.bBarOrClub && bEnhancedMusicSystem >= 2)
-                return;
+			musicCheckTimer = 0.0;
 
             // check a 100 foot radius around me for combat
             // XXXDEUS_EX AMSD Slow Pawn Iterator
@@ -3365,41 +3377,39 @@ function UpdateDynamicMusic(float deltaTime)
                     }
                 }
             }
+
             if (aggro >= iAllowCombatMusic && iAllowCombatMusic > 0)
             {
-                musicChangeTimer = 0.0;
+				musicChangeTimer = 0.0;
+				if (default.musicMode != MUS_Combat)
+				{
+					ClientSetMusic(Level.Song, 3, 255, MTRAN_FastFade);
+					default.musicMode = MUS_Combat;
+				}
+			}
+			else if (default.musicMode != MUS_Ambient)
+			{
+				// wait until we've been out of combat for 5 seconds before switching music
+				if (musicChangeTimer >= 5.0)
+				{
+					// fade slower for combat transitions
+					if (default.musicMode == MUS_Combat)
+						ClientSetMusic(Level.Song, default.savedSection, 255, MTRAN_SlowFade);
+					else
+						ClientSetMusic(Level.Song, default.savedSection, 255, MTRAN_Fade);
 
-                if (musicMode != MUS_Combat)
-                {
-                    // save our place in the ambient track
-                    if (musicMode == MUS_Ambient)
-                        savedSection = SongSection;
-                    else
-                        savedSection = 255;
-
-                    ClientSetMusic(Level.Song, 3, 255, MTRAN_FastFade);
-                    musicMode = MUS_Combat;
-                }
-            }
-            else if (aggro == 0 && musicMode != MUS_Ambient)
+					default.musicMode = MUS_Ambient;
+					musicChangeTimer = 0.0;
+				}
+			}
+            else
             {
-                // wait until we've been out of combat for 5 seconds before switching music
-                if (musicChangeTimer >= 5.0)
-                {
-                    // use the default ambient section for this map
-                    if (savedSection == 255)
-                        savedSection = Level.SongSection;
-
-                    // fade slower for combat transitions
-                    if (musicMode == MUS_Combat)
-                        ClientSetMusic(Level.Song, savedSection, 255, MTRAN_SlowFade);
-                    else
-                        ClientSetMusic(Level.Song, savedSection, 255, MTRAN_Fade);
-
-                    savedSection = 255;
-                    musicMode = MUS_Ambient;
-                    musicChangeTimer = 0.0;
-                }
+                //SARGE: Now we constantly update the saved section, rather than
+                //only updating it when it changes, because that can cause bugs due to fading.
+                if (default.savedSection == 255)
+                    default.savedSection = Level.SongSection;
+                else
+                    default.savedSection = SongSection;
             }
 		}
 	}
@@ -4358,16 +4368,14 @@ function ToggleCameraState(SecurityCamera cam, ElectronicDevices compOwner, opti
 	{
 	  cam.UnTrigger(compOwner, self);
 	  cam.team = -1;
-	}
-    //Set to reboot
-    else if (cam.bActive && bHacked)
+	}    
+    else if (cam.bActive && bHacked) //Set to reboot
     {
-        cam.UnTrigger(compOwner, self);
+        cam.CameraReboot(compOwner, self);
         cam.team = -1;
         cam.StartReboot(self);
-    }
-    //Re-enable
-	else
+    }    
+	else //Re-enable
 	{
       cam.bRebooting = false;
       cam.disableTime = 0;
@@ -11492,7 +11500,7 @@ exec function SkipMessages()
 // ToggleRadialAugMenu()
 // ----------------------------------------------------------------------
 
-exec function ToggleRadialAugMenu()
+exec function ToggleRadialAugMenu(optional bool bHeld, optional bool bRelease)
 {
 	local DeusExRootWindow root;
     root = DeusExRootWindow(rootWindow);
@@ -11502,8 +11510,18 @@ exec function ToggleRadialAugMenu()
     if (RestrictInput())
         return;
 
+    /*
     //No wheel while drone is active
     if (bSpyDroneActive && !bSpyDroneSet)
+    {
+        bRadialAugMenuVisible = false;
+        UpdateHUD();
+        return;
+    }
+    */
+
+    //If it's already closed while we're holding the key, don't re-open it
+    if (bHeld && bRelease && !bRadialAugMenuVisible)
         return;
 
 	bRadialAugMenuVisible = !bRadialAugMenuVisible;
@@ -11703,6 +11721,19 @@ function bool GetBracketsState()
     return true;
 }
 
+// ----------------------------------------------------------------------
+// SARGE: GetCurrentViewRotation()
+// Gets the current view rotation, either returning the standard, or the drone/wheel saved one.
+// ----------------------------------------------------------------------
+function Rotator GetCurrentViewRotation()
+{
+    if(bSpyDroneActive && !bSpyDroneSet && !bBigDroneView)
+        return SAVErotation;
+    else if(bRadialAugMenuVisible)
+        return WHEELSAVErotation;
+    else
+        return ViewRotation;
+}
 
 // ----------------------------------------------------------------------
 // UpdateCrosshairStyle()
@@ -12328,8 +12359,8 @@ exec function ShowMainMenu()
         ConsoleCommand("set" @ "ini:Engine.Engine.ViewportManager Brightness" @ 0.6);
         ConsoleCommand("set" @ "DeusExPlayer bFirstTimeGMDX" @ "True");
         ConsoleCommand("set" @ "JCDentonMale bFirstTimeGMDX" @ "True");
-        ConsoleCommand("set" @ "DeusExPlayer bRealisticCarc" @ "True");
-        ConsoleCommand("set" @ "JCDentonMale bRealisticCarc" @ "True");
+        //ConsoleCommand("set" @ "DeusExPlayer bRealisticCarc" @ "True");
+        //ConsoleCommand("set" @ "JCDentonMale bRealisticCarc" @ "True");
 	}
     ConsoleCommand("FLUSH");
 
@@ -12752,7 +12783,7 @@ event PlayerCalcView( out actor ViewActor, out vector CameraLocation, out rotato
 		return;
 	}
 	// check for spy drone and freeze player's view
-	if (bSpyDroneActive && !bSpyDroneSet && !bRadialAugMenuVisible)                     //RSD: Allows the user to toggle between moving and controlling the drone, also added Lorenz's wheel
+	if (bSpyDroneActive && !bSpyDroneSet)                     //RSD: Allows the user to toggle between moving and controlling the drone, also added Lorenz's wheel
 	{
 		if (aDrone != None)
 		{
@@ -12803,8 +12834,11 @@ event PlayerCalcView( out actor ViewActor, out vector CameraLocation, out rotato
 
         if (bRadialAugMenuVisible) {
             // prevent view from rotating
+            fixedRotation = WHEELSAVErotation;
+            fixedRotation.Pitch = 0f;
+            fixedRotation.Roll = 0f;
             ViewRotation=WHEELSAVErotation;                                     //RSD: Lorenz used SAVErotation, use WHEELSAVErotation instead
-            SetRotation(WHEELSAVErotation);                                     //RSD: Lorenz used SAVErotation, use WHEELSAVErotation instead
+            SetRotation(fixedRotation);                                   //RSD: Lorenz used SAVErotation, use WHEELSAVErotation instead
         }
 
 	    CameraRotation = ViewRotation;
@@ -12916,10 +12950,14 @@ ignores SeePlayer, HearNoise, Bump;
 		StopBlendAnims();
 		ConversationActor = None;
 
+        //SARGE: This is needed otherwise the belt doesn't update properly if we lose an item during a convo
+        UpdateHUD();
+
         //SARGE: Now this is needed because we're changing eyeheight
 		if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
             BaseEyeHeight += FemJCEyeHeightAdjust;
         //ResetBasedPawnSize();
+
 	}
 
 	function int retLevelInfo()
@@ -17958,13 +17996,11 @@ function ForceDroneOff(optional bool skipDeactivation)
         {
             if (bSpyDroneSet)
             {
-                SAVErotation = ViewRotation;
-                bSpyDroneSet = false;                                                 //RSD: Ensures that the Spy Drone will ACTUALLY be turned off
+                anAug.ToggleStandbyMode(true);
             }
             if (!skipDeactivation)
             {
                 anAug.Deactivate();
-                bSpyDroneActive = false;                                                  //RSD: Prevents being forced back into drone control at the last second
             }
         }
     }
@@ -18761,6 +18797,7 @@ defaultproperties
      iCutsceneFOVAdjust=2
      iFrobDisplayStyle=1
      bShowDataCubeRead=true;
+     bShowDataCubeImages=true;
      iAllowCombatMusic=1
      bFullAccuracyCrosshair=true;
      bShowEnergyBarPercentages=true;
@@ -18772,7 +18809,7 @@ defaultproperties
      dblClickHolster=2
      bSmartDecline=True
      killswitchTimer=-2
-     bEnhancedMusicSystem=1
+     iEnhancedMusicSystem=1
      bMedbotAutoswitch=True
      bHDTPEnabled=True
      iEnhancedLipSync=1
@@ -18788,12 +18825,13 @@ defaultproperties
      bConsistentBloodPools=True
      iPersistentDebris=1
   	 iStanceHud=3   //Ygll = Every stance
-	   bIsMantlingStance=false //Ygll: new var to know if we are currently mantling
-	   iHealingScreen=1
+     bIsMantlingStance=false //Ygll: new var to know if we are currently mantling
+     iHealingScreen=1
      bAlwaysShowReceivedItemsWindow=true
      bShowTotalRoundsCount=true
      bPistolStartTrained=true
      bStreamlinedRepairBotInterface=true
      iShowTotalCounts=1
      iSmartKeyring=1
+     iAltFrobDisplay=1
 }

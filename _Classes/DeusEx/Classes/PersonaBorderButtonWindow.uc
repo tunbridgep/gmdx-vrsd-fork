@@ -267,5 +267,5 @@ defaultproperties
      fontButtonText=Font'DeusExUI.FontMenuHeaders'
      verticalTextMargin=1
      maxTextWidth=200
-     bUseTextOffset=True
+     bUseTextOffset=true
 }

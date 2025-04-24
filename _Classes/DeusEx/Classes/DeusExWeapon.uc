@@ -897,9 +897,10 @@ simulated event RenderOverlays( canvas Canvas )
 	{
 		//if ( PlayerOwner.DesiredFOV != PlayerOwner.DefaultFOV )
 		//	return;
-		if (bZoomed || (PlayerOwner.bSpyDroneActive && !PlayerOwner.bSpyDroneSet && !PlayerOwner.bBigDroneView))
-		//if (bZoomed)
+		//if (bZoomed || (PlayerOwner.bSpyDroneActive && !PlayerOwner.bSpyDroneSet && !PlayerOwner.bBigDroneView))
+		if (bZoomed)
 		    return;
+
 		bPlayerOwner = true;
 		Hand = PlayerOwner.Handedness;
 
@@ -954,9 +955,9 @@ simulated event RenderOverlays( canvas Canvas )
         rfs.Yaw=addYaw;
         rfs.Pitch=addPitch;
         GetAxes(rfs,dx,dy,dz);
-        dx=dx>>PlayerOwner.ViewRotation;
-        dy=dy>>PlayerOwner.ViewRotation;
-        dz=dz>>PlayerOwner.ViewRotation;
+        dx=dx>>PlayerOwner.GetCurrentViewRotation();
+        dy=dy>>PlayerOwner.GetCurrentViewRotation();
+        dz=dz>>PlayerOwner.GetCurrentViewRotation();
         rfs=OrthoRotation(dx,dy,dz);
         NewRot = rfs;
 
@@ -2794,8 +2795,8 @@ simulated function Tick(float deltaTime)
 			loc.Z += Pawn(Owner).BaseEyeHeight;
 
 			// add a little random jitter - looks cool!
-			if (player != none && player.bRadialAugMenuVisible)                 //RSD: If radial menu active, don't copy the viewrotation as it's being screwed with
-				rot = player.WHEELSAVErotation;
+            if (player != none)
+				rot = player.GetCurrentViewRotation(); //RSD: If radial menu active, don't copy the viewrotation as it's being screwed with
 			else
             	rot = Pawn(Owner).ViewRotation;
 			rot.Yaw += Rand(5) - 2;
@@ -4415,6 +4416,7 @@ simulated function vector CalcDrawOffset()
 	local ScriptedPawn	SPOwner;
 	local Pawn			PawnOwner;
 	local vector unX,unY,unZ;
+    local Rotator vr;                       //SARGE: Added viewrotation variable
 
 	SPOwner = ScriptedPawn(Owner);
 	if (SPOwner != None)
@@ -4445,10 +4447,15 @@ simulated function vector CalcDrawOffset()
 	       else
 	           PlayerViewOffset.X -= lerpAid;
         }
-        }
+        }       
         // copied from Engine.Inventory to not be FOVAngle dependent
 		PawnOwner = Pawn(Owner);
-		DrawOffset = ((0.9/PawnOwner.Default.FOVAngle * PlayerViewOffset) >> PawnOwner.ViewRotation);
+
+        vr = PawnOwner.ViewRotation;
+        if (PawnOwner.isa('DeusExPlayer'))
+            vr = DeusExPlayer(PawnOwner).GetCurrentViewRotation();
+
+		DrawOffset = ((0.9/PawnOwner.Default.FOVAngle * PlayerViewOffset) >> vr);
 		DrawOffset += (PawnOwner.EyeHeight * vect(0,0,1));
 		WeaponBob = BobDamping * PawnOwner.WalkBob;
 		WeaponBob.Z = (0.45 + 0.55 * BobDamping) * PawnOwner.WalkBob.Z;
