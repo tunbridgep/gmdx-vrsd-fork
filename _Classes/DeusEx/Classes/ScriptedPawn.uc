@@ -486,6 +486,9 @@ var string HDTPMesh;
 var string HDTPMeshTex[8];
 var travel bool bSetupHDTP;
 
+//SARGE: Force cloak on always. Used by Tiffany.
+var bool bForcedCloak;
+
 //SARGE: Blink timer
 var float blinkTimer;
 
@@ -4444,7 +4447,7 @@ local SpoofedCorona cor;
 		bCloakOn = bEnable;
 		bCloaked = True;
 	}
-	else if (!bEnable && bCloakOn)
+	else if (!bEnable && bCloakOn && !bForcedCloak)
 	{
 		ResetSkinStyle();
 		CreateShadow();

@@ -44,7 +44,7 @@ defaultproperties
      items(27)=(HelpText="Change weapon viewmodels to display better on some widescreen resolutions.",actionText="HUD: Alternate Weapon Offsets",variable="bEnhancedWeaponOffsets");
      items(28)=(HelpText="Display CLIPS or MAGS in the Ammo window. Has no effect for weapons that don't use magazines, or if Accurate Ammo Display is turned on.",actionText="HUD: Ammo Text Display",variable="bDisplayClips",valueText0="MAGS",valueText1="CLIPS",defaultValue=1);
      items(29)=(HelpText="Always show the accuracy crosshairs for your currently held weapon.",actionText="HUD: Always Show Bloom",variable="bAlwaysShowBloom");
-	 items(30)=(HelpText="Alternative tool display window with some minor text and spacing changes.",actionText="HUD: Alternate Tool Window Display",variable="bAltFrobDisplay");
+	 items(30)=(HelpText="Alternative tool display window with some minor text and spacing changes.",actionText="HUD: Alternate Tool Window Display",variable="iAltFrobDisplay",valueText1="Indented",valueText2="Extended",defaultValue=1);
 	 items(31)=(HelpText="Shows the ammo display on the right side of the screen, and the belt on the left",actionText="HUD: Ammo Display on Right",variable="bAmmoDisplayOnRight");
      items(32)=(HelpText="Enable alternate visuals for the bioenergy bar.",actionText="HUD: Animated Bioenergy Bar",variable="bAnimBar1",defaultValue=1);
      items(33)=(HelpText="Enable alternate visuals for the stamina bar.",actionText="HUD: Animated Stamina Bar",variable="bAnimBar2",defaultValue=1);
@@ -87,6 +87,8 @@ defaultproperties
      items(69)=(HelpText="Prevent accidentally killing vac-bots by stomping on them.",actionText="Player: Stomp Vac Bots",variable="bStompDomesticAnimals",defaultValue=0);
      items(70)=(HelpText="Always use the female hands with male JC. This setting does nothing if LDDP is not installed.",actionText="Player: Use Female Hands",variable="bFemaleHandsAlways",defaultValue=0)
      items(71)=(HelpText="If enabled, the New Game screen will automatically start with Pistols upgraded to Trained.",actionText="Player: Start with Pistols at Trained",variable="bPistolStartTrained",defaultValue=1)
+     items(74)=(HelpText="If enabled, Data Cubes will display images as they are read.",actionText="HUD: Data Cubes Show Images",variable="bShowDataCubeImages",defaultValue=1)
+     //items(74)=(HelpText="If enabled, selecting an item that isn't on the toolbelt will clear the primary selection, allowing right-click to reselect it. Only applies to the Invisible War Toolbelt.",actionText="Belt: Auto-Clear Primary Selection",variable="bAllowSelectingOffAdvBelt",defaultValue=1)
      Title="GMDX Quality of Life Options"
      colWidths(0)=214
      colWidths(1)=155

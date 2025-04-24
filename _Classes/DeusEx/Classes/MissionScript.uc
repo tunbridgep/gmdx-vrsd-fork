@@ -270,7 +270,7 @@ function FirstFrame()
 	//and have some other issues.
 	foreach AllActors(class'ScriptedPawn', P)
 	{
-	   if (P.IsA('MJ12TroopElite'))
+	   if (P.IsA('MJ12Elite') || P.IsA('MJ12Elite2'))
 	   {
 		    if (Rand(2) == 0)
 				P.BarkBindName = "MJ12Troop";

@@ -360,10 +360,7 @@ function DeactivateAll(optional bool forced)
 	anAug = FirstAug;
 	while(anAug != None)
 	{
-        //SARGE: If we have a spy drone out, just put it on standby mode instead.
-        if (anAug.IsA('AugDrone'))
-            AugDrone(anAug).ToggleStandbyMode(true);
-		else if (anAug.bIsActive && anAug.CanBeActivated() && (!anAug.IsToggleAug() || forced))
+        if (anAug.bIsActive && anAug.CanBeActivated() && (!anAug.IsToggleAug() || forced))
         {
             anAug.Deactivate();
         }

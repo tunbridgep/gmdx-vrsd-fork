@@ -63,10 +63,11 @@ simulated function bool UpdateInfo(Object winObject)
 // GetAugmentation()
 // ----------------------------------------------------------------------
 
-simulated function Augmentation GetAugmentation(int augIndex)
+//SARGE: Generic version
+
+function Augmentation GetAugGeneric(int augIndex, DeusExPlayer player)
 {
 	local Augmentation anAug;
-	local DeusExPlayer player;
 
 	// First make sure we have a valid value
 	if ((augIndex < 0) || (augIndex > (ArrayCount(AddAugs) - 1)))
@@ -78,8 +79,6 @@ simulated function Augmentation GetAugmentation(int augIndex)
 	// Loop through all the augmentation objects and look
 	// for the augName that matches the one stored in
 	// this object
-
-	player = DeusExPlayer(Owner);
 
 	if (player != None)
 	{
@@ -94,6 +93,15 @@ simulated function Augmentation GetAugmentation(int augIndex)
 	}
 
 	return anAug;
+}
+
+simulated function Augmentation GetAugmentation(int augIndex)
+{
+	local DeusExPlayer player;
+
+	player = DeusExPlayer(Owner);
+
+	return GetAugGeneric(augIndex,player);
 }
 
 // ----------------------------------------------------------------------

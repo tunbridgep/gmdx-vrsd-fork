@@ -2003,7 +2003,7 @@ function DrawVisionAugmentation(GC gc)
 		{
 			if (A.bVisionImportant)
 			{
-				if (IsHeatSource(A) || ( (Player.Level.Netmode != NM_Standalone) && ((A.IsA('AutoTurret')) || (A.IsA('AutoTurretGun')) || (A.IsA('SecurityCamera')) ) ))
+				if (IsHeatSource(A))
 				{
 					dist = VSize(A.Location - loc);
 					//If within range of vision aug bit
@@ -2134,12 +2134,18 @@ function DrawVisionAugmentation(GC gc)
 
 function bool IsHeatSource(Actor A)
 {
+    //SARGE: No cloaked enemies on lower levels
 	if ((A.bHidden))
 		return False;
 	if (A.IsA('Pawn'))
 	{
 		if (A.IsA('ScriptedPawn'))
+        {
+            //SARGE: No longer reveal cloaked enemies at level 1 (or with unupgraded tech goggles)
+            if (ScriptedPawn(A).bHasCloak && ScriptedPawn(A).bCloakOn && visionLevel <= 1)
+                return False;
 			return True;
+        }
 		else if ( (A.IsA('DeusExPlayer')) && (A != Player) )//DEUS_EX AMSD For multiplayer.
 			return True;
 		return False;
@@ -2148,6 +2154,13 @@ function bool IsHeatSource(Actor A)
 		return True;
 	else if (A.IsA('FleshFragment'))
 		return True;
+    //SARGE: Added turrets and cameras, previously multiplayer only
+    else if (A.IsA('AutoTurret'))
+        return true;
+    else if (A.IsA('AutoTurretGun'))
+        return true;
+    else if (A.IsA('SecurityCamera'))
+        return true;
 	else
 		return False;
 }
@@ -2168,6 +2181,9 @@ function Texture GetGridTexture(Texture tex)
 		return Texture'BlackMaskTex';
 	else if (tex == Texture'PinkMaskTex')
 		return Texture'BlackMaskTex';
+    else if (visionlevel <= 1) //SARGE: Low level vision only shows green
+		//return Texture'RSDCrap.Skins.NVGTex';
+		return Texture'SolidGreen';
 	else if (VisionTargetStatus == VISIONENEMY)
 		return Texture'Virus_SFX';
 	else if (VisionTargetStatus == VISIONALLY)
@@ -2214,6 +2230,19 @@ function ResetSkins(Actor actor, Texture oldSkins[9])
 	for (i=0; i<8; i++)
 		actor.MultiSkins[i] = oldSkins[i];
 	actor.Skin = oldSkins[i];
+	//actor.Texture = oldSkins[i+1];
+    //actor.Style = ERenderStyle(oldStyle); //SARGE: Doesn't compile???
+    //So we have to do this fucking bullshit...
+    /*
+    switch (oldStyle)
+    {
+        case 0: actor.Style = STY_None; break;
+        case 1: actor.Style = STY_Normal; break;
+        case 2: actor.Style = STY_Masked; break;
+        case 3: actor.Style = STY_Translucent; break;
+        case 4: actor.Style = STY_Modulated; break;
+    }
+    */
 }
 
 // ----------------------------------------------------------------------

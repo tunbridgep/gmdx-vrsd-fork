@@ -601,6 +601,7 @@ var travel bool bRandomizeMods;
 var travel bool bRandomizeAugs;
 var travel bool bRandomizeEnemies;
 var travel bool bRandomizeCrap;                                                 //Sarge: Randomize the crap around the level, like couch skins, etc.
+var travel bool bCutInteractions;                                               //Sarge: Allow cut-content interactions like arming Miguel and giving Tiffany Thermoptic Camo
 var travel bool bRestrictedSaving;												//Sarge: This used to be tied to hardcore, now it's a config option
 var travel int iNoKeypadCheese;													//Sarge: 1 = Prevent using keycodes that we don't know, 2 = additionally prevent plot skips, 3 = additionally obscure keypad code length.
 var travel int seed;                                                            //Sarge: When using randomisation playthrough modifiers, this is our generated seed for the playthrough, to prevent autosave abuse and the like
@@ -667,6 +668,8 @@ var globalconfig bool bTrickReloading;											//Sarge: Allow reloading with a
 var globalconfig bool bFemaleHandsAlways;                                      //SARGE: If true, use the Female hands on male JC. Goth JC with nail polish?
 
 var globalconfig bool bShowDataCubeRead;                                      //SARGE: If true, darken the screens on Data Cubes when they have been read.
+
+var globalconfig bool bShowDataCubeImages;                                    //SARGE: If true, Images will be shown when reading a data cube.
 
 var globalconfig int iAllowCombatMusic;                                        //SARGE: Enable/Disable combat music, or make it require 2 enemies
 
@@ -768,7 +771,7 @@ const FemJCEyeHeightAdjust = -6;                                    //SARGE: Now
 var travel bool bShenanigans;
 
 //Ygll: New QoL Options
-var globalconfig bool bAltFrobDisplay;                              //Ygll: Alternate frob display option.
+var globalconfig int iAltFrobDisplay;                              //Ygll: Alternate frob display option.
 
 var globalconfig int iStanceHud;					                //Ygll: Display the current player stance in the hud. 0 = none, 1 = stance changes only, 2 = all stances.
 
@@ -4335,16 +4338,14 @@ function ToggleCameraState(SecurityCamera cam, ElectronicDevices compOwner, opti
 	{
 	  cam.UnTrigger(compOwner, self);
 	  cam.team = -1;
-	}
-    //Set to reboot
-    else if (cam.bActive && bHacked)
+	}    
+    else if (cam.bActive && bHacked) //Set to reboot
     {
-        cam.UnTrigger(compOwner, self);
+        cam.CameraReboot(compOwner, self);
         cam.team = -1;
         cam.StartReboot(self);
-    }
-    //Re-enable
-	else
+    }    
+	else //Re-enable
 	{
       cam.bRebooting = false;
       cam.disableTime = 0;
@@ -11310,7 +11311,7 @@ exec function SkipMessages()
 // ToggleRadialAugMenu()
 // ----------------------------------------------------------------------
 
-exec function ToggleRadialAugMenu()
+exec function ToggleRadialAugMenu(optional bool bHeld, optional bool bRelease)
 {
 	local DeusExRootWindow root;
     root = DeusExRootWindow(rootWindow);
@@ -11320,8 +11321,18 @@ exec function ToggleRadialAugMenu()
     if (RestrictInput())
         return;
 
+    /*
     //No wheel while drone is active
     if (bSpyDroneActive && !bSpyDroneSet)
+    {
+        bRadialAugMenuVisible = false;
+        UpdateHUD();
+        return;
+    }
+    */
+
+    //If it's already closed while we're holding the key, don't re-open it
+    if (bHeld && bRelease && !bRadialAugMenuVisible)
         return;
 
 	bRadialAugMenuVisible = !bRadialAugMenuVisible;
@@ -11521,6 +11532,19 @@ function bool GetBracketsState()
     return true;
 }
 
+// ----------------------------------------------------------------------
+// SARGE: GetCurrentViewRotation()
+// Gets the current view rotation, either returning the standard, or the drone/wheel saved one.
+// ----------------------------------------------------------------------
+function Rotator GetCurrentViewRotation()
+{
+    if(bSpyDroneActive && !bSpyDroneSet && !bBigDroneView)
+        return SAVErotation;
+    else if(bRadialAugMenuVisible)
+        return WHEELSAVErotation;
+    else
+        return ViewRotation;
+}
 
 // ----------------------------------------------------------------------
 // UpdateCrosshairStyle()
@@ -12138,8 +12162,8 @@ exec function ShowMainMenu()
         ConsoleCommand("set" @ "ini:Engine.Engine.ViewportManager Brightness" @ 0.6);
         ConsoleCommand("set" @ "DeusExPlayer bFirstTimeGMDX" @ "True");
         ConsoleCommand("set" @ "JCDentonMale bFirstTimeGMDX" @ "True");
-        ConsoleCommand("set" @ "DeusExPlayer bRealisticCarc" @ "True");
-        ConsoleCommand("set" @ "JCDentonMale bRealisticCarc" @ "True");
+        //ConsoleCommand("set" @ "DeusExPlayer bRealisticCarc" @ "True");
+        //ConsoleCommand("set" @ "JCDentonMale bRealisticCarc" @ "True");
 	}
     ConsoleCommand("FLUSH");
 
@@ -12566,7 +12590,7 @@ event PlayerCalcView( out actor ViewActor, out vector CameraLocation, out rotato
 		return;
 	}
 	// check for spy drone and freeze player's view
-	if (bSpyDroneActive && !bSpyDroneSet && !bRadialAugMenuVisible)                     //RSD: Allows the user to toggle between moving and controlling the drone, also added Lorenz's wheel
+	if (bSpyDroneActive && !bSpyDroneSet)                     //RSD: Allows the user to toggle between moving and controlling the drone, also added Lorenz's wheel
 	{
 		if (aDrone != None)
 		{
@@ -12617,8 +12641,11 @@ event PlayerCalcView( out actor ViewActor, out vector CameraLocation, out rotato
 
         if (bRadialAugMenuVisible) {
             // prevent view from rotating
+            fixedRotation = WHEELSAVErotation;
+            fixedRotation.Pitch = 0f;
+            fixedRotation.Roll = 0f;
             ViewRotation=WHEELSAVErotation;                                     //RSD: Lorenz used SAVErotation, use WHEELSAVErotation instead
-            SetRotation(WHEELSAVErotation);                                     //RSD: Lorenz used SAVErotation, use WHEELSAVErotation instead
+            SetRotation(fixedRotation);                                   //RSD: Lorenz used SAVErotation, use WHEELSAVErotation instead
         }
 
 	    CameraRotation = ViewRotation;
@@ -12730,10 +12757,14 @@ ignores SeePlayer, HearNoise, Bump;
 		StopBlendAnims();
 		ConversationActor = None;
 
+        //SARGE: This is needed otherwise the belt doesn't update properly if we lose an item during a convo
+        UpdateHUD();
+
         //SARGE: Now this is needed because we're changing eyeheight
 		if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
             BaseEyeHeight += FemJCEyeHeightAdjust;
         //ResetBasedPawnSize();
+
 	}
 
 	function int retLevelInfo()
@@ -17772,13 +17803,11 @@ function ForceDroneOff(optional bool skipDeactivation)
         {
             if (bSpyDroneSet)
             {
-                SAVErotation = ViewRotation;
-                bSpyDroneSet = false;                                                 //RSD: Ensures that the Spy Drone will ACTUALLY be turned off
+                anAug.ToggleStandbyMode(true);
             }
             if (!skipDeactivation)
             {
                 anAug.Deactivate();
-                bSpyDroneActive = false;                                                  //RSD: Prevents being forced back into drone control at the last second
             }
         }
     }
@@ -18575,6 +18604,7 @@ defaultproperties
      iCutsceneFOVAdjust=2
      iFrobDisplayStyle=1
      bShowDataCubeRead=true;
+     bShowDataCubeImages=true;
      iAllowCombatMusic=1
      bFullAccuracyCrosshair=true;
      bShowEnergyBarPercentages=true;
@@ -18602,10 +18632,11 @@ defaultproperties
      bConsistentBloodPools=True
      iPersistentDebris=1
   	 iStanceHud=3   //Ygll = Every stance
-	   bIsMantlingStance=false //Ygll: new var to know if we are currently mantling
-	   iHealingScreen=1
+     bIsMantlingStance=false //Ygll: new var to know if we are currently mantling
+     iHealingScreen=1
      bAlwaysShowReceivedItemsWindow=true
      bShowTotalRoundsCount=true
      bPistolStartTrained=true
      bStreamlinedRepairBotInterface=true
+     iAltFrobDisplay=1
 }

@@ -67,6 +67,72 @@ replication
 		  bActive, ReplicatedRotation, team, safeTarget;
 }
 
+function EnableCamera()
+{
+    bActive = true;
+    MultiSkins[2] = GetCameraLightTex(1);
+    AmbientSound = None;
+    bRebooting = false;
+}
+
+function DisableCamera()
+{
+    TriggerEvent(false);
+    TriggerCarcassEvent(false); // eshkrm
+    bActive = false;
+    AmbientSound = None;
+    DesiredRotation = origRot;
+    bRebooting = false;    
+}
+
+function Trigger(Actor Other, Pawn Instigator)
+{
+	if (bConfused)
+		return;	
+
+	if (!bActive)
+	{
+		if (Instigator != None)
+			Instigator.ClientMessage(msgActivated);
+	}
+	
+    EnableCamera();
+	bHackable = true;
+	bDisabledByComputer = false;
+	Super.Trigger(Other, Instigator);
+}
+
+function UnTrigger(Actor Other, Pawn Instigator)
+{
+	//if (bConfused) //Sarge: Attempted fix for cameras reactivating once EMP wears off if they were disabled during EMP
+	//	return;	
+
+	if (bActive)
+	{
+		if (Instigator != None)
+			Instigator.ClientMessage(msgDeactivated);
+	}
+	
+    DisableCamera();
+	bHackable = false;
+	bDisabledByComputer = true;
+	Super.UnTrigger(Other, Instigator);
+}
+
+function CameraReboot(Actor Other, Pawn Instigator)
+{
+	//if (bConfused) //Sarge: Attempted fix for cameras reactivating once EMP wears off if they were disabled during EMP
+	//	return;
+	if (bActive)
+	{
+		if (Instigator != None)
+			Instigator.ClientMessage(msgDeactivated);
+	}
+	
+    DisableCamera();	
+	Super.UnTrigger(Other, Instigator);
+}
+
 //SARGE: Get the relevant camera light texture, based on situation and HDTP
 function Texture GetCameraLightTex(int camState)
 {
@@ -143,7 +209,7 @@ function HackAction(Actor Hacker, bool bHacked)
 	{
 		if (Level.NetMode == NM_Standalone)
 		{
-			if (bActive || HackStrength == 0)
+			if (bActive || HackStrength == 0.0)
 				UnTrigger(Hacker, Pawn(Hacker));
 			else
 				Trigger(Hacker, Pawn(Hacker));
@@ -188,55 +254,6 @@ function HackAction(Actor Hacker, bool bHacked)
 			}
 		}
 	}
-}
-
-function EnableCamera()
-{
-    bActive = true;
-    MultiSkins[2] = GetCameraLightTex(1);
-    AmbientSound = None;
-    bRebooting = false;
-}
-
-function DisableCamera()
-{
-    TriggerEvent(false);
-    TriggerCarcassEvent(false); // eshkrm
-    bActive = false;
-    AmbientSound = None;
-    DesiredRotation = origRot;
-    bRebooting = false;
-    //hackStrength = 0.0;
-}
-
-function Trigger(Actor Other, Pawn Instigator)
-{
-	if (bConfused)
-		return;
-
-	Super.Trigger(Other, Instigator);
-
-	if (!bActive)
-	{
-		if (Instigator != None)
-			Instigator.ClientMessage(msgActivated);
-	}
-    EnableCamera();
-}
-
-function UnTrigger(Actor Other, Pawn Instigator)
-{
-	//if (bConfused) //Sarge: Attempted fix for cameras reactivating once EMP wears off if they were disabled during EMP
-	//	return;
-
-	Super.UnTrigger(Other, Instigator);
-
-	if (bActive)
-	{
-		if (Instigator != None)
-			Instigator.ClientMessage(msgDeactivated);
-	}
-    DisableCamera();
 }
 
 function TriggerEvent(bool bTrigger)
@@ -860,7 +877,7 @@ defaultproperties
      Buoyancy=5.000000
      RotationRate=(Pitch=65535,Yaw=65535)
      bVisionImportant=true
-     disableTimeBase=120.0;
-     disableTimeMult=60.0;
-	 lastSeenTimer=0.000000;
+     disableTimeBase=120.0
+     disableTimeMult=60.0
+	 lastSeenTimer=0.000000
 }
