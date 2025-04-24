@@ -33,9 +33,9 @@ function ExtinguishFlare()
 
 function tick(float DT)
 {
-	if(self==none)
+	if(self==None)
 		ExtinguishFlare();
-    else if(self!=none && gen != none)
+    else if(self!=None && gen != None)
 		UpdateGens();
 
 	super.Tick(dt);
@@ -46,7 +46,7 @@ function UpdateGens()
 	local Vector loc;
 	local rotator rota;
 
-	if(gen != none)
+	if(gen != None)
 	{
 		loc = location;
 		loc.X += 2.0;		
@@ -56,7 +56,7 @@ function UpdateGens()
 		gen.SetRotation(rota);
 	}
 
-	if(flaregen != none)
+	if(flaregen != None)
 	{
 		loc = location;
 		rota = rotation;
@@ -77,7 +77,7 @@ function UpdateGens()
 		flaregen.SetRotation(rota);
 	}
 	
-	if(flamething != none)
+	if(flamething != None)
 	{
 		loc = location;
 		rota = rotation;
@@ -147,48 +147,52 @@ function Timer()
 			gen.particleLifeSpan = 2.8;
 			gen.particleDrawScale = 0.11;			
 		}
-
-		loc2.Y = collisionradius*0.8;    //I hate coordinate shifting
-		loc = loc2 >> rotation;
-		loc += location;
-		rota = rotation;
-		rota.Roll = 0;
-		rota.Yaw = 32768;//32768;//16384;
-		flaregen = Spawn(class'ParticleGenerator',Self,, loc, rota);
-		if (flaregen != None)
+		
+		if(IsHDTP())
 		{
-			flaregen.particleTexture = class'HDTPLoader'.static.GetFireTexture("HDTPAnim.Effects.HDTPFlarespark");
-			flaregen.LifeSpan = LifeSpan;
-			flaregen.attachTag = Name;
-			flaregen.SetBase(Self);
-			flaregen.bRandomEject = true;
-			flaregen.RandomEjectAmt = 0.1;
-			flaregen.bParticlesUnlit = true;
-			flaregen.frequency = 0.3 + 0.4*frand();
-			flaregen.numPerSpawn = 2;
-			flaregen.bGravity = true;
-			flaregen.ejectSpeed = 100;
-			flaregen.riseRate = 1;
-			flaregen.checkTime = 0.02;
-			flaregen.particleLifeSpan = 0.2*(1 + frand());
-			flaregen.particleDrawScale = 0.01 + 0.04*frand();            
-		}
+			loc2.Y = collisionradius*0.8;    //I hate coordinate shifting
+			loc = loc2 >> rotation;
+			loc += location;
+			rota = rotation;
+			rota.Roll = 0;
+			rota.Yaw = 32768;//32768;//16384;
+			
+			flaregen = Spawn(class'ParticleGenerator',Self,, loc, rota);
+			if (flaregen != None)
+			{
+				flaregen.particleTexture = class'HDTPLoader'.static.GetFireTexture("HDTPAnim.Effects.HDTPFlarespark");
+				flaregen.LifeSpan = LifeSpan;
+				flaregen.attachTag = Name;
+				flaregen.SetBase(Self);
+				flaregen.bRandomEject = true;
+				flaregen.RandomEjectAmt = 0.1;
+				flaregen.bParticlesUnlit = true;
+				flaregen.frequency = 0.3 + 0.4*frand();
+				flaregen.numPerSpawn = 2;
+				flaregen.bGravity = true;
+				flaregen.ejectSpeed = 100;
+				flaregen.riseRate = 1;
+				flaregen.checkTime = 0.02;
+				flaregen.particleLifeSpan = 0.2*(1 + frand());
+				flaregen.particleDrawScale = 0.01 + 0.04*frand();            
+			}
 
-		rota.Yaw = 0;
-		flamething = Spawn(class'Effects', Self,, Loc, rota);
-		if(flamething != none)
-		{
-			flamething.mesh=class'HDTPLoader'.static.GetMesh("HDTPItems.HDTPflareflame");
-			flamething.multiskins[1]=class'HDTPLoader'.static.GetFireTexture("HDTPAnim.Effects.HDTPflrflame");
-			flamething.setbase(self);
-			flaregen.attachTag = Name;
-			flamething.lifespan = LifeSpan;
-			flamething.bHidden = false;
-			flamething.DrawType = DT_mesh;			
-			flamething.Style = STY_Translucent;
-			flamething.bUnlit = true;
-			flamething.DrawScale = 0.1;
-			flamething.Scaleglow = 5;			
+			rota.Yaw = 0;
+			flamething = Spawn(class'Effects', Self,, Loc, rota);
+			if(flamething != None)
+			{
+				flamething.mesh=class'HDTPLoader'.static.GetMesh("HDTPItems.HDTPflareflame");
+				flamething.multiskins[1]=class'HDTPLoader'.static.GetFireTexture("HDTPAnim.Effects.HDTPflrflame");
+				flamething.setbase(self);
+				flaregen.attachTag = Name;
+				flamething.lifespan = LifeSpan;
+				flamething.bHidden = false;
+				flamething.DrawType = DT_mesh;			
+				flamething.Style = STY_Translucent;
+				flamething.bUnlit = true;
+				flamething.DrawScale = 0.1;
+				flamething.Scaleglow = 5;			
+			}
 		}
 	}
 }
@@ -202,7 +206,7 @@ defaultproperties
      ItemName="Flare Dart"
      Damage=7.000000
      LifeSpan=160.000000
-     bUnlit=True
+     bUnlit=true
      SoundRadius=20
      SoundVolume=128
      LightType=LT_Steady
