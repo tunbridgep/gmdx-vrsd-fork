@@ -771,7 +771,7 @@ const FemJCEyeHeightAdjust = -6;                                    //SARGE: Now
 var travel bool bShenanigans;
 
 //Ygll: New QoL Options
-var globalconfig bool bAltFrobDisplay;                              //Ygll: Alternate frob display option.
+var globalconfig int iAltFrobDisplay;                              //Ygll: Alternate frob display option.
 
 var globalconfig int iStanceHud;					                //Ygll: Display the current player stance in the hud. 0 = none, 1 = stance changes only, 2 = all stances.
 
@@ -4338,16 +4338,14 @@ function ToggleCameraState(SecurityCamera cam, ElectronicDevices compOwner, opti
 	{
 	  cam.UnTrigger(compOwner, self);
 	  cam.team = -1;
-	}
-    //Set to reboot
-    else if (cam.bActive && bHacked)
+	}    
+    else if (cam.bActive && bHacked) //Set to reboot
     {
-        cam.UnTrigger(compOwner, self);
+        cam.CameraReboot(compOwner, self);
         cam.team = -1;
         cam.StartReboot(self);
-    }
-    //Re-enable
-	else
+    }    
+	else //Re-enable
 	{
       cam.bRebooting = false;
       cam.disableTime = 0;
@@ -18634,10 +18632,11 @@ defaultproperties
      bConsistentBloodPools=True
      iPersistentDebris=1
   	 iStanceHud=3   //Ygll = Every stance
-	   bIsMantlingStance=false //Ygll: new var to know if we are currently mantling
-	   iHealingScreen=1
+     bIsMantlingStance=false //Ygll: new var to know if we are currently mantling
+     iHealingScreen=1
      bAlwaysShowReceivedItemsWindow=true
      bShowTotalRoundsCount=true
      bPistolStartTrained=true
      bStreamlinedRepairBotInterface=true
+     iAltFrobDisplay=1
 }
