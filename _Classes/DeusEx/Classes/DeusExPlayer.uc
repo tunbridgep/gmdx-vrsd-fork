@@ -712,9 +712,8 @@ var travel bool bRealKillswitch;                                                
 var travel float killswitchTimer;                                                       //SARGE: Killswitch timer in seconds.
 
 //Music Stuff
-var transient string currentSong;                                                 //SARGE: The "Song" variable is notoriously unreliable...
-var transient byte currentSection;                                              //SARGE: We need to track this for conversations/combat/etc
-var globalconfig int bEnhancedMusicSystem;                                             //SARGE: Should the music system be a bit smarter about playing tracks?
+var transient string currentSong;                                                 //SARGE: The "Song" variable is kept in savegames...
+var globalconfig int iEnhancedMusicSystem;                                             //SARGE: Should the music system be a bit smarter about playing tracks?
 
 //SARGE: Autoswitch to Health screen when installing the last augmentation at a med bot.
 var globalconfig bool bMedbotAutoswitch;
@@ -3221,20 +3220,58 @@ exec function PlayMusicWindow()
 // ClientSetMusic()
 //
 // SARGE: Copied over from Engine/PlayerPawn.uc
-// Modified to not restart music if the new song is the same as the current song, and the
-// sections are the same (section 0 is always used on map-change, so we set it to that if we're using the "remembered" section).
+// Modified to not restart music if the new song is the same as the current song, and also goes to
+// our remembered section instead of restarting the song when trying to restart it, such as
+// on map transition to a new map with the same song.
+// This is a scraggly horrible mess and it abuses the fuck out of default variables being
+// remembered between savegames and level loads.
+// Anyone who wishes to modify this: Beware Ye! Here be dragons!
 // ----------------------------------------------------------------------
 function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusicTransition NewTransition )
 {
-    //ClientMessage("Switching music: " $ Song $ "->" $ NewSong $ ":" $ NewSection $ " (current: " $ default.currentSong $ ", " $ default.currentSection $ ")");
-    if (default.currentSong != string(NewSong) || default.currentSection != NewSection || bEnhancedMusicSystem == 0)
+    local bool bChange;
+	local DeusExLevelInfo info;
+    
+    info = GetLevelInfo();
+
+    if (string(NewSong) != default.currentSong) //We always want to allow song changes
+    {
+        bChange = true;
+        DebugMessage("Changing Music - Song Change" @ default.currentSong);
+        default.savedSection = Level.SongSection; //And reset the saved section
+    }
+    else if (iEnhancedMusicSystem == 0) //Always change with the old system
+    {
+        bChange = true;
+        DebugMessage("Changing Music - Old System");
+    }
+    else if (SongSection != NewSection) //Don't let us replay the same bit we're already playing.
+    {
+        if (NewSection == default.savedSection && default.musicMode != MUS_Ambient) //allow changing to our saved section if we're not already playing it
+        {
+            bChange = true;
+            DebugMessage("Changing Music - Saved Section: " $ default.musicMode);
+        }
+        else if (NewSection != Level.SongSection) //We want to allow changes to different patterns (except ambient)
+        {
+            if (info == none || !info.bBarOrClub || iEnhancedMusicSystem != 2) //Don't allow music changes in clubs or bars with the extended option.
+            {
+                bChange = true;
+                DebugMessage("Changing Music - Non-Default Section");
+            }
+        }
+        else if (NewSection == Level.SongSection && default.musicMode != MUS_Ambient) //If we ARE changing to our default section and not in ambient, then instead change to our saved section
+        {
+            NewSection = default.savedSection;
+            bChange = true;
+            DebugMessage("Changing Music - Default Section - Setting to Saved Section");
+        }
+    }
+
+    if (bChange)
     {
         super.ClientSetMusic(NewSong,NewSection,NewCdTrack,NewTransition);
         default.currentSong = string(NewSong);
-        if (NewSection == savedSection)
-            default.currentSection = 0;
-        else
-            default.currentSection = NewSection;
     }
 }
 
@@ -3262,20 +3299,6 @@ function UpdateDynamicMusic(float deltaTime)
 
     info = GetLevelInfo();
 
-	// DEUS_EX AMSD In singleplayer, do the old thing.
-	// In multiplayer, we can come out of dying.
-	if (!PlayerIsClient())
-	{
-	  if ((musicMode == MUS_Dying) || (musicMode == MUS_Outro))
-		 return;
-	}
-	else
-	{
-	  if (musicMode == MUS_Outro)
-		 return;
-	}
-
-
 	musicCheckTimer += deltaTime;
 	musicChangeTimer += deltaTime;
 
@@ -3285,41 +3308,30 @@ function UpdateDynamicMusic(float deltaTime)
 		info = GetLevelInfo();
 		if ((info != None) && (info.MissionNumber < 0))
 		{
-			musicMode = MUS_Outro;
+			default.musicMode = MUS_Outro;
 			return;
 		}
 
-		if (musicMode != MUS_Outro)
+		if (default.musicMode != MUS_Outro)
 		{
 			ClientSetMusic(Level.Song, 5, 255, MTRAN_FastFade);
-			musicMode = MUS_Outro;
+			default.musicMode = MUS_Outro;
 		}
 	}
 	else if (IsInState('Conversation'))
 	{
-        //CyberP: no dynamic music in clubs and bars.
-	    if (info != none && info.bBarOrClub && bEnhancedMusicSystem >= 2)
-              return;
-		if (musicMode != MUS_Conversation)
+		if (default.musicMode != MUS_Conversation)
 		{
-			// save our place in the ambient track
-			if (musicMode == MUS_Ambient)
-				savedSection = SongSection;
-			else
-				savedSection = 255;
-
 			ClientSetMusic(Level.Song, 4, 255, MTRAN_Fade);
-			musicMode = MUS_Conversation;
+			default.musicMode = MUS_Conversation;
 		}
 	}
 	else if (IsInState('Dying'))
 	{
-	    if (info != none && info.bBarOrClub && bEnhancedMusicSystem >= 2)
-              return;
-		if (musicMode != MUS_Dying)
+		if (default.musicMode != MUS_Dying)
 		{
 			ClientSetMusic(Level.Song, 1, 255, MTRAN_Fade);
-			musicMode = MUS_Dying;
+			default.musicMode = MUS_Dying;
 		}
 	}
 	else
@@ -3328,11 +3340,8 @@ function UpdateDynamicMusic(float deltaTime)
 		// only check for combat music every second //CyberP: 2 secs
 		if (musicCheckTimer >= 2.0)
 		{
-			musicCheckTimer = 0.0;
 			aggro = 0;
-
-            if (info != none && info.bBarOrClub && bEnhancedMusicSystem >= 2)
-                return;
+			musicCheckTimer = 0.0;
 
             // check a 100 foot radius around me for combat
             // XXXDEUS_EX AMSD Slow Pawn Iterator
@@ -3348,41 +3357,39 @@ function UpdateDynamicMusic(float deltaTime)
                     }
                 }
             }
+
             if (aggro >= iAllowCombatMusic && iAllowCombatMusic > 0)
             {
-                musicChangeTimer = 0.0;
+				musicChangeTimer = 0.0;
+				if (default.musicMode != MUS_Combat)
+				{
+					ClientSetMusic(Level.Song, 3, 255, MTRAN_FastFade);
+					default.musicMode = MUS_Combat;
+				}
+			}
+			else if (default.musicMode != MUS_Ambient)
+			{
+				// wait until we've been out of combat for 5 seconds before switching music
+				if (musicChangeTimer >= 5.0)
+				{
+					// fade slower for combat transitions
+					if (default.musicMode == MUS_Combat)
+						ClientSetMusic(Level.Song, default.savedSection, 255, MTRAN_SlowFade);
+					else
+						ClientSetMusic(Level.Song, default.savedSection, 255, MTRAN_Fade);
 
-                if (musicMode != MUS_Combat)
-                {
-                    // save our place in the ambient track
-                    if (musicMode == MUS_Ambient)
-                        savedSection = SongSection;
-                    else
-                        savedSection = 255;
-
-                    ClientSetMusic(Level.Song, 3, 255, MTRAN_FastFade);
-                    musicMode = MUS_Combat;
-                }
-            }
-            else if (aggro == 0 && musicMode != MUS_Ambient)
+					default.musicMode = MUS_Ambient;
+					musicChangeTimer = 0.0;
+				}
+			}
+            else
             {
-                // wait until we've been out of combat for 5 seconds before switching music
-                if (musicChangeTimer >= 5.0)
-                {
-                    // use the default ambient section for this map
-                    if (savedSection == 255)
-                        savedSection = Level.SongSection;
-
-                    // fade slower for combat transitions
-                    if (musicMode == MUS_Combat)
-                        ClientSetMusic(Level.Song, savedSection, 255, MTRAN_SlowFade);
-                    else
-                        ClientSetMusic(Level.Song, savedSection, 255, MTRAN_Fade);
-
-                    savedSection = 255;
-                    musicMode = MUS_Ambient;
-                    musicChangeTimer = 0.0;
-                }
+                //SARGE: Now we constantly update the saved section, rather than
+                //only updating it when it changes, because that can cause bugs due to fading.
+                if (default.savedSection == 255)
+                    default.savedSection = Level.SongSection;
+                else
+                    default.savedSection = SongSection;
             }
 		}
 	}
@@ -18616,7 +18623,7 @@ defaultproperties
      dblClickHolster=2
      bSmartDecline=True
      killswitchTimer=-2
-     bEnhancedMusicSystem=1
+     iEnhancedMusicSystem=1
      bMedbotAutoswitch=True
      bHDTPEnabled=True
      iEnhancedLipSync=1
