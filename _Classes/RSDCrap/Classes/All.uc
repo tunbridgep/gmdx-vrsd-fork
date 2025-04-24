@@ -132,6 +132,9 @@ class All expands Object
 //Bloody Shuriken
 #exec TEXTURE IMPORT FILE="Textures\BeltIconShurikenBloody.pcx"	    NAME="BeltIconShurikenBloody"   GROUP="Icons"   FLAGS=2
 
+//NSF Warehouse satellite photo, with ladder removed
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\Image02_NYC_Warehouse_1_noladder.pcx"	NAME="Image02_NYC_Warehouse_1_noladder" GROUP="UserInterface"
+
 //Crap
 #exec TEXTURE IMPORT FILE="Textures\Skins\SpartaSign.pcx"	        NAME="SpartaSign" GROUP="Skins"
 #exec TEXTURE IMPORT FILE="Textures\Skins\HDTPSpartaSign.pcx"	    NAME="HDTPSpartaSign" GROUP="Skins"
