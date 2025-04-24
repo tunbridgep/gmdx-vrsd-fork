@@ -19,9 +19,13 @@ var localized String msgNoText;
 var Bool bFirstParagraph;
 var localized String ImageLabel;
 var localized String AddedToDatavaultLabel;
+var localized String msgNextPage;                   //Text to go to the next page
 
 //SARGE: Set to true when we have read this once. Used for blanking datacubes
 var travel bool bRead;
+
+//SARGE: For datacubes with both images and text, allow paging through them.
+var transient bool bPageTwo;
 
 // Called when the device is read
 function OnBeginRead(DeusExPlayer reader) { }
@@ -66,6 +70,8 @@ function DestroyWindow()
 	winText = None;
     winImages = None;
 	aReader = None;
+
+    bPageTwo = false;
 }
 
 // ----------------------------------------------------------------------
@@ -105,7 +111,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 
 	if (player != None)
 	{
-		if (infoWindow == None)
+		if (infoWindow == None || bPageTwo)
 		{
 			aReader = player;
 			CreateInfoWindow();
@@ -196,12 +202,18 @@ function CreateInfoWindow()
     bRead = true;
     OnBeginRead(aReader);
 
-    GetText();
+    if (!bPageTwo)
+        GetText();
     
 	// do we have any image data to give the player?
 	if ((imageClass != None) && (aReader != None))
 	{
-		image = Spawn(imageClass, aReader);
+        //SARGE: Images were being spawned every time we read??
+        image = DataVaultImage(aReader.FindInventoryType(imageClass));
+
+        if (image == None)
+            image = Spawn(imageClass, aReader);
+
 		if (image != None)
 		{
 			image.GiveTo(aReader);
@@ -210,9 +222,10 @@ function CreateInfoWindow()
 
 			// Display a note to the effect that there's an image here,
 			// but only if nothing else was displayed
-			if (infoWindow == None)
+			if (infoWindow == None || bPageTwo)
 			{
 				infoWindow = rootWindow.hud.ShowInfoWindow();
+                infoWindow.ClearTextWindows();
 				winText = infoWindow.AddTextWindow();
 				winText.SetText(Sprintf(ImageLabel, image.imageDescription));
                 winText.SetTextAlignments(HALIGN_Center, VALIGN_Top);               //SARGE: Added.
@@ -222,8 +235,17 @@ function CreateInfoWindow()
                 {
                     winImages = infoWindow.AddImageWindow();
                     winImages.SetImage(image);
+                    bPageTwo = false;
                 }
 			}
+            else if (aReader.bShowDataCubeImages)
+            {
+                bPageTwo = true;
+				winText = infoWindow.AddTextWindow();
+				winText.SetText("");
+				winText.SetText(msgNextPage);
+                winText.SetTextAlignments(HALIGN_Center, VALIGN_Top);               //SARGE: Added.
+            }
 
 			// Log the fact that the user just got an image.
 			if (bImageAdded)
@@ -509,4 +531,5 @@ defaultproperties
      FragType=Class'DeusEx.PaperFragment'
      bPushable=False
 	 bHDTPFailsafe=False
+     msgNextPage="[Image on next page]"
 }
