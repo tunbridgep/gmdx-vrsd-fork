@@ -441,7 +441,7 @@ function DistributeItem(class<Inventory> itemClass, int minAmount, int maxAmount
 
     foreach AllActors(class'ScriptedPawn', SP)
     {
-        if (/*!SP.bImportant && */SP.GetPawnAllianceType(Player) == ALLIANCE_Hostile && !SP.isA('Robot') && !SP.isA('Animal') && !SP.isA('HumanCivilian') && !SP.bDontRandomizeWeapons && actorCount < 50 && SP.IsA(actorClass))
+        if (/*!SP.bImportant && */SP.GetPawnAllianceType(Player) == ALLIANCE_Hostile && !SP.isA('Robot') && !SP.isA('Animal') && !SP.isA('HumanCivilian') && !SP.bDontRandomizeWeapons && actorCount < 50 && SP.IsA('ActorClass'))
             actors[actorCount++] = SP;
     }
     
