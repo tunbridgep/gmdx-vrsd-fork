@@ -225,6 +225,9 @@ Sarge's Changes since Beta 2.2:
         - This was done because of integer truncation. In GMDX v9, the 5th upgrade would change their base damage from 4.2 to 4.5, which was pointless as it was rounded to 4 either way.
         - With vRSD partial damage calculations were added, so this is now relevant again.
     - Crowbar has been changed from +5 damage vs breakables to instead having 2x damage against breakables, to scale better with low-tech.
+    - Added a new playthrough modifier for adding some cut interactions, namely:
+        - JC can arm Miguel with various weapons, including a crossbow, stealth pistol, and others. Miguel will keep them with him thoughout the UNATCO escape.
+        - JC can give Thermoptic Camo to Tiffany Savage, during the Gas Station rescue, which will allow her to escape to the helicopter while cloaked.
     - Augmentation Changes
         - Augmentations with a long recharge (like the Spy Drone) now have a progress bar in the augmentation display in the HUD to show when they will be ready.
         - Augmentations can now be swapped out with the opposite choice when finding duplicate augmentation Canisters.
