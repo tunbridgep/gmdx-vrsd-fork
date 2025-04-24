@@ -207,7 +207,6 @@ Sarge's Changes since Beta 2.2:
     - 20MM HE Ammo is now limited to 4 (from 10), and the ammo count scales with Demolitions, rather then Rifles.
         - It is also no longer affected by the Ammo Capacity augmentation.
         - Ammo amounts should be from 2-6 depending on skill.
-    - The Dragons Tooth Sword now requires Biocells to use. It starts with 100% charge, with each attack taking 2% if it hits a target, giving you 50 hits total. Biocells restore 20% (or 30% with the Field Repair perk), giving you an additional 10 (15) hits each.
     - Aim Stabilisation is now reset when using Medkits/Biocells from the health/augs screens, or using items from the inventory.
     - The GEP Gun now has limited range. After 5 seconds of flight, rockets will detonate as they run out of fuel. Each range mod increases flight time by 1 second.
     - Stamina no longer regenerates while holding an object or corpse.
@@ -224,7 +223,14 @@ Sarge's Changes since Beta 2.2:
     - Reverted GMDX change limiting Assault Rifles, Assault Shotguns and Sawed Off's to 4 damage mods. Now they can have 5 just like everything else.
         - This was done because of integer truncation. In GMDX v9, the 5th upgrade would change their base damage from 4.2 to 4.5, which was pointless as it was rounded to 4 either way.
         - With vRSD partial damage calculations were added, so this is now relevant again.
-    - Crowbar has been changed from +5 damage vs breakables to instead having 2x damage against breakables, to scale better with low-tech.
+    - Low Tech Skill Overhaul
+        - Crowbar base damage increased from 8 to 10
+        - Crowbar has been changed from +5 damage vs breakables to instead having 2x damage against breakables, to scale better with low-tech.
+        - Added a new perk: Hemorrhage, utilising a new mechanic: Bleed
+            - With the perk, organic enemies hit by throwing knives will begin to bleed, taking damage over time.
+            - Bleed damage is lethal and can kill targets.
+        - The Dragons Tooth Sword now requires Biocells to use. It starts with 100% charge, with each attack taking 2% if it hits a target, giving you 50 hits total. Biocells restore 20% (or 30% with the Field Repair perk), giving you an additional 10 (15) hits each.
+        - Dragons Tooth Sword base damage increased to 25 from 20.
     - Augmentation Changes
         - Augmentations with a long recharge (like the Spy Drone) now have a progress bar in the augmentation display in the HUD to show when they will be ready.
         - Augmentations can now be swapped out with the opposite choice when finding duplicate augmentation Canisters.
@@ -254,6 +260,8 @@ Sarge's Changes since Beta 2.2:
             - Is now a Toggle Augmentation, reserving 20 energy to function. The reserved amount is discounted when calculating damage reduction.
         - Combat Speed
             - Is now a Toggle Augmentation, reserving 20 energy to function.
+        - Combat Strength
+            - Is now a Toggle Augmentation, reserving 25 energy to function.
         - Environmental Resist
             - Is now an Automatic Augmentation, draining 20 energy per second when taking environmental damage.
         - Power Recirculator
@@ -286,8 +294,7 @@ Sarge's Changes since Beta 2.2:
                 - Now, any bonuses that would have been given to a fully-upgraded augmentation will "spill over" into other augmentations, allowing them to be upgraded twice.
                 - The order in which augmentations is upgraded is pre-set and cannot be changed, starting with the Torso, then the head, the eyes, and then moving to the skin, arms and legs.
         - Targeting
-            - Is now a Toggle Augmentation, reserving 20 energy to function.
-            - Will now automatically update when levelled up, as it's a toggle so you will leave it on all the time.
+            - No longer affects Hand to Hand weapons
             - No longer shows the `DEFAULT NAME - REPORT AS A BUG` text when looking at objects with no name.
             - The Picture-in-Picture window has been made slightly bigger.
             - The Picture-in-Picture window can now be minimised, which hides it and only displays textual info.
