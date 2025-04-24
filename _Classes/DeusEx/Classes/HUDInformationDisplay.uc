@@ -115,6 +115,21 @@ function TextWindow AddTextWindow()
 }
 
 // ----------------------------------------------------------------------
+// SARGE: CreateImageWindow()
+// Allow us to create image windows;
+// ----------------------------------------------------------------------
+
+function PersonaImageWindow AddImageWindow()
+{
+    local PersonaImageWindow winImage;
+
+	winImage = PersonaImageWindow(winTile.NewChild(Class'PersonaImageWindow'));
+    AskParentForReconfigure();
+
+    return winImage;
+}
+
+// ----------------------------------------------------------------------
 // ClearTextWindows()
 //
 // Removes all the text window
