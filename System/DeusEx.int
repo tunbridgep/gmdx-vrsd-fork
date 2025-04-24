@@ -1119,7 +1119,7 @@ StatusText="PNGBS//GLOBAL//PUB:3902.9571[wd]"
 HackedText="TERMINAL HACKED"
 Title="PageNet Global Banking System"
 ComputerNodeFunctionLabel="ATMWD"
-ButtonLabelWithdrawAll="|&Withdraw All"
+ButtonLabelWithdrawAll="Withdraw |&All"
 
 [Ammo10mm]
 ItemName="10mm Ammo"
