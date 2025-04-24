@@ -39,6 +39,8 @@ Sarge's Changes since Beta 2.2:
     - Fixed GMDX bugs where knocked-out scuba-divers would die immediately upon reaching the surface of water.
     - Fixed vanilla item-duplication bug (caused by repeatedly dropping and repeatedly picking up items quickly)
     - Fixed a vanilla game bug that would prevent weapons from spawning with ammo available if there wasn't enough room to spawn the ammo when being picked up.
+    - Fixed vRSD bug where attempting to loot ammo from a weapon while having the same weapon equipped, but with an alternate ammo type (such as AP rounds) would silently fail with no message.
+    - Fixed major GMDX bugs related to spawning items in tight spaces, including weapons with no ammo and items not appearing when gibbing enemies.
     - Fixed many other GMDX and Vanilla bugs.
 - Quality of Life Improvements:
     - Data Cubes containing images will now show the image rather than simply saying you received an image.
@@ -93,7 +95,9 @@ Sarge's Changes since Beta 2.2:
                 - Setting the IW Toolbelt to "hybrid" mode will only switch back to your primary belt selection if you were unholstered before selecting the current item, otherwise it does nothing.
         - Added a new setting to move the Belt to the left and the Ammo Display to the right.
         - "Smart Keyring" support added.
-            - When Smart Keyring is enabled, the keyring will no longer occupy belt slot 0 (or belt slot =, if the large belt is enabled), allowing these slots to be used for regular items.
+            - The Smart Keyring has 3 settings. Disabled, Enabled and No Keyring.
+            - When enabled, objects may freely replace the nanokey on the toolbelt. Once they are removed, the key will once again be added to the slot.
+            - If "No Keyring" mode is enabled, the keyring will never occupy the slot, allowing the slot to act as a completely normal belt slot.
             - The keyring can still be selected using Left-Click Frob on doors or by right-clicking the Nano-Keyring icon in the inventory screen.
     - Datacubes will show a black screen after they have been read.
     - Added the option to use the original HUD fonts instead of the GMDX ones.
@@ -127,8 +131,18 @@ Sarge's Changes since Beta 2.2:
     - The Inventory "Show Ammo" display now always shows the total amount of ammo you can carry. Before, it was only visible when "Show Descriptions" was enabled.
     - A lot of inventory item displays have been improved to show more statistics.
     - Added a Lighting Accessibility setting, which removes some strobing and flickering in certain areas on some maps, such as the 'Ton hotel elevator shaft.
-    - Added a new corpse searching setting, "Enhanced Looting", which makes the first right-click on a corpse never pick them up, even if empty, so that you can search them reliably without accidentally picking them up.
+    - Looting/Searching improvements:
+        - Added a new corpse searching setting, "Enhanced Looting", which makes the first right-click on a corpse never pick them up, even if empty, so that you can search them reliably without accidentally picking them up.
         - Additionally, the first time a corpse is interacted with, it will show any items which it contains that you cannot pick up (such as duplicate weapons and declined items).
+        - Attempting to pick up a weapon now tells you how much ammo it has, if you are at the maximum for that ammo type.
+        - Added a display window to show how many rounds were looted when looting ammo from a weapon.
+        - Added new looting sounds, including unique sounds for partially-looting ammo.
+        - Added a sound and a message when upgrading a weapon in your inventory by picking up a modded weapon.
+        - Retrieving throwing knives from corpses will show a bloodied icon.
+    - The "Put Away Weapon" key has been replaced with a new "Holster/Unholster" keybind, which holsters and unholsters your current weapon.
+    - ATM Machines now show a "Withdraw All" button when logged in using an account. Previously, this was only shown with Hacking at Advanced or higher.
+        - Advanced Hacking is still required to show the Withdraw All button when hacking ATMs.
+    - Removed the completely pointless "This weapon cannot be reloaded" messages when attempting to reload melee weapons.
     - Added a new setting to show "[Searched]" text after interacting with corpses once, to differentiate between those which have been searched and which have not.
     - Added a new keybinding to stop the currently playing infolink.
     - Using an Augmentation Upgrade cannister (via right-click or the Use button) will now open the Augmentations screen.
@@ -196,6 +210,9 @@ Sarge's Changes since Beta 2.2:
     - The Pedometer can now be viewed in the Health screen when using the Addiction system.
     - Subtitles are now enabled in third-person cutscenes regardless of Subtitles setting, allowing text to show instead of useless black bars while also not displaying in-game barks. This can be disabled using the `bSubtitlesCutscene` option in `DeusEx.ini`
 - Gameplay Changes:
+    - New Item Distribution System that distributes a preset number of items from a pool upon loading a new map.
+        - MJ12 Elites now have a small chance of carrying Throwing Knives
+        - All enemy troopers now have a small chance of carrying a PS20 or some flares.
     - Tech Goggles and Vision Enhancement Changes
         - Battery increased by 30% (from 500 to 650)
         - Tech Goggles and Level 1 Vision now show all targets in green, rather than being targeted in various colours based on IFF info
