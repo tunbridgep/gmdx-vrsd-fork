@@ -18488,7 +18488,7 @@ defaultproperties
      dblClickHolster=2
      bSmartDecline=True
      killswitchTimer=-2
-     bEnhancedMusicSystem=1
+     iEnhancedMusicSystem=1
      bMedbotAutoswitch=True
      bHDTPEnabled=True
      iEnhancedLipSync=1
