@@ -11310,7 +11310,7 @@ exec function SkipMessages()
 // ToggleRadialAugMenu()
 // ----------------------------------------------------------------------
 
-exec function ToggleRadialAugMenu()
+exec function ToggleRadialAugMenu(optional bool bHeld, optional bool bRelease)
 {
 	local DeusExRootWindow root;
     root = DeusExRootWindow(rootWindow);
@@ -11320,8 +11320,18 @@ exec function ToggleRadialAugMenu()
     if (RestrictInput())
         return;
 
+    /*
     //No wheel while drone is active
     if (bSpyDroneActive && !bSpyDroneSet)
+    {
+        bRadialAugMenuVisible = false;
+        UpdateHUD();
+        return;
+    }
+    */
+
+    //If it's already closed while we're holding the key, don't re-open it
+    if (bHeld && bRelease && !bRadialAugMenuVisible)
         return;
 
 	bRadialAugMenuVisible = !bRadialAugMenuVisible;
@@ -11521,6 +11531,19 @@ function bool GetBracketsState()
     return true;
 }
 
+// ----------------------------------------------------------------------
+// SARGE: GetCurrentViewRotation()
+// Gets the current view rotation, either returning the standard, or the drone/wheel saved one.
+// ----------------------------------------------------------------------
+function Rotator GetCurrentViewRotation()
+{
+    if(bSpyDroneActive && !bSpyDroneSet && !bBigDroneView)
+        return SAVErotation;
+    else if(bRadialAugMenuVisible)
+        return WHEELSAVErotation;
+    else
+        return ViewRotation;
+}
 
 // ----------------------------------------------------------------------
 // UpdateCrosshairStyle()
@@ -12138,8 +12161,8 @@ exec function ShowMainMenu()
         ConsoleCommand("set" @ "ini:Engine.Engine.ViewportManager Brightness" @ 0.6);
         ConsoleCommand("set" @ "DeusExPlayer bFirstTimeGMDX" @ "True");
         ConsoleCommand("set" @ "JCDentonMale bFirstTimeGMDX" @ "True");
-        ConsoleCommand("set" @ "DeusExPlayer bRealisticCarc" @ "True");
-        ConsoleCommand("set" @ "JCDentonMale bRealisticCarc" @ "True");
+        //ConsoleCommand("set" @ "DeusExPlayer bRealisticCarc" @ "True");
+        //ConsoleCommand("set" @ "JCDentonMale bRealisticCarc" @ "True");
 	}
     ConsoleCommand("FLUSH");
 
@@ -12566,7 +12589,7 @@ event PlayerCalcView( out actor ViewActor, out vector CameraLocation, out rotato
 		return;
 	}
 	// check for spy drone and freeze player's view
-	if (bSpyDroneActive && !bSpyDroneSet && !bRadialAugMenuVisible)                     //RSD: Allows the user to toggle between moving and controlling the drone, also added Lorenz's wheel
+	if (bSpyDroneActive && !bSpyDroneSet)                     //RSD: Allows the user to toggle between moving and controlling the drone, also added Lorenz's wheel
 	{
 		if (aDrone != None)
 		{
@@ -12617,8 +12640,11 @@ event PlayerCalcView( out actor ViewActor, out vector CameraLocation, out rotato
 
         if (bRadialAugMenuVisible) {
             // prevent view from rotating
+            fixedRotation = WHEELSAVErotation;
+            fixedRotation.Pitch = 0f;
+            fixedRotation.Roll = 0f;
             ViewRotation=WHEELSAVErotation;                                     //RSD: Lorenz used SAVErotation, use WHEELSAVErotation instead
-            SetRotation(WHEELSAVErotation);                                     //RSD: Lorenz used SAVErotation, use WHEELSAVErotation instead
+            SetRotation(fixedRotation);                                   //RSD: Lorenz used SAVErotation, use WHEELSAVErotation instead
         }
 
 	    CameraRotation = ViewRotation;
@@ -17772,13 +17798,11 @@ function ForceDroneOff(optional bool skipDeactivation)
         {
             if (bSpyDroneSet)
             {
-                SAVErotation = ViewRotation;
-                bSpyDroneSet = false;                                                 //RSD: Ensures that the Spy Drone will ACTUALLY be turned off
+                anAug.ToggleStandbyMode(true);
             }
             if (!skipDeactivation)
             {
                 anAug.Deactivate();
-                bSpyDroneActive = false;                                                  //RSD: Prevents being forced back into drone control at the last second
             }
         }
     }

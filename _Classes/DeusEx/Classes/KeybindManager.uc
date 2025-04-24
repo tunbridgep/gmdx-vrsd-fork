@@ -303,5 +303,5 @@ function Setup(DeusExPlayer P)
     ReplaceAlias(KB_Jump,"Jump | StartMantling 1 | OnRelease StopMantling 1");
     
     //Setup aug wheel key
-    ReplaceAlias(KB_AugMenu_Hold,"HoldRadialAugMenu | ToggleRadialAugMenu 1 | OnRelease ToggleRadialAugMenu 1");
+    ReplaceAlias(KB_AugMenu_Hold,"HoldRadialAugMenu | ToggleRadialAugMenu 1 0 | OnRelease ToggleRadialAugMenu 1 1");
 }

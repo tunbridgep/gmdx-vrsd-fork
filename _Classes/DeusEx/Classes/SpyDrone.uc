@@ -112,6 +112,7 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector HitLocation, Vector Mo
         LightRadius = 0;
         bEMPDeath = true;
         ForceDroneOff();
+        AmbientSound=None;
 	}
 
 	if ( Level.NetMode != NM_Standalone )
@@ -208,7 +209,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 
     player = DeusExPlayer(frobber);
 
-    if (player != None && player.AugmentationSystem != None)
+    if (player != None && player.AugmentationSystem != None && !bEMPDeath)
     {
         droneAug = player.AugmentationSystem.FindAugmentation(class'AugDrone');
 
