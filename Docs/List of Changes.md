@@ -349,7 +349,10 @@ Sarge's Changes since Beta 2.2:
     - The Laser Sight on Liberty Island is replaced with a Recoil Mod on Hardcore mode
     - A Laser Sight has been added to Smuggler's safe in the first NY visit (replaces a recoil mod)
     - The Silencer in Paul's Apartment, Full-Auto Mod in Tong's Lab, and Laser Sight in Smugglers Safe are all guaranteed to appear even with the weapon mod shuffle turned on.
+    - Vandenberg:
+        - The security code is no longer given by the research team on Hardcore. You will need to use your hacking skill if you wish to access the security system!
 - Miscellaneous Changes:
+    - MJ12 Elites have had their voices reset to the default troop voices, because they don't have female-appropriate voice lines and the voices sound strange and broken in many ways.
     - Many default "<item> Activated" messages have been removed as these would pollute the log.
     - Added miscelanous sounds when interacting with certain things, such as the Bioelectric "hiss" sound when using repair bots.
     - Fixed misaligned HUD elements (ammo display and belt) by moving the Ammo display down slightly.
