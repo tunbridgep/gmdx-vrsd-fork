@@ -200,6 +200,7 @@ Sarge's Changes since Beta 2.2:
         - Tech Goggles and Level 1 Vision now show all targets in green, rather than being targeted in various colours based on IFF info
         - Tech Goggles and Level 1 Vision can no longer see cloaked enemies
         - Upgraded tech goggles (via the Thermal Imaging perk) and Vision level 3+ work as they did before, with full thermal vision and the ability to see cloaked enemies and enemies through walls.
+        - Tech Goggles and the Vision Augmentation are now able to highlight turrets and cameras (was previously only available in multiplayer).
     - JC can now carry 30 Zyme instead of 20, to facilitate selling every one you find to Renault.
     - Laser Triggers can no longer be set off by medical and repair bots.
     - Karkians and other transgenics will no longer drown when unconscious.
