@@ -150,6 +150,11 @@ function FirstFrame()
 
 	flags.DeleteFlag('PlayerTraveling', FLAG_Bool);
 
+    //SARGE: Sanity check for ConFix
+    //The flag is NOT set in the training mission!
+    if (dxInfo.MissionNumber > 0 && !flags.GetBool('Confix_Engaged'))
+        player.clientMessage("ConFix is not installed! Please install ConFix for the best experience while playing GMDX!");
+
     //Recreate/Setup our decal manager
 	foreach AllActors(class'DecalManager', D)
         break;
@@ -431,30 +436,47 @@ function DistributeItem(class<Inventory> itemClass, int minAmount, int maxAmount
     local ScriptedPawn actors[50], temp, SP;
     local int actorCount, toGive, index;
     local Inventory inv, inv2;
-
-    //player.ClientMessage("Distributing "$itemClass$"...");
+    
+    player.DebugMessage("Distributing "$itemClass$"...");
 
     foreach AllActors(class'ScriptedPawn', SP)
     {
-        if (!SP.bImportant && SP.GetPawnAllianceType(Player) == ALLIANCE_Hostile && !SP.isA('Robot') && !SP.isA('Animal') && !SP.isA('HumanCivilian') && !SP.bDontRandomizeWeapons && actorCount < 50)
+        if (/*!SP.bImportant && */SP.GetPawnAllianceType(Player) == ALLIANCE_Hostile && !SP.isA('Robot') && !SP.isA('Animal') && !SP.isA('HumanCivilian') && !SP.bDontRandomizeWeapons && actorCount < 50 && SP.IsA(actorClass))
             actors[actorCount++] = SP;
     }
     
-    //Shuffle the array
-    for (i = actorCount;i > 0;i--)
+    toGive = Player.Randomizer.GetRandomInt(maxAmount - minAmount) + minAmount;
+    player.DebugMessage("  To Give: "$toGive);
+    toGive = MIN(toGive,actorCount);
+    player.DebugMessage("  To Give (capped): "$toGive);
+
+    if (toGive == 0)
+        return;
+    
+    player.DebugMessage("  Before Shuffle...");
+
+    for (i = actorCount - 1;i >= 0;i--)
     {
-        swapTo = Player.Randomizer.GetRandomInt(i + 1);
+        player.DebugMessage("    Actor: " $ actors[i]);
+    }
+
+    //Shuffle the array
+    for (i = actorCount - 1;i >= 0;i--)
+    {
+        swapTo = Player.Randomizer.GetRandomInt(i);
         temp = actors[i];
         actors[i] = actors[swapTo];
         actors[swapTo] = temp;
     }
     
+    player.DebugMessage("  After Shuffle...");
+    
+    for (i = actorCount - 1;i >= 0;i--)
+    {
+        player.DebugMessage("    Actor: " $ actors[i]);
+    }
 
     //Now give the first 0-2 PS20s
-    toGive = Player.Randomizer.GetRandomInt(maxAmount - minAmount) + minAmount;
-    //player.ClientMessage("  To Give: "$toGive);
-    toGive = MIN(toGive,actorCount);
-    //player.ClientMessage("  To Give (capped): "$toGive);
 
     for(i = 0;i < actorCount;i++)
     {
@@ -499,7 +521,7 @@ function DistributeItem(class<Inventory> itemClass, int minAmount, int maxAmount
                 //player.ClientMessage("  Given a "$ammoClass$" to "$actors[i]);
             }
         }
-        //Player.ClientMessage("Give " $ actors[given].FamiliarName $ " a " $ itemClass);
+        Player.DebugMessage("  Give " $ actors[i].UnfamiliarName $ " (" $ actors[i] $ " ) a " $ itemClass);
         actors[i].SwitchToBestWeapon();
         toGive--;
     }

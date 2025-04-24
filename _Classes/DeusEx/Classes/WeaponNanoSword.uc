@@ -110,7 +110,7 @@ function PlaySelect()
 function SetWeaponSkin(bool hdtp)
 {
     //Stop light re-appearing when holstered
-    if (!IsInState('Idle'))
+    if (!IsInState('Idle') && Owner != None)
         return;
 
     if (hdtp)

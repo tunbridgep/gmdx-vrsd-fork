@@ -272,7 +272,7 @@ event DrawWindow(GC gc)
         //SARGE: Otherwise, print the ammo type. This is useful when we "use" items from the inventory
         //that aren't on our belt, which normally would give us no idea what is in our weapon if we change ammo types,
         //especially if an infolink is playing.
-        else if (player.bShowAmmoTypeInAmmoHUD)
+        else if (player.bShowAmmoTypeInAmmoHUD && !weapon.bDisposableWeapon)
         {
 			gc.SetFont(Font'FontTiny'); //CyberP: hud scaling Font'FontTiny'
             gc.SetTextColor(GetAmmoTextColor());

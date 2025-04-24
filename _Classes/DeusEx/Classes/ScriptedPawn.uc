@@ -2684,23 +2684,35 @@ function SetupWeapon(bool bDrawWeapon, optional bool bForce)
 
 // ----------------------------------------------------------------------
 // DropWeapon()
+// SARGE: This function needed a rewrite, so I rewrote it...
 // ----------------------------------------------------------------------
 function DropWeapon()
 {
 	local DeusExWeapon dxWeapon;
+    local vector loc;
 
 	if (Weapon != None && !Weapon.IsA('WeaponRifle'))
 	{
 		dxWeapon = DeusExWeapon(Weapon);
-		if ((dxWeapon == None) || !dxWeapon.bNativeAttack)
+		if (dxWeapon != None && !dxWeapon.bNativeAttack)
 		{
-			SetWeapon(None);
-			if (Weapon.IsA('DeusExWeapon'))  //CyberP: Dropped weapons onto the floor should really give ammo...
-                dxWeapon.SetDroppedAmmoCount(PickupAmmoCount, false);   //RSD: Added PickupAmmoCount for initialization from MissionScript.uc
-			if (Weapon.IsA('WeaponAssaultGunSpider')) //CyberP: make sure these are destroyed
-			    Weapon.Destroy();
+			if (dxWeapon.IsA('WeaponAssaultGunSpider')) //CyberP: make sure these are destroyed
+            {
+			    dxWeapon.Destroy();
+                SetWeapon(None);
+                return;
+            }
 			else
-			    Weapon.DropFrom(Location);
+            {
+                //SARGE: Get a spot to our right based on our rotation.
+                loc = Location + (CollisionRadius * Vect(0,1,0) >> Rotation);
+                if (!class'SpawnUtils'.static.CheckDropFrom(dxWeapon,loc,Location))
+                    return;
+            }
+			
+            dxWeapon.SetDroppedAmmoCount(PickupAmmoCount);   //RSD: Added PickupAmmoCount for initialization from MissionScript.uc
+			
+            SetWeapon(None);
 		}
 	}
 }
@@ -3312,11 +3324,14 @@ function ExpelInventory()
 				else
 				{
 					//G-Flex: spread them out like chunks, but a little less
-					loc.X = (1-2*FRand()) * CollisionRadius;
-					loc.Y = (1-2*FRand()) * CollisionRadius;
-					loc.Z = (1-2*FRand()) * CollisionHeight;
-					loc += Location;
-					item.DropFrom(loc);
+                    do
+                    {
+                        loc.X = (1-2*FRand()) * CollisionRadius;
+                        loc.Y = (1-2*FRand()) * CollisionRadius;
+                        loc.Z = CollisionHeight + 4 + (FRand() * 4); //CyberP: stop things spawning under the floor.
+                        loc += Location;
+                    }
+                    until (class'SpawnUtils'.static.CheckDropFrom(item,loc));
 
 					item.Velocity += Velocity;
 					item.Velocity += VRand() * (100.0 + (400.0 / item.Mass));   //RSD: This is way, WAY too much
@@ -3324,7 +3339,7 @@ function ExpelInventory()
 
 					//G-Flex: get the same ammo as from the carcass or a dropped weapon
 					if (item.IsA('DeusExWeapon'))
-						DeusExWeapon(item).SetDroppedAmmoCount(PickupAmmoCount, false);//RSD: Added PickupAmmoCount for initialization from MissionScript.uc
+						DeusExWeapon(item).SetDroppedAmmoCount(PickupAmmoCount);//RSD: Added PickupAmmoCount for initialization from MissionScript.uc
 				}
 
 				item = nextItem;
@@ -16769,6 +16784,10 @@ state Dying
 	}
 
 Begin:
+    //SARGE: Drop weapons on death.
+    if (class'DeusExPlayer'.default.bDropWeaponsOnDeath && Health > -100 && !IsA('Robot'))
+        DropWeapon();
+
 	WaitForLanding();
 	MoveFallingBody();
 
