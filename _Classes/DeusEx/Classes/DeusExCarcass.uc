@@ -831,12 +831,15 @@ function ExpelInventory()
 
             if (item != None)
             {
-                loc.X = (1-2*FRand()) * CollisionRadius;
-                loc.Y = (1-2*FRand()) * CollisionRadius;
-                loc.Z = CollisionHeight + 4 + (FRand() * 4); //CyberP: stop things spawning under the floor.
-                loc += Location;
+                do
+                {
+                    loc.X = (1-2*FRand()) * CollisionRadius;
+                    loc.Y = (1-2*FRand()) * CollisionRadius;
+                    loc.Z = CollisionHeight + 4 + (FRand() * 4); //CyberP: stop things spawning under the floor.
+                    loc += Location;
+                }
+                until (class'SpawnUtils'.static.CheckDropFrom(item,loc));
                 DeleteInventory(item);
-                item.DropFrom(loc);
                 if ( (item.IsA('DeusExWeapon')) )
                 {
                     // Any weapons have their ammo set to a random number of rounds (1-4)

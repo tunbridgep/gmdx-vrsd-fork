@@ -2703,7 +2703,7 @@ function DropWeapon()
             {
                 //SARGE: Get a spot to our right based on our rotation.
                 loc = Location + (CollisionRadius * Vect(0,1,0) >> Rotation);
-                if (!dxWeapon.CheckDropFrom(loc,Location))
+                if (!class'SpawnUtils'.static.CheckDropFrom(dxWeapon,loc,Location))
                     return;
             }
 			
@@ -3321,11 +3321,14 @@ function ExpelInventory()
 				else
 				{
 					//G-Flex: spread them out like chunks, but a little less
-					loc.X = (1-2*FRand()) * CollisionRadius;
-					loc.Y = (1-2*FRand()) * CollisionRadius;
-					loc.Z = (1-2*FRand()) * CollisionHeight;
-					loc += Location;
-					item.DropFrom(loc);
+                    do
+                    {
+                        loc.X = (1-2*FRand()) * CollisionRadius;
+                        loc.Y = (1-2*FRand()) * CollisionRadius;
+                        loc.Z = CollisionHeight + 4 + (FRand() * 4); //CyberP: stop things spawning under the floor.
+                        loc += Location;
+                    }
+                    until (class'SpawnUtils'.static.CheckDropFrom(item,loc));
 
 					item.Velocity += Velocity;
 					item.Velocity += VRand() * (100.0 + (400.0 / item.Mass));   //RSD: This is way, WAY too much

@@ -706,25 +706,6 @@ function SupportActor( actor StandingActor )
 	StandingActor.SetBase( self );
 }
 
-//SARGE: Proper version of DropFrom that actually returns a value.
-
-function bool CheckDropFrom(vector StartLocation, optional vector fallback)
-{
-    local vector loc;
-
-    loc = StartLocation;
-
-	if (!SetLocation(loc))
-    {
-        loc = fallback;
-        if (!SetLocation(loc))
-            return false;
-    }
-
-     DropFrom(loc);
-     return true;
-}
-
 function DropFrom(vector StartLocation)
 {
 	if ( !SetLocation(StartLocation) )
@@ -1127,15 +1108,7 @@ function GiveAmmo( Pawn Other )
 	{
         //SARGE: Here's the nasty bug!
         //Spawn will fail if there's not enough room to spawn the relevant ammo...
-		AmmoType = Spawn(AmmoName);	// Create ammo type required		
-        
-        //...So we do a filthy hack by making the ammo type no longer collide with the world temporarily
-        if (AmmoType == None && AmmoName.default.bCollideWorld == true)
-        {
-            AmmoName.default.bCollideWorld = false;
-            AmmoType = Spawn(AmmoName);	// Create ammo type required...again!
-            AmmoName.default.bCollideWorld = true;
-        }
+		AmmoType = Ammo(class'SpawnUtils'.static.SpawnSafe(AmmoName));	// Create ammo type required		
 
 		Other.AddInventory(AmmoType);		// and add to player's inventory
 		AmmoType.BecomeItem();
