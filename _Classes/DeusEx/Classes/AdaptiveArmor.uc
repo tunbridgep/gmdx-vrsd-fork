@@ -47,4 +47,5 @@ defaultproperties
      CollisionHeight=13.810000
      Mass=30.000000
      Buoyancy=20.000000
+     PickupSound=sound'objpickup'
 }

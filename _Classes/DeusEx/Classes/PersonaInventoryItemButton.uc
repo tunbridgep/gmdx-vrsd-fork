@@ -50,6 +50,8 @@ var Color		fillColor;
 var Texture		fillTexture;
 
 var localized String CountLabel;
+var localized String CountLabel2;
+var localized String QtyLabel;
 var localized String ChargeLabel;
 var localized String RoundLabel;
 var localized String RoundsLabel;
@@ -170,7 +172,9 @@ event DrawWindow(GC gc)
 			if ((weapon != None) && weapon.bDisposableWeapon)
 			{
 				str = String(weapon.AmmoType.AmmoAmount);
-                if (player.bShowTotalRoundsCount)
+                if (player.iShowTotalCounts > 1)
+                    str = Sprintf(QtyLabel, str, player.GetAdjustedMaxAmmo(weapon.AmmoType));
+                else if (player.iShowTotalCounts > 0)
                     str = Sprintf(RoundsLabel2, str, player.GetAdjustedMaxAmmo(weapon.AmmoType));
 				else if (str == "1")
 					str = Sprintf(RoundLabel, str);
@@ -180,8 +184,8 @@ event DrawWindow(GC gc)
 			else if (anItem.IsA('DeusExAmmo'))
 			{
 				str = String(DeusExAmmo(anItem).AmmoAmount);
-                if (player.bShowTotalRoundsCount)
-                    str = Sprintf(RoundsLabel, str, player.GetAdjustedMaxAmmo(DeusExAmmo(anItem)));
+                if (player.iShowTotalCounts > 1)
+                    str = Sprintf(QtyLabel, str, player.GetAdjustedMaxAmmo(DeusExAmmo(anItem)));
 				else if (str == "1")
 					str = Sprintf(RoundLabel, str);
 				else
@@ -196,8 +200,13 @@ event DrawWindow(GC gc)
 		// Check to see if we need to print "x copies"
 		if (anItem.IsA('DeusExPickup') && (!anItem.IsA('NanoKeyRing')))
 		{
-            if (DeusExPickup(anItem).NumCopies > 1)
-				str = Sprintf(CountLabel, DeusExPickup(anItem).NumCopies);
+            //SARGE: Always show Charged Pickup counts if the setting is on.
+            if (player.iShowTotalCounts > 1)
+                str = Sprintf(QtyLabel, DeusExPickup(anItem).NumCopies, DeusExPickup(anItem).RetMaxCopies());
+            else if (player.iShowTotalCounts > 0 && anItem.IsA('ChargedPickup'))
+                str = Sprintf(CountLabel2, DeusExPickup(anItem).NumCopies, DeusExPickup(anItem).RetMaxCopies());
+            else if (DeusExPickup(anItem).NumCopies > 1)
+                str = Sprintf(CountLabel, DeusExPickup(anItem).NumCopies);
 
             //SARGE: Add charge for ChargedItems
             if (anItem.isA('ChargedPickup') && ChargedPickup(anItem).GetCurrentCharge() > 0)
@@ -621,6 +630,8 @@ defaultproperties
      colDropBad=(R=128,G=32,B=32)
      fillTexture=Texture'Extension.Solid'
      CountLabel="Count: %d"
+     CountLabel2="Count: %d/%d"
+     QtyLabel="Qty: %d/%d"
      ChargeLabel="Charge: %d%%"
      RoundLabel="%d Rd"
      RoundsLabel="%d Rds"
