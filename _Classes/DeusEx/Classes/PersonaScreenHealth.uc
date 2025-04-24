@@ -688,7 +688,7 @@ function UpdateStatusText()                                                     
          extraBPM += FRand()*1.5;
      else if (FRand() < 0.0007)
          extraBPM -= FRand()*1.5;
-     else if (player.musicMode == MUS_Combat)
+     else if (player.default.musicMode == MUS_Combat)
          extraBPM += 4;
      }
      if (FRand() < 0.6)
