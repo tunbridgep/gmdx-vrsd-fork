@@ -1598,12 +1598,9 @@ simulated function float GetWeaponSkill()
 			if ((player.AugmentationSystem != None ) && ( player.SkillSystem != None ))
 			{
 				// get the target augmentation
-                if (!bHandToHand)
-                {
-                    value = player.AugmentationSystem.GetAugLevelValue(class'AugTarget');
-                    if (value == -1.0)
-                        value = 0;
-                }
+				value = player.AugmentationSystem.GetAugLevelValue(class'AugTarget');
+				if (value == -1.0)
+					value = 0;
 
 				// get the skill
 				value += player.SkillSystem.GetSkillLevelValue(GoverningSkill);
