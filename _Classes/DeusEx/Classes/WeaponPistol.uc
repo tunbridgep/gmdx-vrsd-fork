@@ -389,4 +389,5 @@ defaultproperties
      CollisionHeight=1.000000
      minSkillRequirement=1;
      bFancyScopeAnimation=true
+     bAutoaimCompatibleWeapon=true
 }

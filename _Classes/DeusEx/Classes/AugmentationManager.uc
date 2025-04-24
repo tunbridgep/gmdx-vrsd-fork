@@ -485,6 +485,7 @@ function AssignOverflow()
         //Then Eyes
         AssignOverflowTo(class'AugVision',level);
         AssignOverflowTo(class'AugTarget',level);
+        AssignOverflowTo(class'AugAutoaim',level);
         
         //Then Subdermal
         AssignOverflowTo(class'AugCloak',level);

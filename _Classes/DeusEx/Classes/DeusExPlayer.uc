@@ -6300,11 +6300,6 @@ state PlayerWalking
 		// don't slow the player down if he's skilled at the corresponding weapon skill
 		else if ((DeusExWeapon(Weapon) != None) && (Weapon.Mass > 30) && (AugmentationSystem != None))
 		{
-		  /*if (DeusExWeapon(Weapon).GetWeaponSkill() > -0.25 && AugmentationSystem.GetAugLevelValue(class'AugMuscle') == -1)
-			{
-            bIsWalking = True;
-			newSpeed = defSpeed;
-			}*/
 			//RSD: New formula for Heavy weap speed penalty:
 			// 50% mult is lowest speed, 100% is normal run
 			// SkillWeaponHeavy adds 10/25/50%
@@ -6329,12 +6324,12 @@ state PlayerWalking
 			newSpeed -= inHand.Mass * 3*augValue;
 		}
 
-		/*// Multiplayer movement adjusters   //CyberP: no multiplayer
+		// Multiplayer movement adjusters
 		if ( Level.NetMode != NM_Standalone )
 		{
 			if ( Weapon != None )
 			{
-				weapSkill = DeusExWeapon(Weapon).GetWeaponSkill();
+				weapSkill = DeusExWeapon(Weapon).GetWeaponSkill(true);
 				// Slow down heavy weapons in multiplayer
 				if ((DeusExWeapon(Weapon) != None) && (Weapon.Mass > 30) )
 				{
@@ -6349,7 +6344,7 @@ state PlayerWalking
 			}
 			else
 				TurnRateAdjuster = 1.0;
-		} */
+		}
 
 		// if we are moving really slow, force us to walking
 		if ((newSpeed <= defSpeed / 3) && !bForceDuck)
@@ -17811,6 +17806,22 @@ function ForceDroneOff(optional bool skipDeactivation)
             }
         }
     }
+}
+
+// ----------------------------------------------------------------------
+// SARGE: GetAutoaimObject()
+// If we are using the Targeting aug, and currently have a target,
+// then return it
+// ----------------------------------------------------------------------
+function ScriptedPawn GetAutoaimObject()
+{
+    local AugAutoaim augAuto;
+    if (AugmentationSystem != none)
+        augAuto = AugAutoaim(AugmentationSystem.FindAugmentation(class'AugAutoaim'));
+
+    if (augAuto != None && augAuto.IsActive())
+        return augAuto.target;
+    return None;
 }
 
 // ----------------------------------------------------------------------
