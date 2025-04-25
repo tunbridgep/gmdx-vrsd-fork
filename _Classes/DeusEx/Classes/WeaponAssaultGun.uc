@@ -313,13 +313,13 @@ defaultproperties
      ItemName="Assault Rifle"
      ItemArticle="an"
      PlayerViewOffset=(X=12.500000,Y=-5.000000,Z=-12.000000)
-     //HDTPPlayerViewMesh="RSDCrap.HDTPAssaultGunRSD"
-     HDTPPlayerViewMesh="HDTPItems.HDTPAssaultGun"
+     HDTPPlayerViewMesh="RSDCrap.HDTPAssaultGunRSD"
+     //HDTPPlayerViewMesh="HDTPItems.HDTPAssaultGun"
      HDTPPickupViewMesh="HDTPItems.HDTPassaultGunPickup"
      HDTPThirdPersonMesh="HDTPItems.HDTPassaultGun3rd"
-     PlayerViewMesh=LodMesh'DeusExItems.AssaultGun'
+     //PlayerViewMesh=LodMesh'DeusExItems.AssaultGun'
      //PlayerViewMesh=LodMesh'HDTPEditsRSD.AssaultGunRSD' //Required for 3-shot burst
-     //PlayerViewMesh=LodMesh'RSDCrap.AssaultGunRSD'
+     PlayerViewMesh=LodMesh'RSDCrap.AssaultGunRSD'
      PickupViewMesh=LodMesh'DeusExItems.AssaultGunPickup'
      ThirdPersonMesh=LodMesh'DeusExItems.AssaultGun3rd'
      LandSound=Sound'DeusExSounds.Generic.DropMediumWeapon'
