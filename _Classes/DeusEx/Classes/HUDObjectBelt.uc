@@ -160,24 +160,18 @@ function CreateNanoKeySlot()
             if (player.iSmartKeyring == 0) //Smart Keyring disabled, force keyring into the slot
             {
                 if (objects[KeyRingSlot].item != None)
-                    RemoveObjectFromBelt(objects[KeyRingSlot].item);
+                    RemoveObjectFromBelt(objects[KeyRingSlot].item,false,true);
     			objects[KeyRingSlot].SetItem(player.KeyRing);
-                objects[KeyRingSlot].bDimIcon = false;
-                player.KeyRing.bInObjectBelt = True;
-                player.KeyRing.beltPos = KeyRingSlot;
                 //player.ClientMessage("weeeeee");
             }
             else if (player.iSmartKeyring == 2 && objects[KeyRingSlot].item != None && objects[KeyRingSlot].item.IsA('NanoKeyRing')) //If Smart Keyring on "No Keyring" mode, force-remove the keyring
             {
-                RemoveObjectFromBelt(objects[KeyRingSlot].item);
+                RemoveObjectFromBelt(objects[KeyRingSlot].item,false,true);
                 //player.ClientMessage("aaaaahhh");
             }
             else if (player.iSmartKeyring == 1 && objects[KeyRingSlot].item == None && !player.GetPlaceholder(KeyRingSlot)) //Smart Keyring is 1 - update the slot if it's empty
             {
     			objects[KeyRingSlot].SetItem(player.KeyRing);
-                objects[KeyRingSlot].bDimIcon = false;
-                player.KeyRing.bInObjectBelt = True;
-                player.KeyRing.beltPos = KeyRingSlot;
                 //player.ClientMessage("ooooohhhh: " $ objects[KeyRingSlot].item);
             }
             objects[KeyRingSlot].AllowDragging(player.iSmartKeyring > 0);
@@ -276,7 +270,7 @@ function UpdateInHand()
 			return;
 		}
 	
-		for (slotIndex=0; slotIndex<ArrayCount(objects); slotIndex++)
+		for (slotIndex=0; slotIndex < numSlots; slotIndex++)
 		{
             if (objects[slotIndex].item != None)
             {
@@ -304,7 +298,7 @@ function RefreshAlternateToolbelt()
 
 	if ((player != None) && (!bInteractive))
 	{
-		for (slotIndex=0; slotIndex<ArrayCount(objects); slotIndex++)
+		for (slotIndex=0; slotIndex < numSlots; slotIndex++)
 		{
             placeholderSlot = player.GetPlaceholder(slotIndex);
 			
@@ -385,7 +379,7 @@ function ClearBelt()
 // Sarge: Added optional parameter to make the slot be a placeholder
 // ----------------------------------------------------------------------
 
-function RemoveObjectFromBelt(Inventory item, optional bool Placeholder)
+function RemoveObjectFromBelt(Inventory item, optional bool Placeholder, optional bool bForce)
 {
 	local int i;
 
@@ -395,7 +389,7 @@ function RemoveObjectFromBelt(Inventory item, optional bool Placeholder)
     //only allow a position to be valid if the object in it is draggable.
 	for (i=0; IsValidPos(i); i++)
 	{
-		if (objects[i].GetItem() == item && objects[i].bAllowDragging)
+		if (objects[i].GetItem() == item && (objects[i].bAllowDragging || bForce))
 		{
             if (placeholder)
                 player.SetPlaceholder(i,objects[i].item.icon);
