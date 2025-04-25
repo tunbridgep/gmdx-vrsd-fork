@@ -204,7 +204,7 @@ defaultproperties
      CollisionRadius=20.000000
      CollisionHeight=49.000000
      RotationRate=(Yaw=90000)
-     BarkBindName="MJ12Elite"
+     BarkBindName="MJ12Troop"
      BindName="MJ12Troop"
      FamiliarName="MJ12 Elite"
      UnfamiliarName="MJ12 Elite"

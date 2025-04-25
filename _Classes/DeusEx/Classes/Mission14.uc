@@ -31,6 +31,11 @@ function FirstFrame()
                 
             flags.SetBool('GMDX_RemoveComputer',True,, 15);
         }
+        
+        //prevent the "Antennapedia" password on hardcore,
+        //since it trivialises the security setup.
+        if (player.bHardCoreMode)
+            flags.SetBool('OceanLabSkipPassword',True,, 1);
     }
 
 CanQuickSave=true;

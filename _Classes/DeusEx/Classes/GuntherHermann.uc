@@ -234,4 +234,5 @@ defaultproperties
      BindName="GuntherHermann"
      FamiliarName="Gunther Hermann"
      UnfamiliarName="Gunther Hermann"
+     bCanBlink=false                        //mechs blinking looks weird
 }

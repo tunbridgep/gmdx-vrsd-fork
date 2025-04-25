@@ -20,7 +20,7 @@ function bool DoLeftFrob(DeusExPlayer frobber)
 
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {
-    if (frobber.bRightClickToolSelection && objectInHand && bSelectMeleeWeapon && frobber.inHand == frobber.primaryWeapon)
+    if (frobber.bRightClickToolSelection && objectInHand && bSelectMeleeWeapon && (frobber.inHand == frobber.primaryWeapon || !frobber.InHand.IsA('DeusExWeapon')))
         return DoLeftFrob(frobber);
 
     return Super.DoRightFrob(frobber,objectInHand);

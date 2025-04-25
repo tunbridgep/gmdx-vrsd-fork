@@ -78,7 +78,7 @@ event StyleChanged()
 	colText       = theme.GetColorFromName('HUDColor_NormalText');
 	colHeaderText = theme.GetColorFromName('HUDColor_HeaderText');
 
-	bDrawBorder            = player.GetHUDBordersVisible();
+	bDrawBorder = player.GetHUDBordersVisible();
 
 	if (player.GetHUDBorderTranslucency())
 		borderDrawStyle = DSTY_Translucent;
@@ -96,5 +96,5 @@ event StyleChanged()
 
 defaultproperties
 {
-     bDrawBorder=True
+     bDrawBorder=true
 }

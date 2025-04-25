@@ -33,10 +33,7 @@ function SetBeamLocation()
 
         // Lorenz: The Following if-else is very bad design. Please keep children away!
         // I am sorry! Forgive me, Lord! *speaks three Ave Maria*
-		if (Player.bRadialAugMenuVisible)
-		  EndTrace = StartTrace + LevelValues[CurrentLevel] * Vector(Player.WHEELSAVErotation); //RSD: Lorenz used SAVErotation, use WHEELSAVErotation instead
-		else
-		  EndTrace = StartTrace + LevelValues[CurrentLevel] * Vector(Player.ViewRotation);
+	    EndTrace = StartTrace + LevelValues[CurrentLevel] * Vector(Player.GetCurrentViewRotation());
 
 		Trace(HitLocation, HitNormal, EndTrace, StartTrace, True);
 		if (HitLocation == vect(0,0,0))
@@ -46,7 +43,7 @@ function SetBeamLocation()
 		size       = fclamp(dist/LevelValues[CurrentLevel], 0, 1);
 		radius     = size*7.12 + 4.0; //CyberP: 5.12
 		brightness = fclamp(size-0.5, 0, 1)*2*-192 + 192;
-		b1.SetLocation(HitLocation-vector(Player.ViewRotation)*64);
+		b1.SetLocation(HitLocation-vector(Player.GetCurrentViewRotation())*64);
 		b1.LightRadius     = byte(radius);
 		//b1.LightBrightness = byte(brightness);  // someday we should put this back in again
 		b1.LightType       = LT_Steady;

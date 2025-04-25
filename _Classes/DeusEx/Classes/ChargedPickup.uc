@@ -107,6 +107,9 @@ function ChargedPickupBegin(DeusExPlayer Player)
 
 function ChargedPickupEnd(DeusExPlayer Player)
 {
+    if (!bIsActive)
+        return;
+
     if ((Charge > 0 || bDrained) && DeactivateSound != None)	// Trash: If charge is more than 0 and there's a deactivation sound, play it instead
         Player.PlaySound(DeactivateSound, SLOT_Pain);
     else

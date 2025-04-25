@@ -129,6 +129,12 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\BeltIconAmmoDartsTaser.pcx"	    NAME="BeltIconAmmoDartsTaser"   GROUP="Icons"
 #exec TEXTURE IMPORT FILE="Textures\ChargedIconArmorAdaptive.pcx"	NAME="ChargedIconArmorAdaptive" GROUP="Icons"
 
+//Bloody Shuriken
+#exec TEXTURE IMPORT FILE="Textures\BeltIconShurikenBloody.pcx"	    NAME="BeltIconShurikenBloody"   GROUP="Icons"   FLAGS=2
+
+//NSF Warehouse satellite photo, with ladder removed
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\Image02_NYC_Warehouse_1_noladder.pcx"	NAME="Image02_NYC_Warehouse_1_noladder" GROUP="UserInterface"
+
 //Crap
 #exec TEXTURE IMPORT FILE="Textures\Skins\SpartaSign.pcx"	        NAME="SpartaSign" GROUP="Skins"
 #exec TEXTURE IMPORT FILE="Textures\Skins\HDTPSpartaSign.pcx"	    NAME="HDTPSpartaSign" GROUP="Skins"
@@ -230,6 +236,20 @@ class All expands Object
 
 #exec AUDIO IMPORT FILE="Sounds\MultitoolEquip.wav"			NAME="MultitoolEquip"	    	GROUP="Misc"
 #exec AUDIO IMPORT FILE="Sounds\MultitoolUnequip.wav"	    NAME="MultitoolUnequip"		    GROUP="Misc"
+
+//New poison smoke texture
+#exec TEXTURE IMPORT  FILE="Textures\ef_PoisonSmoke001.pcx" NAME="ef_PoisonSmoke001" GROUP="Skins"
+#exec TEXTURE IMPORT  FILE="Textures\ef_PoisonSmoke002.pcx" NAME="ef_PoisonSmoke002" GROUP="Skins"
+#exec TEXTURE IMPORT  FILE="Textures\ef_PoisonSmoke003.pcx" NAME="ef_PoisonSmoke003" GROUP="Skins"
+#exec TEXTURE IMPORT  FILE="Textures\ef_PoisonSmoke004.pcx" NAME="ef_PoisonSmoke004" GROUP="Skins"
+#exec TEXTURE IMPORT  FILE="Textures\ef_PoisonSmoke005.pcx" NAME="ef_PoisonSmoke005" GROUP="Skins"
+#exec TEXTURE IMPORT  FILE="Textures\ef_PoisonSmoke006.pcx" NAME="ef_PoisonSmoke006" GROUP="Skins"
+#exec TEXTURE IMPORT  FILE="Textures\ef_PoisonSmoke007.pcx" NAME="ef_PoisonSmoke007" GROUP="Skins"
+#exec TEXTURE IMPORT  FILE="Textures\ef_PoisonSmoke008.pcx" NAME="ef_PoisonSmoke008" GROUP="Skins"
+#exec TEXTURE IMPORT  FILE="Textures\ef_PoisonSmoke009.pcx" NAME="ef_PoisonSmoke009" GROUP="Skins"
+#exec TEXTURE IMPORT  FILE="Textures\ef_PoisonSmoke010.pcx" NAME="ef_PoisonSmoke010" GROUP="Skins"
+#exec TEXTURE IMPORT  FILE="Textures\ef_PoisonSmoke011.pcx" NAME="ef_PoisonSmoke011" GROUP="Skins"
+#exec TEXTURE IMPORT  FILE="Textures\ef_PoisonSmoke012.pcx" NAME="ef_PoisonSmoke012" GROUP="Skins"
 
 defaultproperties
 {

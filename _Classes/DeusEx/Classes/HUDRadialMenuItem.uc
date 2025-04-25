@@ -68,6 +68,10 @@ function Activate() {
     if (!augmentation.bIsActive)                                                //RSD: So check bIsActive instead
         return;
 
+    //SARGE: Awful hack to stop the spy drone thinking it's been "fake" activated (ie by a save game load)
+    if (augmentation.IsA('AugDrone'))
+        AugDrone(augmentation).bRealActivation = true;
+
     UpdateDisplayColor();
     isActive=true;
 

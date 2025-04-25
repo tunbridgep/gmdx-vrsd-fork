@@ -129,7 +129,7 @@ defaultproperties
      bStickToWall=True
      blastRadius=32.000000
      DamageType=shot
-     AccurateRange=840
+     AccurateRange=1024
      maxRange=1480
      spawnWeaponClass=Class'DeusEx.WeaponShuriken'
      bIgnoresNanoDefense=True
@@ -140,7 +140,7 @@ defaultproperties
      hdtpReference=Class'DeusEx.WeaponShuriken'
      speed=1400.000000
      MaxSpeed=1400.000000
-     Damage=16.000000
+     Damage=14.000000
      MomentumTransfer=1000
      ImpactSound=Sound'DeusExSounds.Generic.BulletHitFlesh'
      LifeSpan=560.000000

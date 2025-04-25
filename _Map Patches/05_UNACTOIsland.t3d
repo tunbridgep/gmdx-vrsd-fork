@@ -43127,6 +43127,7 @@ Begin Actor Class=Terrorist Name=Terrorist2
     bHateShot=False
     bReactAlarm=False
     bReactProjectiles=False
+    bReactShot=True
     RaiseAlarm=RAISEALARM_Never
     MaxProvocations=9
     InitialAlliances(0)=(AllianceName=Player,AllianceLevel=1.000000)

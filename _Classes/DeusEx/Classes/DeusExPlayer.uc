@@ -473,7 +473,7 @@ var globalconfig bool bBeltAutofill;											//Sarge: Added new feature for au
 var globalconfig bool bHackLockouts;											//Sarge: Allow locking-out security terminals when hacked, and rebooting.
 var bool bForceBeltAutofill;    	    										//Sarge: Overwrite autofill setting. Used by starting items
 var globalconfig bool bBeltMemory;  											//Sarge: Added new feature to allow belt to rember items
-var globalconfig bool bSmartKeyring;  											//Sarge: Added new feature to allow keyring to be used without belt, freeing up a slot
+var globalconfig int iSmartKeyring;  											//Sarge: Added new feature to allow keyring to be used without belt, freeing up a slot
 var globalconfig int dynamicCrosshair;       									//Sarge: Allow using a special interaction crosshair
 var travel BeltInfo beltInfos[12];                                              //Sarge: Holds information about belt slots
 var travel float fullUp; //CyberP: eat/drink limit.                             //RSD: was int, now float
@@ -601,6 +601,7 @@ var travel bool bRandomizeMods;
 var travel bool bRandomizeAugs;
 var travel bool bRandomizeEnemies;
 var travel bool bRandomizeCrap;                                                 //Sarge: Randomize the crap around the level, like couch skins, etc.
+var travel bool bCutInteractions;                                               //Sarge: Allow cut-content interactions like arming Miguel and giving Tiffany Thermoptic Camo
 var travel bool bRestrictedSaving;												//Sarge: This used to be tied to hardcore, now it's a config option
 var travel int iNoKeypadCheese;													//Sarge: 1 = Prevent using keycodes that we don't know, 2 = additionally prevent plot skips, 3 = additionally obscure keypad code length.
 var travel int seed;                                                            //Sarge: When using randomisation playthrough modifiers, this is our generated seed for the playthrough, to prevent autosave abuse and the like
@@ -668,6 +669,8 @@ var globalconfig bool bFemaleHandsAlways;                                      /
 
 var globalconfig bool bShowDataCubeRead;                                      //SARGE: If true, darken the screens on Data Cubes when they have been read.
 
+var globalconfig bool bShowDataCubeImages;                                    //SARGE: If true, Images will be shown when reading a data cube.
+
 var globalconfig int iAllowCombatMusic;                                        //SARGE: Enable/Disable combat music, or make it require 2 enemies
 
 //Decline Everything
@@ -709,9 +712,8 @@ var travel bool bRealKillswitch;                                                
 var travel float killswitchTimer;                                                       //SARGE: Killswitch timer in seconds.
 
 //Music Stuff
-var transient string currentSong;                                                 //SARGE: The "Song" variable is notoriously unreliable...
-var transient byte currentSection;                                              //SARGE: We need to track this for conversations/combat/etc
-var globalconfig int bEnhancedMusicSystem;                                             //SARGE: Should the music system be a bit smarter about playing tracks?
+var transient string currentSong;                                                 //SARGE: The "Song" variable is kept in savegames...
+var globalconfig int iEnhancedMusicSystem;                                             //SARGE: Should the music system be a bit smarter about playing tracks?
 
 //SARGE: Autoswitch to Health screen when installing the last augmentation at a med bot.
 var globalconfig bool bMedbotAutoswitch;
@@ -762,13 +764,16 @@ var globalconfig int iFragileDarts;                                    //SARGE: 
 
 var globalconfig bool bReloadingResetsAim;                              //SARGE: Allow the "reloading resets aim" hardcore behaviour outside of hardcore.
 
+
+//SARGE: Fix the inventory bug on map load????? I have no idea if this actually works or not.
+var travel bool bDelayInventoryFix;
 const FemJCEyeHeightAdjust = -6;                                    //SARGE: Now the femJC eye height adjustment is handled by a const, so we can easily change it //SARGE: Was -2 originally, but that clips too much with ceilings.
 
 //SARGE: ??? - I wonder what this does :P
 var travel bool bShenanigans;
 
 //Ygll: New QoL Options
-var globalconfig bool bAltFrobDisplay;                              //Ygll: Alternate frob display option.
+var globalconfig int iAltFrobDisplay;                              //Ygll: Alternate frob display option.
 
 var globalconfig int iStanceHud;					                //Ygll: Display the current player stance in the hud. 0 = none, 1 = stance changes only, 2 = all stances.
 
@@ -786,9 +791,11 @@ var globalconfig bool bReversedAltBeltColours;                      //SARGE: Mak
 
 var globalconfig bool bAlwaysShowReceivedItemsWindow;               //SARGE: Always show the retrieved items window when picking up ammo from a weapon.
 
-var globalconfig bool bShowTotalRoundsCount;                        //SARGE: Show the total number of rounds we can carry for disposable items in the inventory screen.
+var globalconfig int iShowTotalCounts;                        //SARGE: Show the total number of rounds we can carry for disposable items in the inventory screen. 1 = charged items and disposable weapons/grenades only, 2 = everything.
 
 var globalconfig bool bGMDXDebug;                                   //SARGE: Allows extra debug info/messages. Not for regular players!
+
+var globalconfig bool bDropWeaponsOnDeath;                      //SARGE: If enabled, NPCs will drop weapons on death.
 
 //////////END GMDX
 
@@ -950,6 +957,14 @@ function ClientMessage(coerce string msg, optional Name type, optional bool bBee
 
     Super.ClientMessage(msg,type,bBeep);
 }
+
+//SARGE: Allow printing when debug mode is enabled
+function DebugMessage(coerce string msg)
+{
+    if (bGMDXDebug)
+        ClientMessage(msg);
+}
+
 
 // ----------------------------------------------------------------------
 // AssignSecondary
@@ -1658,6 +1673,8 @@ function PreTravel()
     drugEffectTimer = 0;
 	SaveSkillPoints();
 
+    bDelayInventoryFix = true;
+
     if (AugmentationSystem != None && AugmentationSystem.GetAugLevelValue(class'AugVision') != -1.0)
         AugmentationSystem.DeactivateAll();
     else if (UsingChargedPickup(class'TechGoggles'))
@@ -1851,6 +1868,10 @@ event TravelPostAccept()
 	   RocketTarget=spawn(class'DeusEx.GEPDummyTarget');
 
 	SetRocketWireControl();
+    
+    bDelayInventoryFix = false;
+
+
 	//end GMDX
 }
 //GMDX: set up mounted gep spawn, as no matter what i try it still draws it on spawn :/
@@ -1937,7 +1958,9 @@ exec function HDTP(optional bool updateDecals)
 	local DeusExProjectile PR;                                                  //SARGE: Added for object toggles
 	local DeusExAmmo AM;                                                        //SARGE: Added for object toggles
 	local DeusExDecal DC;                                                       //SARGE: Added for object toggles
-	local LaserTrigger LT;                                                       //SARGE: Added for object toggles
+	local LaserTrigger LT;                                                      //Ygll: Added for object toggles
+	local BeamTrigger BT;                                                       //Ygll: Added for object toggles
+	local DeusExFragment Frag;													//Ygll: Added for object toggles
     
     //SARGE: Yes, using the class name is necessary. Statics are weird.
 	class'DeusExPlayer'.default.bHDTPInstalled = class'HDTPLoader'.static.HDTPInstalled();
@@ -1958,12 +1981,16 @@ exec function HDTP(optional bool updateDecals)
     	AM.UpdateHDTPsettings();
     if (updateDecals)
     {
-        foreach AllActors(Class'DeusExDecal',DC)                                     //SARGE: Added for object toggles
+        foreach AllActors(Class'DeusExDecal',DC)                                //SARGE: Added for object toggles
             if (!DC.bHidden)
                 DC.UpdateHDTPsettings();
     }
-	foreach AllActors(Class'LaserTrigger',LT)                                     //SARGE: Added for object toggles
-    	LT.UpdateHDTPsettings();
+	foreach AllActors(Class'LaserTrigger',LT)                                   //Ygll: Added for object toggles
+		LT.UpdateHDTPsettings();
+	foreach AllActors(Class'BeamTrigger',BT)                                    //Ygll: Added for object toggles
+    	BT.UpdateHDTPsettings();
+	foreach AllActors(Class'DeusExFragment',Frag)                               //Ygll: Added for object toggles
+		Frag.UpdateHDTPsettings();
 
 	UpdateHDTPsettings();
 }
@@ -3030,10 +3057,10 @@ function bool SelectMeleePriority(int damageThreshold)	// Trash: Used to automat
 		return false;
 
 
-	if (sword != None && (bHardCoreMode || BreaksDamageThreshold(sword, damageThreshold)))
-		meleeWeapon = sword;
-	else if (crowbar != None && (bHardCoreMode || BreaksDamageThreshold(crowbar, damageThreshold)))
+	if (crowbar != None && (bHardCoreMode || BreaksDamageThreshold(crowbar, damageThreshold)))
 		meleeWeapon = crowbar;
+	else if (sword != None && (bHardCoreMode || BreaksDamageThreshold(sword, damageThreshold)))
+		meleeWeapon = sword;
 	else if (knife != None && (bHardCoreMode || BreaksDamageThreshold(knife, damageThreshold)))
 		meleeWeapon = knife;
 	else if (baton != None && (bHardCoreMode || BreaksDamageThreshold(baton, damageThreshold)))
@@ -3214,20 +3241,58 @@ exec function PlayMusicWindow()
 // ClientSetMusic()
 //
 // SARGE: Copied over from Engine/PlayerPawn.uc
-// Modified to not restart music if the new song is the same as the current song, and the
-// sections are the same (section 0 is always used on map-change, so we set it to that if we're using the "remembered" section).
+// Modified to not restart music if the new song is the same as the current song, and also goes to
+// our remembered section instead of restarting the song when trying to restart it, such as
+// on map transition to a new map with the same song.
+// This is a scraggly horrible mess and it abuses the fuck out of default variables being
+// remembered between savegames and level loads.
+// Anyone who wishes to modify this: Beware Ye! Here be dragons!
 // ----------------------------------------------------------------------
 function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusicTransition NewTransition )
 {
-    //ClientMessage("Switching music: " $ Song $ "->" $ NewSong $ ":" $ NewSection $ " (current: " $ default.currentSong $ ", " $ default.currentSection $ ")");
-    if (default.currentSong != string(NewSong) || default.currentSection != NewSection || bEnhancedMusicSystem == 0)
+    local bool bChange;
+	local DeusExLevelInfo info;
+    
+    info = GetLevelInfo();
+
+    if (string(NewSong) != default.currentSong) //We always want to allow song changes
+    {
+        bChange = true;
+        DebugMessage("Changing Music - Song Change" @ default.currentSong);
+        default.savedSection = Level.SongSection; //And reset the saved section
+    }
+    else if (iEnhancedMusicSystem == 0) //Always change with the old system
+    {
+        bChange = true;
+        DebugMessage("Changing Music - Old System");
+    }
+    else if (SongSection != NewSection) //Don't let us replay the same bit we're already playing.
+    {
+        if (NewSection == default.savedSection && default.musicMode != MUS_Ambient) //allow changing to our saved section if we're not already playing it
+        {
+            bChange = true;
+            DebugMessage("Changing Music - Saved Section: " $ default.musicMode);
+        }
+        else if (NewSection != Level.SongSection) //We want to allow changes to different patterns (except ambient)
+        {
+            if (info == none || !info.bBarOrClub || iEnhancedMusicSystem != 2) //Don't allow music changes in clubs or bars with the extended option.
+            {
+                bChange = true;
+                DebugMessage("Changing Music - Non-Default Section");
+            }
+        }
+        else if (NewSection == Level.SongSection && default.musicMode != MUS_Ambient) //If we ARE changing to our default section and not in ambient, then instead change to our saved section
+        {
+            NewSection = default.savedSection;
+            bChange = true;
+            DebugMessage("Changing Music - Default Section - Setting to Saved Section");
+        }
+    }
+
+    if (bChange)
     {
         super.ClientSetMusic(NewSong,NewSection,NewCdTrack,NewTransition);
         default.currentSong = string(NewSong);
-        if (NewSection == savedSection)
-            default.currentSection = 0;
-        else
-            default.currentSection = NewSection;
     }
 }
 
@@ -3255,20 +3320,6 @@ function UpdateDynamicMusic(float deltaTime)
 
     info = GetLevelInfo();
 
-	// DEUS_EX AMSD In singleplayer, do the old thing.
-	// In multiplayer, we can come out of dying.
-	if (!PlayerIsClient())
-	{
-	  if ((musicMode == MUS_Dying) || (musicMode == MUS_Outro))
-		 return;
-	}
-	else
-	{
-	  if (musicMode == MUS_Outro)
-		 return;
-	}
-
-
 	musicCheckTimer += deltaTime;
 	musicChangeTimer += deltaTime;
 
@@ -3278,41 +3329,30 @@ function UpdateDynamicMusic(float deltaTime)
 		info = GetLevelInfo();
 		if ((info != None) && (info.MissionNumber < 0))
 		{
-			musicMode = MUS_Outro;
+			default.musicMode = MUS_Outro;
 			return;
 		}
 
-		if (musicMode != MUS_Outro)
+		if (default.musicMode != MUS_Outro)
 		{
 			ClientSetMusic(Level.Song, 5, 255, MTRAN_FastFade);
-			musicMode = MUS_Outro;
+			default.musicMode = MUS_Outro;
 		}
 	}
 	else if (IsInState('Conversation'))
 	{
-        //CyberP: no dynamic music in clubs and bars.
-	    if (info != none && info.bBarOrClub && bEnhancedMusicSystem >= 2)
-              return;
-		if (musicMode != MUS_Conversation)
+		if (default.musicMode != MUS_Conversation)
 		{
-			// save our place in the ambient track
-			if (musicMode == MUS_Ambient)
-				savedSection = SongSection;
-			else
-				savedSection = 255;
-
 			ClientSetMusic(Level.Song, 4, 255, MTRAN_Fade);
-			musicMode = MUS_Conversation;
+			default.musicMode = MUS_Conversation;
 		}
 	}
 	else if (IsInState('Dying'))
 	{
-	    if (info != none && info.bBarOrClub && bEnhancedMusicSystem >= 2)
-              return;
-		if (musicMode != MUS_Dying)
+		if (default.musicMode != MUS_Dying)
 		{
 			ClientSetMusic(Level.Song, 1, 255, MTRAN_Fade);
-			musicMode = MUS_Dying;
+			default.musicMode = MUS_Dying;
 		}
 	}
 	else
@@ -3321,11 +3361,8 @@ function UpdateDynamicMusic(float deltaTime)
 		// only check for combat music every second //CyberP: 2 secs
 		if (musicCheckTimer >= 2.0)
 		{
-			musicCheckTimer = 0.0;
 			aggro = 0;
-
-            if (info != none && info.bBarOrClub && bEnhancedMusicSystem >= 2)
-                return;
+			musicCheckTimer = 0.0;
 
             // check a 100 foot radius around me for combat
             // XXXDEUS_EX AMSD Slow Pawn Iterator
@@ -3341,41 +3378,39 @@ function UpdateDynamicMusic(float deltaTime)
                     }
                 }
             }
+
             if (aggro >= iAllowCombatMusic && iAllowCombatMusic > 0)
             {
-                musicChangeTimer = 0.0;
+				musicChangeTimer = 0.0;
+				if (default.musicMode != MUS_Combat)
+				{
+					ClientSetMusic(Level.Song, 3, 255, MTRAN_FastFade);
+					default.musicMode = MUS_Combat;
+				}
+			}
+			else if (default.musicMode != MUS_Ambient)
+			{
+				// wait until we've been out of combat for 5 seconds before switching music
+				if (musicChangeTimer >= 5.0)
+				{
+					// fade slower for combat transitions
+					if (default.musicMode == MUS_Combat)
+						ClientSetMusic(Level.Song, default.savedSection, 255, MTRAN_SlowFade);
+					else
+						ClientSetMusic(Level.Song, default.savedSection, 255, MTRAN_Fade);
 
-                if (musicMode != MUS_Combat)
-                {
-                    // save our place in the ambient track
-                    if (musicMode == MUS_Ambient)
-                        savedSection = SongSection;
-                    else
-                        savedSection = 255;
-
-                    ClientSetMusic(Level.Song, 3, 255, MTRAN_FastFade);
-                    musicMode = MUS_Combat;
-                }
-            }
-            else if (aggro == 0 && musicMode != MUS_Ambient)
+					default.musicMode = MUS_Ambient;
+					musicChangeTimer = 0.0;
+				}
+			}
+            else
             {
-                // wait until we've been out of combat for 5 seconds before switching music
-                if (musicChangeTimer >= 5.0)
-                {
-                    // use the default ambient section for this map
-                    if (savedSection == 255)
-                        savedSection = Level.SongSection;
-
-                    // fade slower for combat transitions
-                    if (musicMode == MUS_Combat)
-                        ClientSetMusic(Level.Song, savedSection, 255, MTRAN_SlowFade);
-                    else
-                        ClientSetMusic(Level.Song, savedSection, 255, MTRAN_Fade);
-
-                    savedSection = 255;
-                    musicMode = MUS_Ambient;
-                    musicChangeTimer = 0.0;
-                }
+                //SARGE: Now we constantly update the saved section, rather than
+                //only updating it when it changes, because that can cause bugs due to fading.
+                if (default.savedSection == 255)
+                    default.savedSection = Level.SongSection;
+                else
+                    default.savedSection = SongSection;
             }
 		}
 	}
@@ -3539,6 +3574,9 @@ function RepairInventory()
 	local int slotsCol;
 	local int slotsRow;
 	local Inventory curInv;
+
+    if (bDelayInventoryFix)
+        return;
 
 	if ((Level.NetMode != NM_Standalone) && (bBeltIsMPInventory))
 	  return;
@@ -4331,16 +4369,14 @@ function ToggleCameraState(SecurityCamera cam, ElectronicDevices compOwner, opti
 	{
 	  cam.UnTrigger(compOwner, self);
 	  cam.team = -1;
-	}
-    //Set to reboot
-    else if (cam.bActive && bHacked)
+	}    
+    else if (cam.bActive && bHacked) //Set to reboot
     {
-        cam.UnTrigger(compOwner, self);
+        cam.CameraReboot(compOwner, self);
         cam.team = -1;
         cam.StartReboot(self);
-    }
-    //Re-enable
-	else
+    }    
+	else //Re-enable
 	{
       cam.bRebooting = false;
       cam.disableTime = 0;
@@ -5628,28 +5664,38 @@ function DoJump( optional float F )
     //SARGE: Prevent jumping if we're using a computer
     if (bUsingComputer)
         return;
-
-	MusLevel = AugmentationSystem.GetClassLevel(class'AugMuscle');
-    SpeedAug = AugSpeed(AugmentationSystem.GetAug(class'AugSpeed'));
-
-	if (MusLevel==-1) MusLevel=30;
-	  else MusLevel=(MusLevel+3)*50;
-
+	
 	if ((CarriedDecoration != None) && (CarriedDecoration.Mass > MusLevel))
 		return;
 	else if (bForceDuck || IsLeaning())
 		return;
 
+	if (AugmentationSystem == None)
+	{
+		MusLevel = -1;
+		SpeedAug = None;
+	}
+	else
+	{
+		MusLevel = AugmentationSystem.GetClassLevel(class'AugMuscle');
+		SpeedAug = AugSpeed(AugmentationSystem.GetAug(class'AugSpeed'));
+	}		
+
+	if (MusLevel == -1)
+		MusLevel = 30;
+	else
+		MusLevel = (MusLevel+3)*50;
+
     if (bOnLadder && WallMaterial != 'Ladder')
     {
-        //BroadcastMessage("new dojump");
-
 	    if (camInterpol == 0)
 	        camInterpol = 0.4; //do not change this value. its used by mantling code
-		if ((Role == ROLE_Authority )&&(FRand()<0.33))
+
+		if ( (Role == ROLE_Authority ) && (FRand() < 0.33) )
 			PlaySound(JumpSound, SLOT_None, 1.5, true, 1200, 1.0 - 0.2*FRand() );
 		if ( (Level.Game != None) && (Level.Game.Difficulty > 0) )
 			MakeNoise(0.1 * Level.Game.Difficulty);
+
 		PlayInAir();
 
         //if (JumpZ > 650)      //CyberP: fix super jump exploit.
@@ -5668,7 +5714,7 @@ function DoJump( optional float F )
 		}
 	
         // Trash: Speed Enhancement now uses energy while jumping
-        if (SpeedAug.CurrentLevel > -1 && SpeedAug.bIsActive)
+        if (SpeedAug != None && SpeedAug.CurrentLevel > -1 && SpeedAug.bIsActive)
         {
             Energy=FMAX(Energy - SpeedAug.GetAdjustedEnergy(SpeedAug.EnergyDrainJump),0);
         }
@@ -5677,14 +5723,17 @@ function DoJump( optional float F )
             swimTimer -= 1.0;
         else
             swimTimer -= 0.8;
+		
         if (swimTimer < 0)
-		swimTimer = 0;
+			swimTimer = 0;
+		
 		if ( Level.NetMode != NM_Standalone )
 		{
-		 if (AugmentationSystem == None)
-			augLevel = -1.0;
-		 else
-			augLevel = AugmentationSystem.GetAugLevelValue(class'AugSpeed');
+			 if (AugmentationSystem == None)
+				augLevel = -1.0;
+			 else
+				augLevel = AugmentationSystem.GetAugLevelValue(class'AugSpeed');
+			
 			w = DeusExWeapon(InHand);
 			if ((augLevel != -1.0) && ( w != None ) && ( w.Mass > 30.0))
 			{
@@ -5693,77 +5742,76 @@ function DoJump( optional float F )
 			}
 		}
 
-		// reduce the jump velocity if you are crouching
-//		if (IsCrouching())
-//			Velocity.Z *= 0.9;
-
-		//if ( Base != Level )
-		//	Velocity.Z += Base.Velocity.Z;
 		SetTimer(0.15,false);
-		//SetPhysics(PHYS_Falling);
+
 		if ( bCountJumps && (Role == ROLE_Authority) )
 			Inventory.OwnerJumped();
+		
 		return;
 	}
 
         //CyberP: effect when jumping
-if (Physics == PHYS_Walking)
-{
-   RecoilTime=default.RecoilTime + 0.9;
+	if (Physics == PHYS_Walking)
+	{
+	   RecoilTime=default.RecoilTime + 0.9;
 
-   if (Weapon != none && inHand != none)
-   {
-     if (weapon.IsA('DeusExWeapon') && (DeusExWeapon(weapon).bAimingDown || AnimSequence == 'Shoot'))
-     {
-         RecoilShake.Z-=lerp(min(Abs(30),4.0*30)/(4.0*30),1,2.0);
-		 RecoilShaker(vect(0,0,1));
-     }
-     else if (Weapon.IsA('WeaponPlasmaRifle') || Weapon.IsA('WeaponGEPGun') || Weapon.IsA('WeaponFlamethrower') || inHand.IsA('DeusExPickup'))
-     {
-        RecoilShake.Z-=lerp(min(Abs(4),4.0*4)/(4.0*4),2,4.0);
-        RecoilShaker(vect(0,0,2));
-     }
-     else
-     {
-        RecoilShake.Z-=lerp(min(Abs(30),4.0*30)/(4.0*30),5,11.0);
-		RecoilShaker(vect(0,0,3));
-     }
-   }
-   else
-   {
-   RecoilShake.Z-=lerp(min(Abs(10),4.0*10)/(4.0*10),1,2.0);
-   RecoilShaker(vect(0,0,1));
-   }
-}
-
+	   if (Weapon != none && inHand != none)
+	   {
+		 if (weapon.IsA('DeusExWeapon') && (DeusExWeapon(weapon).bAimingDown || AnimSequence == 'Shoot'))
+		 {
+			 RecoilShake.Z-=lerp(min(Abs(30),4.0*30)/(4.0*30),1,2.0);
+			 RecoilShaker(vect(0,0,1));
+		 }
+		 else if (Weapon.IsA('WeaponPlasmaRifle') || Weapon.IsA('WeaponGEPGun') || Weapon.IsA('WeaponFlamethrower') || inHand.IsA('DeusExPickup'))
+		 {
+			RecoilShake.Z-=lerp(min(Abs(4),4.0*4)/(4.0*4),2,4.0);
+			RecoilShaker(vect(0,0,2));
+		 }
+		 else
+		 {
+			RecoilShake.Z-=lerp(min(Abs(30),4.0*30)/(4.0*30),5,11.0);
+			RecoilShaker(vect(0,0,3));
+		 }
+	   }
+	   else
+	   {
+			RecoilShake.Z-=lerp(min(Abs(10),4.0*10)/(4.0*10),1,2.0);
+			RecoilShaker(vect(0,0,1));
+	   }
+	}
+	
 	if (Physics == PHYS_Walking && !bOnLadder)
 	{
 	    if (camInterpol == 0)
 	        camInterpol = 0.4; //do not change this value. its used by mantling code
+		
 		if ((Role == ROLE_Authority )&&(FRand()<0.33))
 			PlaySound(JumpSound, SLOT_None, 1.5, true, 1200, 1.0 - 0.2*FRand() );
 		if ( (Level.Game != None) && (Level.Game.Difficulty > 0) )
 			MakeNoise(0.1 * Level.Game.Difficulty);
+
 		PlayInAir();
 
         //RSD: reset ground speed to default if Run Silent is on
-        augStealthValue = AugmentationSystem.GetAugLevelValue(class'AugStealth');
+		if (AugmentationSystem == None)
+			augStealthValue = -1.0;
+		else
+			augStealthValue = AugmentationSystem.GetAugLevelValue(class'AugStealth');
+
         if(augStealthValue != -1.0)
         {
         	velocityNormal = Normal(Velocity);
         	Velocity.X = Default.GroundSpeed*velocityNormal.X;
         	Velocity.Y = Default.GroundSpeed*velocityNormal.Y;
         }
-        //if (JumpZ > 650)      //CyberP: fix super jump exploit.
-        //JumpZ = default.JumpZ;
 
         if (IsStunted())
-        Velocity.Z = JumpZ*0.75;                                                 //RSD: Was 0.75
+			Velocity.Z = JumpZ*0.75;                                                 //RSD: Was 0.75
         else
-		Velocity.Z = JumpZ;
+			Velocity.Z = JumpZ;
 
         // Trash: Speed Enhancement now uses energy while jumping
-        if (SpeedAug.CurrentLevel > -1 && speedAug.bIsActive)
+        if (SpeedAug != None && SpeedAug.CurrentLevel > -1 && speedAug.bIsActive)
         {
             Energy=FMAX(Energy - SpeedAug.GetAdjustedEnergy(SpeedAug.EnergyDrainJump),0);
         }
@@ -5772,14 +5820,17 @@ if (Physics == PHYS_Walking)
             swimTimer -= 1.0;
         else
             swimTimer -= 0.8;
+		
         if (swimTimer < 0)
-		swimTimer = 0;
+			swimTimer = 0;
+		
 		if ( Level.NetMode != NM_Standalone )
 		{
-		 if (AugmentationSystem == None)
-			augLevel = -1.0;
-		 else
-			augLevel = AugmentationSystem.GetAugLevelValue(class'AugSpeed');
+			if (AugmentationSystem == None)
+				augLevel = -1.0;
+			else
+				augLevel = AugmentationSystem.GetAugLevelValue(class'AugSpeed');
+			
 			w = DeusExWeapon(InHand);
 			if ((augLevel != -1.0) && ( w != None ) && ( w.Mass > 30.0))
 			{
@@ -5788,16 +5839,12 @@ if (Physics == PHYS_Walking)
 			}
 		}
 
-		// reduce the jump velocity if you are crouching
-//		if (IsCrouching())
-//			Velocity.Z *= 0.9;
-
 		if ( Base != Level )
 			Velocity.Z += Base.Velocity.Z;
+		
 		SetPhysics(PHYS_Falling);
 		if ( bCountJumps && (Role == ROLE_Authority) )
 			Inventory.OwnerJumped();
-		//BroadcastMessage("default dojump");
 	}
 }
 
@@ -7874,7 +7921,7 @@ function DoLeftFrob(Actor frobTarget)
         }
         */
         bLeftClicked = true;
-        HandleItemPickup(FrobTarget);
+        HandleItemPickup(FrobTarget,false,false,false,true);
     }
 }
 
@@ -7913,7 +7960,7 @@ function DoRightFrob(Actor frobTarget)
     }
     */
     if (bDefaultFrob && frobTarget.IsA('Inventory'))
-        HandleItemPickup(FrobTarget);
+        HandleItemPickup(FrobTarget,false,false,false,true);
     else if (bDefaultFrob)
         DoFrob(Self, None);
 }
@@ -8208,6 +8255,24 @@ function DoAutoHolster()
 }
 
 // ----------------------------------------------------------------------
+// SARGE: Holster()
+// Replaces the "Put away item" key in the options
+// ----------------------------------------------------------------------
+exec function Holster()
+{
+    if (inHand != None)
+    {
+        bSelectedFromMainBeltSelection = false;
+        PutInHand(None);
+    }
+    else
+    {
+        bSelectedFromMainBeltSelection = true;
+        SelectLastWeapon(false,true);
+    }
+}
+
+// ----------------------------------------------------------------------
 // ParseRightClick()
 // ----------------------------------------------------------------------
 
@@ -8403,18 +8468,141 @@ function PlayPickupAnim(Vector locPickup)
 }
 
 // ----------------------------------------------------------------------
+// SARGE: LootAmmo()
+// Replaces the numerous instances of duplicated code
+// between the weapon, carcass and ammo classes.
+//
+// Picks up the specified max amount of a given ammo
+// type that the player can pick up, and optionally
+// presents messages, plays sounds, etc, to let the player know what's going on.
+//
+// Returns the number of rounds they were able to pick up.
+// ----------------------------------------------------------------------
+function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool bShowWindow, optional bool bLootSound, optional bool bNoGroup, optional bool bNoOnes, optional bool bShowOverflowMsg, optional Texture overrideTexture)
+{
+    local int MaxAmmo, prevAmmo, ammoCount, intj, over, ret;
+    local DeusExAmmo AmmoType;
+    local Texture prevTexture;
+    
+    /*
+    ClientMessage("----LOOTAMMO CALLED----"); 
+    ClientMessage("Max" @ max); 
+    ClientMessage("LootAmmoClass" @ LootAmmoClass); 
+    */
+    
+    if (LootAmmoClass == None || LootAmmoClass == class'AmmoNone')
+        return 0;
+
+    //The actual ammo type in our inventory
+    AmmoType = DeusExAmmo(FindInventoryType(LootAmmoClass));
+        
+    if (AmmoType == None)
+    {
+        //If we don't have it, spawn it
+        //Spawn will fail if there's not enough room to spawn the relevant ammo...
+        AmmoType = DeusExAmmo(Spawn(LootAmmoClass));	// Create ammo type required
+        
+        //...So we do a filthy hack by making the ammo type no longer collide with the world temporarily
+        if (AmmoType == None && LootAmmoClass.default.bCollideWorld == true)
+        {
+            LootAmmoClass.default.bCollideWorld = false;
+            AmmoType = DeusExAmmo(Spawn(LootAmmoClass));	// Create ammo type required...again!
+            LootAmmoClass.default.bCollideWorld = true;
+        }
+        
+        if (AmmoType == None)
+            return 0;
+
+		AddInventory(AmmoType);		// and add to player's inventory
+		AmmoType.BecomeItem();
+		AmmoType.AmmoAmount = 0; 
+		AmmoType.GotoState('Idle2');
+    }
+
+    MaxAmmo = GetAdjustedMaxAmmo(AmmoType);
+    prevAmmo = AmmoType.AmmoAmount;
+    AmmoCount = MIN(AmmoType.AmmoAmount + max,maxAmmo);
+
+    intj = AmmoCount - prevAmmo; //the amount taken
+    over = max - intj; //the amount of "overflow" above our max ammo.
+
+    //ClientMessage("intj is" @ intj); 
+
+    if (intj > 0)
+    {
+        //Add to our ammo stockpile
+        AmmoType.AddAmmo(intj);
+
+        // Update the ammo display on the object belt
+        UpdateAmmoBeltText(AmmoType);
+        
+        if (bDisplayMsg)
+        {
+            //VERY DIRTY HACK
+            if (AmmoType.IsA('AmmoShuriken') && intj == 1)
+                ClientMessage(AmmoType.PickupMessage @ class'Shuriken'.default.itemArticle @ class'Shuriken'.default.itemName, 'Pickup');
+            else if (intj > 1 || !bNoOnes)
+                ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName $ " (" $ intj $ ")", 'Pickup');
+            else
+                ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName, 'Pickup');
+        }
+            
+        if (bShowWindow)
+        {
+            //SARGE: This is a hack to allow us to change icons for ammo.
+            //Used for bloody shurikens.
+            if (overrideTexture != None)
+            {
+                prevTexture = AmmoType.Icon;
+                AmmoType.Icon = overrideTexture;
+                AddReceivedItem(AmmoType, intj, bNoGroup);
+                AmmoType.Icon = prevTexture;
+            }
+            else
+                AddReceivedItem(AmmoType, intj, bNoGroup);
+        }
+
+        //If we only took a partial amount, make a special sound.
+        if (bLootSound)
+            PlayPartialAmmoSound(AmmoType,AmmoType.Class);
+
+        ret = intj;
+    }
+
+    if (over > 0 && bDisplayMsg && bShowOverflowMsg)
+    {
+        ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName $ " (" $ over $ ")" @ AmmoType.MaxAmmoString, 'Pickup');
+    }
+    return ret;
+}
+
+//SARGE: Same as PlayRetrieveAmmoSound in DeusExWeapon.uc
+function PlayPartialAmmoSound(Actor source, class<Ammo> ammoName)
+{
+    local class<DeusExAmmo> dxAmmoClass;
+
+    dxAmmoClass = class<DeusExAmmo>(ammoName);
+
+    if (dxAmmoClass == None)
+        return;
+
+    source.PlaySound(dxAmmoClass.default.PartialAmmoSound, SLOT_None, 1.5+FRand()*0.25, , 256, 0.95+FRand()*0.1);
+}
+
+// ----------------------------------------------------------------------
 // HandleItemPickup()
 // ----------------------------------------------------------------------
 
-function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, optional bool bSkipDeclineCheck)
+function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, optional bool bSkipDeclineCheck, optional bool bFromCorpse, optional bool bShowOverflow)
 {
 	local bool bCanPickup;
 	local bool bSlotSearchNeeded;
 	local Inventory foundItem;
-    local DeusExAmmo foundAmmo;
+    local Ammo foundAmmo;
     local DeusExAmmo assignedAmmo;
     local int intj;
     local bool bDeclined;
+    local bool bLootedAmmo;
 
 	bSlotSearchNeeded = True;
 	bCanPickup = True;
@@ -8459,6 +8647,12 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 		{
 			bSlotSearchNeeded = False;
 
+            /*
+            //Absolute first thing, copy over any mods it has.
+            if (foundItem.IsA('DeusExWeapon') && FrobTarget.IsA('DeusExWeapon'))
+                DeusExWeapon(foundItem).CopyModsFrom(DeusExWeapon(FrobTarget),true);
+            */
+
 			// if this is an ammo, and we're full of it, abort the pickup
 			if (foundItem.IsA('Ammo'))
 			{
@@ -8488,8 +8682,12 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 
 				if (!bCanPickup)
 					ClientMessage(Sprintf(CanCarryOnlyOne, foundItem.itemName));
+
+                /*
 				//DeusExWeapon(foundItem).SetMaxAmmo();                           //RSD: No longer needed
-			  	if (Weapon(foundItem).AmmoType != none && Weapon(foundItem).AmmoType.AmmoAmount >= GetAdjustedMaxAmmo(Weapon(foundItem).AmmoType)) //RSD: removed DeusExWeapon(foundItem).MaxiAmmo for adjusted, changed DeusExWeapon to Weapon, added none check
+			  	//if (Weapon(foundItem).AmmoType != none && Weapon(foundItem).AmmoType.AmmoAmount >= GetAdjustedMaxAmmo(Weapon(foundItem).AmmoType)) //RSD: removed DeusExWeapon(foundItem).MaxiAmmo for adjusted, changed DeusExWeapon to Weapon, added none check
+		        foundAmmo = Ammo(FindInventoryType(DeusExWeapon(foundItem).GetPrimaryAmmoType()));
+			  	if (foundAmmo != none && foundAmmo.AmmoAmount >= GetAdjustedMaxAmmo(foundAmmo)) //SARGE: Completely rewrote this because it was breaking when we're using secondary ammo types.
 				{
                     if (DeusExWeapon(foundItem).bDisposableWeapon) //SARGE: Disposable weapons have a different message
                     	ClientMessage(class'DeusExPickup'.default.msgTooMany);
@@ -8497,11 +8695,30 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
                     	ClientMessage(TooMuchAmmo);
 					bCanPickup = False;
 				}
-
+                */
 			}
 		}
 	}
 
+    //SARGE: Always try looting non-disposable weapons of their ammo
+    if (bCanPickup && FrobTarget.IsA('DeusExWeapon') && !bFromCorpse && !DeusExWeapon(frobTarget).bDisposableWeapon)
+    {
+        bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,true,bAlwaysShowReceivedItemsWindow,false,false,bShowOverflow);
+
+        //Make a noise if we picked up partial ammo
+        if (bLootedAmmo && DeusExWeapon(frobTarget).PickupAmmoCount > 0)
+            PlayPartialAmmoSound(frobTarget,DeusExWeapon(frobTarget).GetPrimaryAmmoType());
+        
+        //Don't pick up a weapon if there's ammo in it and we already have one
+        if (!bSlotSearchNeeded && DeusExWeapon(frobTarget).PickupAmmoCount > 0 && bCanPickup)
+        {
+            //if (!bLootedAmmo)
+            //    ClientMessage(TooMuchAmmo);
+            bCanPickup = False;
+        }
+
+    }
+	
 	if (bSlotSearchNeeded && bCanPickup)
 	{
 //	  log("MYCHK::DXPlayer::HIP::ADD TO::"@FrobTarget);
@@ -8510,43 +8727,20 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 //		 log("MYCHK::DXPlayer::HIP::ADD TO FAILED::"@foundItem);
 			bCanPickup = False;
 			ServerConditionalNotifyMsg( MPMSG_DropItem );
-            if (frobTarget != None && frobTarget.IsA('DeusExWeapon'))
-            {
-               forEach AllActors(class'DeusExAmmo',foundAmmo)
-                   if (foundAmmo.Owner != None && foundAmmo.Owner.IsA('DeusExPlayer') && foundAmmo.default.ItemName == DeusExWeapon(frobTarget).AmmoTag)
-                   { assignedAmmo = foundAmmo; break; }
-
-               if (assignedAmmo != None && assignedAmmo.AmmoAmount < GetAdjustedMaxAmmo(assignedAmmo) && DeusExWeapon(frobTarget).PickupAmmoCount != 0)
-               {                                                                //RSD: Replaced assignedAmmo.MaxAmmo with adjusted
-                   intj = GetAdjustedMaxAmmo(assignedAmmo) - assignedAmmo.AmmoAmount; //RSD: Replaced assignedAmmo.MaxAmmo with adjusted
-                   assignedAmmo.AmmoAmount += DeusExWeapon(frobTarget).PickupAmmoCount;
-                    if (assignedAmmo.AmmoAmount > GetAdjustedMaxAmmo(assignedAmmo)) //RSD: Replaced assignedAmmo.MaxAmmo with adjusted
-                    {
-                        assignedAmmo.AmmoAmount = GetAdjustedMaxAmmo(assignedAmmo); //RSD: Replaced assignedAmmo.MaxAmmo with adjusted
-                        ClientMessage(assignedAmmo.PickupMessage $ " " $ assignedAmmo.ItemName $ " (" $ intj $ ")");
-                        AddReceivedItem(assignedAmmo,intj);
-                        DeusExWeapon(frobTarget).PickupAmmoCount -= intj;
-                        DeusExWeapon(frobTarget).PlayRetrievedAmmoSound();
-                    }
-                    else
-                    {
-                        ClientMessage(assignedAmmo.PickupMessage $ " " $ assignedAmmo.ItemName $ " (" $ DeusExWeapon(frobTarget).PickupAmmoCount $ ")");
-                        AddReceivedItem(assignedAmmo,DeusExWeapon(frobTarget).PickupAmmoCount);
-                        DeusExWeapon(frobTarget).PickupAmmoCount = 0;
-                        DeusExWeapon(frobTarget).PlayRetrievedAmmoSound();
-                    }
-               }
-               else
+            
+            if (frobTarget != None && frobTarget.IsA('DeusExWeapon') && !bLootedAmmo)
                 ClientMessage(Sprintf(InventoryFull, Inventory(FrobTarget).itemName));
-            }
-            else
+            else if (frobTarget != None)
                 ClientMessage(Sprintf(InventoryFull, Inventory(FrobTarget).itemName));
 		}
 	}
-	
-    //SARGE: Decline checking.
+
     if (bSlotSearchNeeded && bCanPickup)
     {
+		if (FrobTarget.IsA('WeaponShuriken'))
+			WeaponShuriken(FrobTarget).SetFrobNameHack(WeaponShuriken(FrobTarget).PickupAmmoCount == 1);
+
+        //SARGE: Decline checking.
         if (!bSkipDeclineCheck)
             bDeclined = CheckFrobDeclined(FrobTarget);
         if (!bDeclined && !bSearchOnly)
@@ -8555,11 +8749,13 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 
 	if (bCanPickup && !bDeclined)
 	{
-		if (FrobTarget.IsA('WeaponShuriken'))
-			WeaponShuriken(FrobTarget).ItemName = WeaponShuriken(FrobTarget).default.ItemName @ "(" $ WeaponShuriken(FrobTarget).PickupAmmoCount $ ")";
-
         //if (FrobTarget.IsA('WeaponLAW'))
 		//	PlaySound(sound'WeaponPickup', SLOT_Interact, 0.5+FRand()*0.25, , 256, 0.95+FRand()*0.1);
+        
+        //SARGE: Since we haven't looted Disposable weapons yet, do so now.
+        if (FrobTarget.IsA('DeusExWeapon') && DeusExWeapon(frobTarget).bDisposableWeapon)
+            DeusExWeapon(frobTarget).LootAmmo(self,foundItem != None || bFromCorpse,bFromCorpse,false,false,false);
+
         DoFrob(Self, inHand);
         /*if ( FrobTarget.IsA('DeusExWeapon') && bLeftClicked) //CyberP: for left click interaction //RSD: This is actually in FindInventorySlot() already, and the conflict made the player equip nothing
         {
@@ -8574,9 +8770,6 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 				DeusExWeapon(FrobTarget).PickupAmmoCount = DeusExWeapon(FrobTarget).Default.mpPickupAmmoCount * 3;
 			}
 		}
-
-		if (FrobTarget.IsA('WeaponShuriken'))
-			WeaponShuriken(FrobTarget).ItemName = WeaponShuriken(FrobTarget).default.ItemName;
 	}
 
     if (bCanPickup && !bDeclined)
@@ -8592,34 +8785,35 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
         }
     }
 
+    //Hacky Shuriken fix
+    if (FrobTarget.IsA('WeaponShuriken'))
+        WeaponShuriken(FrobTarget).SetFrobNameHack(false);
+
 	return bCanPickup && !bDeclined;
 }
 
-function AddReceivedItem(Inventory item, int count, optional bool bAlwaysShow)
+function AddReceivedItem(Inventory item, int count, optional bool bNoGroup)
 {
+    local int i;
+
     //clientMessage("item: " $ item $ ", count: " $ count);
     if (item == None || count == 0)
         return;
 
-    if (!bAlwaysShowReceivedItemsWindow && !bAlwaysShow)
-        return;
-
-    /*
-    //If count is -1, try to figure it out by magic.
-    if (count == -1)
-    {
-        if (item.isA('DeusExPickup'))
-            count = DeusExPickup(item).numCopies;
-        else if (item.isA('DeusExWeapon') && DeusExWeapon(item).bDisposableWeapon && DeusExWeapon(item).AmmoType != None)
-            count = DeusExWeapon(item).AmmoType.AmmoAmount;
-        else
-            count = 1;
-    }
-    */
-
     if (rootWindow != None && DeusExRootWindow(rootWindow).hud != None)
     {
-        DeusExRootWindow(rootWindow).hud.receivedItems.AddItem(item, count);
+        //Carcasses always spawn individual copies of their inventory items,
+        //rather than spawning them as a stack. So when things ARE stacked, (usually
+        //disposable weapons), we display them the same way.
+        if (!bNoGroup && count < 5)
+        {
+            for (i = 0; i < count; i++)
+                DeusExRootWindow(rootWindow).hud.receivedItems.AddItem(item, 1);
+        }
+        else
+        {
+            DeusExRootWindow(rootWindow).hud.receivedItems.AddItem(item, count);
+        }
 
         // Make sure the object belt is updated
         if (item.IsA('Ammo'))
@@ -8811,6 +9005,13 @@ exec function PutInHand(optional Inventory inv, optional bool bNoPrimary)
 		//if ((inv.IsA('ChargedPickup')) && (ChargedPickup(inv).IsActive()))
 		//	return;
 
+        //SARGE: Adding charged pickups as your last used weapon feels bad.
+        //SARGE: Overruled!
+        /*
+		if (inv.IsA('ChargedPickup') && !inv.bInObjectBelt)
+            bNoPrimary = true;
+        */
+
 	}
 
 	if (CarriedDecoration != None)
@@ -8825,6 +9026,10 @@ exec function PutInHand(optional Inventory inv, optional bool bNoPrimary)
     if (!bNoPrimary)
         bLastWasEmpty = inv == None;
     
+    //SARGE: If we don't have a valid advBelt selection, the first selection is valid.
+    if (!bNoPrimary && advBelt == -1 && inv.bInObjectBelt)
+        advBelt = inv.beltPos;
+
     SetInHandPending(inv);
                 
     //clientMessage("PutInHand called for : " $ inv $ ", bBeltSkipNextPrimary=" $ bBeltSkipNextPrimary);
@@ -9499,16 +9704,25 @@ function ClearBelt()
 	  DeusExRootWindow(rootWindow).hud.belt.ClearBelt();
 }
 
-function RemoveObjectFromBelt(Inventory item)
+//SARGE: Extended to allow placeholders
+function RemoveObjectFromBelt(Inventory item, optional bool bNoPlaceholder)
 {
-	if (DeusExRootWindow(rootWindow) != None)
-	  DeusExRootWindow(rootWindow).hud.belt.RemoveObjectFromBelt(item);
-}
+    local int beltPos;
 
-function MakeBeltObjectPlaceholder(Inventory item)
-{
+    beltPos = item.beltPos;
+
+    //placeholders are NOT allowed in multiplayer, they fuck the belt
+    if (Level.NetMode != NM_Standalone && bBeltIsMPInventory)
+        bNoPlaceholder = true;
+
 	if (DeusExRootWindow(rootWindow) != None)
-	  DeusExRootWindow(rootWindow).hud.belt.RemoveObjectFromBelt(item,Level.NetMode == NM_Standalone || !bBeltIsMPInventory);
+    {
+        DeusExRootWindow(rootWindow).hud.belt.RemoveObjectFromBelt(item,!bNoPlaceholder && bBeltMemory);
+
+        //SARGE: Smart Keyring needs to be updated if we just removed from it's slot.
+        if ((bNoPlaceholder || !bBeltMemory) && beltPos == DeusExRootWindow(rootWindow).hud.belt.KeyringSlot)
+            DeusExRootWindow(rootWindow).hud.belt.CreateNanoKeySlot();
+    }
 }
 
 function AddObjectToBelt(Inventory item, int pos, bool bOverride)
@@ -10264,7 +10478,6 @@ function DropDecoration()
 // or places it on your currently highlighted object
 // if None is passed in, it drops what's inHand
 // ----------------------------------------------------------------------
-
 exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 {
 	local Inventory item, previtem;
@@ -10292,7 +10505,10 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 	{
 		item = inv;
 	}
-	if ((item!=none)&&(!item.IsA('POVcorpse'))) bThrowDecoration=false;
+
+	if ((item != None) && (!item.IsA('POVcorpse')))
+		bThrowDecoration=false;
+
 	if (item != None)
 	{
 		GetAxes(Rotation, X, Y, Z);
@@ -10366,13 +10582,13 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 				previtem = item;
 
 				item = Spawn(item.Class, Owner);
-				if (item.IsA('ChargedPickup'))                                  //RSD: Simulates dropping the top ChargedPickup from the stack
+				if (item != None && item.IsA('ChargedPickup'))                                  //RSD: Simulates dropping the top ChargedPickup from the stack
 				{
 					item.Charge = previtem.Charge;
 					previtem.Charge = previtem.default.Charge;
 				}
 
-				if(item != none)
+				if(item != None)
 				{
 					if(deusExPickUp(item).bhasMultipleSkins)
 					{
@@ -10398,17 +10614,14 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 
 				// Remove it from the inventory slot grid
 				RemoveItemFromSlot(item);
-                if (!bBeltAutofill)
-                    MakeBeltObjectPlaceholder(item); //SARGE: Disabled because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
-                else
-                    RemoveObjectFromBelt(item);
+                RemoveObjectFromBelt(item,bBeltAutofill); //SARGE: Disabled placeholders because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
 
 				// make sure we have one copy to throw!
 				DeusExPickup(item).NumCopies = 1;
 			}
 		}
         //If it's a disposable weapon, throw away only one, and deduct ammo
-        else if (DeusExWeapon(item).bDisposableWeapon && DeusExWeapon(item).ammoName != none)
+        else if (DeusExWeapon(item).bDisposableWeapon && DeusExWeapon(item).ammoName != None)
         {
             AmmoType = Ammo(FindInventoryType(Weapon(item).AmmoName));
             amm = ammoType.ammoAmount;
@@ -10431,10 +10644,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 
 				// Remove it from the inventory slot grid
 				RemoveItemFromSlot(item);
-                if (!bBeltAutofill)
-                    MakeBeltObjectPlaceholder(item); //SARGE: Disabled because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
-                else
-                    RemoveObjectFromBelt(item);
+                RemoveObjectFromBelt(item,bBeltAutofill); //SARGE: Disabled placeholders because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
             }
             ammoType.ammoAmount -= 1;
             UpdateAmmoBeltText(AmmoType);
@@ -10449,10 +10659,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 
 			// Remove it from the inventory slot grid
 			RemoveItemFromSlot(item);
-            if (!bBeltAutofill && bBeltMemory)
-                MakeBeltObjectPlaceholder(item); //SARGE: Disabled because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
-            else
-                RemoveObjectFromBelt(item);
+            RemoveObjectFromBelt(item,bBeltAutofill); //SARGE: Disabled placeholders because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
 		}
 
 		// if we are highlighting something, try to place the object on the target //CyberP: more lenience when dropping
@@ -10488,7 +10695,8 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 				if (mult == -1.0)
 					mult = 1.0;                                                 //RSD: Was 0.7 in GMDX, back to 1.0 from vanilla
 			}
-			//mult = 1.0;                                                         //RSD: Screw it, no more having fun
+			else
+				mult = 1.0;                                                         //RSD: Screw it, no more having fun //Ygll: need to initialze the float value, use vanilla value
 
 			if (bDrop)
 			{
@@ -10553,6 +10761,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 							Carc.Inventory = PovCorpse(item).Inv; //GMDX
 							Carc.bSearched = POVCorpse(item).bSearched;
 							Carc.PickupAmmoCount = POVCorpse(item).PickupAmmoCount;
+							Carc.passedImpaleCount = POVCorpse(item).passedImpaleCount;
 							Carc.savedName = POVCorpse(item).savedName;
                             Carc.bFirstBloodPool = POVCorpse(item).bFirstBloodPool; //SARGE: Added.
                             Carc.bNoDefaultPools = POVCorpse(item).bNoDefaultPools;
@@ -10616,9 +10825,8 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 	}
 	else if (CarriedDecoration != None)
 	{
-	  bThrowDecoration=false;
-	  DropDecoration();
-
+		bThrowDecoration=false;
+		DropDecoration();
 		// play a throw anim
 		PlayAnim('Attack',,0.1);
 	}
@@ -10626,13 +10834,12 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 	// If the drop failed and we removed the item from the inventory
 	// grid, then we need to stick it back where it came from so
 	// the inventory doesn't get fucked up.
-
 	if ((bRemovedFromSlots) && (item != None) && (!bDropped))
 	{
 		//DEUS_EX AMSD Use the function call for this, helps multiplayer
 		PlaceItemInSlot(item, itemPosX, itemPosY);
 	}
-    else if (DeusExWeapon(item).bDisposableWeapon) //SARGE: This has to be done here for some reason
+    else if (item != None && DeusExWeapon(item).bDisposableWeapon) //SARGE: This has to be done here for some reason
         DeusExWeapon(item).PickupAmmoCount = 1;
 
 	return bDropped;
@@ -11295,7 +11502,7 @@ exec function SkipMessages()
 // ToggleRadialAugMenu()
 // ----------------------------------------------------------------------
 
-exec function ToggleRadialAugMenu()
+exec function ToggleRadialAugMenu(optional bool bHeld, optional bool bRelease)
 {
 	local DeusExRootWindow root;
     root = DeusExRootWindow(rootWindow);
@@ -11305,8 +11512,18 @@ exec function ToggleRadialAugMenu()
     if (RestrictInput())
         return;
 
+    /*
     //No wheel while drone is active
     if (bSpyDroneActive && !bSpyDroneSet)
+    {
+        bRadialAugMenuVisible = false;
+        UpdateHUD();
+        return;
+    }
+    */
+
+    //If it's already closed while we're holding the key, don't re-open it
+    if (bHeld && bRelease && !bRadialAugMenuVisible)
         return;
 
 	bRadialAugMenuVisible = !bRadialAugMenuVisible;
@@ -11506,6 +11723,19 @@ function bool GetBracketsState()
     return true;
 }
 
+// ----------------------------------------------------------------------
+// SARGE: GetCurrentViewRotation()
+// Gets the current view rotation, either returning the standard, or the drone/wheel saved one.
+// ----------------------------------------------------------------------
+function Rotator GetCurrentViewRotation()
+{
+    if(bSpyDroneActive && !bSpyDroneSet && !bBigDroneView)
+        return SAVErotation;
+    else if(bRadialAugMenuVisible)
+        return WHEELSAVErotation;
+    else
+        return ViewRotation;
+}
 
 // ----------------------------------------------------------------------
 // UpdateCrosshairStyle()
@@ -11552,8 +11782,16 @@ function UpdateCrosshair()
 
 function UpdateHUD()
 {
+    local int i;
 	local DeusExRootWindow root;
 	root = DeusExRootWindow(rootWindow);
+
+    // Reset Belt Memory
+    if (!bBeltMemory)
+    {
+        for(i = 0;i < 12;i++)
+            ClearPlaceholder(i);
+    }
 
     if (root != None)
         root.UpdateHUD();
@@ -11815,7 +12053,7 @@ exec function ActivateBelt(int objectNum)
 			}
 
             //If we're not in IW belt mode, set our IW belt to match our current belt.
-            else if (iAlternateToolbelt == 0)
+            else if (iAlternateToolbelt == 0 || advBelt == -1)
                 advBelt = objectNum;
 		
 			root.ActivateObjectInBelt(objectNum);
@@ -12123,8 +12361,8 @@ exec function ShowMainMenu()
         ConsoleCommand("set" @ "ini:Engine.Engine.ViewportManager Brightness" @ 0.6);
         ConsoleCommand("set" @ "DeusExPlayer bFirstTimeGMDX" @ "True");
         ConsoleCommand("set" @ "JCDentonMale bFirstTimeGMDX" @ "True");
-        ConsoleCommand("set" @ "DeusExPlayer bRealisticCarc" @ "True");
-        ConsoleCommand("set" @ "JCDentonMale bRealisticCarc" @ "True");
+        //ConsoleCommand("set" @ "DeusExPlayer bRealisticCarc" @ "True");
+        //ConsoleCommand("set" @ "JCDentonMale bRealisticCarc" @ "True");
 	}
     ConsoleCommand("FLUSH");
 
@@ -12489,11 +12727,7 @@ function bool DeleteInventory(inventory item)
 		// Remove the item from the object belt
 		if (root != None)
         {
-            // Sarge: Keep darkened version in the belt if we have Keep Deleted Belt Items setting turn on
-            if (bBeltMemory)
-                MakeBeltObjectPlaceholder(item);
-            else
-                RemoveObjectFromBelt(item);
+            RemoveObjectFromBelt(item);
         }
         else //In multiplayer, we often don't have a root window when creating corpse, so hand delete
         {
@@ -12551,7 +12785,7 @@ event PlayerCalcView( out actor ViewActor, out vector CameraLocation, out rotato
 		return;
 	}
 	// check for spy drone and freeze player's view
-	if (bSpyDroneActive && !bSpyDroneSet && !bRadialAugMenuVisible)                     //RSD: Allows the user to toggle between moving and controlling the drone, also added Lorenz's wheel
+	if (bSpyDroneActive && !bSpyDroneSet)                     //RSD: Allows the user to toggle between moving and controlling the drone, also added Lorenz's wheel
 	{
 		if (aDrone != None)
 		{
@@ -12602,8 +12836,11 @@ event PlayerCalcView( out actor ViewActor, out vector CameraLocation, out rotato
 
         if (bRadialAugMenuVisible) {
             // prevent view from rotating
+            fixedRotation = WHEELSAVErotation;
+            fixedRotation.Pitch = 0f;
+            fixedRotation.Roll = 0f;
             ViewRotation=WHEELSAVErotation;                                     //RSD: Lorenz used SAVErotation, use WHEELSAVErotation instead
-            SetRotation(WHEELSAVErotation);                                     //RSD: Lorenz used SAVErotation, use WHEELSAVErotation instead
+            SetRotation(fixedRotation);                                   //RSD: Lorenz used SAVErotation, use WHEELSAVErotation instead
         }
 
 	    CameraRotation = ViewRotation;
@@ -12715,10 +12952,14 @@ ignores SeePlayer, HearNoise, Bump;
 		StopBlendAnims();
 		ConversationActor = None;
 
+        //SARGE: This is needed otherwise the belt doesn't update properly if we lose an item during a convo
+        UpdateHUD();
+
         //SARGE: Now this is needed because we're changing eyeheight
 		if ((FlagBase != None) && (FlagBase.GetBool('LDDPJCIsFemale')))
             BaseEyeHeight += FemJCEyeHeightAdjust;
         //ResetBasedPawnSize();
+
 	}
 
 	function int retLevelInfo()
@@ -13799,7 +14040,6 @@ function bool GetExceptedCode(string code)
         || code == "CHAD" //Given in conversation
         || (code == "2167" && FlagBase.GetBool('NYCUndergroundCodeObtained')) //Allow us to use it after we access the computer. Also adds a note from a datacube.
         || code == "JCDENTON"; //Uses Base: JCDenton instead of Username: JCDenton.
-        || code == "CHAD"; //Given in conversation
 }
 
 //"Security" is a commonly used word in many logs.
@@ -17759,13 +17999,11 @@ function ForceDroneOff(optional bool skipDeactivation)
         {
             if (bSpyDroneSet)
             {
-                SAVErotation = ViewRotation;
-                bSpyDroneSet = false;                                                 //RSD: Ensures that the Spy Drone will ACTUALLY be turned off
+                anAug.ToggleStandbyMode(true);
             }
             if (!skipDeactivation)
             {
                 anAug.Deactivate();
-                bSpyDroneActive = false;                                                  //RSD: Prevents being forced back into drone control at the last second
             }
         }
     }
@@ -18562,6 +18800,7 @@ defaultproperties
      iCutsceneFOVAdjust=2
      iFrobDisplayStyle=1
      bShowDataCubeRead=true;
+     bShowDataCubeImages=true;
      iAllowCombatMusic=1
      bFullAccuracyCrosshair=true;
      bShowEnergyBarPercentages=true;
@@ -18573,7 +18812,7 @@ defaultproperties
      dblClickHolster=2
      bSmartDecline=True
      killswitchTimer=-2
-     bEnhancedMusicSystem=1
+     iEnhancedMusicSystem=1
      bMedbotAutoswitch=True
      bHDTPEnabled=True
      iEnhancedLipSync=1
@@ -18589,11 +18828,14 @@ defaultproperties
      bConsistentBloodPools=True
      iPersistentDebris=1
   	 iStanceHud=3   //Ygll = Every stance
-	   bIsMantlingStance=false //Ygll: new var to know if we are currently mantling
-	   iHealingScreen=1
      bCutsceneVolumeEqualiser=true
+     bIsMantlingStance=false //Ygll: new var to know if we are currently mantling
+     iHealingScreen=1
      bAlwaysShowReceivedItemsWindow=true
      bShowTotalRoundsCount=true
      bPistolStartTrained=true
      bStreamlinedRepairBotInterface=true
+     iShowTotalCounts=1
+     iSmartKeyring=1
+     iAltFrobDisplay=1
 }

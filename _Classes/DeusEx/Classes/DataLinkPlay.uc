@@ -363,7 +363,7 @@ function AbortAndSaveHistory(optional bool bNotInstant)
 	// Make sure no sound playing
 	player.StopSound(playingSoundId);
 
-	if ((!bEndTransmission) && (bStartTransmission))
+	if ((!bEndTransmission) && (bStartTransmission) && bNotInstant)
 	{
 		bStartTransmission = False;
 		GotoState('PlayEvent');
