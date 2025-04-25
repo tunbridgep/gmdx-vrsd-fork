@@ -219,9 +219,9 @@ event DrawWindow(GC gc)
     gc.SetAlignments(HALIGN_Center, VALIGN_Center);
     gc.SetTextColor(colHeaderText);
     gc.GetTextExtent(0, strWidth, strHeight, "      ");
-    gc.DrawText(0, height - strHeight, width, strHeight, str);
+    gc.DrawText(1, height - strHeight, width, strHeight, str);
     //gc.SetTextColor(colCharge);
-    gc.DrawText(0, height/2 - strHeight/2, width, strHeight, str2);
+    gc.DrawText(1, height/2 - strHeight/2, width, strHeight, str2);
 
 	// Draw selection border width/height of button
 	if (bSelected)
