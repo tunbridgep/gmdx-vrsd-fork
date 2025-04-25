@@ -17,7 +17,45 @@ simulated function PreBeginPlay()
 		MaxRange = mpMaxRange;
       PickupAmmoCount = 7;
 	}
+
+    SetFrobNameHack(true);
 }
+
+// ----------------------------------------------------------------------
+// SARGE: Name hack stuff
+// ----------------------------------------------------------------------
+
+//Sarge: Update weapon frob display when we have 1
+function string GetFrobString(DeusExPlayer player)
+{
+    if (PickupAmmoCount == 1)
+        return class'Shuriken'.default.itemName;
+    else if (player.bShowItemPickupCounts)
+        return default.itemName @ "(" $ PickupAmmoCount $ ")";
+    else
+        return default.itemName;
+}
+
+function string SetFrobNameHack(bool frobbing, optional int num)
+{
+    if (frobbing)
+    {
+        itemName = class'Shuriken'.default.itemName;
+        itemArticle = class'Shuriken'.default.itemArticle;
+    }
+    else if (num > 0)
+    {
+        itemName = default.itemName @ num;
+        itemArticle = default.itemArticle;
+    }
+    else
+    {
+        itemName = default.itemName;
+        itemArticle = default.itemArticle;
+    }
+}
+
+/////////////////////////////////
 
 function DisplayWeapon(bool overlay)
 {
@@ -68,6 +106,7 @@ defaultproperties
      PlayerViewMesh=LodMesh'DeusExItems.Shuriken'
      PickupViewMesh=LodMesh'DeusExItems.ShurikenPickup'
      ThirdPersonMesh=LodMesh'DeusExItems.Shuriken3rd'
+     Mesh=LodMesh'DeusExItems.ShurikenPickup'
      Icon=Texture'DeusExUI.Icons.BeltIconShuriken'
      largeIcon=Texture'DeusExUI.Icons.LargeIconShuriken'
      largeIconWidth=36
@@ -78,4 +117,5 @@ defaultproperties
      CollisionHeight=0.300000
      bDisposableWeapon=true
      minSkillRequirement=2;
+     PickupSound=Sound'DeusExSounds.Weapons.CombatKnifeSelect'
 }

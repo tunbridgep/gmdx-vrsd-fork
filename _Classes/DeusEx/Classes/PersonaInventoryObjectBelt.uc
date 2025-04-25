@@ -80,7 +80,7 @@ function CopyObjectBeltInventory()
 	local int objectIndex;
 
 	// Now copy the items
-	for (objectIndex=0;objectIndex<10;objectIndex++)
+	for (objectIndex=0;objectIndex<12;objectIndex++)
     {
 		objBelt.AddObjectToBelt(hudBelt.GetObjectFromBelt(objectIndex), objectIndex, True);
     }
@@ -176,7 +176,7 @@ function AddObject(Inventory inv, int objectNum)
 	if (inv != None && objBelt.objects[objectNum].bAllowDragging)
 	{
       //DEUS_EX AMSD Changed so hudbelt call propagates through player
-      DeusExPlayer(GetRootWindow().ParentPawn).RemoveObjectFromBelt(inv);
+      DeusExPlayer(GetRootWindow().ParentPawn).RemoveObjectFromBelt(inv,true);
 		//hudBelt.RemoveObjectFromBelt(inv);
       DeusExPlayer(GetRootWindow().ParentPawn).AddObjectToBelt(inv, objectNum, True);
 		//hudBelt.objects[objectNum].SetItem(inv);
@@ -192,7 +192,7 @@ function AddObject(Inventory inv, int objectNum)
 function RemoveObject(Inventory inv)
 {
 	objBelt.RemoveObjectFromBelt(inv);
-   DeusExPlayer(GetRootWindow().ParentPawn).RemoveObjectFromBelt(inv);
+   DeusExPlayer(GetRootWindow().ParentPawn).RemoveObjectFromBelt(inv,true);
 	//hudBelt.RemoveObjectFromBelt(inv);
 }
 

@@ -23,7 +23,7 @@ defaultproperties
      items(6)=(HelpText="After consuming the last item in a belt slot, it's position will be preserved.|nIf Autofill is off, dropped items will also be preserved. Right-Click to clear.",actionText="Belt: Belt Memory",variable="bBeltMemory",defaultValue=1);
      items(7)=(HelpText="Right-click confirms belt selection, removing the need to cycle through items to reach desired slot.",actionText="Belt: Invisible War Toolbelt",variable="iAlternateToolbelt",valueText2="Classic",valueText3="Hybrid",helpText2="Classic mode makes right-click switch back after using the number keys.",helpText3="Hybrid mode only switches back to the primary selection if the primary belt selection was initially unholstered.");
      items(8)=(HelpText="Belt size is extended to 12 items. The - and = keys will be rebound to use the new belt slots.",actionText="Belt: Larger Belt",variable="bBiggerBelt",defaultValue=1);
-     items(9)=(HelpText="Removes the keyring from the toolbelt, making it's slot available to general items. The keyring is always selectable via left-clicking on a locked object.",actionText="Belt: Usable Keyring Slot",variable="bSmartKeyring");
+     items(9)=(HelpText="Allows replacing the keyring in the toolbelt, making it's slot available to general items. The keyring is always selectable via left-clicking on a locked object. No Keyring mode removes the keyring entirely.",actionText="Belt: Usable Keyring Slot",variable="iSmartKeyring",valueText2="No Keyring",defaultValue=1);
      items(10)=(HelpText="Adjust the Field-of-View during dialog scenes to more closely match the original game.",actionText="Conversations: FOV Adjustment",variable="iCutsceneFOVAdjust",valueText1="75 FOV",valueText2="80 FOV",valueText3="85 FOV",valueText4="90 FOV",defaultValue=2);
      items(11)=(HelpText="Enable Subtitles in full-screen cinematics. This is independent of the regular Subtitles setting.",actionText="Conversations: Subtitles",variable="bSubtitlesCutscene",defaultValue=1);
      items(12)=(HelpText="Smooths out the lip-synching animations in conversations. Setting it to 'chunky' intentionally removes blending.",actionText="Conversations: Improved Lip Synch",variable="iEnhancedLipSync",defaultValue=1,valueText2="Chunky");
@@ -44,7 +44,7 @@ defaultproperties
      items(27)=(HelpText="Change weapon viewmodels to display better on some widescreen resolutions.",actionText="HUD: Alternate Weapon Offsets",variable="bEnhancedWeaponOffsets");
      items(28)=(HelpText="Display CLIPS or MAGS in the Ammo window. Has no effect for weapons that don't use magazines, or if Accurate Ammo Display is turned on.",actionText="HUD: Ammo Text Display",variable="bDisplayClips",valueText0="MAGS",valueText1="CLIPS",defaultValue=1);
      items(29)=(HelpText="Always show the accuracy crosshairs for your currently held weapon.",actionText="HUD: Always Show Bloom",variable="bAlwaysShowBloom");
-	 items(30)=(HelpText="Alternative tool display window with some minor text and spacing changes.",actionText="HUD: Alternate Tool Window Display",variable="bAltFrobDisplay");
+	 items(30)=(HelpText="Alternative tool display window with some minor text and spacing changes.",actionText="HUD: Alternate Tool Window Display",variable="iAltFrobDisplay",valueText1="Indented",valueText2="Extended",defaultValue=1);
 	 items(31)=(HelpText="Shows the ammo display on the right side of the screen, and the belt on the left",actionText="HUD: Ammo Display on Right",variable="bAmmoDisplayOnRight");
      items(32)=(HelpText="Enable alternate visuals for the bioenergy bar.",actionText="HUD: Animated Bioenergy Bar",variable="bAnimBar1",defaultValue=1);
      items(33)=(HelpText="Enable alternate visuals for the stamina bar.",actionText="HUD: Animated Stamina Bar",variable="bAnimBar2",defaultValue=1);
@@ -76,7 +76,7 @@ defaultproperties
      items(58)=(HelpText="Loot will not be declined from corpses if the Walk/Run key is held.",actionText="Interaction: Smart Declining",variable="bSmartDecline");
      items(59)=(HelpText="When using a medical bot, automatically switch to the Health screen after using the last Aug canister.",actionText="Interaction: Medbot Auto Switch",variable="bMedbotAutoswitch",defaultValue=1);
      items(60)=(HelpText="Changes lighting on some maps to reduce strobing and flickering.",actionText="Lighting: Lighting Accessibility",variable="bLightingAccessibility");
-     items(61)=(HelpText="If Enabled, music will not restart upon map changes using the same track. Extended mode also stops conversation music in bars and clubs.",actionText="Music: More Immersive Music",variable="bEnhancedMusicSystem",valueText2="Extended",defaultValue=1);
+     items(61)=(HelpText="If Enabled, music will not restart upon map changes using the same track. Extended mode also stops conversation music in bars and clubs.",actionText="Music: More Immersive Music",variable="iEnhancedMusicSystem",valueText2="Extended",defaultValue=1);
      items(62)=(HelpText="Enable/disable level transition autosaving.",actionText="Player: Autosave on Level Change",variable="bTogAutoSave",defaultValue=1);
      items(63)=(HelpText="When dying, switch to a first or third person camera.",actionText="Player: Death Perspective",variable="bRemoveVanillaDeath",valueText0="Third Person",valueText1="First Person");
 	 items(64)=(HelpText="If enabled, the current player stance will be displayed on the HUD.",actionText="Player: Current Stance Display",variable="iStanceHud",defaultValue=3,valueText1="Walk/Run",valueText2="Everything except Default",valueText3="Everything");
@@ -87,6 +87,11 @@ defaultproperties
      items(69)=(HelpText="Prevent accidentally killing vac-bots by stomping on them.",actionText="Player: Stomp Vac Bots",variable="bStompDomesticAnimals",defaultValue=0);
      items(70)=(HelpText="Always use the female hands with male JC. This setting does nothing if LDDP is not installed.",actionText="Player: Use Female Hands",variable="bFemaleHandsAlways",defaultValue=0)
      items(71)=(HelpText="If enabled, the New Game screen will automatically start with Pistols upgraded to Trained.",actionText="Player: Start with Pistols at Trained",variable="bPistolStartTrained",defaultValue=1)
+     items(72)=(HelpText="If enabled, the Items Received window will be shown when looting partial ammo counts from weapons or ammo pickups without picking them up.",actionText="HUD: Show Items Window When Looting Ammo",variable="bAlwaysShowReceivedItemsWindow",defaultValue=0)
+     items(73)=(HelpText="If enabled, the maximum number of a given item type will be shown on the inventory icon, instead of just the count.",actionText="HUD: Show Max Stacks",variable="iShowTotalCounts",defaultValue=1,valueText1="Limited",valueText2="Everything")
+     items(74)=(HelpText="If enabled, Data Cubes will display images as they are read.",actionText="HUD: Data Cubes Show Images",variable="bShowDataCubeImages",defaultValue=1)
+     //items(74)=(HelpText="If enabled, selecting an item that isn't on the toolbelt will clear the primary selection, allowing right-click to reselect it. Only applies to the Invisible War Toolbelt.",actionText="Belt: Auto-Clear Primary Selection",variable="bAllowSelectingOffAdvBelt",defaultValue=1)
+     items(75)=(HelpText="If enabled, killed enemies will drop their current weapon as they die. Realism option, not intended for general use.",actionText="Game: Enemies Drop Weapons on Death",variable="bDropWeaponsOnDeath",defaultValue=0)
      Title="GMDX Quality of Life Options"
      colWidths(0)=214
      colWidths(1)=155

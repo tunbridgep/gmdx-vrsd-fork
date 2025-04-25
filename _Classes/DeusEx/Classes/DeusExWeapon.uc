@@ -346,10 +346,11 @@ var vector axesY;
 var vector axesZ;
 var bool bFancyScopeAnimation;
 
-//SARGE: Sounds for various things
+//SARGE: String when weapon mods are copies from another weapon
+var localized String msgModsCopied;
 
-//Retrieve Ammo from Weapon
-var const Sound RetrieveAmmoSound;
+//SARGE: Sounds for various things
+var const Sound CopyModsSound;
 
 //END GMDX:
 
@@ -374,6 +375,56 @@ replication
 	// Functions Server calls in client
 	reliable if ( Role == ROLE_Authority )
 	  RefreshScopeDisplay, ReadyClientToFire, SetClientAmmoParams, ClientDownWeapon, ClientActive, ClientReload;
+}
+
+// ----------------------------------------------------------------------
+// GetPrimaryAmmoType()
+//
+// SARGE: Returns the main ammo type of the weapon, since we can't pick up secondaries usually
+// ----------------------------------------------------------------------
+function class<Ammo> GetPrimaryAmmoType()
+{
+    if ( AmmoNames[0] == None )
+        return AmmoName;
+    else
+        return AmmoNames[0];
+
+}
+
+// ----------------------------------------------------------------------
+// LootWeaponAmmo()
+//
+// SARGE: Refactored this out of the Carcass Frob function so it was hopefully less horribly long,
+// and it was repeated everywhere, all over the codebase. For shame, GMDX!!!
+// ----------------------------------------------------------------------
+function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, optional bool bLootSound, optional bool bNoRemoveClipAmmo, optional bool bOverflow, optional Texture overrideTexture)
+{
+    local class<Ammo> defAmmoClass;
+    local int intj;
+
+    if (P == None)
+        return false;
+			
+    // Only add ammo of the default type
+    // There was an easy way to get 32 20mm shells, buy picking up another assault rifle with 20mm ammo selected
+    // Add to default ammo only
+    defAmmoClass = GetPrimaryAmmoType();
+
+    //hack
+    if (defAmmoClass == class'AmmoNone' || self.PickupAmmoCount <= 0)
+        return false;
+
+    intj = P.LootAmmo(defAmmoClass,PickupAmmoCount,bDisplayMsg,bDisplayWindow,bLootSound,!bDisposableWeapon,bDisposableWeapon,bOverflow,overrideTexture);
+
+    if (intj > 0)
+    {
+        if (!bNoRemoveClipAmmo && !bDisposableWeapon)
+            self.ClipCount = MAX(self.ClipCount - intj,0);
+        PickupAmmoCount = MAX(PickupAmmoCount - intj,0);
+        //P.ClientMessage("intj is > 0: " $ intj $ ", with pickupammocount: " $ pickupammocount);
+        return true;
+    }
+    return false;
 }
 
 //Sarge: Update weapon frob display when we have a mod applied
@@ -846,9 +897,10 @@ simulated event RenderOverlays( canvas Canvas )
 	{
 		//if ( PlayerOwner.DesiredFOV != PlayerOwner.DefaultFOV )
 		//	return;
-		if (bZoomed || (PlayerOwner.bSpyDroneActive && !PlayerOwner.bSpyDroneSet && !PlayerOwner.bBigDroneView))
-		//if (bZoomed)
+		//if (bZoomed || (PlayerOwner.bSpyDroneActive && !PlayerOwner.bSpyDroneSet && !PlayerOwner.bBigDroneView))
+		if (bZoomed)
 		    return;
+
 		bPlayerOwner = true;
 		Hand = PlayerOwner.Handedness;
 
@@ -903,9 +955,9 @@ simulated event RenderOverlays( canvas Canvas )
         rfs.Yaw=addYaw;
         rfs.Pitch=addPitch;
         GetAxes(rfs,dx,dy,dz);
-        dx=dx>>PlayerOwner.ViewRotation;
-        dy=dy>>PlayerOwner.ViewRotation;
-        dz=dz>>PlayerOwner.ViewRotation;
+        dx=dx>>PlayerOwner.GetCurrentViewRotation();
+        dy=dy>>PlayerOwner.GetCurrentViewRotation();
+        dz=dz>>PlayerOwner.GetCurrentViewRotation();
         rfs=OrthoRotation(dx,dy,dz);
         NewRot = rfs;
 
@@ -1057,15 +1109,7 @@ function GiveAmmo( Pawn Other )
 	{
         //SARGE: Here's the nasty bug!
         //Spawn will fail if there's not enough room to spawn the relevant ammo...
-		AmmoType = Spawn(AmmoName);	// Create ammo type required		
-        
-        //...So we do a filthy hack by making the ammo type no longer collide with the world temporarily
-        if (AmmoType == None && AmmoName.default.bCollideWorld == true)
-        {
-            AmmoName.default.bCollideWorld = false;
-            AmmoType = Spawn(AmmoName);	// Create ammo type required...again!
-            AmmoName.default.bCollideWorld = true;
-        }
+		AmmoType = Ammo(class'SpawnUtils'.static.SpawnSafe(AmmoName));	// Create ammo type required		
 
 		Other.AddInventory(AmmoType);		// and add to player's inventory
 		AmmoType.BecomeItem();
@@ -1141,10 +1185,63 @@ function TakeDamage(int Damage, Pawn EventInstigator, vector HitLocation, vector
 	}
 }
 
-function PlayRetrievedAmmoSound()
+//SARGE: Moved this to a new function so that it can be used
+//even at full ammo.
+function CopyModsFrom(DeusExWeapon W, optional bool bNotify)
 {
-    //PlaySound(RetrieveAmmoSound, SLOT_None, 0.5+FRand()*0.25, , 256, 0.95+FRand()*0.1);
-    PlaySound(RetrieveAmmoSound, SLOT_None, 1.5+FRand()*0.25, , 256, 0.95+FRand()*0.1);
+    if (W.ModBaseAccuracy > ModBaseAccuracy)
+        ModBaseAccuracy = W.ModBaseAccuracy;
+    if (W.ModReloadCount > ModReloadCount)
+        ModReloadCount = W.ModReloadCount;
+    if (W.ModAccurateRange > ModAccurateRange)
+        ModAccurateRange = W.ModAccurateRange;
+
+    // these are negative
+    if (W.ModReloadTime < ModReloadTime)
+        ModReloadTime = W.ModReloadTime;
+    if (W.ModRecoilStrength < ModRecoilStrength)
+        ModRecoilStrength = W.ModRecoilStrength;
+
+    if (W.bHasLaser)
+        bHasLaser = True;
+    if (W.bHasSilencer)
+        bHasSilencer = True;
+    if (W.bHasScope)
+        bHasScope = True;
+    if (W.bFullAuto)     //CyberP:
+        bFullAuto = True;
+
+    // copy the actual stats as well
+    if (W.ReloadCount > ReloadCount)
+        ReloadCount = W.ReloadCount;
+    if (W.AccurateRange > AccurateRange)
+        AccurateRange = W.AccurateRange;
+
+    // these are negative
+    if (W.BaseAccuracy < BaseAccuracy)
+        BaseAccuracy = W.BaseAccuracy;
+    if (W.ReloadTime < ReloadTime)
+        ReloadTime = W.ReloadTime;
+    if (W.RecoilStrength < RecoilStrength)
+        RecoilStrength = W.RecoilStrength;
+
+    //ROF mod
+        if(W.ModShotTime < ModShotTime)
+            ModShotTime = W.ModShotTime;
+    //DAM mod
+        if(W.ModDamage > ModDamage)
+            ModDamage = W.ModDamage;
+    
+    if (W.bModified && !bModified && bNotify)
+    {
+        if (Owner != None && Owner.IsA('DeusExPlayer'))
+            DeusExPlayer(Owner).ClientMessage(sprintf(msgModsCopied,W.ItemName));
+        PlaySound(CopyModsSound,SLOT_None,0.8);
+    }
+
+    if (W.bModified)
+        bModified = true;
+
 }
 
 function bool HandlePickupQuery(Inventory Item)
@@ -1161,117 +1258,28 @@ function bool HandlePickupQuery(Inventory Item)
 	W = DeusExWeapon(Item);
 	if ((W != None) && (W.Class == Class))
 	{
-		if (W.ModBaseAccuracy > ModBaseAccuracy)
-			ModBaseAccuracy = W.ModBaseAccuracy;
-		if (W.ModReloadCount > ModReloadCount)
-			ModReloadCount = W.ModReloadCount;
-		if (W.ModAccurateRange > ModAccurateRange)
-			ModAccurateRange = W.ModAccurateRange;
-
-		// these are negative
-		if (W.ModReloadTime < ModReloadTime)
-			ModReloadTime = W.ModReloadTime;
-		if (W.ModRecoilStrength < ModRecoilStrength)
-			ModRecoilStrength = W.ModRecoilStrength;
-
-		if (W.bHasLaser)
-			bHasLaser = True;
-		if (W.bHasSilencer)
-			bHasSilencer = True;
-		if (W.bHasScope)
-			bHasScope = True;
-		if (W.bFullAuto)     //CyberP:
-            bFullAuto = True;
-
-		// copy the actual stats as well
-		if (W.ReloadCount > ReloadCount)
-			ReloadCount = W.ReloadCount;
-		if (W.AccurateRange > AccurateRange)
-			AccurateRange = W.AccurateRange;
-
-		// these are negative
-		if (W.BaseAccuracy < BaseAccuracy)
-			BaseAccuracy = W.BaseAccuracy;
-		if (W.ReloadTime < ReloadTime)
-			ReloadTime = W.ReloadTime;
-		if (W.RecoilStrength < RecoilStrength)
-			RecoilStrength = W.RecoilStrength;
-
-		//ROF mod
-			if(W.ModShotTime < ModShotTime)
-				ModShotTime = W.ModShotTime;
-	   //DAM mod
-            if(W.ModDamage > ModDamage)
-				ModDamage = W.ModDamage;
-       
-       if (W.bModified)
-         bModified = true;
+        CopyModsFrom(W,true);
 	}
-
+    
 	player = DeusExPlayer(Owner);
     if (player != None)
+    {
         player.UpdateHUD(); //SARGE: Required now because weapons can have + icons in the HUD
+		
+    }
 
 	if (Item.Class == Class)
 	{
-	  if (!( (Weapon(item).bWeaponStay && (Level.NetMode == NM_Standalone)) && (!Weapon(item).bHeldItem || (Weapon(item).bTossedOut && !DeusExWeapon(item).bDisposableWeapon))))
+	  if (!( (Weapon(item).bWeaponStay && (Level.NetMode == NM_Standalone)) && (!Weapon(item).bHeldItem || (Weapon(item).bTossedOut))))
 		{
-			// Only add ammo of the default type
-			// There was an easy way to get 32 20mm shells, buy picking up another assault rifle with 20mm ammo selected
-			if ( AmmoType != None )
-			{
-				// Add to default ammo only
-				if ( AmmoNames[0] == None )
-					defAmmoClass = AmmoName;
-				else
-					defAmmoClass = AmmoNames[0];
-
-				defAmmo = Ammo(player.FindInventoryType(defAmmoClass));
-				//defAmmo.AddAmmo( Weapon(Item).PickupAmmoCount );
-				//RSD: Check for spillover ammo to leave the gun on the ground with it, and also tell the player how much they picked up
-				tempMaxAmmo = player.GetAdjustedMaxAmmo(defAmmo);
-				if (defAmmo.AmmoAmount + Weapon(Item).PickupAmmoCount > tempMaxAmmo)
+            if ( Level.NetMode != NM_Standalone )
+            {
+                if (( player != None ) && ( player.InHand != None ))
                 {
-					intj = tempMaxAmmo - defAmmo.AmmoAmount;
-					defAmmo.AddAmmo(intj);
-					Weapon(Item).PickupAmmoCount -= intj;
-                    DeusExWeapon(Item).clipcount = Weapon(Item).PickupAmmoCount;
-
-					if (!(DeusExWeapon(item) != none && DeusExWeapon(item).bDisposableWeapon)) //RSD: Don't display ammo message for grenades or the PS20
-					{
-                        player.ClientMessage(defAmmo.PickupMessage @ defAmmo.itemArticle @ defAmmo.ItemName $ " (" $ intj $ ")", 'Pickup' );
-                        player.AddReceivedItem(defAmmo,intj);
-                        PlayRetrievedAmmoSound();
-					}
-					return true;
-				}
-				else                                                            //RSD: Add ammo and TELL the player about it!
-				{
-					defAmmo.AddAmmo( Weapon(Item).PickupAmmoCount );
-                    
-                    if (!DeusExWeapon(Item).bDisposableWeapon) //RSD: Don't display ammo message for grenades or the PS20
-                    {
-                        //SARGE: Tell us when we pick up empty weapons, rather than telling us
-                        //that we found 0 ammo
-                        if (Weapon(Item).PickupAmmoCount == 0)
-                            player.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.ItemName, 'Pickup' );
-                        else
-                        {
-                            player.ClientMessage(defAmmo.PickupMessage @ defAmmo.itemArticle @ defAmmo.ItemName $ " (" $ Weapon(Item).PickupAmmoCount $ ")", 'Pickup' );
-                            player.AddReceivedItem(defAmmo,Weapon(Item).PickupAmmoCount);
-                        }
-                    }
-				}
-
-				if ( Level.NetMode != NM_Standalone )
-				{
-					if (( player != None ) && ( player.InHand != None ))
-					{
-						if ( DeusExWeapon(item).class == DeusExWeapon(player.InHand).class )
-							ReadyToFire();
-					}
-				}
-			}
+                    if ( DeusExWeapon(item).class == DeusExWeapon(player.InHand).class )
+                        ReadyToFire();
+                }
+            }
 		}
 	}
 
@@ -1281,7 +1289,7 @@ function bool HandlePickupQuery(Inventory Item)
 	// Notify the object belt of the new ammo
 	if (player != None)
 		player.UpdateBeltText(Self);
-
+            
 	return bResult;
 }
 
@@ -1289,8 +1297,10 @@ function bool HandlePickupQuerySuper( inventory Item )                          
 {
 	local Pawn P;
     local DeusExAmmo DXAmmoType;
+    local bool bResult;
 	if (Item.Class == Class)
 	{
+
 		if ( Weapon(item).bWeaponStay && (!Weapon(item).bHeldItem || Weapon(item).bTossedOut) )
 			return true;
 		P = Pawn(Owner);
@@ -1313,43 +1323,67 @@ function bool HandlePickupQuerySuper( inventory Item )                          
 			Level.Game.LocalLog.LogPickup(Item, Pawn(Owner));
 		if (Level.Game.WorldLog != None)
 			Level.Game.WorldLog.LogPickup(Item, Pawn(Owner));
+        /*
 		if (DeusExWeapon(item) != none && DeusExWeapon(item).bDisposableWeapon) //RSD: Only print pickup message if it's a grenade
 		{
             if (Item.PickupMessageClass == None)
+            {
                 // DEUS_EX CNN - use the itemArticle and itemName
-    //			P.ClientMessage(Item.PickupMessage, 'Pickup');
-                P.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
+                P.ClientMessage(PickupMessage @ itemArticle @ itemName, 'Pickup');
+            }
             else
                 P.ReceiveLocalizedMessage( Item.PickupMessageClass, 0, None, None, item.Class );
 		}
+        */
 		Item.PlaySound(Item.PickupSound);
 		Item.SetRespawn();
-		return true;
+		
+        return true;
 	}
 	if ( Inventory == None )
 		return false;
-
+        
 	return Inventory.HandlePickupQuery(Item);
 }
 
-function float SetDroppedAmmoCount(int amountPassed, bool bSearched) //RSD: Added optional int amountPassed for initialization in MissionScript.uc
+function float SetDroppedAmmoCount(int amountPassed, optional int impaleCount) //RSD: Added optional int amountPassed for initialization in MissionScript.uc //SARGE: Generified this for corpses too, now takes an optional impale count
 {
-    if (amountPassed == 0 && !bSearched)                                                      //RSD: If we didn't get anything, set to old formula //Ygll: change the test to advert empty weapon bug
+    if (amountPassed == 0) //RSD: If we didn't get anything, set to old formula
         amountPassed = Rand(4) + 1;
 
     // Any weapons have their ammo set to a random number of rounds (1-4)
 	// unless it's a grenade, in which case we only want to dole out one.
 	// DEUS_EX AMSD In multiplayer, give everything away.
 	// Grenades and LAMs always pickup 1
-	if (bDisposableWeapon)
-		PickupAmmoCount = 1;
-	else if (IsA('WeaponGepGun'))
+                        
+    //Handle impales.
+    if (IsA('WeaponShuriken') && impaleCount > 0)
+    {
+        if (impaleCount > 1)
+            impaleCount = 1; //Cap impales at one
+        PickupAmmoCount = impaleCount;
+        if (PickupAmmoCount == 0)
+            PickupAmmoCount = 1;
+    }
+
+    // Grenades and LAMs always pickup 1
+    else if (bDisposableWeapon && !IsA('WeaponShuriken'))
+        PickupAmmoCount = 1;
+    else if (IsA('WeaponFlamethrower'))
+        PickupAmmoCount = (amountPassed * 5);                    //SARGE: Now 5-25 rounds with initialization in MissionScript.uc on first map load
+    else if (IsA('WeaponPepperGun'))
+        PickupAmmoCount = 34 + (amountPassed * 4);               //SARGE: Now 35-50 rounds with initialization in MissionScript.uc on first map load
+    else if (IsA('WeaponAssaultGun'))
+        //PickupAmmoCount = Rand(5) + 1.5;                          //RSD
+        PickupAmmoCount = amountPassed + 1;                      //RSD: Now 2-5 rounds with initialization in MissionScript.uc on first map load
+    else if (IsA('WeaponGepGun'))
         PickupAmmoCount = 2;
-    else if (IsA('WeaponAssaultGun'))                                           //RSD: Now 2-5 rounds
-        PickupAmmoCount = amountPassed + 1;
-	else if (Level.NetMode == NM_Standalone)
-        //PickupAmmoCount = Rand(4) + 1;                                        //RSD
-        PickupAmmoCount = amountPassed;                                         //RSD
+    else if (amountPassed > 0)
+        PickupAmmoCount = amountPassed;                            //RSD
+    //SARGE: Failsafe??? Originally CyberP's code but made no sense
+    else if (default.PickupAmmoCount != 0)
+        PickupAmmoCount = 1; //CyberP: hmm
+
     clipcount = PickupAmmoCount;
 }
 
@@ -1498,8 +1532,8 @@ local string msgContactOff;
 	// single use or hand to hand weapon if ReloadCount == 0
 	if (ReloadCount == 0 || bDisposableWeapon)
 	{
-	    if (Owner.IsA('DeusExPlayer'))
-		    DeusExPlayer(Owner).ClientMessage(msgCannotBeReloaded);
+	    //if (Owner.IsA('DeusExPlayer'))
+		//    DeusExPlayer(Owner).ClientMessage(msgCannotBeReloaded); //SARGE: Disabled. This message is annoying as fuck!
 		return;
 	}
 	else if (activateAn == True)
@@ -1553,12 +1587,38 @@ simulated function float GetWeaponSkill()
 	return value;
 }
 
+//SARGE: Terrible function, this needs a rewrite.
+//This is only used for updating the frob info in the tool window,
+//and for picking a melee weapon to use for left-frobbing.
+//It has absolutely no bearing on actually doing any damage,
+//which is why it needs a rework.
 function int CalculateTrueDamage()
 {
 	local int trueDamage;
+    local DeusExPlayer P;
+    local float mult;
 
-	trueDamage = HitDamage * (1.0 - (2.0 * GetWeaponSkill()) + ModDamage);
+    P = DeusExPlayer(Owner);
 
+    //SARGE: Factor in Targeting and Combat Strength
+    //SARGE: NOTE: Targeting is handled in GetWeaponSkill, so not needed here.
+    if (P != None)
+    {
+        if (P.AugmentationSystem != None)
+            mult = P.AugmentationSystem.GetAugLevelValue(class'AugCombatStrength');
+
+        if (mult < 1.0)
+            mult = 0.0;
+        else
+            mult -= 1.0;
+        
+        if (P.AddictionManager.addictions[2].drugTimer > 0) //RSD: Zyme gives its own +50% boost
+            mult += 0.5;
+	}
+
+    trueDamage = HitDamage * (1.0 - (2.0 * GetWeaponSkill()) + mult + ModDamage);
+
+    //P.ClientMessage("Damage: " $ trueDamage @ "(" $ mult @ GetWeaponSkill() @ ")");
 	return trueDamage;
 }
 
@@ -2738,8 +2798,8 @@ simulated function Tick(float deltaTime)
 			loc.Z += Pawn(Owner).BaseEyeHeight;
 
 			// add a little random jitter - looks cool!
-			if (player != none && player.bRadialAugMenuVisible)                 //RSD: If radial menu active, don't copy the viewrotation as it's being screwed with
-				rot = player.WHEELSAVErotation;
+            if (player != none)
+				rot = player.GetCurrentViewRotation(); //RSD: If radial menu active, don't copy the viewrotation as it's being screwed with
 			else
             	rot = Pawn(Owner).ViewRotation;
 			rot.Yaw += Rand(5) - 2;
@@ -4359,6 +4419,7 @@ simulated function vector CalcDrawOffset()
 	local ScriptedPawn	SPOwner;
 	local Pawn			PawnOwner;
 	local vector unX,unY,unZ;
+    local Rotator vr;                       //SARGE: Added viewrotation variable
 
 	SPOwner = ScriptedPawn(Owner);
 	if (SPOwner != None)
@@ -4389,10 +4450,15 @@ simulated function vector CalcDrawOffset()
 	       else
 	           PlayerViewOffset.X -= lerpAid;
         }
-        }
+        }       
         // copied from Engine.Inventory to not be FOVAngle dependent
 		PawnOwner = Pawn(Owner);
-		DrawOffset = ((0.9/PawnOwner.Default.FOVAngle * PlayerViewOffset) >> PawnOwner.ViewRotation);
+
+        vr = PawnOwner.ViewRotation;
+        if (PawnOwner.isa('DeusExPlayer'))
+            vr = DeusExPlayer(PawnOwner).GetCurrentViewRotation();
+
+		DrawOffset = ((0.9/PawnOwner.Default.FOVAngle * PlayerViewOffset) >> vr);
 		DrawOffset += (PawnOwner.EyeHeight * vect(0,0,1));
 		WeaponBob = BobDamping * PawnOwner.WalkBob;
 		WeaponBob.Z = (0.45 + 0.55 * BobDamping) * PawnOwner.WalkBob.Z;
@@ -7174,7 +7240,7 @@ function DestroyMe()
 	local DeusExPlayer player;
 	player = DeusExPlayer(GetPlayerPawn());
 
-    player.MakeBeltObjectPlaceholder(self);
+    player.RemoveObjectFromBelt(self);
     Destroy();
 }
 
@@ -7292,5 +7358,7 @@ defaultproperties
      Mass=10.000000
      Buoyancy=5.000000
      muzzleSlot=2
-     RetrieveAmmoSound=Sound'WeaponPickup'
+     //CopyModsSound=sound'weaponmodinstall'
+     CopyModsSound=sound'M4ClipOut'
+     msgModsCopied="Weapon Modifications applied from %d"
 }

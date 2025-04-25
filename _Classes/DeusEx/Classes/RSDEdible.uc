@@ -6,6 +6,8 @@ class RSDEdible extends ConsumableItem abstract;
 
 var int fullness;                                                   //How much a given food item should fill up the player
 
+var localized string msgConsumed;                                   //SARGE: Message to print when consuming food.
+
 //Add fullness amount to the description field
 var localized String HungerLabel;
 
@@ -87,6 +89,7 @@ function Eat(DeusExPlayer player)
 function OnActivate(DeusExPlayer player)
 {
     Super.OnActivate(player);
+    player.ClientMessage(sprintf(msgConsumed,ItemName));
     Eat(player);
     FillUp(player);
 }
@@ -97,5 +100,5 @@ defaultproperties
      HungerLabel="Fullness Amount: %d%%"
      CannotUse="You cannot consume any more at this time"
      bGluttonous=true
-     M_Activated=" consumed"
+     msgConsumed="%d consumed"
 }

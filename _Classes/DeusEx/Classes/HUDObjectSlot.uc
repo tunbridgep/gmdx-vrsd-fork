@@ -277,9 +277,9 @@ event DrawWindow(GC gc)
         weapon = DeusExWeapon(item);
         // Draw the item description at the bottom
         if (weapon != None)
-            gc.DrawText(1, 42, 42, 7, weapon.GetBeltDescription(player));
+            gc.DrawText(1+1, 42, 42, 7, weapon.GetBeltDescription(player));
         else if (item != None)
-            gc.DrawText(1, 42, 42, 7, item.beltDescription);
+            gc.DrawText(1+1, 42, 42, 7, item.beltDescription);
 
         if (player.bColorCodedAmmo) //CyberP: start
         {
@@ -290,21 +290,21 @@ event DrawWindow(GC gc)
                 {
                     itemText = DXAmmo.beltDescription;
                     if (DXAmmo.HasCustomAmmoColor())
-                    gc.SetTextColor(DXAmmo.ammoHUDColor);
+						gc.SetTextColor(DXAmmo.ammoHUDColor);
                 }
 			}
-        //Sarge: Disabled because it looks weird on the belt
-        /*
-		if (weapon != None && weapon.IsA('WeaponHideAGun') && weapon.ProjectileClass == class'DeusEx.PlasmaBolt')
-            gc.SetTextColor(colAmmoTranqText);
-        else if (weapon != None && weapon.IsA('WeaponHideAGun'))
-        gc.SetTextColor(colAmmoEMPText);
-        */
-		}                                              //CyberP: end.
+			//Sarge: Disabled because it looks weird on the belt
+			/*
+			if (weapon != None && weapon.IsA('WeaponHideAGun') && weapon.ProjectileClass == class'DeusEx.PlasmaBolt')
+				gc.SetTextColor(colAmmoTranqText);
+			else if (weapon != None && weapon.IsA('WeaponHideAGun'))
+			gc.SetTextColor(colAmmoEMPText);
+			*/
+		}  //CyberP: end.
 
 		// If there's any additional text (say, for an ammo or weapon), draw it
 		if (itemText != "")
-			gc.DrawText(slotIconX, itemTextPosY, slotFillWidth, 8, itemText);
+			gc.DrawText(slotIconX+1, itemTextPosY, slotFillWidth, 8, itemText);
 
 		// Draw selection border
 		if (bButtonPressed)
@@ -322,17 +322,17 @@ event DrawWindow(GC gc)
 		gc.SetTextColor(colObjectNum);
 
 		if ((objectNum >=1) && (objectNum <=3))
-      {
-         gc.DrawText(1, 42, 42, 7, "WEAPONS");
-      }
-      else if ((objectNum >=4) && (objectNum <=6))
-      {
-         gc.DrawText(1, 42, 42, 7, "GRENADES");
-      }
-      else if ( ((objectNum >=7) && (objectNum <=9)) || (objectNum == 0) )
-      {
-         gc.DrawText(1, 42, 42, 7, "TOOLS");
-      }
+		{
+			gc.DrawText(1+1, 42, 42, 7, "WEAPONS");
+		}
+		else if ((objectNum >=4) && (objectNum <=6))
+		{
+			gc.DrawText(1+1, 42, 42, 7, "GRENADES");
+		}
+		else if ( ((objectNum >=7) && (objectNum <=9)) || (objectNum == 0) )
+		{
+			gc.DrawText(1+1, 42, 42, 7, "TOOLS");
+		}
     }
 
 	// Draw the Object Slot Number in upper-right corner
@@ -363,7 +363,7 @@ function DrawHUDIcon(GC gc)
 		{
 			gc.SetTileColorRGB(255,255,255);
 		}
-		gc.DrawTexture(slotIconX, slotIconY, slotFillWidth, slotFillHeight, 0, 0, icon);
+		gc.DrawTexture(slotIconX+1, slotIconY, slotFillWidth, slotFillHeight, 0, 0, icon);
 }
 
 function DrawHUDBackground(GC gc)
@@ -484,10 +484,11 @@ event bool MouseButtonPressed(float pointX, float pointY, EInputKey button,
             player.ClearPlaceholder(objectNum);
         else
         {
-            player.RemoveObjectFromBelt(item);
+            player.RemoveObjectFromBelt(item,true);
             SetItem(None);
         }
         bResult = True;
+        winInv.UpdateBelt();
     }
 	
 	return bResult;
@@ -577,10 +578,6 @@ event texture CursorRequested(window win, float pointX, float pointY,
 
         return item.icon;
 	}
-	else if(!player.bBeltMemory) //Ygll: actually, calling this part of code with the bBeltMemory enable make a visual bug when hovering the belt placeholder
-	{
-        return player.GetPlaceholderIcon(objectNum);
-	}
 }
 
 // ----------------------------------------------------------------------
@@ -590,9 +587,12 @@ event texture CursorRequested(window win, float pointX, float pointY,
 function StartButtonDrag()
 {
 	bDragStart = False;
-	bDragging  = True;
 
-	winInv.StartButtonDrag(Self);
+    if (!item.IsA('NanoKeyRing'))
+    {
+        bDragging  = True;
+        winInv.StartButtonDrag(Self);
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -605,6 +605,8 @@ function FinishButtonDrag()
 
 	bDragStart = False;
 	bDragging  = False;
+    
+    winInv.UpdateBelt();
 }
 
 // ----------------------------------------------------------------------

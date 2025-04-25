@@ -21,8 +21,64 @@ function FirstFrame()
     local ammocrate crate;                                                      //RSD: Added an ammo crate to store all the player's ammo (new behavior in SP for that class)
     local Ammo Ammotype;
     local int ammoCount;
+    local DeusExWeapon MiguelWeapon;
+    local DeusExAmmo MiguelAmmo;
 
 	Super.FirstFrame();
+    
+    //SARGE: Disable cut content without the modifier
+    if (!player.bCutInteractions && firstTime)
+		flags.SetBool('Miguel_No_Arming', True);
+
+    //On all maps except the lab map, give Miguel the correct weapon
+    if (localURL != "05_NYC_UNATCOMJ12LAB" && firstTime && flags.GetBool('MiguelArmed'))
+    {
+        foreach AllActors(class'Terrorist', T)
+        {
+            if (flags.GetBool('MiguelArmedCrossbow'))
+            {
+                MiguelWeapon = spawn(class'WeaponMiniCrossbow', T);
+                MiguelAmmo = spawn(class'AmmoDartPoison', T);
+            }
+            else if (flags.GetBool('MiguelArmedPistol'))
+            {
+                MiguelWeapon = spawn(class'WeaponPistol', T);
+                MiguelAmmo = spawn(class'Ammo10mm', T);
+            }
+            else if (flags.GetBool('MiguelArmedShotgun'))
+            {
+                MiguelWeapon = spawn(class'WeaponAssaultShotgun', T);
+                MiguelAmmo = spawn(class'AmmoShell', T);
+            }
+            else if (flags.GetBool('MiguelArmedStealthPistol'))
+            {
+                MiguelWeapon = spawn(class'WeaponStealthPistol', T);
+                MiguelAmmo = spawn(class'Ammo10mm', T);
+            }
+            
+            if (MiguelAmmo != None)
+            {
+                MiguelAmmo.GiveTo(T);
+                MiguelAmmo.SetBase(T);
+                MiguelAmmo.bHidden = True;
+                MiguelAmmo.SetPhysics(PHYS_None);
+                T.AddInventory(MiguelAmmo);
+            }
+
+            if (MiguelWeapon != None)
+            {
+                if (MiguelAmmo != None)
+                    MiguelWeapon.AmmoType = MiguelAmmo;
+                MiguelWeapon.GiveTo(T);
+                MiguelWeapon.SetBase(T);
+                MiguelWeapon.bHidden = True;
+                MiguelWeapon.SetPhysics(PHYS_None);
+                T.AddInventory(MiguelWeapon);
+                T.SetWeapon(MiguelWeapon);
+            }
+
+        }    
+    }
 
 	if (localURL == "05_NYC_UNATCOMJ12LAB")
 	{
@@ -232,6 +288,13 @@ function Timer()
 	local BlackHelicopter B;
 
 	Super.Timer();
+    
+    //SARGE: When miguel is following, make sure he's always got his weapon drawn.
+    if (flags.GetBool('MiguelFollowing'))
+    {
+        foreach AllActors(class'Terrorist', T)
+            T.bKeepWeaponDrawn = true;
+    }
 
 	if (localURL == "05_NYC_UNATCOHQ")
 	{

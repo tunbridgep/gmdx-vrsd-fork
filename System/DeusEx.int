@@ -207,6 +207,8 @@ beltDescription="IMAGE"
 
 [PersonaInventoryItemButton]
 CountLabel="Count: %d"
+CountLabel2="Count: %d/%d"
+QtyLabel="Qty: %d/%d"
 RoundLabel="%d Rd"
 RoundsLabel="%d Rds"
 RoundsLabel2="%d/%d Rds"
@@ -792,7 +794,7 @@ Title="Keyboard/Mouse Settings"
 FunctionText[0]="Fire Weapon/Use object in hand"
 FunctionText[1]="Use object in world"
 FunctionText[2]="Drop/Throw Item"
-FunctionText[3]="Put Away Item"
+FunctionText[3]="Holster/Unholster Item"
 FunctionText[4]="Move Forward"
 FunctionText[5]="Move Backward"
 FunctionText[6]="Turn Left"
@@ -1117,7 +1119,7 @@ StatusText="PNGBS//GLOBAL//PUB:3902.9571[wd]"
 HackedText="TERMINAL HACKED"
 Title="PageNet Global Banking System"
 ComputerNodeFunctionLabel="ATMWD"
-ButtonLabelWithdrawAll="|&Withdraw All"
+ButtonLabelWithdrawAll="Withdraw |&All"
 
 [Ammo10mm]
 ItemName="10mm Ammo"
@@ -1598,7 +1600,7 @@ beltDescription="CHARGER"
 
 [AugDrone]
 AugmentationName="Spy Drone"
-Description="Advanced nanofactories can assemble a spy drone upon demand which can then be remotely controlled by the agent until released or destroyed, at which a point a new drone will be assembled over time. The agent can expend additional bioelectric energy to detonate the drone for an EMP blast, or set it to standby to enable extended remote surveillance with no energy drain.|n|nThe drone comes equipped with an experimental cloaking device, rendering it invisible while in standby mode.|n|nTECH ONE: The drone is very slow and has a very light EMP attack.|n|nTECH TWO: The drone is somewhat faster and has a light EMP attack.|n|nTECH THREE: The drone has notable speed and has a medium EMP attack.|n|nTECH FOUR: The drone can move swiftly and has a strong EMP attack, as well as the ability to cloak while in-flight.|n|nUse the FIRE button to detonate the drone, or the INTERACTION button to set the drone into standby mode.|n|nThe drone can be reclaimed by activating it while in standby mode, to remove the required reconstruction time."
+Description="Advanced nanofactories can assemble a spy drone upon demand which can then be remotely controlled by the agent until released or destroyed, at which a point a new drone will be assembled over time. The agent can expend additional bioelectric energy to detonate the drone for an EMP blast, or set it to standby to enable extended remote surveillance with no energy drain.|n|nThe drone comes equipped with an experimental cloaking device, rendering it invisible while in standby mode.|n|nTECH ONE: The drone is very slow and has a very light EMP attack.|n|nTECH TWO: The drone is somewhat faster and has a light EMP attack.|n|nTECH THREE: The drone has notable speed and a medium EMP attack.|n|nTECH FOUR: The drone can move swiftly and has a strong EMP attack, as well as the ability to cloak while in-flight.|n|nUse the FIRE button to detonate the drone, or the INTERACTION button to set the drone into standby mode.|n|nThe reconstruction time can be removed by interacting with the drone in standby mode to reclaim it."
 MPInfo="Activation creates a remote-controlled spy drone.  Deactivation disables the drone.  Firing while active detonates the drone in a massive EMP explosion.  Energy Drain: Medium"
 
 [Basketball]
@@ -2292,7 +2294,7 @@ MPInfo="When active, you heal, but at a rate insufficient for healing in combat.
 
 [AugVision]
 AugmentationName="Vision Enhancement"
-Description="By bleaching selected rod photoreceptors and saturating them with metarhodopsin XII, the 'nightvision' present in most nocturnal animals can be duplicated. Subsequent upgrades and modifications add infravision & sonar-resonance imaging that effectively allows an agent to see through walls and bypass advanced stealth cloaking technology.|n|nTECH ONE: Nightvision.|n|nTECH TWO: Infravision.|n|nTECH THREE: Close range sonar imaging that enables an agent to detect threats through solid material.|n|nTECH FOUR: Long range sonar imaging that enables an agent to detect threats through solid material."
+Description="By bleaching selected rod photoreceptors and saturating them with metarhodopsin XII, the 'nightvision' present in most nocturnal animals can be duplicated. Subsequent upgrades and modifications add infravision & sonar-resonance imaging that effectively allows an agent to see through walls and bypass advanced stealth cloaking technology.|n|nTECH ONE: Nightvision.|n|nTECH TWO: Infravision and heat source detection.|n|nTECH THREE: Close range sonar imaging that enables an agent to detect threats through solid material.|n|nTECH FOUR: Long range sonar imaging that enables an agent to detect threats through solid material."
 MPInfo="When active, you can see enemy players in the dark from any distance, and for short distances you can see through walls and see cloaked enemies.  Energy Drain: Moderate"
 
 [WeaponBaton]

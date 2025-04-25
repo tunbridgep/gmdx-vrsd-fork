@@ -30,10 +30,10 @@ event InitWindow()
 {
 	Super.InitWindow();
     SetRightSide(true);
-    RecreateBelt();
+    RecreateBelt(true);
 }
 
-function RecreateBelt()
+function RecreateBelt(optional bool bDontRecreateKeyring)
 {
     if (player.bBiggerBelt)
     {
@@ -52,9 +52,12 @@ function RecreateBelt()
     
     ConfigureSlots();
 
-	CreateNanoKeySlot();
-
 	PopulateBelt();
+
+    //SARGE: I don't know why it's necessary to restrict this on the first time...
+    //but if we don't, the nanokey overrides our last slot's belt memory.
+    if (!bDontRecreateKeyring)
+        CreateNanoKeySlot();
 }
 
 // Set belt mode
@@ -152,19 +155,32 @@ function ConfigureSlots()
 
 function CreateNanoKeySlot()
 {
-		if (player != None && player.KeyRing != None && objects[KeyRingSlot] != None)
+		if (player != None && player.KeyRing != None)
 		{
-            if (!player.bSmartKeyring)
+            if (player.iSmartKeyring == 0) //Smart Keyring disabled, force keyring into the slot
             {
                 if (objects[KeyRingSlot].item != None)
                     RemoveObjectFromBelt(objects[KeyRingSlot].item);
     			objects[KeyRingSlot].SetItem(player.KeyRing);
+                objects[KeyRingSlot].bDimIcon = false;
+                player.KeyRing.bInObjectBelt = True;
+                player.KeyRing.beltPos = KeyRingSlot;
+                //player.ClientMessage("weeeeee");
             }
-            else if (objects[KeyRingSlot].item != None && objects[KeyRingSlot].item.IsA('NanoKeyRing'))
+            else if (player.iSmartKeyring == 2 && objects[KeyRingSlot].item != None && objects[KeyRingSlot].item.IsA('NanoKeyRing')) //If Smart Keyring on "No Keyring" mode, force-remove the keyring
             {
                 RemoveObjectFromBelt(objects[KeyRingSlot].item);
+                //player.ClientMessage("aaaaahhh");
             }
-			objects[KeyRingSlot].AllowDragging(player.bSmartKeyring);
+            else if (player.iSmartKeyring == 1 && objects[KeyRingSlot].item == None && !player.GetPlaceholder(KeyRingSlot)) //Smart Keyring is 1 - update the slot if it's empty
+            {
+    			objects[KeyRingSlot].SetItem(player.KeyRing);
+                objects[KeyRingSlot].bDimIcon = false;
+                player.KeyRing.bInObjectBelt = True;
+                player.KeyRing.beltPos = KeyRingSlot;
+                //player.ClientMessage("ooooohhhh: " $ objects[KeyRingSlot].item);
+            }
+            objects[KeyRingSlot].AllowDragging(player.iSmartKeyring > 0);
 		}
 }
 
@@ -250,9 +266,6 @@ function DrawBorder(GC gc)
 function UpdateInHand()
 {
 	local int slotIndex;
-	
-    //SARGE: Update Keyring Slot. This is now required due to smart keyring
-    CreateNanoKeySlot();
 
 	// highlight the slot and unhighlight the other slots
 	if ((player != None) && (!bInteractive))
@@ -345,6 +358,8 @@ function ClearPosition(int pos)
 {
 	if (IsValidPos(pos))
 		objects[pos].SetItem(None);
+    if (pos == KeyRingSlot)
+        CreateNanoKeySlot();
 }
 
 // ----------------------------------------------------------------------
@@ -420,14 +435,12 @@ function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
 	if ((newItem != None ) && (newItem.Icon != None))
 	{
 		// If this is the NanoKeyRing, force it into slot 0 //SARGE: Or slot 11
-		if (newItem.IsA('NanoKeyRing') && !player.bSmartKeyring)
+		if (newItem.IsA('NanoKeyRing'))
 		{
 			ClearPosition(KeyRingSlot);
 			pos = KeyRingSlot;
-		}
-        //SARGE: Don't put it on the belt at all if we have smart keyring on
-        else if (newItem.IsA('NanoKeyRing'))
             return true;
+		}
 
 		if (  (!IsValidPos(pos)) ||
             (  (Player.Level.NetMode != NM_Standalone) &&
@@ -565,7 +578,7 @@ function PopulateBelt()
       {
 			AddObjectToBelt(anItem, anItem.beltPos, True);
       }
-	 
+    
 	//Set the highlight
 }
 

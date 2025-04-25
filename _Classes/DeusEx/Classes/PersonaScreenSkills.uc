@@ -180,7 +180,7 @@ function CreateSkillsList()
 	}
 
 	// Select the first skill
-	SelectSkillButton(skillButton);
+	SelectSkillButton(firstButton);
 }
 
 // ----------------------------------------------------------------------

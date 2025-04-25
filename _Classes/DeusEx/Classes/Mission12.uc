@@ -37,6 +37,10 @@ function FirstFrame()
 	else if (localURL == "12_VANDENBERG_GAS")
 	{
 		flags.SetBool('RescueBegan', True,, 14);
+		
+        //SARGE: Enable Cut Content interactions
+        if (player.bCutInteractions && firstTime)
+            flags.SetBool('NPC_Stealth_Enabled', True);
 
 		if (flags.GetBool('SandraWentToCalifornia'))
 		{
@@ -72,6 +76,7 @@ function Timer()
 	local MJ12Troop troop;
 	local Earth earth;
 	local BobPage Bob;
+    local TiffanySavage Tiffany;
 	local int count;
 	local DeusExMover M;
 
@@ -130,6 +135,44 @@ function Timer()
 				flags.SetBool('MS_ChopperGasUnhidden', True,, 14);
 			}
 		}
+		
+        //SARGE: Player gave Tiffany the thermoptic camo
+        if (flags.GetBool('TiffanyCloaked') && !flags.GetBool('TiffanyCloaked_Done'))
+        {
+            foreach AllActors(Class'TiffanySavage', Tiffany)
+            {
+                //Force tiffany to cloak and prevent her uncloaking
+                Tiffany.bHasCloak = true;
+                Tiffany.EnableCloak(true);
+                Tiffany.bCloakOn = true;
+                Tiffany.bForcedCloak = true;
+                Tiffany.CloakThreshold = 9999;
+                Tiffany.bDetectable = false;
+            }
+            flags.SetBool('TiffanyCloaked_Done', True,, 14);
+        }
+        
+        //When tiffany get's near the chopper, uncloak her.
+        if (flags.GetBool('TiffanyCloaked') && flags.GetBool('TiffanyCloaked_Done') && !flags.GetBool('TiffanyCloaked_Done2'))
+        {
+            foreach AllActors(Class'TiffanySavage', Tiffany)
+            {
+				foreach AllActors(class'BlackHelicopter', chopper)
+                {
+                    if ((VSize(chopper.location - Tiffany.location)) < 700)
+                    {
+                        Tiffany.bForcedCloak = false;
+                        Tiffany.EnableCloak(false);
+                        Tiffany.bHasCloak = false;
+                        Tiffany.bDetectable = true;
+                        flags.SetBool('TiffanyCloaked_Done', False,, 14);
+                        flags.SetBool('TiffanyCloaked_Done2', True,, 14);
+                        flags.SetBool('TiffanyCloaked', False,, 14);
+                        flags.SetBool('TiffanyHeli',True,, 14);
+                    }
+                }
+            }
+        }
 
 		if (!flags.GetBool('MS_TiffanyDLPlayed') &&
 			flags.GetBool('TiffanySavage_Dead'))
