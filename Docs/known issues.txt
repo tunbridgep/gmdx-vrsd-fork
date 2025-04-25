@@ -1,2 +1,0 @@
-1. Missing newly-added electronic panel in NYC_Underground maps after the first
-2. DataCube in NYC_Underground has wrong code. Need to redo that code system entirely.
