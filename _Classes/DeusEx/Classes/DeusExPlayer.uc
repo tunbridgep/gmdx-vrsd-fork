@@ -8702,7 +8702,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     //SARGE: Always try looting non-disposable weapons of their ammo
     if (bCanPickup && FrobTarget.IsA('DeusExWeapon') && !bFromCorpse && !DeusExWeapon(frobTarget).bDisposableWeapon)
     {
-        bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,true,bAlwaysShowReceivedItemsWindow,false,false,bShowOverflow);
+        bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,true,bAlwaysShowReceivedItemsWindow,false,true,bShowOverflow);
 
         //Make a noise if we picked up partial ammo
         if (bLootedAmmo && DeusExWeapon(frobTarget).PickupAmmoCount > 0)
@@ -8787,6 +8787,11 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     //Hacky Shuriken fix
     if (FrobTarget.IsA('WeaponShuriken'))
         WeaponShuriken(FrobTarget).SetFrobNameHack(false);
+
+    //SARGE: Hacky weapon clip fix
+    //I really shouldn't have rewritten the ammo system...
+    if ((!bCanPickup || bDeclined) && frobTarget.IsA('DeusExWeapon') && !DeusExWeapon(frobTarget).bDisposableWeapon)
+        DeusExWeapon(frobTarget).ClipCount = DeusExWeapon(frobTarget).PickupAmmoCount;
 
 	return bCanPickup && !bDeclined;
 }
