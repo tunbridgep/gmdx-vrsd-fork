@@ -568,7 +568,7 @@ function PopulateBelt()
 	player = DeusExPlayer(DeusExRootWindow(GetRootWindow()).parentPawn);
 
 	for (anItem=player.Inventory; anItem!=None; anItem=anItem.Inventory)
-		if (anItem.bInObjectBelt)
+		if (anItem.bInObjectBelt && !anItem.IsA('NanoKeyRing'))
       {
 			AddObjectToBelt(anItem, anItem.beltPos, True);
       }
