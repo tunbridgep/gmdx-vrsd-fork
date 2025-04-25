@@ -8561,7 +8561,7 @@ function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool
                 AddReceivedItem(AmmoType, intj, bNoGroup);
         }
 
-        //If we only took a partial amount, make a special sound.
+        //If we took at least some, make a special sound.
         if (bLootSound)
             PlayPartialAmmoSound(AmmoType,AmmoType.Class);
 
@@ -8599,7 +8599,6 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 	local Inventory foundItem;
     local Ammo foundAmmo;
     local DeusExAmmo assignedAmmo;
-    local int intj;
     local bool bDeclined;
     local bool bLootedAmmo;
 
@@ -8704,14 +8703,11 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     {
         bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,true,bAlwaysShowReceivedItemsWindow,false,true,bShowOverflow);
 
-        //Make a noise if we picked up partial ammo
-        if (bLootedAmmo && DeusExWeapon(frobTarget).PickupAmmoCount > 0)
-            PlayPartialAmmoSound(frobTarget,DeusExWeapon(frobTarget).GetPrimaryAmmoType());
-        
         //Don't pick up a weapon if there's ammo in it and we already have one
         if (!bSlotSearchNeeded && DeusExWeapon(frobTarget).PickupAmmoCount > 0 && bCanPickup)
         {
-            //if (!bLootedAmmo)
+            //SARGE: Not needed anymore as we're reporting overflow.
+            //if (!bFromCorpse)
             //    ClientMessage(TooMuchAmmo);
             bCanPickup = False;
         }
@@ -8753,22 +8749,38 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
         
         //SARGE: Since we haven't looted Disposable weapons yet, do so now.
         if (FrobTarget.IsA('DeusExWeapon') && DeusExWeapon(frobTarget).bDisposableWeapon)
-            DeusExWeapon(frobTarget).LootAmmo(self,foundItem != None || bFromCorpse,bFromCorpse,false,false,false);
-
-        DoFrob(Self, inHand);
-        /*if ( FrobTarget.IsA('DeusExWeapon') && bLeftClicked) //CyberP: for left click interaction //RSD: This is actually in FindInventorySlot() already, and the conflict made the player equip nothing
         {
-        PutInHand(FoundItem);
-        //bLeftClicked = False;
-        }*/
-		// This is bad. We need to reset the number so restocking works
-		if ( Level.NetMode != NM_Standalone )
-		{
-			if ( FrobTarget.IsA('DeusExWeapon') && (DeusExWeapon(FrobTarget).PickupAmmoCount == 0) )
-			{
-				DeusExWeapon(FrobTarget).PickupAmmoCount = DeusExWeapon(FrobTarget).Default.mpPickupAmmoCount * 3;
-			}
-		}
+            bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,!bFromCorpse,bFromCorpse,false,false,false);
+
+            if (DeusExWeapon(frobTarget).PickupAmmoCount > 0)
+            {
+                if (!bFromCorpse)
+                    //ClientMessage(TooMuchAmmo);
+                    ClientMessage(class'DeusExPickup'.default.msgTooMany);
+                    
+             
+                if (!bSlotSearchNeeded)
+                    bCanPickup = false;
+            }
+        }
+        
+        if (bCanPickup)
+        {
+            DoFrob(Self, inHand);
+            /*if ( FrobTarget.IsA('DeusExWeapon') && bLeftClicked) //CyberP: for left click interaction //RSD: This is actually in FindInventorySlot() already, and the conflict made the player equip nothing
+            {
+            PutInHand(FoundItem);
+            //bLeftClicked = False;
+            }*/
+            // This is bad. We need to reset the number so restocking works
+            if ( Level.NetMode != NM_Standalone )
+            {
+                if ( FrobTarget.IsA('DeusExWeapon') && (DeusExWeapon(FrobTarget).PickupAmmoCount == 0) )
+                {
+                    DeusExWeapon(FrobTarget).PickupAmmoCount = DeusExWeapon(FrobTarget).Default.mpPickupAmmoCount * 3;
+                }
+            }
+        }
 	}
 
     if (bCanPickup && !bDeclined)
@@ -8783,6 +8795,11 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
             bLeftClicked = False;
         }
     }
+        
+    //Make a noise if we picked up ammo from a weapon we couldn't pick up.
+    if (bLootedAmmo && (!bCanPickup || bDeclined) && FrobTarget.IsA('DeusExWeapon'))
+        PlayPartialAmmoSound(frobTarget,DeusExWeapon(frobTarget).GetPrimaryAmmoType());
+        
 
     //Hacky Shuriken fix
     if (FrobTarget.IsA('WeaponShuriken'))
