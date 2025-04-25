@@ -21,6 +21,8 @@ var float TimeToSave;
 
 var bool firstTime;     //SARGE: Set to true the first time we enter a map.
 
+var bool bConfixChecked;                        //SARGE: Set to true when we've checked confix being installed.
+
 // ----------------------------------------------------------------------
 // DoLightingAccessibility()
 //
@@ -128,6 +130,37 @@ function int GenerateMapSeed()
     return int(seed);
 }
 
+//SARGE: Confix sets the `Confix_Engaged` flag, but
+//only when we've received the first message from Alex
+function DoConfixCheck()
+{
+    local bool bDetected;
+
+    if (bConfixChecked || dxInfo == None)
+        return;
+
+    //Flag is set, we're all good!
+    if (flags.GetBool('Confix_Engaged'))
+        bDetected = true;
+
+    //Not ready yet, abort! - Training
+    else if (dxInfo.missionNumber == 0 && !flags.GetBool('DL_Start_Played'))
+        return;
+
+    //Not ready yet, abort! - Lib Island
+    else if (dxInfo.missionNumber == 1 && !flags.GetBool('DL_StartGame_Played'))
+        return;
+    
+    //Not ready yet, abort! - MJ12 Lab (Alternate Start)
+    else if (dxInfo.missionNumber == 1 && !flags.GetBool('DL_PrisonCell_Played'))
+        return;
+
+    if (!bDetected)
+        player.clientMessage("ConFix is not installed! Please install ConFix for the best experience while playing GMDX!");
+    
+    bConfixChecked = true;
+}
+
 // ----------------------------------------------------------------------
 // FirstFrame()
 //
@@ -149,11 +182,6 @@ function FirstFrame()
     local SecurityCamera Cam;                                                      //SARGE
 
 	flags.DeleteFlag('PlayerTraveling', FLAG_Bool);
-
-    //SARGE: Sanity check for ConFix
-    //The flag is NOT set in the training mission!
-    if (dxInfo.MissionNumber > 0 && !flags.GetBool('Confix_Engaged'))
-        player.clientMessage("ConFix is not installed! Please install ConFix for the best experience while playing GMDX!");
 
     //Recreate/Setup our decal manager
 	foreach AllActors(class'DecalManager', D)
@@ -339,6 +367,8 @@ function Timer()
 		if ((player != None) && (flags.GetBool('PlayerTraveling')))
 			FirstFrame();
 	}
+
+    DoConfixCheck();
 }
 
 function Tick(float DeltaTime)
