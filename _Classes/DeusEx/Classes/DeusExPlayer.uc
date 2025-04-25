@@ -3257,7 +3257,7 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
     if (string(NewSong) != default.currentSong) //We always want to allow song changes
     {
         bChange = true;
-        DebugMessage("Changing Music - Song Change" @ default.currentSong);
+        DebugMessage("Changing Music - Song Change from" @ default.currentSong);
         default.savedSection = Level.SongSection; //And reset the saved section
     }
     else if (iEnhancedMusicSystem == 0) //Always change with the old system
@@ -3267,18 +3267,19 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
     }
     else if (SongSection != NewSection) //Don't let us replay the same bit we're already playing.
     {
-        if (NewSection == default.savedSection && default.musicMode != MUS_Ambient) //allow changing to our saved section if we're not already playing it
+        if (info != none && info.bBarOrClub && iEnhancedMusicSystem == 2) //Don't allow music changes in clubs or bars with the extended option.
+        {
+            DebugMessage("Bar or Club - Music Unchanged");
+        }
+        else if (NewSection == default.savedSection && default.musicMode != MUS_Ambient) //allow changing to our saved section if we're not already playing it
         {
             bChange = true;
             DebugMessage("Changing Music - Saved Section: " $ default.musicMode);
         }
         else if (NewSection != Level.SongSection) //We want to allow changes to different patterns (except ambient)
         {
-            if (info == none || !info.bBarOrClub || iEnhancedMusicSystem != 2) //Don't allow music changes in clubs or bars with the extended option.
-            {
-                bChange = true;
-                DebugMessage("Changing Music - Non-Default Section");
-            }
+            bChange = true;
+            DebugMessage("Changing Music - Non-Default Section");
         }
         else if (NewSection == Level.SongSection && default.musicMode != MUS_Ambient) //If we ARE changing to our default section and not in ambient, then instead change to our saved section
         {
