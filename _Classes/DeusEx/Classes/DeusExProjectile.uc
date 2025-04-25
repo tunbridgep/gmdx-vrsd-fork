@@ -573,7 +573,7 @@ function bool CheckHelmetCollision(int actualDamage, Vector hitLocation, name da
 		if (offset.z > headOffsetZ)		// head
 		{
 		    if (offset.z > HelmetPawn.CollisionHeight * 0.85 && !(abs(offset.y) < headOffsetY && offset.x > 0.0 && offset.z < CollisionHeight*0.93) //RSD: Was CollisionHeight*0.93, I'm making it *0.85, and NOT from the front
-            	&& (damageType == 'Shot' || damageType == 'Poison' || damageType == 'Stunned'))
+            	&& (damageType == 'Shot' || damageType == 'Poison' || damageType == 'Stunned') || damageType == 'Bleed')
             {
 				if (actualDamage >= 25)
 					return false;
@@ -923,6 +923,10 @@ auto simulated state Flying
                         	//if (FRand() < 0.7)                                  //RSD: This part is relocated too
                				//	ScriptedPawn(damagee).impaleCount++;
                				ScriptedPawn(damagee).impaleCount = 1;              //RSD: max of one TK return, but it's 100% chance
+                    
+                             //SARGE: Add bleed damage to Shurikens
+                            if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkHemmorhage').bPerkObtained)
+                                damageType = 'Bleed';
                     	}
                         else
                         	ScriptedPawn(damagee).extraMult = 0;                //RSD: pretty sure this was missing from original implementation! Agh!

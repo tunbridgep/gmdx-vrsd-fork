@@ -74,9 +74,9 @@ defaultproperties
      EnviroEffective=ENVEFF_AirVacuum
      Concealability=CONC_Visual
      reloadTime=0.200000
-     HitDamage=16
+     HitDamage=14
      maxRange=2048
-     AccurateRange=840
+     AccurateRange=1024
      BaseAccuracy=0.600000
      bHasMuzzleFlash=False
      bHandToHand=True

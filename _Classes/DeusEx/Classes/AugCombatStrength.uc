@@ -32,7 +32,10 @@ defaultproperties
 {
      mpAugValue=2.000000
      mpEnergyDrain=20.000000
-     EnergyRate=20.000000
+     //EnergyRate=20.000000
+     EnergyRate=0.000000
+     AugmentationType=Aug_Toggle
+     EnergyReserved=25
      Icon=Texture'DeusExUI.UserInterface.AugIconCombat'
      smallIcon=Texture'DeusExUI.UserInterface.AugIconCombat_Small'
      AugmentationName="Combat Strength (Active)"

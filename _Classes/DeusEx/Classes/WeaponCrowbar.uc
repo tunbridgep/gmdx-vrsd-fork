@@ -43,7 +43,7 @@ defaultproperties
      NoiseLevel=0.050000
      ShotTime=0.400000
      reloadTime=0.000000
-     HitDamage=8
+     HitDamage=10
      maxRange=90
      AccurateRange=90
      BaseAccuracy=1.000000

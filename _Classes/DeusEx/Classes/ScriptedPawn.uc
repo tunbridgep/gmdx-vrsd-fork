@@ -504,6 +504,12 @@ var Sound randomPainSoundChoice2; //Used by the GetDeathSound and GetPainSound f
 var Sound deathSoundOverride;            //If this is set, we will use this instead of our rolled death sounds.
 var bool bDontChangeDeathPainSounds; //If set, we don't randomise death or pain sounds for this actor
 
+//SARGE: Copied the poison stuff to allow bleeding, which is lethal poison.
+var      float    bleedTimer;      // time remaining before next poison TakeDamage
+var      int      bleedCounter;    // number of poison TakeDamages remaining
+var      int      bleedDamage;     // damage taken from poison effect
+var      Pawn     BleedSource;         // person who initiated PoisonEffect damage
+
 
 native(2102) final function ConBindEvents();
 
@@ -1868,6 +1874,59 @@ function StopPoison()
 	Poisoner      = None;
 }
 
+//SARGE: Bleed is literally just poison copy-pasted
+// ----------------------------------------------------------------------
+// UpdatePoison()
+// ----------------------------------------------------------------------
+
+function UpdateBleed(float deltaTime)
+{
+	if ((Health <= 0) || bDeleteMe)  // no more pain -- you're already dead!
+		return;
+
+	if (bleedCounter > 0)
+	{
+		bleedTimer += deltaTime;
+		if (bleedTimer >= 1.0)  // pain every second
+		{
+			bleedTimer = 0;
+			bleedCounter--;
+			TakeDamage(bleedDamage, BleedSource, Location, vect(0,0,0), 'BleedEffect');
+		}
+		if ((bleedCounter <= 0) || (Health <= 0) || bDeleteMe)
+			StopBleed();
+	}
+}
+
+
+// ----------------------------------------------------------------------
+// StartBleed()
+// ----------------------------------------------------------------------
+
+function StartBleed(int Damage, Pawn newBleedSource)
+{
+	if ((Health <= 0) || bDeleteMe)  // no more pain -- you're already dead!
+		return;
+
+	bleedCounter = 16;    // take damage no more than eight times (over 16 seconds) //SARGE: 16 times
+	bleedTimer   = 0;    // reset pain timer
+	BleedSource  = newBleedSource;
+	//if (poisonDamage < Damage)  // set damage amount
+		bleedDamage = Damage*0.1; //was *0.5
+}
+
+
+// ----------------------------------------------------------------------
+// StopPoison()
+// ----------------------------------------------------------------------
+
+function StopBleed()
+{
+	bleedCounter = 0;
+	bleedTimer   = 0;
+	bleedDamage  = 0;
+	BleedSource  = None;
+}
 
 // ----------------------------------------------------------------------
 // HasEnemyTimedOut()
@@ -3487,6 +3546,7 @@ function bool IsPrimaryDamageType(name damageType)
 		case 'HalonGas':
 		case 'PoisonGas':
 		case 'PoisonEffect':
+		case 'BleedEffect':
 		case 'Radiation':
 		case 'EMP':
 		case 'Drowned':
@@ -3862,11 +3922,26 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
 		    (damageType != 'Poison') && (damageType != 'PoisonEffect'))
 			bleedRate += (origHealth-Health)/(0.3*Default.Health);  // 1/3 of default health = bleed profusely
 
+    //bleed like crazy every time we take a blood tick
+    if (damageType == 'BleedEffect' && actualDamage > 0 && bCanBleed)
+    {
+        for(i=0;i<10;i++)
+        {
+            if (FRand() < 0.5) //SARGE: Now, we determine number of blood splats by random, not the chance of having any.
+                continue;
+            spawn(class'BloodDrop',,, HitLocation);
+        }
+    }
+
+
 	if (CarriedDecoration != None)
 		DropDecoration();
 
 	if ((actualDamage > 0) && (damageType == 'Poison'))
 		StartPoison(Damage, instigatedBy);
+	
+    if ((actualDamage > 0) && (damageType == 'Bleed'))
+		StartBleed(Damage, instigatedBy);
 
     if (bDefensiveStyle) //CyberP: stop camping
         if (Health < default.Health * (0.5+(FRand()*0.3)) && EnemyLastSeen > 1)
@@ -8758,6 +8833,9 @@ function Tick(float deltaTime)
 
 	// Handle poison damage
 	UpdatePoison(deltaTime);
+	
+    // SARGE: Handle bleeding damage
+	UpdateBleed(deltaTime);
 
     //SARGE: Handle Blinking
     HandleBlink(deltaTime);
@@ -9210,6 +9288,8 @@ function bool SwitchToBestWeapon()
 					case 'Poison':
 					case 'PoisonEffect':
 					case 'Radiation':
+					case 'Bleed':
+					case 'BleedEffect':
 						if (enemyRobot != None)
 							//score += 10000;
 							bValid = false;
