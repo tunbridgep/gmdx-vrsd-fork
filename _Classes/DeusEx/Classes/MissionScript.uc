@@ -152,7 +152,7 @@ function DoConfixCheck()
         return;
     
     //Not ready yet, abort! - MJ12 Lab (Alternate Start)
-    else if (dxInfo.missionNumber == 1 && !flags.GetBool('DL_PrisonCell_Played'))
+    else if (dxInfo.missionNumber == 5 && !flags.GetBool('DL_PrisonCell_Played'))
         return;
 
     if (!bDetected)
