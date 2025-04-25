@@ -188,7 +188,7 @@ function CreateButtons()
 
     winActionButtons = PersonaButtonBarWindow(winClient.NewChild(Class'PersonaButtonBarWindow'));
 	winActionButtons.SetPos(13, 407);
-	winActionButtons.SetWidth(299);
+	winActionButtons.SetWidth(295);
 	winActionButtons.FillAllSpace(true);
 
 	btnAugStats = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow'));
