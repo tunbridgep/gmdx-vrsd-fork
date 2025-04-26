@@ -117,7 +117,7 @@ event bool ToggleChanged(Window button, bool bNewToggle)
 // SetObjectNumber()
 // ----------------------------------------------------------------------
 
-function SetObjectNumber(int newNumber, bool nanoKeySlot)
+function SetObjectNumber(int newNumber)
 {
 	objectNum = newNumber;
 
@@ -133,11 +133,14 @@ function SetObjectNumber(int newNumber, bool nanoKeySlot)
     else
         beltText = player.KeybindManager.GetBindingString(KB_Belt0,objectNum);
 
-    /*
-    //SARGE: This looks pretty bad, so disable for now
-    if (nanoKeySlot && beltText != "")
-        beltText = player.KeybindManager.GetBinding(KB_Keyring) $ ", " $ beltText;
-    */
+    //SARGE: Add extra bind for the nano key
+    if (item.IsA('NanoKeyRing'))
+    {
+    if (item.IsA('NanoKeyRing') && beltText != "")
+        beltText = player.KeybindManager.GetBinding(KB_Keyring,0) $ ", " $ beltText;
+    else if (item.IsA('NanoKeyRing'))
+        beltText = player.KeybindManager.GetBindingString(KB_Keyring);
+    }
 }
 
 // ----------------------------------------------------------------------

@@ -84,7 +84,7 @@ function CreateSlots()
     if (winRadio != None && winSlots != None)
     {
         for (i=0; i<12; i++)
-            objects[i].SetObjectNumber(i,i == KeyRingSlot);
+            objects[i].SetObjectNumber(i);
         return;
     }
 
@@ -102,7 +102,7 @@ function CreateSlots()
 	for (i=0; i<12; i++)
 	{
 		objects[i] = HUDObjectSlot(winSlots.NewChild(Class'HUDObjectSlot'));
-		objects[i].SetObjectNumber(i,i == KeyRingSlot);
+		objects[i].SetObjectNumber(i);
 		objects[i].Lower();
 	}
 }
@@ -175,6 +175,7 @@ function CreateNanoKeySlot()
                 //player.ClientMessage("ooooohhhh: " $ objects[KeyRingSlot].item);
             }
             objects[KeyRingSlot].AllowDragging(player.iSmartKeyring > 0);
+            objects[KeyRingSlot].SetObjectNumber(KeyRingSlot);
 		}
 }
 
