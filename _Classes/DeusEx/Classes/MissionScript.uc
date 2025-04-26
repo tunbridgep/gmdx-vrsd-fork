@@ -134,31 +134,27 @@ function int GenerateMapSeed()
 //only when we've received the first message from Alex
 function DoConfixCheck()
 {
-    local bool bDetected;
-
-    if (bConfixChecked || dxInfo == None)
+    if (bConfixChecked)
         return;
 
-    //Flag is set, we're all good!
-    if (flags.GetBool('Confix_Engaged'))
-        bDetected = true;
+    //Check Training
+    else if (localURL == "00_TRAINING" && flags.GetBool('DL_Start_Played'))
+        bConfixChecked = true;
 
-    //Not ready yet, abort! - Training
-    else if (dxInfo.missionNumber == 0 && !flags.GetBool('DL_Start_Played'))
-        return;
-
-    //Not ready yet, abort! - Lib Island
-    else if (dxInfo.missionNumber == 1 && !flags.GetBool('DL_StartGame_Played'))
-        return;
+    //Check on Liberty Island
+    else if (localURL == "01_NYC_UNATCOISLAND" && flags.GetBool('DL_StartGame_Played'))
+        bConfixChecked = true;
     
-    //Not ready yet, abort! - MJ12 Lab (Alternate Start)
-    else if (dxInfo.missionNumber == 5 && !flags.GetBool('DL_PrisonCell_Played'))
-        return;
+    //Check on MJ12 Lab (Alternate Start)
+    else if (localURL == "05_NYC_UNATCOMJ12LAB" && flags.GetBool('DL_PrisonCell_Played'))
+        bConfixChecked = true;
 
-    if (!bDetected)
+    //Flag is not set, oh dear! Tell the player about it!
+    if (bConfixChecked && !flags.GetBool('Confix_Engaged'))
+    {
         player.clientMessage("ConFix is not installed! Please install ConFix for the best experience while playing GMDX!");
-    
-    bConfixChecked = true;
+        player.clientMessage("After installing ConFix, it is highly recommended that you start a new playthrough!");
+    }
 }
 
 // ----------------------------------------------------------------------
