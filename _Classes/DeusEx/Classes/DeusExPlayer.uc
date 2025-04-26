@@ -17719,7 +17719,7 @@ simulated function ClientSpawnHits( bool bPenetrating, bool bHandToHand, Vector 
 	  {
 		 hitspawner = Spawn(class'TraceHitHandNonPenSpawner',Other,,HitLocation,Rotator(HitNormal));
 		 if (IsInState('Dying'))
-		 hitspawner = none; //CyberP: death overrides melee attacks
+			hitspawner = none; //CyberP: death overrides melee attacks
 	  }
 	  else
 	  {
@@ -17731,7 +17731,6 @@ simulated function ClientSpawnHits( bool bPenetrating, bool bHandToHand, Vector 
 	  hitspawner.HitDamage = Damage;
 	  if (inHand.isA('WeaponNanoSword'))
 	  {
-		 log("From DXplayer");
 		 hitSpawner.damageType='NanoSword';
 	  }
 	}

@@ -4,10 +4,50 @@
 class WeaponProd extends DeusExWeapon;
 
 var int lerpClamp;
+var DeusExPlayer player;
+
+//Ygll: new utility function to create taser light effect on impact
+function CreateTaserDartHitLight(Vector HitLocation, Vector HitNormal)
+{
+	local GMDXImpactSpark sparkEffect1;
+	local GMDXImpactSpark2 sparkEffect2;
+	local int i;
+
+	for (i = 0; i < 2; i++)
+	{
+		sparkEffect1 = spawn(class'GMDXImpactSpark',,,HitLocation+HitNormal);
+		sparkEffect2 = spawn(class'GMDXImpactSpark2',,,HitLocation+HitNormal);
+
+		if( sparkEffect1 != None  )
+		{
+			sparkEffect1.Texture = Texture'Effects.Fire.Spark_Electric';
+			sparkEffect1.LifeSpan = FRand()*0.2;
+			sparkEffect1.LightBrightness = 255;
+			sparkEffect1.LightSaturation = 60;
+			sparkEffect1.LightHue = 146;
+			sparkEffect1.LightRadius = 1;
+			sparkEffect1.LightType = LT_Steady;
+		}
+
+		if( sparkEffect2 != None )
+		{
+			sparkEffect2.Texture = Texture'Effects.Fire.Spark_Electric';
+			sparkEffect2.LifeSpan = FRand()*0.2;
+			sparkEffect2.LightBrightness = 200;
+			sparkEffect2.LightSaturation = 60;
+			sparkEffect2.LightHue = 146;
+			sparkEffect2.LightRadius = 1;
+			sparkEffect2.LightType = LT_Steady;
+		}
+	}
+}
 
 simulated function PreBeginPlay()
 {
 	Super.PreBeginPlay();
+
+	if(Owner != None && Owner.IsA('DeusExPlayer'))
+		player = DeusExPlayer(Owner);
 
 	// If this is a netgame, then override defaults
 	if ( Level.NetMode != NM_StandAlone )
@@ -60,29 +100,35 @@ state Reload
    {
         Super.Tick(deltaTime);
 
-    if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).inHand == self)
-    {
+	if (player != None && player.inHand == self)
+	{
      //if ((DeusExPlayer(Owner).ViewRotation.Pitch > 16384) && (DeusExPlayer(Owner).ViewRotation.Pitch < 32768))
      //{
      if (AnimSequence == 'ReloadBegin')
      {
-        DeusExPlayer(Owner).ViewRotation.Yaw += deltaTime*30;
+        player.ViewRotation.Yaw += deltaTime*30;
         lerpClamp += 1;
         if (lerpClamp >= 4)
-           DeusExPlayer(Owner).ViewRotation.Pitch -= deltaTime*180;
+           player.ViewRotation.Pitch -= deltaTime*180;
         else
-           DeusExPlayer(Owner).ViewRotation.Pitch -= deltaTime*380;
+           player.ViewRotation.Pitch -= deltaTime*380;
      }
      else if (AnimSequence == 'ReloadEnd')
      {
-        DeusExPlayer(Owner).ViewRotation.Pitch += deltaTime*280;
-        DeusExPlayer(Owner).ViewRotation.Yaw -= deltaTime*30;
+        player.ViewRotation.Pitch += deltaTime*280;
+        player.ViewRotation.Yaw -= deltaTime*30;
      }
-     if ((DeusExPlayer(Owner).ViewRotation.Pitch > 16384) && (DeusExPlayer(Owner).ViewRotation.Pitch < 32768))
-				DeusExPlayer(Owner).ViewRotation.Pitch = 16384;
+     if ((player.ViewRotation.Pitch > 16384) && (DeusExPlayer(Owner).ViewRotation.Pitch < 32768))
+		player.ViewRotation.Pitch = 16384;
      //}
     }
     }
+}
+
+simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNormal, Vector X, Vector Y, Vector Z)
+{
+	Super.ProcessTraceHit(Other, HitLocation, HitNormal, X, Y, Z);
+	CreateTaserDartHitLight(HitLocation, HitNormal);
 }
 
 defaultproperties
@@ -99,21 +145,21 @@ defaultproperties
      HitDamage=16
      maxRange=150
      AccurateRange=150
-     bPenetrating=False
+     bPenetrating=false
      StunDuration=10.000000
-     bHasMuzzleFlash=False
+     bHasMuzzleFlash=false
      mpReloadTime=3.000000
      mpHitDamage=15
      mpBaseAccuracy=0.500000
      mpAccurateRange=80
      mpMaxRange=80
      mpReloadCount=4
-     bCanHaveModBaseAccuracy=True
-     bCanHaveModReloadCount=True
-     bCanHaveModReloadTime=True
+     bCanHaveModBaseAccuracy=true
+     bCanHaveModReloadCount=true
+     bCanHaveModReloadTime=true
      RecoilShaker=(Y=1.000000)
-     bCanHaveModShotTime=True
-     bCanHaveModDamage=True
+     bCanHaveModShotTime=true
+     bCanHaveModDamage=true
      AmmoTag="Prod Charger"
      ClipModAdd=1
      NPCMaxRange=120
@@ -121,7 +167,7 @@ defaultproperties
      AmmoName=Class'DeusEx.AmmoBattery'
      ReloadCount=4
      PickupAmmoCount=4
-     bInstantHit=True
+     bInstantHit=true
      FireOffset=(X=-21.000000,Y=12.000000,Z=19.000000)
      shakemag=20.000000
      FireSound=Sound'DeusExSounds.Weapons.ProdFire'
