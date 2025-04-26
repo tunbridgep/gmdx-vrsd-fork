@@ -9,7 +9,8 @@ class Image02_NYC_Warehouse expands DataVaultImage;
 
 defaultproperties
 {
-     imageTextures(0)=Texture'DeusExUI.UserInterface.Image02_NYC_Warehouse_1'
+     //imageTextures(0)=Texture'DeusExUI.UserInterface.Image02_NYC_Warehouse_1'
+     imageTextures(0)=Texture'RSDCrap.UserInterface.Image02_NYC_Warehouse_1_noladder' //SARGE: Remove ladder that was also removed in the map in GMDX
      imageTextures(1)=Texture'DeusExUI.UserInterface.Image02_NYC_Warehouse_2'
      imageTextures(2)=Texture'DeusExUI.UserInterface.Image02_NYC_Warehouse_3'
      imageTextures(3)=Texture'DeusExUI.UserInterface.Image02_NYC_Warehouse_4'

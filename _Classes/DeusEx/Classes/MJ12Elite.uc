@@ -205,6 +205,7 @@ defaultproperties
      MultiSkins(7)=Texture'DeusExCharacters.Skins.MJ12TroopTex3'
      CollisionRadius=20.000000
      CollisionHeight=49.000000
+     BarkBindName="MJ12Troop"
      BindName="MJ12Troop"
      FamiliarName="MJ12 Elite"
      UnfamiliarName="MJ12 Elite"

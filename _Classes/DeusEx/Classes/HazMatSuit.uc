@@ -50,4 +50,5 @@ defaultproperties
      Mass=20.000000
      Buoyancy=12.000000
      bUnequipWhenDrained=false
+     PickupSound=sound'objpickup'
 }

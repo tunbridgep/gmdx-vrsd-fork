@@ -81,6 +81,7 @@ var bool bRealKillswitch;
 var bool bCameraDetectUnconscious;
 var bool bShenanigans;
 var bool bRandomizeCrap;
+var bool bCutInteractions;
 
 //LDDP
 var bool bFemaleEnabled;
@@ -115,6 +116,10 @@ event InitWindow()
 		TexPortraits[8] = Texture(DynamicLoadObject("FemJC.MenuPlayerSetupJCDentonMale_5", class'Texture', false));
 		TexPortraits[9] = Texture(DynamicLoadObject("FemJC.MenuPlayerSetupJCDentonFemale_5", class'Texture', false));
 	}
+    else
+    {
+        actionButtons[4].action = AB_None;
+    }
 	
     Super.InitWindow();
 
@@ -145,6 +150,7 @@ event InitWindow()
   	bCameraDetectUnconscious=false;
     bShenanigans=false;                                                         //Sarge
     bRandomizeCrap=false;                                                       //Sarge
+    bCutInteractions=false;                                                     //Sarge
     //bRestrictedMetabolism=false;                                              //Sarge
     default.bRandomizeCrates=false;                                             //RSD: Also need default values! Otherwise get command in modifier menu takes the wrong value
     default.bRandomizeMods=false;                                               //RSD
@@ -163,6 +169,7 @@ event InitWindow()
 	default.bCameraDetectUnconscious=false;
     default.bShenanigans=false;                                                 //Sarge
     default.bRandomizeCrap=false;                                               //Sarge
+    default.bCutInteractions=false;                                             //Sarge
 
 	StyleChanged();
 }
@@ -815,6 +822,7 @@ function SaveSettings()
     player.bRandomizeEnemies=bRandomizeEnemies;                                 //Sarge
     player.bPrisonStart=bPrisonStart;                                           //Sarge
     player.bRandomizeCrap=bRandomizeCrap;                                       //Sarge
+    player.bCutInteractions=bCutInteractions;                                   //Sarge
     if (player.bRandomizeAugs)                                                  //RSD: New aug randomization feature
         ScrambleAugOrderList();
     player.bAddictionSystem=bAddictionSystem;
@@ -1063,7 +1071,7 @@ defaultproperties
      actionButtons(1)=(Align=HALIGN_Right,Action=AB_Other,Text="|&Start Game",Key="START")
      actionButtons(2)=(Action=AB_Reset)
      actionButtons(3)=(Action=AB_Other,Text="Modifiers",Key="MODIFIERS")
-     //actionButtons(4)=(Action=AB_Other,Text="Help",Key="HELP") //Remove this because it appears without LDDP installed
+     actionButtons(4)=(Action=AB_Other,Text="LDDP Help",Key="HELP")
      Title="Start New Game"
      ClientWidth=580
      ClientHeight=389

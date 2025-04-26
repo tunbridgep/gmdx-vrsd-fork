@@ -21,7 +21,6 @@ var Inventory                    assignThis;                                    
 
 var localized String PassedSkillName;
 var localized string RequiredPoints;
-var localized string PerkTitle;
 var localized string ob;
 var localized string msgAssign;                                                 //RSD: Added
 var localized string msgAssigned;                                               //RSD: Added
@@ -58,6 +57,10 @@ var localized String DeclinedTitleLabel;
 var localized String DeclinedDesc;
 var localized String DeclinedDesc2;
 
+//Ygll new var
+var string strDash;
+var PersonaButtonBarWindow winActionButtonRemove;
+
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -67,6 +70,11 @@ var localized String DeclinedDesc2;
 event InitWindow()
 {
 	Super.InitWindow();
+
+	if(player.iAltFrobDisplay == 2)
+		strDash = "+ ";
+	else
+		strDash = "";
 
 	CreateControls();
 }
@@ -85,16 +93,12 @@ function CreateControls()
 	winTile = TileWindow(winScroll.ClipWindow.NewChild(Class'TileWindow'));
 	winTile.SetOrder(ORDER_Down);
 	winTile.SetChildAlignments(HALIGN_Full, VALIGN_Top);
-	winTile.MakeWidthsEqual(True);
-	winTile.MakeHeightsEqual(False);
+	winTile.MakeWidthsEqual(true);
+	winTile.MakeHeightsEqual(false);
 	winTile.SetMargins(4, 1);
 	winTile.SetMinorSpacing(0);
 	winTile.SetWindowAlignments(HALIGN_Full, VALIGN_Top);
 }
-
-// ----------------------------------------------------------------------
-// CreatePerkOverview()
-// ----------------------------------------------------------------------
 
 //SARGE: Using sprintf shows floats as 1.00000000000 etc,
 //So we need to remove some of the digits.
@@ -108,95 +112,140 @@ function string TextDisplayHack(float value, int digits)
     return Left(value, digits);
 }
 
+// ----------------------------------------------------------------------
+// CreatePerkOverview()
+// ----------------------------------------------------------------------
 function CreatePerkOverview(Skill skill, Perk Perk, int index)	//Trash: Creates the description, upgrade button, etc for each perk
 {
 	local DeusExPlayer player;
-    local string perkDescModified;
-
 	player = DeusExPlayer(GetPlayerPawn());
 
 	PassedSkillIcon = Perk.GetPerkIcon();
 
-    winActionButtons1[index] = PersonaButtonBarWindow(winTile.NewChild(Class'PersonaButtonBarWindow'));
-    winActionButtons1[index].SetWidth(0);
-    winActionButtons1[index].SetHeight(26);
-    winActionButtons1[index].FillAllSpace(false);
-    WinPerkTitle[index] = TextWindow(winActionButtons1[index].NewChild(class'TextWindow'));
+	if(player.iAltFrobDisplay == 2) //Ygll: French LOVE their line :D
+		AddLine();
+
+	winActionButtons1[index] = PersonaButtonBarWindow(winTile.NewChild(class'PersonaButtonBarWindow'));
+	winActionButtons1[index].SetWidth(0);
+	winActionButtons1[index].SetHeight(28);
+	winActionButtons1[index].FillAllSpace(false);
+	WinPerkTitle[index] = TextWindow(winActionButtons1[index].NewChild(class'TextWindow'));
 	WinPerkTitle[index].SetText(Caps(Perk.PerkName));
 	WinPerkTitle[index].SetFont(Font'FontMenuSmall');
-    WinPerkTitle[index].SetTextColor(colText);
-    WinPerkTitle[index].SetTextMargins(6,4);
-    winSkillIconP[index] = winActionButtons1[index].NewChild(Class'Window');
-    winSkillIconP[index].SetPos(192, 0);
+	WinPerkTitle[index].SetTextColor(colText);
+	WinPerkTitle[index].SetTextMargins(6,4);
+	winSkillIconP[index] = winActionButtons1[index].NewChild(class'Window');
+	winSkillIconP[index].SetPos(191, 2);
 	winSkillIconP[index].SetSize(24, 24);
 	winSkillIconP[index].SetBackgroundStyle(DSTY_Normal);
-	winSkillIconP[index].SetBackground(PassedSkillIcon); // CHECK THIS LATER, TRASH!
-    if (Perk.PerkValueDisplay == Delta_Percentage)
-        SetText(sprintf(Perk.PerkDescription,int(Perk.PerkValue * 100 - 100)));
-    else if (Perk.PerkValueDisplay == Percentage)
-        SetText(sprintf(Perk.PerkDescription,int(Perk.PerkValue * 100)));
-    else
-        SetText(sprintf(Perk.PerkDescription,TextDisplayHack(Perk.PerkValue,3)));
-    SetText("");
-    if (skill != None)
-        SetText(sprintf(PerkRequiredSkill,skill.SkillName,skill.GetLevelString(Perk.PerkLevelRequirement)));
-    SetText(RequiredPoints $ Perk.PerkCost);
+	winSkillIconP[index].SetBackground(PassedSkillIcon);
+	if(player.iAltFrobDisplay == 2) //Ygll: French LOVE their line :D
+		AddLine();
+		
+	if (Perk.PerkValueDisplay == Delta_Percentage)
+		SetText(sprintf(Perk.PerkDescription,int(Perk.PerkValue * 100 - 100)));
+	else if (Perk.PerkValueDisplay == Percentage)
+		SetText(sprintf(Perk.PerkDescription,int(Perk.PerkValue * 100)));
+	else
+		SetText(sprintf(Perk.PerkDescription,TextDisplayHack(Perk.PerkValue,3)));
+
+	SetText("");
+	if (skill != None)
+		SetText(sprintf(PerkRequiredSkill,skill.SkillName,skill.GetLevelString(Perk.PerkLevelRequirement)));
+
+	SetText(RequiredPoints $ Perk.PerkCost);
+	SetText("");
 	winActionButtons[index] = PersonaButtonBarWindow(winTile.NewChild(Class'PersonaButtonBarWindow'));
 	winActionButtons[index].SetWidth(32); //149
 	winActionButtons[index].FillAllSpace(false);
-	buttonUpgrade[index] = PersonaActionButtonWindow(winActionButtons[index].NewChild(Class'PersonaActionButtonWindow'));
+	buttonUpgrade[index] = PersonaActionButtonWindow(winActionButtons[index].NewChild(class'PersonaActionButtonWindow'));
 	buttonUpgrade[index].ButtonPerk = Perk;
-    AddLine();
-
-    UpdateButton(buttonUpgrade[index], Perk);
+	UpdateButton(buttonUpgrade[index], Perk);
+	AddLine();
 }
 
 function UpdateButton(PersonaActionButtonWindow button, Perk P)
 {
+	button.SetSensitivity(P.IsPurchasable());
+
     if (P.bPerkObtained)
         button.SetButtonText(PurchasedButtonLabel);
     else if (P.IsPurchasable())
         button.SetButtonText(UpgradeButtonLabel);
     else
         button.SetButtonText(UnobtainableButtonLabel);
+}
 
-    button.SetSensitivity(P.IsPurchasable());
+function UpdateObtainedPerkList(DeusExPlayer player, string perkName)
+{
+	local int index, count;
 
+	count = 0;
+
+    for(index = 0; index < player.PerkManager.GetNumPerks(); index++)
+    {
+		if(player.PerkManager.GetPerkAtIndex(index).bPerkObtained)
+			count++;
+
+		if(count > 1) //don't need to check more obtained perk for the next step
+			break;
+    }
+
+	if(count <= 1)
+		CreateObtainedPerkList(player);
+	else
+		SetText(strDash $ Caps(perkName));
+}
+
+function CreateObtainedPerkList(DeusExPlayer player)
+{
+	local int index;
+	local bool bSetTitle;
+
+	bSetTitle = false;
+
+    for (index = 0; index < player.PerkManager.GetNumPerks(); index++)
+    {
+		if (player.PerkManager.GetPerkAtIndex(index).bPerkObtained)
+		{
+			if(!bSetTitle)
+			{
+				SetText( CR() $ ob );
+				AddLine();
+				bSetTitle = true;
+			}
+
+			SetText(strDash $ Caps(player.PerkManager.GetPerkAtIndex(index).PerkName));
+		}
+    }
+
+	if(bSetTitle)
+		AddLine();
 }
 
 //////////////////////////////////////////////////
 //  //Totalitarian: CreatePerkButtons
 //////////////////////////////////////////////////
 function CreatePerkButtons(Skill Skill)
-{
-    local int index;
+{    
 	local DeusExPlayer player;
     local Perk currPerk;
 
-    AddLine();
-    SetText(PerkTitle);
-    AddLine();
-
 	player = DeusExPlayer(GetPlayerPawn());
+	if(player != None)
+	{
+		numPerkButtons = 0;
+		currPerk = player.PerkManager.GetPerkForSkill(Skill.class,numPerkButtons);
 
-    numPerkButtons = 0;
-    currPerk = player.PerkManager.GetPerkForSkill(Skill.class,numPerkButtons);
-    while (currPerk != None)
-    {
-        CreatePerkOverview(skill, currPerk, numPerkButtons);
-        numPerkButtons++;
-        currPerk = player.PerkManager.GetPerkForSkill(Skill.class,numPerkButtons);
-    }
+		while (currPerk != None)
+		{
+			CreatePerkOverview(skill, currPerk, numPerkButtons);
+			numPerkButtons++;
+			currPerk = player.PerkManager.GetPerkForSkill(Skill.class,numPerkButtons);
+		}
 
-    //SetText(ob $ ": " $ player.PerkManager.GetNumObtainedPerks());
-    SetText(ob);
-    AddLine();
-	
-    for (index = 0; index < player.PerkManager.GetNumPerks(); index++)
-    {
-		if (player.PerkManager.GetPerkAtIndex(index).bPerkObtained == true)
-			SetText(player.PerkManager.GetPerkAtIndex(index).PerkName);
-    }
+		CreateObtainedPerkList(player);
+	}
 }
 
 //SARGE: Create general perk buttons
@@ -205,22 +254,24 @@ function CreateGeneralPerkButtons()
 	local DeusExPlayer player;
     local Perk currPerk;
 
-    Clear();
-    SetTitle(GeneralPerksTitleText);
-    AddLine();
-    SetText(PerkTitle);
-    AddLine();
-	
-    player = DeusExPlayer(GetPlayerPawn());
+	Clear();
+	SetTitle(GeneralPerksTitleText);
 
-    numPerkButtons = 0;
-    currPerk = player.PerkManager.GetGeneralPerk(numPerkButtons);
-    while (currPerk != None)
-    {
-        CreatePerkOverview(None, currPerk, numPerkButtons);
-        numPerkButtons++;
-        currPerk = player.PerkManager.GetGeneralPerk(numPerkButtons);
-    }
+    player = DeusExPlayer(GetPlayerPawn());
+	if(player != None)
+	{
+		numPerkButtons = 0;
+		currPerk = player.PerkManager.GetGeneralPerk(numPerkButtons);
+
+		while (currPerk != None)
+		{
+			CreatePerkOverview(None, currPerk, numPerkButtons);
+			numPerkButtons++;
+			currPerk = player.PerkManager.GetGeneralPerk(numPerkButtons);
+		}
+
+		CreateObtainedPerkList(player);
+	}
 }
 
 // ----------------------------------------------------------------------
@@ -237,29 +288,21 @@ function bool ButtonActivated( Window buttonPressed )
     local class<inventory> declineThis;
 
 	if (Super.ButtonActivated(buttonPressed))
-		return True;
+		return true;
 
-	bHandled   = True;
+	bHandled = true;
 	player = DeusExPlayer(GetPlayerPawn());
 
     topWin = DeusExRootWindow(GetRootWindow()).GetTopWindow();
-	// Check if this is one of our Skills buttons
-	/*if (buttonPressed.IsA('PersonaActionButtonWindow'))
-	{
-		SelectSkillButton(PersonaSkillButtonWindow(buttonPressed));
-	}
-	else
-	{*/
+
 	for (index = 0; index < numPerkButtons; index++)
 	{
 		if (buttonPressed == buttonUpgrade[index])
 		{
             boughtPerk = true;
 			player.PerkManager.PurchasePerk(buttonUpgrade[index].ButtonPerk.Class);
-			buttonUpgrade[index].SetSensitivity(False);
-            buttonUpgrade[index].SetButtonText(PurchasedButtonLabel);
-			SetText(buttonUpgrade[index].ButtonPerk.PerkName);
-			if ( TopWin!=None )
+			UpdateObtainedPerkList(player, buttonUpgrade[index].ButtonPerk.PerkName);
+			if ( TopWin != None )
 				TopWin.RefreshWindow( 0.0 );
 		}
 	}
@@ -272,71 +315,63 @@ function bool ButtonActivated( Window buttonPressed )
             UpdateButton(buttonUpgrade[index], buttonUpgrade[index].ButtonPerk);
     }
 
-		switch(buttonPressed)
+	switch(buttonPressed)
+	{
+		case buttonUpgradeSecond:
+		   if (assignThis != None && player.GetSecondaryClass() == assignThis.Class)
+		   {
+			   player.AssignSecondary(None);
+			   //player.ClientMessage(msgUnassigned);
+		   }
+		   else if (assignThis != None)
+		   {
+			   player.AssignSecondary(assignThis);
+			   //player.ClientMessage(msgAssigned);
+		   }
+		   UpdateSecondaryButton(assignThis.class);
+		   break;
+		case buttonDecline:
+			declineThis = class<Inventory>(DynamicLoadObject(buttonDecline.tags[0], class'Class', true));
+			if (declineThis != None)
+			{
+				if (player.declinedItemsManager.IsDeclined(declineThis))
+					player.declinedItemsManager.RemoveDeclinedItem(declineThis);
+				else
+					player.declinedItemsManager.AddDeclinedItem(declineThis);
+				UpdateDeclineButton(declineThis);
+			}
+			break;		
+		default:
+			bHandled = false;
+			break;
+	}
+
+	if (!bHandled)
+	{
+		//Handle the decline buttons separately
+		for(i = 0; i < player.declinedItemsManager.GetDeclinedNumber();i++)
 		{
-            case buttonUpgradeSecond:
-
-               if (assignThis != None && player.GetSecondaryClass() == assignThis.Class)
-               {
-                   player.AssignSecondary(None);
-                   //player.ClientMessage(msgUnassigned);
-               }
-               else if (assignThis != None)
-               {
-                   player.AssignSecondary(assignThis);
-                   //player.ClientMessage(msgAssigned);
-               }
-               UpdateSecondaryButton(assignThis.class);
-			   break;
-
-            case buttonDecline:
-                declineThis = class<Inventory>(DynamicLoadObject(buttonDecline.tags[0], class'Class', true));
-                if (declineThis != None)
-                {
-                    if (player.declinedItemsManager.IsDeclined(declineThis))
-                        player.declinedItemsManager.RemoveDeclinedItem(declineThis);
-                    else
-                        player.declinedItemsManager.AddDeclinedItem(declineThis);
-                    UpdateDeclineButton(declineThis);
-                }
-                break;
-            
-			default:
-				bHandled = False;
-				break;
+			if (buttonPressed == buttonRemoveDecline[i])
+			{
+				declineThis = class<Inventory>(DynamicLoadObject(buttonRemoveDecline[i].tags[0], class'Class', true));
+				if (declineThis != None)
+				{
+					player.declinedItemsManager.RemoveDeclinedItem(declineThis);
+					AddDeclinedInfoWindow();
+					return true;
+					//SignalRefresh();
+				}
+			}
 		}
-
-        if (!bHandled)
-        {
-            //Handle the decline buttons separately
-            for(i = 0; i < player.declinedItemsManager.GetDeclinedNumber();i++)
-            {
-                if (buttonPressed == buttonRemoveDecline[i])
-                {
-                    declineThis = class<Inventory>(DynamicLoadObject(buttonRemoveDecline[i].tags[0], class'Class', true));
-                    if (declineThis != None)
-                    {
-                        player.declinedItemsManager.RemoveDeclinedItem(declineThis);
-                        AddDeclinedInfoWindow();
-                        return true;
-                        //SignalRefresh();
-                    }
-                }
-            }
-        }
-
-
+	}
 
     return bHandled;
 }
 
 // ----------------------------------------------------------------------
-// SetTitle()
-//
 // Assume that if we're setting the title we're looking at another
 // item and to clear the existing contents.
 // ----------------------------------------------------------------------
-
 function SetTitle(String newTitle)
 {
 	Clear();
@@ -351,55 +386,39 @@ function SetTitle(String newTitle)
 function PersonaNormalLargeTextWindow SetText(String newText)
 {
 	winText = PersonaNormalLargeTextWindow(winTile.NewChild(Class'PersonaNormalLargeTextWindow'));
-    //winText.SetBackground(Texture'DeusExUI.UserInterface.ComputerSpecialOptionsBackgroundTop_1');
+
+	if(winText == None)
+		return None;
+
     if (bStylization)
     {
-       if (winScroll != None)
-       {
-          winScroll.EnableScrolling(false,false);
-          winScroll.EnableWindow(false);
-       }
        winText.SetTextColorRGB(224,224,244);
        winText.SetVerticalSpacing(3);
        winText.SetFont(Font'Engine.SmallFont');
        winText.SetBackgroundStyle(DSTY_Masked);
-       //winText.SetBackground(Texture'DeusExUI.UserInterface.ComputerHackBorder');
        winText.SetBackground(Texture'GMDXSFX.UI.pedometerTex1');
     }
     else if (bStylization2)
     {
-       if (winScroll != None)
-       {
-          winScroll.EnableScrolling(false,false);
-          winScroll.EnableWindow(false);
-       }
-       //winText.SetTextColorRGB(224,224,244);
        winText.SetFont(Font'FontMenuSmall');
-       //winText.SetFont(Font'FontConversation');
-       //winText.SetBackgroundStyle(DSTY_Translucent);
-       //winText.SetBackground(Texture'DeusExUI.UserInterface.GoalsBackground_5');
-       //winText.SetBackground(Texture'DeusExUI.UserInterface.HealthButtonNormal_Center');
-       //winText.SetBackground(Texture'DeusExUI.UserInterface.HUDInfolinkBackground_1');
-       winScroll.EnableScrolling(false,false);
     }
     else if (bStylization3)
     {
-       if (winScroll != None)
-       {
-          winScroll.EnableScrolling(false,false);
-          winScroll.EnableWindow(false);
-       }
        winText.SetTextColorRGB(224,224,244);
        winText.SetFont(Font'FontComputer8x20_B');
-       //winText.SetBackgroundStyle(DSTY_Masked);
-       //winText.SetBackground(Texture'DeusExUI.UserInterface.ComputerHackBorder');
-       //winText.SetBackground(Texture'GMDXSFX.UI.pedometerTex1');
     }
     else
     {
        winText.SetFont(Font'FontMenuSmall');
        winText.SetBackground(None);
     }
+
+	if (winScroll != None && ( bStylization || bStylization2 || bStylization3 ) )
+	{
+		winScroll.EnableScrolling(false,false);
+		winScroll.EnableWindow(false);
+	}
+
 	winText.SetTextMargins(0, 0);
 	winText.SetWordWrap(True);
 	winText.SetTextAlignments(HALIGN_Left, VALIGN_Top);
@@ -463,14 +482,6 @@ function Clear()
 {
 	winTitle.SetText("");
 	winTile.DestroyAllChildren();
-
-	//Totalitarian: destroy perk upgrade buttons
-	/*if (winActionButtons != None)
-	    winActionButtons.DestroyAllChildren();
-	if (winActionButtons2 != None)
-	    winActionButtons2.DestroyAllChildren();
-    if (winActionButtons3 != None)
-	    winActionButtons3.DestroyAllChildren();      */
 }
 
 // ----------------------------------------------------------------------
@@ -509,14 +520,14 @@ function AddSecondaryButton(Inventory wep)                                      
 {
    if (wep != None)
    {
-    SetText(msgAssign);
-    winActionButtonsSecondary = PersonaButtonBarWindow(winTile.NewChild(Class'PersonaButtonBarWindow'));
-	winActionButtonsSecondary.SetWidth(32); //149
-	winActionButtonsSecondary.FillAllSpace(False);
-	buttonUpgradeSecond = PersonaActionButtonWindow(winActionButtonsSecondary.NewChild(Class'PersonaActionButtonWindow'));
-	assignThis = wep;
-    UpdateSecondaryButton(wep.Class);
-   AddLine();
+		SetText(msgAssign);
+		winActionButtonsSecondary = PersonaButtonBarWindow(winTile.NewChild(Class'PersonaButtonBarWindow'));
+		winActionButtonsSecondary.SetWidth(32); //149
+		winActionButtonsSecondary.FillAllSpace(false);
+		buttonUpgradeSecond = PersonaActionButtonWindow(winActionButtonsSecondary.NewChild(Class'PersonaActionButtonWindow'));
+		assignThis = wep;
+		UpdateSecondaryButton(wep.Class);
+		AddLine();
    }
 }
 
@@ -544,10 +555,10 @@ function AddDeclineButton(class<Inventory> wep)
 {
     if (wep != None)
     {
-        //SetText(DeclinedDesc);
+        AddLine();
         winActionButtonsSecondary = PersonaButtonBarWindow(winTile.NewChild(Class'PersonaButtonBarWindow'));
         winActionButtonsSecondary.SetWidth(32); //149
-        winActionButtonsSecondary.FillAllSpace(False);
+        winActionButtonsSecondary.FillAllSpace(false);
         buttonDecline = PersonaActionButtonWindow(winActionButtonsSecondary.NewChild(Class'PersonaActionButtonWindow'));
         UpdateDeclineButton(wep);
         AddLine();
@@ -566,57 +577,63 @@ function AddDeclinedInfoWindow()
 	local Window winIcon;
 	local Class<Inventory> invClass;
     local int i, num;
-    
+
     Clear();
 
     num = player.declinedItemsManager.GetDeclinedNumber();
-    
+
     if (num == 0)
         return;
 
-    SetTitle(DeclinedTitleLabel);
-    if (player.bSmartDecline)
-        SetText(DeclinedDesc2);
-    else
-        SetText(DeclinedDesc);
-    AddLine();
+	SetTitle(DeclinedTitleLabel);
+	if(player.iAltFrobDisplay == 2) //Ygll: French LOVE their line :D
+		AddLine();
+
+	if (player.bSmartDecline)
+		SetText(DeclinedDesc2);
+	else
+		SetText(DeclinedDesc);
+
+	if(player.iAltFrobDisplay == 2) //Ygll: French LOVE their space
+		SetText("");
+
+	AddLine();
     
     for(i = 0; i < ArrayCount(player.declinedItemsManager.declinedTypes);i++)
     {
         invClass = class<Inventory>(DynamicLoadObject(player.declinedItemsManager.declinedTypes[i], class'Class', true));
         if (invClass != None)
         {
-            winAmmo = AlignWindow(winTile.NewChild(Class'AlignWindow'));
-            winAmmo.SetChildVAlignment(VALIGN_Top);
-            winAmmo.SetChildSpacing(4);
+			winAmmo = AlignWindow(winTile.NewChild(Class'AlignWindow'));
+			winAmmo.SetChildVAlignment(VALIGN_Top);
+			winAmmo.SetChildSpacing(4);
 
-            // Add icon
-            winIcon = winAmmo.NewChild(Class'Window');
-            winIcon.SetBackground(invClass.default.Icon);
-            winIcon.SetBackgroundStyle(DSTY_Masked);
+			// Add icon
+			winIcon = winAmmo.NewChild(Class'Window');
+			winIcon.SetBackground(invClass.default.Icon);
+			winIcon.SetBackgroundStyle(DSTY_Masked);
 
-            //SARGE: Holy dirty hack batman!
-            if (invClass == class'SoftwareNuke' || invClass == class'SoftwareStop')
-                winIcon.SetBackgroundStretching(true);
-            winIcon.SetSize(42, 37);
-            //winIcon.SetSize(invClass.default.largeIconWidth, invClass.default.largeIconHeight);
-            
-            // Add Item Name
-            winText = PersonaNormalTextWindow(winAmmo.NewChild(Class'PersonaNormalTextWindow'));
-            winText.SetWordWrap(False);
-            winText.SetTextMargins(0, 0);
-            winText.SetTextAlignments(HALIGN_Left, VALIGN_Top);
-            winText.SetText(invClass.default.itemName);
+			//SARGE: Holy dirty hack batman!
+			if (invClass == class'SoftwareNuke' || invClass == class'SoftwareStop')
+				winIcon.SetBackgroundStretching(true);
 
-            //Add "Remove From List" Button
-            //winActionButtons = PersonaButtonBarWindow(winText.NewChild(Class'PersonaButtonBarWindow'));
-            //winActionButtons.SetWidth(32); //149
-            buttonRemoveDecline[i] = PersonaActionButtonWindow(winTile.NewChild(Class'PersonaActionButtonWindow'));
-            //buttonUpgrade.SetWidth(32);
-            buttonRemoveDecline[i].SetButtonText(msgRemoveDecline);
-            buttonRemoveDecline[i].tags[0] = string(invClass);
+			winIcon.SetSize(42, 37);
+			// Add Item Name
+			winText = PersonaNormalTextWindow(winAmmo.NewChild(Class'PersonaNormalTextWindow'));
+			winText.SetWordWrap(False);
+			winText.SetTextMargins(0, 0);
+			winText.SetTextAlignments(HALIGN_Left, VALIGN_Top);
+			winText.SetText(invClass.default.itemName);
 
-            AddLine();
+			//Add "Remove From List" Button
+			winActionButtonRemove = PersonaButtonBarWindow(winTile.NewChild(Class'PersonaButtonBarWindow'));
+			winActionButtonRemove.SetWidth(32); //149
+			winActionButtonRemove.FillAllSpace(false);
+			buttonRemoveDecline[i] = PersonaActionButtonWindow(winActionButtonRemove.NewChild(Class'PersonaActionButtonWindow'));
+			buttonRemoveDecline[i].SetButtonText(msgRemoveDecline);
+			buttonRemoveDecline[i].tags[0] = string(invClass);
+
+			AddLine();
         }
     }
 }
@@ -632,7 +649,6 @@ defaultproperties
      PurchasedButtonLabel="|&Already Purchased"
      UnobtainableButtonLabel="|&Cannot Purchase"
      RequiredPoints="Points Needed: "
-     PerkTitle="PERKS"
      ob="OBTAINED PERKS"
      GeneralPerksTitleText="Perks - General"
      PerkRequiredSkill="Requires: %s: %s"
@@ -646,4 +662,5 @@ defaultproperties
      msgDoUnassign="Unassign"
      msgAssigned="Secondary Item Assigned"
      msgUnassigned="Secondary Item Unassigned"
+     strDash=""
 }

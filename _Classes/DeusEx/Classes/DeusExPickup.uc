@@ -405,13 +405,14 @@ function bool HandlePickupQuery( inventory Item )
 	local DeusExPlayer player;
 	local Inventory anItem;
 	local Bool bAlreadyHas;
-	local Bool bResult;
+	local Bool bResult, bSound;
 	local int i, startcopies, tempCharge;                                       //RSD: Added tempCharge
 
 	if ( Item.Class == Class )
 	{
 		player = DeusExPlayer(Owner);
 		bResult = False;
+        bSound = true;
 
 		// Check to see if the player already has one of these in
 		// his inventory
@@ -432,6 +433,8 @@ function bool HandlePickupQuery( inventory Item )
                     //SARGE: Let us know we're charging the thing...
                     player.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
                     
+                    bSound = false;
+                    
                     anItem.Charge += DeusExPickup(item).Charge;
                     if (anItem.Charge >= anItem.default.Charge)
                         anItem.Charge = anItem.default.Charge;
@@ -450,6 +453,7 @@ function bool HandlePickupQuery( inventory Item )
                         UpdateBeltText();
                         player.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
                         DeusExPickup(item).NumCopies -= (NumCopies - startcopies);
+                        Item.PlaySound(Item.PickupSound);
                     }
                     else //SARGE: Now only display a message if we actually pickup none of the things.
                         player.ClientMessage(msgTooMany);
@@ -468,6 +472,8 @@ function bool HandlePickupQuery( inventory Item )
                     //SARGE: Let us know we're charging the thing...
                     player.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
                     
+                    bSound = false;
+                    
  			    	NumCopies--;                                                //RSD: Keep the stack number the same as before but add the pickup charge
                 }
 
@@ -475,7 +481,11 @@ function bool HandlePickupQuery( inventory Item )
  			    if (anItem.Charge > 0)
  			    {
                     ChargedPickup(anItem).bActivatable=true;                    //RSD: Since now you can hold one at 0%
-                    ChargedPickup(anItem).bDrained=false;                       //SARGE: Since now you can keep it equipped while empty
+					
+					//SARGE: Only automatically un-drain if we're picking up the first one.
+					//Feels strange otherwise...
+					if (NumCopies == 1)
+						ChargedPickup(anItem).bDrained=false;                       //SARGE: Since now you can keep it equipped while empty
                     ChargedPickup(anItem).unDimIcon();
                 }
             }
@@ -487,6 +497,9 @@ function bool HandlePickupQuery( inventory Item )
 		if (bResult)
 		{
             player.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
+            
+            if (bSound)
+                Item.PlaySound(Item.PickupSound);
 
 			// Destroy me!
 			// DEUS_EX AMSD In multiplayer, we don't want to destroy the item, we want it to set to respawn
@@ -1051,7 +1064,7 @@ function DestroyMe()
 	local DeusExPlayer player;
 	player = DeusExPlayer(GetPlayerPawn());
 
-    player.MakeBeltObjectPlaceholder(self);
+    player.RemoveObjectFromBelt(self);
     Destroy();
 }
 

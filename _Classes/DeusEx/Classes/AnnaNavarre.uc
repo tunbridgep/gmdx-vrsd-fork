@@ -162,4 +162,5 @@ defaultproperties
      BindName="AnnaNavarre"
      FamiliarName="Anna Navarre"
      UnfamiliarName="Anna Navarre"
+     bCanBlink=false                        //mechs blinking looks weird
 }

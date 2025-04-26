@@ -24,8 +24,9 @@ var localized String LogsButtonLabel;
 //Sarge: Outfits button
 var PersonaNavButtonWindow btnOutfits;
 
-var localized String ConsButtonLabelShort; //Sarge: Added
 var localized String OutfitsButtonLabel;
+var localized String ImgButtonLabelShort; //Ygll: Added
+var localized String LogButtonLabel;
 
 // ----------------------------------------------------------------------
 // CreateButtons()
@@ -59,8 +60,9 @@ function CreateOutfitsButton()
     //Only create the Outfits button if the outfits window is actually available
     if (test != None)
     {
-    	btnOutfits   = CreateNavButton(winNavButtons, OutfitsButtonLabel);
-        btnCons.SetButtonText(ConsButtonLabelShort);
+		btnOutfits   = CreateNavButton(winNavButtons, OutfitsButtonLabel);
+		btnImages.SetButtonText(ImgButtonLabelShort);
+		btnLogs.SetButtonText(LogButtonLabel);
     }
 }
 
@@ -123,9 +125,9 @@ function bool ButtonActivated( Window buttonPressed )
 	{
 		PersonaScreenBaseWindow(GetParent()).SaveSettings();
 		if (Player.bRealUI || Player.bHardCoreMode)    //CyberP: no pause
-		root.InvokeUIScreen(winClass,true);
+			root.InvokeUIScreen(winClass,true);
 		else
-		root.InvokeUIScreen(winClass);
+			root.InvokeUIScreen(winClass);
 		return bHandled;
 	}
 	else
@@ -147,6 +149,7 @@ defaultproperties
      ConsButtonLabel="|&Conversations"
      ImagesButtonLabel="I|&mages"
      LogsButtonLabel="|&Logs"
-     OutfitsButtonLabel="|&Outfits"
-     ConsButtonLabelShort="|&Conv."
+     OutfitsButtonLabel="|&Outfit"
+     ImgButtonLabelShort="I|&mg."
+     LogButtonLabel="|&Log"
 }
