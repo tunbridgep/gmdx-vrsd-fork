@@ -88,7 +88,6 @@ function Fire(float Value)
 {
     if (chargeManager != None && chargeManager.IsUsedUp())
     {
-        GotoState('Idle');
         return;
     }
 
@@ -110,7 +109,7 @@ function PlaySelect()
 function SetWeaponSkin(bool hdtp)
 {
     //Stop light re-appearing when holstered
-    if (!IsInState('Idle') && Owner != None)
+    if (!(IsInState('Idle') || IsInState('DownWeapon') || IsInState('Active')) && Owner != None)
         return;
 
     if (hdtp)
