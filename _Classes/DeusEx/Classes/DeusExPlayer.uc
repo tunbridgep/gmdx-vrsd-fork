@@ -743,6 +743,10 @@ var globalconfig bool bShowAmmoTypeInAmmoHUD;                           //SARGE:
 
 var transient float pickupCooldown;                                     //SARGE: Add a very short cooldown after picking something up, so that we can't duplicate items while they replicate to the server.
 
+var bool bWasForceSelected;                                             //SARGE: Whether or not our last weapon selection was forced.
+var bool bSelectedOffBelt;                                             //SARGE: Whether or not our last weapon selection was for an item that isn't on the belt.
+var globalconfig bool bAllowOffBeltSelection;                           //SARGE: When selecting off belt, unholstering respects the new selection rather than using the last belt selection. Disabled by default because it can feel weird/inconsistent.
+
 //SARGE: Bigger weapon effect sparks
 var globalconfig bool bJohnWooSparks;
 
@@ -8144,7 +8148,7 @@ exec function ParseLeftClick()
 
         //SARGE: Final option - select last weapon
         if (inHand == None && bLeftClickUnholster)
-            SelectLastWeapon(false,true);
+            SelectLastWeapon(false,!bSelectedOffBelt);
 	}
 }
 
@@ -8175,6 +8179,11 @@ function SelectLastWeapon(optional bool allowEmpty, optional bool bBeltLast)
         if (iAlternateToolbelt > 0 && root.ActivateObjectInBelt(advBelt))
         {
             bSelectedFromMainBeltSelection = true;
+            NewWeaponSelected();
+            return;
+        }
+        else if (root.ActivateObjectInBelt(beltLast))
+        {
             NewWeaponSelected();
             return;
         }
@@ -8267,7 +8276,7 @@ exec function Holster()
     else
     {
         bSelectedFromMainBeltSelection = true;
-        SelectLastWeapon(false,true);
+        SelectLastWeapon(false,!bSelectedOffBelt);
     }
 }
 
@@ -8418,21 +8427,21 @@ exec function ParseRightClick()
 			PutInHand(None);
 		}
         //SARGE: When we have a forced weapon selection in hand (like a lockpick after left-frobbing, then select our last weapon instead.
-        else if (inHand != None && primaryWeapon != None && inHand != primaryWeapon && (clickCountCyber >= 1 || dblClickHolster == 0 || !bLastWasEmpty))
+        else if (bWasForceSelected && inHand != None && primaryWeapon != None && inHand != primaryWeapon && (clickCountCyber >= 1 || dblClickHolster == 0 || !bLastWasEmpty))
         {
             SelectLastWeapon(true);
         }
         //If we are using a different items to our belt item, and classic mode is on or we scrolled, select it instantly
 		else if ((iAlternateToolbelt > 1 || bScrollSelect) && (iAlternateToolbelt < 3 || bSelectedFromMainBeltSelection || bScrollSelect) && (beltScrolled != beltLast || bLastWasEmpty) && inHand != None)
 		{
-            SelectLastWeapon(false,true);
+            SelectLastWeapon(false,!bSelectedOffBelt);
             beltLast = advBelt;
 		}
         else if (inHand == None && (clickCountCyber >= 1 || dblClickHolster < 2))
 		{
             //SARGE: Added support for the unholster behaviour from the Alternate Toolbelt on both Toolbelts
             bSelectedFromMainBeltSelection = true;
-            SelectLastWeapon(false,true);
+            SelectLastWeapon(false,!bSelectedOffBelt);
 		}
 		else if (inHand != None && (clickCountCyber >= 1 || dblClickHolster == 0))
 		{
@@ -9024,6 +9033,11 @@ exec function PutInHand(optional Inventory inv, optional bool bNoPrimary)
 
     if (!bNoPrimary)
         bLastWasEmpty = inv == None;
+
+    //SARGE: Was this weapon force selected?
+    //ie, was it selected through left/right frob, rather than
+    //being selected deliberately by the player
+    bWasForceSelected = bNoPrimary;
     
     //SARGE: If we don't have a valid advBelt selection, the first selection is valid.
     if (!bNoPrimary && advBelt == -1 && inv.bInObjectBelt)
@@ -9224,8 +9238,16 @@ function UpdateInHand()
         
             if (inHandPending != None && !inHandPending.IsA('POVCorpse') && !bBeltSkipNextPrimary)
             {
+                //SARGE: TODO: Consider implementing this
+                //if (selectedItem.beltPos == beltLast && selectedItem.bInObjectBelt)
+                if (selectedItem.bInObjectBelt)
+                    beltLast = selectedItem.beltPos;
+                
+                bSelectedOffBelt = !selectedItem.bInObjectBelt && bAllowOffBeltSelection;
+
+                //if (selectedItem.bInObjectBelt || selectedItem.IsA('DeusExWeapon'))
                 //clientMessage("Update Primary to: " $ selectedItem);
-                primaryWeapon = selectedItem;
+                    primaryWeapon = selectedItem;
                 bBeltSkipNextPrimary = false;
             }
 
