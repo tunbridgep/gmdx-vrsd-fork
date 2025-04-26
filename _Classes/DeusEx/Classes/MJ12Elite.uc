@@ -190,7 +190,8 @@ defaultproperties
      HealthLegRight=300
      HealthArmLeft=300
      HealthArmRight=300
-     VisibilityThreshold=0.002000
+     HearingThreshold=0.120000
+     VisibilityThreshold=0.001000
      Texture=Texture'DeusExItems.Skins.PinkMaskTex'
      Mesh=LodMesh'DeusExCharacters.GM_Jumpsuit'
      MultiSkins(0)=Texture'DeusExCharacters.Skins.MJ12TroopTex0'
