@@ -37,12 +37,12 @@ function CreateButtons()
 	btnLogs      = CreateNavButton(winNavButtons, LogsButtonLabel);
 	btnImages    = CreateNavButton(winNavButtons, ImagesButtonLabel);
 	btnCons      = CreateNavButton(winNavButtons, ConsButtonLabel);
+    CreateOutfitsButton();                  //Sarge: Added
 	btnGoals     = CreateNavButton(winNavButtons, GoalsButtonLabel);
 	btnSkills    = CreateNavButton(winNavButtons, SkillsButtonLabel);
 	btnAugs      = CreateNavButton(winNavButtons, AugsButtonLabel);
 	btnHealth    = CreateNavButton(winNavButtons, HealthButtonLabel);
 	btnInventory = CreateNavButton(winNavButtons, InventoryButtonLabel);
-    CreateOutfitsButton();                  //Sarge: Added
 
 	Super.CreateButtons();
 }
