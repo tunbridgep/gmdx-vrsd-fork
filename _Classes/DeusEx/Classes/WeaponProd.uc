@@ -6,42 +6,6 @@ class WeaponProd extends DeusExWeapon;
 var int lerpClamp;
 var DeusExPlayer player;
 
-//Ygll: new utility function to create taser light effect on impact
-function CreateTaserDartHitLight(Vector HitLocation, Vector HitNormal)
-{
-	local GMDXImpactSpark sparkEffect1;
-	local GMDXImpactSpark2 sparkEffect2;
-	local int i;
-
-	for (i = 0; i < 2; i++)
-	{
-		sparkEffect1 = spawn(class'GMDXImpactSpark',,,HitLocation+HitNormal);
-		sparkEffect2 = spawn(class'GMDXImpactSpark2',,,HitLocation+HitNormal);
-
-		if( sparkEffect1 != None  )
-		{
-			sparkEffect1.Texture = Texture'Effects.Fire.Spark_Electric';
-			sparkEffect1.LifeSpan = FRand()*0.2;
-			sparkEffect1.LightBrightness = 255;
-			sparkEffect1.LightSaturation = 60;
-			sparkEffect1.LightHue = 146;
-			sparkEffect1.LightRadius = 1;
-			sparkEffect1.LightType = LT_Steady;
-		}
-
-		if( sparkEffect2 != None )
-		{
-			sparkEffect2.Texture = Texture'Effects.Fire.Spark_Electric';
-			sparkEffect2.LifeSpan = FRand()*0.2;
-			sparkEffect2.LightBrightness = 200;
-			sparkEffect2.LightSaturation = 60;
-			sparkEffect2.LightHue = 146;
-			sparkEffect2.LightRadius = 1;
-			sparkEffect2.LightType = LT_Steady;
-		}
-	}
-}
-
 simulated function PreBeginPlay()
 {
 	Super.PreBeginPlay();
@@ -123,12 +87,6 @@ state Reload
      //}
     }
     }
-}
-
-simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNormal, Vector X, Vector Y, Vector Z)
-{
-	Super.ProcessTraceHit(Other, HitLocation, HitNormal, X, Y, Z);
-	CreateTaserDartHitLight(HitLocation, HitNormal);
 }
 
 defaultproperties
