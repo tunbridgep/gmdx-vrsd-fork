@@ -713,6 +713,7 @@ var travel float killswitchTimer;                                               
 
 //Music Stuff
 var transient string currentSong;                                                 //SARGE: The "Song" variable is kept in savegames...
+var transient bool bLastWasOutro;                                                 //SARGE: The "Song" variable is kept in savegames...
 var globalconfig int iEnhancedMusicSystem;                                             //SARGE: Should the music system be a bit smarter about playing tracks?
 
 //SARGE: Autoswitch to Health screen when installing the last augmentation at a med bot.
@@ -961,7 +962,10 @@ function ClientMessage(coerce string msg, optional Name type, optional bool bBee
 function DebugMessage(coerce string msg)
 {
     if (bGMDXDebug)
+    {
         ClientMessage(msg);
+        Log(msg);
+    }
 }
 
 
@@ -3253,6 +3257,8 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
 	local DeusExLevelInfo info;
     
     info = GetLevelInfo();
+        
+    DebugMessage("Music Change Request:" @ NewSong @ NewSection);
 
     if (string(NewSong) != default.currentSong) //We always want to allow song changes
     {
@@ -3264,6 +3270,12 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
     {
         bChange = true;
         DebugMessage("Changing Music - Old System");
+    }
+    else if (default.bLastWasOutro) //Always restart music after an outtro cutscene even if the next map has the same music.
+    {
+        bChange = true;
+        DebugMessage("Changing Music - Switching after Outro");
+        default.savedSection = Level.SongSection; //And reset the saved section
     }
     else if (SongSection != NewSection) //Don't let us replay the same bit we're already playing.
     {
@@ -3293,6 +3305,7 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
     {
         super.ClientSetMusic(NewSong,NewSection,NewCdTrack,NewTransition);
         default.currentSong = string(NewSong);
+        default.bLastWasOutro = NewSection == 5;
     }
 }
 
