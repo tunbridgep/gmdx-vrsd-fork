@@ -3953,12 +3953,17 @@ function SpawnBlood(Vector HitLocation, Vector HitNormal)
 	spawn(class'BloodSpurt',,,HitLocation+HitNormal);
     spawn(class'BloodDrop',,,HitLocation+HitNormal);
     spawn(class'BloodDrop',,,HitLocation+HitNormal);
-    spawn(class'BloodDrop',,,HitLocation+HitNormal);
-	
+	spawn(class'BloodDrop',,,HitLocation+HitNormal);
+	if (FRand() < 0.4)
+		spawn(class'BloodDrop',,,HitLocation+HitNormal);
+
     if (!IsA('WeaponProd') && Owner != None && Owner.IsA('DeusExPlayer'))
     {
-		for(i=0;i<5;i++)
+		for(i=0;i<25;i++)
 		{
+			if (FRand() < 0.5) //Ygll: taking the test from Carcass spawn blood. 
+				continue;
+
 			drop = spawn(class'BloodDrop',,,HitLocation+HitNormal);
 			if (drop != None)
 			{
@@ -5240,14 +5245,14 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
                 {
 				    if (!bHandToHand && !IsA('WeaponProd') && !Pawn(Other).IsA('DeusExPlayer') && !Pawn(Other).IsInState('Dying'))
                     {
-                        SpawnBlood(HitLocation, HitNormal);
+						SpawnBlood(HitLocation, HitNormal);						
                         spoofer = Spawn(class'BloodMeleeHit',,,HitLocation);
                         if (spoofer != none)
                             spoofer.DrawScale= 0.14;
                     }
                     else if (bHandToHand)
 					{
-					   SpawnBlood(HitLocation, HitNormal);
+						SpawnBlood(HitLocation, HitNormal);
                        if (IsA('WeaponNanoSword') || IsA('WeaponCombatKnife') || IsA('WeaponSword') || IsA('WeaponCrowbar'))
 				         spoofer = Spawn(class'BloodMeleeHit',,,HitLocation);
 					}
