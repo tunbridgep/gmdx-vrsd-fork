@@ -8602,6 +8602,8 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     local int intj;
     local bool bDeclined;
     local bool bLootedAmmo;
+    local WeaponNanoSword dts;
+    local bool bDestroy;
 
 	bSlotSearchNeeded = True;
 	bCanPickup = True;
