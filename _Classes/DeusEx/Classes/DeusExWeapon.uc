@@ -1109,7 +1109,7 @@ function GiveAmmo( Pawn Other )
 	{
         //SARGE: Here's the nasty bug!
         //Spawn will fail if there's not enough room to spawn the relevant ammo...
-		AmmoType = Ammo(class'SpawnUtils'.static.SpawnSafe(AmmoName));	// Create ammo type required		
+		AmmoType = Ammo(class'SpawnUtils'.static.SpawnSafe(AmmoName,self));	// Create ammo type required		
 
 		Other.AddInventory(AmmoType);		// and add to player's inventory
 		AmmoType.BecomeItem();
