@@ -713,6 +713,7 @@ var travel float killswitchTimer;                                               
 
 //Music Stuff
 var transient string currentSong;                                                 //SARGE: The "Song" variable is kept in savegames...
+var transient bool bLastWasOutro;                                                 //SARGE: The "Song" variable is kept in savegames...
 var globalconfig int iEnhancedMusicSystem;                                             //SARGE: Should the music system be a bit smarter about playing tracks?
 
 //SARGE: Autoswitch to Health screen when installing the last augmentation at a med bot.
@@ -966,7 +967,10 @@ function ClientMessage(coerce string msg, optional Name type, optional bool bBee
 function DebugMessage(coerce string msg)
 {
     if (bGMDXDebug)
+    {
         ClientMessage(msg);
+        Log(msg);
+    }
 }
 
 
@@ -3258,11 +3262,13 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
 	local DeusExLevelInfo info;
     
     info = GetLevelInfo();
+        
+    DebugMessage("Music Change Request:" @ NewSong @ NewSection);
 
     if (string(NewSong) != default.currentSong) //We always want to allow song changes
     {
         bChange = true;
-        DebugMessage("Changing Music - Song Change" @ default.currentSong);
+        DebugMessage("Changing Music - Song Change from" @ default.currentSong);
         default.savedSection = Level.SongSection; //And reset the saved section
     }
     else if (iEnhancedMusicSystem == 0) //Always change with the old system
@@ -3270,20 +3276,27 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
         bChange = true;
         DebugMessage("Changing Music - Old System");
     }
+    else if (default.bLastWasOutro) //Always restart music after an outtro cutscene even if the next map has the same music.
+    {
+        bChange = true;
+        DebugMessage("Changing Music - Switching after Outro");
+        default.savedSection = Level.SongSection; //And reset the saved section
+    }
     else if (SongSection != NewSection) //Don't let us replay the same bit we're already playing.
     {
-        if (NewSection == default.savedSection && default.musicMode != MUS_Ambient) //allow changing to our saved section if we're not already playing it
+        if (info != none && info.bBarOrClub && iEnhancedMusicSystem == 2) //Don't allow music changes in clubs or bars with the extended option.
+        {
+            DebugMessage("Bar or Club - Music Unchanged");
+        }
+        else if (NewSection == default.savedSection && default.musicMode != MUS_Ambient) //allow changing to our saved section if we're not already playing it
         {
             bChange = true;
             DebugMessage("Changing Music - Saved Section: " $ default.musicMode);
         }
         else if (NewSection != Level.SongSection) //We want to allow changes to different patterns (except ambient)
         {
-            if (info == none || !info.bBarOrClub || iEnhancedMusicSystem != 2) //Don't allow music changes in clubs or bars with the extended option.
-            {
-                bChange = true;
-                DebugMessage("Changing Music - Non-Default Section");
-            }
+            bChange = true;
+            DebugMessage("Changing Music - Non-Default Section");
         }
         else if (NewSection == Level.SongSection && default.musicMode != MUS_Ambient) //If we ARE changing to our default section and not in ambient, then instead change to our saved section
         {
@@ -3297,6 +3310,7 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
     {
         super.ClientSetMusic(NewSong,NewSection,NewCdTrack,NewTransition);
         default.currentSong = string(NewSong);
+        default.bLastWasOutro = NewSection == 5;
     }
 }
 
