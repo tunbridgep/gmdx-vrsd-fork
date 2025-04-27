@@ -5245,7 +5245,7 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
                 {
 				    if (!bHandToHand && !IsA('WeaponProd') && !Pawn(Other).IsA('DeusExPlayer') && !Pawn(Other).IsInState('Dying'))
                     {
-						SpawnBlood(HitLocation, HitNormal);						
+						SpawnBlood(HitLocation, HitNormal);
                         spoofer = Spawn(class'BloodMeleeHit',,,HitLocation);
                         if (spoofer != none)
                             spoofer.DrawScale= 0.14;
