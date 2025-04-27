@@ -49,6 +49,16 @@ function DrainPower()
     drained = 0.5;
 }
 
+
+//SARGE: Recharges this nano sword based on another ones charge.
+function RechargeFrom(WeaponNanoSword target)
+{
+    if (target == None || target.ChargeManager == None || chargeManager == None)
+        return;
+
+    chargeManager.RechargeFrom(target.ChargeManager);
+}
+
 function Tick(float deltaTime)
 {
     super.Tick(deltaTime);
@@ -158,7 +168,7 @@ function DisplayWeapon(bool overlay)
     	multiskins[0] = handstex;
     }
 
-    SetWeaponSkin(hdtp);
+    SetWeaponSkin(IsHDTP());
 }
 
 state Idle
