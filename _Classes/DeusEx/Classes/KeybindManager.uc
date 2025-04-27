@@ -194,7 +194,7 @@ function Setup(DeusExPlayer P)
     local string keyName, alias;
     local int i, augNum, beltNum, arrayvar;
     local EKeybind bindPos;
-    local bool bReplaceKillerProfile;
+    local bool bReplaceShowScores;
     
     player = P;
 
@@ -264,9 +264,9 @@ function Setup(DeusExPlayer P)
             //HACK: Allow using the Multiplayer Kill Details button to
             //also work for belt slot 11
             //This is inconsistent, but should "just work", so it stays.
-            if (Left(alias,13) == "KillerProfile" && keyName == "Equals" /*&& player.bBiggerBelt*/)
+            if (Left(alias,13) == "ShowScores" && keyName == "Equals" /*&& player.bBiggerBelt*/)
             {
-                bReplaceKillerProfile = true;
+                bReplaceShowScores = true;
                 AddBindingToArray(KB_Belt12,keyName);
             }
 	    }
@@ -315,6 +315,6 @@ function Setup(DeusExPlayer P)
     //Setup aug wheel key
     ReplaceAlias(KB_AugMenu_Hold,"HoldRadialAugMenu | ToggleRadialAugMenu 1 0 | OnRelease ToggleRadialAugMenu 1 1");
     
-    if (bReplaceKillerProfile)
-        ReplaceAlias(KB_Belt12,"KillerProfile | ActivateBelt 11");
+    if (bReplaceShowScores)
+        ReplaceAlias(KB_Belt12,"ShowScores | ActivateBelt 11");
 }

@@ -7761,10 +7761,23 @@ function ClientTurnOffScores()
 }
 
 // ----------------------------------------------------------------------
-/// ShowScores()  //CyberP: this function is now used in singleplayer for secondary weapon use
+/// ShowScores()
+// SARGE: Reset to vanilla. Was modified in GMDX (see the UseSecondary function below)
 // ----------------------------------------------------------------------
 
 exec function ShowScores()
+{
+	if ( bBuySkills && !bShowScores )
+		BuySkills();
+
+	bShowScores = !bShowScores;
+}
+// ----------------------------------------------------------------------
+/// ShowScores()  //CyberP: this function is now used in singleplayer for secondary weapon use
+// SARGE: Now it's an actual proper exec function. What was CyberP thinking....???
+// ----------------------------------------------------------------------
+
+exec function UseSecondary()
 {
     local Inventory assigned;
     assigned = GetSecondary();
@@ -7879,8 +7892,6 @@ exec function ShowScores()
 	    }
 
     }
-
-	bShowScores = !bShowScores;
 }
 
 //Sarge: Because we can only inherit from one class,
