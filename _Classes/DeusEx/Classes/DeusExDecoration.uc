@@ -73,6 +73,8 @@ var(GMDX) const bool LDDPExtra;                                                 
 var(GMDX) const bool deleteIfMale;                                              //Delete this character if we're male
 var(GMDX) const bool deleteIfFemale;                                            //Delete this character if we're female
 
+var const localized string msgCantUseWhileSwimming;                             //SARGE: Message when we can't grab this due to swimming.
+
 // ----------------------------------------------------------------------
 // ShouldCreate()
 // If this returns FALSE, the object will be deleted on it's first tick
@@ -121,10 +123,17 @@ replication
 function bool DoLeftFrob(DeusExPlayer frobber)
 {
     //Don't allow frobbing while swimming, and only allow objects grabbable via left click
-    if (bLeftGrab && !frobber.IsInState('PlayerSwimming'))
+    if (bLeftGrab)
     {
-        frobber.GrabDecoration();
-        return false;
+        if (frobber.IsInState('PlayerSwimming'))
+        {
+            frobber.ClientMessage(msgCantUseWhileSwimming);
+        }
+        else
+        {
+            frobber.GrabDecoration();
+            return false;
+        }
     }
     else if (frobber.SelectMeleePriority(minDamageThreshold))
         return false;
@@ -133,10 +142,17 @@ function bool DoLeftFrob(DeusExPlayer frobber)
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {
     //Don't allow frobbing while swimming, and only allow pushable objects
-    if (bPushable && !frobber.IsInState('PlayerSwimming'))
+    if (bPushable)
     {
-        frobber.GrabDecoration();
-        return false;
+        if (frobber.IsInState('PlayerSwimming'))
+        {
+            frobber.ClientMessage(msgCantUseWhileSwimming);
+        }
+        else
+        {
+            frobber.GrabDecoration();
+            return false;
+        }
     }
     return true;
 }
@@ -1796,4 +1812,5 @@ defaultproperties
      bBlockPlayers=True
      iHDTPModelToggle=1
      bHDTPFailsafe=True
+     msgCantUseWhileSwimming="You can't pick this up while swimming."
 }
