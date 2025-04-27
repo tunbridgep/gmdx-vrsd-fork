@@ -899,6 +899,7 @@ function ConfigBigDroneView(bool droneView)
 }
 
 //Handle Crouch Toggle
+//SARGE: This should set bIsCrouching maybe???
 function HandleCrouchToggle()
 {
     //SARGE: Don't let us toggle crouch while using the drone
@@ -1857,7 +1858,7 @@ event TravelPostAccept()
 
 	if (bHardCoreMode)
 	{
-	  bCheatsEnabled=false;
+	  //bCheatsEnabled=false;
 	  bAutoReload=false;
 	}
 
@@ -4575,6 +4576,7 @@ function name GetFloorMaterial()
         texGroup = 'Stucco';
     }
     SpecTex = texName;
+    //ClientMessage("GetFloorMaterial: " $ texName);
 	return texGroup;
 }
 
