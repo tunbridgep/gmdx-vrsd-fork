@@ -8604,6 +8604,8 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     local int intj;
     local bool bDeclined;
     local bool bLootedAmmo;
+    local WeaponNanoSword dts;
+    local bool bDestroy;
 
 	bSlotSearchNeeded = True;
 	bCanPickup = True;
@@ -8680,8 +8682,50 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 
 				/*if (Weapon(foundItem).IsA('WeaponHideAGun'))
                 {bCanPickup = True;  bSearchSlotNeeded = True;  }*/
+				
+                //SARGE: Now that the DTS can have "ammo" in the form of charge,
+                //treat it like any other weapon.
+                //SARGE: EDIT: This doesn't work at all!
+                /*
+                if (Weapon(foundItem).IsA('WeaponNanoSword'))
+                {
+                    bCanPickup = True;
+                }
+                */
+                //SARGE: Looks like we're going to have to handle the DTS manually...
+                if (foundItem.IsA('WeaponNanoSword'))
+                {
+                    dts = WeaponNanoSword(foundItem);
 
-				if (!bCanPickup)
+                    //First copy over any mods.
+                    if (WeaponNanoSword(frobTarget).bModified)
+                    {
+                        dts.CopyModsFrom(WeaponNanoSword(frobTarget),true);
+                        bDestroy=true;
+                    }
+
+                    if (dts.chargeManager.GetCurrentCharge() < 100)
+                    {
+                        //Copy any charge from the target
+                        dts.RechargeFrom(WeaponNanoSword(frobTarget));
+                        
+                        pickupCooldown = 0.15;
+                        UpdateHUD();
+
+                        bDestroy = true;
+                    }
+                        
+                    //Destroy the target.
+                    if (bDestroy)
+                    {
+                        frobTarget.Destroy();
+                        return false;
+                    }
+                    else
+                        ClientMessage(Sprintf(CanCarryOnlyOne, foundItem.itemName));
+
+                }
+				else if (!bCanPickup)
 					ClientMessage(Sprintf(CanCarryOnlyOne, foundItem.itemName));
 
                 /*

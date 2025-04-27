@@ -31,9 +31,39 @@ function int SetMaxCharge(int amount, optional bool resetCharge)
         charge = amount;
 }
 
+//Sets charge to a literal amount, capped at max amount and not going below zero
+function int SetCharge(int newCharge)
+{
+    charge = MAX(0,MIN(newCharge,maxCharge));
+}
+
 function int GetCurrentCharge()
 {
 	return int((Float(charge) / Float(maxCharge)) * 100.0);
+}
+
+//recharges this charge manager from another one.
+function RechargeFrom(ChargeManager other)
+{
+    local int amount;
+
+    amount = maxCharge - charge;
+
+    //Don't let us charge more than the other object has.
+    if (other.charge < amount)
+        amount = other.charge;
+
+    if (amount > 0)
+    {
+        SetCharge(charge + amount);
+        other.SetCharge(other.charge - amount);
+        target.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
+        
+        if (charge == maxCharge)
+            owner.ClientMessage(msgFullyCharged);
+        else
+            owner.ClientMessage(Sprintf(msgRecharged,amount));
+    }
 }
 
 //Gets the recharge amount per biocell
