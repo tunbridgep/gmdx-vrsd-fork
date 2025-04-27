@@ -801,6 +801,8 @@ var globalconfig bool bGMDXDebug;                                   //SARGE: All
 
 var globalconfig bool bDropWeaponsOnDeath;                      //SARGE: If enabled, NPCs will drop weapons on death.
 
+var globalconfig int iCrosshairOffByOne;                       //SARGE: Set this if your crosshair is a few pixels too far to the left
+
 //////////END GMDX
 
 // OUTFIT STUFF
