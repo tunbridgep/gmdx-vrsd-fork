@@ -70,7 +70,7 @@ simulated function SetVisionAugStatus(int Level, int LevelValue, bool IsActive)
       if (--DeusExRootWindow(Player.rootWindow).hud.augDisplay.activeCount == 0)
          DeusExRootWindow(Player.rootWindow).hud.augDisplay.bVisionActive = False;
       DeusExRootWindow(Player.rootWindow).hud.augDisplay.visionBlinder = None;
-      Player.HeadRegion.Zone.ViewFog.Y = 0;
+      //Player.HeadRegion.Zone.ViewFog.Y = 0;
    }
 	DeusExRootWindow(Player.rootWindow).hud.augDisplay.visionLevel = Level;
    DeusExRootWindow(Player.rootWindow).hud.augDisplay.visionLevelValue = LevelValue;
