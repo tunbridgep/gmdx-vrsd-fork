@@ -12,21 +12,6 @@ var string tags[10];
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
-event StyleChanged()
-{
-	local ColorTheme theme;
-	theme = player.ThemeManager.GetCurrentHUDColorTheme();
-	bTranslucent  = player.GetHUDBackgroundTranslucency();
-	colButtonFace = theme.GetColorFromName('HUDColor_ButtonFace');
-	// Normal button color
-	colText[0]    = theme.GetColorFromName('HUDColor_ButtonTextNormal');
-	// Focus, pressed
-	colText[1]    = colText[0];
-	colText[2]    = theme.GetColorFromName('HUDColor_ButtonTextFocus');
-	// Disabled button
-	colText[3]    = theme.GetColorFromName('HUDColor_ButtonTextFocus');
-}
-
 defaultproperties
 {
      Left_Textures(0)=(Tex=Texture'DeusExUI.UserInterface.PersonaActionButtonNormal_Left',Width=4)

@@ -21,6 +21,8 @@ var float TimeToSave;
 
 var bool firstTime;     //SARGE: Set to true the first time we enter a map.
 
+var bool bConfixChecked;                        //SARGE: Set to true when we've checked confix being installed.
+
 var byte savedSoundVolume;
 var byte savedMusicVolume;
 var byte savedSpeechVolume;
@@ -164,6 +166,33 @@ function int GenerateMapSeed()
     return int(seed);
 }
 
+//SARGE: Confix sets the `Confix_Engaged` flag, but
+//only when we've received the first message from Alex
+function DoConfixCheck()
+{
+    if (bConfixChecked)
+        return;
+
+    //Check Training
+    else if (localURL == "00_TRAINING" && flags.GetBool('DL_Start_Played'))
+        bConfixChecked = true;
+
+    //Check on Liberty Island
+    else if (localURL == "01_NYC_UNATCOISLAND" && flags.GetBool('DL_StartGame_Played'))
+        bConfixChecked = true;
+    
+    //Check on MJ12 Lab (Alternate Start)
+    else if (localURL == "05_NYC_UNATCOMJ12LAB" && flags.GetBool('DL_PrisonCell_Played'))
+        bConfixChecked = true;
+
+    //Flag is not set, oh dear! Tell the player about it!
+    if (bConfixChecked && !flags.GetBool('Confix_Engaged'))
+    {
+        player.clientMessage("ConFix is not installed! Please install ConFix for the best experience while playing GMDX!");
+        player.clientMessage("After installing ConFix, it is highly recommended that you start a new playthrough!");
+    }
+}
+
 // ----------------------------------------------------------------------
 // FirstFrame()
 //
@@ -185,11 +214,6 @@ function FirstFrame()
     local SecurityCamera Cam;                                                      //SARGE
 
 	flags.DeleteFlag('PlayerTraveling', FLAG_Bool);
-
-    //SARGE: Sanity check for ConFix
-    //The flag is NOT set in the training mission!
-    if (dxInfo.MissionNumber > 0 && !flags.GetBool('Confix_Engaged'))
-        player.clientMessage("ConFix is not installed! Please install ConFix for the best experience while playing GMDX!");
 
     //Recreate/Setup our decal manager
 	foreach AllActors(class'DecalManager', D)
@@ -375,6 +399,8 @@ function Timer()
 		if ((player != None) && (flags.GetBool('PlayerTraveling')))
 			FirstFrame();
 	}
+
+    DoConfixCheck();
 }
 
 function Tick(float DeltaTime)
@@ -469,7 +495,7 @@ function DistributeItem(name actorClass, class<Inventory> itemClass, int minAmou
 
     foreach AllActors(class'ScriptedPawn', SP)
     {
-        if (/*!SP.bImportant && */SP.GetPawnAllianceType(Player) == ALLIANCE_Hostile && !SP.isA('Robot') && !SP.isA('Animal') && !SP.isA('HumanCivilian') && !SP.bDontRandomizeWeapons && actorCount < 50 && SP.IsA('ActorClass'))
+        if (/*!SP.bImportant && */SP.GetPawnAllianceType(Player) == ALLIANCE_Hostile && !SP.isA('Robot') && !SP.isA('Animal') && !SP.isA('HumanCivilian') && !SP.bDontRandomizeWeapons && actorCount < 50 && SP.IsA(actorClass))
             actors[actorCount++] = SP;
     }
     

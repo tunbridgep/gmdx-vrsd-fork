@@ -116,6 +116,10 @@ event InitWindow()
 		TexPortraits[8] = Texture(DynamicLoadObject("FemJC.MenuPlayerSetupJCDentonMale_5", class'Texture', false));
 		TexPortraits[9] = Texture(DynamicLoadObject("FemJC.MenuPlayerSetupJCDentonFemale_5", class'Texture', false));
 	}
+    else
+    {
+        actionButtons[4].action = AB_None;
+    }
 	
     Super.InitWindow();
 
@@ -1067,7 +1071,7 @@ defaultproperties
      actionButtons(1)=(Align=HALIGN_Right,Action=AB_Other,Text="|&Start Game",Key="START")
      actionButtons(2)=(Action=AB_Reset)
      actionButtons(3)=(Action=AB_Other,Text="Modifiers",Key="MODIFIERS")
-     //actionButtons(4)=(Action=AB_Other,Text="Help",Key="HELP") //Remove this because it appears without LDDP installed
+     actionButtons(4)=(Action=AB_Other,Text="LDDP Help",Key="HELP")
      Title="Start New Game"
      ClientWidth=580
      ClientHeight=389

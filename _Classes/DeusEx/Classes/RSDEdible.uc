@@ -88,8 +88,8 @@ function Eat(DeusExPlayer player)
 //What happens when we eat this.
 function OnActivate(DeusExPlayer player)
 {
-    Super.OnActivate(player);
     player.ClientMessage(sprintf(msgConsumed,ItemName));
+    Super.OnActivate(player);
     Eat(player);
     FillUp(player);
 }

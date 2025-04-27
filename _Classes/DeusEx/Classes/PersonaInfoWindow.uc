@@ -236,8 +236,6 @@ function CreatePerkButtons(Skill Skill)
 	{
 		numPerkButtons = 0;
 		currPerk = player.PerkManager.GetPerkForSkill(Skill.class,numPerkButtons);
-		if(player.iAltFrobDisplay < 2)
-			AddLine();
 
 		while (currPerk != None)
 		{
@@ -264,8 +262,6 @@ function CreateGeneralPerkButtons()
 	{
 		numPerkButtons = 0;
 		currPerk = player.PerkManager.GetGeneralPerk(numPerkButtons);
-		if(player.iAltFrobDisplay < 2)
-			AddLine();
 
 		while (currPerk != None)
 		{
@@ -581,22 +577,26 @@ function AddDeclinedInfoWindow()
 	local Window winIcon;
 	local Class<Inventory> invClass;
     local int i, num;
-    
+
     Clear();
 
     num = player.declinedItemsManager.GetDeclinedNumber();
-    
+
     if (num == 0)
         return;
 
 	SetTitle(DeclinedTitleLabel);
-	AddLine();
+	if(player.iAltFrobDisplay == 2) //Ygll: French LOVE their line :D
+		AddLine();
+
 	if (player.bSmartDecline)
 		SetText(DeclinedDesc2);
 	else
 		SetText(DeclinedDesc);
 
-	SetText("");
+	if(player.iAltFrobDisplay == 2) //Ygll: French LOVE their space
+		SetText("");
+
 	AddLine();
     
     for(i = 0; i < ArrayCount(player.declinedItemsManager.declinedTypes);i++)

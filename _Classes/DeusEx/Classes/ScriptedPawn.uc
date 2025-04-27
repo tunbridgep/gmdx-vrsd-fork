@@ -3617,7 +3617,7 @@ function EHitLocation HandleDamage(out int actualDamage, Vector hitLocation, Vec
 		else if (offset.z > headOffsetZ)		// head
 		{
 		    if (offset.z > CollisionHeight * 0.85 && !(abs(offset.y) < headOffsetY && offset.x > 0.0 && offset.z < CollisionHeight*0.93) //RSD: Was CollisionHeight*0.93, I'm making it *0.85, and NOT from the front
-            	&& bHasHelmet && (damageType == 'Shot' || damageType == 'Poison' || damageType == 'Stunned'))
+            	&& bHasHelmet && (damageType == 'Shot' || damageType == 'Poison' || damageType == 'Stunned' || damageType == 'Bleed'))
             {
                     //PlaySound(sound'ArmorRicochet',SLOT_Interact,,true,1536); //RSD: New ricochet sounds because I hate that one
                     if (IsA('Mechanic') && (actualDamage >= 25 || FRand() < 0.2))

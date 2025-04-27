@@ -7,7 +7,7 @@ class SpawnUtils extends Object;
 //Spawns an object in a safe manner
 //If it can't initially spawn, it sets the class to not collide with actors,
 //then spawns it again.
-static function Actor SpawnSafe(class<Actor> spawnType, optional Actor owner, optional name Tag, optional vector Location, optional rotator Rotation)
+static function Actor SpawnSafe(class<Actor> spawnType, Actor owner, optional name Tag, optional vector Location, optional rotator Rotation)
 {
     local Actor spawned;
     

@@ -30,8 +30,9 @@ function Setup()
     super.Setup();
     if (CurrentLevel > 0)
     {
-        if (AugmentationType == Aug_Passive && bIsActive)
-            Deactivate();
+        //SARGE: Reverted now that it's free
+        //if (AugmentationType == Aug_Passive && bIsActive)
+        //    Deactivate();
         AugmentationType=Aug_Toggle;
         //EnergyReserved=5;
         EnergyReserved=0; //SARGE: Just remove it....ugh
