@@ -713,6 +713,7 @@ var travel float killswitchTimer;                                               
 
 //Music Stuff
 var transient string currentSong;                                                 //SARGE: The "Song" variable is kept in savegames...
+var transient bool bLastWasOutro;                                                 //SARGE: The "Song" variable is kept in savegames...
 var globalconfig int iEnhancedMusicSystem;                                             //SARGE: Should the music system be a bit smarter about playing tracks?
 
 //SARGE: Autoswitch to Health screen when installing the last augmentation at a med bot.
@@ -742,6 +743,10 @@ var globalconfig bool bShowItemPickupCounts;                            //SARGE:
 var globalconfig bool bShowAmmoTypeInAmmoHUD;                           //SARGE: If true, show the selected ammo type in the Ammo HUD, where the lock on text would normally be.
 
 var transient float pickupCooldown;                                     //SARGE: Add a very short cooldown after picking something up, so that we can't duplicate items while they replicate to the server.
+
+var bool bWasForceSelected;                                             //SARGE: Whether or not our last weapon selection was forced.
+var bool bSelectedOffBelt;                                             //SARGE: Whether or not our last weapon selection was for an item that isn't on the belt.
+var globalconfig bool bAllowOffBeltSelection;                           //SARGE: When selecting off belt, unholstering respects the new selection rather than using the last belt selection. Disabled by default because it can feel weird/inconsistent.
 
 //SARGE: Bigger weapon effect sparks
 var globalconfig bool bJohnWooSparks;
@@ -899,6 +904,7 @@ function ConfigBigDroneView(bool droneView)
 }
 
 //Handle Crouch Toggle
+//SARGE: This should set bIsCrouching maybe???
 function HandleCrouchToggle()
 {
     //SARGE: Don't let us toggle crouch while using the drone
@@ -961,7 +967,10 @@ function ClientMessage(coerce string msg, optional Name type, optional bool bBee
 function DebugMessage(coerce string msg)
 {
     if (bGMDXDebug)
+    {
         ClientMessage(msg);
+        Log(msg);
+    }
 }
 
 
@@ -1857,7 +1866,7 @@ event TravelPostAccept()
 
 	if (bHardCoreMode)
 	{
-	  bCheatsEnabled=false;
+	  //bCheatsEnabled=false;
 	  bAutoReload=false;
 	}
 
@@ -3253,11 +3262,13 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
 	local DeusExLevelInfo info;
     
     info = GetLevelInfo();
+        
+    DebugMessage("Music Change Request:" @ NewSong @ NewSection);
 
     if (string(NewSong) != default.currentSong) //We always want to allow song changes
     {
         bChange = true;
-        DebugMessage("Changing Music - Song Change" @ default.currentSong);
+        DebugMessage("Changing Music - Song Change from" @ default.currentSong);
         default.savedSection = Level.SongSection; //And reset the saved section
     }
     else if (iEnhancedMusicSystem == 0) //Always change with the old system
@@ -3265,20 +3276,27 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
         bChange = true;
         DebugMessage("Changing Music - Old System");
     }
+    else if (default.bLastWasOutro) //Always restart music after an outtro cutscene even if the next map has the same music.
+    {
+        bChange = true;
+        DebugMessage("Changing Music - Switching after Outro");
+        default.savedSection = Level.SongSection; //And reset the saved section
+    }
     else if (SongSection != NewSection) //Don't let us replay the same bit we're already playing.
     {
-        if (NewSection == default.savedSection && default.musicMode != MUS_Ambient) //allow changing to our saved section if we're not already playing it
+        if (info != none && info.bBarOrClub && iEnhancedMusicSystem == 2) //Don't allow music changes in clubs or bars with the extended option.
+        {
+            DebugMessage("Bar or Club - Music Unchanged");
+        }
+        else if (NewSection == default.savedSection && default.musicMode != MUS_Ambient) //allow changing to our saved section if we're not already playing it
         {
             bChange = true;
             DebugMessage("Changing Music - Saved Section: " $ default.musicMode);
         }
         else if (NewSection != Level.SongSection) //We want to allow changes to different patterns (except ambient)
         {
-            if (info == none || !info.bBarOrClub || iEnhancedMusicSystem != 2) //Don't allow music changes in clubs or bars with the extended option.
-            {
-                bChange = true;
-                DebugMessage("Changing Music - Non-Default Section");
-            }
+            bChange = true;
+            DebugMessage("Changing Music - Non-Default Section");
         }
         else if (NewSection == Level.SongSection && default.musicMode != MUS_Ambient) //If we ARE changing to our default section and not in ambient, then instead change to our saved section
         {
@@ -3292,6 +3310,7 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
     {
         super.ClientSetMusic(NewSong,NewSection,NewCdTrack,NewTransition);
         default.currentSong = string(NewSong);
+        default.bLastWasOutro = NewSection == 5;
     }
 }
 
@@ -4575,6 +4594,7 @@ function name GetFloorMaterial()
         texGroup = 'Stucco';
     }
     SpecTex = texName;
+    //ClientMessage("GetFloorMaterial: " $ texName);
 	return texGroup;
 }
 
@@ -8144,7 +8164,7 @@ exec function ParseLeftClick()
 
         //SARGE: Final option - select last weapon
         if (inHand == None && bLeftClickUnholster)
-            SelectLastWeapon(false,true);
+            SelectLastWeapon(false,!bSelectedOffBelt);
 	}
 }
 
@@ -8175,6 +8195,11 @@ function SelectLastWeapon(optional bool allowEmpty, optional bool bBeltLast)
         if (iAlternateToolbelt > 0 && root.ActivateObjectInBelt(advBelt))
         {
             bSelectedFromMainBeltSelection = true;
+            NewWeaponSelected();
+            return;
+        }
+        else if (root.ActivateObjectInBelt(beltLast))
+        {
             NewWeaponSelected();
             return;
         }
@@ -8267,7 +8292,7 @@ exec function Holster()
     else
     {
         bSelectedFromMainBeltSelection = true;
-        SelectLastWeapon(false,true);
+        SelectLastWeapon(false,!bSelectedOffBelt);
     }
 }
 
@@ -8418,21 +8443,21 @@ exec function ParseRightClick()
 			PutInHand(None);
 		}
         //SARGE: When we have a forced weapon selection in hand (like a lockpick after left-frobbing, then select our last weapon instead.
-        else if (inHand != None && primaryWeapon != None && inHand != primaryWeapon && (clickCountCyber >= 1 || dblClickHolster == 0 || !bLastWasEmpty))
+        else if (bWasForceSelected && inHand != None && primaryWeapon != None && inHand != primaryWeapon && (clickCountCyber >= 1 || dblClickHolster == 0 || !bLastWasEmpty))
         {
             SelectLastWeapon(true);
         }
         //If we are using a different items to our belt item, and classic mode is on or we scrolled, select it instantly
 		else if ((iAlternateToolbelt > 1 || bScrollSelect) && (iAlternateToolbelt < 3 || bSelectedFromMainBeltSelection || bScrollSelect) && (beltScrolled != beltLast || bLastWasEmpty) && inHand != None)
 		{
-            SelectLastWeapon(false,true);
+            SelectLastWeapon(false,!bSelectedOffBelt);
             beltLast = advBelt;
 		}
         else if (inHand == None && (clickCountCyber >= 1 || dblClickHolster < 2))
 		{
             //SARGE: Added support for the unholster behaviour from the Alternate Toolbelt on both Toolbelts
             bSelectedFromMainBeltSelection = true;
-            SelectLastWeapon(false,true);
+            SelectLastWeapon(false,!bSelectedOffBelt);
 		}
 		else if (inHand != None && (clickCountCyber >= 1 || dblClickHolster == 0))
 		{
@@ -8561,7 +8586,7 @@ function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool
                 AddReceivedItem(AmmoType, intj, bNoGroup);
         }
 
-        //If we only took a partial amount, make a special sound.
+        //If we took at least some, make a special sound.
         if (bLootSound)
             PlayPartialAmmoSound(AmmoType,AmmoType.Class);
 
@@ -8599,9 +8624,10 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 	local Inventory foundItem;
     local Ammo foundAmmo;
     local DeusExAmmo assignedAmmo;
-    local int intj;
     local bool bDeclined;
     local bool bLootedAmmo;
+    local WeaponNanoSword dts;
+    local bool bDestroy;
 
 	bSlotSearchNeeded = True;
 	bCanPickup = True;
@@ -8678,8 +8704,50 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 
 				/*if (Weapon(foundItem).IsA('WeaponHideAGun'))
                 {bCanPickup = True;  bSearchSlotNeeded = True;  }*/
+				
+                //SARGE: Now that the DTS can have "ammo" in the form of charge,
+                //treat it like any other weapon.
+                //SARGE: EDIT: This doesn't work at all!
+                /*
+                if (Weapon(foundItem).IsA('WeaponNanoSword'))
+                {
+                    bCanPickup = True;
+                }
+                */
+                //SARGE: Looks like we're going to have to handle the DTS manually...
+                if (foundItem.IsA('WeaponNanoSword'))
+                {
+                    dts = WeaponNanoSword(foundItem);
 
-				if (!bCanPickup)
+                    //First copy over any mods.
+                    if (WeaponNanoSword(frobTarget).bModified)
+                    {
+                        dts.CopyModsFrom(WeaponNanoSword(frobTarget),true);
+                        bDestroy=true;
+                    }
+
+                    if (dts.chargeManager.GetCurrentCharge() < 100)
+                    {
+                        //Copy any charge from the target
+                        dts.RechargeFrom(WeaponNanoSword(frobTarget));
+                        
+                        pickupCooldown = 0.15;
+                        UpdateHUD();
+
+                        bDestroy = true;
+                    }
+                        
+                    //Destroy the target.
+                    if (bDestroy)
+                    {
+                        frobTarget.Destroy();
+                        return false;
+                    }
+                    else
+                        ClientMessage(Sprintf(CanCarryOnlyOne, foundItem.itemName));
+
+                }
+				else if (!bCanPickup)
 					ClientMessage(Sprintf(CanCarryOnlyOne, foundItem.itemName));
 
                 /*
@@ -8702,16 +8770,13 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     //SARGE: Always try looting non-disposable weapons of their ammo
     if (bCanPickup && FrobTarget.IsA('DeusExWeapon') && !bFromCorpse && !DeusExWeapon(frobTarget).bDisposableWeapon)
     {
-        bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,true,bAlwaysShowReceivedItemsWindow,false,false,bShowOverflow);
+        bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,true,bAlwaysShowReceivedItemsWindow,false,true,bShowOverflow);
 
-        //Make a noise if we picked up partial ammo
-        if (bLootedAmmo && DeusExWeapon(frobTarget).PickupAmmoCount > 0)
-            PlayPartialAmmoSound(frobTarget,DeusExWeapon(frobTarget).GetPrimaryAmmoType());
-        
         //Don't pick up a weapon if there's ammo in it and we already have one
         if (!bSlotSearchNeeded && DeusExWeapon(frobTarget).PickupAmmoCount > 0 && bCanPickup)
         {
-            //if (!bLootedAmmo)
+            //SARGE: Not needed anymore as we're reporting overflow.
+            //if (!bFromCorpse)
             //    ClientMessage(TooMuchAmmo);
             bCanPickup = False;
         }
@@ -8753,22 +8818,38 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
         
         //SARGE: Since we haven't looted Disposable weapons yet, do so now.
         if (FrobTarget.IsA('DeusExWeapon') && DeusExWeapon(frobTarget).bDisposableWeapon)
-            DeusExWeapon(frobTarget).LootAmmo(self,foundItem != None || bFromCorpse,bFromCorpse,false,false,false);
-
-        DoFrob(Self, inHand);
-        /*if ( FrobTarget.IsA('DeusExWeapon') && bLeftClicked) //CyberP: for left click interaction //RSD: This is actually in FindInventorySlot() already, and the conflict made the player equip nothing
         {
-        PutInHand(FoundItem);
-        //bLeftClicked = False;
-        }*/
-		// This is bad. We need to reset the number so restocking works
-		if ( Level.NetMode != NM_Standalone )
-		{
-			if ( FrobTarget.IsA('DeusExWeapon') && (DeusExWeapon(FrobTarget).PickupAmmoCount == 0) )
-			{
-				DeusExWeapon(FrobTarget).PickupAmmoCount = DeusExWeapon(FrobTarget).Default.mpPickupAmmoCount * 3;
-			}
-		}
+            bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,!bFromCorpse,bFromCorpse,false,false,false);
+
+            if (DeusExWeapon(frobTarget).PickupAmmoCount > 0)
+            {
+                if (!bFromCorpse)
+                    //ClientMessage(TooMuchAmmo);
+                    ClientMessage(class'DeusExPickup'.default.msgTooMany);
+                    
+             
+                if (!bSlotSearchNeeded)
+                    bCanPickup = false;
+            }
+        }
+        
+        if (bCanPickup)
+        {
+            DoFrob(Self, inHand);
+            /*if ( FrobTarget.IsA('DeusExWeapon') && bLeftClicked) //CyberP: for left click interaction //RSD: This is actually in FindInventorySlot() already, and the conflict made the player equip nothing
+            {
+            PutInHand(FoundItem);
+            //bLeftClicked = False;
+            }*/
+            // This is bad. We need to reset the number so restocking works
+            if ( Level.NetMode != NM_Standalone )
+            {
+                if ( FrobTarget.IsA('DeusExWeapon') && (DeusExWeapon(FrobTarget).PickupAmmoCount == 0) )
+                {
+                    DeusExWeapon(FrobTarget).PickupAmmoCount = DeusExWeapon(FrobTarget).Default.mpPickupAmmoCount * 3;
+                }
+            }
+        }
 	}
 
     if (bCanPickup && !bDeclined)
@@ -8783,10 +8864,20 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
             bLeftClicked = False;
         }
     }
+        
+    //Make a noise if we picked up ammo from a weapon we couldn't pick up.
+    if (bLootedAmmo && (!bCanPickup || bDeclined) && FrobTarget.IsA('DeusExWeapon'))
+        PlayPartialAmmoSound(frobTarget,DeusExWeapon(frobTarget).GetPrimaryAmmoType());
+        
 
     //Hacky Shuriken fix
     if (FrobTarget.IsA('WeaponShuriken'))
         WeaponShuriken(FrobTarget).SetFrobNameHack(false);
+
+    //SARGE: Hacky weapon clip fix
+    //I really shouldn't have rewritten the ammo system...
+    if ((!bCanPickup || bDeclined) && frobTarget.IsA('DeusExWeapon') && !DeusExWeapon(frobTarget).bDisposableWeapon)
+        DeusExWeapon(frobTarget).ClipCount = DeusExWeapon(frobTarget).PickupAmmoCount;
 
 	return bCanPickup && !bDeclined;
 }
@@ -9024,6 +9115,11 @@ exec function PutInHand(optional Inventory inv, optional bool bNoPrimary)
 
     if (!bNoPrimary)
         bLastWasEmpty = inv == None;
+
+    //SARGE: Was this weapon force selected?
+    //ie, was it selected through left/right frob, rather than
+    //being selected deliberately by the player
+    bWasForceSelected = bNoPrimary;
     
     //SARGE: If we don't have a valid advBelt selection, the first selection is valid.
     if (!bNoPrimary && advBelt == -1 && inv.bInObjectBelt)
@@ -9224,8 +9320,16 @@ function UpdateInHand()
         
             if (inHandPending != None && !inHandPending.IsA('POVCorpse') && !bBeltSkipNextPrimary)
             {
+                //SARGE: TODO: Consider implementing this
+                //if (selectedItem.beltPos == beltLast && selectedItem.bInObjectBelt)
+                if (selectedItem.bInObjectBelt)
+                    beltLast = selectedItem.beltPos;
+                
+                bSelectedOffBelt = !selectedItem.bInObjectBelt && bAllowOffBeltSelection;
+
+                //if (selectedItem.bInObjectBelt || selectedItem.IsA('DeusExWeapon'))
                 //clientMessage("Update Primary to: " $ selectedItem);
-                primaryWeapon = selectedItem;
+                    primaryWeapon = selectedItem;
                 bBeltSkipNextPrimary = false;
             }
 
@@ -18699,7 +18803,7 @@ defaultproperties
      bAnimBar1=True
      bAnimBar2=True
      bRealisticCarc=True
-     bRemoveVanillaDeath=True
+     bRemoveVanillaDeath=False
      bHitmarkerOn=True
      bMantleOption=True
      bSkillMessage=True
@@ -18790,19 +18894,18 @@ defaultproperties
      dynamicCrosshair=1
      bBeltMemory=True
      bEnhancedCorpseInteractions=True
-     bBeltShowModified=true;
+     bBeltShowModified=true
      bSearchedCorpseText=True
-     bDisplayClips=true
+     bDisplayClips=false
      iCutsceneFOVAdjust=2
      iFrobDisplayStyle=1
-     bShowDataCubeRead=true;
-     bShowDataCubeImages=true;
-     iAllowCombatMusic=1
-     bFullAccuracyCrosshair=true;
-     bShowEnergyBarPercentages=true;
+     bShowDataCubeRead=true
+     bShowDataCubeImages=true
+     iAllowCombatMusic=2
+     bFullAccuracyCrosshair=true
+     bShowEnergyBarPercentages=true
      bSimpleAugSystem=false
      bBigDroneView=True
-     bSimpleAugSystem=true
 	 MenuThemeNameGMDX="MJ12"
      HUDThemeNameGMDX="Amber"
      dblClickHolster=2
@@ -18818,16 +18921,15 @@ defaultproperties
      bOnlyShowTargetingWindowWithWeaponOut=True
      //bRightClickToolSelection=True
      bShowItemPickupCounts=True
-     bAllowSaveWhileInfolinkPlaying=True
+     bAllowSaveWhileInfolinkPlaying=False
      bShowAmmoTypeInAmmoHUD=True
      //bJohnWooSparks=True
      bConsistentBloodPools=True
-     iPersistentDebris=1
+     iPersistentDebris=3
   	 iStanceHud=3   //Ygll = Every stance
      bIsMantlingStance=false //Ygll: new var to know if we are currently mantling
      iHealingScreen=1
      bAlwaysShowReceivedItemsWindow=true
-     bShowTotalRoundsCount=true
      bPistolStartTrained=true
      bStreamlinedRepairBotInterface=true
      iShowTotalCounts=1

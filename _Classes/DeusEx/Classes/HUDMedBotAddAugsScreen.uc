@@ -111,11 +111,12 @@ function CreateButtons()
 	winActionButtons.SetWidth(96);
 
 	btnInstall = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow'));
+	btnInstall.bCenterText = false;
 	btnInstall.SetButtonText(InstallButtonLabel);
 
 	chkAutoswitch = PersonaCheckboxWindow(winClient.NewChild(Class'PersonaCheckboxWindow'));
 	chkAutoswitch.SetText(AutoswitchText);
-	chkAutoswitch.SetPos(346+96+4, 371);
+	chkAutoswitch.SetPos(346+96+4, 373);
 	chkAutoswitch.SetWidth(200);
     chkAutoswitch.SetToggle(player.bMedbotAutoswitch);
 }
