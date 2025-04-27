@@ -146,7 +146,7 @@ function DoConfixCheck()
         bConfixChecked = true;
     
     //Check on MJ12 Lab (Alternate Start)
-    else if (localURL == "05_NYC_UNATCOMJ12LAB" && flags.GetBool('DL_PrisonCell_Played'))
+    else if (localURL == "05_NYC_UNATCOMJ12LAB" && flags.GetBool('M05AnnaTaunt_Played'))
         bConfixChecked = true;
 
     //Flag is not set, oh dear! Tell the player about it!
