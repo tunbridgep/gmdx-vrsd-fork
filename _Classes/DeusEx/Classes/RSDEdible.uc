@@ -66,7 +66,7 @@ function string GetDescription2(DeusExPlayer player)
 
     str = super.GetDescription2(player);
 
-    if (fullness > 0)
+    if (fullness > 0 && (player.bHardcoreMode || player.bRestrictedMetabolism))
         str = AddLine(str,sprintf(HungerLabel,fullness));
 
     return str;
