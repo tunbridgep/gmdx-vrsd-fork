@@ -151,7 +151,7 @@ function CreateHackButton()
 
 	winActionButtons = PersonaButtonBarWindow(NewChild(Class'PersonaButtonBarWindow'));
 	winActionButtons.SetPos(20, 86);
-	winActionButtons.SetWidth(90);
+	winActionButtons.SetWidth(88);
 	winActionButtons.FillAllSpace(True);
 
 	btnHack = PersonaActionButtonWindowMenu(winActionButtons.NewChild(Class'PersonaActionButtonWindowMenu'));

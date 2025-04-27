@@ -111,7 +111,6 @@ function CreateButtons()
 	winActionButtons.SetWidth(96);
 
 	btnInstall = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow'));
-	btnInstall.bCenterText = false;
 	btnInstall.SetButtonText(InstallButtonLabel);
 
 	chkAutoswitch = PersonaCheckboxWindow(winClient.NewChild(Class'PersonaCheckboxWindow'));
