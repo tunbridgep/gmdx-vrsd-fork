@@ -314,7 +314,7 @@ function RefreshAlternateToolbelt()
                 objects[slotIndex].SetToggle(player.inHandPending != None && slotIndex == player.inHandPending.beltPos);
                 
                 //White outline stays with our current weapon
-                objects[slotIndex].HighlightSelect(slotIndex == player.advBelt && !placeholderSlot && objects[slotIndex].item != None);
+                objects[slotIndex].HighlightSelect(slotIndex == player.advBelt && !placeholderSlot && objects[slotIndex].item != None && !player.bSelectedOffBelt);
             }
             else
             {
@@ -322,7 +322,7 @@ function RefreshAlternateToolbelt()
                 objects[slotIndex].HighlightSelect(player.inHandPending != None && slotIndex == player.inHandPending.beltPos);
                 
                 //White outline stays with our primary selection
-                objects[slotIndex].SetToggle(slotIndex == player.advBelt && !placeholderSlot && objects[slotIndex].item != None);
+                objects[slotIndex].SetToggle(slotIndex == player.advBelt && !placeholderSlot && objects[slotIndex].item != None && !player.bSelectedOffBelt);
             }
 		}
 	}
