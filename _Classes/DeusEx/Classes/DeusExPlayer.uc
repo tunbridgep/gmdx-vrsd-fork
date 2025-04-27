@@ -8768,7 +8768,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 	}
 
     //SARGE: Always try looting non-disposable weapons of their ammo
-    if (bCanPickup && FrobTarget.IsA('DeusExWeapon') && !bFromCorpse && !DeusExWeapon(frobTarget).bDisposableWeapon)
+    if (bCanPickup && FrobTarget.IsA('DeusExWeapon') && !DeusExWeapon(frobTarget).bDisposableWeapon)
     {
         bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,true,bAlwaysShowReceivedItemsWindow,false,true,bShowOverflow);
 
