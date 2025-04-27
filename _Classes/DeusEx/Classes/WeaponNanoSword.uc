@@ -53,6 +53,15 @@ function Tick(float deltaTime)
 {
     super.Tick(deltaTime);
     drained = MAX(0,drained - deltaTime);
+    RefreshLight();
+}
+
+function RefreshLight()
+{
+    if (!IsInState('DownWeapon') && !IsInState('Idle2') && !chargeManager.IsUsedUp())
+        LightType = LT_Steady;
+    else
+        LightType = LT_None;
 }
 
 //Initialise charge manager and link the player to it
@@ -94,49 +103,33 @@ function Fire(float Value)
     super.Fire(Value);
 }
 
-//SARGE: Don't play a sound when drawing if we're out of charge
-function PlaySelect()
-{
-    if (chargeManager != None && chargeManager.IsUsedUp())
-        SelectSound=None;
-    else
-        SelectSound=default.SelectSound;
-    Super.PlaySelect();
-}
-
-
 //SARGE: Sets and unsets textures based on our charge amount
 function SetWeaponSkin(bool hdtp)
 {
-    //Stop light re-appearing when holstered
-    if (!(IsInState('Idle') || IsInState('DownWeapon') || IsInState('Active')) && Owner != None)
-        return;
-
     if (hdtp)
     {
         if (chargeManager.IsUsedUp())
         {
-            LightType = LT_None;
             multiskins[2] = Texture'PinkMaskTex';
             multiskins[3] = Texture'PinkMaskTex';
             multiskins[4] = Texture'PinkMaskTex';
             multiskins[6] = Texture'PinkMaskTex';
             multiskins[7] = Texture'PinkMaskTex';
             Texture = Texture'PinkMaskTex';
+            SelectSound = None;
         }
         else
         {
-            LightType = LT_Steady;
             multiskins[2] = Texture'Effects.Electricity.WavyBlade';
             multiskins[3] = Texture'Effects.Electricity.WavyBlade';
             multiskins[4] = Texture'Effects.Electricity.WavyBlade';
             multiskins[6] = Texture'Effects.Electricity.WavyBlade';
             multiskins[7] = Texture'Effects.Electricity.WavyBlade';
+            SelectSound = default.SelectSound;
         }
     }
     else if (chargeManager.IsUsedUp())
     {
-		LightType = LT_None;
         multiskins[1] = Texture'PinkMaskTex';
         multiskins[2] = Texture'BlackMaskTex';
         //multiskins[3] = Texture'PinkMaskTex';
@@ -144,10 +137,12 @@ function SetWeaponSkin(bool hdtp)
         multiskins[5] = Texture'PinkMaskTex';
         multiskins[6] = Texture'PinkMaskTex';
         multiskins[7] = Texture'PinkMaskTex';
+        SelectSound = None;
     }
     else
-        LightType = LT_Steady;
-
+    {
+        SelectSound = default.SelectSound;
+    }
 }
 
 function DisplayWeapon(bool overlay)
@@ -163,16 +158,7 @@ function DisplayWeapon(bool overlay)
     	multiskins[0] = handstex;
     }
 
-    SetWeaponSkin(IsHDTP());
-}
-
-state DownWeapon
-{
-	function BeginState()
-	{
-		Super.BeginState();
-		LightType = LT_None;
-	}
+    SetWeaponSkin(hdtp);
 }
 
 state Idle
@@ -182,7 +168,6 @@ state Idle
 		Super.BeginState();
         if (chargeManager != None && !chargeManager.IsUsedUp())
         {
-            LightType = LT_Steady;
             AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 416);  //CyberP: drawing the sword makes noise
        }
 	}
@@ -193,7 +178,6 @@ auto state Pickup
 	function EndState()
 	{
 		Super.EndState();
-		LightType = LT_None;
         SetupChargeManager();
 	}
 }
