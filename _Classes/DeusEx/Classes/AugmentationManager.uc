@@ -538,7 +538,7 @@ function Augmentation GivePlayerAugmentation(Class<Augmentation> giveClass)
 		Player.ClientMessage(AugLocationFull);
 		return anAug;
 	}
-
+        
     //Add it to the aug wheel permanently, depending on settings.
     AddToWheel(anAug);
 
@@ -567,7 +567,7 @@ function Augmentation GivePlayerAugmentation(Class<Augmentation> giveClass)
 
 	anAug.bHasIt = True;
 
-	if (anAug.AugmentationType == Aug_Passive)
+	if (anAug.AugmentationType == Aug_Passive || anAug.AugmentationType == Aug_Automatic)
 	{
 		anAug.bIsActive = True;
 		anAug.GotoState('Active');
