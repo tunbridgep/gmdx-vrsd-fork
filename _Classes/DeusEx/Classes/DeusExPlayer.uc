@@ -3271,11 +3271,24 @@ function ClientSetMusic(music NewSong, byte NewSection, byte NewCdTrack, EMusicT
     bSwitchingToNonAmbient = !IsAmbientSection(NewSection);
     bChange = true;
     
-    //Hack to fix broken audio settings.
-    SetInstantMusicVolume(int(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice MusicVolume")));
-    
+    if (NewSection == 255)
+        NewSection = Level.SongSection;
+        
+    DebugMessage("ClientSetMusicCalled: " $ NewSong);
+    DebugMessage("FadeTimeHack is: " $ default.fadeTimeHack);
 
-    if (iEnhancedMusicSystem > 0 && default.fadeTimeHack == 0)
+    //SARGE: We're still fading, so we need to do a hacky fix
+    //The engine is busted and needs to be reset, so instantly transition back to our saved section.
+    //and reset the volume
+    if (default.fadeTimeHack > 0)
+    {
+        //Hack to fix broken audio settings.
+        SetInstantMusicVolume(int(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice MusicVolume")));
+        NewTransition = MTRAN_Instant;
+        DebugMessage("FadeTimeHack fix");
+        NewSection = default.savedSection;
+    }
+    else if (iEnhancedMusicSystem > 0)
     {
         //No changes allowed at all in bars or clubs
         if (info.bBarOrClub && iEnhancedMusicSystem > 1 && string(NewSong) == default.lastSong)
@@ -3291,10 +3304,10 @@ function ClientSetMusic(music NewSong, byte NewSection, byte NewCdTrack, EMusicT
     if (bChange)
         super.ClientSetMusic(NewSong,NewSection,NewCdTrack,NewTransition);
 
-    if (NewTransition == MTRAN_FastFade)
-        default.fadeTimeHack = 2.0;
-    else if (NewTransition == MTRAN_Fade)
+    if (NewTransition == MTRAN_SlowFade)
         default.fadeTimeHack = 6.0;
+    else if (NewTransition == MTRAN_Fade)
+        default.fadeTimeHack = 4.0;
 
     default.lastSong = string(NewSong);
     default.lastSection = NewSection;
@@ -3478,21 +3491,23 @@ function UpdateDynamicMusic(float deltaTime)
 				// wait until we've been out of combat for 5 seconds before switching music
 				if (musicChangeTimer >= 5.0)
 				{
-                    // use the default ambient section for this map
-					if (savedSection == 255)
-						savedSection = Level.SongSection;
-
 					// fade slower for combat transitions
 					if (musicMode == MUS_Combat)
 						ClientSetMusic(Level.Song, savedSection, 255, MTRAN_SlowFade);
 					else
 						ClientSetMusic(Level.Song, savedSection, 255, MTRAN_Fade);
                     
-                    savedSection = 255;
 					musicMode = MUS_Ambient;
 					musicChangeTimer = 0.0;
 				}
 			}
+            //SARGE: Set our savedsection constantly, rather than trying to
+            //do it based on changing modes, because if we change modes too fast,
+            //we instead get wonkiness. So, just update it if we're ambient.
+            else if (default.fadeTimeHack == 0)
+            {
+                default.savedSection = SongSection;
+            }
 		}
 	}
 }
