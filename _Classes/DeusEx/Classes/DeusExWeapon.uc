@@ -558,7 +558,8 @@ function Draw(DeusExPlayer frobber)
     //frobber.clientMessage("Draw!");
 
     //Fix allowing more in the clip than we have
-    ClipCount = min(ClipCount,AmmoType.AmmoAmount);
+	if(AmmoType != None)
+		ClipCount = min(ClipCount,AmmoType.AmmoAmount);
     
     SetWeaponHandTex();
 
@@ -747,7 +748,7 @@ function SetWeaponHandTex()
 			case 4: handsTex = class'HDTPLoader'.static.GetTexture("FOMOD.HandTexFinalA"); break;
         }
     }
-    else if(p != none)
+    else if(p != None)
         handsTex = p.GetWeaponHandTex();
     else
         handsTex = None;
@@ -1100,21 +1101,26 @@ function ReloadMaxAmmo()
 //Copied from Weapon.uc
 function GiveAmmo( Pawn Other )
 {
-	if ( AmmoName == None )
+	if ( AmmoName == None || Other == None )
 		return;
+
 	AmmoType = Ammo(Other.FindInventoryType(AmmoName));
+
 	if ( AmmoType != None )
 		AmmoType.AddAmmo(PickUpAmmoCount);
 	else
 	{
         //SARGE: Here's the nasty bug!
         //Spawn will fail if there's not enough room to spawn the relevant ammo...
-		AmmoType = Ammo(class'SpawnUtils'.static.SpawnSafe(AmmoName));	// Create ammo type required		
+		AmmoType = Ammo(class'SpawnUtils'.static.SpawnSafe(AmmoName,self));	// Create ammo type required		
 
-		Other.AddInventory(AmmoType);		// and add to player's inventory
-		AmmoType.BecomeItem();
-		AmmoType.AmmoAmount = PickUpAmmoCount; 
-		AmmoType.GotoState('Idle2');
+		if ( AmmoType != None )
+		{
+			Other.AddInventory(AmmoType);		// and add to player's inventory
+			AmmoType.BecomeItem();
+			AmmoType.AmmoAmount = PickUpAmmoCount; 
+			AmmoType.GotoState('Idle2');
+		}
 	}
 }	
 
@@ -3213,7 +3219,6 @@ simulated function MuzzleFlashLight()
 			spoof = spawn(class'PlasmaParticleSpoof',,, offset, Pawn(Owner).ViewRotation);
 			if (spoof!=none)
 			{
-				log("Spoofing");
 				spoof.DrawScale=0.006;
 				spoof.LifeSpan=0.2;
 				spoof.Texture= class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashSmall2");
@@ -3900,7 +3905,7 @@ simulated function PlayIdleAnim()
 		return;
 
 	rnd = FRand();
-	if (Owner.IsA('DeusExPlayer'))
+	if (Owner != None && Owner.IsA('DeusExPlayer'))
 	{
 		if (DeusExPlayer(Owner).IsCrouching() == False && (DeusExPlayer(Owner).Velocity.X != 0 || DeusExPlayer(Owner).Velocity.Y != 0))
 		{
@@ -3939,28 +3944,33 @@ simulated function PlayIdleAnim()
 
 function SpawnBlood(Vector HitLocation, Vector HitNormal)
 {
-local BloodDrop drop;
-local int i;
+	local BloodDrop drop;
+	local int i;
+	
 	if ((DeusExMPGame(Level.Game) != None) && (!DeusExMPGame(Level.Game).bSpawnEffects))
 	  return;
 
+	spawn(class'BloodSpurt',,,HitLocation+HitNormal);
+    spawn(class'BloodDrop',,,HitLocation+HitNormal);
+    spawn(class'BloodDrop',,,HitLocation+HitNormal);
+	spawn(class'BloodDrop',,,HitLocation+HitNormal);
+	if (FRand() < 0.4)
+		spawn(class'BloodDrop',,,HitLocation+HitNormal);
 
-    spawn(class'BloodDrop',,,HitLocation+HitNormal);
-    spawn(class'BloodDrop',,,HitLocation+HitNormal);
-    if (FRand() < 0.4)
-       spawn(class'BloodDrop',,,HitLocation+HitNormal);
-    spawn(class'BloodSpurt',,,HitLocation+HitNormal);
-    if (!bHandToHand && Owner != none && Owner.IsA('DeusExPlayer'))
+    if (!IsA('WeaponProd') && Owner != None && Owner.IsA('DeusExPlayer'))
     {
-    for(i=0;i<25;i++)
-    {
-    drop = spawn(class'BloodDrop',,,HitLocation+HitNormal);
-    if (drop!=none)
-    {
-    drop.LifeSpan=0.2;
-    drop.Velocity*=0.8;
-    }
-    }
+		for(i=0;i<25;i++)
+		{
+			if (FRand() < 0.5) //Ygll: taking the test from Carcass spawn blood. 
+				continue;
+
+			drop = spawn(class'BloodDrop',,,HitLocation+HitNormal);
+			if (drop != None)
+			{
+				drop.LifeSpan=0.2;
+				drop.Velocity*=0.8;
+			}
+		}
     }
 }
 
@@ -5233,20 +5243,22 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
                 }
                 else
                 {
-				    if (!bHandToHand && !Pawn(Other).IsA('DeusExPlayer') && !Pawn(Other).IsInState('Dying'))
+				    if (!bHandToHand && !IsA('WeaponProd') && !Pawn(Other).IsA('DeusExPlayer') && !Pawn(Other).IsInState('Dying'))
                     {
-                        if (FRand() < 0.3)
-                            SpawnBlood(HitLocation, HitNormal);
+						SpawnBlood(HitLocation, HitNormal);
                         spoofer = Spawn(class'BloodMeleeHit',,,HitLocation);
                         if (spoofer != none)
                             spoofer.DrawScale= 0.14;
                     }
                     else if (bHandToHand)
+					{
+						SpawnBlood(HitLocation, HitNormal);
                        if (IsA('WeaponNanoSword') || IsA('WeaponCombatKnife') || IsA('WeaponSword') || IsA('WeaponCrowbar'))
 				         spoofer = Spawn(class'BloodMeleeHit',,,HitLocation);
+					}
 				}
 			}
-            else if (Other.IsA('DeusExCarcass') && DamageType == 'shot')
+            else if (Other.IsA('DeusExCarcass') && !IsA('WeaponProd') && DamageType == 'shot')
            	{
                 spoofer = Spawn(class'BloodMeleeHit',,,HitLocation+vect(0,0,1));
            	    if (spoofer != none)

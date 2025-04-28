@@ -1359,6 +1359,12 @@ function DrawAccuracyCrosshair(GC gc, DeusExWeapon weapon, Color crossColor, out
     local int i;
     w = width;
     h = height;
+
+    if (player.iCrosshairOffByOne > 0)
+    {
+        w += player.iCrosshairOffByOne;
+    }
+
     x = int(w * 0.5)-1;
     y = int(h * 0.5)-1;
 

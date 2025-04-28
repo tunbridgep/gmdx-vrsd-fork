@@ -277,14 +277,12 @@ function SpawnBlood(Vector HitLocation, Vector HitNormal)
 
 	if ((DeusExMPGame(Level.Game) != None) && (!DeusExMPGame(Level.Game).bSpawnEffects))
 	  return;
-	
-	//for all projectile
-	spurt = spawn(class'BloodSpurt',,, HitLocation+HitNormal);
-		
+
 	//Ygll: new for Taser Dart, they are now the same behaviour than poison dart
 	//Ygll: adding the hit visual effect for flesh hit
 	if (IsA('DartPoison') || IsA('DartTaser') )
 	{
+		spurt = spawn(class'BloodSpurt',,, HitLocation+HitNormal);
 		spurt.LifeSpan *= 0.7;
 		spurt.DrawScale *= 1.0;
 
@@ -292,6 +290,7 @@ function SpawnBlood(Vector HitLocation, Vector HitNormal)
 	}
 	else if( bBlood ) //Ygll: if the current projectile is set to generate blood
 	{
+		spurt = spawn(class'BloodSpurt',,, HitLocation+HitNormal);
 		spurt.LifeSpan *= 0.8;
 		spurt.DrawScale *= 1.1;
 
@@ -886,12 +885,16 @@ auto simulated state Flying
         local FireballSpoof fSpoof;
         local SFXExp exp;
 
+        //SARGE: Removed. We now reduce it for player-damage only.
+        //See below.
+        /*
 	    // Reduce damage on nano exploded projectiles
 	    if (bAggressiveExploded)
         {
             if (Level.NetMode != NM_Standalone)
 		        Damage = Damage/6;
         }
+        */
 
 		bDestroy = false;
 

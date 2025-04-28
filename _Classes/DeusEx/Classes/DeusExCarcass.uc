@@ -1451,6 +1451,16 @@ function AddSearchedString(DeusExPlayer player)
 
 function AddReceivedItem(DeusExPlayer player, Inventory item, int count, optional bool bNoGroup)
 {
+    /*
+    //SARGE: TODO: This needs to be split out into a separate function, because now we can display
+    //"you found" lines for things that don't add a received display, such as declined items
+    if (!bSearchMsgPrinted)
+	{
+		player.ClientMessage(msgSearching);
+		bSearchMsgPrinted = True;
+	}
+    */
+
     player.AddReceivedItem(item,count,bNoGroup);
 }
 

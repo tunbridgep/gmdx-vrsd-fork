@@ -40,6 +40,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed vanilla item-duplication bug (caused by repeatedly dropping and repeatedly picking up items quickly)
     - Fixed a vanilla game bug that would prevent weapons from spawning with ammo available if there wasn't enough room to spawn the ammo when being picked up.
     - Fixed vRSD bug where attempting to loot ammo from a weapon while having the same weapon equipped, but with an alternate ammo type (such as AP rounds) would silently fail with no message.
+    - Fixed vRSD oversight where Damage mods wouldn't be automatically transferred when attempting to pick up a second Dragons Tooth Sword.
     - Fixed major GMDX bugs related to spawning items in tight spaces, including weapons with no ammo and items not appearing when gibbing enemies.
     - Fixed many other GMDX and Vanilla bugs.
 - Quality of Life Improvements:
@@ -384,6 +385,7 @@ Sarge's Changes since Beta 2.2:
         - The security code is no longer given by the research team on Hardcore. You will need to use your hacking skill if you wish to access the security system!
 - Miscellaneous Changes:
     - The vanilla "Show Multiplayer Scores" key has been restored, and the GMDX Use Secondary functionality has been given a separate keybind, defaulting to the V key.
+	  - Updated Weapons Hit blood effects to occur more consistently, by changing it so that blood rolls individually for each drop rather than rolling for whether or not blood will appear.
     - MJ12 Elites have had their voices reset to the default troop voices, because they don't have female-appropriate voice lines and the voices sound strange and broken in many ways.
     - Many default "<item> Activated" messages have been removed as these would pollute the log.
     - Added miscelanous sounds when interacting with certain things, such as the Bioelectric "hiss" sound when using repair bots.

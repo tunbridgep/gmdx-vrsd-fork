@@ -115,7 +115,7 @@ function CreateButtons()
 
 	chkAutoswitch = PersonaCheckboxWindow(winClient.NewChild(Class'PersonaCheckboxWindow'));
 	chkAutoswitch.SetText(AutoswitchText);
-	chkAutoswitch.SetPos(346+96+4, 371);
+	chkAutoswitch.SetPos(346+96+4, 373);
 	chkAutoswitch.SetWidth(200);
     chkAutoswitch.SetToggle(player.bMedbotAutoswitch);
 }

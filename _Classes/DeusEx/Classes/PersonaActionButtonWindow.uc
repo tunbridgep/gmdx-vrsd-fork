@@ -23,5 +23,5 @@ defaultproperties
      buttonHeight=16
      minimumButtonWidth=20
      bBaseWidthOnText=true
-     bCenterText=true
+     bCenterText=false
 }
