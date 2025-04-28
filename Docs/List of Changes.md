@@ -385,7 +385,7 @@ Sarge's Changes since Beta 2.2:
         - The security code is no longer given by the research team on Hardcore. You will need to use your hacking skill if you wish to access the security system!
 - Miscellaneous Changes:
     - The vanilla "Show Multiplayer Scores" key has been restored, and the GMDX Use Secondary functionality has been given a separate keybind, defaulting to the V key.
-	  - Updated Weapons Hit blood effects to occur more consistently, by changing it so that blood rolls individually for each drop rather than rolling for whether or not blood will appear.
+	- Updated Weapons Hit blood effects to occur more consistently, by changing it so that blood rolls individually for each drop rather than rolling for whether or not blood will appear.
     - MJ12 Elites have had their voices reset to the default troop voices, because they don't have female-appropriate voice lines and the voices sound strange and broken in many ways.
     - Many default "<item> Activated" messages have been removed as these would pollute the log.
     - Added miscelanous sounds when interacting with certain things, such as the Bioelectric "hiss" sound when using repair bots.
