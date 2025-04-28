@@ -119,6 +119,7 @@ event bool ToggleChanged(Window button, bool bNewToggle)
 
 function SetObjectNumber(int newNumber)
 {
+    local string nanoBind;
 	objectNum = newNumber;
 
     //SARGE: mildly annoying.
@@ -136,10 +137,11 @@ function SetObjectNumber(int newNumber)
     //SARGE: Add extra bind for the nano key
     if (item.IsA('NanoKeyRing'))
     {
-    if (item.IsA('NanoKeyRing') && beltText != "")
-        beltText = player.KeybindManager.GetBinding(KB_Keyring,0) $ ", " $ beltText;
-    else if (item.IsA('NanoKeyRing'))
-        beltText = player.KeybindManager.GetBindingString(KB_Keyring);
+        nanoBind = player.KeybindManager.GetBinding(KB_Keyring,0);
+        if (nanoBind != "" && beltText != "")
+            beltText = nanoBind $ ", " $ beltText;
+        else
+            beltText = nanoBind $ beltText;
     }
 }
 
