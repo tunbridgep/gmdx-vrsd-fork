@@ -1375,6 +1375,8 @@ function SetDroppedAmmoCount(int amountPassed) //RSD: Added optional int amountP
     // Grenades and LAMs always pickup 1
     else if (bDisposableWeapon && !IsA('WeaponShuriken'))
         PickupAmmoCount = 1;
+    else if (IsA('WeaponShuriken'))
+        PickupAmmoCount = MAX(1,amountPassed / 2);                //SARGE: capped at 2
     else if (IsA('WeaponFlamethrower'))
         PickupAmmoCount = (amountPassed * 5);                    //SARGE: Now 5-25 rounds with initialization in MissionScript.uc on first map load
     else if (IsA('WeaponPepperGun'))

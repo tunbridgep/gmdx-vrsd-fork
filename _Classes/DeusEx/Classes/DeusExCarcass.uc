@@ -1056,7 +1056,6 @@ function Frob(Actor Frobber, Inventory frobWith)
                     if (!bSearched)     //Sarge: Attempted fix for ammo dupe bug
                     {
                         W.SetDroppedAmmoCount(PickupAmmoCount);
-                        PickupAmmoCount = 0; //SARGE: WTF, why does this work??
                     }
                 }
 
