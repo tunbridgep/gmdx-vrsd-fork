@@ -802,6 +802,8 @@ var globalconfig bool bGMDXDebug;                                   //SARGE: All
 
 var globalconfig bool bDropWeaponsOnDeath;                      //SARGE: If enabled, NPCs will drop weapons on death.
 
+var globalconfig int iCrosshairOffByOne;                       //SARGE: Set this if your crosshair is a few pixels too far to the left
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -8769,7 +8771,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 	}
 
     //SARGE: Always try looting non-disposable weapons of their ammo
-    if (bCanPickup && FrobTarget.IsA('DeusExWeapon') && !bFromCorpse && !DeusExWeapon(frobTarget).bDisposableWeapon)
+    if (bCanPickup && FrobTarget.IsA('DeusExWeapon') && !DeusExWeapon(frobTarget).bDisposableWeapon)
     {
         bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,true,bAlwaysShowReceivedItemsWindow,false,true,bShowOverflow);
 
@@ -17826,7 +17828,7 @@ simulated function ClientSpawnHits( bool bPenetrating, bool bHandToHand, Vector 
 	  {
 		 hitspawner = Spawn(class'TraceHitHandNonPenSpawner',Other,,HitLocation,Rotator(HitNormal));
 		 if (IsInState('Dying'))
-		 hitspawner = none; //CyberP: death overrides melee attacks
+			hitspawner = none; //CyberP: death overrides melee attacks
 	  }
 	  else
 	  {
@@ -17838,7 +17840,6 @@ simulated function ClientSpawnHits( bool bPenetrating, bool bHandToHand, Vector 
 	  hitspawner.HitDamage = Damage;
 	  if (inHand.isA('WeaponNanoSword'))
 	  {
-		 log("From DXplayer");
 		 hitSpawner.damageType='NanoSword';
 	  }
 	}
