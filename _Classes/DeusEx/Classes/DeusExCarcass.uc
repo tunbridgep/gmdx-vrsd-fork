@@ -45,7 +45,6 @@ var transient bool bDblClickStart;
 var transient float DblClickTimeout;
 var bool            bPop;
 var bool            bNotFirstFall;
-var int             passedImpaleCount;
 var bool            passedSkins;
 
 //RSD
@@ -92,9 +91,6 @@ var bool bMadePool;     //SARGE: Stores the state of our current blood pool. Del
 var bool bDontRemovePool; //SARGE: If set, the blood pool isn't removed when deleting the carcass. Used when Frobbing.
 
 var sound LootPickupSound;            //SARGE: Sound played if we pick up anything from this corpse.
-
-//SARGE: Since now enemies can have knives independently of impales, we need to track if impales are done.
-var int impalesProcessed;
 
 // ----------------------------------------------------------------------
 // ShouldCreate()
@@ -846,7 +842,7 @@ function ExpelInventory()
                     // unless it's a grenade, in which case we only want to dole out one.
                     // DEUS_EX AMSD In multiplayer, give everything away.
                     if (PickupAmmoCount > 0 && !bSearched)
-                        DeusExWeapon(item).SetDroppedAmmoCount(PickupAmmoCount, passedImpaleCount);//RSD: Added PickupAmmoCount for initialization from MissionScript.uc
+                        DeusExWeapon(item).SetDroppedAmmoCount(PickupAmmoCount);//RSD: Added PickupAmmoCount for initialization from MissionScript.uc
                 }
             }
 
@@ -919,7 +915,6 @@ function PickupCorpse(DeusExPlayer player)
             corpse.Inv=Inventory; //GMDX:dbl click
             corpse.bSearched = bSearched;
             corpse.PickupAmmoCount = PickupAmmoCount;
-            corpse.passedImpaleCount = passedImpaleCount;
             corpse.savedName = savedName;
             corpse.bFirstBloodPool = bFirstBloodPool; //SARGE: Remember if we've made a blood pool.
             corpse.Frob(player, None);
@@ -1060,7 +1055,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 
                     if (!bSearched)     //Sarge: Attempted fix for ammo dupe bug
                     {
-                        W.SetDroppedAmmoCount(PickupAmmoCount,passedImpaleCount);
+                        W.SetDroppedAmmoCount(PickupAmmoCount);
                         PickupAmmoCount = 0; //SARGE: WTF, why does this work??
                     }
                 }
@@ -1123,14 +1118,13 @@ function Frob(Actor Frobber, Inventory frobWith)
 						// the weapon).
 						else if ((W != None) || (W == None && (bDeclined||!player.FindInventorySlot(item, True))))
 						{
-
-                            bLootResult = LootWeaponAmmo(DeusExPlayer(P),DeusExWeapon(item),!bSearched);
+                            bLootResult = DeusExWeapon(item).LootAmmo(DeusExPlayer(P),true,true,false,false,!bSearched && W != None);
                             bFoundSomething = bFoundSomething || bLootResult;
                             bFoundInvalid = bFoundInvalid || PickupAmmoCount > 0;
                             bPickedSomethingUp = bPickedSomethingUp || bLootResult;
 
-                            if (item.IsA('WeaponShuriken') && bLootResult)
-                                impalesProcessed++;
+                            if (bLootResult && item.IsA('WeaponShuriken') && WeaponShuriken(item).bImpaled)
+                                LootPickupSound = Sound'DeusExSounds.Generic.FleshHit1';
 
                             //Destroy disposable weapons after taking their ammo.
                             if (DeusExWeapon(item).bDisposableWeapon && Weapon(item).PickupAmmoCount <= 0)
@@ -1307,18 +1301,15 @@ function Frob(Actor Frobber, Inventory frobWith)
                                         //PlaySound(Item.PickupSound);
                                             
                                         bPickedSomethingUp = True;
-
-                                        if (item.IsA('WeaponShuriken'))
-                                            impalesProcessed++;
                                         
                                         if (!item.IsA('DeusExWeapon') || !DeusExWeapon(item).bDisposableWeapon)
-                                        // Show the item received in the ReceivedItems window and also
+                                        // Show the item received in the ReceivedItems window
                                         {
 
                                             AddReceivedItem(player, item, 1);
                                             P.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
                                         }
-                                        else if (passedImpaleCount > 0 && item.IsA('WeaponShuriken'))
+                                        else if (item.IsA('WeaponShuriken') && WeaponShuriken(item).bImpaled)
                                             LootPickupSound = Sound'DeusExSounds.Generic.FleshHit1';
 
                                         item.SpawnCopy(P);
@@ -1403,6 +1394,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 	}
 }
 
+/*
 //Plays the "splat" sound when we loot throwing knives from enemies.
 function bool LootWeaponAmmo(DeusExPlayer P, DeusExWeapon item, optional bool bShowOverflow)
 {
@@ -1432,6 +1424,7 @@ function bool LootWeaponAmmo(DeusExPlayer P, DeusExWeapon item, optional bool bS
 
     return false;
 }
+*/
 
 // ----------------------------------------------------------------------
 // AddSearchedString()

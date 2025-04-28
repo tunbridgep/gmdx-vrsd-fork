@@ -10877,7 +10877,6 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 							Carc.Inventory = PovCorpse(item).Inv; //GMDX
 							Carc.bSearched = POVCorpse(item).bSearched;
 							Carc.PickupAmmoCount = POVCorpse(item).PickupAmmoCount;
-							Carc.passedImpaleCount = POVCorpse(item).passedImpaleCount;
 							Carc.savedName = POVCorpse(item).savedName;
                             Carc.bFirstBloodPool = POVCorpse(item).bFirstBloodPool; //SARGE: Added.
                             Carc.UpdateName();

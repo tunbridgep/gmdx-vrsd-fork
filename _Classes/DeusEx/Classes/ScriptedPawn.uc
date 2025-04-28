@@ -3329,7 +3329,8 @@ function Carcass SpawnCarcass()
                         item.GiveTo(self);
                         item.SetBase(self);
 					    item.SetPhysics(PHYS_None);
-					    carc.passedImpaleCount = impaleCount;
+                        WeaponShuriken(item).bImpaled = true;
+                        WeaponShuriken(item).PickupAmmoCount = 1; //SARGE: New shuriken pickup code is here, so we don't have to mess with passedImpaleCount
 					}
             }
 			if (Inventory != None)
