@@ -305,7 +305,7 @@ function DrawBackground(GC gc)
         else
             gc.DrawText(53+offset, 17, 21, 8, AmmoLabel);
 
-        if (weapon != None && weapon.bPerShellReload || weapon.AmmoName == Class'Ammo20mm' || (player.bDisplayTotalAmmo && !player.bHardCoreMode))
+        if (weapon != None && (weapon.bPerShellReload || weapon.AmmoName == Class'Ammo20mm' || (player.bDisplayTotalAmmo && !player.bHardCoreMode)))
             gc.DrawText(53+offset, 48, 21, 8, RoundsLabel);
         else if (player.bDisplayClips)
             gc.DrawText(53+offset, 48, 21, 8, ClipsLabel);

@@ -22,7 +22,7 @@ simulated function PreBeginPlay()
     Super.PreBeginPlay();
 
     //== Y|y: we only want to bump this up to Trained when starting a new game
-    if ( Level.NetMode == NM_Standalone )
+    if ( Level.NetMode == NM_Standalone && player != None)
     {
         //== Y|y: this will detect if we're doing it from one of the intro (non-cinematic) maps
         foreach AllActors(class'DeusExLevelInfo', info)
@@ -32,9 +32,8 @@ simulated function PreBeginPlay()
         }
 
         //== Y|y: This detects if the player is starting a new game during an existing one
-        if(DeusExPlayer(GetPlayerPawn()) != None)
-            if(DeusExPlayer(GetPlayerPawn()).bShowMenu)
-                bGivePistols = true;
+        if(player.bShowMenu)
+            bGivePistols = true;
 
         //SARGE: If we have the "start pistols at trained" setting, give a skill level,
         //otherwise, give us the skill points for the value of the first level.
