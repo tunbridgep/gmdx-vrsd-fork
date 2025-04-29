@@ -3567,6 +3567,7 @@ function Fire(float Value)
     if (player != None && player.bBlockNextFire)
     {
         player.bBlockNextFire = false;
+        GotoState('Idle');  //SARGE: Needed to not break weapons
         return;
     }
 
