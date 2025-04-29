@@ -835,7 +835,7 @@ function ExpelInventory()
                 {
                     loc.X = (1-2*FRand()) * CollisionRadius;
                     loc.Y = (1-2*FRand()) * CollisionRadius;
-                    loc.Z = CollisionHeight + 4 + (FRand() * 4); //CyberP: stop things spawning under the floor.
+                    loc.Z = CollisionHeight + 8 + (FRand() * 4); //CyberP: stop things spawning under the floor.
                     loc += Location;
                 }
                 until (class'SpawnUtils'.static.CheckDropFrom(item,loc));
