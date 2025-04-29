@@ -397,10 +397,11 @@ function class<Ammo> GetPrimaryAmmoType()
 // SARGE: Refactored this out of the Carcass Frob function so it was hopefully less horribly long,
 // and it was repeated everywhere, all over the codebase. For shame, GMDX!!!
 // ----------------------------------------------------------------------
-function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, optional bool bLootSound, optional bool bNoRemoveClipAmmo, optional bool bOverflow, optional Texture overrideTexture)
+function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, optional bool bLootSound, optional bool bNoRemoveClipAmmo, optional bool bOverflow)
 {
     local class<Ammo> defAmmoClass;
     local int intj;
+    local Texture overrideTexture;
 
     if (P == None)
         return false;
@@ -413,6 +414,10 @@ function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, op
     //hack
     if (defAmmoClass == class'AmmoNone' || self.PickupAmmoCount <= 0)
         return false;
+
+    //Shuriken hack
+    if (IsA('WeaponShuriken') && WeaponShuriken(self).bImpaled)
+        overrideTexture = Texture'RSDCrap.Icons.BeltIconShurikenBloody';
 
     intj = P.LootAmmo(defAmmoClass,PickupAmmoCount,bDisplayMsg,bDisplayWindow,bLootSound,!bDisposableWeapon,bDisposableWeapon,bOverflow,overrideTexture);
 
@@ -1352,7 +1357,7 @@ function bool HandlePickupQuerySuper( inventory Item )                          
 	return Inventory.HandlePickupQuery(Item);
 }
 
-function float SetDroppedAmmoCount(int amountPassed, optional int impaleCount) //RSD: Added optional int amountPassed for initialization in MissionScript.uc //SARGE: Generified this for corpses too, now takes an optional impale count
+function SetDroppedAmmoCount(int amountPassed) //RSD: Added optional int amountPassed for initialization in MissionScript.uc //SARGE: Generified this for corpses too, now takes an optional impale count
 {
     if (amountPassed == 0) //RSD: If we didn't get anything, set to old formula
         amountPassed = Rand(4) + 1;
@@ -1363,18 +1368,15 @@ function float SetDroppedAmmoCount(int amountPassed, optional int impaleCount) /
 	// Grenades and LAMs always pickup 1
                         
     //Handle impales.
-    if (IsA('WeaponShuriken') && impaleCount > 0)
-    {
-        if (impaleCount > 1)
-            impaleCount = 1; //Cap impales at one
-        PickupAmmoCount = impaleCount;
-        if (PickupAmmoCount == 0)
-            PickupAmmoCount = 1;
-    }
+    //Impales have their pickupammocount set manually, so don't change it
+    if (IsA('WeaponShuriken') && WeaponShuriken(Self).bImpaled)
+        return;
 
     // Grenades and LAMs always pickup 1
     else if (bDisposableWeapon && !IsA('WeaponShuriken'))
         PickupAmmoCount = 1;
+    else if (IsA('WeaponShuriken'))
+        PickupAmmoCount = MAX(1,amountPassed / 2);                //SARGE: capped at 2
     else if (IsA('WeaponFlamethrower'))
         PickupAmmoCount = (amountPassed * 5);                    //SARGE: Now 5-25 rounds with initialization in MissionScript.uc on first map load
     else if (IsA('WeaponPepperGun'))

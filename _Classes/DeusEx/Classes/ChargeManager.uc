@@ -70,7 +70,7 @@ function RechargeFrom(ChargeManager other)
 function float GetRechargeAmount()
 {
     if (owner != None && owner.PerkManager != None && owner.PerkManager.GetPerkWithClass(class'DeusEx.PerkFieldRepair').bPerkObtained == true)                         //RSD: New Repairman perk
-        return 1.5 * chargeMult;
+        return (1.5 * chargeMult);
     else 
         return chargeMult;
 }
@@ -78,7 +78,7 @@ function float GetRechargeAmount()
 //Gets the recharge amount per biocell in a nice format
 function int GetRechargeAmountDisplay()
 {
-    return GetRechargeAmount() * 100;
+    return int(GetRechargeAmount() * 100);
 }
 
 function Setup(DeusExPlayer newOwner, Inventory newTarget)
@@ -105,7 +105,7 @@ function bool Recharge(optional out string msg)
     }
     else
     {
-        msg = sprintf(msgRecharged,GetRechargeAmount());
+        msg = sprintf(msgRecharged,GetRechargeAmountDisplay());
     }
     //ChargedTarget.bActivatable=true;                                //RSD: Since now you can hold one at 0%
     unDimIcon();                                      //RSD

@@ -404,14 +404,14 @@ function bool ButtonActivated( Window buttonPressed )
 	else if ((buttonPressed.IsA('PersonaItemDetailButton')) &&
 	         (PersonaItemDetailButton(buttonPressed).icon == Class'AmmoShell'.Default.LargeIcon))
 	{
-		SelectInventory(PersonaItemButton(buttonPressed),true);
+		SelectInventory(PersonaItemButton(buttonPressed));
 		UpdateAmmoDisplay();
 	}
 	// Now check to see if it's an Inventory button
 	else if (buttonPressed.IsA('PersonaItemButton'))
 	{
 		winStatus.ClearText();
-		SelectInventory(PersonaItemButton(buttonPressed),true);
+		SelectInventory(PersonaItemButton(buttonPressed));
 	}
 	// Otherwise must be one of our action buttons
 	else
@@ -615,7 +615,7 @@ function UpdateAmmoDisplay()
 // SelectInventory()
 // ----------------------------------------------------------------------
 
-function SelectInventory(PersonaItemButton buttonPressed, optional bool bAllowDeselect)
+function SelectInventory(PersonaItemButton buttonPressed)
 {
 	local Inventory anItem;
 
@@ -644,7 +644,7 @@ function SelectInventory(PersonaItemButton buttonPressed, optional bool bAllowDe
 			EnableButtons();
 		}
         //SARGE: Allow deselecting inventory items
-        else if (bAllowDeselect)
+        else
         {
             selectedItem.SelectButton(False);
 			ClearSpecialHighlights();
@@ -1845,11 +1845,14 @@ function FinishButtonDrag()
             {
                 WeaponNanoSword(dragTarget.GetClientObject()).chargeManager.Recharge(msg);
                 winStatus.AddText(msg);
-                BioelectricCell(draginv).UseOnce();
                 Player.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
                 WeaponNanoSword(dragTarget.GetClientObject()).chargeManager.unDimIcon();
                 dragTarget.bDimIcon = false;
                 invBelt.objBelt.RecreateBelt();                                  //SARGE: Update the inventory belt
+                
+                BioelectricCell(draginv).UseOnce();
+				dragButton = None;
+				SelectInventory(dragTarget);
             }
 		}
         else if ( (dragInv.IsA('BioelectricCell')) && (dragTarget != None) && (dragTarget.GetClientObject().IsA('ChargedPickup')) )

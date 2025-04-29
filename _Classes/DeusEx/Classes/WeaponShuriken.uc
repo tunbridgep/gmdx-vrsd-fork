@@ -3,6 +3,8 @@
 //=============================================================================
 class WeaponShuriken extends DeusExWeapon;
 
+var bool bImpaled;              //Use the special impaled shuriken icon
+
 simulated function PreBeginPlay()
 {
 	Super.PreBeginPlay();
