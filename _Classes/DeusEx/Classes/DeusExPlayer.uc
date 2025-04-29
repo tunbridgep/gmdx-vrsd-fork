@@ -3274,8 +3274,8 @@ function ClientSetMusic(music NewSong, byte NewSection, byte NewCdTrack, EMusicT
     if (NewSection == 255)
         NewSection = Level.SongSection;
         
-    DebugMessage("ClientSetMusicCalled: " $ NewSong);
-    DebugMessage("FadeTimeHack is: " $ default.fadeTimeHack);
+    //DebugMessage("ClientSetMusicCalled: " $ NewSong);
+    //DebugMessage("FadeTimeHack is: " $ default.fadeTimeHack);
 
     //SARGE: We're still fading, so we need to do a hacky fix
     //The engine is busted and needs to be reset, so instantly transition back to our saved section.
@@ -3286,16 +3286,23 @@ function ClientSetMusic(music NewSong, byte NewSection, byte NewCdTrack, EMusicT
         SetInstantMusicVolume(int(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice MusicVolume")));
         NewTransition = MTRAN_Instant;
         DebugMessage("FadeTimeHack fix");
-        NewSection = default.savedSection;
+        if (NewSection == Level.SongSection)
+            NewSection = default.savedSection;
+    }
+    
+    if (string(NewSong) != default.lastSong)
+    {
+        default.savedSection = Level.SongSection;
+        NewSection = Level.SongSection;
     }
     else if (iEnhancedMusicSystem > 0)
     {
         //No changes allowed at all in bars or clubs
-        if (info.bBarOrClub && iEnhancedMusicSystem > 1 && string(NewSong) == default.lastSong)
+        if (info.bBarOrClub && iEnhancedMusicSystem > 1)
             return;
 
         //Whenever we're told to restart the track, either go to the saved section, or do nothing
-        if (bWasAmbient && NewSection == Level.SongSection && string(NewSong) == default.lastSong)
+        if (bWasAmbient && NewSection == Level.SongSection)
             bChange = false;
         else if (!bWasAmbient && NewSection == Level.SongSection)
             NewSection = default.lastSavedSection;
@@ -3307,6 +3314,8 @@ function ClientSetMusic(music NewSong, byte NewSection, byte NewCdTrack, EMusicT
     if (NewTransition == MTRAN_SlowFade)
         default.fadeTimeHack = 6.0;
     else if (NewTransition == MTRAN_Fade)
+        default.fadeTimeHack = 4.0;
+    else if (NewTransition == MTRAN_FastFade)
         default.fadeTimeHack = 4.0;
 
     default.lastSong = string(NewSong);
