@@ -41,8 +41,8 @@ defaultproperties
      items(24)=(HelpText="If enabled, the intro cutscene is not loaded.",actionText="Game: Skip Intro",variable="bSkipNewGameIntro");
      items(25)=(HelpText="Show outer crosshairs at 100% accuracy. Disable this if they get in the way.",actionText="HUD: 100% Accuracy Crosshairs",variable="bFullAccuracyCrosshair",defaultValue=1);
      items(26)=(HelpText="Always display the total amount of ammo available, rather than the number of magazines. Some weapons always show total ammo count. Disabled on Hardcore.",actionText="HUD: Accurate Ammo Display",variable="bDisplayTotalAmmo");
-     items(27)=(HelpText="Change weapon viewmodels to display better on some widescreen resolutions.",actionText="HUD: Alternate Weapon Offsets",variable="bEnhancedWeaponOffsets");
-     items(28)=(HelpText="Display CLIPS or MAGS in the Ammo window. Has no effect for weapons that don't use magazines, or if Accurate Ammo Display is turned on.",actionText="HUD: Ammo Text Display",variable="bDisplayClips",valueText0="MAGS",valueText1="CLIPS",defaultValue=1);
+     items(27)=(HelpText="Change weapon viewmodels to display better at high FOV (110+).",actionText="HUD: Alternate Weapon Offsets",variable="bEnhancedWeaponOffsets");
+     items(28)=(HelpText="Display CLIPS or MAGS in the Ammo window. Has no effect for weapons that don't use magazines, or if Accurate Ammo Display is turned on.",actionText="HUD: Ammo Text Display",variable="bDisplayClips",valueText0="MAGS",valueText1="CLIPS",defaultValue=0);
      items(29)=(HelpText="Always show the accuracy crosshairs for your currently held weapon.",actionText="HUD: Always Show Bloom",variable="bAlwaysShowBloom");
 	 items(30)=(HelpText="Alternative tool display window with some minor text and spacing changes.",actionText="HUD: Alternate Tool Window Display",variable="iAltFrobDisplay",valueText1="Indented",valueText2="Extended",defaultValue=1);
 	 items(31)=(HelpText="Shows the ammo display on the right side of the screen, and the belt on the left",actionText="HUD: Ammo Display on Right",variable="bAmmoDisplayOnRight");
@@ -71,7 +71,7 @@ defaultproperties
      items(53)=(HelpText="If enabled, right clicking a corpse for the first time will never pick it up, to stop accidentally picking up corpses while searching for items.",actionText="Interaction: Enhanced Carcass Searching",variable="bEnhancedCorpseInteractions",defaultValue=1);
      items(54)=(HelpText="If enabled, left-clicking with nothing targeted will unholster your last item.",actionText="Interaction: Left-Click Unholstering",variable="bLeftClickUnholster");
      items(55)=(HelpText="Append item counts to item pickup text, if more than 1 item is in the stack.",actionText="Interaction: Show Item Count Labels",variable="bShowItemPickupCounts");
-     items(56)=(HelpText="Append [Searched] text to corpses when they are interacted with.",actionText="Interaction: Show Searched Labels",variable="bSearchedCorpseText");
+     items(56)=(HelpText="Append [Searched] text to corpses when they are interacted with.",actionText="Interaction: Show Searched Labels",variable="bSearchedCorpseText",defaultValue=1);
      items(57)=(HelpText="With an item in your hand, Right-Clicking will pull out Lockpicks and Multitools, similar to Revision, and will also go back to previous item. Left-Clicking works when hands are empty.",actionText="Interaction: Right-Click Tool Selection.",variable="bRightClickToolSelection");
      items(58)=(HelpText="Loot will not be declined from corpses if the Walk/Run key is held.",actionText="Interaction: Smart Declining",variable="bSmartDecline");
      items(59)=(HelpText="When using a medical bot, automatically switch to the Health screen after using the last Aug canister.",actionText="Interaction: Medbot Auto Switch",variable="bMedbotAutoswitch",defaultValue=1);
@@ -81,7 +81,7 @@ defaultproperties
      items(63)=(HelpText="When dying, switch to a first or third person camera.",actionText="Player: Death Perspective",variable="bRemoveVanillaDeath",valueText0="Third Person",valueText1="First Person");
 	 items(64)=(HelpText="If enabled, the current player stance will be displayed on the HUD.",actionText="Player: Current Stance Display",variable="iStanceHud",defaultValue=3,valueText1="Walk/Run",valueText2="Everything except Default",valueText3="Everything");
 	 items(65)=(HelpText="Disable the flash effect when healing or change the color.",actionText="Player: Healing Screen Effect",variable="iHealingScreen",defaultValue=1,valueText2="Classic");
-     items(66)=(HelpText="Active Augmentations no longer play their ambient sounds.",actionText="Player: Quiet Augmentations",variable="bQuietAugs",defaultValue=0);
+     items(66)=(HelpText="Active Augmentations no longer play their ambient sounds.",actionText="Player: Quiet Augmentations",variable="bQuietAugs",defaultValue=1);
      items(67)=(HelpText="Alternate realistic headbobbing effect. To disable headbobbing outright, see the standard Settings menu.",actionText="Player: Realistic Head-Bobbing",variable="bModdedHeadBob",defaultValue=1);
      items(68)=(HelpText="Prevent accidentally killing domesticated animals by stomping on them.",actionText="Player: Stomp Domestic Animals",variable="bStompDomesticAnimals",defaultValue=0);
      items(69)=(HelpText="Prevent accidentally killing vac-bots by stomping on them.",actionText="Player: Stomp Vac Bots",variable="bStompDomesticAnimals",defaultValue=0);

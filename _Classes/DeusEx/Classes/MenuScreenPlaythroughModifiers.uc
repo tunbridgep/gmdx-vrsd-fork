@@ -52,7 +52,7 @@ defaultproperties
      items(6)=(HelpText="Replaces drug effects with temporary buffs on use and debuffs on withdrawal. Addiction accumulates with use and depreciates through play.",actionText="Addiction System",variable="bAddictionSystem");
      items(7)=(HelpText="Prevents manually saving and adds single-use save points to the level. Autosaves still occur as normal. Always enabled in Hardcore mode.",actionText="Restricted Saving",variable="bRestrictedSaving");
      items(8)=(HelpText="Prevents using keypads and logins unless you have them in your notes. No Plot Skips setting also prevents certain sequence breaks.",actionText="Undiscovered Codes",variable="iNoKeypadCheese",valueText2="Enabled + No Plot Skips",valueText3="Enabled + NPS + Keypad Length Unknown");
-     items(9)=(HelpText="Allow cut content, such as arming Miguel and giving Tiffany thermoptic camo.",actionText="Cut Content Interactions",variable="bCutInteractions");
+     items(9)=(HelpText="Allow arming Miguel and giving Tiffany thermoptic camo.",actionText="Additional NPC Interactions",variable="bCutInteractions");
      items(10)=(HelpText="Start the game in the MJ12 Prison facility. Not recommended for new players! Also skips the intro cutscene.",actionText="Alternate Start",variable="bPrisonStart");
      items(11)=(HelpText="Disable the use of the console.",actionText="Disable Console Access",variable="bDisableConsoleAccess");
      items(12)=(HelpText="Most weapons will require a minimum skill investment in order to be used.",actionText="Weapon Requirements Matter",variable="bWeaponRequirementsMatter");
