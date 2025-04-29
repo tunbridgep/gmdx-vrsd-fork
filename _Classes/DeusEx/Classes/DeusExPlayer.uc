@@ -714,7 +714,8 @@ var travel float killswitchTimer;                                               
 //Music Stuff
 var transient string currentSong;                                                 //SARGE: The "Song" variable is kept in savegames...
 var transient bool bLastWasOutro;                                                 //SARGE: The "Song" variable is kept in savegames...
-var globalconfig int iEnhancedMusicSystem;                                             //SARGE: Should the music system be a bit smarter about playing tracks?
+var globalconfig int iEnhancedMusicSystem;                                        //SARGE: Should the music system be a bit smarter about playing tracks?
+var transient float fadeTimeHack;                                                 //SARGE: Hacky music transition fix timer
 
 //SARGE: Autoswitch to Health screen when installing the last augmentation at a med bot.
 var globalconfig bool bMedbotAutoswitch;
@@ -3266,12 +3267,26 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
     info = GetLevelInfo();
         
     DebugMessage("Music Change Request:" @ NewSong @ NewSection);
+    
+    //SARGE: We're still fading from the last track, so we need to do a hacky fix
+    //The engine is busted and the music system needs to be reset, so instantly transition back to our saved section.
+    //and reset the volume
+    if (default.fadeTimeHack > 0)
+    {
+        //Hack to fix broken audio settings.
+        SetInstantMusicVolume(int(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice MusicVolume")));
+        NewTransition = MTRAN_Instant;
+        DebugMessage("FadeTimeHack fix");
+        if (NewSection == Level.SongSection)
+            NewSection = default.savedSection;
+    }
 
     if (string(NewSong) != default.currentSong) //We always want to allow song changes
     {
         bChange = true;
         DebugMessage("Changing Music - Song Change from" @ default.currentSong);
         default.savedSection = Level.SongSection; //And reset the saved section
+        NewSection = Level.SongSection;
     }
     else if (iEnhancedMusicSystem == 0) //Always change with the old system
     {
@@ -3313,6 +3328,14 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
         super.ClientSetMusic(NewSong,NewSection,NewCdTrack,NewTransition);
         default.currentSong = string(NewSong);
         default.bLastWasOutro = NewSection == 5;
+
+        //Apply fade-time hack
+        if (NewTransition == MTRAN_SlowFade)
+            default.fadeTimeHack = 6.0;
+        else if (NewTransition == MTRAN_Fade)
+            default.fadeTimeHack = 4.0;
+        else if (NewTransition == MTRAN_FastFade)
+            default.fadeTimeHack = 4.0;
     }
 }
 
@@ -3342,6 +3365,9 @@ function UpdateDynamicMusic(float deltaTime)
 
 	musicCheckTimer += deltaTime;
 	musicChangeTimer += deltaTime;
+    default.fadeTimeHack -= deltaTime;
+    if (default.fadeTimeHack < 0)
+        default.fadeTimeHack = 0;
 
 	if (IsInState('Interpolating'))
 	{
@@ -3423,7 +3449,7 @@ function UpdateDynamicMusic(float deltaTime)
 					musicChangeTimer = 0.0;
 				}
 			}
-            else
+            else if (default.fadeTimeHack == 0)
             {
                 //SARGE: Now we constantly update the saved section, rather than
                 //only updating it when it changes, because that can cause bugs due to fading.
