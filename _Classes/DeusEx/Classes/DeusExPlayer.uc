@@ -18948,4 +18948,6 @@ defaultproperties
      iShowTotalCounts=1
      iSmartKeyring=1
      iAltFrobDisplay=1
+     bDialogHUDColors=True
+     bQuietAugs=True
 }
