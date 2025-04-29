@@ -5,6 +5,7 @@ class WIBCarcass extends DeusExCarcass;
 
 function ChunkUp(int Damage)
 {
+   //ExpelInventory(); //SARGE: Added this. But left it commended because it can cause problems with items not being frobbable???
    Explode();
    Destroy();
 }
