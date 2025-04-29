@@ -420,7 +420,7 @@ function PostBeginPlay()
 	{
 		Mesh = Mesh3;
         if (!IsA('ScubaDiverCarcass') && !IsA('KarkianCarcass') && !IsA('KarkianBabyCarcass') && !IsA('GreaselCarcass')) //SARGE: Added aquatic animals.
-            KillUnconscious(); //You will die in water every time.
+            bNotDead = False;		// you will die in water every time
         assignedMesh = 3;
 	}
 
