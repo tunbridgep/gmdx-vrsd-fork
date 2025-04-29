@@ -182,7 +182,7 @@ function ClearAll()
     local int i, j;
 
     //Reset bindings
-    for (i=1;i<255;i++)
+    for (i=0;i<255;i++)
     {
         bindings[i].totalBinds = 0;
         bindings[i].alias = "";
