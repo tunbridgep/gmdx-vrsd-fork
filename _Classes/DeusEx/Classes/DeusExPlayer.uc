@@ -3326,17 +3326,17 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
     if (bChange)
     {
         super.ClientSetMusic(NewSong,NewSection,NewCdTrack,NewTransition);
-        default.currentSong = string(NewSong);
-        default.bLastWasOutro = NewSection == 5;
 
         //Apply fade-time hack
         if (NewTransition == MTRAN_SlowFade)
-            default.fadeTimeHack = 6.0;
+            default.fadeTimeHack = 4.0;
         else if (NewTransition == MTRAN_Fade)
-            default.fadeTimeHack = 4.0;
+            default.fadeTimeHack = 0.6;
         else if (NewTransition == MTRAN_FastFade)
-            default.fadeTimeHack = 4.0;
+            default.fadeTimeHack = 0.2;
     }
+    default.currentSong = string(NewSong);
+    default.bLastWasOutro = NewSection == 5;
 }
 
 // ----------------------------------------------------------------------
@@ -3437,7 +3437,7 @@ function UpdateDynamicMusic(float deltaTime)
 			else if (default.musicMode != MUS_Ambient)
 			{
 				// wait until we've been out of combat for 5 seconds before switching music
-				if (musicChangeTimer >= 5.0)
+				if (musicChangeTimer >= 5.0 && default.fadeTimeHack == 0)
 				{
 					// fade slower for combat transitions
 					if (default.musicMode == MUS_Combat)
