@@ -12790,7 +12790,7 @@ function bool AddInventory(inventory item)
 
 		if ( item.bInObjectBelt )
 		{
-			if (root != None)
+			if (root != None && root.hud != None && root.hud.belt != None)
 			{
 				root.hud.belt.AddObjectToBelt(item, item.beltPos, True);
 			}
@@ -15748,6 +15748,7 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 	local bool bReduced;
     local AugEnviro enviro;
     local AugAqualung lung;
+    local AugBallisticPassive ballistic;
 
 	bReduced = False;
 	newDamage = Float(Damage);
@@ -15758,26 +15759,31 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 	{
 	    if (DamageType != 'Shocked')
 	    {
-            if (bBoosterUpgrade && Energy > 0 && Damage > 0)
-                    AugmentationSystem.AutoAugs(false,true);
             if (AugmentationSystem != None)
             {
-                enviro = AugEnviro(AugmentationSystem.GetAug(class'AugEnviro'));
-                augLevel = enviro.LevelValues[enviro.CurrentLevel];
+                if (bBoosterUpgrade && Energy > 0 && Damage > 0)
+                    AugmentationSystem.AutoAugs(false,true);
 
-                //Make sure we have enough energy
-                //EDIT: This was based on damage tane, and still can be if you uncomment this. For now, use the old "20 per second" of the old aug.
-                //if (enviro.bIsActive && augLevel >= 0.0 && Energy > 0 && Energy >= enviro.GetCustomEnergyRate(newDamage * 0.1))
-                if (enviro.bIsActive && augLevel >= 0.0 && Energy > 0)
+                enviro = AugEnviro(AugmentationSystem.GetAug(class'AugEnviro'));
+                if (enviro != None)
                 {
-                    //Only use energy once per 3 seconds, like the old aug
-                    if (saveTime >= enviro.lastEnergyTick)
+                    DeusExPlayer(GetPlayerPawn()).ClientMessage("enviro level: " $ enviro.CurrentLevel);
+                    augLevel = enviro.LevelValues[enviro.CurrentLevel];
+
+                    //Make sure we have enough energy
+                    //EDIT: This was based on damage tane, and still can be if you uncomment this. For now, use the old "20 per second" of the old aug.
+                    //if (enviro.bIsActive && augLevel >= 0.0 && Energy > 0 && Energy >= enviro.GetCustomEnergyRate(newDamage * 0.1))
+                    if (enviro.bIsActive && augLevel >= 0.0 && Energy > 0)
                     {
-                        //Energy -= MAX(int(newDamage * 0.1),1);
-                        Energy = FMAX(Energy - enviro.GetAdjustedEnergy(1),0);
-                        enviro.lastEnergyTick = saveTime + 3.0;
+                        //Only use energy once per 3 seconds, like the old aug
+                        if (saveTime >= enviro.lastEnergyTick)
+                        {
+                            //Energy -= MAX(int(newDamage * 0.1),1);
+                            Energy = FMAX(Energy - enviro.GetAdjustedEnergy(1),0);
+                            enviro.lastEnergyTick = saveTime + 3.0;
+                        }
+                        newDamage *= augLevel;
                     }
-                    newDamage *= augLevel;
                 }
             }
         }
@@ -15824,7 +15830,7 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
                     //Aqualung now reduces stamina damage
                     augLevel = 1.0;
                     lung = AugAqualung(AugmentationSystem.GetAug(class'AugAqualung'));
-                    if (lung.bIsActive)
+                    if (lung != None && lung.bIsActive)
                     {
                         augLevel = 2.0 - lung.LevelValues[lung.CurrentLevel];
                     }
@@ -15878,7 +15884,9 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 
 			if (augLevel < 0.0 && Energy > 0.0) //this means we can't have both augs installed, and that for passive to work energy is required. //RSD: Actually it just means active overrides passive
 			{
-                augLevel = AugBallisticPassive(AugmentationSystem.GetAug(class'AugBallisticPassive')).GetDamageMod(true);
+                ballistic = AugBallisticPassive(AugmentationSystem.GetAug(class'AugBallisticPassive'));
+                if (ballistic != None) //SARGE: Accessed none?
+                    augLevel = ballistic.GetDamageMod(true);
 			}
 			//augLevel *= AugmentationSystem.GetAugLevelValue(class'AugBallistic');//RSD: figure out stacking prots later maybe
         }

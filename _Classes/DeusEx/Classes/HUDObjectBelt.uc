@@ -367,9 +367,12 @@ function ClearBelt()
 {
 	local int beltPos;
 
+    if (player == None)
+        return;
+
 	for(beltPos=0; beltPos<numSlots; beltPos++)
     {
-        if (player.bBeltMemory && objects[beltPos].bAllowDragging)
+        if (player.bBeltMemory && objects[beltPos].item != None && objects[beltPos].bAllowDragging)
             player.SetPlaceholder(beltPos,objects[beltPos].item.icon);
 		ClearPosition(beltPos);
     }
