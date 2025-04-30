@@ -47,7 +47,7 @@ function FirstFrame()
             }
             else if (flags.GetBool('MiguelArmedShotgun'))
             {
-                MiguelWeapon = spawn(class'WeaponAssaultShotgun', T);
+                MiguelWeapon = spawn(class'WeaponSawedOffShotgun', T);
                 MiguelAmmo = spawn(class'AmmoShell', T);
             }
             else if (flags.GetBool('MiguelArmedStealthPistol'))
