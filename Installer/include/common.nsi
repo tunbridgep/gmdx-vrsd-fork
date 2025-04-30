@@ -1,5 +1,10 @@
+# We need to define where our u files are located,
+# because they are symlinks, and nsis doesn't like symlinks
+!define SARGE_U_FILES "F:\Games\Deus Ex GOTY\System"
+
 # Base Info
-Name "GMDX: AE Installer" "GMDX: Augmented Edition 1.0"
+Name "${INSTALLER_NAME}"
+OutFile "${INSTALLER_EXE_NAME}-${INSTALLER_VERSION}_${INSTALLER_SUFFIX}.exe"
 ShowInstDetails show
 
 #Set a sensical dir, but read it from the Registry if we can
@@ -7,14 +12,13 @@ InstallDir ./
 InstallDirRegKey HKLM "SOFTWARE\Unreal Technology\Installed Apps\Deus Ex" "Folder"
 
 #include other plugins
-!include LogicLib.nsh
-
+#!include LogicLib.nsh
 
 #Now create the actual installer
 
-Page license
+;Page license
 
-licenseText "derp" "derp2"
+;licenseText "derp" "derp2"
 
 Page directory
 
@@ -23,12 +27,35 @@ Page components
 Page instfiles
 
 # Install the main mod.
-Section "GMDX Augmented Edition"
+Section "${INSTALLER_NAME} ${INSTALLER_VERSION}"
 
 SectionIn RO
 
 SetOutPath $INSTDIR
 
-;File test.txt
+IfFileExists "$INSTDIR\System\DeusEx.exe" afterFileCheck
+MessageBox MB_OK "GMDX must be installed to your Deus Ex Directory"
+Quit
+afterFileCheck:
+
+SetOutPath $INSTDIR\GMDXvSARGE
+File /r /x DeusEx.u /x RSDCrap.u /x DeusEx.int game\GMDXvSARGE\*
+SetOutPath $INSTDIR\GMDXvSARGE\System
+File "${SARGE_U_FILES}\DeusEx.u"
+File "${SARGE_U_FILES}\RSDCrap.u"
+
+;Copy int file
+File "..\System\DeusEx.int"
+
+;Install additional files
+SetOutPath $INSTDIR\GMDXvSARGE\Docs
+File ..\Docs\credits.txt
+File ..\Docs\EditPackages.txt
+File "..\Docs\List of Changes.html"
+SetOutPath $INSTDIR\System
+File extras\GMDX.exe
+File extras\GMDX.ini
+File extras\GMDXUser.ini
+SetOutPath $INSTDIR
 
 SectionEnd
