@@ -13794,6 +13794,7 @@ State Attacking
     local Vector HitNormal, HitLocation, StartTrace, EndTrace, offset;
     local int i;
     local bool bSafe, bSafe2;
+    local Actor hit;
 
     if (Enemy != None && Enemy.IsA('DeusExPlayer'))
         playa = DeusExPlayer(Enemy);
@@ -13810,7 +13811,11 @@ State Attacking
      else
          EndTrace = playa.Location;
 
-        ForEach Trace(HitLocation, HitNormal, EndTrace, StartTrace, True, vect(4,4,4)).RadiusActors(Class'DeusExPlayer',playa,192,HitLocation)
+        hit = Trace(HitLocation, HitNormal, EndTrace, StartTrace, True, vect(4,4,4));
+        
+        if (hit == None)
+            return;
+        ForEach hit.RadiusActors(Class'DeusExPlayer',playa,192,HitLocation)
         {
           i++;
           if (i == 1)
