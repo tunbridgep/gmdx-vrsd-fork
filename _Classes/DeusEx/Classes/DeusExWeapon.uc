@@ -1605,12 +1605,13 @@ function int CalculateTrueDamage()
 	local int trueDamage;
     local DeusExPlayer P;
     local float mult;
+    local float hit;
 
     P = DeusExPlayer(Owner);
 
     //SARGE: Factor in Targeting and Combat Strength
     //SARGE: NOTE: Targeting is handled in GetWeaponSkill, so not needed here.
-    if (P != None)
+    if (P != None && bHandToHand)
     {
         if (P.AugmentationSystem != None)
             mult = P.AugmentationSystem.GetAugLevelValue(class'AugCombatStrength');
@@ -1624,9 +1625,15 @@ function int CalculateTrueDamage()
             mult += 0.5;
 	}
 
-    trueDamage = HitDamage * (1.0 - (2.0 * GetWeaponSkill()) + mult + ModDamage);
+    //SARGE: I have no idea why the crossbow is so fucked...
+    if (IsA('WeaponMiniCrossbow'))
+        hit = HitDamage - 2;
+    else
+        hit = HitDamage;
 
-    //P.ClientMessage("Damage: " $ trueDamage @ "(" $ mult @ GetWeaponSkill() @ ")");
+    trueDamage = int(hit * (1.0 - (2.0 * GetWeaponSkill()) + mult + ModDamage));
+
+    //P.ClientMessage("Damage: " $ hit $ " - " $ trueDamage @ "(" $ mult @ GetWeaponSkill() @ ")");
 	return trueDamage;
 }
 
