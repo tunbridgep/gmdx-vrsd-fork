@@ -457,7 +457,6 @@ var globalconfig int iAlternateToolbelt;
 var globalconfig bool bAnimBar1;
 var globalconfig bool bAnimBar2;
 var globalconfig bool bExtraObjectDetails;
-var globalconfig bool bA51Camera;
 var globalconfig bool bCameraSensors;
 var globalconfig bool bHardcoreFilterOption;
 var globalconfig bool bRealisticCarc;
@@ -616,6 +615,8 @@ var travel bool bDisableConsoleAccess;                                          
 var travel bool bWeaponRequirementsMatter;                                      //Sarge: Using certain weapons requires skill investments.
 
 var travel bool bCameraDetectUnconscious;                                      //Ygll: Unconscious body will now be detected by camera.
+
+var travel bool bA51Camera;                                                     //SARGE: Was a gameplay setting, now a modifier. Make cameras stronger and act like Area 51 cameras.
 
 //END GAMEPLAY MODIFIERS
 
@@ -18815,6 +18816,8 @@ defaultproperties
      bAnimBar1=True
      bAnimBar2=True
      bRealisticCarc=True
+     bRestrictedMetabolism=True
+     bHackLockouts=True
      bRemoveVanillaDeath=False
      bHitmarkerOn=True
      bMantleOption=True
