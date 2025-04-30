@@ -5255,9 +5255,11 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
                     }
                     else if (bHandToHand)
 					{
-						SpawnBlood(HitLocation, HitNormal);
-                       if (IsA('WeaponNanoSword') || IsA('WeaponCombatKnife') || IsA('WeaponSword') || IsA('WeaponCrowbar'))
-				         spoofer = Spawn(class'BloodMeleeHit',,,HitLocation);
+                        if (IsA('WeaponNanoSword') || IsA('WeaponCombatKnife') || IsA('WeaponSword') || IsA('WeaponCrowbar'))
+                        {
+                            SpawnBlood(HitLocation, HitNormal);
+                            spoofer = Spawn(class'BloodMeleeHit',,,HitLocation);
+                        }
 					}
 				}
 			}
