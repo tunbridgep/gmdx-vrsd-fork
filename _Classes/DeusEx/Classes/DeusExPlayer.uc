@@ -15767,7 +15767,6 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
                 enviro = AugEnviro(AugmentationSystem.GetAug(class'AugEnviro'));
                 if (enviro != None)
                 {
-                    DeusExPlayer(GetPlayerPawn()).ClientMessage("enviro level: " $ enviro.CurrentLevel);
                     augLevel = enviro.LevelValues[enviro.CurrentLevel];
 
                     //Make sure we have enough energy
