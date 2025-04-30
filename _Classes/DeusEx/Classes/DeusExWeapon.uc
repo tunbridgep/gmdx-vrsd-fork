@@ -5253,7 +5253,7 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
                 }
                 else
                 {
-				    if (!bHandToHand && !IsA('WeaponProd') && !Pawn(Other).IsA('DeusExPlayer') && !Pawn(Other).IsInState('Dying'))
+				    if (!bHandToHand && !IsA('WeaponProd') && (!IsA('WeaponSawedOffShotgun') || AmmoRubber(ammoType) == none) && !Pawn(Other).IsA('DeusExPlayer') && !Pawn(Other).IsInState('Dying'))
                     {
 						SpawnBlood(HitLocation, HitNormal);
                         spoofer = Spawn(class'BloodMeleeHit',,,HitLocation);
