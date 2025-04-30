@@ -79,16 +79,16 @@ function string GetBindName(string keyName)
         case "SingleQuote": return "'";
         case "Comma": return ",";
         case "Period": return ".";
-        case "NumPad1": return "1";
-        case "NumPad2": return "2";
-        case "NumPad3": return "3";
-        case "NumPad4": return "4";
-        case "NumPad5": return "5";
-        case "NumPad6": return "6";
-        case "NumPad7": return "7";
-        case "NumPad8": return "8";
-        case "NumPad9": return "9";
-        case "NumPad0": return "0";
+        case "NumPad1": return "KP1";
+        case "NumPad2": return "KP2";
+        case "NumPad3": return "KP3";
+        case "NumPad4": return "KP4";
+        case "NumPad5": return "KP5";
+        case "NumPad6": return "KP6";
+        case "NumPad7": return "KP7";
+        case "NumPad8": return "KP8";
+        case "NumPad9": return "KP9";
+        case "NumPad0": return "KP0";
         default: return keyName;
     }
 }
