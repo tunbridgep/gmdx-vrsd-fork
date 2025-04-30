@@ -10,7 +10,7 @@ simulated function postbeginplay()
 	if( IsHDTP() )
 		DrawScale -= 0.16;
 	else
-		DrawScale -= 0.2;
+		DrawScale -= 0.25;
 }
 
 simulated function spawnBulletSmoke()
