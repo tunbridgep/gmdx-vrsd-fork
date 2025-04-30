@@ -1279,7 +1279,7 @@ local DeusExPickup     PU;                                                      
 	        	   SC.hackStrength = 0.150000;
             }
 
-            if ((bA51Camera || bHardcoreMode) && SC.minDamageThreshold != 70)
+            if (bA51Camera && SC.minDamageThreshold != 70)
             {
                 if (!SC.bDiffProperties)
                 {
