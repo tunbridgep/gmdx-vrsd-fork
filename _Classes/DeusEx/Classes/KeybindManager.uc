@@ -68,6 +68,7 @@ var private transient Binding bindings[255];
 //Now things get annoying...
 function string GetBindName(string keyName)
 {
+    //Log("KeyName is ["$keyName$"]");
     switch (keyName)
     {
         case "Minus": return "-";
@@ -78,6 +79,16 @@ function string GetBindName(string keyName)
         case "SingleQuote": return "'";
         case "Comma": return ",";
         case "Period": return ".";
+        case "NumPad1": return "1";
+        case "NumPad2": return "2";
+        case "NumPad3": return "3";
+        case "NumPad4": return "4";
+        case "NumPad5": return "5";
+        case "NumPad6": return "6";
+        case "NumPad7": return "7";
+        case "NumPad8": return "8";
+        case "NumPad9": return "9";
+        case "NumPad0": return "0";
         default: return keyName;
     }
 }
