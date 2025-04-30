@@ -164,6 +164,7 @@ function ToggleCurrent() {
     bClicked = true;
 
     if (highlightedItem == power && activeItems > 0) {
+        player.ForceDroneOff();
         player.DeactivateAllAugs();
         activeItems = player.augmentationSystem.NumAugsActive(); //SARGE: Was hardcoded to 0. Now that we aren't deactivating toggled augs, we need to re-read the number
         updatePowerStatus();

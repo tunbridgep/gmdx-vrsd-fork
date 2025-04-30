@@ -18099,7 +18099,7 @@ function MultiplayerTick(float DeltaTime)
 
 // ----------------------------------------------------------------------
 
-function ForceDroneOff(optional bool skipDeactivation)
+function ForceDroneOff()
 {
 	local AugDrone anAug;
 
@@ -18109,14 +18109,8 @@ function ForceDroneOff(optional bool skipDeactivation)
         //foreach AllActors(class'AugDrone', anAug)
         if (anAug != None)
         {
-            if (bSpyDroneSet)
-            {
-                anAug.ToggleStandbyMode(true);
-            }
-            if (!skipDeactivation)
-            {
-                anAug.Deactivate();
-            }
+            anAug.bDestroyNow = true;
+            anAug.Deactivate();
         }
     }
 }
