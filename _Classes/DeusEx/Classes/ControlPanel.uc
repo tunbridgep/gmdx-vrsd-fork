@@ -40,26 +40,25 @@ auto state Active                //CyberP:
 {
      function TakeDamage(int Damage, Pawn EventInstigator, vector HitLocation, vector Momentum, name DamageType)
      {
-     local int i;
-     //local Actor A;
+        local int i;
 
-       if (bInvincible || hackStrength == 0.0)
-       return;
+        if (bInvincible)
+            return;
 
-       if (Damage > minDamageThreshold)
-	   {
-                     bInvincible=True;
-                     bHighlight=False;
-	                 hackStrength=0.0;
-                     StopHacking();
-                     HackAction(EventInstigator,true);
+        DeusExPlayer(GetPlayerPawn()).ClientMessage("Damage: " $ Damage);
 
-                     //for (i=0; i<ArrayCount(UnTriggerEvent); i++)
-			          //if (UnTriggerEvent[i] != '')
-				       // foreach AllActors(class'Actor', A, UnTriggerEvent[i])
-					     // A.UnTrigger(player, player);
-       }
-    Super.TakeDamage(Damage, EventInstigator, HitLocation, Momentum, DamageType);
+        if (Damage >= minDamageThreshold || Damage >= HitPoints) //SARGE: Fixed this check and added hackStrength conditional below.
+        {
+            //bInvincible=True; //SARGE: Removed. Now we can be destroyed
+            bHighlight=False;
+            if (hackStrength > 0.0)
+            {
+                hackStrength=0.0;
+                StopHacking();
+                HackAction(EventInstigator,true);
+            }
+        }
+        Super.TakeDamage(Damage, EventInstigator, HitLocation, Momentum, DamageType);
     }
 
 }

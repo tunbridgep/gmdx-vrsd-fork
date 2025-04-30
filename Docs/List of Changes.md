@@ -41,6 +41,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed a vanilla game bug that would prevent weapons from spawning with ammo available if there wasn't enough room to spawn the ammo when being picked up.
     - Fixed vRSD bug where attempting to loot ammo from a weapon while having the same weapon equipped, but with an alternate ammo type (such as AP rounds) would silently fail with no message.
     - Fixed vRSD oversight where Damage mods wouldn't be automatically transferred when attempting to pick up a second Dragons Tooth Sword.
+    - Fixed vRSD bug where control panels could be destroyed but would sometimes not trigger their associated hacking event.
     - Fixed major GMDX bugs related to spawning items in tight spaces, including weapons with no ammo and items not appearing when gibbing enemies.
     - Fixed many other GMDX and Vanilla bugs.
 - Quality of Life Improvements:
