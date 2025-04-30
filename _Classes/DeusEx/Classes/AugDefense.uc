@@ -230,6 +230,7 @@ defaultproperties
      smallIcon=Texture'DeusExUI.UserInterface.AugIconDefense_Small'
      AugmentationType=Aug_Automatic
      AugmentationName="Aggressive Defense System"
+     AugmentationShortName="A.D.S"
      Description="Aerosol nanoparticles are released upon the detection of objects fitting the electromagnetic threat profile of missiles and grenades; these nanoparticles will prematurely detonate such objects prior to reaching the agent. The particles will additionally shape the detonation away from the agent, resulting in a significant reduction in damage from detonated objects.|n|nTECH ONE: The range at which incoming rockets and grenades are detonated is short, and damage is reduced slightly.|n|nTECH TWO: The range at which detonation occurs is increased slightly and damage is reduced by a small amount.|n|nTECH THREE: The range at which detonation occurs is increased moderately and damage is reduced by a moderate amount.|n|nTECH FOUR: Rockets and grenades are detonated almost before they are fired and damage is reduces significantly."
      MPInfo="When active, enemy rockets detonate when they get close, doing reduced damage.  Some large rockets may still be close enough to do damage when they explode.  Energy Drain: Low"
      LevelValues(0)=400.000000

@@ -92,20 +92,14 @@ function Augmentation GetAugmentation()
 // GetAugDesc()
 // ----------------------------------------------------------------------
 
+//Sarge: This was a hardcoded list of augmentation names.
+//Now we just use the short name
 function String GetAugDesc()
 {
 	if (GetClientObject() != None)
 	{
-	    if (Augmentation(GetClientObject()).IsA('AugDefense'))
-	        return "A.D.S (Active)";
-	    else if (Augmentation(GetClientObject()).IsA('AugEnviro'))
-	        return "Environ Resistance (Active)";
-        else
-            return Augmentation(GetClientObject()).augmentationName;
+		return Augmentation(GetClientObject()).GetName(true);
 	}
-	else
-		return "";
-
 }
 
 // ----------------------------------------------------------------------

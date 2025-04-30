@@ -25,6 +25,7 @@ var localized string AugLocsText[7];
 var() localized string AugActivated;
 var() localized string AugDeactivated;
 var() localized string AugmentationName;
+var() localized string AugmentationShortName;
 var() localized string Description;
 var() localized string MPInfo;
 var() localized string AugAlreadyHave;
@@ -664,9 +665,16 @@ function bool IsToggleAug()
 // Gets the Augmentation name, followed by the aug type, such as "(Automatic)"
 // ----------------------------------------------------------------------
 
-function string GetName()
+function string GetName(optional bool bShortName)
 {
     local string suffix;
+    local string AugName;
+
+    if (bShortName)
+        AugName = AugmentationShortName;
+
+    if (AugName == "")
+        AugName = AugmentationName;
 
     switch (AugmentationType)
     {
@@ -687,7 +695,7 @@ function string GetName()
             break;
     }
 
-    return AugmentationName @ "(" $ suffix $ ")";
+    return AugName @ "(" $ suffix $ ")";
 }
 
 // ----------------------------------------------------------------------
