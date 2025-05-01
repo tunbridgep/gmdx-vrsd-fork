@@ -15,10 +15,16 @@ var int buttonLightWidth;
 
 event InitWindow()
 {
+    local DeusExPlayer player;
+    
 	Super.InitWindow();
+    player = DeusExPlayer(GetPlayerPawn());
 
+    if (player != None)
 	// Load the menu font from the DXFonts package
-	fontButtonText = Font'DeusExUI.FontConversationLarge';//Font(DynamicLoadObject("DXFonts.MainMenuTrueType", Class'Font'));
+        fontButtonText = player.FontManager.GetFont(TT_MainMenu);
+    else
+        fontButtonText = Font'DeusExUI.FontConversationLarge';//Font(DynamicLoadObject("DXFonts.MainMenuTrueType", Class'Font'));
 }
 
 // ----------------------------------------------------------------------
