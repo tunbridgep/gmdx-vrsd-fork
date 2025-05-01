@@ -9,6 +9,7 @@ var Window     winIcon;
 var TextWindow winLabel;
 
 var Color colText;
+var Color colDecline;
 var Font fontLabel;
 
 var const localized string msgDeclined;
@@ -66,7 +67,9 @@ event SetItem(Inventory invItem, int count, optional bool bDeclined)
     if (bDeclined)
     {
         winIcon.SetTileColorRGB(64,64,64);
-        labelText = msgDeclined;
+        //labelText = msgDeclined;
+        winLabel.SetTextColor(colDecline);
+        //winIcon.SetTileColor(colDecline);
     }
 
 	winLabel.SetText(labelText);
@@ -83,6 +86,7 @@ event StyleChanged()
 	theme = player.ThemeManager.GetCurrentHUDColorTheme();
 
 	colText = theme.GetColorFromName('HUDColor_NormalText');
+	colDecline = theme.GetColorFromName('HUDColor_ButtonTextDisabled');
 
 	if (winLabel != None)
 		winLabel.SetTextColor(colText);

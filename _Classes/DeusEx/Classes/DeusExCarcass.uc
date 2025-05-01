@@ -1247,6 +1247,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                 {
                                     player.ClientMessage(invItem.PickupMessage @ invItem.itemArticle @ invItem.itemName @ msgTooMany, 'Pickup');
                                     bFoundSomething = True;
+                                    badItems[badItemCount++] = item;
 
                                 }
 								else
@@ -1318,6 +1319,8 @@ function Frob(Actor Frobber, Inventory frobWith)
 
                                         item.SpawnCopy(P);
                                     }
+                                    else
+                                        badItems[badItemCount++] = item;
                                 }
 							}
 							else

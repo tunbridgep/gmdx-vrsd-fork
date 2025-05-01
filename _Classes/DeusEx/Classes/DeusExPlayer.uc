@@ -8611,6 +8611,9 @@ function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool
     if (over > 0 && bDisplayMsg && bShowOverflowMsg)
     {
         ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName $ " (" $ over $ ")" @ AmmoType.MaxAmmoString, 'Pickup');
+        
+        if (bShowWindow && bShowDeclinedInReceivedWindow)
+            AddReceivedItem(AmmoType, over, bNoGroup, true);
     }
     return ret;
 }
