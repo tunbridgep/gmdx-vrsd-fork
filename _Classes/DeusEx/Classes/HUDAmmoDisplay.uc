@@ -62,17 +62,21 @@ event InitWindow()
 function UpdateVisibility()
 {
     local bool validWeap, hastool;
+    
+    if (!bVisible)
+    {
+        Hide();
+        return;
+    }
 
     curr = GetWeapon();
     weapon = DeusExWeapon(curr);
     
-    //player.ClientMessage("UpdateVisibility: " $ curr $ ", " $ weapon);
-
     //it's visible if we have a valid weapon
     validWeap = player.inHand != None && weapon != None && (weapon.ReloadCount > 0 || (weapon.IsA('WeaponNanoSword')));
     hasTool = curr != None && weapon == None;
 
-	if (curr != None && curr.Owner == player && (validweap || hastool) && bVisible )
+	if (curr != None && curr.Owner == player && (validweap || hastool))
 		Show();
 	else
 		Hide();
@@ -338,8 +342,7 @@ function DrawBorder(GC gc)
 function SetVisibility( bool bNewVisibility )
 {
 	bVisible = bNewVisibility;
-    if (bNewVisibility)
-        UpdateVisibility();
+    UpdateVisibility();
 }
 
 // ----------------------------------------------------------------------
