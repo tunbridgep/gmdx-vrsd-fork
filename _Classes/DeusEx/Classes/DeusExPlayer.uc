@@ -5114,7 +5114,8 @@ function HighlightCenterObject()
                         if (hackable != None && hackable.bHackable && hackable.hackStrength > 0.0)
                         {
                             HackTarget = HackableDevices(target);
-                            FrobTarget = target;
+                            if (inHand != None && inHand.IsA('Multitool'))
+                                FrobTarget = target;
                             break; //Just keep it simple and only get the first one, they usually never overlap.
                         }
                     }
@@ -8137,6 +8138,12 @@ exec function ParseLeftClick()
 
     }
 
+    //Allow left-frobbing distant control panels with the Wireless Strength perk
+    else if (HackTarget != None && !bInHandTransition && inHand == None)
+    {
+        DoLeftFrob(HackTarget);
+    }
+
     //Special cases aside, now do the left hand frob behaviour
     else if (FrobTarget != none && IsReallyFrobbable(FrobTarget,true) && !bInHandTransition && (inHand == None || !inHand.IsA('POVcorpse')) && CarriedDecoration == None)
 	{
@@ -8342,6 +8349,7 @@ exec function ParseRightClick()
 	local Vector loc;
 	local DeusExWeapon ExWep;
     local DeusExRootWindow root;
+    local bool bFarAway;
 
     //SARGE: Add quickloading if pressing right click while dead.
     if (IsInState('dying') && !bDeadLoad)
@@ -8398,18 +8406,14 @@ exec function ParseRightClick()
 	oldInHand = inHand;
 	oldCarriedDecoration = CarriedDecoration;
 
-    //We have a hacktarget, we can't interact with it at all
-    //except to pull out multitools.
-    if (HackTarget != None) 
-    {
-        HackTarget.DoWirelessPerkFrob(self);
-        return;
-    }
+    //We have a hacktarget, we can't right click it at all
+    //because we're out of range.
+    bFarAway = HackTarget != None && FrobTarget != None;
 
 	if (FrobTarget != None)
 		loc = FrobTarget.Location;
 
-	if (FrobTarget != None && IsReallyFrobbable(FrobTarget))
+	if (FrobTarget != None && IsReallyFrobbable(FrobTarget) && !bFarAway)
 	{
         //SARGE: I really should add this to the proper OOP setup, but I just don't care.
         //We don't care about MP, so will omit it for now
@@ -8490,19 +8494,24 @@ exec function ParseRightClick()
             bSelectedFromMainBeltSelection = false;
             PutInHand(None);
             NewWeaponSelected();
-		    DoRightFrob(FrobTarget); //Last minute check for things with no highlight.
+            if (!bFarAway)
+                DoRightFrob(FrobTarget); //Last minute check for things with no highlight.
 		}
 		else
 		{
             SetDoubleClickTimer();
-		    DoRightFrob(FrobTarget); //Last minute check for things with no highlight.
+            if (!bFarAway)
+                DoRightFrob(FrobTarget); //Last minute check for things with no highlight.
         }
 	}
 
-	if ((oldInHand == None) && (inHand != None))
-		PlayPickupAnim(loc);
-	else if ((oldCarriedDecoration == None) && (CarriedDecoration != None))
-		PlayPickupAnim(loc);
+    if (!bFarAway)
+    {
+        if ((oldInHand == None) && (inHand != None))
+            PlayPickupAnim(loc);
+        else if ((oldCarriedDecoration == None) && (CarriedDecoration != None))
+            PlayPickupAnim(loc);
+    }
 }
 
 // ----------------------------------------------------------------------

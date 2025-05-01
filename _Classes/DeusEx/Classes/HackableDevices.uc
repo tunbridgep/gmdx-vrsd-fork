@@ -67,8 +67,10 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 }
 
 //SARGE: Allow special selection with right click if we're far away
+//SARGE: Removed because it feels bad randomly triggering it in combat or otherwise.
 function DoWirelessPerkFrob(DeusExPlayer frobber)
 {
+    /*
     //SARGE: Use the "right-click to autoselect" revision-style interaction, if enabled
     if (frobber.bRightClickToolSelection && frobber.inHand != None && !frobber.inHand.IsA('Multitool') && !DoLeftFrob(frobber))
         return;
@@ -78,6 +80,7 @@ function DoWirelessPerkFrob(DeusExPlayer frobber)
         return;
 
     frobber.ClientMessage(msgNeedMultitool);
+    */
 }
 
 // ---------------------------------------------------------------------------------------
