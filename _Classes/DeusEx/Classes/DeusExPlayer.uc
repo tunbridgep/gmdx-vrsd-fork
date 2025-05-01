@@ -795,6 +795,7 @@ var globalconfig bool bReversedAltBeltColours;                      //SARGE: Mak
 
 var globalconfig bool bAlwaysShowReceivedItemsWindow;               //SARGE: Always show the retrieved items window when picking up ammo from a weapon.
 
+var globalconfig bool bShowDeclinedInReceivedWindow;                //SARGE: Allow showing declined items in the received items window.
 
 var globalconfig int iShowTotalCounts;                        //SARGE: Show the total number of rounds we can carry for disposable items in the inventory screen. 1 = charged items and disposable weapons/grenades only, 2 = everything.
 
@@ -8896,7 +8897,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 	return bCanPickup && !bDeclined;
 }
 
-function AddReceivedItem(Inventory item, int count, optional bool bNoGroup)
+function AddReceivedItem(Inventory item, int count, optional bool bNoGroup, optional bool bDeclined)
 {
     local int i;
 
@@ -8912,11 +8913,11 @@ function AddReceivedItem(Inventory item, int count, optional bool bNoGroup)
         if (!bNoGroup && count < 5)
         {
             for (i = 0; i < count; i++)
-                DeusExRootWindow(rootWindow).hud.receivedItems.AddItem(item, 1);
+                DeusExRootWindow(rootWindow).hud.receivedItems.AddItem(item, 1, bDeclined);
         }
         else
         {
-            DeusExRootWindow(rootWindow).hud.receivedItems.AddItem(item, count);
+            DeusExRootWindow(rootWindow).hud.receivedItems.AddItem(item, count, bDeclined);
         }
 
         // Make sure the object belt is updated

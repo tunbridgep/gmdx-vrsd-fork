@@ -11,6 +11,8 @@ var TextWindow winLabel;
 var Color colText;
 var Font fontLabel;
 
+var const localized string msgDeclined;
+
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -38,7 +40,7 @@ event InitWindow()
 // SetItem()
 // ----------------------------------------------------------------------
 
-event SetItem(Inventory invItem, int count)
+event SetItem(Inventory invItem, int count, optional bool bDeclined)
 {
 	local String labelText;
 
@@ -59,6 +61,13 @@ event SetItem(Inventory invItem, int count)
         labelText = invItem.beltDescription;
 	if (count > 1)
 		labelText = labelText $ " (" $ String(count) $ ")";
+    
+    //SARGE: Special case for handling declined items. Yuck.
+    if (bDeclined)
+    {
+        winIcon.SetTileColorRGB(64,64,64);
+        labelText = msgDeclined;
+    }
 
 	winLabel.SetText(labelText);
 }
@@ -85,4 +94,5 @@ event StyleChanged()
 defaultproperties
 {
      fontLabel=Font'DeusExUI.FontMenuSmall_DS'
+     msgDeclined="-"
 }
