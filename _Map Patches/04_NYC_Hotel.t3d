@@ -48128,7 +48128,7 @@ Begin Actor Class=SignFloor Name=SignFloor0
     Name=SignFloor0
 End Actor
 Begin Actor Class=ATM Name=ATM0
-    UserList(0)=(accountNumber="487659",PIN="259087",balance=200)
+    UserList(0)=(accountNumber="487659",PIN="249087",balance=200)
     UserList(1)=(accountNumber="572345",PIN="98746",balance=100)
     UserList(2)=(accountNumber="748506",PIN="54857",balance=100)
     ATMSecLevel=1
