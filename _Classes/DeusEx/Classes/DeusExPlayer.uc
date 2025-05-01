@@ -804,6 +804,9 @@ var globalconfig bool bDropWeaponsOnDeath;                      //SARGE: If enab
 
 var globalconfig int iCrosshairOffByOne;                       //SARGE: Set this if your crosshair is a few pixels too far to the left
 
+//SARGE: Overhauled the Wireless Strength perk to no longer require having a multitool out.
+var HackableDevices HackTarget;
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -5013,6 +5016,8 @@ function HighlightCenterObject()
 	local int skillz;
 	local float shakeTime, shakeRoll, shakeVert;
     local float rnd;
+    local PerkWirelessStrength perk;
+    local HackableDevices hackable;
 
     if (IsInState('Dying'))
 		return;
@@ -5048,15 +5053,6 @@ function HighlightCenterObject()
        }
        LadTime = 0;
       }
-      if (inHand != None && inHand.IsA('Multitool'))
-          	{
-            	if (self.IsA('DeusExPlayer') && PerkManager.GetPerkWithClass(class'DeusEx.PerkWirelessStrength').bPerkObtained == true)
-                MaxFrobDistance = 768;
-          	}
-     	else
-           	{
-	            MaxFrobDistance = 112;
-            }
 		// figure out how far ahead we should trace
 		StartTrace = Location;
 		EndTrace = Location + (Vector(ViewRotation) * MaxFrobDistance);
@@ -5069,26 +5065,8 @@ function HighlightCenterObject()
 		minSize = 99999;
 		bFirstTarget = True;
 
-     if (inHand != none && inHand.IsA('Multitool'))
-     {
-        foreach TraceActors(class'Actor', target, HitLoc, HitNormal, EndTrace, StartTrace)
-		{
-		if (IsFrobbable(target) && (target != CarriedDecoration))
-		     {
-                if (target.IsA('HackableDevices'))
-			    {
-                }
-			    else
-			    {
-			    MaxFrobDistance=112;
-		        StartTrace = Location;
-		        EndTrace = Location + (Vector(ViewRotation) * MaxFrobDistance);
-		        StartTrace.Z += BaseEyeHeight;
-		        EndTrace.Z += BaseEyeHeight;
-                }
-             }
-        }
-     }
+        //SARGE: Removed the special case for Multitools, see below for how this is done.
+
 		// find the object that we are looking at
 		// make sure we don't select the object that we're carrying
 		// use the last traced object as the target...this will handle
@@ -5117,6 +5095,32 @@ function HighlightCenterObject()
 			}
 		}
 		FrobTarget = smallestTarget;
+        HackTarget = None;
+
+        //SARGE: If we have no frobtarget, do the special check for the wireless strength perk
+        if (FrobTarget == None)
+        {
+            perk = PerkWirelessStrength(PerkManager.GetPerkWithClass(class'DeusEx.PerkWirelessStrength'));
+            if (perk != None && perk.bPerkObtained)
+            {
+                EndTrace = Location + (Vector(ViewRotation) * perk.PerkValue);
+                EndTrace.Z += BaseEyeHeight;
+
+                foreach TraceActors(class'Actor', target, HitLoc, HitNormal, EndTrace, StartTrace)
+                {
+                    if (target.IsA('HackableDevices'))
+                    {
+                        hackable = HackableDevices(target);
+                        if (hackable != None && hackable.bHackable && hackable.hackStrength > 0.0)
+                        {
+                            HackTarget = HackableDevices(target);
+                            FrobTarget = target;
+                            break; //Just keep it simple and only get the first one, they usually never overlap.
+                        }
+                    }
+                }
+            }
+        }
 
 		// reset our frob timer
 		FrobTime = 0;
@@ -8393,6 +8397,14 @@ exec function ParseRightClick()
 	oldFirstItem = Inventory;
 	oldInHand = inHand;
 	oldCarriedDecoration = CarriedDecoration;
+
+    //We have a hacktarget, we can't interact with it at all
+    //except to pull out multitools.
+    if (HackTarget != None) 
+    {
+        HackTarget.DoWirelessPerkFrob(self);
+        return;
+    }
 
 	if (FrobTarget != None)
 		loc = FrobTarget.Location;

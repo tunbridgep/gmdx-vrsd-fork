@@ -35,6 +35,8 @@ var float               previousStrength;        //Sarge: What was the strength 
 
 var const bool          bAllowRightClickToolSelection; //Sarge: Used to prevent right-click tool selection on keypads
 
+var const localized string msgNeedMultitool;        //SARGE: Tell the user that they need a tool (Wireless Strength perk)
+
 //SARGE: Added "Left Click Frob" and "Right Click Frob" support
 //Return true to use the default frobbing mechanism, or false for custom behaviour
 function bool DoLeftFrob(DeusExPlayer frobber)
@@ -62,6 +64,20 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
         return DoLeftFrob(frobber);
 
     return true;
+}
+
+//SARGE: Allow special selection with right click if we're far away
+function DoWirelessPerkFrob(DeusExPlayer frobber)
+{
+    //SARGE: Use the "right-click to autoselect" revision-style interaction, if enabled
+    if (frobber.bRightClickToolSelection && frobber.inHand != None && !frobber.inHand.IsA('Multitool') && !DoLeftFrob(frobber))
+        return;
+        
+    //No message if we already have a multitool
+    if (frobber.inHand != None && frobber.inHand.IsA('Multitool'))
+        return;
+
+    frobber.ClientMessage(msgNeedMultitool);
 }
 
 // ---------------------------------------------------------------------------------------
@@ -309,6 +325,7 @@ defaultproperties
      msgNotHacked="It's secure"
      msgHacking="Bypassing the device..."
      msgAlreadyHacked="It's already bypassed"
+     msgNeedMultitool="You need a Multitool"
      Physics=PHYS_None
      bCollideWorld=false
      bAllowRightClickToolSelection=true

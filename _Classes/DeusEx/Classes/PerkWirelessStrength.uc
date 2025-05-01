@@ -12,5 +12,5 @@ defaultproperties
     PerkSkill=Class'DeusEx.SkillTech'
     PerkCost=250
     PerkLevelRequirement=2
-    PerkValue=1
+    PerkValue=768   //How far we can frob hackables with multitools.
 }
