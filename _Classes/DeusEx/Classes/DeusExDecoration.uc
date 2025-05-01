@@ -125,19 +125,15 @@ function bool DoLeftFrob(DeusExPlayer frobber)
     //Don't allow frobbing while swimming, and only allow objects grabbable via left click
     if (bLeftGrab)
     {
-        /*
         if (frobber.IsInState('PlayerSwimming'))
         {
             frobber.ClientMessage(msgCantUseWhileSwimming);
         }
         else
         {
-        */
             frobber.GrabDecoration();
             return false;
-        /*
         }
-        */
     }
     else if (frobber.SelectMeleePriority(minDamageThreshold))
         return false;
@@ -148,19 +144,15 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
     //Don't allow frobbing while swimming, and only allow pushable objects
     if (bPushable)
     {
-        /*
         if (frobber.IsInState('PlayerSwimming'))
         {
             frobber.ClientMessage(msgCantUseWhileSwimming);
         }
         else
         {
-        */
             frobber.GrabDecoration();
             return false;
-        /*
         }
-        */
     }
     return true;
 }

@@ -45,7 +45,6 @@ auto state Active                //CyberP:
         if (bInvincible)
             return;
 
-        DeusExPlayer(GetPlayerPawn()).ClientMessage("Damage: " $ Damage);
 
         if (Damage >= minDamageThreshold || Damage >= HitPoints) //SARGE: Fixed this check and added hackStrength conditional below.
         {
