@@ -622,8 +622,9 @@ if (Other.IsA('Pawn') || Other.IsA('Pickup') || (Other.IsA('DeusExDecoration') &
 
 if (Other.IsA('Pawn') && !Other.IsA('Robot'))
 {
-SpawnBlood(Location,any);
-PlaySound(Misc1Sound,SLOT_None,,,1024);
+    if (!Other.IsA('ScriptedPawn') || ScriptedPawn(Other).bCanBleed)
+        SpawnBlood(Location,any);
+    PlaySound(Misc1Sound,SLOT_None,,,1024);
 }
 }
 }
@@ -5255,8 +5256,11 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
                 {
 				    if (!bHandToHand && !IsA('WeaponProd') && (!IsA('WeaponSawedOffShotgun') || AmmoRubber(ammoType) == none) && !Pawn(Other).IsA('DeusExPlayer') && !Pawn(Other).IsInState('Dying'))
                     {
-						SpawnBlood(HitLocation, HitNormal);
-                        spoofer = Spawn(class'BloodMeleeHit',,,HitLocation);
+                        if (ScriptedPawn(Other).bCanBleed)
+                        {
+                            SpawnBlood(HitLocation, HitNormal);
+                            spoofer = Spawn(class'BloodMeleeHit',,,HitLocation);
+                        }
                         if (spoofer != none)
                             spoofer.DrawScale= 0.14;
                     }
@@ -5264,8 +5268,11 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
 					{
                         if (IsA('WeaponNanoSword') || IsA('WeaponCombatKnife') || IsA('WeaponSword') || IsA('WeaponCrowbar'))
                         {
-                            SpawnBlood(HitLocation, HitNormal);
-                            spoofer = Spawn(class'BloodMeleeHit',,,HitLocation);
+                            if (ScriptedPawn(Other).bCanBleed)
+                            {
+                                SpawnBlood(HitLocation, HitNormal);
+                                spoofer = Spawn(class'BloodMeleeHit',,,HitLocation);
+                            }
                         }
 					}
 				}

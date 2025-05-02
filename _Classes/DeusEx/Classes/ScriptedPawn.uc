@@ -637,6 +637,7 @@ function PostBeginPlay()
             ScaleGlow = 1.000000;
 		KillShadow();
 		bHasShadow = False;
+		bCanBleed = False;
 	}
 }
 
@@ -4002,7 +4003,7 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
     }
     }
 
-        if (HealthHead < 0 && (DamageType == 'Shot' || DamageType == 'Sabot'))
+        if (bCanBleed && HealthHead < 0 && (DamageType == 'Shot' || DamageType == 'Sabot'))
         {
         deathSoundOverride = Sound'DeusExSounds.Generic.FleshHit1';
        player = DeusExPlayer(GetPlayerPawn());

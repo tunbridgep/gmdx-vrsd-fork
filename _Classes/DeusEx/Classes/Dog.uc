@@ -91,6 +91,7 @@ function bool WillTakeStompDamage(Actor stomper)
 
 defaultproperties
 {
+	 bCanBleed=True
      bPlayDying=True
      MinHealth=4.000000
      InitialAlliances(7)=(AllianceName=Cat,AllianceLevel=-1.000000)
