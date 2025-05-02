@@ -1343,6 +1343,9 @@ function PostBeginPlay()
 
     //SARGE: Account for FemJC eye height changes
     ResetBasedPawnSize();
+	
+    //Reset the music timers
+    ResetMusic();
 
     //RSD: log item distribution on map load
     //logItemsInCrates();
@@ -2207,6 +2210,7 @@ exec function TeamSay( string Msg )
 exec function RestartLevel()
 {
 	ResetPlayer();
+    ResetMusic(true);
 	Super.RestartLevel();
 }
 
@@ -2217,6 +2221,7 @@ exec function RestartLevel()
 exec function LoadGame(int saveIndex)
 {
     SetupRendererSettings();
+    ResetMusic();
 
 //   log("MYCHK:LoadGame: ,"@saveIndex);
 	// Reset the FOV
@@ -2560,6 +2565,7 @@ exec function StartNewGame(String startMap)
 
 	SaveSkillPoints();
 	ResetPlayer();
+    ResetMusic(true);
 	DeleteSaveGameFiles();
 
 	bStartingNewGame = True;
@@ -3337,6 +3343,17 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
     }
     default.currentSong = string(NewSong);
     default.bLastWasOutro = NewSection == 5;
+}
+
+//SARGE: Resets the music timers and state.
+function ResetMusic(optional bool bResetPlace)
+{
+    //Reset the music timers
+    musicCheckTimer = 999;
+	musicChangeTimer = 999;
+    default.musicMode = MUS_Outro;
+    if (bResetPlace)
+        default.savedSection = Level.SongSection;
 }
 
 // ----------------------------------------------------------------------
