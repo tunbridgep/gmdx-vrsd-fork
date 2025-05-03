@@ -38,24 +38,19 @@ MessageBox MB_OK "GMDX must be installed to your Deus Ex Directory"
 Quit
 afterFileCheck:
 
-SetOutPath $INSTDIR\GMDXvSARGE
+SetOutPath $INSTDIR\GMDX_AE
 File /r /x DeusEx.u /x RSDCrap.u /x DeusEx.int game\GMDXvSARGE\*
-SetOutPath $INSTDIR\GMDXvSARGE\System
+SetOutPath $INSTDIR\GMDX_AE\System
 File "${SARGE_U_FILES}\DeusEx.u"
 File "${SARGE_U_FILES}\RSDCrap.u"
 
 ;Copy int file
 File "..\System\DeusEx.int"
 
-;Install additional files
-SetOutPath $INSTDIR\GMDXvSARGE\Docs
+;Install docs
+SetOutPath $INSTDIR\GMDX_AE\Docs
 File ..\Docs\credits.txt
 File ..\Docs\EditPackages.txt
 File "..\Docs\List of Changes.html"
-SetOutPath $INSTDIR\System
-File extras\GMDX.exe
-File extras\GMDX.ini
-File extras\GMDXUser.ini
-SetOutPath $INSTDIR
 
 SectionEnd
