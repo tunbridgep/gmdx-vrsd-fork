@@ -22,11 +22,11 @@ function DrawHotKey(GC gc)
 
 	// Draw Dropshadow
 	gc.SetTextColor(colBlack);
-	gc.DrawText(6, 1, 25, 8, hotKeyString);
+	gc.DrawText(6, 1, 25, 20, hotKeyString);
 
 	// Draw Dropshadow
 	gc.SetTextColor(colText);
-	gc.DrawText(7, 0, 25, 8, hotKeyString);
+	gc.DrawText(7, 0, 25, 20, hotKeyString);
 }
 
 // ----------------------------------------------------------------------
