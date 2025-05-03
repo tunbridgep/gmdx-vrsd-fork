@@ -416,6 +416,9 @@ singular function checkForHazards(GC gc)
     local int i;
 	local DeusExRootWindow root;
 
+    if (player == None || player.AugmentationSystem == None)
+        return;
+
 	root = DeusExRootWindow(player.rootWindow);
     
     //Disable the hazard detection text while windows are open
@@ -424,8 +427,10 @@ singular function checkForHazards(GC gc)
 
     aug = AugIFF(Player.AugmentationSystem.GetAug(class'AugIFF'));
 
-    if (aug != None && aug.bHasIt)
-        range = (aug.CurrentLevel) * aug.default.hazardsrange * 16; //Range in which hazards are detected - 50 feet at level 2, 100 at level 3
+    if (aug == None || !aug.bHasIt)
+        return;
+
+    range = (aug.CurrentLevel) * aug.default.hazardsrange * 16; //Range in which hazards are detected - 50 feet at level 2, 100 at level 3
 
     if (range <= 0)
         return;
