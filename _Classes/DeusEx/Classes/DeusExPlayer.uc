@@ -3337,9 +3337,15 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
 //SARGE: Calls ClientSetMusic based on our current music state.
 function MusicTransition(EMusicMode mode, EMusicMode prev)
 {
+	local DeusExLevelInfo info;
+	info = GetLevelInfo();
+
+    if (info == None)
+        return;
+
     switch (mode)
     {
-        case MUS_Combat: ClientSetMusic(Level.Song, 3, 255, MTRAN_FastFade); break;
+        case MUS_Combat: ClientSetMusic(Level.Song, info.SongCombatSection, 255, MTRAN_FastFade); break;
         case MUS_Outro: ClientSetMusic(Level.Song, 5, 255, MTRAN_FastFade); break;
         case MUS_Conversation: ClientSetMusic(Level.Song, 4, 255, MTRAN_Fade); break;
         case MUS_Dying: ClientSetMusic(Level.Song, 1, 255, MTRAN_Fade); break;
