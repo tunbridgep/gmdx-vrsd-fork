@@ -1,0 +1,1 @@
+DeusEx.exe INI="..\GMDX_AE\System\DeusEx.ini" USERINI="..\GMDX_AE\System\User.ini"
