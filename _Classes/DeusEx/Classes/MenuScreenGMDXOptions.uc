@@ -41,6 +41,30 @@ event InitWindow()
     }
 }
 
+function CreateChoices()
+{
+	local int choiceIndex;
+	local MenuUIChoice newChoice;
+	local DeusExLevelInfo info;
+
+	// Loop through the Menu Choices and create the appropriate buttons
+	for(choiceIndex=0; choiceIndex<arrayCount(choices); choiceIndex++)
+	{
+		if (choices[choiceIndex] != None)
+		{
+			newChoice = MenuUIChoice(winClient.NewChild(choices[choiceIndex]));
+			newChoice.SetPos(choiceStartX, choiceStartY + (choiceCount * choiceVerticalGap) - newChoice.buttonVerticalOffset);
+			choiceCount++;
+            newChoice.SetSensitivity(true);
+
+            //SARGE: If HDTP is not installed, disable the button
+            if (!class'DeusExPlayer'.static.IsHDTPInstalled() && choiceCount == 3)
+                newChoice.SetSensitivity(False);
+
+         }
+    }
+}
+
 function ProcessAction(String actionKey)
 {
 	if (actionKey == "TIPS")
