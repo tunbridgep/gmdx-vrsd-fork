@@ -8788,6 +8788,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     //SARGE: Always try looting non-disposable weapons of their ammo
     if (bCanPickup && FrobTarget.IsA('DeusExWeapon') && !DeusExWeapon(frobTarget).bDisposableWeapon)
     {
+        ClearReceivedItems();
         bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,true,bAlwaysShowReceivedItemsWindow,false,true,bShowOverflow);
 
         //Don't pick up a weapon if there's ammo in it and we already have one
@@ -8898,6 +8899,11 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
         DeusExWeapon(frobTarget).ClipCount = DeusExWeapon(frobTarget).PickupAmmoCount;
 
 	return bCanPickup && !bDeclined;
+}
+
+function ClearReceivedItems()
+{
+    DeusExRootWindow(rootWindow).hud.receivedItems.RemoveItems();
 }
 
 function AddReceivedItem(Inventory item, int count, optional bool bNoGroup, optional bool bDeclined)
