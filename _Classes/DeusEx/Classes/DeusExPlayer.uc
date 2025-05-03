@@ -5074,6 +5074,10 @@ function HighlightCenterObject()
 		// ScriptedPawns always have precedence, though
 		foreach TraceActors(class'Actor', target, HitLoc, HitNormal, EndTrace, StartTrace)
 		{
+            //SARGE: Stop being able to frob things through walls
+            if (target.IsA('DeusExDecoration') && !LineOfSightTo(target))
+                continue;
+
 			if (IsFrobbable(target) && (target != CarriedDecoration))
 			{
                 if (target.IsA('ScriptedPawn'))
@@ -5110,6 +5114,10 @@ function HighlightCenterObject()
                 {
                     if (target.IsA('HackableDevices'))
                     {
+                        //SARGE: Ensure we can actually see what we're trying to frob
+                        if (!LineOfSightTo(target))
+                            continue;
+
                         hackable = HackableDevices(target);
                         if (hackable != None && hackable.bHackable && hackable.hackStrength > 0.0)
                         {
