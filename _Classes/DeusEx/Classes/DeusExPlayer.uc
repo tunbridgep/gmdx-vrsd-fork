@@ -3273,6 +3273,7 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
     info = GetLevelInfo();
         
     DebugMessage("Music Change Request:" @ NewSong @ NewSection);
+    DebugMessage("  Modes:" @ default.prevMusicMode @ default.musicMode);
     
     //SARGE: We're still fading from the last track, so we need to do a hacky fix
     //The engine is busted and the music system needs to be reset, so instantly transition back to our saved section.
@@ -3297,26 +3298,18 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
         default.musicMode = MUS_Ambient;
         default.prevMusicMode = MUS_Ambient;
     }
-    else if (iEnhancedMusicSystem == 0) //Always change with the old system
+    else if (info != none && info.bBarOrClub && iEnhancedMusicSystem == 2) //Don't allow music changes in clubs or bars with the extended option.
+    {
+        DebugMessage("Bar or Club - Music Unchanged");
+    }
+    else if (default.prevMusicMode != default.musicMode) //We want to allow changes between modes
     {
         bChange = true;
-        DebugMessage("Changing Music - Old System");
-    }
-    else if (SongSection != NewSection) //Don't let us replay the same bit we're already playing.
-    {
-        if (info != none && info.bBarOrClub && iEnhancedMusicSystem == 2) //Don't allow music changes in clubs or bars with the extended option.
-        {
-            DebugMessage("Bar or Club - Music Unchanged");
-        }
-        else if (default.prevMusicMode != default.musicMode) //We want to allow changes between modes
-        {
-            bChange = true;
-            DebugMessage("Changing Music - Changed Mode");
+        DebugMessage("Changing Music - Changed Mode");
 
-            //If we're changing back to ambient, always go to our saved section instead of the start
-            if (NewSection == Level.SongSection && default.musicMode == MUS_Ambient)
-                NewSection = default.savedSection;
-        }
+        //If we're changing back to ambient, always go to our saved section instead of the start
+        if (NewSection == Level.SongSection && default.musicMode == MUS_Ambient)
+            NewSection = default.savedSection;
     }
 
     if (bChange)
@@ -3472,7 +3465,7 @@ function UpdateDynamicMusic(float deltaTime, optional bool bNoFadeHack)
                 default.musicMode = MUS_Combat;
 			}
             // wait until we've been out of combat for 5 seconds before switching music
-			else if (musicChangeTimer >= 5.0)
+			else if (musicChangeTimer >= 5.0 || default.musicMode != MUS_Combat)
             {
                 default.musicMode = MUS_Ambient;
                 musicChangeTimer = 0.0;
