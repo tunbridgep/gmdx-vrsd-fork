@@ -113,7 +113,10 @@ function bool ShouldCreate(DeusExPlayer player)
 
 static function bool IsHDTP()
 {
-    return class'DeusExPlayer'.static.IsHDTPInstalled() && default.hdtpReference.default.iHDTPModelToggle > 0;
+    if (default.hdtpReference != None)
+        return class'DeusExPlayer'.static.IsHDTPInstalled() && default.hdtpReference.default.iHDTPModelToggle > 0;
+    else
+        return false;
 }
 
 exec function UpdateHDTPsettings()
