@@ -647,7 +647,7 @@ var bool bUsingComputer;                                                        
 var bool bBlockNextFire;                                                        //SARGE: Set to TRUE to block the next weapon firing attempt. Used when blowing up the spy drone.
 
 //Sarge: Allow Enhanced Weapon Offsets
-var globalconfig bool bEnhancedWeaponOffsets; 									//Sarge: Allow using enhanced weapon offsets
+var globalconfig int iEnhancedWeaponOffsets; 									//Sarge: Allow using enhanced weapon offsets. 0 = off, 1 = automatic at 100+ fov, 2 = always
 
 //Sarge: Dialog Settings
 var globalconfig bool bNumberedDialog;                                          //Sarge: Shows numbers in the dialog window and allows selecting topics with the number keys
@@ -18906,7 +18906,7 @@ defaultproperties
      BindName="JCDenton"
      FamiliarName="JC Denton"
      UnfamiliarName="JC Denton"
-     bEnhancedWeaponOffsets=false
+     iEnhancedWeaponOffsets=1
      bQuickAugWheel=false
      bAugWheelDisableAll=true
      bAugWheelFreeCursor=true

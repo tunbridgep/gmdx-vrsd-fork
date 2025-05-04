@@ -526,6 +526,8 @@ function ResizeHeavyWeapon(DeusExPlayer player)
 //Function to fix weapon offsets
 function DoWeaponOffset(DeusExPlayer player)
 {
+    local bool bDoOffsets;
+        
     if (player == None)
         return;
 
@@ -542,7 +544,9 @@ function DoWeaponOffset(DeusExPlayer player)
             bOldOffsetsSet = true;
         }
 
-        if (player.bEnhancedWeaponOffsets)
+        bDoOffsets = player.iEnhancedWeaponOffsets == 2 || (player.iEnhancedWeaponOffsets == 1 && player.defaultFOV >= 110);
+
+        if (bDoOffsets)
         {
             default.PlayerViewOffset.x = weaponOffsets.x;
             default.PlayerViewOffset.y = weaponOffsets.y;
@@ -704,7 +708,8 @@ function PreBeginPlay()
 	}
 
     UpdateHDTPSettings();
-    DoWeaponOffset(DeusExPlayer(GetPlayerPawn()));
+    if (Owner != None && Owner.IsA('DeusExPlayer'))
+        DoWeaponOffset(DeusExPlayer(Owner));
 }
 
 function SupportActor( actor StandingActor )
@@ -4360,10 +4365,11 @@ simulated function Vector ComputeProjectileStart(Vector X, Vector Y, Vector Z)
         //SARGE: Filthy. dirty hack!!
         //We need to reset our offsets because otherwise projectiles can
         //spawn too close to the player, and collide with him!
-        if (bOldOffsetsSet)
+        if (bOldOffsetsSet && Owner != None && Owner.IsA('DeusExPlayer'))
             default.PlayerViewOffset = oldOffsets;
 		Start = Owner.Location + CalcDrawOffset() + FireOffset.X * X + FireOffset.Y * Y + FireOffset.Z * Z;
-        DoWeaponOffset(DeusExPlayer(Owner));
+        if (Owner != None && Owner.IsA('DeusExPlayer'))
+            DoWeaponOffset(DeusExPlayer(Owner));
     }
 
 	return Start;
@@ -6428,7 +6434,8 @@ exec function UpdateHDTPsettings()
     SetWeaponHandTex();
     UpdateLargeIcon();
     CheckWeaponSkins();
-    DoWeaponOffset(DeusExPlayer(GetPlayerPawn()));
+    if (Owner != None && Owner.IsA('DeusExPlayer'))
+        DoWeaponOffset(DeusExPlayer(Owner));
 }
 
 //

@@ -41,7 +41,7 @@ defaultproperties
      items(24)=(HelpText="If enabled, the intro cutscene is not loaded.",actionText="Game: Skip Intro",variable="bSkipNewGameIntro");
      items(25)=(HelpText="Show outer crosshairs at 100% accuracy. Disable this if they get in the way.",actionText="HUD: 100% Accuracy Crosshairs",variable="bFullAccuracyCrosshair",defaultValue=1);
      items(26)=(HelpText="Always display the total amount of ammo available, rather than the number of magazines. Some weapons always show total ammo count. Disabled on Hardcore.",actionText="HUD: Accurate Ammo Display",variable="bDisplayTotalAmmo");
-     items(27)=(HelpText="Change weapon viewmodels to display better at high FOV (110+).",actionText="HUD: Alternate Weapon Offsets",variable="bEnhancedWeaponOffsets");
+     items(27)=(HelpText="Change weapon viewmodels to display better at high FOV (110+).",actionText="HUD: Alternate Weapon Offsets",variable="iEnhancedWeaponOffsets",defaultValue=1,valueText1="Automatic",valueText2="Always");
      items(28)=(HelpText="Display CLIPS or MAGS in the Ammo window. Has no effect for weapons that don't use magazines, or if Accurate Ammo Display is turned on.",actionText="HUD: Ammo Text Display",variable="bDisplayClips",valueText0="MAGS",valueText1="CLIPS",defaultValue=0);
      items(29)=(HelpText="Always show the accuracy crosshairs for your currently held weapon.",actionText="HUD: Always Show Bloom",variable="bAlwaysShowBloom");
 	 items(30)=(HelpText="Alternative tool display window with some minor text and spacing changes.",actionText="HUD: Alternate Tool Window Display",variable="iAltFrobDisplay",valueText1="Indented",valueText2="Extended",defaultValue=1);
