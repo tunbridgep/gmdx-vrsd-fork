@@ -141,8 +141,11 @@ function RecreateDecals(optional int startAt, optional int num)
 
     for(index = startAt;index < num;index++)
     {
-
         decal = spawn(decalInfos[index].decalClass,decalInfos[index].owner,, decalInfos[index].decalPos, decalInfos[index].decalRot);
+        
+        if (decal == None)
+            continue;
+
         decal.drawScale = decalInfos[index].drawScale;
         decal.lifespan = decalInfos[index].lifespan;
         decal.bInitialHDTPUpdate = false;

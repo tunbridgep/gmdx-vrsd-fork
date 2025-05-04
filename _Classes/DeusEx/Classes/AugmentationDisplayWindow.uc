@@ -438,7 +438,7 @@ singular function checkForHazards(GC gc)
     //First, get all the damage triggers
     foreach Player.RadiusActors(class'DamageTrigger', DT, range)
     {
-        if (totalActors >= 20)
+        if (totalActors >= 19)
             break;
 
         if (!DT.bInitiallyActive || !DT.bIsOn || DT.damageInterval == 0 || DT.damageAmount == 0)
@@ -467,7 +467,7 @@ singular function checkForHazards(GC gc)
     //Next, get radioactive barrels
     foreach Player.RadiusActors(class'Barrel1', BR, range)
     {
-        if (totalActors >= 20)
+        if (totalActors >= 19)
             break;
 
         if (BR.SkinColor != SC_RadioActive)
@@ -491,7 +491,7 @@ singular function checkForHazards(GC gc)
     //Next, get clouds of each type
     foreach Player.RadiusActors(class'Cloud', CL, range)
     {
-        if (totalActors >= 20)
+        if (totalActors >= 19)
             break;
 
         if (CL.Damage == 0)
@@ -519,7 +519,7 @@ singular function checkForHazards(GC gc)
         if (bDefenseActive)
             break;
 
-        if (totalActors >= 20)
+        if (totalActors >= 19)
             break;
 
         if (!PROJ.bProximityTriggered || PROJ.bDisabled || PROJ.Damage <= 0 || PROJ.Owner == player) //Only detect mines placed on walls, etc
