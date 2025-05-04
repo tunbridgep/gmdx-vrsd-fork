@@ -3,7 +3,6 @@ Section "ConFix"
 SectionIn RO
 
 SetOutPath $INSTDIR\System
-SetOverwrite on
 File game\System\ConSys.u
 ;File game\System\DeusExConAudioAIBarks.u
 ;File game\System\DeusExConAudioEndGame.u
@@ -15,7 +14,6 @@ File game\System\ConSys.u
 ;File game\System\DeusExConversations.u
 File game\System\DeusExText.u
 File /x DeusExConAudioFemJC* /x DeusExConAudioLDDP* game\System\DeusExCon*.u
-SetOverwrite off
 SetOutPath $INSTDIR
 
 SectionEnd

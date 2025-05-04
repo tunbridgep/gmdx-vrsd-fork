@@ -26,6 +26,10 @@ Page components
 
 Page instfiles
 
+# Always overwrite to allow updating in-place
+
+SetOverwrite on
+
 # Install the main mod.
 Section "${INSTALLER_NAME} ${INSTALLER_VERSION}"
 

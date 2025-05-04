@@ -2,9 +2,7 @@ SectionGroup "Renderers"
 Section "Direct3D9 Renderer (Recommended)"
 
     SetOutPath $INSTDIR\System
-    SetOverwrite on
     File game\System\D3D9Drv.*
-    SetOverwrite off
     SetOutPath $INSTDIR
 
 SectionEnd
