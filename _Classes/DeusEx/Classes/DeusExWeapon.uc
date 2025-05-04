@@ -1391,7 +1391,7 @@ function SetDroppedAmmoCount(int amountPassed) //RSD: Added optional int amountP
     else if (IsA('WeaponFlamethrower'))
         PickupAmmoCount = (amountPassed * 5);                    //SARGE: Now 5-25 rounds with initialization in MissionScript.uc on first map load
     else if (IsA('WeaponPepperGun'))
-        PickupAmmoCount = 34 + (amountPassed * 4);               //SARGE: Now 35-50 rounds with initialization in MissionScript.uc on first map load
+        PickupAmmoCount = 35 + (amountPassed * 3);               //SARGE: Now 38-50 rounds with initialization in MissionScript.uc on first map load
     else if (IsA('WeaponAssaultGun'))
         //PickupAmmoCount = Rand(5) + 1.5;                          //RSD
         PickupAmmoCount = amountPassed + 1;                      //RSD: Now 2-5 rounds with initialization in MissionScript.uc on first map load
@@ -1403,7 +1403,7 @@ function SetDroppedAmmoCount(int amountPassed) //RSD: Added optional int amountP
     else if (default.PickupAmmoCount != 0)
         PickupAmmoCount = 1; //CyberP: hmm
 
-    clipcount = PickupAmmoCount;
+    clipcount = MIN(PickupAmmoCount,ReloadCount);
 }
 
 function BringUp()
