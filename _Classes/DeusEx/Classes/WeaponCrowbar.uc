@@ -26,6 +26,7 @@ function DisplayWeapon(bool overlay)
 		if (IsHDTP())
 		{
 			multiskins[1] = handsTex;
+            Texture = Texture'PinkMaskTex';
 		}
 		else
 		{
@@ -83,6 +84,7 @@ defaultproperties
      PlayerViewMesh=LodMesh'DeusExItems.Crowbar';
      PickupViewMesh=LodMesh'DeusExItems.CrowbarPickup';
      ThirdPersonMesh=LodMesh'DeusExItems.Crowbar3rd';
+     Mesh=LodMesh'DeusExItems.CrowbarPickup';
      LandSound=Sound'DeusExSounds.Weapons.CrowbarHitHard'
      Icon=Texture'DeusExUI.Icons.BeltIconCrowbar'
      largeIcon=Texture'DeusExUI.Icons.LargeIconCrowbar'
