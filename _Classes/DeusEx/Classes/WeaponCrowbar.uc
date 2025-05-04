@@ -26,14 +26,23 @@ function DisplayWeapon(bool overlay)
 		if (IsHDTP())
 		{
 			multiskins[1] = handsTex;
-            Texture = Texture'PinkMaskTex';
+            if (iHDTPModelToggle == 2)
+                Texture = default.Texture;
+            else
+                Texture = Texture'PinkMaskTex';
 		}
 		else
 		{
-		   multiskins[1]=handsTex;                                        //RSD: Fix vanilla hand tex
-		   multiskins[2]=handsTex;
+            multiskins[1]=handsTex;                                        //RSD: Fix vanilla hand tex
+            multiskins[2]=handsTex;
 		}
 	}
+}
+
+//Can't have Clyzm model
+function bool IsClyzmModel()
+{
+    return false;
 }
 
 defaultproperties

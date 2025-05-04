@@ -546,7 +546,7 @@ function DoWeaponOffset(DeusExPlayer player)
 
         bDoOffsets = player.iEnhancedWeaponOffsets == 2 || (player.iEnhancedWeaponOffsets == 1 && player.defaultFOV >= 110);
 
-        if (bDoOffsets)
+        if (bDoOffsets && !IsClyzmModel())
         {
             default.PlayerViewOffset.x = weaponOffsets.x;
             default.PlayerViewOffset.y = weaponOffsets.y;
@@ -737,6 +737,11 @@ function DropFrom(vector StartLocation)
 
 	super.dropfrom(startlocation);
 	checkweaponskins();                                                         //RSD: Need to do this after so we know mesh for Clyzm model check
+}
+
+function bool IsClyzmModel()
+{
+    return IsHDTP() && iHDTPModelToggle == 2;
 }
 
 //Shorthand for accessing hands tex
@@ -3927,7 +3932,7 @@ simulated function PlayIdleAnim()
 		{
 			if (rnd < 0.1)
 			{
-				if (IsHDTP() && iHDTPModelToggle == 2) //RSD: Clyzm model
+				if (IsClyzmModel()) //RSD: Clyzm model
 					PlayAnim('Idle',1.5,0.1);
 				else
 					PlayAnim('Idle1',1.5,0.1);
@@ -3941,7 +3946,7 @@ simulated function PlayIdleAnim()
 		{
 			if (rnd < 0.1)
 			{
-				if (IsHDTP() && iHDTPModelToggle == 2) //RSD: Clyzm model
+				if (IsClyzmModel()) //RSD: Clyzm model
 					PlayAnim('Idle',,0.1);
 				else
 					PlayAnim('Idle1',,0.1);
@@ -6743,7 +6748,7 @@ else
                 while (ClipCount < ReloadCount && AmmoType.AmmoAmount > 0 && ClipCount < AmmoType.AmmoAmount)                //RSD: Reverted Assault shotty, added GEP
                 {
                     sleeptime = 0;
-                    if (IsA('WeaponAssaultShotgun') || (IsA('WeaponSawedOffShotgun') && (iHDTPModelToggle != 2||!IsHDTP()))) //RSD: use normal sound routine if not using Clyzm's shotty
+                    if (IsA('WeaponAssaultShotgun') || (IsA('WeaponSawedOffShotgun') && (!IsClyzmModel()||!IsHDTP()))) //RSD: use normal sound routine if not using Clyzm's shotty
                         LoadShells();
                     //Sleep(GetReloadTime());
                     //SARGE: Changed to now check during reload, so it's more responsive
@@ -6914,7 +6919,7 @@ Begin:
 	bFiring = False;
 	if (!bNearWall)
 	{
-		if (IsHDTP() && iHDTPModelToggle == 2) //RSD: Clyzm model
+		if (IsClyzmModel()) //RSD: Clyzm model
 			PlayAnim('Idle',,0.1);
 		else
 			PlayAnim('Idle1',,0.1);
@@ -7064,7 +7069,7 @@ Begin:
               PlayAnim('Idle2',,0.1);
            else
 			{
-				if (IsHDTP() && iHDTPModelToggle == 2) //RSD: Clyzm model
+				if (IsClyzmModel()) //RSD: Clyzm model
 					PlayAnim('Idle',,0.1);
 				else
 					PlayAnim('Idle1',,0.1);
@@ -7072,7 +7077,7 @@ Begin:
         }
         else if (!bNearWall && !activateAn)
 		{
-			if (IsHDTP() && iHDTPModelToggle == 2) //RSD: Clyzm model
+			if (IsClyzmModel()) //RSD: Clyzm model
 				PlayAnim('Idle',,0.1);
 			else
 				PlayAnim('Idle1',,0.1);
