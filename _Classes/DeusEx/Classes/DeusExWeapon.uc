@@ -752,7 +752,7 @@ function SetWeaponHandTex()
     p = deusexplayer(owner);
 	
     //FOMOD weapons use the FOMOD hands
-    if (p != None && IsHDTP() && iHDTPModelToggle == 2)
+    if (p != None && IsClyzmModel())
     {
         switch (p.PlayerSkin)
         {
