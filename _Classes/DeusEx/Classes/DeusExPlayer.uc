@@ -442,7 +442,6 @@ var travel bool bHardCoreMode; //if set disable save game options.
 //misc
 var globalconfig bool bSkipNewGameIntro; //CyberP: for GMDX option menu
 var globalconfig bool bColorCodedAmmo;
-var globalconfig bool bExtraHardcore;
 var globalconfig bool bDecap;
 var globalconfig bool bNoTranslucency;
 var globalconfig int dblClickHolster;                      //SARGE: 0 = off, 1 = double click holstering only, 2 = double click holstering and unholstering
@@ -619,6 +618,9 @@ var travel bool bCameraDetectUnconscious;                                      /
 var travel bool bA51Camera;                                                     //SARGE: Was a gameplay setting, now a modifier. Make cameras stronger and act like Area 51 cameras.
 
 //END GAMEPLAY MODIFIERS
+
+//hardcore+
+var travel bool bExtraHardcore;
 
 //Autosave Stuff
 var travel float autosaveRestrictTimer;                                         //Sarge: Current time left before we're allowed to autosave again.
@@ -1877,6 +1879,10 @@ event TravelPostAccept()
 	  bAutoReload=false;
 	}
 
+    //No cheating when console access is disabled
+    if (bDisableConsoleAccess)
+	  bCheatsEnabled=false;
+
     setupDifficultyMod(); //CyberP: set difficulty modifiers
 //set gep tracking
 	if (RocketTarget==none)
@@ -1938,7 +1944,7 @@ function string retInfo()
 //GMDX remove console from Hardcore mode >:]
 exec function Say(string Msg )
 {
-	if (bDisableConsoleAccess || bExtraHardcore)
+	if (bDisableConsoleAccess)
         return;
     else                                                                  //RSD: temporarily re-enable console for HC testing //SARGE: Made it a gameplay modifier
 	    super.Say(Msg);
@@ -1947,15 +1953,15 @@ exec function Say(string Msg )
 //SARGE: TODO: Add a proper console window.
 exec function Type()
 {
-	if (bDisableConsoleAccess || bExtraHardcore)                         //RSD: temporarily re-enable console for HC testing //SARGE: Made it a gameplay modifier
+	if (bDisableConsoleAccess)                         //RSD: temporarily re-enable console for HC testing //SARGE: Made it a gameplay modifier
         return;
     else
-	  super.Type();
+        super.Type();
 }
 
 function Typing( bool bTyping )
 {
-	if (bDisableConsoleAccess || bExtraHardcore)                                                        //RSD: temporarily re-enable console for HC testing //SARGE: Made it a gameplay modifier
+	if (bDisableConsoleAccess)                                                        //RSD: temporarily re-enable console for HC testing //SARGE: Made it a gameplay modifier
 	    Player.Console.GotoState('');
 	else
         super.Typing(bTyping);
