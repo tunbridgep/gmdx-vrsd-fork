@@ -17,6 +17,9 @@ exec function UpdateHDTPsettings()
         Super.UpdateHDTPsettings();
         Skin = class'HDTPLoader'.static.GetTexture2("RSDCrap.Skins.HDTPSpartaSign","RSDCrap.Skins.SpartaSign",IsHDTP());
     }
+    else
+        Super.UpdateHDTPsettings();
+
 }
 
 defaultproperties
