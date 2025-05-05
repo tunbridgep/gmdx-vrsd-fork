@@ -17470,6 +17470,7 @@ function CreateColorThemeManager()
 		ThemeManager.AddTheme(Class'ColorThemeHUD_VonBraun');
 		ThemeManager.AddTheme(Class'ColorThemeHUD_WildBerry');
 		ThemeManager.AddTheme(Class'ColorThemeHUD_ZeroOne');
+        ThemeManager.UpdateCustomTheme();
 	}
 }
 
