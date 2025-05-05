@@ -1071,6 +1071,7 @@ function DestroyMe()
 //SARGE: Called when the item is added to the players hands
 function Draw(DeusExPlayer frobber)
 {
+    SetWeaponHandTex();
 }
 
 //SARGE: Set up the Shenanigans gameplay modifier for this entity
