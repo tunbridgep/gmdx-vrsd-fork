@@ -551,7 +551,7 @@ singular function checkForHazards(GC gc)
         {
             CL = Cloud(actors[i]);
             threatType = string(CL.damageType);
-            if (DT.damageInterval != 0)
+            if (CL.damageInterval != 0)
                 threatDam = int(CL.Damage/CL.damageInterval);
             else
                 threatDam = int(CL.Damage);
