@@ -2,7 +2,7 @@
 // SARGE: DeclinedItemsManager
 // Manages which items the player has declined
 //=============================================================================
-class DeclinedItemsManager extends Actor config(GMDX);
+class DeclinedItemsManager extends Actor;
 
 var globalconfig string declinedTypes[100];
 
