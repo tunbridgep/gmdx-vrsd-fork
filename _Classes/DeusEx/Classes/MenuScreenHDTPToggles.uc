@@ -247,6 +247,7 @@ defaultproperties
      Items(193)=(actionText="Shells (Sabot)",defaultValue=1,consoleTarget="DeusEx.AmmoSabot",sortcategory="1Ammo")
      Items(194)=(actionText="Shells (Rubber)",defaultValue=1,consoleTarget="DeusEx.AmmoRubber",sortcategory="1Ammo")
    	 Items(195)=(actionText="Laser Tripwire",defaultValue=1,consoleTarget="DeusEx.LaserTrigger")
+   	 Items(195)=(actionText="Lockpick",defaultValue=1,consoleTarget="DeusEx.Lockpick")
      Title="HDTP Model Options"
      disabledText="Vanilla"
      enabledText="HDTP"
