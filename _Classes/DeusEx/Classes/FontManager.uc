@@ -18,6 +18,7 @@ enum TextType
     TT_AmmoCount,
     TT_DamageAbsorb,
     TT_AugHotKey,
+    TT_MainMenu,
 };
 
 function Font GetFont(TextType TT)
@@ -27,6 +28,7 @@ function Font GetFont(TextType TT)
         case TT_AmmoCount: if (bClassicFont) return Font'FontTiny'; else return Font'TechMedium'; break;
         case TT_DamageAbsorb: if (bClassicFont) return Font'FontTiny'; else return Font'TechMedium'; break;
         case TT_AugHotKey: if (bClassicFont) return Font'FontTiny'; else return Font'FontMenuSmall'; break;
+        case TT_MainMenu: if (bClassicFont) return Font(DynamicLoadObject("DXFonts.MainMenuTrueType", class'Font')); else return Font'DeusExUI.FontConversationLarge'; break;
     }
 }
 
