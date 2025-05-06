@@ -72,14 +72,15 @@ function ToggleStandbyMode(bool standby)
     {
         if (player.aDrone != None)
             player.aDrone.Velocity = vect(0.,0.,0.);
-        Player.bSpyDroneSet = True;                                            //RSD: Allows the user to toggle between moving and controlling the drone
         if (!Player.RestrictInput())
         {
-            Player.ViewRotation = player.SAVErotation;
+            if (!player.bSpyDroneSet)
+                Player.ViewRotation = player.SAVErotation;
             Player.ConfigBigDroneView(false);
             Player.UpdateCrosshairStyle();
             Player.UpdateHUD();
         }
+        Player.bSpyDroneSet = True;                                            //RSD: Allows the user to toggle between moving and controlling the drone
     }
     else
     {
@@ -135,26 +136,29 @@ function Deactivate()
 {
 	bRealActivation = false;
 
-    //If we were shut off due to energy, go into standby instead
-    if (player.Energy == 0 && !bDestroyNow)
+    if (!bDestroyNow)
     {
-        if (!Player.bSpyDroneSet)
-            ToggleStandbyMode(true);
-        return;
-    }
-
-	if (Player.bSpyDroneSet && player.Energy > 0)                                                    //RSD: Allows the user to toggle between moving and controlling the drone
-	{
-        player.clientmessage("2");
-		if (IsA('AugDrone') && (player.Physics == PHYS_Falling || player.physics == PHYS_Swimming))
+        //If we were shut off due to energy, go into standby instead
+        if (player.Energy == 0 && !bDestroyNow)
         {
-            player.ClientMessage(GroundedMessage2);
+            if (!Player.bSpyDroneSet)
+                ToggleStandbyMode(true);
             return;
         }
 
-        ToggleStandbyMode(false);
-        return;
-	}
+        //If we're set, allow toggling back to it
+        if (Player.bSpyDroneSet && player.Energy > 0)                                                    //RSD: Allows the user to toggle between moving and controlling the drone
+        {
+            if (IsA('AugDrone') && (player.Physics == PHYS_Falling || player.physics == PHYS_Swimming))
+            {
+                player.ClientMessage(GroundedMessage2);
+                return;
+            }
+
+            ToggleStandbyMode(false);
+            return;
+        }
+    }
 
     Super.Deactivate();
 
@@ -165,6 +169,7 @@ function Deactivate()
     ToggleStandbyMode(true);
     Player.bSpyDroneSet = False;
     Player.bSpyDroneActive = False;
+    bDestroyNow = false;
 }
 
 simulated function PreBeginPlay()

@@ -216,7 +216,9 @@ function Frob(Actor Frobber, Inventory frobWith)
         if (droneAug != None) //This should never fail
         {
             player.ClientMessage(msgDroneRecovered);
+            PlaySound(Sound'biomodoff', SLOT_Pain, 0.85, ,768,1.0);
             droneAug.bSilentDeactivation = true; //Don't show message or play sound.
+            ForceDroneOff();
             Destroy();
             droneAug.GiveFullRecharge();
         }

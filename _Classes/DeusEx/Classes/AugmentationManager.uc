@@ -567,11 +567,16 @@ function Augmentation GivePlayerAugmentation(Class<Augmentation> giveClass)
 
 	anAug.bHasIt = True;
 
-	if (anAug.AugmentationType == Aug_Passive || anAug.AugmentationType == Aug_Automatic)
+	if (anAug.AugmentationType == Aug_Passive)
 	{
 		anAug.bIsActive = True;
 		anAug.GotoState('Active');
 	}
+    else if (anAug.AugmentationType == Aug_Automatic && player.KillswitchTimer <= 0)
+    {
+		anAug.bIsActive = True;
+		anAug.GotoState('Active');
+    }
 	else
 	{
 		anAug.bIsActive = False;

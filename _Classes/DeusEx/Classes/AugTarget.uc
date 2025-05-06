@@ -25,9 +25,14 @@ Begin:
 
 function Deactivate()
 {
+    //SARGE: Fuck up the players accuracy bonus.
+    player.savedStandingTimer = 0.0;
+    if (player.inHand != None && player.inHand.IsA('DeusExWeapon'))
+        DeusExWeapon(player.inHand).standingTimer = 0.0;
+
 	Super.Deactivate();
 
-   SetTargetingAugStatus(CurrentLevel,False);
+    SetTargetingAugStatus(CurrentLevel,False);
 }
 
 //SARGE: Handle being levelled-up while the aug is turned on
@@ -58,7 +63,7 @@ simulated function PreBeginPlay()
 	{
 		LevelValues[3] = mpAugValue;
 		EnergyRate = mpEnergyDrain;
-      AugmentationLocation = LOC_Subdermal;
+        AugmentationLocation = LOC_Subdermal;
 	}
 }
 
@@ -66,10 +71,8 @@ defaultproperties
 {
      mpAugValue=-0.125000
      mpEnergyDrain=40.000000
-     //EnergyRate=35.000000
-     EnergyRate=0.000000
-     EnergyReserved=20
-     AugmentationType=Aug_Toggle
+     EnergyRate=35.000000
+     AugmentationType=Aug_Active
      Icon=Texture'DeusExUI.UserInterface.AugIconTarget'
      smallIcon=Texture'DeusExUI.UserInterface.AugIconTarget_Small'
      AugmentationName="Targeting"
