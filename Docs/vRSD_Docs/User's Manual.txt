@@ -1,0 +1,196 @@
+===============================
+Totalitarian's Give Me Deus Ex.
+===============================
+
+A large-scale Deus Ex Advancement Mod, GMDX builds upon Deus Ex whilst strictly adhering to the design principles of Ion Storm.
+Reinforces all aspects of the game to varying degrees except the plot/writing.
+
+More information including a comprehensive list of features can be found at: http://www.givemedeusex.com/
+
+
+||--------------------------------------------------------------------------||
+||  GMDX v9 INSTALLATION GUIDE:                                             ||
+||--------------------------------------------------------------------------||
+     
+
+|||Getting Deus Ex mod-ready|||
+
+1. Install Deus Ex.
+2. Launch Deus Ex up to the main menu. At the main menu look for the text "v1.112fm". 
+If "v1.112fm" is NOT displayed and some other version number is then apply the Official patch v1.112fm.
+
+|||Installing GMDX|||
+
+1. Download GMDX v9.0
+2. Launch GMDXv9_Setup.exe and follow the necessary steps to install the mod.
+Install to the Deus Ex directory (C:\DeusEx for example). 
+Once installed you MUST launch the game from one of the three Play_GMDX shotcuts. 
+
+Installation complete. You can now play GMDX.
+
+||--------------------------------------------------------------------------||
+||  IMPORTANT NOTES:                                                        ||
+||--------------------------------------------------------------------------||
+
+GMDX is compatible with HDTP and New Vision ONLY. That is, essentially, all you need. 
+GMDX is the most comprehensive fix/patch mod available, so you don't need the Deus Ex maps patch or anything like that.
+
+You have to start a new game to begin GMDX without conflict.
+
+Don't set FOV too high (90 is recommended) otherwise HDTP culling is visible on some weapons. 
+
+As indication GMDX is installed properly the main menu will display "GMDXv9.0".
+
+GMDX can be played with ANY official version (including Steam, Retail, GOTY etc) of 
+Deus Ex providing it is patched to v1112fm (GOTY version has this patch by default).
+
+Look in DeusEx\GMDX\System and you'll find two configuration files: gmdx.ini & gmdxuser.ini. 
+In these files you can configure aspects of DeusEx\GMDX if you so choose.
+
+||--------------------------------------------------------------------------||
+||  Credits & thanks:                                                       ||
+||--------------------------------------------------------------------------||
+
+
+Credits:
+========
+
+|Totalitarian| (Producer/Sole Developer: game design, programming, level design, v9.0 installer etc etc) 
+
+On and off contributors:
+========================
+
+dasraiser (additional programming)
+Klauz (high resolution textures)
+Dan Mayhew (various 2D & 3D art assets)
+ggrotz (v8.0 installer)
+
+v9.0 Beta Community Developers:
+===============================
+
+Bogie (a little bit of everything)
+Made In China (Conversation Bugfixes Project)
+DefaultPlayer001 (Old website hosting, gmdx subreddit, general assistance)
+Kaiserboot (v9.0 website design)
+Clyzm (Sawed off shotgun and animated flare)
+Clear_Strelok (French Translation)
+|Ducci (Spanish Translation)
+Constantin vW (German Translation)
+zbu33rz (Russian Translation)
+
+Indirect Contributors:
+======================
+
+DDL (Permission to build GMDX on top of 'HDTP' & misc. assistance). 
+G-Flex (misc. adapted bugfixes from his mod 'Human Renovation').
+eshkrm (Cameras detect corpses code).
+Y|Yukichigai (Snippets of code taken from his mod 'Shifter' for a few bug fixes).
+Bjorn98009_91 (Misc. assistance)
+Project 2027 team (some SFX & art assets from the exceptional 2027 Deus Ex TC).
+Whoever made the "DXIW SoundDrome" program to extract the sounds from Deus Ex: Invisible War.
+GMDX logo by Syntax_Error
+Moddb.com for hosting the mod.
+
+Testers and feedback:
+=====================
+
+Fox 
+DDentonas
+Specom 
+Bobby55 
+ForumVisitor#451
+Marcelo 
+WildcatPhoenix 
+MediantSamuel
+Marvin 
+Varderac 
+Made In China
+Piotr "ToasterTester" Federowicz
+jasmine-ja2
+zbu3rz
+helpimarock
+dev221117
+TheUnbeholden
+IcarusAI
+Hellcaller
+Trepe
+damjancd
+brunocar
+Keyboardjunkie
+denton13
+DefaultPlayer001
+Lichking
+SnowTheDrifter
+ggrotz
+Dark_Evilous
+{zXc}Henry
+Hawawaa
+shodanbot
+AmmoniaVII
+RoSoDude
+SyndicateWheels
+macd11
+ocean114
+Descent95
+qqq31
+18x37
+Alanz
+apdapreturns
+Blade Sword
+Bogie
+Darc Clan
+deleuze
+Filion91
+Frank Drebin
+Fred Herbert
+GManNickG
+Grammernatzi
+Grimace
+GEPGUN
+Ruairi
+Jose21crisis
+Kaiserboot
+killerpommes
+KlauZ
+magicmonday
+Nolan Seryn
+Peeks
+Seriphyn
+SlySpy
+SomeOne64
+Tearmisu
+tetracycloide
+TheHurtmaster
+TimberManiac
+WaltonSimons
+
+Anyone else I've missed don't hesitate to bug me to get your name here.
+
+Special Thanks:
+
+The people in my life who put up with me over the half a decade I restlessly worked on this.
+Those of you who made donations. 
+Those of you that showed unending general support (e.g RoSoDude). 
+Ion Storm Austin & Looking Glass Studios. Still more than relevant today.
+  
+-------------------------------------------------------------------------
+
+GMDX's unique content is shared under the following copyright license:
+
+Creative Commons - Attribution-NonCommercial-ShareAlike 3.0 Unported
+
+You are free:
+ to Share         — to copy, distribute and transmit the work
+
+Under the following conditions:
+
+ Attribution         — You must attribute the work in the manner specified by the author or licensor (but not in any way that suggests that they endorse you or your use of the work).
+ Noncommercial     — You may not use this work for commercial purposes.
+ Share Alike         — If you alter, transform, or build upon this work, you may distribute the resulting work only under the same or similar license to this one.
+
+ www.Creativecommons.org  
+
+Assets used from other mods as well as Deus Ex itself belongs to their respective copyright owners and operate under their own licenses. 
+If you would like to use GMDX assets for a mod of your own, or would like to use it in it's entirety as a base, then ask me for permission. 
+Contact me via email if you have any inquiries: genericname112@gmail.com
+Consider dropping a review on the moddb website or make a donation on GMDX's official website if you think it is worth it. 
