@@ -34,14 +34,30 @@ function bool CanAssignSecondary(DeusExPlayer player)
     return true;
 }
 
-//Gluttony perk lets us hold twice as much
-function int RetMaxCopies()
+function int GetHealAmount(DeusExPlayer player)
 {
-    RefreshGlutton();
-    if (glutton != none && glutton.bPerkObtained && bGluttonous)
-        return default.maxCopies * 2;
+    local float amount;
+
+    if (glutton != None && glutton.bPerkObtained)
+        amount = super.GetHealAmount(player) * 1.5;
     else
-        return default.maxCopies;
+        amount = super.GetHealAmount(player);
+    
+    //Glutton gives amount rounded up
+    return int(amount+0.9);
+}
+
+function int GetBioenergyAmount(DeusExPlayer player)
+{
+    local float amount;
+
+    if (glutton != None && glutton.bPerkObtained)
+        amount = super.GetBioenergyAmount(player) * 1.5;
+    else
+        amount = super.GetBioenergyAmount(player);
+
+    //Glutton gives amount rounded up
+    return int(amount+0.9);
 }
 
 //Check hunger before letting us use them
@@ -64,6 +80,7 @@ function string GetDescription2(DeusExPlayer player)
 {
     local string str;
 
+    RefreshGlutton();
     str = super.GetDescription2(player);
 
     if (fullness > 0 && (player.bHardcoreMode || player.bRestrictedMetabolism))
@@ -88,6 +105,7 @@ function Eat(DeusExPlayer player)
 //What happens when we eat this.
 function OnActivate(DeusExPlayer player)
 {
+    RefreshGlutton();
     player.ClientMessage(sprintf(msgConsumed,ItemName));
     Super.OnActivate(player);
     Eat(player);
