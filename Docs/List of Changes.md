@@ -351,9 +351,6 @@ Sarge's Changes since Beta 2.2:
         - Additionally, at the "Enabled + NPS + Keypad Length Unknown" level, it will also remove the small dots showing the length of keypad codes, and you will need to press ENTER (or click the confirm button on the keypad) to "lock in" a code.
             - Codes of any length can be typed, up to 10 characters.
             - This essentially makes it impossible to know how long the expected code is for a given keypad.
-    - Computer Code changes:
-        - The Vandenberg `command`/`zebra42` login is not given to the player in Hardcore mode. Combined with the "Unknown Codes" modifier, this makes it impossible to access the security computers without hacking them.
-        - The `tech`/`sharkman` login has been removed from one of the hallway security computers in the Ocean lab map on Hardcore mode. This means that the only way to bypass security for the areas leading up to the sub pen will require hacking. The sub pen terminal still uses this login.
     - AI Behaviour Changes
         - Enemies will now have a small delay (usually between 0.1 and 0.6) seconds before firing after losing sight of the player.
             - This has almost no effect on normal gameplay, other than reducing enemies ability to instantly shoot as they strafe around corners, resulting in frustrating one-shots.
@@ -391,7 +388,9 @@ Sarge's Changes since Beta 2.2:
     - A Laser Sight has been added to Smuggler's safe in the first NY visit (replaces a recoil mod)
     - The Silencer in Paul's Apartment, Full-Auto Mod in Tong's Lab, and Laser Sight in Smugglers Safe are all guaranteed to appear even with the weapon mod shuffle turned on.
     - Vandenberg:
-        - The security code is no longer given by the research team on Hardcore. You will need to use your hacking skill if you wish to access the security system!
+        - The Vandenberg `command`/`zebra42` login is not given to the player in Hardcore mode. Combined with the "Unknown Codes" modifier, this makes it impossible to access the security computers without hacking them.
+    - Oceanlab
+        - The `tech`/`sharkman` login has been removed from one of the hallway security computers in the Ocean lab map on Hardcore mode. This means that the only way to bypass security for the areas leading up to the sub pen will require hacking. The sub pen terminal still uses this login.
 - Miscellaneous Changes:
 	- Updated Weapons Hit blood effects to occur more consistently, by changing it so that blood rolls individually for each drop rather than rolling for whether or not blood will appear.
     - MJ12 Elites have had their voices reset to the default troop voices, because they don't have female-appropriate voice lines and the voices sound strange and broken in many ways.
