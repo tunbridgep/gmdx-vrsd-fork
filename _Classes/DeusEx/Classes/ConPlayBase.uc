@@ -648,6 +648,14 @@ log("  event.toActor    = " $ event.toActor );
 		invItemFrom = Spawn(event.giveObject);
 		bSpawnedItem = True;
 	}
+    
+    // SARGE: If we gave away a disposable weapon, also take it's ammo.
+    if (invItemFrom != none && event.fromActor.IsA('DeusExPlayer') && invItemFrom.IsA('DeusExWeapon'))
+    {
+        wpn = DeusExWeapon(invItemFrom);
+        if (wpn != None && wpn.bDisposableWeapon && wpn.AmmoType != None && !wpn.AmmoType.IsA('AmmoNone'))
+            wpn.AmmoType.AmmoAmount = 0;
+    }
 
     //CyberP: sort out ammo nonsense
     if (invItemFrom != none && invItemFrom.IsA('Ammo') && invokeActor != none)  //RSD: accessed none?
