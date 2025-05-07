@@ -135,7 +135,7 @@ function bool DoLeftFrob(DeusExPlayer frobber)
             return false;
         }
     }
-    else if (frobber.SelectMeleePriority(minDamageThreshold))
+    else if (!bInvincible && frobber.SelectMeleePriority(minDamageThreshold))
         return false;
     return true;
 }
@@ -249,6 +249,9 @@ function BeginPlay()
 {
 	local Mover M;
 	local float Volume,temp;
+
+	if (Physics == PHYS_None)
+		bLeftGrab = false;
 
 	Super.BeginPlay();
 
