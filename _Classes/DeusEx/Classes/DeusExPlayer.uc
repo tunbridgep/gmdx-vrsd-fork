@@ -5525,6 +5525,10 @@ function int HealPlayer(int baseHealPoints, optional bool bUseMedicineSkill)
 function float GetMaxEnergy(optional bool trueMax)
 {
     local int max;
+
+    if (AugmentationSystem == None)
+        return;
+
     max = EnergyMax - AugmentationSystem.CalcEnergyReserve();
 
     if (Energy > max)
