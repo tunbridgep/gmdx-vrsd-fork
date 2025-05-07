@@ -1,4 +1,4 @@
-GMDX Credits:
+GMDX: Augmented Edition Credits:
 
 This version of the mod is based on GMDX vRSD, which was forked from GMDX v9.
 

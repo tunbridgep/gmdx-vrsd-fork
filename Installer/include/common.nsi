@@ -53,8 +53,9 @@ File "..\System\DeusEx.int"
 
 ;Install docs
 SetOutPath $INSTDIR\GMDX_AE\Docs
-File ..\Docs\credits.txt
-File ..\Docs\EditPackages.txt
-File "..\Docs\List of Changes.html"
+File ..\Docs\*.txt
+File "..\Docs\*.html"
+SetOutPath $INSTDIR\GMDX_AE\vRSD_Docs
+File ..\Docs\vRSD_Docs\*.txt
 
 SectionEnd
