@@ -5526,16 +5526,14 @@ function float GetMaxEnergy(optional bool trueMax)
 {
     local int max;
 
-    if (AugmentationSystem == None)
-        return 100;
+    if (AugmentationSystem == None || trueMax)
+        return EnergyMax;
 
     max = EnergyMax - AugmentationSystem.CalcEnergyReserve();
 
     if (Energy > max)
         Energy = max;
 
-    if (trueMax)
-        return EnergyMax;
     return FMax(0.0,max);
 }
 
