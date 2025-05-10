@@ -883,7 +883,12 @@ replication
 //SARGE: Hide/Show the entire HUD at once
 exec function TogglePhotoMode()
 {
-    bPhotoMode = !bPhotoMode;
+    SetPhotoMode(!bPhotoMode);
+}
+
+function SetPhotoMode(bool value)
+{
+    bPhotoMode = value;
     UpdatePhotoMode();
 }
 
@@ -11665,6 +11670,8 @@ exec function ToggleObjectBelt()
 
 	bObjectBeltVisible = !bObjectBeltVisible;
 
+    SetPhotoMode(false);
+
 	root = DeusExRootWindow(rootWindow);
 	if (root != None)
 		root.UpdateHud();
@@ -11679,6 +11686,8 @@ exec function ToggleHitDisplay()
 	local DeusExRootWindow root;
 
 	bHitDisplayVisible = !bHitDisplayVisible;
+    
+    SetPhotoMode(false);
 
 	root = DeusExRootWindow(rootWindow);
 	if (root != None)
@@ -11694,6 +11703,8 @@ exec function ToggleAmmoDisplay()
 	local DeusExRootWindow root;
 
 	bAmmoDisplayVisible = !bAmmoDisplayVisible;
+    
+    SetPhotoMode(false);
 
 	root = DeusExRootWindow(rootWindow);
 	if (root != None)
@@ -11709,6 +11720,8 @@ exec function ToggleAugDisplay()
 	local DeusExRootWindow root;
 
 	bAugDisplayVisible = !bAugDisplayVisible;
+    
+    SetPhotoMode(false);
 
 	root = DeusExRootWindow(rootWindow);
 	if (root != None)
@@ -11723,6 +11736,7 @@ exec function ToggleAugDisplay()
 exec function MinimiseTargetingWindow()
 {
     bMinimiseTargetingWindow = !bMinimiseTargetingWindow;
+    SetPhotoMode(false);
 }
 
 // ----------------------------------------------------------------------
@@ -11790,6 +11804,9 @@ exec function ToggleRadialAugMenu(optional bool bHeld, optional bool bRelease)
 exec function ToggleCompass()
 {
 	bCompassVisible = !bCompassVisible;
+
+    SetPhotoMode(false);
+
     UpdateHUD();
 }
 
@@ -11837,6 +11854,9 @@ function SetLaser(bool bNewOn)
 exec function ToggleCrosshair()
 {
     bCrosshairVisible = !bCrosshairVisible;
+    
+    SetPhotoMode(false);
+
 	UpdateCrosshair();
 }
 
