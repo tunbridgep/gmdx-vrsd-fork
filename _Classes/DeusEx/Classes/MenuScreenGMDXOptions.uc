@@ -58,7 +58,7 @@ function CreateChoices()
             newChoice.SetSensitivity(true);
 
             //SARGE: If HDTP is not installed, disable the button
-            if (!class'DeusExPlayer'.static.IsHDTPInstalled() && choiceCount == 3)
+            if (!class'DeusExPlayer'.static.IsHDTPInstalled(true) && choiceCount == 3)
                 newChoice.SetSensitivity(False);
 
          }

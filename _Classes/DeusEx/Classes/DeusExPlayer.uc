@@ -1031,9 +1031,12 @@ function Class<Inventory> GetSecondaryClass()
 // HDTP Stuff
 // ----------------------------------------------------------------------
 
-static function bool IsHDTPInstalled()
+static function bool IsHDTPInstalled(optional bool bNoEnabledCheck)
 {
-    return class'DeusExPlayer'.default.bHDTPInstalled && default.bHDTPEnabled;
+    if (bNoEnabledCheck)
+        return class'DeusExPlayer'.default.bHDTPInstalled;
+    else
+        return class'DeusExPlayer'.default.bHDTPInstalled && default.bHDTPEnabled;
 }
 
 static function bool IsHDTP()
