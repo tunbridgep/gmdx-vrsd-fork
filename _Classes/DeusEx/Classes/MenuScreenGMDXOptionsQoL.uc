@@ -93,6 +93,7 @@ defaultproperties
      //items(74)=(HelpText="If enabled, selecting an item that isn't on the toolbelt will clear the primary selection, allowing right-click to reselect it. Only applies to the Invisible War Toolbelt.",actionText="Belt: Auto-Clear Primary Selection",variable="bAllowSelectingOffAdvBelt",defaultValue=1)
      items(75)=(HelpText="If enabled, killed enemies will drop their current weapon as they die. Realism option, not intended for general use.",actionText="Game: Enemies Drop Weapons on Death",variable="bDropWeaponsOnDeath",defaultValue=0)
      items(76)=(HelpText="If enabled, the intro and ending cutscenes will play at preset volume ratios.",actionText="Game: Intro/Outro Volume Equalisation",variable="bCutsceneVolumeEqualiser",defaultValue=1)
+     items(77)=(HelpText="Show darkened versions of ignored and declined items in the Items Received Window when searching carcasses.",actionText="HUD: Show Unlooted in Items Window",variable="bShowDeclinedInReceivedWindow")
      Title="GMDX Quality of Life Options"
      colWidths(0)=214
      colWidths(1)=155

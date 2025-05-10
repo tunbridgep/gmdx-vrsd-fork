@@ -115,6 +115,7 @@ Sarge's Changes since Beta 2.2:
         - Items can be removed from the decline list in the inventory screen.
         - Declined Items need to be double-clicked in order to be picked up in the world.
         - Holding the Walk/Run key while interacting will always pick up any declined items.
+        - If enabled, darkened versions of declined items will be shown in the Items Received Window when searching carcasses.
     - Datacubes will show a black screen after they have been read.
     - When picking up duplicate Nanokeys, the log now lists it as a duplicate.
     - While having a grenade selected, the crosshair will turn blue when you're able to place it on a wall.

@@ -954,6 +954,8 @@ function Frob(Actor Frobber, Inventory frobWith)
     local bool bDeclined;
     local bool bLootResult;
     local bool bProcessedImpale;
+    local Inventory badItems[10];                                                   //SARGE: Keep a list of the declined or ignored items, so that we can add it to the display window.
+    local int badItemCount;
 
 	// Can we assume only the *PLAYER* would actually be frobbing carci?
 	player = DeusExPlayer(Frobber);
@@ -1036,6 +1038,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                     }
                     bDeclined=True;
                     bFoundInvalid=True;
+                    badItems[badItemCount++] = item;
                 }
 				else if (item != none && (item.IsA('Ammo') || (item.IsA('WeaponSpiderBotConstructor')) || (item.IsA('WeaponAssaultGunSpider')))) //CyberP: new type weapons exclusive to pawns //RSD: Failsafe
 				{
@@ -1159,6 +1162,8 @@ function Frob(Actor Frobber, Inventory frobWith)
                                         if (!W.bDisposableWeapon)
                                             P.ClientMessage(item.PickupMessage @ item.itemArticle @ Item.itemName @ IgnoredString);
                                     }
+                                    if (!bDeclined) //SARGE: declined items are already added.
+                                        badItems[badItemCount++] = item;
                                     bFoundInvalid = true;
                                 }
                                 bPickedItemUp = True;
@@ -1178,7 +1183,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 							bPickedItemUp = True;
 					}
 
-					if (!bPickedItemUp && item != None)
+                    if (!bPickedItemUp && item != None)
 					{
 						// Special case if this is a DeusExPickup(), it can have multiple copies
 						// and the player already has it.
@@ -1243,8 +1248,10 @@ function Frob(Actor Frobber, Inventory frobWith)
                                 //SARGE: Inform us if our inventory is too full (max stack) to pick these items up.
 								else if (DeusExPickup(item).numCopies + invItem.numCopies >= invItem.RetMaxCopies())  //GMDX
                                 {
-                                    player.ClientMessage(invItem.PickupMessage @ invItem.itemArticle @ invItem.itemName @ msgTooMany, 'Pickup');
+                                    if (!bSearched)
+                                        player.ClientMessage(invItem.PickupMessage @ invItem.itemArticle @ invItem.itemName @ msgTooMany, 'Pickup');
                                     bFoundSomething = True;
+                                    badItems[badItemCount++] = item;
 
                                 }
 								else
@@ -1316,6 +1323,8 @@ function Frob(Actor Frobber, Inventory frobWith)
 
                                         item.SpawnCopy(P);
                                     }
+                                    else
+                                        badItems[badItemCount++] = item;
                                 }
 							}
 							else
@@ -1334,6 +1343,15 @@ function Frob(Actor Frobber, Inventory frobWith)
 			}
 			until ((item == None) || (item == startItem));
 		}
+
+        //SARGE: Display our bad items at the end of the list
+        if (!bSearched && player.bShowDeclinedInReceivedWindow && badItemCount > 0)
+        {
+            for (i = 0;i < badItemCount;i++)
+            {
+                AddReceivedItem(player, badItems[i], 1, false, true);
+            }
+        }
 
 //GMDX:
 	}
@@ -1444,7 +1462,7 @@ function AddSearchedString(DeusExPlayer player)
 // AddReceivedItem()
 // ----------------------------------------------------------------------
 
-function AddReceivedItem(DeusExPlayer player, Inventory item, int count, optional bool bNoGroup)
+function AddReceivedItem(DeusExPlayer player, Inventory item, int count, optional bool bNoGroup, optional bool bDeclined)
 {
     /*
     //SARGE: TODO: This needs to be split out into a separate function, because now we can display
@@ -1456,7 +1474,7 @@ function AddReceivedItem(DeusExPlayer player, Inventory item, int count, optiona
 	}
     */
 
-    player.AddReceivedItem(item,count,bNoGroup);
+    player.AddReceivedItem(item,count,bNoGroup,bDeclined);
 }
 
 //-----------------------------------------------------------------------
