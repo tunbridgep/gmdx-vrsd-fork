@@ -95,6 +95,7 @@ defaultproperties
      items(76)=(HelpText="If enabled, the intro and ending cutscenes will play at preset volume ratios.",actionText="Game: Intro/Outro Volume Equalisation",variable="bCutsceneVolumeEqualiser",defaultValue=1)
      items(77)=(HelpText="Show darkened versions of ignored and declined items in the Items Received Window when searching carcasses.",actionText="HUD: Show Unlooted in Items Window",variable="bShowDeclinedInReceivedWindow")
      items(78)=(HelpText="When active, left-clicking on doors, crates, windows and other interactive items while holstered will select the appropriate tool or melee weapon.",actionText="Interaction: Left-Click Interactions",variable="bEnableLeftFrob",defaultValue=1)
+     items(79)=(HelpText="If Enabled, JC will always keep their weapon drawn during conversations. JC will always keep weapons drawn in some circumstances.",actionText="Conversations: Keep Weapon Drawn",variable="bConversationKeepWeaponDrawn")
      Title="GMDX Quality of Life Options"
      colWidths(0)=214
      colWidths(1)=155

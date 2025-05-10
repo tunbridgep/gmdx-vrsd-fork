@@ -810,6 +810,8 @@ var globalconfig int iCrosshairOffByOne;                       //SARGE: Set this
 
 var globalconfig bool bEnableLeftFrob;                          //SARGE: No idea why anybody would want to disable this, and yet people asked for it...
 
+var globalconfig bool bConversationKeepWeaponDrawn;             //SARGE: Always keep weapons drawn during conversations.
+
 //SARGE: Overhauled the Wireless Strength perk to no longer require having a multitool out.
 var HackableDevices HackTarget;
 
@@ -13191,6 +13193,16 @@ ignores SeePlayer, HearNoise, Bump;
        return misNum;
 	}
 
+    //SARGE: Move CyberP's soup to a new function...
+    //I'm really getting sick of having to clean this damn codebase...
+    function bool KeepWeaponOut()
+    {
+        if (bConversationKeepWeaponDrawn)
+            return true;
+        return inHand != None && inHand.IsA('DeusExWeapon') && !conPlay.startActor.IsA('NicoletteDuClare') && (retLevelInfo() == 5 || retLevelInfo() >= 12 || conPlay.startActor.IsA('HumanThug') ||
+          conPlay.startActor.IsA('Terrorist') || conPlay.startActor.Style == STY_Translucent || conPlay.startActor.IsA('DeusExDecoration') || conPlay.startActor.IsA('JuanLebedev') || conPlay.startActor.IsA('BobPage'));
+    }
+
 Begin:
 	// Make sure we're stopped
 	Velocity.X = 0;
@@ -13224,11 +13236,7 @@ Begin:
 	else
 	{
 		// Put away whatever the PC may be holding //CyberP: don't put away wep when shit hits the fan or conversee is a potential threat
-		if (inHand != None && inHand.IsA('DeusExWeapon') && !conPlay.startActor.IsA('NicoletteDuClare') && (retLevelInfo() == 5 || retLevelInfo() >= 12 || conPlay.startActor.IsA('HumanThug') ||
-          conPlay.startActor.IsA('Terrorist') || conPlay.startActor.Style == STY_Translucent || conPlay.startActor.IsA('DeusExDecoration') || conPlay.startActor.IsA('JuanLebedev') || conPlay.startActor.IsA('BobPage')))
-		{
-		}
-		else
+		if (!KeepWeaponOut())
 		{
 		    conPlay.SetInHand(InHand);
 		    PutInHand(None);
