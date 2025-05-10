@@ -39,3 +39,8 @@ function float GetTextPosition(float pos1, float pos2)
     else
         return pos1;
 }
+
+defaultproperties
+{
+    bClassicFont=True
+}
