@@ -883,9 +883,21 @@ replication
 //SARGE: Hide/Show the entire HUD at once
 exec function TogglePhotoMode()
 {
-    local DeusExRootWindow root;
     bPhotoMode = !bPhotoMode;
-    UpdateHUD();
+    UpdatePhotoMode();
+}
+
+function UpdatePhotoMode()
+{
+    local DeusExRootWindow root;
+	root = DeusExRootWindow(rootWindow);
+    if (root != None && root.hud != None)
+    {
+        if (bPhotoMode)
+            root.hud.Hide();
+        else
+            root.hud.Show();
+    }
 }
 
 exec function cheat()
@@ -1768,6 +1780,9 @@ event TravelPostAccept()
 
 	// reset the keyboard
 	ResetKeyboard();
+
+    //Update Photo Mode
+    UpdatePhotoMode();
 
     //Update HUD
     UpdateHUD();
@@ -12016,13 +12031,7 @@ function UpdateHUD()
     }
 
     if (root != None)
-    {
         root.UpdateHUD();
-        if (bPhotoMode)
-            root.hud.Hide();
-        else
-            root.hud.Show();
-    }
 }
 
 function UpdateSecondaryDisplay()
