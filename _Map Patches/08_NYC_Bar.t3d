@@ -28260,8 +28260,6 @@ Begin Actor Class=Pinball Name=Pinball3
     Name=Pinball3
 End Actor
 Begin Actor Class=NewAshtray Name=NewAshtray3
-    ItemArticle=""
-    ItemName=""
     LastRenderTime=0.306806
     Level=LevelInfo'MyLevel.LevelInfo0'
     Tag=NewAshtray

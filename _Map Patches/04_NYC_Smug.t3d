@@ -36347,8 +36347,6 @@ Begin Actor Class=HangingShopLight Name=HangingShopLight6
     Name=HangingShopLight6
 End Actor
 Begin Actor Class=Trashbag Name=Trashbag8
-    ItemArticle=""
-    ItemName=""
     LastRenderTime=15.237805
     DistanceFromPlayer=1384.939331
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -36360,8 +36358,6 @@ Begin Actor Class=Trashbag Name=Trashbag8
     Name=Trashbag8
 End Actor
 Begin Actor Class=TrashCan3 Name=TrashCan0
-    ItemArticle=""
-    ItemName=""
     LastRenderTime=15.237805
     DistanceFromPlayer=1334.425293
     Level=LevelInfo'MyLevel.LevelInfo0'
