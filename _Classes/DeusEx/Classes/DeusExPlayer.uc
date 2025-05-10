@@ -808,6 +808,8 @@ var globalconfig bool bDropWeaponsOnDeath;                      //SARGE: If enab
 
 var globalconfig int iCrosshairOffByOne;                       //SARGE: Set this if your crosshair is a few pixels too far to the left
 
+var globalconfig bool bEnableLeftFrob;                          //SARGE: No idea why anybody would want to disable this, and yet people asked for it...
+
 //SARGE: Overhauled the Wireless Strength perk to no longer require having a multitool out.
 var HackableDevices HackTarget;
 
@@ -8201,16 +8203,16 @@ exec function ParseLeftClick()
     }
 
     //Allow left-frobbing distant control panels with the Wireless Strength perk
-    else if (HackTarget != None && !bInHandTransition && inHand == None)
+    else if (bEnableLeftFrob && HackTarget != None && !bInHandTransition && inHand == None)
     {
         DoLeftFrob(HackTarget);
     }
 
     //Special cases aside, now do the left hand frob behaviour
-    else if (FrobTarget != none && IsReallyFrobbable(FrobTarget,true) && !bInHandTransition && (inHand == None || !inHand.IsA('POVcorpse')) && CarriedDecoration == None)
-	{
+    else if (bEnableLeftFrob && FrobTarget != none && IsReallyFrobbable(FrobTarget,true) && !bInHandTransition && (inHand == None || !inHand.IsA('POVcorpse')) && CarriedDecoration == None)
+    {
         DoLeftFrob(FrobTarget);
-	}
+    }
 
     //Handle throwing decorations/corpses and selecting weapons
 	else
@@ -19046,4 +19048,5 @@ defaultproperties
      iAltFrobDisplay=1
      bDialogHUDColors=True
      bQuietAugs=True
+     bEnableLeftFrob=True
 }
