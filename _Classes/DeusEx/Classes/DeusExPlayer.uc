@@ -223,7 +223,7 @@ var globalconfig bool bHitDisplayVisible;
 var globalconfig bool bAmmoDisplayVisible;
 var globalconfig bool bDisplayAmmoByClip;
 var globalconfig bool bCompassVisible;
-var globalconfig bool bCrosshairVisible;
+var globalconfig bool bCrosshairVisible;            //SARGE: Now unused. Don't use this! The only reason it's still here is because the game crashes if we change/remove it. Use the new iCrosshairVisible var instead
 var globalconfig bool bAutoReload;
 var globalconfig bool bDisplayAllGoals;
 var globalconfig bool bHUDShowAllAugs;				// TRUE = Always show Augs on HUD
@@ -811,6 +811,8 @@ var globalconfig int iCrosshairOffByOne;                       //SARGE: Set this
 var globalconfig bool bEnableLeftFrob;                          //SARGE: No idea why anybody would want to disable this, and yet people asked for it...
 
 var globalconfig bool bConversationKeepWeaponDrawn;             //SARGE: Always keep weapons drawn during conversations.
+
+var globalconfig int iCrosshairVisible;                         //SARGE: Replaces the boolean crosshair setting, now we can control inner and outer crosshair independently.
 
 //SARGE: Overhauled the Wireless Strength perk to no longer require having a multitool out.
 var HackableDevices HackTarget;
@@ -11813,7 +11815,11 @@ function SetLaser(bool bNewOn)
 // ----------------------------------------------------------------------
 exec function ToggleCrosshair()
 {
-    bCrosshairVisible = !bCrosshairVisible;
+    if (iCrosshairVisible > 0)
+        iCrosshairVisible = 0;
+    else
+        iCrosshairVisible = 1;
+    
 	UpdateCrosshair();
 }
 
@@ -11837,7 +11843,11 @@ function bool GetCrosshairState(optional bool bCheckForOuterCrosshairs)
     if (bSpyDroneActive && !bSpyDroneSet && bCheckForOuterCrosshairs)
         return false;
 
-    if (!bCrosshairVisible)
+    if (iCrosshairVisible == 0)
+        return false;
+    
+    //if we're set to "outer only", then bail if we're checking for normal crosshairs
+    if (iCrosshairVisible == 2 && !bCheckForOuterCrosshairs)
         return false;
 
     if (IsInState('Dying')) //No crosshair while dying
@@ -18858,6 +18868,7 @@ defaultproperties
      bDisplayAmmoByClip=True
      bCompassVisible=True
      bCrosshairVisible=True
+     iCrosshairVisible=1
      bAutoReload=True
      bDisplayAllGoals=True
      bHUDShowAllAugs=True

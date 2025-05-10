@@ -1044,11 +1044,6 @@ function int WindowStackCount()
 
 function ExitGame()
 {
-	/*if (parentPawn!=none&&parentPawn.IsA('DeusExPlayer')&&DeusExPlayer(parentPawn).Weapon!=none&&DeusExPlayer(parentPawn).Weapon.IsA('WeaponNanoSword')) //RSD: Uhhhhhhh
-	{
-		DeusExPlayer(parentPawn).bCrosshairVisible=DeusExPlayer(parentPawn).bWasCrosshair;
-		DeusExPlayer(parentPawn).SaveConfig();
-	}*/
 	ClearWindowStack();
 
 	parentPawn.ConsoleCommand("Exit");
