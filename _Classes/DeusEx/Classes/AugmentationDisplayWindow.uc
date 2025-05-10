@@ -1473,11 +1473,16 @@ function DrawTargetAugmentation(GC gc)
             }
         }
 
-    //Sarge: Set crosshair colour if we're placing a grenade on a wall
-    if (weapon != None && weapon.bNearWall && Player.bWallPlacementCrosshair)
-        crossColor = colBlue;
-    else
-        crossColor = colWhite;
+    crossColor = colWhite;
+    
+    //Sarge: Set crosshair colour if we're placing a grenade on a wall or highlighting distant hackables
+    if (Player.bWallPlacementCrosshair)
+    {
+        if (weapon != None && weapon.bNearWall)
+            crossColor = colBlue;
+        else if (player.HackTarget != None && player.inHand == None)
+            crossColor = colBlue;
+    }
 
     //SARGE: Moved this out to a new function, and made sure to always show it if enabled
 	if ( target != None && !target.bHidden //)                                  //RSD

@@ -807,6 +807,9 @@ var globalconfig bool bDropWeaponsOnDeath;                      //SARGE: If enab
 
 var globalconfig int iCrosshairOffByOne;                       //SARGE: Set this if your crosshair is a few pixels too far to the left
 
+//SARGE: Overhauled the Wireless Strength perk to no longer require having a multitool out.
+var HackableDevices HackTarget;
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -5064,6 +5067,8 @@ function HighlightCenterObject()
 	local int skillz;
 	local float shakeTime, shakeRoll, shakeVert;
     local float rnd;
+    local PerkWirelessStrength perk;
+    local HackableDevices hackable;
 
     if (IsInState('Dying'))
 		return;
@@ -5099,15 +5104,6 @@ function HighlightCenterObject()
        }
        LadTime = 0;
       }
-      if (inHand != None && inHand.IsA('Multitool'))
-          	{
-            	if (self.IsA('DeusExPlayer') && PerkManager.GetPerkWithClass(class'DeusEx.PerkWirelessStrength').bPerkObtained == true)
-                MaxFrobDistance = 768;
-          	}
-     	else
-           	{
-	            MaxFrobDistance = 112;
-            }
 		// figure out how far ahead we should trace
 		StartTrace = Location;
 		EndTrace = Location + (Vector(ViewRotation) * MaxFrobDistance);
@@ -5120,26 +5116,8 @@ function HighlightCenterObject()
 		minSize = 99999;
 		bFirstTarget = True;
 
-     if (inHand != none && inHand.IsA('Multitool'))
-     {
-        foreach TraceActors(class'Actor', target, HitLoc, HitNormal, EndTrace, StartTrace)
-		{
-		if (IsFrobbable(target) && (target != CarriedDecoration))
-		     {
-                if (target.IsA('HackableDevices'))
-			    {
-                }
-			    else
-			    {
-			    MaxFrobDistance=112;
-		        StartTrace = Location;
-		        EndTrace = Location + (Vector(ViewRotation) * MaxFrobDistance);
-		        StartTrace.Z += BaseEyeHeight;
-		        EndTrace.Z += BaseEyeHeight;
-                }
-             }
-        }
-     }
+        //SARGE: Removed the special case for Multitools, see below for how this is done.
+
 		// find the object that we are looking at
 		// make sure we don't select the object that we're carrying
 		// use the last traced object as the target...this will handle
@@ -5147,6 +5125,10 @@ function HighlightCenterObject()
 		// ScriptedPawns always have precedence, though
 		foreach TraceActors(class'Actor', target, HitLoc, HitNormal, EndTrace, StartTrace)
 		{
+            //SARGE: Stop being able to frob things through walls
+            if (target.IsA('DeusExDecoration') && !LineOfSightTo(target))
+                continue;
+
 			if (IsFrobbable(target) && (target != CarriedDecoration))
 			{
                 if (target.IsA('ScriptedPawn'))
@@ -5168,6 +5150,37 @@ function HighlightCenterObject()
 			}
 		}
 		FrobTarget = smallestTarget;
+        HackTarget = None;
+
+        //SARGE: If we have no frobtarget, do the special check for the wireless strength perk
+        if (FrobTarget == None)
+        {
+            perk = PerkWirelessStrength(PerkManager.GetPerkWithClass(class'DeusEx.PerkWirelessStrength'));
+            if (perk != None && perk.bPerkObtained)
+            {
+                EndTrace = Location + (Vector(ViewRotation) * perk.PerkValue);
+                EndTrace.Z += BaseEyeHeight;
+
+                foreach TraceActors(class'Actor', target, HitLoc, HitNormal, EndTrace, StartTrace)
+                {
+                    if (target.IsA('HackableDevices'))
+                    {
+                        //SARGE: Ensure we can actually see what we're trying to frob
+                        if (!LineOfSightTo(target))
+                            continue;
+
+                        hackable = HackableDevices(target);
+                        if (hackable != None && hackable.bHackable && hackable.hackStrength > 0.0)
+                        {
+                            HackTarget = HackableDevices(target);
+                            if (inHand != None && inHand.IsA('Multitool'))
+                                FrobTarget = target;
+                            break; //Just keep it simple and only get the first one, they usually never overlap.
+                        }
+                    }
+                }
+            }
+        }
 
 		// reset our frob timer
 		FrobTime = 0;
@@ -8186,6 +8199,12 @@ exec function ParseLeftClick()
 
     }
 
+    //Allow left-frobbing distant control panels with the Wireless Strength perk
+    else if (HackTarget != None && !bInHandTransition && inHand == None)
+    {
+        DoLeftFrob(HackTarget);
+    }
+
     //Special cases aside, now do the left hand frob behaviour
     else if (FrobTarget != none && IsReallyFrobbable(FrobTarget,true) && !bInHandTransition && (inHand == None || !inHand.IsA('POVcorpse')) && CarriedDecoration == None)
 	{
@@ -8391,6 +8410,7 @@ exec function ParseRightClick()
 	local Vector loc;
 	local DeusExWeapon ExWep;
     local DeusExRootWindow root;
+    local bool bFarAway;
 
     //SARGE: Add quickloading if pressing right click while dead.
     if (IsInState('dying') && !bDeadLoad)
@@ -8447,10 +8467,14 @@ exec function ParseRightClick()
 	oldInHand = inHand;
 	oldCarriedDecoration = CarriedDecoration;
 
+    //We have a hacktarget, we can't right click it at all
+    //because we're out of range.
+    bFarAway = HackTarget != None && FrobTarget != None;
+
 	if (FrobTarget != None)
 		loc = FrobTarget.Location;
 
-	if (FrobTarget != None && IsReallyFrobbable(FrobTarget))
+	if (FrobTarget != None && IsReallyFrobbable(FrobTarget) && !bFarAway)
 	{
         //SARGE: I really should add this to the proper OOP setup, but I just don't care.
         //We don't care about MP, so will omit it for now
@@ -8531,19 +8555,24 @@ exec function ParseRightClick()
             bSelectedFromMainBeltSelection = false;
             PutInHand(None);
             NewWeaponSelected();
-		    DoRightFrob(FrobTarget); //Last minute check for things with no highlight.
+            if (!bFarAway)
+                DoRightFrob(FrobTarget); //Last minute check for things with no highlight.
 		}
 		else
 		{
             SetDoubleClickTimer();
-		    DoRightFrob(FrobTarget); //Last minute check for things with no highlight.
+            if (!bFarAway)
+                DoRightFrob(FrobTarget); //Last minute check for things with no highlight.
         }
 	}
 
-	if ((oldInHand == None) && (inHand != None))
-		PlayPickupAnim(loc);
-	else if ((oldCarriedDecoration == None) && (CarriedDecoration != None))
-		PlayPickupAnim(loc);
+    if (!bFarAway)
+    {
+        if ((oldInHand == None) && (inHand != None))
+            PlayPickupAnim(loc);
+        else if ((oldCarriedDecoration == None) && (CarriedDecoration != None))
+            PlayPickupAnim(loc);
+    }
 }
 
 // ----------------------------------------------------------------------

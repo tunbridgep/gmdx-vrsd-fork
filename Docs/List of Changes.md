@@ -211,6 +211,8 @@ Sarge's Changes since Beta 2.2:
         - When holstered, you should use the standard left-frobbing system instead.
     - The Pedometer can now be viewed in the Health screen when using the Addiction system.
     - Subtitles are now enabled in third-person cutscenes regardless of Subtitles setting, allowing text to show instead of useless black bars while also not displaying in-game barks. This can be disabled using the `bSubtitlesCutscene` option in `DeusEx.ini`
+    - Wireless Strength perk now allows you to left-frob at long range, rather than needing to have a multitool selected.
+        - Additionally, fixed the bug where JC could interact with keypads at range with the Wireless Strength perk.
 - Gameplay Changes:
     - New Item Distribution System that distributes a preset number of items from a pool upon loading a new map.
         - MJ12 Elites now have a small chance of carrying Throwing Knives
