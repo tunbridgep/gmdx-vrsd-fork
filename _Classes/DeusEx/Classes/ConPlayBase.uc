@@ -898,6 +898,11 @@ log("  event.toActor    = " $ event.toActor );
 				//SARGE: Add some ammo, too
 				if (invItemTo.IsA('WeaponMiniCrossbow'))
                 {
+                    //SARGE: Add a range mod too!
+                    wepMod = Spawn(class'WeaponModRange');
+                    wepMod.ApplyMod(DeusExWeapon(invItemTo));
+                    wepMod.Destroy();
+
 					DeusExWeapon(invItemTo).AmmoType.AddAmmo(8);
                     //conWinThird.ShowReceivedItem(DeusExWeapon(invItemTo).AmmoType, 8);
                     addAmmo += 8;
