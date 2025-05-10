@@ -813,6 +813,8 @@ var globalconfig bool bEnableLeftFrob;                          //SARGE: No idea
 //SARGE: Overhauled the Wireless Strength perk to no longer require having a multitool out.
 var HackableDevices HackTarget;
 
+var travel bool bPhotoMode;                                     //SARGE: Show/Hide the entire HUD at once
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -876,6 +878,14 @@ replication
 	  BuySkillSound, ShowMultiplayerWin, ForceDroneOff ,AddDamageDisplay, ClientSpawnHits, CloseThisComputer, ClientPlayAnimation, ClientSpawnProjectile, LocalLog,
 	  VerifyRootWindow, VerifyConsole, ForceDisconnect;
 
+}
+
+//SARGE: Hide/Show the entire HUD at once
+exec function TogglePhotoMode()
+{
+    local DeusExRootWindow root;
+    bPhotoMode = !bPhotoMode;
+    UpdateHUD();
 }
 
 exec function cheat()
@@ -12006,7 +12016,13 @@ function UpdateHUD()
     }
 
     if (root != None)
+    {
         root.UpdateHUD();
+        if (bPhotoMode)
+            root.hud.Hide();
+        else
+            root.hud.Show();
+    }
 }
 
 function UpdateSecondaryDisplay()
