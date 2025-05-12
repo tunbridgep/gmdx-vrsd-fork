@@ -11815,10 +11815,9 @@ function SetLaser(bool bNewOn)
 // ----------------------------------------------------------------------
 exec function ToggleCrosshair()
 {
-    if (iCrosshairVisible > 0)
+    iCrosshairVisible += 1;
+    if (iCrosshairVisible > 2)
         iCrosshairVisible = 0;
-    else
-        iCrosshairVisible = 1;
     
 	UpdateCrosshair();
 }
