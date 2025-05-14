@@ -11,7 +11,7 @@ function PostBeginPlay()                                                        
 
 	player = DeusExPlayer(GetPlayerPawn());
 
-	if (player != none && player.bHardCoreMode)
+	if (player != None && player.bHardCoreMode)
 	{
 		Damage = 240;
 		blastRadius = 384.000000;

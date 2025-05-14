@@ -12,6 +12,7 @@ simulated function DrawExplosionEffects(vector HitLocation, vector HitNormal)
 	local ExplosionLight light;
 	local ParticleGenerator gen;
 	local ExplosionSmall expeffect;
+	local ExplosionMedium expeffectMed;
 
 	// draw a pretty explosion
 	light = Spawn(class'ExplosionLight',,, HitLocation);
@@ -25,21 +26,23 @@ simulated function DrawExplosionEffects(vector HitLocation, vector HitNormal)
 	if (expeffect != None)
 		expeffect.RemoteRole = ROLE_None;
 
-    Spawn(class'ExplosionMedium',,, HitLocation);
+    expeffectMed = Spawn(class'ExplosionMedium',,, HitLocation);
+	if (expeffectMed != None)
+		expeffectMed.RemoteRole = ROLE_None;
 
  	// create a particle generator shooting out white-hot fireballs
 	gen = Spawn(class'ParticleGenerator',,, HitLocation, Rotator(HitNormal));
 	if (gen != None)
 	{
 		gen.RemoteRole = ROLE_None;
-		gen.particleDrawScale = 0.9;
-		gen.checkTime = 0.05;
-		gen.frequency = 1.0;
+		gen.particleDrawScale = 0.8;
+		gen.checkTime = 0.04;
+		gen.frequency = 0.7;
 		gen.ejectSpeed = 200.0;
-		gen.bGravity = True;
-		gen.bRandomEject = True;
+		gen.bGravity = true;
+		gen.bRandomEject = true;
 		gen.particleTexture = Texture'Effects.Fire.FireballWhite';
-		gen.LifeSpan = 2.0;
+		gen.LifeSpan = 1.8;
 	}
 }
 
@@ -47,7 +50,7 @@ simulated function PreBeginPlay()
 {
 	Super.PreBeginPlay();
 
-	if ( ( Level.NetMode != NM_Standalone ) && (Class == Class'RocketWP') )
+	if ( ( Level.NetMode != NM_Standalone ) )
 	{
 		speed = 2000.0000;
 		SetTimer(5,false);
@@ -61,8 +64,8 @@ defaultproperties
 {
      mpExplodeDamage=75.000000
      mpBlastRadius=768.000000
-     bBlood=False
-     bDebris=False
+     bBlood=True
+     bDebris=True
      blastRadius=224.000000
      DamageType=Flamed
      ItemName="WP Rocket"
