@@ -3,37 +3,6 @@
 //=============================================================================
 class WeaponRobotMachinegun extends WeaponNPCRanged;
 
-function DrawMuzzleFlash()
-{
-	local Vector offset, X, Y, Z;
-
-	if ((flash != None) && !flash.bDeleteMe)
-		flash.LifeSpan = flash.Default.LifeSpan;
-	else
-	{
-		GetAxes(Pawn(Owner).ViewRotation,X,Y,Z);
-		offset = Owner.Location;
-		offset += X * Owner.CollisionRadius;
-		flash = spawn(class'MuzzleFlash',,, offset);
-		if (flash != None)
-		{
-			flash.SetBase(Owner);
-			flash.LightRadius = 5;
-		}
-
-		offset = Owner.Location + CalcDrawOffset();
-		// randomly draw an effect
-		if (FRand() < 0.6)
-			Spawn(class'Tracer',,, offset, Pawn(Owner).ViewRotation);
-	}
-}
-
-simulated function PlaySelectiveFiring()
-{
-	DrawMuzzleFlash();
-    Super.PlaySelectiveFiring();
-}
-
 defaultproperties
 {
      ShotTime=0.100000

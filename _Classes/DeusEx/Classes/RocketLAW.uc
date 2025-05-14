@@ -7,7 +7,7 @@ simulated function PreBeginPlay()
 {
 	Super.PreBeginPlay();
 
-	if (( Level.NetMode != NM_Standalone ))
+	if (( Level.NetMode != NM_Standalone ) && (Class == Class'RocketLAW'))
 	{
 		SoundRadius = 192;
 	}
