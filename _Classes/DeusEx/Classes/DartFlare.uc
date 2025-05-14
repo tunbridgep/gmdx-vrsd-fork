@@ -22,82 +22,55 @@ function ExtinguishFlare()
 	AmbientSound = None;
 	if (gen != None)
 		gen.DelayedDestroy();
-	if (flaregen != None && flamething != None)
-	{
+	
+	if (flaregen != None)
 		flaregen.DelayedDestroy();
-		flamething.LifeSpan=1;
+	
+	if(flamething != None)
 		flamething.Destroy();
-		flamething.bHidden=true;
-	}
 }
 
-function tick(float DT)
+simulated function Tick(float deltaTime)
 {
-	if(self==None)
+	super.Tick(deltaTime);
+	
+	if(Self == None)
 		ExtinguishFlare();
-    else if(self!=None && gen != None)
-		UpdateGens();
-
-	super.Tick(dt);
+    else if(Self != None && gen != None)
+		UpdateGens();	
 }
 
 function UpdateGens()
 {
-	local Vector loc;
 	local rotator rota;
-
+	
+	rota = Rotation;
+	rota.Yaw += 32768.0;
+	
 	if(gen != None)
 	{
-		loc = location;
-		loc.X += 2.0;		
-		rota = rotation;
-		rota.Yaw += 32768;
-		gen.SetLocation(loc);
+		if(gen.Location != Location)
+			gen.SetLocation(Location); //bah!
+
 		gen.SetRotation(rota);
 	}
-
+	
 	if(flaregen != None)
 	{
-		loc = location;
-		rota = rotation;
-		if(rota.Roll > 0)
-		{
-			rota.Roll += 4096;
-		}
-		else if (rota.Roll < 0)
-		{
-			rota.Roll -= 4096;
-		}
-		else
-		{
-			rota.Roll = 0;
-		}
-		rota.Yaw += 32768;
-		flaregen.SetLocation(loc);
+		if(flaregen.Location != Location)
+			flaregen.SetLocation(Location); //bah!
+
 		flaregen.SetRotation(rota);
 	}
 	
 	if(flamething != None)
 	{
-		loc = location;
-		rota = rotation;
-		if(rota.Roll > 0)
-		{
-			rota.Roll += 4096;
-		}
-		else if (rota.Roll < 0)
-		{
-			rota.Roll -= 4096;
-		}
-		else
-		{
-			rota.Roll = 0;
-		}		
-		rota.Yaw += 16384;
-		flamething.SetLocation(loc);
-        flamething.SetRotation(rota);
-		
-		if(lifespan > 2)
+		if(flamething.Location != Location)
+			flamething.SetLocation(Location); //bah!
+
+		rota.Yaw -= 16384.0;
+		flamething.SetRotation(rota);
+		if(lifespan > 1)
 			flamething.DrawScale = 0.06 + (0.2*lifespan)/flaretime;
 		else
 			flamething.Destroy();
@@ -108,10 +81,10 @@ function PostBeginPlay()
 {
 	super.PostBeginPlay();
 
-	if (Owner!=None && Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkHumanCombustion').bPerkObtained == true) //RSD: Was 11, now 22 (Human Combustion perk moved from Advanced -> Master)
+	if (Owner != None && Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkHumanCombustion').bPerkObtained) //RSD: Was 11, now 22 (Human Combustion perk moved from Advanced -> Master)
 		DamageType='Flamed';
 
-	SetTimer(0.05, False);
+	SetTimer(0.05, false);
 }
 
 simulated function Destroyed()
@@ -130,32 +103,32 @@ function Timer()
         flaretime = LifeSpan;
 
 		loc2.Y += collisionradius*1.05;
-		loc = loc2 >> rotation;
-		loc += location;
-		gen = Spawn(class'ParticleGenerator', Self,, loc, rot(32768,0,0));
+		loc = loc2 >> Rotation;
+		loc += Location;
+		gen = Spawn(class'ParticleGenerator', Self,, loc, Rot(16384.0,0.0,0.0));
 		if (gen != None )
 		{
 			gen.particleTexture = Texture'Effects.Smoke.SmokePuff1';
 			gen.attachTag = Name;
-			gen.SetBase(Self);
+			//gen.SetBase(Self);
 			gen.LifeSpan = LifeSpan;
 			gen.bRandomEject = true;
 			gen.bParticlesUnlit = false;
 			gen.ejectSpeed = 15;
-			gen.riseRate = 5;
-			gen.checkTime = 0.05;
-			gen.particleLifeSpan = 2.8;
-			gen.particleDrawScale = 0.11;			
+			gen.riseRate = 15;
+			gen.checkTime = 0.075;
+			gen.particleLifeSpan = 3.5;
+			gen.particleDrawScale = 0.20;			
 		}
 		
 		if(IsHDTP())
-		{
+		{			
 			loc2.Y = collisionradius*0.8;    //I hate coordinate shifting
-			loc = loc2 >> rotation;
-			loc += location;
-			rota = rotation;
+			loc = loc2 >> Rotation;
+			loc += Location;
+			rota = Rotation;
 			rota.Roll = 0;
-			rota.Yaw = 32768;//32768;//16384;
+			rota.Yaw += 16384;
 			
 			flaregen = Spawn(class'ParticleGenerator',Self,, loc, rota);
 			if (flaregen != None)
@@ -167,14 +140,14 @@ function Timer()
 				flaregen.bRandomEject = true;
 				flaregen.RandomEjectAmt = 0.1;
 				flaregen.bParticlesUnlit = true;
-				flaregen.frequency = 0.3 + 0.4*frand();
+				flaregen.frequency = 0.3 + 0.4*FRand();
 				flaregen.numPerSpawn = 2;
 				flaregen.bGravity = true;
 				flaregen.ejectSpeed = 100;
 				flaregen.riseRate = 1;
 				flaregen.checkTime = 0.02;
-				flaregen.particleLifeSpan = 0.2*(1 + frand());
-				flaregen.particleDrawScale = 0.01 + 0.04*frand();            
+				flaregen.particleLifeSpan = 0.2*(1 + FRand());
+				flaregen.particleDrawScale = 0.01 + 0.04*FRand();            
 			}
 
 			rota.Yaw = 0;
@@ -201,12 +174,12 @@ defaultproperties
 {
      mpDamage=10.000000
      DamageType=Burned
-     spawnAmmoClass=Class'DeusEx.AmmoDartFlare'
+     spawnAmmoClass=class'DeusEx.AmmoDartFlare'
      hdtpReference=class'DeusEx.WeaponMiniCrossbow'
      ItemName="Flare Dart"
      Damage=7.000000
      LifeSpan=160.000000
-     bUnlit=true
+     bUnlit=True
      SoundRadius=20
      SoundVolume=128
      LightType=LT_Steady
@@ -214,5 +187,5 @@ defaultproperties
      LightBrightness=255
      LightHue=16
      LightSaturation=192
-     LightRadius=10
+     LightRadius=12
 }
