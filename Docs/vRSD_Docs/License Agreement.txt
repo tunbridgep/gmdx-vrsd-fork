@@ -1,0 +1,23 @@
+STEAM USERS ONLY: WARNING! If you have Deus Ex™ installed with Steam®, it is critical to have run Deus Ex™ at least once before installing GMDX. Please note that you have been warned about this.
+
+This software is provided 'as-is', without any express or implied warranty. In no event will the author be held liable for any damages arising from the use of this software.
+
+GMDX vRSD's unique content is shared under the following copyright license:
+
+Creative Commons - Attribution-NonCommercial-ShareAlike 3.0 Unported
+
+You are free:
+ to Share         — to copy, distribute and transmit the work
+
+Under the following conditions:
+
+ Attribution         — You must attribute the work in the manner specified by the author or licensor (but not in any way that suggests that they endorse you or your use of the work).
+ Noncommercial     — You may not use this work for commercial purposes.
+ Share Alike         — If you alter, transform, or build upon this work, you may distribute the resulting work only under the same or similar license to this one.
+
+ www.Creativecommons.org  
+
+Assets used from other mods (including GMDX v9.0.3) as well as Deus Ex itself belongs to their respective copyright owners and operate under their own licenses. 
+You are not permitted to use GMDX vRSD code or assets without explicit permission.
+Contact me via email if you have any inquiries: RoSoDudeRSD@gmail.com
+Consider leaving feedback on the moddb website or making a donation at https://rosodudemods.wordpress.com/ if you think it is worth it. 

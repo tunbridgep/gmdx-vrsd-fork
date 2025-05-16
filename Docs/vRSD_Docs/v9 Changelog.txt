@@ -1,0 +1,465 @@
+v9.0 Changelog
+
+Note: this only covers ~50% of v9.0 features, and nothing from earlier versions of GMDX.
+
+_Localization_
+--------------
+
+GMDX is now available in the following five languages:
+
+English
+French
+German
+Russian
+Spanish
+
+
+_ARTIFICIAL INTELLIGENCE_
+-------------------------
+
+-Human NPCs now sometimes lay down suppressive fire.
+-Human NPCs in combat sometimes strafe around corners already facing the player. This is quite the significant improvement to how NPCs move around the world, and how believable and competent they are in combat.
+-AI are no longer "psychic" and will not know your location when fighting with other NPCs, unless they have actually spotted you.
+-AI will now investigate the source of alarms emitting from alarm units (Previously they'd only investigate alarms from laser triggers and cameras).
+-Spiderbots can walk on the ceiling. 
+-The range at which a stealth takedown counts is increased by 33% - if you're behind an unaware NPC and aim for the right part, you WILL perform a takedown now.
+-NPC grenade throwing is now significantly more versatile, including throwing grenades into vents.
+-Hostile AI attempting to move to a location will immediately stop and attack if they bump into the player, rather than attempting to move around him to get to that location. 
+-Added minor diversity to what an NPC decides to do after triggering an alarm. 
+-NPCs in combat that are moving to a location and see the player often will immediately stop and shoot, rather than continuing running to that location without opening fire.
+-Reduced the radius of NPC pain screams, resulting in leniency when attempting to silently take out enemies without the whole area becoming alert. Vanilla the radius happened to be just a touch too loud.
+-Animals can now be knocked unconscious.
+-Improved various strafing-related behaviour.
+-New AI feature: human AI sometimes wander the area after giving up looking for the player post-combat, instead of returning to patrols.
+-NPCs will often backup when opening doors, even if it's a non-encroaching door type. (hinders AI door exploitation), and the backup animation should no longer sometimes bug out.
+-Improved behaviour related to NPCs opening doors in combat.
+-Robots ram down doors blocking their path.
+-Heavy robots destroy decorative objects blocking their path.
+-AI are somewhat less accurate if the player is moving at high velocities.
+-AI with assault rifles are highly innaccurate while dying mid-burst fire.
+-Enemies set on fire no longer run into walls if they can't find water.
+-Enemies that are melee-based and can't reach the player will run away and hide (e.g player is on ladder, Karkian cannot reach so will go hide).
+-Unconscious NPCs now have their name displayed when highlighted.
+-NPCs no longer break open footlockers by running into them.
+-if the player is blocking the path of an alarm unit an NPC is attempting to get to and press, the NPC will instead attack, if equipped with a weapon.
+-AI stealth-related stats have been nerfed a little on realistic mode. 
+-The advanced security bot now uses a new/previously unused model.
+-Greatly diversified how an NPC behaves when seeking the source of a disturbance.
+-Minor improvement to the new NPC melee attack/gun bash system.
+-If an NPC runs into glass in combat they will stop and shoot it rather than steamrolling right through it.
+-Enabled some overlooked NPC vocal reactions to the player clowning around (like throwing a basketball at them).
+-Security camera FOV is higher on hardcore mode.
+-NPCs will still be able to shoot you if you're in view but standing behind a invincible or high dam threshold object.
+-Advanced security bots can climb stairs.
+-NPCs crouch less and strafe around corners a touch more frequently.
+-NPCs melee attack gun bash slightly less often.
+-If you're hiding behind an explosive object the NPC will shoot it, if it's reasonably far away
+-Refined v8.0 helmet bullet deflection behavior. Mechanic NPC hardhats also now provide minor protection, and are likely to break.
+-Breaking boxes alerts AI at a lower radius.
+-NPC leg pain animation rate is slowed down a touch, to add realistic diversity and tactical advantage to shooting the legs.
+-Spiderbot movement animation rate is increased a touch, giving them a more realistic-looking stride.
+-Heavy EMP damage now disables Anna, Gunther and Walton Simon's augmentations.
+-Grays suffer flamed damage, but do not set on fire.
+-Greasel attack rate now scales based on difficulty mode.
+-MJ12 Elite are now only immune to tear gas on hardcore mode. 
+-Snipers now take their time to fire on all except hardcore mode. 
+-Walker bots suffering critical levels of health attempt to suicide self-destruct near the player if specific conditions are met (Hardcore mode only).
+-Military bots that have spotted the player take faster strides/move faster, returning to normal when no longer in combat (Hardcore mode only).
+-The advanced patrol bot met later in the game now reacts to sound disturbances (Hardcore mode only).
+
+
+_PLAYER-CONTROLLED MECHANICS_
+-----------------------------
+
+-You can now jump from ladders.
+-You can now lean over edges, as in System Shock.
+-Leaning is not blocked by corpses or small objects on the floor.
+-You can now pick up objects that have other objects standing on top of them, providing they aren't too heavy.
+-You can now attempt to jump from water even if there is no reachable ledge to grab.
+-Mantling has been improved considerably. 
+-You can now zoom in/out with the binoculars.
+-You can now mantle low-standing objects if both legs are crippled.
+-Right clicking while looking through a weapon's scope will stop looking through the scope as opposed to holstering weapon.
+-When throwing objects with a normal right click throw, throw accuracy is precise (vanilla had very noticable randomization, resulting in it being difficult to get a basketball in the hoop for example). 
+-The GEP Gun's remote controlled rocket steering is no longer inverted on the Y axis & pressing the left mouse button will boost the remote rocket.
+-With nothing in hand, left clicking on doors will put either a lockpick or nanokey ring in your hand. 
+Doing the same for hackable electronics will put multitools in hand. 
+
+
+_PHYSICS_
+---------
+
+-Rotational velocity is applied when throwing objects with the Microfibral Muscle augmentation.
+-Exploding fire extinguishers will send nearby objects flying, making use of the version 8.0 physics system expansion.
+-Push carts now roll along when shot/whacked etc.
+-Dropping stacks via the inventory results in the dropped items spread out over a slightly wider area, to prevent immersion breaking towers.
+-Standing on objects that cannot be stood on will throw you off more realistically.
+-Player Buoyancy is more realistic.
+-Items will reset pitch rotation when landing on the ground, much like the decorative objects always have done in Deus Ex.
+-More types of fragile objects break when something heavy lands on top of them. 
+-Fine-tuned other physics elements.
+
+
+_ENHANCED ARTISTIC DIRECTION_
+----------------------------- 
+
+-Considerably sharp and faithful level detail.
+-Many new high resolution textures.
+-A bunch of new 3D models.
+Note: some models and textures are HDTP/New Vision/Vanilla replacements, others are entirely new. All based on context, of course. 
+-Created some new dynamic corona/lighting effects.
+-New decals to diversify the game's environments. 
+-Considerable focus on better implementation of lighting and shadow-casting. 
+-All fragments now use high resolution textures.
+-All explosion sprites are twice as bright and less translucent.
+-Various new decals for shooting and melee bashing the environment.
+-Fixed a modern renderer lighting issue where all meshes didn't blend into their environment well.
+-Set all translucent water to "low translucency" mode, as default was far too clear.
+-Fixed LOD issues with HDTP's Trashcans and Barrels.
+-General optimization of HDTP and New Vision's design + consistency. 
+-The speed at which clouds pan in the sky is slowed down to a more realistic rate, for all skyboxes.
+-Flares light up the ground more realistically and effectively.
+-Exploding fire extinguishers have new visual effects.
+-Added a new optional realistic headbobbing effect.
+-Jock's chopper hovers and sways subtly rather than sitting completely static.
+-Gore effects toned down very mildly and further polished.
+-Reduced the size of flies that spawn over corpses.
+-Exploding grenades no longer cause the screen to flash if not nearby or looking at the source of the explosion.
+-The laser dot is only larger when emitted by weapon laser sight, not laser triggers.
+-The UNATCO boats sway in the sea more subtly.
+
+_CONVERSATION-
+--------------
+
+-Receiving ammo during conversations now displays how much ammo you were given.
+-JC no longer puts away his weapon in conversation when shit hits the fan or the conversee is a potential threat.
+-Kaplan gives sensible ammo counts to the player when purchased.
+-Vanilla Bugfix: fixed the item duplication bug wherein items are dropped at the feet of NPC vendors when your inventory is full.
+-Vanilla Bugfix: Stephanie Maxwell will converse with you even if the conversation between her and the MJ12 troop does not trigger.
+-Vanilla Bugfix: fixed a rare game breaking bug wherein the dragon heads would not talk to you at the temple.
+-Vanilla Bugfix: fixed a moderately rare bug where Paul refused to converse with the player in the Hotel after having sent the NSF signal.
+-Vanilla Bugfix: The mechanic that sells you items on the UNATCO Escape mission no longer gets you stuck in an infinite conversation loop if you attempt to buy all his wares.
+
+_WEAPONRY_
+----------
+
+-More weapons accept a wider variety of modifications than even v8.0. 
+-Throwing knives can now be retrieved from the bodies of organic enemies.  
+-Heavy weapon sizes are reduced from 4x2 to 3x2, taking up 6 slots as opposed to 8, making heavy weapon builds a little more viable.
+-Improved new recoil handling system further. 
+-Sabot rounds now do 30% less damage VS organic targets as the ammo's description indicates.
+-Retored the GEP gun's Lock-on guidance functionality. The GEP gun now has THREE individual guidance systems in total.
+-Weapon damage displayed in the inventory now changes based on the ammo type currently loaded.
+-Improved dynamic cover animations.
+-Explosions ignore geometry at a radius of 20% the explosion's blast radius. 
+-Reduced collision radius of all dart types -- now they'll not hit the corner of walls you're leaning round.  
+-Improved a large number of vanilla technical flaws with the Assault Rifle.
+-The standing still accuracy bonus doesn't IMMEDIATELY drop off as soon as you start moving, but rather gradually decrements over ~five seconds.
+-The assault rifle now accepts rate of fire mods.
+-Improved camera firing effects.
+-Crossbow darts are not visually present in the weapon until halfway through the reload process.
+-Ejected shell casings are no longer visually different if you attach a silencer, as in GMDX shell casings differ based on ammo type. //perhaps re-add as it represents sub-sonic rounds despite that ammo type not existing in DX
+-Improved flamethrower handling effects.
+-shotguns can never have pinpoint accuracy.
+-Reduced lingering poison damage enemies take by half. Initial damage received upon dart impact remains.
+-New simulated reload movement effects.
+-Dynamic crosshairs no longer are drawn while the laser sight weapon mod is on.
+-Optimized the new flamethrower flame effects for better performance.
+-The laser sight attachment no longer automatically turns off when mantling.
+-New rare custom variant of the assault gun
+
+
+_User Interface/HUD_
+--------------------
+
+-The health and augmentations screens now display a variety of general statistics (can be disabled).
+-Added a number of functional & cosmetic improvements to the augmentation screen.
+-ATM windows now enable you to withdraw all available credits at the press of a button providing your skill level is Advanced or greater.
+-With the real time UI option enabled only one toolbelt is displayed when browsing the UI. 
+-The perk window now features stylistic aesthetic additions such as icons.
+-Minor audio design additions.
+-Improved dynamic crosshair behaviour.
+
+
+_AUDIO DESIGN_ 
+--------------
+
+-Climbing ladders now has sound effects.
+-Added some new subtle UI audio effects.
+-Three more new groups of footstep sounds.
+-Added a variety of new collision sounds when thrown objects hits walls etc.
+-Landing from height while crouched will play the appropriate footstep/land sound you'd get when falling while standing.
+-Movers will play the appropriate footstep sounds as opposed to defaulting to concrete sounds.
+-Additional location-specific audio ambience.
+-Hitting corpses with melee weapons will play the appropriate body hit sound as opposed to the sound of hitting the floor underneath them. 
+-Security Bots no longer play scanning sound when idle.
+-Security Bots play their unused critical damage sound if health is less than 20%.
+-Restored two unused music tracks.
+-Various new weapon sounds.
+-Reduced the volume of ADS tracking sound.
+-Cloak up/down sound effect no longer conflicts with footstep sounds.
+-Gunther's movement sounds now sounds different to the bot's.
+-Decreased aug activate/deactivate sound volume by 30%
+-Various other miscellaneous tweaking and additions.
+
+
+_AUGMENTATIONS_ 
+---------------
+ 
+
+###Microfibral Muscle###
+
+-Drains bioenergy when power-throwing objects.
+-Improved physics
+-Nerfed microfibral Muscle damage output across the board, with emphasis on lightweight objects.
+-General Polish
+
+
+###Vision Enhancement###
+
+-Full Screen display
+-Now amplifies light.
+-Improved graphical effects.
+
+
+###Targeting###
+
+-Now displays the player's current accuracy in percentage.
+-The Target Augmentation's scanning text has now been moved to the location of the target window so as to not distract the player.
+
+
+###Cloak and Radar Transparency###
+
+-New visual effects each.
+-Player can see themselves turn invisible in mirrors.
+
+###EUAS###
+
+-Light level HUD readout now represents how visible the player is more accurately.
+
+
+###SpyDrone###
+
+-The spy drone now bounces off of level geometry upon collision, rather than losing all velocity.
+-The spy drone now requires 3 bioenergy points to detonate.
+-Reduced Drone size by 25%.
+-Removed v8.0 cloaking effect.
+
+
+###Combat Speed###
+
+-Independent from combat strength.
+-Influences melee speed and weapon swap speed only.
+
+
+###Combat Strength###
+
+-Now independent from the combat speed augmentation.
+-Same aug as in vanilla.
+
+
+###Environmental Resistence###
+
+-Can be upgraded into an AUTOMATIC augmentation.
+-Description now displays defense values in percent (%).
+-Reduced screen flash when protected by the aug.
+-Altered values.
+
+
+###Ballistic Protection###
+
+-Reduced screen flash when protected by the aug.
+
+
+###Energy Shield###
+
+-New Visual shielding effect is present at any upgrade level.
+-Reduced screen flash when protected by the aug.
+
+###Speed Enhancement###
+
+-Crouch-walking with speed enhancement enabled now produces slightly louder footsteps.
+
+
+###Synthetic Heart###
+
+-Synthetic heart increases energy drain of individual active augmentations by %, rather than draining energy itself.
+
+###Aqualung###
+
+-Can be upgraded into an AUTOMATIC augmentation.
+-Regenerates stamina at a faster rate.
+
+
+###Energy Transference###
+
+-New Passive augmentation that transfers bioenergy and stamina from hostiles upon death or KO by melee weapon.
+-Stealth kills grant more energy and stamina.
+
+
+_MISCELLANEOUS_
+---------------
+
+-Rescuing Miguel rewards a small # of skillpoints.
+-The stamina system is now optional.
+-Frobbing a weapon while your inventory is full will unload the weapon of its ammo. 
+-stamina now regenerates when crouched (if idle), among other stamina system improvements.
+-Approximately 15 new interactive objects.
+-Laser alarms will continuously sound an alarm if something is blocking the beam on higher difficulty modes.
+-There is now a displayed name distinction between quicksaves and autosaves.
+-The conditions for picking up carryable objects are more lenient (less "no room to lift that").
+-On hardcore mode breath/stamina meter is not automatically refilled when entering water.
+-Default control scheme is partially customized to meet modern standards. 
+-Updated tutorial.
+-Corpses do not infinitely spawn a blood pool. Once only.
+-The hunger system is now exclusive to Hardcore Mode.
+-If the player runs/jumps/falls into glass at high velocities the glass will break and the player will go right through it.
+-Tied a number of new headbob and camera interpolation effects added in GMDXv8.0 to the vanilla headbob option for those that suffer with motion sickness.
+-Pressing the "Secondary Weapon" key while your secondary weapon is in your hand equipped (as if a primary weapon), you will attack with said weapon. 
+-Added some new config options, including the ability to decline the game's hundreds of combat knifes when looting.
+-The MJ12 Attack force that "converges in on your position" in the final visit to Hell's Kitchen can now lose track of the player. Once they do, they will 
+patrol the streets extensively looking for you. 
+-Minor refinements to the first person death perspective.
+-The keyboard/mouse binding options now display which augmentation is bound to what key.
+-IF the player dies in the sewer during the UNATCO raid events, he is not captured.
+-In addition to the above, many of the game's scripted events have been updated and polished in a faithful manner.
+-After inputting the correct passcode the Keypad window is automatically closed in half the time it was vanilla.
+-Log object is now flammable.
+-Hard difficulty mode is restored.
+
+_SKILLS/PERKS_
+--------------
+
+-The Tech Goggles now amplifies light, aiding you see in darkness.
+-The Tech Goggles comes with Infra-Red Amp (highlights NPCs) by default.  
+-Leaning speed now scales with the stealth skill on a per level basis.
+-Four new perks.
+-Further improvements to the armor system.
+-Lockpick and multitool "strength" values are set back closer to vanilla, except on hardcore mode. 
+-Thermoptic camo only enables you to pass through laser alarms undetected if you have the "Tech Specialist" perk.
+-The "Nimble" perk now makes climbing ladders silent, in addition to mantling.
+-The 'Neat Hack' perk grants +50% credits, as opposed to +20%.
+
+
+_BUG FIXES_
+-----------
+
+-Vanilla Bugfix: stacked items left in the armory upon capture by UNATCO are no longer duplicated when frobbed. 
+-Vanilla Bugfix: ensured an end-game scenario cannot be met at the Hong Kong Helibase event if Jock misses his shot at blowing up the door.
+-Vanilla Bugfix: finally got that darn new game inventory bug, including when travelling from the training maps to new game.  
+-Vanilla Bugfix: fixed the speed enhancement super jump exploit.
+-Vanilla Bugfix: you can now successfully throw objects while running forward (originally you'd run into the object as it is thrown, causing it to drop 
+straight to the floor).
+-Vanilla Bugfix: augmentations cannot be used while dead.
+-Vanilla Bugfix: Projectile-based weapon accuracy now matches the current crosshair representation closely.
+-Vanilla Bugfix: Fixed an edge case game breaking bug where sometimes Page would not spawn in the holoprojecter at vandenburg.  
+-Vanilla Bugfix: the assault gun's fire sound plays per bullet rather than playing a five round burst sound regardless of # of shots fired.
+-Vanilla Bugfix: Weapons dropped to the floor by NPCs give ammo, as opposed to none.
+-Vanilla Bugfix: When burnt to destruction, fire goes out as the object is destroyed, rather than 1 second before. 
+-Vanilla Bugfix: shooting unconscious NPCs, throwing them in water and so on kills them. 
+-Vanilla Bugfix: saving while crouched, then loading that save game doesn't force you to the standing position.
+-Vanilla Bugfix: when picking up objects under rare circumstances you are no longer forced to drop it.
+-Vanilla Bugfix: carried/throwable objects will no longer magically disappear from your hands when climbing ladders and under other rare circumstances.
+-Vanilla Bugfix: Added a successful (this time) fix to the amount of ammo Kaplan and Carter give you.
+-Vanilla Bugfix: Starting a new game after completing the training with items you found on the final test will no longer start you with those items.
+-Vanilla Bugfix: frobbing ATMs with 'interact' bound to a key no longer causes the key's character to be input to the ATM account.
+-Vanilla bugfix: various overlooked objects now have names, which will display when viewed with the targeting aug. 
+-Vanilla bugfix: Picking up incense burners puts out the smoke they emit.
+-Vanilla bugfix: Turrets ignore rats and flies
+-Vanilla bugfix: JC no longer plays a third person shoot anim if the player attempts to shoot while reloading
+-Vanilla bugfix: Player can't use augs when dead.
+-Vanilla bugfix: UNATCO troops ordered to kill you by Simons @NSF Warehouse should no longer attack the Medbot if drawn to that room.
+-Vanilla bugfix: the targeting aug uses familiar name for NPC name display, as opposed to bind name. Also displays the correct name for overlooked objects.
+-Vanilla bugfix: JC won't scream in pain if damage received is <= 0
+-Vanilla bugfix: Page is now invincible in the HongKong_MJ12 LAb
+-Vanilla bugfix: Drug/drunk visual effect is no longer preserved when exiting a level while high, then returning to the same level
+-Vanilla bugfix: 747 Hangar:  UNATCO Troop no longer has a chance of floating by being lifted into the air by the Plane loading ramp.
+-Vanilla bugfix: When told to "make a break for it" on the surface, Miguel will go and wait over by the chopper. Rescuing Miguel also rewards a small # of skill points.
+-Vanilla bugfix: Once the player blows up the generator, Jock is removed from the Underworld Tavern if you return to it (as he's supposed to be waiting in the chopper).
+-Vanilla Bugfix: the vision aug and tech goggles won't reveal NPCs that are hidden from the world, nor display duplicate "ghosts" when interacting with corpses.
+-Vanilla bugfix: throwing a grenade and then facing a wall doesn't override the grenade throw anim with the wall place one and result in all your grenades disappearing.
+-Vanilla bugfix: frobbing the reactor overload button A51 exploit fixed.
+-Vanilla Bugfix: Private Lloyd only spawns in-world after getting to the top of the statue. cant draw him out of UNATCO.
+-Vanilla bugfix: Enemies won't stupidly strafe out of sight all the time. 
+-Vanilla bugfix: Fixed lockers making explosion sounds in vandenberg
+-Vanilla Bugfix: PS20 and Plasma Rifle both now do damage to doors.
+-Vanilla bugfix: carrying barrels from map to map will retain their skin and potential explosive properties.
+-Vanilla bugfix: Nicolette should say the appropriate lines at the correct location, instead of talking about the garden when indoors etc.
+-Vanilla bugfix: Picking up incense burners puts out the smoke they emit.
+-Vanilla bugfix: vision augmentation doesn't display hidden actors
+-Cloak/Radar effect won't turn off when using both simultaneously, then only disabling one.
+-Hazmat should spawn properly from the box in Jacobson's cupboard, UNATCO first visit.
+-Picking up/dropping armors should be non-exploitable
+-The custom color theme should now work without flaw.
+-The "do not place" test box bug when interacting with corpses if you have the the interaction auto holster option enabled is now fixed.
+-Vanilla bugfix: throwing a grenade and then facing a wall doesn't override the grenade throw anim with the wall place one and result in all your grenades disappearing.
+-Fixed an ai cooldown issue affecting a bot activated via an alarm being triggered in the dockyard map.
+-Fixed a BSP error on the Brooklyn Bridge Station map. 
+-fixed a rare issue where pawns with the pistol would not immediately turn to face the target before shooting. 
+-JoJo now finds a path to the Rentons, and the UNATCO ambush event happens without error. 
+-The "Short Fuse" and "Combat Medic's Bag" perks now actually work properly.
+-The advanced security bot with cloaking now deactivates it upon returning to patrol (just like the humans with cloaking do post-GMDXv6.0), and can also be destroyed by the plasma rifle without error.
+-Fixed a bug leading to medbots and repairbots not recharging after two uses on lower difficulty modes.
+-Fixed occasional crashing when quickloading upon death.
+-Pepper spray and other gasses no longer trigger laser alarms, same as in vanilla.
+-Fixed a pathfinding error on the batterypark_02 map.
+-Cameras on higher difficulties that have tagged the player do not go into stasis until they've forgotten the player's existence.
+-Fragments no longer spawn splash effects when hitting water for performance reasons. 
+-The "Death Perspective" option no longer causes occasional crashing if set to First Person.
+-Throwing Knives assigned as a Secondary Weapon no longer can be thrown underwater.
+-Tear gas doesn't produce splashing effects when entering water.
+-Fixed bug where right clicking inventory icons while dragging another caused the dragged item to disappear.
+-Fixed a minor visual inconsistency on the Skills UI screen.
+-The New Dark Age ending works without using the glitch.
+-The 'Neat Hack' perk applies to credits frobbed from corpses.
+-Max Chen appears at the bar for drinks, and stays at the bar rather than returning to his desk.
+-Ensured the player cannot set all custom color theme colors black, as this will result in a broken menu. 
+-Used a superior method of playing a sound effect when a body hits the floor after being thrown. 
+-Amended a couple typos. 
+-Fixed a subtle visual anomaly with MJ12 Elite troops' helmets.
+-You no longer "auto-mantle" at the top of ladders if you press the jump key while on the ladder at any point.
+-Made some additional performance optimizations.
+
+
+_BALANCING & DIFFICULTY ADJUSTMENT_
+----------------------------------
+
+-Reduced Synthetic heart energy drain considerably and halved the light aug's drain.
+-Grenades are inaccurate on hardcore mode unless you have the respective skill.  
+-There was already more ammo available on the lower difficulty modes. Now even more is available.
+-Further additional handicap tweaks for lower difficulty modes.
+-You now cannot assign any melee weapon as a secondary weapon without the "inventive" perk.
+-Reduced the damage of the starting melee weapons.
+-Altered stamina drain values.
+-Toned down the ranges at which AI hear you smacking things (like crates) with melee weapons.
+-TNT crates are set back to their unstable, extremely dangerous former self.
+-Reduced the health of the minature spiderbot variant.
+-The Gep Gun's Lock-on timer is longer on hardcore mode.
+-The MJ12 ambush in Area51 now detects if the player has been ghosting/non-lethaling, and if so this ambush event does not happen.
+-Minicrossbow steel dart damage reduced by 4.
+-WP rocket damage more finely balanced.
+-Prod default clip size increased to 3.
+-Drowning damage now scales based on difficulty level.
+-Biocells are half as effective at recharging suits and armors.
+-Taser darts incapacitate enemies for half the duration the riot prod does.
+-Cameras have slightly less health (to increase the effectiveness of AP 10mm ammo and sabot primarily).
+-Mini crossbow darts hitting walls alerts guards at a more realistic range.
+-Added a couple extra assault gun clips in the interest of ammo balancing.
+-The large green metal shiiping crate can now be destroyed.
+-Enemy assault rifle ammo drops range from 1-5 bullets, with additional odds in your favor of a good drop.  
+-Nerfed the damage of rubber bullets & thrown inventory items, and improved rubber bullet behaviour.
+-Increased the plasma rifle's effectiveness VS bots.
+
+
+_SCRAPPED GMDX features_
+------------------------
+
+-Removed UMP, USP and Laser Rifle (to be available via optional add-on).
+-Removed 20mm EMP grenades.
+-NPCs are no longer scared or turn hostile when the player is running around with a crate of TNT.
+-Removed "drops of blood on your shades" effect. 
+-Removed plasma rifle gibbing.
+-Walker bots no longer use flamethrowers.
+-NPC Head decapitation is disabled as was originally intended (because it's incomplete).
+-Removed power-throwing of corpses
+
