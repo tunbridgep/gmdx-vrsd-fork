@@ -3844,6 +3844,13 @@ simulated function PlaySelectiveFiring()
 		       LoopAnim(anim,1 * mod, 0.1);
 		      //PlayAnim(anim,1 * mod, 0.1);
 		}
+        //Assault gun grenade launcher
+		else if (IsA('WeaponAssaultGun'))
+        {
+            //mod = 4.000000;
+			//PlayAnim(anim,1 * mod,0.1);
+            return;
+        }            
 		else if (bHandToHand && !IsA('WeaponHideAGun') && !IsA('WeaponLAW'))
 		{
 			if (hhspeed < 1.0)

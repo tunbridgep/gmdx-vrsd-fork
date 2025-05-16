@@ -1,0 +1,367 @@
+This is the GMDX v8.0 changelog ONLY. For the vast majority of features in GMDX see: http://genericname112.wix.com/gmdx 
+
+///////---------------------------------------------------------\\\\\\\
+
+                           MISCELLANEOUS
+
+\\\\\\\---------------------------------------------------------///////
+
+Secondary Weapons:
+
+-Assign secondary weapons of your choosing (such as grenades or throwing knives) which can be used without having to change your primary weapon.
+-Secondary weapon is assigned via the inventory and used via its own rebindable key. 
+
+Perk System:
+
+-Over 30 new empowering perks.
+-Features skill requirements; you must first upgrade the respective skill to the corresponding level to be able to purchase the perk.
+-Enables new features such as the ability to toggle grenades that explode on contact or timed, and the ability to hack security systems at range with multitools.
+-Click the "perks" button from the skills screen.
+-More choice, more depth. How will you build your character?
+
+Expanded Physics:
+
+-Pickups and decorative objects now move when taking damage, meaning explosions send objects flying, and hitting objects or shooting them 
+knocks them around.
+-Force is transferred when one object hits another.
+-AI are knocked back by high-powered weaponry.
+-Improved the microfibral muscle object power throw physics.
+-Pool ball and basketball physics improved, and various other physics tweaks.
+
+New Stamina system:
+
+-Stamina must be managed. Running out of stamina results in a penalty to movement & jump height for a short period of time. 
+-Various RPG upgrades increase total stamina and regeneration rate.
+-The stamina system has great impact on a number of systems and results in more tactical and in-depth gameplay.
+
+A vast wealth of new menu options. Here are some samples:
+
+Option 1: Create your own custom color themes for both the HUD and Menus.
+Option 2: Real Time UI: if enabled time is not paused while in the inventory/during UI navigation akin to System Shock & Ultima Underworld.
+Option 3: if enabled, player death event happens in first person perspective as opposed to third.
+Option 4: Toolbelt selection that functions similar to Deus Ex: Invisible War.
+Option 5: if enabled, your currently held weapon automatically holsters weapons when attempting to pick up carryable decoration.
+Opyion 6: toggle hitmarker on/off. The hitmarker indicates that you hit the target. 
+
+----
+
+Misc Other:
+
+-When dragging & dropping in the inventory, two items of the same size can swap positions.
+-Improved & polished the mantling system considerably.
+-Difficulty level options have been expanded upon considerably: AI stealth & combat behaviour, environmental hazards, turret/camera range &
+much more is now influenced by difficulty level, whereas originally only bullet damage the player recieved was influenced. 
+-The conditions for dropping & throwing inventory items are far more lenient. You'll see a "you cannot drop this here" message much less often. 
+-You can now destroy control panels as an alternative to hacking them. However, they have a very high damage threshold.
+-Once a fire extinguisher has been used up instead of disappearing it is thrown to the ground and can be picked up and thrown around if desired.
+-Changed some font styles to be less ugly.
+-Added new hacking software inspired by Deus Ex: Human Revolution that lets you temporarily pause the hacking bar or bypass skill requirements.
+-Candy Bars heal 3 points of bioenergy. This is to create deeper choice over what food to eat now that there is a drink/eat appetite limit.  
+-Improvements to the fragility of fragile objects such as being broken when stepped on or having another object dropped on top.
+-Cigarette & vending machines display how many credits are required.
+-Added more new interactive decorations.
+-Made further useful tweaks to the toolbelt.
+-Refined player death event further. 
+-Occasionally when recieving skill points your total number of skill points will also be displayed. 
+-Player no longer screams in pain when in halon gas (from Fire Extinguisher).
+-added randomized tips that appear in the GMDX options menu.
+-Flares stay ignited when tossed in water, last twice as long, emit high-res smoke, and leave behind the empty shell when used as opposed to disappearing.
+-Pickups such as wine bottles break when thrown against walls.
+-Many, MANY more realism detail tweaks like the above.
+
+
+///////---------------------------------------------------------\\\\\\\
+
+                     ARTIFICIAL INTELLIGENCE
+
+\\\\\\\---------------------------------------------------------///////
+
+-Military-trained NPCs sometimes throw flares to illuminate the area when they suspect the player is hiding in darkness (can be turned off via options). 
+-Military-trained NPCs can now competently throw grenades, and do so more frequently.
+-In combat, enemies do not *ALWAYS* rush your position when they lose line of sight and are in close proximity, but instead hold back & wait for you to make the first move.
+-MJ12 commandos & military NPCs have a new melee attack.
+-AI in the seeking state (such as seeking the source of a sound) continue seeking post-opening a door (originally they would open the door, then give up, no exceptions).
+-Greasels now agressively jump at you if in close proximity and attempt a poisonous bite.
+-Enemies' helmets now play their role: Helmets can either deflect bullets, shatter or be shot off the heads of enemies. 
+-If an alarm is sounded enemy backup is called in (in high security areas only).
+-NPCs check for alarms over a greater distance.
+-Snipers take their time to aim at the target on lower difficulty levels.
+-Added two new variations of reaction to sound-based disturbances.
+-Robots no longer open doors, but instead ram right through them.
+-If chasing the player, doberman bark a ton and alert nearby enemies. Doberman also have a new sighting sound, new variation of attack sound and run & attack 
+faster. Doberman also now have a charging attack which doesn't rely on the game's dodgy AI melee system. 
+-All AI that use projectile weapons (rockets, Greasel spit, crossbow etc) have an element of randomization to whether or not they will 
+use target leading to predict your future position when moving. 
+-Improved the conditions surrounding AI reacting to theft, as well as other reactions.
+-AI bark a little less frequently to cut down on bark spam. 
+-Blowing up NPCs doesn't destroy their inventories (Credit: Yuki of Shifter).
+-Increased the range at which AI can use the flamethrower.
+-If the player/enemy is hiding behind objects, AI will attempt to shoot through the vast majority.
+-If a military bot stomps over a corpse the corpse will gib.
+-AI behaviour now scales extensively based on difficulty level, including the behaviour of security systems.
+-Improved various Karkian stats but lowered health.
+-Shooting robots with high-damaging or armor-piercing weaponry tears their armor off. 
+-Yet more appropriate variation in pain, death and knockout sounds.
+-The late game MJ12 Elite class are immune to tear gas as a result of their facial protection.
+-Improved the various "bossfights" of the game.
+-Men In Black Mk.II have a number of improvements, such as a new augmentation.
+-Improved the new AI camping system implemented in earlier versions.
+-AI burn faster/dont run around on fire for too long.
+-Cameras now only detect corpses in hardcore mode, unless you enable the option that can be found in the AI options menu.
+-Grays are no longer immune to the plasma rifle, don't flinch quite so frequently, and have an improved projectile attack.
+
+----
+
+AI bugixes:
+
+-Security cameras now no longer detect the player if he is using thermoptic camo.
+-AI no longer consider small objects on the floor something to be navigated around (pathfinding improvement).
+-AI no longer set off their own blue beam triggers (in addition to laser alarm triggers implemented in an earlier version).
+-NPC melee attacks are cancelled out if a pain animation or death animation interrupts the attack. 
+
+
+///////---------------------------------------------------------\\\\\\\
+
+                              WEAPONRY
+
+\\\\\\\---------------------------------------------------------///////
+
+-Added weapon sway animation when running.
+-When aiming through a scope the view is twice as big.
+-You can Zoom in/out when aiming through a scope using next/prev weapon (default: mouse wheel). 
+-Added new "scope-in" animation for weapons with scopes.
+-You can now carry multiple PS20s.
+-In an attempt to balance melee weapons better, each melee weapon has more unique properties.
+-Weapons that fire multiple projectiles no longer display the damage value of all projectiles multiplied, but rather the value of a single projectile.
+-Throwing knives now bounce off of objects that they cannot stick into, and can then be retrieved. 
+-Yet more weapon bugfixes (see bugs category).
+-The dynamic crosshairs (that represent accuracy) now draw for the throwing knives.
+-Some weapons have greater or lesser headshot multipliers.
+-Increased the base firing rate of numerous weapons.
+-Paul weapon choices: if you choose the mini crossbow, you are also given some normal & flare darts too. The rifle comes with one accuracy mod pre-installed.
+-Refined the GEP gun remote controlled rockets behaviour.
+-Nerfed rubber bullet damage.
+-Reduced Taser dart ammo pickup count per pickup by 1 for all difficulty modes.
+-[Insert a hell of a lot more pedantic weapon tweaking & polishing here].
+
+----
+
+Improved Shotguns:
+
+-Shells must be loaded one at a time. You can cancel loading shells at any time by pressing 'fire/shoot'.
+-The Sawed-off shotgun now ejects shell casings when you cock the pump, not immediately upon firing.  
+-Ejected shotgun shells also look different based on ammo type.
+-The sawed-off shotgun has a headshot multiplier of 9 to give it another edge over the previously superior assault shotgun.
+-Improved shotgun muzzle flash, added subtle camera effects and various other improvements. Also nerfed rubber bullet damage.
+
+----
+
+Recoil system further improved: 
+ 
+-Recoil also now affects yaw rotation (so rather than kicking straight up you get a bit of side-to-side kick too).
+-Once the initial recoil has kicked, view rotates back downwards somewhat.
+-recoil duration is no longer determined by firing animation length. 
+-View interpolation is much faster.
+
+----
+
+Inventory Weapon Information (the in-game window that shows weapon stats etc):
+
+-Weapons that fire multiple projectiles no longer display the damage value of all projectiles multiplied, but rather the value of a single 
+projectile.
+-Max ammo carry capacity is now displayed (example: 10mm rounds: 10/128).
+-Displays new information such as noise level (how loud the weapon is when firing), lethality (lethal or non-lethal), headshot damage multiplier & whether a 
+weapon is semi-automatic or fully-automatic.
+-Refined some other information for clarity.
+-See more immediately below.
+
+----
+
+Further Weapon modding system expansions:
+
+-Added a "Installed Modifications" display to inventory weapon information. This shows all the weapon mods you have installed with clarity.
+-New weapon mod types: damage & fully-automatic firing modes.
+-Also updated and improved general weapon information info.
+-Installing weapon mods produces various different sounds based on type.
+-More weapons accept more types of mods.
+
+
+///////---------------------------------------------------------\\\\\\\
+
+                           AUDIO
+
+\\\\\\\---------------------------------------------------------///////
+ 
+-The HUD alerts you audibly when bioenergy is running low.
+-Most weapons now have a middle reload sound, when previously they only had reload begin and reload end.
+-New ambient sounds added to maps.
+-New sounds that replace old, low quality ones.
+-Added various new sounds when landing onto surfaces from height, based on surface texture (wood, metal etc).
+-New sounds when in and floating on the surface of water.
+-Frobbing locked doors plays a door locked sound based on material type.
+-Added sounds for eating candy bars and drinking alcohol when previously there was none.
+-New "break legs" sound when falling from great height.
+-various new sounds for installing weapon mods.
+-A number of new sounds for UI interaction.
+-New sounds for installing & upgrading augmentations.
+-More new pain and death sounds for NPCs.
+-Added a new death sound exclusive to headshots by bullets.
+-Robots exploding can be heard to a realistic range, and other such realism tweaks.
+-A 'item recieved' sound plays when an NPC gives you items.
+-The pistol now has a reloadEnd sound when previously it had none.
+
+
+///////---------------------------------------------------------\\\\\\\
+
+                           AUGMENTATIONS
+
+\\\\\\\---------------------------------------------------------///////
+
+
+-The passive ballistic protection aug now drains energy by 1/8th of ballistic damage recieved.
+-The light aug can now be upgraded. Doing so doubles light radius and halves energy drain.
+-silent running now also reduces falling damage (as in Deus Ex: Invisible War) to balance it VS speed enhancement.
+-Lvl 4 of the Microfibral muscle aug renders you immune to dropping held objects when shot.
+-Radar Transparency now has a resonating visual effect when active.   
+-Improved cloaking activation effect.
+-The combat speed aug now increases draw/holster speeds of all inventory items, not just weapons.
+-Rebalanced various energy drain rates.
+-Updated various aug descriptions for clarity.
+-Augmentations also have improved audio design, and cannot be turned on momentarily if the player has no bioelectric energy.
+
+----
+
+The IFF augmentation can now be upgraded:
+
+Level 1: IFF (default friend or foe recognition).
+Level 2: the dynamic crosshairs representing accuracy are always displayed if a weapon is readied.
+Level 3: Environmental Hazards are detected by the HUD and their lethality and damage type is displayed. Player light level is also displayed in the HUD which 
+represents how visible you are to enemies. 
+
+Spy drone:
+
+-The Spy Drone now has cloaking (AI never reacted to the spy drone, so this gives good reasoning as to why).
+-Use mouse right click to emit noise from the drone and distract enemies from their patrols.
+
+
+///////---------------------------------------------------------\\\\\\\
+
+                             SKILLS
+
+\\\\\\\---------------------------------------------------------///////
+
+-Tweaked skill costs as a result of the introduction of the perk system.
+-Hacking now features skill requirements: some computers require advanced or master hacking skill level to be able to hack.
+-Stealth skill now also increases movement speed whilst walking and crouched, as well as lean speed.
+-Rebreathers now gradually restore breath over time as opposed to refilling your breath instantly and keeping it full, and do not last as long. 
+Also placed a couple rebreathers back in the game world.
+-Improved the effectiveness of the Stealth Skill's ability to reduce sound when landing from height.
+-The player is now only visible to NPCs whilst hacking if the real-time UI option is enabled, or playing in hardcore mode.
+
+----
+
+New Armor System:
+
+-Ballistic Vests and Hazmat suits only degrade with sustained damage, like real world armor. Tech Goggles, Rebreathers and Thermoptic Camos 
+remain time-based. 
+-Armor can be toggled on/off.
+-You cannot wear more than one armor type at a time per body part.
+-Biocells can be used to recharge armor via dragging and dropping in the inventory.
+
+
+///////---------------------------------------------------------\\\\\\\
+
+                         GRAPHICS & EFFECTS
+
+\\\\\\\---------------------------------------------------------///////
+
+-Various visual effects and levels updated with higher-res textures.
+-Thermoptic camo provides a visual cloaking effect when active.
+-Updated flamethrower effects.
+-Shooting water results in a splash effect.
+-When objects break, the spawned fragments fly faster based on damage dealt to the object.
+-Shooting wooden geometry causes wood chippings to fly off. 
+-Weapons use tracer rounds/emit a tracer effect, just like the enemies' weapons.
+-Altered drug/poison effects (such as when hit by a tranquilizer dart): FOV isn't lowered and held weapons do not disappear.
+-Various new effects when shooting bots with different ammo types.
+-Improved enemy cloak activation effect. 
+-Added animated effect to the bioelectricity bar in the HUD. 
+-Various decal effects improved and added.
+-Cardboard boxes sometimes spill polystyrene when broken.
+-Fragments spawned from decorative objects (when hit) now spawn from hit location. 
+-Fragments spawned from decorative objects (when hit or destroyed) now use the object texture as opposed to a generic universal one. 
+-Crossbow Dart effect can be seen when fired by enemies too, making them easier to dodge.
+-Added glass crack decal when attacking glass with melee weapons or guns.
+-Improved fire extinguisher spray effect.
+-More explosion effect refinements.
+-Improved heavy EMP damage effect.
+-Updated various smoke effects.
+-Improved the muzzle flash effects of both shotguns.
+-Added new effects for when landing into water from height.
+-New camera effect when throwing heavy objects and hitting with melee weapons.
+-Destroying plant pots causes proportionate dirt to spill. 
+-New electro-shock effect when zapped by spiderbots. Only happens if shocked in the head.
+-Improved EMP grenade explosion effects.
+-Refined simulated camera effects (when shooting, flinching, landing from height etc).
+
+----
+
+Further expanded gore (all can be disabled via in-game options):
+
+-Added head decapitation to high-damaging weapons. 
+-Improved the blood spurt effect when player and enemies are shot.
+-Added new blood splat effect if a pint of blood goes in your face. 
+-Improved effects when attacking & destroying carcasses.
+-Visual improvements to plasma gibs.
+
+///////---------------------------------------------------------\\\\\\\
+
+                           LEVEL DESIGN
+
+\\\\\\\---------------------------------------------------------///////
+
+
+All the maps have recieved a lot of attention as always. Expect greater interactivity, polish, balance of paths, visual splendor and so on. 
+The level design work of GMDX focuses on improving the experience in every respect whilst remaining very faithful to the original design direction of Deus Ex. 
+
+
+
+///////---------------------------------------------------------\\\\\\\
+
+                        BUGS & INCONSISTENCIES
+
+\\\\\\\---------------------------------------------------------///////
+
+-fixed bug where accessing menus whilst zoomed in with scope would change default FOV (vanilla bugfix).
+-You cannot reload when you have only 1 clip loaded and no ammo to spare (vanilla bugfix).
+-You cannot shoot when dying. (vanilla bugfix).
+-Fixed the flamethrower fire sound not playing under certain conditions (Vanilla bugfix).
+-Turret Rotation is optimal (Vanilla bugfix).
+-Holograms no longer run away from projectiles. (Vanilla bugfix).
+-The spy drone can no longer be used as a parachute by activating it in mid-air (vanilla bugfix).
+-Hipfiring with the sniper rifle is now unreliable unless you mod it and/or are skilled in rifles (vanila bugfix).
+-Grenades no longer explode upon contact with a corpse or item (Vanilla bugfix).
+-Fixed MJ12 Lab inventory exploit (vanilla bugfix).
+-Made darn sure the Castle Clinton non-lethal quest bug is fixed (vanilla bugfix).
+-Dying then starting a new game before reverting to the main menu doesn't screw up your inventory (Vanilla bugfix).
+-When bioenergy is depleted augmentations cannot be activated for a split second of time (Vanilla bugfix).
+-The "I SPILL MY DRINK!" speech sound test doesn't play upon initilization of the window, only when changing the slider value. (Vanilla bugfix).
+-When the player is offered the option to arm an NPC, the player will not opt to hand over modified weaponry (that you cannot get back) but instead any other 
+possible unmodified weapons (vanilla bugfix).
+-Certain NPCs when giving ammo to the player no longer give rediculous amounts (vanilla bugfix).
+-Alarm Units no longer turn 100% black when triggered (HDTP Bugfix).
+-Flares no longer ignite when thrown at NPCs. (GMDX bugfix). 
+-Fixed Heavy weapon inventory size reduction quirk where the weapon's size was not reduced until they were in your inventory first. (GMDX bugfix)
+-Fixed a number of bugs related to the synthetic heart. (GMDX) 
+-AI no longer get angered if they witness you kill a rat (GMDX).
+-Removed the ability to drop inventory items by dragging them out of the inventory as it was unstable (GMDX).
+-The pre-placed LAMs on the training level are more lenient than in the actual game (GMDX).
+-Fixed a bug where the sawed-off shotgun could have infinite ammo when switching between rubber bullets and sabot/buckshot (GMDX).
+-In v7 death sounds were prevented from playing when an NPC is blown up. Instead pain sounds decided to play in place of them, and this is now fixed.
+-Fixed a bug where the radar Transparency aug only let you pass through laser beams at aug lvl 1. (GMDX).
+-Fixed stealth pistol rate of fire issues. (GMDX)
+-Smoking fragments get doused out if in water. (GMDX)
+-Refined gore behaviour - gore only sticks to the ceiling and walls, never the floor. (GMDX)
+-Fixed a bug that prevented the new lvl 4 energy shield visual effect from displaying when taking energy damage (GMDX).
+-Fixed an issue where rubber bullets would sometimes go into a bouncing frenzy. (GMDX)
+-Made some additional performance optimizations.
