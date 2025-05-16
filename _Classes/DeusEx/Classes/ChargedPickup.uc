@@ -306,10 +306,12 @@ state DeActivated
 
 	function BeginState()
     {
-        bDrained = false;
         UpdateBeltText();
         if (Charge > 0)
+        {
+            bDrained = false;
             UnDimIcon();
+        }
     }
 }
 
