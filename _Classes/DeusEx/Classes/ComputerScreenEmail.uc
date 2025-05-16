@@ -224,12 +224,16 @@ function SetCompOwner(ElectronicDevices newCompOwner)
 		// Select the first row
 		rowId = lstEmail.IndexToRowId(0);
 		lstEmail.SetRow(rowId, True);
+        if (btnSaveEmail != None)
+            btnSaveEmail.SetSensitivity(True);
 	}
 	else
 	{
 		// No Email, so just print a "No Email Today!" message
 		winEmail.SetText(NoEmailTodayText);
 		winEmail.SetTextAlignments(HALIGN_Center, VALIGN_Center);
+        if (btnSaveEmail != None)
+            btnSaveEmail.SetSensitivity(false);
 	}
 }
 
