@@ -45,7 +45,6 @@ var transient bool bDblClickStart;
 var transient float DblClickTimeout;
 var bool            bPop;
 var bool            bNotFirstFall;
-var int             passedImpaleCount;
 var bool            passedSkins;
 
 //RSD
@@ -95,9 +94,6 @@ var bool bNoDefaultPools;        //SARGE: If set, don't make pools at all, unles
 
 var sound LootPickupSound;            //SARGE: Sound played if we pick up anything from this corpse.
 
-//SARGE: Since now enemies can have knives independently of impales, we need to track if impales are done.
-var int impalesProcessed;
-
 // ----------------------------------------------------------------------
 // ShouldCreate()
 // If this returns FALSE, the object will be deleted on it's first tick
@@ -119,7 +115,10 @@ function bool ShouldCreate(DeusExPlayer player)
 
 static function bool IsHDTP()
 {
-    return class'DeusExPlayer'.static.IsHDTPInstalled() && default.hdtpReference.default.iHDTPModelToggle > 0;
+    if (default.hdtpReference != None)
+        return class'DeusExPlayer'.static.IsHDTPInstalled() && default.hdtpReference.default.iHDTPModelToggle > 0;
+    else
+        return false;
 }
 
 exec function UpdateHDTPsettings()
@@ -422,7 +421,7 @@ function PostBeginPlay()
 	{
 		Mesh = Mesh3;
         if (!IsA('ScubaDiverCarcass') && !IsA('KarkianCarcass') && !IsA('KarkianBabyCarcass') && !IsA('GreaselCarcass')) //SARGE: Added aquatic animals.
-            KillUnconscious(); //You will die in water every time.
+            bNotDead = False;		// you will die in water every time
         assignedMesh = 3;
 	}
 
@@ -843,7 +842,7 @@ function ExpelInventory()
                 {
                     loc.X = (1-2*FRand()) * CollisionRadius;
                     loc.Y = (1-2*FRand()) * CollisionRadius;
-                    loc.Z = CollisionHeight + 4 + (FRand() * 4); //CyberP: stop things spawning under the floor.
+                    loc.Z = CollisionHeight + 8 + (FRand() * 4); //CyberP: stop things spawning under the floor.
                     loc += Location;
                 }
                 until (class'SpawnUtils'.static.CheckDropFrom(item,loc));
@@ -854,7 +853,7 @@ function ExpelInventory()
                     // unless it's a grenade, in which case we only want to dole out one.
                     // DEUS_EX AMSD In multiplayer, give everything away.
                     if (PickupAmmoCount > 0 && !bSearched)
-                        DeusExWeapon(item).SetDroppedAmmoCount(PickupAmmoCount, passedImpaleCount);//RSD: Added PickupAmmoCount for initialization from MissionScript.uc
+                        DeusExWeapon(item).SetDroppedAmmoCount(PickupAmmoCount);//RSD: Added PickupAmmoCount for initialization from MissionScript.uc
                 }
             }
 
@@ -927,7 +926,6 @@ function PickupCorpse(DeusExPlayer player)
             corpse.Inv=Inventory; //GMDX:dbl click
             corpse.bSearched = bSearched;
             corpse.PickupAmmoCount = PickupAmmoCount;
-            corpse.passedImpaleCount = passedImpaleCount;
             corpse.savedName = savedName;
             corpse.bFirstBloodPool = bFirstBloodPool; //SARGE: Remember if we've made a blood pool.
             corpse.bNoDefaultPools = bNoDefaultPools; //SARGE: Remember if we should be making pools or not.
@@ -965,6 +963,8 @@ function Frob(Actor Frobber, Inventory frobWith)
     local bool bDeclined;
     local bool bLootResult;
     local bool bProcessedImpale;
+    local Inventory badItems[10];                                                   //SARGE: Keep a list of the declined or ignored items, so that we can add it to the display window.
+    local int badItemCount;
 
 	// Can we assume only the *PLAYER* would actually be frobbing carci?
 	player = DeusExPlayer(Frobber);
@@ -1047,6 +1047,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                     }
                     bDeclined=True;
                     bFoundInvalid=True;
+                    badItems[badItemCount++] = item;
                 }
 				else if (item != none && (item.IsA('Ammo') || (item.IsA('WeaponSpiderBotConstructor')) || (item.IsA('WeaponAssaultGunSpider')))) //CyberP: new type weapons exclusive to pawns //RSD: Failsafe
 				{
@@ -1069,8 +1070,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 
                     if (!bSearched)     //Sarge: Attempted fix for ammo dupe bug
                     {
-                        W.SetDroppedAmmoCount(PickupAmmoCount,passedImpaleCount);
-                        PickupAmmoCount = 0; //SARGE: WTF, why does this work??
+                        W.SetDroppedAmmoCount(PickupAmmoCount);
                     }
                 }
 
@@ -1132,14 +1132,13 @@ function Frob(Actor Frobber, Inventory frobWith)
 						// the weapon).
 						else if ((W != None) || (W == None && (bDeclined||!player.FindInventorySlot(item, True))))
 						{
-
-                            bLootResult = LootWeaponAmmo(DeusExPlayer(P),DeusExWeapon(item),!bSearched);
+                            bLootResult = DeusExWeapon(item).LootAmmo(DeusExPlayer(P),true,true,false,false,!bSearched && W != None);
                             bFoundSomething = bFoundSomething || bLootResult;
                             bFoundInvalid = bFoundInvalid || PickupAmmoCount > 0;
                             bPickedSomethingUp = bPickedSomethingUp || bLootResult;
 
-                            if (item.IsA('WeaponShuriken') && bLootResult)
-                                impalesProcessed++;
+                            if (bLootResult && item.IsA('WeaponShuriken') && WeaponShuriken(item).bImpaled)
+                                LootPickupSound = Sound'DeusExSounds.Generic.FleshHit1';
 
                             //Destroy disposable weapons after taking their ammo.
                             if (DeusExWeapon(item).bDisposableWeapon && Weapon(item).PickupAmmoCount <= 0)
@@ -1172,6 +1171,8 @@ function Frob(Actor Frobber, Inventory frobWith)
                                         if (!W.bDisposableWeapon)
                                             P.ClientMessage(item.PickupMessage @ item.itemArticle @ Item.itemName @ IgnoredString);
                                     }
+                                    if (!bDeclined) //SARGE: declined items are already added.
+                                        badItems[badItemCount++] = item;
                                     bFoundInvalid = true;
                                 }
                                 bPickedItemUp = True;
@@ -1191,7 +1192,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 							bPickedItemUp = True;
 					}
 
-					if (!bPickedItemUp && item != None)
+                    if (!bPickedItemUp && item != None)
 					{
 						// Special case if this is a DeusExPickup(), it can have multiple copies
 						// and the player already has it.
@@ -1256,8 +1257,10 @@ function Frob(Actor Frobber, Inventory frobWith)
                                 //SARGE: Inform us if our inventory is too full (max stack) to pick these items up.
 								else if (DeusExPickup(item).numCopies + invItem.numCopies >= invItem.RetMaxCopies())  //GMDX
                                 {
-                                    player.ClientMessage(invItem.PickupMessage @ invItem.itemArticle @ invItem.itemName @ msgTooMany, 'Pickup');
+                                    if (!bSearched)
+                                        player.ClientMessage(invItem.PickupMessage @ invItem.itemArticle @ invItem.itemName @ msgTooMany, 'Pickup');
                                     bFoundSomething = True;
+                                    badItems[badItemCount++] = item;
 
                                 }
 								else
@@ -1316,22 +1319,21 @@ function Frob(Actor Frobber, Inventory frobWith)
                                         //PlaySound(Item.PickupSound);
                                             
                                         bPickedSomethingUp = True;
-
-                                        if (item.IsA('WeaponShuriken'))
-                                            impalesProcessed++;
                                         
                                         if (!item.IsA('DeusExWeapon') || !DeusExWeapon(item).bDisposableWeapon)
-                                        // Show the item received in the ReceivedItems window and also
+                                        // Show the item received in the ReceivedItems window
                                         {
 
                                             AddReceivedItem(player, item, 1);
                                             P.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
                                         }
-                                        else if (passedImpaleCount > 0 && item.IsA('WeaponShuriken'))
+                                        else if (item.IsA('WeaponShuriken') && WeaponShuriken(item).bImpaled)
                                             LootPickupSound = Sound'DeusExSounds.Generic.FleshHit1';
 
                                         item.SpawnCopy(P);
                                     }
+                                    else
+                                        badItems[badItemCount++] = item;
                                 }
 							}
 							else
@@ -1350,6 +1352,15 @@ function Frob(Actor Frobber, Inventory frobWith)
 			}
 			until ((item == None) || (item == startItem));
 		}
+
+        //SARGE: Display our bad items at the end of the list
+        if (!bSearched && player.bShowDeclinedInReceivedWindow && badItemCount > 0)
+        {
+            for (i = 0;i < badItemCount;i++)
+            {
+                AddReceivedItem(player, badItems[i], 1, false, true);
+            }
+        }
 
 //GMDX:
 	}
@@ -1412,6 +1423,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 	}
 }
 
+/*
 //Plays the "splat" sound when we loot throwing knives from enemies.
 function bool LootWeaponAmmo(DeusExPlayer P, DeusExWeapon item, optional bool bShowOverflow)
 {
@@ -1441,6 +1453,7 @@ function bool LootWeaponAmmo(DeusExPlayer P, DeusExWeapon item, optional bool bS
 
     return false;
 }
+*/
 
 // ----------------------------------------------------------------------
 // AddSearchedString()
@@ -1458,7 +1471,7 @@ function AddSearchedString(DeusExPlayer player)
 // AddReceivedItem()
 // ----------------------------------------------------------------------
 
-function AddReceivedItem(DeusExPlayer player, Inventory item, int count, optional bool bNoGroup)
+function AddReceivedItem(DeusExPlayer player, Inventory item, int count, optional bool bNoGroup, optional bool bDeclined)
 {
     /*
     //SARGE: TODO: This needs to be split out into a separate function, because now we can display
@@ -1470,7 +1483,7 @@ function AddReceivedItem(DeusExPlayer player, Inventory item, int count, optiona
 	}
     */
 
-    player.AddReceivedItem(item,count,bNoGroup);
+    player.AddReceivedItem(item,count,bNoGroup,bDeclined);
 }
 
 //-----------------------------------------------------------------------

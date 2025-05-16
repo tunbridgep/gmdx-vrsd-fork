@@ -229,8 +229,11 @@ auto state Off
 Begin:
 	if (bOn)
 	{
-      AdditionalDeactivation(curFrobber);
-        curFrobber.bUsingComputer = false;
+        if (curFrobber != None)
+        {
+            AdditionalDeactivation(curFrobber);
+            curFrobber.bUsingComputer = false;
+        }
 		ChangePlayerVisibility(True);
 		bAnimating = True;
 		PlayAnim('Deactivate');
@@ -243,7 +246,7 @@ Begin:
 		// Resume any datalinks that may have started while we were
 		// in the computers (don't want them to start until we pop back out)
 		ResumeDataLinks();
-      curFrobber = None;
+        curFrobber = None;
 	}
 }
 

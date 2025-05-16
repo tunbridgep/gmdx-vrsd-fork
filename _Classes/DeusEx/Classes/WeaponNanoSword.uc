@@ -107,6 +107,7 @@ function Fire(float Value)
 {
     if (chargeManager != None && chargeManager.IsUsedUp())
     {
+        GotoState('Idle');  //SARGE: Needed to not break weapons
         return;
     }
 

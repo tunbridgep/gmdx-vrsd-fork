@@ -97,6 +97,62 @@ function Color GetDialogHighlightColor(bool active)
         return colConTextSpeaker;
 }
 
+// ----------------------------------------------------------------------
+// UpdateCustomTheme()
+// SARGE: Added this function here, instead of doing it all over the codebase.
+// ----------------------------------------------------------------------
+
+function UpdateCustomTheme()
+{
+    local DeusExPlayer player;
+    
+    player = DeusExPlayer(GetPlayerPawn());
+
+    if (player == None)
+        return;
+    
+    //CyberP: hacky failsafe checks to make sure that colors do not ALL go completely black (players cannot navigate if everything is black).
+    if (player.customColorsMenu[4].R <= 5 && player.customColorsMenu[4].G <= 5 && player.customColorsMenu[4].B <= 5)
+        player.customColorsMenu[4].R = 255;
+    if (player.customColorsMenu[12].R <= 3 && player.customColorsMenu[12].G <= 3 && player.customColorsMenu[12].B <= 3)
+        player.customColorsMenu[12].R = 255;
+
+    if (currentHUDTheme.GetThemeName() == "CustomHUD")
+    {
+	    currentHUDTheme.colors[0] = player.customColorsHUD[0];
+	    currentHUDTheme.colors[1] = player.customColorsHUD[1];
+	    currentHUDTheme.colors[2] = player.customColorsHUD[2];
+	    currentHUDTheme.colors[3] = player.customColorsHUD[3];
+	    currentHUDTheme.colors[4] = player.customColorsHUD[4];
+	    currentHUDTheme.colors[5] = player.customColorsHUD[5];
+	    currentHUDTheme.colors[6] = player.customColorsHUD[6];
+	    currentHUDTheme.colors[7] = player.customColorsHUD[7];
+	    currentHUDTheme.colors[8] = player.customColorsHUD[8];
+	    currentHUDTheme.colors[9] = player.customColorsHUD[9];
+	    currentHUDTheme.colors[10] = player.customColorsHUD[10];
+	    currentHUDTheme.colors[11] = player.customColorsHUD[11];
+	    currentHUDTheme.colors[12] = player.customColorsHUD[12];
+	    currentHUDTheme.colors[13] = player.customColorsHUD[13];
+    }
+
+    if (currentMenuTheme.GetThemeName() == "CustomMenu")
+    {
+        currentMenuTheme.colors[0] = player.customColorsMenu[0];
+	    currentMenuTheme.colors[1] = player.customColorsMenu[1];
+		currentMenuTheme.colors[2] = player.customColorsMenu[2];
+	    currentMenuTheme.colors[3] = player.customColorsMenu[3];
+		currentMenuTheme.colors[4] = player.customColorsMenu[4];
+		currentMenuTheme.colors[5] = player.customColorsMenu[5];
+		currentMenuTheme.colors[6] = player.customColorsMenu[6];
+		currentMenuTheme.colors[7] = player.customColorsMenu[7];
+		currentMenuTheme.colors[8] = player.customColorsMenu[8];
+		currentMenuTheme.colors[9] = player.customColorsMenu[9];
+		currentMenuTheme.colors[10] = player.customColorsMenu[10];
+		currentMenuTheme.colors[11] = player.customColorsMenu[11];
+		currentMenuTheme.colors[12] = player.customColorsMenu[12];
+		currentMenuTheme.colors[13] = player.customColorsMenu[13];
+    }
+}
 
 // ----------------------------------------------------------------------
 // SetCurrentHUDColorTheme()
@@ -319,6 +375,8 @@ simulated function ColorTheme SetHUDThemeByName(String themeName)
 {
 	local ColorTheme theme;
 	local ColorTheme firstHUDTheme;
+    
+    UpdateCustomTheme();
 
 	theme = FirstColorTheme;
 
@@ -350,6 +408,8 @@ simulated function ColorTheme SetMenuThemeByName(String themeName)
 {
 	local ColorTheme theme;
 	local ColorTheme firstMenuTheme;
+
+    UpdateCustomTheme();
 
 	theme = FirstColorTheme;
 

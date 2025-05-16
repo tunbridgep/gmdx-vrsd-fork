@@ -38,7 +38,7 @@ function CreateControls()
 	Super.CreateControls();
 
 	btnWithdraw = winButtonBar.AddButton(ButtonLabelWithdraw, HALIGN_Right);
-	if (Player.SkillSystem.GetSkillLevel(class'SkillComputer') >= 3 || winTerm.GetUserIndex() != -1) //SARGE: Also show Withdraw All if we log into the ATM without hacking it.
+	if ((Player != None && Player.SkillSystem != None && Player.SkillSystem.GetSkillLevel(class'SkillComputer') >= 3) || (winTerm != None && winTerm.GetUserIndex() != -1)) //SARGE: Also show Withdraw All if we log into the ATM without hacking it.
 	   btnWithdrawAll = winButtonBar.AddButton(ButtonLabelWithdrawAll, HALIGN_Right);
 	btnClose    = winButtonBar.AddButton(ButtonLabelClose,  HALIGN_Right);
 

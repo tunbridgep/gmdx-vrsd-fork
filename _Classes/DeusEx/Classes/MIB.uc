@@ -122,6 +122,7 @@ function Carcass SpawnCarcass()
 	if (bStunned)
 		return Super.SpawnCarcass();
 
+    ExpelInventory();
 	Explode();
 
 	return None;

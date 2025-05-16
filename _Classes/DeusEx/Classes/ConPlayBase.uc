@@ -594,6 +594,8 @@ function EEventAction SetupEventTransferObject( ConEventTransferObject event, ou
     local AmmoDart AD;
     local AmmoDartFlare ADF;
     local WeaponMod wepMod;                                                     //RSD: For Smuggler convo
+    local DeusExWeapon wpn;                                                     //SARGE: For displaying weapon ammo.
+    local int addAmmo;                                                          //SARGE: For displaying weapon ammo + additional ammo given during convo at the same time.
 /*
 log("SetupEventTransferObject()------------------------------------------");
 log("  event = " $ event);
@@ -646,6 +648,14 @@ log("  event.toActor    = " $ event.toActor );
 		invItemFrom = Spawn(event.giveObject);
 		bSpawnedItem = True;
 	}
+    
+    // SARGE: If we gave away a disposable weapon, also take it's ammo.
+    if (invItemFrom != none && event.fromActor.IsA('DeusExPlayer') && invItemFrom.IsA('DeusExWeapon'))
+    {
+        wpn = DeusExWeapon(invItemFrom);
+        if (wpn != None && wpn.bDisposableWeapon && wpn.AmmoType != None && !wpn.AmmoType.IsA('AmmoNone'))
+            wpn.AmmoType.AmmoAmount = 0;
+    }
 
     //CyberP: sort out ammo nonsense
     if (invItemFrom != none && invItemFrom.IsA('Ammo') && invokeActor != none)  //RSD: accessed none?
@@ -888,13 +898,20 @@ log("  event.toActor    = " $ event.toActor );
 				//SARGE: Add some ammo, too
 				if (invItemTo.IsA('WeaponMiniCrossbow'))
                 {
+                    //SARGE: Add a range mod too!
+                    wepMod = Spawn(class'WeaponModRange');
+                    wepMod.ApplyMod(DeusExWeapon(invItemTo));
+                    wepMod.Destroy();
+
 					DeusExWeapon(invItemTo).AmmoType.AddAmmo(8);
-                    conWinThird.ShowReceivedItem(DeusExWeapon(invItemTo).AmmoType, 8);
+                    //conWinThird.ShowReceivedItem(DeusExWeapon(invItemTo).AmmoType, 8);
+                    addAmmo += 8;
                 }
 				else if (invItemTo.IsA('WeaponRifle'))
                 {
 					DeusExWeapon(invItemTo).AmmoType.AddAmmo(5);
-                    conWinThird.ShowReceivedItem(DeusExWeapon(invItemTo).AmmoType, 5);
+                    //conWinThird.ShowReceivedItem(DeusExWeapon(invItemTo).AmmoType, 5);
+                    addAmmo += 5;
                 }
 			 }
             }
@@ -918,10 +935,19 @@ log("  event.toActor    = " $ event.toActor );
 	// Show the player that he/she/it just received something!
 	if ((DeusExPlayer(event.toActor) != None) && (conWinThird != None) && (invItemTo != None))
 	{
+        wpn = DeusExWeapon(invItemTo);
+
         if ( invItemTo.IsA('Ammo') )   //CyberP: display ammo counts
 	        itemsTransferred = tempAmmoCount;
 		if (conWinThird != None)
+        {
 			conWinThird.ShowReceivedItem(invItemTo, itemsTransferred);
+           
+            //SARGE: Show ammo loaded inside transferred weapons, plus any additional ammo transferred.
+            if (wpn != None && wpn.AmmoName != None && wpn.AmmoName != class'AmmoNone' && !wpn.bDisposableWeapon && wpn.PickupAmmoCount + AddAmmo > 0)
+                conWinThird.ShowReceivedItem(wpn.AmmoType, wpn.PickupAmmoCount + AddAmmo);
+
+        }
 		else
 			DeusExRootWindow(player.rootWindow).hud.receivedItems.AddItem(invItemTo, itemsTransferred);
 		player.PlaySound(sound'objpickup3',SLOT_None,0.7);

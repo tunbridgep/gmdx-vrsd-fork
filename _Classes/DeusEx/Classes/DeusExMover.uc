@@ -718,9 +718,6 @@ function Frob(Actor Frobber, Inventory frobWith)
 	bOpenIt = False;
 	bDone = False;
 	msg = msgLocked;
-
-    //Get the name of our key if the player has it
-    KeyName = Player.GetNanoKeyDesc(KeyIDNeeded);
     
 	// make sure someone is trying to open the door
 	if (P == None)
@@ -738,6 +735,10 @@ function Frob(Actor Frobber, Inventory frobWith)
 		msg = "";
 		bDone = True;
 	}
+
+    if (Player != None)
+        KeyName = Player.GetNanoKeyDesc(KeyIDNeeded);
+
 
 	// If we are already trying to pick it, print a message
 	if (bPicking)
@@ -775,7 +776,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 	// 1. Use the KeyIDNeeded
 	// 2. Use the Lockpick and SkillLockpicking
 	//
-	if (!bDone)
+	if (!bDone && player != None)
 	{
 		// Get what's in the player's hand
 		if (frobWith != None)

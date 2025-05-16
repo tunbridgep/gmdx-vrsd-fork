@@ -416,6 +416,9 @@ singular function checkForHazards(GC gc)
     local int i;
 	local DeusExRootWindow root;
 
+    if (player == None || player.AugmentationSystem == None)
+        return;
+
 	root = DeusExRootWindow(player.rootWindow);
     
     //Disable the hazard detection text while windows are open
@@ -424,8 +427,10 @@ singular function checkForHazards(GC gc)
 
     aug = AugIFF(Player.AugmentationSystem.GetAug(class'AugIFF'));
 
-    if (aug != None && aug.bHasIt)
-        range = (aug.CurrentLevel) * aug.default.hazardsrange * 16; //Range in which hazards are detected - 50 feet at level 2, 100 at level 3
+    if (aug == None || !aug.bHasIt)
+        return;
+
+    range = (aug.CurrentLevel) * aug.default.hazardsrange * 16; //Range in which hazards are detected - 50 feet at level 2, 100 at level 3
 
     if (range <= 0)
         return;
@@ -433,7 +438,7 @@ singular function checkForHazards(GC gc)
     //First, get all the damage triggers
     foreach Player.RadiusActors(class'DamageTrigger', DT, range)
     {
-        if (totalActors >= 20)
+        if (totalActors >= 19)
             break;
 
         if (!DT.bInitiallyActive || !DT.bIsOn || DT.damageInterval == 0 || DT.damageAmount == 0)
@@ -462,7 +467,7 @@ singular function checkForHazards(GC gc)
     //Next, get radioactive barrels
     foreach Player.RadiusActors(class'Barrel1', BR, range)
     {
-        if (totalActors >= 20)
+        if (totalActors >= 19)
             break;
 
         if (BR.SkinColor != SC_RadioActive)
@@ -486,7 +491,7 @@ singular function checkForHazards(GC gc)
     //Next, get clouds of each type
     foreach Player.RadiusActors(class'Cloud', CL, range)
     {
-        if (totalActors >= 20)
+        if (totalActors >= 19)
             break;
 
         if (CL.Damage == 0)
@@ -514,7 +519,7 @@ singular function checkForHazards(GC gc)
         if (bDefenseActive)
             break;
 
-        if (totalActors >= 20)
+        if (totalActors >= 19)
             break;
 
         if (!PROJ.bProximityTriggered || PROJ.bDisabled || PROJ.Damage <= 0 || PROJ.Owner == player) //Only detect mines placed on walls, etc
@@ -546,7 +551,7 @@ singular function checkForHazards(GC gc)
         {
             CL = Cloud(actors[i]);
             threatType = string(CL.damageType);
-            if (DT.damageInterval != 0)
+            if (CL.damageInterval != 0)
                 threatDam = int(CL.Damage/CL.damageInterval);
             else
                 threatDam = int(CL.Damage);
@@ -1468,11 +1473,16 @@ function DrawTargetAugmentation(GC gc)
             }
         }
 
-    //Sarge: Set crosshair colour if we're placing a grenade on a wall
-    if (weapon != None && weapon.bNearWall && Player.bWallPlacementCrosshair)
-        crossColor = colBlue;
-    else
-        crossColor = colWhite;
+    crossColor = colWhite;
+    
+    //Sarge: Set crosshair colour if we're placing a grenade on a wall or highlighting distant hackables
+    if (Player.bWallPlacementCrosshair)
+    {
+        if (weapon != None && weapon.bNearWall)
+            crossColor = colBlue;
+        else if (player.HackTarget != None && player.inHand == None)
+            crossColor = colBlue;
+    }
 
     //SARGE: Moved this out to a new function, and made sure to always show it if enabled
 	if ( target != None && !target.bHidden //)                                  //RSD

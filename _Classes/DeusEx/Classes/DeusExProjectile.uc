@@ -885,12 +885,16 @@ auto simulated state Flying
         local FireballSpoof fSpoof;
         local SFXExp exp;
 
+        //SARGE: Removed. We now reduce it for player-damage only.
+        //See below.
+        /*
 	    // Reduce damage on nano exploded projectiles
 	    if (bAggressiveExploded)
         {
             if (Level.NetMode != NM_Standalone)
 		        Damage = Damage/6;
         }
+        */
 
 		bDestroy = false;
 

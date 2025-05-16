@@ -79,8 +79,8 @@ function ShowVersionInfo()
 	version.SetTextMargins(0, 0);
 	version.SetWindowAlignments(HALIGN_Right, VALIGN_Bottom);
 	version.SetTextColorRGB(255, 255, 255);
-	version.SetTextAlignments(HALIGN_Right, VALIGN_Bottom);
-	version.SetText(player.GetDeusExVersion() @ GMDXText);
+	version.SetTextAlignments(HALIGN_Right, VALIGN_Top);
+	version.SetText(GMDXText);
 }
 
 // ----------------------------------------------------------------------
@@ -88,7 +88,7 @@ function ShowVersionInfo()
 
 defaultproperties
 {
-     GMDXText="Give Me Deus Ex: Augmented Edition BETA"
+     GMDXText="GMDX: Augmented Edition 1.01"
      ButtonNames(0)="New Game"
      ButtonNames(1)="Save Game"
      ButtonNames(2)="Load Game"

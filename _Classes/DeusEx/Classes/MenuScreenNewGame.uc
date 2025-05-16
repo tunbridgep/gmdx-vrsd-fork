@@ -82,6 +82,7 @@ var bool bCameraDetectUnconscious;
 var bool bShenanigans;
 var bool bRandomizeCrap;
 var bool bCutInteractions;
+var bool bA51Camera;
 
 //LDDP
 var bool bFemaleEnabled;
@@ -151,6 +152,7 @@ event InitWindow()
     bShenanigans=false;                                                         //Sarge
     bRandomizeCrap=false;                                                       //Sarge
     bCutInteractions=false;                                                     //Sarge
+    bA51Camera=false;                                                           //Sarge
     //bRestrictedMetabolism=false;                                              //Sarge
     default.bRandomizeCrates=false;                                             //RSD: Also need default values! Otherwise get command in modifier menu takes the wrong value
     default.bRandomizeMods=false;                                               //RSD
@@ -170,6 +172,7 @@ event InitWindow()
     default.bShenanigans=false;                                                 //Sarge
     default.bRandomizeCrap=false;                                               //Sarge
     default.bCutInteractions=false;                                             //Sarge
+    default.bA51Camera=false;                                                   //Sarge
 
 	StyleChanged();
 }
@@ -823,6 +826,7 @@ function SaveSettings()
     player.bPrisonStart=bPrisonStart;                                           //Sarge
     player.bRandomizeCrap=bRandomizeCrap;                                       //Sarge
     player.bCutInteractions=bCutInteractions;                                   //Sarge
+    player.bA51Camera=bA51Camera;                                               //Sarge
     if (player.bRandomizeAugs)                                                  //RSD: New aug randomization feature
         ScrambleAugOrderList();
     player.bAddictionSystem=bAddictionSystem;

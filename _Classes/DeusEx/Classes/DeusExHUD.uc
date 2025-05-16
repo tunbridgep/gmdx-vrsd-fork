@@ -45,6 +45,9 @@ event InitWindow()
 
 	// Get a pointer to the player
 	player = DeusExPlayer(root.parentPawn);
+    
+    if (player.ThemeManager != None)
+        player.ThemeManager.UpdateCustomTheme();
 
 	SetFont(Font'TechMedium');
 	SetSensitivity(false);
@@ -95,25 +98,6 @@ event InitWindow()
 
 	// Received Items Display
 	receivedItems = HUDReceivedDisplay(NewChild(Class'HUDReceivedDisplay', False));
-
-	if (player.ThemeManager.currentHUDTheme.themeName == "CustomHUD")
-	{
-	    player.ThemeManager.currentHUDTheme.colors[0] = player.customColorsHUD[0];
-	    player.ThemeManager.currentHUDTheme.colors[1] = player.customColorsHUD[1];
-	    player.ThemeManager.currentHUDTheme.colors[2] = player.customColorsHUD[2];
-	    player.ThemeManager.currentHUDTheme.colors[3] = player.customColorsHUD[3];
-	    player.ThemeManager.currentHUDTheme.colors[4] = player.customColorsHUD[4];
-	    player.ThemeManager.currentHUDTheme.colors[5] = player.customColorsHUD[5];
-	    player.ThemeManager.currentHUDTheme.colors[6] = player.customColorsHUD[6];
-	    player.ThemeManager.currentHUDTheme.colors[7] = player.customColorsHUD[7];
-	    player.ThemeManager.currentHUDTheme.colors[8] = player.customColorsHUD[8];
-	    player.ThemeManager.currentHUDTheme.colors[9] = player.customColorsHUD[9];
-	    player.ThemeManager.currentHUDTheme.colors[10] = player.customColorsHUD[10];
-	    player.ThemeManager.currentHUDTheme.colors[11] = player.customColorsHUD[11];
-	    player.ThemeManager.currentHUDTheme.colors[12] = player.customColorsHUD[12];
-	    player.ThemeManager.currentHUDTheme.colors[13] = player.customColorsHUD[13];
-	    ChangeStyle();
-	}
 }
 
 //SARGE: Updates the Assigned Weapon

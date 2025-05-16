@@ -182,6 +182,7 @@ defaultproperties
      PlayerViewMesh=LodMesh'DeusExItems.LAM'
      PickupViewMesh=LodMesh'DeusExItems.LAMPickup'
      ThirdPersonMesh=LodMesh'DeusExItems.LAM3rd'
+     Mesh=LodMesh'DeusExItems.LAMPickup'
      Icon=Texture'DeusExUI.Icons.BeltIconLAM'
      largeIcon=Texture'DeusExUI.Icons.LargeIconLAM'
      largeIconWidth=35

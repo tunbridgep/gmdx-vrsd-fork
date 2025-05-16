@@ -68,8 +68,6 @@ function RefreshRebootDuration()
         winCameras[1].camera.StartReboot(player);
     if (winCameras[2].camera != None && winCameras[2].camera.bRebooting)
         winCameras[2].camera.StartReboot(player);
-    if (winCameras[3].camera != None && winCameras[3].camera.bRebooting)
-        winCameras[3].camera.StartReboot(player);
     
     if (winCameras[0].turret != None && winCameras[0].turret.bRebooting)
         winCameras[0].turret.StartReboot(player);
@@ -77,8 +75,6 @@ function RefreshRebootDuration()
         winCameras[1].turret.StartReboot(player);
     if (winCameras[2].turret != None && winCameras[2].turret.bRebooting)
         winCameras[2].turret.StartReboot(player);
-    if (winCameras[3].turret != None && winCameras[3].turret.bRebooting)
-        winCameras[3].turret.StartReboot(player);
 }
 
 // ----------------------------------------------------------------------

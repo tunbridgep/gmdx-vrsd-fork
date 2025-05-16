@@ -12,9 +12,12 @@ function SetSkin()
     Icon = default.Icon;
     LargeIcon = default.LargeIcon;
 
+    if (IsHDTP() && textureSet == 0)
+        Skin = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPCigarettestex1");
+
     switch(textureSet)
     {
-        case 0: break; //Handled by UpdateHDTPSettings
+        case 0: break; //Handled above
         case 1: //Big Top
             Skin = class'HDTPLoader'.static.GetTexture2("RSDCrap.Skins.HDTPCigarettestex2","RSDCrap.Skins.Cigarettestex2",IsHDTP());
             Description = Description2;

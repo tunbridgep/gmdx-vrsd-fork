@@ -289,12 +289,15 @@ function FirstFrame()
         //Randomise the crap around the level
         RandomiseCrap();
 
-        //Distribute PS20's and Flares
-        DistributeItem('ScriptedPawn',class'WeaponHideAGun',0,2,class'AmmoHideAGun');
-        DistributeItem('ScriptedPawn',class'Flare',1,3);
+        if (dxInfo.MissionNumber > 0)
+        {
+            //Distribute PS20's and Flares
+            DistributeItem('ScriptedPawn',class'WeaponHideAGun',0,2,class'AmmoHideAGun');
+            DistributeItem('ScriptedPawn',class'Flare',1,3);
 
-        //SARGE: Give Shurikens to Elites
-        DistributeItem('MJ12Elite',class'WeaponShuriken',1,3);
+            //SARGE: Give Shurikens to Elites
+            DistributeItem('MJ12Elite',class'WeaponShuriken',1,3);
+        }
 
 		flags.SetBool(flagName, True);
 

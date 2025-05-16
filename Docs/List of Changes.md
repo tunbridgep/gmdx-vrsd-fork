@@ -41,6 +41,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed a vanilla game bug that would prevent weapons from spawning with ammo available if there wasn't enough room to spawn the ammo when being picked up.
     - Fixed vRSD bug where attempting to loot ammo from a weapon while having the same weapon equipped, but with an alternate ammo type (such as AP rounds) would silently fail with no message.
     - Fixed vRSD oversight where Damage mods wouldn't be automatically transferred when attempting to pick up a second Dragons Tooth Sword.
+    - Fixed vRSD bug where control panels could be destroyed but would sometimes not trigger their associated hacking event.
     - Fixed major GMDX bugs related to spawning items in tight spaces, including weapons with no ammo and items not appearing when gibbing enemies.
     - Fixed many other GMDX and Vanilla bugs.
 - Quality of Life Improvements:
@@ -114,6 +115,7 @@ Sarge's Changes since Beta 2.2:
         - Items can be removed from the decline list in the inventory screen.
         - Declined Items need to be double-clicked in order to be picked up in the world.
         - Holding the Walk/Run key while interacting will always pick up any declined items.
+        - If enabled, darkened versions of declined items will be shown in the Items Received Window when searching carcasses.
     - Datacubes will show a black screen after they have been read.
     - When picking up duplicate Nanokeys, the log now lists it as a duplicate.
     - While having a grenade selected, the crosshair will turn blue when you're able to place it on a wall.
@@ -210,6 +212,8 @@ Sarge's Changes since Beta 2.2:
         - When holstered, you should use the standard left-frobbing system instead.
     - The Pedometer can now be viewed in the Health screen when using the Addiction system.
     - Subtitles are now enabled in third-person cutscenes regardless of Subtitles setting, allowing text to show instead of useless black bars while also not displaying in-game barks. This can be disabled using the `bSubtitlesCutscene` option in `DeusEx.ini`
+    - Wireless Strength perk now allows you to left-frob at long range, rather than needing to have a multitool selected.
+        - Additionally, fixed the bug where JC could interact with keypads at range with the Wireless Strength perk.
 - Gameplay Changes:
     - New Item Distribution System that distributes a preset number of items from a pool upon loading a new map.
         - MJ12 Elites now have a small chance of carrying Throwing Knives
@@ -392,6 +396,7 @@ Sarge's Changes since Beta 2.2:
     - Oceanlab
         - The `tech`/`sharkman` login has been removed from one of the hallway security computers in the Ocean lab map on Hardcore mode. This means that the only way to bypass security for the areas leading up to the sub pen will require hacking. The sub pen terminal still uses this login.
 - Miscellaneous Changes:
+    - The vanilla "Show Multiplayer Scores" key has been restored, and the GMDX Use Secondary functionality has been given a separate keybind, defaulting to the V key.
 	- Updated Weapons Hit blood effects to occur more consistently, by changing it so that blood rolls individually for each drop rather than rolling for whether or not blood will appear.
     - MJ12 Elites have had their voices reset to the default troop voices, because they don't have female-appropriate voice lines and the voices sound strange and broken in many ways.
     - Many default "<item> Activated" messages have been removed as these would pollute the log.

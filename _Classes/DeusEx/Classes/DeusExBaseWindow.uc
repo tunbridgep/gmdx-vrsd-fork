@@ -64,48 +64,8 @@ event InitWindow()
 	player = DeusExPlayer(root.parentPawn);
 
 	//CyberP: update custom colors
-	if (player.ThemeManager.currentMenuTheme.themeName == "CustomMenu")
-	{
-		//CyberP: hacky failsafe checks to make sure that colors do not ALL go completely black (players cannot navigate if everything is black).
-		if (player.customColorsMenu[4].R <= 5 && player.customColorsMenu[4].G <= 5 && player.customColorsMenu[4].B <= 5)
-		   player.customColorsMenu[4].R = 255;
-		if (player.customColorsMenu[12].R <= 3 && player.customColorsMenu[12].G <= 3 && player.customColorsMenu[12].B <= 3)
-		   player.customColorsMenu[12].R = 255;
-
-	    player.ThemeManager.currentMenuTheme.colors[0] = player.customColorsMenu[0];
-	    player.ThemeManager.currentMenuTheme.colors[1] = player.customColorsMenu[1];
-		player.ThemeManager.currentMenuTheme.colors[2] = player.customColorsMenu[2];
-	    player.ThemeManager.currentMenuTheme.colors[3] = player.customColorsMenu[3];
-		player.ThemeManager.currentMenuTheme.colors[4] = player.customColorsMenu[4];
-		player.ThemeManager.currentMenuTheme.colors[5] = player.customColorsMenu[5];
-		player.ThemeManager.currentMenuTheme.colors[6] = player.customColorsMenu[6];
-		player.ThemeManager.currentMenuTheme.colors[7] = player.customColorsMenu[7];
-		player.ThemeManager.currentMenuTheme.colors[8] = player.customColorsMenu[8];
-		player.ThemeManager.currentMenuTheme.colors[9] = player.customColorsMenu[9];
-		player.ThemeManager.currentMenuTheme.colors[10] = player.customColorsMenu[10];
-		player.ThemeManager.currentMenuTheme.colors[11] = player.customColorsMenu[11];
-		player.ThemeManager.currentMenuTheme.colors[12] = player.customColorsMenu[12];
-		player.ThemeManager.currentMenuTheme.colors[13] = player.customColorsMenu[13];
-		ChangeStyle();
-		}
-		if (player.ThemeManager.currentHUDTheme.themeName == "CustomHUD")
-		{
-	    player.ThemeManager.currentHUDTheme.colors[0] = player.customColorsHUD[0];
-	    player.ThemeManager.currentHUDTheme.colors[1] = player.customColorsHUD[1];
-	    player.ThemeManager.currentHUDTheme.colors[2] = player.customColorsHUD[2];
-	    player.ThemeManager.currentHUDTheme.colors[3] = player.customColorsHUD[3];
-	    player.ThemeManager.currentHUDTheme.colors[4] = player.customColorsHUD[4];
-	    player.ThemeManager.currentHUDTheme.colors[5] = player.customColorsHUD[5];
-	    player.ThemeManager.currentHUDTheme.colors[6] = player.customColorsHUD[6];
-	    player.ThemeManager.currentHUDTheme.colors[7] = player.customColorsHUD[7];
-	    player.ThemeManager.currentHUDTheme.colors[8] = player.customColorsHUD[8];
-	    player.ThemeManager.currentHUDTheme.colors[9] = player.customColorsHUD[9];
-	    player.ThemeManager.currentHUDTheme.colors[10] = player.customColorsHUD[10];
-	    player.ThemeManager.currentHUDTheme.colors[11] = player.customColorsHUD[11];
-	    player.ThemeManager.currentHUDTheme.colors[12] = player.customColorsHUD[12];
-	    player.ThemeManager.currentHUDTheme.colors[13] = player.customColorsHUD[13];
-	    ChangeStyle();
-	}
+    if (player.ThemeManager != None)
+        player.ThemeManager.UpdateCustomTheme();
 
 	// Center this window
 	SetWindowAlignments(HALIGN_Center, VALIGN_Center);

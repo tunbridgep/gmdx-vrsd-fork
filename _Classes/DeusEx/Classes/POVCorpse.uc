@@ -14,7 +14,6 @@ var travel int    CumulativeDamage;
 var travel int    MaxDamage;
 var travel string CorpseItemName;
 var travel Name   CarcassName;
-var travel int    passedImpaleCount;
 var travel Inventory Inv;
 var Texture pMultitex[8];
 var bool    bHasSkins;
@@ -39,6 +38,11 @@ var travel bool bNoDefaultPools;                                                
 //Function to fix weapon offsets
 function DoWeaponOffset(DeusExPlayer player)
 {
+    local bool bDoOffsets;
+
+    if (player == None)
+        return;
+
     if ((weaponOffsets.x != 0.0 || weaponOffsets.y != 0.0 || weaponOffsets.z != 0.0))
     {
     
@@ -52,7 +56,8 @@ function DoWeaponOffset(DeusExPlayer player)
             bOldOffsetsSet = true;
         }
 
-        if (player.bEnhancedWeaponOffsets)
+        bDoOffsets = player.iEnhancedWeaponOffsets == 2 || (player.iEnhancedWeaponOffsets == 1 && player.defaultFOV >= 110);
+        if (bDoOffsets)
         {
             default.PlayerViewOffset.x = weaponOffsets.x;
             default.PlayerViewOffset.y = weaponOffsets.y;

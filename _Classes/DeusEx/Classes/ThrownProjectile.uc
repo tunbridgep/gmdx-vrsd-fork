@@ -31,7 +31,8 @@ var travel bool bEUASDetected;              //SARGE: Set to true when this explo
 var bool            bEMPDisabled;             //SARGE: When disabled by EMP, permanently prevent it from being re-armed
 
 var int             rearmSkillRequired;      //SARGE: Demolitions Skill required to rearm this explosive after disarming it. Only used by Proximity Triggered Grenades.
-var localized string disabledText;
+var const localized string disabledText;
+var const localized string msgCannotRearm;        //SARGE: When we try to frob a disarmed grenades but our skill is not enough
 
 replication
 {
@@ -353,9 +354,6 @@ function Frob(Actor Frobber, Inventory frobWith)
         player.ClientMessage(disabledText);
         return;
     }
-
-    if (Player == None)
-        return;
         
 
     skill = Player.SkillSystem.GetSkillLevel(class'SkillDemolition');
@@ -363,7 +361,11 @@ function Frob(Actor Frobber, Inventory frobWith)
 	// if the player frobs it and it's disabled, the player can grab it
 	if (bDisabled)
     {
-        Super.Frob(Frobber, frobWith);
+        //SARGE: Cannot pick up grenades if we lack the skill
+        if (skill < rearmSkillRequired && Owner != Player)
+            Player.ClientMessage(sprintf(msgCannotRearm,itemName));
+        else
+            Super.Frob(Frobber, frobWith);
     }
 	else if (bProximityTriggered && bArmed && (skillTime >= 0))
 	{
@@ -372,8 +374,8 @@ function Frob(Actor Frobber, Inventory frobWith)
         AmbientSound = None;
 
         //SARGE: If the player lacks the skills to properly disarm it, disable it completely.
-        if (skill < rearmSkillRequired && Owner != Player)
-            bEMPDisabled = true;
+        //if (skill < rearmSkillRequired && Owner != Player)
+        //    bEMPDisabled = true;
 	}
 }
 
@@ -781,4 +783,5 @@ defaultproperties
      bBounce=True
      bFixedRotationDir=True
      disabledText="The internal circuitry is damaged."
+     msgCannotRearm="You lack the skill to rearm the %d"
 }

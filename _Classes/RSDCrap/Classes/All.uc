@@ -9,6 +9,7 @@ class All expands Object
 // ===========================================================================================================
 
 #exec TEXTURE IMPORT FILE="Textures\RubberShellBox.pcx"			NAME="RubberShellBox"			GROUP="Items"
+#exec TEXTURE IMPORT FILE="Textures\RubberShellBoxLow.pcx"		NAME="RubberShellBoxLow"		GROUP="Items"
 #exec TEXTURE IMPORT FILE="Textures\RubberShell.pcx"			NAME="RubberShell"			GROUP="Items"
 #exec TEXTURE IMPORT FILE="Textures\SabotShellBox.pcx"			NAME="SabotShellBox"			GROUP="Items"
 #exec TEXTURE IMPORT FILE="Textures\SabotShell.pcx"			NAME="SabotShell"			GROUP="Items"

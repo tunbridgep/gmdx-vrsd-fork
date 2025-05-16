@@ -442,7 +442,6 @@ var travel bool bHardCoreMode; //if set disable save game options.
 //misc
 var globalconfig bool bSkipNewGameIntro; //CyberP: for GMDX option menu
 var globalconfig bool bColorCodedAmmo;
-var globalconfig bool bExtraHardcore;
 var globalconfig bool bDecap;
 var globalconfig bool bNoTranslucency;
 var globalconfig int dblClickHolster;                      //SARGE: 0 = off, 1 = double click holstering only, 2 = double click holstering and unholstering
@@ -457,7 +456,6 @@ var globalconfig int iAlternateToolbelt;
 var globalconfig bool bAnimBar1;
 var globalconfig bool bAnimBar2;
 var globalconfig bool bExtraObjectDetails;
-var globalconfig bool bA51Camera;
 var globalconfig bool bCameraSensors;
 var globalconfig bool bHardcoreFilterOption;
 var globalconfig bool bRealisticCarc;
@@ -617,7 +615,12 @@ var travel bool bWeaponRequirementsMatter;                                      
 
 var travel bool bCameraDetectUnconscious;                                      //Ygll: Unconscious body will now be detected by camera.
 
+var travel bool bA51Camera;                                                     //SARGE: Was a gameplay setting, now a modifier. Make cameras stronger and act like Area 51 cameras.
+
 //END GAMEPLAY MODIFIERS
+
+//hardcore+
+var travel bool bExtraHardcore;
 
 //Autosave Stuff
 var travel float autosaveRestrictTimer;                                         //Sarge: Current time left before we're allowed to autosave again.
@@ -646,7 +649,7 @@ var bool bUsingComputer;                                                        
 var bool bBlockNextFire;                                                        //SARGE: Set to TRUE to block the next weapon firing attempt. Used when blowing up the spy drone.
 
 //Sarge: Allow Enhanced Weapon Offsets
-var globalconfig bool bEnhancedWeaponOffsets; 									//Sarge: Allow using enhanced weapon offsets
+var globalconfig int iEnhancedWeaponOffsets; 									//Sarge: Allow using enhanced weapon offsets. 0 = off, 1 = automatic at 100+ fov, 2 = always
 
 //Sarge: Dialog Settings
 var globalconfig bool bNumberedDialog;                                          //Sarge: Shows numbers in the dialog window and allows selecting topics with the number keys
@@ -713,8 +716,9 @@ var travel float killswitchTimer;                                               
 
 //Music Stuff
 var transient string currentSong;                                                 //SARGE: The "Song" variable is kept in savegames...
-var transient bool bLastWasOutro;                                                 //SARGE: The "Song" variable is kept in savegames...
-var globalconfig int iEnhancedMusicSystem;                                             //SARGE: Should the music system be a bit smarter about playing tracks?
+var globalconfig int iEnhancedMusicSystem;                                        //SARGE: Should the music system be a bit smarter about playing tracks?
+var transient float fadeTimeHack;                                                 //SARGE: Hacky music transition fix timer
+var transient EMusicMode prevmusicMode;
 
 //SARGE: Autoswitch to Health screen when installing the last augmentation at a med bot.
 var globalconfig bool bMedbotAutoswitch;
@@ -796,6 +800,8 @@ var globalconfig bool bReversedAltBeltColours;                      //SARGE: Mak
 
 var globalconfig bool bAlwaysShowReceivedItemsWindow;               //SARGE: Always show the retrieved items window when picking up ammo from a weapon.
 
+var globalconfig bool bShowDeclinedInReceivedWindow;                //SARGE: Allow showing declined items in the received items window.
+
 var globalconfig int iShowTotalCounts;                        //SARGE: Show the total number of rounds we can carry for disposable items in the inventory screen. 1 = charged items and disposable weapons/grenades only, 2 = everything.
 
 var globalconfig bool bGMDXDebug;                                   //SARGE: Allows extra debug info/messages. Not for regular players!
@@ -803,6 +809,13 @@ var globalconfig bool bGMDXDebug;                                   //SARGE: All
 var globalconfig bool bDropWeaponsOnDeath;                      //SARGE: If enabled, NPCs will drop weapons on death.
 
 var globalconfig int iCrosshairOffByOne;                       //SARGE: Set this if your crosshair is a few pixels too far to the left
+
+var globalconfig bool bEnableLeftFrob;                          //SARGE: No idea why anybody would want to disable this, and yet people asked for it...
+
+var globalconfig bool bConversationKeepWeaponDrawn;             //SARGE: Always keep weapons drawn during conversations.
+
+//SARGE: Overhauled the Wireless Strength perk to no longer require having a multitool out.
+var HackableDevices HackTarget;
 
 //////////END GMDX
 
@@ -1022,9 +1035,12 @@ function Class<Inventory> GetSecondaryClass()
 // HDTP Stuff
 // ----------------------------------------------------------------------
 
-static function bool IsHDTPInstalled()
+static function bool IsHDTPInstalled(optional bool bNoEnabledCheck)
 {
-    return class'DeusExPlayer'.default.bHDTPInstalled && default.bHDTPEnabled;
+    if (bNoEnabledCheck)
+        return class'DeusExPlayer'.default.bHDTPInstalled;
+    else
+        return class'DeusExPlayer'.default.bHDTPInstalled && default.bHDTPEnabled;
 }
 
 static function bool IsHDTP()
@@ -1280,7 +1296,7 @@ local DeusExPickup     PU;                                                      
 	        	   SC.hackStrength = 0.150000;
             }
 
-            if ((bA51Camera || bHardcoreMode) && SC.minDamageThreshold != 70)
+            if (bA51Camera && SC.minDamageThreshold != 70)
             {
                 if (!SC.bDiffProperties)
                 {
@@ -1343,6 +1359,9 @@ function PostBeginPlay()
 
     //SARGE: Account for FemJC eye height changes
     ResetBasedPawnSize();
+	
+    //Reset the music timers
+    ResetMusic();
 
     //RSD: log item distribution on map load
     //logItemsInCrates();
@@ -1873,6 +1892,10 @@ event TravelPostAccept()
 	  bAutoReload=false;
 	}
 
+    //No cheating when console access is disabled
+    if (bDisableConsoleAccess)
+	  bCheatsEnabled=false;
+
     setupDifficultyMod(); //CyberP: set difficulty modifiers
 //set gep tracking
 	if (RocketTarget==none)
@@ -1934,7 +1957,7 @@ function string retInfo()
 //GMDX remove console from Hardcore mode >:]
 exec function Say(string Msg )
 {
-	if (bDisableConsoleAccess || bExtraHardcore)
+	if (bDisableConsoleAccess)
         return;
     else                                                                  //RSD: temporarily re-enable console for HC testing //SARGE: Made it a gameplay modifier
 	    super.Say(Msg);
@@ -1943,15 +1966,15 @@ exec function Say(string Msg )
 //SARGE: TODO: Add a proper console window.
 exec function Type()
 {
-	if (bDisableConsoleAccess || bExtraHardcore)                         //RSD: temporarily re-enable console for HC testing //SARGE: Made it a gameplay modifier
+	if (bDisableConsoleAccess)                         //RSD: temporarily re-enable console for HC testing //SARGE: Made it a gameplay modifier
         return;
     else
-	  super.Type();
+        super.Type();
 }
 
 function Typing( bool bTyping )
 {
-	if (bDisableConsoleAccess || bExtraHardcore)                                                        //RSD: temporarily re-enable console for HC testing //SARGE: Made it a gameplay modifier
+	if (bDisableConsoleAccess)                                                        //RSD: temporarily re-enable console for HC testing //SARGE: Made it a gameplay modifier
 	    Player.Console.GotoState('');
 	else
         super.Typing(bTyping);
@@ -2207,6 +2230,7 @@ exec function TeamSay( string Msg )
 exec function RestartLevel()
 {
 	ResetPlayer();
+    ResetMusic(true);
 	Super.RestartLevel();
 }
 
@@ -2217,6 +2241,7 @@ exec function RestartLevel()
 exec function LoadGame(int saveIndex)
 {
     SetupRendererSettings();
+    ResetMusic();
 
 //   log("MYCHK:LoadGame: ,"@saveIndex);
 	// Reset the FOV
@@ -2560,6 +2585,7 @@ exec function StartNewGame(String startMap)
 
 	SaveSkillPoints();
 	ResetPlayer();
+    ResetMusic(true);
 	DeleteSaveGameFiles();
 
 	bStartingNewGame = True;
@@ -3267,54 +3293,94 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
     info = GetLevelInfo();
         
     DebugMessage("Music Change Request:" @ NewSong @ NewSection);
+    DebugMessage("  Modes:" @ default.prevMusicMode @ default.musicMode);
+    
+    //SARGE: We're still fading from the last track, so we need to do a hacky fix
+    //The engine is busted and the music system needs to be reset, so instantly transition back to our saved section.
+    //and reset the volume
+    if (default.fadeTimeHack > 0)
+    {
+        //Hack to fix broken audio settings.
+        bChange = true;
+        SetInstantMusicVolume(int(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice MusicVolume")));
+        NewTransition = MTRAN_Instant;
+        DebugMessage("FadeTimeHack fix");
+        if (NewSection == Level.SongSection)
+            NewSection = default.savedSection;
+    }
 
     if (string(NewSong) != default.currentSong) //We always want to allow song changes
     {
         bChange = true;
         DebugMessage("Changing Music - Song Change from" @ default.currentSong);
+        NewSection = Level.SongSection;
         default.savedSection = Level.SongSection; //And reset the saved section
+        default.musicMode = MUS_Ambient;
+        default.prevMusicMode = MUS_Ambient;
     }
-    else if (iEnhancedMusicSystem == 0) //Always change with the old system
+    else if (info != none && info.bBarOrClub && iEnhancedMusicSystem == 2) //Don't allow music changes in clubs or bars with the extended option.
+    {
+        DebugMessage("Bar or Club - Music Unchanged");
+    }
+    else if (default.prevMusicMode != default.musicMode) //We want to allow changes between modes
     {
         bChange = true;
-        DebugMessage("Changing Music - Old System");
-    }
-    else if (default.bLastWasOutro) //Always restart music after an outtro cutscene even if the next map has the same music.
-    {
-        bChange = true;
-        DebugMessage("Changing Music - Switching after Outro");
-        default.savedSection = Level.SongSection; //And reset the saved section
-    }
-    else if (SongSection != NewSection) //Don't let us replay the same bit we're already playing.
-    {
-        if (info != none && info.bBarOrClub && iEnhancedMusicSystem == 2) //Don't allow music changes in clubs or bars with the extended option.
-        {
-            DebugMessage("Bar or Club - Music Unchanged");
-        }
-        else if (NewSection == default.savedSection && default.musicMode != MUS_Ambient) //allow changing to our saved section if we're not already playing it
-        {
-            bChange = true;
-            DebugMessage("Changing Music - Saved Section: " $ default.musicMode);
-        }
-        else if (NewSection != Level.SongSection) //We want to allow changes to different patterns (except ambient)
-        {
-            bChange = true;
-            DebugMessage("Changing Music - Non-Default Section");
-        }
-        else if (NewSection == Level.SongSection && default.musicMode != MUS_Ambient) //If we ARE changing to our default section and not in ambient, then instead change to our saved section
-        {
+        DebugMessage("Changing Music - Changed Mode");
+
+        //If we're changing back to ambient, always go to our saved section instead of the start
+        if (NewSection == Level.SongSection && default.musicMode == MUS_Ambient)
             NewSection = default.savedSection;
-            bChange = true;
-            DebugMessage("Changing Music - Default Section - Setting to Saved Section");
-        }
     }
 
     if (bChange)
     {
         super.ClientSetMusic(NewSong,NewSection,NewCdTrack,NewTransition);
-        default.currentSong = string(NewSong);
-        default.bLastWasOutro = NewSection == 5;
+
+        //Apply fade-time hack
+        if (NewTransition == MTRAN_SlowFade)
+            default.fadeTimeHack = 5.0;
+        else if (NewTransition == MTRAN_Fade)
+            default.fadeTimeHack = 1.5;
+        else if (NewTransition == MTRAN_FastFade)
+            default.fadeTimeHack = 1.0;
     }
+    default.currentSong = string(NewSong);
+}
+
+//SARGE: Calls ClientSetMusic based on our current music state.
+function MusicTransition(EMusicMode mode, EMusicMode prev)
+{
+	local DeusExLevelInfo info;
+	info = GetLevelInfo();
+
+    if (info == None)
+        return;
+
+    switch (mode)
+    {
+        case MUS_Combat: ClientSetMusic(Level.Song, info.SongCombatSection, 255, MTRAN_FastFade); break;
+        case MUS_Outro: ClientSetMusic(Level.Song, 5, 255, MTRAN_FastFade); break;
+        case MUS_Conversation: ClientSetMusic(Level.Song, 4, 255, MTRAN_Fade); break;
+        case MUS_Dying: ClientSetMusic(Level.Song, 1, 255, MTRAN_Fade); break;
+        case MUS_Ambient:
+            if (prev == MUS_Combat)
+                ClientSetMusic(Level.Song, default.savedSection, 255, MTRAN_SlowFade);
+            else
+                ClientSetMusic(Level.Song, default.savedSection, 255, MTRAN_Fade);
+            break;
+    }
+}
+
+//SARGE: Resets the music timers and state.
+//Now that we're using variables that persist per-session, we need to do this.
+function ResetMusic(optional bool bResetPlace)
+{
+    //Reset the music timers
+    //default.musicMode = MUS_Outro;
+    //default.prevMusicMode = MUS_Outro;
+    if (bResetPlace || iEnhancedMusicSystem == 0)
+        default.savedSection = Level.SongSection;
+    UpdateDynamicMusic(999,true);
 }
 
 // ----------------------------------------------------------------------
@@ -3329,7 +3395,11 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
 //   5 - Outro
 // ----------------------------------------------------------------------
 
-function UpdateDynamicMusic(float deltaTime)
+//SARGE: This has changed significantly!
+//Instead of triggering music and then latching, it now
+//just simply stores what state our music is in. And if the state has changed,
+//attempts to play the music.
+function UpdateDynamicMusic(float deltaTime, optional bool bNoFadeHack)
 {
 	local ScriptedPawn npc;
 	local Pawn CurPawn;
@@ -3343,38 +3413,47 @@ function UpdateDynamicMusic(float deltaTime)
 
 	musicCheckTimer += deltaTime;
 	musicChangeTimer += deltaTime;
+    if (!bNoFadeHack)
+        default.fadeTimeHack -= deltaTime;
+    if (default.fadeTimeHack < 0)
+        default.fadeTimeHack = 0;
+
+    //No music changes while we're fading.
+    if (default.fadeTimeHack > 0)
+        return;
+            
+    if (default.musicMode == MUS_Ambient)
+    {
+        //SARGE: Now we constantly update the saved section, rather than
+        //only updating it when it changes, because that can cause bugs due to fading.
+        if (default.savedSection == 255)
+            default.savedSection = Level.SongSection;
+        else
+            default.savedSection = SongSection;
+    }
 
 	if (IsInState('Interpolating'))
 	{
+        default.musicMode = MUS_Outro;
 		// don't mess with the music on any of the intro maps
 		info = GetLevelInfo();
 		if ((info != None) && (info.MissionNumber < 0))
-		{
-			default.musicMode = MUS_Outro;
+        {
+            default.prevMusicMode = MUS_Outro;
 			return;
-		}
-
-		if (default.musicMode != MUS_Outro)
-		{
-			ClientSetMusic(Level.Song, 5, 255, MTRAN_FastFade);
-			default.musicMode = MUS_Outro;
-		}
+        }
 	}
 	else if (IsInState('Conversation'))
 	{
-		if (default.musicMode != MUS_Conversation)
-		{
-			ClientSetMusic(Level.Song, 4, 255, MTRAN_Fade);
-			default.musicMode = MUS_Conversation;
-		}
+        default.musicMode = MUS_Conversation;
+        musicChangeTimer = 100;
+        musicCheckTimer = 100;
 	}
 	else if (IsInState('Dying'))
 	{
-		if (default.musicMode != MUS_Dying)
-		{
-			ClientSetMusic(Level.Song, 1, 255, MTRAN_Fade);
-			default.musicMode = MUS_Dying;
-		}
+        default.musicMode = MUS_Dying;
+        musicChangeTimer = 100;
+        musicCheckTimer = 100;
 	}
 	else
 	{
@@ -3403,38 +3482,23 @@ function UpdateDynamicMusic(float deltaTime)
             if (aggro >= iAllowCombatMusic && iAllowCombatMusic > 0)
             {
 				musicChangeTimer = 0.0;
-				if (default.musicMode != MUS_Combat)
-				{
-					ClientSetMusic(Level.Song, 3, 255, MTRAN_FastFade);
-					default.musicMode = MUS_Combat;
-				}
+                default.musicMode = MUS_Combat;
 			}
-			else if (default.musicMode != MUS_Ambient)
-			{
-				// wait until we've been out of combat for 5 seconds before switching music
-				if (musicChangeTimer >= 5.0)
-				{
-					// fade slower for combat transitions
-					if (default.musicMode == MUS_Combat)
-						ClientSetMusic(Level.Song, default.savedSection, 255, MTRAN_SlowFade);
-					else
-						ClientSetMusic(Level.Song, default.savedSection, 255, MTRAN_Fade);
-
-					default.musicMode = MUS_Ambient;
-					musicChangeTimer = 0.0;
-				}
-			}
-            else
+            // wait until we've been out of combat for 5 seconds before switching music
+			else if (musicChangeTimer >= 5.0 || default.musicMode != MUS_Combat)
             {
-                //SARGE: Now we constantly update the saved section, rather than
-                //only updating it when it changes, because that can cause bugs due to fading.
-                if (default.savedSection == 255)
-                    default.savedSection = Level.SongSection;
-                else
-                    default.savedSection = SongSection;
+                default.musicMode = MUS_Ambient;
+                musicChangeTimer = 0.0;
             }
 		}
 	}
+
+    //If we changed state, trigger a music transition.
+    if (default.musicMode != default.prevMusicMode)
+    {
+        MusicTransition(default.musicMode, default.prevMusicMode);
+        default.prevMusicMode = default.musicMode;
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -5013,6 +5077,8 @@ function HighlightCenterObject()
 	local int skillz;
 	local float shakeTime, shakeRoll, shakeVert;
     local float rnd;
+    local PerkWirelessStrength perk;
+    local HackableDevices hackable;
 
     if (IsInState('Dying'))
 		return;
@@ -5048,15 +5114,6 @@ function HighlightCenterObject()
        }
        LadTime = 0;
       }
-      if (inHand != None && inHand.IsA('Multitool'))
-          	{
-            	if (self.IsA('DeusExPlayer') && PerkManager.GetPerkWithClass(class'DeusEx.PerkWirelessStrength').bPerkObtained == true)
-                MaxFrobDistance = 768;
-          	}
-     	else
-           	{
-	            MaxFrobDistance = 112;
-            }
 		// figure out how far ahead we should trace
 		StartTrace = Location;
 		EndTrace = Location + (Vector(ViewRotation) * MaxFrobDistance);
@@ -5069,26 +5126,8 @@ function HighlightCenterObject()
 		minSize = 99999;
 		bFirstTarget = True;
 
-     if (inHand != none && inHand.IsA('Multitool'))
-     {
-        foreach TraceActors(class'Actor', target, HitLoc, HitNormal, EndTrace, StartTrace)
-		{
-		if (IsFrobbable(target) && (target != CarriedDecoration))
-		     {
-                if (target.IsA('HackableDevices'))
-			    {
-                }
-			    else
-			    {
-			    MaxFrobDistance=112;
-		        StartTrace = Location;
-		        EndTrace = Location + (Vector(ViewRotation) * MaxFrobDistance);
-		        StartTrace.Z += BaseEyeHeight;
-		        EndTrace.Z += BaseEyeHeight;
-                }
-             }
-        }
-     }
+        //SARGE: Removed the special case for Multitools, see below for how this is done.
+
 		// find the object that we are looking at
 		// make sure we don't select the object that we're carrying
 		// use the last traced object as the target...this will handle
@@ -5096,6 +5135,10 @@ function HighlightCenterObject()
 		// ScriptedPawns always have precedence, though
 		foreach TraceActors(class'Actor', target, HitLoc, HitNormal, EndTrace, StartTrace)
 		{
+            //SARGE: Stop being able to frob things through walls
+            if (target.IsA('DeusExDecoration') && !LineOfSightTo(target))
+                continue;
+
 			if (IsFrobbable(target) && (target != CarriedDecoration))
 			{
                 if (target.IsA('ScriptedPawn'))
@@ -5117,6 +5160,37 @@ function HighlightCenterObject()
 			}
 		}
 		FrobTarget = smallestTarget;
+        HackTarget = None;
+
+        //SARGE: If we have no frobtarget, do the special check for the wireless strength perk
+        if (FrobTarget == None)
+        {
+            perk = PerkWirelessStrength(PerkManager.GetPerkWithClass(class'DeusEx.PerkWirelessStrength'));
+            if (perk != None && perk.bPerkObtained)
+            {
+                EndTrace = Location + (Vector(ViewRotation) * perk.PerkValue);
+                EndTrace.Z += BaseEyeHeight;
+
+                foreach TraceActors(class'Actor', target, HitLoc, HitNormal, EndTrace, StartTrace)
+                {
+                    if (target.IsA('HackableDevices'))
+                    {
+                        //SARGE: Ensure we can actually see what we're trying to frob
+                        if (!LineOfSightTo(target))
+                            continue;
+
+                        hackable = HackableDevices(target);
+                        if (hackable != None && hackable.bHackable && hackable.hackStrength > 0.0)
+                        {
+                            HackTarget = HackableDevices(target);
+                            if (inHand != None && inHand.IsA('Multitool'))
+                                FrobTarget = target;
+                            break; //Just keep it simple and only get the first one, they usually never overlap.
+                        }
+                    }
+                }
+            }
+        }
 
 		// reset our frob timer
 		FrobTime = 0;
@@ -5474,13 +5548,15 @@ function int HealPlayer(int baseHealPoints, optional bool bUseMedicineSkill)
 function float GetMaxEnergy(optional bool trueMax)
 {
     local int max;
+
+    if (AugmentationSystem == None || trueMax)
+        return EnergyMax;
+
     max = EnergyMax - AugmentationSystem.CalcEnergyReserve();
 
     if (Energy > max)
         Energy = max;
 
-    if (trueMax)
-        return EnergyMax;
     return FMax(0.0,max);
 }
 
@@ -7784,10 +7860,23 @@ function ClientTurnOffScores()
 }
 
 // ----------------------------------------------------------------------
-/// ShowScores()  //CyberP: this function is now used in singleplayer for secondary weapon use
+/// ShowScores()
+// SARGE: Reset to vanilla. Was modified in GMDX (see the UseSecondary function below)
 // ----------------------------------------------------------------------
 
 exec function ShowScores()
+{
+	if ( bBuySkills && !bShowScores )
+		BuySkills();
+
+	bShowScores = !bShowScores;
+}
+// ----------------------------------------------------------------------
+/// ShowScores()  //CyberP: this function is now used in singleplayer for secondary weapon use
+// SARGE: Now it's an actual proper exec function. What was CyberP thinking....???
+// ----------------------------------------------------------------------
+
+exec function UseSecondary()
 {
     local Inventory assigned;
     assigned = GetSecondary();
@@ -7902,8 +7991,6 @@ exec function ShowScores()
 	    }
 
     }
-
-	bShowScores = !bShowScores;
 }
 
 //Sarge: Because we can only inherit from one class,
@@ -8122,11 +8209,17 @@ exec function ParseLeftClick()
 
     }
 
+    //Allow left-frobbing distant control panels with the Wireless Strength perk
+    else if (bEnableLeftFrob && HackTarget != None && !bInHandTransition && inHand == None)
+    {
+        DoLeftFrob(HackTarget);
+    }
+
     //Special cases aside, now do the left hand frob behaviour
-    else if (FrobTarget != none && IsReallyFrobbable(FrobTarget,true) && !bInHandTransition && (inHand == None || !inHand.IsA('POVcorpse')) && CarriedDecoration == None)
-	{
+    else if (bEnableLeftFrob && FrobTarget != none && IsReallyFrobbable(FrobTarget,true) && !bInHandTransition && (inHand == None || !inHand.IsA('POVcorpse')) && CarriedDecoration == None)
+    {
         DoLeftFrob(FrobTarget);
-	}
+    }
 
     //Handle throwing decorations/corpses and selecting weapons
 	else
@@ -8327,6 +8420,7 @@ exec function ParseRightClick()
 	local Vector loc;
 	local DeusExWeapon ExWep;
     local DeusExRootWindow root;
+    local bool bFarAway;
 
     //SARGE: Add quickloading if pressing right click while dead.
     if (IsInState('dying') && !bDeadLoad)
@@ -8383,10 +8477,14 @@ exec function ParseRightClick()
 	oldInHand = inHand;
 	oldCarriedDecoration = CarriedDecoration;
 
+    //We have a hacktarget, we can't right click it at all
+    //because we're out of range.
+    bFarAway = HackTarget != None && FrobTarget != None;
+
 	if (FrobTarget != None)
 		loc = FrobTarget.Location;
 
-	if (FrobTarget != None && IsReallyFrobbable(FrobTarget))
+	if (FrobTarget != None && IsReallyFrobbable(FrobTarget) && !bFarAway)
 	{
         //SARGE: I really should add this to the proper OOP setup, but I just don't care.
         //We don't care about MP, so will omit it for now
@@ -8467,19 +8565,24 @@ exec function ParseRightClick()
             bSelectedFromMainBeltSelection = false;
             PutInHand(None);
             NewWeaponSelected();
-		    DoRightFrob(FrobTarget); //Last minute check for things with no highlight.
+            if (!bFarAway)
+                DoRightFrob(FrobTarget); //Last minute check for things with no highlight.
 		}
 		else
 		{
             SetDoubleClickTimer();
-		    DoRightFrob(FrobTarget); //Last minute check for things with no highlight.
+            if (!bFarAway)
+                DoRightFrob(FrobTarget); //Last minute check for things with no highlight.
         }
 	}
 
-	if ((oldInHand == None) && (inHand != None))
-		PlayPickupAnim(loc);
-	else if ((oldCarriedDecoration == None) && (CarriedDecoration != None))
-		PlayPickupAnim(loc);
+    if (!bFarAway)
+    {
+        if ((oldInHand == None) && (inHand != None))
+            PlayPickupAnim(loc);
+        else if ((oldCarriedDecoration == None) && (CarriedDecoration != None))
+            PlayPickupAnim(loc);
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -8599,6 +8702,9 @@ function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool
     if (over > 0 && bDisplayMsg && bShowOverflowMsg)
     {
         ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName $ " (" $ over $ ")" @ AmmoType.MaxAmmoString, 'Pickup');
+        
+        if (bShowWindow && bShowDeclinedInReceivedWindow)
+            AddReceivedItem(AmmoType, over, bNoGroup, true);
     }
     return ret;
 }
@@ -8773,6 +8879,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     //SARGE: Always try looting non-disposable weapons of their ammo
     if (bCanPickup && FrobTarget.IsA('DeusExWeapon') && !DeusExWeapon(frobTarget).bDisposableWeapon)
     {
+        ClearReceivedItems();
         bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,true,bAlwaysShowReceivedItemsWindow,false,true,bShowOverflow);
 
         //Don't pick up a weapon if there's ammo in it and we already have one
@@ -8822,7 +8929,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
         //SARGE: Since we haven't looted Disposable weapons yet, do so now.
         if (FrobTarget.IsA('DeusExWeapon') && DeusExWeapon(frobTarget).bDisposableWeapon)
         {
-            bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,!bFromCorpse,bFromCorpse,false,false,false);
+            bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,!bSlotSearchNeeded || (bFromCorpse && bSlotSearchNeeded),bFromCorpse,false,false,false);
 
             if (DeusExWeapon(frobTarget).PickupAmmoCount > 0)
             {
@@ -8885,7 +8992,12 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 	return bCanPickup && !bDeclined;
 }
 
-function AddReceivedItem(Inventory item, int count, optional bool bNoGroup)
+function ClearReceivedItems()
+{
+    DeusExRootWindow(rootWindow).hud.receivedItems.RemoveItems();
+}
+
+function AddReceivedItem(Inventory item, int count, optional bool bNoGroup, optional bool bDeclined)
 {
     local int i;
 
@@ -8901,11 +9013,11 @@ function AddReceivedItem(Inventory item, int count, optional bool bNoGroup)
         if (!bNoGroup && count < 5)
         {
             for (i = 0; i < count; i++)
-                DeusExRootWindow(rootWindow).hud.receivedItems.AddItem(item, 1);
+                DeusExRootWindow(rootWindow).hud.receivedItems.AddItem(item, 1, bDeclined);
         }
         else
         {
-            DeusExRootWindow(rootWindow).hud.receivedItems.AddItem(item, count);
+            DeusExRootWindow(rootWindow).hud.receivedItems.AddItem(item, count, bDeclined);
         }
 
         // Make sure the object belt is updated
@@ -10867,7 +10979,6 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 							Carc.Inventory = PovCorpse(item).Inv; //GMDX
 							Carc.bSearched = POVCorpse(item).bSearched;
 							Carc.PickupAmmoCount = POVCorpse(item).PickupAmmoCount;
-							Carc.passedImpaleCount = POVCorpse(item).passedImpaleCount;
 							Carc.savedName = POVCorpse(item).savedName;
                             Carc.bFirstBloodPool = POVCorpse(item).bFirstBloodPool; //SARGE: Added.
                             Carc.bNoDefaultPools = POVCorpse(item).bNoDefaultPools;
@@ -12781,7 +12892,7 @@ function bool AddInventory(inventory item)
 
 		if ( item.bInObjectBelt )
 		{
-			if (root != None)
+			if (root != None && root.hud != None && root.hud.belt != None)
 			{
 				root.hud.belt.AddObjectToBelt(item, item.beltPos, True);
 			}
@@ -13085,6 +13196,16 @@ ignores SeePlayer, HearNoise, Bump;
        return misNum;
 	}
 
+    //SARGE: Move CyberP's soup to a new function...
+    //I'm really getting sick of having to clean this damn codebase...
+    function bool KeepWeaponOut()
+    {
+        if (bConversationKeepWeaponDrawn)
+            return true;
+        return inHand != None && inHand.IsA('DeusExWeapon') && !conPlay.startActor.IsA('NicoletteDuClare') && (retLevelInfo() == 5 || retLevelInfo() >= 12 || conPlay.startActor.IsA('HumanThug') ||
+          conPlay.startActor.IsA('Terrorist') || conPlay.startActor.Style == STY_Translucent || conPlay.startActor.IsA('DeusExDecoration') || conPlay.startActor.IsA('JuanLebedev') || conPlay.startActor.IsA('BobPage'));
+    }
+
 Begin:
 	// Make sure we're stopped
 	Velocity.X = 0;
@@ -13118,11 +13239,7 @@ Begin:
 	else
 	{
 		// Put away whatever the PC may be holding //CyberP: don't put away wep when shit hits the fan or conversee is a potential threat
-		if (inHand != None && inHand.IsA('DeusExWeapon') && !conPlay.startActor.IsA('NicoletteDuClare') && (retLevelInfo() == 5 || retLevelInfo() >= 12 || conPlay.startActor.IsA('HumanThug') ||
-          conPlay.startActor.IsA('Terrorist') || conPlay.startActor.Style == STY_Translucent || conPlay.startActor.IsA('DeusExDecoration') || conPlay.startActor.IsA('JuanLebedev') || conPlay.startActor.IsA('BobPage')))
-		{
-		}
-		else
+		if (!KeepWeaponOut())
 		{
 		    conPlay.SetInHand(InHand);
 		    PutInHand(None);
@@ -15740,6 +15857,7 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 	local bool bReduced;
     local AugEnviro enviro;
     local AugAqualung lung;
+    local AugBallisticPassive ballistic;
 
 	bReduced = False;
 	newDamage = Float(Damage);
@@ -15750,26 +15868,30 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 	{
 	    if (DamageType != 'Shocked')
 	    {
-            if (bBoosterUpgrade && Energy > 0 && Damage > 0)
-                    AugmentationSystem.AutoAugs(false,true);
             if (AugmentationSystem != None)
             {
-                enviro = AugEnviro(AugmentationSystem.GetAug(class'AugEnviro'));
-                augLevel = enviro.LevelValues[enviro.CurrentLevel];
+                if (bBoosterUpgrade && Energy > 0 && Damage > 0)
+                    AugmentationSystem.AutoAugs(false,true);
 
-                //Make sure we have enough energy
-                //EDIT: This was based on damage tane, and still can be if you uncomment this. For now, use the old "20 per second" of the old aug.
-                //if (enviro.bIsActive && augLevel >= 0.0 && Energy > 0 && Energy >= enviro.GetCustomEnergyRate(newDamage * 0.1))
-                if (enviro.bIsActive && augLevel >= 0.0 && Energy > 0)
+                enviro = AugEnviro(AugmentationSystem.GetAug(class'AugEnviro'));
+                if (enviro != None)
                 {
-                    //Only use energy once per 3 seconds, like the old aug
-                    if (saveTime >= enviro.lastEnergyTick)
+                    augLevel = enviro.LevelValues[enviro.CurrentLevel];
+
+                    //Make sure we have enough energy
+                    //EDIT: This was based on damage tane, and still can be if you uncomment this. For now, use the old "20 per second" of the old aug.
+                    //if (enviro.bIsActive && augLevel >= 0.0 && Energy > 0 && Energy >= enviro.GetCustomEnergyRate(newDamage * 0.1))
+                    if (enviro.bIsActive && augLevel >= 0.0 && Energy > 0)
                     {
-                        //Energy -= MAX(int(newDamage * 0.1),1);
-                        Energy = FMAX(Energy - enviro.GetAdjustedEnergy(1),0);
-                        enviro.lastEnergyTick = saveTime + 3.0;
+                        //Only use energy once per 3 seconds, like the old aug
+                        if (saveTime >= enviro.lastEnergyTick)
+                        {
+                            //Energy -= MAX(int(newDamage * 0.1),1);
+                            Energy = FMAX(Energy - enviro.GetAdjustedEnergy(1),0);
+                            enviro.lastEnergyTick = saveTime + 3.0;
+                        }
+                        newDamage *= augLevel;
                     }
-                    newDamage *= augLevel;
                 }
             }
         }
@@ -15816,7 +15938,7 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
                     //Aqualung now reduces stamina damage
                     augLevel = 1.0;
                     lung = AugAqualung(AugmentationSystem.GetAug(class'AugAqualung'));
-                    if (lung.bIsActive)
+                    if (lung != None && lung.bIsActive)
                     {
                         augLevel = 2.0 - lung.LevelValues[lung.CurrentLevel];
                     }
@@ -15870,7 +15992,9 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 
 			if (augLevel < 0.0 && Energy > 0.0) //this means we can't have both augs installed, and that for passive to work energy is required. //RSD: Actually it just means active overrides passive
 			{
-                augLevel = AugBallisticPassive(AugmentationSystem.GetAug(class'AugBallisticPassive')).GetDamageMod(true);
+                ballistic = AugBallisticPassive(AugmentationSystem.GetAug(class'AugBallisticPassive'));
+                if (ballistic != None) //SARGE: Accessed none?
+                    augLevel = ballistic.GetDamageMod(true);
 			}
 			//augLevel *= AugmentationSystem.GetAugLevelValue(class'AugBallistic');//RSD: figure out stacking prots later maybe
         }
@@ -17404,6 +17528,7 @@ function CreateColorThemeManager()
 		ThemeManager.AddTheme(Class'ColorThemeHUD_VonBraun');
 		ThemeManager.AddTheme(Class'ColorThemeHUD_WildBerry');
 		ThemeManager.AddTheme(Class'ColorThemeHUD_ZeroOne');
+        ThemeManager.UpdateCustomTheme();
 	}
 }
 
@@ -18092,7 +18217,7 @@ function MultiplayerTick(float DeltaTime)
 
 // ----------------------------------------------------------------------
 
-function ForceDroneOff(optional bool skipDeactivation)
+function ForceDroneOff()
 {
 	local AugDrone anAug;
 
@@ -18102,14 +18227,8 @@ function ForceDroneOff(optional bool skipDeactivation)
         //foreach AllActors(class'AugDrone', anAug)
         if (anAug != None)
         {
-            if (bSpyDroneSet)
-            {
-                anAug.ToggleStandbyMode(true);
-            }
-            if (!skipDeactivation)
-            {
-                anAug.Deactivate();
-            }
+            anAug.bDestroyNow = true;
+            anAug.Deactivate();
         }
     }
 }
@@ -18808,6 +18927,8 @@ defaultproperties
      bAnimBar1=True
      bAnimBar2=True
      bRealisticCarc=True
+     bRestrictedMetabolism=True
+     bHackLockouts=True
      bRemoveVanillaDeath=False
      bHitmarkerOn=True
      bMantleOption=True
@@ -18889,7 +19010,7 @@ defaultproperties
      BindName="JCDenton"
      FamiliarName="JC Denton"
      UnfamiliarName="JC Denton"
-     bEnhancedWeaponOffsets=false
+     iEnhancedWeaponOffsets=1
      bQuickAugWheel=false
      bAugWheelDisableAll=true
      bAugWheelFreeCursor=true
@@ -18941,4 +19062,7 @@ defaultproperties
      iShowTotalCounts=1
      iSmartKeyring=1
      iAltFrobDisplay=1
+     bDialogHUDColors=True
+     bQuietAugs=True
+     bEnableLeftFrob=True
 }

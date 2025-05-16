@@ -119,7 +119,11 @@ event bool ToggleChanged(Window button, bool bNewToggle)
 
 function SetObjectNumber(int newNumber)
 {
+    local string nanoBind;
 	objectNum = newNumber;
+
+    if (player == None || player.KeybindManager == None)
+        return;
 
     //SARGE: mildly annoying.
     //belt numbers are offset by 1 in the ActivateBelt code,
@@ -134,12 +138,13 @@ function SetObjectNumber(int newNumber)
         beltText = player.KeybindManager.GetBindingString(KB_Belt0,objectNum);
 
     //SARGE: Add extra bind for the nano key
-    if (item.IsA('NanoKeyRing'))
+    if (item != None && item.IsA('NanoKeyRing'))
     {
-    if (item.IsA('NanoKeyRing') && beltText != "")
-        beltText = player.KeybindManager.GetBinding(KB_Keyring,0) $ ", " $ beltText;
-    else if (item.IsA('NanoKeyRing'))
-        beltText = player.KeybindManager.GetBindingString(KB_Keyring);
+        nanoBind = player.KeybindManager.GetBinding(KB_Keyring,0);
+        if (nanoBind != "" && beltText != "")
+            beltText = nanoBind $ ", " $ beltText;
+        else
+            beltText = nanoBind $ beltText;
     }
 }
 

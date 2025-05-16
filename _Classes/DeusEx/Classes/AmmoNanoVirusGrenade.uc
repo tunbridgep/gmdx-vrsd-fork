@@ -8,6 +8,7 @@ defaultproperties
      ammoSkill=Class'DeusEx.SkillDemolition'
      AmmoAmount=1
      MaxAmmo=5
+     ItemArticle="a"
      ItemName="Scramble Grenade"
      PickupViewMesh=LodMesh'DeusExItems.TestBox'
      Icon=Texture'DeusExUI.Icons.BeltIconWeaponNanoVirus'

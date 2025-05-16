@@ -397,10 +397,11 @@ function class<Ammo> GetPrimaryAmmoType()
 // SARGE: Refactored this out of the Carcass Frob function so it was hopefully less horribly long,
 // and it was repeated everywhere, all over the codebase. For shame, GMDX!!!
 // ----------------------------------------------------------------------
-function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, optional bool bLootSound, optional bool bNoRemoveClipAmmo, optional bool bOverflow, optional Texture overrideTexture)
+function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, optional bool bLootSound, optional bool bNoRemoveClipAmmo, optional bool bOverflow)
 {
     local class<Ammo> defAmmoClass;
     local int intj;
+    local Texture overrideTexture;
 
     if (P == None)
         return false;
@@ -413,6 +414,10 @@ function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, op
     //hack
     if (defAmmoClass == class'AmmoNone' || self.PickupAmmoCount <= 0)
         return false;
+
+    //Shuriken hack
+    if (IsA('WeaponShuriken') && WeaponShuriken(self).bImpaled)
+        overrideTexture = Texture'RSDCrap.Icons.BeltIconShurikenBloody';
 
     intj = P.LootAmmo(defAmmoClass,PickupAmmoCount,bDisplayMsg,bDisplayWindow,bLootSound,!bDisposableWeapon,bDisposableWeapon,bOverflow,overrideTexture);
 
@@ -521,6 +526,8 @@ function ResizeHeavyWeapon(DeusExPlayer player)
 //Function to fix weapon offsets
 function DoWeaponOffset(DeusExPlayer player)
 {
+    local bool bDoOffsets;
+        
     if (player == None)
         return;
 
@@ -537,7 +544,9 @@ function DoWeaponOffset(DeusExPlayer player)
             bOldOffsetsSet = true;
         }
 
-        if (player.bEnhancedWeaponOffsets)
+        bDoOffsets = player.iEnhancedWeaponOffsets == 2 || (player.iEnhancedWeaponOffsets == 1 && player.defaultFOV >= 110);
+
+        if (bDoOffsets && !IsClyzmModel())
         {
             default.PlayerViewOffset.x = weaponOffsets.x;
             default.PlayerViewOffset.y = weaponOffsets.y;
@@ -617,8 +626,9 @@ if (Other.IsA('Pawn') || Other.IsA('Pickup') || (Other.IsA('DeusExDecoration') &
 
 if (Other.IsA('Pawn') && !Other.IsA('Robot'))
 {
-SpawnBlood(Location,any);
-PlaySound(Misc1Sound,SLOT_None,,,1024);
+    if (!Other.IsA('ScriptedPawn') || ScriptedPawn(Other).bCanBleed)
+        SpawnBlood(Location,any);
+    PlaySound(Misc1Sound,SLOT_None,,,1024);
 }
 }
 }
@@ -698,7 +708,8 @@ function PreBeginPlay()
 	}
 
     UpdateHDTPSettings();
-    DoWeaponOffset(DeusExPlayer(GetPlayerPawn()));
+    if (Owner != None && Owner.IsA('DeusExPlayer'))
+        DoWeaponOffset(DeusExPlayer(Owner));
 }
 
 function SupportActor( actor StandingActor )
@@ -728,6 +739,11 @@ function DropFrom(vector StartLocation)
 	checkweaponskins();                                                         //RSD: Need to do this after so we know mesh for Clyzm model check
 }
 
+function bool IsClyzmModel()
+{
+    return IsHDTP() && iHDTPModelToggle == 2;
+}
+
 //Shorthand for accessing hands tex
 function SetWeaponHandTex()
 {
@@ -736,7 +752,7 @@ function SetWeaponHandTex()
     p = deusexplayer(owner);
 	
     //FOMOD weapons use the FOMOD hands
-    if (p != None && IsHDTP() && iHDTPModelToggle == 2)
+    if (p != None && IsClyzmModel())
     {
         switch (p.PlayerSkin)
         {
@@ -1352,7 +1368,7 @@ function bool HandlePickupQuerySuper( inventory Item )                          
 	return Inventory.HandlePickupQuery(Item);
 }
 
-function float SetDroppedAmmoCount(int amountPassed, optional int impaleCount) //RSD: Added optional int amountPassed for initialization in MissionScript.uc //SARGE: Generified this for corpses too, now takes an optional impale count
+function SetDroppedAmmoCount(int amountPassed) //RSD: Added optional int amountPassed for initialization in MissionScript.uc //SARGE: Generified this for corpses too, now takes an optional impale count
 {
     if (amountPassed == 0) //RSD: If we didn't get anything, set to old formula
         amountPassed = Rand(4) + 1;
@@ -1363,22 +1379,19 @@ function float SetDroppedAmmoCount(int amountPassed, optional int impaleCount) /
 	// Grenades and LAMs always pickup 1
                         
     //Handle impales.
-    if (IsA('WeaponShuriken') && impaleCount > 0)
-    {
-        if (impaleCount > 1)
-            impaleCount = 1; //Cap impales at one
-        PickupAmmoCount = impaleCount;
-        if (PickupAmmoCount == 0)
-            PickupAmmoCount = 1;
-    }
+    //Impales have their pickupammocount set manually, so don't change it
+    if (IsA('WeaponShuriken') && WeaponShuriken(Self).bImpaled)
+        return;
 
     // Grenades and LAMs always pickup 1
     else if (bDisposableWeapon && !IsA('WeaponShuriken'))
         PickupAmmoCount = 1;
+    else if (IsA('WeaponShuriken'))
+        PickupAmmoCount = MAX(1,amountPassed / 2);                //SARGE: capped at 2
     else if (IsA('WeaponFlamethrower'))
         PickupAmmoCount = (amountPassed * 5);                    //SARGE: Now 5-25 rounds with initialization in MissionScript.uc on first map load
     else if (IsA('WeaponPepperGun'))
-        PickupAmmoCount = 34 + (amountPassed * 4);               //SARGE: Now 35-50 rounds with initialization in MissionScript.uc on first map load
+        PickupAmmoCount = 35 + (amountPassed * 3);               //SARGE: Now 38-50 rounds with initialization in MissionScript.uc on first map load
     else if (IsA('WeaponAssaultGun'))
         //PickupAmmoCount = Rand(5) + 1.5;                          //RSD
         PickupAmmoCount = amountPassed + 1;                      //RSD: Now 2-5 rounds with initialization in MissionScript.uc on first map load
@@ -1390,7 +1403,7 @@ function float SetDroppedAmmoCount(int amountPassed, optional int impaleCount) /
     else if (default.PickupAmmoCount != 0)
         PickupAmmoCount = 1; //CyberP: hmm
 
-    clipcount = PickupAmmoCount;
+    clipcount = MIN(PickupAmmoCount,ReloadCount);
 }
 
 function BringUp()
@@ -1603,12 +1616,13 @@ function int CalculateTrueDamage()
 	local int trueDamage;
     local DeusExPlayer P;
     local float mult;
+    local float hit;
 
     P = DeusExPlayer(Owner);
 
     //SARGE: Factor in Targeting and Combat Strength
     //SARGE: NOTE: Targeting is handled in GetWeaponSkill, so not needed here.
-    if (P != None)
+    if (P != None && bHandToHand)
     {
         if (P.AugmentationSystem != None)
             mult = P.AugmentationSystem.GetAugLevelValue(class'AugCombatStrength');
@@ -1622,9 +1636,15 @@ function int CalculateTrueDamage()
             mult += 0.5;
 	}
 
-    trueDamage = HitDamage * (1.0 - (2.0 * GetWeaponSkill()) + mult + ModDamage);
+    //SARGE: I have no idea why the crossbow is so fucked...
+    if (IsA('WeaponMiniCrossbow'))
+        hit = HitDamage - 2;
+    else
+        hit = HitDamage;
 
-    //P.ClientMessage("Damage: " $ trueDamage @ "(" $ mult @ GetWeaponSkill() @ ")");
+    trueDamage = int(hit * (1.0 - (2.0 * GetWeaponSkill()) + mult + ModDamage));
+
+    //P.ClientMessage("Damage: " $ hit $ " - " $ trueDamage @ "(" $ mult @ GetWeaponSkill() @ ")");
 	return trueDamage;
 }
 
@@ -3567,6 +3587,7 @@ function Fire(float Value)
     if (player != None && player.bBlockNextFire)
     {
         player.bBlockNextFire = false;
+        GotoState('Idle');  //SARGE: Needed to not break weapons
         return;
     }
 
@@ -3823,6 +3844,13 @@ simulated function PlaySelectiveFiring()
 		       LoopAnim(anim,1 * mod, 0.1);
 		      //PlayAnim(anim,1 * mod, 0.1);
 		}
+        //Assault gun grenade launcher
+		else if (IsA('WeaponAssaultGun'))
+        {
+            //mod = 4.000000;
+			//PlayAnim(anim,1 * mod,0.1);
+            return;
+        }            
 		else if (bHandToHand && !IsA('WeaponHideAGun') && !IsA('WeaponLAW'))
 		{
 			if (hhspeed < 1.0)
@@ -3911,7 +3939,7 @@ simulated function PlayIdleAnim()
 		{
 			if (rnd < 0.1)
 			{
-				if (IsHDTP() && iHDTPModelToggle == 2) //RSD: Clyzm model
+				if (IsClyzmModel()) //RSD: Clyzm model
 					PlayAnim('Idle',1.5,0.1);
 				else
 					PlayAnim('Idle1',1.5,0.1);
@@ -3925,7 +3953,7 @@ simulated function PlayIdleAnim()
 		{
 			if (rnd < 0.1)
 			{
-				if (IsHDTP() && iHDTPModelToggle == 2) //RSD: Clyzm model
+				if (IsClyzmModel()) //RSD: Clyzm model
 					PlayAnim('Idle',,0.1);
 				else
 					PlayAnim('Idle1',,0.1);
@@ -4349,10 +4377,11 @@ simulated function Vector ComputeProjectileStart(Vector X, Vector Y, Vector Z)
         //SARGE: Filthy. dirty hack!!
         //We need to reset our offsets because otherwise projectiles can
         //spawn too close to the player, and collide with him!
-        if (bOldOffsetsSet)
+        if (bOldOffsetsSet && Owner != None && Owner.IsA('DeusExPlayer'))
             default.PlayerViewOffset = oldOffsets;
 		Start = Owner.Location + CalcDrawOffset() + FireOffset.X * X + FireOffset.Y * Y + FireOffset.Z * Z;
-        DoWeaponOffset(DeusExPlayer(Owner));
+        if (Owner != None && Owner.IsA('DeusExPlayer'))
+            DoWeaponOffset(DeusExPlayer(Owner));
     }
 
 	return Start;
@@ -5243,18 +5272,26 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
                 }
                 else
                 {
-				    if (!bHandToHand && !IsA('WeaponProd') && !Pawn(Other).IsA('DeusExPlayer') && !Pawn(Other).IsInState('Dying'))
+				    if (!bHandToHand && !IsA('WeaponProd') && (!IsA('WeaponSawedOffShotgun') || AmmoRubber(ammoType) == none) && !Pawn(Other).IsA('DeusExPlayer') && !Pawn(Other).IsInState('Dying'))
                     {
-						SpawnBlood(HitLocation, HitNormal);
-                        spoofer = Spawn(class'BloodMeleeHit',,,HitLocation);
+                        if (ScriptedPawn(Other).bCanBleed)
+                        {
+                            SpawnBlood(HitLocation, HitNormal);
+                            spoofer = Spawn(class'BloodMeleeHit',,,HitLocation);
+                        }
                         if (spoofer != none)
                             spoofer.DrawScale= 0.14;
                     }
                     else if (bHandToHand)
 					{
-						SpawnBlood(HitLocation, HitNormal);
-                       if (IsA('WeaponNanoSword') || IsA('WeaponCombatKnife') || IsA('WeaponSword') || IsA('WeaponCrowbar'))
-				         spoofer = Spawn(class'BloodMeleeHit',,,HitLocation);
+                        if (IsA('WeaponNanoSword') || IsA('WeaponCombatKnife') || IsA('WeaponSword') || IsA('WeaponCrowbar'))
+                        {
+                            if (ScriptedPawn(Other).bCanBleed)
+                            {
+                                SpawnBlood(HitLocation, HitNormal);
+                                spoofer = Spawn(class'BloodMeleeHit',,,HitLocation);
+                            }
+                        }
 					}
 				}
 			}
@@ -6409,7 +6446,8 @@ exec function UpdateHDTPsettings()
     SetWeaponHandTex();
     UpdateLargeIcon();
     CheckWeaponSkins();
-    DoWeaponOffset(DeusExPlayer(GetPlayerPawn()));
+    if (Owner != None && Owner.IsA('DeusExPlayer'))
+        DoWeaponOffset(DeusExPlayer(Owner));
 }
 
 //
@@ -6717,7 +6755,7 @@ else
                 while (ClipCount < ReloadCount && AmmoType.AmmoAmount > 0 && ClipCount < AmmoType.AmmoAmount)                //RSD: Reverted Assault shotty, added GEP
                 {
                     sleeptime = 0;
-                    if (IsA('WeaponAssaultShotgun') || (IsA('WeaponSawedOffShotgun') && (iHDTPModelToggle != 2||!IsHDTP()))) //RSD: use normal sound routine if not using Clyzm's shotty
+                    if (IsA('WeaponAssaultShotgun') || (IsA('WeaponSawedOffShotgun') && (!IsClyzmModel()||!IsHDTP()))) //RSD: use normal sound routine if not using Clyzm's shotty
                         LoadShells();
                     //Sleep(GetReloadTime());
                     //SARGE: Changed to now check during reload, so it's more responsive
@@ -6888,7 +6926,7 @@ Begin:
 	bFiring = False;
 	if (!bNearWall)
 	{
-		if (IsHDTP() && iHDTPModelToggle == 2) //RSD: Clyzm model
+		if (IsClyzmModel()) //RSD: Clyzm model
 			PlayAnim('Idle',,0.1);
 		else
 			PlayAnim('Idle1',,0.1);
@@ -7038,7 +7076,7 @@ Begin:
               PlayAnim('Idle2',,0.1);
            else
 			{
-				if (IsHDTP() && iHDTPModelToggle == 2) //RSD: Clyzm model
+				if (IsClyzmModel()) //RSD: Clyzm model
 					PlayAnim('Idle',,0.1);
 				else
 					PlayAnim('Idle1',,0.1);
@@ -7046,7 +7084,7 @@ Begin:
         }
         else if (!bNearWall && !activateAn)
 		{
-			if (IsHDTP() && iHDTPModelToggle == 2) //RSD: Clyzm model
+			if (IsClyzmModel()) //RSD: Clyzm model
 				PlayAnim('Idle',,0.1);
 			else
 				PlayAnim('Idle1',,0.1);

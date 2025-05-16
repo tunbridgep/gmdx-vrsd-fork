@@ -41,8 +41,8 @@ defaultproperties
      items(24)=(HelpText="If enabled, the intro cutscene is not loaded.",actionText="Game: Skip Intro",variable="bSkipNewGameIntro");
      items(25)=(HelpText="Show outer crosshairs at 100% accuracy. Disable this if they get in the way.",actionText="HUD: 100% Accuracy Crosshairs",variable="bFullAccuracyCrosshair",defaultValue=1);
      items(26)=(HelpText="Always display the total amount of ammo available, rather than the number of magazines. Some weapons always show total ammo count. Disabled on Hardcore.",actionText="HUD: Accurate Ammo Display",variable="bDisplayTotalAmmo");
-     items(27)=(HelpText="Change weapon viewmodels to display better on some widescreen resolutions.",actionText="HUD: Alternate Weapon Offsets",variable="bEnhancedWeaponOffsets");
-     items(28)=(HelpText="Display CLIPS or MAGS in the Ammo window. Has no effect for weapons that don't use magazines, or if Accurate Ammo Display is turned on.",actionText="HUD: Ammo Text Display",variable="bDisplayClips",valueText0="MAGS",valueText1="CLIPS",defaultValue=1);
+     items(27)=(HelpText="Change weapon viewmodels to display better at high FOV (110+).",actionText="HUD: Alternate Weapon Offsets",variable="iEnhancedWeaponOffsets",defaultValue=1,valueText1="Automatic",valueText2="Always");
+     items(28)=(HelpText="Display CLIPS or MAGS in the Ammo window. Has no effect for weapons that don't use magazines, or if Accurate Ammo Display is turned on.",actionText="HUD: Ammo Text Display",variable="bDisplayClips",valueText0="MAGS",valueText1="CLIPS",defaultValue=0);
      items(29)=(HelpText="Always show the accuracy crosshairs for your currently held weapon.",actionText="HUD: Always Show Bloom",variable="bAlwaysShowBloom");
 	 items(30)=(HelpText="Alternative tool display window with some minor text and spacing changes.",actionText="HUD: Alternate Tool Window Display",variable="iAltFrobDisplay",valueText1="Indented",valueText2="Extended",defaultValue=1);
 	 items(31)=(HelpText="Shows the ammo display on the right side of the screen, and the belt on the left",actionText="HUD: Ammo Display on Right",variable="bAmmoDisplayOnRight");
@@ -64,14 +64,14 @@ defaultproperties
      items(47)=(HelpText="Don't show the Repair Bot interface if it's not currently charged.",actionText="HUD: Streamlined Repair Bot Interface",variable="bStreamlinedRepairBotInterface",defaultValue=1);
      //items(48)=(HelpText="Augmentation descriptions will be simplified. Disable to show the difference between Energy Reserving (toggle) augmentations and conditional energy using (Automatic) augmentations.",actionText="HUD: Simplified Aug Categories",variable="bSimpleAugSystem",defaultValue=1);
      items(48)=(HelpText="Use smaller fonts for some HUD Elements.",actionText="HUD: Use Classic Fonts",variable="bClassicFont",consoleTarget="DeusEx.FontManager",defaultValue=0);
-     items(49)=(HelpText="If enabled, the crosshair will turn blue when attempting to attach a mine to a surface.",actionText="HUD: Wall Placement Helper",variable="bWallPlacementCrosshair",defaultValue=1);
+     items(49)=(HelpText="If enabled, the crosshair will turn blue when attempting to attach a mine to a surface, or when highlighting with the Wireless Strength perk.",actionText="HUD: Wall Placement Helper",variable="bWallPlacementCrosshair",defaultValue=1);
      items(50)=(HelpText="If enabled, attempting to pick up carryable objects will automatically holster your held weapon, enabling you to pick up the object.",actionText="Interaction: Auto-Holster",variable="bAutoHolster");
      items(51)=(HelpText="If enabled, Data Cubes will show when they have been interacted with.",actionText="Interaction: Darken Data-Cube Screens",variable="bShowDataCubeRead",defaultValue=1);
      items(52)=(HelpText="If enabled, double-right click to holster/unholster items in hand. Prevents accidentally putting away items when attempting to interact with the world.",actionText="Interaction: Double-Click Holstering",variable="dblClickHolster",valueText2="Holstering and Unholstering",defaultValue=2);
      items(53)=(HelpText="If enabled, right clicking a corpse for the first time will never pick it up, to stop accidentally picking up corpses while searching for items.",actionText="Interaction: Enhanced Carcass Searching",variable="bEnhancedCorpseInteractions",defaultValue=1);
      items(54)=(HelpText="If enabled, left-clicking with nothing targeted will unholster your last item.",actionText="Interaction: Left-Click Unholstering",variable="bLeftClickUnholster");
      items(55)=(HelpText="Append item counts to item pickup text, if more than 1 item is in the stack.",actionText="Interaction: Show Item Count Labels",variable="bShowItemPickupCounts");
-     items(56)=(HelpText="Append [Searched] text to corpses when they are interacted with.",actionText="Interaction: Show Searched Labels",variable="bSearchedCorpseText");
+     items(56)=(HelpText="Append [Searched] text to corpses when they are interacted with.",actionText="Interaction: Show Searched Labels",variable="bSearchedCorpseText",defaultValue=1);
      items(57)=(HelpText="With an item in your hand, Right-Clicking will pull out Lockpicks and Multitools, similar to Revision, and will also go back to previous item. Left-Clicking works when hands are empty.",actionText="Interaction: Right-Click Tool Selection.",variable="bRightClickToolSelection");
      items(58)=(HelpText="Loot will not be declined from corpses if the Walk/Run key is held.",actionText="Interaction: Smart Declining",variable="bSmartDecline");
      items(59)=(HelpText="When using a medical bot, automatically switch to the Health screen after using the last Aug canister.",actionText="Interaction: Medbot Auto Switch",variable="bMedbotAutoswitch",defaultValue=1);
@@ -81,7 +81,7 @@ defaultproperties
      items(63)=(HelpText="When dying, switch to a first or third person camera.",actionText="Player: Death Perspective",variable="bRemoveVanillaDeath",valueText0="Third Person",valueText1="First Person");
 	 items(64)=(HelpText="If enabled, the current player stance will be displayed on the HUD.",actionText="Player: Current Stance Display",variable="iStanceHud",defaultValue=3,valueText1="Walk/Run",valueText2="Everything except Default",valueText3="Everything");
 	 items(65)=(HelpText="Disable the flash effect when healing or change the color.",actionText="Player: Healing Screen Effect",variable="iHealingScreen",defaultValue=1,valueText2="Classic");
-     items(66)=(HelpText="Active Augmentations no longer play their ambient sounds.",actionText="Player: Quiet Augmentations",variable="bQuietAugs",defaultValue=0);
+     items(66)=(HelpText="Active Augmentations no longer play their ambient sounds.",actionText="Player: Quiet Augmentations",variable="bQuietAugs",defaultValue=1);
      items(67)=(HelpText="Alternate realistic headbobbing effect. To disable headbobbing outright, see the standard Settings menu.",actionText="Player: Realistic Head-Bobbing",variable="bModdedHeadBob",defaultValue=1);
      items(68)=(HelpText="Prevent accidentally killing domesticated animals by stomping on them.",actionText="Player: Stomp Domestic Animals",variable="bStompDomesticAnimals",defaultValue=0);
      items(69)=(HelpText="Prevent accidentally killing vac-bots by stomping on them.",actionText="Player: Stomp Vac Bots",variable="bStompDomesticAnimals",defaultValue=0);
@@ -93,6 +93,9 @@ defaultproperties
      //items(74)=(HelpText="If enabled, selecting an item that isn't on the toolbelt will clear the primary selection, allowing right-click to reselect it. Only applies to the Invisible War Toolbelt.",actionText="Belt: Auto-Clear Primary Selection",variable="bAllowSelectingOffAdvBelt",defaultValue=1)
      items(75)=(HelpText="If enabled, killed enemies will drop their current weapon as they die. Realism option, not intended for general use.",actionText="Game: Enemies Drop Weapons on Death",variable="bDropWeaponsOnDeath",defaultValue=0)
      items(76)=(HelpText="If enabled, the intro and ending cutscenes will play at preset volume ratios.",actionText="Game: Intro/Outro Volume Equalisation",variable="bCutsceneVolumeEqualiser",defaultValue=1)
+     items(77)=(HelpText="Show darkened versions of ignored and declined items in the Items Received Window when searching carcasses.",actionText="HUD: Show Unlooted in Items Window",variable="bShowDeclinedInReceivedWindow")
+     items(78)=(HelpText="When active, left-clicking on doors, crates, windows and other interactive items while holstered will select the appropriate tool or melee weapon.",actionText="Interaction: Left-Click Interactions",variable="bEnableLeftFrob",defaultValue=1)
+     items(79)=(HelpText="If Enabled, JC will always keep their weapon drawn during conversations. JC will always keep weapons drawn in some circumstances.",actionText="Conversations: Keep Weapon Drawn",variable="bConversationKeepWeaponDrawn")
      Title="GMDX Quality of Life Options"
      colWidths(0)=214
      colWidths(1)=155

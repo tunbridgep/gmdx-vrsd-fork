@@ -638,6 +638,7 @@ function PostBeginPlay()
             ScaleGlow = 1.000000;
 		KillShadow();
 		bHasShadow = False;
+		bCanBleed = False;
 	}
 }
 
@@ -3330,7 +3331,8 @@ function Carcass SpawnCarcass()
                         item.GiveTo(self);
                         item.SetBase(self);
 					    item.SetPhysics(PHYS_None);
-					    carc.passedImpaleCount = impaleCount;
+                        WeaponShuriken(item).bImpaled = true;
+                        WeaponShuriken(item).PickupAmmoCount = 1; //SARGE: New shuriken pickup code is here, so we don't have to mess with passedImpaleCount
 					}
             }
 			if (Inventory != None)
@@ -4002,7 +4004,7 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
     }
     }
 
-        if (HealthHead < 0 && (DamageType == 'Shot' || DamageType == 'Sabot'))
+        if (bCanBleed && HealthHead < 0 && (DamageType == 'Shot' || DamageType == 'Sabot'))
         {
         deathSoundOverride = Sound'DeusExSounds.Generic.FleshHit1';
        player = DeusExPlayer(GetPlayerPawn());
@@ -13794,6 +13796,7 @@ State Attacking
     local Vector HitNormal, HitLocation, StartTrace, EndTrace, offset;
     local int i;
     local bool bSafe, bSafe2;
+    local Actor hit;
 
     if (Enemy != None && Enemy.IsA('DeusExPlayer'))
         playa = DeusExPlayer(Enemy);
@@ -13810,7 +13813,11 @@ State Attacking
      else
          EndTrace = playa.Location;
 
-        ForEach Trace(HitLocation, HitNormal, EndTrace, StartTrace, True, vect(4,4,4)).RadiusActors(Class'DeusExPlayer',playa,192,HitLocation)
+        hit = Trace(HitLocation, HitNormal, EndTrace, StartTrace, True, vect(4,4,4));
+        
+        if (hit == None)
+            return;
+        ForEach hit.RadiusActors(Class'DeusExPlayer',playa,192,HitLocation)
         {
           i++;
           if (i == 1)

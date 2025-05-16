@@ -43,8 +43,9 @@ defaultproperties
      ItemName="Human Femur"
      LifeSpan=30.000000
      HDTPSkin="HDTPItems.Skins.HDTPFlatFXtex6"
+     Skin=Texture'DeusExItems.Skins.FlatFXtex6'
      HDTPMesh="HDTPDecos.HDTPbonefemur"
-     Mesh=LodMesh'DeusDeco.BoneFemur'
+     Mesh=LodMesh'DeusExDeco.bonefemur'
      CollisionRadius=2.000000
      CollisionHeight=0.780000
      bCollideActors=False

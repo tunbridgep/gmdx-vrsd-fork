@@ -5,6 +5,9 @@ class Lockpick expands SkilledTool;
 
 function DisplayWeapon(bool overlay)
 {
+    if (overlay && IsHDTP())
+        Multiskins[1] = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPLockpickPOVTex1");
+
     if (overlay)
         Multiskins[0] = handsTex;
 }
@@ -57,6 +60,7 @@ defaultproperties
      Description="A disposable lockpick. The tension wrench is steel, but appropriate needles are formed from fast congealing polymers.|n|n<UNATCO OPS FILE NOTE AJ006-BLACK> Here's what they don't tell you: despite the product literature, you can use a standard lockpick to bypass all but the most high-class nanolocks. -- Alex Jacobson <END NOTE>"
      beltDescription="LOCKPICK"
      Mesh=LodMesh'DeusExItems.Lockpick'
+     HDTPTexture="HDTPItems.Skins.HDTPLockpickTex1"
      CollisionRadius=11.750000
      CollisionHeight=1.900000
      Mass=20.000000

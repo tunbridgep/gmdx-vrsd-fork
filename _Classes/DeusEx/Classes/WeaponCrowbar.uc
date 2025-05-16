@@ -26,13 +26,23 @@ function DisplayWeapon(bool overlay)
 		if (IsHDTP())
 		{
 			multiskins[1] = handsTex;
+            if (iHDTPModelToggle == 2)
+                Texture = default.Texture;
+            else
+                Texture = Texture'PinkMaskTex';
 		}
 		else
 		{
-		   multiskins[1]=handsTex;                                        //RSD: Fix vanilla hand tex
-		   multiskins[2]=handsTex;
+            multiskins[1]=handsTex;                                        //RSD: Fix vanilla hand tex
+            multiskins[2]=handsTex;
 		}
 	}
+}
+
+//Can't have Clyzm model
+function bool IsClyzmModel()
+{
+    return false;
 }
 
 defaultproperties
@@ -83,6 +93,7 @@ defaultproperties
      PlayerViewMesh=LodMesh'DeusExItems.Crowbar';
      PickupViewMesh=LodMesh'DeusExItems.CrowbarPickup';
      ThirdPersonMesh=LodMesh'DeusExItems.Crowbar3rd';
+     Mesh=LodMesh'DeusExItems.CrowbarPickup';
      LandSound=Sound'DeusExSounds.Weapons.CrowbarHitHard'
      Icon=Texture'DeusExUI.Icons.BeltIconCrowbar'
      largeIcon=Texture'DeusExUI.Icons.LargeIconCrowbar'

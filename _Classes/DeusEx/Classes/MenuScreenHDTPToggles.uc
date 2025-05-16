@@ -80,7 +80,7 @@ defaultproperties
      Items(28)=(actionText="Assault Shotgun",defaultValue=1,consoleTarget="DeusEx.WeaponAssaultShotgun",sortcategory="0BAA")
      Items(29)=(actionText="Baton",consoleTarget="DeusEx.WeaponBaton",sortcategory="0BAA")
      Items(30)=(actionText="Combat Knife",defaultValue=1,consoleTarget="DeusEx.WeaponCombatKnife",sortcategory="0BAA")
-     Items(31)=(actionText="Crowbar",defaultValue=1,consoleTarget="DeusEx.WeaponCrowbar",sortcategory="0BAA")
+     Items(31)=(actionText="Crowbar",defaultValue=1,consoleTarget="DeusEx.WeaponCrowbar",valueText2="HDTP (Shiny)",sortcategory="0BAA")
      Items(32)=(actionText="EMP Grenade",consoleTarget="DeusEx.WeaponEMPGrenade",sortcategory="0BAA")
      Items(33)=(actionText="Flamethrower",defaultValue=1,consoleTarget="DeusEx.WeaponFlamethrower",sortcategory="0BAA")
      Items(34)=(actionText="Gas Grenade",consoleTarget="DeusEx.WeaponGasGrenade",sortcategory="0BAA")
@@ -247,6 +247,7 @@ defaultproperties
      Items(193)=(actionText="Shells (Sabot)",defaultValue=1,consoleTarget="DeusEx.AmmoSabot",sortcategory="1Ammo")
      Items(194)=(actionText="Shells (Rubber)",defaultValue=1,consoleTarget="DeusEx.AmmoRubber",sortcategory="1Ammo")
    	 Items(195)=(actionText="Laser Tripwire",defaultValue=1,consoleTarget="DeusEx.LaserTrigger")
+   	 Items(195)=(actionText="Lockpick",defaultValue=1,consoleTarget="DeusEx.Lockpick")
      Title="HDTP Model Options"
      disabledText="Vanilla"
      enabledText="HDTP"

@@ -34,6 +34,7 @@ var Color colBorder;
 var Color colText;
 var const Color colNotEnough;
 var const Color colJustEnough;
+var const Color colWireless;
 
 var localized string msgDoorThreshold; //CyberP: these two vars are for damage threshold display
 var localized string msgObjThreshold;
@@ -108,13 +109,19 @@ function DrawDarkBackground(GC gc, float infoX, float infoY, float infoW, float 
 }
 
 //Ygll: utility function to draw hightlight box
-function DrawHightlightBox(GC gc, float infoX, float infoY, float infoW, float infoH)
+function DrawHightlightBox(GC gc, float infoX, float infoY, float infoW, float infoH, optional bool bWireless)
 {
 	// draw the two highlight boxes
 	gc.SetStyle(DSTY_Translucent);
 	gc.SetTileColor(colBorder);
 	gc.DrawBox(infoX, infoY, infoW, infoH, 0, 0, 1, Texture'Solid');
-	gc.SetTileColor(colBackground);
+
+    //Set color
+    if (bWireless)
+        gc.SetTileColor(colWireless);
+    else
+        gc.SetTileColor(colBackground);
+
 	gc.DrawBox(infoX+1, infoY+1, infoW-2, infoH-2, 0, 0, 1, Texture'Solid');
 }
 
@@ -474,7 +481,7 @@ function DrawDeviceHudInformation(GC gc, actor frobTarget)
 	// draw a dark background
 	DrawDarkBackground(gc, infoX, infoY, infoW, infoH);
 	// draw the two highlight boxes
-	DrawHightlightBox(gc, infoX, infoY, infoW, infoH);
+	DrawHightlightBox(gc, infoX, infoY, infoW, infoH, frobTarget == player.HackTarget);
 	
 	// Draw the current text information	
 	gc.SetTextColor(colText);
@@ -644,7 +651,7 @@ function string GetAugCanInformation(AugmentationCannister can)
 	for(canIndex=0; canIndex<ArrayCount(can.AddAugs); canIndex++)
     {
         aug = can.GetAugGeneric(canIndex,player);
-        retStr = retStr $ CR() $ strDash $ aug.GetName();
+        retStr = retStr $ CR() $ strDash $ aug.GetName(true);
     }
 
     return retStr;
@@ -755,6 +762,7 @@ defaultproperties
 	msgHP2="Hitpoints: 3"
 	colNotEnough=(R=255,G=50,B=50)
 	colJustEnough=(R=255,G=255,B=50)
+    colWireless=(B=255,G=50,R=50)
 	msgDisabled="Disabled"
 	msgTrackAll="Target: All"
 	msgTrackAllies="Target: Allies"

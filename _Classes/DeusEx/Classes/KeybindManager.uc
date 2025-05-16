@@ -46,6 +46,9 @@ enum EKeybind
     //Keyring button
     KB_Keyring,
 
+    //Use Secondary item
+    KB_Secondary,
+
     //Aug Menu
     KB_AugMenu_Hold,
     KB_AugMenu_Toggle,
@@ -65,6 +68,7 @@ var private transient Binding bindings[255];
 //Now things get annoying...
 function string GetBindName(string keyName)
 {
+    //Log("KeyName is ["$keyName$"]");
     switch (keyName)
     {
         case "Minus": return "-";
@@ -75,6 +79,16 @@ function string GetBindName(string keyName)
         case "SingleQuote": return "'";
         case "Comma": return ",";
         case "Period": return ".";
+        case "NumPad1": return "KP1";
+        case "NumPad2": return "KP2";
+        case "NumPad3": return "KP3";
+        case "NumPad4": return "KP4";
+        case "NumPad5": return "KP5";
+        case "NumPad6": return "KP6";
+        case "NumPad7": return "KP7";
+        case "NumPad8": return "KP8";
+        case "NumPad9": return "KP9";
+        case "NumPad0": return "KP0";
         default: return keyName;
     }
 }
@@ -179,7 +193,7 @@ function ClearAll()
     local int i, j;
 
     //Reset bindings
-    for (i=1;i<255;i++)
+    for (i=0;i<255;i++)
     {
         bindings[i].totalBinds = 0;
         bindings[i].alias = "";
@@ -194,6 +208,7 @@ function Setup(DeusExPlayer P)
     local string keyName, alias;
     local int i, augNum, beltNum, arrayvar;
     local EKeybind bindPos;
+    local bool bReplaceShowScores;
     
     player = P;
 
@@ -259,6 +274,23 @@ function Setup(DeusExPlayer P)
                 AddBindingToArray(KB_AugMenu_Hold,keyName);
             if (Left(alias,19) == "ToggleRadialAugMenu")
                 AddBindingToArray(KB_AugMenu_Toggle,keyName);
+
+            //HACK: V is autobound to "Look Down"
+            //Since literally nobody uses that anymore, just clobber it...
+            if (Left(alias,8) == "LookDown" && keyName == "V")
+            {
+                AddBindingToArray(KB_Secondary,keyName);
+                ReplaceAlias(KB_Secondary,"UseSecondary");
+            }
+
+            //HACK: Allow using the Multiplayer Scores button to
+            //also work for belt slot 11
+            //This is inconsistent, but should "just work", so it stays.
+            if (Left(alias,10) == "ShowScores" && keyName == "Equals" /*&& player.bBiggerBelt*/)
+            {
+                bReplaceShowScores = true;
+                AddBindingToArray(KB_Belt12,keyName);
+            }
 	    }
     }
 
@@ -294,6 +326,7 @@ function Setup(DeusExPlayer P)
 
     //Misc keys
     SetupBinding(KB_Keyring,"","SelectNanoKey");
+    SetupBinding(KB_Secondary,"V","UseSecondary");
 
     //Bind the Lean Keys to Tiptoes
     ReplaceAlias(KB_LeanLeft,"LeanLeft | SetTiptoesLeft 1 | OnRelease SetTiptoesLeft 0");
@@ -304,4 +337,7 @@ function Setup(DeusExPlayer P)
     
     //Setup aug wheel key
     ReplaceAlias(KB_AugMenu_Hold,"HoldRadialAugMenu | ToggleRadialAugMenu 1 0 | OnRelease ToggleRadialAugMenu 1 1");
+    
+    if (bReplaceShowScores)
+        ReplaceAlias(KB_Belt12,"ShowScores | ActivateBelt 11");
 }
