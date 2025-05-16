@@ -223,7 +223,7 @@ var globalconfig bool bHitDisplayVisible;
 var globalconfig bool bAmmoDisplayVisible;
 var globalconfig bool bDisplayAmmoByClip;
 var globalconfig bool bCompassVisible;
-var globalconfig bool bCrosshairVisible;
+var globalconfig bool bCrosshairVisible;            //SARGE: Now unused. Don't use this! The only reason it's still here is because the game crashes if we change/remove it. Use the new iCrosshairVisible var instead
 var globalconfig bool bAutoReload;
 var globalconfig bool bDisplayAllGoals;
 var globalconfig bool bHUDShowAllAugs;				// TRUE = Always show Augs on HUD
@@ -812,8 +812,12 @@ var globalconfig bool bEnableLeftFrob;                          //SARGE: No idea
 
 var globalconfig bool bConversationKeepWeaponDrawn;             //SARGE: Always keep weapons drawn during conversations.
 
+var globalconfig int iCrosshairVisible;                         //SARGE: Replaces the boolean crosshair setting, now we can control inner and outer crosshair independently.
+
 //SARGE: Overhauled the Wireless Strength perk to no longer require having a multitool out.
 var HackableDevices HackTarget;
+
+var travel bool bPhotoMode;                                     //SARGE: Show/Hide the entire HUD at once
 
 //////////END GMDX
 
@@ -878,6 +882,31 @@ replication
 	  BuySkillSound, ShowMultiplayerWin, ForceDroneOff ,AddDamageDisplay, ClientSpawnHits, CloseThisComputer, ClientPlayAnimation, ClientSpawnProjectile, LocalLog,
 	  VerifyRootWindow, VerifyConsole, ForceDisconnect;
 
+}
+
+//SARGE: Hide/Show the entire HUD at once
+exec function TogglePhotoMode()
+{
+    SetPhotoMode(!bPhotoMode);
+}
+
+function SetPhotoMode(bool value)
+{
+    bPhotoMode = value;
+    UpdatePhotoMode();
+}
+
+function UpdatePhotoMode()
+{
+    local DeusExRootWindow root;
+	root = DeusExRootWindow(rootWindow);
+    if (root != None && root.hud != None)
+    {
+        if (bPhotoMode)
+            root.hud.Hide();
+        else
+            root.hud.Show();
+    }
 }
 
 exec function cheat()
@@ -1760,6 +1789,9 @@ event TravelPostAccept()
 
 	// reset the keyboard
 	ResetKeyboard();
+
+    //Update Photo Mode
+    UpdatePhotoMode();
 
     //Update HUD
     UpdateHUD();
@@ -11642,6 +11674,8 @@ exec function ToggleObjectBelt()
 
 	bObjectBeltVisible = !bObjectBeltVisible;
 
+    SetPhotoMode(false);
+
 	root = DeusExRootWindow(rootWindow);
 	if (root != None)
 		root.UpdateHud();
@@ -11656,6 +11690,8 @@ exec function ToggleHitDisplay()
 	local DeusExRootWindow root;
 
 	bHitDisplayVisible = !bHitDisplayVisible;
+    
+    SetPhotoMode(false);
 
 	root = DeusExRootWindow(rootWindow);
 	if (root != None)
@@ -11671,6 +11707,8 @@ exec function ToggleAmmoDisplay()
 	local DeusExRootWindow root;
 
 	bAmmoDisplayVisible = !bAmmoDisplayVisible;
+    
+    SetPhotoMode(false);
 
 	root = DeusExRootWindow(rootWindow);
 	if (root != None)
@@ -11686,6 +11724,8 @@ exec function ToggleAugDisplay()
 	local DeusExRootWindow root;
 
 	bAugDisplayVisible = !bAugDisplayVisible;
+    
+    SetPhotoMode(false);
 
 	root = DeusExRootWindow(rootWindow);
 	if (root != None)
@@ -11700,6 +11740,7 @@ exec function ToggleAugDisplay()
 exec function MinimiseTargetingWindow()
 {
     bMinimiseTargetingWindow = !bMinimiseTargetingWindow;
+    SetPhotoMode(false);
 }
 
 // ----------------------------------------------------------------------
@@ -11767,6 +11808,9 @@ exec function ToggleRadialAugMenu(optional bool bHeld, optional bool bRelease)
 exec function ToggleCompass()
 {
 	bCompassVisible = !bCompassVisible;
+
+    SetPhotoMode(false);
+
     UpdateHUD();
 }
 
@@ -11813,8 +11857,12 @@ function SetLaser(bool bNewOn)
 // ----------------------------------------------------------------------
 exec function ToggleCrosshair()
 {
-    bCrosshairVisible = !bCrosshairVisible;
-	UpdateCrosshair();
+    iCrosshairVisible += 1;
+    if (iCrosshairVisible > 2)
+        iCrosshairVisible = 0;
+    
+    SetPhotoMode(false);
+  	UpdateCrosshair();
 }
 
 
@@ -11837,7 +11885,11 @@ function bool GetCrosshairState(optional bool bCheckForOuterCrosshairs)
     if (bSpyDroneActive && !bSpyDroneSet && bCheckForOuterCrosshairs)
         return false;
 
-    if (!bCrosshairVisible)
+    if (iCrosshairVisible == 0)
+        return false;
+    
+    //if we're set to "outer only", then bail if we're checking for normal crosshairs
+    if (iCrosshairVisible == 2 && !bCheckForOuterCrosshairs)
         return false;
 
     if (IsInState('Dying')) //No crosshair while dying
@@ -18858,6 +18910,7 @@ defaultproperties
      bDisplayAmmoByClip=True
      bCompassVisible=True
      bCrosshairVisible=True
+     iCrosshairVisible=1
      bAutoReload=True
      bDisplayAllGoals=True
      bHUDShowAllAugs=True

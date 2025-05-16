@@ -29,6 +29,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed Vanilla bug where NPCs wouldn't blink. Technically they did (only during conversations), but it was too quick to notice. Now they blink properly, and don't need to be in a conversation.
     - Fixed Vanilla bug where the spy drone would be deployable inside a wall, which would make it fail to spawn but keep the augmentation running.
     - Fixed GMDX "Create Custom Theme" menu being able to corrupt standard themes. Now the player is forced into the Custom HUD/Menu themes upon loading the custom theme creator.
+    - Fixed GMDX bug where the ADS augmentation would trigger scripted/invisible grenades in Versalife.
     - Fixed GMDX bug which would make an empty subtitles box appear when interacting with things during first-person conversations, if subtitles were disabled.
     - Fixed GMDX bug where recharging items with biocells would cause the belt view in the inventory to continually get brighter and brighter until the inventory screen was closed.
     - Fixed GMDX slowdowns related to calling timers many times repeatedly.
@@ -42,10 +43,16 @@ Sarge's Changes since Beta 2.2:
     - Fixed vRSD bug where attempting to loot ammo from a weapon while having the same weapon equipped, but with an alternate ammo type (such as AP rounds) would silently fail with no message.
     - Fixed vRSD oversight where Damage mods wouldn't be automatically transferred when attempting to pick up a second Dragons Tooth Sword.
     - Fixed vRSD bug where control panels could be destroyed but would sometimes not trigger their associated hacking event.
+    - Fixed GMDX bug where you could continue to interact with the UI while the game was paused with the Pause key, essentially circumventing the real-time UI restriction.
     - Fixed major GMDX bugs related to spawning items in tight spaces, including weapons with no ammo and items not appearing when gibbing enemies.
+    - Fixed screen shake effects caused by recoil and other events triggering whilst in dialogue or otherwise when input is restricted, which would mess up custom FOV settings.
+    - Fixed vRSD oversight where power usage from automatic augmentations (ie Microfibral Muscle) was not taking into account the gains/losses from Heart and Recirculator. Now, all energy use takes this into account.
     - Fixed many other GMDX and Vanilla bugs.
 - Quality of Life Improvements:
     - Data Cubes containing images will now show the image rather than simply saying you received an image.
+    - Added a third crosshair display option to show only the Outer crosshairs in the Game Options menu and via the "Show/Hide Crosshair" keybinding.
+    - Added Photo Mode, which hides the HUD completely, available in Keyboard settings.
+    - Right-Clicking Fire Extinguishers in the inventory screen will now equip them, rather than using them immediately.
     - Duplicate Nano-Keys are no longer shown in the "Received Items" window when picked up from carcasses.
     - Ballistic Armour and Hazmat Suits are now kept equipped when drained, but will have no effect.
         - Recharging them in any way (such as through biocells or a repair bot) will make them active again
@@ -58,14 +65,19 @@ Sarge's Changes since Beta 2.2:
         - Alternate binds for Augmentations will be displayed on the Active Augs window.
     - The players current stance (Walking/Running, etc) is now displayed on the HUD.
     - By default, Repair Bots will no longer open the repair interface if they are recharging or out of charges.
-    - Music will now continue when loading different areas that use the same music track, rather than restarting.
+    - The Ammo display will display "MAGS" by default. This can be changed back to "CLIPS" in the options.
+    - Music Overbaul
+        - Added an option to only play combat music when 2 or more enemies are engaged in combat, to stop Combat music from constantly starting and stopping during gameplay.
+        - Music will now continue when loading different areas or savegames that use the same music track, rather than restarting.
+        - Music will return to it's saved position when reloading after dying.
+        - Optionally, bars and clubs can be made to continue their standard music during conversations, rather than restarting.
+    - Holding Ctrl, Shift or Alt while double-clicking a skill in the New Game menu will downgrade it.
     - Added a new option to always start a new game with Pistols set to Untrained instead of Trained by default. This has no gameplay impact and you will always have the same total number of skill points.
     - GMDX "Secondary Item" system updated to use a type, rather than a specific item. This means that dropping/losing your secondary items will no longer unassign your secondary item.
     - Taking ammo from weapons in the world will now make an "ammo retrieval" sound.
     - Saving is now possible while an infolink is playing. The infolink will be aborted.
     - The current ammo type is now displayed in the Ammo display as well as on the belt, to facilitate selecting weapons that aren't currently on the belt.
     - The Toolbelt and Augmentation Icons will show multiple hotkeys, if multiple are assigned.
-    - Optionally, bars and clubs can be made to continue their standard music during conversations, rather than restarting.
     - Items in the world now show their pickup count in their name tag if stacked, such as `Lockpick (2)`.
         - This should be exceptionally rare as items are normally dropped one-at-a-time, so this should only really be relevant in the MJ12 prison escape mission.
     - Keypads have been improved:
@@ -81,7 +93,7 @@ Sarge's Changes since Beta 2.2:
         - Belt Autofilling can now be disabled in the options.
         - Selecting an empty belt slot will no longer put away your current item.
         - Right-Clicking an item in the belt with the Inventory Window open will clear the slot.
-        - Charged Items now show their charge percentage.
+        - Charged Items now show their charge percentage on the belt and in the inventory screen.
         - Added "Belt Memory". When belt memory is enabled, using the last item in a belt slot will keep a darkened version of the item's icon in the toolbelt
             - Regardless of the Autofill setting, no other items will be added to the item's slot automatically.
             - Regardless of the Autofill setting, all items of the remembered type will be automatically added to the belt slot when picked up.
@@ -93,7 +105,7 @@ Sarge's Changes since Beta 2.2:
             - With Double Click Unholstering enabled, a single-rightclick will unholster a weapon if the selection was changed.
             - Pressing a number key again while its slot is selected will set it as the primary selection.
             - In previous versions of GMDX, when selecting a belt item using the number keys, right-clicking would switch back to your primary belt selection. Now, it holsters instead.
-                - Setting The IW Toolbelt to "classic mode" will revert this behaviour, and will once again make right-clicking select the primary belt selection.
+                - Setting The IW Toolbelt to "classic" mode will revert this behaviour, and will once again make right-clicking select the primary belt selection.
                 - Setting the IW Toolbelt to "hybrid" mode will only switch back to your primary belt selection if you were unholstered before selecting the current item, otherwise it does nothing.
         - Added a new setting to move the Belt to the left and the Ammo Display to the right.
         - "Smart Keyring" support added.
@@ -102,7 +114,7 @@ Sarge's Changes since Beta 2.2:
             - If "No Keyring" mode is enabled, the keyring will never occupy the slot, allowing the slot to act as a completely normal belt slot.
             - The keyring can still be selected using Left-Click Frob on doors or by right-clicking the Nano-Keyring icon in the inventory screen.
     - Datacubes will show a black screen after they have been read.
-    - Added the option to use the original HUD fonts instead of the GMDX ones.
+    - Added the option to use the original HUD fonts instead of the GMDX ones. This will change the ammo display font to the tiny one used in Vanilla, as well as resetting the Main Menu font.
     - When using a medical bot, using the last augmentation cannister in the Augs screen will automatically switch to the Health screen.
     - The augmentation "hum" sound can be disabled.
     - Added a new setting to make debris, blood pools, and other decals permanent, as well as persistent between map loads.
@@ -120,6 +132,7 @@ Sarge's Changes since Beta 2.2:
     - When picking up duplicate Nanokeys, the log now lists it as a duplicate.
     - While having a grenade selected, the crosshair will turn blue when you're able to place it on a wall.
     - The stamina bar now shows as red when the player is exhausted.
+    - Autosaves now contain JC Denton's real name, for easy identification.
     - Right-Clicking while dead will load the last save game.
         - You won't be automatically returned to the menu either, so you can watch the camera slowly rise for as long as you want.
     - Right-Clicking an item in the belt with the Inventory Window open will clear the slot.
@@ -156,7 +169,7 @@ Sarge's Changes since Beta 2.2:
     - Pressing the walk/run key while crouch toggled will now uncrouch.
     - You can no longer waste medkits or biocells when at maximum health/energy
     - The HUD now shows stamina and bioenergy percentages below the bars if enabled.
-    - Added alternate weapon offsets to hide many of the visible seams or missing parts of weapon viewmodels.
+    - Added alternate weapon offsets to hide many of the visible seams or missing parts of weapon viewmodels at higher FOV settings (110+).
     - Weapons that don't use ammo (such as melee weapons) no longer show the Ammo element on the HUD.
     - Modified Weapons will appear with a "+" icon on the belt and in the inventory screen to differentiate them from unmodded ones.
     - Augmentation Wheel improvements
@@ -164,9 +177,10 @@ Sarge's Changes since Beta 2.2:
         - By default only active augmentations will appear on the wheel. This can be changed to Everything or Nothing. Augs can always be added and removed with middle-click.
         - The "Disable All" button can optionally be removed using the options menu.
         - The augmentation wheel can be changed to work in Quick mode. In Quick mode, releasing the augmentation wheel key will select the currently highlighted augmentation. Use right click to cancel.
+        - The mouse cursor can now move freely, rather than being constrained to a circlular pattern.
+        - The mouse cursor position is now remembered when opening the augmentation wheel (disabled by default).
     - Added a new setting to always show weapon bloom.
     - Added a new setting to not show weapon bloom when at 100% accuracy, because it can obscure targets.
-    - In the Inventory screen, charged items will now show their charge level on their icon. Additionally, belt slots containing charged items will show their charge level.
     - Lockpicks and Multitools will no longer be consumed if you look away from an object you're picking/bypassing. Instead, the action will be cancelled and any progress cancelled.
     - Added an optional "Dynamic Crosshair" mode, which shows a small dot-crosshair when no weapons is equipped, and some items have no crosshairs at all.
         - Also fixed many instances of crosshair weirdness.
@@ -180,6 +194,7 @@ Sarge's Changes since Beta 2.2:
     - "One-shot-at-a-time" reload cancelling has been made far more responsive.
     - Added an option to display the total amount of ammo remaining, rather than the number of magazines. Disabled on Hardcore Mode.
     - Different shotgun shells have different textures, and the boxes were reworked to have a different texture for easier identification.
+        - Shotguns were given proper shotgun casings when firing.
         - Shells also have different sounds when they hit the floor
     - Equipping/Unequipping Environmental Training items gives you a unique sound depending on the item.
     - Pressing the Reload key will no longer reload weapons that have a full clip, unless Trick Reloading is enabled (always enabled on Hardcore).
@@ -203,9 +218,9 @@ Sarge's Changes since Beta 2.2:
             - The priority list is as follows: Chinese Sword, Crowbar, Combat Knife, Baton, Dragon Tooth Sword.
             - If you don't have the weapon or the weapon deals less damage than the breakable object's DT, it'll go to the next one in the priority list.
             - The DT check is disabled on hardcore, so it simply checks the weapon's priority and equips it even if it won't deal enough damage to break the container.
-        - Left-Clicking on a door will pull out the Nano Keyring if you have the correct key, otherwise it will pull out a lockpick.
+        - Left-Clicking on a door will pull out the Nano Keyring if you have the correct key, otherwise it will pull out a lockpick or a melee weapon if pickable/breakable.
             - This behaviour is disabled in Hardcore mode
-            - In Hardcore, Left-Clicking on a door will always pull out a lockpick (or the keyring if the lock is unpickable or you have no lockpicks). Right-clicking will then swap between the keyring and lockpicks.
+            - In Hardcore, Left-Clicking on a door will always pull out a lockpick (or the keyring if the lock is unpickable or you have no lockpicks). Right-clicking will then swap between the keyring lockpicks, and a melee weapon.
         - Left-Clicking on a corpse will always pick it up regardless of inventory. Double-Rightclick still works.
     - Added a new "Right-Click Tool Interaction" option. While having a weapon out, right-clicking on a breakable container or a locked or bypassable item (except keypads) will pull out the appropriate tool.
         - Right-Clicking again after selecting a tool in this manner will switch back to your previous weapon.
@@ -225,9 +240,15 @@ Sarge's Changes since Beta 2.2:
         - Upgraded tech goggles (via the Thermal Imaging perk) and Vision level 3+ work as they did before, with full thermal vision and the ability to see cloaked enemies and enemies through walls.
         - Tech Goggles and the Vision Augmentation are now able to highlight turrets and cameras (was previously only available in multiplayer).
     - JC can now carry 30 Zyme instead of 20, to facilitate selling every one you find to Renault.
+    - Max Ammo Capacity reduced by 50%. Ammo Capacity now ranges from 50% at Untrained to 150% at Master (was 100% at Untrained and 200% at Master).
     - Laser Triggers can no longer be set off by medical and repair bots.
     - Karkians and other transgenics will no longer drown when unconscious.
+    - Unconscious Corpses can now be killed if they are thrown from high falls. Previously the corpse would have to be destroyed.
+        - Unconscious Corpses killed this way will make a unique bone-cracking sound and will begin to bleed.
     - The NUKE! Virus can now be used at Untrained hacking.
+    - Throwing Knives Changes:
+        - Throwing Speed now increases with skill level. Throwing speed has a significant impact on projectile drop.
+        - Noise level reduce slightly. This probably doesn't make a noticeable difference.
     - Cameras will set off more alarm events in Hardcore mode, which will result in them opening doors, releasing bots, etc more often.
     - Destroyable Movers that aren't set to highlighting will now have 1 HP.
         - This removes ambiguity about whether or not a surface is unbreakable, or just needs more hits to destroy.
@@ -245,7 +266,7 @@ Sarge's Changes since Beta 2.2:
     - Putting a scope or a laser sight on the GEP gun now requires the Heavily Tweaked perk (ADVANCED heavy weapons, 100 skill points). The scope and laser sight still provide rocket guidance capabilities.
     - Added a new "Killswitch Engaged" Playthrough Modifier. When enabled, all augmentations will be disabled and a countdown timer will be active while your killswitch is enabled.
     - Added a new "Weapon Requirements Matter" Playthrough Modifier. When enabled, most weapons will require a minimum skill investment in order to be used.
-    - Demolitions Skill Overhaul
+    - Demolitions Skill Overhaul:
         - Demolitions Skill-based grenade timing rescaled from 0.5, 1.0, 2.5, 7.0 seconds to 0.75, 1.0, 1.5, 2.5 seconds
         - Being able to pick up disarmed grenades is now based on skill level - Trained for Gas Grenades, Advanced for EMP and Scrambler Grenades, Master for LAMs.
         - EMP damage will always permanently disable grenades, making them unable to be reused, regardless of skill level.
@@ -258,7 +279,7 @@ Sarge's Changes since Beta 2.2:
         - Added a new perk: Hemorrhage, utilising a new mechanic: Bleed
             - With the perk, organic enemies hit by throwing knives will begin to bleed, taking damage over time.
             - Bleed damage is lethal and can kill targets.
-        - The Dragons Tooth Sword now requires Biocells to use. It starts with 100% charge, with each attack taking 2% if it hits a target, giving you 50 hits total. Biocells restore 20% (or 30% with the Field Repair perk), giving you an additional 10 (15) hits each.
+        - The Dragons Tooth Sword now requires Biocells to use. It starts with 100% charge, with each attack taking 5% if it hits a target, giving you 20 hits total. Biocells restore 20% (or 30% with the Field Repair perk), giving you an additional 4 (6) hits each.
         - Dragons Tooth Sword base damage increased to 25 from 20.
     - Added a new playthrough modifier for adding some cut interactions, namely:
         - JC can arm Miguel with various weapons, including a crossbow, stealth pistol, and others. Miguel will keep them with him thoughout the UNATCO escape.
@@ -274,6 +295,8 @@ Sarge's Changes since Beta 2.2:
             - Toggled augs do not consume energy when active, but must "reserve" a portion of your total bioelectrical energy in order to activate.
             - The reserved amount is not restored upon deactivating the augmentation.
             - Reserve Amounts can be increased by Synthetic Heart and reduced by Power Recirculator
+        - Speed Augmentation
+            - Jumping with the Speed Augmentation now uses 3 energy per jump.
         - EUAS
             - At Level 2, EUAS becomes a Toggle augmentation, reserving 5 energy to detect hazards.
             - Swapped Level 2 and 3, because level 2 was arguably better than level 3. Now level 2 detects environmental hazards, level 3 shows visibility on the HUD.
@@ -287,9 +310,11 @@ Sarge's Changes since Beta 2.2:
                 - Will instead continue to display destroyed projectiles on the HUD for a second or so after they are destroyed.
             - Now only beeps as projectiles enter range, to prevent annoying earrape
             - Range increased from 340/480/640/800 to 400/600/800/1000
-            - Added Player Damage Reduction for projectiles detonated by ADS. Reduces damage from projectiles by 20%/30%/40%/50%
+            - Generic Projectile Damage Reduction removed (See below).
+            - Added Player Damage Reduction for projectiles detonated by ADS. Reduces damage from projectiles by 20%/30%/40%/50%. Projectiles still do full damage to enemies.
         - Ballistic Protection (Passive)
             - Is now a Toggle Augmentation, reserving 20 energy to function. The reserved amount is discounted when calculating damage reduction.
+            - Will now show it's total protection amount in the information display on the Augs screen.
         - Combat Speed
             - Is now a Toggle Augmentation, reserving 20 energy to function.
         - Combat Strength
@@ -297,6 +322,7 @@ Sarge's Changes since Beta 2.2:
         - Environmental Resist
             - Is now an Automatic Augmentation, draining 20 energy per second when taking environmental damage.
         - Power Recirculator
+            - Will now show your total energy efficiency bonus/penalty from Heart and Recirculator in the information display on the Augs screen, if you have both augmentations.
             - All dynamically-applied energy drain from using Augmentations (such as the energy drain from the Muscle aug) now properly accounts for the bonuses and penalties given from Synthetic Heart and Power Recirculator.
             - Synthetic Heart and Power Recirculator energy use is now combined additively, rather than multiplicatively.
                 - This means if the heart gives a 10% penalty and recirculator gives a 30% bonus, you will have a 20% bonus.
@@ -307,7 +333,7 @@ Sarge's Changes since Beta 2.2:
             - The drone can now be spotted by enemies at close range
                 - The drone is invisible while parked, and cannot be seen at all at level 4.
             - The drone has been made significantly smaller
-            - The drone can now be activated while parked, which will reclaim it, allowing immediate redeployment without needing to wait for the reconstruction time.
+            - The drone can now be right-clicked while parked, which will reclaim it, allowing immediate redeployment without needing to wait for the reconstruction time.
             - Saving and Loading the game will no longer destroy any drones in flight.
             - The drone can now be used in full-screen (enabled by default), with the player view being displayed in the picture-in-picture window.
             - The drone will bounce off walls and floors slightly less than before.
@@ -318,9 +344,12 @@ Sarge's Changes since Beta 2.2:
             - When running out of bioelectrical energy, the Drone will be parked automatically instead of being destroyed.
                 - Using the Drone augmentation while at 0 bioelectrical energy can be used to forcibly destroy the drone.
         - Synthetic Heart
+            - Will now show your total energy efficiency bonus/penalty from Heart and Recirculator in the information display on the Augs screen, if you have both augmentations.
             - All dynamically-applied energy drain from using Augmentations (such as the energy drain from the Muscle aug) now properly accounts for the bonuses and penalties given from Synthetic Heart and Power Recirculator.
             - Synthetic Heart and Power Recirculator energy use is now combined additively, rather than multiplicatively.
                 - This means if the heart gives a 10% penalty and recirculator gives a 30% bonus, you will have a 20% bonus.
+            - If Synthetic Heart is removed (by being replaced by Power Recirculator), all given upgrades will be removed.
+                - Upgrades given by the Synthetic Heart can be seen by interacting with a Medical Bot, which will show the upgraded levels in a different colour.
             - Upgrades can now "spill over" when acquiring the Heart augmentation. 
                 - In vRSD, acquiring the heart for the first time would upgrade all augs the player currently has. This means any max-level augs miss out on the bonus.
                 - Now, any bonuses that would have been given to a fully-upgraded augmentation will "spill over" into other augmentations, allowing them to be upgraded twice.
@@ -332,15 +361,19 @@ Sarge's Changes since Beta 2.2:
             - The Picture-in-Picture window can now be minimised, which hides it and only displays textual info.
             - The Picture-in-Picture window is also minimised by default when you don't have a weapon selected.
     - Hacking Overhaul
+        - "Hacking" skill renamed to "Computers" to match Vanilla.
         - Bypassing Turrets now requires Advanced hacking, as in Vanilla.
         - Hacked Cameras and Turrets will "reboot" and become re-enabled again after 2 minutes (plus an additional 2 minutes for each level of the Hacking skill)
-        - Hacking a security computer terminal will disable it and show an access denied message instead, similar to ATMs (Optional, always enabled in Hardcore).
+            - Reboot time can be seen in the HUD and the targeting display.
+            - Cameras will strobe with a yellow light for 6 seconds before being rebooted.
+        - Hacking a security computer terminal a certain number of times will disable it and show an access denied message instead, similar to ATMs (Optional, always enabled in Hardcore).
             - The number of times a computer can be hacked is based on your Computers skill.
             - Regular computers will never be locked out, so you can read email to your hearts content.
     - Normalized damage from the Plasma Rifle, PS20, the flamethrower, and explosives.
         - Now they will use the same damage multiplier across all limbs, making the damage more reliable against enemies.
         - This also means you will take less damage from plasma and explosives to your torso and head.
-    - Charged Objects no longer destroy themselves on use in Hardcore mode.
+    - Charged Pickup Changes:
+        - Charged Objects no longer destroy themselves on use in Hardcore mode.
     - JC can no longer move while interacting with security computers.
     - The rifle's grenade launcher doesn't require reloading to turn on, but you need to reload after each shot. It now works like a different weapon.
     - Increased the sawed off shotgun's pellet count from 8 to 9, and decreased shot speed from 1.3 to 1.2.
@@ -349,21 +382,38 @@ Sarge's Changes since Beta 2.2:
     - Non-recoverable darts and reloading resetting aim hardcore features added in vRSD are now gameplay options (still always enabled on Hardcore)
     - Enemies with flamethrowers now give 5-25 flamethrower ammo as loot instead of 1-5
     - Added No Console Access Playthrough Modifier, which prevents using the console (disallows cheats) while playing.
-    - Added No Keypad Cheese Playthrough Modifier (called "Unknown Codes") which prevents using keypads or computer logins without having found them beforehand. Some codes which are hinted but never given are excepted.
+    - Added Unknown Codes gameplay modifier which prevents using keypads or computer logins without having found them beforehand.
+        - Some codes which are hinted but never given are excepted.
+        - "No Plot Skips" additionally prevents interacting with certain options until JC Canonically knows how to interact with them, such as the hidden brick in the Mole People tunnels.
+        - "Unknown Code Length" requires you to manually press Enter to accept keypad codes, allowing arbitrary inputs and hiding any hints about their length.
     - AI Behaviour Changes
         - Enemies will now have a small delay (usually between 0.1 and 0.6) seconds before firing after losing sight of the player.
             - This has almost no effect on normal gameplay, other than reducing enemies ability to instantly shoot as they strafe around corners, resulting in frustrating one-shots.
             - Enemies can now always fire while strafing (was previously a 90% chance). This makes them slightly more aggressive, but combined with the previous change doesn't make them more frustrating.
-    - You now take stamina damage from poison, to encourage better management of your stamina bar and give aqualung/ahtletics an indirect buff in combat.
+    - Stamina System/Poison Changes:
+        - You now take stamina damage from poison, to encourage better management of your stamina bar and give aqualung/ahtletics an indirect buff in combat.
+        - Dolphin-diving from water no longer instantly refills a portion of your stamina bar.
+        - Fixing exhaustion now requires refilling your entire stamina bar, previously it was hardcoded to 3 seconds (which was often long enough to fill the bar anyway, but not always)
     - Increased ballistic armor durability loss by double, untrained enviro has the same values.
     - Added Door Locking mechanics
         - You can now lock any door you have the nanokey for, plus any doors you have picked previously if you have the Locksport perk (this is retroactive).
         - Enemies cannot open doors which you have locked (Enemies can still open doors that are initially locked in the map unless you lock them)
     - When using Restricted Saving (and Hardcore Mode), Autosaves are now only created the first time upon entering a new level, or if no save has been performed in the last 15 minutes. This is designed to mitigate save-abuse by crossing between maps.
-    - Weapon Mod, Enemy Weapon and Container Randomisation gameplay modifiers now use a table of predetermined random numbers, generated at the start of the game, rather than randomising on map load. This means that you can no longer reroll randomisation for a given map by loading a save before a transition to a new map.
-    - Perk System Rework
+    - Randomisation Rework
+        - Added a new "Enemy Weapon Shuffle" playthrough modifier, which will swap loadouts between existing enemies in the maps.
+        - Weapon Mod, Enemy Weapon and Container Randomisation gameplay modifiers now use a seed generated at the start of the game, rather than randomising on map load.
+        - Each map has a unique identifier which, combined with the seed, always guarantees a specific roll for a given map on a given playthrough.
+        - This means that you can no longer reroll randomisation for a given map by loading a save before a transition to a new map or entering different maps in a different order.
+    - Perk System Rework:
+        - Many perks have had custom icons added. More icons are planned to be added in future updates!
+        - Low-Tech:
+            - Hemorrhage (NEW MASTER): An agent is adept at finding vital weak spots, causing organic targets to bleed profusely over time when struck by throwing knives, suffering an additional 10% of the damage dealt per second over 16 seconds.
+        - Pistols Perks:
+            - Hollow Points (NEW MASTER): An agent uses hollow-pointed rounds in his pistol, increasing damage against transgenics and animals while using 10mm ammo (+50%).
         - Demolitions Perks:
             - Sensor Overload (NEW ADVANCED): After being manipulated by scrambler grenades, affected robots will reboot over 30 seconds.
+        - Athletics Perks:
+            - Sprinter (NEW ADVANCED): An agent is able to utilise their full body as leverage to propel themselves forward. Movement speed is increased by 10% when holstered.
         - Environmental Training Perks:
             - Filter Upgrade (NEW TRAINED): An agent uses an upgraded hazmat suit that filters out harmful chemicals, removing stamina damage from poison and tear gas entirely.
             - Blast Padding (NEW ADVANCED): An agent's ballistic vest is fitted with a protective layer that reduces susceptibility to self-damage from explosive and plasma weaponry (-75%).
@@ -381,14 +431,33 @@ Sarge's Changes since Beta 2.2:
         - Alcohol no longer heals for 5 points. Instead, it temporarily gives you 5 torso HP (along with it's usual 5 extra torso Max-HP) while in effect, which is removed afterwards. This health removal cannot kill the player.
         - Alcohol no longer adds to fullness when the addiction system is enabled
         - Zyme no longer removes 10HP if the addiction system is enabled.
+        - Addictions can now properly add/remove HP without killing JC
 - Map Changes:
-    - The Laser Sight on Liberty Island is replaced with a Recoil Mod on Hardcore mode
-    - A Laser Sight has been added to Smuggler's safe in the first NY visit (replaces a recoil mod)
-    - The Silencer in Paul's Apartment, Full-Auto Mod in Tong's Lab, and Laser Sight in Smugglers Safe are all guaranteed to appear even with the weapon mod shuffle turned on.
+    - Liberty Island:
+        - Laser Sight Upgrage replaced with a Recoil Mod on Hardcore mode
+    - NYC Streets (first visit)
+        - A Laser Sight has been added to Smuggler's safe (replaces a recoil mod).
+        - A Datacube has been added to the Secret MJ12 Underground lab to explain that cameras don't detect unconscious bodies.
+    - NYC Dockyard:
+        - Fixed several instances of "friendly" cameras.
+    - Paris Metro:
+        - The Police have been changed to using pistols only (from Assault Shotguns and Assault Rifles), to ensure more 10mm ammo is available in the late game, as well as to reinforce their status as the puppet regime under MJ12.
     - Vandenberg:
         - The security code is no longer given by the research team on Hardcore. You will need to use your hacking skill if you wish to access the security system!
+    - Miscellaneous Map Changes:
+        - The Silencer in Paul's Apartment, Full-Auto Mod in Tong's Lab, and Laser Sight in Smugglers Safe are all guaranteed to appear even with the weapon mod shuffle turned on.
 - Miscellaneous Changes:
+    - The messy GMDX options menus have been replaced with neat, sortable list menus.
+    - Added Animal Stomp Protection
+        - Stepping on domesticated cats and dogs will no longer damage them
+        - Stepping on Cleaner bots will no longer damage them
+        - Creatures will still react and run away from you when stomped, even if it deals no damage
+        - Can be disabled in the options.
+    - Binoculars are no longer breakable.
+    - The Secondary Item display in the HUD has been updated to use custom artwork, rather than reusing the standard Ammo HUD element.
     - The vanilla "Show Multiplayer Scores" key has been restored, and the GMDX Use Secondary functionality has been given a separate keybind, defaulting to the V key.
+    - Selecting Hardcore Difficulty and other Hardcore features (like changing gameplay settings) are no longer restricted to completing the game once.
+        - Instead, a message box will strongly warn against playing in Hardcore mode without having completed the game.
 	- Updated Weapons Hit blood effects to occur more consistently, by changing it so that blood rolls individually for each drop rather than rolling for whether or not blood will appear.
     - MJ12 Elites have had their voices reset to the default troop voices, because they don't have female-appropriate voice lines and the voices sound strange and broken in many ways.
     - Many default "<item> Activated" messages have been removed as these would pollute the log.
@@ -427,7 +496,6 @@ Sarge's Changes since Beta 2.2:
     - Single-Use weapons (grenades, PS20s, etc) will now drop individually from the inventory screen, similar to pickups, rather than dropping as a single stack.
     - Added an "Alternate Start" option, which skips the first part of the game and starts at the MJ12 Lab. You will start with nothing, so this is extra hardcore.
     - The "You Found:" message when searching corpses has been removed. The actual items are still listed, only the extra message is removed.
-    - The Paris Metro Police have been changed to using pistols only (from Assault Shotguns and Assault Rifles), to ensure more 10mm ammo is available in the late game, as well as to reinforce their status as the puppet regime under MJ12.
     - Added a number of new HUD themes, including themes styled around Splinter Cell, NSF, Human Revolution and more. Most themes are based on ones created by GEPGUN, with some modifications.
     - Added several new high-quality sounds in cases where interactions didn't have sounds, or used the same sounds for multiple interactions.
         - Added equip/unequip sounds for the Lockpick, Nanokey and Multitool, which were previously silent.

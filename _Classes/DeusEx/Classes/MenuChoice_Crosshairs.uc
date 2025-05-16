@@ -2,7 +2,7 @@
 // MenuChoice_Crosshairs
 //=============================================================================
 
-class MenuChoice_Crosshairs extends MenuChoice_VisibleHidden;
+class MenuChoice_Crosshairs extends MenuUIChoiceEnum;
 
 // ----------------------------------------------------------------------
 // LoadSetting()
@@ -10,7 +10,7 @@ class MenuChoice_Crosshairs extends MenuChoice_VisibleHidden;
 
 function LoadSetting()
 {
-	SetValue(int(!player.bCrosshairVisible));
+	SetValue(player.iCrosshairVisible);
 }
 
 // ----------------------------------------------------------------------
@@ -19,7 +19,7 @@ function LoadSetting()
 
 function SaveSetting()
 {
-	player.bCrosshairVisible = !bool(GetValue());
+	player.iCrosshairVisible = int(GetValue());
     player.UpdateCrosshair();
 }
 
@@ -28,7 +28,7 @@ function SaveSetting()
 
 function ResetToDefault()
 {
-	SetValue(int(!player.bCrosshairVisible));
+	SetValue(0);
 }
 
 // ----------------------------------------------------------------------
@@ -39,4 +39,7 @@ defaultproperties
      defaultInfoWidth=88
      HelpText="Toggles Crosshairs visibility."
      actionText="Cross|&hairs"
+     enumText(0)="Hidden"
+     enumText(1)="Visible"
+     enumText(2)="Outer Only"
 }
