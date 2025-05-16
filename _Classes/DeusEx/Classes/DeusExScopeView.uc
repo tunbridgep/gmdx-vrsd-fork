@@ -50,13 +50,6 @@ event Tick(float deltaSeconds)
 	if (dxRoot != None)
 	{
 		cross = dxRoot.hud.cross;
-
-		/*
-		if (bActive)
-			cross.SetCrosshair(false);
-		else
-			cross.SetCrosshair(player.bCrosshairVisible);
-		*/
 	}
 }
 
