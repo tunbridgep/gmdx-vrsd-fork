@@ -10802,6 +10802,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 				{
 					item.Charge = previtem.Charge;
 					previtem.Charge = previtem.default.Charge;
+					ChargedPickup(previtem).UpdateBeltText();
 				}
 
 				if(item != None)

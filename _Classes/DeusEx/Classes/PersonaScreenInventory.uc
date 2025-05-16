@@ -292,7 +292,7 @@ function CreateInventoryButtons()
 			newButton.SetClientObject(anItem);
 			newButton.SetInventoryWindow(Self);
 
-			if (anItem.IsA('ChargedPickup') && (!ChargedPickup(anItem).bActivatable || ChargedPickup(anItem).Charge == 0))
+			if (anItem.IsA('ChargedPickup') && ChargedPickup(anItem).ShouldDim())
 				newButton.bDimIcon = true;                                      //RSD: Dim ChargedPickups if they're at 0%
 
 			//Dim Nanosword if it's at 0%
@@ -2165,7 +2165,7 @@ function MoveItemButton(PersonaInventoryItemButton anItemButton, int col, int ro
 	player.PlaceItemInSlot(Inventory(anItemButton.GetClientObject()), col, row );
 	SetItemButtonPos(anItemButton, col, row);
 
-	if (Inventory(anItemButton.GetClientObject()).IsA('ChargedPickup') && (!ChargedPickup(anItemButton.GetClientObject()).bActivatable || ChargedPickup(anItemButton.GetClientObject()).Charge == 0))
+	if (Inventory(anItemButton.GetClientObject()).IsA('ChargedPickup') && ChargedPickup(anItemButton.GetClientObject()).ShouldDim())
         anItemButton.bDimIcon = true;                                           //RSD: Dim ChargedPickups if they're at 0%
 
     resetHomeButton();                                                          //RSD: item rotation
