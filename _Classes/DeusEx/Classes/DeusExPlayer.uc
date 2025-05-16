@@ -5136,7 +5136,7 @@ function HighlightCenterObject()
 		foreach TraceActors(class'Actor', target, HitLoc, HitNormal, EndTrace, StartTrace)
 		{
             //SARGE: Stop being able to frob things through walls
-            if (target.IsA('DeusExDecoration') && !LineOfSightTo(target))
+            if (target.IsA('DeusExDecoration') && !DeusExDecoration(target).bSkipLOSFrobCheck && !LineOfSightTo(target))
                 continue;
 
 			if (IsFrobbable(target) && (target != CarriedDecoration))

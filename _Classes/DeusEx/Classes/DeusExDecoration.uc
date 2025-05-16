@@ -79,6 +79,9 @@ var(GMDX) const bool deleteIfFemale;                                            
 
 var const localized string msgCantUseWhileSwimming;                             //SARGE: Message when we can't grab this due to swimming.
 
+//SARGE: Ignore LOS check for frobbing. Allows us to frob through walls! Disabled by default
+var(GMDX) bool bSkipLOSFrobCheck;
+
 // ----------------------------------------------------------------------
 // ShouldCreate()
 // If this returns FALSE, the object will be deleted on it's first tick
@@ -1819,5 +1822,6 @@ defaultproperties
      bBlockPlayers=True
      iHDTPModelToggle=1
      bHDTPFailsafe=True
+     bSkipLOSFrobCheck=False
      msgCantUseWhileSwimming="You can't pick this up while swimming."
 }

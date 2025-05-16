@@ -130,5 +130,6 @@ defaultproperties
      LightSaturation=32
      LightRadius=3
      bHighlight=True
+     //bSkipLOSFrobCheck=True //SARGE: Otherwise they get a little weird.
      ItemName="Save Point"
 }
