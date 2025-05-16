@@ -50,6 +50,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed many other GMDX and Vanilla bugs.
 - Quality of Life Improvements:
     - Data Cubes containing images will now show the image rather than simply saying you received an image.
+    - Added Photo Mode, which hides the HUD completely, available in Keyboard settings.
     - Right-Clicking Fire Extinguishers in the inventory screen will now equip them, rather than using them immediately.
     - Duplicate Nano-Keys are no longer shown in the "Received Items" window when picked up from carcasses.
     - Ballistic Armour and Hazmat Suits are now kept equipped when drained, but will have no effect.
