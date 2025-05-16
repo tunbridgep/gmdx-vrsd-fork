@@ -41270,16 +41270,6 @@ Begin Actor Class=Brush Name=Brush88
     Brush=Model'MyLevel.Model251'
     Name=Brush88
 End Actor
-Begin Actor Class=Candybar Name=Candybar0
-    LastRenderTime=0.348555
-    DistanceFromPlayer=2112.454102
-    Level=LevelInfo'MyLevel.LevelInfo0'
-    Tag=Candybar
-    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
-    Location=(X=8.612082,Y=206.559586,Z=-109.229988)
-    OldLocation=(X=8.612082,Y=206.559586,Z=-109.229988)
-    Name=Candybar0
-End Actor
 Begin Actor Class=Credits Name=Credits0
     numCredits=50
     LastRenderTime=0.348555
@@ -41310,26 +41300,6 @@ Begin Actor Class=SoyFood Name=SoyFood0
     Location=(X=544.000000,Y=-1104.000000)
     OldLocation=(X=544.000000,Y=-1104.000000)
     Name=SoyFood0
-End Actor
-Begin Actor Class=WeaponModAccuracy Name=WeaponModAccuracy0
-    LastRenderTime=0.348555
-    DistanceFromPlayer=2082.975098
-    Level=LevelInfo'MyLevel.LevelInfo0'
-    Tag=WeaponModAccuracy
-    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
-    Location=(X=-16.000000,Y=208.000000,Z=-80.000000)
-    OldLocation=(X=-16.000000,Y=208.000000,Z=-80.000000)
-    Name=WeaponModAccuracy0
-End Actor
-Begin Actor Class=Lockpick Name=Lockpick0
-    LastRenderTime=0.348555
-    DistanceFromPlayer=2082.787842
-    Level=LevelInfo'MyLevel.LevelInfo0'
-    Tag=Lockpick
-    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
-    Location=(X=-22.485857,Y=204.098907,Z=-107.999825)
-    OldLocation=(X=-22.485857,Y=204.098907,Z=-107.999825)
-    Name=Lockpick0
 End Actor
 Begin Actor Class=Brush Name=Brush2
     CsgOper=CSG_Add
