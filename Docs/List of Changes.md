@@ -46,6 +46,7 @@ Sarge's Changes since Beta 2.2:
     - Fixed many other GMDX and Vanilla bugs.
 - Quality of Life Improvements:
     - Data Cubes containing images will now show the image rather than simply saying you received an image.
+    - Added a third crosshair display option to show only the Outer crosshairs in the Game Options menu and via the "Show/Hide Crosshair" keybinding.
     - Duplicate Nano-Keys are no longer shown in the "Received Items" window when picked up from carcasses.
     - Ballistic Armour and Hazmat Suits are now kept equipped when drained, but will have no effect.
         - Recharging them in any way (such as through biocells or a repair bot) will make them active again
