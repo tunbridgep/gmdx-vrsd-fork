@@ -120,7 +120,7 @@ defaultproperties
      largeIconHeight=45
      Description="A law enforcement tool for non-lethal crowd control."
      beltDescription="RUBBER"
-     Skin=Texture'RSDCrap.Items.RubberShellBox'
+     Skin=Texture'RSDCrap.Items.RubberShellBoxLow'
      HDTPSkin="RSDCrap.Items.RubberShellBox"
      Mesh=LodMesh'DeusExItems.AmmoShell'
      HDTPMesh="HDTPItems.HDTPammoshell"

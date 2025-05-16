@@ -817,6 +817,8 @@ var globalconfig int iCrosshairVisible;                         //SARGE: Replace
 //SARGE: Overhauled the Wireless Strength perk to no longer require having a multitool out.
 var HackableDevices HackTarget;
 
+var travel bool bPhotoMode;                                     //SARGE: Show/Hide the entire HUD at once
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -880,6 +882,31 @@ replication
 	  BuySkillSound, ShowMultiplayerWin, ForceDroneOff ,AddDamageDisplay, ClientSpawnHits, CloseThisComputer, ClientPlayAnimation, ClientSpawnProjectile, LocalLog,
 	  VerifyRootWindow, VerifyConsole, ForceDisconnect;
 
+}
+
+//SARGE: Hide/Show the entire HUD at once
+exec function TogglePhotoMode()
+{
+    SetPhotoMode(!bPhotoMode);
+}
+
+function SetPhotoMode(bool value)
+{
+    bPhotoMode = value;
+    UpdatePhotoMode();
+}
+
+function UpdatePhotoMode()
+{
+    local DeusExRootWindow root;
+	root = DeusExRootWindow(rootWindow);
+    if (root != None && root.hud != None)
+    {
+        if (bPhotoMode)
+            root.hud.Hide();
+        else
+            root.hud.Show();
+    }
 }
 
 exec function cheat()
@@ -1762,6 +1789,9 @@ event TravelPostAccept()
 
 	// reset the keyboard
 	ResetKeyboard();
+
+    //Update Photo Mode
+    UpdatePhotoMode();
 
     //Update HUD
     UpdateHUD();
@@ -11644,6 +11674,8 @@ exec function ToggleObjectBelt()
 
 	bObjectBeltVisible = !bObjectBeltVisible;
 
+    SetPhotoMode(false);
+
 	root = DeusExRootWindow(rootWindow);
 	if (root != None)
 		root.UpdateHud();
@@ -11658,6 +11690,8 @@ exec function ToggleHitDisplay()
 	local DeusExRootWindow root;
 
 	bHitDisplayVisible = !bHitDisplayVisible;
+    
+    SetPhotoMode(false);
 
 	root = DeusExRootWindow(rootWindow);
 	if (root != None)
@@ -11673,6 +11707,8 @@ exec function ToggleAmmoDisplay()
 	local DeusExRootWindow root;
 
 	bAmmoDisplayVisible = !bAmmoDisplayVisible;
+    
+    SetPhotoMode(false);
 
 	root = DeusExRootWindow(rootWindow);
 	if (root != None)
@@ -11688,6 +11724,8 @@ exec function ToggleAugDisplay()
 	local DeusExRootWindow root;
 
 	bAugDisplayVisible = !bAugDisplayVisible;
+    
+    SetPhotoMode(false);
 
 	root = DeusExRootWindow(rootWindow);
 	if (root != None)
@@ -11702,6 +11740,7 @@ exec function ToggleAugDisplay()
 exec function MinimiseTargetingWindow()
 {
     bMinimiseTargetingWindow = !bMinimiseTargetingWindow;
+    SetPhotoMode(false);
 }
 
 // ----------------------------------------------------------------------
@@ -11769,6 +11808,9 @@ exec function ToggleRadialAugMenu(optional bool bHeld, optional bool bRelease)
 exec function ToggleCompass()
 {
 	bCompassVisible = !bCompassVisible;
+
+    SetPhotoMode(false);
+
     UpdateHUD();
 }
 
@@ -11819,7 +11861,8 @@ exec function ToggleCrosshair()
     if (iCrosshairVisible > 2)
         iCrosshairVisible = 0;
     
-	UpdateCrosshair();
+    SetPhotoMode(false);
+  	UpdateCrosshair();
 }
 
 

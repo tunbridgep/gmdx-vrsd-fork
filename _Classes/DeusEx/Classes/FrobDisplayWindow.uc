@@ -651,7 +651,7 @@ function string GetAugCanInformation(AugmentationCannister can)
 	for(canIndex=0; canIndex<ArrayCount(can.AddAugs); canIndex++)
     {
         aug = can.GetAugGeneric(canIndex,player);
-        retStr = retStr $ CR() $ strDash $ aug.GetName();
+        retStr = retStr $ CR() $ strDash $ aug.GetName(true);
     }
 
     return retStr;
