@@ -9259,7 +9259,7 @@ exec function PutInHand(optional Inventory inv, optional bool bNoPrimary)
         bBeltSkipNextPrimary = bNoPrimary;
 
     if (!bNoPrimary)
-        bLastWasEmpty = inv == None;
+        bLastWasEmpty = inv == None || inv.IsA('POVCorpse');
 
     //SARGE: Was this weapon force selected?
     //ie, was it selected through left/right frob, rather than
