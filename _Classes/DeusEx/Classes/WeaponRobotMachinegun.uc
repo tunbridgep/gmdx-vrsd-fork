@@ -7,14 +7,17 @@ function DrawMuzzleFlash()
 {
 	local Vector offset, X, Y, Z;
 
+	if(Pawn(Owner) == None)
+		return;
+
 	if ((flash != None) && !flash.bDeleteMe)
-		flash.LifeSpan = flash.Default.LifeSpan;
+		flash.LifeSpan = flash.default.LifeSpan;
 	else
 	{
 		GetAxes(Pawn(Owner).ViewRotation,X,Y,Z);
 		offset = Owner.Location;
 		offset += X * Owner.CollisionRadius;
-		flash = spawn(class'MuzzleFlash',,, offset);
+		flash = Spawn(class'MuzzleFlash',,, offset);
 		if (flash != None)
 		{
 			flash.SetBase(Owner);
