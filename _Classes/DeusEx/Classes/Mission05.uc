@@ -286,6 +286,7 @@ function Timer()
 	local DeusExMover M;
 	local Terrorist T;
 	local BlackHelicopter B;
+    local SkillAwardTrigger TR;
 
 	Super.Timer();
     
@@ -380,6 +381,10 @@ function Timer()
 			flags.GetBool('PaulInMedLab_Played'))
 		{
 			Player.StartDataLinkTransmission("DL_Paul");
+
+            //SARGE: Manually trigger the 500 skill point bonus, in case we missed it.
+            foreach AllActors(class 'SkillAwardTrigger', TR, 'Skillawardforpaul')
+			    TR.Trigger(player, player);
 			flags.SetBool('MS_DL_Played', True,, 6);
 		}
 	}
