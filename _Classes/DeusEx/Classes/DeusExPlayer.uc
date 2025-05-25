@@ -819,6 +819,8 @@ var HackableDevices HackTarget;
 
 var travel bool bPhotoMode;                                     //SARGE: Show/Hide the entire HUD at once
 
+var bool bClearReceivedItems;                                   //SARGE: Clear the received items window next time we display it.
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -8558,6 +8560,14 @@ exec function ParseRightClick()
                 }
             }
         }
+
+        //SARGE: Hack to fix weapons repeatedly filling the received items window with crap if we're full
+        if (bClearReceivedItems)
+        {
+            ClearReceivedItems();
+            bClearReceivedItems = false;
+        }
+
 		// otherwise, just frob it
 		DoRightFrob(FrobTarget);
 	}
@@ -8734,7 +8744,10 @@ function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool
         ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName $ " (" $ over $ ")" @ AmmoType.MaxAmmoString, 'Pickup');
         
         if (bShowWindow && bShowDeclinedInReceivedWindow)
+        {
+            bClearReceivedItems=true;
             AddReceivedItem(AmmoType, over, bNoGroup, true);
+        }
     }
     return ret;
 }
@@ -8909,7 +8922,6 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     //SARGE: Always try looting non-disposable weapons of their ammo
     if (bCanPickup && FrobTarget.IsA('DeusExWeapon') && !DeusExWeapon(frobTarget).bDisposableWeapon)
     {
-        ClearReceivedItems();
         bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,true,bAlwaysShowReceivedItemsWindow,false,true,bShowOverflow);
 
         //Don't pick up a weapon if there's ammo in it and we already have one
