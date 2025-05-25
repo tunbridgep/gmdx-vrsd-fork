@@ -2,18 +2,19 @@ GMDX Credits:
 
 This version of the mod is based on GMDX vRSD, which was forked from GMDX v9.
 
-GMDX was created by TT aka Totalitarian aka Ash.
+GMDX v9 was created by TT aka Totalitarian aka Ash.
 GMDX vRSD was created by RoSoDude (https://rosodudemods.wordpress.com/)
 
 This fork is possible thanks to the following awesome people:
 
 - Sarge - Programmer, Project Lead.
 - Lady Trash - Programmer.
-- Solomon Ichi - Programmer
+- Solomon Ichi - Programmer.
 - RoSoDude - Game Design advice and some programming help.
 - Xriborg - Sound Design, all LDDP content.
-- LupusDraconis - Perk Icons and other graphical assets.
+- LupusDraconis - Perk Icons and other graphical assets, female JC voices and other LDDP work.
 - Adman32 - Art and some weapon sounds.
+- Maciek - Trailer.
 - Made In China - LDDP+ConFix Conversation files, various art assets and icons.
 - Joe Wintergreen (https://www.joewintergreen.com/) - for help with the Lip Synch and Blinking issue.
 
@@ -24,3 +25,5 @@ RoSoDude, Solomon Ichi, ShadowDancer, BennyTheFearless, Tony Swan and many other
 Special thanks to the Revision Framerowk team for some small code snippets
 which were used as inspiration for fixing the HUD aspect ratio for cinematics,
 which previously didn't show subtitles.
+
+For additional credits (from previous GMDX versions), please see the User Guide and vRSD Readme in the vRSD_Docs folder
