@@ -62,7 +62,10 @@ function GroupTranspose(PartSlot bodySlot,optional int slot0,optional int slot1,
 function GroupTranspose2(PartSlot bodySlot, PartSlot bodySlot2,optional int slot0,optional int slot1,optional int slot2,optional int slot3,optional int slot4,optional int slot5,optional int slot6,optional int slot7,optional int slot8) {}
 
 //Outfit Functions
-function BeginNewOutfit(string id, string name, string desc, optional string highlightName, optional string pickupName, optional string pickupMessage, optional string pickupArticle) {}
+function bool GetPartsGroup(string mesh) {}
+function BeginNewPartsGroup(string mesh, bool allowMale, bool allowFemale) {}
+function AddDefaultReference(string defRef) {}
+function BeginNewOutfit(string id, string name, optional string desc, optional string highlightName, optional string pickupName, optional string pickupMessage, optional string pickupArticle) {}
 function OutfitAddPartReference(string partID) {}
 function Unlock(string id) {}
 
