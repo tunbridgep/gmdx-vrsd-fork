@@ -55,7 +55,7 @@ function CreateButtons()
 function CreateOutfitsButton()
 {
     local class<PersonaScreenBaseWindow> test;
-    test = class<PersonaScreenBaseWindow>(DynamicLoadObject("JCOutfits.PersonaScreenOutfits", class'Class'));
+    test = class<PersonaScreenBaseWindow>(DynamicLoadObject("Augmentique.PersonaScreenOutfits", class'Class'));
 
     //Only create the Outfits button if the outfits window is actually available
     if (test != None)
@@ -113,7 +113,7 @@ function bool ButtonActivated( Window buttonPressed )
 
         //Sarge: Add new button for Outfits
 		case btnOutfits:
-            winClass = class<PersonaScreenBaseWindow>(DynamicLoadObject("JCOutfits.PersonaScreenOutfits", class'Class'));
+            winClass = class<PersonaScreenBaseWindow>(DynamicLoadObject("Augmentique.PersonaScreenOutfits", class'Class'));
 			break;
 
 		default:

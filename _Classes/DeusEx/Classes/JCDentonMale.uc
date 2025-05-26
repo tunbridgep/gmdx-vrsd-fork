@@ -265,7 +265,7 @@ function SetupOutfitManager()
 	// create the Outfit Manager if not found
 	if (outfitManager == None || !outfitManager.IsA('OutfitManager'))
     {
-        managerBaseClass = class<OutfitManagerBase>(DynamicLoadObject("JCOutfits.OutfitManager", class'Class'));
+        managerBaseClass = class<OutfitManagerBase>(DynamicLoadObject("Augmentique.OutfitManager", class'Class'));
         
         if (managerBaseClass == None)
         {
