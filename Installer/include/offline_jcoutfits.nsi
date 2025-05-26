@@ -1,7 +1,7 @@
 Section "Augmentique"
 
 SetOutPath $INSTDIR\Augmentique\System
-File "${SARGE_U_FILES}\JCOutfits.u"
+File "${SARGE_U_FILES}\Augmentique.u"
 SetOutPath $INSTDIR
 
 SectionEnd
