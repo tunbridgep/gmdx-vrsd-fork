@@ -96,9 +96,6 @@ function ChargedPickupBegin(DeusExPlayer Player)
         class'DeusExPlayer'.default.bCloakEnabled=true;
 
 	bIsActive = True;
-
-    if (Charge > 0)
-        bDrained = false;
 }
 
 // ----------------------------------------------------------------------
@@ -305,6 +302,16 @@ state DeActivated
         if (player != None)
             DeselectInHand(player);
         super.Activate();
+    }
+
+	function BeginState()
+    {
+        UpdateBeltText();
+        if (Charge > 0)
+        {
+            bDrained = false;
+            UnDimIcon();
+        }
     }
 }
 
@@ -548,6 +555,14 @@ event TravelPostAccept()
     }
 
 	Super.TravelPostAccept();
+}
+
+//SARGE: Whether or not we should dim the icon for this charged pickup.
+//This used to be easy, but now they can be activated and worn even when empty,
+//so "Activatable" isn't usable anymore.
+function bool ShouldDim()
+{
+    return !bActivatable || (Charge == 0 && NumCopies == 1);
 }
 
 // ----------------------------------------------------------------------
