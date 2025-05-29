@@ -13522,7 +13522,7 @@ Begin Actor Class=DeusExLevelInfo Name=DeusExLevelInfo0
     Script=Class'DeusEx.Mission10'
     startupMessage(0)="La Porte de l'Enfer"
     startupMessage(1)="Parisian Nightclub"
-    bBarOrClub=True
+    MusicType=MT_CombatOnly
     bNoSpawnFlies=True
     LastRenderTime=410.283478
     DistanceFromPlayer=3285.138184

@@ -3318,18 +3318,29 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
         default.musicMode = MUS_Ambient;
         default.prevMusicMode = MUS_Ambient;
     }
-    else if (info != none && info.bBarOrClub && iEnhancedMusicSystem == 2) //Don't allow music changes in clubs or bars with the extended option.
+    else if (info != none && info.MusicType == MT_SingleTrack) //Don't change tracks at all if we're in a single track level.
+    {
+        DebugMessage("Single Track - Music Unchanged");
+    }
+    else if (info != none && (info.MusicType == MT_CombatOnly || info.MusicType == MT_ConversationOnly) && iEnhancedMusicSystem == 2) //Don't allow music changes in clubs or bars with the extended option.
     {
         DebugMessage("Bar or Club - Music Unchanged");
     }
     else if (default.prevMusicMode != default.musicMode) //We want to allow changes between modes
     {
-        bChange = true;
-        DebugMessage("Changing Music - Changed Mode");
+        if (info != none && info.MusicType == MT_CombatOnly && default.MusicMode != MUS_Combat && default.prevMusicMode != MUS_Combat)
+            DebugMessage("Non-Combat section of Combat Only track - Music Unchanged");
+        else if (info != none && info.MusicType == MT_ConversationOnly && default.MusicMode != MUS_Conversation && default.prevMusicMode != MUS_Conversation)
+            DebugMessage("Non-Conversation section of Conversation Only track - Music Unchanged");
+        else
+        {
+            bChange = true;
+            DebugMessage("Changing Music - Changed Mode");
 
-        //If we're changing back to ambient, always go to our saved section instead of the start
-        if (NewSection == Level.SongSection && default.musicMode == MUS_Ambient)
-            NewSection = default.savedSection;
+            //If we're changing back to ambient, always go to our saved section instead of the start
+            if (NewSection == Level.SongSection && default.musicMode == MUS_Ambient)
+                NewSection = default.savedSection;
+        }
     }
 
     if (bChange)

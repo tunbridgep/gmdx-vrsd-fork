@@ -25937,7 +25937,7 @@ Begin Actor Class=DeusExLevelInfo Name=DeusExLevelInfo0
     Script=Class'DeusEx.Mission06'
     TrueNorth=32768
     startupMessage(0)="Tracer Tong's Laboratory"
-    bBarOrClub=True
+    MusicType=MT_SingleTrack
     bNoSpawnFlies=True
     LastRenderTime=0.348555
     DistanceFromPlayer=3575.671631

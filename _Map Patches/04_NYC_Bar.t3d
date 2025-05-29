@@ -16062,7 +16062,7 @@ Begin Actor Class=DeusExLevelInfo Name=DeusExLevelInfo0
     missionNumber=4
     Script=Class'DeusEx.Mission04'
     TrueNorth=16384
-    bBarOrClub=True
+    MusicType=MT_CombatOnly
     LastRenderTime=16.151382
     DistanceFromPlayer=1494.084961
     Level=LevelInfo'MyLevel.LevelInfo0'
