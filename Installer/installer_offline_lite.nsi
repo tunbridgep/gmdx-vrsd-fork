@@ -15,11 +15,14 @@
 
 SectionGroup "Extras"
 
-#Install Kenties
-!include .\include\kenties.nsi
-
 #Install GMDX Settings
 !include .\include\gmdx_settings.nsi
+
+#Create Shortcut
+!include .\include\gmdx_shortcut.nsi
+
+#Install Kenties
+!include .\include\kenties.nsi
 
 #Install LDDP
 !include .\include\offline_lddp.nsi

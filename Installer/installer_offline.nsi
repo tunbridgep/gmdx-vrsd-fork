@@ -23,6 +23,9 @@ SectionGroup "Extras"
 #Install GMDX Settings
 !include .\include\gmdx_settings.nsi
 
+#Create Shortcut
+!include .\include\gmdx_shortcut.nsi
+
 #Install Kenties
 !include .\include\kenties.nsi
 

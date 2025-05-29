@@ -58,4 +58,8 @@ File "..\Docs\*.html"
 SetOutPath $INSTDIR\GMDX_AE\vRSD_Docs
 File ..\Docs\vRSD_Docs\*.txt
 
+#install launcher
+SetOutPath $INSTDIR\System
+File extras\GMDX_AE.exe
+
 SectionEnd
