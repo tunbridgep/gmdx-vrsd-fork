@@ -8251,6 +8251,12 @@ exec function ParseLeftClick()
     //Special cases aside, now do the left hand frob behaviour
     else if (bEnableLeftFrob && FrobTarget != none && IsReallyFrobbable(FrobTarget,true) && !bInHandTransition && (inHand == None || !inHand.IsA('POVcorpse')) && CarriedDecoration == None)
     {
+        //SARGE: Hack to fix weapons repeatedly filling the received items window with crap if we're full
+        if (bClearReceivedItems)
+        {
+            ClearReceivedItems();
+            bClearReceivedItems = false;
+        }
         DoLeftFrob(FrobTarget);
     }
 
@@ -8935,7 +8941,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
         }
 
         //If we picked up a weapon and it was empty, display a message
-        else if (!bLootedAmmo)
+        else if (!bLootedAmmo && DeusExWeapon(frobTarget).ReloadCount > 0)
             ClientMessage(DeusExWeapon(frobTarget).PickupMessage @ DeusExWeapon(frobTarget).itemArticle @ DeusExWeapon(frobTarget).itemName, 'Pickup');
     }
 	
@@ -9008,7 +9014,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
         }
 	}
 
-    if (bCanPickup && !bDeclined)
+    if ((bCanPickup || !bSlotSearchNeeded) && !bDeclined)
     {
         pickupCooldown = 0.15;
         
