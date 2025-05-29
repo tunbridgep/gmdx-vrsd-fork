@@ -572,10 +572,12 @@ function PopulateBelt()
 	player = DeusExPlayer(DeusExRootWindow(GetRootWindow()).parentPawn);
 
 	for (anItem=player.Inventory; anItem!=None; anItem=anItem.Inventory)
-		if (anItem.bInObjectBelt && !anItem.IsA('NanoKeyRing'))
+		if (anItem.bInObjectBelt)
       {
 			AddObjectToBelt(anItem, anItem.beltPos, True);
       }
+
+    CreateNanoKeySlot();
     
 	//Set the highlight
 }

@@ -10000,7 +10000,7 @@ function AddObjectToBelt(Inventory item, int pos, bool bOverride)
 // Set Placeholder
 function SetPlaceholder(int objectNum, texture icon)
 {
-    if (icon != None)
+    if (icon != None && icon != class'NanoKeyRing'.default.icon)
         beltInfos[objectNum].icon = icon;
 }
 
