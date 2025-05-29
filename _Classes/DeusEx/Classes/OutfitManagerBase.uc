@@ -67,7 +67,7 @@ function BeginNewPartsGroup(string mesh, bool allowMale, bool allowFemale) {}
 function AddDefaultReference(string defRef) {}
 function BeginNewOutfit(string id, string name, optional string desc, optional string highlightName, optional string pickupName, optional string pickupMessage, optional string pickupArticle) {}
 function OutfitAddPartReference(string partID) {}
-function Unlock(string id) {}
+function Unlock(string id, optional bool bShowMessage) {}
 
 //Function called by spawners
 function SpawnerPickup(OutfitSpawner S) {}
