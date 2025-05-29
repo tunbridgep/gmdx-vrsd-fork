@@ -174,6 +174,7 @@ function CreateNanoKeySlot()
     			objects[KeyRingSlot].SetItem(player.KeyRing);
                 //player.ClientMessage("ooooohhhh: " $ objects[KeyRingSlot].item);
             }
+            player.KeyRing.bInObjectBelt = player.iSmartKeyring < 2;
             objects[KeyRingSlot].AllowDragging(player.iSmartKeyring > 0);
             objects[KeyRingSlot].SetObjectNumber(KeyRingSlot);
 		}

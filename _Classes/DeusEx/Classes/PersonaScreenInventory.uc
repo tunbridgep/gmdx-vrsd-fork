@@ -1589,7 +1589,7 @@ function UpdateDragMouse(float newX, float newY)
 		{
 			if (HUDObjectSlot(findWin).item != None)
 			{
-				if (!HUDObjectSlot(findWin).item.IsA('NanoKeyRing'))
+				if (HUDObjectSlot(findWin).bAllowDragging)
 				{
 					bValidDrop = True;
 				}
@@ -2032,15 +2032,12 @@ function FinishButtonDrag()
 
 		itemSlot = HUDObjectSlot(lastDragOverButton);
 
-		if (itemSlot != None)
+		if (itemSlot != None && (itemSlot.bAllowDragging || itemSlot.Item == None))
 		{
-			if (((itemSlot.Item != None) && (!itemSlot.Item.IsA('NanoKeyRing'))) || (itemSlot.Item == None))
-			{
-				invBelt.SwapObjects(HUDObjectSlot(dragButton), itemSlot);
-				itemSlot.SetToggle(True);
-			}
+			invBelt.SwapObjects(HUDObjectSlot(dragButton), itemSlot);
+			itemSlot.SetToggle(True);
 		}
-		else
+		else if (itemSlot == None)
 		{
 			// If the player drags the item outside the object belt,
 			// then remove it.
