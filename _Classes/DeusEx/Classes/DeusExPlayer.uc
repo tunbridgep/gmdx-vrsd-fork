@@ -8933,6 +8933,9 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
             bCanPickup = False;
         }
 
+        //If we picked up a weapon and it was empty, display a message
+        else if (!bLootedAmmo)
+            ClientMessage(DeusExWeapon(frobTarget).PickupMessage @ DeusExWeapon(frobTarget).itemArticle @ DeusExWeapon(frobTarget).itemName, 'Pickup');
     }
 	
 	if (bSlotSearchNeeded && bCanPickup)
