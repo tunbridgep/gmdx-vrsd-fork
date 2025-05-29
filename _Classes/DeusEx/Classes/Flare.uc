@@ -302,9 +302,6 @@ function LightFlare()
 	local Pawn P;
 	local rotator rota;
     local DeusExPlayer playa;
-    local bool bHDTPInstalled;
-
-    bHDTPInstalled = DeusExPlayer(GetPlayerPawn()).IsHDTPInstalled();
 
 	if (gen == None)
 	{
@@ -394,8 +391,7 @@ function LightFlare()
 		rota = rotation;
 		rota.Roll = 0;
 		rota.Yaw += 16384;
-        //if (IsHDTP())
-        if (bHDTPInstalled)
+        if (IsHDTP(true))
         {
             flaregen = Spawn(class'ParticleGenerator',Self,, Loc, rota);
             if (flaregen != None)
@@ -417,8 +413,7 @@ function LightFlare()
                 flaregen.particleTexture = class'HDTPLoader'.static.GetFireTexture("HDTPAnim.effects.HDTPFlarespark");
             }
         }
-        //if (IsHDTP())
-        if (bHDTPInstalled)
+        if (IsHDTP(true))
         {
             flamething = Spawn(class'Effects', Self,, Location, rotation);
             if(flamething != none)
@@ -435,8 +430,7 @@ function LightFlare()
                 flamething.bHidden=false;
             }
         }
-        //if (IsHDTP())
-        if (bHDTPInstalled)
+        if (IsHDTP(true))
         {
             flamething2 = Spawn(class'Effects', Self,, Location, rotation);
             if(flamething2 != none)

@@ -423,6 +423,7 @@ var string HDTPMesh;
 var string HDTPMeshTex[8];
 var bool bHDTPInstalled;
 var globalconfig bool bHDTPEnabled;                      //SARGE: Master switch to enable or disable HDTP
+var globalconfig bool bHDTPEffects;                      //SARGE: Shared setting for HDTP Effects being enabled independently of their objects.
 
 //GMDX: CyberP & dasraiser
 //SAVEOUT

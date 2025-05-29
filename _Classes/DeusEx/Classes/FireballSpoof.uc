@@ -88,7 +88,7 @@ function Destroyed()
 function UpdateHDTPSettings()
 {
     Super.UpdateHDTPSettings();
-    if (IsHDTP())
+    if (IsHDTP(true))
     {
         Texture = class'HDTPLoader'.static.GetWetTexture(texes[rand(5)]);
         DrawScale=0.001000;

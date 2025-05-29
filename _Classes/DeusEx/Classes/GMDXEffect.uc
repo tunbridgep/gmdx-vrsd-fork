@@ -9,11 +9,11 @@ var string HDTPMesh;
 //The weapon we're looking at to determine if we should draw as HDTP or not
 var class<DeusExWeapon> hdtpReference;
 
-static function bool IsHDTP()
+static function bool IsHDTP(optional bool bAllowEffects)
 {
     if (!class'DeusExPlayer'.static.IsHDTPInstalled())
         return false;
-    return default.hdtpReference == None || default.hdtpReference.default.iHDTPModelToggle > 0;
+    return default.hdtpReference == None || default.hdtpReference.default.iHDTPModelToggle > 0 || (bAllowEffects && class'DeusExPlayer'.default.bHDTPEffects);
 }
 
 simulated function PreBeginPlay()
