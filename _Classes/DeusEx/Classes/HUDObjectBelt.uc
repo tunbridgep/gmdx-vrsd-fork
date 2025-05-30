@@ -358,8 +358,6 @@ function ClearPosition(int pos)
 {
 	if (IsValidPos(pos))
 		objects[pos].SetItem(None);
-    if (pos == KeyRingSlot)
-        CreateNanoKeySlot();
 }
 
 // ----------------------------------------------------------------------
