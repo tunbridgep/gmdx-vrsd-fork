@@ -1938,6 +1938,8 @@ event TravelPostAccept()
     
     bDelayInventoryFix = false;
 
+    //Reset the music timers
+    ResetMusic();
 
 	//end GMDX
 }
@@ -2274,7 +2276,6 @@ exec function RestartLevel()
 exec function LoadGame(int saveIndex)
 {
     SetupRendererSettings();
-    ResetMusic();
 
 //   log("MYCHK:LoadGame: ,"@saveIndex);
 	// Reset the FOV
