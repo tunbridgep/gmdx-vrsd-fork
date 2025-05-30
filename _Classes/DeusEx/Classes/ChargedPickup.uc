@@ -425,6 +425,7 @@ state Activated
             DeselectInHand(player);
             if (bDrained && bActive && Charge > 0)
             {
+                bDrained = false;
                 Player.PlaySound(ActivateSound, SLOT_Pain);
                 ChargedPickupBegin(Player);
                 return;
