@@ -435,11 +435,10 @@ function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
 
 	if ((newItem != None ) && (newItem.Icon != None))
 	{
-		// If this is the NanoKeyRing, force it into slot 0 //SARGE: Or slot 11
+		// If this is the NanoKeyRing, force it into slot 0 //SARGE: Actually, do nothing except undim
 		if (newItem.IsA('NanoKeyRing'))
 		{
-			ClearPosition(KeyRingSlot);
-			pos = KeyRingSlot;
+            objects[pos].bDimIcon = false;
             return true;
 		}
 
