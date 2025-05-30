@@ -1078,6 +1078,10 @@ function Frob(Actor Frobber, Inventory frobWith)
                                 bFoundSomething = True;
                                 bPickedSomethingUp = True;
                             }
+                            //SARGE: Show declined nanokeys
+                            else if (player.bShowDeclinedInReceivedWindow)
+                                AddReceivedItem(player, item, 1, true, true);
+
 							DeleteInventory(item);
 							item.Destroy();
 							item = None;
