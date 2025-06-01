@@ -96,18 +96,7 @@ function Tick(float deltaTime)
 	{
         destroyWindow.Destroy();
 		bTickEnabled = False;
-		//return;                                                                 //RSD: Added to avoid lower branch
 	}
-
-	/*if (lastRefresh >= refreshInterval)                                         //RSD: Now refresh info (especially for ChargedPickups) every 0.2s
-	{
-		lastRefresh = 0.0;
-		UpdateInventoryInfo()
-	}
-	else
-	{
-		lastRefresh += deltaTime;
-	}*/
 }
 
 // ----------------------------------------------------------------------
@@ -402,7 +391,7 @@ function bool ButtonActivated( Window buttonPressed )
 	}
 	// Check to see if this is the Ammo button
 	else if ((buttonPressed.IsA('PersonaItemDetailButton')) &&
-	         (PersonaItemDetailButton(buttonPressed).icon == Class'AmmoShell'.Default.LargeIcon))
+	         (PersonaItemDetailButton(buttonPressed).icon == class'AmmoShell'.default.LargeIcon))
 	{
 		SelectInventory(PersonaItemButton(buttonPressed));
 		UpdateAmmoDisplay();
@@ -634,7 +623,7 @@ function SelectInventory(PersonaItemButton buttonPressed)
 			HighlightSpecial(Inventory(selectedItem.GetClientObject()));
 			SelectObjectBeltItem(Inventory(selectedItem.GetClientObject()), True);
 
-			selectedItem.SelectButton(True);
+			selectedItem.SelectButton(true);
 
 			anItem = Inventory(selectedItem.GetClientObject());
 
@@ -646,7 +635,7 @@ function SelectInventory(PersonaItemButton buttonPressed)
         //SARGE: Allow deselecting inventory items
         else
         {
-            selectedItem.SelectButton(False);
+            selectedItem.SelectButton(false);
 			ClearSpecialHighlights();
             //SelectInventory(None);
             //SignalRefresh();
@@ -665,17 +654,6 @@ function SelectInventory(PersonaItemButton buttonPressed)
 	}
 }
 
-/*function UpdateInventoryInfo()                                                  //RSD: To refresh inventory info
-{
-	local Inventory anItem;
-
-	if (selectedItem != None)
-	{
-		anItem = Inventory(selectedItem.GetClientObject());
-		if (anItem != None)
-			anItem.UpdateInfo(winInfo);
-	}
-}*/
 
 // ----------------------------------------------------------------------
 // SelectInventoryItem()
@@ -683,7 +661,6 @@ function SelectInventory(PersonaItemButton buttonPressed)
 // Searches through the inventory items for the item passed in and
 // selects it.
 // ----------------------------------------------------------------------
-
 function SelectInventoryItem(Inventory item)
 {
 	local PersonaInventoryItemButton itemButton;
@@ -830,7 +807,6 @@ function UseSelectedItem()
 		// If this item was equipped in the inventory screen,
 		// make sure we set inHandPending to None so it's not
 		// drawn when we exit the Inventory screen
-
 		if (player.inHandPending == inv)
 			player.SetInHandPending(None);
 
@@ -1105,10 +1081,7 @@ function UpdateWinInfo(Inventory inv)
 	winInfo.Clear();
 
 	if (inv != None)
-	{
-		winInfo.SetTitle(inv.ItemName);
-		winInfo.SetText(inv.Description);
-	}
+		inv.UpdateInfo(winInfo);
 }
 
 // ----------------------------------------------------------------------
@@ -1127,10 +1100,6 @@ function RefreshWindow(float DeltaTime)
             CleanBelt();
         }
     }
-
-    log("Refresh");
-
-
     Super.RefreshWindow(DeltaTime);
 }
 // ----------------------------------------------------------------------
@@ -1446,39 +1415,18 @@ function UpdateDragMouse(float newX, float newY)
 
             //CyberP: this is a bit demanding. Should probably optimize at some point //RSD to the rescue!
            if (PersonaInventoryItemButton(findWin) != dragButton && PersonaInventoryItemButton(findWin).GetClientObject().IsA('Inventory')) //RSD: Everything's an Inventory object, no need to separate
-           //IsA('DeusExPickup') || PersonaInventoryItemButton(findWin).GetClientObject().IsA('DeusExWeapon'))
 		   {
-		    /*if (DeusExPickup(PersonaInventoryItemButton(findWin).GetClientObject()) != None)
-		     {
-		      sX = DeusExPickup(PersonaInventoryItemButton(findWin).GetClientObject()).invSlotsX;
-		      sY = DeusExPickup(PersonaInventoryItemButton(findWin).GetClientObject()).invSlotsY;
-		     }
-            else if (DeusExWeapon(PersonaInventoryItemButton(findWin).GetClientObject()) != None)
-             {
-              sX = DeusExWeapon(PersonaInventoryItemButton(findWin).GetClientObject()).invSlotsX;
-		      sY = DeusExWeapon(PersonaInventoryItemButton(findWin).GetClientObject()).invSlotsY;
-             }*/
              if (Inventory(PersonaInventoryItemButton(findWin).getClientObject()) != None) //RSD: Everything's an Inventory object, no need to separate
              {
 		      sX = Inventory(PersonaInventoryItemButton(findWin).GetClientObject()).invSlotsX;
 		      sY = Inventory(PersonaInventoryItemButton(findWin).GetClientObject()).invSlotsY;
              }
-             /*if (invButton.GetClientObject().IsA('DeusExPickup'))
-		     {
-		      dX = DeusExPickup(invButton.GetClientObject()).invSlotsX;
-		      dY = DeusExPickup(invButton.GetClientObject()).invSlotsY;
-		     }
-            else if (invButton.GetClientObject().IsA('DeusExWeapon'))
-             {
-              dX = DeusExWeapon(invButton.GetClientObject()).invSlotsX;
-		      dY = DeusExWeapon(invButton.GetClientObject()).invSlotsY;
-             }*/
+
              if (invButton.GetClientObject().IsA('Inventory'))                  //RSD: Everything's an Inventory object, no need to separate
 		     {
 		      dX = Inventory(invButton.GetClientObject()).invSlotsX;
 		      dY = Inventory(invButton.GetClientObject()).invSlotsY;
-		      //dX = invButton.safeInvX;                                          //RSD: Need to use saved value otherwise we can swap with the rotated value, ECH
-		      //dY = invButton.safeInvY;                                          //RSD: Need to use saved value otherwise we can swap with the rotated value, ECH
+
 		     }
            if (sX == dX && sY == dY)
              {
@@ -1496,7 +1444,6 @@ function UpdateDragMouse(float newX, float newY)
                     homeButton.ResetFill();
              }
            }
-
 
 			// Check for weapon mods being dragged over weapons
 			if ((dragButton.GetClientObject().IsA('WeaponMod')) && (findWin.GetClientObject().IsA('DeusExWeapon')))
@@ -1942,16 +1889,6 @@ function FinishButtonDrag()
 		else if (dragTarget != None && dragTarget != dragButton && dragTarget.GetClientObject().IsA('Inventory'))
         //(dragtarget.GetClientObject().IsA('DeusExPickup') || dragtarget.GetClientObject().IsA('DeusExWeapon'))) //RSD: Everything's an Inventory object, no need to separate
 		{
-		  /*if (DeusExPickup(dragTarget.GetClientObject()) != None)
-		  {
-		    invX = DeusExPickup(dragTarget.GetClientObject()).invSlotsX;
-		    invY = DeusExPickup(dragTarget.GetClientObject()).invSlotsY;
-		  }
-          else if (DeusExWeapon(dragTarget.GetClientObject()) != None)
-          {
-            invX = DeusExWeapon(dragTarget.GetClientObject()).invSlotsX;
-		    invY = DeusExWeapon(dragTarget.GetClientObject()).invSlotsY;
-          }*/
           if (Inventory(dragTarget.GetClientObject()) != None)                  //RSD: Everything's an Inventory object, no need to separate
           {
             invX = Inventory(dragTarget.GetClientObject()).invSlotsX;
@@ -1959,20 +1896,6 @@ function FinishButtonDrag()
           }
           if (invX == dragInv.invSlotsX && invY == dragInv.invSlotsY)
           {
-              /*if (DeusExPickup(dragTarget.GetClientObject()) != None)
-              {
-                     posY = DeusExPickup(dragTarget.GetClientObject()).invPosY;
-                     posX = DeusExPickup(dragTarget.GetClientObject()).invPosX;
-                     DeusExPickup(dragTarget.GetClientObject()).invPosY = dragInv.invPosY;
-                     DeusExPickup(dragTarget.GetClientObject()).invPosX = dragInv.invPosX;
-              }
-              else if (DeusExWeapon(dragTarget.GetClientObject()) != None)
-              {
-                     posY = DeusExWeapon(dragTarget.GetClientObject()).invPosY;
-                     posX = DeusExWeapon(dragTarget.GetClientObject()).invPosX;
-                     DeusExWeapon(dragTarget.GetClientObject()).invPosY = dragInv.invPosY;
-                     DeusExWeapon(dragTarget.GetClientObject()).invPosX = dragInv.invPosX;
-              }*/
               if (Inventory(dragTarget.GetClientObject()) != None)              //RSD: Everything's an Inventory object, no need to separate
               {
                      posY = Inventory(dragTarget.GetClientObject()).invPosY;
@@ -2048,81 +1971,6 @@ function FinishButtonDrag()
 
     EndDragMode();
 }
-/*
-// ----------------------------------------------------------------------
-// EndDragMode()
-// ----------------------------------------------------------------------
-
-function EndDragMode()
-{
-	// Make sure the last inventory item dragged over isn't still highlighted
-	if (lastDragOverButton != None)
-	{
-		if (lastDragOverButton.IsA('PersonaInventoryItemButton'))
-			PersonaInventoryItemButton(lastDragOverButton).ResetFill();
-		else
-			HUDObjectSlot(lastDragOverButton).ResetFill();
-
-		lastDragOverButton = None;
-	}
-
-	bDragging = False;
-
-	// Select the item
-	if (dragButton != None)
-	{
-		if (dragButton.IsA('PersonaInventoryItemButton'))
-			SelectInventory(PersonaInventoryItemButton(dragButton));
-		else if (dragButton.IsA('ToggleWindow'))
-			ToggleWindow(dragButton).SetToggle(True);
-
-		dragButton = None;
-	}
-
-    SignalRefresh();
-}
-*/
-// ----------------------------------------------------------------------
-// EndDragMode()
-// mod by eshkrm implemented for GMDX //CyberP: removed as caused crashes.
-// ----------------------------------------------------------------------
-
-/*function EndDragMode()
-{
-   // Make sure the last inventory item dragged over isn't still highlighted
-   if (lastDragOverButton != None)
-   {
-      if (lastDragOverButton.IsA('PersonaInventoryItemButton'))
-         PersonaInventoryItemButton(lastDragOverButton).ResetFill();
-      else
-         HUDObjectSlot(lastDragOverButton).ResetFill();
-   }
-
-   bDragging = False;
-
-   // Select the dragged item...
-   if (dragButton != None)
-   {
-      if (dragButton.IsA('PersonaInventoryItemButton'))
-      {
-         SelectInventory(PersonaInventoryItemButton(dragButton));
-
-         // ...but drop it if player dragged it outside the inventory window
-         if (lastDragOverButton == None)
-            DropSelectedItem();
-      }
-      else if (dragButton.IsA('ToggleWindow'))
-      {
-         ToggleWindow(dragButton).SetToggle(True);
-      }
-   }
-
-   dragButton = None;
-   lastDragOverButton = None;
-
-   SignalRefresh();
-}
-*/
 
 function EndDragMode()
 {

@@ -76,6 +76,9 @@ event InitWindow()
 	else
 		strDash = "";
 
+	msgDoAssign = msgDoAssign $ " as Secondary Item";
+	msgDoUnassign = msgDoUnassign $ " as Secondary Item";
+
 	CreateControls();
 }
 
@@ -318,15 +321,15 @@ function bool ButtonActivated( Window buttonPressed )
 	switch(buttonPressed)
 	{
 		case buttonUpgradeSecond:
-		   if (assignThis != None && player.GetSecondaryClass() == assignThis.Class)
+		   if (assignThis != None && player.GetSecondaryClass() == assignThis.class)
 		   {
 			   player.AssignSecondary(None);
-			   //player.ClientMessage(msgUnassigned);
+			   player.ClientMessage(msgUnassigned);
 		   }
 		   else if (assignThis != None)
 		   {
 			   player.AssignSecondary(assignThis);
-			   //player.ClientMessage(msgAssigned);
+			   player.ClientMessage(msgAssigned);
 		   }
 		   UpdateSecondaryButton(assignThis.class);
 		   break;
@@ -460,15 +463,13 @@ function PersonaInfoItemWindow AddModInfo(coerce String newLabel, int count, opt
         //a: we create an instance of an InfoItem as a child to winTile,
         //which actually makes the winItem var the new row we want to create in DeusExWeapon.uc
         winItem = PersonaInfoItemWindow(winTile.NewChild(Class'PersonaInfoItemWindow'));
-
         //And since InfoItem on init event creates instances of left and right columns of our new row, let's populate them with our custom function
         winItem.SetModInfo(newLabel, count, bHighlight, count2);
-
 }
+
 // ----------------------------------------------------------------------
 // AddLine()
 // ----------------------------------------------------------------------
-
 function AddLine()
 {
 	winTile.NewChild(Class'PersonaInfoLineWindow');
@@ -481,6 +482,8 @@ function AddLine()
 function Clear()
 {
 	winTitle.SetText("");
+	buttonUpgradeSecond = None;
+	buttonDecline = None;
 	winTile.DestroyAllChildren();
 }
 
@@ -513,20 +516,19 @@ function bool ChildRequestedReconfiguration(window child)
 {
 	ConfigurationChanged();
 
-	return True;
+	return true;
 }
 
 function AddSecondaryButton(Inventory wep)                                      //RSD: Extending secondary items to more than just weapons
 {
    if (wep != None)
    {
-		SetText(msgAssign);
-		winActionButtonsSecondary = PersonaButtonBarWindow(winTile.NewChild(Class'PersonaButtonBarWindow'));
+		winActionButtonsSecondary = PersonaButtonBarWindow(winTile.NewChild(class'PersonaButtonBarWindow'));
 		winActionButtonsSecondary.SetWidth(32); //149
 		winActionButtonsSecondary.FillAllSpace(false);
-		buttonUpgradeSecond = PersonaActionButtonWindow(winActionButtonsSecondary.NewChild(Class'PersonaActionButtonWindow'));
+		buttonUpgradeSecond = PersonaActionButtonWindow(winActionButtonsSecondary.NewChild(class'PersonaActionButtonWindow'));
 		assignThis = wep;
-		UpdateSecondaryButton(wep.Class);
+		UpdateSecondaryButton(wep.class);
 		AddLine();
    }
 }
@@ -534,9 +536,9 @@ function AddSecondaryButton(Inventory wep)                                      
 function UpdateSecondaryButton(class<Inventory> item)
 {
     if (player.GetSecondaryClass() != item)
-        buttonUpgradeSecond.SetButtonText(msgDoAssign);
-    else
-        buttonUpgradeSecond.SetButtonText(msgDoUnassign);
+		buttonUpgradeSecond.SetButtonText(msgDoAssign);
+	else
+		buttonUpgradeSecond.SetButtonText(msgDoUnassign);
 }
 
 function UpdateDeclineButton(class<Inventory> wep)
@@ -556,10 +558,10 @@ function AddDeclineButton(class<Inventory> wep)
     if (wep != None)
     {
         AddLine();
-        winActionButtonsSecondary = PersonaButtonBarWindow(winTile.NewChild(Class'PersonaButtonBarWindow'));
+        winActionButtonsSecondary = PersonaButtonBarWindow(winTile.NewChild(class'PersonaButtonBarWindow'));
         winActionButtonsSecondary.SetWidth(32); //149
         winActionButtonsSecondary.FillAllSpace(false);
-        buttonDecline = PersonaActionButtonWindow(winActionButtonsSecondary.NewChild(Class'PersonaActionButtonWindow'));
+        buttonDecline = PersonaActionButtonWindow(winActionButtonsSecondary.NewChild(class'PersonaActionButtonWindow'));
         UpdateDeclineButton(wep);
         AddLine();
     }
@@ -575,7 +577,7 @@ function AddDeclinedInfoWindow()
 	local AlignWindow winAmmo;
 	local PersonaNormalTextWindow winText;
 	local Window winIcon;
-	local Class<Inventory> invClass;
+	local Inventory invClass;
     local int i, num;
 
     Clear();
@@ -598,12 +600,15 @@ function AddDeclinedInfoWindow()
 		SetText("");
 
 	AddLine();
-    
+
     for(i = 0; i < ArrayCount(player.declinedItemsManager.declinedTypes);i++)
     {
         invClass = class<Inventory>(DynamicLoadObject(player.declinedItemsManager.declinedTypes[i], class'Class', true));
         if (invClass != None)
         {
+			if(player.iAltFrobDisplay == 2) //Ygll: French LOVE their line :D
+				AddLine();
+
 			winAmmo = AlignWindow(winTile.NewChild(Class'AlignWindow'));
 			winAmmo.SetChildVAlignment(VALIGN_Top);
 			winAmmo.SetChildSpacing(4);
