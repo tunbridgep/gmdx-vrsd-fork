@@ -1127,7 +1127,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 						// the weapon).
 						else if ((W != None) || (W == None && (bDeclined||!player.FindInventorySlot(item, True))))
 						{
-                            bLootResult = DeusExWeapon(item).LootAmmo(DeusExPlayer(P),true,true,false,false,!bSearched && W != None);
+                            bLootResult = DeusExWeapon(item).LootAmmo(DeusExPlayer(P),true,true,false,false,!bSearched && (W != None || bDeclined));
                             bFoundSomething = bFoundSomething || bLootResult;
                             bFoundInvalid = bFoundInvalid || PickupAmmoCount > 0;
                             bPickedSomethingUp = bPickedSomethingUp || bLootResult;
@@ -1166,7 +1166,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                         if (!W.bDisposableWeapon)
                                             P.ClientMessage(item.PickupMessage @ item.itemArticle @ Item.itemName @ IgnoredString);
                                     }
-                                    if (!bDeclined) //SARGE: declined items are already added.
+                                    if (!bDeclined && !W.bDisposableWeapon) //SARGE: declined items are already added.
                                         badItems[badItemCount++] = item;
                                     bFoundInvalid = true;
                                 }
