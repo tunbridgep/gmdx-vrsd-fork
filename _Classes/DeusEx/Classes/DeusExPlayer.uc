@@ -19137,4 +19137,5 @@ defaultproperties
      bDialogHUDColors=True
      bQuietAugs=True
      bEnableLeftFrob=True
+     bShowDeclinedInReceivedWindow=true
 }
