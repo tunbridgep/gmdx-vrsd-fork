@@ -817,6 +817,8 @@ var globalconfig bool bConversationKeepWeaponDrawn;             //SARGE: Always 
 //SARGE: Overhauled the Wireless Strength perk to no longer require having a multitool out.
 var HackableDevices HackTarget;
 
+
+var bool bFakeDeath;                                            //SARGE: Fixes a rather nasty bug when dying and being transferred to the MJ12 Prison facility. Also disables quick loading.
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -1760,6 +1762,9 @@ event TravelPostAccept()
     SetupKeybindManager();
 	SetupDecalManager();
 
+    //reset "fake" death
+    bFakeDeath = false;
+
 	// reset the keyboard
 	ResetKeyboard();
 
@@ -2512,7 +2517,7 @@ exec function QuickLoad()
 
 	if (DeusExRootWindow(rootWindow) != None && !IsInState('dying'))
 		DeusExRootWindow(rootWindow).ConfirmQuickLoad();
-	else if (DeusExRootWindow(rootWindow) != None && IsInState('dying') && !bDeadLoad)
+	else if (DeusExRootWindow(rootWindow) != None && IsInState('dying') && !bDeadLoad && !bFakeDeath)
 	{ bDeadLoad=True; GoToState('Dying','LoadHack');   }
 }
 
@@ -5421,11 +5426,14 @@ function Carcass SpawnCarcass()
 		MoveTarget = carc; //for Player 3rd person views
 
 		// give the carcass the player's inventory
-		for (item=Inventory; item!=None; item=Inventory)
-		{
-			DeleteInventory(item);
-		//	carc.AddInventory(item);   //CyberP: commented out to prevent suicide inventory exploit.
-		}
+        if (!bFakeDeath)
+        {
+            for (item=Inventory; item!=None; item=Inventory)
+            {
+                DeleteInventory(item);
+            //	carc.AddInventory(item);   //CyberP: commented out to prevent suicide inventory exploit.
+            }
+        }
 	}
 
 	return carc;
@@ -7547,7 +7555,7 @@ Begin:
 	drugEffectTimer	= 0;
 
     if (AugmentationSystem != None)
-        AugmentationSystem.DeactivateAll(true); //CyberP: deactivate augs
+        AugmentationSystem.DeactivateAll(); //CyberP: deactivate augs
 	// Don't come back to life crouched
     SetCrouch(false,true);
 
@@ -16091,7 +16099,8 @@ function Died(pawn Killer, name damageType, vector HitLocation)
 		ExtinguishFire();
 
 	if (AugmentationSystem != None)
-		AugmentationSystem.DeactivateAll(true);
+		//AugmentationSystem.DeactivateAll(true);
+		AugmentationSystem.DeactivateAll(); //SARGE: Keep toggled and auto ones on, for mission 5
 
 	if ((Level.NetMode == NM_DedicatedServer) || (Level.NetMode == NM_ListenServer))
 	  ClientDeath();

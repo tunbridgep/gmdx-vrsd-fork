@@ -218,6 +218,7 @@ function FirstFrame()
        			}
 
 				player.primaryWeapon = None;
+                player.RefreshChargedPickups();
 
                 //SARGE: If we're using the "Killswitch Engaged" playthrough mod,
                 //then set the killswitch to ~23 hours, as mentioned by Simons
