@@ -13848,159 +13848,80 @@ State Attacking
     }
     }
 
-    singular function nadeThrow() //CyberP: this is awful. rewrite it ffs
+    //SARGE: Rewrote this horrible mess, now it's much nicer,
+    //also added ability to throw nanovirus grenades.
+    singular function nadeThrow()
     {
-    local GasGrenade gasNade;
-    local EMPGrenade empNade;
-    local LAM        lamNade;
-    local vector flareOffset;
-    local DeusExPlayer playa;
-    local float dista;
-    local bool bSafe;
+        local ThrownProjectile nade;
+        local vector flareOffset;
+        local DeusExPlayer playa;
+        local float dista;
+        local bool bSafe;
+        local float chance;
 
-    flareOffset = Location;
-    flareOffset.Z += 50;
-    playa = DeusExPlayer(GetPlayerPawn());
-    dista = Abs(VSize(playa.Location - Location));
+        flareOffset = Location;
+        flareOffset.Z += 50;
+        playa = DeusExPlayer(GetPlayerPawn());
+        dista = Abs(VSize(playa.Location - Location));
 
-    if (IsA('Terrorist') || IsA('UNATCOTroop') || IsA('RiotCop') || IsA('HKMilitary'))
-    {
-     gasNade = Spawn(class'GasGrenade',self,,flareOffset);
-     if (gasNade != None)
-     {
-        if (playa != None && playa.CombatDifficulty > 2)
-            gasNade.blastRadius = 512;
-        else
-            gasNade.blastRadius = 352;
-       if (dista < 1000)
-       {
-       if (FRand() < 0.1)
-           gasNade.Velocity = Vector(Rotation)*1000 + (VRand()*140);
-       else
-           gasNade.Velocity = Vector(Rotation)*1000 + (VRand()*60);
-       gasNade.Velocity.Z += 300;
-       }
-       else if (dista < 1300)
-       {
-       if (FRand() < 0.1)
-           gasNade.Velocity = Vector(Rotation)*1150 + (VRand()*140);
-       else
-           gasNade.Velocity = Vector(Rotation)*1150 + (VRand()*60);
-       gasNade.Velocity.Z += 350;
-       }
-       else
-       {
-       if (FRand() < 0.1)
-           gasNade.Velocity = Vector(Rotation)*1300 + (VRand()*140);
-       else
-           gasNade.Velocity = Vector(Rotation)*1300 + (VRand()*60);
-       gasNade.Velocity.Z += 420;
-       }
-       gasNade.Velocity.Z -= ((Location.Z-playa.Location.Z)*1.1);
-       if (Location.Z-playa.Location.Z > 160)
-           gasNade.Velocity*=0.6;
-     }
-    }
-    else if (IsA('MJ12Troop') || IsA('Soldier') || IsA('MJ12Elite'))
-    {
-      if (FRand() < 0.3)
-      {
-      gasNade = Spawn(class'GasGrenade',self,,flareOffset);
-       if (gasNade != None)
-      {
-        if (playa != None && playa.CombatDifficulty > 2)
-            gasNade.blastRadius = 512;
-        else
-            gasNade.blastRadius = 352;
-        if (dista < 900)
-       {
-       gasNade.Velocity = Vector(Rotation)*1000 + (VRand()*60);
-       gasNade.Velocity.Z += 300;
-       }
-       else if (dista < 1300)
-       {
-       gasNade.Velocity = Vector(Rotation)*1150 + (VRand()*60);
-       gasNade.Velocity.Z += 350;
-       }
-       else
-       {
-       gasNade.Velocity = Vector(Rotation)*1300 + (VRand()*60);
-       gasNade.Velocity.Z += 420;
-       }
-       gasNade.Velocity.Z -= ((Location.Z-playa.Location.Z)*1.1);
-       if (Location.Z-playa.Location.Z > 160)
-           gasNade.Velocity*=0.6;
-      }
-      }
-      else if (FRand() < 0.6)
-      {
-        empNade = Spawn(class'EMPGrenade',self,,flareOffset);
-       if (empNade != None)
-      {
-        if (playa != None && playa.CombatDifficulty > 2)
-            empNade.blastRadius = 512;
-        else
-            empNade.blastRadius = 352;
-        if (dista < 900)
-       {
-       empNade.Velocity = Vector(Rotation)*1000 + (VRand()*60);
-       empNade.Velocity.Z += 300;
-       }
-       else if (dista < 1300)
-       {
-       empNade.Velocity = Vector(Rotation)*1150 + (VRand()*60);
-       empNade.Velocity.Z += 350;
-       }
-       else
-       {
-       empNade.Velocity = Vector(Rotation)*1300 + (VRand()*60);
-       empNade.Velocity.Z += 420;
-       }
-       empNade.Velocity.Z -= ((Location.Z-playa.Location.Z)*1.1);
-       if (Location.Z-playa.Location.Z > 160)
-           empNade.Velocity*=0.6;
-      }
-      }
-      else
-      {
-        lamNade = Spawn(class'LAM',self,,flareOffset);
-       if (lamNade != None)
-      {
-        if (playa != None && playa.CombatDifficulty > 2)
-            lamNade.blastRadius = 512;
-        else
-            lamNade.blastRadius = 352;
-        if (dista < 900)
-       {
-       lamNade.Velocity = Vector(Rotation)*1000 + (VRand()*60);
-       lamNade.Velocity.Z += 300;
-       }
-       else if (dista < 1300)
-       {
-       lamNade.Velocity = Vector(Rotation)*1150 + (VRand()*60);
-       lamNade.Velocity.Z += 350;
-       }
-       else
-       {
-       lamNade.Velocity = Vector(Rotation)*1300 + (VRand()*60);
-       lamNade.Velocity.Z += 420;
-       }
-       lamNade.Velocity.Z -= ((Location.Z-playa.Location.Z)*1.1);
-       if (Location.Z-playa.Location.Z > 160)
-           lamNade.Velocity*=0.6;
-      }
-      }
-    }
-    bSafe = FastTrace(Location + vect(0,0,160), Location + vect(0,0,1)*CollisionHeight);
-    if (!bSafe)
-    {
-       if (lamNade != None)
-          lamNade.Velocity.Z *= 0.6;
-       else if (gasNade != None)
-          gasNade.Velocity.Z *= 0.6;
-       else if (empNade != None)
-          empNade.Velocity.Z *= 0.6;
-    }
+        //Determine which nade type to throw
+        if (IsA('Terrorist') || IsA('UNATCOTroop') || IsA('RiotCop') || IsA('HKMilitary'))
+        {
+            chance = 0.1;
+            nade = Spawn(class'GasGrenade',self,,flareOffset);
+        }
+        else if (IsA('MJ12Troop') || IsA('Soldier') || IsA('MJ12Elite'))
+        {
+            chance = 0.0;
+            if (FRand() < 0.3)
+                nade = Spawn(class'GasGrenade',self,,flareOffset);
+            else if (FRand() < 0.3)
+                nade = Spawn(class'EMPGrenade',self,,flareOffset);
+            else if (FRand() < 0.3)
+                nade = Spawn(class'NanoVirusGrenade',self,,flareOffset);
+            else
+                nade = Spawn(class'LAM',self,,flareOffset);
+        }
+        
+        //Now actually throw the nade
+        if (nade != None)
+        {
+            if (playa != None && playa.CombatDifficulty > 2)
+                nade.blastRadius = 512;
+            else
+                nade.blastRadius = 352;
+            if (dista < 900)
+            {
+                if (FRand() < chance)
+                    nade.Velocity = Vector(Rotation)*1000 + (VRand()*140);
+                else
+                    nade.Velocity = Vector(Rotation)*1000 + (VRand()*60);
+                nade.Velocity.Z += 300;
+            }
+            else if (dista < 1300)
+            {
+                if (FRand() < chance)
+                    nade.Velocity = Vector(Rotation)*1150 + (VRand()*140);
+                else
+                    nade.Velocity = Vector(Rotation)*1150 + (VRand()*60);
+                nade.Velocity.Z += 350;
+            }
+            else
+            {
+                if (FRand() < chance)
+                    nade.Velocity = Vector(Rotation)*1300 + (VRand()*140);
+                else
+                    nade.Velocity = Vector(Rotation)*1300 + (VRand()*60);
+                nade.Velocity.Z += 420;
+            }
+            nade.Velocity.Z -= ((Location.Z-playa.Location.Z)*1.1);
+            if (Location.Z-playa.Location.Z > 160)
+                nade.Velocity*=0.6;
+        }
+    
+        bSafe = FastTrace(Location + vect(0,0,160), Location + vect(0,0,1)*CollisionHeight);
+        if (!bSafe)
+            nade.Velocity.Z *= 0.6;
     }
 
 	function BeginState()
