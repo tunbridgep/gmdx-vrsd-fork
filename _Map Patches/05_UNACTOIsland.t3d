@@ -2,7 +2,7 @@ Begin Map
 Begin Actor Class=LevelInfo Name=LevelInfo0
     TimeSeconds=18.887167
     Summary=LevelSummary'MyLevel.LevelSummary'
-    Song=Music'LibertyIsland_Music.LibertyIsland_Music'
+    Song=Music'UNATCOReturn_Music.UNATCOReturn_Music'
     NavigationPointList=PathNode'MyLevel.PathNode7'
     AIProfile(0)=201582009
     AmbientHue=150
