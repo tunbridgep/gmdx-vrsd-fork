@@ -448,7 +448,7 @@ var globalconfig bool bNoTranslucency;
 var globalconfig int dblClickHolster;                      //SARGE: 0 = off, 1 = double click holstering only, 2 = double click holstering and unholstering
 var globalconfig bool bHalveAmmo;
 var globalconfig bool bHardcoreUnlocked;
-var globalconfig bool bAutoHolster;
+var globalconfig int iAutoHolster;                         //SARGE: 0 = off, 1 = corpses only, 2 = everything
 var globalconfig bool bRealUI;
 var globalconfig bool bHardcoreAI1;
 var globalconfig bool bHardcoreAI2;
@@ -8408,9 +8408,9 @@ function SetDoubleClickTimer()
     
 function DoAutoHolster()
 {
-    if (bAutoHolster)// && (clickCountCyber >= 1 || dblClickHolster == 0 ))
+    if (iAutoHolster > 1)// && (clickCountCyber >= 1 || dblClickHolster == 0 ))
         PutInHand(None);
-    else if (bAutoHolster && dblClickHolster > 0)
+    else if (iAutoHolster > 0 && dblClickHolster > 0)
         SetDoubleClickTimer();
 }
 
@@ -10509,7 +10509,7 @@ function GrabDecoration()
 	{
 	    if (carriedDecoration != None || inHand.IsA('POVcorpse'))
         {ClientMessage(HandsFull); return;}
-        else if (!bAutoHolster)
+        else if (iAutoHolster < 2)
         {ClientMessage(HandsFull); return;}
         else
             DoAutoHolster();
