@@ -448,7 +448,7 @@ var globalconfig bool bNoTranslucency;
 var globalconfig int dblClickHolster;                      //SARGE: 0 = off, 1 = double click holstering only, 2 = double click holstering and unholstering
 var globalconfig bool bHalveAmmo;
 var globalconfig bool bHardcoreUnlocked;
-var globalconfig bool bAutoHolster;
+var globalconfig int iAutoHolster;                         //SARGE: 0 = off, 1 = corpses only, 2 = everything
 var globalconfig bool bRealUI;
 var globalconfig bool bHardcoreAI1;
 var globalconfig bool bHardcoreAI2;
@@ -3374,9 +3374,9 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
         if (NewTransition == MTRAN_SlowFade)
             default.fadeTimeHack = 5.0;
         else if (NewTransition == MTRAN_Fade)
-            default.fadeTimeHack = 1.5;
+            default.fadeTimeHack = 2.5;
         else if (NewTransition == MTRAN_FastFade)
-            default.fadeTimeHack = 1.0;
+            default.fadeTimeHack = 1.5;
     }
     default.currentSong = string(NewSong);
 }
@@ -8408,9 +8408,9 @@ function SetDoubleClickTimer()
     
 function DoAutoHolster()
 {
-    if (bAutoHolster)// && (clickCountCyber >= 1 || dblClickHolster == 0 ))
+    if (iAutoHolster > 1)// && (clickCountCyber >= 1 || dblClickHolster == 0 ))
         PutInHand(None);
-    else if (bAutoHolster && dblClickHolster > 0)
+    else if (iAutoHolster > 0 && dblClickHolster > 0)
         SetDoubleClickTimer();
 }
 
@@ -10509,7 +10509,7 @@ function GrabDecoration()
 	{
 	    if (carriedDecoration != None || inHand.IsA('POVcorpse'))
         {ClientMessage(HandsFull); return;}
-        else if (!bAutoHolster)
+        else if (iAutoHolster < 2)
         {ClientMessage(HandsFull); return;}
         else
             DoAutoHolster();
@@ -10918,8 +10918,6 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 				RemoveItemFromSlot(item);
                 RemoveObjectFromBelt(item,bBeltAutofill); //SARGE: Disabled placeholders because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
             }
-            ammoType.ammoAmount -= 1;
-            UpdateAmmoBeltText(AmmoType);
         }
 		else
 		{
@@ -11109,8 +11107,14 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 		//DEUS_EX AMSD Use the function call for this, helps multiplayer
 		PlaceItemInSlot(item, itemPosX, itemPosY);
 	}
-    else if (item != None && DeusExWeapon(item).bDisposableWeapon) //SARGE: This has to be done here for some reason
+    //Sarge: Fix up disposable weapons
+    else if (item != None && DeusExWeapon(item).bDisposableWeapon)
+    {
+        AmmoType = Ammo(FindInventoryType(Weapon(item).AmmoName));
+        ammoType.ammoAmount -= 1;
+        UpdateAmmoBeltText(AmmoType);
         DeusExWeapon(item).PickupAmmoCount = 1;
+    }
 
 	return bDropped;
 }

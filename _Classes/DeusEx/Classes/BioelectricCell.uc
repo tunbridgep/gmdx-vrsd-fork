@@ -50,7 +50,7 @@ defaultproperties
 {
      bBiogenic=true
      bAutoActivate=True
-     bioenergyAmount=20
+     bioenergyAmount=15
      mpRechargeAmount=50
 	 CannotUse="You're already at full Energy"
      maxCopies=20

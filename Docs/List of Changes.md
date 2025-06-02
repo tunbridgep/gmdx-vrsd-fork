@@ -406,6 +406,8 @@ Sarge's Changes since Beta 2.2:
         - This means that you can no longer reroll randomisation for a given map by loading a save before a transition to a new map or entering different maps in a different order.
     - Perk System Rework:
         - Many perks have had custom icons added. More icons are planned to be added in future updates!
+        - Computers:
+            - Data Recovery (NEW TRAINED): An agent modifies their computer interface software to include custom data-exfiltration algorithms, allowing them to save email contents to their datavault.
         - Low-Tech:
             - Hemorrhage (NEW MASTER): An agent is adept at finding vital weak spots, causing organic targets to bleed profusely over time when struck by throwing knives, suffering an additional 10% of the damage dealt per second over 16 seconds.
         - Pistols Perks:
