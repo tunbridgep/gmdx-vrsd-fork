@@ -6,6 +6,7 @@ class ComputerScreenEmail expands ComputerUIWindow;
 
 var MenuUIActionButtonWindow     btnSpecial;
 var MenuUIActionButtonWindow     btnLogout;
+var MenuUIActionButtonWindow     btnSaveEmail;
 var MenuUIListWindow             lstEmail;
 var MenuUINormalLargeTextWindow  winEmail;
 var MenuUIListHeaderButtonWindow btnHeaderFrom;
@@ -29,6 +30,10 @@ var localized String EmailSubjectHeader;
 var localized String HeaderFromLabel;
 var localized String HeaderSubjectLabel;
 
+var localized String SaveEmailLabel;
+
+var int currentEmailIndex;
+
 // ----------------------------------------------------------------------
 // CloseScreen()
 // ----------------------------------------------------------------------
@@ -47,9 +52,17 @@ function CloseScreen(String action)
 
 function CreateControls()
 {
+    local bool bPerk;
+
 	Super.CreateControls();
 
 	btnLogout = winButtonBar.AddButton(ButtonLabelLogout, HALIGN_Right);
+
+    //SARGE: Allow saving emails to datavault if we have the data recovery perk.
+    bPerk = player.PerkManager != None && player.PerkManager.GetPerkWithClass(class'PerkDataRecovery').bPerkObtained;
+
+    if (bPerk)
+        btnSaveEmail = winButtonBar.AddButton(SaveEmailLabel, HALIGN_Right);
 
 	CreateEmailListWindow();
 	CreateEmailViewWindow();
@@ -211,12 +224,16 @@ function SetCompOwner(ElectronicDevices newCompOwner)
 		// Select the first row
 		rowId = lstEmail.IndexToRowId(0);
 		lstEmail.SetRow(rowId, True);
+        if (btnSaveEmail != None)
+            btnSaveEmail.SetSensitivity(True);
 	}
 	else
 	{
 		// No Email, so just print a "No Email Today!" message
 		winEmail.SetText(NoEmailTodayText);
 		winEmail.SetTextAlignments(HALIGN_Center, VALIGN_Center);
+        if (btnSaveEmail != None)
+            btnSaveEmail.SetSensitivity(false);
 	}
 }
 
@@ -227,6 +244,8 @@ function SetCompOwner(ElectronicDevices newCompOwner)
 function bool ButtonActivated( Window buttonPressed )
 {
 	local bool bHandled;
+    local DeusExNote note;
+    local Name savedNoteName;
 
 	bHandled = True;
 
@@ -242,6 +261,17 @@ function bool ButtonActivated( Window buttonPressed )
 			bSubjectSortOrder = !bSubjectSortOrder;
 			lstEmail.SetSortColumn(1, bSubjectSortOrder);
 			lstEmail.Sort();
+			break;
+
+		case btnSaveEmail:
+            //SARGE: Special datavault version of note.
+            //This fixes problems with ordering, and makes sure we get the "Note Added" message.
+            //Also, make it a user note since we already have a version with the text.
+            savedNoteName = StringToName(emailInfo[currentEmailIndex].emailName$"_DV");
+            note = player.GetNote(savedNoteName);
+            if (note == None)
+                player.NoteAdd(winEmail.GetText(),true,false,savedNoteName);
+            //note = player.GetNote(emailInfo[currentEmailIndex].emailName);
 			break;
 
 		case btnLogout:
@@ -295,6 +325,7 @@ event bool ListSelectionChanged(window list, int numSelections, int focusRowId)
 	ProcessDeusExText(emailInfo[emailInfoIndex].emailName, winEmail);
     //player.AddNote(emailInfo[emailInfoIndex].emailName);
     player.NoteAdd(winEmail.GetText(),false,true,emailInfo[emailInfoIndex].emailName);
+    currentEmailIndex = emailInfoIndex;
 }
 
 // ----------------------------------------------------------------------
@@ -322,6 +353,7 @@ defaultproperties
      EmailSubjectHeader="Subj:"
      HeaderFromLabel="From"
      HeaderSubjectLabel="Subject"
+     SaveEmailLabel="Save To Datavault"
      escapeAction="LOGOUT"
      Title="Email"
      ClientWidth=395
