@@ -10918,8 +10918,6 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 				RemoveItemFromSlot(item);
                 RemoveObjectFromBelt(item,bBeltAutofill); //SARGE: Disabled placeholders because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
             }
-            ammoType.ammoAmount -= 1;
-            UpdateAmmoBeltText(AmmoType);
         }
 		else
 		{
@@ -11109,8 +11107,14 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 		//DEUS_EX AMSD Use the function call for this, helps multiplayer
 		PlaceItemInSlot(item, itemPosX, itemPosY);
 	}
-    else if (item != None && DeusExWeapon(item).bDisposableWeapon) //SARGE: This has to be done here for some reason
+    //Sarge: Fix up disposable weapons
+    else if (item != None && DeusExWeapon(item).bDisposableWeapon)
+    {
+        AmmoType = Ammo(FindInventoryType(Weapon(item).AmmoName));
+        ammoType.ammoAmount -= 1;
+        UpdateAmmoBeltText(AmmoType);
         DeusExWeapon(item).PickupAmmoCount = 1;
+    }
 
 	return bDropped;
 }
