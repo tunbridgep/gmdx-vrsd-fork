@@ -3374,9 +3374,9 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
         if (NewTransition == MTRAN_SlowFade)
             default.fadeTimeHack = 5.0;
         else if (NewTransition == MTRAN_Fade)
-            default.fadeTimeHack = 1.5;
+            default.fadeTimeHack = 2.5;
         else if (NewTransition == MTRAN_FastFade)
-            default.fadeTimeHack = 1.0;
+            default.fadeTimeHack = 1.5;
     }
     default.currentSong = string(NewSong);
 }
