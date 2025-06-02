@@ -288,7 +288,7 @@ function bool ButtonActivated( Window buttonPressed )
 	local DeusExPlayer player;
     local int i, index;
     local bool boughtPerk;
-    local class<inventory> declineThis;
+    local Inventory declineThis;
 
 	if (Super.ButtonActivated(buttonPressed))
 		return true;
@@ -322,15 +322,10 @@ function bool ButtonActivated( Window buttonPressed )
 	{
 		case buttonUpgradeSecond:
 		   if (assignThis != None && player.GetSecondaryClass() == assignThis.class)
-		   {
 			   player.AssignSecondary(None);
-			   player.ClientMessage(msgUnassigned);
-		   }
 		   else if (assignThis != None)
-		   {
 			   player.AssignSecondary(assignThis);
-			   player.ClientMessage(msgAssigned);
-		   }
+
 		   UpdateSecondaryButton(assignThis.class);
 		   break;
 		case buttonDecline:
@@ -463,6 +458,7 @@ function PersonaInfoItemWindow AddModInfo(coerce String newLabel, int count, opt
         //a: we create an instance of an InfoItem as a child to winTile,
         //which actually makes the winItem var the new row we want to create in DeusExWeapon.uc
         winItem = PersonaInfoItemWindow(winTile.NewChild(Class'PersonaInfoItemWindow'));
+
         //And since InfoItem on init event creates instances of left and right columns of our new row, let's populate them with our custom function
         winItem.SetModInfo(newLabel, count, bHighlight, count2);
 }
