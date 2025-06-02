@@ -493,10 +493,10 @@ var bool bForcedCloak;
 var float blinkTimer;
 
 //SARGE: Allow randomised pain and death sounds
-var Sound randomDeathSoundsM[11];
-var Sound randomPainSoundsM[21];
-var Sound randomDeathSoundsF[3];
-var Sound randomPainSoundsF[5];
+var Sound randomDeathSoundsM[22];
+var Sound randomPainSoundsM[22];
+var Sound randomDeathSoundsF[22];
+var Sound randomPainSoundsF[22];
 var bool bSetupRandomSounds; //Have we set up a random sound?
 var Sound randomDeathSoundChoice; //These three variables hold the references to
 var Sound randomPainSoundChoice1; //our randomly rolled sounds.
@@ -17448,5 +17448,5 @@ defaultproperties
      randomPainSoundsM(17)=Sound'GMDXSFX.Player.malegrunt2'
      randomPainSoundsM(18)=Sound'GMDXSFX.Player.malegrunt3'
      randomPainSoundsM(19)=Sound'DeusExSounds.Player.MaleLand' //WTF?
-     randomPainSoundsM(20)=Sound'DeusExSounds.Player.MaleGrunt'
+     randomPainSoundsM(19)=Sound'DeusExSounds.Player.MaleGrunt'
 }
