@@ -76,9 +76,6 @@ event InitWindow()
 	else
 		strDash = "";
 
-	msgDoAssign = msgDoAssign $ " as Secondary Item";
-	msgDoUnassign = msgDoUnassign $ " as Secondary Item";
-
 	CreateControls();
 }
 
@@ -517,8 +514,9 @@ function bool ChildRequestedReconfiguration(window child)
 
 function AddSecondaryButton(Inventory wep)                                      //RSD: Extending secondary items to more than just weapons
 {
-   if (wep != None)
-   {
+	if (wep != None)
+	{
+		SetText(msgAssign);
 		winActionButtonsSecondary = PersonaButtonBarWindow(winTile.NewChild(class'PersonaButtonBarWindow'));
 		winActionButtonsSecondary.SetWidth(32); //149
 		winActionButtonsSecondary.FillAllSpace(false);
@@ -526,7 +524,7 @@ function AddSecondaryButton(Inventory wep)                                      
 		assignThis = wep;
 		UpdateSecondaryButton(wep.class);
 		AddLine();
-   }
+	}
 }
 
 function UpdateSecondaryButton(class<Inventory> item)
