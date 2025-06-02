@@ -49,7 +49,9 @@ function StandStill()
 
     player = DeusExPlayer(GetPlayerPawn());                                     //RSD
 
-    if (player != none && player.CombatDifficulty >= 3.0)                       //RSD: Realistic/Hardcore get 2 charges max
+    if (player != none && player.bHardCoreMode)                                 //SARGE: Hardcore gets 1 charge
+        lowerThreshold = 2;
+    else if (player != none && player.CombatDifficulty >= 3.0)                  //RSD: Realistic gets 2 charges max
         lowerThreshold = 1;
     else                                                                        //RSD: Medium/Hard get 3 charges max
         lowerThreshold = 0;
