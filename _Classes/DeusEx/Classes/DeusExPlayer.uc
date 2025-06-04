@@ -719,6 +719,7 @@ var transient string currentSong;                                               
 var globalconfig int iEnhancedMusicSystem;                                        //SARGE: Should the music system be a bit smarter about playing tracks?
 var transient float fadeTimeHack;                                                 //SARGE: Hacky music transition fix timer
 var transient EMusicMode prevmusicMode;
+var transient int prevSongSection;                                               //SARGE: Remember the SongSection for the previous map. If it changes, we need to always change tracks.
 
 //SARGE: Autoswitch to Health screen when installing the last augmentation at a med bot.
 var globalconfig bool bMedbotAutoswitch;
@@ -3309,9 +3310,7 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
         bChange = true;
         SetInstantMusicVolume(int(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice MusicVolume")));
         NewTransition = MTRAN_Instant;
-        DebugMessage("FadeTimeHack fix");
-        if (NewSection == Level.SongSection)
-            NewSection = default.savedSection;
+        DebugMessage("Changing Music - FadeTimeHack fix");
     }
 
     if (string(NewSong) != default.currentSong) //We always want to allow song changes
@@ -3337,15 +3336,28 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
             DebugMessage("Non-Combat section of Combat Only track - Music Unchanged");
         else if (info != none && info.MusicType == MT_ConversationOnly && default.MusicMode != MUS_Conversation && default.prevMusicMode != MUS_Conversation)
             DebugMessage("Non-Conversation section of Conversation Only track - Music Unchanged");
+        else if (NewSection == Level.SongSection && default.musicMode != MUS_Ambient)
+        {
+            DebugMessage("New section is level section - Music Unchanged");
+            default.prevMusicMode = default.musicMode;
+        }
         else
         {
             bChange = true;
             DebugMessage("Changing Music - Changed Mode");
 
             //If we're changing back to ambient, always go to our saved section instead of the start
-            if (NewSection == Level.SongSection && default.musicMode == MUS_Ambient)
+            if (NewSection == Level.SongSection && default.prevSongSection == Level.SongSection && default.musicMode == MUS_Ambient)
                 NewSection = default.savedSection;
         }
+    }
+    //Always allow changing to ambient, if the ambient track isn't zero.
+    //This is a bit of a hack!
+    else if (NewSection == Level.SongSection && default.prevSongSection != Level.SongSection)
+    {
+        DebugMessage("Changing Music - Changed Ambient Section");
+        default.savedSection = Level.SongSection; //And reset the saved section
+        bChange = true;
     }
 
     if (bChange)
@@ -3361,6 +3373,7 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
             default.fadeTimeHack = 1.0;
     }
     default.currentSong = string(NewSong);
+    default.prevSongSection = Level.SongSection;
 }
 
 //SARGE: Calls ClientSetMusic based on our current music state.
