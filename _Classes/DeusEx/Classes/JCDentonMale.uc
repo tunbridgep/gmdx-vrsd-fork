@@ -11,22 +11,21 @@ function UpdateHDTPSettings()
 	local string texstr;
 
     //If we're femJC, abort
-    if (FlagBase.GetBool('LDDPJCIsFemale'))
-        return;
+    if (!FlagBase.GetBool('LDDPJCIsFemale'))
+    {
+        super.UpdateHDTPsettings();
+        SetSkin();
+    }
 
-	super.UpdateHDTPsettings();
-
-	SetSkin();
+    //Augmentique overrides HDTP
+    if (outfitManager != None)
+        outfitManager.ApplyCurrentOutfit();
 }
 
 //Set HDTP Skin
 function SetSkin()
 {
     local Texture tex1, tex2;
-
-    //If we're femJC, abort
-    if (FlagBase.GetBool('LDDPJCIsFemale'))
-        return;
 
 	if(IsHDTP())
 	{
@@ -233,11 +232,11 @@ function Timer()
 {
     Super.Timer();
 
-    //load HDTP Skin
-    UpdateHDTPSettings();
-
     //Setup Outfit Manager
     SetupOutfitManager();
+
+    //load HDTP Skin
+    UpdateHDTPSettings();
 }
 
 // ----------------------------------------------------------------------
