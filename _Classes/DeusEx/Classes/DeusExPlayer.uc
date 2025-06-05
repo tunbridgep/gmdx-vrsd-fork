@@ -1362,9 +1362,6 @@ function PostBeginPlay()
 
     //SARGE: Account for FemJC eye height changes
     ResetBasedPawnSize();
-	
-    //Reset the music timers
-    ResetMusic();
 
     //RSD: log item distribution on map load
     //logItemsInCrates();
@@ -2236,7 +2233,7 @@ exec function TeamSay( string Msg )
 exec function RestartLevel()
 {
 	ResetPlayer();
-    ResetMusic(true);
+    ResetMusic();
 	Super.RestartLevel();
 }
 
@@ -2591,7 +2588,7 @@ exec function StartNewGame(String startMap)
 
 	SaveSkillPoints();
 	ResetPlayer();
-    ResetMusic(true);
+    ResetMusic();
 	DeleteSaveGameFiles();
 
 	bStartingNewGame = True;
@@ -3280,6 +3277,12 @@ exec function PlayMusicWindow()
 	InvokeUIScreen(Class'PlayMusicWindow');
 }
 
+//Determine if the ambient track changed - either a song change, or a change of default part.
+function bool AmbientTrackChanged(string newSong)
+{
+    return newSong != default.currentSong || default.prevSongSection != Level.SongSection;
+}
+
 // ----------------------------------------------------------------------
 // ClientSetMusic()
 //
@@ -3304,16 +3307,31 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
     //SARGE: We're still fading from the last track, so we need to do a hacky fix
     //The engine is busted and the music system needs to be reset, so instantly transition back to our saved section.
     //and reset the volume
+    /*
     if (default.fadeTimeHack > 0)
     {
-        //Hack to fix broken audio settings.
-        bChange = true;
+        //barf...
+        //bChange = true;
+        SetInstantMusicVolume(int(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice MusicVolume")));
+        NewTransition = MTRAN_Instant;
+        default.savedSection = Level.SongSection; //And reset the saved section
+        default.musicMode = MUS_Ambient;
+        default.prevMusicMode = MUS_Ambient;
+        DebugMessage("Changing Music - FadeTimeHack fix");
+    }
+    */
+    //Fix fade time shenanigans
+    //This makes me sick!
+    if (default.fadeTimeHack > 0 && default.musicMode == MUS_Ambient && NewSection == Level.SongSection)
+    {
+        //barf...
         SetInstantMusicVolume(int(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice MusicVolume")));
         NewTransition = MTRAN_Instant;
         DebugMessage("Changing Music - FadeTimeHack fix");
+        NewSection = default.savedSection;
+        bChange = true;
     }
-
-    if (string(NewSong) != default.currentSong) //We always want to allow song changes
+    else if (AmbientTrackChanged(string(NewSong))) //We always want to allow song changes
     {
         bChange = true;
         DebugMessage("Changing Music - Song Change from" @ default.currentSong);
@@ -3351,14 +3369,6 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
                 NewSection = default.savedSection;
         }
     }
-    //Always allow changing to ambient, if the ambient track isn't zero.
-    //This is a bit of a hack!
-    else if (NewSection == Level.SongSection && default.prevSongSection != Level.SongSection)
-    {
-        DebugMessage("Changing Music - Changed Ambient Section");
-        default.savedSection = Level.SongSection; //And reset the saved section
-        bChange = true;
-    }
 
     if (bChange)
     {
@@ -3371,6 +3381,8 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
             default.fadeTimeHack = 1.5;
         else if (NewTransition == MTRAN_FastFade)
             default.fadeTimeHack = 1.0;
+        else
+            default.fadeTimeHack = 0;
     }
     default.currentSong = string(NewSong);
     default.prevSongSection = Level.SongSection;
@@ -3402,14 +3414,14 @@ function MusicTransition(EMusicMode mode, EMusicMode prev)
 
 //SARGE: Resets the music timers and state.
 //Now that we're using variables that persist per-session, we need to do this.
-function ResetMusic(optional bool bResetPlace)
+function ResetMusic()
 {
     //Reset the music timers
-    //default.musicMode = MUS_Outro;
-    //default.prevMusicMode = MUS_Outro;
-    if (bResetPlace || iEnhancedMusicSystem == 0)
+    if (iEnhancedMusicSystem == 0)
+    {
         default.savedSection = Level.SongSection;
-    UpdateDynamicMusic(999,true);
+        UpdateDynamicMusic(999,true);
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -3446,12 +3458,8 @@ function UpdateDynamicMusic(float deltaTime, optional bool bNoFadeHack)
         default.fadeTimeHack -= deltaTime;
     if (default.fadeTimeHack < 0)
         default.fadeTimeHack = 0;
-
-    //No music changes while we're fading.
-    if (default.fadeTimeHack > 0)
-        return;
             
-    if (default.musicMode == MUS_Ambient)
+    if (default.musicMode == MUS_Ambient && fadeTimeHack == 0)
     {
         //SARGE: Now we constantly update the saved section, rather than
         //only updating it when it changes, because that can cause bugs due to fading.
@@ -3469,6 +3477,7 @@ function UpdateDynamicMusic(float deltaTime, optional bool bNoFadeHack)
 		if ((info != None) && (info.MissionNumber < 0))
         {
             default.prevMusicMode = MUS_Outro;
+            default.fadeTimeHack = 0;
 			return;
         }
 	}
