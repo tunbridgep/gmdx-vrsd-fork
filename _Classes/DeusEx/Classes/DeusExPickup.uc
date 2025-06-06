@@ -1149,4 +1149,5 @@ defaultproperties
      //SARGE: Suppress the default Activation and Deactivation messages, we will handle them ourselves
      M_Activated=""
      M_Deactivated=""
+     bVisionImportant=true
 }

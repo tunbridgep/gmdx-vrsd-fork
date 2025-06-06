@@ -184,6 +184,8 @@ simulated function AddSmoke()
 {
     if (smokeTime == -1 && class'DeusExPlayer'.default.iPersistentDebris >= 2)
         return;
+            
+    bVisionImportant = true;
 
 	smokeGen = Spawn(class'ParticleGenerator', Self);
 	if (smokeGen != None)
@@ -232,6 +234,7 @@ simulated function Tick(float deltaTime)
             smokeTime = -1;
             if (smokeGen != none)
                 smokeGen.Destroy();
+            bVisionImportant = false;
         }
     }
 }

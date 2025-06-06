@@ -101,6 +101,7 @@ var Actor VisionBlinder; //So the same thing doesn't blind me twice.
 var int VisionTargetStatus; //For picking see through wall texture
 const VISIONENEMY = 1;
 const VISIONALLY = 2;
+const VISIONITEM = 3; //SARGE: Added
 const VISIONNEUTRAL = 0;
 
 // Show name of player in multiplayer on a timer
@@ -2177,6 +2178,9 @@ function bool IsHeatSource(Actor A)
         return true;
     else if (A.IsA('SecurityCamera'))
         return true;
+    //SARGE: Added pickups and weapons as well
+    else if (A.IsA('Inventory'))
+        return true;
 	else
 		return False;
 }
@@ -2197,6 +2201,8 @@ function Texture GetGridTexture(Texture tex)
 		return Texture'BlackMaskTex';
 	else if (tex == Texture'PinkMaskTex')
 		return Texture'BlackMaskTex';
+	else if (VisionTargetStatus == VISIONITEM)
+		return Texture'Nano_SFX_A';
     else if (visionlevel <= 1) //SARGE: Low level vision only shows green
 		//return Texture'RSDCrap.Skins.NVGTex';
 		return Texture'SolidGreen';
@@ -2289,6 +2295,10 @@ function int GetVisionTargetStatus(Actor Target)
 
 	if (Target == None)
 		return VISIONNEUTRAL;
+	
+    //SARGE: Added. Show items as a different colour
+    if (target.IsA('Inventory'))
+        return VISIONITEM;
 
 	if (player.Level.NetMode == NM_Standalone)
 		return VISIONENEMY;

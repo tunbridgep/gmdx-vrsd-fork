@@ -11,5 +11,5 @@ defaultproperties
      Mesh=LodMesh'GameMedia.GibGuts'
      CollisionRadius=1.000000
      CollisionHeight=0.500000
-     bVisionImportant=True
+     //bVisionImportant=True //SARGE: WTF???
 }

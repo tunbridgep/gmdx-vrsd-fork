@@ -450,4 +450,5 @@ defaultproperties
      PartialAmmoSound=Sound'WeaponPickup'
      MaxAmmoString="[Ammo at Maximum]"
      PickupSound=sound'objpickup2'
+     bVisionImportant=true
 }

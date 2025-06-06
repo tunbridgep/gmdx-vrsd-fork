@@ -7411,4 +7411,5 @@ defaultproperties
      //CopyModsSound=sound'weaponmodinstall'
      CopyModsSound=sound'M4ClipOut'
      msgModsCopied="Weapon Modifications applied from %d"
+     bVisionImportant=true
 }
