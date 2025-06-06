@@ -90,8 +90,8 @@ function CreateAmmoTileWindow()
 		winTileAmmo.SetWindowAlignments(HALIGN_Full, VALIGN_Top);
 		winTileAmmo.MakeWidthsEqual(false); //False
 		winTileAmmo.MakeHeightsEqual(true);
-		winTileAmmo.SetMargins(2, 2);
-		winTileAmmo.SetMinorSpacing(3);  //4
+		winTileAmmo.SetMargins(0, 0);
+		winTileAmmo.SetMinorSpacing(1);  //4
 
 		winText = PersonaNormalTextWindow(winTileAmmo.NewChild(Class'PersonaNormalTextWindow'));
 		winText.SetWidth(36); //70
