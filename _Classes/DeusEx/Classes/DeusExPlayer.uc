@@ -1769,6 +1769,9 @@ event TravelPostAccept()
     //Update HUD
     UpdateHUD();
 
+    //Reset Music
+    ResetMusic();
+
     //Reset Crosshair
     UpdateCrosshair();
 
@@ -3320,15 +3323,17 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
         DebugMessage("Changing Music - FadeTimeHack fix");
     }
     */
+
     //Fix fade time shenanigans
     //This makes me sick!
-    if (default.fadeTimeHack > 0 && default.musicMode == MUS_Ambient && NewSection == Level.SongSection)
+    if (default.fadeTimeHack > 0 && default.prevMusicMode == MUS_Ambient)
     {
         //barf...
         SetInstantMusicVolume(int(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice MusicVolume")));
         NewTransition = MTRAN_Instant;
         DebugMessage("Changing Music - FadeTimeHack fix");
-        NewSection = default.savedSection;
+        if (NewSection == Level.SongSection && iEnhancedMusicSystem > 0)
+            NewSection = default.savedSection;
         bChange = true;
     }
     else if (AmbientTrackChanged(string(NewSong))) //We always want to allow song changes
@@ -3376,11 +3381,11 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
 
         //Apply fade-time hack
         if (NewTransition == MTRAN_SlowFade)
-            default.fadeTimeHack = 5.0;
+            default.fadeTimeHack = 4.0;
         else if (NewTransition == MTRAN_Fade)
             default.fadeTimeHack = 1.5;
         else if (NewTransition == MTRAN_FastFade)
-            default.fadeTimeHack = 1.0;
+            default.fadeTimeHack = 0.5;
         else
             default.fadeTimeHack = 0;
     }
@@ -3417,11 +3422,14 @@ function MusicTransition(EMusicMode mode, EMusicMode prev)
 function ResetMusic()
 {
     //Reset the music timers
+    DebugMessage("Music Reset");
     if (iEnhancedMusicSystem == 0)
     {
+        default.prevMusicMode = MUS_Outro;
+        default.musicMode = MUS_Outro;
         default.savedSection = Level.SongSection;
-        UpdateDynamicMusic(999,true);
     }
+    UpdateDynamicMusic(999,true);
 }
 
 // ----------------------------------------------------------------------
