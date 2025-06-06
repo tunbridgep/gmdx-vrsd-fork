@@ -218,7 +218,7 @@ function ConWinFinished()
 
 		// Show the hud display if this was a third-person convo
 		if (!bForcePlay)
-			rootWindow.hud.Show();
+			rootWindow.ShowHud(True);
 	}
 
 	PostTerminateConversation();

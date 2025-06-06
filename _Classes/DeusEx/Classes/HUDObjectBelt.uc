@@ -174,6 +174,11 @@ function CreateNanoKeySlot()
     			objects[KeyRingSlot].SetItem(player.KeyRing);
                 //player.ClientMessage("ooooohhhh: " $ objects[KeyRingSlot].item);
             }
+
+            if (objects[KeyRingSlot].item == None && player.iSmartKeyring < 2)
+                player.KeyRing.bInObjectBelt = true;
+            else if (player.iSmartKeyring == 2)
+                player.KeyRing.bInObjectBelt = false;
             objects[KeyRingSlot].AllowDragging(player.iSmartKeyring > 0);
             objects[KeyRingSlot].SetObjectNumber(KeyRingSlot);
 		}
@@ -353,8 +358,6 @@ function ClearPosition(int pos)
 {
 	if (IsValidPos(pos))
 		objects[pos].SetItem(None);
-    if (pos == KeyRingSlot)
-        CreateNanoKeySlot();
 }
 
 // ----------------------------------------------------------------------
@@ -432,11 +435,10 @@ function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
 
 	if ((newItem != None ) && (newItem.Icon != None))
 	{
-		// If this is the NanoKeyRing, force it into slot 0 //SARGE: Or slot 11
+		// If this is the NanoKeyRing, force it into slot 0 //SARGE: Actually, do nothing except undim
 		if (newItem.IsA('NanoKeyRing'))
 		{
-			ClearPosition(KeyRingSlot);
-			pos = KeyRingSlot;
+            objects[pos].bDimIcon = false;
             return true;
 		}
 
@@ -501,7 +503,7 @@ function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
 
 			objects[pos].SetItem(newItem);
 
-			if (newItem.IsA('ChargedPickup') && (!ChargedPickup(newItem).bActivatable || ChargedPickup(newItem).Charge == 0))
+			if (newItem.IsA('ChargedPickup') && ChargedPickup(newItem).ShouldDim())
 			{
 				objects[pos].bDimIcon = true;                                   //RSD: Dim ChargedPickups if they're at 0%
 			}
@@ -572,10 +574,12 @@ function PopulateBelt()
 	player = DeusExPlayer(DeusExRootWindow(GetRootWindow()).parentPawn);
 
 	for (anItem=player.Inventory; anItem!=None; anItem=anItem.Inventory)
-		if (anItem.bInObjectBelt && !anItem.IsA('NanoKeyRing'))
+		if (anItem.bInObjectBelt)
       {
 			AddObjectToBelt(anItem, anItem.beltPos, True);
       }
+
+    CreateNanoKeySlot();
     
 	//Set the highlight
 }

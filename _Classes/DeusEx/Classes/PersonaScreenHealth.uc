@@ -320,9 +320,9 @@ function bool ButtonActivated(Window buttonPressed)
 	local int  pointsHealed;
 
 	if (Super.ButtonActivated(buttonPressed))
-		return True;
+		return true;
 
-	bHandled   = True;
+	bHandled = true;
 
 	// Check if this is one of our Augmentation buttons
 	if (buttonPressed.IsA('PersonaHealthItemButton'))
@@ -361,28 +361,6 @@ function bool ButtonActivated(Window buttonPressed)
                 winInfo.Clear();
                 bBodyPartPressed = False;
                 PlaySound(Sound'MetalDrawerOpen',0.5);
-                /*
-                {
-                    player.bShowStatus = !player.bShowStatus;
-                    winInfo.Clear();
-                    CreateInfoWindow();
-                    bBodyPartPressed = False;
-                    PlaySound(Sound'MetalDrawerOpen',0.5);
-                
-                }
-                else
-                {
-                    player.bShowStatus = False;
-                    winInfo.Clear();
-                    winInfo.bStylization = False;
-		            winInfo.bStylization2 = False;
-		            winInfo.SetBackground(winInfo.default.background);
-                    winInfo.SetTitle(" ");
-		            winInfo.SetText(" ");
-                    bBodyPartPressed = True;
-                    PlaySound(Sound'MetalDrawerOpen',0.5);
-                }
-                */
                 break;
 
 			default:
@@ -818,14 +796,14 @@ function int GetMedKitHealPoints()
 
 	if (medKit != None)
 	{
-	    if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkToxicologist').bPerkObtained == true)
+	    if (player.PerkManager != None && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkToxicologist').bPerkObtained)
 	    {
-	    player.StopPoison();
-		player.myPoisoner = None;
-        player.poisonCounter = 0;
-        player.poisonTimer   = 0;
-       	player.poisonDamage  = 0;
-		player.drugEffectTimer = 0;	// stop the drunk effect
+			player.StopPoison();
+			player.myPoisoner = None;
+			player.poisonCounter = 0;
+			player.poisonTimer   = 0;
+			player.poisonDamage  = 0;
+			player.drugEffectTimer = 0;	// stop the drunk effect
 	    }
 		
 	    player.HealScreenEffect(4.0, false);

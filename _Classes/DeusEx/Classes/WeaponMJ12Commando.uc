@@ -7,6 +7,7 @@ class WeaponMJ12Commando extends WeaponNPCRanged;
 function Fire(float Value)
 {
 	PlayerViewOffset.Y = -PlayerViewOffset.Y;
+    DrawMuzzleFlash();
 	Super.Fire(Value);
 }
 

@@ -1,0 +1,79 @@
+============================
+Troubleshooting Deus Ex\GMDX
+============================
+
+Expand this document to full screen, just for convenience's sake while reading.
+
+You should be patched to v1112fm before installing GMDX. GOTY version of Deus Ex has this patch by default.
+You can find the patch here if need be: http://kentie.net/article/dxguide/files/DeusExMPPatch1112fm.exe
+
+You should also meet the specifications and requirements set by Kenties.exe: 
+
+-Deus Exe requires Windows Vista or later since version 6. Windows XP is not supported unless you download an older version of Kenties Launcher (and if you do, rename it to GMDX.exe).
+-Kenties Launcher requires Visual Studio 2015 runtimes: http://download.microsoft.com/download/9/3/F/93FCF1E7-E6A4-478B-96E7-D4B285925B00/vc_redist.x86.exe 
+
+
+NOTE: None of the following issues are the fault of GMDX, but rather of the Engine, user error, operating system, custom renderers and/or .exe. 
+
+--------
+
+Problem: The .exe/GMDX installer is not responsive.
+
+Solution: Windows 10 may be blocking it. Right click the .exe and check 'properties'. It could also be your anti-virus blocking it by what is know as a "false postive" alert, so exclude the installer in your nti-virus settings.
+
+--------
+
+Problem: not all of GMDX's features appear to be present, or a map won't load. 
+
+Solution: Make sure you didn't mess with the 'Data Directories' menu present when launching the game.
+
+Here's the default structure from top to bottom:
+
+GMDX 
+HDTP 
+New vision
+
+Make sure all the sub-folders (click to expand) are checked too. Everything else should not be checked, unless you have a custom add-on for GMDX, 
+which in that case make sure it's in the correct order of things too (should be specified by the add-on's developer).
+ 
+--------
+
+Problem: The game plays with distorted audio.
+
+Solution: Simply exit and relaunch the game. It happens sometimes no matter your version of Deus Ex. If you'd like to solve the problem at its core, try this: http://forums.steampowered.com/forums/showthread.php?t=1375721
+
+This shouldn't happen in GMDX, but if it does let me know.
+
+--------
+
+Problem: the HUD/GUI elements are too small!
+
+Solution: Use Kenties Launcher pop-up window that appears when launching GMDX. Click the "configure" button and an options menu appears. The GUI scaling setting is the one you want.
+
+--------
+
+Problem: occassional, seemingly random lag.
+
+Solution: unlimit framerate via GMDX.ini found in MyDocuments\DeusEx\GMDXv9\System. 
+Secondary solution: tone down graphics rendering or disable New Vision. Or get better hardware.
+
+--------
+
+Problem: The game is really dark and I can't up the brightness!
+
+Solution: do not play the game in Borderless Windowed mode. Change to full screen. Alternatively, change renderer.
+Both of these options can be found in the 'configure' menu when launching the game.
+
+--------
+
+Problem: Engine.DLL not found?
+
+Solution: you didn't install GMDX properly. Install to ...\Deus Ex 
+Your Deus Ex folder wherein the first level down contains a bunch of subfolders with names such as GMDXv9, Music and Textures.
+ 
+--------
+
+Problem: Menu/GUI text flickers and distorts randomly.
+
+Solution: continue playing. This is a rare issue that may or may not be the fault of GMDX that usually goes away on its own. If it doesn't, exiting the game and restarting does the trick.
+

@@ -4,6 +4,35 @@
 class WeaponNPCRanged extends DeusExWeapon
 	abstract;
 
+//SARGE: Add Ygll's Muzzle Flash fix.
+function DrawMuzzleFlash()
+{
+	local Vector offset, X, Y, Z;
+
+	if(Pawn(Owner) == None)
+		return;
+
+	if ((flash != None) && !flash.bDeleteMe)
+		flash.LifeSpan = flash.default.LifeSpan;
+	else
+	{
+		GetAxes(Pawn(Owner).ViewRotation,X,Y,Z);
+		offset = Owner.Location;
+		offset += X * Owner.CollisionRadius;
+		flash = Spawn(class'MuzzleFlash',,, offset);
+		if (flash != None)
+		{
+			flash.SetBase(Owner);
+			flash.LightRadius = 5;
+		}
+
+		offset = Owner.Location + CalcDrawOffset();
+		// randomly draw an effect
+		if (FRand() < 0.6)
+			Spawn(class'Tracer',,, offset, Pawn(Owner).ViewRotation);
+	}
+}
+
 defaultproperties
 {
      LowAmmoWaterMark=0

@@ -423,7 +423,7 @@ event bool MouseButtonReleased(float pointX, float pointY, EInputKey button,
 	if (button == IK_LeftMouse)
 	{
 		FinishButtonDrag();
-		return True;
+		return true;
 	}
 	else
 	{
@@ -503,8 +503,8 @@ event texture CursorRequested(window win, float pointX, float pointY,
 
 function StartButtonDrag()
 {
-	bDragStart = False;
-	bDragging  = True;
+	bDragStart = false;
+	bDragging  = true;
 
 	winInv.StartButtonDrag(Self);
 }
@@ -515,8 +515,8 @@ function StartButtonDrag()
 
 function FinishButtonDrag()
 {
-	bDragStart = False;
-	bDragging  = False;
+	bDragStart = false;
+	bDragging  = false;
 
 	winInv.FinishButtonDrag();
 }
@@ -534,7 +534,7 @@ function bool RotateButton()                                                    
     invButtonHeight=class'PersonaScreenInventory'.default.invButtonHeight;
 
 	inv = DeusExWeapon(self.GetClientObject());                                 //RSD: MUST be a DeusExWeapon, hacks are afoot
-	if (inv == none)
+	if (inv == None)
     	return false;
 
 	invX = inv.invSlotsX;
@@ -548,7 +548,7 @@ function bool RotateButton()                                                    
 		inv.invSlotsY = invX;
         inv.bRotated = !inv.bRotated;
 		inv.UpdateLargeIcon();
-		if (inv.largeIcon != none)
+		if (inv.largeIcon != None)
 		{
 			invWidth = inv.largeIconWidth;
 			invHeight = inv.largeIconHeight;
@@ -595,7 +595,7 @@ function ResetRotation(/*float newX, float newY*/)                              
     invButtonHeight=class'PersonaScreenInventory'.default.invButtonHeight;
 
 	inv = DeusExWeapon(self.GetClientObject());                                 //RSD: MUST be a DeusExWeapon, hacks are afoot
-	if (inv == none)
+	if (inv == None)
     	return;
 
 	if (inv.invSlotsX != safeInvX || inv.invSlotsY != safeInvY)

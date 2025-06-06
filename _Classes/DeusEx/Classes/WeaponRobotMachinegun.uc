@@ -3,6 +3,12 @@
 //=============================================================================
 class WeaponRobotMachinegun extends WeaponNPCRanged;
 
+simulated function PlaySelectiveFiring()
+{
+	DrawMuzzleFlash();
+    Super.PlaySelectiveFiring();
+}
+
 defaultproperties
 {
      ShotTime=0.100000

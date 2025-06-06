@@ -148,7 +148,7 @@ function Timer()
 			gen.particleDrawScale = 0.11;			
 		}
 		
-		if(IsHDTP())
+		if(IsHDTP(true))
 		{
 			loc2.Y = collisionradius*0.8;    //I hate coordinate shifting
 			loc = loc2 >> rotation;

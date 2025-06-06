@@ -835,7 +835,7 @@ function DrawDefenseAugmentation(GC gc)
 
     if (drawTime > 0)
     {
-		if (defenseTarget.IsInState('Exploding') || defenseTarget == None)
+		if (defenseTarget == None || defenseTarget.IsInState('Exploding'))
             str = msgADSDetonating;
         else
             str = msgADSTracking;

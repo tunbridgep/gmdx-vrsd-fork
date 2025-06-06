@@ -5,6 +5,7 @@ class Lockpick expands SkilledTool;
 
 function DisplayWeapon(bool overlay)
 {
+    super.DisplayWeapon(overlay);
     if (overlay && IsHDTP())
         Multiskins[1] = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPLockpickPOVTex1");
 

@@ -15,6 +15,7 @@ simulated function bool TestMPBeltSpot(int BeltSpot)
 
 function DisplayWeapon(bool overlay)
 {
+    super.DisplayWeapon(overlay);
     if (overlay)
     {
         Multiskins[1] = handsTex;

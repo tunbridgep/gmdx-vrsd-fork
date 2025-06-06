@@ -224,10 +224,10 @@ simulated function Tick(float deltaTime)
 									    switch (itmp) //GMDX now pick what u want
 									    {
                                             //SARGE: Was 0.5, 1.0, 2.5, 7.0
-											case 0:skillTime=0.75*difficultyMod;blastRadius=512.000000;break;
+											case 0:skillTime=0.5*difficultyMod;blastRadius=512.000000;break;
 											case 1:skillTime=1.0*difficultyMod;blastRadius=512.000000;break;
-											case 2:skillTime=1.5*difficultyMod;blastRadius=512.000000;break;
-											case 3:skillTime=2.5*difficultyMod;blastRadius=512.000000;break;
+											case 2:skillTime=1.75*difficultyMod;blastRadius=512.000000;break;
+											case 3:skillTime=3.0*difficultyMod;blastRadius=512.000000;break;
 										}
 										//skillTime = FClamp(-20.0 * Player.SkillSystem.GetSkillLevelValue(class'SkillDemolition'), 1.0, 10.0);
 									}

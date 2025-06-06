@@ -96,9 +96,6 @@ function ChargedPickupBegin(DeusExPlayer Player)
         class'DeusExPlayer'.default.bCloakEnabled=true;
 
 	bIsActive = True;
-
-    if (Charge > 0)
-        bDrained = false;
 }
 
 // ----------------------------------------------------------------------
@@ -306,6 +303,16 @@ state DeActivated
             DeselectInHand(player);
         super.Activate();
     }
+
+	function BeginState()
+    {
+        UpdateBeltText();
+        if (Charge > 0)
+        {
+            bDrained = false;
+            UnDimIcon();
+        }
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -418,6 +425,7 @@ state Activated
             DeselectInHand(player);
             if (bDrained && bActive && Charge > 0)
             {
+                bDrained = false;
                 Player.PlaySound(ActivateSound, SLOT_Pain);
                 ChargedPickupBegin(Player);
                 return;
@@ -480,6 +488,9 @@ function DimIcon() //RSD: When an item runs out of charge, dim the inv/belt icon
 	}
 }
 
+//SARGE: WARNING!!
+//THIS FUNCTION CRASHES THE GAME SOMETIMES WHEN USED
+//IN THE INVENTORY SCREEN
 function unDimIcon() //RSD: When a biocell is used to charge an item, check if it was dead (dimmed inv/belt icon) and undim it
 {
 	local HUDObjectBelt hudbelt;
@@ -548,6 +559,14 @@ event TravelPostAccept()
     }
 
 	Super.TravelPostAccept();
+}
+
+//SARGE: Whether or not we should dim the icon for this charged pickup.
+//This used to be easy, but now they can be activated and worn even when empty,
+//so "Activatable" isn't usable anymore.
+function bool ShouldDim()
+{
+    return !bActivatable || (Charge == 0 && NumCopies == 1);
 }
 
 // ----------------------------------------------------------------------

@@ -79,15 +79,15 @@ function PostBeginPlay()
 		AIStartEvent('Projectile', EAITYPE_Visual);
 }
 
-static function bool IsHDTP()
+static function bool IsHDTP(optional bool bAllowEffects)
 {
 	if (!class'DeusExPlayer'.static.IsHDTPInstalled())
 		return false;
     else if (default.hdtpReference != None)
-        return default.hdtpReference.default.iHDTPModelToggle > 0;
+        return default.hdtpReference.default.iHDTPModelToggle > 0 || (class'DeusExPlayer'.default.bHDTPEffects && bAllowEffects);
     else if (default.spawnWeaponClass != None)
-        return default.spawnWeaponClass.default.iHDTPModelToggle > 0;
-
+        return default.spawnWeaponClass.default.iHDTPModelToggle > 0 || (class'DeusExPlayer'.default.bHDTPEffects && bAllowEffects);
+    
     return false;
 }
 

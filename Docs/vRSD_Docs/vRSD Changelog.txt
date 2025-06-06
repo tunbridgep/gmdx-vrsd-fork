@@ -1,0 +1,787 @@
+GMDX v10 Changelog:
+
+## BETA 0.0 CHANGES ##
+-Reverted HDTP Prod and Baton (will later consider doing something with the ini)
+-Added half of Speed Enhancement's groundspeed boost to Run Silent
+	-Doesn't affect jump height or distance
+-Ballistic Protection (Passive) no longer drains any energy, but protects proportionally to current bioenergy level (up to 20/25/30/35% reduction)
+-Mantling ability now scales with Athletics (54/72/102/135% of original reach)
+	-NOTE: Make sure that Master Athletes aren't punished by a higher trace cylinder above!
+-Removed deranged gravity simulation from hitscan weapons, replaced with linear damage falloff beyond a weapon's accurate range to make range modification more meaningful
+	-Capped at 35% falloff
+	-Only affects player's shots; AI have full damage at all ranges	
+-Removed hidden influence of weapon maximum range on accuracy -- every hitscan weapon will behave like the pistol did with respect to how your reticule communicates accuracy
+	-Only for hitscan weapons with max range exceeding 125 ft (basically, everything but the prod)
+	-AI retain the old formula (tweaked for new ranges, see below) so they can still hit the broadside of a barn with an assault gun
+-Range mods now increase weapon max range (was just accurate range before)
+	-DONE: need to update inventory UI so it shows these changes
+-Hitscan weapon ranges reduced across the board
+	-Assault Rifle range reduced by 50% (300-600ft to 150-300ft)
+	-Pistols/shotguns range reduced by roughly 25-35%
+		-Pistol (125-250ft to 93.75-187.5ft)
+		-Stealth pistol (150-300ft to 112.5-225ft)
+		-Sawed-off shotgun (150-300ft to 93.75-187.5ft)
+		-Assault shotgun (87.5-175ft to 62.5-125ft)	
+	-Sniper Rifle only nerfed by 20% (312.5-625ft to 250-500ft) to preserve its long-range dominance
+	-Projectile weapons only adjusted to look consistent, should be unaffected (CHECK YOU DINGUS)
+-AI GetWeaponRanges() function adjusted so they still attack at the original ranges (Assault Shotgun users will move a tad bit closer now before they start firing though)
+-Medkit healing values changed from 30/60/75/90 to 30/45/65/90
+-Reworked wearable items. Picking one up adds the pickup's charge to your current wearable's charge -- if this charge exceeds 100%, one copy is added to the stack and the overflow is given to the top item
+	-This removes the exploit where you could infinitely recharge any wearable with swapping shenanigans so long as you had at least 2
+	-You still cannot exceed 1/2/3/4 copies in the stack (so picking up a wearable when at maximum copies just recharges the wearable)
+	-You can now drop wearable items while active (they will automatically deactivate)
+	-Dropping a wearable item drops the top one on the stack (which will be the only one that may have less than 100% charge)
+	-Using a Ballistic Armor/Hazmat Suit/Thermoptic Camo when another is already active will automatically deactivate the other and activate the new one
+	-Rebreathers now recharge only 10% for each biocell applied
+	-The inventory UI will now display the correct recharge amount (used to say 15% for all when most are 30%)
+-REVERTED: Increased stealth pistol base damage back up to 9 (was accidentally reverted to 8 in v9 beta)
+-Increased stealth pistol recoil by roughly 50% so to be more in line with the assault gun and pistol
+-Added "SLEIGHT OF HAND" Trained Lockpicking perk. Allows you to lockpick and commit acts of theft without arousing suspicion from onlookers.
+	-NOTE: still need to remove/relocate Artificial Lock and make the perk require Trained Lockpicking
+-Added an "Info" button to the skills menu so you can see the level descriptions again without clicking on a new skill.
+	-When clicking on a new skill, the menu will remember if you were looking at info or perks and stay on that menu for the new skill
+	-Will do the same when upgrading a skill
+	-The button switches between "Perks" and "Info" dynamically
+-Stealth skill makes you hide up to 0/15/30/45% better in darkness
+	-Also crouchwalking now has the same percent speed bosts (was 0/10/20/30% despite description)
+-Using Tech Goggles or Vision Enhancement should no longer noticeably increase player visibility to AI (as they illuminate surrounding areas by 9.4%)
+	-The IFF readout will still fluctuate, but quickly return to the correct value
+-Laser Mod Nerfed
+	-Now randomly wavers based on current accuracy. Similar to Shifter, except the laser dot has a 1st-order proportional decay back to the center so it doesn't feel awful
+	-Laser dot reinitializes in a random spot in your accuracy cone (er... box) when you turn on the laser
+	-Laser dot now "kicks" within your accuracy box depending on the weapon's recoil stat. No more pinpoint accurate Assault Rifle bursts on Untrained
+	-Laser dot disappears during reload cycles
+-Secondary items reworked:
+	-Can use a secondary item when holding anything in hand (before it had to be a weapon)
+	-Can now assign Flares as secondary items
+	-Can now assign Tech Goggles as a secondary item (activate or deactivate without putting them in hand)
+	-Can now assign Binoculars as a secondary item. Pressing the secondary fire key will toggle binocular zoom and put away your currently held item.
+	-Can now assign Medkits or Biocells as secondaries with the Combat Medic's Bag perk (use without putting in hand)
+	-The Dragon's Tooth Sword will only make the draw sound when it is first drawn as a secondary weapon
+	-If you equip your secondary weapon manually, pressing the secondary button will use it (properly!)
+	-If you're not holding anything and press the secondary button to equip it, pressing the secondary button again will use it
+	-NOTE: perhaps add an option to make it always quickdraw and never equip normally when not holding anything?
+-Added the ability to add damage mods to the DTS
+	-Nerfed damage from 26 to 22
+	-Will get up to 83 damage with Combat Strength + Master Low-Tech + Targeting + 5 Damage Mods for the ultimate door buster
+-Changed the Hardcore lockpick/multitool nerf (10/15/25/50 -> 5/10/15/50) to 5/10/20/45
+	-Added a buff on easy that brings it to 10/25/40/75 (vanilla numbers)
+-Added a rangefinder to Binoculars. Especially useful now that weapon range stats are more impactful.
+	-Binocular textures upscaled by 2x
+-Skill cost changes:
+	-Increased cost of Environmental Training skill from 750/1500/3000 to 900/1800/3600 
+	-Increased cost of Demolitions skill from 625/1250/2500 to 750/1500/3000 (see max grenade change)
+	-Increased cost of Pistols and Rifles skills from 1350/2700/4050 to 1500/3000/4500 (see ammo capacity changes, also to match Heavy)
+	-Decreased cost of Medicine skill from 1225/2450/3675 to 1000/2000/4000 (see medkit healing value change)
+-Roughly halved most ammo capacities, added Ammo Capacity Aug to replace Energy Transference
+	-Gives 20/30/40/50% boost to all ammo capacity (excluding grenades)
+	-Weapons skills (other than Demolitions) also enhance ammo capacity by an additional 0/10/25/50%
+	-The Demolitions skill allows you to carry 5/7/10/15 grenades of each type
+-"Halve Ammo Capacity" menu option (unlocked after beating the game once) fixed
+-AI have more varied decision-making regarding how much they'll lead projectile shots
+	-50% chance to lead perfectly
+	-50% chance to lead randomly between not at all and slightly overshooting
+-Tranquilizer darts break when they hit the ground on Hardcore mode to disable dart farming
+	-A weaker hit sound effect helps establish this
+-Fixed a strong rightward and upward bias to projectile innaccuracy
+-Aggressive Defense system radius changed from 10/20/30/50 ft to 20/30/40/50 ft
+-The crossbow now loads one dart at a time to simulate an internal magazine
+-The Assault Shotgun now reloads the entire drum magazine at a time (5s base reload, longest in the game but shorter than loading all 12 shells individually)
+-Damage taken by the player now rounds properly, rather than just truncating during conversion to an int
+	-e.g. 9 damage from an assault rifle would always round down to 6/4/4/3 with active Ballistic Protection, but now rounds properly to 6/5/4/3
+-Box of WP rockets in Sam Carter's cabinet in the second UNATCO visit moved back so the cabinet can be opened
+-There was not a box of gamma ionized plasma ammo in the barge that needed to be removed. Fake news
+-Can now press the frob key (default RMB) to set the Spy Drone in place and resume control of JC. Press the Drone aug key again to resume control of the drone.
+	-Removed the sound distraction on the frob key
+	-No energy drain while the Spy Drone is on standby (may change to lower drain later)
+	-The player's camera is now fixed in place while in control of the drone
+-Fixed a bug where laser dots would remain on map transition
+-Throwing Knives now require the Inventive perk to be assigned as a secondary weapon. C'mon now
+-Stamina no longer regenerates while crouched and standing still to make stamina management matter to stealth players
+-Perk shenanigans:
+	-Trained and Advanced Athletics perk merged into Trained perk "PERSERVERANCE", costs 100 SP (no blurring when drowning, damage to legs does not hinder movement speed)
+	-Adrenaline, Advanced Athletics perk, now gives 30% stamina return on melee eliminations
+	-Master Stealth perk merged into Master Athletics perk (still called Endurance, still costs 300 SP).
+	-Security Loophole, new Advanced Stealth perk, now grants +50% camera detection time and laser grids no longer activate on contact with the legs (camera detection time was misreported as +45% for Advanced Stealth, was actually +52.73%)
+	-Diversionary Tactic, new Master Stealth perk, allows the player to distract transgenics with corpses
+-Nerfed Ballistic Protection (active)'s energy drain from 40 BPM to 60 BPM (vanilla)
+-SecurityBot4 (the MJ12 one that cloaks) now rapid-fires plasma bolts instead of bullets and rockets
+	-NOTE: Still needs work
+-Inventory overlap exploit fixed
+-Repair bot and additional wearable changes:
+	-Can now repair/recharge equipment. Each use is equivalent to three biocells applied to the item in the inventory.
+	-Repair bot window now updates bioenergy every 0.2s (used to not update)
+	-When the last wearable in the stack runs out of charge, it will remain in your inventory at 0% charge, unable to be activated until it is recharged.
+		-Icon dynamically dims to communicate this.
+		-Fixed Ballistic Armors and Hazmat Suits dropping below 0% as a result
+	-Ballistic Armor, Hazmat Suits, and Tech Goggles now recharge for 20%
+	-Repairman, new Trained Environmental Training perk, now makes biocells 1.5x as effective when repairing/recharging equipment (replaces Steady-Footed perk)
+	-Repair and Medical bots limited to 3 charges on Medium/Hard, 2 charges on Realistic/Hardcore (still infinite on Easy)
+	-REVERTED: Misfeature Exploit (Advanced) and Neat Hack (Master) Hacking perks swapped places to reflect their relative value, Misfeature Exploit now increases by a flat 50% (medbot was 80%)
+		-see replacement to Neat Hack below
+-Stealth Pistol ROF no longer messes up if you have it modded for full auto and switch ammo types
+-Crowbar no longer does extra damage when thrown, but instead does an extra +5 damage against all inanimate objects (doors, crates, security objects, etc)
+-The damage thresholds on doors now only display with the Doorsman perk (never display on electronics, suck it)
+-Sabot rounds are now truly slug rounds, and do 18 damage at base
+-Both Sabot and 10mm AP rounds now do:
+	-0.5x damage to soft targets (was 0.7x)
+	-2.0x damage to robots
+	-1.5 damage to MJ12 Commandos
+	-1.0x damage to helmets (see below)
+-Changes to helmets:
+	-Now protect a bit more from the sides and back. Shoot in the face or neck, use Sabot/AP ammo, or go above 25 damage to confirm damage vs helmets
+	-Sabot/AP ammo does full x8 headshot damage against enemies with helmets, not just 0.5x8 damage (previously was 0.7x8)
+	-Sabot/AP ammo destroys the helmets of mechanics and pops off the helmets of UNATCO troopers. MJ12 Trooper helmets are held tight by chinstraps
+	-6 new bullet ricochet sounds to replace the old one (vanilla bot ricochet sound), changed to a more consistent sound slot so they'll get clipped less often
+	-Enemies will no longer scream in pain if you do no damage vs their helmets. Hard to get rid of the blood effect though...
+	-Crossbow darts and throwing knives will no longer play a flesh hit sound if you hit an enemy helmet with a damage lower than 25, play a type-specific ricochet sound instead
+-Damage done to the four "corner" wedges on the head will no longer count as torso damage for some unfathomable reason (GMDX fixed the multiplier, but still counted as torso damage like vanilla)
+-Nerfed stealth pistol damage from 9 back to 8 to make it less dominant in the lategame
+-AI now fire four times as fast with the stealth pistol (roughly twice the fire rate of the pistol, trust me it was way too slow before)
+-Auto turrets can now run out of ammo to make hacked turrets less OP
+	-Default 100 rounds
+	-To assure that they can't be easily cheesed, turrets will no longer shoot at objects they can't destroy (e.g. heavy metal crates)
+	-Turrets now aim higher at the center of mass, requiring players to actually duck behind objects to avoid damage (previously, some turrets couldn't hit you if you were behind a waist-high crate)
+	-Setting auto turrets to target "Everything" will no longer make them target inanimate objects on the map, but rather Allies + Enemies as you would expect (this wasn't helpful anyway, as they couldn't destroy movers/hackable devices)
+-Neat Hack (Master Hacking) perk replaced with "Turret Domination" perk. You'll need this perk to alter turret targeting parameters, whether you're hacking or used the login.
+	-TURRET DOMINATION: An agent can alter the IFF routines of gun turrets to make them target his enemies, or everything in sight
+	-You can always disable turrets whether logged in or hacked in, just not make them attack enemies/everything
+-Changes to the NYC_UNATCOMJ12Lab map (MJ12 Prison Escape):
+	-The player's ammo is now taken away at the start of the mission, and placed inside a new (vanilla but unused in singleplayer) ammo crate in the armory which can be frobbed to retrieve it
+		-NOTE: limited to Hardcore
+	-To offset the removal of the player's ammo, more ammo has been scattered through the level (weapons no longer come preloaded in the armory either, so this is not really a net gain in general)
+		-Added a box of 10mm ammo and a prod battery to the drawers in the starting room
+		-Added a crate containing a 7.62x51mm clip to the upper portion of Robot Maintenance on the right side
+		-Added a box of buckshot shells on a desk on the right side of the Command Center
+		-Added a crate containing a box of tranquilizer darts to the hallway opposite the Nanotech lab
+		-Added a box of tranquilizer darts, a box of sabot shells, and a crate containing a box of 10mm ammo to the corridor on the right side of the Karkian pit on the way to Surgery Ward
+	-Throwing Knives, weapon mods, and the PS20 should no longer have their stack counts screwed up by the armory transfer
+	-The crate containing an Assault Gun in the armory has been moved onto a stack of three other crates
+	-The MJ12 Trooper in the corridor on the left side of the Karkian pit on the way to the Surgery Ward no longer carries a Plasma Rifle, but an Assault Gun as vanilla
+-Made the door to Flight Control #2 in the Hong Kong MJ12 Helibase frobbable in case the player gets locked outside it (sometimes the AI close the door and just stare at you through it?)
+-Removed a dirty dirty GMDX hack that associated a 3/10 chance to 15% complexity locks becoming 20% complexity locks, meaning that you could get two cabinet doors with different strengths where unlocking one would also unlock the other.
+	-NOTE: will be manually adjusting some locks upward to compensate
+-Default 10mm AP pickup count changed from 5->8, so the 10mm/10mmAP pickup ratio matches the Shell/Sabot ratio of 5/8
+-Taser Dart pickup count changed from 2->3 in line with all other dart types (it's already rare enough in the world)
+	-Damage reduced to 0 so they can only stun, not KO
+	-Will be reworking stun duration mechanics soon
+-Reloading resets the player's standing accuracy bonus on Hardcore mode
+-Fire extinguishers now have a damage threshold of 3, so limply thrown pistols/combat knives etc. won't cause them to explode without the muscle augmentation (heavier thrown items will still work)
+-Death sound radius increased from 14ft to 21ft (was roughly 31ft vanilla) to punish overly dominant lethal stealth tactics. Remember, a nonlethal takedown is always the most silent way to eliminate resistance
+	-Animal and robot death sound radius reduced from 20ft to 14ft to more closely match the vanilla ratio with human NPCs
+	-These overall reductions compared to vanilla are countered by increased enemy hearing radius on higher difficulties
+-Liberty Island laser mod reinstated on Hardcore
+-Laser dot size increased by roughly 15% to help with targeting with a wavering laser, any larger would look totally ridiculous
+-Reduced two sources of randomization (position + velocity) from crate item spawning to hopefully cut down on the issue of items spawning outside of walls?
+-Added an Assault Shotgun to the locked armory in the MJ12 Sewers to allow perceptive players to choose between shotguns earlier (not "wasting" mods on a Sawed-Off by accident)
+-Fixed the reload time on the minicrossbow doubling if you switched ammo types
+-MODDER perk makes the STOP worm effect permanent rather than just lasting 50% longer
+-Pistols rebalanced:
+	-Ranges and accuracies swapped, so pistol is a better pocket sniper and stealth pistol is a better CQC weapon
+		-Pistol: 67.5% base accuracy, 112.5-225ft effective-max range
+		-Stealth pistol: 65% base accuracy, 93.75-187.5ft effective-max range
+		-AI formulas adjusted so they have the same accuracy and firing behavior
+	-Stealth pistol ROF adjusted to be only slightly slower than pistol, rather than roughly 2x slower
+		-NOTE: Doesn't majorly increase the ROF when full-auto, but I need to look at this anyway
+-Added granularity to the Heavy weapon movement speed penalty:
+	-Start at 50% speed
+	-Heavy weapons skill adds 0/10/25/50%
+	-Microfibral Muscle adds 12.5/25/37.5/50%
+	-Caps at 100%
+-All "Focused:___" perks now accelerate the standing accuracy bonus by +25% instead of +20%
+	-Technically just the "Steady" perk for Rifles now
+-Standing accuracy bonus now properly doubles on Easy difficulty rather than adding +100%
+-Stamina regeneration reworked so multiple bonuses stack properly, values changed slightly
+-All new addiction system for drugs:
+There are three types of addiction: nicotine, alcohol, and zyme. Using a substance adds to an addiction meter, and passing a threshold (50%) makes you addicted to that substance. Use of each substance applies a temporary buff, but also produces withdrawal effects if you become addicted, temporarily curable by consuming more of the substance (but this makes you more addicted). The addiction meter goes down gradually as you progress through the game but NOT with time, so there's no point waiting it out. The Toxicologist perk will also allow you to detox yourself a bit with each medkit to the torso, good for if you want to use drugs a lot. The effects are as follows:
+	-Cigarettes
+	Use Buff: Crosshairs tighten more quickly (+100%)
+	Withdrawal Debuff: Increased stamina usage when running (+100%), reduced stamina regeneration (-50%)
+	Addiction Increment Per Use: 20%
+	Duration: 5 min (refreshes)
+	-Alcohol
+	Use Buff: Increased torso max health by +5 (allows temporary overhealing before fights, stacks 5 times)
+	Withdrawal Debuff: Accuracy penalty (-15%)
+	Addiction Increment Per Use: 5%
+	Duration: 2 min (stacks up to 10 min)
+	-Zyme
+	Use Buff: Increase stamina regeneration (+100%), combat speed (+50%), combat strength (+50%), and no stamina penalty for melee strikes
+	Withdrawal Debuff: Reduced max torso health (-10)
+	Addiction Increment Per use: 60% (become addicted immediately!)
+	Duration: 1 min (stacks up to 2 min)
+	-NOTE: still need to do Toxicologist perk (maybe medbot instead?)
+-Reworked weapon perks to make weapon types more distinct:
+	-Pistol perks
+	SIDEARM: Maintain standing accuracy bonus when swapping to a pistol
+	ONE-HANDED: Accuracy is calculated with the highest health arm
+	HUMAN COMBUSTION: Flare darts light people on fire (was Advanced perk)
+	-Rifle perks
+	FOCUSED: Standing accuracy bonus accelerated by 25%
+	STOPPING POWER: Hitting all of your shotgun pellets on an enemy grants an extra 25% damage
+	MARKSMAN: Scope in 30% faster, reduced recoil and scope sway
+	-Heavy perks
+	CONTROLLED BURN: Flamethrower napalm passes through enemies rather than stopping on contact
+	BLAST ENERGY: Plasma rifle splash damage increased within the radius
+	H.E. ROCKET: Increased GEP splash radius
+-Throwing Knife changes:
+	-Damage nerfed from 18 -> 16
+	-Headshot multiplier increased from x8 -> x9 to guarantee Untrained headshot kills on MJ12 troopers
+		-NOTE: Need to update tooltip
+	-Base Accuracy nerfed from 75% -> 70%
+	-Now have a 100% chance to stick in targets rather than a 70% chance, but a maximum of 1 may be retrieved from any corpse
+	-Now get increased damage from Combat Strength, was Combat Speed
+	-No longer receive a buff to projectile speed from the Combat Speed augmentation
+-Moved headshot extraMult application outside of TakeDamageBase() in ScriptedPawn.uc to make behavior more robust and also ensure that headshot modifiers are reset when changing to a non-altered weapon
+-Increased effect of player projectile inaccuracy by 14% to match overall hitscan nerfs
+-Mantling reach Athletics scaling rebalanced from a prior version
+	-Gave the player Advanced Athletics in the Training mission so they can still do the mantling challenge
+-Hardcoded the hacking skill requirements for all terminals. Some comments about the design approach follow:
+	-Skill requirements are designed to offer rewards for hacking investment at various points in the game, as well as to gate more potent solutions to hard challenges
+	-Some skill requirements are also put high to emphasize alternate solutions (esp. passwords), others to add world-building and flavor (tech wizards have better antivirus!)
+	-Each mission should have a mix of low and high hacking skill requirements in support of path balance and to ensure that all levels of hacking feel worthwhile throughout
+	-Higher skill requirements on critical path terminals go hand in hand with increased frequency of nuke virus and stop worm softwares (but not so much that Master isn't worth it)
+	-Any computer with no utility or readable content will have a security level no higher than trained so as not to act as fool's gold (however, there should also be emails readable on some Trained PCs so as not to mislead the Trained hacker that there are no emails to be read!)
+-Equalized credit distribution between left and right ATMs in the Underworld Bar (visit 2)
+-Removed the dmoreau and pshermann accounts from all PCs in the MJ12 Prison except those in the Nanotech Lab and Medical R&D
+-Corrected passwords to ALL_SHIFTS accounts on two Versalife computers
+	-Temporary Security Pass option removed from all but three computers
+-Replaced the pistol on the corpse in the radioactive portion of the Versalife MJ12 Labs with a damage mod, added a biocell and a Hazmat suit to the room
+	-Replaced the hidden damage mod on a raised platform with a ROF mod
+-Equalized credit distribution among Paris ATMs
+-Added two STOP! WORM softwares and one NUKE VIRUS software to the digital media shop in Paris
+-Removed redundant non-functional special option from the security computer in Everett's lab (for self reference, bTriggerOnce=True, Text=Nanotech Containment Field 002, TriggerEvent=None, TriggerText=Containment Field 002 Deactivated, UnTriggerEvent=None)
+-Moved the Haz Lab storage key in Vandenberg to where it was in the pre-GOTY release version
+-Added a user account in the Vandenberg lobby to the PC with none
+-Aug canister rearrangements:
+	-Replaced all instances of Energy Transference with the new Ammo Capacity aug (counterpart of Combat Strength)
+	-Vision/Targeting canister in Simons' safe swapped for Ballistic Protection Active/Passive
+	-Replaced the aug override canister in the MJ12 Prison level with a normal aug upgrade canister -- I recommend re-implementing it in the Shipping & Receiving addon
+-Turrets will not fire if the player is beyond their maximum rotation (since they are now limited to 100 rounds each)
+-Standing in laser triggers quadruples the cost of Radar Transparency
+-Power Recirculator and Synthetic Heart are now fully passive
+	-All energy costs are now increased/decreased passively with no buffer and no double activation sound
+	-Synthetic Heart permanently upgrades all augs by +1 (active AND passive), again with no buffer or double activation sound for active augs
+	-Installing any aug after Synthetic Heart still grants the +1 upgrade
+	-Due to some code rearrangements, the +1 upgrade is granted even when Synthetic Heart is installed using cheat commands (before it had to be a medbot)
+-Debug messages are no longer broadcasted to the player when installing the Combat Strength, Spy Drone, or Aggressive Defense System augs
+-Removed fireballs, throwing knives, rubber bullets, and the new mini-plasmabolts now fired by the GMDX security robot from the list of "objects fitting the electromagnetic threat profile of missiles and grenades" against which the Aggressive Defense System aug protects
+	-Technically, they were added to the list of objects which ADS ignores. Assume what you will about the original developer intentions (which were not mirrored in the more robust multiplayer implementation which explicitly has ADS ignore fireballs and the like)
+-Random ammo pickup counts on pawns and corpses initialized on first map load, rather than on loot so as to not encourage savescumming
+	-Count transfers from pawn -> corpse as well as pawn -> weapon or corpse -> weapon for exploded pawns/corpses respectively; corpse -> weapon would previously result in 0 ammo due to a bug
+	-Most weapons drop 1-4 as before, Assault Guns drop 2-5 (was 1-5), hardcoded counts remain hardcoded
+	-Will not take effect if the player uses cheat commands to enter a map. Entering any area normally will rectify this.
+-GMDX difficulty modifiers are now enforced on first map load only, which removes some edge case behavior when loading saves
+	-Will not take effect if the player uses cheat commands to enter a map. Entering any area normally will rectify this.
+-The player is now prevented from picking up multiple copies of binoculars to avoid inventory clutter
+-Added automatic energy drain of 20 bpm (vanilla cost) whenever Microfibral Muscle is used to carry a heavy object
+-Taser dart base damage is now 10, but technically does no damage (number used for stun duration mechanics below)
+-Overhauled stun duration mechanics:
+	-Stun duration now properly instantiated on hit; a typographical error previously caused the riot prod to stun for half as long as intended
+	-Stun duration is now 1/2 of damage before location multipliers (e.g. riot prod stuns for 8s at Untrained, taser darts for 5s at Untrained)
+-The counts of ammo pickups found in the world are now displayed for the player
+-Using a biocell now reports the actual amount of energy gained if the player is at or near full charge
+-Left click interact now equips weapons from in the world as it did in previous versions of GMDX
+-Removed augmented throwing of inventory items with the Microfibral Muscle aug. Hard to make it balanced for both light and heavy objects alike, also with no energy cost
+	-Now inherit a bit of player velocity so it feels more natural
+	-No changes to thrown decorations
+-The homeless people by the burning barrel in the second Hell's Kitchen visit (relocated there by GMDX) now walk back to the barrel after fleeing in fear
+-Binocular zoom is no longer reset when jumping, and hopefully zoom is also properly reset when using the GEP's fly-by-wire scope feature
+-The HUD no longer disappears when taking EMP damage
+-Increased Sniper Rifle inventory size from 3x1 to 4x1 (vanilla) to reflect its potency and enforce more stringent equipment choices
+-Scrambler grenades now deactivate the player's augmentation system for a number of seconds equal to scrambler damage taken
+	-Consecutive effects stack
+	-Scramblers are currently rare in NPC inventories and as mines in the levels, but a few may be placed here and there in the future to take advantage of this behavior
+-Super MIB health on Hardcore reduced from 900 -> 850 to avoid cases like two Master-level sniper rifle headshots leaving them at 0.4% health
+-Completed HUD icons for new secondary items (non-weapons)
+-Reduced the delay before autosaving by 0.1s (smallest possible)
+-Ensured the new Blast Energy perk is only active for plasma bolts fired from the plasma rifle, not from the PS20
+-Halve Ammo Capacity option is now forced on in Hardcore+
+-Attempted a fix for the GEP Gun not making the inventory transfer in the MJ12 Prison level
+-Made Hardcore save points unaffected by lighting so they can actually be seen with HDR lighting enabled (ClassicLighting=false in the D3D10 renderer)
+-Reverted the pistol UI icons to their vanilla counterparts because they display better against dark colors
+-Made the Radar Transparency visual effect solid rather than transparent
+-Fixed the Radar Transparency visual effects using wrong or inappropriate textures on the stealth pistol, sniper rifle, and flamethrower
+-Fixed Cloak and Radar Transparency effects not animating on the vanilla riot prod for some unfathomable reason
+-Changed the behavior of bullet tracers so you still see e.g. water splashes when tracers are not visible
+-Fixed inconsistent textures between map loads in Hong Kong
+-Added drug addiction/status/effects to the Status tab in the Health screen, as well as notifications for drugs becoming active/deactive and gaining/losing addiction effects
+-Fixed the player view staying zoomed in if the player was using the GEP fly-by-wire feature and didn't deactivate the zoom before the rocket exploded
+-Fixed the laser mod position not visually updating while using the GEP laser-guiding feature (intend to totally rework this, maybe in a later update)
+-Fixed the robot alliance settings on the security computers in the Naval Shipyard only working one time each
+-Added working fan speed control to the new Area 51 ventilation room, including reduced gravity
+-Added a special option to the security terminal in the Naval Shipyard ventilation area to turn off the fan from inside the facility
+-Changed Passive Ballistic Protection again: now provides up to 35% protection, proportional to the bottom 100/80/60/40% of your energy bar (less punishing at higher upgrade level)
+-Added some seemingly missing code for related to new GMDX HUD features which should maybe cut down on crashes during game loads?
+-Maximum burn time with the flamethrower reduced from 40s -> 10s so it's at all relevant to gameplay
+-Reduced Military Bot rocket blast radius from 24 -> 15ft and damage from 240 -> 100 (still direct hit instakill with no Energy Shield)
+-Limited camera hack strength for Hard and below/Realistic/Hardcore to 10/15/20% to encourage multitool use (some were as high as 80% from vanilla values, change intended in GMDX but removed)
+-Limited turret hack strength for Hard and below/Realistic and above to 25/50% to encourage multitool use
+-Added a save point to the sewers in the Paris Streets level
+-Modified Hardcore hunger meter to decay more gradually as you progress through the game
+-Changed some MJ12 Elites back to MJ12 Troops from Vandenberg onward (especially snipers and squads with MIBs) to smooth out the difficulty curve and enable more variety in nonlethal tactics
+-Added two save points to the Gas Station level
+-Reworked GMDX difficulty scaling another time so it once again goes into effect every time the game is loaded, except for some parameters which are altered on first map load only
+-Taser dart pickup count now actually increased from 1->3 (previously tried to increase it from 2->3, but was being overruled elsewhere)
+-Changed rubber bullet damage from 13/19 -> 18 for the Assault Shotgun and Sawed-Off Shotgun respectively (description wrongly claimed 12)
+	-Now properly obtain damage bonuses from weapon skill, Targeting aug, and damage mods (was previously LOCKED to 13/19)
+	-Added the +30% damage bonus for rubber bullets to the Sawed-Off to act additively with other damage mods
+	-Range mods now increase the speed of rubber bullets as they do with other projectile weapons
+-Added some prod batteries to the Oceanlab ownwards, since there are very few in the lategame
+-Added a save point by the elevator in Sector 2 of Area 51
+-Re-enabled Throwing Knives as secondary items without the Inventive perk
+-Added a clip of plasma ammo to Area 51 and increased its ammo pickup count back from 8 -> 12 on Hardcore
+-Fixed Run Silent giving DIMINISHING fall protection as you upgrade it (was 26.25/22.5/18.75/15 reduction, now 18.75/22.5/26.25/30, compare with 31.5/33/34.5/36 from Speed Enhancement)
+-Sonar imaging ranges for Vision Enhancement Tech 3/4 increased from 20/50ft to 32/64ft, Tech Goggles (with Tech Specialist perk) sonar imaging range increased from 31.25ft to 32ft.
+-Revised lockpick/multitool values again
+	-10/15/25/50% on Medium/Hard/Realistic (GMDX values)
+	-10/25/40/75% on Easy (vanilla values, GMDX was same as Medium/Hard/Realistic)
+	-5/10/20/50% on Hardcore (previously 5/10/20/45%, GMDX was 5/10/15/50%)
+-Moved the datacube with the basement password in the NSF Warehouse "Send the Signal" mission to the locked room
+
+## BETA 0.1 CHANGES ##
+-Changed cigarettes max copies from 20 -> 10 to reflect new usefulness
+-Fixed the perks buttons not updating if you were viewing the perks menu and upgraded a skill
+-Fixed grenade max counts not scaling to 5/7/10/15 with the Demolitions skill as intended (was 10/14/20/30)
+-Fixed not being able to pick up wearables from carcasses when at max copies but below max charge (now charges them to full, as with picking up from the world)
+-Clip mod now increases AR clip size by 5 rather than 3 to match 5-round burst (this will be reverted if I get 3-round burst working)
+-Drastically reduced the degree to which items (weapons, pickups, and ammo) are knocked around by explosive damage so you have a chance of finding scattered loot
+-Fixed the player being unable to actually obtain Misfeature Exploit, despite repeatedly paying for the perk
+-Turret "Allies" targeting setting renamed to "Default", because people often wrongly assume it means the turret's allies
+-Cigarette damage changed from 2 -> 1
+-Reverted the Assault Shotgun reloading the entire drum magazine at a time, reset base reload to 1.2s
+-GEP gun loads a rocket at a time, set base reload to 1.5s
+	-Need a new sound for this
+-Rebalanced ammo capacities again:
+	-Removed Halve Ammo Capacity option so I only have to balance one set of numbers
+	-Reduced many of the ammo capacities further
+	-Buffed the Ammo Capacity aug's boost from 20/30/40/50% to 25/50/75/100% (initial increases are already inherently the most impactful)
+	-Buffed weapon skill's boost from 10/25/50% to 20/50/100%
+-Fixed triggers in the Paris Chateau map so you still get goal completed/Everett's datalink message/Nicolette staying behind if you hop over the maze wall instead of taking the entrance
+-Fixed the Controlled Burn perk causing individual fireballs to hit the same enemy multiple times, dealing extra damage
+-Removed the laser mod from the silenced pistol on the final training map, so players won't be confused if they try to install the laser mod on it later
+-Increased default rubber bullet pickup count from 5->8 to match Sabot/Shell ratio
+-Fixed per-round loading weapons (Sawed-Off/Mini-Crossbow/GEP Gun) loading near-instantly if using the ammo icon in the inventory
+-Using the "Change Ammo" button or ammo icons to swap ammo types now equips the weapon and performs and active reload if Real-Time UI is enabled (forced on in Hardcore)
+	-Otherwise, the original background reload remains
+-Refactored some code in the firing routine that may have made hitscan shots not go quite to the location of the laser dot (?)
+-Overhauled shotgun and plasma rifle firing routines to give them a consistent spread no matter your accuracy, with accuracy instead determining the center where shots spread from
+	-Likely to be reverted for the shotgun, or made into a toggleable option somehow
+-Fixed the zyme buff not properly affecting melee speed
+-Cleaned up errors with minor game-crashing potential related to the following code:
+	-Stopping Power perk
+	-Zyme buff affecting melee animation speed
+	-New helmet collision sound routines for projectiles
+	-Deactivating secondary binoculars when changing weapons
+	-Sidearm perk
+	-Turning off laser sight when reloading
+	-Inventory overlap exploit fix
+	-Controlled Burn perk
+	-Player weapon dropping edge case
+	-Generalized secondary items HUD display
+	-Laser emitter turning off
+	-GEP Gun targeting
+-Fixed inventory overlap exploit with weapon mods -- now they return to their original inventory position after application rather than to the nearest space
+-Added a biocell to the locked area in the alley by Hell's Kitchen
+-Added a button to the locked and keypadded aug canister room in Hell's Kitchen so the player can get out if they close the door while locked
+-New Master-level perk to replace Cracked:
+	-EASY CRACK: An agent can bypass trivial devices at 5% strength or below without expending a multitool
+	-Lowered the hack strength of all alarm units from 10% to 5%
+	-Lowered the hack strength of a couple of security panels from 10% to 5% (there were one or two more at 5% already)
+-Fixed reverted MJ12 Troops turning back into elites when killed
+-If a frobbed ammo box contains more ammo than the player can carry, the spillover amount will remain in the ammo box rather than being lost, and the ammo box stays in the world
+-If a frobbed copy of a player's weapon contains more ammo than the player can carry, the spillover amount will remain in the weapon rather than being lost, and the weapon stays in the world
+	-Also added messages telling the player how much ammo they've picked up
+	-This was already the case when looting ammo from new guns that the player didn't have inventory space to carry
+-Retuned the new shotgun spread mechanics towards a middle ground between the previous system (variable spread around the fixed center) and new system (fixed spread around a variable center)
+-Adjusted cigarette map counts due to new usefulness
+	-9 deleted from Hell's Kitchen visit 1 (3 total)
+	-2 deleted from Underworld bar visit 1 (2 total)
+	-6 deleted from Smuggler's visit 1 (2 total)
+	-1 added to Brooklyn Bridge tunnels (1 total)
+	-1 added to Mole People Tunnels (2 total)
+	-1 deleted from 747 (3 left), soda can added in its place
+	-1 added to Hell's Kitchen visit 2 (1 total)
+	-1 added to UNATCO visit 3 (1 total)
+	-2 added to Wan Chai market (4 total)
+-Added a slightly randomized delay before withdrawal sets in, to make it a reoccurring hassle rather than an instant debuff
+	-Roughly 20min delay for nicotine
+	-Roughly 30min delay for alcohol
+	-Roughly 10min delay for zyme
+	-Delay is halved on Hardcore or with the Restricted Metabolism option
+-Nerfed cigarette duration from 5min -> 2min since drugs no longer need to be constantly active to avoid withdrawal
+-Fixed modded weapon max range reverting on map transition
+-Decoupled weapon range stats for NPCs and the player. Now weapon range can be altered indepenently without having to hack AI engagement distance or accuracy (this was some of my earliest code)
+-Replaced Halve Ammo Capacity option with Restricted Metabolism: The player can only eat/drink so much before getting full, and withdrawal symptoms occur twice as quickly (forced on in Hardcore)
+	-Hunger meter accumulates whether or not the option is enabled, capped at 100% (so toggling the option during a playthrough simply affects whether you can eat at 100%)
+	-Fixed edible items becoming unfrobbable if you attemt to LMB frob them while full with restricted metabolism enabled (oversight in LMB frob rework)
+	-Other miscellaneous backend adjustments to the hunger system so it functions properly when enabled on non-Hardcore
+-Added 1.0dB sound to silenced weapons (stealth pistol or weapons with a silencer mod). Translates to ~15ft radius
+	-Updated noise level in weapon descriptions from 0.5dB to 1.0dB (this was a lie, there was no sound before)
+	-Nerfed stealth pistol noise level from 0.01dB to 1.0dB
+-New sounds thanks to Markie Music (no relation):
+	-Security Robot 4 miniplasma bolt impact
+	-Withdrawal onset notice
+-Nerfed base mantling height again, further scaled up influence of Athletics skill. Now 27/65/103/141% of old mantling reach (can't mantle up forklift puzzle at Untrained!!!)
+-Moved the "Withdraw All" button on ATMs from Advanced to Master level to reward further investment with the extra convenience (Advanced is already very efficient)
+-The hack timer is no longer set to 0 when you exit a computer terminal, instead retaining its value. Master level was counter-intuitively punished by taking 16x longer to fill up again
+-Headshot capability added to Grays, x2 damage multiplier
+-Fixed an exploit on Hardcore mode where you could clip against an object while attempting to dolphin jump out of water to get limitless stamina for swimming
+-Refactored Cloak/Radar Transparency animated texture routines for efficiency, code clarity, and consistent effect stacking
+-Fixed a transparent square texture appearing when activating the laser mod on the pistol and then turning on cloak or radar transparency
+-Added an individual ini toggle for all weapon model replacements
+	-Go to [Documents]\Deus Ex\GMDXv9\System\gmdx.ini and search for the iHDTPModelToggle fields for each weapon. 0 = vanilla, 1 = HDTP, 2 = FOMOD (for Sawed-Off Shotgun only)
+	-A menu option may be included in the future
+	-If loading a prior save, drop and pick up the weapon again to register the model change. Some visual glitches may appear until you do
+	-NOTE: there may be a few lingering visual glitches, particularly with viewmodel position, animated textures, cloak/radar transparency effects, and reloading animations
+-Melee attack speed changes:
+	-Reduced base crowbar attack speed by 20%
+	-Melee attack speed is now halved when out of breath
+	-Holding the fire button now causes melee weapons to attack continuously
+-Minimum hitscan bullet damage due to range falloff reduced from 65% to 35% of full damage (recall that bullet damage drops off linearly with distance beyond a weapon's effective range)
+-Weapon tooltip fixes:
+	-Renamed "Acc. Range" in weapon tooltips to "Eff. Range"
+	-Corrected rubber bullet damage stats
+	-Corrected rubber bullet and throwing knife headshot multipliers
+	-Fixed percentage displays rounding down 1% from actual values
+	-Added proper rounding for all decimal values
+	-Fixed the tenths place disappearing for numbers with two decimal places of precision when the tenths place was 0, e.g. 1.05 displaying as 1.5
+-Targeting reticle fixes:
+	-Now precisely sized to current weapon accuracy; were near meaningless before thanks to the (now removed) variable effect of max range on accuracy
+	-Should properly reflect weapon accuracy for all resolutions and UI scalings with proper maximum/minimum values (no arbitrary cutoffs)
+	-Removed extra pixels from two of the reticle lines that rendered it uneven
+-Fixed nominally incorrect accuracy formula in targeting augmentation display (overstating inaccuracy by 2x)
+-Swapped the third Cloak/Radar Transparency canister in Everett's lab for a second Regeneration/Energy Shield canister
+-Swapped the second (now third) Regeneration/Energy Shield canister in Area 51 for a second Synthetic Heart/Power Recirculation canister (can now install both augs!)
+-Streamlined ammo cycling behavior ("Change Ammo" hotkey or inventory button):
+	-"Out of X" message does not occur when cycling over ammo types that you've never picked up
+	-"Out of X" message DOES occur when cycling of empty ammo types that you have picked up, and the ammo type is skipped over rather than leaving you with an empty clip of that type
+	-"X already has Y loaded" message changed to "No other ammo to load" when the only available ammo type is already loaded
+	-Per-shell loading weapons (shotguns, mini-crossbow, GEP gun) don't empty their magazines for a reload when the only available ammo type is already loaded
+	-Fixed a bug where repeatedly cycling ammo on per-shell loading weapons could lead to incomplete ammo loads
+	-Pressing Change Ammo in the inventory with Real-Time UI enabled now checks if there is actually alternate ammo to load before proceeding to equip the weapon
+-Added 0-1 points of damage variation to player attacks to account for int rounding. Now every percentage point of damage increase results in the same degree of DPS increase
+	-e.g. before, adding +10% damage to the Assault Rifle with a base damage of 3 resulted in 3.3 being rounded down to 3, ultimately a +0% increase. Now DPS is increased by 10% with no exceptions
+	-Damage now displays to the tenths place in weapon tooltips to reflect this
+-Tranquilizer darts will no longer play a flesh hit sound if you hit a robot, play a weak deflection sound instead
+-Removed a clip mod from one Hong Kong cop and a reload mod from one Paris cop to discourage random cop killing, and a scope mod from a MJ12 Trooper in Paris
+-Fixed the Rooks being overprotective of junkies/hookers in the Brooklyn Bridge map (would become hostile to player if they observed fleeing junkies/hookers)
+-Fixed reworked +30% damage bonus for rubber bullets on the Sawed-Off Shotgun not actually going into effect
+-Added a removed prod battery back to the NSF hideout in Battery Park
+-The amount of ammo contained in a ammo boxes is now displayed in the frob window, e.g. 10mm Ammo (5)
+-The amount of ammo picked up from all sources is now displayed in the log, e.g. You found some 10mm Ammo (5)
+	-Now includes ammo boxes picked up for the first time (previously only displayed when adding to an existing ammo pool)
+	-Now includes ammo picked up from corpses (previously only displayed in the corpse looting window)
+-The current charge of wearable items is now displayed in the frob window
+-Partially fixed an exploit that allowed the player to double activate Smuggler's laser trap, causing the robot door to close
+-Restored autosaving in the Paris Cathedral map
+-Rearranged some objects in the Brooklyn Naval Shipyard map so as to require crate stacking, skill/aug investment, and/or precise platforming for a mantling path over the main gate and side fence
+-HUD windows that overlap with inventory menus (e.g. log/infolink/loot/bark/conversation/mission start text) are now dynamically hidden when the latter are open and Real-Time UI is enabled
+-Added missing "some" to pickup messages for ammo types added in GMDX (e.g. You found some Taser Darts)
+-Fixed exploit associated with new spillover ammo feature that could allow the player to farm unlimited rockets, 20mm HE ammo, and taser darts on Hardcore
+-Fixed some hazards in the EUAS threat detector being named "Flamed" instead of "Fire"
+-Fixed 2/3 of the doors to the PCRS Wall Cloud's mess hall closing after 8s rather than opening/closing on demand
+-Added a few more hidden goodies to Area 51
+-Removed the forcefield generators in Area 51 Sector 4 on non-Hardcore difficulty, as Everett's message about Page's OTHER forcefield may confuse new players
+-Fixed some misaligned/missing geometry and textures in Area 51 Sector 4
+-Halved flamethrower damage threshold for MIBs to be set on fire
+-Fixed Targeting aug displaying the weapon class name in code instead of the localized display name
+-Added Clyzm's FOMOD beta Sniper Rifle and Stealth Pistol in the iHDTPModelToggle = 2 slot for WeaponRifle.uc and WeaponStealthPistol.uc, respectively
+	-Fixed aim sway with FOMOD beta Sniper Rifle and Stealth Pistol after reloading while zoomed
+	-Fixed typo in code for FOMOD beta Stealth Pistol that broke the zooming animation
+	-Made zoom toggling on FOMOD beta Sniper Rifle and Stealth Pistol as flexible as with other weapons
+	-Equalized FOMOD beta Stealth Pistol fire rate with vanilla/HDTP Stealth Pistol in all firing modes
+-Added a Weapon Model Selection menu for toggling weapon model replacements (vanilla/HDTP/FOMOD beta where available)
+-Addressed a potential oversight with mantling when changing keybinds
+-Fixed stealth pistol full-auto jank (delayed second shot, clipped final shot animation). Now fires smoothly with a consistent ROF in full-auto
+-Increased stealth pistol base damage back up to 9 (was accidentally reverted to 8 in v9 beta and now rererereverted)
+-Fixed duplicate config variables in GMDXUser.ini file ([DeusEx.DeusExPlayer] and [DeusEx.Human] vars were redundant with [DeusEx.JCDentonMale], now all vars only in [DeusEx.DeusExPlayer])
+-Fixed pitch-dependent viewmodel rotation on some HDTP weapons
+-Decreased Gray hitcylinder radius by 30% to better accord with its model
+-Decreased Gray health by 20% on all difficulties
+-Ported Irosenth's Radial Augmentation Menu addon with permission
+	-DESCRIPTION: This makes gameplay more fluent: tired of always searching the right F-key to toggle augs in your dark and moody (and untidy) gaming cave? Simply toggle augs on the run with a radial aug menu! Click middle mouse button (configurable), highlight one, click, done! I forgot F-keys exist using this thing. It's awesome!
+	-BINDING: Go to Settings -> Keyboard/Mouse and locate the "Toggle Augmentation Wheel" option at the bottom. 
+	-Fixed several camera bugs that occurred due to conflicts with Spy Drone camera behavior (new feature)
+	-Fixed augs activated outside of the radial menu not displaying as such
+	-Fixed Spy Drone showing as deactivated when reactivated from standby using the radial menu (new feature)
+	-Fixed visible targeting reticles when the radial menu is active
+	-Fixed visible crosshair when deactivating the radial menu while a weapon laser sight is active
+	-Fixed laser dot position getting dragged around by the radial menu
+	-Fixed missing head/weapon bob when using the radial menu
+-Further refinements to weapon/ammo pickup messages:
+	-Fixed DEFAULT PICKUP NAME pickup message bug when picking up a grenade type that the player already carries in the inventory
+	-Fixed throwing knives displaying a pickup message twice, now also displays pickup count
+	-When picking up a weapon not carried in the inventory, the weapon name is displayed in the pickup message e.g. "You found a Pistol"
+	-When picking up a weapon already carried in the inventory, only the ammo is displayed in the pickup message e.g. "You found some 10mm ammo (5)"
+-Updated text descriptions:
+	-Added numerical detail to drug descriptions for the new addiction system, fleshed out by new UNATCO OPS file descriptions
+	-Added numerical detail to food descriptions (e.g. Heals 2 points)
+	-Restored Pistol, Combat Knife, Sword, Crowbar, Baton, Liquor, Wine, and Soda descriptions to vanilla
+	-Restored weapon mod drag message to vanilla
+	-Restored Datacube "It is blank" to vanilla "There's nothing interesting to read"
+	-Restored Water fountain "Your drinking limit has been exceeded, please come back tomorrow" to vanilla "It's out of water"
+	-Reworked Flare description to vanilla + new UNATCO OPS file
+	-Reworked Fire Extinguisher description to vanilla + new UNATCO OPS file
+	-Reworked Binoculars description to vanilla + additional note about rangefinder functionality.
+	-Reworked weapon range mod description to more clearly cover all projectile weaponry
+	-Reworked ballistic armor description to more clearly indicate draining with use and recharging
+	-Reworked Spy Drone description to remove noisemaker functionality and indicate the new standby mode as well as clarify the detonation energy cost
+	-Reworked Stealth Pistol description to vanilla + additional notes about its unique benefits
+	-Reworked Ballistic Protection, Vision Enhancement, Dragon's Tooth Sword description for clarity
+	-Reworked Mini-Crossbow description to indicate its new internal magazine
+	-Refined skill descriptions to account for new changes and improve clarity
+	-Capitalized "Low-Tech" and "Demolitions" in the Combat Speed description
+	-Uncapitalized "Bioelectric Energy Units" in item descriptions and log messages
+-Swapped the Combat Strength/Combat Speed aug icons so Combat Strength has its vanilla fist icon, while Combat Speed gets the new icon depicting the whole body (since it affects more than just melee speed)
+-Reverted Environmental Training skill costs from 900/1800/3600 to 750/1500/3000
+-Reworked Athletics/Aqualung and general stamina system balance:
+	-Removed maximum stamina multiplier from Athletics skill, now only affects swimming speed and mantling reach (note: ADRENALINE RUSH and ENDURANCE perks still grant means of stamina regeneration)
+	-Increased Athletics swimming speed multiplier from 0.9/1.2/1.7/2.75 to 1.0/1.4/2.0/3.0x
+	-Increased ADRENALINE RUSH stamina gain from 30% to 50% of total stamina
+	-Decreased growth rate per rank from 2x to ~1.5x (30/60/120/240 seconds underwater to 30/45/65/90 seconds underwater)
+	-Removed Aqualung's influence on stamina regeneration
+	-Aqualung is now a passive augmentation
+-Slightly improved performance of new accuracy/range implementation in hitscan firing routine
+-Fixed some unsightly texture flickering and inconsistencies between geometry and destructible mover on the EMP generator in Osgood's and Sons
+-Added number of uses remaining on repair bot and medical bot user interface on Medium difficulty and above (inf/3/3/2/2 uses on Easy/Medium/Hard/Realistic/Hardcore)
+-Fixed incorrect font for N/A ammo text on new secondary items
+
+#### BETA 0.2 CHANGES ####
+-Fixed Sleight of Hand being infinitely purchasable
+-Fixed Doorsman becoming available to purchase without Advanced Lockpicking after purchasing Sleight of Hand before menu is refreshed
+-Fixed Stealth perks being unable to be purchased
+-Fixed the secondary item window always showing the most recent weapon assigned as a secondary if a non-weapon item is currently assigned
+-Fixed the player automatically trying to consume food inventory items after map transition again if they were previously blocked by the consumption limit
+-Alcohol and zyme can now always be consumed, but alcohol still increments the player's fullness meter (Restricted Metabolism and Hardcore only)
+-Fullness is now capped at 200%, so alcoholics must wait even longer to consume other food (Restricted Metabolism and Hardcore only)
+-Removed all visual drunkenness effects (pending overhaul with more subtle effects)
+-Fixed radial menu not updating with new augs until map transition if HUD Augmentation Display is set to "Active"
+-Fixed radial menu augs activated/deactivated outside of the radial menu not displaying as such
+-Fixed Sniper Rifle pickup model sometimes acquiring the wrong textures when using the FOMOD Beta model
+-Fixed the Sniper Rifle and Stealth Pistol pickup models erroneously showing lasers, scopes, and/or silencers when using the FOMOD Beta models
+-Minor weapon rebalancing:
+	-Stealth Pistol ROF from 2.85 to 3.33
+	-Stealth Pistol base accuracy from 65% to 62.5%
+	-Stealth Pistol eff-max range from 93.75-187.5 ft to 80-160ft
+	-Assault Shotgun base accuracy from 67.5% to 65%
+	-Assault Rifle base accuracy from 65% to 67.5%
+
+#### BETA 0.3 CHANGES ####
+-Restored dynamic cover animations accidentally removed during view offset fix testing
+-Fixed the Field Repair perk not working
+-Fixed peculiar behavior with drug timers resetting during map transition
+-Fixed exploit where players with Microfibral Muscle could cancel footstep sounds by attempting to power throw with nothing in hand
+-Removed test code for NPC grenade throws that could spawn fire extinguishers
+-Added protections to ensure alarm units and Area 51 cameras did not "heal" back hacking strength on map load
+-Reworked difficulty modulation code for NPC stats to optimize performance and remove all edge cases with enemies healing on map load
+-Security cameras no longer react to unconscious bodies on Hardcore to uniquely punish dominant lethal stealth tactics
+-Removed coughing sound and damage when smoking cigarettes pending further effects work
+
+#### BETA 1.0 CHANGES ####
+-Further refinements to difficulty modulation code to fix some health inconsistencies and edge cases
+-Fixed Sniper Rifle and Stealth Pistol FOMOD Beta 3rd person model sometimes acquiring the wrong textures
+	-NOTE: still broken on the player in mirrors, perhaps indefinitely
+-Fixed radial menu showing passive augs after installation
+-Replaced "standing accuracy bonus" in tooltips with "aim stability"
+
+#### BETA 1.1 CHANGES ####
+-Fixed wearable items at 0% charge becoming activatable and undimming icon on map transition
+-Fixed wearable items going slightly below 0% charge when the last one in the stack runs out
+-Secondary items now always quickdraw, even when nothing is currently in hand (before, this would simply equip them)
+-Reworked stamina system again:
+	-Athletics now improves maximum stamina/breath by half of the swim speed bonus (20/50/100%)
+	-Aqualung no longer passively improves maximum stamina/breath, but reduces breath loss underwater and improves stamina regen speed by 15/30/45/60%
+	-Jumping cost 1.25x more stamina on Hardcore to match Hardcore running stamina drain
+	-Stamina does not regenerate on ladders when pressing the walk modifier key
+	-NOTE: Mantling scaling may be relocated or reconsidered in a future update if Athletics is found too potent
+-Updated text descriptions:
+	-Renamed ONE-HANDED perk to AMBIDEXTROUS, simplified description
+	-Changed Athletics/Aqualung descriptions to reflect changes, corrected "imbedded" typo in Aqualung description
+	-Changed all mentions of "secondary weapon" to "secondary item"
+	-Added "40%" to the Speed Enhancement Tech Four description to specify the exact speed bonus
+	-Added exact bonuses to the Medicine skill description
+	-Added medkit healing amount to description
+	-Fixed biocell restoration amount with Biogenic perk in description
+
+#### BETA 1.2 CHANGES ####
+-Reduced base stamina by 10% to match v9
+-Unified mantling code across states, can grab slightly shallower ledges while jumping
+-Mantling now costs as much stamina as jumping, and the player cannot mantle while out of breath
+-The Doorsman perk is no longer needed to see door damage thresholds, and damage thresholds on hackable devices are once again visible
+-Fixed decorations and pickups annihiliating one another when colliding
+-Fixed PS20 "DEFAULT PICKUP NAME" bug
+-Increased PS20 base ammo capacity from 4 to 5
+-Reduced GEP gun pickup ammo count from 3 to 1
+-Rewrote Hacking skill, Microfibral Muscle aug, and SONIC-TRANSDUCER SENSOR and SHORT FUSE perk descriptions for improved clarity and consistency
+-Rewrote taser dart description to note that it cannot KO targets
+-Fixed rate of fire tooltip stating full-auto modified weapons as single-fire
+
+#### BETA 1.3 CHANGES ####
+-Fixed NPCs with melee attacks bugging out and attempting to attack at long range
+-Removed extraneous brush geometry in the first sewer ladder shaft in the Brooklyn Naval Shipyard map
+-Fixed missing names on some containers
+-Replaced second pair of binoculars on south Liberty Island dock with a prod battery
+-Re-enabled drunk visual effects (since they affect poison visual effects)
+-Reduced Osgood and Sons' mirror damage threshold from 5 to 3 (to match AR/shotgun damage)
+-Health/Augs screen status tabs now shown by default
+-Fixed vanilla oversight that caused explosions to double hit movers (e.g. doors) and ignore line of sight. Now only ignore LOS at 40% radius as GMDX standard
+-Smuggler's Assault Shotgun for 7500 credits on the 3rd Hell's Kitchen visit now comes with a full-auto mod pre-installed
+    -Also simplified code for Paul's weapon choice (Mini-Crossbow and Sniper Rifle come with +1 accuracy mod)
+    -NOTE: Need to update convo texts to indicate modded status
+
+#### BETA 1.4 CHANGES ####
+-Reduced 10mm AP pickup ammo count back from 8 to 5
+-Reverted GEP gun pickup ammo count from 1 to 3 (since they generally appear as locational rewards)
+-Further refined explosion behavior. Explosions now ignore LOS at 40% radius for most objects, but 60% for movers (40% caused many failed doorbusts with LAMs)
+-Fixed script log errors:
+	-Crowbar +5 damage to movers and decorations
+	-Secondary item expansions
+	-Tranq dart deflection sound on robots
+	-Carts pushed by damage
+	-Reworked Synthetic Heart
+	-On hit blood spawning
+	-Piercing perk melee damage bonus to robots
+	-GMDX melee swipe
+	-Bullet decals from autoturrets
+	-Decline Combat Knives option for corpse looting
+	-Sabot slug damage
+-Removed debug logspam:
+	-Corpse looting
+	-GEP gun scope toggle
+-Tied autoturret firing check to gun damage variable instead of hardcoded number
+-Fixed weapon stats and current ammo type not updating in the inventory when using realtime load without the current weapon equipped
+-Fixed (loud!) stacking menu sounds when using ammo load buttons, and sounds no longer play when highlighting weapons with ammo (but not other items)
+-Fixed Rebreather incrementing stamina/breath above 100%, allowing the player to store additional stamina
+-Fixed wearable items not undimming icons when picking up a new copy
+-Removed code and runaway variables from old wearable system which potentially leads to overcharged items?
+-Rebuilt Area 51 Sector 4 map to fix the death zone near the test tube where Page blows up the hallway (15_Area51_Page)
+-Refined hack fix for reverted MJ12 troops turning back into elites on death to prevent edge cases (more robust map fixes later)
+-Fixed crosshair user toggle being reset by hitmarkers, the new radial aug menu, and map loads
+-Fixed the Security Bot following the player into the armory and causing crashing in the MJ12 Prison map (05_NYC_UNATCOMJ12Lab)
+-Weapon tooltip fixes:
+	-Sabot rounds now properly display 18 base damage for the single slug
+	-Damage now indicates the shot multiplier for multi-pellet weapons (x8 for buckshot and x3 for plasma)
+	-Final damage now shows the tenths place only when it is relevant
+-Fixed stealth pistol/sniper rifle disappearing when swapping between weapon models due to mismatched idle anims, potentially crashing the game
+
+#### BETA 2.0 CHANGES ####
+-Increased NSF basement security terminal hacking requirement from Trained back to Advanced
+-Fixed bad mover pivot points on several maps
+	-01_NYC_UNATCOHQ
+	-02_NYC_Hotel
+	-14_OceanLab_Lab
+	-09_NYC_Ship
+-Fixed reverted MJ12 Troop corpse assignments on the following maps:
+	-12_Vandenberg_Cmd
+	-13_Oceanlab_Silo
+	-14_Vandenberg_Sub
+	-15_Area51_Entrance
+-Reduced hacking requirements on several plot-critical computers
+	-OceanLab UC
+	-Missile Silo launch
+-Fixed non-functional shower faucets on the PCRS Wall Cloud upper decks and fixed their alignment
+-Renamed "Unlocks the Security area access panel" nanokey description to "Security Area Access Panel key" in PCRS Wall Cloud upper decks
+-Fixed Flight Control Deck 1 inside door button opening a vent grating in the barracks instead of the adjacent door
+-Removed illogical event trigger from MJ12 Prison Nanotech Lab alarm to release Greasels from containment (now activate manually with button/computer as vanilla)
+-Swapped the third ADS/Spy Drone canister in the DuClare Chateau for a third Speed Enhancement/Run Silent augmentation canister
+-Added a box of rubber bullets to the UNATCO armory on the first visit
+-Added a button to the Ocean Lab to prevent a softlock
+-Fixed Area 51 Sector 3 door at the end of the Gray jumpscare hallway appearing to be interactable
+-Fixed Area 51 Sector 3 door leading to waste pool not responding to melee attacks
+-Removed all miniplasma bots from Area 51 Bunker ground level on non-Hardcore difficulty
+-Corpses no longer spawn flies in sterile environments and underground bunkers
+	-Maps: UNATCO, MJ12 labs, 747, Versalife, Canal Road, Shipyard interior, Catacombs, Everett's, Vandenberg tunnels/comms, Ocean Lab, Area 51
+-Fixed the UNATCO security bot on the Liberty Island dock turning against you if it sees the NSF security bot attacking you (the two now fight)
+-Added more shotgun shells to mid-late game areas (+30), some replacing excess boxes of Sabot next to one another on the same map (-24)
+-Added more pistol bullets to Hong Kong (+10) and Paris (+15)
+-Removed a 7.62mm clip and a napalm canister from a secret location in Hong Kong
+-Removed 5 throwing knives from Paris Cathedral
+-Rebalanced door strengths and removed one Hazmat Suit from MJ12 Versalife labs locker room
+-Telegraphed goodies behind descructible walls in the Catacombs more clearly
+-Removed some barrels in the Catacombs room with the broken electrical junction that made mantling too easy
+-Replaced miniplasma security bots in the Paris metro station with standard security rollers
+-Made the Rooks women unfazed by signs of distress so a junkie fleeing from the death of the zyme dealer doesn't set the whole gang after the player
+-Made the bouncers in the Club de la Porte de L'Enfer hostile if the player brandishes weapons like they warn
+-Renamed "Osgood" key to Osgood and Sons front door key as in vanilla (key moved from NSF inventory to world)
+-The PS20 is no longer listed as variably lethal in the weapon tooltip
+-Removed reload finish sound from Mini-Crossbow to stop overlapping with dart load sound
+-Bullets now penetrate breakable glass
+-Deactivating (or frobbing deactivated) alarm panels shuts off all active camera alarms in an area
+-Fixed Assault Shotgun double-firing with maxed ROF on full-auto after switching ammo types
+-Spy drones on standby are now deactivated before map transition
+-Fixed the player's view getting spun to their previous camera view when the spy drone is destroyed
+-Fixed players being able to resume control of disabled drones when returning to maps after deactivation
+-Fixed incorrect cloak/radar textures on the lockpick and nanokeyring viewmodel
+-Fixed skin colors not updating on all vanilla weapon models and the multitool
+-Removed dangling "Restores" in biocell tooltip
+-Fixed crosshair user toggle being reset when loading a save game with the laser mod or radial menu active (byproduct of earlier fix)
+-Nerfed Blast Energy perk falloff plasma rifle maximum damage falloff reduction from 50% to 25%
+-Removed projectile flight path dependence on hidden projectile accurate range stat, plus other changes:
+	-In vanilla, nearly all projectiles would only start to drop beyond their accurate range (rockets/plasma bolts etc. had extremely high range values)
+	-In GMDXv9, some projectiles dropped immediately (rubber bullets), while others (darts, throwing knives) would drop after modified ranges
+	-Now all relevant projectiles drop immediately, resulting in a consistent and predictable parabolic trajectory
+	-Darts are only affected marginally, while throwing knives require more drop compensation from the player
+	-20mm HE rounds have 20% increased gravity, speed reduced from 1550 units to 1400 units
+	-Range mods still increase projectile speed, and hence distance traveled
+	-Grenades retain old thrown arc (half gravity on throw, full gravity after 50 ft)
+	-Range modifications can now be applied to the pepper gun to increase speed and lifespan of teargas clouds
+-Decline Combat Knives option now always deletes combat knives from looted inventories instead of only doing so 85% of the time
+-Added a new playthrough modifiers system. Press the "Modifiers" button in the character creation menu to enable new gameplay effects
+-Added Crate Randomization playthrough modifier:
+	-Crate contents can be swapped for other items if they are located in predefined loot tables
+	-Each item in the loot table has a certain chance to drop which is determined by the actual amount of crates containing that item in all of the maps
+	-Loot tables are organized into “lots” which group items by relative value and use case so as to not unbalance locational rewards and playstyle support
+		-i.e. 7.62mm ammo can get swapped for .30-06 ammo and shotgun shells, but never 10mm ammo
+	-Lots: pistol/rifle/nonlethal/anti-robot/heavy/explosive ammo, as well as lockpicks/multitools, wearables, and misc. pickups
+	-Crate contents are randomized on first map load only so as to discourage savescumming
+-Added Weapon Mod Randomization playthrough modifier:
+	-Same as crates with loot tables governed by in-game distribution, but encompassing weapon mods both in crates and in the world.
+	-Lots: handling (accuracy/recoil/range), ammo (clip/reload), ballistics (damage/RoF), attachments (silencer/scope/laser/full-auto)
+		-the Silencer in the Hong-Kong shop and the Full-Auto mod in the Paris shop are fixed, guaranteeing at least one of each for purchase
+-Added Aug Canister Scramble playthrough modifier
+	-The ordering of aug canisters is scrambled on New Game
+	-The total number of each aug canister type in the game is unchanged
+-Standardized the ordering of Drone/ADS and Cloak/Radar choices in aug canisters
+-Removed non-functional "Cancel" button from HDTP Model Toggles menu (Restore Defaults and OK are sufficient)
+-Fixed edge cases around alcohol health manipulation, e.g. where zyme withdrawal while sober could artificially grant the player an extra 5 HP
+-Fixed biocell recharge amount displayed in the log rounding down by one point
+-Fixed "(NPC name)" missing from the frob display window when killing unconscious NPCs, e.g. "Unconscious (UNATCO troop)" -> "Dead Body"
+-Fixed animal carcasses getting mislabled as "Dead Body" instead of "Animal Carcass" when kiling from unconscious
+-MIB/WIB corpses now explode when killed from unconscious if the Persistent Corpses option is disabled (forced on in Hardcore)
+-Fixed Health status screen displaying a speed penalty even if it was cancelled by the Perserverance perk
+-Fixed Health status screen not displaying accuracy penalties due to alcohol withdrawal
+-Fixed Health status screen not automatically updating torso max health from alcohol buff/zyme debuff
+-Fixed Health status screen average health not correcting for head/torso max health from Medicine skill/alcohol buff/zyme debuff
+-Fixed log window appearing behind inventory windows due to new or delayed log messages with Real-Time UI enabled, now waits for inventory window close
+-Re-added minor crash protection code which was accidentally deleted during the radial menu port
+-Added exact ranges to Aggressive Defense System description
+-Added exact damage bonuses to Combat Strength description
+-Renamed Pan2 from "Pot" to "Saucepan" and Pan3 from "Frying Pan" to "Saucepan"
+-Fixed "DEFAULT WEAPON NAME" when using Targeting aug tech 2 to gather weapon data on enemies with built-in attacks (melee, rockets, etc.)
+-Moved the addiction system to a playthrough modifier (disabled by default)
+	-With the option disabled, cigarettes deal 2 damage, alcohol heals 2 HP, and zyme and alcohol shake the player's view again
+	-Restricted Metabolism once again stops the player from consuming alcohol when full, except when the addiction system is active
+	-The GMDX v9 pedometer returns in the health status screen except when the addiction system is enabled
+-Changed the Assault Gun's firing operation from 5-round burst to 3-round burst
+	-This is a buff to fire rate, as the burst timings overlap slightly
+	-Slightly decreased the effectiveness of ROF mods to compensate and ensure animation stability
+	-Decreased base magazine capacity from 35 to 33 and reverted each clip size mod from +5 to +3
+	-Decreased 7.62mm magazine pickup ammount from 35 to 33
+-Fixed crosshair flickering on after hitmarkers when disabled by laser sight or user option, also an edge case changing the user option
+-Hitmarker color is now always white when using laser sights, since IFF is otherwise disabled (also helps with seeing red laser dot)
+-Fixed conversation bug allowing players to repeatedly increase their augmentation upgrade canister count even with a full inventory
+-Fixed GEP fly-by-wire control not matching the player's Invert Y-axis setting
+-Added the ability to rotate items in the inventory by pressing the Spacebar while dragging them
+	-To swap two items of equal size, rotate the source item to the same orientation as the target item
+	-Note that alt-tabbing breaks keyboard inputs in game menus -- to fix, press the "Exit" button and bring up the main menu
+	-Some bugs may occur when swapping/dropping/combining items, or during map transition. Please report any issues you find!
+-Added an blue indicator to show where the target item will go when swapping items of equal size
+-Added a keybind for Hold Augmentation Wheel. Note that it must be a standard key or mouse button, not something too modern like mouse 5
+-Fixed loot window displaying the wrong amount of ammo picked up from bodies when the user is near full
+-Fixed script log errors:
+	-Generalized stamina drain rework
+	-Reworked breath scaling underwater
+	-Augmentation menu displaying added GMDX v9 aug slot
+	-HDTP weapon rotation fix
+	-HDTP NPC flamethrower fire offset fix
+	-Melee attack speed tooltip with Combat Speed

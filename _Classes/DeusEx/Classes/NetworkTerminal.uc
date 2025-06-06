@@ -377,7 +377,10 @@ function CreateHackWindow()
         //disable the "Hack" button if our skill level is untrained,
         //which means we're using a nuke
         if (skillLevel == 0)
+        {
             winHack.btnHack.SetSensitivity(false);
+            skillLevel = 1;
+        }
 	}
 }
 

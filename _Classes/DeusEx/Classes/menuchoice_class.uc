@@ -84,21 +84,8 @@ function SetValue(int newValue)
 
 function SaveSetting()
 {
-//log("menuchoice_class.SaveSettings");
-//log("menuchoice_class.SaveSettings.b4"@GetModuleName(currentValue));
-   /*if ((player.Weapon!=none)&&(player.Weapon.IsA('WeaponNanoSword')))         //RSD: Uhhhhhhh
-   {
-      player.bCrosshairVisible=player.bWasCrosshair;
-      log("menuchoice_class.SaveSettings.found");
-   }*/
-
    player.UpdateURL("Class", GetModuleName(currentValue), true);
-//log("menuchoice_class.SaveSettings.after"@GetModuleName(currentValue));
    player.SaveConfig();
-   /*if ((player.Weapon!=none)&&(player.Weapon.IsA('WeaponNanoSword')))         //RSD: Uhhhhhhh
-   {
-      player.bCrosshairVisible=false;
-   }*/
 }
 
 // ----------------------------------------------------------------------

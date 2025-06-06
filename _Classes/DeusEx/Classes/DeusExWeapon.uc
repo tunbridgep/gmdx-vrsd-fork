@@ -2460,7 +2460,7 @@ simulated function Tick(float deltaTime)
 	if (ClipCount > 0)
 	{
 		// check for LAM or other placed mine placement
-		if (bHandToHand && (ProjectileClass != None) && (!Self.IsA('WeaponShuriken')) && (!Self.IsA('WeaponLAW')))
+		if (bHandToHand && ProjectileClass != None && !Self.IsA('WeaponShuriken') && !Self.IsA('WeaponLAW') && !Self.IsA('WeaponHideAGun'))
 		{
 			if (NearWallCheck())
 			{

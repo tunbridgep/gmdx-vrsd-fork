@@ -36,10 +36,11 @@ var localized String HackedText;
 function CreateControls()
 {
 	Super.CreateControls();
-
-	btnWithdraw = winButtonBar.AddButton(ButtonLabelWithdraw, HALIGN_Right);
-	if ((Player != None && Player.SkillSystem != None && Player.SkillSystem.GetSkillLevel(class'SkillComputer') >= 3) || (winTerm != None && winTerm.GetUserIndex() != -1)) //SARGE: Also show Withdraw All if we log into the ATM without hacking it.
-	   btnWithdrawAll = winButtonBar.AddButton(ButtonLabelWithdrawAll, HALIGN_Right);
+    
+    btnWithdrawAll = winButtonBar.AddButton(ButtonLabelWithdrawAll, HALIGN_Right);
+    btnWithdrawAll.SetSensitivity(false);
+	
+    btnWithdraw = winButtonBar.AddButton(ButtonLabelWithdraw, HALIGN_Right);
 	btnClose    = winButtonBar.AddButton(ButtonLabelClose,  HALIGN_Right);
 
 	CreateMenuLabel(20, 91, BalanceLabel, winClient);
@@ -269,6 +270,7 @@ event bool TextChanged(window edit, bool bModified)
 function EnableButtons()
 {
 	local float balance;
+    local bool bEnableWithdrawAll;
 
 	// Only allow withdraw if there's money to be withdrawn and the user has typed
 	// something into the editWithdraw field
@@ -279,8 +281,10 @@ function EnableButtons()
 		balance = atmOwner.GetBalance(winTerm.GetUserIndex(), balanceModifier);
 
 	btnWithdraw.SetSensitivity((editWithdraw.GetText() != "") && (balance > 0));
-	if (btnWithdrawAll != None)
-       btnWithdrawAll.SetSensitivity(balance > 0);
+    
+    //SARGE: Enable Withdraw All if we log into the ATM without hacking it, or have computer skill of Master.
+    bEnableWithdrawAll = ((Player != None && Player.SkillSystem != None && Player.SkillSystem.GetSkillLevel(class'SkillComputer') >= 3) || (winTerm != None && !winTerm.bHacked));
+    btnWithdrawAll.SetSensitivity(balance > 0 && bEnableWithdrawAll);
 }
 
 // ----------------------------------------------------------------------

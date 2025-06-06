@@ -46,7 +46,7 @@ event InitWindow()
 
     SetRightSide(false);
 
-	bTickEnabled = TRUE;
+	bTickEnabled = true;
 
 	Hide();
 

@@ -1087,6 +1087,10 @@ function Frob(Actor Frobber, Inventory frobWith)
                                 bFoundSomething = True;
                                 bPickedSomethingUp = True;
                             }
+                            //SARGE: Show declined nanokeys
+                            else if (player.bShowDeclinedInReceivedWindow)
+                                AddReceivedItem(player, item, 1, true, true);
+
 							DeleteInventory(item);
 							item.Destroy();
 							item = None;
@@ -1132,7 +1136,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 						// the weapon).
 						else if ((W != None) || (W == None && (bDeclined||!player.FindInventorySlot(item, True))))
 						{
-                            bLootResult = DeusExWeapon(item).LootAmmo(DeusExPlayer(P),true,true,false,false,!bSearched && W != None);
+                            bLootResult = DeusExWeapon(item).LootAmmo(DeusExPlayer(P),true,true,false,false,!bSearched && (W != None || bDeclined));
                             bFoundSomething = bFoundSomething || bLootResult;
                             bFoundInvalid = bFoundInvalid || PickupAmmoCount > 0;
                             bPickedSomethingUp = bPickedSomethingUp || bLootResult;
@@ -1171,7 +1175,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                         if (!W.bDisposableWeapon)
                                             P.ClientMessage(item.PickupMessage @ item.itemArticle @ Item.itemName @ IgnoredString);
                                     }
-                                    if (!bDeclined) //SARGE: declined items are already added.
+                                    if (!bDeclined && !W.bDisposableWeapon) //SARGE: declined items are already added.
                                         badItems[badItemCount++] = item;
                                     bFoundInvalid = true;
                                 }
@@ -1199,7 +1203,6 @@ function Frob(Actor Frobber, Inventory frobWith)
 
 						if ((item.IsA('DeusExPickup')) && (DeusExPickup(item).bCanHaveMultipleCopies) && (player.FindInventoryType(item.class) != None))
 						{
-                            bFoundSomething = True;
 							invItem   = DeusExPickup(player.FindInventoryType(item.class));
 							itemCount = DeusExPickup(item).numCopies;
 							startcopies = invitem.NumCopies;
@@ -1258,9 +1261,12 @@ function Frob(Actor Frobber, Inventory frobWith)
 								else if (DeusExPickup(item).numCopies + invItem.numCopies >= invItem.RetMaxCopies())  //GMDX
                                 {
                                     if (!bSearched)
+                                    {
                                         player.ClientMessage(invItem.PickupMessage @ invItem.itemArticle @ invItem.itemName @ msgTooMany, 'Pickup');
-                                    bFoundSomething = True;
-                                    badItems[badItemCount++] = item;
+                                        bFoundSomething = True;
+                                        badItems[badItemCount++] = item;
+                                    }
+                                    bFoundInvalid=true;
 
                                 }
 								else
@@ -1386,9 +1392,9 @@ function Frob(Actor Frobber, Inventory frobWith)
     {
         PickupCorpse(player);
     }
-    else if (!bAnimalCarcass && player != None && player.inhand != none && player.bAutoHolster && !player.inHand.IsA('POVCorpse') && player.CarriedDecoration == None)
+    else if (!bAnimalCarcass && player != None && player.inhand != none && player.iAutoHolster > 0 && !player.inHand.IsA('POVCorpse') && player.CarriedDecoration == None)
     {
-        if ((bSearched||!player.bEnhancedCorpseInteractions) && (bDblClickStart || player.dblClickHolster == 0))
+        if ((bSearched||!player.bEnhancedCorpseInteractions))// && (bDblClickStart || player.dblClickHolster == 0))
             player.PutInHand(none);
     }
     

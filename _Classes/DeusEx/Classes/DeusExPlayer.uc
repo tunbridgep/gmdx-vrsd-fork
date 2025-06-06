@@ -223,7 +223,7 @@ var globalconfig bool bHitDisplayVisible;
 var globalconfig bool bAmmoDisplayVisible;
 var globalconfig bool bDisplayAmmoByClip;
 var globalconfig bool bCompassVisible;
-var globalconfig bool bCrosshairVisible;
+var globalconfig bool bCrosshairVisible;            //SARGE: Now unused. Don't use this! The only reason it's still here is because the game crashes if we change/remove it. Use the new iCrosshairVisible var instead
 var globalconfig bool bAutoReload;
 var globalconfig bool bDisplayAllGoals;
 var globalconfig bool bHUDShowAllAugs;				// TRUE = Always show Augs on HUD
@@ -423,6 +423,7 @@ var string HDTPMesh;
 var string HDTPMeshTex[8];
 var bool bHDTPInstalled;
 var globalconfig bool bHDTPEnabled;                      //SARGE: Master switch to enable or disable HDTP
+var globalconfig bool bHDTPEffects;                      //SARGE: Shared setting for HDTP Effects being enabled independently of their objects.
 
 //GMDX: CyberP & dasraiser
 //SAVEOUT
@@ -447,7 +448,7 @@ var globalconfig bool bNoTranslucency;
 var globalconfig int dblClickHolster;                      //SARGE: 0 = off, 1 = double click holstering only, 2 = double click holstering and unholstering
 var globalconfig bool bHalveAmmo;
 var globalconfig bool bHardcoreUnlocked;
-var globalconfig bool bAutoHolster;
+var globalconfig int iAutoHolster;                         //SARGE: 0 = off, 1 = corpses only, 2 = everything
 var globalconfig bool bRealUI;
 var globalconfig bool bHardcoreAI1;
 var globalconfig bool bHardcoreAI2;
@@ -815,11 +816,17 @@ var globalconfig bool bEnableLeftFrob;                          //SARGE: No idea
 
 var globalconfig bool bConversationKeepWeaponDrawn;             //SARGE: Always keep weapons drawn during conversations.
 
+var globalconfig int iCrosshairVisible;                         //SARGE: Replaces the boolean crosshair setting, now we can control inner and outer crosshair independently.
+
 //SARGE: Overhauled the Wireless Strength perk to no longer require having a multitool out.
 var HackableDevices HackTarget;
 
-
 var bool bFakeDeath;                                            //SARGE: Fixes a rather nasty bug when dying and being transferred to the MJ12 Prison facility. Also disables quick loading.
+
+var travel bool bPhotoMode;                                     //SARGE: Show/Hide the entire HUD at once
+
+var bool bClearReceivedItems;                                   //SARGE: Clear the received items window next time we display it.
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -883,6 +890,31 @@ replication
 	  BuySkillSound, ShowMultiplayerWin, ForceDroneOff ,AddDamageDisplay, ClientSpawnHits, CloseThisComputer, ClientPlayAnimation, ClientSpawnProjectile, LocalLog,
 	  VerifyRootWindow, VerifyConsole, ForceDisconnect;
 
+}
+
+//SARGE: Hide/Show the entire HUD at once
+exec function TogglePhotoMode()
+{
+    SetPhotoMode(!bPhotoMode);
+}
+
+function SetPhotoMode(bool value)
+{
+    bPhotoMode = value;
+    UpdatePhotoMode();
+}
+
+function UpdatePhotoMode()
+{
+    local DeusExRootWindow root;
+	root = DeusExRootWindow(rootWindow);
+    if (root != None && root.hud != None)
+    {
+        if (bPhotoMode)
+            root.hud.Hide();
+        else
+            root.hud.Show();
+    }
 }
 
 exec function cheat()
@@ -992,6 +1024,12 @@ function DebugMessage(coerce string msg)
     }
 }
 
+//SARGE: Allow logging when debug mode is enabled
+function DebugLog(coerce string msg)
+{
+    if (bGMDXDebug)
+        Log(msg);
+}
 
 // ----------------------------------------------------------------------
 // AssignSecondary
@@ -1766,6 +1804,9 @@ event TravelPostAccept()
 	// reset the keyboard
 	ResetKeyboard();
 
+    //Update Photo Mode
+    UpdatePhotoMode();
+
     //Update HUD
     UpdateHUD();
 
@@ -1911,6 +1952,8 @@ event TravelPostAccept()
     
     bDelayInventoryFix = false;
 
+    //Reset the music timers
+    ResetMusic();
 
 	//end GMDX
 }
@@ -2247,7 +2290,6 @@ exec function RestartLevel()
 exec function LoadGame(int saveIndex)
 {
     SetupRendererSettings();
-    ResetMusic();
 
 //   log("MYCHK:LoadGame: ,"@saveIndex);
 	// Reset the FOV
@@ -3383,7 +3425,7 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
         if (NewTransition == MTRAN_SlowFade)
             default.fadeTimeHack = 4.0;
         else if (NewTransition == MTRAN_Fade)
-            default.fadeTimeHack = 1.5;
+            default.fadeTimeHack = 2.5;
         else if (NewTransition == MTRAN_FastFade)
             default.fadeTimeHack = 0.5;
         else
@@ -7306,7 +7348,7 @@ state Dying
 		UpdateDynamicMusic(deltaTime);
 		time = Level.TimeSeconds - FrobTime;
         HeadRegion.Zone.ViewFog.X = time*0.01;
-        if (bRemoveVanillaDeath && time > 64.0 && HeadRegion.Zone.ViewFog.X != 0)
+        if (bRemoveVanillaDeath && time > 64.0 && HeadRegion.Zone.ViewFog.X != 0 && bMenuAfterDeath)
 		{
 		if ((MenuUIWindow(DeusExRootWindow(rootWindow).GetTopWindow()) == None) &&
 		(ToolWindow(DeusExRootWindow(rootWindow).GetTopWindow()) == None))
@@ -8267,6 +8309,12 @@ exec function ParseLeftClick()
     //Special cases aside, now do the left hand frob behaviour
     else if (bEnableLeftFrob && FrobTarget != none && IsReallyFrobbable(FrobTarget,true) && !bInHandTransition && (inHand == None || !inHand.IsA('POVcorpse')) && CarriedDecoration == None)
     {
+        //SARGE: Hack to fix weapons repeatedly filling the received items window with crap if we're full
+        if (bClearReceivedItems)
+        {
+            ClearReceivedItems();
+            bClearReceivedItems = false;
+        }
         DoLeftFrob(FrobTarget);
     }
 
@@ -8417,9 +8465,9 @@ function SetDoubleClickTimer()
     
 function DoAutoHolster()
 {
-    if (bAutoHolster)// && (clickCountCyber >= 1 || dblClickHolster == 0 ))
+    if (iAutoHolster > 1)// && (clickCountCyber >= 1 || dblClickHolster == 0 ))
         PutInHand(None);
-    else if (bAutoHolster && dblClickHolster > 0)
+    else if (iAutoHolster > 0 && dblClickHolster > 0)
         SetDoubleClickTimer();
 }
 
@@ -8577,6 +8625,14 @@ exec function ParseRightClick()
                 }
             }
         }
+
+        //SARGE: Hack to fix weapons repeatedly filling the received items window with crap if we're full
+        if (bClearReceivedItems)
+        {
+            ClearReceivedItems();
+            bClearReceivedItems = false;
+        }
+
 		// otherwise, just frob it
 		DoRightFrob(FrobTarget);
 	}
@@ -8753,7 +8809,10 @@ function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool
         ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName $ " (" $ over $ ")" @ AmmoType.MaxAmmoString, 'Pickup');
         
         if (bShowWindow && bShowDeclinedInReceivedWindow)
+        {
+            bClearReceivedItems=true;
             AddReceivedItem(AmmoType, over, bNoGroup, true);
+        }
     }
     return ret;
 }
@@ -8928,7 +8987,6 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     //SARGE: Always try looting non-disposable weapons of their ammo
     if (bCanPickup && FrobTarget.IsA('DeusExWeapon') && !DeusExWeapon(frobTarget).bDisposableWeapon)
     {
-        ClearReceivedItems();
         bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,true,bAlwaysShowReceivedItemsWindow,false,true,bShowOverflow);
 
         //Don't pick up a weapon if there's ammo in it and we already have one
@@ -8940,6 +8998,9 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
             bCanPickup = False;
         }
 
+        //If we picked up a weapon that we already have and it was empty, display a message
+        else if (!bLootedAmmo && !bSlotSearchNeeded && DeusExWeapon(frobTarget).PickupAmmoCount == 0 && DeusExWeapon(frobTarget).ReloadCount > 0)
+            ClientMessage(DeusExWeapon(frobTarget).PickupMessage @ DeusExWeapon(frobTarget).itemArticle @ DeusExWeapon(frobTarget).itemName, 'Pickup');
     }
 	
 	if (bSlotSearchNeeded && bCanPickup)
@@ -9011,7 +9072,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
         }
 	}
 
-    if (bCanPickup && !bDeclined)
+    if ((bCanPickup || !bSlotSearchNeeded) && !bDeclined)
     {
         pickupCooldown = 0.15;
         
@@ -9278,7 +9339,7 @@ exec function PutInHand(optional Inventory inv, optional bool bNoPrimary)
         bBeltSkipNextPrimary = bNoPrimary;
 
     if (!bNoPrimary)
-        bLastWasEmpty = inv == None;
+        bLastWasEmpty = inv == None || inv.IsA('POVCorpse');
 
     //SARGE: Was this weapon force selected?
     //ie, was it selected through left/right frob, rather than
@@ -10003,7 +10064,7 @@ function AddObjectToBelt(Inventory item, int pos, bool bOverride)
 // Set Placeholder
 function SetPlaceholder(int objectNum, texture icon)
 {
-    if (icon != None)
+    if (icon != None && icon != class'NanoKeyRing'.default.icon)
         beltInfos[objectNum].icon = icon;
 }
 
@@ -10505,7 +10566,7 @@ function GrabDecoration()
 	{
 	    if (carriedDecoration != None || inHand.IsA('POVcorpse'))
         {ClientMessage(HandsFull); return;}
-        else if (!bAutoHolster)
+        else if (iAutoHolster < 2)
         {ClientMessage(HandsFull); return;}
         else
             DoAutoHolster();
@@ -10853,6 +10914,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 				{
 					item.Charge = previtem.Charge;
 					previtem.Charge = previtem.default.Charge;
+					ChargedPickup(previtem).UpdateBeltText();
 				}
 
 				if(item != None)
@@ -10913,8 +10975,6 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 				RemoveItemFromSlot(item);
                 RemoveObjectFromBelt(item,bBeltAutofill); //SARGE: Disabled placeholders because keeping dropped items as placeholders feels weird //Actually, re-enabled if autofill is false, since we obviously care about it
             }
-            ammoType.ammoAmount -= 1;
-            UpdateAmmoBeltText(AmmoType);
         }
 		else
 		{
@@ -11105,8 +11165,14 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 		//DEUS_EX AMSD Use the function call for this, helps multiplayer
 		PlaceItemInSlot(item, itemPosX, itemPosY);
 	}
-    else if (item != None && DeusExWeapon(item).bDisposableWeapon) //SARGE: This has to be done here for some reason
+    //Sarge: Fix up disposable weapons
+    else if (item != None && DeusExWeapon(item).bDisposableWeapon)
+    {
+        AmmoType = Ammo(FindInventoryType(Weapon(item).AmmoName));
+        ammoType.ammoAmount -= 1;
+        UpdateAmmoBeltText(AmmoType);
         DeusExWeapon(item).PickupAmmoCount = 1;
+    }
 
 	return bDropped;
 }
@@ -11694,6 +11760,8 @@ exec function ToggleObjectBelt()
 
 	bObjectBeltVisible = !bObjectBeltVisible;
 
+    SetPhotoMode(false);
+
 	root = DeusExRootWindow(rootWindow);
 	if (root != None)
 		root.UpdateHud();
@@ -11708,6 +11776,8 @@ exec function ToggleHitDisplay()
 	local DeusExRootWindow root;
 
 	bHitDisplayVisible = !bHitDisplayVisible;
+    
+    SetPhotoMode(false);
 
 	root = DeusExRootWindow(rootWindow);
 	if (root != None)
@@ -11723,6 +11793,8 @@ exec function ToggleAmmoDisplay()
 	local DeusExRootWindow root;
 
 	bAmmoDisplayVisible = !bAmmoDisplayVisible;
+    
+    SetPhotoMode(false);
 
 	root = DeusExRootWindow(rootWindow);
 	if (root != None)
@@ -11738,6 +11810,8 @@ exec function ToggleAugDisplay()
 	local DeusExRootWindow root;
 
 	bAugDisplayVisible = !bAugDisplayVisible;
+    
+    SetPhotoMode(false);
 
 	root = DeusExRootWindow(rootWindow);
 	if (root != None)
@@ -11752,6 +11826,7 @@ exec function ToggleAugDisplay()
 exec function MinimiseTargetingWindow()
 {
     bMinimiseTargetingWindow = !bMinimiseTargetingWindow;
+    SetPhotoMode(false);
 }
 
 // ----------------------------------------------------------------------
@@ -11819,6 +11894,9 @@ exec function ToggleRadialAugMenu(optional bool bHeld, optional bool bRelease)
 exec function ToggleCompass()
 {
 	bCompassVisible = !bCompassVisible;
+
+    SetPhotoMode(false);
+
     UpdateHUD();
 }
 
@@ -11865,8 +11943,12 @@ function SetLaser(bool bNewOn)
 // ----------------------------------------------------------------------
 exec function ToggleCrosshair()
 {
-    bCrosshairVisible = !bCrosshairVisible;
-	UpdateCrosshair();
+    iCrosshairVisible += 1;
+    if (iCrosshairVisible > 2)
+        iCrosshairVisible = 0;
+    
+    SetPhotoMode(false);
+  	UpdateCrosshair();
 }
 
 
@@ -11889,7 +11971,11 @@ function bool GetCrosshairState(optional bool bCheckForOuterCrosshairs)
     if (bSpyDroneActive && !bSpyDroneSet && bCheckForOuterCrosshairs)
         return false;
 
-    if (!bCrosshairVisible)
+    if (iCrosshairVisible == 0)
+        return false;
+    
+    //if we're set to "outer only", then bail if we're checking for normal crosshairs
+    if (iCrosshairVisible == 2 && !bCheckForOuterCrosshairs)
         return false;
 
     if (IsInState('Dying')) //No crosshair while dying
@@ -14189,10 +14275,10 @@ static final function string Locs(coerce string Text)
 //because these are often in all-caps, and will confuse the algorithm.
 function string StripFromTo(string text)
 {
-    local int newlinePos;
+    local int newlinePos, alexPos;
     local bool bFoundNewline;
     
-    if(InStr(text,"FROM: ") == 0)
+    while(InStr(caps(text),"FROM: ") == 0 || InStr(caps(text),"TO: ") == 0)
     {
         //find the first ascii 10 (newline)
         for (newlinePos = 0; newlinePos < Len(text); newlinePos++)
@@ -14204,8 +14290,17 @@ function string StripFromTo(string text)
             }
         }
         if (bFoundNewline)
-            return Mid(text, newlinePos);
+            text = Mid(text, newlinePos+1);
+        else
+            break;
     }
+
+    //horrible dirty hack!
+    //One email is a "reply" from Alex, we need to get rid of Alex's username
+    alexPos = InStr(text,"(AJacobson//UNATCO.00013.76490)");
+    if(alexPos != -1)
+        text = Mid(text,alexPos+30);
+
 
     return text;
 }
@@ -14229,7 +14324,7 @@ function bool GetCodeNote(string code)
             
             //noteText = note.originalText;
 
-            //log("NOTE: " $ note.text);
+            //DebugLog("NOTE (pre trim): " $ note.text);
 
             //SARGE: This is some WEIRD logic!
             //Because we need to dynamically check the notes for codes,
@@ -14250,24 +14345,24 @@ function bool GetCodeNote(string code)
             //Start by checking that our code matches CAPS in the note...
             if (InStr(noteText,Caps(code)) != -1)
             {
-                //log("NOTE: " $ noteText);
-                //log("NOTE CODE " $code$ " FOUND (CAPS)");
+                DebugLog("NOTE: " $ noteText);
+                DebugLog("NOTE CODE " $code$ " FOUND (CAPS)");
                 return true;
             }
             
             //Then check that our code matches all lower case in the note...
             else if (InStr(noteText,Locs(code)) != -1)
             {
-                //log("NOTE: " $ noteText);
-                //log("NOTE CODE " $code$ " FOUND (LOCS)");
+                DebugLog("NOTE: " $ noteText);
+                DebugLog("NOTE CODE " $code$ " FOUND (LOCS)");
                 return true;
             }
             
             //Some codes are in quotes, so always allows things in quotes
             if (InStr(Caps(noteText),"\""$Caps(code)$"\"") != -1)
             {
-                //log("NOTE: " $ noteText);
-                //log("NOTE CODE " $code$ " FOUND (CAPS)");
+                DebugLog("NOTE: " $ noteText);
+                DebugLog("NOTE CODE " $code$ " FOUND (CAPS)");
                 return true;
             }
 
@@ -14284,7 +14379,7 @@ function bool GetCodeNote(string code)
 		note = note.next;
 	}
 
-    log("NOTE CODE " $code$ " NOT FOUND");
+    DebugLog("NOTE CODE " $code$ " NOT FOUND");
 	return false;
 }
 
@@ -18912,6 +19007,7 @@ defaultproperties
      bDisplayAmmoByClip=True
      bCompassVisible=True
      bCrosshairVisible=True
+     iCrosshairVisible=1
      bAutoReload=True
      bDisplayAllGoals=True
      bHUDShowAllAugs=True
@@ -19115,4 +19211,5 @@ defaultproperties
      bDialogHUDColors=True
      bQuietAugs=True
      bEnableLeftFrob=True
+     bShowDeclinedInReceivedWindow=true
 }
