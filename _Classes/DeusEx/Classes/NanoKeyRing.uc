@@ -301,6 +301,7 @@ Begin:
 
 function DisplayWeapon(bool overlay)
 {
+    super.DisplayWeapon(overlay);
     if (overlay)
         multiskins[0] = handstex;
 }
