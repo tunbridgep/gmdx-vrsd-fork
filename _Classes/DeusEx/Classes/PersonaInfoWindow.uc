@@ -285,7 +285,7 @@ function bool ButtonActivated( Window buttonPressed )
 	local DeusExPlayer player;
     local int i, index;
     local bool boughtPerk;
-    local Inventory declineThis;
+    local class<Inventory> declineThis;
 
 	if (Super.ButtonActivated(buttonPressed))
 		return true;
@@ -571,7 +571,7 @@ function AddDeclinedInfoWindow()
 	local AlignWindow winAmmo;
 	local PersonaNormalTextWindow winText;
 	local Window winIcon;
-	local Inventory invClass;
+	local class<Inventory> invClass;
     local int i, num;
 
     Clear();
