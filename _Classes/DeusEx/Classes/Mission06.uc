@@ -18,6 +18,7 @@ function FirstFrame()
 	local MJ12Commando commando;
 	local DeusExCarcass carc;
 	local DeusExDecoration deco;
+	local DeusExFragment frag;
 	local HKMilitary mil;
 	local SpiderBot bot;
 	local BookOpen book;
@@ -168,8 +169,31 @@ function FirstFrame()
 		{
 			flags.SetBool('DragonHeadsInLuckyMoney', True,, 8);
 
-			foreach AllActors(class'DeusExCarcass', carc)
-				carc.Destroy();
+            if (!flags.GetBool('GMDXBarCleanup'))
+            {
+                //SARGE: We need to clean up the fragments and decals as well after the fight
+                if (player.decalManager != None)
+                {
+                    player.DecalManager.HideAllDecals();
+                    player.DecalManager.ClearList();
+                }
+
+                foreach AllActors(class'DeusExFragment', frag)
+                    frag.Destroy();
+
+                foreach AllActors(class'DeusExCarcass', carc)
+                    carc.Destroy();
+                
+                foreach AllActors(class'DeusExDecoration', deco)
+                {
+                    if (deco.IsA('BoneFemur')
+                        || deco.IsA('BoneFemurBloody')
+                        || deco.IsA('BoneFemurLessBloody'))
+                    deco.Destroy();
+                }
+                
+                flags.SetBool('GMDXBarCleanup', True,, 7);
+            }
 		}
 
 		if (flags.GetBool('DragonHeadsInLuckyMoney') &&
