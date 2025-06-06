@@ -1851,6 +1851,10 @@ function FinishButtonDrag()
                 invBelt.objBelt.RecreateBelt();                                  //SARGE: Update the inventory belt
                 
                 BioelectricCell(draginv).UseOnce();
+                
+                // move back to original spot
+				ReturnButton(PersonaInventoryItemButton(dragButton));
+
 				dragButton = None;
 				SelectInventory(dragTarget);
             }
@@ -1890,6 +1894,9 @@ function FinishButtonDrag()
                 BioelectricCell(draginv).UseOnce();
                 Player.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
 				//player.DeleteInventory(dragInv);
+				
+                // move back to original spot
+				ReturnButton(PersonaInventoryItemButton(dragButton));
 
 				dragButton = None;
 				SelectInventory(dragTarget);
