@@ -38,7 +38,7 @@ event Tick(float deltaSeconds)
 
 	if ((item != None) && (winEnergy != None))
 	{
-        if (item.bDrained) //SARGE: If it's drained, don't show the power level for the next one.
+        if (item.bDrained && !item.bUnequipWhenDrained) //SARGE: If it's drained, don't show the power level for the next one.
             winEnergy.SetCurrentValue(0);
         else
             winEnergy.SetCurrentValue(item.GetCurrentCharge());
@@ -52,7 +52,7 @@ function bool DrawDim()
 	local ChargedPickup item;
 	item = ChargedPickup(GetClientObject());
 
-    return (item != None && item.bDrained);
+    return (item != None && item.bDrained && !item.bUnequipWhenDrained); //SARGE: Extra check is for Goggles on Secondary
 }
 
 // ----------------------------------------------------------------------
