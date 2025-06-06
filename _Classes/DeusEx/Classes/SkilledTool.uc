@@ -56,6 +56,8 @@ function DisplayWeapon(bool overlay)
         //else
             multiskins[i] = default.multiskins[i];
     }
+    Skin = default.Skin;
+    Texture = default.Texture;
 }
 
 // ----------------------------------------------------------------------
