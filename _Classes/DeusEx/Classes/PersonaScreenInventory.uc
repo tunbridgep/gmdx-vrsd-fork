@@ -1793,7 +1793,7 @@ function FinishButtonDrag()
                 WeaponNanoSword(dragTarget.GetClientObject()).chargeManager.Recharge(msg);
                 winStatus.AddText(msg);
                 Player.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
-                WeaponNanoSword(dragTarget.GetClientObject()).chargeManager.unDimIcon();
+                //WeaponNanoSword(dragTarget.GetClientObject()).chargeManager.unDimIcon(); //SARGE: May crash the game, IDK???!!!
                 dragTarget.bDimIcon = false;
                 invBelt.objBelt.RecreateBelt();                                  //SARGE: Update the inventory belt
                 
@@ -1806,50 +1806,27 @@ function FinishButtonDrag()
 		{
 			ChargedTarget = ChargedPickup(dragTarget.GetClientObject());        //RSD: Making a new var for it so there aren't a billion constructor calls
             //if (ChargedPickup(dragTarget.GetClientObject()).Charge < ChargedPickup(dragTarget.GetClientObject()).default.Charge)
-            if (ChargedTarget.Charge < ChargedTarget.default.Charge)
+            if (ChargedTarget != None && ChargedTarget.Charge < ChargedTarget.default.Charge)
 			{
-				// 0.  Unhighlight highlighted weapons
-				// 1.  Apply the weapon upgrade
-				// 2.  Remove from Object Belt
-				// 3.  Destroy the upgrade (will cause button to be destroyed)
-				// 4.  Highlight the weapon.
-                /*if (ChargedPickup(dragTarget.GetClientObject()).IsA('AdaptiveArmor') || ChargedPickup(dragTarget.GetClientObject()).IsA('Rebreather'))
-                {
-				   ChargedPickup(dragTarget.GetClientObject()).Charge += ChargedPickup(dragTarget.GetClientObject()).default.Charge*0.15;
-				   if (ChargedPickup(dragTarget.GetClientObject()).Charge >= ChargedPickup(dragTarget.GetClientObject()).default.Charge)
-                   {
-                      winStatus.AddText("Fully Recharged");
-                      ChargedPickup(dragTarget.GetClientObject()).Charge = ChargedPickup(dragTarget.GetClientObject()).default.Charge;
-                   }
-                   else
-                      winStatus.AddText("Recharged by 15%");
-				}
-                else
-                {
-                   ChargedPickup(dragTarget.GetClientObject()).Charge += ChargedPickup(dragTarget.GetClientObject()).default.Charge*0.3;
-                   if (ChargedPickup(dragTarget.GetClientObject()).Charge >= ChargedPickup(dragTarget.GetClientObject()).default.Charge)
-                   {
-                      winStatus.AddText("Fully Recharged");
-                      ChargedPickup(dragTarget.GetClientObject()).Charge = ChargedPickup(dragTarget.GetClientObject()).default.Charge;
-                   }
-                   else
-                      winStatus.AddText("Recharged by 30%");
-                }*/
+
 				//SARGE: TODO: Refactor this to use the new ChargeManager system
                 mult = ChargedTarget.default.ChargeMult;                        //RSD: No more special cases for charge rates
                 if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkFieldRepair').bPerkObtained == true)                              //RSD: Field Repair perk
                    mult *= 1.5;
                 ChargedTarget.Charge += mult*ChargedTarget.default.Charge;
+
                 if (ChargedTarget.Charge >= ChargedTarget.default.Charge)
                 {
-                   winStatus.AddText("Fully Recharged");
+                   winStatus.AddText(class'ChargeManager'.default.msgFullyCharged);
                    ChargedTarget.Charge = ChargedTarget.default.Charge;
                 }
                 else
-                   winStatus.AddText("Recharged by"@int(100*mult)$"%");
+                   winStatus.AddText(sprintf(class'ChargeManager'.default.msgRecharged,int(100*mult)));
+
                 ChargedTarget.bDrained=false;                                   //SARGE: Since now it can remain equipped when empty.
                 ChargedTarget.bActivatable=true;                                //RSD: Since now you can hold one at 0%
-                ChargedTarget.unDimIcon();                                      //RSD
+                //ChargedTarget.unDimIcon();                                    //RSD //SARGE: Crashes the game sometimes!
+                dragTarget.bDimIcon = false;
 
                 invBelt.objBelt.RecreateBelt();                                  //SARGE: Update the inventory belt
 

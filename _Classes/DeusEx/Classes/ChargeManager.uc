@@ -150,6 +150,9 @@ function DimIcon() //RSD: When an item runs out of charge, dim the inv/belt icon
     }
 }
 
+//SARGE: WARNING!!
+//THIS FUNCTION CRASHES THE GAME SOMETIMES WHEN USED
+//IN THE INVENTORY SCREEN
 function unDimIcon() //RSD: When a biocell is used to charge an item, check if it was dead (dimmed inv/belt icon) and undim it
 {
 	local HUDObjectBelt hudbelt;

@@ -1019,6 +1019,12 @@ function DebugMessage(coerce string msg)
     }
 }
 
+//SARGE: Allow logging when debug mode is enabled
+function DebugLog(coerce string msg)
+{
+    if (bGMDXDebug)
+        Log(msg);
+}
 
 // ----------------------------------------------------------------------
 // AssignSecondary
@@ -14217,10 +14223,10 @@ static final function string Locs(coerce string Text)
 //because these are often in all-caps, and will confuse the algorithm.
 function string StripFromTo(string text)
 {
-    local int newlinePos;
+    local int newlinePos, alexPos;
     local bool bFoundNewline;
     
-    if(InStr(text,"FROM: ") == 0)
+    while(InStr(caps(text),"FROM: ") == 0 || InStr(caps(text),"TO: ") == 0)
     {
         //find the first ascii 10 (newline)
         for (newlinePos = 0; newlinePos < Len(text); newlinePos++)
@@ -14232,8 +14238,17 @@ function string StripFromTo(string text)
             }
         }
         if (bFoundNewline)
-            return Mid(text, newlinePos);
+            text = Mid(text, newlinePos+1);
+        else
+            break;
     }
+
+    //horrible dirty hack!
+    //One email is a "reply" from Alex, we need to get rid of Alex's username
+    alexPos = InStr(text,"(AJacobson//UNATCO.00013.76490)");
+    if(alexPos != -1)
+        text = Mid(text,alexPos+30);
+
 
     return text;
 }
@@ -14257,7 +14272,7 @@ function bool GetCodeNote(string code)
             
             //noteText = note.originalText;
 
-            //log("NOTE: " $ note.text);
+            //DebugLog("NOTE (pre trim): " $ note.text);
 
             //SARGE: This is some WEIRD logic!
             //Because we need to dynamically check the notes for codes,
@@ -14278,24 +14293,24 @@ function bool GetCodeNote(string code)
             //Start by checking that our code matches CAPS in the note...
             if (InStr(noteText,Caps(code)) != -1)
             {
-                //log("NOTE: " $ noteText);
-                //log("NOTE CODE " $code$ " FOUND (CAPS)");
+                DebugLog("NOTE: " $ noteText);
+                DebugLog("NOTE CODE " $code$ " FOUND (CAPS)");
                 return true;
             }
             
             //Then check that our code matches all lower case in the note...
             else if (InStr(noteText,Locs(code)) != -1)
             {
-                //log("NOTE: " $ noteText);
-                //log("NOTE CODE " $code$ " FOUND (LOCS)");
+                DebugLog("NOTE: " $ noteText);
+                DebugLog("NOTE CODE " $code$ " FOUND (LOCS)");
                 return true;
             }
             
             //Some codes are in quotes, so always allows things in quotes
             if (InStr(Caps(noteText),"\""$Caps(code)$"\"") != -1)
             {
-                //log("NOTE: " $ noteText);
-                //log("NOTE CODE " $code$ " FOUND (CAPS)");
+                DebugLog("NOTE: " $ noteText);
+                DebugLog("NOTE CODE " $code$ " FOUND (CAPS)");
                 return true;
             }
 
@@ -14312,7 +14327,7 @@ function bool GetCodeNote(string code)
 		note = note.next;
 	}
 
-    log("NOTE CODE " $code$ " NOT FOUND");
+    DebugLog("NOTE CODE " $code$ " NOT FOUND");
 	return false;
 }
 
