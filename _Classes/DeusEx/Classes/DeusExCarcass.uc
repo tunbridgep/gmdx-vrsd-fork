@@ -1194,7 +1194,6 @@ function Frob(Actor Frobber, Inventory frobWith)
 
 						if ((item.IsA('DeusExPickup')) && (DeusExPickup(item).bCanHaveMultipleCopies) && (player.FindInventoryType(item.class) != None))
 						{
-                            bFoundSomething = True;
 							invItem   = DeusExPickup(player.FindInventoryType(item.class));
 							itemCount = DeusExPickup(item).numCopies;
 							startcopies = invitem.NumCopies;
@@ -1253,9 +1252,12 @@ function Frob(Actor Frobber, Inventory frobWith)
 								else if (DeusExPickup(item).numCopies + invItem.numCopies >= invItem.RetMaxCopies())  //GMDX
                                 {
                                     if (!bSearched)
+                                    {
                                         player.ClientMessage(invItem.PickupMessage @ invItem.itemArticle @ invItem.itemName @ msgTooMany, 'Pickup');
-                                    bFoundSomething = True;
-                                    badItems[badItemCount++] = item;
+                                        bFoundSomething = True;
+                                        badItems[badItemCount++] = item;
+                                    }
+                                    bFoundInvalid=true;
 
                                 }
 								else
