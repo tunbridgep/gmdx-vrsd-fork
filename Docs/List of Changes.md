@@ -234,6 +234,7 @@ Sarge's Changes since Beta 2.2:
         - MJ12 Elites now have a small chance of carrying Throwing Knives
         - All enemy troopers now have a small chance of carrying a PS20 or some flares.
     - Tech Goggles and Vision Enhancement Changes
+        - Tech Goggles and Vision Enhancement Lvl 1 will now highlight pickups in addition to characters
         - Battery increased by 30% (from 500 to 650)
         - Tech Goggles and Level 1 Vision now show all targets in green, rather than being targeted in various colours based on IFF info
         - Tech Goggles and Level 1 Vision can no longer see cloaked enemies

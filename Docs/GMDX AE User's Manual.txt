@@ -71,8 +71,8 @@ To get GMDX working without the dedicate exe, follow these steps:
 1. Ensure the GMDX: AE directory is added to DeusEx.ini
 2. Ensure that DeusEx.int is copied from the GMDX: AE directory into the base System directory (this is not necessary if using Kenties Deus Exe on Windows)
 3. Ensure that UseS3TC is enabled (if not using the DirectX10 Renderer), as the game will crash when using scopes otherwise.
-    - GMDX: AE will automatically enable UseS3TC if it's disabled.
-4. It is recommended that you set your FOV to 100+, as GMDX: AE can account for higher FOV's and adjust weapon models accordingly.
+    - GMDX: AE will automatically enable UseS3TC if it's disabled, but may crash once because the setting requires a game restart to take effect.
+4. It is recommended that you set your FOV to 100+, as GMDX: AE can account for higher FOVs and adjust weapon models accordingly.
 
 ||--------------------------------------------------------------------------||
 ||  IMPORTANT NOTES:                                                        ||
@@ -83,7 +83,7 @@ GMDX: AE is compatible with the following mods:
 - New Vision (Included in Full Version)
 - HDTP (Included in Full Version)
 - Lay-D Denton Project (Included in all versions)
-- Augmentique
+- Augmentique (Included in all versions)
 
 With the exception of Confix, Each of these mods is optional, but highly recommended.
 
