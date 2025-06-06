@@ -7297,7 +7297,7 @@ state Dying
 		UpdateDynamicMusic(deltaTime);
 		time = Level.TimeSeconds - FrobTime;
         HeadRegion.Zone.ViewFog.X = time*0.01;
-        if (bRemoveVanillaDeath && time > 64.0 && HeadRegion.Zone.ViewFog.X != 0)
+        if (bRemoveVanillaDeath && time > 64.0 && HeadRegion.Zone.ViewFog.X != 0 && bMenuAfterDeath)
 		{
 		if ((MenuUIWindow(DeusExRootWindow(rootWindow).GetTopWindow()) == None) &&
 		(ToolWindow(DeusExRootWindow(rootWindow).GetTopWindow()) == None))
