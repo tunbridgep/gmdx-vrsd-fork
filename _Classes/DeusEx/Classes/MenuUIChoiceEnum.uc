@@ -7,7 +7,7 @@ class MenuUIChoiceEnum extends MenuUIChoice;
 // Defaults
 var MenuUIInfoButtonWindow btnInfo;
 
-var localized String enumText[40];
+var localized String enumText[50];
 var int    currentEnum;
 
 var int    currentValue;
