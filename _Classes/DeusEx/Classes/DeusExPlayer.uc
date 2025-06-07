@@ -11114,12 +11114,15 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 		PlaceItemInSlot(item, itemPosX, itemPosY);
 	}
     //Sarge: Fix up disposable weapons
-    else if (item != None && DeusExWeapon(item).bDisposableWeapon)
+    else if (item != None && item.IsA('DeusExWeapon') && DeusExWeapon(item).bDisposableWeapon)
     {
         AmmoType = Ammo(FindInventoryType(Weapon(item).AmmoName));
-        ammoType.ammoAmount -= 1;
-        UpdateAmmoBeltText(AmmoType);
-        DeusExWeapon(item).PickupAmmoCount = 1;
+        if (ammoType != None)
+        {
+            ammoType.ammoAmount -= 1;
+            UpdateAmmoBeltText(AmmoType);
+            DeusExWeapon(item).PickupAmmoCount = 1;
+        }
     }
 
 	return bDropped;

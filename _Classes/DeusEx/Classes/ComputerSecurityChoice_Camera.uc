@@ -73,7 +73,7 @@ function bool ButtonActivatedRight( Window buttonPressed )
 function UpdateText(bool bHacking)
 {
     local int disableTime;
-    if (winCamera.camera.bRebooting && !winCamera.camera.bActive && !bHacking)
+    if (btnInfo != None && winCamera != None && winCamera.camera != None && winCamera.camera.bRebooting && !winCamera.camera.bActive && !bHacking)
     {
         SetValue(0); //If not hacked, Next choice will be Off.
         disableTime = winCamera.camera.disableTime - player.saveTime;

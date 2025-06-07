@@ -863,12 +863,12 @@ function DropSelectedItem()
 			if (player.DropItem(anItem, True))
 			{
 				// Make damn sure there's nothing pending
-            if ((player.inHandPending == anItem) || (player.inHand == anItem))
+                if ((player.inHandPending == anItem) || (player.inHand == anItem))
 				   player.SetInHandPending(None);
 
 				// Remove the item, but first check to see if it was stackable
 				// and there are more than 1 copies available
-   			if ( ((!anItem.IsA('DeusExPickup')) && !(anItem.IsA('DeusExWeapon') && DeusExWeapon(anItem).bDisposableWeapon)) ||
+       			if ( ((!anItem.IsA('DeusExPickup')) && !(anItem.IsA('DeusExWeapon') && DeusExWeapon(anItem).bDisposableWeapon)) ||
 					 (anItem.IsA('DeusExPickup') && (numCopies <= 1)))
 				{
 					RemoveSelectedItem();
