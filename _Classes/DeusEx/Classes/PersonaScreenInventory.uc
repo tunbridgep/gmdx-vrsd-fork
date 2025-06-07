@@ -831,8 +831,7 @@ function UseSelectedItem()
 		invBelt.UpdateBeltText(inv);
 
 		// Refresh the info!
-		if (numCopies > 0)
-			UpdateWinInfo(inv);
+        UpdateWinInfo(inv);
 	}
 }
 
@@ -879,6 +878,9 @@ function DropSelectedItem()
 
 				// Update the object belt
 				invBelt.UpdateBeltText(anItem);
+
+                //SARGE: Actually update the item text
+                UpdateWinInfo(anItem);
 
                 //Force an update
                 SignalRefresh();
