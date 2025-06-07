@@ -210,7 +210,8 @@ state DownItem
 Begin:
 	AmbientSound = None;
 	GetAugSpeed();
-	bHidden = False;		// make sure we can see the animation
+	//bHidden = False;		// make sure we can see the animation
+	bOnlyOwnerSee = True;
 	PlayAnim('Down',p, 0.1);
 	FinishAnim();
 	bHidden = True;	// hide it correctly
