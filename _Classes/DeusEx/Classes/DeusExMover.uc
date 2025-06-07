@@ -509,6 +509,10 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
 
 	if ((DamageType == 'EMP') || (DamageType == 'NanoVirus') || (DamageType == 'Shocked'))
 		return;
+   
+    //SARGE: 25% damage from WP rockets
+    if ((DamageType == 'Flamed'))
+       damage *= 0.25;
 
     if (InstigatedBy != none && InstigatedBy.Weapon != none && InstigatedBy.Weapon.IsA('WeaponCrowbar')) //RSD: New special effect for the crowbar: additional 5 damage vs inanimate objects //SARGE: Now 2x
        damage *= 2;

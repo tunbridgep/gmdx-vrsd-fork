@@ -267,6 +267,7 @@ Sarge's Changes since Beta 2.2:
     - Putting a scope or a laser sight on the GEP gun now requires the Heavily Tweaked perk (ADVANCED heavy weapons, 100 skill points). The scope and laser sight still provide rocket guidance capabilities.
     - Added a new "Killswitch Engaged" Playthrough Modifier. When enabled, all augmentations will be disabled and a countdown timer will be active while your killswitch is enabled.
     - Added a new "Weapon Requirements Matter" Playthrough Modifier. When enabled, most weapons will require a minimum skill investment in order to be used.
+    - WP Rockets now only deal 25% damage against movers, to make blowing everything up a little harder and solidify their role as anti-personal rockets.
     - Demolitions Skill Overhaul:
         - Demolitions Skill-based grenade timing rescaled from 0.5, 1.0, 2.5, 7.0 seconds to 0.75, 1.0, 1.5, 2.5 seconds
         - Being able to pick up disarmed grenades is now based on skill level - Trained for Gas Grenades, Advanced for EMP and Scrambler Grenades, Master for LAMs.
