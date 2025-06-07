@@ -398,9 +398,6 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
 	else if (Inventory != None) //then check if carrying armor
 		actualDamage = Inventory.ReduceDamage(int(actualDamage), DamageType, HitLocation);
 
-	if (!bInvincible)
-		Health -= int(actualDamage);
-
     Enemy = instigatedBy;
 
     if (Enemy != none && Enemy.IsA('DeusExPlayer'))
@@ -411,6 +408,9 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
 			DeusExPlayer(Enemy).inHand.IsA('WeaponCrowbar') || DeusExPlayer(Enemy).inHand.IsA('WeaponNanoSword'))
 				actualDamage*=perkPiercing.PerkValue;
 	}
+	
+    if (!bInvincible)
+		Health -= int(actualDamage);
 
 	if (Health <= 0)
 	{
