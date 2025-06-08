@@ -10629,6 +10629,7 @@ function DropDecoration()
 	local float velscale, size, mult;
 	local bool bSuccess;
 	local Actor hitActor;
+    local Decoration deco;
 
 	bSuccess = False;
 
@@ -10719,24 +10720,24 @@ function DropDecoration()
 		// if we can drop it here, then drop it
 		if (bSuccess)
 		{
-			CarriedDecoration.bWasCarried = True;
-			CarriedDecoration.SetBase(None);
-			CarriedDecoration.SetPhysics(PHYS_Falling);
-			CarriedDecoration.Instigator = Self;
-			CarriedDecoration.SetCollision(True, True, True);
-			CarriedDecoration.bCollideWorld = True;
+            deco = CarriedDecoration;
+            CarriedDecoration = None;
+			deco.bWasCarried = True;
+			deco.SetBase(None);
+			deco.SetPhysics(PHYS_Falling);
+			deco.Instigator = Self;
+			deco.SetCollision(True, True, True);
+			deco.bCollideWorld = True;
 			AIEndEvent('WeaponDrawn', EAITYPE_Visual);
             PlayAnim('Attack',,0.1);
 			// turn off translucency
-			CarriedDecoration.Style = CarriedDecoration.Default.Style;
-			CarriedDecoration.bUnlit = CarriedDecoration.Default.bUnlit;
+			deco.Style = CarriedDecoration.Default.Style;
+			deco.bUnlit = CarriedDecoration.Default.bUnlit;
 			if ((!bNoTranslucency && !bHardcoreMode) && CarriedDecoration.IsA('DeusExDecoration'))
 				DeusExDecoration(CarriedDecoration).ScaleGlow = CarriedDecoGlow;
 
 		 if (bThrowDecoration)
-			ThrowDecoration(CarriedDecoration);
-
-			CarriedDecoration = None;
+			ThrowDecoration(deco);
 		}
 		else
 		{

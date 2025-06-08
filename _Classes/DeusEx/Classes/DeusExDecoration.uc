@@ -550,6 +550,7 @@ local float HP;
 
 singular function BaseChange()
 {
+    local DeusExPlayer p;
 	bBobbing = false;
 
 	if( (base == None) && (bPushable || IsA('Carcass')) && (Physics == PHYS_None) )
@@ -560,6 +561,15 @@ singular function BaseChange()
 	SetCollision(Default.bCollideActors, Default.bBlockActors, Default.bBlockPlayers);
 	Style = Default.Style;
 	bUnlit = Default.bUnlit;
+
+    //SARGE: If this is the players carried decoration, put it back in our hand
+    //This is a hack to deal with vanilla shenanigans!
+    p = DeusExPlayer(base);
+    if (p == none)
+        p = DeusExPlayer(GetPlayerPawn());
+
+    if (p != None && p.carriedDecoration == self)
+        p.PutCarriedDecorationInHand(true);
 }
 
 // ----------------------------------------------------------------------
