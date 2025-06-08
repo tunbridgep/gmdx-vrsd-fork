@@ -31,6 +31,7 @@ var localized String HeaderFromLabel;
 var localized String HeaderSubjectLabel;
 
 var localized String SaveEmailLabel;
+var localized String SavedEmailLabel;
 
 var int currentEmailIndex;
 
@@ -224,17 +225,45 @@ function SetCompOwner(ElectronicDevices newCompOwner)
 		// Select the first row
 		rowId = lstEmail.IndexToRowId(0);
 		lstEmail.SetRow(rowId, True);
-        if (btnSaveEmail != None)
-            btnSaveEmail.SetSensitivity(True);
+        RefreshEmailSaveButton(emailInfo[0].emailName);
 	}
 	else
 	{
 		// No Email, so just print a "No Email Today!" message
 		winEmail.SetText(NoEmailTodayText);
 		winEmail.SetTextAlignments(HALIGN_Center, VALIGN_Center);
-        if (btnSaveEmail != None)
-            btnSaveEmail.SetSensitivity(false);
+        RefreshEmailSaveButton('');
 	}
+}
+
+// ----------------------------------------------------------------------
+// RefreshEmailSaveButton()
+// Updates the "Save Email to Datavault" button based on whether or not
+// we already have a note for this email
+// ----------------------------------------------------------------------
+
+function RefreshEmailSaveButton(name emailName, optional bool bSkipCheck)
+{
+    if (btnSaveEmail == None)
+        return;
+    
+	if (emailName == '')
+        btnSaveEmail.Hide();
+    else
+    {
+        btnSaveEmail.Show();
+        if (bSkipCheck || player.HasNote(StringToName(emailName$"_DV")))
+        {
+            btnSaveEmail.SetSensitivity(false);
+            btnSaveEmail.SetButtonText(SavedEmailLabel);
+        }
+        else
+        {
+            btnSaveEmail.SetSensitivity(true);
+            btnSaveEmail.SetButtonText(SaveEmailLabel);
+        }
+    }
+
 }
 
 // ----------------------------------------------------------------------
@@ -270,7 +299,11 @@ function bool ButtonActivated( Window buttonPressed )
             savedNoteName = StringToName(emailInfo[currentEmailIndex].emailName$"_DV");
             note = player.GetNote(savedNoteName);
             if (note == None)
+            {
                 player.NoteAdd(winEmail.GetText(),true,false,savedNoteName);
+                RefreshEmailSaveButton(savedNoteName,true); //Disable the save button
+                btnSaveEmail.SetButtonText(SavedEmailLabel);
+            }
             //note = player.GetNote(emailInfo[currentEmailIndex].emailName);
 			break;
 
@@ -326,6 +359,9 @@ event bool ListSelectionChanged(window list, int numSelections, int focusRowId)
     //player.AddNote(emailInfo[emailInfoIndex].emailName);
     player.NoteAdd(winEmail.GetText(),false,true,emailInfo[emailInfoIndex].emailName);
     currentEmailIndex = emailInfoIndex;
+    
+    //SARGE: Update "add to datavault" button
+    RefreshEmailSaveButton(emailInfo[emailInfoIndex].emailName);
 }
 
 // ----------------------------------------------------------------------
@@ -354,6 +390,7 @@ defaultproperties
      HeaderFromLabel="From"
      HeaderSubjectLabel="Subject"
      SaveEmailLabel="Save To Datavault"
+     SavedEmailLabel="Saved To Datavault"
      escapeAction="LOGOUT"
      Title="Email"
      ClientWidth=395

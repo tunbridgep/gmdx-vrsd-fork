@@ -14392,6 +14392,17 @@ function DeusExNote GetNote(Name textTag)
 }
 
 // ----------------------------------------------------------------------
+// HasNote()
+//
+// Helper function to return whether or not we have a note already
+// ----------------------------------------------------------------------
+
+function bool HasNote(Name textTag)
+{
+    return GetNote(textTag) != None;
+}
+
+// ----------------------------------------------------------------------
 // DeleteNote()
 //
 // Deletes the specified note
