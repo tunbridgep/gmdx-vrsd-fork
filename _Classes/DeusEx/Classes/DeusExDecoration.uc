@@ -553,12 +553,13 @@ singular function BaseChange()
     local DeusExPlayer p;
 	bBobbing = false;
 
-	if( (base == None) && (bPushable || IsA('Carcass')) && (Physics == PHYS_None) )
+	if( (base == None) && (bPushable || IsA('Carcass')) && (Physics == PHYS_None))
 		SetPhysics(PHYS_Falling);
 
 	// make sure if a decoration is accidentally dropped,
 	// we reset it's parameters correctly
 	SetCollision(Default.bCollideActors, Default.bBlockActors, Default.bBlockPlayers);
+	bCollideWorld = Default.bCollideWorld;
 	Style = Default.Style;
 	bUnlit = Default.bUnlit;
 
@@ -899,7 +900,7 @@ function Bump(actor Other)
 function Bump2( actor Other )
 {
 	local float speed, oldZ;
-	if( bPushable && (Pawn(Other)!=None) && (Other.Mass > 20) )
+	if( bPushable && (Pawn(Other)!=None) && (Other.Mass > 20) && base != None)
 	{
 	    if (Other.IsA('ScriptedPawn') && ScriptedPawn(Other).bTank && Physics != PHYS_Falling)
 	        TakeDamage(400,Pawn(Other),vect(0,0,0),vect(0,0,0),'shot');
