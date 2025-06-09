@@ -1704,9 +1704,6 @@ function PostPostBeginPlay()
 {
 	Super.PostPostBeginPlay();
 
-    //SARGE: TODO: Change this before 1.0 release.
-    bSimpleAugSystem=false;
-
     //Fix all inventory item positions
     SetAllBase();
 
