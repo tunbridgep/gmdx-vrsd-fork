@@ -1973,9 +1973,6 @@ event TravelPostAccept()
     
     bDelayInventoryFix = false;
 
-    //Reset the music timers
-    ResetMusic();
-
 	//end GMDX
 }
 //GMDX: set up mounted gep spawn, as no matter what i try it still draws it on spawn :/
