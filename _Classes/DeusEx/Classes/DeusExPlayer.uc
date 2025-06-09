@@ -10549,7 +10549,7 @@ function PutCarriedDecorationInHand(optional bool bNoSoundEffect)
 		     upDir.Z = CollisionHeight / 1.75;      //CyberP: a bit higher for small objects.
 		else
 		     upDir.Z = CollisionHeight / 2.5;		// put it up near eye level  //CyberP: chest level. was 2
-		CarriedDecoration.SetPhysics(PHYS_Falling);
+		//CarriedDecoration.SetPhysics(PHYS_Falling);
         //CarriedDecoration.SetCollisionSize(CarriedDecoration.CollisionRadius*0.5,CarriedDecoration.CollisionHeight*0.5);
 		if ( CarriedDecoration.SetLocation(Location + upDir + (0.25 * CollisionRadius + CarriedDecoration.CollisionRadius) * lookDir) )  //CyberP: was 0.5
 		{
@@ -10571,9 +10571,9 @@ function PutCarriedDecorationInHand(optional bool bNoSoundEffect)
             }
 
 			CarriedDecoration.SetPhysics(PHYS_None);
-			CarriedDecoration.SetBase(self);
 			CarriedDecoration.SetCollision(False, False, False);
 			CarriedDecoration.bCollideWorld = False;
+			CarriedDecoration.SetBase(self);
             //CarriedDecoration.SetCollisionSize(CarriedDecoration.CollisionRadius*2,CarriedDecoration.CollisionHeight*2);
 			// make it translucent
 			if ((!bNoTranslucency && !bHardcoreMode) || AugmentationSystem.GetAugLevelValue(class'AugCloak') != -1.0)
@@ -10714,6 +10714,7 @@ function DropDecoration()
 				CarriedDecoration.SetCollision(False, False, False);
 				CarriedDecoration.bCollideWorld = False;
 				CarriedDecoration.SetPhysics(PHYS_None);
+                CarriedDecoration.SetBase(self);
 			}
 		}
 
@@ -10722,27 +10723,32 @@ function DropDecoration()
 		{
             deco = CarriedDecoration;
             CarriedDecoration = None;
-			deco.bWasCarried = True;
-			deco.SetBase(None);
-			deco.SetPhysics(PHYS_Falling);
-			deco.Instigator = Self;
-			deco.SetCollision(True, True, True);
-			deco.bCollideWorld = True;
-			AIEndEvent('WeaponDrawn', EAITYPE_Visual);
-            PlayAnim('Attack',,0.1);
-			// turn off translucency
-			deco.Style = CarriedDecoration.Default.Style;
-			deco.bUnlit = CarriedDecoration.Default.bUnlit;
-			if ((!bNoTranslucency && !bHardcoreMode) && CarriedDecoration.IsA('DeusExDecoration'))
-				DeusExDecoration(CarriedDecoration).ScaleGlow = CarriedDecoGlow;
 
-		 if (bThrowDecoration)
-			ThrowDecoration(deco);
+            if (deco != None)
+            {
+                deco.bWasCarried = True;
+                deco.SetBase(None);
+                deco.SetPhysics(PHYS_Falling);
+                deco.Instigator = Self;
+                deco.SetCollision(True, True, True);
+                deco.bCollideWorld = True;
+                AIEndEvent('WeaponDrawn', EAITYPE_Visual);
+                PlayAnim('Attack',,0.1);
+                // turn off translucency
+                deco.Style = deco.Default.Style;
+                deco.bUnlit = deco.Default.bUnlit;
+                if ((!bNoTranslucency && !bHardcoreMode) && deco.IsA('DeusExDecoration'))
+                    DeusExDecoration(deco).ScaleGlow = CarriedDecoGlow;
+
+                if (bThrowDecoration)
+                    ThrowDecoration(deco);
+            }
 		}
 		else
 		{
 			// otherwise, don't drop it and display a message
 			CarriedDecoration.SetLocation(origLoc);
+            CarriedDecoration.SetBase(self);
 			ClientMessage(CannotDropHere);
 		}
 	}
