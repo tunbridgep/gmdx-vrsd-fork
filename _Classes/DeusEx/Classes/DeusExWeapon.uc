@@ -4525,12 +4525,21 @@ simulated function vector CalcDrawOffset()
 
 function GetAIVolume(out float volume, out float radius)
 {
+    local DeusExPlayer player;
+	local float NL;
+    player = DeusExPlayer(Owner);
+
 	volume = 0;
 	radius = 0;
 
-	if (!bHasSilencer && !bHandToHand)
+    if (Owner == None)
+        return;
+
+	NL = NoiseLevel * 1.8; //SARGE: Dirty hack.
+
+	if (!bHasSilencer && (!bHandToHand || IsA('WeaponHideAGun'))) //SARGE: Added PS20
 	{
-		volume = NoiseLevel*Pawn(Owner).SoundDampening;
+		volume = NL*Pawn(Owner).SoundDampening;
 		if (Owner.IsA('DeusExPlayer'))
 		{
 		    if (DeusExPlayer(Owner).CombatDifficulty < 1)
@@ -4540,11 +4549,15 @@ function GetAIVolume(out float volume, out float radius)
 		}
 		radius = volume * 800.0;
 	}
+    //SARGE: Silencers are now pretty much silent, with the Stealth perk.
 	else if (bHasSilencer && NoiseLevel >= 0.1)                                 //RSD: Added quiet sound for silenced weapons
-	{
-		volume = 1.0*Pawn(Owner).SoundDampening;                                //RSD: Hardcoded value as specified in weapon info
+    {
+        if (player != None && player.PerkManager != None && player.PerkManager.GetPerkWithClass(class'PerkWetwork').bPerkObtained)
+            volume = 1.0*Pawn(Owner).SoundDampening;                                //RSD: Hardcoded value as specified in weapon info
+        else
+            volume = 0.6*NL*Pawn(Owner).SoundDampening;                       //SARGE: Silencers now make the weapon quieter, not silent.
 		radius = volume * 800.0;
-	}
+    }
 }
 
 //Ygll: utility function to test the behaviour of the dart with Fragile dart gameplay option enabled

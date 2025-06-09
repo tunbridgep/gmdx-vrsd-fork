@@ -822,6 +822,8 @@ var travel bool bPhotoMode;                                     //SARGE: Show/Hi
 
 var bool bClearReceivedItems;                                   //SARGE: Clear the received items window next time we display it.
 
+var float lastWalkTimer;                                        //SARGE: Allow playing footsteps while crouching.
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -1701,6 +1703,9 @@ function int GetInventoryCount(Name item)
 function PostPostBeginPlay()
 {
 	Super.PostPostBeginPlay();
+
+    //SARGE: TODO: Change this before 1.0 release.
+    bSimpleAugSystem=false;
 
     //Fix all inventory item positions
     SetAllBase();
@@ -4743,6 +4748,7 @@ simulated function PlayFootStep()
 	local DeusExPlayer pp;
 	local bool bOtherPlayer;
 	local float shakeTime, shakeRoll, shakeVert;
+    local float stealthLevel;
 
 	// Only do this on ourself, since this takes into account aug stealth and such
 	if ( Level.NetMode != NM_StandAlone )
@@ -5019,17 +5025,32 @@ simulated function PlayFootStep()
     }
 
 	//GMDX: modded for skill system stealth
-	volumeMod=0.9;
-	if (SkillSystem!=None && SkillSystem.GetSkillLevel(class'SkillStealth')>=1)
+	//volumeMod=0.9;
+    volumeMod = 1.2;
+    if (SkillSystem!=None)
+        stealthLevel = SkillSystem.GetSkillLevel(class'SkillStealth');
+
+    //Change landing volume
+	if (stealthLevel >= 1 && abs(Velocity.z) > 20)
 	{
-		if (abs(Velocity.z)>20) volumeMod*=0.9; //no point really having landed caclucate when footstep overrides it, so a nasty hack is afoot.
+		volumeMod*=0.9 - (0.1 * stealthLevel); //no point really having landed caclucate when footstep overrides it, so a nasty hack is afoot.
 	}
+
+    //SARGE: Change walking/crouch speed volume
+    else if (bIsWalking && velocity.Z == 0)
+    {
+        if (stealthLevel == 3 && IsCrouching()) //Silent crouching at Master stealth
+            volume = 0;
+        else
+            volume *= 0.8 - (0.2 * stealthLevel);
+    }
+
 	//if (bJustLanded) log("PlayFootStep bJustLanded vol="@volume@": mod="@volumeMod@": Z="@Velocity.Z);
 
-    if (IsCrouching() && velocity.Z == 0)  //CyberP: only applies when speed enhancement is active.
-       volume *= 1.5;
+    /*
     else if (bIsWalking)
        volume *= 0.5;  //CyberP: can walk up behind enemies.
+    */
 
     //BroadcastMessage(volume);
 
@@ -5038,6 +5059,7 @@ simulated function PlayFootStep()
     if (!bHardCoreMode) //CyberP: Nerf footsteps a touch on lower diffs.
         range*=0.9;
 	AISendEvent('LoudNoise', EAITYPE_Audio, volume*volumeMultiplier*volumeMod, range*volumeMultiplier);
+    //DebugMessage("LoudNoise: vol = " $ volume*volumeMultiplier*volumeMod $ " range = " $ range*volumeMultiplier);
 }
 
 // ----------------------------------------------------------------------
@@ -6719,6 +6741,15 @@ state PlayerWalking
 				}
 			}
 
+        if(Physics == PHYS_Walking && IsCrouching() && lastWalkTimer == 0 && (abs(velocity.Y) > 0 || abs(velocity.X) > 0) && Velocity.Z == 0)
+        {
+            lastWalkTimer = 0.4;
+            //lastWalkTimer = FMIN(0.1,0.5 - 0.01 * VSize(Velocity));
+            //lastWalkTimer = 50 * (1 - VSize(Velocity));
+            //DebugMessage("Vel: " $ VSize(Velocity));
+            //DebugMessage("timer: " $ lastWalkTimer);
+            PlayFootStep();
+        }
 		Super.ProcessMove(DeltaTime, newAccel, DodgeMove, DeltaRot);
 	}
 
@@ -6994,6 +7025,9 @@ state PlayerWalking
         }
         //Fire blocking is only valid for 1 frame
         bBlockNextFire = False;
+
+        //SARGE: Tick the crouch walk timer.
+        lastWalkTimer = FMAX(lastWalkTimer - deltaTime,0);
 
 		Super.PlayerTick(deltaTime);
 	}
