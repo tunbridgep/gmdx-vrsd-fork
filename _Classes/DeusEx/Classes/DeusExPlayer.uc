@@ -3463,9 +3463,9 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
         if (NewTransition == MTRAN_SlowFade)
             default.fadeTimeHack = 4.0;
         else if (NewTransition == MTRAN_Fade)
-            default.fadeTimeHack = 2.5;
-        else if (NewTransition == MTRAN_FastFade)
             default.fadeTimeHack = 0.5;
+        else if (NewTransition == MTRAN_FastFade)
+            default.fadeTimeHack = 0.25;
         else
             default.fadeTimeHack = 0;
     }
