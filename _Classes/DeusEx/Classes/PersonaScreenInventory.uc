@@ -1798,6 +1798,7 @@ function FinishButtonDrag()
                 //WeaponNanoSword(dragTarget.GetClientObject()).chargeManager.unDimIcon(); //SARGE: May crash the game, IDK???!!!
                 dragTarget.bDimIcon = false;
                 invBelt.objBelt.RecreateBelt();                                  //SARGE: Update the inventory belt
+                invBelt.hudBelt.RecreateBelt();                                  //SARGE: Update the inventory belt
                 
                 BioelectricCell(draginv).UseOnce();
                 
@@ -1835,6 +1836,7 @@ function FinishButtonDrag()
                 dragTarget.bDimIcon = false;
 
                 invBelt.objBelt.RecreateBelt();                                  //SARGE: Update the inventory belt
+                invBelt.hudBelt.RecreateBelt();                                  //SARGE: Update the inventory belt
 
 				// Send status message
 				//rechargedMsg = string(int(ChargedPickup(dragTarget.GetClientObject()).default.Charge*0.3));
