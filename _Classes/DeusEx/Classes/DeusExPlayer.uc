@@ -11113,11 +11113,12 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 		//DEUS_EX AMSD Use the function call for this, helps multiplayer
 		PlaceItemInSlot(item, itemPosX, itemPosY);
 	}
+	
     //Sarge: Fix up disposable weapons
-    else if (item != None && item.IsA('DeusExWeapon') && DeusExWeapon(item).bDisposableWeapon && bDropped)
+    if (item != None && item.IsA('DeusExWeapon') && DeusExWeapon(item).bDisposableWeapon && bDropped)
     {
         AmmoType = Ammo(FindInventoryType(Weapon(item).AmmoName));
-        if (ammoType != None)
+        if (ammoType != None && ammoType.AmmoAmount > 0)
         {
             ammoType.ammoAmount -= 1;
             UpdateAmmoBeltText(AmmoType);
