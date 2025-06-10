@@ -9,6 +9,7 @@ defaultproperties
      AmmoAmount=1
      MaxAmmo=3
      ItemName="Light Anti-Tank Weapon (LAW)"
+     ItemArticle="a"
      PickupViewMesh=LodMesh'DeusExItems.LAWPickup'
      Mesh=LodMesh'DeusExItems.LAWPickup'
      Icon=Texture'DeusExUI.Icons.BeltIconLAW'
