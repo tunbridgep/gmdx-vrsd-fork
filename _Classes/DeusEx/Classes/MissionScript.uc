@@ -28,6 +28,39 @@ var byte savedMusicVolume;
 var byte savedSpeechVolume;
 
 // ----------------------------------------------------------------------
+// SARGE: UpdateSavePoints()
+//
+// Checks the required flags for all Save Points, and hides/unhides them accordingly.
+// ----------------------------------------------------------------------
+
+function UpdateSavePoints()
+{
+	local SavePoint SP;
+    local bool bValid;
+	
+    foreach AllActors(class'SavePoint', SP)
+    {
+        bValid = SP.requiredFlag == '' || flags.GetBool(SP.requiredFlag);
+        if (bValid)
+        {
+            if (SP.bHidden)
+            {
+                SP.bHidden = false;
+                SP.LightRadius = SP.default.LightRadius;
+            }
+        }
+        else
+        {
+            if (!SP.bHidden)
+            {
+                SP.bHidden = true;
+                SP.LightRadius = 0;
+            }
+        }
+    }
+}
+
+// ----------------------------------------------------------------------
 // SARGE: SetMinimumVolume()
 //
 // Force the players Music, Sound and Speech volume to be a certain minimum amount.
@@ -404,6 +437,7 @@ function Timer()
 	}
 
     DoConfixCheck();
+    UpdateSavePoints();
 }
 
 function Tick(float DeltaTime)

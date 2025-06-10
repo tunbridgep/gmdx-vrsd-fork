@@ -14,41 +14,6 @@ var localized String msgSaveName;
 
 //SARGE: Allow save points to activate themselves based on flags
 var() Name requiredFlag;
-var float flagCheckTimer;
-
-//Called every 3 seconds or so
-function CheckFlag()
-{
-    if (bHidden && player != None && player.FlagBase != None && player.FlagBase.GetBool(requiredFlag))
-    {
-        bHidden = false;
-        LightRadius = default.LightRadius;
-    }
-}
-
-function PostBeginPlay()
-{
-    super.PostBeginPlay();
-    if (requiredFlag != '')
-    {
-        bHidden = true;
-        LightRadius = 0;
-    }
-}
-
-function Tick(float deltaTime)
-{
-    if (player == None)
-        player = DeusExPlayer(GetPlayerPawn());
-
-    if (requiredFlag == '')
-        return;
-
-    if (flagCheckTimer < 3)
-        flagCheckTimer += deltaTime;
-    else
-        CheckFlag();
-}
 
 function Timer()
 {
@@ -63,12 +28,10 @@ function Timer()
 //singular function Touch(Actor Other)
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {
-   local DeusExLevelInfo info;
-
     if (frobber == None)
         return true;
 
-    info=frobber.GetLevelInfo();
+    player=frobber;
 
     if (frobber.Credits < 100 && frobber.bExtraHardcore)
         frobber.ClientMessage(msgNotEnough);
