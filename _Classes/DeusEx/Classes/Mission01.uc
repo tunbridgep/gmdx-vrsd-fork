@@ -106,6 +106,10 @@ function Timer()
 		if (!flags.GetBool('M01PlayerAggressive'))
 		{
 			count = 0;
+		
+            //SARGE: Our reputation as a killer spreads quickly...
+            if (flags.GetBool('KaplanLikesPlayer'))
+                count -= 1;
 
 			// count the living
 			foreach AllActors(class'Terrorist', T)

@@ -733,7 +733,7 @@ Begin Actor Class=Brush Name=Brush243
              Vertex   +00064.000000,-00064.000000,-00064.000000
              Vertex   -00064.000000,-00064.000000,-00064.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=ClenBrownWood_A Link=2
+          Begin Polygon Item=OUTSIDE Texture=Floor3 Link=2
              Origin   -00064.000008,+00064.000000,-00064.000000
              Normal   +00000.000000,+00001.000000,+00000.000000
              Pan      U=-16 V=14
@@ -744,7 +744,7 @@ Begin Actor Class=Brush Name=Brush243
              Vertex   +00064.000000,+00064.000000,+00064.000000
              Vertex   +00064.000000,+00064.000000,-00064.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=ClenBrownWood_A Link=3
+          Begin Polygon Item=OUTSIDE Texture=Floor3 Link=3
              Origin   +00064.000008,-00064.000000,-00064.000000
              Normal   +00000.000000,-00001.000000,+00000.000000
              Pan      U=-16 V=14
@@ -755,7 +755,7 @@ Begin Actor Class=Brush Name=Brush243
              Vertex   -00064.000000,-00064.000000,+00064.000000
              Vertex   -00064.000000,-00064.000000,-00064.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=ClenBrownWood_A Link=4
+          Begin Polygon Item=OUTSIDE Texture=Floor3 Link=4
              Origin   +00064.000008,+00064.000000,-00064.000000
              Normal   +00001.000000,+00000.000000,+00000.000000
              Pan      U=-16 V=14
@@ -766,7 +766,7 @@ Begin Actor Class=Brush Name=Brush243
              Vertex   +00064.000000,-00064.000000,+00064.000000
              Vertex   +00064.000000,-00064.000000,-00064.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=ClenBrownWood_A Link=5
+          Begin Polygon Item=OUTSIDE Texture=Floor3 Link=5
              Origin   -00064.000008,-00064.000000,-00064.000000
              Normal   -00001.000000,+00000.000000,+00000.000000
              Pan      U=-16 V=14
@@ -25937,7 +25937,7 @@ Begin Actor Class=DeusExLevelInfo Name=DeusExLevelInfo0
     Script=Class'DeusEx.Mission06'
     TrueNorth=32768
     startupMessage(0)="Tracer Tong's Laboratory"
-    bBarOrClub=True
+    MusicType=MT_SingleTrack
     bNoSpawnFlies=True
     LastRenderTime=0.348555
     DistanceFromPlayer=3575.671631
@@ -41270,16 +41270,6 @@ Begin Actor Class=Brush Name=Brush88
     Brush=Model'MyLevel.Model251'
     Name=Brush88
 End Actor
-Begin Actor Class=Candybar Name=Candybar0
-    LastRenderTime=0.348555
-    DistanceFromPlayer=2112.454102
-    Level=LevelInfo'MyLevel.LevelInfo0'
-    Tag=Candybar
-    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
-    Location=(X=8.612082,Y=206.559586,Z=-109.229988)
-    OldLocation=(X=8.612082,Y=206.559586,Z=-109.229988)
-    Name=Candybar0
-End Actor
 Begin Actor Class=Credits Name=Credits0
     numCredits=50
     LastRenderTime=0.348555
@@ -41310,26 +41300,6 @@ Begin Actor Class=SoyFood Name=SoyFood0
     Location=(X=544.000000,Y=-1104.000000)
     OldLocation=(X=544.000000,Y=-1104.000000)
     Name=SoyFood0
-End Actor
-Begin Actor Class=WeaponModAccuracy Name=WeaponModAccuracy0
-    LastRenderTime=0.348555
-    DistanceFromPlayer=2082.975098
-    Level=LevelInfo'MyLevel.LevelInfo0'
-    Tag=WeaponModAccuracy
-    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
-    Location=(X=-16.000000,Y=208.000000,Z=-80.000000)
-    OldLocation=(X=-16.000000,Y=208.000000,Z=-80.000000)
-    Name=WeaponModAccuracy0
-End Actor
-Begin Actor Class=Lockpick Name=Lockpick0
-    LastRenderTime=0.348555
-    DistanceFromPlayer=2082.787842
-    Level=LevelInfo'MyLevel.LevelInfo0'
-    Tag=Lockpick
-    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
-    Location=(X=-22.485857,Y=204.098907,Z=-107.999825)
-    OldLocation=(X=-22.485857,Y=204.098907,Z=-107.999825)
-    Name=Lockpick0
 End Actor
 Begin Actor Class=Brush Name=Brush2
     CsgOper=CSG_Add
@@ -57710,19 +57680,6 @@ Begin Actor Class=AmmoDart Name=AmmoDart1
     OldLocation=(X=290.121094,Y=832.144226,Z=19.099840)
     Name=AmmoDart1
 End Actor
-Begin Actor Class=SoftwareNuke Name=SoftwareNuke2
-    LastRenderTime=0.348555
-    DistanceFromPlayer=3854.750977
-    Level=LevelInfo'MyLevel.LevelInfo0'
-    Tag=SoftwareNuke
-    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
-    Location=(X=1798.596436,Y=584.824707,Z=-196.539291)
-    Rotation=(Pitch=16400,Yaw=6000)
-    OldLocation=(X=471.609650,Y=-103.003944,Z=53.613949)
-    ScaleGlow=0.600000
-    bUnlit=True
-    Name=SoftwareNuke2
-End Actor
 Begin Actor Class=Light Name=Light76
     LastRenderTime=0.348555
     DistanceFromPlayer=1506.064575
@@ -61443,5 +61400,17 @@ Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner3
     OldLocation=(X=-467.054413,Y=795.275085,Z=6.099649)
     bSelected=True
     Name=OutfitSpawner3
+End Actor
+Begin Actor Class=SavePoint Name=SavePoint1
+    requiredFlag=Have_ROM
+    bDynamicLight=True
+    LastRenderTime=51.803444
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=SavePoint
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=1523,ZoneNumber=1)
+    Location=(X=-37.556488,Y=352.996674,Z=50.099693)
+    OldLocation=(X=-37.556488,Y=352.996674,Z=50.099693)
+    bSelected=True
+    Name=SavePoint1
 End Actor
 End Map

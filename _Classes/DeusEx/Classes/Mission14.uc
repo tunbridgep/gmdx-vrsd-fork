@@ -11,6 +11,7 @@ class Mission14 expands MissionScript;
 
 function FirstFrame()
 {
+    local ComputerSecurity SC;
 	Super.FirstFrame();
 
 	if (localURL == "14_OCEANLAB_LAB")
@@ -18,10 +19,21 @@ function FirstFrame()
 		Player.GoalCompleted('StealSub');
 	}
 
-    //prevent the "Antennapedia" password on hardcore,
-    //since it trivialises the security setup.
 	else if (localURL == "14_VANDENBERG_SUB")
     {
+        //Remove the Hallway security computer login.
+        //Tech/Sharkman can now ONLY be used to access the sub bay.
+        //Hackers can still bypass the security.
+        if (player.bHardCoreMode && !flags.GetBool('GMDX_RemoveComputer'))
+        {
+            foreach AllActors(class'ComputerSecurity', SC, 'HallwayComputer')
+                SC.UserList[0]=SC.default.UserList[0];
+                
+            flags.SetBool('GMDX_RemoveComputer',True,, 15);
+        }
+        
+        //prevent the "Antennapedia" password on hardcore,
+        //since it trivialises the security setup.
         if (player.bHardCoreMode)
             flags.SetBool('OceanLabSkipPassword',True,, 1);
     }
@@ -79,9 +91,10 @@ function Timer()
 	local Actor part, A;
 	local BobPage Bob;
     local ParticleGenerator PG;
-    local SavePoint SP;
     Local DeusExMover DM;
     local Light L;
+	local Karkian K;
+	local Greasel G;
 
 	Super.Timer();
 
@@ -89,6 +102,7 @@ function Timer()
 	{
 		// when the mission is complete, unhide the chopper and Gary Savage,
 		// and destroy the minisub and the welding parts
+        // SARGE: Also add some divers
 		if (!flags.GetBool('MS_DestroySub'))
 		{
 			if (flags.GetBool('DL_downloaded_Played'))
@@ -106,6 +120,9 @@ function Timer()
 					Gary.EnterWorld();
 
 				flags.SetBool('MS_DestroySub', True,, 15);
+				
+                foreach AllActors(class'ScubaDiver', diver, 'ReturnAmbush')
+					diver.EnterWorld();
 			}
 		}
 	}
@@ -125,6 +142,13 @@ function Timer()
 		{
 			if (flags.GetBool('DL_downloaded_Played'))
 			{
+                //SARGE: We need to remove the remaining greasels/karkians
+                //otherwise Walton Simons does a T-pose
+				foreach AllActors(class'Karkian', K)
+                    K.LeaveWorld();
+				foreach AllActors(class'Greasel', G)
+                    G.LeaveWorld();
+
 				foreach AllActors(class'WaltonSimons', Walton)
 					Walton.EnterWorld();
 
@@ -147,6 +171,16 @@ function Timer()
 
 				foreach AllActors(class'ScubaDiver', diver, 'scubateam')
 					diver.EnterWorld();
+				
+
+                //SARGE: Now that we may or may not get the oceanguard/kraken password,
+                //based on our difficulty, we need to force the sub door open.
+                if (!flags.GetBool('door_open'))
+                {
+                    foreach AllActors(class'DeusExMover', DM, 'subDoor')
+                        DM.Trigger(DM,player);
+                    flags.SetBool('door_open', True,, 15);
+                }
 
 				foreach AllActors(class'DeusExMover', DM, 'simonsDoor')
                 {
@@ -155,10 +189,6 @@ function Timer()
                 //  DM.bHighlight = False;
                  // DM.bFrobbable = False;
                 }
-
-                if (Player.bHardCoreMode)
-                    foreach AllActors(class'SavePoint', SP)
-                        SP.bHidden = False;
 
 				flags.SetBool('MS_UnhideSub', True,, 15);
 			}

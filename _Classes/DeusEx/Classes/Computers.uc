@@ -30,6 +30,8 @@ var localized String msgLockedOut;
 var travel int timesHacked;			// How many times has this computer been hacked?
 var const bool allowHackingLockout;       // Can the player be locked out of this terminal after hacking?
 
+var(GMDX) name LoginFlag;      //SARGE: Set a flag when this computer is logged in for the first time.
+
 enum EAccessLevel
 {
 	AL_Untrained,
@@ -444,6 +446,13 @@ function String GetNodeAddress()
 function Texture GetNodeTexture()
 {
 	return nodeInfo[Int(ComputerNode)].nodeTexture;
+}
+
+//Perform an action after a successful log in.
+function PerformLoginAction(DeusExPlayer ActivatingPlayer)
+{
+    if (LoginFlag != '')
+        ActivatingPlayer.FlagBase.SetBool(LoginFlag,true);
 }
 
 // ----------------------------------------------------------------------

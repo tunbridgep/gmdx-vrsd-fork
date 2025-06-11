@@ -3,7 +3,6 @@
 //=============================================================================
 class MissionEndgame extends MissionScript;
 
-var byte savedSoundVolume;
 var float endgameDelays[3];
 var float endgameTimer;
 var localized string endgameQuote[6];
@@ -36,6 +35,12 @@ function InitStateMachine()
 // Stuff to check at first frame
 // ----------------------------------------------------------------------
 
+function AdjustFOV(float value)
+{
+    player.desiredFOV = value;
+    player.SetFOVAngle(value);
+}
+
 function FirstFrame()
 {
 
@@ -45,6 +50,8 @@ function FirstFrame()
 
 	if (Player != None)
 	{
+        player.DeactivateAllAugs(true);
+
 		// Make sure all the flags are deleted
 		TarEndgameConvo = 'Barf';
 		DelayTimer = 0.05;
@@ -74,10 +81,7 @@ function FirstFrame()
             Player.ConsoleCommand("set" @ "JCDentonMale bHardcoreUnlocked" @ "True");
 		}
 
-		// turn down the sound so we can hear the speech
-		savedSoundVolume = SoundVolume;
-		SoundVolume = 32;
-		Player.SetInstantSoundVolume(SoundVolume);
+        SetMinimumVolume();
 	}
 }
 
@@ -90,8 +94,7 @@ function FirstFrame()
 function PreTravel()
 {
 	// restore the sound volume
-	SoundVolume = savedSoundVolume;
-	Player.SetInstantSoundVolume(SoundVolume);
+    RestorePreviousVolume();
     Player.bHardcoreUnlocked = True;      //CyberP: unlock the options menu
 	Super.PreTravel();
 }
@@ -103,6 +106,20 @@ function Tick(float DT)
 	local name UseConvo;
 	
 	Super.Tick(DT);
+    
+    //Set the players FOV to 75 so that cutscenes appear mostly normal
+    //TODO: Fix this to work properly on other aspect ratios
+    //SARGE TODO: This exists here as well as ConWindowActive,
+    //lets move it into the player, something like AdjustCutsceneFOV()
+    if (player.iCutsceneFOVAdjust == 1)
+        AdjustFOV(75);
+    else if (player.iCutsceneFOVAdjust == 2)
+        AdjustFOV(80);
+    else if (player.iCutsceneFOVAdjust == 3)
+        AdjustFOV(85);
+    else if (player.iCutsceneFOVAdjust == 4)
+        AdjustFOV(90);
+
 	
 	//LDDP, 11/3/21: Barf, part 2.
 	if (TarEndgameConvo == 'Barf')
@@ -213,6 +230,11 @@ function FinishCinematic()
 
 	foreach player.AllActors(class'CameraPoint', cPoint)
 		cPoint.nextPoint = None;
+    
+    //SARGE: Set the volume to zero so that we don't hear the stupid
+    //blaring alarms in the New Dark Age ending
+    SoundVolume = 0;
+    Player.SetInstantSoundVolume(0);
 
 	flags.SetBool('EndgameExplosions', False);
 	SetTimer(0, False);

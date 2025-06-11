@@ -2,7 +2,7 @@ Begin Map
 Begin Actor Class=LevelInfo Name=LevelInfo0
     TimeSeconds=18.887167
     Summary=LevelSummary'MyLevel.LevelSummary'
-    Song=Music'LibertyIsland_Music.LibertyIsland_Music'
+    Song=Music'UNATCOReturn_Music.UNATCOReturn_Music'
     NavigationPointList=PathNode'MyLevel.PathNode7'
     AIProfile(0)=201582009
     AmbientHue=150
@@ -13598,6 +13598,7 @@ Begin Actor Class=Brush Name=Brush602
 End Actor
 Begin Actor Class=SecurityCamera Name=SecurityCamera2
     bSwing=True
+    bNoAlarm=True
     hackStrength=0.250000
     LastRenderTime=26.866123
     DistanceFromPlayer=2348.349609
@@ -14469,6 +14470,7 @@ Begin Actor Class=Brush Name=Brush163
 End Actor
 Begin Actor Class=SecurityCamera Name=SecurityCamera4
     bSwing=True
+    bNoAlarm=True
     hackStrength=0.250000
     LastRenderTime=9.591573
     DistanceFromPlayer=466.662994
@@ -20325,6 +20327,7 @@ Begin Actor Class=AutoTurret Name=AutoTurret0
 End Actor
 Begin Actor Class=SecurityCamera Name=SecurityCamera3
     bSwing=True
+    bNoAlarm=True
     hackStrength=0.250000
     LastRenderTime=0.340359
     DistanceFromPlayer=6147.199219

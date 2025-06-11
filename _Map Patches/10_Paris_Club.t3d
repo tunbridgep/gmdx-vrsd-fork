@@ -13522,7 +13522,7 @@ Begin Actor Class=DeusExLevelInfo Name=DeusExLevelInfo0
     Script=Class'DeusEx.Mission10'
     startupMessage(0)="La Porte de l'Enfer"
     startupMessage(1)="Parisian Nightclub"
-    bBarOrClub=True
+    MusicType=MT_CombatOnly
     bNoSpawnFlies=True
     LastRenderTime=410.283478
     DistanceFromPlayer=3285.138184
@@ -44291,7 +44291,7 @@ Begin Actor Class=Brush Name=Brush351
              Vertex   +00019.882200,+00048.000000,-00016.000000
              Vertex   +00048.000000,+00019.882200,-00016.000000
           End Polygon
-          Begin Polygon Item=Top Texture=BarrelFire0001 Flags=4194304 Link=9
+          Begin Polygon Item=Top Texture=GMDXTextures.BarrelFire0001 Flags=4194304 Link=9
              Origin   +00048.000000,+00019.882200,+00016.000000
              Normal   +00000.000000,+00000.000000,+00001.000000
              Pan      U=96 V=-36
@@ -44683,7 +44683,7 @@ Begin Actor Class=Brush Name=Brush355
              Vertex   +00019.882200,+00048.000000,-00016.000000
              Vertex   +00048.000000,+00019.882200,-00016.000000
           End Polygon
-          Begin Polygon Item=Top Texture=BarrelFire0001 Flags=4194304 Link=9
+          Begin Polygon Item=Top Texture=GMDXTextures.BarrelFire0001 Flags=4194304 Link=9
              Origin   +00048.000000,+00019.882200,+00016.000000
              Normal   +00000.000000,+00000.000000,+00001.000000
              Pan      U=-8 V=92
@@ -45062,7 +45062,7 @@ Begin Actor Class=Brush Name=Brush358
              Vertex   +00019.882200,+00048.000000,-00016.000000
              Vertex   +00048.000000,+00019.882200,-00016.000000
           End Polygon
-          Begin Polygon Item=Top Texture=BarrelFire0001 Flags=4194304 Link=9
+          Begin Polygon Item=Top Texture=GMDXTextures.BarrelFire0001 Flags=4194304 Link=9
              Origin   +00048.000000,+00019.882200,+00016.000000
              Normal   +00000.000000,+00000.000000,+00001.000000
              Pan      U=-8 V=92
@@ -48835,7 +48835,7 @@ Begin Actor Class=Brush Name=Brush415
              Vertex   +00019.882200,+00048.000000,-00016.000000
              Vertex   +00048.000000,+00019.882200,-00016.000000
           End Polygon
-          Begin Polygon Item=Top Texture=BarrelFire0001 Flags=4194304 Link=9
+          Begin Polygon Item=Top Texture=GMDXTextures.BarrelFire0001 Flags=4194304 Link=9
              Origin   +00048.000000,+00019.882200,+00016.000000
              Normal   +00000.000000,+00000.000000,+00001.000000
              Pan      U=-8 V=92
@@ -49229,7 +49229,7 @@ Begin Actor Class=Brush Name=Brush418
              Vertex   +00019.882200,+00048.000000,-00016.000000
              Vertex   +00048.000000,+00019.882200,-00016.000000
           End Polygon
-          Begin Polygon Item=Top Texture=BarrelFire0001 Flags=4194304 Link=9
+          Begin Polygon Item=Top Texture=GMDXTextures.BarrelFire0001 Flags=4194304 Link=9
              Origin   +00048.000000,+00019.882200,+00016.000000
              Normal   +00000.000000,+00000.000000,+00001.000000
              Pan      U=-8 V=92
@@ -49623,7 +49623,7 @@ Begin Actor Class=Brush Name=Brush421
              Vertex   +00019.882200,+00048.000000,-00016.000000
              Vertex   +00048.000000,+00019.882200,-00016.000000
           End Polygon
-          Begin Polygon Item=Top Texture=BarrelFire0001 Flags=4194304 Link=9
+          Begin Polygon Item=Top Texture=GMDXTextures.BarrelFire0001 Flags=4194304 Link=9
              Origin   +00048.000000,+00019.882200,+00016.000000
              Normal   +00000.000000,+00000.000000,+00001.000000
              Pan      U=-8 V=92
@@ -50017,7 +50017,7 @@ Begin Actor Class=Brush Name=Brush424
              Vertex   +00019.882200,+00048.000000,-00016.000000
              Vertex   +00048.000000,+00019.882200,-00016.000000
           End Polygon
-          Begin Polygon Item=Top Texture=BarrelFire0001 Flags=4194304 Link=9
+          Begin Polygon Item=Top Texture=GMDXTextures.BarrelFire0001 Flags=4194304 Link=9
              Origin   +00048.000000,+00019.882200,+00016.000000
              Normal   +00000.000000,+00000.000000,+00001.000000
              Pan      U=-8 V=92
@@ -53746,7 +53746,7 @@ Begin Actor Class=Brush Name=Brush362
     Rotation=(Pitch=16384,Yaw=32768)
     Begin Brush Name=Model378
        Begin PolyList
-          Begin Polygon Texture=BarrelFire0001 Flags=4194568 Link=0
+          Begin Polygon Texture=GMDXTextures.BarrelFire0001 Flags=4194568 Link=0
              Origin   -00016.000000,-00064.000000,+00000.000000
              Normal   +00000.000000,+00000.000000,+00001.000000
              TextureU +00000.000000,+00001.000000,-00000.000000
@@ -53774,7 +53774,7 @@ Begin Actor Class=Brush Name=Brush366
     OldLocation=(X=439.000000,Y=-484.000000,Z=27.000000)
     Begin Brush Name=Model382
        Begin PolyList
-          Begin Polygon Texture=BarrelFire0001 Flags=4194568 Link=0
+          Begin Polygon Texture=GMDXTextures.BarrelFire0001 Flags=4194568 Link=0
              Origin   -00016.000000,-00064.000000,+00000.000000
              Normal   +00000.000000,+00000.000000,+00001.000000
              TextureU +00000.000000,+00001.000000,-00000.000000
@@ -53802,7 +53802,7 @@ Begin Actor Class=Brush Name=Brush368
     OldLocation=(X=303.000000,Y=-396.000000,Z=27.000000)
     Begin Brush Name=Model384
        Begin PolyList
-          Begin Polygon Texture=BarrelFire0001 Flags=4194568 Link=0
+          Begin Polygon Texture=GMDXTextures.BarrelFire0001 Flags=4194568 Link=0
              Origin   -00016.000000,-00064.000000,+00000.000000
              Normal   +00000.000000,+00000.000000,+00001.000000
              TextureU +00000.000000,+00001.000000,-00000.000000

@@ -163,7 +163,7 @@ function FirstFrame()
                             //If it's a disposable weapon, it's harder. Add our current ammo to the weapon pickup, then remove our ammo.
                             else
                             {
-                                player.ClientMessage("Mission05 crap: " $ AmmoType.itemName $ " - " $ ammoCount);
+                                //player.ClientMessage("Mission05 crap: " $ AmmoType.itemName $ " - " $ ammoCount);
                                 Weapon(item).PickupAmmoCount = ammoCount;
                                 AmmoType.ammoAmount = 0;
                             }
@@ -218,6 +218,7 @@ function FirstFrame()
        			}
 
 				player.primaryWeapon = None;
+                player.RefreshChargedPickups();
 
                 //SARGE: If we're using the "Killswitch Engaged" playthrough mod,
                 //then set the killswitch to ~23 hours, as mentioned by Simons
@@ -286,6 +287,7 @@ function Timer()
 	local DeusExMover M;
 	local Terrorist T;
 	local BlackHelicopter B;
+    local SkillAwardTrigger TR;
 
 	Super.Timer();
     
@@ -380,6 +382,10 @@ function Timer()
 			flags.GetBool('PaulInMedLab_Played'))
 		{
 			Player.StartDataLinkTransmission("DL_Paul");
+
+            //SARGE: Manually trigger the 500 skill point bonus, in case we missed it.
+            foreach AllActors(class 'SkillAwardTrigger', TR, 'Skillawardforpaul')
+			    TR.Trigger(player, player);
 			flags.SetBool('MS_DL_Played', True,, 6);
 		}
 	}

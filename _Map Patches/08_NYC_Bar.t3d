@@ -648,7 +648,7 @@ Begin Actor Class=DeusExLevelInfo Name=DeusExLevelInfo1
     missionNumber=8
     Script=Class'DeusEx.Mission08'
     TrueNorth=16384
-    bBarOrClub=True
+    MusicType=MT_ConversationOnly
     LastRenderTime=21.092234
     DistanceFromPlayer=1173.369141
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -28260,8 +28260,6 @@ Begin Actor Class=Pinball Name=Pinball3
     Name=Pinball3
 End Actor
 Begin Actor Class=NewAshtray Name=NewAshtray3
-    ItemArticle=""
-    ItemName=""
     LastRenderTime=0.306806
     Level=LevelInfo'MyLevel.LevelInfo0'
     Tag=NewAshtray

@@ -216,6 +216,8 @@ function ProcessLogin()
 		if (winTerm.GetSkillLevel() < userSkillLevel)
 			winTerm.SetSkillLevel(userSkillLevel);
 
+        Computers(CompOwner).PerformLoginAction(player);
+
 		CloseScreen("LOGIN");
 	}
 	else

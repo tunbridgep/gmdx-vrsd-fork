@@ -60,6 +60,10 @@ var bool bHitMarkers;             //Sarge: Show hitmarkers when damaged. For thi
 
 var bool bFirstTickDone;                                                        //SARGE: Set to true after the first tick. Allows us to do stuff on the first frame
 
+//SARGE: Moved from Containers, now affects all DeusExDecorations
+var() bool bLowDifficultyOnly; //Remove on realistic and hardcore
+var() bool bHardcoreRemoveIt; //Remove on hardcore only
+
 //SARGE: HDTP Model toggles
 var config int iHDTPModelToggle;
 var string HDTPSkin;
@@ -74,6 +78,9 @@ var(GMDX) const bool deleteIfMale;                                              
 var(GMDX) const bool deleteIfFemale;                                            //Delete this character if we're female
 
 var const localized string msgCantUseWhileSwimming;                             //SARGE: Message when we can't grab this due to swimming.
+
+//SARGE: Ignore LOS check for frobbing. Allows us to frob through walls! Disabled by default
+var(GMDX) bool bSkipLOSFrobCheck;
 
 // ----------------------------------------------------------------------
 // ShouldCreate()
@@ -1826,5 +1833,6 @@ defaultproperties
      bBlockPlayers=True
      iHDTPModelToggle=1
      bHDTPFailsafe=True
+     bSkipLOSFrobCheck=False
      msgCantUseWhileSwimming="You can't pick this up while swimming."
 }

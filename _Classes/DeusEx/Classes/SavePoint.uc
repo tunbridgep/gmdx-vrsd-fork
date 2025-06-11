@@ -12,6 +12,9 @@ var localized String msgSaveName;
 
 #exec OBJ LOAD FILE=Extras
 
+//SARGE: Allow save points to activate themselves based on flags
+var() Name requiredFlag;
+
 function Timer()
 {
    Tcount--;
@@ -25,13 +28,10 @@ function Timer()
 //singular function Touch(Actor Other)
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {
-   local DeusExLevelInfo info;
-
     if (frobber == None)
         return true;
 
     player=frobber;
-    info=frobber.GetLevelInfo();
 
     if (frobber.Credits < 100 && frobber.bExtraHardcore)
         frobber.ClientMessage(msgNotEnough);
@@ -43,6 +43,9 @@ State QuickSaver
 {
    function Timer()
    {
+        if (player == None)
+            return;
+
         if (player.bExtraHardcore)
         {
             player.Credits -= 100;
@@ -90,5 +93,6 @@ defaultproperties
      LightSaturation=32
      LightRadius=3
      bHighlight=True
+     //bSkipLOSFrobCheck=True //SARGE: Otherwise they get a little weird.
      ItemName="Save Point"
 }

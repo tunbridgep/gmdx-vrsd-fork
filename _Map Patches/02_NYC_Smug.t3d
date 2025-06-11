@@ -48483,4 +48483,62 @@ Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner1
     OldLocation=(X=-423.505005,Y=765.572449,Z=488.276581)
     Name=OutfitSpawner1
 End Actor
+Begin Actor Class=Ammo20mm Name=Ammo20mm0
+    bDynamicLight=True
+    LastRenderTime=61.126976
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=Ammo20mm
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=542,ZoneNumber=1)
+    Location=(X=-584.688110,Y=1744.420898,Z=244.849686)
+    OldLocation=(X=-584.688110,Y=1744.420898,Z=244.849686)
+    Name=Ammo20mm0
+End Actor
+Begin Actor Class=WeaponShuriken Name=WeaponShuriken0
+    bDynamicLight=True
+    LastRenderTime=174.174347
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=WeaponShuriken
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=441,ZoneNumber=1)
+    Location=(X=-430.853668,Y=1595.791870,Z=212.399933)
+    Rotation=(Yaw=18000)
+    OldLocation=(X=-430.853668,Y=1595.791870,Z=208.399933)
+    PickupAmmoCount=1
+    Name=WeaponShuriken0
+End Actor
+Begin Actor Class=WeaponShuriken Name=WeaponShuriken1
+    bDynamicLight=True
+    LastRenderTime=174.174347
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=WeaponShuriken
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=437,ZoneNumber=1)
+    Location=(X=-432.853668,Y=1599.791870,Z=212.399933)
+    Rotation=(Yaw=18000)
+    OldLocation=(X=-398.853668,Y=1627.791870,Z=208.399933)
+    PickupAmmoCount=1
+    Name=WeaponShuriken1
+End Actor
+Begin Actor Class=WeaponShuriken Name=WeaponShuriken2
+    bDynamicLight=True
+    LastRenderTime=174.174347
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=WeaponShuriken
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=437,ZoneNumber=1)
+    Location=(X=-431.853668,Y=1603.791870,Z=212.399933)
+    Rotation=(Yaw=18000)
+    OldLocation=(X=-399.853668,Y=1631.791870,Z=208.399933)
+    PickupAmmoCount=1
+    Name=WeaponShuriken2
+End Actor
+Begin Actor Class=WeaponShuriken Name=WeaponShuriken3
+    bDynamicLight=True
+    LastRenderTime=174.174347
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=WeaponShuriken
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=437,ZoneNumber=1)
+    Location=(X=-431.853668,Y=1609.791870,Z=212.399933)
+    Rotation=(Yaw=18000)
+    OldLocation=(X=-398.853668,Y=1635.791870,Z=208.399933)
+    PickupAmmoCount=1
+    Name=WeaponShuriken3
+End Actor
 End Map
