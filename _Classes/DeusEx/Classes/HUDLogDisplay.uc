@@ -59,6 +59,7 @@ function CreateControls()
 	winLog.SetTextMargins(0, 0);
 	winLog.SetFont(fontLog);
 	winLog.SetLines(MinLogLines, MaxLogLines);
+    winLog.SetWordWrap(False); //Sarge: Added so that it doesn't wrap horribly when in small mode
 }
 
 // ----------------------------------------------------------------------
@@ -163,9 +164,8 @@ event Tick(float deltaSeconds)
 	// If a DataLink or Conversation is being played, then don't count down,
 	// so we don't miss any log messages the player might receive.
 
-	if ((player.dataLinkPlay == None) &&
-	    ((player.conPlay == None) ||
-		 ((player.conPlay != None) && (player.conPlay.GetDisplayMode() == DM_FirstPerson))))
+	if ((player.dataLinkPlay == None || player.bShowSmallLog) &&
+	    (player.conPlay == None || (player.conPlay != None && player.conPlay.GetDisplayMode() == DM_FirstPerson)))
 	{
 		if (( lastLogMsg > 0.0 ) && ( lastLogMsg + deltaSeconds > displayTime ))
 		{
@@ -205,7 +205,7 @@ function AddLog(coerce String newLog, Color linecol)
 		//
 		// Don't show the log if a DataLink is playing
 
-		if (( GetParent().IsVisible() ) && ( root.hud.infolink == None ) && winPersona == none) //RSD: Added winPersona == none so it doesn't pop up when we're in realtime UI
+		if (( GetParent().IsVisible() ) && ( root.hud.infolink == None || player.bShowSmallLog ) && winPersona == none) //RSD: Added winPersona == none so it doesn't pop up when we're in realtime UI
 		{
 			ShowLogWindow();                                                    //RSD: Was Show(), new shell function so we can set bPlayingLog properly
 		}
