@@ -19067,7 +19067,6 @@ defaultproperties
      bWallPlacementCrosshair=True
      bSubtitles=True
      bSubtitlesCutscene=True
-     bBeltAutofill=True
      bAlwaysRun=True
      logTimeout=3.000000
      maxLogLines=4
