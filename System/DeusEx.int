@@ -2285,7 +2285,7 @@ beltDescription="20MM AMMO"
 
 [AmmoRocketWP]
 ItemName="WP Rockets"
-Description="The white-phosphorus rocket, or 'wooly peter,' was designed to expand the mission profile of the GEP gun. While it does minimal damage upon detonation, the explosion will spread a cloud of particularized white phosphorus that ignites immediately upon contact with the air."
+Description="The white-phosphorus rocket, or 'wooly peter,' was designed to expand the mission profile of the GEP gun. While it does minimal damage upon detonation, the explosion will spread a cloud of particularized white phosphorus that ignites immediately upon contact with the air.|n|n<UNATCO OPS FILE NOTE JR337-INDIGO>WP Rockets are made of a frangible substance and do not pack the direct-fire stopping power of a regular rocket, and should not be used for breaching doors or other structures. In these cases, it's better to use a regular rocket instead -- Sam Carter <END NOTE>"
 beltDescription="WP ROCKET"
 
 [AugHealing]
