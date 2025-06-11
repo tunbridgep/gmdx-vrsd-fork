@@ -1,6 +1,6 @@
 !define INSTALLER_NAME "GMDX: Augmented Edition"
 !define INSTALLER_EXE_NAME "GMDX-AE"
-!define INSTALLER_VERSION "1.0"
+!define INSTALLER_VERSION "1.01"
 !define INSTALLER_SUFFIX "Lite"
 
 #include the common parts of the installer

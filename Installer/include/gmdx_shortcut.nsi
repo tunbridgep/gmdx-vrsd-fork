@@ -1,8 +1,8 @@
 Section "Create GMDX Shortcut"
 
 SetOutPath "$INSTDIR\System"
-CreateShortCut "$SMPROGRAMS\Deus Ex - GMDX.lnk" "$INSTDIR\System\GMDX_AE.exe"
-CreateShortCut "$DESKTOP\Deus Ex - GMDX.lnk" "$INSTDIR\System\GMDX_AE.exe"
+CreateShortCut "$SMPROGRAMS\GMDX Augmented Edition.lnk" "$INSTDIR\System\GMDX_AE.cmd" "" "$INSTDIR\GMDX_AE\gmdxicon.ico" 0
+CreateShortCut "$DESKTOP\GMDX Augmented Edition.lnk" "$INSTDIR\System\GMDX_AE.cmd" "" "$INSTDIR\GMDX_AE\gmdxicon.ico" 0
 SetOutPath "$INSTDIR"
 
 SectionEnd
