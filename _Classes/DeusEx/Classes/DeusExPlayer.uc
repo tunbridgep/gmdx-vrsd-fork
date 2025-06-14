@@ -461,7 +461,6 @@ var globalconfig bool bAnimBar1;
 var globalconfig bool bAnimBar2;
 var globalconfig bool bExtraObjectDetails;
 var globalconfig bool bCameraSensors;
-var globalconfig bool bHardcoreFilterOption;
 var globalconfig bool bRealisticCarc;
 var globalconfig bool bLaserRifle;
 var globalconfig bool bRemoveVanillaDeath;
@@ -620,6 +619,8 @@ var travel bool bWeaponRequirementsMatter;                                      
 var travel bool bCameraDetectUnconscious;                                      //Ygll: Unconscious body will now be detected by camera.
 
 var travel bool bA51Camera;                                                     //SARGE: Was a gameplay setting, now a modifier. Make cameras stronger and act like Area 51 cameras.
+
+var travel bool bHardcoreFilterOption;                                          //SARGE: Moved from gameplay options to modifiers
 
 //END GAMEPLAY MODIFIERS
 
