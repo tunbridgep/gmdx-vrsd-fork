@@ -1202,7 +1202,7 @@ local DeusExPickup     PU;                                                      
     {
         ForEach AllActors(class'ThrownProjectile', TP)
         {
-       	    if (TP.bNoHardcoreFilter == True) //CyberP: destroy this bomb if we are not hardcore
+       	    if (TP.bNoHardcoreFilter == True && !bHardcoreFilterOption) //CyberP: destroy this bomb if we are not hardcore
 	       	    TP.Destroy();
             else
                 TP.proxRadius=156.000000;  //Also lower radius if not hardcore
