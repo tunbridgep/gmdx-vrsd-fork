@@ -829,6 +829,11 @@ function SaveSettings()
     player.bA51Camera=bA51Camera;                                               //Sarge
     if (player.bRandomizeAugs)                                                  //RSD: New aug randomization feature
         ScrambleAugOrderList();
+
+    //Fix players still having killswitch if they had it previously
+    if (!player.bRealKillswitch)
+        player.killswitchTimer = -1;
+
     player.bAddictionSystem=bAddictionSystem;
     player.bExtraHardcore=bExtraHardcore;
     //player.bRestrictedMetabolism=bRestrictedMetabolism;
