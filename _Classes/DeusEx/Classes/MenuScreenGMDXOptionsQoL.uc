@@ -96,6 +96,7 @@ defaultproperties
      items(77)=(HelpText="Show darkened versions of ignored and declined items in the Items Received Window when searching carcasses.",actionText="HUD: Show Unlooted in Items Window",variable="bShowDeclinedInReceivedWindow")
      items(78)=(HelpText="When active, left-clicking on doors, crates, windows and other interactive items while holstered will select the appropriate tool or melee weapon.",actionText="Interaction: Left-Click Interactions",variable="bEnableLeftFrob",defaultValue=1)
      items(79)=(HelpText="If Enabled, JC will always keep their weapon drawn during conversations. JC will always keep weapons drawn in some circumstances.",actionText="Conversations: Keep Weapon Drawn",variable="bConversationKeepWeaponDrawn")
+     items(81)=(HelpText="When playing at certain resolutions, the outer crosshairs may become misaligned with the central crosshair. Use this setting to corect it.",actionText="HUD: Crosshair Adjustment",variable="iCrosshairOffByOne")
      Title="GMDX Quality of Life Options"
      colWidths(0)=214
      colWidths(1)=155

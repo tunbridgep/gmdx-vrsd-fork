@@ -19283,4 +19283,5 @@ defaultproperties
      bQuietAugs=True
      bEnableLeftFrob=True
      bShowDeclinedInReceivedWindow=true
+     iCrosshairOffByOne=1
 }
