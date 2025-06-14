@@ -17,7 +17,7 @@ exec function UpdateHDTPsettings()
 
     //Blank the screen once it's been read
     if (DarkenScreen() && player != None && player.bShowDataCubeRead)
-        MultiSkins[2]=Texture'PinkMaskTex';
+        DoDarkenScreen();
     else if (IsHDTP())
         MultiSkins[2]=class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPDatacubetex1");
     else
@@ -27,7 +27,14 @@ exec function UpdateHDTPsettings()
 function OnBeginRead(DeusExPlayer reader)
 {
     if (reader != None && reader.bShowDataCubeRead)
-        MultiSkins[2]=Texture'PinkMaskTex';
+        DoDarkenScreen();
+}
+
+//Turn off the light and darken the screen
+function DoDarkenScreen()
+{
+    LightType=LT_None;
+    MultiSkins[2]=Texture'PinkMaskTex';
 }
 
 defaultproperties
@@ -44,5 +51,10 @@ defaultproperties
      CollisionRadius=7.000000
      CollisionHeight=1.270000
      Mass=2.000000
+     LightType=LT_Steady
+     LightRadius=3
+     LightBrightness=48
+     LightSaturation=32
+     LightHue=140
      Buoyancy=3.000000
 }
