@@ -1015,7 +1015,7 @@ event bool BoxOptionSelected(Window msgBoxWindow, int buttonNumber)
 	// Destroy the msgbox!
 	root.PopWindow();
 
-	editName.SetText(player.TruePlayerName);
+	//editName.SetText(player.TruePlayerName); //Resets the name!
 	editName.MoveInsertionPoint(MOVEINSERT_End);
 	editName.SetSelectedArea(0, Len(editName.GetText()));
 	SetFocusWindow(editName);
