@@ -796,7 +796,7 @@ var globalconfig bool bReloadingResetsAim;                              //SARGE:
 
 //SARGE: Fix the inventory bug on map load????? I have no idea if this actually works or not.
 var travel bool bDelayInventoryFix;
-const FemJCEyeHeightAdjust = -6;                                    //SARGE: Now the femJC eye height adjustment is handled by a const, so we can easily change it //SARGE: Was -2 originally, but that clips too much with ceilings.
+const FemJCEyeHeightAdjust = -4;                                    //SARGE: Now the femJC eye height adjustment is handled by a const, so we can easily change it //SARGE: Was -2 originally, but that clips too much with ceilings.
 
 //SARGE: ??? - I wonder what this does :P
 var travel bool bShenanigans;
