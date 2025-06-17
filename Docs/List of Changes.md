@@ -267,6 +267,7 @@ Sarge's Changes since Beta 2.2:
     - Putting a scope or a laser sight on the GEP gun now requires the Heavily Tweaked perk (ADVANCED heavy weapons, 100 skill points). The scope and laser sight still provide rocket guidance capabilities.
     - Added a new "Killswitch Engaged" Playthrough Modifier. When enabled, all augmentations will be disabled and a countdown timer will be active while your killswitch is enabled.
     - Added a new "Weapon Requirements Matter" Playthrough Modifier. When enabled, most weapons will require a minimum skill investment in order to be used.
+    - WP Rockets now only deal 25% damage against movers, to make blowing everything up a little harder and solidify their role as anti-personal rockets.
     - Demolitions Skill Overhaul:
         - Demolitions Skill-based grenade timing rescaled from 0.5, 1.0, 2.5, 7.0 seconds to 0.75, 1.0, 1.5, 2.5 seconds
         - Being able to pick up disarmed grenades is now based on skill level - Trained for Gas Grenades, Advanced for EMP and Scrambler Grenades, Master for LAMs.
@@ -399,7 +400,8 @@ Sarge's Changes since Beta 2.2:
     - Added Door Locking mechanics
         - You can now lock any door you have the nanokey for, plus any doors you have picked previously if you have the Locksport perk (this is retroactive).
         - Enemies cannot open doors which you have locked (Enemies can still open doors that are initially locked in the map unless you lock them)
-    - When using Restricted Saving (and Hardcore Mode), Autosaves are now only created the first time upon entering a new level, or if no save has been performed in the last 15 minutes. This is designed to mitigate save-abuse by crossing between maps.
+    - When using Restricted Saving (and Hardcore Mode), Autosaves are now only created the first time upon entering a new level. This is designed to mitigate save-abuse by crossing between maps.
+        - Some additional save points have been added to the levels to account for some times when there can be long stretches of gameplay that involve revisiting past maps which were previously covered by autosaves.
     - Randomisation Rework
         - Added a new "Enemy Weapon Shuffle" playthrough modifier, which will swap loadouts between existing enemies in the maps.
         - Weapon Mod, Enemy Weapon and Container Randomisation gameplay modifiers now use a seed generated at the start of the game, rather than randomising on map load.
@@ -446,6 +448,9 @@ Sarge's Changes since Beta 2.2:
     - Paris Metro:
         - The Police have been changed to using pistols only (from Assault Shotguns and Assault Rifles), to ensure more 10mm ammo is available in the late game, as well as to reinforce their status as the puppet regime under MJ12.
     - Vandenberg:
+        - The Vandenberg `command`/`zebra42` login is not given to the player in Hardcore mode. Combined with the "Unknown Codes" modifier, this makes it impossible to access the security computers without hacking them.
+    - Oceanlab
+        - The `tech`/`sharkman` login has been removed from one of the hallway security computers in the Ocean lab map on Hardcore mode. This means that the only way to bypass security for the areas leading up to the sub pen will require hacking. The sub pen terminal still uses this login.
         - The security code is no longer given by the research team on Hardcore. You will need to use your hacking skill if you wish to access the security system!
     - Miscellaneous Map Changes:
         - The Silencer in Paul's Apartment, Full-Auto Mod in Tong's Lab, and Laser Sight in Smugglers Safe are all guaranteed to appear even with the weapon mod shuffle turned on.

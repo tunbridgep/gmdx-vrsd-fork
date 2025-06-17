@@ -1644,7 +1644,10 @@ function int CalculateTrueDamage()
 
     trueDamage = int(hit * (1.0 - (2.0 * GetWeaponSkill()) + mult + ModDamage));
 
-    //P.ClientMessage("Damage: " $ hit $ " - " $ trueDamage @ "(" $ mult @ GetWeaponSkill() @ ")");
+    if (ammoType != None && ammoType.Class == class'AmmoRocketWP')
+        trueDamage *= 0.25 * 0.25;
+
+    //P.ClientMessage("Damage: " $ hit $ " - " $ trueDamage @ "(" $ mult @ GetWeaponSkill() @ ")" $ ", AmmoType is " $ ammoType.Class);
 	return trueDamage;
 }
 
@@ -3832,7 +3835,8 @@ simulated function PlaySelectiveFiring()
 		{
 		    if (IsA('WeaponAssaultGun'))
 		    {
-	           mod = 1.000000;
+	           //mod = 1.000000;
+	           mod = 2.200000; // SARGE: speed increase, convert 5 round burst to 3 round burst
 	           PlayAnim(anim,1 * (mod-2*ModShotTime), 0.1);
 		    }
 		    else if (IsA('WeaponStealthPistol'))

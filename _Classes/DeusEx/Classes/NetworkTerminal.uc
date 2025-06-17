@@ -569,6 +569,8 @@ function ComputerHacked()
         Computers(compOwner).timesHacked++;
     }
 
+    Computers(CompOwner).PerformLoginAction(player);
+
 	CloseScreen("LOGIN");
 }
 

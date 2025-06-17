@@ -222,4 +222,10 @@ defaultproperties
      FamiliarName="MJ12 Troop"
      UnfamiliarName="MJ12 Troop"
      fireReactTime=0.35
+     bHateWeapon=True
+     bHateDistress=True
+     bReactLoudNoise=True
+     bReactShot=True
+     bReactCarcass=True
+     bReactDistress=True
 }

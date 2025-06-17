@@ -3,6 +3,7 @@ Begin Actor Class=LevelInfo Name=LevelInfo0
     TimeSeconds=37.079895
     Summary=LevelSummary'MyLevel.LevelSummary'
     NavigationPointList=PathNode'MyLevel.PathNode9'
+    Song=Music'Tunnels_Music.Tunnels_Music'
     AIProfile(0)=105962938
     Level=LevelInfo'MyLevel.LevelInfo0'
     Tag=LevelInfo
@@ -51286,5 +51287,18 @@ Begin Actor Class=OutfitSpawner3 Name=OutfitSpawner19
     Rotation=(Yaw=10000)
     OldLocation=(X=-1033.575928,Y=-89.386383,Z=-826.719666)
     Name=OutfitSpawner19
+End Actor
+Begin Actor Class=ControlPanel Name=ControlPanel3
+    hackStrength=0.000000
+    bDynamicLight=True
+    LastRenderTime=10.498636
+    DistanceFromPlayer=2809.308838
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=ControlPanel
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo1',iLeaf=877,ZoneNumber=6)
+    Location=(X=2633.714844,Y=-642.848633,Z=-786.348450)
+    Rotation=(Yaw=16408,Roll=1890)
+    OldLocation=(X=2107.714844,Y=-546.848633,Z=-786.348450)
+    Name=ControlPanel3
 End Actor
 End Map

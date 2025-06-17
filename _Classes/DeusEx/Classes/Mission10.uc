@@ -198,8 +198,6 @@ function Timer()
 				commando.EnterWorld();
 
 			flags.SetBool('MS_CommandosUnhidden', True,, 11);
-
-			PutInWorld_SavePoint(); //GMDX: unhide save points
 		}
 	}
 }

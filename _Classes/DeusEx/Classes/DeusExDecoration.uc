@@ -60,6 +60,10 @@ var bool bHitMarkers;             //Sarge: Show hitmarkers when damaged. For thi
 
 var bool bFirstTickDone;                                                        //SARGE: Set to true after the first tick. Allows us to do stuff on the first frame
 
+//SARGE: Moved from Containers, now affects all DeusExDecorations
+var() bool bLowDifficultyOnly; //Remove on realistic and hardcore
+var() bool bHardcoreRemoveIt; //Remove on hardcore only
+
 //SARGE: HDTP Model toggles
 var config int iHDTPModelToggle;
 var string HDTPSkin;
@@ -74,6 +78,9 @@ var(GMDX) const bool deleteIfMale;                                              
 var(GMDX) const bool deleteIfFemale;                                            //Delete this character if we're female
 
 var const localized string msgCantUseWhileSwimming;                             //SARGE: Message when we can't grab this due to swimming.
+
+//SARGE: Ignore LOS check for frobbing. Allows us to frob through walls! Disabled by default
+var(GMDX) bool bSkipLOSFrobCheck;
 
 // ----------------------------------------------------------------------
 // ShouldCreate()
@@ -550,16 +557,27 @@ local float HP;
 
 singular function BaseChange()
 {
+    local DeusExPlayer p;
 	bBobbing = false;
 
-	if( (base == None) && (bPushable || IsA('Carcass')) && (Physics == PHYS_None) )
+	if( (base == None) && (bPushable || IsA('Carcass')) && (Physics == PHYS_None))
 		SetPhysics(PHYS_Falling);
 
 	// make sure if a decoration is accidentally dropped,
 	// we reset it's parameters correctly
 	SetCollision(Default.bCollideActors, Default.bBlockActors, Default.bBlockPlayers);
+	bCollideWorld = Default.bCollideWorld;
 	Style = Default.Style;
 	bUnlit = Default.bUnlit;
+
+    //SARGE: If this is the players carried decoration, put it back in our hand
+    //This is a hack to deal with vanilla shenanigans!
+    p = DeusExPlayer(base);
+    if (p == none)
+        p = DeusExPlayer(GetPlayerPawn());
+
+    if (p != None && p.carriedDecoration == self)
+        p.PutCarriedDecorationInHand(true);
 }
 
 // ----------------------------------------------------------------------
@@ -889,7 +907,7 @@ function Bump(actor Other)
 function Bump2( actor Other )
 {
 	local float speed, oldZ;
-	if( bPushable && (Pawn(Other)!=None) && (Other.Mass > 20) )
+	if( bPushable && (Pawn(Other)!=None) && (Other.Mass > 20) && base != None)
 	{
 	    if (Other.IsA('ScriptedPawn') && ScriptedPawn(Other).bTank && Physics != PHYS_Falling)
 	        TakeDamage(400,Pawn(Other),vect(0,0,0),vect(0,0,0),'shot');
@@ -1815,5 +1833,6 @@ defaultproperties
      bBlockPlayers=True
      iHDTPModelToggle=1
      bHDTPFailsafe=True
+     bSkipLOSFrobCheck=False
      msgCantUseWhileSwimming="You can't pick this up while swimming."
 }

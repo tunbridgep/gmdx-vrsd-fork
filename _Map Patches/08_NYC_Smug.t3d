@@ -2,7 +2,7 @@ Begin Map
 Begin Actor Class=LevelInfo Name=LevelInfo0
     TimeSeconds=10.374562
     Summary=LevelSummary'MyLevel.LevelSummary'
-    Song=Music'NYCStreets_Music.NYCStreets_Music'
+    Song=Music'NYCStreets2_Music.NYCStreets2_Music'
     NavigationPointList=PathNode'MyLevel.PathNode70'
     AIProfile(0)=17237452
     Level=LevelInfo'MyLevel.LevelInfo0'

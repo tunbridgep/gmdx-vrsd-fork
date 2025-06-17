@@ -318,6 +318,9 @@ enum EInvokeMethod
 	IM_Other
 };
 
+//SARGE: NOT USED!
+//This has been replaced.
+//We can't remove this because it's above the line of shame.
 enum EMusicMode
 {
 	MUS_Ambient,
@@ -327,7 +330,7 @@ enum EMusicMode
 	MUS_Dying
 };
 
-var EMusicMode musicMode;
+var EMusicMode musicMode; //UNUSED
 var byte savedSection;		// last section playing before interrupt
 var float musicCheckTimer;
 var float musicChangeTimer;
@@ -716,10 +719,26 @@ var travel bool bRealKillswitch;                                                
 var travel float killswitchTimer;                                                       //SARGE: Killswitch timer in seconds.
 
 //Music Stuff
+
+//SARGE: Improved version of the Music Mode enum,
+//with more states.
+enum EMusicModeGMDX
+{
+    MUS_Invalid,
+	MUS_Ambient,
+	MUS_Combat,
+	MUS_Conversation,
+	MUS_Outro,
+	MUS_Dying,
+	MUS_Forced,
+};
+
+var transient EMusicModeGMDX musicModeGMDX;                                                 //SARGE: Current music mode. Used by the state machine.
+var transient EMusicModeGMDX prevmusicMode;
 var transient string currentSong;                                                 //SARGE: The "Song" variable is kept in savegames...
 var globalconfig int iEnhancedMusicSystem;                                        //SARGE: Should the music system be a bit smarter about playing tracks?
 var transient float fadeTimeHack;                                                 //SARGE: Hacky music transition fix timer
-var transient EMusicMode prevmusicMode;
+var transient int prevSongSection;                                               //SARGE: Remember the SongSection for the previous map. If it changes, we need to always change tracks.
 
 //SARGE: Autoswitch to Health screen when installing the last augmentation at a med bot.
 var globalconfig bool bMedbotAutoswitch;
@@ -777,7 +796,7 @@ var globalconfig bool bReloadingResetsAim;                              //SARGE:
 
 //SARGE: Fix the inventory bug on map load????? I have no idea if this actually works or not.
 var travel bool bDelayInventoryFix;
-const FemJCEyeHeightAdjust = -6;                                    //SARGE: Now the femJC eye height adjustment is handled by a const, so we can easily change it //SARGE: Was -2 originally, but that clips too much with ceilings.
+const FemJCEyeHeightAdjust = -4;                                    //SARGE: Now the femJC eye height adjustment is handled by a const, so we can easily change it //SARGE: Was -2 originally, but that clips too much with ceilings.
 
 //SARGE: ??? - I wonder what this does :P
 var travel bool bShenanigans;
@@ -790,6 +809,8 @@ var globalconfig int iStanceHud;					                //Ygll: Display the current
 var globalconfig int iHealingScreen;                            //Ygll: can disable the flash screen when healing or changing it to green color.
 
 var globalconfig bool bAmmoDisplayOnRight;                          //SARGE: If enabled, make the ammo display appear on the right (with the belt on the left)
+
+var globalconfig bool bCutsceneVolumeEqualiser;                     //SARGE: If true, cutscenes will have their sound, voice and music volumes adjusted to be as clear as possible, with the sound and music relatively quiet and the speech quite loud.
 
 var globalconfig bool bPistolStartTrained;                          //SARGE: If false, pistols no longer start the game trained, and the player will instead be given skill points equivalent to it's value
 
@@ -817,6 +838,8 @@ var globalconfig int iCrosshairVisible;                         //SARGE: Replace
 
 //SARGE: Overhauled the Wireless Strength perk to no longer require having a multitool out.
 var HackableDevices HackTarget;
+
+var bool bFakeDeath;                                            //SARGE: Fixes a rather nasty bug when dying and being transferred to the MJ12 Prison facility. Also disables quick loading.
 
 var travel bool bPhotoMode;                                     //SARGE: Show/Hide the entire HUD at once
 
@@ -1136,7 +1159,7 @@ local Medkit           MK;
 local BioelectricCell  BC;
 local inventory        anItem;
 local int              i;
-local Containers       CO;
+local DeusExDecoration DC;
 local actor            AR;
 local DeusExLevelInfo dxInfo;                                                   //RSD: Added
 local name flagName;                                                            //RSD: Added
@@ -1186,13 +1209,13 @@ local DeusExPickup     PU;                                                      
             else
                 TP.proxRadius=156.000000;  //Also lower radius if not hardcore
         }
-        ForEach AllActors(class'Containers', CO)
+        ForEach AllActors(class'DeusExDecoration', DC)
         {
-           if (CO.bLowDifficultyOnly && CombatDifficulty >= 3.0)
+           if (DC.bLowDifficultyOnly && CombatDifficulty >= 3.0)
            {
-              CO.DrawScale = 0.00001;
-              CO.SetCollision(false,false,false);
-              CO.SetCollisionSize(0,0);
+              DC.DrawScale = 0.00001;
+              DC.SetCollision(false,false,false);
+              DC.SetCollisionSize(0,0);
 	       }
         }
         if (SkillSystem != None && CombatDifficulty <= 1)
@@ -1216,13 +1239,13 @@ local DeusExPickup     PU;                                                      
              AM.AmmoAmount = 3;
            }
        }
-       ForEach AllActors(class'Containers', CO)
+       ForEach AllActors(class'DeusExDecoration', DC)
        {
-           if (CO.bLowDifficultyOnly || CO.bHardcoreRemoveIt)
+           if (DC.bLowDifficultyOnly || DC.bHardcoreRemoveIt)
            {
-              CO.DrawScale = 0.00001;
-              CO.SetCollision(false,false,false);
-              CO.SetCollisionSize(0,0);
+              DC.DrawScale = 0.00001;
+              DC.SetCollision(false,false,false);
+              DC.SetCollisionSize(0,0);
 	       }
        }
        if (SkillSystem != None)
@@ -1397,9 +1420,6 @@ function PostBeginPlay()
 
     //SARGE: Account for FemJC eye height changes
     ResetBasedPawnSize();
-	
-    //Reset the music timers
-    ResetMusic();
 
     //RSD: log item distribution on map load
     //logItemsInCrates();
@@ -1715,9 +1735,9 @@ function PostPostBeginPlay()
 	ThemeManager.SetMenuThemeByName(MenuThemeNameGMDX);
 	ThemeManager.SetHUDThemeByName(HUDThemeNameGMDX);
 
-
-
-
+    //Set our FOV if we have FOV adjustments enabled
+    //Should "fix" the intro
+    DesiredFOV = default.DesiredFOV;
 
 	if ((Level.NetMode != NM_Standalone) && ( killProfile == None ))
 		killProfile = Spawn(class'KillerProfile', Self);
@@ -1769,6 +1789,9 @@ function PreTravel()
 
 	foreach AllActors(class'SpyDrone',SD)                                       //RSD: Destroy all spy drones so we can't activate disabled drones on map transition
 		SD.Destroy();
+
+    //Prepare the music system for the next map
+    default.musicModeGMDX = MUS_Invalid;
 }
 
 // ----------------------------------------------------------------------
@@ -1798,6 +1821,9 @@ event TravelPostAccept()
     SetupKeybindManager();
 	SetupDecalManager();
 
+    //reset "fake" death
+    bFakeDeath = false;
+
 	// reset the keyboard
 	ResetKeyboard();
 
@@ -1806,6 +1832,9 @@ event TravelPostAccept()
 
     //Update HUD
     UpdateHUD();
+
+    //Reset Music
+    ResetMusic();
 
     //Reset Crosshair
     UpdateCrosshair();
@@ -1945,9 +1974,6 @@ event TravelPostAccept()
 	SetRocketWireControl();
     
     bDelayInventoryFix = false;
-
-    //Reset the music timers
-    ResetMusic();
 
 	//end GMDX
 }
@@ -2273,7 +2299,7 @@ exec function TeamSay( string Msg )
 exec function RestartLevel()
 {
 	ResetPlayer();
-    ResetMusic(true);
+    ResetMusic();
 	Super.RestartLevel();
 }
 
@@ -2554,7 +2580,7 @@ exec function QuickLoad()
 
 	if (DeusExRootWindow(rootWindow) != None && !IsInState('dying'))
 		DeusExRootWindow(rootWindow).ConfirmQuickLoad();
-	else if (DeusExRootWindow(rootWindow) != None && IsInState('dying') && !bDeadLoad)
+	else if (DeusExRootWindow(rootWindow) != None && IsInState('dying') && !bDeadLoad && !bFakeDeath)
 	{ bDeadLoad=True; GoToState('Dying','LoadHack');   }
 }
 
@@ -2627,7 +2653,7 @@ exec function StartNewGame(String startMap)
 
 	SaveSkillPoints();
 	ResetPlayer();
-    ResetMusic(true);
+    ResetMusic();
 	DeleteSaveGameFiles();
 
 	bStartingNewGame = True;
@@ -3316,6 +3342,12 @@ exec function PlayMusicWindow()
 	InvokeUIScreen(Class'PlayMusicWindow');
 }
 
+//Determine if the ambient track changed - either a song change, or a change of default part.
+function bool AmbientTrackChanged(string newSong)
+{
+    return newSong != default.currentSong || default.prevSongSection != Level.SongSection;
+}
+
 // ----------------------------------------------------------------------
 // ClientSetMusic()
 //
@@ -3335,43 +3367,94 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
     info = GetLevelInfo();
         
     DebugMessage("Music Change Request:" @ NewSong @ NewSection);
-    DebugMessage("  Modes:" @ default.prevMusicMode @ default.musicMode);
+    DebugMessage("  Modes:" @ default.prevMusicMode @ default.musicModeGMDX);
     
     //SARGE: We're still fading from the last track, so we need to do a hacky fix
     //The engine is busted and the music system needs to be reset, so instantly transition back to our saved section.
     //and reset the volume
+    /*
     if (default.fadeTimeHack > 0)
     {
-        //Hack to fix broken audio settings.
-        bChange = true;
+        //barf...
+        //bChange = true;
         SetInstantMusicVolume(int(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice MusicVolume")));
         NewTransition = MTRAN_Instant;
-        DebugMessage("FadeTimeHack fix");
-        if (NewSection == Level.SongSection)
-            NewSection = default.savedSection;
+        default.savedSection = Level.SongSection; //And reset the saved section
+        default.musicModeGMDX = MUS_Ambient;
+        default.prevMusicMode = MUS_Ambient;
+        DebugMessage("Changing Music - FadeTimeHack fix");
+    }
+    */
+
+    //Always skip invalid music state, which is called at the start of every level
+    if (default.musicModeGMDX == MUS_Invalid)
+    {
+        //default.prevMusicMode = MUS_Ambient;
+        //default.musicModeGMDX = MUS_Outro;
+        DebugMessage("Skipping Music Change - Invalid State (Level Change)");
+        default.savedSection = Level.SongSection; //And reset the saved section
+        //super.ClientSetMusic(NewSong,Level.SongSection,NewCdTrack,NewTransition);
+        return;
     }
 
-    if (string(NewSong) != default.currentSong) //We always want to allow song changes
+    //Fix fade time shenanigans
+    //This makes me sick!
+    else if (default.fadeTimeHack > 0 && default.prevMusicMode == MUS_Ambient)
+    {
+        //barf...
+        SetInstantMusicVolume(int(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice MusicVolume")));
+        NewTransition = MTRAN_Instant;
+        DebugMessage("Changing Music - FadeTimeHack fix");
+        if (NewSection == Level.SongSection && iEnhancedMusicSystem > 0)
+            NewSection = default.savedSection;
+        bChange = true;
+    }
+    else if (AmbientTrackChanged(string(NewSong))) //We always want to allow song changes on map transition
     {
         bChange = true;
         DebugMessage("Changing Music - Song Change from" @ default.currentSong);
         NewSection = Level.SongSection;
         default.savedSection = Level.SongSection; //And reset the saved section
-        default.musicMode = MUS_Ambient;
+        default.musicModeGMDX = MUS_Ambient;
         default.prevMusicMode = MUS_Ambient;
     }
-    else if (info != none && info.bBarOrClub && iEnhancedMusicSystem == 2) //Don't allow music changes in clubs or bars with the extended option.
+    else if ((newSection == 2 && Level.SongSection == 0) || (newSection == 0 && Level.SongSection == 2)) //"one off" Swap from one ambient section to the other
+    {
+        bChange = true;
+        DebugMessage("Changing Music - Ambient Section Change");
+        //default.savedSection = newSection; //And reset the saved section
+        default.savedSection = Level.SongSection; //And reset the saved section
+        default.musicModeGMDX = MUS_Forced;
+        default.prevMusicMode = MUS_Forced;
+    }
+    else if (info != none && info.MusicType == MT_SingleTrack) //Don't change tracks at all if we're in a single track level.
+    {
+        DebugMessage("Single Track - Music Unchanged");
+    }
+    else if (info != none && (info.MusicType == MT_CombatOnly || info.MusicType == MT_ConversationOnly) && iEnhancedMusicSystem == 2) //Don't allow music changes in clubs or bars with the extended option.
     {
         DebugMessage("Bar or Club - Music Unchanged");
     }
-    else if (default.prevMusicMode != default.musicMode) //We want to allow changes between modes
+    else if (default.prevMusicMode != default.musicModeGMDX) //We want to allow changes between modes
     {
-        bChange = true;
-        DebugMessage("Changing Music - Changed Mode");
+        if (info != none && info.MusicType == MT_CombatOnly && default.musicModeGMDX != MUS_Combat && default.prevMusicMode != MUS_Combat)
+            DebugMessage("Non-Combat section of Combat Only track - Music Unchanged");
+        else if (info != none && info.MusicType == MT_ConversationOnly && default.musicModeGMDX != MUS_Conversation && default.prevMusicMode != MUS_Conversation)
+            DebugMessage("Non-Conversation section of Conversation Only track - Music Unchanged");
+        else if (NewSection == Level.SongSection && default.musicModeGMDX != MUS_Ambient)
+        {
+            DebugMessage("New section is level section - Music Unchanged");
+            default.prevMusicMode = default.musicModeGMDX;
+        }
+        else
+        {
+            bChange = true;
+            DebugMessage("Changing Music - Changed Mode");
 
-        //If we're changing back to ambient, always go to our saved section instead of the start
-        if (NewSection == Level.SongSection && default.musicMode == MUS_Ambient)
-            NewSection = default.savedSection;
+            //If we're changing back to ambient, always go to our saved section instead of the start
+            if (NewSection == Level.SongSection && default.prevSongSection == Level.SongSection && default.musicModeGMDX == MUS_Ambient)
+                NewSection = default.savedSection;
+        }
     }
 
     if (bChange)
@@ -3380,17 +3463,20 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
 
         //Apply fade-time hack
         if (NewTransition == MTRAN_SlowFade)
-            default.fadeTimeHack = 5.0;
+            default.fadeTimeHack = 4.0;
         else if (NewTransition == MTRAN_Fade)
-            default.fadeTimeHack = 2.5;
+            default.fadeTimeHack = 0.5;
         else if (NewTransition == MTRAN_FastFade)
-            default.fadeTimeHack = 1.5;
+            default.fadeTimeHack = 0.25;
+        else
+            default.fadeTimeHack = 0;
     }
     default.currentSong = string(NewSong);
+    default.prevSongSection = Level.SongSection;
 }
 
 //SARGE: Calls ClientSetMusic based on our current music state.
-function MusicTransition(EMusicMode mode, EMusicMode prev)
+function MusicTransition(EMusicModeGMDX mode, EMusicModeGMDX prev)
 {
 	local DeusExLevelInfo info;
 	info = GetLevelInfo();
@@ -3407,6 +3493,8 @@ function MusicTransition(EMusicMode mode, EMusicMode prev)
         case MUS_Ambient:
             if (prev == MUS_Combat)
                 ClientSetMusic(Level.Song, default.savedSection, 255, MTRAN_SlowFade);
+            else if (prev == MUS_Invalid || prev == MUS_Outro)
+                ClientSetMusic(Level.Song, default.savedSection, 255, MTRAN_Instant);
             else
                 ClientSetMusic(Level.Song, default.savedSection, 255, MTRAN_Fade);
             break;
@@ -3415,13 +3503,21 @@ function MusicTransition(EMusicMode mode, EMusicMode prev)
 
 //SARGE: Resets the music timers and state.
 //Now that we're using variables that persist per-session, we need to do this.
-function ResetMusic(optional bool bResetPlace)
+function ResetMusic()
 {
     //Reset the music timers
-    //default.musicMode = MUS_Outro;
-    //default.prevMusicMode = MUS_Outro;
-    if (bResetPlace || iEnhancedMusicSystem == 0)
+    DebugMessage("Music Reset");
+    if (iEnhancedMusicSystem == 0)
+    {
         default.savedSection = Level.SongSection;
+        default.prevMusicMode = MUS_Outro;
+        default.musicModeGMDX = MUS_Outro;
+    }
+
+
+    if (default.musicModeGMDX == MUS_Invalid)
+        default.musicModeGMDX = MUS_Ambient;
+
     UpdateDynamicMusic(999,true);
 }
 
@@ -3448,7 +3544,7 @@ function UpdateDynamicMusic(float deltaTime, optional bool bNoFadeHack)
 	local DeusExLevelInfo info;
     local int aggro;                    //Sarge: Keep track of the number of aggro enemies. If >2, start combat music. If 0 stop combat music.
 
-	if (Level.Song == None)
+	if (Level.Song == None || default.musicModeGMDX == MUS_Invalid)
 		return;
 
     info = GetLevelInfo();
@@ -3459,12 +3555,8 @@ function UpdateDynamicMusic(float deltaTime, optional bool bNoFadeHack)
         default.fadeTimeHack -= deltaTime;
     if (default.fadeTimeHack < 0)
         default.fadeTimeHack = 0;
-
-    //No music changes while we're fading.
-    if (default.fadeTimeHack > 0)
-        return;
             
-    if (default.musicMode == MUS_Ambient)
+    if (default.musicModeGMDX == MUS_Ambient && fadeTimeHack == 0)
     {
         //SARGE: Now we constantly update the saved section, rather than
         //only updating it when it changes, because that can cause bugs due to fading.
@@ -3476,24 +3568,25 @@ function UpdateDynamicMusic(float deltaTime, optional bool bNoFadeHack)
 
 	if (IsInState('Interpolating'))
 	{
-        default.musicMode = MUS_Outro;
+        default.musicModeGMDX = MUS_Outro;
 		// don't mess with the music on any of the intro maps
 		info = GetLevelInfo();
 		if ((info != None) && (info.MissionNumber < 0))
         {
             default.prevMusicMode = MUS_Outro;
+            default.fadeTimeHack = 0;
 			return;
         }
 	}
 	else if (IsInState('Conversation'))
 	{
-        default.musicMode = MUS_Conversation;
+        default.musicModeGMDX = MUS_Conversation;
         musicChangeTimer = 100;
         musicCheckTimer = 100;
 	}
 	else if (IsInState('Dying'))
 	{
-        default.musicMode = MUS_Dying;
+        default.musicModeGMDX = MUS_Dying;
         musicChangeTimer = 100;
         musicCheckTimer = 100;
 	}
@@ -3524,22 +3617,27 @@ function UpdateDynamicMusic(float deltaTime, optional bool bNoFadeHack)
             if (aggro >= iAllowCombatMusic && iAllowCombatMusic > 0)
             {
 				musicChangeTimer = 0.0;
-                default.musicMode = MUS_Combat;
+                default.musicModeGMDX = MUS_Combat;
 			}
             // wait until we've been out of combat for 5 seconds before switching music
-			else if (musicChangeTimer >= 5.0 || default.musicMode != MUS_Combat)
+			else if (musicChangeTimer >= 5.0)
             {
-                default.musicMode = MUS_Ambient;
-                musicChangeTimer = 0.0;
+                if (default.musicModeGMDX == MUS_Forced)
+                    return;
+                else
+                {
+                    default.musicModeGMDX = MUS_Ambient;
+                    musicChangeTimer = 0.0;
+                }
             }
 		}
 	}
 
     //If we changed state, trigger a music transition.
-    if (default.musicMode != default.prevMusicMode)
+    if (default.musicModeGMDX != default.prevMusicMode)
     {
-        MusicTransition(default.musicMode, default.prevMusicMode);
-        default.prevMusicMode = default.musicMode;
+        MusicTransition(default.musicModeGMDX, default.prevMusicMode);
+        default.prevMusicMode = default.musicModeGMDX;
     }
 }
 
@@ -5195,7 +5293,7 @@ function HighlightCenterObject()
 		foreach TraceActors(class'Actor', target, HitLoc, HitNormal, EndTrace, StartTrace)
 		{
             //SARGE: Stop being able to frob things through walls
-            if (target.IsA('DeusExDecoration') && !LineOfSightTo(target))
+            if (target.IsA('DeusExDecoration') && !DeusExDecoration(target).bSkipLOSFrobCheck && !LineOfSightTo(target))
                 continue;
 
 			if (IsFrobbable(target) && (target != CarriedDecoration))
@@ -5469,11 +5567,14 @@ function Carcass SpawnCarcass()
 		MoveTarget = carc; //for Player 3rd person views
 
 		// give the carcass the player's inventory
-		for (item=Inventory; item!=None; item=Inventory)
-		{
-			DeleteInventory(item);
-		//	carc.AddInventory(item);   //CyberP: commented out to prevent suicide inventory exploit.
-		}
+        if (!bFakeDeath)
+        {
+            for (item=Inventory; item!=None; item=Inventory)
+            {
+                DeleteInventory(item);
+            //	carc.AddInventory(item);   //CyberP: commented out to prevent suicide inventory exploit.
+            }
+        }
 	}
 
 	return carc;
@@ -7607,7 +7708,7 @@ Begin:
 	drugEffectTimer	= 0;
 
     if (AugmentationSystem != None)
-        AugmentationSystem.DeactivateAll(true); //CyberP: deactivate augs
+        AugmentationSystem.DeactivateAll(); //CyberP: deactivate augs
 	// Don't come back to life crouched
     SetCrouch(false,true);
 
@@ -10580,7 +10681,7 @@ function PutCarriedDecorationInHand(optional bool bNoSoundEffect)
 		     upDir.Z = CollisionHeight / 1.75;      //CyberP: a bit higher for small objects.
 		else
 		     upDir.Z = CollisionHeight / 2.5;		// put it up near eye level  //CyberP: chest level. was 2
-		CarriedDecoration.SetPhysics(PHYS_Falling);
+		//CarriedDecoration.SetPhysics(PHYS_Falling);
         //CarriedDecoration.SetCollisionSize(CarriedDecoration.CollisionRadius*0.5,CarriedDecoration.CollisionHeight*0.5);
 		if ( CarriedDecoration.SetLocation(Location + upDir + (0.25 * CollisionRadius + CarriedDecoration.CollisionRadius) * lookDir) )  //CyberP: was 0.5
 		{
@@ -10602,9 +10703,9 @@ function PutCarriedDecorationInHand(optional bool bNoSoundEffect)
             }
 
 			CarriedDecoration.SetPhysics(PHYS_None);
-			CarriedDecoration.SetBase(self);
 			CarriedDecoration.SetCollision(False, False, False);
 			CarriedDecoration.bCollideWorld = False;
+			CarriedDecoration.SetBase(self);
             //CarriedDecoration.SetCollisionSize(CarriedDecoration.CollisionRadius*2,CarriedDecoration.CollisionHeight*2);
 			// make it translucent
 			if ((!bNoTranslucency && !bHardcoreMode) || AugmentationSystem.GetAugLevelValue(class'AugCloak') != -1.0)
@@ -10660,6 +10761,7 @@ function DropDecoration()
 	local float velscale, size, mult;
 	local bool bSuccess;
 	local Actor hitActor;
+    local Decoration deco;
 
 	bSuccess = False;
 
@@ -10744,35 +10846,41 @@ function DropDecoration()
 				CarriedDecoration.SetCollision(False, False, False);
 				CarriedDecoration.bCollideWorld = False;
 				CarriedDecoration.SetPhysics(PHYS_None);
+                CarriedDecoration.SetBase(self);
 			}
 		}
 
 		// if we can drop it here, then drop it
 		if (bSuccess)
 		{
-			CarriedDecoration.bWasCarried = True;
-			CarriedDecoration.SetBase(None);
-			CarriedDecoration.SetPhysics(PHYS_Falling);
-			CarriedDecoration.Instigator = Self;
-			CarriedDecoration.SetCollision(True, True, True);
-			CarriedDecoration.bCollideWorld = True;
-			AIEndEvent('WeaponDrawn', EAITYPE_Visual);
-            PlayAnim('Attack',,0.1);
-			// turn off translucency
-			CarriedDecoration.Style = CarriedDecoration.Default.Style;
-			CarriedDecoration.bUnlit = CarriedDecoration.Default.bUnlit;
-			if ((!bNoTranslucency && !bHardcoreMode) && CarriedDecoration.IsA('DeusExDecoration'))
-				DeusExDecoration(CarriedDecoration).ScaleGlow = CarriedDecoGlow;
+            deco = CarriedDecoration;
+            CarriedDecoration = None;
 
-		 if (bThrowDecoration)
-			ThrowDecoration(CarriedDecoration);
+            if (deco != None)
+            {
+                deco.bWasCarried = True;
+                deco.SetBase(None);
+                deco.SetPhysics(PHYS_Falling);
+                deco.Instigator = Self;
+                deco.SetCollision(True, True, True);
+                deco.bCollideWorld = True;
+                AIEndEvent('WeaponDrawn', EAITYPE_Visual);
+                PlayAnim('Attack',,0.1);
+                // turn off translucency
+                deco.Style = deco.Default.Style;
+                deco.bUnlit = deco.Default.bUnlit;
+                if ((!bNoTranslucency && !bHardcoreMode) && deco.IsA('DeusExDecoration'))
+                    DeusExDecoration(deco).ScaleGlow = CarriedDecoGlow;
 
-			CarriedDecoration = None;
+                if (bThrowDecoration)
+                    ThrowDecoration(deco);
+            }
 		}
 		else
 		{
 			// otherwise, don't drop it and display a message
 			CarriedDecoration.SetLocation(origLoc);
+            CarriedDecoration.SetBase(self);
 			ClientMessage(CannotDropHere);
 		}
 	}
@@ -11070,6 +11178,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 							Carc.PickupAmmoCount = POVCorpse(item).PickupAmmoCount;
 							Carc.savedName = POVCorpse(item).savedName;
                             Carc.bFirstBloodPool = POVCorpse(item).bFirstBloodPool; //SARGE: Added.
+                            Carc.bNoDefaultPools = POVCorpse(item).bNoDefaultPools;
                             Carc.UpdateName();
 
                             //if (FRand() < 0.3)
@@ -11144,11 +11253,12 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 		//DEUS_EX AMSD Use the function call for this, helps multiplayer
 		PlaceItemInSlot(item, itemPosX, itemPosY);
 	}
+	
     //Sarge: Fix up disposable weapons
-    else if (item != None && item.IsA('DeusExWeapon') && DeusExWeapon(item).bDisposableWeapon)
+    if (item != None && item.IsA('DeusExWeapon') && DeusExWeapon(item).bDisposableWeapon && bDropped)
     {
         AmmoType = Ammo(FindInventoryType(Weapon(item).AmmoName));
-        if (ammoType != None)
+        if (ammoType != None && ammoType.AmmoAmount > 0)
         {
             ammoType.ammoAmount -= 1;
             UpdateAmmoBeltText(AmmoType);
@@ -14387,6 +14497,7 @@ function bool GetExceptedCode(string code)
         || code == "4321" //We are told to "count backwards from 4"
         || code == "NICOLETTE" //Given in conversation
         || code == "CHAD" //Given in conversation
+        || (code == "2167" && FlagBase.GetBool('NYCUndergroundCodeObtained')) //Allow us to use it after we access the computer. Also adds a note from a datacube.
         || code == "JCDENTON"; //Uses Base: JCDenton instead of Username: JCDenton.
 }
 
@@ -16216,7 +16327,8 @@ function Died(pawn Killer, name damageType, vector HitLocation)
 		ExtinguishFire();
 
 	if (AugmentationSystem != None)
-		AugmentationSystem.DeactivateAll(true);
+		//AugmentationSystem.DeactivateAll(true);
+		AugmentationSystem.DeactivateAll(); //SARGE: Keep toggled and auto ones on, for mission 5
 
 	if ((Level.NetMode == NM_DedicatedServer) || (Level.NetMode == NM_ListenServer))
 	  ClientDeath();
@@ -18986,7 +19098,6 @@ defaultproperties
      bWallPlacementCrosshair=True
      bSubtitles=True
      bSubtitlesCutscene=True
-     bBeltAutofill=True
      bAlwaysRun=True
      logTimeout=3.000000
      maxLogLines=4
@@ -19190,6 +19301,7 @@ defaultproperties
      bConsistentBloodPools=True
      iPersistentDebris=3
   	 iStanceHud=3   //Ygll = Every stance
+     bCutsceneVolumeEqualiser=true
      bIsMantlingStance=false //Ygll: new var to know if we are currently mantling
      iHealingScreen=1
      bAlwaysShowReceivedItemsWindow=true

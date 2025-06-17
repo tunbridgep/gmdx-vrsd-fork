@@ -23,6 +23,75 @@ var bool firstTime;     //SARGE: Set to true the first time we enter a map.
 
 var bool bConfixChecked;                        //SARGE: Set to true when we've checked confix being installed.
 
+var byte savedSoundVolume;
+var byte savedMusicVolume;
+var byte savedSpeechVolume;
+
+// ----------------------------------------------------------------------
+// SARGE: UpdateSavePoints()
+//
+// Checks the required flags for all Save Points, and hides/unhides them accordingly.
+// ----------------------------------------------------------------------
+
+function UpdateSavePoints()
+{
+	local SavePoint SP;
+    local bool bValid;
+	
+    foreach AllActors(class'SavePoint', SP)
+    {
+        bValid = SP.requiredFlag == '' || flags.GetBool(SP.requiredFlag);
+        if (bValid)
+        {
+            if (SP.bHidden)
+            {
+                SP.bHidden = false;
+                SP.LightRadius = SP.default.LightRadius;
+            }
+        }
+        else
+        {
+            if (!SP.bHidden)
+            {
+                SP.bHidden = true;
+                SP.LightRadius = 0;
+            }
+        }
+    }
+}
+
+// ----------------------------------------------------------------------
+// SARGE: SetMinimumVolume()
+//
+// Force the players Music, Sound and Speech volume to be a certain minimum amount.
+// Used for cutscenes because they sound awkward/weird without music
+// Saves the values so we can use RestorePreviousVolume to restore it to what it was. Used for cutscenes.
+// ----------------------------------------------------------------------
+
+function SetMinimumVolume()
+{
+    savedSoundVolume = byte(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice SoundVolume"));
+    savedMusicVolume = byte(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice MusicVolume"));
+    savedSpeechVolume = byte(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice SpeechVolume"));
+ 
+    if (!player.bCutsceneVolumeEqualiser)
+        return;
+
+    //Reduce the overall sound volume
+    SoundVolume = savedSpeechVolume / 8;
+    Player.SetInstantSoundVolume(savedSpeechVolume / 8);
+
+    //Force the music on
+    Player.SetInstantMusicVolume(savedSpeechVolume / 2);
+}
+
+function RestorePreviousVolume()
+{
+	Player.SetInstantSoundVolume(savedSoundVolume);
+	Player.SetInstantMusicVolume(savedMusicVolume);
+	Player.SetInstantSpeechVolume(savedSpeechVolume);
+}
+
 // ----------------------------------------------------------------------
 // DoLightingAccessibility()
 //
@@ -368,6 +437,7 @@ function Timer()
 	}
 
     DoConfixCheck();
+    UpdateSavePoints();
 }
 
 function Tick(float DeltaTime)
@@ -406,17 +476,6 @@ function Tick(float DeltaTime)
 //   SetTimer(0.1,false);
 //}
 
-
-//GMDX: unhide savepoints, will add reactivate at some point
-function PutInWorld_SavePoint(Optional name MatchTag)
-{
-   local SavePoint SP;
-   foreach AllActors(class'SavePoint',SP,MatchTag)
-   {
-      if (SP.bHidden)
-         SP.bHidden=false;
-   }
-}
 
 // ----------------------------------------------------------------------
 // GetPatrolPoint()
@@ -674,6 +733,7 @@ function ReplaceEnemyWeapon(ScriptedPawn first, ScriptedPawn second)
     local Inventory inv;
     local DeusExWeapon wep;
     local int i,j,k;
+    local float tempAcc;
 
 
     //Do the ammos first, so we can assign them to weapons properly
@@ -762,6 +822,15 @@ function ReplaceEnemyWeapon(ScriptedPawn first, ScriptedPawn second)
         if (wep != None)
             wep.AmmoType = Ammo(first.FindInventoryType(wep.AmmoName));
     }
+
+    //Swap BaseAccuracy between the two pawns.
+    //Shotgunners and Crossbow Guys generally always have 0 base accuracy.
+    tempAcc = first.BaseAccuracy;
+    first.BaseAccuracy = second.BaseAccuracy;
+    second.BaseAccuracy = tempAcc;
+        
+    first.WeaponSwap(second);
+    second.WeaponSwap(first);
 
     first.SetupWeapon(false);
     second.SetupWeapon(false);

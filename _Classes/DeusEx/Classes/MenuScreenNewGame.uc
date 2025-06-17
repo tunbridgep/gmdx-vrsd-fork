@@ -829,6 +829,11 @@ function SaveSettings()
     player.bA51Camera=bA51Camera;                                               //Sarge
     if (player.bRandomizeAugs)                                                  //RSD: New aug randomization feature
         ScrambleAugOrderList();
+
+    //Fix players still having killswitch if they had it previously
+    if (!player.bRealKillswitch)
+        player.killswitchTimer = -1;
+
     player.bAddictionSystem=bAddictionSystem;
     player.bExtraHardcore=bExtraHardcore;
     //player.bRestrictedMetabolism=bRestrictedMetabolism;
@@ -1010,7 +1015,7 @@ event bool BoxOptionSelected(Window msgBoxWindow, int buttonNumber)
 	// Destroy the msgbox!
 	root.PopWindow();
 
-	editName.SetText(player.TruePlayerName);
+	//editName.SetText(player.TruePlayerName); //Resets the name!
 	editName.MoveInsertionPoint(MOVEINSERT_End);
 	editName.SetSelectedArea(0, Len(editName.GetText()));
 	SetFocusWindow(editName);

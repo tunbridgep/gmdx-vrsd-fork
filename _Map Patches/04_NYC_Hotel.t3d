@@ -70495,4 +70495,16 @@ Begin Actor Class=LDDPHotelAddictSCarcass Name=LDDPHotelAddictCarcass0
     bSelected=True
     Name=LDDPHotelAddictCarcass0
 End Actor
+Begin Actor Class=SavePoint Name=SavePoint1
+    requiredFlag=NSFSignalSent
+    bDynamicLight=True
+    LastRenderTime=91.654320
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=SavePoint
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=1497,ZoneNumber=1)
+    Location=(X=-383.915222,Y=-2539.844971,Z=114.100502)
+    OldLocation=(X=-405.915222,Y=-2674.844971,Z=114.100502)
+    bSelected=True
+    Name=SavePoint1
+End Actor
 End Map

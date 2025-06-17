@@ -3,8 +3,6 @@
 //=============================================================================
 class MissionIntro extends MissionScript;
 
-var byte savedSoundVolume;
-
 // ----------------------------------------------------------------------
 // InitStateMachine()
 // ----------------------------------------------------------------------
@@ -31,6 +29,7 @@ function InitStateMachine()
 function FirstFrame()
 {
 	local BobPage bob;
+    local DeusExCarcass C;
 
 	Super.FirstFrame();
 
@@ -50,9 +49,14 @@ function FirstFrame()
 		}
 
 		// turn down the sound so we can hear the speech
-		savedSoundVolume = SoundVolume;
-		SoundVolume = 32;
-		Player.SetInstantSoundVolume(SoundVolume);
+        SetMinimumVolume();
+
+        //SARGE: Make the corpses not bleed anymore (except for the thug in the Paris scene)
+        Foreach AllActors(class'DeusExCarcass', C)
+        {
+            If (!C.IsA('ThugMaleCarcass'))
+                C.DestroyPool();
+        }
 	}
 }
 
@@ -65,8 +69,7 @@ function FirstFrame()
 function PreTravel()
 {
 	// restore the sound volume
-	SoundVolume = savedSoundVolume;
-	Player.SetInstantSoundVolume(SoundVolume);
+    RestorePreviousVolume();
 
 	Super.PreTravel();
 }
