@@ -690,6 +690,7 @@ var globalconfig bool bFullAccuracyCrosshair;                                   
 
 var globalconfig bool bAlwaysShowBloom;                                         //SARGE: Always show weapon bloom
 var globalconfig bool bAlternateCrosshairAcc;                                   //YGLL:  Alternate Accuracy Crosshair display
+var globalconfig bool bYgll; 					                                //YGLL:  Hidden and Dangerous
 
 var globalconfig bool bShowEnergyBarPercentages;                                //SARGE: If true, show the oxygen and bioenergy percentages below the bars.
 
@@ -12058,9 +12059,9 @@ function bool GetCrosshairState(optional bool bCheckForOuterCrosshairs)
 
     if (W != None)
     {
-        if (W.bLasing && ( !bAlternateCrosshairAcc || (bAlternateCrosshairAcc && !bCheckForOuterCrosshairs) ) )
+        if (W.bLasing && ( !bYgll || ( bYgll && !bCheckForOuterCrosshairs) ) )
             return false;
-        else if (W.bLaserToggle && ( !bAlternateCrosshairAcc || (bAlternateCrosshairAcc && !bCheckForOuterCrosshairs) ) )
+        else if (W.bLaserToggle && ( !bYgll || ( bYgll && !bCheckForOuterCrosshairs) ) )
             return false;
         //else if (W.bIsMeleeWeapon)
         //    return false;
