@@ -138,9 +138,12 @@ var localized String msgDisarmed;
 event InitWindow()
 {
 	Super.InitWindow();
-	bTickEnabled = True;
+	bTickEnabled = true;
 	Lower();
 	RefreshMultiplayerKeys();
+
+	if(Player.bAlternateCrosshairAcc)
+		corner = 5.000000;
 }
 
 // ----------------------------------------------------------------------
@@ -1362,58 +1365,45 @@ function GetTargetReticleColor( Actor target, out Color xcolor )
 function DrawAccuracyCrosshair(GC gc, DeusExWeapon weapon, Color crossColor, out float x, out float y, out float mult)
 {
 	local float w, h;
-    local int i;
-    w = width;
-    h = height;
+	local int i;
 
-    if (player.iCrosshairOffByOne > 0)
-    {
-        w += player.iCrosshairOffByOne;
-    }
+	//SARGE: Don't draw accuracy crosshairs at 100% accuracy
+	if (weapon.currentAccuracy <= 0.01 && !Player.bFullAccuracyCrosshair)
+		return;
 
-    x = int(w * 0.5)-1;
-    y = int(h * 0.5)-1;
+	w = width;
+	h = height;
+	if (Player.iCrosshairOffByOne > 0)
+		w += Player.iCrosshairOffByOne;
 
+	x = int(w * 0.5)-1;
+	y = int(h * 0.5)-1;
 
-    //SARGE: Don't draw accuracy crosshairs at 100% accuracy
-    if (weapon.currentAccuracy <= 0.01 && !player.bFullAccuracyCrosshair)
-        return;
-
-    //if (player.bXhairShrink)
-    //{
-    //   if (weapon.currentAccuracy < 0.04)
-    //      corner = (default.corner * weapon.currentAccuracy) + 1;
-    //   else
-    //      corner = default.corner;
-    //}
-    // scale based on screen resolution - default is 640x480
-    //mult = FClamp(weapon.currentAccuracy * 80.0 * (width/640.0), corner, 80.0);
     mult = FClamp(weapon.currentAccuracy * (width/16.0), 0, width/4.0); //RSD: New formula based on trig (see new accuracy model in TraceFire() in DeusExWeapon.uc)
 
-    // make sure it's not too close to the center unless you have a perfect accuracy
-    //RSD: Redone so that mult occurs in the inner rather than outer radius of the reticle (no more artificial limits)
-    /*mult = FMax(mult, corner);
-    if (weapon.currentAccuracy == 0.0)
-        mult = corner;*/
-
     // draw the drop shadowed reticle
-    gc.SetTileColorRGB(0,0,0);
-    for (i=1; i>=0; i--)
+	gc.SetTileColorRGB(0,0,0);
+    //RSD: Redone so that accuracy indicator mult occurs in the inner rather than outer radius of the reticle (pushed everything out by pixels = corner)
+	for (i = 1; i >= 0; i--)
     {
-        //RSD: Redone so that accuracy indicator mult occurs in the inner rather than outer radius of the reticle (pushed everything out by pixels = corner)
-        gc.DrawBox(x+i, y-mult-corner+i, 1, corner, 0, 0, 1, Texture'Solid');
-        gc.DrawBox(x+i, y+mult+1+i, 1, corner, 0, 0, 1, Texture'Solid'); //RSD Added +1 to make reticle lengths equal
-        gc.DrawBox(x-(corner-1)/2+i, y-mult-corner+i, corner, 1, 0, 0, 1, Texture'Solid');
-        gc.DrawBox(x-(corner-1)/2+i, y+mult+corner+i, corner, 1, 0, 0, 1, Texture'Solid');
+		//up
+		if(!Player.bAlternateCrosshairAcc)
+		{
+			gc.DrawBox(x+i, y-mult-corner+i, 1, corner, 0, 0, 1, Texture'Solid');
+			gc.DrawBox(x-(corner-1)/2+i, y-mult-corner+i, corner, 1, 0, 0, 1, Texture'Solid');
+		}
+		//bottom
+		gc.DrawBox(x+i, y+mult+i, 1, corner, 0, 0, 1, Texture'Solid'); //RSD Added +1 to make reticle lengths equal
+		gc.DrawBox(x-(corner-1)/2+i, y+mult+corner+i, corner, 1, 0, 0, 1, Texture'Solid');
+		//left
+		gc.DrawBox(x-mult-corner+i, y+i, corner, 1, 0, 0, 1, Texture'Solid');
+		gc.DrawBox(x-mult-corner+i, y-(corner-1)/2+i, 1, corner, 0, 0, 1, Texture'Solid');
+		//right
+		gc.DrawBox(x+mult+i, y+i, corner, 1, 0, 0, 1, Texture'Solid'); //RSD Added +1 to make reticle lengths equal
+		gc.DrawBox(x+mult+corner+i, y-(corner-1)/2+i, 1, corner, 0, 0, 1, Texture'Solid');
 
-        gc.DrawBox(x-mult-corner+i, y+i, corner, 1, 0, 0, 1, Texture'Solid');
-        gc.DrawBox(x+mult+1+i, y+i, corner, 1, 0, 0, 1, Texture'Solid'); //RSD Added +1 to make reticle lengths equal
-        gc.DrawBox(x-mult-corner+i, y-(corner-1)/2+i, 1, corner, 0, 0, 1, Texture'Solid');
-        gc.DrawBox(x+mult+corner+i, y-(corner-1)/2+i, 1, corner, 0, 0, 1, Texture'Solid');
-
-        //gc.DrawIcon(x*0.975, y*0.975, Texture'AugIconTarget_Small');
-        gc.SetTileColor(crossColor);
-    }
+		gc.SetTileColor(crossColor);
+	}
 }
 
 // ----------------------------------------------------------------------
@@ -2359,10 +2349,9 @@ function int GetVisionTargetStatus(Actor Target)
 
 function int GetCurrentResolutionWidth()                                        //RSD: Stolen from ConPlay.uc
 {
-	local int p;
 	local int resX;
 	local int resWidth;
-	local string CurrentRes;
+	local String CurrentRes;
 
 	CurrentRes   = player.ConsoleCommand("GetCurrentRes");
 
