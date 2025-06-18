@@ -845,6 +845,7 @@ var travel bool bPhotoMode;                                     //SARGE: Show/Hi
 
 var bool bClearReceivedItems;                                   //SARGE: Clear the received items window next time we display it.
 
+var globalconfig bool bAutoUncrouch;                            //SARGE: Automatically uncrouch when we press the run button.
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -5878,7 +5879,7 @@ function HandleWalking()
 		bIsWalking = !bIsWalking;
 
     //SARGE: If we started running with the run key, untoggle crouch
-    if (!bLastRun && bRun == 1 && IsCrouching() && !bAlwaysRun)
+    if (bAutoUncrouch && !bLastRun && bRun == 1 && IsCrouching() && !bAlwaysRun)
         SetCrouch(false);
 
     bLastRun = bool(bRun);
@@ -19283,4 +19284,5 @@ defaultproperties
      bQuietAugs=True
      bEnableLeftFrob=True
      bShowDeclinedInReceivedWindow=true
+     bAutoUncrouch=true
 }
