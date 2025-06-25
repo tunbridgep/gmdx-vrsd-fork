@@ -58,6 +58,7 @@ defaultproperties
      items(9)=(HelpText="Reloading will reset your standing accuracy",actionText="Reloading resets accuracy.",variable="bReloadingResetsAim");
      items(10)=(HelpText="If enabled, running and jumping will drain stamina over time.",actionText="Stamina System",variable="bStaminaSystem");
      items(11)=(HelpText="If enabled, reloading with a full magazine is possible.",actionText="Trick Reloads",variable="bTrickReloading");
+     items(12)=(HelpText="If enabled, rearming grenades depends on your Demolitions skill.",actionText="Skill-based grenade rearming",variable="bRearmSkillRequired",defaultValue=1);
      msgText="The settings available in this menu are always active as part of Hardcore difficulty.|nYou may still edit them freely, but they will have no effect when playing in Hardcore mode."
      msgTitle="Hardcore Mode"
      Title="GMDX Gameplay Options"
