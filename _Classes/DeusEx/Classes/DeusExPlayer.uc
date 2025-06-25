@@ -12414,6 +12414,9 @@ exec function ActivateBelt(int objectNum)
 	local DeusExRootWindow root;
     local Inventory beltItem;
 
+	if (RestrictInput())
+		return;
+
     //SARGE: When holding the number keys in dialog, we will select a weapon
     //upon finishing the conversation. Ignore the weapon change command.
     if (fBlockBeltSelection > 0)
@@ -12421,9 +12424,6 @@ exec function ActivateBelt(int objectNum)
         fBlockBeltSelection = 0;
         return;
     }
-
-	if (RestrictInput())
-		return;
 
     //SARGE: We need to do some wacky stuff here,
     //now that the belt slots go from 0-9 and are offset in the HUD,
