@@ -845,6 +845,8 @@ var travel bool bPhotoMode;                                     //SARGE: Show/Hi
 
 var bool bClearReceivedItems;                                   //SARGE: Clear the received items window next time we display it.
 
+
+var globalconfig bool bAlwaysShowModifiers;                     //SARGE: Always show the Playthrough Modifiers screen when starting a new game.
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -19283,4 +19285,5 @@ defaultproperties
      bQuietAugs=True
      bEnableLeftFrob=True
      bShowDeclinedInReceivedWindow=true
+     bAlwaysShowModifiers=true
 }
