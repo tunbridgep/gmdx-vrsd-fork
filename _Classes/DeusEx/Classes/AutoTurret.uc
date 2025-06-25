@@ -71,8 +71,6 @@ function Trigger(Actor Other, Pawn Instigator)
 
 	AmbientSound = Default.AmbientSound;
     bDisabled = false;
-	gun.bHackable = true;
-	gun.bDisabledByComputer = false;
 	Super.Trigger(Other, Instigator);
 }
 
@@ -86,8 +84,6 @@ function UnTrigger(Actor Other, Pawn Instigator)
 	
 	AmbientSound = None;
     bDisabled = true;	
-	gun.bHackable = false;
-	gun.bDisabledByComputer = true;
 	Super.UnTrigger(Other, Instigator);
 }
 
@@ -254,6 +250,7 @@ function Tick(float deltaTime)
             bRebooting = false;
             bDisabled = bDefaultDisabled;
             bActive = bDefaultActive;
+            AmbientSound = Default.AmbientSound;
 
             //Reset Tracking
             bTrackPlayersOnly = bDefaultTrackPlayersOnly;
