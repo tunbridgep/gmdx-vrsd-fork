@@ -2565,11 +2565,11 @@ exec function QuickLoad()
 	local GameDirectory saveDir;
 	local DeusExSaveInfo info;
 
-    saveDir = GetSaveGameDirectory();
-
-	//Don't allow in multiplayer.
-	if (Level.Netmode != NM_Standalone)
+	//Don't allow in multiplayer. //SARGE: Or during fake death
+	if (Level.Netmode != NM_Standalone || bFakeDeath)
 	  return;
+
+    saveDir = GetSaveGameDirectory();
 
     //Confirm the save exists before trying to do anything
     info = saveDir.GetSaveInfo(int(ConsoleCommand("get DeusExPlayer iLastSave")));
@@ -2578,7 +2578,7 @@ exec function QuickLoad()
 
 	if (DeusExRootWindow(rootWindow) != None && !IsInState('dying'))
 		DeusExRootWindow(rootWindow).ConfirmQuickLoad();
-	else if (DeusExRootWindow(rootWindow) != None && IsInState('dying') && !bDeadLoad && !bFakeDeath)
+	else if (DeusExRootWindow(rootWindow) != None && IsInState('dying') && !bDeadLoad)
 	{ bDeadLoad=True; GoToState('Dying','LoadHack');   }
 }
 
