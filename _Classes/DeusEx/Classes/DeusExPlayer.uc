@@ -5120,8 +5120,7 @@ simulated function PlayFootStep()
     }
 
 	//GMDX: modded for skill system stealth
-	//volumeMod=0.9;
-    volumeMod = 1.2;
+    volumeMod = 0.9;
     if (SkillSystem!=None)
         stealthLevel = SkillSystem.GetSkillLevel(class'SkillStealth');
 
@@ -5153,6 +5152,10 @@ simulated function PlayFootStep()
     PlaySound(stepSound, SLOT_Interact, volume, , range, pitch);
     if (!bHardCoreMode) //CyberP: Nerf footsteps a touch on lower diffs.
         range*=0.9;
+
+    //Sarge: Increase the AI volume by a significant margin, to make Stealth more necessary
+    volumeMultiplier *= 1.85;
+
 	AISendEvent('LoudNoise', EAITYPE_Audio, volume*volumeMultiplier*volumeMod, range*volumeMultiplier);
     //DebugMessage("LoudNoise: vol = " $ volume*volumeMultiplier*volumeMod $ " range = " $ range*volumeMultiplier);
 }
