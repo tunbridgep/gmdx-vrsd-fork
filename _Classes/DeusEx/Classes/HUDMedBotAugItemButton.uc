@@ -19,7 +19,6 @@ var Color colBorderRespec;
 // ----------------------------------------------------------------------
 // DrawWindow()
 // ----------------------------------------------------------------------
-
 event DrawWindow(GC gc)
 {
 	Super.DrawWindow(gc);
@@ -93,20 +92,14 @@ function Augmentation GetAugmentation()
 // GetAugDesc()
 // ----------------------------------------------------------------------
 
+//Sarge: This was a hardcoded list of augmentation names.
+//Now we just use the short name
 function String GetAugDesc()
 {
 	if (GetClientObject() != None)
 	{
-	    if (Augmentation(GetClientObject()).IsA('AugDefense'))
-	        return "A.D.S (Active)";
-	    else if (Augmentation(GetClientObject()).IsA('AugEnviro'))
-	        return "Environ Resistance (Active)";
-        else
-            return Augmentation(GetClientObject()).augmentationName;
+		return Augmentation(GetClientObject()).GetName(true);
 	}
-	else
-		return "";
-
 }
 
 // ----------------------------------------------------------------------
@@ -129,14 +122,13 @@ event StyleChanged()
 
 defaultproperties
 {
-     colBorderRespec=(R=255,G=0,B=100)
-     colIconDisabled=(R=64,G=64,B=64)
-     colIconNormal=(R=255,G=255)
-     colIconRespec=(R=255,B=255)
-     iconPosWidth=32
-     iconPosHeight=32
-     buttonWidth=34
-     buttonHeight=34
-     borderWidth=34
-     borderHeight=34
+	colBorderRespec=(R=255,G=0,B=100)
+	colIconDisabled=(R=64,G=64,B=64)
+	colIconNormal=(R=255,G=255)
+	iconPosWidth=32
+	iconPosHeight=32
+	buttonWidth=34
+	buttonHeight=34
+	borderWidth=34
+	borderHeight=34
 }

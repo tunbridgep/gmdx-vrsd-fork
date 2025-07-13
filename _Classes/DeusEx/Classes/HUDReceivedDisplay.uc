@@ -125,12 +125,12 @@ function bool ChildRequestedReconfiguration(window child)
 // AddItem()
 // ----------------------------------------------------------------------
 
-function AddItem(Inventory invItem, Int count)
+function AddItem(Inventory invItem, Int count, optional bool bDeclined)
 {
 	local HUDReceivedDisplayItem item;
 
 	item = HUDReceivedDisplayItem(winTile.NewChild(Class'HUDReceivedDisplayItem'));
-	item.SetItem(invItem, count);
+	item.SetItem(invItem, count, bDeclined);
 
 	displayTimer = 0.0;
 	Show();

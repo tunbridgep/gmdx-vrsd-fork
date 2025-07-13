@@ -11,6 +11,7 @@ var ParticleGenerator smokeGen;
 //SARGE: HDTP Model toggles
 var globalconfig int iHDTPModelToggle;
 var string HDTPSkin;
+var string HDTPMesh;
 
 //
 // copied from Engine.Fragment
@@ -106,19 +107,22 @@ state Dying
 			if (Physics == PHYS_None)
 				bBounce = false;
 		}
-        if (ImpactSound==Sound'DeusExSounds.Generic.FleshHit1')
+        if (!region.zone.bWaterZone) //SARGE: Prevent endless sounds when in water
         {
-        if (FRand()<0.2)
-			PlaySound(ImpactSound, SLOT_None, 0.5+FRand()*0.5,, 512, 0.85+FRand()*0.3);
-		else if (FRand()<0.4)
-			PlaySound(MiscSound, SLOT_None, 0.5+FRand()*0.5,, 512, 0.85+FRand()*0.3);
-        }
-        else
-        {
-		if (FRand()<0.5)
-			PlaySound(ImpactSound, SLOT_None, 0.5+FRand()*0.5,, 512, 0.85+FRand()*0.3);
-		else
-			PlaySound(MiscSound, SLOT_None, 0.5+FRand()*0.5,, 512, 0.85+FRand()*0.3);
+            if (ImpactSound==Sound'DeusExSounds.Generic.FleshHit1')
+            {
+                if (FRand()<0.2)
+                    PlaySound(ImpactSound, SLOT_None, 0.5+FRand()*0.5,, 512, 0.85+FRand()*0.3);
+                else if (FRand()<0.4)
+                    PlaySound(MiscSound, SLOT_None, 0.5+FRand()*0.5,, 512, 0.85+FRand()*0.3);
+            }
+            else
+            {
+                if (FRand()<0.5)
+                    PlaySound(ImpactSound, SLOT_None, 0.5+FRand()*0.5,, 512, 0.85+FRand()*0.3);
+                else
+                    PlaySound(MiscSound, SLOT_None, 0.5+FRand()*0.5,, 512, 0.85+FRand()*0.3);
+            }
         }
 		lastHitLoc = Location;
 	}
@@ -143,21 +147,26 @@ function Destroyed()
 function PostBeginPlay()
 {
 	Super.PostBeginPlay();
-    //UpdateHDTPsettings();
+    UpdateHDTPsettings();
 
-	// randomize the lifespan a bit so things don't all disappear at once
 	speed *= 1.1;
-	if (!IsA('GMDXImpactSpark') && !IsA('GMDXImpactSpark2'))
-	LifeSpan += FRand()*1.5; //CyberP: was 1.0
+
+    if (class'DeusExPlayer'.default.iPersistentDebris >= 2) //SARGE: Stick around forever, if we've enabled the setting.
+        LifeSpan = 0;
+    else if (!IsA('GMDXImpactSpark') && !IsA('GMDXImpactSpark2'))
+        // randomize the lifespan a bit so things don't all disappear at once
+        LifeSpan += FRand()*1.5; //CyberP: was 1.0
 }
 
-function bool IsHDTP()
+static function bool IsHDTP()
 {
-    return DeusExPlayer(GetPlayerPawn()).bHDTPInstalled && iHDTPModelToggle > 0;
+    return class'DeusExPlayer'.static.IsHDTPInstalled() && default.iHDTPModelToggle > 0;
 }
 
 exec function UpdateHDTPsettings()
 {
+	if(HDTPMesh != "")
+		Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),IsHDTP());
 }
 
 exec function UpdateHDTPSkin()
@@ -173,6 +182,11 @@ function SkinVariation()
 
 simulated function AddSmoke()
 {
+    if (smokeTime == -1 && class'DeusExPlayer'.default.iPersistentDebris >= 2)
+        return;
+            
+    bVisionImportant = true;
+
 	smokeGen = Spawn(class'ParticleGenerator', Self);
 	if (smokeGen != None)
 	{
@@ -186,6 +200,10 @@ simulated function AddSmoke()
 		smokeGen.bRandomEject = True;
 		smokeGen.bFade = True;
 		smokeGen.SetBase(Self);
+        if (class'DeusExPlayer'.default.iPersistentDebris >= 2)
+            smokeTime = 30 + (FRand() * 10); //Sarge: only smoke for 30 seconds, now that we can have permanent gore.
+        else
+            smokeTime = -1;
 	}
 }
 
@@ -195,13 +213,30 @@ simulated function Tick(float deltaTime)
 		AddSmoke();
 
 	// fade out the object smoothly 2 seconds before it dies completely
-	if (LifeSpan <= 2 && !IsA('GMDXImpactSpark') && !IsA('GMDXImpactSpark2'))
+	if (LifeSpan <= 2 && LifeSpan != 0 && !IsA('GMDXImpactSpark') && !IsA('GMDXImpactSpark2'))
 	{
 		if (Style != STY_Translucent)
 			Style = STY_Translucent;
 
 		ScaleGlow = LifeSpan / 2.0;
 	}
+
+    //Sarge: only smoke for 30 seconds, now that we can have permanent gore.
+    if (smokeTime > 0)
+    {
+        smokeTime -= deltaTime;
+        
+        //slow down the smoke as we get to the end
+        smokeGen.frequency = 6.0 / (30 - smokeTime);
+
+        if (smokeTime <= 0)
+        {
+            smokeTime = -1;
+            if (smokeGen != none)
+                smokeGen.Destroy();
+            bVisionImportant = false;
+        }
+    }
 }
 
 auto state flying

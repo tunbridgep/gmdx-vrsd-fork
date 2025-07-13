@@ -24,8 +24,9 @@ var localized String LogsButtonLabel;
 //Sarge: Outfits button
 var PersonaNavButtonWindow btnOutfits;
 
-var localized String ConsButtonLabelShort; //Sarge: Added
 var localized String OutfitsButtonLabel;
+var localized String ImgButtonLabelShort; //Ygll: Added
+var localized String LogButtonLabel;
 
 // ----------------------------------------------------------------------
 // CreateButtons()
@@ -36,12 +37,12 @@ function CreateButtons()
 	btnLogs      = CreateNavButton(winNavButtons, LogsButtonLabel);
 	btnImages    = CreateNavButton(winNavButtons, ImagesButtonLabel);
 	btnCons      = CreateNavButton(winNavButtons, ConsButtonLabel);
+    CreateOutfitsButton();                  //Sarge: Added
 	btnGoals     = CreateNavButton(winNavButtons, GoalsButtonLabel);
 	btnSkills    = CreateNavButton(winNavButtons, SkillsButtonLabel);
 	btnAugs      = CreateNavButton(winNavButtons, AugsButtonLabel);
 	btnHealth    = CreateNavButton(winNavButtons, HealthButtonLabel);
 	btnInventory = CreateNavButton(winNavButtons, InventoryButtonLabel);
-    CreateOutfitsButton();                  //Sarge: Added
 
 	Super.CreateButtons();
 }
@@ -54,13 +55,14 @@ function CreateButtons()
 function CreateOutfitsButton()
 {
     local class<PersonaScreenBaseWindow> test;
-    test = class<PersonaScreenBaseWindow>(DynamicLoadObject("JCOutfits.PersonaScreenOutfits", class'Class'));
+    test = class<PersonaScreenBaseWindow>(DynamicLoadObject("Augmentique.PersonaScreenOutfits", class'Class'));
 
     //Only create the Outfits button if the outfits window is actually available
     if (test != None)
     {
-    	btnOutfits   = CreateNavButton(winNavButtons, OutfitsButtonLabel);
-        btnCons.SetButtonText(ConsButtonLabelShort);
+		btnOutfits   = CreateNavButton(winNavButtons, OutfitsButtonLabel);
+		btnImages.SetButtonText(ImgButtonLabelShort);
+		btnLogs.SetButtonText(LogButtonLabel);
     }
 }
 
@@ -111,7 +113,7 @@ function bool ButtonActivated( Window buttonPressed )
 
         //Sarge: Add new button for Outfits
 		case btnOutfits:
-            winClass = class<PersonaScreenBaseWindow>(DynamicLoadObject("JCOutfits.PersonaScreenOutfits", class'Class'));
+            winClass = class<PersonaScreenBaseWindow>(DynamicLoadObject("Augmentique.PersonaScreenOutfits", class'Class'));
 			break;
 
 		default:
@@ -123,9 +125,9 @@ function bool ButtonActivated( Window buttonPressed )
 	{
 		PersonaScreenBaseWindow(GetParent()).SaveSettings();
 		if (Player.bRealUI || Player.bHardCoreMode)    //CyberP: no pause
-		root.InvokeUIScreen(winClass,true);
+			root.InvokeUIScreen(winClass,true);
 		else
-		root.InvokeUIScreen(winClass);
+			root.InvokeUIScreen(winClass);
 		return bHandled;
 	}
 	else
@@ -147,6 +149,7 @@ defaultproperties
      ConsButtonLabel="|&Conversations"
      ImagesButtonLabel="I|&mages"
      LogsButtonLabel="|&Logs"
-     OutfitsButtonLabel="|&Outfits"
-     ConsButtonLabelShort="|&Conv."
+     OutfitsButtonLabel="|&Outfit"
+     ImgButtonLabelShort="I|&mg."
+     LogButtonLabel="|&Log"
 }

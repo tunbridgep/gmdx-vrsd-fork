@@ -3,25 +3,14 @@
 //=============================================================================
 class Lockpick expands SkilledTool;
 
-function renderoverlays(canvas canvas)
+function DisplayWeapon(bool overlay)
 {
-	Multiskins[0] = handsTex;
-	if (bIsCloaked)                                                             //RSD: Overhauled cloak/radar routines
-    {
-	   Multiskins[0] = FireTexture'GameEffects.InvisibleTex';
-	   Multiskins[1] = FireTexture'GameEffects.InvisibleTex';
-    }
-    else if (bIsRadar)
-    {
-       Multiskins[0] = Texture'Effects.Electricity.Xplsn_EMPG';
-       Multiskins[1] = Texture'Effects.Electricity.Xplsn_EMPG';
-    }
-    else
-	   multiskins[1]=none;//texture'HDTPItems.Skins.HDTPLockpickPOVTex1';
+    super.DisplayWeapon(overlay);
+    if (overlay && IsHDTP())
+        Multiskins[1] = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPLockpickPOVTex1");
 
-	super.renderoverlays(canvas);
-	multiskins[1]=none;
-	multiskins[0]=none;//texture'HDTPItems.Skins.HDTPLockpickTex1';
+    if (overlay)
+        Multiskins[0] = handsTex;
 }
 
 
@@ -72,6 +61,7 @@ defaultproperties
      Description="A disposable lockpick. The tension wrench is steel, but appropriate needles are formed from fast congealing polymers.|n|n<UNATCO OPS FILE NOTE AJ006-BLACK> Here's what they don't tell you: despite the product literature, you can use a standard lockpick to bypass all but the most high-class nanolocks. -- Alex Jacobson <END NOTE>"
      beltDescription="LOCKPICK"
      Mesh=LodMesh'DeusExItems.Lockpick'
+     HDTPTexture="HDTPItems.Skins.HDTPLockpickTex1"
      CollisionRadius=11.750000
      CollisionHeight=1.900000
      Mass=20.000000

@@ -18,7 +18,13 @@ var Localized String NoCansAvailableText;
 var Localized String AlreadyHasItText;
 var Localized String SlotFullText;
 var Localized String SelectAnotherText;
+
+//SARGE: Added
 var Localized String RespecText;
+var Localized String AutoswitchText;
+
+var int canCount;                   //SARGE: Now a class variable so we can read it elsewhere
+var PersonaCheckBoxWindow  chkAutoswitch;   //SARGE: If set, we will auto-switch to health screen when we have no augs to install
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -28,6 +34,7 @@ var Localized String RespecText;
 
 event InitWindow()
 {
+    bMedbot = true;
 	Super.InitWindow();
 
 	HUDMedBotNavBarWindow(winNavBar).btnAugs.SetSensitivity(False);
@@ -105,6 +112,12 @@ function CreateButtons()
 
 	btnInstall = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow'));
 	btnInstall.SetButtonText(InstallButtonLabel);
+
+	chkAutoswitch = PersonaCheckboxWindow(winClient.NewChild(Class'PersonaCheckboxWindow'));
+	chkAutoswitch.SetText(AutoswitchText);
+	chkAutoswitch.SetPos(346+96+4, 373);
+	chkAutoswitch.SetWidth(200);
+    chkAutoswitch.SetToggle(player.bMedbotAutoswitch);
 }
 
 // ----------------------------------------------------------------------
@@ -171,10 +184,10 @@ function CreateAugCanList()
 function PopulateAugCanList()
 {
 	local Inventory item;
-	local int canCount;
 	local HUDMedBotAugCanWindow augCanWindow;
 	local PersonaNormalTextWindow txtNoCans;
 
+    canCount = 0;
 	winAugsTile.DestroyAllChildren();
 
 	// Loop through all the Augmentation Cannisters in the player's
@@ -230,6 +243,16 @@ function bool ButtonActivated(Window buttonPressed)
 		return Super.ButtonActivated(buttonPressed);
 
 	return bHandled;
+}
+
+//SARGE: Now needed to handle the toggle button
+event bool ToggleChanged(Window button, bool bNewToggle)
+{
+	if (button == chkAutoswitch)
+    {
+		player.bMedbotAutoswitch = bNewToggle;
+        player.SaveConfig();
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -303,6 +326,7 @@ function InstallAugmentation()
 {
 	local AugmentationCannister augCan;
 	local Augmentation aug, aug2;
+	local HUDMedBotHealthScreen healthScreen;
 
 	if (HUDMedBotAugItemButton(selectedAugButton) == None)
 		return;
@@ -344,6 +368,10 @@ function InstallAugmentation()
     medBot.PlaySound(sound'biomodinstall',SLOT_None);
 	// Need to update the aug list
 	PopulateAugCanList();
+
+    // Invoke the health screen if we have no more augs to add/replace
+    if (canCount == 0 && player.bMedBotAutoswitch)
+        HUDMedBotNavBarWindow(winNavBar).InvokeHealthScreen();
 }
 
 // ----------------------------------------------------------------------
@@ -423,6 +451,7 @@ defaultproperties
      SlotFullText="The slot that this augmentation occupies is already full, therefore you cannot install it."
      SelectAnotherText="Please select another augmentation to install."
      RespecText="WARNING: Installing this augmentation will replace %s, and any upgrades will be lost!"
+     AutoswitchText="Auto-Switch Screens"
      clientTextures(0)=Texture'GMDXSFX.UI.MedbotAug'
      clientTextures(1)=Texture'DeusExUI.UserInterface.HUDMedbotBackground_2'
      clientTextures(2)=Texture'DeusExUI.UserInterface.HUDMedbotBackground_3'

@@ -4,8 +4,6 @@
 
 class HUDActiveItem extends HUDActiveItemBase;
 
-var ProgressBarWindow winEnergy;
-
 // ----------------------------------------------------------------------
 // InitWindow()
 // ----------------------------------------------------------------------
@@ -13,7 +11,6 @@ var ProgressBarWindow winEnergy;
 event InitWindow()
 {
 	Super.InitWindow();
-
 	CreateEnergyBar();
 
 	bTickEnabled = TRUE;
@@ -31,34 +28,31 @@ event Tick(float deltaSeconds)
 
 	item = ChargedPickup(GetClientObject());
 
-   if ((item != None) && (Player.PlayerIsRemoteClient()))
-      if (!VerifyItemCarried())
-      {
-        Player.RemoveChargedDisplay(item);
-        item = None;
-      }
+    if ((item != None) && (Player.PlayerIsRemoteClient()))
+        if (!VerifyItemCarried())
+        {
+            Player.RemoveChargedDisplay(item);
+            item = None;
+        }
 
 
 	if ((item != None) && (winEnergy != None))
 	{
-		winEnergy.SetCurrentValue(item.GetCurrentCharge());
+        if (item.bDrained && !item.bUnequipWhenDrained) //SARGE: If it's drained, don't show the power level for the next one.
+            winEnergy.SetCurrentValue(0);
+        else
+            winEnergy.SetCurrentValue(item.GetCurrentCharge());
 	}
 
 }
 
-// ----------------------------------------------------------------------
-// CreateEnergyBar()
-// ----------------------------------------------------------------------
-
-function CreateEnergyBar()
+//SARGE: Draw dim if a charged pickup is drained
+function bool DrawDim()
 {
-	winEnergy = ProgressBarWindow(NewChild(Class'ProgressBarWindow'));
-	winEnergy.SetSize(32, 2);
-	winEnergy.UseScaledColor(True);
-	winEnergy.SetPos(1, 30);
-	winEnergy.SetValues(0, 100);
-	winEnergy.SetCurrentValue(0);
-	winEnergy.SetVertical(False);
+	local ChargedPickup item;
+	item = ChargedPickup(GetClientObject());
+
+    return (item != None && item.bDrained && !item.bUnequipWhenDrained); //SARGE: Extra check is for Goggles on Secondary
 }
 
 // ----------------------------------------------------------------------

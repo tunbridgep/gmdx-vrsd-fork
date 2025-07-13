@@ -19,7 +19,7 @@ defaultproperties
      DrugIncrement=60.000000
      MaxDrugTimer=60.000000
      bBreakable=True
-     maxCopies=20
+     maxCopies=30
      ItemName="Zyme Vial"
      PlayerViewOffset=(X=30.000000,Z=-12.000000)
      PlayerViewMesh=LodMesh'DeusExItems.VialCrack'

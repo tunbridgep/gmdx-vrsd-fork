@@ -11,22 +11,21 @@ function UpdateHDTPSettings()
 	local string texstr;
 
     //If we're femJC, abort
-    if (FlagBase.GetBool('LDDPJCIsFemale'))
-        return;
+    if (!FlagBase.GetBool('LDDPJCIsFemale'))
+    {
+        super.UpdateHDTPsettings();
+        SetSkin();
+    }
 
-	super.UpdateHDTPsettings();
-
-	SetSkin();
+    //Augmentique overrides HDTP
+    if (outfitManager != None)
+        outfitManager.ApplyCurrentOutfit();
 }
 
 //Set HDTP Skin
 function SetSkin()
 {
     local Texture tex1, tex2;
-
-    //If we're femJC, abort
-    if (FlagBase.GetBool('LDDPJCIsFemale'))
-        return;
 
 	if(IsHDTP())
 	{
@@ -238,9 +237,6 @@ function Timer()
 
     //load HDTP Skin
     UpdateHDTPSettings();
-
-    //Apply Current Outfit
-    outfitManager.ApplyCurrentOutfit();
 }
 
 // ----------------------------------------------------------------------
@@ -265,7 +261,7 @@ function SetupOutfitManager()
 	// create the Outfit Manager if not found
 	if (outfitManager == None || !outfitManager.IsA('OutfitManager'))
     {
-        managerBaseClass = class<OutfitManagerBase>(DynamicLoadObject("JCOutfits.OutfitManager", class'Class'));
+        managerBaseClass = class<OutfitManagerBase>(DynamicLoadObject("Augmentique.OutfitManager", class'Class'));
         
         if (managerBaseClass == None)
         {

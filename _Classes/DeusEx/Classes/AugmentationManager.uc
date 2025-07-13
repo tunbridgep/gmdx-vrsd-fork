@@ -23,6 +23,8 @@ var localized string AugLocationFull;
 var localized String NoAugInSlot;
 var Augmentation augie;
 
+var travel int heartOverflow;
+
 // ----------------------------------------------------------------------
 // Network Replication
 // ----------------------------------------------------------------------
@@ -152,12 +154,31 @@ simulated function RefreshAugDisplay()
 }
 
 // ----------------------------------------------------------------------
+// AddToWheel()
+//
+// SARGE: Add an augmentation to the wheel, conditionally.
+// ----------------------------------------------------------------------
+
+function AddToWheel(Augmentation anAug)
+{
+    //If auto-add is turned off, don't add it
+    if (player.iAugWheelAutoAdd == 0)
+        return;
+
+    //If auto add is turned on for active only, and it's not active, don't add it
+    if (player.iAugWheelAutoAdd == 1 && anAug.AugmentationType != Aug_Active)
+        return;
+
+    anAug.bAddedToWheel = true;
+}
+
+// ----------------------------------------------------------------------
 // NumAugsActive()
 //
 // How many augs are currently active?
 // ----------------------------------------------------------------------
 
-simulated function int NumAugsActive(optional bool countToggled)
+simulated function int NumAugsActive(optional bool countEverything)
 {
 	local Augmentation anAug;
 	local int count;
@@ -169,7 +190,10 @@ simulated function int NumAugsActive(optional bool countToggled)
 	anAug = FirstAug;
 	while(anAug != None)
 	{
-		if (anAug.bHasIt && anAug.bIsActive && anAug.CanBeActivated() && (!anAug.IsToggleAug() || countToggled))
+        //SARGE: Don't count the spy drone as active if it's set, unless we're counting everything
+        if (anAug.IsA('AugDrone') && player.bSpyDroneSet && !countEverything)
+        { /*do nothing*/ }
+		else if (anAug.bHasIt && anAug.bIsActive && anAug.CanBeActivated() && (!anAug.IsToggleAug() || countEverything))
 			count++;
 
 		anAug = anAug.next;
@@ -321,20 +345,22 @@ function ActivateAll()
 // ActiveOnly only activates AugmentationType "Active" augs, leaves Toggle augmentations active.
 // ----------------------------------------------------------------------
 
-function DeactivateAll(optional bool toggled)
+function DeactivateAll(optional bool forced)
 {
 	local Augmentation anAug;
 
-    if (Player.bSpyDroneSet)
+    /*
+    if (Player.bSpyDroneSet && forced)
     {
     	Player.SAVErotation = Player.ViewRotation;
         Player.bSpyDroneSet = false;                                            //RSD: Ensures that the Spy Drone will ACTUALLY be turned off
     }
+    */
 
 	anAug = FirstAug;
 	while(anAug != None)
 	{
-		if (anAug.bIsActive && anAug.CanBeActivated() && (!anAug.IsToggleAug() || toggled))
+        if (anAug.bIsActive && anAug.CanBeActivated() && (!anAug.IsToggleAug() || forced))
         {
             anAug.Deactivate();
         }
@@ -370,16 +396,16 @@ simulated function Augmentation FindAugmentation(Class<Augmentation> findClass)
 // used for respeccing
 // ----------------------------------------------------------------------
 
-function RemoveAugmentation(Class<Augmentation> takeClass)
+function bool RemoveAugmentation(Class<Augmentation> takeClass)
 {
-	local Augmentation anAug;
+	local Augmentation anAug, allTheAugs;
 
 	// Checks to see if the player already has it.  If so, we want to
 	// increase the level
 	anAug = FindAugmentation(takeClass);
 
-	if (anAug == None)
-		return;		// shouldn't happen, but you never know!
+	if (anAug == None || !anAug.bHasIt)
+		return false;		// shouldn't happen, but you never know!
 
     if (anAug.bIsActive)
         anAug.Deactivate();
@@ -388,12 +414,103 @@ function RemoveAugmentation(Class<Augmentation> takeClass)
     anAug.CurrentLevel = anAug.default.CurrentLevel;
     anAug.bAddedToWheel = false;
 
+    //If removing HeartLung, downgrade everything
+    if (anAug.IsA('AugHeartLung'))
+    {
+        ForEach Player.AllActors(class'Augmentation',allTheAugs)
+        {
+            if (allTheAugs.bHasIt && allTheAugs.CurrentLevel != 0 && allTheAugs.heartUpgraded > 0)
+            {
+                allTheAugs.CurrentLevel -= allTheAugs.heartUpgraded;
+                allTheAugs.heartUpgraded = 0;;
+                allTheAugs.Setup();
+            }
+        }
+    }
+
 	// Manage our AugLocs[] array
 	AugLocs[anAug.AugmentationLocation].augCount--;
 
     Player.RemoveAugmentationDisplay(anAug);
     Player.RadialMenuUpdateAug(anAug);
+
+    return true;
 }
+
+// ----------------------------------------------------------------------
+// AssignOverflow()
+// SARGE: Assigns a specific priority list for heart augmentation overflow
+// Focuses exclusively on augs that are at or below the max level
+// ----------------------------------------------------------------------
+
+function AssignOverflowTo(class<Augmentation> augClass, int maxLevel)
+{
+    local Augmentation aug;
+
+    if (heartOverflow <= 0)
+        return;
+
+    aug = GetAug(augClass);
+
+    if (aug != None && aug.bHasIt && aug.CurrentLevel < aug.MaxLevel && aug.CurrentLevel <= maxLevel)
+    {
+        //player.clientMessage("Overflow to " $ aug.GetName() $ ": " $ heartOverflow);
+        heartOverflow--;
+        aug.CurrentLevel++;
+        aug.heartUpgraded++;
+        aug.Setup();
+    }
+}
+
+function AssignOverflow()
+{
+    local int level;
+
+    level = 1;
+
+    while (level <= 4 && heartOverflow > 0)
+    {
+        //Chest first
+        AssignOverflowTo(class'AugShield',level);
+        AssignOverflowTo(class'AugEMP',level);
+        AssignOverflowTo(class'AugAqualung',level);
+        AssignOverflowTo(class'AugEnviro',level);
+        AssignOverflowTo(class'AugHealing',level);
+        AssignOverflowTo(class'AugPower',level);
+        
+        //Then Head
+        AssignOverflowTo(class'AugDefense',level);
+        AssignOverflowTo(class'AugDrone',level);
+        
+        //Then Eyes
+        AssignOverflowTo(class'AugVision',level);
+        AssignOverflowTo(class'AugTarget',level);
+        
+        //Then Subdermal
+        AssignOverflowTo(class'AugCloak',level);
+        AssignOverflowTo(class'AugRadarTrans',level);
+        AssignOverflowTo(class'AugBallisticPassive',level);
+        AssignOverflowTo(class'AugBallistic',level);
+        
+        //Then Arms
+        AssignOverflowTo(class'AugAmmoCap',level);
+        AssignOverflowTo(class'AugCombatStrength',level);
+        AssignOverflowTo(class'AugCombat',level);
+        AssignOverflowTo(class'AugMuscle',level);
+
+        //Then Legs
+        AssignOverflowTo(class'AugSpeed',level);
+        AssignOverflowTo(class'AugStealth',level);
+        AssignOverflowTo(class'AugIcarus',level);
+        
+        //Then Default
+        AssignOverflowTo(class'AugIFF',level);
+        AssignOverflowTo(class'AugLight',level);
+
+        level++;
+    }
+}
+
 
 // ----------------------------------------------------------------------
 // GivePlayerAugmentation()
@@ -421,15 +538,32 @@ function Augmentation GivePlayerAugmentation(Class<Augmentation> giveClass)
 		Player.ClientMessage(AugLocationFull);
 		return anAug;
 	}
-
+        
+    //Add it to the aug wheel permanently, depending on settings.
+    AddToWheel(anAug);
 
     if (anAug.IsA('AugHeartLung')) //CyberP: AugHeartLung upgrades all passive augs. //RSD: Active too now, taken from HUDMedBotAddAugsScreen.uc for less specialized code architecture
-       ForEach Player.AllActors(class'Augmentation',allTheAugs)
-        if (allTheAugs.bHasIt && allTheAugs.CurrentLevel != allTheAugs.MaxLevel) //RSD: removed && allTheAugs.bAlwaysActive, no distinction between active or passive for synth heart anymore
+    {
+        heartOverflow = 0;
+        //SARGE: Now we try to assign 11 augs worth (1 for each slot), and bubble over any overflow.
+        ForEach Player.AllActors(class'Augmentation',allTheAugs)
         {
-          allTheAugs.CurrentLevel++;                                            //RSD: changed from +=1 to ++ for no reason
-          allTheAugs.Setup();
+            //Find any augs that are fully upgraded, which means we're wasting the aug upgrade.
+            if (allTheAugs.bHasIt && allTheAugs.CurrentLevel == allTheAugs.MaxLevel && allTheAugs.CurrentLevel > 0)
+            {
+                heartOverflow++;
+                player.clientMessage("Overflow from " $ allTheAugs.GetName() $ ": " $ heartOverflow);
+            }
+
+            else if (allTheAugs.bHasIt && allTheAugs.CurrentLevel != allTheAugs.MaxLevel)
+            {
+                allTheAugs.CurrentLevel++;
+                allTheAugs.heartUpgraded++;
+                allTheAugs.Setup();
+            }
         }
+        AssignOverflow();
+    }
 
 	anAug.bHasIt = True;
 
@@ -438,6 +572,11 @@ function Augmentation GivePlayerAugmentation(Class<Augmentation> giveClass)
 		anAug.bIsActive = True;
 		anAug.GotoState('Active');
 	}
+    else if (anAug.AugmentationType == Aug_Automatic && player.KillswitchTimer <= 0)
+    {
+		anAug.bIsActive = True;
+		anAug.GotoState('Active');
+    }
 	else
 	{
 		anAug.bIsActive = False;
@@ -445,7 +584,10 @@ function Augmentation GivePlayerAugmentation(Class<Augmentation> giveClass)
     if (!anAug.IsA('AugHeartLung')                                              //RSD: If we already have Synth Heart installed, give a free upgrade
       && Player.AugmentationSystem.FindAugmentation(class'AugHeartLung').bHasIt
       && anAug.CurrentLevel != anAug.MaxLevel)
-    	anAug.CurrentLevel++;
+    {
+        anAug.CurrentLevel++;
+        anAug.heartUpgraded++;
+    }
 
 	if ( Player.Level.Netmode == NM_Standalone )
 		Player.ClientMessage(Sprintf(anAug.AugNowHaveAtLevel, anAug.GetName(), anAug.CurrentLevel + 1));
@@ -481,7 +623,7 @@ function Augmentation GivePlayerAugmentation(Class<Augmentation> giveClass)
 	if ((anAug.CanBeActivated()) && (Player.bHUDShowAllAugs))
 	    Player.AddAugmentationDisplay(anAug);
     if (anAug.CanBeActivated())                                                   //RSD: Otherwise we get passive augs showing up in the radial menu
-        Player.RadialMenuAddAug(anAug);
+        player.RadialMenuAddAug(anAug);
 
     anAug.Setup();
 	return anAug;

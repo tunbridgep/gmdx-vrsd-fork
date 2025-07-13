@@ -1,0 +1,4 @@
+Run with BSP Optimisations on Maximum and the Minimise Cuts slider set to 70.
+(Previously was set to 0, which is much safer, but causes footstep sound weirdness)
+It breaks almost immediately otherwise.
+Also try running BSP multiple times to get the ratio as low as possible.

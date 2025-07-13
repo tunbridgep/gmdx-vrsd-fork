@@ -516,6 +516,7 @@ function EEventAction SetupEventCheckObject( ConEventCheckObject event, out Stri
 	local Name keyName;
 	local bool bHasObject;
 	local DeusExWeapon wep;
+    local ChargedPickup P;
 
 	// Okay this is some HackyHack stuff here.  We want the ability to
 	// check if the player has a particular nanokey.  Sooooooo.
@@ -528,14 +529,28 @@ function EEventAction SetupEventCheckObject( ConEventCheckObject event, out Stri
 	}
 	else
 	{
-		bHasObject = (player.FindInventoryType(event.checkObject) != None);
-		  if (bHasObject && player.FindInventoryType(event.checkObject).IsA('DeusExWeapon')) //CyberP: ignore the wep if it is modded
-		   {
-           wep = DeusExWeapon(player.FindInventoryType(event.checkObject));
-           if (wep.bHasScope || wep.bHasLaser || wep.HasClipMod() || wep.HasDAMMod() || wep.HasROFMod() ||
-               wep.HasAccuracyMod() || wep.HasRangeMod() || wep.HasRecoilMod() || wep.HasReloadMod())
-		            bHasObject = False;
-		   }
+	      bHasObject = (player.FindInventoryType(event.checkObject) != None);
+
+        if (bHasObject && player.FindInventoryType(event.checkObject).IsA('DeusExWeapon')) //CyberP: ignore the wep if it is modded
+        {
+            wep = DeusExWeapon(player.FindInventoryType(event.checkObject));
+            
+            //SARGE: This had a bug in vRSD where you couldn't tell Max Chen you had the DTS if you modded it before telling him about it.
+            //So we're going to ignore the DTS for now. I don't think any other convo checks for it, so it shouldn't be a big deal.
+            //EDIT: Same with the Sniper. Kaplan has a special line for it that players will never hear because they start with a modded one.
+            //Anyway, if anything breaks due to this, then you can point at me and laugh.
+            if (!wep.IsA('WeaponNanoSword') && !wep.IsA('WeaponRifle') && wep.bModified)
+            {
+                bHasObject = False;
+            }
+        }
+
+        if (bHasObject && player.FindInventoryType(event.checkObject).IsA('ChargedPickup')) //SARGE: Ignore the item if it's not charged.
+        {
+            P = ChargedPickup(player.FindInventoryType(event.checkObject));
+            if (P != None && P.GetCurrentCharge() == 0)
+                bHasObject = False;
+        }
 	}
 
 	// Now branch appropriately
@@ -579,6 +594,8 @@ function EEventAction SetupEventTransferObject( ConEventTransferObject event, ou
     local AmmoDart AD;
     local AmmoDartFlare ADF;
     local WeaponMod wepMod;                                                     //RSD: For Smuggler convo
+    local DeusExWeapon wpn;                                                     //SARGE: For displaying weapon ammo.
+    local int addAmmo;                                                          //SARGE: For displaying weapon ammo + additional ammo given during convo at the same time.
 /*
 log("SetupEventTransferObject()------------------------------------------");
 log("  event = " $ event);
@@ -631,6 +648,14 @@ log("  event.toActor    = " $ event.toActor );
 		invItemFrom = Spawn(event.giveObject);
 		bSpawnedItem = True;
 	}
+    
+    // SARGE: If we gave away a disposable weapon, also take it's ammo.
+    if (invItemFrom != none && event.fromActor.IsA('DeusExPlayer') && invItemFrom.IsA('DeusExWeapon'))
+    {
+        wpn = DeusExWeapon(invItemFrom);
+        if (wpn != None && wpn.bDisposableWeapon && wpn.AmmoType != None && !wpn.AmmoType.IsA('AmmoNone'))
+            wpn.AmmoType.AmmoAmount = 0;
+    }
 
     //CyberP: sort out ammo nonsense
     if (invItemFrom != none && invItemFrom.IsA('Ammo') && invokeActor != none)  //RSD: accessed none?
@@ -864,23 +889,31 @@ log("  event.toActor    = " $ event.toActor );
 
 			if (invokeActor != none && invokeActor.IsA('PaulDenton'))    //CyberP: have paul offer you balanced choices //RSD: accessed none?
             {
-             /*if (invItemTo.IsA('WeaponMiniCrossbow'))
-             {
-                WeaponMiniCrossbow(invItemTo).BaseAccuracy -= 0.1;
-                WeaponMiniCrossbow(invItemTo).ModBaseAccuracy += 0.1;
-                //WeaponMiniCrossbow(invItemTo).PickupAmmoCount = 8;
-             }
-             else if (invItemTo.IsA('WeaponRifle'))
-             {
-                WeaponRifle(invItemTo).BaseAccuracy -= 0.1;
-                WeaponRifle(invItemTo).ModBaseAccuracy += 0.1;
-             }*/
-             if (invItemTo.IsA('WeaponMiniCrossbow') || invItemTo.IsA('WeaponRifle'))
-             {
-                wepMod = Spawn(class'WeaponModAccuracy');
-                wepMod.ApplyMod(DeusExWeapon(invItemTo));
-                wepMod.Destroy();
-             }
+			 if (invItemTo.IsA('WeaponMiniCrossbow') || invItemTo.IsA('WeaponRifle'))
+			 {
+				wepMod = Spawn(class'WeaponModAccuracy');
+				wepMod.ApplyMod(DeusExWeapon(invItemTo));
+				wepMod.Destroy();
+				
+				//SARGE: Add some ammo, too
+				if (invItemTo.IsA('WeaponMiniCrossbow'))
+                {
+                    //SARGE: Add a range mod too!
+                    wepMod = Spawn(class'WeaponModRange');
+                    wepMod.ApplyMod(DeusExWeapon(invItemTo));
+                    wepMod.Destroy();
+
+					DeusExWeapon(invItemTo).AmmoType.AddAmmo(8);
+                    //conWinThird.ShowReceivedItem(DeusExWeapon(invItemTo).AmmoType, 8);
+                    addAmmo += 8;
+                }
+				else if (invItemTo.IsA('WeaponRifle'))
+                {
+					DeusExWeapon(invItemTo).AmmoType.AddAmmo(5);
+                    //conWinThird.ShowReceivedItem(DeusExWeapon(invItemTo).AmmoType, 5);
+                    addAmmo += 5;
+                }
+			 }
             }
             else if (invokeActor != none && invokeActor.IsA('Male2'))           //RSD: accessed none?
             {
@@ -902,14 +935,28 @@ log("  event.toActor    = " $ event.toActor );
 	// Show the player that he/she/it just received something!
 	if ((DeusExPlayer(event.toActor) != None) && (conWinThird != None) && (invItemTo != None))
 	{
+        wpn = DeusExWeapon(invItemTo);
+
         if ( invItemTo.IsA('Ammo') )   //CyberP: display ammo counts
 	        itemsTransferred = tempAmmoCount;
 		if (conWinThird != None)
+        {
 			conWinThird.ShowReceivedItem(invItemTo, itemsTransferred);
+           
+            //SARGE: Show ammo loaded inside transferred weapons, plus any additional ammo transferred.
+            if (wpn != None && wpn.AmmoName != None && wpn.AmmoName != class'AmmoNone' && !wpn.bDisposableWeapon && wpn.PickupAmmoCount + AddAmmo > 0)
+                conWinThird.ShowReceivedItem(wpn.AmmoType, wpn.PickupAmmoCount + AddAmmo);
+
+        }
 		else
 			DeusExRootWindow(player.rootWindow).hud.receivedItems.AddItem(invItemTo, itemsTransferred);
 		player.PlaySound(sound'objpickup3',SLOT_None,0.7);
 	}
+	
+    // SARGE: Update secondary display
+	if (event.toActor.IsA('DeusExPlayer'))
+        DeusExPlayer(event.toActor).UpdateSecondaryDisplay();
+
 
 	nextAction = EA_NextEvent;
 	nextLabel = "";

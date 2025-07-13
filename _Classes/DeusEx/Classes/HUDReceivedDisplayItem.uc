@@ -9,7 +9,10 @@ var Window     winIcon;
 var TextWindow winLabel;
 
 var Color colText;
+var Color colDecline;
 var Font fontLabel;
+
+var const localized string msgDeclined;
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -38,7 +41,7 @@ event InitWindow()
 // SetItem()
 // ----------------------------------------------------------------------
 
-event SetItem(Inventory invItem, int count)
+event SetItem(Inventory invItem, int count, optional bool bDeclined)
 {
 	local String labelText;
 
@@ -59,6 +62,15 @@ event SetItem(Inventory invItem, int count)
         labelText = invItem.beltDescription;
 	if (count > 1)
 		labelText = labelText $ " (" $ String(count) $ ")";
+    
+    //SARGE: Special case for handling declined items. Yuck.
+    if (bDeclined)
+    {
+        winIcon.SetTileColorRGB(64,64,64);
+        //labelText = msgDeclined;
+        winLabel.SetTextColor(colDecline);
+        //winIcon.SetTileColor(colDecline);
+    }
 
 	winLabel.SetText(labelText);
 }
@@ -74,6 +86,7 @@ event StyleChanged()
 	theme = player.ThemeManager.GetCurrentHUDColorTheme();
 
 	colText = theme.GetColorFromName('HUDColor_NormalText');
+	colDecline = theme.GetColorFromName('HUDColor_ButtonTextDisabled');
 
 	if (winLabel != None)
 		winLabel.SetTextColor(colText);
@@ -85,4 +98,5 @@ event StyleChanged()
 defaultproperties
 {
      fontLabel=Font'DeusExUI.FontMenuSmall_DS'
+     msgDeclined="-"
 }

@@ -67,5 +67,5 @@ defaultproperties
      CollisionHeight=0.010000
      Mass=0.000000
      Buoyancy=5.500000
-     bVisionImportant=True
+     //bVisionImportant=True //SARGE: WTF???
 }

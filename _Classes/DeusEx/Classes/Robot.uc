@@ -19,6 +19,34 @@ var float crazedTimer;
 var(Sounds) sound explosionSound;
 var bool bPlayedCritical;
 
+//Sarge: Nanovirus disable time
+var float rebootTime;                    //Sarge: timer before we are enabled again after nanovirus.
+
+function StartReboot()
+{
+    local Perk sensorBurn;
+    local DeusExPlayer player;
+
+    player = DeusExPlayer(GetPlayerPawn());
+
+    if (player == None)
+        return;
+
+    sensorBurn = player.PerkManager.GetPerkWithClass(class'DeusEx.PerkSensorBurnout');
+
+    if (sensorBurn.bPerkObtained)
+    {
+        rebootTime = player.saveTime + sensorBurn.PerkValue;
+        if (GetStateName() != 'Disabled')
+            GotoState('Disabled');
+    }
+}
+
+function bool HasRebooted()
+{
+    return rebootTime == 0 || rebootTime - DeusExPlayer(GetPlayerPawn()).saveTime <= 0;
+}
+
 function InitGenerator()
 {
 	local Vector loc;
@@ -72,11 +100,21 @@ function Tick(float deltaTime)
 	if (CrazedTimer > 0)
 	{
 		CrazedTimer -= deltaTime;
-		if (CrazedTimer < 0)
+		if (CrazedTimer <= 0)
+        {
+            StartReboot();
 			CrazedTimer = 0;
+        }
 	}
+    
+    if (rebootTime > 0 && rebootTime - DeusExPlayer(GetPlayerPawn()).saveTime < 0 && IsInState('Disabled'))
+    {
+        rebootTime = 0;
+        GotoState(Orders);
+    }
 
-	if (CrazedTimer > 0)
+
+	if (CrazedTimer > 0 || rebootTime > 0)
 		bReverseAlliances = true;
 	else
 		bReverseAlliances = false;
@@ -120,8 +158,8 @@ local ScorchMark mark;
     mark = Spawn(class'DeusEx.ScorchMark', Self,, HitLocation, Rotator(HitNormal));
 		if (mark != None && CollisionRadius != 0)
 		{
-			mark.DrawScale = CollisionRadius / 120;
-			mark.ReattachDecal();
+			mark.DrawScaleMult = CollisionRadius / 6;
+			mark.UpdateHDTPSettings();
 		}
 }
 
@@ -140,13 +178,17 @@ function bool IgnoreDamageType(Name damageType)
 		return True;
 	//else if (damageType == 'KnockedOut')
 	//	return True;
+	
+    //SARGE: Bleeding
+    else if (damageType == 'BleedEffect')
+		return True;
 	else
 		return False;
 }
 
 function SetOrders(Name orderName, optional Name newOrderTag, optional bool bImmediate)
 {
-	if (EMPHitPoints > 0)  // ignore orders if disabled
+	if (EMPHitPoints > 0 && HasRebooted())  // ignore orders if disabled
 		Super.SetOrders(orderName, newOrderTag, bImmediate);
 }
 
@@ -225,6 +267,8 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
             if (bHasCloak)
                 bHasCloak=False; //CyberP: no cloaking when disabled.
 			EMPHitPoints = 0;
+            rebootTime = 0; //SARGE: Disable the reboot timer when disabled
+
 			if (oldEMPHitPoints > 0)
 			{
 				PlaySound(sound'EMPZap', SLOT_None,,, (CollisionRadius+CollisionHeight)*8, 2.0);
@@ -285,7 +329,7 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
 
 	// robots don't have soft, squishy bodies like humans do, so they're less
 	// susceptible to gunshots...
-	if (damageType == 'Shot')
+	if (damageType == 'Shot' || damageType == 'Bleed') //SARGE: Added bleed check for shurikens
 	{
 	    if (theInstigator != None && theInstigator.inHand != None && theInstigator.inHand.IsA('WeaponNanoSword'))
 	    {
@@ -354,9 +398,6 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
 	else if (Inventory != None) //then check if carrying armor
 		actualDamage = Inventory.ReduceDamage(int(actualDamage), DamageType, HitLocation);
 
-	if (!bInvincible)
-		Health -= int(actualDamage);
-
     Enemy = instigatedBy;
 
     if (Enemy != none && Enemy.IsA('DeusExPlayer'))
@@ -367,6 +408,9 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
 			DeusExPlayer(Enemy).inHand.IsA('WeaponCrowbar') || DeusExPlayer(Enemy).inHand.IsA('WeaponNanoSword'))
 				actualDamage*=perkPiercing.PerkValue;
 	}
+	
+    if (!bInvincible)
+		Health -= int(actualDamage);
 
 	if (Health <= 0)
 	{

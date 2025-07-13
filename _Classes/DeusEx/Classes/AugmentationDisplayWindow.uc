@@ -62,6 +62,7 @@ var localized String msgIRAmpActive;
 var localized String msgNoImage;
 var localized String msgDisabled;
 var localized String msgReboot;                                                 //Sarge: Added
+var localized String msgCurrentAccuracy;                                        //Sarge: Added
 var localized String SpottedTeamString;
 var localized String YouArePoisonedString;
 var localized String YouAreBurnedString;
@@ -100,6 +101,7 @@ var Actor VisionBlinder; //So the same thing doesn't blind me twice.
 var int VisionTargetStatus; //For picking see through wall texture
 const VISIONENEMY = 1;
 const VISIONALLY = 2;
+const VISIONITEM = 3; //SARGE: Added
 const VISIONNEUTRAL = 0;
 
 // Show name of player in multiplayer on a timer
@@ -178,13 +180,22 @@ function Actor TraceLOS(float checkDist, out vector HitLocation)
        return target;
        }
     } */
-	// figure out how far ahead we should trace
-	StartTrace = Player.Location;
-	EndTrace = Player.Location + (Vector(Player.ViewRotation) * checkDist);
+    if (player.bSpyDroneActive && !player.bSpyDroneSet && player.bBigDroneView && player.aDrone != None)
+    {
+        // figure out how far ahead we should trace
+        StartTrace = Player.aDrone.Location;
+        EndTrace = Player.aDrone.Location + (Vector(player.aDrone.Rotation) * checkDist);
+    }
+    else
+    {
+        // figure out how far ahead we should trace
+        StartTrace = Player.Location;
+        EndTrace = Player.Location + (Vector(Player.ViewRotation) * checkDist);
 
-	// adjust for the eye height
-	StartTrace.Z += Player.BaseEyeHeight;
-	EndTrace.Z += Player.BaseEyeHeight;
+        // adjust for the eye height
+        StartTrace.Z += Player.BaseEyeHeight;
+        EndTrace.Z += Player.BaseEyeHeight;
+    }
 
 	// find the object that we are looking at
 	// make sure we don't select the object that we're carrying
@@ -254,6 +265,69 @@ function Interpolate(GC gc, float fromX, float fromY, float toX, float toY, int 
 }
 
 // ----------------------------------------------------------------------
+// IsMinimised()
+// SARGE: Is the drone window minimised?
+// SARGE: Add optional param for Targeting aug
+// ----------------------------------------------------------------------
+
+function bool IsMinimised(optional bool targeting)
+{
+    if (targeting)
+        return targetLevel < 2 || player.bMinimiseTargetingWindow || ((player.inHand == None || !player.inHand.isA('Weapon')) && player.bOnlyShowTargetingWindowWithWeaponOut);
+    else
+        return player.bMinimiseTargetingWindow && (!player.bSpyDroneActive || player.bSpyDroneSet);
+}
+
+// ----------------------------------------------------------------------
+// GetDroneWindowSize()
+// SARGE: Gets the drone window size,
+// ----------------------------------------------------------------------
+function GetDroneWindowSize(out float W, out float H, out float CX, out float CY,optional bool targeting)
+{
+    if (IsMinimised(targeting))
+    {
+        W = (width/3.33)*0.1;
+        H = (height/3.33)*0.1;
+        //CX = width/2;
+        //CY = margin + 20;//Leave some space for some text above it
+        CX = margin;
+        CY = height/2.0;
+    }
+    else
+    {
+        W = width/3.33;
+        H = height/3.33;
+        CX = width/6.5 + margin;
+        CY = height/2.0;
+    }
+}
+
+function DrawDroneWindow(GC gc, ViewportWindow win, out float W, out float H, out float CX, out float CY, optional bool targeting)
+{
+    local float boxTLX,boxTLY,boxBRY,boxBRX;
+
+    GetDroneWindowSize(W,H,CX,CY,targeting);
+
+    boxTLX = CX - W/2.0;
+    boxTLY = CY - H/2.0;
+    boxBRX = CX + W/2.0;
+    boxBRY = CY + H/2.0;
+	
+    if (win != None)
+    {
+        if (IsMinimised(targeting))
+        {
+            win.Hide();
+        }
+        else
+        {
+            win.Show();
+            DrawDropShadowBox(gc, boxTLX, boxTLY, W, H);
+        }
+    }
+}
+
+// ----------------------------------------------------------------------
 // ConfigurationChanged()
 // ----------------------------------------------------------------------
 
@@ -263,10 +337,7 @@ function ConfigurationChanged()
 
 	if ((winDrone != None) || (winZoom != None))
 	{
-		w = width/3.33;
-		h = height/3.33;
-		cx = width/6.5 + margin;
-		cy = height/2.0;
+        GetDroneWindowSize(w,h,cx,cy);
 		x = cx - w/2.0;
 		y = cy - h/2.0;
 
@@ -346,6 +417,9 @@ singular function checkForHazards(GC gc)
     local int i;
 	local DeusExRootWindow root;
 
+    if (player == None || player.AugmentationSystem == None)
+        return;
+
 	root = DeusExRootWindow(player.rootWindow);
     
     //Disable the hazard detection text while windows are open
@@ -354,8 +428,10 @@ singular function checkForHazards(GC gc)
 
     aug = AugIFF(Player.AugmentationSystem.GetAug(class'AugIFF'));
 
-    if (aug != None && aug.bHasIt)
-        range = (aug.CurrentLevel) * aug.default.hazardsrange * 16; //Range in which hazards are detected - 50 feet at level 2, 100 at level 3
+    if (aug == None || !aug.bHasIt)
+        return;
+
+    range = (aug.CurrentLevel) * aug.default.hazardsrange * 16; //Range in which hazards are detected - 50 feet at level 2, 100 at level 3
 
     if (range <= 0)
         return;
@@ -363,7 +439,7 @@ singular function checkForHazards(GC gc)
     //First, get all the damage triggers
     foreach Player.RadiusActors(class'DamageTrigger', DT, range)
     {
-        if (totalActors >= 20)
+        if (totalActors >= 19)
             break;
 
         if (!DT.bInitiallyActive || !DT.bIsOn || DT.damageInterval == 0 || DT.damageAmount == 0)
@@ -392,7 +468,7 @@ singular function checkForHazards(GC gc)
     //Next, get radioactive barrels
     foreach Player.RadiusActors(class'Barrel1', BR, range)
     {
-        if (totalActors >= 20)
+        if (totalActors >= 19)
             break;
 
         if (BR.SkinColor != SC_RadioActive)
@@ -416,7 +492,7 @@ singular function checkForHazards(GC gc)
     //Next, get clouds of each type
     foreach Player.RadiusActors(class'Cloud', CL, range)
     {
-        if (totalActors >= 20)
+        if (totalActors >= 19)
             break;
 
         if (CL.Damage == 0)
@@ -444,7 +520,7 @@ singular function checkForHazards(GC gc)
         if (bDefenseActive)
             break;
 
-        if (totalActors >= 20)
+        if (totalActors >= 19)
             break;
 
         if (!PROJ.bProximityTriggered || PROJ.bDisabled || PROJ.Damage <= 0 || PROJ.Owner == player) //Only detect mines placed on walls, etc
@@ -476,7 +552,7 @@ singular function checkForHazards(GC gc)
         {
             CL = Cloud(actors[i]);
             threatType = string(CL.damageType);
-            if (DT.damageInterval != 0)
+            if (CL.damageInterval != 0)
                 threatDam = int(CL.Damage/CL.damageInterval);
             else
                 threatDam = int(CL.Damage);
@@ -760,7 +836,7 @@ function DrawDefenseAugmentation(GC gc)
 
     if (drawTime > 0)
     {
-		if (defenseTarget.IsInState('Exploding') || defenseTarget == None)
+		if (defenseTarget == None || defenseTarget.IsInState('Exploding'))
             str = msgADSDetonating;
         else
             str = msgADSTracking;
@@ -801,35 +877,21 @@ function DrawSpyDroneAugmentation(GC gc)
 
 	// set the coords of the drone window
 
-    boxW = width/3.33;
-    boxH = height/3.33;
-    boxCX = width/6.5 + margin;
-    boxCY = height/2;
-    boxTLX = boxCX - boxW/2.0;
-    boxTLY = boxCY - boxH/2.0;
-    boxBRX = boxCX + boxW/2.0;
-    boxBRY = boxCY + boxH/2.0;
-
 	if (winDrone != None)
 	{
-		DrawDropShadowBox(gc, boxTLX, boxTLY, boxW, boxH);
-			
+        DrawDroneWindow(gc,winDrone,boxW,boxH,boxCX,boxCY);
+        boxTLX = boxCX - boxW/2.0;
+        boxTLY = boxCY - boxH/2.0;
+        boxBRX = boxCX + boxW/2.0;
+        boxBRY = boxCY + boxH/2.0;
+
         winDrone.SetViewportActor(Player.aDrone);
 
         if (!Player.bSpyDroneSet)
         {
             //SARGE: Now we swap windows when the spy drone is active
             if (player.bBigDroneView)
-            {
-                //playerPosition = Player.Location;
-                //playerPosition.Z += Player.EyeHeight - 10;
-                //playerPosition += Player.WalkBob;
-                //Move it forward a bit so we don't see parts of the player
-                //playerPosition += Vector(Player.Rotation) * 10;
                 winDrone.SetViewportActor(Player);
-                //winDrone.SetViewportLocation(playerPosition);
-                //winDrone.SetRotation(Player.SAVErotation);
-            }
 			str = msgDroneActive;
         }
 		else
@@ -837,8 +899,16 @@ function DrawSpyDroneAugmentation(GC gc)
 			str = msgDroneStandby;                                                  //RSD: Standby message
         }
 		gc.GetTextExtent(0, w, h, str);
-		x = boxCX - w/2;
-		y = boxTLY - h - margin;
+        if (IsMinimised())
+        {
+            x = boxCX;
+            y = boxCY - h/2;
+        }
+        else
+        {
+            x = boxCX - w/2;
+            y = boxTLY - h - margin;
+        }
 		gc.DrawText(x, y, w, h, str);
 
         str = "";
@@ -848,8 +918,16 @@ function DrawSpyDroneAugmentation(GC gc)
         {
 			str = msgEnergyLow;
 			gc.GetTextExtent(0, w, h, str);
-			x = boxCX - w/2;
-			y = boxTLY + margin;
+            if (IsMinimised())
+            {
+                x = boxCX;
+                y = (boxCY - h/2) + 10;
+            }
+            else
+            {
+                x = boxCX - w/2;
+                y = boxTLY + margin;
+            }
 			gc.SetTextColorRGB(255,0,0);
 			gc.DrawText(x, y, w, h, str);
 			gc.SetTextColor(colHeaderText);
@@ -863,9 +941,18 @@ function DrawSpyDroneAugmentation(GC gc)
 
             str = msgEMPEnergyLow;
 			gc.GetTextExtent(0, w, h, str);
-			x = boxCX - w/2;
-			y = boxTLY + margin;
-			gc.SetTextColorRGB(255,0,0);
+            if (IsMinimised())
+            {
+                x = boxCX;
+                y = (boxCY - h/2) + 10;
+            }
+            else
+            {
+                x = boxCX - w/2;
+                y = boxTLY + margin;
+            }
+			
+            gc.SetTextColorRGB(255,0,0);
 			gc.DrawText(x, y+ymod, w, h, str);
 			gc.SetTextColor(colHeaderText);
         }
@@ -878,8 +965,16 @@ function DrawSpyDroneAugmentation(GC gc)
 
             str = msgDroneCloaked;
 			gc.GetTextExtent(0, w, h, str);
-			x = boxCX - w/2;
-			y = boxTLY + margin;
+            if (IsMinimised())
+            {
+                x = boxCX;
+                y = (boxCY - h/2) + 10;
+            }
+            else
+            {
+                x = boxCX - w/2;
+                y = boxTLY + margin;
+            }
 			gc.SetTextColorRGB(0,0,255);
 			gc.DrawText(x, y+ymod, w, h, str);
 			gc.SetTextColor(colHeaderText);
@@ -1111,11 +1206,7 @@ function DrawMiscStatusMessages( GC gc )
 	weap = DeusExWeapon(Player.inHand);
 	if (( weap != None ) && ( weap.AmmoLeftInClip() == 0 ) && (weap.NumClips() == 0) )
 	{
-		if ( weap.IsA('WeaponLAM') ||
-			  weap.IsA('WeaponGasGrenade') ||
-			  weap.IsA('WeaponEMPGrenade') ||
-			  weap.IsA('WeaponShuriken') ||
-			  weap.IsA('WeaponLAW') )
+		if (weap.bDisposableWeapon)
 		{
 		}
 		else
@@ -1267,10 +1358,6 @@ function GetTargetReticleColor( Actor target, out Color xcolor )
 	}
 }
 
-// ----------------------------------------------------------------------
-// DrawTargetAugmentation()
-// ----------------------------------------------------------------------
-
 //SARGE: Moved here so we can call it from multiple places
 function DrawAccuracyCrosshair(GC gc, DeusExWeapon weapon, Color crossColor, out float x, out float y, out float mult)
 {
@@ -1278,6 +1365,12 @@ function DrawAccuracyCrosshair(GC gc, DeusExWeapon weapon, Color crossColor, out
     local int i;
     w = width;
     h = height;
+
+    if (player.iCrosshairOffByOne > 0)
+    {
+        w += player.iCrosshairOffByOne;
+    }
+
     x = int(w * 0.5)-1;
     y = int(h * 0.5)-1;
 
@@ -1323,11 +1416,15 @@ function DrawAccuracyCrosshair(GC gc, DeusExWeapon weapon, Color crossColor, out
     }
 }
 
+// ----------------------------------------------------------------------
+// DrawTargetAugmentation()
+// ----------------------------------------------------------------------
+
 function DrawTargetAugmentation(GC gc)
 {
-	local String str;
+	local String str,str2,str3,str4;
 	local Actor target;
-	local float boxCX, boxCY, boxTLX, boxTLY, boxBRX, boxBRY, boxW, boxH;
+	local float boxCX, boxCY, boxTLX, boxTLY, boxBLX, boxBLY, boxTRX, boxTRY, boxBRX, boxBRY, boxW, boxH;
 	local Vector v1, v2;
 	local int i, j, k;
 	local DeusExWeapon weapon;
@@ -1377,11 +1474,16 @@ function DrawTargetAugmentation(GC gc)
             }
         }
 
-    //Sarge: Set crosshair colour if we're placing a grenade on a wall
-    if (weapon != None && weapon.bNearWall && Player.bWallPlacementCrosshair)
-        crossColor = colBlue;
-    else
-        crossColor = colWhite;
+    crossColor = colWhite;
+    
+    //Sarge: Set crosshair colour if we're placing a grenade on a wall or highlighting distant hackables
+    if (Player.bWallPlacementCrosshair)
+    {
+        if (weapon != None && weapon.bNearWall)
+            crossColor = colBlue;
+        else if (player.HackTarget != None && player.inHand == None)
+            crossColor = colBlue;
+    }
 
     //SARGE: Moved this out to a new function, and made sure to always show it if enabled
 	if ( target != None && !target.bHidden //)                                  //RSD
@@ -1495,7 +1597,7 @@ function DrawTargetAugmentation(GC gc)
 			boxW = boxBRX - boxTLX;
 			boxH = boxBRY - boxTLY;
 
-			if ((bTargetActive) && (Player.Level.Netmode == NM_Standalone))
+			if ((bTargetActive) && (Player.Level.Netmode == NM_Standalone) && winDrone == None)
 			{
 				// set the coords of the zoom window, and draw the box
 				// even if we don't have a zoom window
@@ -1504,14 +1606,16 @@ function DrawTargetAugmentation(GC gc)
 				w = width/4;
 				h = height/4;
 
-				DrawDropShadowBox(gc, x-w/2, y-h/2, w, h);
+                DrawDroneWindow(gc,winZoom,boxW,boxH,boxCX,boxCY,true);
 
-				boxCX = width/8 + margin;
-				boxCY = height/2;
-				boxTLX = boxCX - width/8;
-				boxTLY = boxCY - height/8;
-				boxBRX = boxCX + width/8;
-				boxBRY = boxCY + height/8;
+				boxTLX = boxCX - BoxW/2.0;
+				boxTLY = boxCY - BoxH/2.0;
+				boxTRX = boxCX + BoxW/2.0;
+				boxTRY = boxCY - BoxH/2.0;
+				boxBRX = boxCX + BoxW/2.0;
+				boxBRY = boxCY + BoxH/2.0;
+				boxBLX = boxCX - BoxW/2.0;
+				boxBLY = boxCY + BoxH/2.0;
 
 				if (targetLevel > 2)
 				{
@@ -1526,12 +1630,12 @@ function DrawTargetAugmentation(GC gc)
 					}
 					// window construction now happens in Tick()
 				}
-				else
+				else if (!IsMinimised(true))
 				{
 					// black out the zoom window and draw a "no image" message
 					gc.SetStyle(DSTY_Normal);
 					gc.SetTileColorRGB(0,0,0);
-					gc.DrawPattern(boxTLX, boxTLY, w, h, 0, 0, Texture'Solid');
+					gc.DrawPattern(boxTLX, boxTLY, boxW, boxH, 0, 0, Texture'Solid');
 
 					gc.SetTextColorRGB(255,255,255);
 					gc.GetTextExtent(0, w, h, msgNoImage);
@@ -1549,7 +1653,12 @@ function DrawTargetAugmentation(GC gc)
 					    str = target.BindName;
 				}
 				else if (target.IsA('DeusExDecoration'))
+                {
 					str = DeusExDecoration(target).itemName;
+                    //SARGE: No more "DEFAULT NAME" shit
+                    if (str == class'DeusExDecoration'.default.itemName)
+                        str = "";
+                }
 				else if (target.IsA('DeusExProjectile'))
 					str = DeusExProjectile(target).itemName;
 				else
@@ -1569,7 +1678,9 @@ function DrawTargetAugmentation(GC gc)
 
 				// print the range to target
 				//mult = VSize(target.Location - Player.Location);              //RSD
-				str = str $ CR() $ msgRange @ Int(dist/16) @ msgRangeUnits;     //RSD: replaced mult with dist
+                if (str != "")
+                    str = str $ CR();
+				str = str $ msgRange @ Int(dist/16) @ msgRangeUnits;     //RSD: replaced mult with dist
                 if (targetLevel > 0)
                 {
                      weapon = DeusExWeapon(Player.Weapon);
@@ -1578,13 +1689,9 @@ function DrawTargetAugmentation(GC gc)
                         wepAcc = 100 - int(weapon.currentAccuracy*50);          //RSD: Was *100, which is incorrect. Nominal accuracy is (1-0.5*currentaccuracy)*100% everywhere else since accuracy ranges from 0.0 (most) to 2.0 (least)
                         if (wepAcc < 0)
                            wepacc = 0;
-                        str = str $ "                             " $ "Current Accuracy: " $ int(wepAcc) $ msgPercent;
+                        str2 = msgCurrentAccuracy $ int(wepAcc) $ msgPercent;
                      }
 				}
-                gc.GetTextExtent(0, w, h, str);
-				x = boxTLX + margin;
-				y = boxTLY - h - margin;
-				gc.DrawText(x, y, w, h, str);
 
 				// level zero gives very basic health info
 				if (target.IsA('Pawn'))
@@ -1599,75 +1706,117 @@ function DrawTargetAugmentation(GC gc)
 					// level zero only gives us general health readings
 					if (mult >= 0.66)
 					{
-						str = msgHigh;
+						str3 = msgHigh;
 						mult = 1.0;
 					}
 					else if (mult >= 0.33)
 					{
-						str = msgMedium;
+						str3 = msgMedium;
 						mult = 0.5;
 					}
 					else
 					{
-						str = msgLow;
+						str3 = msgLow;
 						mult = 0.05;
 					}
 
-					str = str @ msgHealth;
+					str3 = str3 @ msgHealth;
 				}
 				else
 				{
 					// level one gives exact health readings
-					str = Int(mult * 100.0) $ msgPercent;
+					str3 = Int(mult * 100.0) $ msgPercent;
 					if (target.IsA('Pawn') && !target.IsA('Robot') && !target.IsA('Animal'))
 					{
 						x = mult;		// save this for color calc
-						str = str @ msgOverall;
+						str3 = str3 @ msgOverall;
 						mult = Float(Pawn(target).HealthHead) / Float(Pawn(target).Default.HealthHead);
-						str = str $ CR() $ Int(mult * 100.0) $ msgPercent @ msgHead;
+						str3 = str3 $ CR() $ Int(mult * 100.0) $ msgPercent @ msgHead;
 						mult = Float(Pawn(target).HealthTorso) / Float(Pawn(target).Default.HealthTorso);
-						str = str $ CR() $ Int(mult * 100.0) $ msgPercent @ msgTorso;
+						str3 = str3 $ CR() $ Int(mult * 100.0) $ msgPercent @ msgTorso;
 						mult = Float(Pawn(target).HealthArmLeft) / Float(Pawn(target).Default.HealthArmLeft);
-						str = str $ CR() $ Int(mult * 100.0) $ msgPercent @ msgLeftArm;
+						str3 = str3 $ CR() $ Int(mult * 100.0) $ msgPercent @ msgLeftArm;
 						mult = Float(Pawn(target).HealthArmRight) / Float(Pawn(target).Default.HealthArmRight);
-						str = str $ CR() $ Int(mult * 100.0) $ msgPercent @ msgRightArm;
+						str3 = str3 $ CR() $ Int(mult * 100.0) $ msgPercent @ msgRightArm;
 						mult = Float(Pawn(target).HealthLegLeft) / Float(Pawn(target).Default.HealthLegLeft);
-						str = str $ CR() $ Int(mult * 100.0) $ msgPercent @ msgLeftLeg;
+						str3 = str3 $ CR() $ Int(mult * 100.0) $ msgPercent @ msgLeftLeg;
 						mult = Float(Pawn(target).HealthLegRight) / Float(Pawn(target).Default.HealthLegRight);
-						str = str $ CR() $ Int(mult * 100.0) $ msgPercent @ msgRightLeg;
+						str3 = str3 $ CR() $ Int(mult * 100.0) $ msgPercent @ msgRightLeg;
 						mult = x;
 					}
 					else
 					{
-						str = str @ msgHealth;
+						str3 = str3 @ msgHealth;
 					}
 				}
-
-				gc.GetTextExtent(0, w, h, str);
-				x = boxTLX + margin;
-				y = boxTLY + margin;
-				gc.SetTextColor(GetColorScaled(mult));
-				gc.DrawText(x, y, w, h, str);
-				gc.SetTextColor(colHeaderText);
 
 				if (targetLevel > 1)
 				{
 					// level two gives us weapon info as well
 					if (target.IsA('Pawn'))
 					{
-						str = msgWeapon;
+						str4 = msgWeapon;
 
 						if (Pawn(target) != none && Pawn(target).Weapon != None && Pawn(target).Weapon.ItemName != "")
-							str = str @ Pawn(target).Weapon.ItemName; //target.GetItemName(String(Pawn(target).Weapon.Class)); //RSD: Fixed it using the class name instead of the display name
+							str4 = str4 @ Pawn(target).Weapon.ItemName; //target.GetItemName(String(Pawn(target).Weapon.Class)); //RSD: Fixed it using the class name instead of the display name
 						else
-							str = str @ msgNone;
-
-						gc.GetTextExtent(0, w, h, str);
-						x = boxTLX + margin;
-						y = boxBRY - h - margin;
-						gc.DrawText(x, y, w, h, str);
+							str4 = str4 @ msgNone;
 					}
 				}
+
+                //If we're minimised, draw everything in a list
+                //This is a horrible mess!
+                if (IsMinimised(true))
+                {
+
+                    gc.GetTextExtent(0, w, h, str$CR()$str2$CR()$str3$CR()$str4);
+                    if (str4 != "") //Add extra space for the Weapon info, if it's there
+                        str3 = CR() $ str3;
+                    str2 = CR() $ CR() $ str2;
+                    str4 = CR() $ CR() $ CR() $ str4;
+                    str3 = CR() $ CR() $ CR() $ str3;
+
+                    x = boxCX;
+                    y = boxCY - h/2;
+                    gc.DrawText(x, y, w, h, str);
+                    gc.SetTextColor(colHeaderText);
+                    gc.DrawText(x, y, w, h, str2);
+                    gc.SetTextColor(colHeaderText);
+                    gc.DrawText(x, y, w, h, str4);
+                    gc.SetTextColor(GetColorScaled(mult));
+                    gc.DrawText(x, y, w, h, str3);
+                    gc.SetTextColor(colHeaderText);
+                }
+                else
+                {
+                    //Draw name and range
+                    gc.GetTextExtent(0, w, h, str);
+                    x = boxTLX + margin;
+                    y = boxTLY + margin;
+                    gc.DrawText(x, y, w, h, str);
+
+                    //Draw current accuracy
+                    gc.SetTextColor(colHeaderText);
+                    gc.GetTextExtent(0, w, h, str2);
+                    x = boxTRX - w - margin;
+                    y = boxTRY + margin;
+                    gc.DrawText(x, y, w, h, str2);
+
+                    //Draw Health Info
+                    gc.GetTextExtent(0, w, h, str3);
+                    x = boxBLX + margin;
+                    y = boxBLY - h - margin;
+                    gc.SetTextColor(GetColorScaled(mult));
+                    gc.DrawText(x, y, w, h, str3);
+                    gc.SetTextColor(colHeaderText);
+
+                    //Draw weapon info
+                    gc.GetTextExtent(0, w, h, str4);
+                    x = boxBRX - w - margin;
+                    y = boxBRY - h - margin;
+                    gc.DrawText(x, y, w, h, str4);
+                }
+
 			}
 			else
 			{
@@ -1695,7 +1844,7 @@ function DrawTargetAugmentation(GC gc)
 			}
 		}
 	}
-	else if ((bTargetActive) && (Player.Level.NetMode == NM_Standalone))
+	else if ((bTargetActive) && (Player.Level.NetMode == NM_Standalone) && winDrone == None)
 	{
 		if (Player.Level.TimeSeconds % 1.5 > 0.75)
 			str = msgScanning1;
@@ -1707,12 +1856,12 @@ function DrawTargetAugmentation(GC gc)
            wepAcc = 100 - int(weapon.currentAccuracy*100);
            if (wepAcc < 0)
                wepacc = 0;
-           str = str $ CR() $ CR() $ "Current Accuracy: " $ int(wepAcc) $ msgPercent;
+           str = str $ CR() $ msgCurrentAccuracy $ int(wepAcc) $ msgPercent;
         }
 		gc.GetTextExtent(0, w, h, str);
-		x = width/2 - w/2;
-		y = (height/2 - h) - 20;
-		gc.DrawText(16, y-24, w, h, str);
+        x = margin;
+        y = (height/2 - h);
+		gc.DrawText(x, y, w, h, str);
 	}
 	// set the crosshair colors
 	DeusExRootWindow(player.rootWindow).hud.cross.SetCrosshairColor(crossColor);
@@ -1751,15 +1900,16 @@ function string GetHackDisabledText(Actor target,bool TargetingDisplay)
     
     cam = SecurityCamera(target);
 
-
-
     if (turr != None && turr.bRebooting)
         amt = int(turr.disableTime - player.saveTime);
     else if (cam != None && cam.bRebooting)
         amt = int(cam.disableTime - player.saveTime);
 
+    if (target.IsA('Robot'))
+        amt = int(Robot(target).rebootTime - player.saveTime);
+
     //ZAP!
-    if (amt == 0)
+    if (amt <= 0)
         return "";
     /*
     else if (turr != None && turr.bConfused && turr.bRebooting)
@@ -1870,7 +2020,7 @@ function DrawVisionAugmentation(GC gc)
 		{
 			if (A.bVisionImportant)
 			{
-				if (IsHeatSource(A) || ( (Player.Level.Netmode != NM_Standalone) && ((A.IsA('AutoTurret')) || (A.IsA('AutoTurretGun')) || (A.IsA('SecurityCamera')) ) ))
+				if (IsHeatSource(A))
 				{
 					dist = VSize(A.Location - loc);
 					//If within range of vision aug bit
@@ -2001,12 +2151,18 @@ function DrawVisionAugmentation(GC gc)
 
 function bool IsHeatSource(Actor A)
 {
+    //SARGE: No cloaked enemies on lower levels
 	if ((A.bHidden))
 		return False;
 	if (A.IsA('Pawn'))
 	{
 		if (A.IsA('ScriptedPawn'))
+        {
+            //SARGE: No longer reveal cloaked enemies at level 1 (or with unupgraded tech goggles)
+            if (ScriptedPawn(A).bHasCloak && ScriptedPawn(A).bCloakOn && visionLevel <= 1)
+                return False;
 			return True;
+        }
 		else if ( (A.IsA('DeusExPlayer')) && (A != Player) )//DEUS_EX AMSD For multiplayer.
 			return True;
 		return False;
@@ -2015,6 +2171,16 @@ function bool IsHeatSource(Actor A)
 		return True;
 	else if (A.IsA('FleshFragment'))
 		return True;
+    //SARGE: Added turrets and cameras, previously multiplayer only
+    else if (A.IsA('AutoTurret'))
+        return true;
+    else if (A.IsA('AutoTurretGun'))
+        return true;
+    else if (A.IsA('SecurityCamera'))
+        return true;
+    //SARGE: Added pickups and weapons as well
+    else if (A.IsA('Inventory'))
+        return true;
 	else
 		return False;
 }
@@ -2035,6 +2201,11 @@ function Texture GetGridTexture(Texture tex)
 		return Texture'BlackMaskTex';
 	else if (tex == Texture'PinkMaskTex')
 		return Texture'BlackMaskTex';
+	else if (VisionTargetStatus == VISIONITEM)
+		return Texture'Nano_SFX_A';
+    else if (visionlevel <= 1) //SARGE: Low level vision only shows green
+		//return Texture'RSDCrap.Skins.NVGTex';
+		return Texture'SolidGreen';
 	else if (VisionTargetStatus == VISIONENEMY)
 		return Texture'Virus_SFX';
 	else if (VisionTargetStatus == VISIONALLY)
@@ -2081,6 +2252,19 @@ function ResetSkins(Actor actor, Texture oldSkins[9])
 	for (i=0; i<8; i++)
 		actor.MultiSkins[i] = oldSkins[i];
 	actor.Skin = oldSkins[i];
+	//actor.Texture = oldSkins[i+1];
+    //actor.Style = ERenderStyle(oldStyle); //SARGE: Doesn't compile???
+    //So we have to do this fucking bullshit...
+    /*
+    switch (oldStyle)
+    {
+        case 0: actor.Style = STY_None; break;
+        case 1: actor.Style = STY_Normal; break;
+        case 2: actor.Style = STY_Masked; break;
+        case 3: actor.Style = STY_Translucent; break;
+        case 4: actor.Style = STY_Modulated; break;
+    }
+    */
 }
 
 // ----------------------------------------------------------------------
@@ -2111,6 +2295,10 @@ function int GetVisionTargetStatus(Actor Target)
 
 	if (Target == None)
 		return VISIONNEUTRAL;
+	
+    //SARGE: Added. Show items as a different colour
+    if (target.IsA('Inventory'))
+        return VISIONITEM;
 
 	if (player.Level.NetMode == NM_Standalone)
 		return VISIONENEMY;
@@ -2264,4 +2452,5 @@ defaultproperties
      IFFLabel1="Type:"
      IFFLabel2="Lethality:"
      msgDroneCloaked="Cloak Engaged"
+     msgCurrentAccuracy="Current Accuracy: "
 }

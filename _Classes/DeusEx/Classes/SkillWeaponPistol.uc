@@ -13,36 +13,49 @@ var float mpLevel3;
 
 simulated function PreBeginPlay()
 {
-   local DeusExLevelInfo info;
+    local DeusExLevelInfo info;
+    local DeusExPlayer player;
+    local bool bGivePistols;
 
-   Super.PreBeginPlay();
+    player = DeusExPlayer(GetPlayerPawn());
 
-   //== Y|y: we only want to bump this up to Trained when starting a new game
-   if ( Level.NetMode == NM_Standalone )
-   {
-      //== Y|y: this will detect if we're doing it from one of the intro (non-cinematic) maps
-      foreach AllActors(class'DeusExLevelInfo', info)
-      {
-         if(info.MissionNumber < 0)
-         CurrentLevel = 1;
-      }
+    Super.PreBeginPlay();
 
-      //== Y|y: This detects if the player is starting a new game during an existing one
-      if(DeusExPlayer(GetPlayerPawn()) != None)
-         if(DeusExPlayer(GetPlayerPawn()).bShowMenu)
+    //== Y|y: we only want to bump this up to Trained when starting a new game
+    if ( Level.NetMode == NM_Standalone && player != None)
+    {
+        //== Y|y: this will detect if we're doing it from one of the intro (non-cinematic) maps
+        foreach AllActors(class'DeusExLevelInfo', info)
+        {
+            if(info.MissionNumber < 0)
+                bGivePistols = true;
+        }
+
+        //== Y|y: This detects if the player is starting a new game during an existing one
+        if(player.bShowMenu)
+            bGivePistols = true;
+
+        //SARGE: If we have the "start pistols at trained" setting, give a skill level,
+        //otherwise, give us the skill points for the value of the first level.
+        if (bGivePistols && player.bPistolStartTrained)
             CurrentLevel = 1;
-   }
+        else if (bGivePistols)
+        {
+            player.SkillPointsTotal = player.default.SkillPointsTotal + cost[0];
+            player.SkillPointsAvail = player.default.SkillPointsAvail + cost[0];
+        }
+    }
 
-   if ( Level.NetMode != NM_Standalone )
-   {
-      cost[0] = mpCost1;
-      cost[1] = mpCost2;
-      cost[2] = mpCost3;
-      LevelValues[0] = mpLevel0;
-      LevelValues[1] = mpLevel1;
-      LevelValues[2] = mpLevel2;
-      LevelValues[3] = mpLevel3;
-   }
+    if ( Level.NetMode != NM_Standalone )
+    {
+        cost[0] = mpCost1;
+        cost[1] = mpCost2;
+        cost[2] = mpCost3;
+        LevelValues[0] = mpLevel0;
+        LevelValues[1] = mpLevel1;
+        LevelValues[2] = mpLevel2;
+        LevelValues[3] = mpLevel3;
+    }
 }
 
 defaultproperties

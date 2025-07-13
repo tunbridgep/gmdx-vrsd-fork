@@ -1,11 +1,11 @@
 //=============================================================================
 // ComputerScreenHack
 //=============================================================================
-class ComputerScreenHack extends HUDBaseWindow;
+class ComputerScreenHack extends HUDBaseWindowMenu;
 
 var PersonaNormalTextWindow   winDigits;
 var PersonaHeaderTextWindow   winHackMessage;
-var PersonaActionButtonWindow btnHack;
+var PersonaActionButtonWindowMenu btnHack;
 var ProgressBarWindow         barHackProgress;
 
 var NetworkTerminal           winTerm;
@@ -42,8 +42,8 @@ var localized String HackDetectedLabel;
 var localized String MPHackInitializingLabel;
 
 var int passedSecLevel; //CyberP:
-var PersonaActionButtonWindow btnWorm;
-var PersonaActionButtonWindow btnNuke;
+var PersonaActionButtonWindowMenu btnWorm;
+var PersonaActionButtonWindowMenu btnNuke;
 var bool bTimePaused;
 var float wormTime;
 var localized String hackRequirement1;
@@ -61,6 +61,9 @@ event InitWindow()
 	SetSize(215, 112);
 
 	CreateControls();
+
+    if(Player.SkillSystem.GetSkillLevel(class'SkillComputer') == 0)
+        UpdateSoftwareNuke();
 
 	SetHackMessage(HackReadyLabel);
 }
@@ -148,10 +151,10 @@ function CreateHackButton()
 
 	winActionButtons = PersonaButtonBarWindow(NewChild(Class'PersonaButtonBarWindow'));
 	winActionButtons.SetPos(20, 86);
-	winActionButtons.SetWidth(90);
+	winActionButtons.SetWidth(88);
 	winActionButtons.FillAllSpace(True);
 
-	btnHack = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow'));
+	btnHack = PersonaActionButtonWindowMenu(winActionButtons.NewChild(Class'PersonaActionButtonWindowMenu'));
 	btnHack.SetButtonText(HackButtonLabel);
 }
 
@@ -165,7 +168,7 @@ function CreateWormButton()
         winActionButtons2.SetPos(116, 86);
         winActionButtons2.SetWidth(76);
         winActionButtons2.FillAllSpace(True);
-        btnWorm = PersonaActionButtonWindow(winActionButtons2.NewChild(Class'PersonaActionButtonWindow'));
+        btnWorm = PersonaActionButtonWindowMenu(winActionButtons2.NewChild(Class'PersonaActionButtonWindowMenu'));
         btnWorm.SetButtonText("Use Worm");
     }
 }
@@ -180,7 +183,7 @@ function CreateNukeButton()
         winActionButtons3.SetPos(116, 86);
         winActionButtons3.SetWidth(72);
         winActionButtons3.FillAllSpace(True);
-        btnNuke = PersonaActionButtonWindow(winActionButtons3.NewChild(Class'PersonaActionButtonWindow'));
+        btnNuke = PersonaActionButtonWindowMenu(winActionButtons3.NewChild(Class'PersonaActionButtonWindowMenu'));
         btnNuke.SetButtonText("Use Virus");
     }
 }
@@ -319,49 +322,28 @@ local int compSkill;
 
 function UpdateSoftwareWorm()
 {
-	local Inventory anItem;
-	local int softCount;
+	local Inventory worm;
 
-		anItem = player.Inventory;
+	worm = player.FindInventoryType(class'SoftwareStop');
 
-		while(anItem != None)
-		{
-			if (anItem.IsA('SoftwareStop'))
-				softCount++;
+    if (worm != None && btnWorm == None)
+        CreateWormButton();
 
-            if (softCount == 1)
-			CreateWormButton();
-
-			anItem = anItem.Inventory;
-		}
-
-        if (softCount == 0 && btnWorm != none)
-            btnWorm.SetSensitivity(false);
-        else if (softCount > 0 && btnWorm != None)
-            btnWorm.SetSensitivity(True);
-		//winAugCans.SetCount(augCanCount);
+    if (worm == None && btnWorm != none)
+        btnWorm.SetSensitivity(false);
 }
 
 function UpdateSoftwareNuke()
 {
-	local Inventory anItem;
-	local int softCount;
+	local Inventory nuke;
 
-		anItem = player.Inventory;
+	nuke = player.FindInventoryType(class'SoftwareNuke');
 
-		while(anItem != None)
-		{
-			if (anItem.IsA('SoftwareNuke'))
-				softCount++;
+    if (nuke != None && btnNuke == None)
+        CreateNukeButton();
 
-            if (softCount == 1)
-			CreateNukeButton();
-
-			anItem = anItem.Inventory;
-		}
-        if (softCount == 0 && btnNuke != none)
-            btnNuke.SetSensitivity(false);
-		//winAugCans.SetCount(augCanCount);
+    if (nuke == None && btnNuke != none)
+        btnNuke.SetSensitivity(false);
 }
 
 function decrementSoftwareWorm()
@@ -449,6 +431,7 @@ function SetHackMessage(String newHackMessage)
 	else
 		winHackMessage.Show();
 
+    winHackMessage.SetTextColor(colText);
 	winHackMessage.SetText(newHackMessage);
 }
 

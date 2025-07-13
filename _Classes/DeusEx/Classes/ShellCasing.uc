@@ -13,9 +13,11 @@ function postbeginplay()
 	if(frand() > smokeprob)
 	{
 		smoketimer = 0.1+frand()*0.2;
-	}
+	}	
 
 	super.postbeginplay();
+
+	UpdateHDTPsettings();
 }
 
 function tick(float DT)
@@ -179,22 +181,20 @@ state Dying
 exec function UpdateHDTPsettings()
 {
     super.UpdateHDTPsettings();
-    if (IsHDTP())
-        Fragments[0]=class'HDTPLoader'.static.GetMesh("HDTPItems.HDTPShellcasing");
-    else
-        Fragments[0]=LodMesh'DeusExItems.ShellCasing';
+	
+    Fragments[0]=class'HDTPLoader'.static.GetMesh2("HDTPItems.HDTPShellcasing","DeusExItems.ShellCasing",IsHDTP());
 }
 
 defaultproperties
 {
-     smokeprob=0.600000
-     HDTPMesh="HDTPItems.HDTPShellcasing"
-     numFragmentTypes=1
-     elasticity=0.700000
-     ImpactSound=Sound'DeusExSounds.Generic.ShellHit'
-     MiscSound=Sound'DeusExSounds.Generic.ShellHit'
-     Mesh=LodMesh'DeusExItems.ShellCasing'
-     DrawScale=1.100000
-     CollisionRadius=0.600000
-     CollisionHeight=0.300000
+	smokeprob=0.600000
+	HDTPMesh="HDTPItems.HDTPShellcasing"
+	numFragmentTypes=1
+	elasticity=0.700000
+	ImpactSound=Sound'DeusExSounds.Generic.ShellHit'
+	MiscSound=Sound'DeusExSounds.Generic.ShellHit'
+	Mesh=LodMesh'DeusExItems.ShellCasing'
+	DrawScale=1.100000
+	CollisionRadius=0.600000
+	CollisionHeight=0.300000
 }

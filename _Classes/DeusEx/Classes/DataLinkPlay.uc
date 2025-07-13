@@ -356,14 +356,14 @@ function Bool FireNextDataLink()
 // AbortAndSaveHistory()
 // ----------------------------------------------------------------------
 
-function AbortAndSaveHistory()
+function AbortAndSaveHistory(optional bool bNotInstant)
 {
 	bSilent = True;
 
 	// Make sure no sound playing
 	player.StopSound(playingSoundId);
 
-	if ((!bEndTransmission) && (bStartTransmission))
+	if ((!bEndTransmission) && (bStartTransmission) && bNotInstant)
 	{
 		bStartTransmission = False;
 		GotoState('PlayEvent');
@@ -372,7 +372,30 @@ function AbortAndSaveHistory()
 	else
 	{
 		PlayNextEvent();
+        
+        //SARGE: Fix issue with saving the game not correctly firing off all infolinks.
+        if (!bNotInstant)
+        {
+            //iterate the whole list
+            do
+            {
+                while (currentEvent != None)
+                {
+                    GotoState('PlayEvent');
+                    SetupEvent();
+                }
+                AbortDataLink();
+            }
+            until(!FireNextDataLink())
+
+            player.dataLinkPlay = None; // Required post-infolink
+            Destroy();
+        }
 	}
+}
+
+function SetupEvent()
+{
 }
 
 // ----------------------------------------------------------------------

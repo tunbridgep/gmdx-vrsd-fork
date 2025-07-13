@@ -236,6 +236,8 @@ function DifficultyMod(float CombatDifficulty, bool bHardCoreMode, bool bExtraHa
 
 defaultproperties
 {
+     bCanBlink=False
+     WalkSound=Sound'DeusExSounds.Generic.MetalHit1'
      bDontRandomizeWeapons=True
      MinHealth=0.000000
      CarcassType=Class'DeusEx.MJ12CommandoCarcass'
@@ -252,6 +254,7 @@ defaultproperties
      HitSound1=None
      HitSound2=None
      Die=Sound'DeusExSounds.Augmentation.CloakDown'
+     bDontChangeDeathPainSounds=True
      HealthHead=450
      HealthTorso=450
      HealthLegLeft=450

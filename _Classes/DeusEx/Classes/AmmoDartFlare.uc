@@ -21,12 +21,15 @@ defaultproperties
      CollisionHeight=2.000000
      bCollideActors=True
      ItemName="Flare Darts"
-     Icon=Texture'GMDXSFX.Icons.BeltIconFlareDart'
-     largeIcon=Texture'GMDXSFX.Icons.LargeIconFlareDart'
+     HDTPIcon="GMDXSFX.Icons.BeltIconFlareDart"
+     HDTPLargeIcon="GMDXSFX.Icons.LargeIconFlareDart"
+     Icon=Texture'DeusExUI.Icons.BeltIconAmmoDartsFlare'
+     largeIcon=Texture'DeusExUI.Icons.LargeIconAmmoDartsFlare'
      Description="Mini-crossbow flare darts use a slow-burning incendiary device, ignited on impact, to provide illumination of a targeted area."
      beltDescription="FLR DART"
      HDTPSkin="GMDXSFX.Skins.FlareAmmo"
      //HDTPSkin="HDTPItems.Skins.HDTPAmmoDartTex2"
      Skin=Texture'DeusExItems.Skins.AmmoDartTex2'
      Mesh=LodMesh'DeusExItems.AmmoDart'
+     ammoHUDColor=(R=255,G=64)
 }

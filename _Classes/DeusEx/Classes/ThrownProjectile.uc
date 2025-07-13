@@ -31,7 +31,8 @@ var travel bool bEUASDetected;              //SARGE: Set to true when this explo
 var bool            bEMPDisabled;             //SARGE: When disabled by EMP, permanently prevent it from being re-armed
 
 var int             rearmSkillRequired;      //SARGE: Demolitions Skill required to rearm this explosive after disarming it. Only used by Proximity Triggered Grenades.
-var localized string disabledText;
+var const localized string disabledText;
+var const localized string msgCannotRearm;        //SARGE: When we try to frob a disarmed grenades but our skill is not enough
 
 replication
 {
@@ -187,7 +188,8 @@ simulated function Tick(float deltaTime)
 					if (Owner == None)
 					{
                         //Fix bug with pre-placed grenades not opening
-                        PlayAnim('Open');
+                        if (HasAnim('Open'))
+                            PlayAnim('Open');
 						blastRadius=512.000000;
 						foreach RadiusActors(class'DeusExPlayer', Player, proxRadius*4)
 						{
@@ -222,10 +224,10 @@ simulated function Tick(float deltaTime)
 									    switch (itmp) //GMDX now pick what u want
 									    {
                                             //SARGE: Was 0.5, 1.0, 2.5, 7.0
-											case 0:skillTime=0.75*difficultyMod;blastRadius=512.000000;break;
+											case 0:skillTime=0.5*difficultyMod;blastRadius=512.000000;break;
 											case 1:skillTime=1.0*difficultyMod;blastRadius=512.000000;break;
-											case 2:skillTime=1.5*difficultyMod;blastRadius=512.000000;break;
-											case 3:skillTime=2.5*difficultyMod;blastRadius=512.000000;break;
+											case 2:skillTime=1.75*difficultyMod;blastRadius=512.000000;break;
+											case 3:skillTime=3.0*difficultyMod;blastRadius=512.000000;break;
 										}
 										//skillTime = FClamp(-20.0 * Player.SkillSystem.GetSkillLevelValue(class'SkillDemolition'), 1.0, 10.0);
 									}
@@ -352,16 +354,17 @@ function Frob(Actor Frobber, Inventory frobWith)
         player.ClientMessage(disabledText);
         return;
     }
+        
 
-    if (Player == None)
-        return;
+    skill = Player.SkillSystem.GetSkillLevel(class'SkillDemolition');
 
 	// if the player frobs it and it's disabled, the player can grab it
 	if (bDisabled)
     {
-        skill = Player.SkillSystem.GetSkillLevel(class'SkillDemolition');
-		// if the player frobs it and has the demolition skill, collect the explosive
-        if (skill >= rearmSkillRequired || Owner == Player)
+        //SARGE: Cannot pick up grenades if we lack the skill
+        if (skill < rearmSkillRequired && Owner != Player)
+            Player.ClientMessage(sprintf(msgCannotRearm,itemName));
+        else
             Super.Frob(Frobber, frobWith);
     }
 	else if (bProximityTriggered && bArmed && (skillTime >= 0))
@@ -369,6 +372,10 @@ function Frob(Actor Frobber, Inventory frobWith)
         PlaySound(sound'Beep4',SLOT_None,,, 1280, 0.5);
         bDisabled = True;
         AmbientSound = None;
+
+        //SARGE: If the player lacks the skills to properly disarm it, disable it completely.
+        //if (skill < rearmSkillRequired && Owner != Player)
+        //    bEMPDisabled = true;
 	}
 }
 
@@ -524,8 +531,8 @@ simulated function SpawnEffects(Vector HitLocation, Vector HitNormal, Actor Othe
 		mark = DeusExDecal(Spawn(ExplosionDecal, Self,, HitLocation, Rotator(HitNormal)));
 		if (mark != None)
 		{
-			mark.DrawScale *= FClamp(damage/28, 0.1, 3.5);
-			mark.ReattachDecal();
+			mark.DrawScaleMult = FClamp(damage/28, 0.1, 3.5);
+			mark.UpdateHDTPSettings();
 		 if (!bDamaged)
 			mark.RemoteRole = ROLE_None;
 		}
@@ -776,4 +783,5 @@ defaultproperties
      bBounce=True
      bFixedRotationDir=True
      disabledText="The internal circuitry is damaged."
+     msgCannotRearm="You lack the skill to rearm the %d"
 }

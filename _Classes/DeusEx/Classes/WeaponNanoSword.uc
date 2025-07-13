@@ -49,10 +49,29 @@ function DrainPower()
     drained = 0.5;
 }
 
+
+//SARGE: Recharges this nano sword based on another ones charge.
+function RechargeFrom(WeaponNanoSword target)
+{
+    if (target == None || target.ChargeManager == None || chargeManager == None)
+        return;
+
+    chargeManager.RechargeFrom(target.ChargeManager);
+}
+
 function Tick(float deltaTime)
 {
     super.Tick(deltaTime);
     drained = MAX(0,drained - deltaTime);
+    RefreshLight();
+}
+
+function RefreshLight()
+{
+    if (!IsInState('DownWeapon') && !IsInState('Idle2') && !chargeManager.IsUsedUp())
+        LightType = LT_Steady;
+    else
+        LightType = LT_None;
 }
 
 //Initialise charge manager and link the player to it
@@ -62,7 +81,7 @@ function SetupChargeManager()
     {
 	    chargeManager = new(Self) class'ChargeManager';
         chargeManager.SetMaxCharge(totalCharge,true);
-        chargeManager.chargeMult = 0.3;
+        chargeManager.chargeMult = 0.2;
     }
         
     if (owner.IsA('DeusExPlayer'))
@@ -76,22 +95,65 @@ function string DoAmmoInfoWindow(Pawn P, PersonaInventoryInfoWindow winInfo)
     winInfo.AddLine();
 }
 
-function bool CanUseWeapon(DeusExPlayer player, optional bool noMessage)
-{
-    if (ChargeManager != None && chargeManager.IsUsedUp())
-    {
-        if (!noMessage)
-            player.ClientMessage("Dragon's Tooth Sword is not charged");
-        return false;
-    }
-
-    return super.CanUseWeapon(player,noMessage);
-}
-
 //Stops the game crashing with a "Destroyed != 0" message when loading savegames or transitioning maps
 event Destroyed()
 {
     CriticalDelete(chargeManager);
+}
+
+
+//SARGE: Restrict fire if we're using the Dragons Tooth with no charge
+function Fire(float Value)
+{
+    if (chargeManager != None && chargeManager.IsUsedUp())
+    {
+        GotoState('Idle');  //SARGE: Needed to not break weapons
+        return;
+    }
+
+    super.Fire(Value);
+}
+
+//SARGE: Sets and unsets textures based on our charge amount
+function SetWeaponSkin(bool hdtp)
+{
+    if (hdtp)
+    {
+        if (chargeManager.IsUsedUp())
+        {
+            multiskins[2] = Texture'PinkMaskTex';
+            multiskins[3] = Texture'PinkMaskTex';
+            multiskins[4] = Texture'PinkMaskTex';
+            multiskins[6] = Texture'PinkMaskTex';
+            multiskins[7] = Texture'PinkMaskTex';
+            Texture = Texture'PinkMaskTex';
+            SelectSound = None;
+        }
+        else
+        {
+            multiskins[2] = Texture'Effects.Electricity.WavyBlade';
+            multiskins[3] = Texture'Effects.Electricity.WavyBlade';
+            multiskins[4] = Texture'Effects.Electricity.WavyBlade';
+            multiskins[6] = Texture'Effects.Electricity.WavyBlade';
+            multiskins[7] = Texture'Effects.Electricity.WavyBlade';
+            SelectSound = default.SelectSound;
+        }
+    }
+    else if (chargeManager.IsUsedUp())
+    {
+        multiskins[1] = Texture'PinkMaskTex';
+        multiskins[2] = Texture'BlackMaskTex';
+        //multiskins[3] = Texture'PinkMaskTex';
+        multiskins[4] = Texture'PinkMaskTex';
+        multiskins[5] = Texture'PinkMaskTex';
+        multiskins[6] = Texture'PinkMaskTex';
+        multiskins[7] = Texture'PinkMaskTex';
+        SelectSound = None;
+    }
+    else
+    {
+        SelectSound = default.SelectSound;
+    }
 }
 
 function DisplayWeapon(bool overlay)
@@ -101,26 +163,13 @@ function DisplayWeapon(bool overlay)
     {
 		if (overlay)
 			multiskins[5] = handstex;
-        multiskins[2] = Texture'Effects.Electricity.WavyBlade';
-        multiskins[3] = Texture'Effects.Electricity.WavyBlade';
-        multiskins[4] = Texture'Effects.Electricity.WavyBlade';
-        multiskins[6] = Texture'Effects.Electricity.WavyBlade';
-        multiskins[7] = Texture'Effects.Electricity.WavyBlade';
     }
     else if (overlay)
     {
     	multiskins[0] = handstex;
     }
 
-}
-
-state DownWeapon
-{
-	function BeginState()
-	{
-		Super.BeginState();
-		LightType = LT_None;
-	}
+    SetWeaponSkin(IsHDTP());
 }
 
 state Idle
@@ -128,20 +177,11 @@ state Idle
 	function BeginState()
 	{
 		Super.BeginState();
-		LightType = LT_Steady;
-       AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 416);  //CyberP: drawing the sword makes noise
-	}
-
-    //Put away weapon when it runs out of juice
-    function Tick(float deltaTime)
-    {
-        Super.Tick(deltaTime);
-        if (owner.IsA('DeusExPlayer') && ChargeManager != None)
+        if (chargeManager != None && !chargeManager.IsUsedUp())
         {
-            if (ChargeManager.IsUsedUp())
-                DeusExPlayer(Owner).PutInHand(none);
-        }
-    }
+            AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 416);  //CyberP: drawing the sword makes noise
+       }
+	}
 }
 
 auto state Pickup
@@ -149,7 +189,6 @@ auto state Pickup
 	function EndState()
 	{
 		Super.EndState();
-		LightType = LT_None;
         SetupChargeManager();
 	}
 }
@@ -218,6 +257,6 @@ defaultproperties
      LightRadius=4
      Mass=20.000000
      minSkillRequirement=3;
-     chargePerUse=4
+     chargePerUse=5
      totalCharge=100
 }

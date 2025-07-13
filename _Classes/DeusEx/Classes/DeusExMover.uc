@@ -82,6 +82,10 @@ function bool DoLeftFrob(DeusExPlayer frobber)
 {
     local Inventory item;
     
+    //No interaction if locked but not highlightable (used by some elevator doors)
+    if (bLocked && !bHighlight)
+        return false;
+    
     //Give us 3 seconds to use the right-click options after left-frobbing
     //This is so we don't accudentally change weapons in the middle of gameplay, by
     //right clicking on a mover
@@ -89,7 +93,7 @@ function bool DoLeftFrob(DeusExPlayer frobber)
 
     //If not highlightable, not locked, and having a threshold, just select melee
     //This is a fallback for glass panes that aren't actually defined as BreakableGlass
-    if (!bLocked && minDamageThreshold > 0 && !bHighlight)
+    if (!bLocked && minDamageThreshold > 0 && !bHighlight && bBreakable)
     {
         frobber.SelectMeleePriority(minDamageThreshold);
         return false;
@@ -98,30 +102,30 @@ function bool DoLeftFrob(DeusExPlayer frobber)
     //When not on hardcore, always select the keyring if we have the key
     if (!frobber.bHardcoreMode && CanToggleLock(frobber,frobber.KeyRing))
     {
-        frobber.PutInHand(frobber.KeyRing);
+        frobber.PutInHand(frobber.KeyRing,true);
         return false;
     }
     else if (bLocked && frobber.bHardcoreMode) //Hardcore Mode: Always select picks. If we don't have one, always select keyring
     {
-        if (bPickable && frobber.SelectInventoryItem('Lockpick'))
+        if (bPickable && frobber.SelectInventoryItem('Lockpick',true))
             return false;
         //else if (bBreakable && frobber.SelectMeleePriority(minDamageThreshold))
         //    return false;
         else
-            frobber.PutInHand(frobber.KeyRing);
+            frobber.PutInHand(frobber.KeyRing,true);
         return false;
     }
     else if (bLocked) //Non-Hardcore. See if we have a melee weapon to bust the mover. Otherwise, select picks
     {
         if (bBreakable && frobber.SelectMeleePriority(minDamageThreshold))
 			return false;
-        else if (!bPickable || !frobber.SelectInventoryItem('Lockpick'))
-            frobber.PutInHand(frobber.KeyRing);
+        else if (!bPickable || !frobber.SelectInventoryItem('Lockpick',true))
+            frobber.PutInHand(frobber.KeyRing,true);
         return false;
     }
     else if (CanToggleLock(frobber,frobber.KeyRing)) //Keyring check for Hardcore mode
     {
-        frobber.PutInHand(frobber.KeyRing);
+        frobber.PutInHand(frobber.KeyRing,true);
         return false;
     }
     
@@ -130,9 +134,29 @@ function bool DoLeftFrob(DeusExPlayer frobber)
 }
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {
+    //Normal interaction if unlocked
+    if (!bLocked && bFrobbable)
+        return true;
+    
+    //No interaction if locked but not highlightable (used by some elevator doors)
+    if (bLocked && !bHighlight)
+        return false;
 
-    //Nofmal interaction if 
-    if (!bLocked || frobber.inHand == None)
+    //If it's open, normal interaction
+    if (KeyNum != 0)
+        return true;
+
+    //we're no longer in the "forced" weapon state, so clear the left-frob timer
+    if (frobber.inHand == frobber.primaryWeapon)
+        leftFrobTimer = 0;
+
+    //SARGE: If left frob timer is 0 (ie, we have not left-frobbed),
+    //then use the "right-click to autoselect" revision-style interaction, if enabled
+    if (frobber.bRightClickToolSelection && (bLocked||!bFrobbable) && frobber.inHand != None && leftFrobTimer == 0 && !frobber.inHand.IsA('Lockpick') && !frobber.InHand.IsA('NanoKeyRing'))
+        return DoLeftFrob(frobber);
+
+    //don't continue if our hands are full, just do the default interaction
+    if (frobber.inHand == None)
         return true;
 
     //Swap between lockpicks and nanokeyring
@@ -141,19 +165,19 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
         if (frobber.inHand.isA('NanoKeyRing'))
         {
             if (!frobber.SelectMeleePriority(minDamageThreshold))
-                if (!frobber.SelectInventoryItem('Lockpick'))
+                if (!frobber.SelectInventoryItem('Lockpick',true))
                     return true;
             leftFrobTimer = leftFrobTimerMax;
         }
         else if (frobber.inHand.isA('Lockpick'))
         {
-            frobber.PutInHand(frobber.KeyRing);
+            frobber.PutInHand(frobber.KeyRing,true);
             leftFrobTimer = leftFrobTimerMax;
         }
         else if (frobber.inHand.isA('DeusExWeapon') && DeusExWeapon(frobber.inHand).bHandToHand)
         {
-            if (!frobber.SelectInventoryItem('Lockpick'))
-                frobber.PutInHand(frobber.KeyRing);
+            if (!frobber.SelectInventoryItem('Lockpick',true))
+                frobber.PutInHand(frobber.KeyRing,true);
             leftFrobTimer = leftFrobTimerMax;
         }
     }
@@ -485,6 +509,10 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
 
 	if ((DamageType == 'EMP') || (DamageType == 'NanoVirus') || (DamageType == 'Shocked'))
 		return;
+   
+    //SARGE: 25% damage from WP rockets
+    if ((DamageType == 'Flamed'))
+       damage *= 0.25;
 
     if (InstigatedBy != none && InstigatedBy.Weapon != none && InstigatedBy.Weapon.IsA('WeaponCrowbar')) //RSD: New special effect for the crowbar: additional 5 damage vs inanimate objects //SARGE: Now 2x
        damage *= 2;
@@ -694,9 +722,6 @@ function Frob(Actor Frobber, Inventory frobWith)
 	bOpenIt = False;
 	bDone = False;
 	msg = msgLocked;
-
-    //Get the name of our key if the player has it
-    KeyName = Player.GetNanoKeyDesc(KeyIDNeeded);
     
 	// make sure someone is trying to open the door
 	if (P == None)
@@ -714,6 +739,10 @@ function Frob(Actor Frobber, Inventory frobWith)
 		msg = "";
 		bDone = True;
 	}
+
+    if (Player != None)
+        KeyName = Player.GetNanoKeyDesc(KeyIDNeeded);
+
 
 	// If we are already trying to pick it, print a message
 	if (bPicking)
@@ -751,7 +780,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 	// 1. Use the KeyIDNeeded
 	// 2. Use the Lockpick and SkillLockpicking
 	//
-	if (!bDone)
+	if (!bDone && player != None)
 	{
 		// Get what's in the player's hand
 		if (frobWith != None)

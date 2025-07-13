@@ -66,11 +66,13 @@ function Trigger(Actor Other, Pawn Instigator)
 {
 	if (!bActive)
 	{
-		bActive = True;
-		AmbientSound = Default.AmbientSound;
+		bActive = true;
 	}
 
+	AmbientSound = Default.AmbientSound;
     bDisabled = false;
+	gun.bHackable = true;
+	gun.bDisabledByComputer = false;
 	Super.Trigger(Other, Instigator);
 }
 
@@ -79,11 +81,13 @@ function UnTrigger(Actor Other, Pawn Instigator)
 {
 	if (bActive)
 	{
-		bActive = False;
-		AmbientSound = None;
+		bActive = false;		
 	}
-    
-    bDisabled = true;
+	
+	AmbientSound = None;
+    bDisabled = true;	
+	gun.bHackable = false;
+	gun.bDisabledByComputer = true;
 	Super.UnTrigger(Other, Instigator);
 }
 
@@ -102,7 +106,7 @@ function UpdateSwitch()
 {
 	if ( Level.Timeseconds > SwitchTime )
 	{
-		bSwitching = False;
+		bSwitching = false;
 		//safeTarget = savedTarget;
 		SwitchTime = 0;
 		beepTime = 0;
@@ -121,7 +125,7 @@ function SetSafeTarget( Pawn newSafeTarget )
 {
 	local DeusExPlayer aplayer;
 
-	bSwitching = True;
+	bSwitching = true;
 	SwitchTime = Level.Timeseconds + 2.5;
 	beepTime = 0.0;
 	safeTarget = newSafeTarget;
@@ -230,7 +234,7 @@ function Tick(float deltaTime)
 
 	Super.Tick(deltaTime);
 
-	bSwitched = False;
+	bSwitched = false;
 
 	if ( bSwitching )
 	{
@@ -247,7 +251,7 @@ function Tick(float deltaTime)
     {
         if (remainingTime <= 0)
         {
-            bRebooting = False;
+            bRebooting = false;
             bDisabled = bDefaultDisabled;
             bActive = bDefaultActive;
 
@@ -264,23 +268,23 @@ function Tick(float deltaTime)
 	{
 		if ( safeTarget == None )
 		{
-			bDisabled = True;
-			bComputerReset = False;
+			bDisabled = true;
+			bComputerReset = false;
 		}
 		else
 		{
 			if ( DeusExPlayer(safeTarget) != None )
 			{
 				if ((TeamDMGame(DeusExPlayer(safeTarget).DXGame) != None) && (DeusExPlayer(safeTarget).PlayerReplicationInfo.team != team))
-					bSwitched = True;
+					bSwitched = true;
 				else if ((DeathMatchGame(DeusExPlayer(safeTarget).DXGame) != None ) && (DeusExPlayer(safeTarget).PlayerReplicationInfo.PlayerID != team))
-					bSwitched = True;
+					bSwitched = true;
 
 				if ( bSwitched )
 				{
-					bDisabled = True;
+					bDisabled = true;
 					safeTarget = None;
-					bComputerReset = False;
+					bComputerReset = false;
 				}
 			}
 		}
@@ -292,7 +296,7 @@ function Tick(float deltaTime)
 		if ( !bComputerReset )
 		{
 			gun.ResetComputerAlignment();
-			bComputerReset = True;
+			bComputerReset = true;
 		}
 	}
 
@@ -312,7 +316,7 @@ function Tick(float deltaTime)
 		}
 		if (confusionTimer > confusionDuration)
 		{
-			bConfused = False;
+			bConfused = false;
 			confusionTimer = 0;
 			confusionDuration = Default.confusionDuration;
 		}
@@ -539,7 +543,7 @@ auto state Active
 			confusionTimer = 0;
 			if (!bConfused)
 			{
-				bConfused = True;
+				bConfused = true;
 				PlaySound(sound'EMPZap', SLOT_None,,, 1280);
 			}
 			return;
@@ -576,7 +580,7 @@ local GMDXSparkFade fade;
 		StartTrace = gun.Location+X*32;
 		EndTrace = StartTrace + gunAccuracy * (FRand()-0.5)*Y*1000 + gunAccuracy * (FRand()-0.5)*Z*1000 ;
 		EndTrace += 10000 * X;
-		hit = Trace(HitLocation, HitNormal, EndTrace, StartTrace, True);
+		hit = Trace(HitLocation, HitNormal, EndTrace, StartTrace, true);
 
 		// spawn some effects
 	  if ((DeusExMPGame(Level.Game) != None) && (!DeusExMPGame(Level.Game).bSpawnEffects))
@@ -599,8 +603,8 @@ local GMDXSparkFade fade;
 		if (IsHDTP())
 			gun.MultiSkins[3] = GetHDTPMuzzleTex();
 		else
-			gun.MultiSkins[2] = Texture'FlatFXTex34';
-		SetTimer(0.1, False);
+			gun.MultiSkins[2] = GetHDTPMuzzleTex();
+		SetTimer(0.1, false);
 
 		// randomly draw a tracer
 		if (FRand() < 0.5)
@@ -686,18 +690,28 @@ simulated function texture GetHDTPMuzzleTex()
 	local int i;
 	local texture tex;
 
-	i = rand(8);
-	switch(i)
-	{
-		case 0: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.HDTPMuzzleflashlarge1"); break;
-		case 1: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.HDTPMuzzleflashlarge2"); break;
-		case 2: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.HDTPMuzzleflashlarge3"); break;
-		case 3: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.HDTPMuzzleflashlarge4"); break;
-		case 4: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.HDTPMuzzleflashlarge5"); break;
-		case 5: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.HDTPMuzzleflashlarge6"); break;
-		case 6: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.HDTPMuzzleflashlarge7"); break;
-		case 7: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.HDTPMuzzleflashlarge8"); break;
-	}
+    if (!IsHDTP())                                                  //RSD: If using the vanilla model, use vanilla muzzle flash
+    {
+        if (FRand() < 0.5)
+            tex = Texture'FlatFXTex34';
+        else
+            tex = Texture'FlatFXTex37';
+    }
+    else
+    {
+        i = rand(8);
+        switch(i)
+        {
+            case 0: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashlarge1"); break;
+            case 1: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashlarge2"); break;
+            case 2: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashlarge3"); break;
+            case 3: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashlarge4"); break;
+            case 4: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashlarge5"); break;
+            case 5: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashlarge6"); break;
+            case 6: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashlarge7"); break;
+            case 7: tex = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPMuzzleflashlarge8"); break;
+        }
+    }
 	return tex;
 }
 
@@ -726,7 +740,6 @@ simulated function SpawnEffects(Vector HitLocation, Vector HitNormal, Actor Othe
 {
 	local SmokeTrail puff;
 	local int i;
-	local BulletHole hole;
 	local Rotator rot;
 
 	if ((DeusExMPGame(Level.Game) != None) && (!DeusExMPGame(Level.Game).bSpawnEffects))
@@ -752,30 +765,12 @@ simulated function SpawnEffects(Vector HitLocation, Vector HitNormal, Actor Othe
 			if (FRand() < 0.8)
 				spawn(class'Rockchip',,,HitLocation+HitNormal);
 
-	hole = spawn(class'BulletHole', Other,, HitLocation, Rotator(HitNormal));
 
 	// should we crack glass?
-	if (GetWallMaterial(HitLocation, HitNormal) == 'Glass' && hole != none)     //RSD: hole failsafe
-	{
-        if (IsHDTP())
-        {
-			hole.Texture = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPFlatFXTex29");
-            hole.DrawScale = 0.00625;
-        }
-		else if (FRand() < 0.5)
-        {
-			hole.Texture = Texture'FlatFXTex29';
-            hole.DrawScale = 0.1;
-        }
-        else
-        {
-			hole.Texture = Texture'FlatFXTex30';
-            hole.DrawScale = 0.1;
-        }
-
-		hole.drawscale *= 1.0 + frand()*0.2;
-		hole.ReattachDecal();
-	}
+	if (GetWallMaterial(HitLocation, HitNormal) == 'Glass')
+        spawn(class'BulletHoleGlass', Other,, HitLocation, Rotator(HitNormal));
+	else
+		spawn(class'BulletHole', Other,, HitLocation, Rotator(HitNormal));
 }
 
 function name GetWallMaterial(vector HitLocation, vector HitNormal)
@@ -841,7 +836,7 @@ local DeusExPlayer player;
 		if (!bActive)
 		{
 			bPreAlarmActiveState = bActive;
-			bActive = True;
+			bActive = true;
 			//PlaySound(Sound'TurretSwitch', SLOT_None, 1.0,, 2048); //CyberP: added new sound
 		}
 	}
@@ -850,7 +845,7 @@ local DeusExPlayer player;
 	    /*player = DeusExPlayer(GetPlayerPawn());
 	    if (player.bPermTurrets) //CyberP: alarms permanent once triggered if option is enabled.
 	    {
-	        bActive = True;
+	        bActive = true;
 	    }
 		else if (bActive)
 			bActive = bPreAlarmActiveState;
@@ -896,7 +891,7 @@ function PreBeginPlay()
 	{
 		maxRange = mpTurretRange;
 		gunDamage = mpTurretDamage;
-		bInvincible = True;
+		bInvincible = true;
 	  bDisabled = !bActive;
 	}
 }
@@ -931,7 +926,7 @@ function bool checkForObstruction()                                             
     GetAxes(gun.Rotation, X, Y, Z);
 	StartTrace = gun.Location+X*32;
 	EndTrace = StartTrace + 10000*X;
-	hit = Trace(HitLocation, HitNormal, EndTrace, StartTrace, True);
+	hit = Trace(HitLocation, HitNormal, EndTrace, StartTrace, true);
 
     if (gun.DesiredRotation.Pitch > 0)                                          //RSD: If aiming up, current rotation (+25% of collision height)  to check is good
     	collisionMult = 0.;
@@ -951,10 +946,10 @@ function bool checkForObstruction()                                             
 defaultproperties
 {
      titleString="AutoTurret"
-     bHitMarkers=True
-     bEMPHitMarkers=True
-     bTrackPlayersOnly=True
-     bActive=True
+     bHitMarkers=true
+     bEMPHitMarkers=true
+     bTrackPlayersOnly=true
+     bActive=true
      maxRange=4000
      fireRate=0.240000
      gunAccuracy=0.500000
@@ -967,9 +962,9 @@ defaultproperties
      mpTurretRange=1024
      HitPoints=60
      minDamageThreshold=60
-     bHighlight=False
+     bHighlight=false
      ItemName="Turret Base"
-     bPushable=False
+     bPushable=false
      Physics=PHYS_None
      HDTPMesh="HDTPDecos.HDTPAutoTurretBase"
      Mesh=LodMesh'DeusExDeco.AutoTurretBase'
@@ -980,7 +975,7 @@ defaultproperties
      CollisionHeight=20.200001
      Mass=50.000000
      Buoyancy=10.000000
-     bVisionImportant=True
+     bVisionImportant=true
      disableTimeBase=120.0
      disableTimeMult=60.0
 }

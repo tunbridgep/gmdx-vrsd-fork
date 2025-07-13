@@ -88,25 +88,36 @@ simulated function PostBeginPlay()
     }
 
     Super.PostBeginPlay();
-
+    SetTimer(0.08, False);
     PlaySound(sound'CombatKnifeFire',SLOT_None,,,,1.5);
+}
 
-    if (player != None && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkSharpEyed').bPerkObtained == true)
+function Timer()
+{
+local DeusExPlayer player;
+
+    player = DeusExPlayer(GetPlayerPawn());
+
+    if (player != none)
     {
-        smokeGen = Spawn(class'ParticleGenerator', Self);
-        if (smokeGen != None)
-        {
-            smokeGen.RemoteRole = ROLE_None;
-            smokeGen.particleTexture = Texture'DeusExItems.Skins.FlatFXTex46';
-            smokeGen.particleDrawScale = 0.08;
-            smokeGen.checkTime = 0.05;
-            smokeGen.riseRate = 0.0;
-            smokeGen.ejectSpeed = 0.0;
-            smokeGen.particleLifeSpan = 0.5;
-            smokeGen.bRandomEject = False;
-            smokeGen.SetBase(Self);
-        }
+	if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkSharpEyed').bPerkObtained == true)
+    {
+     smokeGen = Spawn(class'ParticleGenerator', Self);
+	if (smokeGen != None)
+	{
+	  smokeGen.RemoteRole = ROLE_None;
+		smokeGen.particleTexture = Texture'DeusExItems.Skins.FlatFXTex46';
+		smokeGen.particleDrawScale = 0.07;
+		smokeGen.checkTime = 0.03;
+		smokeGen.riseRate = 0.0;
+		smokeGen.ejectSpeed = 0.0;
+		smokeGen.ScaleGlow=0.5;
+		smokeGen.particleLifeSpan = 0.5;
+		smokeGen.bRandomEject = False;
+		smokeGen.SetBase(Self);
 	}
+	}
+   }
 }
 
 defaultproperties
@@ -118,7 +129,7 @@ defaultproperties
      bStickToWall=True
      blastRadius=32.000000
      DamageType=shot
-     AccurateRange=840
+     AccurateRange=1024
      maxRange=1480
      spawnWeaponClass=Class'DeusEx.WeaponShuriken'
      bIgnoresNanoDefense=True
@@ -129,7 +140,7 @@ defaultproperties
      hdtpReference=Class'DeusEx.WeaponShuriken'
      speed=1400.000000
      MaxSpeed=1400.000000
-     Damage=16.000000
+     Damage=14.000000
      MomentumTransfer=1000
      ImpactSound=Sound'DeusExSounds.Generic.BulletHitFlesh'
      LifeSpan=560.000000

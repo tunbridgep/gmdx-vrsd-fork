@@ -110,8 +110,8 @@ local ScorchMark mark;
     mark = Spawn(class'DeusEx.ScorchMark', Self,, HitLocation, Rotator(HitNormal));
 		if (mark != None && CollisionRadius != 0)
 		{
-			mark.DrawScale = CollisionRadius / 120;
-			mark.ReattachDecal();
+			mark.DrawScaleMult = CollisionRadius / 6;
+			mark.UpdateHDTPSettings();
 		}
 }
 

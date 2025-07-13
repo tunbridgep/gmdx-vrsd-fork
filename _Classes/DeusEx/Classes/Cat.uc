@@ -73,6 +73,7 @@ function bool WillTakeStompDamage(Actor stomper)
 
 defaultproperties
 {
+	 bCanBleed=True
      bPlayDying=True
      bFleeBigPawns=True
      MinHealth=0.000000

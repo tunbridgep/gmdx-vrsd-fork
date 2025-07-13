@@ -42,6 +42,7 @@ function InitializePerks(DeusExPlayer newPlayer)	// Trash: Add every perk in the
 	// Lowtech Perks
 	AddPerk(Class'DeusEx.PerkSharpEyed');
 	AddPerk(Class'DeusEx.PerkPiercing');
+	AddPerk(Class'DeusEx.PerkHemmorhage');
 	AddPerk(Class'DeusEx.PerkInventive');
 
 	// Heavy Perks
@@ -54,6 +55,7 @@ function InitializePerks(DeusExPlayer newPlayer)	// Trash: Add every perk in the
 	// Demolition Perks
 	AddPerk(Class'DeusEx.PerkSonicTransducerSensor');
 	AddPerk(Class'DeusEx.PerkShortFuse');
+	AddPerk(Class'DeusEx.PerkSensorBurnout');
 	AddPerk(Class'DeusEx.PerkKnockoutGas');
 
 	// Lockpicking Perks
@@ -67,8 +69,8 @@ function InitializePerks(DeusExPlayer newPlayer)	// Trash: Add every perk in the
 	AddPerk(Class'DeusEx.PerkCracked');
 
 	// Medicine Perks
-	AddPerk(Class'DeusEx.PerkBiogenic');
 	AddPerk(Class'DeusEx.PerkToxicologist');
+	AddPerk(Class'DeusEx.PerkBiogenic');
 	AddPerk(Class'DeusEx.PerkCombatMedicsBag');
 
 	// Enviro TrainPerks
@@ -91,12 +93,14 @@ function InitializePerks(DeusExPlayer newPlayer)	// Trash: Add every perk in the
 	AddPerk(Class'DeusEx.PerkTacticalDistraction');
 
 	// Hacking Perks
+	AddPerk(Class'DeusEx.PerkDataRecovery');
 	AddPerk(Class'DeusEx.PerkModder');
 	AddPerk(Class'DeusEx.PerkMisfeatureExploit');
 	AddPerk(Class'DeusEx.PerkTurretDomination');
 
     //General Perks
 	AddPerk(Class'DeusEx.PerkFirefighter');
+	AddPerk(Class'DeusEx.PerkLawfare');
 	AddPerk(Class'DeusEx.PerkGlutton');
 	AddPerk(Class'DeusEx.PerkSocketJockey');
 }
@@ -162,6 +166,15 @@ function bool PurchasePerk(class<Perk> perk, optional bool free, optional bool a
 }
 
 // ----------------------------------------------------------------------
+// GetNumPerks()
+// ----------------------------------------------------------------------
+
+function int GetNumPerks()
+{
+    return numPerks;
+}
+
+// ----------------------------------------------------------------------
 // GetNumObtainedPerks()
 // ----------------------------------------------------------------------
 
@@ -199,6 +212,18 @@ function int GetPerkIndex(Perk Perk)  // Trash: Get the index of the perk by che
 			return index;
 		}
 	}
+}
+
+// ----------------------------------------------------------------------
+// GetPerkAtIndex()
+// ----------------------------------------------------------------------
+
+function Perk GetPerkAtIndex(int index)  // Trash: Get the perk at a certain index
+{
+    if (index < numPerks)
+        return PerkList[index];
+    else
+        return None;
 }
 
 // ----------------------------------------------------------------------

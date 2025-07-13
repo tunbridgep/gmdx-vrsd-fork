@@ -1,7 +1,7 @@
 //=============================================================================
 // HUDAmmoDisplay
 //=============================================================================
-class HUDAmmoDisplay2 expands HUDBaseWindow;
+class HUDAmmoDisplay2 expands HUDRightSidedWindow;
 
 var Bool			bVisible;
 var DeusExPlayer	player;
@@ -23,8 +23,14 @@ var DeusExPickup item;                                                          
 // Defaults
 var Texture texBackground;
 var Texture texBorder;
+var Texture texBorderRight;
 
 var Color colIconDimmed;
+
+//SARGE: Cache the players secondary
+var transient Inventory assigned;
+var transient class<Inventory> assignedClass;
+var bool bUpdateAssigned;
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -34,13 +40,27 @@ event InitWindow()
 {
 	Super.InitWindow();
 
+    SetRightSide(false);
+
 	bTickEnabled = TRUE;
 
 	Hide();
 
 	player = DeusExPlayer(DeusExRootWindow(GetRootWindow()).parentPawn);
 
+    UpdateAssigned();
+
 	SetSize(95, 77);
+}
+
+//SARGE: Update our assigned weapon
+function UpdateAssigned()
+{
+    bUpdateAssigned = true;
+    /*
+    if (player != None)
+        assigned = player.GetSecondary();
+    */
 }
 
 // ----------------------------------------------------------------------
@@ -49,7 +69,14 @@ event InitWindow()
 
 event Tick(float deltaSeconds)
 {
-	if ((player.assignedWeapon != None) && ( bVisible ))
+    if (player != None && bUpdateAssigned)
+    {
+        assigned = player.GetSecondary();
+        assignedClass = player.GetSecondaryClass();
+        bUpdateAssigned = false;
+    }
+
+	if (player != None && assignedClass != None && bVisible)
 		Show();
 	else
 		Hide();
@@ -66,19 +93,36 @@ event DrawWindow(GC gc)
 
 	Super.DrawWindow(gc);
 
+    /*
+    if (assigned == None || assigned.Owner != player)
+        return;
+    */
+
+    if (player == None || assignedClass == None)
+        return;
+
 	// No need to draw anything if the player doesn't have
 	// a weapon selected
 
-	if (player != None && player.assignedWeapon != none && player.assignedWeapon.IsA('DeusExWeapon')) //RSD: Added IsA weapon check
+    if (assigned == None || assigned.Owner != player)
+    {
+        gc.SetTileColor(colIconDimmed);
+		gc.SetStyle(DSTY_Masked);
+		gc.DrawTexture(9+offset, 20, 40, 35, 0, 0, assignedClass.default.icon);
+        return;
+    }
+
+
+	if (assigned.IsA('DeusExWeapon')) //RSD: Added IsA weapon check
 	{
-		weapon = DeusExWeapon(player.assignedWeapon);
+		weapon = DeusExWeapon(assigned);
 		item = none;                                                            //RSD: Fix for the last weapon assigned icon always showing up
         amount = weapon.AmmoType.AmmoAmount;
         icon = weapon.icon;
 	}
-    else if (player != None && player.assignedWeapon != none && player.assignedWeapon.IsA('DeusExPickup')) //RSD: Extended to include general inventory items
+    else if (assigned.IsA('DeusExPickup')) //RSD: Extended to include general inventory items
     {
-    	item = DeusExPickup(player.assignedWeapon);
+    	item = DeusExPickup(assigned);
     	weapon = none;                                                          //RSD: Fix for the last weapon assigned icon always showing up
         amount = item.numCopies;
         icon = item.icon;
@@ -90,31 +134,30 @@ event DrawWindow(GC gc)
         chargeLevel = int(ChargedPickup(item).GetCurrentCharge());
     else if (weapon != None && weapon.isA('WeaponNanoSword'))
         chargeLevel = WeaponNanoSword(weapon).ChargeManager.GetCurrentCharge();
-
-	if ( weapon != None || item != None)
+	
+    if ( weapon != None || item != None)
 	{
         if (!IsCharged(item))
             gc.SetTileColor(colIconDimmed);
 
 		// Draw the weapon icon
 		gc.SetStyle(DSTY_Masked);
-		gc.DrawTexture(22, 20, 40, 35, 0, 0, icon);
+		gc.DrawTexture(9+offset, 20, 40, 35, 0, 0, icon);
 
         if ((amount > 0 || chargeLevel > 0) && (item == None || !item.isA('Binoculars')))
         {
             // Draw the ammo count
-            gc.SetFont(Font'TechMedium'); //CyberP: hud scaling Font'FontTiny'
             gc.SetAlignments(HALIGN_Center, VALIGN_Top);   //CyberP: Valignment
             gc.EnableWordWrap(false);
             gc.SetFont(Font'FontTiny');
             gc.SetTextColor(colText);
 
             if (amount > 0)
-                gc.DrawText(28, 56, 32, 8, InvLabel @ amount); //Position below icon
-            //gc.DrawText(28, 48, 32, 8, InvLabel @ amount); //Position at bottom of icon
+                gc.DrawText(offset-3, 56, 64, 8, InvLabel @ amount); //Position below icon
+            //gc.DrawText(15+offset, 48, 32, 8, InvLabel @ amount); //Position at bottom of icon
         
             if (chargeLevel > 0)
-                gc.DrawText(28, 34, 32, 8, Sprintf("%d%%", chargeLevel)); //Position center of icon
+                gc.DrawText(15+offset, 34, 32, 8, Sprintf("%d%%", chargeLevel)); //Position center of icon
         }
 	}
 }
@@ -147,7 +190,7 @@ function DrawBackground(GC gc)
 {
 	gc.SetStyle(backgroundDrawStyle);
 	gc.SetTileColor(colBackground);
-	gc.DrawTexture(13, 13, 80, 54, 0, 0, texBackground);
+	gc.DrawTexture(offset, 13, 80, 54, 0, 0, texBackground);
 }
 
 // ----------------------------------------------------------------------
@@ -160,7 +203,10 @@ function DrawBorder(GC gc)
 	{
 		gc.SetStyle(borderDrawStyle);
 		gc.SetTileColor(colBorder);
-		gc.DrawTexture(0, 0, 95, 77, 0, 0, texBorder);
+        if (bRightSided)
+            gc.DrawTexture(0, 0, 95, 77, 0, 0, texBorderRight);
+        else
+            gc.DrawTexture(0, 0, 95, 77, 0, 0, texBorder);
 	}
 }
 
@@ -182,5 +228,8 @@ defaultproperties
      InvLabel="COUNT:"
      texBackground=Texture'RSDCrap.UserInterface.HudAmmoDisplayBackgroundSecondary'
      texBorder=Texture'RSDCrap.UserInterface.HudAmmoDisplayBorderSecondary'
+     texBorderRight=Texture'RSDCrap.UserInterface.HudAmmoDisplayBorderSecondaryF'
      colIconDimmed=(R=64,G=64,B=64)
+     leftSideOffset=13
+     rightSideOffset=2
 }

@@ -31,16 +31,46 @@ function int SetMaxCharge(int amount, optional bool resetCharge)
         charge = amount;
 }
 
+//Sets charge to a literal amount, capped at max amount and not going below zero
+function int SetCharge(int newCharge)
+{
+    charge = MAX(0,MIN(newCharge,maxCharge));
+}
+
 function int GetCurrentCharge()
 {
 	return int((Float(charge) / Float(maxCharge)) * 100.0);
+}
+
+//recharges this charge manager from another one.
+function RechargeFrom(ChargeManager other)
+{
+    local int amount;
+
+    amount = maxCharge - charge;
+
+    //Don't let us charge more than the other object has.
+    if (other.charge < amount)
+        amount = other.charge;
+
+    if (amount > 0)
+    {
+        SetCharge(charge + amount);
+        other.SetCharge(other.charge - amount);
+        target.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
+        
+        if (charge == maxCharge)
+            owner.ClientMessage(msgFullyCharged);
+        else
+            owner.ClientMessage(Sprintf(msgRecharged,amount));
+    }
 }
 
 //Gets the recharge amount per biocell
 function float GetRechargeAmount()
 {
     if (owner != None && owner.PerkManager != None && owner.PerkManager.GetPerkWithClass(class'DeusEx.PerkFieldRepair').bPerkObtained == true)                         //RSD: New Repairman perk
-        return 1.5 * chargeMult;
+        return (1.5 * chargeMult);
     else 
         return chargeMult;
 }
@@ -48,7 +78,7 @@ function float GetRechargeAmount()
 //Gets the recharge amount per biocell in a nice format
 function int GetRechargeAmountDisplay()
 {
-    return GetRechargeAmount() * 100;
+    return int(GetRechargeAmount() * 100);
 }
 
 function Setup(DeusExPlayer newOwner, Inventory newTarget)
@@ -75,7 +105,7 @@ function bool Recharge(optional out string msg)
     }
     else
     {
-        msg = sprintf(msgRecharged,GetRechargeAmount());
+        msg = sprintf(msgRecharged,GetRechargeAmountDisplay());
     }
     //ChargedTarget.bActivatable=true;                                //RSD: Since now you can hold one at 0%
     unDimIcon();                                      //RSD
@@ -120,6 +150,9 @@ function DimIcon() //RSD: When an item runs out of charge, dim the inv/belt icon
     }
 }
 
+//SARGE: WARNING!!
+//THIS FUNCTION CRASHES THE GAME SOMETIMES WHEN USED
+//IN THE INVENTORY SCREEN
 function unDimIcon() //RSD: When a biocell is used to charge an item, check if it was dead (dimmed inv/belt icon) and undim it
 {
 	local HUDObjectBelt hudbelt;

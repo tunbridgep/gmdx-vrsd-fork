@@ -39,6 +39,7 @@ function SetCloak()
 function Tick(float deltaTime)
 {
     local ScriptedPawn pawn;
+    local DeusExPlayer player;
 
     SetCloak();
 
@@ -47,6 +48,7 @@ function Tick(float deltaTime)
         Style=STY_Translucent;
     else
     {
+        player = DeusExPlayer(Owner);
         Style=STY_Normal;
 
         //SARGE: AISendEvent has a seemingly unlimited range, and the radius variable does nothing
@@ -55,11 +57,34 @@ function Tick(float deltaTime)
         //AISendEvent('Projectile', EAITYPE_Visual);
         foreach VisibleActors(class'ScriptedPawn', pawn, detectionRange)
         {
+            /*
             if ((pawn.bFearProjectiles || pawn.bReactProjectiles) && pawn.bLookingForProjectiles)
             {
                 pawn.ReactToProjectiles(self);
                 //If one person knows about it, everyone knows about it
                 AISendEvent('Projectile', EAITYPE_Audio);
+            }
+            */
+                
+                //if (Tag == '')
+                //    Tag = player.rootWindow.StringToName("MySpyDrone");
+                //pawn.SetOrders('Attacking','MySpyDrone',True);
+                //player.ClientMessage("Ordering an attack right now!: " $ Tag);
+
+            if ((pawn.bFearProjectiles || pawn.bReactProjectiles) && pawn.bLookingForProjectiles)
+            {
+                //Bail if we're not hostile
+                if (pawn.GetPawnAllianceType(player) != ALLIANCE_Hostile)
+                    continue;
+
+                //Bail if the pawn can't see us
+                if (pawn.AICanSee(Self, , false, true, true, true) < 0.4)
+                    continue;
+                
+                //If one person knows about it, everyone knows about it
+                AISendEvent('Projectile', EAITYPE_Audio, , detectionRange * 4);
+                return;
+                //pawn.ReactToProjectiles(self);
             }
         }
     }
@@ -87,6 +112,7 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector HitLocation, Vector Mo
         LightRadius = 0;
         bEMPDeath = true;
         ForceDroneOff();
+        AmbientSound=None;
 	}
 
 	if ( Level.NetMode != NM_Standalone )
@@ -183,14 +209,16 @@ function Frob(Actor Frobber, Inventory frobWith)
 
     player = DeusExPlayer(frobber);
 
-    if (player != None && player.AugmentationSystem != None)
+    if (player != None && player.AugmentationSystem != None && !bEMPDeath)
     {
         droneAug = player.AugmentationSystem.FindAugmentation(class'AugDrone');
 
         if (droneAug != None) //This should never fail
         {
             player.ClientMessage(msgDroneRecovered);
+            PlaySound(Sound'biomodoff', SLOT_Pain, 0.85, ,768,1.0);
             droneAug.bSilentDeactivation = true; //Don't show message or play sound.
+            ForceDroneOff();
             Destroy();
             droneAug.GiveFullRecharge();
         }

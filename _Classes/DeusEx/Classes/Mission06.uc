@@ -18,6 +18,7 @@ function FirstFrame()
 	local MJ12Commando commando;
 	local DeusExCarcass carc;
 	local DeusExDecoration deco;
+	local DeusExFragment frag;
 	local HKMilitary mil;
 	local SpiderBot bot;
 	local BookOpen book;
@@ -26,11 +27,32 @@ function FirstFrame()
     local Hooker1 Mercedes;
 	local LowerClassFemale Tessa;
     local ScriptedPawn SP;
+    local Light L;
 
 
 	Super.FirstFrame();
 
-	if (localURL == "06_HONGKONG_VERSALIFE")
+	if (localURL == "06_HONGKONG_HELIBASE")
+    {
+        //SARGE: If we're using the "Killswitch Engaged" playthrough mod,
+        //then reduce the killswitch by 10 hours
+        if (player.bRealKillswitch && !flags.GetBool('GMDXKillswitchReduced'))
+        {
+            player.killswitchTimer -= (10*60)*60;
+            flags.SetBool('GMDXKillswitchReduced', True,, 7);
+        }
+
+        //SARGE: Fix up Lighting if we have Lighting Accessibility enabled
+        if (Player.bLightingAccessibility)
+        {
+            ForEach AllActors(class'Light', L)
+            {
+                if (L.LightType == LT_Flicker && (L.Name == 'Light5' || L.Name == 'Light61' || L.Name == 'Light7' || L.Name == 'Light6'))
+                    L.LightType = LT_Steady;
+            }
+        }
+    }
+	else if (localURL == "06_HONGKONG_VERSALIFE")
 	{
 		if (flags.GetBool('M07Briefing_Played'))
 		{
@@ -46,6 +68,16 @@ function FirstFrame()
 			foreach AllActors(class'DeusExCarcass', carc, 'John_Smith_Body')
 				carc.bHidden = False;
 		}
+        
+        //SARGE: Fix up Lighting if we have Lighting Accessibility enabled
+        if (Player.bLightingAccessibility)
+        {
+            ForEach AllActors(class'Light', L)
+            {
+                if (L.Name == 'Light0' || L.Name == 'Light1')
+                    L.LightType = LT_Steady;
+            }
+        }
 	}
 	else if (localURL == "06_HONGKONG_MJ12LAB")
 	{
@@ -66,6 +98,16 @@ function FirstFrame()
 	}
 	else if (localURL == "06_HONGKONG_TONGBASE")
 	{
+        //SARGE: Fix up Lighting if we have Lighting Accessibility enabled
+        if (Player.bLightingAccessibility)
+        {
+            ForEach AllActors(class'Light', L)
+            {
+                if (L.Name == 'Light15')
+                    L.LightType = LT_Steady;
+            }
+        }
+
 		if (flags.GetBool('Versalife_Done'))
 		{
 			foreach AllActors(class'ScriptedPawn', pawn)
@@ -95,21 +137,6 @@ function FirstFrame()
 					pawn.EnterWorld();
 			}
 		}
-
-		if (flags.GetBool('TriadCeremony_Played'))
-        {
-         if (flags.GetBool('Enhancement_Detected'))
-	     {
-            foreach AllActors(class'ScriptedPawn', pawn)
-	        {
-               if (pawn.IsA('TriadLumPath') || pawn.IsA('TriadLumPath2'))
-               {
-                  if (pawn.BarkBindName == "TriadLumPath")
-                     pawn.BarkBindName = "TriadLumPathPeace";
-               }
-            }
-	     }
-        }
 	}
 	else if (localURL == "06_HONGKONG_WANCHAI_UNDERWORLD")
 	{
@@ -142,8 +169,31 @@ function FirstFrame()
 		{
 			flags.SetBool('DragonHeadsInLuckyMoney', True,, 8);
 
-			foreach AllActors(class'DeusExCarcass', carc)
-				carc.Destroy();
+            if (!flags.GetBool('GMDXBarCleanup'))
+            {
+                //SARGE: We need to clean up the fragments and decals as well after the fight
+                if (player.decalManager != None)
+                {
+                    player.DecalManager.HideAllDecals();
+                    player.DecalManager.ClearList();
+                }
+
+                foreach AllActors(class'DeusExFragment', frag)
+                    frag.Destroy();
+
+                foreach AllActors(class'DeusExCarcass', carc)
+                    carc.Destroy();
+                
+                foreach AllActors(class'DeusExDecoration', deco)
+                {
+                    if (deco.IsA('BoneFemur')
+                        || deco.IsA('BoneFemurBloody')
+                        || deco.IsA('BoneFemurLessBloody'))
+                    deco.Destroy();
+                }
+                
+                flags.SetBool('GMDXBarCleanup', True,, 7);
+            }
 		}
 
 		if (flags.GetBool('DragonHeadsInLuckyMoney') &&
@@ -193,6 +243,16 @@ function FirstFrame()
 	}
 	else if (localURL == "06_HONGKONG_WANCHAI_MARKET")
 	{
+        //SARGE: Fix up Lighting if we have Lighting Accessibility enabled
+        if (Player.bLightingAccessibility)
+        {
+            ForEach AllActors(class'Light', L)
+            {
+                if (L.Name == 'Light157')
+                    L.LightType = LT_Steady;
+            }
+        }
+
 		// prepare for the ceremony
 		if (flags.GetBool('Have_ROM') &&
 			flags.GetBool('MeetTracerTong_Played') &&
@@ -481,7 +541,10 @@ function Timer()
 	else if (localURL == "06_HONGKONG_WANCHAI_MARKET")
 	{
 		// release rats
-		if (flags.GetBool('TeaHouseDrama_Played') &&
+        //SARGE: Changed from TeaHouseDrama_Played to
+        //CatererConvo_Played, because it fits so much better
+        //this way
+		if (flags.GetBool('CatererConvo_Played') &&
 			!flags.GetBool('MS_RatsReleased'))
 		{
 			foreach AllActors(class'RatGenerator', gen)
@@ -699,6 +762,17 @@ function Timer()
 			flags.SetBool('MS_DrugDealersAttacking', True,, 8);
 		}
 	}
+	else if (localURL == "06_HONGKONG_TONGBASE")
+    {
+        //SARGE: If we're using the "Killswitch Engaged" playthrough mod,
+        //then disable the killswitch when Tong tells us it's done
+        if (player.bRealKillswitch && !flags.GetBool('GMDXKillswitchStopped') && flags.GetBool('DL_TongFixesKillswitch2_Played'))
+        {
+            player.killswitchTimer = -1;
+            //player.bRealKillswitch = false;
+            flags.SetBool('GMDXKillswitchStopped', True,, 0);
+        }
+    }
 }
 
 function FireMissilesAt(name targetTag)

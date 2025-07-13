@@ -14,19 +14,18 @@ function FirstFrame()
 	local DeusExMover M;
 	local BlackHelicopter chopper;
     local ScriptedPawn SP;
+    local SecurityCamera SC;
 
 	Super.FirstFrame();
 
-     if (flags.GetBool('Enhancement_Detected'))
-     {
-            foreach AllActors(class'ScriptedPawn', SP)
-	        {
-                  if (SP.BarkBindName == "UNATCOTroop")
-                     SP.BarkBindName = "UNATCOTroopEnemy";
-                  else if (SP.BarkBindName == "UNATCOTroopB")
-                     SP.BarkBindName = "UNATCOTroopEnemyB";
-            }
-     }
+    //SARGE: Ensure all cameras are set to alarming.
+    //For some reason, some were set to bNoAlarm
+    foreach AllActors(class'SecurityCamera', SC)
+    {
+        //Vinnie camera remains bNoAlarm
+        if (SC.Name != 'SecurityCamera2')
+            SC.bNoAlarm = false;
+    }
 
 	if (localURL == "09_NYC_SHIP")
 	{
@@ -57,6 +56,13 @@ function FirstFrame()
 	}
 	else if (localURL == "09_NYC_DOCKYARD")
 	{
+        //In hardcore mode, we don't get the USFEMA login so easily...
+        if (player.bHardCoreMode)
+        {
+            foreach AllActors(class'DeusExMover', M, 'USFEMA_Locker')
+                M.bLocked = false;
+        }
+
 		if (flags.GetBool('MS_ShipBreeched'))
 		{
 			foreach AllActors(class'BlackHelicopter', chopper, 'BlackHelicopter')
@@ -88,8 +94,9 @@ function Timer()
 {
 	local int count;
 	local DeusExMover M;
+	local HackableDevices E;
 	local BlackHelicopter chopper;
-	local MJ12Troop troop;
+	local MJ12Elite2 troop;
 	local Trigger trig;
 	local MJ12Commando commando;
 	local WaltonSimons Walton;
@@ -163,6 +170,22 @@ function Timer()
 	}
 	else if (localURL == "09_NYC_GRAVEYARD")
 	{
+
+        //SARGE: Stop us from using finding the little device if we don't know about it
+        if (player.iNoKeypadCheese >= 2)
+        {
+			foreach AllActors(class'DeusExMover', M, 'SecretPainting')
+            {
+                M.bFrobbable = flags.GetBool('M09MeetStantonDowd_Played');
+                M.bHighlight = flags.GetBool('M09MeetStantonDowd_Played');
+            }
+			foreach AllActors(class'HackableDevices', E, 'SecretKeypad')
+            {
+                E.bHackable = flags.GetBool('M09MeetStantonDowd_Played');
+                E.bHighlight = flags.GetBool('M09MeetStantonDowd_Played');
+            }
+        }
+
 		// unhide the helicopter when the "little device" is destroyed
 		if (!flags.GetBool('MS_UnhideHelicopter'))
 		{
@@ -174,7 +197,7 @@ function Timer()
 
 				Player.StartDataLinkTransmission("DL_ComingIn");
 
-				foreach AllActors(class'MJ12Troop', troop, 'TroopSupport')
+				foreach AllActors(class'MJ12Elite2', troop, 'TroopSupport')
 					troop.EnterWorld();
 
 				flags.SetBool('MS_UnhideHelicopter', True,, 10);
@@ -189,7 +212,7 @@ function Timer()
 			foreach AllActors(class'Trigger', trig, 'TunnelTrigger')
 				trig.SetCollision(True);
 
-			foreach AllActors(class'MJ12Troop', troop, 'TroopInsertion')
+			foreach AllActors(class'MJ12Elite2', troop, 'TroopInsertion')
 				troop.EnterWorld();
 
 			flags.SetBool('MS_TriggerOn', True,, 10);
@@ -247,9 +270,11 @@ function ShipExplosionEffects(bool bFragments)
 		// shake the view
 		Player.ShakeView(shakeTime, shakeRoll, shakeVert);
 
-		// bobble the player around
+		// bobble the player around //SARGE: Holy SHIT this is annoying! Begone!
+        /*
 		bobble = vect(300.0,300.0,200.0) + 500.0 * size * VRand();
 		Player.Velocity += bobble;
+        */
 
 		// make all the hanging decorations sway randomly
 		foreach AllActors(class'HangingDecoration', deco)

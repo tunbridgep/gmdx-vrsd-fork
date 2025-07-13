@@ -122,6 +122,7 @@ function Carcass SpawnCarcass()
 	if (bStunned)
 		return Super.SpawnCarcass();
 
+    ExpelInventory();
 	Explode();
 
 	return None;
@@ -163,8 +164,8 @@ function Explode()
 	s = spawn(class'ScorchMark', Base,, Location-vect(0,0,1)*CollisionHeight, Rotation+rot(16384,0,0));
 	if (s != None)
 	{
-		s.DrawScale *= FClamp(explosionDamage/30, 0.1, 5.0);
-		s.ReattachDecal();
+		s.DrawScaleMult = FClamp(explosionDamage/30, 0.1, 5.0);
+		s.UpdateHDTPSettings();
 	}
 
     for (i=0; i<22; i++) //CyberP: was /1.2
@@ -328,9 +329,7 @@ function DifficultyMod(float CombatDifficulty, bool bHardCoreMode, bool bExtraHa
 	SurprisePeriod=0.200000;
 	GroundSpeed=350.000000;
 	}
-	Die = None;
-
-        bNotFirstDiffMod = true;
+    bNotFirstDiffMod = true;
 }
 
 defaultproperties
@@ -347,6 +346,8 @@ defaultproperties
      Health=900
      HitSound1=Sound'GMDXSFX.Human.MiBPain'
      HitSound2=Sound'GMDXSFX.Human.MiBPain'
+     Die=None
+     bDontChangeDeathPainSounds=True
      HealthHead=900
      HealthTorso=900
      HealthLegLeft=900

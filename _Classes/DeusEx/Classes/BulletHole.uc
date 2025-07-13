@@ -3,12 +3,23 @@
 //=============================================================================
 class BulletHole extends DeusExDecal;
 
+var float randomScale;
+
+function BeginPlay()
+{
+	randomScale = frand()*0.2;
+	Super.BeginPlay();
+}
+
 // overridden to NOT rotate decal
 //HDTP DDL- OVERRULED!
-exec function UpdateHDTPsettings()
+function DoHDTP()
 {
-    super.UpdateHDTPsettings();
-	drawscale *= 1.0 + frand()*0.2;
+    super.DoHDTP();
+	drawscale *= 1.0 + randomScale;
+
+    if (class'DeusExPlayer'.default.bJohnWooSparks)
+        drawScale *= 1.5;
 
 	//if(!AttachDecal(32, vect(0.1,0.1,0)))
 	//	Destroy();

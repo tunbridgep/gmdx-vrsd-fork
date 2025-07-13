@@ -13,6 +13,9 @@ var int iconHeight;
 var Texture icon;
 var Texture texBackground;
 
+var ProgressBarWindow winEnergy; //SARGE: Moved to the base class, so augs can use it too.
+
+
 // ----------------------------------------------------------------------
 // InitWindow()
 // ----------------------------------------------------------------------
@@ -37,10 +40,22 @@ event DrawWindow(GC gc)
 		// Now draw the icon
 		gc.SetStyle(iconDrawStyle);
 		gc.SetTileColor(colItemIcon);
+        if (DrawDim())
+            gc.SetTileColorRGB(64,64,64);
 		gc.DrawTexture(2, 2, 32, 32, 0, 0, icon);
 	}
 
 	DrawHotKey(gc);
+}
+
+// ----------------------------------------------------------------------
+// SARGE: DrawDim()
+// Whether or not to dim the icon
+// ----------------------------------------------------------------------
+
+function bool DrawDim()
+{
+    return false;
 }
 
 // ----------------------------------------------------------------------
@@ -91,6 +106,22 @@ function SetIconMasked(bool bNewMask)
 
 function SetObject(object newClientObject)
 {
+}
+
+// ----------------------------------------------------------------------
+// CreateEnergyBar()
+// SARGE: Moved to Base Class
+// ----------------------------------------------------------------------
+
+function CreateEnergyBar()
+{
+	winEnergy = ProgressBarWindow(NewChild(Class'ProgressBarWindow'));
+	winEnergy.SetSize(32, 2);
+	winEnergy.UseScaledColor(True);
+	winEnergy.SetPos(1, 30);
+	winEnergy.SetValues(0, 100);
+	winEnergy.SetCurrentValue(0);
+	winEnergy.SetVertical(False);
 }
 
 // ----------------------------------------------------------------------

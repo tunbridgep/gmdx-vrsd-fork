@@ -20,8 +20,65 @@ function FirstFrame()
 	local AnnaNavarre Anna;
     local ammocrate crate;                                                      //RSD: Added an ammo crate to store all the player's ammo (new behavior in SP for that class)
     local Ammo Ammotype;
+    local int ammoCount;
+    local DeusExWeapon MiguelWeapon;
+    local DeusExAmmo MiguelAmmo;
 
 	Super.FirstFrame();
+    
+    //SARGE: Disable cut content without the modifier
+    if (!player.bCutInteractions && firstTime)
+		flags.SetBool('Miguel_No_Arming', True);
+
+    //On all maps except the lab map, give Miguel the correct weapon
+    if (localURL != "05_NYC_UNATCOMJ12LAB" && firstTime && flags.GetBool('MiguelArmed'))
+    {
+        foreach AllActors(class'Terrorist', T)
+        {
+            if (flags.GetBool('MiguelArmedCrossbow'))
+            {
+                MiguelWeapon = spawn(class'WeaponMiniCrossbow', T);
+                MiguelAmmo = spawn(class'AmmoDartPoison', T);
+            }
+            else if (flags.GetBool('MiguelArmedPistol'))
+            {
+                MiguelWeapon = spawn(class'WeaponPistol', T);
+                MiguelAmmo = spawn(class'Ammo10mm', T);
+            }
+            else if (flags.GetBool('MiguelArmedShotgun'))
+            {
+                MiguelWeapon = spawn(class'WeaponSawedOffShotgun', T);
+                MiguelAmmo = spawn(class'AmmoShell', T);
+            }
+            else if (flags.GetBool('MiguelArmedStealthPistol'))
+            {
+                MiguelWeapon = spawn(class'WeaponStealthPistol', T);
+                MiguelAmmo = spawn(class'Ammo10mm', T);
+            }
+            
+            if (MiguelAmmo != None)
+            {
+                MiguelAmmo.GiveTo(T);
+                MiguelAmmo.SetBase(T);
+                MiguelAmmo.bHidden = True;
+                MiguelAmmo.SetPhysics(PHYS_None);
+                T.AddInventory(MiguelAmmo);
+            }
+
+            if (MiguelWeapon != None)
+            {
+                if (MiguelAmmo != None)
+                    MiguelWeapon.AmmoType = MiguelAmmo;
+                MiguelWeapon.GiveTo(T);
+                MiguelWeapon.SetBase(T);
+                MiguelWeapon.bHidden = True;
+                MiguelWeapon.SetPhysics(PHYS_None);
+                T.AddInventory(MiguelWeapon);
+                T.SetWeapon(MiguelWeapon);
+            }
+
+        }    
+    }
 
 	if (localURL == "05_NYC_UNATCOMJ12LAB")
 	{
@@ -77,10 +134,23 @@ function FirstFrame()
 					if (item != None)
 					{
 						nextItem = item.Inventory;
+                        if (item.IsA('Weapon'))
+                        {
+                            AmmoType = Ammo(player.FindInventoryType(Weapon(item).AmmoName));
+                            ammoCount = ammoType.AmmoAmount;
+                        }
 						
 						//== Y|y: Turn off any charged pickups we were using and remove the associated HUD.  Per Lork on the OTP forums
 						if (item.IsA('ChargedPickup'))
 							ChargedPickup(item).ChargedPickupEnd(Player);
+
+						Player.DeleteInventory(item);
+
+                        if (item.IsA('WeaponGEPGun'))                           //RSD: To try to help with the GEP gun not showing up?
+                        	item.DropFrom(SP.Location + item.CollisionHeight*vect(0,0,1));
+                        else
+							item.DropFrom(SP.Location);
+							//item.DropFrom(player.Location); //SARGE: Enable this for testing, then disable it after!
 
 						// restore any ammo amounts for a weapon to default
 						//DDL- except the fucking lams and stuff!
@@ -93,19 +163,11 @@ function FirstFrame()
                             //If it's a disposable weapon, it's harder. Add our current ammo to the weapon pickup, then remove our ammo.
                             else
                             {
-                                AmmoType = Weapon(item).AmmoType;
-                                Weapon(item).PickupAmmoCount = AmmoType.ammoAmount;
+                                //player.ClientMessage("Mission05 crap: " $ AmmoType.itemName $ " - " $ ammoCount);
+                                Weapon(item).PickupAmmoCount = ammoCount;
                                 AmmoType.ammoAmount = 0;
-                                Player.DeleteInventory(Weapon(item).AmmoType);
                             }
 						}
-
-						Player.DeleteInventory(item);
-
-                        if (item.IsA('WeaponGEPGun'))                           //RSD: To try to help with the GEP gun not showing up?
-                        	item.DropFrom(SP.Location + item.CollisionHeight*vect(0,0,1));
-                        else
-							item.DropFrom(SP.Location);
 					}
 
 					if (nextItem == None)
@@ -155,8 +217,19 @@ function FirstFrame()
 	       			}
        			}
 
-				player.AssignSecondary(None);
 				player.primaryWeapon = None;
+                player.RefreshChargedPickups();
+
+                //SARGE: If we're using the "Killswitch Engaged" playthrough mod,
+                //then set the killswitch to ~23 hours, as mentioned by Simons
+                if (player.bRealKillswitch && !flags.GetBool('GMDXKillswitchSet'))
+                {
+                    player.killswitchTimer = (23*60)*60;
+                    player.killswitchTimer += Player.Randomizer.GetRandomInt(3600);
+                    player.DeactivateAllAugs(true);
+                    //player.killSwitchTimer = 20; //For testing, set it to 20 seconds.
+                    flags.SetBool('GMDXKillswitchSet', True,, 6);
+                }
 			}
 
 			flags.SetBool('MS_InventoryRemoved', True,, 6);
@@ -214,8 +287,16 @@ function Timer()
 	local DeusExMover M;
 	local Terrorist T;
 	local BlackHelicopter B;
+    local SkillAwardTrigger TR;
 
 	Super.Timer();
+    
+    //SARGE: When miguel is following, make sure he's always got his weapon drawn.
+    if (flags.GetBool('MiguelFollowing'))
+    {
+        foreach AllActors(class'Terrorist', T)
+            T.bKeepWeaponDrawn = true;
+    }
 
 	if (localURL == "05_NYC_UNATCOHQ")
 	{
@@ -301,6 +382,10 @@ function Timer()
 			flags.GetBool('PaulInMedLab_Played'))
 		{
 			Player.StartDataLinkTransmission("DL_Paul");
+
+            //SARGE: Manually trigger the 500 skill point bonus, in case we missed it.
+            foreach AllActors(class 'SkillAwardTrigger', TR, 'Skillawardforpaul')
+			    TR.Trigger(player, player);
 			flags.SetBool('MS_DL_Played', True,, 6);
 		}
 	}

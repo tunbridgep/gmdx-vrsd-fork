@@ -30,6 +30,9 @@ function FirstFrame()
 
 	if (localURL == "00_TRAINING")
 	{
+        //Set the flag for ConFix to change the swimming obstacle dialog
+        flags.SetBool('Durable_Wearables', True);
+
 		// knock this guy out
 		foreach AllActors(class'UNATCOTroop', troop, 'Test_Subject')
 		{

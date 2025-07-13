@@ -26,13 +26,23 @@ function DisplayWeapon(bool overlay)
 		if (IsHDTP())
 		{
 			multiskins[1] = handsTex;
+            if (iHDTPModelToggle == 2)
+                Texture = default.Texture;
+            else
+                Texture = Texture'PinkMaskTex';
 		}
 		else
 		{
-		   multiskins[1]=handsTex;                                        //RSD: Fix vanilla hand tex
-		   multiskins[2]=handsTex;
+            multiskins[1]=handsTex;                                        //RSD: Fix vanilla hand tex
+            multiskins[2]=handsTex;
 		}
 	}
+}
+
+//Can't have Clyzm model
+function bool IsClyzmModel()
+{
+    return false;
 }
 
 defaultproperties
@@ -43,7 +53,7 @@ defaultproperties
      NoiseLevel=0.050000
      ShotTime=0.400000
      reloadTime=0.000000
-     HitDamage=8
+     HitDamage=10
      maxRange=90
      AccurateRange=90
      BaseAccuracy=1.000000
@@ -63,7 +73,6 @@ defaultproperties
      NPCAccurateRange=90
      iHDTPModelToggle=1
      attackSpeedMult=0.800000
-     largeIconRot=Texture'GMDXSFX.Icons.HDTPLargeIconRotCrowbar'
      invSlotsXtravel=2
      AmmoName=Class'DeusEx.AmmoNone'
      ReloadCount=0
@@ -84,9 +93,13 @@ defaultproperties
      PlayerViewMesh=LodMesh'DeusExItems.Crowbar';
      PickupViewMesh=LodMesh'DeusExItems.CrowbarPickup';
      ThirdPersonMesh=LodMesh'DeusExItems.Crowbar3rd';
+     Mesh=LodMesh'DeusExItems.CrowbarPickup';
      LandSound=Sound'DeusExSounds.Weapons.CrowbarHitHard'
      Icon=Texture'DeusExUI.Icons.BeltIconCrowbar'
-     largeIcon=Texture'RSDCrap.Icons.LargeIconCrowbar'
+     largeIcon=Texture'DeusExUI.Icons.LargeIconCrowbar'
+     largeIconRot=Texture'RSDCrap.Icons.LargeIconCrowbarRot'
+     HDTPlargeIcon="RSDCrap.Icons.LargeIconCrowbarHDTP"
+     HDTPlargeIconRot="GMDXSFX.Icons.HDTPLargeIconRotCrowbar"
      largeIconWidth=101
      largeIconHeight=43
      invSlotsX=2

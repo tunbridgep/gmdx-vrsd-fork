@@ -347,6 +347,13 @@ function Timer()
 	}
 	else if (localURL == "15_AREA51_PAGE")
 	{
+        //SARGE: Change the combat music to the harder version if we've spoken to bob page and are in the finale.
+        if (flags.GetBool('MeetBobPage_Played') && !flags.GetBool('GMDXMusicChange'))
+        {
+            dxInfo.SongCombatSection = 5;
+            flags.SetBool('GMDXMusicChange',True);
+        }
+
 		// check for UC respawing
 		// count the number of monsters that are still alive
 		foreach AllActors(class'ScriptedPawn', pawn)

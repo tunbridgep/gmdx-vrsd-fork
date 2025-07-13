@@ -14,28 +14,12 @@ var PersonaInfoItemWindow        lastAmmoLoaded;
 var PersonaInfoItemWindow	     lastAmmoTypes;
 var PersonaNormalLargeTextWindow lastAmmoDescription;
 var PersonaLevelIconWindow       winIcons;
-var PersonaActionButtonWindow    buttonUpgrade;
 var PersonaButtonBarWindow       winActionButtons;
 var Inventory                    assignThis;
-var localized string msgAssign;
-var localized string msgConf;
-var localized string msgAssigned;
-var localized string msgUnassigned;
-/*function CreateWin()
-{
-local AlignWindow winIco;
 
-	winIcons = PersonaLevelIconWindow(NewChild(Class'PersonaLevelIconWindow'));
-	winIcons.SetPos(30, 54);
-	winIcons.SetLevel(4);
-	winIcons.iconSizeX=4;
-	winIcons.iconSizeY=5;
-	//winIcon.SetSelected(True);
-} */
 // ----------------------------------------------------------------------
 // AddAmmoInfoWindow()
 // ----------------------------------------------------------------------
-
 function AddAmmoInfoWindow(DeusExAmmo ammo, bool bShowDescriptions)
 {
 	local AlignWindow winAmmo;
@@ -46,19 +30,19 @@ function AddAmmoInfoWindow(DeusExAmmo ammo, bool bShowDescriptions)
 	if (ammo != None)
 	{
 	    outOf = "/";
-		winAmmo = AlignWindow(winTile.NewChild(Class'AlignWindow'));
+		winAmmo = AlignWindow(winTile.NewChild(class'AlignWindow'));
 		winAmmo.SetChildVAlignment(VALIGN_Top);
 		winAmmo.SetChildSpacing(4);
 
 		// Add icon
-		winIcon = winAmmo.NewChild(Class'Window');
-		winIcon.SetBackground(ammo.Icon);
+		winIcon = winAmmo.NewChild(class'Window');
+		winIcon.SetBackground(ammo.static.GetHDTPIcon());
 		winIcon.SetBackgroundStyle(DSTY_Masked);
 		winIcon.SetSize(42, 37);
 
 		// Add description
-		winText = PersonaNormalTextWindow(winAmmo.NewChild(Class'PersonaNormalTextWindow'));
-		winText.SetWordWrap(True);
+		winText = PersonaNormalTextWindow(winAmmo.NewChild(class'PersonaNormalTextWindow'));
+		winText.SetWordWrap(true);
 		winText.SetTextMargins(0, 0);
 		winText.SetTextAlignments(HALIGN_Left, VALIGN_Top);
 
@@ -102,11 +86,10 @@ function CreateAmmoTileWindow()
 	if (winTileAmmo == None)
 	{
 		winTileAmmo = TileWindow(winTile.NewChild(Class'TileWindow'));
-		//winTileAmmo.SetOrder(ORDER_Right); //Right
 		winTileAmmo.SetChildAlignments(HALIGN_Left, VALIGN_Full);
 		winTileAmmo.SetWindowAlignments(HALIGN_Full, VALIGN_Top);
-		winTileAmmo.MakeWidthsEqual(False); //False
-		winTileAmmo.MakeHeightsEqual(True);
+		winTileAmmo.MakeWidthsEqual(false); //False
+		winTileAmmo.MakeHeightsEqual(true);
 		winTileAmmo.SetMargins(0, 0);
 		winTileAmmo.SetMinorSpacing(1);  //4
 
@@ -130,7 +113,8 @@ function AddAmmo(Class<Ammo> ammo, bool bHasIt, optional int newRounds)
 		CreateAmmoTileWindow();
 
 	ammoButton = PersonaAmmoDetailButton(winTileAmmo.NewChild(Class'PersonaAmmoDetailButton'));
-	ammoButton.SetAmmo(ammo, bHasIt, newRounds);
+	if(ammoButton != None)
+		ammoButton.SetAmmo(ammo, bHasIt, newRounds);
 }
 
 // ----------------------------------------------------------------------
@@ -276,57 +260,6 @@ function SelectAmmoButton(PersonaAmmoDetailButton selectedButton)
 	selectedAmmoButton = selectedButton;
 }
 
-//function AddSecondaryButton(DeusExWeapon wep)
-function AddSecondaryButton(Inventory wep)                                      //RSD: Changed to Inventory for parent class' version
-{
-   if (wep != None)
-   {
-    SetText(msgAssign);
-    winActionButtons = PersonaButtonBarWindow(winTile.NewChild(Class'PersonaButtonBarWindow'));
-	winActionButtons.SetWidth(32); //149
-	winActionButtons.FillAllSpace(False);
-	buttonUpgrade = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow'));
-	buttonUpgrade.SetButtonText(msgConf);
-	assignThis = wep;
-   AddLine();
-   }
-}
-
-function bool ButtonActivated( Window buttonPressed )
-{
-	local bool bHandled;
-    local DeusExBaseWindow TopWin;
-    local int i;
-
-	if (Super.ButtonActivated(buttonPressed))
-		return True;
-
-	bHandled   = True;
-
-    topWin = DeusExRootWindow(GetRootWindow()).GetTopWindow();
-
-		switch(buttonPressed)
-		{
-			case buttonUpgrade:
-
-               if (assignThis != None && player.assignedWeapon != None && player.assignedWeapon == assignThis)
-               {
-                   player.AssignSecondary(none);
-                   player.ClientMessage(msgUnassigned);
-               }
-               else if (assignThis != None)
-               {
-                   player.AssignSecondary(assignThis);
-                   player.ClientMessage(msgAssigned);
-               }
-			   break;
-
-			default:
-				bHandled = False;
-				break;
-		}
-	return bHandled;
-}
 // ----------------------------------------------------------------------
 // Clear()
 // ----------------------------------------------------------------------
@@ -345,8 +278,4 @@ defaultproperties
      AmmoLabel="Ammo:"
      AmmoRoundsLabel="Rounds:"
      ShowAmmoDescriptionsLabel="Show Ammo Descriptions"
-     msgAssign="Assign as Secondary Item:"
-     msgConf="Assign"
-     msgAssigned="Secondary Item Assigned"
-     msgUnassigned="Secondary Item Unassigned"
 }

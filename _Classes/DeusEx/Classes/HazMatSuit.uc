@@ -30,7 +30,6 @@ defaultproperties
      DeactivateSound=Sound'RSDCrap.Pickup.HazmatSuitUnequip'
      skillNeeded=Class'DeusEx.SkillEnviro'
      ChargedIcon=Texture'DeusExUI.Icons.ChargedIconHazMatSuit'
-     ExpireMessage="HazMatSuit power supply used up"
      ItemName="Hazmat Suit"
      PlayerViewOffset=(X=30.000000,Z=-12.000000)
      PlayerViewMesh=LodMesh'DeusExItems.HazMatSuit'
@@ -50,4 +49,6 @@ defaultproperties
      CollisionHeight=11.520000
      Mass=20.000000
      Buoyancy=12.000000
+     bUnequipWhenDrained=false
+     PickupSound=sound'objpickup'
 }

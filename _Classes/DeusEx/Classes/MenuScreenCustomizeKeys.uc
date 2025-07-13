@@ -15,10 +15,10 @@ struct S_KeyDisplayItem
 	var localized String DisplayName;
 };
 
-var localized string	FunctionText[64];  		 //CyberP: 61
-var string				MenuValues1[64]; //CyberP: 61
-var string				MenuValues2[64]; //CyberP: 61
-var string				AliasNames[64];  //CyberP: 61
+var localized string	FunctionText[80];  		 //CyberP: 61
+var string				MenuValues1[80]; //CyberP: 61
+var string				MenuValues2[80]; //CyberP: 61
+var string				AliasNames[80];  //CyberP: 61
 var string				PendingCommands[100];
 var localized S_KeyDisplayItem    keyDisplayNames[71];
 var localized string			  NoneText;
@@ -175,6 +175,8 @@ function WaitingForInput(bool bWaiting)
 function SaveSettings()
 {
 	ProcessPending();
+    player.KeybindManager.Setup(player);
+    player.UpdateHUD();
 }
 
 // ----------------------------------------------------------------------
@@ -279,9 +281,6 @@ function ProcessPending()
 		log(PendingCommands[i]);
 	}
 	Pending = 0;
-    player.RefreshMantleKey();
-	player.RefreshLeanKeys();
-	player.RefreshAugWheelKey();                                                //RSD
 //	RefreshKey();
 }
 
@@ -569,7 +568,7 @@ defaultproperties
      FunctionText(0)="Fire Weapon/Use object in hand"
      FunctionText(1)="Use object in world"
      FunctionText(2)="Drop/Throw Item"
-     FunctionText(3)="Put Away Item"
+     FunctionText(3)="Holster/Unholster Item"
      FunctionText(4)="Move Forward"
      FunctionText(5)="Move Backward"
      FunctionText(6)="Turn Left"
@@ -612,28 +611,44 @@ defaultproperties
      FunctionText(43)="Toggle Augmentation Display"
      FunctionText(44)="Toggle Object Belt"
      FunctionText(45)="Toggle Ammo Display"
-     FunctionText(46)="F3"
-     FunctionText(47)="F4"
-     FunctionText(48)="F5"
-     FunctionText(49)="F6"
-     FunctionText(50)="F7"
-     FunctionText(51)="F8"
-     FunctionText(52)="F9"
-     FunctionText(53)="F10"
-     FunctionText(54)="F11"
-     FunctionText(55)="F12"
-     FunctionText(56)="Show Multiplayer Scores"
-     FunctionText(57)="Send Message To Team"
-     FunctionText(58)="Send Message To All"
-     FunctionText(59)="Activate Multiplayer Skill Menu"
-     FunctionText(60)="Show Multiplayer Kill Details"
-     FunctionText(61)="Toggle Augmentation Wheel"
-     FunctionText(62)="Hold Augmentation Wheel"
-     FunctionText(63)="Stop Current Infolink"
+     FunctionText(46)="Show/Hide HUD (Photo Mode)"
+     FunctionText(47)="F3"
+     FunctionText(48)="F4"
+     FunctionText(49)="F5"
+     FunctionText(50)="F6"
+     FunctionText(51)="F7"
+     FunctionText(52)="F8"
+     FunctionText(53)="F9"
+     FunctionText(54)="F10"
+     FunctionText(55)="F11"
+     FunctionText(56)="F12"
+     FunctionText(57)="Show Multiplayer Scores"
+     FunctionText(58)="Send Message To Team"
+     FunctionText(59)="Send Message To All"
+     FunctionText(60)="Activate Multiplayer Skill Menu"
+     FunctionText(61)="Show Multiplayer Kill Details"
+     FunctionText(62)="Use Secondary Item"
+     FunctionText(63)="Toggle Augmentation Wheel"
+     FunctionText(64)="Hold Augmentation Wheel"
+     FunctionText(65)="Stop Current Infolink"
+     FunctionText(66)="Minimise Targeting/Drone Screen"
+     FunctionText(67)="Select/Deselect Nano Keyring"
+     FunctionText(68)="Belt Slot 1"
+     FunctionText(69)="Belt Slot 2"
+     FunctionText(70)="Belt Slot 3"
+     FunctionText(71)="Belt Slot 4"
+     FunctionText(72)="Belt Slot 5"
+     FunctionText(73)="Belt Slot 6"
+     FunctionText(74)="Belt Slot 7"
+     FunctionText(75)="Belt Slot 8"
+     FunctionText(76)="Belt Slot 9"
+     FunctionText(77)="Belt Slot 10"
+     FunctionText(78)="Belt Slot 11"
+     FunctionText(79)="Belt Slot 12"
      AliasNames(0)="ParseLeftClick|Fire"
      AliasNames(1)="ParseRightClick"
      AliasNames(2)="DropItem"
-     AliasNames(3)="PutInHand"
+     AliasNames(3)="Holster"
      AliasNames(4)="MoveForward"
      AliasNames(5)="MoveBackward"
      AliasNames(6)="TurnLeft"
@@ -676,24 +691,40 @@ defaultproperties
      AliasNames(43)="ToggleAugDisplay"
      AliasNames(44)="ToggleObjectBelt"
      AliasNames(45)="ToggleAmmoDisplay"
-     AliasNames(46)="DualMapF3"
-     AliasNames(47)="DualMapF4"
-     AliasNames(48)="DualMapF5"
-     AliasNames(49)="DualMapF6"
-     AliasNames(50)="DualMapF7"
-     AliasNames(51)="DualMapF8"
-     AliasNames(52)="DualMapF9"
-     AliasNames(53)="DualMapF10"
-     AliasNames(54)="DualMapF11"
-     AliasNames(55)="DualMapF12"
-     AliasNames(56)="ShowScores"
-     AliasNames(57)="TeamTalk"
-     AliasNames(58)="Talk"
-     AliasNames(59)="BuySkills"
-     AliasNames(60)="KillerProfile"
-     AliasNames(61)="ToggleRadialAugMenu"
-     AliasNames(62)="HoldRadialAugMenu"
-     AliasNames(63)="SkipMessages"
+     AliasNames(46)="TogglePhotoMode"
+     AliasNames(47)="DualMapF3"
+     AliasNames(48)="DualMapF4"
+     AliasNames(49)="DualMapF5"
+     AliasNames(50)="DualMapF6"
+     AliasNames(51)="DualMapF7"
+     AliasNames(52)="DualMapF8"
+     AliasNames(53)="DualMapF9"
+     AliasNames(54)="DualMapF10"
+     AliasNames(55)="DualMapF11"
+     AliasNames(56)="DualMapF12"
+     AliasNames(57)="ShowScores"
+     AliasNames(58)="TeamTalk"
+     AliasNames(59)="Talk"
+     AliasNames(60)="BuySkills"
+     AliasNames(61)="KillerProfile"
+     AliasNames(62)="UseSecondary"
+     AliasNames(63)="ToggleRadialAugMenu"
+     AliasNames(64)="HoldRadialAugMenu"
+     AliasNames(65)="SkipMessages"
+     AliasNames(66)="MinimiseTargetingWindow"
+     AliasNames(67)="SelectNanoKey"
+     AliasNames(68)="AltBelt1"
+     AliasNames(69)="AltBelt2"
+     AliasNames(70)="AltBelt3"
+     AliasNames(71)="AltBelt4"
+     AliasNames(72)="AltBelt5"
+     AliasNames(73)="AltBelt6"
+     AliasNames(74)="AltBelt7"
+     AliasNames(75)="AltBelt8"
+     AliasNames(76)="AltBelt9"
+     AliasNames(77)="AltBelt0"
+     AliasNames(78)="AltBelt10"
+     AliasNames(79)="AltBelt11"
      keyDisplayNames(0)=(inputKey=IK_LeftMouse,displayName="Left Mouse Button")
      keyDisplayNames(1)=(inputKey=IK_RightMouse,displayName="Right Mouse Button")
      keyDisplayNames(2)=(inputKey=IK_MiddleMouse,displayName="Middle Mouse Button")

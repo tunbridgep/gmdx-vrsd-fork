@@ -356,16 +356,21 @@ function bool ClientMessage(coerce string msg, optional Name type,
 
 function ShowHud(bool bShow)
 {
+    local DeusExPlayer player;
+    player = DeusExPlayer(parentPawn);
+
 	if (hud != None)
 	{
-		if (bShow)
+		if (bShow && player != None && !player.bPhotoMode && !parentPawn.IsInState('Dying')) //SARGE: Added check so we stop re-enabling the HUD while dead
 		{
-			hud.UpdateSettings(DeusExPlayer(parentPawn));
+			hud.UpdateSettings(player);
 			hud.Show();
 			scopeView.ShowView();
 		}
 		else
 		{
+            if (player != None)
+                hud.UpdateSettings(player);
 			hud.Hide();
 			scopeView.HideView();
 		}
@@ -379,7 +384,18 @@ function ShowHud(bool bShow)
 function UpdateHud()
 {
 	if (hud != None)
+    {
+        hud.RecreateBelt();
+		hud.UpdateAssigned();
 		hud.UpdateSettings(DeusExPlayer(parentPawn), WindowStackCount() != 0);
+        hud.RefreshActiveAugs();
+    }
+}
+
+function UpdateSecondaryDisplay()
+{
+	if (hud != None)
+		hud.UpdateAssigned();
 }
 
 function UpdateCrosshair()
@@ -696,7 +712,7 @@ function UnPauseGame()
 	SetBackgroundStyle(DSTY_None);
 
 	HideSnapshot();
-	ShowHud(True);
+    ShowHud(True);
 
 	parentPawn.bShowMenu = false;
 	parentPawn.Player.Console.GotoState('');
@@ -1033,11 +1049,6 @@ function int WindowStackCount()
 
 function ExitGame()
 {
-	/*if (parentPawn!=none&&parentPawn.IsA('DeusExPlayer')&&DeusExPlayer(parentPawn).Weapon!=none&&DeusExPlayer(parentPawn).Weapon.IsA('WeaponNanoSword')) //RSD: Uhhhhhhh
-	{
-		DeusExPlayer(parentPawn).bCrosshairVisible=DeusExPlayer(parentPawn).bWasCrosshair;
-		DeusExPlayer(parentPawn).SaveConfig();
-	}*/
 	ClearWindowStack();
 
 	parentPawn.ConsoleCommand("Exit");

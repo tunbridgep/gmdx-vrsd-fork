@@ -213,6 +213,7 @@ function Timer()
 	{
 		if (flags.GetBool('TalkedToPaulAfterMessage_Played'))
 		{
+            player.bFakeDeath = true; //SARGE: Disable quickloading and don't transfer our inventory to our corpse.
 		    //cyberP: beware lazy timer hack. I'm sorry. Also player no longer is captured if gibbed.
 			if (Player.IsInState('Dying') && Player.HeadRegion.Zone.ViewFog.X > 0.01 && Player.Health > -40)
 			{
@@ -461,7 +462,9 @@ function Timer()
 				count++;
 
 			// if two or less are still alive
-			if (count <= 2)
+            // SARGE: deduct an extra one since there's one out of bounds,
+            // so we need to increase it to 3
+			if (count <= 2 + 1)
 				flags.SetBool('MostWarehouseTroopsDead', True);
 		}
 	}

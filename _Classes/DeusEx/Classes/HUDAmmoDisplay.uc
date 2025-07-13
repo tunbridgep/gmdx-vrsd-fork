@@ -1,7 +1,7 @@
 //=============================================================================
 // HUDAmmoDisplay
 //=============================================================================
-class HUDAmmoDisplay expands HUDBaseWindow;
+class HUDAmmoDisplay expands HUDRightSidedWindow;
 
 var Bool			bVisible;
 var Color			colAmmoText;		// Ammo count text color
@@ -24,11 +24,15 @@ var localized String RoundsLabel;
 var int clipsRemaining;
 var int ammoRemaining;
 var int ammoInClip;
+
+//Stores a reference to our currently relevant weapon
+var Inventory curr;
 var DeusExWeapon weapon;
 
 // Defaults
 var Texture texBackground;
 var Texture texBorder;
+var Texture texBorderRight;
 var localized String LaserLabel;
 var localized String RemoteLabel;
 
@@ -40,7 +44,9 @@ event InitWindow()
 {
 	Super.InitWindow();
 
-	bTickEnabled = TRUE;
+    SetRightSide(false);
+
+	bTickEnabled = true;
 
 	Hide();
 
@@ -50,15 +56,62 @@ event InitWindow()
 }
 
 // ----------------------------------------------------------------------
+// UpdateVisibility()
+// ----------------------------------------------------------------------
+
+function UpdateVisibility()
+{
+    local bool validWeap, hastool;
+    
+    if (!bVisible)
+    {
+        Hide();
+        return;
+    }
+
+    curr = GetWeapon();
+    weapon = DeusExWeapon(curr);
+    
+    //it's visible if we have a valid weapon
+    validWeap = player.inHand != None && weapon != None && (weapon.ReloadCount > 0 || (weapon.IsA('WeaponNanoSword')));
+    hasTool = curr != None && weapon == None;
+
+	if (curr != None && curr.Owner == player && (validweap || hastool))
+		Show();
+	else
+		Hide();
+
+}
+
+// ----------------------------------------------------------------------
 // GetWeapon()
 // ----------------------------------------------------------------------
 
+//SARGE: This is slightly complicated...
+//That's the price we pay for having it feel """nice"""
 function Inventory GetWeapon()
 {
-    if (player.primaryWeapon != None)
-        return player.primaryWeapon;
-    else
-        return player.Weapon;
+    if (player == None)
+        return None;
+
+    if (player.inHandPending != None && player.inHandPending.IsA('DeusExPickup') && !player.inHandPending.IsA('SkilledTool'))
+        return None;
+
+    //SARGE: Hack...
+    if (player.inHandPending != None && string(player.inHandPending.Class) == player.assignedWeapon && player.bLastWasEmpty) //If we're using our secondary weapon, hide the ammo display.
+        //return player.assignedWeapon;
+        return None;
+    //SARGE: ...Even worse hack...
+    if (player.inHand != None && (player.inHand.isA('Multitool') || player.inHand.isA('Lockpick')) && player.iFrobDisplayStyle != 0 && player.bLastWasEmpty) //Hide the ammo counter when we have tools, unless we're using the classic tool window display.
+        return None;
+    //SARGE: ...And again...
+    if (player.inHandPending == None) //Hide the empty ammo counter when we have nothing selected
+        return None;
+    //SARGE: ...Oh god it just keeps going!...
+    if (player.inHand != None && (player.inHand.isA('Multitool') || player.inHand.isA('Lockpick')) && player.iFrobDisplayStyle == 0) //Return our current tool rather than our primary weapon, if we're using the classic tool window display.
+        return player.inHand;
+		
+    return player.primaryWeapon;
 }
 
 // ----------------------------------------------------------------------
@@ -67,18 +120,19 @@ function Inventory GetWeapon()
 
 event Tick(float deltaSeconds)
 {
-    local bool validWeap, hastool;
-    local Inventory curr;
-    curr = GetWeapon();
-    weapon = DeusExWeapon(curr);
+}
 
-    validWeap = player.inHand != None && weapon != None && (weapon.ReloadCount > 0 || (weapon.IsA('WeaponNanoSword')));
-    hasTool = player.inHand != None && (curr.isA('Multitool') || curr.isA('Lockpick')) && player.iFrobDisplayStyle == 0;
+// ----------------------------------------------------------------------
+// GetAmmoTextColor()
+// SARGE: Get the ammo color()
+// ----------------------------------------------------------------------
 
-	if ((validweap || hastool) && bVisible )
-		Show();
-	else
-		Hide();
+function Color GetAmmoTextColor()
+{
+    if (weapon != None && DeusExAmmo(weapon.AmmoType) != None && DeusExAmmo(weapon.AmmoType).HasCustomAmmoColor() && player.bColorCodedAmmo)
+        return DeusExAmmo(weapon.AmmoType).ammoHUDColor;
+    else
+        return colText;
 }
 
 // ----------------------------------------------------------------------
@@ -87,44 +141,46 @@ event Tick(float deltaSeconds)
 
 event DrawWindow(GC gc)
 {
-    local DeusExWeapon weapon;
-    local Inventory curr;
-    curr = GetWeapon();
-    weapon = DeusExWeapon(curr);
+    local float ammopostop, ammoposbtm, posX, posY;             //SARGE: Added
 
 	Super.DrawWindow(gc);
 
+    if (curr == None || !IsVisible() || curr.Owner != player)
+        return;
+
+    ammopostop = player.FontManager.GetTextPosition(27,26);
+    ammoposbtm = player.FontManager.GetTextPosition(39,38);
+
 	// No need to draw anything if the player doesn't have
 	// a weapon selected
-
+    
     //SARGE: Draw tool info if we have one
     //TODO: Refactor this
-    if (player.inHand != None && (curr.isA('Multitool') || curr.isA('Lockpick')) && player.iFrobDisplayStyle == 0)
+    if (curr != None && curr.IsA('SkilledTool'))
     {
 		// Draw the weapon icon
 		gc.SetStyle(DSTY_Masked);
 		gc.SetTileColorRGB(255, 255, 255);
-		gc.DrawTexture(22, 20, 40, 35, 0, 0, SkilledTool(curr).icon);
+		gc.DrawTexture(9+offset, 20, 40, 35, 0, 0, SkilledTool(curr).icon);
 
 		// Draw the ammo count
-		gc.SetFont(Font'TechMedium'); //CyberP: hud scaling Font'FontTiny'
+		gc.SetFont(player.FontManager.GetFont(TT_AmmoCount)); //CyberP: hud scaling Font'FontTiny'
 		gc.SetAlignments(HALIGN_Center, VALIGN_Top);   //CyberP: Valignment
 		gc.EnableWordWrap(false);
          
         gc.SetTextColor(colAmmoText);
-        gc.DrawText(infoX, 27, 20, 9, SkilledTool(curr).numCopies);
-        gc.DrawText(infoX, 39, 20, 9, NotAvailable);
+        gc.DrawText(infoX+offset, ammopostop, 20, 9, SkilledTool(curr).numCopies);
+        gc.DrawText(infoX+offset, ammoposbtm, 20, 9, NotAvailable);
     }
-
-	if ( weapon != None )
+	else if ( weapon != None )
 	{
 		// Draw the weapon icon
 		gc.SetStyle(DSTY_Masked);
 		gc.SetTileColorRGB(255, 255, 255);
-		gc.DrawTexture(22, 20, 40, 35, 0, 0, weapon.icon);
+		gc.DrawTexture(9+offset, 20, 40, 35, 0, 0, weapon.icon);
 
 		// Draw the ammo count
-		gc.SetFont(Font'TechMedium'); //CyberP: hud scaling Font'FontTiny'
+		gc.SetFont(player.FontManager.GetFont(TT_AmmoCount)); //CyberP: hud scaling Font'FontTiny'
 		gc.SetAlignments(HALIGN_Center, VALIGN_Top);   //CyberP: Valignment
 		gc.EnableWordWrap(false);
 			
@@ -142,15 +198,16 @@ event DrawWindow(GC gc)
         //Draw DTS Charge
         if (weapon.IsA('WeaponNanoSword'))
         {
+            gc.SetTextColor(colAmmoText);
             ammoInClip = WeaponNanoSword(weapon).ChargeManager.GetCurrentCharge();
-            gc.DrawText(infoX, 27, 20, 9, ammoInClip);
-			gc.DrawText(infoX, 39, 20, 9, NotAvailable);
+            gc.DrawText(infoX+offset, ammopostop, 20, 9, ammoInClip);
+			gc.DrawText(infoX+offset, ammoposbtm, 20, 9, NotAvailable);
         }
 		// Ammo count drawn differently depending on user's setting
 		else if (weapon.ReloadCount > 1 || weapon.IsA('WeaponGEPGun') || weapon.AmmoName == Class'Ammo20mm')
 		{
 
-			if (weapon.bPerShellReload || player.bDisplayTotalAmmo)
+			if (weapon.bPerShellReload || (player.bDisplayTotalAmmo && !player.bHardCoreMode))
 				clipsRemaining = weapon.NumRounds();
 			else
 				clipsRemaining = weapon.NumClips();
@@ -161,37 +218,43 @@ event DrawWindow(GC gc)
                 gc.SetTextColor(colAmmoText);
 
 			if (weapon.IsInState('Reload') && weapon.bPerShellReload == false)
-				gc.DrawText(infoX, 27, 20, 9, msgReloading);
+				gc.DrawText(infoX+offset, ammopostop, 20, 9, msgReloading);
 			else
-				gc.DrawText(infoX, 27, 20, 9, ammoInClip);
+				gc.DrawText(infoX+offset, ammopostop, 20, 9, ammoInClip);
 
 			// if there are no clips (or a partial clip) remaining, color me red
 			if (( clipsRemaining == 0 ) || (( clipsRemaining == 1 ) && ( ammoRemaining < 2 * weapon.ReloadCount )))
 				gc.SetTextColor(colAmmoLowText);
 			else
-				gc.SetTextColor(colAmmoText);
+                gc.SetTextColor(colAmmoText);
 
 			if (weapon.IsInState('Reload') && weapon.bPerShellReload == false)
-				gc.DrawText(infoX, 39, 20, 9, msgReloading);
+				gc.DrawText(infoX+offset, ammoposbtm, 20, 9, msgReloading);
 			else
-				gc.DrawText(infoX, 39, 20, 9, clipsRemaining);
+				gc.DrawText(infoX+offset, ammoposbtm, 20, 9, clipsRemaining);
 		}
 		else
 		{
-			gc.DrawText(infoX, 39, 20, 9, NotAvailable);
+			gc.DrawText(infoX+offset, ammoposbtm, 20, 9, NotAvailable);
 
 			if (weapon.ReloadCount == 0)
 			{
-				gc.DrawText(infoX, 27, 20, 9, NotAvailable);
+				gc.DrawText(infoX+offset, ammopostop, 20, 9, NotAvailable);
 			}
 			else
 			{
 				if (weapon.IsInState('Reload') && weapon.bPerShellReload == false)
-					gc.DrawText(infoX, 27, 20, 9, msgReloading);
+					gc.DrawText(infoX+offset, ammopostop, 20, 9, msgReloading);
 				else
-					gc.DrawText(infoX, 27, 20, 9, ammoRemaining);
+					gc.DrawText(infoX+offset, ammopostop, 20, 9, ammoRemaining);
 			}
-		}
+		}		
+		
+		gc.SetFont(Font'FontTiny'); //CyberP: hud scaling Font'FontTiny' //SARGE: always force the tiny font for this text display section
+		gc.SetAlignments(HALIGN_Center, VALIGN_Top);   //Ygll: make the text alignment to the left for a consistant display
+		
+		posX = offset+9;
+		posY = 57;
 
 		// Now, let's draw the targetting information
 		if (weapon.bCanTrack)
@@ -202,21 +265,29 @@ event DrawWindow(GC gc)
 				gc.SetTextColor(colTrackingText);
 			else
 				gc.SetTextColor(colNormalText);
-			gc.SetFont(Font'FontTiny'); //CyberP: hud scaling Font'FontTiny'
+			
 			if (weapon.bLasing)
-		        gc.DrawText(25, 56, 65, 8, LaserLabel);
+		        gc.DrawText(posX, posY, 65, 8, LaserLabel);
             else if (weapon.bZoomed)
-                gc.DrawText(25, 56, 65, 8, RemoteLabel);
+                gc.DrawText(posX, posY, 65, 8, RemoteLabel);
             else
-			    gc.DrawText(25, 56, 65, 8, weapon.TargetMessage);
+			    gc.DrawText(posX, posY, 65, 8, weapon.TargetMessage);
 		}
+        //SARGE: Otherwise, print the ammo type. This is useful when we "use" items from the inventory
+        //that aren't on our belt, which normally would give us no idea what is in our weapon if we change ammo types,
+        //especially if an infolink is playing.
+        else if (player.bShowAmmoTypeInAmmoHUD && !weapon.bDisposableWeapon)
+        {
+			gc.SetFont(Font'FontTiny'); //CyberP: hud scaling Font'FontTiny'
+            gc.SetTextColor(GetAmmoTextColor());
+            gc.DrawText(posX, posY, 65, 8, DeusExAmmo(weapon.AmmoType).beltDescription);
+        }
 	}
 }
 
 // ----------------------------------------------------------------------
 // DrawBackground()
 // ----------------------------------------------------------------------
-
 function DrawBackground(GC gc)
 {
     if (gc == None)
@@ -224,7 +295,7 @@ function DrawBackground(GC gc)
 
 	gc.SetStyle(backgroundDrawStyle);
 	gc.SetTileColor(colBackground);
-	gc.DrawTexture(13, 13, 80, 54, 0, 0, texBackground);
+    gc.DrawTexture(offset, 13, 80, 54, 0, 0, texBackground);
 
 	// Draw the Ammo and Clips text labels
 	gc.SetFont(Font'FontTiny');
@@ -234,16 +305,16 @@ function DrawBackground(GC gc)
     if (player != None)
     {
         if (weapon != None && weapon.IsA('WeaponNanoSword'))
-            gc.DrawText(66, 17, 21, 8, ChargeLabel);
+            gc.DrawText(53+offset, 17, 21, 8, ChargeLabel);
         else
-            gc.DrawText(66, 17, 21, 8, AmmoLabel);
+            gc.DrawText(53+offset, 17, 21, 8, AmmoLabel);
 
-        if (weapon != None && weapon.bPerShellReload || weapon.AmmoName == Class'Ammo20mm' || player.bDisplayTotalAmmo)
-            gc.DrawText(66, 48, 21, 8, RoundsLabel);
+        if (weapon != None && (weapon.bPerShellReload || weapon.AmmoName == Class'Ammo20mm' || (player.bDisplayTotalAmmo && !player.bHardCoreMode)))
+            gc.DrawText(53+offset, 48, 21, 8, RoundsLabel);
         else if (player.bDisplayClips)
-            gc.DrawText(66, 48, 21, 8, ClipsLabel);
+            gc.DrawText(53+offset, 48, 21, 8, ClipsLabel);
         else
-            gc.DrawText(66, 48, 21, 8, MagsLabel);
+            gc.DrawText(53+offset, 48, 21, 8, MagsLabel);
     }
 }
 
@@ -257,7 +328,10 @@ function DrawBorder(GC gc)
 	{
 		gc.SetStyle(borderDrawStyle);
 		gc.SetTileColor(colBorder);
-		gc.DrawTexture(0, 0, 95, 77, 0, 0, texBorder);
+        if (bRightSided)
+            gc.DrawTexture(0, 0, 95, 77, 0, 0, texBorderRight);
+        else
+            gc.DrawTexture(0, 0, 95, 77, 0, 0, texBorder);
 	}
 }
 
@@ -268,6 +342,7 @@ function DrawBorder(GC gc)
 function SetVisibility( bool bNewVisibility )
 {
 	bVisible = bNewVisibility;
+    UpdateVisibility();
 }
 
 // ----------------------------------------------------------------------
@@ -275,21 +350,24 @@ function SetVisibility( bool bNewVisibility )
 
 defaultproperties
 {
-     colAmmoText=(G=255)
-     colAmmoLowText=(R=255,G=32)
-     colNormalText=(G=255)
-     colTrackingText=(R=255,G=255)
-     colLockedText=(R=255)
-     infoX=66
-     NotAvailable="N/A"
-     msgReloading="---"
-     AmmoLabel="AMMO"
-     MagsLabel="MAGS"
-     ClipsLabel="CLIPS"
-     ChargeLabel="CHARG"
-	 RoundsLabel="RDS"
-     texBackground=Texture'DeusExUI.UserInterface.HUDAmmoDisplayBackground_1'
-     texBorder=Texture'DeusExUI.UserInterface.HUDAmmoDisplayBorder_1'
-     LaserLabel="LASER GUIDANCE"
-     RemoteLabel="REMOTE GUIDANCE"
+     colAmmoText=(G=255);
+     colAmmoLowText=(R=255,G=32);
+     colNormalText=(G=255);
+     colTrackingText=(R=255,G=255);
+     colLockedText=(R=255);
+     infoX=53;
+     NotAvailable="N/A";
+     msgReloading="---";
+     AmmoLabel="AMMO";
+     MagsLabel="MAGS";
+     ClipsLabel="CLIPS";
+     ChargeLabel="CHARG";
+	 RoundsLabel="RDS";
+     texBackground=Texture'DeusExUI.UserInterface.HUDAmmoDisplayBackground_1';
+     texBorder=Texture'DeusExUI.UserInterface.HUDAmmoDisplayBorder_1';
+     texBorderRight=Texture'RSDCrap.UserInterface.HUDAmmoDisplayBorder_1F';
+     LaserLabel="LASER GUIDANCE";
+     RemoteLabel="REMOTE GUIDANCE";
+     leftSideOffset=13;
+     rightSideOffset=2;
 }

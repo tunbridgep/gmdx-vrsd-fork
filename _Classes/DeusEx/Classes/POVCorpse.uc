@@ -20,18 +20,29 @@ var bool    bHasSkins;
 
 //GMDX
 
+var string savedName;                                                           //SARGE: vRSD seemingly forgot to add this?
+
 //SARGE: Weapon Offset Stuff
 //TODO: Replace this with a generic implementation
 var const vector weaponOffsets;                                                 //Sarge: Our weapon offsets. Leave at (0,0,0) to disable using offsets
 var travel vector oldOffsets;                                                   //Sarge: Stores our old default offsets
 var travel bool bOldOffsetsSet;                                                 //Sarge: Stores whether or not old default offsets have been remembered
 var travel bool bSearched;                                                      //Sarge: Carried over from Carcasses so they are retained when we make a new one by putting the corpse down
+var travel int PickupAmmoCount;                                                 //Sarge: Carried over from Carcasses so they are retained when we make a new one by putting the corpse down
+
+var travel bool bFirstBloodPool;                                                //SARGE: Stores whether or not the carcass has created a blood pool yet.
+var travel bool bNoDefaultPools;                                                //SARGE: If set, don't make pools at all, unless we receive gunshot wounds or the corpse is otherwise damaged.
 
 //END GMDX:
 
 //Function to fix weapon offsets
 function DoWeaponOffset(DeusExPlayer player)
 {
+    local bool bDoOffsets;
+
+    if (player == None)
+        return;
+
     if ((weaponOffsets.x != 0.0 || weaponOffsets.y != 0.0 || weaponOffsets.z != 0.0))
     {
     
@@ -45,7 +56,8 @@ function DoWeaponOffset(DeusExPlayer player)
             bOldOffsetsSet = true;
         }
 
-        if (player.bEnhancedWeaponOffsets)
+        bDoOffsets = player.iEnhancedWeaponOffsets == 2 || (player.iEnhancedWeaponOffsets == 1 && player.defaultFOV >= 110);
+        if (bDoOffsets)
         {
             default.PlayerViewOffset.x = weaponOffsets.x;
             default.PlayerViewOffset.y = weaponOffsets.y;
@@ -64,6 +76,7 @@ function DoWeaponOffset(DeusExPlayer player)
 function Draw(DeusExPlayer frobber)
 {
     DoWeaponOffset(frobber);
+    SetWeaponHandTex();
 }
 
 function PreBeginPlay()
@@ -74,15 +87,16 @@ function PreBeginPlay()
 
 simulated event RenderOverlays( canvas Canvas )
 {
-    //This has to be done here for some stupid reason
-    if (handsTex == None)
-        SetWeaponHandTex();
-
     //SARGE: TODO: Allow setting POV skins
     //multiskins[0] = POVSkin;
     multiskins[1] = handstex;
+    
+    if (bIsRadar || bIsCloaked)
+    {
+        ShowCamo();
+    }
+    
     super.RenderOverlays(canvas);
-    //multiskins[0] = none;
     multiskins[1] = none;
 }
 

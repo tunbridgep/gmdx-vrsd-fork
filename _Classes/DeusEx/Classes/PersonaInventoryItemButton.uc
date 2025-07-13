@@ -50,12 +50,45 @@ var Color		fillColor;
 var Texture		fillTexture;
 
 var localized String CountLabel;
+var localized String CountLabel2;
+var localized String QtyLabel;
 var localized String ChargeLabel;
 var localized String RoundLabel;
 var localized String RoundsLabel;
+var localized String RoundsLabel2;
 
 var Color colDropSwap; //CyberP:
 var Color colIconDimmed; //RSD
+
+// ----------------------------------------------------------------------
+// SetObjectNumber()
+// ----------------------------------------------------------------------
+
+function string GetBeltNumText(Inventory item)
+{
+    local int objectNum;
+    objectNum = item.beltPos;
+
+    //SARGE: mildly annoying.
+    //belt numbers are offset by 1 in the ActivateBelt code,
+    //since belt slot 0 is now on the far left.
+    //So we need to display the binding for the next belt slot,
+    //but only between 1 and 10
+    if (objectNum == 9)
+        return player.KeybindManager.GetBindingString(KB_Belt0,0);
+    else if (objectNum >= 0 && objectNum < 9)
+        return player.KeybindManager.GetBindingString(KB_Belt0,objectNum + 1);
+    else
+        return player.KeybindManager.GetBindingString(KB_Belt0,objectNum);
+
+    /*
+    //SARGE: This looks pretty bad, so disable for now
+    if (nanoKeySlot && beltText != "")
+        beltText = player.KeybindManager.GetBinding(KB_Keyring) $ ", " $ beltText;
+    */
+}
+
+
 // ----------------------------------------------------------------------
 // DrawWindow()
 // ----------------------------------------------------------------------
@@ -104,8 +137,8 @@ event DrawWindow(GC gc)
 			gc.SetFont(Font'FontMenuSmall_DS');
 			gc.SetAlignments(HALIGN_Right, VALIGN_Center);
 			gc.SetTextColor(colHeaderText);
-			gc.GetTextExtent(0, strWidth, strHeight, anItem.beltPos);
-			gc.DrawText(width - strWidth - 3, 3, strWidth, strHeight, anItem.beltPos);
+			gc.GetTextExtent(0, strWidth, strHeight, GetBeltNumText(anItem));
+			gc.DrawText(width - strWidth - 3, 3, strWidth, strHeight, GetBeltNumText(anItem));
 		}
 		
         // SARGE: If it's a weapon, and it's modified
@@ -136,10 +169,14 @@ event DrawWindow(GC gc)
             if (anItem.isA('WeaponNanoSword') && WeaponNanoSword(anItem).chargeManager != None && WeaponNanoSword(anItem).chargeManager.GetCurrentCharge() > 0)
                 str2 = Sprintf("%d%%", WeaponNanoSword(anItem).chargeManager.GetCurrentCharge());
 
-			if ((weapon != None) && weapon.bHandToHand && (weapon.AmmoType != None) && (weapon.AmmoName != class'AmmoNone'))
+			if ((weapon != None) && weapon.bDisposableWeapon)
 			{
 				str = String(weapon.AmmoType.AmmoAmount);
-				if (str == "1")
+                if (player.iShowTotalCounts > 1)
+                    str = Sprintf(QtyLabel, str, player.GetAdjustedMaxAmmo(weapon.AmmoType));
+                else if (player.iShowTotalCounts > 0)
+                    str = Sprintf(RoundsLabel2, str, player.GetAdjustedMaxAmmo(weapon.AmmoType));
+				else if (str == "1")
 					str = Sprintf(RoundLabel, str);
 				else
 					str = Sprintf(RoundsLabel, str);
@@ -147,7 +184,9 @@ event DrawWindow(GC gc)
 			else if (anItem.IsA('DeusExAmmo'))
 			{
 				str = String(DeusExAmmo(anItem).AmmoAmount);
-				if (str == "1")
+                if (player.iShowTotalCounts > 1)
+                    str = Sprintf(QtyLabel, str, player.GetAdjustedMaxAmmo(DeusExAmmo(anItem)));
+				else if (str == "1")
 					str = Sprintf(RoundLabel, str);
 				else
 					str = Sprintf(RoundsLabel, str);
@@ -161,8 +200,13 @@ event DrawWindow(GC gc)
 		// Check to see if we need to print "x copies"
 		if (anItem.IsA('DeusExPickup') && (!anItem.IsA('NanoKeyRing')))
 		{
-            if (DeusExPickup(anItem).NumCopies > 1)
-				str = Sprintf(CountLabel, DeusExPickup(anItem).NumCopies);
+            //SARGE: Always show Charged Pickup counts if the setting is on.
+            if (player.iShowTotalCounts > 1)
+                str = Sprintf(QtyLabel, DeusExPickup(anItem).NumCopies, DeusExPickup(anItem).RetMaxCopies());
+            else if (player.iShowTotalCounts > 0 && anItem.IsA('ChargedPickup'))
+                str = Sprintf(CountLabel2, DeusExPickup(anItem).NumCopies, DeusExPickup(anItem).RetMaxCopies());
+            else if (DeusExPickup(anItem).NumCopies > 1)
+                str = Sprintf(CountLabel, DeusExPickup(anItem).NumCopies);
 
             //SARGE: Add charge for ChargedItems
             if (anItem.isA('ChargedPickup') && ChargedPickup(anItem).GetCurrentCharge() > 0)
@@ -175,9 +219,9 @@ event DrawWindow(GC gc)
     gc.SetAlignments(HALIGN_Center, VALIGN_Center);
     gc.SetTextColor(colHeaderText);
     gc.GetTextExtent(0, strWidth, strHeight, "      ");
-    gc.DrawText(0, height - strHeight, width, strHeight, str);
+    gc.DrawText(1, height - strHeight, width, strHeight, str);
     //gc.SetTextColor(colCharge);
-    gc.DrawText(0, height/2 - strHeight/2, width, strHeight, str2);
+    gc.DrawText(1, height/2 - strHeight/2, width, strHeight, str2);
 
 	// Draw selection border width/height of button
 	if (bSelected)
@@ -379,7 +423,7 @@ event bool MouseButtonReleased(float pointX, float pointY, EInputKey button,
 	if (button == IK_LeftMouse)
 	{
 		FinishButtonDrag();
-		return True;
+		return true;
 	}
 	else
 	{
@@ -459,8 +503,8 @@ event texture CursorRequested(window win, float pointX, float pointY,
 
 function StartButtonDrag()
 {
-	bDragStart = False;
-	bDragging  = True;
+	bDragStart = false;
+	bDragging  = true;
 
 	winInv.StartButtonDrag(Self);
 }
@@ -471,8 +515,8 @@ function StartButtonDrag()
 
 function FinishButtonDrag()
 {
-	bDragStart = False;
-	bDragging  = False;
+	bDragStart = false;
+	bDragging  = false;
 
 	winInv.FinishButtonDrag();
 }
@@ -490,7 +534,7 @@ function bool RotateButton()                                                    
     invButtonHeight=class'PersonaScreenInventory'.default.invButtonHeight;
 
 	inv = DeusExWeapon(self.GetClientObject());                                 //RSD: MUST be a DeusExWeapon, hacks are afoot
-	if (inv == none)
+	if (inv == None)
     	return false;
 
 	invX = inv.invSlotsX;
@@ -503,16 +547,14 @@ function bool RotateButton()                                                    
         inv.invSlotsX = invY;
 		inv.invSlotsY = invX;
         inv.bRotated = !inv.bRotated;
-		if (inv.largeIcon != none)
+		inv.UpdateLargeIcon();
+		if (inv.largeIcon != None)
 		{
 			invWidth = inv.largeIconWidth;
 			invHeight = inv.largeIconHeight;
             inv.largeIconWidth = invHeight;
 			inv.largeIconHeight = invWidth;
-			if (inv.largeIconRot != none && inv.bRotated)
-				SetIcon(inv.largeIconRot);
-			else
-				SetIcon(inv.largeIcon);
+			SetIcon(inv.largeIcon);
 			SetIconSize(inv.largeIconWidth, inv.largeIconHeight);
 		}
 		SetSize((invButtonWidth  * inv.invSlotsX) + 1,
@@ -553,7 +595,7 @@ function ResetRotation(/*float newX, float newY*/)                              
     invButtonHeight=class'PersonaScreenInventory'.default.invButtonHeight;
 
 	inv = DeusExWeapon(self.GetClientObject());                                 //RSD: MUST be a DeusExWeapon, hacks are afoot
-	if (inv == none)
+	if (inv == None)
     	return;
 
 	if (inv.invSlotsX != safeInvX || inv.invSlotsY != safeInvY)
@@ -565,10 +607,8 @@ function ResetRotation(/*float newX, float newY*/)                              
 		inv.largeIconWidth = safeIconWidth;
 		inv.largeIconHeight = safeIconHeight;
 		inv.bRotated = saferotation;
-		if (inv.largeIconRot != none && inv.bRotated)
-			SetIcon(inv.largeIconRot);
-		else
-			SetIcon(inv.largeIcon);
+		inv.UpdateLargeIcon();
+		SetIcon(inv.largeIcon);
 		SetIconSize(inv.largeIconWidth, inv.largeIconHeight);
 		SetSize((invButtonWidth  * inv.invSlotsX) + 1,
     		(invButtonHeight * inv.invSlotsY) + 1);
@@ -590,9 +630,12 @@ defaultproperties
      colDropBad=(R=128,G=32,B=32)
      fillTexture=Texture'Extension.Solid'
      CountLabel="Count: %d"
+     CountLabel2="Count: %d/%d"
+     QtyLabel="Qty: %d/%d"
      ChargeLabel="Charge: %d%%"
      RoundLabel="%d Rd"
      RoundsLabel="%d Rds"
+     RoundsLabel2="%d/%d Rds"
      colDropSwap=(R=16,G=32,B=128)
      colIconDimmed=(R=64,G=64,B=64)
      colCharge=(R=255,G=243,B=109)

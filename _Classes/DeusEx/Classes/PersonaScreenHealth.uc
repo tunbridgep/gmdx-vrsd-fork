@@ -40,6 +40,7 @@ var localized String KillerStr;
 var localized String MassMurdererStr;
 var localized String LocStr;
 var localized String HungryStr;
+var localized String StarvingStr;
 var localized String stepsStr;
 var localized String distStr;
 var localized String heartStr;
@@ -54,6 +55,7 @@ var localized string PedometerButtonLabel;
 var PersonaActionButtonWindow buttonStats;
 var localized string accuracyLabel;
 var localized string speedLabel;
+var localized string killswitchTime;
 
 //RSD: Stuff for addiction status
 var localized string drugLabels[3];
@@ -319,9 +321,9 @@ function bool ButtonActivated(Window buttonPressed)
 	local int  pointsHealed;
 
 	if (Super.ButtonActivated(buttonPressed))
-		return True;
+		return true;
 
-	bHandled   = True;
+	bHandled = true;
 
 	// Check if this is one of our Augmentation buttons
 	if (buttonPressed.IsA('PersonaHealthItemButton'))
@@ -334,6 +336,9 @@ function bool ButtonActivated(Window buttonPressed)
 		pointsHealed = HealPart(regionWindows[PersonaHealthActionButtonWindow(buttonPressed).GetPartIndex()]);
 		player.PopHealth( playerHealth[0],playerHealth[1],playerHealth[2],playerHealth[3],playerHealth[4],playerHealth[5]);
 		winStatus.AddText(Sprintf(PointsHealedLabel, pointsHealed));
+        
+        //SARGE: Reset players accuracy bonus.
+        player.ResetAim();
 
 		EnableButtons();
 	}
@@ -357,28 +362,6 @@ function bool ButtonActivated(Window buttonPressed)
                 winInfo.Clear();
                 bBodyPartPressed = False;
                 PlaySound(Sound'MetalDrawerOpen',0.5);
-                /*
-                {
-                    player.bShowStatus = !player.bShowStatus;
-                    winInfo.Clear();
-                    CreateInfoWindow();
-                    bBodyPartPressed = False;
-                    PlaySound(Sound'MetalDrawerOpen',0.5);
-                
-                }
-                else
-                {
-                    player.bShowStatus = False;
-                    winInfo.Clear();
-                    winInfo.bStylization = False;
-		            winInfo.bStylization2 = False;
-		            winInfo.SetBackground(winInfo.default.background);
-                    winInfo.SetTitle(" ");
-		            winInfo.SetText(" ");
-                    bBodyPartPressed = True;
-                    PlaySound(Sound'MetalDrawerOpen',0.5);
-                }
-                */
                 break;
 
 			default:
@@ -492,13 +475,19 @@ function DisplayCommonInfo()
     local string suffix;
     local float accuracyPenalty;
     local float speedPenalty;
+    local int hours,mins,seconds;                            //SARGE: Added for Killswitch stuff
+    local string killswitchTimeString;
 
     winInfo.bStylization = False;
     winInfo.bStylization2 = True;
     //winInfo.SetBackground(Texture'DeusExUI.UserInterface.GridTex64x64');
 	player.GenerateTotalHealth();
 	winInfo.SetTitle(StatusTitle);
-    winInfo.SetText(AvgHealthStr $ player.Health $ "%");
+    
+    //Display total health
+    player.GenerateTotalHealth();
+    winInfo.SetText(AvgHealthStr $ player.Health $ "% (" $ player.GetTotalHealth() $ "/" $ player.GetTotalMaxHealth() $ ")");
+
     /*if (player.KillerCount > 300)
        winInfo.SetText(MoralityStr $ MassMurdererStr);
     else if (player.KillerCount > 4)
@@ -510,6 +499,8 @@ function DisplayCommonInfo()
     {
         if (player.fullUp >= 100)
             suffix = SatiatedStr;
+        else if (player.fullUp < 20) //SARGE: Added starving string
+            suffix = StarvingStr;
         else if (player.fullUp < 50)
             suffix = HungryStr;
         
@@ -581,6 +572,34 @@ function DisplayCommonInfo()
      //winInfo.SetText(StaminaStr $ int(player.swimTimer*100) $ "/" $ int(player.swimDuration*100));
      //winInfo.SetText(BioStr $ int(player.Energy) $ "/" $ int(player.GetMaxEnergy()));
      winInfo.SetText(LocStr $ player.retInfo());
+    
+    winInfo.SetText(KillerStr $ player.Killercount); //SARGE: We don't want the morality stuff, but we do want to track kills
+
+    //SARGE: Display the killswitch timer
+    if (player.bRealKillswitch && player.killswitchtimer > 0)
+    {
+        hours = int(player.killswitchTimer / 3600.0);
+        mins = int((player.killswitchTimer % 3600.0) / 60.0);
+        seconds = int(player.killswitchTimer % 60.0);
+        
+        //awful, awful code!
+        killswitchTimeString = "";
+        killswitchTimeString = killswitchTimeString $ hours;
+        killswitchTimeString = killswitchTimeString $ ":";
+
+        if (mins < 10)
+            killswitchTimeString = killswitchTimeString $ "0";
+
+        killswitchTimeString = killswitchTimeString $ mins;
+        killswitchTimeString = killswitchTimeString $ ":";
+        
+        if (seconds < 10)
+            killswitchTimeString = killswitchTimeString $ "0";
+        
+        killswitchTimeString = killswitchTimeString $ seconds;
+
+        winInfo.SetText(sprintf(killswitchTime,killswitchTimeString));
+    }
 }
 
 function UpdateAddictionText()
@@ -599,10 +618,10 @@ function UpdateAddictionText()
         if (player.AddictionManager.addictions[i].drugTimer > 0.0)
         {
             winInfo.SetText(drugStatusLabel $ drugActiveLabel $ int(player.AddictionManager.addictions[i].drugTimer) $ "s");
-            if (i == 1 && player.AddictionManager.stacks[i] > 1)
-                winInfo.SetText(drugEffectLabel $ sprintf(drugActiveEffects[i], 5*player.AddictionManager.stacks[i]) @ sprintf(drugStacks,player.AddictionManager.stacks[i],player.AddictionManager.maxStacks[i]));
+            if (i == 1 && player.AddictionManager.addictions[i].stacks > 1)
+                winInfo.SetText(drugEffectLabel $ sprintf(drugActiveEffects[i], 5*player.AddictionManager.addictions[i].stacks) @ sprintf(drugStacks,player.AddictionManager.addictions[i].stacks,player.AddictionManager.addictions[i].maxStacks));
             else if (i == 1)
-                winInfo.SetText(drugEffectLabel $ sprintf(drugActiveEffects[i], 5*player.AddictionManager.stacks[i]));
+                winInfo.SetText(drugEffectLabel $ sprintf(drugActiveEffects[i], 5*player.AddictionManager.addictions[i].stacks));
             else
                 winInfo.SetText(drugEffectLabel $ drugActiveEffects[i]);
         }
@@ -650,7 +669,7 @@ function UpdateStatusText()                                                     
          extraBPM += FRand()*1.5;
      else if (FRand() < 0.0007)
          extraBPM -= FRand()*1.5;
-     else if (player.musicMode == MUS_Combat)
+     else if (player.default.musicMode == MUS_Combat)
          extraBPM += 4;
      }
      if (FRand() < 0.6)
@@ -750,6 +769,11 @@ function int HealAllParts()
 	RemoveMedKits(healPointsAvailable - healPointsRemaining);
 
 	player.PopHealth( playerHealth[0],playerHealth[1],playerHealth[2],playerHealth[3],playerHealth[4],playerHealth[5]);
+       
+    //SARGE: Reset players accuracy bonus.
+    if (healPointsAvailable > 0)
+        player.ResetAim();
+
 
 	EnableButtons();
 
@@ -775,17 +799,18 @@ function int GetMedKitHealPoints()
 
 	if (medKit != None)
 	{
-	    if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkToxicologist').bPerkObtained == true)
+	    if (player.PerkManager != None && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkToxicologist').bPerkObtained)
 	    {
-	    player.StopPoison();
-		player.myPoisoner = None;
-        player.poisonCounter = 0;
-        player.poisonTimer   = 0;
-       	player.poisonDamage  = 0;
-		player.drugEffectTimer = 0;	// stop the drunk effect
+			player.StopPoison();
+			player.myPoisoner = None;
+			player.poisonCounter = 0;
+			player.poisonTimer   = 0;
+			player.poisonDamage  = 0;
+			player.drugEffectTimer = 0;	// stop the drunk effect
 	    }
-	    player.PlaySound(sound'MedicalHiss', SLOT_None,,, 256);
-        player.ClientFlash(4,vect(0,0,200));
+		
+	    player.HealScreenEffect(4.0, false);
+        
         ncl = 1;
     	return player.CalculateSkillHealAmount(ncl * medKit.healAmount);  //medKit.NumCopies
     }
@@ -965,15 +990,16 @@ MedSkillLevel=player.SkillSystem.GetSkillLevel(class'SkillMedicine');
 	{
 	    if (player.PerkManager.GetPerkWithClass(class'DeusEx.PerkToxicologist').bPerkObtained == true)
 	    {
-	    player.StopPoison();
-	    player.myPoisoner = None;
-        player.poisonCounter = 0;
-        player.poisonTimer   = 0;
-       	player.poisonDamage  = 0;
-	    player.drugEffectTimer = 0;
+			player.StopPoison();
+			player.myPoisoner = None;
+			player.poisonCounter = 0;
+			player.poisonTimer   = 0;
+			player.poisonDamage  = 0;
+			player.drugEffectTimer = 0;
 	    }
-	    player.PlaySound(sound'MedicalHiss', SLOT_None,,, 256);
-        player.ClientFlash(4,vect(0,0,200));
+		
+	    player.HealScreenEffect(4.0, false);
+		
 		medKit.UseOnce();
 		UpdateMedKits();
 
@@ -1078,10 +1104,11 @@ defaultproperties
      SatiatedStr=" (Satiated)"
      MoralityStr=" Morality: "
      PacifistStr="Pacifist"
-     killerStr="Killer"
+     killerStr=" Total Kills: "
      MassMurdererStr="Mass Murderer"
      LocStr=" Location: "
      HungryStr=" (Hungry)"
+     StarvingStr=" (Starving)"
      stepsStr="Steps Taken: "
      distStr="Distance Travelled: "
      heartStr="Heart Rate: "
@@ -1111,6 +1138,7 @@ defaultproperties
      drugWithdrawalLabel="Withdrawal"
      drugInactiveLabel="Inactive"
      drugEffectLabel=" Effects: "
+     killswitchTime=" Killswitch Activated: %d"
      clientBorderOffsetY=32
      ClientWidth=596
      ClientHeight=427

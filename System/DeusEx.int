@@ -207,8 +207,11 @@ beltDescription="IMAGE"
 
 [PersonaInventoryItemButton]
 CountLabel="Count: %d"
+CountLabel2="Count: %d/%d"
+QtyLabel="Qty: %d/%d"
 RoundLabel="%d Rd"
 RoundsLabel="%d Rds"
+RoundsLabel2="%d/%d Rds"
 
 [Computers]
 msgLockedOut="Terminal is locked out for %d more seconds"
@@ -383,10 +386,6 @@ ButtonLabelSpecial="|&Special Options"
 AmmoLabel="Ammo:"
 AmmoRoundsLabel="Rounds:"
 ShowAmmoDescriptionsLabel="Show Ammo Descriptions"
-msgAssign="Assign as secondary item:"
-msgConf="Assign"
-msgAssigned="Secondary Item Assigned" 
-msgUnassigned="Secondary Item Unassigned" 
 
 [PersonaInfoWindow]
 UpgradeButtonLabel="|&Upgrade"
@@ -396,9 +395,10 @@ RequiredPoints="Points Needed: "
 PerkTitle="PERKS"
 ob="OBTAINED PERKS"
 msgAssign="Assign as secondary item:"
-msgConf="Assign"
-msgAssigned="Secondary Item Assigned"
-msgUnassigned="Secondary Item Unassigned"
+msgDoAssign="Assign"
+msgDoUnassign="Unassign"
+msgAssigned="Secondary Item Assigned" 
+msgUnassigned="Secondary Item Unassigned" 
 
 [FrobDisplayWindow]
 msgLocked="Locked"
@@ -530,7 +530,7 @@ SatiatedStr=" (Satiated)"
 HungryStr=" (Hungry)"
 StatusTitle=" Status Evaluation"
 MassMurdererStr="Mass Murderer"
-KillerStr="Killer"
+KillerStr=" Total Kills: "
 PacifistStr="Pacifist"
 StatsButtonLabel="|&Status"
 drugLabels(0)=" Nicotine "
@@ -794,7 +794,7 @@ Title="Keyboard/Mouse Settings"
 FunctionText[0]="Fire Weapon/Use object in hand"
 FunctionText[1]="Use object in world"
 FunctionText[2]="Drop/Throw Item"
-FunctionText[3]="Put Away Item"
+FunctionText[3]="Holster/Unholster Item"
 FunctionText[4]="Move Forward"
 FunctionText[5]="Move Backward"
 FunctionText[6]="Turn Left"
@@ -912,21 +912,22 @@ actionButtons[0]="(Align=HALIGN_Right,Action=AB_Cancel)"
 actionButtons[1]="(Align=HALIGN_Right,Action=AB_OK)"
 actionButtons[2]="(Action=AB_Reset)"
 NoneText="[None]"
-FunctionText[46]="F3 (Typically Subdermal Aug 1)"
-FunctionText[47]="F4 (Typically Subdermal Aug 2)"
-FunctionText[48]="F5 (Typically Cranial Aug 1)"
-FunctionText[49]="F6 (Typically Arm Aug 2)"
-FunctionText[50]="F7 (Typically Leg Aug 1)"
-FunctionText[51]="F8 (Typically Eye Aug 1)"
-FunctionText[52]="F9 (Typically Torso Aug 1)"
-FunctionText[53]="F10 (Typically Torso Aug 2)"
-FunctionText[54]="F11 (Typically Torso Aug 3)"
-FunctionText[55]="F12 (Flashlight)"
-FunctionText[56]="Secondary Item"
-FunctionText[57]="Send Message To Team"
-FunctionText[58]="Send Message To All"
-FunctionText[59]="Activate Multiplayer Skill Menu"
-FunctionText[60]="Show Multiplayer Kill Details"
+FunctionText[46]="Show/Hide HUD (Photo Mode)"
+FunctionText[47]="F3 (Typically Subdermal Aug 1)"
+FunctionText[48]="F4 (Typically Subdermal Aug 2)"
+FunctionText[49]="F5 (Typically Cranial Aug 1)"
+FunctionText[50]="F6 (Typically Arm Aug 2)"
+FunctionText[51]="F7 (Typically Leg Aug 1)"
+FunctionText[52]="F8 (Typically Eye Aug 1)"
+FunctionText[53]="F9 (Typically Torso Aug 1)"
+FunctionText[54]="F10 (Typically Torso Aug 2)"
+FunctionText[55]="F11 (Typically Torso Aug 3)"
+FunctionText[56]="F12 (Flashlight)"
+FunctionText[57]="Show Multiplayer Scores"
+FunctionText[58]="Send Message To Team"
+FunctionText[59]="Send Message To All"
+FunctionText[60]="Activate Multiplayer Skill Menu"
+FunctionText[61]="Show Multiplayer Kill Details"
 
 [NanoKeyRing]
 NoKeys="No Nano Keys Available!"
@@ -1119,7 +1120,7 @@ StatusText="PNGBS//GLOBAL//PUB:3902.9571[wd]"
 HackedText="TERMINAL HACKED"
 Title="PageNet Global Banking System"
 ComputerNodeFunctionLabel="ATMWD"
-ButtonLabelWithdrawAll="|&Withdraw All"
+ButtonLabelWithdrawAll="Withdraw |&All"
 
 [Ammo10mm]
 ItemName="10mm Ammo"
@@ -1324,7 +1325,7 @@ ItemName="Lightweight Attack Munition (LAM)"
 ItemName="Cigarettes"
 ItemArticle="some"
 Description="'COUGHING NAILS -- when you've just got to have a cigarette.'"
-AddictionDescription="'COUGHING NAILS -- when you've just got to have a cigarette.'|n|n<UNATCO OPS FILE NOTE JR154-VIOLET> Nicotine intake stimulates an augmented agent's central nervous system and releases a surge of adrenaline, increasing alertness and fine motor control. Overstimulation will lead to addiction, with heightened fatigue in withdrawal. -- Jaime Reyes <END NOTE>|n|nActive Buff: Aim Stabilization Rate +100%|nWithdrawal Debuff: Running Stamina -50%|nUse Duration: 120 seconds (refreshes)|nAddiction Increment: 20%"
+AddictionDescription="'COUGHING NAILS -- when you've just got to have a cigarette.'|n|n<UNATCO OPS FILE NOTE JR154-VIOLET> Nicotine intake stimulates an augmented agent's central nervous system and releases a surge of adrenaline, increasing alertness and fine motor control. Overstimulation will lead to addiction, with heightened fatigue in withdrawal. -- Jaime Reyes <END NOTE>|n|nActive Buff: Aim Stabilization Rate +100%|nWithdrawal Debuff: Running Stamina -50%|nUse Duration: 120 seconds (refreshes)"
 beltDescription="CIGS"
 
 [WeaponModAccuracy]
@@ -1424,7 +1425,6 @@ Description="Its high velocity and accuracy have made sniper rifles using the 30
 beltDescription="3006 AMMO"
 
 [TechGoggles]
-ExpireMessage="TechGoggles power supply used up"
 ItemName="Tech Goggles"
 ItemArticle="some"
 Description="Tech goggles are used by many special ops forces throughout the world under a number of different brand names, but they all provide some form of portable light amplification in a disposable package."
@@ -1482,7 +1482,6 @@ FamiliarName="Thug"
 UnfamiliarName="Thug"
 
 [AdaptiveArmor]
-ExpireMessage="Thermoptic camo power supply used up"
 ItemName="Thermoptic Camo"
 ItemArticle="some"
 Description="Integrating woven fiber-optics and an advanced computing system, thermoptic camo can render an agent invisible to both humans and bots by dynamically refracting light and radar waves; however, the high power drain makes it impractial for more than short-term use, after which the circuitry is fused and it becomes useless."
@@ -1526,14 +1525,14 @@ beltDescription="BINOCS"
 [Liquor40oz]
 ItemName="Forty"
 Description="'COLD SWEAT forty ounce malt liquor. Never let 'em see your COLD SWEAT.'"
-AddictionDescription="'COLD SWEAT forty ounce malt liquor. Never let 'em see your COLD SWEAT.'|n|n<UNATCO OPS FILE NOTE JR155-VIOLET> An augmented agent's immune system reacts to alcohol consumption with a pseudo-anesthetic effect, notably enhancing pain tolerance. While addiction is slow to take root, it will cause increased nerve activity in withdrawal, resulting in involuntary muscle spasms colloquially known as "the shakes". -- Jaime Reyes <END NOTE>|n|nActive Buff: Max Torso Health +5 (stacks x5)|nWithdrawal Debuff: Accuracy -15%|nUse Duration: 120 seconds (stacks x5)|nAddiction Increment: 5%"
+AddictionDescription="'COLD SWEAT forty ounce malt liquor. Never let 'em see your COLD SWEAT.'|n|n<UNATCO OPS FILE NOTE JR155-VIOLET> An augmented agent's immune system reacts to alcohol consumption with a pseudo-anesthetic effect, notably enhancing pain tolerance. While addiction is slow to take root, it will cause increased nerve activity in withdrawal, resulting in involuntary muscle spasms colloquially known as "the shakes". -- Jaime Reyes <END NOTE>|n|nActive Buff: Max Torso Health +5 (stacks x5)|nWithdrawal Debuff: Accuracy -15%|nUse Duration: 120 seconds (stacks x5)"
 beltDescription="FORTY"
 
 [LiquorBottle]
 ItemName="Liquor"
 ItemArticle="some"
 Description="The label is torn off, but it looks like some of the good stuff."
-AddictionDescription="The label is torn off, but it looks like some of the good stuff.|n|n<UNATCO OPS FILE NOTE JR155-VIOLET> An augmented agent's immune system reacts to alcohol consumption with a pseudo-anesthetic effect, notably enhancing pain tolerance. While addiction is slow to take root, it will cause increased nerve activity in withdrawal, resulting in involuntary muscle spasms colloquially known as "the shakes". -- Jaime Reyes <END NOTE>|nActive Buff: Max Torso Health +5 (stacks x5)|nWithdrawal Debuff: Accuracy -15%|nUse Duration: 120 seconds (stacks x5)|nAddiction Increment: 5%"
+AddictionDescription="The label is torn off, but it looks like some of the good stuff.|n|n<UNATCO OPS FILE NOTE JR155-VIOLET> An augmented agent's immune system reacts to alcohol consumption with a pseudo-anesthetic effect, notably enhancing pain tolerance. While addiction is slow to take root, it will cause increased nerve activity in withdrawal, resulting in involuntary muscle spasms colloquially known as "the shakes". -- Jaime Reyes <END NOTE>|n|nActive Buff: Max Torso Health +5 (stacks x5)|nWithdrawal Debuff: Accuracy -15%|nUse Duration: 120 seconds (stacks x5)"
 beltDescription="LIQUOR"
 
 [ComputerPublic]
@@ -1551,7 +1550,6 @@ AddictionDescription="A vial of zyme, likely brewed up in some basement lab.|n|n
 beltDescription="ZYME"
 
 [HazMatSuit]
-ExpireMessage="HazMatSuit power supply used up"
 ItemName="Hazmat Suit"
 Description="A standard hazardous materials suit that protects against a full range of environmental hazards including radiation, fire, biochemical toxins, electricity, and EMP. Hazmat suits contain an integrated bacterial oxygen scrubber that degrades with use and thus should not be reused."
 beltDescription="HAZMAT"
@@ -1565,7 +1563,6 @@ beltDescription="MOD RANGE"
 NewLegendLabel=" = New Image"
 
 [BallisticArmor]
-ExpireMessage="Ballistic Armor power supply used up"
 ItemName="Ballistic Armor"
 ItemArticle="some"
 Description="Ballistic armor is manufactured from electrically sensitive polymer sheets that intrinsically react to the violent impact of a bullet or an explosion by 'stiffening' in response and absorbing the majority of the damage. These polymer sheets lose their reflexive properties with sustained damage and must be recharged before they become totally inert."
@@ -1604,7 +1601,7 @@ beltDescription="CHARGER"
 
 [AugDrone]
 AugmentationName="Spy Drone"
-Description="Advanced nanofactories can assemble a spy drone upon demand which can then be remotely controlled by the agent until released or destroyed, at which a point a new drone will be assembled over time. The agent can expend additional bioelectric energy to detonate the drone for an EMP blast, or set it to standby to enable extended remote surveillance with no energy drain.|n|nThe drone comes equipped with an experimental cloaking device, rendering it invisible while in standby mode.|n|nTECH ONE: The drone is very slow and has a very light EMP attack.|n|nTECH TWO: The drone is somewhat faster and has a light EMP attack.|n|nTECH THREE: The drone has notable speed and has a medium EMP attack.|n|nTECH FOUR: The drone can move swiftly and has a strong EMP attack, as well as the ability to cloak while in-flight.|n|nUse the FIRE button to detonate the drone, or the INTERACTION button to set the drone into standby mode.|n|nThe drone can be reclaimed by activating it while in standby mode, to remove the required reconstruction time."
+Description="Advanced nanofactories can assemble a spy drone upon demand which can then be remotely controlled by the agent until released or destroyed, at which a point a new drone will be assembled over time. The agent can expend additional bioelectric energy to detonate the drone for an EMP blast, or set it to standby to enable extended remote surveillance with no energy drain.|n|nThe drone comes equipped with an experimental cloaking device, rendering it invisible while in standby mode.|n|nTECH ONE: The drone is very slow and has a very light EMP attack.|n|nTECH TWO: The drone is somewhat faster and has a light EMP attack.|n|nTECH THREE: The drone has notable speed and a medium EMP attack.|n|nTECH FOUR: The drone can move swiftly and has a strong EMP attack, as well as the ability to cloak while in-flight.|n|nUse the FIRE button to detonate the drone, or the INTERACTION button to set the drone into standby mode.|n|nThe reconstruction time can be removed by interacting with the drone in standby mode to reclaim it."
 MPInfo="Activation creates a remote-controlled spy drone.  Deactivation disables the drone.  Firing while active detonates the drone in a massive EMP explosion.  Energy Drain: Medium"
 
 [Basketball]
@@ -1628,7 +1625,7 @@ ItemName="Retinal Scanner"
 ItemName="Wine"
 ItemArticle="some"
 Description="A nice bottle of wine."
-AddictionDescription="A nice bottle of wine.|n|n<UNATCO OPS FILE NOTE JR155-VIOLET> An augmented agent's immune system reacts to alcohol consumption with a pseudo-anesthetic effect, notably enhancing pain tolerance. While addiction is slow to take root, it will cause increased nerve activity in withdrawal, resulting in involuntary muscle spasms colloquially known as "the shakes". -- Jaime Reyes <END NOTE>|nActive Buff: Max Torso Health +5 (stacks x5)|nWithdrawal Debuff: Accuracy -15%|nUse Duration: 120 seconds (stacks x5)|nAddiction Increment: 5%"
+AddictionDescription="A nice bottle of wine.|n|n<UNATCO OPS FILE NOTE JR155-VIOLET> An augmented agent's immune system reacts to alcohol consumption with a pseudo-anesthetic effect, notably enhancing pain tolerance. While addiction is slow to take root, it will cause increased nerve activity in withdrawal, resulting in involuntary muscle spasms colloquially known as "the shakes". -- Jaime Reyes <END NOTE>|n|nActive Buff: Max Torso Health +5 (stacks x5)|nWithdrawal Debuff: Accuracy -15%|nUse Duration: 120 seconds (stacks x5)|nAddiction Increment: 5%"
 beltDescription="WINE"
 
 [Valve]
@@ -1713,7 +1710,6 @@ Description="'CHOC-O-LENT DREAM. IT'S CHOCOLATE! IT'S PEOPLE! IT'S BOTH!(tm) 85%
 beltDescription="CANDY BAR"
 
 [Rebreather]
-ExpireMessage="Rebreather power supply used up"
 ItemName="Rebreather"
 Description="A disposable chemical scrubber that can extract oxygen from water during brief submerged operations."
 beltDescription="REBREATHR"
@@ -1761,7 +1757,7 @@ InfoDescription="Difficulty levels primarily influence stealth, combat & explora
 HardCoreTitle="Enable Hardcore Mode?"
 HardCoreDescription="Disables manual saving, enables save points. |nAdditional rules: disabled console access, real-time inventory use, greater stamina drain, no weapon auto-reload, less ammo and more."
 HardcoreUnlockInfo="Are you sure?"
-HardcoreUnlockDescription="Hardcore difficulty will be extremely unforgiving and is not recommended for those new to GMDX.|nIt is strongly recommended that you choose a lower diffiuculty! Proceed?"
+HardcoreUnlockDescription="Hardcore difficulty will be extremely unforgiving and is not recommended for those new to GMDX.|nIt is strongly recommended that you choose a lower difficulty! Proceed?"
 RealisticTitle="Warning"
 RealisticDescription="Realistic difficulty will be a testing challenge and is not recommended for those new to GMDX.|nProceed Anyway?"
 //ButtonNames[5]="Previous Menu"
@@ -1966,7 +1962,7 @@ MPInfo="When active, you do not make footstep sounds.  Energy Drain: Low"
 
 [AugTarget]
 AugmentationName="Targeting"
-Description="Image-scaling and recognition provided by multiplexing the optic nerve with doped polyacetylene 'quantum wires' not only increases accuracy & damage, but also delivers limited situational info about a target.|n|nTECH ONE: Slight increase in accuracy & damage (+15%), as well as general target information.|n|nTECH TWO: Additional increase in accuracy and damage (+20%), as well as more target information.|n|nTECH THREE: Additional increase in accuracy & damage (+25%), as well as specific target information.|n|nTECH FOUR: moderate increase in accuracy & damage (+30%), and telescopic vision."
+Description="Image-scaling and recognition provided by multiplexing the optic nerve with doped polyacetylene 'quantum wires' not only increases accuracy & damage of ranged weapons, but also delivers limited situational info about a target.|n|nTECH ONE: Slight increase in accuracy & damage (+15%), as well as general target information.|n|nTECH TWO: Additional increase in accuracy and damage (+20%), as well as more target information.|n|nTECH THREE: Additional increase in accuracy & damage (+25%), as well as specific target information.|n|nTECH FOUR: moderate increase in accuracy & damage (+30%), and telescopic vision.|n|nNOTE: Optic nerve multiplexing has only been tested in ranged combat environments with conventional and heavy weapons, and has been shown to be ineffective for hand to hand weapons and throwing knives."
 MPInfo="When active, all weapon skills are effectively increased by one level, and you can see an enemy's health.  The skill increases allow you to effectively surpass skill level 3.  Energy Drain: Moderate"
 
 [AcousticSensor]
@@ -2289,7 +2285,7 @@ beltDescription="20MM AMMO"
 
 [AmmoRocketWP]
 ItemName="WP Rockets"
-Description="The white-phosphorus rocket, or 'wooly peter,' was designed to expand the mission profile of the GEP gun. While it does minimal damage upon detonation, the explosion will spread a cloud of particularized white phosphorus that ignites immediately upon contact with the air."
+Description="The white-phosphorus rocket, or 'wooly peter,' was designed to expand the mission profile of the GEP gun. While it does minimal damage upon detonation, the explosion will spread a cloud of particularized white phosphorus that ignites immediately upon contact with the air.|n|n<UNATCO OPS FILE NOTE JR337-INDIGO>WP Rockets are made of a frangible substance and do not pack the direct-fire stopping power of a regular rocket, and should not be used for breaching doors or other structures. In these cases, it's better to use a regular rocket instead -- Sam Carter <END NOTE>"
 beltDescription="WP ROCKET"
 
 [AugHealing]
@@ -2299,7 +2295,7 @@ MPInfo="When active, you heal, but at a rate insufficient for healing in combat.
 
 [AugVision]
 AugmentationName="Vision Enhancement"
-Description="By bleaching selected rod photoreceptors and saturating them with metarhodopsin XII, the 'nightvision' present in most nocturnal animals can be duplicated. Subsequent upgrades and modifications add infravision & sonar-resonance imaging that effectively allows an agent to see through walls and bypass advanced stealth cloaking technology.|n|nTECH ONE: Nightvision.|n|nTECH TWO: Infravision.|n|nTECH THREE: Close range sonar imaging that enables an agent to detect threats through solid material.|n|nTECH FOUR: Long range sonar imaging that enables an agent to detect threats through solid material."
+Description="By bleaching selected rod photoreceptors and saturating them with metarhodopsin XII, the 'nightvision' present in most nocturnal animals can be duplicated. Subsequent upgrades and modifications add infravision & sonar-resonance imaging that effectively allows an agent to see through walls and bypass advanced stealth cloaking technology.|n|nTECH ONE: Nightvision.|n|nTECH TWO: Infravision and heat source detection.|n|nTECH THREE: Close range sonar imaging that enables an agent to detect threats through solid material.|n|nTECH FOUR: Long range sonar imaging that enables an agent to detect threats through solid material."
 MPInfo="When active, you can see enemy players in the dark from any distance, and for short distances you can see through walls and see cloaked enemies.  Energy Drain: Moderate"
 
 [WeaponBaton]
@@ -2853,7 +2849,7 @@ Description="The use of rifles, including assault rifles, sniper rifles, and sho
 
 [SkillDemolition]
 SkillName="Weapons: Demolition"
-Description="The use of thrown explosive devices, including LAMs, gas grenades, EMP grenades, and electronic scrambler grenades. |n|nTotal skill points to master: 5250|n|nUNTRAINED: An agent can throw grenades, attach them to a surface as a proximity device, or attempt to disarm a proximity device. An agent can carry up to 2 grenades of each type. |n|nTRAINED: Grenade damage & blast radius increases slightly, and an agent can utilise their familiarity with explosive devices to rearm Gas Grenades. An agent can carry up to 4 grenades of each type.|n|nADVANCED: Grenade damage & blast radius increases moderately, and an agent can utilise their familiarity with explosive devices to rearm EMP and Scrambler grenades. An agent can carry up to 7 grenades of each type.|n|nMASTER: An agent is an expert at all forms of demolition, allowing for maximum grenade damage and blast radius. An agent can utilise their familiarity with explosive devices to rearm even the most complex grenades. An agent can carry up to 12 grenades of each type."
+Description="The use of thrown explosive devices, including LAMs, gas grenades, EMP grenades, and electronic scrambler grenades. |n|nTotal skill points to master: 5250|n|nUNTRAINED: An agent can throw grenades, attach them to a surface as a proximity device, or attempt to disarm a proximity device. An agent can carry up to 2 grenades of each type. |n|nTRAINED: Grenade damage & blast radius increases slightly, and an agent can utilise their familiarity with explosive devices to rearm Gas Grenades. An agent can carry up to 4 grenades of each type.|n|nADVANCED: Grenade damage & blast radius increases moderately, and an agent can utilise their familiarity with explosive devices to rearm EMP and Scrambler grenades while carrying up to 7 grenades of each type.|n|nMASTER: An agent is an expert at all forms of demolition, allowing for maximum grenade damage and blast radius, as well as the ability to rearm even the most complex grenades. An agent can carry up to 12 grenades of each type."
 
 [SkillWeaponPistol]
 SkillName="Weapons: Pistol"
@@ -3657,12 +3653,12 @@ StringTable(2)="Turn around and press the 'Jump' key to jump from the ladder. Mo
 StringTable(3)="ACCURACY BREAKDOWN|n|nAccuracy is negatively modified by damage to your arms, head and/or torso.|n|nAccuracy is positively modified by standing/crouching still, modifying your weapon with accessories such as a laser sight, increasing your weapon skill level from the 'Skills/Perks' menu, and more. |n|nAgents do not usually become a crack shot without extensive field experience."
 StringTable(4)="SECONDARY ITEMS|n|nPick up the grenade from this table, open your inventory (default = TAB or F1), select the grenade and click the 'Assign' button, which will equip it as your secondary item. You can then use the grenade at any time by pressing the 'secondary item' key (default= F)."
 StringTable(5)="WARNING|nBefore you is the final test of basic training. Now would be a good time to save your game (press 'Esc' key)."
-StringTable(6)="DEFAULT WEAPON CONTROLS|n|nShoot: Left Mouse Button|nHolster: Right Mouse Button|nReload: R|nChange Weapon: Mouse Wheel|nDrop Weapon: Middle Mouse Button|nChange Ammo Type: C|nToggle Scope: CAPS|nToggle Laser Sight: \|n|nAdvanced Controls: |n|nScope Zoom In/Out: Mouse Wheel (while scope is active)|nUse Secondary Weapon: F (if you have a Secondary Weapon)|nCancel Reload: Left Mouse Button (while reloading. Shotguns only)|n|nYou can rebind keys at any time from the 'Keyboard/Mouse' menu."
+StringTable(6)="DEFAULT WEAPON CONTROLS|n|nShoot: Left Mouse Button|nHolster: Right Mouse Button|nReload: R|nChange Weapon: Mouse Wheel|nDrop Weapon: J|nChange Ammo Type: X|nToggle Scope: Middle Mouse|nToggle Laser Sight: z|n|nAdvanced Controls: |n|nScope Zoom In/Out: Mouse Wheel (while scope is active)|nUse Secondary Weapon: F (if you have a Secondary Weapon)|nCancel Reload: Left Mouse Button (while reloading. Shotguns/crossbow only)|n|nYou can rebind keys at any time from the 'Keyboard/Mouse' menu."
 StringTable(7)="ADVANCED MOVEMENT TRAINING|n|nAttention Recruits,|n|nDue to a high rate of incidents the Advanced Movement Training Course is no longer required participation. Take the key from the table and exit the course to receive your evaluation, or venture forward if you think you have what it takes. Be warned, recruits receive no comms assistance on the course.|n|n-J.Reyes"
 StringTable(8)="TAKEDOWNS|n|nPerform a takedown! To do so, equip a melee weapon, sneak right up behind the hologram and aim for the midsection or the back of the head, then press 'Fire Weapon' (default = Left Mouse Button). |n|nThe Baton or Riot Prod are best suited to this task as a result of their silent and non-lethal nature, though any weapon can be used. |n|nA takedown can only be performed if the target is unaware of your presence."
 StringTable(9)="DOOR INTERACTIVITY|n|nDoors that can be interacted with will display relevant information before your eyes (via your HUD augmentation): |n|nLock Complexity: complexity of the lock (if any); the number of lockpicks required to pick the lock.|nDoor Durability: a representation of door sturdiness, simplified as a 'health bar'.|nDamage Threshold: if your weapon does not deal greater damage than this number you will not be able to break the door with that weapon.|n|nSee if you can bypass all three doors."
 StringTable(10)="MANTLING|n|nYou can mantle onto objects by pressing the 'Jump' key (default = SPACE BAR) whilst facing an object. |n|nTo begin, mantle up the stack of crates, and from there climb up onto the ledge."
-StringTable(11)="AMMO TYPES|n|nCycle through available ammo types by pressing the 'Cycle Ammo' key (default = C).|nAmmo types offer specific advantages and disadvatages depending on the situation at hand."
+StringTable(11)="AMMO TYPES|n|nCycle through available ammo types by pressing the 'Cycle Ammo' key (default = X).|nAmmo types offer specific advantages and disadvatages depending on the situation at hand."
 StringTable(12)="This is a tougher jump. Get a run-up. If you don't quite make it, you can mantle the ledge to save yourself from falling down."
 StringTable(13)="You can mantle into crawl-spaces you'd have trouble getting into otherwise.|n|nCrouch, Jump then Mantle."
 StringTable(14)="Walkway bridge code: 154"

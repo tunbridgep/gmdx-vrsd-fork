@@ -22,4 +22,6 @@ defaultproperties
      Center_Textures(1)=(Tex=Texture'DeusExUI.UserInterface.PersonaActionButtonPressed_Center',Width=2)
      buttonHeight=16
      minimumButtonWidth=20
+     bBaseWidthOnText=true
+     bCenterText=false
 }

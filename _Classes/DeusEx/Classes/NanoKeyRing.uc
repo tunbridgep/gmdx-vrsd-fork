@@ -299,21 +299,11 @@ Begin:
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
-simulated function renderoverlays(Canvas canvas)
+function DisplayWeapon(bool overlay)
 {
-    Multiskins[0] = handsTex;
-	if (bIsCloaked)                                                             //RSD: Overhauled cloak/radar routines
-    {
-	   Multiskins[0] = FireTexture'GameEffects.InvisibleTex';
-    }
-    else if (bIsRadar)
-    {
-       Multiskins[0] = Texture'Effects.Electricity.Xplsn_EMPG';
-    }
-
-	super.renderoverlays(canvas);
-
-    multiskins[0] = None;
+    super.DisplayWeapon(overlay);
+    if (overlay)
+        multiskins[0] = handstex;
 }
 
 defaultproperties

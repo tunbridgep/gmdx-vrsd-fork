@@ -60,14 +60,15 @@ var bool bHitMarkers;             //Sarge: Show hitmarkers when damaged. For thi
 
 var bool bFirstTickDone;                                                        //SARGE: Set to true after the first tick. Allows us to do stuff on the first frame
 
+//SARGE: Moved from Containers, now affects all DeusExDecorations
+var() bool bLowDifficultyOnly; //Remove on realistic and hardcore
+var() bool bHardcoreRemoveIt; //Remove on hardcore only
+
 //SARGE: HDTP Model toggles
 var config int iHDTPModelToggle;
 var string HDTPSkin;
 var string HDTPTexture;
 var string HDTPMesh;
-var string oldSkin;
-var string oldTexture;
-var string oldMesh;
 var bool bHDTPFailsafe;
 
 //Sarge: LDDP Stuff
@@ -75,6 +76,11 @@ var(GMDX) const bool requiresLDDP;                                              
 var(GMDX) const bool LDDPExtra;                                                 //Delete this character we don't have the "Extra LDDP Characters" playthrough modifier
 var(GMDX) const bool deleteIfMale;                                              //Delete this character if we're male
 var(GMDX) const bool deleteIfFemale;                                            //Delete this character if we're female
+
+var const localized string msgCantUseWhileSwimming;                             //SARGE: Message when we can't grab this due to swimming.
+
+//SARGE: Ignore LOS check for frobbing. Allows us to frob through walls! Disabled by default
+var(GMDX) bool bSkipLOSFrobCheck;
 
 // ----------------------------------------------------------------------
 // ShouldCreate()
@@ -124,32 +130,43 @@ replication
 function bool DoLeftFrob(DeusExPlayer frobber)
 {
     //Don't allow frobbing while swimming, and only allow objects grabbable via left click
-    if (bLeftGrab && frobber.swimTimer > 1)
+    if (bLeftGrab)
     {
-        frobber.GrabDecoration();
-        return false;
+        if (frobber.IsInState('PlayerSwimming'))
+        {
+            frobber.ClientMessage(msgCantUseWhileSwimming);
+        }
+        else
+        {
+            frobber.GrabDecoration();
+            return false;
+        }
     }
-    else if (minDamageThreshold > 0)
-    {
-        frobber.SelectMeleePriority(minDamageThreshold);
+    else if (!bInvincible && frobber.SelectMeleePriority(minDamageThreshold))
         return false;
-    }
     return true;
 }
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {
     //Don't allow frobbing while swimming, and only allow pushable objects
-    if (bPushable && frobber.swimTimer > 1)
+    if (bPushable)
     {
-        frobber.GrabDecoration();
-        return false;
+        if (frobber.IsInState('PlayerSwimming'))
+        {
+            frobber.ClientMessage(msgCantUseWhileSwimming);
+        }
+        else
+        {
+            frobber.GrabDecoration();
+            return false;
+        }
     }
     return true;
 }
 
-function bool IsHDTP()
+static function bool IsHDTP()
 {
-    return DeusExPlayer(GetPlayerPawn()) != None && DeusExPlayer(GetPlayerPawn()).bHDTPInstalled && iHDTPModelToggle > 0;
+    return class'DeusExPlayer'.static.IsHDTPInstalled() && default.iHDTPModelToggle > 0;
 }
 
 //SARGE: New function to update model meshes (specifics handled in each class)
@@ -160,39 +177,31 @@ exec function UpdateHDTPsettings()
     //De-Morgans laws to the rescue!
     if (bHDTPFailsafe)
     {
-        if (!(string(Mesh) ~= HDTPMesh || Mesh == default.Mesh || string(Mesh) ~= oldMesh))
+        if (!(string(Mesh) ~= HDTPMesh || Mesh == default.Mesh || string(Mesh) ~= string(default.Mesh)))
         {
             //log("Failed: Mesh mismatch. Got " $ string(Mesh));
             return;
         }
         
-        if (!(string(Skin) ~= HDTPSkin || Skin == default.Skin || string(Skin) ~= oldSkin))
+        if (!(string(Skin) ~= HDTPSkin || Skin == default.Skin || string(Skin) ~= string(default.Skin)))
         {
             //log("Failed: Skin mismatch. Got " $ string(Skin));
             return;
         }
         
-        if (!(string(Texture) ~= HDTPTexture || Texture == default.Texture || string(Texture) ~= oldTexture))
+        if (!(string(Texture) ~= HDTPTexture || Texture == default.Texture || string(Texture) ~= string(default.Texture)))
         {
             //log("Failed: Texture mismatch. Got " $ string(Texture));
             return;
         }
     }
 
-    //Allow changing the vanilla skins/meshes/textures/whatever
-    if (oldSkin == "")
-        oldSkin = string(default.Skin);
-    if (oldMesh == "")
-        oldMesh = string(default.Mesh);
-    if (oldTexture == "")
-        oldTexture = string(default.Texture);
-
     if (HDTPMesh != "")
-        Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,oldMesh,IsHDTP());
+        Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),IsHDTP());
     if (HDTPSkin != "")
-        Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,oldSkin,IsHDTP());
+        Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),IsHDTP());
     if (HDTPTexture != "")
-        Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,oldTexture,IsHDTP());
+        Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),IsHDTP());
 }
 
 // ----------------------------------------------------------------------
@@ -247,6 +256,9 @@ function BeginPlay()
 {
 	local Mover M;
 	local float Volume,temp;
+
+	if (Physics == PHYS_None)
+		bLeftGrab = false;
 
 	Super.BeginPlay();
 
@@ -545,16 +557,28 @@ local float HP;
 
 singular function BaseChange()
 {
+    local DeusExPlayer p;
 	bBobbing = false;
 
-	if( (base == None) && (bPushable || IsA('Carcass')) && (Physics == PHYS_None) )
+	if( (base == None) && (bPushable || IsA('Carcass')) && (Physics == PHYS_None))
 		SetPhysics(PHYS_Falling);
 
 	// make sure if a decoration is accidentally dropped,
 	// we reset it's parameters correctly
 	SetCollision(Default.bCollideActors, Default.bBlockActors, Default.bBlockPlayers);
+    if (bPushable)
+        bCollideWorld = Default.bCollideWorld;
 	Style = Default.Style;
 	bUnlit = Default.bUnlit;
+
+    //SARGE: If this is the players carried decoration, put it back in our hand
+    //This is a hack to deal with vanilla shenanigans!
+    p = DeusExPlayer(base);
+    if (p == none)
+        p = DeusExPlayer(GetPlayerPawn());
+
+    if (p != None && p.carriedDecoration == self)
+        p.PutCarriedDecorationInHand(true);
 }
 
 // ----------------------------------------------------------------------
@@ -884,7 +908,7 @@ function Bump(actor Other)
 function Bump2( actor Other )
 {
 	local float speed, oldZ;
-	if( bPushable && (Pawn(Other)!=None) && (Other.Mass > 20) )
+	if( bPushable && (Pawn(Other)!=None) && (Other.Mass > 20) && base != None)
 	{
 	    if (Other.IsA('ScriptedPawn') && ScriptedPawn(Other).bTank && Physics != PHYS_Falling)
 	        TakeDamage(400,Pawn(Other),vect(0,0,0),vect(0,0,0),'shot');
@@ -1094,8 +1118,8 @@ function Explode(vector HitLocation)
 	s = spawn(class'ScorchMark', Base,, Location-vect(0,0,1)*CollisionHeight, Rotation+rot(16384,0,0));
 	if (s != None)
 	{
-		s.DrawScale *= FClamp(explosionDamage/26, 0.1, 3.5); //CyberP: was 1st param was /30, 3rd was 3.0
-		s.ReattachDecal();
+		s.DrawScaleMult = FClamp(explosionDamage/26, 0.1, 3.5); //CyberP: was 1st param was /30, 3rd was 3.0
+		s.UpdateHDTPSettings();
 	}
     /*ForEach RadiusActors(class'Actor',acti,explosionRadius*0.2)
     {
@@ -1810,4 +1834,6 @@ defaultproperties
      bBlockPlayers=True
      iHDTPModelToggle=1
      bHDTPFailsafe=True
+     bSkipLOSFrobCheck=False
+     msgCantUseWhileSwimming="You can't pick this up while swimming."
 }

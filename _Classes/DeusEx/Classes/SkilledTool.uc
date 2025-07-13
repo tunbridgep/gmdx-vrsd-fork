@@ -22,6 +22,44 @@ function GetAugSpeed()
      }
 	}
 
+//SARGE: This is basically a stripped down version of the code in DeusExWeapon
+simulated function renderoverlays(Canvas canvas)
+{
+	local DeusExPlayer PlayerOwner;
+	PlayerOwner = DeusExPlayer(Owner);
+	
+    if ( PlayerOwner != None )
+    {
+
+        DisplayWeapon(true);
+    
+        if (bIsRadar || bIsCloaked)
+        {
+            ShowCamo();
+        }
+    }
+    
+    super.RenderOverlays(canvas);
+
+    //Reset weapon to standard display
+    DisplayWeapon(false);
+}
+
+function DisplayWeapon(bool overlay)
+{
+    local int i;
+    for (i = 0;i < 8;i++)
+    {
+        //SARGE: No HDTP models for these
+        //if (IsHDTP())
+        //    multiskins[i] = none;
+        //else
+            multiskins[i] = default.multiskins[i];
+    }
+    Skin = default.Skin;
+    Texture = default.Texture;
+}
+
 // ----------------------------------------------------------------------
 // PlayUseAnim()
 // ----------------------------------------------------------------------
@@ -86,6 +124,7 @@ function BringUp()
 
 function OnEquipped()
 {
+    SetWeaponHandTex();
 }
 
 // ----------------------------------------------------------------------
@@ -171,7 +210,8 @@ state DownItem
 Begin:
 	AmbientSound = None;
 	GetAugSpeed();
-	bHidden = False;		// make sure we can see the animation
+	//bHidden = False;		// make sure we can see the animation
+	bOnlyOwnerSee = True;
 	PlayAnim('Down',p, 0.1);
 	FinishAnim();
 	bHidden = True;	// hide it correctly

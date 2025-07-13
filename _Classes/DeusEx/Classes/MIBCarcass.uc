@@ -5,6 +5,7 @@ class MIBCarcass extends DeusExCarcass;
 
 function ChunkUp(int Damage)
 {
+   //ExpelInventory(); //SARGE: Added this. But left it commended because it can cause problems with items not being frobbable???
    Explode();
    Destroy();
 }
@@ -58,8 +59,8 @@ function Explode()
 	s = spawn(class'ScorchMark', Base,, Location-vect(0,0,1)*CollisionHeight, Rotation+rot(16384,0,0));
 	if (s != None)
 	{
-		s.DrawScale *= FClamp(explosionDamage/30, 0.1, 3.0);
-		s.ReattachDecal();
+		s.DrawScaleMult = FClamp(explosionDamage/30, 0.1, 3.0);
+		s.UpdateHDTPSettings();
 	}
 
 	//CyberP: messy gore

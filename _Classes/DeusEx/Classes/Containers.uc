@@ -6,8 +6,6 @@ class Containers extends DeusExDecoration
 
 var() int numThings;
 var() bool bGenerateTrash;
-var() bool bLowDifficultyOnly; //Remove on realistic and hardcore
-var() bool bHardcoreRemoveIt; //Remove on hardcore only
 var   bool bSelectMeleeWeapon; //Select a melee weapon when we left-frob this container
 
 function bool DoLeftFrob(DeusExPlayer frobber)
@@ -18,6 +16,14 @@ function bool DoLeftFrob(DeusExPlayer frobber)
         return false;
     }
     return true;
+}
+
+function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
+{
+    if (frobber.bRightClickToolSelection && objectInHand && bSelectMeleeWeapon && (frobber.inHand == frobber.primaryWeapon || !frobber.InHand.IsA('DeusExWeapon')))
+        return DoLeftFrob(frobber);
+
+    return Super.DoRightFrob(frobber,objectInHand);
 }
 
 //
@@ -62,8 +68,10 @@ function Destroyed()
 		if (FRand() < 0.01)
 		Spawn(class'BoxSmall');
 
+        /*
 		if (FRand() < 0.001)
 		Spawn(class'VialCrack');  //CyberP: rare chances to spawn more useless stuff
+        */
 
 		for (i=0; i<8; i++)        //CyberP: increased chance to spawn trash.
 		{

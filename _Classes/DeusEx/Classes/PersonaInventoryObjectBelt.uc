@@ -17,10 +17,16 @@ event InitWindow()
 {
 	local DeusExRootWindow root;
 	local float hudBeltWidth, hudBeltHeight;
+    local DeusExPlayer player;
 
 	Super.InitWindow();
+    player = DeusExPlayer(GetRootWindow().ParentPawn);
 
-	SetSize(631, 69);
+    //SARGE: ugh, just hardcode it here for now :(
+    if (player != None && player.bBiggerBelt)
+        SetSize(631+100-2, 69);
+    else
+        SetSize(631, 69);
 
 	hudBelt = DeusExRootWindow(GetRootWindow()).hud.belt;
 
@@ -74,7 +80,7 @@ function CopyObjectBeltInventory()
 	local int objectIndex;
 
 	// Now copy the items
-	for (objectIndex=0;objectIndex<10;objectIndex++)
+	for (objectIndex=0;objectIndex<12;objectIndex++)
     {
 		objBelt.AddObjectToBelt(hudBelt.GetObjectFromBelt(objectIndex), objectIndex, True);
     }
@@ -99,9 +105,16 @@ function SetInventoryWindow( PersonaScreenInventory newWinInventory )
 function AssignObjectBeltByKey(Inventory invItem, EInputKey key)
 {
 	local int objectNum;
+    local DeusExPlayer player;
 
-	if ((key < IK_0) || ( key > IK_9 ))
+	if (((key < IK_0) || ( key > IK_9 )) && key != IK_Minus && key != IK_Equals)
 		return;
+
+    player = DeusExPlayer(GetRootWindow().ParentPawn);
+
+    //don't let us assign to slots that aren't usable
+    if ((key == IK_Minus || key == IK_Equals) && (player != None && !player.bBiggerBelt))
+        return;
 
 	// Typecasting EInputKey to int doesn't seem to work.
 	// All I have to say to that is BAH.
@@ -112,34 +125,40 @@ function AssignObjectBeltByKey(Inventory invItem, EInputKey key)
 	switch( key )
 	{
 		case IK_1:
-			objectNum = 1;
+			objectNum = 0;
 			break;
 		case IK_2:
-			objectNum = 2;
+			objectNum = 1;
 			break;
 		case IK_3:
-			objectNum = 3;
+			objectNum = 2;
 			break;
 		case IK_4:
-			objectNum = 4;
+			objectNum = 3;
 			break;
 		case IK_5:
-			objectNum = 5;
+			objectNum = 4;
 			break;
 		case IK_6:
-			objectNum = 6;
+			objectNum = 5;
 			break;
 		case IK_7:
-			objectNum = 7;
+			objectNum = 6;
 			break;
 		case IK_8:
-			objectNum = 8;
+			objectNum = 7;
 			break;
 		case IK_9:
-			objectNum = 9;
+			objectNum = 8;
 			break;
 		case IK_0: //SARGE: Needed now because we can assign slot 0
-			objectNum = 0;
+			objectNum = 9;
+            break;
+		case IK_Minus: //SARGE: Needed now because we can assign slot 10
+			objectNum = 10;
+            break;
+		case IK_Equals: //SARGE: Needed now because we can assign slot 11
+			objectNum = 11;
 			break;
 	}
 
@@ -157,7 +176,7 @@ function AddObject(Inventory inv, int objectNum)
 	if (inv != None && objBelt.objects[objectNum].bAllowDragging)
 	{
       //DEUS_EX AMSD Changed so hudbelt call propagates through player
-      DeusExPlayer(GetRootWindow().ParentPawn).RemoveObjectFromBelt(inv);
+      DeusExPlayer(GetRootWindow().ParentPawn).RemoveObjectFromBelt(inv,true);
 		//hudBelt.RemoveObjectFromBelt(inv);
       DeusExPlayer(GetRootWindow().ParentPawn).AddObjectToBelt(inv, objectNum, True);
 		//hudBelt.objects[objectNum].SetItem(inv);
@@ -173,7 +192,7 @@ function AddObject(Inventory inv, int objectNum)
 function RemoveObject(Inventory inv)
 {
 	objBelt.RemoveObjectFromBelt(inv);
-   DeusExPlayer(GetRootWindow().ParentPawn).RemoveObjectFromBelt(inv);
+   DeusExPlayer(GetRootWindow().ParentPawn).RemoveObjectFromBelt(inv,true);
 	//hudBelt.RemoveObjectFromBelt(inv);
 }
 

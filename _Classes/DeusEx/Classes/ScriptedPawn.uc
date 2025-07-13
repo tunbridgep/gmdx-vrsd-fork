@@ -486,6 +486,32 @@ var string HDTPMesh;
 var string HDTPMeshTex[8];
 var travel bool bSetupHDTP;
 
+//SARGE: Force cloak on always. Used by Tiffany.
+var bool bForcedCloak;
+
+//SARGE: Blink timer
+var float blinkTimer;
+var() const bool bCanBlink;                                                     //SARGE: Whether or not this human can blink. Defaults to true. Set to false for Bob Page in the intro so he doesn't ruin his eye-zoom.
+
+//SARGE: Allow randomised pain and death sounds
+var Sound randomDeathSoundsM[11];
+var Sound randomPainSoundsM[21];
+var Sound randomDeathSoundsF[3];
+var Sound randomPainSoundsF[5];
+var bool bSetupRandomSounds; //Have we set up a random sound?
+var Sound randomDeathSoundChoice; //These three variables hold the references to
+var Sound randomPainSoundChoice1; //our randomly rolled sounds.
+var Sound randomPainSoundChoice2; //Used by the GetDeathSound and GetPainSound functions.
+var Sound deathSoundOverride;            //If this is set, we will use this instead of our rolled death sounds.
+var bool bDontChangeDeathPainSounds; //If set, we don't randomise death or pain sounds for this actor
+
+//SARGE: Copied the poison stuff to allow bleeding, which is lethal poison.
+var      float    bleedTimer;      // time remaining before next poison TakeDamage
+var      int      bleedCounter;    // number of poison TakeDamages remaining
+var      int      bleedDamage;     // damage taken from poison effect
+var      Pawn     BleedSource;         // person who initiated PoisonEffect damage
+
+
 native(2102) final function ConBindEvents();
 
 native(2105) final function bool IsValidEnemy(Pawn TestEnemy, optional bool bCheckAlliance);
@@ -551,9 +577,9 @@ function PreBeginPlay()
 	UpdateReactionCallbacks();
 }
 
-function bool IsHDTP()
+static function bool IsHDTP()
 {
-    return DeusExPlayer(GetPlayerPawn()) != None && DeusExPlayer(GetPlayerPawn()).bHDTPInstalled && iHDTPModelToggle > 0;
+    return class'DeusExPlayer'.static.IsHDTPInstalled() && default.iHDTPModelToggle > 0;
 }
 
 //SARGE: New function to update model meshes (specifics handled in each class)
@@ -591,6 +617,8 @@ function PostBeginPlay()
 
 	Super.PostBeginPlay();
 
+    RandomiseSounds();
+
 	//sort out HDTP settings
 	UpdateHDTPSettings();
 	// Set up pain timer
@@ -610,6 +638,7 @@ function PostBeginPlay()
             ScaleGlow = 1.000000;
 		KillShadow();
 		bHasShadow = False;
+		bCanBleed = False;
 	}
 }
 
@@ -1847,6 +1876,59 @@ function StopPoison()
 	Poisoner      = None;
 }
 
+//SARGE: Bleed is literally just poison copy-pasted
+// ----------------------------------------------------------------------
+// UpdatePoison()
+// ----------------------------------------------------------------------
+
+function UpdateBleed(float deltaTime)
+{
+	if ((Health <= 0) || bDeleteMe)  // no more pain -- you're already dead!
+		return;
+
+	if (bleedCounter > 0)
+	{
+		bleedTimer += deltaTime;
+		if (bleedTimer >= 1.0)  // pain every second
+		{
+			bleedTimer = 0;
+			bleedCounter--;
+			TakeDamage(bleedDamage, BleedSource, Location, vect(0,0,0), 'BleedEffect');
+		}
+		if ((bleedCounter <= 0) || (Health <= 0) || bDeleteMe)
+			StopBleed();
+	}
+}
+
+
+// ----------------------------------------------------------------------
+// StartBleed()
+// ----------------------------------------------------------------------
+
+function StartBleed(int Damage, Pawn newBleedSource)
+{
+	if ((Health <= 0) || bDeleteMe)  // no more pain -- you're already dead!
+		return;
+
+	bleedCounter = 16;    // take damage no more than eight times (over 16 seconds) //SARGE: 16 times
+	bleedTimer   = 0;    // reset pain timer
+	BleedSource  = newBleedSource;
+	//if (poisonDamage < Damage)  // set damage amount
+		bleedDamage = Damage*0.1; //was *0.5
+}
+
+
+// ----------------------------------------------------------------------
+// StopPoison()
+// ----------------------------------------------------------------------
+
+function StopBleed()
+{
+	bleedCounter = 0;
+	bleedTimer   = 0;
+	bleedDamage  = 0;
+	BleedSource  = None;
+}
 
 // ----------------------------------------------------------------------
 // HasEnemyTimedOut()
@@ -2663,26 +2745,35 @@ function SetupWeapon(bool bDrawWeapon, optional bool bForce)
 
 // ----------------------------------------------------------------------
 // DropWeapon()
+// SARGE: This function needed a rewrite, so I rewrote it...
 // ----------------------------------------------------------------------
-
 function DropWeapon()
 {
 	local DeusExWeapon dxWeapon;
-	local Weapon       oldWeapon;
+    local vector loc;
 
 	if (Weapon != None && !Weapon.IsA('WeaponRifle'))
 	{
 		dxWeapon = DeusExWeapon(Weapon);
-		if ((dxWeapon == None) || !dxWeapon.bNativeAttack)
+		if (dxWeapon != None && !dxWeapon.bNativeAttack)
 		{
-			oldWeapon = Weapon;
-			SetWeapon(None);
-			if (oldWeapon.IsA('DeusExWeapon'))  //CyberP: Dropped weapons onto the floor should really give ammo...
-                DeusExWeapon(oldWeapon).SetDroppedAmmoCount(PickupAmmoCount);   //RSD: Added PickupAmmoCount for initialization from MissionScript.uc
-			if (oldWeapon.IsA('WeaponAssaultGunSpider')) //CyberP: make sure these are destroyed
-			    oldWeapon.Destroy();
+			if (dxWeapon.IsA('WeaponAssaultGunSpider')) //CyberP: make sure these are destroyed
+            {
+			    dxWeapon.Destroy();
+                SetWeapon(None);
+                return;
+            }
 			else
-			    oldWeapon.DropFrom(Location);
+            {
+                //SARGE: Get a spot to our right based on our rotation.
+                loc = Location + (CollisionRadius * Vect(0,1,0) >> Rotation);
+                if (!class'SpawnUtils'.static.CheckDropFrom(dxWeapon,loc,Location))
+                    return;
+            }
+			
+            dxWeapon.SetDroppedAmmoCount(PickupAmmoCount);   //RSD: Added PickupAmmoCount for initialization from MissionScript.uc
+			
+            SetWeapon(None);
 		}
 	}
 }
@@ -3240,7 +3331,8 @@ function Carcass SpawnCarcass()
                         item.GiveTo(self);
                         item.SetBase(self);
 					    item.SetPhysics(PHYS_None);
-					    carc.passedImpaleCount = impaleCount;
+                        WeaponShuriken(item).bImpaled = true;
+                        WeaponShuriken(item).PickupAmmoCount = 1; //SARGE: New shuriken pickup code is here, so we don't have to mess with passedImpaleCount
 					}
             }
 			if (Inventory != None)
@@ -3273,7 +3365,6 @@ function Carcass SpawnCarcass()
 // G-Flex: so if the NPC is gibbed, items won't be lost
 // G-Flex: uses some logic from SpawnCarcass()
 // ----------------------------------------------------------------------
-
 function ExpelInventory()
 {
 	local Vector loc;
@@ -3295,11 +3386,14 @@ function ExpelInventory()
 				else
 				{
 					//G-Flex: spread them out like chunks, but a little less
-					loc.X = (1-2*FRand()) * CollisionRadius;
-					loc.Y = (1-2*FRand()) * CollisionRadius;
-					loc.Z = (1-2*FRand()) * CollisionHeight;
-					loc += Location;
-					item.DropFrom(loc);
+                    do
+                    {
+                        loc.X = (1-2*FRand()) * CollisionRadius;
+                        loc.Y = (1-2*FRand()) * CollisionRadius;
+                        loc.Z = CollisionHeight + 4 + (FRand() * 4); //CyberP: stop things spawning under the floor.
+                        loc += Location;
+                    }
+                    until (class'SpawnUtils'.static.CheckDropFrom(item,loc));
 
 					item.Velocity += Velocity;
 					item.Velocity += VRand() * (100.0 + (400.0 / item.Mass));   //RSD: This is way, WAY too much
@@ -3455,6 +3549,7 @@ function bool IsPrimaryDamageType(name damageType)
 		case 'HalonGas':
 		case 'PoisonGas':
 		case 'PoisonEffect':
+		case 'BleedEffect':
 		case 'Radiation':
 		case 'EMP':
 		case 'Drowned':
@@ -3524,7 +3619,7 @@ function EHitLocation HandleDamage(out int actualDamage, Vector hitLocation, Vec
 		else if (offset.z > headOffsetZ)		// head
 		{
 		    if (offset.z > CollisionHeight * 0.85 && !(abs(offset.y) < headOffsetY && offset.x > 0.0 && offset.z < CollisionHeight*0.93) //RSD: Was CollisionHeight*0.93, I'm making it *0.85, and NOT from the front
-            	&& bHasHelmet && (damageType == 'Shot' || damageType == 'Poison' || damageType == 'Stunned'))
+            	&& bHasHelmet && (damageType == 'Shot' || damageType == 'Poison' || damageType == 'Stunned' || damageType == 'Bleed'))
             {
                     //PlaySound(sound'ArmorRicochet',SLOT_Interact,,true,1536); //RSD: New ricochet sounds because I hate that one
                     if (IsA('Mechanic') && (actualDamage >= 25 || FRand() < 0.2))
@@ -3830,11 +3925,26 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
 		    (damageType != 'Poison') && (damageType != 'PoisonEffect'))
 			bleedRate += (origHealth-Health)/(0.3*Default.Health);  // 1/3 of default health = bleed profusely
 
+    //bleed like crazy every time we take a blood tick
+    if (damageType == 'BleedEffect' && actualDamage > 0 && bCanBleed)
+    {
+        for(i=0;i<10;i++)
+        {
+            if (FRand() < 0.5) //SARGE: Now, we determine number of blood splats by random, not the chance of having any.
+                continue;
+            spawn(class'BloodDrop',,, HitLocation);
+        }
+    }
+
+
 	if (CarriedDecoration != None)
 		DropDecoration();
 
 	if ((actualDamage > 0) && (damageType == 'Poison'))
 		StartPoison(Damage, instigatedBy);
+	
+    if ((actualDamage > 0) && (damageType == 'Bleed'))
+		StartBleed(Damage, instigatedBy);
 
     if (bDefensiveStyle) //CyberP: stop camping
         if (Health < default.Health * (0.5+(FRand()*0.3)) && EnemyLastSeen > 1)
@@ -3894,9 +4004,9 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
     }
     }
 
-        if (HealthHead < 0 && (DamageType == 'Shot' || DamageType == 'Sabot'))
+        if (bCanBleed && HealthHead < 0 && (DamageType == 'Shot' || DamageType == 'Sabot'))
         {
-        Die = Sound'DeusExSounds.Generic.FleshHit1';
+        deathSoundOverride = Sound'DeusExSounds.Generic.FleshHit1';
        player = DeusExPlayer(GetPlayerPawn());
        //Sarge: Disable head popping because it looks awful, and doesn't work with HDTP
        /*
@@ -3942,9 +4052,6 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
 		// gib us if we get blown up
 		if (DamageType == 'Exploded') //|| (DamageType == 'Burned' && !bOnFire))
 			{
-			Die = none; //CyberP: no death sounds if blown up.
-            HitSound1 = none;  //CyberP: or pain sounds
-            HitSound2 = none;
             Health = -10000;
             //if (DamageType == 'Burned')
               // bBurnedUp = True;
@@ -4433,7 +4540,7 @@ local SpoofedCorona cor;
 		bCloakOn = bEnable;
 		bCloaked = True;
 	}
-	else if (!bEnable && bCloakOn)
+	else if (!bEnable && bCloakOn && !bForcedCloak)
 	{
 		ResetSkinStyle();
 		CreateShadow();
@@ -4501,7 +4608,7 @@ function PlayDyingSound()
 {
 	SetDistressTimer();
 
-	PlaySound(Die, SLOT_Pain,,,, RandomPitch());
+	PlaySound(GetDeathSound(), SLOT_Pain,,,, RandomPitch());
 	if (bEmitDistress)
 		AISendEvent('Distress', EAITYPE_Audio,0.25,336); //CyberP: radius was 490 //RSD: psshh, only 224? We going to 336 baby
 	AISendEvent('LoudNoise', EAITYPE_Audio,0.25,224);                           //RSD: was 320, to make it line up more with vanilla ratio it's now 224
@@ -4812,18 +4919,19 @@ function PlayTakeHitSound(int Damage, name damageType, int Mult)
 		return;
 
 	LastPainSound = Level.TimeSeconds;
+	
+    if (damageType != 'Exploded')
+        hitSound = GetRandomHitSound();
 
-    if (FRand() < 0.15)
-		hitSound = HitSound2;
-    else
-		hitSound = HitSound1;            //CyberP: more lax conditions for hitsound2
 	volume = FMax(Mult*TransientSoundVolume, Mult*2.0);
 
 	SetDistressTimer();
-	if (damageType != 'Exploded')
-	    PlaySound(hitSound, SLOT_Pain, volume,,, RandomPitch());
-	if ((hitSound != None) && bEmitDistress)
-		AISendEvent('Distress', EAITYPE_Audio, volume,224); //CyberP: added radius param
+    if (hitSound != None)
+    {
+        PlaySound(hitSound, SLOT_Pain, volume,,, RandomPitch());
+        if (bEmitDistress)
+            AISendEvent('Distress', EAITYPE_Audio, volume,224); //CyberP: added radius param
+    }
 }
 
 
@@ -5988,7 +6096,8 @@ function PlayDying(name damageType, vector hitLoc)
 	else
 	{
 		bStunned = False;
-		PlayDyingSound();
+		if (DamageType != 'Exploded') //|| (DamageType == 'Burned' && !bOnFire))
+            PlayDyingSound();
 	}
 }
 
@@ -8727,6 +8836,12 @@ function Tick(float deltaTime)
 
 	// Handle poison damage
 	UpdatePoison(deltaTime);
+	
+    // SARGE: Handle bleeding damage
+	UpdateBleed(deltaTime);
+
+    //SARGE: Handle Blinking
+    HandleBlink(deltaTime);
 
     bFirstTickDone = true;
 }
@@ -9176,6 +9291,8 @@ function bool SwitchToBestWeapon()
 					case 'Poison':
 					case 'PoisonEffect':
 					case 'Radiation':
+					case 'Bleed':
+					case 'BleedEffect':
 						if (enemyRobot != None)
 							//score += 10000;
 							bValid = false;
@@ -13504,7 +13621,7 @@ State Attacking
 		{
 			if (DeusExWeapon(Weapon) != None)
 			{
-				if (DeusExWeapon(Weapon).bHandToHand && !DeusExWeapon(Weapon).IsA('WeaponHideAGun'))
+				if (DeusExWeapon(Weapon).bHandToHand && !DeusExWeapon(Weapon).IsA('WeaponHideAGun') && !DeusExWeapon(Weapon).IsA('WeaponLAW'))
 					return true;
 				else
 					return false;
@@ -13679,6 +13796,7 @@ State Attacking
     local Vector HitNormal, HitLocation, StartTrace, EndTrace, offset;
     local int i;
     local bool bSafe, bSafe2;
+    local Actor hit;
 
     if (Enemy != None && Enemy.IsA('DeusExPlayer'))
         playa = DeusExPlayer(Enemy);
@@ -13695,7 +13813,11 @@ State Attacking
      else
          EndTrace = playa.Location;
 
-        ForEach Trace(HitLocation, HitNormal, EndTrace, StartTrace, True, vect(4,4,4)).RadiusActors(Class'DeusExPlayer',playa,192,HitLocation)
+        hit = Trace(HitLocation, HitNormal, EndTrace, StartTrace, True, vect(4,4,4));
+        
+        if (hit == None)
+            return;
+        ForEach hit.RadiusActors(Class'DeusExPlayer',playa,192,HitLocation)
         {
           i++;
           if (i == 1)
@@ -13727,159 +13849,80 @@ State Attacking
     }
     }
 
-    singular function nadeThrow() //CyberP: this is awful. rewrite it ffs
+    //SARGE: Rewrote this horrible mess, now it's much nicer,
+    //also added ability to throw nanovirus grenades.
+    singular function nadeThrow()
     {
-    local GasGrenade gasNade;
-    local EMPGrenade empNade;
-    local LAM        lamNade;
-    local vector flareOffset;
-    local DeusExPlayer playa;
-    local float dista;
-    local bool bSafe;
+        local ThrownProjectile nade;
+        local vector flareOffset;
+        local DeusExPlayer playa;
+        local float dista;
+        local bool bSafe;
+        local float chance;
 
-    flareOffset = Location;
-    flareOffset.Z += 50;
-    playa = DeusExPlayer(GetPlayerPawn());
-    dista = Abs(VSize(playa.Location - Location));
+        flareOffset = Location;
+        flareOffset.Z += 50;
+        playa = DeusExPlayer(GetPlayerPawn());
+        dista = Abs(VSize(playa.Location - Location));
 
-    if (IsA('Terrorist') || IsA('UNATCOTroop') || IsA('RiotCop') || IsA('HKMilitary'))
-    {
-     gasNade = Spawn(class'GasGrenade',self,,flareOffset);
-     if (gasNade != None)
-     {
-        if (playa != None && playa.CombatDifficulty > 2)
-            gasNade.blastRadius = 512;
-        else
-            gasNade.blastRadius = 352;
-       if (dista < 1000)
-       {
-       if (FRand() < 0.1)
-           gasNade.Velocity = Vector(Rotation)*1000 + (VRand()*140);
-       else
-           gasNade.Velocity = Vector(Rotation)*1000 + (VRand()*60);
-       gasNade.Velocity.Z += 300;
-       }
-       else if (dista < 1300)
-       {
-       if (FRand() < 0.1)
-           gasNade.Velocity = Vector(Rotation)*1150 + (VRand()*140);
-       else
-           gasNade.Velocity = Vector(Rotation)*1150 + (VRand()*60);
-       gasNade.Velocity.Z += 350;
-       }
-       else
-       {
-       if (FRand() < 0.1)
-           gasNade.Velocity = Vector(Rotation)*1300 + (VRand()*140);
-       else
-           gasNade.Velocity = Vector(Rotation)*1300 + (VRand()*60);
-       gasNade.Velocity.Z += 420;
-       }
-       gasNade.Velocity.Z -= ((Location.Z-playa.Location.Z)*1.1);
-       if (Location.Z-playa.Location.Z > 160)
-           gasNade.Velocity*=0.6;
-     }
-    }
-    else if (IsA('MJ12Troop') || IsA('Soldier') || IsA('MJ12Elite'))
-    {
-      if (FRand() < 0.3)
-      {
-      gasNade = Spawn(class'GasGrenade',self,,flareOffset);
-       if (gasNade != None)
-      {
-        if (playa != None && playa.CombatDifficulty > 2)
-            gasNade.blastRadius = 512;
-        else
-            gasNade.blastRadius = 352;
-        if (dista < 900)
-       {
-       gasNade.Velocity = Vector(Rotation)*1000 + (VRand()*60);
-       gasNade.Velocity.Z += 300;
-       }
-       else if (dista < 1300)
-       {
-       gasNade.Velocity = Vector(Rotation)*1150 + (VRand()*60);
-       gasNade.Velocity.Z += 350;
-       }
-       else
-       {
-       gasNade.Velocity = Vector(Rotation)*1300 + (VRand()*60);
-       gasNade.Velocity.Z += 420;
-       }
-       gasNade.Velocity.Z -= ((Location.Z-playa.Location.Z)*1.1);
-       if (Location.Z-playa.Location.Z > 160)
-           gasNade.Velocity*=0.6;
-      }
-      }
-      else if (FRand() < 0.6)
-      {
-        empNade = Spawn(class'EMPGrenade',self,,flareOffset);
-       if (empNade != None)
-      {
-        if (playa != None && playa.CombatDifficulty > 2)
-            empNade.blastRadius = 512;
-        else
-            empNade.blastRadius = 352;
-        if (dista < 900)
-       {
-       empNade.Velocity = Vector(Rotation)*1000 + (VRand()*60);
-       empNade.Velocity.Z += 300;
-       }
-       else if (dista < 1300)
-       {
-       empNade.Velocity = Vector(Rotation)*1150 + (VRand()*60);
-       empNade.Velocity.Z += 350;
-       }
-       else
-       {
-       empNade.Velocity = Vector(Rotation)*1300 + (VRand()*60);
-       empNade.Velocity.Z += 420;
-       }
-       empNade.Velocity.Z -= ((Location.Z-playa.Location.Z)*1.1);
-       if (Location.Z-playa.Location.Z > 160)
-           empNade.Velocity*=0.6;
-      }
-      }
-      else
-      {
-        lamNade = Spawn(class'LAM',self,,flareOffset);
-       if (lamNade != None)
-      {
-        if (playa != None && playa.CombatDifficulty > 2)
-            lamNade.blastRadius = 512;
-        else
-            lamNade.blastRadius = 352;
-        if (dista < 900)
-       {
-       lamNade.Velocity = Vector(Rotation)*1000 + (VRand()*60);
-       lamNade.Velocity.Z += 300;
-       }
-       else if (dista < 1300)
-       {
-       lamNade.Velocity = Vector(Rotation)*1150 + (VRand()*60);
-       lamNade.Velocity.Z += 350;
-       }
-       else
-       {
-       lamNade.Velocity = Vector(Rotation)*1300 + (VRand()*60);
-       lamNade.Velocity.Z += 420;
-       }
-       lamNade.Velocity.Z -= ((Location.Z-playa.Location.Z)*1.1);
-       if (Location.Z-playa.Location.Z > 160)
-           lamNade.Velocity*=0.6;
-      }
-      }
-    }
-    bSafe = FastTrace(Location + vect(0,0,160), Location + vect(0,0,1)*CollisionHeight);
-    if (!bSafe)
-    {
-       if (lamNade != None)
-          lamNade.Velocity.Z *= 0.6;
-       else if (gasNade != None)
-          gasNade.Velocity.Z *= 0.6;
-       else if (empNade != None)
-          empNade.Velocity.Z *= 0.6;
-    }
+        //Determine which nade type to throw
+        if (IsA('Terrorist') || IsA('UNATCOTroop') || IsA('RiotCop') || IsA('HKMilitary'))
+        {
+            chance = 0.1;
+            nade = Spawn(class'GasGrenade',self,,flareOffset);
+        }
+        else if (IsA('MJ12Troop') || IsA('Soldier') || IsA('MJ12Elite'))
+        {
+            chance = 0.0;
+            if (FRand() < 0.3)
+                nade = Spawn(class'GasGrenade',self,,flareOffset);
+            else if (FRand() < 0.3)
+                nade = Spawn(class'EMPGrenade',self,,flareOffset);
+            else if (FRand() < 0.3)
+                nade = Spawn(class'NanoVirusGrenade',self,,flareOffset);
+            else
+                nade = Spawn(class'LAM',self,,flareOffset);
+        }
+        
+        //Now actually throw the nade
+        if (nade != None)
+        {
+            if (playa != None && playa.CombatDifficulty > 2)
+                nade.blastRadius = 512;
+            else
+                nade.blastRadius = 352;
+            if (dista < 900)
+            {
+                if (FRand() < chance)
+                    nade.Velocity = Vector(Rotation)*1000 + (VRand()*140);
+                else
+                    nade.Velocity = Vector(Rotation)*1000 + (VRand()*60);
+                nade.Velocity.Z += 300;
+            }
+            else if (dista < 1300)
+            {
+                if (FRand() < chance)
+                    nade.Velocity = Vector(Rotation)*1150 + (VRand()*140);
+                else
+                    nade.Velocity = Vector(Rotation)*1150 + (VRand()*60);
+                nade.Velocity.Z += 350;
+            }
+            else
+            {
+                if (FRand() < chance)
+                    nade.Velocity = Vector(Rotation)*1300 + (VRand()*140);
+                else
+                    nade.Velocity = Vector(Rotation)*1300 + (VRand()*60);
+                nade.Velocity.Z += 420;
+            }
+            nade.Velocity.Z -= ((Location.Z-playa.Location.Z)*1.1);
+            if (Location.Z-playa.Location.Z > 160)
+                nade.Velocity*=0.6;
+        }
+    
+        bSafe = FastTrace(Location + vect(0,0,160), Location + vect(0,0,1)*CollisionHeight);
+        if (!bSafe)
+            nade.Velocity.Z *= 0.6;
     }
 
 	function BeginState()
@@ -14321,7 +14364,7 @@ ContinueFire:
 	   if (Abs(VSize(Enemy.Location - Location)) < 112)
        {
 	   Enemy.TakeDamage(8,self,Enemy.Location,vect(0,0,0),'Shot');
-	   if (Enemy.IsA('DeusExPlayer'))
+	   if (Enemy.IsA('DeusExPlayer') && !DeusExPlayer(Enemy).RestrictInput())
 	   {
            DeusExPlayer(Enemy).ShakeView(0.2,512,12);
            if (Enemy.Weapon != None && Enemy.Weapon.IsA('DeusExWeapon') && DeusExWeapon(Enemy.Weapon).bAimingDown)
@@ -16750,6 +16793,10 @@ state Dying
 	}
 
 Begin:
+    //SARGE: Drop weapons on death.
+    if (class'DeusExPlayer'.default.bDropWeaponsOnDeath && Health > -100 && !IsA('Robot'))
+        DropWeapon();
+
 	WaitForLanding();
 	MoveFallingBody();
 
@@ -17043,6 +17090,242 @@ function JumpOffPawn()
 }
 
 // ----------------------------------------------------------------------
+// LipSynch()
+// Copied over from Engine/Pawn.uc
+// SARGE: Attempts to fix the janky DX lipsynching
+// Based on the idea from https://www.youtube.com/watch?v=oxTWU2YgzfQ, but
+// doesn't use any code from it.
+// Also split out the Blink functionality
+// ----------------------------------------------------------------------
+
+//Blink is handled slightly differently for scriptedpawns.
+//They can blink outside of conversations, and so have to have a separate blink timer
+function HandleBlink(float deltaTime)
+{
+    if (!bIsHuman || !bCanBlink)
+        return;
+    
+    blinkTimer += deltaTime;
+
+	// blink randomly
+	if (blinkTimer > 3.5)
+	{
+		if (FRand() < 0.4 && class'DeusExPlayer'.default.bEnableBlinking)
+        {
+			PlayBlendAnim('Blink', 0.2, 0.1, 1);
+            blinkTimer = 0;
+        }
+        else
+            blinkTimer = 2; //Make them more likely to blink again sooner
+	}
+}
+
+function LipSynch(float deltaTime)
+{
+	local name animseq;
+	local float rnd;
+	local float tweentime;
+
+    local int iEnhancedLipSync;
+    iEnhancedLipSync = class'DeusExPlayer'.default.iEnhancedLipSync;
+    
+	// update the animation timers that we are using
+	animTimer[0] += deltaTime;
+	animTimer[1] += deltaTime;
+	animTimer[2] += deltaTime;
+        
+    if (iEnhancedLipSync == 1)
+        tweentime = 0.225;
+    else if (iEnhancedLipSync == 2)
+        tweentime = 0;
+    else if (Level.TimeSeconds - animTimer[3]  < 0.05)
+        tweentime = 0.1;
+
+    // the last animTimer slot is used to check framerate
+    animTimer[3] = Level.TimeSeconds;
+
+	if (bIsSpeaking)
+	{
+
+		if (nextPhoneme == "A")
+			animseq = 'MouthA';
+		else if (nextPhoneme == "E")
+			animseq = 'MouthE';
+		else if (nextPhoneme == "F")
+			animseq = 'MouthF';
+		else if (nextPhoneme == "M")
+			animseq = 'MouthM';
+		else if (nextPhoneme == "O")
+			animseq = 'MouthO';
+		else if (nextPhoneme == "T")
+			animseq = 'MouthT';
+		else if (nextPhoneme == "U")
+			animseq = 'MouthU';
+		else if (nextPhoneme == "X")
+			animseq = 'MouthClosed';
+
+		if (animseq != '')
+		{
+			if (lastPhoneme != nextPhoneme)
+			{
+				lastPhoneme = nextPhoneme;
+				TweenBlendAnim(animseq, tweentime);
+			}
+		}
+	}
+	else if (bWasSpeaking)
+	{
+		bWasSpeaking = False;
+		TweenBlendAnim('MouthClosed', tweentime);
+	}
+
+	LoopHeadConvoAnim();
+	LoopBaseConvoAnim();
+}
+
+// ----------------------------------------------------------------------
+// RandomiseSounds()
+// SARGE: GMDX Adds many new death sounds,
+// This attempts to give some more variety and make
+// them less hard-coded, by allowing us to pick from a list
+// ----------------------------------------------------------------------
+
+function Sound GetDeathSoundFromIndex(int index)
+{
+    if (bIsFemale && index < ArrayCount(randomDeathSoundsF))
+        return randomDeathSoundsF[index];
+    else if (!bIsFemale && index < ArrayCount(randomDeathSoundsM))
+        return randomDeathSoundsM[index];
+
+    return None;
+}
+
+function Sound GetPainSoundFromIndex(int index)
+{
+    if (bIsFemale && index < ArrayCount(randomPainSoundsF))
+        return randomPainSoundsF[index];
+    else if (!bIsFemale && index < ArrayCount(randomPainSoundsM))
+        return randomPainSoundsM[index];
+
+    return None;
+}
+
+//Gets this characters death sound, based on our settings
+function Sound GetDeathSound()
+{
+    //If sound has been set to something else, get it instead
+    if (deathSoundOverride != None)
+        return deathSoundOverride;
+
+    //If we're using our original sound, or not valid, use the default
+    else if (Class'DeusExPlayer'.default.iDeathSoundMode == 1 || !bIsHuman || bDontChangeDeathPainSounds)
+        return default.Die;
+
+    //Otherwise do vanilla sounds, if set
+    else if (Class'DeusExPlayer'.default.iDeathSoundMode == 0)
+    {
+        // change the sounds for chicks
+        if (bIsFemale)
+            return Sound'FemaleDeath';
+        else
+            return Sound'DeusExSounds.Player.MaleDeath';
+    }
+
+    else
+        return randomDeathSoundChoice;
+}
+
+//Gets one of this characters two hit sounds
+function Sound GetRandomHitSound()
+{
+    if (FRand() < 0.15)
+		return GetHitSound(true);
+    else
+		return GetHitSound();            //CyberP: more lax conditions for hitsound2
+}
+
+//Gets on of this characters his sounds, based on our settings
+function Sound GetHitSound(optional bool sound2)
+{
+    //If we're using our original sound, or not valid, use the default
+    if (Class'DeusExPlayer'.default.iDeathSoundMode == 1 || !bIsHuman || bDontChangeDeathPainSounds)
+    {
+        if (sound2)
+            return default.HitSound2;
+        else
+            return default.HitSound1;
+    }
+
+    //Otherwise do vanilla sounds, if set
+    else if (Class'DeusExPlayer'.default.iDeathSoundMode == 0)
+    {
+        // change the sounds for chicks
+        if (bIsFemale)
+        {
+            if (sound2)
+                return Sound'FemalePainSmall';
+            else
+                return Sound'FemalePainMedium';
+        }
+        else
+        {
+            if (sound2)
+                return Sound'DeusExSounds.Player.MalePainMedium';
+            else
+                return Sound'DeusExSounds.Player.MalePainSmall';
+        }
+    }
+
+    //Otherwise, use our pain sound choices
+    if (sound2)
+        return randomPainSoundChoice2;
+    else
+        return randomPainSoundChoice1;
+
+}
+
+function RandomiseSounds()
+{
+    local int dyingSounds, painSounds, i;
+    
+    //hack
+    //if (HitSound1 == Sound'DeusExSounds.Generic.ArmorRicochet')
+    if (bDontChangeDeathPainSounds)
+        return;
+
+    if (bSetupRandomSounds || !bIsHuman)
+        return;
+    
+    bSetupRandomSounds = true;
+    
+    while (GetDeathSoundFromIndex(dyingSounds) != None)
+        dyingSounds++;
+    while (GetPainSoundFromIndex(painSounds) != None)
+        painSounds++;
+
+    if (dyingSounds > 0)
+    {
+        randomDeathSoundChoice = GetDeathSoundFromIndex(int(FRand() * (dyingSounds-1)));
+    }
+    if (painSounds > 0)
+    {
+        randomPainSoundChoice1 = GetPainSoundFromIndex(int(FRand() * (painSounds-1)));
+        randomPainSoundChoice2 = GetPainSoundFromIndex(int(FRand() * (painSounds-1)));
+    }
+}
+
+
+//SARGE: Called when the Weapon Swap gameplay modifier for this entity has been called
+function WeaponSwap(ScriptedPawn SwappedFrom)
+{
+}
+
+//SARGE: Set up the Shenanigans gameplay modifier for this entity
+function Shenanigans(bool bEnabled)
+{
+}
+
+// ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
 defaultproperties
@@ -17130,4 +17413,48 @@ defaultproperties
      UnfamiliarName="DEFAULT UNFAMILIAR NAME - REPORT THIS AS A BUG"
      fireReactTime=0.4
      iHDTPModelToggle=0
+     randomDeathSoundsF(0)=Sound'DeusExSounds.Player.FemaleDeath';
+     randomDeathSoundsF(1)=Sound'DeusExSounds.Player.FemaleUnconscious';
+     randomDeathSoundsF(2)=Sound'GMDXSFX.Player.fem1grunt1';
+     //
+     randomDeathSoundsM(0)=Sound'DeusExSounds.Player.MaleDeath';
+     randomDeathSoundsM(1)=Sound'DeusExSounds.Player.MaleUnconscious';
+     randomDeathSoundsM(2)=Sound'GMDXSFX.Human.Death01';
+     randomDeathSoundsM(3)=Sound'GMDXSFX.Human.Death02';
+     randomDeathSoundsM(4)=Sound'GMDXSFX.Human.Death03';
+     randomDeathSoundsM(5)=Sound'GMDXSFX.Human.Death05';
+     randomDeathSoundsM(6)=Sound'GMDXSFX.Human.Death06';
+     randomDeathSoundsM(7)=Sound'GMDXSFX.Human.Death07';
+     randomDeathSoundsM(8)=Sound'GMDXSFX.Human.Death09';
+     randomDeathSoundsM(9)=Sound'GMDXSFX.Human.Death11';
+     randomDeathSoundsM(10)=Sound'GMDXSFX.Player.male1grunt2';
+     //
+     randomPainSoundsF(0)=Sound'DeusExSounds.Player.FemalePainSmall'
+     randomPainSoundsF(1)=Sound'DeusExSounds.Player.FemalePainMedium'
+     randomPainSoundsF(2)=Sound'DeusExSounds.Player.FemalePainLarge'
+     randomPainSoundsF(3)=Sound'GMDXSFX.Player.fem2grunt1'
+     randomPainSoundsF(4)=Sound'GMDXSFX.Player.fem2grunt2'
+     //
+     randomPainSoundsM(0)=Sound'DeusExSounds.Player.MalePainSmall'
+     randomPainSoundsM(1)=Sound'DeusExSounds.Player.MalePainMedium'
+     randomPainSoundsM(2)=Sound'DeusExSounds.Player.MalePainBig'
+     randomPainSoundsM(3)=Sound'GMDXSFX.Human.PainSmall01'
+     randomPainSoundsM(4)=Sound'GMDXSFX.Human.PainSmall02'
+     randomPainSoundsM(5)=Sound'GMDXSFX.Human.PainSmall03'
+     randomPainSoundsM(6)=Sound'GMDXSFX.Human.PainSmall04'
+     randomPainSoundsM(7)=Sound'GMDXSFX.Human.PainSmall06'
+     randomPainSoundsM(8)=Sound'GMDXSFX.Human.PainSmall07'
+     randomPainSoundsM(9)=Sound'GMDXSFX.Human.PainSmall08'
+     randomPainSoundsM(10)=Sound'GMDXSFX.Human.PainBig01'
+     randomPainSoundsM(11)=Sound'GMDXSFX.Human.PainBig02'
+     randomPainSoundsM(12)=Sound'GMDXSFX.Human.PainBig04'
+     randomPainSoundsM(13)=Sound'GMDXSFX.Human.PainBig05'
+     randomPainSoundsM(14)=Sound'GMDXSFX.Human.PainBig06'
+     randomPainSoundsM(15)=Sound'GMDXSFX.Human.MGrunt1'
+     randomPainSoundsM(16)=Sound'GMDXSFX.Human.MGrunt3'
+     randomPainSoundsM(17)=Sound'GMDXSFX.Player.malegrunt2'
+     randomPainSoundsM(18)=Sound'GMDXSFX.Player.malegrunt3'
+     randomPainSoundsM(19)=Sound'DeusExSounds.Player.MaleLand' //WTF?
+     randomPainSoundsM(20)=Sound'DeusExSounds.Player.MaleGrunt'
+     bCanBlink=true
 }

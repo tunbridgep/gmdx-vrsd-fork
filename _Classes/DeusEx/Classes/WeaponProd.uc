@@ -4,10 +4,14 @@
 class WeaponProd extends DeusExWeapon;
 
 var int lerpClamp;
+var DeusExPlayer player;
 
 simulated function PreBeginPlay()
 {
 	Super.PreBeginPlay();
+
+	if(Owner != None && Owner.IsA('DeusExPlayer'))
+		player = DeusExPlayer(Owner);
 
 	// If this is a netgame, then override defaults
 	if ( Level.NetMode != NM_StandAlone )
@@ -60,26 +64,26 @@ state Reload
    {
         Super.Tick(deltaTime);
 
-    if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).inHand == self)
-    {
+	if (player != None && player.inHand == self)
+	{
      //if ((DeusExPlayer(Owner).ViewRotation.Pitch > 16384) && (DeusExPlayer(Owner).ViewRotation.Pitch < 32768))
      //{
      if (AnimSequence == 'ReloadBegin')
      {
-        DeusExPlayer(Owner).ViewRotation.Yaw += deltaTime*30;
+        player.ViewRotation.Yaw += deltaTime*30;
         lerpClamp += 1;
         if (lerpClamp >= 4)
-           DeusExPlayer(Owner).ViewRotation.Pitch -= deltaTime*180;
+           player.ViewRotation.Pitch -= deltaTime*180;
         else
-           DeusExPlayer(Owner).ViewRotation.Pitch -= deltaTime*380;
+           player.ViewRotation.Pitch -= deltaTime*380;
      }
      else if (AnimSequence == 'ReloadEnd')
      {
-        DeusExPlayer(Owner).ViewRotation.Pitch += deltaTime*280;
-        DeusExPlayer(Owner).ViewRotation.Yaw -= deltaTime*30;
+        player.ViewRotation.Pitch += deltaTime*280;
+        player.ViewRotation.Yaw -= deltaTime*30;
      }
-     if ((DeusExPlayer(Owner).ViewRotation.Pitch > 16384) && (DeusExPlayer(Owner).ViewRotation.Pitch < 32768))
-				DeusExPlayer(Owner).ViewRotation.Pitch = 16384;
+     if ((player.ViewRotation.Pitch > 16384) && (DeusExPlayer(Owner).ViewRotation.Pitch < 32768))
+		player.ViewRotation.Pitch = 16384;
      //}
     }
     }
@@ -99,21 +103,21 @@ defaultproperties
      HitDamage=16
      maxRange=150
      AccurateRange=150
-     bPenetrating=False
+     bPenetrating=false
      StunDuration=10.000000
-     bHasMuzzleFlash=False
+     bHasMuzzleFlash=false
      mpReloadTime=3.000000
      mpHitDamage=15
      mpBaseAccuracy=0.500000
      mpAccurateRange=80
      mpMaxRange=80
      mpReloadCount=4
-     bCanHaveModBaseAccuracy=True
-     bCanHaveModReloadCount=True
-     bCanHaveModReloadTime=True
+     bCanHaveModBaseAccuracy=true
+     bCanHaveModReloadCount=true
+     bCanHaveModReloadTime=true
      RecoilShaker=(Y=1.000000)
-     bCanHaveModShotTime=True
-     bCanHaveModDamage=True
+     bCanHaveModShotTime=true
+     bCanHaveModDamage=true
      AmmoTag="Prod Charger"
      ClipModAdd=1
      NPCMaxRange=120
@@ -121,7 +125,7 @@ defaultproperties
      AmmoName=Class'DeusEx.AmmoBattery'
      ReloadCount=4
      PickupAmmoCount=4
-     bInstantHit=True
+     bInstantHit=true
      FireOffset=(X=-21.000000,Y=12.000000,Z=19.000000)
      shakemag=20.000000
      FireSound=Sound'DeusExSounds.Weapons.ProdFire'

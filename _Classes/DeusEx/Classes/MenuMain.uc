@@ -79,8 +79,8 @@ function ShowVersionInfo()
 	version.SetTextMargins(0, 0);
 	version.SetWindowAlignments(HALIGN_Right, VALIGN_Bottom);
 	version.SetTextColorRGB(255, 255, 255);
-	version.SetTextAlignments(HALIGN_Right, VALIGN_Bottom);
-	version.SetText(player.GetDeusExVersion() @ GMDXText);
+	version.SetTextAlignments(HALIGN_Right, VALIGN_Top);
+	version.SetText(GMDXText);
 }
 
 // ----------------------------------------------------------------------
@@ -88,7 +88,7 @@ function ShowVersionInfo()
 
 defaultproperties
 {
-     GMDXText="GMDX vSARGE 1.0"
+     GMDXText="GMDX: Augmented Edition 1.01"
      ButtonNames(0)="New Game"
      ButtonNames(1)="Save Game"
      ButtonNames(2)="Load Game"
@@ -109,7 +109,7 @@ defaultproperties
      buttonDefaults(5)=(Y=193,Action=MA_Intro)
      buttonDefaults(6)=(Y=229,Action=MA_MenuScreen,Invoke=Class'DeusEx.CreditsWindow')
      buttonDefaults(7)=(Y=265,Action=MA_Previous)
-     buttonDefaults(8)=(Y=301,Action=MA_MenuScreen,Invoke=Class'DeusEx.MenuScreenHDTP')
+     buttonDefaults(8)=(Y=301,Action=MA_MenuScreen,Invoke=Class'DeusEx.MenuMPMain')
      buttonDefaults(9)=(Y=359,Action=MA_Quit)
      Title="Give Me Deus Ex"
      ClientWidth=258

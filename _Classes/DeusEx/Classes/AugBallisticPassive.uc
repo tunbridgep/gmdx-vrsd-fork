@@ -31,10 +31,11 @@ simulated function PreBeginPlay()
 }
 
 //SARGE: New function to get the damage modifier for the augmentation
-function float GetDamageMod()
+function float GetDamageMod(optional bool mustBeActive)
 {
     local float damageMod;
-    if (CurrentLevel >= 0.0 && player.Energy > 0)
+    
+    if (CurrentLevel >= 0.0 && player.Energy > 0 && (bIsActive || !mustBeActive))
     {
         //damageMod = 1.0-(player.Energy/player.GetMaxEnergy())*(1.0-LevelValues[CurrentLevel]);               //RSD: Now protects proportionally to current energy (up to 20/25/30/35%)
         //damageMod = 1.0 - 0.35*FClamp(player.Energy/(LevelValues[CurrentLevel]*player.GetMaxEnergy()),0.0,1.0);//RSD: Still proportional, but up to 35% protection depending on 100/80/60/40% of your energy bar
@@ -45,7 +46,12 @@ function float GetDamageMod()
 
 function string GetDescription()
 {
-    return Description $ "|n|n" $ sprintf(DamageModDesc,int(100 * (1.0 - GetDamageMod())));
+    local int damageMod;
+    damageMod = int(100 * (1.0 - GetDamageMod()));
+    if (damageMod == 100) //Awful, terrible, gawdy, unsanitary, gross, disgusting hack!
+        return Description $ "|n|n" $ sprintf(DamageModDesc,0);
+    else
+        return Description $ "|n|n" $ sprintf(DamageModDesc,damageMod);
 }
 
 defaultproperties

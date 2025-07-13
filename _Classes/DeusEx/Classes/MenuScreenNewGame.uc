@@ -70,13 +70,19 @@ var bool bRandomizeAugs;
 var bool bRandomizeEnemies;
 var bool bAddictionSystem;
 var bool bRestrictedSaving;
-var bool bNoKeypadCheese;
+var int iNoKeypadCheese;
 var bool bExtraHardcore;
 var bool bMoreLDDPNPCs;
 //var bool bRestrictedMetabolism;
 var bool bPrisonStart;
 var bool bDisableConsoleAccess;
 var bool bWeaponRequirementsMatter;
+var bool bRealKillswitch;
+var bool bCameraDetectUnconscious;
+var bool bShenanigans;
+var bool bRandomizeCrap;
+var bool bCutInteractions;
+var bool bA51Camera;
 
 //LDDP
 var bool bFemaleEnabled;
@@ -111,6 +117,10 @@ event InitWindow()
 		TexPortraits[8] = Texture(DynamicLoadObject("FemJC.MenuPlayerSetupJCDentonMale_5", class'Texture', false));
 		TexPortraits[9] = Texture(DynamicLoadObject("FemJC.MenuPlayerSetupJCDentonFemale_5", class'Texture', false));
 	}
+    else
+    {
+        actionButtons[4].action = AB_None;
+    }
 	
     Super.InitWindow();
 
@@ -131,19 +141,25 @@ event InitWindow()
     bRandomizeAugs=false;                                                       //RSD
     bAddictionSystem=false;                                                     //RSD
     bRestrictedSaving=false;                                                    //Sarge
-    bNoKeypadCheese=false;                                                      //Sarge
+    iNoKeypadCheese=0;      	                                                //Sarge
     bRandomizeEnemies=false;                                                    //Sarge
     bExtraHardcore=false;                                                       //Sarge
     bMoreLDDPNPCs=false;                                                        //Sarge
     bDisableConsoleAccess=false;                                                //Sarge
     bWeaponRequirementsMatter=false;                                            //Sarge
+    bRealKillswitch=false;                                                      //Sarge
+  	bCameraDetectUnconscious=false;
+    bShenanigans=false;                                                         //Sarge
+    bRandomizeCrap=false;                                                       //Sarge
+    bCutInteractions=false;                                                     //Sarge
+    bA51Camera=false;                                                           //Sarge
     //bRestrictedMetabolism=false;                                              //Sarge
     default.bRandomizeCrates=false;                                             //RSD: Also need default values! Otherwise get command in modifier menu takes the wrong value
     default.bRandomizeMods=false;                                               //RSD
     default.bRandomizeAugs=false;                                               //RSD
     default.bAddictionSystem=false;                                             //RSD
     default.bRestrictedSaving=false;                                            //Sarge
-    default.bNoKeypadCheese=false;                                              //Sarge
+    default.iNoKeypadCheese=0;                                                  //Sarge
     default.bRandomizeEnemies=false;                                            //Sarge
     default.bExtraHardcore=false;                                               //Sarge
     default.bMoreLDDPNPCs=false;                                                //Sarge
@@ -151,6 +167,12 @@ event InitWindow()
     default.bPrisonStart=false;                                                 //Sarge
     default.bDisableConsoleAccess=false;                                        //Sarge
     default.bWeaponRequirementsMatter=false;                                    //Sarge
+    default.bRealKillswitch=false;                                              //Sarge
+	default.bCameraDetectUnconscious=false;
+    default.bShenanigans=false;                                                 //Sarge
+    default.bRandomizeCrap=false;                                               //Sarge
+    default.bCutInteractions=false;                                             //Sarge
+    default.bA51Camera=false;                                                   //Sarge
 
 	StyleChanged();
 }
@@ -799,17 +821,28 @@ function SaveSettings()
     player.bRandomizeMods=bRandomizeMods;                                       //RSD
     player.bRandomizeAugs=bRandomizeAugs;                                       //RSD
     player.bRestrictedSaving=bRestrictedSaving;                                 //Sarge
-    player.bNoKeypadCheese=bNoKeypadCheese;                                     //Sarge
+    player.iNoKeypadCheese=iNoKeypadCheese;                                     //Sarge
     player.bRandomizeEnemies=bRandomizeEnemies;                                 //Sarge
     player.bPrisonStart=bPrisonStart;                                           //Sarge
+    player.bRandomizeCrap=bRandomizeCrap;                                       //Sarge
+    player.bCutInteractions=bCutInteractions;                                   //Sarge
+    player.bA51Camera=bA51Camera;                                               //Sarge
     if (player.bRandomizeAugs)                                                  //RSD: New aug randomization feature
         ScrambleAugOrderList();
+
+    //Fix players still having killswitch if they had it previously
+    if (!player.bRealKillswitch)
+        player.killswitchTimer = -1;
+
     player.bAddictionSystem=bAddictionSystem;
     player.bExtraHardcore=bExtraHardcore;
     //player.bRestrictedMetabolism=bRestrictedMetabolism;
     player.bMoreLDDPNPCs=bMoreLDDPNPCs;                                         //Sarge
     player.bDisableConsoleAccess=bDisableConsoleAccess;                         //Sarge
     player.bWeaponRequirementsMatter=bWeaponRequirementsMatter;                 //Sarge
+    player.bRealKillswitch=bRealKillswitch;                                     //Sarge
+  	player.bCameraDetectUnconscious = bCameraDetectUnconscious;
+    player.bShenanigans=bShenanigans;                                           //Sarge
 
     //LDDP
 	THuman = Human(Player);
@@ -982,7 +1015,7 @@ event bool BoxOptionSelected(Window msgBoxWindow, int buttonNumber)
 	// Destroy the msgbox!
 	root.PopWindow();
 
-	editName.SetText(player.TruePlayerName);
+	//editName.SetText(player.TruePlayerName); //Resets the name!
 	editName.MoveInsertionPoint(MOVEINSERT_End);
 	editName.SetSelectedArea(0, Len(editName.GetText()));
 	SetFocusWindow(editName);
@@ -1047,7 +1080,7 @@ defaultproperties
      actionButtons(1)=(Align=HALIGN_Right,Action=AB_Other,Text="|&Start Game",Key="START")
      actionButtons(2)=(Action=AB_Reset)
      actionButtons(3)=(Action=AB_Other,Text="Modifiers",Key="MODIFIERS")
-     //actionButtons(4)=(Action=AB_Other,Text="Help",Key="HELP") //Remove this because it appears without LDDP installed
+     actionButtons(4)=(Action=AB_Other,Text="LDDP Help",Key="HELP")
      Title="Start New Game"
      ClientWidth=580
      ClientHeight=389

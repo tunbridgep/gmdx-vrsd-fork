@@ -14,6 +14,7 @@ function Carcass SpawnCarcass()
 	if (bStunned)
 		return Super.SpawnCarcass();
 
+    ExpelInventory();
 	Explode();
 
 	return None;
@@ -55,8 +56,8 @@ function Explode()
 	s = spawn(class'ScorchMark', Base,, Location-vect(0,0,1)*CollisionHeight, Rotation+rot(16384,0,0));
 	if (s != None)
 	{
-		s.DrawScale *= FClamp(explosionDamage/30, 0.1, 3.0);
-		s.ReattachDecal();
+		s.DrawScaleMult = FClamp(explosionDamage/30, 0.1, 3.0);
+		s.UpdateHDTPSettings();
 	}
 
 	for (i=0; i<22; i++) //CyberP: was /1.2
@@ -100,7 +101,9 @@ defaultproperties
      GroundSpeed=200.000000
      Health=300
      HitSound1=None
+     HitSound2=None
      Die=None
+     bDontChangeDeathPainSounds=True
      HealthHead=300
      HealthTorso=300
      HealthLegLeft=300

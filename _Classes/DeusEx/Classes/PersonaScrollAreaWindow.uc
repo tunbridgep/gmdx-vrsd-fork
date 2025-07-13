@@ -34,7 +34,7 @@ event InitWindow()
 	vScale.SetScaleStyle(DSTY_Translucent);
 	vScale.SetThumbStyle(DSTY_Translucent);
 	vScale.SetThumbStep(10);
-	vScale.SetScaleSounds(Sound'Menu_Press', Sound'Menu_Press', Sound'Menu_Slider');
+	//vScale.SetScaleSounds(Sound'Menu_Press', Sound'Menu_Press', Sound'Menu_Slider'); //SARGE: FUCK ME this is annoying!
 	vScale.SetSoundVolume(0.25);
 
 	upButton.SetSize(11, 12);

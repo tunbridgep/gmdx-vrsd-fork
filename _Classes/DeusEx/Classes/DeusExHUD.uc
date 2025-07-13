@@ -45,6 +45,9 @@ event InitWindow()
 
 	// Get a pointer to the player
 	player = DeusExPlayer(root.parentPawn);
+    
+    if (player.ThemeManager != None)
+        player.ThemeManager.UpdateCustomTheme();
 
 	SetFont(Font'TechMedium');
 	SetSensitivity(false);
@@ -62,7 +65,8 @@ event InitWindow()
 	hit				= HUDHitDisplay(NewChild(Class'HUDHitDisplay'));
 	cross			= Crosshair(NewChild(Class'Crosshair'));
 	hitmarker		= Crosshair(NewChild(Class'Crosshair'));
-	belt			= HUDObjectBelt(NewChild(Class'HUDObjectBelt'));
+	//belt			= HUDObjectBelt(NewChild(Class'HUDObjectBelt'));
+    RecreateBelt();
 	activeItems		= HUDActiveItemsDisplay(NewChild(Class'HUDActiveItemsDisplay'));
 	damageDisplay	= DamageHUDDisplay(NewChild(Class'DamageHUDDisplay'));
 	compass     	= HUDCompassDisplay(NewChild(Class'HUDCompassDisplay'));
@@ -94,25 +98,45 @@ event InitWindow()
 
 	// Received Items Display
 	receivedItems = HUDReceivedDisplay(NewChild(Class'HUDReceivedDisplay', False));
+}
 
-	if (player.ThemeManager.currentHUDTheme.themeName == "CustomHUD")
-	{
-	    player.ThemeManager.currentHUDTheme.colors[0] = player.customColorsHUD[0];
-	    player.ThemeManager.currentHUDTheme.colors[1] = player.customColorsHUD[1];
-	    player.ThemeManager.currentHUDTheme.colors[2] = player.customColorsHUD[2];
-	    player.ThemeManager.currentHUDTheme.colors[3] = player.customColorsHUD[3];
-	    player.ThemeManager.currentHUDTheme.colors[4] = player.customColorsHUD[4];
-	    player.ThemeManager.currentHUDTheme.colors[5] = player.customColorsHUD[5];
-	    player.ThemeManager.currentHUDTheme.colors[6] = player.customColorsHUD[6];
-	    player.ThemeManager.currentHUDTheme.colors[7] = player.customColorsHUD[7];
-	    player.ThemeManager.currentHUDTheme.colors[8] = player.customColorsHUD[8];
-	    player.ThemeManager.currentHUDTheme.colors[9] = player.customColorsHUD[9];
-	    player.ThemeManager.currentHUDTheme.colors[10] = player.customColorsHUD[10];
-	    player.ThemeManager.currentHUDTheme.colors[11] = player.customColorsHUD[11];
-	    player.ThemeManager.currentHUDTheme.colors[12] = player.customColorsHUD[12];
-	    player.ThemeManager.currentHUDTheme.colors[13] = player.customColorsHUD[13];
-	    ChangeStyle();
-	}
+//SARGE: Updates the Assigned Weapon
+//Used for refreshing it when the HUD needs to change
+function UpdateAssigned()
+{
+    if (ammo2 != None)
+        ammo2.UpdateAssigned();
+}
+
+//SARGE: Recreates the belt. Used for refreshing it
+//with the larger belt option
+function RecreateBelt()
+{
+	local DeusExRootWindow root;
+	local DeusExPlayer player;
+    local bool bRightSide;
+	
+	root = DeusExRootWindow(GetRootWindow());
+
+    if (root == None)
+        return;
+
+    player = DeusExPlayer(root.parentPawn);
+    bRightSide = player != None && player.bAmmoDisplayOnRight;
+
+    if (belt == None)
+        belt = HUDObjectBelt(NewChild(Class'HUDObjectBelt'));
+    else
+    {
+        belt.SetRightSide(!bRightSide);
+        belt.RecreateBelt();
+    }
+}
+
+//SARGE: Update the aug display window
+function RefreshActiveAugs()
+{
+    activeItems.UpdateAllIcons();
 }
 
 // ----------------------------------------------------------------------
@@ -184,13 +208,30 @@ function ConfigurationChanged()
 	local float recWidth, recHeight, recPosY;
 	local float logTop;
 	local float radMenuSize;
+	local DeusExRootWindow root;
+	local DeusExPlayer player;
+    local bool bRightSide;
+	
+	root = DeusExRootWindow(GetRootWindow());
+
+    if (root == None)
+        return;
+
+    player = DeusExPlayer(root.parentPawn);
+    bRightSide = player != None && player.bAmmoDisplayOnRight;
 
 	if (ammo != None)
 	{
 		if (ammo.IsVisible())
 		{
+            ammo.SetRightSide(bRightSide);                      //SARGE: Added
 			ammo.QueryPreferredSize(ammoWidth, ammoHeight);
-			ammo.ConfigureChild(0, height-ammoHeight, ammoWidth, ammoHeight);
+            //SARGE: Move the ammo display down by 1 unit because it's misaligned,
+            //and was annoying me too much
+            if (bRightSide)
+                ammo.ConfigureChild(width-ammowidth, height-ammoHeight+1, ammoWidth, ammoHeight);
+            else
+                ammo.ConfigureChild(0, height-ammoHeight+1, ammoWidth, ammoHeight);
 		}
 		else
 		{
@@ -203,8 +244,13 @@ function ConfigurationChanged()
 	{
 		if (ammo2.IsVisible())
 		{
+            //SARGE: Disabled, clashes with active items display.
+            //ammo2.SetRightSide(bRightSide);
 			ammo2.QueryPreferredSize(ammoWidth, ammoHeight);
-			ammo2.ConfigureChild(0, height-ammoHeight-64, ammoWidth, ammoHeight);
+            //if (bRightSide)
+            //    ammo2.ConfigureChild(width-ammowidth+26, height-ammoHeight-64, ammoWidth, ammoHeight);
+            //else
+                ammo2.ConfigureChild(0, height-ammoHeight-64, ammoWidth, ammoHeight);
 		}
 		else
 		{
@@ -245,7 +291,11 @@ function ConfigurationChanged()
 	if (belt != None)
 	{
 		belt.QueryPreferredSize(beltWidth, beltHeight);
-		belt.ConfigureChild(width - beltWidth, height - beltHeight, beltWidth, beltHeight);
+        belt.SetRightSide(!bRightSide);
+        if (bRightSide)
+            belt.ConfigureChild(5, height - beltHeight, beltWidth, beltHeight);
+        else
+            belt.ConfigureChild(width - beltWidth, height - beltHeight, beltWidth, beltHeight);
 
 		infoBottom = height - beltHeight;
 	}

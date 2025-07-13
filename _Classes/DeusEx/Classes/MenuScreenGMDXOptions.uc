@@ -41,6 +41,30 @@ event InitWindow()
     }
 }
 
+function CreateChoices()
+{
+	local int choiceIndex;
+	local MenuUIChoice newChoice;
+	local DeusExLevelInfo info;
+
+	// Loop through the Menu Choices and create the appropriate buttons
+	for(choiceIndex=0; choiceIndex<arrayCount(choices); choiceIndex++)
+	{
+		if (choices[choiceIndex] != None)
+		{
+			newChoice = MenuUIChoice(winClient.NewChild(choices[choiceIndex]));
+			newChoice.SetPos(choiceStartX, choiceStartY + (choiceCount * choiceVerticalGap) - newChoice.buttonVerticalOffset);
+			choiceCount++;
+            newChoice.SetSensitivity(true);
+
+            //SARGE: If HDTP is not installed, disable the button
+            if (!class'DeusExPlayer'.static.IsHDTPInstalled(true) && choiceCount == 3)
+                newChoice.SetSensitivity(False);
+
+         }
+    }
+}
+
 function ProcessAction(String actionKey)
 {
 	if (actionKey == "TIPS")
@@ -93,15 +117,17 @@ defaultproperties
      //New tips added by Sarge
      tips(20)="TIP: Hacking security computers will disable devices for a limited time. Multitools are the only permanent solution."
      tips(21)="TIP: With the Locksport perk, you can lock any door you have previously picked. Use this to control enemy movements."
-     tips(22)="TIP: The Spy Drone has a long recharge time between uses. Look for the red icon to know when it's unavailable."
-     tips(23)="TIP: Using the fire button with nothing equipped will perform helpful contextual actions, such as selecting a lockpick or multitool when looking at a locked door or keypad."
-     tips(24)="TIP: The Assault Rifle comes with an equipped grenade launcher. Use the swap ammo key to quickly change to the grenade launcher in the heat of battle."
-     tips(25)="TIP: Using the fire button with nothing equipped while looking at a corpse will always pick it up rather than searching it."
+     tips(22)="TIP: The Spy Drone has a long recharge time between uses. Look for the red icon to know when it's unavailable, or interact with it while it's in standby mode to pick it up without destroying it."
+     tips(23)="ADVANCED TIP: Augmentations can be added and removed from the Augmentation Wheel using MIDDLE-MOUSE while in the Augmentation screen."
+     tips(24)="TIP: The Assault Rifle comes with an equipped grenade launcher. Use the swap ammo key to quickly use the grenade launcher in the heat of battle."
+     tips(25)="TIP: Left-Clicking while looking at a corpse will always pick it up rather than searching it."
      tips(26)="TIP: Food items, tech goggles and drugs can be assigned as secondary items for quick healing or buffs during combat situations."
      tips(27)="TIP: If you're having trouble managing a lot of augmentations, try using the augmentation wheel."
-     tips(28)="TIP: When left-clicking on a locked object, you can use the right mouse button to cycle between lockpicks, the nanokey, and melee weapons."
+     tips(28)="TIP: When left-clicking on a locked object, you can use the right mouse button to cycle between lockpicks, the nanokey, and your best melee weapon."
      tips(29)="TIP: Some weapons reload a single shot at a time. Press the FIRE button at any time to cancel the animation, allowing you to quickly return fire."
      tips(30)="TIP: The GEP gun is not actually the most silent way to eliminate Manderley."
+     tips(31)="TIP: You can right-click on the icon in the inventory screen to select your nano-keyring."
+     tips(32)="ADVANCED TIP: Augmentations can be added and removed from the Augmentation Wheel using MIDDLE-MOUSE while in the Augmentation screen."
      choices(0)=Class'DeusEx.MenuChoice_GMDXQoLOptions'
      choices(1)=Class'DeusEx.MenuChoice_GMDXGameplayOptions'
      //choices(2)=Class'DeusEx.MenuChoice_CreateCustomColor'

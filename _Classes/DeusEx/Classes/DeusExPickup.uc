@@ -71,7 +71,8 @@ function bool DoLeftFrob(DeusExPlayer frobber)
 {
     if (bAutoActivate)
     {
-        GotoState('Activated');
+        //GotoState('Activated');
+        Activate();
         return false;
     }
     else
@@ -84,9 +85,9 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
     return true;
 }
 
-function bool IsHDTP()
+static function bool IsHDTP(optional bool bAllowEffects)
 {
-    return DeusExPlayer(GetPlayerPawn()) != None && DeusExPlayer(GetPlayerPawn()).bHDTPInstalled && iHDTPModelToggle > 0;
+    return class'DeusExPlayer'.static.IsHDTPInstalled() && (default.iHDTPModelToggle > 0 || (bAllowEffects && class'DeusExPlayer'.default.bHDTPEffects));
 }
 
 exec function UpdateHDTPsettings()                                              //SARGE: New function to update model meshes (specifics handled in each class)
@@ -404,13 +405,14 @@ function bool HandlePickupQuery( inventory Item )
 	local DeusExPlayer player;
 	local Inventory anItem;
 	local Bool bAlreadyHas;
-	local Bool bResult;
+	local Bool bResult, bSound;
 	local int i, startcopies, tempCharge;                                       //RSD: Added tempCharge
 
 	if ( Item.Class == Class )
 	{
 		player = DeusExPlayer(Owner);
 		bResult = False;
+        bSound = true;
 
 		// Check to see if the player already has one of these in
 		// his inventory
@@ -426,32 +428,39 @@ function bool HandlePickupQuery( inventory Item )
 			if ((RetMaxCopies()> 0) && (NumCopies > RetMaxCopies()))
 			{
 				NumCopies = RetMaxCopies();
-				if (item.IsA('ChargedPickup'))
+				if (item.IsA('ChargedPickup') && anItem.Charge < anItem.default.Charge)
                 {
-                   if (anItem.Charge < anItem.default.Charge)
-                   {
-                       anItem.Charge += DeusExPickup(item).Charge;
-                       if (anItem.Charge >= anItem.default.Charge)
-                           anItem.Charge = anItem.default.Charge;
-                       item.Destroy();
+                    //SARGE: Let us know we're charging the thing...
+                    player.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
+                    
+                    bSound = false;
+                    
+                    anItem.Charge += DeusExPickup(item).Charge;
+                    if (anItem.Charge >= anItem.default.Charge)
+                        anItem.Charge = anItem.default.Charge;
 
-                       if (anItem.Charge > 0)
-                       {
-                           ChargedPickup(anItem).bActivatable=true;             //RSD: Since now you can hold one at 0%
-                           ChargedPickup(anItem).unDimIcon();
-                       }
-                       return true;
-                   }
+                    if (anItem.Charge > 0)
+                    {
+                        ChargedPickup(anItem).bActivatable=true;             //RSD: Since now you can hold one at 0%
+                        ChargedPickup(anItem).bDrained=false;                //SARGE: Since now you can keep it equipped while empty
+                        ChargedPickup(anItem).unDimIcon();
+                    }
                 }
-				player.ClientMessage(msgTooMany);
-				if (NumCopies > startCopies)    //CyberP: bugfix
-				{
-				    UpdateBeltText();
-				    player.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
-                    DeusExPickup(item).NumCopies -= (NumCopies - startcopies);
+                else
+                {
+                    if (NumCopies > startCopies)    //CyberP: bugfix
+                    {
+                        UpdateBeltText();
+                        player.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
+                        DeusExPickup(item).NumCopies -= (NumCopies - startcopies);
+                        Item.PlaySound(Item.PickupSound);
+                    }
+                    else //SARGE: Now only display a message if we actually pickup none of the things.
+                        player.ClientMessage(msgTooMany);
+
+                    // abort the pickup
+                    return True;
                 }
-				// abort the pickup
-				return True;
 			}
             else if (item.IsA('ChargedPickup'))                                 //RSD: New branch to fix ChargedPickup stacking //RSD: why was this not else before??
 			{
@@ -459,12 +468,24 @@ function bool HandlePickupQuery( inventory Item )
 				if (tempCharge > anItem.default.Charge)
 		  			tempCharge -= anItem.default.Charge;                        //RSD: Add one to the stack and put the leftover charge on top
  			    else
+                {
+                    //SARGE: Let us know we're charging the thing...
+                    player.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
+                    
+                    bSound = false;
+                    
  			    	NumCopies--;                                                //RSD: Keep the stack number the same as before but add the pickup charge
+                }
 
  			    anItem.Charge = tempCharge;
  			    if (anItem.Charge > 0)
  			    {
                     ChargedPickup(anItem).bActivatable=true;                    //RSD: Since now you can hold one at 0%
+					
+					//SARGE: Only automatically un-drain if we're picking up the first one.
+					//Feels strange otherwise...
+					if (NumCopies == 1)
+						ChargedPickup(anItem).bDrained=false;                       //SARGE: Since now you can keep it equipped while empty
                     ChargedPickup(anItem).unDimIcon();
                 }
             }
@@ -475,7 +496,10 @@ function bool HandlePickupQuery( inventory Item )
 
 		if (bResult)
 		{
-			player.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
+            player.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
+            
+            if (bSound)
+                Item.PlaySound(Item.PickupSound);
 
 			// Destroy me!
 			// DEUS_EX AMSD In multiplayer, we don't want to destroy the item, we want it to set to respawn
@@ -518,15 +542,13 @@ function UseOnce()
 	NumCopies--;
 	UpdateSkinStatus();
 
-	if (!IsA('SkilledTool'))
+	if (!IsA('SkilledTool') && IsInState('Activated'))
 		GotoState('DeActivated');
 
 	if (NumCopies <= 0)
 	{
 		if (player.inHand == Self)
 			player.PutInHand(None);
-		if (player.assignedWeapon == Self)                                      //RSD: Reset our assigned weapon
-			player.assignedWeapon = None;
 		DestroyMe();
 	}
 	else
@@ -612,7 +634,7 @@ simulated function BreakItSmashIt(class<fragment> FragType, float size)
         PlaySound(sound'SplashSmall', SLOT_None,3.0,, 1280);
         if (pool != None)
         {
-			pool.maxDrawScale = CollisionRadius / 16.0;
+			pool.SetMaxDrawScale(CollisionRadius / 16.0);
             pool.spreadTime = 0.5;
         }
 	}
@@ -672,7 +694,8 @@ simulated function BreakItSmashIt(class<fragment> FragType, float size)
             }
             //else if (i > 4)
             //    HurtRadius(1,256,'HalonGas',2000,Location);
-            s.LifeSpan += 20.0;
+            if (class'DeusExPlayer'.default.iPersistentDebris < 2)
+                s.LifeSpan += 20.0;
 		}
 			if ((IsA('WineBottle') || IsA('Liquor40oz') || IsA('LiquorBottle')) && (!Region.Zone.bWaterZone))
 			{
@@ -871,7 +894,7 @@ simulated function bool UpdateInfo(Object winObject)
     //Set title
 	winInfo.SetTitle(GetTitle(player));
 
-    if (player != None && !player.DeclinedItemsManager.IsDeclined(class))
+    if (player != None)
 		winInfo.AddDeclineButton(class);
 
     if (player != None && CanAssignSecondary(player))
@@ -1041,14 +1064,21 @@ function DestroyMe()
 	local DeusExPlayer player;
 	player = DeusExPlayer(GetPlayerPawn());
 
-    player.MakeBeltObjectPlaceholder(self);
+    player.RemoveObjectFromBelt(self);
     Destroy();
 }
 
 //SARGE: Called when the item is added to the players hands
 function Draw(DeusExPlayer frobber)
 {
+    SetWeaponHandTex();
 }
+
+//SARGE: Set up the Shenanigans gameplay modifier for this entity
+function Shenanigans(bool bEnabled)
+{
+}
+
 
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
@@ -1116,4 +1146,8 @@ defaultproperties
      LandSound=Sound'DeusExSounds.Generic.PaperHit1'
      bProjTarget=True
      iHDTPModelToggle=1
+     //SARGE: Suppress the default Activation and Deactivation messages, we will handle them ourselves
+     M_Activated=""
+     M_Deactivated=""
+     bVisionImportant=true
 }

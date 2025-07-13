@@ -13,25 +13,14 @@ simulated function bool TestMPBeltSpot(int BeltSpot)
    return (BeltSpot == 8);
 }
 
-simulated function renderoverlays(Canvas canvas)
+function DisplayWeapon(bool overlay)
 {
-	Multiskins[1] = handsTex;
-	Multiskins[5] = handsTex;
-	if (bIsCloaked)                                                             //RSD: Overhauled cloak/radar routines
+    super.DisplayWeapon(overlay);
+    if (overlay)
     {
-	   Multiskins[1] = FireTexture'GameEffects.InvisibleTex';
-	   Multiskins[5] = FireTexture'GameEffects.InvisibleTex';
+        Multiskins[1] = handsTex;
+        Multiskins[5] = handsTex;
     }
-    else if (bIsRadar)
-    {
-       Multiskins[1] = Texture'Effects.Electricity.Xplsn_EMPG';
-       Multiskins[5] = Texture'Effects.Electricity.Xplsn_EMPG';
-    }
-
-	super.renderoverlays(canvas);
-
-	multiskins[1] = none;
-	multiskins[5] = none;
 }
 
 function OnEquipped()

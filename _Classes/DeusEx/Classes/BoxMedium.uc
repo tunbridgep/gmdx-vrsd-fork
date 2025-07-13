@@ -19,7 +19,7 @@ function UpdateHDTPSettings()
     switch (SkinType)
     {
         case E_Standard: break; //Do nothing.
-        case E_HongKong: tex = class'HDTPLoader'.static.GetTexture("HK_Signs.HK_Sign_28");
+        case E_HongKong: tex = class'HDTPLoader'.static.GetTexture("HK_Signs.HK_Sign_28"); bHDTPFailsafe = false; break;
     }
 
     if (tex != None)

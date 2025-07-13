@@ -15,11 +15,22 @@ function FirstFrame()
     local Light L;
     local Keypad K;
     local ComputerSecurity SC;
+    local DeusExCarcass C;
     local string newPasscode;
 
 	Super.FirstFrame();
 
-	if (localURL == "02_NYC_STREET")
+	if (localURL == "02_NYC_FREECLINIC")
+    {
+        //SARGE: Carcasses already in the map won't bleed
+        foreach AllActors(class'DeusExCarcass', C)
+        {
+            C.DestroyPool();
+            C.bNoDefaultPools=true;
+        }
+
+    }
+	else if (localURL == "02_NYC_STREET")
 	{
 		flags.SetBool('M02StreetLoaded', True,, 3);
 
@@ -102,45 +113,6 @@ function FirstFrame()
 			flags.SetBool('SchickThankedPlayer', True);
 		}
 	}
-	else if (localURL == "02_NYC_UNDERGROUND") //Totalitarian: change troop barks if confix is detected
-	{
-        //Randomise the 2167 code
-        if (Player.bNoKeypadCheese)
-        {
-            newPasscode = string(Rand(8999) + 1000);
-            player.ClientMessage("New code is " $ newPasscode);
-            foreach AllActors(class'Keypad', K)
-            {
-                if (K.validCode == "2167")
-                {
-                    K.validCode = newPasscode;
-                    K.codeExcepted = true;
-                }
-            }
-
-            //Update security computer to also contain the right code
-            foreach AllActors(class'ComputerSecurity', SC)
-            {
-                if (SC.specialOptions[1].TriggerText ~= "This Week's Code: 2167")
-                    SC.specialOptions[1].TriggerText = "This week's code: " $ newPasscode;
-            }
-                        
-        }
-
-	     if (flags.GetBool('Enhancement_Detected'))
-	     {
-            foreach AllActors(class'ScriptedPawn', pawn)
-	        {
-               if (pawn.IsA('MJ12Troop'))
-               {
-                  if (pawn.BarkBindName == "MJ12Troop")
-                     pawn.BarkBindName = "MJ12TroopInSewer";
-                  else if (pawn.BarkBindName == "MJ12TroopB")
-                     pawn.BarkBindName = "MJ12TroopInSewerB";
-               }
-            }
-	     }
-    }
 	else if (localURL == "02_NYC_HOTEL")
     {
         //SARGE: Fix up elevator shaft Lighting if we have Lighting Accessibility enabled
@@ -212,7 +184,8 @@ function Timer()
 	local GuntherHermann Gunther;
 	local Actor A;
 	local SandraRenton Sandra;
-	local int count;
+	local int count, unconscious;
+    local bool bumDead;
 	local Male3 GenericMale;
 
 	Super.Timer();
@@ -269,6 +242,14 @@ function Timer()
 
 				Player.GoalCompleted('LiberateBatteryParkSubway');
 				flags.SetBool('SubTerroristsDead', True,, 6);
+							
+				// count the number of unconscious terrorists
+				foreach AllActors(class'TerroristCarcass', carc, 'SubTerrorist')
+					if (carc.bNotDead || carc.itemName == "Unconscious")// || carc.KillerBindName != "JCDenton")
+						unconscious++;
+				
+				if (unconscious <= 6)
+					flags.SetBool('SubTerroristsKilledLethal', True,, 6);
 			}
 		}
 
@@ -439,6 +420,21 @@ function Timer()
 	}
 	else if (localURL == "02_NYC_FREECLINIC")
 	{
+		//SARGE: Detect if the bum has been killed and set a flag,
+        //so that confix can go ahead and cancel the conversation with the doctor
+		if (!flags.GetBool('ClinicArguingBumDead'))
+        {
+            bumDead = true;
+            foreach AllActors(class'BumMale', bum, 'ArguingBum')
+            {
+                bumDead = false;
+                break;
+            }
+
+            if (bumDead)
+                flags.SetBool('ClinicArguingBumDead', True,, 3);
+        }
+
 		// make the bum disappear when he gets to his destination
 		if (flags.GetBool('MS_BumLeaving') &&
 			!flags.GetBool('MS_BumRemoved'))

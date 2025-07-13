@@ -79,14 +79,15 @@ function PostBeginPlay()
 		AIStartEvent('Projectile', EAITYPE_Visual);
 }
 
-function bool IsHDTP()
+static function bool IsHDTP(optional bool bAllowEffects)
 {
-	if (DeusExPlayer(GetPlayerPawn()) == None || !DeusExPlayer(GetPlayerPawn()).bHDTPInstalled)
+	if (!class'DeusExPlayer'.static.IsHDTPInstalled())
 		return false;
-    else if (hdtpReference != None)
-        return hdtpReference.default.iHDTPModelToggle > 0;
-    else if (spawnWeaponClass != None)
-        return spawnWeaponClass.default.iHDTPModelToggle > 0;
+    else if (default.hdtpReference != None)
+        return default.hdtpReference.default.iHDTPModelToggle > 0 || (class'DeusExPlayer'.default.bHDTPEffects && bAllowEffects);
+    else if (default.spawnWeaponClass != None)
+        return default.spawnWeaponClass.default.iHDTPModelToggle > 0 || (class'DeusExPlayer'.default.bHDTPEffects && bAllowEffects);
+    
     return false;
 }
 
@@ -106,8 +107,19 @@ function Destroyed()
 {
     if (bExplodeOnDestroy)
         Explode(Location, vect(0,0,1));
-    else
-        Super.Destroyed();
+	else
+		Super.Destroyed();
+}
+
+//Ygll: interface function used in each dart classe to create visual effect
+function DoProjectileHitEffects(bool bWallHit)
+{
+}
+
+//Ygll: new utility function to generate base wall hit effect for darts item
+function CreateDartHitBaseEffect(bool bWallHit)
+{
+	DoProjectileHitEffects(bWallHit);
 }
 
 //
@@ -118,8 +130,10 @@ function Frob(Actor Frobber, Inventory frobWith)
 	Super.Frob(Frobber, frobWith);
 
 	// if the player frobs it and it's stuck, the player can grab it
-	if (bStuck && !IsA('RubberBullet'))
+	if( bStuck && !IsA('RubberBullet') )
+	{
 		GrabProjectile(DeusExPlayer(Frobber));
+	}
 }
 
 function GrabProjectile(DeusExPlayer player)
@@ -177,6 +191,7 @@ function float SpeedMod()
 {
    return 1;
 }
+
 //GMDX normal drop based on ranges
 //function vector CalculateDrop(float dist)
 //{
@@ -184,153 +199,6 @@ function float SpeedMod()
 //   if (dist > 20000)		// start descent due to "gravity"
 //		acc = Region.Zone.ZoneGravity / 2; //cyberP: was 100
 //	return acc;
-
-
-//}
-//
-// update our flight path based on our ranges and tracking info
-//
-simulated function Tick(float deltaTime)
-{
-	local float dist, size;
-	local Rotator dir;
-	local vector TargetLocation;
-	local vector vel;
-	local vector NormalHeading;
-	local vector NormalDesiredHeading;
-	local float HeadingDiffDot;
-	local vector zerovec;
-
-	local DeusExPlayer dxPlayer;
-	local vector rx,ry,rz;
-
-	if (bStuck)
-		return;
-
-	Super.Tick(deltaTime);
-
-	if ((bEmitDanger)&&(WarningTimer<=0.0))
-	{
-		AIStartEvent('Projectile', EAITYPE_Visual);
-		WarningTimer=default.WarningTimer;
-	} else WarningTimer-=deltaTime;
-
-	if (VSize(LastSeenLoc) < 1)
-	{
-	  LastSeenLoc = Location + Normal(Vector(Rotation)) * 10000;
-	}
-
-	if (Role == ROLE_Authority)
-	{
-	  bHasNetworkTarget = (Target != None);
-	}
-	else
-	{
-	  bHadLocalTarget = (bHadLocalTarget || (Target != None));
-	}
-
-	dxPlayer=DeusExPlayer(Owner);
-
-	if (bTracking && ((Target != None) || ((Level.NetMode != NM_Standalone) && (bHasNetworkTarget)) || ((Level.Netmode != NM_Standalone) && (bHadLocalTarget))))
-	{
-		// check it's range
-		dist = Abs(VSize(Target.Location - Location));
-		if ((dist > MaxRange)&&(!(IsA('Rocket')&&(dxPlayer!=none)&&(dxPlayer.RocketTarget!=none))))
-		{
-				// if we're out of range, lose the lock and quit tracking
-			bTracking = False;
-			Target = None;
-			return;
-		}
-		else
-		{
-			// get the direction to the target
-		 if (Level.NetMode == NM_Standalone)
-			TargetLocation = Target.Location;
-		 else
-			TargetLocation = AcquireMPTargetLocation();
-		 if (Role == ROLE_Authority)
-			NetworkTargetLoc = TargetLocation;
-		 LastSeenLoc = TargetLocation;
-			dir = Rotator(TargetLocation - Location);
-			dir.Roll = 0;
-
-		 if (Level.Netmode != NM_Standalone)
-		 {
-			NormalHeading = Normal(Vector(Rotation));
-			NormalDesiredHeading = Normal(TargetLocation - Location);
-			HeadingDiffDot = NormalHeading Dot NormalDesiredHeading;
-		 }
-
-			// set our new rotation
-			bRotateToDesired = True;
-			DesiredRotation = dir;
-
-			// move us in the new direction that we are facing
-			size = VSize(Velocity);
-			vel = Normal(Vector(Rotation));
-
-		 if (Level.NetMode != NM_Standalone)
-		 {
-			size = FMax(HeadingDiffDot,0.4) * Speed;
-		 }
-			Velocity = vel * size;
-		}
-	}
-	else
-	{
-		if ((IsA('Rocket'))&&(dxPlayer!=none)&&(dxPlayer.bGEPprojectileInflight)&&(Rocket(self).bGEPInFlight))
-		{
-			if (dxPlayer.bGEPzoomActive)
-			{
-				dxPlayer.UpdateTrackingSteering(DeltaTime);
-
-				GetAxes(Rotator(Velocity),rx,ry,rz);
-				dir=Rotator(rx*25.0+ry*dxPlayer.GEPSteeringX*0.8+rz*dxPlayer.GEPSteeringY*0.8);
-
-				dir.Roll = 0;
-				bRotateToDesired = True;
-				DesiredRotation=dir;
-
-				size = VSize(Velocity);
-				vel = Normal(Vector(Rotation));
-				Velocity = vel * size * SpeedMod();
-			}
-		}
-		SetRotation(Rotator(Velocity));
-	}
-
-	dist = Abs(VSize(initLoc - Location));
-
-   //Acceleration=CalculateDrop(dist);
-
-	/*if (dist > AccurateRange/100 && IsA('SpiderConstructorLaunched'))		// start descent due to "gravity"
-		Acceleration = Region.Zone.ZoneGravity / 2.2;
-    else if (dist > AccurateRange/3 && IsA('Dart') && Owner.IsA('DeusExPlayer'))
-        Acceleration = Region.Zone.ZoneGravity / 2;
-    else if (dist > AccurateRange/2 && IsA('RubberBullet'))
-        Acceleration = Region.Zone.ZoneGravity / 2;
-    else if (dist > AccurateRange)		// start descent due to "gravity"
-		Acceleration = Region.Zone.ZoneGravity / 2;*/
-
-    if (IsA('ThrownProjectile'))                                                //RSD: Retain old arc with grenades
-    {
-        if (dist > AccurateRange)
-            Acceleration = gravMult*Region.Zone.ZoneGravity;
-    }
-    else if (Owner != none && Owner.IsA('ScriptedPawn'))                        //RSD: NPCs retain old drop formula
-    {
-    	if (dist > AccurateRange/100 && IsA('SpiderConstructorLaunched'))
-			Acceleration = Region.Zone.ZoneGravity / 2.2;
-        else if (dist > AccurateRange)
-        	Acceleration = Region.Zone.ZoneGravity / 2;
-    }
-    else if (gravMult > 0) //RSD: New simple and effective formula for gravity, multiplier determined individually with MATH and SCIENCE
-    	Acceleration = gravMult*Region.Zone.ZoneGravity;
-
-    if ((Role < ROLE_Authority) && (bAggressiveExploded))
-	  Explode(Location, vect(0,0,1));
-}
 
 function Timer()
 {
@@ -375,34 +243,70 @@ simulated function vector AcquireMPTargetLocation()
 	return LastSeenLoc;
 }
 
+//Ygll: new utility function to generate blood drop on hit vector
+function CreateDartBloodDropHit(Vector vec)
+{
+	local int i, maxBloodDrop;
+	local float hitEffectDamage;
+	local BloodDrop drop;
+
+	hitEffectDamage = Damage/2;
+	maxBloodDrop = 0;
+
+	if(hitEffectDamage < 2.0)
+		maxBloodDrop = 2;
+	else if(hitEffectDamage > 6.0)
+		maxBloodDrop = 6;
+	else
+		maxBloodDrop = hitEffectDamage;
+
+	for(i=0; i<maxBloodDrop; i++)
+	{
+		drop = spawn(class'BloodDrop',,, vec);
+		if (drop != None)
+		{
+			drop.Velocity *= 0.5;
+			//drop.Velocity.Z *= 1.3;
+		}
+	}
+}
+
 function SpawnBlood(Vector HitLocation, Vector HitNormal)
 {
-	local int i;
+	local BloodSpurt spurt;
 
 	if ((DeusExMPGame(Level.Game) != None) && (!DeusExMPGame(Level.Game).bSpawnEffects))
 	  return;
 
-    if (IsA('DartPoison'))
-    return;
-
-	spawn(class'BloodSpurt',,,HitLocation+HitNormal);
-	for (i=0; i<Damage/5; i++)
+	//Ygll: new for Taser Dart, they are now the same behaviour than poison dart
+	//Ygll: adding the hit visual effect for flesh hit
+	if (IsA('DartPoison') || IsA('DartTaser') )
 	{
-		if (FRand() < 0.6)
-			spawn(class'BloodDrop',,,HitLocation+HitNormal*4);
+		spurt = spawn(class'BloodSpurt',,, HitLocation+HitNormal);
+		spurt.LifeSpan *= 0.7;
+		spurt.DrawScale *= 1.0;
+
+		CreateDartHitBaseEffect(false);
+	}
+	else if( bBlood ) //Ygll: if the current projectile is set to generate blood
+	{
+		spurt = spawn(class'BloodSpurt',,, HitLocation+HitNormal);
+		spurt.LifeSpan *= 0.8;
+		spurt.DrawScale *= 1.1;
+
+		CreateDartBloodDropHit(HitLocation+HitNormal);
 	}
 }
 
-simulated function SpawnEffects(Vector HitLocation, Vector HitNormal, Actor Other)
+function SpawnEffects(Vector HitLocation, Vector HitNormal, Actor Other)
 {
 	local int i;
 	local DeusExDecal mark;
 	local Rockchip chip;
 
 	// don't draw damage art on destroyed movers
-	if (DeusExMover(Other) != None)
-		if (DeusExMover(Other).bDestroyed)
-			ExplosionDecal = None;
+	if ( DeusExMover(Other) != None && DeusExMover(Other).bDestroyed )
+		ExplosionDecal = None;
 
 	// draw the explosion decal here, not in Engine.Projectile
 	if (ExplosionDecal != None)
@@ -410,8 +314,8 @@ simulated function SpawnEffects(Vector HitLocation, Vector HitNormal, Actor Othe
 		mark = DeusExDecal(Spawn(ExplosionDecal, Self,, HitLocation, Rotator(HitNormal)));
 		if (mark != None)
 		{
-			mark.DrawScale *= FClamp(damage/24, 0.5, 4.0); //CyberP: was divided by 30, last param was 3
-			mark.ReattachDecal();
+			mark.DrawScaleMult = FClamp(Damage/24, 0.5, 4.0); //CyberP: was divided by 30, last param was 3
+			mark.UpdateHDTPSettings();
 		}
 
 		ExplosionDecal = None;
@@ -424,14 +328,17 @@ simulated function SpawnEffects(Vector HitLocation, Vector HitNormal, Actor Othe
 	if (bDebris)
 	{
 		for (i=0; i<Damage/5; i++)
+		{
 			if (FRand() < 0.8)
-		 {
+			{
 				chip = spawn(class'Rockchip',,,HitLocation+HitNormal);
-			//DEUS_EX AMSD In multiplayer, don't propagate these to
-			//other players (or from the listen server to clients).
-			if (chip != None)
-			   chip.RemoteRole = ROLE_None;
-		 }
+
+				//DEUS_EX AMSD In multiplayer, don't propagate these to
+				//other players (or from the listen server to clients).
+				if (chip != None)
+				   chip.RemoteRole = ROLE_None;
+			}
+		}
 	}
 }
 
@@ -446,9 +353,6 @@ simulated function DrawExplosionEffects(vector HitLocation, vector HitNormal)
 	light = Spawn(class'ExplosionLight',,, HitLocation);
 	if (light != None)
 	  light.RemoteRole = ROLE_None;
-    //light2 = Spawn(class'ExplosionLight',,, HitLocation+vect(0,0,16));
-	//if (light2 != None)
-	//  light2.RemoteRole = ROLE_None;
 
 	if (blastRadius < 128 || IsA('GasGrenade'))
 	{
@@ -550,21 +454,21 @@ state Ricocheted
 
     simulated function Landed( vector HitNormal)
 	{
-	 Velocity = vect(0,0,0);
-	 Acceleration = vect(0,0,0);
-     SetPhysics(PHYS_None);
-	 bStuck = True;
-	 PlaySound(sound'BulletHitFlesh',SLOT_None,,,2048,1.1);
+		Velocity = vect(0,0,0);
+		Acceleration = vect(0,0,0);
+		SetPhysics(PHYS_None);
+		bStuck = true;
+		PlaySound(sound'BulletHitFlesh',SLOT_None,,,2048,1.1);
 	}
 
 	Begin:
-		SetCollision(True, False, False);
+		SetCollision(true, false, false);
         Velocity.Z-= 600;
-        bBounce=False;
+        bBounce=false;
         if (Velocity.Z > -600)
         Velocity.Z = -600;
 		//SetPhysics(PHYS_Falling);
-		bFixedRotationDir = True;
+		bFixedRotationDir = true;
 }
 
 state Exploding
@@ -613,44 +517,42 @@ state Exploding
 
 	function Timer()
 	{
-	ImpactSound=None;
-
+		ImpactSound=None;
 		gradualHurtCounter++;
-	  DamageRing();
+		DamageRing();
 		if (gradualHurtCounter >= gradualHurtSteps)
 			Destroy();
 	}
 
-Begin:
-	// stagger the HurtRadius outward using Timer()
-	// do five separate blast rings increasing in size
-	gradualHurtCounter = 1;
-	gradualHurtSteps = 5;
-	Velocity = vect(0,0,0);
-	bHidden = True;
-	LightType = LT_None;
-	SetCollision(False, False, False);
-	//if (damageType == 'Exploded')
-	//    BlastDeadzone();
-	DamageRing();
-	SetTimer(0.25/float(gradualHurtSteps), True);
+	Begin:
+		// stagger the HurtRadius outward using Timer()
+		// do five separate blast rings increasing in size
+		gradualHurtCounter = 1;
+		gradualHurtSteps = 5;
+		Velocity = vect(0,0,0);
+		bHidden = true;
+		LightType = LT_None;
+		SetCollision(false, false, false);
+		//if (damageType == 'Exploded')
+		//    BlastDeadzone();
+		DamageRing();
+		SetTimer(0.25/float(gradualHurtSteps), true);
 }
 
 function PlayImpactSound()
 {
 	local float rad;
-    local GMDXImpactSpark AST;
 
-		rad = Max(blastRadius*28, 2048); //CyberP: was *4
-        if (IsA('Dart'))
-        PlaySound(ImpactSound, SLOT_None, 2.0,, rad,1.15);
-        else if (IsA('RubberBullet')) //Special case for rubber bullets as they can be problematic
-        {
-          if (FRand() < 0.6)
-              PlaySound(ImpactSound, SLOT_Interact, 1.5,, 512);
-        }
-        else
-        PlaySound(ImpactSound, SLOT_None, 2.0,, rad);
+	rad = Max(blastRadius*28, 2048); //CyberP: was *4
+	if (IsA('Dart'))
+		PlaySound(ImpactSound, SLOT_None, 2.0,, rad,1.15);
+	else if (IsA('RubberBullet')) //Special case for rubber bullets as they can be problematic
+	{
+	  if (FRand() < 0.6)
+		  PlaySound(ImpactSound, SLOT_Interact, 1.5,, 512);
+	}
+	else
+		PlaySound(ImpactSound, SLOT_None, 2.0,, rad);
 }
 
 function bool CheckHelmetCollision(int actualDamage, Vector hitLocation, name damageType, Pawn helmetPawn) //RSD: Adapted from HandleDamage() in ScriptedPawn.uc
@@ -670,16 +572,12 @@ function bool CheckHelmetCollision(int actualDamage, Vector hitLocation, name da
 		if (offset.z > headOffsetZ)		// head
 		{
 		    if (offset.z > HelmetPawn.CollisionHeight * 0.85 && !(abs(offset.y) < headOffsetY && offset.x > 0.0 && offset.z < CollisionHeight*0.93) //RSD: Was CollisionHeight*0.93, I'm making it *0.85, and NOT from the front
-            	&& (damageType == 'Shot' || damageType == 'Poison' || damageType == 'Stunned'))
+            	&& (damageType == 'Shot' || damageType == 'Poison' || damageType == 'Stunned') || damageType == 'Bleed')
             {
-                    if (actualDamage >= 25)
-                    {
-                          return false;
-                    }
-                    else
-                    {
-                          return true;
-                    }
+				if (actualDamage >= 25)
+					return false;
+				else
+					return true;
             }
 		}
 	}
@@ -694,7 +592,6 @@ function HurtRadiusGMDX( float DamageAmount, float DamageRadius, name DamageName
 	local actor Victims;
 	local float damageScale, dist, mult;
 	local vector dir;
-
 	// DEUS_EX CNN
 	local Mover M;
 
@@ -702,105 +599,101 @@ function HurtRadiusGMDX( float DamageAmount, float DamageRadius, name DamageName
 		return;
 
 	bHurtEntry = true;
-   if (!bIgnoreLOS)
-   {
-      foreach VisibleCollidingActors( class 'Actor', Victims, DamageRadius, HitLocation )
-      {
-         if( Victims != self)
-         {
-            //SARGE: Reduce damage dealt when exploded by ADS
-            if ( Victims == aggressiveExploder )
-            {
-                mult = 0.2 + (aggressiveExploder.AugmentationSystem.GetClassLevel(class'AugDefense') * 0.1);
-                damageAmount = mult * damageAmount;
-            }
-            dir = Victims.Location - HitLocation;
-            dist = FMax(1,VSize(dir));
-            dir = dir/dist;
-            damageScale = 1 - FMax(0,(dist - Victims.CollisionRadius)/DamageRadius);
-            Victims.TakeDamage
-               (
-               damageScale * DamageAmount,
-               Instigator,
-               Victims.Location - 0.5 * (Victims.CollisionHeight + Victims.CollisionRadius) * dir,
-               (damageScale * Momentum * dir),
-               DamageName
-               );
-         }
-      }
-   }
-   else
-   {
-      foreach RadiusActors(class 'Actor', Victims, DamageRadius, HitLocation )
-      {
-         if( Victims != self )
-         {
-            //SARGE: Reduce damage dealt when exploded by ADS
-            if ( Victims == aggressiveExploder )
-            {
-                mult = 0.2 + (aggressiveExploder.AugmentationSystem.GetClassLevel(class'AugDefense') * 0.1);
-                damageAmount = mult * damageAmount;
-            }
-            dir = Victims.Location - HitLocation;
-            dist = FMax(1,VSize(dir));
-            dir = dir/dist;
-            damageScale = 1 - FMax(0,(dist - Victims.CollisionRadius)/DamageRadius);
-            Victims.TakeDamage
-               (
-               damageScale * DamageAmount,
-               Instigator,
-               Victims.Location - 0.5 * (Victims.CollisionHeight + Victims.CollisionRadius) * dir,
-               (damageScale * Momentum * dir),
-               DamageName
-               );
-         }
-      }
-   }
-
-	//
-	// DEUS_EX - CNN - damage the movers, also
-	//
-	if (!bIgnoreLOSmover)                                                       //RSD: New mover LOS bool
+	if (!bIgnoreLOS)
 	{
-	foreach VisibleCollidingActors(class 'Mover', M, DamageRadius, HitLocation)
-	{
-		if( M != self )
+		foreach VisibleCollidingActors( class 'Actor', Victims, DamageRadius, HitLocation )
 		{
-			dir = M.Location - HitLocation;
-			dist = FMax(1,VSize(dir));
-			dir = dir/dist;
-			damageScale = 1 - FMax(0,(dist - M.CollisionRadius)/DamageRadius);
-			M.TakeDamage
-			(
-				damageScale * DamageAmount,
-				Instigator,
-				M.Location - 0.5 * (M.CollisionHeight + M.CollisionRadius) * dir,
-				(damageScale * Momentum * dir),
-				DamageName
-			);
+			if( Victims != self)
+			{
+				//SARGE: Reduce damage dealt when exploded by ADS
+				if ( aggressiveExploder != None && aggressiveExploder.AugmentationSystem != None && Victims == aggressiveExploder )
+				{
+					mult = 0.2 + (aggressiveExploder.AugmentationSystem.GetClassLevel(class'AugDefense') * 0.1);
+					damageAmount = mult * damageAmount;
+				}
+				dir = Victims.Location - HitLocation;
+				dist = FMax(1,VSize(dir));
+				dir = dir/dist;
+				damageScale = 1 - FMax(0,(dist - Victims.CollisionRadius)/DamageRadius);
+				Victims.TakeDamage (
+					damageScale * DamageAmount,
+					Instigator,
+					Victims.Location - 0.5 * (Victims.CollisionHeight + Victims.CollisionRadius) * dir,
+					(damageScale * Momentum * dir),
+					DamageName
+				);
+			}
 		}
-	}
 	}
 	else
 	{
-	foreach RadiusActors(class 'Mover', M, DamageRadius, HitLocation)
-	{
-		if( M != self )
+		foreach RadiusActors(class 'Actor', Victims, DamageRadius, HitLocation )
 		{
-			dir = M.Location - HitLocation;
-			dist = FMax(1,VSize(dir));
-			dir = dir/dist;
-			damageScale = 1 - FMax(0,(dist - M.CollisionRadius)/DamageRadius);
-			M.TakeDamage
-			(
-				damageScale * DamageAmount,
-				Instigator,
-				M.Location - 0.5 * (M.CollisionHeight + M.CollisionRadius) * dir,
-				(damageScale * Momentum * dir),
-				DamageName
-			);
+			if( Victims != self )
+			{
+				//SARGE: Reduce damage dealt when exploded by ADS
+				if ( Victims == aggressiveExploder )
+				{
+					mult = 0.2 + (aggressiveExploder.AugmentationSystem.GetClassLevel(class'AugDefense') * 0.1);
+					damageAmount = mult * damageAmount;
+				}
+				dir = Victims.Location - HitLocation;
+				dist = FMax(1,VSize(dir));
+				dir = dir/dist;
+				damageScale = 1 - FMax(0,(dist - Victims.CollisionRadius)/DamageRadius);
+				Victims.TakeDamage (
+					damageScale * DamageAmount,
+					Instigator,
+					Victims.Location - 0.5 * (Victims.CollisionHeight + Victims.CollisionRadius) * dir,
+					(damageScale * Momentum * dir),
+					DamageName
+				);
+			}
 		}
 	}
+
+	// DEUS_EX - CNN - damage the movers, also
+	if (!bIgnoreLOSmover)   //RSD: New mover LOS bool
+	{
+		foreach VisibleCollidingActors(class 'Mover', M, DamageRadius, HitLocation)
+		{
+			if( M != self )
+			{
+				dir = M.Location - HitLocation;
+				dist = FMax(1,VSize(dir));
+				dir = dir/dist;
+				damageScale = 1 - FMax(0,(dist - M.CollisionRadius)/DamageRadius);
+				M.TakeDamage
+				(
+					damageScale * DamageAmount,
+					Instigator,
+					M.Location - 0.5 * (M.CollisionHeight + M.CollisionRadius) * dir,
+					(damageScale * Momentum * dir),
+					DamageName
+				);
+			}
+		}
+	}
+	else
+	{
+		foreach RadiusActors(class 'Mover', M, DamageRadius, HitLocation)
+		{
+			if( M != self )
+			{
+				dir = M.Location - HitLocation;
+				dist = FMax(1,VSize(dir));
+				dir = dir/dist;
+				damageScale = 1 - FMax(0,(dist - M.CollisionRadius)/DamageRadius);
+				M.TakeDamage
+				(
+					damageScale * DamageAmount,
+					Instigator,
+					M.Location - 0.5 * (M.CollisionHeight + M.CollisionRadius) * dir,
+					(damageScale * Momentum * dir),
+					DamageName
+				);
+			}
+		}
 	}
 
 	bHurtEntry = false;
@@ -816,248 +709,200 @@ auto simulated state Flying
 
         //G-Flex: let's try sticking projectiles in decorations
 		//G-Flex: or not, collision cylinders make it look terrible and weird and ugly //CyberP: overruled! We'll have special cases
-		if ((bStickToWall && DeusExDecoration(Other) != none && DeusExDecoration(Other).bInvincible &&
-           DeusExDecoration(Other).bPushable == False) || (IsA('Shuriken')&& DeusExDecoration(Other) != None))
-               {
-                   HitWall(normal(Velocity), Other);
-               }
-
-		if ((Other != instigator) && (DeusExProjectile(Other) == None) &&
-			(Other != Owner))
+		if ( Other != None && ( ( bStickToWall && DeusExDecoration(Other) != None && DeusExDecoration(Other).bInvincible && !DeusExDecoration(Other).bPushable ) 
+				|| ( IsA('Shuriken') && DeusExDecoration(Other) != None ) ) )
 		{
-		    if (IsA('ThrownProjectile') && (Other.IsA('DeusExCarcass') || Other.IsA('Pickup')))
+			HitWall(normal(Velocity), Other);
+		}
+		else if(Other != None && DeusExDecoration(Other) != None && !Other.IsA('DeusExPlayer')) //Ygll: test to have some visual hit event with all object, add the player to the test to advert issue when moving
+		{
+			HitWall(normal(Velocity), Other);
+		}
+
+		if( Other != None && (Other != instigator) && (DeusExProjectile(Other) == None) && (Other != Owner) )
+		{
+			if (IsA('ThrownProjectile') && (Other.IsA('DeusExCarcass') || Other.IsA('Pickup')))
+			{
 		        return;    //CyberP: don't explode when hitting carci or pickups
+			}
 
 			damagee = Other;
-			//if (damagee.IsA('ScriptedPawn') && Owner != None && Owner.IsA('DeusExPlayer'))
-			    //if (DeusExPlayer(Owner).bHitmarkerOn)
-			          //DeusExPlayer(Owner).hitmarkerTime = 0.2;
 
 			Explode(HitLocation, Normal(HitLocation-damagee.Location));
 
-            /*if (IsA('PlasmaRobot'))
-            	DrawExplosionEffects(HitLocation,HitLocation-damagee.Location);*/ //RSD: Faked explosion effects even though they don't explode
-
-		 // DEUS_EX AMSD Spawn blood server side only
-		 if (Role == ROLE_Authority)
+			// DEUS_EX AMSD Spawn blood server side only
+			if (Role == ROLE_Authority)
 			{
-			if (damagee.IsA('Pawn') && !damagee.IsA('Robot') && bBlood)
-			   SpawnBlood(HitLocation, Normal(HitLocation-damagee.Location));
+				//Ygll: change to add hit effect on all flesh target type
+				if ((damagee.IsA('Pawn') || damagee.IsA('DeusExCarcass')) && !damagee.IsA('Robot'))
+				{
+				   SpawnBlood(HitLocation, Normal(HitLocation-damagee.Location));
+				}
 			}
 		}
-		else if (Other.IsA('LAM') || Other.IsA('EMPGrenade') || Other.IsA('GasGrenade') || Other.IsA('NanoVirusGrenade')) //RSD: special case for hitting wall mines since they get filtered by above
+		else if( Other != None && ( Other.IsA('LAM') || Other.IsA('EMPGrenade') || Other.IsA('GasGrenade') || Other.IsA('NanoVirusGrenade') ) ) //RSD: special case for hitting wall mines since they get filtered by above
 		{
             damagee = Other;
             Explode(HitLocation, Normal(HitLocation-damagee.Location));
 		}
 	}
+
 	simulated function HitWall(vector HitNormal, actor Wall)
 	{
-local int i;
-local GMDXImpactSpark s;
-local GMDXImpactSpark2 t;
-local GMDXSparkFade fade;
-local float speed2;
-local DeusExPlayer player;                                                      //RSD: Added
+		local float speed2;
 
-   if (IsA('RubberBullet'))
-   {
-	Velocity = 0.8*((Velocity dot HitNormal) * HitNormal * (-2.0) + Velocity);   // Reflect off Wall w/damping
-	speed2 = VSize(Velocity);
-	bFixedRotationDir = True;
-	RotationRate = RotRand(False);
-	if ((speed2 > 0) && (speed2 < 50))
-	{
-		SetPhysics(PHYS_None);
-		bStickToWall=True;
-		bStuck = True;
-		Velocity = vect(0,0,0);
-		if (Physics == PHYS_None)
-			bFixedRotationDir = False;
-	}
-	else if (speed2 < 800)
-	{
-		if (FRand() < 0.5)
-		ImpactSound=none;
-		else
-		ImpactSound=Sound'DeusExSounds.Generic.BasketballBounce';
-
-	}
-    }
-
-    if (Wall.IsA('Mover')) //CyberP A.K.A Totalitarian: since movers seem to ignore plasma...
-    {
-        if (bPlusOneDamage)                                                     //RSD: remove random damage variation
-           Damage=Damage-1.0;
-        if (IsA('PlasmaBolt') || IsA('PlasmaPS20'))
-           Wall.TakeDamage(Damage, Pawn(Owner), Wall.Location, MomentumTransfer*Normal(Velocity), damageType);
-    }
-
+		if (Wall != None && Wall.IsA('Mover')) //CyberP A.K.A Totalitarian: since movers seem to ignore plasma...
+		{
+			if (bPlusOneDamage)                                                     //RSD: remove random damage variation
+			   Damage=Damage-1.0;
+			if (IsA('PlasmaBolt') || IsA('PlasmaPS20'))
+			   Wall.TakeDamage(Damage, Pawn(Owner), Wall.Location, MomentumTransfer*Normal(Velocity), damageType);
+		}
+	
+	   if (IsA('RubberBullet'))
+	   {
+			Velocity = 0.8*((Velocity dot HitNormal) * HitNormal * (-2.0) + Velocity);   // Reflect off Wall w/damping
+			speed2 = VSize(Velocity);
+			bFixedRotationDir = true;
+			RotationRate = RotRand(false);
+			if ((speed2 > 0) && (speed2 < 50))
+			{
+				SetPhysics(PHYS_None);
+				bStickToWall=true;
+				bStuck = true;
+				Velocity = vect(0,0,0);
+				if (Physics == PHYS_None)
+					bFixedRotationDir = false;
+			}
+			else if (speed2 < 800)
+			{
+				if (FRand() < 0.5)
+					ImpactSound=None;
+				else
+					ImpactSound=Sound'DeusExSounds.Generic.BasketballBounce';
+			}
+		}
+		
 		if (bStickToWall)
 		{
-		  if (IsA('Shuriken') && (Wall.IsA('DeusExDecoration') || Wall.IsA('Pickup')))
+			if (IsA('Shuriken') && ( Wall != None && ( Wall.IsA('DeusExDecoration') || Wall.IsA('Pickup') ) ) )
 		    {
-		       SetCollisionSize(4.0,3.0);
-		       bBounce=True;
-			   Velocity = 0.8*((Velocity dot HitNormal) * HitNormal * (-2.0) + (Velocity*0.75));   // Reflect off Wall w/damping
-			   bFixedRotationDir = True;
-			   RotationRate.Pitch = (32768 - Rand(65536)) * 4.0;
+		        SetCollisionSize(4.0,3.0);
+		        bBounce = true;
+			    Velocity = 0.8*((Velocity dot HitNormal) * HitNormal * (-2.0) + (Velocity*0.75));   // Reflect off Wall w/damping
+			    bFixedRotationDir = true;
+				RotationRate.Pitch = (32768 - Rand(65536)) * 4.0;
                 RotationRate.Yaw = (32768 - Rand(65536)) * 4.0;
-               if (DeusExDecoration(Wall) != None && DeusExDecoration(Wall).fragType == class'MetalFragment')
-               PlaySound(sound'bouncemetal',SLOT_None,,,2048,1.3);
-               else
-               PlaySound(sound'BulletHitFlesh',SLOT_None,,,2048,1.1);
-               if (bPlusOneDamage)                                              //RSD: remove random damage variation
-                  Damage=Damage-1.0;
-               Wall.TakeDamage(Damage,Pawn(Owner),Location,MomentumTransfer*Normal(Velocity)*0.001,damageType);
-			   GoToState('Ricocheted');
+				
+				if (DeusExDecoration(Wall) != None && DeusExDecoration(Wall).fragType == class'MetalFragment')
+					PlaySound(sound'bouncemetal',SLOT_None,,,2048,1.3);
+				else
+					PlaySound(sound'BulletHitFlesh',SLOT_None,,,2048,1.1);
+
+				if (bPlusOneDamage)                                              //RSD: remove random damage variation
+					Damage=Damage-1.0;
+
+				Wall.TakeDamage(Damage,Pawn(Owner),Location,MomentumTransfer*Normal(Velocity)*0.001,damageType);
+				GoToState('Ricocheted');
 	        }
-	      else
+			else
             {
-            if (IsA('Dart') || IsA('Shuriken'))
-                SetCollisionSize(4.0,3.0);
-			Velocity = vect(0,0,0);
-			Acceleration = vect(0,0,0);
-			SetPhysics(PHYS_None);
-			bStuck = True;
-		   }
+				if (IsA('Dart') || IsA('Shuriken'))
+				{
+					SetCollisionSize(4.0,3.0);
+				}
+				Velocity = vect(0,0,0);
+				Acceleration = vect(0,0,0);
+				SetPhysics(PHYS_None);
+				bStuck = true;
+		    }
+
 			if (!IsA('RubberBullet'))
 			{
-            ImpactSound = Sound'DeusExSounds.Weapons.CrowbarHitSoft';
-		fade = spawn(class'GMDXSparkFade');
-		 if (fade != None)
-		 {
-		 fade.DrawScale = 0.14;
-		 }
-       for (i=0;i<12;i++)
-        {
-        s = spawn(class'GMDXImpactSpark');
-        t = spawn(class'GMDXImpactSpark2');
-          if (s != none && t != none)
-        {
-        s.LifeSpan=FRand()*0.075;
-        t.LifeSpan=FRand()*0.075;
-        s.DrawScale = FRand() * 0.065;
-        t.DrawScale = FRand() * 0.065;
-        if (IsA('DartTaser'))
-        {
-        s.Texture =Texture'Effects.Fire.Spark_Electric';
-        t.Texture =Texture'Effects.Fire.Spark_Electric';
-        if(i==1)
-        {
-        s.AmbientSound = Sound'Ambient.Ambient.Electricity3';
-        s.SoundRadius=64;
-        s.SoundVolume=160;
-        s.SoundPitch=64;
-        }
-        s.LifeSpan=FRand()*0.2;
-        t.LifeSpan=FRand()*0.2;
-        s.LightBrightness=255;
-        s.LightSaturation=60;
-        s.LightHue=146;
-        s.LightRadius=1;
-        s.LightType=LT_Steady;
-        t.LightBrightness=255;
-        t.LightSaturation=60;
-        t.LightHue=146;
-        t.LightRadius=1;
-        t.LightType=LT_Steady;
-        }
-        }
-        }
-        }
-			// MBCODE: Do this only on server side
-			if ( Role == ROLE_Authority )
-			{
-			if (Level.NetMode != NM_Standalone)
-			   SetTimer(5.0,False);
+				ImpactSound = Sound'DeusExSounds.Weapons.CrowbarHitSoft';
 
-				if (Wall.IsA('Mover'))
+				CreateDartHitBaseEffect(true);
+
+				// MBCODE: Do this only on server side
+				if ( Role == ROLE_Authority )
 				{
-					SetBase(Wall);
-					if (bPlusOneDamage)                                         //RSD: remove random damage variation
-						Damage=Damage-1.0;
-					Wall.TakeDamage(Damage, Pawn(Owner), Wall.Location, MomentumTransfer*Normal(Velocity), damageType);
-                    
-                    //Sarge: Don't allow knives to be retrieved if they damaged a locked object
-                    if (IsA('Shuriken') && DeusExMover(Wall).bLocked && Damage >= DeusExMover(Wall).minDamagethreshold)
-                        Destroy();
+					if (Level.NetMode != NM_Standalone)
+						SetTimer(5.0,false);
+
+					if ( Wall != None && Wall.IsA('Mover'))
+					{
+						SetBase(Wall);
+						if (bPlusOneDamage)                                         //RSD: remove random damage variation
+							Damage=Damage-1.0;
+						Wall.TakeDamage(Damage, Pawn(Owner), Wall.Location, MomentumTransfer*Normal(Velocity), damageType);
+
+						//Sarge: Don't allow knives to be retrieved if they damaged a locked object
+						if (IsA('Shuriken') && DeusExMover(Wall).bLocked && Damage >= DeusExMover(Wall).minDamagethreshold)
+							Destroy();
+					}
 				}
 			}
 		}
-        else if (IsA('DartPoison'))                                             //RSD: Still do hit effects for Tranquilizer Darts on Hardcore (bSticktoWall=false)
+        else if( IsA('Dart') )                        //RSD: Still do hit effects for Darts on Hardcore or fragile dart enable (bSticktoWall=false)
         {
-        ImpactSound = Sound'DeusExSounds.Weapons.BatonHitSoft';                 //RSD: Weaker sound effect to help sell the illusion of dart breaking
-		fade = spawn(class'GMDXSparkFade');
-		 if (fade != None)
-		 {
-		 fade.DrawScale = 0.14;
-		 }
-       for (i=0;i<12;i++)
-        {
-        s = spawn(class'GMDXImpactSpark');
-        t = spawn(class'GMDXImpactSpark2');
-          if (s != none && t != none)
-        {
-        s.LifeSpan=FRand()*0.075;
-        t.LifeSpan=FRand()*0.075;
-        s.DrawScale = FRand() * 0.065;
-        t.DrawScale = FRand() * 0.065;
+			// Ygll : Adding Taser dart to handle them with new the hardcore rule and 'Fragile Dart' gameplay option enable.
+			ImpactSound = Sound'DeusExSounds.Weapons.BatonHitSoft';	//RSD: Weaker sound effect to help sell the illusion of dart breaking
+			CreateDartHitBaseEffect(true);
         }
-        }
-
-        }
-			// MBCODE: Do this only on server side
-			if ( Role == ROLE_Authority )
-			{
+		
+		// MBCODE: Do this only on server side
+		if ( Role == ROLE_Authority )
+		{
 			if (Level.NetMode != NM_Standalone)
-			   SetTimer(5.0,False);
+				SetTimer(5.0,false);
 
-				if (Wall.IsA('Mover'))
-				{
-					SetBase(Wall);
-					if (bPlusOneDamage)                                         //RSD: remove random damage variation
-						Damage=Damage-1.0;
-					Wall.TakeDamage(Damage, Pawn(Owner), Wall.Location, MomentumTransfer*Normal(Velocity), damageType);
-				}
+			if ( Wall != None && Wall.IsA('Mover'))
+			{
+				SetBase(Wall);
+				if (bPlusOneDamage)                                         //RSD: remove random damage variation
+					Damage=Damage-1.0;
+
+				Wall.TakeDamage(Damage, Pawn(Owner), Wall.Location, MomentumTransfer*Normal(Velocity), damageType);
 			}
+		}
 
-
-		if (Wall.IsA('BreakableGlass'))
-			bDebris = False;
-
-        if (Wall.IsA('Containers') && Containers(Wall).fragType == class'DeusEx.PaperFragment')
+		if ( Wall != None && Wall.IsA('BreakableGlass'))
+			bDebris = false;
+		
+		//Ygll: Doing a change to add hit sfx effect on all containers object classe except paper type
+		if ( ( Wall != None && !Wall.IsA('Containers') ) || (Wall != None && Wall.IsA('Containers') && Containers(Wall).fragType != class'DeusEx.PaperFragment'))
         {
+			SpawnEffects(Location, HitNormal, Wall);
         }
-        else
-		SpawnEffects(Location, HitNormal, Wall);
-
+		
 		Super.HitWall(HitNormal, Wall);
 	}
+
 	simulated function Explode(vector HitLocation, vector HitNormal)
 	{
 		local bool bDestroy;
 		local float rad, mult;
         local FireballSpoof fSpoof;
         local SFXExp exp;
-        local DeusExPlayer player;
 
-        player = DeusExPlayer(GetPlayerPawn());
-
+        //SARGE: Removed. We now reduce it for player-damage only.
+        //See below.
+        /*
 	    // Reduce damage on nano exploded projectiles
 	    if (bAggressiveExploded)
         {
             if (Level.NetMode != NM_Standalone)
 		        Damage = Damage/6;
         }
+        */
 
 		bDestroy = false;
 
 		if (bExplodes)
 		{
-		 //DEUS_EX AMSD Don't draw effects on dedicated server
-		 if ((Level.NetMode != NM_DedicatedServer) || (Role < ROLE_Authority))
-			DrawExplosionEffects(HitLocation, HitNormal);
+			//DEUS_EX AMSD Don't draw effects on dedicated server
+			if ((Level.NetMode != NM_DedicatedServer) || (Role < ROLE_Authority))
+				DrawExplosionEffects(HitLocation, HitNormal);
 
 			GotoState('Exploding');
 		}
@@ -1081,9 +926,14 @@ local DeusExPlayer player;                                                      
                         	//if (FRand() < 0.7)                                  //RSD: This part is relocated too
                				//	ScriptedPawn(damagee).impaleCount++;
                				ScriptedPawn(damagee).impaleCount = 1;              //RSD: max of one TK return, but it's 100% chance
+                    
+                             //SARGE: Add bleed damage to Shurikens
+                            if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkHemmorhage').bPerkObtained)
+                                damageType = 'Bleed';
                     	}
                         else
                         	ScriptedPawn(damagee).extraMult = 0;                //RSD: pretty sure this was missing from original implementation! Agh!
+
                        	if (ScriptedPawn(damagee).extraMult != 0)               //RSD: Ensuring that no extraMult is added in edge cases
  			        		ScriptedPawn(damagee).bHeadshotAltered = true;
 			        	else
@@ -1103,11 +953,13 @@ local DeusExPlayer player;                                                      
 					}
 					if (!damagee.IsA('ScriptedPawn') && bPlusOneDamage)         //RSD: remove random damage variation
 						Damage=Damage-1.0;
-					if (!(damagee.IsA('ScriptedPawn') && pawnAlreadyHit != none && ScriptedPawn(damagee) == pawnAlreadyHit)) //RSD: Don't multihit enemies with the Controlled Burn perk
-					damagee.TakeDamage(Damage, Pawn(Owner), HitLocation, MomentumTransfer*Normal(Velocity), damageType);
+					if (!(damagee.IsA('ScriptedPawn') && pawnAlreadyHit != None && ScriptedPawn(damagee) == pawnAlreadyHit)) //RSD: Don't multihit enemies with the Controlled Burn perk
+						damagee.TakeDamage(Damage, Pawn(Owner), HitLocation, MomentumTransfer*Normal(Velocity), damageType);
 					//log("Damage =" $Damage);
 				}
 			}
+
+			//Ygll: just a comment, here we gonna to destroy all item classe with the parameter at false (from hardcore or gameplay option settings or item parameter)
 			if (!bStuck)
 				bDestroy = true;
 		}
@@ -1115,70 +967,216 @@ local DeusExPlayer player;                                                      
 		rad = Max(blastRadius*24, 1024);
 
 		// This needs to be outside the simulated call chain
-		if (damagee != none && (damagee.IsA('ScriptedPawn') && ScriptedPawn(damagee).bHasHelmet && (IsA('Dart') || IsA('Shuriken'))
-        	&& CheckHelmetCollision(Damage, HitLocation, damageType, ScriptedPawn(damagee)))) //RSD: Don't play impact sounds if we're hitting a helmet (alt sound handled in HandleDamage() in ScriptedPawn.uc)
-        {
-        }
-        else if (IsA('DartPoison') && damagee != none && damagee.IsA('Robot'))  //RSD: Play weak sound for dart deflecting
-            PlaySound(sound'BatonHitSoft', SLOT_None, 2.0,, 1536,1.15);
-        else
+		// RSD: Don't play impact sounds if we're hitting a helmet (alt sound handled in HandleDamage() in ScriptedPawn.uc)
+		// Ygll: Now all projectile item type will have the deflect sound
+		if( ( damagee != None && !damagee.IsA('ScriptedPawn') )
+			|| ( damagee != None && damagee.IsA('ScriptedPawn') && ( !ScriptedPawn(damagee).bHasHelmet || ( ScriptedPawn(damagee).bHasHelmet && !CheckHelmetCollision(Damage, HitLocation, damageType, ScriptedPawn(damagee)) ) ) ) )
+		{
+			if (IsA('DartPoison') && damagee.IsA('Robot'))  //RSD: Play weak sound for dart deflecting
+			{
+				PlaySound(sound'BatonHitSoft', SLOT_None, 2.0,, 1536,1.15);
+			}
+			else
+			{
+				PlayImpactSound();
+			}
+		}
+		else
 			PlayImpactSound();
 
-	  //DEUS_EX AMSD Only do these server side
-	  if (Role == ROLE_Authority)
-	  {
-		 if (ImpactSound != None)
-		 {
-//		    log("EXPLODE:"@blastRadius);
-			AISendEvent('LoudNoise', EAITYPE_Audio, 2.0, blastRadius*10);
-			if (bExplodes)
-			   AISendEvent('WeaponFire', EAITYPE_Audio, 2.0, blastRadius*2);
-		 }
-	  }
-	    if (IsA('RubberBullet') || IsA('ShockRingProjectile'))
-	        bDestroy=False;
-        if (IsA('Fireball') && damagee != none && damagee.IsA('ScriptedPawn') && Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkControlledBurn').bPerkObtained == true)
+		//DEUS_EX AMSD Only do these server side
+		if (Role == ROLE_Authority)
+		{
+			if (ImpactSound != None)
+			{
+				//log("EXPLODE:"@blastRadius);
+				AISendEvent('LoudNoise', EAITYPE_Audio, 2.0, blastRadius*10);
+				if (bExplodes)
+				   AISendEvent('WeaponFire', EAITYPE_Audio, 2.0, blastRadius*2);
+			}
+		}
+	  
+		if (IsA('RubberBullet') || IsA('ShockRingProjectile'))
+			bDestroy=false;
+
+        if (IsA('Fireball') && damagee != None && damagee.IsA('ScriptedPawn') && Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkControlledBurn').bPerkObtained)
         {
-            bDestroy=False;
+            bDestroy=false;
             pawnAlreadyHit = ScriptedPawn(damagee);
         }
-	    if (IsA('Fireball') && FRand()< 0.3)
+
+	    if (IsA('Fireball') && FRand() < 0.5)
 	    {
-	        if (damagee != None && damagee.IsA('DeusExPlayer'))
+	        if (damagee == None || !damagee.IsA('DeusExPlayer') )
 			{
-			}
-            else
-            {
-            fSpoof = spawn(class'FireballSpoof');
-            if (fSpoof != None)
-            {
-            fSpoof.drawscale += (drawscale*0.6);
-            }
-            exp = Spawn(class'SFXExp');
-	        if (exp != none)
-	        {
-	        exp.Velocity.Z = 4;
-	        exp.scaleFactor = 1.25+DrawScale;
-	        exp.Velocity.Z = 2;
-	        }
+				fSpoof = spawn(class'FireballSpoof');
+				if (fSpoof != None)
+					fSpoof.drawscale += (drawscale*0.6);
+
+				exp = Spawn(class'SFXExp');
+				if (exp != None)
+				{
+					exp.Velocity.Z = 4;
+					exp.scaleFactor = 1.25+DrawScale;
+					exp.Velocity.Z = 2;
+				}
 	        }
         }
+
 		if (bDestroy)
 			Destroy();
 	}
+
 	simulated function BeginState()
 	{
 		local DeusExWeapon W;
+		
         if (IsA('Dart') || IsA('Shuriken'))
            SetCollisionSize(0.5,0.5);
+	   
 		initLoc = Location;
 		initDir = vector(Rotation);
 		Velocity = speed*initDir;
+		
 		if (W != None && W.IsA('WeaponPlasmaRifle'))
-		PlaySound(SpawnSound, SLOT_None,1.2,,8193);
+			PlaySound(SpawnSound, SLOT_None,1.2,,8193);
 		else
-		PlaySound(SpawnSound, SLOT_None,,,2048);
+			PlaySound(SpawnSound, SLOT_None,,,2048);
 	}
+}
+
+//
+// update our flight path based on our ranges and tracking info
+//
+simulated function Tick(float deltaTime)
+{
+	local float dist, size;
+	local Rotator dir;
+	local vector TargetLocation;
+	local vector vel;
+	local vector NormalHeading;
+	local vector NormalDesiredHeading;
+	local float HeadingDiffDot;
+	local vector zerovec;
+
+	local DeusExPlayer dxPlayer;
+	local vector rx,ry,rz;
+
+	if (bStuck)
+		return;
+
+	Super.Tick(deltaTime);
+
+	if ((bEmitDanger)&&(WarningTimer<=0.0))
+	{
+		AIStartEvent('Projectile', EAITYPE_Visual);
+		WarningTimer=default.WarningTimer;
+	} else WarningTimer-=deltaTime;
+
+	if (VSize(LastSeenLoc) < 1)
+	{
+	  LastSeenLoc = Location + Normal(Vector(Rotation)) * 10000;
+	}
+
+	if (Role == ROLE_Authority)
+	{
+	  bHasNetworkTarget = (Target != None);
+	}
+	else
+	{
+	  bHadLocalTarget = (bHadLocalTarget || (Target != None));
+	}
+
+	dxPlayer=DeusExPlayer(Owner);
+
+	if (bTracking && ((Target != None) || ((Level.NetMode != NM_Standalone) && (bHasNetworkTarget)) || ((Level.Netmode != NM_Standalone) && (bHadLocalTarget))))
+	{
+		// check it's range
+		dist = Abs(VSize(Target.Location - Location));
+		if ( (dist > MaxRange) && ( !(IsA('Rocket') && (dxPlayer != None) && (dxPlayer.RocketTarget != None)) ) ) 
+		{
+				// if we're out of range, lose the lock and quit tracking
+			bTracking = false;
+			Target = None;
+			return;
+		}
+		else
+		{
+			// get the direction to the target
+		 if (Level.NetMode == NM_Standalone)
+			TargetLocation = Target.Location;
+		 else
+			TargetLocation = AcquireMPTargetLocation();
+		 if (Role == ROLE_Authority)
+			NetworkTargetLoc = TargetLocation;
+		 LastSeenLoc = TargetLocation;
+			dir = Rotator(TargetLocation - Location);
+			dir.Roll = 0;
+
+		 if (Level.Netmode != NM_Standalone)
+		 {
+			NormalHeading = Normal(Vector(Rotation));
+			NormalDesiredHeading = Normal(TargetLocation - Location);
+			HeadingDiffDot = NormalHeading Dot NormalDesiredHeading;
+		 }
+
+			// set our new rotation
+			bRotateToDesired = true;
+			DesiredRotation = dir;
+
+			// move us in the new direction that we are facing
+			size = VSize(Velocity);
+			vel = Normal(Vector(Rotation));
+
+		 if (Level.NetMode != NM_Standalone)
+		 {
+			size = FMax(HeadingDiffDot,0.4) * Speed;
+		 }
+			Velocity = vel * size;
+		}
+	}
+	else
+	{
+		if ((IsA('Rocket')) && (dxPlayer != None) && (dxPlayer.bGEPprojectileInflight) && (Rocket(self).bGEPInFlight))
+		{
+			if (dxPlayer.bGEPzoomActive)
+			{
+				dxPlayer.UpdateTrackingSteering(DeltaTime);
+
+				GetAxes(Rotator(Velocity),rx,ry,rz);
+				dir=Rotator(rx*25.0+ry*dxPlayer.GEPSteeringX*0.8+rz*dxPlayer.GEPSteeringY*0.8);
+
+				dir.Roll = 0;
+				bRotateToDesired = true;
+				DesiredRotation=dir;
+
+				size = VSize(Velocity);
+				vel = Normal(Vector(Rotation));
+				Velocity = vel * size * SpeedMod();
+			}
+		}
+		SetRotation(Rotator(Velocity));
+	}
+
+	dist = Abs(VSize(initLoc - Location));
+
+    if (IsA('ThrownProjectile'))                                                //RSD: Retain old arc with grenades
+    {
+        if (dist > AccurateRange)
+            Acceleration = gravMult*Region.Zone.ZoneGravity;
+    }
+    else if (Owner != None && Owner.IsA('ScriptedPawn'))                        //RSD: NPCs retain old drop formula
+    {
+		if (dist > AccurateRange/100 && IsA('SpiderConstructorLaunched'))
+			Acceleration = Region.Zone.ZoneGravity / 2.2;
+        else if (dist > AccurateRange)
+			Acceleration = Region.Zone.ZoneGravity / 2;
+    }
+    else if (gravMult > 0) //RSD: New simple and effective formula for gravity, multiplier determined individually with MATH and SCIENCE
+		Acceleration = gravMult*Region.Zone.ZoneGravity;
+
+    if ((Role < ROLE_Authority) && (bAggressiveExploded))
+	  Explode(Location, vect(0,0,1));
 }
 
 defaultproperties
@@ -1187,7 +1185,7 @@ defaultproperties
      maxRange=1600
      MinDrawScale=0.050000
      maxDrawScale=2.500000
-     bEmitDanger=True
+     bEmitDanger=true
      ItemName="DEFAULT PROJECTILE NAME - REPORT THIS AS A BUG"
      ItemArticle="Error"
      WarningTimer=1.000000

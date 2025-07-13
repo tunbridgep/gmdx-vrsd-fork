@@ -21,6 +21,77 @@ var float TimeToSave;
 
 var bool firstTime;     //SARGE: Set to true the first time we enter a map.
 
+var bool bConfixChecked;                        //SARGE: Set to true when we've checked confix being installed.
+
+var byte savedSoundVolume;
+var byte savedMusicVolume;
+var byte savedSpeechVolume;
+
+// ----------------------------------------------------------------------
+// SARGE: UpdateSavePoints()
+//
+// Checks the required flags for all Save Points, and hides/unhides them accordingly.
+// ----------------------------------------------------------------------
+
+function UpdateSavePoints()
+{
+	local SavePoint SP;
+    local bool bValid;
+	
+    foreach AllActors(class'SavePoint', SP)
+    {
+        bValid = SP.requiredFlag == '' || flags.GetBool(SP.requiredFlag);
+        if (bValid)
+        {
+            if (SP.bHidden)
+            {
+                SP.bHidden = false;
+                SP.LightRadius = SP.default.LightRadius;
+            }
+        }
+        else
+        {
+            if (!SP.bHidden)
+            {
+                SP.bHidden = true;
+                SP.LightRadius = 0;
+            }
+        }
+    }
+}
+
+// ----------------------------------------------------------------------
+// SARGE: SetMinimumVolume()
+//
+// Force the players Music, Sound and Speech volume to be a certain minimum amount.
+// Used for cutscenes because they sound awkward/weird without music
+// Saves the values so we can use RestorePreviousVolume to restore it to what it was. Used for cutscenes.
+// ----------------------------------------------------------------------
+
+function SetMinimumVolume()
+{
+    savedSoundVolume = byte(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice SoundVolume"));
+    savedMusicVolume = byte(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice MusicVolume"));
+    savedSpeechVolume = byte(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice SpeechVolume"));
+ 
+    if (!player.bCutsceneVolumeEqualiser)
+        return;
+
+    //Reduce the overall sound volume
+    SoundVolume = savedSpeechVolume / 8;
+    Player.SetInstantSoundVolume(savedSpeechVolume / 8);
+
+    //Force the music on
+    Player.SetInstantMusicVolume(savedSpeechVolume / 2);
+}
+
+function RestorePreviousVolume()
+{
+	Player.SetInstantSoundVolume(savedSoundVolume);
+	Player.SetInstantMusicVolume(savedMusicVolume);
+	Player.SetInstantSpeechVolume(savedSpeechVolume);
+}
+
 // ----------------------------------------------------------------------
 // DoLightingAccessibility()
 //
@@ -128,6 +199,33 @@ function int GenerateMapSeed()
     return int(seed);
 }
 
+//SARGE: Confix sets the `Confix_Engaged` flag, but
+//only when we've received the first message from Alex
+function DoConfixCheck()
+{
+    if (bConfixChecked)
+        return;
+
+    //Check Training
+    else if (localURL == "00_TRAINING" && flags.GetBool('DL_Start_Played'))
+        bConfixChecked = true;
+
+    //Check on Liberty Island
+    else if (localURL == "01_NYC_UNATCOISLAND" && flags.GetBool('DL_StartGame_Played'))
+        bConfixChecked = true;
+    
+    //Check on MJ12 Lab (Alternate Start)
+    else if (localURL == "05_NYC_UNATCOMJ12LAB" && flags.GetBool('M05AnnaTaunt_Played'))
+        bConfixChecked = true;
+
+    //Flag is not set, oh dear! Tell the player about it!
+    if (bConfixChecked && !flags.GetBool('Confix_Engaged'))
+    {
+        player.clientMessage("ConFix is not installed! Please install ConFix for the best experience while playing GMDX!");
+        player.clientMessage("After installing ConFix, it is highly recommended that you start a new playthrough!");
+    }
+}
+
 // ----------------------------------------------------------------------
 // FirstFrame()
 //
@@ -144,8 +242,22 @@ function FirstFrame()
     local bool bRandomCrates;                                                   //RSD
     local bool bRandomItems;                                                    //RSD
     local int seed;
+    local DeusExCarcass C;                                                      //SARGE
+    local DecalManager D;                                                       //SARGE
+    local SecurityCamera Cam;                                                      //SARGE
 
 	flags.DeleteFlag('PlayerTraveling', FLAG_Bool);
+
+    //Recreate/Setup our decal manager
+	foreach AllActors(class'DecalManager', D)
+        break;
+
+    if (D == None)
+    {
+        D = Spawn(class'DecalManager');
+        player.DecalManager = D;
+        D.Setup(player);
+    }
 
 	// Check to see which NPCs should be dead from prevous missions
 	foreach AllActors(class'ScriptedPawn', P)
@@ -200,14 +312,32 @@ function FirstFrame()
             InitializeEnemySwap(1);
         }
 
+        //Make the placed corpses bleed
+        foreach AllActors(class'DeusExCarcass', C)
+        {
+            if (!C.bHidden && !C.bNotDead)
+                C.SetupCarcass(false);
+        }
+
         //Randomise the crap around the level
         RandomiseCrap();
 
-        //Distribute PS20's and Flares
-        DistributeItem(class'WeaponHideAGun',0,2,class'AmmoHideAGun');
-        DistributeItem(class'Flare',1,3);
+        if (dxInfo.MissionNumber > 0)
+        {
+            //Distribute PS20's and Flares
+            DistributeItem('ScriptedPawn',class'WeaponHideAGun',0,2,class'AmmoHideAGun');
+            DistributeItem('ScriptedPawn',class'Flare',1,3);
+
+            //SARGE: Give Shurikens to Elites
+            DistributeItem('MJ12Elite',class'WeaponShuriken',1,3);
+        }
 
 		flags.SetBool(flagName, True);
+
+        //SARGE: HARDCORE ONLY, force all cameras to set off alarms etc,
+        if (player.bHardCoreMode)
+            foreach AllActors(class'SecurityCamera', Cam)
+                Cam.bAlarmEvent = true;
 
         firstTime = true;
 	}
@@ -240,15 +370,17 @@ function FirstFrame()
 		flags.SetBool(flagName, True);
 	}
 
-	if (Flags.GetBool('Enhancement_Detected'))
+	//SARGE: Remove the MJ12 Elite vocoded voices, they don't work properly for LDDP,
+	//and have some other issues.
+	foreach AllActors(class'ScriptedPawn', P)
 	{
-	    ForEach AllActors(class'HumanMilitary', HumM)
-	    {
-	        if (humM.IsA('MJ12Elite') || humM.IsA('MJ12Troop'))
-	        if (HumM.UnfamiliarName == "MJ12 Elite" || HumM.MultiSkins[3]==Texture'DeusExCharacters.Skins.MiscTex1'
-            || HumM.MultiSkins[3]==Texture'DeusExCharacters.Skins.TerroristTex0' || HumM.MultiSkins[3]==Texture'GMDXSFX.Skins.MJ12EliteTex0')
-	            HumM.BarkBindName = "MJ12Elite";
-        }
+	   if (P.IsA('MJ12Elite') || P.IsA('MJ12Elite2'))
+	   {
+		    if (Rand(2) == 0)
+				P.BarkBindName = "MJ12Troop";
+			else
+				P.BarkBindName = "MJ12TroopB";
+	   }
 	}
 
 	//HDTP DDL: make the trees not unlit, because seriously WTF people
@@ -303,6 +435,9 @@ function Timer()
 		if ((player != None) && (flags.GetBool('PlayerTraveling')))
 			FirstFrame();
 	}
+
+    DoConfixCheck();
+    UpdateSavePoints();
 }
 
 function Tick(float DeltaTime)
@@ -341,17 +476,6 @@ function Tick(float DeltaTime)
 //   SetTimer(0.1,false);
 //}
 
-
-//GMDX: unhide savepoints, will add reactivate at some point
-function PutInWorld_SavePoint(Optional name MatchTag)
-{
-   local SavePoint SP;
-   foreach AllActors(class'SavePoint',SP,MatchTag)
-   {
-      if (SP.bHidden)
-         SP.bHidden=false;
-   }
-}
 
 // ----------------------------------------------------------------------
 // GetPatrolPoint()
@@ -397,36 +521,53 @@ function SpawnPoint GetSpawnPoint(Name spawnTag, optional bool bRandom)
 }
 
 //Gives the specified item to 0-X random enemies in the map.
-function DistributeItem(class<Inventory> itemClass, int minAmount, int maxAmount, optional class<Ammo> ammoClass)
+function DistributeItem(name actorClass, class<Inventory> itemClass, int minAmount, int maxAmount, optional class<Ammo> ammoClass)
 {
     local int i, j, swapTo, items;
     local ScriptedPawn actors[50], temp, SP;
     local int actorCount, toGive, index;
-    local Inventory inv;
-
-    //player.ClientMessage("Distributing "$itemClass$"...");
+    local Inventory inv, inv2;
+    
+    player.DebugMessage("Distributing "$itemClass$"...");
 
     foreach AllActors(class'ScriptedPawn', SP)
     {
-        if (!SP.bImportant && SP.GetPawnAllianceType(Player) == ALLIANCE_Hostile && !SP.isA('Robot') && !SP.isA('Animal') && !SP.isA('HumanCivilian') && !SP.bDontRandomizeWeapons && actorCount < 50)
+        if (/*!SP.bImportant && */SP.GetPawnAllianceType(Player) == ALLIANCE_Hostile && !SP.isA('Robot') && !SP.isA('Animal') && !SP.isA('HumanCivilian') && !SP.bDontRandomizeWeapons && actorCount < 50 && SP.IsA(actorClass))
             actors[actorCount++] = SP;
     }
     
-    //Shuffle the array
-    for (i = actorCount;i > 0;i--)
+    toGive = Player.Randomizer.GetRandomInt(maxAmount - minAmount) + minAmount;
+    player.DebugMessage("  To Give: "$toGive);
+    toGive = MIN(toGive,actorCount);
+    player.DebugMessage("  To Give (capped): "$toGive);
+
+    if (toGive == 0)
+        return;
+    
+    player.DebugMessage("  Before Shuffle...");
+
+    for (i = actorCount - 1;i >= 0;i--)
     {
-        swapTo = Player.Randomizer.GetRandomInt(i + 1);
+        player.DebugMessage("    Actor: " $ actors[i]);
+    }
+
+    //Shuffle the array
+    for (i = actorCount - 1;i >= 0;i--)
+    {
+        swapTo = Player.Randomizer.GetRandomInt(i);
         temp = actors[i];
         actors[i] = actors[swapTo];
         actors[swapTo] = temp;
     }
     
+    player.DebugMessage("  After Shuffle...");
+    
+    for (i = actorCount - 1;i >= 0;i--)
+    {
+        player.DebugMessage("    Actor: " $ actors[i]);
+    }
 
     //Now give the first 0-2 PS20s
-    toGive = Player.Randomizer.GetRandomInt(maxAmount - minAmount) + minAmount;
-    //player.ClientMessage("  To Give: "$toGive);
-    toGive = MIN(toGive,actorCount);
-    //player.ClientMessage("  To Give (capped): "$toGive);
 
     for(i = 0;i < actorCount;i++)
     {
@@ -458,18 +599,20 @@ function DistributeItem(class<Inventory> itemClass, int minAmount, int maxAmount
         }
         if (ammoClass != None)
         {
-            inv = spawn(ammoClass, actors[i]);
-            if (inv != None)
+            inv2 = spawn(ammoClass, actors[i]);
+            if (inv2 != None)
             {
-                inv.GiveTo(actors[i]);
-                inv.SetBase(actors[i]);
-                inv.bHidden = True;
-                inv.SetPhysics(PHYS_None);
-                actors[i].AddInventory(inv);
+                inv2.GiveTo(actors[i]);
+                inv2.SetBase(actors[i]);
+                inv2.bHidden = True;
+                inv2.SetPhysics(PHYS_None);
+                actors[i].AddInventory(inv2);
+                if(inv.IsA('DeusExWeapon') && inv2.isA('Ammo'))
+                    DeusExWeapon(inv).AmmoType = Ammo(inv2);
                 //player.ClientMessage("  Given a "$ammoClass$" to "$actors[i]);
             }
         }
-        //Player.ClientMessage("Give " $ actors[given].FamiliarName $ " a " $ itemClass);
+        Player.DebugMessage("  Give " $ actors[i].UnfamiliarName $ " (" $ actors[i] $ " ) a " $ itemClass);
         actors[i].SwitchToBestWeapon();
         toGive--;
     }
@@ -497,9 +640,43 @@ function InitializeRandomAmmoCounts()                                           
 function RandomiseCrap()
 {
     local DeusExPickup P;
+    local OfficeChair C;
+    local CouchLeather L;
+    local ChairLeather L2;
+    local int chairSkin;
+        
+    if (!player.bRandomizeCrap)
+        return;
+
     foreach AllActors(class'DeusExPickup', P)
     {
         P.RandomiseSkin(player);
+    }
+    
+    //Roll once, so that all the chairs in the level get the same style.
+    chairSkin=Player.Randomizer.GetRandomInt(5);
+    //log("Applying chair skin to all swivel chairs: " $ chairSkin);
+    foreach AllActors(class'OfficeChair', C)
+    {
+        C.SkinColor = chairSkin;
+        C.UpdateHDTPsettings();
+    }
+    
+    //Roll once, so that all the couches in the level get the same style.
+    chairSkin=Player.Randomizer.GetRandomInt(4);
+    //log("Applying chair skin to all leather couches: " $ chairSkin);
+    foreach AllActors(class'CouchLeather', L)
+    {
+        L.SkinColor = chairSkin;
+        L.UpdateHDTPsettings();
+    }
+    
+    //And chairs
+    //log("Applying chair skin to all leather chairs: " $ chairSkin);
+    foreach AllActors(class'ChairLeather', L2)
+    {
+        L2.SkinColor = chairSkin;
+        L2.UpdateHDTPsettings();
     }
 }
 
@@ -554,13 +731,16 @@ function ReplaceEnemyWeapon(ScriptedPawn first, ScriptedPawn second)
 {
     local Inventory weaps1[5], weaps2[5];
     local Inventory inv;
+    local DeusExWeapon wep;
     local int i,j,k;
+    local float tempAcc;
 
-    //Get a list of all the weapons in each inventory
+
+    //Do the ammos first, so we can assign them to weapons properly
     inv = first.Inventory;
     while (inv != None && i < 5)
     {
-        if (inv.isA('DeusExWeapon') || inv.isA('Ammo'))
+        if (inv.isA('Ammo'))
         {
             weaps1[i] = inv;
             i++;
@@ -571,7 +751,50 @@ function ReplaceEnemyWeapon(ScriptedPawn first, ScriptedPawn second)
     inv = second.Inventory;
     while (inv != None && j < 5)
     {
-        if (inv.isA('DeusExWeapon') || inv.isA('Ammo'))
+        if (inv.isA('Ammo'))
+        {
+            weaps2[j] = inv;
+            j++;
+        }
+        inv = inv.Inventory;
+    }
+    
+    //Now actually swap the ammo between pawns
+    for (k=0;k < i;k++)
+    {
+        //Player.ClientMessage("Give " $ first.FamiliarName $ " " $weaps1[k].ItemName $ " to " $ second.FamiliarName);
+        weaps1[k].GiveTo(second);
+        weaps1[k].SetBase(second);
+    }
+
+    for (k=0;k < j;k++)
+    {
+        //Player.ClientMessage("Give " $ second.FamiliarName $ " " $ weaps2[k].ItemName $ " to " $ first.FamiliarName);
+        weaps2[k].GiveTo(first);
+        weaps2[k].SetBase(first);
+    }
+
+    //Now do the weapons
+    i = 0;
+    j = 0;
+    k = 0;
+
+    //Get a list of all the weapons in each inventory
+    inv = first.Inventory;
+    while (inv != None && i < 5)
+    {
+        if (inv.isA('DeusExWeapon'))
+        {
+            weaps1[i] = inv;
+            i++;
+        }
+        inv = inv.Inventory;
+    }
+    
+    inv = second.Inventory;
+    while (inv != None && j < 5)
+    {
+        if (inv.isA('DeusExWeapon'))
         {
             weaps2[j] = inv;
             j++;
@@ -584,25 +807,33 @@ function ReplaceEnemyWeapon(ScriptedPawn first, ScriptedPawn second)
     {
         //Player.ClientMessage("Give " $ first.FamiliarName $ " " $weaps1[k].ItemName $ " to " $ second.FamiliarName);
         weaps1[k].GiveTo(second);
+        weaps1[k].SetBase(second);
+        wep = DeusExWeapon(weaps1[k]);
+        if (wep != None)
+            wep.AmmoType = Ammo(second.FindInventoryType(wep.AmmoName));
     }
 
     for (k=0;k < j;k++)
     {
         //Player.ClientMessage("Give " $ second.FamiliarName $ " " $ weaps2[k].ItemName $ " to " $ first.FamiliarName);
         weaps2[k].GiveTo(first);
+        weaps2[k].SetBase(first);
+        wep = DeusExWeapon(weaps2[k]);
+        if (wep != None)
+            wep.AmmoType = Ammo(first.FindInventoryType(wep.AmmoName));
     }
 
-    first.SwitchToBestWeapon();
-    second.SwitchToBestWeapon();
+    //Swap BaseAccuracy between the two pawns.
+    //Shotgunners and Crossbow Guys generally always have 0 base accuracy.
+    tempAcc = first.BaseAccuracy;
+    first.BaseAccuracy = second.BaseAccuracy;
+    second.BaseAccuracy = tempAcc;
+        
+    first.WeaponSwap(second);
+    second.WeaponSwap(first);
 
-    /*
-    if (weap != None && weap2 != None)
-    {
-        weap.GiveTo(second);
-        weap2.GiveTo(first);
-        Player.ClientMessage("Swapping " $ first.bindName $ " with " $ second.bindName);
-    }
-    */
+    first.SetupWeapon(false);
+    second.SetupWeapon(false);
 }
 
 function InitializeRandomCrateContents()                                        //RSD: Randomizes crate contents depdending on new loot table classes

@@ -25,6 +25,7 @@ var localized string AugLocsText[7];
 var() localized string AugActivated;
 var() localized string AugDeactivated;
 var() localized string AugmentationName;
+var() localized string AugmentationShortName;
 var() localized string Description;
 var() localized string MPInfo;
 var() localized string AugAlreadyHave;
@@ -35,6 +36,7 @@ var() localized String CanUpgradeLabel;
 var() localized String CurrentLevelLabel;
 var() localized String MaximumLabel;
 var() localized String AugRecharging;
+var localized String AugKillswitch;
 
 // which player am I attached to?
 var DeusExPlayer Player;
@@ -105,6 +107,10 @@ var localized String ConditionalLabel;
 var travel int EnergyReserved;         //Amount of energy this aug uses when active. Used for Toggled augs.
 
 var bool bSilentDeactivation;           //SARGE: Next time this augmentation is deactivated, it will not show a message. Used when reclaiming the spy drone.
+
+var travel int heartUpgraded;    //SARGE: Stores if an aug was upgraded via heart. Used for downgrading if we remove heart.
+
+var const bool bHasChargeBar;   //SARGE: Display a bar in the Active Augs window when this is charging.
 
 ////Augmentation Colors
 var Color colActive;
@@ -222,6 +228,13 @@ function ActivateKeyPressed()
 //Sarge: Added a boolean so that individual augs can define their own activation conditions
 function bool CanActivate(out string message)
 {
+   
+    //SARGE: If the players killswitch is engaged, their augmentations are disabled
+    if (player.killswitchTimer > 0)
+    {
+        message = AugKillswitch;
+        return false;
+    }
 
     if (player.NanoVirusTimer > 0)                                              //RSD: If hit by nanovirus grenade, can't activate augs for seconds = damage
     {
@@ -452,7 +465,6 @@ simulated function bool UpdateInfo(Object winObject, optional string initialText
 	else
 	{
 		winInfo.AppendText(GetDescription());
-		winInfo.SetText(GetDescription());
 	}
 
     // Energy Reserve
@@ -565,37 +577,53 @@ simulated function bool CanDrainEnergy()
     return CanBeActivated() && !IsToggleAug();
 }
 
+
 // ----------------------------------------------------------------------
-// GetAdjustedEnergyRate()
+// GetAdjustedEnergy()
 //
-// Gets the actual rate of energy use for an augmentation, factoring in bonuses and penalties.
+// Modifies an energy value, factoring in bonuses and penalties.
 // SARGE: This was multiplicative for recirc and heart, in that order.
 // So a 20 energy aug with level 3 recirc (-35%) and level 1 heart (+40%) would
 // cost 18.2 energy (20 * 0.65 * 1.4) which seemed unintented.
 // Replaced it with an additive bonus/penalty.
 // Custom version allows working with any energy ratio
 // ----------------------------------------------------------------------
-
-function float GetAdjustedEnergyRate()
+function float GetAdjustedEnergy(float amount)
 {    
     local float bonus, penalty, mult;
 
-    //Heart Penalty
-    penalty = Player.AugmentationSystem.GetAugLevelValue(class'AugHeartLung');
+	if(amount > 0.0)
+	{
+		if(Player == None)
+			return amount;
 
-    //recirc bonus
-    bonus = Player.AugmentationSystem.GetAugLevelValue(class'AugPower');
+		//Heart Penalty
+		penalty = Player.AugmentationSystem.GetAugLevelValue(class'AugHeartLung');
+		//recirc bonus
+		bonus = Player.AugmentationSystem.GetAugLevelValue(class'AugPower');
+		mult = 1.0;
+		if (penalty > 0 && bonus > 0)
+			mult = bonus + penalty - 1.0;
+		else if (bonus > 0)
+			mult = bonus;
+		else if (penalty > 0)
+			mult = penalty;
 
-    if (penalty > 0 && bonus > 0)
-        mult = bonus + penalty - 1.0;
-    else if (bonus > 0)
-        mult = bonus;
-    else if (penalty > 0)
-        mult = penalty;
-    else
-        mult = 1.0;
+		return amount * mult;
+	}
+	else
+		return 0.0;
+}
 
-    return GetEnergyRate() * mult;
+// ----------------------------------------------------------------------
+// GetAdjustedEnergyRate()
+//
+// Gets the actual rate of energy use for an augmentation, factoring in bonuses and penalties.
+// ----------------------------------------------------------------------
+
+function float GetAdjustedEnergyRate()
+{    
+    return GetAdjustedEnergy(GetEnergyRate());
 }
 
 // ----------------------------------------------------------------------
@@ -606,24 +634,7 @@ function float GetAdjustedEnergyRate()
 
 function float GetAdjustedEnergyReserve()
 {    
-    local float bonus, penalty, mult;
-
-    //Heart Penalty
-    penalty = Player.AugmentationSystem.GetAugLevelValue(class'AugHeartLung');
-
-    //recirc bonus
-    bonus = Player.AugmentationSystem.GetAugLevelValue(class'AugPower');
-
-    if (penalty > 0 && bonus > 0)
-        mult = bonus + penalty - 1.0;
-    else if (bonus > 0)
-        mult = bonus;
-    else if (penalty > 0)
-        mult = penalty;
-    else
-        mult = 1.0;
-
-    return EnergyReserved * mult;
+    return GetAdjustedEnergy(EnergyReserved);
 }
 
 // ----------------------------------------------------------------------
@@ -654,9 +665,16 @@ function bool IsToggleAug()
 // Gets the Augmentation name, followed by the aug type, such as "(Automatic)"
 // ----------------------------------------------------------------------
 
-function string GetName()
+function string GetName(optional bool bShortName)
 {
     local string suffix;
+    local string AugName;
+
+    if (bShortName)
+        AugName = AugmentationShortName;
+
+    if (AugName == "")
+        AugName = AugmentationName;
 
     switch (AugmentationType)
     {
@@ -677,7 +695,7 @@ function string GetName()
             break;
     }
 
-    return AugmentationName @ "(" $ suffix $ ")";
+    return AugName @ "(" $ suffix $ ")";
 }
 
 // ----------------------------------------------------------------------
@@ -712,6 +730,7 @@ defaultproperties
      AugLocsText(4)="Legs"
      AugLocsText(5)="Subdermal"
      AugLocsText(6)="Default"
+     AugKillswitch="Augmentation System has been disabled by user MJ12//SIMONS-W"
      AugActivated="%s activated"
      AugRecharging="%s is recharging"
      AugDeactivated="%s deactivated"
@@ -734,10 +753,9 @@ defaultproperties
      ActivateSound=Sound'DeusExSounds.Augmentation.AugActivate'
      DeActivateSound=Sound'DeusExSounds.Augmentation.AugDeactivate'
      LoopSound=Sound'DeusExSounds.Augmentation.AugLoop'
-     bHidden=True
-     bTravel=True
+     bHidden=true
+     bTravel=true
      NetUpdateFrequency=5.000000
-     bAddedToWheel=true;
      chargeTime=1.000000
      AugmentationType=Aug_Active
      colToggle=(R=76,G=255,B=0)
@@ -748,4 +766,5 @@ defaultproperties
      colPassive=(R=255,G=255)
      colActive=(R=0,G=38,B=255)
      colAuto=(G=255,B=255)
+     bHasChargeBar=true
 }

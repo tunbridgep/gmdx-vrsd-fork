@@ -80,6 +80,15 @@ function UpdateAugIconStatus(Augmentation aug)
 }
 
 // ----------------------------------------------------------------------
+// UpdateAllAugIcons()
+// ----------------------------------------------------------------------
+
+function UpdateAllIcons()
+{
+	winAugsContainer.UpdateAllIcons();
+}
+
+// ----------------------------------------------------------------------
 // ClearAugmentationDisplay()
 // ----------------------------------------------------------------------
 
@@ -139,9 +148,9 @@ function ConfigurationChanged()
 	{
 		winAugsContainer.QueryPreferredSize(augsWidth, augsHeight);
 		winAugsContainer.ConfigureChild(itemsWidth, 0, augsWidth, augsHeight);
-
-		itemPosX = itemsWidth + itemAugsOffsetX;
 	}
+    
+    itemPosX = itemsWidth + itemAugsOffsetX;
 
 	// Now that we know where the Augmentation window is, position
 	// the Items window

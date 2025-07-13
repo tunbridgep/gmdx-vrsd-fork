@@ -126,7 +126,7 @@ function ConfigurationChanged()
 
 function bool ChildRequestedReconfiguration(window child)
 {
-	return FALSE;
+	return false;
 }
 
 // ----------------------------------------------------------------------
@@ -159,5 +159,5 @@ event StyleChanged()
 defaultproperties
 {
      defaultBarHeight=16
-     bFillAllSpace=True
+     bFillAllSpace=true
 }

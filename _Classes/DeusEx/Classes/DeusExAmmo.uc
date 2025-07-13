@@ -15,12 +15,33 @@ var int altDamage; //CyberP:
 var() class<Skill> ammoSkill;                                                   //RSD: Denotes associated weapon skill
 var travel bool bLooted;                                                        //RSD: If we've already looted this and partially emptied it (for ammo spillover in world)
 
+var const bool bHarderScaling;                                                  //SARGE: If set, ammo will scale much harsher when untrained, up to the same value at Master.
+
 //SARGE: HDTP Model toggles
+//SARGE: TODO: Make these arrays so that ammo can have multi skins,
+//so we can have traditional HDTP darts as well as GMDX darts, for instance
 var config int iHDTPModelToggle;
 var string HDTPSkin;
 var string HDTPTexture;
 var string HDTPMesh;
+var string HDTPIcon;
+var string HDTPLargeIcon;
 var class<DeusExWeapon> hdtpReference;                                          //SARGE: Used when we want to tell a projectile to use the HDTP settings of a particular weapon
+
+//SARGE: For the GMDX v9 Color Coded Ammo setting, we now store the setting per ammo,
+//rather than hardcoding it, so that it can be used in other places, like the ammo display.
+var const Color ammoHUDColor;
+
+//SARGE: Partial ammo pickup
+var const Sound PartialAmmoSound;
+
+//SARGE: Ammo handling moved to ammo class
+var localized string MaxAmmoString;                                            //SARGE: Appended to searches when we can't pick ammo up
+
+function bool HasCustomAmmoColor()
+{
+    return default.ammoHUDColor != class'DeusExAmmo'.default.ammoHUDColor;
+}
 
 // ----------------------------------------------------------------------
 // PostBeginPlay()
@@ -208,52 +229,34 @@ function bool HandlePickupQuery( inventory Item )                               
     if ( (class == item.class) ||
 		(ClassIsChildOf(item.class, class'Ammo') && (class == Ammo(item).parentammo)) )
 	{
-        if (AmmoAmount>=tempMaxAmmo) return true;                               //RSD: Made >= in case of errors
-		else if (AmmoAmount + Ammo(item).AmmoAmount > tempMaxAmmo)              //RSD: New branch to leave spillover ammo in the world
-		{
-			intj = tempMaxAmmo - AmmoAmount;
-			AddAmmo(intj);
-			Ammo(item).AmmoAmount -= intj;
-			if (item.IsA('DeusExAmmo'))
-            	DeusExAmmo(item).bLooted = true;                                //RSD: so we don't add free ammo to containers we've partially looted
-            if (ammoSkill != Class'DeusEx.SkillDemolition' && !IsA('AmmoHideAGun')) //RSD: Don't display ammo message for grenades or the PS20
-		    {
-			Pawn(Owner).ClientMessage( Item.PickupMessage @ Item.itemArticle @ Item.ItemName $ " (" $ intj $ ")", 'Pickup' );
-			}
-			item.PlaySound( item.PickupSound );
-			if (Ammo(item).AmmoAmount <= 0)                                     //RSD: If the box is emptied, destroy it
-				item.SetRespawn();
-			return true;
-		}
-		else
-		{
-		if (Level.Game.LocalLog != None)
-			Level.Game.LocalLog.LogPickup(Item, Pawn(Owner));
-		if (Level.Game.WorldLog != None)
-			Level.Game.WorldLog.LogPickup(Item, Pawn(Owner));
-		if (ammoSkill != Class'DeusEx.SkillDemolition' && !IsA('AmmoHideAGun'))  //RSD: Don't display ammo message for grenades or the PS20
-		{
-		if (Item.PickupMessageClass == None)
-			// DEUS_EX CNN - use the itemArticle and itemName
-//			Pawn(Owner).ClientMessage( Item.PickupMessage, 'Pickup' );
-			//Pawn(Owner).ClientMessage( Item.PickupMessage @ Item.itemArticle @ Item.ItemName, 'Pickup' );
-			Pawn(Owner).ClientMessage( Item.PickupMessage @ Item.itemArticle @ Item.ItemName $ " (" $ Ammo(item).AmmoAmount $ ")", 'Pickup' ); //RSD
-		else
-			Pawn(Owner).ReceiveLocalizedMessage( Item.PickupMessageClass, 0, None, None, item.Class );
-		}
-		item.PlaySound( item.PickupSound );
-		AddAmmo(Ammo(item).AmmoAmount);
-		item.SetRespawn();
-		return true;
-		}
+        intj = player.LootAmmo(class<DeusExAmmo>(item.class),Ammo(item).AmmoAmount,true,false,false,true,false);
+        
+        Ammo(item).AmmoAmount = MAX(Ammo(item).AmmoAmount - intj,0);
+
+        if (Ammo(item).AmmoAmount == 0)
+        {
+            item.PlaySound( item.PickupSound );
+            item.SetRespawn();
+        }
+        else if (item.IsA('DeusExAmmo'))
+        {
+            //SARGE: We have to play the sound manually here so that it only plays when we're grabbing a partial amount.
+            player.PlayPartialAmmoSound(item,class<Ammo>(item.class));
+            
+            //SARGE: We have to do this here too, yucky!
+            if (player.bAlwaysShowReceivedItemsWindow)
+                player.AddReceivedItem(item, intj, true);
+            
+            if (player.bAlwaysShowReceivedItemsWindow && player.bShowDeclinedInReceivedWindow)
+                player.AddReceivedItem(item, Ammo(item).AmmoAmount, true, true);
+        }
+        return true;
 	}
 	if ( Inventory == None )
 		return false;
 
 	return Inventory.HandlePickupQuery(Item);
 }
-
-
 
 auto state Pickup                                                               //RSD: State to override Inventory.uc in Engine classes for proper ammo count numbers. Holy fuck this is bad
 {
@@ -379,13 +382,14 @@ Dropped:
 }
 
 //Whether this displays in HDTP depends on it's associated weapon's settings
-function bool IsHDTP()
+static function bool IsHDTP()
 {
-	if (DeusExPlayer(GetPlayerPawn()) == None || !DeusExPlayer(GetPlayerPawn()).bHDTPInstalled)
+	
+	if (!class'DeusExPlayer'.static.IsHDTPInstalled())
 		return false;
-    else if (hdtpReference != None)
-        return hdtpReference.default.iHDTPModelToggle > 0;
-    return iHDTPModelToggle > 0;
+    else if (default.hdtpReference != None)
+        return default.hdtpReference.default.iHDTPModelToggle > 0;
+    return default.iHDTPModelToggle > 0;
 }
 
 //SARGE: Setup the HDTP settings for this ammo
@@ -395,6 +399,10 @@ exec function UpdateHDTPSettings()
     if (Mesh != default.Mesh && !(string(Mesh) ~= HDTPMesh))
         return;
 
+    if (HDTPIcon != "")
+        Icon = class'HDTPLoader'.static.GetTexture2(HDTPIcon,string(default.Icon),IsHDTP());
+    if (HDTPLargeIcon != "")
+        LargeIcon = class'HDTPLoader'.static.GetTexture2(HDTPLargeIcon,string(default.LargeIcon),IsHDTP());
     if (HDTPMesh != "")
     {
         if (PlayerViewMesh == Mesh || PlayerViewMesh == None)
@@ -416,6 +424,17 @@ exec function UpdateHDTPSettings()
         Mesh = PickupViewMesh;
 }
 
+//Static functions to get the icons.
+//Used by the ammo screen
+static function Texture GetHDTPIcon()
+{
+    return class'HDTPLoader'.static.GetTexture2(default.HDTPIcon,string(default.Icon),IsHDTP());
+}
+static function Texture GetHDTPLargeIcon()
+{
+    return class'HDTPLoader'.static.GetTexture2(default.HDTPLargeIcon,string(default.LargeIcon),IsHDTP());
+}
+
 defaultproperties
 {
      msgInfoRounds="%d Rounds remaining"
@@ -428,4 +447,8 @@ defaultproperties
      bProjTarget=True
      Mass=30.000000
      iHDTPModelToggle=1
+     PartialAmmoSound=Sound'WeaponPickup'
+     MaxAmmoString="[Ammo at Maximum]"
+     PickupSound=sound'objpickup2'
+     bVisionImportant=true
 }

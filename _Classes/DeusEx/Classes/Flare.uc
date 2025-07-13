@@ -115,6 +115,7 @@ function UpdateGens()
 {
 	local vector loc, loc2;
 	local rotator rota;
+    local FlareShell shell;
 
 	if(gen != none)
 	{
@@ -176,17 +177,21 @@ function UpdateGens()
 		if(lifespan > 2)
 			flamething.DrawScale = 0.1 + 0.3*lifespan/flaretime;
 		else
-		{
 			flamething.Destroy();
-			Spawn(class'FlareShell',,,Location,Rotation);
-			Destroy();
-		}
 	}
 	if (attachedBeam != none)
 	{
 	    attachedBeam.setlocation(Location + vect(0,0,3));
         if (lifespan < 3)
              attachedBeam.Destroy();
+    }
+    
+    if(lifespan < 2)
+    {
+        shell = Spawn(class'FlareShell',,,Location,Rotation);
+        if (class'DeusExPlayer'.default.iPersistentDebris < 2)
+            shell.LifeSpan = 30;
+        Destroy();
     }
 }
 
@@ -297,9 +302,6 @@ function LightFlare()
 	local Pawn P;
 	local rotator rota;
     local DeusExPlayer playa;
-    local bool bHDTPInstalled;
-
-    bHDTPInstalled = DeusExPlayer(GetPlayerPawn()).bHDTPInstalled;
 
 	if (gen == None)
 	{
@@ -389,8 +391,7 @@ function LightFlare()
 		rota = rotation;
 		rota.Roll = 0;
 		rota.Yaw += 16384;
-        //if (IsHDTP())
-        if (bHDTPInstalled)
+        if (IsHDTP(true))
         {
             flaregen = Spawn(class'ParticleGenerator',Self,, Loc, rota);
             if (flaregen != None)
@@ -412,8 +413,7 @@ function LightFlare()
                 flaregen.particleTexture = class'HDTPLoader'.static.GetFireTexture("HDTPAnim.effects.HDTPFlarespark");
             }
         }
-        //if (IsHDTP())
-        if (bHDTPInstalled)
+        if (IsHDTP(true))
         {
             flamething = Spawn(class'Effects', Self,, Location, rotation);
             if(flamething != none)
@@ -430,8 +430,7 @@ function LightFlare()
                 flamething.bHidden=false;
             }
         }
-        //if (IsHDTP())
-        if (bHDTPInstalled)
+        if (IsHDTP(true))
         {
             flamething2 = Spawn(class'Effects', Self,, Location, rotation);
             if(flamething2 != none)
@@ -488,7 +487,7 @@ function Finish()                                                               
             //if (DeusExPlayer(Owner).primaryWeapon != None)                    //RSD: Always quickdraw
             //{
               if (DeusExPlayer(Owner).CarriedDecoration == None)
-                 DeusExPlayer(Owner).inHandPending = DeusExPlayer(Owner).primaryWeapon;
+                 DeusExPlayer(Owner).SelectLastWeapon(true,false);
               GotoState('idle');
               return;
             //}
@@ -503,6 +502,8 @@ exec function UpdateHDTPsettings()
 {
     Super.UpdateHDTPsettings();
     PlayerViewMesh=class'HDTPLoader'.static.GetMesh2("FOMOD.flare1st","DeusExItems.Flare",IsHDTP());
+    if (bCarriedItem)
+        Mesh = PlayerViewMesh;
 }
 
 defaultproperties
