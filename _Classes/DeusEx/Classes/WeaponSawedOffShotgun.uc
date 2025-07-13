@@ -297,6 +297,7 @@ defaultproperties
      FireOffset=(X=-11.000000,Y=4.000000,Z=13.000000)
      shakemag=600.000000
      FireSound=Sound'GMDXSFX.Weapons.shottie'
+     ClassicFireSound=Sound'DeusExSounds.Weapons.SawedOffShotgunFire'
      AltFireSound=Sound'DeusExSounds.Weapons.SawedOffShotgunReloadEnd'
      CockingSound=Sound'DeusExSounds.Weapons.SawedOffShotgunReload'
      SelectSound=Sound'GMDXSFX.Weapons.ShotgunCock'
