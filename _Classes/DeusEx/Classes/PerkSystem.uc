@@ -7,11 +7,11 @@
 
 class PerkSystem extends object;
 
-var private Perk PerkList[50];			// Trash: Hopefully with this system, you can make this 500 and it wouldn't matter much. You still need to manually set how many perks are created here though...
+var private Perk PerkList[100];			// Trash: Hopefully with this system, you can make this 500 and it wouldn't matter much. You still need to manually set how many perks are created here though...
 var private int numPerks;				// Trash: UnrealScript doesn't support lists, so this is essentially the number of perks in the game
 var private DeusExPlayer PlayerAttached;	// Trash: The player this class is attached to
 
-var private travel Name obtainedPerks[50]; //SARGE: Now we store the owned perks in this list, rather than in the perks themselves, so that we can regenerate the perk list on load.
+var private travel Name obtainedPerks[100]; //SARGE: Now we store the owned perks in this list, rather than in the perks themselves, so that we can regenerate the perk list on load.
 var private travel int numObtained;
 
 // ----------------------------------------------------------------------
@@ -24,7 +24,7 @@ function InitializePerks(DeusExPlayer newPlayer)	// Trash: Add every perk in the
 
 	PlayerAttached = newPlayer;
 
-    for (i = 0;i < 50;i++)
+    for (i = 0;i < 100;i++)
         PerkList[i] = None;
     numPerks = 0;
 
@@ -103,6 +103,13 @@ function InitializePerks(DeusExPlayer newPlayer)	// Trash: Add every perk in the
 	AddPerk(Class'DeusEx.PerkLawfare');
 	AddPerk(Class'DeusEx.PerkGlutton');
 	AddPerk(Class'DeusEx.PerkSocketJockey');
+    
+    for (i = 0;i < numObtained;i++)
+    {
+        playerAttached.DebugMessage("Obtained Perks: " $ obtainedPerks[i]);
+    }
+    playerAttached.DebugMessage("numObtained: " $ numObtained);
+    playerAttached.DebugMessage("numPerks: " $ numPerks);
 }
 
 function AddPerk(class<Perk> perk)
@@ -117,24 +124,38 @@ function AddPerk(class<Perk> perk)
 
     //If it's in the obtained list, set it to obtained
     for (i = 0;i < numObtained;i++)
+    {
         if (obtainedPerks[i] == Perk.name)
         {
             perkInstance.bPerkObtained = true;
             perkInstance.OnMapLoad();
             perkInstance.OnMapLoadAndPurchase();
         }
+    }
 
     numPerks++;
+}
+
+// ----------------------------------------------------------------------
+// AddAll()
+// ----------------------------------------------------------------------
+
+function AddAll()
+{
+    local int i;
+    for (i = 0;i < numPerks;i++)
+        PurchasePerk(PerkList[i].Class,true);
 }
 
 // ----------------------------------------------------------------------
 // PurchasePerk()
 // ----------------------------------------------------------------------
 
-function bool PurchasePerk(class<Perk> perk, optional bool free, optional bool always)  // Trash: Purchase the perk if possible
+function bool PurchasePerk(class<Perk> perk, optional bool free)  // Trash: Purchase the perk if possible
 {
     local Perk perkInstance;
     local int i;
+    local bool bFound;
 
     perkInstance = GetPerkWithClass(perk);
 
@@ -147,19 +168,17 @@ function bool PurchasePerk(class<Perk> perk, optional bool free, optional bool a
             PlayerAttached.SkillPointsAvail -= perkInstance.PerkCost;
 
         //Don't re-add it if we already have it
-        if (!always)
-        {
-            for (i = 0;i < numObtained;i++)
-                if (obtainedPerks[i] == perk.name)
-                    return false;
-        }
+        for (i = 0;i < numObtained;i++)
+            if (obtainedPerks[i] == perk.Name)
+                bFound = true;
 
         PlayerAttached.PlaySound(Sound'GMDXSFX.Generic.codelearned',SLOT_None,,,,0.8);
 		perkInstance.bPerkObtained = true;
         perkInstance.OnPerkPurchase();
         perkInstance.OnMapLoadAndPurchase();
 
-        obtainedPerks[numObtained++] = perk.name;
+        if (!bFound)
+            obtainedPerks[numObtained++] = perk.Name;
         return true;
     }
     return false;
@@ -193,8 +212,9 @@ function ResetPerks()  // Trash: Reset every perk
 
 	for (index = 0; index < numObtained; index++)
 	{
-		obtainedPerks[index] = '';
+		obtainedPerks[index] = 'none';
 	}
+    numObtained = 0;
 }
 
 // ----------------------------------------------------------------------

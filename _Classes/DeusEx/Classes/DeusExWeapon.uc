@@ -351,6 +351,7 @@ var localized String msgModsCopied;
 
 //SARGE: Sounds for various things
 var const Sound CopyModsSound;
+var const Sound ClassicFireSound;
 
 //END GMDX:
 
@@ -375,6 +376,25 @@ replication
 	// Functions Server calls in client
 	reliable if ( Role == ROLE_Authority )
 	  RefreshScopeDisplay, ReadyClientToFire, SetClientAmmoParams, ClientDownWeapon, ClientActive, ClientReload;
+}
+
+// ----------------------------------------------------------------------
+// GetDefaultFireSound()
+//
+// SARGE: Returns the default fire sound (standard or classic), based on the players options
+// ----------------------------------------------------------------------
+function Sound GetDefaultFireSound()
+{
+    if (Ammo20mm(AmmoType) != None) //Hack for 20mm grenade launcher
+        return Sound'AssaultGunFire20mm';
+    else if ( AmmoRocketWP(AmmoType) != None )
+        return Sound'GEPGunFireWP';
+    else if ( AmmoRocket(AmmoType) != None )
+        return Sound'GEPGunFire';
+    else if (class'DeusExPlayer'.default.bImprovedWeaponSounds || default.ClassicFireSound == None)
+        return default.FireSound;
+    else
+        return default.ClassicFireSound;
 }
 
 // ----------------------------------------------------------------------
@@ -1838,7 +1858,6 @@ function bool LoadAmmo(int ammoNum)
 					else
 						ReloadTime = Default.ReloadTime;
 				}
-				FireSound = Default.FireSound;
 
 				if (ProjectileNames[ammoNum] == Class'DeusEx.RubberBullet')
 				{
@@ -1899,9 +1918,8 @@ function bool LoadAmmo(int ammoNum)
 			// Same for WP rocket
 			if ( Ammo20mm(newAmmo) != None )
 				{
-                FireSound=Sound'AssaultGunFire20mm';
-                if (bHasSilencer)
-                   FireSilentSound=Sound'AssaultGunFire20mm';     //CyberP: if silenced also
+                    if (bHasSilencer)
+                        FireSilentSound=Sound'AssaultGunFire20mm';     //CyberP: if silenced also
                 }
             /*else if ( Ammo20mmEMP(newAmmo) != None )
 				{
@@ -1913,17 +1931,7 @@ function bool LoadAmmo(int ammoNum)
             {
                 if (bHasSilencer)    //CyberP: revert back to norm
                    FireSilentSound=default.FireSilentSound;
-                else
-                   FireSound=default.FireSound;
             }
-			else if ( AmmoRocketWP(newAmmo) != None )
-				{
-                FireSound=Sound'GEPGunFireWP';
-                }
-			else if ( AmmoRocket(newAmmo) != None )
-				{
-                FireSound=Sound'GEPGunFire';
-                }
             /*else if ( AmmoPlasmaSuperheated(newAmmo) != None )
                 {
                 bSuperheated=True;
@@ -3836,8 +3844,8 @@ simulated function PlaySelectiveFiring()
 		    if (IsA('WeaponAssaultGun'))
 		    {
 	           //mod = 1.000000;
-	           mod = 2.200000; // SARGE: speed increase, convert 5 round burst to 3 round burst
-	           PlayAnim(anim,1 * (mod-2*ModShotTime), 0.1);
+	           mod = 2.000000; // SARGE: speed increase, convert 5 round burst to 3 round burst
+	           PlayAnim(anim,1 * (mod-6*ModShotTime), 0.1);
 		    }
 		    else if (IsA('WeaponStealthPistol'))
 		    {
@@ -3917,6 +3925,8 @@ simulated function PlayFiringSound()
     }
 	else
 	{
+        if (FireSound != None)
+            FireSound = GetDefaultFireSound();
 		// The sniper rifle sound is heard to it's range in multiplayer
 		if ( ( Level.NetMode != NM_Standalone ) &&  Self.IsA('WeaponRifle') )
 			PlaySimSound( FireSound, SLOT_Interface, TransientSoundVolume, class'WeaponRifle'.Default.mpMaxRange );

@@ -5,6 +5,7 @@ class MJ12TroopCarcass extends DeusExCarcass;
 
 defaultproperties
 {
+	 nameReference=class'DeusEx.MJ12Troop'
      Mesh2=LodMesh'DeusExCharacters.GM_Jumpsuit_CarcassB'
      Mesh3=LodMesh'DeusExCharacters.GM_Jumpsuit_CarcassC'
      Texture=Texture'DeusExItems.Skins.PinkMaskTex'

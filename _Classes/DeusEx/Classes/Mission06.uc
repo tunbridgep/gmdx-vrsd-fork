@@ -5,6 +5,8 @@ class Mission06 expands MissionScript;
 
 var float fireTime;
 
+var localized string AugSystemReboot;
+
 // ----------------------------------------------------------------------
 // FirstFrame()
 //
@@ -769,6 +771,7 @@ function Timer()
         if (player.bRealKillswitch && !flags.GetBool('GMDXKillswitchStopped') && flags.GetBool('DL_TongFixesKillswitch2_Played'))
         {
             player.killswitchTimer = -1;
+            player.ClientMessage(AugSystemReboot);
             //player.bRealKillswitch = false;
             flags.SetBool('GMDXKillswitchStopped', True,, 0);
         }
@@ -825,4 +828,5 @@ function TeleportPawn(ScriptedPawn pawn, name patrolTag, name orders, optional b
 
 defaultproperties
 {
+    AugSystemReboot="Augmentation system re-initializing..."
 }

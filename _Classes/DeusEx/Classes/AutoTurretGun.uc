@@ -12,6 +12,16 @@ replication
 	reliable if (Role==ROLE_Authority)
 		team, titleString;
 }
+    
+//For cameras and turrets which can be turned off at a computer, we want to display them
+//as BYPASSED if they are disabled at a computer
+function bool DisplayHackText()
+{
+	local AutoTurret turret;
+	turret = AutoTurret(Owner);
+
+    return super.DisplayHackText() && (!turret.bDisabled || turret.bRebooting);
+}
 
 function Destroyed()
 {

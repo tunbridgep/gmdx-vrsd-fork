@@ -305,6 +305,7 @@ defaultproperties
      FireOffset=(X=-16.000000,Y=5.000000,Z=11.500000)
      shakemag=240.000000
      FireSound=Sound'GMDXSFX.Weapons.MP5Fire2'
+     ClassicFireSound=Sound'DeusExSounds.Weapons.AssaultGunFire'
      AltFireSound=Sound'GMDXSFX.Weapons.M4ClipIn'
      CockingSound=Sound'GMDXSFX.Weapons.M4ClipOut'
      SelectSound=Sound'GMDXSFX.Weapons.famasselect'
