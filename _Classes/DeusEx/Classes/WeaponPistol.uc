@@ -360,6 +360,7 @@ defaultproperties
      FireOffset=(X=-22.000000,Y=10.000000,Z=14.000000)
      shakemag=440.000000
      FireSound=Sound'GMDXSFX.Weapons.GlockFire'
+     ClassicFireSound=Sound'DeusExSounds.Weapons.PistolFire'
      AltFireSound=Sound'GMDXSFX.Weapons.M4ClipOut'
      CockingSound=Sound'DeusExSounds.Weapons.PistolReload'
      SelectSound=Sound'DeusExSounds.Weapons.PistolSelect'

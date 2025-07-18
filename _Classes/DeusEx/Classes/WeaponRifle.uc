@@ -391,6 +391,7 @@ defaultproperties
      FireOffset=(X=-20.000000,Y=2.000000,Z=30.000000)
      shakemag=450.000000
      FireSound=Sound'GMDXSFX.Weapons.REV2FIRE'
+     ClassicFireSound=Sound'DeusExSounds.Weapons.RifleFire'
      AltFireSound=Sound'DeusExSounds.Weapons.RifleReloadEnd'
      CockingSound=Sound'DeusExSounds.Weapons.RifleReload'
      SelectSound=Sound'DeusExSounds.Weapons.RifleSelect'

@@ -420,6 +420,7 @@ defaultproperties
      FireOffset=(X=-24.000000,Y=10.000000,Z=14.000000)
      shakemag=96.000000
      FireSound=Sound'GMDXSFX.Weapons.stealth_fire'
+     ClassicFireSound=Sound'DeusExSounds.Weapons.StealthPistolFire'
      AltFireSound=Sound'DeusExSounds.Weapons.StealthPistolReloadEnd'
      CockingSound=Sound'DeusExSounds.Weapons.StealthPistolReload'
      SelectSound=Sound'DeusExSounds.Weapons.StealthPistolSelect'
