@@ -26,4 +26,7 @@ Special thanks to the Revision Framerowk team for some small code snippets
 which were used as inspiration for fixing the HUD aspect ratio for cinematics,
 which previously didn't show subtitles.
 
+The GMDX:AE Installer comes with the DirectX 9 renderer by cwdonhal
+https://www.cwdohnal.com/utglr/
+
 For additional credits (from previous GMDX versions), please see the User Guide and vRSD Readme in the vRSD_Docs folder

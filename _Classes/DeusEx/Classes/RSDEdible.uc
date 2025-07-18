@@ -83,7 +83,7 @@ function string GetDescription2(DeusExPlayer player)
     RefreshGlutton();
     str = super.GetDescription2(player);
 
-    if (fullness > 0 && (player.bHardcoreMode || player.bRestrictedMetabolism))
+    if (fullness > 0 && (player.bHardcoreMode || player.bRestrictedMetabolism) && (!isA('Vice') || !player.bAddictionSystem))
         str = AddLine(str,sprintf(HungerLabel,fullness));
 
     return str;

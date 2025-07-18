@@ -17,7 +17,10 @@ function bool IsDiscovered(DeusExPlayer player, string code, optional string cod
     if (code2 != "")
         return codeExcepted || player.iNoKeypadCheese == 0 || ((player.GetCodeNote(code) || player.GetExceptedCode(code)) && (player.GetCodeNote(code2) || player.GetExceptedCode(code2)));
 
-    return codeExcepted || player.iNoKeypadCheese == 0 || player.GetCodeNote(code) || player.GetExceptedCode(code);
+    if (code != "")
+        return codeExcepted || player.iNoKeypadCheese == 0 || player.GetCodeNote(code) || player.GetExceptedCode(code);
+
+    return false;
 }
 
 defaultproperties

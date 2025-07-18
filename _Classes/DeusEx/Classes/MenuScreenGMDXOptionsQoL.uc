@@ -18,7 +18,7 @@ defaultproperties
      items(1)=(HelpText="Enable/Disable the highlighted augmentation when closing the augmentation wheel without requiring left-click. Cancel with right click.",actionText="Augmentation Wheel: Quick Select",variable="bQuickAugWheel");
      items(2)=(HelpText="Automatically Add Augmentations to the Wheel when acquired. Augmentations can always be added or removed using middle-click in the Augmentation window.",actionText="Augmentation Wheel: Auto Add Augs.",variable="iAugWheelAutoAdd",defaultValue=1,valueText1="Active Augs Only",valueText2="All Augs");
      items(3)=(HelpText="Remember the Cursor Position in the Augmentation Wheel",actionText="Augmentation Wheel: Remember Cursor Position",variable="bAugWheelRememberCursor");
-     items(4)=(HelpText="Enable/Disable the 'Disable All' button on the Augmentaiton Wheel.",actionText="Augmentation Wheel: Show 'Disable All'",variable="bAugWheelDisableAll",defaultValue=1);
+     items(4)=(HelpText="Enable/Disable the 'Disable All' button on the Augmentation Wheel.",actionText="Augmentation Wheel: Show 'Disable All'",variable="bAugWheelDisableAll",defaultValue=1);
      items(5)=(HelpText="Automtically add newly-acquired items to the toolbelt.",actionText="Belt: Autofill Belt",variable="bBeltAutofill");
      items(6)=(HelpText="After consuming the last item in a belt slot, its position will be preserved.|nIf Autofill is off, dropped items will also be preserved. Right-Click to clear.",actionText="Belt: Belt Memory",variable="bBeltMemory",defaultValue=1);
      items(7)=(HelpText="Right-click confirms belt selection, removing the need to cycle through items to reach desired slot.",actionText="Belt: Invisible War Toolbelt",variable="iAlternateToolbelt",valueText2="Classic",valueText3="Hybrid",helpText2="Classic mode makes right-click switch back after using the number keys.",helpText3="Hybrid mode only switches back to the primary selection if the primary belt selection was initially unholstered.");
@@ -36,7 +36,7 @@ defaultproperties
      items(19)=(HelpText="If enabled, characters (including the player) will blink randomly.",actionText="Game: Enable Blinking",variable="bEnableBlinking",defaultValue=1);
      items(20)=(HelpText="Shooting at walls will send sparks flying, and bullet holes are bigger!",actionText="Game: John Woo Mode",variable="bJohnWooSparks");
      items(21)=(HelpText="In Restricted mode, Combat Music will require at least 2 enemies to be in combat before music plays.",actionText="Music: Play Combat Music",variable="iAllowCombatMusic",defaultValue=1,valueText2="Restricted",);
-     items(22)=(HelpText="If set to Vanilla, only vanilla death/pain sounds play. Randomised randomises all death/pain sounds.",actionText="Game: Pain/Death Sounds",variable="iDeathSoundMode",defaultValue=2,valueText0="Vanilla",valueText1="Pre-Set",valueText2="Randomised");
+     items(22)=(HelpText="If set to Vanilla, only vanilla death/pain sounds play. Randomised randomises all death/pain sounds.",actionText="Audio: Pain/Death Sounds",variable="iDeathSoundMode",defaultValue=2,valueText0="Vanilla",valueText1="Pre-Set",valueText2="Randomised");
      items(23)=(HelpText="Makes all decals and fragments stick around forever.|nWARNING: High values may severely affect performance and lead to save instability!",actionText="Game: Persistant Debris",variable="iPersistentDebris",valueText1="Blood Pools Only",valueText2="Everything (2048 Decal Limit)",valuetext3="Everything (4096 Decal Limit)",valuetext4="Everything (8192 Decal Limit)",valuetext5="Everything (16384 Decal Limit)",defaultValue=1);
      items(24)=(HelpText="If enabled, the intro cutscene is not loaded.",actionText="Game: Skip Intro",variable="bSkipNewGameIntro");
      items(25)=(HelpText="Show outer crosshairs at 100% accuracy. Disable this if they get in the way.",actionText="HUD: 100% Accuracy Crosshairs",variable="bFullAccuracyCrosshair",defaultValue=1);
@@ -81,7 +81,7 @@ defaultproperties
      items(63)=(HelpText="When dying, switch to a first or third person camera.",actionText="Player: Death Perspective",variable="bRemoveVanillaDeath",valueText0="Third Person",valueText1="First Person");
 	 items(64)=(HelpText="If enabled, the current player stance will be displayed on the HUD.",actionText="Player: Current Stance Display",variable="iStanceHud",defaultValue=3,valueText1="Walk/Run",valueText2="Everything except Default",valueText3="Everything");
 	 items(65)=(HelpText="Disable the flash effect when healing or change the color.",actionText="Player: Healing Screen Effect",variable="iHealingScreen",defaultValue=1,valueText2="Classic");
-     items(66)=(HelpText="Active Augmentations no longer play their ambient sounds.",actionText="Player: Quiet Augmentations",variable="bQuietAugs",defaultValue=1);
+     items(66)=(HelpText="Active Augmentations no longer play their ambient sounds.",actionText="Audio: Quiet Augmentations",variable="bQuietAugs",defaultValue=1);
      items(67)=(HelpText="Alternate realistic headbobbing effect. To disable headbobbing outright, see the standard Settings menu.",actionText="Player: Realistic Head-Bobbing",variable="bModdedHeadBob",defaultValue=1);
      items(68)=(HelpText="Prevent accidentally killing domesticated animals by stomping on them.",actionText="Player: Stomp Domestic Animals",variable="bStompDomesticAnimals",defaultValue=0);
      items(69)=(HelpText="Prevent accidentally killing vac-bots by stomping on them.",actionText="Player: Stomp Vac Bots",variable="bStompDomesticAnimals",defaultValue=0);
@@ -96,6 +96,7 @@ defaultproperties
      items(77)=(HelpText="Show darkened versions of ignored and declined items in the Items Received Window when searching carcasses.",actionText="HUD: Show Unlooted in Items Window",variable="bShowDeclinedInReceivedWindow")
      items(78)=(HelpText="When active, left-clicking on doors, crates, windows and other interactive items while holstered will select the appropriate tool or melee weapon.",actionText="Interaction: Left-Click Interactions",variable="bEnableLeftFrob",defaultValue=1)
      items(79)=(HelpText="If Enabled, JC will always keep their weapon drawn during conversations. JC will always keep weapons drawn in some circumstances.",actionText="Conversations: Keep Weapon Drawn",variable="bConversationKeepWeaponDrawn")
+     items(80)=(HelpText="If Enabled, a smaller version of the messages window will display while an infolink is playing.",actionText="HUD: Enable Log during Infolinks",variable="bShowSmallLog")
      items(81)=(HelpText="When playing at certain resolutions, the outer crosshairs may become misaligned with the central crosshair. Use this setting to corect it.",actionText="HUD: Crosshair Adjustment",variable="iCrosshairOffByOne")
      Title="GMDX Quality of Life Options"
      colWidths(0)=214
