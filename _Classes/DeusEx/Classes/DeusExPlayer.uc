@@ -836,6 +836,8 @@ var globalconfig bool bConversationKeepWeaponDrawn;             //SARGE: Always 
 
 var globalconfig int iCrosshairVisible;                         //SARGE: Replaces the boolean crosshair setting, now we can control inner and outer crosshair independently.
 
+var globalconfig bool bRearmSkillRequired;                      //SARGE: Rearming grenades requires demolitions skill. Always enabled in Hardcore
+
 var globalconfig bool bShowSmallLog;                            //SARGE: Show a small log when the Infolink window is open. Otherwise, hide the log completely.
 
 //SARGE: Overhauled the Wireless Strength perk to no longer require having a multitool out.
@@ -19293,6 +19295,7 @@ defaultproperties
      bQuietAugs=True
      bEnableLeftFrob=True
      bShowDeclinedInReceivedWindow=true
+     bRearmSkillRequired=true
      bAutoUncrouch=true
      iCrosshairOffByOne=1
      bShowSmallLog=true
