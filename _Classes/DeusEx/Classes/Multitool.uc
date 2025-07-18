@@ -25,12 +25,14 @@ function DisplayWeapon(bool overlay)
 
 function OnEquipped()
 {
-    PlaySound(sound'RSDCrap.Misc.MultitoolEquip',SLOT_None);
+    if (class'DeusExPlayer'.default.bImprovedWeaponSounds)
+        PlaySound(sound'RSDCrap.Misc.MultitoolEquip',SLOT_None);
 }
 
 function OnUnEquipped()
 {
-    PlaySound(sound'RSDCrap.Misc.MultitoolUnequip',SLOT_None);
+    if (class'DeusExPlayer'.default.bImprovedWeaponSounds)
+        PlaySound(sound'RSDCrap.Misc.MultitoolUnequip',SLOT_None);
 }
 
 simulated function PreBeginPlay()

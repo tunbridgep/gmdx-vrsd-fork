@@ -48,6 +48,7 @@ simulated function bool TestMPBeltSpot(int BeltSpot)
 defaultproperties
 {
      UseSound=Sound'RSDCrap.Misc.LockpickUse'
+     ClassicUseSound=Sound'DeusExSounds.Generic.LockpickRattling'
      maxCopies=20
      bCanHaveMultipleCopies=True
      ItemName="Lockpick"

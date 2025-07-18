@@ -24,12 +24,14 @@ replication
 
 function OnEquipped()
 {
-    PlaySound(sound'RSDCrap.Misc.NanoKeyEquip',SLOT_None);
+    if (class'DeusExPlayer'.default.bImprovedWeaponSounds)
+        PlaySound(sound'RSDCrap.Misc.NanoKeyEquip',SLOT_None);
 }
 
 function OnUnEquipped()
 {
-    PlaySound(sound'RSDCrap.Misc.NanoKeyUnEquip',SLOT_None);
+    if (class'DeusExPlayer'.default.bImprovedWeaponSounds)
+        PlaySound(sound'RSDCrap.Misc.NanoKeyUnEquip',SLOT_None);
 }
 
 // ----------------------------------------------------------------------
