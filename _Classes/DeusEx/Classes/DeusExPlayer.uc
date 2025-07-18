@@ -3189,7 +3189,7 @@ function bool SelectMeleePriority(int damageThreshold)	// Trash: Used to automat
 		meleeWeapon = dts;
 	else if (!bHardCoreMode)
     {
-		ClientMessage(CantBreakDT);
+		//ClientMessage(CantBreakDT);
         return false;
     }
     else
