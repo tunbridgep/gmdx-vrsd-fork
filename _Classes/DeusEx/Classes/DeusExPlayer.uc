@@ -4308,16 +4308,6 @@ exec function PerkAdd(class<Perk> aWantedPerk)
         ClientMessage("Perk Added");
 }
 
-//SARGE: Add in a way to cheat perks
-exec function PerkReAdd(class<Perk> aWantedPerk)
-{
-	if (!bCheatsEnabled || PerkManager == None)
-		return;
-
-    if (PerkManager.PurchasePerk(aWantedPerk,true,true))
-        ClientMessage("Perk Re-added");
-}
-
 exec function OPAug() //CyberP: cheat for my fucked keyboard
 {
    local AugmentationCannister cann;
