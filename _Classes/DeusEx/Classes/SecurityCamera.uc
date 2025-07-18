@@ -67,6 +67,13 @@ replication
 		  bActive, ReplicatedRotation, team, safeTarget;
 }
 
+//For cameras and turrets which can be turned off at a computer, we want to display them
+//as BYPASSED if they are disabled at a computer
+function bool DisplayHackText()
+{
+    return super.DisplayHackText() && (bActive || bRebooting);
+}
+
 function EnableCamera()
 {
     bActive = true;
@@ -97,8 +104,6 @@ function Trigger(Actor Other, Pawn Instigator)
 	}
 	
     EnableCamera();
-	bHackable = true;
-	bDisabledByComputer = false;
 	Super.Trigger(Other, Instigator);
 }
 
@@ -114,8 +119,6 @@ function UnTrigger(Actor Other, Pawn Instigator)
 	}
 	
     DisableCamera();
-	bHackable = false;
-	bDisabledByComputer = true;
 	Super.UnTrigger(Other, Instigator);
 }
 

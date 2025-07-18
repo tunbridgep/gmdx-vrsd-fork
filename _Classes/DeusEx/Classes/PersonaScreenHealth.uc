@@ -40,6 +40,7 @@ var localized String KillerStr;
 var localized String MassMurdererStr;
 var localized String LocStr;
 var localized String HungryStr;
+var localized String StarvingStr;
 var localized String stepsStr;
 var localized String distStr;
 var localized String heartStr;
@@ -498,6 +499,8 @@ function DisplayCommonInfo()
     {
         if (player.fullUp >= 100)
             suffix = SatiatedStr;
+        else if (player.fullUp < 20) //SARGE: Added starving string
+            suffix = StarvingStr;
         else if (player.fullUp < 50)
             suffix = HungryStr;
         
@@ -1105,6 +1108,7 @@ defaultproperties
      MassMurdererStr="Mass Murderer"
      LocStr=" Location: "
      HungryStr=" (Hungry)"
+     StarvingStr=" (Starving)"
      stepsStr="Steps Taken: "
      distStr="Distance Travelled: "
      heartStr="Heart Rate: "

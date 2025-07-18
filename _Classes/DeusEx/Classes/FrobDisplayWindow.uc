@@ -502,7 +502,7 @@ function DrawDeviceHudInformation(GC gc, actor frobTarget)
 	gc.DrawText(infoX+(infoW-barSize+5), infoY+19+(infoH-8)/4, barSize, ((infoH-8)/4)+5, strThreshold);
 
 	// draw the absolute number of multitools on top of the colored bar
-	if ( device.bHackable && device.hackStrength > 0.0 )
+	if (device.DisplayHackText())
 	{
 		// draw a colored bar
 		gc.SetStyle(DSTY_Translucent);
@@ -551,7 +551,7 @@ function DrawDeviceHudInformation(GC gc, actor frobTarget)
 	}
 	else
 	{
-		if (device.bHackable || ( !device.bHackable && device.bDisabledByComputer ) )
+		if (device.bHackable)
 		{
 			strInfo = msgHacked;
 		}
@@ -763,7 +763,7 @@ defaultproperties
 	colNotEnough=(R=255,G=50,B=50)
 	colJustEnough=(R=255,G=255,B=50)
     colWireless=(B=255,G=50,R=50)
-	msgDisabled="Disabled"
+	msgDisabled="Rebooting"
 	msgTrackAll="Target: All"
 	msgTrackAllies="Target: Allies"
 	msgTrackEnemies="Target: Enemies"

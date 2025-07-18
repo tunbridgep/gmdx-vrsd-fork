@@ -126,8 +126,8 @@ function SetTurretState()
 			securityWindow.SetTurretState(False, True);
 			break;
 
-		case 1:			// Attack Allies
-			securityWindow.SetTurretState(True, False);
+		case 1:			// Default
+			securityWindow.SetTurretState(False, False);
 			securityWindow.SetTurretTrackMode(True, False);
 			break;
 
