@@ -128,13 +128,25 @@ function AddPerk(class<Perk> perk)
 }
 
 // ----------------------------------------------------------------------
+// AddAll()
+// ----------------------------------------------------------------------
+
+function AddAll()
+{
+    local int i;
+    for (i = 0;i < numPerks;i++)
+        PurchasePerk(PerkList[i].Class,true);
+}
+
+// ----------------------------------------------------------------------
 // PurchasePerk()
 // ----------------------------------------------------------------------
 
-function bool PurchasePerk(class<Perk> perk, optional bool free, optional bool always)  // Trash: Purchase the perk if possible
+function bool PurchasePerk(class<Perk> perk, optional bool free)  // Trash: Purchase the perk if possible
 {
     local Perk perkInstance;
     local int i;
+    local bool bHasIt;
 
     perkInstance = GetPerkWithClass(perk);
 
@@ -147,19 +159,18 @@ function bool PurchasePerk(class<Perk> perk, optional bool free, optional bool a
             PlayerAttached.SkillPointsAvail -= perkInstance.PerkCost;
 
         //Don't re-add it if we already have it
-        if (!always)
-        {
-            for (i = 0;i < numObtained;i++)
-                if (obtainedPerks[i] == perk.name)
-                    return false;
-        }
+        for (i = 0;i < numObtained;i++)
+            if (obtainedPerks[i] == perk.name)
+                bHasIt = true;
 
         PlayerAttached.PlaySound(Sound'GMDXSFX.Generic.codelearned',SLOT_None,,,,0.8);
 		perkInstance.bPerkObtained = true;
         perkInstance.OnPerkPurchase();
         perkInstance.OnMapLoadAndPurchase();
 
-        obtainedPerks[numObtained++] = perk.name;
+        if (!bHasIt)
+            obtainedPerks[numObtained++] = perk.name;
+
         return true;
     }
     return false;

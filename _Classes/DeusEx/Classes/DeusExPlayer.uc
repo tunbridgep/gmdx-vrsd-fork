@@ -4308,14 +4308,13 @@ exec function PerkAdd(class<Perk> aWantedPerk)
         ClientMessage("Perk Added");
 }
 
-//SARGE: Add in a way to cheat perks
-exec function PerkReAdd(class<Perk> aWantedPerk)
+//SARGE: Add in a way to cheat all perks
+exec function AllPerks()
 {
 	if (!bCheatsEnabled || PerkManager == None)
 		return;
 
-    if (PerkManager.PurchasePerk(aWantedPerk,true,true))
-        ClientMessage("Perk Re-added");
+    PerkManager.AddAll();
 }
 
 exec function OPAug() //CyberP: cheat for my fucked keyboard
@@ -4324,6 +4323,7 @@ exec function OPAug() //CyberP: cheat for my fucked keyboard
    Allskills();
    Allaugs();
    AllWeapons();
+   AllPerks(); //Sarge: Added
    cann = Spawn(class'AugmentationCannister',,,Location + (CollisionRadius+3) * Vector(Rotation) + vect(0,0,1) * 15 );
    if (cann != None)
        cann.AddAugs[1] = 'AugIcarus';
