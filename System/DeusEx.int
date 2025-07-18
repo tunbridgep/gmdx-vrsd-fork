@@ -1325,7 +1325,7 @@ ItemName="Lightweight Attack Munition (LAM)"
 ItemName="Cigarettes"
 ItemArticle="some"
 Description="'COUGHING NAILS -- when you've just got to have a cigarette.'"
-AddictionDescription="'COUGHING NAILS -- when you've just got to have a cigarette.'|n|n<UNATCO OPS FILE NOTE JR154-VIOLET> Nicotine intake stimulates an augmented agent's central nervous system and releases a surge of adrenaline, increasing alertness and fine motor control. Overstimulation will lead to addiction, with heightened fatigue in withdrawal. -- Jaime Reyes <END NOTE>|n|nActive Buff: Aim Stabilization Rate +100%|nWithdrawal Debuff: Running Stamina -50%|nUse Duration: 120 seconds (refreshes)|nAddiction Increment: 20%"
+AddictionDescription="'COUGHING NAILS -- when you've just got to have a cigarette.'|n|n<UNATCO OPS FILE NOTE JR154-VIOLET> Nicotine intake stimulates an augmented agent's central nervous system and releases a surge of adrenaline, increasing alertness and fine motor control. Overstimulation will lead to addiction, with heightened fatigue in withdrawal. -- Jaime Reyes <END NOTE>|n|nActive Buff: Aim Stabilization Rate +100%|nWithdrawal Debuff: Running Stamina -50%|nUse Duration: 120 seconds (refreshes)"
 beltDescription="CIGS"
 
 [WeaponModAccuracy]
@@ -1525,14 +1525,14 @@ beltDescription="BINOCS"
 [Liquor40oz]
 ItemName="Forty"
 Description="'COLD SWEAT forty ounce malt liquor. Never let 'em see your COLD SWEAT.'"
-AddictionDescription="'COLD SWEAT forty ounce malt liquor. Never let 'em see your COLD SWEAT.'|n|n<UNATCO OPS FILE NOTE JR155-VIOLET> An augmented agent's immune system reacts to alcohol consumption with a pseudo-anesthetic effect, notably enhancing pain tolerance. While addiction is slow to take root, it will cause increased nerve activity in withdrawal, resulting in involuntary muscle spasms colloquially known as "the shakes". -- Jaime Reyes <END NOTE>|n|nActive Buff: Max Torso Health +5 (stacks x5)|nWithdrawal Debuff: Accuracy -15%|nUse Duration: 120 seconds (stacks x5)|nAddiction Increment: 5%"
+AddictionDescription="'COLD SWEAT forty ounce malt liquor. Never let 'em see your COLD SWEAT.'|n|n<UNATCO OPS FILE NOTE JR155-VIOLET> An augmented agent's immune system reacts to alcohol consumption with a pseudo-anesthetic effect, notably enhancing pain tolerance. While addiction is slow to take root, it will cause increased nerve activity in withdrawal, resulting in involuntary muscle spasms colloquially known as "the shakes". -- Jaime Reyes <END NOTE>|n|nActive Buff: Max Torso Health +5 (stacks x5)|nWithdrawal Debuff: Accuracy -15%|nUse Duration: 120 seconds (stacks x5)"
 beltDescription="FORTY"
 
 [LiquorBottle]
 ItemName="Liquor"
 ItemArticle="some"
 Description="The label is torn off, but it looks like some of the good stuff."
-AddictionDescription="The label is torn off, but it looks like some of the good stuff.|n|n<UNATCO OPS FILE NOTE JR155-VIOLET> An augmented agent's immune system reacts to alcohol consumption with a pseudo-anesthetic effect, notably enhancing pain tolerance. While addiction is slow to take root, it will cause increased nerve activity in withdrawal, resulting in involuntary muscle spasms colloquially known as "the shakes". -- Jaime Reyes <END NOTE>|nActive Buff: Max Torso Health +5 (stacks x5)|nWithdrawal Debuff: Accuracy -15%|nUse Duration: 120 seconds (stacks x5)|nAddiction Increment: 5%"
+AddictionDescription="The label is torn off, but it looks like some of the good stuff.|n|n<UNATCO OPS FILE NOTE JR155-VIOLET> An augmented agent's immune system reacts to alcohol consumption with a pseudo-anesthetic effect, notably enhancing pain tolerance. While addiction is slow to take root, it will cause increased nerve activity in withdrawal, resulting in involuntary muscle spasms colloquially known as "the shakes". -- Jaime Reyes <END NOTE>|n|nActive Buff: Max Torso Health +5 (stacks x5)|nWithdrawal Debuff: Accuracy -15%|nUse Duration: 120 seconds (stacks x5)"
 beltDescription="LIQUOR"
 
 [ComputerPublic]
@@ -1625,7 +1625,7 @@ ItemName="Retinal Scanner"
 ItemName="Wine"
 ItemArticle="some"
 Description="A nice bottle of wine."
-AddictionDescription="A nice bottle of wine.|n|n<UNATCO OPS FILE NOTE JR155-VIOLET> An augmented agent's immune system reacts to alcohol consumption with a pseudo-anesthetic effect, notably enhancing pain tolerance. While addiction is slow to take root, it will cause increased nerve activity in withdrawal, resulting in involuntary muscle spasms colloquially known as "the shakes". -- Jaime Reyes <END NOTE>|nActive Buff: Max Torso Health +5 (stacks x5)|nWithdrawal Debuff: Accuracy -15%|nUse Duration: 120 seconds (stacks x5)|nAddiction Increment: 5%"
+AddictionDescription="A nice bottle of wine.|n|n<UNATCO OPS FILE NOTE JR155-VIOLET> An augmented agent's immune system reacts to alcohol consumption with a pseudo-anesthetic effect, notably enhancing pain tolerance. While addiction is slow to take root, it will cause increased nerve activity in withdrawal, resulting in involuntary muscle spasms colloquially known as "the shakes". -- Jaime Reyes <END NOTE>|n|nActive Buff: Max Torso Health +5 (stacks x5)|nWithdrawal Debuff: Accuracy -15%|nUse Duration: 120 seconds (stacks x5)|nAddiction Increment: 5%"
 beltDescription="WINE"
 
 [Valve]
