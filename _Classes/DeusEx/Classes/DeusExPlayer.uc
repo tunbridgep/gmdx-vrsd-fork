@@ -621,6 +621,8 @@ var travel bool bCameraDetectUnconscious;                                      /
 
 var travel bool bA51Camera;                                                     //SARGE: Was a gameplay setting, now a modifier. Make cameras stronger and act like Area 51 cameras.
 
+var travel bool bCollectiblesEnabled;                                          //SARGE: Enable the Collectibles system.
+
 //END GAMEPLAY MODIFIERS
 
 //hardcore+
@@ -682,7 +684,6 @@ var globalconfig int iAllowCombatMusic;                                        /
 
 ////Collectibles Stuff
 var travel int collectiblesFound;                                               //SARGE: How many collectibles the player has found.
-var globalconfig bool bCollectiblesEnabled;                                     //SARGE: Enable the Collectibles system.
 
 //Decline Everything
 var travel DeclinedItemsManager declinedItemsManager;                          //SARGE: Holds declined items.
