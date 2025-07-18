@@ -10,6 +10,8 @@ var float DrugIncrement;                                                        
 var float MaxDrugTimer;                                                         //RSD: Limit for how long a current drug can be active;
 var localized string AddictionDescription;                                      //RSD: Special description for if the player has the addiction system active
 
+var localized String IncrementLabel;
+
 //RSD: Superclass for all addictive drug types
 // 0 - Cigarettes (Cigarettes.uc)
 // 1 - Alcohol (Liquor40oz.uc, LiquorBottle.uc, WineBottle.uc)
@@ -52,6 +54,19 @@ function string GetDescription(DeusExPlayer player)
         return Description;
 }
 
+//Add Fullnes to description, if we're not using the addiction system
+function string GetDescription2(DeusExPlayer player)
+{
+    local string str;
+
+    str = super.GetDescription2(player);
+
+    if (player.bAddictionSystem)
+        str = AddLine(str,sprintf(IncrementLabel,int(AddictionIncrement)));
+
+    return str;
+}
+
 function HandleViceEffects(DeusExPlayer player)
 {
     //SARGE: New Addiction System
@@ -67,4 +82,5 @@ defaultproperties
      maxCopies=10
      bCanHaveMultipleCopies=True
      bActivatable=True
+     IncrementLabel="Addiction Increment: %d%%"
 }

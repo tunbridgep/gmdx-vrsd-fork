@@ -460,7 +460,6 @@ var globalconfig bool bAnimBar1;
 var globalconfig bool bAnimBar2;
 var globalconfig bool bExtraObjectDetails;
 var globalconfig bool bCameraSensors;
-var globalconfig bool bHardcoreFilterOption;
 var globalconfig bool bRealisticCarc;
 var globalconfig bool bLaserRifle;
 var globalconfig bool bRemoveVanillaDeath;
@@ -619,6 +618,8 @@ var travel bool bWeaponRequirementsMatter;                                      
 var travel bool bCameraDetectUnconscious;                                      //Ygll: Unconscious body will now be detected by camera.
 
 var travel bool bA51Camera;                                                     //SARGE: Was a gameplay setting, now a modifier. Make cameras stronger and act like Area 51 cameras.
+
+var travel bool bHardcoreFilterOption;                                          //SARGE: Moved from gameplay options to modifiers
 
 //END GAMEPLAY MODIFIERS
 
@@ -834,6 +835,8 @@ var globalconfig bool bEnableLeftFrob;                          //SARGE: No idea
 var globalconfig bool bConversationKeepWeaponDrawn;             //SARGE: Always keep weapons drawn during conversations.
 
 var globalconfig int iCrosshairVisible;                         //SARGE: Replaces the boolean crosshair setting, now we can control inner and outer crosshair independently.
+
+var globalconfig bool bShowSmallLog;                            //SARGE: Show a small log when the Infolink window is open. Otherwise, hide the log completely.
 
 //SARGE: Overhauled the Wireless Strength perk to no longer require having a multitool out.
 var HackableDevices HackTarget;
@@ -1206,7 +1209,7 @@ local DeusExPickup     PU;                                                      
     {
         ForEach AllActors(class'ThrownProjectile', TP)
         {
-       	    if (TP.bNoHardcoreFilter == True) //CyberP: destroy this bomb if we are not hardcore
+       	    if (TP.bNoHardcoreFilter == True && !bHardcoreFilterOption) //CyberP: destroy this bomb if we are not hardcore
 	       	    TP.Destroy();
             else
                 TP.proxRadius=156.000000;  //Also lower radius if not hardcore
@@ -2569,11 +2572,11 @@ exec function QuickLoad()
 	local GameDirectory saveDir;
 	local DeusExSaveInfo info;
 
-    saveDir = GetSaveGameDirectory();
-
-	//Don't allow in multiplayer.
-	if (Level.Netmode != NM_Standalone)
+	//Don't allow in multiplayer. //SARGE: Or during fake death
+	if (Level.Netmode != NM_Standalone || bFakeDeath)
 	  return;
+
+    saveDir = GetSaveGameDirectory();
 
     //Confirm the save exists before trying to do anything
     info = saveDir.GetSaveInfo(int(ConsoleCommand("get DeusExPlayer iLastSave")));
@@ -2582,7 +2585,7 @@ exec function QuickLoad()
 
 	if (DeusExRootWindow(rootWindow) != None && !IsInState('dying'))
 		DeusExRootWindow(rootWindow).ConfirmQuickLoad();
-	else if (DeusExRootWindow(rootWindow) != None && IsInState('dying') && !bDeadLoad && !bFakeDeath)
+	else if (DeusExRootWindow(rootWindow) != None && IsInState('dying') && !bDeadLoad)
 	{ bDeadLoad=True; GoToState('Dying','LoadHack');   }
 }
 
@@ -12418,6 +12421,9 @@ exec function ActivateBelt(int objectNum)
 	local DeusExRootWindow root;
     local Inventory beltItem;
 
+	if (RestrictInput())
+		return;
+
     //SARGE: When holding the number keys in dialog, we will select a weapon
     //upon finishing the conversation. Ignore the weapon change command.
     if (fBlockBeltSelection > 0)
@@ -12425,9 +12431,6 @@ exec function ActivateBelt(int objectNum)
         fBlockBeltSelection = 0;
         return;
     }
-
-	if (RestrictInput())
-		return;
 
     //SARGE: We need to do some wacky stuff here,
     //now that the belt slots go from 0-9 and are offset in the HUD,
@@ -19288,4 +19291,6 @@ defaultproperties
      bQuietAugs=True
      bEnableLeftFrob=True
      bShowDeclinedInReceivedWindow=true
+     iCrosshairOffByOne=1
+     bShowSmallLog=true
 }
