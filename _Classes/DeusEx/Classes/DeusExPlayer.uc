@@ -836,6 +836,8 @@ var globalconfig bool bConversationKeepWeaponDrawn;             //SARGE: Always 
 
 var globalconfig int iCrosshairVisible;                         //SARGE: Replaces the boolean crosshair setting, now we can control inner and outer crosshair independently.
 
+var globalconfig bool bImprovedLasers;                          //SARGE: Prevent pepper spray, boxes etc from disrupting lasers.
+
 var globalconfig bool bRearmSkillRequired;                      //SARGE: Rearming grenades requires demolitions skill. Always enabled in Hardcore
 
 var globalconfig bool bShowSmallLog;                            //SARGE: Show a small log when the Infolink window is open. Otherwise, hide the log completely.
@@ -19301,6 +19303,7 @@ defaultproperties
      bQuietAugs=True
      bEnableLeftFrob=True
      bShowDeclinedInReceivedWindow=true
+     bImprovedLasers=true
      bRearmSkillRequired=true
      bAutoUncrouch=true
      iCrosshairOffByOne=1
