@@ -668,7 +668,13 @@ local GMDXSparkFade fade;
 			attacker = safetarget;
 			if ( hit.IsA('DeusExPlayer') && ( Level.NetMode != NM_Standalone ))
 				DeusExPlayer(hit).myTurretKiller = Self;
-			hit.TakeDamage(gunDamage, attacker, HitLocation, 1000.0*X, 'AutoShot');
+
+
+            //SARGE: Now do double damage against enemies.
+			if (hit.IsA('ScriptedPawn'))
+                hit.TakeDamage(gunDamage * 2, attacker, HitLocation, 1000.0*X, 'AutoShot');
+            else
+                hit.TakeDamage(gunDamage, attacker, HitLocation, 1000.0*X, 'AutoShot');
 
 			if (hit.IsA('Pawn') && !hit.IsA('Robot'))
 				SpawnBlood(HitLocation, HitNormal);
@@ -950,7 +956,7 @@ defaultproperties
      maxRange=4000
      fireRate=0.240000
      gunAccuracy=0.500000
-     gunDamage=4
+     gunDamage=6
      AmmoAmount=100
      confusionDuration=10.000000
      pitchLimit=11000.000000
