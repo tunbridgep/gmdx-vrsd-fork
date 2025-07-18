@@ -350,10 +350,10 @@ function ConfigurationChanged()
 	{
 		infolink.QueryPreferredSize(qWidth, qHeight);
 
-		if ((msgLog != None) && (msgLog.IsVisible()))
-			infolink.ConfigureChild(hitWidth + 20, msgLog.Height + 20, qWidth, qHeight);
-		else
-			infolink.ConfigureChild(hitWidth + 20, 0, qWidth, qHeight);
+        infolink.ConfigureChild(hitWidth + 20, 0, qWidth, qHeight);
+        //Also make the message log smaller
+        if (msgLog != None && infoLink.IsVisible())
+            msgLog.ConfigureChild(hitWidth + qWidth + 20, 10, width - hitWidth - qwidth - itemsWidth - 40, msgLog.height);
 
 		if (infolink.IsVisible())
 			infoTop = max(infoTop, 10 + qHeight);
@@ -488,7 +488,7 @@ function HUDInfoLinkDisplay CreateInfoLinkWindow()
 	infolink = HUDInfoLinkDisplay(NewChild(Class'HUDInfoLinkDisplay'));
 
 	// Hide Log window
-	if ( msgLog != None )
+	if ( msgLog != None && !class'DeusExPlayer'.default.bShowSmallLog)
 		msgLog.HideLogWindow();                                                 //RSD: Was Hide(), new shell function so we can set bPlayingLog properly
 
 	infolink.AskParentForReconfigure();
@@ -510,6 +510,7 @@ function DestroyInfoLinkWindow()
 
     if ( infoLink != None )
 	{
+        infolink.AskParentForReconfigure();
 		infoLink.Destroy();
 
 		// If the msgLog window was visible, show it again
@@ -554,7 +555,7 @@ event VisibilityChanged(bool bNewVisibility)
 
 	if (( msgLog != None ) && ( bNewVisibility ))
 	{
-		if (( infoLink == None ) && ( msgLog.MessagesWaiting() ) && winPersona == none) //RSD: Added winPersona == none so it doesn't pop up when we're in realtime UI
+		if (( infoLink == None || class'DeusExPlayer'.default.bShowSmallLog ) && ( msgLog.MessagesWaiting() ) && winPersona == none) //RSD: Added winPersona == none so it doesn't pop up when we're in realtime UI
 			msgLog.ShowLogWindow();                                             //RSD: Was Show(), new shell function so we can set bPlayingLog properly
 	}
 }
@@ -614,7 +615,7 @@ function UpdateSettings( DeusExPlayer player , optional bool bNoBelt)
 
 	//RSD: Also bring back any windows we may have closed in realtime UI
     if (msgLog != none)
-        msgLog.SetVisibility(msgLog.bPlayingLog || (infoLink==None && msgLog.MessagesWaiting())); //RSD: Need to check if actually playing a log, otherwise an extra window will be drawn if a ConWindow is active. Also check if we were delayed by an infolink
+        msgLog.SetVisibility(msgLog.bPlayingLog || ((infoLink==None || class'DeusExPlayer'.default.bShowSmallLog) && msgLog.MessagesWaiting())); //RSD: Need to check if actually playing a log, otherwise an extra window will be drawn if a ConWindow is active. Also check if we were delayed by an infolink
     if (infoLink != none)
         infolink.SetVisibility(true);
     if (conWindow != none)
