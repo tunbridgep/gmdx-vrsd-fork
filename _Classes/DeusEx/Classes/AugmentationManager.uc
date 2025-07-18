@@ -399,6 +399,8 @@ simulated function Augmentation FindAugmentation(Class<Augmentation> findClass)
 function bool RemoveAugmentation(Class<Augmentation> takeClass)
 {
 	local Augmentation anAug, allTheAugs;
+    local Inventory I;
+    local int max;
 
 	// Checks to see if the player already has it.  If so, we want to
 	// increase the level
@@ -427,6 +429,23 @@ function bool RemoveAugmentation(Class<Augmentation> takeClass)
             }
         }
     }
+
+    //SARGE: If removing Ammo Capacity, remove excess ammo
+    if (anAug.IsA('AugAmmoCap'))
+    {
+        I = player.Inventory;
+        while (I != None)
+        {
+            if (I.IsA('Ammo'))
+            {
+                max = player.GetAdjustedMaxAmmo(Ammo(I));
+                if (Ammo(I).AmmoAmount > max)
+                    Ammo(I).AmmoAmount = max;
+            }
+            I = I.Inventory;
+        }
+    }
+
 
 	// Manage our AugLocs[] array
 	AugLocs[anAug.AugmentationLocation].augCount--;
