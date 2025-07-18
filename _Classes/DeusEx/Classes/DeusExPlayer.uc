@@ -847,11 +847,13 @@ var travel bool bPhotoMode;                                     //SARGE: Show/Hi
 
 var bool bClearReceivedItems;                                   //SARGE: Clear the received items window next time we display it.
 
+var globalconfig bool bAutoUncrouch;                            //SARGE: Automatically uncrouch when we press the run button.
 
 //SARGE: Holstering Modes
 //Replaces Double Click Holstering
 var globalconfig int iHolsterMode;                             //SARGE: 0 = single click, 1 = double click
 var globalconfig int iUnholsterMode;                           //SARGE: 0 = disabled completely, 1 = single click, 2 = double click
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -5885,7 +5887,7 @@ function HandleWalking()
 		bIsWalking = !bIsWalking;
 
     //SARGE: If we started running with the run key, untoggle crouch
-    if (!bLastRun && bRun == 1 && IsCrouching() && !bAlwaysRun)
+    if (bAutoUncrouch && !bLastRun && bRun == 1 && IsCrouching() && !bAlwaysRun)
         SetCrouch(false);
 
     bLastRun = bool(bRun);
@@ -19116,7 +19118,7 @@ defaultproperties
      CanCarryOnlyOne="You can only carry one %s"
      CannotDropHere="Can't drop that here"
      HandsFull="Your hands are full"
-	 CantBreakDT="Strongest melee damage doesn't pass threshold"
+	   CantBreakDT="Strongest melee damage doesn't pass threshold"
      NoteAdded="Note Received - Check DataVault For Details"
      GoalAdded="Goal Received - Check DataVault For Details"
      PrimaryGoalCompleted="Primary Goal Completed"
@@ -19256,7 +19258,7 @@ defaultproperties
      bShowEnergyBarPercentages=true
      bSimpleAugSystem=false
      bBigDroneView=True
-	 MenuThemeNameGMDX="MJ12"
+	   MenuThemeNameGMDX="MJ12"
      HUDThemeNameGMDX="Amber"
      iHolsterMode=1
      iUnholsterMode=2
@@ -19291,6 +19293,7 @@ defaultproperties
      bQuietAugs=True
      bEnableLeftFrob=True
      bShowDeclinedInReceivedWindow=true
+     bAutoUncrouch=true
      iCrosshairOffByOne=1
      bShowSmallLog=true
 }
