@@ -65,9 +65,9 @@ defaultproperties
      //items(48)=(HelpText="Augmentation descriptions will be simplified. Disable to show the difference between Energy Reserving (toggle) augmentations and conditional energy using (Automatic) augmentations.",actionText="HUD: Simplified Aug Categories",variable="bSimpleAugSystem",defaultValue=1);
      items(48)=(HelpText="Use smaller fonts for some HUD Elements.",actionText="HUD: Use Classic Fonts",variable="bClassicFont",consoleTarget="DeusEx.FontManager",defaultValue=0);
      items(49)=(HelpText="If enabled, the crosshair will turn blue when attempting to attach a mine to a surface, or when highlighting with the Wireless Strength perk.",actionText="HUD: Wall Placement Helper",variable="bWallPlacementCrosshair",defaultValue=1);
-     items(50)=(HelpText="If enabled, attempting to pick up carryable objects will automatically holster your held weapon, enabling you to pick up the object.",actionText="Interaction: Auto-Holster",variable="iAutoHolster",valueText1="Carcasses Only",valueText2="Everything");
+     items(50)=(HelpText="If enabled, attempting to pick up carryable objects will automatically holster your held weapon, enabling you to pick up the object.",actionText="Holstering: Auto-Holster",variable="iAutoHolster",valueText1="Carcasses Only",valueText2="Everything");
      items(51)=(HelpText="If enabled, Data Cubes will show when they have been interacted with.",actionText="Interaction: Darken Data-Cube Screens",variable="bShowDataCubeRead",defaultValue=1);
-     items(52)=(HelpText="If enabled, double-right click to holster/unholster items in hand. Prevents accidentally putting away items when attempting to interact with the world.",actionText="Interaction: Double-Click Holstering",variable="dblClickHolster",valueText2="Holstering and Unholstering",defaultValue=2);
+     items(52)=(HelpText="If enabled, double-right click to holster items in hand. Prevents accidentally putting away items when attempting to interact with the world.",actionText="Holstering: Holstering Mode",variable="iHolsterMode",valueText0="Standard",valueText1="Double Click",defaultValue=1);
      items(53)=(HelpText="If enabled, right clicking a corpse for the first time will never pick it up, to stop accidentally picking up corpses while searching for items.",actionText="Interaction: Enhanced Carcass Searching",variable="bEnhancedCorpseInteractions",defaultValue=1);
      items(54)=(HelpText="If enabled, left-clicking with nothing targeted will unholster your last item.",actionText="Interaction: Left-Click Unholstering",variable="bLeftClickUnholster");
      items(55)=(HelpText="Append item counts to item pickup text, if more than 1 item is in the stack.",actionText="Interaction: Show Item Count Labels",variable="bShowItemPickupCounts");
@@ -96,6 +96,10 @@ defaultproperties
      items(77)=(HelpText="Show darkened versions of ignored and declined items in the Items Received Window when searching carcasses.",actionText="HUD: Show Unlooted in Items Window",variable="bShowDeclinedInReceivedWindow")
      items(78)=(HelpText="When active, left-clicking on doors, crates, windows and other interactive items while holstered will select the appropriate tool or melee weapon.",actionText="Interaction: Left-Click Interactions",variable="bEnableLeftFrob",defaultValue=1)
      items(79)=(HelpText="If Enabled, JC will always keep their weapon drawn during conversations. JC will always keep weapons drawn in some circumstances.",actionText="Conversations: Keep Weapon Drawn",variable="bConversationKeepWeaponDrawn")
+     items(80)=(HelpText="If Enabled, a smaller version of the messages window will display while an infolink is playing.",actionText="HUD: Enable Log during Infolinks",variable="bShowSmallLog")
+     items(81)=(HelpText="When playing at certain resolutions, the outer crosshairs may become misaligned with the central crosshair. Use this setting to corect it.",actionText="HUD: Crosshair Adjustment",variable="iCrosshairOffByOne")
+     items(82)=(HelpText="If enabled, double-right click to unholster items in hand, or disable unholstering completely.",actionText="Holstering: Unholstering Mode",variable="iUnholsterMode",valueText1="Standard",valueText2="Double-Click",defaultValue=2);
+     items(84)=(HelpText="If enabled, pressing the Run key while crouched will automatically uncrouch. Does nothing when Always Run is enabled.",actionText="Game: Auto Uncrouch",variable="bAutoUncrouch",defaultValue=1);
      Title="GMDX Quality of Life Options"
      colWidths(0)=214
      colWidths(1)=155

@@ -448,7 +448,6 @@ var globalconfig bool bSkipNewGameIntro; //CyberP: for GMDX option menu
 var globalconfig bool bColorCodedAmmo;
 var globalconfig bool bDecap;
 var globalconfig bool bNoTranslucency;
-var globalconfig int dblClickHolster;                      //SARGE: 0 = off, 1 = double click holstering only, 2 = double click holstering and unholstering
 var globalconfig bool bHalveAmmo;
 var globalconfig bool bHardcoreUnlocked;
 var globalconfig int iAutoHolster;                         //SARGE: 0 = off, 1 = corpses only, 2 = everything
@@ -461,7 +460,6 @@ var globalconfig bool bAnimBar1;
 var globalconfig bool bAnimBar2;
 var globalconfig bool bExtraObjectDetails;
 var globalconfig bool bCameraSensors;
-var globalconfig bool bHardcoreFilterOption;
 var globalconfig bool bRealisticCarc;
 var globalconfig bool bLaserRifle;
 var globalconfig bool bRemoveVanillaDeath;
@@ -620,6 +618,8 @@ var travel bool bWeaponRequirementsMatter;                                      
 var travel bool bCameraDetectUnconscious;                                      //Ygll: Unconscious body will now be detected by camera.
 
 var travel bool bA51Camera;                                                     //SARGE: Was a gameplay setting, now a modifier. Make cameras stronger and act like Area 51 cameras.
+
+var travel bool bHardcoreFilterOption;                                          //SARGE: Moved from gameplay options to modifiers
 
 //END GAMEPLAY MODIFIERS
 
@@ -836,6 +836,10 @@ var globalconfig bool bConversationKeepWeaponDrawn;             //SARGE: Always 
 
 var globalconfig int iCrosshairVisible;                         //SARGE: Replaces the boolean crosshair setting, now we can control inner and outer crosshair independently.
 
+var globalconfig bool bRearmSkillRequired;                      //SARGE: Rearming grenades requires demolitions skill. Always enabled in Hardcore
+
+var globalconfig bool bShowSmallLog;                            //SARGE: Show a small log when the Infolink window is open. Otherwise, hide the log completely.
+
 //SARGE: Overhauled the Wireless Strength perk to no longer require having a multitool out.
 var HackableDevices HackTarget;
 
@@ -844,6 +848,13 @@ var bool bFakeDeath;                                            //SARGE: Fixes a
 var travel bool bPhotoMode;                                     //SARGE: Show/Hide the entire HUD at once
 
 var bool bClearReceivedItems;                                   //SARGE: Clear the received items window next time we display it.
+
+var globalconfig bool bAutoUncrouch;                            //SARGE: Automatically uncrouch when we press the run button.
+
+//SARGE: Holstering Modes
+//Replaces Double Click Holstering
+var globalconfig int iHolsterMode;                             //SARGE: 0 = single click, 1 = double click
+var globalconfig int iUnholsterMode;                           //SARGE: 0 = disabled completely, 1 = single click, 2 = double click
 
 //////////END GMDX
 
@@ -1202,7 +1213,7 @@ local DeusExPickup     PU;                                                      
     {
         ForEach AllActors(class'ThrownProjectile', TP)
         {
-       	    if (TP.bNoHardcoreFilter == True) //CyberP: destroy this bomb if we are not hardcore
+       	    if (TP.bNoHardcoreFilter == True && !bHardcoreFilterOption) //CyberP: destroy this bomb if we are not hardcore
 	       	    TP.Destroy();
             else
                 TP.proxRadius=156.000000;  //Also lower radius if not hardcore
@@ -2565,11 +2576,11 @@ exec function QuickLoad()
 	local GameDirectory saveDir;
 	local DeusExSaveInfo info;
 
-    saveDir = GetSaveGameDirectory();
-
-	//Don't allow in multiplayer.
-	if (Level.Netmode != NM_Standalone)
+	//Don't allow in multiplayer. //SARGE: Or during fake death
+	if (Level.Netmode != NM_Standalone || bFakeDeath)
 	  return;
+
+    saveDir = GetSaveGameDirectory();
 
     //Confirm the save exists before trying to do anything
     info = saveDir.GetSaveInfo(int(ConsoleCommand("get DeusExPlayer iLastSave")));
@@ -2578,7 +2589,7 @@ exec function QuickLoad()
 
 	if (DeusExRootWindow(rootWindow) != None && !IsInState('dying'))
 		DeusExRootWindow(rootWindow).ConfirmQuickLoad();
-	else if (DeusExRootWindow(rootWindow) != None && IsInState('dying') && !bDeadLoad && !bFakeDeath)
+	else if (DeusExRootWindow(rootWindow) != None && IsInState('dying') && !bDeadLoad)
 	{ bDeadLoad=True; GoToState('Dying','LoadHack');   }
 }
 
@@ -5878,7 +5889,7 @@ function HandleWalking()
 		bIsWalking = !bIsWalking;
 
     //SARGE: If we started running with the run key, untoggle crouch
-    if (!bLastRun && bRun == 1 && IsCrouching() && !bAlwaysRun)
+    if (bAutoUncrouch && !bLastRun && bRun == 1 && IsCrouching() && !bAlwaysRun)
         SetCrouch(false);
 
     bLastRun = bool(bRun);
@@ -8515,9 +8526,9 @@ function SetDoubleClickTimer()
     
 function DoAutoHolster()
 {
-    if (iAutoHolster > 1)// && (clickCountCyber >= 1 || dblClickHolster == 0 ))
+    if (iAutoHolster > 1)// && (clickCountCyber >= 1 || iHolsterMode == 0 ))
         PutInHand(None);
-    else if (iAutoHolster > 0 && dblClickHolster > 0)
+    else if (iAutoHolster > 0 && iHolsterMode > 0)
         SetDoubleClickTimer();
 }
 
@@ -8699,7 +8710,7 @@ exec function ParseRightClick()
 			PutInHand(None);
 		}
         //SARGE: When we have a forced weapon selection in hand (like a lockpick after left-frobbing, then select our last weapon instead.
-        else if (bWasForceSelected && inHand != None && primaryWeapon != None && inHand != primaryWeapon && (clickCountCyber >= 1 || dblClickHolster == 0 || !bLastWasEmpty))
+        else if (bWasForceSelected && inHand != None && primaryWeapon != None && inHand != primaryWeapon && (clickCountCyber >= 1 || iHolsterMode == 0 || !bLastWasEmpty))
         {
             SelectLastWeapon(true);
         }
@@ -8709,13 +8720,13 @@ exec function ParseRightClick()
             SelectLastWeapon(false,!bSelectedOffBelt);
             beltLast = advBelt;
 		}
-        else if (inHand == None && (clickCountCyber >= 1 || dblClickHolster < 2))
+        else if (inHand == None && (clickCountCyber >= 1 || iUnholsterMode < 2) && iUnholsterMode > 0)
 		{
             //SARGE: Added support for the unholster behaviour from the Alternate Toolbelt on both Toolbelts
             bSelectedFromMainBeltSelection = true;
             SelectLastWeapon(false,!bSelectedOffBelt);
 		}
-		else if (inHand != None && (clickCountCyber >= 1 || dblClickHolster == 0))
+		else if (inHand != None && (clickCountCyber >= 1 || iHolsterMode == 0))
 		{
             bSelectedFromMainBeltSelection = false;
             PutInHand(None);
@@ -19109,7 +19120,7 @@ defaultproperties
      CanCarryOnlyOne="You can only carry one %s"
      CannotDropHere="Can't drop that here"
      HandsFull="Your hands are full"
-	 CantBreakDT="Strongest melee damage doesn't pass threshold"
+	   CantBreakDT="Strongest melee damage doesn't pass threshold"
      NoteAdded="Note Received - Check DataVault For Details"
      GoalAdded="Goal Received - Check DataVault For Details"
      PrimaryGoalCompleted="Primary Goal Completed"
@@ -19249,9 +19260,10 @@ defaultproperties
      bShowEnergyBarPercentages=true
      bSimpleAugSystem=false
      bBigDroneView=True
-	 MenuThemeNameGMDX="MJ12"
+	   MenuThemeNameGMDX="MJ12"
      HUDThemeNameGMDX="Amber"
-     dblClickHolster=2
+     iHolsterMode=1
+     iUnholsterMode=2
      bSmartDecline=True
      killswitchTimer=-2
      iEnhancedMusicSystem=1
@@ -19283,4 +19295,8 @@ defaultproperties
      bQuietAugs=True
      bEnableLeftFrob=True
      bShowDeclinedInReceivedWindow=true
+     bRearmSkillRequired=true
+     bAutoUncrouch=true
+     iCrosshairOffByOne=1
+     bShowSmallLog=true
 }

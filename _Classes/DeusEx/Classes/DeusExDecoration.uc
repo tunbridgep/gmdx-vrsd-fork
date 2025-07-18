@@ -566,7 +566,8 @@ singular function BaseChange()
 	// make sure if a decoration is accidentally dropped,
 	// we reset it's parameters correctly
 	SetCollision(Default.bCollideActors, Default.bBlockActors, Default.bBlockPlayers);
-	bCollideWorld = Default.bCollideWorld;
+    if (bPushable)
+        bCollideWorld = Default.bCollideWorld;
 	Style = Default.Style;
 	bUnlit = Default.bUnlit;
 
