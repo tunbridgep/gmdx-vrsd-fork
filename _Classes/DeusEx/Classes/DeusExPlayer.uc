@@ -4601,8 +4601,8 @@ function ToggleCameraState(SecurityCamera cam, ElectronicDevices compOwner, opti
     //If we're active, or we were rebooting, and we logged in, then disable
 	if ((cam.bActive || cam.bRebooting) && !bHacked)
 	{
-	  cam.UnTrigger(compOwner, self);
-	  cam.team = -1;
+        cam.UnTrigger(compOwner, self);
+        cam.team = -1;
 	}    
     else if (cam.bActive && bHacked) //Set to reboot
     {
@@ -4612,10 +4612,10 @@ function ToggleCameraState(SecurityCamera cam, ElectronicDevices compOwner, opti
     }    
 	else //Re-enable
 	{
-      cam.bRebooting = false;
-      cam.disableTime = 0;
-	  MakeCameraAlly(cam);
-	  cam.Trigger(compOwner, self);
+        cam.bRebooting = false;
+        cam.disableTime = 0;
+        MakeCameraAlly(cam);
+        cam.Trigger(compOwner, self);
 	}
 
 	// Make sure the camera isn't in bStasis=True
@@ -4624,10 +4624,16 @@ function ToggleCameraState(SecurityCamera cam, ElectronicDevices compOwner, opti
 }
 
 //client->server (window to player)
-function SetTurretState(AutoTurret turret, bool bActive, bool bDisabled, bool bHacked)
+function SetTurretState(AutoTurret turret, ElectronicDevices compOwner, bool bActive, bool bDisabled, bool bHacked)
 {
     if (!bHacked)
     {
+        //If we're disabling it without hacking, fully disable it.
+        if (!bActive && bDisabled)
+        {
+            turret.UnTrigger(compOwner,Self);
+        }
+
         turret.disableTime = 0;
         turret.bRebooting = false;
     }

@@ -8,7 +8,6 @@ var() bool				bHackable;				// can this device be hacked?
 var() float 			hackStrength;			// "toughness" of the hack on this device - 0.0 is easy, 1.0 is hard
 var() float          initialhackStrength; // for multiplayer hack resets, this is the initial value
 var() name				UnTriggerEvent[4];		// event to UnTrigger when hacked
-var bool 			bDisabledByComputer;
 
 var bool				   bHacking;				// a multitool is currently being used
 var float				hackValue;				// how much this multitool is currently hacking
@@ -43,7 +42,7 @@ function bool DoLeftFrob(DeusExPlayer frobber)
 {
     local Inventory item;
     
-    if (!bHackable || hackStrength == 0.0)
+    if (!DisplayHackText())
         return true;
 
     //Select a multitool if it's locked and we've got one
@@ -60,7 +59,7 @@ function bool DoLeftFrob(DeusExPlayer frobber)
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {
     //SARGE: Use the "right-click to autoselect" revision-style interaction, if enabled
-    if (bAllowRightClickToolSelection && bHackable && hackStrength > 0.0 && frobber.bRightClickToolSelection && frobber.inHand != None && !frobber.inHand.IsA('Multitool'))
+    if (bAllowRightClickToolSelection && DisplayHackText() && frobber.bRightClickToolSelection && frobber.inHand != None && !frobber.inHand.IsA('Multitool'))
         return DoLeftFrob(frobber);
 
     return true;
@@ -81,6 +80,12 @@ function DoWirelessPerkFrob(DeusExPlayer frobber)
 
     frobber.ClientMessage(msgNeedMultitool);
     */
+}
+
+//SARGE: Should we display the text for Multitools and Hack Strength?
+function bool DisplayHackText()
+{
+    return bHackable && hackStrength > 0.0;
 }
 
 // ---------------------------------------------------------------------------------------
@@ -258,7 +263,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 			// check for the use of multitools
 			if (bHackable && frobWith.IsA('Multitool') && (Player.SkillSystem != None))
 			{
-				if (hackStrength > 0.0)
+				if (DisplayHackText())
 				{
                     //Store the previous strength, so we can refund
                     previousStrength = hackStrength;
