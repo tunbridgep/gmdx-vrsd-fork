@@ -213,7 +213,7 @@ function Timer()
 	{
 		if (flags.GetBool('TalkedToPaulAfterMessage_Played'))
 		{
-            player.bFakeDeath = true; //SARGE: Disable quicksaving and don't transfer our inventory to our corpse.
+            player.bFakeDeath = true; //SARGE: Disable quickloading and don't transfer our inventory to our corpse.
 		    //cyberP: beware lazy timer hack. I'm sorry. Also player no longer is captured if gibbed.
 			if (Player.IsInState('Dying') && Player.HeadRegion.Zone.ViewFog.X > 0.01 && Player.Health > -40)
 			{

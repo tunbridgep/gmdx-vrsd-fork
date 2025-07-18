@@ -51,7 +51,6 @@ defaultproperties
      items(2)=(HelpText="Security Terminals will disable access after being hacked a certain number of times, and Cameras and Turrets will reboot after a short time.",actionText="Advanced Security System",variable="bHackLockouts",defaultValue=1);
      items(3)=(HelpText="Crossbow Darts are no longer recoverable after hitting walls.",actionText="Fragile Darts",variable="iFragileDarts",valueText1="Tranquiliser Darts",valueText2="Tranquiliser and Taser Darts",valueText3="All Darts except Flare Darts",valueText4="Everything");
      items(4)=(HelpText="Immersion/simulation option. If enabled, carried objects are no longer translucent.",actionText="Immersive Carryables",variable="bNoTranslucency");
-     items(5)=(HelpText="In hardcore mode you face enemies in greater numbers. Enable this option to have this feature in other difficulty modes.",actionText="Overwhelming Odds",variable="bHardcoreFilterOption");
      items(6)=(HelpText="Corpses can only be destroyed by realistic means and do not deal throw damage with the muscle aug.",actionText="Persistent Corpses",variable="bRealisticCarc",defaultValue=1);
      items(7)=(HelpText="If enabled, time is not paused whilst in the inventory & during general UI navigation.",actionText="Real Time UI",variable="bRealUI");
      items(8)=(HelpText="JC can only eat/drink so much before getting full, and withdrawal symptoms occur twice as quickly.",actionText="Restricted Metabolism",variable="bRestrictedMetabolism",defaultValue=1);
