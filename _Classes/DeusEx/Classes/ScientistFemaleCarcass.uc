@@ -5,6 +5,7 @@ class ScientistFemaleCarcass extends DeusExCarcass;
 
 defaultproperties
 {
+	 nameReference=class'DeusEx.ScientistFemale'
      Mesh2=LodMesh'DeusExCharacters.GFM_Trench_CarcassB'
      Mesh3=LodMesh'DeusExCharacters.GFM_Trench_CarcassC'
      Mesh=LodMesh'DeusExCharacters.GFM_Trench_Carcass'
