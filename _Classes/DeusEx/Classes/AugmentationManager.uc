@@ -433,6 +433,8 @@ function bool RemoveAugmentation(Class<Augmentation> takeClass)
 
     Player.RemoveAugmentationDisplay(anAug);
     Player.RadialMenuUpdateAug(anAug);
+    
+    AssignAugHotKeys();
 
     return true;
 }
@@ -511,6 +513,48 @@ function AssignOverflow()
     }
 }
 
+// ----------------------------------------------------------------------
+// AssignAugHotKeys()
+// SARGE: Now that we can remove augs, and some can change their types,
+// we need to fix the aug hotkeys every time we update them.
+// So this requires redoing ALL the aug hotkeys.
+// NOTE: Despite the name, it also sets up on the wheel.
+// ----------------------------------------------------------------------
+
+function AssignAugHotKeys()
+{
+	local Augmentation aug;
+    local int i, c;
+
+    player.ClearAugmentationDisplay();
+    
+    //Reset hotkeys first
+    ForEach AllActors(class'Augmentation',aug)
+        aug.HotKeyNum = -1;
+
+    //get each aug location and find all the augs for it
+    for (i = 0; i < ArrayCount(AugLocs);i++)
+    {
+        c = 1;
+        //set each aug hotkey
+        ForEach AllActors(class'Augmentation',aug)
+        {
+            //horrible dirty hack
+            if (aug.IsA('AugIFF') || aug.IsA('AugDataLink'))
+                continue;
+
+            if (aug.AugmentationLocation == i && aug.CanBeActivated())
+            {
+                aug.HotKeyNum = AugLocs[i].KeyBase + c;
+                c++;
+
+                //Also add it to the aug display
+                if (Player.bHUDShowAllAugs || aug.bIsActive)
+                    Player.AddAugmentationDisplay(aug);
+            }
+        }
+    }
+}
 
 // ----------------------------------------------------------------------
 // GivePlayerAugmentation()
@@ -597,6 +641,7 @@ function Augmentation GivePlayerAugmentation(Class<Augmentation> giveClass)
 
 	// Assign hot key to new aug
 	// (must be after before augCount is incremented!)
+    /*
    if (anAug.CanBeActivated())
    {
    if (Level.NetMode == NM_Standalone && anAug.IsA('AugCombatStrength') || anAug.IsA('AugDrone') || anAug.IsA('AugDefense'))
@@ -622,10 +667,14 @@ function Augmentation GivePlayerAugmentation(Class<Augmentation> giveClass)
    }
 	if ((anAug.CanBeActivated()) && (Player.bHUDShowAllAugs))
 	    Player.AddAugmentationDisplay(anAug);
+    */
+    AssignAugHotKeys();
+    anAug.Setup();
+    
+    //Add to aug wheel
     if (anAug.CanBeActivated())                                                   //RSD: Otherwise we get passive augs showing up in the radial menu
         player.RadialMenuAddAug(anAug);
 
-    anAug.Setup();
 	return anAug;
 }
 
@@ -832,6 +881,7 @@ function SetAllAugsToMaxLevel()
 
 		anAug = anAug.next;
 	}
+    AssignAugHotKeys();
 }
 
 // ----------------------------------------------------------------------
@@ -850,6 +900,7 @@ function IncreaseAllAugs(int Amount)
 
       anAug = anAug.next;
    }
+    AssignAugHotKeys();
 }
 
 // ----------------------------------------------------------------------
@@ -884,7 +935,7 @@ function bool ActivateAugByKey(int keyNum)
         ActivateAug(anAug,!anAug.bIsActive);
 		bActivated = True;
 	}
-
+                
 	return bActivated;
 }
 

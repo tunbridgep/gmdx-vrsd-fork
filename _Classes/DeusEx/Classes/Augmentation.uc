@@ -383,6 +383,9 @@ function bool IncLevel()
     Setup();
 
 	Player.ClientMessage(Sprintf(AugNowHave, GetName(), CurrentLevel + 1));
+
+    //SARGE: Reset hotkeys
+    player.AugmentationSystem.AssignAugHotKeys();
 }
 
 // ----------------------------------------------------------------------
