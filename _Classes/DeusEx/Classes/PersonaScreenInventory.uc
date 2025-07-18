@@ -394,8 +394,11 @@ event bool MouseButtonPressed(float pointX, float pointY, EInputKey button, int 
     local PersonaInventoryItemButton itemBtn;
     
     //SARGE: Hacky fix to select the right button
-    if (button == IK_RightMouse || button == IK_MiddleMouse)
-        GetInventoryButtonFromPos(pointX,pointY);
+    if (!bDragging)
+    {
+        if (button == IK_RightMouse || button == IK_MiddleMouse)
+            GetInventoryButtonFromPos(pointX,pointY);
+    }
     
     itemBtn = PersonaInventoryItemButton(selectedItem);
    
@@ -586,7 +589,8 @@ event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
 		return False;
 
     //SARGE: Added
-    GetInventoryButtonFromMouse();
+    if (!bDragging)
+        GetInventoryButtonFromMouse();
 
 	// If a number key was pressed and we have a selected inventory item,
 	// then assign the hotkey
@@ -725,6 +729,9 @@ function SelectInventory(PersonaItemButton buttonPressed, optional bool bNoDesel
 
 			selectedItem.SelectButton(true);
 
+            //SARGE: Added a sound
+            //PlaySound(Sound'Menu_Press', 0.25);
+
 			anItem = Inventory(selectedItem.GetClientObject());
 
 			if (anItem != None)
@@ -740,6 +747,9 @@ function SelectInventory(PersonaItemButton buttonPressed, optional bool bNoDesel
             //SelectInventory(None);
             //SignalRefresh();
             UpdateDeclinedDisplay();
+
+            //SARGE: Added a sound
+            //PlaySound(Sound'Menu_Press', 0.25);
         }
 	}
 	else
