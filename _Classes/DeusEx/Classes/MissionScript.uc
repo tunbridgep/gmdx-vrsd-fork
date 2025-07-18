@@ -207,8 +207,10 @@ function DoConfixCheck()
         return;
 
     //Check Training
+    /*
     else if (localURL == "00_TRAINING" && flags.GetBool('DL_Start_Played'))
         bConfixChecked = true;
+    */
 
     //Check on Liberty Island
     else if (localURL == "01_NYC_UNATCOISLAND" && flags.GetBool('DL_StartGame_Played'))
