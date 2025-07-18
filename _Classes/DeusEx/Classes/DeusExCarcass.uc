@@ -69,7 +69,7 @@ var localized string msgTooMany;                                           //SAR
 
 
 //SARGE: HDTP Model toggles
-var class<ScriptedPawn> hdtpReference;
+var const class<ScriptedPawn> hdtpReference;
 var string HDTPSkin;
 var string HDTPTexture;
 var string HDTPMesh;
@@ -83,6 +83,9 @@ var travel int assignedMesh;
 
 //SARGE: Remember when we first create a blood pool
 var travel bool bFirstBloodPool;
+
+//SARGE: A name of a pawn type to use, if we're placed in the world rather than created.
+var const class<ScriptedPawn> nameReference;
 
 var BloodPool pool;     //SARGE: Stores our last created blood pool.
 
@@ -1394,7 +1397,7 @@ function Frob(Actor Frobber, Inventory frobWith)
     }
     else if (!bAnimalCarcass && player != None && player.inhand != none && player.iAutoHolster > 0 && !player.inHand.IsA('POVCorpse') && player.CarriedDecoration == None)
     {
-        if ((bSearched||!player.bEnhancedCorpseInteractions))// && (bDblClickStart || player.dblClickHolster == 0))
+        if ((bSearched||!player.bEnhancedCorpseInteractions))// && (bDblClickStart || player.iHolsterMode == 0))
             player.PutInHand(none);
     }
     
@@ -1748,12 +1751,12 @@ function UpdateName()
 
     if (savedName != "")
         itemName = itemName $ " (" $ savedName $ ")";
-
-    /*
-    //SARGE: Allow in-map caarcasses to have names
+    
+    //SARGE: Allow carcasses placed in maps to have names
+    else if (nameReference != None && nameReference.default.UnfamiliarName != "")
+        itemName = itemName $ " (" $ nameReference.default.UnfamiliarName $ ")";
     else if (hdtpReference != None && hdtpReference.default.UnfamiliarName != "")
         itemName = itemName $ " (" $ hdtpReference.default.UnfamiliarName $ ")";
-    */
 
     //SARGE: Add searched string
     if (!bAnimalCarcass)

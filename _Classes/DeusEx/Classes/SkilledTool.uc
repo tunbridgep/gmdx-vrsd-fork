@@ -8,6 +8,8 @@ var() sound			useSound;
 var bool			bBeingUsed;
 var float           p; //CyberP: combatspeedaug
 
+var const Sound ClassicUseSound;
+
 function GetAugSpeed()
 	{
 	local DeusExPlayer player;
@@ -21,6 +23,19 @@ function GetAugSpeed()
         p = 1.0;
      }
 	}
+
+// ----------------------------------------------------------------------
+// GetDefaultUseSound()
+//
+// SARGE: Returns the default use sound (standard or classic), based on the players options
+// ----------------------------------------------------------------------
+function Sound GetDefaultUseSound()
+{
+    if (class'DeusExPlayer'.default.bImprovedWeaponSounds || default.ClassicUseSound == None)
+        return default.UseSound;
+    else
+        return default.ClassicUseSound;
+}
 
 //SARGE: This is basically a stripped down version of the code in DeusExWeapon
 simulated function renderoverlays(Canvas canvas)
@@ -176,6 +191,7 @@ state UseIt
 Begin:
 	if (( Level.NetMode != NM_Standalone ) && ( Owner != None ))
 		SetLocation( Owner.Location );
+    UseSound = GetDefaultUseSound();
 	AmbientSound = useSound;
 	PlayAnim('UseBegin',, 0.1);
 	FinishAnim();

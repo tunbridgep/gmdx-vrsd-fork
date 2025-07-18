@@ -83,6 +83,7 @@ var bool bShenanigans;
 var bool bRandomizeCrap;
 var bool bCutInteractions;
 var bool bA51Camera;
+var bool bHardcoreFilterOption;
 
 //LDDP
 var bool bFemaleEnabled;
@@ -153,6 +154,7 @@ event InitWindow()
     bRandomizeCrap=false;                                                       //Sarge
     bCutInteractions=false;                                                     //Sarge
     bA51Camera=false;                                                           //Sarge
+    bHardcoreFilterOption=false;                                                //Sarge
     //bRestrictedMetabolism=false;                                              //Sarge
     default.bRandomizeCrates=false;                                             //RSD: Also need default values! Otherwise get command in modifier menu takes the wrong value
     default.bRandomizeMods=false;                                               //RSD
@@ -173,6 +175,7 @@ event InitWindow()
     default.bRandomizeCrap=false;                                               //Sarge
     default.bCutInteractions=false;                                             //Sarge
     default.bA51Camera=false;                                                   //Sarge
+    default.bHardcoreFilterOption=false;                                        //Sarge
 
 	StyleChanged();
 }
@@ -827,6 +830,7 @@ function SaveSettings()
     player.bRandomizeCrap=bRandomizeCrap;                                       //Sarge
     player.bCutInteractions=bCutInteractions;                                   //Sarge
     player.bA51Camera=bA51Camera;                                               //Sarge
+    player.bHardcoreFilterOption=bHardcoreFilterOption;                         //Sarge
     if (player.bRandomizeAugs)                                                  //RSD: New aug randomization feature
         ScrambleAugOrderList();
 

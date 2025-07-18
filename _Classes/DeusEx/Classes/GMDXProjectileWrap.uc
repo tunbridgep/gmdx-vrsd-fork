@@ -52,17 +52,23 @@ function bool WrapWithDecoration()
         muscleAug = DxPlayer.AugmentationSystem.GetAug(class'AugMuscle');
    
 	  mult = 2.5+muscleAug.CurrentLevel; //CyberP: increased 1+
-	  //log("AUG LEVEL "@mult);
-	  if (trackingDeco.Mass > 100)
-	      DxPlayer.Energy -= muscleAug.GetAdjustedEnergy(3.0);
-	  else if (trackingDeco.Mass > 60)
-	      DxPlayer.Energy -= muscleAug.GetAdjustedEnergy(2.0);
-	  if (DxPlayer.Energy < 0)
-	     DxPlayer.Energy = 0;
+
 	  if (mult == 0.0)
 		 mult = 1.0; //passive but incase it hasn't engaged
 //         else
 //            mult*=1.5;
+	  
+      //log("AUG LEVEL "@mult);
+      //SARGE: Changed from 3/2/0 to 20/10/5
+	  if (trackingDeco.Mass > 100)
+	        DxPlayer.Energy -= muscleAug.GetAdjustedEnergy(20.0);
+	  else if (trackingDeco.Mass > 60)
+	        DxPlayer.Energy -= muscleAug.GetAdjustedEnergy(10.0);
+      else
+            DxPlayer.Energy -= muscleAug.GetAdjustedEnergy(5.0);
+
+	  if (DxPlayer.Energy < 0)
+	     DxPlayer.Energy = 0;
    }
 
    if (mult==4) AugDamMod=2; else AugDamMod=1.2;

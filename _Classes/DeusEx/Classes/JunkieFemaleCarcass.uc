@@ -5,6 +5,7 @@ class JunkieFemaleCarcass extends DeusExCarcass;
 
 defaultproperties
 {
+	 nameReference=class'DeusEx.JunkieFemale'
      Mesh2=LodMesh'DeusExCharacters.GFM_TShirtPants_CarcassB'
      Mesh3=LodMesh'DeusExCharacters.GFM_TShirtPants_CarcassC'
      Mesh=LodMesh'DeusExCharacters.GFM_TShirtPants_Carcass'
