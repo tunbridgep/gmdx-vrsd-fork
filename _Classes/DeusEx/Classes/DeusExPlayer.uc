@@ -853,6 +853,8 @@ var travel bool bPhotoMode;                                     //SARGE: Show/Hi
 
 var bool bClearReceivedItems;                                   //SARGE: Clear the received items window next time we display it.
 
+var globalconfig bool bAlwaysShowModifiers;                     //SARGE: Always show the Playthrough Modifiers screen when starting a new game.
+
 var globalconfig bool bAutoUncrouch;                            //SARGE: Automatically uncrouch when we press the run button.
 
 //SARGE: Holstering Modes
@@ -19305,6 +19307,7 @@ defaultproperties
      bQuietAugs=True
      bEnableLeftFrob=True
      bShowDeclinedInReceivedWindow=true
+     bAlwaysShowModifiers=true
      bImprovedWeaponSounds=true
      bImprovedLasers=true
      bRearmSkillRequired=true

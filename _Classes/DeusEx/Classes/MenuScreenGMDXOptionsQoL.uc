@@ -101,6 +101,7 @@ defaultproperties
      items(82)=(HelpText="If enabled, double-right click to unholster items in hand, or disable unholstering completely.",actionText="Holstering: Unholstering Mode",variable="iUnholsterMode",valueText1="Standard",valueText2="Double-Click",defaultValue=2);
      items(83)=(HelpText="If enabled, weapons will use new high-quality sounds.",actionText="Audio: Improved Weapon Sounds",variable="bImprovedWeaponSounds",defaultValue=1);
      items(84)=(HelpText="If enabled, pressing the Run key while crouched will automatically uncrouch. Does nothing when Always Run is enabled.",actionText="Game: Auto Uncrouch",variable="bAutoUncrouch",defaultValue=1);
+     items(85)=(HelpText="If enabled, always show the Playthrough Modifiers screen before the New Game screen.",actionText="Game: Always Show Playthrough Modifiers",variable="bAlwaysShowModifiers",defaultValue=1);
      Title="GMDX Quality of Life Options"
      colWidths(0)=214
      colWidths(1)=155
