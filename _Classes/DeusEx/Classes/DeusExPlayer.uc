@@ -448,7 +448,6 @@ var globalconfig bool bSkipNewGameIntro; //CyberP: for GMDX option menu
 var globalconfig bool bColorCodedAmmo;
 var globalconfig bool bDecap;
 var globalconfig bool bNoTranslucency;
-var globalconfig int dblClickHolster;                      //SARGE: 0 = off, 1 = double click holstering only, 2 = double click holstering and unholstering
 var globalconfig bool bHalveAmmo;
 var globalconfig bool bHardcoreUnlocked;
 var globalconfig int iAutoHolster;                         //SARGE: 0 = off, 1 = corpses only, 2 = everything
@@ -848,6 +847,11 @@ var travel bool bPhotoMode;                                     //SARGE: Show/Hi
 
 var bool bClearReceivedItems;                                   //SARGE: Clear the received items window next time we display it.
 
+
+//SARGE: Holstering Modes
+//Replaces Double Click Holstering
+var globalconfig int iHolsterMode;                             //SARGE: 0 = single click, 1 = double click
+var globalconfig int iUnholsterMode;                           //SARGE: 0 = disabled completely, 1 = single click, 2 = double click
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -8518,9 +8522,9 @@ function SetDoubleClickTimer()
     
 function DoAutoHolster()
 {
-    if (iAutoHolster > 1)// && (clickCountCyber >= 1 || dblClickHolster == 0 ))
+    if (iAutoHolster > 1)// && (clickCountCyber >= 1 || iHolsterMode == 0 ))
         PutInHand(None);
-    else if (iAutoHolster > 0 && dblClickHolster > 0)
+    else if (iAutoHolster > 0 && iHolsterMode > 0)
         SetDoubleClickTimer();
 }
 
@@ -8702,7 +8706,7 @@ exec function ParseRightClick()
 			PutInHand(None);
 		}
         //SARGE: When we have a forced weapon selection in hand (like a lockpick after left-frobbing, then select our last weapon instead.
-        else if (bWasForceSelected && inHand != None && primaryWeapon != None && inHand != primaryWeapon && (clickCountCyber >= 1 || dblClickHolster == 0 || !bLastWasEmpty))
+        else if (bWasForceSelected && inHand != None && primaryWeapon != None && inHand != primaryWeapon && (clickCountCyber >= 1 || iHolsterMode == 0 || !bLastWasEmpty))
         {
             SelectLastWeapon(true);
         }
@@ -8712,13 +8716,13 @@ exec function ParseRightClick()
             SelectLastWeapon(false,!bSelectedOffBelt);
             beltLast = advBelt;
 		}
-        else if (inHand == None && (clickCountCyber >= 1 || dblClickHolster < 2))
+        else if (inHand == None && (clickCountCyber >= 1 || iUnholsterMode < 2) && iUnholsterMode > 0)
 		{
             //SARGE: Added support for the unholster behaviour from the Alternate Toolbelt on both Toolbelts
             bSelectedFromMainBeltSelection = true;
             SelectLastWeapon(false,!bSelectedOffBelt);
 		}
-		else if (inHand != None && (clickCountCyber >= 1 || dblClickHolster == 0))
+		else if (inHand != None && (clickCountCyber >= 1 || iHolsterMode == 0))
 		{
             bSelectedFromMainBeltSelection = false;
             PutInHand(None);
@@ -19254,7 +19258,8 @@ defaultproperties
      bBigDroneView=True
 	 MenuThemeNameGMDX="MJ12"
      HUDThemeNameGMDX="Amber"
-     dblClickHolster=2
+     iHolsterMode=1
+     iUnholsterMode=2
      bSmartDecline=True
      killswitchTimer=-2
      iEnhancedMusicSystem=1
