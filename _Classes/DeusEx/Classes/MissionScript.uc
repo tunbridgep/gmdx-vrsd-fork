@@ -247,6 +247,7 @@ function FirstFrame()
     local DeusExCarcass C;                                                      //SARGE
     local DecalManager D;                                                       //SARGE
     local SecurityCamera Cam;                                                      //SARGE
+    local Collectible Coll;                                                     //SARGE
 
 	flags.DeleteFlag('PlayerTraveling', FLAG_Bool);
 
@@ -340,6 +341,11 @@ function FirstFrame()
         if (player.bHardCoreMode)
             foreach AllActors(class'SecurityCamera', Cam)
                 Cam.bAlarmEvent = true;
+
+        //SARGE: Make the collectibles disappear
+        if (!player.bCollectiblesEnabled)
+            foreach AllActors(class'Collectible', Coll)
+                Coll.Destroy();
 
         firstTime = true;
 	}

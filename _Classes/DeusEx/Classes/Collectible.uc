@@ -13,19 +13,6 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
     return False;
 }
 
-function PostBeginPlay()
-{
-	Super.PostBeginPlay();
-		
-    //Disappear if collectibles are not enabled
-    if (!class'DeusExPlayer'.default.bCollectiblesEnabled)
-    {
-        Log("Destroying Collectible");
-        Destroy();
-        return;
-    }
-}
-
 defaultproperties
 {
     //Mesh=LodMesh'DeusExDeco.NYEagleStatue'
