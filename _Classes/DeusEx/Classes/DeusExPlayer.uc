@@ -7700,7 +7700,7 @@ Begin:
 	drugEffectTimer	= 0;
 
     if (AugmentationSystem != None)
-        AugmentationSystem.DeactivateAll(); //CyberP: deactivate augs
+        AugmentationSystem.DeactivateAll(!bFakeDeath); //CyberP: deactivate augs //SARGE: Leave Toggle augs on if we're fake dead
 	// Don't come back to life crouched
     SetCrouch(false,true);
 
