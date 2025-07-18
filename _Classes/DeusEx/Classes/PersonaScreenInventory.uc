@@ -361,6 +361,103 @@ function SetItemButtonPos(PersonaInventoryItemButton moveButton, int slotX, int 
 		);
 }
 
+//Sarge: Reselect the current inventory icon based on the current mouse pos
+function GetInventoryButtonFromPos(float pointX, float pointY)
+{
+    local PersonaInventoryItemButton newBtn;
+
+    //GetCursorPos(pointX, pointY);
+
+    if (player.bEnhancedPersonaScreenMouse)
+    {
+        newBtn = getButtonAtPosition(pointX,pointY);
+        //if (newBtn != None)
+            SelectInventory(newBtn,true);
+    }
+}
+
+function GetInventoryButtonFromMouse()
+{
+    local float pointX, pointY;
+    if (player.bEnhancedPersonaScreenMouse)
+    {
+        GetCursorPos(pointX, pointY);
+        GetInventoryButtonFromPos(pointX,pointY);
+    }
+}
+
+//Sarge: change item with right mouse and middle mouse
+event bool MouseButtonPressed(float pointX, float pointY, EInputKey button, int numClicks)
+{
+   	local Inventory anItem; 
+    local Bool bResult;
+    local PersonaInventoryItemButton itemBtn;
+    
+    //SARGE: Hacky fix to select the right button
+    if (button == IK_RightMouse || button == IK_MiddleMouse)
+        GetInventoryButtonFromPos(pointX,pointY);
+    
+    itemBtn = PersonaInventoryItemButton(selectedItem);
+   
+    if (itemBtn == None)
+        return false;
+
+	anItem = Inventory(selectedItem.GetClientObject());
+    //CyberP: new mouse shortcuts in the inventory:
+    if (!itemBtn.bDragging && !itemBtn.bDragStart)
+    {
+        if (button == IK_RightMouse && anItem.IsA('DeusExPickup'))
+        {
+            //TODO: Sarge: Create a generic Inventory Use/Equip function per item
+            if (anItem.IsA('Lockpick') || anItem.IsA('Multitool') || anItem.IsA('FireExtinguisher'))
+                EquipSelectedItem();
+            else
+                UseSelectedItem(); //winInv.ButtonActivated(??????, btnUse);
+            return true;
+        }
+        if (button == IK_RightMouse && anItem.IsA('DeusExWeapon'))
+        {
+            EquipSelectedItem();
+            return true;
+        }
+        if (button == IK_MiddleMouse && (anItem.IsA('DeusExWeapon') || anItem.IsA('DeusExPickup')))
+        {
+            DropSelectedItem();
+            return true;
+        }
+    }
+}
+
+// ----------------------------------------------------------------------
+// FindHoveredButton()
+// SARGE: Hacky function to find the window at the specified coordinates
+// ----------------------------------------------------------------------
+
+function PersonaInventoryItemButton getButtonAtPosition(int x, int y)
+{
+	local PersonaInventoryItemButton btn;
+    local Window win;
+    local int xL, xR, yL, yR;
+
+    win = winItems.GetTopChild();
+    while (win != None)
+    {
+        btn = PersonaInventoryItemButton(win);
+        if (btn != None)
+        {
+            xL = btn.x + btn.buttonWidth - 10;
+            xR = xL + btn.width;
+            yL = btn.y + btn.buttonHeight + 10;
+            yR = yL + btn.height;
+
+            if (xL < x && xR > x && yL < y && yR > y)// && btn != selectedItem)
+                return btn;
+        }
+        win = win.GetLowerSibling();
+    }
+    return none;
+}
+
 // ----------------------------------------------------------------------
 // ButtonActivated()
 // ----------------------------------------------------------------------
@@ -488,6 +585,9 @@ event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
 	if ( IsKeyDown( IK_Alt ) || IsKeyDown( IK_Shift ) || IsKeyDown( IK_Ctrl ))
 		return False;
 
+    //SARGE: Added
+    GetInventoryButtonFromMouse();
+
 	// If a number key was pressed and we have a selected inventory item,
 	// then assign the hotkey
 	if ((( key >= IK_0 ) && ( key <= IK_9 ) || key == IK_Minus || key == IK_Equals) && (selectedItem != None) && (Inventory(selectedItem.GetClientObject()) != None))
@@ -604,7 +704,7 @@ function UpdateAmmoDisplay()
 // SelectInventory()
 // ----------------------------------------------------------------------
 
-function SelectInventory(PersonaItemButton buttonPressed)
+function SelectInventory(PersonaItemButton buttonPressed, optional bool bNoDeselect)
 {
 	local Inventory anItem;
 
@@ -633,7 +733,7 @@ function SelectInventory(PersonaItemButton buttonPressed)
 			EnableButtons();
 		}
         //SARGE: Allow deselecting inventory items
-        else
+        else if (!bNoDeselect)
         {
             selectedItem.SelectButton(false);
 			ClearSpecialHighlights();

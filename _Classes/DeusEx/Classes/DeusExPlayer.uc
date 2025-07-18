@@ -862,6 +862,8 @@ var globalconfig bool bAutoUncrouch;                            //SARGE: Automat
 var globalconfig int iHolsterMode;                             //SARGE: 0 = single click, 1 = double click
 var globalconfig int iUnholsterMode;                           //SARGE: 0 = disabled completely, 1 = single click, 2 = double click
 
+var globalconfig bool bEnhancedPersonaScreenMouse;             //SARGE: When enabled, allows the right-click and middle-click actions in the inventory and aug screens to work on the currently hovered item, not the selected one.
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -19314,4 +19316,5 @@ defaultproperties
      bAutoUncrouch=true
      iCrosshairOffByOne=1
      bShowSmallLog=true
+     bEnhancedPersonaScreenMouse=true
 }
