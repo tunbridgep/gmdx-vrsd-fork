@@ -862,6 +862,8 @@ var globalconfig bool bAutoUncrouch;                            //SARGE: Automat
 var globalconfig int iHolsterMode;                             //SARGE: 0 = single click, 1 = double click
 var globalconfig int iUnholsterMode;                           //SARGE: 0 = disabled completely, 1 = single click, 2 = double click
 
+
+var globalconfig bool bShowCodeNotes;                           //SARGE: Show relevant nodes for codes and logins.
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -14394,17 +14396,17 @@ function bool HasCodeNote(string code)
     return GetCodeNote(code) != None;
 }
 
-function DeusExNote GetCodeNote(string code)
+function DeusExNote GetCodeNote(string code, optional bool bNoHidden)
 {
 	local DeusExNote note;
     local string noteText;
 
 	note = FirstNote;
 
-	while( note != None )
+	while( note != None && code != "")
 	{
-        //Skip user notes
-        if (!note.bUserNote)
+        //Skip user notes and hidden notes
+        if (!note.bUserNote && (!bNoHidden || !note.bHidden))
         {
 
             //handle any notes we were given which might not have "original" text for whatever reason
@@ -19319,4 +19321,5 @@ defaultproperties
      bAutoUncrouch=true
      iCrosshairOffByOne=1
      bShowSmallLog=true
+     bShowCodeNotes=true
 }

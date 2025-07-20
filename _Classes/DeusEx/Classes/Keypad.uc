@@ -89,7 +89,11 @@ simulated function ActivateKeypadWindow(DeusExPlayer Hacker, bool bHacked)
 function AddNotesWindow(DeusExRootWindow root,DeusExPlayer player)
 {
     local DeusExNote codeNote;
-    codeNote = player.GetCodeNote(validCode);
+
+    if (!player.bShowCodeNotes)
+        return;
+
+    codeNote = player.GetCodeNote(validCode,true);
 
     if (codeNote == None)
         return;
@@ -98,8 +102,10 @@ function AddNotesWindow(DeusExRootWindow root,DeusExPlayer player)
     //winNotes = class'HUDKeypadNotesWindow'.static.CreateNotesWindow(root,keypadwindow.x, keypadwindow.width, 640/2, keypadwindow.height);
     winNotes = HUDKeypadNotesWindow(root.NewChild(Class'HUDKeypadNotesWindow'));
     winNotes.SetPos(keypadwindow.x + keypadwindow.width, keypadwindow.y);
-	winNotes.SetSize(640/2, keypadwindow.height);
+	winNotes.Resize(640/2, keypadwindow.height);
     winNotes.AddNote(codeNote);
+    winNotes.CreateNotesList();
+    winNotes.StyleChanged();
     if (keypadwindow != None)
         keypadWindow.notesDisplay = winNotes;
     winNotes = none;

@@ -32,6 +32,8 @@ var int    userIndex;
 var int shadowOffsetX;
 var int shadowOffsetY;
 
+var HUDKeypadNotesWindow winNotes;
+
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -69,6 +71,15 @@ event InitWindow()
 
 event DestroyWindow()
 {
+    //SARGE: Destroy the notes window too
+    if (winNotes != None)
+    {
+        winNotes.DestroyWindow();
+        winNotes.DestroyAllChildren();
+        winNotes.Destroy();
+        winNotes = None;
+    }
+
 	if ((compOwner.IsA('Computers')) && (compOwner != None))
 	{
       if (Player != Player.GetPlayerPawn())
@@ -266,6 +277,7 @@ function ShowScreen(Class<ComputerUIWindow> newScreen)
 	// First close any existing screen
 	if (winComputer != None)
 	{
+        winComputer.winNotes = None;
 		winComputer.Destroy();
 		winComputer = None;
 	}
@@ -277,6 +289,11 @@ function ShowScreen(Class<ComputerUIWindow> newScreen)
 		winComputer.SetWindowAlignments(HALIGN_Center, VALIGN_Center);
 		winComputer.SetNetworkTerminal(Self);
 		winComputer.SetCompOwner(compOwner);
+        if (winNotes != None)
+        {
+            winComputer.winNotes = winNotes;
+            winComputer.bTickEnabled = true;
+        }
 		winComputer.Lower();
 	}
 }
@@ -290,8 +307,18 @@ function CloseScreen(String action)
 	// First destroy the current screen
 	if (winComputer != None)
 	{
+        winComputer.winNotes = None;
 		winComputer.Destroy();
 		winComputer = None;
+	}
+	
+    // and notes
+	if (winNotes != None)
+	{
+		winNotes.DestroyAllChildren();
+		winNotes.DestroyWindow();
+		winNotes.Destroy();
+		winNotes = None;
 	}
 
 	// Based on the action, proceed!
@@ -384,6 +411,61 @@ function CreateHackWindow()
 	}
 }
 
+//SARGE: Add a notes window showing all relevant notes.
+function AddNotesWindow()
+{
+    local DeusExNote codeNotes[10];
+    local DeusExNote note1, note2;
+    local int numCodes;
+    local Computers C;
+    local ATM A;
+    local int i;
+
+    if (!player.bShowCodeNotes)
+        return;
+
+    C = Computers(compOwner);
+    A = ATM(compOwner);
+
+    if (C != None)
+    {
+        for (i = 0; i < 8;i++)
+        {
+            note1 = player.GetCodeNote(C.GetUserName(i),true);
+            note2 = player.GetCodeNote(C.GetPassword(i),true);
+            
+            if (note1 != None)
+                codeNotes[numCodes++] = note1;
+            if (note2 != None && note2 != note1)
+                codeNotes[numCodes++] = note2;
+        }
+    }
+    else if (A != None)
+    {
+        for (i = 0; i < 8;i++)
+        {
+            note1 = player.GetCodeNote(A.GetAccountNumber(i),true);
+            note2 = player.GetCodeNote(A.GetPIN(i),true);
+
+            if (note1 != None)
+                codeNotes[numCodes++] = note1;
+            if (note2 != None && note2 != note1)
+                codeNotes[numCodes++] = note2;
+        }
+    }
+    
+    if (numCodes == 0)
+        return;
+
+    winNotes = HUDKeypadNotesWindow(NewChild(Class'HUDKeypadNotesWindow'));
+    winNotes.bUseMenuColors = true;
+    for (i = 0; i < numCodes;i++)
+        winNotes.AddNote(codeNotes[i]);
+    winNotes.CreateNotesList();
+    winNotes.StyleChanged();
+    winNotes.Hide();
+}
+
 // ----------------------------------------------------------------------
 // CreateHackAccountsWindow()
 //
@@ -457,6 +539,8 @@ function SetCompOwner(ElectronicDevices newCompOwner)
 		}
 	// Update the hack bar detection time
 	UpdateHackDetectionTime();
+		
+    AddNotesWindow();
 }
 
 // ----------------------------------------------------------------------
