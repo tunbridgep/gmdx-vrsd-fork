@@ -11,11 +11,7 @@ var() name FailEvent;
 var() bool bToggleLock;		// if True, toggle the lock state instead of triggering
 
 var HUDKeypadWindow keypadwindow;
-
-var HUDInformationDisplay winNotes;
-var TextWindow winNotesText;
-
-var localized string msgRelevantNote;
+var HUDKeypadNotesWindow winNotes;
 
 // ----------------------------------------------------------------------
 // Network Replication
@@ -99,15 +95,14 @@ function AddNotesWindow(DeusExRootWindow root,DeusExPlayer player)
         return;
 
     //winNotes = root.hud.ShowInfowindow(); //Can't do this, HUD is hidden
-    winNotes = HUDInformationDisplay(root.NewChild(Class'HUDInformationDisplay'));
-    winNotesText = winNotes.AddTextWindow();
-    winNotesText.SetText(codeNote.text);
+    //winNotes = class'HUDKeypadNotesWindow'.static.CreateNotesWindow(root,keypadwindow.x, keypadwindow.width, 640/2, keypadwindow.height);
+    winNotes = HUDKeypadNotesWindow(root.NewChild(Class'HUDKeypadNotesWindow'));
     winNotes.SetPos(keypadwindow.x + keypadwindow.width, keypadwindow.y);
 	winNotes.SetSize(640/2, keypadwindow.height);
+    winNotes.AddNote(codeNote);
     if (keypadwindow != None)
         keypadWindow.notesDisplay = winNotes;
     winNotes = none;
-    winNotesText = none;
 }
 
 // ----------------------------------------------------------------------
@@ -178,5 +173,4 @@ defaultproperties
      Mass=10.000000
      Buoyancy=5.000000
      bAllowRightClickToolSelection=False
-     msgRelevantNote="Relevant Note:"
 }

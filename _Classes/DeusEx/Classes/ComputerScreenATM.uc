@@ -55,6 +55,9 @@ function CreateControls()
 
 	winTitle.SetTitle(Title);
 	winStatus.SetText(StatusText);
+    
+    //SARGE: Add a notes window
+    AddNotesWindow(root,player);
 }
 
 // ----------------------------------------------------------------------

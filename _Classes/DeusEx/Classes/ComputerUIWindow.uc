@@ -73,6 +73,45 @@ var localized string ButtonLabelCancel;
 var localized string ButtonLabelSpecial;
 var localized string ComputerNodeFunctionLabel;
 
+//SARGE: Add the ability to have a notes window
+var HUDKeypadNotesWindow winNotes;
+
+// ----------------------------------------------------------------------
+// SARGE: NOTES WINDOW STUFF
+// ----------------------------------------------------------------------
+
+//SARGE: Add a notes window showing all relevant notes.
+function AddNotesWindow(DeusExRootWindow root,DeusExPlayer player)
+{
+    local DeusExNote codeNote;
+    codeNote = player.GetCodeNote("230023");
+
+    if (codeNote == None)
+        return;
+
+    winNotes = HUDKeypadNotesWindow(root.NewChild(Class'HUDKeypadNotesWindow'));
+    winNotes.bUseMenuColors = true;
+    winNotes.StyleChanged();
+    winNotes.AddNote(codeNote);
+    bTickEnabled = true;
+    //SetNotesPos(windowStartDragX,windowStartDragY);
+}
+
+function SetNotesPos()
+{
+    if (winNotes == None)
+        return;
+
+    winNotes.SetPos(x + winClient.x + winClient.width,y + (winTitle.Height/2) + 5);
+	winNotes.SetSize(640/2, winClient.height + winStatus.Height);
+}
+
+//SARGE: This sucks, but I can't make it work any other way...
+function Tick(float deltaTime)
+{
+    SetNotesPos();
+}
+
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -120,6 +159,14 @@ function DestroyWindow()
 		player.UnloadTexture(clientTextures[texIndex]);
 
 	Super.DestroyWindow();
+    
+    //SARGE: Destroy notes window
+    if (winNotes != None)
+    {
+        winNotes.DestroyWindow();
+        winNotes.Destroy();
+        winNotes = None;
+    }
 }
 
 // ----------------------------------------------------------------------
