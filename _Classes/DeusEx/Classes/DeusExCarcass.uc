@@ -1050,7 +1050,8 @@ function Frob(Actor Frobber, Inventory frobWith)
                     }
                     bDeclined=True;
                     bFoundInvalid=True;
-                    badItems[badItemCount++] = item;
+                    if (!item.IsA('DeusExWeapon'))
+                        badItems[badItemCount++] = item;
                 }
 				else if (item != none && (item.IsA('Ammo') || (item.IsA('WeaponSpiderBotConstructor')) || (item.IsA('WeaponAssaultGunSpider')))) //CyberP: new type weapons exclusive to pawns //RSD: Failsafe
 				{
@@ -1123,6 +1124,10 @@ function Frob(Actor Frobber, Inventory frobWith)
 						// then just give the ammo and not the weapon.  Otherwise give
 						// the weapon normally.
 						W = DeusExWeapon(player.FindInventoryType(item.Class));
+
+                        //SARGE: Always show declined weapons, unless we already have a disposable weapon
+                        if (bDeclined && (W == None || !DeusExWeapon(item).bDisposableWeapon))
+                            badItems[badItemCount++] = item;
 
                         //SARGE: Disposable weapons don't give ammo if we don't have space for them, or if declined
                         if (W == None && DeusExWeapon(item).bDisposableWeapon && (!player.FindInventorySlot(item, True) || bDeclined))
