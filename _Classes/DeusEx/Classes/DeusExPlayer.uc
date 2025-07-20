@@ -14334,7 +14334,7 @@ function DeusExNote AddNote( optional String strNote, optional Bool bUserNote, o
 }
 
 // ----------------------------------------------------------------------
-// SARGE: GetCodeNote()
+// SARGE: HasCodeNote()
 //
 // Loops through the notes and searches for the code in any note.
 // Ignores user notes, so we can't add some equivalent of "The code's 0451" and instantly know a code
@@ -14389,7 +14389,12 @@ function string StripFromTo(string text)
     return text;
 }
 
-function bool GetCodeNote(string code)
+function bool HasCodeNote(string code)
+{
+    return GetCodeNote(code) != None;
+}
+
+function DeusExNote GetCodeNote(string code)
 {
 	local DeusExNote note;
     local string noteText;
@@ -14431,7 +14436,7 @@ function bool GetCodeNote(string code)
             {
                 DebugLog("NOTE: " $ noteText);
                 DebugLog("NOTE CODE " $code$ " FOUND (CAPS)");
-                return true;
+                return note;
             }
             
             //Then check that our code matches all lower case in the note...
@@ -14439,7 +14444,7 @@ function bool GetCodeNote(string code)
             {
                 DebugLog("NOTE: " $ noteText);
                 DebugLog("NOTE CODE " $code$ " FOUND (LOCS)");
-                return true;
+                return note;
             }
             
             //Some codes are in quotes, so always allows things in quotes
@@ -14447,16 +14452,16 @@ function bool GetCodeNote(string code)
             {
                 DebugLog("NOTE: " $ noteText);
                 DebugLog("NOTE CODE " $code$ " FOUND (CAPS)");
-                return true;
+                return note;
             }
 
             //Some notes have Login: Username and Password: Whatever in them, so handle them.
             else if (InStr(Caps(noteText),Caps("LOGIN: " $ code)) != -1)
-                return true;
+                return note;
             else if (InStr(Caps(noteText),Caps("PASSWORD: " $ code)) != -1)
-                return true;
+                return note;
             else if (InStr(Caps(noteText),Caps("LOGIN/PASSWORD: " $ code)) != -1)
-                return true;
+                return note;
             
         }
 
@@ -14464,7 +14469,7 @@ function bool GetCodeNote(string code)
 	}
 
     DebugLog("NOTE CODE " $code$ " NOT FOUND");
-	return false;
+	return None;
 }
 
 //This is a simple list of codes which serve as exceptions to No Keypad Cheese

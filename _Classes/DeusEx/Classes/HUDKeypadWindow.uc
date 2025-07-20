@@ -38,6 +38,8 @@ var globalconfig bool bNumberPadStyle;                                          
 var globalconfig bool bDigitDisplay;                                                 //SARGE: Show numbers as we enter them.
 var globalconfig bool bReplaceSymbols;                                               //SARGE: Replace the * and # keys with < and C, which remove 1 character or all characters
 
+var HUDInformationDisplay notesDisplay;                                              //SARGE: Reference to the notes window.
+
 var bool bIgnore;                                                                    //SARGE: Ignore the next button press
 
 // ----------------------------------------------------------------------
@@ -73,9 +75,16 @@ event InitWindow()
 
 event DestroyWindow()
 {
-	Super.DestroyWindow();
-
 	keypadOwner.keypadwindow = None;
+    if (notesDisplay != None)
+    {
+        notesDisplay.DestroyAllChildren();
+        notesDisplay.DestroyWindow();
+        notesDisplay.Destroy();
+        notesDisplay = None;
+    }
+
+	Super.DestroyWindow();
 }
 
 // ----------------------------------------------------------------------

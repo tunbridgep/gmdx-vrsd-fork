@@ -12,6 +12,11 @@ var() bool bToggleLock;		// if True, toggle the lock state instead of triggering
 
 var HUDKeypadWindow keypadwindow;
 
+var HUDInformationDisplay winNotes;
+var TextWindow winNotesText;
+
+var localized string msgRelevantNote;
+
 // ----------------------------------------------------------------------
 // Network Replication
 // ----------------------------------------------------------------------
@@ -66,21 +71,43 @@ simulated function ActivateKeypadWindow(DeusExPlayer Hacker, bool bHacked)
 {
 	local DeusExRootWindow root;
 
-   root = DeusExRootWindow(Hacker.rootWindow);
+    root = DeusExRootWindow(Hacker.rootWindow);
    if (root != None)
    {
       keypadwindow = HUDKeypadWindow(root.InvokeUIScreen(Class'HUDKeypadWindow', True));
+      AddNotesWindow(root,Hacker);
       root.MaskBackground(True);
       
       // copy the tag data to the actual class
       if (keypadwindow != None)
       {
-         keypadwindow.keypadOwner = Self;
-         keypadwindow.player = Hacker;
-         keypadwindow.bInstantSuccess = bHacked;
-         keypadwindow.InitData();
+         keypadWindow.keypadOwner = Self;
+         keypadWindow.player = Hacker;
+         keypadWindow.bInstantSuccess = bHacked;
+         keypadWindow.InitData();
       }
    }
+}
+
+//SARGE: Add a notes window showing all relevant notes.
+function AddNotesWindow(DeusExRootWindow root,DeusExPlayer player)
+{
+    local DeusExNote codeNote;
+    codeNote = player.GetCodeNote(validCode);
+
+    if (codeNote == None)
+        return;
+
+    //winNotes = root.hud.ShowInfowindow(); //Can't do this, HUD is hidden
+    winNotes = HUDInformationDisplay(root.NewChild(Class'HUDInformationDisplay'));
+    winNotesText = winNotes.AddTextWindow();
+    winNotesText.SetText(codeNote.text);
+    winNotes.SetPos(keypadwindow.x + keypadwindow.width, keypadwindow.y);
+	winNotes.SetSize(640/2, keypadwindow.height);
+    if (keypadwindow != None)
+        keypadWindow.notesDisplay = winNotes;
+    winNotes = none;
+    winNotesText = none;
 }
 
 // ----------------------------------------------------------------------
@@ -151,4 +178,5 @@ defaultproperties
      Mass=10.000000
      Buoyancy=5.000000
      bAllowRightClickToolSelection=False
+     msgRelevantNote="Relevant Note:"
 }
