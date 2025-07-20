@@ -21,8 +21,8 @@ defaultproperties
     Mesh=LodMesh'DeusExDeco.HKBuddha'
     DrawScale=0.200000
     CollisionRadius=10.0
-    CollisionHeight=12.0
+    CollisionHeight=16.0
     Mass=15.000000
     Buoyancy=15.000000
-    Physics=PHYS_None
+    Physics=PHYS_Falling
 }
