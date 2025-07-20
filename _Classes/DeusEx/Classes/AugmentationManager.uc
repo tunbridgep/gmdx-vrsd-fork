@@ -60,6 +60,8 @@ function Setup()
             aug.GotoState('Active');
         aug = aug.next;
     }
+    
+    AssignAugHotKeys();
 }
 
 // ----------------------------------------------------------------------
@@ -527,6 +529,7 @@ function AssignAugHotKeys()
     local int i, c;
 
     player.ClearAugmentationDisplay();
+    player.DebugMessage("Repopulating aug keys");
     
     //Reset hotkeys first
     ForEach AllActors(class'Augmentation',aug)
@@ -539,19 +542,19 @@ function AssignAugHotKeys()
         //set each aug hotkey
         ForEach AllActors(class'Augmentation',aug)
         {
-            //horrible dirty hack
-            if (aug.IsA('AugIFF') || aug.IsA('AugDataLink'))
+            if (aug.IsA('AugIFF') || aug.IsA('AugDataLink')) //horrible dirty hack!!!
                 continue;
-
-            if (aug.AugmentationLocation == i && aug.CanBeActivated())
+            else if (aug.IsA('AugLight')) //And another one!!!
+                aug.HotKeyNum = 12;
+            else if (aug.AugmentationLocation == i && aug.CanBeActivated())
             {
                 aug.HotKeyNum = AugLocs[i].KeyBase + c;
                 c++;
-
-                //Also add it to the aug display
-                if (Player.bHUDShowAllAugs || aug.bIsActive)
-                    Player.AddAugmentationDisplay(aug);
             }
+
+            //Also add it to the aug display
+            if (Player.bHUDShowAllAugs || aug.bIsActive)
+                Player.AddAugmentationDisplay(aug);
         }
     }
 }
