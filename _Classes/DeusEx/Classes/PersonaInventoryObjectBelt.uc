@@ -36,6 +36,7 @@ event InitWindow()
     objBelt.SetInventoryBelt(true);
 	objBelt.SetVisibility(True);
 	objBelt.SetInteractive(True);
+    objBelt.RecreateBelt();
 
 	if ( !hudBelt.IsVisible() )
 	{
@@ -232,7 +233,7 @@ function SelectObject(Inventory item, bool bNewToggle)
 {
 	local int objectIndex;
 
-	for (objectIndex=0;objectIndex<10;objectIndex++)
+	for (objectIndex=0;objectIndex<11;objectIndex++)
 	{
 		if (objBelt.objects[objectIndex].item == item)
 		{
