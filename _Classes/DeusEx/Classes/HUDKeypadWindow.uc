@@ -2,7 +2,7 @@
 // HUDKeypadWindow
 //=============================================================================
 
-class HUDKeypadWindow extends DeusExBaseWindow;
+class HUDKeypadWindow extends HUDBaseWindow;
 
 var bool bFirstFrameDone;
 
@@ -38,9 +38,12 @@ var globalconfig bool bNumberPadStyle;                                          
 var globalconfig bool bDigitDisplay;                                                 //SARGE: Show numbers as we enter them.
 var globalconfig bool bReplaceSymbols;                                               //SARGE: Replace the * and # keys with < and C, which remove 1 character or all characters
 
-var HUDKeypadNotesWindow notesDisplay;                                              //SARGE: Reference to the notes window.
-
 var bool bIgnore;                                                                    //SARGE: Ignore the next button press
+
+//SARGE: Need to redefine these, as we are no longer a DeusExBaseWindow class
+var const Color colRed;
+var const Color colGreen;
+var DeusExRootWindow root;
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -54,7 +57,6 @@ event InitWindow()
 
 	SetWindowAlignments(HALIGN_Center, VALIGN_Center);
 	SetSize(103, 162);
-	SetMouseFocusMode(MFocus_EnterLeave);
 
 	inputCode="";
 
@@ -63,6 +65,9 @@ event InitWindow()
 	CreateInputTextWindow();
 
 	bTickEnabled = True;
+
+	// Get a pointer to the root window
+	root = DeusExRootWindow(GetRootWindow());
 
 	StyleChanged();
 }
@@ -75,15 +80,8 @@ event InitWindow()
 
 event DestroyWindow()
 {
+	keypadOwner.topWindow = None;
 	Super.DestroyWindow();
-	keypadOwner.keypadwindow = None;
-    if (notesDisplay != None)
-    {
-        notesDisplay.DestroyWindow();
-        notesDisplay.DestroyAllChildren();
-        notesDisplay.Destroy();
-        notesDisplay = None;
-    }
 }
 
 // ----------------------------------------------------------------------
@@ -675,4 +673,6 @@ defaultproperties
      bNumberPadStyle=true
      bDigitDisplay=true
      bReplaceSymbols=true
+     colRed=(R=255)
+     colGreen=(G=255)
 }

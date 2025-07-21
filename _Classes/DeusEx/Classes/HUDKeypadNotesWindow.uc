@@ -115,6 +115,7 @@ function TileWindow CreateTileWindow(Window parent)
 function PopulateNotes(TileWindow winTile)
 {
 	local PersonaNotesViewWindow noteWindow;
+    local DeusExNote note;
 	local bool   bWasVisible;
     local int i;
 
@@ -126,13 +127,20 @@ function PopulateNotes(TileWindow winTile)
 	winTile.DestroyAllChildren();
 
 	// Loop through all the notes
-	//note = player.FirstNote;
-	//while(note != None)
+    /*
     for(i = 0;i < NotesCount;i++)
 	{
         if (!Notes[i].bHidden)
             noteWindow = CreateNoteEditWindow(winTile,Notes[i]);
+
 	}
+    */
+	note = player.FirstNote;
+	while(note != None)
+    {
+        noteWindow = CreateNoteEditWindow(winTile,note);
+        note = note.next;
+    }
 
 	// Show the notes again, if they were visible before
 	winTile.Show(bWasVisible);

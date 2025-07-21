@@ -10,8 +10,7 @@ var() sound failureSound;
 var() name FailEvent;
 var() bool bToggleLock;		// if True, toggle the lock state instead of triggering
 
-var HUDKeypadWindow keypadwindow;
-var HUDKeypadNotesWindow winNotes;
+var HUDKeypadContainerWindow topWindow;           //SARGE: Put everything on a temp window so that we can interact with the keypad and the notes window simultaneously.
 
 // ----------------------------------------------------------------------
 // Network Replication
@@ -33,8 +32,8 @@ function HackAction(Actor Hacker, bool bHacked)
 	local DeusExPlayer Player;
 
 	// if we're already using this keypad, get out
-	if (keypadwindow != None)
-		return;
+	//if (keypadwindow != None)
+	//	return;
 
 	Player = DeusExPlayer(Hacker);
 
@@ -66,49 +65,19 @@ function HackAction(Actor Hacker, bool bHacked)
 simulated function ActivateKeypadWindow(DeusExPlayer Hacker, bool bHacked)
 {
 	local DeusExRootWindow root;
+    local DeusExNote note;
+
+    note = Hacker.GetCodeNote(validCode,true);
 
     root = DeusExRootWindow(Hacker.rootWindow);
-   if (root != None)
-   {
-      keypadwindow = HUDKeypadWindow(root.InvokeUIScreen(Class'HUDKeypadWindow', True));
-      AddNotesWindow(root,Hacker);
-      root.MaskBackground(True);
-      
-      // copy the tag data to the actual class
-      if (keypadwindow != None)
-      {
-         keypadWindow.keypadOwner = Self;
-         keypadWindow.player = Hacker;
-         keypadWindow.bInstantSuccess = bHacked;
-         keypadWindow.InitData();
-      }
-   }
-}
-
-//SARGE: Add a notes window showing all relevant notes.
-function AddNotesWindow(DeusExRootWindow root,DeusExPlayer player)
-{
-    local DeusExNote codeNote;
-
-    if (!player.bShowCodeNotes)
-        return;
-
-    codeNote = player.GetCodeNote(validCode,true);
-
-    if (codeNote == None)
-        return;
-
-    //winNotes = root.hud.ShowInfowindow(); //Can't do this, HUD is hidden
-    //winNotes = class'HUDKeypadNotesWindow'.static.CreateNotesWindow(root,keypadwindow.x, keypadwindow.width, 640/2, keypadwindow.height);
-    winNotes = HUDKeypadNotesWindow(root.NewChild(Class'HUDKeypadNotesWindow'));
-    winNotes.SetPos(keypadwindow.x + keypadwindow.width, keypadwindow.y);
-	winNotes.Resize(640/2, keypadwindow.height);
-    winNotes.AddNote(codeNote);
-    winNotes.CreateNotesList();
-    winNotes.StyleChanged();
-    if (keypadwindow != None)
-        keypadWindow.notesDisplay = winNotes;
-    winNotes = none;
+    if (root != None)
+    {
+        //HUDKeypadWindow(root.InvokeUIScreen(Class'HUDKeypadWindow', True));
+        topWindow = HUDKeypadContainerWindow(root.InvokeUIScreen(Class'HUDKeypadContainerWindow', True));
+        topWindow.InitKeypadWindow(self,Hacker,bHacked);
+        topWindow.AddNotesWindow(Hacker,note);
+        root.MaskBackground(True);
+    }
 }
 
 // ----------------------------------------------------------------------
