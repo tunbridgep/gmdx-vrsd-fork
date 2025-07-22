@@ -117,18 +117,6 @@ function FirstFrame()
 				bot.Destroy();
 		}
 	}
-	else if (localURL == "03_NYC_BROOKLYNBRIDGESTATION")
-	{
-        //SARGE: Fix up Lighting if we have Lighting Accessibility enabled
-        if (Player.bLightingAccessibility)
-        {
-            ForEach AllActors(class'Light', L)
-            {
-                if (L.LightType == LT_Flicker)
-                    L.LightType = LT_Steady;
-            }
-        }
-    }
 
 CanQuickSave=true;
 }

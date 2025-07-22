@@ -43,16 +43,6 @@ function FirstFrame()
             player.killswitchTimer -= (10*60)*60;
             flags.SetBool('GMDXKillswitchReduced', True,, 7);
         }
-
-        //SARGE: Fix up Lighting if we have Lighting Accessibility enabled
-        if (Player.bLightingAccessibility)
-        {
-            ForEach AllActors(class'Light', L)
-            {
-                if (L.LightType == LT_Flicker && (L.Name == 'Light5' || L.Name == 'Light61' || L.Name == 'Light7' || L.Name == 'Light6'))
-                    L.LightType = LT_Steady;
-            }
-        }
     }
 	else if (localURL == "06_HONGKONG_VERSALIFE")
 	{
@@ -70,16 +60,6 @@ function FirstFrame()
 			foreach AllActors(class'DeusExCarcass', carc, 'John_Smith_Body')
 				carc.bHidden = False;
 		}
-        
-        //SARGE: Fix up Lighting if we have Lighting Accessibility enabled
-        if (Player.bLightingAccessibility)
-        {
-            ForEach AllActors(class'Light', L)
-            {
-                if (L.Name == 'Light0' || L.Name == 'Light1')
-                    L.LightType = LT_Steady;
-            }
-        }
 	}
 	else if (localURL == "06_HONGKONG_MJ12LAB")
 	{
@@ -100,16 +80,6 @@ function FirstFrame()
 	}
 	else if (localURL == "06_HONGKONG_TONGBASE")
 	{
-        //SARGE: Fix up Lighting if we have Lighting Accessibility enabled
-        if (Player.bLightingAccessibility)
-        {
-            ForEach AllActors(class'Light', L)
-            {
-                if (L.Name == 'Light15')
-                    L.LightType = LT_Steady;
-            }
-        }
-
 		if (flags.GetBool('Versalife_Done'))
 		{
 			foreach AllActors(class'ScriptedPawn', pawn)
@@ -245,16 +215,6 @@ function FirstFrame()
 	}
 	else if (localURL == "06_HONGKONG_WANCHAI_MARKET")
 	{
-        //SARGE: Fix up Lighting if we have Lighting Accessibility enabled
-        if (Player.bLightingAccessibility)
-        {
-            ForEach AllActors(class'Light', L)
-            {
-                if (L.Name == 'Light157')
-                    L.LightType = LT_Steady;
-            }
-        }
-
 		// prepare for the ceremony
 		if (flags.GetBool('Have_ROM') &&
 			flags.GetBool('MeetTracerTong_Played') &&
