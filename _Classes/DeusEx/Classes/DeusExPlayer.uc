@@ -16664,7 +16664,7 @@ function float CalculatePlayerVisibility(ScriptedPawn P)                        
 	local DeusExWeapon wep;
 
     wep = DeusExWeapon(Weapon);
-	vis = 1.0;
+	vis = 2.0; //SARGE: Was 1.0
 	/*litelvl = AIVisibility(false);                                              //RSD: Get AI visibility
     skillStealthMod = (SkillSystem.GetSkillLevelValue(class'SkillStealth')-0.5)*0.3;
     if (skillStealthMod < 0.0)
