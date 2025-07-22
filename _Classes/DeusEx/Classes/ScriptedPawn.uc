@@ -2189,8 +2189,8 @@ function bool CheckEnemyPresence(float deltaSeconds,
 							{
 								/*skillStealthMod = (playerCandidate.SkillSystem.GetSkillLevelValue(class'SkillStealth')-0.5)*0.3;
 								if (skillStealthMod < 0.0)
-									skillStealthMod = 0.0;*/                    //RSD: Returns 0/15/35/45% depending on skill level value
-								skillStealthMod = (playerCandidate.SkillSystem.GetSkillLevel(class'SkillStealth'))*0.15;
+									skillStealthMod = 0.0;*/                    //RSD: Returns 0/15/35/45% depending on skill level value //SARGE: 25/50/75/100
+								skillStealthMod = (playerCandidate.SkillSystem.GetSkillLevel(class'SkillStealth'))*0.25;
 								/*litelvl = playerCandidate.AIVisibility();
 								if (playerCandidate.UsingChargedPickup(class'TechGoggles'))
          							litelvl -= 0.031376;                        //RSD: Tech Goggles hack
@@ -3441,6 +3441,37 @@ function bool FilterDamageType(Pawn instigatedBy, Vector hitLocation,
 // ModifyDamage()
 // ----------------------------------------------------------------------
 
+//SARGE: Calculate new damage from behind
+// Was previously a flat 12x bonus, now it's Stealth skill dependent
+function float CalculateBehindDamage(int initialDamage, Pawn instigator)
+{
+    local DeusExPlayer player;
+    local int mod;
+    local name s;
+    player = DeusExPlayer(instigator);
+
+    //SARGE: Prevent bonus damage from behind when enemy is aware
+    s = GetStateName();
+    if (s == 'Seeking' || s == 'Attacking' || s == 'Alerting')
+        return initialDamage;
+
+    if (player != None && player.SkillSystem != None)
+        mod = 3 * (player.SkillSystem.GetSkillLevel(class'SkillStealth') + 1); //SARGE: 3x/6x/9x/12x
+    else
+        mod = 12; //CyberP: was 10
+
+    if (mod < 1)
+        mod = 1;
+
+    return initialDamage * mod;
+}
+
+//SARGE: Was done in ModifyDamage. Moved it out to a new function
+function float GetSabotDamage(int actualDamage)
+{
+    return actualDamage * 0.5;                                                    //RSD: 0.5x damage to organics (was 0.7)
+}
+
 function float ModifyDamage(int Damage, Pawn instigatedBy, Vector hitLocation,
 							Vector offset, Name damageType)
 {
@@ -3459,9 +3490,10 @@ function float ModifyDamage(int Damage, Pawn instigatedBy, Vector hitLocation,
 		actualDamage *= 8; //CyberP: now *8, hacky fix
 
 	// if the pawn is hit from behind at point-blank range, he is killed instantly
+    //SARGE: Now Stealth Skill dependent
 	else if (offset.x < 0)
 		if ((instigatedBy != None) && (VSize(instigatedBy.Location - Location) < 96)) //CyberP: was 64
-			actualDamage  *= 12; //CyberP: was 10
+			actualDamage = CalculateBehindDamage(actualDamage,instigatedBy);
 
 	actualDamage = Level.Game.ReduceDamage(actualDamage, DamageType, self, instigatedBy);
 
@@ -3474,7 +3506,7 @@ function float ModifyDamage(int Damage, Pawn instigatedBy, Vector hitLocation,
 	if (damageType == 'TearGas' || damageType == 'EMP' || damageType == 'NanoVirus')
 		actualDamage = 0;
     else if (damageType == 'Sabot')
-        actualDamage *= 0.5;                                                    //RSD: 0.5x damage to organics (was 0.7)
+        actualDamage = GetSabotDamage(actualDamage);                                                    //RSD: 0.5x damage to organics (was 0.7)
 	//if (damageType == 'EMP')
     //{bHasCloak = False; CloakThreshold = 0;}//CyberP: EMP just outright disables cloaking.
 
