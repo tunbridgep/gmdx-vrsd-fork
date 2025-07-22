@@ -10,7 +10,7 @@ var HUDKeypadNotesWindow winNotes;
 event InitWindow()
 {
 	Super.InitWindow();
-	SetMouseFocusMode(MFocus_EnterLeave);
+	SetMouseFocusMode(MFocus_click);
 
 }
 
@@ -33,7 +33,8 @@ function AddNotesWindow(DeusExPlayer player, DeusExNote codeNote)
     if (!player.bShowCodeNotes)
         return;
 
-    if (codeNote == None || keypadWindow == None)
+    //SARGE: What an AWFUL conditional...
+    if (((codeNote == None && (!player.bHardcoreMode || player.iNoKeypadCheese == 0))) || keypadWindow == None || keypadWindow.bInstantSuccess)
         return;
 
     //winNotes = root.hud.ShowInfowindow(); //Can't do this, HUD is hidden

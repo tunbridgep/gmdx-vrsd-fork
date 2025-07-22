@@ -203,6 +203,7 @@ function CreateKeypadButtons()
 			btnKeys[i] = HUDKeypadButton(NewChild(Class'HUDKeypadButton'));
 			btnKeys[i].SetPos((x * 26) + 16, (y * 28) + 35);
             btnKeys[i].num = TransposeNumber(i);
+            btnKeys[i].StyleChanged();
 		}
 	}
 

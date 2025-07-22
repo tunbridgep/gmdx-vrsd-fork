@@ -32,8 +32,8 @@ function HackAction(Actor Hacker, bool bHacked)
 	local DeusExPlayer Player;
 
 	// if we're already using this keypad, get out
-	//if (keypadwindow != None)
-	//	return;
+	if (topWindow != None)
+		return;
 
 	Player = DeusExPlayer(Hacker);
 

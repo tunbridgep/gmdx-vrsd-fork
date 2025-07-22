@@ -43,17 +43,24 @@ function CreateNotesList()
 
 function AddNote(DeusExNote Note)
 {
-    Notes[NotesCount++] = Note;
+    if (Note != None)
+        Notes[NotesCount++] = Note;
 }
 
 function Resize(float width, float height)
 {
     super.SetSize(width,height);
 
-    winScroll.SetPos(20,20);
-    winScroll.SetSize(width - 40,height - 40);
-    winBackground.SetPos(0,0);
-    winBackground.SetSize(width,height);
+    if (winScroll != None)
+    {
+        winScroll.SetPos(20,20);
+        winScroll.SetSize(width - 40,height - 40);
+    }
+    if (winBackground != None)
+    {
+        winBackground.SetPos(0,0);
+        winBackground.SetSize(width,height);
+    }
 }
 
 event DestroyWindow()
@@ -126,20 +133,26 @@ function PopulateNotes(TileWindow winTile)
 	// First make sure there aren't already notes
 	winTile.DestroyAllChildren();
 
-	// Loop through all the notes
-    /*
-    for(i = 0;i < NotesCount;i++)
-	{
-        if (!Notes[i].bHidden)
-            noteWindow = CreateNoteEditWindow(winTile,Notes[i]);
-
-	}
-    */
-	note = player.FirstNote;
-	while(note != None)
+    if (player.bHardcoreMode || player.iNoKeypadCheese > 0)
     {
-        noteWindow = CreateNoteEditWindow(winTile,note);
-        note = note.next;
+        //All notes mode - simply display everything
+        note = player.FirstNote;
+        while(note != None)
+        {
+            if (!note.bHidden)
+                noteWindow = CreateNoteEditWindow(winTile,note);
+            note = note.next;
+        }
+    }
+    else
+    {
+        //Relevant mode - Loop through all the relevant, passed-in notes
+        for(i = 0;i < NotesCount;i++)
+        {
+            if (!Notes[i].bHidden)
+                noteWindow = CreateNoteEditWindow(winTile,Notes[i]);
+
+        }
     }
 
 	// Show the notes again, if they were visible before

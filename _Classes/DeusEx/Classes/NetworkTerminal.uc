@@ -454,7 +454,8 @@ function AddNotesWindow()
         }
     }
     
-    if (numCodes == 0)
+    //SARGE: Dirty hack alert!!!!
+    if (numCodes == 0 && (!player.bHardCoreMode || player.iNoKeypadCheese == 0))
         return;
 
     winNotes = HUDKeypadNotesWindow(NewChild(Class'HUDKeypadNotesWindow'));
