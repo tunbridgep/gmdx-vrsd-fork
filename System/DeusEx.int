@@ -2295,7 +2295,7 @@ MPInfo="When active, you heal, but at a rate insufficient for healing in combat.
 
 [AugVision]
 AugmentationName="Vision Enhancement"
-Description="By bleaching selected rod photoreceptors and saturating them with metarhodopsin XII, the 'nightvision' present in most nocturnal animals can be duplicated. Subsequent upgrades and modifications add infravision & sonar-resonance imaging that effectively allows an agent to see through walls and bypass advanced stealth cloaking technology.|n|nTECH ONE: Nightvision.|n|nTECH TWO: Infravision and heat source detection.|n|nTECH THREE: Close range sonar imaging that enables an agent to detect threats through solid material.|n|nTECH FOUR: Long range sonar imaging that enables an agent to detect threats through solid material."
+Description="By bleaching selected rod photoreceptors and saturating them with metarhodopsin XII, the 'nightvision' present in most nocturnal animals can be duplicated. Subsequent upgrades and modifications add infravision & sonar-resonance imaging that effectively allows an agent to see through walls and bypass advanced stealth cloaking technology.|n|nTECH ONE: Nightvision.|n|nTECH TWO: Infravision and heat source detection. By analysing known molecular structures, identification of useful items within a short range can be achieved, even through solid material.|n|nTECH THREE: Medium range sonar imaging that enables an agent to detect threats and items through solid material.|n|nTECH FOUR: Long range sonar imaging that enables an agent to detect threats and items through solid material."
 MPInfo="When active, you can see enemy players in the dark from any distance, and for short distances you can see through walls and see cloaked enemies.  Energy Drain: Moderate"
 
 [WeaponBaton]

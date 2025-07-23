@@ -131,6 +131,8 @@ var ThrownProjectile lastGrenade;
 
 var localized String msgDisarmed;
 
+const ITEM_SONAR_DISTANCE = 256;                //SARGE: Range for special item-only sonar
+
 // ----------------------------------------------------------------------
 // InitWindow()
 // ----------------------------------------------------------------------
@@ -2023,8 +2025,18 @@ function DrawVisionAugmentation(GC gc)
 				if (IsHeatSource(A))
 				{
 					dist = VSize(A.Location - loc);
+                    //SARGE: Added a new condition for detecting items only
+                    if (visionLevelValue == 0 && dist <= ITEM_SONAR_DISTANCE && A.IsA('Inventory'))
+                    {
+						VisionTargetStatus = GetVisionTargetStatus(A);
+						SetSkins(A, oldSkins);
+
+						gc.DrawActor(A, False, False, True, 1.0, 2.0, None);
+
+						ResetSkins(A, oldSkins);
+                    }
 					//If within range of vision aug bit
-					if ( ( ((Player.Level.Netmode != NM_Standalone) && (dist <= (visionLevelvalue / 2))) ||
+					else if ( ( ((Player.Level.Netmode != NM_Standalone) && (dist <= (visionLevelvalue / 2))) ||
 							 ((Player.Level.Netmode == NM_Standalone) && (dist <= (visionLevelValue)))        ) && (IsHeatSource(A)))
 					{
 						VisionTargetStatus = GetVisionTargetStatus(A);
