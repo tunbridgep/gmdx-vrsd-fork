@@ -224,7 +224,7 @@ defaultproperties
 {
      mpAugValue=500.000000
      mpEnergyDrain=35.000000
-     EnergyRate=5.000000 //Was 40 when Active, now per projectile
+     EnergyRate=8.000000 //Was 40 when Active, now per projectile
      EnergyRateLabel="Energy Rate: %d Units/Projectile"
      Icon=Texture'DeusExUI.UserInterface.AugIconDefense'
      smallIcon=Texture'DeusExUI.UserInterface.AugIconDefense_Small'
