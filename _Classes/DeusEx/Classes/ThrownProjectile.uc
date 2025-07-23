@@ -654,7 +654,7 @@ auto simulated state Flying
 		PlayImpactSound();
 
 		if ( AISoundLevel > 0.0 )
-			AISendEvent('LoudNoise', EAITYPE_Audio, 2.0, AISoundLevel*blastRadius*10);
+			AISendEvent('LoudNoise', EAITYPE_Audio, 2.0, AISoundLevel*blastRadius*25); //SARGE: Was *10, increased to *25, since explosions were too quiet before
 
 		GotoState('Exploding');
 	}

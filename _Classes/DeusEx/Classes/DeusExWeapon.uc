@@ -4539,7 +4539,7 @@ function GetAIVolume(out float volume, out float radius)
     if (Owner == None)
         return;
 
-	NL = NoiseLevel * 4; //SARGE: Dirty hack to make guns louder.
+	NL = NoiseLevel * 8; //SARGE: Dirty hack to make guns louder.
 
 	if (!bHasSilencer && (!bHandToHand || IsA('WeaponHideAGun'))) //SARGE: Added PS20
 	{
@@ -4661,7 +4661,7 @@ simulated function Projectile ProjectileFire(class<projectile> ProjClass, float 
     	mult += 0.30;
 
 	// make noise if we are not silenced
-	if (!bHasSilencer && !bHandToHand)
+	if (!bHandToHand || IsA('WeaponHideAGun'))
 	{
 		GetAIVolume(volume, radius);
 		Owner.AISendEvent('WeaponFire', EAITYPE_Audio, volume, radius);
@@ -4938,7 +4938,7 @@ simulated function TraceFire( float Accuracy )
     local Projectile firedProjectile;
 
 	// make noise if we are not silenced
-	if (!bHasSilencer && !bHandToHand)
+	if (!bHandToHand || IsA('WeaponHideAGun'))
 	{
 		GetAIVolume(volume, radius);
 		Owner.AISendEvent('WeaponFire', EAITYPE_Audio, volume, radius);
