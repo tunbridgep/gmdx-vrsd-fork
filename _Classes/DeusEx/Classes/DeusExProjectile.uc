@@ -990,6 +990,8 @@ auto simulated state Flying
 			if (ImpactSound != None)
 			{
 				//log("EXPLODE:"@blastRadius);
+                //SARGE: Fix the broken sound propagation
+                class'PawnUtils'.static.WakeUpAI(self,blastRadius*10);
 				AISendEvent('LoudNoise', EAITYPE_Audio, 2.0, blastRadius*10);
 				if (bExplodes)
 				   AISendEvent('WeaponFire', EAITYPE_Audio, 2.0, blastRadius*2);

@@ -4539,16 +4539,16 @@ function GetAIVolume(out float volume, out float radius)
     if (Owner == None)
         return;
 
-	NL = NoiseLevel * 8; //SARGE: Dirty hack to make guns louder.
+	NL = NoiseLevel * 0.451; //SARGE: Dirty hack to make guns quieter now that pawns can actually detect gunfire reliably.
 
 	if (!bHasSilencer && (!bHandToHand || IsA('WeaponHideAGun'))) //SARGE: Added PS20
 	{
 		volume = NL*Pawn(Owner).SoundDampening;
-		if (Owner.IsA('DeusExPlayer'))
+		if (player != None)
 		{
-		    if (DeusExPlayer(Owner).CombatDifficulty < 1)
+		    if (player.CombatDifficulty < 1)
 		        volume *= 0.65;  //CyberP: AI are less receptive to gunshots on lower difficulty levels. easy = -50% medium = -25%
-		    else if (DeusExPlayer(Owner).CombatDifficulty < 3)
+		    else if (player.CombatDifficulty < 3)
                 volume *= 0.8;
 		}
 		radius = volume * 800.0;
@@ -4559,9 +4559,12 @@ function GetAIVolume(out float volume, out float radius)
         if (player != None && player.PerkManager != None && player.PerkManager.GetPerkWithClass(class'PerkWetwork').bPerkObtained)
             volume = 1.0*Pawn(Owner).SoundDampening;                                //RSD: Hardcoded value as specified in weapon info
         else
-            volume = 0.25*NL*Pawn(Owner).SoundDampening;                       //SARGE: Silencers now make the weapon quieter, not silent.
+            volume = 0.4*NL*Pawn(Owner).SoundDampening;                       //SARGE: Silencers now make the weapon quieter, not silent.
 		radius = volume * 800.0;
     }
+
+    //SARGE: Wake up the AI
+    class'PawnUtils'.static.WakeUpAI(Owner,radius);
 }
 
 //Ygll: utility function to test the behaviour of the dart with Fragile dart gameplay option enabled
