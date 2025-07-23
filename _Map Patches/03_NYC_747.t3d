@@ -58514,6 +58514,7 @@ Begin Actor Class=Sodacan Name=Sodacan3
 End Actor
 Begin Actor Class=OutfitSpawner2 Name=OutfitSpawner2
     Id="lebedev"
+    bSkipLOSFrobCheck=True
     bDynamicLight=True
     LastRenderTime=10.365916
     Level=LevelInfo'MyLevel.LevelInfo0'
