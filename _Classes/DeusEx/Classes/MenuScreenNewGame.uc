@@ -846,6 +846,7 @@ function SaveSettings()
     player.bCutInteractions=bCutInteractions;                                   //Sarge
     player.bA51Camera=bA51Camera;                                               //Sarge
     player.bHardcoreFilterOption=bHardcoreFilterOption;                         //Sarge
+    player.bPermaCloak=bPermaCloak;                                             //Sarge
     if (player.bRandomizeAugs)                                                  //RSD: New aug randomization feature
         ScrambleAugOrderList();
 
