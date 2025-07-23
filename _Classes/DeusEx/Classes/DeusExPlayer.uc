@@ -621,6 +621,8 @@ var travel bool bA51Camera;                                                     
 
 var travel bool bHardcoreFilterOption;                                          //SARGE: Moved from gameplay options to modifiers
 
+
+var travel bool bPermaCloak;                                                  //SARGE: If enabled, Elites and Shock Troopers will be permanently cloaked.
 //END GAMEPLAY MODIFIERS
 
 //hardcore+
