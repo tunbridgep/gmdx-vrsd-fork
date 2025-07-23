@@ -92,6 +92,7 @@ defaultproperties
      HDTPPlayerViewMesh="HDTPItems.HDTPLaw"
      HDTPPickupViewMesh="HDTPItems.HDTPLAWPickup"
      HDTPThirdPersonMesh="HDTPItems.HDTPLAW3rd"
+     Mesh=LodMesh'DeusExItems.LAWPickup'
      PlayerViewMesh=LodMesh'DeusExItems.LAW'
      PickupViewMesh=LodMesh'DeusExItems.LAWPickup'
      ThirdPersonMesh=LodMesh'DeusExItems.LAW3rd'
