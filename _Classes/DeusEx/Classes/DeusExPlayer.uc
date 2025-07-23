@@ -5420,7 +5420,7 @@ function Landed(vector HitNormal)
 	if (Velocity.Z < -460)//(Abs(Velocity.Z) >= 1.5 * JumpZ)//GMDX add compression to jump/fall (cosmetic) //CyberP: edited
 	{
 	camInterpol = 0.4;
-	if (IsCrouching())
+	if (IsCrouching() && !bOnLadder)
 	   PlayFootstep();
 	if (inHand != none && (inHand.IsA('NanoKeyRing') || inHand.IsA('DeusExPickup')))
 	{
