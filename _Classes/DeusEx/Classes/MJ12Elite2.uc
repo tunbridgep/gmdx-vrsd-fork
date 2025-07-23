@@ -55,7 +55,7 @@ function DifficultyMod(float CombatDifficulty, bool bHardCoreMode, bool bExtraHa
         CloakThreshold=140;
         //GroundSpeed=220.000000;
     }
-    bNotFirstDiffMod = true;
+    super.DifficultyMod(CombatDifficulty,bHardCoreMode,bExtraHardcore,bFirstLevelLoad);
 }
 
 defaultproperties

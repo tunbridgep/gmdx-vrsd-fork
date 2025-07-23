@@ -694,7 +694,7 @@ function InitializeEnemySwap(int pool) //use pool 0 for regular weapons, pool 1 
     //Get all the relevant actors on the map
     foreach AllActors(class'ScriptedPawn', Man)
 	{
-        if (!Man.bImportant && Man.GetPawnAllianceType(Player) == ALLIANCE_Hostile && !Man.isA('Robot') && !Man.isA('Animal') && !Man.isA('HumanCivilian') && !Man.bDontRandomizeWeapons)
+        if (!Man.bImportant && Man.GetPawnAllianceType(Player) == ALLIANCE_Hostile && !Man.isA('Robot') && !Man.isA('Animal') && !Man.isA('HumanCivilian') && !Man.bDontRandomizeWeapons && Man.Weapon != None)
         {
             if (pool == 0 && !Man.Weapon.isA('WeaponRifle') && !Man.Weapon.isA('WeaponGEPGun') && !Man.Weapon.isA('WeaponPlasmaRifle'))
                 randomizeActors[totalRandomized] = Man;

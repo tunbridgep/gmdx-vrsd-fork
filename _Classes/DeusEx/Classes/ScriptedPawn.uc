@@ -10059,6 +10059,10 @@ function Died(pawn Killer, name damageType, vector HitLocation)
 
 function DifficultyMod(float CombatDifficulty, bool bHardCoreMode, bool bExtraHardcore, bool bFirstLevelLoad) //RSD: New function to streamline NPC stat difficulty modulation
 {
+    //SARGE: If we have perma cloak terned on, and if we can cloak, make it permanent
+    if (!bNotFirstDiffMod && bFirstLevelLoad && bHasCloak && DeusExPlayer(GetPlayerPawn()) != None && DeusExPlayer(GetPlayerPawn()).bPermaCloak)
+        bForcedCloak = true;
+
 	bNotFirstDiffMod = true;
 }
 

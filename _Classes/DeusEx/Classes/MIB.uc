@@ -329,7 +329,7 @@ function DifficultyMod(float CombatDifficulty, bool bHardCoreMode, bool bExtraHa
 	SurprisePeriod=0.200000;
 	GroundSpeed=350.000000;
 	}
-    bNotFirstDiffMod = true;
+    super.DifficultyMod(CombatDifficulty,bHardCoreMode,bExtraHardcore,bFirstLevelLoad);
 }
 
 defaultproperties

@@ -202,7 +202,7 @@ function DifficultyMod(float CombatDifficulty, bool bHardCoreMode, bool bExtraHa
          HealthArmRight=500;
          }
          }
-         bNotFirstDiffMod = true;
+         super.DifficultyMod(CombatDifficulty,bHardCoreMode,bExtraHardcore,bFirstLevelLoad);
 }
 
 defaultproperties
