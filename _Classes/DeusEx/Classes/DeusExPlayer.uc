@@ -1600,7 +1600,7 @@ function SetupPerkManager()
 	// install the Perk Manager if not found
 	if (PerkManager == None)
     {
-        //ClientMessage("Make new Perk System");
+        DebugMessage("Make new Perk System");
 	    PerkManager = new(Self) class'PerkSystem';
     }
     PerkManager.InitializePerks(Self);
