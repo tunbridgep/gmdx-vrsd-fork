@@ -847,6 +847,8 @@ var bool bClearReceivedItems;                                   //SARGE: Clear t
 
 var float lastWalkTimer;                                        //SARGE: Allow playing footsteps while crouching.
 
+var globalconfig bool bEnhancedSoundPropagation;                //SARGE: Allow more advanced sound propagation. May introduce performance issues!
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -5156,9 +5158,13 @@ simulated function PlayFootStep()
     //Sarge: Increase the AI volume by a significant margin, to make Stealth more necessary
     volumeMultiplier *= 1.5;
 
-    class'PawnUtils'.static.WakeUpAI(self,range*volumeMultiplier);
-	AISendEvent('LoudNoise', EAITYPE_Audio, volume*volumeMultiplier*volumeMod, range*volumeMultiplier);
-    //DebugMessage("LoudNoise: vol = " $ volume*volumeMultiplier*volumeMod $ " range = " $ range*volumeMultiplier);
+    if (volume > 0)
+    {
+        //SARGE: Fix the broken sound propagation
+        class'PawnUtils'.static.WakeUpAI(self,range*volumeMultiplier);
+        AISendEvent('LoudNoise', EAITYPE_Audio, volume*volumeMultiplier*volumeMod, range*volumeMultiplier);
+        //DebugMessage("LoudNoise: vol = " $ volume*volumeMultiplier*volumeMod $ " range = " $ range*volumeMultiplier);
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -19318,4 +19324,5 @@ defaultproperties
      bQuietAugs=True
      bEnableLeftFrob=True
      bShowDeclinedInReceivedWindow=true
+     bEnhancedSoundPropagation=true
 }

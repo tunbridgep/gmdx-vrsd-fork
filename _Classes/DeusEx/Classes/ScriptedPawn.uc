@@ -4640,6 +4640,8 @@ function PlayDyingSound()
 {
 	SetDistressTimer();
 
+    //SARGE: Fix the broken sound propagation
+    class'PawnUtils'.static.WakeUpAI(self,336);
 	PlaySound(GetDeathSound(), SLOT_Pain,,,, RandomPitch());
 	if (bEmitDistress)
 		AISendEvent('Distress', EAITYPE_Audio,0.25,336); //CyberP: radius was 490 //RSD: psshh, only 224? We going to 336 baby

@@ -11,9 +11,20 @@ class PawnUtils extends Object abstract;
 //NOT FOR THE FEINT OF HEART!
 static function WakeUpAI(Actor S, float radius)
 {
-    local ScriptedPawn P;
+    local ScriptedPawn SP;
+    local Pawn P;
 
-    foreach S.AllActors(class'ScriptedPawn',P)
-        if (P.InStasis() && P.bInWorld && VSize(P.Location - S.Location) <= radius)
-            P.lastRendertime = S.Level.TimeSeconds;
+    if (!class'DeusExPlayer'.default.bEnhancedSoundPropagation)
+        return;
+
+    for (P = S.Level.PawnList; P != None; P = P.NextPawn)
+    {
+        SP = ScriptedPawn(P);
+
+        if (SP == None)
+            continue;
+
+        if (SP.InStasis() && SP.bInWorld && VSize(SP.Location - S.Location) <= radius)
+            SP.lastRendertime = S.Level.TimeSeconds;
+    }
 }
