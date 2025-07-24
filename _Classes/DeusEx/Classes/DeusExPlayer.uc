@@ -2895,6 +2895,14 @@ function ResetPlayer(optional bool bTraining)
 		AugmentationSystem = None;
 	}
 
+    //SARGE: Remove perks
+    if (PerkManager != None)
+    {
+        PerkManager.ResetPerks();
+        PerkManager.Destroy();
+        PerkManager = None;
+    }
+
     //SARGE: Remove secondary weapon
     AssignSecondary(None);
 
@@ -3006,8 +3014,6 @@ function ResetPlayerToDefaults()
 
 	// Reinitialize all subsystems we've just nuked
 	InitializeSubSystems();
-
-	PerkManager.ResetPerks();
 
     bBoosterUpgrade = False;
 
