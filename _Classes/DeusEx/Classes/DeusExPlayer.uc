@@ -1804,9 +1804,6 @@ function PreTravel()
 
 	foreach AllActors(class'SpyDrone',SD)                                       //RSD: Destroy all spy drones so we can't activate disabled drones on map transition
 		SD.Destroy();
-
-    //Prepare the music system for the next map
-    default.musicModeGMDX = MUS_Invalid;
 }
 
 // ----------------------------------------------------------------------
@@ -3384,23 +3381,7 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
     DebugMessage("Music Change Request:" @ NewSong @ NewSection);
     DebugMessage("  Modes:" @ default.prevMusicMode @ default.musicModeGMDX);
     
-    //SARGE: We're still fading from the last track, so we need to do a hacky fix
-    //The engine is busted and the music system needs to be reset, so instantly transition back to our saved section.
-    //and reset the volume
     /*
-    if (default.fadeTimeHack > 0)
-    {
-        //barf...
-        //bChange = true;
-        SetInstantMusicVolume(int(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice MusicVolume")));
-        NewTransition = MTRAN_Instant;
-        default.savedSection = Level.SongSection; //And reset the saved section
-        default.musicModeGMDX = MUS_Ambient;
-        default.prevMusicMode = MUS_Ambient;
-        DebugMessage("Changing Music - FadeTimeHack fix");
-    }
-    */
-
     //Always skip invalid music state, which is called at the start of every level
     if (default.musicModeGMDX == MUS_Invalid)
     {
@@ -3411,10 +3392,11 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
         //super.ClientSetMusic(NewSong,Level.SongSection,NewCdTrack,NewTransition);
         return;
     }
+    */
 
     //Fix fade time shenanigans
     //This makes me sick!
-    else if (default.fadeTimeHack > 0 && default.prevMusicMode == MUS_Ambient)
+    /*else*/ if (default.fadeTimeHack > 0 && default.prevMusicMode == MUS_Ambient)
     {
         //barf...
         SetInstantMusicVolume(int(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice MusicVolume")));
@@ -3481,10 +3463,8 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
             default.fadeTimeHack = 4.0;
         else if (NewTransition == MTRAN_Fade)
             default.fadeTimeHack = 0.5;
-        else if (NewTransition == MTRAN_FastFade)
-            default.fadeTimeHack = 0.25;
         else
-            default.fadeTimeHack = 0;
+            default.fadeTimeHack = 0.25;
     }
     default.currentSong = string(NewSong);
     default.prevSongSection = Level.SongSection;
@@ -3528,10 +3508,6 @@ function ResetMusic()
         default.prevMusicMode = MUS_Outro;
         default.musicModeGMDX = MUS_Outro;
     }
-
-
-    if (default.musicModeGMDX == MUS_Invalid)
-        default.musicModeGMDX = MUS_Ambient;
 
     UpdateDynamicMusic(999,true);
 }
