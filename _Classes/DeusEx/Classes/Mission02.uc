@@ -16,7 +16,9 @@ function FirstFrame()
     local Keypad K;
     local ComputerSecurity SC;
     local DeusExCarcass C;
-    local string newPasscode;
+    local CrateExplosiveSmall tnt;
+    local BeamTrigger trig;
+    local UnatcoTroop troop;
 
 	Super.FirstFrame();
 
@@ -123,6 +125,33 @@ function FirstFrame()
                 DoLightingAccessibility(L, 'Light45');
                 DoLightingAccessibility(L, 'Light42', true);
             }
+        }
+    }
+	else if (localURL == "02_NYC_BATTERYPARK")
+    {
+        //SARGE: Prevent the player from exploiting the next map by removing the TNT crates
+		if (flags.GetBool('SubTerroristsDead') && !flags.GetBool('GMDXRemoveTNT'))
+        {
+            //Add some extra guards to justify why the cleanup has happened.
+            foreach AllActors(class'UNATCOTroop', troop, 'CleanupTroop')
+            {
+                troop.EnterWorld();
+                troop.SetOrders('Wandering', '', True);
+            }
+            
+            //remove all the TNT Crates
+            foreach AllActors(class'CrateExplosiveSmall', tnt)
+            {
+                tnt.DrawScale = 0.00001;
+                tnt.SetCollision(false,false,false);
+                tnt.SetCollisionSize(0,0);
+            }
+            
+            //disable the tripwires
+            foreach AllActors(class'BeamTrigger', trig)
+                trig.Untrigger(player, player);
+            
+            flags.SetBool('GMDXRemoveTNT', True,, 3);
         }
     }
 CanQuickSave=true;
