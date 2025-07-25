@@ -2899,7 +2899,6 @@ function ResetPlayer(optional bool bTraining)
     if (PerkManager != None)
     {
         PerkManager.ResetPerks();
-        PerkManager.Destroy();
         PerkManager = None;
     }
 

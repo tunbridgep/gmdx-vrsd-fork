@@ -125,7 +125,7 @@ function AddPerk(class<Perk> perk)
     //If it's in the obtained list, set it to obtained
     for (i = 0;i < numObtained;i++)
     {
-        if (obtainedPerks[i] == string(Perk.Class))
+        if (obtainedPerks[i] == string(Perk.Name))
         {
             perkInstance.bPerkObtained = true;
             perkInstance.OnMapLoad();
@@ -169,7 +169,7 @@ function bool PurchasePerk(class<Perk> perk, optional bool free)  // Trash: Purc
 
         //Don't re-add it if we already have it
         for (i = 0;i < numObtained;i++)
-            if (obtainedPerks[i] == string(perk.Class))
+            if (obtainedPerks[i] == string(perk.Name))
                 bFound = true;
 
         PlayerAttached.PlaySound(Sound'GMDXSFX.Generic.codelearned',SLOT_None,,,,0.8);
@@ -178,7 +178,8 @@ function bool PurchasePerk(class<Perk> perk, optional bool free)  // Trash: Purc
         perkInstance.OnMapLoadAndPurchase();
 
         if (!bFound)
-            obtainedPerks[numObtained++] = string(perk.Class);
+            obtainedPerks[numObtained++] = string(perk.Name);
+
         return true;
     }
     return false;
