@@ -66,6 +66,8 @@ state Active
                 minproj.bAggressiveExploded = True;
                 minproj.aggressiveExploder = Player;
 				minproj.Explode(minproj.Location, vect(0,0,1));
+                minproj = None;
+                SetDefenseAugStatus(True,CurrentLevel,None);
                 player.Energy -= GetAdjustedEnergyRate();
 				Player.PlaySound(sound'ProdFire', SLOT_None,,,, 2.0);
 			}
