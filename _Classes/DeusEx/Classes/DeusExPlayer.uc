@@ -3373,7 +3373,7 @@ function bool AmbientTrackChanged(string newSong)
 // ----------------------------------------------------------------------
 function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusicTransition NewTransition )
 {
-    local bool bChange;
+    local bool bChange, bHacked;
 	local DeusExLevelInfo info;
     
     info = GetLevelInfo();
@@ -3399,12 +3399,12 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
     /*else*/ if (default.fadeTimeHack > 0 && default.prevMusicMode == MUS_Ambient)
     {
         //barf...
-        SetInstantMusicVolume(int(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice MusicVolume")));
         NewTransition = MTRAN_Instant;
         DebugMessage("Changing Music - FadeTimeHack fix");
         if (NewSection == Level.SongSection && iEnhancedMusicSystem > 0)
             NewSection = default.savedSection;
         bChange = true;
+        bHacked = true;
     }
     else if (AmbientTrackChanged(string(NewSong))) //We always want to allow song changes on map transition
     {
@@ -3457,14 +3457,18 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
     if (bChange)
     {
         super.ClientSetMusic(NewSong,NewSection,NewCdTrack,NewTransition);
+        
+        //SARGE: Fix the volume if we changed mid-fade
+        if (bHacked)
+            SetInstantMusicVolume(int(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice MusicVolume")));
 
         //Apply fade-time hack
         if (NewTransition == MTRAN_SlowFade)
-            default.fadeTimeHack = 4.0;
-        else if (NewTransition == MTRAN_Fade)
-            default.fadeTimeHack = 0.5;
+            default.fadeTimeHack = 6.0;
+        //else if (NewTransition == MTRAN_Fade)
+        //    default.fadeTimeHack = 3.0;
         else
-            default.fadeTimeHack = 0.25;
+            default.fadeTimeHack = 3.0;
     }
     default.currentSong = string(NewSong);
     default.prevSongSection = Level.SongSection;
@@ -3535,7 +3539,7 @@ function UpdateDynamicMusic(float deltaTime, optional bool bNoFadeHack)
 	local DeusExLevelInfo info;
     local int aggro;                    //Sarge: Keep track of the number of aggro enemies. If >2, start combat music. If 0 stop combat music.
 
-	if (Level.Song == None || default.musicModeGMDX == MUS_Invalid)
+	if (Level.Song == None)
 		return;
 
     info = GetLevelInfo();
@@ -3546,16 +3550,6 @@ function UpdateDynamicMusic(float deltaTime, optional bool bNoFadeHack)
         default.fadeTimeHack -= deltaTime;
     if (default.fadeTimeHack < 0)
         default.fadeTimeHack = 0;
-            
-    if (default.musicModeGMDX == MUS_Ambient && fadeTimeHack == 0)
-    {
-        //SARGE: Now we constantly update the saved section, rather than
-        //only updating it when it changes, because that can cause bugs due to fading.
-        if (default.savedSection == 255)
-            default.savedSection = Level.SongSection;
-        else
-            default.savedSection = SongSection;
-    }
 
 	if (IsInState('Interpolating'))
 	{
@@ -3627,6 +3621,14 @@ function UpdateDynamicMusic(float deltaTime, optional bool bNoFadeHack)
     //If we changed state, trigger a music transition.
     if (default.musicModeGMDX != default.prevMusicMode)
     {
+        if (default.prevMusicMode == MUS_Ambient && default.fadeTimeHack == 0)
+        {
+            if (default.savedSection == 255)
+                default.savedSection = Level.SongSection;
+            else
+                default.savedSection = SongSection;
+        }
+
         MusicTransition(default.musicModeGMDX, default.prevMusicMode);
         default.prevMusicMode = default.musicModeGMDX;
     }
