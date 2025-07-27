@@ -4539,7 +4539,7 @@ function GetAIVolume(out float volume, out float radius)
     if (Owner == None)
         return;
 
-	NL = NoiseLevel * 0.451; //SARGE: Dirty hack to make guns quieter now that pawns can actually detect gunfire reliably.
+	NL = NoiseLevel * 0.75; //SARGE: Dirty hack to make guns quieter now that pawns can actually detect gunfire reliably.
 
 	if (!bHasSilencer && (!bHandToHand || IsA('WeaponHideAGun'))) //SARGE: Added PS20
 	{
@@ -4559,7 +4559,7 @@ function GetAIVolume(out float volume, out float radius)
         if (player != None && player.PerkManager != None && player.PerkManager.GetPerkWithClass(class'PerkWetwork').bPerkObtained)
             volume = 1.0*Pawn(Owner).SoundDampening;                                //RSD: Hardcoded value as specified in weapon info
         else
-            volume = 0.4*NL*Pawn(Owner).SoundDampening;                       //SARGE: Silencers now make the weapon quieter, not silent.
+            volume = 0.25*NL*Pawn(Owner).SoundDampening;                       //SARGE: Silencers now make the weapon quieter, not silent.
 		radius = volume * 800.0;
     }
 
