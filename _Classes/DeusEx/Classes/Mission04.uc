@@ -14,6 +14,7 @@ function FirstFrame()
 	local ScriptedPawn pawn;
 	local PaulDenton paul;
 	local FlagTrigger ftrig;
+    local DeusExCarcass C;
 	local int count;
 
 	if(flags.GetBool('PaulDenton_Dead') && !flags.GetBool('TalkedToPaulAfterMessage')) //== Paul CANNOT die before the raid, period
@@ -51,6 +52,17 @@ function FirstFrame()
 	}*/
 	else if (localURL == "04_NYC_HOTEL")
 	{
+        //SARGE: Carcasses already in the map won't bleed
+        //This fixes the junkies having blood pools
+		if (firstTime)
+        {
+            foreach AllActors(class'DeusExCarcass', C)
+            {
+                C.DestroyPool();
+                C.bNoDefaultPools=true;
+            }
+        }
+
 		// unhide the correct JoJo
 		if (flags.GetBool('SandraRenton_Dead') ||
 			flags.GetBool('GilbertRenton_Dead'))

@@ -23,7 +23,8 @@ function FirstFrame()
 	Super.FirstFrame();
 
     //SARGE: Carcasses already in the map won't bleed
-	if (localURL == "02_NYC_FREECLINIC" || localURL == "02_NYC_HOTEL")
+    //This fixes the junkies having blood pools
+	if ((localURL == "02_NYC_FREECLINIC" || localURL == "02_NYC_HOTEL") && firstTime)
     {
         foreach AllActors(class'DeusExCarcass', C)
         {

@@ -16,6 +16,7 @@ function FirstFrame()
 	local FordSchick Ford;
 	local AugmentationUpgradeCannister Upgrade;
     local ScriptedPawn pawn;
+    local DeusExCarcass C;
     local Light L;
 
 	Super.FirstFrame();
@@ -65,6 +66,17 @@ function FirstFrame()
     }
 	else if (localURL == "08_NYC_HOTEL")
     {
+        //SARGE: Carcasses already in the map won't bleed
+        //This fixes the junkies having blood pools
+		if (firstTime)
+        {
+            foreach AllActors(class'DeusExCarcass', C)
+            {
+                C.DestroyPool();
+                C.bNoDefaultPools=true;
+            }
+        }
+
         //SARGE: Fix up elevator shaft Lighting if we have Lighting Accessibility enabled
         if (Player.bLightingAccessibility)
         {
