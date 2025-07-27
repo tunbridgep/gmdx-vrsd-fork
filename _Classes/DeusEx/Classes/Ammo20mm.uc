@@ -3,19 +3,19 @@
 //=============================================================================
 class Ammo20mm extends DeusExAmmo;
 
-function PostBeginPlay()
+function PostPostBeginPlay()
 {
-local DeusExPlayer player;
+    local DeusExPlayer player;
 
-        super.PostBeginPlay();
+    super.PostPostBeginPlay();
 
-        player=DeusExPlayer(GetPlayerPawn());
+    player=DeusExPlayer(GetPlayerPawn());
 
-   if ((player != none) && (player.bHardCoreMode == True))
-   	{
-   	    if (Owner == None)
-    	AmmoAmount = 2;  //CyberP: less ammo on hardcore
-   	}
+    if ((player != none) && (player.bHardCoreMode == True))
+    {
+        if (Owner == None)
+            AmmoAmount = 1;  //CyberP: less ammo on hardcore
+    }
 }
 
 defaultproperties
@@ -23,7 +23,7 @@ defaultproperties
      bShowInfo=True
      altDamage=200
      ammoSkill=Class'DeusEx.SkillDemolition'
-     AmmoAmount=3
+     AmmoAmount=2
      MaxAmmo=4
      ItemName="20mm HE Ammo"
      ItemArticle="some"
