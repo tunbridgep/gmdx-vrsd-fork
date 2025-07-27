@@ -17,6 +17,8 @@ static function WakeUpAI(Actor S, float radius)
     if (!class'DeusExPlayer'.default.bEnhancedSoundPropagation)
         return;
 
+    //radius = radius * 0.85; //SARGE: Hack!
+
     for (P = S.Level.PawnList; P != None; P = P.NextPawn)
     {
         SP = ScriptedPawn(P);
