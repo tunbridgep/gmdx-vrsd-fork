@@ -122,7 +122,7 @@ function ApplyLightingAccessibility()
 function DoLightingAccessibilityFor(Light L, optional bool bStrobe)
 {
     //log("Light Found: [" $ L.Name $ "]");
-    if (L.LightType != LT_Flicker && L.LightType != LT_Strobe)
+    if (L.LightType != LT_Flicker && L.LightType != LT_Strobe && L.LightType != LT_Blink)
         return;
 
     L.LightPeriod = 0;
