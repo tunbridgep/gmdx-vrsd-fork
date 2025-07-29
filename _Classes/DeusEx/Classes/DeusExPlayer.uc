@@ -5156,12 +5156,12 @@ simulated function PlayFootStep()
         range*=0.9;
 
     //Sarge: Increase the AI volume by a significant margin, to make Stealth more necessary
-    volumeMultiplier *= 1.5;
+    volumeMultiplier *= 1.25;
 
     if (volume > 0)
     {
         //SARGE: Fix the broken sound propagation
-        class'PawnUtils'.static.WakeUpAI(self,range*volumeMultiplier);
+        class'PawnUtils'.static.WakeUpAI(self,range*volumeMultiplier * 0.25);
         AISendEvent('LoudNoise', EAITYPE_Audio, volume*volumeMultiplier*volumeMod, range*volumeMultiplier);
         //DebugMessage("LoudNoise: vol = " $ volume*volumeMultiplier*volumeMod $ " range = " $ range*volumeMultiplier);
     }
@@ -16669,7 +16669,7 @@ function float CalculatePlayerVisibility(ScriptedPawn P)                        
 	local DeusExWeapon wep;
 
     wep = DeusExWeapon(Weapon);
-	vis = 2.0; //SARGE: Was 1.0
+	vis = 1.3; //SARGE: Was 1.0
 	/*litelvl = AIVisibility(false);                                              //RSD: Get AI visibility
     skillStealthMod = (SkillSystem.GetSkillLevelValue(class'SkillStealth')-0.5)*0.3;
     if (skillStealthMod < 0.0)
