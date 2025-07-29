@@ -288,6 +288,7 @@ function Timer()
 	local Terrorist T;
 	local BlackHelicopter B;
     local SkillAwardTrigger TR;
+    local UnatcoTroop Trooper;
 
 	Super.Timer();
     
@@ -300,6 +301,26 @@ function Timer()
 
 	if (localURL == "05_NYC_UNATCOHQ")
 	{
+		if (!flags.GetBool('GMDXEntryDoorFix'))
+        {
+            //SARGE: Make the guards near the front door not come running to let you out of the facility
+            foreach AllActors(class'DeusExMover', M, 'levelone')
+            {
+                if (M.bLocked == false)
+                {
+                    foreach AllActors(class'UNATCOTroop', Trooper, 'EntryTroop')
+                    {
+                        Trooper.bReactAlarm = true;
+                        Trooper.bReactDistress = true;
+                        Trooper.bReactLoudNoise = true;
+                        Trooper.bReactShot = true;
+                        Trooper.bReactProjectiles = true;
+                    }
+                flags.SetBool('GMDXEntryDoorFix', True,, 6);
+                }
+            }
+        }
+
 		// unlock a door
 		if (flags.GetBool('CarterUnlock') &&
 			!flags.GetBool('MS_DoorUnlocked'))
