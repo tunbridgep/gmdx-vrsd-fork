@@ -13,11 +13,17 @@ static function WakeUpAI(Actor S, float radius)
 {
     local ScriptedPawn SP;
     local Pawn P;
+	local DeusExLevelInfo info;
+    local DeusExPlayer PL;
+	
+    PL = DeusExPlayer(S);
+    if (PL == None)
+        PL = DeusExPlayer(S.GetPlayerPawn());
 
-    if (!class'DeusExPlayer'.default.bEnhancedSoundPropagation)
+    if (PL == None || !PL.bEnhancedSoundPropagation)
         return;
 
-    //radius = radius * 0.85; //SARGE: Hack!
+    info = PL.GetLevelInfo();
 
     for (P = S.Level.PawnList; P != None; P = P.NextPawn)
     {
@@ -26,7 +32,7 @@ static function WakeUpAI(Actor S, float radius)
         if (SP == None)
             continue;
 
-        if (SP.InStasis() && SP.bInWorld && VSize(SP.Location - S.Location) <= radius)
+        if (SP.InStasis() && SP.bInWorld && VSize(SP.Location - S.Location) <= radius * info.SoundPropagationMult)
             SP.lastRendertime = S.Level.TimeSeconds;
     }
 }
