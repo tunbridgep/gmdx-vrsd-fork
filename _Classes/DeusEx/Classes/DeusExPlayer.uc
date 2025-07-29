@@ -739,6 +739,7 @@ var transient string currentSong;                                               
 var globalconfig int iEnhancedMusicSystem;                                        //SARGE: Should the music system be a bit smarter about playing tracks?
 var transient float fadeTimeHack;                                                 //SARGE: Hacky music transition fix timer
 var transient int prevSongSection;                                               //SARGE: Remember the SongSection for the previous map. If it changes, we need to always change tracks.
+var transient bool bMusicLoadHack;                                               //SARGE: Set to true when we're transitioning maps for any reason, to allow the fadetimehack to be applied
 
 //SARGE: Autoswitch to Health screen when installing the last augmentation at a med bot.
 var globalconfig bool bMedbotAutoswitch;
@@ -1777,9 +1778,13 @@ function PreTravel()
 	SaveSkillPoints();
 
     bDelayInventoryFix = true;
+    
+    //SARGE: Prepare the music system
+    default.bMusicLoadHack = true;
+
 
     if (AugmentationSystem != None && AugmentationSystem.GetAugLevelValue(class'AugVision') != -1.0)
-        AugmentationSystem.DeactivateAll();
+        AugmentationSystem.DeactivateAll(!bFakeDeath);
     else if (UsingChargedPickup(class'TechGoggles'))
         foreach AllActors(class'TechGoggles', tech)
             if ((tech.Owner == Self) && tech.bActive)
@@ -3396,7 +3401,7 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
 
     //Fix fade time shenanigans
     //This makes me sick!
-    /*else*/ if (default.fadeTimeHack > 0 && default.prevMusicMode == MUS_Ambient)
+    /*else*/ if (default.fadeTimeHack > 0 && default.prevMusicMode == MUS_Ambient && default.bMusicLoadHack)
     {
         //barf...
         NewTransition = MTRAN_Instant;
@@ -3405,6 +3410,7 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
             NewSection = default.savedSection;
         bChange = true;
         bHacked = true;
+        bMusicLoadHack = false;
     }
     else if (AmbientTrackChanged(string(NewSong))) //We always want to allow song changes on map transition
     {
@@ -3468,7 +3474,7 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
         //else if (NewTransition == MTRAN_Fade)
         //    default.fadeTimeHack = 3.0;
         else
-            default.fadeTimeHack = 3.0;
+            default.fadeTimeHack = 0.5;
     }
     default.currentSong = string(NewSong);
     default.prevSongSection = Level.SongSection;
@@ -3551,6 +3557,9 @@ function UpdateDynamicMusic(float deltaTime, optional bool bNoFadeHack)
     if (default.fadeTimeHack < 0)
         default.fadeTimeHack = 0;
 
+    if (default.fadeTimeHack > 0)
+        return;
+
 	if (IsInState('Interpolating'))
 	{
         default.musicModeGMDX = MUS_Outro;
@@ -3621,7 +3630,7 @@ function UpdateDynamicMusic(float deltaTime, optional bool bNoFadeHack)
     //If we changed state, trigger a music transition.
     if (default.musicModeGMDX != default.prevMusicMode)
     {
-        if (default.prevMusicMode == MUS_Ambient && default.fadeTimeHack == 0)
+        if (default.prevMusicMode == MUS_Ambient)
         {
             if (default.savedSection == 255)
                 default.savedSection = Level.SongSection;
