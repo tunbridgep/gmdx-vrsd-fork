@@ -4374,8 +4374,20 @@ exec function DeactivateAllAugs(optional bool toggle)
 
 exec function SwitchAmmo()
 {
+    local ThrownProjectile P;
+
 	if (inHand != None && inHand.IsA('DeusExWeapon')) //CyberP: fixed vanilla accessed none
 		DeusExWeapon(inHand).CycleAmmo();
+
+    //SARGE: Allow detonating all of our wall grenades with the switch-ammo button
+    else if (inHand == None && PerkManager.GetPerkWithClass(class'DeusEx.PerkRemoteDetonation').bPerkObtained)
+    {
+        foreach AllActors(class'ThrownProjectile',P)
+        {
+            if (P.Owner == self && P.bProximityTriggered)
+                P.bDoExplode = true;
+        }
+    }
 }
 
 // ----------------------------------------------------------------------
