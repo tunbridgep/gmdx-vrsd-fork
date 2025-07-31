@@ -22,6 +22,7 @@ function FirstFrame()
     local LaserTrigger AT;
     local Doberman dob;
     local Light L;
+    local SkillAwardTrigger TRIG;
 
 	Super.FirstFrame();
 
@@ -80,6 +81,14 @@ function FirstFrame()
 
 			foreach AllActors(class'GuntherHermann', Gunther)
 				Gunther.EnterWorld();
+
+            //SARGE: Remove the Tower Skill Award bonuses.
+			foreach AllActors(class'SkillAwardTrigger', TRIG, 'TowerSkillTrigger')
+				TRIG.Destroy();
+
+            //SARGE: Remove the Ambrosia Skill Award bonus.
+			foreach AllActors(class'SkillAwardTrigger', TRIG, 'skills')
+				TRIG.Destroy();
 		}
 	}
 	else if (localURL == "03_NYC_HANGAR")
