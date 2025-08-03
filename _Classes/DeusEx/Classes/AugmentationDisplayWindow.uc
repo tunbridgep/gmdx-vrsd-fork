@@ -934,7 +934,7 @@ function DrawSpyDroneAugmentation(GC gc)
         }
 		
         // print a low energy warning message for EMP attack
-		if (augDrone != None && Player.Energy < augDrone.EMPDrain)
+		if (augDrone != None && Player.Energy < augDrone.GetAdjustedEnergy(augDrone.EMPDrain))
         {
             if (str != "")
                 ymod = 10;
