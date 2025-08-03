@@ -1587,7 +1587,7 @@ function SetupPerkManager()
 	// install the Perk Manager if not found
 	if (PerkManager == None)
     {
-        //ClientMessage("Make new Perk System");
+        DebugMessage("Make new Perk System");
 	    PerkManager = new(Self) class'PerkSystem';
     }
     PerkManager.InitializePerks(Self);
@@ -2883,6 +2883,13 @@ function ResetPlayer(optional bool bTraining)
 		AugmentationSystem = None;
 	}
 
+    //SARGE: Remove perks
+    if (PerkManager != None)
+    {
+        PerkManager.ResetPerks();
+        PerkManager = None;
+    }
+
     //SARGE: Remove secondary weapon
     AssignSecondary(None);
 
@@ -2994,8 +3001,6 @@ function ResetPlayerToDefaults()
 
 	// Reinitialize all subsystems we've just nuked
 	InitializeSubSystems();
-
-	PerkManager.ResetPerks();
 
     bBoosterUpgrade = False;
 

@@ -11,7 +11,7 @@ var private Perk PerkList[100];			// Trash: Hopefully with this system, you can 
 var private int numPerks;				// Trash: UnrealScript doesn't support lists, so this is essentially the number of perks in the game
 var private DeusExPlayer PlayerAttached;	// Trash: The player this class is attached to
 
-var private travel Name obtainedPerks[100]; //SARGE: Now we store the owned perks in this list, rather than in the perks themselves, so that we can regenerate the perk list on load.
+var private travel String obtainedPerks[100]; //SARGE: Now we store the owned perks in this list, rather than in the perks themselves, so that we can regenerate the perk list on load.
 var private travel int numObtained;
 
 // ----------------------------------------------------------------------
@@ -126,7 +126,7 @@ function AddPerk(class<Perk> perk)
     //If it's in the obtained list, set it to obtained
     for (i = 0;i < numObtained;i++)
     {
-        if (obtainedPerks[i] == Perk.name)
+        if (obtainedPerks[i] == string(Perk.Name))
         {
             perkInstance.bPerkObtained = true;
             perkInstance.OnMapLoad();
@@ -170,7 +170,7 @@ function bool PurchasePerk(class<Perk> perk, optional bool free)  // Trash: Purc
 
         //Don't re-add it if we already have it
         for (i = 0;i < numObtained;i++)
-            if (obtainedPerks[i] == perk.Name)
+            if (obtainedPerks[i] == string(perk.Name))
                 bFound = true;
 
         PlayerAttached.PlaySound(Sound'GMDXSFX.Generic.codelearned',SLOT_None,,,,0.8);
@@ -179,7 +179,8 @@ function bool PurchasePerk(class<Perk> perk, optional bool free)  // Trash: Purc
         perkInstance.OnMapLoadAndPurchase();
 
         if (!bFound)
-            obtainedPerks[numObtained++] = perk.Name;
+            obtainedPerks[numObtained++] = string(perk.Name);
+
         return true;
     }
     return false;
@@ -213,7 +214,7 @@ function ResetPerks()  // Trash: Reset every perk
 
 	for (index = 0; index < numObtained; index++)
 	{
-		obtainedPerks[index] = 'none';
+		obtainedPerks[index] = "";
 	}
     numObtained = 0;
 }
