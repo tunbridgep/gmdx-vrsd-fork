@@ -599,7 +599,7 @@ var travel bool bRandomizeAugs;
 var travel bool bRandomizeEnemies;
 var travel bool bRandomizeCrap;                                                 //Sarge: Randomize the crap around the level, like couch skins, etc.
 var travel bool bCutInteractions;                                               //Sarge: Allow cut-content interactions like arming Miguel and giving Tiffany Thermoptic Camo
-var travel bool bRestrictedSaving;												//Sarge: This used to be tied to hardcore, now it's a config option
+var travel int iRestrictedSaving;												//Sarge: 1 = Restricted Saving, 2 = Bronzeman mode (only autosaves), 3 = Bronzeman Plus (One save per mission), 4 = Iron Man Mode.
 var travel int iNoKeypadCheese;													//Sarge: 1 = Prevent using keycodes that we don't know, 2 = additionally prevent plot skips, 3 = additionally obscure keypad code length.
 var travel int seed;                                                            //Sarge: When using randomisation playthrough modifiers, this is our generated seed for the playthrough, to prevent autosave abuse and the like
 var travel int augOrderNums[21];                                                //RSD: New aug can order for scrambling
@@ -622,11 +622,6 @@ var travel bool bHardcoreFilterOption;                                          
 
 //hardcore+
 var travel bool bExtraHardcore;
-
-//Autosave Stuff
-var travel float autosaveRestrictTimer;                                         //Sarge: Current time left before we're allowed to autosave again.
-var const float autosaveRestrictTimerDefault;                                   //Sarge: Timer for autosaves.
-var travel bool bResetAutosaveTimer;                                            //Sarge: This is necessary because our timer isn't set properly during the same frame as saving, for some reason.
 
 //Menu Overhaul stuff
 var localized String RechargedPointLabel;
@@ -1954,7 +1949,7 @@ event TravelPostAccept()
 
 	foreach AllActors(class'SavePoint',SP)
 	{
- 	 if ((!bHardCoreMode && !bRestrictedSaving)||(SP.bUsedSavePoint))
+ 	 if ((!bHardCoreMode && iRestrictedSaving != 1)||(SP.bUsedSavePoint))
 		 SP.Destroy();
 	}
 	//ConsoleCommand("set ini:Engine.Engine.ViewportManager Brightness 1");
@@ -2387,7 +2382,7 @@ function bool CanSave(optional bool allowHardcore)
     // 7) SARGE: We're in a conversation
     // 8) SARGE: We're currently recreating decals
 
-    if ((bHardCoreMode || bRestrictedSaving) && !allowHardcore) //Hardcore Mode
+    if ((bHardCoreMode || iRestrictedSaving > 0) && !allowHardcore) //Hardcore Mode
         return false;
 
 	if ((info != None) && (info.MissionNumber < 0)) //Logo Screen
@@ -2534,9 +2529,16 @@ function bool PerformAutoSave(bool allowHardcore)
     if (!CanSave(allowHardcore))
         return false;
     
+    //If restricted saving is greater than 1, prevent autosaves,
+    //but act as if we saved
+    if (iRestrictedSaving > 1)
+    {
+        return true;
+    }
+
     //Only allow autosaving if we have autosaves turned on,
     //or if saving restrictions is enabled.
-    if (bTogAutoSave || bRestrictedSaving || bHardCoreMode)
+    if (bTogAutoSave || iRestrictedSaving == 1 || bHardCoreMode)
     {
         DoSaveGame(FindAutosaveSlot(), sprintf(AutoSaveGameTitle,TruePlayerName));
         return true;

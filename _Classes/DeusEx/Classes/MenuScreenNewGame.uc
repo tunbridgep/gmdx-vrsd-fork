@@ -69,7 +69,7 @@ var bool bRandomizeMods;
 var bool bRandomizeAugs;
 var bool bRandomizeEnemies;
 var bool bAddictionSystem;
-var bool bRestrictedSaving;
+var int iRestrictedSaving;
 var int iNoKeypadCheese;
 var bool bExtraHardcore;
 var bool bMoreLDDPNPCs;
@@ -141,7 +141,7 @@ event InitWindow()
     bRandomizeMods=false;                                                       //RSD
     bRandomizeAugs=false;                                                       //RSD
     bAddictionSystem=false;                                                     //RSD
-    bRestrictedSaving=false;                                                    //Sarge
+    iRestrictedSaving=0;                                                        //Sarge
     iNoKeypadCheese=0;      	                                                //Sarge
     bRandomizeEnemies=false;                                                    //Sarge
     bExtraHardcore=false;                                                       //Sarge
@@ -160,7 +160,7 @@ event InitWindow()
     default.bRandomizeMods=false;                                               //RSD
     default.bRandomizeAugs=false;                                               //RSD
     default.bAddictionSystem=false;                                             //RSD
-    default.bRestrictedSaving=false;                                            //Sarge
+    default.iRestrictedSaving=0;                                                //Sarge
     default.iNoKeypadCheese=0;                                                  //Sarge
     default.bRandomizeEnemies=false;                                            //Sarge
     default.bExtraHardcore=false;                                               //Sarge
@@ -823,7 +823,7 @@ function SaveSettings()
     player.bRandomizeCrates=bRandomizeCrates;                                   //RSD
     player.bRandomizeMods=bRandomizeMods;                                       //RSD
     player.bRandomizeAugs=bRandomizeAugs;                                       //RSD
-    player.bRestrictedSaving=bRestrictedSaving;                                 //Sarge
+    player.iRestrictedSaving=iRestrictedSaving;                                 //Sarge
     player.iNoKeypadCheese=iNoKeypadCheese;                                     //Sarge
     player.bRandomizeEnemies=bRandomizeEnemies;                                 //Sarge
     player.bPrisonStart=bPrisonStart;                                           //Sarge

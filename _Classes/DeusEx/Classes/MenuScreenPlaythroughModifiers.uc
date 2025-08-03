@@ -22,7 +22,7 @@ function BuildModifierList()
     //Remove Restricted Saving and Restricted Metabolism on Hardcore
     else
     {
-        RemoveItem("bRestrictedSaving");
+        RemoveItem("iRestrictedSaving");
         RemoveItem("bHardcoreFilterOption");
         //RemoveItem("bRestrictedMetabolism");
     }
@@ -52,7 +52,7 @@ defaultproperties
      items(5)=(HelpText="Shuffles the order of aug canisters in the game. Total number of each aug canister type is unchanged.",actionText="Aug Canister Shuffle",variable="bRandomizeAugs");
      items(6)=(HelpText="Equipped weapons will be swapped randomly between hostile enemies. Total number of weapons remains the same.",actionText="Enemy Weapon Shuffle",variable="bRandomizeEnemies");
      items(7)=(HelpText="Replaces drug effects with temporary buffs on use and debuffs on withdrawal. Addiction accumulates with use and depreciates through play.",actionText="Addiction System",variable="bAddictionSystem");
-     items(8)=(HelpText="Prevents manually saving and adds single-use save points to the level. Autosaves still occur as normal. Always enabled in Hardcore mode.",actionText="Restricted Saving",variable="bRestrictedSaving");
+     items(8)=(HelpText="Prevents manually saving and adds single-use save points to the level. Autosaves still occur as normal. Always enabled in Hardcore mode.",actionText="Restricted Saving",variable="iRestrictedSaving",ValueText2="Bronzeman Mode (Autosaves Only)",ValueText3="Bronzeman Plus (Mission Saves Only)",ValueText4="Ironman Mode (Exit Saves Only)");
      items(9)=(HelpText="Prevents using keypads and logins unless you have them in your notes. No Plot Skips setting also prevents certain sequence breaks.",actionText="Undiscovered Codes",variable="iNoKeypadCheese",valueText2="Enabled + No Plot Skips",valueText3="Enabled + NPS + Keypad Length Unknown");
      items(10)=(HelpText="Allow arming Miguel and giving Tiffany thermoptic camo.",actionText="Additional NPC Interactions",variable="bCutInteractions");
      items(11)=(HelpText="Start the game in the MJ12 Prison facility. Not recommended for new players! Also skips the intro cutscene.",actionText="Alternate Start",variable="bPrisonStart");
