@@ -855,6 +855,29 @@ function PersonaAugmentationItemButton CreateAugButton(Augmentation anAug, int a
 }
 
 // ----------------------------------------------------------------------
+// FindHoveredButton()
+// SARGE: Hacky function to find the window at the specified coordinates
+// ----------------------------------------------------------------------
+
+function PersonaAugmentationItemButton getButtonAtPosition(int x, int y)
+{
+    local int i;
+    local int xL, xR, yL, yR;
+
+    for (i = 0;i < ArrayCount(augItems);i++)
+    {
+        xL = augItems[i].x + augItems[i].width * 0.5;// - (augItems[i].width * 0.5);
+        xR = xL + augItems[i].width;// + (augItems[i].width * 0.5);
+        yL = augItems[i].y + augItems[i].height * 0.5;// - (augItems[i].height * 0.5);
+        yR = yL + augItems[i].height;// + (augItems[i].height * 0.5);
+
+        if (augItems[i] != None && xL < x && xR > x && yL < y && yR > y)// && augItems[i] != selectedAugButton)
+            return augItems[i];
+    }
+    return none;
+}
+
+// ----------------------------------------------------------------------
 // ButtonActivated()
 // ----------------------------------------------------------------------
 
@@ -1045,8 +1068,22 @@ event bool MouseButtonPressed(float pointX, float pointY, EInputKey button,
                               int numClicks)
 {
 	local Bool bResult;
+    local PersonaAugmentationItemButton newBtn;
 
 	bResult = False;
+    
+    //SARGE: Hacky fix to select the right button
+    if (player.bEnhancedPersonaScreenMouse)
+    {
+        if (button == IK_RightMouse || button == IK_MiddleMouse)
+        {
+            newBtn = getButtonAtPosition(pointX,pointY);
+            if (newBtn != None)
+                ButtonActivated(newBtn);
+            else //Horrible hack to make right-clicking on nothing do nothing
+                return false;
+        }
+    }
 
     if (button == IK_RightMouse && SelectedAug != None)
     {
