@@ -221,14 +221,11 @@ function FirstFrame()
                 player.RefreshChargedPickups();
 
                 //SARGE: If we're using the "Killswitch Engaged" playthrough mod,
-                //then set the killswitch to ~23 hours, as mentioned by Simons
-                if (player.bRealKillswitch && !flags.GetBool('GMDXKillswitchSet'))
+                //then reduce the killswitch by 3 hours
+                if (player.bRealKillswitch && !flags.GetBool('GMDXKillswitchReduced1'))
                 {
-                    player.killswitchTimer = (23*60)*60;
-                    player.killswitchTimer += Player.Randomizer.GetRandomInt(3600);
-                    player.DeactivateAllAugs(true);
-                    //player.killSwitchTimer = 20; //For testing, set it to 20 seconds.
-                    flags.SetBool('GMDXKillswitchSet', True,, 6);
+                    player.killswitchTimer -= (3*60)*60;
+                    flags.SetBool('GMDXKillswitchReduced1', True,, 6);
                 }
 			}
 

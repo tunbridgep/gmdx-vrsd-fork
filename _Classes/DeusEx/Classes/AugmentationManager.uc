@@ -138,6 +138,9 @@ simulated function RefreshAugDisplay()
 	player.ClearAugmentationDisplay();
     player.RadialMenuClear();
 
+    if (player.killswitchTimer > -1)
+        return;
+
 	anAug = FirstAug;
 	while(anAug != None)
 	{
@@ -320,22 +323,26 @@ simulated function float GetAugLevelValue(class<Augmentation> AugClass)
 // Loops through all the Augmentations, deactivating any that are active.
 // ----------------------------------------------------------------------
 
-function ActivateAll()
+function ActivateAll(bool bActivateActive, optional bool bActivateToggled, optional bool bActivateAutomatic)
 {
 	local Augmentation anAug;
 
 	// Only allow this if the player still has
 	// Bioleectric Energy(tm)
 
-    //SARGE: TODO: Fix this for Toggle augs
 	if ((player != None))
 	{
 		anAug = FirstAug;
 		while(anAug != None)
 		{
-         if ( (Level.NetMode == NM_Standalone) || (!anAug.IsA('AugLight')) )
-            ActivateAug(anAug,true);
-			anAug = anAug.next;
+            if ( (Level.NetMode == NM_Standalone) || (!anAug.IsA('AugLight')) )
+            {
+                if ((bActivateActive && anAug.AugmentationType == Aug_Active)
+                 || (bActivateToggled && anAug.AugmentationType == Aug_Toggle)
+                 || (bActivateAutomatic && anAug.AugmentationType == Aug_Automatic))
+                    ActivateAug(anAug,true);
+            }
+            anAug = anAug.next;
 		}
 	}
 }

@@ -38,10 +38,10 @@ function FirstFrame()
     {
         //SARGE: If we're using the "Killswitch Engaged" playthrough mod,
         //then reduce the killswitch by 10 hours
-        if (player.bRealKillswitch && !flags.GetBool('GMDXKillswitchReduced'))
+        if (player.bRealKillswitch && !flags.GetBool('GMDXKillswitchReduced2'))
         {
             player.killswitchTimer -= (10*60)*60;
-            flags.SetBool('GMDXKillswitchReduced', True,, 7);
+            flags.SetBool('GMDXKillswitchReduced2', True,, 7);
         }
 
         //SARGE: Fix up Lighting if we have Lighting Accessibility enabled
@@ -772,6 +772,10 @@ function Timer()
         {
             player.killswitchTimer = -1;
             player.ClientMessage(AugSystemReboot);
+            player.PlaySound(sound'GMDXSFX.Generic.biomodscreenselect', SLOT_Pain);
+            player.ActivateAllAugsOfType(false,false,true);         //SARGE: Reactivate automatic augs
+            player.RefreshAugmentationDisplay();
+;
             //player.bRealKillswitch = false;
             flags.SetBool('GMDXKillswitchStopped', True,, 0);
         }
