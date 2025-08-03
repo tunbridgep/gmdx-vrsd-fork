@@ -14357,6 +14357,27 @@ static final function string Locs(coerce string Text)
     return Text;
 }
 
+//Hack to force finding codes with either a space before or after.
+static function int InStrSpaced(string haystack, string needle)
+{
+    local int result;
+
+    result = InStr(haystack," " $ needle $ " ");
+    if (result != -1)
+        return result;
+    
+    result = InStr(haystack," " $ needle $ ". ");
+    if (result != -1)
+        return result;
+    
+    result = InStr(haystack," " $ needle $ ".");
+    if (result != -1 && Right(haystack, len(needle) + 1) == (needle $ "."))
+        return result;
+    
+    //Log("String: " $ Right(haystack, len(needle) + 1));
+    return -1;
+}
+
 //SARGE: Strip off the "FROM: xxx TO: xxx" line in notes,
 //because these are often in all-caps, and will confuse the algorithm.
 function string StripFromTo(string text)
@@ -14400,10 +14421,14 @@ function DeusExNote GetCodeNote(string code, optional bool bNoHidden)
 {
 	local DeusExNote note;
     local string noteText;
+    local int noteTextNumeric;
+
+    if (code == "")
+        return None;
 
 	note = FirstNote;
 
-	while( note != None && code != "")
+	while( note != None)
 	{
         //Skip user notes and hidden notes
         if (!note.bUserNote && (!bNoHidden || !note.bHidden))
@@ -14432,11 +14457,21 @@ function DeusExNote GetCodeNote(string code, optional bool bNoHidden)
             //First, strip off the first line if there's FROM: and TO: text...
             noteText = StripFromTo(note.originalText);
 
+            noteTextNumeric = int(noteText);
+
+            //First, if it's numeric, Check note contents for the code exactly
+            if (noteTextNumeric != 0 && InStrSpaced(noteText,code) != -1)
+            {
+                //DebugLog("NOTE: " $ noteText);
+                DebugLog("NOTE CODE " $code$ " FOUND (NUMERIC)");
+                return note;
+            }
+
             //Next, Check note contents for the code
             //Start by checking that our code matches CAPS in the note...
-            if (InStr(noteText,Caps(code)) != -1)
+            else if (InStr(noteText,Caps(code)) != -1)
             {
-                DebugLog("NOTE: " $ noteText);
+                //DebugLog("NOTE: " $ noteText);
                 DebugLog("NOTE CODE " $code$ " FOUND (CAPS)");
                 return note;
             }
@@ -14444,7 +14479,7 @@ function DeusExNote GetCodeNote(string code, optional bool bNoHidden)
             //Then check that our code matches all lower case in the note...
             else if (InStr(noteText,Locs(code)) != -1)
             {
-                DebugLog("NOTE: " $ noteText);
+                //DebugLog("NOTE: " $ noteText);
                 DebugLog("NOTE CODE " $code$ " FOUND (LOCS)");
                 return note;
             }
@@ -14452,11 +14487,11 @@ function DeusExNote GetCodeNote(string code, optional bool bNoHidden)
             //Some codes are in quotes, so always allows things in quotes
             if (InStr(Caps(noteText),"\""$Caps(code)$"\"") != -1)
             {
-                DebugLog("NOTE: " $ noteText);
-                DebugLog("NOTE CODE " $code$ " FOUND (CAPS)");
+                //DebugLog("NOTE: " $ noteText);
+                DebugLog("NOTE CODE " $code$ " FOUND (CAPS QUOTES)");
                 return note;
             }
-
+            
             //Some notes have Login: Username and Password: Whatever in them, so handle them.
             else if (InStr(Caps(noteText),Caps("LOGIN: " $ code)) != -1)
                 return note;
@@ -14497,6 +14532,8 @@ function bool GetExceptedCode(string code)
         || code == "NICOLETTE" //Given in conversation
         || code == "CHAD" //Given in conversation
         || (code == "2167" && FlagBase.GetBool('NYCUndergroundCodeObtained')) //Allow us to use it after we access the computer. Also adds a note from a datacube.
+        || code == "12" //Guessable code for the keypad in the MJ12 lab above the entry stairs
+        || code == "APPLE" //Special case, spelled "Apple" in note so it fails the LOCS and CAPS checks...
         || code == "JCDENTON"; //Uses Base: JCDenton instead of Username: JCDenton.
 }
 
