@@ -353,15 +353,28 @@ function PlayNextEvent()
 
 function ProcessAction( EEventAction nextAction, string nextLabel )
 {
+    local DeusExLevelInfo info;
+
 	// Don't do squat if the currentEvent is NONE
-	if (currentEvent == None)
+	if (currentEvent == None || player == None)
 		return;
 
+	info = player.GetLevelInfo();
+
     //CyberP: hackfix for the mechanic infinite loop
-    if (nextAction == 1 && nextLabel == "Done")
+    //SARGE: Modified to not make this completely fucking stupid:
+    // 1. Now it only affects sven, since it was causing issues for other mechanics (like the Hangar guy in the Lebedev Airfield map),
+    // 2. it actually sets Sven's done flag correctly, so he barks properly once he runs out of options.
+    // This is technically not necessary thanks to Confix, but if someone decides to play without confix for whatever reason, it'll all work properly.
+    if (nextAction == 1 && nextLabel == "Done" && info != None && Caps(info.MapName) == "05_NYC_UNATCOMJ12LAB")
     {
         if ((currentSpeaker != None && currentSpeaker.IsA('Mechanic')) || (currentSpeakingTo != None && currentSpeakingTo.IsA('Mechanic')))
-        {    TerminateConversation();   return;   }
+        {
+            if (player.flagBase != None)
+                player.FlagBase.SetBool('SvenDone', True,, 6);
+            TerminateConversation();
+            return;
+        }
     }
 
 	switch( nextAction )
