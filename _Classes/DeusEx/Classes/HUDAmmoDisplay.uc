@@ -36,6 +36,10 @@ var Texture texBorderRight;
 var localized String LaserLabel;
 var localized String RemoteLabel;
 
+//SARGE: Colour for the "Max Ammo" counter
+var Color			colAmmoTextMax;
+var bool            bMaxAmmo;
+
 // ----------------------------------------------------------------------
 // InitWindow()
 // ----------------------------------------------------------------------
@@ -76,11 +80,23 @@ function UpdateVisibility()
     validWeap = player.inHand != None && weapon != None && (weapon.ReloadCount > 0 || (weapon.IsA('WeaponNanoSword')));
     hasTool = curr != None && weapon == None;
 
+    UpdateMaxAmmo();
+
 	if (curr != None && curr.Owner == player && (validweap || hastool))
 		Show();
 	else
 		Hide();
 
+}
+
+function UpdateMaxAmmo()
+{
+    local bool validWeap;
+    validWeap = player.inHand != None && weapon != None && (weapon.ReloadCount > 0 || (weapon.IsA('WeaponNanoSword')));
+
+    //player.DebugMessage("Updating Ammo Display");
+
+    bMaxAmmo = validWeap && player.bShowFullAmmoInHUD && weapon.AmmoType != None && weapon.AmmoType.AmmoAmount == player.GetAdjustedMaxAmmo(weapon.AmmoType);
 }
 
 // ----------------------------------------------------------------------
@@ -225,6 +241,8 @@ event DrawWindow(GC gc)
 			// if there are no clips (or a partial clip) remaining, color me red
 			if (( clipsRemaining == 0 ) || (( clipsRemaining == 1 ) && ( ammoRemaining < 2 * weapon.ReloadCount )))
 				gc.SetTextColor(colAmmoLowText);
+			else if (bMaxAmmo) //SARGE: Show ammo in Yellow at max ammo
+                gc.SetTextColor(colAmmoTextMax);
 			else
                 gc.SetTextColor(colAmmoText);
 
@@ -351,6 +369,7 @@ function SetVisibility( bool bNewVisibility )
 defaultproperties
 {
      colAmmoText=(G=255);
+     colAmmoTextMax=(G=255,B=255);
      colAmmoLowText=(R=255,G=32);
      colNormalText=(G=255);
      colTrackingText=(R=255,G=255);
