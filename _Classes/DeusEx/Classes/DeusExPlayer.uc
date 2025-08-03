@@ -4362,6 +4362,9 @@ exec function SwitchAmmo()
                 P.bDoExplode = true;
         }
     }
+	
+    if (DeusExRootWindow(rootWindow) != None && DeusExRootWindow(rootWindow).hud != None)
+	   DeusExRootWindow(rootWindow).hud.ammo.UpdateMaxAmmo();
 }
 
 // ----------------------------------------------------------------------
