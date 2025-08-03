@@ -2893,6 +2893,9 @@ function ResetPlayer(optional bool bTraining)
     //SARGE: Remove secondary weapon
     AssignSecondary(None);
 
+    //SARGE: Reset killswitch
+    killswitchTimer = default.killswitchTimer;
+
     // Reset Belt Memory
     for(i = 0;i < 12;i++)
         ClearPlaceholder(i);
