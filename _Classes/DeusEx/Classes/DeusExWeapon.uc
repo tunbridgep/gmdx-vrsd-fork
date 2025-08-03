@@ -1642,7 +1642,7 @@ function int CalculateTrueDamage()
 
     //SARGE: Factor in Targeting and Combat Strength
     //SARGE: NOTE: Targeting is handled in GetWeaponSkill, so not needed here.
-    if (P != None && bHandToHand)
+    if (P != None && bHandToHand && !IsA('WeaponHideAGun'))
     {
         if (P.AugmentationSystem != None)
             mult = P.AugmentationSystem.GetAugLevelValue(class'AugCombatStrength');
@@ -4616,7 +4616,7 @@ simulated function Projectile ProjectileFire(class<projectile> ProjClass, float 
 	speedMult=1.0;
 	// AugCombat increases our speed (distance) if hand to hand
 	mult = 1.0;
-	if (bHandToHand && (DeusExPlayer(Owner) != None))
+	if (bHandToHand && !IsA('WeaponHideAGun') && (DeusExPlayer(Owner) != None))
 	{
 		/*mult = DeusExPlayer(Owner).AugmentationSystem.GetAugLevelValue(class'AugCombat'); //RSD: No more buffs to projectile speed from Combat Speed
 		if (mult == -1.0)
@@ -5151,7 +5151,7 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
 	{
 		// AugCombat increases our damage if hand to hand
 		mult = 1.0;
-		if (bHandToHand && (DeusExPlayer(Owner) != None))
+		if (bHandToHand && !IsA('WeaponHideAGun') && (DeusExPlayer(Owner) != None))
 		{
 			mult = DeusExPlayer(Owner).AugmentationSystem.GetAugLevelValue(class'AugCombatStrength');
 			if (mult == -1.0)
