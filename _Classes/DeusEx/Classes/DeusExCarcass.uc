@@ -96,6 +96,16 @@ var bool bDontRemovePool; //SARGE: If set, the blood pool isn't removed when del
 var bool bNoDefaultPools;        //SARGE: If set, don't make pools at all, unless we receive gunshot wounds or the corpse is otherwise damaged.
 
 var sound LootPickupSound;            //SARGE: Sound played if we pick up anything from this corpse.
+    
+struct BadItem
+{
+    var Inventory item;
+    var int count;
+};
+
+var transient BadItem badItems[10];                                                   //SARGE: Keep a list of the declined or ignored items, so that we can add it to the display window.
+var transient int badItemCount;
+
 
 // ----------------------------------------------------------------------
 // ShouldCreate()
@@ -942,6 +952,36 @@ function PickupCorpse(DeusExPlayer player)
     }
 }
 
+//SARGE: Adds an item to the bad items list
+function AddBadItem(DeusExPlayer P, Inventory item, optional int count)
+{
+    if (item == None || !P.bShowDeclinedInReceivedWindow)
+        return;
+
+    if (count == 0)
+        count = 1;
+
+    badItems[badItemCount].item = item;
+    badItems[badItemCount].count = count;
+    badItemCount++;
+}
+
+//SARGE: Simplified ammo loot function
+function bool LootAmmo(DeusExPlayer P, DeusExWeapon item, bool bShowOverflow)
+{
+    local bool bResult;
+    local DeusExAmmo AmmoType;
+    bResult = item.LootAmmo(P,true,true,false,false,bShowOverflow);
+    
+    AmmoType = DeusExAmmo(P.FindInventoryType(item.AmmoName));
+
+    //If we were unable to loot everything and are showing overflow, add any additional ammo to the bad list
+    if (!bShowOverflow && AmmoType != None && AmmoType.bShowInfo && item.PickupAmmoCount > 0)
+        AddBadItem(P,AmmoType,item.PickupAmmoCount);
+
+    return bResult;
+}
+
 // ----------------------------------------------------------------------
 // Frob()
 //
@@ -966,10 +1006,11 @@ function Frob(Actor Frobber, Inventory frobWith)
     local bool bDeclined;
     local bool bLootResult;
     local bool bProcessedImpale;
-    local Inventory badItems[10];                                                   //SARGE: Keep a list of the declined or ignored items, so that we can add it to the display window.
-    local int badItemCount;
+    local bool bSuppressEmptyMessage;                                           //SARGE: Suppress the "You don't find anything" message
+	
+    badItemCount = 0;
 
-	// Can we assume only the *PLAYER* would actually be frobbing carci?
+    // Can we assume only the *PLAYER* would actually be frobbing carci?
 	player = DeusExPlayer(Frobber);
 
 	// No doublefrobbing in multiplayer.
@@ -1051,7 +1092,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                     bDeclined=True;
                     bFoundInvalid=True;
                     if (!item.IsA('DeusExWeapon'))
-                        badItems[badItemCount++] = item;
+                        AddBadItem(player,item);
                 }
 				else if (item != none && (item.IsA('Ammo') || (item.IsA('WeaponSpiderBotConstructor')) || (item.IsA('WeaponAssaultGunSpider')))) //CyberP: new type weapons exclusive to pawns //RSD: Failsafe
 				{
@@ -1092,8 +1133,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                 bPickedSomethingUp = True;
                             }
                             //SARGE: Show declined nanokeys
-                            else if (player.bShowDeclinedInReceivedWindow)
-                                AddReceivedItem(player, item, 1, true, true);
+                            AddBadItem(player,item);
 
 							DeleteInventory(item);
 							item.Destroy();
@@ -1127,7 +1167,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 
                         //SARGE: Always show declined weapons, unless we already have a disposable weapon
                         if (bDeclined && (W == None || !DeusExWeapon(item).bDisposableWeapon))
-                            badItems[badItemCount++] = item;
+                            AddBadItem(player,item);
 
                         //SARGE: Disposable weapons don't give ammo if we don't have space for them, or if declined
                         if (W == None && DeusExWeapon(item).bDisposableWeapon && (!player.FindInventorySlot(item, True) || bDeclined))
@@ -1144,7 +1184,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 						// the weapon).
 						else if ((W != None) || (W == None && (bDeclined||!player.FindInventorySlot(item, True))))
 						{
-                            bLootResult = DeusExWeapon(item).LootAmmo(DeusExPlayer(P),true,true,false,false,!bSearched && (W != None || bDeclined));
+                            bLootResult = LootAmmo(DeusExPlayer(P),DeusExWeapon(item),!bSearched && (W == None || bDeclined));
                             bFoundSomething = bFoundSomething || bLootResult;
                             bFoundInvalid = bFoundInvalid || PickupAmmoCount > 0;
                             bPickedSomethingUp = bPickedSomethingUp || bLootResult;
@@ -1168,6 +1208,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 							if ((W == None) && (item != None) && !bDeclined && (!player.FindInventorySlot(item, True)))
                             {
                                 bFoundSomething = True;
+                                bSuppressEmptyMessage = True;
 								//P.ClientMessage(Sprintf(Player.InventoryFull, item.itemName));
                             }
 
@@ -1175,18 +1216,15 @@ function Frob(Actor Frobber, Inventory frobWith)
                             //SARGE: Keep weapons, just ignore them.
 							if (W != None)
 							{
-                                if (player.bEnhancedCorpseInteractions)
+                                if (!bSearched)
                                 {
-                                    if (!bSearched)
-                                    {
-                                        bFoundSomething = True;
-                                        if (!W.bDisposableWeapon)
-                                            P.ClientMessage(item.PickupMessage @ item.itemArticle @ Item.itemName @ IgnoredString);
-                                    }
-                                    if (!bDeclined && !W.bDisposableWeapon) //SARGE: declined items are already added.
-                                        badItems[badItemCount++] = item;
-                                    bFoundInvalid = true;
+                                    bFoundSomething = True;
+                                    if (!W.bDisposableWeapon)
+                                        P.ClientMessage(item.PickupMessage @ item.itemArticle @ Item.itemName @ IgnoredString);
                                 }
+                                if (!bDeclined && !W.bDisposableWeapon) //SARGE: declined items are already added.
+                                    AddBadItem(player,item);
+                                bFoundInvalid = true;
                                 bPickedItemUp = True;
 							}
 
@@ -1244,7 +1282,10 @@ function Frob(Actor Frobber, Inventory frobWith)
                                     //SARGE: Inform the player when they missed out on some items due to full stack size
                                     if (DeusExPickup(item).numCopies > 0)
                                     {
-                                        player.ClientMessage(invItem.PickupMessage @ invItem.itemArticle @ invItem.itemName @ msgTooMany, 'Pickup');
+                                        if (!bSearched)
+                                            player.ClientMessage(invItem.PickupMessage @ invItem.itemArticle @ invItem.itemName @ msgTooMany, 'Pickup');
+                                        AddBadItem(player,item,DeusExPickup(item).numCopies);
+                                        bFoundInvalid=true;
                                     }
 								}
 								else if (invItem.IsA('ChargedPickup') && invItem.Charge < invItem.default.Charge) //RSD: Charge up the player's wearable if they have max copies but are below max charge
@@ -1269,11 +1310,9 @@ function Frob(Actor Frobber, Inventory frobWith)
 								else if (DeusExPickup(item).numCopies + invItem.numCopies >= invItem.RetMaxCopies())  //GMDX
                                 {
                                     if (!bSearched)
-                                    {
                                         player.ClientMessage(invItem.PickupMessage @ invItem.itemArticle @ invItem.itemName @ msgTooMany, 'Pickup');
-                                        bFoundSomething = True;
-                                        badItems[badItemCount++] = item;
-                                    }
+                                    bFoundSomething = True;
+                                    AddBadItem(player,item);
                                     bFoundInvalid=true;
 
                                 }
@@ -1322,7 +1361,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                 if (!bDeclined)
                                 {
                                     bFoundSomething = True;
-                                    if (DeusExPlayer(P).HandleItemPickup(Item,false,true,true,!bSearched) != False)
+                                    if (DeusExPlayer(P).HandleItemPickup(Item,false,true,true,false) != False)
                                     {
                                         DeleteInventory(item);
 
@@ -1347,7 +1386,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                         item.SpawnCopy(P);
                                     }
                                     else
-                                        badItems[badItemCount++] = item;
+                                        AddBadItem(player,item);
                                 }
 							}
 							else
@@ -1368,11 +1407,11 @@ function Frob(Actor Frobber, Inventory frobWith)
 		}
 
         //SARGE: Display our bad items at the end of the list
-        if (!bSearched && player.bShowDeclinedInReceivedWindow && badItemCount > 0)
+        if (!CanPickupCorpse(bFoundSomething,player) && player.bShowDeclinedInReceivedWindow && badItemCount > 0)
         {
             for (i = 0;i < badItemCount;i++)
             {
-                AddReceivedItem(player, badItems[i], 1, false, true);
+                AddReceivedItem(player, badItems[i].item, badItems[i].count, badItems[i].item.IsA('DeusExAmmo'), true);
             }
         }
 
@@ -1395,8 +1434,7 @@ function Frob(Actor Frobber, Inventory frobWith)
     // Were you to do it, you'd need to check the respawning issue, destroy the POVcorpse it creates and point to the
     // one in inventory (like I did when giving the player starting inventory).
 
-    if (!bAnimalCarcass && (bDblClickStart||!bFoundSomething)&&
-    (player != None) && (player.inHand == None) && player.carriedDecoration == None && (bSearched||!player.bEnhancedCorpseInteractions))
+    if (CanPickupCorpse(bFoundSomething,player))
     {
         PickupCorpse(player);
     }
@@ -1413,11 +1451,11 @@ function Frob(Actor Frobber, Inventory frobWith)
     //SARGE: Hack
     LootPickupSound = default.LootPickupSound;
 
-    if (!bFoundSomething && (!bDblClickStart || player.inHand != None))
+    if (!bPickedSomethingUp && !bSuppressEmptyMessage && !CanPickupCorpse(bFoundSomething,player))
     {
-        if (!bFoundInvalid || !player.bEnhancedCorpseInteractions)
+        if (!bFoundInvalid)
             P.ClientMessage(msgEmpty);
-        else
+        else if (bSearched)
             P.ClientMessage(msgEmptyS);
     }
 
@@ -1435,6 +1473,12 @@ function Frob(Actor Frobber, Inventory frobWith)
 	   bQueuedDestroy = true;
 	   Destroy();
 	}
+}
+
+function bool CanPickupCorpse(bool bFoundSomething, DeusExPlayer player)
+{
+    return (!bAnimalCarcass && (bDblClickStart||!bFoundSomething)&&
+    (player != None) && (player.inHand == None) && player.carriedDecoration == None && (bSearched||!player.bEnhancedCorpseInteractions));
 }
 
 /*
