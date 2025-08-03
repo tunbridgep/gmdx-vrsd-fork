@@ -238,7 +238,7 @@ function FirstFrame()
             player.killswitchTimer += Player.Randomizer.GetRandomInt(3600);
             player.DeactivateAllAugs(true);
             player.PlaySound(sound'GMDXSFX.Generic.biomodscreenselect', SLOT_Pain);
-            player.ClientMessage(AugSystemShutdown);
+            player.ClientMessage(class'Mission04'.default.AugSystemShutdown);
             player.RefreshAugmentationDisplay();
             //player.killSwitchTimer = 20; //For testing, set it to 20 seconds.
             flags.SetBool('GMDXKillswitchSet', True,, 6);
