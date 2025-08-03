@@ -48,6 +48,9 @@ var bool bTimePaused;
 var float wormTime;
 var localized String hackRequirement1;
 var localized String hackRequirement2;
+var localized String NukesAvailableLabel;
+
+var SoftwareNuke nuke;
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -56,16 +59,23 @@ var localized String hackRequirement2;
 
 event InitWindow()
 {
+    local bool bShowNukes;
+
 	Super.InitWindow();
+
+	nuke = SoftwareNuke(player.FindInventoryType(class'SoftwareNuke'));
 
 	SetSize(215, 112);
 
 	CreateControls();
 
     if(Player.SkillSystem.GetSkillLevel(class'SkillComputer') == 0)
+    {
         UpdateSoftwareNuke();
+        bShowNukes = true;
+    }
 
-	SetHackMessage(HackReadyLabel);
+	SetHackMessage(HackReadyLabel,bShowNukes);
 }
 
 // ----------------------------------------------------------------------
@@ -78,6 +88,8 @@ event DestroyWindow()
 {
 	if ((bHackDetected) && (!bHackDetectedNotified) && (winTerm != None))
 		winTerm.HackDetected(True);
+
+    nuke = none;
 
 	Super.DestroyWindow();
 }
@@ -311,9 +323,9 @@ local int compSkill;
     {               //CyberP: hack denied
       winHackMessage.SetTextColor(colRed);
       if (passedSecLevel == 2)
-         SetHackMessage(hackRequirement1);
+         SetHackMessage(hackRequirement1,true);
       else if (passedSecLevel == 3)
-         SetHackMessage(hackRequirement2);
+         SetHackMessage(hackRequirement2,true);
       Player.PlaySound(sound'cantdrophere',SLOT_None,2.0,,,0.8);
       UpdateSoftwareNuke();
       return;
@@ -335,10 +347,6 @@ function UpdateSoftwareWorm()
 
 function UpdateSoftwareNuke()
 {
-	local Inventory nuke;
-
-	nuke = player.FindInventoryType(class'SoftwareNuke');
-
     if (nuke != None && btnNuke == None)
         CreateNukeButton();
 
@@ -424,7 +432,7 @@ function HackDetected()
 // SetHackMessage()
 // ----------------------------------------------------------------------
 
-function SetHackMessage(String newHackMessage)
+function SetHackMessage(String newHackMessage, optional bool bShowNukes)
 {
 	if (newHackMessage == "")
 		winHackMessage.Hide();
@@ -432,7 +440,12 @@ function SetHackMessage(String newHackMessage)
 		winHackMessage.Show();
 
     winHackMessage.SetTextColor(colText);
-	winHackMessage.SetText(newHackMessage);
+    if (bShowNukes && nuke != None)
+        winHackMessage.SetText(newHackMessage $ "|n" $ sprintf(NukesAvailableLabel,nuke.numCopies));
+    else if (bShowNukes)
+        winHackMessage.SetText(newHackMessage $ "|n" $ sprintf(NukesAvailableLabel,0));
+    else
+        winHackMessage.SetText(newHackMessage);
 }
 
 // ----------------------------------------------------------------------
@@ -719,6 +732,7 @@ defaultproperties
      HackButtonLabel="|&Hack"
      ReturnButtonLabel="|&Return"
      HackReadyLabel="Ice Breaker Ready..."
+     NukesAvailableLabel="%d Nuke(s) Available"
      HackInitializingLabel="Initializing ICE Breaker..."
      HackSuccessfulLabel="ICE Breaker Hack Successful..."
      HackDetectedLabel="*** WARNING ***|nICE DETECTED! ABORT HACK!"
