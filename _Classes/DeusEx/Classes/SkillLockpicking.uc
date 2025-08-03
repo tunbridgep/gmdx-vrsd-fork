@@ -37,11 +37,11 @@ defaultproperties
      mpLevel2=0.550000
      mpLevel3=0.950000
      SkillName="Lockpicking"
-     Description="Lockpicking is as much art as skill, but with intense study it can be mastered by any agent with patience and a set of lockpicks. Total Skill points to master: 5250 |n|nUNTRAINED: An agent can pick locks.|n|nTRAINED: The efficiency with which an agent picks locks increases slightly.|n|nADVANCED: The efficiency with which an agent picks locks increases moderately.|n|nMASTER: An agent can defeat almost any mechanical lock."
+     Description="Lockpicking is as much art as skill, but with intense study it can be mastered by any agent with patience and a set of lockpicks. Total Skill points to master: 6000 |n|nUNTRAINED: An agent can pick locks.|n|nTRAINED: The efficiency with which an agent picks locks increases slightly.|n|nADVANCED: The efficiency with which an agent picks locks increases moderately.|n|nMASTER: An agent can defeat almost any mechanical lock."
      SkillIcon=Texture'DeusExUI.UserInterface.SkillIconLockPicking'
-     cost(0)=750
-     cost(1)=1500
-     cost(2)=3000
+     cost(0)=1000
+     cost(1)=1750
+     cost(2)=3250
      LevelValues(0)=0.100000
      LevelValues(1)=0.150000
      LevelValues(2)=0.250000

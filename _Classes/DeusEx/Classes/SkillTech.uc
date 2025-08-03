@@ -41,11 +41,11 @@ defaultproperties
      mpLevel3=0.950000
      MultitoolString="Multitooling"
      SkillName="Electronics"
-     Description="By studying electronics and its practical application, agents can more efficiently bypass a number of security systems using multitools. Total Skill points to master: 5250 |n|nUNTRAINED: An agent can bypass security systems.|n|nTRAINED: The efficiency with which an agent bypasses security increases slightly.|n|nADVANCED: The efficiency with which an agent bypasses security increases moderately.|n|nMASTER: An agent encounters almost no security systems of any challenge."
+     Description="By studying electronics and its practical application, agents can more efficiently bypass a number of security systems using multitools. Total Skill points to master: 6000 |n|nUNTRAINED: An agent can bypass security systems.|n|nTRAINED: The efficiency with which an agent bypasses security increases slightly.|n|nADVANCED: The efficiency with which an agent bypasses security increases moderately.|n|nMASTER: An agent encounters almost no security systems of any challenge."
      SkillIcon=Texture'DeusExUI.UserInterface.SkillIconTech'
-     cost(0)=750
-     cost(1)=1500
-     cost(2)=3000
+     cost(0)=1000
+     cost(1)=1750
+     cost(2)=3250
      LevelValues(0)=0.100000
      LevelValues(1)=0.150000
      LevelValues(2)=0.250000
