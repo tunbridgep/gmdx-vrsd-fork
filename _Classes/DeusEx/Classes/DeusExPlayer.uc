@@ -3609,7 +3609,7 @@ function UpdateDynamicMusic(float deltaTime, optional bool bNoFadeHack)
     {
         if (default.prevMusicMode == MUS_Ambient)
         {
-            if (default.savedSection == 255 || default.savedSection == 255)
+            if (default.savedSection == 255)
                 default.savedSection = info.SongAmbientSection;
             else
                 default.savedSection = SongSection;
