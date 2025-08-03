@@ -285,7 +285,8 @@ function Timer()
 		// unhide shady guy
 		if (!flags.GetBool('MS_ShadyGuyUnhidden'))
 		{
-			if (flags.GetBool('StantonDowd_Played')) //(flags.GetBool('MS_StantonUnhidden'))//CyberP: only pawn after dowd talk
+			//if (flags.GetBool('StantonDowd_Played')) //(flags.GetBool('MS_StantonUnhidden'))//CyberP: only pawn after dowd talk
+			if (flags.GetBool('MS_StantonUnhidden')) //SARGE: No, it's fine how it was
 			{
 				if ((flags.GetBool('GreenKnowsAboutDowd') &&
 					!flags.GetBool('JoeGreen_Dead')) ||
