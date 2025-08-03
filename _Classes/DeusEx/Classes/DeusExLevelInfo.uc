@@ -15,6 +15,7 @@ var() localized String		startupMessage[4];		// printed when the level starts
 var() String				ConversationPackage;  // DEUS_EX STM -- added so SDK users will be able to use their own convos
 var() bool                  bNoSpawnFlies;                                      //RSD: Are we a sterile environment that shouldn't spawn flies?
 var() byte                  SongCombatSection;                                  //SARGE: Allow us to define a custom section for combat. By default this is 3
+var() byte                  SongAmbientSection;                                 //SARGE: Allow us to define a custom section for ambience, since SongSection is read-only.
 
 //SARGE: Replace the bBarOrClub variable with a more complex music system.
 enum EMusicType
@@ -55,6 +56,9 @@ function PostBeginPlay()
 {
 	Super.PostBeginPlay();
 
+    if (SongAmbientSection == -1)
+        SongAmbientSection = Level.SongSection;
+
 	SpawnScript();
 }
 
@@ -64,4 +68,5 @@ defaultproperties
      Texture=Texture'Engine.S_ZoneInfo'
      bAlwaysRelevant=True
      SongCombatSection=3
+     SongAmbientSection=-1
 }
