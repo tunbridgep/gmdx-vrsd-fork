@@ -353,6 +353,10 @@ var localized String msgModsCopied;
 var const Sound CopyModsSound;
 var const Sound ClassicFireSound;
 
+//SARGE: Since demolitions weapons are no longer H2H, but they still use Mesh Notify,
+//we need a hacky variable to distinguish them
+var const bool bFakeHandToHand;
+
 //END GMDX:
 
 //
@@ -1611,7 +1615,7 @@ simulated function float GetWeaponSkill()
 			if ((player.AugmentationSystem != None ) && ( player.SkillSystem != None ))
 			{
 				// get the target augmentation
-                if (!bHandToHand)
+                if (!bHandToHand || IsA('WeaponShuriken'))
                 {
                     value = player.AugmentationSystem.GetAugLevelValue(class'AugTarget');
                     if (value == -1.0)
@@ -1642,7 +1646,7 @@ function int CalculateTrueDamage()
 
     //SARGE: Factor in Targeting and Combat Strength
     //SARGE: NOTE: Targeting is handled in GetWeaponSkill, so not needed here.
-    if (P != None && bHandToHand && !IsA('WeaponHideAGun'))
+    if (P != None && bHandToHand)
     {
         if (P.AugmentationSystem != None)
             mult = P.AugmentationSystem.GetAugLevelValue(class'AugCombatStrength');
@@ -2471,7 +2475,7 @@ simulated function Tick(float deltaTime)
 	if (ClipCount > 0)
 	{
 		// check for LAM or other placed mine placement
-		if (bHandToHand && ProjectileClass != None && !Self.IsA('WeaponShuriken') && !Self.IsA('WeaponLAW') && !Self.IsA('WeaponHideAGun'))
+		if (bDisposableWeapon && ProjectileClass != None && !Self.IsA('WeaponShuriken') && !Self.IsA('WeaponLAW') && !Self.IsA('WeaponHideAGun'))
 		{
 			if (NearWallCheck())
 			{
@@ -3292,7 +3296,7 @@ function ServerHandleNotify( bool bInstantHit, class<projectile> ProjClass, floa
 //
 // HandToHandAttack
 // called by the MESH NOTIFY for the H2H weapons
-//
+// SARGE: Also gets called by the demolitions weapons, so we need a variable for it
 simulated function HandToHandAttack()
 {
 	local bool bOwnerIsPlayerPawn;
@@ -3324,7 +3328,7 @@ simulated function HandToHandAttack()
     }
 
 	// if we are a thrown weapon and we run out of ammo, destroy the weapon
-	if ( bHandToHand && (ReloadCount > 0) && (SimAmmoAmount <= 0))
+	if ( bDisposableWeapon && (ReloadCount > 0) && (SimAmmoAmount <= 0))
 	{
 		DestroyOnFinish();
 		if ( Role < ROLE_Authority )
@@ -3462,7 +3466,7 @@ simulated function bool ClientFire( float value )
 			if (Pawn(Owner) != None)
 			{
 				Pawn(Owner).ClientMessage(msgNotWorking);
-				if (!bHandToHand)
+				if (!bHandToHand && !bDisposableWeapon)
 					PlaySimSound( Misc1Sound, SLOT_None, TransientSoundVolume * 2.0, 1024 );
 			}
 			return false;
@@ -3494,7 +3498,7 @@ simulated function bool ClientFire( float value )
 	if ( !Self.IsA('WeaponFlamethrower') )
 		ServerForceFire();
 
-	if (bHandToHand)
+	if (bHandToHand || bFakeHandToHand)
 	{
 		SimAmmoAmount = AmmoType.AmmoAmount - 1;
 
@@ -3636,7 +3640,7 @@ function Fire(float Value)
 			if (Pawn(Owner) != None)
 			{
 				Pawn(Owner).ClientMessage(msgNotWorking);
-				if (!bHandToHand)
+				if (!bHandToHand && !bDisposableWeapon)
 					PlaySimSound( Misc1Sound, SLOT_None, sndVolume, 1024 );		// play dry fire sound
 			}
 			GotoState('Idle');
@@ -3644,12 +3648,12 @@ function Fire(float Value)
 		}
 	}
 
-	if (bHandToHand)
+	if (bHandToHand || bFakeHandToHand)
 	{
 		if (ReloadCount > 0)
 			AmmoType.UseAmmo(1);
 
-       if (meleeStaminaDrain != 0)
+       if (meleeStaminaDrain != 0 && !bFakeHandToHand)
        {
        if (Owner.IsA('DeusExPlayer') && Owner != none)
        {
@@ -3803,7 +3807,7 @@ simulated function PlaySelectiveFiring()
 //	if(anim == '\'')
 //		anim = 'Shoot';
 
-	if (bHandToHand)
+	if (bHandToHand || bDisposableWeapon)
 	{
 		rnd = FRand();
 		if (IsA('WeaponHideAGun') || IsA('WeaponLAW'))
@@ -3863,7 +3867,7 @@ simulated function PlaySelectiveFiring()
 			//PlayAnim(anim,1 * mod,0.1);
             return;
         }            
-		else if (bHandToHand && !IsA('WeaponHideAGun') && !IsA('WeaponLAW'))
+		else if (bHandToHand)
 		{
 			if (hhspeed < 1.0)
 				hhspeed = 1.0;
@@ -4616,7 +4620,7 @@ simulated function Projectile ProjectileFire(class<projectile> ProjClass, float 
 	speedMult=1.0;
 	// AugCombat increases our speed (distance) if hand to hand
 	mult = 1.0;
-	if (bHandToHand && !IsA('WeaponHideAGun') && (DeusExPlayer(Owner) != None))
+	if (bHandToHand && (DeusExPlayer(Owner) != None))
 	{
 		/*mult = DeusExPlayer(Owner).AugmentationSystem.GetAugLevelValue(class'AugCombat'); //RSD: No more buffs to projectile speed from Combat Speed
 		if (mult == -1.0)
@@ -5151,7 +5155,7 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
 	{
 		// AugCombat increases our damage if hand to hand
 		mult = 1.0;
-		if (bHandToHand && !IsA('WeaponHideAGun') && (DeusExPlayer(Owner) != None))
+		if (bHandToHand && (DeusExPlayer(Owner) != None))
 		{
 			mult = DeusExPlayer(Owner).AugmentationSystem.GetAugLevelValue(class'AugCombatStrength');
 			if (mult == -1.0)
@@ -5410,7 +5414,7 @@ function Finish()
                //{
                   if (AccurateRange > 200)
                       Buoyancy=5.123456;
-                  if (bHandToHand && (ReloadCount > 0) && (AmmoType.AmmoAmount <= 0))
+                  if (bDisposableWeapon && (ReloadCount > 0) && (AmmoType.AmmoAmount <= 0))
                   {
                      bBeginQuickMelee = False;
 				     DestroyMe();
@@ -5627,18 +5631,17 @@ simulated function bool UpdateInfo(Object winObject)
     if (P.IsA('DeusExPlayer'))
 		winInfo.AddDeclineButton(class);
 
+    //Allow melee weapons, if we have the Inventive perk.
 	if (bHandToHand && Owner.IsA('DeusExPlayer'))
 	{
-	   if (DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkInventive').bPerkObtained == true)
-	   {
+	   if (DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkInventive').bPerkObtained == true || IsA('WeaponCombatKnife') || IsA('WeaponShuriken')) //RSD: Throwing Knives now require the perk, c'mon //RSD: Or nah
 	      winInfo.AddSecondaryButton(self);
-	   }
-	   else if (GoverningSkill != class'DeusEx.SkillDemolition' && !IsA('WeaponCombatKnife') && !IsA('WeaponHideAGun') && !IsA('WeaponShuriken'))
-	   {                                                                        //RSD: Throwing Knives now require the perk, c'mon //RSD: Or nah
-	   }
-	   else
-	       winInfo.AddSecondaryButton(self);
 	}
+    //Allow grenades and the PS20
+	else if (Owner.IsA('DeusExPlayer') && (GoverningSkill == class'DeusEx.SkillDemolition' || IsA('WeaponHideAGun') || IsA('WeaponLAW'))) //SARGE: Add LAW
+    {                                                                        
+        winInfo.AddSecondaryButton(self);
+    }
 
 	winInfo.SetText(msgInfoWeaponStats);
 	winInfo.AddLine();
@@ -6052,9 +6055,7 @@ simulated function bool UpdateInfo(Object winObject)
     //secondary weapon
     if (bHandToHand && DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkInventive').bPerkObtained == true)
        str = msgInfoYes;
-    else if (bHandToHand && GoverningSkill != class'DeusEx.SkillDemolition' && !IsA('WeaponHideAGun') && !IsA('WeaponShuriken'))
-       str = msgInfoNo;
-    else if (bHandToHand)
+    else if (GoverningSkill == class'DeusEx.SkillDemolition' || IsA('WeaponHideAGun') || IsA('WeaponShuriken') || IsA('WeaponCombatKnife') )
        str = msgInfoYes;
     else
        str = msgInfoNo;
@@ -6500,7 +6501,7 @@ state NormalFire
 		else
 		{
 			// if we are a thrown weapon and we run out of ammo, destroy the weapon
-			if (bHandToHand && (ReloadCount > 0) && (AmmoType.AmmoAmount <= 0))
+			if (bDisposableWeapon && (ReloadCount > 0) && (AmmoType.AmmoAmount <= 0))
 			{
 				DestroyMe();
 			}

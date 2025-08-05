@@ -56,7 +56,6 @@ defaultproperties
      NoiseLevel=8.000000
      EnviroEffective=ENVEFF_Air
      ShotTime=0.300000
-     bHandToHand=True
      reloadTime=0.000000
      HitDamage=100
      maxRange=12000

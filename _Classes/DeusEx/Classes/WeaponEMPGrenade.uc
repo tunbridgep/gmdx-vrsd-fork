@@ -121,7 +121,6 @@ defaultproperties
      bPenetrating=False
      StunDuration=60.000000
      bHasMuzzleFlash=False
-     bHandToHand=True
      bUseAsDrawnWeapon=False
      AITimeLimit=3.500000
      AIFireDelay=5.000000
@@ -162,5 +161,6 @@ defaultproperties
      Mass=5.000000
      Buoyancy=2.000000
      bDisposableWeapon=true
-     minSkillRequirement=1;
+     minSkillRequirement=1
+     bFakeHandToHand=true
 }

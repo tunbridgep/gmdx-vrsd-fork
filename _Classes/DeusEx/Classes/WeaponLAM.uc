@@ -152,7 +152,6 @@ defaultproperties
      maxRange=4800
      AccurateRange=2400
      bHasMuzzleFlash=False
-     bHandToHand=True
      bUseAsDrawnWeapon=False
      AITimeLimit=3.500000
      AIFireDelay=5.000000
@@ -195,4 +194,5 @@ defaultproperties
      Mass=5.000000
      Buoyancy=2.000000
      bDisposableWeapon=true
+     bFakeHandToHand=true
 }

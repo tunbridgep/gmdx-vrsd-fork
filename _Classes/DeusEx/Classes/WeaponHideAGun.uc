@@ -28,7 +28,6 @@ defaultproperties
      BaseAccuracy=0.000000
      AreaOfEffect=AOE_Cone
      bHasMuzzleFlash=False
-     bHandToHand=True
      recoilStrength=0.200000
      bEmitWeaponDrawn=False
      bUseAsDrawnWeapon=False

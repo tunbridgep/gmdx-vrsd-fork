@@ -117,7 +117,6 @@ defaultproperties
      AccurateRange=2400
      bPenetrating=False
      bHasMuzzleFlash=False
-     bHandToHand=True
      bUseAsDrawnWeapon=False
      AITimeLimit=3.500000
      AIFireDelay=5.000000
@@ -152,4 +151,5 @@ defaultproperties
      Buoyancy=2.000000
      bDisposableWeapon=true
      minSkillRequirement=2;
+     bFakeHandToHand=true
 }
