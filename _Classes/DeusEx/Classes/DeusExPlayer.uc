@@ -8318,6 +8318,11 @@ exec function ParseLeftClick()
 	{
         if (aGEPProjectile!=none && aGEPProjectile.IsA('Rocket'))
         {
+            //SARGE: Was doing something weird/wacky before!
+            //Lets fix it
+            aGEPProjectile.bExplodeOnDestroy = true;
+            aGEPProjectile.Destroy();
+            /*
             if (aGEPProjectile.SoundPitch!=112)
             {
                 aGEPProjectile.MaxSpeed=1600.000000;
@@ -8326,6 +8331,7 @@ exec function ParseLeftClick()
                 aGEPProjectile.SoundPitch=112;
                 PlaySound(sound'impboom2',SLOT_None);
             }
+            */
             return;
         }
 	}
