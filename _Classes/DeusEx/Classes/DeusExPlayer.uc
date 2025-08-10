@@ -3363,6 +3363,8 @@ function bool AmbientTrackChanged(string newSong, DeusExLevelInfo info)
 // Modified to not restart music if the new song is the same as the current song, and also goes to
 // our remembered section instead of restarting the song when trying to restart it, such as
 // on map transition to a new map with the same song.
+// Additionally, allows overwriting the ambient and combat sections of the current track,
+// while also allowing bars and clubs to only play them ambient track.
 // This is a scraggly horrible mess and it abuses the fuck out of default variables being
 // remembered between savegames and level loads.
 // Anyone who wishes to modify this: Beware Ye! Here be dragons!
@@ -3373,8 +3375,9 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
 	local DeusExLevelInfo info;
     
     info = GetLevelInfo();
-        
+    
     DebugMessage("Music Change Request:" @ NewSong @ NewSection);
+
     DebugMessage("  Modes:" @ default.prevMusicMode @ default.musicModeGMDX);
     DebugMessage("  Level Ambient Section is :" @ info.SongAmbientSection);
     
@@ -3387,7 +3390,7 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
         DebugMessage("Changing Music - FadeTimeHack fix");
         if (NewSection == Level.SongSection && Level.SongSection != info.SongAmbientSection)
             NewSection = info.SongAmbientSection;
-        else if (NewSection == info.SongAmbientSection && iEnhancedMusicSystem > 0)
+        else if (NewSection == info.SongAmbientSection && iEnhancedMusicSystem > 0 && !AmbientTrackChanged(string(NewSong),info))
             NewSection = default.savedSection;
         bChange = true;
         bHacked = true;
@@ -3395,6 +3398,10 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
     }
     else if (AmbientTrackChanged(string(NewSong),info)) //We always want to allow song changes on map transition
     {
+        //If we're changing to an empty track, fade out slowly
+        if (NewSong == None && iEnhancedMusicSystem > 0)
+            NewTransition = MTRAN_SlowFade;
+
         bChange = true;
         DebugMessage("Changing Music - Song Change from" @ default.currentSong);
         NewSection = info.SongAmbientSection;
@@ -3491,9 +3498,17 @@ function ResetMusic()
 {
 	local DeusExLevelInfo info;
     info = GetLevelInfo();
+    
+    DebugMessage("Music Reset");
+        
+    //If song ambient section hasn't been set yet, fix it up.
+    if (info.SongAmbientSection == -1)
+    {
+        info.SongAmbientSection = Level.SongSection;
+        DebugMessage("  Update Ambient Section: " $ Level.SongSection);
+    }
 
     //Reset the music timers
-    DebugMessage("Music Reset");
     if (iEnhancedMusicSystem == 0)
     {
         default.savedSection = info.SongAmbientSection;
@@ -3525,16 +3540,18 @@ function UpdateDynamicMusic(float deltaTime, optional bool bNoFadeHack)
 	local ScriptedPawn npc;
 	local Pawn CurPawn;
 	local DeusExLevelInfo info;
+	local DeusExRootWindow root;
     local int aggro;                    //Sarge: Keep track of the number of aggro enemies. If >2, start combat music. If 0 stop combat music.
 
 	if (Level.Song == None)
 		return;
 
+	root = DeusExRootWindow(rootWindow);
     info = GetLevelInfo();
 
 	musicCheckTimer += deltaTime;
 	musicChangeTimer += deltaTime;
-    if (!bNoFadeHack)
+    if (!bNoFadeHack)// && (root == None || !root.bUIPaused))
         default.fadeTimeHack -= deltaTime;
     if (default.fadeTimeHack < 0)
         default.fadeTimeHack = 0;
