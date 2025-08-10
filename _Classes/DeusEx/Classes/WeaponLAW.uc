@@ -108,4 +108,5 @@ defaultproperties
      CollisionHeight=6.800000
      Mass=50.000000
      bDisposableWeapon=true
+     bFakeHandToHand=true
 }

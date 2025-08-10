@@ -353,6 +353,10 @@ var localized String msgModsCopied;
 var const Sound CopyModsSound;
 var const Sound ClassicFireSound;
 
+//SARGE: Some weapons are marked "hand to hand" but actually aren't hand to hand weapons
+//we need a hacky variable to distinguish them, so we don't give them combat strength etc
+var const bool bFakeHandToHand;
+
 //END GMDX:
 
 //
@@ -1611,7 +1615,7 @@ simulated function float GetWeaponSkill()
 			if ((player.AugmentationSystem != None ) && ( player.SkillSystem != None ))
 			{
 				// get the target augmentation
-                if (!bHandToHand)
+                if (!bHandToHand || IsA('WeaponShuriken'))
                 {
                     value = player.AugmentationSystem.GetAugLevelValue(class'AugTarget');
                     if (value == -1.0)
@@ -1642,7 +1646,7 @@ function int CalculateTrueDamage()
 
     //SARGE: Factor in Targeting and Combat Strength
     //SARGE: NOTE: Targeting is handled in GetWeaponSkill, so not needed here.
-    if (P != None && bHandToHand && !IsA('WeaponHideAGun'))
+    if (P != None && bHandToHand && !bFakeHandToHand)
     {
         if (P.AugmentationSystem != None)
             mult = P.AugmentationSystem.GetAugLevelValue(class'AugCombatStrength');
@@ -3649,7 +3653,7 @@ function Fire(float Value)
 		if (ReloadCount > 0)
 			AmmoType.UseAmmo(1);
 
-       if (meleeStaminaDrain != 0)
+       if (meleeStaminaDrain != 0 && !bFakeHandToHand)
        {
        if (Owner.IsA('DeusExPlayer') && Owner != none)
        {
@@ -3863,7 +3867,7 @@ simulated function PlaySelectiveFiring()
 			//PlayAnim(anim,1 * mod,0.1);
             return;
         }            
-		else if (bHandToHand && !IsA('WeaponHideAGun') && !IsA('WeaponLAW'))
+		else if (bHandToHand && !bFakeHandToHand)
 		{
 			if (hhspeed < 1.0)
 				hhspeed = 1.0;
@@ -4616,7 +4620,7 @@ simulated function Projectile ProjectileFire(class<projectile> ProjClass, float 
 	speedMult=1.0;
 	// AugCombat increases our speed (distance) if hand to hand
 	mult = 1.0;
-	if (bHandToHand && !IsA('WeaponHideAGun') && (DeusExPlayer(Owner) != None))
+	if (bHandToHand && !bFakeHandToHand && (DeusExPlayer(Owner) != None))
 	{
 		/*mult = DeusExPlayer(Owner).AugmentationSystem.GetAugLevelValue(class'AugCombat'); //RSD: No more buffs to projectile speed from Combat Speed
 		if (mult == -1.0)
@@ -5151,7 +5155,7 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
 	{
 		// AugCombat increases our damage if hand to hand
 		mult = 1.0;
-		if (bHandToHand && !IsA('WeaponHideAGun') && (DeusExPlayer(Owner) != None))
+		if (bHandToHand && !bFakeHandToHand && (DeusExPlayer(Owner) != None))
 		{
 			mult = DeusExPlayer(Owner).AugmentationSystem.GetAugLevelValue(class'AugCombatStrength');
 			if (mult == -1.0)
