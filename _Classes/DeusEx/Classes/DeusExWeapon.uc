@@ -3833,6 +3833,9 @@ simulated function PlaySelectiveFiring()
 	{
 	    if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).AugmentationSystem != none)
 		   hhspeed = DeusExPlayer(Owner).AugmentationSystem.GetAugLevelValue(class'AugCombat');
+			
+        if (hhspeed < 1.0)
+            hhspeed = 1.0;
 
 		//== Speed up the firing animation if we have the ROF mod
 		//mod = 1.000000 - ModShotTime;
@@ -3869,8 +3872,6 @@ simulated function PlaySelectiveFiring()
         }            
 		else if (bHandToHand && !bFakeHandToHand)
 		{
-			if (hhspeed < 1.0)
-				hhspeed = 1.0;
 
             if (Owner.IsA('DeusExPlayer'))
             {
@@ -3883,6 +3884,8 @@ simulated function PlaySelectiveFiring()
 
 			PlayAnim(anim,1 * hhspeed,0.1); //CyberP: increase melee speed if augcombat
 		}
+		else if (bHandToHand && GoverningSkill == class'DeusEx.SkillDemolition') //SARGE: Hand to Hand speed used to work for grenades. Make it work again, but without the stamina and zyme changes
+			PlayAnim(anim,1 * hhspeed,0.1);
 		else
 			PlayAnim(anim,1 * mod,0.1);
 	}
