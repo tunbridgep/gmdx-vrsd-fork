@@ -17495,7 +17495,7 @@ exec function DXDumpInfo()
 			if (item.bDisplayableInv || item.IsA('Ammo'))
 			{
 				W = DeusExWeapon(item);
-				if ((W != None) && W.bHandToHand && (W.ProjectileClass != None))
+				if ((W != None) && W.bDisposableWeapon && (W.ProjectileClass != None))
 					strCopies = " ("$W.AmmoType.AmmoAmount$" rds)";
 				else if (item.IsA('Ammo') && (Ammo(item).PickupViewMesh != Mesh'TestBox'))
 					strCopies = " ("$Ammo(item).AmmoAmount$" rds)";
