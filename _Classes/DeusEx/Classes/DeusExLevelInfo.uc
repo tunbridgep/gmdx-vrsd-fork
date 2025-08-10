@@ -56,9 +56,6 @@ function PostBeginPlay()
 {
 	Super.PostBeginPlay();
 
-    if (SongAmbientSection == -1)
-        SongAmbientSection = Level.SongSection;
-
 	SpawnScript();
 }
 
