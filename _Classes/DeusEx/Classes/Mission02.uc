@@ -205,6 +205,8 @@ function Timer()
 	local ThugMale thug;
 	local ThugMale2 thug2;
 	local BumMale bum;
+	local BumMale2 bum2;
+	local BumMale3 bum3;
 	local BlackHelicopter chopper;
 	local Doctor doc;
 	local BarrelAmbrosia barrel;
@@ -501,6 +503,23 @@ function Timer()
 
 			flags.SetBool('MS_BumTurned', True,, 3);
 		}
+
+        //SARGE: Make the 2 bums have the right names after introducing themselves
+		if (flags.GetBool('ClinicMaleBum1Barks_Played') && !flags.GetBool('GMDXClinicBumsRenamed'))
+        {
+            foreach AllActors(class'BumMale3', bum3, 'Rafael')
+            {
+                bum3.FamiliarName = "Rafael";
+                bum3.UnfamiliarName = "Rafael";
+            }
+            foreach AllActors(class'BumMale2', bum2, 'Jake')
+            {
+                bum2.FamiliarName = "Jake";
+                bum2.UnfamiliarName = "Jake";
+            }
+
+			flags.SetBool('GMDXClinicBumsRenamed', True,, 3);
+        }
 	}
 	else if (localURL == "02_NYC_BAR")
 	{
