@@ -5156,7 +5156,7 @@ simulated function PlayFootStep()
         range*=0.9;
 
     //Sarge: Increase the AI volume by a significant margin, to make Stealth more necessary
-    volumeMultiplier *= 1.25;
+    volumeMultiplier *= 1.15;
 
     if (volume > 0)
     {
