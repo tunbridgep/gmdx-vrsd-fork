@@ -7133,7 +7133,10 @@ state PlayerWalking
         bBlockNextFire = False;
 
         //SARGE: Tick the crouch walk timer.
-        lastWalkTimer = FMAX(lastWalkTimer - deltaTime,0);
+        if (abs(Velocity.z) == 0)
+            lastWalkTimer = FMAX(lastWalkTimer - deltaTime,0);
+        else
+            lastWalkTimer = 0.4;
 
 		Super.PlayerTick(deltaTime);
 	}
