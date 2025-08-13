@@ -967,17 +967,11 @@ function AddBadItem(DeusExPlayer P, Inventory item, optional int count)
 }
 
 //SARGE: Simplified ammo loot function
-function bool LootAmmo(DeusExPlayer P, DeusExWeapon item, bool bShowOverflow)
+function bool LootAmmo(DeusExPlayer P, DeusExWeapon item, bool bDisplayOverflowMsg, bool bShowOverflow)
 {
     local bool bResult;
     local DeusExAmmo AmmoType;
-    bResult = item.LootAmmo(P,true,true,false,false,bShowOverflow);
-    
-    AmmoType = DeusExAmmo(P.FindInventoryType(item.AmmoName));
-
-    //If we were unable to loot everything and are showing overflow, add any additional ammo to the bad list
-    if (!bShowOverflow && AmmoType != None && AmmoType.bShowInfo && item.PickupAmmoCount > 0)
-        AddBadItem(P,AmmoType,item.PickupAmmoCount);
+    bResult = item.LootAmmo(P,true,true,false,false,bDisplayOverflowMsg,bShowOverflow);
 
     return bResult;
 }
@@ -1005,6 +999,7 @@ function Frob(Actor Frobber, Inventory frobWith)
     local bool bPickedSomethingUp;                                              //SARGE: Did we pick anything up from this corpse?
     local bool bDeclined;
     local bool bLootResult;
+    local bool bLootedAmmo;
     local bool bProcessedImpale;
     local bool bSuppressEmptyMessage;                                           //SARGE: Suppress the "You don't find anything" message
 	
@@ -1075,6 +1070,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                 //== end
 				bPickedItemUp = False;
                 bDeclined = False;
+                bLootedAmmo = false;
 
                 //DEBUG TEXT
                 //player.ClientMessage("Inventory Item: " $ item);
@@ -1133,7 +1129,13 @@ function Frob(Actor Frobber, Inventory frobWith)
                                 bPickedSomethingUp = True;
                             }
                             //SARGE: Show declined nanokeys
-                            AddBadItem(player,item);
+                            else
+                            {
+                                if (player.bShowDeclinedInReceivedWindow)
+                                    AddBadItem(player,item);
+                                if (!bSearched)
+                                    player.ClientMessage(sprintf(player.DuplicateNanoKey,item.Name));
+                            }
 
 							DeleteInventory(item);
 							item.Destroy();
@@ -1184,7 +1186,8 @@ function Frob(Actor Frobber, Inventory frobWith)
 						// the weapon).
 						else if ((W != None) || (W == None && (bDeclined||!player.FindInventorySlot(item, True))))
 						{
-                            bLootResult = LootAmmo(DeusExPlayer(P),DeusExWeapon(item),!bSearched && (W == None || bDeclined));
+                            bLootResult = LootAmmo(DeusExPlayer(P),DeusExWeapon(item),!bSearched,true);
+                            bLootedAmmo = true;
                             bFoundSomething = bFoundSomething || bLootResult;
                             bFoundInvalid = bFoundInvalid || PickupAmmoCount > 0;
                             bPickedSomethingUp = bPickedSomethingUp || bLootResult;
@@ -1212,18 +1215,24 @@ function Frob(Actor Frobber, Inventory frobWith)
 								//P.ClientMessage(Sprintf(Player.InventoryFull, item.itemName));
                             }
 
-							// Only destroy the weapon if the player already has it.
-                            //SARGE: Keep weapons, just ignore them.
+                            //Ignore weapons we cannot take.
 							if (W != None)
 							{
-                                if (!bSearched)
+                                bFoundSomething = True;
+                                if (!W.bDisposableWeapon)
                                 {
-                                    bFoundSomething = True;
-                                    if (!W.bDisposableWeapon)
+                                    if (!bSearched)
                                         P.ClientMessage(item.PickupMessage @ item.itemArticle @ Item.itemName @ IgnoredString);
+                                
+                                    if (!bDeclined) //SARGE: declined items are already added.
+                                        AddBadItem(player,item);
                                 }
-                                if (!bDeclined && !W.bDisposableWeapon) //SARGE: declined items are already added.
-                                    AddBadItem(player,item);
+                                else if (item != None)
+                                {
+                                    bSuppressEmptyMessage = True;
+                                    P.ClientMessage(Sprintf(Player.InventoryFull, item.itemName));
+                                }
+
                                 bFoundInvalid = true;
                                 bPickedItemUp = True;
 							}
@@ -1361,7 +1370,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                 if (!bDeclined)
                                 {
                                     bFoundSomething = True;
-                                    if (DeusExPlayer(P).HandleItemPickup(Item,false,true,true,false) != False)
+                                    if (DeusExPlayer(P).HandleItemPickup(Item,false,true,true,!bLootedAmmo,false) != False)
                                     {
                                         DeleteInventory(item);
 
@@ -1373,20 +1382,20 @@ function Frob(Actor Frobber, Inventory frobWith)
                                             
                                         bPickedSomethingUp = True;
                                         
-                                        if (!item.IsA('DeusExWeapon') || !DeusExWeapon(item).bDisposableWeapon)
                                         // Show the item received in the ReceivedItems window
-                                        {
+                                        AddReceivedItem(player, item, 1);
+                                        P.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
 
-                                            AddReceivedItem(player, item, 1);
-                                            P.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
-                                        }
-                                        else if (item.IsA('WeaponShuriken') && WeaponShuriken(item).bImpaled)
+                                        if (item.IsA('WeaponShuriken') && WeaponShuriken(item).bImpaled)
                                             LootPickupSound = Sound'DeusExSounds.Generic.FleshHit1';
 
                                         item.SpawnCopy(P);
                                     }
                                     else
+                                    {
+                                        bSuppressEmptyMessage = True;
                                         AddBadItem(player,item);
+                                    }
                                 }
 							}
 							else

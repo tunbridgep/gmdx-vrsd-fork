@@ -123,7 +123,6 @@ var Actor ConActors[10];
 var Actor ConActorsBound[10];
 
 var int conActorCount;
-var int tempAmmoCount;
 
 // ----------------------------------------------------------------------
 // SetStartActor()
@@ -596,6 +595,8 @@ function EEventAction SetupEventTransferObject( ConEventTransferObject event, ou
     local WeaponMod wepMod;                                                     //RSD: For Smuggler convo
     local DeusExWeapon wpn;                                                     //SARGE: For displaying weapon ammo.
     local int addAmmo;                                                          //SARGE: For displaying weapon ammo + additional ammo given during convo at the same time.
+    local bool bUnroll;                                                         //SARGE: Unroll the items in the received items window.
+    local int i;
 /*
 log("SetupEventTransferObject()------------------------------------------");
 log("  event = " $ event);
@@ -671,8 +672,6 @@ log("  event.toActor    = " $ event.toActor );
         //infinite tran darts from catacomb bum
         //double 3006 ammo only giving one box batt. park bum
         //Jock cold beer
-        //Also, need to make given grenades display # too
-        tempAmmoCount = Ammo(invItemFrom).AmmoAmount;
     }
 	// If we're giving this item to the player and he does NOT yet have it,
 	// then make sure there's enough room in his inventory for the
@@ -740,7 +739,8 @@ log("  event.toActor    = " $ event.toActor );
 						invItemFrom.Destroy();
 						return nextAction;
 					}
-					event.TransferCount = Weapon(invItemTo).PickUpAmmoCount;
+					//event.TransferCount = Weapon(invItemTo).PickUpAmmoCount; //SARGE: Removed this because it was borked
+                    bUnroll = true; //SARGE: Added to make disposable weapons look nicer
 					itemsTransferred = event.TransferCount;
 				}
 				else
@@ -937,16 +937,22 @@ log("  event.toActor    = " $ event.toActor );
 	{
         wpn = DeusExWeapon(invItemTo);
 
-        if ( invItemTo.IsA('Ammo') )   //CyberP: display ammo counts
-	        itemsTransferred = tempAmmoCount;
 		if (conWinThird != None)
         {
-			conWinThird.ShowReceivedItem(invItemTo, itemsTransferred);
+            //SARGE: "Unroll" disposable weapons so they appear multiple times
+            if (bUnroll && itemsTransferred < 5)
+            {
+                for (i = 0;i < itemsTransferred;i++)
+                    conWinThird.ShowReceivedItem(invItemTo, 1);
+            }
+            else
+            {
+                conWinThird.ShowReceivedItem(invItemTo, itemsTransferred);
            
-            //SARGE: Show ammo loaded inside transferred weapons, plus any additional ammo transferred.
-            if (wpn != None && wpn.AmmoName != None && wpn.AmmoName != class'AmmoNone' && !wpn.bDisposableWeapon && wpn.PickupAmmoCount + AddAmmo > 0)
-                conWinThird.ShowReceivedItem(wpn.AmmoType, wpn.PickupAmmoCount + AddAmmo);
-
+                //SARGE: Show ammo loaded inside transferred weapons, plus any additional ammo transferred.
+                if (wpn != None && wpn.AmmoName != None && wpn.AmmoName != class'AmmoNone' && !wpn.bDisposableWeapon && wpn.PickupAmmoCount + AddAmmo > 0)
+                    conWinThird.ShowReceivedItem(wpn.AmmoType, wpn.PickupAmmoCount + AddAmmo);
+            }
         }
 		else
 			DeusExRootWindow(player.rootWindow).hud.receivedItems.AddItem(invItemTo, itemsTransferred);

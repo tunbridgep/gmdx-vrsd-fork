@@ -8187,7 +8187,7 @@ function DoLeftFrob(Actor frobTarget)
         }
         */
         bLeftClicked = true;
-        HandleItemPickup(FrobTarget,false,false,false,true);
+        HandleItemPickup(FrobTarget,false,false,false,true,true);
     }
 }
 
@@ -8226,7 +8226,7 @@ function DoRightFrob(Actor frobTarget)
     }
     */
     if (bDefaultFrob && frobTarget.IsA('Inventory'))
-        HandleItemPickup(FrobTarget,false,false,false,true);
+        HandleItemPickup(FrobTarget,false,false,false,true,true);
     else if (bDefaultFrob)
         DoFrob(Self, None);
 }
@@ -8785,7 +8785,7 @@ function PlayPickupAnim(Vector locPickup)
 //
 // Returns the number of rounds they were able to pick up.
 // ----------------------------------------------------------------------
-function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool bShowWindow, optional bool bLootSound, optional bool bNoGroup, optional bool bNoOnes, optional bool bShowOverflowMsg, optional Texture overrideTexture)
+function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool bShowWindow, optional bool bLootSound, optional bool bNoGroup, optional bool bNoOnes, optional bool bShowOverflowMsg, optional bool bShowOverflowWindow, optional Texture overrideTexture)
 {
     local int MaxAmmo, prevAmmo, ammoCount, intj, over, ret;
     local DeusExAmmo AmmoType;
@@ -8876,11 +8876,12 @@ function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool
         ret = intj;
     }
 
-    if (over > 0 && bDisplayMsg && bShowOverflowMsg)
+    if (over > 0)
     {
-        ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName $ " (" $ over $ ")" @ AmmoType.MaxAmmoString, 'Pickup');
+        if (bShowOverflowMsg)
+            ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName $ " (" $ over $ ")" @ AmmoType.MaxAmmoString, 'Pickup');
         
-        if (bShowWindow && bShowDeclinedInReceivedWindow)
+        if (bShowWindow && bShowDeclinedInReceivedWindow && bShowOverflowWindow)
         {
             bClearReceivedItems=true;
             AddReceivedItem(AmmoType, over, bNoGroup, true);
@@ -8906,7 +8907,7 @@ function PlayPartialAmmoSound(Actor source, class<Ammo> ammoName)
 // HandleItemPickup()
 // ----------------------------------------------------------------------
 
-function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, optional bool bSkipDeclineCheck, optional bool bFromCorpse, optional bool bShowOverflow)
+function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, optional bool bSkipDeclineCheck, optional bool bFromCorpse, optional bool bShowOverflow, optional bool bShowOverflowWindow)
 {
 	local bool bCanPickup;
 	local bool bSlotSearchNeeded;
@@ -9059,7 +9060,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     //SARGE: Always try looting non-disposable weapons of their ammo
     if (bCanPickup && FrobTarget.IsA('DeusExWeapon') && !DeusExWeapon(frobTarget).bDisposableWeapon)
     {
-        bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,true,bAlwaysShowReceivedItemsWindow,false,true,bShowOverflow);
+        bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,true,bAlwaysShowReceivedItemsWindow,false,true,bShowOverflow,bShowOverflowWindow);
 
         //Don't pick up a weapon if there's ammo in it and we already have one
         if (!bSlotSearchNeeded && DeusExWeapon(frobTarget).PickupAmmoCount > 0 && bCanPickup)
@@ -9111,7 +9112,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
         //SARGE: Since we haven't looted Disposable weapons yet, do so now.
         if (FrobTarget.IsA('DeusExWeapon') && DeusExWeapon(frobTarget).bDisposableWeapon)
         {
-            bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,!bSlotSearchNeeded || (bFromCorpse && bSlotSearchNeeded),bFromCorpse,false,false,false);
+            bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,!bSlotSearchNeeded || (bFromCorpse && bSlotSearchNeeded),bFromCorpse,false,false,false,false);
 
             if (DeusExWeapon(frobTarget).PickupAmmoCount > 0)
             {
