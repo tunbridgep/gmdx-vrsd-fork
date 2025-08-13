@@ -99,24 +99,45 @@ function RestorePreviousVolume()
 // based on the players Lighting Accessibility setting
 // ----------------------------------------------------------------------
 
-function DoLightingAccessibility(Light L, name checkName, optional bool bStrobe)
+function ApplyLightingAccessibility()
 {
-    if (!player.bLightingAccessibility || L.name != checkName)
-        return;
-                
-    //log("Light Found: [" $ L.Name $ "]");
+    local light L;
+    local LightCoronaFlicker C;
 
-    if (bStrobe)
+    ForEach AllActors(class'LightCoronaFlicker', C)
     {
-        L.LightPeriod = 155;
-        L.LightType = LT_Strobe;
+        if (player.bLightingAccessibility)
+            C.minimumTime = 2.0;
+        else
+            C.minimumTime = C.default.minimumTime;
     }
-    else
+
+    if (player.bLightingAccessibility)
     {
-        L.LightPeriod = 0;
-        L.LightType = LT_Steady;
+        ForEach AllActors(class'Light', L)
+            DoLightingAccessibilityFor(L);
     }
 }
+
+function DoLightingAccessibilityFor(Light L, optional bool bStrobe)
+{
+    //log("Light Found: [" $ L.Name $ "]");
+    if (L.LightType != LT_Flicker && L.LightType != LT_Strobe && L.LightType != LT_Blink)
+        return;
+
+    L.LightPeriod = 0;
+    L.LightType = LT_Steady;
+    L.bLightChanged = True;
+}
+
+/*
+//SARGE: This will break for lights that are turned on/off dynamically.
+function ResetLightingAccessibilityFor(Light L)
+{
+    L.LightPeriod = L.default.LightPeriod;
+    L.LightType = L.default.LightType;
+}
+*/
 
 // ----------------------------------------------------------------------
 // PostPostBeginPlay()
@@ -341,6 +362,9 @@ function FirstFrame()
             foreach AllActors(class'SecurityCamera', Cam)
                 Cam.bAlarmEvent = true;
 
+
+        //SARGE: Do lighting accessibility
+        ApplyLightingAccessibility();
         firstTime = true;
 	}
 

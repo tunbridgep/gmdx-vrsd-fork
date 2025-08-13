@@ -6,6 +6,9 @@ class LightCoronaFlicker extends DeusExDecoration;
 var Light CoronaLight;
 var() float lightScale;
 
+var float timeSincePrevious;
+var float minimumTime;
+
 function PostBeginPlay()
 {
   local Light A;
@@ -21,23 +24,31 @@ function PostBeginPlay()
   }
 }
 
+//SARGE: Changed to make this less insufferable
+//Now, it has to have been "on" for at least 2 seconds, with the chance of changing starting small and going up
 function Tick(float deltaTime)
 {
-   if (CoronaLight != None)
-   {
-       if (FRand() < 0.6)
-       {
-           CoronaLight.DrawScale = 0.0;
-           LightBrightness = 0;
-           AmbientSound = None;
-       }
-       else
-       {
-           CoronaLight.DrawScale = lightScale;
-           LightBrightness = 68;
-           AmbientSound = sound'HumLight3';
-       }
-   }
+    if (CoronaLight != None)
+    {
+        timeSincePrevious += deltaTime;
+
+        if (timeSincePrevious <= minimumTime)
+            return;
+
+        if (FRand() < 0.4)
+        {
+            CoronaLight.DrawScale = 0.0;
+            LightBrightness = 0;
+            AmbientSound = None;
+        }
+        else
+        {
+            CoronaLight.DrawScale = lightScale;
+            LightBrightness = 68;
+            AmbientSound = sound'HumLight3';
+        }
+        timeSincePrevious = 0;
+    }
 }
 
 Function Destroyed()
@@ -85,4 +96,5 @@ defaultproperties
      LightRadius=6
      Mass=3.000000
      Buoyancy=2.000000
+     minimumTime=0.0000
 }

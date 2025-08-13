@@ -112,19 +112,6 @@ function FirstFrame()
 			flags.SetBool('SchickThankedPlayer', True);
 		}
 	}
-	else if (localURL == "02_NYC_HOTEL")
-    {
-        //SARGE: Fix up elevator shaft Lighting if we have Lighting Accessibility enabled
-        if (Player.bLightingAccessibility)
-        {
-            ForEach AllActors(class'Light', L)
-            {
-                DoLightingAccessibility(L, 'Light44');
-                DoLightingAccessibility(L, 'Light45');
-                DoLightingAccessibility(L, 'Light42', true);
-            }
-        }
-    }
 CanQuickSave=true;
 }
 
