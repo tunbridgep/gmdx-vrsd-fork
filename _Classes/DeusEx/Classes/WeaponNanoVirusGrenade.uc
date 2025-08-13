@@ -152,4 +152,5 @@ defaultproperties
      Buoyancy=2.000000
      bDisposableWeapon=true
      minSkillRequirement=2;
+     bFakeHandToHand=true
 }

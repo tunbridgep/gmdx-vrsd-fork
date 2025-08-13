@@ -61,4 +61,5 @@ defaultproperties
      Mass=5.000000
      Buoyancy=2.000000
      bDisposableWeapon=true
+     bFakeHandToHand=true
 }
