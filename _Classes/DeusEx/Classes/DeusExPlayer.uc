@@ -1008,7 +1008,7 @@ function HandleCrouchToggle()
 //Return if the character is crouching
 function bool IsCrouching()
 {
-    return bCrouchOn || bForceDuck || bIsCrouching || bCrouchHack || IsInState('PlayerSwimming');
+    return bCrouchOn || IsCrippled() || bForceDuck || bIsCrouching || bCrouchHack || IsInState('PlayerSwimming');
 }
 
 //set our crouch state to a certain value
@@ -5945,7 +5945,7 @@ function DoJump( optional float F )
 	else
 		MusLevel = (MusLevel+3)*50;
 
-    if (bOnLadder && WallMaterial != 'Ladder')
+    if (bOnLadder && WallMaterial != 'Ladder' && !IsCrippled())
     {
 	    if (camInterpol == 0)
 	        camInterpol = 0.4; //do not change this value. its used by mantling code
@@ -6009,8 +6009,8 @@ function DoJump( optional float F )
 		return;
 	}
 
-        //CyberP: effect when jumping
-	if (Physics == PHYS_Walking)
+    //CyberP: effect when jumping
+	if (Physics == PHYS_Walking && !IsCrippled())
 	{
 	   RecoilTime=default.RecoilTime + 0.9;
 
@@ -6064,7 +6064,10 @@ function DoJump( optional float F )
         	Velocity.Y = Default.GroundSpeed*velocityNormal.Y;
         }
 
-        if (IsStunted())
+        //SARGE: Allow jumping while crippled
+        if (IsCrippled())
+			Velocity.Z = JumpZ*0.50;
+        else if (IsStunted())
 			Velocity.Z = JumpZ*0.75;                                                 //RSD: Was 0.75
         else
 			Velocity.Z = JumpZ;
@@ -6375,6 +6378,16 @@ exec function SetTiptoesRight(bool B)
 }
 
 // ----------------------------------------------------------------------
+// SARGE: IsCrippled()
+// Are we crippled?
+// ----------------------------------------------------------------------
+
+function bool IsCrippled()
+{
+    return (HealthLegLeft < 1 && HealthLegRight < 1);
+}
+
+// ----------------------------------------------------------------------
 // state PlayerWalking
 // ----------------------------------------------------------------------
 
@@ -6486,7 +6499,7 @@ state PlayerWalking
 			traceSize.Y = CollisionRadius;
 			traceSize.Z = 1;
 			HitActor = Trace(HitLocation, HitNormal, checkpoint, Location, True, traceSize);
-			if (HitActor == None && !bForceDuck)
+			if (HitActor == None && !bForceDuck && !IsCrippled())
 				bCanTiptoes = True;
 			else
 				bCanTiptoes = False;
@@ -6537,11 +6550,11 @@ state PlayerWalking
 
 		// let the player pull themselves along with their hands even if both of
 		// their legs are blown off
-		if ((HealthLegLeft < 1) && (HealthLegRight < 1))
+        if (IsCrippled())
 		{
 			newSpeed = defSpeed * 0.8;
 			bIsWalking = True;
-			bForceDuck = True;
+			//bForceDuck = True;
 			bCanTiptoes=false;
 		}
 		// make crouch speed faster than normal
@@ -6642,7 +6655,7 @@ state PlayerWalking
 		} */
 
 		// if we are moving really slow, force us to walking
-		if ((newSpeed <= defSpeed / 3) && !bForceDuck)
+		if ((newSpeed <= defSpeed / 3) && !bForceDuck && !IsCrippled())
 		{
 			bIsWalking = True;
 			newSpeed = defSpeed;
@@ -13520,7 +13533,7 @@ function bool CanStartConversation()
 {
 	if	(((conPlay != None) && (conPlay.CanInterrupt() == False)) ||
 		((conPlay != None) && (conPlay.con.bFirstPerson != True)) ||
-		 (( bForceDuck == True ) && ((HealthLegLeft > 0) || (HealthLegRight > 0))) ||
+		 (( bForceDuck == True ) && (!IsCrippled())) ||
 		 ( IsInState('Dying') ) ||
 		 ( IsInState('PlayerSwimming') ) ||
 		 ( IsInState('CheatFlying') ) ||
