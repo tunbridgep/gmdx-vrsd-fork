@@ -241,138 +241,141 @@ function InitFor(Actor Other)
             assignedMesh = 2;
 			Mesh = Mesh2;
         }
-/*if (bPop && (IsA('CopCarcassBeheaded') || IsA('ThugMale2CarcassBeheaded')))
-{
-if (Mesh == Mesh2)
-{
-vec = vect(0,0,0);
-vec.X += CollisionRadius*0.87;
-vec.Z -= 39;
-vec.Y += 3.5;
-vec = vec >> Rotation;
-vec += Location;
-randRot=Rotation;
-	nub = Spawn(class'FleshFragmentNub', Self,, vec, randRot);
-	if (nub != None)
-	{
-	nub.ScaleGlow=0.9;
+
+    //SARGE: Crappy old GMDX v8 code follows.
+    //I didn't write this so I take no responsibility for it's general crappiness
+    if (bPop && (IsA('CopCarcassBeheaded') || IsA('ThugMale2CarcassBeheaded')))
+    {
+    if (Mesh == Mesh2)
+    {
+    vec = vect(0,0,0);
+    vec.X += CollisionRadius*0.87;
+    vec.Z -= 39;
+    vec.Y += 3.5;
+    vec = vec >> Rotation;
+    vec += Location;
+    randRot=Rotation;
+        nub = Spawn(class'FleshFragmentNub', Self,, vec, randRot);
+        if (nub != None)
+        {
+        nub.ScaleGlow=0.9;
+        }
     }
-}
-else
-{
-vec = vect(0,0,0);
-vec.X -= CollisionRadius*0.93;
-vec.Z -= 43;
-vec.Y -= 0.25;
-vec = vec >> Rotation;
-vec += Location;
-randRot=Rotation;
-	nub = Spawn(class'FleshFragmentNub', Self,, vec, randRot);
-	if (nub != None)
-	{
-	nub.ScaleGlow=0.9;
+    else
+    {
+    vec = vect(0,0,0);
+    vec.X -= CollisionRadius*0.93;
+    vec.Z -= 43;
+    vec.Y -= 0.25;
+    vec = vec >> Rotation;
+    vec += Location;
+    randRot=Rotation;
+        nub = Spawn(class'FleshFragmentNub', Self,, vec, randRot);
+        if (nub != None)
+        {
+        nub.ScaleGlow=0.9;
+        }
     }
-}
-}
-else if (bPop && IsA('MJ12TroopCarcassBeheaded'))
-{
-if (Mesh == Mesh2)
-{
-vec = vect(0,0,0);
-vec.X += CollisionRadius*0.9;
-vec.Z -= 39.25;
-vec.Y += 3.5;
-vec = vec >> Rotation;
-vec += Location;
-randRot=Rotation;
-	nub = Spawn(class'FleshFragmentNub', Self,, vec, randRot);
-	if (nub != None)
-	{
-	nub.ScaleGlow=0.9;
     }
-}
-else
-{
-vec = vect(0,0,0);
-vec.X -= CollisionRadius*1.22;
-vec.Z -= 47.5;
-vec.Y -= 0.25;
-vec = vec >> Rotation;
-vec += Location;
-randRot=Rotation;
-	nub = Spawn(class'FleshFragmentNub', Self,, vec, randRot);
-	if (nub != None)
-	{
-	nub.ScaleGlow=0.9;
+    else if (bPop && IsA('MJ12TroopCarcassBeheaded'))
+    {
+    if (Mesh == Mesh2)
+    {
+    vec = vect(0,0,0);
+    vec.X += CollisionRadius*0.9;
+    vec.Z -= 39.25;
+    vec.Y += 3.5;
+    vec = vec >> Rotation;
+    vec += Location;
+    randRot=Rotation;
+        nub = Spawn(class'FleshFragmentNub', Self,, vec, randRot);
+        if (nub != None)
+        {
+        nub.ScaleGlow=0.9;
+        }
     }
-}
-}
-else if (bPop && IsA('UNATCOTroopCarcassBeheaded'))
-{
-if (Mesh == Mesh2)
-{
-vec = vect(0,0,0);
-vec.X += CollisionRadius*0.89;
-vec.Z -= 39.25;
-vec.Y += 3.5;
-vec = vec >> Rotation;
-vec += Location;
-randRot=Rotation;
-	nub = Spawn(class'FleshFragmentNub', Self,, vec, randRot);
-	if (nub != None)
-	{
-	nub.ScaleGlow=0.9;
+    else
+    {
+    vec = vect(0,0,0);
+    vec.X -= CollisionRadius*1.22;
+    vec.Z -= 47.5;
+    vec.Y -= 0.25;
+    vec = vec >> Rotation;
+    vec += Location;
+    randRot=Rotation;
+        nub = Spawn(class'FleshFragmentNub', Self,, vec, randRot);
+        if (nub != None)
+        {
+        nub.ScaleGlow=0.9;
+        }
     }
-}
-else
-{
-vec = vect(0,0,0);
-vec.X -= CollisionRadius*0.92;
-vec.Z -= 42.5;
-vec.Y -= 0.5;
-vec = vec >> Rotation;
-vec += Location;
-randRot=Rotation;
-	nub = Spawn(class'FleshFragmentNub', Self,, vec, randRot);
-	if (nub != None)
-	{
-	nub.ScaleGlow=0.9;
     }
-}
-}
-else if (bPop)
-{
-if (Mesh == Mesh2)
-{
-vec = vect(0,0,0);
-vec.X += CollisionRadius * 1.77;
-vec.Z -= 40.5;
-vec.Y += 3.5;
-vec = vec >> Rotation;
-vec += Location;
-randRot=Rotation;
-	nub = Spawn(class'FleshFragmentNub', Self,, vec, randRot);
-	if (nub != None)
-	{
-	nub.ScaleGlow=0.9;
+    else if (bPop && IsA('UNATCOTroopCarcassBeheaded'))
+    {
+    if (Mesh == Mesh2)
+    {
+    vec = vect(0,0,0);
+    vec.X += CollisionRadius*0.89;
+    vec.Z -= 39.25;
+    vec.Y += 3.5;
+    vec = vec >> Rotation;
+    vec += Location;
+    randRot=Rotation;
+        nub = Spawn(class'FleshFragmentNub', Self,, vec, randRot);
+        if (nub != None)
+        {
+        nub.ScaleGlow=0.9;
+        }
     }
-}
-else
-{
-vec = vect(0,0,0);
-vec.X -= CollisionRadius * 1.87;
-vec.Z -= 43;
-vec.Y -= 0.25;
-vec = vec >> Rotation;
-vec += Location;
-randRot=Rotation;
-	nub = Spawn(class'FleshFragmentNub', Self,, vec, randRot);
-	if (nub != None)
-	{
-	nub.ScaleGlow=0.9;
+    else
+    {
+    vec = vect(0,0,0);
+    vec.X -= CollisionRadius*0.92;
+    vec.Z -= 42.5;
+    vec.Y -= 0.5;
+    vec = vec >> Rotation;
+    vec += Location;
+    randRot=Rotation;
+        nub = Spawn(class'FleshFragmentNub', Self,, vec, randRot);
+        if (nub != None)
+        {
+        nub.ScaleGlow=0.9;
+        }
     }
-}
-}*/
+    }
+    else if (bPop)
+    {
+    if (Mesh == Mesh2)
+    {
+    vec = vect(0,0,0);
+    vec.X += CollisionRadius * 1.77;
+    vec.Z -= 40.5;
+    vec.Y += 3.5;
+    vec = vec >> Rotation;
+    vec += Location;
+    randRot=Rotation;
+        nub = Spawn(class'FleshFragmentNub', Self,, vec, randRot);
+        if (nub != None)
+        {
+        nub.ScaleGlow=0.9;
+        }
+    }
+    else
+    {
+    vec = vect(0,0,0);
+    vec.X -= CollisionRadius * 1.87;
+    vec.Z -= 43;
+    vec.Y -= 0.25;
+    vec = vec >> Rotation;
+    vec += Location;
+    randRot=Rotation;
+        nub = Spawn(class'FleshFragmentNub', Self,, vec, randRot);
+        if (nub != None)
+        {
+        nub.ScaleGlow=0.9;
+        }
+    }
+    }
 		// set the instigator and tag information
 		if (Other.Instigator != None)
 		{
