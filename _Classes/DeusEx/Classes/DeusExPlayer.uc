@@ -1776,7 +1776,8 @@ function PreTravel()
     bDelayInventoryFix = true;
     
     //SARGE: Prepare the music system
-    default.bMusicLoadHack = true;
+    if (Level.Song != None) //HACK!
+        default.bMusicLoadHack = true;
 
 
     if (AugmentationSystem != None && AugmentationSystem.GetAugLevelValue(class'AugVision') != -1.0)
@@ -3407,12 +3408,12 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
             NewSection = default.savedSection;
         bChange = true;
         bHacked = true;
-        bMusicLoadHack = false;
+        //default.bMusicLoadHack = false;
     }
     else if (AmbientTrackChanged(string(NewSong),info)) //We always want to allow song changes on map transition
     {
         //If we're changing to an empty track, fade out slowly
-        if (NewSong == None && iEnhancedMusicSystem > 0)
+        if (NewSong == None && iEnhancedMusicSystem > 0 && default.prevMusicMode != MUS_Outro)
             NewTransition = MTRAN_SlowFade;
 
         bChange = true;
@@ -3477,6 +3478,7 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
     }
     default.currentSong = string(NewSong);
     default.prevSongSection = info.SongAmbientSection;
+    default.bMusicLoadHack = false;
 }
 
 //SARGE: Calls ClientSetMusic based on our current music state.
