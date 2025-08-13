@@ -4481,7 +4481,8 @@ function SetSkinStyle(ERenderStyle newStyle, optional texture newTex, optional f
 	for (i=0; i<8; i++)
 	{
 		curSkin = GetMeshTexture(i);
-		MultiSkins[i] = GetStyleTexture(newStyle, curSkin, newTex);
+        if (curSkin != None && curSkin.Name != 'PinkMaskTex')
+            MultiSkins[i] = GetStyleTexture(newStyle, curSkin, newTex);
 	}
 	Skin      = GetStyleTexture(newStyle, Skin, newTex);
 	ScaleGlow = newScaleGlow;
