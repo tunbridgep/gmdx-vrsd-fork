@@ -18,7 +18,7 @@ defaultproperties
      ammoSkill=Class'DeusEx.SkillWeaponHeavy'
      LandSound=Sound'DeusExSounds.Generic.WoodHit2'
      altDamage=50
-     AmmoAmount=6
+     AmmoAmount=4
      MaxAmmo=12
      ItemArticle="some"
      ItemName="WP Rockets"
