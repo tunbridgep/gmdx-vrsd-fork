@@ -5158,12 +5158,12 @@ simulated function PlayFootStep()
         range*=0.9;
 
     //Sarge: Increase the AI volume by a significant margin, to make Stealth more necessary
-    volumeMultiplier *= 1.15;
+    //volumeMultiplier *= 1.15;
 
     if (volume > 0)
     {
-        //SARGE: Fix the broken sound propagation
-        class'PawnUtils'.static.WakeUpAI(self,range*volumeMultiplier * 0.25);
+        //SARGE: Fix the broken sound propagation //SARGE: or nah! It goes through too many walls
+        //class'PawnUtils'.static.WakeUpAI(self,range*volumeMultiplier);
         AISendEvent('LoudNoise', EAITYPE_Audio, volume*volumeMultiplier*volumeMod, range*volumeMultiplier);
         //DebugMessage("LoudNoise: vol = " $ volume*volumeMultiplier*volumeMod $ " range = " $ range*volumeMultiplier);
     }
