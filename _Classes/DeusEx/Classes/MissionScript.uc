@@ -301,8 +301,8 @@ function FirstFrame()
                        || player.bRandomizeCratesAmmoPistol || player.bRandomizeCratesAmmoRifle
                        || player.bRandomizeCratesAmmoNonlethal || player.bRandomizeCratesAmmoRobot
                        || player.bRandomizeCratesAmmoHeavy || player.bRandomizeCratesAmmoExplosive);*/
-        if (bRandomCrates)                                                      //RSD: Also randomize crates with user setting
-			InitializeRandomCrateContents();
+        //if (bRandomCrates)                                                      //RSD: Also randomize crates with user setting
+			InitializeRandomCrateContents(bRandomCrates);
 		if (bRandomItems)                                                       //RSD: Also randomize items (weapon mods) with user setting
 			InitializeRandomItems();
 		if (player.bRandomizeAugs)
@@ -838,10 +838,10 @@ function ReplaceEnemyWeapon(ScriptedPawn first, ScriptedPawn second)
     second.SetupWeapon(false);
 }
 
-function InitializeRandomCrateContents()                                        //RSD: Randomizes crate contents depdending on new loot table classes
+function InitializeRandomCrateContents(bool bRandomCrates)                                        //RSD: Randomizes crate contents depdending on new loot table classes
 {
     local Containers CO;
-    //local class<Inventory> itemClass;
+    local class<Inventory> itemClass;
     local bool bMatchFound;
 	local LootTableAmmoPistol tablePistol;
 	local LootTableAmmoRifle tableRifle;
@@ -880,7 +880,25 @@ function InitializeRandomCrateContents()                                        
     {
     	if (CO.IsA('CrateBreakableMedCombat') || CO.IsA('CrateBreakableMedGeneral') || CO.IsA('CrateBreakableMedMedical'))
     	{
-            //itemClass = CO.contents;
+            //SARGE: The base game can swap crate contents between 1 of 3 items, the main contents, content2 or content3.
+            //That worked completely differently to this system, and would be set upon the crate being destroyed, meaning
+            //it could be savescummed.
+            //We will fix it by just rolling it now instead.
+            //This is a horribly lazy hacky implementation.
+            itemClass = CO.contents;
+            if (CO.Content2!=None && FRand()<0.33) itemClass = CO.Content2;
+            if (CO.Content3!=None && FRand()<0.33) itemClass = CO.Content3;
+            CO.contents = itemClass;
+            CO.Content2 = None;
+            CO.Content3 = None;
+
+            //Jump out if crate randomisation isn't enabled.
+            //We used to not run this entire function, but now we need to
+            //ensure that the contents shuffling above takes place, because
+            //crates will no longer pick random contents when being destroyed.
+            if (!bRandomCrates)
+                continue;
+
             if ((ClassIsChildOf(CO.contents,class'DeusExAmmo') || ClassIsChildOf(CO.contents,class'DeusExWeapon')) && player.bRandomizeCrates) //RSD: First do ammo tables since they're most common
             {
             //if (player.bRandomizeCratesAmmoPistol)
