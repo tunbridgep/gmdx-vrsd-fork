@@ -100,6 +100,8 @@ var Localized string KeyTutorialText1;
 var Localized string KeyTutorialText2;
 var Localized string KeyTutorialText3;
 var Localized string KeyTutorialText4;
+var Localized string KeyTutorialTextYes;
+var Localized string KeyTutorialTextNo;
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -1409,6 +1411,8 @@ defaultproperties
      toggleLabel="Toggle:"
      BarString="%d%%"
      BarStringRes="%d/%d (%d%%) - %d Reserved"
+     KeyTutorialTextYes="Yes"
+     KeyTutorialTextNo="No"
      KeyTutorialText1="Assigned to Augmentation Wheel: %s"
      KeyTutorialText2="Press MIDDLE-MOUSE to Assign/Unassign items to the augmentation wheel"
      KeyTutorialText3="Assigned hotkey: %s"
