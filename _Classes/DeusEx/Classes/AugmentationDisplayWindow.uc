@@ -794,7 +794,7 @@ function PostDrawWindow(GC gc)
 	if ( Player.Level.NetMode != NM_Standalone )
 		DrawMiscStatusMessages( gc );
 
-	if (bDefenseActive)
+	if (bDefenseActive || drawTime > 0)
 		DrawDefenseAugmentation(gc);
 
 	if (Player.bSpyDroneActive)
@@ -821,22 +821,27 @@ function PostDrawWindow(GC gc)
 // DrawDefenseAugmentation()
 // ----------------------------------------------------------------------
 
+//Sarge: Don't draw across the whole map, since it has infinite range. Instead, only draw when something is actually exploding
+//We also want to draw it for a second or so afterwards
+function SetDefenseTarget(DeusExProjectile target)
+{
+    defenseTarget = target;
+	if (target != None)
+    {
+        defenseTargetLastPos = target.Location;
+        drawTime = 1.0;
+    }
+}
+
 function DrawDefenseAugmentation(GC gc)
 {
 	local String str;
 	local float boxCX, boxCY;
 	local float x, y, w, h, mult;
 
-	if (defenseTarget != None)
-	{
+    SetDefenseTarget(defenseTarget);
 
-        //Sarge: Don't draw across the whole map, since it has infinite range. Instead, only draw when something is actually exploding
-        //We also want to draw it for a second or so afterwards
-        defenseTargetLastPos = defenseTarget.Location;
-        drawTime = 1.0;
-	}
-
-    if (drawTime > 0)
+    if (drawTime > 0 || bDefenseActive)
     {
 		if (defenseTarget == None || defenseTarget.IsInState('Exploding'))
             str = msgADSDetonating;

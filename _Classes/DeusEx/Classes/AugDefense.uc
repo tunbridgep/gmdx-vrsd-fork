@@ -63,11 +63,11 @@ state Active
 
 			if (mindist < LevelValues[CurrentLevel])
 			{
+				SetDefenseAugStatus(True,CurrentLevel,minproj);
                 minproj.bAggressiveExploded = True;
                 minproj.aggressiveExploder = Player;
 				minproj.Explode(minproj.Location, vect(0,0,1));
                 minproj = None;
-                SetDefenseAugStatus(True,CurrentLevel,None);
                 player.Energy -= GetAdjustedEnergyRate();
 				Player.PlaySound(sound'ProdFire', SLOT_None,,,, 2.0);
 			}
@@ -147,7 +147,7 @@ simulated function DeusExProjectile FindNearestProjectile()
 				// make sure it's moving fast enough
 				if (VSize(proj.Velocity) > 100)
 				{
-				   dist = VSize(Player.Location - proj.Location);
+				   dist = abs(VSize(Player.Location - proj.Location));
 				   if (dist < mindist)
 				   {
 					  mindist = dist;
@@ -205,7 +205,7 @@ simulated function SetDefenseAugStatus(bool bDefenseActive, int defenseLevel, De
       return;
    DeusExRootWindow(Player.rootWindow).hud.augDisplay.bDefenseActive = bDefenseActive;
    DeusExRootWindow(Player.rootWindow).hud.augDisplay.defenseLevel = defenseLevel;
-   DeusExRootWindow(Player.rootWindow).hud.augDisplay.defenseTarget = defenseTarget;
+   DeusExRootWindow(Player.rootWindow).hud.augDisplay.SetDefenseTarget(defenseTarget);
 
 }
 
