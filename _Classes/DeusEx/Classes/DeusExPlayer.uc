@@ -2903,6 +2903,9 @@ function ResetPlayer(optional bool bTraining)
     //SARGE: Remove secondary weapon
     AssignSecondary(None);
 
+    //SARGE: Reset killswitch
+    killswitchTimer = default.killswitchTimer;
+
     // Reset Belt Memory
     for(i = 0;i < 12;i++)
         ClearPlaceholder(i);
@@ -4345,7 +4348,19 @@ exec function ActivateAugmentation(int num)
 exec function ActivateAllAugs()
 {
 	if (AugmentationSystem != None)
-		AugmentationSystem.ActivateAll();
+		AugmentationSystem.ActivateAll(true);
+}
+
+
+// ----------------------------------------------------------------------
+// ActivateAllAugsSpeciaOfType()
+// SARGE: Special version of ActivateAllAugs designed for use by other functions.
+// Doesn't conflict with the keybind above
+// ----------------------------------------------------------------------
+function ActivateAllAugsOfType(bool bActivateActive, bool bActivateToggled, bool bActivateAutomatic)
+{
+	if (AugmentationSystem != None)
+		AugmentationSystem.ActivateAll(bActivateActive,bActivateToggled,bActivateAutomatic);
 }
 
 // ----------------------------------------------------------------------
@@ -4475,7 +4490,18 @@ function RemoveAugmentationDisplay(Augmentation aug)
 
 function ClearAugmentationDisplay()
 {
-	DeusExRootWindow(rootWindow).hud.activeItems.ClearAugmentationDisplay();
+	if (rootWindow != None && DeusExRootWindow(rootWindow).hud != None && DeusExRootWindow(rootWindow).hud.activeItems != None)
+        DeusExRootWindow(rootWindow).hud.activeItems.ClearAugmentationDisplay();
+}
+
+// ----------------------------------------------------------------------
+// RefreshAugmentationDisplay()
+// ----------------------------------------------------------------------
+
+function RefreshAugmentationDisplay()
+{
+	if (AugmentationSystem != None)
+		AugmentationSystem.RefreshAugDisplay();
 }
 
 // ----------------------------------------------------------------------
@@ -11966,6 +11992,13 @@ exec function ToggleRadialAugMenu(optional bool bHeld, optional bool bRelease)
 
     if (RestrictInput())
         return;
+
+    if (killswitchTimer > -1 && !bRadialAugMenuVisible)
+    {
+        if (!bRelease)
+            ClientMessage(class'Augmentation'.default.AugKillswitch);
+        return;
+    }
 
     /*
     //No wheel while drone is active
