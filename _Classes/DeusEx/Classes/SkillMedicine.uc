@@ -141,6 +141,14 @@ function string GetDescriptionText(bool bHardcoreMode, float combatDifficulty)
         s2 = 2.166667 * healAmount;
         s3 = 3.000000 * healAmount;
 
+        if (bHardcoreMode)
+        {
+            s0 -= 10;
+            s1 -= 10;
+            s2 -= 10;
+            s3 -= 10;
+        }
+
         return sprintf(Description,s0,s1,s2,s3);
     }
     else
