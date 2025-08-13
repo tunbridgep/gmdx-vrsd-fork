@@ -1382,13 +1382,11 @@ function Frob(Actor Frobber, Inventory frobWith)
                                             
                                         bPickedSomethingUp = True;
                                         
-                                        if (!item.IsA('DeusExWeapon'))
                                         // Show the item received in the ReceivedItems window
-                                        {
-                                            AddReceivedItem(player, item, 1);
-                                            P.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
-                                        }
-                                        else if (item.IsA('WeaponShuriken') && WeaponShuriken(item).bImpaled)
+                                        AddReceivedItem(player, item, 1);
+                                        P.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
+
+                                        if (item.IsA('WeaponShuriken') && WeaponShuriken(item).bImpaled)
                                             LootPickupSound = Sound'DeusExSounds.Generic.FleshHit1';
 
                                         item.SpawnCopy(P);
