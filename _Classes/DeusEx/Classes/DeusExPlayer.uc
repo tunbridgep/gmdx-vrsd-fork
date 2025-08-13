@@ -849,6 +849,9 @@ var globalconfig int iUnholsterMode;                           //SARGE: 0 = disa
 
 var globalconfig bool bEnhancedPersonaScreenMouse;             //SARGE: When enabled, allows the right-click and middle-click actions in the inventory and aug screens to work on the currently hovered item, not the selected one.
 
+
+var globalconfig bool bShowFullAmmoInHUD;                       //SARGE: When ammo for a certain ammo type is full, show it as Yellow in the AMMO Hud
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -912,6 +915,13 @@ replication
 	  BuySkillSound, ShowMultiplayerWin, ForceDroneOff ,AddDamageDisplay, ClientSpawnHits, CloseThisComputer, ClientPlayAnimation, ClientSpawnProjectile, LocalLog,
 	  VerifyRootWindow, VerifyConsole, ForceDisconnect;
 
+}
+
+//SARGE: Update the visibility of the AMMO Hud whenever we use ammo
+function OnUseAmmo(DeusExAmmo ammoType, int amount)
+{
+	if (DeusExRootWindow(rootWindow) != None && DeusExRootWindow(rootWindow).hud != None && ammoType != None)
+	   DeusExRootWindow(rootWindow).hud.ammo.UpdateMaxAmmo();
 }
 
 //SARGE: Hide/Show the entire HUD at once
@@ -4369,6 +4379,9 @@ exec function SwitchAmmo()
                 P.bDoExplode = true;
         }
     }
+	
+    if (DeusExRootWindow(rootWindow) != None && DeusExRootWindow(rootWindow).hud != None)
+	   DeusExRootWindow(rootWindow).hud.ammo.UpdateMaxAmmo();
 }
 
 // ----------------------------------------------------------------------
@@ -19332,4 +19345,5 @@ defaultproperties
      iCrosshairOffByOne=1
      bShowSmallLog=true
      bEnhancedPersonaScreenMouse=true
+     bShowFullAmmoInHUD=true
 }

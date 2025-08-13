@@ -103,6 +103,7 @@ defaultproperties
      items(84)=(HelpText="If enabled, pressing the Run key while crouched will automatically uncrouch. Does nothing when Always Run is enabled.",actionText="Game: Auto Uncrouch",variable="bAutoUncrouch",defaultValue=1);
      items(85)=(HelpText="If enabled, always show the Playthrough Modifiers screen before the New Game screen.",actionText="Game: Always Show Playthrough Modifiers",variable="bAlwaysShowModifiers",defaultValue=1);
      items(86)=(HelpText="If enabled, right- and middle-clicking in the inventory and augmentations screens will effect the item under the cursor, rather than the currently selected item.",actionText="HUD: Enhanced Inventory/Aug Interaction",variable="bEnhancedPersonaScreenMouse",defaultValue=1);
+     items(88)=(HelpText="If enabled, the HUD Ammo Display will show total ammo as yellow when at max ammo.",actionText="HUD: Full Ammo Display",variable="bShowFullAmmoInHUD",defaultValue=1);
      Title="GMDX Quality of Life Options"
      colWidths(0)=214
      colWidths(1)=155
