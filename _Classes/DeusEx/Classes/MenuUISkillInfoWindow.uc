@@ -16,6 +16,9 @@ var LargeTextWindow        winSkillDescription;
 var Color colSkillName;
 var Color colSkillDesc;
 
+var bool bHardcoreMode;                                             //SARGE: Transferred from MainMenu so we can update skill descriptions
+var float combatDifficulty;                                         //SARGE: Transferred from MainMenu so we can update skill descriptions
+
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -75,7 +78,7 @@ function SetSkill(skill newSkill)
 
 	winSkillIcon.SetBackground(skill.SkillIcon);
 	winSkillName.SetText(skill.SkillName);
-	winSkillDescription.SetText(skill.Description);
+	winSkillDescription.SetText(skill.GetDescriptionText(bHardcoreMode,combatDifficulty));
 }
 
 // ----------------------------------------------------------------------

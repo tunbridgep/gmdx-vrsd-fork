@@ -360,6 +360,7 @@ function CreateSkillInfoWindow()
 {
 	winSkillInfo = MenuUISkillInfoWindow(winClient.NewChild(Class'MenuUISkillInfoWindow'));
 	winSkillInfo.SetPos(165, 208);
+    winSkillInfo.bHardCoreMode = bHardCoreMode;
 }
 
 // ----------------------------------------------------------------------
@@ -1057,6 +1058,11 @@ function SetDifficulty(float newDifficulty,bool bSetHardCore)
 {
 	combatDifficulty = newDifficulty;
 	bHardCoreMode=bSetHardCore;
+    if (winSkillInfo != None)
+    {
+        winSkillInfo.bHardCoreMode = bHardCoreMode;
+        winSkillInfo.combatDifficulty = combatDifficulty;
+    }
 }
 
 // ----------------------------------------------------------------------

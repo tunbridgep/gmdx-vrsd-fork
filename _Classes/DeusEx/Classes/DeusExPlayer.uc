@@ -5774,6 +5774,10 @@ function int CalculateSkillHealAmount(int baseHealPoints)
 
 		// apply the skill
 		adjustedHealAmount = baseHealPoints * mult;
+
+        //SARGE: If we're on hardcore, reduce by 10
+        if (bHardCoreMode)
+            adjustedHealAmount -= 10;
 	}
 
 	return adjustedHealAmount;
