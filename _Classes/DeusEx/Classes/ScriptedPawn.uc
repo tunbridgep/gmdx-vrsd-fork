@@ -4009,7 +4009,6 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
         deathSoundOverride = Sound'DeusExSounds.Generic.FleshHit1';
        player = DeusExPlayer(GetPlayerPawn());
        //Sarge: Disable head popping because it looks awful, and doesn't work with HDTP
-       /*
         if (bCanPop && FRand() < 0.8 && player.bDecap && (player.inHand.IsA('WeaponRifle') || player.inHand.IsA('WeaponAssaultShotgun') ||
      player.inHand.IsA('WeaponSawedOffShotgun'))) //CyberP: I need to change these conditions
         {
@@ -4044,7 +4043,6 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
                 spawn(Class'BloodDrop',,,hitLocation);
             }
         }
-        */
         spawn(Class'BloodDrop',,,hitLocation);
         spawn(Class'BloodDrop',,,hitLocation);
         spawn(Class'BloodDrop',,,hitLocation);
