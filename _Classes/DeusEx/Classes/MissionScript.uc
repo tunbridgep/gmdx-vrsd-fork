@@ -348,7 +348,7 @@ function FirstFrame()
         if (dxInfo.MissionNumber > 0)
         {
             //Distribute PS20's and Flares
-            DistributeItem('ScriptedPawn',class'WeaponHideAGun',0,2,class'AmmoHideAGun');
+            DistributeItem('ScriptedPawn',class'WeaponHideAGun',0,1,class'AmmoHideAGun');
             DistributeItem('ScriptedPawn',class'Flare',1,3);
 
             //SARGE: Give Shurikens to Elites
