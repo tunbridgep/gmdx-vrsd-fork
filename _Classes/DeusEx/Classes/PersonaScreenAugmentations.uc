@@ -95,6 +95,12 @@ var bool bMedbot;                                     //SARGE: Set to TRUE if we
 //LDDP, 10/28/21: Store this assessment for later.
 var bool bFemale;
 
+//SARGE: Add new tutorial text for augs
+var Localized string KeyTutorialText1;
+var Localized string KeyTutorialText2;
+var Localized string KeyTutorialText3;
+var Localized string KeyTutorialText4;
+
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -1162,6 +1168,20 @@ function SelectAugmentation(PersonaItemButton buttonPressed)
 		selectedAug.UpdateInfo(winInfo);
 		selectedAugButton.SelectButton(True);
         selectedAugButton.bTickEnabled = True;
+
+        //SARGE: Add tutorial info
+        if (selectedAug.AugmentationType != Aug_Passive)
+        {
+            winInfo.SetText(CR());
+            //winInfo.AddLine();
+            if (selectedAug.bAddedToWheel)
+                winInfo.SetText(sprintf(KeyTutorialText1,KeyTutorialTextYes));
+            else
+                winInfo.SetText(sprintf(KeyTutorialText1,KeyTutorialTextNo));
+            winInfo.SetText(KeyTutorialText2);
+            //winInfo.SetText(CR());
+        }
+
 		EnableButtons();
 	}
 }
@@ -1389,6 +1409,10 @@ defaultproperties
      toggleLabel="Toggle:"
      BarString="%d%%"
      BarStringRes="%d/%d (%d%%) - %d Reserved"
+     KeyTutorialText1="Assigned to Augmentation Wheel: %s"
+     KeyTutorialText2="Press MIDDLE-MOUSE to Assign/Unassign items to the augmentation wheel"
+     KeyTutorialText3="Assigned hotkey: %s"
+     KeyTutorialText4="Use the 3-9, 0, - and = keys to assign augmentations to the associated F keys"
      clientBorderOffsetY=32
      ClientWidth=596
      ClientHeight=427

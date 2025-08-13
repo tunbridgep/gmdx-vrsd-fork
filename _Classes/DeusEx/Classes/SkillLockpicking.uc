@@ -27,6 +27,43 @@ simulated function PreBeginPlay()
 	}
 }
 
+//SARGE: This is absolutely abysmally awful!
+//We need to manually replace the text with the updated skill info
+//This is so that it works in the main menu
+//TODO: Tidy this up by using a centralised function for level values
+function string GetDescriptionText(bool bHardcoreMode, float combatDifficulty)
+{
+    local int s0, s1, s2, s3;
+    if (bSmartSkillString)
+    {
+        if (bHardCoreMode)
+        {
+            s0=5;
+            s1=10;
+            s2=20;
+            s3=50;
+        }
+        else if(CombatDifficulty <= 1.0)                                  //RSD: Repurposing for Easy mode (original lockpick/multitool strengths)
+        {
+            s0=10;
+            s1=25;
+            s2=40;
+            s3=75;
+        }
+        else
+        {
+	        s0 = default.LevelValues[0] * 100;
+	        s1 = default.LevelValues[1] * 100;
+	        s2 = default.LevelValues[2] * 100;
+	        s3 = default.LevelValues[3] * 100;
+        }
+        
+        return sprintf(Description,s0,s1,s2,s3);
+    }
+    else
+        return Description;
+}
+
 defaultproperties
 {
      mpCost1=1000
@@ -47,4 +84,5 @@ defaultproperties
      LevelValues(2)=0.250000
      LevelValues(3)=0.500000
      itemNeeded=Class'DeusEx.Lockpick'
+     bSmartSkillString=true
 }

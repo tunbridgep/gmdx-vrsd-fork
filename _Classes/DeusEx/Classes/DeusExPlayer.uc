@@ -3363,6 +3363,8 @@ function bool AmbientTrackChanged(string newSong, DeusExLevelInfo info)
 // Modified to not restart music if the new song is the same as the current song, and also goes to
 // our remembered section instead of restarting the song when trying to restart it, such as
 // on map transition to a new map with the same song.
+// Additionally, allows overwriting the ambient and combat sections of the current track,
+// while also allowing bars and clubs to only play them ambient track.
 // This is a scraggly horrible mess and it abuses the fuck out of default variables being
 // remembered between savegames and level loads.
 // Anyone who wishes to modify this: Beware Ye! Here be dragons!
@@ -3373,8 +3375,9 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
 	local DeusExLevelInfo info;
     
     info = GetLevelInfo();
-        
+    
     DebugMessage("Music Change Request:" @ NewSong @ NewSection);
+
     DebugMessage("  Modes:" @ default.prevMusicMode @ default.musicModeGMDX);
     DebugMessage("  Level Ambient Section is :" @ info.SongAmbientSection);
     
@@ -3387,7 +3390,7 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
         DebugMessage("Changing Music - FadeTimeHack fix");
         if (NewSection == Level.SongSection && Level.SongSection != info.SongAmbientSection)
             NewSection = info.SongAmbientSection;
-        else if (NewSection == info.SongAmbientSection && iEnhancedMusicSystem > 0)
+        else if (NewSection == info.SongAmbientSection && iEnhancedMusicSystem > 0 && !AmbientTrackChanged(string(NewSong),info))
             NewSection = default.savedSection;
         bChange = true;
         bHacked = true;
@@ -3395,6 +3398,10 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
     }
     else if (AmbientTrackChanged(string(NewSong),info)) //We always want to allow song changes on map transition
     {
+        //If we're changing to an empty track, fade out slowly
+        if (NewSong == None && iEnhancedMusicSystem > 0)
+            NewTransition = MTRAN_SlowFade;
+
         bChange = true;
         DebugMessage("Changing Music - Song Change from" @ default.currentSong);
         NewSection = info.SongAmbientSection;
@@ -3491,9 +3498,17 @@ function ResetMusic()
 {
 	local DeusExLevelInfo info;
     info = GetLevelInfo();
+    
+    DebugMessage("Music Reset");
+        
+    //If song ambient section hasn't been set yet, fix it up.
+    if (info.SongAmbientSection == -1)
+    {
+        info.SongAmbientSection = Level.SongSection;
+        DebugMessage("  Update Ambient Section: " $ Level.SongSection);
+    }
 
     //Reset the music timers
-    DebugMessage("Music Reset");
     if (iEnhancedMusicSystem == 0)
     {
         default.savedSection = info.SongAmbientSection;
@@ -3525,16 +3540,18 @@ function UpdateDynamicMusic(float deltaTime, optional bool bNoFadeHack)
 	local ScriptedPawn npc;
 	local Pawn CurPawn;
 	local DeusExLevelInfo info;
+	local DeusExRootWindow root;
     local int aggro;                    //Sarge: Keep track of the number of aggro enemies. If >2, start combat music. If 0 stop combat music.
 
 	if (Level.Song == None)
 		return;
 
+	root = DeusExRootWindow(rootWindow);
     info = GetLevelInfo();
 
 	musicCheckTimer += deltaTime;
 	musicChangeTimer += deltaTime;
-    if (!bNoFadeHack)
+    if (!bNoFadeHack)// && (root == None || !root.bUIPaused))
         default.fadeTimeHack -= deltaTime;
     if (default.fadeTimeHack < 0)
         default.fadeTimeHack = 0;
@@ -3609,7 +3626,7 @@ function UpdateDynamicMusic(float deltaTime, optional bool bNoFadeHack)
     {
         if (default.prevMusicMode == MUS_Ambient)
         {
-            if (default.savedSection == 255 || default.savedSection == 255)
+            if (default.savedSection == 255)
                 default.savedSection = info.SongAmbientSection;
             else
                 default.savedSection = SongSection;
@@ -5757,6 +5774,10 @@ function int CalculateSkillHealAmount(int baseHealPoints)
 
 		// apply the skill
 		adjustedHealAmount = baseHealPoints * mult;
+
+        //SARGE: If we're on hardcore, reduce by 10
+        if (bHardCoreMode)
+            adjustedHealAmount -= 10;
 	}
 
 	return adjustedHealAmount;
@@ -8170,7 +8191,7 @@ function DoLeftFrob(Actor frobTarget)
         }
         */
         bLeftClicked = true;
-        HandleItemPickup(FrobTarget,false,false,false,true);
+        HandleItemPickup(FrobTarget,false,false,false,true,true);
     }
 }
 
@@ -8209,7 +8230,7 @@ function DoRightFrob(Actor frobTarget)
     }
     */
     if (bDefaultFrob && frobTarget.IsA('Inventory'))
-        HandleItemPickup(FrobTarget,false,false,false,true);
+        HandleItemPickup(FrobTarget,false,false,false,true,true);
     else if (bDefaultFrob)
         DoFrob(Self, None);
 }
@@ -8318,6 +8339,11 @@ exec function ParseLeftClick()
 	{
         if (aGEPProjectile!=none && aGEPProjectile.IsA('Rocket'))
         {
+            //SARGE: Was doing something weird/wacky before!
+            //Lets fix it
+            aGEPProjectile.bExplodeOnDestroy = true;
+            aGEPProjectile.Destroy();
+            /*
             if (aGEPProjectile.SoundPitch!=112)
             {
                 aGEPProjectile.MaxSpeed=1600.000000;
@@ -8326,6 +8352,7 @@ exec function ParseLeftClick()
                 aGEPProjectile.SoundPitch=112;
                 PlaySound(sound'impboom2',SLOT_None);
             }
+            */
             return;
         }
 	}
@@ -8762,7 +8789,7 @@ function PlayPickupAnim(Vector locPickup)
 //
 // Returns the number of rounds they were able to pick up.
 // ----------------------------------------------------------------------
-function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool bShowWindow, optional bool bLootSound, optional bool bNoGroup, optional bool bNoOnes, optional bool bShowOverflowMsg, optional Texture overrideTexture)
+function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool bShowWindow, optional bool bLootSound, optional bool bNoGroup, optional bool bNoOnes, optional bool bShowOverflowMsg, optional bool bShowOverflowWindow, optional Texture overrideTexture)
 {
     local int MaxAmmo, prevAmmo, ammoCount, intj, over, ret;
     local DeusExAmmo AmmoType;
@@ -8853,11 +8880,12 @@ function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool
         ret = intj;
     }
 
-    if (over > 0 && bDisplayMsg && bShowOverflowMsg)
+    if (over > 0)
     {
-        ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName $ " (" $ over $ ")" @ AmmoType.MaxAmmoString, 'Pickup');
+        if (bShowOverflowMsg)
+            ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName $ " (" $ over $ ")" @ AmmoType.MaxAmmoString, 'Pickup');
         
-        if (bShowWindow && bShowDeclinedInReceivedWindow)
+        if (bShowWindow && bShowDeclinedInReceivedWindow && bShowOverflowWindow)
         {
             bClearReceivedItems=true;
             AddReceivedItem(AmmoType, over, bNoGroup, true);
@@ -8883,7 +8911,7 @@ function PlayPartialAmmoSound(Actor source, class<Ammo> ammoName)
 // HandleItemPickup()
 // ----------------------------------------------------------------------
 
-function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, optional bool bSkipDeclineCheck, optional bool bFromCorpse, optional bool bShowOverflow)
+function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, optional bool bSkipDeclineCheck, optional bool bFromCorpse, optional bool bShowOverflow, optional bool bShowOverflowWindow)
 {
 	local bool bCanPickup;
 	local bool bSlotSearchNeeded;
@@ -9036,7 +9064,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     //SARGE: Always try looting non-disposable weapons of their ammo
     if (bCanPickup && FrobTarget.IsA('DeusExWeapon') && !DeusExWeapon(frobTarget).bDisposableWeapon)
     {
-        bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,true,bAlwaysShowReceivedItemsWindow,false,true,bShowOverflow);
+        bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,true,bAlwaysShowReceivedItemsWindow,false,true,bShowOverflow,bShowOverflowWindow);
 
         //Don't pick up a weapon if there's ammo in it and we already have one
         if (!bSlotSearchNeeded && DeusExWeapon(frobTarget).PickupAmmoCount > 0 && bCanPickup)
@@ -9088,7 +9116,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
         //SARGE: Since we haven't looted Disposable weapons yet, do so now.
         if (FrobTarget.IsA('DeusExWeapon') && DeusExWeapon(frobTarget).bDisposableWeapon)
         {
-            bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,!bSlotSearchNeeded || (bFromCorpse && bSlotSearchNeeded),bFromCorpse,false,false,false);
+            bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,!bSlotSearchNeeded || (bFromCorpse && bSlotSearchNeeded),bFromCorpse,false,false,false,false);
 
             if (DeusExWeapon(frobTarget).PickupAmmoCount > 0)
             {
