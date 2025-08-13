@@ -849,6 +849,8 @@ var float lastWalkTimer;                                        //SARGE: Allow p
 
 var globalconfig bool bEnhancedSoundPropagation;                //SARGE: Allow more advanced sound propagation. May introduce performance issues!
 
+var globalconfig bool bCrouchingSounds;                         //SARGE: Make footstep sounds when crouching.
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -6847,7 +6849,7 @@ state PlayerWalking
 				}
 			}
 
-        if(Physics == PHYS_Walking && IsCrouching() && lastWalkTimer == 0 && (abs(velocity.Y) > 0 || abs(velocity.X) > 0) && Velocity.Z == 0)
+        if(Physics == PHYS_Walking && IsCrouching() && lastWalkTimer == 0 && (abs(velocity.Y) > 0 || abs(velocity.X) > 0) && Velocity.Z == 0 && (bCrouchingSounds || bHardcoreMode))
         {
             lastWalkTimer = 0.4;
             //lastWalkTimer = FMIN(0.1,0.5 - 0.01 * VSize(Velocity));
@@ -19326,4 +19328,5 @@ defaultproperties
      bEnableLeftFrob=True
      bShowDeclinedInReceivedWindow=true
      bEnhancedSoundPropagation=true
+     bCrouchingSounds=true
 }
