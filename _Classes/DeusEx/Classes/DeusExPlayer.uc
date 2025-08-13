@@ -8589,7 +8589,7 @@ function bool IsReallyFrobbable(Actor target, optional bool left)
 
 function SetDoubleClickTimer()
 {
-    doubleClickCheck=0.4;
+    doubleClickCheck=0.5;
     clickCountCyber=1;
 }
     
@@ -14980,6 +14980,11 @@ function ClearLog()
 {
 	local DeusExLog log;
 	local DeusExLog nextLog;
+
+    //SARGE: Don't clear the log in debug mode!
+    //This will get very big!
+    if (bGMDXDebug)
+        return;
 
 	log = FirstLog;
 
