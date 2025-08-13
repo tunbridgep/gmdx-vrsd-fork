@@ -704,6 +704,10 @@ function Augmentation GivePlayerAugmentation(Class<Augmentation> giveClass)
     if (anAug.CanBeActivated())                                                   //RSD: Otherwise we get passive augs showing up in the radial menu
         player.RadialMenuAddAug(anAug);
 
+    RefreshAugDisplay();
+
+    RefreshAugDisplay();
+
 	return anAug;
 }
 
