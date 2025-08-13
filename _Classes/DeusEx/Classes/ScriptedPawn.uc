@@ -511,6 +511,8 @@ var      int      bleedCounter;    // number of poison TakeDamages remaining
 var      int      bleedDamage;     // damage taken from poison effect
 var      Pawn     BleedSource;         // person who initiated PoisonEffect damage
 
+//SARGE: Allow "high alert" mode which skips some states and makes enemies generally attack instantly. Lasts for a time limit
+var float fHighAlertState;
 
 native(2102) final function ConBindEvents();
 
@@ -6640,6 +6642,7 @@ function HandleLoudNoise(Name event, EAIEventState state, XAIParams params)
 
 	local Actor bestActor;
 	local Pawn  instigator;
+    local DeusExPlayer player;          //SARGE: Added
 
 
 	if (state == EAISTATE_Begin || state == EAISTATE_Pulse)
@@ -6655,7 +6658,20 @@ function HandleLoudNoise(Name event, EAIEventState state, XAIParams params)
 				if (IsValidEnemy(instigator))
 				{
 					SetSeekLocation(instigator, bestActor.Location, SEEKTYPE_Sound);
-					HandleEnemy();
+
+                    //SARGE: If we're super close, and we're in hardcore mode, allow
+                    //attacking instantly, rather than searching.
+                    player = DeusExPlayer(instigator);
+
+                    if (!IsA('Robot') && player != None && player.bHardcoreMode && Abs(VSize(player.Location - Location)) < 500)
+                    {
+                        //player.DebugMessage("High Alert!");
+                        SetEnemy(player);
+                        fHighAlertState = 4.0;
+                        if (Weapon == None)
+                            SwitchToBestWeapon();
+                    }
+                    HandleEnemy();
 				}
 			}
 		}
@@ -8638,6 +8654,9 @@ function Tick(float deltaTime)
     if (!bFirstTickDone && !ShouldCreate(player))
         Destroy();
 
+    
+    //SARGE: tick down high alert state
+    fHighAlertState = FMAX(0,fHighAlertState - deltaTime);
 
 	bDoLowPriority = true;
 	bCheckPlayer   = true;
@@ -12261,7 +12280,8 @@ GoToLocation:
 	EnableCheckDestLoc(true);
 	if (SeekType == SEEKTYPE_Sound && FRand() < 0.1 && SeekLevel >=3)
 	{
-	Sleep(0.2);
+        if (fHighAlertState == 0)
+            Sleep(0.2);
 	while (GetNextLocation(useLoc))
 	{
 		            if (ShouldPlayWalk(useLoc))
@@ -12289,7 +12309,8 @@ GoToLocation:
 		MoveTarget = GetOvershootDestination(0.5);
 		if (MoveTarget != None)
 		{
-		   sleep(0.2);
+            if (fHighAlertState == 0)
+                sleep(0.2);
 			if (ShouldPlayWalk(MoveTarget.Location))
 				PlayRunning();
 			MoveToward(MoveTarget, MaxDesiredSpeed);
@@ -12329,7 +12350,7 @@ TurnToLocation:
 	PlayWaiting();
 	if (SeekType == SEEKTYPE_Sound)
 	{
-	    if (SeekLevel == 0)
+	    if (SeekLevel == 0 && fHighAlertState == 0)
 	    {
 	       Sleep(FRand()*2+3);
            GoTo('LookAroundAgain');
@@ -12362,7 +12383,7 @@ TurnToLocation:
                 }
             }
             Sleep(FRand()+1.0);
-            if (FRand() < 0.4 && !bReactToBeamGlobal && !IsA('Robot'))    //CyberP: This makes pawns sometimes seek the location
+            if (FRand() < 0.4 && !bReactToBeamGlobal && !IsA('Robot') && fHighAlertState == 0)    //CyberP: This makes pawns sometimes seek the location
             {
                 if (bHasCloak && FRand() < 0.4 && !bCloakOn)
                 {
@@ -13472,6 +13493,9 @@ State Attacking
         local DeusExPlayer player;
 	    local DeusExWeapon W;
 
+        if (fHighAlertState > 0)
+            return 0;
+
         player = DeusExPlayer(GetPlayerPawn());    
         W = DeusExWeapon(Weapon);
 
@@ -13750,6 +13774,9 @@ State Attacking
    if (enemy == None)                                                           //RSD
      return;
 
+   if (fHighAlertState > 0)                                                     //SARGE
+    return;
+
    //dxPlayer = DeusExPlayer(GetPlayerPawn());
    dista = Abs(VSize(enemy.Location - Location));
    //CyberP: this should be a return function, duh.
@@ -14013,7 +14040,7 @@ Begin:
 	CheckAttack(false);
 
 Surprise:
-	if ((1.0-ReactionLevel)*SurprisePeriod < 0.25)
+	if ((1.0-ReactionLevel)*SurprisePeriod < 0.25 || fHighAlertState > 0)
 		Goto('BeginAttack');
 	Acceleration=vect(0,0,0);
 	PlaySurpriseSound();
@@ -14067,7 +14094,7 @@ RunToRange:
         bSmartStrafe = False;
 	while (PickDestination() == DEST_NewLocation)
 	{
-		if (bCanStrafe && ShouldStrafe())
+		if (bCanStrafe && ShouldStrafe() && fHighAlertState == 0)
 		{
 			PlayRunningAndFiring();
 			if (destPoint != None)
@@ -14212,13 +14239,15 @@ Fire:
 		bUseSecondaryAttack = false;
 	if (IsHandToHand())
 		TweenToAttack(0.15);      //CyberP: 0.15
+	else if (fHighAlertState > 0)
+		TweenToShoot(0.05);
 	else if (ShouldCrouch() && (FRand() < CrouchRate))
 	{
 		TweenToCrouchShoot(0.15);
 		FinishAnim();
 		StartCrouch();
 	}
-	else
+	else if (fHighAlertState > 0)
 		TweenToShoot(0.15);
 	if (!IsWeaponReloading() || bCrouching)  //CyberP: gmm
 	{
