@@ -14532,6 +14532,7 @@ function bool GetExceptedCode(string code)
         || code == "NICOLETTE" //Given in conversation
         || code == "CHAD" //Given in conversation
         || (code == "2167" && FlagBase.GetBool('NYCUndergroundCodeObtained')) //Allow us to use it after we access the computer. Also adds a note from a datacube.
+        || (code == "6512" && FlagBase.GetBool('VersalifeCodeObtained')) //Allow us to use it after we access generate a temp security pass.
         || code == "12" //Guessable code for the keypad in the MJ12 lab above the entry stairs
         || code == "APPLE" //Special case, spelled "Apple" in note so it fails the LOCS and CAPS checks...
         || code == "JCDENTON"; //Uses Base: JCDenton instead of Username: JCDenton.
