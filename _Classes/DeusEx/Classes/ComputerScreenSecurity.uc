@@ -591,7 +591,7 @@ function bool ButtonActivated( Window buttonPressed )
 
 			case btnLogout:
                 RefreshRebootDuration();
-				CloseScreen("LOGOUT");
+				CloseScreen("EXIT"); //SARGE: Was LOGOUT
 				break;
 
 			default:

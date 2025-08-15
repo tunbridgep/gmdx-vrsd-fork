@@ -89,7 +89,7 @@ function SetNotesPos()
 
     winNotes.SetPos(x + winClient.x + winClient.width,y + winClient.y - 8);
 	winNotes.Resize(640/2, winClient.height + winStatus.Height);
-    winNotes.Show();
+    //winNotes.Show();
 }
 
 //SARGE: This sucks, but I can't make it work any other way...
@@ -98,7 +98,13 @@ function Tick(float deltaTime)
     if (bWindowBeingDragged || !bNotFirstTick)
         SetNotesPos();
 
-    bNotFirstTick = false;
+    bNotFirstTick = true;
+}
+
+function SetNotesWindow(HUDKeypadNotesWindow N)
+{
+    winNotes = N;
+    bTickEnabled = true;
 }
 
 // ----------------------------------------------------------------------

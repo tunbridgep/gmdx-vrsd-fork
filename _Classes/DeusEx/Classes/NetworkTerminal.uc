@@ -266,6 +266,9 @@ function ShowFirstScreen()
         ShowScreen(LockoutScreen);
     else
     	ShowScreen(FirstScreen);
+    //Show the notes screen
+    if (winNotes != None)
+        winNotes.Show();
 }
 
 // ----------------------------------------------------------------------
@@ -291,8 +294,7 @@ function ShowScreen(Class<ComputerUIWindow> newScreen)
 		winComputer.SetCompOwner(compOwner);
         if (winNotes != None)
         {
-            winComputer.winNotes = winNotes;
-            winComputer.bTickEnabled = true;
+            winComputer.SetNotesWindow(winNotes);
         }
 		winComputer.Lower();
 	}
@@ -311,20 +313,20 @@ function CloseScreen(String action)
 		winComputer.Destroy();
 		winComputer = None;
 	}
-	
-    // and notes
-	if (winNotes != None)
-	{
-		winNotes.DestroyAllChildren();
-		winNotes.DestroyWindow();
-		winNotes.Destroy();
-		winNotes = None;
-	}
 
 	// Based on the action, proceed!
-
 	if (action == "EXIT")
 	{
+	
+        // destroy notes
+        if (winNotes != None)
+        {
+            winNotes.DestroyAllChildren();
+            winNotes.DestroyWindow();
+            winNotes.Destroy();
+            winNotes = None;
+        }
+
 		if (Computers(compOwner) != None)
 			player.CloseComputerScreen(Computers(compOwner));
 		root.PopWindow();
@@ -339,6 +341,22 @@ function CloseScreen(String action)
 		CloseHackWindow();
 		bNoHack = True;
 	}
+	
+    //SARGE: Hide notes screen when logging in
+    if (action == "LOGIN")
+    {
+        if (winNotes != None)
+            winNotes.Hide();
+    }
+	
+    //SARGE: Re-show notes and the hack window when logging out.
+    if (action == "LOGOUT")
+    {
+        if (winNotes != None)
+            winNotes.Show();
+        CreateHackWindow();
+		bNoHack = False;
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -458,7 +476,10 @@ function AddNotesWindow()
     if (numCodes == 0 && (!player.bHardCoreMode || player.iNoKeypadCheese == 0))
         return;
 
-    winNotes = HUDKeypadNotesWindow(NewChild(Class'HUDKeypadNotesWindow'));
+    if (winNotes == None)
+    {
+        winNotes = HUDKeypadNotesWindow(NewChild(Class'HUDKeypadNotesWindow'));
+    }
     winNotes.bUseMenuColors = true;
     for (i = 0; i < numCodes;i++)
         winNotes.AddNote(codeNotes[i]);
