@@ -1446,7 +1446,7 @@ function Frob(Actor Frobber, Inventory frobWith)
     // Were you to do it, you'd need to check the respawning issue, destroy the POVcorpse it creates and point to the
     // one in inventory (like I did when giving the player starting inventory).
 
-    if (CanPickupCorpse(bFoundSomething,player))
+    if (CanPickupCorpse(bPickedSomethingUp && !bSuppressEmptyMessage,player))
     {
         PickupCorpse(player);
     }
@@ -1463,7 +1463,7 @@ function Frob(Actor Frobber, Inventory frobWith)
     //SARGE: Hack
     LootPickupSound = default.LootPickupSound;
 
-    if (!bPickedSomethingUp && !bSuppressEmptyMessage && !CanPickupCorpse(bFoundSomething,player))
+    if (!bPickedSomethingUp && !bSuppressEmptyMessage && !CanPickupCorpse(bPickedSomethingUp && !bSuppressEmptyMessage,player))
     {
         if (!bFoundInvalid)
             P.ClientMessage(msgEmpty);
@@ -1487,9 +1487,9 @@ function Frob(Actor Frobber, Inventory frobWith)
 	}
 }
 
-function bool CanPickupCorpse(bool bFoundSomething, DeusExPlayer player)
+function bool CanPickupCorpse(bool bPickedUpSomething, DeusExPlayer player)
 {
-    return (!bAnimalCarcass && (bDblClickStart||!bFoundSomething)&&
+    return (!bAnimalCarcass && (bDblClickStart||!bPickedUpSomething)&&
     (player != None) && (player.inHand == None) && player.carriedDecoration == None && (bSearched||!player.bEnhancedCorpseInteractions));
 }
 
