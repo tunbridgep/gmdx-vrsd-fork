@@ -195,6 +195,7 @@ function ActivateSpecialOption(MenuUIChoiceButton buttonPressed)
 	local int buttonIndex;
 	local int specialIndex;
 	local Actor A;
+    local String N;
 
 	specialIndex = -1;
 
@@ -229,6 +230,16 @@ function ActivateSpecialOption(MenuUIChoiceButton buttonPressed)
 
 			if (Computers(compOwner).specialOptions[specialIndex].bTriggerOnceOnly)
 				Computers(compOwner).specialOptions[specialIndex].bAlreadyTriggered = true;
+
+            //SARGE: Add a note if we're told to add a note
+			if (Computers(compOwner).specialOptionsExtra[specialIndex].bAddNote)
+            {
+                if (Computers(compOwner).specialOptionsExtra[specialIndex].noteID != "")
+                    N = Computers(compOwner).specialOptionsExtra[specialIndex].noteID;
+
+                player.NoteAdd(Computers(compOwner).specialOptions[specialIndex].TriggerText,false,false,StringToName(N));
+                //player.NoteAdd(Computers(compOwner).specialOptions[specialIndex].TriggerText);
+            }
 
 			// Display a message
 			winSpecialInfo.SetText(Computers(compOwner).specialOptions[specialIndex].TriggerText);
