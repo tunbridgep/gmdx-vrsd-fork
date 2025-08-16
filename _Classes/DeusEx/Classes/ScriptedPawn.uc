@@ -640,6 +640,8 @@ function PostBeginPlay()
 		bHasShadow = False;
 		bCanBleed = False;
 	}
+        
+    SetupSkin();
 }
 
 
@@ -4540,6 +4542,7 @@ local SpoofedCorona cor;
 		KillShadow();
 		bCloakOn = bEnable;
 		bCloaked = True;
+        SetupSkin();
 	}
 	else if (!bEnable && bCloakOn && !bForcedCloak)
 	{
@@ -4551,7 +4554,14 @@ local SpoofedCorona cor;
 		bCloaked = False;
 		if (Health > 0)
 		PlaySound(Sound'CloakDown', SLOT_Pain, 0.85, ,768,1.0);
+        SetupSkin();
 	}
+}
+
+//SARGE: Added to let us fix up skins when disabling cloak or swapping weapons
+//By default, does nothing, but can be used for things like custom skins for shotgunners
+function SetupSkin()
+{
 }
 
 function ForceCloakOff()                                                        //RSD: Hack function to force cloak off without playing sounds
@@ -17326,6 +17336,7 @@ function RandomiseSounds()
 //SARGE: Called when the Weapon Swap gameplay modifier for this entity has been called
 function WeaponSwap(ScriptedPawn SwappedFrom)
 {
+    SetupSkin();
 }
 
 //SARGE: Set up the Shenanigans gameplay modifier for this entity
