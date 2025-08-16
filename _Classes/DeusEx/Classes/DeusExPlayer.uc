@@ -11914,6 +11914,42 @@ exec function MinimiseTargetingWindow()
 }
 
 // ----------------------------------------------------------------------
+// CleanUpDebris
+// SARGE: Clean up the debris in the map.
+// ----------------------------------------------------------------------
+
+exec function CleanUpDebris(optional bool bCleanCorpses)
+{
+	local DeusExFragment frag;
+    local DeusExDecoration deco;
+    local DeusExCarcass carc;
+
+    //SARGE: We need to clean up the fragments and decals as well after the fight
+    if (decalManager != None)
+    {
+        DecalManager.HideAllDecals();
+        DecalManager.ClearList();
+    }
+                
+    foreach AllActors(class'DeusExFragment', frag)
+        frag.Destroy();
+
+    if (bCleanCorpses)
+    {
+        foreach AllActors(class'DeusExCarcass', carc)
+            carc.Destroy();
+    }
+
+    foreach AllActors(class'DeusExDecoration', deco)
+    {
+        if (/*deco.IsA('BoneFemur')
+            ||*/ deco.IsA('BoneFemurBloody')
+            || deco.IsA('BoneFemurLessBloody'))
+        deco.Destroy();
+    }
+}
+
+// ----------------------------------------------------------------------
 // SkipMessages
 // ----------------------------------------------------------------------
 
