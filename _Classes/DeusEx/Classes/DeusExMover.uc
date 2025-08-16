@@ -733,7 +733,8 @@ function Frob(Actor Frobber, Inventory frobWith)
 
 	// Let any non-player pawn open any door for now
     // SARGE: Unless we manually locked it
-	if (Player == None && !bPlayerLocked)
+	// SARGE: Or the actor has no door interactions set
+	if (Player == None && !bPlayerLocked && (!P.IsA('ScriptedPawn') || !ScriptedPawn(P).bNoDoorInteractions || !bLocked))
 	{
 		bOpenIt = True;
 		msg = "";

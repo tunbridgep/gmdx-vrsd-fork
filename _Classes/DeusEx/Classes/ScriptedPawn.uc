@@ -470,6 +470,8 @@ var bool bNotFirstDiffMod;                                                      
 //Sarge
 var(GMDX) bool bDontRandomizeWeapons;                                           //If true, this pawn will never have it's weapons randomised amongst other enemies.
 
+var(GMDX) bool bNoDoorInteractions;                                             //If true, this pawn will never open locked doors. Used for Tiffany Savage to stop her running out of her cell.
+
 var bool bFirstTickDone;                                                        //SARGE: Set to true after the first tick. Allows us to do stuff on the first frame
 
 //Sarge: Gender Stuff
