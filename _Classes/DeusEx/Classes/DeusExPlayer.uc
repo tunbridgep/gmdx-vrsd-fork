@@ -3931,6 +3931,12 @@ function StartPoison( Pawn poisoner, int Damage )
 {
 	myPoisoner = poisoner;
 
+	if (Health <= 0)  // no more pain -- you're already dead!
+		return;
+
+	if (InConversation())  // kinda hacky...
+		return;
+
     if (myPoisoner.weapon.IsA('WeaponGreaselSpit') && FRand() < 0.3)
     {
         if (FlagBase.GetBool('LDDPJCIsFemale')) //Sarge: Lay-D Denton support
@@ -3938,12 +3944,11 @@ function StartPoison( Pawn poisoner, int Damage )
         else
             PlaySound(sound'MaleCough',SLOT_Pain);    //CyberP: cough to greasel spit
     }
-
-	if (Health <= 0)  // no more pain -- you're already dead!
-		return;
-
-	if (InConversation())  // kinda hacky...
-		return;
+    //SARGE: Shenanigans support!
+    //We're getting DEVOURED!!!! by poison damage!
+    //So we start constantly whining, waaah waaah!! Shut the fuck up, god damn!
+    else if (bShenanigans && myPoisoner.weapon.IsA('WeaponMiniCrossbow') && FRand() < 0.05)
+        PlaySound(sound'RSDCrap.Misc.DSPToxic',SLOT_Pain);
 
     // CyberP: less poison if
 	if (PerkManager.GetPerkWithClass(class'DeusEx.PerkHardened').bPerkObtained == true)
