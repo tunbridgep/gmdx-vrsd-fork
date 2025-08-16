@@ -1419,7 +1419,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 		}
 
         //SARGE: Display our bad items at the end of the list
-        if (!CanPickupCorpse(bFoundSomething,player) && player.bShowDeclinedInReceivedWindow && badItemCount > 0)
+        if (/*!CanPickupCorpse(bPickedSomethingUp,player) && */player.bShowDeclinedInReceivedWindow && badItemCount > 0)
         {
             for (i = 0;i < badItemCount;i++)
             {
@@ -1446,7 +1446,7 @@ function Frob(Actor Frobber, Inventory frobWith)
     // Were you to do it, you'd need to check the respawning issue, destroy the POVcorpse it creates and point to the
     // one in inventory (like I did when giving the player starting inventory).
 
-    if (CanPickupCorpse(bPickedSomethingUp && !bSuppressEmptyMessage,player))
+    if (CanPickupCorpse(bPickedSomethingUp,player) && !bSuppressEmptyMessage)
     {
         PickupCorpse(player);
     }
@@ -1463,7 +1463,7 @@ function Frob(Actor Frobber, Inventory frobWith)
     //SARGE: Hack
     LootPickupSound = default.LootPickupSound;
 
-    if (!bPickedSomethingUp && !bSuppressEmptyMessage && !CanPickupCorpse(bPickedSomethingUp && !bSuppressEmptyMessage,player))
+    if (!bPickedSomethingUp && !bSuppressEmptyMessage && !CanPickupCorpse(bPickedSomethingUp,player))
     {
         if (!bFoundInvalid)
             P.ClientMessage(msgEmpty);
