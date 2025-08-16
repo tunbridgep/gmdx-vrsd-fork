@@ -238,6 +238,8 @@ class All expands Object
 #exec AUDIO IMPORT FILE="Sounds\MultitoolEquip.wav"			NAME="MultitoolEquip"	    	GROUP="Misc"
 #exec AUDIO IMPORT FILE="Sounds\MultitoolUnequip.wav"	    NAME="MultitoolUnequip"		    GROUP="Misc"
 
+#exec AUDIO IMPORT FILE="Sounds\dsp_toxic.wav"			    NAME="DSPToxic"	         		GROUP="Misc"
+
 //New poison smoke texture
 #exec TEXTURE IMPORT  FILE="Textures\ef_PoisonSmoke001.pcx" NAME="ef_PoisonSmoke001" GROUP="Skins"
 #exec TEXTURE IMPORT  FILE="Textures\ef_PoisonSmoke002.pcx" NAME="ef_PoisonSmoke002" GROUP="Skins"
