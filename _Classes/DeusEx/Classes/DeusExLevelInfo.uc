@@ -16,6 +16,7 @@ var() String				ConversationPackage;  // DEUS_EX STM -- added so SDK users will 
 var() bool                  bNoSpawnFlies;                                      //RSD: Are we a sterile environment that shouldn't spawn flies?
 var() byte                  SongCombatSection;                                  //SARGE: Allow us to define a custom section for combat. By default this is 3
 var() int                   SongAmbientSection;                                 //SARGE: Allow us to define a custom section for ambience, since SongSection is read-only.
+var() int                   ChairRandomizationToken;                            //SARGE: For Junk Randomization, use a custom token instead of getting a new one. Used for randomising certain maps together             
 
 //SARGE: Replace the bBarOrClub variable with a more complex music system.
 enum EMusicType
@@ -66,4 +67,5 @@ defaultproperties
      bAlwaysRelevant=True
      SongCombatSection=3
      SongAmbientSection=-1
+     ChairRandomizationToken=-1
 }
