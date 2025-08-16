@@ -34,6 +34,8 @@ var int shadowOffsetY;
 
 var HUDKeypadNotesWindow winNotes;
 
+var const bool bShowNotes;         //SARGE: Added. Show the notes on the first screen(usually login).
+
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -439,7 +441,7 @@ function AddNotesWindow()
     local ATM A;
     local int i;
 
-    if (!player.bShowCodeNotes)
+    if (!player.bShowCodeNotes || !bShowNotes)
         return;
 
     C = Computers(compOwner);
@@ -759,4 +761,5 @@ defaultproperties
      shadowOffsetY=15
      ScreenType=ST_Computer
 	 LockoutScreen=Class'DeusEx.ComputerScreenDisabled'
+     bShowNotes=true
 }
