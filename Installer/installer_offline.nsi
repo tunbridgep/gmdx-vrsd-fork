@@ -41,4 +41,7 @@ SectionGroup "Extras"
 #Install Augmentique
 !include .\include\offline_jcoutfits.nsi
 
+#Install Visible Attachments
+!include .\include\offline_visible_attachments.nsi
+
 SectionGroupEnd

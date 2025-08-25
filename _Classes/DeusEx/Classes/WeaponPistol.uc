@@ -100,6 +100,12 @@ function DisplayWeapon(bool overlay)
     else if (overlay)
     {
         multiskins[1] = handstex;
+        if (bVanillaModelAttachments)
+        {
+            ShowWeaponAddon(4,bHasScope);
+            ShowWeaponAddon(5,bHasSilencer);
+            ShowWeaponAddon(6,bHasLaser);
+        }
     }
 }
 
@@ -371,6 +377,7 @@ defaultproperties
      HDTPPlayerViewMesh="HDTPItems.HDTPWeaponPistol"
      HDTPPickupViewMesh="HDTPItems.HDTPGlockPickUp"
      HDTPThirdPersonMesh="HDTPItems.HDTPGlock3rd"
+     VanillaAddonPlayerViewMesh="VisibleAttachments.ScopedGlock"
      PlayerViewMesh=LodMesh'DeusExItems.Glock'
      PickupViewMesh=LodMesh'DeusExItems.GlockPickup'
      ThirdPersonMesh=LodMesh'DeusExItems.Glock3rd'
