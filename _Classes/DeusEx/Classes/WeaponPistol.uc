@@ -377,7 +377,7 @@ defaultproperties
      HDTPPlayerViewMesh="HDTPItems.HDTPWeaponPistol"
      HDTPPickupViewMesh="HDTPItems.HDTPGlockPickUp"
      HDTPThirdPersonMesh="HDTPItems.HDTPGlock3rd"
-     VanillaAddonPlayerViewMesh="VisibleAttachments.ScopedGlock"
+     VanillaAddonPlayerViewMesh="VisibleAttachments.NewGlock"
      PlayerViewMesh=LodMesh'DeusExItems.Glock'
      PickupViewMesh=LodMesh'DeusExItems.GlockPickup'
      ThirdPersonMesh=LodMesh'DeusExItems.Glock3rd'
