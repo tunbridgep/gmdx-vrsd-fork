@@ -524,6 +524,7 @@ function string GetString(string text, bool bClosed)
 
 defaultproperties
 {
+     bLeftGrab=True
      TextPackage="DeusExText"
      msgNoText="It is blank"
      ImageLabel="[Image: %s]"
