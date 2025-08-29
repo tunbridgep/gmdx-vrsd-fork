@@ -25,12 +25,14 @@ simulated function PreBeginPlay()
 
 function OnEquipped()
 {
-    PlaySound(sound'RSDCrap.Misc.LockpickEquip',SLOT_None);
+    if (class'DeusExPlayer'.default.bImprovedWeaponSounds)
+        PlaySound(sound'RSDCrap.Misc.LockpickEquip',SLOT_None);
 }
 
 function OnUnEquipped()
 {
-    PlaySound(sound'RSDCrap.Misc.LockpickUnEquip',SLOT_None);
+    if (class'DeusExPlayer'.default.bImprovedWeaponSounds)
+        PlaySound(sound'RSDCrap.Misc.LockpickUnEquip',SLOT_None);
 }
 
 // ----------------------------------------------------------------------
@@ -46,6 +48,7 @@ simulated function bool TestMPBeltSpot(int BeltSpot)
 defaultproperties
 {
      UseSound=Sound'RSDCrap.Misc.LockpickUse'
+     ClassicUseSound=Sound'DeusExSounds.Generic.LockpickRattling'
      maxCopies=20
      bCanHaveMultipleCopies=True
      ItemName="Lockpick"

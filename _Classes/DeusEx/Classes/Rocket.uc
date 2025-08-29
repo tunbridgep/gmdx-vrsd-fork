@@ -274,13 +274,13 @@ simulated function Destroyed()
 		DeusExPlayer(Owner).aGEPProjectile=none;
 		if (DeusExPlayer(Owner).InHand.IsA('WeaponGEPGun'))
 		{
-		  if (DeusExWeapon(DeusExPlayer(Owner).InHand).bZoomed)
-            if (DeusExPlayer(Owner).bAutoReload)
-			{
-			    DeusExWeapon(DeusExPlayer(Owner).InHand).ScopeOff();
-				DeusExWeapon(DeusExPlayer(Owner).InHand).ReloadAmmo();
-			}
-		}
+            if (DeusExPlayer(Owner).bAutoReload && DeusExWeapon(DeusExPlayer(Owner).InHand).ClipCount == 0) //SARGE: Added clipcount check
+            {
+                DeusExWeapon(DeusExPlayer(Owner).InHand).ReloadAmmo();
+                if (DeusExWeapon(DeusExPlayer(Owner).InHand).bZoomed)
+                    DeusExWeapon(DeusExPlayer(Owner).InHand).ScopeOff();
+            }
+        }
 	}
 	Super.Destroyed();
 }

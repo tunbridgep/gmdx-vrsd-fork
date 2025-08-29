@@ -73,6 +73,40 @@ var localized string ButtonLabelCancel;
 var localized string ButtonLabelSpecial;
 var localized string ComputerNodeFunctionLabel;
 
+//SARGE: Add the ability to have a notes window
+var HUDKeypadNotesWindow winNotes;
+
+var bool bNotFirstTick;             //SARGE: Added
+
+// ----------------------------------------------------------------------
+// SARGE: NOTES WINDOW STUFF
+// ----------------------------------------------------------------------
+
+function SetNotesPos()
+{
+    if (winNotes == None)
+        return;
+
+    winNotes.SetPos(x + winClient.x + winClient.width,y + winClient.y - 8);
+	winNotes.Resize(640/2, winClient.height + winStatus.Height);
+    //winNotes.Show();
+}
+
+//SARGE: This sucks, but I can't make it work any other way...
+function Tick(float deltaTime)
+{
+    if (bWindowBeingDragged || !bNotFirstTick)
+        SetNotesPos();
+
+    bNotFirstTick = true;
+}
+
+function SetNotesWindow(HUDKeypadNotesWindow N)
+{
+    winNotes = N;
+    bTickEnabled = true;
+}
+
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -106,6 +140,7 @@ function DestroyWindow()
 {
 	local int texIndex;
 
+    bTickEnabled = false;
    if (Player != Player.GetPlayerPawn())
    {
       log("==============>Player mismatch!!!!");
@@ -118,6 +153,8 @@ function DestroyWindow()
 
 	for(texIndex=0; texIndex<arrayCount(clientTextures); texIndex++)
 		player.UnloadTexture(clientTextures[texIndex]);
+
+    winNotes = None;
 
 	Super.DestroyWindow();
 }

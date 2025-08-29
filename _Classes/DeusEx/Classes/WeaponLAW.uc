@@ -92,6 +92,7 @@ defaultproperties
      HDTPPlayerViewMesh="HDTPItems.HDTPLaw"
      HDTPPickupViewMesh="HDTPItems.HDTPLAWPickup"
      HDTPThirdPersonMesh="HDTPItems.HDTPLAW3rd"
+     Mesh=LodMesh'DeusExItems.LAWPickup'
      PlayerViewMesh=LodMesh'DeusExItems.LAW'
      PickupViewMesh=LodMesh'DeusExItems.LAWPickup'
      ThirdPersonMesh=LodMesh'DeusExItems.LAW3rd'
@@ -107,4 +108,5 @@ defaultproperties
      CollisionHeight=6.800000
      Mass=50.000000
      bDisposableWeapon=true
+     bFakeHandToHand=true
 }

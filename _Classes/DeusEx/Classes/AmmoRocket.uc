@@ -3,12 +3,27 @@
 //=============================================================================
 class AmmoRocket extends DeusExAmmo;
 
+function PostPostBeginPlay()
+{
+    local DeusExPlayer player;
+
+    super.PostPostBeginPlay();
+
+    player=DeusExPlayer(GetPlayerPawn());
+
+    if ((player != none) && (player.bHardCoreMode == True))
+    {
+        if (Owner == None)
+            AmmoAmount = 2;  //SARGE: Less ammo on hardcore. Copied from Ammo20mm
+    }
+}
+
 defaultproperties
 {
      bShowInfo=True
      ammoSkill=Class'DeusEx.SkillWeaponHeavy'
      AmmoAmount=4
-     MaxAmmo=10
+     MaxAmmo=4
      ItemName="Rockets"
      ItemArticle="some"
      LandSound=Sound'DeusExSounds.Generic.WoodHit2'

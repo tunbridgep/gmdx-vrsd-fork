@@ -351,6 +351,11 @@ var localized String msgModsCopied;
 
 //SARGE: Sounds for various things
 var const Sound CopyModsSound;
+var const Sound ClassicFireSound;
+
+//SARGE: Some weapons are marked "hand to hand" but actually aren't hand to hand weapons
+//we need a hacky variable to distinguish them, so we don't give them combat strength etc
+var const bool bFakeHandToHand;
 
 //END GMDX:
 
@@ -378,6 +383,25 @@ replication
 }
 
 // ----------------------------------------------------------------------
+// GetDefaultFireSound()
+//
+// SARGE: Returns the default fire sound (standard or classic), based on the players options
+// ----------------------------------------------------------------------
+function Sound GetDefaultFireSound()
+{
+    if (Ammo20mm(AmmoType) != None) //Hack for 20mm grenade launcher
+        return Sound'AssaultGunFire20mm';
+    else if ( AmmoRocketWP(AmmoType) != None )
+        return Sound'GEPGunFireWP';
+    else if ( AmmoRocket(AmmoType) != None )
+        return Sound'GEPGunFire';
+    else if (class'DeusExPlayer'.default.bImprovedWeaponSounds || default.ClassicFireSound == None)
+        return default.FireSound;
+    else
+        return default.ClassicFireSound;
+}
+
+// ----------------------------------------------------------------------
 // GetPrimaryAmmoType()
 //
 // SARGE: Returns the main ammo type of the weapon, since we can't pick up secondaries usually
@@ -397,7 +421,7 @@ function class<Ammo> GetPrimaryAmmoType()
 // SARGE: Refactored this out of the Carcass Frob function so it was hopefully less horribly long,
 // and it was repeated everywhere, all over the codebase. For shame, GMDX!!!
 // ----------------------------------------------------------------------
-function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, optional bool bLootSound, optional bool bNoRemoveClipAmmo, optional bool bOverflow)
+function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, optional bool bLootSound, optional bool bNoRemoveClipAmmo, optional bool bOverflow, optional bool bOverflowWindow)
 {
     local class<Ammo> defAmmoClass;
     local int intj;
@@ -419,7 +443,7 @@ function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, op
     if (IsA('WeaponShuriken') && WeaponShuriken(self).bImpaled)
         overrideTexture = Texture'RSDCrap.Icons.BeltIconShurikenBloody';
 
-    intj = P.LootAmmo(defAmmoClass,PickupAmmoCount,bDisplayMsg,bDisplayWindow,bLootSound,!bDisposableWeapon,bDisposableWeapon,bOverflow,overrideTexture);
+    intj = P.LootAmmo(defAmmoClass,PickupAmmoCount,bDisplayMsg,bDisplayWindow,bLootSound,!bDisposableWeapon,bDisposableWeapon,bOverflow && !bDisposableWeapon,bOverflowWindow,overrideTexture);
 
     if (intj > 0)
     {
@@ -1591,7 +1615,7 @@ simulated function float GetWeaponSkill()
 			if ((player.AugmentationSystem != None ) && ( player.SkillSystem != None ))
 			{
 				// get the target augmentation
-                if (!bHandToHand)
+                if (!bHandToHand || IsA('WeaponShuriken'))
                 {
                     value = player.AugmentationSystem.GetAugLevelValue(class'AugTarget');
                     if (value == -1.0)
@@ -1622,7 +1646,7 @@ function int CalculateTrueDamage()
 
     //SARGE: Factor in Targeting and Combat Strength
     //SARGE: NOTE: Targeting is handled in GetWeaponSkill, so not needed here.
-    if (P != None && bHandToHand)
+    if (P != None && bHandToHand && !bFakeHandToHand)
     {
         if (P.AugmentationSystem != None)
             mult = P.AugmentationSystem.GetAugLevelValue(class'AugCombatStrength');
@@ -1838,7 +1862,6 @@ function bool LoadAmmo(int ammoNum)
 					else
 						ReloadTime = Default.ReloadTime;
 				}
-				FireSound = Default.FireSound;
 
 				if (ProjectileNames[ammoNum] == Class'DeusEx.RubberBullet')
 				{
@@ -1899,9 +1922,8 @@ function bool LoadAmmo(int ammoNum)
 			// Same for WP rocket
 			if ( Ammo20mm(newAmmo) != None )
 				{
-                FireSound=Sound'AssaultGunFire20mm';
-                if (bHasSilencer)
-                   FireSilentSound=Sound'AssaultGunFire20mm';     //CyberP: if silenced also
+                    if (bHasSilencer)
+                        FireSilentSound=Sound'AssaultGunFire20mm';     //CyberP: if silenced also
                 }
             /*else if ( Ammo20mmEMP(newAmmo) != None )
 				{
@@ -1913,17 +1935,7 @@ function bool LoadAmmo(int ammoNum)
             {
                 if (bHasSilencer)    //CyberP: revert back to norm
                    FireSilentSound=default.FireSilentSound;
-                else
-                   FireSound=default.FireSound;
             }
-			else if ( AmmoRocketWP(newAmmo) != None )
-				{
-                FireSound=Sound'GEPGunFireWP';
-                }
-			else if ( AmmoRocket(newAmmo) != None )
-				{
-                FireSound=Sound'GEPGunFire';
-                }
             /*else if ( AmmoPlasmaSuperheated(newAmmo) != None )
                 {
                 bSuperheated=True;
@@ -3641,7 +3653,7 @@ function Fire(float Value)
 		if (ReloadCount > 0)
 			AmmoType.UseAmmo(1);
 
-       if (meleeStaminaDrain != 0)
+       if (meleeStaminaDrain != 0 && !bFakeHandToHand)
        {
        if (Owner.IsA('DeusExPlayer') && Owner != none)
        {
@@ -3821,6 +3833,9 @@ simulated function PlaySelectiveFiring()
 	{
 	    if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).AugmentationSystem != none)
 		   hhspeed = DeusExPlayer(Owner).AugmentationSystem.GetAugLevelValue(class'AugCombat');
+			
+        if (hhspeed < 1.0)
+            hhspeed = 1.0;
 
 		//== Speed up the firing animation if we have the ROF mod
 		//mod = 1.000000 - ModShotTime;
@@ -3836,8 +3851,8 @@ simulated function PlaySelectiveFiring()
 		    if (IsA('WeaponAssaultGun'))
 		    {
 	           //mod = 1.000000;
-	           mod = 2.200000; // SARGE: speed increase, convert 5 round burst to 3 round burst
-	           PlayAnim(anim,1 * (mod-2*ModShotTime), 0.1);
+	           mod = 2.000000; // SARGE: speed increase, convert 5 round burst to 3 round burst
+	           PlayAnim(anim,1 * (mod-6*ModShotTime), 0.1);
 		    }
 		    else if (IsA('WeaponStealthPistol'))
 		    {
@@ -3855,10 +3870,8 @@ simulated function PlaySelectiveFiring()
 			//PlayAnim(anim,1 * mod,0.1);
             return;
         }            
-		else if (bHandToHand && !IsA('WeaponHideAGun') && !IsA('WeaponLAW'))
+		else if (bHandToHand && !bFakeHandToHand)
 		{
-			if (hhspeed < 1.0)
-				hhspeed = 1.0;
 
             if (Owner.IsA('DeusExPlayer'))
             {
@@ -3871,6 +3884,8 @@ simulated function PlaySelectiveFiring()
 
 			PlayAnim(anim,1 * hhspeed,0.1); //CyberP: increase melee speed if augcombat
 		}
+		else if (bHandToHand && GoverningSkill == class'DeusEx.SkillDemolition') //SARGE: Hand to Hand speed used to work for grenades. Make it work again, but without the stamina and zyme changes
+			PlayAnim(anim,1 * hhspeed,0.1);
 		else
 			PlayAnim(anim,1 * mod,0.1);
 	}
@@ -3917,6 +3932,8 @@ simulated function PlayFiringSound()
     }
 	else
 	{
+        if (FireSound != None)
+            FireSound = GetDefaultFireSound();
 		// The sniper rifle sound is heard to it's range in multiplayer
 		if ( ( Level.NetMode != NM_Standalone ) &&  Self.IsA('WeaponRifle') )
 			PlaySimSound( FireSound, SLOT_Interface, TransientSoundVolume, class'WeaponRifle'.Default.mpMaxRange );
@@ -4606,7 +4623,7 @@ simulated function Projectile ProjectileFire(class<projectile> ProjClass, float 
 	speedMult=1.0;
 	// AugCombat increases our speed (distance) if hand to hand
 	mult = 1.0;
-	if (bHandToHand && (DeusExPlayer(Owner) != None))
+	if (bHandToHand && !bFakeHandToHand && (DeusExPlayer(Owner) != None))
 	{
 		/*mult = DeusExPlayer(Owner).AugmentationSystem.GetAugLevelValue(class'AugCombat'); //RSD: No more buffs to projectile speed from Combat Speed
 		if (mult == -1.0)
@@ -5141,7 +5158,7 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
 	{
 		// AugCombat increases our damage if hand to hand
 		mult = 1.0;
-		if (bHandToHand && (DeusExPlayer(Owner) != None))
+		if (bHandToHand && !bFakeHandToHand && (DeusExPlayer(Owner) != None))
 		{
 			mult = DeusExPlayer(Owner).AugmentationSystem.GetAugLevelValue(class'AugCombatStrength');
 			if (mult == -1.0)

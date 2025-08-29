@@ -14,6 +14,8 @@ enum ESkinColor
 
 var() travel ESkinColor SkinColor;
 
+var const string ShenanigansText;
+
 // ----------------------------------------------------------------------
 // SetSkin()
 // ----------------------------------------------------------------------
@@ -36,6 +38,18 @@ function UpdateHDTPsettings()
         Skin = flagTex;
 }
 
+//SARGE: SHENANIGANS!!!
+simulated function Frag(class<fragment> FragType, vector Momentum, float DSize, int NumFrags)
+{
+    local DeusExPlayer P;
+    
+    P = DeusExPlayer(GetPlayerPawn());
+    if (P != None && P.bShenanigans && SkinColor == SC_China)
+        P.ClientMessage(sprintf(ShenanigansText,NumFrags));
+    
+    super.Frag(FragType,Momentum,DSize,NumFrags);
+}
+
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
@@ -50,4 +64,5 @@ defaultproperties
      Mass=40.000000
      Buoyancy=30.000000
 	 bHDTPFailsafe=False
+     ShenanigansText="%d Social Credit Points Deducted!!!"
 }

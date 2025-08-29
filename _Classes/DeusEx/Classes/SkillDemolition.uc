@@ -36,7 +36,7 @@ defaultproperties
      mpLevel2=-0.300000
      mpLevel3=-0.500000
      SkillName="Weapons: Demolition"
-     Description="The use of thrown explosive devices, including LAMs, gas grenades, EMP grenades, and electronic scrambler grenades. Total Skill points to master: 3875 |n|nUNTRAINED: An agent can throw grenades, attach them to a surface as a proximity device, or attempt to disarm and remove a previously armed proximity device.|n|nTRAINED: Grenade accuracy and damage increases slightly, as does the safety margin for disarming proximity devices.|n|nADVANCED: Grenade accuracy and damage increases moderately, as does the safety margin for disarming proximity devices.|n|nMASTER: An agent is an expert at all forms of demolition."
+     Description="The use of thrown explosive devices, including LAMs, gas grenades, EMP grenades, and electronic scrambler grenades. Total Skill points to master: 6300 |n|nUNTRAINED: An agent can throw grenades, attach them to a surface as a proximity device, or attempt to disarm and remove a previously armed proximity device.|n|nTRAINED: Grenade accuracy and damage increases slightly, as does the safety margin for disarming proximity devices.|n|nADVANCED: Grenade accuracy and damage increases moderately, as does the safety margin for disarming proximity devices.|n|nMASTER: An agent is an expert at all forms of demolition."
      SkillIcon=Texture'DeusExUI.UserInterface.SkillIconDemolition'
      cost(0)=900
      cost(1)=1800

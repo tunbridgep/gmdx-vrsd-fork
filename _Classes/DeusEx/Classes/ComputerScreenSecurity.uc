@@ -430,7 +430,7 @@ function SetTurretState(bool bActive, bool bDisabled)
 {
 	if ((selectedCamera != None) && (selectedCamera.turret != None))
 	{
-        player.SetTurretState(selectedCamera.turret,bActive,bDisabled,winTerm.bHacked);
+        player.SetTurretState(selectedCamera.turret,compOwner,bActive,bDisabled,winTerm.bHacked);
         selectedCamera.UpdateTurretStatus();
 	}
 }
@@ -591,7 +591,7 @@ function bool ButtonActivated( Window buttonPressed )
 
 			case btnLogout:
                 RefreshRebootDuration();
-				CloseScreen("LOGOUT");
+				CloseScreen("EXIT"); //SARGE: Was LOGOUT
 				break;
 
 			default:

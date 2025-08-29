@@ -937,7 +937,7 @@ function DrawSpyDroneAugmentation(GC gc)
         }
 		
         // print a low energy warning message for EMP attack
-		if (augDrone != None && Player.Energy < augDrone.EMPDrain)
+		if (augDrone != None && Player.Energy < augDrone.GetAdjustedEnergy(augDrone.EMPDrain))
         {
             if (str != "")
                 ymod = 10;
@@ -1426,6 +1426,7 @@ function DrawTargetAugmentation(GC gc)
     local float visi, wepAcc, litemult, dist;                                   //RSD: Added litemult, dist
     local int ifflevel;
     local float x,y,w,h,mult;
+    local bool bValidTarget;
 
 	crossColor.R = 255; crossColor.G = 255; crossColor.B = 255;
 
@@ -1475,8 +1476,11 @@ function DrawTargetAugmentation(GC gc)
             crossColor = colBlue;
     }
 
+    //SARGE: Non-highlighting decorations (like trash paper) aren't valid targets
+    bValidTarget = target != None && (!target.IsA('DeusExDecoration') || DeusExDecoration(target).bHighlight);
+    
     //SARGE: Moved this out to a new function, and made sure to always show it if enabled
-	if ( target != None && !target.bHidden //)                                  //RSD
+	if ( target != None && bValidTarget && !target.bHidden //)                                  //RSD
     	&& !(target.IsA('ScriptedPawn') && ScriptedPawn(target).bCloakOn && !(bVisionActive && visionLevel >= 1))) //RSD: no targeting info if NPCs are cloaked with no player infravision
 	{
 		dist = VSize(target.Location - Player.Location);                        //RSD: was calculated twice, just store it

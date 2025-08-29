@@ -36,6 +36,7 @@ event InitWindow()
     objBelt.SetInventoryBelt(true);
 	objBelt.SetVisibility(True);
 	objBelt.SetInteractive(True);
+    objBelt.RecreateBelt();
 
 	if ( !hudBelt.IsVisible() )
 	{
@@ -113,7 +114,7 @@ function AssignObjectBeltByKey(Inventory invItem, EInputKey key)
     player = DeusExPlayer(GetRootWindow().ParentPawn);
 
     //don't let us assign to slots that aren't usable
-    if ((key != IK_Minus || key != IK_Equals) && (player != None && !player.bBiggerBelt))
+    if ((key == IK_Minus || key == IK_Equals) && (player != None && !player.bBiggerBelt))
         return;
 
 	// Typecasting EInputKey to int doesn't seem to work.
@@ -232,7 +233,7 @@ function SelectObject(Inventory item, bool bNewToggle)
 {
 	local int objectIndex;
 
-	for (objectIndex=0;objectIndex<10;objectIndex++)
+	for (objectIndex=0;objectIndex<11;objectIndex++)
 	{
 		if (objBelt.objects[objectIndex].item == item)
 		{

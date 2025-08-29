@@ -30,7 +30,7 @@ event InitWindow()
 {
 	Super.InitWindow();
     SetRightSide(true);
-    RecreateBelt(true);
+    RecreateBelt(!bInteractive);
 }
 
 function RecreateBelt(optional bool bDontRecreateKeyring)
@@ -52,12 +52,7 @@ function RecreateBelt(optional bool bDontRecreateKeyring)
     
     ConfigureSlots();
 
-	PopulateBelt();
-
-    //SARGE: I don't know why it's necessary to restrict this on the first time...
-    //but if we don't, the nanokey overrides our last slot's belt memory.
-    if (!bDontRecreateKeyring)
-        CreateNanoKeySlot();
+	PopulateBelt(bDontRecreateKeyring);
 }
 
 // Set belt mode
@@ -175,7 +170,7 @@ function CreateNanoKeySlot()
                 //player.ClientMessage("ooooohhhh: " $ objects[KeyRingSlot].item);
             }
 
-            if (objects[KeyRingSlot].item == None && player.iSmartKeyring < 2)
+            if (objects[KeyRingSlot].item == player.KeyRing)
                 player.KeyRing.bInObjectBelt = true;
             else if (player.iSmartKeyring == 2)
                 player.KeyRing.bInObjectBelt = false;
@@ -501,6 +496,7 @@ function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
 			if ( objects[pos].GetItem() != None )
 				RemoveObjectFromBelt(objects[pos].GetItem());
 
+            //player.SetPlaceholder(pos,newItem.icon);
 			objects[pos].SetItem(newItem);
 
 			if (newItem.IsA('ChargedPickup') && ChargedPickup(newItem).ShouldDim())
@@ -564,7 +560,7 @@ function SetVisibility( bool bNewVisibility )
 // game
 // ----------------------------------------------------------------------
 
-function PopulateBelt()
+function PopulateBelt(optional bool bDontRecreateKeyring)
 {
 	local Inventory anItem;
 	local HUDObjectBelt belt;
@@ -579,7 +575,8 @@ function PopulateBelt()
 			AddObjectToBelt(anItem, anItem.beltPos, True);
       }
 
-    CreateNanoKeySlot();
+    if (!bDontRecreateKeyring)
+        CreateNanoKeySlot();
     
 	//Set the highlight
 }
