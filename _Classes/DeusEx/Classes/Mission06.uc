@@ -630,15 +630,6 @@ function Timer()
 		if (flags.GetBool('Have_ROM') &&
 			!flags.GetBool('TriadCeremony_Played')) //CyberP: failsafe
 			   flags.SetBool('CeremonyReadyToBegin', True,True);
-
-		if (flags.GetBool('TriadCeremony_Played') && flags.GetBool('Enhancement_Detected'))
-        {
-            foreach AllActors(class'TriadLumPath', triadlum)
-	        {
-                  if (triadlum.BarkBindName == "TriadLumPath")
-                     triadlum.BarkBindName = "TriadLumPathPeace";
-            }
-        }
 	}
 	else if (localURL == "06_HONGKONG_HELIBASE")
 	{
