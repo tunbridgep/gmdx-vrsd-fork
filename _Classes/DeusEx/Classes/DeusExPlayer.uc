@@ -849,8 +849,9 @@ var globalconfig bool bAutoUncrouch;                            //SARGE: Automat
 var globalconfig int iHolsterMode;                             //SARGE: 0 = single click, 1 = double click
 var globalconfig int iUnholsterMode;                           //SARGE: 0 = disabled completely, 1 = single click, 2 = double click
 
-var globalconfig bool bEnhancedPersonaScreenMouse;             //SARGE: When enabled, allows the right-click and middle-click actions in the inventory and aug screens to work on the currently hovered item, not the selected one.
+var globalconfig bool bShowCodeNotes;                           //SARGE: Show relevant nodes for codes and logins.
 
+var globalconfig bool bEnhancedPersonaScreenMouse;             //SARGE: When enabled, allows the right-click and middle-click actions in the inventory and aug screens to work on the currently hovered item, not the selected one.
 
 var globalconfig bool bShowFullAmmoInHUD;                       //SARGE: When ammo for a certain ammo type is full, show it as Yellow in the AMMO Hud
 
@@ -14401,7 +14402,7 @@ function DeusExNote AddNote( optional String strNote, optional Bool bUserNote, o
 }
 
 // ----------------------------------------------------------------------
-// SARGE: GetCodeNote()
+// SARGE: HasCodeNote()
 //
 // Loops through the notes and searches for the code in any note.
 // Ignores user notes, so we can't add some equivalent of "The code's 0451" and instantly know a code
@@ -14420,6 +14421,27 @@ static final function string Locs(coerce string Text)
             Text = Left(Text, IndexChar) $ Chr(Asc(Mid(Text, IndexChar, 1)) + 32) $ Mid(Text, IndexChar + 1);
 
     return Text;
+}
+
+//Hack to force finding codes with either a space before or after.
+static function int InStrSpaced(string haystack, string needle)
+{
+    local int result;
+
+    result = InStr(haystack," " $ needle $ " ");
+    if (result != -1)
+        return result;
+    
+    result = InStr(haystack," " $ needle $ ". ");
+    if (result != -1)
+        return result;
+    
+    result = InStr(haystack," " $ needle $ ".");
+    if (result != -1 && Right(haystack, len(needle) + 1) == (needle $ "."))
+        return result;
+    
+    //Log("String: " $ Right(haystack, len(needle) + 1));
+    return -1;
 }
 
 //SARGE: Strip off the "FROM: xxx TO: xxx" line in notes,
@@ -14456,17 +14478,26 @@ function string StripFromTo(string text)
     return text;
 }
 
-function bool GetCodeNote(string code)
+function bool HasCodeNote(string code)
+{
+    return GetCodeNote(code) != None;
+}
+
+function DeusExNote GetCodeNote(string code, optional bool bNoHidden)
 {
 	local DeusExNote note;
     local string noteText;
+    local int noteTextNumeric;
+
+    if (code == "")
+        return None;
 
 	note = FirstNote;
 
-	while( note != None )
+	while( note != None)
 	{
-        //Skip user notes
-        if (!note.bUserNote)
+        //Skip user notes and hidden notes
+        if (!note.bUserNote && (!bNoHidden || !note.bHidden))
         {
 
             //handle any notes we were given which might not have "original" text for whatever reason
@@ -14492,38 +14523,48 @@ function bool GetCodeNote(string code)
             //First, strip off the first line if there's FROM: and TO: text...
             noteText = StripFromTo(note.originalText);
 
+            noteTextNumeric = int(noteText);
+
+            //First, if it's numeric, Check note contents for the code exactly
+            if (noteTextNumeric != 0 && InStrSpaced(noteText,code) != -1)
+            {
+                //DebugLog("NOTE: " $ noteText);
+                DebugLog("NOTE CODE " $code$ " FOUND (NUMERIC)");
+                return note;
+            }
+
             //Next, Check note contents for the code
             //Start by checking that our code matches CAPS in the note...
-            if (InStr(noteText,Caps(code)) != -1)
+            else if (InStr(noteText,Caps(code)) != -1)
             {
-                DebugLog("NOTE: " $ noteText);
+                //DebugLog("NOTE: " $ noteText);
                 DebugLog("NOTE CODE " $code$ " FOUND (CAPS)");
-                return true;
+                return note;
             }
             
             //Then check that our code matches all lower case in the note...
             else if (InStr(noteText,Locs(code)) != -1)
             {
-                DebugLog("NOTE: " $ noteText);
+                //DebugLog("NOTE: " $ noteText);
                 DebugLog("NOTE CODE " $code$ " FOUND (LOCS)");
-                return true;
+                return note;
             }
             
             //Some codes are in quotes, so always allows things in quotes
             if (InStr(Caps(noteText),"\""$Caps(code)$"\"") != -1)
             {
-                DebugLog("NOTE: " $ noteText);
-                DebugLog("NOTE CODE " $code$ " FOUND (CAPS)");
-                return true;
+                //DebugLog("NOTE: " $ noteText);
+                DebugLog("NOTE CODE " $code$ " FOUND (CAPS QUOTES)");
+                return note;
             }
-
+            
             //Some notes have Login: Username and Password: Whatever in them, so handle them.
             else if (InStr(Caps(noteText),Caps("LOGIN: " $ code)) != -1)
-                return true;
+                return note;
             else if (InStr(Caps(noteText),Caps("PASSWORD: " $ code)) != -1)
-                return true;
+                return note;
             else if (InStr(Caps(noteText),Caps("LOGIN/PASSWORD: " $ code)) != -1)
-                return true;
+                return note;
             
         }
 
@@ -14531,7 +14572,7 @@ function bool GetCodeNote(string code)
 	}
 
     DebugLog("NOTE CODE " $code$ " NOT FOUND");
-	return false;
+	return None;
 }
 
 //This is a simple list of codes which serve as exceptions to No Keypad Cheese
@@ -14557,6 +14598,9 @@ function bool GetExceptedCode(string code)
         || code == "NICOLETTE" //Given in conversation
         || code == "CHAD" //Given in conversation
         || (code == "2167" && FlagBase.GetBool('NYCUndergroundCodeObtained')) //Allow us to use it after we access the computer. Also adds a note from a datacube.
+        || (code == "6512" && FlagBase.GetBool('VersalifeCodeObtained')) //Allow us to use it after we access generate a temp security pass.
+        || code == "12" //Guessable code for the keypad in the MJ12 lab above the entry stairs
+        || code == "APPLE" //Special case, spelled "Apple" in note so it fails the LOCS and CAPS checks...
         || code == "JCDENTON"; //Uses Base: JCDenton instead of Username: JCDenton.
 }
 
@@ -19386,6 +19430,7 @@ defaultproperties
      bAutoUncrouch=true
      iCrosshairOffByOne=1
      bShowSmallLog=true
+     bShowCodeNotes=true
      bEnhancedPersonaScreenMouse=true
      bShowFullAmmoInHUD=true
 }

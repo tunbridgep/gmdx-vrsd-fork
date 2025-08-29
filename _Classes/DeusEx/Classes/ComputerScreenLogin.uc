@@ -233,6 +233,18 @@ function ProcessLogin()
 }
 
 // ----------------------------------------------------------------------
+// SARGE: NOTES WINDOW STUFF
+// ----------------------------------------------------------------------
+
+//Move the login window slightly to the left
+function SetNotesWindow(HUDKeypadNotesWindow N)
+{
+    super.SetNotesWindow(N);
+    SetPos(x - 50,y);
+    bWindowDragged = true;
+}
+
+// ----------------------------------------------------------------------
 // TextChanged() 
 // ----------------------------------------------------------------------
 
