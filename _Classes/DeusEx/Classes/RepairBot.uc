@@ -84,7 +84,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 
    // DEUS_EX AMSD  In multiplayer, don't pop up the window, just use them
    // In singleplayer, do the old thing.
-   if (Level.NetMode == NM_Standalone && (CanCharge(true) || !class'DeusExPlayer'.default.bStreamlinedRepairBotInterface))
+   if (Level.NetMode == NM_Standalone && (HasChargesRemaining() || !class'DeusExPlayer'.default.bStreamlinedRepairBotInterface))
    {
       ActivateRepairBotScreens(DeusExPlayer(Frobber));
    }
@@ -98,7 +98,7 @@ function Frob(Actor Frobber, Inventory frobWith)
       }
       else
       {
-         if(CanCharge(true))                                      //RSD: 0 changed to lowerThreshold
+         if(HasChargesRemaining())                                      //RSD: 0 changed to lowerThreshold
             Pawn(Frobber).ClientMessage(sprintf(msgCharging, int(chargeRefreshTime - (Level.TimeSeconds - lastChargetime))));
         else
             Pawn(Frobber).ClientMessage(msgDepleted);
@@ -150,10 +150,13 @@ function int ChargePlayer(DeusExPlayer PlayerToCharge)
 // Returns whether or not the bot can charge the player
 // ----------------------------------------------------------------------
 
-simulated function bool CanCharge(optional bool checkChargesOnly)
+function bool HasChargesRemaining()
 {
-    if (checkChargesOnly)
-        return chargeMaxTimes > lowerThreshold;
+    return chargeMaxTimes > lowerThreshold;
+}
+
+simulated function bool CanCharge()
+{
 	return (( (Level.TimeSeconds - int(lastChargeTime)) > chargeRefreshTime)&&(chargeMaxTimes>lowerThreshold)); //RSD: 0 changed to lowerThreshold
 }
 
