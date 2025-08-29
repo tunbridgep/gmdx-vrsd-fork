@@ -719,6 +719,8 @@ var globalconfig bool bStompVacbots;                                            
 var travel bool bRealKillswitch;                                                        //SARGE: Playthrough Modifier for a real killswitch
 var travel float killswitchTimer;                                                       //SARGE: Killswitch timer in seconds.
 
+var globalconfig bool bLessTutorialMessages;                                            //SARGE: Turn off some of the tutorial messages, like Alex's starting game messages.
+
 //Music Stuff
 
 var transient EMusicMode musicModeGMDX;                                                 //SARGE: Current music mode. Used by the state machine.

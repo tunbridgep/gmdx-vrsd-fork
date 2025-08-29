@@ -102,6 +102,22 @@ function Timer()
 
 	if (localURL == "01_NYC_UNATCOISLAND")
 	{
+        //Fix conversations
+        //This has to be done every time we restart the game.
+        if (!bDoneConversationFix)
+        {
+            // "the NSF have set up patchwork security systems here"
+            GetConversation('DL_FrontEntrance').AddFlagRef('GMDXNoTutorials', false);
+            // "The NSF has a security bot on patrol..."
+            //GetConversation('DL_FrontEntranceBot').AddFlagRef('GMDXNoTutorials', false);
+            // "you might be able to avoid some of the security by entering this way"
+            GetConversation('DL_BackEntrance').AddFlagRef('GMDXNoTutorials', false);
+            // "NSF everywhere, JC.  Your orders are to shoot on sight."
+            //GetConversation('DL_LeaveDockNoGun').AddFlagRef('GMDXNoTutorials', false);
+            // "If you want to make a covert approach, remember the academy's stealth course..."
+            GetConversation('DL_GameplayIntro').AddFlagRef('GMDXNoTutorials', false);
+            bDoneConversationFix = true;
+        }
 		// count the number of dead terrorists
 		if (!flags.GetBool('M01PlayerAggressive'))
 		{
