@@ -281,7 +281,7 @@ function DifficultyMod(float CombatDifficulty, bool bHardCoreMode, bool bExtraHa
           HealthArmRight=200;                                                 //RSD: Was 250
           }
           }
-          bNotFirstDiffMod = true;
+          super.DifficultyMod(CombatDifficulty,bHardCoreMode,bExtraHardcore,bFirstLevelLoad);
 }
 
 State Attacking

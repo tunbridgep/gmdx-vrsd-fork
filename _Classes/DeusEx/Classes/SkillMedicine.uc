@@ -123,6 +123,38 @@ function bool DecLevel(
 	return False;
 }
 
+//SARGE: Added a new function so we can overwrite it in certain contexts.
+//Replaces the janky "Hardcore mode values" text for Lockpicking/Electronics.
+//Now we should be able to accurately show the actual values.
+function string GetDescriptionText(bool bHardcoreMode, float combatDifficulty)
+{
+    local int s0, s1, s2, s3;
+    local int healAmount;
+
+    healAmount = class'Medkit'.default.healAmount;
+
+    if (bSmartSkillString)
+    {
+        //SARGE: This is some dumb bullshit!
+        s0 = 1 * healAmount;
+        s1 = 1.5 * healAmount;
+        s2 = 2.166667 * healAmount;
+        s3 = 3.000000 * healAmount;
+
+        if (bHardcoreMode)
+        {
+            s0 -= 10;
+            s1 -= 10;
+            s2 -= 10;
+            s3 -= 10;
+        }
+
+        return sprintf(Description,s0,s1,s2,s3);
+    }
+    else
+        return Description;
+}
+
 defaultproperties
 {
      mpCost1=1000
@@ -142,4 +174,5 @@ defaultproperties
      LevelValues(1)=2.000000
      LevelValues(2)=2.500000
      LevelValues(3)=3.000000
+     bSmartSkillString=true
 }

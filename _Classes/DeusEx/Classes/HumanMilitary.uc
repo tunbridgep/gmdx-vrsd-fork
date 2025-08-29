@@ -91,7 +91,7 @@ function DifficultyMod(float CombatDifficulty, bool bHardCoreMode, bool bExtraHa
          else if (IsA('MJ12Commando'))
              HearingThreshold = 0.125000;
          }
-         bNotFirstDiffMod = true;
+         super.DifficultyMod(CombatDifficulty,bHardCoreMode,bExtraHardcore,bFirstLevelLoad);
 }
 
 defaultproperties

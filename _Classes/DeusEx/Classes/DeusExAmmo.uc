@@ -435,6 +435,18 @@ static function Texture GetHDTPLargeIcon()
     return class'HDTPLoader'.static.GetTexture2(default.HDTPLargeIcon,string(default.LargeIcon),IsHDTP());
 }
 
+//SARGE: Notify the player when we use ammo.
+function bool UseAmmo(int AmountNeeded)
+{
+    local bool re;
+    re = super.UseAmmo(AmountNeeded);
+    
+    if (re && Owner != None && Owner.IsA('DeusExPlayer'))
+        DeusExPlayer(Owner).OnUseAmmo(self,AmountNeeded);
+
+    return re;
+}
+
 defaultproperties
 {
      msgInfoRounds="%d Rounds remaining"

@@ -836,8 +836,9 @@ auto simulated state Flying
 							Damage=Damage-1.0;
 						Wall.TakeDamage(Damage, Pawn(Owner), Wall.Location, MomentumTransfer*Normal(Velocity), damageType);
 
-						//Sarge: Don't allow knives to be retrieved if they damaged a locked object
-						if (IsA('Shuriken') && DeusExMover(Wall).bLocked && Damage >= DeusExMover(Wall).minDamagethreshold)
+						//Sarge: Don't allow knives or Darts to be retrieved if they damaged a locked object
+                        //SARGE: Add a small grace amount so that we can still use them instead of melee weapons for doorbusting low-level stuff for free. Controversial. Might remove.
+						if ((IsA('Shuriken') || IsA('Dart')) && DeusExMover(Wall).bLocked && Damage >= DeusExMover(Wall).minDamagethreshold && DeusExMover(Wall).minDamagethreshold >= 16)
 							Destroy();
 					}
 				}

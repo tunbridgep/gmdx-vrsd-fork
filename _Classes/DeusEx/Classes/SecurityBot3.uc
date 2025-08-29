@@ -26,7 +26,7 @@ function DifficultyMod(float CombatDifficulty, bool bHardCoreMode, bool bExtraHa
                  else
                      GroundSpeed=110.000000;
              }
-             bNotFirstDiffMod = true;
+             super.DifficultyMod(CombatDifficulty,bHardCoreMode,bExtraHardcore,bFirstLevelLoad);
 }
 
 defaultproperties
