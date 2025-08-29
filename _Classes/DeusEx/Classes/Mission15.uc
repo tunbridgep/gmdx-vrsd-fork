@@ -35,7 +35,7 @@ function FirstFrame()
 		// unhide a helicopter if a flag is set, and start the countdown
 		// to Jock's death
 
-		if (!flags.GetBool('Ray_dead'))
+		if (!flags.GetBool('GotHelicopterInfo'))
 		{
 			foreach AllActors(class'BlackHelicopter', chopper)
 			{
