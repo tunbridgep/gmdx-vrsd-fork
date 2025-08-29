@@ -48,11 +48,14 @@ function ClearAugmentationDisplay()
 	// Loop through all our children and check to see if 
 	// we have a match.
 
+    if (winIcons == None)
+        return;
+
 	currentWindow = winIcons.GetTopChild();
 	while(currentWindow != None)
 	{
 		currentWindow.Hide();
-      currentWindow.SetClientObject(None);
+        currentWindow.SetClientObject(None);
 		currentWindow = currentWindow.GetLowerSibling();
 	}
 

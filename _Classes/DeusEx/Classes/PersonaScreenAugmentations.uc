@@ -95,6 +95,14 @@ var bool bMedbot;                                     //SARGE: Set to TRUE if we
 //LDDP, 10/28/21: Store this assessment for later.
 var bool bFemale;
 
+//SARGE: Add new tutorial text for augs
+var Localized string KeyTutorialText1;
+var Localized string KeyTutorialText2;
+var Localized string KeyTutorialText3;
+var Localized string KeyTutorialText4;
+var Localized string KeyTutorialTextYes;
+var Localized string KeyTutorialTextNo;
+
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -400,11 +408,12 @@ local int timeRem;
         if (PersonaAugmentationItemButton(selectedAugButton) != None)
            PersonaAugmentationItemButton(selectedAugButton).SetActive(selectedAug);
   }
-  if (player.Energy == 0 && !bAllIconsReset)
-  {
-    bAllIconsReset = True;
+  //SARGE: Make aug buttons always update, not just when told to.
+  //if (player.Energy == 0 && !bAllIconsReset)
+  //{
+    //bAllIconsReset = True;
     RefreshAugmentationButtons();
-  }
+  //}
 }
 
 function int GetAugCount()
@@ -855,6 +864,29 @@ function PersonaAugmentationItemButton CreateAugButton(Augmentation anAug, int a
 }
 
 // ----------------------------------------------------------------------
+// FindHoveredButton()
+// SARGE: Hacky function to find the window at the specified coordinates
+// ----------------------------------------------------------------------
+
+function PersonaAugmentationItemButton getButtonAtPosition(int x, int y)
+{
+    local int i;
+    local int xL, xR, yL, yR;
+
+    for (i = 0;i < ArrayCount(augItems);i++)
+    {
+        xL = augItems[i].x + augItems[i].width * 0.5;// - (augItems[i].width * 0.5);
+        xR = xL + augItems[i].width;// + (augItems[i].width * 0.5);
+        yL = augItems[i].y + augItems[i].height * 0.5;// - (augItems[i].height * 0.5);
+        yR = yL + augItems[i].height;// + (augItems[i].height * 0.5);
+
+        if (augItems[i] != None && xL < x && xR > x && yL < y && yR > y)// && augItems[i] != selectedAugButton)
+            return augItems[i];
+    }
+    return none;
+}
+
+// ----------------------------------------------------------------------
 // ButtonActivated()
 // ----------------------------------------------------------------------
 
@@ -1045,8 +1077,22 @@ event bool MouseButtonPressed(float pointX, float pointY, EInputKey button,
                               int numClicks)
 {
 	local Bool bResult;
+    local PersonaAugmentationItemButton newBtn;
 
 	bResult = False;
+    
+    //SARGE: Hacky fix to select the right button
+    if (player.bEnhancedPersonaScreenMouse)
+    {
+        if (button == IK_RightMouse || button == IK_MiddleMouse)
+        {
+            newBtn = getButtonAtPosition(pointX,pointY);
+            if (newBtn != None)
+                ButtonActivated(newBtn);
+            else //Horrible hack to make right-clicking on nothing do nothing
+                return false;
+        }
+    }
 
     if (button == IK_RightMouse && SelectedAug != None)
     {
@@ -1125,6 +1171,20 @@ function SelectAugmentation(PersonaItemButton buttonPressed)
 		selectedAug.UpdateInfo(winInfo);
 		selectedAugButton.SelectButton(True);
         selectedAugButton.bTickEnabled = True;
+
+        //SARGE: Add tutorial info
+        if (selectedAug.AugmentationType != Aug_Passive)
+        {
+            winInfo.SetText(CR());
+            //winInfo.AddLine();
+            if (selectedAug.bAddedToWheel)
+                winInfo.SetText(sprintf(KeyTutorialText1,KeyTutorialTextYes));
+            else
+                winInfo.SetText(sprintf(KeyTutorialText1,KeyTutorialTextNo));
+            winInfo.SetText(KeyTutorialText2);
+            //winInfo.SetText(CR());
+        }
+
 		EnableButtons();
 	}
 }
@@ -1352,6 +1412,12 @@ defaultproperties
      toggleLabel="Toggle:"
      BarString="%d%%"
      BarStringRes="%d/%d (%d%%) - %d Reserved"
+     KeyTutorialTextYes="Yes"
+     KeyTutorialTextNo="No"
+     KeyTutorialText1="Assigned to Augmentation Wheel: %s"
+     KeyTutorialText2="Press MIDDLE-MOUSE to Assign/Unassign items to the augmentation wheel"
+     KeyTutorialText3="Assigned hotkey: %s"
+     KeyTutorialText4="Use the 3-9, 0, - and = keys to assign augmentations to the associated F keys"
      clientBorderOffsetY=32
      ClientWidth=596
      ClientHeight=427

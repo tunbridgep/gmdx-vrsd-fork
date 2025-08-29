@@ -42,7 +42,7 @@ function DifficultyMod(float CombatDifficulty, bool bHardCoreMode, bool bExtraHa
                     EMPHitPoints = 120;
                 }
              }
-             bNotFirstDiffMod = true;
+             super.DifficultyMod(CombatDifficulty,bHardCoreMode,bExtraHardcore,bFirstLevelLoad);
 }
 
 /*function bool ShouldStrafe()                                                    //RSD: Hacked so we can get the robot backing up but not generally actually strafing

@@ -35,7 +35,7 @@ defaultproperties
      items(18)=(HelpText="If enabled, the game will return to the menu after dying, as in Vanilla.",actionText="Game: Death returns to menu",variable="bMenuAfterDeath");
      items(19)=(HelpText="If enabled, characters (including the player) will blink randomly.",actionText="Game: Enable Blinking",variable="bEnableBlinking",defaultValue=1);
      items(20)=(HelpText="Shooting at walls will send sparks flying, and bullet holes are bigger!",actionText="Game: John Woo Mode",variable="bJohnWooSparks");
-     items(21)=(HelpText="In Restricted mode, Combat Music will require at least 2 enemies to be in combat before music plays.",actionText="Music: Play Combat Music",variable="iAllowCombatMusic",defaultValue=1,valueText2="Restricted",);
+     items(21)=(HelpText="In Restricted mode, Combat Music will require at least 2 enemies to be in combat before music plays.",actionText="Audio: Play Combat Music",variable="iAllowCombatMusic",defaultValue=1,valueText2="Restricted",);
      items(22)=(HelpText="If set to Vanilla, only vanilla death/pain sounds play. Randomised randomises all death/pain sounds.",actionText="Audio: Pain/Death Sounds",variable="iDeathSoundMode",defaultValue=2,valueText0="Vanilla",valueText1="Pre-Set",valueText2="Randomised");
      items(23)=(HelpText="Makes all decals and fragments stick around forever.|nWARNING: High values may severely affect performance and lead to save instability!",actionText="Game: Persistant Debris",variable="iPersistentDebris",valueText1="Blood Pools Only",valueText2="Everything (2048 Decal Limit)",valuetext3="Everything (4096 Decal Limit)",valuetext4="Everything (8192 Decal Limit)",valuetext5="Everything (16384 Decal Limit)",defaultValue=1);
      items(24)=(HelpText="If enabled, the intro cutscene is not loaded.",actionText="Game: Skip Intro",variable="bSkipNewGameIntro");
@@ -44,8 +44,8 @@ defaultproperties
      items(27)=(HelpText="Change weapon viewmodels to display better at high FOV (110+).",actionText="HUD: Alternate Weapon Offsets",variable="iEnhancedWeaponOffsets",defaultValue=1,valueText1="Automatic",valueText2="Always");
      items(28)=(HelpText="Display CLIPS or MAGS in the Ammo window. Has no effect for weapons that don't use magazines, or if Accurate Ammo Display is turned on.",actionText="HUD: Ammo Text Display",variable="bDisplayClips",valueText0="MAGS",valueText1="CLIPS",defaultValue=0);
      items(29)=(HelpText="Always show the accuracy crosshairs for your currently held weapon.",actionText="HUD: Always Show Bloom",variable="bAlwaysShowBloom");
-	 items(30)=(HelpText="Alternative tool display window with some minor text and spacing changes.",actionText="HUD: Alternate Tool Window Display",variable="iAltFrobDisplay",valueText1="Indented",valueText2="Extended",defaultValue=1);
-	 items(31)=(HelpText="Shows the ammo display on the right side of the screen, and the belt on the left",actionText="HUD: Ammo Display on Right",variable="bAmmoDisplayOnRight");
+     items(30)=(HelpText="Alternative tool display window with some minor text and spacing changes.",actionText="HUD: Alternate Tool Window Display",variable="iAltFrobDisplay",valueText1="Indented",valueText2="Extended",defaultValue=1);
+     items(31)=(HelpText="Shows the ammo display on the right side of the screen, and the belt on the left",actionText="HUD: Ammo Display on Right",variable="bAmmoDisplayOnRight");
      items(32)=(HelpText="Enable alternate visuals for the bioenergy bar.",actionText="HUD: Animated Bioenergy Bar",variable="bAnimBar1",defaultValue=1);
      items(33)=(HelpText="Enable alternate visuals for the stamina bar.",actionText="HUD: Animated Stamina Bar",variable="bAnimBar2",defaultValue=1);
      items(34)=(HelpText="Automatically minimise the Targeting augmentation when your hands are empty.",actionText="HUD: Auto-Minimise Targeting",variable="bOnlyShowTargetingWindowWithWeaponOut",defaultValue=1);
@@ -76,11 +76,11 @@ defaultproperties
      items(58)=(HelpText="Loot will not be declined from corpses if the Walk/Run key is held.",actionText="Interaction: Smart Declining",variable="bSmartDecline");
      items(59)=(HelpText="When using a medical bot, automatically switch to the Health screen after using the last Aug canister.",actionText="Interaction: Medbot Auto Switch",variable="bMedbotAutoswitch",defaultValue=1);
      items(60)=(HelpText="Changes lighting on some maps to reduce strobing and flickering.",actionText="Lighting: Lighting Accessibility",variable="bLightingAccessibility");
-     items(61)=(HelpText="If Enabled, music will not restart upon map changes using the same track. Extended mode also stops conversation music in bars and clubs.",actionText="Music: More Immersive Music",variable="iEnhancedMusicSystem",valueText2="Extended",defaultValue=1);
+     items(61)=(HelpText="If Enabled, music will not restart upon map changes using the same track. Extended mode also stops conversation music in bars and clubs.",actionText="Audio: More Immersive Music",variable="iEnhancedMusicSystem",valueText2="Extended",defaultValue=1);
      items(62)=(HelpText="Enable/disable level transition autosaving.",actionText="Player: Autosave on Level Change",variable="bTogAutoSave",defaultValue=1);
      items(63)=(HelpText="When dying, switch to a first or third person camera.",actionText="Player: Death Perspective",variable="bRemoveVanillaDeath",valueText0="Third Person",valueText1="First Person");
-	 items(64)=(HelpText="If enabled, the current player stance will be displayed on the HUD.",actionText="Player: Current Stance Display",variable="iStanceHud",defaultValue=3,valueText1="Walk/Run",valueText2="Everything except Default",valueText3="Everything");
-	 items(65)=(HelpText="Disable the flash effect when healing or change the color.",actionText="Player: Healing Screen Effect",variable="iHealingScreen",defaultValue=1,valueText2="Classic");
+     items(64)=(HelpText="If enabled, the current player stance will be displayed on the HUD.",actionText="Player: Current Stance Display",variable="iStanceHud",defaultValue=3,valueText1="Walk/Run",valueText2="Everything except Default",valueText3="Everything");
+     items(65)=(HelpText="Disable the flash effect when healing or change the color.",actionText="Player: Healing Screen Effect",variable="iHealingScreen",defaultValue=1,valueText2="Classic");
      items(66)=(HelpText="Active Augmentations no longer play their ambient sounds.",actionText="Audio: Quiet Augmentations",variable="bQuietAugs",defaultValue=1);
      items(67)=(HelpText="Alternate realistic headbobbing effect. To disable headbobbing outright, see the standard Settings menu.",actionText="Player: Realistic Head-Bobbing",variable="bModdedHeadBob",defaultValue=1);
      items(68)=(HelpText="Prevent accidentally killing domesticated animals by stomping on them.",actionText="Player: Stomp Domestic Animals",variable="bStompDomesticAnimals",defaultValue=0);
@@ -102,6 +102,11 @@ defaultproperties
      items(83)=(HelpText="If enabled, weapons will use new high-quality sounds.",actionText="Audio: Improved Weapon Sounds",variable="bImprovedWeaponSounds",defaultValue=1);
      items(84)=(HelpText="If enabled, pressing the Run key while crouched will automatically uncrouch. Does nothing when Always Run is enabled.",actionText="Game: Auto Uncrouch",variable="bAutoUncrouch",defaultValue=1);
      items(85)=(HelpText="If enabled, always show the Playthrough Modifiers screen before the New Game screen.",actionText="Game: Always Show Playthrough Modifiers",variable="bAlwaysShowModifiers",defaultValue=1);
+     items(86)=(HelpText="If enabled, right- and middle-clicking in the inventory and augmentations screens will effect the item under the cursor, rather than the currently selected item.",actionText="HUD: Enhanced Inventory/Aug Interaction",variable="bEnhancedPersonaScreenMouse",defaultValue=1);
+     items(87)=(HelpText="If enabled, keypads and computer login screens will show a list of valid codes from your notes.",actionText="HUD: Show Code Notes",variable="bShowCodeNotes",defaultValue=1);
+     items(88)=(HelpText="If enabled, the HUD Ammo Display will show total ammo as cyan when at max ammo.",actionText="HUD: Show Max Ammo",variable="bShowFullAmmoInHUD",defaultValue=1);
+     items(89)=(HelpText="Re-enables the head-popping system from GMDX v9. Not recommended as it looks very unfinished.",actionText="Game: Allow Decapitations",variable="bDecap",defaultValue=0);
+     items(90)=(HelpText="Alternate display for the accuracy crosshairs. Requires a map load/reload to fully work.",actionText="HUD: Alternate Accuracy Crosshairs",variable="bAlternateCrosshairAcc");
      Title="GMDX Quality of Life Options"
      colWidths(0)=214
      colWidths(1)=155

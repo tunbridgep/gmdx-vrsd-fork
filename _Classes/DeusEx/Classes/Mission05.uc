@@ -223,6 +223,26 @@ function FirstFrame()
 
 			flags.SetBool('MS_InventoryRemoved', True,, 6);
 		}
+
+        //SARGE: If we're using the "Killswitch Engaged" playthrough mod,
+        //then reduce the killswitch by 3 hours
+        if (player.bRealKillswitch && flags.GetBool('GMDXKillswitchSet') && !flags.GetBool('GMDXKillswitchReduced1'))
+        {
+            player.killswitchTimer -= (3*60)*60;
+            flags.SetBool('GMDXKillswitchReduced1', True,, 6);
+        }
+        //If we came here via Alternate Start, then set up the killswitch for ~23 hours
+        else if (player.bRealKillswitch && !flags.GetBool('GMDXKillswitchSet'))
+        {
+            player.killswitchTimer = (22*60)*60;
+            player.killswitchTimer += Player.Randomizer.GetRandomInt(3600);
+            player.DeactivateAllAugs(true);
+            player.PlaySound(sound'GMDXSFX.Generic.biomodscreenselect', SLOT_Pain);
+            player.ClientMessage(class'Mission04'.default.AugSystemShutdown);
+            player.RefreshAugmentationDisplay();
+            //player.killSwitchTimer = 20; //For testing, set it to 20 seconds.
+            flags.SetBool('GMDXKillswitchSet', True,, 6);
+        }
 	}
 	else if (localURL == "05_NYC_UNATCOHQ")
 	{

@@ -59,10 +59,12 @@ event DrawWindow(GC gc)
 	else
 		gc.SetStyle(DSTY_Masked);
 	
+    //SARGE: I don't know why, but I had to swap these...
+    //something fucky is going on!
 	if (bButtonPressed)
-		gc.DrawTexture(0, 0, width, height, 0, 0, keypadButtonTextures[1]);
-	else
 		gc.DrawTexture(0, 0, width, height, 0, 0, keypadButtonTextures[0]);
+	else
+		gc.DrawTexture(0, 0, width, height, 0, 0, keypadButtonTextures[1]);
 
 	// Display darker if the button's insensitive
 	if (bIsSensitive)

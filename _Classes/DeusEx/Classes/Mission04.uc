@@ -483,13 +483,15 @@ function Timer()
 		}
 
         //SARGE: If we're using the "Killswitch Engaged" playthrough mod,
-        //then set the killswitch to ~23 hours, as mentioned by Simons, when sending the signal
+        //then set the killswitch to ~26 hours, as mentioned by Simons, when sending the signal
         if (flags.GetBool('NSFSignalSent') && player.bRealKillswitch && !flags.GetBool('GMDXKillswitchSet'))
         {
-            player.killswitchTimer = (23*60)*60;
+            player.killswitchTimer = (25*60)*60;
             player.killswitchTimer += Player.Randomizer.GetRandomInt(3600);
             player.DeactivateAllAugs(true);
+            player.PlaySound(sound'GMDXSFX.Generic.biomodscreenselect', SLOT_Pain);
             player.ClientMessage(AugSystemShutdown);
+            player.RefreshAugmentationDisplay();
             //player.killSwitchTimer = 20; //For testing, set it to 20 seconds.
             flags.SetBool('GMDXKillswitchSet', True,, 6);
         }

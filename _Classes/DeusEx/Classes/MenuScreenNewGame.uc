@@ -84,6 +84,11 @@ var bool bRandomizeCrap;
 var bool bCutInteractions;
 var bool bA51Camera;
 var bool bHardcoreFilterOption;
+<<<<<<< Updated upstream
+=======
+var bool bCollectibles;
+var bool bPermaCloak;
+>>>>>>> Stashed changes
 
 //LDDP
 var bool bFemaleEnabled;
@@ -155,6 +160,11 @@ event InitWindow()
     bCutInteractions=false;                                                     //Sarge
     bA51Camera=false;                                                           //Sarge
     bHardcoreFilterOption=false;                                                //Sarge
+<<<<<<< Updated upstream
+=======
+    bCollectibles=false;                                                        //Sarge
+    bPermaCloak=false;                                                          //Sarge
+>>>>>>> Stashed changes
     //bRestrictedMetabolism=false;                                              //Sarge
     default.bRandomizeCrates=false;                                             //RSD: Also need default values! Otherwise get command in modifier menu takes the wrong value
     default.bRandomizeMods=false;                                               //RSD
@@ -176,6 +186,11 @@ event InitWindow()
     default.bCutInteractions=false;                                             //Sarge
     default.bA51Camera=false;                                                   //Sarge
     default.bHardcoreFilterOption=false;                                        //Sarge
+<<<<<<< Updated upstream
+=======
+    default.bCollectibles=false;                                                //Sarge
+    default.bPermaCloak=false;                                                  //Sarge
+>>>>>>> Stashed changes
 
 	StyleChanged();
 }
@@ -360,6 +375,7 @@ function CreateSkillInfoWindow()
 {
 	winSkillInfo = MenuUISkillInfoWindow(winClient.NewChild(Class'MenuUISkillInfoWindow'));
 	winSkillInfo.SetPos(165, 208);
+    winSkillInfo.bHardCoreMode = bHardCoreMode;
 }
 
 // ----------------------------------------------------------------------
@@ -831,6 +847,7 @@ function SaveSettings()
     player.bCutInteractions=bCutInteractions;                                   //Sarge
     player.bA51Camera=bA51Camera;                                               //Sarge
     player.bHardcoreFilterOption=bHardcoreFilterOption;                         //Sarge
+    player.bPermaCloak=bPermaCloak;                                             //Sarge
     if (player.bRandomizeAugs)                                                  //RSD: New aug randomization feature
         ScrambleAugOrderList();
 
@@ -1057,6 +1074,11 @@ function SetDifficulty(float newDifficulty,bool bSetHardCore)
 {
 	combatDifficulty = newDifficulty;
 	bHardCoreMode=bSetHardCore;
+    if (winSkillInfo != None)
+    {
+        winSkillInfo.bHardCoreMode = bHardCoreMode;
+        winSkillInfo.combatDifficulty = combatDifficulty;
+    }
 }
 
 // ----------------------------------------------------------------------

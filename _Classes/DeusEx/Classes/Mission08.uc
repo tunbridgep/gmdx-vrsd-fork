@@ -44,26 +44,6 @@ function FirstFrame()
         }
 
 	}
-	else if (localURL == "08_NYC_STREET")
-	{
-        //SARGE: Fix up street light Lighting if we have Lighting Accessibility enabled
-        ForEach AllActors(class'Light', L)
-            DoLightingAccessibility(L, 'Light94');
-
-	     if (flags.GetBool('Enhancement_Detected'))
-	     {
-            foreach AllActors(class'ScriptedPawn', pawn)
-	        {
-               if (pawn.IsA('UNATCOTroop'))
-               {
-                  if (pawn.BarkBindName == "UNATCOTroop")
-                     pawn.BarkBindName = "UNATCOTroopEnemy";
-                  else if (pawn.BarkBindName == "UNATCOTroopB")
-                     pawn.BarkBindName = "UNATCOTroopEnemyB";
-               }
-            }
-	     }
-    }
 	else if (localURL == "08_NYC_HOTEL")
     {
         //SARGE: Carcasses already in the map won't bleed
@@ -74,39 +54,6 @@ function FirstFrame()
             {
                 C.DestroyPool();
                 C.bNoDefaultPools=true;
-            }
-        }
-
-        //SARGE: Fix up elevator shaft Lighting if we have Lighting Accessibility enabled
-        if (Player.bLightingAccessibility)
-        {
-            ForEach AllActors(class'Light', L)
-            {
-                //Remove some of the more egregious ones
-                if (L.Name == 'Light44' || L.Name == 'Light45'  )
-                {
-                    L.LightPeriod = 0;
-                    L.LightType = LT_Steady;
-                    //L.Destroy();
-                }
-                else if (L.Name == 'Light42')
-                {
-                    L.LightPeriod = 155;
-                    L.LightType = LT_Strobe;
-                }
-
-                //L.Destroy();
-
-
-                /*
-                if (L.LightType == LT_Flicker)
-                {
-                    clientMessage("Changing Light Period on " $ L.name $ " from " $ L.LightPeriod $ " to 0");
-                    L.LightPeriod = 100;
-                    //L.LightPeriod = Max(L.LightPeriod,255);
-                    L.LightType = LT_Blink;
-                }
-                */
             }
         }
     }

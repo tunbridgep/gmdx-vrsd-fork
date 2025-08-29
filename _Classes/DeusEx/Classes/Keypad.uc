@@ -10,7 +10,7 @@ var() sound failureSound;
 var() name FailEvent;
 var() bool bToggleLock;		// if True, toggle the lock state instead of triggering
 
-var HUDKeypadWindow keypadwindow;
+var HUDKeypadContainerWindow topWindow;           //SARGE: Put everything on a temp window so that we can interact with the keypad and the notes window simultaneously.
 
 // ----------------------------------------------------------------------
 // Network Replication
@@ -32,7 +32,7 @@ function HackAction(Actor Hacker, bool bHacked)
 	local DeusExPlayer Player;
 
 	// if we're already using this keypad, get out
-	if (keypadwindow != None)
+	if (topWindow != None)
 		return;
 
 	Player = DeusExPlayer(Hacker);
@@ -65,22 +65,21 @@ function HackAction(Actor Hacker, bool bHacked)
 simulated function ActivateKeypadWindow(DeusExPlayer Hacker, bool bHacked)
 {
 	local DeusExRootWindow root;
+    local DeusExNote note;
 
-   root = DeusExRootWindow(Hacker.rootWindow);
-   if (root != None)
-   {
-      keypadwindow = HUDKeypadWindow(root.InvokeUIScreen(Class'HUDKeypadWindow', True));
-      root.MaskBackground(True);
-      
-      // copy the tag data to the actual class
-      if (keypadwindow != None)
-      {
-         keypadwindow.keypadOwner = Self;
-         keypadwindow.player = Hacker;
-         keypadwindow.bInstantSuccess = bHacked;
-         keypadwindow.InitData();
-      }
-   }
+    note = Hacker.GetCodeNote(validCode,true);
+
+    root = DeusExRootWindow(Hacker.rootWindow);
+    if (root != None)
+    {
+        //HUDKeypadWindow(root.InvokeUIScreen(Class'HUDKeypadWindow', True));
+        topWindow = HUDKeypadContainerWindow(root.InvokeUIScreen(Class'HUDKeypadContainerWindow', True));
+        topWindow.InitKeypadWindow(self,Hacker,bHacked);
+
+        if (len(validCode) > 2) //Don't create notes pages for keypads with 2 letter codes, since there will be lots of invalid notes that match.
+            topWindow.AddNotesWindow(Hacker,note);
+        root.MaskBackground(True);
+    }
 }
 
 // ----------------------------------------------------------------------

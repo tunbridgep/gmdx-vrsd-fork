@@ -25,7 +25,8 @@ defaultproperties
      HitDamage=20
      maxRange=24000
      AccurateRange=14400
-     BaseAccuracy=0.000000
+     BaseAccuracy=0.650000
+     //BaseAccuracy=0.000000
      AreaOfEffect=AOE_Cone
      bHasMuzzleFlash=False
      bHandToHand=True
@@ -61,4 +62,5 @@ defaultproperties
      Mass=5.000000
      Buoyancy=2.000000
      bDisposableWeapon=true
+     bFakeHandToHand=true
 }

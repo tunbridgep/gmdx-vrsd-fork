@@ -2,7 +2,7 @@
 // HUDKeypadWindow
 //=============================================================================
 
-class HUDKeypadWindow extends DeusExBaseWindow;
+class HUDKeypadWindow extends HUDBaseWindow;
 
 var bool bFirstFrameDone;
 
@@ -40,6 +40,11 @@ var globalconfig bool bReplaceSymbols;                                          
 
 var bool bIgnore;                                                                    //SARGE: Ignore the next button press
 
+//SARGE: Need to redefine these, as we are no longer a DeusExBaseWindow class
+var const Color colRed;
+var const Color colGreen;
+var DeusExRootWindow root;
+
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -52,7 +57,6 @@ event InitWindow()
 
 	SetWindowAlignments(HALIGN_Center, VALIGN_Center);
 	SetSize(103, 162);
-	SetMouseFocusMode(MFocus_EnterLeave);
 
 	inputCode="";
 
@@ -61,6 +65,9 @@ event InitWindow()
 	CreateInputTextWindow();
 
 	bTickEnabled = True;
+
+	// Get a pointer to the root window
+	root = DeusExRootWindow(GetRootWindow());
 
 	StyleChanged();
 }
@@ -73,9 +80,8 @@ event InitWindow()
 
 event DestroyWindow()
 {
+	keypadOwner.topWindow = None;
 	Super.DestroyWindow();
-
-	keypadOwner.keypadwindow = None;
 }
 
 // ----------------------------------------------------------------------
@@ -197,6 +203,7 @@ function CreateKeypadButtons()
 			btnKeys[i] = HUDKeypadButton(NewChild(Class'HUDKeypadButton'));
 			btnKeys[i].SetPos((x * 26) + 16, (y * 28) + 35);
             btnKeys[i].num = TransposeNumber(i);
+            btnKeys[i].StyleChanged();
 		}
 	}
 
@@ -667,4 +674,6 @@ defaultproperties
      bNumberPadStyle=true
      bDigitDisplay=true
      bReplaceSymbols=true
+     colRed=(R=255)
+     colGreen=(G=255)
 }

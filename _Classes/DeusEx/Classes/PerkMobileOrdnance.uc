@@ -3,8 +3,8 @@
 //=============================================================================
 class PerkMobileOrdnance extends Perk;
 
-//Make all GEP Guns in the players inventory accept laser and scope mods
-function OnPerkPurchase()
+//Make all Flamethrowers take up 3 spaces instead of 6
+function OnMapLoadAndPurchase()
 {
 	local Inventory item;
     local DeusExWeapon W;

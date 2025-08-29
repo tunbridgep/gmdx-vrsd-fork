@@ -642,6 +642,8 @@ function PostBeginPlay()
 		bHasShadow = False;
 		bCanBleed = False;
 	}
+        
+    SetupSkin();
 }
 
 
@@ -4011,7 +4013,6 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
         deathSoundOverride = Sound'DeusExSounds.Generic.FleshHit1';
        player = DeusExPlayer(GetPlayerPawn());
        //Sarge: Disable head popping because it looks awful, and doesn't work with HDTP
-       /*
         if (bCanPop && FRand() < 0.8 && player.bDecap && (player.inHand.IsA('WeaponRifle') || player.inHand.IsA('WeaponAssaultShotgun') ||
      player.inHand.IsA('WeaponSawedOffShotgun'))) //CyberP: I need to change these conditions
         {
@@ -4046,7 +4047,6 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
                 spawn(Class'BloodDrop',,,hitLocation);
             }
         }
-        */
         spawn(Class'BloodDrop',,,hitLocation);
         spawn(Class'BloodDrop',,,hitLocation);
         spawn(Class'BloodDrop',,,hitLocation);
@@ -4483,7 +4483,8 @@ function SetSkinStyle(ERenderStyle newStyle, optional texture newTex, optional f
 	for (i=0; i<8; i++)
 	{
 		curSkin = GetMeshTexture(i);
-		MultiSkins[i] = GetStyleTexture(newStyle, curSkin, newTex);
+        if (curSkin != None && curSkin.Name != 'PinkMaskTex')
+            MultiSkins[i] = GetStyleTexture(newStyle, curSkin, newTex);
 	}
 	Skin      = GetStyleTexture(newStyle, Skin, newTex);
 	ScaleGlow = newScaleGlow;
@@ -4541,6 +4542,7 @@ local SpoofedCorona cor;
 		KillShadow();
 		bCloakOn = bEnable;
 		bCloaked = True;
+        SetupSkin();
 	}
 	else if (!bEnable && bCloakOn && !bForcedCloak)
 	{
@@ -4552,7 +4554,14 @@ local SpoofedCorona cor;
 		bCloaked = False;
 		if (Health > 0)
 		PlaySound(Sound'CloakDown', SLOT_Pain, 0.85, ,768,1.0);
+        SetupSkin();
 	}
+}
+
+//SARGE: Added to let us fix up skins when disabling cloak or swapping weapons
+//By default, does nothing, but can be used for things like custom skins for shotgunners
+function SetupSkin()
+{
 }
 
 function ForceCloakOff()                                                        //RSD: Hack function to force cloak off without playing sounds
@@ -10061,6 +10070,13 @@ function Died(pawn Killer, name damageType, vector HitLocation)
 
 function DifficultyMod(float CombatDifficulty, bool bHardCoreMode, bool bExtraHardcore, bool bFirstLevelLoad) //RSD: New function to streamline NPC stat difficulty modulation
 {
+    //SARGE: If we have perma cloak terned on, and if we can cloak, make it permanent
+    if (!bNotFirstDiffMod && bFirstLevelLoad && bHasCloak && DeusExPlayer(GetPlayerPawn()) != None && DeusExPlayer(GetPlayerPawn()).bPermaCloak && (IsA('Robot') || IsA('MJ12Elite')))
+    {
+        bForcedCloak = true;
+        EnableCloak(true);
+    }
+
 	bNotFirstDiffMod = true;
 }
 
@@ -17320,6 +17336,7 @@ function RandomiseSounds()
 //SARGE: Called when the Weapon Swap gameplay modifier for this entity has been called
 function WeaponSwap(ScriptedPawn SwappedFrom)
 {
+    SetupSkin();
 }
 
 //SARGE: Set up the Shenanigans gameplay modifier for this entity

@@ -64,7 +64,8 @@ function bool WrapWithDecoration()
 	        DxPlayer.Energy -= muscleAug.GetAdjustedEnergy(20.0);
 	  else if (trackingDeco.Mass > 60)
 	        DxPlayer.Energy -= muscleAug.GetAdjustedEnergy(10.0);
-      else
+	  else if (trackingDeco.Mass > 30)
+      //else
             DxPlayer.Energy -= muscleAug.GetAdjustedEnergy(5.0);
 
 	  if (DxPlayer.Energy < 0)

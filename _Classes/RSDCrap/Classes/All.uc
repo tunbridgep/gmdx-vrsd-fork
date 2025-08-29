@@ -133,8 +133,14 @@ class All expands Object
 //Bloody Shuriken
 #exec TEXTURE IMPORT FILE="Textures\BeltIconShurikenBloody.pcx"	    NAME="BeltIconShurikenBloody"   GROUP="Icons"   FLAGS=2
 
+//Fixed "Hair: None" in Terrorist Commander image
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\Image01_TerroristCommander_1_hair.pcx" NAME="Image01_TerroristCommander_1" GROUP="UserInterface"
+
 //NSF Warehouse satellite photo, with ladder removed
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\Image02_NYC_Warehouse_1_noladder.pcx"	NAME="Image02_NYC_Warehouse_1_noladder" GROUP="UserInterface"
+
+//Fixed Paris image
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\Image11_Paris_Cathedral_1.pcx"	NAME="Image11_Paris_Cathedral_1" GROUP="UserInterface"
 
 //Crap
 #exec TEXTURE IMPORT FILE="Textures\Skins\SpartaSign.pcx"	        NAME="SpartaSign" GROUP="Skins"
@@ -237,6 +243,8 @@ class All expands Object
 
 #exec AUDIO IMPORT FILE="Sounds\MultitoolEquip.wav"			NAME="MultitoolEquip"	    	GROUP="Misc"
 #exec AUDIO IMPORT FILE="Sounds\MultitoolUnequip.wav"	    NAME="MultitoolUnequip"		    GROUP="Misc"
+
+#exec AUDIO IMPORT FILE="Sounds\dsp_toxic.wav"			    NAME="DSPToxic"	         		GROUP="Misc"
 
 //New poison smoke texture
 #exec TEXTURE IMPORT  FILE="Textures\ef_PoisonSmoke001.pcx" NAME="ef_PoisonSmoke001" GROUP="Skins"
