@@ -37,7 +37,7 @@ function FirstFrame()
 		}
 
         //SARGE: Remove the newly added aug canister if we didn't rescue him, or if we're using ConFix
-        if (flags.GetBool('Enhancement_Detected') || !flags.GetBool('FordSchickRescued'))
+        if (flags.GetBool('Confix_Engaged') || !flags.GetBool('FordSchickRescued'))
         {
             foreach AllActors(class'AugmentationUpgradeCannister', Upgrade)
                 Upgrade.Destroy();
