@@ -512,6 +512,15 @@ var      int      bleedDamage;     // damage taken from poison effect
 var      Pawn     BleedSource;         // person who initiated PoisonEffect damage
 
 
+//Augmentique Data
+struct AugmentiqueOutfitData
+{
+    var Texture textures[9];
+    var bool bRandomized;
+};
+
+var travel AugmentiqueOutfitData augmentiqueData;
+
 native(2102) final function ConBindEvents();
 
 native(2105) final function bool IsValidEnemy(Pawn TestEnemy, optional bool bCheckAlliance);
@@ -520,6 +529,25 @@ native(2107) final function EAllianceType GetPawnAllianceType(Pawn QueryPawn);
 
 native(2108) final function bool HaveSeenCarcass(Name CarcassName);
 native(2109) final function AddCarcass(Name CarcassName);
+
+//Augmentique: Update our textures to our Augmentique outfit
+function ApplyCurrentOutfit()
+{
+    local int i;
+
+    if (!augmentiqueData.bRandomized)
+        return;
+    
+    //GMDX Exclusive code
+    if (IsHDTP())
+        return;
+
+    for (i = 0;i < 8;i++)
+        if (augmentiqueData.textures[i] != None)
+            multiskins[i] = augmentiqueData.textures[i];
+    if (augmentiqueData.textures[8] != None)
+        Texture = augmentiqueData.textures[8];
+}
 
 // ----------------------------------------------------------------------
 // ShouldCreate()
@@ -606,6 +634,7 @@ exec function UpdateHDTPsettings()
     if (HDTPTexture != "")
         Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),hdtp);
     bSetupHDTP = hdtp;
+    SetupSkin();
 }
 
 // ----------------------------------------------------------------------
@@ -4560,6 +4589,7 @@ local SpoofedCorona cor;
 //By default, does nothing, but can be used for things like custom skins for shotgunners
 function SetupSkin()
 {
+    ApplyCurrentOutfit();
 }
 
 function ForceCloakOff()                                                        //RSD: Hack function to force cloak off without playing sounds

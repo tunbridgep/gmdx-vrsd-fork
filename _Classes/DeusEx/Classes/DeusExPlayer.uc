@@ -1435,6 +1435,9 @@ function PostBeginPlay()
 		bCheatsEnabled = False;
 	HDTP();
 
+    if (OutfitManager != None)
+        outfitManager.ApplyNPCOutfits();
+
     //SARGE: Account for FemJC eye height changes
     ResetBasedPawnSize();
 
@@ -11232,7 +11235,6 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 							carc.bEmitCarcass = true;  //CyberP: emitcarc
 							carc.SetPhysics(PHYS_Falling);
 							carc.SetScaleGlow();
-							Carc.UpdateHDTPSettings();
 							Carc.Inventory = PovCorpse(item).Inv; //GMDX
 							Carc.bSearched = POVCorpse(item).bSearched;
 							Carc.PickupAmmoCount = POVCorpse(item).PickupAmmoCount;
@@ -11240,6 +11242,8 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
                             Carc.bFirstBloodPool = POVCorpse(item).bFirstBloodPool; //SARGE: Added.
                             Carc.bNoDefaultPools = POVCorpse(item).bNoDefaultPools;
                             Carc.UpdateName();
+                            Carc.CopyAugmentiqueDataFromPOVCorpse(POVCorpse(item));     //AUGMENTIQUE: Copy over outfit data.
+							Carc.UpdateHDTPSettings();
 
                             //if (FRand() < 0.3)
                             //PlaySound(Sound'DeusExSounds.Player.MaleLand', SLOT_None, 0.9, false, 800, 0.85);

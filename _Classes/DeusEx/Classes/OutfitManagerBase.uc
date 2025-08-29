@@ -10,7 +10,8 @@ enum PartSlot
     PS_Body_F,
     PS_Main,             //Main model texture
     PS_Glasses,
-    PS_Hat,
+    PS_Hat,             //Hat for GM_Suit
+    PS_Helmet,
     PS_Mask,
     PS_Trench, //Common trench coats
     PS_Trench_F, //Female Exclusive trench coats
@@ -19,6 +20,7 @@ enum PartSlot
     PS_Trench_Shirt_M, //Male Exclusive Trench Shirts
     PS_Trench_Shirt_F, //Female Exclusive Trench Shirts
     PS_Torso_M,
+    PS_Torso_M_B,   //Male big boy textures (Gunther, etc)
     PS_Torso_F,
     PS_Skirt,
     PS_Legs, //Common Legs
@@ -74,3 +76,7 @@ function SpawnerPickup(OutfitSpawner S) {}
 
 //Force-apply current outfit
 function ApplyCurrentOutfit() {}
+
+//Force-apply NPC outfits
+function ApplyNPCOutfits() {}
+

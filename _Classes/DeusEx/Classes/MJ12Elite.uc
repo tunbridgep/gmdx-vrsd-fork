@@ -7,6 +7,7 @@ var float burnAmount;
 
 function SetupSkin()
 {
+    Super.SetupSkin();
     if (bCloakOn)
         return;
 

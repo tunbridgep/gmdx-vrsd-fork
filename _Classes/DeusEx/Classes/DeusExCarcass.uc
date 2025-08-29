@@ -106,6 +106,84 @@ struct BadItem
 var transient BadItem badItems[10];                                                   //SARGE: Keep a list of the declined or ignored items, so that we can add it to the display window.
 var transient int badItemCount;
 
+//Augmentique Data
+struct AugmentiqueOutfitData
+{
+    var Texture textures[9];
+    var bool bRandomized;
+};
+
+var travel AugmentiqueOutfitData augmentiqueData;
+
+//Augmentique: Update our textures to our Augmentique outfit
+function ApplyCurrentOutfit()
+{
+    local int i;
+
+    if (!augmentiqueData.bRandomized)
+        return;
+
+    //GMDX Exclusive code
+    if (IsHDTP())
+        return;
+    
+    Log("Doing carcass stuff");
+
+    for (i = 0;i < 8;i++)
+        if (augmentiqueData.textures[i] != None)
+            multiskins[i] = augmentiqueData.textures[i];
+    if (augmentiqueData.textures[8] != None)
+        Texture = augmentiqueData.textures[8];
+}
+
+function CopyOutfitFrom(Actor A)
+{
+    local ScriptedPawn S;
+    S = ScriptedPawn(A);
+    if (S != None)
+    {
+        augmentiqueData.textures[0] = S.augmentiqueData.textures[0];
+        augmentiqueData.textures[1] = S.augmentiqueData.textures[1];
+        augmentiqueData.textures[2] = S.augmentiqueData.textures[2];
+        augmentiqueData.textures[3] = S.augmentiqueData.textures[3];
+        augmentiqueData.textures[4] = S.augmentiqueData.textures[4];
+        augmentiqueData.textures[5] = S.augmentiqueData.textures[5];
+        augmentiqueData.textures[6] = S.augmentiqueData.textures[6];
+        augmentiqueData.textures[7] = S.augmentiqueData.textures[7];
+        augmentiqueData.textures[8] = S.augmentiqueData.textures[8];
+        augmentiqueData.bRandomized = S.augmentiqueData.bRandomized;
+    }
+    ApplyCurrentOutfit();
+}
+
+function CopyAugmentiqueDataToPOVCorpse(POVCorpse pov)
+{
+    pov.augmentiqueData.textures[0] = augmentiqueData.textures[0];
+    pov.augmentiqueData.textures[1] = augmentiqueData.textures[1];
+    pov.augmentiqueData.textures[2] = augmentiqueData.textures[2];
+    pov.augmentiqueData.textures[3] = augmentiqueData.textures[3];
+    pov.augmentiqueData.textures[4] = augmentiqueData.textures[4];
+    pov.augmentiqueData.textures[5] = augmentiqueData.textures[5];
+    pov.augmentiqueData.textures[6] = augmentiqueData.textures[6];
+    pov.augmentiqueData.textures[7] = augmentiqueData.textures[7];
+    pov.augmentiqueData.textures[8] = augmentiqueData.textures[8];
+    pov.augmentiqueData.textures[8] = augmentiqueData.textures[8];
+    pov.augmentiqueData.bRandomized = augmentiqueData.bRandomized;
+}
+
+function CopyAugmentiqueDataFromPOVCorpse(POVCorpse pov)
+{
+    augmentiqueData.textures[0] = pov.augmentiqueData.textures[0];
+    augmentiqueData.textures[1] = pov.augmentiqueData.textures[1];
+    augmentiqueData.textures[2] = pov.augmentiqueData.textures[2];
+    augmentiqueData.textures[3] = pov.augmentiqueData.textures[3];
+    augmentiqueData.textures[4] = pov.augmentiqueData.textures[4];
+    augmentiqueData.textures[5] = pov.augmentiqueData.textures[5];
+    augmentiqueData.textures[6] = pov.augmentiqueData.textures[6];
+    augmentiqueData.textures[7] = pov.augmentiqueData.textures[7];
+    augmentiqueData.textures[8] = pov.augmentiqueData.textures[8];
+    augmentiqueData.bRandomized = pov.augmentiqueData.bRandomized;
+}
 
 // ----------------------------------------------------------------------
 // ShouldCreate()
@@ -160,6 +238,8 @@ exec function UpdateHDTPsettings()
     else if (assignedMesh == 3)
         Mesh = Mesh3;
 
+    ApplyCurrentOutfit();
+
 }
 
 // ----------------------------------------------------------------------
@@ -173,6 +253,9 @@ function InitFor(Actor Other)
     local rotator randRot;
     local DeusExLevelInfo info;                                                     //RSD
     local DeusExPlayer player;                                                      //RSD
+
+    //Augmentique: Configure our carcass
+    CopyOutfitFrom(Other);
 
     player = DeusExPlayer(GetPlayerPawn());                                     //RSD
     info = player.GetLevelInfo();                                               //RSD
@@ -945,6 +1028,7 @@ function PickupCorpse(DeusExPlayer player)
             corpse.savedName = savedName;
             corpse.bFirstBloodPool = bFirstBloodPool; //SARGE: Remember if we've made a blood pool.
             corpse.bNoDefaultPools = bNoDefaultPools; //SARGE: Remember if we should be making pools or not.
+            CopyAugmentiqueDataToPOVCorpse(corpse);     //AUGMENTIQUE: Copy over outfit data.
             corpse.Frob(player, None);
             corpse.SetBase(player);
             player.PutInHand(corpse);
