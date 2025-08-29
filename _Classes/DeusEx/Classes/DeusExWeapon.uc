@@ -4527,7 +4527,7 @@ simulated function vector CalcDrawOffset()
 	return DrawOffset;
 }
 
-function GetAIVolume(out float volume, out float radius)
+function GetAIVolume(out float volume, out float radius, optional bool wakeUp)
 {
     local DeusExPlayer player;
 	local float NL;
@@ -4560,12 +4560,13 @@ function GetAIVolume(out float volume, out float radius)
         if (player != None && player.PerkManager != None && player.PerkManager.GetPerkWithClass(class'PerkWetwork').bPerkObtained)
             volume = 1.0*Pawn(Owner).SoundDampening;                                //RSD: Hardcoded value as specified in weapon info
         else
-            volume = 0.451*NL*Pawn(Owner).SoundDampening;                       //SARGE: Silencers now make the weapon quieter, not silent.
+            volume = 0.75*NL*Pawn(Owner).SoundDampening;                       //SARGE: Silencers now make the weapon quieter, not silent.
 		radius = volume * 800.0;
     }
 
     //SARGE: Wake up the AI
-    class'PawnUtils'.static.WakeUpAI(Owner,radius * 0.6);
+    if (wakeUp)
+        class'PawnUtils'.static.WakeUpAI(Owner,radius * 0.6);
 }
 
 //Ygll: utility function to test the behaviour of the dart with Fragile dart gameplay option enabled
@@ -4667,7 +4668,7 @@ simulated function Projectile ProjectileFire(class<projectile> ProjClass, float 
 	// make noise if we are not silenced
 	if (!bHandToHand || IsA('WeaponHideAGun'))
 	{
-		GetAIVolume(volume, radius);
+		GetAIVolume(volume, radius, true);
 		Owner.AISendEvent('WeaponFire', EAITYPE_Audio, volume, radius);
 		Owner.AISendEvent('LoudNoise', EAITYPE_Audio, volume, radius);
 		if (!Owner.IsA('PlayerPawn'))
@@ -4944,7 +4945,7 @@ simulated function TraceFire( float Accuracy )
 	// make noise if we are not silenced
 	if (!bHandToHand || IsA('WeaponHideAGun'))
 	{
-		GetAIVolume(volume, radius);
+		GetAIVolume(volume, radius, true);
 		Owner.AISendEvent('WeaponFire', EAITYPE_Audio, volume, radius);
 		Owner.AISendEvent('LoudNoise', EAITYPE_Audio, volume, radius);
 		if (!Owner.IsA('PlayerPawn'))
@@ -5615,6 +5616,7 @@ simulated function bool UpdateInfo(Object winObject)
     local DeusExPlayer player;
     local string noiseLev, msgMultiplier;
     local float prec;                                                           //RSD: Floating point precision
+    local float vol,rad;                                                        //SARGE: Added
 
 	P = Pawn(Owner);
 	if (P == None)
@@ -5902,17 +5904,25 @@ simulated function bool UpdateInfo(Object winObject)
 	winInfo.AddInfoItem(msgInfoMaxRange, str,HasRangeMod());                    //RSD: Added HasRangeMod()
 
 	//Noise level
-	if (!bHandToHand || IsA('WeaponProd') || IsA('WeaponHideAGun') || IsA('WeaponPepperGun') ||  IsA('WeaponLAW'))
+	if (!bHandToHand || IsA('WeaponProd') || IsA('WeaponHideAGun') || IsA('WeaponPepperGun') || IsA('WeaponLAW'))
 	{
 	noiseLev="dB";
 
+    //SARGE: Now we just read it's actual noise level, rather than this dumb bullshit
+
+    GetAIVolume(vol,rad);
+    if (vol == 0)
+        vol = 1;
+	winInfo.AddInfoItem(msgNoise,FormatFloatString(vol * 30,1.0) @ noiseLev);
+    /*
 	  if (bHasSilencer)
       {
          str = "1.0";                                                           //RSD: Was 0.5
          winInfo.AddInfoItem(msgNoise,str @ noiseLev);
       }
       else
-	winInfo.AddInfoItem(msgNoise,FormatFloatString(NoiseLevel,1.0) @ noiseLev);
+	winInfo.AddInfoItem(msgNoise,FormatFloatString(NoiseLevel * 10,1.0) @ noiseLev); //SARGE: Multiplied by 10
+    */
     }
 
     if (meleeStaminaDrain != 0 && !IsA('WeaponShuriken'))  //CyberP: display special, speed rating & stamina drain
