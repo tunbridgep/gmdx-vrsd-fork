@@ -669,18 +669,27 @@ function RandomiseCrap()
     local OfficeChair C;
     local CouchLeather L;
     local ChairLeather L2;
-    local int chairSkin;
+    local int chairSkin, couchSkin;
         
     if (!player.bRandomizeCrap)
         return;
 
     foreach AllActors(class'DeusExPickup', P)
-    {
         P.RandomiseSkin(player);
+
+    //If the mission has a custom token, use that for chair colours
+    if (dxInfo.ChairRandomizationToken == -1)
+    {
+        couchSkin=Player.Randomizer.GetRandomInt(4);
+        chairSkin=Player.Randomizer.GetRandomInt(5);
+    }
+    else
+    {
+        couchSkin = (Player.seed + dxInfo.ChairRandomizationToken) % 4;
+        chairSkin = (Player.seed + dxInfo.ChairRandomizationToken) % 5;
     }
     
     //Roll once, so that all the chairs in the level get the same style.
-    chairSkin=Player.Randomizer.GetRandomInt(5);
     //log("Applying chair skin to all swivel chairs: " $ chairSkin);
     foreach AllActors(class'OfficeChair', C)
     {
@@ -689,11 +698,10 @@ function RandomiseCrap()
     }
     
     //Roll once, so that all the couches in the level get the same style.
-    chairSkin=Player.Randomizer.GetRandomInt(4);
     //log("Applying chair skin to all leather couches: " $ chairSkin);
     foreach AllActors(class'CouchLeather', L)
     {
-        L.SkinColor = chairSkin;
+        L.SkinColor = couchSkin;
         L.UpdateHDTPsettings();
     }
     
