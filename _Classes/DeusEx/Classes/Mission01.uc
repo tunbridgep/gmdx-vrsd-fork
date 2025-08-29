@@ -11,6 +11,49 @@ var bool bDoneConversationFix;
 // Stuff to check at first frame
 // ----------------------------------------------------------------------
 
+//Reduce Paul's starting weapon choice dialog.
+//ENGLISH ONLY!
+//Based on the DX Rando code
+function ReducePaulDialog()
+{
+    local Conversation C;
+    local ConEvent E, before, after;
+    local ConEventSpeech S;
+        
+    if (!player.bNoStartingWeaponChoices) //SARGE: Check for the no starting weapons modifier
+        return;
+
+    C = GetConversation('MeetPaul');
+    E = C.eventList;
+
+    while (E != None)
+    {
+        if (E.eventType == ET_Speech)
+        {
+            S = ConEventSpeech(E);
+            if (InStr(S.conSpeech.speech,"NSF took one of our agents hostage") != -1)
+            {
+                before = E;
+            }
+            if (InStr(S.conSpeech.speech,"Great.  What's the first move?") != -1)
+            {
+                after = E;
+            }
+            if (before != None && after != None)
+            {
+                break;
+            }
+        }
+        E = E.nextEvent;
+    }
+
+    //Just in case something went wrong
+    if (before != None && after != None)
+    {
+        before.nextEvent = after;
+    }
+}
+
 function FirstFrame()
 {
 	local CrateBreakableMedCombat LaserCrate;
@@ -108,6 +151,8 @@ function Timer()
         //This has to be done every time we restart the game.
         if (!bDoneConversationFix)
         {
+            ReducePaulDialog();
+
             // "the NSF have set up patchwork security systems here"
             GetConversation('DL_FrontEntrance').AddFlagRef('GMDXNoTutorials', false);
             // "The NSF has a security bot on patrol..."
@@ -120,6 +165,13 @@ function Timer()
             GetConversation('DL_GameplayIntro').AddFlagRef('GMDXNoTutorials', false);
             bDoneConversationFix = true;
         }
+
+
+        //SARGE: Dodgy hack to fix Paul being repeatable
+        if (player.bNoStartingWeaponChoices && flags.GetBool('MeetPaul_Played') && !flags.GetBool('PaulGaveWeapon'))
+            flags.SetBool('PaulGaveWeapon', True,, 2);
+
+
 		// count the number of dead terrorists
 		if (!flags.GetBool('M01PlayerAggressive'))
 		{
