@@ -1,4 +1,4 @@
-Section "Augmentique"
+Section "Visible Attachments"
 
 SetOutPath $INSTDIR\VisibleAttachments\System
 File "${SARGE_U_FILES}\VisibleAttachments.u"
