@@ -441,7 +441,7 @@ function AddNotesWindow()
     local ATM A;
     local int i;
 
-    if (!player.bShowCodeNotes || !bShowNotes)
+    if (!player.bShowCodeNotes || !bShowNotes || player.RandomizerEnabled())
         return;
 
     C = Computers(compOwner);

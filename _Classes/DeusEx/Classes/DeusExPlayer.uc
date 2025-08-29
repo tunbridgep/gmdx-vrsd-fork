@@ -19084,6 +19084,12 @@ function bool FemaleEnabled()
 	return TTex != None;
 }
 
+//Sarge: Checks if DXRandomizer is installed
+function bool RandomizerEnabled()
+{
+    return(Level.Game.Class.Name == 'DXRandoGameInfo');
+}
+
 //SARGE: We can be stunted through stamina, which needs to be recharged (bStunted), or through
 //specific events like explosions (stuntedtime)
 function bool IsStunted()
