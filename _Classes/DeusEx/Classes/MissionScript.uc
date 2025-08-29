@@ -249,7 +249,8 @@ function FirstFrame()
     local SecurityCamera Cam;                                                      //SARGE
 
 	flags.DeleteFlag('PlayerTraveling', FLAG_Bool);
-
+    flags.SetBool('Enhancement_Detected', True);
+    
     //Recreate/Setup our decal manager
 	foreach AllActors(class'DecalManager', D)
         break;
