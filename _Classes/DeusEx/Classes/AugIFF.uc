@@ -58,4 +58,5 @@ defaultproperties
      HazardsRange=50;
      AugmentationLocation=LOC_Default
      bAddedToWheel=false;
+     chargeTime=0.000000
 }

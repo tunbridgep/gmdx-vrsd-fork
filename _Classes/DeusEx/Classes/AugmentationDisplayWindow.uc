@@ -131,6 +131,8 @@ var ThrownProjectile lastGrenade;
 
 var localized String msgDisarmed;
 
+const ITEM_SONAR_DISTANCE = 256;                //SARGE: Range for special item-only sonar
+
 // ----------------------------------------------------------------------
 // InitWindow()
 // ----------------------------------------------------------------------
@@ -795,7 +797,7 @@ function PostDrawWindow(GC gc)
 	if ( Player.Level.NetMode != NM_Standalone )
 		DrawMiscStatusMessages( gc );
 
-	if (bDefenseActive)
+	if (bDefenseActive || drawTime > 0)
 		DrawDefenseAugmentation(gc);
 
 	if (Player.bSpyDroneActive)
@@ -822,22 +824,27 @@ function PostDrawWindow(GC gc)
 // DrawDefenseAugmentation()
 // ----------------------------------------------------------------------
 
+//Sarge: Don't draw across the whole map, since it has infinite range. Instead, only draw when something is actually exploding
+//We also want to draw it for a second or so afterwards
+function SetDefenseTarget(DeusExProjectile target)
+{
+    defenseTarget = target;
+	if (target != None)
+    {
+        defenseTargetLastPos = target.Location;
+        drawTime = 1.0;
+    }
+}
+
 function DrawDefenseAugmentation(GC gc)
 {
 	local String str;
 	local float boxCX, boxCY;
 	local float x, y, w, h, mult;
 
-	if (defenseTarget != None)
-	{
+    SetDefenseTarget(defenseTarget);
 
-        //Sarge: Don't draw across the whole map, since it has infinite range. Instead, only draw when something is actually exploding
-        //We also want to draw it for a second or so afterwards
-        defenseTargetLastPos = defenseTarget.Location;
-        drawTime = 1.0;
-	}
-
-    if (drawTime > 0)
+    if (drawTime > 0 || bDefenseActive)
     {
 		if (defenseTarget == None || defenseTarget.IsInState('Exploding'))
             str = msgADSDetonating;
@@ -2017,8 +2024,18 @@ function DrawVisionAugmentation(GC gc)
 				if (IsHeatSource(A))
 				{
 					dist = VSize(A.Location - loc);
+                    //SARGE: Added a new condition for detecting items only
+                    if (visionLevelValue == 0 && dist <= ITEM_SONAR_DISTANCE && A.IsA('Inventory'))
+                    {
+						VisionTargetStatus = GetVisionTargetStatus(A);
+						SetSkins(A, oldSkins);
+
+						gc.DrawActor(A, False, False, True, 1.0, 2.0, None);
+
+						ResetSkins(A, oldSkins);
+                    }
 					//If within range of vision aug bit
-					if ( ( ((Player.Level.Netmode != NM_Standalone) && (dist <= (visionLevelvalue / 2))) ||
+					else if ( ( ((Player.Level.Netmode != NM_Standalone) && (dist <= (visionLevelvalue / 2))) ||
 							 ((Player.Level.Netmode == NM_Standalone) && (dist <= (visionLevelValue)))        ) && (IsHeatSource(A)))
 					{
 						VisionTargetStatus = GetVisionTargetStatus(A);
