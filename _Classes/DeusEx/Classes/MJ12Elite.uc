@@ -5,14 +5,11 @@ class MJ12Elite extends HumanMilitary;
 
 var float burnAmount;
 
-function PostBeginPlay()
-{
-    super.PostBeginPlay();
-    SetupSkin();
-}
-
 function SetupSkin()
 {
+    if (bCloakOn)
+        return;
+
     bHasHelmet = MultiSkins[6]==Texture'DeusExCharacters.Skins.MJ12TroopTex4'
         || MultiSkins[6]==Texture'DeusExCharacters.Skins.MJ12TroopTex3'
         || MultiSkins[6]==Texture'GMDXSFX.Skins.hMJ12TroopTex3'
@@ -30,12 +27,6 @@ function SetupSkin()
         MultiSkins[6]=default.MultiSkins[6];
         CarcassType=default.CarcassType;
     }
-}
-
-//SARGE: Called when the Weapon Swap gameplay modifier for this entity has been called
-function WeaponSwap(ScriptedPawn SwappedFrom)
-{
-    SetupSkin();
 }
 
 function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector momentum, name damageType)
@@ -154,7 +145,7 @@ function DifficultyMod(float CombatDifficulty, bool bHardCoreMode, bool bExtraHa
         CloakThreshold=140;
         //GroundSpeed=220.000000;
     }
-    bNotFirstDiffMod = true;
+    super.DifficultyMod(CombatDifficulty,bHardCoreMode,bExtraHardcore,bFirstLevelLoad);
 }
 
 defaultproperties

@@ -63,10 +63,9 @@ function InitGenerator()
 
 function PostBeginPlay()      //CyberP
 {
-Super.PostBeginPlay();
-
-HearingThreshold=0.150000;
-EnemyTimeout=14.000000;
+    Super.PostBeginPlay();
+    
+    EnemyTimeout=14.000000;
 }
 
 function DestroyGenerator()
@@ -793,11 +792,20 @@ function bool IsImmobile()
 
 function DifficultyMod(float CombatDifficulty, bool bHardCoreMode, bool bExtraHardcore, bool bFirstLevelLoad) //RSD: New function to streamline NPC stat difficulty modulation
 {
-         if (bHardCoreMode)
-           EnemyTimeout = 13.000000;
-         else
-           EnemyTimeout = 9.000000;
-         bNotFirstDiffMod = true;
+    if (bFirstLevelLoad)
+    {
+        if (bHardCoreMode)
+            EnemyTimeout = 13.000000;
+        else
+            EnemyTimeout = 9.000000;
+
+        //SARGE: Make bots hear you on Extra Hardcore only
+        if (bExtraHardcore)
+            HearingThreshold=0.150000;
+        else
+            HearingThreshold=99999.99999;
+    }
+    super.DifficultyMod(CombatDifficulty,bHardCoreMode,bExtraHardcore,bFirstLevelLoad);
 }
 
 defaultproperties

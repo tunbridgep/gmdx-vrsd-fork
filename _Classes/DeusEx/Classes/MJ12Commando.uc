@@ -231,7 +231,7 @@ function DifficultyMod(float CombatDifficulty, bool bHardCoreMode, bool bExtraHa
         }
         VisibilityThreshold=0.007000;
         }
-        bNotFirstDiffMod = true;
+        super.DifficultyMod(CombatDifficulty,bHardCoreMode,bExtraHardcore,bFirstLevelLoad);
 }
 
 defaultproperties
