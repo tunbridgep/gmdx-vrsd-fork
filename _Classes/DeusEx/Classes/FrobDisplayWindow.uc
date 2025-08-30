@@ -35,12 +35,17 @@ var Color colText;
 var const Color colNotEnough;
 var const Color colJustEnough;
 var const Color colWireless;
+var const Color colHasKey;
 
 var localized string msgDoorThreshold; //CyberP: these two vars are for damage threshold display
 var localized string msgObjThreshold;
 var localized string msgMass;
 var localized string msgHP;
 var localized string msgHP2;
+
+//SARGE: This is performance heavy, so only check this when the frobtarget changes
+var bool bKnownCode;
+var Actor prevFrobTarget;
 
 //var to stock value during the calculation of the window
 var float boxTLX, boxTLY, boxBRX, boxBRY;
@@ -99,6 +104,32 @@ function string FormatString(float num)
 	return tempstr;
 }
 
+//SARGE: Draw a green border if we know the code (or have the key) to our frob target.
+//This is not called directly, instead it updates when the frob target changes,
+//which hopefully reduces performance cost, as it's a semi-expensive function.
+function bool ShouldDrawGreenBorder(Actor frobTarget)
+{
+    local int i;
+    local Computers C;
+
+    if (!player.bShowGreenInteractionDisplay || player.bHardcoreMode || player.iNoKeypadCheese > 0)
+        return false;
+
+    C = Computers(frobTarget);
+
+    if (C != None)
+    {
+        for(i = 0;i < 8;i++)
+            if (C.IsDiscovered(player,C.GetUsername(i),C.GetPassword(i),true))
+                return true;
+    }
+    else if (frobTarget != None && frobTarget.IsA('Keypad'))
+        return Keypad(frobTarget).bHackable &&  Keypad(frobTarget).hackStrength > 0.0 && Keypad(frobTarget).IsDiscovered(player,Keypad(frobTarget).validCode,,true);
+    else if (frobTarget != None && frobTarget.IsA('DeusExMover'))
+        return DeusExMover(frobTarget).bLocked && DeusExMover(frobTarget).HasKey(player);
+    return false; 
+}
+
 //Ygll: utility function to draw the dark backbround of the hud window
 function DrawDarkBackground(GC gc, float infoX, float infoY, float infoW, float infoH)
 {
@@ -109,7 +140,7 @@ function DrawDarkBackground(GC gc, float infoX, float infoY, float infoW, float 
 }
 
 //Ygll: utility function to draw hightlight box
-function DrawHightlightBox(GC gc, float infoX, float infoY, float infoW, float infoH, optional bool bWireless)
+function DrawHightlightBox(GC gc, float infoX, float infoY, float infoW, float infoH, optional bool bWireless, optional bool bOwnedKey)
 {
 	// draw the two highlight boxes
 	gc.SetStyle(DSTY_Translucent);
@@ -119,6 +150,8 @@ function DrawHightlightBox(GC gc, float infoX, float infoY, float infoW, float i
     //Set color
     if (bWireless)
         gc.SetTileColor(colWireless);
+    else if (bOwnedKey)
+        gc.SetTileColor(colHasKey);
     else
         gc.SetTileColor(colBackground);
 
@@ -297,7 +330,7 @@ function DrawDoorHudInformation(GC gc, actor frobTarget)
 	// draw a dark background
 	DrawDarkBackground(gc, infoX, infoY, infoW, infoH);
 	// draw the two highlight boxes
-	DrawHightlightBox(gc, infoX, infoY, infoW, infoH);
+	DrawHightlightBox(gc, infoX, infoY, infoW, infoH,, bKnownCode);
 
 	// draw the info text
 	gc.SetTextColor(colText);	
@@ -481,7 +514,7 @@ function DrawDeviceHudInformation(GC gc, actor frobTarget)
 	// draw a dark background
 	DrawDarkBackground(gc, infoX, infoY, infoW, infoH);
 	// draw the two highlight boxes
-	DrawHightlightBox(gc, infoX, infoY, infoW, infoH, frobTarget == player.HackTarget);
+	DrawHightlightBox(gc, infoX, infoY, infoW, infoH, frobTarget == player.HackTarget, bKnownCode);
 	
 	// Draw the current text information	
 	gc.SetTextColor(colText);
@@ -633,7 +666,7 @@ function DrawOtherHudInformation(GC gc, actor frobTarget)
 	gc.DrawText(infoX+4, infoY+4, infoW-8, infoH-8, strInfo);
 
 	// draw the two highlight boxes
-	DrawHightlightBox(gc, infoX, infoY, infoW, infoH);	
+	DrawHightlightBox(gc, infoX, infoY, infoW, infoH,, bKnownCode);	
 }
 
 //SARGE: Draw Augmentation Cannister Information
@@ -708,6 +741,11 @@ function DrawWindow(GC gc)
 	if (player != None)
 	{
 		frobTarget = player.FrobTarget;
+        if (frobTarget != prevFrobTarget)
+        {
+            prevFrobTarget = frobTarget;
+            bKnownCode = ShouldDrawGreenBorder(frobTarget);
+        }
 		
 		if (frobTarget != None && player.IsHighlighted(frobTarget))
 		{
@@ -763,6 +801,7 @@ defaultproperties
 	colNotEnough=(R=255,G=50,B=50)
 	colJustEnough=(R=255,G=255,B=50)
     colWireless=(B=255,G=50,R=50)
+    colHasKey=(B=50,G=150,R=50)
 	msgDisabled="Rebooting"
 	msgTrackAll="Target: All"
 	msgTrackAllies="Target: Allies"

@@ -69,6 +69,12 @@ var float               leftFrobTimer;           //Sarge: Ticks down from 3 seco
 const             leftFrobTimerMax = 6.0;
 
 
+//SARGE: Do we have the key for this lock?
+function bool HasKey(DeusExPlayer Player)
+{
+    return Player.KeyRing.HasKey(KeyIDNeeded);
+}
+
 //SARGE: Check to see if we can re-lock a door
 //Either we have the key for it in our keyring, or we previously picked it open and have the Locksport perk
 function bool CanToggleLock(DeusExPlayer Player, NanoKeyRing keyring)
