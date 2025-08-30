@@ -521,15 +521,6 @@ struct AugmentiqueOutfitData
 
 var travel AugmentiqueOutfitData augmentiqueData;
 
-native(2102) final function ConBindEvents();
-
-native(2105) final function bool IsValidEnemy(Pawn TestEnemy, optional bool bCheckAlliance);
-native(2106) final function EAllianceType GetAllianceType(Name AllianceName);
-native(2107) final function EAllianceType GetPawnAllianceType(Pawn QueryPawn);
-
-native(2108) final function bool HaveSeenCarcass(Name CarcassName);
-native(2109) final function AddCarcass(Name CarcassName);
-
 //Augmentique: Update our textures to our Augmentique outfit
 function ApplyCurrentOutfit()
 {
@@ -548,6 +539,15 @@ function ApplyCurrentOutfit()
     if (augmentiqueData.textures[8] != None)
         Texture = augmentiqueData.textures[8];
 }
+
+native(2102) final function ConBindEvents();
+
+native(2105) final function bool IsValidEnemy(Pawn TestEnemy, optional bool bCheckAlliance);
+native(2106) final function EAllianceType GetAllianceType(Name AllianceName);
+native(2107) final function EAllianceType GetPawnAllianceType(Pawn QueryPawn);
+
+native(2108) final function bool HaveSeenCarcass(Name CarcassName);
+native(2109) final function AddCarcass(Name CarcassName);
 
 // ----------------------------------------------------------------------
 // ShouldCreate()
@@ -4569,7 +4569,6 @@ local SpoofedCorona cor;
 		KillShadow();
 		bCloakOn = bEnable;
 		bCloaked = True;
-        SetupSkin();
 	}
 	else if (!bEnable && bCloakOn && !bForcedCloak)
 	{
@@ -4599,6 +4598,7 @@ function ForceCloakOff()                                                        
 		LightRadius = 0;
         AmbientGlow = 0;
 		bCloakOn = False;
+        SetupSkin();
 }
 
 // ----------------------------------------------------------------------

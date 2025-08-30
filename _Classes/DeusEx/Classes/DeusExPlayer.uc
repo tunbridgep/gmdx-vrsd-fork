@@ -1435,9 +1435,6 @@ function PostBeginPlay()
 		bCheatsEnabled = False;
 	HDTP();
 
-    if (OutfitManager != None)
-        outfitManager.ApplyNPCOutfits();
-
     //SARGE: Account for FemJC eye height changes
     ResetBasedPawnSize();
 
