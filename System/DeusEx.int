@@ -249,7 +249,7 @@ ItemName="DEFAULT AMMO NAME - REPORT THIS AS A BUG"
 ItemArticle=""
 
 [ComputerSecurityCameraWindow]
-CameraLabel="Camera"
+CameraLabel="Cam"
 CameraStatusLabel="Camera:"
 DoorStatusLabel="Door:"
 TurretStatusLabel="Turret:"
