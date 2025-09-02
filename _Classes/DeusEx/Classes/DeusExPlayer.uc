@@ -857,6 +857,9 @@ var globalconfig bool bEnhancedPersonaScreenMouse;             //SARGE: When ena
 
 var globalconfig bool bShowFullAmmoInHUD;                       //SARGE: When ammo for a certain ammo type is full, show it as Yellow in the AMMO Hud
 
+
+var globalconfig bool bFasterInfolinks;                         //SARGE: Significantly decreases the time before queued datalinks can play, to make receiving many messages at once far less sluggish.
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -19440,4 +19443,5 @@ defaultproperties
      bShowCodeNotes=true
      bEnhancedPersonaScreenMouse=true
      bShowFullAmmoInHUD=true
+     bFasterInfolinks=true
 }
