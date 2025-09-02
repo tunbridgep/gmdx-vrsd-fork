@@ -68,6 +68,8 @@ var float               previousStrength;        //Sarge: What was the strength 
 var float               leftFrobTimer;           //Sarge: Ticks down from 3 seconds after we do a left frob, so that we can use right-click to select different options
 const             leftFrobTimerMax = 6.0;
 
+var(GMDX) const int iSpecialMoverKeyframe;      //SARGE: Allow movers to "snap" into place on map load. Used for the janky smuggler elevator
+
 
 //SARGE: Check to see if we can re-lock a door
 //Either we have the key for it in our keyring, or we previously picked it open and have the Locksport perk
@@ -216,6 +218,20 @@ function PostBeginPlay()
 	}*/
 }
 
+function PostPostBeginPlay()
+{
+    local EMoverEncroachType prevEncroach;
+
+    super.PostPostBeginPlay();
+
+
+    //SARGE: If we have a special keyframe set, snap to it immediately
+    prevEncroach = MoverEncroachType;
+    MoverEncroachType = ME_IgnoreWhenEncroach;
+    if (iSpecialMoverKeyframe > -1)
+        InterpolateTo(iSpecialMoverKeyframe,0);
+    MoverEncroachType = prevEncroach;
+}
 
 // -------------------------------------------------------------------------------
 // Network Replication
@@ -1143,4 +1159,5 @@ defaultproperties
      bBlockSight=True
      InitialState=TriggerToggle
      bDirectional=True
+     iSpecialMoverKeyframe=-1
 }
