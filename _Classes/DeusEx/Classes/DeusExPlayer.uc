@@ -856,8 +856,6 @@ var globalconfig bool bEnhancedPersonaScreenMouse;             //SARGE: When ena
 
 var globalconfig bool bShowFullAmmoInHUD;                       //SARGE: When ammo for a certain ammo type is full, show it as Yellow in the AMMO Hud
 
-var globalconfig bool bShowGreenInteractionDisplay;             //SARGE: Show a green border when looking at objects for which you have the key.
-
 //Tool Window Colouring
 var globalconfig bool bToolWindowShowQuantityColours;           //SARGE: Colour Code the Frob display when you don't meet or only just meet the number of tools/picks required. Some people might not like the colours.
 var globalconfig bool bToolWindowShowKnownCodes;                //SARGE: Show a green border when looking at objects for which you have the key.
@@ -19542,7 +19540,6 @@ defaultproperties
      bShowCodeNotes=true
      bEnhancedPersonaScreenMouse=true
      bShowFullAmmoInHUD=true
-     bShowGreenInteractionDisplay=true
      bToolWindowShowKnownCodes=true
      bToolWindowShowRead=false
      bToolWindowShowAugState=true
