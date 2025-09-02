@@ -3122,14 +3122,6 @@ local vector loc;
   fragg.Velocity = VRand()*80;
  }
  }
- Multiskins[6]=None;
- bHasHelmet=False;
- if (IsA('UNATCOTroop'))
-     CarcassType = Class'DeusEx.UNATCOTroopCarcassDehelm';
- else if (IsA('Soldier'))
-     CarcassType = Class'DeusEx.SoldierCarcassDehelm';
- else if (IsA('Mechanic'))
-     CarcassType=Class'DeusEx.MechanicCarcass2';
 }
 
 singular function HelmetSpawn(Vector hitLocation, int actualDamage, Pawn instigatedBy)
@@ -3151,13 +3143,6 @@ local vector loc;
     dh.Velocity.Z += 50;
     dh.SetTimer(0.4,false);
  }
-
- Multiskins[6]=None;
- bHasHelmet=False;
- if (IsA('UNATCOTroop'))
-     CarcassType = Class'DeusEx.UNATCOTroopCarcassDehelm';
- else if (IsA('Soldier'))
-     CarcassType = Class'DeusEx.SoldierCarcassDehelm';
 }
 // ----------------------------------------------------------------------
 // SpawnCarcass()
@@ -3593,6 +3578,45 @@ function bool ShouldReactToInjuryType(name damageType,
 
 
 // ----------------------------------------------------------------------
+// SARGE: Split out helmet breaking to a new function.
+// Fixes TT's horrible mess
+// (I seem to be fixing these messes a lot recently...)
+// ----------------------------------------------------------------------
+
+function bool DoHelmetBreak(bool bForced, float actualDamage, Pawn instigatedBy)
+{
+    local bool bBroken;
+    
+    if (IsA('MJ12Troop') || IsA('MJ12Elite'))
+        return false;
+
+    if ((IsA('Mechanic') || IsA('Soldier')) && (FRand() < 0.2 || bForced))
+    {
+        HelmetBreak();
+        bBroken = true;
+    }
+    else if (FRand() < 0.08 || bForced)
+    {
+        HelmetSpawn(Location+vect(0,0,49), actualDamage, instigatedBy);
+        bBroken = true;
+    }
+    
+    if (bBroken)
+    {
+        Multiskins[6]=None;
+        bHasHelmet=False;
+        if (IsA('UNATCOTroop'))
+            CarcassType = Class'DeusEx.UNATCOTroopCarcassDehelm';
+        else if (IsA('Soldier'))
+            CarcassType = Class'DeusEx.SoldierCarcassDehelm';
+        else if (IsA('Mechanic'))
+            CarcassType=Class'DeusEx.MechanicCarcass2';
+    }
+
+    return bBroken;
+}
+
+// ----------------------------------------------------------------------
 // HandleDamage()
 // ----------------------------------------------------------------------
 
@@ -3602,6 +3626,8 @@ function EHitLocation HandleDamage(out int actualDamage, Vector hitLocation, Vec
 	local float        headOffsetZ, headOffsetY, armOffset;
     local float ricochetRand;                                                   //RSD: Added
     local name origDamageType;                                                  //RSD: Added
+	local Perk perkArmorPiercing;                                               //SARGE: Added
+    local bool bHelmetSoundHack;                                                //SARGE: Added
 
     origDamageType = damageType;                                                //RSD: For distinct helmet hit sounds
 
@@ -3624,32 +3650,25 @@ function EHitLocation HandleDamage(out int actualDamage, Vector hitLocation, Vec
             	&& bHasHelmet && (damageType == 'Shot' || damageType == 'Poison' || damageType == 'Stunned' || damageType == 'Bleed'))
             {
                     //PlaySound(sound'ArmorRicochet',SLOT_Interact,,true,1536); //RSD: New ricochet sounds because I hate that one
-                    if (IsA('Mechanic') && (actualDamage >= 25 || FRand() < 0.2))
+                    DoHelmetBreak(false,actualDamage,instigatedBy);
+                    if (!IsA('Mechanic') && actualDamage < 25)
                     {
-                          HelmetBreak();
-                    }
-                    else if (IsA('UNATCOTroop') && (actualDamage >= 25 || FRand() < 0.08))
-                    {
-                          HelmetSpawn(Location+vect(0,0,49), actualDamage, instigatedBy);
-                          if (actualDamage < 25)
-                          {
-                          actualDamage = 0;
-                          damageType = '';
-                          }
-                    }
-                    else
-                    {
-                    if (actualDamage >= 25)
-                    {
-                    }
-                    else
-                    {
-                        actualDamage = 0;
-                        damageType = '';
-                    }
+                        //SARGE: The new Armor Piercing perk still gives us some amount of damage.
+                        perkArmorPiercing = DeusExPlayer(instigatedBy).PerkManager.GetPerkWithClass(class'DeusEx.PerkArmorPiercing');
+                        if (perkArmorPiercing.bPerkObtained && WeaponAssaultGun(instigatedBy.weapon) != None)
+                        {
+                            actualDamage = actualDamage * perkArmorPiercing.perkValue;
+                            //DeusExPlayer(GetPlayerPawn()).ClientMessage("Armor Pierced: " $ actualDamage);
+                            bHelmetSoundHack = true;
+                        }
+                        else
+                        {
+                            actualDamage = 0;
+                            damageType = '';
+                        }
                     }
 
-                    if (actualDamage <= 0)                                      //RSD: Only play helmet sounds if we didn't do damage!
+                    if (actualDamage <= 0 || bHelmetSoundHack)                                      //RSD: Only play helmet sounds if we didn't do damage! //SARGE: Or if we have armor piercing and did some damage.
                     {
                     if (origDamageType == 'Shot')                               //RSD: Play new ricochet sounds for hard damage
                     {
@@ -3679,14 +3698,7 @@ function EHitLocation HandleDamage(out int actualDamage, Vector hitLocation, Vec
             else if (bHasHelmet && damageType == 'Sabot')
             {
                 actualDamage *= 2.0;                                            //RSD: Armor piercing damage passes through helmets (x2 here because it's halved in ModifyDamage())
-                if (IsA('Mechanic'))                                            //RSD: Also it breaks mechanic helmets
-                    {
-                          HelmetBreak();
-                    }
-                    else if (IsA('UNATCOTroop'))                                //RSD: And it pops off trooper helmets
-                    {
-                          HelmetSpawn(Location+vect(0,0,49), actualDamage, instigatedBy);
-                    }
+                DoHelmetBreak(true,actualDamage,instigatedBy);
             }
 			// narrow the head region
 			if ((Abs(offset.x) < headOffsetY) || (Abs(offset.y) < headOffsetY))

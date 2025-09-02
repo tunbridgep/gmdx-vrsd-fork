@@ -32,6 +32,7 @@ function InitializePerks(DeusExPlayer newPlayer)	// Trash: Add every perk in the
 	AddPerk(Class'DeusEx.PerkSteady');
 	AddPerk(Class'DeusEx.PerkStoppingPower');
 	AddPerk(Class'DeusEx.PerkMarksman');
+	AddPerk(Class'DeusEx.PerkArmorPiercing');
 
 	// Pistol Perks
 	AddPerk(Class'DeusEx.PerkSidearm');
