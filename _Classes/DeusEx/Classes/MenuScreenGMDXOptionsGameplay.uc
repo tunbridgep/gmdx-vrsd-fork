@@ -63,4 +63,5 @@ defaultproperties
      msgText="The settings available in this menu are always active as part of Hardcore difficulty.|nYou may still edit them freely, but they will have no effect when playing in Hardcore mode."
      msgTitle="Hardcore Mode"
      Title="GMDX Gameplay Options"
+     bShowDefaults=true
 }
