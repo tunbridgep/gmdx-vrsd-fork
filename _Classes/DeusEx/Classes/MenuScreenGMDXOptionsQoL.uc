@@ -108,6 +108,12 @@ defaultproperties
      items(89)=(HelpText="Re-enables the head-popping system from GMDX v9. Not recommended as it looks very unfinished.",actionText="Game: Allow Decapitations",variable="bDecap",defaultValue=0);
      items(90)=(HelpText="Alternate display for the accuracy crosshairs. Requires a map load/reload to fully work.",actionText="HUD: Alternate Accuracy Crosshairs",variable="bAlternateCrosshairAcc");
      items(91)=(HelpText="Shows a green border on the tool display window when looking at doors and hackable devices for which you have the key or know the code. Not displayed in Hardcore mode or if the Unknown Codes modifier is enabled.",actionText="HUD: Tool Window Key Display",variable="bShowGreenInteractionDisplay",defaultValue=1);
+     items(93)=(HelpText="Shows a green border on the tool display window when looking at doors and hackable devices for which you have the key or the code. Not displayed in Hardcore mode or with the Unknown Codes modifier.",actionText="Tool Windows: Show Known Codes",variable="bToolWindowShowKnownCodes",defaultValue=1);
+     items(94)=(HelpText="Shows a blue border on the tool display window when looking at readable items which you have previously read.",actionText="Tool Windows: Show Read Objects",variable="bToolWindowShowRead",defaultValue=0);
+     items(95)=(HelpText="Shows a blue border on the tool display window when looking at aug canisters where you can only replace an augmentation, and red when you cannot use the container.",actionText="Tool Windows: Show Augmentation Canister Status",variable="bToolWindowShowAugState",defaultValue=1);
+     items(96)=(HelpText="Shows a red border on the tool display window when looking at duplicate nano keys",actionText="Tool Windows: Show Duplicate Keys",variable="iToolWindowShowDuplicateKeys",valueText1="Text Only",valueText2="Border Only",valueText3="Border and Text",defaultValue=1);
+     items(97)=(HelpText="Shows the names of Books, Datacubes and Newspapers when highlighting them.",actionText="Tool Windows: Show Book Names",variable="iToolWindowShowBookNames",valueText1="When Read",valueText2="Always",defaultValue=1);
+     items(98)=(HelpText="Items that can't be picked up due to inventory limitations will display with a Red border when highlighted. Ammo that can be partially looted will show a blue border.",actionText="Tool Windows: Show Invalid Pickups",variable="bToolWindowShowInvalidPickup",defaultValue=0);
      Title="GMDX Quality of Life Options"
      colWidths(0)=214
      colWidths(1)=155

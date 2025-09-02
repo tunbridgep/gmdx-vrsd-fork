@@ -396,11 +396,10 @@ struct BeltInfo
 var globalconfig bool bWallPlacementCrosshair;		// SARGE: Show a blue crosshair when placing objects on walls
 var globalconfig bool bDisplayTotalAmmo;		    // SARGE: Show total ammo count, rather than MAGS
 var globalconfig bool bDisplayClips;		        // SARGE: For the weirdos who prefer Clips instead of Mags. Hidden Option
-var globalconfig bool bColourCodeFrobDisplay;       //SARGE: Colour Code the Frob display when you don't meet or only just meet the number of tools/picks required. Some people might not like the colours.
 var globalconfig int iFrobDisplayStyle;             //SARGE: Frob Display Style. 0 = "X Tools", 1 = "curr/total Tools", 2 = "total/curr Tools"
 var globalconfig bool bGameplayMenuHardcoreMsgShown;//SARGE: Stores whether or not the gameplay menu message has been displayed.
 var globalconfig bool bEnhancedCorpseInteractions;  //SARGE: Right click always searches corpses. After searching, right click picks up corpses as normal.
-var globalconfig bool bSearchedCorpseText;          //SARGE: Corpses show "[Searched]" text when interacted with for the first time.
+var globalconfig int iSearchedCorpseText;          //SARGE: Corpses show "[Searched]" text when interacted with for the first time. 0 = not show, 1 = show text only, 2 = blue border only, 3 = text and border.
 var globalconfig int iCutsceneFOVAdjust;           //SARGE: Enforce 75 FOV in cutscenes
 var globalconfig bool bLightingAccessibility;       //SARGE: Changes lighting in some areas to reduce strobing/flashing, as it may hurt eyes or cause seizures.
 
@@ -858,6 +857,15 @@ var globalconfig bool bEnhancedPersonaScreenMouse;             //SARGE: When ena
 var globalconfig bool bShowFullAmmoInHUD;                       //SARGE: When ammo for a certain ammo type is full, show it as Yellow in the AMMO Hud
 
 var globalconfig bool bShowGreenInteractionDisplay;             //SARGE: Show a green border when looking at objects for which you have the key.
+
+//Tool Window Colouring
+var globalconfig bool bToolWindowShowQuantityColours;           //SARGE: Colour Code the Frob display when you don't meet or only just meet the number of tools/picks required. Some people might not like the colours.
+var globalconfig bool bToolWindowShowKnownCodes;                //SARGE: Show a green border when looking at objects for which you have the key.
+var globalconfig bool bToolWindowShowRead;                      //SARGE: Show a blue border when looking at informationdevices which you have already read.
+var globalconfig bool bToolWindowShowAugState;                  //SARGE: Show a blue border when looking at aug containers where you can replace an aug, and red when the container is not usable.
+var globalconfig int iToolWindowShowDuplicateKeys;              //SARGE: Show a red border when looking at nanokeys we already have 0 = disabled, 1 = text only, 2 = border only, 3 = border and text
+var globalconfig int iToolWindowShowBookNames;                 //SARGE: Show the names of Books, Datacubes etc in the Tool window. 0 = disabled, 1 = only when read, 2 = always
+var globalconfig bool bToolWindowShowInvalidPickup;            //SARGE: Show a red border when unable to pick up an item from the ground
 
 //////////END GMDX
 
@@ -1711,6 +1719,7 @@ function InitializeSubSystems()
 }
 
 //SARGE: Helper function to get the count of an item type
+//NOTE TO SELF: Remember to use <object>.class.name here, not <object>.name
 function int GetInventoryCount(Name item)
 {
 	local int count;
@@ -1718,12 +1727,16 @@ function int GetInventoryCount(Name item)
 	
 	anItem = Inventory;
 	count = 0;
+    
+    //ClientMessage("Passed Item: " $ item);
 
 	while(anItem != None)
 	{
 		if (anItem.IsA(item))
         {
-            if (anItem.IsA('DeusExPickup'))
+            if (anItem.IsA('DeusExAmmo'))
+                count += DeusExAmmo(anItem).AmmoAmount;
+            else if (anItem.IsA('DeusExPickup'))
                 count += DeusExPickup(anItem).NumCopies;
             else
     			count++;
@@ -14419,6 +14432,7 @@ function DeusExNote AddNote( optional String strNote, optional Bool bUserNote, o
 // ----------------------------------------------------------------------
 
 //SARGE: This exists because we can't use Locs in pre-UT2K3 Unrealscript
+//SARGE TODO: Make a proper string parsing library.
 //This was taken from the UnrealWiki: https://beyondunrealwiki.github.io/pages/useful-string-functions.html
 static final function string Locs(coerce string Text)
 {
@@ -14430,6 +14444,78 @@ static final function string Locs(coerce string Text)
             Text = Left(Text, IndexChar) $ Chr(Asc(Mid(Text, IndexChar, 1)) + 32) $ Mid(Text, IndexChar + 1);
 
     return Text;
+}
+
+//SARGE: This exists because there's no equivalent function
+//SARGE TODO: Make a proper string parsing library.
+static final function string TitleCase(coerce string Text)
+{
+    local int IndexChar;
+
+    //First, make it lowercase
+    Text = Locs(Text);
+ 
+    //Then step through it, if there's a space, then change the next character
+    for (IndexChar = 0; IndexChar < Len(Text) - 1; IndexChar++)
+        if (Mid(Text, IndexChar, 1) == " " &&
+            Mid(Text, IndexChar+1, 1) >= "a" &&
+            Mid(Text, IndexChar+1, 1) <= "z")
+            Text = Left(Text, IndexChar+1) $ Chr(Asc(Mid(Text, IndexChar+1, 1)) - 32) $ Mid(Text, IndexChar + 2);
+
+    //Make the first character uppercase
+    Text = Chr(Asc(Left(Text, 1)) - 32) $ Mid(Text, 1);
+    
+    return Text;
+}
+
+//SARGE: This exists because there's no equivalent function
+//SARGE TODO: Make a proper string parsing library.
+static final function string StrRepl(coerce string Source, coerce string What, coerce string With)
+{
+    local int needle;
+    local string Output;
+    
+    needle = InStr(Source, What);
+
+    Output = Source;
+
+    //Hack to stop infinite loops and etc.
+    if (What == With)
+        return Output;
+
+    while(needle > -1)
+    {
+        Output = Left(Output,needle) $ With $ Mid(Output,needle + Len(What));
+        needle = InStr(Output, What);
+    }
+
+    return Output;
+}
+
+//SARGE: This exists because there's no equivalent function
+//SARGE TODO: Make a proper string parsing library.
+static final function string Trim(coerce string Text)
+{
+    local int IndexChar;
+ 
+    for (IndexChar = 0; IndexChar < Len(Text); IndexChar++)
+        if (Mid(Text, IndexChar, 1) != " ")
+            break;
+
+    return Right(Text, Len(Text) - IndexChar);
+}
+
+//SARGE: This exists because there's no equivalent function
+//SARGE TODO: Make a proper string parsing library.
+static final function string RTrim(coerce string Text)
+{
+    local int IndexChar;
+ 
+    for (IndexChar = Len(Text) - 1; IndexChar >= 0; IndexChar--)
+        if (Mid(Text, IndexChar, 1) != " ")
+            break;
+
+    return Left(Text, IndexChar + 1);
 }
 
 //Hack to force finding codes with either a space before or after.
@@ -14487,9 +14573,9 @@ function string StripFromTo(string text)
     return text;
 }
 
-function bool HasCodeNote(string code)
+function bool HasCodeNote(string code, optional bool bNoHidden)
 {
-    return GetCodeNote(code) != None;
+    return GetCodeNote(code,bNoHidden) != None;
 }
 
 function DeusExNote GetCodeNote(string code, optional bool bNoHidden)
@@ -14499,6 +14585,10 @@ function DeusExNote GetCodeNote(string code, optional bool bNoHidden)
     local int noteTextNumeric;
 
     if (code == "")
+        return None;
+
+    //Some codes are so obvious that they will never have valid notes.
+    if (bNoHidden && IsObfustactedCode(code))
         return None;
 
 	note = FirstNote;
@@ -14582,6 +14672,16 @@ function DeusExNote GetCodeNote(string code, optional bool bNoHidden)
 
     DebugLog("NOTE CODE " $code$ " NOT FOUND");
 	return None;
+}
+
+//This is the OPPOSITE of the below function.
+//Some codes should NEVER appear in notes, as they are far too common
+//within notes to actually be detected properly.
+function bool IsObfustactedCode(string code)
+{
+    code = Caps(code);
+    return code == "NSF"
+        || code == "SECURITY";
 }
 
 //This is a simple list of codes which serve as exceptions to No Keypad Cheese
@@ -19380,13 +19480,13 @@ defaultproperties
      bAugWheelDisableAll=true
      bAugWheelFreeCursor=true
      iAugWheelAutoAdd=1
-     bColourCodeFrobDisplay=True
+     bToolWindowShowQuantityColours=True
      bWallPlacementCrosshair=True
      dynamicCrosshair=1
      bBeltMemory=True
      bEnhancedCorpseInteractions=True
      bBeltShowModified=true
-     bSearchedCorpseText=True
+     iSearchedCorpseText=1
      bDisplayClips=false
      iCutsceneFOVAdjust=2
      iFrobDisplayStyle=1
@@ -19443,4 +19543,10 @@ defaultproperties
      bEnhancedPersonaScreenMouse=true
      bShowFullAmmoInHUD=true
      bShowGreenInteractionDisplay=true
+     bToolWindowShowKnownCodes=true
+     bToolWindowShowRead=false
+     bToolWindowShowAugState=true
+     iToolWindowShowDuplicateKeys=1
+     iToolWindowShowBookNames=1
+     bToolWindowShowInvalidPickup=false
 }

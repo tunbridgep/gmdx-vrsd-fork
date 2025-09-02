@@ -20,6 +20,8 @@ var Bool bFirstParagraph;
 var localized String ImageLabel;
 var localized String AddedToDatavaultLabel;
 var localized String msgNextPage;                   //Text to go to the next page
+var localized String msgRead;                       //Text to add to name if it's been read
+var localized String msgEmpty;                      //Text to add to name if it's empty.
 
 //SARGE: Set to true when we have read this once. Used for blanking datacubes
 var travel bool bRead;
@@ -27,9 +29,194 @@ var travel bool bRead;
 //SARGE: For datacubes with both images and text, allow paging through them.
 var transient bool bPageTwo;
 
+//SARGE: Frob string handling
+var string itemTitle;
+struct Title
+{
+    var string textTag;
+    var localized string replacement;
+};
+
+var const Title bookTitles[20];
+var const Title newspaperTitles[20];
+var const Title datacubeTitles[20];
+var const string titleIgnored[100];
+var const string titlePrefixes[100];
+var const string upcases[100];
+var const localized bool bShowNamePrefix;
+var const localized int minParagraphs;
+
 // Called when the device is read
 function OnBeginRead(DeusExPlayer reader) { }
 function OnEndRead(DeusExPlayer reader) { }
+
+function bool IsRead(optional DeusExPlayer player, optional bool bIndividual)
+{
+    if (player == None)
+        player = DeusExPlayer(GetPlayerPawn());
+
+    if (bIndividual)
+        return bRead || (textTag == '' && !IsA('GMDXTutorialCube'));
+    else
+        return bRead || (textTag == '' && !IsA('GMDXTutorialCube')) || player == None || player.GetNote(textTag) != None;
+}
+
+//HUGE list of hardcoded *ugh!!* object titles.
+//This idea is very similar to the same idea in DXRando, so credit
+//goes to them for thinking of this. Except I just use the first line,
+//since it fits in most cases, with some exceptions defined for specific instances.
+function string GetItemTitle()
+{
+    local string tag, text, textPart;
+	local DeusExTextParser parser;
+    local int i;
+    local bool bWrite, bPrefix, bWritten;
+    local bool bMatch;
+	local byte T;
+    local int paragraphs;
+	
+    if ( textTag == '' )
+        return msgEmpty;
+
+    //Some objects need special handling
+    tag = textPackage $ "." $ texttag;
+    for (i = 0; i < ArrayCount(bookTitles);i++)
+    {
+        if (IsA('DataCube') && datacubeTitles[i].textTag == tag)
+            return datacubeTitles[i].replacement;
+        else if ((IsA('Newspaper') || IsA('NewspaperOpen')) && newspaperTitles[i].textTag == tag)
+            return newspaperTitles[i].replacement;
+        else if ((IsA('BookOpen') || IsA('BookClosed')) && bookTitles[i].textTag == tag)
+            return bookTitles[i].replacement;
+    }
+
+    //If we didn't return, use the generic solution
+    //Get the first line of the text
+    parser = new(None) Class'DeusExTextParser';
+    parser.OpenText(textTag,TextPackage);
+    while(parser.ProcessText())
+    {
+        bWrite = true;
+        bPrefix = false;
+        textPart = parser.GetText();
+        T = parser.GetTag();
+        
+        Log("----");
+
+        Log("Tag: " $ T);
+
+        if (T == 18 && bWritten)
+        {
+            paragraphs++;
+            if (paragraphs >= minParagraphs)
+                break;
+        }
+
+        Log("TextPart (pre-trim): [" $ TextPart $ "]");
+
+        //Fix the text having leading/trailing spaces
+        textPart = class'DeusExPlayer'.static.Trim(textPart);
+        textPart = class'DeusExPlayer'.static.RTrim(textPart);
+        
+        Log("TextPart (post-trim): [" $ TextPart $ "]");
+            
+        //If the line is empty, ignore it
+        if (TextPart == "")
+        {
+            bWrite = false;
+        }
+        else
+        {
+            //if this is an ignored line, pretend it doesn't exist
+            for(i = 0;i < ArrayCount(titleIgnored);i++)
+            {
+                if (titleIgnored[i] != "" && titleIgnored[i] ~= Left(textPart,Len(titleIgnored[i])))
+                //if (titleIgnored[i] ~= textPart)
+                {
+                    bWrite = false;
+                    break;
+                }
+            }
+        
+            //if this is a prefix line, add it to the string but continue
+            for(i = 0;i < ArrayCount(titlePrefixes);i++)
+            {
+                if (titlePrefixes[i] != "" && titlePrefixes[i] ~= Left(textPart,Len(titlePrefixes[i])))
+                //if (titlePrefixes[i] ~= textPart)
+                {
+                    bPrefix = true;
+                    break;
+                }
+            }
+        }
+        
+        Log("TextPart: [" $ TextPart $ "] - " $ bWrite $ ", " $ bPrefix $ " [" $ Text $ "]");
+
+        if (bWrite)
+        {
+            if (text != "")
+                text = text $ " - " $ textPart;
+            else
+                text = textPart;
+
+            if (!bPrefix)
+                bWritten = true;
+        }
+    }
+    parser.CloseText();
+    CriticalDelete(parser);
+        
+    Log("Text (Before case conversion): " $ Text);
+    
+    //Convert to title case
+    text = class'DeusExPlayer'.static.TitleCase(text);
+    
+    Log("Text (After case conversion): " $ Text);
+
+    //Text Replacements
+    for(i = 0;i < ArrayCount(upcases);i++)
+    {
+        if (upcases[i] != "")
+            text = class'DeusExPlayer'.static.StrRepl(text,upcases[i],Caps(upcases[i]));
+    }
+    
+    Log("Text (After replacements): " $ Text);
+
+    //Strip off anything more than 100 characters
+    text = Left(text,100);
+    
+    Log("Text (Final): " $ Text);
+
+    if (text == "")
+        return msgEmpty;
+    else
+        return text;
+}
+
+
+//Sarge: Update with a horrible list of crap!
+function string GetFrobString(DeusExPlayer player)
+{
+    local string frobString;
+    local bool bShow;
+
+    bShow = (player.iToolWindowShowBookNames >= 2 || (player.iToolWindowShowBookNames == 1 && IsRead(player)));
+    
+    if (itemTitle != "" && bShow)
+    {
+        if (bShowNamePrefix)
+            frobString = itemName $ ": " $ itemTitle;
+        else
+            frobString = itemTitle;
+
+        if (player.bGMDXDebug)
+            frobString = "[Tag: " $ TextPackage $ "." $ textTag $ "]" @ frobString;
+    }
+    else
+        frobString = itemName;
+
+    return frobString;
+}
 
 // ----------------------------------------------------------------------
 // Destroyed()
@@ -127,6 +314,10 @@ function Frob(Actor Frobber, Inventory frobWith)
 			DestroyWindow();
             player.UpdateCrosshair();
 		}
+
+        //SARGE: Re-cache the fancy item name, to make testing easier.
+        if (player.bGMDXDebug)
+            itemTitle = GetItemTitle();
 	}
 }
 
@@ -348,6 +539,8 @@ function postbeginplay()
 		SetPropertyText("FemaleTextTag", TS);
 	}
 
+    //SARGE: Cache the fancy item name.
+    itemTitle = GetItemTitle();
 
 	super.postbeginplay();
 }
@@ -526,10 +719,48 @@ defaultproperties
 {
      TextPackage="DeusExText"
      msgNoText="It is blank"
+     msgEmpty="Empty"
      ImageLabel="[Image: %s]"
      AddedToDatavaultLabel="Image %s added to DataVault"
      FragType=Class'DeusEx.PaperFragment'
      bPushable=False
 	 bHDTPFailsafe=False
-     msgNextPage="[Image on next page]"
+     bShowNamePrefix=True
+     msgNextPage="[Press again to view Image]"
+     
+     minParagraphs=2
+     
+     //These are now done automagically.
+     //bookTitles(0)=(textTag="DeusExText.01_Book01",replacement="UNATCO Handbook - Welcome to UNATCO!")
+     //bookTitles(1)=(textTag="DeusExText.01_Book02",replacement="UNATCO Handbook - UNATCO and the Public")
+     //bookTitles(2)=(textTag="DeusExText.01_Book03",replacement="UNATCO Handbook - UNATCO and the Police")
+     //bookTitles(4)=(textTag="DeusExText.01_Book05",replacement="UNATCO Handbook - UNATCO and the Future")
+
+     datacubeTitles(0)=(textTag="DeusExText.01_Datacube01",replacement="Joseph Manderley Password Change")
+     datacubeTitles(1)=(textTag="DeusExText.01_Datacube03",replacement="Comm Van Code")
+     datacubeTitles(2)=(textTag="DeusExText.02_Datacube01",replacement="Note from Commander Frase")
+     datacubeTitles(3)=(textTag="DeusExText.02_Datacube02",replacement="New Access Codes")
+     datacubeTitles(4)=(textTag="DeusExText.02_Datacube05",replacement="Net Account")
+     datacubeTitles(5)=(textTag="DeusExText.02_Datacube07",replacement="Note from Paul")
+     datacubeTitles(6)=(textTag="DeusExText.02_Datacube08",replacement="New Account Setup")
+     datacubeTitles(7)=(textTag="DeusExText.02_Datacube11",replacement="Security Grid Online")
+     datacubeTitles(8)=(textTag="DeusExText.02_Datacube13",replacement="Account Compromised")
+     datacubeTitles(9)=(textTag="DeusExText.02_Datacube15",replacement="Castle Clinton Underground Code")
+     datacubeTitles(10)=(textTag="DeusExText.02_Datacube16",replacement="Note to Commander Grimaldi")
+     datacubeTitles(11)=(textTag="DeusExText.02_Datacube17",replacement="Note to Commander Frase")
+
+     titleIgnored(0)="!=!==!==="
+     titleIgnored(1)="* = * = * ="
+     //titleIgnored(2)="By G. K."
+     //titleIgnored(3)="By Andrew"
+     titleIgnored(4)="Report For The New York City Council"
+     titleIgnored(5)="By " //Remove the author line from books.
+
+     titlePrefixes(0)="UNATCO HANDBOOK"
+
+     upcases(0)="Unatco"
+     upcases(1)=" NYC "
+     upcases(2)=" NY "
+     upcases(3)="Cia"
+
 }

@@ -16,13 +16,14 @@ function bool IsDiscovered(DeusExPlayer player, string code, optional string cod
 
     //if bReallyKnown is set, then we are only checking if the player literally knows the code.
     //Otherwise, they are considered to have known it if it was excepted, or if no keypad cheese is turned off.
+    //NOTE: This requires the code to literally be in their notes. They can't have just read it somewhere.
     if (bReallyKnown)
     {
         //Check usernames and passwords
         if (code2 != "")
-            return player.HasCodeNote(code) || player.HasCodeNote(code2);
+            return player.HasCodeNote(code,true) || player.HasCodeNote(code2,true);
         else if (code != "")
-            return player.HasCodeNote(code);
+            return player.HasCodeNote(code,true);
     }
     else
     {

@@ -853,6 +853,9 @@ function Frob(Actor Frobber, Inventory frobWith)
                     bPlayerLocked = bLocked;
 					TimeSinceReset = 0;
 
+                    //SARGE: Update crosshair so that the frob display border colour updates
+                    player.UpdateCrosshair();
+
                     //if re-locked, reset the lock strength
                     if (bLocked)
                         lockStrength = initialLockStrength;
