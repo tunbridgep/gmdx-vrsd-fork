@@ -6,6 +6,7 @@ class OutfitManagerBase extends Object;
 //Part Slot Names
 enum PartSlot
 {
+    PS_Hack,            //Used to override certain NPC textures before others. This is fucking stupid!
     PS_Body_M,
     PS_Body_F,
     PS_Main,             //Main model texture
