@@ -107,6 +107,7 @@ defaultproperties
      items(88)=(HelpText="If enabled, the HUD Ammo Display will show total ammo as cyan when at max ammo.",actionText="HUD: Show Max Ammo",variable="bShowFullAmmoInHUD",defaultValue=1);
      items(89)=(HelpText="Re-enables the head-popping system from GMDX v9. Not recommended as it looks very unfinished.",actionText="Game: Allow Decapitations",variable="bDecap",defaultValue=0);
      items(90)=(HelpText="Alternate display for the accuracy crosshairs. Requires a map load/reload to fully work.",actionText="HUD: Alternate Accuracy Crosshairs",variable="bAlternateCrosshairAcc");
+     items(99)=(HelpText="Queued Infolinks will play much faster, without needing to wait 5 seconds to finish and start each one.",actionText="HUD: Faster Infolink Playback",variable="bFasterInfolinks",defaultValue=1);
      Title="GMDX Quality of Life Options"
      colWidths(0)=214
      colWidths(1)=155
