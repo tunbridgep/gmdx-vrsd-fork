@@ -8877,16 +8877,7 @@ function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool
     if (AmmoType == None)
     {
         //If we don't have it, spawn it
-        //Spawn will fail if there's not enough room to spawn the relevant ammo...
-        AmmoType = DeusExAmmo(Spawn(LootAmmoClass));	// Create ammo type required
-        
-        //...So we do a filthy hack by making the ammo type no longer collide with the world temporarily
-        if (AmmoType == None && LootAmmoClass.default.bCollideWorld == true)
-        {
-            LootAmmoClass.default.bCollideWorld = false;
-            AmmoType = DeusExAmmo(Spawn(LootAmmoClass));	// Create ammo type required...again!
-            LootAmmoClass.default.bCollideWorld = true;
-        }
+        AmmoType = DeusExAmmo(class'SpawnUtils'.static.SpawnSafe(LootAmmoClass,self));	// Create ammo type required
         
         if (AmmoType == None)
             return 0;
