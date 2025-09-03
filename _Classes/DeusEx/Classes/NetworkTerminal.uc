@@ -82,7 +82,7 @@ event DestroyWindow()
         winNotes = None;
     }
 
-	if ((compOwner.IsA('Computers')) && (compOwner != None))
+	if (compOwner != None && compOwner.IsA('Computers'))
 	{
       if (Player != Player.GetPlayerPawn())
       {
@@ -671,13 +671,12 @@ function ComputerHacked()
 	// Use the first login
 	userIndex = 0;
 
-	if (compOwner.IsA('Computers'))
+	if (compOwner != None && compOwner.IsA('Computers'))
     {
 		userName  = Computers(compOwner).GetUserName(userIndex);
         Computers(compOwner).timesHacked++;
+        Computers(CompOwner).PerformLoginAction(player);
     }
-
-    Computers(CompOwner).PerformLoginAction(player);
 
 	CloseScreen("LOGIN");
 }
