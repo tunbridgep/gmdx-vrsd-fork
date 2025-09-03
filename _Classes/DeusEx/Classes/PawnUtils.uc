@@ -15,6 +15,9 @@ static function WakeUpAI(Actor S, float radius)
     local Pawn P;
 	local DeusExLevelInfo info;
     local DeusExPlayer PL;
+        
+    if (S == None)
+        return;
 	
     PL = DeusExPlayer(S);
     if (PL == None)
