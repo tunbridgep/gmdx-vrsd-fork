@@ -4475,7 +4475,8 @@ function RadialMenuToggleCurrentAug()
 
 function RadialMenuClear()
 {
-	DeusExRootWindow(rootWindow).hud.radialAugMenu.Clear();
+	if (rootWindow != None)
+        DeusExRootWindow(rootWindow).hud.radialAugMenu.Clear();
 }
 
 
