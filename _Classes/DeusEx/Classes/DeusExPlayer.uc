@@ -929,6 +929,17 @@ function OnUseAmmo(DeusExAmmo ammoType, int amount)
 	   DeusExRootWindow(rootWindow).hud.ammo.UpdateMaxAmmo();
 }
 
+//SARGE: Redo our outfits
+//SARGE TODO: Remove this before release!
+exec function RedoOutfits()
+{
+    if (outfitManager != None)
+    {
+        outfitManager.RedoNPCOutfits();
+        ClientMessage("Rerolling NPC Outfits");
+    }
+}
+
 //SARGE: Hide/Show the entire HUD at once
 exec function TogglePhotoMode()
 {
