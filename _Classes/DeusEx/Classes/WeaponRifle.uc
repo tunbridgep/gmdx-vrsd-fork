@@ -121,6 +121,13 @@ function DisplayWeapon(bool overlay)
     else if (overlay)
     {
         multiskins[0] = handsTex;
+        if (bVanillaModelAttachments)
+        {
+            ShowWeaponAddon(2,!bHasSilencer); //Muzzle Break, hidden when we have silencer
+            ShowWeaponAddon(3,bHasSilencer);
+            ShowWeaponAddon(4,bHasLaser);
+            ShowWeaponAddon(5,bHasScope);
+        }
     }
 }
 
@@ -405,6 +412,7 @@ defaultproperties
      HDTPPlayerViewMesh="HDTPItems.HDTPWeaponRifle"
      HDTPPickupViewMesh="HDTPItems.HDTPSniperPickup"
      HDTPThirdPersonMesh="HDTPItems.HDTPSniper3rd"
+     VanillaAddonPlayerViewMesh="VisibleAttachments.SniperRifle_Mod"
      LandSound=Sound'DeusExSounds.Generic.DropMediumWeapon'
      Icon=Texture'RSDCrap.Icons.BeltIconRifle'
      largeIcon=Texture'RSDCrap.Icons.LargeIconRifle'
