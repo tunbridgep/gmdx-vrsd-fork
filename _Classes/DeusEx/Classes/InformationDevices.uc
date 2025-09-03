@@ -56,9 +56,9 @@ function bool IsRead(optional DeusExPlayer player, optional bool bIndividual)
         player = DeusExPlayer(GetPlayerPawn());
 
     if (bIndividual)
-        return bRead || (textTag == '' && !IsA('GMDXTutorialCube'));
+        return bRead || textTag == '';
     else
-        return bRead || (textTag == '' && !IsA('GMDXTutorialCube')) || player == None || player.GetNote(textTag) != None;
+        return bRead || textTag == '' || (player != None && player.GetNote(textTag) != None);
 }
 
 //HUGE list of hardcoded *ugh!!* object titles.
@@ -735,19 +735,27 @@ defaultproperties
      //bookTitles(1)=(textTag="DeusExText.01_Book02",replacement="UNATCO Handbook - UNATCO and the Public")
      //bookTitles(2)=(textTag="DeusExText.01_Book03",replacement="UNATCO Handbook - UNATCO and the Police")
      //bookTitles(4)=(textTag="DeusExText.01_Book05",replacement="UNATCO Handbook - UNATCO and the Future")
+     bookTitles(0)=(textTag="DeusExText.01_Book08",replacement="UNATCO Handbook - Dedication")
+     bookTitles(1)=(textTag="DeusExText.03_Book06",replacement="Curly's Journal")
 
      datacubeTitles(0)=(textTag="DeusExText.01_Datacube01",replacement="Joseph Manderley Password Change")
      datacubeTitles(1)=(textTag="DeusExText.01_Datacube03",replacement="Comm Van Code")
-     datacubeTitles(2)=(textTag="DeusExText.02_Datacube01",replacement="Note from Commander Frase")
-     datacubeTitles(3)=(textTag="DeusExText.02_Datacube02",replacement="New Access Codes")
-     datacubeTitles(4)=(textTag="DeusExText.02_Datacube05",replacement="Net Account")
-     datacubeTitles(5)=(textTag="DeusExText.02_Datacube07",replacement="Note from Paul")
-     datacubeTitles(6)=(textTag="DeusExText.02_Datacube08",replacement="New Account Setup")
-     datacubeTitles(7)=(textTag="DeusExText.02_Datacube11",replacement="Security Grid Online")
-     datacubeTitles(8)=(textTag="DeusExText.02_Datacube13",replacement="Account Compromised")
-     datacubeTitles(9)=(textTag="DeusExText.02_Datacube15",replacement="Castle Clinton Underground Code")
-     datacubeTitles(10)=(textTag="DeusExText.02_Datacube16",replacement="Note to Commander Grimaldi")
-     datacubeTitles(11)=(textTag="DeusExText.02_Datacube17",replacement="Note to Commander Frase")
+     datacubeTitles(2)=(textTag="DeusExText.01_Datacube04",replacement="Security Login")
+     datacubeTitles(3)=(textTag="DeusExText.01_Datacube05",replacement="Password Change Request")
+     datacubeTitles(4)=(textTag="DeusExText.01_Datacube09",replacement="Janine's Bots - Medical Bot")
+     datacubeTitles(5)=(textTag="DeusExText.02_Datacube01",replacement="Note from Commander Frase")
+     datacubeTitles(6)=(textTag="DeusExText.02_Datacube02",replacement="New Access Codes")
+     datacubeTitles(7)=(textTag="DeusExText.02_Datacube05",replacement="Net Account")
+     datacubeTitles(8)=(textTag="DeusExText.02_Datacube07",replacement="Note from Paul")
+     datacubeTitles(9)=(textTag="DeusExText.02_Datacube08",replacement="New Account Setup")
+     datacubeTitles(10)=(textTag="DeusExText.02_Datacube11",replacement="Security Grid Online")
+     datacubeTitles(11)=(textTag="DeusExText.02_Datacube13",replacement="Account Compromised")
+     datacubeTitles(12)=(textTag="DeusExText.02_Datacube15",replacement="Castle Clinton Underground Code")
+     datacubeTitles(13)=(textTag="DeusExText.02_Datacube16",replacement="Note to Commander Grimaldi")
+     datacubeTitles(14)=(textTag="DeusExText.02_Datacube17",replacement="Note to Commander Frase")
+     datacubeTitles(15)=(textTag="DeusExText.03_Datacube05",replacement="Ambrosia Delivery")
+     datacubeTitles(16)=(textTag="DeusExText.03_Datacube11",replacement="Janine's Bots - Repair Bot")
+     datacubeTitles(17)=(textTag="DeusExText.03_Datacube12",replacement="Helibase Computer Login")
 
      titleIgnored(0)="!=!==!==="
      titleIgnored(1)="* = * = * ="
@@ -755,12 +763,14 @@ defaultproperties
      //titleIgnored(3)="By Andrew"
      titleIgnored(4)="Report For The New York City Council"
      titleIgnored(5)="By " //Remove the author line from books.
+     titleIgnored(6)="U.s. Army" //Way too long title
 
      titlePrefixes(0)="UNATCO HANDBOOK"
 
      upcases(0)="Unatco"
      upcases(1)=" NYC "
      upcases(2)=" NY "
-     upcases(3)="Cia"
+     upcases(3)="Cia "
+     //upcases(4)="U.s. "
 
 }

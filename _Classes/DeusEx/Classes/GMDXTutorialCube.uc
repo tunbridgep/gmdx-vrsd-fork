@@ -51,6 +51,17 @@ struct DataCubeString
 var() EHackText HackText;
 var Localized DataCubeString StringTable[30];
 
+function bool IsRead(optional DeusExPlayer player, optional bool bIndividual)
+{
+    if (player == None)
+        player = DeusExPlayer(GetPlayerPawn());
+
+    if (bIndividual)
+        return bRead;
+    else
+        return bRead || (player != None && player.GetNote(GetNoteLabel(player)) != None);
+}
+
 function string GetItemTitle()
 {
     local string desc;
@@ -68,15 +79,30 @@ function bool DarkenScreen()
     return bRead;
 }
 
-function GetText()
+function Name GetNoteLabel(DeusExPlayer player)
 {
 	local DeusExRootWindow rootWindow;
+
+    if (player != None)
+        rootWindow = DeusExRootWindow(player.rootWindow);
+
+    if (rootWindow != None)
+        return rootWindow.StringToName("GMDXCustom"$HackText);
+}
+
+function GetText()
+{
     local string text;
     local Name noteLabel;
     local DeusExNote note;
+	local DeusExRootWindow rootWindow;
+    
+    if (aReader != None)
+        rootWindow = DeusExRootWindow(aReader.rootWindow);
 
-    rootWindow = DeusExRootWindow(aReader.rootWindow);
-			
+    if (rootWindow == None)
+        return;
+
     infoWindow = rootWindow.hud.ShowInfoWindow();
     infoWindow.ClearTextWindows();
 
@@ -86,9 +112,10 @@ function GetText()
     text = StringTable[HackText].text;
     winText.SetText(text);
 
+    noteLabel = GetNoteLabel(aReader);
+
     // Check to see if we need to save this string in the DataVault
     // SARGE: Now we always add it, but hide it if it's not supposed to be added
-    noteLabel = rootWindow.StringToName("GMDXCustom"$HackText);
     note = aReader.GetNote(noteLabel);
 
     if (note == None)

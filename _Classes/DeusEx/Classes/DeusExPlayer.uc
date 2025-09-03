@@ -14448,22 +14448,70 @@ static final function string Locs(coerce string Text)
 //SARGE TODO: Make a proper string parsing library.
 static final function string TitleCase(coerce string Text)
 {
-    local int IndexChar;
+    local int i, j;
+    local string c, c2;
+    local string Word, Ret;
+    local bool bFirstWord, bDontChange;
+
+    bFirstWord = true;
 
     //First, make it lowercase
     Text = Locs(Text);
  
-    //Then step through it, if there's a space, then change the next character
-    for (IndexChar = 0; IndexChar < Len(Text) - 1; IndexChar++)
-        if (Mid(Text, IndexChar, 1) == " " &&
-            Mid(Text, IndexChar+1, 1) >= "a" &&
-            Mid(Text, IndexChar+1, 1) <= "z")
-            Text = Left(Text, IndexChar+1) $ Chr(Asc(Mid(Text, IndexChar+1, 1)) - 32) $ Mid(Text, IndexChar + 2);
+    //Then step through it, if there's a space, then create a new word
+    for (i = 0; i < Len(Text); i++)
+    {
+        c = Mid(Text, i, 1);
+        Word = Word $ c;
+
+        //Log("c is [" $ c $ "]");
+        //If the current character is a space, start a new word
+        if (c == " " || c == "." || i == Len(Text) - 1)
+        {
+
+            //Some articles, like "a" and "the" will remain lower case
+            if (!bFirstWord)
+            {
+                switch (Word)
+                {
+                    case "a ":
+                    case "an ":
+                    case "and ":
+                    case "the ":
+                    case "of ":
+                    case "in ":
+                    case "for ":
+                        bDontChange = true;
+                }
+            }
+
+            if (!bDontChange)
+            {
+                //Make the first alpha character of the word uppercase
+                for (j = 0;j < Len(Word);j++)
+                {
+                    c2 = Mid(Word, j, 1);
+                    //Log("c2 is [" $ c2 $ "]");
+                    if (c2 >= "a" && c2 <= "z")
+                    {
+                        Word = Left(Word,j) $ Chr(Asc(c2) - 32) $ Mid(Word, j+1);
+                        //Log("Caps Word is [" $ Word $ "]");
+                        break;
+                    }
+                }
+            }
+
+            Ret = Ret $ Word; 
+            Word = "";
+            bFirstWord = false;
+            bDontChange = false;
+        }
+    }
 
     //Make the first character uppercase
-    Text = Chr(Asc(Left(Text, 1)) - 32) $ Mid(Text, 1);
+    //Ret = Chr(Asc(Left(Ret, 1)) - 32) $ Mid(Ret, 1);
     
-    return Text;
+    return Ret;
 }
 
 //SARGE: This exists because there's no equivalent function
