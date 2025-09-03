@@ -131,7 +131,7 @@ function ApplyCurrentOutfit()
     if (IsHDTP())
         return;
     
-    Log("Doing carcass stuff");
+    //Log("Doing carcass stuff");
 
     for (i = 0;i < 8;i++)
         if (augmentiqueData.textures[i] != None)
@@ -199,7 +199,6 @@ function CopyAugmentiqueDataToPOVCorpse(POVCorpse pov)
         pov.augmentiqueData.textures[5] = multiskins[5];
         pov.augmentiqueData.textures[6] = multiskins[6];
         pov.augmentiqueData.textures[7] = multiskins[7];
-        pov.augmentiqueData.textures[8] = multiskins[8];
         pov.augmentiqueData.textures[8] = Texture;
         pov.augmentiqueData.bRandomized = augmentiqueData.bRandomized;
     }

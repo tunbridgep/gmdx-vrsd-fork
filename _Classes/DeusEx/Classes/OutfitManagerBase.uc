@@ -66,7 +66,7 @@ function GroupTranspose2(PartSlot bodySlot, PartSlot bodySlot2,optional int slot
 
 //Outfit Functions
 function bool GetPartsGroup(string mesh) {}
-function BeginNewPartsGroup(string mesh, bool allowMale, bool allowFemale) {}
+function BeginNewPartsGroup(string mesh, string carcassMesh, bool allowMale, bool allowFemale) {}
 function AddDefaultReference(string defRef) {}
 function BeginNewOutfit(string id, string name, optional string desc, optional string highlightName, optional string pickupName, optional string pickupMessage, optional string pickupArticle) {}
 function OutfitAddPartReference(string partID) {}
@@ -81,3 +81,11 @@ function ApplyCurrentOutfit() {}
 //Force-apply NPC outfits
 function ApplyNPCOutfits() {}
 
+//Re-Apply NPC Outfits (for testing) //SARGE: TODO: Remove this before release!
+function RedoNPCOutfits() {}
+
+//NPC Carcass Functions
+function static CopyOutfitFromActorToCarcass(Actor A, DeusExCarcass C, optional bool bStrictMode) {}
+function static CopyAugmentiqueDataToPOVCorpse(POVCorpse pov, DeusExCarcass C, optional bool bStrictMode) {}
+function static CopyAugmentiqueDataFromPOVCorpse(POVCorpse pov, DeusExCarcass C) {}
+function static ApplyOutfitToCarcass(DeusExCarcass C) {}
