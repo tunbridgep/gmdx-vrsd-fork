@@ -151,12 +151,8 @@ function ModBalance(int userIndex, int numCredits, bool bSync)
 	{
 		foreach AllActors(class'ATM', atm)
 			for (i=0; i<atm.NumUsers(); i++)
-				if (atm != Self)
-					if ((Caps(userList[userIndex].accountNumber) == atm.GetAccountNumber(i)) &&
-						(Caps(userList[userIndex].PIN) == atm.GetPIN(i)))
-					{
-						atm.ModBalance(i, numCredits, False);
-					}
+                if (atm != Self && GetAccountNumber(i) == atm.GetAccountNumber(i) && GetPIN(i) == atm.GetPIN(i)) //SARGE: Fixed this horrible mess of a conditional
+                    atm.ModBalance(i, numCredits, False);
 	}
 }
 
