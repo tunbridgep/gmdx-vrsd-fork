@@ -153,8 +153,8 @@ function Color GetFrobDisplayBorderColor(Actor frobTarget)
     
     //Duplicate Keys
     else if (player.iToolWindowShowDuplicateKeys >= 2 && N != None && player.KeyRing != None && player.KeyRing.HasKey(N.KeyID))
-        //return colBadAug;
-        return colWireless;
+        return colBadAug;
+        //return colWireless;
     
     //Wireless Perk
     else if (frobTarget == player.HackTarget)
@@ -200,7 +200,7 @@ function Color GetFrobDisplayBorderColor(Actor frobTarget)
         }
         
         //Stack is full and we can't recharge
-        else if (Inv.IsA('ChargedPickup') && player.GetInventoryCount(Inv.class.name) >= ChargedPickup(Inv).RetMaxCopies() && ChargedPickup(Inv).GetCurrentCharge() == 100)
+        else if (Inv.IsA('ChargedPickup') && player.GetInventoryCount(Inv.class.name) >= ChargedPickup(Inv).RetMaxCopies() && ChargedPickup(Inv).GetCurrentCharge() > 99)
             return colBadAug;
 
         //Stack is full
