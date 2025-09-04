@@ -13,7 +13,10 @@ function ApplyMod(DeusExWeapon weapon)
 {
 	Super.ApplyMod(weapon);
 	if (weapon != None)
+    {
 		weapon.bHasScope = True;
+        weapon.bHadScope = True;
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -41,4 +44,5 @@ defaultproperties
      Description="A telescopic scope attachment provides zoom capability and increases accuracy against distant targets."
      beltDescription="MOD SCOPE"
      Skin=Texture'DeusExItems.Skins.WeaponModTex8'
+     bShowBulkyText=true
 }

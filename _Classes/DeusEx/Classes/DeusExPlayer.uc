@@ -850,6 +850,7 @@ var float lastWalkTimer;                                        //SARGE: Allow p
 var globalconfig bool bEnhancedSoundPropagation;                //SARGE: Allow more advanced sound propagation. May introduce performance issues!
 
 var globalconfig bool bCrouchingSounds;                         //SARGE: Make footstep sounds when crouching.
+var globalconfig bool bAddonDrawbacks;                          //SARGE: Add drawbacks to weapon attachments. Always enabled on Hardcore.
 
 //////////END GMDX
 
@@ -19329,4 +19330,5 @@ defaultproperties
      bShowDeclinedInReceivedWindow=true
      bEnhancedSoundPropagation=true
      bCrouchingSounds=true
+     bAddonDrawbacks=false
 }

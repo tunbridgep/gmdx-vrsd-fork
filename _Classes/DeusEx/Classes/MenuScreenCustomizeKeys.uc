@@ -15,10 +15,10 @@ struct S_KeyDisplayItem
 	var localized String DisplayName;
 };
 
-var localized string	FunctionText[80];  		 //CyberP: 61
-var string				MenuValues1[80]; //CyberP: 61
-var string				MenuValues2[80]; //CyberP: 61
-var string				AliasNames[80];  //CyberP: 61
+var localized string	FunctionText[84];  		 //CyberP: 61
+var string				MenuValues1[84]; //CyberP: 61
+var string				MenuValues2[84]; //CyberP: 61
+var string				AliasNames[84];  //CyberP: 61
 var string				PendingCommands[100];
 var localized S_KeyDisplayItem    keyDisplayNames[71];
 var localized string			  NoneText;
@@ -645,6 +645,9 @@ defaultproperties
      FunctionText(77)="Belt Slot 10"
      FunctionText(78)="Belt Slot 11"
      FunctionText(79)="Belt Slot 12"
+     FunctionText(81)="Attach/Detach Silencer"
+     FunctionText(82)="Attach/Detach Scope"
+     FunctionText(83)="Attach/Detach Laser Sight"
      AliasNames(0)="ParseLeftClick|Fire"
      AliasNames(1)="ParseRightClick"
      AliasNames(2)="DropItem"
@@ -725,6 +728,9 @@ defaultproperties
      AliasNames(77)="AltBelt0"
      AliasNames(78)="AltBelt10"
      AliasNames(79)="AltBelt11"
+     AliasNames(81)="AttachSilencer"
+     AliasNames(82)="AttachScope"
+     AliasNames(83)="AttachLaser"
      keyDisplayNames(0)=(inputKey=IK_LeftMouse,displayName="Left Mouse Button")
      keyDisplayNames(1)=(inputKey=IK_RightMouse,displayName="Right Mouse Button")
      keyDisplayNames(2)=(inputKey=IK_MiddleMouse,displayName="Middle Mouse Button")

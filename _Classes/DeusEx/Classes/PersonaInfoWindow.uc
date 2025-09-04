@@ -13,11 +13,19 @@ var int textVerticalOffset;
 var PersonaActionButtonWindow    buttonUpgradeSecond;                           //RSD
 var PersonaActionButtonWindow    buttonRemoveDecline[100];
 var PersonaActionButtonWindow    buttonDecline;
+var PersonaActionButtonWindow    buttonAddRemoveLaser; //SARGE: Weapon mod buttons
+var PersonaActionButtonWindow    buttonAddRemoveScope; //SARGE: Weapon mod buttons
+var PersonaActionButtonWindow    buttonAddRemoveSilencer; //SARGE: Weapon mod buttons
 var localized String UpgradeButtonLabel;
 var localized String PurchasedButtonLabel;
 var localized String UnobtainableButtonLabel;
 
+var localized String LaserLabel;
+var localized String ScopeLabel;
+var localized String SilencerLabel;
+
 var Inventory                    assignThis;                                    //RSD: Added
+var DeusExWeapon                 modifyThis;                                    //SARGE: Added
 
 var localized String PassedSkillName;
 var localized string RequiredPoints;
@@ -42,6 +50,7 @@ var TextWindow WinPerkTitle[10];
 var TextWindow WinSkillText[10];
 var PersonaButtonBarWindow winActionButtons[10];
 var PersonaButtonBarWindow winActionButtonsSecondary;
+var PersonaButtonBarWindow winActionButtonsWeaponMods;
 var PersonaActionButtonWindow buttonUpgrade[10];
 var Window winSkillIconP[10];
 
@@ -56,6 +65,15 @@ var localized string msgRemoveDecline;
 var localized String DeclinedTitleLabel;
 var localized String DeclinedDesc;
 var localized String DeclinedDesc2;
+
+//Weapon Mod Penalties
+var localized String AccuracyPenaltyLabel;
+var localized String ReloadPenaltyLabel;
+var localized String RecoilPenaltyLabel;
+var localized String RangePenaltyLabel;
+var localized String DamagePenaltyLabel;
+var localized String AttachDetachLabel;
+var localized String WeaponModEffectsLabel;
 
 //Ygll new var
 var string strDash;
@@ -282,6 +300,7 @@ function bool ButtonActivated( Window buttonPressed )
 {
 	local bool bHandled;
     local DeusExBaseWindow TopWin;
+    local DeusExWeapon W;
 	local DeusExPlayer player;
     local int i, index;
     local bool boughtPerk;
@@ -317,6 +336,29 @@ function bool ButtonActivated( Window buttonPressed )
 
 	switch(buttonPressed)
 	{
+        //SARGE: Weapon addon toggles.
+		case buttonAddRemoveSilencer:
+            if (modifyThis != None)
+            {
+                modifyThis.ToggleAttachedSilencer(player.bRealUI || player.bHardcoreMode);
+                modifyThis.UpdateInventoryInfo();
+            }
+            break;
+		case buttonAddRemoveLaser:
+            if (modifyThis != None)
+            {
+                modifyThis.ToggleAttachedLaser(player.bRealUI || player.bHardcoreMode);
+                modifyThis.UpdateInventoryInfo();
+            }
+            break;
+		case buttonAddRemoveScope:
+            if (modifyThis != None)
+            {
+                modifyThis.ToggleAttachedScope(player.bRealUI || player.bHardcoreMode);
+                modifyThis.UpdateInventoryInfo();
+            }
+            break;
+
 		case buttonUpgradeSecond:
 		   if (assignThis != None && player.GetSecondaryClass() == assignThis.class)
 			   player.AssignSecondary(None);
@@ -477,6 +519,9 @@ function Clear()
 	winTitle.SetText("");
 	buttonUpgradeSecond = None;
 	buttonDecline = None;
+    buttonAddRemoveSilencer = None;
+    buttonAddRemoveLaser = None;
+    buttonAddRemoveScope = None;
 	winTile.DestroyAllChildren();
 }
 
@@ -558,6 +603,103 @@ function AddDeclineButton(class<Inventory> wep)
         buttonDecline = PersonaActionButtonWindow(winActionButtonsSecondary.NewChild(class'PersonaActionButtonWindow'));
         UpdateDeclineButton(wep);
         AddLine();
+    }
+}
+
+function UpdateWeaponModButtons(DeusExWeapon weapon)
+{
+    local string str;
+
+    if (weapon != None)
+    {
+        if (buttonAddRemoveLaser != None)
+        {
+            buttonAddRemoveLaser.SetButtonText(LaserLabel);
+            buttonAddRemoveLaser.SetSensitivity(weapon.bHadLaser);
+        }
+        if (buttonAddRemoveScope != None)
+        {
+            buttonAddRemoveScope.SetButtonText(ScopeLabel);
+            buttonAddRemoveScope.SetSensitivity(weapon.bHadScope);
+            //buttonAddRemoveScope.SetSensitivity(true);
+        }
+        if (buttonAddRemoveSilencer != None)
+        {
+            buttonAddRemoveSilencer.SetButtonText(SilencerLabel);
+            buttonAddRemoveSilencer.SetSensitivity(weapon.bHadSilencer);
+        }
+    }
+
+}
+
+//SARGE: Add buttons to attach and detach bulky weapon mods.
+function AddWeaponModButtons(DeusExWeapon weapon)
+{
+	local DeusExPlayer player;
+    local bool bDrawLaser, bDrawScope, bDrawSilencer;
+	
+    player = DeusExPlayer(GetPlayerPawn());
+
+    //Don't do anything if we have the feature disabled.
+    if (player != None && !player.bHardcoreMode && !player.bAddonDrawbacks)
+        return;
+
+    if (weapon != None)
+    {
+        modifyThis = weapon;
+
+        bDrawLaser = weapon.bHadLaser;
+        bDrawScope = weapon.bHadScope;
+        bDrawSilencer = weapon.bHadSilencer;
+
+        //Don't add the buttons if we don't have any valid mods
+        if (!bDrawLaser && !bDrawSilencer && !bDrawScope)
+            return;
+    
+        SetText(AttachDetachLabel);
+
+        winActionButtonsWeaponMods = PersonaButtonBarWindow(winTile.NewChild(class'PersonaButtonBarWindow'));
+        winActionButtonsWeaponMods.SetWidth(32); //149
+        winActionButtonsWeaponMods.FillAllSpace(false);
+
+        //Add mod buttons
+        buttonAddRemoveLaser = PersonaActionButtonWindow(winActionButtonsWeaponMods.NewChild(class'PersonaActionButtonWindow'));
+        buttonAddRemoveScope = PersonaActionButtonWindow(winActionButtonsWeaponMods.NewChild(class'PersonaActionButtonWindow'));
+        buttonAddRemoveSilencer = PersonaActionButtonWindow(winActionButtonsWeaponMods.NewChild(class'PersonaActionButtonWindow'));
+        UpdateWeaponModButtons(weapon);
+    }
+}
+
+//Add some information about the drawbacks of the current mods
+function AddWeaponModDrawbacks(DeusExWeapon weapon)
+{
+    local bool bDrawLaser, bDrawScope, bDrawSilencer;
+
+    bDrawLaser = weapon.bHasLaser && weapon.bHadLaser && weapon.GetAddonPenalty(Laser) > 0.0;
+    bDrawScope = weapon.bHasScope && weapon.bHadScope && weapon.GetAddonPenalty(Scope) > 0.0;
+    bDrawSilencer = weapon.bHasSilencer && weapon.bHadSilencer && weapon.GetAddonPenalty(Silencer) > 0.0;
+
+    if (!bDrawLaser && !bDrawSilencer && !bDrawScope)
+        return;
+        
+    AddLine();
+    SetText(WeaponModEffectsLabel $ "|n");
+    if (bDrawLaser)
+    {
+        SetText(LaserLabel $ ":");
+        SetText("  " $ RecoilPenaltyLabel $ ": +" $ weapon.FormatFloatString(weapon.GetAddonPenalty(Laser) * 100, 0.1) $ "%");
+    }
+    if (bDrawScope)
+    {
+        SetText(ScopeLabel $ ":");
+        SetText("  " $ RecoilPenaltyLabel $ ": +" $ int(weapon.GetAddonPenalty(Scope) * 100) $ "%");
+        SetText("  " $ ReloadPenaltyLabel $ ": +" $ weapon.FormatFloatString(weapon.GetAddonPenalty(Scope), 0.1) $ " sec");
+    }
+    if (bDrawSilencer)
+    {
+        SetText(SilencerLabel $ ":");
+        SetText("  " $ AccuracyPenaltyLabel $ ": -" $ int(weapon.GetAddonPenalty(Silencer) * 100) $ "%");
+        SetText("  " $ DamagePenaltyLabel $ ": -" $ int(weapon.GetAddonPenalty(Silencer) * 100) $ "%");
     }
 }
 
@@ -662,4 +804,14 @@ defaultproperties
      msgAssigned="Secondary Item Assigned"
      msgUnassigned="Secondary Item Unassigned"
      strDash=""
+     LaserLabel="Laser"
+     ScopeLabel="Scope"
+     SilencerLabel="Silencer"
+     AccuracyPenaltyLabel="Accuracy"
+     ReloadPenaltyLabel="Reload Speed"
+     RecoilPenaltyLabel="Recoil"
+     RangePenaltyLabel="Range"
+     DamagePenaltyLabel="Damage"
+     AttachDetachLabel="Attach/Detach Weapon Mods:"
+     WeaponModEffectsLabel="Some weapon mods provide negative effects:"
 }

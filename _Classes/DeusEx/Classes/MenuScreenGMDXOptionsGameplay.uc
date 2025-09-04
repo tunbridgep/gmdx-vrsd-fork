@@ -60,6 +60,7 @@ defaultproperties
      items(11)=(HelpText="If enabled, reloading with a full magazine is possible.",actionText="Trick Reloads",variable="bTrickReloading");
      items(15)=(HelpText="Enable improved sound propagation. This should be left ON as it improves the reliability of stealth gameplay. May introduce performance issues!",actionText="Enhanced Sound Propagation",variable="bEnhancedSoundPropagation",defaultValue=1);
      items(16)=(HelpText="Crouching will create footstep sounds, which are detectable by enemies.",actionText="Crouching Footsteps",variable="bCrouchingSounds",defaultValue=1);
+     items(17)=(HelpText="Scopes, Silencers and Lasers will come with drawbacks. Weapon mods can be detached/reattached in the inventory screen.",actionText="Strategic Weapon Mods",variable="bAddonDrawbacks",defaultValue=1);
      msgText="The settings available in this menu are always active as part of Hardcore difficulty.|nYou may still edit them freely, but they will have no effect when playing in Hardcore mode."
      msgTitle="Hardcore Mode"
      Title="GMDX Gameplay Options"

@@ -1748,6 +1748,9 @@ simulated function float CalculateAccuracy()
 	// this only works for the player, because NPCs don't need any more aiming help!
 	if (player != None)
 	{
+        //SARGE: Add accuracy penalty for having weapon mods
+        accuracy += GetAddonPenalty(Silencer);
+
 		tempacc = accuracy;
 		if (standingTimer > 0)
 		{
@@ -2678,6 +2681,9 @@ simulated function Tick(float deltaTime)
 		   recoil = recoilStrength * 0.5;*/
 		else
 		   recoil = recoilStrength;
+
+        recoil += GetAddonPenalty(Laser); //SARGE: Penalties for addons
+        recoil += GetAddonPenalty(Scope); //SARGE: Penalties for addons
 
 		if (recoil < 0.0)
 			recoil = 0.0;
@@ -4609,6 +4615,7 @@ function DartStickToWall(DeusExProjectile proj)
 //
 simulated function Projectile ProjectileFire(class<projectile> ProjClass, float ProjSpeed, bool bWarn)
 {
+    local float AddonRangeMod;
 	local Vector Start, X, Y, Z;
 	local DeusExProjectile proj;
 	local float mult, speedMult, rangeMult, strengthMult;                       //RSD: Added strengthMult
@@ -4789,6 +4796,8 @@ simulated function Projectile ProjectileFire(class<projectile> ProjClass, float 
 			{
 				//SARGE: Added new gameplay setting //Ygll: Add more option to the fragile dart option
 				DartStickToWall(proj);
+
+                mult *= 1.0 - GetAddonPenalty(Silencer);
 					
                 //proj.Damage *= mult;                                          //RSD
                 finalDamage = proj.Damage*mult;                                 //RSD: final input to TakeDamage is a truncated int
@@ -5171,6 +5180,8 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
 		// skill also affects our damage
 		// GetWeaponSkill returns 0.0 to -0.7 (max skill/aug)
 		mult += -2.0 * GetWeaponSkill() + ModDamage;   //CyberP: damage mod
+
+        mult *= 1.0 - GetAddonPenalty(Silencer);
 
         //RSD: check our range
         dist = Abs(VSize(HitLocation - Owner.Location));
@@ -5729,6 +5740,7 @@ simulated function bool UpdateInfo(Object winObject)
 
 	//G-Flex: display the correct damage bonus
 	mod = 1.0 - (2.0 * GetWeaponSkill()) + ModDamage;  //CyberP: damage mods
+    mod *= 1.0 - GetAddonPenalty(Silencer);
 	if (IsA('WeaponSawedoffShotgun') && AmmoName==class'AmmoRubber')            //RSD: Sawed-off gets +30% damage on rubber bullets
 	   mod += 0.30;
 	if (bHandToHand)
@@ -5814,6 +5826,7 @@ simulated function bool UpdateInfo(Object winObject)
 		str = msgInfoNA;
 	else
 	{
+        mod = 0.0;
 		if (Level.NetMode != NM_Standalone )
 			str = FormatFloatString(Default.mpReloadTime, 0.1) @ msgTimeUnit;
 		else if (bPerShellReload)
@@ -5822,32 +5835,35 @@ simulated function bool UpdateInfo(Object winObject)
 			str = FormatFloatString(Default.ReloadTime, 0.1) @ msgTimeUnit;
 	}
 
-	if (HasReloadMod())
+    mod = GetAddonPenalty(Scope); //SARGE: Penalties for addons
+	if (HasReloadMod() || mod > 0.0)
 	{
-		str = str @ BuildPercentString(ModReloadTime);
+		str = str @ BuildPercentString(ModReloadTime + mod);
 		if (bPerShellReload)
-			str = str @ "=" @ FormatFloatString(1 / ReloadTime, 0.1) @ msgInfoRoundsPerSec;
+			str = str @ "=" @ FormatFloatString(1 / (ReloadTime + mod), 0.1) @ msgInfoRoundsPerSec;
 		else
-		str = str @ "=" @ FormatFloatString(ReloadTime, 0.1) @ msgTimeUnit;
+            str = str @ "=" @ FormatFloatString(ReloadTime + mod, 0.1) @ msgTimeUnit;
 	}
     if (!bHandToHand || IsA('WeaponPepperGun') || IsA('WeaponProd'))
-	winInfo.AddInfoItem(msgInfoReload, str, HasReloadMod());
+	winInfo.AddInfoItem(msgInfoReload, str, HasReloadMod() || mod >= 0.01);
 
 	// recoil
+    mod = GetAddonPenalty(Scope); //SARGE: Penalties for addons
 	str = FormatFloatString(Default.recoilStrength, 0.01);
-	if (HasRecoilMod())
+	if (HasRecoilMod() || mod > 0.0)
 	{
-		str = str @ BuildPercentString(ModRecoilStrength);
-		str = str @ "=" @ FormatFloatString(recoilStrength, 0.01);
+		str = str @ BuildPercentString(ModRecoilStrength + mod);
+		str = str @ "=" @ FormatFloatString(recoilStrength + mod, 0.01);
 	}
     if (!bHandToHand)
-	winInfo.AddInfoItem(msgInfoRecoil, str, HasRecoilMod());
+	winInfo.AddInfoItem(msgInfoRecoil, str, HasRecoilMod() || mod > 0.0);
 
 	// base accuracy (2.0 = 0%, 0.0 = 100%)
 	if ( Level.NetMode != NM_Standalone )
 	{
 		str = Int((2.0 - Default.mpBaseAccuracy)*50.0) $ "%";
 		mod = (Default.mpBaseAccuracy - (BaseAccuracy + GetWeaponSkill())) * 0.5;
+        mod -= GetAddonPenalty(Silencer);
 		if (mod != 0.0)
 		{
 			str = str @ BuildPercentString(mod);
@@ -5858,6 +5874,8 @@ simulated function bool UpdateInfo(Object winObject)
 	{
 		str = Int((2.0 - Default.BaseAccuracy)*50.0) $ "%";
 		mod = (Default.BaseAccuracy - (BaseAccuracy + GetWeaponSkill())) * 0.5;
+        mod -= GetAddonPenalty(Silencer);
+
 		if (mod != 0.0)
 		{
 			str = str @ BuildPercentString(mod);
@@ -6086,9 +6104,9 @@ simulated function bool UpdateInfo(Object winObject)
 
     if (bCanHaveModBaseAccuracy || bCanHaveModReloadCount || bCanHaveModAccurateRange || bCanHaveModReloadTime || bCanHaveModRecoilStrength || bCanHaveModShotTime || bCanHaveModDamage)
         {
-                winInfo.AddLine();
-                winInfo.SetText(msgAllMods);
-                winInfo.AddLine();
+            winInfo.AddLine();
+            winInfo.SetText(msgAllMods);
+            winInfo.AddLine();
 
                 if (bCanHaveModReloadCount)
                 {
@@ -6173,6 +6191,12 @@ simulated function bool UpdateInfo(Object winObject)
                     winInfo.AddModInfo(msgInfoFullAuto, 0, (numMods == 1), 4);
                 }
          }
+    if (bHadLaser || bHadSilencer || bHadScope)
+    {
+        winInfo.AddLine();
+        winInfo.AddWeaponModButtons(self);
+        winInfo.AddWeaponModDrawbacks(self);
+    }
 	winInfo.AddLine();
 	winInfo.SetText(Description);
 
@@ -6657,6 +6681,39 @@ state Pickup
 	}
 }
 
+//SARGE: New state for attaching/detaching attachments
+state SwitchAttachment
+{
+ignores Fire, AltFire;
+    begin:
+    //FinishAnim();
+    //if(hasAnim('ReloadBegin'))
+    //    PlayAnim('ReloadBegin',1.0-(ModReloadTime*0.8));
+    //FinishAnim();
+    TweenAnim('Reload',0.4);
+    //PlayAnim('Reload',default.ReloadTime/ReloadTime);
+    Sleep(ReloadTime);
+    if (bSwitchingToLaser)
+        bHasLaser = !bHasLaser;
+    else if (bSwitchingToScope)
+        bHasScope = !bHasScope;
+    else if (bSwitchingToSilencer)
+        bHasSilencer = !bHasSilencer;
+    else if (bSwitchingToLaser)
+        bHasLaser = !bHasLaser;
+    Owner.PlaySound(AltFireSound, SLOT_None,,, 1024);
+    if(hasAnim('ReloadEnd'))
+        PlayAnim('ReloadEnd',1.0-(ModReloadTime*0.8));
+    FinishAnim();
+    if (Owner.isA('DeusExPlayer'))
+        DeusExPlayer(Owner).UpdateCrosshair();
+
+    bSwitchingToLaser = false;
+    bSwitchingToScope = false;
+    bSwitchingToSilencer = false;
+	GotoState('Idle');
+}
+
 state Reload
 {
 ignores Fire, AltFire;
@@ -6680,6 +6737,9 @@ ignores Fire, AltFire;
 			// check for skill use if we are the player
 			val = GetWeaponSkill();
 			val = ReloadTime + (val*ReloadTime);
+ 
+            val += GetAddonPenalty(Scope); //SARGE: Penalties for addons
+
 			/*if (AmmoType.IsA('AmmoRubber'))                                   //RSD: Rubber rounds no longer load more quickly (huh?)
 			   val *= 0.75;*/
 		}
@@ -7443,4 +7503,7 @@ defaultproperties
      CopyModsSound=sound'M4ClipOut'
      msgModsCopied="Weapon Modifications applied from %d"
      bVisionImportant=true
+     addonPenalties(0)=0.1 //Scope
+     addonPenalties(1)=0.2 //Silencer
+     addonPenalties(2)=0.075 //Laser
 }

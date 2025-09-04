@@ -605,6 +605,7 @@ automaticLabel="Automatic:"
 
 [WeaponMod]
 DragToUpgrade="Drag over weapon to upgrade.  Weapons highlighted in GREEN can be upgraded with this mod."
+BulkyText="This modification is bulky and will reduce weapon handling characteristics!"
 
 [Faucet]
 ItemName="Faucet"
