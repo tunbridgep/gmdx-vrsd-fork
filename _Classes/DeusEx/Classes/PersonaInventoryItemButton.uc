@@ -166,7 +166,7 @@ event DrawWindow(GC gc)
 			str = "";
 
 			//SARGE: Add charge for NanoSword
-            if (anItem.isA('WeaponNanoSword') && WeaponNanoSword(anItem).chargeManager != None && WeaponNanoSword(anItem).chargeManager.GetCurrentCharge() > 0)
+            if (anItem.isA('WeaponNanoSword') && WeaponNanoSword(anItem).chargeManager != None && WeaponNanoSword(anItem).chargeManager.GetCurrentCharge() > 0 && (player.bNanoswordEnergyUse || player.bHardcoreMode))
                 str2 = Sprintf("%d%%", WeaponNanoSword(anItem).chargeManager.GetCurrentCharge());
 
 			if ((weapon != None) && weapon.bDisposableWeapon)
