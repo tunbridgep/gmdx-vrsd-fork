@@ -11936,6 +11936,35 @@ exec function MinimiseTargetingWindow()
 }
 
 // ----------------------------------------------------------------------
+
+// ----------------------------------------------------------------------
+// Functions to toggle attachments
+// ----------------------------------------------------------------------
+
+exec function AttachSilencer()
+{
+    local DeusExWeapon W;
+    W = DeusExWeapon(Weapon);
+    if (W != None)
+        W.ToggleAttachedSilencer(true);
+}
+
+exec function AttachScope()
+{
+    local DeusExWeapon W;
+    W = DeusExWeapon(Weapon);
+    if (W != None)
+        W.ToggleAttachedScope(true);
+}
+
+exec function AttachLaser()
+{
+    local DeusExWeapon W;
+    W = DeusExWeapon(Weapon);
+    if (W != None)
+        W.ToggleAttachedLaser(true);
+}
+
 // SkipMessages
 // ----------------------------------------------------------------------
 
