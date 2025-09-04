@@ -9138,7 +9138,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     //SARGE: Always try looting non-disposable weapons of their ammo
     if (bCanPickup && FrobTarget.IsA('DeusExWeapon') && !DeusExWeapon(frobTarget).bDisposableWeapon)
     {
-        bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,true,bAlwaysShowReceivedItemsWindow,false,true,bShowOverflow,bShowOverflowWindow);
+        bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,true,bAlwaysShowReceivedItemsWindow,true,true,bShowOverflow,bShowOverflowWindow);
 
         //Don't pick up a weapon if there's ammo in it and we already have one
         if (!bSlotSearchNeeded && DeusExWeapon(frobTarget).PickupAmmoCount > 0 && bCanPickup)
@@ -9237,8 +9237,9 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     }
         
     //Make a noise if we picked up ammo from a weapon we couldn't pick up.
-    if (bLootedAmmo && (!bCanPickup || bDeclined) && FrobTarget.IsA('DeusExWeapon'))
-        PlayPartialAmmoSound(frobTarget,DeusExWeapon(frobTarget).GetPrimaryAmmoType());
+    //SARGE: TODO: Re-enable this and set bLootSound to false from the above LootAmmo camm so that we get the proper pickup sound, once implemented
+    //if (bLootedAmmo && (!bCanPickup || bDeclined) && FrobTarget.IsA('DeusExWeapon'))
+    //    PlayPartialAmmoSound(frobTarget,DeusExWeapon(frobTarget).GetPrimaryAmmoType());
         
 
     //Hacky Shuriken fix
