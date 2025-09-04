@@ -113,6 +113,7 @@ defaultproperties
      items(96)=(HelpText="Shows a red border on the tool display window when looking at duplicate nano keys",actionText="Tool Windows: Show Duplicate Keys",variable="iToolWindowShowDuplicateKeys",valueText1="Text Only",valueText2="Border Only",valueText3="Border and Text",defaultValue=1);
      items(97)=(HelpText="Shows the names of Books, Datacubes and Newspapers when highlighting them.",actionText="Tool Windows: Show Book Names",variable="iToolWindowShowBookNames",valueText1="When Read",valueText2="Always",defaultValue=1);
      items(98)=(HelpText="Items that can't be picked up due to inventory limitations will display with a Red border when highlighted. Ammo that can be partially looted will show a blue border.",actionText="Tool Windows: Show Invalid Pickups",variable="bToolWindowShowInvalidPickup",defaultValue=0);
+     items(99)=(HelpText="When accessing computers, the Special Options screen won't have a Logout button but will instead always return to the email or security screen.",actionText="HUD: Streamlined Computer Interface",variable="bStreamlinedComputerInterface",defaultValue=1);
      Title="GMDX Quality of Life Options"
      colWidths(0)=214
      colWidths(1)=155

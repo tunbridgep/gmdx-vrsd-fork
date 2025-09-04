@@ -804,6 +804,8 @@ var globalconfig bool bPistolStartTrained;                          //SARGE: If 
 
 var globalconfig bool bStreamlinedRepairBotInterface;               //SARGE: Don't bother showing the repair bot interface at all if it's not charged.
 
+var globalconfig bool bStreamlinedComputerInterface;           //SARGE: "Special Options" screen goes back to the standard Security screen, rather than logging out, so we don't forget to turn off security.
+
 var globalconfig bool bReversedAltBeltColours;                      //SARGE: Make it like how it was in vSarge beta.
 
 var globalconfig bool bAlwaysShowReceivedItemsWindow;               //SARGE: Always show the retrieved items window when picking up ammo from a weapon.
@@ -19594,4 +19596,5 @@ defaultproperties
      iToolWindowShowDuplicateKeys=1
      iToolWindowShowBookNames=1
      bToolWindowShowInvalidPickup=false
+     bStreamlinedComputerInterface=true
 }
