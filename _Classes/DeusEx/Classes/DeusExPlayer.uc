@@ -861,6 +861,13 @@ var globalconfig bool bEnhancedPersonaScreenMouse;             //SARGE: When ena
 
 var globalconfig bool bShowFullAmmoInHUD;                       //SARGE: When ammo for a certain ammo type is full, show it as Yellow in the AMMO Hud
 
+var globalconfig bool bNanoswordEnergyUse;                      //SARGE: Whether or not the DTS requires energy to function.
+
+var globalconfig bool bNanoswordEnergyUse;                      //SARGE: Whether or not the DTS requires energy to function.
+
+
+var globalconfig bool bFasterInfolinks;                         //SARGE: Significantly decreases the time before queued datalinks can play, to make receiving many messages at once far less sluggish.
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -931,6 +938,17 @@ function OnUseAmmo(DeusExAmmo ammoType, int amount)
 {
 	if (DeusExRootWindow(rootWindow) != None && DeusExRootWindow(rootWindow).hud != None && ammoType != None)
 	   DeusExRootWindow(rootWindow).hud.ammo.UpdateMaxAmmo();
+}
+
+//SARGE: Redo our outfits
+//SARGE TODO: Remove this before release!
+exec function RedoOutfits()
+{
+    if (outfitManager != None)
+    {
+        outfitManager.RedoNPCOutfits();
+        ClientMessage("Rerolling NPC Outfits");
+    }
 }
 
 //SARGE: Hide/Show the entire HUD at once
@@ -8878,16 +8896,7 @@ function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool
     if (AmmoType == None)
     {
         //If we don't have it, spawn it
-        //Spawn will fail if there's not enough room to spawn the relevant ammo...
-        AmmoType = DeusExAmmo(Spawn(LootAmmoClass));	// Create ammo type required
-        
-        //...So we do a filthy hack by making the ammo type no longer collide with the world temporarily
-        if (AmmoType == None && LootAmmoClass.default.bCollideWorld == true)
-        {
-            LootAmmoClass.default.bCollideWorld = false;
-            AmmoType = DeusExAmmo(Spawn(LootAmmoClass));	// Create ammo type required...again!
-            LootAmmoClass.default.bCollideWorld = true;
-        }
+        AmmoType = DeusExAmmo(class'SpawnUtils'.static.SpawnSafe(LootAmmoClass,self));	// Create ammo type required
         
         if (AmmoType == None)
             return 0;
@@ -11236,7 +11245,6 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 							carc.bEmitCarcass = true;  //CyberP: emitcarc
 							carc.SetPhysics(PHYS_Falling);
 							carc.SetScaleGlow();
-							Carc.UpdateHDTPSettings();
 							Carc.Inventory = PovCorpse(item).Inv; //GMDX
 							Carc.bSearched = POVCorpse(item).bSearched;
 							Carc.PickupAmmoCount = POVCorpse(item).PickupAmmoCount;
@@ -11244,6 +11252,8 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
                             Carc.bFirstBloodPool = POVCorpse(item).bFirstBloodPool; //SARGE: Added.
                             Carc.bNoDefaultPools = POVCorpse(item).bNoDefaultPools;
                             Carc.UpdateName();
+                            Carc.CopyAugmentiqueDataFromPOVCorpse(POVCorpse(item));     //AUGMENTIQUE: Copy over outfit data.
+							Carc.UpdateHDTPSettings();
 
                             //if (FRand() < 0.3)
                             //PlaySound(Sound'DeusExSounds.Player.MaleLand', SLOT_None, 0.9, false, 800, 0.85);
@@ -19444,4 +19454,6 @@ defaultproperties
      bShowCodeNotes=true
      bEnhancedPersonaScreenMouse=true
      bShowFullAmmoInHUD=true
+     bFasterInfolinks=true
+     bNanoswordEnergyUse=true
 }

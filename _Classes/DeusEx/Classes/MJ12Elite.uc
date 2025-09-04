@@ -7,8 +7,7 @@ var float burnAmount;
 
 function SetupSkin()
 {
-    if (bCloakOn)
-        return;
+    Super.SetupSkin();
 
     bHasHelmet = MultiSkins[6]==Texture'DeusExCharacters.Skins.MJ12TroopTex4'
         || MultiSkins[6]==Texture'DeusExCharacters.Skins.MJ12TroopTex3'

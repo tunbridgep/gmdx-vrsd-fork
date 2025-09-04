@@ -35,6 +35,9 @@ var const bool bNoSort;                             //SARGE: If true, the conten
 
 var const bool bShortHeaderButtons;                 //SARGE: The vanilla lists have a shortened header button on the right side to make both the header buttons equal length.
 
+var const bool bShowDefaults;                       //SARGE: Shows "(Default: <Value>)" text in the help area when looking at an item in the list.
+var localized string DefaultValueString;
+
 struct S_ListItem
 {
 	var localized string helpText;
@@ -71,7 +74,7 @@ event InitWindow()
     LoadSettings();
     CreateHeaderButtons();
     CreateChoices();
-    ShowHelp(helpText);
+    ShowHelpString(-1);
 }
 
 function CreateChoices()
@@ -180,6 +183,45 @@ function string GetValueString(int index)
     return "";
 }
 
+function string GetDefaultString(int index)
+{
+    local S_ListItem item;
+    local string def;
+    
+    if (!bShowDefaults)
+        return "";
+
+    item = items[index];
+
+    switch (item.defaultValue)
+    {
+        case 0:
+            def = item.valueText0;
+            break;
+        case 1:
+            def = item.valueText1;
+            break;
+        case 2:
+            def = item.valueText2;
+            break;
+        case 3:
+            def = item.valueText3;
+            break;
+        case 4:
+            def = item.valueText4;
+            break;
+        case 5:
+            def = item.valueText5;
+            break;
+    }
+
+    if (def == "")
+        return "";
+
+    return sprintf(DefaultValueString,def);
+
+}
+
 function string GetHelpString(int index)
 {
     local S_ListItem item;
@@ -245,8 +287,30 @@ function bool HandleResetMessagebox(Window msgBoxWindow, int buttonNumber)
         LoadSettings();
         SaveSettings();
         CreateChoices();
-        ShowHelp(helpText);
+        ShowHelpString(-1);
     }
+}
+
+//A bit of a dodgy hack.
+function string ShowHelpString(int id)
+{
+    local string help1, help2, help3;
+
+    //Show the default help text if it's -1
+    if (id == -1)
+        ShowHelp(helpText);
+
+    //This is a bit of a hack
+    help1 = items[id].helpText;
+    help2 = GetHelpString(id);
+    help3 = GetDefaultString(id);
+    
+    if (help1 != "" && (help2 != "" || help3 != ""))
+        help2 = " " $ help2;
+    if (help2 != "" && help2 != " " && help3 != "")
+        help3 = " " $ help3;
+
+    ShowHelp(help1 $ help2 $ help3);
 }
 
 event bool BoxOptionSelected(Window msgBoxWindow, int buttonNumber)
@@ -274,9 +338,9 @@ event bool ListRowActivated(window list, int rowId)
     if (GetValueString(id) == "")
         items[id].value = 0;
 
-    ShowHelp(items[id].helpText @ GetHelpString(id));
-
     SetConsoleValue(id,items[id].value);
+
+    ShowHelpString(id);
 
     //Refresh List
     lstItems.SetField(rowId, 1, GetValueString(id));
@@ -385,10 +449,7 @@ event bool ListSelectionChanged(window list, int numSelections, int focusRowId)
     bResult = Super.ListSelectionChanged(list, numSelections, focusRowId);
     rowIndex = int(lstItems.GetFieldValue(focusRowId, 2));
 
-    if (rowIndex == -1)
-        ShowHelp(helpText);
-    else
-        ShowHelp(items[rowIndex].helpText @ GetHelpString(rowIndex));
+    ShowHelpString(rowIndex);
 
     return bResult;
 }
@@ -455,4 +516,5 @@ defaultproperties
      colWidths(0)=164
      colWidths(1)=205
      bShortHeaderButtons=true
+     DefaultValueString="(Default: %s)"
 }

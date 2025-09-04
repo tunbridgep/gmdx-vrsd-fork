@@ -21,7 +21,7 @@ defaultproperties
      items(4)=(HelpText="Enable/Disable the 'Disable All' button on the Augmentation Wheel.",actionText="Augmentation Wheel: Show 'Disable All'",variable="bAugWheelDisableAll",defaultValue=1);
      items(5)=(HelpText="Automtically add newly-acquired items to the toolbelt.",actionText="Belt: Autofill Belt",variable="bBeltAutofill");
      items(6)=(HelpText="After consuming the last item in a belt slot, its position will be preserved.|nIf Autofill is off, dropped items will also be preserved. Right-Click to clear.",actionText="Belt: Belt Memory",variable="bBeltMemory",defaultValue=1);
-     items(7)=(HelpText="Right-click confirms belt selection, removing the need to cycle through items to reach desired slot.",actionText="Belt: Invisible War Toolbelt",variable="iAlternateToolbelt",valueText2="Classic",valueText3="Hybrid",helpText2="Classic mode makes right-click switch back after using the number keys.",helpText3="Hybrid mode only switches back to the primary selection if the primary belt selection was initially unholstered.");
+     items(7)=(HelpText="Right-click confirms belt selection, removing the need to cycle through items to reach desired slot.",actionText="Belt: Invisible War Toolbelt",variable="iAlternateToolbelt",valueText2="Classic",valueText3="Hybrid",helpText2="Classic mode makes right-click switch back after using the number keys.",helpText3="Hybrid mode only switches to the primary selection if the primary selection was initially unholstered.");
      items(8)=(HelpText="Belt size is extended to 12 items. The - and = keys will be rebound to use the new belt slots.",actionText="Belt: Larger Belt",variable="bBiggerBelt",defaultValue=1);
      items(9)=(HelpText="Allows replacing the keyring in the toolbelt, making its slot available to general items. The keyring is always selectable via left-clicking on a locked object. No Keyring mode removes the keyring entirely.",actionText="Belt: Smart Keyring",variable="iSmartKeyring",valueText2="No Keyring",defaultValue=1);
      items(10)=(HelpText="Adjust the Field-of-View during dialog scenes to more closely match the original game.",actionText="Conversations: FOV Adjustment",variable="iCutsceneFOVAdjust",valueText1="75 FOV",valueText2="80 FOV",valueText3="85 FOV",valueText4="90 FOV",defaultValue=2);
@@ -108,10 +108,12 @@ defaultproperties
      items(89)=(HelpText="Re-enables the head-popping system from GMDX v9. Not recommended as it looks very unfinished.",actionText="Game: Allow Decapitations",variable="bDecap",defaultValue=0);
      items(90)=(HelpText="Alternate display for the accuracy crosshairs. Requires a map load/reload to fully work.",actionText="HUD: Alternate Accuracy Crosshairs",variable="bAlternateCrosshairAcc");
      items(91)=(HelpText="Disables some early-game infolinks containing tutorial messages.",actionText="Game: Disable Tutorial Infolinks",variable="bLessTutorialMessages",defaultValue=0);
+     items(92)=(HelpText="Queued Infolinks will play much faster, without needing to wait 5 seconds to finish and start each one.",actionText="HUD: Faster Infolink Playback",variable="bFasterInfolinks",defaultValue=1);
      Title="GMDX Quality of Life Options"
      colWidths(0)=214
      colWidths(1)=155
      helpPosY=307
+     bShowDefaults=true
      bShortHeaderButtons=false
      defaultHelpHeight=37
      clientTextures(0)=Texture'RSDCrap.UserInterface.MenuQoLBackground_1'
