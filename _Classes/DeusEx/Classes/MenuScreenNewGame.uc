@@ -84,12 +84,8 @@ var bool bRandomizeCrap;
 var bool bCutInteractions;
 var bool bA51Camera;
 var bool bHardcoreFilterOption;
-<<<<<<< Updated upstream
-=======
-var bool bCollectibles;
 var bool bPermaCloak;
 var bool bNoStartingWeaponChoices;
->>>>>>> Stashed changes
 
 //LDDP
 var bool bFemaleEnabled;
@@ -161,12 +157,8 @@ event InitWindow()
     bCutInteractions=false;                                                     //Sarge
     bA51Camera=false;                                                           //Sarge
     bHardcoreFilterOption=false;                                                //Sarge
-<<<<<<< Updated upstream
-=======
-    bCollectibles=false;                                                        //Sarge
     bPermaCloak=false;                                                          //Sarge
     bNoStartingWeaponChoices=false;                                             //Sarge
->>>>>>> Stashed changes
     //bRestrictedMetabolism=false;                                              //Sarge
     default.bRandomizeCrates=false;                                             //RSD: Also need default values! Otherwise get command in modifier menu takes the wrong value
     default.bRandomizeMods=false;                                               //RSD
@@ -188,12 +180,7 @@ event InitWindow()
     default.bCutInteractions=false;                                             //Sarge
     default.bA51Camera=false;                                                   //Sarge
     default.bHardcoreFilterOption=false;                                        //Sarge
-<<<<<<< Updated upstream
-=======
-    default.bCollectibles=false;                                                //Sarge
     default.bPermaCloak=false;                                                  //Sarge
->>>>>>> Stashed changes
-
     default.bNoStartingWeaponChoices=false;                                     //Sarge
 	StyleChanged();
 }

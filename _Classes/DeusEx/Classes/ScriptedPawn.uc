@@ -3619,12 +3619,12 @@ function bool DoHelmetBreak(bool bForced, float actualDamage, Pawn instigatedBy)
     if (IsA('MJ12Troop') || IsA('MJ12Elite'))
         return false;
 
-    if ((IsA('Mechanic') || IsA('Soldier')) && (FRand() < 0.2 || bForced))
+    if ((IsA('Mechanic') || IsA('Soldier')) && (actualDamage >= 25 || FRand() < 0.2 || bForced))
     {
         HelmetBreak();
         bBroken = true;
     }
-    else if (FRand() < 0.08 || bForced)
+    else if (IsA('UNATCOTroop') && (actualDamage >= 25 || FRand() < 0.08 || bForced))
     {
         HelmetSpawn(Location+vect(0,0,49), actualDamage, instigatedBy);
         bBroken = true;
