@@ -75,8 +75,10 @@ function string GetItemTitle()
 	local byte T;
     local int paragraphs;
 	
-    if ( textTag == '' )
+    if ( textTag == '' && imageClass == None)
         return msgEmpty;
+    else if (textTag == '' && imageClass != None)
+        return imageClass.default.imageDescription;
 
     //Some objects need special handling
     tag = textPackage $ "." $ texttag;
@@ -154,6 +156,9 @@ function string GetItemTitle()
 
         if (bWrite)
         {
+            //Convert to title case
+            textPart = class'DeusExPlayer'.static.TitleCase(textPart);
+
             if (text != "")
                 text = text $ " - " $ textPart;
             else
@@ -167,9 +172,6 @@ function string GetItemTitle()
     CriticalDelete(parser);
         
     Log("Text (Before case conversion): " $ Text);
-    
-    //Convert to title case
-    text = class'DeusExPlayer'.static.TitleCase(text);
     
     Log("Text (After case conversion): " $ Text);
 
@@ -748,28 +750,29 @@ defaultproperties
      datacubeTitles(7)=(textTag="DeusExText.02_Datacube05",replacement="Net Account")
      datacubeTitles(8)=(textTag="DeusExText.02_Datacube07",replacement="Note from Paul")
      datacubeTitles(9)=(textTag="DeusExText.02_Datacube08",replacement="New Account Setup")
-     datacubeTitles(10)=(textTag="DeusExText.02_Datacube11",replacement="Security Grid Online")
-     datacubeTitles(11)=(textTag="DeusExText.02_Datacube13",replacement="Account Compromised")
-     datacubeTitles(12)=(textTag="DeusExText.02_Datacube15",replacement="Castle Clinton Underground Code")
-     datacubeTitles(13)=(textTag="DeusExText.02_Datacube16",replacement="Note to Commander Grimaldi")
-     datacubeTitles(14)=(textTag="DeusExText.02_Datacube17",replacement="Note to Commander Frase")
-     datacubeTitles(15)=(textTag="DeusExText.03_Datacube05",replacement="Ambrosia Delivery")
-     datacubeTitles(16)=(textTag="DeusExText.03_Datacube11",replacement="Janine's Bots - Repair Bot")
-     datacubeTitles(17)=(textTag="DeusExText.03_Datacube12",replacement="Helibase Computer Login")
+     datacubeTitles(10)=(textTag="DeusExText.02_Datacube10",replacement="New Office")
+     datacubeTitles(11)=(textTag="DeusExText.02_Datacube11",replacement="Security Grid Online")
+     datacubeTitles(12)=(textTag="DeusExText.02_Datacube13",replacement="Account Compromised")
+     datacubeTitles(13)=(textTag="DeusExText.02_Datacube15",replacement="Note to Commander Grimaldi")
+     datacubeTitles(14)=(textTag="DeusExText.02_Datacube16",replacement="Note to Commander Grimaldi")
+     datacubeTitles(15)=(textTag="DeusExText.02_Datacube17",replacement="Note to Commander Frase")
+     datacubeTitles(16)=(textTag="DeusExText.03_Datacube05",replacement="Ambrosia Delivery")
+     datacubeTitles(17)=(textTag="DeusExText.03_Datacube11",replacement="Janine's Bots - Repair Bot")
+     datacubeTitles(18)=(textTag="DeusExText.03_Datacube12",replacement="Helibase Computer Login")
 
      titleIgnored(0)="!=!==!==="
      titleIgnored(1)="* = * = * ="
      //titleIgnored(2)="By G. K."
      //titleIgnored(3)="By Andrew"
-     titleIgnored(4)="Report For The New York City Council"
+     //titleIgnored(4)="Report For The New York City Council"
      titleIgnored(5)="By " //Remove the author line from books.
      titleIgnored(6)="U.s. Army" //Way too long title
 
      titlePrefixes(0)="UNATCO HANDBOOK"
 
      upcases(0)="Unatco"
-     upcases(1)=" NYC "
-     upcases(2)=" NY "
+     upcases(1)=" Nyc "
+     upcases(2)=" Ny "
      upcases(3)="Cia "
      //upcases(4)="U.s. "
 
