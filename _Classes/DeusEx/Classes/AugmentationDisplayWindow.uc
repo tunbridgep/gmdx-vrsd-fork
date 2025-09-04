@@ -2024,8 +2024,8 @@ function DrawVisionAugmentation(GC gc)
 				if (IsHeatSource(A))
 				{
 					dist = VSize(A.Location - loc);
-                    //SARGE: Added a new condition for detecting items only
-                    if (visionLevelValue == 0 && dist <= ITEM_SONAR_DISTANCE && A.IsA('Inventory'))
+                    //SARGE: Added a new condition for detecting items and security systems only
+                    if (visionLevelValue == 0 && dist <= ITEM_SONAR_DISTANCE && (A.IsA('Inventory') || A.IsA('SecurityCamera') || A.IsA('AutoTurret') || A.IsA('AutoTurretGun') || A.IsA('AlarmUnit')))
                     {
 						VisionTargetStatus = GetVisionTargetStatus(A);
 						SetSkins(A, oldSkins);
