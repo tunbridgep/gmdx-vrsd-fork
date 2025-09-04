@@ -47,11 +47,11 @@ GMDX: AE must be installed to your *base* Deus Ex directory, not the System Fold
 
 GMDX: AE comes with Kenties Deus Exe (more information can be found here: https://kentie.net/article/dxguide/)
 
-The GMDX: AE installer will create a new file, *GMDX_AE.cmd*, which can be used as an easy one-click way to enjoy the mod.
+The GMDX: AE installer will create a new file, *GMDX_AE.exe*, which can be used as an easy one-click way to enjoy the mod.
 
 To launch GMDX: AE through steam, please add the following to the Launch Parameters of Deus Ex GOTY:
 
-"C:\Program Files\Steam\steamapps\common\Deus Ex\System\GMDX_AE.cmd" %command%
+"C:\Program Files\Steam\steamapps\common\Deus Ex\System\GMDX_AE.exe" %command%
 
 Be sure to replace the path specified with your actual Deus Ex installation path. This can be found by right-clicking Deus Ex in Steam,
 selecting Manage, and then selecting Browse Local Files.
@@ -64,7 +64,7 @@ selecting Manage, and then selecting Browse Local Files.
 
 GMDX: AE may also be played without Kenties Deus Exe (or by using alternative launchers), as the GMDX_AE batch will replace the DeusEx.int file automatically.
 
-Additionally, it can be played without the GMDX_AE.cmd file at all, which may be desired for users with pre-existing Deus Ex setups with multiple mods already installed.
+Additionally, it can be played without the GMDX_AE.exe file at all, which may be desired for users with pre-existing Deus Ex setups with multiple mods already installed.
 
 To get GMDX working without the dedicate batch file, follow these steps:
 
@@ -93,7 +93,7 @@ You must start a new game to play GMDX: AE without conflict. Do not use it on an
 
 The `Docs/vRSD_Docs` folder contains the original documentation from previous GMDX versions. It's highly recommended that you read it!
 
-When using GMDX_AE.cmd, your configuration and saved games will be saved to "My Documents/Deus Ex/GMDX_AE" (if using Kenties Deus Exe).
+When using GMDX_AE.exe, your configuration and saved games will be saved to "My Documents/Deus Ex/GMDX_AE" (if using Kenties Deus Exe).
 
 ||--------------------------------------------------------------------------||
 ||  FORKS/EDITING/NEW VERSIONS                                              ||

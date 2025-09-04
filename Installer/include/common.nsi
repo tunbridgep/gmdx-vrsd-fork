@@ -64,5 +64,6 @@ File ..\Docs\vRSD_Docs\*.txt
 #install launcher
 SetOutPath $INSTDIR\System
 File extras\GMDX_AE.cmd
+File extras\GMDX_AE.exe
 
 SectionEnd
