@@ -14620,6 +14620,7 @@ function bool GetExceptedCode(string code)
         || (code == "6512" && FlagBase.GetBool('VersalifeCodeObtained')) //Allow us to use it after we access generate a temp security pass.
         || code == "12" //Guessable code for the keypad in the MJ12 lab above the entry stairs
         || code == "APPLE" //Special case, spelled "Apple" in note so it fails the LOCS and CAPS checks...
+        || code == "MEVERETT" //Can only be guessed, but it's pretty obvious
         || code == "JCDENTON"; //Uses Base: JCDenton instead of Username: JCDenton.
 }
 
