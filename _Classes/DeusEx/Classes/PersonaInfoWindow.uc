@@ -257,8 +257,9 @@ function CreatePerkButtons(Skill Skill)
 
 		while (currPerk != None)
 		{
-			CreatePerkOverview(skill, currPerk, numPerkButtons);
-			numPerkButtons++;
+            if (currPerk.IsVisible())
+                CreatePerkOverview(skill, currPerk, numPerkButtons);
+            numPerkButtons++;
 			currPerk = player.PerkManager.GetPerkForSkill(Skill.class,numPerkButtons);
 		}
 
@@ -283,7 +284,8 @@ function CreateGeneralPerkButtons()
 
 		while (currPerk != None)
 		{
-			CreatePerkOverview(None, currPerk, numPerkButtons);
+            if (currPerk.IsVisible())
+                CreatePerkOverview(None, currPerk, numPerkButtons);
 			numPerkButtons++;
 			currPerk = player.PerkManager.GetGeneralPerk(numPerkButtons);
 		}
