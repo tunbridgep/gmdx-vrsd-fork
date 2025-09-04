@@ -936,6 +936,17 @@ function OnUseAmmo(DeusExAmmo ammoType, int amount)
 	   DeusExRootWindow(rootWindow).hud.ammo.UpdateMaxAmmo();
 }
 
+//SARGE: Redo our outfits
+//SARGE TODO: Remove this before release!
+exec function RedoOutfits()
+{
+    if (outfitManager != None)
+    {
+        outfitManager.RedoNPCOutfits();
+        ClientMessage("Rerolling NPC Outfits");
+    }
+}
+
 //SARGE: Hide/Show the entire HUD at once
 exec function TogglePhotoMode()
 {
@@ -11230,7 +11241,6 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 							carc.bEmitCarcass = true;  //CyberP: emitcarc
 							carc.SetPhysics(PHYS_Falling);
 							carc.SetScaleGlow();
-							Carc.UpdateHDTPSettings();
 							Carc.Inventory = PovCorpse(item).Inv; //GMDX
 							Carc.bSearched = POVCorpse(item).bSearched;
 							Carc.PickupAmmoCount = POVCorpse(item).PickupAmmoCount;
@@ -11238,6 +11248,8 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
                             Carc.bFirstBloodPool = POVCorpse(item).bFirstBloodPool; //SARGE: Added.
                             Carc.bNoDefaultPools = POVCorpse(item).bNoDefaultPools;
                             Carc.UpdateName();
+                            Carc.CopyAugmentiqueDataFromPOVCorpse(POVCorpse(item));     //AUGMENTIQUE: Copy over outfit data.
+							Carc.UpdateHDTPSettings();
 
                             //if (FRand() < 0.3)
                             //PlaySound(Sound'DeusExSounds.Player.MaleLand', SLOT_None, 0.9, false, 800, 0.85);
