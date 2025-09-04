@@ -378,6 +378,84 @@ replication
 }
 
 // ----------------------------------------------------------------------
+// GetAddonPenalty()
+//
+// SARGE: Gets the penalty for using a Scope, Silencer or Laser Sight
+// FUCK ME this is overengineered....
+// ----------------------------------------------------------------------
+function float GetAddonPenalty(EAddonPenaltyType penaltyType)
+{
+    local float mod;
+    local DeusExPlayer player;
+
+    player = DeusExPlayer(Owner);
+
+    //Only enabled on Hardcore or if we have the drawbacks setting enabled
+    if (player != None && !(player.bAddonDrawbacks || player.bHardcoreMode))
+        return 0;
+    
+    //Wetwork perk removes all penalties
+    if (player != None && player.PerkManager != None && player.PerkManager.GetPerkWithClass(class'PerkWetwork').bPerkObtained)
+        return 0;
+
+    if (bHasLaser && bHadLaser && penaltyType == Laser)
+        mod += addonPenalties[penaltyType];
+    if (bHasScope && bHadScope && penaltyType == Scope)
+        mod += addonPenalties[penaltyType];
+    if (bHasSilencer && bHadSilencer && penaltyType == Silencer)
+        mod += addonPenalties[penaltyType];
+
+    return mod;
+}
+
+// ----------------------------------------------------------------------
+// SARGE: Functions for attaching/detaching addons
+// ----------------------------------------------------------------------
+
+function ToggleAttachedLaser(bool bRealtime)
+{
+    if (bHadLaser)
+    {
+        LaserOff();
+        if (bRealtime)
+        {
+            bSwitchingToLaser = true;
+            GotoState('SwitchAttachment');
+        }
+        else
+            bHasLaser = !bHasLaser;
+    }
+}
+
+function ToggleAttachedScope(bool bRealtime)
+{
+    if (bHadScope)
+    {
+        if (bRealtime)
+        {
+            bSwitchingToScope = true;
+            GotoState('SwitchAttachment');
+        }
+        else
+            bHasScope = !bHasScope;
+    }
+}
+
+function ToggleAttachedSilencer(bool bRealtime)
+{
+    if (bHadSilencer)
+    {
+        if (bRealtime)
+        {
+            bSwitchingToSilencer = true;
+            GotoState('SwitchAttachment');
+        }
+        else
+            bHasSilencer = !bHasSilencer;
+    }
+}
+
+// ----------------------------------------------------------------------
 // GetPrimaryAmmoType()
 //
 // SARGE: Returns the main ammo type of the weapon, since we can't pick up secondaries usually
