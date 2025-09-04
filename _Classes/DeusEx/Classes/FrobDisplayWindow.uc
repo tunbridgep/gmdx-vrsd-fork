@@ -148,7 +148,7 @@ function Color GetFrobDisplayBorderColor(Actor frobTarget)
     Inv = Inventory(frobTarget);
     
     //Carcass Searched
-    if (Carc != None && player.iSearchedCorpseText >= 2 && Carc.bSearched)
+    if (Carc != None && player.iSearchedCorpseText >= 2 && Carc.bSearched && !Carc.bAnimalCarcass)
         return colWireless;
     
     //Duplicate Keys
