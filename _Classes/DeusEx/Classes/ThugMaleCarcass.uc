@@ -5,6 +5,7 @@ class ThugMaleCarcass extends DeusExCarcass;
 
 defaultproperties
 {
+     nameReference=class'DeusEx.ThugMale'
      Mesh2=LodMesh'DeusExCharacters.GM_Trench_CarcassB'
      Mesh3=LodMesh'DeusExCharacters.GM_Trench_CarcassC'
      Mesh=LodMesh'DeusExCharacters.GM_Trench_Carcass'
