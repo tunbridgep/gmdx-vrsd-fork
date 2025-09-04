@@ -59723,6 +59723,7 @@ Begin Actor Class=Brush Name=Brush996
     Name=Brush996
 End Actor
 Begin Actor Class=DeusExLevelInfo Name=DeusExLevelInfo0
+    ChairRandomizationToken=96
     MapName="04_NYC_Hotel"
     MapAuthor="Bob White"
     MissionLocation="NYC - 'Ton Hotel"

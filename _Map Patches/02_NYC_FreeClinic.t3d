@@ -24531,6 +24531,7 @@ Begin Actor Class=PathNode Name=PathNode356
     Name=PathNode356
 End Actor
 Begin Actor Class=DeusExLevelInfo Name=DeusExLevelInfo0
+    ChairRandomizationToken=97
     MapName="02_NYC_FreeClinic"
     MapAuthor="Bob White"
     MissionLocation="NYC - Free Clinic"

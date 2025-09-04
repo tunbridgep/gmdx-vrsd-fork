@@ -40326,6 +40326,7 @@ Begin Actor Class=Teleporter Name=Teleporter20
     Name=Teleporter20
 End Actor
 Begin Actor Class=DeusExLevelInfo Name=DeusExLevelInfo0
+    ChairRandomizationToken=96
     MapName="08_NYC_Hotel"
     MapAuthor="Bob White"
     MissionLocation="NYC - 'Ton Hotel"
