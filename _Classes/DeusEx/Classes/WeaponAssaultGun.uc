@@ -258,7 +258,7 @@ defaultproperties
      bAutomatic=True
      ShotTime=0.100000
      reloadTime=3.500000
-     HitDamage=3
+     HitDamage=4
      maxRange=4800
      AccurateRange=2400
      BaseAccuracy=0.650000

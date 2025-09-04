@@ -1418,7 +1418,7 @@ function SetDroppedAmmoCount(int amountPassed) //RSD: Added optional int amountP
         PickupAmmoCount = 35 + (amountPassed * 3);               //SARGE: Now 38-50 rounds with initialization in MissionScript.uc on first map load
     else if (IsA('WeaponAssaultGun'))
         //PickupAmmoCount = Rand(5) + 1.5;                          //RSD
-        PickupAmmoCount = amountPassed + 1;                      //RSD: Now 2-5 rounds with initialization in MissionScript.uc on first map load
+        PickupAmmoCount = amountPassed + 2;                      //RSD: Now 2-5 rounds with initialization in MissionScript.uc on first map load //SARGE: Now 3-6
     else if (IsA('WeaponGepGun'))
         PickupAmmoCount = 2;
     else if (amountPassed > 0)
