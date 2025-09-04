@@ -88,6 +88,7 @@ var bool bHardcoreFilterOption;
 =======
 var bool bCollectibles;
 var bool bPermaCloak;
+var bool bNoStartingWeaponChoices;
 >>>>>>> Stashed changes
 
 //LDDP
@@ -164,6 +165,7 @@ event InitWindow()
 =======
     bCollectibles=false;                                                        //Sarge
     bPermaCloak=false;                                                          //Sarge
+    bNoStartingWeaponChoices=false;                                             //Sarge
 >>>>>>> Stashed changes
     //bRestrictedMetabolism=false;                                              //Sarge
     default.bRandomizeCrates=false;                                             //RSD: Also need default values! Otherwise get command in modifier menu takes the wrong value
@@ -192,6 +194,7 @@ event InitWindow()
     default.bPermaCloak=false;                                                  //Sarge
 >>>>>>> Stashed changes
 
+    default.bNoStartingWeaponChoices=false;                                     //Sarge
 	StyleChanged();
 }
 
@@ -848,6 +851,7 @@ function SaveSettings()
     player.bA51Camera=bA51Camera;                                               //Sarge
     player.bHardcoreFilterOption=bHardcoreFilterOption;                         //Sarge
     player.bPermaCloak=bPermaCloak;                                             //Sarge
+    player.bNoStartingWeaponChoices=bNoStartingWeaponChoices;                   //Sarge
     if (player.bRandomizeAugs)                                                  //RSD: New aug randomization feature
         ScrambleAugOrderList();
 

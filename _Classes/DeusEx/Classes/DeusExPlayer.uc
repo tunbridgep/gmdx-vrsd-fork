@@ -620,6 +620,8 @@ var travel bool bHardcoreFilterOption;                                          
 
 
 var travel bool bPermaCloak;                                                  //SARGE: If enabled, Elites and Shock Troopers will be permanently cloaked.
+
+var travel bool bNoStartingWeaponChoices;                                      //SARGE: No more weapons from Paul!
 //END GAMEPLAY MODIFIERS
 
 //hardcore+
@@ -718,6 +720,8 @@ var globalconfig bool bStompVacbots;                                            
 //Killswitch Engaged
 var travel bool bRealKillswitch;                                                        //SARGE: Playthrough Modifier for a real killswitch
 var travel float killswitchTimer;                                                       //SARGE: Killswitch timer in seconds.
+
+var globalconfig bool bLessTutorialMessages;                                            //SARGE: Turn off some of the tutorial messages, like Alex's starting game messages.
 
 //Music Stuff
 

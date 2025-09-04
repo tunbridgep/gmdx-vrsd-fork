@@ -64,8 +64,9 @@ defaultproperties
      items(17)=(HelpText="Enable additional NPC's added by the Lay-D Denton mod. By default only the most relevant ones are enabled.",actionText="Add extra Lay-D Denton NPCs",variable="bMoreLDDPNPCs");
      items(18)=(HelpText="We shall partake in a miniscule amount of tomfoolery.",actionText="Shenanigans",variable="bShenanigans");
 	 items(17)=(HelpText="When enabled, NPCs with cloaking will be permanently cloaked. Extremely difficult - Not recommended for normal play.",actionText="Permanent Cloaking",variable="bPermaCloak");
-     items(19)=(HelpText="Enable additional NPC's added by the Lay-D Denton mod. By default only the most relevant ones are enabled.",actionText="Add extra Lay-D Denton NPCs",variable="bMoreLDDPNPCs");
-     items(20)=(HelpText="We shall partake in a miniscule amount of tomfoolery.",actionText="Shenanigans",variable="bShenanigans");
+     items(19)=(HelpText="No longer receive a starting weapon from Paul during the first mission.",actionText="Limited Starting Equipment",variable="bNoStartingWeaponChoices");
+     items(20)=(HelpText="Enable additional NPC's added by the Lay-D Denton mod. By default only the most relevant ones are enabled.",actionText="Add extra Lay-D Denton NPCs",variable="bMoreLDDPNPCs");
+     items(21)=(HelpText="We shall partake in a miniscule amount of tomfoolery.",actionText="Shenanigans",variable="bShenanigans");
      Title="Playthrough Modifiers"
      consoleTarget="MenuScreenNewGame"
      bNoSort=true
