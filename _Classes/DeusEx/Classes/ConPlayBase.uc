@@ -597,6 +597,7 @@ function EEventAction SetupEventTransferObject( ConEventTransferObject event, ou
     local int addAmmo;                                                          //SARGE: For displaying weapon ammo + additional ammo given during convo at the same time.
     local bool bUnroll;                                                         //SARGE: Unroll the items in the received items window.
     local int i;
+    local bool bPlaySound;                                                      //SARGE: Added.
 /*
 log("SetupEventTransferObject()------------------------------------------");
 log("  event = " $ event);
@@ -956,13 +957,25 @@ log("  event.toActor    = " $ event.toActor );
         }
 		else
 			DeusExRootWindow(player.rootWindow).hud.receivedItems.AddItem(invItemTo, itemsTransferred);
-		player.PlaySound(sound'objpickup3',SLOT_None,0.7);
+        bPlaySound = true;
 	}
-	
+
+    //SARGE: If the player gave away an item, show it!
+	if ((DeusExPlayer(event.fromActor) != None) && (conWinThird != None) && (invItemTo != None) && player.bConversationShowGivenItems)
+	{
+        if (conWinThird != None)
+        {
+            conWinThird.ShowTakenItem(invItemTo, 1);
+            bPlaySound = true;
+        }
+    }
+
     // SARGE: Update secondary display
 	if (event.toActor.IsA('DeusExPlayer'))
         DeusExPlayer(event.toActor).UpdateSecondaryDisplay();
 
+    if (bPlaySound)
+        player.PlaySound(sound'objpickup3',SLOT_None,0.7);
 
 	nextAction = EA_NextEvent;
 	nextLabel = "";
@@ -1228,11 +1241,31 @@ function EEventAction SetupEventAddSkillPoints( ConEventAddSkillPoints event, ou
 // Adds the specified number of credits to the player.  If the
 // 'creditsToTransfer' variable is negative, this will cause
 // the credits to get deducted from the player's credits total.
+// SARGE: This now shows credits taken/received in the info window.
 // ----------------------------------------------------------------------
 
 function EEventAction SetupEventAddCredits( ConEventAddCredits event, out String nextLabel )
 {
+    local bool bPlaySound;
 	player.credits += event.creditsToAdd;
+	
+    //SARGE: Add credits taken/given display
+    if (conWinThird != None && player.bConversationShowCredits)
+    {
+        if (event.creditsToAdd < 0 && player.bConversationShowCredits)
+        {
+            conWinThird.ShowTakenCredits(abs(event.creditsToAdd));
+            bPlaySound = true;
+        }
+        else if (event.creditsToAdd > 0)
+        {
+            conWinThird.ShowReceivedCredits(event.creditsToAdd);
+            bPlaySound = true;
+        }
+    }
+
+    if (bPlaySound)
+        player.PlaySound(sound'objpickup3',SLOT_None,0.7);
 
 	// Make sure we haven't gone into the negative
 	player.credits = Max(player.credits, 0);

@@ -44,16 +44,6 @@ event InitWindow()
 event SetItem(Inventory invItem, int count, optional bool bDeclined)
 {
 	local String labelText;
-
-	winIcon = NewChild(Class'Window');
-	winIcon.SetSize(42, 37);
-	winIcon.SetBackgroundStyle(DSTY_Masked);
-	winIcon.SetBackground(invItem.Icon);
-
-	winLabel = TextWindow(NewChild(Class'TextWindow'));
-	winLabel.SetFont(fontLabel);
-	winLabel.SetTextColor(colText);
-	winLabel.SetTextAlignments(HALIGN_Center, VALIGN_Top);
 	
     //SARGE: Add a "+" to the item name for upgraded weapons
     if (invItem.isA('DeusExWeapon'))
@@ -62,6 +52,22 @@ event SetItem(Inventory invItem, int count, optional bool bDeclined)
         labelText = invItem.beltDescription;
 	if (count > 1)
 		labelText = labelText $ " (" $ String(count) $ ")";
+	
+    SetItemIcon(invItem.icon, labelText, bDeclined);
+}
+
+//This is the REAL function
+function SetItemIcon(Texture icon, coerce string label, optional bool bDeclined)
+{
+	winIcon = NewChild(Class'Window');
+	winIcon.SetSize(42, 37);
+	winIcon.SetBackgroundStyle(DSTY_Masked);
+	winIcon.SetBackground(icon);
+
+	winLabel = TextWindow(NewChild(Class'TextWindow'));
+	winLabel.SetFont(fontLabel);
+	winLabel.SetTextColor(colText);
+	winLabel.SetTextAlignments(HALIGN_Center, VALIGN_Top);
     
     //SARGE: Special case for handling declined items. Yuck.
     if (bDeclined)
@@ -72,7 +78,7 @@ event SetItem(Inventory invItem, int count, optional bool bDeclined)
         //winIcon.SetTileColor(colDecline);
     }
 
-	winLabel.SetText(labelText);
+	winLabel.SetText(label);
 }
 
 // ----------------------------------------------------------------------

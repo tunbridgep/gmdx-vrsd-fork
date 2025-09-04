@@ -11,6 +11,7 @@ var Float displayLength;
 var int   topMargin;
 
 var localized string TextReceivedLabel;
+var localized string TextGivenLabel; //SARGE: Added
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -122,6 +123,27 @@ function bool ChildRequestedReconfiguration(window child)
 }
 
 // ----------------------------------------------------------------------
+// AddCredits()
+// SARGE: Added because adding Credits via items is a major PITA
+// ----------------------------------------------------------------------
+
+function AddCredits(Int count)
+{
+	local HUDReceivedDisplayItem item;
+    local string label;
+
+    label = class'Credits'.default.beltDescription $ " (" $ String(count) $ ")";
+
+	item = HUDReceivedDisplayItem(winTile.NewChild(Class'HUDReceivedDisplayItem'));
+	item.SetItemIcon(class'Credits'.default.Icon, label, false);
+
+	displayTimer = 0.0;
+	Show();
+	bTickEnabled = True;
+	AskParentForReconfigure();
+}
+
+// ----------------------------------------------------------------------
 // AddItem()
 // ----------------------------------------------------------------------
 
@@ -199,4 +221,5 @@ defaultproperties
      displayLength=3.000000
      TopMargin=5
      TextReceivedLabel="Received:"
+     TextGivenLabel="Given:"
 }

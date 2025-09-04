@@ -837,6 +837,9 @@ var globalconfig bool bRearmSkillRequired;                      //SARGE: Rearmin
 
 var globalconfig bool bShowSmallLog;                            //SARGE: Show a small log when the Infolink window is open. Otherwise, hide the log completely.
 
+var globalconfig bool bConversationShowGivenItems;              //SARGE: Show items given out during conversations.
+var globalconfig bool bConversationShowCredits;                 //SARGE: Show credits transferred during conversations.
+
 //SARGE: Overhauled the Wireless Strength perk to no longer require having a multitool out.
 var HackableDevices HackTarget;
 
@@ -19455,4 +19458,6 @@ defaultproperties
      bShowFullAmmoInHUD=true
      bFasterInfolinks=true
      bNanoswordEnergyUse=true
+     bConversationShowCredits=true
+     bConversationShowGivenItems=true
 }

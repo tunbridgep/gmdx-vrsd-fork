@@ -109,6 +109,8 @@ defaultproperties
      items(90)=(HelpText="Alternate display for the accuracy crosshairs. Requires a map load/reload to fully work.",actionText="HUD: Alternate Accuracy Crosshairs",variable="bAlternateCrosshairAcc");
      items(91)=(HelpText="Disables some early-game infolinks containing tutorial messages.",actionText="Game: Disable Tutorial Infolinks",variable="bLessTutorialMessages",defaultValue=0);
      items(92)=(HelpText="Queued Infolinks will play much faster, without needing to wait 5 seconds to finish and start each one.",actionText="HUD: Faster Infolink Playback",variable="bFasterInfolinks",defaultValue=1);
+     items(100)=(HelpText="Items given to other characters will show alongside the items received window during conversations.",actionText="Conversations: Show Given Items",variable="bConversationShowGivenItems",defaultValue=1);
+     items(101)=(HelpText="Credits transferred will show in the items received window during conversations.",actionText="Conversations: Show Credit Transfers",variable="bConversationShowCredits",defaultValue=1);
      Title="GMDX Quality of Life Options"
      colWidths(0)=214
      colWidths(1)=155

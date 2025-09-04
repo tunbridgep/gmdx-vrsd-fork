@@ -9,6 +9,7 @@ var ConWindowUpper upperConWindow;						// Upper letterbox region
 var int numChoices;								// Number of choice buttons
 var ConChoiceWindow conChoices[10];				// Maximum of ten buttons
 var HUDReceivedDisplay winReceived;
+var HUDReceivedDisplay winTaken;                //SARGE: Added
 var bool bRestrictInput;
 
 var float currentWindowPos;
@@ -47,6 +48,7 @@ event InitWindow()
 	moveMode = MM_None;
 
 	CreateReceivedWindow();
+	CreateTakenWindow();
 
     //Set the players FOV to 75 so that cutscenes appear mostly normal
     //TODO: Fix this to work properly on other aspect ratios
@@ -137,7 +139,7 @@ event Tick(float deltaSeconds)
 			// Don't increment while the Items Received window
 			// is still active
 
-			if (!winReceived.IsVisible())
+			if (!winReceived.IsVisible() && !winTaken.IsVisible())
 			{
 				currentWindowPos -= increment;
 				if (currentWindowPos <= 0.0)
@@ -231,6 +233,7 @@ function CalculateWindowSizes()
 	local float cinHeight;
 	local float ratio;
 	local RootWindow root;
+    local float temp1,temp2;    //SARGE: Added
 	local float minLowerHeight; //MKE
 
 	root = GetRootWindow();
@@ -293,6 +296,17 @@ function CalculateWindowSizes()
 	{
 		winReceived.QueryPreferredSize(recWidth, recHeight);
 		winReceived.ConfigureChild(10, lowerCurrentPos - recHeight - 5, recWidth, recHeight);
+	}
+	
+    // Configure Taken Window
+	if (winTaken != None)
+	{
+        temp1 = recWidth;
+        temp2 = 10;
+		winTaken.QueryPreferredSize(recWidth, recHeight);
+        if (winReceived != None && winReceived.IsVisible())
+            temp2 += 10 + temp1;
+		winTaken.ConfigureChild(temp2, lowerCurrentPos - recHeight - 5, recWidth, recHeight);
 	}
 	
 	ConfigureCameraWindow(lowerCurrentPos);
@@ -642,6 +656,17 @@ function CreateReceivedWindow()
 }
 
 // ----------------------------------------------------------------------
+// CreateTakenWindow()
+// ----------------------------------------------------------------------
+
+function CreateTakenWindow()
+{
+	winTaken = HUDReceivedDisplay(NewChild(Class'HUDReceivedDisplay'));
+	winTaken.Hide();
+	winTaken.txtReceived.SetText(winTaken.TextGivenLabel);
+}
+
+// ----------------------------------------------------------------------
 // ShowReceivedItem()
 // ----------------------------------------------------------------------
 
@@ -649,9 +674,51 @@ function ShowReceivedItem(Inventory invItem, int count)
 {
 	if (winReceived != None)
 	{
+        AskParentForReconfigure(); //SARGE: Added, so we can place the windows properly
 		winReceived.AddItem(invItem, count);
 	}
 }
+
+// ----------------------------------------------------------------------
+// ShowTakenItem()
+// ----------------------------------------------------------------------
+
+function ShowTakenItem(Inventory invItem, int count)
+{
+	if (winTaken != None)
+	{
+        AskParentForReconfigure(); //SARGE: Added, so we can place the windows properly
+		winTaken.AddItem(invItem, count);
+	}
+}
+
+// ----------------------------------------------------------------------
+// ShowReceivedCredits()
+// SARGE: Save us from the pain of having to spawn them!
+// ----------------------------------------------------------------------
+
+function ShowReceivedCredits(int count)
+{
+	if (winReceived != None)
+	{
+        AskParentForReconfigure(); //SARGE: Added, so we can place the windows properly
+		winReceived.AddCredits(count);
+	}
+}
+
+// ----------------------------------------------------------------------
+// ShowTakenItem()
+// ----------------------------------------------------------------------
+
+function ShowTakenCredits(int count)
+{
+	if (winTaken != None)
+	{
+        AskParentForReconfigure(); //SARGE: Added, so we can place the windows properly
+		winTaken.AddCredits(count);
+	}
+}
+
 
 // ----------------------------------------------------------------------
 // SetForcePlay()
