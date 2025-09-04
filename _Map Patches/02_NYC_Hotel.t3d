@@ -31280,6 +31280,7 @@ Begin Actor Class=ClothesRack Name=ClothesRack2
 End Actor
 Begin Actor Class=DeusExMover Name=DeusExMover31
     lockStrength=0.150000
+    bLocked=true
     bBreakable=True
     doorStrength=0.500000
     minDamageThreshold=35
