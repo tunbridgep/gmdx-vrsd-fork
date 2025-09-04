@@ -4560,13 +4560,9 @@ function GetAIVolume(out float volume, out float radius, optional bool wakeUp)
 		}
 		radius = volume * 800.0;
 	}
-    //SARGE: Silencers are now pretty much silent, with the Stealth perk.
 	else if (bHasSilencer && NoiseLevel >= 0.1)                                 //RSD: Added quiet sound for silenced weapons
     {
-        if (player != None && player.PerkManager != None && player.PerkManager.GetPerkWithClass(class'PerkWetwork').bPerkObtained)
-            volume = 1.0*Pawn(Owner).SoundDampening;                                //RSD: Hardcoded value as specified in weapon info
-        else
-            volume = 0.75*NL*Pawn(Owner).SoundDampening;                       //SARGE: Silencers now make the weapon quieter, not silent.
+        volume = 1.0*Pawn(Owner).SoundDampening;                                //RSD: Hardcoded value as specified in weapon info
 		radius = volume * 800.0;
     }
 
