@@ -132,7 +132,7 @@ event DrawWindow(GC gc)
     
     if (item != None && item.isA('ChargedPickup'))
         chargeLevel = int(ChargedPickup(item).GetCurrentCharge());
-    else if (weapon != None && weapon.isA('WeaponNanoSword'))
+    else if (weapon != None && weapon.isA('WeaponNanoSword') && (player.bNanoswordEnergyUse || player.bHardcoreMode))
         chargeLevel = WeaponNanoSword(weapon).ChargeManager.GetCurrentCharge();
 	
     if ( weapon != None || item != None)
