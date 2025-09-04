@@ -464,7 +464,7 @@ function string GetFrobString(DeusExPlayer player)
         return itemName @ "(" $ PickupAmmoCount $ ")";
     //Modified weapons show their modified state
     else if (bModified && player != None && player.bBeltShowModified)
-        return itemName @ strModified;
+        return itemName @ "(" $ strModified $ ")";
     else
         return itemName;
 }
@@ -5626,7 +5626,7 @@ simulated function bool UpdateInfo(Object winObject)
     
     //SARGE: Show modified weapons in title
     if (bModified && DeusExPlayer(owner) != None && DeusExPlayer(owner).bBeltShowModified)
-        winInfo.SetTitle(itemName @ strModified);
+        winInfo.SetTitle(itemName @ "(" $ strModified $ ")");
     else
         winInfo.SetTitle(itemName);
 
@@ -7420,7 +7420,7 @@ defaultproperties
      bRotatingPickup=False
      PickupMessage="You found"
      ItemName="DEFAULT WEAPON NAME - REPORT THIS AS A BUG"
-     strModified="(Modified)"
+     strModified="Modified"
      BobDamping=0.840000
      LandSound=Sound'DeusExSounds.Generic.DropSmallWeapon'
      bNoSmooth=False
