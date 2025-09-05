@@ -35,10 +35,6 @@ function CreateControls()
 {
 	Super.CreateControls();
 
-    //SARGE: Replace the logout button
-    if (!player.bStreamlinedComputerInterface)
-        btnLogout = winButtonBar.AddButton(ButtonLabelLogout, HALIGN_Right);
-
 	CreateSpecialInfoWindow();
 }
 
@@ -76,6 +72,7 @@ function CreateSpecialInfoWindow()
 function SetNetworkTerminal(NetworkTerminal newTerm)
 {
     local string buttonText;
+    local bool bLeft;
 
 	Super.SetNetworkTerminal(newTerm);
         
@@ -84,12 +81,19 @@ function SetNetworkTerminal(NetworkTerminal newTerm)
 	else if (winTerm.IsA('NetworkTerminalSecurity'))
         buttonText = SecurityButtonLabel;
         
-    if (player.bStreamlinedComputerInterface)
-        btnReturn = winButtonBar.AddButton(buttonText, HALIGN_Right);
-    else
+    if (!player.bStreamlinedComputerInterface || (Computers(newTerm.compOwner) != None &&  Computers(newTerm.compOwner).textPackage == ""))
+    {
+        btnLogout = winButtonBar.AddButton(ButtonLabelLogout, HALIGN_Right);
         btnReturn = winButtonBar.AddButton(buttonText, HALIGN_Left);
+        bLeft = true;
+    }
+    else
+    {
+        //btnLogout = winButtonBar.AddButton(ButtonLabelLogout, HALIGN_Right);
+        btnReturn = winButtonBar.AddButton(buttonText, HALIGN_Right);
+    }
 
-	if (btnReturn != None && !player.bStreamlinedComputerInterface)
+	if (btnReturn != None && bLeft)
 		CreateLeftEdgeWindow();
 }
 
