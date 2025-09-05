@@ -1,0 +1,4 @@
+<DC=255,255,255>
+<P>While looking at an object, you can LEFT-CLICK to immediately put it into your hands.
+<P>
+<P>Some objects like Flares will be used instantly, rather than picked up.

@@ -1,0 +1,26 @@
+<P>
+<P><B>GIVE ME DEUS EX: AUGMENTED EDITION
+<P>
+<B>Lead Developer
+<P>Paul "Sarge945" Tunbridge
+<P>
+<B>Developers
+<P>Ygll, Lord Trashcan
+<P>
+<B>Art, Assets, and the Lay D Denton Project
+<P>Xriborg, LupusDraconis, Made in China
+<P>
+<B>Notable Contributions
+<P>Joe Wintergreen for the Blink and Lip Sync Fix mod
+<P>GEPGUN for custom HUD colour schemes
+<P>
+<B>Testing and QA
+<P>Julian, Georg, the1truepickaxe, Xriborg, domitomi,
+<P>Made in China, RoSoDude, Ygll, ShadowDancer,
+<P>BennyTheFearless, Tony Swan, Augmented
+<P>
+<B>Special Thanks
+<P>Totalitarian for making the original Give Me Deus Ex
+<P>RoSoDude for his amazing GMDXv9 fork, which this mod is based on
+<P>This version would not have been possible without either of them!
+<P>

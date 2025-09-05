@@ -1,0 +1,18 @@
+<DC=255,255,255>
+<P>DEFAULT WEAPON CONTROLS
+<P>
+<P>Shoot: Left Mouse Button
+<P>Holster: Right Mouse Button
+<P>Reload: R
+<P>Change Weapon: Mouse Wheel
+<P>Drop Weapon: J
+<P>Change Ammo Type: X
+<P>Toggle Scope: Middle Mouse
+<P>Toggle Laser Sight: Z
+<P>
+<P>Advanced Controls:
+<P>Scope Zoom In/Out: Mouse Wheel (while scope is active)
+<P>Use Secondary Weapon: F (if you have a Secondary Weapon)
+<P>Cancel Reload: Left Mouse Button (while reloading. Shotguns/crossbow only)
+<P>
+<P>You can rebind keys at any time from the 'Keyboard/Mouse' menu.
