@@ -85,6 +85,14 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
     return true;
 }
 
+//Sarge: Update frob display to show item count
+function string GetFrobString(DeusExPlayer player)
+{
+	if (numCopies > 1 && player.bShowItemPickupCounts)
+		return itemName @ "(" $ numCopies $ ")"; //SARGE: Append number of copies, if more than 1
+    return itemName;
+}
+
 static function bool IsHDTP(optional bool bAllowEffects)
 {
     return class'DeusExPlayer'.static.IsHDTPInstalled() && (default.iHDTPModelToggle > 0 || (bAllowEffects && class'DeusExPlayer'.default.bHDTPEffects));

@@ -42,6 +42,9 @@ function string GetFrobString(DeusExPlayer player)
     else
         frobString = itemName;
 
+    //SARGE: Make the frob string look nice
+    //frobString = player.TitleCase(frobString); //SARGE: Now done in BeginPlay
+
     if ((player.iToolWindowShowDuplicateKeys == 1 || player.iToolWindowShowDuplicateKeys == 3) && player.KeyRing.HasKey(KeyID))
         frobString = frobString @ DuplicateMsg;
 
@@ -55,6 +58,10 @@ function string GetFrobString(DeusExPlayer player)
 function BeginPlay()
 {
 	Super.BeginPlay();
+    
+    //SARGE: A lot of descriptions weird and inconsistent capitalisation.
+    //I'm too lazy to fix them in the maps, so we will just fix them here.
+    Description = class'DeusExPlayer'.static.TitleCase(Description);
 
 	switch (SkinColor)
 	{

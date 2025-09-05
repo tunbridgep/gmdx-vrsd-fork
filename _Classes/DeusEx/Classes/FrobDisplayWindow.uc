@@ -757,18 +757,12 @@ function DrawOtherHudInformation(GC gc, actor frobTarget)
 		strInfo = DeusExCarcass(frobTarget).GetFrobString(player);
     else if (frobTarget.IsA('AugmentationCannister'))                          //SARGE: Append the Augs to the display
         strInfo = GetAugCanInformation(AugmentationCannister(frobTarget));
+	else if (frobTarget.IsA('DeusExPickup')) //SARGE: Show copies, nano key names, and much more
+        strInfo = DeusExPickup(frobTarget).GetFrobString(player);
 	else if (frobTarget.IsA('DeusExAmmo'))                          //RSD: Append the ammo count
 		strInfo = DeusExAmmo(frobTarget).itemName @ "(" $ DeusExAmmo(frobTarget).AmmoAmount $ ")";
-	else if (frobTarget.IsA('ChargedPickup') && ChargedPickup(frobTarget).numCopies > 1 && player.bShowItemPickupCounts)
-		strInfo = ChargedPickup(frobTarget).ItemName @ "(" $ int(ChargedPickup(frobTarget).GetCurrentCharge()) $ "%) (" $ ChargedPickup(frobTarget).numCopies $ ")"; //SARGE: Append the current charge and num copies
-	else if (frobTarget.IsA('ChargedPickup'))
-		strInfo = ChargedPickup(frobTarget).ItemName @ "(" $ int(ChargedPickup(frobTarget).GetCurrentCharge()) $ "%)"; //RSD: Append the current charge
 	else if (frobTarget.IsA('DeusExWeapon'))                    //Sarge: Add "(Modified)" to weapons
 		strInfo = DeusExWeapon(frobTarget).GetFrobString(player);
-	else if (frobTarget.IsA('DeusExPickup') && DeusExPickup(frobTarget).numCopies > 1 && player.bShowItemPickupCounts)
-		strInfo = Inventory(frobTarget).itemName @ "(" $ DeusExPickup(frobTarget).numCopies $ ")"; //SARGE: Append number of copies, if more than 1
-	else if (frobTarget.IsA('NanoKey')) //SARGE: Show nano key names
-        strInfo = NanoKey(frobTarget).GetFrobString(player);
 	else if (frobTarget.IsA('Inventory'))
 		strInfo = Inventory(frobTarget).itemName;
 	else if (frobTarget.IsA('DeusExDecoration'))
