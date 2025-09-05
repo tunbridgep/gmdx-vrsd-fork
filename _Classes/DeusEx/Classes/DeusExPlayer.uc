@@ -14466,6 +14466,8 @@ static final function string TitleCase(coerce string Text)
             //Some articles, like "a" and "the" will remain lower case
             if (!bFirstWord)
             {
+                //DON'T want to trim here, because these are only
+                //lower case when used as joiner words.
                 switch (Word)
                 {
                     case "a ":
@@ -14475,6 +14477,23 @@ static final function string TitleCase(coerce string Text)
                     case "of ":
                     case "in ":
                     case "for ":
+                        bDontChange = true;
+                }
+            }
+            
+            if (!bDontChange)
+            {
+                //Some words are always upper case
+                switch (RTrim(Word))
+                {
+                    case "nsf":
+                    case "hq":
+                    case "nyc":
+                    case "ny":
+                    case "cia":
+                    case "fbi":
+                    case "unatco":
+                        Word = Caps(Word);
                         bDontChange = true;
                 }
             }

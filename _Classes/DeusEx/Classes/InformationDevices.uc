@@ -39,7 +39,7 @@ struct Title
 
 var const Title bookTitles[20];
 var const Title newspaperTitles[20];
-var const Title datacubeTitles[20];
+var const Title datacubeTitles[50];
 var const string titleIgnored[100];
 var const string titlePrefixes[100];
 var const string upcases[100];
@@ -82,13 +82,19 @@ function string GetItemTitle()
 
     //Some objects need special handling
     tag = textPackage $ "." $ texttag;
-    for (i = 0; i < ArrayCount(bookTitles);i++)
+    for (i = 0; i < ArrayCount(datacubeTitles);i++)
     {
         if (IsA('DataCube') && datacubeTitles[i].textTag == tag)
             return datacubeTitles[i].replacement;
-        else if ((IsA('Newspaper') || IsA('NewspaperOpen')) && newspaperTitles[i].textTag == tag)
-            return newspaperTitles[i].replacement;
-        else if ((IsA('BookOpen') || IsA('BookClosed')) && bookTitles[i].textTag == tag)
+    }
+    for (i = 0; i < ArrayCount(bookTitles);i++)
+    {
+        if ((IsA('BookOpen') || IsA('BookClosed')) && bookTitles[i].textTag == tag)
+            return bookTitles[i].replacement;
+    }
+    for (i = 0; i < ArrayCount(newspaperTitles);i++)
+    {
+        if ((IsA('Newspaper') || IsA('NewspaperOpen')) && newspaperTitles[i].textTag == tag)
             return bookTitles[i].replacement;
     }
 
@@ -757,8 +763,21 @@ defaultproperties
      datacubeTitles(14)=(textTag="DeusExText.02_Datacube16",replacement="Note to Commander Grimaldi")
      datacubeTitles(15)=(textTag="DeusExText.02_Datacube17",replacement="Note to Commander Frase")
      datacubeTitles(16)=(textTag="DeusExText.03_Datacube05",replacement="Ambrosia Delivery")
-     datacubeTitles(17)=(textTag="DeusExText.03_Datacube11",replacement="Janine's Bots - Repair Bot")
-     datacubeTitles(18)=(textTag="DeusExText.03_Datacube12",replacement="Helibase Computer Login")
+     datacubeTitles(17)=(textTag="DeusExText.03_Datacube06",replacement="Perimeter Survey")
+     datacubeTitles(18)=(textTag="DeusExText.03_Datacube10",replacement="Hangar Code")
+     datacubeTitles(19)=(textTag="DeusExText.03_Datacube11",replacement="Janine's Bots - Repair Bot")
+     datacubeTitles(20)=(textTag="DeusExText.03_Datacube12",replacement="Helibase Computer Login")
+     datacubeTitles(21)=(textTag="DeusExText.04_Datacube01",replacement="Message to Paul")
+     datacubeTitles(22)=(textTag="DeusExText.04_Datacube02",replacement="Security Login")
+     datacubeTitles(23)=(textTag="DeusExText.04_Datacube03",replacement="Account Summary")
+     datacubeTitles(24)=(textTag="DeusExText.04_Datacube04",replacement="Halon Gas")
+     datacubeTitles(25)=(textTag="DeusExText.04_Datacube05",replacement="UNATCO Dossier")
+     datacubeTitles(26)=(textTag="DeusExText.05_Datacube01",replacement="Intrusion Attempt")
+     datacubeTitles(27)=(textTag="DeusExText.05_Datacube02",replacement="New Password")
+     datacubeTitles(28)=(textTag="DeusExText.05_Datacube04",replacement="Armory Code Change")
+     datacubeTitles(29)=(textTag="DeusExText.05_Datacube04",replacement="Greasel Dissection")
+     datacubeTitles(30)=(textTag="DeusExText.05_Datacube09",replacement="Janine's Bots - Page Bravo-3 Peacebringer")
+     datacubeTitles(31)=(textTag="DeusExText.05_Datacube10",replacement="Prospectus - Series P Agents")
 
      titleIgnored(0)="!=!==!==="
      titleIgnored(1)="* = * = * ="
@@ -770,10 +789,10 @@ defaultproperties
 
      titlePrefixes(0)="UNATCO HANDBOOK"
 
-     upcases(0)="Unatco"
-     upcases(1)=" Nyc "
-     upcases(2)=" Ny "
-     upcases(3)="Cia "
+     upcases(0)="Sh-187"
+     //upcases(1)="Unatco"
+     //upcases(2)=" Ny "
+     //upcases(3)="Cia "
      //upcases(4)="U.s. "
 
 }
