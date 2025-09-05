@@ -492,6 +492,7 @@ function Timer()
             player.PlaySound(sound'GMDXSFX.Generic.biomodscreenselect', SLOT_Pain);
             player.ClientMessage(AugSystemShutdown);
             player.RefreshAugmentationDisplay();
+            player.RefreshChargedPickups();
             //player.killSwitchTimer = 20; //For testing, set it to 20 seconds.
             flags.SetBool('GMDXKillswitchSet', True,, 6);
         }
