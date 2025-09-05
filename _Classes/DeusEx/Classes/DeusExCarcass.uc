@@ -1136,8 +1136,6 @@ function Frob(Actor Frobber, Inventory frobWith)
                             {
                                 if (player.bShowDeclinedInReceivedWindow)
                                     AddBadItem(player,item);
-                                if (!bSearched)
-                                    player.ClientMessage(sprintf(player.DuplicateNanoKey,item.Name));
                             }
 
 							DeleteInventory(item);
