@@ -29,6 +29,10 @@ auto state Pickup
 			player.Credits += numCredits;
 			player.ClientMessage(Sprintf(msgCreditsAdded, numCredits));
 			player.FrobTarget = None;
+
+            if (player.bCreditsShowReceivedItemsWindow)
+                player.AddReceivedItem(self,numCredits);
+
 			Destroy();
 		}
 	}

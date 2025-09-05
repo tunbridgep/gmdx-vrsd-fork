@@ -813,6 +813,8 @@ var globalconfig bool bReversedAltBeltColours;                      //SARGE: Mak
 
 var globalconfig bool bAlwaysShowReceivedItemsWindow;               //SARGE: Always show the retrieved items window when picking up ammo from a weapon.
 
+var globalconfig bool bCreditsShowReceivedItemsWindow;              //SARGE: Always show the retrieved items window when picking up credits
+
 var globalconfig bool bShowDeclinedInReceivedWindow;                //SARGE: Allow showing declined items in the received items window.
 
 var globalconfig int iShowTotalCounts;                        //SARGE: Show the total number of rounds we can carry for disposable items in the inventory screen. 1 = charged items and disposable weapons/grenades only, 2 = everything.
@@ -19437,6 +19439,7 @@ defaultproperties
      bIsMantlingStance=false //Ygll: new var to know if we are currently mantling
      iHealingScreen=1
      bAlwaysShowReceivedItemsWindow=true
+     bCreditsShowReceivedItemsWindow=false
      bPistolStartTrained=true
      bStreamlinedRepairBotInterface=true
      iShowTotalCounts=1
