@@ -3421,7 +3421,7 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
     
     //Fix fade time shenanigans
     //This makes me sick!
-    if (default.fadeTimeHack > 0 && default.prevMusicMode == MUS_Ambient && default.bMusicLoadHack)
+    if (default.fadeTimeHack > 0 && default.bMusicLoadHack)
     {
         //barf...
         NewTransition = MTRAN_Instant;
@@ -13692,6 +13692,9 @@ function EndConversation()
 	//
 	// Also make sure the player is actually in the Conversation state
 	// before attempting to kick him out of it.
+
+    //SARGE: Allow fixing the music if we change too quickly
+    default.bMusicLoadHack = true;
 
 	if ((Health > 0) && ((IsInState('Conversation')) || (IsInState('FirstPersonConversation')) || (NextState == 'Interpolating')))
 	{
