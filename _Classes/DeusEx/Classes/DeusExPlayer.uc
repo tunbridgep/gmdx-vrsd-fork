@@ -5994,9 +5994,7 @@ function DoJump( optional float F )
     if (bUsingComputer)
         return;
 	
-	if ((CarriedDecoration != None) && (CarriedDecoration.Mass > MusLevel))
-		return;
-	else if (bForceDuck || IsLeaning())
+	if (bForceDuck || IsLeaning())
 		return;
 
 	if (AugmentationSystem == None)
@@ -6014,6 +6012,9 @@ function DoJump( optional float F )
 		MusLevel = 30;
 	else
 		MusLevel = (MusLevel+3)*50;
+
+	if ((CarriedDecoration != None) && (CarriedDecoration.Mass > MusLevel)) //SARGE: Moved this to below the part where we actually set AugMuscle. Previously it did nothing...
+		return;
 
     if (bOnLadder && WallMaterial != 'Ladder' && !IsCrippled())
     {
