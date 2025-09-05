@@ -511,6 +511,18 @@ function Timer()
 			}
 		}
 	}
+    //SARGE: Remove Harley Filben once we send the signal
+	else if(localURL == "04_NYC_BAR")
+    {
+		if(flags.getBool('M04RaidTeleportDone') && !flags.getBool('GMDXRemoveFilben'))
+        {
+            foreach AllActors(class'ScriptedPawn', pawn)
+                if (pawn.isA('HarleyFilben'))
+                    pawn.LeaveWorld();
+            
+            flags.SetBool('GMDXRemoveFilben', True,, 5);
+        }
+    }
 }
 
 // ----------------------------------------------------------------------
