@@ -710,7 +710,7 @@ function RandomiseCrap()
     //log("Applying chair skin to all leather chairs: " $ chairSkin);
     foreach AllActors(class'ChairLeather', L2)
     {
-        L2.SkinColor = chairSkin;
+        L2.SkinColor = couchSkin;
         L2.UpdateHDTPsettings();
     }
 }
