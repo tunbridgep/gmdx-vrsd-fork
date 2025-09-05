@@ -16264,6 +16264,7 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
                             //Energy -= MAX(int(newDamage * 0.1),1);
                             Energy = FMAX(Energy - enviro.GetAdjustedEnergy(1),0);
                             enviro.lastEnergyTick = saveTime + (60.0 / enviro.EnergyRate);
+							enviro.displayAsActiveTime = saveTime + 3.0; //SARGE: Display as active while in use
                         }
                         newDamage *= augLevel;
                     }
