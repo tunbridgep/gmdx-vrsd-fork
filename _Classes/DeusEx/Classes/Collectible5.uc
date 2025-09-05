@@ -2,8 +2,11 @@ class Collectible5 extends Collectible;
 
 defaultproperties
 {
-    ItemName="Tramsmittion Dish (Collectible)"
-    Mesh=LodMesh'DeusExDeco.SatelliteDish'
-    DrawScale=0.050000
+    ItemName="UNATCO Trophy (Collectible)"
+    Mesh=LodMesh'DeusExDeco.Trophy'
+    HDTPMesh="HDTPDecos.HDTPTrophy"
+    CollisionRadius=11.030000
+    CollisionHeight=10.940000
+    DrawScale=1.0
 }
 
