@@ -6,6 +6,13 @@ class Credits extends DeusExPickup;
 var() int numCredits;
 var localized String msgCreditsAdded;
 
+//Show credits amount in frob string
+function string GetFrobString(DeusExPlayer player)
+{
+    if (numCredits > 1 && player.bShowItemPickupCounts)
+		return ItemName @ "(" $ numCredits $ ")"; //SARGE: Append the current charge and num copies
+}
+
 // ----------------------------------------------------------------------
 // Frob()
 //
