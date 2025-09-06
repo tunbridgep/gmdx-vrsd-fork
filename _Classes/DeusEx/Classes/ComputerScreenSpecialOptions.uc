@@ -71,7 +71,7 @@ function CreateSpecialInfoWindow()
 //SARGE: Rewritten to take into account replacing the logout button
 function SetNetworkTerminal(NetworkTerminal newTerm)
 {
-    local string buttonText;
+    local string buttonText, emailName;
     local bool bLeft;
 
 	Super.SetNetworkTerminal(newTerm);
@@ -80,8 +80,10 @@ function SetNetworkTerminal(NetworkTerminal newTerm)
         buttonText = EmailButtonLabel;
 	else if (winTerm.IsA('NetworkTerminalSecurity'))
         buttonText = SecurityButtonLabel;
+    
+    ProcessEmails();
         
-    if (!player.bStreamlinedComputerInterface || (Computers(newTerm.compOwner) != None &&  Computers(newTerm.compOwner).textPackage == ""))
+    if (!player.bStreamlinedComputerInterface || emailIndex == -1)
     {
         btnLogout = winButtonBar.AddButton(ButtonLabelLogout, HALIGN_Right);
         btnReturn = winButtonBar.AddButton(buttonText, HALIGN_Left);
