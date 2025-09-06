@@ -7,65 +7,251 @@ class MarkerDisplayWindow expands Window;
 var const Color markerColor;
 var const Color noteColor;
 
-var DeusExPlayer player;
-var bool bDisplay;
+var transient DeusExPlayer player;
+var transient bool bDisplay;
 
-function bool Setup(bool bShow, DeusExPlayer P)
+var transient DeusExLevelInfo dxInfo;
+
+var transient MarkerInfo markers;
+
+const MAX_BOX_SIZE = 10;
+const MIN_BOX_SIZE = 4;
+const MIN_DISTANCE_TO_SHOW = 50; //Multiplied by 16. Should be in feet.
+
+//Store info about teleporters so we're not endlessly redoing work
+struct TeleportInfo
+{
+    var Vector location;
+    var string newURL;
+};
+
+var transient TeleportInfo teleporters[10];
+var transient int numTeleporters;
+
+var const localized string msgMultipleMarkers; //SARGE: Name for when we have a map transition with multiple markers on the other side.
+
+function bool Setup(bool bShow, DeusExPlayer P, bool bRegenerateTeleporters)
 {
     player = P;
     bDisplay = bShow;
+    dxInfo = player.GetLevelInfo();
+    GenerateMarkerList();
+    if (bRegenerateTeleporters)
+        GenerateTeleporterList();
 }
 
-//Now for the tricky part...
+//Strip the bad parts from the URL
+function private string FixURL(string url)
+{
+    local int pos;
+    local string newURL;
+
+    newURL = url;
+    pos = InStr(newURL,"#");
+    if (pos > 0)
+        newURL = Left(newURL,pos);
+    pos = InStr(newURL,"/");
+    if (pos > 0)
+        newURL = Left(newURL,pos);
+
+    return newURL;
+}
+
+function GenerateTeleporterList()
+{
+    local Teleporter tele;
+    local MapExit exit;
+    local Actor connectedActor;
+
+    //Don't even bother if we don't have any markers
+    if (player.markers == None)
+        return;
+
+    numTeleporters = 0;
+
+    foreach player.AllActors(class'Teleporter',tele)
+    {
+        if (tele.url ~= "" || numTeleporters >= 10)
+            continue;
+
+        teleporters[numTeleporters].newURL = FixURL(tele.URL);
+        teleporters[numTeleporters].location = tele.location;
+        numTeleporters++;
+    }
+
+    foreach player.AllActors(class'MapExit',exit)
+    {
+        if (exit.DestMap ~= "" || numTeleporters >= 10)
+            continue;
+
+        //Horrible filthy hack
+        if (exit.Tag != '')
+        {
+            foreach player.AllActors(class'Actor',connectedActor)
+            {
+                if (connectedActor.Event == exit.Tag)
+                {
+                    break;
+                }
+            }
+        }
+        if (connectedActor == None)
+            connectedActor = exit;
+
+        teleporters[numTeleporters].newURL = FixURL(exit.DestMap);
+        teleporters[numTeleporters].location = connectedActor.location;
+        numTeleporters++;
+    }
+}
+
+//SARGE: TODO: Make a list once here, so we aren't repeating a bunch of ifs constantly...
+function GenerateMarkerList()
+{
+}
+
 function DrawWindow(GC gc)
 {
-    local Marker marker;
-	
-    local float centerX, centerY;
-	local float topY, bottomY;
-	local float leftX, rightX;
-    local Vector tVect;
-
     Super.DrawWindow(gc);
-
-    if (player == None || !bDisplay)
-        return;
     
     gc.EnableDrawing(true);
     gc.SetStyle(DSTY_Translucent);
     gc.SetTileColor(markerColor);
 
-    foreach player.AllActors(class'Marker', marker)
+    DrawMarkers(gc);
+    DrawTeleporters(gc);
+}
+
+//Now for the tricky part...
+function DrawMarkers(GC gc)
+{
+    local MarkerInfo marker;
+    local float centerX, centerY;
+    local bool bFail;
+    local float distance;
+
+    if (player == None || !bDisplay || dxInfo == None)
+        return;
+    
+    marker = player.markers;
+
+    while (marker != None)
     {
-        tVect = marker.Location;
-				
-        if (!ConvertVectorToCoordinates(tVect, centerX, centerY))
-            continue;
-        
-        //if (marker.associatedNote == None)
-        //    continue;
+        bFail = false;
+		
+        if (!ConvertVectorToCoordinates(marker.Position, centerX, centerY))
+            bFail = true;
 
-        leftX = centerX-10;
-        rightX = centerX+10;
-        topY = centerY-10;
-        bottomY = centerY+10;
-	
-        //Draw the edges of the box
-        gc.SetTileColorRGB(markerColor.R/4, markerColor.G/4, markerColor.B/4);
-        gc.DrawBox(leftX, topY, 1+rightX-leftX, 1+bottomY-topY, 0, 0, 1, Texture'Solid');
-        leftX += 1;
-        rightX -= 1;
-        topY += 1;
-        bottomY -= 1;
-        gc.SetTileColorRGB(markerColor.R*3/16, markerColor.G*3/16, markerColor.B*3/16);
-        gc.DrawBox(leftX, topY, 1+rightX-leftX, 1+bottomY-topY, 0, 0, 1, Texture'Solid');
-        leftX += 1;
-        rightX -= 1;
-        topY += 1;
-        bottomY -= 1;
-        gc.SetTileColorRGB(markerColor.R/8, markerColor.G/8, markerColor.B/8);
-        gc.DrawBox(leftX, topY, 1+rightX-leftX, 1+bottomY-topY, 0, 0, 1, Texture'Solid');
+        if (marker.mapName != dxInfo.mapName)
+            bFail = true;
 
+        if (!bFail)
+        {
+            DrawSpot(gc,marker.associatedNote.text,centerx,centery,GetBoxSize(marker,marker.Position));
+        }
+
+        marker = marker.next;
+    }
+}
+
+
+function float GetBoxSize(MarkerInfo marker, Vector position)
+{
+    local float boxSize;
+    local float distance;
+
+    boxSize = marker.boxSize;
+    
+    distance = abs(VSize(player.Location - position));
+
+    if (distance < MIN_DISTANCE_TO_SHOW * 16 && marker.boxSize < MAX_BOX_SIZE)
+        marker.boxSize += 1;
+    else if (distance > MIN_DISTANCE_TO_SHOW * 16 && boxSize > MIN_BOX_SIZE)
+        marker.boxSize -= 1;
+
+    //Hack to fix it being reset on load
+    marker.boxSize = FMax(4,marker.boxSize);
+
+    return marker.boxSize;
+}
+
+//Draw all the teleporters which link to a map containing a given note.
+function DrawTeleporters(GC gc)
+{
+    local int i;
+    local string text;
+    local float centerX, centerY;
+    local MarkerInfo marker, lastValid;
+    local bool bDraw;
+    local float distance;
+    
+    if (player == None || !bDisplay || dxInfo == None)
+        return;
+
+    for(i = 0;i < numTeleporters;i++)
+    {
+        bDraw = false;
+
+        marker = player.markers;
+        while (marker != None)
+        {
+            if (marker.mapName ~= teleporters[i].newURL && marker.associatedNote != None && !marker.associatedNote.bHidden)
+            {
+                lastValid = marker;
+                //if there's more than one, just say "multiple markers"
+                if (bDraw)
+                {
+                    text = msgMultipleMarkers;
+                    break;
+                }
+                text = marker.associatedNote.text;
+                bDraw = true;
+            }
+            marker = marker.next;
+        }
+
+        if (bDraw && ConvertVectorToCoordinates(teleporters[i].Location, centerX, centerY))
+        {
+            DrawSpot(gc,text,centerx,centery,GetBoxSize(lastValid,teleporters[i].Location));
+        }
+    }
+}
+
+function DrawSpot(GC gc, string text, float centerx, float centery, float boxSize)
+{
+    local float leftx, rightx, topy, bottomy;
+    local float alpha;
+    local Color colBox;
+
+    alpha = (boxSize) * 0.1;
+
+    colBox.R = int(float(markerColor.R) * alpha);
+    colBox.G = int(float(markerColor.G) * alpha);
+    colBox.B = int(float(markerColor.B) * alpha);
+
+    leftX = centerX-boxSize;
+    rightX = centerX+boxSize;
+    topY = centerY-boxSize;
+    bottomY = centerY+boxSize;
+
+    //Draw the edges of the box
+    gc.SetTileColorRGB(colBox.R/4, colBox.G/4, colBox.B/4);
+    gc.DrawBox(leftX, topY, 1+rightX-leftX, 1+bottomY-topY, 0, 0, 1, Texture'Solid');
+    leftX += 1;
+    rightX -= 1;
+    topY += 1;
+    bottomY -= 1;
+    gc.SetTileColorRGB(colBox.R*3/16, colBox.G*3/16, colBox.B*3/16);
+    gc.DrawBox(leftX, topY, 1+rightX-leftX, 1+bottomY-topY, 0, 0, 1, Texture'Solid');
+    leftX += 1;
+    rightX -= 1;
+    topY += 1;
+    bottomY -= 1;
+    gc.SetTileColorRGB(colBox.R/8, colBox.G/8, colBox.B/8);
+    gc.DrawBox(leftX, topY, 1+rightX-leftX, 1+bottomY-topY, 0, 0, 1, Texture'Solid');
+
+    
+    if (boxSize == MAX_BOX_SIZE)
+    {
         //Draw the center point
         gc.SetTileColorRGB(255, 255, 255);
         gc.DrawPattern(centerX, centerY-3, 1, 7, 0, 0, Texture'Solid');
@@ -75,15 +261,13 @@ function DrawWindow(GC gc)
         gc.SetTextColor(noteColor);
         gc.SetAlignments(HALIGN_Center, VALIGN_Bottom);
         gc.SetFont(Font'TechSmall');
-        if (marker.associatedNote == None)
-            gc.DrawText(leftX-40, topY-140, 80+rightX-leftX, 135, "<No Note>");
-        else
-            gc.DrawText(leftX-40, topY-140, 80+rightX-leftX, 135, marker.associatedNote.text);
+        gc.DrawText(leftX-40, topY-140, 80+rightX-leftX, 135, text);
     }
 }
 
 defaultproperties
 {
+    msgMultipleMarkers="Multiple Markers"
     markerColor=(G=255)
     noteColor=(R=255,G=255,B=255)
 }

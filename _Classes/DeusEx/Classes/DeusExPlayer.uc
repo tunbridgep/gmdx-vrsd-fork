@@ -866,6 +866,8 @@ var globalconfig bool bNanoswordEnergyUse;                      //SARGE: Whether
 var globalconfig bool bFasterInfolinks;                         //SARGE: Significantly decreases the time before queued datalinks can play, to make receiving many messages at once far less sluggish.
 
 
+//Markers Stuff
+var travel MarkerInfo markers;                                  //SARGE: A list of markers 
 var travel bool bShowMarkers;                                   //SARGE: Whether or not to show note markers
 //////////END GMDX
 
@@ -12326,7 +12328,7 @@ function UpdateHUD()
         root.UpdateHUD();
 
     //Show/Hide Markers
-    UpdateMarkerDisplay();
+    UpdateMarkerDisplay(true);
 }
 
 function UpdateSecondaryDisplay()
@@ -14721,8 +14723,9 @@ function Bool DeleteNote( DeusExNote noteToDelete )
 		note = note.next;
 	}
 
-    //SARGE: Update any associated markers
+    //SARGE: Remove markers associated with this note.
     UpdateMarkerValidity();
+    //DeleteMarkersForNote(noteToDelete);
 
 	return bNoteDeleted;
 }
@@ -19121,7 +19124,7 @@ function bool IsStunted()
 // SARGE: Added the ability to display Markers
 // ----------------------------------------------------------------------
 
-function UpdateMarkerDisplay()
+function UpdateMarkerDisplay(optional bool bUpdateTeleporters)
 {
     local MarkerDisplayWindow markerDisplay;
 
@@ -19132,21 +19135,108 @@ function UpdateMarkerDisplay()
         return;
 
     //Setup the marker display
-    markerDisplay.Setup(bShowMarkers,self);
+    markerDisplay.Setup(bShowMarkers,self,bUpdateTeleporters);
 }
 
 //Destroys any markers that no longer have associated notes
 function UpdateMarkerValidity()
 {
-    local Marker marker;
+    local MarkerInfo marker, prev, m1;
+    local bool bValid;
+    
+    if (markers == None)
+        return;
 
-    foreach AllActors(class'Marker', marker)
+    marker = markers;
+
+    while (marker != None)
     {
-        Log("Updating " $ marker $ ": " $ marker.associatedNote $ ", " $ marker.associatedNote.bHidden @ marker.associatedNote.text);
-        if (marker.associatedNote == None || marker.associatedNote.bHidden)
-            marker.Destroy();
+        bValid = marker.associatedNote != None && !marker.associatedNote.bHidden;
+        Log("Marker " $ marker.associatedNote.text $ " is valid: " $ bValid);
+        if (!bValid && prev == None)
+        {
+            markers = marker.next;
+            CriticalDelete(marker);
+            marker = markers;
+        }
+        else if (!bValid)
+        {
+            prev.next = marker.next;
+
+            m1 = marker;
+            marker = marker.next;
+            CriticalDelete(m1);
+        }
+        else
+        {
+            prev = marker;
+            marker = marker.next;
+        }
     }
 }
+
+function AddMarker(DeusExNote note)
+{
+    local MarkerInfo marker, currMarker;
+    local DeusExLevelInfo dxinfo;
+
+    dxInfo=GetLevelInfo();
+    marker = new(Self) class'MarkerInfo';
+    marker.associatedNote = note;
+    marker.Position = Location;
+    marker.MapName = dxInfo.MapName;
+
+    if (markers == None)
+    {
+        markers = marker;
+        return;
+    }
+    
+    currMarker = markers;
+
+    while (currMarker.next != None)
+        currMarker = currMarker.next;
+
+    currMarker.next = marker;
+
+}
+
+/*
+function DeleteMarkersForNote(DeusExNote note)
+{
+    local MarkerInfo marker, prev, m1;
+    
+    if (markers == None)
+        return;
+
+    marker = markers;
+
+    while (marker != None)
+    {
+        if (marker.associatedNote == note && prev == None)
+        {
+            markers = marker.next;
+            CriticalDelete(marker);
+            marker = markers;
+        }
+        else if (marker.associatedNote == note)
+        {
+            prev.next = marker.next;
+
+            m1 = marker;
+            marker = marker.next;
+            CriticalDelete(m1);
+        }
+        else
+        {
+            prev = marker;
+            marker = marker.next;
+        }
+    }
+    
+    UpdateMarkerValidity();
+}
+*/
 
 // ----------------------------------------------------------------------
 // LipSynch()

@@ -400,15 +400,13 @@ event bool BoxOptionSelected(Window msgBoxWindow, int buttonNumber)
 function AddMarker()
 {
 	local DeusExNote newNote;
-    local Marker marker;
 	local PersonaNotesEditWindow newNoteWindow;
 
 	// Create a new note and then a window to display it in
 	newNote = player.AddNote(defaultNoteText, True);
     newNote.bMarkerNote = true;
 
-    marker = player.Spawn(class'Marker');
-    marker.associatedNote = newNote;
+    player.AddMarker(newNote);
 
 	newNoteWindow = CreateNoteEditWindow(newNote);
     newNoteWindow.SetMarkerNote(true);
