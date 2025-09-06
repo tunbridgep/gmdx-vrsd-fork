@@ -128,6 +128,7 @@ function Color GetFrobDisplayBorderColor(Actor frobTarget)
     local int i;
     local int capacity, myammo;
     local Inventory Inv;
+    local Inventory playerInv;
     
     //Aug Can stuff
     local AugmentationCannister A;
@@ -199,13 +200,18 @@ function Color GetFrobDisplayBorderColor(Actor frobTarget)
             //Do Nothing
         }
         
-        //Stack is full and we can't recharge
-        else if (Inv.IsA('ChargedPickup') && player.GetInventoryCount(Inv.class.name) >= ChargedPickup(Inv).RetMaxCopies() && ChargedPickup(Inv).GetCurrentCharge() > 99)
-            return colBadAug;
-
         //Stack is full
         else if (Inv.IsA('DeusExPickup') && player.GetInventoryCount(Inv.class.name) >= DeusExPickup(Inv).RetMaxCopies() && DeusExPickup(Inv).bCanHaveMultipleCopies)
+        {
+            //Stack is full and we can recharge
+            if (Inv.IsA('ChargedPickup'))
+            {
+		        playerInv = player.FindInventoryType(Inv.Class);
+                if (ChargedPickup(playerInv) != None && ChargedPickup(playerInv).GetCurrentCharge() <= 99)
+                    return colWireless;
+            }
             return colBadAug;
+        }
         
         //Weapons and Ammo show BLUE when able to be patially looted, and Red if they can't be looted at all.
         else if (AM != None)
