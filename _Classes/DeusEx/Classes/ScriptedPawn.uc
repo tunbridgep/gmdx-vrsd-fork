@@ -6663,7 +6663,7 @@ function HandleLoudNoise(Name event, EAIEventState state, XAIParams params)
                     //attacking instantly, rather than searching.
                     player = DeusExPlayer(instigator);
 
-                    if (!IsA('Robot') && player != None && player.bHardcoreMode && Abs(VSize(player.Location - Location)) < 500)
+                    if (!IsA('Robot') && player != None && ((player.bHardcoreMode && Abs(VSize(player.Location - Location)) < 500) || FRand() < 0.1))
                     {
                         //player.DebugMessage("High Alert!");
                         SetEnemy(player);
