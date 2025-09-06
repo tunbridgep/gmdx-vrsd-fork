@@ -23,6 +23,7 @@ struct TeleportInfo
 {
     var Vector location;
     var string newURL;
+    var float boxSize;      //Ugh, it sucks that we have to do this...
 };
 
 var transient TeleportInfo teleporters[10];
@@ -53,6 +54,9 @@ function private string FixURL(string url)
     pos = InStr(newURL,"/");
     if (pos > 0)
         newURL = Left(newURL,pos);
+
+    //make the name generic (remove the starting mission number)
+    newURL = Right(newURL,Len(newURL)-2);
 
     return newURL;
 }
@@ -141,12 +145,12 @@ function DrawMarkers(GC gc)
         if (!ConvertVectorToCoordinates(marker.Position, centerX, centerY))
             bFail = true;
 
-        if (marker.mapName != dxInfo.mapName)
+        if (marker.mapName != dxInfo.GetMapNameGeneric())
             bFail = true;
 
         if (!bFail)
         {
-            DrawSpot(gc,marker.associatedNote.text,centerx,centery,GetBoxSize(marker,marker.Position));
+            DrawSpot(gc,marker.associatedNote.text,centerx,centery,GetBoxSizeMarker(marker));
         }
 
         marker = marker.next;
@@ -154,24 +158,44 @@ function DrawMarkers(GC gc)
 }
 
 
-function float GetBoxSize(MarkerInfo marker, Vector position)
+function float GetBoxSizeTeleporter(int index)
+{
+    local float boxSize;
+    local float distance;
+
+    boxSize = teleporters[index].boxSize;
+    
+    distance = abs(VSize(player.Location - teleporters[index].location));
+
+    if (distance < MIN_DISTANCE_TO_SHOW * 16 && boxSize < MAX_BOX_SIZE)
+        boxSize += 1;
+    else if (distance > MIN_DISTANCE_TO_SHOW * 16 && boxSize > MIN_BOX_SIZE)
+        boxSize -= 1;
+
+    //Hack to fix it being reset on load
+    teleporters[index].boxSize = FMax(4,boxSize);
+
+    return boxSize;
+}
+
+function float GetBoxSizeMarker(MarkerInfo marker)
 {
     local float boxSize;
     local float distance;
 
     boxSize = marker.boxSize;
     
-    distance = abs(VSize(player.Location - position));
+    distance = abs(VSize(player.Location - marker.position));
 
-    if (distance < MIN_DISTANCE_TO_SHOW * 16 && marker.boxSize < MAX_BOX_SIZE)
-        marker.boxSize += 1;
+    if (distance < MIN_DISTANCE_TO_SHOW * 16 && boxSize < MAX_BOX_SIZE)
+        boxSize += 1;
     else if (distance > MIN_DISTANCE_TO_SHOW * 16 && boxSize > MIN_BOX_SIZE)
-        marker.boxSize -= 1;
+        boxSize -= 1;
 
     //Hack to fix it being reset on load
-    marker.boxSize = FMax(4,marker.boxSize);
+    marker.boxSize = FMax(4,boxSize);
 
-    return marker.boxSize;
+    return boxSize;
 }
 
 //Draw all the teleporters which link to a map containing a given note.
@@ -180,7 +204,7 @@ function DrawTeleporters(GC gc)
     local int i;
     local string text;
     local float centerX, centerY;
-    local MarkerInfo marker, lastValid;
+    local MarkerInfo marker;
     local bool bDraw;
     local float distance;
     
@@ -196,7 +220,6 @@ function DrawTeleporters(GC gc)
         {
             if (marker.mapName ~= teleporters[i].newURL && marker.associatedNote != None && !marker.associatedNote.bHidden)
             {
-                lastValid = marker;
                 //if there's more than one, just say "multiple markers"
                 if (bDraw)
                 {
@@ -211,7 +234,7 @@ function DrawTeleporters(GC gc)
 
         if (bDraw && ConvertVectorToCoordinates(teleporters[i].Location, centerX, centerY))
         {
-            DrawSpot(gc,text,centerx,centery,GetBoxSize(lastValid,teleporters[i].Location));
+            DrawSpot(gc,text,centerx,centery,GetBoxSizeTeleporter(i));
         }
     }
 }
