@@ -19190,7 +19190,7 @@ function AddMarker(DeusExNote note)
     marker = new(Self) class'MarkerInfo';
     marker.associatedNote = note;
     marker.Position = Location;
-    marker.MapName = dxInfo.MapName;
+    marker.MapName = dxInfo.GetMapNameGeneric();
 
     if (markers == None)
     {
