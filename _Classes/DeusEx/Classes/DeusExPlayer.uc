@@ -14477,6 +14477,7 @@ static final function string TitleCase(coerce string Text)
                     case "of ":
                     case "in ":
                     case "for ":
+                    case "to ":
                         bDontChange = true;
                 }
             }
@@ -14493,6 +14494,7 @@ static final function string TitleCase(coerce string Text)
                     case "cia":
                     case "fbi":
                     case "unatco":
+                    case "mj12":
                         Word = Caps(Word);
                         bDontChange = true;
                 }

@@ -780,8 +780,14 @@ defaultproperties
      datacubeTitles(31)=(textTag="DeusExText.05_Datacube10",replacement="Prospectus - Series P Agents")
      datacubeTitles(32)=(textTag="DeusExText.06_Datacube01",replacement="Hong Kong Challenges")
      datacubeTitles(33)=(textTag="DeusExText.06_Datacube02",replacement="Security Code Reset")
-     datacubeTitles(34)=(textTag="DeusExText.06_Datacube18",replacement="Password Update")
-     datacubeTitles(35)=(textTag="DeusExText.06_Datacube32",replacement="New Security Procedure")
+     datacubeTitles(34)=(textTag="DeusExText.06_Datacube05",replacement="I'm Sorry!")
+     datacubeTitles(35)=(textTag="DeusExText.06_Datacube06",replacement="Interrogation Recording")
+     datacubeTitles(36)=(textTag="DeusExText.06_Datacube14",replacement="Message to Party Leader Xan")
+     datacubeTitles(37)=(textTag="DeusExText.06_Datacube15",replacement="Password Change")
+     datacubeTitles(38)=(textTag="DeusExText.06_Datacube18",replacement="Password Update")
+     datacubeTitles(39)=(textTag="DeusExText.06_Datacube20",replacement="Instructions for Mort")
+     datacubeTitles(40)=(textTag="DeusExText.06_Datacube21",replacement="Book Recommendations")
+     datacubeTitles(41)=(textTag="DeusExText.06_Datacube32",replacement="New Security Procedure")
 
      titleIgnored(0)="!=!==!==="
      titleIgnored(1)="* = * = * ="
