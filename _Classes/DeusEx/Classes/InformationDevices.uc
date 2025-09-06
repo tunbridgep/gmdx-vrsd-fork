@@ -778,6 +778,10 @@ defaultproperties
      datacubeTitles(29)=(textTag="DeusExText.05_Datacube04",replacement="Greasel Dissection")
      datacubeTitles(30)=(textTag="DeusExText.05_Datacube09",replacement="Janine's Bots - Page Bravo-3 Peacebringer")
      datacubeTitles(31)=(textTag="DeusExText.05_Datacube10",replacement="Prospectus - Series P Agents")
+     datacubeTitles(32)=(textTag="DeusExText.06_Datacube01",replacement="Hong Kong Challenges")
+     datacubeTitles(33)=(textTag="DeusExText.06_Datacube02",replacement="Security Code Reset")
+     datacubeTitles(34)=(textTag="DeusExText.06_Datacube18",replacement="Password Update")
+     datacubeTitles(35)=(textTag="DeusExText.06_Datacube32",replacement="New Security Procedure")
 
      titleIgnored(0)="!=!==!==="
      titleIgnored(1)="* = * = * ="
