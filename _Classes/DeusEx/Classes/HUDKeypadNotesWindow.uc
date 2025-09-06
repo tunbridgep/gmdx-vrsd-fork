@@ -121,7 +121,7 @@ function TileWindow CreateTileWindow(Window parent)
 
 function PopulateNotes(TileWindow winTile)
 {
-	local PersonaNotesViewWindow noteWindow;
+	local PersonaNotesEditWindow noteWindow;
     local DeusExNote note;
 	local bool   bWasVisible;
     local int i;
@@ -163,15 +163,18 @@ function PopulateNotes(TileWindow winTile)
 // Creates a note edit window
 // ----------------------------------------------------------------------
 
-function PersonaNotesViewWindow CreateNoteEditWindow(TileWindow winTile, DeusExNote note)
+function PersonaNotesEditWindow CreateNoteEditWindow(TileWindow winTile, DeusExNote note)
 {
-	local PersonaNotesViewWindow newNoteWindow;
+	local PersonaNotesEditWindow newNoteWindow;
 
-	newNoteWindow = PersonaNotesViewWindow(winTile.NewChild(Class'PersonaNotesViewWindow'));
+	newNoteWindow = PersonaNotesEditWindow(winTile.NewChild(Class'PersonaNotesEditWindow'));
+    newNoteWindow.SetNote(note);
+    newNoteWindow.SetReadOnly(true);
     newNoteWindow.bUseMenuColors = bUseMenuColors;
-    newNoteWindow.SetTextAlignments(HALIGN_Left, VALIGN_Center);
-    newNoteWindow.SetTheme(player);
-    newNoteWindow.SetText(note.text);
+    newNoteWindow.StyleChanged();
+    //newNoteWindow.SetTextAlignments(HALIGN_Left, VALIGN_Center);
+    //newNoteWindow.SetTheme(player);
+    //newNoteWindow.SetText(note.text);
 
 	return newNoteWindow;
 }

@@ -11,6 +11,50 @@ var Texture texBordersFocus[9];
 var Color colMarkerNote;            //SARGE: Added a new colour for borders of marker notes
 var private bool bMarkerNote;
 
+var private bool bNoteSet;          //SARGE: Hack.
+var private bool bFakeReadOnly;     //SARGE: Block all input, but still allow selecting and copying
+var private bool bPermanentFakeReadonly;    //SARGE: Read Only is no longer related to the player setting, just prevent it entirely.
+var bool bUseMenuColors;                     //SARGE: Use the menu theme instead of the HUD theme
+
+// ----------------------------------------------------------------------
+// VirtualKeyPressed()
+//
+// We need to make this dynamic so it can handle if edit mode is turned on.
+// ----------------------------------------------------------------------
+event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
+{
+    local bool bCtrl;
+
+    //when editing is turned off, we have to handle copy pasting ourselves
+    if (bFakeReadOnly)
+    {
+        bCtrl  = IsKeyDown(IK_Ctrl);
+        if (bCtrl && key == IK_C && !bRepeat)
+        {
+            PlayEditSound(moveSound);
+            Log("Copy: " $ key);
+            Copy();
+        }
+    }
+    else
+        Super.VirtualKeyPressed(key,bRepeat);
+}
+
+// ----------------------------------------------------------------------
+// SetReadOnly()
+//
+// Sets this as being permanently read only, regardless of the player note editing setting.
+// ----------------------------------------------------------------------
+function SetReadOnly(bool bValue)
+{
+    bPermanentFakeReadonly = bValue;
+}
+
+// ----------------------------------------------------------------------
+// SetMarkerNote()
+//
+// Sets this note window as being for a marker note, giving it a coloured border.
+// ----------------------------------------------------------------------
 function SetMarkerNote(bool bValue)
 {
     bMarkerNote = bValue;
@@ -56,6 +100,11 @@ event DrawWindow(GC gc)
 
 function bool FilterChar(out string chStr)
 {
+    if (bNoteSet)
+        bFakeReadOnly = !player.bAllowNoteEditing;
+
+    if (bFakeReadOnly)
+        return false;
 	return (chStr != "\\");
 }
 
@@ -68,6 +117,8 @@ function SetNote( DeusExNote newNote )
 	SetClientObject(newNote);
 
 	SetText( newNote.text );
+
+    bNoteSet = true;
 }
 
 // ----------------------------------------------------------------------
@@ -89,12 +140,30 @@ event StyleChanged()
 
 	Super.StyleChanged();
 
-	theme = player.ThemeManager.GetCurrentHUDColorTheme();
-
-    if (bMarkerNote)
+    if (bUseMenuColors)
+    {
+        theme = player.ThemeManager.GetCurrentMenuColorTheme();
+        colBracket = theme.GetColorFromName('MenuColor_ButtonFace');
+        
+        // Title colors
+        colText          = theme.GetColorFromName('MenuColor_ButtonTextFocus');
+        colHighlight     = theme.GetColorFromName('MenuColor_ButtonFace');
+        colCursor        = theme.GetColorFromName('MenuColor_Cursor');
+    }
+    else if (bMarkerNote)
         colBracket = colMarkerNote;
     else
+    {
+        theme = player.ThemeManager.GetCurrentHUDColorTheme();
         colBracket = theme.GetColorFromName('HUDColor_HeaderText');
+    }
+	
+    SetTextColor(colText);
+	SetTileColor(colHighlight);
+	SetSelectedAreaTexture(Texture'Solid', colText);
+	SetSelectedAreaTextColor(colBlack);
+	SetEditCursor(Texture'DeusExEditCursor', Texture'DeusExEditCursor_Shadow', colCursor);
+	SetInsertionPointTexture(Texture'Solid', colCursor);
 }
 
 // ----------------------------------------------------------------------

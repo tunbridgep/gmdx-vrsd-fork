@@ -20,6 +20,10 @@ var localized String       GoalCompletedText;
 var TileWindow                winNotes;
 var PersonaCheckBoxWindow     chkConfirmNoteDeletion;
 var PersonaCheckBoxWindow     chkShowMarkers;
+var PersonaCheckBoxWindow     chkShowDefaultNotes;
+var PersonaCheckBoxWindow     chkShowUserNotes;
+var PersonaCheckBoxWindow     chkShowMarkerNotes;
+var PersonaCheckBoxWindow     chkAllowEdit;
 var Bool                      bConfirmNoteDeletes;
 var localized String          NotesTitleText;
 var PersonaActionButtonWindow btnAddNote;
@@ -103,6 +107,10 @@ function CreateControls()
 	CreateNotesButtons();
 	CreateShowCompletedGoalsCheckbox();
     CreateShowMarkerCheckbox();
+    CreateEditCheckbox();
+    CreateShowDefaultNotesCheckbox();
+    CreateShowUserNotesCheckbox();
+    CreateShowMarkerNotesCheckbox();
 	CreateConfirmNoteDeletionCheckbox();
 }
 
@@ -145,6 +153,58 @@ function CreateNotesButtons()
 }
 
 // ----------------------------------------------------------------------
+// SARGE: CreateShowDefaultNotesCheckbox()
+// ----------------------------------------------------------------------
+
+function CreateShowDefaultNotesCheckbox()
+{
+	chkShowDefaultNotes = PersonaCheckBoxWindow(winClient.NewChild(Class'PersonaCheckBoxWindow'));
+
+	chkShowDefaultNotes.SetText("Show Default Notes");
+	chkShowDefaultNotes.SetToggle(player.bShowRegularNotes);
+	chkShowDefaultNotes.SetWindowAlignments(HALIGN_Right, VALIGN_Top, 63, 207);
+}
+
+// ----------------------------------------------------------------------
+// SARGE: CreateShowUserNotesCheckbox()
+// ----------------------------------------------------------------------
+
+function CreateShowUserNotesCheckbox()
+{
+	chkShowUserNotes = PersonaCheckBoxWindow(winClient.NewChild(Class'PersonaCheckBoxWindow'));
+
+	chkShowUserNotes.SetText("Show User Notes");
+	chkShowUserNotes.SetToggle(player.bShowUserNotes);
+	chkShowUserNotes.SetWindowAlignments(HALIGN_Right, VALIGN_Top, 203, 207);
+}
+
+// ----------------------------------------------------------------------
+// SARGE: CreateShowMarkerNotesCheckbox()
+// ----------------------------------------------------------------------
+
+function CreateShowMarkerNotesCheckbox()
+{
+	chkShowMarkerNotes = PersonaCheckBoxWindow(winClient.NewChild(Class'PersonaCheckBoxWindow'));
+
+	chkShowMarkerNotes.SetText("Show Marker Notes");
+	chkShowMarkerNotes.SetToggle(player.bShowMarkerNotes);
+	chkShowMarkerNotes.SetWindowAlignments(HALIGN_Right, VALIGN_Top, 343, 207);
+}
+
+// ----------------------------------------------------------------------
+// SARGE: CreateEditCheckbox()
+// ----------------------------------------------------------------------
+
+function CreateEditCheckbox()
+{
+	chkAllowEdit = PersonaCheckBoxWindow(winClient.NewChild(Class'PersonaCheckBoxWindow'));
+
+	chkAllowEdit.SetText("Allow Editing");
+	chkAllowEdit.SetToggle(player.bAllowNoteEditing);
+	chkAllowEdit.SetWindowAlignments(HALIGN_Right, VALIGN_Top, 263, 412);
+}
+
+// ----------------------------------------------------------------------
 // SARGE: CreateShowMarkerCheckbox()
 // ----------------------------------------------------------------------
 
@@ -154,7 +214,7 @@ function CreateShowMarkerCheckbox()
 
 	chkShowMarkers.SetText(ShowMarkersLabel);
 	chkShowMarkers.SetToggle(player.bShowMarkers);
-	chkShowMarkers.SetWindowAlignments(HALIGN_Right, VALIGN_Top, 163, 412);
+	chkShowMarkers.SetWindowAlignments(HALIGN_Right, VALIGN_Top, 158, 412);
 }
 
 // ----------------------------------------------------------------------
@@ -253,6 +313,7 @@ function PopulateNotes()
 	local PersonaNotesEditWindow noteWindow;
 	local DeusExNote note;
 	local bool   bWasVisible;
+    local bool bAdd;
 
 	// Hide the notes, so we don't flood the tile window with ConfigureChanged() events
 	bWasVisible = winNotes.IsVisible(FALSE);
@@ -265,7 +326,19 @@ function PopulateNotes()
 	note = player.FirstNote;
 	while(note != None)
 	{
-        if (!note.bHidden)
+        bAdd = true;
+        
+        //Filter notes using the filter checkboxes
+        if (note.bHidden)
+            bAdd = false;
+        if (!player.bShowRegularNotes && !note.bUserNote)
+            bAdd = false;
+        else if (!player.bShowUserNotes && note.bUserNote && !note.bMarkerNote)
+            bAdd = false;
+        else if (!player.bShowMarkerNotes && note.bUserNote && note.bMarkerNote)
+            bAdd = false;
+
+        if (bAdd)
         {
             noteWindow = CreateNoteEditWindow( note );
             noteWindow.SetMarkerNote(note.bMarkerNote);
@@ -273,12 +346,18 @@ function PopulateNotes()
             if (firstNoteWindow == None)
                 firstNoteWindow = noteWindow;
         }
+
 		// Continue on to the next note
 		note = note.next;
 	}
 
 	// Show the notes again, if they were visible before
 	winNotes.Show(bWasVisible);
+	
+    //SARGE: Scroll to the top!
+    //Stolen from WindowReady();
+    if (firstNoteWindow != None)
+		firstNoteWindow.AskParentToShowArea();
 }
 
 // ----------------------------------------------------------------------
@@ -297,10 +376,12 @@ function bool ButtonActivated( Window buttonPressed )
 	switch(buttonPressed)
 	{
 		case btnAddNote:
+            player.bAllowNoteEditing = true;
 			AddNote();
 			break;
 		
         case btnMarker:
+            player.bAllowNoteEditing = true;
 			AddMarker();
 			break;
 
@@ -331,9 +412,17 @@ function bool ButtonActivated( Window buttonPressed )
 
 event FocusEnteredDescendant(Window enterWindow)
 {
+	local DeusExNote note;
 	// Ignore this even if we're deleting
 	if (PersonaNotesEditWindow(enterWindow) != None)
 	{
+        //SARGE: If it's a user note, and we have note editing turned off, hide the checkbox
+		note = PersonaNotesEditWindow(enterWindow).GetNote();
+        if (note != None && !note.bUserNote && !player.bEditDefaultNotes)
+            chkAllowEdit.Hide();
+        else
+            chkAllowEdit.Show();
+
 		currentNoteWindow = PersonaNotesEditWindow(enterWindow);
 		EnableButtons();
 	}
@@ -486,6 +575,26 @@ event bool ToggleChanged(Window button, bool bNewToggle)
         player.bShowMarkers = bNewToggle;
         player.UpdateMarkerDisplay();
 	}
+	else if (button == chkAllowEdit)
+    {
+        player.bAllowNoteEditing = bNewToggle;
+        //PopulateNotes();
+    }
+	else if (button == chkShowDefaultNotes)
+    {
+        player.bShowRegularNotes = bNewToggle;
+        PopulateNotes();
+    }
+	else if (button == chkShowUserNotes)
+    {
+        player.bShowUserNotes = bNewToggle;
+        PopulateNotes();
+    }
+	else if (button == chkShowMarkerNotes)
+    {
+        player.bShowMarkerNotes = bNewToggle;
+        PopulateNotes();
+    }
 
 	return True;
 }
@@ -500,6 +609,10 @@ function PersonaNotesEditWindow CreateNoteEditWindow(DeusExNote note)
 
 	newNoteWindow = PersonaNotesEditWindow(winNotes.NewChild(Class'PersonaNotesEditWindow'));
 	newNoteWindow.SetNote(note);
+
+    //SARGE: Set to permanent read only if it's not a user note, and we're not allowed to edit
+    if (!note.bUserNote && !player.bEditDefaultNotes)
+        newNoteWindow.SetReadOnly(true);
 
 	return newNoteWindow;
 }

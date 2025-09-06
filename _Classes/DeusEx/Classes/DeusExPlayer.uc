@@ -866,9 +866,15 @@ var globalconfig bool bNanoswordEnergyUse;                      //SARGE: Whether
 var globalconfig bool bFasterInfolinks;                         //SARGE: Significantly decreases the time before queued datalinks can play, to make receiving many messages at once far less sluggish.
 
 
-//Markers Stuff
+//Markers Stuff and Notes Overhaul
 var travel MarkerInfo markers;                                  //SARGE: A list of markers 
 var travel bool bShowMarkers;                                   //SARGE: Whether or not to show note markers
+var travel bool bShowUserNotes;
+var travel bool bShowRegularNotes;
+var travel bool bShowMarkerNotes;
+var travel bool bAllowNoteEditing;
+var globalconfig bool bEditDefaultNotes;                        //SARGE: If enabled, we can edit the default game notes.
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -19589,4 +19595,9 @@ defaultproperties
      bFasterInfolinks=true
      bNanoswordEnergyUse=true
      bShowMarkers=true
+     bAllowNoteEditing=trueRegularNotes
+     bShowUserNotes=true
+     bShowRegularNotes=true
+     bShowMarkerNotes=true
+     bEditDefaultNotes=false
 }

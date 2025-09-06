@@ -109,6 +109,7 @@ defaultproperties
      items(90)=(HelpText="Alternate display for the accuracy crosshairs. Requires a map load/reload to fully work.",actionText="HUD: Alternate Accuracy Crosshairs",variable="bAlternateCrosshairAcc");
      items(91)=(HelpText="Disables some early-game infolinks containing tutorial messages.",actionText="Game: Disable Tutorial Infolinks",variable="bLessTutorialMessages",defaultValue=0);
      items(92)=(HelpText="Queued Infolinks will play much faster, without needing to wait 5 seconds to finish and start each one.",actionText="HUD: Faster Infolink Playback",variable="bFasterInfolinks",defaultValue=1);
+     items(103)=(HelpText="If enabled, notes added by datacubes, books, etc can be edited.",actionText="HUD: Edit Default Notes",variable="bEditDefaultNotes",defaultValue=0)
      Title="GMDX Quality of Life Options"
      colWidths(0)=214
      colWidths(1)=155
