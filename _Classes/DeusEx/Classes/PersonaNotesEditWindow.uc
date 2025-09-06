@@ -8,6 +8,15 @@ var Color colBracket;
 var Texture texBordersNormal[9];
 var Texture texBordersFocus[9];
 
+var Color colMarkerNote;            //SARGE: Added a new colour for borders of marker notes
+var private bool bMarkerNote;
+
+function SetMarkerNote(bool bValue)
+{
+    bMarkerNote = bValue;
+    StyleChanged();
+}
+
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -82,7 +91,10 @@ event StyleChanged()
 
 	theme = player.ThemeManager.GetCurrentHUDColorTheme();
 
-	colBracket = theme.GetColorFromName('HUDColor_HeaderText');
+    if (bMarkerNote)
+        colBracket = colMarkerNote;
+    else
+        colBracket = theme.GetColorFromName('HUDColor_HeaderText');
 }
 
 // ----------------------------------------------------------------------
@@ -108,4 +120,6 @@ defaultproperties
      texBordersFocus(6)=Texture'DeusExUI.UserInterface.PersonaNoteFocus_Top'
      texBordersFocus(7)=Texture'DeusExUI.UserInterface.PersonaNoteFocus_Bottom'
      texBordersFocus(8)=Texture'DeusExUI.UserInterface.PersonaNoteFocus_Center'
+     //colMarkerNote=(R=255,G=255,B=255)
+     colMarkerNote=(G=255)
 }

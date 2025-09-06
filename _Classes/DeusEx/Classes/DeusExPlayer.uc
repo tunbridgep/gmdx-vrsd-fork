@@ -865,6 +865,8 @@ var globalconfig bool bNanoswordEnergyUse;                      //SARGE: Whether
 
 var globalconfig bool bFasterInfolinks;                         //SARGE: Significantly decreases the time before queued datalinks can play, to make receiving many messages at once far less sluggish.
 
+
+var travel bool bShowMarkers;                                   //SARGE: Whether or not to show note markers
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -1876,6 +1878,9 @@ event TravelPostAccept()
 
     //Reset Crosshair
     UpdateCrosshair();
+
+    //Destroy any unlinked markers
+    UpdateMarkerValidity();
 
 	info = GetLevelInfo();
 
@@ -12319,6 +12324,9 @@ function UpdateHUD()
 
     if (root != None)
         root.UpdateHUD();
+
+    //Show/Hide Markers
+    UpdateMarkerDisplay();
 }
 
 function UpdateSecondaryDisplay()
@@ -14712,6 +14720,9 @@ function Bool DeleteNote( DeusExNote noteToDelete )
 		previousNote = note;
 		note = note.next;
 	}
+
+    //SARGE: Update any associated markers
+    UpdateMarkerValidity();
 
 	return bNoteDeleted;
 }
@@ -19105,6 +19116,37 @@ function bool IsStunted()
     return bStunted || stuntedTime > 0;
 }
 
+// ----------------------------------------------------------------------
+// UpdateMarkerDisplay()
+// SARGE: Added the ability to display Markers
+// ----------------------------------------------------------------------
+
+function UpdateMarkerDisplay()
+{
+    local MarkerDisplayWindow markerDisplay;
+
+    if (DeusExRootWindow(rootWindow) != None)
+        markerDisplay = DeusExRootWindow(rootWindow).markerDisplay; 
+
+    if (markerDisplay == None)
+        return;
+
+    //Setup the marker display
+    markerDisplay.Setup(bShowMarkers,self);
+}
+
+//Destroys any markers that no longer have associated notes
+function UpdateMarkerValidity()
+{
+    local Marker marker;
+
+    foreach AllActors(class'Marker', marker)
+    {
+        Log("Updating " $ marker $ ": " $ marker.associatedNote $ ", " $ marker.associatedNote.bHidden @ marker.associatedNote.text);
+        if (marker.associatedNote == None || marker.associatedNote.bHidden)
+            marker.Destroy();
+    }
+}
 
 // ----------------------------------------------------------------------
 // LipSynch()
@@ -19456,4 +19498,5 @@ defaultproperties
      bShowFullAmmoInHUD=true
      bFasterInfolinks=true
      bNanoswordEnergyUse=true
+     bShowMarkers=true
 }
