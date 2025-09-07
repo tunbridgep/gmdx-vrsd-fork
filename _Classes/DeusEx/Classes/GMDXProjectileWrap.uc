@@ -70,6 +70,8 @@ function bool WrapWithDecoration()
 
 	  if (DxPlayer.Energy < 0)
 	     DxPlayer.Energy = 0;
+
+      muscleAug.displayAsActiveTime = dxPlayer.saveTime + 0.5;
    }
 
    if (mult==4) AugDamMod=2; else AugDamMod=1.2;
