@@ -210,6 +210,11 @@ function Color GetFrobDisplayBorderColor(Actor frobTarget)
                 if (ChargedPickup(playerInv) != None && ChargedPickup(playerInv).GetCurrentCharge() <= 99)
                     return colWireless;
             }
+
+            //Stack is full but we can still left-frob
+            if (Inv.IsA('ConsumableItem') && !ConsumableItem(Inv).RestrictedUse(player))
+                    return colWireless;
+
             return colBadAug;
         }
         
