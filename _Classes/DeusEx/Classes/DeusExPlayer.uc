@@ -14499,6 +14499,22 @@ static final function string TitleCase(coerce string Text)
                         bDontChange = true;
                 }
             }
+            
+            //Fucking stupid special case!
+            if (!bDontChange)
+            {
+                switch (Word)
+                {
+                    case "versalife ":
+                        Word = "VersaLife ";
+                        bDontChange = true;
+                        break;
+                    case "duclare ":
+                        Word = "DuClare ";
+                        bDontChange = true;
+                        break;
+                }
+            }
 
             if (!bDontChange)
             {

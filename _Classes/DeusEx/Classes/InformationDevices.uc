@@ -39,7 +39,7 @@ struct Title
 
 var const Title bookTitles[20];
 var const Title newspaperTitles[20];
-var const Title datacubeTitles[50];
+var const Title datacubeTitles[150];
 var const string titleIgnored[100];
 var const string titlePrefixes[100];
 var const string upcases[100];
@@ -745,6 +745,7 @@ defaultproperties
      //bookTitles(4)=(textTag="DeusExText.01_Book05",replacement="UNATCO Handbook - UNATCO and the Future")
      bookTitles(0)=(textTag="DeusExText.01_Book08",replacement="UNATCO Handbook - Dedication")
      bookTitles(1)=(textTag="DeusExText.03_Book06",replacement="Curly's Journal")
+     bookTitles(2)=(textTag="DeusExText.06_Book07",replacement="Scrawled Note")
 
      datacubeTitles(0)=(textTag="DeusExText.01_Datacube01",replacement="Joseph Manderley Password Change")
      datacubeTitles(1)=(textTag="DeusExText.01_Datacube03",replacement="Comm Van Code")
@@ -780,20 +781,34 @@ defaultproperties
      datacubeTitles(31)=(textTag="DeusExText.05_Datacube10",replacement="Prospectus - Series P Agents")
      datacubeTitles(32)=(textTag="DeusExText.06_Datacube01",replacement="Hong Kong Challenges")
      datacubeTitles(33)=(textTag="DeusExText.06_Datacube02",replacement="Security Code Reset")
-     datacubeTitles(34)=(textTag="DeusExText.06_Datacube05",replacement="I'm Sorry!")
-     datacubeTitles(35)=(textTag="DeusExText.06_Datacube06",replacement="Interrogation Recording")
-     datacubeTitles(36)=(textTag="DeusExText.06_Datacube08",replacement="VersaLife Sign-In")
-     datacubeTitles(37)=(textTag="DeusExText.06_Datacube09",replacement="I Think Something is Going On")
-     datacubeTitles(38)=(textTag="DeusExText.06_Datacube10",replacement="Security System Access")
-     datacubeTitles(39)=(textTag="DeusExText.06_Datacube11",replacement="Corrupted Security Upgrade")
-     datacubeTitles(40)=(textTag="DeusExText.06_Datacube12",replacement="New Server Node")
-     datacubeTitles(41)=(textTag="DeusExText.06_Datacube14",replacement="Message to Party Leader Xan")
-     datacubeTitles(42)=(textTag="DeusExText.06_Datacube15",replacement="Password Change")
-     datacubeTitles(43)=(textTag="DeusExText.06_Datacube18",replacement="Password Update")
-     datacubeTitles(44)=(textTag="DeusExText.06_Datacube20",replacement="Instructions for Mort")
-     datacubeTitles(45)=(textTag="DeusExText.06_Datacube21",replacement="Book Recommendations")
-     datacubeTitles(46)=(textTag="DeusExText.06_Datacube29",replacement="Augmentation Canister")
-     datacubeTitles(47)=(textTag="DeusExText.06_Datacube32",replacement="New Security Procedure")
+     datacubeTitles(34)=(textTag="DeusExText.06_Datacube03",replacement="Re: Triad Report")
+     datacubeTitles(35)=(textTag="DeusExText.06_Datacube04",replacement="Surveillance Report - Triads")
+     datacubeTitles(36)=(textTag="DeusExText.06_Datacube05",replacement="I'm Sorry!")
+     datacubeTitles(37)=(textTag="DeusExText.06_Datacube06",replacement="Interrogation Recording")
+     datacubeTitles(38)=(textTag="DeusExText.06_Datacube08",replacement="VersaLife Sign-In")
+     datacubeTitles(39)=(textTag="DeusExText.06_Datacube09",replacement="I Think Something is Going On")
+     datacubeTitles(40)=(textTag="DeusExText.06_Datacube10",replacement="Security System Access")
+     datacubeTitles(41)=(textTag="DeusExText.06_Datacube11",replacement="Corrupted Security Upgrade")
+     datacubeTitles(42)=(textTag="DeusExText.06_Datacube12",replacement="New Server Node")
+     datacubeTitles(43)=(textTag="DeusExText.06_Datacube13",replacement="Police Substation Code")
+     datacubeTitles(44)=(textTag="DeusExText.06_Datacube14",replacement="Message to Party Leader Xan")
+     datacubeTitles(45)=(textTag="DeusExText.06_Datacube15",replacement="Password Change")
+     datacubeTitles(46)=(textTag="DeusExText.06_Datacube18",replacement="Password Update")
+     datacubeTitles(47)=(textTag="DeusExText.06_Datacube19",replacement="Incident Report - Officer Tam")
+     datacubeTitles(48)=(textTag="DeusExText.06_Datacube20",replacement="Instructions for Mort")
+     datacubeTitles(49)=(textTag="DeusExText.06_Datacube21",replacement="Book Recommendations")
+     datacubeTitles(50)=(textTag="DeusExText.06_Datacube22",replacement="Surveillance Report - Maggie Chow")
+     datacubeTitles(51)=(textTag="DeusExText.06_Datacube23",replacement="Hong Kong Network Services - New Account")
+     datacubeTitles(52)=(textTag="DeusExText.06_Datacube24",replacement="Superfreighter Refit")
+     datacubeTitles(53)=(textTag="DeusExText.06_Datacube25",replacement="Regression Analysis")
+     datacubeTitles(54)=(textTag="DeusExText.06_Datacube29",replacement="Augmentation Canister")
+     datacubeTitles(55)=(textTag="DeusExText.06_Datacube30",replacement="Note to Self")
+     datacubeTitles(56)=(textTag="DeusExText.06_Datacube31",replacement="Welcome to VersaLife!")
+     datacubeTitles(57)=(textTag="DeusExText.06_Datacube32",replacement="New Security Procedure")
+     datacubeTitles(58)=(textTag="DeusExText.08_Datacube01",replacement="Information for All Staff")
+     datacubeTitles(59)=(textTag="DeusExText.09_Datacube01",replacement="Ship Access")
+     datacubeTitles(60)=(textTag="DeusExText.09_Datacube09",replacement="Security Restrictions")
+     datacubeTitles(61)=(textTag="DeusExText.09_Datacube14",replacement="Security Restrictions")
 
      titleIgnored(0)="!=!==!==="
      titleIgnored(1)="* = * = * ="
