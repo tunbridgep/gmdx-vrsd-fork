@@ -22,6 +22,7 @@ var bool bUseMenuColors;
 var DeusExNote Notes[10];
 var int NotesCount;
 
+var bool bEditableNotes;                //If the notes should be read only but selectable, or non-interactive entirely.
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -34,6 +35,11 @@ event InitWindow()
 	Super.InitWindow();
 
 	winBackground = HUDInformationDisplay(NewChild(Class'HUDInformationDisplay'));
+}
+
+function SetEditable(bool bValue)
+{
+    bEditableNotes = bValue;
 }
 
 function CreateNotesList()
@@ -169,7 +175,10 @@ function PersonaNotesEditWindow CreateNoteEditWindow(TileWindow winTile, DeusExN
 
 	newNoteWindow = PersonaNotesEditWindow(winTile.NewChild(Class'PersonaNotesEditWindow'));
     newNoteWindow.SetNote(note);
-    newNoteWindow.SetReadOnly(true);
+    if (bEditableNotes)
+        newNoteWindow.SetReadOnly(true);
+    else
+        newNoteWindow.EnableEditing(false);
     newNoteWindow.bUseMenuColors = bUseMenuColors;
     newNoteWindow.StyleChanged();
     //newNoteWindow.SetTextAlignments(HALIGN_Left, VALIGN_Center);
@@ -241,4 +250,5 @@ function ApplyStyleToChildren()
 defaultproperties
 {
     msgRelevantNote="Relevant Note:"
+    bEditableNotes=true
 }

@@ -23,27 +23,45 @@ var bool bUseMenuColors;                     //SARGE: Use the menu theme instead
 // ----------------------------------------------------------------------
 event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
 {
-    local bool bCtrl;
+    //If we're disabled, just passthrough to something else
+    if (!bEditable)
+        return false;
 
-    //when editing is turned off, we have to handle copy pasting ourselves
+    if (bNoteSet && !bPermanentFakeReadonly)
+        bFakeReadOnly = !player.bAllowNoteEditing;
+
+    //when editing is turned off, we have to stop editing operations
     if (bFakeReadOnly)
     {
-        bCtrl  = IsKeyDown(IK_Ctrl);
-        if (bCtrl && key == IK_C && !bRepeat)
+        //Send certain keys to our parent
+        //like the C and V keys, so we can copy-paste,
+        //but everything else should be ignored.
+        switch (key)
         {
-            PlayEditSound(moveSound);
-            Log("Copy: " $ key);
-            Copy();
+            case IK_C:  //Copy
+            case IK_V:  //Pasta
+            case IK_Left:  //Move
+            case IK_Right:  //Move
+            case IK_Up:  //Move
+            case IK_Down:  //Move
+            case IK_PageUp:
+            case IK_PageDown:
+            case IK_Home:
+            case IK_End:
+            return Super.VirtualKeyPressed(key,bRepeat);
         }
+        return false;
     }
-    else
-        Super.VirtualKeyPressed(key,bRepeat);
+    
+    return Super.VirtualKeyPressed(key,bRepeat);
 }
 
 // ----------------------------------------------------------------------
 // SetReadOnly()
 //
 // Sets this as being permanently read only, regardless of the player note editing setting.
+// "Read Only" means we can still select text and interact with it by moving the cursor around with the keys,
+// we can copy paste etc as well.
 // ----------------------------------------------------------------------
 function SetReadOnly(bool bValue)
 {

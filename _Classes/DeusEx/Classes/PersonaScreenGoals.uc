@@ -321,6 +321,8 @@ function PopulateNotes()
 
 	// First make sure there aren't already notes
 	winNotes.DestroyAllChildren();
+            
+    firstNoteWindow = None;
 
 	// Loop through all the notes
 	note = player.FirstNote;
@@ -356,6 +358,7 @@ function PopulateNotes()
 	
     //SARGE: Scroll to the top!
     //Stolen from WindowReady();
+    //SARGE: TODO: Crashy??
     if (firstNoteWindow != None)
 		firstNoteWindow.AskParentToShowArea();
 }
