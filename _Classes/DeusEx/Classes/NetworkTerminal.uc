@@ -451,8 +451,15 @@ function AddNotesWindow()
     {
         for (i = 0; i < 8;i++)
         {
-            note1 = player.GetCodeNote(C.GetUserName(i),true);
-            note2 = player.GetCodeNote(C.GetPassword(i),true);
+            if (!player.IsObfuscatedCode(C.GetUserName(i)) && !player.IsObfuscatedCode(C.GetPassword(i)))
+            {
+                note1 = player.GetCodeNote(C.GetUserName(i),true);
+                note2 = player.GetCodeNote(C.GetPassword(i),true);
+            }
+            else
+            {
+                note1 = player.GetCodeNoteStrict(C.GetUserName(i),C.GetPassword(i),true);
+            }
             
             if (note1 != None)
                 codeNotes[numCodes++] = note1;
@@ -464,8 +471,15 @@ function AddNotesWindow()
     {
         for (i = 0; i < 8;i++)
         {
-            note1 = player.GetCodeNote(A.GetAccountNumber(i),true);
-            note2 = player.GetCodeNote(A.GetPIN(i),true);
+            if (!player.IsObfuscatedCode(A.GetAccountNumber(i)) && !player.IsObfuscatedCode(A.GetPIN(i)))
+            {
+                note1 = player.GetCodeNote(A.GetAccountNumber(i),true);
+                note2 = player.GetCodeNote(A.GetPIN(i),true);
+            }
+            else
+            {
+                note1 = player.GetCodeNoteStrict(A.GetAccountNumber(i),A.GetPIN(i),true);
+            }
 
             if (note1 != None)
                 codeNotes[numCodes++] = note1;

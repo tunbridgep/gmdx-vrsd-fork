@@ -14599,21 +14599,32 @@ static final function string RTrim(coerce string Text)
 static function int InStrSpaced(string haystack, string needle)
 {
     local int result;
+    local bool bLeft, bRight;
+    local string c;
 
-    result = InStr(haystack," " $ needle $ " ");
+    result = InStr(haystack,needle);
     if (result != -1)
+    {
+        //We found the needle, so either it's the first/last thing in the string, or it's surrounded by non-alpha characters
+        //CHECK LEFT
+        bLeft = true;
+        c = Mid(haystack, result - 1, 1);
+        if (result != 0 && ((c >= "A" && c <= "Z") || (c >= "A" && c <= "Z")))
+            bLeft = false;
+        
+        //CHECK Right
+        bRight = true;
+        if (result + len(needle) < len(haystack) - 1)
+        {
+            c = Mid(haystack, result + len(needle), 1);
+            if ((c >= "A" && c <= "Z") || (c >= "A" && c <= "Z"))
+                bRight = false;
+        }
+    }
+    if (bLeft && bRight)
         return result;
-    
-    result = InStr(haystack," " $ needle $ ". ");
-    if (result != -1)
-        return result;
-    
-    result = InStr(haystack," " $ needle $ ".");
-    if (result != -1 && Right(haystack, len(needle) + 1) == (needle $ "."))
-        return result;
-    
-    //Log("String: " $ Right(haystack, len(needle) + 1));
-    return -1;
+    else
+        return -1;
 }
 
 //SARGE: Strip off the "FROM: xxx TO: xxx" line in notes,
@@ -14655,18 +14666,122 @@ function bool HasCodeNote(string code, optional bool bNoHidden)
     return GetCodeNote(code,bNoHidden) != None;
 }
 
+function bool HasCodeNoteStrict(string code, string code2, optional bool bNoHidden)
+{
+    return GetCodeNoteStrict(code,code2,bNoHidden) != None;
+}
+
+function private bool ProcessCodeNote(DeusExNote note, string code, optional bool bStrictMode)
+{
+    local string noteText;
+    local int noteTextNumeric;
+
+    //handle any notes we were given which might not have "original" text for whatever reason
+    if (note.originalText == "")
+        note.originalText = note.text;
+    
+    //noteText = note.originalText;
+
+    //DebugLog("NOTE (pre trim): " $ note.text);
+
+    //SARGE: This is some WEIRD logic!
+    //Because we need to dynamically check the notes for codes,
+    //HOWEVER We DON'T want to be able to login if the words simply exist in notes,
+    //because some logins are common words, like SECURITY,
+    //or WALTON and SIMONS, which means we need to check more thoroughly.
+    //Generally, though, Passwords follow these rules:
+    //1. Normally they are either in ALL CAPS or all lower case.
+    //2. There's a few times where they will have Login: Somename, Password: Somename, which are in camel caps (becase of course....)
+    //3. Lots of notes also have allcaps FROM and TO text in them, like an email,
+    //such as FROM: WALTON SIMONS TO: SOME GUY
+    //So we need to account for all of these.
+    
+    //First, strip off the first line if there's FROM: and TO: text...
+    noteText = StripFromTo(note.originalText);
+
+    noteTextNumeric = int(noteText);
+
+    //First, if it's numeric, Check note contents for the code exactly
+    if (noteTextNumeric != 0 && InStrSpaced(noteText,code) != -1)
+    {
+        //DebugLog("NOTE: " $ noteText);
+        DebugLog("NOTE CODE " $code$ " FOUND (NUMERIC)");
+        return true;
+    }
+
+    //Next, Check note contents for the code
+    //Start by checking that our code matches CAPS in the note...
+    else if (InStrSpaced(noteText,Caps(code)) != -1)
+    {
+        //DebugLog("NOTE: " $ noteText);
+        DebugLog("NOTE CODE " $code$ " FOUND (CAPS)");
+        return true;
+    }
+    
+    //Then check that our code matches all lower case in the note...
+    //locs is not allowed in strict mode!
+    else if (InStrSpaced(noteText,Locs(code)) != -1 && !bStrictMode)
+    {
+        //DebugLog("NOTE: " $ noteText);
+        DebugLog("NOTE CODE " $code$ " FOUND (LOCS)");
+        return true;
+    }
+    
+    //Some codes are in quotes, so always allows things in quotes
+    if (InStr(Caps(noteText),"\""$Caps(code)$"\"") != -1)
+    {
+        //DebugLog("NOTE: " $ noteText);
+        DebugLog("NOTE CODE " $code$ " FOUND (CAPS QUOTES)");
+        return true;
+    }
+    
+    //Some notes have Login: Username and Password: Whatever in them, so handle them.
+    else if (InStr(Caps(noteText),Caps("LOGIN: " $ code)) != -1)
+        return true;
+    else if (InStr(Caps(noteText),Caps("PASSWORD: " $ code)) != -1)
+        return true;
+    else if (InStr(Caps(noteText),Caps("LOGIN/PASSWORD: " $ code)) != -1)
+        return true;
+}
+
+//A stricter version of GetCodeNote which requires the username and password to be contained
+//within the same note.
+function DeusExNote GetCodeNoteStrict(string username, string password, optional bool bNoHidden)
+{
+	local DeusExNote note;
+    
+    if (username == "" && password == "")
+        return None;
+	
+    note = FirstNote;
+
+	while( note != None)
+	{
+        //Skip user notes and hidden notes
+        if (!note.bUserNote && (!bNoHidden || !note.bHidden))
+        {
+            if (ProcessCodeNote(note,username,true) && ProcessCodeNote(note,password,true))
+                return note;
+        }
+
+        note = note.next;
+	}
+
+    DebugLog("NOTE CODE " $username$"/"$password$ " NOT FOUND");
+	return None;
+
+}
+
 function DeusExNote GetCodeNote(string code, optional bool bNoHidden)
 {
 	local DeusExNote note;
-    local string noteText;
-    local int noteTextNumeric;
 
     if (code == "")
         return None;
 
     //Some codes are so obvious that they will never have valid notes.
-    if (bNoHidden && IsObfustactedCode(code))
-        return None;
+    //if (bNoHidden && IsObfuscatedCode(code))
+    //    return None;
 
 	note = FirstNote;
 
@@ -14675,76 +14790,11 @@ function DeusExNote GetCodeNote(string code, optional bool bNoHidden)
         //Skip user notes and hidden notes
         if (!note.bUserNote && (!bNoHidden || !note.bHidden))
         {
-
-            //handle any notes we were given which might not have "original" text for whatever reason
-            if (note.originalText == "")
-                note.originalText = note.text;
-            
-            //noteText = note.originalText;
-
-            //DebugLog("NOTE (pre trim): " $ note.text);
-
-            //SARGE: This is some WEIRD logic!
-            //Because we need to dynamically check the notes for codes,
-            //HOWEVER We DON'T want to be able to login if the words simply exist in notes,
-            //because some logins are common words, like SECURITY,
-            //or WALTON and SIMONS, which means we need to check more thoroughly.
-            //Generally, though, Passwords follow these rules:
-            //1. Normally they are either in ALL CAPS or all lower case.
-            //2. There's a few times where they will have Login: Somename, Password: Somename, which are in camel caps (becase of course....)
-            //3. Lots of notes also have allcaps FROM and TO text in them, like an email,
-            //such as FROM: WALTON SIMONS TO: SOME GUY
-            //So we need to account for all of these.
-            
-            //First, strip off the first line if there's FROM: and TO: text...
-            noteText = StripFromTo(note.originalText);
-
-            noteTextNumeric = int(noteText);
-
-            //First, if it's numeric, Check note contents for the code exactly
-            if (noteTextNumeric != 0 && InStrSpaced(noteText,code) != -1)
-            {
-                //DebugLog("NOTE: " $ noteText);
-                DebugLog("NOTE CODE " $code$ " FOUND (NUMERIC)");
+            if (ProcessCodeNote(note,code))
                 return note;
-            }
-
-            //Next, Check note contents for the code
-            //Start by checking that our code matches CAPS in the note...
-            else if (InStr(noteText,Caps(code)) != -1)
-            {
-                //DebugLog("NOTE: " $ noteText);
-                DebugLog("NOTE CODE " $code$ " FOUND (CAPS)");
-                return note;
-            }
-            
-            //Then check that our code matches all lower case in the note...
-            else if (InStr(noteText,Locs(code)) != -1)
-            {
-                //DebugLog("NOTE: " $ noteText);
-                DebugLog("NOTE CODE " $code$ " FOUND (LOCS)");
-                return note;
-            }
-            
-            //Some codes are in quotes, so always allows things in quotes
-            if (InStr(Caps(noteText),"\""$Caps(code)$"\"") != -1)
-            {
-                //DebugLog("NOTE: " $ noteText);
-                DebugLog("NOTE CODE " $code$ " FOUND (CAPS QUOTES)");
-                return note;
-            }
-            
-            //Some notes have Login: Username and Password: Whatever in them, so handle them.
-            else if (InStr(Caps(noteText),Caps("LOGIN: " $ code)) != -1)
-                return note;
-            else if (InStr(Caps(noteText),Caps("PASSWORD: " $ code)) != -1)
-                return note;
-            else if (InStr(Caps(noteText),Caps("LOGIN/PASSWORD: " $ code)) != -1)
-                return note;
-            
         }
 
-		note = note.next;
+        note = note.next;
 	}
 
     DebugLog("NOTE CODE " $code$ " NOT FOUND");
@@ -14754,10 +14804,13 @@ function DeusExNote GetCodeNote(string code, optional bool bNoHidden)
 //This is the OPPOSITE of the below function.
 //Some codes should NEVER appear in notes, as they are far too common
 //within notes to actually be detected properly.
-function bool IsObfustactedCode(string code)
+function bool IsObfuscatedCode(string code)
 {
     code = Caps(code);
     return code == "NSF"
+        || code == "MJ12"
+        || code == "RECEPTION"
+        || code == "UNKNOWN"
         || code == "SECURITY";
 }
 
