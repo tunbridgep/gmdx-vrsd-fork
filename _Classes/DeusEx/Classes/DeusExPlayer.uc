@@ -9300,6 +9300,10 @@ function AddReceivedItem(Inventory item, int count, optional bool bNoGroup, opti
 function String GetNanoKeyDesc(Name nanokey)
 {
     local NanoKeyInfo key;
+
+    if (nanokey == '')
+        return "";
+
     key = KeyList;
     while (key != None)
     {
