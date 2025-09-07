@@ -81,22 +81,28 @@ function SetNetworkTerminal(NetworkTerminal newTerm)
 	else if (winTerm.IsA('NetworkTerminalSecurity'))
         buttonText = SecurityButtonLabel;
     
-    ProcessEmails();
-        
-    if (!player.bStreamlinedComputerInterface || emailIndex == -1)
+    bLeft = !player.bStreamlinedComputerInterface;
+
+    //Personal computers it's dependent on emails.
+    if (winTerm.IsA('NetworkTerminalPersonal'))
+    {
+        ProcessEmails();
+        if (emailIndex == -1)
+            bLeft = true;
+    }
+
+    if (bLeft)
     {
         btnLogout = winButtonBar.AddButton(ButtonLabelLogout, HALIGN_Right);
         btnReturn = winButtonBar.AddButton(buttonText, HALIGN_Left);
-        bLeft = true;
+        if (btnReturn != None)
+            CreateLeftEdgeWindow();
     }
     else
     {
         //btnLogout = winButtonBar.AddButton(ButtonLabelLogout, HALIGN_Right);
         btnReturn = winButtonBar.AddButton(buttonText, HALIGN_Right);
     }
-
-	if (btnReturn != None && bLeft)
-		CreateLeftEdgeWindow();
 }
 
 // ----------------------------------------------------------------------
