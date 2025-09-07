@@ -257,7 +257,7 @@ function Color GetFrobDisplayBorderColor(Actor frobTarget)
     else if (player.bToolWindowShowKnownCodes && !player.bHardcoreMode && player.iNoKeypadCheese == 0)
     {
         //We have code for Keypad
-        if (K != None && K.bHackable && K.hackStrength > 0.0 && K.IsDiscovered(player,K.validCode,,true))
+        if (K != None && K.bHackable && K.hackStrength > 0.0 && K.IsDiscovered(player,K.validCode,,true) && len(K.validCode) > 2)
             return colHasKey;
 
         //We have Key for Door
