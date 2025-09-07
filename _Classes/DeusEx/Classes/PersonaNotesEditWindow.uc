@@ -48,6 +48,7 @@ event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
 function SetReadOnly(bool bValue)
 {
     bPermanentFakeReadonly = bValue;
+    bFakeReadOnly = bValue;
 }
 
 // ----------------------------------------------------------------------
@@ -100,7 +101,7 @@ event DrawWindow(GC gc)
 
 function bool FilterChar(out string chStr)
 {
-    if (bNoteSet)
+    if (bNoteSet && !bPermanentFakeReadonly)
         bFakeReadOnly = !player.bAllowNoteEditing;
 
     if (bFakeReadOnly)
