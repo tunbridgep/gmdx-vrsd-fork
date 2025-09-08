@@ -14720,6 +14720,14 @@ function private bool ProcessCodeNote(DeusExNote note, string code, optional boo
         DebugLog("NOTE CODE " $code$ " FOUND (CAPS)");
         return true;
     }
+
+    //Next, Check note contents for the code exactly
+    else if (InStrSpaced(noteText,code) != -1)
+    {
+        //DebugLog("NOTE: " $ noteText);
+        DebugLog("NOTE CODE " $code$ " FOUND (EXACT)");
+        return true;
+    }
     
     //Then check that our code matches all lower case in the note...
     //locs is not allowed in strict mode!
@@ -14754,6 +14762,10 @@ function DeusExNote GetCodeNoteStrict(string username, string password, optional
 	local DeusExNote note;
     
     if (username == "" && password == "")
+        return None;
+
+    //Default username/password.
+    if (username == "SECURITY" && password == "SECURITY")
         return None;
 	
     note = FirstNote;
@@ -14810,11 +14822,16 @@ function DeusExNote GetCodeNote(string code, optional bool bNoHidden)
 function bool IsObfuscatedCode(string code)
 {
     code = Caps(code);
+    return code == "RIGHTEOUS";
+    /*
     return code == "NSF"
         || code == "MJ12"
         || code == "RECEPTION"
         || code == "UNKNOWN"
+        || code == "CAPTAIN"
         || code == "SECURITY";
+    */
+    return false;
 }
 
 //This is a simple list of codes which serve as exceptions to No Keypad Cheese

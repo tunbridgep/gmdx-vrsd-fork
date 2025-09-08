@@ -17,7 +17,7 @@ function bool IsDiscovered(DeusExPlayer player, string code, optional string cod
     local bool bHasCode;
 
     //If we have one of the super generic codes, we need to run in generic mode.
-    bStrict = code2 != "" && (player.IsObfuscatedCode(code) || player.isObfuscatedCode(code2));
+    bStrict = code2 != "" && (!player.IsObfuscatedCode(code) && !player.isObfuscatedCode(code2));
 
     //if bReallyKnown is set, then we are only checking if the player literally knows the code.
     //Otherwise, they are considered to have known it if it was excepted, or if no keypad cheese is turned off.

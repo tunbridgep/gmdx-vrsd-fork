@@ -212,7 +212,7 @@ function Color GetFrobDisplayBorderColor(Actor frobTarget)
             }
 
             //Stack is full but we can still left-frob
-            if (Inv.IsA('ConsumableItem') && !ConsumableItem(Inv).RestrictedUse(player))
+            if (player.bEnableLeftFrob && Inv.IsA('ConsumableItem') && !ConsumableItem(Inv).RestrictedUse(player))
                     return colWireless;
 
             return colBadAug;

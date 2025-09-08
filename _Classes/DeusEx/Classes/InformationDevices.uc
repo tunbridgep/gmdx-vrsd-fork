@@ -807,8 +807,15 @@ defaultproperties
      datacubeTitles(57)=(textTag="DeusExText.06_Datacube32",replacement="New Security Procedure")
      datacubeTitles(58)=(textTag="DeusExText.08_Datacube01",replacement="Information for All Staff")
      datacubeTitles(59)=(textTag="DeusExText.09_Datacube01",replacement="Ship Access")
-     datacubeTitles(60)=(textTag="DeusExText.09_Datacube09",replacement="Security Restrictions")
-     datacubeTitles(61)=(textTag="DeusExText.09_Datacube14",replacement="Security Restrictions")
+     datacubeTitles(60)=(textTag="DeusExText.09_Datacube03",replacement="Code Change")
+     datacubeTitles(61)=(textTag="DeusExText.09_Datacube04",replacement="Note to Self")
+     datacubeTitles(62)=(textTag="DeusExText.09_Datacube05",replacement="Message to Walton Simons (Draft)")
+     datacubeTitles(63)=(textTag="DeusExText.09_Datacube07",replacement="Note for Doctor Liu")
+     datacubeTitles(64)=(textTag="DeusExText.09_Datacube08",replacement="Security Review")
+     datacubeTitles(65)=(textTag="DeusExText.09_Datacube09",replacement="Security Restrictions")
+     datacubeTitles(66)=(textTag="DeusExText.09_Datacube10",replacement="BlueOS Installation Log")
+     datacubeTitles(67)=(textTag="DeusExText.09_Datacube13",replacement="Note to Self")
+     datacubeTitles(68)=(textTag="DeusExText.09_Datacube14",replacement="Security Restrictions")
 
      titleIgnored(0)="!=!==!==="
      titleIgnored(1)="* = * = * ="
