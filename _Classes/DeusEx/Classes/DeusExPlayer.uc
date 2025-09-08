@@ -18980,15 +18980,31 @@ exec function MyLogInfos()
     BroadcastMessage(ammotype.maxAmmo);
 }*/
 
+//SARGE: Make a generic version that works with classes,
+//so we don't need literal ammo to check this.
+//This is just here as a shorthand/placeholder since it was used like this
+//so many times throughout the codebase.
 function int GetAdjustedMaxAmmo(Ammo ammotype)
+{
+    return GetAdjustedMaxAmmoByClass(ammoType.class);
+}
+
+//SARGE: This is the original GetAdjustedMaxAmmo function.
+//It's been changed to use a class
+function int GetAdjustedMaxAmmoByClass(class<Ammo> ammotype)
 {
 	local int adjustedMaxAmmo;
     local float mult;
     local class associatedSkill;
-    local DeusExAmmo DXammotype;
+    local class<DeusExAmmo> DXammotype;
     local Perk lawfare;
 
     mult = 1.0;
+
+    if (ammoType == None)
+        return 0;
+        
+    DXammotype = class<DeusExAmmo>(ammotype);
 
     //SARGE: Special case for LAW ammo
     if (ammoType.IsA('AmmoLAW'))
@@ -19000,9 +19016,8 @@ function int GetAdjustedMaxAmmo(Ammo ammotype)
             return 1;
     }
 
-    else if (ammotype.IsA('DeusExAmmo'))
+    else if (ammotype != None)
     {
-        DXammotype = DeusExAmmo(ammotype);
         adjustedMaxAmmo = DXammotype.default.MaxAmmo;
         associatedSkill = DXammotype.default.ammoSkill;
         if (AugmentationSystem != none)

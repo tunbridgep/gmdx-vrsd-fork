@@ -670,12 +670,25 @@ function CreateTakenWindow()
 // ShowReceivedItem()
 // ----------------------------------------------------------------------
 
-function ShowReceivedItem(Inventory invItem, int count)
+function ShowReceivedItem(Inventory invItem, int count, optional bool bDeclined)
 {
 	if (winReceived != None)
 	{
         AskParentForReconfigure(); //SARGE: Added, so we can place the windows properly
-		winReceived.AddItem(invItem, count);
+		winReceived.AddItem(invItem, count, bDeclined);
+	}
+}
+
+// ----------------------------------------------------------------------
+// ShowGenericIcon()
+// ----------------------------------------------------------------------
+
+function ShowGenericIcon(Texture icon, string label, optional bool bDeclined)
+{
+	if (winReceived != None)
+	{
+        AskParentForReconfigure(); //SARGE: Added, so we can place the windows properly
+		winReceived.AddGenericIcon(icon, label, bDeclined);
 	}
 }
 

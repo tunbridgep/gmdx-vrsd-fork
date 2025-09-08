@@ -204,6 +204,25 @@ function TakeDamage(int Damage, Pawn EventInstigator, vector HitLocation, vector
         AmmoAmount = MaxAmmo;
 }*/
 
+function inventory SpawnCopy( Pawn Other )                                      //SARGE: Function to override Ammo in Engine classes for adjusted ammo counts
+{
+	local int tempMaxAmmo;
+    local DeusExPlayer player;
+    local inventory item;
+
+    player = DeusExPlayer(Other);
+    item = super.SpawnCopy(Other);
+
+    if (player != None)
+    {
+        tempMaxAmmo = player.GetAdjustedMaxAmmo(Ammo(item));
+        Ammo(item).AmmoAmount = MIN(Ammo(item).AmmoAmount,tempMaxAmmo);
+    }
+
+    return item;
+
+}
+
 function bool AddAmmo(int AmmoToAdd)                                            //RSD: Function to override Ammo in Engine classes for adjusted ammo counts
 {
 	local int tempMaxAmmo;

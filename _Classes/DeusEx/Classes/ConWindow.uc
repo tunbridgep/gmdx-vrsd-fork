@@ -525,7 +525,7 @@ function bool ProcessCameraKey(EInputKey key)
 // ShowReceivedItem()
 // ----------------------------------------------------------------------
 
-function ShowReceivedItem(Inventory invItem, int count)
+function ShowReceivedItem(Inventory invItem, int count, optional bool bDeclined)
 {
 }
 

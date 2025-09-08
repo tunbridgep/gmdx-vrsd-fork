@@ -129,13 +129,22 @@ function bool ChildRequestedReconfiguration(window child)
 
 function AddCredits(Int count)
 {
-	local HUDReceivedDisplayItem item;
     local string label;
-
     label = class'Credits'.default.beltDescription $ " (" $ String(count) $ ")";
+    AddGenericIcon(class'Credits'.default.Icon,label,false);
+}
+
+// ----------------------------------------------------------------------
+// AddGenericIcon()
+// SARGE: Allow displaying arbitrary icons without an associated item
+// ----------------------------------------------------------------------
+
+function AddGenericIcon(Texture icon, string label, optional bool bDeclined)
+{
+	local HUDReceivedDisplayItem item;
 
 	item = HUDReceivedDisplayItem(winTile.NewChild(Class'HUDReceivedDisplayItem'));
-	item.SetItemIcon(class'Credits'.default.Icon, label, false);
+	item.SetItemIcon(icon, label, bDeclined);
 
 	displayTimer = 0.0;
 	Show();
