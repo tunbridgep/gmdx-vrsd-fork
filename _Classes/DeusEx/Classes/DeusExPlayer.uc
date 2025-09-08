@@ -867,6 +867,9 @@ var globalconfig int iToolWindowShowDuplicateKeys;              //SARGE: Show a 
 var globalconfig int iToolWindowShowBookNames;                 //SARGE: Show the names of Books, Datacubes etc in the Tool window. 0 = disabled, 1 = only when read, 2 = always
 var globalconfig bool bToolWindowShowInvalidPickup;            //SARGE: Show a red border when unable to pick up an item from the ground
 
+
+//Inventory Ammo Displays show max ammo
+var globalconfig bool bInventoryAmmoShowsMax;
 //////////END GMDX
 
 // OUTFIT STUFF
