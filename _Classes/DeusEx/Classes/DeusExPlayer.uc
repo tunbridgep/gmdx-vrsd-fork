@@ -19699,4 +19699,5 @@ defaultproperties
      iToolWindowShowBookNames=1
      bToolWindowShowInvalidPickup=false
      bStreamlinedComputerInterface=true
+     bInventoryAmmoShowsMax=true
 }
