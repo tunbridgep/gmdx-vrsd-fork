@@ -237,4 +237,5 @@ defaultproperties
      FamiliarName="MJ12 Commando"
      UnfamiliarName="MJ12 Commando"
      fireReactTime=0.1
+     fHighAlertChance=0.6
 }

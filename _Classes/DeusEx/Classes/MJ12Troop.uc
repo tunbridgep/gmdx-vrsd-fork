@@ -228,4 +228,6 @@ defaultproperties
      bReactShot=True
      bReactCarcass=True
      bReactDistress=True
+     bSmartWeaponDraw=true
+     fHighAlertChance=0.4
 }

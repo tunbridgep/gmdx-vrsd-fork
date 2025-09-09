@@ -202,4 +202,6 @@ defaultproperties
      fireReactTime=0.25
      BaseAccuracy=0.200000
      maxRange=9000.000000
+     bSmartWeaponDraw=true
+     fHighAlertChance=0.6
 }

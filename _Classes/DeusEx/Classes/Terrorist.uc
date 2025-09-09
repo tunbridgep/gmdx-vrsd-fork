@@ -56,4 +56,5 @@ defaultproperties
      FamiliarName="Terrorist"
      UnfamiliarName="Terrorist"
      fireReactTime=0.6
+     fHighAlertChance=0
 }

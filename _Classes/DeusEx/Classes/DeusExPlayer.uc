@@ -1227,7 +1227,10 @@ local DeusExPickup     PU;                                                      
     if (bFirstLevelLoad)
     {
         ForEach AllActors(class'ScriptedPawn', P)
+        {
             P.Shenanigans(bShenanigans);
+            P.SmartWeaponDraw(self);
+        }
         ForEach AllActors(class'DeusExPickup', PU)
             PU.Shenanigans(bShenanigans);
     }

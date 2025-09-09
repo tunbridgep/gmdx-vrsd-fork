@@ -514,6 +514,10 @@ var      Pawn     BleedSource;         // person who initiated PoisonEffect dama
 //SARGE: Allow "high alert" mode which skips some states and makes enemies generally attack instantly. Lasts for a time limit
 var float fHighAlertState;
 
+var(GMDX) const float fHighAlertChance;       //SARGE: The chance of a character going into high alert based on sounds or sights. Will always go on high alert when hearing a sound super close on Hardcore
+
+var(GMDX) const bool bSmartWeaponDraw;        //SARGE: If set, Pawn will draw their weapon when it makes sense to do so.
+
 //Augmentique Data
 struct AugmentiqueOutfitData
 {
@@ -637,6 +641,17 @@ exec function UpdateHDTPsettings()
         Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),hdtp);
     bSetupHDTP = hdtp;
     SetupSkin();
+}
+
+//SARGE: On Hardcore, some enemies keep weapons drawn ready for combat when not preoccupied.
+function SmartWeaponDraw(DeusExPlayer player)
+{
+    Log("Smart Weapon Draw: " $ player);
+    if (player != None && Weapon == None && bSmartWeaponDraw && BindName != string(Class.Name) && player.bHardcoreMode)
+    {
+        bKeepWeaponDrawn = true;
+        SwitchToBestWeapon();
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -1727,8 +1742,29 @@ function HandleEnemy()
 
 function HandleSighting(Pawn pawnSighted)
 {
+    local DeusExPlayer player;
+    local float chance;
+
     SetSeekLocation(pawnSighted, pawnSighted.Location, SEEKTYPE_Sight);
-	GotoState('Seeking');
+                    
+    //SARGE: Add a chance for enemies to instantly open fire,
+    //rather than standing around waiting to be headshotted.
+    player = DeusExPlayer(pawnSighted);
+    
+    chance = fHighAlertChance;
+    if (player == None || !player.bHardCoreMode)
+        chance = fHighAlertChance * 0.25;
+    if (IsValidEnemy(pawnSighted) && !IsA('Robot') && player != None && FRand() < chance)
+    {
+        //player.DebugMessage("High Alert!");
+        SetEnemy(player);
+        fHighAlertState = 4.0;
+        if (Weapon == None)
+            SwitchToBestWeapon();
+        GotoState('Attacking');
+    }
+    else
+        GotoState('Seeking');
 }
 
 
@@ -6714,13 +6750,14 @@ function HandleLoudNoise(Name event, EAIEventState state, XAIParams params)
                     //attacking instantly, rather than searching.
                     player = DeusExPlayer(instigator);
 
-                    if (!IsA('Robot') && player != None && ((player.bHardcoreMode && Abs(VSize(player.Location - Location)) < 500) || FRand() < 0.1))
+                    if (!IsA('Robot') && player != None && ((player.bHardcoreMode && Abs(VSize(player.Location - Location)) < 500) || FRand() < fHighAlertChance))
                     {
                         //player.DebugMessage("High Alert!");
                         SetEnemy(player);
                         fHighAlertState = 4.0;
                         if (Weapon == None)
                             SwitchToBestWeapon();
+                        GotoState('Attacking');
                     }
                     HandleEnemy();
 				}
@@ -12441,7 +12478,7 @@ TurnToLocation:
                 }
             }
             Sleep(FRand()+1.0);
-            if (FRand() < 0.4 && !bReactToBeamGlobal && !IsA('Robot') && fHighAlertState == 0)    //CyberP: This makes pawns sometimes seek the location
+            if (FRand() < 0.4 && !bReactToBeamGlobal && !IsA('Robot'))    //CyberP: This makes pawns sometimes seek the location
             {
                 if (bHasCloak && FRand() < 0.4 && !bCloakOn)
                 {
@@ -13496,13 +13533,13 @@ State Attacking
 		{
 		    if (dxWeapon.bHandToHand)
 		        bDefendHome = False; //CyberP: campers no longer camp if out of ammo
-			if ((dxWeapon.AIFireDelay > 0) && (FireTimer > 0))
+			if ((dxWeapon.AIFireDelay > 0) && (FireTimer > 0) && fHighAlertState == 0)
 				return false;
 			else if (dxWeapon.IsA('WeaponRifle') && FRand() < 0.8)
                 return false;  //CyberP: rand as to whether snipers can fire, to simulate taking variable time to aim.
 			else if (AICanShoot(enemy, true, true, 0.025))
 			{
-                if (currentReactTime > 0)
+                if (currentReactTime > 0 && fHighAlertState == 0)
                 {
                     //Waiting to fire...
                     return false;
@@ -13523,6 +13560,7 @@ State Attacking
                 else if (IsInState('Dying'))
                     dxWeapon.PawnAccuracyModifier += 0.4;
 				Weapon.Fire(0);
+                fHighAlertState = 0;
 				/*if (CombatSeeTimer < 0.75)
 				{
 				   ForEach RadiusActors(class'HumanMilitary',ham,512)
@@ -13550,9 +13588,6 @@ State Attacking
         local float add;
         local DeusExPlayer player;
 	    local DeusExWeapon W;
-
-        if (fHighAlertState > 0)
-            return 0;
 
         player = DeusExPlayer(GetPlayerPawn());    
         W = DeusExWeapon(Weapon);
@@ -13832,9 +13867,6 @@ State Attacking
    if (enemy == None)                                                           //RSD
      return;
 
-   if (fHighAlertState > 0)                                                     //SARGE
-    return;
-
    //dxPlayer = DeusExPlayer(GetPlayerPawn());
    dista = Abs(VSize(enemy.Location - Location));
    //CyberP: this should be a return function, duh.
@@ -14098,7 +14130,7 @@ Begin:
 	CheckAttack(false);
 
 Surprise:
-	if ((1.0-ReactionLevel)*SurprisePeriod < 0.25 || fHighAlertState > 0)
+	if ((1.0-ReactionLevel)*SurprisePeriod < 0.25)
 		Goto('BeginAttack');
 	Acceleration=vect(0,0,0);
 	PlaySurpriseSound();
@@ -14152,7 +14184,7 @@ RunToRange:
         bSmartStrafe = False;
 	while (PickDestination() == DEST_NewLocation)
 	{
-		if (bCanStrafe && ShouldStrafe() && fHighAlertState == 0)
+		if (bCanStrafe && ShouldStrafe())
 		{
 			PlayRunningAndFiring();
 			if (destPoint != None)
@@ -14297,15 +14329,13 @@ Fire:
 		bUseSecondaryAttack = false;
 	if (IsHandToHand())
 		TweenToAttack(0.15);      //CyberP: 0.15
-	else if (fHighAlertState > 0)
-		TweenToShoot(0.05);
 	else if (ShouldCrouch() && (FRand() < CrouchRate))
 	{
 		TweenToCrouchShoot(0.15);
 		FinishAnim();
 		StartCrouch();
 	}
-	else if (fHighAlertState > 0)
+	else
 		TweenToShoot(0.15);
 	if (!IsWeaponReloading() || bCrouching)  //CyberP: gmm
 	{
@@ -17579,4 +17609,5 @@ defaultproperties
      randomPainSoundsM(19)=Sound'DeusExSounds.Player.MaleLand' //WTF?
      randomPainSoundsM(20)=Sound'DeusExSounds.Player.MaleGrunt'
      bCanBlink=true
+     fHighAlertChance=0.2
 }
