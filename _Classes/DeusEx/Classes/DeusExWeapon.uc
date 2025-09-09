@@ -4640,7 +4640,8 @@ function GetAIVolume(out float volume, out float radius, optional bool wakeUp)
     if (Owner == None)
         return;
 
-	NL = NoiseLevel * 0.451; //SARGE: Dirty hack to make guns quieter now that pawns can actually detect gunfire reliably.
+	NL = NoiseLevel;
+	//NL = NoiseLevel * 0.451; //SARGE: Dirty hack to make guns quieter now that pawns can actually detect gunfire reliably.
 	//NL = NoiseLevel; //SARGE: Now it's reduced in the WakeUpAI call instead
 
 	if (!bHasSilencer && (!bHandToHand || IsA('WeaponHideAGun'))) //SARGE: Added PS20
