@@ -3191,25 +3191,28 @@ local vector loc;
  }
 }
 
-singular function HelmetSpawn(Vector hitLocation, int actualDamage, Pawn instigatedBy)
+singular function HelmetSpawn(Vector hitLocation, int actualDamage, Pawn instigatedBy, Texture skin)
 {
-local int i;
-local GMDXUnatcoDamHelmet dh;
-local vector loc;
+    local int i;
+    local GMDXUnatcoDamHelmet dh;
+    local vector loc;
 
- loc = Location;
- loc.Z += CollisionHeight+3;
+    loc = Location;
+    loc.Z += CollisionHeight+3;
 
- if (mesh != default.mesh || instigatedBy == None)
-   return;
+    if (mesh != default.mesh || instigatedBy == None)
+    return;
 
- dh = Spawn(class'GMDXUnatcoDamHelmet',,,loc);
- if (dh != None)
- {
-    dh.Velocity = Vector(instigatedBy.ViewRotation) * (170 + actualDamage); //CyberP/Totalitarian: terrible, lazy hack.
-    dh.Velocity.Z += 50;
-    dh.SetTimer(0.4,false);
- }
+    dh = Spawn(class'GMDXUnatcoDamHelmet',,,loc);
+    
+    dh.Multiskins[1]=skin;
+
+    if (dh != None)
+    {
+        dh.Velocity = Vector(instigatedBy.ViewRotation) * (170 + actualDamage); //CyberP/Totalitarian: terrible, lazy hack.
+        dh.Velocity.Z += 50;
+        dh.SetTimer(0.4,false);
+    }
 }
 // ----------------------------------------------------------------------
 // SpawnCarcass()
@@ -3685,18 +3688,28 @@ function bool ShouldReactToInjuryType(name damageType,
 function bool DoHelmetBreak(bool bForced, float actualDamage, Pawn instigatedBy)
 {
     local bool bBroken;
+    local Texture tex;
     
     if (IsA('MJ12Troop') || IsA('MJ12Elite'))
         return false;
 
-    if ((IsA('Mechanic') || IsA('Soldier')) && (actualDamage >= 25 || FRand() < 0.2 || bForced))
+    if (bHasHelmet && (actualDamage >= 25 || FRand() < 0.08 || bForced))
     {
-        HelmetBreak();
-        bBroken = true;
-    }
-    else if (IsA('UNATCOTroop') && (actualDamage >= 25 || FRand() < 0.08 || bForced))
-    {
-        HelmetSpawn(Location+vect(0,0,49), actualDamage, instigatedBy);
+        if (FRand() < 0.6)
+        {
+            HelmetBreak();
+        }
+        else
+        {
+            if (IsA('UNATCOTroop'))
+                tex = Texture'GMDXSFX.Skins.hUNATCOTroopTex3';
+            else if (IsA('Soldier') || IsA('HKMilitary'))
+                tex = Texture'GMDXSFX.Skins.hSoldierTex3';
+            else if (IsA('Mechanic'))
+                tex = Texture'GMDXSFX.Skins.hMechanicTex3';
+            HelmetSpawn(Location+vect(0,0,49), actualDamage, instigatedBy, tex);
+        }
+
         bBroken = true;
     }
     

@@ -5,15 +5,22 @@ class MJ12Troop extends HumanMilitary;
 
 var float burnAmount;
 
+//SARGE: Yet again fixing up more of TT's mess...
+function SetupSkin()
+{
+    Super.SetupSkin();
+
+    bHasHelmet = MultiSkins[6] !=Texture'DeusExItems.Skins.PinkMaskTex';
+}
+
 //GMDX inline hack  //cyberp: it's a big hack, beware!
 function PostBeginPlay()
 {
     BurnPeriod=0.000000;
 
-    if (MultiSkins[6]==Texture'DeusExCharacters.Skins.MJ12TroopTex4' || MultiSkins[6]==Texture'DeusExCharacters.Skins.MJ12TroopTex3' ||
-     MultiSkins[6]==Texture'GMDXSFX.Skins.hMJ12TroopTex3')
-         bHasHelmet = True;
-
+    /*
+    //SARGE: Fixed this insanity by replacing all the fake elites in the maps with real elites.
+    //What a stupid, stupid, stupid way to do things!!
     if (UnfamiliarName == "MJ12 Elite" || MultiSkins[3]==Texture'DeusExCharacters.Skins.MiscTex1' || MultiSkins[3]==Texture'DeusExCharacters.Skins.TerroristTex0' || MultiSkins[3]==Texture'GMDXSFX.Skins.MJ12EliteTex0')
     {
         bHasCloak=true;
@@ -38,6 +45,7 @@ function PostBeginPlay()
     }
     else if (CarcassType == Class'DeusEx.MJ12TroopCarcassElite' || CarcassType == Class'DeusEx.MJ12TroopCarcassElite') //RSD: Fix for reverted MJ12 troops becoming elites when killed
         CarcassType=Class'DeusEx.MJ12TroopCarcass';
+    */
 
     Super.PostBeginPlay();
 }
@@ -213,8 +221,10 @@ defaultproperties
      MultiSkins(2)=Texture'DeusExCharacters.Skins.MJ12TroopTex2'
      MultiSkins(3)=Texture'DeusExCharacters.Skins.SkinTex1'
      MultiSkins(4)=Texture'DeusExItems.Skins.PinkMaskTex'
-     MultiSkins(5)=Texture'DeusExCharacters.Skins.MJ12TroopTex3'
-     MultiSkins(6)=Texture'DeusExCharacters.Skins.MJ12TroopTex4'
+     //MultiSkins(5)=Texture'DeusExCharacters.Skins.MJ12TroopTex3'
+     //MultiSkins(6)=Texture'DeusExCharacters.Skins.MJ12TroopTex4'
+     MultiSkins(5)=Texture'DeusExItems.Skins.GrayMaskTex'
+     MultiSkins(6)=Texture'GMDXSFX.Skins.MJ12TroopTex9'
      MultiSkins(7)=Texture'DeusExItems.Skins.PinkMaskTex'
      CollisionRadius=20.000000
      CollisionHeight=49.000000

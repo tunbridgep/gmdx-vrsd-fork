@@ -12,6 +12,7 @@ function SetupSkin()
     bHasHelmet = MultiSkins[6]==Texture'DeusExCharacters.Skins.MJ12TroopTex4'
         || MultiSkins[6]==Texture'DeusExCharacters.Skins.MJ12TroopTex3'
         || MultiSkins[6]==Texture'GMDXSFX.Skins.hMJ12TroopTex3'
+        || MultiSkins[6]==Texture'GMDXSFX.Skins.hMJ12TroopTex4'
         || MultiSkins[6]==Texture'GMDXSFX.Skins.MJ12TroopTex9';
 
     if (BaseAccuracy == 0.000000) //Shotgunners and xbow dudes look different.
