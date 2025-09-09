@@ -9,7 +9,7 @@ class Image01_TerroristCommander expands DataVaultImage;
 
 defaultproperties
 {
-     imageTextures(0)=Texture'DeusExUI.UserInterface.Image01_TerroristCommander_1'
+     imageTextures(0)=Texture'RSDCrap.UserInterface.Image01_TerroristCommander_1' //Fixed "Hair: None" in description
      imageTextures(1)=Texture'DeusExUI.UserInterface.Image01_TerroristCommander_2'
      imageTextures(2)=Texture'DeusExUI.UserInterface.Image01_TerroristCommander_3'
      imageTextures(3)=Texture'DeusExUI.UserInterface.Image01_TerroristCommander_4'

@@ -161,11 +161,24 @@ function InvokeMessageDialog5()
 function InvokeNewGameScreen(float difficulty,bool bSetHardCore)
 {
 	local MenuScreenNewGame newGame;
+	local MenuScreenPlaythroughModifiers mods;
 
 	newGame = MenuScreenNewGame(root.InvokeMenuScreen(Class'MenuScreenNewGame'));
 
 	if (newGame != None)
 		newGame.SetDifficulty(difficulty,bSetHardCore);
+    
+    //SARGE: Display the Playthrough Modifiers menu first.
+    if (player.bAlwaysShowModifiers)
+    {
+        mods = MenuScreenPlaythroughModifiers(root.InvokeMenuScreen(Class'MenuScreenPlaythroughModifiers'));
+
+        if (mods != None)
+        {
+            mods.bHardcoreSelected = bSetHardCore;
+            mods.BuildModifierList();
+        }
+    }
 }
 
 // ----------------------------------------------------------------------

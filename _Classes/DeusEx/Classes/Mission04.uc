@@ -3,6 +3,8 @@
 //=============================================================================
 class Mission04 expands MissionScript;
 
+var localized string AugSystemShutdown;
+
 // ----------------------------------------------------------------------
 // FirstFrame()
 //
@@ -213,7 +215,7 @@ function Timer()
 	{
 		if (flags.GetBool('TalkedToPaulAfterMessage_Played'))
 		{
-            player.bFakeDeath = true; //SARGE: Disable quicksaving and don't transfer our inventory to our corpse.
+            player.bFakeDeath = true; //SARGE: Disable quickloading and don't transfer our inventory to our corpse.
 		    //cyberP: beware lazy timer hack. I'm sorry. Also player no longer is captured if gibbed.
 			if (Player.IsInState('Dying') && Player.HeadRegion.Zone.ViewFog.X > 0.01 && Player.Health > -40)
 			{
@@ -467,6 +469,20 @@ function Timer()
 			if (count <= 2 + 1)
 				flags.SetBool('MostWarehouseTroopsDead', True);
 		}
+
+        //SARGE: If we're using the "Killswitch Engaged" playthrough mod,
+        //then set the killswitch to ~26 hours, as mentioned by Simons, when sending the signal
+        if (flags.GetBool('NSFSignalSent') && player.bRealKillswitch && !flags.GetBool('GMDXKillswitchSet'))
+        {
+            player.killswitchTimer = (25*60)*60;
+            player.killswitchTimer += Player.Randomizer.GetRandomInt(3600);
+            player.DeactivateAllAugs(true);
+            player.PlaySound(sound'GMDXSFX.Generic.biomodscreenselect', SLOT_Pain);
+            player.ClientMessage(AugSystemShutdown);
+            player.RefreshAugmentationDisplay();
+            //player.killSwitchTimer = 20; //For testing, set it to 20 seconds.
+            flags.SetBool('GMDXKillswitchSet', True,, 6);
+        }
 	}
 	else if(localURL == "04_NYC_SMUG")
 	{
@@ -489,4 +505,5 @@ function Timer()
 
 defaultproperties
 {
+    AugSystemShutdown="Augmentation system access override by user MJ12//SIMONS-W..."
 }

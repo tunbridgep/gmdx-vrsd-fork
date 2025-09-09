@@ -12,7 +12,7 @@ var transient HUDInformationDisplay infoWindow;		// Window to display the inform
 var transient TextWindow winText;				// Last text window we added
 var transient PersonaImageWindow winImages;     // Last image window we added
 var Bool bSetText;
-var Bool bAddToVault;					// True if we need to add this text to the DataVault
+var() Bool bAddToVault;					// True if we need to add this text to the DataVault
 var String vaultString;
 var DeusExPlayer aReader;				// who is reading this?
 var localized String msgNoText;

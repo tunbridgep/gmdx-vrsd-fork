@@ -1134,7 +1134,7 @@ exec function startMantling(optional float F)
 {
     if (F > 0)
        bOnKeyHold = True;
-    if ((velocity.Z > -1 && (camInterpol <= 0 || camInterpol > 0.35)) || isMantling || !bMantleOption || CarriedDecoration != None)
+    if ((velocity.Z > -1 && (camInterpol <= 0 || camInterpol > 0.35)) || isMantling || !bMantleOption || CarriedDecoration != None || IsCrippled()) //SARGE: No mantling while crippled
     {
     }
     else

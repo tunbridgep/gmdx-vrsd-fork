@@ -337,11 +337,23 @@ function UpdateInfoText()
 function UpdateBioWindows()
 {
 	local float energyPercent;
+    local float maxEnergy, actualMaxEnergy; //SARGE: Added
+    local string text;                      //SARGE: Added
+	
+    energyPercent = 100.0 * (player.Energy / player.GetMaxEnergy());
 
-	energyPercent = 100.0 * (player.Energy / player.GetMaxEnergy());
 	winBioBar.SetCurrentValue(energyPercent);
+    maxEnergy = player.GetMaxEnergy();
+	actualMaxEnergy = player.GetMaxEnergy(true);
+	
+    if (maxEnergy != actualMaxEnergy)
+        text = Sprintf(class'PersonaScreenAugmentations'.default.BarStringRes,int(player.Energy),int(player.GetMaxEnergy()),int(energyPercent),int(player.AugmentationSystem.CalcEnergyReserve()));
+    else
+        //text = Sprintf(class'PersonaScreenAugmentations'.default.BarString,int(player.Energy),int(player.GetMaxEnergy()),int(energyPercent));
+        text = Sprintf(class'PersonaScreenAugmentations'.default.BarString,int(energyPercent));
 
-	winBioBarText.SetText(String(Int(energyPercent)) $ "%");
+	//winBioBarText.SetText(String(Int(energyPercent)) $ "%"); //SARGE: Replaced with new version, see above
+    winBioBarText.SetText(text);
 
 	winBioInfoText.SetText(BioStatusLabel);
 }

@@ -64,7 +64,7 @@ function Tick(float deltaTime)
                 if (emitter.HitActor.IsA('Cloud'))
                 {
                         Player = DeusExPlayer(GetPlayerPawn());
-                        if (player != None && !Player.bHardCoreMode)
+                        if (player != None && !Player.bHardCoreMode && !Player.bImprovedLasers)
 					        bTrigger = False;
 				}
 				if (emitter.HitActor.IsA('DeusExPlayer'))

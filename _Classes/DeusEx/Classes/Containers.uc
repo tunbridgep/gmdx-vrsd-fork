@@ -109,8 +109,11 @@ function Destroyed()
 	if( (Contents!=None) && !Level.bStartup )
 	{
 		tempClass = Contents;
+        //SARGE: Now handled in the start of map randomiser.
+        /*
 		if (Content2!=None && FRand()<0.3) tempClass = Content2;
 		if (Content3!=None && FRand()<0.3) tempClass = Content3;
+        */
 
 		for (i=0; i<numThings; i++)
 		{
@@ -172,4 +175,5 @@ defaultproperties
      bFlammable=True
      bCanBeBase=True
      bSelectMeleeWeapon=True
+     bSmallFragments=True
 }

@@ -3,10 +3,10 @@
 //=============================================================================
 class PerkCombatMedicsBag extends Perk;
 
-function OnPerkPurchase()
+function OnMapLoadAndPurchase()
 {
-    class'BioelectricCell'.default.MaxCopies += 5;
-    class'Medkit'.default.MaxCopies += 5;
+    class'BioelectricCell'.default.MaxCopies = 25;
+    class'Medkit'.default.MaxCopies = 20;
 }
 
 /*

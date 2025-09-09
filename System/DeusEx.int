@@ -72,6 +72,7 @@ skillLevelStrings[1]="TRAINED"
 skillLevelStrings[2]="ADVANCED"
 skillLevelStrings[3]="MASTER"
 SkillAtMaximum="Skill at Maximum Level"
+SkillPointsToMaster="Total skill points to master: %n"
 
 [AugmentationManager]
 AugLocationFull="You can't add any more augmentations to that location!"
@@ -1046,7 +1047,7 @@ LogsTitleText="Logs"
 ClearButtonLabel="Cl|&ear Log"
 
 [AugmentationUpgradeCannister]
-MustBeUsedOn="Must be used on Augmentations Screen."
+MustBeUsedOn="Right-Click to switch to the Augmentations Screen."
 ItemName="Augmentation Upgrade Canister"
 ItemArticle="an"
 Description="An augmentation upgrade canister contains highly specific nanomechanisms that, when combined with a previously programmed module, can increase the efficiency of an installed augmentation. Because no programming is required, upgrade canisters may be used by trained agents in the field with minimal risk."
@@ -1326,7 +1327,7 @@ ItemName="Lightweight Attack Munition (LAM)"
 ItemName="Cigarettes"
 ItemArticle="some"
 Description="'COUGHING NAILS -- when you've just got to have a cigarette.'"
-AddictionDescription="'COUGHING NAILS -- when you've just got to have a cigarette.'|n|n<UNATCO OPS FILE NOTE JR154-VIOLET> Nicotine intake stimulates an augmented agent's central nervous system and releases a surge of adrenaline, increasing alertness and fine motor control. Overstimulation will lead to addiction, with heightened fatigue in withdrawal. -- Jaime Reyes <END NOTE>|n|nActive Buff: Aim Stabilization Rate +100%|nWithdrawal Debuff: Running Stamina -50%|nUse Duration: 120 seconds (refreshes)|nAddiction Increment: 20%"
+AddictionDescription="'COUGHING NAILS -- when you've just got to have a cigarette.'|n|n<UNATCO OPS FILE NOTE JR154-VIOLET> Nicotine intake stimulates an augmented agent's central nervous system and releases a surge of adrenaline, increasing alertness and fine motor control. Overstimulation will lead to addiction, with heightened fatigue in withdrawal. -- Jaime Reyes <END NOTE>|n|nActive Buff: Aim Stabilization Rate +100%|nWithdrawal Debuff: Running Stamina -50%|nUse Duration: 120 seconds (refreshes)"
 beltDescription="CIGS"
 
 [WeaponModAccuracy]
@@ -1526,14 +1527,14 @@ beltDescription="BINOCS"
 [Liquor40oz]
 ItemName="Forty"
 Description="'COLD SWEAT forty ounce malt liquor. Never let 'em see your COLD SWEAT.'"
-AddictionDescription="'COLD SWEAT forty ounce malt liquor. Never let 'em see your COLD SWEAT.'|n|n<UNATCO OPS FILE NOTE JR155-VIOLET> An augmented agent's immune system reacts to alcohol consumption with a pseudo-anesthetic effect, notably enhancing pain tolerance. While addiction is slow to take root, it will cause increased nerve activity in withdrawal, resulting in involuntary muscle spasms colloquially known as "the shakes". -- Jaime Reyes <END NOTE>|n|nActive Buff: Max Torso Health +5 (stacks x5)|nWithdrawal Debuff: Accuracy -15%|nUse Duration: 120 seconds (stacks x5)|nAddiction Increment: 5%"
+AddictionDescription="'COLD SWEAT forty ounce malt liquor. Never let 'em see your COLD SWEAT.'|n|n<UNATCO OPS FILE NOTE JR155-VIOLET> An augmented agent's immune system reacts to alcohol consumption with a pseudo-anesthetic effect, notably enhancing pain tolerance. While addiction is slow to take root, it will cause increased nerve activity in withdrawal, resulting in involuntary muscle spasms colloquially known as "the shakes". -- Jaime Reyes <END NOTE>|n|nActive Buff: Max Torso Health +5 (stacks x5)|nWithdrawal Debuff: Accuracy -15%|nUse Duration: 120 seconds (stacks x5)"
 beltDescription="FORTY"
 
 [LiquorBottle]
 ItemName="Liquor"
 ItemArticle="some"
 Description="The label is torn off, but it looks like some of the good stuff."
-AddictionDescription="The label is torn off, but it looks like some of the good stuff.|n|n<UNATCO OPS FILE NOTE JR155-VIOLET> An augmented agent's immune system reacts to alcohol consumption with a pseudo-anesthetic effect, notably enhancing pain tolerance. While addiction is slow to take root, it will cause increased nerve activity in withdrawal, resulting in involuntary muscle spasms colloquially known as "the shakes". -- Jaime Reyes <END NOTE>|nActive Buff: Max Torso Health +5 (stacks x5)|nWithdrawal Debuff: Accuracy -15%|nUse Duration: 120 seconds (stacks x5)|nAddiction Increment: 5%"
+AddictionDescription="The label is torn off, but it looks like some of the good stuff.|n|n<UNATCO OPS FILE NOTE JR155-VIOLET> An augmented agent's immune system reacts to alcohol consumption with a pseudo-anesthetic effect, notably enhancing pain tolerance. While addiction is slow to take root, it will cause increased nerve activity in withdrawal, resulting in involuntary muscle spasms colloquially known as "the shakes". -- Jaime Reyes <END NOTE>|n|nActive Buff: Max Torso Health +5 (stacks x5)|nWithdrawal Debuff: Accuracy -15%|nUse Duration: 120 seconds (stacks x5)"
 beltDescription="LIQUOR"
 
 [ComputerPublic]
@@ -1626,7 +1627,7 @@ ItemName="Retinal Scanner"
 ItemName="Wine"
 ItemArticle="some"
 Description="A nice bottle of wine."
-AddictionDescription="A nice bottle of wine.|n|n<UNATCO OPS FILE NOTE JR155-VIOLET> An augmented agent's immune system reacts to alcohol consumption with a pseudo-anesthetic effect, notably enhancing pain tolerance. While addiction is slow to take root, it will cause increased nerve activity in withdrawal, resulting in involuntary muscle spasms colloquially known as "the shakes". -- Jaime Reyes <END NOTE>|nActive Buff: Max Torso Health +5 (stacks x5)|nWithdrawal Debuff: Accuracy -15%|nUse Duration: 120 seconds (stacks x5)|nAddiction Increment: 5%"
+AddictionDescription="A nice bottle of wine.|n|n<UNATCO OPS FILE NOTE JR155-VIOLET> An augmented agent's immune system reacts to alcohol consumption with a pseudo-anesthetic effect, notably enhancing pain tolerance. While addiction is slow to take root, it will cause increased nerve activity in withdrawal, resulting in involuntary muscle spasms colloquially known as "the shakes". -- Jaime Reyes <END NOTE>|n|nActive Buff: Max Torso Health +5 (stacks x5)|nWithdrawal Debuff: Accuracy -15%|nUse Duration: 120 seconds (stacks x5)|nAddiction Increment: 5%"
 beltDescription="WINE"
 
 [Valve]
@@ -2296,7 +2297,7 @@ MPInfo="When active, you heal, but at a rate insufficient for healing in combat.
 
 [AugVision]
 AugmentationName="Vision Enhancement"
-Description="By bleaching selected rod photoreceptors and saturating them with metarhodopsin XII, the 'nightvision' present in most nocturnal animals can be duplicated. Subsequent upgrades and modifications add infravision & sonar-resonance imaging that effectively allows an agent to see through walls and bypass advanced stealth cloaking technology.|n|nTECH ONE: Nightvision.|n|nTECH TWO: Infravision and heat source detection.|n|nTECH THREE: Close range sonar imaging that enables an agent to detect threats through solid material.|n|nTECH FOUR: Long range sonar imaging that enables an agent to detect threats through solid material."
+Description="By bleaching selected rod photoreceptors and saturating them with metarhodopsin XII, the 'nightvision' present in most nocturnal animals can be duplicated, as well as infravision & sonar-resonance imaging that effectively allows an agent to see through walls and bypass advanced stealth cloaking technology.|nAdditionally provides sonar imaging, infravision as well as the ability to detect items, security systems and heat sources through solid material such as walls.|n|nTECH ONE: Extremely High Power Drain, Extremely Low Range.|n|nTECH TWO: High Power Drain, Low Range.|n|nTECH THREE: Moderate Power Drain, Moderate Range.|n|nTECH FOUR: Low Power Drain, Long Range."
 MPInfo="When active, you can see enemy players in the dark from any distance, and for short distances you can see through walls and see cloaked enemies.  Energy Drain: Moderate"
 
 [WeaponBaton]
@@ -2838,51 +2839,51 @@ UnfamiliarName="JC Denton"
 
 [SkillWeaponLowTech]
 SkillName="Weapons: Low-Tech"
-Description="The use of melee weapons such as knives, throwing knives, swords, pepper guns, and prods.|n|nTotal skill points to master: 6300|n|nUNTRAINED: An agent can use melee weaponry. |n|nTRAINED: Accuracy, damage, and reload speed increase slightly. More space is allocated to prod batteries, pepper cartridges, and throwing knives.|n|nADVANCED: Accuracy, damage, and reload speed increase moderately. Even more space is allocated to prod batteries, pepper cartridges, and throwing knives.|n|nMASTER: An agent can render most opponents unconscious or dead with a single blow: accuracy, damage, and carrying capacity are optimal, and melee strikes drain 50% less stamina."
+Description="The use of melee weapons such as knives, throwing knives, swords, pepper guns, and prods.|n|nUNTRAINED: An agent can use melee weaponry. |n|nTRAINED: Accuracy, damage, and reload speed increase slightly. More space is allocated to prod batteries, pepper cartridges, and throwing knives.|n|nADVANCED: Accuracy, damage, and reload speed increase moderately. Even more space is allocated to prod batteries, pepper cartridges, and throwing knives.|n|nMASTER: An agent can render most opponents unconscious or dead with a single blow: accuracy, damage, and carrying capacity are optimal, and melee strikes drain 50% less stamina."
 
 [SkillEnviro]
 SkillName="Environmental Training"
-Description="Experience with using hazmat suits, ballistic armor, thermoptic camo, tech goggles and rebreathers in a number of dangerous situations. |n|nTotal skill points to master: 5250|n|nUNTRAINED: An agent can use environmental apparel: armors degrade with sustained damage, charged apparel lasts for a period of time until drained.|n|nTRAINED: Environmental apparel can be used more efficiently and carried in higher quantities.|n|nADVANCED: Apparel can be used yet more efficiently and carried in even greater quantities.|n|nMASTER: An agent wears environmental apparel like a second skin and comes prepared for any tactical situation."
+Description="Experience with using hazmat suits, ballistic armor, thermoptic camo, tech goggles and rebreathers in a number of dangerous situations.|n|nUNTRAINED: An agent can use environmental apparel: armors degrade with sustained damage, charged apparel lasts for a period of time until drained.|n|nTRAINED: Environmental apparel can be used more efficiently and carried in higher quantities.|n|nADVANCED: Apparel can be used yet more efficiently and carried in even greater quantities.|n|nMASTER: An agent wears environmental apparel like a second skin and comes prepared for any tactical situation."
 
 [SkillWeaponRifle]
 SkillName="Weapons: Rifle"
-Description="The use of rifles, including assault rifles, sniper rifles, and shotguns. |n|nTotal skill points to master: 9000|n|nUNTRAINED: An agent can use rifles.|n|nTRAINED: Accuracy and damage increases slightly, while reloading is faster. More space is allocated to rifle rounds and shotgun shells.|n|nADVANCED: Accuracy and damage increases moderately, while reloading is even more rapid. Even more space is allocated to rifle rounds and shotgun shells.|n|nMASTER: An agent can take down a target a mile away with one shot: accuracy, damage, reload speed, and carrying capacity are optimal."
+Description="The use of rifles, including assault rifles, sniper rifles, and shotguns.|n|nUNTRAINED: An agent can use rifles.|n|nTRAINED: Accuracy and damage increases slightly, while reloading is faster. More space is allocated to rifle rounds and shotgun shells.|n|nADVANCED: Accuracy and damage increases moderately, while reloading is even more rapid. Even more space is allocated to rifle rounds and shotgun shells.|n|nMASTER: An agent can take down a target a mile away with one shot: accuracy, damage, reload speed, and carrying capacity are optimal."
 
 [SkillDemolition]
 SkillName="Weapons: Demolition"
-Description="The use of thrown explosive devices, including LAMs, gas grenades, EMP grenades, and electronic scrambler grenades. |n|nTotal skill points to master: 5250|n|nUNTRAINED: An agent can throw grenades, attach them to a surface as a proximity device, or attempt to disarm a proximity device. An agent can carry up to 2 grenades of each type. |n|nTRAINED: Grenade damage & blast radius increases slightly, and an agent can utilise their familiarity with explosive devices to rearm Gas Grenades. An agent can carry up to 4 grenades of each type.|n|nADVANCED: Grenade damage & blast radius increases moderately, and an agent can utilise their familiarity with explosive devices to rearm EMP and Scrambler grenades while carrying up to 7 grenades of each type.|n|nMASTER: An agent is an expert at all forms of demolition, allowing for maximum grenade damage and blast radius, as well as the ability to rearm even the most complex grenades. An agent can carry up to 12 grenades of each type."
+Description="The use of thrown explosive devices, including LAMs, gas grenades, EMP grenades, and electronic scrambler grenades.|n|nUNTRAINED: An agent can throw grenades, attach them to a surface as a proximity device, or attempt to disarm a proximity device. An agent can carry up to 2 grenades of each type. |n|nTRAINED: Grenade damage & blast radius increases slightly, and an agent can utilise their familiarity with explosive devices to rearm Gas Grenades. An agent can carry up to 4 grenades of each type.|n|nADVANCED: Grenade damage & blast radius increases moderately, and an agent can utilise their familiarity with explosive devices to rearm EMP and Scrambler grenades while carrying up to 7 grenades of each type.|n|nMASTER: An agent is an expert at all forms of demolition, allowing for maximum grenade damage and blast radius, as well as the ability to rearm even the most complex grenades. An agent can carry up to 12 grenades of each type."
 
 [SkillWeaponPistol]
 SkillName="Weapons: Pistol"
-Description="The use of handheld weapons, including the standard 10mm pistol, its stealth variant, the PS20 and the mini-crossbow.|n|nTotal skill points to master: 9000|n|nUNTRAINED: An agent can use pistols.|n|nTRAINED: Accuracy and damage increases slightly, while reloading is faster. More space is allocated to pistol rounds and specialized darts.|n|nADVANCED: Accuracy and damage increases moderately, while reloading is even more rapid. Even more space is allocated to pistol rounds and specialized darts.|n|nMASTER: An agent is lethally precise with pistols: accuracy, damage, reloading speed, and carrying capacity are optimal."
+Description="The use of handheld weapons, including the standard 10mm pistol, its stealth variant, the PS20 and the mini-crossbow.|n|nUNTRAINED: An agent can use pistols.|n|nTRAINED: Accuracy and damage increases slightly, while reloading is faster. More space is allocated to pistol rounds and specialized darts.|n|nADVANCED: Accuracy and damage increases moderately, while reloading is even more rapid. Even more space is allocated to pistol rounds and specialized darts.|n|nMASTER: An agent is lethally precise with pistols: accuracy, damage, reloading speed, and carrying capacity are optimal."
 
 [SkillWeaponHeavy]
 SkillName="Weapons: Heavy"
-Description="The use of heavy weaponry, including flamethrowers, LAWs, and the experimental plasma and GEP guns.|n|nTotal skill points to master: 9000|n|nUNTRAINED: An agent can use heavy weaponry, but their accuracy is low and movement is difficult.|n|nTRAINED: Accuracy and damage increases slightly, while reloading and movement is somewhat faster. More space is allocated to heavy ammunition.|n|nADVANCED: Accuracy and damage increases moderately, while reloading and movement is even more rapid. Even more space is allocated to heavy ammunition.|n|nMASTER: An agent is a walking tank when equipped with heavy weaponry: accuracy, damage, reloading speed, movement speed, and carrying capacity are optimal."
+Description="The use of heavy weaponry, including flamethrowers, LAWs, and the experimental plasma and GEP guns.|n|nUNTRAINED: An agent can use heavy weaponry, but their accuracy is low and movement is difficult.|n|nTRAINED: Accuracy and damage increases slightly, while reloading and movement is somewhat faster. More space is allocated to heavy ammunition.|n|nADVANCED: Accuracy and damage increases moderately, while reloading and movement is even more rapid. Even more space is allocated to heavy ammunition.|n|nMASTER: An agent is a walking tank when equipped with heavy weaponry: accuracy, damage, reloading speed, movement speed, and carrying capacity are optimal."
 
 [SkillSwimming]
 SkillName="Athletics"
-Description="An agent with extreme physical dedication can develop the skills to climb tall heights and swim great distances.|n|nTotal skill points to master: 4725|n|nUNTRAINED: An agent can swim and climb onto short ledges.|n|nTRAINED: The swimming speed and stamina of an agent increases slightly, and an agent can climb onto moderate ledges.|n|nADVANCED: The swimming speed and stamina of an agent increases moderately, and an agent can climb onto tall ledges.|n|nMASTER: An agent moves like a dolphin underwater and climbs like a jaguar."
+Description="An agent with extreme physical dedication can develop the skills to climb tall heights and swim great distances.|n|nUNTRAINED: An agent can swim and climb onto short ledges.|n|nTRAINED: The swimming speed and stamina of an agent increases slightly, and an agent can climb onto moderate ledges.|n|nADVANCED: The swimming speed and stamina of an agent increases moderately, and an agent can climb onto tall ledges.|n|nMASTER: An agent moves like a dolphin underwater and climbs like a jaguar."
 
 [SkillComputer]
 SkillName="Computers"
-Description="The covert manipulation of computers and security consoles.|n|nTotal skill points to master: 6000.|n|nUNTRAINED: An agent can use terminals to read bulletins and news. |n|nTRAINED: An agent can hack computers and security consoles of intermediate security systems and siphon up to half of an ATM's funds. |n|nADVANCED: An agent can hack computers featuring advanced defense systems and siphon all credits from ATMs, and achieves a moderate increase in detection time.|n|nMASTER: An agent is an elite hacker that no system can withstand, gaining the ability to spoof additional credits from ATMs and evading detection for long periods."
+Description="The covert manipulation of computers and security consoles.|n|nUNTRAINED: An agent can use terminals to read bulletins and news. |n|nTRAINED: An agent can hack computers and security consoles of intermediate security systems and siphon up to half of an ATM's funds. |n|nADVANCED: An agent can hack computers featuring advanced defense systems and siphon all credits from ATMs, and achieves a moderate increase in detection time.|n|nMASTER: An agent is an elite hacker that no system can withstand, gaining the ability to spoof additional credits from ATMs and evading detection for long periods."
 strHardcore="HARDCORE MODE ADDITIONS:"
 strNewHackSystem="NEW HACKING SYSTEM ADDITIONS:"
 strDescExtra="Devices will reboot after a certain time, returning to their default state. Additionally, hacking the same terminal repeatedly will result in network detection, preventing future hacking attempts.|n|nReboot Times:|n2 minutes at TRAINED, plus 1 additional minute on ADVANCED and MASTER (4 Minutes Total)|n|nMaximum Successful Hacks:|n2 plus 1 additional hack on ADVANCED and MASTER (4 Total)"
 
 [SkillTech]
 SkillName="Electronics"
-Description="By studying electronics and its practical application, agents can more efficiently bypass a number of security systems using multitools. |n|nTotal skill points to master: 5250|n|nUNTRAINED: An agent can bypass security systems (10%).|n|nTRAINED: The efficiency with which an agent bypasses security increases slightly (15%).|n|nADVANCED: The efficiency with which an agent bypasses security increases moderately (25%).|n|nMASTER: An agent encounters almost no security systems of any challenge (50%)."
+Description="By studying electronics and its practical application, agents can more efficiently bypass a number of security systems using multitools.|n|nUNTRAINED: An agent can bypass security systems (%d%%).|n|nTRAINED: The efficiency with which an agent bypasses security increases slightly (%d%%).|n|nADVANCED: The efficiency with which an agent bypasses security increases moderately (%d%%).|n|nMASTER: An agent encounters almost no security systems of any challenge (%d%)."
 MultitoolString="Multitooling"
 
 [SkillLockpicking]
 SkillName="Lockpicking"
-Description="Lockpicking is as much art as skill, but with intense study it can be mastered by any agent with patience and a set of lockpicks.|n|nTotal skill points to master: 5250|n|nUNTRAINED: An agent can pick locks (10% per pick).|n|nTRAINED: The efficiency with which an agent picks locks increases slightly (15%).|n|nADVANCED: The efficiency with which an agent picks locks increases moderately (25%).|n|nMASTER: An agent can defeat almost any mechanical lock (50%)."
+Description="Lockpicking is as much art as skill, but with intense study it can be mastered by any agent with patience and a set of lockpicks.|n|nUNTRAINED: An agent can pick locks (%d%% per pick).|n|nTRAINED: The efficiency with which an agent picks locks increases slightly (%d%%).|n|nADVANCED: The efficiency with which an agent picks locks increases moderately (%d%%).|n|nMASTER: An agent can defeat almost any mechanical lock (%d%)."
 
 [SkillMedicine]
 SkillName="Medicine"
-Description="Practical knowledge of human physiology can be applied by an agent in the field allowing more efficient use of medkits and survival. |n|nTotal skill points to master: 6300|n|nUNTRAINED: An agent can use medkits (30).|n|nTRAINED: An agent can heal slightly more damage (45) and has slightly more maximum torso & head health (110).|n|nADVANCED: An agent can heal moderately more damage (65) and has further improved maximum torso & head health (120).|n|nMASTER: An agent can perform a heart bypass with household materials (90) and survive near-fatal injuries (130)."
+Description="Practical knowledge of human physiology can be applied by an agent in the field allowing more efficient use of medkits and survival.|n|nUNTRAINED: An agent can use medkits (%d).|n|nTRAINED: An agent can heal slightly more damage (%d) and has slightly more maximum torso & head health (110).|n|nADVANCED: An agent can heal moderately more damage (%d) and has further improved maximum torso & head health (120).|n|nMASTER: An agent can perform a heart bypass with household materials (%d) and survive near-fatal injuries (130)."
 
 [SkillStealth]
 SkillName="Stealth"
@@ -3592,7 +3593,7 @@ ss19="TIP: There are many ways in which you can distract the enemy."
 ss20="Your Deus Ex is Augmented."
 
 [AugmentationUpgradeCannisterOverdrive]
-MustBeUsedOn="Must be used on Augmentations Screen."
+MustBeUsedOn="Right-Click to switch to the Augmentations Screen."
 ItemName="Augmentation Override Cannister"
 Description="An augmentation upgrade cannister with intricately-programmed scripts designed to override certain functionality of the 'Environmental Resistance' and 'Aqualung' augmentations. |nThis specialized upgrade cannister can be used to upgrade any augmentation by two tech levels, however using it on one of the two specified augmentations it was designed for will upgrade it from an 'Active' augmentation to 'Automatic', but will only increase its tech level by one.|n|n<UNATCO OPS FILE NOTE JR189-VIOLET> The Environmental Resistance and Aqualung augmentations share the same sub-routines. Hypothetically-speaking both would benefit from this device even if applied to one, should you happen to have both installed. -- Jaime Reyes <END NOTE>"
 beltDescription="AUG OVER"

@@ -23,6 +23,7 @@ function BuildModifierList()
     else
     {
         RemoveItem("bRestrictedSaving");
+        RemoveItem("bHardcoreFilterOption");
         //RemoveItem("bRestrictedMetabolism");
     }
 
@@ -58,9 +59,12 @@ defaultproperties
      items(12)=(HelpText="Disable the use of the console.",actionText="Disable Console Access",variable="bDisableConsoleAccess");
      items(13)=(HelpText="Most weapons will require a minimum skill investment in order to be used.",actionText="Weapon Requirements Matter",variable="bWeaponRequirementsMatter");
      items(14)=(HelpText="When imprisoned by UNATCO, your killswitch will be activated, exactly how it's described by Paul",actionText="Killswitch Engaged",variable="bRealKillswitch");
-	 items(15)=(HelpText="Enable cameras to detect unconscious bodies. Realism option - Not recommended for normal play.",actionText="Cameras Detect Unconscious",variable="bCameraDetectUnconscious");
-     items(16)=(HelpText="Enable additional NPC's added by the Lay-D Denton mod. By default only the most relevant ones are enabled.",actionText="Add extra Lay-D Denton NPCs",variable="bMoreLDDPNPCs");
-     items(17)=(HelpText="We shall partake in a miniscule amount of tomfoolery.",actionText="Shenanigans",variable="bShenanigans");
+     items(15)=(HelpText="In hardcore mode you face enemies and hazards in greater numbers. Enable this option to have this feature in other difficulty modes.",actionText="Overwhelming Odds",variable="bHardcoreFilterOption");
+	 items(16)=(HelpText="Enable cameras to detect unconscious bodies. Realism option - Not recommended for normal play.",actionText="Cameras Detect Unconscious",variable="bCameraDetectUnconscious");
+	 items(17)=(HelpText="When enabled, NPCs with cloaking will be permanently cloaked. Extremely difficult - Not recommended for normal play.",actionText="Permanent Cloaking",variable="bPermaCloak");
+     items(18)=(HelpText="No longer receive a starting weapon from Paul during the first mission.",actionText="Limited Starting Equipment",variable="bNoStartingWeaponChoices");
+     items(19)=(HelpText="Enable additional NPC's added by the Lay-D Denton mod. By default only the most relevant ones are enabled.",actionText="Add extra Lay-D Denton NPCs",variable="bMoreLDDPNPCs");
+     items(20)=(HelpText="We shall partake in a miniscule amount of tomfoolery.",actionText="Shenanigans",variable="bShenanigans");
      Title="Playthrough Modifiers"
      consoleTarget="MenuScreenNewGame"
      bNoSort=true

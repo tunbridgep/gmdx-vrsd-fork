@@ -20,15 +20,14 @@ function FirstFrame()
 
 	Super.FirstFrame();
 
-	if (localURL == "02_NYC_FREECLINIC")
+    //SARGE: Carcasses already in the map won't bleed
+	if (localURL == "02_NYC_FREECLINIC" || localURL == "02_NYC_HOTEL")
     {
-        //SARGE: Carcasses already in the map won't bleed
         foreach AllActors(class'DeusExCarcass', C)
         {
             C.DestroyPool();
             C.bNoDefaultPools=true;
         }
-
     }
 	else if (localURL == "02_NYC_STREET")
 	{
@@ -113,19 +112,6 @@ function FirstFrame()
 			flags.SetBool('SchickThankedPlayer', True);
 		}
 	}
-	else if (localURL == "02_NYC_HOTEL")
-    {
-        //SARGE: Fix up elevator shaft Lighting if we have Lighting Accessibility enabled
-        if (Player.bLightingAccessibility)
-        {
-            ForEach AllActors(class'Light', L)
-            {
-                DoLightingAccessibility(L, 'Light44');
-                DoLightingAccessibility(L, 'Light45');
-                DoLightingAccessibility(L, 'Light42', true);
-            }
-        }
-    }
 CanQuickSave=true;
 }
 

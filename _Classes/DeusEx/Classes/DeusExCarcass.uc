@@ -69,7 +69,7 @@ var localized string msgTooMany;                                           //SAR
 
 
 //SARGE: HDTP Model toggles
-var class<ScriptedPawn> hdtpReference;
+var const class<ScriptedPawn> hdtpReference;
 var string HDTPSkin;
 var string HDTPTexture;
 var string HDTPMesh;
@@ -84,6 +84,9 @@ var travel int assignedMesh;
 //SARGE: Remember when we first create a blood pool
 var travel bool bFirstBloodPool;
 
+//SARGE: A name of a pawn type to use, if we're placed in the world rather than created.
+var const class<ScriptedPawn> nameReference;
+
 var BloodPool pool;     //SARGE: Stores our last created blood pool.
 
 var bool bMadePool;     //SARGE: Stores the state of our current blood pool. Deliberately not remembered between creations of corpses.
@@ -93,6 +96,128 @@ var bool bDontRemovePool; //SARGE: If set, the blood pool isn't removed when del
 var bool bNoDefaultPools;        //SARGE: If set, don't make pools at all, unless we receive gunshot wounds or the corpse is otherwise damaged.
 
 var sound LootPickupSound;            //SARGE: Sound played if we pick up anything from this corpse.
+    
+struct BadItem
+{
+    var Inventory item;
+    var int count;
+};
+
+var transient BadItem badItems[10];                                                   //SARGE: Keep a list of the declined or ignored items, so that we can add it to the display window.
+var transient int badItemCount;
+
+// ----------------------------------------------------------------------
+// Augmentique
+// ----------------------------------------------------------------------
+
+//Augmentique Data
+struct AugmentiqueOutfitData
+{
+    var Texture textures[9];
+    var bool bRandomized;
+};
+
+var travel AugmentiqueOutfitData augmentiqueData;
+
+//Augmentique: Update our textures to our Augmentique outfit
+function ApplyCurrentOutfit()
+{
+    local int i;
+
+    if (!augmentiqueData.bRandomized)
+        return;
+
+    //GMDX Exclusive code
+    if (IsHDTP())
+        return;
+    
+    //Log("Doing carcass stuff");
+
+    for (i = 0;i < 8;i++)
+        if (augmentiqueData.textures[i] != None)
+            multiskins[i] = augmentiqueData.textures[i];
+    if (augmentiqueData.textures[8] != None)
+        Texture = augmentiqueData.textures[8];
+}
+
+function CopyOutfitFrom(Actor A)
+{
+    local ScriptedPawn S;
+    S = ScriptedPawn(A);
+
+    //GMDX Specific Code
+    if (S != None && IsHDTP())
+    {
+        augmentiqueData.textures[0] = S.augmentiqueData.textures[0];
+        augmentiqueData.textures[1] = S.augmentiqueData.textures[1];
+        augmentiqueData.textures[2] = S.augmentiqueData.textures[2];
+        augmentiqueData.textures[3] = S.augmentiqueData.textures[3];
+        augmentiqueData.textures[4] = S.augmentiqueData.textures[4];
+        augmentiqueData.textures[5] = S.augmentiqueData.textures[5];
+        augmentiqueData.textures[6] = S.augmentiqueData.textures[6];
+        augmentiqueData.textures[7] = S.augmentiqueData.textures[7];
+        augmentiqueData.textures[8] = S.augmentiqueData.textures[8];
+    }
+    else if (S != None)
+    {
+        augmentiqueData.textures[0] = S.MultiSkins[0];
+        augmentiqueData.textures[1] = S.MultiSkins[1];
+        augmentiqueData.textures[2] = S.MultiSkins[2];
+        augmentiqueData.textures[3] = S.MultiSkins[3];
+        augmentiqueData.textures[4] = S.MultiSkins[4];
+        augmentiqueData.textures[5] = S.MultiSkins[5];
+        augmentiqueData.textures[6] = S.MultiSkins[6];
+        augmentiqueData.textures[7] = S.MultiSkins[7];
+        augmentiqueData.textures[8] = S.Texture;
+    }
+    augmentiqueData.bRandomized = S.augmentiqueData.bRandomized;
+    ApplyCurrentOutfit();
+}
+
+function CopyAugmentiqueDataToPOVCorpse(POVCorpse pov)
+{
+    //GMDX Specific Code
+    if (pov != None && IsHDTP())
+    {
+        pov.augmentiqueData.textures[0] = augmentiqueData.textures[0];
+        pov.augmentiqueData.textures[1] = augmentiqueData.textures[1];
+        pov.augmentiqueData.textures[2] = augmentiqueData.textures[2];
+        pov.augmentiqueData.textures[3] = augmentiqueData.textures[3];
+        pov.augmentiqueData.textures[4] = augmentiqueData.textures[4];
+        pov.augmentiqueData.textures[5] = augmentiqueData.textures[5];
+        pov.augmentiqueData.textures[6] = augmentiqueData.textures[6];
+        pov.augmentiqueData.textures[7] = augmentiqueData.textures[7];
+        pov.augmentiqueData.textures[8] = augmentiqueData.textures[8];
+    }
+    else if (pov != None)
+    {
+        pov.augmentiqueData.textures[0] = multiskins[0];
+        pov.augmentiqueData.textures[1] = multiskins[1];
+        pov.augmentiqueData.textures[2] = multiskins[2];
+        pov.augmentiqueData.textures[3] = multiskins[3];
+        pov.augmentiqueData.textures[4] = multiskins[4];
+        pov.augmentiqueData.textures[5] = multiskins[5];
+        pov.augmentiqueData.textures[6] = multiskins[6];
+        pov.augmentiqueData.textures[7] = multiskins[7];
+        pov.augmentiqueData.textures[8] = Texture;
+        pov.augmentiqueData.bRandomized = augmentiqueData.bRandomized;
+    }
+}
+
+function CopyAugmentiqueDataFromPOVCorpse(POVCorpse pov)
+{
+    augmentiqueData.textures[0] = pov.augmentiqueData.textures[0];
+    augmentiqueData.textures[1] = pov.augmentiqueData.textures[1];
+    augmentiqueData.textures[2] = pov.augmentiqueData.textures[2];
+    augmentiqueData.textures[3] = pov.augmentiqueData.textures[3];
+    augmentiqueData.textures[4] = pov.augmentiqueData.textures[4];
+    augmentiqueData.textures[5] = pov.augmentiqueData.textures[5];
+    augmentiqueData.textures[6] = pov.augmentiqueData.textures[6];
+    augmentiqueData.textures[7] = pov.augmentiqueData.textures[7];
+    augmentiqueData.textures[8] = pov.augmentiqueData.textures[8];
+    augmentiqueData.bRandomized = pov.augmentiqueData.bRandomized;
+    ApplyCurrentOutfit();
+}
 
 // ----------------------------------------------------------------------
 // ShouldCreate()
@@ -147,6 +272,8 @@ exec function UpdateHDTPsettings()
     else if (assignedMesh == 3)
         Mesh = Mesh3;
 
+    ApplyCurrentOutfit();
+
 }
 
 // ----------------------------------------------------------------------
@@ -165,6 +292,9 @@ function InitFor(Actor Other)
     info = player.GetLevelInfo();                                               //RSD
 	if (Other != None)
 	{
+        //Augmentique: Configure our carcass
+        CopyOutfitFrom(Other);
+
         if (player != None)
             savedName = player.GetDisplayName(Other);
          else if (Other.IsA('ScriptedPawn'))
@@ -228,138 +358,141 @@ function InitFor(Actor Other)
             assignedMesh = 2;
 			Mesh = Mesh2;
         }
-/*if (bPop && (IsA('CopCarcassBeheaded') || IsA('ThugMale2CarcassBeheaded')))
-{
-if (Mesh == Mesh2)
-{
-vec = vect(0,0,0);
-vec.X += CollisionRadius*0.87;
-vec.Z -= 39;
-vec.Y += 3.5;
-vec = vec >> Rotation;
-vec += Location;
-randRot=Rotation;
-	nub = Spawn(class'FleshFragmentNub', Self,, vec, randRot);
-	if (nub != None)
-	{
-	nub.ScaleGlow=0.9;
+
+    //SARGE: Crappy old GMDX v8 code follows.
+    //I didn't write this so I take no responsibility for it's general crappiness
+    if (bPop && (IsA('CopCarcassBeheaded') || IsA('ThugMale2CarcassBeheaded')))
+    {
+    if (Mesh == Mesh2)
+    {
+    vec = vect(0,0,0);
+    vec.X += CollisionRadius*0.87;
+    vec.Z -= 39;
+    vec.Y += 3.5;
+    vec = vec >> Rotation;
+    vec += Location;
+    randRot=Rotation;
+        nub = Spawn(class'FleshFragmentNub', Self,, vec, randRot);
+        if (nub != None)
+        {
+        nub.ScaleGlow=0.9;
+        }
     }
-}
-else
-{
-vec = vect(0,0,0);
-vec.X -= CollisionRadius*0.93;
-vec.Z -= 43;
-vec.Y -= 0.25;
-vec = vec >> Rotation;
-vec += Location;
-randRot=Rotation;
-	nub = Spawn(class'FleshFragmentNub', Self,, vec, randRot);
-	if (nub != None)
-	{
-	nub.ScaleGlow=0.9;
+    else
+    {
+    vec = vect(0,0,0);
+    vec.X -= CollisionRadius*0.93;
+    vec.Z -= 43;
+    vec.Y -= 0.25;
+    vec = vec >> Rotation;
+    vec += Location;
+    randRot=Rotation;
+        nub = Spawn(class'FleshFragmentNub', Self,, vec, randRot);
+        if (nub != None)
+        {
+        nub.ScaleGlow=0.9;
+        }
     }
-}
-}
-else if (bPop && IsA('MJ12TroopCarcassBeheaded'))
-{
-if (Mesh == Mesh2)
-{
-vec = vect(0,0,0);
-vec.X += CollisionRadius*0.9;
-vec.Z -= 39.25;
-vec.Y += 3.5;
-vec = vec >> Rotation;
-vec += Location;
-randRot=Rotation;
-	nub = Spawn(class'FleshFragmentNub', Self,, vec, randRot);
-	if (nub != None)
-	{
-	nub.ScaleGlow=0.9;
     }
-}
-else
-{
-vec = vect(0,0,0);
-vec.X -= CollisionRadius*1.22;
-vec.Z -= 47.5;
-vec.Y -= 0.25;
-vec = vec >> Rotation;
-vec += Location;
-randRot=Rotation;
-	nub = Spawn(class'FleshFragmentNub', Self,, vec, randRot);
-	if (nub != None)
-	{
-	nub.ScaleGlow=0.9;
+    else if (bPop && IsA('MJ12TroopCarcassBeheaded'))
+    {
+    if (Mesh == Mesh2)
+    {
+    vec = vect(0,0,0);
+    vec.X += CollisionRadius*0.9;
+    vec.Z -= 39.25;
+    vec.Y += 3.5;
+    vec = vec >> Rotation;
+    vec += Location;
+    randRot=Rotation;
+        nub = Spawn(class'FleshFragmentNub', Self,, vec, randRot);
+        if (nub != None)
+        {
+        nub.ScaleGlow=0.9;
+        }
     }
-}
-}
-else if (bPop && IsA('UNATCOTroopCarcassBeheaded'))
-{
-if (Mesh == Mesh2)
-{
-vec = vect(0,0,0);
-vec.X += CollisionRadius*0.89;
-vec.Z -= 39.25;
-vec.Y += 3.5;
-vec = vec >> Rotation;
-vec += Location;
-randRot=Rotation;
-	nub = Spawn(class'FleshFragmentNub', Self,, vec, randRot);
-	if (nub != None)
-	{
-	nub.ScaleGlow=0.9;
+    else
+    {
+    vec = vect(0,0,0);
+    vec.X -= CollisionRadius*1.22;
+    vec.Z -= 47.5;
+    vec.Y -= 0.25;
+    vec = vec >> Rotation;
+    vec += Location;
+    randRot=Rotation;
+        nub = Spawn(class'FleshFragmentNub', Self,, vec, randRot);
+        if (nub != None)
+        {
+        nub.ScaleGlow=0.9;
+        }
     }
-}
-else
-{
-vec = vect(0,0,0);
-vec.X -= CollisionRadius*0.92;
-vec.Z -= 42.5;
-vec.Y -= 0.5;
-vec = vec >> Rotation;
-vec += Location;
-randRot=Rotation;
-	nub = Spawn(class'FleshFragmentNub', Self,, vec, randRot);
-	if (nub != None)
-	{
-	nub.ScaleGlow=0.9;
     }
-}
-}
-else if (bPop)
-{
-if (Mesh == Mesh2)
-{
-vec = vect(0,0,0);
-vec.X += CollisionRadius * 1.77;
-vec.Z -= 40.5;
-vec.Y += 3.5;
-vec = vec >> Rotation;
-vec += Location;
-randRot=Rotation;
-	nub = Spawn(class'FleshFragmentNub', Self,, vec, randRot);
-	if (nub != None)
-	{
-	nub.ScaleGlow=0.9;
+    else if (bPop && IsA('UNATCOTroopCarcassBeheaded'))
+    {
+    if (Mesh == Mesh2)
+    {
+    vec = vect(0,0,0);
+    vec.X += CollisionRadius*0.89;
+    vec.Z -= 39.25;
+    vec.Y += 3.5;
+    vec = vec >> Rotation;
+    vec += Location;
+    randRot=Rotation;
+        nub = Spawn(class'FleshFragmentNub', Self,, vec, randRot);
+        if (nub != None)
+        {
+        nub.ScaleGlow=0.9;
+        }
     }
-}
-else
-{
-vec = vect(0,0,0);
-vec.X -= CollisionRadius * 1.87;
-vec.Z -= 43;
-vec.Y -= 0.25;
-vec = vec >> Rotation;
-vec += Location;
-randRot=Rotation;
-	nub = Spawn(class'FleshFragmentNub', Self,, vec, randRot);
-	if (nub != None)
-	{
-	nub.ScaleGlow=0.9;
+    else
+    {
+    vec = vect(0,0,0);
+    vec.X -= CollisionRadius*0.92;
+    vec.Z -= 42.5;
+    vec.Y -= 0.5;
+    vec = vec >> Rotation;
+    vec += Location;
+    randRot=Rotation;
+        nub = Spawn(class'FleshFragmentNub', Self,, vec, randRot);
+        if (nub != None)
+        {
+        nub.ScaleGlow=0.9;
+        }
     }
-}
-}*/
+    }
+    else if (bPop)
+    {
+    if (Mesh == Mesh2)
+    {
+    vec = vect(0,0,0);
+    vec.X += CollisionRadius * 1.77;
+    vec.Z -= 40.5;
+    vec.Y += 3.5;
+    vec = vec >> Rotation;
+    vec += Location;
+    randRot=Rotation;
+        nub = Spawn(class'FleshFragmentNub', Self,, vec, randRot);
+        if (nub != None)
+        {
+        nub.ScaleGlow=0.9;
+        }
+    }
+    else
+    {
+    vec = vect(0,0,0);
+    vec.X -= CollisionRadius * 1.87;
+    vec.Z -= 43;
+    vec.Y -= 0.25;
+    vec = vec >> Rotation;
+    vec += Location;
+    randRot=Rotation;
+        nub = Spawn(class'FleshFragmentNub', Self,, vec, randRot);
+        if (nub != None)
+        {
+        nub.ScaleGlow=0.9;
+        }
+    }
+    }
 		// set the instigator and tag information
 		if (Other.Instigator != None)
 		{
@@ -929,6 +1062,7 @@ function PickupCorpse(DeusExPlayer player)
             corpse.savedName = savedName;
             corpse.bFirstBloodPool = bFirstBloodPool; //SARGE: Remember if we've made a blood pool.
             corpse.bNoDefaultPools = bNoDefaultPools; //SARGE: Remember if we should be making pools or not.
+            CopyAugmentiqueDataToPOVCorpse(corpse);     //AUGMENTIQUE: Copy over outfit data.
             corpse.Frob(player, None);
             corpse.SetBase(player);
             player.PutInHand(corpse);
@@ -937,6 +1071,30 @@ function PickupCorpse(DeusExPlayer player)
             Destroy();
         }
     }
+}
+
+//SARGE: Adds an item to the bad items list
+function AddBadItem(DeusExPlayer P, Inventory item, optional int count)
+{
+    if (item == None || !P.bShowDeclinedInReceivedWindow)
+        return;
+
+    if (count == 0)
+        count = 1;
+
+    badItems[badItemCount].item = item;
+    badItems[badItemCount].count = count;
+    badItemCount++;
+}
+
+//SARGE: Simplified ammo loot function
+function bool LootAmmo(DeusExPlayer P, DeusExWeapon item, bool bDisplayOverflowMsg, bool bShowOverflow)
+{
+    local bool bResult;
+    local DeusExAmmo AmmoType;
+    bResult = item.LootAmmo(P,true,true,false,false,bDisplayOverflowMsg,bShowOverflow);
+
+    return bResult;
 }
 
 // ----------------------------------------------------------------------
@@ -962,11 +1120,13 @@ function Frob(Actor Frobber, Inventory frobWith)
     local bool bPickedSomethingUp;                                              //SARGE: Did we pick anything up from this corpse?
     local bool bDeclined;
     local bool bLootResult;
+    local bool bLootedAmmo;
     local bool bProcessedImpale;
-    local Inventory badItems[10];                                                   //SARGE: Keep a list of the declined or ignored items, so that we can add it to the display window.
-    local int badItemCount;
+    local bool bSuppressEmptyMessage;                                           //SARGE: Suppress the "You don't find anything" message
+	
+    badItemCount = 0;
 
-	// Can we assume only the *PLAYER* would actually be frobbing carci?
+    // Can we assume only the *PLAYER* would actually be frobbing carci?
 	player = DeusExPlayer(Frobber);
 
 	// No doublefrobbing in multiplayer.
@@ -1031,6 +1191,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                 //== end
 				bPickedItemUp = False;
                 bDeclined = False;
+                bLootedAmmo = false;
 
                 //DEBUG TEXT
                 //player.ClientMessage("Inventory Item: " $ item);
@@ -1047,7 +1208,8 @@ function Frob(Actor Frobber, Inventory frobWith)
                     }
                     bDeclined=True;
                     bFoundInvalid=True;
-                    badItems[badItemCount++] = item;
+                    if (!item.IsA('DeusExWeapon'))
+                        AddBadItem(player,item);
                 }
 				else if (item != none && (item.IsA('Ammo') || (item.IsA('WeaponSpiderBotConstructor')) || (item.IsA('WeaponAssaultGunSpider')))) //CyberP: new type weapons exclusive to pawns //RSD: Failsafe
 				{
@@ -1088,8 +1250,13 @@ function Frob(Actor Frobber, Inventory frobWith)
                                 bPickedSomethingUp = True;
                             }
                             //SARGE: Show declined nanokeys
-                            else if (player.bShowDeclinedInReceivedWindow)
-                                AddReceivedItem(player, item, 1, true, true);
+                            else
+                            {
+                                if (player.bShowDeclinedInReceivedWindow)
+                                    AddBadItem(player,item);
+                                if (!bSearched)
+                                    player.ClientMessage(sprintf(player.DuplicateNanoKey,item.Name));
+                            }
 
 							DeleteInventory(item);
 							item.Destroy();
@@ -1121,6 +1288,10 @@ function Frob(Actor Frobber, Inventory frobWith)
 						// the weapon normally.
 						W = DeusExWeapon(player.FindInventoryType(item.Class));
 
+                        //SARGE: Always show declined weapons, unless we already have a disposable weapon
+                        if (bDeclined && (W == None || !DeusExWeapon(item).bDisposableWeapon))
+                            AddBadItem(player,item);
+
                         //SARGE: Disposable weapons don't give ammo if we don't have space for them, or if declined
                         if (W == None && DeusExWeapon(item).bDisposableWeapon && (!player.FindInventorySlot(item, True) || bDeclined))
                         {
@@ -1136,7 +1307,8 @@ function Frob(Actor Frobber, Inventory frobWith)
 						// the weapon).
 						else if ((W != None) || (W == None && (bDeclined||!player.FindInventorySlot(item, True))))
 						{
-                            bLootResult = DeusExWeapon(item).LootAmmo(DeusExPlayer(P),true,true,false,false,!bSearched && (W != None || bDeclined));
+                            bLootResult = LootAmmo(DeusExPlayer(P),DeusExWeapon(item),!bSearched,true);
+                            bLootedAmmo = true;
                             bFoundSomething = bFoundSomething || bLootResult;
                             bFoundInvalid = bFoundInvalid || PickupAmmoCount > 0;
                             bPickedSomethingUp = bPickedSomethingUp || bLootResult;
@@ -1160,25 +1332,29 @@ function Frob(Actor Frobber, Inventory frobWith)
 							if ((W == None) && (item != None) && !bDeclined && (!player.FindInventorySlot(item, True)))
                             {
                                 bFoundSomething = True;
+                                bSuppressEmptyMessage = True;
 								//P.ClientMessage(Sprintf(Player.InventoryFull, item.itemName));
                             }
 
-							// Only destroy the weapon if the player already has it.
-                            //SARGE: Keep weapons, just ignore them.
+                            //Ignore weapons we cannot take.
 							if (W != None)
 							{
-                                if (player.bEnhancedCorpseInteractions)
+                                bFoundSomething = True;
+                                if (!W.bDisposableWeapon)
                                 {
                                     if (!bSearched)
-                                    {
-                                        bFoundSomething = True;
-                                        if (!W.bDisposableWeapon)
-                                            P.ClientMessage(item.PickupMessage @ item.itemArticle @ Item.itemName @ IgnoredString);
-                                    }
-                                    if (!bDeclined && !W.bDisposableWeapon) //SARGE: declined items are already added.
-                                        badItems[badItemCount++] = item;
-                                    bFoundInvalid = true;
+                                        P.ClientMessage(item.PickupMessage @ item.itemArticle @ Item.itemName @ IgnoredString);
+                                
+                                    if (!bDeclined) //SARGE: declined items are already added.
+                                        AddBadItem(player,item);
                                 }
+                                else if (item != None)
+                                {
+                                    bSuppressEmptyMessage = True;
+                                    P.ClientMessage(Sprintf(Player.InventoryFull, item.itemName));
+                                }
+
+                                bFoundInvalid = true;
                                 bPickedItemUp = True;
 							}
 
@@ -1236,7 +1412,10 @@ function Frob(Actor Frobber, Inventory frobWith)
                                     //SARGE: Inform the player when they missed out on some items due to full stack size
                                     if (DeusExPickup(item).numCopies > 0)
                                     {
-                                        player.ClientMessage(invItem.PickupMessage @ invItem.itemArticle @ invItem.itemName @ msgTooMany, 'Pickup');
+                                        if (!bSearched)
+                                            player.ClientMessage(invItem.PickupMessage @ invItem.itemArticle @ invItem.itemName @ msgTooMany, 'Pickup');
+                                        AddBadItem(player,item,DeusExPickup(item).numCopies);
+                                        bFoundInvalid=true;
                                     }
 								}
 								else if (invItem.IsA('ChargedPickup') && invItem.Charge < invItem.default.Charge) //RSD: Charge up the player's wearable if they have max copies but are below max charge
@@ -1261,11 +1440,9 @@ function Frob(Actor Frobber, Inventory frobWith)
 								else if (DeusExPickup(item).numCopies + invItem.numCopies >= invItem.RetMaxCopies())  //GMDX
                                 {
                                     if (!bSearched)
-                                    {
                                         player.ClientMessage(invItem.PickupMessage @ invItem.itemArticle @ invItem.itemName @ msgTooMany, 'Pickup');
-                                        bFoundSomething = True;
-                                        badItems[badItemCount++] = item;
-                                    }
+                                    bFoundSomething = True;
+                                    AddBadItem(player,item);
                                     bFoundInvalid=true;
 
                                 }
@@ -1314,7 +1491,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                 if (!bDeclined)
                                 {
                                     bFoundSomething = True;
-                                    if (DeusExPlayer(P).HandleItemPickup(Item,false,true,true,!bSearched) != False)
+                                    if (DeusExPlayer(P).HandleItemPickup(Item,false,true,true,!bLootedAmmo,false) != False)
                                     {
                                         DeleteInventory(item);
 
@@ -1326,20 +1503,20 @@ function Frob(Actor Frobber, Inventory frobWith)
                                             
                                         bPickedSomethingUp = True;
                                         
-                                        if (!item.IsA('DeusExWeapon') || !DeusExWeapon(item).bDisposableWeapon)
                                         // Show the item received in the ReceivedItems window
-                                        {
+                                        AddReceivedItem(player, item, 1);
+                                        P.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
 
-                                            AddReceivedItem(player, item, 1);
-                                            P.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
-                                        }
-                                        else if (item.IsA('WeaponShuriken') && WeaponShuriken(item).bImpaled)
+                                        if (item.IsA('WeaponShuriken') && WeaponShuriken(item).bImpaled)
                                             LootPickupSound = Sound'DeusExSounds.Generic.FleshHit1';
 
                                         item.SpawnCopy(P);
                                     }
                                     else
-                                        badItems[badItemCount++] = item;
+                                    {
+                                        bSuppressEmptyMessage = True;
+                                        AddBadItem(player,item);
+                                    }
                                 }
 							}
 							else
@@ -1360,11 +1537,11 @@ function Frob(Actor Frobber, Inventory frobWith)
 		}
 
         //SARGE: Display our bad items at the end of the list
-        if (!bSearched && player.bShowDeclinedInReceivedWindow && badItemCount > 0)
+        if (/*!CanPickupCorpse(bPickedSomethingUp,player) && */player.bShowDeclinedInReceivedWindow && badItemCount > 0)
         {
             for (i = 0;i < badItemCount;i++)
             {
-                AddReceivedItem(player, badItems[i], 1, false, true);
+                AddReceivedItem(player, badItems[i].item, badItems[i].count, badItems[i].item.IsA('DeusExAmmo'), true);
             }
         }
 
@@ -1387,14 +1564,13 @@ function Frob(Actor Frobber, Inventory frobWith)
     // Were you to do it, you'd need to check the respawning issue, destroy the POVcorpse it creates and point to the
     // one in inventory (like I did when giving the player starting inventory).
 
-    if (!bAnimalCarcass && (bDblClickStart||!bFoundSomething)&&
-    (player != None) && (player.inHand == None) && player.carriedDecoration == None && (bSearched||!player.bEnhancedCorpseInteractions))
+    if (CanPickupCorpse(bPickedSomethingUp,player) && !bSuppressEmptyMessage)
     {
         PickupCorpse(player);
     }
     else if (!bAnimalCarcass && player != None && player.inhand != none && player.iAutoHolster > 0 && !player.inHand.IsA('POVCorpse') && player.CarriedDecoration == None)
     {
-        if ((bSearched||!player.bEnhancedCorpseInteractions))// && (bDblClickStart || player.dblClickHolster == 0))
+        if ((bSearched||!player.bEnhancedCorpseInteractions))// && (bDblClickStart || player.iHolsterMode == 0))
             player.PutInHand(none);
     }
     
@@ -1405,11 +1581,11 @@ function Frob(Actor Frobber, Inventory frobWith)
     //SARGE: Hack
     LootPickupSound = default.LootPickupSound;
 
-    if (!bFoundSomething && (!bDblClickStart || player.inHand != None))
+    if (!bPickedSomethingUp && !bSuppressEmptyMessage && !CanPickupCorpse(bPickedSomethingUp,player))
     {
-        if (!bFoundInvalid || !player.bEnhancedCorpseInteractions)
+        if (!bFoundInvalid)
             P.ClientMessage(msgEmpty);
-        else
+        else if (bSearched)
             P.ClientMessage(msgEmptyS);
     }
 
@@ -1427,6 +1603,12 @@ function Frob(Actor Frobber, Inventory frobWith)
 	   bQueuedDestroy = true;
 	   Destroy();
 	}
+}
+
+function bool CanPickupCorpse(bool bPickedUpSomething, DeusExPlayer player)
+{
+    return (!bAnimalCarcass && (bDblClickStart||!bPickedUpSomething)&&
+    (player != None) && (player.inHand == None) && player.carriedDecoration == None && (bSearched||!player.bEnhancedCorpseInteractions));
 }
 
 /*
@@ -1753,12 +1935,12 @@ function UpdateName()
 
     if (savedName != "")
         itemName = itemName $ " (" $ savedName $ ")";
-
-    /*
-    //SARGE: Allow in-map caarcasses to have names
+    
+    //SARGE: Allow carcasses placed in maps to have names
+    else if (nameReference != None && nameReference.default.UnfamiliarName != "")
+        itemName = itemName $ " (" $ nameReference.default.UnfamiliarName $ ")";
     else if (hdtpReference != None && hdtpReference.default.UnfamiliarName != "")
         itemName = itemName $ " (" $ hdtpReference.default.UnfamiliarName $ ")";
-    */
 
     //SARGE: Add searched string
     if (!bAnimalCarcass)

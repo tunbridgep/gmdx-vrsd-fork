@@ -5,6 +5,7 @@ class CopCarcass extends DeusExCarcass;
 
 defaultproperties
 {
+	 nameReference=class'DeusEx.Cop'
      Mesh2=LodMesh'DeusExCharacters.GM_DressShirt_CarcassB'
      Mesh3=LodMesh'DeusExCharacters.GM_DressShirt_CarcassC'
      Mesh=LodMesh'DeusExCharacters.GM_DressShirt_Carcass'

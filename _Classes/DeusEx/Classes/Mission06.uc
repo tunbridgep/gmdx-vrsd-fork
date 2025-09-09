@@ -5,6 +5,8 @@ class Mission06 expands MissionScript;
 
 var float fireTime;
 
+var localized string AugSystemReboot;
+
 // ----------------------------------------------------------------------
 // FirstFrame()
 //
@@ -36,20 +38,10 @@ function FirstFrame()
     {
         //SARGE: If we're using the "Killswitch Engaged" playthrough mod,
         //then reduce the killswitch by 10 hours
-        if (player.bRealKillswitch && !flags.GetBool('GMDXKillswitchReduced'))
+        if (player.bRealKillswitch && !flags.GetBool('GMDXKillswitchReduced2'))
         {
             player.killswitchTimer -= (10*60)*60;
-            flags.SetBool('GMDXKillswitchReduced', True,, 7);
-        }
-
-        //SARGE: Fix up Lighting if we have Lighting Accessibility enabled
-        if (Player.bLightingAccessibility)
-        {
-            ForEach AllActors(class'Light', L)
-            {
-                if (L.LightType == LT_Flicker && (L.Name == 'Light5' || L.Name == 'Light61' || L.Name == 'Light7' || L.Name == 'Light6'))
-                    L.LightType = LT_Steady;
-            }
+            flags.SetBool('GMDXKillswitchReduced2', True,, 7);
         }
     }
 	else if (localURL == "06_HONGKONG_VERSALIFE")
@@ -68,16 +60,6 @@ function FirstFrame()
 			foreach AllActors(class'DeusExCarcass', carc, 'John_Smith_Body')
 				carc.bHidden = False;
 		}
-        
-        //SARGE: Fix up Lighting if we have Lighting Accessibility enabled
-        if (Player.bLightingAccessibility)
-        {
-            ForEach AllActors(class'Light', L)
-            {
-                if (L.Name == 'Light0' || L.Name == 'Light1')
-                    L.LightType = LT_Steady;
-            }
-        }
 	}
 	else if (localURL == "06_HONGKONG_MJ12LAB")
 	{
@@ -98,16 +80,6 @@ function FirstFrame()
 	}
 	else if (localURL == "06_HONGKONG_TONGBASE")
 	{
-        //SARGE: Fix up Lighting if we have Lighting Accessibility enabled
-        if (Player.bLightingAccessibility)
-        {
-            ForEach AllActors(class'Light', L)
-            {
-                if (L.Name == 'Light15')
-                    L.LightType = LT_Steady;
-            }
-        }
-
 		if (flags.GetBool('Versalife_Done'))
 		{
 			foreach AllActors(class'ScriptedPawn', pawn)
@@ -243,16 +215,6 @@ function FirstFrame()
 	}
 	else if (localURL == "06_HONGKONG_WANCHAI_MARKET")
 	{
-        //SARGE: Fix up Lighting if we have Lighting Accessibility enabled
-        if (Player.bLightingAccessibility)
-        {
-            ForEach AllActors(class'Light', L)
-            {
-                if (L.Name == 'Light157')
-                    L.LightType = LT_Steady;
-            }
-        }
-
 		// prepare for the ceremony
 		if (flags.GetBool('Have_ROM') &&
 			flags.GetBool('MeetTracerTong_Played') &&
@@ -769,6 +731,11 @@ function Timer()
         if (player.bRealKillswitch && !flags.GetBool('GMDXKillswitchStopped') && flags.GetBool('DL_TongFixesKillswitch2_Played'))
         {
             player.killswitchTimer = -1;
+            player.ClientMessage(AugSystemReboot);
+            player.PlaySound(sound'GMDXSFX.Generic.biomodscreenselect', SLOT_Pain);
+            player.ActivateAllAugsOfType(false,false,true);         //SARGE: Reactivate automatic augs
+            player.RefreshAugmentationDisplay();
+;
             //player.bRealKillswitch = false;
             flags.SetBool('GMDXKillswitchStopped', True,, 0);
         }
@@ -825,4 +792,5 @@ function TeleportPawn(ScriptedPawn pawn, name patrolTag, name orders, optional b
 
 defaultproperties
 {
+    AugSystemReboot="Augmentation system re-initializing..."
 }

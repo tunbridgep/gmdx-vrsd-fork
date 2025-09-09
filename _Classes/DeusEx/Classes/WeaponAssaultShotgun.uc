@@ -143,6 +143,7 @@ defaultproperties
      FireOffset=(X=-30.000000,Y=10.000000,Z=12.000000)
      shakemag=640.000000
      FireSound=Sound'GMDXSFX.Weapons.JackhammerFire'
+     ClassicFireSound=Sound'DeusExSounds.Weapons.AssaultShotgunFire'
      AltFireSound=Sound'GMDXSFX.Weapons.M79ReloadEnd'
      CockingSound=Sound'GMDXSFX.Weapons.JackhammerReload'
      SelectSound=Sound'DeusExSounds.Weapons.AssaultShotgunSelect'

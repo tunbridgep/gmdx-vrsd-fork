@@ -348,6 +348,9 @@ function Frob(Actor Frobber, Inventory frobWith)
 
     Player = DeusExPlayer(Frobber);
 
+    if (player == None)
+        return;
+
     //Can no longer re-use grenades damaged by EMP.
     if (bEMPDisabled)
     {
@@ -362,7 +365,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 	if (bDisabled)
     {
         //SARGE: Cannot pick up grenades if we lack the skill
-        if (skill < rearmSkillRequired && Owner != Player)
+        if (skill < rearmSkillRequired && Owner != Player && (player.bRearmSkillRequired || player.bHardcoreMode))
             Player.ClientMessage(sprintf(msgCannotRearm,itemName));
         else
             Super.Frob(Frobber, frobWith);
@@ -790,5 +793,5 @@ defaultproperties
      bBounce=True
      bFixedRotationDir=True
      disabledText="The internal circuitry is damaged."
-     msgCannotRearm="You lack the skill to rearm the %d"
+     msgCannotRearm="You lack the Demolitions skill to rearm the %d"
 }

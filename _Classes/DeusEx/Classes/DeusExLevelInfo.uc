@@ -14,9 +14,10 @@ var() int					TrueNorth;
 var() localized String		startupMessage[4];		// printed when the level starts
 var() String				ConversationPackage;  // DEUS_EX STM -- added so SDK users will be able to use their own convos
 var() bool                  bNoSpawnFlies;                                      //RSD: Are we a sterile environment that shouldn't spawn flies?
-var() byte                  SongCombatSection;                                  //SARGE: Allow us to define a custom section for combat. By default this is 3
 var() float                 SoundPropagationMult;                               //SARGE: Allow sound to propagate through walls by different amounts for this map.
-
+var() byte                  SongCombatSection;                                  //SARGE: Allow us to define a custom section for combat. By default this is 3
+var() int                   SongAmbientSection;                                 //SARGE: Allow us to define a custom section for ambience, since SongSection is read-only.
+var() int                   ChairRandomizationToken;                            //SARGE: For Junk Randomization, use a custom token instead of getting a new one. Used for randomising certain maps together             
 //SARGE: Replace the bBarOrClub variable with a more complex music system.
 enum EMusicType
 {
@@ -64,6 +65,8 @@ defaultproperties
      ConversationPackage="DeusExConversations"
      Texture=Texture'Engine.S_ZoneInfo'
      bAlwaysRelevant=True
-     SongCombatSection=3
      SoundPropagationMult=1.0
+     SongCombatSection=3
+     SongAmbientSection=-1
+     ChairRandomizationToken=-1
 }
