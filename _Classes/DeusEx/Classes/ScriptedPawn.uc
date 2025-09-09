@@ -625,6 +625,8 @@ exec function UpdateHDTPsettings()
     local bool hdtp;
 
     hdtp = IsHDTP();
+    
+    SetupSkin();
 
     //Bail out if we have no need to continue
     if ((hdtp && bSetupHDTP) || (!hdtp && !bSetupHDTP))
@@ -642,7 +644,17 @@ exec function UpdateHDTPsettings()
     if (HDTPTexture != "")
         Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),hdtp);
     bSetupHDTP = hdtp;
-    SetupSkin();
+}
+
+//SARGE: On Hardcore, some enemies keep weapons drawn ready for combat when not preoccupied.
+function SmartWeaponDraw(DeusExPlayer player)
+{
+    Log("Smart Weapon Draw: " $ player);
+    if (player != None && Weapon == None && bSmartWeaponDraw && BindName != string(Class.Name) && player.bHardcoreMode)
+    {
+        bKeepWeaponDrawn = true;
+        SwitchToBestWeapon();
+    }
 }
 
 //SARGE: On Hardcore, some enemies keep weapons drawn ready for combat when not preoccupied.
@@ -3678,6 +3690,15 @@ function bool ShouldReactToInjuryType(name damageType,
 		return false;
 }
 
+// ----------------------------------------------------------------------
+// SARGE: Orders this pawn to don a helmet!
+// Allows characters to equip helmets.
+// Used to give Terrorists and such helmets.
+// ----------------------------------------------------------------------
+
+function DonHelmet()
+{
+}
 
 // ----------------------------------------------------------------------
 // SARGE: Split out helmet breaking to a new function.
@@ -4627,12 +4648,7 @@ function ResetSkinStyle()
 	Skin      = Default.Skin;
 	ScaleGlow = Default.ScaleGlow;
 	Style     = Default.Style;
-	if ((IsA('MJ12Troop') || IsA('MJ12Elite')) && bHasCloak)
-	{
-	MultiSkins[3] = Texture'DeusExCharacters.Skins.MiscTex1';
-	MultiSkins[6] = Texture'DeusExCharacters.Skins.MJ12TroopTex3';
-	MultiSkins[7] = None;
-	}
+    SetupSkin();
 }
 
 
