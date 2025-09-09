@@ -61,6 +61,10 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\AmmoDartTex4.pcx"			NAME="AmmoDartTex4"			GROUP="Skins"
 
 // Misc Textures
+
+//Deus Ex Collectible Disk
+#exec TEXTURE IMPORT FILE="Textures\Skins\deusexdisk.pcx"	        NAME="DeusExDisk"   GROUP="Skins"
+
 //Cloaking Texture
 #exec TEXTURE IMPORT FILE="Textures\CloakingTex.pcx"			NAME="CloakingTex"			GROUP="Skins"
 //Was used by water fountains in HDTP, but used by some effects, is a big blow "ring" of water.
