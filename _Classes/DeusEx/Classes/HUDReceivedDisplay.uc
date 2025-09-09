@@ -159,6 +159,11 @@ function AddGenericIcon(Texture icon, string label, optional bool bDeclined)
 function AddItem(Inventory invItem, Int count, optional bool bDeclined)
 {
 	local HUDReceivedDisplayItem item;
+    
+    //SARGE: Stupid bugfix!
+    //Vanilla/GMDX doesn't show the "NANO" description for whatever reason.
+    if (invItem.IsA('NanoKey') && invItem.beltDescription == "")
+        invItem.beltDescription = invItem.default.beltDescription;
 
 	item = HUDReceivedDisplayItem(winTile.NewChild(Class'HUDReceivedDisplayItem'));
 	item.SetItem(invItem, count, bDeclined);
