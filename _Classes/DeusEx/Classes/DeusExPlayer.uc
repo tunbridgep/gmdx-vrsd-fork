@@ -873,6 +873,7 @@ var globalconfig bool bNanoswordEnergyUse;                      //SARGE: Whether
 
 var globalconfig bool bFasterInfolinks;                         //SARGE: Significantly decreases the time before queued datalinks can play, to make receiving many messages at once far less sluggish.
 >>>>>>> master
+var globalconfig bool bDrawAddonsOnAmmoDisplay;                 //SARGE: Draws "S", "L" and "S" labels for Scopes, Silencers and Lasers on the Ammo display.
 
 //////////END GMDX
 
