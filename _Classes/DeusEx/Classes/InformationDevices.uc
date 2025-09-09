@@ -109,9 +109,9 @@ function string GetItemTitle()
         textPart = parser.GetText();
         T = parser.GetTag();
         
-        Log("----");
+        //Log("----");
 
-        Log("Tag: " $ T);
+        //Log("Tag: " $ T);
 
         if (T == 18 && bWritten)
         {
@@ -120,13 +120,13 @@ function string GetItemTitle()
                 break;
         }
 
-        Log("TextPart (pre-trim): [" $ TextPart $ "]");
+        //Log("TextPart (pre-trim): [" $ TextPart $ "]");
 
         //Fix the text having leading/trailing spaces
         textPart = class'DeusExPlayer'.static.Trim(textPart);
         textPart = class'DeusExPlayer'.static.RTrim(textPart);
         
-        Log("TextPart (post-trim): [" $ TextPart $ "]");
+        //Log("TextPart (post-trim): [" $ TextPart $ "]");
             
         //If the line is empty, ignore it
         if (TextPart == "")
@@ -158,7 +158,7 @@ function string GetItemTitle()
             }
         }
         
-        Log("TextPart: [" $ TextPart $ "] - " $ bWrite $ ", " $ bPrefix $ " [" $ Text $ "]");
+        //Log("TextPart: [" $ TextPart $ "] - " $ bWrite $ ", " $ bPrefix $ " [" $ Text $ "]");
 
         if (bWrite)
         {
@@ -177,9 +177,9 @@ function string GetItemTitle()
     parser.CloseText();
     CriticalDelete(parser);
         
-    Log("Text (Before case conversion): " $ Text);
+    //Log("Text (Before case conversion): " $ Text);
     
-    Log("Text (After case conversion): " $ Text);
+    //Log("Text (After case conversion): " $ Text);
 
     //Text Replacements
     for(i = 0;i < ArrayCount(upcases);i++)
@@ -188,12 +188,12 @@ function string GetItemTitle()
             text = class'DeusExPlayer'.static.StrRepl(text,upcases[i],Caps(upcases[i]));
     }
     
-    Log("Text (After replacements): " $ Text);
+    //Log("Text (After replacements): " $ Text);
 
     //Strip off anything more than 100 characters
     text = Left(text,100);
     
-    Log("Text (Final): " $ Text);
+    //Log("Text (Final): " $ Text);
 
     if (text == "")
         return msgEmpty;
@@ -816,6 +816,9 @@ defaultproperties
      datacubeTitles(66)=(textTag="DeusExText.09_Datacube10",replacement="BlueOS Installation Log")
      datacubeTitles(67)=(textTag="DeusExText.09_Datacube13",replacement="Note to Self")
      datacubeTitles(68)=(textTag="DeusExText.09_Datacube14",replacement="Security Restrictions")
+     datacubeTitles(69)=(textTag="DeusExText.10_Datacube06",replacement="To Do List")
+     datacubeTitles(70)=(textTag="DeusExText.10_Datacube10",replacement="Message for Chad")
+     datacubeTitles(71)=(textTag="DeusExText.10_Datacube11",replacement="Security Login")
 
      titleIgnored(0)="!=!==!==="
      titleIgnored(1)="* = * = * ="
