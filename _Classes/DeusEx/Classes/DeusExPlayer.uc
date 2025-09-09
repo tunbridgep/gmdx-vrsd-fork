@@ -3419,6 +3419,10 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
     DebugMessage("  Modes:" @ default.prevMusicMode @ default.musicModeGMDX);
     DebugMessage("  Level Ambient Section is :" @ info.SongAmbientSection);
     
+    //If we're restarting the default, change it to the actual default
+    if (NewSection == Level.SongSection && info.SongAmbientSection != Level.SongSection && info.SongAmbientSection > -1)
+        NewSection = info.SongAmbientSection;
+
     //Fix fade time shenanigans
     //This makes me sick!
     if (default.fadeTimeHack > 0 && default.bMusicLoadHack)
@@ -3443,11 +3447,11 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
         bChange = true;
         DebugMessage("Changing Music - Song Change from" @ default.currentSong);
         NewSection = info.SongAmbientSection;
-        default.savedSection = info.SongAmbientSection; //And reset the saved section
+        default.savedSection = 255; //And reset the saved section
+        default.prevMusicMode = default.musicModeGMDX;
         default.musicModeGMDX = MUS_Ambient;
-        default.prevMusicMode = MUS_Ambient;
     }
-    else if ((newSection == 2 && info.SongAmbientSection == 0) || (newSection == 0 && info.SongAmbientSection == 2)) //"one off" Swap from one ambient section to the other
+    else if (info.musicType != MT_SingleTrack && ((newSection == 2 && info.SongAmbientSection == 0) || (newSection == 0 && info.SongAmbientSection == 2))) //"one off" Swap from one ambient section to the other
     {
         bChange = true;
         DebugMessage("Changing Music - Ambient Section Change");
@@ -3494,11 +3498,9 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
 
         //Apply fade-time hack
         if (NewTransition == MTRAN_SlowFade)
-            default.fadeTimeHack = 6.0;
-        //else if (NewTransition == MTRAN_Fade)
-        //    default.fadeTimeHack = 3.0;
+            default.fadeTimeHack = 8.0;
         else
-            default.fadeTimeHack = 0.5;
+            default.fadeTimeHack = 5.0;
     }
     default.currentSong = string(NewSong);
     default.prevSongSection = info.SongAmbientSection;
@@ -3595,32 +3597,41 @@ function UpdateDynamicMusic(float deltaTime, optional bool bNoFadeHack)
     if (default.fadeTimeHack < 0)
         default.fadeTimeHack = 0;
 
-    if (default.fadeTimeHack > 0)
-        return;
-
 	if (IsInState('Interpolating'))
 	{
-        default.musicModeGMDX = MUS_Outro;
-		// don't mess with the music on any of the intro maps
-		info = GetLevelInfo();
-		if ((info != None) && (info.MissionNumber < 0))
+        if (default.musicModeGMDX != MUS_Outro)
         {
-            default.prevMusicMode = MUS_Outro;
-            default.fadeTimeHack = 0;
-			return;
+            RememberMusicSection(info);
+            default.musicModeGMDX = MUS_Outro;
+            // don't mess with the music on any of the intro maps
+            info = GetLevelInfo();
+            if ((info != None) && (info.MissionNumber < 0))
+            {
+                default.prevMusicMode = MUS_Outro;
+                default.fadeTimeHack = 0;
+                return;
+            }
         }
 	}
 	else if (IsInState('Conversation'))
 	{
-        default.musicModeGMDX = MUS_Conversation;
-        musicChangeTimer = 100;
-        musicCheckTimer = 100;
+        if (default.musicModeGMDX != MUS_Conversation)
+        {
+            RememberMusicSection(info);
+            default.musicModeGMDX = MUS_Conversation;
+            musicChangeTimer = 100;
+            musicCheckTimer = 100;
+        }
 	}
 	else if (IsInState('Dying'))
 	{
-        default.musicModeGMDX = MUS_Dying;
-        musicChangeTimer = 100;
-        musicCheckTimer = 100;
+        if (default.musicModeGMDX != MUS_Dying)
+        {
+            RememberMusicSection(info);
+            default.musicModeGMDX = MUS_Dying;
+            musicChangeTimer = 100;
+            musicCheckTimer = 100;
+        }
 	}
 	else
 	{
@@ -3648,14 +3659,21 @@ function UpdateDynamicMusic(float deltaTime, optional bool bNoFadeHack)
 
             if (aggro >= iAllowCombatMusic && iAllowCombatMusic > 0)
             {
-				musicChangeTimer = 0.0;
-                default.musicModeGMDX = MUS_Combat;
+                if (default.musicModeGMDX != MUS_Combat)
+                {
+                    RememberMusicSection(info);
+                    musicChangeTimer = 0.0;
+                    default.musicModeGMDX = MUS_Combat;
+                }
 			}
             // wait until we've been out of combat for 5 seconds before switching music
 			else if (musicChangeTimer >= 5.0)
             {
-                default.musicModeGMDX = MUS_Ambient;
-                musicChangeTimer = 0.0;
+                if (default.musicModeGMDX != MUS_Ambient)
+                {
+                    default.musicModeGMDX = MUS_Ambient;
+                    musicChangeTimer = 0.0;
+                }
             }
 		}
 	}
@@ -3663,17 +3681,26 @@ function UpdateDynamicMusic(float deltaTime, optional bool bNoFadeHack)
     //If we changed state, trigger a music transition.
     if (default.musicModeGMDX != default.prevMusicMode)
     {
-        if (default.prevMusicMode == MUS_Ambient)
-        {
-            if (default.savedSection == 255)
-                default.savedSection = info.SongAmbientSection;
-            else
-                default.savedSection = SongSection;
-        }
-
         MusicTransition(default.musicModeGMDX, default.prevMusicMode);
         default.prevMusicMode = default.musicModeGMDX;
     }
+}
+
+// ----------------------------------------------------------------------
+// RememberMusicSection()
+// ----------------------------------------------------------------------
+
+function RememberMusicSection(DeusExLevelInfo info)
+{
+    if (fadeTimeHack > 0 || default.musicModeGMDX != MUS_Ambient)
+        return;
+
+    DebugLog("RememberMusicSection:" @ default.musicModeGMDX @ default.prevMusicMode @ SongSection);
+
+    if (default.savedSection == 255)
+        default.savedSection = info.SongAmbientSection;
+    else
+        default.savedSection = SongSection;
 }
 
 // ----------------------------------------------------------------------
