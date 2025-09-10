@@ -1777,6 +1777,9 @@ function PostPostBeginPlay()
 
 	if ((Level.NetMode != NM_Standalone) && ( killProfile == None ))
 		killProfile = Spawn(class'KillerProfile', Self);
+
+    //Reset Music
+    ResetMusic();
 }
 
 // ----------------------------------------------------------------------
@@ -1870,9 +1873,6 @@ event TravelPostAccept()
 
     //Update HUD
     UpdateHUD();
-
-    //Reset Music
-    ResetMusic();
 
     //Reset Crosshair
     UpdateCrosshair();
@@ -3423,6 +3423,10 @@ function ClientSetMusic( music NewSong, byte NewSection, byte NewCdTrack, EMusic
     if (NewSection == Level.SongSection && info.SongAmbientSection != Level.SongSection && info.SongAmbientSection > -1)
         NewSection = info.SongAmbientSection;
 
+    //If we're given section 255, then just restart the track.
+    if (NewSection == 255 && info.SongAmbientSection > -1)
+        NewSection = info.SongAmbientSection;
+
     //Fix fade time shenanigans
     //This makes me sick!
     if (default.fadeTimeHack > 0 && default.bMusicLoadHack)
@@ -3548,6 +3552,9 @@ function ResetMusic()
         info.SongAmbientSection = Level.SongSection;
         DebugMessage("  Update Ambient Section: " $ Level.SongSection);
     }
+        
+    if (default.musicModeGMDX == MUS_Ambient)
+        default.savedSection = info.SongAmbientSection;
 
     //Reset the music timers
     if (iEnhancedMusicSystem == 0)
@@ -3692,8 +3699,11 @@ function UpdateDynamicMusic(float deltaTime, optional bool bNoFadeHack)
 
 function RememberMusicSection(DeusExLevelInfo info)
 {
-    if (fadeTimeHack > 0 || default.musicModeGMDX != MUS_Ambient)
+    if (default.fadeTimeHack > 0 || default.musicModeGMDX != MUS_Ambient)
+    {
+        DebugLog("Don't remember music section: " $ default.fadeTimeHack @ default.musicModeGMDX);
         return;
+    }
 
     DebugLog("RememberMusicSection:" @ default.musicModeGMDX @ default.prevMusicMode @ SongSection);
 
