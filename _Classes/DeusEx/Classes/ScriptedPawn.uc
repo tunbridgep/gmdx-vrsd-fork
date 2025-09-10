@@ -649,7 +649,6 @@ exec function UpdateHDTPsettings()
 //SARGE: On Hardcore, some enemies keep weapons drawn ready for combat when not preoccupied.
 function SmartWeaponDraw(DeusExPlayer player)
 {
-    Log("Smart Weapon Draw: " $ player);
     if (player != None && Weapon == None && bSmartWeaponDraw && BindName != string(Class.Name) && player.bHardcoreMode)
     {
         bKeepWeaponDrawn = true;
