@@ -12,6 +12,11 @@ var Color colText;
 var Color colDecline;
 var Font fontLabel;
 
+var Texture itemIcon;
+var int itemQuantity;           //SARGE: Number added in brackets after the label.
+var string itemLabel;
+var bool bItemDeclined;
+
 var const localized string msgDeclined;
 
 // ----------------------------------------------------------------------
@@ -37,32 +42,18 @@ event InitWindow()
 	StyleChanged();
 }
 
-// ----------------------------------------------------------------------
-// SetItem()
-// ----------------------------------------------------------------------
-
-event SetItem(Inventory invItem, int count, optional bool bDeclined)
-{
-	local String labelText;
-	
-    //SARGE: Add a "+" to the item name for upgraded weapons
-    if (invItem.isA('DeusExWeapon'))
-        labelText = DeusExWeapon(invItem).GetBeltDescription(player);
-    else
-        labelText = invItem.beltDescription;
-	if (count > 1)
-		labelText = labelText $ " (" $ String(count) $ ")";
-	
-    SetItemIcon(invItem.icon, labelText, bDeclined);
-}
-
 //This is the REAL function
-function SetItemIcon(Texture icon, coerce string label, optional bool bDeclined)
+function SetItemIcon(Texture icon, coerce string label, optional int quantity, optional bool bDeclined)
 {
+    itemIcon = icon;
+    itemLabel = label;
+    itemQuantity = quantity;
+    bItemDeclined = bDeclined;
+
 	winIcon = NewChild(Class'Window');
 	winIcon.SetSize(42, 37);
 	winIcon.SetBackgroundStyle(DSTY_Masked);
-	winIcon.SetBackground(icon);
+	winIcon.SetBackground(itemIcon);
 
 	winLabel = TextWindow(NewChild(Class'TextWindow'));
 	winLabel.SetFont(fontLabel);
@@ -70,7 +61,7 @@ function SetItemIcon(Texture icon, coerce string label, optional bool bDeclined)
 	winLabel.SetTextAlignments(HALIGN_Center, VALIGN_Top);
     
     //SARGE: Special case for handling declined items. Yuck.
-    if (bDeclined)
+    if (bItemDeclined)
     {
         winIcon.SetTileColorRGB(64,64,64);
         //labelText = msgDeclined;
@@ -78,7 +69,7 @@ function SetItemIcon(Texture icon, coerce string label, optional bool bDeclined)
         //winIcon.SetTileColor(colDecline);
     }
 
-	winLabel.SetText(label);
+    Update();
 }
 
 // ----------------------------------------------------------------------
@@ -96,6 +87,18 @@ event StyleChanged()
 
 	if (winLabel != None)
 		winLabel.SetTextColor(colText);
+}
+
+//SARGE: Function to force a refresh of the text;
+function Update()
+{
+    local string label;
+
+    label = itemLabel;
+    if (itemQuantity > 1)
+        label = label @ "(" $ itemQuantity $ ")";
+
+	winLabel.SetText(label);
 }
 
 // ----------------------------------------------------------------------

@@ -621,11 +621,11 @@ function EEventAction SetupEventTransferObject( ConEventTransferObject event, ou
     local AmmoDartFlare ADF;
     local WeaponMod wepMod;                                                     //RSD: For Smuggler convo
     local DeusExWeapon wpn;                                                     //SARGE: For displaying weapon ammo.
-    local bool bUnroll;                                                         //SARGE: Unroll the items in the received items window.
     local int i;
     local bool bPlaySound;                                                      //SARGE: Added.
     local int missedAmount;                                                     //SARGE: How much of the given stuff we've missed out on.
     local int extraAmmo, missedAmmo;                                            //SARGE: Used to track ammo when receiving a weapon.
+    local int rollupType;                                   //SARGE: Determines the behaviour of the item display, either combining items or not.
 /*
 log("SetupEventTransferObject()------------------------------------------");
 log("  event = " $ event);
@@ -825,7 +825,7 @@ log("  event.toActor    = " $ event.toActor );
 						return nextAction;
 					}
 					event.TransferCount = Weapon(invItemFrom).PickUpAmmoCount;
-                    bUnroll = true; //SARGE: Added to make disposable weapons look nicer
+                    rollupType = 2; //SARGE: Added to make disposable weapons look nicer
 				}
 				else
 				{
@@ -934,9 +934,9 @@ log("  event.toActor    = " $ event.toActor );
 			DeusExPlayer(event.toActor).AddImage(DataVaultImage(invItemTo));
 
 			if (conWinThird != None)
-				conWinThird.ShowReceivedItem(invItemTo, 1);
+				conWinThird.ShowReceivedItem(invItemTo, 1, false, 3);
 			else
-				DeusExRootWindow(player.rootWindow).hud.receivedItems.AddItem(invItemTo, 1);
+				DeusExRootWindow(player.rootWindow).hud.receivedItems.AddItem(invItemTo, 1, false, 3);
 
 			invItemFrom = None;
 			invItemTo   = None;
@@ -1001,20 +1001,10 @@ log("  event.toActor    = " $ event.toActor );
 	{
 		if (conWinThird != None)
         {
-            //SARGE: "Unroll" disposable weapons so they appear multiple times
-            if (bUnroll && itemsTransferred < 5)
-            {
-                for (i = 0;i < itemsTransferred;i++)
-                    conWinThird.ShowReceivedItem(invItemTo, 1);
-                for (i = 0;i < missedAmount;i++)
-                    conWinThird.ShowReceivedItem(invItemTo, 1, true);
-            }
-            else
-            {
-                conWinThird.ShowReceivedItem(invItemTo, itemsTransferred);
-                if (missedAmount > 0)
-                    conWinThird.ShowReceivedItem(invItemTo, missedAmount, true);
-            }
+            //Display what we got, showing any declined items
+            bPlaySound = conWinThird.ShowReceivedItem(invItemTo, itemsTransferred, false, rollupType);
+            if (missedAmount > 0)
+                conWinThird.ShowReceivedItem(invItemTo, missedAmount, true, rollupType);
 
             //If we received a weapon, we have some extra ammo to show too
             if (extraAmmo > 0)
@@ -1025,9 +1015,9 @@ log("  event.toActor    = " $ event.toActor );
         }
 		else
         {
-			DeusExRootWindow(player.rootWindow).hud.receivedItems.AddItem(invItemTo, itemsTransferred);
+			DeusExRootWindow(player.rootWindow).hud.receivedItems.AddItem(invItemTo, itemsTransferred, false, rollupType);
             if (missedAmount > 0)
-                DeusExRootWindow(player.rootWindow).hud.receivedItems.AddItem(invItemTo, missedAmount, true);
+                bPlaySound = DeusExRootWindow(player.rootWindow).hud.receivedItems.AddItem(invItemTo, missedAmount, true, rollupType);
             
             //If we received a weapon, we have some extra ammo to show too
             if (extraAmmo > 0)
@@ -1035,7 +1025,6 @@ log("  event.toActor    = " $ event.toActor );
             if (missedAmmo > 0)
                 DeusExRootWindow(player.rootWindow).hud.receivedItems.AddItem(Weapon(invItemTo).AmmoType, missedAmmo, true);
         }
-        bPlaySound = true;
 	}
 
     //SARGE: If the player gave away an item, show it!
@@ -1043,15 +1032,14 @@ log("  event.toActor    = " $ event.toActor );
 	{
         if (conWinThird != None)
         {
-            conWinThird.ShowTakenItem(invItemTo, 1);
-            bPlaySound = true;
+            bPlaySound = conWinThird.ShowTakenItem(invItemTo, itemsTransferred) || bPlaySound;
         }
     }
 
     // SARGE: Update secondary display
 	if (event.toActor.IsA('DeusExPlayer'))
         DeusExPlayer(event.toActor).UpdateSecondaryDisplay();
-
+    
     if (bPlaySound)
         player.PlaySound(sound'objpickup3',SLOT_None,0.7);
 
@@ -1332,13 +1320,11 @@ function EEventAction SetupEventAddCredits( ConEventAddCredits event, out String
     {
         if (event.creditsToAdd < 0 && player.bConversationShowCredits)
         {
-            conWinThird.ShowTakenCredits(abs(event.creditsToAdd));
-            bPlaySound = true;
+            bPlaySound = conWinThird.ShowTakenCredits(abs(event.creditsToAdd));
         }
         else if (event.creditsToAdd > 0)
         {
-            conWinThird.ShowReceivedCredits(event.creditsToAdd);
-            bPlaySound = true;
+            bPlaySound = conWinThird.ShowReceivedCredits(event.creditsToAdd);
         }
     }
 

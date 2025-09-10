@@ -1541,7 +1541,7 @@ function Frob(Actor Frobber, Inventory frobWith)
         {
             for (i = 0;i < badItemCount;i++)
             {
-                AddReceivedItem(player, badItems[i].item, badItems[i].count, badItems[i].item.IsA('DeusExAmmo'), true);
+                AddReceivedItem(player, badItems[i].item, badItems[i].count, badItems[i].item.IsA('Ammo'), true);
             }
         }
 

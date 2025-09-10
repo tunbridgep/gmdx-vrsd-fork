@@ -849,8 +849,6 @@ var bool bFakeDeath;                                            //SARGE: Fixes a
 
 var travel bool bPhotoMode;                                     //SARGE: Show/Hide the entire HUD at once
 
-var bool bClearReceivedItems;                                   //SARGE: Clear the received items window next time we display it.
-
 var globalconfig bool bAlwaysShowModifiers;                     //SARGE: Always show the Playthrough Modifiers screen when starting a new game.
 
 var globalconfig bool bAutoUncrouch;                            //SARGE: Automatically uncrouch when we press the run button.
@@ -8474,11 +8472,6 @@ exec function ParseLeftClick()
     else if (bEnableLeftFrob && FrobTarget != none && IsReallyFrobbable(FrobTarget,true) && !bInHandTransition && (inHand == None || !inHand.IsA('POVcorpse')) && CarriedDecoration == None)
     {
         //SARGE: Hack to fix weapons repeatedly filling the received items window with crap if we're full
-        if (bClearReceivedItems)
-        {
-            ClearReceivedItems();
-            bClearReceivedItems = false;
-        }
         DoLeftFrob(FrobTarget);
     }
 
@@ -8790,13 +8783,6 @@ exec function ParseRightClick()
             }
         }
 
-        //SARGE: Hack to fix weapons repeatedly filling the received items window with crap if we're full
-        if (bClearReceivedItems)
-        {
-            ClearReceivedItems();
-            bClearReceivedItems = false;
-        }
-
 		// otherwise, just frob it
 		DoRightFrob(FrobTarget);
 	}
@@ -8965,10 +8951,7 @@ function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool
             ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName $ " (" $ over $ ")" @ AmmoType.MaxAmmoString, 'Pickup');
         
         if (bShowWindow && bShowDeclinedInReceivedWindow && bShowOverflowWindow)
-        {
-            bClearReceivedItems=true;
             AddReceivedItem(AmmoType, over, bNoGroup, true);
-        }
     }
     return ret;
 }
@@ -9267,6 +9250,7 @@ function ClearReceivedItems()
 function AddReceivedItem(Inventory item, int count, optional bool bNoGroup, optional bool bDeclined)
 {
     local int i;
+    local int rollupType;
 
     //clientMessage("item: " $ item $ ", count: " $ count);
     if (item == None || count == 0)
@@ -9277,15 +9261,14 @@ function AddReceivedItem(Inventory item, int count, optional bool bNoGroup, opti
         //Carcasses always spawn individual copies of their inventory items,
         //rather than spawning them as a stack. So when things ARE stacked, (usually
         //disposable weapons), we display them the same way.
-        if (!bNoGroup && count < 5)
-        {
-            for (i = 0; i < count; i++)
-                DeusExRootWindow(rootWindow).hud.receivedItems.AddItem(item, 1, bDeclined);
-        }
-        else
-        {
-            DeusExRootWindow(rootWindow).hud.receivedItems.AddItem(item, count, bDeclined);
-        }
+        if (bNoGroup && count < 5)
+            rollupType = 2;
+        else if (bDeclined)
+            rollupType = 1;
+
+        Log("Item is: " $ item $ ", rollupType is " $ rollupType $ ", bNoGroup: " $ bNoGroup);
+
+        DeusExRootWindow(rootWindow).hud.receivedItems.AddItem(item, count, bDeclined, rollupType);
 
         // Make sure the object belt is updated
         if (item.IsA('Ammo'))

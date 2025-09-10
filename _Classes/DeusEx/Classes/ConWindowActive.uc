@@ -180,6 +180,7 @@ function Close()
 event ConfigurationChanged()
 {
 	CalculateWindowSizes();
+    ConfigureGivenWindowPosition();
 }
 
 // ----------------------------------------------------------------------
@@ -233,7 +234,6 @@ function CalculateWindowSizes()
 	local float cinHeight;
 	local float ratio;
 	local RootWindow root;
-    local float temp1,temp2;    //SARGE: Added
 	local float minLowerHeight; //MKE
 
 	root = GetRootWindow();
@@ -298,18 +298,31 @@ function CalculateWindowSizes()
 		winReceived.ConfigureChild(10, lowerCurrentPos - recHeight - 5, recWidth, recHeight);
 	}
 	
+	ConfigureCameraWindow(lowerCurrentPos);
+}
+
+//SARGE: This has to be done in another function because of stupid DeusExe.u
+function ConfigureGivenWindowPosition()
+{
+    local float temp1,temp2;    //SARGE: Added
+	local float lowerHeight;
+	local float lowerCurrentPos;
+	local float recWidth, recHeight;
+		
+    lowerHeight = int(height * lowerFinalHeightPercent);
+
+    // Compute positions for the convo windows
+    lowerCurrentPos = int(height - (lowerHeight*currentWindowPos));
+
     // Configure Taken Window
 	if (winTaken != None)
 	{
-        temp1 = recWidth;
         temp2 = 10;
 		winTaken.QueryPreferredSize(recWidth, recHeight);
         if (winReceived != None && winReceived.IsVisible())
-            temp2 += 10 + temp1;
+            temp2 += 10 + winReceived.Width;
 		winTaken.ConfigureChild(temp2, lowerCurrentPos - recHeight - 5, recWidth, recHeight);
 	}
-	
-	ConfigureCameraWindow(lowerCurrentPos);
 }
 
 // ----------------------------------------------------------------------
@@ -670,39 +683,42 @@ function CreateTakenWindow()
 // ShowReceivedItem()
 // ----------------------------------------------------------------------
 
-function ShowReceivedItem(Inventory invItem, int count, optional bool bDeclined)
+function bool ShowReceivedItem(Inventory invItem, int count, optional bool bDeclined, optional int rollupType)
 {
 	if (winReceived != None)
 	{
         AskParentForReconfigure(); //SARGE: Added, so we can place the windows properly
-		winReceived.AddItem(invItem, count, bDeclined);
+		return winReceived.AddItem(invItem, count, bDeclined, rollupType);
 	}
+    return false;
 }
 
 // ----------------------------------------------------------------------
 // ShowGenericIcon()
 // ----------------------------------------------------------------------
 
-function ShowGenericIcon(Texture icon, string label, optional bool bDeclined)
+function bool ShowGenericIcon(Texture icon, string label, optional int count, optional bool bDeclined, optional int rollupType)
 {
 	if (winReceived != None)
 	{
         AskParentForReconfigure(); //SARGE: Added, so we can place the windows properly
-		winReceived.AddGenericIcon(icon, label, bDeclined);
+		return winReceived.AddGenericIcon(icon, label, count, bDeclined, rollupType);
 	}
+    return false;
 }
 
 // ----------------------------------------------------------------------
 // ShowTakenItem()
 // ----------------------------------------------------------------------
 
-function ShowTakenItem(Inventory invItem, int count)
+function bool ShowTakenItem(Inventory invItem, int count)
 {
 	if (winTaken != None)
 	{
         AskParentForReconfigure(); //SARGE: Added, so we can place the windows properly
-		winTaken.AddItem(invItem, count);
+		return winTaken.AddItem(invItem, count);
 	}
+    return false;
 }
 
 // ----------------------------------------------------------------------
@@ -710,26 +726,28 @@ function ShowTakenItem(Inventory invItem, int count)
 // SARGE: Save us from the pain of having to spawn them!
 // ----------------------------------------------------------------------
 
-function ShowReceivedCredits(int count)
+function bool ShowReceivedCredits(int count)
 {
 	if (winReceived != None)
 	{
         AskParentForReconfigure(); //SARGE: Added, so we can place the windows properly
-		winReceived.AddCredits(count);
+		return winReceived.AddCredits(count);
 	}
+    return false;
 }
 
 // ----------------------------------------------------------------------
 // ShowTakenItem()
 // ----------------------------------------------------------------------
 
-function ShowTakenCredits(int count)
+function bool ShowTakenCredits(int count)
 {
 	if (winTaken != None)
 	{
         AskParentForReconfigure(); //SARGE: Added, so we can place the windows properly
-		winTaken.AddCredits(count);
+		return winTaken.AddCredits(count);
 	}
+    return false;
 }
 
 
