@@ -18,6 +18,14 @@ event InitWindow()
     bTickEnabled=true;
 }
 
+//Update belt when closing the menu
+function SaveSettings()
+{
+    Super.SaveSettings();
+    player.UpdateCrosshairStyle();
+    player.UpdateHUD();
+}
+
 event bool BoxOptionSelected(Window msgBoxWindow, int buttonNumber)
 {
     if (msgBoxWindow != msgbox)

@@ -47,6 +47,9 @@ simulated function bool HasKey(Name KeyToLookFor)
 
 	bHasKey = False;
 
+    if (KeyToLookFor == '')
+        return false;
+
 	if (GetPlayer() != None)
 	{
 		aKey = GetPlayer().KeyList;
