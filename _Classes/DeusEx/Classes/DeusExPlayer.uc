@@ -679,7 +679,11 @@ var globalconfig bool bShowDataCubeRead;                                      //
 
 var globalconfig bool bShowDataCubeImages;                                    //SARGE: If true, Images will be shown when reading a data cube.
 
+//SARGE: Music Stuff
 var globalconfig int iAllowCombatMusic;                                        //SARGE: Enable/Disable combat music, or make it require 2 enemies
+var transient Music previousTrack;                                             //SARGE: The last thing that was ClientSetMusic'd
+var transient EMusicMode previousMusicMode;                                    //SARGE: The last thing that was ClientSetMusic'd
+var transient byte previousLevelSection;                                       //SARGE: The last levelsection
 
 //Decline Everything
 var travel DeclinedItemsManager declinedItemsManager;                          //SARGE: Holds declined items.
@@ -3377,10 +3381,60 @@ exec function PlayMusicWindow()
 	InvokeUIScreen(Class'PlayMusicWindow');
 }
 
+//SARGE: ClientSetMusic sets the music
+function ClientSetMusic(Music NewSong, byte NewSection, byte NewCdTrack, EMusicTransition NewTransition)
+{
+    local bool bContinue;
+    local bool bAllowReset;
+
+    DebugLog("ClientSetMusic called:" @ NewSong @ NewSection @ NewTransition @ "Song is: " $ default.previousTrack @ default.previousLevelSection @ default.previousMusicMode);
+
+    //SARGE: Here's the really annoying part...
+    //We've just been asked to change tracks or sections, we need to work out
+    //whether it's okay to ignore it or continue.
+
+    //If we're changing tracks, or we're changing to a different level with the same track, but a different default section, ALWAYS allow changing.
+    if (default.previousTrack != NewSong || default.previousLevelSection != Level.SongSection)
+    {
+        DebugLog("ClientSetMusic: Music Change Allowed (Track Change)");
+        bContinue = true;
+        bAllowReset = true;
+    }
+
+    //if we're changing to the same track, but a nonstandard section, always allow changing
+    else if (default.previousTrack == NewSong && NewSection >= 1 && NewSection <= 5 && NewSection != 2)
+    {
+        DebugLog("ClientSetMusic: Music Change Allowed (To non-ambient section)");
+        bContinue = true;
+        bAllowReset = true;
+    }
+    
+    //Allow changing back to ambient, if we were on something else
+    else if (default.MusicMode == MUS_Ambient && default.previousMusicMode != MUS_Ambient)
+    {
+        DebugLog("ClientSetMusic: Music Change Allowed (From Non-Ambient to Ambient)");
+        bContinue = true;
+    }
+
+    if (bContinue)
+    {
+        //If we're changing to the start of the track, instead, go to our saved section.
+        if (!bAllowReset)
+            NewSection = default.savedSection;
+
+        Super.ClientSetMusic(NewSong,NewSection,NewCDTrack,NewTransition);
+        default.previousTrack = NewSong;
+        default.previousLevelSection = Level.SongSection;
+        default.previousMusicMode = default.musicMode;
+    }
+}
+
 //SARGE: Resets the music timers and state.
 //Now that we're using variables that persist per-session, we need to do this.
 function ResetMusic()
 {
+    default.musicMode = MUS_Ambient;
+    //default.savedSection = Level.SongSection;
 }
 
 // ----------------------------------------------------------------------
@@ -3397,27 +3451,16 @@ function ResetMusic()
 
 function UpdateDynamicMusic(float deltaTime)
 {
-	local bool bCombat;
+	//local bool bCombat; //SARGE: Replaced with aggro below
+    local int aggro;
 	local ScriptedPawn npc;
-   local Pawn CurPawn;
+    local Pawn CurPawn;
 	local DeusExLevelInfo info;
 
 	if (Level.Song == None)
 		return;
-
-   // DEUS_EX AMSD In singleplayer, do the old thing.
-   // In multiplayer, we can come out of dying.
-   if (!PlayerIsClient())
-   {
-      if ((musicMode == MUS_Dying) || (musicMode == MUS_Outro))
-         return;
-   }
-   else
-   {
-      if (musicMode == MUS_Outro)
-         return;
-   }
-      
+		
+    info = GetLevelInfo();
 
 	musicCheckTimer += deltaTime;
 	musicChangeTimer += deltaTime;
@@ -3425,98 +3468,101 @@ function UpdateDynamicMusic(float deltaTime)
 	if (IsInState('Interpolating'))
 	{
 		// don't mess with the music on any of the intro maps
-		info = GetLevelInfo();
 		if ((info != None) && (info.MissionNumber < 0))
 		{
-			musicMode = MUS_Outro;
+            default.previousMusicMode = default.musicMode;
+			default.musicMode = MUS_Outro;
 			return;
 		}
 
-		if (musicMode != MUS_Outro)
+		if (default.musicMode != MUS_Outro)
 		{
+            default.previousMusicMode = default.musicMode;
+
+            // save our place in the ambient track
+            if (default.musicMode == MUS_Ambient)
+                default.savedSection = SongSection;
+
+			default.musicMode = MUS_Outro;
 			ClientSetMusic(Level.Song, 5, 255, MTRAN_FastFade);
-			musicMode = MUS_Outro;
 		}
 	}
 	else if (IsInState('Conversation'))
 	{
-		if (musicMode != MUS_Conversation)
+		if (default.musicMode != MUS_Conversation)
 		{
-			// save our place in the ambient track
-			if (musicMode == MUS_Ambient)
-				savedSection = SongSection;
-			else
-				savedSection = 255;
+            default.previousMusicMode = default.musicMode;
 
+			// save our place in the ambient track
+			if (default.musicMode == MUS_Ambient)
+				default.savedSection = SongSection;
+
+			default.musicMode = MUS_Conversation;
 			ClientSetMusic(Level.Song, 4, 255, MTRAN_Fade);
-			musicMode = MUS_Conversation;
 		}
 	}
 	else if (IsInState('Dying'))
 	{
-		if (musicMode != MUS_Dying)
+		if (default.musicMode != MUS_Dying)
 		{
+            default.previousMusicMode = default.musicMode;
+
+            // save our place in the ambient track
+            if (default.musicMode == MUS_Ambient)
+                default.savedSection = SongSection;
+
+			default.musicMode = MUS_Dying;
 			ClientSetMusic(Level.Song, 1, 255, MTRAN_Fade);
-			musicMode = MUS_Dying;
 		}
 	}
 	else
 	{
 		// only check for combat music every second
-		if (musicCheckTimer >= 1.0)
+        if (musicCheckTimer >= 1.0)
 		{
 			musicCheckTimer = 0.0;
-			bCombat = False;
+			aggro = 0;
 
 			// check a 100 foot radius around me for combat
-         // XXXDEUS_EX AMSD Slow Pawn Iterator
-         //foreach RadiusActors(class'ScriptedPawn', npc, 1600)
-         for (CurPawn = Level.PawnList; CurPawn != None; CurPawn = CurPawn.NextPawn)
-         {
-            npc = ScriptedPawn(CurPawn);
-            if ((npc != None) && (VSize(npc.Location - Location) < (1600 + npc.CollisionRadius)))
+            // XXXDEUS_EX AMSD Slow Pawn Iterator
+            //foreach RadiusActors(class'ScriptedPawn', npc, 1600)
+            for (CurPawn = Level.PawnList; CurPawn != None; CurPawn = CurPawn.NextPawn)
             {
-               if ((npc.GetStateName() == 'Attacking') && (npc.Enemy == Self))
-               {
-                  bCombat = True;
-                  break;
-               }
+                npc = ScriptedPawn(CurPawn);
+                if ((npc != None) && (VSize(npc.Location - Location) < (1600 + npc.CollisionRadius)))
+                    if ((npc.GetStateName() == 'Attacking') && (npc.Enemy == Self))
+                        aggro++;
             }
-         }
 
-			if (bCombat)
+			if (aggro >= iAllowCombatMusic)
 			{
 				musicChangeTimer = 0.0;
 
-				if (musicMode != MUS_Combat)
+				if (default.musicMode != MUS_Combat)
 				{
 					// save our place in the ambient track
-					if (musicMode == MUS_Ambient)
-						savedSection = SongSection;
-					else
-						savedSection = 255;
+					if (default.musicMode == MUS_Ambient)
+						default.savedSection = SongSection;
 
+                    default.previousMusicMode = default.musicMode;
+					default.musicMode = MUS_Combat;
 					ClientSetMusic(Level.Song, 3, 255, MTRAN_FastFade);
-					musicMode = MUS_Combat;
 				}
 			}
-			else if (musicMode != MUS_Ambient)
+			else if (default.musicMode != MUS_Ambient)
 			{
 				// wait until we've been out of combat for 5 seconds before switching music
 				if (musicChangeTimer >= 5.0)
 				{
-					// use the default ambient section for this map
-					if (savedSection == 255)
-						savedSection = Level.SongSection;
+                    default.previousMusicMode = default.musicMode;
+                    default.musicMode = MUS_Ambient;
 
 					// fade slower for combat transitions
-					if (musicMode == MUS_Combat)
-						ClientSetMusic(Level.Song, savedSection, 255, MTRAN_SlowFade);
+					if (default.musicMode == MUS_Combat)
+						ClientSetMusic(Level.Song, default.savedSection, 255, MTRAN_SlowFade);
 					else
-						ClientSetMusic(Level.Song, savedSection, 255, MTRAN_Fade);
+						ClientSetMusic(Level.Song, default.savedSection, 255, MTRAN_Fade);
 
-					savedSection = 255;
-					musicMode = MUS_Ambient;
 					musicChangeTimer = 0.0;
 				}
 			}
