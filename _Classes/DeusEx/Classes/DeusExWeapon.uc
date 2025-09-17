@@ -1236,6 +1236,10 @@ function TakeDamage(int Damage, Pawn EventInstigator, vector HitLocation, vector
 function bool CopyModsFrom(DeusExWeapon W, optional bool bNotify)
 {
     local bool bCopied;
+
+    if (!W.bModified || W.bDisposableWeapon)
+        return false;
+
     if (W.ModBaseAccuracy > ModBaseAccuracy)
     {
         ModBaseAccuracy = W.ModBaseAccuracy;
