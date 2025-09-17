@@ -36,7 +36,12 @@ function bool IsDiscovered(DeusExPlayer player, string code, optional string cod
     {
         //Check usernames and passwords
         if (bStrict)
-            return codeExcepted || player.iNoKeypadCheese == 0 || player.HasCodeNoteStrict(code,code2);
+        {
+            if (code2 != "")
+                return codeExcepted || player.iNoKeypadCheese == 0 || (player.GetExceptedCode(code) && player.GetExceptedCode(code2)) || player.HasCodeNoteStrict(code,code2);
+            else
+                return codeExcepted || player.iNoKeypadCheese == 0 || player.GetExceptedCode(code) || player.HasCodeNoteStrict(code,code2);
+        }
         if (code2 != "")
             return codeExcepted || player.iNoKeypadCheese == 0 || ((player.HasCodeNote(code) || player.GetExceptedCode(code)) && (player.HasCodeNote(code2) || player.GetExceptedCode(code2)));
         else if (code != "")
