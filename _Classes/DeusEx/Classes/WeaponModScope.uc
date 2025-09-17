@@ -26,7 +26,7 @@ function ApplyMod(DeusExWeapon weapon)
 simulated function bool CanUpgradeWeapon(DeusExWeapon weapon)
 {
 	if (weapon != None)
-		return (weapon.bCanHaveScope && !weapon.bHasScope);
+		return (weapon.bCanHaveScope && !weapon.bHadScope && !weapon.bHasScope);
 	else
 		return False;
 }

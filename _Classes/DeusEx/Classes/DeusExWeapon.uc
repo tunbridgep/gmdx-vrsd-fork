@@ -1325,6 +1325,23 @@ function CopyModsFrom(DeusExWeapon W, optional bool bNotify)
         ModReloadTime = W.ModReloadTime;
     if (W.ModRecoilStrength < ModRecoilStrength)
         ModRecoilStrength = W.ModRecoilStrength;
+    
+    //SARGE: Added
+    if (W.bHadLaser)
+    {
+        bHadLaser = True;
+        bCopied = true;
+    }
+    if (W.bHadSilencer)
+    {
+        bHadSilencer = True;
+        bCopied = true;
+    }
+    if (W.bHadScope)
+    {
+        bHadScope = True;
+        bCopied = true;
+    }
 
     if (W.bHasLaser)
         bHasLaser = True;
@@ -4640,11 +4657,11 @@ function GetAIVolume(out float volume, out float radius, optional bool wakeUp)
     if (Owner == None)
         return;
 
-	NL = NoiseLevel;
+	NL = NoiseLevel * 0.451; //SARGE: Dirty hack to make guns quieter now that pawns can actually detect gunfire reliably.
 	//NL = NoiseLevel * 0.451; //SARGE: Dirty hack to make guns quieter now that pawns can actually detect gunfire reliably.
 	//NL = NoiseLevel; //SARGE: Now it's reduced in the WakeUpAI call instead
 
-	if (!bHasSilencer && (!bHandToHand || IsA('WeaponHideAGun'))) //SARGE: Added PS20
+	if (!bHasSilencer && (!bHandToHand || bFakeHandToHand)) //SARGE: Added PS20
 	{
 		volume = NL*Pawn(Owner).SoundDampening;
 		if (player != None)
@@ -4664,7 +4681,7 @@ function GetAIVolume(out float volume, out float radius, optional bool wakeUp)
 
     //SARGE: Wake up the AI
     if (wakeUp)
-        class'PawnUtils'.static.WakeUpAI(Owner,radius * 0.3);
+        class'PawnUtils'.static.WakeUpAI(Owner,radius * 0.5);
 }
 
 //Ygll: utility function to test the behaviour of the dart with Fragile dart gameplay option enabled
@@ -4765,7 +4782,7 @@ simulated function Projectile ProjectileFire(class<projectile> ProjClass, float 
     	mult += 0.30;
 
 	// make noise if we are not silenced
-	if (!bHandToHand || IsA('WeaponHideAGun'))
+	if (!bHandToHand || bFakeHandToHand)
 	{
 		GetAIVolume(volume, radius, true);
 		Owner.AISendEvent('WeaponFire', EAITYPE_Audio, volume, radius);
@@ -5044,7 +5061,7 @@ simulated function TraceFire( float Accuracy )
     local Projectile firedProjectile;
 
 	// make noise if we are not silenced
-	if (!bHandToHand || IsA('WeaponHideAGun'))
+	if (!bHandToHand || bFakeHandToHand)
 	{
 		GetAIVolume(volume, radius, true);
 		Owner.AISendEvent('WeaponFire', EAITYPE_Audio, volume, radius);

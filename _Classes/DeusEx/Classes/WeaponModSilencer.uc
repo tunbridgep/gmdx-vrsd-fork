@@ -26,7 +26,7 @@ function ApplyMod(DeusExWeapon weapon)
 simulated function bool CanUpgradeWeapon(DeusExWeapon weapon)
 {
 	if (weapon != None)
-		return (weapon.bCanHaveSilencer && !weapon.bHasSilencer);
+		return (weapon.bCanHaveSilencer && !weapon.bHadSilencer && !weapon.bHasSilencer);
 	else
 		return False;
 }
