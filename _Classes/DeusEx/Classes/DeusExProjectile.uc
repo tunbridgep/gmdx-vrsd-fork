@@ -491,6 +491,17 @@ state Exploding
 			Location, gradualHurtCounter < 2,                                   //RSD: Was <3
 			gradualHurtCounter < 3);                                            //RSD: Additional new bIgnoreLOSmover bool
 
+        //SARGE: Actually send explosion sound events!!!
+        if (ImpactSound != None)
+        {
+            //SARGE: Fix the broken sound propagation
+            class'PawnUtils'.static.WakeUpAI(self,blastRadius*4);
+            AISendEvent('LoudNoise', EAITYPE_Audio, 2.0, blastRadius*10);
+            if (bExplodes)
+                AISendEvent('WeaponFire', EAITYPE_Audio, 2.0, blastRadius*2);
+        }
+
+
 	    if ( Level.NetMode != NM_Standalone )
 		{
 			damageRadius = (blastRadius / gradualHurtSteps) * gradualHurtCounter;
