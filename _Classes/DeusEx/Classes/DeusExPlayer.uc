@@ -2662,7 +2662,6 @@ function BuySkillSound( int code )
 exec function StartNewGame(String startMap)
 {
     local Inventory item, nextItem;
-    local int musicVol, soundVol, speechVol;
 
     bGMDXNewGame = True;
     seed = -1;
@@ -2704,13 +2703,7 @@ exec function StartNewGame(String startMap)
     //SARGE: Fix audio volume being incorrectly set on new game
     //TODO: Make this an option
     //TODO: Move this to ResetPlayer, since this function is for loading maps
-    musicVol = int(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice MusicVolume"));
-    soundVol = int(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice SoundVolume"));
-    speechVol = int(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice SpeechVolume"));
-    
-    ConsoleCommand("set" @ "ini:Engine.Engine.AudioDevice SoundVolume" @ soundVol);
-    ConsoleCommand("set" @ "ini:Engine.Engine.AudioDevice MusicVolume" @ musicVol);
-    ConsoleCommand("set" @ "ini:Engine.Engine.AudioDevice SpeechVolume" @ speechVol);
+    SoundVolumeHackFix();
 }
 
 // ----------------------------------------------------------------------
@@ -3381,11 +3374,30 @@ exec function PlayMusicWindow()
 	InvokeUIScreen(Class'PlayMusicWindow');
 }
 
+//SARGE: Resets the music and sound volumes to their set levels.
+//Fixes various bugs
+function SoundVolumeHackFix()
+{
+    local int musicVol, soundVol, speechVol;
+    musicVol = int(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice MusicVolume"));
+    soundVol = int(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice SoundVolume"));
+    speechVol = int(ConsoleCommand("get" @ "ini:Engine.Engine.AudioDevice SpeechVolume"));
+    
+    ConsoleCommand("set" @ "ini:Engine.Engine.AudioDevice SoundVolume" @ soundVol);
+    ConsoleCommand("set" @ "ini:Engine.Engine.AudioDevice MusicVolume" @ musicVol);
+    ConsoleCommand("set" @ "ini:Engine.Engine.AudioDevice SpeechVolume" @ speechVol);
+}
+
 //SARGE: ClientSetMusic sets the music
 function ClientSetMusic(Music NewSong, byte NewSection, byte NewCdTrack, EMusicTransition NewTransition)
 {
-    local bool bContinue;
-    local bool bAllowReset;
+    local bool bChange;
+    local bool bContinueOn;
+	local DeusExLevelInfo info;
+    
+    info = GetLevelInfo();
+    
+    PopulateLevelAmbientSection(info);
 
     DebugLog("ClientSetMusic called:" @ NewSong @ NewSection @ NewTransition @ "Song is: " $ default.previousTrack @ default.previousLevelSection @ default.previousMusicMode);
 
@@ -3393,39 +3405,66 @@ function ClientSetMusic(Music NewSong, byte NewSection, byte NewCdTrack, EMusicT
     //We've just been asked to change tracks or sections, we need to work out
     //whether it's okay to ignore it or continue.
 
-    //If we're changing tracks, or we're changing to a different level with the same track, but a different default section, ALWAYS allow changing.
-    if (default.previousTrack != NewSong || default.previousLevelSection != Level.SongSection)
+    if (default.fMusicHackTimer > 0)
     {
-        DebugLog("ClientSetMusic: Music Change Allowed (Track Change)");
-        bContinue = true;
-        bAllowReset = true;
+        DebugMessage("ClientSetMusic: Music Change Allowed (Fade Hack)");
+        NewTransition = MTRAN_Instant;
+        SoundVolumeHackFix();
+        bChange = true;
+        bContinueOn = true;
+    }
+
+    //If we're changing tracks, or we're changing to a different level with the same track, but a different default section, ALWAYS allow changing.
+    else if (default.previousTrack != NewSong || default.previousLevelSection != info.SongAmbientSection)
+    {
+        //If changing to nothing, fade out
+        if (NewSong != None && (default.previousTrack == None || default.previousLevelSection == 255))
+            NewTransition = MTRAN_SlowFade;
+
+        DebugMessage("ClientSetMusic: Music Change Allowed (Track Change)");
+        bChange = true;
+        bContinueOn = false;
     }
 
     //if we're changing to the same track, but a nonstandard section, always allow changing
     else if (default.previousTrack == NewSong && NewSection >= 1 && NewSection <= 5 && NewSection != 2)
     {
-        DebugLog("ClientSetMusic: Music Change Allowed (To non-ambient section)");
-        bContinue = true;
-        bAllowReset = true;
+        DebugMessage("ClientSetMusic: Music Change Allowed (To non-ambient section)");
+        bChange = true;
+        bContinueOn = false;
     }
     
     //Allow changing back to ambient, if we were on something else
     else if (default.MusicMode == MUS_Ambient && default.previousMusicMode != MUS_Ambient)
     {
-        DebugLog("ClientSetMusic: Music Change Allowed (From Non-Ambient to Ambient)");
-        bContinue = true;
+        DebugMessage("ClientSetMusic: Music Change Allowed (From Non-Ambient to Ambient)");
+        bChange = true;
+        bContinueOn = true;
     }
 
-    if (bContinue)
+    //if we're using the basic music system, don't ever skip,
+    //and always restart when we're told to.
+    if (iEnhancedMusicSystem == 0)
+    {
+        bChange = true;
+        bContinueOn = false;
+    }
+
+    DebugMessage("ClientSetMusic: bChange " $ bChange $ ", bContinueOn " $ bContinueOn);
+    if (bChange)
     {
         //If we're changing to the start of the track, instead, go to our saved section.
-        if (!bAllowReset)
+        if (bContinueOn && (NewSection == 0 || NewSection == 2))
             NewSection = default.savedSection;
 
         Super.ClientSetMusic(NewSong,NewSection,NewCDTrack,NewTransition);
         default.previousTrack = NewSong;
-        default.previousLevelSection = Level.SongSection;
+        default.previousLevelSection = info.SongAmbientSection;
         default.previousMusicMode = default.musicMode;
+        if (NewTransition == MTRAN_SlowFade)
+            default.fMusicHackTimer = 8.0;
+        else
+            default.fMusicHackTimer = 4.0;
     }
 }
 
@@ -3433,8 +3472,31 @@ function ClientSetMusic(Music NewSong, byte NewSection, byte NewCdTrack, EMusicT
 //Now that we're using variables that persist per-session, we need to do this.
 function ResetMusic()
 {
+	local DeusExLevelInfo info;
+    info = GetLevelInfo();
+
+    PopulateLevelAmbientSection(info);
+
+    //When we start a new map or load a save, we need to force
+    //the music system to reset it's remembered position, or we get funky shenanigans.
+    if (default.previousTrack != Level.Song || info.SongAmbientSection != default.previousLevelSection)
+    {
+        DebugMessage("ResetMusic: Resetting Song Ambient Section");
+        default.savedSection = info.SongAmbientSection;
+    }
+
+    /*
+    //SARGE: Hack to fix the transition bug.
+    if (default.fMusicHackTimer > 0)
+    {
+        DebugMessage("ResetMusic: Music Hack Timer stuff");
+        //Set transition to instant and fix the sound volume.
+        SoundVolumeHackFix();
+        ClientSetMusic();
+    }
+    */
+
     default.musicMode = MUS_Ambient;
-    //default.savedSection = Level.SongSection;
 }
 
 // ----------------------------------------------------------------------
@@ -3449,6 +3511,16 @@ function ResetMusic()
 //   5 - Outro
 // ----------------------------------------------------------------------
 
+function PopulateLevelAmbientSection(DeusExLevelInfo info)
+{
+    if (info != None && info.SongAmbientSection == -1)
+    {
+        info.SongAmbientSection = Level.SongSection;
+        DebugMessage("Setting up SongAmbientSection: " $ info.SongAmbientSection);
+    }
+
+}
+
 function UpdateDynamicMusic(float deltaTime)
 {
 	//local bool bCombat; //SARGE: Replaced with aggro below
@@ -3456,11 +3528,26 @@ function UpdateDynamicMusic(float deltaTime)
 	local ScriptedPawn npc;
     local Pawn CurPawn;
 	local DeusExLevelInfo info;
+    local bool bAllowConverse, bAllowCombat, bAllowOther;
 
 	if (Level.Song == None)
 		return;
+
+    default.fMusicHackTimer = FMAX(default.fMusicHackTimer - deltaTime,0);
 		
     info = GetLevelInfo();
+
+    bAllowConverse = info.MusicType != MT_SingleTrack && info.MusicType != MT_CombatOnly;
+    bAllowCombat = info.MusicType != MT_SingleTrack && info.MusicType != MT_ConversationOnly && iAllowCombatMusic > 0;
+    bAllowOther = info.MusicType == MT_Normal;
+
+    //If we have the Extended music option, and we're in a bar or club, stop all of the music entirely
+    if ((info.MusicType == MT_ConversationOnly || info.MusicType == MT_CombatOnly) && iEnhancedMusicSystem == 2)
+    {
+        bAllowConverse = false;
+        bAllowCombat = false;
+        bAllowOther = false;
+    }
 
 	musicCheckTimer += deltaTime;
 	musicChangeTimer += deltaTime;
@@ -3475,40 +3562,40 @@ function UpdateDynamicMusic(float deltaTime)
 			return;
 		}
 
-		if (default.musicMode != MUS_Outro)
+		if (default.musicMode != MUS_Outro && bAllowOther)
 		{
             default.previousMusicMode = default.musicMode;
 
             // save our place in the ambient track
-            if (default.musicMode == MUS_Ambient)
+            if (default.musicMode == MUS_Ambient && default.fMusicHackTimer == 0)
                 default.savedSection = SongSection;
 
 			default.musicMode = MUS_Outro;
 			ClientSetMusic(Level.Song, 5, 255, MTRAN_FastFade);
 		}
 	}
-	else if (IsInState('Conversation'))
+	else if (IsInState('Conversation') && bAllowConverse)
 	{
 		if (default.musicMode != MUS_Conversation)
 		{
             default.previousMusicMode = default.musicMode;
 
 			// save our place in the ambient track
-			if (default.musicMode == MUS_Ambient)
+			if (default.musicMode == MUS_Ambient && default.fMusicHackTimer == 0)
 				default.savedSection = SongSection;
 
 			default.musicMode = MUS_Conversation;
 			ClientSetMusic(Level.Song, 4, 255, MTRAN_Fade);
 		}
 	}
-	else if (IsInState('Dying'))
+	else if (IsInState('Dying') && bAllowOther)
 	{
 		if (default.musicMode != MUS_Dying)
 		{
             default.previousMusicMode = default.musicMode;
 
             // save our place in the ambient track
-            if (default.musicMode == MUS_Ambient)
+            if (default.musicMode == MUS_Ambient && default.fMusicHackTimer == 0)
                 default.savedSection = SongSection;
 
 			default.musicMode = MUS_Dying;
@@ -3526,22 +3613,27 @@ function UpdateDynamicMusic(float deltaTime)
 			// check a 100 foot radius around me for combat
             // XXXDEUS_EX AMSD Slow Pawn Iterator
             //foreach RadiusActors(class'ScriptedPawn', npc, 1600)
-            for (CurPawn = Level.PawnList; CurPawn != None; CurPawn = CurPawn.NextPawn)
+            if (bAllowCombat)
             {
-                npc = ScriptedPawn(CurPawn);
-                if ((npc != None) && (VSize(npc.Location - Location) < (1600 + npc.CollisionRadius)))
-                    if ((npc.GetStateName() == 'Attacking') && (npc.Enemy == Self))
-                        aggro++;
+                for (CurPawn = Level.PawnList; CurPawn != None; CurPawn = CurPawn.NextPawn)
+                {
+                    npc = ScriptedPawn(CurPawn);
+                    if ((npc != None) && (VSize(npc.Location - Location) < (1600 + npc.CollisionRadius)))
+                        if ((npc.GetStateName() == 'Attacking') && (npc.Enemy == Self))
+                            aggro++;
+                }
             }
-
-			if (aggro >= iAllowCombatMusic)
-			{
+                
+            //SARGE: Don't stop combat music until aggro has returned to zero.
+            if (aggro > 0)
 				musicChangeTimer = 0.0;
 
+			if (aggro >= iAllowCombatMusic && aggro > 0)
+			{
 				if (default.musicMode != MUS_Combat)
 				{
 					// save our place in the ambient track
-					if (default.musicMode == MUS_Ambient)
+					if (default.musicMode == MUS_Ambient && default.fMusicHackTimer == 0)
 						default.savedSection = SongSection;
 
                     default.previousMusicMode = default.musicMode;
@@ -3558,7 +3650,7 @@ function UpdateDynamicMusic(float deltaTime)
                     default.musicMode = MUS_Ambient;
 
 					// fade slower for combat transitions
-					if (default.musicMode == MUS_Combat)
+					if (default.previousMusicMode == MUS_Combat)
 						ClientSetMusic(Level.Song, default.savedSection, 255, MTRAN_SlowFade);
 					else
 						ClientSetMusic(Level.Song, default.savedSection, 255, MTRAN_Fade);
