@@ -999,6 +999,11 @@ log("  event.toActor    = " $ event.toActor );
 	// Show the player that he/she/it just received something!
 	if ((DeusExPlayer(event.toActor) != None) && (conWinThird != None) && (invItemTo != None))
 	{
+
+        //SARGE: If we received a small amount of items, unroll them
+        if (invItemTo.IsA('DeusExPickup') && itemsTransferred <= 4)
+            rollupType = 2;
+
 		if (conWinThird != None)
         {
             //Display what we got, showing any declined items
