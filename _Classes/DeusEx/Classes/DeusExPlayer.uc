@@ -19468,7 +19468,7 @@ defaultproperties
      iSmartKeyring=1
      iAltFrobDisplay=1
      bDialogHUDColors=True
-     bQuietAugs=True
+     //bQuietAugs=True //DISABLED by request of RoSoDude
      bEnableLeftFrob=True
      bShowDeclinedInReceivedWindow=true
      bAlwaysShowModifiers=true
