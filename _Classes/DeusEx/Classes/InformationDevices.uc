@@ -746,6 +746,7 @@ defaultproperties
      bookTitles(0)=(textTag="DeusExText.01_Book08",replacement="UNATCO Handbook - Dedication")
      bookTitles(1)=(textTag="DeusExText.03_Book06",replacement="Curly's Journal")
      bookTitles(2)=(textTag="DeusExText.06_Book07",replacement="Scrawled Note")
+     bookTitles(3)=(textTag="DeusExText.11_Book10",replacement="Journal")
 
      datacubeTitles(0)=(textTag="DeusExText.01_Datacube01",replacement="Joseph Manderley Password Change")
      datacubeTitles(1)=(textTag="DeusExText.01_Datacube03",replacement="Comm Van Code")
@@ -816,9 +817,18 @@ defaultproperties
      datacubeTitles(66)=(textTag="DeusExText.09_Datacube10",replacement="BlueOS Installation Log")
      datacubeTitles(67)=(textTag="DeusExText.09_Datacube13",replacement="Note to Self")
      datacubeTitles(68)=(textTag="DeusExText.09_Datacube14",replacement="Security Restrictions")
-     datacubeTitles(69)=(textTag="DeusExText.10_Datacube06",replacement="To Do List")
-     datacubeTitles(70)=(textTag="DeusExText.10_Datacube10",replacement="Message for Chad")
-     datacubeTitles(71)=(textTag="DeusExText.10_Datacube11",replacement="Security Login")
+     datacubeTitles(69)=(textTag="DeusExText.10_Datacube02",replacement="Dear Nicolette")
+     datacubeTitles(70)=(textTag="DeusExText.10_Datacube03",replacement="Account Security")
+     datacubeTitles(71)=(textTag="DeusExText.10_Datacube04",replacement="Get Some Cash!")
+     datacubeTitles(72)=(textTag="DeusExText.10_Datacube05",replacement="Account Security")
+     datacubeTitles(73)=(textTag="DeusExText.10_Datacube06",replacement="To Do List")
+     datacubeTitles(74)=(textTag="DeusExText.10_Datacube07",replacement="Storeroom Code")
+     datacubeTitles(75)=(textTag="DeusExText.10_Datacube09",replacement="Welcome to Paris!")
+     datacubeTitles(76)=(textTag="DeusExText.10_Datacube10",replacement="Message for Chad")
+     datacubeTitles(77)=(textTag="DeusExText.10_Datacube11",replacement="Security Login")
+     datacubeTitles(78)=(textTag="DeusExText.11_Datacube02",replacement="Morpheus")
+     datacubeTitles(79)=(textTag="DeusExText.11_Datacube03",replacement="Orders")
+     datacubeTitles(80)=(textTag="DeusExText.12_Datacube02",replacement="Saddle Up (Draft)")
 
      titleIgnored(0)="!=!==!==="
      titleIgnored(1)="* = * = * ="
@@ -831,6 +841,8 @@ defaultproperties
      titlePrefixes(0)="UNATCO HANDBOOK"
 
      upcases(0)="Sh-187"
+     upcases(1)="Iii"
+     upcases(2)=": a " //HACK
      //upcases(1)="Unatco"
      //upcases(2)=" Ny "
      //upcases(3)="Cia "

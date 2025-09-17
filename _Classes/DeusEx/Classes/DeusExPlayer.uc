@@ -14516,6 +14516,10 @@ static final function string TitleCase(coerce string Text)
                         Word = "DuClare ";
                         bDontChange = true;
                         break;
+                    case "3rd ":
+                        Word = "3rd ";
+                        bDontChange = true;
+                        break;
                 }
             }
 
@@ -14612,7 +14616,7 @@ static function int InStrSpaced(string haystack, string needle)
         //CHECK LEFT
         bLeft = true;
         c = Mid(haystack, result - 1, 1);
-        if (result != 0 && ((c >= "A" && c <= "Z") || (c >= "A" && c <= "Z")))
+        if (result != 0 && ((c >= "A" && c <= "Z") || (c >= "a" && c <= "z")))
             bLeft = false;
         
         //CHECK Right
@@ -14620,7 +14624,7 @@ static function int InStrSpaced(string haystack, string needle)
         if (result + len(needle) < len(haystack) - 1)
         {
             c = Mid(haystack, result + len(needle), 1);
-            if ((c >= "A" && c <= "Z") || (c >= "A" && c <= "Z"))
+            if ((c >= "A" && c <= "Z") || (c >= "a" && c <= "z"))
                 bRight = false;
         }
     }
@@ -14703,6 +14707,8 @@ function private bool ProcessCodeNote(DeusExNote note, string code, optional boo
     noteText = StripFromTo(note.originalText);
 
     noteTextNumeric = int(noteText);
+    
+    //DebugLog("CODE: " $ code);
 
     //First, if it's numeric, Check note contents for the code exactly
     if (noteTextNumeric != 0 && InStrSpaced(noteText,code) != -1)
@@ -14750,6 +14756,10 @@ function private bool ProcessCodeNote(DeusExNote note, string code, optional boo
     else if (InStr(Caps(noteText),Caps("LOGIN: " $ code)) != -1)
         return true;
     else if (InStr(Caps(noteText),Caps("PASSWORD: " $ code)) != -1)
+        return true;
+    else if (InStr(Caps(noteText),Caps("ACCOUNT: " $ code)) != -1)
+        return true;
+    else if (InStr(Caps(noteText),Caps("PIN: " $ code)) != -1)
         return true;
     else if (InStr(Caps(noteText),Caps("LOGIN/PASSWORD: " $ code)) != -1)
         return true;
@@ -14846,6 +14856,8 @@ function bool GetExceptedCode(string code)
         || code == "BIONICMAN" //we get our code as soon as we enter our office, but it takes a little bit. Fix it not working when we should know it
         || code == "MCHOW" //maggie chows code can only be guessed, never found, but is designed that way.
         || code == "INSURGENT" //maggie chows code can only be guessed, never found, but is designed that way.
+        || code == "MLUNDQUIST" //mlundquist is never mentioned anywhere
+        || code == "DEMOCLES" //Only ever mentioned by itself
         //|| code == "2167" //Only displayed in a computer message, so we never get a note for it //NOW RANDOMISED
         || code == "718" //Can only be guessed based on cryptic information
         || code == "7243" //We are only given 3 digits, need to guess the 4th
