@@ -1103,16 +1103,13 @@ function ShowFixedPickupMessage(DeusExPlayer P, Inventory item, int count, optio
     if (item == None || P == None)
         return;
 
-    if (count == 0 && item.IsA('DeusExPickup'))
-        count = DeusExPickup(item).numCopies;
-
     if (count > 1)
         P.ClientMessage(item.PickupMessage @ item.itemArticle @ item.itemName @ "(" $ count $ ")", 'Pickup');
     else //Just show the basic one
         P.ClientMessage(item.PickupMessage @ item.itemArticle @ item.itemName, 'Pickup');
 
     if (bShowReceived)
-        AddReceivedItem(P, item, count);
+        AddReceivedItem(P, item, count, item.IsA('DeusExPickup'));
 }
 
 // ----------------------------------------------------------------------
@@ -1555,7 +1552,7 @@ function Frob(Actor Frobber, Inventory frobWith)
         {
             for (i = 0;i < badItemCount;i++)
             {
-                AddReceivedItem(player, badItems[i].item, badItems[i].count, badItems[i].item.IsA('Ammo'), true);
+                AddReceivedItem(player, badItems[i].item, badItems[i].count, badItems[i].item.IsA('Ammo') || badItems[i].item.IsA('DeusExPickup'), true);
             }
         }
 
@@ -1685,7 +1682,7 @@ function AddReceivedItem(DeusExPlayer player, Inventory item, int count, optiona
 	}
     */
 
-    player.AddReceivedItem(item,count,bNoGroup,bDeclined);
+    player.AddReceivedItem(item,count,bNoGroup,bDeclined,true);
 }
 
 //-----------------------------------------------------------------------

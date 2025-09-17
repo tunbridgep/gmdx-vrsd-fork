@@ -443,7 +443,7 @@ function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, op
     if (IsA('WeaponShuriken') && WeaponShuriken(self).bImpaled)
         overrideTexture = Texture'RSDCrap.Icons.BeltIconShurikenBloody';
 
-    intj = P.LootAmmo(defAmmoClass,PickupAmmoCount,bDisplayMsg,bDisplayWindow,bLootSound,bDisposableWeapon,!bDisposableWeapon,bOverflow && !bDisposableWeapon,bOverflowWindow,overrideTexture);
+    intj = P.LootAmmo(defAmmoClass,PickupAmmoCount,bDisplayMsg,bDisplayWindow,bLootSound,bDisposableWeapon,bDisposableWeapon,bOverflow && !bDisposableWeapon,bOverflowWindow,overrideTexture);
 
     if (intj > 0)
     {

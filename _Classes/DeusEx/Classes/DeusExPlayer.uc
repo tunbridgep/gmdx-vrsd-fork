@@ -9247,13 +9247,13 @@ function ClearReceivedItems()
     DeusExRootWindow(rootWindow).hud.receivedItems.RemoveItems();
 }
 
-function AddReceivedItem(Inventory item, int count, optional bool bNoGroup, optional bool bDeclined)
+function AddReceivedItem(Inventory item, int count, optional bool bNoGroup, optional bool bDeclined, optional bool bShowAllDeclined)
 {
     local int i;
     local int rollupType;
 
     //clientMessage("item: " $ item $ ", count: " $ count);
-    if (item == None || count == 0)
+    if (item == None)
         return;
 
     if (rootWindow != None && DeusExRootWindow(rootWindow).hud != None)
@@ -9263,7 +9263,7 @@ function AddReceivedItem(Inventory item, int count, optional bool bNoGroup, opti
         //disposable weapons), we display them the same way.
         if (bNoGroup && count < 5)
             rollupType = 2;
-        else if (bDeclined)
+        else if (bDeclined && !bShowAllDeclined)
             rollupType = 1;
 
         Log("Item is: " $ item $ ", rollupType is " $ rollupType $ ", bNoGroup: " $ bNoGroup);
