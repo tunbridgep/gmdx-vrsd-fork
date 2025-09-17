@@ -684,6 +684,7 @@ var globalconfig int iAllowCombatMusic;                                        /
 var transient Music previousTrack;                                             //SARGE: The last thing that was ClientSetMusic'd
 var transient EMusicMode previousMusicMode;                                    //SARGE: The last thing that was ClientSetMusic'd
 var transient byte previousLevelSection;                                       //SARGE: The last levelsection
+var transient float fMusicHackTimer;                                           //SARGE: A hack for fixing music fading when loading music.
 
 //Decline Everything
 var travel DeclinedItemsManager declinedItemsManager;                          //SARGE: Holds declined items.
