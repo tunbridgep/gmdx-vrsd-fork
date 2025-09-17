@@ -8162,26 +8162,31 @@ exec function UseSecondary()
         {
             if(!Binoculars(assigned).bActive)
             {
-                if (inHand != none && inHand.IsA('DeusExWeapon'))
+                if (inHand != None)
                 {
-                    //DeusExWeapon(inHand).GotoState('DownWeapon');
-                    DeusExWeapon(inHand).ScopeOff();
-                    DeusExWeapon(inHand).LaserOff(true);
-                    PutInHand(None);
-                }
-                else if (inHand.IsA('SkilledTool'))
-                {
-                    SkilledTool(inHand).PutDown();
-                }
-                else if (inHand.IsA('DeusExPickup'))
-                {
-                    PutInHand(None);
+                    if (inHand.IsA('DeusExWeapon'))
+                    {
+                        //DeusExWeapon(inHand).GotoState('DownWeapon');
+                        DeusExWeapon(inHand).ScopeOff();
+                        DeusExWeapon(inHand).LaserOff(true);
+                        PutInHand(None,true);
+                    }
+                    else if (inHand.IsA('SkilledTool'))
+                    {
+                        //SkilledTool(inHand).PutDown();
+                        PutInHand(None,true);
+                    }
+                    else if (inHand.IsA('DeusExPickup'))
+                    {
+                        PutInHand(None,true);
+                    }
                 }
                 Binoculars(assigned).Activate();
             }
             else
             {
                 Binoculars(assigned).Activate();
+                SelectLastWeapon(true);
             }
             return;
         }
@@ -8678,6 +8683,7 @@ exec function ParseRightClick()
 	local DeusExWeapon ExWep;
     local DeusExRootWindow root;
     local bool bFarAway;
+    local Inventory assigned;
 
     //SARGE: Add quickloading if pressing right click while dead.
     if (IsInState('dying') && !bDeadLoad)
@@ -8694,6 +8700,17 @@ exec function ParseRightClick()
         return;
     }
 
+    assigned = GetSecondary();
+       
+
+    //SARGE: Hack to handle binocs as secondary
+    if (Binoculars(assigned) != None && Binoculars(assigned).bActive)
+    {
+        Binoculars(assigned).Activate();
+        SelectLastWeapon(true);
+        return;
+    }
+
     //Descope if we have binocs/scope
     if (inHand != None)
     {
@@ -8705,6 +8722,12 @@ exec function ParseRightClick()
         else if (inHand.IsA('Binoculars') && Binoculars(inhand).bActive)
         {
             Binoculars(inhand).Activate();
+            return;
+        }
+        
+        if (inHand.IsA('DeusExWeapon') && DeusExWeapon(inhand).bZoomed)
+        {
+            DeusExWeapon(inhand).ScopeToggle();
             return;
         }
     }
