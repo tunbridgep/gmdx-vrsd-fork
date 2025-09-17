@@ -141,7 +141,7 @@ function DisplayText(string text, Actor speakingActor)
 	local float txtWidth;
 	local GC gc;
 
-    if (lowerConWindow != None) //SARGE: Fix accessed none?
+    if (lowerConWindow == None) //SARGE: Fix accessed none?
         return;
 
 	newText = TextWindow(lowerConWindow.NewChild(Class'TextWindow'));
