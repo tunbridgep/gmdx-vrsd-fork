@@ -193,6 +193,9 @@ function bool AddGenericIcon(Texture icon, string label, optional int quantity, 
 	local HUDReceivedDisplayItem item;
     local int create, i;
 
+    if (quantity == 0)
+        quantity = 1;
+
     if (rollupType != 2 && RollUp(icon,rollupType,quantity,bDeclined))
     {
         displayTimer = 0.0;
@@ -232,6 +235,8 @@ function bool AddItem(Inventory invItem, Int count, optional bool bDeclined, opt
     //SARGE: Add a "+" to the item name for upgraded weapons
     if (invItem.isA('DeusExWeapon'))
         labelText = DeusExWeapon(invItem).GetBeltDescription(player);
+    else if (invItem.isA('NanoKey') && invItem.beltDescription == "") //SARGE: Fix for keys not displaying properly for whatever reason
+        labelText = class'NanoKey'.default.beltDescription;
     else
         labelText = invItem.beltDescription;
 
