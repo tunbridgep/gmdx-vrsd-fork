@@ -520,6 +520,9 @@ var(GMDX) const float fHighAlertChance;       //SARGE: The chance of a character
 
 var(GMDX) const bool bSmartWeaponDraw;        //SARGE: If set, Pawn will draw their weapon when it makes sense to do so.
 
+var float fSubAwarenessMod;                    //SARGE: gradually improve hearing threshold as we hear footsteps, making us "perk up" more as we hear suspicious sounds. Stops the player "trailing" NPCs.
+var float fSubAwarenessModTime;                //SARGE: How long until sub-awareness state wears off. Usually it's about 5 seconds.
+
 //Augmentique Data
 struct AugmentiqueOutfitData
 {
@@ -1199,7 +1202,10 @@ function SetSeekLocation(Pawn seekCandidate, vector newLocation, ESeekType newSe
 		CarcassTimer      = 120.0;
 	if (newSeekType == SEEKTYPE_Sight)
 		SeekLevel = Max(SeekLevel, 1);
-	else
+    //SARGE: Seek for twice as long if we have Tactical Distraction perk
+	else if (DeusExPlayer(seekCandidate) != None && DeusExPlayer(seekCandidate).PerkManager != None && DeusExPlayer(seekCandidate).PerkManager.GetPerkWithClass(class'DeusEx.PerkTacticalDistraction').bPerkObtained)
+		SeekLevel = Max(SeekLevel, 5);
+    else
 		SeekLevel = Max(SeekLevel, 3);
 	if (bNewPostCombat)
 		bSeekPostCombat = true;
@@ -6746,51 +6752,85 @@ function HandleShot(Name event, EAIEventState state, XAIParams params)
 	}
 }
 
+// ----------------------------------------------------------------------
+// SARGE: HandleFootstepsAwareness()
+// When an NPC hears a number of quiet footsteps, eventually
+// they will take notice
+// ----------------------------------------------------------------------
+
+function HandleFootstepsAwareness(Pawn instigator, float mod)
+{
+	if (instigator != None && bReactLoudNoise && bLookingForLoudNoise && IsInState('Patrolling') && mod > 0)
+    {
+        //If we are still within the time threshold, keep adding until we hear something!
+        //Otherwise, reset
+        if (fSubAwarenessModTime > 0)
+            fSubAwarenessMod -= mod;
+        else
+            fSubAwarenessMod = 1.0 - mod;
+
+        fSubAwarenessModTime = 5.0;
+        DeusExPlayer(instigator).DebugMessage("Noise handler level: " $ fSubAwarenessMod);
+        
+        if (fSubAwarenessMod < HearingThreshold)
+        {
+            //DeusExPlayer(GetPlayerPawn()).DebugMessage("Noise handler alerting!");
+            NoiseHandler(instigator);
+        }
+    }
+}
 
 // ----------------------------------------------------------------------
 // HandleLoudNoise()
 // ----------------------------------------------------------------------
+
+//SARGE: Moved HandleLoudNoise to here, so we can call it directly in special cases
+function NoiseHandler(Actor source)
+{
+	local Pawn  instigator;
+    local DeusExPlayer player;          //SARGE: Added
+    if (source != None)
+    {
+        instigator = Pawn(source);
+        if (instigator == None)
+            instigator = source.Instigator;
+        if (instigator != None)
+        {
+            //DeusExPlayer(source).DebugMessage("NoiseHandler: " $ instigator);
+            if (IsValidEnemy(instigator))
+            {
+                //DeusExPlayer(GetPlayerPawn()).DebugMessage("Aw2");
+                SetSeekLocation(instigator, source.Location, SEEKTYPE_Sound);
+
+                //SARGE: If we're super close, and we're in hardcore mode, allow
+                //attacking instantly, rather than searching.
+                player = DeusExPlayer(instigator);
+
+                if (!IsA('Robot') && player != None && ((player.bHardcoreMode && Abs(VSize(player.Location - Location)) < 500) || FRand() < fHighAlertChance))
+                {
+                    //player.DebugMessage("High Alert!");
+                    SetEnemy(player);
+                    fHighAlertState = 4.0;
+                    if (Weapon == None)
+                        SwitchToBestWeapon();
+                    GotoState('Attacking');
+                }
+                HandleEnemy();
+            }
+        }
+    }
+}
 
 function HandleLoudNoise(Name event, EAIEventState state, XAIParams params)
 {
 	// React
 
 	local Actor bestActor;
-	local Pawn  instigator;
-    local DeusExPlayer player;          //SARGE: Added
-
 
 	if (state == EAISTATE_Begin || state == EAISTATE_Pulse)
 	{
 		bestActor = params.bestActor;
-		if (bestActor != None)
-		{
-			instigator = Pawn(bestActor);
-			if (instigator == None)
-				instigator = bestActor.Instigator;
-			if (instigator != None)
-			{
-				if (IsValidEnemy(instigator))
-				{
-					SetSeekLocation(instigator, bestActor.Location, SEEKTYPE_Sound);
-
-                    //SARGE: If we're super close, and we're in hardcore mode, allow
-                    //attacking instantly, rather than searching.
-                    player = DeusExPlayer(instigator);
-
-                    if (!IsA('Robot') && player != None && ((player.bHardcoreMode && Abs(VSize(player.Location - Location)) < 500) || FRand() < fHighAlertChance))
-                    {
-                        //player.DebugMessage("High Alert!");
-                        SetEnemy(player);
-                        fHighAlertState = 4.0;
-                        if (Weapon == None)
-                            SwitchToBestWeapon();
-                        GotoState('Attacking');
-                    }
-                    HandleEnemy();
-				}
-			}
-		}
+        NoiseHandler(bestActor);
 	}
 }
 
@@ -8773,6 +8813,9 @@ function Tick(float deltaTime)
     
     //SARGE: tick down high alert state
     fHighAlertState = FMAX(0,fHighAlertState - deltaTime);
+
+    //SARGE: tick down sub-awareness time
+    fSubAwarenessModTime = FMAX(0,fSubAwarenessModTime - deltaTime);
 
 	bDoLowPriority = true;
 	bCheckPlayer   = true;
@@ -12380,7 +12423,7 @@ GoToLocation:
 	{
 		PlayPreAttackSearchingSound();
 		disturbanceCount++;
-		if (FRand() < 0.4 && SeekLevel >= 3) //CyberP: sometimes just turn to the source of the sound instead of running around
+		if (FRand() < 0.4 && SeekLevel == 3) //CyberP: sometimes just turn to the source of the sound instead of running around
 		{
 		SeekLevel = 0;
 		GoTo('TurnToLocation');

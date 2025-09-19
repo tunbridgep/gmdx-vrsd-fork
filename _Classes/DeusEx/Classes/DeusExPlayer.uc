@@ -875,6 +875,8 @@ var globalconfig bool bFasterInfolinks;                         //SARGE: Signifi
 >>>>>>> master
 var globalconfig bool bDrawAddonsOnAmmoDisplay;                 //SARGE: Draws "S", "L" and "S" labels for Scopes, Silencers and Lasers on the Ammo display.
 
+var globalconfig bool bExperimentalFootstepDetection;           //SARGE: Adds experimental footstep detection
+
 //////////END GMDX
 
 // OUTFIT STUFF
