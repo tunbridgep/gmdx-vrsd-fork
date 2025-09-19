@@ -14857,7 +14857,7 @@ function bool GetExceptedCode(string code)
         || code == "MCHOW" //maggie chows code can only be guessed, never found, but is designed that way.
         || code == "INSURGENT" //maggie chows code can only be guessed, never found, but is designed that way.
         || code == "MLUNDQUIST" //mlundquist is never mentioned anywhere
-        || code == "DEMOCLES" //Only ever mentioned by itself
+        || code == "DAMOCLES" //Only ever mentioned by itself
         //|| code == "2167" //Only displayed in a computer message, so we never get a note for it //NOW RANDOMISED
         || code == "718" //Can only be guessed based on cryptic information
         || code == "7243" //We are only given 3 digits, need to guess the 4th
@@ -14872,6 +14872,8 @@ function bool GetExceptedCode(string code)
         || (code == "6512" && FlagBase.GetBool('VersalifeCodeObtained')) //Allow us to use it after we access generate a temp security pass.
         || code == "12" //Guessable code for the keypad in the MJ12 lab above the entry stairs
         || code == "APPLE" //Special case, spelled "Apple" in note so it fails the LOCS and CAPS checks...
+        || code == "MEVERETT" //Can only be guessed, but it's pretty obvious
+        || code == "PYNCHON" //Can only be guessed, but it's pretty obvious
         || code == "JCDENTON"; //Uses Base: JCDenton instead of Username: JCDenton.
 }
 
