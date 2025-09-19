@@ -265,10 +265,10 @@ function bool HandlePickupQuery( inventory Item )                               
             
             //SARGE: We have to do this here too, yucky!
             if (player.bAlwaysShowReceivedItemsWindow)
-                player.AddReceivedItem(item, intj, true);
+                player.AddReceivedItem(item, intj, false);
             
             if (player.bAlwaysShowReceivedItemsWindow && player.bShowDeclinedInReceivedWindow)
-                player.AddReceivedItem(item, Ammo(item).AmmoAmount, true, true);
+                player.AddReceivedItem(item, Ammo(item).AmmoAmount, false, true);
         }
         return true;
 	}

@@ -604,6 +604,8 @@ function private bool ItemTransferHelper(Inventory item, int amount, out int amo
         //Log("AmountMissed: " $ amountMissed $ ", amountTransferred: " $ amountTransferred);
     }
 
+    player.DebugMessage("TransferHelpered");
+
     return true;
 }
 
@@ -801,6 +803,16 @@ log("  event.toActor    = " $ event.toActor );
 		// player any ammo from the weapon
 		else if ((invItemTo.IsA('Weapon')) && (DeusExPlayer(event.ToActor) != None))
 		{
+            /*
+            //SARGE: Show a grayed-out version of the weapon
+            if (DeusExWeapon(invItemTo) != None && !DeusExWeapon(invItemTo).bDisposableWeapon)
+            {
+                if (conWinThird != None)
+                    conWinThird.ShowReceivedItem(invItemTo, 1, true);
+                else
+                    DeusExRootWindow(player.rootWindow).hud.receivedItems.AddItem(invItemTo, 1, true);
+            }
+            */
 
             //Copy mods across and show icon
             if (invItemTo.IsA('DeusExWeapon'))
@@ -912,8 +924,36 @@ log("  event.toActor    = " $ event.toActor );
                 itemsTransferred = Ammo(invItemTo).AmmoAmount;
                 missedAmount -= itemsTransferred;
             }
-            else
+            else if (DeusExPlayer(event.toActor) != None && invItemFrom.IsA('DeusExWeapon'))
+            {
+                if (!DeusExWeapon(invItemFrom).bDisposableWeapon && Weapon(invItemFrom).AmmoName != None)
+                {
+                    //Show any ammo in the weapon
+                    AmmoType = Ammo(DeusExPlayer(event.toActor).FindInventoryType(Weapon(invItemFrom).AmmoName));
+                    
+                    if (AmmoType != None)
+                    {
+                        extraAmmo = AmmoType.AmmoAmount + Weapon(invItemFrom).PickupAmmoCount;
+                    }
+                    else
+                    {
+                        extraAmmo = Weapon(invItemFrom).PickupAmmoCount;
+                    }
+
+                    missedAmmo = extraAmmo;
+                    extraAmmo = MIN(extraAmmo,DeusExPlayer(event.toActor).GetAdjustedMaxAmmoByClass(Weapon(invItemFrom).AmmoName));
+                    missedAmmo = missedAmmo - extraAmmo;
+                    extraAmmo = Weapon(invItemFrom).PickupAmmoCount - missedAmmo;
+                }
+                else
+                    rollupType = 2;
+
                 invItemTo = invItemFrom.SpawnCopy(Pawn(event.toActor));
+            }
+            else
+            {
+                invItemTo = invItemFrom.SpawnCopy(Pawn(event.toActor));
+            }
 		}
 
 //log("  invItemFrom = "$  invItemFrom);
@@ -979,20 +1019,6 @@ log("  event.toActor    = " $ event.toActor );
 				player.UpdateAmmoBeltText(Ammo(invItemTo));
 			else
 				player.UpdateBeltText(invItemTo);
-            
-            
-            //if transferred item was a weapon, display the ammo too
-            if (invItemTo.IsA('Weapon'))
-            {
-                AmmoType = Weapon(invItemTo).AmmoType;
-                if (DeusExAmmo(AmmoType) != None && DeusExAmmo(AmmoType).bShowInfo)
-                {
-                    extraAmmo = AmmoType.AmmoAmount;
-                    missedAmmo = extraAmmo;
-                    extraAmmo = MIN(extraAmmo,player.GetAdjustedMaxAmmo(AmmoType));
-                    missedAmmo -= extraAmmo;
-                }
-            }
 		}
 	}
 
