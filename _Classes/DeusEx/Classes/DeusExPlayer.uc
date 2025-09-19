@@ -4943,6 +4943,7 @@ simulated function PlayFootStep()
 	local bool bOtherPlayer;
 	local float shakeTime, shakeRoll, shakeVert;
     local float stealthLevel;
+	local Pawn P;
 
 	// Only do this on ourself, since this takes into account aug stealth and such
 	if ( Level.NetMode != NM_StandAlone )
@@ -5260,6 +5261,18 @@ simulated function PlayFootStep()
         //SARGE: Fix the broken sound propagation //SARGE: or nah! It goes through too many walls
         //class'PawnUtils'.static.WakeUpAI(self,range*volumeMultiplier);
         AISendEvent('LoudNoise', EAITYPE_Audio, volume*volumeMultiplier*volumeMod, range*volumeMultiplier);
+
+        //SARGE: Also alert NPCs for "quiet" footsteps, so they become suspicious over time.
+        //I bet this is real slow!
+        if (bExperimentalFootstepDetection)
+        {
+            for( P=Level.PawnList; P!=None; P=P.nextPawn )
+            {
+                if (P.IsA('ScriptedPawn') && P.IsInState('Patrolling') && ScriptedPawn(P).bReactLoudNoise && VSize(P.Location - Location) < range*volumeMultiplier*0.8)
+                    ScriptedPawn(P).HandleFootstepsAwareness(Self,volume*volumeMultiplier*volumeMod*0.7);
+            }
+        }
+
         //DebugMessage("LoudNoise: vol = " $ volume*volumeMultiplier*volumeMod $ " range = " $ range*volumeMultiplier);
     }
 }
