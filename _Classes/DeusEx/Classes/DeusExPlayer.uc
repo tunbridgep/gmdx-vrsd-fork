@@ -829,7 +829,7 @@ var globalconfig bool bConversationKeepWeaponDrawn;             //SARGE: Always 
 
 var globalconfig int iCrosshairVisible;                         //SARGE: Replaces the boolean crosshair setting, now we can control inner and outer crosshair independently.
 
-var globalconfig bool bImprovedWeaponSounds;                    //SARGE: Allow GMDX weapon sounds, rather than vanilla.
+var globalconfig int iImprovedWeaponSounds;                    //SARGE: Allow GMDX weapon sounds, rather than vanilla.
 
 var globalconfig bool bImprovedLasers;                          //SARGE: Prevent pepper spray, boxes etc from disrupting lasers.
 
@@ -19472,7 +19472,7 @@ defaultproperties
      bEnableLeftFrob=True
      bShowDeclinedInReceivedWindow=true
      bAlwaysShowModifiers=true
-     bImprovedWeaponSounds=true
+     iImprovedWeaponSounds=2
      bImprovedLasers=true
      bRearmSkillRequired=true
      bAutoUncrouch=true
