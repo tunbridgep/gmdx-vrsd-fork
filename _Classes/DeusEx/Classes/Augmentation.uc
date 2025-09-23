@@ -121,6 +121,8 @@ var Color colToggle;
 var Color colAuto;
 var Color colRecharging;
 
+var float displayAsActiveTime;          //SARGE: displays augmentations as "active" when they are actively being used (for auto augs). This lets us know if they are draining energy.
+
 // ----------------------------------------------------------------------
 // network replication
 // ----------------------------------------------------------------------
@@ -201,6 +203,7 @@ function Color GetAugColor(optional bool alternate, optional bool bForceActiveCo
         if (AugmentationType == Aug_Active) return colActive;
         if (AugmentationType == Aug_Passive) return colPassive;
         if (AugmentationType == Aug_Toggle) return colToggle;
+        if (AugmentationType == Aug_Automatic && displayAsActiveTime >= player.saveTime) return colActive;
         if (AugmentationType == Aug_Automatic && !player.bSimpleAugSystem) return colAuto;
         if (AugmentationType == Aug_Automatic && player.bSimpleAugSystem) return colToggle;
     }
