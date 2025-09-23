@@ -813,6 +813,8 @@ var globalconfig bool bReversedAltBeltColours;                      //SARGE: Mak
 
 var globalconfig bool bAlwaysShowReceivedItemsWindow;               //SARGE: Always show the retrieved items window when picking up ammo from a weapon.
 
+var globalconfig bool bCreditsShowReceivedItemsWindow;              //SARGE: Always show the retrieved items window when picking up credits
+
 var globalconfig bool bShowDeclinedInReceivedWindow;                //SARGE: Allow showing declined items in the received items window.
 
 var globalconfig int iShowTotalCounts;                        //SARGE: Show the total number of rounds we can carry for disposable items in the inventory screen. 1 = charged items and disposable weapons/grenades only, 2 = everything.
@@ -837,14 +839,15 @@ var globalconfig bool bRearmSkillRequired;                      //SARGE: Rearmin
 
 var globalconfig bool bShowSmallLog;                            //SARGE: Show a small log when the Infolink window is open. Otherwise, hide the log completely.
 
+var globalconfig bool bConversationShowGivenItems;              //SARGE: Show items given out during conversations.
+var globalconfig bool bConversationShowCredits;                 //SARGE: Show credits transferred during conversations.
+
 //SARGE: Overhauled the Wireless Strength perk to no longer require having a multitool out.
 var HackableDevices HackTarget;
 
 var bool bFakeDeath;                                            //SARGE: Fixes a rather nasty bug when dying and being transferred to the MJ12 Prison facility. Also disables quick loading.
 
 var travel bool bPhotoMode;                                     //SARGE: Show/Hide the entire HUD at once
-
-var bool bClearReceivedItems;                                   //SARGE: Clear the received items window next time we display it.
 
 var globalconfig bool bAlwaysShowModifiers;                     //SARGE: Always show the Playthrough Modifiers screen when starting a new game.
 
@@ -8492,11 +8495,6 @@ exec function ParseLeftClick()
     else if (bEnableLeftFrob && FrobTarget != none && IsReallyFrobbable(FrobTarget,true) && !bInHandTransition && (inHand == None || !inHand.IsA('POVcorpse')) && CarriedDecoration == None)
     {
         //SARGE: Hack to fix weapons repeatedly filling the received items window with crap if we're full
-        if (bClearReceivedItems)
-        {
-            ClearReceivedItems();
-            bClearReceivedItems = false;
-        }
         DoLeftFrob(FrobTarget);
     }
 
@@ -8826,13 +8824,6 @@ exec function ParseRightClick()
             }
         }
 
-        //SARGE: Hack to fix weapons repeatedly filling the received items window with crap if we're full
-        if (bClearReceivedItems)
-        {
-            ClearReceivedItems();
-            bClearReceivedItems = false;
-        }
-
 		// otherwise, just frob it
 		DoRightFrob(FrobTarget);
 	}
@@ -9001,10 +8992,7 @@ function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool
             ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName $ " (" $ over $ ")" @ AmmoType.MaxAmmoString, 'Pickup');
         
         if (bShowWindow && bShowDeclinedInReceivedWindow && bShowOverflowWindow)
-        {
-            bClearReceivedItems=true;
             AddReceivedItem(AmmoType, over, bNoGroup, true);
-        }
     }
     return ret;
 }
@@ -9300,12 +9288,13 @@ function ClearReceivedItems()
     DeusExRootWindow(rootWindow).hud.receivedItems.RemoveItems();
 }
 
-function AddReceivedItem(Inventory item, int count, optional bool bNoGroup, optional bool bDeclined)
+function AddReceivedItem(Inventory item, int count, optional bool bNoGroup, optional bool bDeclined, optional bool bShowAllDeclined)
 {
     local int i;
+    local int rollupType;
 
     //clientMessage("item: " $ item $ ", count: " $ count);
-    if (item == None || count == 0)
+    if (item == None)
         return;
 
     if (rootWindow != None && DeusExRootWindow(rootWindow).hud != None)
@@ -9313,15 +9302,14 @@ function AddReceivedItem(Inventory item, int count, optional bool bNoGroup, opti
         //Carcasses always spawn individual copies of their inventory items,
         //rather than spawning them as a stack. So when things ARE stacked, (usually
         //disposable weapons), we display them the same way.
-        if (!bNoGroup && count < 5)
-        {
-            for (i = 0; i < count; i++)
-                DeusExRootWindow(rootWindow).hud.receivedItems.AddItem(item, 1, bDeclined);
-        }
-        else
-        {
-            DeusExRootWindow(rootWindow).hud.receivedItems.AddItem(item, count, bDeclined);
-        }
+        if (bNoGroup && count < 5)
+            rollupType = 2;
+        else if (bDeclined && !bShowAllDeclined)
+            rollupType = 1;
+
+        Log("Item is: " $ item $ ", rollupType is " $ rollupType $ ", bNoGroup: " $ bNoGroup);
+
+        DeusExRootWindow(rootWindow).hud.receivedItems.AddItem(item, count, bDeclined, rollupType);
 
         // Make sure the object belt is updated
         if (item.IsA('Ammo'))
@@ -19028,15 +19016,31 @@ exec function MyLogInfos()
     BroadcastMessage(ammotype.maxAmmo);
 }*/
 
+//SARGE: Make a generic version that works with classes,
+//so we don't need literal ammo to check this.
+//This is just here as a shorthand/placeholder since it was used like this
+//so many times throughout the codebase.
 function int GetAdjustedMaxAmmo(Ammo ammotype)
+{
+    return GetAdjustedMaxAmmoByClass(ammoType.class);
+}
+
+//SARGE: This is the original GetAdjustedMaxAmmo function.
+//It's been changed to use a class
+function int GetAdjustedMaxAmmoByClass(class<Ammo> ammotype)
 {
 	local int adjustedMaxAmmo;
     local float mult;
     local class associatedSkill;
-    local DeusExAmmo DXammotype;
+    local class<DeusExAmmo> DXammotype;
     local Perk lawfare;
 
     mult = 1.0;
+
+    if (ammoType == None)
+        return 0;
+        
+    DXammotype = class<DeusExAmmo>(ammotype);
 
     //SARGE: Special case for LAW ammo
     if (ammoType.IsA('AmmoLAW'))
@@ -19048,9 +19052,8 @@ function int GetAdjustedMaxAmmo(Ammo ammotype)
             return 1;
     }
 
-    else if (ammotype.IsA('DeusExAmmo'))
+    else if (ammotype != None)
     {
-        DXammotype = DeusExAmmo(ammotype);
         adjustedMaxAmmo = DXammotype.default.MaxAmmo;
         associatedSkill = DXammotype.default.ammoSkill;
         if (AugmentationSystem != none)
@@ -19605,6 +19608,7 @@ defaultproperties
      bIsMantlingStance=false //Ygll: new var to know if we are currently mantling
      iHealingScreen=1
      bAlwaysShowReceivedItemsWindow=true
+     bCreditsShowReceivedItemsWindow=false
      bPistolStartTrained=true
      bStreamlinedRepairBotInterface=true
      iShowTotalCounts=1
@@ -19626,6 +19630,8 @@ defaultproperties
      bShowFullAmmoInHUD=true
      bFasterInfolinks=true
      bNanoswordEnergyUse=true
+     bConversationShowCredits=true
+     bConversationShowGivenItems=true
      bShowMarkers=true
      bAllowNoteEditing=trueRegularNotes
      bShowUserNotes=true
