@@ -83,6 +83,7 @@ var bool bShenanigans;
 var bool bRandomizeCrap;
 var bool bCutInteractions;
 var bool bA51Camera;
+var bool bCollectibles;
 var bool bHardcoreFilterOption;
 var bool bPermaCloak;
 var bool bNoStartingWeaponChoices;
@@ -156,6 +157,7 @@ event InitWindow()
     bRandomizeCrap=false;                                                       //Sarge
     bCutInteractions=false;                                                     //Sarge
     bA51Camera=false;                                                           //Sarge
+    bCollectibles=false;                                                        //Sarge
     bHardcoreFilterOption=false;                                                //Sarge
     bPermaCloak=false;                                                          //Sarge
     bNoStartingWeaponChoices=false;                                             //Sarge
@@ -179,6 +181,7 @@ event InitWindow()
     default.bRandomizeCrap=false;                                               //Sarge
     default.bCutInteractions=false;                                             //Sarge
     default.bA51Camera=false;                                                   //Sarge
+    default.bCollectibles=false;                                                //Sarge
     default.bHardcoreFilterOption=false;                                        //Sarge
     default.bPermaCloak=false;                                                  //Sarge
     default.bNoStartingWeaponChoices=false;                                     //Sarge
@@ -836,6 +839,7 @@ function SaveSettings()
     player.bRandomizeCrap=bRandomizeCrap;                                       //Sarge
     player.bCutInteractions=bCutInteractions;                                   //Sarge
     player.bA51Camera=bA51Camera;                                               //Sarge
+    player.bCollectiblesEnabled=bCollectibles;                                  //Sarge
     player.bHardcoreFilterOption=bHardcoreFilterOption;                         //Sarge
     player.bPermaCloak=bPermaCloak;                                             //Sarge
     player.bNoStartingWeaponChoices=bNoStartingWeaponChoices;                   //Sarge

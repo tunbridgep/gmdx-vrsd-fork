@@ -615,12 +615,14 @@ var travel bool bCameraDetectUnconscious;                                      /
 
 var travel bool bA51Camera;                                                     //SARGE: Was a gameplay setting, now a modifier. Make cameras stronger and act like Area 51 cameras.
 
-var travel bool bHardcoreFilterOption;                                          //SARGE: Moved from gameplay options to modifiers
+var travel bool bCollectiblesEnabled;                                          //SARGE: Enable the Collectibles system.
 
+var travel bool bHardcoreFilterOption;                                          //SARGE: Moved from gameplay options to modifiers
 
 var travel bool bPermaCloak;                                                   //SARGE: If enabled, Elites and Shock Troopers will be permanently cloaked.
 
 var travel bool bNoStartingWeaponChoices;                                      //SARGE: No more weapons from Paul!
+
 //END GAMEPLAY MODIFIERS
 
 //hardcore+
@@ -685,6 +687,9 @@ var EMusicMode previousMusicMode;                                    //SARGE: Th
 var byte previousLevelSection;                                       //SARGE: The last levelsection
 var float fMusicHackTimer;                                           //SARGE: A hack for fixing music fading when loading music.
 var transient bool bMusicSystemReset;                                //SARGE: Whether or not the music system is setup
+
+////Collectibles Stuff
+var travel int collectiblesFound;                                               //SARGE: How many collectibles the player has found.
 
 //Decline Everything
 var travel DeclinedItemsManager declinedItemsManager;                          //SARGE: Holds declined items.

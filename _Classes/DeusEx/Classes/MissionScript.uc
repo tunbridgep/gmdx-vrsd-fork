@@ -296,6 +296,7 @@ function FirstFrame()
     local DeusExCarcass C;                                                      //SARGE
     local DecalManager D;                                                       //SARGE
     local SecurityCamera Cam;                                                      //SARGE
+    local Collectible Coll;                                                     //SARGE
 
 	flags.DeleteFlag('PlayerTraveling', FLAG_Bool);
     flags.SetBool('Enhancement_Detected', True);
@@ -391,6 +392,10 @@ function FirstFrame()
             foreach AllActors(class'SecurityCamera', Cam)
                 Cam.bAlarmEvent = true;
 
+        //SARGE: Make the collectibles disappear
+        if (!player.bCollectiblesEnabled)
+            foreach AllActors(class'Collectible', Coll)
+                Coll.Destroy();
 
         //SARGE: Do lighting accessibility
         ApplyLightingAccessibility();
