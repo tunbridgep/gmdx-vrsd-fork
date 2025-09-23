@@ -895,10 +895,10 @@ function UseSelectedItem()
 	local Inventory inv;
 	local int numCopies;
 	local Class<PersonaScreenBaseWindow> winClass;
+	local PersonaScreenBaseWindow parent;
 
-    winClass = Class'PersonaScreenAugmentations';
-
-	inv = Inventory(selectedItem.GetClientObject());
+    if (selectedItem != None)
+        inv = Inventory(selectedItem.GetClientObject());
 
 	if (inv != None)
 	{
@@ -908,7 +908,9 @@ function UseSelectedItem()
             winClass = Class'PersonaScreenAugmentations';
             if (root != None && winClass != None)
             {
-                PersonaScreenBaseWindow(GetParent()).SaveSettings();
+                parent = PersonaScreenBaseWindow(GetParent());
+                if (parent != None)
+                    parent.SaveSettings();
                 root.InvokeUIScreen(winClass,Player.bRealUI || Player.bHardCoreMode);
                 return;
             }

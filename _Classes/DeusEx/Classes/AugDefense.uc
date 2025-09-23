@@ -70,6 +70,7 @@ state Active
                 minproj = None;
                 player.Energy -= GetAdjustedEnergyRate();
 				Player.PlaySound(sound'ProdFire', SLOT_None,,,, 2.0);
+				displayAsActiveTime = player.saveTime + 1.0; //SARGE: show as active for 1 seconds
 			}
             
             // play a warning sound

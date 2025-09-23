@@ -1,0 +1,4 @@
+<DC=255,255,255>
+<P>An agent can only carry a certain amount of ammo for their weapons.
+<P>
+<P>Skill level has a significant effect on ammo capacity, especially for explosive weapons. As an agent gains more experience with a particular weapon skill, their maximum ammo capacity for that weapon also increases.

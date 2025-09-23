@@ -57,4 +57,5 @@ defaultproperties
      LightSaturation=32
      LightHue=140
      Buoyancy=3.000000
+     bShowNamePrefix=True
 }

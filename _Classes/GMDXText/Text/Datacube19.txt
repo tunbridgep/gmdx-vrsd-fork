@@ -1,0 +1,12 @@
+<DC=255,255,255>
+<P>STORAGE INVENTORY LEDGER
+<P>
+<P>Batch#    Units         Product                          Date
+<P>0001      x4     Sokolo Nano-Lithium Battery        01/24/2052
+<P>0001      x7     Catering Container                 01/24/2052
+<P>0001      x1     Augmentation Upgrade Cannister     01/24/2052
+<P>0001      x3     GDI Combat Supply Crate            01/24/2052
+<P>0001      x2     GDI Medical Supply Crate           01/24/2052
+<P>0001      x1     GDI General Supply Crate           01/24/2052
+<P>0001      x5     Lab Materials Container            01/24/2052
+<P>0001      x1     Universal Damage Modification      01/24/2052

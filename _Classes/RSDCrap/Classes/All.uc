@@ -55,6 +55,13 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDObjectBeltBorder_2_big.pcx"			NAME="HUDOBjectBeltBorder_2_big"			GROUP="UserInterface"
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\InventoryBorder_4_big.pcx"			    NAME="InventoryBorder_4_big"	           	GROUP="UserInterface"
 
+//"Mods Copied" icon
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\modscopied.pcx"		            	    NAME="ModsCopied"	                       	GROUP="UserInterface"
+
+//New buttons on Goals/Notes menu
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\GoalsBackground_4_edit.pcx"			    NAME="GoalsBackground_4_edit"	           	GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\GoalsBackground_5_edit.pcx"			    NAME="GoalsBackground_5_edit"	           	GROUP="UserInterface"
+
 // Ammo
 #exec TEXTURE IMPORT FILE="Textures\Ammo10mmAPTex.pcx"			NAME="Ammo10mmAPTex"			GROUP="Skins"
 #exec TEXTURE IMPORT FILE="Textures\AmmoDartTex1.pcx"			NAME="AmmoDartTex1"			GROUP="Skins"

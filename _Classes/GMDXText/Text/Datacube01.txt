@@ -1,0 +1,3 @@
+<DC=255,255,255>
+<P>Ladders are not the only way to surface from water.
+<P>Swim up to a ledge, look up and keep moving forward to 'dolphin jump' from the water.

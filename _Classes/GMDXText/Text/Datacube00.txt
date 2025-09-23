@@ -1,0 +1,4 @@
+<DC=255,255,255>
+<P>Excellent.
+<P>
+<P>Remember doors can also be unlocked if you have the matching door key, or there may be alternate ways around.

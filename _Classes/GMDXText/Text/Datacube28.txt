@@ -1,0 +1,8 @@
+<DC=255,255,255>
+<P>As you use items, you may notice a darkened version appear on your toolbelt. By default, the toolbelt remembers the contents of each slot when it becomes empty through use. The slot will be reserved for items matching the shown type only.
+<P>
+<P>For instance, as you use your final LAM, a darkened LAM will appear in its belt slot. As items are picked up, only LAMs will be able to occupy this slot. To clear a slot, open the inventory screen and right-click on the darkened icon.
+<P>
+<P>NOTE: Dropped items do not create darkened belt slots if Autofill is Enabled.
+<P>NOTE: This feature can be disabled by disabling 'Belt Memory' in the GMDX Quality of Life menu.
+<P>NOTE: Belt Autofill can be enabled in the GMDX Quality of Life menu.
