@@ -829,9 +829,15 @@ auto state Pickup
 
 	function Frob(Actor Other, Inventory frobWith)
 	{
+        local DeusExPickup copy;
 		pickuplist[0] = textureset;    //doublecheck
 
-		super.Frob(other, frobwith);
+        //SARGE: Fix picking up more than the max amount if empty
+        //This is a hack because I'm too lazy to do it properly
+        if (numCopies > RetMaxCopies())
+            numCopies = RetMaxCopies();
+
+        super.Frob(other, frobwith);
 	}
 }
 

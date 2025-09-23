@@ -1097,6 +1097,21 @@ function bool LootAmmo(DeusExPlayer P, DeusExWeapon item, bool bDisplayOverflowM
     return bResult;
 }
 
+//SARGE: Fixes up message displays for items
+function ShowFixedPickupMessage(DeusExPlayer P, Inventory item, int count, optional bool bShowReceived)
+{
+    if (item == None || P == None)
+        return;
+
+    if (count > 1)
+        P.ClientMessage(item.PickupMessage @ item.itemArticle @ item.itemName @ "(" $ count $ ")", 'Pickup');
+    else //Just show the basic one
+        P.ClientMessage(item.PickupMessage @ item.itemArticle @ item.itemName, 'Pickup');
+
+    if (bShowReceived)
+        AddReceivedItem(P, item, count, item.IsA('DeusExPickup'));
+}
+
 // ----------------------------------------------------------------------
 // Frob()
 //
@@ -1402,8 +1417,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 										}
 									}
 
-									P.ClientMessage(invItem.PickupMessage @ invItem.itemArticle @ invItem.itemName, 'Pickup');
-									AddReceivedItem(player, invItem, itemCount);
+                                    ShowFixedPickupMessage(player,invItem,itemCount,true);
                                     bFoundSomething = True;
                                     bPickedSomethingUp = True;
 
@@ -1430,8 +1444,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                       					ChargedPickup(invItem).unDimIcon();
                                     }
 
-                       				P.ClientMessage(invItem.PickupMessage @ invItem.itemArticle @ invItem.itemName, 'Pickup');
-                       				AddReceivedItem(player, invItem, itemCount);
+                                    ShowFixedPickupMessage(player,invItem,itemCount,true);
                                     bPickedSomethingUp = True;
 								}
                                 //SARGE: Inform us if our inventory is too full (max stack) to pick these items up.
@@ -1469,8 +1482,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 
 								DeleteInventory(item);
 
-								P.ClientMessage(invItem.PickupMessage @ invItem.itemArticle @ invItem.itemName, 'Pickup');
-								AddReceivedItem(player, invItem, itemCount);
+                                ShowFixedPickupMessage(player,invItem,itemCount,true);
                                 bPickedSomethingUp = True;
 							}
 						}
@@ -1502,8 +1514,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                         bPickedSomethingUp = True;
                                         
                                         // Show the item received in the ReceivedItems window
-                                        AddReceivedItem(player, item, 1);
-                                        P.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
+                                        ShowFixedPickupMessage(player,item,itemCount,true);
 
                                         if (item.IsA('WeaponShuriken') && WeaponShuriken(item).bImpaled)
                                             LootPickupSound = Sound'DeusExSounds.Generic.FleshHit1';
@@ -1539,7 +1550,7 @@ function Frob(Actor Frobber, Inventory frobWith)
         {
             for (i = 0;i < badItemCount;i++)
             {
-                AddReceivedItem(player, badItems[i].item, badItems[i].count, badItems[i].item.IsA('DeusExAmmo'), true);
+                AddReceivedItem(player, badItems[i].item, badItems[i].count, badItems[i].item.IsA('Ammo') || badItems[i].item.IsA('DeusExPickup'), true);
             }
         }
 
@@ -1684,7 +1695,7 @@ function AddReceivedItem(DeusExPlayer player, Inventory item, int count, optiona
 	}
     */
 
-    player.AddReceivedItem(item,count,bNoGroup,bDeclined);
+    player.AddReceivedItem(item,count,bNoGroup,bDeclined,true);
 }
 
 //-----------------------------------------------------------------------
