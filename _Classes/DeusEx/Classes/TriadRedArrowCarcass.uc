@@ -5,6 +5,7 @@ class TriadRedArrowCarcass extends DeusExCarcass;
 
 defaultproperties
 {
+     nameReference=class'DeusEx.TriadRedArrow'
      Mesh2=LodMesh'DeusExCharacters.GM_Trench_CarcassB'
      Mesh3=LodMesh'DeusExCharacters.GM_Trench_CarcassC'
      Mesh=LodMesh'DeusExCharacters.GM_Trench_Carcass'

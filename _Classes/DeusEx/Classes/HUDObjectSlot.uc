@@ -185,7 +185,7 @@ function UpdateItemText()
 	if (item != None)
 	{
 		//Show Dragons Tooth charge
-		if (item.isA('WeaponNanoSword') && WeaponNanoSword(item).ChargeManager != None)
+		if (item.isA('WeaponNanoSword') && WeaponNanoSword(item).ChargeManager != None && (player.bNanoswordEnergyUse || player.bHardcoreMode))
 		{
 			itemText = Sprintf(WeaponNanoSword(item).ChargeManager.ChargeRemainingLabelSmall,WeaponNanoSword(item).ChargeManager.GetCurrentCharge());
 		}

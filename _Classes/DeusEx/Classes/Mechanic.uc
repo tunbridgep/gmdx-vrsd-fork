@@ -3,12 +3,10 @@
 //=============================================================================
 class Mechanic extends HumanCivilian;
 
-function PostBeginPlay()
+function SetupSkin()
 {
-    super.PostBeginPlay();
-
-    if (MultiSkins[6]==Texture'DeusExCharacters.Skins.MechanicTex3')
-         bHasHelmet = True;
+    Super.SetupSkin();
+	bHasHelmet = MultiSkins[6] != Texture'DeusExCharacters.Skins.PinkMaskTex';
 }
 
 defaultproperties

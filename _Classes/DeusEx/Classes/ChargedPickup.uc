@@ -454,7 +454,15 @@ function int RetMaxCopies()
 {
 	local DeusExPlayer player;
 	local int skval;
+
 	player = DeusExPlayer(Owner);
+    
+    if (player == None)
+        player = DeusExPlayer(GetPlayerPawn());
+
+    if (player == None)
+        return 1;
+
 	skval = Player.SkillSystem.GetSkillLevel(skillNeeded)+1;
 
 	return skval;

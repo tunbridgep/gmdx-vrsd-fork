@@ -45,7 +45,7 @@ function SetObject(object newClientObject)
 
         if (bHasChargeBar)
             CreateEnergyBar();
-        bTickEnabled = bHasChargeBar;
+        bTickEnabled = bHasChargeBar || Augmentation(newClientObject).AugmentationType == AUG_Automatic;
 		UpdateAugIconStatus();
 	}
 }
@@ -99,6 +99,10 @@ event Tick(float deltaSeconds)
         else
             winEnergy.SetCurrentValue(0);
     }
+
+    //SARGE: Update the aug icon colour when it's active.
+    if (aug != None && aug.displayAsActiveTime + deltaSeconds >= player.saveTime)
+        colItemIcon = aug.GetAugColor(true);
 }
 
 // ----------------------------------------------------------------------

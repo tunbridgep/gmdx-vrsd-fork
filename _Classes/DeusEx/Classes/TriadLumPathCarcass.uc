@@ -5,6 +5,7 @@ class TriadLumPathCarcass extends DeusExCarcass;
 
 defaultproperties
 {
+     nameReference=class'DeusEx.TriadLumPath'
      Mesh2=LodMesh'DeusExCharacters.GM_Suit_CarcassB'
      Mesh3=LodMesh'DeusExCharacters.GM_Suit_CarcassC'
      Mesh=LodMesh'DeusExCharacters.GM_Suit_Carcass'

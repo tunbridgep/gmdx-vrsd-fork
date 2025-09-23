@@ -395,7 +395,7 @@ function Sound GetDefaultFireSound()
         return Sound'GEPGunFireWP';
     else if ( AmmoRocket(AmmoType) != None )
         return Sound'GEPGunFire';
-    else if (class'DeusExPlayer'.default.bImprovedWeaponSounds || default.ClassicFireSound == None)
+    else if (class'DeusExPlayer'.default.iImprovedWeaponSounds > 0 || default.ClassicFireSound == None)
         return default.FireSound;
     else
         return default.ClassicFireSound;
@@ -464,7 +464,7 @@ function string GetFrobString(DeusExPlayer player)
         return itemName @ "(" $ PickupAmmoCount $ ")";
     //Modified weapons show their modified state
     else if (bModified && player != None && player.bBeltShowModified)
-        return itemName @ strModified;
+        return itemName @ "(" $ strModified $ ")";
     else
         return itemName;
 }
@@ -1418,7 +1418,7 @@ function SetDroppedAmmoCount(int amountPassed) //RSD: Added optional int amountP
         PickupAmmoCount = 35 + (amountPassed * 3);               //SARGE: Now 38-50 rounds with initialization in MissionScript.uc on first map load
     else if (IsA('WeaponAssaultGun'))
         //PickupAmmoCount = Rand(5) + 1.5;                          //RSD
-        PickupAmmoCount = amountPassed + 1;                      //RSD: Now 2-5 rounds with initialization in MissionScript.uc on first map load
+        PickupAmmoCount = amountPassed + 2;                      //RSD: Now 2-5 rounds with initialization in MissionScript.uc on first map load //SARGE: Now 3-6
     else if (IsA('WeaponGepGun'))
         PickupAmmoCount = 2;
     else if (amountPassed > 0)
@@ -5626,7 +5626,7 @@ simulated function bool UpdateInfo(Object winObject)
     
     //SARGE: Show modified weapons in title
     if (bModified && DeusExPlayer(owner) != None && DeusExPlayer(owner).bBeltShowModified)
-        winInfo.SetTitle(itemName @ strModified);
+        winInfo.SetTitle(itemName @ "(" $ strModified $ ")");
     else
         winInfo.SetTitle(itemName);
 
@@ -7420,7 +7420,7 @@ defaultproperties
      bRotatingPickup=False
      PickupMessage="You found"
      ItemName="DEFAULT WEAPON NAME - REPORT THIS AS A BUG"
-     strModified="(Modified)"
+     strModified="Modified"
      BobDamping=0.840000
      LandSound=Sound'DeusExSounds.Generic.DropSmallWeapon'
      bNoSmooth=False

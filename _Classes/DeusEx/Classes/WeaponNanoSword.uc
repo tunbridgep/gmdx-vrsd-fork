@@ -90,6 +90,9 @@ function SetupChargeManager()
 
 function string DoAmmoInfoWindow(Pawn P, PersonaInventoryInfoWindow winInfo)
 {
+    if (DeusExPlayer(P) != None && !DeusExPlayer(P).bNanoswordEnergyUse && !DeusExPlayer(P).bHardcoreMode)
+        return "";
+
 	winInfo.SetText(sprintf(chargeManager.ChargeRemainingLabel,chargeManager.GetCurrentCharge()));
     winInfo.SetText(sprintf(chargeManager.BiocellRechargeAmountLabel,chargeManager.GetRechargeAmountDisplay()));
     winInfo.AddLine();
@@ -101,6 +104,25 @@ event Destroyed()
     CriticalDelete(chargeManager);
 }
 
+//SARGE: Show DTS Charge on the frob string
+function string GetFrobString(DeusExPlayer player)
+{
+    local string modStr, energyStr;
+
+    //If it's modified, we want to show it in the brackets alongside the charge
+    if (bModified && player != None && player.bBeltShowModified)
+        modStr = strModified;
+
+    if (ChargeManager != None && player != None && (player.bHardcoreMode || player.bNanoswordEnergyUse))
+        energyStr = string(ChargeManager.GetCurrentCharge()) $ "%";
+
+    if (modStr != "" && energyStr != "")
+        return itemName @ "(" $ energyStr @ "-" @ modStr $ ")";
+    else if (modStr != "" || energyStr != "")
+        return itemName @ "(" $ modStr $ energyStr $ ")";
+    else
+        return itemName;
+}
 
 //SARGE: Restrict fire if we're using the Dragons Tooth with no charge
 function Fire(float Value)

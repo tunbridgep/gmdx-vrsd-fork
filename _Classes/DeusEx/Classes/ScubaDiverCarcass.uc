@@ -5,6 +5,7 @@ class ScubaDiverCarcass extends DeusExCarcass;
 
 defaultproperties
 {
+     nameReference=class'DeusEx.ScubaDiver'
      Mesh2=LodMesh'DeusExCharacters.GM_Scubasuit_CarcassB'
      Mesh3=LodMesh'DeusExCharacters.GM_Scubasuit_CarcassC'
      Texture=Texture'DeusExCharacters.Skins.ScubasuitTex1'

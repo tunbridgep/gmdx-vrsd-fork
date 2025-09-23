@@ -43,10 +43,11 @@ Quit
 afterFileCheck:
 
 SetOutPath $INSTDIR\GMDX_AE
-File /r /x DeusEx.u /x RSDCrap.u /x DeusEx.int game\GMDXvSARGE\*
+File /r /x DeusEx.u /x RSDCrap.u /x GMDXText.u /x DeusEx.int game\GMDXvSARGE\*
 SetOutPath $INSTDIR\GMDX_AE\System
 File "${SARGE_U_FILES}\DeusEx.u"
 File "${SARGE_U_FILES}\RSDCrap.u"
+File "${SARGE_U_FILES}\GMDXText.u"
 
 ;Copy int file
 File "..\System\DeusEx.int"
@@ -64,5 +65,6 @@ File ..\Docs\vRSD_Docs\*.txt
 #install launcher
 SetOutPath $INSTDIR\System
 File extras\GMDX_AE.cmd
+File extras\GMDX_AE.exe
 
 SectionEnd
