@@ -4,7 +4,7 @@
 class DeusExPlayer extends PlayerPawnExt native;
 
 #exec OBJ LOAD FILE=Effects
-
+#exec OBJ LOAD FILE=GMDXText
 // Name and skin assigned to PC by player on the Character Generation screen
 var travel String	TruePlayerName;
 var travel int      PlayerSkin;
@@ -396,11 +396,10 @@ struct BeltInfo
 var globalconfig bool bWallPlacementCrosshair;		// SARGE: Show a blue crosshair when placing objects on walls
 var globalconfig bool bDisplayTotalAmmo;		    // SARGE: Show total ammo count, rather than MAGS
 var globalconfig bool bDisplayClips;		        // SARGE: For the weirdos who prefer Clips instead of Mags. Hidden Option
-var globalconfig bool bColourCodeFrobDisplay;       //SARGE: Colour Code the Frob display when you don't meet or only just meet the number of tools/picks required. Some people might not like the colours.
 var globalconfig int iFrobDisplayStyle;             //SARGE: Frob Display Style. 0 = "X Tools", 1 = "curr/total Tools", 2 = "total/curr Tools"
 var globalconfig bool bGameplayMenuHardcoreMsgShown;//SARGE: Stores whether or not the gameplay menu message has been displayed.
 var globalconfig bool bEnhancedCorpseInteractions;  //SARGE: Right click always searches corpses. After searching, right click picks up corpses as normal.
-var globalconfig bool bSearchedCorpseText;          //SARGE: Corpses show "[Searched]" text when interacted with for the first time.
+var globalconfig int iSearchedCorpseText;          //SARGE: Corpses show "[Searched]" text when interacted with for the first time. 0 = not show, 1 = show text only, 2 = blue border only, 3 = text and border.
 var globalconfig int iCutsceneFOVAdjust;           //SARGE: Enforce 75 FOV in cutscenes
 var globalconfig bool bLightingAccessibility;       //SARGE: Changes lighting in some areas to reduce strobing/flashing, as it may hurt eyes or cause seizures.
 
@@ -809,6 +808,8 @@ var globalconfig bool bPistolStartTrained;                          //SARGE: If 
 
 var globalconfig bool bStreamlinedRepairBotInterface;               //SARGE: Don't bother showing the repair bot interface at all if it's not charged.
 
+var globalconfig bool bStreamlinedComputerInterface;           //SARGE: "Special Options" screen goes back to the standard Security screen, rather than logging out, so we don't forget to turn off security.
+
 var globalconfig bool bReversedAltBeltColours;                      //SARGE: Make it like how it was in vSarge beta.
 
 var globalconfig bool bAlwaysShowReceivedItemsWindow;               //SARGE: Always show the retrieved items window when picking up ammo from a weapon.
@@ -864,10 +865,21 @@ var globalconfig bool bEnhancedPersonaScreenMouse;             //SARGE: When ena
 
 var globalconfig bool bShowFullAmmoInHUD;                       //SARGE: When ammo for a certain ammo type is full, show it as Yellow in the AMMO Hud
 
+//Tool Window Colouring
+var globalconfig bool bToolWindowShowQuantityColours;           //SARGE: Colour Code the Frob display when you don't meet or only just meet the number of tools/picks required. Some people might not like the colours.
+var globalconfig bool bToolWindowShowKnownCodes;                //SARGE: Show a green border when looking at objects for which you have the key.
+var globalconfig bool bToolWindowShowRead;                      //SARGE: Show a blue border when looking at informationdevices which you have already read.
+var globalconfig bool bToolWindowShowAugState;                  //SARGE: Show a blue border when looking at aug containers where you can replace an aug, and red when the container is not usable.
+var globalconfig int iToolWindowShowDuplicateKeys;              //SARGE: Show a red border when looking at nanokeys we already have 0 = disabled, 1 = text only, 2 = border only, 3 = border and text
+var globalconfig int iToolWindowShowBookNames;                 //SARGE: Show the names of Books, Datacubes etc in the Tool window. 0 = disabled, 1 = only when read, 2 = always
+var globalconfig bool bToolWindowShowInvalidPickup;            //SARGE: Show a red border when unable to pick up an item from the ground
+
+//Inventory Ammo Displays show max ammo
+var globalconfig bool bInventoryAmmoShowsMax;
+
 var globalconfig bool bNanoswordEnergyUse;                      //SARGE: Whether or not the DTS requires energy to function.
 
 var globalconfig bool bFasterInfolinks;                         //SARGE: Significantly decreases the time before queued datalinks can play, to make receiving many messages at once far less sluggish.
-
 
 //Markers Stuff and Notes Overhaul
 var travel MarkerInfo markers;                                  //SARGE: A list of markers 
@@ -1741,6 +1753,7 @@ function InitializeSubSystems()
 }
 
 //SARGE: Helper function to get the count of an item type
+//NOTE TO SELF: Remember to use <object>.class.name here, not <object>.name
 function int GetInventoryCount(Name item)
 {
 	local int count;
@@ -1748,12 +1761,16 @@ function int GetInventoryCount(Name item)
 	
 	anItem = Inventory;
 	count = 0;
+    
+    //ClientMessage("Passed Item: " $ item);
 
 	while(anItem != None)
 	{
 		if (anItem.IsA(item))
         {
-            if (anItem.IsA('DeusExPickup'))
+            if (anItem.IsA('DeusExAmmo'))
+                count += DeusExAmmo(anItem).AmmoAmount;
+            else if (anItem.IsA('DeusExPickup'))
                 count += DeusExPickup(anItem).NumCopies;
             else
     			count++;
@@ -12190,10 +12207,6 @@ function bool GetCrosshairState(optional bool bCheckForOuterCrosshairs)
 
     if (frobTarget != None && frobTarget.isA('InformationDevices') && InformationDevices(frobTarget).aReader == Self)
         return false;
-
-    //SARGE: Holy shit the GMDX code absolutely sucks
-    if (frobTarget != None && frobTarget.isA('GMDXTutorialCube') && GMDXTutorialCube(frobTarget).aReader == Self)
-        return false;
         
     if(bRadialAugMenuVisible) //RSD: Remove the crosshair if the radial aug menu is visible
         return false;
@@ -12261,10 +12274,6 @@ function bool GetBracketsState()
 
     //No brackets while reading books/datacubes/etc
     if (frobTarget != None && frobTarget.isA('InformationDevices') && InformationDevices(frobTarget).aReader == Self)
-        return false;
-
-    //SARGE: Holy shit the GMDX code absolutely sucks
-    if (frobTarget != None && frobTarget.isA('GMDXTutorialCube') && GMDXTutorialCube(frobTarget).aReader == Self)
         return false;
         
     if(bRadialAugMenuVisible)
@@ -14465,6 +14474,7 @@ function DeusExNote AddNote( optional String strNote, optional Bool bUserNote, o
 // ----------------------------------------------------------------------
 
 //SARGE: This exists because we can't use Locs in pre-UT2K3 Unrealscript
+//SARGE TODO: Make a proper string parsing library.
 //This was taken from the UnrealWiki: https://beyondunrealwiki.github.io/pages/useful-string-functions.html
 static final function string Locs(coerce string Text)
 {
@@ -14478,25 +14488,197 @@ static final function string Locs(coerce string Text)
     return Text;
 }
 
+//SARGE: This exists because there's no equivalent function
+//SARGE TODO: Make a proper string parsing library.
+static final function string TitleCase(coerce string Text)
+{
+    local int i, j;
+    local string c, c2;
+    local string Word, Ret;
+    local bool bFirstWord, bDontChange;
+
+    bFirstWord = true;
+
+    //First, make it lowercase
+    Text = Locs(Text);
+ 
+    //Then step through it, if there's a space, then create a new word
+    for (i = 0; i < Len(Text); i++)
+    {
+        c = Mid(Text, i, 1);
+        Word = Word $ c;
+
+        //Log("c is [" $ c $ "]");
+        //If the current character is a space, start a new word
+        if (c == " " || c == "." || i == Len(Text) - 1)
+        {
+
+            //Some articles, like "a" and "the" will remain lower case
+            if (!bFirstWord)
+            {
+                //DON'T want to trim here, because these are only
+                //lower case when used as joiner words.
+                switch (Word)
+                {
+                    case "a ":
+                    case "an ":
+                    case "and ":
+                    case "the ":
+                    case "of ":
+                    case "in ":
+                    case "for ":
+                    case "to ":
+                        bDontChange = true;
+                }
+            }
+            
+            if (!bDontChange)
+            {
+                //Some words are always upper case
+                switch (RTrim(Word))
+                {
+                    case "nsf":
+                    case "hq":
+                    case "nyc":
+                    case "ny":
+                    case "cia":
+                    case "fbi":
+                    case "unatco":
+                    case "mj12":
+                        Word = Caps(Word);
+                        bDontChange = true;
+                }
+            }
+            
+            //Fucking stupid special case!
+            if (!bDontChange)
+            {
+                switch (Word)
+                {
+                    case "versalife ":
+                        Word = "VersaLife ";
+                        bDontChange = true;
+                        break;
+                    case "duclare ":
+                        Word = "DuClare ";
+                        bDontChange = true;
+                        break;
+                    case "3rd ":
+                        Word = "3rd ";
+                        bDontChange = true;
+                        break;
+                }
+            }
+
+            if (!bDontChange)
+            {
+                //Make the first alpha character of the word uppercase
+                for (j = 0;j < Len(Word);j++)
+                {
+                    c2 = Mid(Word, j, 1);
+                    //Log("c2 is [" $ c2 $ "]");
+                    if (c2 >= "a" && c2 <= "z")
+                    {
+                        Word = Left(Word,j) $ Chr(Asc(c2) - 32) $ Mid(Word, j+1);
+                        //Log("Caps Word is [" $ Word $ "]");
+                        break;
+                    }
+                }
+            }
+
+            Ret = Ret $ Word; 
+            Word = "";
+            bFirstWord = false;
+            bDontChange = false;
+        }
+    }
+
+    //Make the first character uppercase
+    //Ret = Chr(Asc(Left(Ret, 1)) - 32) $ Mid(Ret, 1);
+    
+    return Ret;
+}
+
+//SARGE: This exists because there's no equivalent function
+//SARGE TODO: Make a proper string parsing library.
+static final function string StrRepl(coerce string Source, coerce string What, coerce string With)
+{
+    local int needle;
+    local string Output;
+    
+    needle = InStr(Source, What);
+
+    Output = Source;
+
+    //Hack to stop infinite loops and etc.
+    if (What == With)
+        return Output;
+
+    while(needle > -1)
+    {
+        Output = Left(Output,needle) $ With $ Mid(Output,needle + Len(What));
+        needle = InStr(Output, What);
+    }
+
+    return Output;
+}
+
+//SARGE: This exists because there's no equivalent function
+//SARGE TODO: Make a proper string parsing library.
+static final function string Trim(coerce string Text)
+{
+    local int IndexChar;
+ 
+    for (IndexChar = 0; IndexChar < Len(Text); IndexChar++)
+        if (Mid(Text, IndexChar, 1) != " ")
+            break;
+
+    return Right(Text, Len(Text) - IndexChar);
+}
+
+//SARGE: This exists because there's no equivalent function
+//SARGE TODO: Make a proper string parsing library.
+static final function string RTrim(coerce string Text)
+{
+    local int IndexChar;
+ 
+    for (IndexChar = Len(Text) - 1; IndexChar >= 0; IndexChar--)
+        if (Mid(Text, IndexChar, 1) != " ")
+            break;
+
+    return Left(Text, IndexChar + 1);
+}
+
 //Hack to force finding codes with either a space before or after.
 static function int InStrSpaced(string haystack, string needle)
 {
     local int result;
+    local bool bLeft, bRight;
+    local string c;
 
-    result = InStr(haystack," " $ needle $ " ");
+    result = InStr(haystack,needle);
     if (result != -1)
+    {
+        //We found the needle, so either it's the first/last thing in the string, or it's surrounded by non-alpha characters
+        //CHECK LEFT
+        bLeft = true;
+        c = Mid(haystack, result - 1, 1);
+        if (result != 0 && ((c >= "A" && c <= "Z") || (c >= "a" && c <= "z")))
+            bLeft = false;
+        
+        //CHECK Right
+        bRight = true;
+        if (result + len(needle) < len(haystack) - 1)
+        {
+            c = Mid(haystack, result + len(needle), 1);
+            if ((c >= "A" && c <= "Z") || (c >= "a" && c <= "z"))
+                bRight = false;
+        }
+    }
+    if (bLeft && bRight)
         return result;
-    
-    result = InStr(haystack," " $ needle $ ". ");
-    if (result != -1)
-        return result;
-    
-    result = InStr(haystack," " $ needle $ ".");
-    if (result != -1 && Right(haystack, len(needle) + 1) == (needle $ "."))
-        return result;
-    
-    //Log("String: " $ Right(haystack, len(needle) + 1));
-    return -1;
+    else
+        return -1;
 }
 
 //SARGE: Strip off the "FROM: xxx TO: xxx" line in notes,
@@ -14533,19 +14715,145 @@ function string StripFromTo(string text)
     return text;
 }
 
-function bool HasCodeNote(string code)
+function bool HasCodeNote(string code, optional bool bNoHidden)
 {
-    return GetCodeNote(code) != None;
+    return GetCodeNote(code,bNoHidden) != None;
+}
+
+function bool HasCodeNoteStrict(string code, string code2, optional bool bNoHidden)
+{
+    return GetCodeNoteStrict(code,code2,bNoHidden) != None;
+}
+
+function private bool ProcessCodeNote(DeusExNote note, string code, optional bool bStrictMode)
+{
+    local string noteText;
+    local int noteTextNumeric;
+
+    //handle any notes we were given which might not have "original" text for whatever reason
+    if (note.originalText == "")
+        note.originalText = note.text;
+    
+    //noteText = note.originalText;
+
+    //DebugLog("NOTE (pre trim): " $ note.text);
+
+    //SARGE: This is some WEIRD logic!
+    //Because we need to dynamically check the notes for codes,
+    //HOWEVER We DON'T want to be able to login if the words simply exist in notes,
+    //because some logins are common words, like SECURITY,
+    //or WALTON and SIMONS, which means we need to check more thoroughly.
+    //Generally, though, Passwords follow these rules:
+    //1. Normally they are either in ALL CAPS or all lower case.
+    //2. There's a few times where they will have Login: Somename, Password: Somename, which are in camel caps (becase of course....)
+    //3. Lots of notes also have allcaps FROM and TO text in them, like an email,
+    //such as FROM: WALTON SIMONS TO: SOME GUY
+    //So we need to account for all of these.
+    
+    //First, strip off the first line if there's FROM: and TO: text...
+    noteText = StripFromTo(note.originalText);
+
+    noteTextNumeric = int(noteText);
+    
+    //DebugLog("CODE: " $ code);
+
+    //First, if it's numeric, Check note contents for the code exactly
+    if (noteTextNumeric != 0 && InStrSpaced(noteText,code) != -1)
+    {
+        //DebugLog("NOTE: " $ noteText);
+        DebugLog("NOTE CODE " $code$ " FOUND (NUMERIC)");
+        return true;
+    }
+
+    //Next, Check note contents for the code
+    //Start by checking that our code matches CAPS in the note...
+    else if (InStrSpaced(noteText,Caps(code)) != -1)
+    {
+        //DebugLog("NOTE: " $ noteText);
+        DebugLog("NOTE CODE " $code$ " FOUND (CAPS)");
+        return true;
+    }
+
+    //Next, Check note contents for the code exactly
+    else if (InStrSpaced(noteText,code) != -1)
+    {
+        //DebugLog("NOTE: " $ noteText);
+        DebugLog("NOTE CODE " $code$ " FOUND (EXACT)");
+        return true;
+    }
+    
+    //Then check that our code matches all lower case in the note...
+    //locs is not allowed in strict mode!
+    else if (InStrSpaced(noteText,Locs(code)) != -1 && !bStrictMode)
+    {
+        //DebugLog("NOTE: " $ noteText);
+        DebugLog("NOTE CODE " $code$ " FOUND (LOCS)");
+        return true;
+    }
+    
+    //Some codes are in quotes, so always allows things in quotes
+    if (InStr(Caps(noteText),"\""$Caps(code)$"\"") != -1)
+    {
+        //DebugLog("NOTE: " $ noteText);
+        DebugLog("NOTE CODE " $code$ " FOUND (CAPS QUOTES)");
+        return true;
+    }
+    
+    //Some notes have Login: Username and Password: Whatever in them, so handle them.
+    else if (InStr(Caps(noteText),Caps("LOGIN: " $ code)) != -1)
+        return true;
+    else if (InStr(Caps(noteText),Caps("PASSWORD: " $ code)) != -1)
+        return true;
+    else if (InStr(Caps(noteText),Caps("ACCOUNT: " $ code)) != -1)
+        return true;
+    else if (InStr(Caps(noteText),Caps("PIN: " $ code)) != -1)
+        return true;
+    else if (InStr(Caps(noteText),Caps("LOGIN/PASSWORD: " $ code)) != -1)
+        return true;
+}
+
+//A stricter version of GetCodeNote which requires the username and password to be contained
+//within the same note.
+function DeusExNote GetCodeNoteStrict(string username, string password, optional bool bNoHidden)
+{
+	local DeusExNote note;
+    
+    if (username == "" && password == "")
+        return None;
+
+    //Default username/password.
+    if (username == "SECURITY" && password == "SECURITY")
+        return None;
+	
+    note = FirstNote;
+
+	while( note != None)
+	{
+        //Skip user notes and hidden notes
+        if (!note.bUserNote && (!bNoHidden || !note.bHidden))
+        {
+            if (ProcessCodeNote(note,username,true) && ProcessCodeNote(note,password,true))
+                return note;
+        }
+
+        note = note.next;
+	}
+
+    DebugLog("NOTE CODE " $username$"/"$password$ " NOT FOUND");
+	return None;
+
 }
 
 function DeusExNote GetCodeNote(string code, optional bool bNoHidden)
 {
 	local DeusExNote note;
-    local string noteText;
-    local int noteTextNumeric;
 
     if (code == "")
         return None;
+
+    //Some codes are so obvious that they will never have valid notes.
+    //if (bNoHidden && IsObfuscatedCode(code))
+    //    return None;
 
 	note = FirstNote;
 
@@ -14554,80 +14862,33 @@ function DeusExNote GetCodeNote(string code, optional bool bNoHidden)
         //Skip user notes and hidden notes
         if (!note.bUserNote && (!bNoHidden || !note.bHidden))
         {
-
-            //handle any notes we were given which might not have "original" text for whatever reason
-            if (note.originalText == "")
-                note.originalText = note.text;
-            
-            //noteText = note.originalText;
-
-            //DebugLog("NOTE (pre trim): " $ note.text);
-
-            //SARGE: This is some WEIRD logic!
-            //Because we need to dynamically check the notes for codes,
-            //HOWEVER We DON'T want to be able to login if the words simply exist in notes,
-            //because some logins are common words, like SECURITY,
-            //or WALTON and SIMONS, which means we need to check more thoroughly.
-            //Generally, though, Passwords follow these rules:
-            //1. Normally they are either in ALL CAPS or all lower case.
-            //2. There's a few times where they will have Login: Somename, Password: Somename, which are in camel caps (becase of course....)
-            //3. Lots of notes also have allcaps FROM and TO text in them, like an email,
-            //such as FROM: WALTON SIMONS TO: SOME GUY
-            //So we need to account for all of these.
-            
-            //First, strip off the first line if there's FROM: and TO: text...
-            noteText = StripFromTo(note.originalText);
-
-            noteTextNumeric = int(noteText);
-
-            //First, if it's numeric, Check note contents for the code exactly
-            if (noteTextNumeric != 0 && InStrSpaced(noteText,code) != -1)
-            {
-                //DebugLog("NOTE: " $ noteText);
-                DebugLog("NOTE CODE " $code$ " FOUND (NUMERIC)");
+            if (ProcessCodeNote(note,code))
                 return note;
-            }
-
-            //Next, Check note contents for the code
-            //Start by checking that our code matches CAPS in the note...
-            else if (InStr(noteText,Caps(code)) != -1)
-            {
-                //DebugLog("NOTE: " $ noteText);
-                DebugLog("NOTE CODE " $code$ " FOUND (CAPS)");
-                return note;
-            }
-            
-            //Then check that our code matches all lower case in the note...
-            else if (InStr(noteText,Locs(code)) != -1)
-            {
-                //DebugLog("NOTE: " $ noteText);
-                DebugLog("NOTE CODE " $code$ " FOUND (LOCS)");
-                return note;
-            }
-            
-            //Some codes are in quotes, so always allows things in quotes
-            if (InStr(Caps(noteText),"\""$Caps(code)$"\"") != -1)
-            {
-                //DebugLog("NOTE: " $ noteText);
-                DebugLog("NOTE CODE " $code$ " FOUND (CAPS QUOTES)");
-                return note;
-            }
-            
-            //Some notes have Login: Username and Password: Whatever in them, so handle them.
-            else if (InStr(Caps(noteText),Caps("LOGIN: " $ code)) != -1)
-                return note;
-            else if (InStr(Caps(noteText),Caps("PASSWORD: " $ code)) != -1)
-                return note;
-            else if (InStr(Caps(noteText),Caps("LOGIN/PASSWORD: " $ code)) != -1)
-                return note;
-            
         }
 
-		note = note.next;
+        note = note.next;
 	}
 
     DebugLog("NOTE CODE " $code$ " NOT FOUND");
 	return None;
+}
+
+//This is the OPPOSITE of the below function.
+//Some codes should NEVER appear in notes, as they are far too common
+//within notes to actually be detected properly.
+function bool IsObfuscatedCode(string code)
+{
+    code = Caps(code);
+    return code == "RIGHTEOUS";
+    /*
+    return code == "NSF"
+        || code == "MJ12"
+        || code == "RECEPTION"
+        || code == "UNKNOWN"
+        || code == "CAPTAIN"
+        || code == "SECURITY";
+    */
+    return false;
 }
 
 //This is a simple list of codes which serve as exceptions to No Keypad Cheese
@@ -14642,6 +14903,8 @@ function bool GetExceptedCode(string code)
         || code == "BIONICMAN" //we get our code as soon as we enter our office, but it takes a little bit. Fix it not working when we should know it
         || code == "MCHOW" //maggie chows code can only be guessed, never found, but is designed that way.
         || code == "INSURGENT" //maggie chows code can only be guessed, never found, but is designed that way.
+        || code == "MLUNDQUIST" //mlundquist is never mentioned anywhere
+        || code == "DAMOCLES" //Only ever mentioned by itself
         //|| code == "2167" //Only displayed in a computer message, so we never get a note for it //NOW RANDOMISED
         || code == "718" //Can only be guessed based on cryptic information
         || code == "7243" //We are only given 3 digits, need to guess the 4th
@@ -14657,6 +14920,7 @@ function bool GetExceptedCode(string code)
         || code == "12" //Guessable code for the keypad in the MJ12 lab above the entry stairs
         || code == "APPLE" //Special case, spelled "Apple" in note so it fails the LOCS and CAPS checks...
         || code == "MEVERETT" //Can only be guessed, but it's pretty obvious
+        || code == "PYNCHON" //Can only be guessed, but it's pretty obvious
         || code == "JCDENTON"; //Uses Base: JCDenton instead of Username: JCDenton.
 }
 
@@ -19565,13 +19829,13 @@ defaultproperties
      bAugWheelDisableAll=true
      bAugWheelFreeCursor=true
      iAugWheelAutoAdd=1
-     bColourCodeFrobDisplay=True
+     bToolWindowShowQuantityColours=True
      bWallPlacementCrosshair=True
      dynamicCrosshair=1
      bBeltMemory=True
      bEnhancedCorpseInteractions=True
      bBeltShowModified=true
-     bSearchedCorpseText=True
+     iSearchedCorpseText=1
      bDisplayClips=false
      iCutsceneFOVAdjust=2
      iFrobDisplayStyle=1
@@ -19628,12 +19892,20 @@ defaultproperties
      bShowCodeNotes=true
      bEnhancedPersonaScreenMouse=true
      bShowFullAmmoInHUD=true
+     bToolWindowShowKnownCodes=true
+     bToolWindowShowRead=false
+     bToolWindowShowAugState=true
+     iToolWindowShowDuplicateKeys=1
+     iToolWindowShowBookNames=1
+     bToolWindowShowInvalidPickup=false
+     bStreamlinedComputerInterface=true
+     bInventoryAmmoShowsMax=true
      bFasterInfolinks=true
      bNanoswordEnergyUse=true
      bConversationShowCredits=true
      bConversationShowGivenItems=true
      bShowMarkers=true
-     bAllowNoteEditing=trueRegularNotes
+     bAllowNoteEditing=true
      bShowUserNotes=true
      bShowRegularNotes=true
      bShowMarkerNotes=true

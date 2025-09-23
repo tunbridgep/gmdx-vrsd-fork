@@ -618,6 +618,37 @@ function SetNetworkTerminal(NetworkTerminal newTerm)
 }
 
 // ----------------------------------------------------------------------
+// ProcessEmails()
+// SARGE: Moved this from the email screen to a new function, since now it's
+// also used by the Special Options screen
+// ----------------------------------------------------------------------
+
+function ProcessEmails()
+{
+	local String emailName;
+	local String missionNumber;
+	local DeusExLevelInfo info;
+	
+    info = player.GetLevelInfo();
+
+	// hack for the DX.DX splash level
+	if (info != None) 
+	{
+		if (info.MissionNumber < 10)
+			MissionNumber = "0" $ String(info.MissionNumber);
+		else
+			MissionNumber = String(info.MissionNumber);
+	}
+
+	// Open the email menu based on the login id
+	// or if it's been hacked, use the first account in the list
+	emailName = MissionNumber $ "_EmailMenu_" $ winTerm.GetUserName();
+
+	ProcessDeusExText(StringToName(emailName));
+
+}
+
+// ----------------------------------------------------------------------
 // ProcessDeusExText()
 // ----------------------------------------------------------------------
 

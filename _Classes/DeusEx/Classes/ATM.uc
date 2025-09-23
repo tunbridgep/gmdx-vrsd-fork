@@ -163,7 +163,7 @@ function ModBalance(int userIndex, int numCredits, bool bSync)
 function string GetAccountNumber(int userIndex)
 {
 	if ((userIndex >= 0) && (userIndex < ArrayCount(userList)))
-		return Caps(userList[userIndex].accountNumber);
+		return userList[userIndex].accountNumber;
 	else if (userIndex == -1)
 		return "HACKED";
 
@@ -177,7 +177,7 @@ function string GetAccountNumber(int userIndex)
 function string GetPIN(int userIndex)
 {
 	if ((userIndex >= 0) && (userIndex < ArrayCount(userList)))
-		return Caps(userList[userIndex].PIN);
+		return userList[userIndex].PIN;
 	else if (userIndex == -1)
 		return "HACKED";
 

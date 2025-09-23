@@ -14,8 +14,14 @@ var Bool         bBold;
 var bool         bLoadIntro;
 var bool         bScrolling;
 
+struct TextName
+{
+    var name packageName;
+    var name textName;
+};
+
 // Defaults
-var Name         textName;
+var TextName     textNames[5];
 var Float        scrollSpeed;
 var Float        minScrollSpeed;
 var Float        maxScrollSpeed;
@@ -46,7 +52,7 @@ event InitWindow()
 	StopRendering();
 	CreateControls();
 	StartMusic();
-	ProcessText();
+    ProcessText();
 
 	// Hide the mousey
 	root.ShowCursor(False);
@@ -403,18 +409,28 @@ function ConfigurationChanged()
 // ProcessText()
 // ----------------------------------------------------------------------
 
+//We can now handle multiple text names!
 function ProcessText()
+{
+    local int i;
+    for (i = 0;i < ArrayCount(textNames);i++)
+        ProcessText2(textNames[i].packageName,textNames[i].textName);
+	ProcessFinished();
+}
+
+//SARGE: Added packagename variable
+function ProcessText2(Name packageName, Name textTag)
 {
 	local DeusExTextParser parser;
 
 	// First check to see if we have a name
-	if (textName != '')
+	if (packageName != '' && textTag != '')
 	{
 		// Create the text parser
 		parser = new(None) Class'DeusExTextParser';
 
 		// Attempt to find the text object
-		if (parser.OpenText(textName))
+		if (parser.OpenText(textTag,string(packageName)))
 		{
 			while(parser.ProcessText())
 				ProcessTextTag(parser);
@@ -424,8 +440,6 @@ function ProcessText()
 
 		CriticalDelete(parser);
 	}
-
-	ProcessFinished();
 }
 
 // ----------------------------------------------------------------------

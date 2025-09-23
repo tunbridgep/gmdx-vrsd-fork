@@ -1,0 +1,10 @@
+<DC=255,255,255>
+<P>DOOR INTERACTIVITY
+<P>
+<P>Doors that can be interacted with will display relevant information before your eyes (via your HUD augmentation):
+<P>
+<P>Lock Complexity: complexity of the lock (if any); the number of lockpicks required to pick the lock.
+<P>Door Durability: a representation of door sturdiness, simplified as a 'health bar'.
+<P>Damage Threshold: if your weapon does not deal greater damage than this number you will not be able to break the door with that weapon.
+<P>
+<P>See if you can bypass all three doors.

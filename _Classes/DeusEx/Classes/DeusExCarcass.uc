@@ -1269,8 +1269,6 @@ function Frob(Actor Frobber, Inventory frobWith)
                             {
                                 if (player.bShowDeclinedInReceivedWindow)
                                     AddBadItem(player,item);
-                                if (!bSearched)
-                                    player.ClientMessage(sprintf(player.DuplicateNanoKey,item.Name));
                             }
 
 							DeleteInventory(item);
@@ -1609,6 +1607,9 @@ function Frob(Actor Frobber, Inventory frobWith)
 
 	Super.Frob(Frobber, frobWith);
 
+    //Make the frob border colour changing work.
+    Player.UpdateCrosshair();
+
 	if ((Level.Netmode != NM_Standalone) && (Player != None))
 	{
 	   bQueuedDestroy = true;
@@ -1656,14 +1657,26 @@ function bool LootWeaponAmmo(DeusExPlayer P, DeusExWeapon item, optional bool bS
 
 // ----------------------------------------------------------------------
 // AddSearchedString()
+// SARGE: Now handled in FrobDisplayWindow
+// See the returning version below
 // ----------------------------------------------------------------------
 
+/*
 function AddSearchedString(DeusExPlayer player)
 {
-    if (player != None && bSearched && player.bSearchedCorpseText && InStr(ItemName, SearchedString) == -1)
+    if (player != None && bSearched && (player.iSearchedCorpseText == 1 || player.iSearchedCorpseText == 3) && InStr(ItemName, SearchedString) == -1)
     {
         itemName = SearchedString @ itemName;
     }
+}
+*/
+
+function string GetFrobString(DeusExPlayer player)
+{
+    if (!bAnimalCarcass && player != None && bSearched && (player.iSearchedCorpseText == 1 || player.iSearchedCorpseText == 3) && InStr(ItemName, SearchedString) == -1)
+        return SearchedString @ itemName;
+    else
+        return itemName;
 }
 
 // ----------------------------------------------------------------------
@@ -1949,8 +1962,9 @@ function UpdateName()
         itemName = itemName $ " (" $ hdtpReference.default.UnfamiliarName $ ")";
 
     //SARGE: Add searched string
-    if (!bAnimalCarcass)
-        AddSearchedString(DeusExPlayer(GetPlayerPawn()));
+    // SARGE: Now handled in FrobDisplayWindow
+    //if (!bAnimalCarcass)
+    //    AddSearchedString(DeusExPlayer(GetPlayerPawn()));
 }
 
 function KillUnconscious()                                                      //RSD: To properly fix corpse names and trigger any other death effects like MIB explosion

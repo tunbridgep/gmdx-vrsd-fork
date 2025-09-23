@@ -1,0 +1,5 @@
+<DC=255,255,255>
+<P>ADVANCED INTERACTIVITY
+<P>
+<P>With two hands free, you can interact with inventory items where they stand with a left click.
+<P>Holster your weapon, look at the items on the table and press the left mouse button.
