@@ -6,7 +6,7 @@ class HUDRadialMenu extends Window;
 var DeusExPlayer player; // local reference to Jesus Christ
 var DeusExRootWindow root;
 
-const MAX_AUG_SLOTS = 11; // number of available aug slots in body
+const MAX_AUG_SLOTS = 30; // number of available aug slots in body //SARGE: Now that we can swap, it's the total number of augs
 const FULL_CIRCLE = 65536; // in Unreal-thingy units
 
 var vector screenCenter;
@@ -19,7 +19,7 @@ var Vector cursorPos;
 var int maxItems; // maximum number of items
 var int itemCount;
 var Rotator itemAngle; // the angle between two items within the wheel
-var HUDRadialMenuItem orderedItems[11]; // set the array length to something >= 10 if you want
+var HUDRadialMenuItem orderedItems[30]; // set the array length to something >= 10 if you want
 var HUDRadialMenuItem highlightedItem;
 var Window focusMarker;
 var Color focusMarkerCol;

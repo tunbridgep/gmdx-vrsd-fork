@@ -25,6 +25,11 @@ var Localized string skillLevelStrings[4];
 var localized string SkillAtMaximum;
 
 var localized string PerkMenuTitle;
+
+var localized string SkillPointsToMaster; //SARGE: This is now separated out
+
+var const bool bSmartSkillString;           //SARGE: If enabled, will use sprintf for the skill values, rather than printing the description directly.
+
 // ----------------------------------------------------------------------
 // network replication
 // ----------------------------------------------------------------------
@@ -234,20 +239,39 @@ simulated function bool CanAffordToUpgrade( int skillPointsAvailable )
 simulated function bool UpdateInfo(Object winObject)
 {
 	local PersonaInfoWindow winInfo;
-
+    local int totalCost;
+    local string totalstr;
+    
+    totalCost = cost[0] + cost[1] + cost[2];
 	winInfo = PersonaInfoWindow(winObject);
 	if (winInfo == None)
 		return False;
 
 	winInfo.Clear();
 	winInfo.SetTitle(SkillName);
-	winInfo.SetText(Description);
-	if (IsA('SkillLockpicking') || IsA('SkillTech'))
-       if (player != None && player.bHardCoreMode)                              //RSD: Edited these, were 5/10/15/50%, now 5/10/20/50%
-          wininfo.SetText(winInfo.CR() $ "HARDCORE MODE VALUES:" $ winInfo.CR() $ winInfo.CR() $ skillLevelStrings[0] $ ": 5%" $ winInfo.CR() $
-          skillLevelStrings[1] $ ": 10%" $ winInfo.CR() $ skillLevelStrings[2] $ ": 20%" $ winInfo.CR() $ skillLevelStrings[3] $ ": 50%");
+	winInfo.SetText(sprintf(SkillPointsToMaster,totalcost)); //SARGE: We need to do this here, sprintf can only take 4 values.
+    winInfo.SetText(winInfo.CR());
+    winInfo.SetText(GetDescriptionText(player.bHardcoreMode, player.combatDifficulty));
 
 	return True;
+}
+
+//SARGE: Added a new function so we can overwrite it in certain contexts.
+//Replaces the janky "Hardcore mode values" text for Lockpicking/Electronics.
+//Now we should be able to accurately show the actual values.
+function string GetDescriptionText(bool bHardcoreMode, float combatDifficulty)
+{
+    local int s0, s1, s2, s3;
+    if (bSmartSkillString)
+    {
+        s0 = levelValues[0] * 100;
+        s1 = levelValues[1] * 100;
+        s2 = levelValues[2] * 100;
+        s3 = levelValues[3] * 100;
+        return sprintf(Description,s0,s1,s2,s3);
+    }
+    else
+        return Description;
 }
 
 simulated function bool UpdatePerksInfo(Object winObject)    //CyberP: perks
@@ -283,4 +307,5 @@ defaultproperties
      bTravel=True
      NetUpdateFrequency=5.000000
      PerkMenuTitle="Perks - %s"
+     SkillPointsToMaster="Total skill points to master: %n"
 }

@@ -12,7 +12,7 @@ var transient HUDInformationDisplay infoWindow;		// Window to display the inform
 var transient TextWindow winText;				// Last text window we added
 var transient PersonaImageWindow winImages;     // Last image window we added
 var Bool bSetText;
-var Bool bAddToVault;					// True if we need to add this text to the DataVault
+var() Bool bAddToVault;					// True if we need to add this text to the DataVault
 var String vaultString;
 var DeusExPlayer aReader;				// who is reading this?
 var localized String msgNoText;
@@ -20,6 +20,8 @@ var Bool bFirstParagraph;
 var localized String ImageLabel;
 var localized String AddedToDatavaultLabel;
 var localized String msgNextPage;                   //Text to go to the next page
+var localized String msgRead;                       //Text to add to name if it's been read
+var localized String msgEmpty;                      //Text to add to name if it's empty.
 
 //SARGE: Set to true when we have read this once. Used for blanking datacubes
 var travel bool bRead;
@@ -27,9 +29,202 @@ var travel bool bRead;
 //SARGE: For datacubes with both images and text, allow paging through them.
 var transient bool bPageTwo;
 
+//SARGE: Frob string handling
+var string itemTitle;
+struct Title
+{
+    var string textTag;
+    var localized string replacement;
+};
+
+var const Title bookTitles[20];
+var const Title newspaperTitles[20];
+var const Title datacubeTitles[150];
+var const string titleIgnored[100];
+var const string titlePrefixes[100];
+var const string upcases[100];
+var const localized bool bShowNamePrefix;
+var const localized int minParagraphs;
+
 // Called when the device is read
 function OnBeginRead(DeusExPlayer reader) { }
 function OnEndRead(DeusExPlayer reader) { }
+
+function bool IsRead(optional DeusExPlayer player, optional bool bIndividual)
+{
+    if (player == None)
+        player = DeusExPlayer(GetPlayerPawn());
+
+    if (bIndividual)
+        return bRead || textTag == '';
+    else
+        return bRead || textTag == '' || (player != None && player.GetNote(textTag) != None);
+}
+
+//HUGE list of hardcoded *ugh!!* object titles.
+//This idea is very similar to the same idea in DXRando, so credit
+//goes to them for thinking of this. Except I just use the first line,
+//since it fits in most cases, with some exceptions defined for specific instances.
+function string GetItemTitle()
+{
+    local string tag, text, textPart;
+	local DeusExTextParser parser;
+    local int i;
+    local bool bWrite, bPrefix, bWritten;
+    local bool bMatch;
+	local byte T;
+    local int paragraphs;
+	
+    if ( textTag == '' && imageClass == None)
+        return msgEmpty;
+    else if (textTag == '' && imageClass != None)
+        return imageClass.default.imageDescription;
+
+    //Some objects need special handling
+    tag = textPackage $ "." $ texttag;
+    for (i = 0; i < ArrayCount(datacubeTitles);i++)
+    {
+        if (IsA('DataCube') && datacubeTitles[i].textTag == tag)
+            return datacubeTitles[i].replacement;
+    }
+    for (i = 0; i < ArrayCount(bookTitles);i++)
+    {
+        if ((IsA('BookOpen') || IsA('BookClosed')) && bookTitles[i].textTag == tag)
+            return bookTitles[i].replacement;
+    }
+    for (i = 0; i < ArrayCount(newspaperTitles);i++)
+    {
+        if ((IsA('Newspaper') || IsA('NewspaperOpen')) && newspaperTitles[i].textTag == tag)
+            return bookTitles[i].replacement;
+    }
+
+    //If we didn't return, use the generic solution
+    //Get the first line of the text
+    parser = new(None) Class'DeusExTextParser';
+    parser.OpenText(textTag,TextPackage);
+    while(parser.ProcessText())
+    {
+        bWrite = true;
+        bPrefix = false;
+        textPart = parser.GetText();
+        T = parser.GetTag();
+        
+        //Log("----");
+
+        //Log("Tag: " $ T);
+
+        if (T == 18 && bWritten)
+        {
+            paragraphs++;
+            if (paragraphs >= minParagraphs)
+                break;
+        }
+
+        //Log("TextPart (pre-trim): [" $ TextPart $ "]");
+
+        //Fix the text having leading/trailing spaces
+        textPart = class'DeusExPlayer'.static.Trim(textPart);
+        textPart = class'DeusExPlayer'.static.RTrim(textPart);
+        
+        //Log("TextPart (post-trim): [" $ TextPart $ "]");
+            
+        //If the line is empty, ignore it
+        if (TextPart == "")
+        {
+            bWrite = false;
+        }
+        else
+        {
+            //if this is an ignored line, pretend it doesn't exist
+            for(i = 0;i < ArrayCount(titleIgnored);i++)
+            {
+                if (titleIgnored[i] != "" && titleIgnored[i] ~= Left(textPart,Len(titleIgnored[i])))
+                //if (titleIgnored[i] ~= textPart)
+                {
+                    bWrite = false;
+                    break;
+                }
+            }
+        
+            //if this is a prefix line, add it to the string but continue
+            for(i = 0;i < ArrayCount(titlePrefixes);i++)
+            {
+                if (titlePrefixes[i] != "" && titlePrefixes[i] ~= Left(textPart,Len(titlePrefixes[i])))
+                //if (titlePrefixes[i] ~= textPart)
+                {
+                    bPrefix = true;
+                    break;
+                }
+            }
+        }
+        
+        //Log("TextPart: [" $ TextPart $ "] - " $ bWrite $ ", " $ bPrefix $ " [" $ Text $ "]");
+
+        if (bWrite)
+        {
+            //Convert to title case
+            textPart = class'DeusExPlayer'.static.TitleCase(textPart);
+
+            if (text != "")
+                text = text $ " - " $ textPart;
+            else
+                text = textPart;
+
+            if (!bPrefix)
+                bWritten = true;
+        }
+    }
+    parser.CloseText();
+    CriticalDelete(parser);
+        
+    //Log("Text (Before case conversion): " $ Text);
+    
+    //Log("Text (After case conversion): " $ Text);
+
+    //Text Replacements
+    for(i = 0;i < ArrayCount(upcases);i++)
+    {
+        if (upcases[i] != "")
+            text = class'DeusExPlayer'.static.StrRepl(text,upcases[i],Caps(upcases[i]));
+    }
+    
+    //Log("Text (After replacements): " $ Text);
+
+    //Strip off anything more than 100 characters
+    text = Left(text,100);
+    
+    //Log("Text (Final): " $ Text);
+
+    if (text == "")
+        return msgEmpty;
+    else
+        return text;
+}
+
+
+//Sarge: Update with a horrible list of crap!
+function string GetFrobString(DeusExPlayer player)
+{
+    local string frobString;
+    local bool bShow;
+
+    bShow = (player.iToolWindowShowBookNames >= 2 || (player.iToolWindowShowBookNames == 1 && IsRead(player)));
+    
+    if (itemTitle != "" && bShow)
+    {
+        if (bShowNamePrefix)
+            frobString = itemName $ ": " $ itemTitle;
+        else
+            frobString = itemTitle;
+
+        if (player.bGMDXDebug)
+            frobString = "[Tag: " $ TextPackage $ "." $ textTag $ "]" @ frobString;
+    }
+    else
+        frobString = itemName;
+
+    return frobString;
+}
 
 // ----------------------------------------------------------------------
 // Destroyed()
@@ -120,13 +315,20 @@ function Frob(Actor Frobber, Inventory frobWith)
 			if (infoWindow == None)
 				player.ClientMessage(msgNoText);
             else
+            {
                 player.UpdateCrosshair();
+                player.ClearReceivedItems(); //SARGE: Clear received items window as it's blocking the reading window
+            }
 		}
 		else
 		{
 			DestroyWindow();
             player.UpdateCrosshair();
 		}
+
+        //SARGE: Re-cache the fancy item name, to make testing easier.
+        if (player.bGMDXDebug)
+            itemTitle = GetItemTitle();
 	}
 }
 
@@ -348,6 +550,8 @@ function postbeginplay()
 		SetPropertyText("FemaleTextTag", TS);
 	}
 
+    //SARGE: Cache the fancy item name.
+    itemTitle = GetItemTitle();
 
 	super.postbeginplay();
 }
@@ -526,10 +730,137 @@ defaultproperties
 {
      TextPackage="DeusExText"
      msgNoText="It is blank"
+     msgEmpty="Empty"
      ImageLabel="[Image: %s]"
      AddedToDatavaultLabel="Image %s added to DataVault"
      FragType=Class'DeusEx.PaperFragment'
      bPushable=False
 	 bHDTPFailsafe=False
-     msgNextPage="[Image on next page]"
+     bShowNamePrefix=True
+     msgNextPage="[Press again to view Image]"
+     
+     minParagraphs=2
+     
+     //These are now done automagically.
+     //bookTitles(0)=(textTag="DeusExText.01_Book01",replacement="UNATCO Handbook - Welcome to UNATCO!")
+     //bookTitles(1)=(textTag="DeusExText.01_Book02",replacement="UNATCO Handbook - UNATCO and the Public")
+     //bookTitles(2)=(textTag="DeusExText.01_Book03",replacement="UNATCO Handbook - UNATCO and the Police")
+     //bookTitles(4)=(textTag="DeusExText.01_Book05",replacement="UNATCO Handbook - UNATCO and the Future")
+     bookTitles(0)=(textTag="DeusExText.01_Book08",replacement="UNATCO Handbook - Dedication")
+     bookTitles(1)=(textTag="DeusExText.03_Book06",replacement="Curly's Journal")
+     bookTitles(2)=(textTag="DeusExText.06_Book07",replacement="Scrawled Note")
+     bookTitles(3)=(textTag="DeusExText.11_Book10",replacement="Journal")
+
+     datacubeTitles(0)=(textTag="DeusExText.01_Datacube01",replacement="Joseph Manderley Password Change")
+     datacubeTitles(1)=(textTag="DeusExText.01_Datacube03",replacement="Comm Van Code")
+     datacubeTitles(2)=(textTag="DeusExText.01_Datacube04",replacement="Security Login")
+     datacubeTitles(3)=(textTag="DeusExText.01_Datacube05",replacement="Password Change Request")
+     datacubeTitles(4)=(textTag="DeusExText.01_Datacube09",replacement="Janine's Bots - Medical Bot")
+     datacubeTitles(5)=(textTag="DeusExText.02_Datacube01",replacement="Note from Commander Frase")
+     datacubeTitles(6)=(textTag="DeusExText.02_Datacube02",replacement="New Access Codes")
+     datacubeTitles(7)=(textTag="DeusExText.02_Datacube05",replacement="Net Account")
+     datacubeTitles(8)=(textTag="DeusExText.02_Datacube07",replacement="Note from Paul")
+     datacubeTitles(9)=(textTag="DeusExText.02_Datacube08",replacement="New Account Setup")
+     datacubeTitles(10)=(textTag="DeusExText.02_Datacube10",replacement="New Office")
+     datacubeTitles(11)=(textTag="DeusExText.02_Datacube11",replacement="Security Grid Online")
+     datacubeTitles(12)=(textTag="DeusExText.02_Datacube13",replacement="Account Compromised")
+     datacubeTitles(13)=(textTag="DeusExText.02_Datacube15",replacement="Note to Commander Grimaldi")
+     datacubeTitles(14)=(textTag="DeusExText.02_Datacube16",replacement="Note to Commander Grimaldi")
+     datacubeTitles(15)=(textTag="DeusExText.02_Datacube17",replacement="Note to Commander Frase")
+     datacubeTitles(16)=(textTag="DeusExText.03_Datacube05",replacement="Ambrosia Delivery")
+     datacubeTitles(17)=(textTag="DeusExText.03_Datacube06",replacement="Perimeter Survey")
+     datacubeTitles(18)=(textTag="DeusExText.03_Datacube10",replacement="Hangar Code")
+     datacubeTitles(19)=(textTag="DeusExText.03_Datacube11",replacement="Janine's Bots - Repair Bot")
+     datacubeTitles(20)=(textTag="DeusExText.03_Datacube12",replacement="Helibase Computer Login")
+     datacubeTitles(21)=(textTag="DeusExText.04_Datacube01",replacement="Message to Paul")
+     datacubeTitles(22)=(textTag="DeusExText.04_Datacube02",replacement="Security Login")
+     datacubeTitles(23)=(textTag="DeusExText.04_Datacube03",replacement="Account Summary")
+     datacubeTitles(24)=(textTag="DeusExText.04_Datacube04",replacement="Halon Gas")
+     datacubeTitles(25)=(textTag="DeusExText.04_Datacube05",replacement="UNATCO Dossier")
+     datacubeTitles(26)=(textTag="DeusExText.05_Datacube01",replacement="Intrusion Attempt")
+     datacubeTitles(27)=(textTag="DeusExText.05_Datacube02",replacement="New Password")
+     datacubeTitles(28)=(textTag="DeusExText.05_Datacube04",replacement="Armory Code Change")
+     datacubeTitles(29)=(textTag="DeusExText.05_Datacube04",replacement="Greasel Dissection")
+     datacubeTitles(30)=(textTag="DeusExText.05_Datacube09",replacement="Janine's Bots - Page Bravo-3 Peacebringer")
+     datacubeTitles(31)=(textTag="DeusExText.05_Datacube10",replacement="Prospectus - Series P Agents")
+     datacubeTitles(32)=(textTag="DeusExText.06_Datacube01",replacement="Hong Kong Challenges")
+     datacubeTitles(33)=(textTag="DeusExText.06_Datacube02",replacement="Security Code Reset")
+     datacubeTitles(34)=(textTag="DeusExText.06_Datacube03",replacement="Re: Triad Report")
+     datacubeTitles(35)=(textTag="DeusExText.06_Datacube04",replacement="Surveillance Report - Triads")
+     datacubeTitles(36)=(textTag="DeusExText.06_Datacube05",replacement="I'm Sorry!")
+     datacubeTitles(37)=(textTag="DeusExText.06_Datacube06",replacement="Interrogation Recording")
+     datacubeTitles(38)=(textTag="DeusExText.06_Datacube08",replacement="VersaLife Sign-In")
+     datacubeTitles(39)=(textTag="DeusExText.06_Datacube09",replacement="I Think Something is Going On")
+     datacubeTitles(40)=(textTag="DeusExText.06_Datacube10",replacement="Security System Access")
+     datacubeTitles(41)=(textTag="DeusExText.06_Datacube11",replacement="Corrupted Security Upgrade")
+     datacubeTitles(42)=(textTag="DeusExText.06_Datacube12",replacement="New Server Node")
+     datacubeTitles(43)=(textTag="DeusExText.06_Datacube13",replacement="Police Substation Code")
+     datacubeTitles(44)=(textTag="DeusExText.06_Datacube14",replacement="Message to Party Leader Xan")
+     datacubeTitles(45)=(textTag="DeusExText.06_Datacube15",replacement="Password Change")
+     datacubeTitles(46)=(textTag="DeusExText.06_Datacube18",replacement="Password Update")
+     datacubeTitles(47)=(textTag="DeusExText.06_Datacube19",replacement="Incident Report - Officer Tam")
+     datacubeTitles(48)=(textTag="DeusExText.06_Datacube20",replacement="Instructions for Mort")
+     datacubeTitles(49)=(textTag="DeusExText.06_Datacube21",replacement="Book Recommendations")
+     datacubeTitles(50)=(textTag="DeusExText.06_Datacube22",replacement="Surveillance Report - Maggie Chow")
+     datacubeTitles(51)=(textTag="DeusExText.06_Datacube23",replacement="Hong Kong Network Services - New Account")
+     datacubeTitles(52)=(textTag="DeusExText.06_Datacube24",replacement="Superfreighter Refit")
+     datacubeTitles(53)=(textTag="DeusExText.06_Datacube25",replacement="Regression Analysis")
+     datacubeTitles(54)=(textTag="DeusExText.06_Datacube29",replacement="Augmentation Canister")
+     datacubeTitles(55)=(textTag="DeusExText.06_Datacube30",replacement="Note to Self")
+     datacubeTitles(56)=(textTag="DeusExText.06_Datacube31",replacement="Welcome to VersaLife!")
+     datacubeTitles(57)=(textTag="DeusExText.06_Datacube32",replacement="New Security Procedure")
+     datacubeTitles(58)=(textTag="DeusExText.08_Datacube01",replacement="Information for All Staff")
+     datacubeTitles(59)=(textTag="DeusExText.09_Datacube01",replacement="Ship Access")
+     datacubeTitles(60)=(textTag="DeusExText.09_Datacube03",replacement="Code Change")
+     datacubeTitles(61)=(textTag="DeusExText.09_Datacube04",replacement="Note to Self")
+     datacubeTitles(62)=(textTag="DeusExText.09_Datacube05",replacement="Message to Walton Simons (Draft)")
+     datacubeTitles(63)=(textTag="DeusExText.09_Datacube07",replacement="Note for Doctor Liu")
+     datacubeTitles(64)=(textTag="DeusExText.09_Datacube08",replacement="Security Review")
+     datacubeTitles(65)=(textTag="DeusExText.09_Datacube09",replacement="Security Restrictions")
+     datacubeTitles(66)=(textTag="DeusExText.09_Datacube10",replacement="BlueOS Installation Log")
+     datacubeTitles(67)=(textTag="DeusExText.09_Datacube13",replacement="Note to Self")
+     datacubeTitles(68)=(textTag="DeusExText.09_Datacube14",replacement="Security Restrictions")
+     datacubeTitles(69)=(textTag="DeusExText.10_Datacube02",replacement="Dear Nicolette")
+     datacubeTitles(70)=(textTag="DeusExText.10_Datacube03",replacement="Account Security")
+     datacubeTitles(71)=(textTag="DeusExText.10_Datacube04",replacement="Get Some Cash!")
+     datacubeTitles(72)=(textTag="DeusExText.10_Datacube05",replacement="Account Security")
+     datacubeTitles(73)=(textTag="DeusExText.10_Datacube06",replacement="To Do List")
+     datacubeTitles(74)=(textTag="DeusExText.10_Datacube07",replacement="Storeroom Code")
+     datacubeTitles(75)=(textTag="DeusExText.10_Datacube09",replacement="Welcome to Paris!")
+     datacubeTitles(76)=(textTag="DeusExText.10_Datacube10",replacement="Message for Chad")
+     datacubeTitles(77)=(textTag="DeusExText.10_Datacube11",replacement="Security Login")
+     datacubeTitles(78)=(textTag="DeusExText.11_Datacube02",replacement="Morpheus")
+     datacubeTitles(79)=(textTag="DeusExText.11_Datacube03",replacement="Orders")
+     datacubeTitles(80)=(textTag="DeusExText.12_Datacube02",replacement="Saddle Up (Draft)")
+     datacubeTitles(81)=(textTag="DeusExText.14_Datacube01",replacement="Message for Nasir")
+     datacubeTitles(82)=(textTag="DeusExText.14_Datacube02",replacement="Tunnel Code")
+     datacubeTitles(83)=(textTag="DeusExText.14_Datacube05",replacement="Security Login")
+     datacubeTitles(84)=(textTag="DeusExText.14_Datacube06",replacement="Ridley's Betrayal")
+     datacubeTitles(85)=(textTag="DeusExText.15_Datacube01",replacement="Message for Julia")
+     datacubeTitles(86)=(textTag="DeusExText.15_Datacube09",replacement="Coolant Door Lock")
+     datacubeTitles(87)=(textTag="DeusExText.15_Datacube11",replacement="Message for Alain")
+     datacubeTitles(88)=(textTag="DeusExText.15_Datacube12",replacement="Explosives")
+     datacubeTitles(89)=(textTag="DeusExText.15_Datacube17",replacement="Security Login")
+     datacubeTitles(90)=(textTag="DeusExText.15_Datacube18",replacement="Lab 12 Testing Regimen")
+     datacubeTitles(91)=(textTag="DeusExText.15_Datacube19",replacement="Reactor Leak")
+     datacubeTitles(92)=(textTag="DeusExText.15_Datacube20",replacement="Get Topside!")
+
+     titleIgnored(0)="!=!==!==="
+     titleIgnored(1)="* = * = * ="
+     //titleIgnored(2)="By G. K."
+     //titleIgnored(3)="By Andrew"
+     //titleIgnored(4)="Report For The New York City Council"
+     titleIgnored(5)="By " //Remove the author line from books.
+     titleIgnored(6)="U.s. Army" //Way too long title
+
+     titlePrefixes(0)="UNATCO HANDBOOK"
+
+     upcases(0)="Sh-187"
+     upcases(1)="Iii"
+     upcases(2)=": a " //HACK
+     //upcases(1)="Unatco"
+     //upcases(2)=" Ny "
+     //upcases(3)="Cia "
+     //upcases(4)="U.s. "
+
 }

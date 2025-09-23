@@ -1,0 +1,8 @@
+<DC=255,255,255>
+<P>While disarming explosives is already a tricky task for most agents, more experienced agents may eventually learn more advanced techniques, allowing them to rearm and reuse grenades that they have previously disarmed, based on their Demolitions skill.
+<P>
+<P>At TRAINED, Agents learn how to rearm the relatively simple mechanisms inside Gas Grenades, allowing them to be collected and reused.
+<P>At ADVANCED, Agents are taught how to interface with the more complex comptuer-based targeting systems of EMP and Scrambler grenades.
+<P>At MASTER, Agents are taught how to reset the complex IFF modules of LAMs.
+<P>
+<P>NOTE: This is a simulated exercise. For the purposes of this exercise, your Demolitions skill will be simulated at MASTER level, allowing you to rearm LAMs.

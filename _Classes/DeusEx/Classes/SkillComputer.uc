@@ -16,28 +16,19 @@ var localized string strNewHackSystem;          //"NEW HACKING SYSTEM ADDITIONS:
 var localized string strDescExtra;              //The info about the new hacking system
 
 //SARGE: If playing on Hardcore or with the new hack system, update description
-simulated function bool UpdateInfo(Object winObject)
+function string GetDescriptionText(bool bHardcoreMode, float combatDifficulty)
 {
     local string title;
-	local PersonaInfoWindow winInfo;
+    local string text;
 
-	winInfo = PersonaInfoWindow(winObject);
-	if (winInfo == None)
-		return False;
+    text = Super.GetDescriptionText(bHardcoreMode,combatDifficulty);
 
-    Super.UpdateInfo(winObject);
-
-    if (player == None || (!player.bHackLockouts && !player.bHardCoreMode))
-        return True;
-    
-    if (player.bHardCoreMode)
+    if (bHardCoreMode)
         title = strHardcore;
-    else if (player.bHackLockouts)
+    else if (class'DeusExPlayer'.default.bHackLockouts)
         title = strNewHackSystem;
         
-    wininfo.SetText(winInfo.CR() $ title $ winInfo.CR() $ winInfo.CR() $ strDescExtra);
-
-	return True;
+    return text $ "|n" $ "|n" $ title $ "|n" $ "|n" $ strDescExtra;
 }
 
 simulated function PreBeginPlay()

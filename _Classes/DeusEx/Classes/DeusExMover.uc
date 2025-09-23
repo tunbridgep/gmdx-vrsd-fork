@@ -69,6 +69,12 @@ var float               leftFrobTimer;           //Sarge: Ticks down from 3 seco
 const             leftFrobTimerMax = 6.0;
 
 
+//SARGE: Do we have the key for this lock?
+function bool HasKey(DeusExPlayer Player)
+{
+    return Player.KeyRing.HasKey(KeyIDNeeded);
+}
+
 //SARGE: Check to see if we can re-lock a door
 //Either we have the key for it in our keyring, or we previously picked it open and have the Locksport perk
 function bool CanToggleLock(DeusExPlayer Player, NanoKeyRing keyring)
@@ -372,6 +378,24 @@ function BlowItUp(Pawn instigatedBy)
 	local Vector spawnLoc;
 	local ExplosionLight light;
 
+    //SARGE: Added.
+    local float fscale;
+    local int fnum;
+
+    //SARGE: If we have permanent debris turned on, increase
+    //the number of fragments, but significantly reduce their size.
+    //This makes things significantly easier to see
+    if (class'DeusExPlayer'.default.iPersistentDebris >= 2)
+    {
+        fNum = NumFragments * 2;
+        fScale = FragmentScale / 6.0;
+    }
+    else
+    {
+        fNum = NumFragments;
+        fScale = FragmentScale;
+    }
+
 	// force the mover to stop
 	if (Leader != None)
 		Leader.MakeGroupStop();
@@ -394,7 +418,7 @@ function BlowItUp(Pawn instigatedBy)
 	spawnLoc = Location - (PrePivot >> Rotation);
 
 	// spawn some fragments and make a sound
-	for (i=0; i<NumFragments; i++)
+	for (i=0; i<fNum; i++)
 	{
 		frag = Spawn(FragmentClass,,, spawnLoc + FragmentSpread * VRand());
 		if (frag != None)
@@ -402,12 +426,12 @@ function BlowItUp(Pawn instigatedBy)
 			frag.Instigator = instigatedBy;
 
 			// make the last fragment just drop down so we have something to attach the sound to
-			if (i == NumFragments - 1)
+			if (i == fNum - 1)
 				frag.Velocity = vect(0,0,0);
 			else
 				frag.CalcVelocity(VRand(), FragmentSpread);
 
-			frag.DrawScale = FragmentScale;
+			frag.DrawScale = fScale;
 			if (FragmentTexture != None)
 				frag.Skin = FragmentTexture;
 			if (bFragmentTranslucent)
@@ -447,7 +471,7 @@ function BlowItUp(Pawn instigatedBy)
 	MakeNoise(2.0);
 	if (frag != None)
 	{
-		if (NumFragments <= 5)
+		if (fNum <= 5)
 			frag.PlaySound(ExplodeSound1, SLOT_None, 2.0,, FragmentSpread*256);
 		else
 			frag.PlaySound(ExplodeSound2, SLOT_None, 2.0,, FragmentSpread*256);
@@ -828,6 +852,9 @@ function Frob(Actor Frobber, Inventory frobWith)
 					bLocked = !bLocked;		// toggle the lock state
                     bPlayerLocked = bLocked;
 					TimeSinceReset = 0;
+
+                    //SARGE: Update crosshair so that the frob display border colour updates
+                    player.UpdateCrosshair();
 
                     //if re-locked, reset the lock strength
                     if (bLocked)

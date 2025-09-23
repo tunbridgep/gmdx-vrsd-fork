@@ -353,6 +353,10 @@ var localized String msgModsCopied;
 var const Sound CopyModsSound;
 var const Sound ClassicFireSound;
 
+//SARGE: Some weapons are marked "hand to hand" but actually aren't hand to hand weapons
+//we need a hacky variable to distinguish them, so we don't give them combat strength etc
+var const bool bFakeHandToHand;
+
 //END GMDX:
 
 //
@@ -391,7 +395,7 @@ function Sound GetDefaultFireSound()
         return Sound'GEPGunFireWP';
     else if ( AmmoRocket(AmmoType) != None )
         return Sound'GEPGunFire';
-    else if (class'DeusExPlayer'.default.bImprovedWeaponSounds || default.ClassicFireSound == None)
+    else if (class'DeusExPlayer'.default.iImprovedWeaponSounds > 0 || default.ClassicFireSound == None)
         return default.FireSound;
     else
         return default.ClassicFireSound;
@@ -417,7 +421,7 @@ function class<Ammo> GetPrimaryAmmoType()
 // SARGE: Refactored this out of the Carcass Frob function so it was hopefully less horribly long,
 // and it was repeated everywhere, all over the codebase. For shame, GMDX!!!
 // ----------------------------------------------------------------------
-function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, optional bool bLootSound, optional bool bNoRemoveClipAmmo, optional bool bOverflow)
+function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, optional bool bLootSound, optional bool bNoRemoveClipAmmo, optional bool bOverflow, optional bool bOverflowWindow)
 {
     local class<Ammo> defAmmoClass;
     local int intj;
@@ -439,7 +443,7 @@ function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, op
     if (IsA('WeaponShuriken') && WeaponShuriken(self).bImpaled)
         overrideTexture = Texture'RSDCrap.Icons.BeltIconShurikenBloody';
 
-    intj = P.LootAmmo(defAmmoClass,PickupAmmoCount,bDisplayMsg,bDisplayWindow,bLootSound,!bDisposableWeapon,bDisposableWeapon,bOverflow,overrideTexture);
+    intj = P.LootAmmo(defAmmoClass,PickupAmmoCount,bDisplayMsg,bDisplayWindow,bLootSound,bDisposableWeapon,bDisposableWeapon,bOverflow && !bDisposableWeapon,bOverflowWindow,overrideTexture);
 
     if (intj > 0)
     {
@@ -460,7 +464,7 @@ function string GetFrobString(DeusExPlayer player)
         return itemName @ "(" $ PickupAmmoCount $ ")";
     //Modified weapons show their modified state
     else if (bModified && player != None && player.bBeltShowModified)
-        return itemName @ strModified;
+        return itemName @ "(" $ strModified $ ")";
     else
         return itemName;
 }
@@ -1229,61 +1233,116 @@ function TakeDamage(int Damage, Pawn EventInstigator, vector HitLocation, vector
 
 //SARGE: Moved this to a new function so that it can be used
 //even at full ammo.
-function CopyModsFrom(DeusExWeapon W, optional bool bNotify)
+function bool CopyModsFrom(DeusExWeapon W, optional bool bNotify)
 {
+    local bool bCopied;
+
+    if (!W.bModified || W.bDisposableWeapon)
+        return false;
+
     if (W.ModBaseAccuracy > ModBaseAccuracy)
+    {
         ModBaseAccuracy = W.ModBaseAccuracy;
+        bCopied = true;
+    }
     if (W.ModReloadCount > ModReloadCount)
+    {
         ModReloadCount = W.ModReloadCount;
+        bCopied = true;
+    }
     if (W.ModAccurateRange > ModAccurateRange)
+    {
         ModAccurateRange = W.ModAccurateRange;
+        bCopied = true;
+    }
 
     // these are negative
     if (W.ModReloadTime < ModReloadTime)
+    {
         ModReloadTime = W.ModReloadTime;
+        bCopied = true;
+    }
     if (W.ModRecoilStrength < ModRecoilStrength)
+    {
         ModRecoilStrength = W.ModRecoilStrength;
+        bCopied = true;
+    }
 
     if (W.bHasLaser)
+    {
         bHasLaser = True;
+        bCopied = true;
+    }
     if (W.bHasSilencer)
+    {
         bHasSilencer = True;
+        bCopied = true;
+    }
     if (W.bHasScope)
+    {
         bHasScope = True;
+        bCopied = true;
+    }
     if (W.bFullAuto)     //CyberP:
+    {
         bFullAuto = True;
+        bCopied = true;
+    }
 
     // copy the actual stats as well
     if (W.ReloadCount > ReloadCount)
+    {
         ReloadCount = W.ReloadCount;
+        bCopied = true;
+    }
     if (W.AccurateRange > AccurateRange)
+    {
         AccurateRange = W.AccurateRange;
+        bCopied = true;
+    }
 
     // these are negative
     if (W.BaseAccuracy < BaseAccuracy)
+    {
         BaseAccuracy = W.BaseAccuracy;
+        bCopied = true;
+    }
     if (W.ReloadTime < ReloadTime)
+    {
         ReloadTime = W.ReloadTime;
+        bCopied = true;
+    }
     if (W.RecoilStrength < RecoilStrength)
+    {
         RecoilStrength = W.RecoilStrength;
+        bCopied = true;
+    }
 
     //ROF mod
-        if(W.ModShotTime < ModShotTime)
-            ModShotTime = W.ModShotTime;
-    //DAM mod
-        if(W.ModDamage > ModDamage)
-            ModDamage = W.ModDamage;
+    if(W.ModShotTime < ModShotTime)
+    {
+        ModShotTime = W.ModShotTime;
+        bCopied = true;
+    }
     
-    if (W.bModified && !bModified && bNotify)
+    //DAM mod
+    if(W.ModDamage > ModDamage)
+    {
+        ModDamage = W.ModDamage;
+        bCopied = true;
+    }
+    
+    if (bCopied && bNotify)
     {
         if (Owner != None && Owner.IsA('DeusExPlayer'))
             DeusExPlayer(Owner).ClientMessage(sprintf(msgModsCopied,W.ItemName));
         PlaySound(CopyModsSound,SLOT_None,0.8);
     }
 
-    if (W.bModified)
+    if (bCopied)
         bModified = true;
 
+    return bCopied;
 }
 
 function bool HandlePickupQuery(Inventory Item)
@@ -1414,7 +1473,7 @@ function SetDroppedAmmoCount(int amountPassed) //RSD: Added optional int amountP
         PickupAmmoCount = 35 + (amountPassed * 3);               //SARGE: Now 38-50 rounds with initialization in MissionScript.uc on first map load
     else if (IsA('WeaponAssaultGun'))
         //PickupAmmoCount = Rand(5) + 1.5;                          //RSD
-        PickupAmmoCount = amountPassed + 1;                      //RSD: Now 2-5 rounds with initialization in MissionScript.uc on first map load
+        PickupAmmoCount = amountPassed + 2;                      //RSD: Now 2-5 rounds with initialization in MissionScript.uc on first map load //SARGE: Now 3-6
     else if (IsA('WeaponGepGun'))
         PickupAmmoCount = 2;
     else if (amountPassed > 0)
@@ -1611,7 +1670,7 @@ simulated function float GetWeaponSkill()
 			if ((player.AugmentationSystem != None ) && ( player.SkillSystem != None ))
 			{
 				// get the target augmentation
-                if (!bHandToHand)
+                if (!bHandToHand || IsA('WeaponShuriken'))
                 {
                     value = player.AugmentationSystem.GetAugLevelValue(class'AugTarget');
                     if (value == -1.0)
@@ -1642,7 +1701,7 @@ function int CalculateTrueDamage()
 
     //SARGE: Factor in Targeting and Combat Strength
     //SARGE: NOTE: Targeting is handled in GetWeaponSkill, so not needed here.
-    if (P != None && bHandToHand)
+    if (P != None && bHandToHand && !bFakeHandToHand)
     {
         if (P.AugmentationSystem != None)
             mult = P.AugmentationSystem.GetAugLevelValue(class'AugCombatStrength');
@@ -3649,7 +3708,7 @@ function Fire(float Value)
 		if (ReloadCount > 0)
 			AmmoType.UseAmmo(1);
 
-       if (meleeStaminaDrain != 0)
+       if (meleeStaminaDrain != 0 && !bFakeHandToHand)
        {
        if (Owner.IsA('DeusExPlayer') && Owner != none)
        {
@@ -3829,6 +3888,9 @@ simulated function PlaySelectiveFiring()
 	{
 	    if (Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).AugmentationSystem != none)
 		   hhspeed = DeusExPlayer(Owner).AugmentationSystem.GetAugLevelValue(class'AugCombat');
+			
+        if (hhspeed < 1.0)
+            hhspeed = 1.0;
 
 		//== Speed up the firing animation if we have the ROF mod
 		//mod = 1.000000 - ModShotTime;
@@ -3863,10 +3925,8 @@ simulated function PlaySelectiveFiring()
 			//PlayAnim(anim,1 * mod,0.1);
             return;
         }            
-		else if (bHandToHand && !IsA('WeaponHideAGun') && !IsA('WeaponLAW'))
+		else if (bHandToHand && !bFakeHandToHand)
 		{
-			if (hhspeed < 1.0)
-				hhspeed = 1.0;
 
             if (Owner.IsA('DeusExPlayer'))
             {
@@ -3879,6 +3939,8 @@ simulated function PlaySelectiveFiring()
 
 			PlayAnim(anim,1 * hhspeed,0.1); //CyberP: increase melee speed if augcombat
 		}
+		else if (bHandToHand && GoverningSkill == class'DeusEx.SkillDemolition') //SARGE: Hand to Hand speed used to work for grenades. Make it work again, but without the stamina and zyme changes
+			PlayAnim(anim,1 * hhspeed,0.1);
 		else
 			PlayAnim(anim,1 * mod,0.1);
 	}
@@ -4616,7 +4678,7 @@ simulated function Projectile ProjectileFire(class<projectile> ProjClass, float 
 	speedMult=1.0;
 	// AugCombat increases our speed (distance) if hand to hand
 	mult = 1.0;
-	if (bHandToHand && (DeusExPlayer(Owner) != None))
+	if (bHandToHand && !bFakeHandToHand && (DeusExPlayer(Owner) != None))
 	{
 		/*mult = DeusExPlayer(Owner).AugmentationSystem.GetAugLevelValue(class'AugCombat'); //RSD: No more buffs to projectile speed from Combat Speed
 		if (mult == -1.0)
@@ -5151,7 +5213,7 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
 	{
 		// AugCombat increases our damage if hand to hand
 		mult = 1.0;
-		if (bHandToHand && (DeusExPlayer(Owner) != None))
+		if (bHandToHand && !bFakeHandToHand && (DeusExPlayer(Owner) != None))
 		{
 			mult = DeusExPlayer(Owner).AugmentationSystem.GetAugLevelValue(class'AugCombatStrength');
 			if (mult == -1.0)
@@ -5619,7 +5681,7 @@ simulated function bool UpdateInfo(Object winObject)
     
     //SARGE: Show modified weapons in title
     if (bModified && DeusExPlayer(owner) != None && DeusExPlayer(owner).bBeltShowModified)
-        winInfo.SetTitle(itemName @ strModified);
+        winInfo.SetTitle(itemName @ "(" $ strModified $ ")");
     else
         winInfo.SetTitle(itemName);
 
@@ -7413,7 +7475,7 @@ defaultproperties
      bRotatingPickup=False
      PickupMessage="You found"
      ItemName="DEFAULT WEAPON NAME - REPORT THIS AS A BUG"
-     strModified="(Modified)"
+     strModified="Modified"
      BobDamping=0.840000
      LandSound=Sound'DeusExSounds.Generic.DropSmallWeapon'
      bNoSmooth=False

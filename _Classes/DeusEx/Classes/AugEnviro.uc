@@ -31,7 +31,7 @@ defaultproperties
      mpAugValue=0.100000
      mpEnergyDrain=20.000000
      //EnergyRate=0.000000
-     EnergyRate=20.000000
+     EnergyRate=30.000000
      Icon=Texture'DeusExUI.UserInterface.AugIconEnviro'
      smallIcon=Texture'DeusExUI.UserInterface.AugIconEnviro_Small'
      AugmentationName="Environmental Resistance"

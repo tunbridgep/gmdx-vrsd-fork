@@ -57,7 +57,7 @@ event InitWindow()
 function CreateNameWindow()
 {
 	local Window winLine;
-
+    
 	// Create the Name Window
 	nameWindow = TextWindow(lowerConWindow.NewChild(Class'TextWindow'));
 	nameWindow.SetTextAlignments( HALIGN_Left, VALIGN_Center);
@@ -84,21 +84,24 @@ event ParentRequestedPreferredSize(bool bWidthSpecified, out float preferredWidt
 
 	if ((!bWidthSpecified) && (!bHeightSpecified))
 	{
-		lowerConWindow.QueryPreferredSize(preferredWidth, preferredHeight);
+        if (lowerConWindow != None) //SARGE: Fix accessed none?
+            lowerConWindow.QueryPreferredSize(preferredWidth, preferredHeight);
 
 		if (preferredHeight < minHeight)
 			preferredHeight = minHeight;
 	}
 	else if (bWidthSpecified)
 	{
-		preferredHeight = lowerConWindow.QueryPreferredHeight(preferredWidth);
+        if (lowerConWindow != None) //SARGE: Fix accessed none?
+            preferredHeight = lowerConWindow.QueryPreferredHeight(preferredWidth);
 
 		if (preferredHeight < minHeight)
 			preferredHeight = minHeight;
 	}
 	else
 	{
-		preferredWidth = lowerConWindow.QueryPreferredWidth(preferredHeight);
+        if (lowerConWindow != None) //SARGE: Fix accessed none?
+            preferredWidth = lowerConWindow.QueryPreferredWidth(preferredHeight);
 	}
 }
 
@@ -110,7 +113,8 @@ event ParentRequestedPreferredSize(bool bWidthSpecified, out float preferredWidt
 
 function ConfigurationChanged()
 {
-	lowerConWindow.ConfigureChild(0, 0, width, height);
+    if (lowerConWindow != None) //SARGE: Fix accessed none?
+        lowerConWindow.ConfigureChild(0, 0, width, height);
 }
 
 // ----------------------------------------------------------------------
@@ -121,7 +125,8 @@ function ConfigurationChanged()
 
 function DisplayName(string text)
 {
-	nameWindow.SetText( text );
+    if (nameWindow != None) //SARGE: Fix accessed none?
+        nameWindow.SetText( text );
 }
 
 // ----------------------------------------------------------------------
@@ -135,6 +140,9 @@ function DisplayText(string text, Actor speakingActor)
 	local TextWindow newText;
 	local float txtWidth;
 	local GC gc;
+
+    if (lowerConWindow == None) //SARGE: Fix accessed none?
+        return;
 
 	newText = TextWindow(lowerConWindow.NewChild(Class'TextWindow'));
 	newText.SetTextAlignments( HALIGN_Left, VALIGN_Center);
@@ -180,8 +188,9 @@ function AppendText(string text)
 function DestroyChildren()
 {
 	local Window win;
-
-	win = lowerConWindow.GetTopChild();
+    
+    if (lowerConWindow != None) //SARGE: Fix accessed none?
+        win = lowerConWindow.GetTopChild();
 	while( win != None )
 	{
 		win.Destroy();

@@ -55,6 +55,13 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDObjectBeltBorder_2_big.pcx"			NAME="HUDOBjectBeltBorder_2_big"			GROUP="UserInterface"
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\InventoryBorder_4_big.pcx"			    NAME="InventoryBorder_4_big"	           	GROUP="UserInterface"
 
+//"Mods Copied" icon
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\modscopied.pcx"		            	    NAME="ModsCopied"	                       	GROUP="UserInterface"
+
+//New buttons on Goals/Notes menu
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\GoalsBackground_4_edit.pcx"			    NAME="GoalsBackground_4_edit"	           	GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\GoalsBackground_5_edit.pcx"			    NAME="GoalsBackground_5_edit"	           	GROUP="UserInterface"
+
 // Ammo
 #exec TEXTURE IMPORT FILE="Textures\Ammo10mmAPTex.pcx"			NAME="Ammo10mmAPTex"			GROUP="Skins"
 #exec TEXTURE IMPORT FILE="Textures\AmmoDartTex1.pcx"			NAME="AmmoDartTex1"			GROUP="Skins"
@@ -137,8 +144,14 @@ class All expands Object
 //Bloody Shuriken
 #exec TEXTURE IMPORT FILE="Textures\BeltIconShurikenBloody.pcx"	    NAME="BeltIconShurikenBloody"   GROUP="Icons"   FLAGS=2
 
+//Fixed "Hair: None" in Terrorist Commander image
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\Image01_TerroristCommander_1_hair.pcx" NAME="Image01_TerroristCommander_1" GROUP="UserInterface"
+
 //NSF Warehouse satellite photo, with ladder removed
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\Image02_NYC_Warehouse_1_noladder.pcx"	NAME="Image02_NYC_Warehouse_1_noladder" GROUP="UserInterface"
+
+//Fixed Paris image
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\Image11_Paris_Cathedral_1.pcx"	NAME="Image11_Paris_Cathedral_1" GROUP="UserInterface"
 
 //Crap
 #exec TEXTURE IMPORT FILE="Textures\Skins\SpartaSign.pcx"	        NAME="SpartaSign" GROUP="Skins"
@@ -241,6 +254,8 @@ class All expands Object
 
 #exec AUDIO IMPORT FILE="Sounds\MultitoolEquip.wav"			NAME="MultitoolEquip"	    	GROUP="Misc"
 #exec AUDIO IMPORT FILE="Sounds\MultitoolUnequip.wav"	    NAME="MultitoolUnequip"		    GROUP="Misc"
+
+#exec AUDIO IMPORT FILE="Sounds\dsp_toxic.wav"			    NAME="DSPToxic"	         		GROUP="Misc"
 
 //New poison smoke texture
 #exec TEXTURE IMPORT  FILE="Textures\ef_PoisonSmoke001.pcx" NAME="ef_PoisonSmoke001" GROUP="Skins"

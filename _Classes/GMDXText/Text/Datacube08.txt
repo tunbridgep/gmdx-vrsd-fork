@@ -1,0 +1,8 @@
+<DC=255,255,255>
+<P>TAKEDOWNS
+<P>
+<P>Perform a takedown! To do so, equip a melee weapon, sneak right up behind the hologram and aim for the midsection or the back of the head, then press 'Fire Weapon' (default = Left Mouse Button).
+<P>
+<P>The Baton or Riot Prod are best suited to this task as a result of their silent and non-lethal nature, though any weapon can be used.
+<P>
+<P>A takedown can only be performed if the target is unaware of your presence.

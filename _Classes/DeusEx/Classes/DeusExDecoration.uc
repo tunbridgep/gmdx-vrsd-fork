@@ -82,6 +82,8 @@ var const localized string msgCantUseWhileSwimming;                             
 //SARGE: Ignore LOS check for frobbing. Allows us to frob through walls! Disabled by default
 var(GMDX) bool bSkipLOSFrobCheck;
 
+var(GMDX) bool bSmallFragments;                                                 //SARGE: If we have debris persistence turned on, create many more much smaller fragments for readability.
+
 // ----------------------------------------------------------------------
 // ShouldCreate()
 // If this returns FALSE, the object will be deleted on it's first tick
@@ -1673,6 +1675,24 @@ simulated function Frag(class<fragment> FragType, vector Momentum, float DSize, 
 	local DeusExFragment s;
 	local vector vecta;
 
+    //SARGE: Added.
+    local float fscale;
+    local int fnum;
+
+    //SARGE: If we have permanent debris turned on, increase
+    //the number of fragments, but significantly reduce their size.
+    //This makes things significantly easier to see
+    if (bSmallFragments && class'DeusExPlayer'.default.iPersistentDebris >= 2)
+    {
+        fNum = NumFrags * 2;
+        fScale = 0.4;
+    }
+    else
+    {
+        fNum = NumFrags;
+        fScale = 1.0;
+    }
+
 	//log("bOnlyTriggerable="@bOnlyTriggerable);
 	if ( bOnlyTriggerable||bInvincible )
 		return;
@@ -1688,7 +1708,7 @@ simulated function Frag(class<fragment> FragType, vector Momentum, float DSize, 
 
 	if (IsA('Plant1') || IsA('Plant2') || IsA('Plant3') || IsA('Flowers'))
 	{
-	 for (i=0 ; i<NumFrags*14 ; i++)   //CyberP: plus 2
+	 for (i=0 ; i<fNum*14 ; i++)   //CyberP: plus 2
 	{
 	    vecta = Location;
 	    vecta.Z -= (CollisionHeight * 0.4);
@@ -1696,7 +1716,7 @@ simulated function Frag(class<fragment> FragType, vector Momentum, float DSize, 
 		if (s != None)
 		{
 			s.CalcVelocity(Momentum,0);
-			s.DrawScale = DSize*0.2+0.7*DSize*FRand();
+			s.DrawScale = (DSize*0.2+0.7*DSize*FRand())*fScale;
 			s.Skin = Texture'GMDXSFX.Earth.ExpoLakeBed';
 			if (stickaround)
 			{
@@ -1707,14 +1727,14 @@ simulated function Frag(class<fragment> FragType, vector Momentum, float DSize, 
 	}
 	}
 
-	for (i=0 ; i<NumFrags+6 ; i++)   //CyberP: plus 6
+	for (i=0 ; i<fNum+6 ; i++)   //CyberP: plus 6
 	{
 		s = DeusExFragment(Spawn(FragType, Owner));
 		if (s != None)
 		{
 			s.Instigator = Instigator;
 			s.CalcVelocity(Momentum,0);
-			s.DrawScale = DSize*0.5+0.2*DSize*FRand();
+			s.DrawScale = (DSize*0.5+0.2*DSize*FRand())*fScale;
 			//if (!s.IsA('GlassFragment'))
 			//{
             if (Frand() < 0.5)

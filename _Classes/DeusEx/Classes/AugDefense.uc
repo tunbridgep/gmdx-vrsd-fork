@@ -63,11 +63,14 @@ state Active
 
 			if (mindist < LevelValues[CurrentLevel])
 			{
+				SetDefenseAugStatus(True,CurrentLevel,minproj);
                 minproj.bAggressiveExploded = True;
                 minproj.aggressiveExploder = Player;
 				minproj.Explode(minproj.Location, vect(0,0,1));
+                minproj = None;
                 player.Energy -= GetAdjustedEnergyRate();
 				Player.PlaySound(sound'ProdFire', SLOT_None,,,, 2.0);
+				displayAsActiveTime = player.saveTime + 1.0; //SARGE: show as active for 1 seconds
 			}
             
             // play a warning sound
@@ -132,7 +135,7 @@ simulated function DeusExProjectile FindNearestProjectile()
         //SARGE: Dirty hack to prevent scripted grenades from triggering it
         bValidProj = bValidProj && (!proj.IsA('GasGrenade') || !GasGrenade(proj).bScriptedGrenade);
         
-        bValidProj = bValidProj && (!proj.IsA('ThrownProjectile') || !ThrownProjectile(proj).bProximityTriggered);
+        bValidProj = bValidProj && (!proj.IsA('ThrownProjectile') || (!ThrownProjectile(proj).bProximityTriggered && ThrownProjectile(proj).bArmed));
 
       if (bValidProj)
       {
@@ -145,7 +148,7 @@ simulated function DeusExProjectile FindNearestProjectile()
 				// make sure it's moving fast enough
 				if (VSize(proj.Velocity) > 100)
 				{
-				   dist = VSize(Player.Location - proj.Location);
+				   dist = abs(VSize(Player.Location - proj.Location));
 				   if (dist < mindist)
 				   {
 					  mindist = dist;
@@ -203,7 +206,7 @@ simulated function SetDefenseAugStatus(bool bDefenseActive, int defenseLevel, De
       return;
    DeusExRootWindow(Player.rootWindow).hud.augDisplay.bDefenseActive = bDefenseActive;
    DeusExRootWindow(Player.rootWindow).hud.augDisplay.defenseLevel = defenseLevel;
-   DeusExRootWindow(Player.rootWindow).hud.augDisplay.defenseTarget = defenseTarget;
+   DeusExRootWindow(Player.rootWindow).hud.augDisplay.SetDefenseTarget(defenseTarget);
 
 }
 
@@ -224,7 +227,7 @@ defaultproperties
 {
      mpAugValue=500.000000
      mpEnergyDrain=35.000000
-     EnergyRate=5.000000 //Was 40 when Active, now per projectile
+     EnergyRate=8.000000 //Was 40 when Active, now per projectile
      EnergyRateLabel="Energy Rate: %d Units/Projectile"
      Icon=Texture'DeusExUI.UserInterface.AugIconDefense'
      smallIcon=Texture'DeusExUI.UserInterface.AugIconDefense_Small'

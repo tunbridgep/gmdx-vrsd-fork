@@ -251,7 +251,7 @@ defaultproperties
      TeamPhotoTextures(1)=Texture'DeusExUI.UserInterface.TeamBack_2'
      TeamPhotoTextures(2)=Texture'DeusExUI.UserInterface.TeamBack_3'
      ScrollMusicString="Quotes_Music.Quotes_Music"
-     textName=DeusExQuotes
      colHeader=(R=192,B=192)
      colText=(R=128,G=255,B=128)
+     textNames(0)=(packageName=DeusExText,textName=DeusExQuotes)
 }

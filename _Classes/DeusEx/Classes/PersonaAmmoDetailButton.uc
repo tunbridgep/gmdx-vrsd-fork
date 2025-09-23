@@ -17,6 +17,10 @@ var localized String RoundsLabel;
 
 var bool bNoSelectSound;                                                        //RSD: Hack to stop ammo load buttons from multiply playing selectbutton sounds
 
+//SARGE: Max rounds display
+var const localized String RoundsLabelShort;
+var transient int maxRounds;
+
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -84,11 +88,13 @@ event DrawWindow(GC gc)
 	gc.SetAlignments(HALIGN_Center, VALIGN_Top);
 	gc.GetTextExtent(0, strWidth, strHeight, descStr);
 
-	if ((bHasIt) && (rounds > 0))
+	if ((bHasIt) && (rounds > 0) || player.bInventoryAmmoShowsMax)
 	{
 		str = String(rounds);
 
-		if (str == "1")
+        if (player.bInventoryAmmoShowsMax && maxRounds > 0)
+			str = Sprintf(RoundsLabelShort, str, maxRounds);
+		else if (str == "1")
 			str = Sprintf(RoundLabel, str);
 		else
 			str = Sprintf(RoundsLabel, str);
@@ -120,6 +126,9 @@ function SetAmmo(Class<Ammo> newAmmo, bool bNewHasIt, optional int newRounds)
 	ammo   = newAmmo;
 	bHasIt = bNewHasIt;
 	rounds = newRounds;
+
+    //SARGE: Populate the max rounds
+    maxRounds = player.GetAdjustedMaxAmmoByClass(ammo);
 
 	SetClientObject(ammo);
 	SetIcon(Class<DeusExAmmo>(ammo).static.GetHDTPIcon());
@@ -193,6 +202,7 @@ defaultproperties
      colSelectionBorderHalf=(R=128,G=128,B=128)
      RoundLabel="%d Round"
      RoundsLabel="%d Rounds"
+     RoundsLabelShort="%d/%d Rds"
      iconPosWidth=42
      iconPosHeight=37
      buttonWidth=44

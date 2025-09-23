@@ -28,6 +28,34 @@ var byte savedMusicVolume;
 var byte savedSpeechVolume;
 
 // ----------------------------------------------------------------------
+// SARGE: GetConversation()
+//
+// Returns a conversation based on a name
+// ----------------------------------------------------------------------
+
+function Conversation GetConversation(Name conName)
+{
+    local Conversation c, fallback;
+    local Name fallbackConName;
+
+    fallbackConName = '';
+
+    if (flags.GetBool('LDDPJCIsFemale'))
+    {
+        fallbackConName=conName;
+        conName = flags.StringToName("FemJC"$string(conName));
+    }
+
+    foreach AllObjects(class'Conversation', c)
+    {
+        if(c.conName == conName || c.conName == fallbackConName)
+            return c;
+    }
+
+    return None;
+}
+
+// ----------------------------------------------------------------------
 // SARGE: UpdateSavePoints()
 //
 // Checks the required flags for all Save Points, and hides/unhides them accordingly.
@@ -99,24 +127,45 @@ function RestorePreviousVolume()
 // based on the players Lighting Accessibility setting
 // ----------------------------------------------------------------------
 
-function DoLightingAccessibility(Light L, name checkName, optional bool bStrobe)
+function ApplyLightingAccessibility()
 {
-    if (!player.bLightingAccessibility || L.name != checkName)
-        return;
-                
-    //log("Light Found: [" $ L.Name $ "]");
+    local light L;
+    local LightCoronaFlicker C;
 
-    if (bStrobe)
+    ForEach AllActors(class'LightCoronaFlicker', C)
     {
-        L.LightPeriod = 155;
-        L.LightType = LT_Strobe;
+        if (player.bLightingAccessibility)
+            C.minimumTime = 2.0;
+        else
+            C.minimumTime = C.default.minimumTime;
     }
-    else
+
+    if (player.bLightingAccessibility)
     {
-        L.LightPeriod = 0;
-        L.LightType = LT_Steady;
+        ForEach AllActors(class'Light', L)
+            DoLightingAccessibilityFor(L);
     }
 }
+
+function DoLightingAccessibilityFor(Light L, optional bool bStrobe)
+{
+    //log("Light Found: [" $ L.Name $ "]");
+    if (L.LightType != LT_Flicker && L.LightType != LT_Strobe && L.LightType != LT_Blink)
+        return;
+
+    L.LightPeriod = 0;
+    L.LightType = LT_Steady;
+    L.bLightChanged = True;
+}
+
+/*
+//SARGE: This will break for lights that are turned on/off dynamically.
+function ResetLightingAccessibilityFor(Light L)
+{
+    L.LightPeriod = L.default.LightPeriod;
+    L.LightType = L.default.LightType;
+}
+*/
 
 // ----------------------------------------------------------------------
 // PostPostBeginPlay()
@@ -302,8 +351,8 @@ function FirstFrame()
                        || player.bRandomizeCratesAmmoPistol || player.bRandomizeCratesAmmoRifle
                        || player.bRandomizeCratesAmmoNonlethal || player.bRandomizeCratesAmmoRobot
                        || player.bRandomizeCratesAmmoHeavy || player.bRandomizeCratesAmmoExplosive);*/
-        if (bRandomCrates)                                                      //RSD: Also randomize crates with user setting
-			InitializeRandomCrateContents();
+        //if (bRandomCrates)                                                      //RSD: Also randomize crates with user setting
+			InitializeRandomCrateContents(bRandomCrates);
 		if (bRandomItems)                                                       //RSD: Also randomize items (weapon mods) with user setting
 			InitializeRandomItems();
 		if (player.bRandomizeAugs)
@@ -328,7 +377,7 @@ function FirstFrame()
         if (dxInfo.MissionNumber > 0)
         {
             //Distribute PS20's and Flares
-            DistributeItem('ScriptedPawn',class'WeaponHideAGun',0,2,class'AmmoHideAGun');
+            DistributeItem('ScriptedPawn',class'WeaponHideAGun',0,1,class'AmmoHideAGun');
             DistributeItem('ScriptedPawn',class'Flare',1,3);
 
             //SARGE: Give Shurikens to Elites
@@ -347,6 +396,8 @@ function FirstFrame()
             foreach AllActors(class'Collectible', Coll)
                 Coll.Destroy();
 
+        //SARGE: Do lighting accessibility
+        ApplyLightingAccessibility();
         firstTime = true;
 	}
 
@@ -443,6 +494,9 @@ function Timer()
 		if ((player != None) && (flags.GetBool('PlayerTraveling')))
 			FirstFrame();
 	}
+
+    //Disable some tutorial messages
+    flags.SetBool('GMDXNoTutorials', player.bLessTutorialMessages);
 
     DoConfixCheck();
     UpdateSavePoints();
@@ -651,18 +705,27 @@ function RandomiseCrap()
     local OfficeChair C;
     local CouchLeather L;
     local ChairLeather L2;
-    local int chairSkin;
+    local int chairSkin, couchSkin;
         
     if (!player.bRandomizeCrap)
         return;
 
     foreach AllActors(class'DeusExPickup', P)
-    {
         P.RandomiseSkin(player);
+
+    //If the mission has a custom token, use that for chair colours
+    if (dxInfo.ChairRandomizationToken == -1)
+    {
+        couchSkin=Player.Randomizer.GetRandomInt(4);
+        chairSkin=Player.Randomizer.GetRandomInt(5);
+    }
+    else
+    {
+        couchSkin = (Player.seed + dxInfo.ChairRandomizationToken) % 4;
+        chairSkin = (Player.seed + dxInfo.ChairRandomizationToken) % 5;
     }
     
     //Roll once, so that all the chairs in the level get the same style.
-    chairSkin=Player.Randomizer.GetRandomInt(5);
     //log("Applying chair skin to all swivel chairs: " $ chairSkin);
     foreach AllActors(class'OfficeChair', C)
     {
@@ -671,11 +734,10 @@ function RandomiseCrap()
     }
     
     //Roll once, so that all the couches in the level get the same style.
-    chairSkin=Player.Randomizer.GetRandomInt(4);
     //log("Applying chair skin to all leather couches: " $ chairSkin);
     foreach AllActors(class'CouchLeather', L)
     {
-        L.SkinColor = chairSkin;
+        L.SkinColor = couchSkin;
         L.UpdateHDTPsettings();
     }
     
@@ -700,7 +762,7 @@ function InitializeEnemySwap(int pool) //use pool 0 for regular weapons, pool 1 
     //Get all the relevant actors on the map
     foreach AllActors(class'ScriptedPawn', Man)
 	{
-        if (!Man.bImportant && Man.GetPawnAllianceType(Player) == ALLIANCE_Hostile && !Man.isA('Robot') && !Man.isA('Animal') && !Man.isA('HumanCivilian') && !Man.bDontRandomizeWeapons)
+        if (!Man.bImportant && Man.GetPawnAllianceType(Player) == ALLIANCE_Hostile && !Man.isA('Robot') && !Man.isA('Animal') && !Man.isA('HumanCivilian') && !Man.bDontRandomizeWeapons && Man.Weapon != None)
         {
             if (pool == 0 && !Man.Weapon.isA('WeaponRifle') && !Man.Weapon.isA('WeaponGEPGun') && !Man.Weapon.isA('WeaponPlasmaRifle'))
                 randomizeActors[totalRandomized] = Man;
@@ -844,10 +906,10 @@ function ReplaceEnemyWeapon(ScriptedPawn first, ScriptedPawn second)
     second.SetupWeapon(false);
 }
 
-function InitializeRandomCrateContents()                                        //RSD: Randomizes crate contents depdending on new loot table classes
+function InitializeRandomCrateContents(bool bRandomCrates)                                        //RSD: Randomizes crate contents depdending on new loot table classes
 {
     local Containers CO;
-    //local class<Inventory> itemClass;
+    local class<Inventory> itemClass;
     local bool bMatchFound;
 	local LootTableAmmoPistol tablePistol;
 	local LootTableAmmoRifle tableRifle;
@@ -886,7 +948,25 @@ function InitializeRandomCrateContents()                                        
     {
     	if (CO.IsA('CrateBreakableMedCombat') || CO.IsA('CrateBreakableMedGeneral') || CO.IsA('CrateBreakableMedMedical'))
     	{
-            //itemClass = CO.contents;
+            //SARGE: The base game can swap crate contents between 1 of 3 items, the main contents, content2 or content3.
+            //That worked completely differently to this system, and would be set upon the crate being destroyed, meaning
+            //it could be savescummed.
+            //We will fix it by just rolling it now instead.
+            //This is a horribly lazy hacky implementation.
+            itemClass = CO.contents;
+            if (CO.Content2!=None && FRand()<0.33) itemClass = CO.Content2;
+            if (CO.Content3!=None && FRand()<0.33) itemClass = CO.Content3;
+            CO.contents = itemClass;
+            CO.Content2 = None;
+            CO.Content3 = None;
+
+            //Jump out if crate randomisation isn't enabled.
+            //We used to not run this entire function, but now we need to
+            //ensure that the contents shuffling above takes place, because
+            //crates will no longer pick random contents when being destroyed.
+            if (!bRandomCrates)
+                continue;
+
             if ((ClassIsChildOf(CO.contents,class'DeusExAmmo') || ClassIsChildOf(CO.contents,class'DeusExWeapon')) && player.bRandomizeCrates) //RSD: First do ammo tables since they're most common
             {
             //if (player.bRandomizeCratesAmmoPistol)

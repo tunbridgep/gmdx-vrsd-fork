@@ -35,7 +35,7 @@ function Frob(actor Frobber, Inventory frobWith)
 	bUsing = True;
 	
     if (Frobber.IsA('Pawn'))
-	    Pawn(Frobber).TakeDamage(5, Pawn(Frobber), vect(0,0,0), vect(0,0,0), 'Shocked');
+	    Pawn(Frobber).TakeDamage(3, Pawn(Frobber), Frobber.Location, vect(0,0,0), 'Shocked');
 	
     GenerateSparks(true);
     soundID = PlaySound(Sound'Ambient.Ambient.Electricity3');

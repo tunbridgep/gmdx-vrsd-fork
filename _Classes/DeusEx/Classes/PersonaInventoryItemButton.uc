@@ -166,7 +166,7 @@ event DrawWindow(GC gc)
 			str = "";
 
 			//SARGE: Add charge for NanoSword
-            if (anItem.isA('WeaponNanoSword') && WeaponNanoSword(anItem).chargeManager != None && WeaponNanoSword(anItem).chargeManager.GetCurrentCharge() > 0)
+            if (anItem.isA('WeaponNanoSword') && WeaponNanoSword(anItem).chargeManager != None && WeaponNanoSword(anItem).chargeManager.GetCurrentCharge() > 0 && (player.bNanoswordEnergyUse || player.bHardcoreMode))
                 str2 = Sprintf("%d%%", WeaponNanoSword(anItem).chargeManager.GetCurrentCharge());
 
 			if ((weapon != None) && weapon.bDisposableWeapon)
@@ -364,40 +364,8 @@ event bool MouseButtonPressed(float pointX, float pointY, EInputKey button,
                               int numClicks)
 {
 	local Bool bResult;
-	local Inventory anItem;
-
 	bResult = False;
-	anItem = Inventory(GetClientObject());
-    //CyberP: new mouse shortcuts in the inventory:
-    if (!bDragging && !bDragStart)
-    {
-    if (button == IK_RightMouse && anItem.IsA('DeusExPickup'))
-    {
-		//TODO: Sarge: Create a generic Inventory Use/Equip function per item
-       if (anItem.IsA('Lockpick') || anItem.IsA('Multitool') || anItem.IsA('FireExtinguisher'))
-       winInv.EquipSelectedItem();
-       else
-       winInv.UseSelectedItem(); //winInv.ButtonActivated(??????, btnUse);
-       return true;
-    }
-    if (button == IK_RightMouse && anItem.IsA('DeusExWeapon'))
-    {
-       winInv.EquipSelectedItem();
-       return true;
-    }
-    if (button == IK_MiddleMouse && (anItem.IsA('DeusExWeapon') || anItem.IsA('DeusExPickup')))
-    {
-       winInv.DropSelectedItem();
-       return true;
-    }
-    }
-    /*else if (bDragging)                                                         //RSD: Inventory rotation with perk
-    {
-       if (button == IK_RightMouse && anItem.IsA('DeusExWeapon'))
-       {
-          RotateButton(pointX, pointY);
-       }
-    }*/
+
     //CyberP: end
 	if (button == IK_LeftMouse)
 	{

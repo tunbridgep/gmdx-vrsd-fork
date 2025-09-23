@@ -32,6 +32,10 @@ var int    userIndex;
 var int shadowOffsetX;
 var int shadowOffsetY;
 
+var HUDKeypadNotesWindow winNotes;
+
+var const bool bShowNotes;         //SARGE: Added. Show the notes on the first screen(usually login).
+
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -69,7 +73,16 @@ event InitWindow()
 
 event DestroyWindow()
 {
-	if ((compOwner.IsA('Computers')) && (compOwner != None))
+    //SARGE: Destroy the notes window too
+    if (winNotes != None)
+    {
+        winNotes.DestroyWindow();
+        winNotes.DestroyAllChildren();
+        winNotes.Destroy();
+        winNotes = None;
+    }
+
+	if (compOwner != None && compOwner.IsA('Computers'))
 	{
       if (Player != Player.GetPlayerPawn())
       {
@@ -255,6 +268,9 @@ function ShowFirstScreen()
         ShowScreen(LockoutScreen);
     else
     	ShowScreen(FirstScreen);
+    //Show the notes screen
+    if (winNotes != None)
+        winNotes.Show();
 }
 
 // ----------------------------------------------------------------------
@@ -266,6 +282,7 @@ function ShowScreen(Class<ComputerUIWindow> newScreen)
 	// First close any existing screen
 	if (winComputer != None)
 	{
+        winComputer.winNotes = None;
 		winComputer.Destroy();
 		winComputer = None;
 	}
@@ -275,8 +292,13 @@ function ShowScreen(Class<ComputerUIWindow> newScreen)
 	{
 		winComputer = ComputerUIWindow(NewChild(newScreen));
 		winComputer.SetWindowAlignments(HALIGN_Center, VALIGN_Center);
+		//winComputer.SetCompOwner(compOwner);
 		winComputer.SetNetworkTerminal(Self);
 		winComputer.SetCompOwner(compOwner);
+        if (winNotes != None)
+        {
+            winComputer.SetNotesWindow(winNotes);
+        }
 		winComputer.Lower();
 	}
 }
@@ -290,14 +312,24 @@ function CloseScreen(String action)
 	// First destroy the current screen
 	if (winComputer != None)
 	{
+        winComputer.winNotes = None;
 		winComputer.Destroy();
 		winComputer = None;
 	}
 
 	// Based on the action, proceed!
-
 	if (action == "EXIT")
 	{
+	
+        // destroy notes
+        if (winNotes != None)
+        {
+            winNotes.DestroyAllChildren();
+            winNotes.DestroyWindow();
+            winNotes.Destroy();
+            winNotes = None;
+        }
+
 		if (Computers(compOwner) != None)
 			player.CloseComputerScreen(Computers(compOwner));
 		root.PopWindow();
@@ -312,6 +344,22 @@ function CloseScreen(String action)
 		CloseHackWindow();
 		bNoHack = True;
 	}
+	
+    //SARGE: Hide notes screen when logging in
+    if (action == "LOGIN")
+    {
+        if (winNotes != None)
+            winNotes.Hide();
+    }
+	
+    //SARGE: Re-show notes and the hack window when logging out.
+    if (action == "LOGOUT")
+    {
+        if (winNotes != None)
+            winNotes.Show();
+        CreateHackWindow();
+		bNoHack = False;
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -382,6 +430,79 @@ function CreateHackWindow()
             skillLevel = 1;
         }
 	}
+}
+
+//SARGE: Add a notes window showing all relevant notes.
+function AddNotesWindow()
+{
+    local DeusExNote codeNotes[10];
+    local DeusExNote note1, note2;
+    local int numCodes;
+    local Computers C;
+    local ATM A;
+    local int i;
+
+    if (!player.bShowCodeNotes || !bShowNotes)
+        return;
+
+    C = Computers(compOwner);
+    A = ATM(compOwner);
+
+    if (C != None)
+    {
+        for (i = 0; i < 8;i++)
+        {
+            if (player.IsObfuscatedCode(C.GetUserName(i)) && player.IsObfuscatedCode(C.GetPassword(i)))
+            {
+                note1 = player.GetCodeNote(C.GetUserName(i),true);
+                note2 = player.GetCodeNote(C.GetPassword(i),true);
+            }
+            else
+            {
+                note1 = player.GetCodeNoteStrict(C.GetUserName(i),C.GetPassword(i),true);
+            }
+            
+            if (note1 != None)
+                codeNotes[numCodes++] = note1;
+            if (note2 != None && note2 != note1)
+                codeNotes[numCodes++] = note2;
+        }
+    }
+    else if (A != None)
+    {
+        for (i = 0; i < 8;i++)
+        {
+            if (player.IsObfuscatedCode(A.GetAccountNumber(i)) && player.IsObfuscatedCode(A.GetPIN(i)))
+            {
+                note1 = player.GetCodeNote(A.GetAccountNumber(i),true);
+                note2 = player.GetCodeNote(A.GetPIN(i),true);
+            }
+            else
+            {
+                note1 = player.GetCodeNoteStrict(A.GetAccountNumber(i),A.GetPIN(i),true);
+            }
+
+            if (note1 != None)
+                codeNotes[numCodes++] = note1;
+            if (note2 != None && note2 != note1)
+                codeNotes[numCodes++] = note2;
+        }
+    }
+    
+    //SARGE: Dirty hack alert!!!!
+    if (numCodes == 0 && (!player.bHardCoreMode || player.iNoKeypadCheese == 0))
+        return;
+
+    if (winNotes == None)
+    {
+        winNotes = HUDKeypadNotesWindow(NewChild(Class'HUDKeypadNotesWindow'));
+    }
+    winNotes.bUseMenuColors = true;
+    for (i = 0; i < numCodes;i++)
+        winNotes.AddNote(codeNotes[i]);
+    winNotes.CreateNotesList();
+    winNotes.StyleChanged();
+    winNotes.Hide();
 }
 
 // ----------------------------------------------------------------------
@@ -457,6 +578,8 @@ function SetCompOwner(ElectronicDevices newCompOwner)
 		}
 	// Update the hack bar detection time
 	UpdateHackDetectionTime();
+		
+    AddNotesWindow();
 }
 
 // ----------------------------------------------------------------------
@@ -563,13 +686,12 @@ function ComputerHacked()
 	// Use the first login
 	userIndex = 0;
 
-	if (compOwner.IsA('Computers'))
+	if (compOwner != None && compOwner.IsA('Computers'))
     {
 		userName  = Computers(compOwner).GetUserName(userIndex);
         Computers(compOwner).timesHacked++;
+        Computers(CompOwner).PerformLoginAction(player);
     }
-
-    Computers(CompOwner).PerformLoginAction(player);
 
 	CloseScreen("LOGIN");
 }
@@ -653,4 +775,5 @@ defaultproperties
      shadowOffsetY=15
      ScreenType=ST_Computer
 	 LockoutScreen=Class'DeusEx.ComputerScreenDisabled'
+     bShowNotes=true
 }

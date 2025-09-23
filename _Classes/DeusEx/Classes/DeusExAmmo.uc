@@ -204,6 +204,25 @@ function TakeDamage(int Damage, Pawn EventInstigator, vector HitLocation, vector
         AmmoAmount = MaxAmmo;
 }*/
 
+function inventory SpawnCopy( Pawn Other )                                      //SARGE: Function to override Ammo in Engine classes for adjusted ammo counts
+{
+	local int tempMaxAmmo;
+    local DeusExPlayer player;
+    local inventory item;
+
+    player = DeusExPlayer(Other);
+    item = super.SpawnCopy(Other);
+
+    if (player != None)
+    {
+        tempMaxAmmo = player.GetAdjustedMaxAmmo(Ammo(item));
+        Ammo(item).AmmoAmount = MIN(Ammo(item).AmmoAmount,tempMaxAmmo);
+    }
+
+    return item;
+
+}
+
 function bool AddAmmo(int AmmoToAdd)                                            //RSD: Function to override Ammo in Engine classes for adjusted ammo counts
 {
 	local int tempMaxAmmo;
@@ -224,6 +243,7 @@ function bool HandlePickupQuery( inventory Item )                               
 	local DeusExPlayer player;
 
     player = DeusExPlayer(GetPlayerPawn());
+
 	tempMaxAmmo = player.GetAdjustedMaxAmmo(self);
 
     if ( (class == item.class) ||
@@ -245,10 +265,10 @@ function bool HandlePickupQuery( inventory Item )                               
             
             //SARGE: We have to do this here too, yucky!
             if (player.bAlwaysShowReceivedItemsWindow)
-                player.AddReceivedItem(item, intj, true);
+                player.AddReceivedItem(item, intj, false);
             
             if (player.bAlwaysShowReceivedItemsWindow && player.bShowDeclinedInReceivedWindow)
-                player.AddReceivedItem(item, Ammo(item).AmmoAmount, true, true);
+                player.AddReceivedItem(item, Ammo(item).AmmoAmount, false, true);
         }
         return true;
 	}
@@ -265,6 +285,12 @@ auto state Pickup                                                               
 	function Frob(Actor Other, Inventory frobWith)
 //	function Touch( actor Other )
 	{
+        local DeusExPlayer P;
+        local int i;
+        local bool bDestroy;
+
+        P = DeusExPlayer(Other);
+
 		// If touched by a player pawn, let him pick this up.
 		if( ValidTouch(Other) )
 		{
@@ -272,22 +298,37 @@ auto state Pickup                                                               
 				Level.Game.LocalLog.LogPickup(Self, Pawn(Other));
 			if (Level.Game.WorldLog != None)
 				Level.Game.WorldLog.LogPickup(Self, Pawn(Other));
-			SpawnCopy(Pawn(Other));
-			if ( PickupMessageClass == None )
-				// DEUS_EX CNN - use the itemArticle and itemName
-//				Pawn(Other).ClientMessage(PickupMessage, 'Pickup');
-				Pawn(Owner).ClientMessage(PickupMessage @ itemArticle @ ItemName $ " (" $ AmmoAmount $ ")", 'Pickup' ); //RSD: Literally copied this entire code block just to add ammo amount
-			else
-				Pawn(Other).ReceiveLocalizedMessage( PickupMessageClass, 0, None, None, Self.Class );
-			PlaySound (PickupSound);
-			if ( Level.Game.Difficulty > 1 )
-				Other.MakeNoise(0.1 * Level.Game.Difficulty);
-			if ( Pawn(Other).MoveTarget == self )
-				Pawn(Other).MoveTimer = -1.0;
+
+            //SARGE: Replaced with the generic ammo looting code.
+            if (P != None)
+            {
+                i = P.LootAmmo(Self.Class,AmmoAmount,true,false);
+                AmmoAmount -= i;
+                if (AmmoAmount == 0)
+                    bDestroy = true;
+            }
+            else
+            {
+                SpawnCopy(Pawn(Other));
+                if ( PickupMessageClass == None )
+                    // DEUS_EX CNN - use the itemArticle and itemName
+    //				Pawn(Other).ClientMessage(PickupMessage, 'Pickup');
+                    Pawn(Owner).ClientMessage(PickupMessage @ itemArticle @ ItemName $ " (" $ AmmoAmount $ ")", 'Pickup' ); //RSD: Literally copied this entire code block just to add ammo amount
+                else
+                    Pawn(Other).ReceiveLocalizedMessage( PickupMessageClass, 0, None, None, Self.Class );
+            }
+            PlaySound (PickupSound);
+            if ( Level.Game.Difficulty > 1 )
+                Other.MakeNoise(0.1 * Level.Game.Difficulty);
+            if ( Pawn(Other).MoveTarget == self )
+                Pawn(Other).MoveTimer = -1.0;
 		}
 		else if ( bTossedOut && (Other.Class == Class)
 				&& Inventory(Other).bTossedOut )
 				Destroy();
+
+        if (bDestroy)
+            Destroy();
 	}
 
 	// Landed on ground.
@@ -433,6 +474,18 @@ static function Texture GetHDTPIcon()
 static function Texture GetHDTPLargeIcon()
 {
     return class'HDTPLoader'.static.GetTexture2(default.HDTPLargeIcon,string(default.LargeIcon),IsHDTP());
+}
+
+//SARGE: Notify the player when we use ammo.
+function bool UseAmmo(int AmountNeeded)
+{
+    local bool re;
+    re = super.UseAmmo(AmountNeeded);
+    
+    if (re && Owner != None && Owner.IsA('DeusExPlayer'))
+        DeusExPlayer(Owner).OnUseAmmo(self,AmountNeeded);
+
+    return re;
 }
 
 defaultproperties

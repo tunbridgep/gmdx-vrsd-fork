@@ -30,6 +30,7 @@ function bool WrapWithDecoration()
 	local vector lookDir, upDir;
 	local float velscale, size, mult;
 	local Augmentation muscleAug;
+    local bool bUsedEnergy;
 
 
    //log("GMDX PROJECTILE OWNER "@Owner);
@@ -51,24 +52,33 @@ function bool WrapWithDecoration()
    {
         muscleAug = DxPlayer.AugmentationSystem.GetAug(class'AugMuscle');
    
-	  mult = 2.5+muscleAug.CurrentLevel; //CyberP: increased 1+
+        mult = 2.5+muscleAug.CurrentLevel; //CyberP: increased 1+
 
-	  if (mult == 0.0)
-		 mult = 1.0; //passive but incase it hasn't engaged
-//         else
-//            mult*=1.5;
-	  
-      //log("AUG LEVEL "@mult);
-      //SARGE: Changed from 3/2/0 to 20/10/5
-	  if (trackingDeco.Mass > 100)
-	        DxPlayer.Energy -= muscleAug.GetAdjustedEnergy(20.0);
-	  else if (trackingDeco.Mass > 60)
-	        DxPlayer.Energy -= muscleAug.GetAdjustedEnergy(10.0);
-      else
+        if (mult == 0.0)
+            mult = 1.0; //passive but incase it hasn't engaged
+    //         else
+    //            mult*=1.5;
+        
+        bUsedEnergy = true;
+        //log("AUG LEVEL "@mult);
+        //SARGE: Changed from 3/2/0 to 20/10/5
+        if (trackingDeco.Mass > 100)
+            DxPlayer.Energy -= muscleAug.GetAdjustedEnergy(20.0);
+        else if (trackingDeco.Mass > 60)
+            DxPlayer.Energy -= muscleAug.GetAdjustedEnergy(10.0);
+        else if (trackingDeco.Mass > 30)
+        //else
             DxPlayer.Energy -= muscleAug.GetAdjustedEnergy(5.0);
+        else
+            bUsedEnergy = false;
 
-	  if (DxPlayer.Energy < 0)
-	     DxPlayer.Energy = 0;
+        if (bUsedEnergy)
+        {
+            if (DxPlayer.Energy < 0)
+                DxPlayer.Energy = 0;
+
+            muscleAug.displayAsActiveTime = dxPlayer.saveTime + 0.5;
+        }
    }
 
    if (mult==4) AugDamMod=2; else AugDamMod=1.2;

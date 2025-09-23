@@ -85,6 +85,8 @@ var bool bCutInteractions;
 var bool bA51Camera;
 var bool bCollectibles;
 var bool bHardcoreFilterOption;
+var bool bPermaCloak;
+var bool bNoStartingWeaponChoices;
 
 //LDDP
 var bool bFemaleEnabled;
@@ -157,6 +159,8 @@ event InitWindow()
     bA51Camera=false;                                                           //Sarge
     bCollectibles=false;                                                        //Sarge
     bHardcoreFilterOption=false;                                                //Sarge
+    bPermaCloak=false;                                                          //Sarge
+    bNoStartingWeaponChoices=false;                                             //Sarge
     //bRestrictedMetabolism=false;                                              //Sarge
     default.bRandomizeCrates=false;                                             //RSD: Also need default values! Otherwise get command in modifier menu takes the wrong value
     default.bRandomizeMods=false;                                               //RSD
@@ -179,7 +183,8 @@ event InitWindow()
     default.bA51Camera=false;                                                   //Sarge
     default.bCollectibles=false;                                                //Sarge
     default.bHardcoreFilterOption=false;                                        //Sarge
-
+    default.bPermaCloak=false;                                                  //Sarge
+    default.bNoStartingWeaponChoices=false;                                     //Sarge
 	StyleChanged();
 }
 
@@ -363,6 +368,7 @@ function CreateSkillInfoWindow()
 {
 	winSkillInfo = MenuUISkillInfoWindow(winClient.NewChild(Class'MenuUISkillInfoWindow'));
 	winSkillInfo.SetPos(165, 208);
+    winSkillInfo.bHardCoreMode = bHardCoreMode;
 }
 
 // ----------------------------------------------------------------------
@@ -835,6 +841,8 @@ function SaveSettings()
     player.bA51Camera=bA51Camera;                                               //Sarge
     player.bCollectiblesEnabled=bCollectibles;                                  //Sarge
     player.bHardcoreFilterOption=bHardcoreFilterOption;                         //Sarge
+    player.bPermaCloak=bPermaCloak;                                             //Sarge
+    player.bNoStartingWeaponChoices=bNoStartingWeaponChoices;                   //Sarge
     if (player.bRandomizeAugs)                                                  //RSD: New aug randomization feature
         ScrambleAugOrderList();
 
@@ -1061,6 +1069,11 @@ function SetDifficulty(float newDifficulty,bool bSetHardCore)
 {
 	combatDifficulty = newDifficulty;
 	bHardCoreMode=bSetHardCore;
+    if (winSkillInfo != None)
+    {
+        winSkillInfo.bHardCoreMode = bHardCoreMode;
+        winSkillInfo.combatDifficulty = combatDifficulty;
+    }
 }
 
 // ----------------------------------------------------------------------

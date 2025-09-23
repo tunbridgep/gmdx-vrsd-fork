@@ -9,7 +9,7 @@ class Image11_Paris_Cathedral expands DataVaultImage;
 
 defaultproperties
 {
-     imageTextures(0)=Texture'DeusExUI.UserInterface.Image11_Paris_Cathedral_1'
+     imageTextures(0)=Texture'RSDCrap.UserInterface.Image11_Paris_Cathedral_1' //SARGE: Fixed visible pink section
      imageTextures(1)=Texture'DeusExUI.UserInterface.Image11_Paris_Cathedral_2'
      imageTextures(2)=Texture'DeusExUI.UserInterface.Image11_Paris_Cathedral_3'
      imageTextures(3)=Texture'DeusExUI.UserInterface.Image11_Paris_Cathedral_4'

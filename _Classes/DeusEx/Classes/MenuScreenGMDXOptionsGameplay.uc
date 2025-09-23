@@ -18,6 +18,14 @@ event InitWindow()
     bTickEnabled=true;
 }
 
+//Update belt when closing the menu
+function SaveSettings()
+{
+    Super.SaveSettings();
+    player.UpdateCrosshairStyle();
+    player.UpdateHUD();
+}
+
 event bool BoxOptionSelected(Window msgBoxWindow, int buttonNumber)
 {
     if (msgBoxWindow != msgbox)
@@ -28,6 +36,7 @@ event bool BoxOptionSelected(Window msgBoxWindow, int buttonNumber)
 	root.PopWindow();
 
     player.bGameplayMenuHardcoreMsgShown = true;
+    player.SaveConfig();
 
 
     //return true;
@@ -40,6 +49,7 @@ function Tick(float deltaTime)
         msgbox = root.MessageBox(msgTitle,msgText,1,false,self);
         shownWindow = true;
         player.bGameplayMenuHardcoreMsgShown = true;
+        player.SaveConfig();
     }
 }
 
@@ -59,7 +69,10 @@ defaultproperties
      items(11)=(HelpText="If enabled, reloading with a full magazine is possible.",actionText="Trick Reloads",variable="bTrickReloading");
      items(12)=(HelpText="If enabled, rearming grenades depends on your Demolitions skill.",actionText="Skill-based grenade rearming",variable="bRearmSkillRequired",defaultValue=1);
      items(13)=(HelpText="If enabled, Lasers won't be able to be bypassed using pepper spray and other blockers.",actionText="Improved Laser Detection.",variable="bImprovedLasers",defaultValue=1);
+     items(14)=(HelpText="Enable or disable mantling. This is not forced on in Hardcore mode. IT IS HIGHLY RECOMMENDED THAT YOU LEAVE THIS ENABLED!",actionText="Mantling",variable="bMantleOption",defaultValue=1);
+     items(18)=(HelpText="The Dragons Tooth Sword will require energy to attack, and is recharged with biocells.",actionText="Strategic Dragon's Tooth",variable="bNanoswordEnergyUse",defaultValue=1);
      msgText="The settings available in this menu are always active as part of Hardcore difficulty.|nYou may still edit them freely, but they will have no effect when playing in Hardcore mode."
      msgTitle="Hardcore Mode"
      Title="GMDX Gameplay Options"
+     bShowDefaults=true
 }
