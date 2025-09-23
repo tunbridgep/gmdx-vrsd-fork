@@ -383,6 +383,48 @@ replication
 }
 
 // ----------------------------------------------------------------------
+<<<<<<< Updated upstream
+=======
+// GetMaxRange()
+//
+// SARGE: Returns the max range of the weapon
+// ----------------------------------------------------------------------
+function float GetMaxRange()
+{
+    return MaxRange * (1.0 - GetAddonPenalty(Silencer));
+}
+
+// ----------------------------------------------------------------------
+// GetAccurateRange()
+//
+// SARGE: Returns the accurate range of the weapon
+// ----------------------------------------------------------------------
+function float GetAccurateRange()
+{
+    return AccurateRange * (1.0 - GetAddonPenalty(Silencer));
+}
+
+// ----------------------------------------------------------------------
+// GetDefaultFireSound()
+//
+// SARGE: Returns the default fire sound (standard or classic), based on the players options
+// ----------------------------------------------------------------------
+function Sound GetDefaultFireSound()
+{
+    if (Ammo20mm(AmmoType) != None) //Hack for 20mm grenade launcher
+        return Sound'AssaultGunFire20mm';
+    else if ( AmmoRocketWP(AmmoType) != None )
+        return Sound'GEPGunFireWP';
+    else if ( AmmoRocket(AmmoType) != None )
+        return Sound'GEPGunFire';
+    else if (class'DeusExPlayer'.default.iImprovedWeaponSounds > 0 || default.ClassicFireSound == None)
+        return default.FireSound;
+    else
+        return default.ClassicFireSound;
+}
+
+// ----------------------------------------------------------------------
+>>>>>>> Stashed changes
 // GetAddonPenalty()
 //
 // SARGE: Gets the penalty for using a Scope, Silencer or Laser Sight
@@ -1868,7 +1910,7 @@ simulated function float CalculateAccuracy()
 	if (player != None)
 	{
         //SARGE: Add accuracy penalty for having weapon mods
-        accuracy += GetAddonPenalty(Silencer);
+        //accuracy += GetAddonPenalty(Silencer);
 
 		tempacc = accuracy;
 		if (standingTimer > 0)
@@ -4771,7 +4813,7 @@ simulated function Projectile ProjectileFire(class<projectile> ProjClass, float 
 			|| IsA('WeaponSawedOffShotgun') || IsA('WeaponAssaultShotgun') || IsA('WeaponPepperGun')) //RSD: Added shotguns and pepper gun
 		speedMult += (ModAccurateRange*1.3333);
 	}
-
+	
 	ProjSpeed *= speedMult;
 
 	// skill also affects our damage
@@ -5059,6 +5101,7 @@ simulated function TraceFire( float Accuracy )
     local vector EndTraceCenter, moverStartTrace;                               //RSD: Added
     local float TempAcc;                                                        //RSD: Added
     local Projectile firedProjectile;
+    local float MaxRangeMod;                                                    //SARGE: Added
 
 	// make noise if we are not silenced
 	if (!bHandToHand || bFakeHandToHand)
@@ -5104,12 +5147,19 @@ simulated function TraceFire( float Accuracy )
 
     UpdateRecoilShaker();//GMDX: bung it here, less intrusive
 
+    //SARGE: Modifiy range based on silencer
+    if (DeusExPlayer(Owner) != None)
+        MaxRangeMod = GetMaxRange();
+    else
+        MaxRangeMod = MaxRange;
+    
+
     if (numSlugs > 1 && Owner.IsA('DeusExPlayer'))
     {
     	TempAcc = FMax(0.0,Accuracy - 0.75*SlugSpreadAcc);
     	//TempAcc = FClamp(Accuracy*SlugSpreadAcc,0.1,SlugSpreadAcc);
         EndTraceCenter = StartTrace + TempAcc * (FRand()-0.5)*Y*1000 + TempAcc * (FRand()-0.5)*Z*1000;
-		if (MaxRange >= 1024)
+		if (MaxRangeMod >= 1024)
     	{
 			EndTraceCenter += 4000.0 * vector(AdjustedAim);
     		//EndTraceCenter = (FMax(1024.0, MaxRange)/VSize(EndTraceCenter-StartTrace)*(EndTraceCenter-StartTrace))+StartTrace; //RSD: Extend length of vector to max range (doi!)
@@ -5132,20 +5182,20 @@ simulated function TraceFire( float Accuracy )
 	  }
 
       if (bLasing && Emitter != None && !bZoomed)                               //RSD: If we're using a laser but not scoped, shoot at the location of the laser
-  	      EndTrace = StartTrace + (FMax(1024.0, MaxRange)*vector(Emitter.Rotation));
+  	      EndTrace = StartTrace + (FMax(1024.0, MaxRangeMod)*vector(Emitter.Rotation));
       else if (numSlugs > 1 && Owner.IsA('DeusExPlayer'))                       //RSD: If we're using a shotgun, spread slugs from the defined aim center
       {
           EndTrace = EndTraceCenter + TempAcc * (FRand()-0.5)*Y*1000 + TempAcc * (FRand()-0.5)*Z*1000;
-          EndTrace = (FMax(1024.0, MaxRange)*Normal(EndTrace-StartTrace))+StartTrace;
+          EndTrace = (FMax(1024.0, MaxRangeMod)*Normal(EndTrace-StartTrace))+StartTrace;
       }
       else                                                                      //RSD: Otherwise new standard accuracy routine
       {                                                                         //RSD: Bracketed this else statement entirely so we don't mess around with laser pointed shots
       EndTrace = StartTrace + Accuracy * (FRand()-0.5)*Y*1000 + Accuracy * (FRand()-0.5)*Z*1000;
       //EndTrace = StartTrace + Accuracy * (0.5)*Y*1000;                          //RSD: For testing
-	  if (Owner.IsA('DeusExPlayer') && MaxRange >= 1024)
+	  if (Owner.IsA('DeusExPlayer') && MaxRangeMod >= 1024)
       {
 	      EndTrace += 4000.0 * vector(AdjustedAim);                             //RSD: range no longer influences player accuracy (took old pistol range)
-          EndTrace = (FMax(1024.0, MaxRange)*Normal(EndTrace-StartTrace))+StartTrace; //RSD: Extend length of vector to max range (doi!)
+          EndTrace = (FMax(1024.0, MaxRangeMod)*Normal(EndTrace-StartTrace))+StartTrace; //RSD: Extend length of vector to max range (doi!)
       }
       /*if ((IsA('WeaponAssaultGun') || IsA('WeaponRifle')) && Owner.IsA('DeusExPlayer'))
 	      EndTrace += (FMax(1024.0, MaxRange*0.6) * vector(AdjustedAim));*/     //RSD: original player EndTrace code for AR and snipe
@@ -5204,7 +5254,7 @@ simulated function TraceFire( float Accuracy )
 		// check our range
 		dist = Abs(VSize(HitLocation - Owner.Location));
 
-		if (dist <= MaxRange)		// we hit just fine                         //RSD: changed to MaxRange
+		if (dist <= MaxRangeMod)		// we hit just fine                         //RSD: changed to MaxRange
 			ProcessTraceHit(Other, HitLocation, HitNormal, vector(AdjustedAim),Y,Z);
 		/*else if (dist <= MaxRange)                                            //RSD: fuck that actually just do damage dropoff in ProcessTraceHit
 		{
@@ -5222,7 +5272,7 @@ simulated function TraceFire( float Accuracy )
 			moverStartTrace = HitLocation + 8*Normal(EndTrace-StartTrace);       //RSD: Start a little past the mover (6 is minimum necessary to go past, 8 is more reliable)
             Other = Pawn(Owner).TraceShot(HitLocation,HitNormal,EndTrace,moverStartTrace); //RSD: Grab a new target and do it all again (minus Stopping Power perk and tracers)
 			dist = Abs(VSize(HitLocation - Owner.Location));
-			if (dist <= MaxRange)
+			if (dist <= MaxRangeMod)
 				ProcessTraceHit(Other, HitLocation, HitNormal, vector(AdjustedAim),Y,Z);
 		}
 
@@ -5257,6 +5307,7 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
     local BloodMeleeHit spoofer;
     local GMDXSparkFade faded;
     local int finalDamage;                                                      //RSD
+    local float AccurateRangeMod, MaxRangeMod;                                  //SARGE: Added
 
     if (bHandToHand && Owner != None)
     {
@@ -5295,15 +5346,42 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
         //RSD: check our range
         dist = Abs(VSize(HitLocation - Owner.Location));
 
-        if (DeusExPlayer(Owner) != None && dist >= AccurateRange)               //RSD: != none instead of IsA
+        //SARGE: Modifiy range based on silencer
+        if (DeusExPlayer(Owner) != None)
+        {
+            MaxRangeMod = GetMaxRange();
+            AccurateRangeMod = GetAccurateRange();
+        }
+        else
+        {
+            MaxRangeMod = MaxRange;
+            AccurateRangeMod = AccurateRange;
+        }
+
+        if (DeusExPlayer(Owner) != None && dist >= AccurateRangeMod)               //RSD: != none instead of IsA
 		{
 			//RSD: Linear damage falloff up to MaxRange for the player
-            alpha = (dist - AccurateRange) / (MaxRange - AccurateRange);
+            alpha = (dist - AccurateRangeMod) / (MaxRangeMod - AccurateRangeMod);
             mult = (1-alpha)*mult;
+            
             //if (mult*float(HitDamage) < 1.0)
             //	mult = 1.1/float(HitDamage);                                    //RSD: Do at least 1 damage
+
             if (mult < 0.35)
             	mult = 0.35;                                                    //RSD: or cap falloff at 65% instead
+
+            if (DeusExPlayer(Owner) != None)
+            {
+                DeusExPlayer(Owner).DebugMessage("AccurateRange: " $ accurateRange);
+                DeusExPlayer(Owner).DebugMessage("AccurateRangeMod: " $ accurateRangeMod);
+                DeusExPlayer(Owner).DebugMessage("MaxRange: " $ maxRange);
+                DeusExPlayer(Owner).DebugMessage("MaxRangeMod: " $ maxRangeMod);
+                DeusExPlayer(Owner).DebugMessage("dist: " $ dist);
+                DeusExPlayer(Owner).DebugMessage("alpha: " $ alpha);
+                DeusExPlayer(Owner).DebugMessage("dist - accurate range: " $ dist - AccurateRangeMod);
+                DeusExPlayer(Owner).DebugMessage("max range - accuraterange: " $ MaxRangeMod - AccurateRangeMod);
+                DeusExPlayer(Owner).DebugMessage("mult: " $ mult);
+            }
 		}
 
 		// Determine damage type
@@ -5972,7 +6050,6 @@ simulated function bool UpdateInfo(Object winObject)
 	{
 		str = Int((2.0 - Default.mpBaseAccuracy)*50.0) $ "%";
 		mod = (Default.mpBaseAccuracy - (BaseAccuracy + GetWeaponSkill())) * 0.5;
-        mod -= GetAddonPenalty(Silencer);
 		if (mod != 0.0)
 		{
 			str = str @ BuildPercentString(mod);
@@ -5983,7 +6060,6 @@ simulated function bool UpdateInfo(Object winObject)
 	{
 		str = Int((2.0 - Default.BaseAccuracy)*50.0) $ "%";
 		mod = (Default.BaseAccuracy - (BaseAccuracy + GetWeaponSkill())) * 0.5;
-        mod -= GetAddonPenalty(Silencer);
 
 		if (mod != 0.0)
 		{
@@ -5999,36 +6075,38 @@ simulated function bool UpdateInfo(Object winObject)
 	//	str = msgInfoNA;
 	//else
 	//{
+        mod = GetAddonPenalty(Silencer);
 		if ( Level.NetMode != NM_Standalone )
-			str = FormatFloatString(Default.mpAccurateRange/16.0, 1.0) @ msgRangeUnit;
+			str = FormatFloatString((Default.mpAccurateRange)/16.0, 1.0) @ msgRangeUnit;
 		else
-			str = FormatFloatString(Default.AccurateRange/16.0, 1.0) @ msgRangeUnit;
+			str = FormatFloatString((Default.AccurateRange)/16.0, 1.0) @ msgRangeUnit;
 	//}
 
-	if (HasRangeMod())
+	if (HasRangeMod() || mod > 0.0)
 	{
-		str = str @ BuildPercentString(ModAccurateRange);
-		str = str @ "=" @ FormatFloatString(AccurateRange/16.0, 1.0) @ msgRangeUnit;
+		str = str @ BuildPercentString(ModAccurateRange-mod);
+		str = str @ "=" @ FormatFloatString((AccurateRange*(1.0-mod))/16.0, 1.0) @ msgRangeUnit;
 	}
 	if (!bHandToHand || IsA('WeaponShuriken'))
-	winInfo.AddInfoItem(msgInfoAccRange, str, HasRangeMod());
+	winInfo.AddInfoItem(msgInfoAccRange, str, HasRangeMod() || mod > 0.0);
 
 	// max range
 	//if (bHandToHand)
 	//	str = msgInfoNA;
 	//else
 	//{
+        mod = GetAddonPenalty(Silencer);
 		if ( Level.NetMode != NM_Standalone )
-			str = FormatFloatString(Default.mpMaxRange/16.0, 1.0) @ msgRangeUnit;
+			str = FormatFloatString((Default.mpMaxRange)/16.0, 1.0) @ msgRangeUnit;
 		else
-			str = FormatFloatString(Default.MaxRange/16.0, 1.0) @ msgRangeUnit;
+			str = FormatFloatString((Default.MaxRange)/16.0, 1.0) @ msgRangeUnit;
 	//}
-	if (HasRangeMod())                                                          //RSD: Added because we can now mod MaxRange
+	if (HasRangeMod() || mod > 0.0)                                                          //RSD: Added because we can now mod MaxRange
 	{
-		str = str @ BuildPercentString(ModAccurateRange);
-		str = str @ "=" @ FormatFloatString(MaxRange/16.0, 1.0) @ msgRangeUnit;
+		str = str @ BuildPercentString(ModAccurateRange-mod);
+		str = str @ "=" @ FormatFloatString((MaxRange*(1.0-mod))/16.0, 1.0) @ msgRangeUnit;
 	}
-	winInfo.AddInfoItem(msgInfoMaxRange, str,HasRangeMod());                    //RSD: Added HasRangeMod()
+	winInfo.AddInfoItem(msgInfoMaxRange, str,HasRangeMod() || mod > 0.0);                    //RSD: Added HasRangeMod()
 
 	//Noise level
 	if (!bHandToHand || IsA('WeaponProd') || IsA('WeaponHideAGun') || IsA('WeaponPepperGun') || IsA('WeaponLAW'))

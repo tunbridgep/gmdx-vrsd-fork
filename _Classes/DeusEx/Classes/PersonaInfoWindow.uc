@@ -700,7 +700,7 @@ function AddWeaponModDrawbacks(DeusExWeapon weapon)
     if (bDrawSilencer)
     {
         SetText(SilencerLabel $ ":");
-        SetText("  " $ AccuracyPenaltyLabel $ ": -" $ int(weapon.GetAddonPenalty(Silencer) * 100) $ "%");
+        SetText("  " $ RangePenaltyLabel $ ": -" $ int(weapon.GetAddonPenalty(Silencer) * 100) $ "%");
         SetText("  " $ DamagePenaltyLabel $ ": -" $ int(weapon.GetAddonPenalty(Silencer) * 100) $ "%");
     }
 }
