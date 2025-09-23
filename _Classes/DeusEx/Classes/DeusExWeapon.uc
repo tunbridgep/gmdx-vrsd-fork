@@ -3243,7 +3243,7 @@ function LaserOn(optional bool IgnoreSound)
 	  LaserPitch = (currentAccuracy) * (Rand(4096) - 2048);
 }
 
-function LaserOff(bool forced)
+function LaserOff(optional bool forced)
 {
 	if (IsA('WeaponNanoSword')&&!IsInState('DownWeapon')) return;
 	if (bHasLaser && bLasing)

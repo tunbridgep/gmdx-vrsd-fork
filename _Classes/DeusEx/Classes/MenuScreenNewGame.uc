@@ -97,6 +97,28 @@ function Timer()
 }
 
 // ----------------------------------------------------------------------
+// SARGE: InvokePlaythroughModifiersMenu()
+//
+// Show the modifiers screen
+// ----------------------------------------------------------------------
+
+function InvokePlaythroughModifiersMenu(optional bool bCheck)
+{
+	local MenuScreenPlaythroughModifiers mods;
+
+    if (bCheck && !player.bAlwaysShowModifiers)
+        return;
+
+    mods = MenuScreenPlaythroughModifiers(root.InvokeMenuScreen(Class'MenuScreenPlaythroughModifiers'));
+
+    if (mods != None)
+    {
+        mods.bHardcoreSelected = bHardCoreMode;
+        mods.BuildModifierList();
+    }
+}
+
+// ----------------------------------------------------------------------
 // InitWindow()
 //
 // Initialize the Window
@@ -804,9 +826,7 @@ function ProcessAction(String actionKey)
 	}
 	else if (actionKey == "MODIFIERS")                                          //RSD: New modifiers menu
     {
-		modMenu = MenuScreenPlaythroughModifiers(root.InvokeMenuScreen(Class'MenuScreenPlaythroughModifiers'));
-        modMenu.bHardcoreSelected = bHardCoreMode;
-        modMenu.BuildModifierList();
+        InvokePlaythroughModifiersMenu();
     }
     else if (actionKey == "HELP")
     {
