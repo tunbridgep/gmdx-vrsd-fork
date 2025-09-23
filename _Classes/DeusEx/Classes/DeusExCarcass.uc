@@ -1866,12 +1866,17 @@ function SetupCarcass(bool bAlert)
 
             if (bNotFirstFall && !bHidden)
             {
-            PlaySound(sound'PaperHit2', SLOT_None,,,1024);
-            AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 512); //CyberP: this applies to when corpses are thrown.
+                PlaySound(sound'PaperHit2', SLOT_None,,,1024);
+                //SARGE: Fix the broken sound propagation
+                class'PawnUtils'.static.WakeUpAI(self,512);
+                AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 512); //CyberP: this applies to when corpses are thrown.
             }
             else
             {
-            AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 96); //CyberP: this applies to when corpses are spawned upon pawn death/K.O.
+                //SARGE TODO: Don't bother fixing sound propagation here as it's so short???
+                //SARGE: Fix the broken sound propagation
+                class'PawnUtils'.static.WakeUpAI(self,96);
+                AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 96); //CyberP: this applies to when corpses are spawned upon pawn death/K.O.
             }
         }
 }

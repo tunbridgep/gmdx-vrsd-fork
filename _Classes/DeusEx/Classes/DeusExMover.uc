@@ -68,6 +68,8 @@ var float               previousStrength;        //Sarge: What was the strength 
 var float               leftFrobTimer;           //Sarge: Ticks down from 3 seconds after we do a left frob, so that we can use right-click to select different options
 const             leftFrobTimerMax = 6.0;
 
+var(GMDX) const int iSpecialMoverKeyframe;      //SARGE: Allow movers to "snap" into place on map load. Used for the janky smuggler elevator
+
 
 //SARGE: Do we have the key for this lock?
 function bool HasKey(DeusExPlayer Player)
@@ -222,6 +224,20 @@ function PostBeginPlay()
 	}*/
 }
 
+function PostPostBeginPlay()
+{
+    local EMoverEncroachType prevEncroach;
+
+    super.PostPostBeginPlay();
+
+
+    //SARGE: If we have a special keyframe set, snap to it immediately
+    prevEncroach = MoverEncroachType;
+    MoverEncroachType = ME_IgnoreWhenEncroach;
+    if (iSpecialMoverKeyframe > -1)
+        InterpolateTo(iSpecialMoverKeyframe,0);
+    MoverEncroachType = prevEncroach;
+}
 
 // -------------------------------------------------------------------------------
 // Network Replication
@@ -757,7 +773,8 @@ function Frob(Actor Frobber, Inventory frobWith)
 
 	// Let any non-player pawn open any door for now
     // SARGE: Unless we manually locked it
-	if (Player == None && !bPlayerLocked)
+	// SARGE: Or the actor has no door interactions set
+	if (Player == None && !bPlayerLocked && (!P.IsA('ScriptedPawn') || !ScriptedPawn(P).bNoDoorInteractions || !bLocked))
 	{
 		bOpenIt = True;
 		msg = "";
@@ -1151,4 +1168,5 @@ defaultproperties
      bBlockSight=True
      InitialState=TriggerToggle
      bDirectional=True
+     iSpecialMoverKeyframe=-1
 }

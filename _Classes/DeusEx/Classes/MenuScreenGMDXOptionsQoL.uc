@@ -120,6 +120,7 @@ defaultproperties
      items(101)=(HelpText="Credits transferred will show in the items received window during conversations.",actionText="Conversations: Show Credit Transfers",variable="bConversationShowCredits",defaultValue=1);
      items(102)=(HelpText="If enabled, the Items Received window will be shown when picking up credits.",actionText="HUD: Show Items Window for Credits",variable="bCreditsShowReceivedItemsWindow",defaultValue=0)
      items(103)=(HelpText="If enabled, notes added by datacubes, books, etc can be edited.",actionText="HUD: Edit Default Notes",variable="bEditDefaultNotes",defaultValue=0)
+     items(104)=(HelpText="If enabled, labels will be displayed on the ammo HUD showing current weapon addons.",actionText="HUD: Ammo Display Shows Addons",variable="bDrawAddonsOnAmmoDisplay",defaultValue=0)
      items(105)=(HelpText="If enabled, the Ammo icons shown when viewing a weapon in the inventory will show max ammo in addition to current ammo.",actionText="HUD: Weapon Info shows Max Ammo",variable="bInventoryAmmoShowsMax",defaultValue=1)
      items(106)=(HelpText="If enabled, weapon scopes will use the vanilla scope textures.",actionText="HUD: Classic Weapon Scope",variable="bClassicScope",defaultValue=0)
      Title="GMDX Quality of Life Options"

@@ -15,6 +15,7 @@ function ApplyMod(DeusExWeapon weapon)
 	if (weapon != None)
 	{
 		weapon.bHasSilencer = True;
+		weapon.bHadSilencer = True;
 	}
 }
 
@@ -25,7 +26,7 @@ function ApplyMod(DeusExWeapon weapon)
 simulated function bool CanUpgradeWeapon(DeusExWeapon weapon)
 {
 	if (weapon != None)
-		return (weapon.bCanHaveSilencer && !weapon.bHasSilencer);
+		return (weapon.bCanHaveSilencer && !weapon.bHadSilencer && !weapon.bHasSilencer);
 	else
 		return False;
 }
@@ -43,4 +44,5 @@ defaultproperties
      Description="A silencer will muffle the muzzle crack caused by rapidly expanding gases left in the wake of a bullet leaving the gun barrel.|n|n<UNATCO OPS FILE NOTE SC108-BLUE> Obviously, a silencer is only effective with firearms. -- Sam Carter <END NOTE>"
      beltDescription="MOD SLNCR"
      Skin=Texture'DeusExItems.Skins.WeaponModTex7'
+     bShowBulkyText=true
 }

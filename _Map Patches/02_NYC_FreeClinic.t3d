@@ -24531,6 +24531,7 @@ Begin Actor Class=PathNode Name=PathNode356
     Name=PathNode356
 End Actor
 Begin Actor Class=DeusExLevelInfo Name=DeusExLevelInfo0
+    ChairRandomizationToken=97
     MapName="02_NYC_FreeClinic"
     MapAuthor="Bob White"
     MissionLocation="NYC - Free Clinic"
@@ -24761,7 +24762,7 @@ Begin Actor Class=BumMale3 Name=BumMale2
     LastRenderTime=1137.585449
     DistanceFromPlayer=3095.626221
     Level=LevelInfo'MyLevel.LevelInfo0'
-    Tag=BumMale3
+    Tag=Rafael
     Base=LevelInfo'MyLevel.LevelInfo0'
     Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=972,ZoneNumber=1)
     Location=(X=54.337929,Y=636.958069,Z=-272.398773)
@@ -24792,7 +24793,7 @@ Begin Actor Class=BumMale2 Name=BumMale3
     LastRenderTime=1137.585449
     DistanceFromPlayer=3209.408936
     Level=LevelInfo'MyLevel.LevelInfo0'
-    Tag=BumMale2
+    Tag=Jake
     Base=LevelInfo'MyLevel.LevelInfo0'
     Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=972,ZoneNumber=1)
     Location=(X=54.210781,Y=763.662659,Z=-272.401947)

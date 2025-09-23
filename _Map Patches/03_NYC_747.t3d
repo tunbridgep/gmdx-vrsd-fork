@@ -45942,6 +45942,7 @@ Begin Actor Class=Flowers Name=Flowers0
 End Actor
 Begin Actor Class=BoxSmall Name=BoxSmall4
     contents=Class'DeusEx.Credits'
+    bSkipLOSFrobCheck=True
     LastRenderTime=0.619330
     DistanceFromPlayer=1774.347534
     Level=LevelInfo'MyLevel.LevelInfo0'

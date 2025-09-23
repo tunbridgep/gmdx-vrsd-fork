@@ -855,6 +855,15 @@ var bool bFakeDeath;                                            //SARGE: Fixes a
 
 var travel bool bPhotoMode;                                     //SARGE: Show/Hide the entire HUD at once
 
+var bool bClearReceivedItems;                                   //SARGE: Clear the received items window next time we display it.
+
+var float lastWalkTimer;                                        //SARGE: Allow playing footsteps while crouching.
+
+var globalconfig bool bEnhancedSoundPropagation;                //SARGE: Allow more advanced sound propagation. May introduce performance issues!
+
+var globalconfig bool bCrouchingSounds;                         //SARGE: Make footstep sounds when crouching.
+var globalconfig bool bAddonDrawbacks;                          //SARGE: Add drawbacks to weapon attachments. Always enabled on Hardcore.
+
 var globalconfig bool bAlwaysShowModifiers;                     //SARGE: Always show the Playthrough Modifiers screen when starting a new game.
 
 var globalconfig bool bAutoUncrouch;                            //SARGE: Automatically uncrouch when we press the run button.
@@ -885,6 +894,10 @@ var globalconfig bool bInventoryAmmoShowsMax;
 var globalconfig bool bNanoswordEnergyUse;                      //SARGE: Whether or not the DTS requires energy to function.
 
 var globalconfig bool bFasterInfolinks;                         //SARGE: Significantly decreases the time before queued datalinks can play, to make receiving many messages at once far less sluggish.
+
+var globalconfig bool bDrawAddonsOnAmmoDisplay;                 //SARGE: Draws "S", "L" and "S" labels for Scopes, Silencers and Lasers on the Ammo display.
+
+var globalconfig bool bExperimentalFootstepDetection;           //SARGE: Adds experimental footstep detection
 
 //Markers Stuff and Notes Overhaul
 var travel MarkerInfo markers;                                  //SARGE: A list of markers 
@@ -1248,7 +1261,10 @@ local DeusExPickup     PU;                                                      
     if (bFirstLevelLoad)
     {
         ForEach AllActors(class'ScriptedPawn', P)
+        {
             P.Shenanigans(bShenanigans);
+            P.SmartWeaponDraw(self);
+        }
         ForEach AllActors(class'DeusExPickup', PU)
             PU.Shenanigans(bShenanigans);
     }
@@ -2438,7 +2454,7 @@ exec function LoadGame(int saveIndex)
 }
 
 //Sarge: Move Save Checks to a single function, rather than being everywhere
-function bool CanSave(optional bool allowHardcore)
+function bool CanSave(optional bool allowHardcore, optional bool bDontStopInfolinks)
 {
 	local DeusExLevelInfo info;
 
@@ -2450,7 +2466,7 @@ function bool CanSave(optional bool allowHardcore)
 	// 2) We're on the logo map
 	// 3) The player is dead
 	// 4) We're interpolating (playing outtro)
-	// 5) A datalink is playing
+	// 5) A datalink is playing (can be skipped, unless the bDontStopInfolinks flag is set)
 	// 6) We're in a multiplayer game
     // 7) SARGE: We're in a conversation
     // 8) SARGE: We're currently recreating decals
@@ -2465,7 +2481,7 @@ function bool CanSave(optional bool allowHardcore)
         return false;
 
     //SARGE: Allow saving while infolinks are playing
-	if (dataLinkPlay != None && !bAllowSaveWhileInfolinkPlaying) //Datalink playing
+	if (dataLinkPlay != None && (!bAllowSaveWhileInfolinkPlaying || bDontStopInfolinks)) //Datalink playing //SARGE: Autosaves now ignore this.
         return false;
 
     if (Level.Netmode != NM_Standalone) //Multiplayer Game
@@ -2599,7 +2615,7 @@ function int FindQuicksaveSlot()
 
 function bool PerformAutoSave(bool allowHardcore)
 {
-    if (!CanSave(allowHardcore))
+    if (!CanSave(allowHardcore,true))
         return false;
     
     //Only allow autosaving if we have autosaves turned on,
@@ -4976,6 +4992,8 @@ simulated function PlayFootStep()
 	local DeusExPlayer pp;
 	local bool bOtherPlayer;
 	local float shakeTime, shakeRoll, shakeVert;
+    local float stealthLevel;
+	local Pawn P;
 
 	// Only do this on ourself, since this takes into account aug stealth and such
 	if ( Level.NetMode != NM_StandAlone )
@@ -5252,17 +5270,31 @@ simulated function PlayFootStep()
     }
 
 	//GMDX: modded for skill system stealth
-	volumeMod=0.9;
-	if (SkillSystem!=None && SkillSystem.GetSkillLevel(class'SkillStealth')>=1)
+    volumeMod = 0.9;
+    if (SkillSystem!=None)
+        stealthLevel = SkillSystem.GetSkillLevel(class'SkillStealth');
+
+    //Change landing volume
+	if (stealthLevel >= 1 && abs(Velocity.z) > 20)
 	{
-		if (abs(Velocity.z)>20) volumeMod*=0.9; //no point really having landed caclucate when footstep overrides it, so a nasty hack is afoot.
+		volumeMod*=0.9 - (0.1 * stealthLevel); //no point really having landed caclucate when footstep overrides it, so a nasty hack is afoot.
 	}
+
+    //SARGE: Change walking/crouch speed volume
+    else if (bIsWalking && velocity.Z == 0)
+    {
+        if (stealthLevel == 3 && IsCrouching()) //Silent crouching at Master stealth
+            volume = 0;
+        else
+            volume *= 0.8 - (0.2 * stealthLevel);
+    }
+
 	//if (bJustLanded) log("PlayFootStep bJustLanded vol="@volume@": mod="@volumeMod@": Z="@Velocity.Z);
 
-    if (IsCrouching() && velocity.Z == 0)  //CyberP: only applies when speed enhancement is active.
-       volume *= 1.5;
+    /*
     else if (bIsWalking)
        volume *= 0.5;  //CyberP: can walk up behind enemies.
+    */
 
     //BroadcastMessage(volume);
 
@@ -5270,7 +5302,29 @@ simulated function PlayFootStep()
     PlaySound(stepSound, SLOT_Interact, volume, , range, pitch);
     if (!bHardCoreMode) //CyberP: Nerf footsteps a touch on lower diffs.
         range*=0.9;
-	AISendEvent('LoudNoise', EAITYPE_Audio, volume*volumeMultiplier*volumeMod, range*volumeMultiplier);
+
+    //Sarge: Increase the AI volume by a significant margin, to make Stealth more necessary
+    //volumeMultiplier *= 1.15;
+
+    if (volume > 0)
+    {
+        //SARGE: Fix the broken sound propagation //SARGE: or nah! It goes through too many walls
+        //class'PawnUtils'.static.WakeUpAI(self,range*volumeMultiplier);
+        AISendEvent('LoudNoise', EAITYPE_Audio, volume*volumeMultiplier*volumeMod, range*volumeMultiplier);
+
+        //SARGE: Also alert NPCs for "quiet" footsteps, so they become suspicious over time.
+        //I bet this is real slow!
+        if (bExperimentalFootstepDetection)
+        {
+            for( P=Level.PawnList; P!=None; P=P.nextPawn )
+            {
+                if (P.IsA('ScriptedPawn') && P.IsInState('Patrolling') && ScriptedPawn(P).bReactLoudNoise && VSize(P.Location - Location) < range*volumeMultiplier*0.8)
+                    ScriptedPawn(P).HandleFootstepsAwareness(Self,volume*volumeMultiplier*volumeMod*0.6);
+            }
+        }
+
+        //DebugMessage("LoudNoise: vol = " $ volume*volumeMultiplier*volumeMod $ " range = " $ range*volumeMultiplier);
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -5533,8 +5587,6 @@ function Landed(vector HitNormal)
 	if (Velocity.Z < -460)//(Abs(Velocity.Z) >= 1.5 * JumpZ)//GMDX add compression to jump/fall (cosmetic) //CyberP: edited
 	{
 	camInterpol = 0.4;
-	if (IsCrouching())
-	   PlayFootstep();
 	if (inHand != none && (inHand.IsA('NanoKeyRing') || inHand.IsA('DeusExPickup')))
 	{
 	}
@@ -6973,6 +7025,15 @@ state PlayerWalking
 				}
 			}
 
+        if(Physics == PHYS_Walking && IsCrouching() && lastWalkTimer == 0 && (abs(velocity.Y) > 0 || abs(velocity.X) > 0) && Velocity.Z == 0 && (bCrouchingSounds || bHardcoreMode))
+        {
+            lastWalkTimer = 0.4;
+            //lastWalkTimer = FMIN(0.1,0.5 - 0.01 * VSize(Velocity));
+            //lastWalkTimer = 50 * (1 - VSize(Velocity));
+            //DebugMessage("Vel: " $ VSize(Velocity));
+            //DebugMessage("timer: " $ lastWalkTimer);
+            PlayFootStep();
+        }
 		Super.ProcessMove(DeltaTime, newAccel, DodgeMove, DeltaRot);
 	}
 
@@ -7248,6 +7309,12 @@ state PlayerWalking
         }
         //Fire blocking is only valid for 1 frame
         bBlockNextFire = False;
+
+        //SARGE: Tick the crouch walk timer.
+        if (abs(Velocity.z) == 0)
+            lastWalkTimer = FMAX(lastWalkTimer - deltaTime,0);
+        else
+            lastWalkTimer = 0.4;
 
 		Super.PlayerTick(deltaTime);
 	}
@@ -12053,6 +12120,70 @@ exec function MinimiseTargetingWindow()
 {
     bMinimiseTargetingWindow = !bMinimiseTargetingWindow;
     SetPhotoMode(false);
+}
+
+// ----------------------------------------------------------------------
+// CleanUpDebris
+// SARGE: Clean up the debris in the map.
+// ----------------------------------------------------------------------
+
+exec function CleanUpDebris(optional bool bCleanCorpses)
+{
+	local DeusExFragment frag;
+    local DeusExDecoration deco;
+    local DeusExCarcass carc;
+
+    //SARGE: We need to clean up the fragments and decals as well after the fight
+    if (decalManager != None)
+    {
+        DecalManager.HideAllDecals();
+        DecalManager.ClearList();
+    }
+                
+    foreach AllActors(class'DeusExFragment', frag)
+        frag.Destroy();
+
+    if (bCleanCorpses)
+    {
+        foreach AllActors(class'DeusExCarcass', carc)
+            carc.Destroy();
+    }
+
+    foreach AllActors(class'DeusExDecoration', deco)
+    {
+        if (/*deco.IsA('BoneFemur')
+            ||*/ deco.IsA('BoneFemurBloody')
+            || deco.IsA('BoneFemurLessBloody'))
+        deco.Destroy();
+    }
+}
+
+// ----------------------------------------------------------------------
+// Functions to toggle attachments
+// ----------------------------------------------------------------------
+
+exec function AttachSilencer()
+{
+    local DeusExWeapon W;
+    W = DeusExWeapon(Weapon);
+    if (W != None)
+        W.ToggleAttachedSilencer(true);
+}
+
+exec function AttachScope()
+{
+    local DeusExWeapon W;
+    W = DeusExWeapon(Weapon);
+    if (W != None)
+        W.ToggleAttachedScope(true);
+}
+
+exec function AttachLaser()
+{
+    local DeusExWeapon W;
+    W = DeusExWeapon(Weapon);
+    if (W != None)
+        W.ToggleAttachedLaser(true);
 }
 
 // ----------------------------------------------------------------------
@@ -17106,7 +17237,7 @@ function float CalculatePlayerVisibility(ScriptedPawn P)                        
 	local DeusExWeapon wep;
 
     wep = DeusExWeapon(Weapon);
-	vis = 1.0;
+	vis = 1.3; //SARGE: Was 1.0
 	/*litelvl = AIVisibility(false);                                              //RSD: Get AI visibility
     skillStealthMod = (SkillSystem.GetSkillLevelValue(class'SkillStealth')-0.5)*0.3;
     if (skillStealthMod < 0.0)
@@ -19894,6 +20025,9 @@ defaultproperties
      //bQuietAugs=True //DISABLED by request of RoSoDude
      bEnableLeftFrob=True
      bShowDeclinedInReceivedWindow=true
+     bEnhancedSoundPropagation=true
+     bCrouchingSounds=true
+     bAddonDrawbacks=false
      bAlwaysShowModifiers=true
      iImprovedWeaponSounds=2
      bImprovedLasers=true

@@ -103,6 +103,18 @@ function Timer()
 				Player.StartDataLinkTransmission("DL_command_bots_destroyed");
 				flags.SetBool('MS_DL_Played', True,, 14);
 			}
+
+            //SARGE: Releasing the bots is really f**ing annoying.
+            //When activating them, they will either blow everything up instantly,
+            //or walk around doing nothing and getting themselves destroyed...
+            //The AI in this game fucking sucks....
+            //So lets just make it always work.
+            //TODO: Consider disabling this on hardcore
+			foreach AllActors(class'Robot', bot, 's_bot1')
+                bot.Health = bot.default.Health;
+			foreach AllActors(class'Robot', bot, 's_bot2')
+                bot.Health = bot.default.Health;
+
 		}
 
 		// rescue the scientist when the guards are dead

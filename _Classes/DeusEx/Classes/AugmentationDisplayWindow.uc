@@ -1293,7 +1293,7 @@ function GetTargetReticleColor( Actor target, out Color xcolor )
 				if (( w != None ) && ( xcolor != colGreen ))
 				{
 					dist = player.Location - target.Location;
-					if ( VSize(dist) > w.maxRange )
+					if ( VSize(dist) > w.GetMaxRange() )
 					{
 						if (!(( WeaponAssaultGun(w) != None ) && ( Ammo20mm(WeaponAssaultGun(w).AmmoType) != None )))
 						{
@@ -1508,7 +1508,7 @@ function DrawTargetAugmentation(GC gc)
 		if ((weapon != None) && !bUseOldTarget && player.GetCrosshairState(true)) //GMDX:remove IFF from overlaying GEP
 		{
 			// if the target is out of range, don't draw the reticle
-			if (weapon.MaxRange >= dist || player.bAlwaysShowBloom /*VSize(target.Location - Player.Location)*/) //RSD: replaced with dist
+			if (weapon.GetMaxRange() >= dist || player.bAlwaysShowBloom /*VSize(target.Location - Player.Location)*/) //RSD: replaced with dist
 			{
                 DrawAccuracyCrosshair(gc,weapon,crossColor,x,y,mult);
 			}

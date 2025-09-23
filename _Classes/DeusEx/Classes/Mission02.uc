@@ -16,12 +16,15 @@ function FirstFrame()
     local Keypad K;
     local ComputerSecurity SC;
     local DeusExCarcass C;
-    local string newPasscode;
+    local CrateExplosiveSmall tnt;
+    local BeamTrigger trig;
+    local UnatcoTroop troop;
 
 	Super.FirstFrame();
 
     //SARGE: Carcasses already in the map won't bleed
-	if (localURL == "02_NYC_FREECLINIC" || localURL == "02_NYC_HOTEL")
+    //This fixes the junkies having blood pools
+	if ((localURL == "02_NYC_FREECLINIC" || localURL == "02_NYC_HOTEL") && firstTime)
     {
         foreach AllActors(class'DeusExCarcass', C)
         {
@@ -112,6 +115,33 @@ function FirstFrame()
 			flags.SetBool('SchickThankedPlayer', True);
 		}
 	}
+	else if (localURL == "02_NYC_BATTERYPARK")
+    {
+        //SARGE: Prevent the player from exploiting the next map by removing the TNT crates
+		if (flags.GetBool('SubTerroristsDead') && !flags.GetBool('GMDXRemoveTNT'))
+        {
+            //Add some extra guards to justify why the cleanup has happened.
+            foreach AllActors(class'UNATCOTroop', troop, 'CleanupTroop')
+            {
+                troop.EnterWorld();
+                troop.SetOrders('Wandering', '', True);
+            }
+            
+            //remove all the TNT Crates
+            foreach AllActors(class'CrateExplosiveSmall', tnt)
+            {
+                tnt.DrawScale = 0.00001;
+                tnt.SetCollision(false,false,false);
+                tnt.SetCollisionSize(0,0);
+            }
+            
+            //disable the tripwires
+            foreach AllActors(class'BeamTrigger', trig)
+                trig.Untrigger(player, player);
+            
+            flags.SetBool('GMDXRemoveTNT', True,, 3);
+        }
+    }
 CanQuickSave=true;
 }
 
@@ -162,6 +192,8 @@ function Timer()
 	local ThugMale thug;
 	local ThugMale2 thug2;
 	local BumMale bum;
+	local BumMale2 bum2;
+	local BumMale3 bum3;
 	local BlackHelicopter chopper;
 	local Doctor doc;
 	local BarrelAmbrosia barrel;
@@ -458,6 +490,23 @@ function Timer()
 
 			flags.SetBool('MS_BumTurned', True,, 3);
 		}
+
+        //SARGE: Make the 2 bums have the right names after introducing themselves
+		if (flags.GetBool('ClinicMaleBum1Barks_Played') && !flags.GetBool('GMDXClinicBumsRenamed'))
+        {
+            foreach AllActors(class'BumMale3', bum3, 'Rafael')
+            {
+                bum3.FamiliarName = "Rafael";
+                bum3.UnfamiliarName = "Rafael";
+            }
+            foreach AllActors(class'BumMale2', bum2, 'Jake')
+            {
+                bum2.FamiliarName = "Jake";
+                bum2.UnfamiliarName = "Jake";
+            }
+
+			flags.SetBool('GMDXClinicBumsRenamed', True,, 3);
+        }
 	}
 	else if (localURL == "02_NYC_BAR")
 	{

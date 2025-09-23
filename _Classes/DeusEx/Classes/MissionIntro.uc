@@ -30,6 +30,7 @@ function FirstFrame()
 {
 	local BobPage bob;
     local DeusExCarcass C;
+    local DeusExWeapon W;
 
 	Super.FirstFrame();
 
@@ -56,6 +57,12 @@ function FirstFrame()
         {
             If (!C.IsA('ThugMaleCarcass'))
                 C.DestroyPool();
+        }
+        
+        //SARGE: Dirty hack - make all weapons silent so AI don't run around like crazy
+        Foreach AllActors(class'DeusExWeapon', W)
+        {
+            W.NoiseLevel = 0;
         }
 	}
 }

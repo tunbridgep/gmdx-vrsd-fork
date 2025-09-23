@@ -15,6 +15,7 @@ function ApplyMod(DeusExWeapon weapon)
 	if (weapon != None)
 	{
 		weapon.bHasLaser = True;
+		weapon.bHadLaser = True;
 	}
 }
 
@@ -25,7 +26,7 @@ function ApplyMod(DeusExWeapon weapon)
 simulated function bool CanUpgradeWeapon(DeusExWeapon weapon)
 {
 	if (weapon != None)
-		return (weapon.bCanHaveLaser && !weapon.bHasLaser);
+		return (weapon.bCanHaveLaser && !weapon.bHadLaser && !weapon.bHasLaser);
 	else
 		return False;
 }
@@ -43,4 +44,5 @@ defaultproperties
      Description="A laser targeting dot eliminates any inaccuracy resulting from the inability to visually guage a projectile's point of impact."
      beltDescription="MOD LASER"
      Skin=Texture'DeusExItems.Skins.WeaponModTex4'
+     bShowBulkyText=true
 }

@@ -661,7 +661,11 @@ auto simulated state Flying
 		PlayImpactSound();
 
 		if ( AISoundLevel > 0.0 )
+        {
+            //SARGE: Fix the broken sound propagation
+            class'PawnUtils'.static.WakeUpAI(self,blastRadius*10);
 			AISendEvent('LoudNoise', EAITYPE_Audio, 2.0, AISoundLevel*blastRadius*10);
+        }
 
 		GotoState('Exploding');
 	}
@@ -686,7 +690,10 @@ auto simulated state Flying
 			// I know this is a little cheesy, but certain grenade types should
 			// not alert AIs unless they are really really close - CNN
 			if (AISoundLevel > 0.0)
+            {
+                class'PawnUtils'.static.WakeUpAI(self, AISoundLevel*256);
 				AISendEvent('LoudNoise', EAITYPE_Audio, volume, AISoundLevel*256);
+            }
 			SetPhysics(PHYS_None, HitWall);
 			if (Physics == PHYS_None)
 			{

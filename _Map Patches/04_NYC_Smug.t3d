@@ -10839,6 +10839,7 @@ Begin Actor Class=Brush Name=Brush222
     Name=Brush222
 End Actor
 Begin Actor Class=DeusExMover Name=DeusExMover9
+    iSpecialMoverKeyframe=0
     bHighlight=False
     bFrobbable=False
     MoverEncroachType=ME_CrushWhenEncroach

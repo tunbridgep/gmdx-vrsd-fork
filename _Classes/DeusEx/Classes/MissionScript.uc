@@ -299,7 +299,8 @@ function FirstFrame()
     local Collectible Coll;                                                     //SARGE
 
 	flags.DeleteFlag('PlayerTraveling', FLAG_Bool);
-
+    flags.SetBool('Enhancement_Detected', True);
+    
     //Recreate/Setup our decal manager
 	foreach AllActors(class'DecalManager', D)
         break;
@@ -745,7 +746,7 @@ function RandomiseCrap()
     //log("Applying chair skin to all leather chairs: " $ chairSkin);
     foreach AllActors(class'ChairLeather', L2)
     {
-        L2.SkinColor = chairSkin;
+        L2.SkinColor = couchSkin;
         L2.UpdateHDTPsettings();
     }
 }

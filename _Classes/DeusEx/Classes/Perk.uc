@@ -56,6 +56,15 @@ function bool IsPurchasable() // Trash: Can you purchase this perk?
 }
 
 // ----------------------------------------------------------------------
+// IsVisible()
+// ----------------------------------------------------------------------
+
+function bool IsVisible() //SARGE: Allow overwriting conditions for displaying perks in the menu.
+{
+    return true;
+}
+
+// ----------------------------------------------------------------------
 // OnPerkPurchase()
 // ----------------------------------------------------------------------
 
