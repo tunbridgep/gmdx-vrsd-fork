@@ -315,7 +315,10 @@ function Frob(Actor Frobber, Inventory frobWith)
 			if (infoWindow == None)
 				player.ClientMessage(msgNoText);
             else
+            {
                 player.UpdateCrosshair();
+                player.ClearReceivedItems(); //SARGE: Clear received items window as it's blocking the reading window
+            }
 		}
 		else
 		{
@@ -829,6 +832,18 @@ defaultproperties
      datacubeTitles(78)=(textTag="DeusExText.11_Datacube02",replacement="Morpheus")
      datacubeTitles(79)=(textTag="DeusExText.11_Datacube03",replacement="Orders")
      datacubeTitles(80)=(textTag="DeusExText.12_Datacube02",replacement="Saddle Up (Draft)")
+     datacubeTitles(81)=(textTag="DeusExText.14_Datacube01",replacement="Message for Nasir")
+     datacubeTitles(82)=(textTag="DeusExText.14_Datacube02",replacement="Tunnel Code")
+     datacubeTitles(83)=(textTag="DeusExText.14_Datacube05",replacement="Security Login")
+     datacubeTitles(84)=(textTag="DeusExText.14_Datacube06",replacement="Ridley's Betrayal")
+     datacubeTitles(85)=(textTag="DeusExText.15_Datacube01",replacement="Message for Julia")
+     datacubeTitles(86)=(textTag="DeusExText.15_Datacube09",replacement="Coolant Door Lock")
+     datacubeTitles(87)=(textTag="DeusExText.15_Datacube11",replacement="Message for Alain")
+     datacubeTitles(88)=(textTag="DeusExText.15_Datacube12",replacement="Explosives")
+     datacubeTitles(89)=(textTag="DeusExText.15_Datacube17",replacement="Security Login")
+     datacubeTitles(90)=(textTag="DeusExText.15_Datacube18",replacement="Lab 12 Testing Regimen")
+     datacubeTitles(91)=(textTag="DeusExText.15_Datacube19",replacement="Reactor Leak")
+     datacubeTitles(92)=(textTag="DeusExText.15_Datacube20",replacement="Get Topside!")
 
      titleIgnored(0)="!=!==!==="
      titleIgnored(1)="* = * = * ="
