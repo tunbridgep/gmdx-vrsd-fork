@@ -1,0 +1,4 @@
+<DC=255,255,255>
+<P>This is a tougher jump.
+<P>
+<P>Get a run-up. If you don't quite make it, you can mantle the ledge to save yourself from falling down.

@@ -341,9 +341,16 @@ function ReEnable()
 	bDisabled = False;
 }
 
-function Frob(Actor Frobber, Inventory frobWith)
+function bool CanRearm(DeusExPlayer player)
 {
     local int skill;
+
+    skill = Player.SkillSystem.GetSkillLevel(class'SkillDemolition');
+    return !(skill < rearmSkillRequired && Owner != Player && (player.bRearmSkillRequired || player.bHardcoreMode));
+}
+
+function Frob(Actor Frobber, Inventory frobWith)
+{
     local DeusExPlayer Player;
 
     Player = DeusExPlayer(Frobber);
@@ -357,15 +364,12 @@ function Frob(Actor Frobber, Inventory frobWith)
         player.ClientMessage(disabledText);
         return;
     }
-        
-
-    skill = Player.SkillSystem.GetSkillLevel(class'SkillDemolition');
 
 	// if the player frobs it and it's disabled, the player can grab it
 	if (bDisabled)
     {
         //SARGE: Cannot pick up grenades if we lack the skill
-        if (skill < rearmSkillRequired && Owner != Player && (player.bRearmSkillRequired || player.bHardcoreMode))
+        if (!CanRearm(player))
             Player.ClientMessage(sprintf(msgCannotRearm,itemName));
         else
             Super.Frob(Frobber, frobWith);

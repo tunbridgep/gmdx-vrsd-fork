@@ -395,6 +395,7 @@ function UpdateHud()
 		hud.UpdateAssigned();
 		hud.UpdateSettings(DeusExPlayer(parentPawn), WindowStackCount() != 0);
         hud.RefreshActiveAugs();
+        hud.frobDisplay.bForceRefreshOutlineColour = true;
     }
 }
 
@@ -407,7 +408,10 @@ function UpdateSecondaryDisplay()
 function UpdateCrosshair()
 {
 	if (hud != None)
+    {
 		hud.UpdateCrosshair(DeusExPlayer(parentPawn));
+        hud.frobDisplay.bForceRefreshOutlineColour = true;
+    }
 }
 
 // ----------------------------------------------------------------------

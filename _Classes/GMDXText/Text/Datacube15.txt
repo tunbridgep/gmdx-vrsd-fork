@@ -1,0 +1,4 @@
+<DC=255,255,255>
+<P>Did you suffer a nasty fall? Keep an eye on your health monitor displayed in the upper-left hand corner of your field of view. If your legs are injured, apply the medkit on the table directly to your legs via the Health Interface (navigate to the health menu through your inventory, or bind a shortcut directly to it if you wish).
+<P>
+<P>Beware, critically injured body parts results in great consequences.

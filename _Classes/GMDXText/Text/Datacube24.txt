@@ -1,0 +1,5 @@
+<DC=255,255,255>
+<P>While nothing is equipped in your hands, you can also LEFT-CLICK on a door, crate, window, or other breakable object to immediately select a relevant tool. Afterwards, RIGHT-CLICK to cycle between lockpicks, the Keyring, and your best Melee weapon.
+<P>
+<P>NOTE: Use this technique to free up belt slots for other items.
+<P>NOTE: The Keyring slot can be used for regular items. By clicking and dragging an item onto the keyring on the belt in the Inventory screen, the Keyring can be replaced, but will still be available via LEFT-CLICK.

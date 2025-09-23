@@ -220,6 +220,9 @@ event DrawWindow(GC gc)
 	local float			scopeWidth, scopeHeight;
     local float x, y, w, h;                                                     //RSD: Added
     local string rangeStr;                                                      //RSD: Added
+    local float offset;                                                         //SARGE: Added
+    local Texture binocsTex[4];                                                 //SARGE: Added
+    local Texture scopeTex[8];                                                 //SARGE: Added
 
 
 	Super.DrawWindow(gc);
@@ -257,18 +260,44 @@ return;
 	// Figure out where to put everything
 	if (bBinocs)
 	{
-		scopeWidth  = 1024;                                                     //RSD: 512
-		scopeHeight = 512;                                                      //RSD: 256
+        if (player.bClassicScope && false) //SARGE: Added //SARGE: This is just a smaller, crappier version of the bigger one, so just use that instead
+        {
+            scopeWidth  = 512;                                                     //RSD: 512
+            scopeHeight = 256;                                                      //RSD: 256
+            offset = 256;
+            binocsTex[0] = Texture'HUDBinocularView_1';
+            binocsTex[1] = Texture'HUDBinocularView_2';
+            binocsTex[2] = Texture'HUDBinocularCrosshair_1';
+            binocsTex[3] = Texture'HUDBinocularCrosshair_2';
+            y = height/2 - 16;                                                      //SARGE: Text is slightly higher in classic mode.
+        }
+        else
+        {
+            scopeWidth  = 1024;                                                     //RSD: 512
+            scopeHeight = 512;                                                      //RSD: 256
+            offset = 512;
+            binocsTex[0] = Texture'GMDXSFX.UI.HUDBinocV1';
+            binocsTex[1] = Texture'GMDXSFX.UI.HUDBinocV2';
+            binocsTex[2] = Texture'GMDXSFX.UI.HUDBinocX1';
+            binocsTex[3] = Texture'GMDXSFX.UI.HUDBinocX2';
+            y = height/2;
+        }
 
 		x = width/2;                                                   //RSD: For rangefinder text
-		y = height/2;
 		w = width/4;
 		h = height/4;
 	}
+	else if (player.bClassicScope) //SARGE: Added
+	{
+		scopeWidth  = 256;
+		scopeHeight = 256;
+        offset = 256;
+	}
 	else
 	{
-		scopeWidth  = 1024;   //512
-		scopeHeight = 1024;   //512
+		scopeWidth  = 1024;
+		scopeHeight = 1024;
+        offset = 512;
 	}
 
 	fromX = (width-scopeWidth)/2;
@@ -280,7 +309,7 @@ return;
          // Draw the black borders
 	gc.SetTileColorRGB(0, 0, 0);
 	gc.SetStyle(DSTY_Normal);
-	if ( Player.Level.NetMode == NM_Standalone )	// Only block out screen real estate in single player
+	if ( Player.Level.NetMode == NM_Standalone && (!player.bClassicScope || bBinocs) )	// Only block out screen real estate in single player
 	{
 		gc.DrawPattern(0, 0, width, fromY, 0, 0, Texture'Solid');
 		gc.DrawPattern(0, toY, width, fromY, 0, 0, Texture'Solid');
@@ -295,13 +324,13 @@ return;
 	if (bBinocs)
 	{
 		gc.SetStyle(DSTY_Modulated);
-		gc.DrawTexture(fromX,       fromY, 512, scopeHeight, 0, 0, Texture'GMDXSFX.UI.HUDBinocV1');
-		gc.DrawTexture(fromX + 512, fromY, 512, scopeHeight, 0, 0, Texture'GMDXSFX.UI.HUDBinocV2');
+		gc.DrawTexture(fromX,       fromY, 512, scopeHeight, 0, 0, binocsTex[0]);
+		gc.DrawTexture(fromX + offset, fromY, 512, scopeHeight, 0, 0, binocsTex[1]);
 
 		gc.SetTileColor(colLines);
 		gc.SetStyle(DSTY_Masked);
-		gc.DrawTexture(fromX,       fromY, 512, scopeHeight, 0, 0, Texture'GMDXSFX.UI.HUDBinocX1');
-		gc.DrawTexture(fromX + 512, fromY, 512, scopeHeight, 0, 0, Texture'GMDXSFX.UI.HUDBinocX2');
+		gc.DrawTexture(fromX,       fromY, 512, scopeHeight, 0, 0, binocsTex[2]);
+		gc.DrawTexture(fromX + offset, fromY, 512, scopeHeight, 0, 0, binocsTex[3]);
 
         rangeStr = getBinocsTargetRangeString();                                //RSD: Rangefinder stuff
 
@@ -312,50 +341,60 @@ return;
         gc.GetTextExtent(0, w, h, rangeStr);
         gc.DrawText(x-30, y+30, w, h, rangeStr);
 	}
-	else
+	else if(!player.bClassicScope)
 	{
-		// Crosshairs - Use new scope in multiplayer, keep the old in single player //CyberP: fuck multiplayer. Edit this 2 get unique scope view for snipe
+        //Rifle has a unique scope
+        //SARGE: Maybe not, it looks worse than the GMDX Scope
+        /*
+        if (DeusExWeapon(player.inHand).IsA('WeaponRifle') && player.IsHDTPInstalled())
+        {
+			scopeTex[0] = class'HDTPLoader'.static.GetTexture("HDTPItems.HDTPHUDScopeView01");
+			scopeTex[1] = class'HDTPLoader'.static.GetTexture("HDTPItems.HDTPHUDScopeView02");
+			scopeTex[2] = class'HDTPLoader'.static.GetTexture("HDTPItems.HDTPHUDScopeView03");
+			scopeTex[3] = class'HDTPLoader'.static.GetTexture("HDTPItems.HDTPHUDScopeView04");
+			
+			scopeTex[4] = class'HDTPLoader'.static.GetTexture("HDTPItems.HDTPHUDScopeCrosshair01");
+			scopeTex[5] = class'HDTPLoader'.static.GetTexture("HDTPItems.HDTPHUDScopeCrosshair02");
+			scopeTex[6] = class'HDTPLoader'.static.GetTexture("HDTPItems.HDTPHUDScopeCrosshair03");
+			scopeTex[7] = class'HDTPLoader'.static.GetTexture("HDTPItems.HDTPHUDScopeCrosshair04");
+        }
+        else
+        {*/
+			scopeTex[0] = Texture'scopeview01';
+			scopeTex[1] = Texture'scopeview02';
+			scopeTex[2] = Texture'scopeview03';
+			scopeTex[3] = Texture'scopeview04';
+			
+            scopeTex[4] = Texture'scopecross01';
+            scopeTex[5] = Texture'scopecross02';
+            scopeTex[6] = Texture'scopecross03';
+            scopeTex[7] = Texture'scopecross04';
+        //}
 
-		/*	if (DeusExWeapon(player.inHand).IsA('WeaponRifle'))
-			{
-
-			gc.SetStyle(DSTY_Modulated);
-			gc.DrawTexture(fromX, fromY, scopeWidth, scopeHeight, 0, 0, Texture'HDTPHUDScopeView01');
-			gc.DrawTexture(fromX+scopeWidth/2, fromY, scopeWidth, scopeHeight, 0, 0, Texture'HDTPHUDScopeView02');
-			gc.DrawTexture(fromX, fromY+scopeHeight/2, scopeWidth, scopeHeight, 0, 0, Texture'HDTPHUDScopeView03');
-			gc.DrawTexture(fromX+scopeWidth/2, fromY+scopeHeight/2, scopeWidth, scopeHeight, 0, 0, Texture'HDTPHUDScopeView04');
-			gc.SetTileColorRGB(255,255,255);
-			gc.SetStyle(DSTY_Masked);
-			gc.DrawTexture(fromX, fromY, scopeWidth, scopeHeight, 0, 0, Texture'HDTPHUDScopeCrosshair01');
-			gc.DrawTexture(fromX+scopeWidth/2, fromY, scopeWidth, scopeHeight, 0, 0, Texture'HDTPHUDScopeCrosshair02');
-			gc.DrawTexture(fromX, fromY+scopeHeight/2, scopeWidth, scopeHeight, 0, 0, Texture'HDTPHUDScopeCrosshair03');
-			gc.DrawTexture(fromX+scopeWidth/2, fromY+scopeHeight/2, scopeWidth, scopeHeight, 0, 0, Texture'HDTPHUDScopeCrosshair04');
-			}
-
-		else
-		{ */
-		if ( Player!=none )
+		if ( Player!=none)
 		{
 			gc.SetStyle(DSTY_Modulated);
-			gc.DrawTexture(fromX, fromY, scopeWidth, scopeHeight, 0, 0, Texture'scopeview01');
-			gc.DrawTexture(fromX+scopeWidth/2, fromY, scopeWidth, scopeHeight, 0, 0, Texture'scopeview02');
-			gc.DrawTexture(fromX, fromY+scopeHeight/2, scopeWidth, scopeHeight, 0, 0, Texture'scopeview03');
-			gc.DrawTexture(fromX+scopeWidth/2, fromY+scopeHeight/2, scopeWidth, scopeHeight, 0, 0, Texture'scopeview04');
+			gc.DrawTexture(fromX, fromY, scopeWidth, scopeHeight, 0, 0, scopeTex[0]);
+			gc.DrawTexture(fromX+scopeWidth/2, fromY, scopeWidth, scopeHeight, 0, 0, scopeTex[1]);
+			gc.DrawTexture(fromX, fromY+scopeHeight/2, scopeWidth, scopeHeight, 0, 0, scopeTex[2]);
+			gc.DrawTexture(fromX+scopeWidth/2, fromY+scopeHeight/2, scopeWidth, scopeHeight, 0, 0, scopeTex[3]);
 			gc.SetTileColorRGB(255,255,255);
 			gc.SetStyle(DSTY_Masked);
-			gc.DrawTexture(fromX, fromY, scopeWidth, scopeHeight, 0, 0, Texture'scopecross01');
-			gc.DrawTexture(fromX+scopeWidth/2, fromY, scopeWidth, scopeHeight, 0, 0, Texture'scopecross02');
-			gc.DrawTexture(fromX, fromY+scopeHeight/2, scopeWidth, scopeHeight, 0, 0, Texture'scopecross03');
-			gc.DrawTexture(fromX+scopeWidth/2, fromY+scopeHeight/2, scopeWidth, scopeHeight, 0, 0, Texture'scopecross04');
-                        }
-
-		else
-			{
-				gc.SetStyle(DSTY_Modulated);
-				gc.DrawTexture(fromX, fromY, scopeWidth, scopeHeight, 0, 0, Texture'HUDScopeView2');
-			}
-		//}
-	}
+			gc.DrawTexture(fromX, fromY, scopeWidth, scopeHeight, 0, 0, scopeTex[4]);
+			gc.DrawTexture(fromX+scopeWidth/2, fromY, scopeWidth, scopeHeight, 0, 0, scopeTex[5]);
+			gc.DrawTexture(fromX, fromY+scopeHeight/2, scopeWidth, scopeHeight, 0, 0, scopeTex[6]);
+			gc.DrawTexture(fromX+scopeWidth/2, fromY+scopeHeight/2, scopeWidth, scopeHeight, 0, 0, scopeTex[7]);
+        }
+    }
+    else //SARGE: Use the Multiplayer scope for the classic scope mode because it's bigger
+    {
+        gc.SetStyle(DSTY_Modulated);
+        
+        //if ( WeaponRifle(Player.inHand) != None )
+        //    gc.DrawTexture(fromX, fromY, scopeWidth, scopeHeight, 0, 0, Texture'HUDScopeView3');
+        //else
+            gc.DrawTexture(fromX, fromY, scopeWidth, scopeHeight, 0, 0, Texture'HUDScopeView2');
+    }
 }
 
 // ----------------------------------------------------------------------

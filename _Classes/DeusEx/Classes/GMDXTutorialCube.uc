@@ -43,70 +43,84 @@ enum EHackText
 };
 
 var() EHackText HackText;
-var Localized String StringTable[30];
+
+var transient bool bUpdatedTextTag;
 
 function bool DarkenScreen()
 {
-    return bRead;
+    if (textTag == '')
+        return false; //Not configured yet
+
+    return bRead && !bSkipDarkenCheck;
 }
 
-function GetText()
+//We need to do this
+function UpdateTextTag()
 {
-	local DeusExRootWindow rootWindow;
-    local string text;
-    local Name noteLabel;
-    local DeusExNote note;
+    local DeusExPlayer player;
+    local string str;
 
-    rootWindow = DeusExRootWindow(aReader.rootWindow);
-			
-    infoWindow = rootWindow.hud.ShowInfoWindow();
-    infoWindow.ClearTextWindows();
+    //Figure out our texttag based on our passed in HackText
+    //This is a holdover from GMDX v9 where it used strings instead of a text package.
+    if (textTag == '')
+    {
+        player = DeusExPlayer(GetPlayerPawn());
+        if (player != None && player.flagBase != None)
+        {
+            str = "Datacube";
 
-    winText = infoWindow.AddTextWindow();
-    
-    //Set the text
-    text = StringTable[HackText];
-    winText.SetText(text);
+            if (HackText < 10)
+                str = str $ "0";
 
-    // Check to see if we need to save this string in the DataVault
-    // SARGE: Now we always add it, but hide it if it's not supposed to be added
-    noteLabel = rootWindow.StringToName("GMDXCustom"$HackText);
-    note = aReader.GetNote(noteLabel);
+            str = str $ int(HackText);
 
-    if (note == None)
-        aReader.NoteAdd(text, False, !bAddToVault, noteLabel);
+            textTag = player.flagBase.StringToName(str);
+        }
+    }
+}
+
+function Tick(float deltaTime)
+{
+    super.Tick(deltaTime);
+
+    if (!bUpdatedTextTag)
+        UpdateTextTag();
+
+    bUpdatedTextTag = true;
 }
 
 defaultproperties
 {
-    StringTable(0)="Excellent.|n|nRemember doors can also be unlocked if you have the matching door key, or there may be alternate ways around."
-    StringTable(1)="Ladders are not the only way to surface from water. Swim up to a ledge, look up and keep moving forward to 'dolphin jump' from the water."
-    StringTable(2)="Turn around and press the 'Jump' key to jump from the ladder. Moving forward as you do this will increase your reach.|n|nStruggling to reach the platform? Remember that you can mantle and climb anything within reach."
-    StringTable(3)="ACCURACY BREAKDOWN|n|nAccuracy is negatively modified by damage to your arms, head and/or torso.|n|nAccuracy is positively modified by standing/crouching still, modifying your weapon with accessories such as a laser sight, increasing your weapon skill level from the 'Skills/Perks' menu, and more. |n|nAgents do not usually become a crack shot without extensive field experience."
-    StringTable(4)="SECONDARY ITEMS|n|nPick up the grenade from this table, open your inventory (default = TAB or F1), select the grenade and click the 'Assign' button, which will equip it as your secondary item. You can then use the grenade at any time by pressing the 'secondary item' key (default= F)."
-    StringTable(5)="WARNING|nBefore you is the final test of basic training. Now would be a good time to save your game (press 'Esc' key)."
-    StringTable(6)="DEFAULT WEAPON CONTROLS|n|nShoot: Left Mouse Button|nHolster: Right Mouse Button|nReload: R|nChange Weapon: Mouse Wheel|nDrop Weapon: J|nChange Ammo Type: X|nToggle Scope: Middle Mouse|nToggle Laser Sight: z|n|nAdvanced Controls: |n|nScope Zoom In/Out: Mouse Wheel (while scope is active)|nUse Secondary Weapon: F (if you have a Secondary Weapon)|nCancel Reload: Left Mouse Button (while reloading. Shotguns/crossbow only)|n|nYou can rebind keys at any time from the 'Keyboard/Mouse' menu."
-    StringTable(7)="ADVANCED MOVEMENT TRAINING|n|nAttention Recruits,|n|nDue to a high rate of incidents the Advanced Movement Training Course is no longer required participation. Take the key from the table and exit the course to receive your evaluation, or venture forward if you think you have what it takes. Be warned, recruits receive no comms assistance on the course.|n|n-J.Reyes"
-    StringTable(8)="TAKEDOWNS|n|nPerform a takedown! To do so, equip a melee weapon, sneak right up behind the hologram and aim for the midsection or the back of the head, then press 'Fire Weapon' (default = Left Mouse Button). |n|nThe Baton or Riot Prod are best suited to this task as a result of their silent and non-lethal nature, though any weapon can be used. |n|nA takedown can only be performed if the target is unaware of your presence."
-    StringTable(9)="DOOR INTERACTIVITY|n|nDoors that can be interacted with will display relevant information before your eyes (via your HUD augmentation): |n|nLock Complexity: complexity of the lock (if any); the number of lockpicks required to pick the lock.|nDoor Durability: a representation of door sturdiness, simplified as a 'health bar'.|nDamage Threshold: if your weapon does not deal greater damage than this number you will not be able to break the door with that weapon.|n|nSee if you can bypass all three doors."
-    StringTable(10)="MANTLING|n|nYou can mantle onto objects by pressing the 'Jump' key (default = SPACE BAR) whilst facing an object. |n|nTo begin, mantle up the stack of crates, and from there climb up onto the ledge."
-    StringTable(11)="AMMO TYPES|n|nCycle through available ammo types by pressing the 'Cycle Ammo' key (default = X).|nAmmo types offer specific advantages and disadvatages depending on the situation at hand."
-    StringTable(12)="This is a tougher jump. Get a run-up. If you don't quite make it, you can mantle the ledge to save yourself from falling down."
-    StringTable(13)="You can mantle into crawl-spaces you'd have trouble getting into otherwise.|n|nCrouch, Jump then Mantle."
-    StringTable(14)="Walkway bridge code: 154"
-    StringTable(15)="Did you suffer a nasty fall? Keep an eye on your health monitor displayed in the upper-left hand corner of your field of view. If your legs are injured, apply the medkit on the table directly to your legs via the Health Interface (navigate to the health menu through your inventory, or bind a shortcut directly to it if you wish).|n|nBeware, critically injured body parts results in great consequences."
-    StringTable(16)="ADVANCED INTERACTIVITY|n|nWith two hands free, you can interact with inventory items where they stand with a left click. Holster your weapon, look at the items on the table and press the left mouse button."
-    StringTable(17)="Cousin,|n|nI'm just leaving the perimeter to shift some zyme. If you're in trouble press the alarm panel as instructed. |nYou try to hide it, but I know you're scared. We all have our part to play. Don't worry I'll hear the alarm, that thing is LOUD."
-    StringTable(18)="You Mantled from a Dolphin Jump, or found a cunning alternative to get up here.|n|nThis will amount positively toward your final evaluation."
-    StringTable(19)="STORAGE INVENTORY LEDGER|n|nBatch#    Units         Product                          Date|n|n 0001      x4     Sokolo Nano-Lithium Battery       01/24/2052|n 0001      x7     Catering Container                  01/24/2052|n 0001      x1      Augmentation Upgrade Cannister   01/24/2052|n 0001      x3     GDI Combat Supply Crate           01/24/2052|n 0001      x2     GDI Medical Supply Crate           01/24/2052|n 0001      x1      GDI General Supply Crate           01/24/2052|n 0001      x5     Lab Materials Container             01/24/2052|n 0001      x1      Universal Damage Modification        01/24/2052"
-    StringTable(20)="Welcome to your first shift in the lockup, newbie.|n|nSo you're curious about the cannister. You want to hold it, examine it, and think of the possibilities. Don't worry, we've all been there and we're not going to fire you if you do the same. It's unrealistic to expect extreme curiosity to be kept at bay, and we're pretty laid back and fun here. HOWEVER, you're going to have to earn the right to touch it by proving you're not an utter dimwit: |n|nSolve the following problems. Solving the first will give you the first portion of the nano-containment container code. Solve the second problem for the second portion of the code. IF you manage to get it open be gentle with the thing. Lord knows how much it costs to manufacture.|n|n1. How many times does a broken mechanical 12-hour clock display an accurate readout over a period of two weeks? |n|n2. [(12*6)/2]-1 = Second Passcode|n|nIf you attempt to run off with the thing it's your funeral. The cameras are watching."
-    StringTable(21)="UNATCO MedDirectorate|nNano-Augmentation Guidelines|n|n...nano-augmentations, once 'installed,' irrevocably alter the physiological system they affect and in many cases cause all subsequent augmentations to be rejected; however, the exact number of augmentations each system can support varies. The various interdependencies between these systems can be seen in the following table that details possible nano-augmentation combinations.|n|nArms (1): Combat Speed or Microfibral Muscle|nArms (2): Combat Strength or Ammo Capacity|nLegs: Speed Enhancement or Run Silent|nSubdermal (1): Ballistic Protection (Active) or Ballistic Protection (Passive)|nSubdermal (2): Cloak or Radar Transparency|nTorso (1): Aqualung or Environmental Resistance|nTorso (2): Regeneration or Energy Resistance|nTorso (3): Synthetic Heart or Power Recirculator|nCranium: Aggressive Defense System or Spy Drone|nOptics: Targeting or Vision Enhancement|n|nSpecific nano-augmentations should be selected based on the mission profile of the particular agent..."
-    StringTable(22)="We've a request to send these up to level 1. Be careful with them as they are very expensive. Dropping one will likely be grounds for instant dismissal."
-    StringTable(23)="Dave,|n|nI understand we've all been working hard, but you can't keep ignoring your responsibilities. I know the camera doesn't beep when we're asleep, but that doesn't mean the base commander isn't going to come down here in person one day and find you asleep. If a real attack happens we don't want to be caught off guard because you weren't watching your post."
-    //SARGE: New training messages
-    StringTable(24)="While nothing is equipped in your hands, you can also LEFT-CLICK on a door, crate, window, or other breakable object to immediately select a relevant tool. Afterwards, RIGHT-CLICK to cycle between lockpicks, the Keyring, and your best Melee weapon.|n|nNOTE: Use this technique to free up belt slots for other items.|nNOTE: The Keyring slot can be used for regular items. By clicking and dragging an item onto the keyring on the belt in the Inventory screen, the Keyring can be replaced, but will still be available via LEFT-CLICK."
-    StringTable(25)="While looking at an object, you can LEFT-CLICK to immediately put it into your hands.|n|nSome objects like Flares will be used instantly, rather than picked up."
-    StringTable(26)="An agent can only carry a certain amount of ammo for their weapons.|n|nSkill level has a significant effect on ammo capacity, especially for explosive weapons. As an agent gains more experience with a particular weapon skill, their maximum ammo capacity for that weapon also increases."
-    StringTable(27)="While disarming explosives is already a tricky task for most agents, more experienced agents may eventually learn more advanced techniques, allowing them to rearm and reuse grenades that they have previously disarmed, based on their Demolitions skill.|n|nAt TRAINED, Agents learn how to rearm the relatively simple mechanisms inside Gas Grenades, allowing them to be collected and reused.|nAt ADVANCED, Agents are taught how to interface with the more complex comptuer-based targeting systems of EMP and Scrambler grenades.|nAt MASTER, Agents are taught how to reset the complex IFF modules of LAMs."
-    StringTable(28)="As you use items, you may notice a darkened version appear on your toolbelt. By default, the toolbelt remembers the contents of each slot when it becomes empty through use. The slot will be reserved for items matching the shown type only.|n|nFor instance, as you use your final LAM, a darkened LAM will appear in its belt slot. As items are picked up, only LAMs will be able to occupy this slot. To clear a slot, open the inventory screen and right-click on the darkened icon.|n|nDropped items do not create darkened belt slots if Autofill is Enabled.|n|nNOTE: This feature can be disabled by disabling 'Belt Memory' in the GMDX Quality of Life menu.|nNOTE: Belt Autofill can be enabled in the GMDX Quality of Life menu."
+    //datacubeTitles(0)=(textTag="GMDXText.Datacube00",replacement="Important Information")
+    datacubeTitles(1)=(textTag="GMDXText.Datacube01",replacement="Swimming Tips")
+    datacubeTitles(2)=(textTag="GMDXText.Datacube02",replacement="Ladder Jumping")
+    datacubeTitles(3)=(textTag="GMDXText.Datacube03",replacement="Accuracy Breakdown")
+    datacubeTitles(4)=(textTag="GMDXText.Datacube04",replacement="Secondary Items")
+    datacubeTitles(5)=(textTag="GMDXText.Datacube05",replacement="Final Test")
+    //datacubeTitles(6)=(textTag="GMDXText.Datacube06",replacement="Weapon Controls")
+    //datacubeTitles(7)=(textTag="GMDXText.Datacube07",replacement="Training Course Closed")
+    //datacubeTitles(8)=(textTag="GMDXText.Datacube08",replacement="Takedowns")
+    //datacubeTitles(9)=(textTag="GMDXText.Datacube09",replacement="Door Information")
+    //datacubeTitles(10)=(textTag="GMDXText.Datacube10",replacement="Mantling Training")
+    datacubeTitles(11)=(textTag="GMDXText.Datacube11",replacement="About Ammo Types")
+    datacubeTitles(12)=(textTag="GMDXText.Datacube12",replacement="Jumping")
+    datacubeTitles(13)=(textTag="GMDXText.Datacube13",replacement="Crawlspaces")
+    datacubeTitles(14)=(textTag="GMDXText.Datacube14",replacement="Walkway Code")
+    datacubeTitles(15)=(textTag="GMDXText.Datacube15",replacement="Staying Healthy")
+    datacubeTitles(16)=(textTag="GMDXText.Datacube16",replacement="Advanced Interactivity")
+    datacubeTitles(17)=(textTag="GMDXText.Datacube17",replacement="Zyme Deal")
+    datacubeTitles(18)=(textTag="GMDXText.Datacube18",replacement="Well Done!")
+    datacubeTitles(19)=(textTag="GMDXText.Datacube19",replacement="Storage Inventory Ledger")
+    datacubeTitles(20)=(textTag="GMDXText.Datacube20",replacement="The Cannister")
+    datacubeTitles(21)=(textTag="GMDXText.Datacube21",replacement="Nano-Augmentation Guidelines")
+    datacubeTitles(22)=(textTag="GMDXText.Datacube22",replacement="Transfer Request")
+    datacubeTitles(23)=(textTag="GMDXText.Datacube23",replacement="Stop Falling Asleep!")
+    ////SARGE: New training messages
+    datacubeTitles(24)=(textTag="GMDXText.Datacube24",replacement="Advanced World Interactions")
+    datacubeTitles(25)=(textTag="GMDXText.Datacube25",replacement="Left-Click Interactions")
+    datacubeTitles(26)=(textTag="GMDXText.Datacube26",replacement="Ammo Restrictions")
+    datacubeTitles(27)=(textTag="GMDXText.Datacube27",replacement="Disarming Explosives")
+    datacubeTitles(28)=(textTag="GMDXText.Datacube28",replacement="Toolbelt Slots")
+     TextPackage="GMDXText"
+
 }

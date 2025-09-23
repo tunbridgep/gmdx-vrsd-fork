@@ -383,8 +383,7 @@ replication
 }
 
 // ----------------------------------------------------------------------
-<<<<<<< Updated upstream
-=======
+
 // GetMaxRange()
 //
 // SARGE: Returns the max range of the weapon
@@ -424,7 +423,6 @@ function Sound GetDefaultFireSound()
 }
 
 // ----------------------------------------------------------------------
->>>>>>> Stashed changes
 // GetAddonPenalty()
 //
 // SARGE: Gets the penalty for using a Scope, Silencer or Laser Sight
@@ -563,7 +561,7 @@ function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, op
     if (IsA('WeaponShuriken') && WeaponShuriken(self).bImpaled)
         overrideTexture = Texture'RSDCrap.Icons.BeltIconShurikenBloody';
 
-    intj = P.LootAmmo(defAmmoClass,PickupAmmoCount,bDisplayMsg,bDisplayWindow,bLootSound,!bDisposableWeapon,bDisposableWeapon,bOverflow && !bDisposableWeapon,bOverflowWindow,overrideTexture);
+    intj = P.LootAmmo(defAmmoClass,PickupAmmoCount,bDisplayMsg,bDisplayWindow,bLootSound,bDisposableWeapon,bDisposableWeapon,bOverflow && !bDisposableWeapon,bOverflowWindow,overrideTexture);
 
     if (intj > 0)
     {
@@ -1353,19 +1351,37 @@ function TakeDamage(int Damage, Pawn EventInstigator, vector HitLocation, vector
 
 //SARGE: Moved this to a new function so that it can be used
 //even at full ammo.
-function CopyModsFrom(DeusExWeapon W, optional bool bNotify)
+function bool CopyModsFrom(DeusExWeapon W, optional bool bNotify)
 {
+    local bool bCopied;
+
+    if (!W.bModified || W.bDisposableWeapon)
+        return false;
+
     if (W.ModBaseAccuracy > ModBaseAccuracy)
+    {
         ModBaseAccuracy = W.ModBaseAccuracy;
+        bCopied = true;
+    }
     if (W.ModReloadCount > ModReloadCount)
+    {
         ModReloadCount = W.ModReloadCount;
+        bCopied = true;
+    }
     if (W.ModAccurateRange > ModAccurateRange)
+    {
         ModAccurateRange = W.ModAccurateRange;
+        bCopied = true;
+    }
 
     // these are negative
     if (W.ModReloadTime < ModReloadTime)
+    {
         ModReloadTime = W.ModReloadTime;
+        bCopied = true;
+    }
     if (W.ModRecoilStrength < ModRecoilStrength)
+    {
         ModRecoilStrength = W.ModRecoilStrength;
     
     //SARGE: Added
@@ -1386,45 +1402,80 @@ function CopyModsFrom(DeusExWeapon W, optional bool bNotify)
     }
 
     if (W.bHasLaser)
+    {
         bHasLaser = True;
+        bCopied = true;
+    }
     if (W.bHasSilencer)
+    {
         bHasSilencer = True;
+        bCopied = true;
+    }
     if (W.bHasScope)
+    {
         bHasScope = True;
+        bCopied = true;
+    }
     if (W.bFullAuto)     //CyberP:
+    {
         bFullAuto = True;
+        bCopied = true;
+    }
 
     // copy the actual stats as well
     if (W.ReloadCount > ReloadCount)
+    {
         ReloadCount = W.ReloadCount;
+        bCopied = true;
+    }
     if (W.AccurateRange > AccurateRange)
+    {
         AccurateRange = W.AccurateRange;
+        bCopied = true;
+    }
 
     // these are negative
     if (W.BaseAccuracy < BaseAccuracy)
+    {
         BaseAccuracy = W.BaseAccuracy;
+        bCopied = true;
+    }
     if (W.ReloadTime < ReloadTime)
+    {
         ReloadTime = W.ReloadTime;
+        bCopied = true;
+    }
     if (W.RecoilStrength < RecoilStrength)
+    {
         RecoilStrength = W.RecoilStrength;
+        bCopied = true;
+    }
 
     //ROF mod
-        if(W.ModShotTime < ModShotTime)
-            ModShotTime = W.ModShotTime;
-    //DAM mod
-        if(W.ModDamage > ModDamage)
-            ModDamage = W.ModDamage;
+    if(W.ModShotTime < ModShotTime)
+    {
+        ModShotTime = W.ModShotTime;
+        bCopied = true;
+    }
     
-    if (W.bModified && !bModified && bNotify)
+    //DAM mod
+    if(W.ModDamage > ModDamage)
+    {
+        ModDamage = W.ModDamage;
+        bCopied = true;
+    }
+    
+    if (bCopied && bNotify)
     {
         if (Owner != None && Owner.IsA('DeusExPlayer'))
             DeusExPlayer(Owner).ClientMessage(sprintf(msgModsCopied,W.ItemName));
         PlaySound(CopyModsSound,SLOT_None,0.8);
     }
 
-    if (W.bModified)
+    if (bCopied)
         bModified = true;
 
+    return bCopied;
 }
 
 function bool HandlePickupQuery(Inventory Item)

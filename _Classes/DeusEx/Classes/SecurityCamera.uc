@@ -512,12 +512,16 @@ function Tick(float deltaTime)
 	//local int skillz; //CyberP                                                //RSD: Removed
     local float remainingTime;
     local int remainingTimeInt;
+    local DeusExPlayer P;
 
 	Super.Tick(deltaTime);
 
 	curTarget = None;
 
-    remainingTime = disableTime - DeusExPlayer(GetPlayerPawn()).saveTime;
+    P = DeusExPlayer(GetPlayerPawn());
+
+    if (P != None)
+        remainingTime = disableTime - P.saveTime;
 
     if (bRebooting && !bConfused)
     {
