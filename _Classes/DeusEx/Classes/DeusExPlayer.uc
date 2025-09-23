@@ -829,7 +829,7 @@ var globalconfig bool bConversationKeepWeaponDrawn;             //SARGE: Always 
 
 var globalconfig int iCrosshairVisible;                         //SARGE: Replaces the boolean crosshair setting, now we can control inner and outer crosshair independently.
 
-var globalconfig bool bImprovedWeaponSounds;                    //SARGE: Allow GMDX weapon sounds, rather than vanilla.
+var globalconfig int iImprovedWeaponSounds;                    //SARGE: Allow GMDX weapon sounds, rather than vanilla.
 
 var globalconfig bool bImprovedLasers;                          //SARGE: Prevent pepper spray, boxes etc from disrupting lasers.
 
@@ -2958,13 +2958,16 @@ function ResetPlayer(optional bool bTraining)
 		anItem = Spawn(class'WeaponProd');
 		anItem.Frob(Self, None);
 		anItem.bInObjectBelt = True;
+		anItem.beltPos = 0;
 		anItem = Spawn(class'WeaponPistol');
 		anItem.Frob(Self, None);
 		anItem.bInObjectBelt = True;
+		anItem.beltPos = 1;
         advBelt = 1;
 		anItem = Spawn(class'MedKit');
 		anItem.Frob(Self, None);
 		anItem.bInObjectBelt = True;
+		anItem.beltPos = 2;
 		swimTimer = 1000;  //CyberP: start with full stamina.
 		KillerCount = 0;    //CyberP: start with 0 kills
 		stepCount = 0;      //CyberP: start with 0 steps
@@ -8175,26 +8178,31 @@ exec function UseSecondary()
         {
             if(!Binoculars(assigned).bActive)
             {
-                if (inHand != none && inHand.IsA('DeusExWeapon'))
+                if (inHand != None)
                 {
-                    //DeusExWeapon(inHand).GotoState('DownWeapon');
-                    DeusExWeapon(inHand).ScopeOff();
-                    DeusExWeapon(inHand).LaserOff(true);
-                    PutInHand(None);
-                }
-                else if (inHand.IsA('SkilledTool'))
-                {
-                    SkilledTool(inHand).PutDown();
-                }
-                else if (inHand.IsA('DeusExPickup'))
-                {
-                    PutInHand(None);
+                    if (inHand.IsA('DeusExWeapon'))
+                    {
+                        //DeusExWeapon(inHand).GotoState('DownWeapon');
+                        DeusExWeapon(inHand).ScopeOff();
+                        DeusExWeapon(inHand).LaserOff(true);
+                        PutInHand(None,true);
+                    }
+                    else if (inHand.IsA('SkilledTool'))
+                    {
+                        //SkilledTool(inHand).PutDown();
+                        PutInHand(None,true);
+                    }
+                    else if (inHand.IsA('DeusExPickup'))
+                    {
+                        PutInHand(None,true);
+                    }
                 }
                 Binoculars(assigned).Activate();
             }
             else
             {
                 Binoculars(assigned).Activate();
+                SelectLastWeapon(true);
             }
             return;
         }
@@ -8691,6 +8699,7 @@ exec function ParseRightClick()
 	local DeusExWeapon ExWep;
     local DeusExRootWindow root;
     local bool bFarAway;
+    local Inventory assigned;
 
     //SARGE: Add quickloading if pressing right click while dead.
     if (IsInState('dying') && !bDeadLoad)
@@ -8707,6 +8716,17 @@ exec function ParseRightClick()
         return;
     }
 
+    assigned = GetSecondary();
+       
+
+    //SARGE: Hack to handle binocs as secondary
+    if (Binoculars(assigned) != None && Binoculars(assigned).bActive)
+    {
+        Binoculars(assigned).Activate();
+        SelectLastWeapon(true);
+        return;
+    }
+
     //Descope if we have binocs/scope
     if (inHand != None)
     {
@@ -8718,6 +8738,12 @@ exec function ParseRightClick()
         else if (inHand.IsA('Binoculars') && Binoculars(inhand).bActive)
         {
             Binoculars(inhand).Activate();
+            return;
+        }
+        
+        if (inHand.IsA('DeusExWeapon') && DeusExWeapon(inhand).bZoomed)
+        {
+            DeusExWeapon(inhand).ScopeToggle();
             return;
         }
     }
@@ -9313,6 +9339,10 @@ function AddReceivedItem(Inventory item, int count, optional bool bNoGroup, opti
 function String GetNanoKeyDesc(Name nanokey)
 {
     local NanoKeyInfo key;
+
+    if (nanokey == '')
+        return "";
+
     key = KeyList;
     while (key != None)
     {
@@ -19579,11 +19609,11 @@ defaultproperties
      iSmartKeyring=1
      iAltFrobDisplay=1
      bDialogHUDColors=True
-     bQuietAugs=True
+     //bQuietAugs=True //DISABLED by request of RoSoDude
      bEnableLeftFrob=True
      bShowDeclinedInReceivedWindow=true
      bAlwaysShowModifiers=true
-     bImprovedWeaponSounds=true
+     iImprovedWeaponSounds=2
      bImprovedLasers=true
      bRearmSkillRequired=true
      bAutoUncrouch=true
