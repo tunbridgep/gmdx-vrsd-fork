@@ -13,15 +13,6 @@ var float EnergyDrainJump;              //SARGE: Add an energy drain for jumping
 state Active
 {
 
-//Justice: hackity hack to make the player noisy if they crouchwalk with the speed aug
-function Timer()
-{
-	if(player.Physics == PHYS_Walking && player.IsCrouching())
-	{
-		player.playFootStep();
-	}
-}
-
 Begin:
 	Player.GroundSpeed *= (LevelValues[CurrentLevel]);   //CyberP: tone down aug speed now that we have increased base ground speed
 
@@ -30,9 +21,6 @@ Begin:
 
 		if ( Human(Player) != None )
 			Human(Player).UpdateAnimRate( LevelValues[CurrentLevel] );
-
-	footStepTimer = 0.75 / levelValues[CurrentLevel];
-	SetTimer(footStepTimer, True);
 }
 
 function Deactivate()

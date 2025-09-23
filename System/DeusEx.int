@@ -606,6 +606,7 @@ automaticLabel="Automatic:"
 
 [WeaponMod]
 DragToUpgrade="Drag over weapon to upgrade.  Weapons highlighted in GREEN can be upgraded with this mod."
+BulkyText="This modification is bulky and will reduce weapon handling characteristics!"
 
 [Faucet]
 ItemName="Faucet"
@@ -2886,7 +2887,7 @@ Description="Practical knowledge of human physiology can be applied by an agent 
 
 [SkillStealth]
 SkillName="Stealth"
-Description="Covert ops require swift and precise stealth skills that must be developed by an agent over time via intensive training.|n|nUNTRAINED: An agent can sneak, most effective if sticking to the shadows. An agent learns to target weak points and attack unaware enemies from behind at close range for bonus damage (3x).|n|nTRAINED: An agent hides slightly more effectively when sneaking in the shadows, movement speed whilst walking, sneaking, leaning and climbing ladders increases slightly (+15%), and weak point damage increases to 6x.|n|nADVANCED: An agent hides much more effectively when sneaking in the shadows, movement speed whilst walking, crouched, leaning and climbing ladders increases moderately (+30%), and weak point damage increases to 9x.|n|nMASTER: An agent need not rely on advanced technology during infiltration (+45%) and can swiftly eliminate almost any unaware target (12x)."
+Description="Covert ops require swift and precise stealth skills that must be developed by an agent over time via intensive training.|n|nTotal skill points to master: 5250|n|nUNTRAINED: An agent can sneak, most effective if sticking to the shadows. An agent learns to target weak points and attack unaware enemies from behind at close range for bonus damage (3x).|n|nTRAINED: An agent hides slightly more effectively when sneaking in the shadows, movement speed whilst walking, sneaking, leaning and climbing ladders increases slightly (+15%), and weak point damage increases to 6x.|n|nADVANCED: An agent hides much more effectively when sneaking in the shadows, movement speed whilst walking, crouched, leaning and climbing ladders increases moderately (+30%), and weak point damage increases to 9x.|n|nMASTER: An agent need not rely on advanced technology during infiltration (+45%) and can swiftly eliminate almost any unaware target (12x)."
 
 [Image12_Tiffany_HostagePic]
 imageDescription="Tiffany Hostage Picture"

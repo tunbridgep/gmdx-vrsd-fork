@@ -2,7 +2,7 @@
 // SARGE: Spawn Utils
 // Functions to assist with spawning objects so that they fail less.
 //=============================================================================
-class SpawnUtils extends Object;
+class SpawnUtils extends Object abstract;
 
 //Spawns an object in a safe manner
 //If it can't initially spawn, it sets the class to not collide with actors,

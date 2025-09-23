@@ -8,6 +8,9 @@ var() Float WeaponModifier;
 var localized String DragToUpgrade;
 var () bool bNoRandomSwap;
 
+var localized String BulkyText; //SARGE: Bulky text
+var const bool bShowBulkyText;
+
 // ----------------------------------------------------------------------
 // Network Replication
 // ----------------------------------------------------------------------
@@ -110,7 +113,11 @@ simulated function bool UpdateInfo(Object winObject)
    winInfo.SetTitle(itemName);
    winInfo.SetText(Description $ winInfo.CR() $ winInfo.CR());
 
-   winInfo.AppendText(DragToUpgrade);
+   winInfo.AppendText(DragToUpgrade $ winInfo.CR() $ winInfo.CR());
+   
+    //SARGE: Add notes for bulky upgrades
+    if (bShowBulkyText)
+        winInfo.AppendText(BulkyText);
 
    return True;
 }
@@ -121,6 +128,7 @@ simulated function bool UpdateInfo(Object winObject)
 defaultproperties
 {
      DragToUpgrade="Drag over weapon to upgrade.  Weapons highlighted in GREEN can be upgraded with this mod."
+     BulkyText="This modification is bulky and will reduce weapon handling characteristics!"
      PlayerViewOffset=(X=30.000000,Z=-12.000000)
      PlayerViewMesh=LodMesh'DeusExItems.WeaponMod'
      PickupViewMesh=LodMesh'DeusExItems.WeaponMod'
