@@ -357,12 +357,26 @@ var const Sound ClassicFireSound;
 //we need a hacky variable to distinguish them, so we don't give them combat strength etc
 var const bool bFakeHandToHand;
 
+////SARGE: Weapon mod penalties and removal! Now we need to remember the weapon mod state.
+//These store if we've ever had the weapon mod.
+var travel bool bHadLaser;
+var travel bool bHadScope;
+var travel bool bHadSilencer;
+
+//Used during the new "SwitchAttachment" state so we can change attachments during the animation
+var bool bSwitchingToLaser;
+var bool bSwitchingToSilencer;
+var bool bSwitchingToScope;
+
+//Penalties to accuracy and reload speed while using mods.
 enum EAddonPenaltyType
 {
-    Silencer,
     Scope,
+    Silencer,
     Laser
 };
+
+var const float addonPenalties[3];
 
 //END GMDX:
 
