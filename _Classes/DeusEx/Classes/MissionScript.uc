@@ -28,6 +28,34 @@ var byte savedMusicVolume;
 var byte savedSpeechVolume;
 
 // ----------------------------------------------------------------------
+// SARGE: GetConversation()
+//
+// Returns a conversation based on a name
+// ----------------------------------------------------------------------
+
+function Conversation GetConversation(Name conName)
+{
+    local Conversation c, fallback;
+    local Name fallbackConName;
+
+    fallbackConName = '';
+
+    if (flags.GetBool('LDDPJCIsFemale'))
+    {
+        fallbackConName=conName;
+        conName = flags.StringToName("FemJC"$string(conName));
+    }
+
+    foreach AllObjects(class'Conversation', c)
+    {
+        if(c.conName == conName || c.conName == fallbackConName)
+            return c;
+    }
+
+    return None;
+}
+
+// ----------------------------------------------------------------------
 // SARGE: UpdateSavePoints()
 //
 // Checks the required flags for all Save Points, and hides/unhides them accordingly.
@@ -461,6 +489,9 @@ function Timer()
 		if ((player != None) && (flags.GetBool('PlayerTraveling')))
 			FirstFrame();
 	}
+
+    //Disable some tutorial messages
+    flags.SetBool('GMDXNoTutorials', player.bLessTutorialMessages);
 
     DoConfixCheck();
     UpdateSavePoints();

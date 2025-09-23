@@ -73,15 +73,6 @@ event InitWindow()
 
 event DestroyWindow()
 {
-    //SARGE: Destroy the notes window too
-    if (winNotes != None)
-    {
-        winNotes.DestroyWindow();
-        winNotes.DestroyAllChildren();
-        winNotes.Destroy();
-        winNotes = None;
-    }
-
 	if ((compOwner.IsA('Computers')) && (compOwner != None))
 	{
       if (Player != Player.GetPlayerPawn())

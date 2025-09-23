@@ -35,6 +35,17 @@ var travel bool bNoDefaultPools;                                                
 
 //END GMDX:
 
+//Augmentique Data
+//Now that pawns can have custom outfits, we need to store the outfit data
+//when we pick it up, so we can restore it when we put it down.
+struct AugmentiqueCarcassData
+{
+    var Texture textures[9];
+    var bool bRandomized;
+};
+
+var travel AugmentiqueCarcassData augmentiqueData;
+
 //Function to fix weapon offsets
 function DoWeaponOffset(DeusExPlayer player)
 {

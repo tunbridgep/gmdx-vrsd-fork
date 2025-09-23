@@ -21,7 +21,7 @@ defaultproperties
      items(4)=(HelpText="Enable/Disable the 'Disable All' button on the Augmentation Wheel.",actionText="Augmentation Wheel: Show 'Disable All'",variable="bAugWheelDisableAll",defaultValue=1);
      items(5)=(HelpText="Automtically add newly-acquired items to the toolbelt.",actionText="Belt: Autofill Belt",variable="bBeltAutofill");
      items(6)=(HelpText="After consuming the last item in a belt slot, its position will be preserved.|nIf Autofill is off, dropped items will also be preserved. Right-Click to clear.",actionText="Belt: Belt Memory",variable="bBeltMemory",defaultValue=1);
-     items(7)=(HelpText="Right-click confirms belt selection, removing the need to cycle through items to reach desired slot.",actionText="Belt: Invisible War Toolbelt",variable="iAlternateToolbelt",valueText2="Classic",valueText3="Hybrid",helpText2="Classic mode makes right-click switch back after using the number keys.",helpText3="Hybrid mode only switches back to the primary selection if the primary belt selection was initially unholstered.");
+     items(7)=(HelpText="Right-click confirms belt selection, removing the need to cycle through items to reach desired slot.",actionText="Belt: Invisible War Toolbelt",variable="iAlternateToolbelt",valueText2="Classic",valueText3="Hybrid",helpText2="Classic mode makes right-click switch back after using the number keys.",helpText3="Hybrid mode only switches to the primary selection if the primary selection was initially unholstered.");
      items(8)=(HelpText="Belt size is extended to 12 items. The - and = keys will be rebound to use the new belt slots.",actionText="Belt: Larger Belt",variable="bBiggerBelt",defaultValue=1);
      items(9)=(HelpText="Allows replacing the keyring in the toolbelt, making its slot available to general items. The keyring is always selectable via left-clicking on a locked object. No Keyring mode removes the keyring entirely.",actionText="Belt: Smart Keyring",variable="iSmartKeyring",valueText2="No Keyring",defaultValue=1);
      items(10)=(HelpText="Adjust the Field-of-View during dialog scenes to more closely match the original game.",actionText="Conversations: FOV Adjustment",variable="iCutsceneFOVAdjust",valueText1="75 FOV",valueText2="80 FOV",valueText3="85 FOV",valueText4="90 FOV",defaultValue=2);
@@ -76,7 +76,7 @@ defaultproperties
      items(58)=(HelpText="Loot will not be declined from corpses if the Walk/Run key is held.",actionText="Interaction: Smart Declining",variable="bSmartDecline");
      items(59)=(HelpText="When using a medical bot, automatically switch to the Health screen after using the last Aug canister.",actionText="Interaction: Medbot Auto Switch",variable="bMedbotAutoswitch",defaultValue=1);
      items(60)=(HelpText="Changes lighting on some maps to reduce strobing and flickering.",actionText="Lighting: Lighting Accessibility",variable="bLightingAccessibility");
-     items(61)=(HelpText="If Enabled, music will not restart upon map changes using the same track. Extended mode also stops conversation music in bars and clubs.",actionText="Audio: More Immersive Music",variable="iEnhancedMusicSystem",valueText2="Extended",defaultValue=1);
+     items(61)=(HelpText="If Enabled, music will not restart upon map changes using the same track. Extended mode also stops conversation and combat music in bars and clubs.",actionText="Audio: More Immersive Music",variable="iEnhancedMusicSystem",valueText2="Extended",defaultValue=1);
      items(62)=(HelpText="Enable/disable level transition autosaving.",actionText="Player: Autosave on Level Change",variable="bTogAutoSave",defaultValue=1);
      items(63)=(HelpText="When dying, switch to a first or third person camera.",actionText="Player: Death Perspective",variable="bRemoveVanillaDeath",valueText0="Third Person",valueText1="First Person");
      items(64)=(HelpText="If enabled, the current player stance will be displayed on the HUD.",actionText="Player: Current Stance Display",variable="iStanceHud",defaultValue=3,valueText1="Walk/Run",valueText2="Everything except Default",valueText3="Everything");
@@ -99,7 +99,7 @@ defaultproperties
      items(80)=(HelpText="If Enabled, a smaller version of the messages window will display while an infolink is playing.",actionText="HUD: Enable Log during Infolinks",variable="bShowSmallLog")
      items(81)=(HelpText="When playing at certain resolutions, the outer crosshairs may become misaligned with the central crosshair. Use this setting to correct it.",actionText="HUD: Crosshair Adjustment",variable="iCrosshairOffByOne")
      items(82)=(HelpText="If enabled, double-right click to unholster items in hand, or disable unholstering completely.",actionText="Holstering: Unholstering Mode",variable="iUnholsterMode",valueText1="Standard",valueText2="Double-Click",defaultValue=2);
-     items(83)=(HelpText="If enabled, weapons will use new high-quality sounds.",actionText="Audio: Improved Weapon Sounds",variable="bImprovedWeaponSounds",defaultValue=1);
+     items(83)=(HelpText="If enabled, weapons will use new high-quality sounds.",actionText="Audio: Improved Weapon Sounds",variable="iImprovedWeaponSounds",defaultValue=2,valueText1="Weapons Only",valueText2="Weapons and Tools");
      items(84)=(HelpText="If enabled, pressing the Run key while crouched will automatically uncrouch. Does nothing when Always Run is enabled.",actionText="Game: Auto Uncrouch",variable="bAutoUncrouch",defaultValue=1);
      items(85)=(HelpText="If enabled, always show the Playthrough Modifiers screen before the New Game screen.",actionText="Game: Always Show Playthrough Modifiers",variable="bAlwaysShowModifiers",defaultValue=1);
      items(86)=(HelpText="If enabled, right- and middle-clicking in the inventory and augmentations screens will effect the item under the cursor, rather than the currently selected item.",actionText="HUD: Enhanced Inventory/Aug Interaction",variable="bEnhancedPersonaScreenMouse",defaultValue=1);
@@ -107,6 +107,8 @@ defaultproperties
      items(88)=(HelpText="If enabled, the HUD Ammo Display will show total ammo as cyan when at max ammo.",actionText="HUD: Show Max Ammo",variable="bShowFullAmmoInHUD",defaultValue=1);
      items(89)=(HelpText="Re-enables the head-popping system from GMDX v9. Not recommended as it looks very unfinished.",actionText="Game: Allow Decapitations",variable="bDecap",defaultValue=0);
      items(90)=(HelpText="Alternate display for the accuracy crosshairs. Requires a map load/reload to fully work.",actionText="HUD: Alternate Accuracy Crosshairs",variable="bAlternateCrosshairAcc");
+     items(91)=(HelpText="Disables some early-game infolinks containing tutorial messages.",actionText="Game: Disable Tutorial Infolinks",variable="bLessTutorialMessages",defaultValue=0);
+     items(92)=(HelpText="Queued Infolinks will play much faster, without needing to wait 5 seconds to finish and start each one.",actionText="HUD: Faster Infolink Playback",variable="bFasterInfolinks",defaultValue=1);
      items(93)=(HelpText="Shows a green border on the tool display window when looking at doors and hackable devices for which you have the key or the code. Not displayed in Hardcore mode or with the Unknown Codes modifier.",actionText="Tool Windows: Show Known Codes",variable="bToolWindowShowKnownCodes",defaultValue=1);
      items(94)=(HelpText="Shows a blue border on the tool display window when looking at readable items which you have previously read.",actionText="Tool Windows: Show Read Objects",variable="bToolWindowShowRead",defaultValue=0);
      items(95)=(HelpText="Shows a blue border on the tool display window when looking at aug canisters where you can only replace an augmentation, and red when you cannot use the container.",actionText="Tool Windows: Show Augmentation Canister Status",variable="bToolWindowShowAugState",defaultValue=1);
@@ -114,12 +116,14 @@ defaultproperties
      items(97)=(HelpText="Shows the names of Books, Datacubes and Newspapers when highlighting them.",actionText="Tool Windows: Show Book Names",variable="iToolWindowShowBookNames",valueText1="When Read",valueText2="Always",defaultValue=1);
      items(98)=(HelpText="Items that can't be picked up due to inventory limitations will display with a Red border when highlighted. Ammo that can be partially looted will show a blue border.",actionText="Tool Windows: Show Invalid Pickups",variable="bToolWindowShowInvalidPickup",defaultValue=0);
      items(99)=(HelpText="When accessing computers, the Special Options screen won't have a Logout button but will instead always return to the email or security screen.",actionText="HUD: Streamlined Computer Interface",variable="bStreamlinedComputerInterface",defaultValue=1);
+     items(103)=(HelpText="If enabled, notes added by datacubes, books, etc can be edited.",actionText="HUD: Edit Default Notes",variable="bEditDefaultNotes",defaultValue=0)
      items(105)=(HelpText="If enabled, the Ammo icons shown when viewing a weapon in the inventory will show max ammo in addition to current ammo.",actionText="HUD: Weapon Info shows Max Ammo",variable="bInventoryAmmoShowsMax",defaultValue=1)
      items(106)=(HelpText="If enabled, weapon scopes will use the vanilla scope textures.",actionText="HUD: Classic Weapon Scope",variable="bClassicScope",defaultValue=0)
      Title="GMDX Quality of Life Options"
      colWidths(0)=214
      colWidths(1)=155
      helpPosY=307
+     bShowDefaults=true
      bShortHeaderButtons=false
      defaultHelpHeight=37
      clientTextures(0)=Texture'RSDCrap.UserInterface.MenuQoLBackground_1'

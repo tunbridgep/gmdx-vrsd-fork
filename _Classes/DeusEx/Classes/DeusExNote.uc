@@ -16,6 +16,8 @@ var travel Name textTag;
 var travel bool bHidden;            //SARGE: Allow us to add "hidden" notes that don't show up
                                     //Use these for codes given by emails, and deleted notes
 
+var travel bool bMarkerNote;        //SARGE: Does this note have a marker associated with it?
+
 // ----------------------------------------------------------------------
 // SetUserNote()
 // ----------------------------------------------------------------------

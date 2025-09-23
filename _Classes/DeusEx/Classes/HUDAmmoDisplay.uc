@@ -77,7 +77,7 @@ function UpdateVisibility()
     weapon = DeusExWeapon(curr);
     
     //it's visible if we have a valid weapon
-    validWeap = player.inHand != None && weapon != None && (weapon.ReloadCount > 0 || (weapon.IsA('WeaponNanoSword')));
+    validWeap = player.inHand != None && weapon != None && (weapon.ReloadCount > 0 || (weapon.IsA('WeaponNanoSword') && (player.bNanoswordEnergyUse || player.bHardcoreMode)));
     hasTool = curr != None && weapon == None;
 
     UpdateMaxAmmo();
@@ -212,7 +212,7 @@ event DrawWindow(GC gc)
          gc.SetTextColor(colAmmoText);
 
         //Draw DTS Charge
-        if (weapon.IsA('WeaponNanoSword'))
+        if (weapon.IsA('WeaponNanoSword') && (player.bNanoswordEnergyUse || player.bHardcoreMode))
         {
             gc.SetTextColor(colAmmoText);
             ammoInClip = WeaponNanoSword(weapon).ChargeManager.GetCurrentCharge();

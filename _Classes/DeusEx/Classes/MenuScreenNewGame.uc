@@ -84,11 +84,8 @@ var bool bRandomizeCrap;
 var bool bCutInteractions;
 var bool bA51Camera;
 var bool bHardcoreFilterOption;
-<<<<<<< Updated upstream
-=======
-var bool bCollectibles;
 var bool bPermaCloak;
->>>>>>> Stashed changes
+var bool bNoStartingWeaponChoices;
 
 //LDDP
 var bool bFemaleEnabled;
@@ -160,11 +157,8 @@ event InitWindow()
     bCutInteractions=false;                                                     //Sarge
     bA51Camera=false;                                                           //Sarge
     bHardcoreFilterOption=false;                                                //Sarge
-<<<<<<< Updated upstream
-=======
-    bCollectibles=false;                                                        //Sarge
     bPermaCloak=false;                                                          //Sarge
->>>>>>> Stashed changes
+    bNoStartingWeaponChoices=false;                                             //Sarge
     //bRestrictedMetabolism=false;                                              //Sarge
     default.bRandomizeCrates=false;                                             //RSD: Also need default values! Otherwise get command in modifier menu takes the wrong value
     default.bRandomizeMods=false;                                               //RSD
@@ -186,12 +180,8 @@ event InitWindow()
     default.bCutInteractions=false;                                             //Sarge
     default.bA51Camera=false;                                                   //Sarge
     default.bHardcoreFilterOption=false;                                        //Sarge
-<<<<<<< Updated upstream
-=======
-    default.bCollectibles=false;                                                //Sarge
     default.bPermaCloak=false;                                                  //Sarge
->>>>>>> Stashed changes
-
+    default.bNoStartingWeaponChoices=false;                                     //Sarge
 	StyleChanged();
 }
 
@@ -848,6 +838,7 @@ function SaveSettings()
     player.bA51Camera=bA51Camera;                                               //Sarge
     player.bHardcoreFilterOption=bHardcoreFilterOption;                         //Sarge
     player.bPermaCloak=bPermaCloak;                                             //Sarge
+    player.bNoStartingWeaponChoices=bNoStartingWeaponChoices;                   //Sarge
     if (player.bRandomizeAugs)                                                  //RSD: New aug randomization feature
         ScrambleAugOrderList();
 

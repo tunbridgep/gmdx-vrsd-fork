@@ -58,6 +58,9 @@ var localized String QuickLoadMessage;
 var float HorizontalDivisor; 						// Horizontal divisor for autoscaling code. See: ResizeRoot().
 var float VerticalDivisor, VerticalRelaxedDivisor;	// Vertical divisor for autoscaling code. See: ResizeRoot().
 
+//SARGE: Added Marker Display
+var MarkerDisplayWindow markerDisplay;
+
 // ----------------------------------------------------------------------
 // InitWindow()
 // ----------------------------------------------------------------------
@@ -82,6 +85,9 @@ event InitWindow()
 	SetDefaultCursor(Texture'DeusExCursor1', Texture'DeusExCursor1_Shadow');
 
 	scopeView.Lower();
+	
+    markerDisplay = MarkerDisplayWindow(NewChild(Class'MarkerDisplayWindow'));
+	markerDisplay.SetWindowAlignments(HALIGN_Full, VALIGN_Full);
 
 	ConditionalBindMultiplayerKeys();
 }

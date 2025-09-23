@@ -29,6 +29,13 @@ enum EMusicType
 
 var() EMusicType MusicType;
 
+//Gets a generic version of the map name, with the level number removed,
+//for instance, 01_NYC_UNATCO becomes _NYC_UNATCO.
+function string GetMapNameGeneric()
+{
+    return Right(MapName,Len(MapName)-2);
+}
+
 function SpawnScript()
 {
 	local MissionScript scr;

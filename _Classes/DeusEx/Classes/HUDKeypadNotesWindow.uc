@@ -22,6 +22,7 @@ var bool bUseMenuColors;
 var DeusExNote Notes[10];
 var int NotesCount;
 
+var bool bEditableNotes;                //If the notes should be read only but selectable, or non-interactive entirely.
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -34,6 +35,11 @@ event InitWindow()
 	Super.InitWindow();
 
 	winBackground = HUDInformationDisplay(NewChild(Class'HUDInformationDisplay'));
+}
+
+function SetEditable(bool bValue)
+{
+    bEditableNotes = bValue;
 }
 
 function CreateNotesList()
@@ -121,7 +127,7 @@ function TileWindow CreateTileWindow(Window parent)
 
 function PopulateNotes(TileWindow winTile)
 {
-	local PersonaNotesViewWindow noteWindow;
+	local PersonaNotesEditWindow noteWindow;
     local DeusExNote note;
 	local bool   bWasVisible;
     local int i;
@@ -163,15 +169,21 @@ function PopulateNotes(TileWindow winTile)
 // Creates a note edit window
 // ----------------------------------------------------------------------
 
-function PersonaNotesViewWindow CreateNoteEditWindow(TileWindow winTile, DeusExNote note)
+function PersonaNotesEditWindow CreateNoteEditWindow(TileWindow winTile, DeusExNote note)
 {
-	local PersonaNotesViewWindow newNoteWindow;
+	local PersonaNotesEditWindow newNoteWindow;
 
-	newNoteWindow = PersonaNotesViewWindow(winTile.NewChild(Class'PersonaNotesViewWindow'));
+	newNoteWindow = PersonaNotesEditWindow(winTile.NewChild(Class'PersonaNotesEditWindow'));
+    newNoteWindow.SetNote(note);
+    if (bEditableNotes)
+        newNoteWindow.SetReadOnly(true);
+    else
+        newNoteWindow.EnableEditing(false);
     newNoteWindow.bUseMenuColors = bUseMenuColors;
-    newNoteWindow.SetTextAlignments(HALIGN_Left, VALIGN_Center);
-    newNoteWindow.SetTheme(player);
-    newNoteWindow.SetText(note.text);
+    newNoteWindow.StyleChanged();
+    //newNoteWindow.SetTextAlignments(HALIGN_Left, VALIGN_Center);
+    //newNoteWindow.SetTheme(player);
+    //newNoteWindow.SetText(note.text);
 
 	return newNoteWindow;
 }
@@ -238,4 +250,5 @@ function ApplyStyleToChildren()
 defaultproperties
 {
     msgRelevantNote="Relevant Note:"
+    bEditableNotes=true
 }

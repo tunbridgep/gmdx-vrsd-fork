@@ -5,6 +5,7 @@ class Male4Carcass extends DeusExCarcass;
 
 defaultproperties
 {
+     nameReference=class'DeusEx.Male4'
      Mesh2=LodMesh'DeusExCharacters.GM_Jumpsuit_CarcassB'
      Mesh3=LodMesh'DeusExCharacters.GM_Jumpsuit_CarcassC'
      Texture=Texture'DeusExItems.Skins.PinkMaskTex'
