@@ -681,10 +681,11 @@ var globalconfig bool bShowDataCubeImages;                                    //
 
 //SARGE: Music Stuff
 var globalconfig int iAllowCombatMusic;                                        //SARGE: Enable/Disable combat music, or make it require 2 enemies
-var transient Music previousTrack;                                             //SARGE: The last thing that was ClientSetMusic'd
-var transient EMusicMode previousMusicMode;                                    //SARGE: The last thing that was ClientSetMusic'd
-var transient byte previousLevelSection;                                       //SARGE: The last levelsection
-var transient float fMusicHackTimer;                                           //SARGE: A hack for fixing music fading when loading music.
+var Music previousTrack;                                             //SARGE: The last thing that was ClientSetMusic'd
+var EMusicMode previousMusicMode;                                    //SARGE: The last thing that was ClientSetMusic'd
+var byte previousLevelSection;                                       //SARGE: The last levelsection
+var float fMusicHackTimer;                                           //SARGE: A hack for fixing music fading when loading music.
+var transient bool bMusicSystemReset;                                //SARGE: Whether or not the music system is setup
 
 //Decline Everything
 var travel DeclinedItemsManager declinedItemsManager;                          //SARGE: Holds declined items.
@@ -3398,9 +3399,7 @@ function ClientSetMusic(Music NewSong, byte NewSection, byte NewCdTrack, EMusicT
     
     info = GetLevelInfo();
     
-    PopulateLevelAmbientSection(info);
-
-    DebugLog("ClientSetMusic called:" @ NewSong @ NewSection @ NewTransition @ "Song is: " $ default.previousTrack @ default.previousLevelSection @ default.previousMusicMode);
+    DebugLog("ClientSetMusic called:" @ NewSong @ NewSection @ NewTransition @ "Song is: " $ default.previousTrack @ default.previousLevelSection @ default.previousMusicMode @ bMusicSystemReset);
 
     //SARGE: Here's the really annoying part...
     //We've just been asked to change tracks or sections, we need to work out
@@ -3408,11 +3407,28 @@ function ClientSetMusic(Music NewSong, byte NewSection, byte NewCdTrack, EMusicT
 
     if (default.fMusicHackTimer > 0)
     {
-        DebugMessage("ClientSetMusic: Music Change Allowed (Fade Hack)");
+        //DebugMessage("ClientSetMusic: Music Change Allowed (Fade Hack)");
+        DebugMessage("ClientSetMusic: Music Fade Hack");
         NewTransition = MTRAN_Instant;
         SoundVolumeHackFix();
+        /*
         bChange = true;
         bContinueOn = true;
+        */
+    }
+
+    //SARGE: If changing after a map transition/loadgame, set it to use
+    //the proper section in case it's changed.
+    if (bMusicSystemReset && NewSection == level.SongSection)
+        NewSection = default.savedSection;
+
+    //If we're changing to the opposite ambient section, make that our default
+    if (!bMusicSystemReset && (NewSection == 0 && info.SongAmbientSection == 2 || NewSection == 2 && info.SongAmbientSection == 0))
+    {
+        DebugMessage("ClientSetMusic: Music Change Allowed (Swapping Ambient from "$info.SongAmbientSection$")");
+        info.SongAmbientSection = NewSection;
+        bChange = true;
+        bContinueOn = false;
     }
 
     //If we're changing tracks, or we're changing to a different level with the same track, but a different default section, ALWAYS allow changing.
@@ -3428,7 +3444,7 @@ function ClientSetMusic(Music NewSong, byte NewSection, byte NewCdTrack, EMusicT
     }
 
     //if we're changing to the same track, but a nonstandard section, always allow changing
-    else if (default.previousTrack == NewSong && NewSection >= 1 && NewSection <= 5 && NewSection != 2)
+    else if (/*default.previousTrack == NewSong && */NewSection >= 1 && NewSection <= 5 && NewSection != 2)
     {
         DebugMessage("ClientSetMusic: Music Change Allowed (To non-ambient section)");
         bChange = true;
@@ -3458,6 +3474,7 @@ function ClientSetMusic(Music NewSong, byte NewSection, byte NewCdTrack, EMusicT
         if (bContinueOn && (NewSection == 0 || NewSection == 2))
             NewSection = default.savedSection;
 
+        DebugMessage("ClientSetMusic: Setting music to " $ NewSong @ NewSection @ NewTransition);
         Super.ClientSetMusic(NewSong,NewSection,NewCDTrack,NewTransition);
         default.previousTrack = NewSong;
         default.previousLevelSection = info.SongAmbientSection;
@@ -3466,6 +3483,8 @@ function ClientSetMusic(Music NewSong, byte NewSection, byte NewCdTrack, EMusicT
             default.fMusicHackTimer = 8.0;
         else
             default.fMusicHackTimer = 4.0;
+
+        bMusicSystemReset = false;
     }
 }
 
@@ -3498,6 +3517,7 @@ function ResetMusic()
     */
 
     default.musicMode = MUS_Ambient;
+    bMusicSystemReset = true;
 }
 
 // ----------------------------------------------------------------------
@@ -3639,7 +3659,7 @@ function UpdateDynamicMusic(float deltaTime)
 
                     default.previousMusicMode = default.musicMode;
 					default.musicMode = MUS_Combat;
-					ClientSetMusic(Level.Song, 3, 255, MTRAN_FastFade);
+					ClientSetMusic(Level.Song, info.SongCombatSection, 255, MTRAN_FastFade);
 				}
 			}
 			else if (default.musicMode != MUS_Ambient)
