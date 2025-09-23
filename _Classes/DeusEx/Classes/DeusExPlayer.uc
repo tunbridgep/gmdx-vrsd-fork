@@ -865,6 +865,16 @@ var globalconfig bool bNanoswordEnergyUse;                      //SARGE: Whether
 
 var globalconfig bool bFasterInfolinks;                         //SARGE: Significantly decreases the time before queued datalinks can play, to make receiving many messages at once far less sluggish.
 
+
+//Markers Stuff and Notes Overhaul
+var travel MarkerInfo markers;                                  //SARGE: A list of markers 
+var travel bool bShowMarkers;                                   //SARGE: Whether or not to show note markers
+var travel bool bShowUserNotes;
+var travel bool bShowRegularNotes;
+var travel bool bShowMarkerNotes;
+var travel bool bAllowNoteEditing;
+var globalconfig bool bEditDefaultNotes;                        //SARGE: If enabled, we can edit the default game notes.
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -1876,6 +1886,9 @@ event TravelPostAccept()
 
     //Reset Crosshair
     UpdateCrosshair();
+
+    //Destroy any unlinked markers
+    UpdateMarkerValidity();
 
 	info = GetLevelInfo();
 
@@ -12349,6 +12362,9 @@ function UpdateHUD()
 
     if (root != None)
         root.UpdateHUD();
+
+    //Show/Hide Markers
+    UpdateMarkerDisplay(true);
 }
 
 function UpdateSecondaryDisplay()
@@ -14742,6 +14758,10 @@ function Bool DeleteNote( DeusExNote noteToDelete )
 		previousNote = note;
 		note = note.next;
 	}
+
+    //SARGE: Remove markers associated with this note.
+    UpdateMarkerValidity();
+    //DeleteMarkersForNote(noteToDelete);
 
 	return bNoteDeleted;
 }
@@ -19135,6 +19155,124 @@ function bool IsStunted()
     return bStunted || stuntedTime > 0;
 }
 
+// ----------------------------------------------------------------------
+// UpdateMarkerDisplay()
+// SARGE: Added the ability to display Markers
+// ----------------------------------------------------------------------
+
+function UpdateMarkerDisplay(optional bool bUpdateTeleporters)
+{
+    local MarkerDisplayWindow markerDisplay;
+
+    if (DeusExRootWindow(rootWindow) != None)
+        markerDisplay = DeusExRootWindow(rootWindow).markerDisplay; 
+
+    if (markerDisplay == None)
+        return;
+
+    //Setup the marker display
+    markerDisplay.Setup(bShowMarkers,self,bUpdateTeleporters);
+}
+
+//Destroys any markers that no longer have associated notes
+function UpdateMarkerValidity()
+{
+    local MarkerInfo marker, prev, m1;
+    local bool bValid;
+    
+    if (markers == None)
+        return;
+
+    marker = markers;
+
+    while (marker != None)
+    {
+        bValid = marker.associatedNote != None && !marker.associatedNote.bHidden;
+        Log("Marker " $ marker.associatedNote.text $ " is valid: " $ bValid);
+        if (!bValid && prev == None)
+        {
+            markers = marker.next;
+            CriticalDelete(marker);
+            marker = markers;
+        }
+        else if (!bValid)
+        {
+            prev.next = marker.next;
+
+            m1 = marker;
+            marker = marker.next;
+            CriticalDelete(m1);
+        }
+        else
+        {
+            prev = marker;
+            marker = marker.next;
+        }
+    }
+}
+
+function AddMarker(DeusExNote note)
+{
+    local MarkerInfo marker, currMarker;
+    local DeusExLevelInfo dxinfo;
+
+    dxInfo=GetLevelInfo();
+    marker = new(Self) class'MarkerInfo';
+    marker.associatedNote = note;
+    marker.Position = Location;
+    marker.MapName = dxInfo.GetMapNameGeneric();
+
+    if (markers == None)
+    {
+        markers = marker;
+        return;
+    }
+    
+    currMarker = markers;
+
+    while (currMarker.next != None)
+        currMarker = currMarker.next;
+
+    currMarker.next = marker;
+
+}
+
+/*
+function DeleteMarkersForNote(DeusExNote note)
+{
+    local MarkerInfo marker, prev, m1;
+    
+    if (markers == None)
+        return;
+
+    marker = markers;
+
+    while (marker != None)
+    {
+        if (marker.associatedNote == note && prev == None)
+        {
+            markers = marker.next;
+            CriticalDelete(marker);
+            marker = markers;
+        }
+        else if (marker.associatedNote == note)
+        {
+            prev.next = marker.next;
+
+            m1 = marker;
+            marker = marker.next;
+            CriticalDelete(m1);
+        }
+        else
+        {
+            prev = marker;
+            marker = marker.next;
+        }
+    }
+    
+    UpdateMarkerValidity();
+}
+*/
 
 // ----------------------------------------------------------------------
 // LipSynch()
@@ -19486,4 +19624,10 @@ defaultproperties
      bShowFullAmmoInHUD=true
      bFasterInfolinks=true
      bNanoswordEnergyUse=true
+     bShowMarkers=true
+     bAllowNoteEditing=trueRegularNotes
+     bShowUserNotes=true
+     bShowRegularNotes=true
+     bShowMarkerNotes=true
+     bEditDefaultNotes=false
 }
