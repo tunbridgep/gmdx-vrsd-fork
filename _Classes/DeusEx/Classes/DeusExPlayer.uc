@@ -5269,7 +5269,7 @@ simulated function PlayFootStep()
             for( P=Level.PawnList; P!=None; P=P.nextPawn )
             {
                 if (P.IsA('ScriptedPawn') && P.IsInState('Patrolling') && ScriptedPawn(P).bReactLoudNoise && VSize(P.Location - Location) < range*volumeMultiplier*0.8)
-                    ScriptedPawn(P).HandleFootstepsAwareness(Self,volume*volumeMultiplier*volumeMod*0.7);
+                    ScriptedPawn(P).HandleFootstepsAwareness(Self,volume*volumeMultiplier*volumeMod*0.6);
             }
         }
 
