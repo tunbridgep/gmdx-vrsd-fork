@@ -62,7 +62,11 @@ event Tick(float deltaSeconds)
 
 function SetBarkSpeech(string text, float newDisplayTime, Actor speakingActor)
 {
-	winName.SetText(speakingActor.UnfamiliarName $ ": ");
+    //SARGE: Now we use the display name, rather than always using the unfamiliar name
+	if (player != None)
+        winName.SetText(player.GetDisplayName(speakingActor) $ ": ");
+    else
+	    winName.SetText(speakingActor.UnfamiliarName $ ": ");
 	winBark.SetText(text);
 
 	timeToDisplay = newDisplayTime;
