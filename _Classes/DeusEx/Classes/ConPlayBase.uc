@@ -609,6 +609,55 @@ function private bool ItemTransferHelper(Inventory item, int amount, out int amo
     return true;
 }
 
+//SARGE: Spawn an item at our feet
+function Inventory SpawnItemAtFeet(class<Inventory> itemtype, Actor source, optional int count)
+{
+    local Inventory spawnedItem;                            //SARGE: The item spawned at our feet.
+    local Vector loc;                                       //SARGE: Stores the position of spawned items
+
+    if (!class'DeusExPlayer'.default.bExperimentalAmmoSpawning)
+        return None;
+
+    //SARGE: DIRTY HACK TIME!!!
+    //We sometimes need to spawn the relevant weapons instead of ammo!
+    switch itemType
+    {
+        case class'AmmoLAM':
+            itemType = class'WeaponLAM';
+            break;
+        case class'AmmoGasGrenade':
+            itemType = class'WeaponGasGrenade';
+            break;
+        case class'AmmoEMPGrenade':
+            itemType = class'WeaponEMPGrenade';
+            break;
+        case class'AmmoNanoVirusGrenade':
+            itemType = class'WeaponNanoVirusGrenade';
+            break;
+    }
+
+    spawnedItem = Inventory(class'SpawnUtils'.static.SpawnSafe(itemType,source));
+    if (spawnedItem != None)
+    {
+        loc = (2.0 + spawnedItem.CollisionRadius + source.CollisionRadius) * Vector(source.Rotation);
+        loc += source.Location;
+        class'SpawnUtils'.static.CheckDropFrom(spawnedItem,loc,source.Location);
+    
+        if (count > 0)
+        {
+            if (spawnedItem.isA('DeusExPickup'))
+                DeusExPickup(spawnedItem).numCopies = count;
+            
+            if (spawnedItem.isA('Ammo'))
+                Ammo(spawnedItem).ammoAmount = count;
+            
+            if (spawnedItem.isA('Weapon'))
+                Weapon(spawnedItem).PickupAmmoCount = count;
+        }
+    }
+    return spawnedItem;
+}
+
 function EEventAction SetupEventTransferObject( ConEventTransferObject event, out String nextLabel )
 {
 	local EEventAction nextAction;
@@ -628,6 +677,7 @@ function EEventAction SetupEventTransferObject( ConEventTransferObject event, ou
     local int missedAmount;                                                     //SARGE: How much of the given stuff we've missed out on.
     local int extraAmmo, missedAmmo;                                            //SARGE: Used to track ammo when receiving a weapon.
     local int rollupType;                                   //SARGE: Determines the behaviour of the item display, either combining items or not.
+    local int spawned;                                      //SARGE: How many items were spawned at our feet
 /*
 log("SetupEventTransferObject()------------------------------------------");
 log("  event = " $ event);
@@ -813,7 +863,7 @@ log("  event.toActor    = " $ event.toActor );
                     DeusExRootWindow(player.rootWindow).hud.receivedItems.AddItem(invItemTo, 1, true);
             }
             */
-
+            
             //Copy mods across and show icon
             if (invItemTo.IsA('DeusExWeapon'))
                 if (DeusExWeapon(invItemTo).CopyModsFrom(DeusExWeapon(invItemFrom)))
@@ -870,7 +920,7 @@ log("  event.toActor    = " $ event.toActor );
 		// one of the given item
 		else
 		{
-            itemsTransferred = AddTransferCount(invItemFrom, invItemTo, event, Pawn(event.toActor), False);
+            itemsTransferred = AddTransferCount(invItemFrom, invItemTo, event, Pawn(event.toActor), False, missedAmount);
 
 			// If no items were transferred, then the player's inventory is full or
 			// no more of these items can be stacked, so abort.
@@ -926,32 +976,47 @@ log("  event.toActor    = " $ event.toActor );
             }
             else if (DeusExPlayer(event.toActor) != None && invItemFrom.IsA('DeusExWeapon'))
             {
-                if (!DeusExWeapon(invItemFrom).bDisposableWeapon && Weapon(invItemFrom).AmmoName != None)
+                if (Weapon(invItemFrom).AmmoName != None)
                 {
-                    //Show any ammo in the weapon
-                    AmmoType = Ammo(DeusExPlayer(event.toActor).FindInventoryType(Weapon(invItemFrom).AmmoName));
-                    
-                    if (AmmoType != None)
+                    if (!DeusExWeapon(invItemFrom).bDisposableWeapon)
                     {
-                        extraAmmo = AmmoType.AmmoAmount + Weapon(invItemFrom).PickupAmmoCount;
+                        //Show any ammo in the weapon
+                        AmmoType = Ammo(DeusExPlayer(event.toActor).FindInventoryType(Weapon(invItemFrom).AmmoName));
+                        
+                        if (AmmoType != None)
+                        {
+                            extraAmmo = AmmoType.AmmoAmount + Weapon(invItemFrom).PickupAmmoCount;
+                        }
+                        else
+                        {
+                            extraAmmo = Weapon(invItemFrom).PickupAmmoCount;
+                        }
+
+                        missedAmmo = extraAmmo;
+                        extraAmmo = MIN(extraAmmo,DeusExPlayer(event.toActor).GetAdjustedMaxAmmoByClass(Weapon(invItemFrom).AmmoName));
+                        missedAmmo = missedAmmo - extraAmmo;
+                        extraAmmo = Weapon(invItemFrom).PickupAmmoCount - missedAmmo;
                     }
                     else
                     {
-                        extraAmmo = Weapon(invItemFrom).PickupAmmoCount;
-                    }
+                        //Disposable Weapons are much easier
+                        missedAmount = MAX(0,event.transferCount - DeusExPlayer(event.toActor).GetAdjustedMaxAmmoByClass(Weapon(invItemFrom).AmmoName));
+                        event.transferCount -= missedAmount;
 
-                    missedAmmo = extraAmmo;
-                    extraAmmo = MIN(extraAmmo,DeusExPlayer(event.toActor).GetAdjustedMaxAmmoByClass(Weapon(invItemFrom).AmmoName));
-                    missedAmmo = missedAmmo - extraAmmo;
-                    extraAmmo = Weapon(invItemFrom).PickupAmmoCount - missedAmmo;
+                        rollupType = 2;
+                    }
                 }
-                else
-                    rollupType = 2;
 
                 invItemTo = invItemFrom.SpawnCopy(Pawn(event.toActor));
             }
             else
             {
+                if (invItemFrom.IsA('DeusExPickup') && DeusExPickup(invItemFrom).bCanHaveMultipleCopies && !invItemFrom.IsA('NanoKey'))
+                {
+                    //SARGE: Track how many we missed out on.
+                    missedAmount = event.transferCount - DeusExPickup(invItemFrom).RetMaxCopies();
+                    missedAmount = MAX(0,missedAmount);
+                }
                 invItemTo = invItemFrom.SpawnCopy(Pawn(event.toActor));
             }
 		}
@@ -1056,7 +1121,22 @@ log("  event.toActor    = " $ event.toActor );
             if (missedAmmo > 0)
                 DeusExRootWindow(player.rootWindow).hud.receivedItems.AddItem(Weapon(invItemTo).AmmoType, missedAmmo, true);
         }
+
 	}
+        
+    //SARGE: Hack! If we have left-over ammo, items, etc, then spawn them at our feet (eww!)
+    if (DeusExPlayer(event.toActor) != None && invItemTo != None)
+    {
+        //For pickups, spawn individual copies.
+        //for (spawned = 0; spawned < missedAmount;spawned++)
+        if (missedAmount > 0)
+            SpawnItemAtFeet(invItemTo.Class,event.toActor,missedAmount);
+            
+        //for ammo, spawn a stack
+        if (missedAmmo > 0)
+            SpawnItemAtFeet(Weapon(invItemTo).AmmoName,event.toActor,missedAmmo);
+
+    }
 
     //SARGE: If the player gave away an item, show it!
 	if ((DeusExPlayer(event.fromActor) != None) && (conWinThird != None) && (invItemTo != None) && player.bConversationShowGivenItems)
@@ -1089,7 +1169,8 @@ function int AddTransferCount(
 	Inventory invItemTo,
 	ConEventTransferObject event,
 	pawn transferTo,
-	bool bSpawned)
+	bool bSpawned,
+    optional out int transfersMissed)
 {
 	local ammo AmmoType;
 	local int itemsTransferred;
@@ -1132,6 +1213,10 @@ log("  event.transferCount = " $ event.transferCount);
 	{
 		// If the item was spawned, then it will already have a copy count of 1, so we
 		// only want to add to that if it was specified to transfer > 1 items.
+                
+        //SARGE: Track how many we missed out on.
+        transfersMissed = DeusExPickup(invItemTo).NumCopies + event.transferCount - DeusExPickup(invItemTo).RetMaxCopies();
+        transfersMissed = MAX(0,transfersMissed);
 
 		if (bSpawned)
 		{
