@@ -292,6 +292,7 @@ function ShowScreen(Class<ComputerUIWindow> newScreen)
 	{
 		winComputer = ComputerUIWindow(NewChild(newScreen));
 		winComputer.SetWindowAlignments(HALIGN_Center, VALIGN_Center);
+		//winComputer.SetCompOwner(compOwner);
 		winComputer.SetNetworkTerminal(Self);
 		winComputer.SetCompOwner(compOwner);
         if (winNotes != None)

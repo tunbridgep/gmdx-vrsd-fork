@@ -83,12 +83,19 @@ function SetNetworkTerminal(NetworkTerminal newTerm)
     
     bLeft = !player.bStreamlinedComputerInterface;
 
-    //Personal computers it's dependent on emails.
-    if (winTerm.IsA('NetworkTerminalPersonal'))
+    //For personal computers it's dependent on emails.
+    if (winTerm.IsA('NetworkTerminalPersonal') && player.bStreamlinedComputerInterface)
     {
         ProcessEmails();
         if (emailIndex == -1)
             bLeft = true;
+    }
+
+    //For security computers, it's dependent on having at least 1 camera or turret
+    else if (ComputerSecurity(CompOwner) != None && player.bStreamlinedComputerInterface)
+    {
+        DeusExPlayer(GetPlayerPawn()).DebugMessage("We got here");
+        bLeft = !ComputerSecurity(CompOwner).HasSecurityOptions();
     }
 
     if (bLeft)

@@ -282,7 +282,7 @@ function bool ButtonActivated( Window buttonPressed )
             note = player.GetNote(savedNoteName);
             if (note == None)
             {
-                player.NoteAdd(winEmail.GetText(),true,false,savedNoteName);
+                player.NoteAdd(winEmail.GetText(),false,false,savedNoteName);
                 RefreshEmailSaveButton(savedNoteName,true); //Disable the save button
                 btnSaveEmail.SetButtonText(SavedEmailLabel);
             }
