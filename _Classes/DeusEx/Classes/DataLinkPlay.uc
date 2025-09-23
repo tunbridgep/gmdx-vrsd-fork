@@ -33,6 +33,9 @@ var DatalinkTrigger datalinkTrigger;
 
 var localized String EndTransmission;
 
+var bool bNotFirstCon; //Will be set to true if we're not the first conversation
+var bool bNotLastCon; //Will be set to true if we're not the last conversation
+
 // ----------------------------------------------------------------------
 // SetConversation()
 //
@@ -129,9 +132,16 @@ function Bool StartConversation(DeusExPlayer newPlayer, optional Actor newInvoke
 
 	// Play a sound and wait a few seconds before starting
 	datalink.ShowTextCursor(False);
-	player.PlaySound(startSound, SLOT_None);
 	bStartTransmission = True;
-	SetTimer(blinkRate, True);
+	if (bNotFirstCon)
+        SetTimer(0.01, True);
+    else
+    {
+        player.PlaySound(startSound, SLOT_None);
+        SetTimer(blinkRate, True);
+    }
+
+    bNotFirstCon = player.bFasterInfolinks;
 	return True;
 }
 
@@ -143,6 +153,8 @@ function TerminateConversation(optional bool bContinueSpeech, optional bool bNoP
 {
 	// Make sure sound is no longer playing
 	player.StopSound(playingSoundId);
+    
+    bNotLastCon = dataLinkQueue[0] != None && player.bFasterInfolinks;
 
 	// Save the DataLink history
 	if ((history != None) && (player != None))
@@ -152,10 +164,17 @@ function TerminateConversation(optional bool bContinueSpeech, optional bool bNoP
 		history = None;		// in case we get called more than once!!
 	}
 
-	SetTimer(blinkRate, True);
+    if (bNotLastCon)
+    {
+        SetTimer(0.01, True);
+    }
+    else
+    {
+        SetTimer(blinkRate, True);
 
-	if ((dataLink != None) && (datalink.winName != None))
-		datalink.winName.SetText(EndTransmission);
+        if ((dataLink != None) && (datalink.winName != None))
+            datalink.winName.SetText(EndTransmission);
+    }
 
 	bEndTransmission = True;
 
@@ -411,7 +430,8 @@ function Timer()
 
 	if ((!bEndTransmission) && (bStartTransmission))
 	{
-		datalink.ShowDatalinkIcon(!datalink.winPortrait.IsVisible());
+        if (!bNotFirstCon)
+            datalink.ShowDatalinkIcon(!datalink.winPortrait.IsVisible());
 
 		if ( eventTimer > startDelay )
 		{
@@ -427,7 +447,9 @@ function Timer()
 	}
 	else if (bEndTransmission)
 	{
-		datalink.winName.Show(!datalink.winName.IsVisible());
+
+        if (!bNotLastCon)
+            datalink.winName.Show(!datalink.winName.IsVisible());
 
 		if ( eventTimer > endDelay )
 		{

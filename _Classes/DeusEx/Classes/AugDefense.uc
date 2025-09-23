@@ -70,6 +70,7 @@ state Active
                 minproj = None;
                 player.Energy -= GetAdjustedEnergyRate();
 				Player.PlaySound(sound'ProdFire', SLOT_None,,,, 2.0);
+				displayAsActiveTime = player.saveTime + 1.0; //SARGE: show as active for 1 seconds
 			}
             
             // play a warning sound
@@ -134,7 +135,7 @@ simulated function DeusExProjectile FindNearestProjectile()
         //SARGE: Dirty hack to prevent scripted grenades from triggering it
         bValidProj = bValidProj && (!proj.IsA('GasGrenade') || !GasGrenade(proj).bScriptedGrenade);
         
-        bValidProj = bValidProj && (!proj.IsA('ThrownProjectile') || !ThrownProjectile(proj).bProximityTriggered);
+        bValidProj = bValidProj && (!proj.IsA('ThrownProjectile') || (!ThrownProjectile(proj).bProximityTriggered && ThrownProjectile(proj).bArmed));
 
       if (bValidProj)
       {

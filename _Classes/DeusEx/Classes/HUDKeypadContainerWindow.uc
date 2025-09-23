@@ -40,6 +40,7 @@ function AddNotesWindow(DeusExPlayer player, DeusExNote codeNote)
     //winNotes = root.hud.ShowInfowindow(); //Can't do this, HUD is hidden
     //winNotes = class'HUDKeypadNotesWindow'.static.CreateNotesWindow(root,keypadwindow.x, keypadwindow.width, 640/2, keypadwindow.height);
     winNotes = HUDKeypadNotesWindow(NewChild(Class'HUDKeypadNotesWindow'));
+    winNotes.SetEditable(false);
     winNotes.SetPos(keypadwindow.x + 420, keypadwindow.y);
 	winNotes.Resize(640/2, keypadwindow.height);
     winNotes.AddNote(codeNote);

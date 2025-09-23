@@ -36,7 +36,7 @@ defaultproperties
      Icon=Texture'GMDXSFX.UI.StrengthIcon'
      smallIcon=Texture'GMDXSFX.UI.StrengthIconSmall'
      AugmentationType=Aug_Toggle
-     EnergyReserved=20
+     EnergyReserved=15
      AugmentationName="Combat Speed"
      Description="Sorting rotors accelerate calcium ion concentration in the sarcoplasmic reticulum, increasing an agent's muscle speed several-fold and multiplying the damage they inflict in melee combat.|n|nTECH ONE: The effectiveness of melee weapons is increased slightly.|n|nTECH TWO: The effectiveness of melee weapons is increased moderately.|n|nTECH THREE: The effectiveness of melee weapons is increased significantly.|n|nTECH FOUR: Melee weapons are almost instantly lethal."
      MPInfo="When active, you do double damage with melee weapons.  Energy Drain: Low"
