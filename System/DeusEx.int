@@ -1046,7 +1046,7 @@ LogsTitleText="Logs"
 ClearButtonLabel="Cl|&ear Log"
 
 [AugmentationUpgradeCannister]
-MustBeUsedOn="Must be used on Augmentations Screen."
+MustBeUsedOn="Right-Click to switch to the Augmentations Screen."
 ItemName="Augmentation Upgrade Canister"
 ItemArticle="an"
 Description="An augmentation upgrade canister contains highly specific nanomechanisms that, when combined with a previously programmed module, can increase the efficiency of an installed augmentation. Because no programming is required, upgrade canisters may be used by trained agents in the field with minimal risk."
@@ -3592,7 +3592,7 @@ ss19="TIP: There are many ways in which you can distract the enemy."
 ss20="Your Deus Ex is Augmented."
 
 [AugmentationUpgradeCannisterOverdrive]
-MustBeUsedOn="Must be used on Augmentations Screen."
+MustBeUsedOn="Right-Click to switch to the Augmentations Screen."
 ItemName="Augmentation Override Cannister"
 Description="An augmentation upgrade cannister with intricately-programmed scripts designed to override certain functionality of the 'Environmental Resistance' and 'Aqualung' augmentations. |nThis specialized upgrade cannister can be used to upgrade any augmentation by two tech levels, however using it on one of the two specified augmentations it was designed for will upgrade it from an 'Active' augmentation to 'Automatic', but will only increase its tech level by one.|n|n<UNATCO OPS FILE NOTE JR189-VIOLET> The Environmental Resistance and Aqualung augmentations share the same sub-routines. Hypothetically-speaking both would benefit from this device even if applied to one, should you happen to have both installed. -- Jaime Reyes <END NOTE>"
 beltDescription="AUG OVER"

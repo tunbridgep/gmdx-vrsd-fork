@@ -25,13 +25,13 @@ simulated function PreBeginPlay()
 
 function OnEquipped()
 {
-    if (class'DeusExPlayer'.default.bImprovedWeaponSounds)
+    if (class'DeusExPlayer'.default.iImprovedWeaponSounds > 1)
         PlaySound(sound'RSDCrap.Misc.LockpickEquip',SLOT_None);
 }
 
 function OnUnEquipped()
 {
-    if (class'DeusExPlayer'.default.bImprovedWeaponSounds)
+    if (class'DeusExPlayer'.default.iImprovedWeaponSounds > 1)
         PlaySound(sound'RSDCrap.Misc.LockpickUnEquip',SLOT_None);
 }
 

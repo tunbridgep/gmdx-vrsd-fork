@@ -3,6 +3,8 @@
 //=============================================================================
 class Mission04 expands MissionScript;
 
+var localized string AugSystemShutdown;
+
 // ----------------------------------------------------------------------
 // FirstFrame()
 //
@@ -503,4 +505,5 @@ function Timer()
 
 defaultproperties
 {
+    AugSystemShutdown="Augmentation system access override by user MJ12//SIMONS-W..."
 }

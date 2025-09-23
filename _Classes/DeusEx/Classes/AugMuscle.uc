@@ -13,7 +13,13 @@ Begin:
 
 simulated function bool CanDrainEnergy()
 {
-    return Player.carriedDecoration != None && Player.carriedDecoration.Mass > 60;
+	local bool bDraining;
+	bDraining = Player.carriedDecoration != None && Player.carriedDecoration.Mass > 60;
+	
+	if (bDraining)
+		displayAsActiveTime = player.saveTime + 1.0; //constantly display as active while being used.
+	
+	return bDraining;
 }
 
 function Deactivate()
