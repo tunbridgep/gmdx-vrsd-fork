@@ -473,7 +473,7 @@ function Sound GetDefaultFireSound()
         return Sound'GEPGunFireWP';
     else if ( AmmoRocket(AmmoType) != None )
         return Sound'GEPGunFire';
-    else if (class'DeusExPlayer'.default.bImprovedWeaponSounds || default.ClassicFireSound == None)
+    else if (class'DeusExPlayer'.default.iImprovedWeaponSounds > 0 || default.ClassicFireSound == None)
         return default.FireSound;
     else
         return default.ClassicFireSound;
