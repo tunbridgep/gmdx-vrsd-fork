@@ -44,6 +44,8 @@ enum EHackText
 
 var() EHackText HackText;
 
+var transient bool bUpdatedTextTag;
+
 function bool DarkenScreen()
 {
     if (textTag == '')
@@ -57,7 +59,6 @@ function UpdateTextTag()
 {
     local DeusExPlayer player;
     local string str;
-    super.PostPostBeginPlay();
 
     //Figure out our texttag based on our passed in HackText
     //This is a holdover from GMDX v9 where it used strings instead of a text package.
@@ -80,8 +81,12 @@ function UpdateTextTag()
 
 function Tick(float deltaTime)
 {
-    UpdateTextTag();
     super.Tick(deltaTime);
+
+    if (!bUpdatedTextTag)
+        UpdateTextTag();
+
+    bUpdatedTextTag = true;
 }
 
 defaultproperties
