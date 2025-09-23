@@ -337,5 +337,4 @@ defaultproperties
      Physics=PHYS_None
      bCollideWorld=false
      bAllowRightClickToolSelection=true
-     bDisabledByComputer=false
 }

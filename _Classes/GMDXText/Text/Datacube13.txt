@@ -1,0 +1,4 @@
+<DC=255,255,255>
+<P>You can mantle into crawl-spaces you'd have trouble getting into otherwise.
+<P>
+<P>Crouch, Jump then Mantle.

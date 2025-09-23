@@ -1,0 +1,2 @@
+<DC=255,255,255>
+<P>We've gotten a request to send these up to level 1. Be careful with them as they are very expensive. Dropping one will likely be grounds for instant dismissal.

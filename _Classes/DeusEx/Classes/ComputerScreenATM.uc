@@ -208,7 +208,7 @@ function ProcessLogin()
 
 	for (accountIndex=0; accountIndex<atmOwner.NumUsers(); accountIndex++)
 	{
-		if (Caps(editAccount.GetText()) == atmOwner.GetAccountNumber(accountIndex))
+		if (Caps(editAccount.GetText()) == Caps(atmOwner.GetAccountNumber(accountIndex)))
 		{
 			userIndex = accountIndex;
 			break;
@@ -218,7 +218,7 @@ function ProcessLogin()
 	if (userIndex != -1)
 	{
         discovered = atmOwner.IsDiscovered(player,atmOwner.GetAccountNumber(userIndex));
-		if (Caps(editPIN.GetText()) == atmOwner.GetPIN(userIndex) && discovered)
+		if (Caps(editPIN.GetText()) == Caps(atmOwner.GetPIN(userIndex)) && discovered)
 			bSuccessfulLogin = True;
 	}
 

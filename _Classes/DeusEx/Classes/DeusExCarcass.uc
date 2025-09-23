@@ -1097,6 +1097,21 @@ function bool LootAmmo(DeusExPlayer P, DeusExWeapon item, bool bDisplayOverflowM
     return bResult;
 }
 
+//SARGE: Fixes up message displays for items
+function ShowFixedPickupMessage(DeusExPlayer P, Inventory item, int count, optional bool bShowReceived)
+{
+    if (item == None || P == None)
+        return;
+
+    if (count > 1)
+        P.ClientMessage(item.PickupMessage @ item.itemArticle @ item.itemName @ "(" $ count $ ")", 'Pickup');
+    else //Just show the basic one
+        P.ClientMessage(item.PickupMessage @ item.itemArticle @ item.itemName, 'Pickup');
+
+    if (bShowReceived)
+        AddReceivedItem(P, item, count, item.IsA('DeusExPickup'));
+}
+
 // ----------------------------------------------------------------------
 // Frob()
 //
@@ -1254,8 +1269,6 @@ function Frob(Actor Frobber, Inventory frobWith)
                             {
                                 if (player.bShowDeclinedInReceivedWindow)
                                     AddBadItem(player,item);
-                                if (!bSearched)
-                                    player.ClientMessage(sprintf(player.DuplicateNanoKey,item.Name));
                             }
 
 							DeleteInventory(item);
@@ -1404,8 +1417,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 										}
 									}
 
-									P.ClientMessage(invItem.PickupMessage @ invItem.itemArticle @ invItem.itemName, 'Pickup');
-									AddReceivedItem(player, invItem, itemCount);
+                                    ShowFixedPickupMessage(player,invItem,itemCount,true);
                                     bFoundSomething = True;
                                     bPickedSomethingUp = True;
 
@@ -1432,8 +1444,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                       					ChargedPickup(invItem).unDimIcon();
                                     }
 
-                       				P.ClientMessage(invItem.PickupMessage @ invItem.itemArticle @ invItem.itemName, 'Pickup');
-                       				AddReceivedItem(player, invItem, itemCount);
+                                    ShowFixedPickupMessage(player,invItem,itemCount,true);
                                     bPickedSomethingUp = True;
 								}
                                 //SARGE: Inform us if our inventory is too full (max stack) to pick these items up.
@@ -1471,8 +1482,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 
 								DeleteInventory(item);
 
-								P.ClientMessage(invItem.PickupMessage @ invItem.itemArticle @ invItem.itemName, 'Pickup');
-								AddReceivedItem(player, invItem, itemCount);
+                                ShowFixedPickupMessage(player,invItem,itemCount,true);
                                 bPickedSomethingUp = True;
 							}
 						}
@@ -1504,8 +1514,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                         bPickedSomethingUp = True;
                                         
                                         // Show the item received in the ReceivedItems window
-                                        AddReceivedItem(player, item, 1);
-                                        P.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
+                                        ShowFixedPickupMessage(player,item,itemCount,true);
 
                                         if (item.IsA('WeaponShuriken') && WeaponShuriken(item).bImpaled)
                                             LootPickupSound = Sound'DeusExSounds.Generic.FleshHit1';
@@ -1541,7 +1550,7 @@ function Frob(Actor Frobber, Inventory frobWith)
         {
             for (i = 0;i < badItemCount;i++)
             {
-                AddReceivedItem(player, badItems[i].item, badItems[i].count, badItems[i].item.IsA('DeusExAmmo'), true);
+                AddReceivedItem(player, badItems[i].item, badItems[i].count, badItems[i].item.IsA('Ammo') || badItems[i].item.IsA('DeusExPickup'), true);
             }
         }
 
@@ -1598,6 +1607,9 @@ function Frob(Actor Frobber, Inventory frobWith)
 
 	Super.Frob(Frobber, frobWith);
 
+    //Make the frob border colour changing work.
+    Player.UpdateCrosshair();
+
 	if ((Level.Netmode != NM_Standalone) && (Player != None))
 	{
 	   bQueuedDestroy = true;
@@ -1645,14 +1657,26 @@ function bool LootWeaponAmmo(DeusExPlayer P, DeusExWeapon item, optional bool bS
 
 // ----------------------------------------------------------------------
 // AddSearchedString()
+// SARGE: Now handled in FrobDisplayWindow
+// See the returning version below
 // ----------------------------------------------------------------------
 
+/*
 function AddSearchedString(DeusExPlayer player)
 {
-    if (player != None && bSearched && player.bSearchedCorpseText && InStr(ItemName, SearchedString) == -1)
+    if (player != None && bSearched && (player.iSearchedCorpseText == 1 || player.iSearchedCorpseText == 3) && InStr(ItemName, SearchedString) == -1)
     {
         itemName = SearchedString @ itemName;
     }
+}
+*/
+
+function string GetFrobString(DeusExPlayer player)
+{
+    if (!bAnimalCarcass && player != None && bSearched && (player.iSearchedCorpseText == 1 || player.iSearchedCorpseText == 3) && InStr(ItemName, SearchedString) == -1)
+        return SearchedString @ itemName;
+    else
+        return itemName;
 }
 
 // ----------------------------------------------------------------------
@@ -1671,7 +1695,7 @@ function AddReceivedItem(DeusExPlayer player, Inventory item, int count, optiona
 	}
     */
 
-    player.AddReceivedItem(item,count,bNoGroup,bDeclined);
+    player.AddReceivedItem(item,count,bNoGroup,bDeclined,true);
 }
 
 //-----------------------------------------------------------------------
@@ -1842,12 +1866,17 @@ function SetupCarcass(bool bAlert)
 
             if (bNotFirstFall && !bHidden)
             {
-            PlaySound(sound'PaperHit2', SLOT_None,,,1024);
-            AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 512); //CyberP: this applies to when corpses are thrown.
+                PlaySound(sound'PaperHit2', SLOT_None,,,1024);
+                //SARGE: Fix the broken sound propagation
+                class'PawnUtils'.static.WakeUpAI(self,512);
+                AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 512); //CyberP: this applies to when corpses are thrown.
             }
             else
             {
-            AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 96); //CyberP: this applies to when corpses are spawned upon pawn death/K.O.
+                //SARGE TODO: Don't bother fixing sound propagation here as it's so short???
+                //SARGE: Fix the broken sound propagation
+                class'PawnUtils'.static.WakeUpAI(self,96);
+                AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 96); //CyberP: this applies to when corpses are spawned upon pawn death/K.O.
             }
         }
 }
@@ -1938,8 +1967,9 @@ function UpdateName()
         itemName = itemName $ " (" $ hdtpReference.default.UnfamiliarName $ ")";
 
     //SARGE: Add searched string
-    if (!bAnimalCarcass)
-        AddSearchedString(DeusExPlayer(GetPlayerPawn()));
+    // SARGE: Now handled in FrobDisplayWindow
+    //if (!bAnimalCarcass)
+    //    AddSearchedString(DeusExPlayer(GetPlayerPawn()));
 }
 
 function KillUnconscious()                                                      //RSD: To properly fix corpse names and trigger any other death effects like MIB explosion

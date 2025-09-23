@@ -1,0 +1,5 @@
+<DC=255,255,255>
+<P>AMMO TYPES
+<P>
+<P>Cycle through available ammo types by pressing the 'Cycle Ammo' key (default = X).
+<P>Ammo types offer specific advantages and disadvatages depending on the situation at hand.

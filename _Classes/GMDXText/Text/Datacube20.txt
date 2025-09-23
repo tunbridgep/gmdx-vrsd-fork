@@ -1,0 +1,13 @@
+<DC=255,255,255>
+<P>Welcome to your first shift in the lockup, newbie.
+<P>
+<P>So you're curious about the cannister. You want to hold it, examine it, and think of the possibilities. Don't worry, we've all been there and we're not going to fire you if you do the same. It's unrealistic to expect extreme curiosity to be kept at bay, and we're pretty laid back and fun here.
+<P>HOWEVER, you're going to have to earn the right to touch it by proving you're not an utter dimwit:
+<P>
+<P>Solve the following problems. Solving the first will give you the first portion of the nano-containment container code. Solve the second problem for the second portion of the code. IF you manage to get it open be gentle with the thing. Lord knows how much it costs to manufacture.
+<P>
+<P>1. How many times does a broken mechanical 12-hour clock display an accurate readout over a period of two weeks?
+<P>
+<P>2. [(12*6)/2]-1 = Second Passcode
+<P>
+<P>If you attempt to run off with the thing it's your funeral. The cameras are watching.

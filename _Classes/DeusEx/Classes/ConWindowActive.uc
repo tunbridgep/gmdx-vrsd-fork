@@ -9,6 +9,7 @@ var ConWindowUpper upperConWindow;						// Upper letterbox region
 var int numChoices;								// Number of choice buttons
 var ConChoiceWindow conChoices[10];				// Maximum of ten buttons
 var HUDReceivedDisplay winReceived;
+var HUDReceivedDisplay winTaken;                //SARGE: Added
 var bool bRestrictInput;
 
 var float currentWindowPos;
@@ -47,6 +48,7 @@ event InitWindow()
 	moveMode = MM_None;
 
 	CreateReceivedWindow();
+	CreateTakenWindow();
 
     //Set the players FOV to 75 so that cutscenes appear mostly normal
     //TODO: Fix this to work properly on other aspect ratios
@@ -137,7 +139,7 @@ event Tick(float deltaSeconds)
 			// Don't increment while the Items Received window
 			// is still active
 
-			if (!winReceived.IsVisible())
+			if (!winReceived.IsVisible() && !winTaken.IsVisible())
 			{
 				currentWindowPos -= increment;
 				if (currentWindowPos <= 0.0)
@@ -178,6 +180,7 @@ function Close()
 event ConfigurationChanged()
 {
 	CalculateWindowSizes();
+    ConfigureGivenWindowPosition();
 }
 
 // ----------------------------------------------------------------------
@@ -296,6 +299,30 @@ function CalculateWindowSizes()
 	}
 	
 	ConfigureCameraWindow(lowerCurrentPos);
+}
+
+//SARGE: This has to be done in another function because of stupid DeusExe.u
+function ConfigureGivenWindowPosition()
+{
+    local float temp1,temp2;    //SARGE: Added
+	local float lowerHeight;
+	local float lowerCurrentPos;
+	local float recWidth, recHeight;
+		
+    lowerHeight = int(height * lowerFinalHeightPercent);
+
+    // Compute positions for the convo windows
+    lowerCurrentPos = int(height - (lowerHeight*currentWindowPos));
+
+    // Configure Taken Window
+	if (winTaken != None)
+	{
+        temp2 = 10;
+		winTaken.QueryPreferredSize(recWidth, recHeight);
+        if (winReceived != None && winReceived.IsVisible())
+            temp2 += 10 + winReceived.Width;
+		winTaken.ConfigureChild(temp2, lowerCurrentPos - recHeight - 5, recWidth, recHeight);
+	}
 }
 
 // ----------------------------------------------------------------------
@@ -642,16 +669,87 @@ function CreateReceivedWindow()
 }
 
 // ----------------------------------------------------------------------
+// CreateTakenWindow()
+// ----------------------------------------------------------------------
+
+function CreateTakenWindow()
+{
+	winTaken = HUDReceivedDisplay(NewChild(Class'HUDReceivedDisplay'));
+	winTaken.Hide();
+	winTaken.txtReceived.SetText(winTaken.TextGivenLabel);
+}
+
+// ----------------------------------------------------------------------
 // ShowReceivedItem()
 // ----------------------------------------------------------------------
 
-function ShowReceivedItem(Inventory invItem, int count)
+function bool ShowReceivedItem(Inventory invItem, int count, optional bool bDeclined, optional int rollupType)
 {
 	if (winReceived != None)
 	{
-		winReceived.AddItem(invItem, count);
+        AskParentForReconfigure(); //SARGE: Added, so we can place the windows properly
+		return winReceived.AddItem(invItem, count, bDeclined, rollupType);
 	}
+    return false;
 }
+
+// ----------------------------------------------------------------------
+// ShowGenericIcon()
+// ----------------------------------------------------------------------
+
+function bool ShowGenericIcon(Texture icon, string label, optional int count, optional bool bDeclined, optional int rollupType)
+{
+	if (winReceived != None)
+	{
+        AskParentForReconfigure(); //SARGE: Added, so we can place the windows properly
+		return winReceived.AddGenericIcon(icon, label, count, bDeclined, rollupType);
+	}
+    return false;
+}
+
+// ----------------------------------------------------------------------
+// ShowTakenItem()
+// ----------------------------------------------------------------------
+
+function bool ShowTakenItem(Inventory invItem, int count)
+{
+	if (winTaken != None)
+	{
+        AskParentForReconfigure(); //SARGE: Added, so we can place the windows properly
+		return winTaken.AddItem(invItem, count);
+	}
+    return false;
+}
+
+// ----------------------------------------------------------------------
+// ShowReceivedCredits()
+// SARGE: Save us from the pain of having to spawn them!
+// ----------------------------------------------------------------------
+
+function bool ShowReceivedCredits(int count)
+{
+	if (winReceived != None)
+	{
+        AskParentForReconfigure(); //SARGE: Added, so we can place the windows properly
+		return winReceived.AddCredits(count);
+	}
+    return false;
+}
+
+// ----------------------------------------------------------------------
+// ShowTakenItem()
+// ----------------------------------------------------------------------
+
+function bool ShowTakenCredits(int count)
+{
+	if (winTaken != None)
+	{
+        AskParentForReconfigure(); //SARGE: Added, so we can place the windows properly
+		return winTaken.AddCredits(count);
+	}
+    return false;
+}
+
 
 // ----------------------------------------------------------------------
 // SetForcePlay()

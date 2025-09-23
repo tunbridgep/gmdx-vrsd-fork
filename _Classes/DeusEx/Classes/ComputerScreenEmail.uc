@@ -189,30 +189,12 @@ function SetNetworkTerminal(NetworkTerminal newTerm)
 
 function SetCompOwner(ElectronicDevices newCompOwner)
 {
-	local String emailName;
-	local String missionNumber;
-	local DeusExLevelInfo info;
 	local int emailInfoIndex;
 	local int rowId;
 
 	Super.SetCompOwner(newCompOwner);
 
-	info = player.GetLevelInfo();
-
-	// hack for the DX.DX splash level
-	if (info != None) 
-	{
-		if (info.MissionNumber < 10)
-			MissionNumber = "0" $ String(info.MissionNumber);
-		else
-			MissionNumber = String(info.MissionNumber);
-	}
-
-	// Open the email menu based on the login id
-	// or if it's been hacked, use the first account in the list
-	emailName = MissionNumber $ "_EmailMenu_" $ winTerm.GetUserName();
-
-	ProcessDeusExText(StringToName(emailName));
+    ProcessEmails();
 
 	if (emailIndex != -1)
 	{
@@ -300,7 +282,7 @@ function bool ButtonActivated( Window buttonPressed )
             note = player.GetNote(savedNoteName);
             if (note == None)
             {
-                player.NoteAdd(winEmail.GetText(),true,false,savedNoteName);
+                player.NoteAdd(winEmail.GetText(),false,false,savedNoteName);
                 RefreshEmailSaveButton(savedNoteName,true); //Disable the save button
                 btnSaveEmail.SetButtonText(SavedEmailLabel);
             }

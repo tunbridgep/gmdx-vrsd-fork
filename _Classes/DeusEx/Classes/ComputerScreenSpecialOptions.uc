@@ -35,8 +35,6 @@ function CreateControls()
 {
 	Super.CreateControls();
 
-	btnLogout = winButtonBar.AddButton(ButtonLabelLogout, HALIGN_Right);
-
 	CreateSpecialInfoWindow();
 }
 
@@ -70,17 +68,48 @@ function CreateSpecialInfoWindow()
 // SetNetworkTerminal()
 // ----------------------------------------------------------------------
 
+//SARGE: Rewritten to take into account replacing the logout button
 function SetNetworkTerminal(NetworkTerminal newTerm)
 {
+    local string buttonText, emailName;
+    local bool bLeft;
+
 	Super.SetNetworkTerminal(newTerm);
-
+        
 	if (winTerm.IsA('NetworkTerminalPersonal'))
-		btnReturn = winButtonBar.AddButton(EmailButtonLabel, HALIGN_Left);
+        buttonText = EmailButtonLabel;
 	else if (winTerm.IsA('NetworkTerminalSecurity'))
-		btnReturn = winButtonBar.AddButton(SecurityButtonLabel, HALIGN_Left);
+        buttonText = SecurityButtonLabel;
+    
+    bLeft = !player.bStreamlinedComputerInterface;
 
-	if (btnReturn != None)
-		CreateLeftEdgeWindow();
+    //For personal computers it's dependent on emails.
+    if (winTerm.IsA('NetworkTerminalPersonal') && player.bStreamlinedComputerInterface)
+    {
+        ProcessEmails();
+        if (emailIndex == -1)
+            bLeft = true;
+    }
+
+    //For security computers, it's dependent on having at least 1 camera or turret
+    else if (ComputerSecurity(CompOwner) != None && player.bStreamlinedComputerInterface)
+    {
+        DeusExPlayer(GetPlayerPawn()).DebugMessage("We got here");
+        bLeft = !ComputerSecurity(CompOwner).HasSecurityOptions();
+    }
+
+    if (bLeft)
+    {
+        btnLogout = winButtonBar.AddButton(ButtonLabelLogout, HALIGN_Right);
+        btnReturn = winButtonBar.AddButton(buttonText, HALIGN_Left);
+        if (btnReturn != None)
+            CreateLeftEdgeWindow();
+    }
+    else
+    {
+        //btnLogout = winButtonBar.AddButton(ButtonLabelLogout, HALIGN_Right);
+        btnReturn = winButtonBar.AddButton(buttonText, HALIGN_Right);
+    }
 }
 
 // ----------------------------------------------------------------------

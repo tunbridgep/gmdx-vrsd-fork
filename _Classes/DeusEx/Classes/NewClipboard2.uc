@@ -1,56 +1,57 @@
 //=============================================================================
 // Flask.
+// SARGE: The previous developer was a fucking idiot, so this is
+// a horrible mess. I have tried to fix it as much as possible...
 //=============================================================================
 class NewClipboard2 extends InformationDevices;
 
-var Localized String				hackText;
-var Localized String				hackText2;
 var() bool              sClip;
 var() bool              sClip2;
 
-// ----------------------------------------------------------------------
-// CreateInfoWindow()
-// ----------------------------------------------------------------------
+var transient bool bUpdatedTextTag;
 
-function CreateInfoWindow()
+var const localized string TitleText;
+
+//We need to do this
+function UpdateTextTag()
 {
-	local DeusExTextParser parser;
-	local DeusExRootWindow rootWindow;
-	local DeusExNote note;
-	local DataVaultImage image;
-	local bool bImageAdded;
+    local DeusExPlayer player;
+    local string str;
 
-	rootWindow = DeusExRootWindow(aReader.rootWindow);
+    //Figure out our texttag based on our passed in HackText
+    //This is a holdover from GMDX v9 where it used strings instead of a text package.
+    if (textTag == '')
+    {
+        player = DeusExPlayer(GetPlayerPawn());
+        if (player != None && player.flagBase != None)
+        {
+            str = "Clipboard";
 
-	// First check to see if we have a name
-	if (sClip)
-	{
-	    infoWindow = rootWindow.hud.ShowInfoWindow();
-	    infoWindow.ClearTextWindows();
+            if (sClip)
+                str = str $ "01";
+            
+            if (sClip2)
+                str = str $ "02";
 
-	    if (winText == None)
-	    {
-		winText = infoWindow.AddTextWindow();
-        winText.SetText(hackText);
-		//winText.AppendText(text);
-        //winText.SetTextColor(parser.GetColor());
-        winText.SetTextAlignments(HALIGN_Left, VALIGN_Center);
-	    }
-	}
-	else if (sClip2)
-	{
-	    infoWindow = rootWindow.hud.ShowInfoWindow();
-	    infoWindow.ClearTextWindows();
+            textTag = player.flagBase.StringToName(str);
+        }
+    }
+}
 
-	    if (winText == None)
-	    {
-		winText = infoWindow.AddTextWindow();
-        winText.SetText(hackText2);
-		//winText.AppendText(text);
-        //winText.SetTextColor(parser.GetColor());
-        winText.SetTextAlignments(HALIGN_Left, VALIGN_Center);
-	    }
-	}
+//SARGE: Fix this!
+function string GetItemTitle()
+{
+    return TitleText;
+}
+
+function Tick(float deltaTime)
+{
+    super.Tick(deltaTime);
+
+    if (!bUpdatedTextTag)
+        UpdateTextTag();
+
+    bUpdatedTextTag = true;
 }
 
 // ----------------------------------------------------------------------
@@ -58,7 +59,8 @@ function CreateInfoWindow()
 
 defaultproperties
 {
-     hackText2="Frank,|n|nAs you spilt coffee all over your computer (idiot) we'll have to do this the old fashioned way: pen and paper. |nYour orders are to send out an alert to all posted patrol employees of this sector -- I want all to guard the door leading to sector 3 indefinitely. |nThe order's come straight from the top, code red, so make sure nobody is slacking off in Rec. |nWe've an assault team on standby ready to react to the first alarm call, but if any assailants make it this far into the base don't expect to even see them coming, so assemble the troops and make sure they're prepared. |n|nF. Barose,|nChief Security Officer"
+     TextPackage="GMDXText"
+     TitleText="Orders"
      HitPoints=10
      FragType=Class'DeusEx.WoodFragment'
      bCanBeBase=True

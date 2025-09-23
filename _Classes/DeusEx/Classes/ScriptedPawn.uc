@@ -515,6 +515,15 @@ var      int      bleedCounter;    // number of poison TakeDamages remaining
 var      int      bleedDamage;     // damage taken from poison effect
 var      Pawn     BleedSource;         // person who initiated PoisonEffect damage
 
+//SARGE: Allow "high alert" mode which skips some states and makes enemies generally attack instantly. Lasts for a time limit
+var float fHighAlertState;
+
+var(GMDX) const float fHighAlertChance;       //SARGE: The chance of a character going into high alert based on sounds or sights. Will always go on high alert when hearing a sound super close on Hardcore
+
+var(GMDX) const bool bSmartWeaponDraw;        //SARGE: If set, Pawn will draw their weapon when it makes sense to do so.
+
+var float fSubAwarenessMod;                    //SARGE: gradually improve hearing threshold as we hear footsteps, making us "perk up" more as we hear suspicious sounds. Stops the player "trailing" NPCs.
+var float fSubAwarenessModTime;                //SARGE: How long until sub-awareness state wears off. Usually it's about 5 seconds.
 
 //Augmentique Data
 struct AugmentiqueOutfitData
@@ -621,6 +630,8 @@ exec function UpdateHDTPsettings()
     local bool hdtp;
 
     hdtp = IsHDTP();
+    
+    SetupSkin();
 
     //Bail out if we have no need to continue
     if ((hdtp && bSetupHDTP) || (!hdtp && !bSetupHDTP))
@@ -638,7 +649,27 @@ exec function UpdateHDTPsettings()
     if (HDTPTexture != "")
         Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),hdtp);
     bSetupHDTP = hdtp;
-    SetupSkin();
+}
+
+//SARGE: On Hardcore, some enemies keep weapons drawn ready for combat when not preoccupied.
+function SmartWeaponDraw(DeusExPlayer player)
+{
+    if (player != None && Weapon == None && bSmartWeaponDraw && BindName != string(Class.Name) && player.bHardcoreMode)
+    {
+        bKeepWeaponDrawn = true;
+        SwitchToBestWeapon();
+    }
+}
+
+//SARGE: On Hardcore, some enemies keep weapons drawn ready for combat when not preoccupied.
+function SmartWeaponDraw(DeusExPlayer player)
+{
+    Log("Smart Weapon Draw: " $ player);
+    if (player != None && Weapon == None && bSmartWeaponDraw && BindName != string(Class.Name) && player.bHardcoreMode)
+    {
+        bKeepWeaponDrawn = true;
+        SwitchToBestWeapon();
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -1173,7 +1204,10 @@ function SetSeekLocation(Pawn seekCandidate, vector newLocation, ESeekType newSe
 		CarcassTimer      = 120.0;
 	if (newSeekType == SEEKTYPE_Sight)
 		SeekLevel = Max(SeekLevel, 1);
-	else
+    //SARGE: Seek for twice as long if we have Tactical Distraction perk
+	else if (DeusExPlayer(seekCandidate) != None && DeusExPlayer(seekCandidate).PerkManager != None && DeusExPlayer(seekCandidate).PerkManager.GetPerkWithClass(class'DeusEx.PerkTacticalDistraction').bPerkObtained)
+		SeekLevel = Max(SeekLevel, 5);
+    else
 		SeekLevel = Max(SeekLevel, 3);
 	if (bNewPostCombat)
 		bSeekPostCombat = true;
@@ -1727,8 +1761,29 @@ function HandleEnemy()
 
 function HandleSighting(Pawn pawnSighted)
 {
+    local DeusExPlayer player;
+    local float chance;
+
     SetSeekLocation(pawnSighted, pawnSighted.Location, SEEKTYPE_Sight);
-	GotoState('Seeking');
+                    
+    //SARGE: Add a chance for enemies to instantly open fire,
+    //rather than standing around waiting to be headshotted.
+    player = DeusExPlayer(pawnSighted);
+    
+    chance = fHighAlertChance;
+    if (player == None || !player.bHardCoreMode)
+        chance = fHighAlertChance * 0.25;
+    if (IsValidEnemy(pawnSighted) && !IsA('Robot') && player != None && FRand() < chance)
+    {
+        //player.DebugMessage("High Alert!");
+        SetEnemy(player);
+        fHighAlertState = 4.0;
+        if (Weapon == None)
+            SwitchToBestWeapon();
+        GotoState('Attacking');
+    }
+    else
+        GotoState('Seeking');
 }
 
 
@@ -2222,8 +2277,8 @@ function bool CheckEnemyPresence(float deltaSeconds,
 							{
 								/*skillStealthMod = (playerCandidate.SkillSystem.GetSkillLevelValue(class'SkillStealth')-0.5)*0.3;
 								if (skillStealthMod < 0.0)
-									skillStealthMod = 0.0;*/                    //RSD: Returns 0/15/35/45% depending on skill level value
-								skillStealthMod = (playerCandidate.SkillSystem.GetSkillLevel(class'SkillStealth'))*0.15;
+									skillStealthMod = 0.0;*/                    //RSD: Returns 0/15/35/45% depending on skill level value //SARGE: 25/50/75/100
+								skillStealthMod = (playerCandidate.SkillSystem.GetSkillLevel(class'SkillStealth'))*0.25;
 								/*litelvl = playerCandidate.AIVisibility();
 								if (playerCandidate.UsingChargedPickup(class'TechGoggles'))
          							litelvl -= 0.031376;                        //RSD: Tech Goggles hack
@@ -3155,25 +3210,28 @@ local vector loc;
  }
 }
 
-singular function HelmetSpawn(Vector hitLocation, int actualDamage, Pawn instigatedBy)
+singular function HelmetSpawn(Vector hitLocation, int actualDamage, Pawn instigatedBy, Texture skin)
 {
-local int i;
-local GMDXUnatcoDamHelmet dh;
-local vector loc;
+    local int i;
+    local GMDXUnatcoDamHelmet dh;
+    local vector loc;
 
- loc = Location;
- loc.Z += CollisionHeight+3;
+    loc = Location;
+    loc.Z += CollisionHeight+3;
 
- if (mesh != default.mesh || instigatedBy == None)
-   return;
+    if (mesh != default.mesh || instigatedBy == None)
+    return;
 
- dh = Spawn(class'GMDXUnatcoDamHelmet',,,loc);
- if (dh != None)
- {
-    dh.Velocity = Vector(instigatedBy.ViewRotation) * (170 + actualDamage); //CyberP/Totalitarian: terrible, lazy hack.
-    dh.Velocity.Z += 50;
-    dh.SetTimer(0.4,false);
- }
+    dh = Spawn(class'GMDXUnatcoDamHelmet',,,loc);
+    
+    dh.Multiskins[1]=skin;
+
+    if (dh != None)
+    {
+        dh.Velocity = Vector(instigatedBy.ViewRotation) * (170 + actualDamage); //CyberP/Totalitarian: terrible, lazy hack.
+        dh.Velocity.Z += 50;
+        dh.SetTimer(0.4,false);
+    }
 }
 // ----------------------------------------------------------------------
 // SpawnCarcass()
@@ -3459,6 +3517,37 @@ function bool FilterDamageType(Pawn instigatedBy, Vector hitLocation,
 // ModifyDamage()
 // ----------------------------------------------------------------------
 
+//SARGE: Calculate new damage from behind
+// Was previously a flat 12x bonus, now it's Stealth skill dependent
+function float CalculateBehindDamage(int initialDamage, Pawn instigator)
+{
+    local DeusExPlayer player;
+    local int mod;
+    local name s;
+    player = DeusExPlayer(instigator);
+
+    //SARGE: Prevent bonus damage from behind when enemy is aware
+    s = GetStateName();
+    if (s == 'Seeking' || s == 'Attacking' || s == 'Alerting')
+        return initialDamage;
+
+    if (player != None && player.SkillSystem != None)
+        mod = 3 * (player.SkillSystem.GetSkillLevel(class'SkillStealth') + 1); //SARGE: 3x/6x/9x/12x
+    else
+        mod = 12; //CyberP: was 10
+
+    if (mod < 1)
+        mod = 1;
+
+    return initialDamage * mod;
+}
+
+//SARGE: Was done in ModifyDamage. Moved it out to a new function
+function float GetSabotDamage(int actualDamage)
+{
+    return actualDamage * 0.5;                                                    //RSD: 0.5x damage to organics (was 0.7)
+}
+
 function float ModifyDamage(int Damage, Pawn instigatedBy, Vector hitLocation,
 							Vector offset, Name damageType)
 {
@@ -3477,9 +3566,10 @@ function float ModifyDamage(int Damage, Pawn instigatedBy, Vector hitLocation,
 		actualDamage *= 8; //CyberP: now *8, hacky fix
 
 	// if the pawn is hit from behind at point-blank range, he is killed instantly
+    //SARGE: Now Stealth Skill dependent
 	else if (offset.x < 0)
 		if ((instigatedBy != None) && (VSize(instigatedBy.Location - Location) < 96)) //CyberP: was 64
-			actualDamage  *= 12; //CyberP: was 10
+			actualDamage = CalculateBehindDamage(actualDamage,instigatedBy);
 
 	actualDamage = Level.Game.ReduceDamage(actualDamage, DamageType, self, instigatedBy);
 
@@ -3492,7 +3582,7 @@ function float ModifyDamage(int Damage, Pawn instigatedBy, Vector hitLocation,
 	if (damageType == 'TearGas' || damageType == 'EMP' || damageType == 'NanoVirus')
 		actualDamage = 0;
     else if (damageType == 'Sabot')
-        actualDamage *= 0.5;                                                    //RSD: 0.5x damage to organics (was 0.7)
+        actualDamage = GetSabotDamage(actualDamage);                                                    //RSD: 0.5x damage to organics (was 0.7)
 	//if (damageType == 'EMP')
     //{bHasCloak = False; CloakThreshold = 0;}//CyberP: EMP just outright disables cloaking.
 
@@ -3607,6 +3697,15 @@ function bool ShouldReactToInjuryType(name damageType,
 		return false;
 }
 
+// ----------------------------------------------------------------------
+// SARGE: Orders this pawn to don a helmet!
+// Allows characters to equip helmets.
+// Used to give Terrorists and such helmets.
+// ----------------------------------------------------------------------
+
+function DonHelmet()
+{
+}
 
 // ----------------------------------------------------------------------
 // SARGE: Split out helmet breaking to a new function.
@@ -3617,18 +3716,28 @@ function bool ShouldReactToInjuryType(name damageType,
 function bool DoHelmetBreak(bool bForced, float actualDamage, Pawn instigatedBy)
 {
     local bool bBroken;
+    local Texture tex;
     
     if (IsA('MJ12Troop') || IsA('MJ12Elite'))
         return false;
 
-    if ((IsA('Mechanic') || IsA('Soldier')) && (actualDamage >= 25 || FRand() < 0.2 || bForced))
+    if (bHasHelmet && (actualDamage >= 25 || FRand() < 0.08 || bForced))
     {
-        HelmetBreak();
-        bBroken = true;
-    }
-    else if (IsA('UNATCOTroop') && (actualDamage >= 25 || FRand() < 0.08 || bForced))
-    {
-        HelmetSpawn(Location+vect(0,0,49), actualDamage, instigatedBy);
+        if (FRand() < 0.6)
+        {
+            HelmetBreak();
+        }
+        else
+        {
+            if (IsA('UNATCOTroop'))
+                tex = Texture'GMDXSFX.Skins.hUNATCOTroopTex3';
+            else if (IsA('Soldier') || IsA('HKMilitary'))
+                tex = Texture'GMDXSFX.Skins.hSoldierTex3';
+            else if (IsA('Mechanic'))
+                tex = Texture'GMDXSFX.Skins.hMechanicTex3';
+            HelmetSpawn(Location+vect(0,0,49), actualDamage, instigatedBy, tex);
+        }
+
         bBroken = true;
     }
     
@@ -4546,12 +4655,7 @@ function ResetSkinStyle()
 	Skin      = Default.Skin;
 	ScaleGlow = Default.ScaleGlow;
 	Style     = Default.Style;
-	if ((IsA('MJ12Troop') || IsA('MJ12Elite')) && bHasCloak)
-	{
-	MultiSkins[3] = Texture'DeusExCharacters.Skins.MiscTex1';
-	MultiSkins[6] = Texture'DeusExCharacters.Skins.MJ12TroopTex3';
-	MultiSkins[7] = None;
-	}
+    SetupSkin();
 }
 
 
@@ -4661,6 +4765,8 @@ function PlayDyingSound()
 {
 	SetDistressTimer();
 
+    //SARGE: Fix the broken sound propagation
+    class'PawnUtils'.static.WakeUpAI(self,336);
 	PlaySound(GetDeathSound(), SLOT_Pain,,,, RandomPitch());
 	if (bEmitDistress)
 		AISendEvent('Distress', EAITYPE_Audio,0.25,336); //CyberP: radius was 490 //RSD: psshh, only 224? We going to 336 baby
@@ -6648,36 +6754,85 @@ function HandleShot(Name event, EAIEventState state, XAIParams params)
 	}
 }
 
+// ----------------------------------------------------------------------
+// SARGE: HandleFootstepsAwareness()
+// When an NPC hears a number of quiet footsteps, eventually
+// they will take notice
+// ----------------------------------------------------------------------
+
+function HandleFootstepsAwareness(Pawn instigator, float mod)
+{
+	if (instigator != None && bReactLoudNoise && bLookingForLoudNoise && IsInState('Patrolling') && mod > 0)
+    {
+        //If we are still within the time threshold, keep adding until we hear something!
+        //Otherwise, reset
+        if (fSubAwarenessModTime > 0)
+            fSubAwarenessMod -= mod;
+        else
+            fSubAwarenessMod = 1.0 - mod;
+
+        fSubAwarenessModTime = 5.0;
+        DeusExPlayer(instigator).DebugMessage("Noise handler level: " $ fSubAwarenessMod);
+        
+        if (fSubAwarenessMod < HearingThreshold)
+        {
+            //DeusExPlayer(GetPlayerPawn()).DebugMessage("Noise handler alerting!");
+            NoiseHandler(instigator);
+        }
+    }
+}
 
 // ----------------------------------------------------------------------
 // HandleLoudNoise()
 // ----------------------------------------------------------------------
+
+//SARGE: Moved HandleLoudNoise to here, so we can call it directly in special cases
+function NoiseHandler(Actor source)
+{
+	local Pawn  instigator;
+    local DeusExPlayer player;          //SARGE: Added
+    if (source != None)
+    {
+        instigator = Pawn(source);
+        if (instigator == None)
+            instigator = source.Instigator;
+        if (instigator != None)
+        {
+            //DeusExPlayer(source).DebugMessage("NoiseHandler: " $ instigator);
+            if (IsValidEnemy(instigator))
+            {
+                //DeusExPlayer(GetPlayerPawn()).DebugMessage("Aw2");
+                SetSeekLocation(instigator, source.Location, SEEKTYPE_Sound);
+
+                //SARGE: If we're super close, and we're in hardcore mode, allow
+                //attacking instantly, rather than searching.
+                player = DeusExPlayer(instigator);
+
+                if (!IsA('Robot') && player != None && ((player.bHardcoreMode && Abs(VSize(player.Location - Location)) < 500) || FRand() < fHighAlertChance))
+                {
+                    //player.DebugMessage("High Alert!");
+                    SetEnemy(player);
+                    fHighAlertState = 4.0;
+                    if (Weapon == None)
+                        SwitchToBestWeapon();
+                    GotoState('Attacking');
+                }
+                HandleEnemy();
+            }
+        }
+    }
+}
 
 function HandleLoudNoise(Name event, EAIEventState state, XAIParams params)
 {
 	// React
 
 	local Actor bestActor;
-	local Pawn  instigator;
-
 
 	if (state == EAISTATE_Begin || state == EAISTATE_Pulse)
 	{
 		bestActor = params.bestActor;
-		if (bestActor != None)
-		{
-			instigator = Pawn(bestActor);
-			if (instigator == None)
-				instigator = bestActor.Instigator;
-			if (instigator != None)
-			{
-				if (IsValidEnemy(instigator))
-				{
-					SetSeekLocation(instigator, bestActor.Location, SEEKTYPE_Sound);
-					HandleEnemy();
-				}
-			}
-		}
+        NoiseHandler(bestActor);
 	}
 }
 
@@ -8657,6 +8812,12 @@ function Tick(float deltaTime)
     if (!bFirstTickDone && !ShouldCreate(player))
         Destroy();
 
+    
+    //SARGE: tick down high alert state
+    fHighAlertState = FMAX(0,fHighAlertState - deltaTime);
+
+    //SARGE: tick down sub-awareness time
+    fSubAwarenessModTime = FMAX(0,fSubAwarenessModTime - deltaTime);
 
 	bDoLowPriority = true;
 	bCheckPlayer   = true;
@@ -12264,7 +12425,7 @@ GoToLocation:
 	{
 		PlayPreAttackSearchingSound();
 		disturbanceCount++;
-		if (FRand() < 0.4 && SeekLevel >= 3) //CyberP: sometimes just turn to the source of the sound instead of running around
+		if (FRand() < 0.4 && SeekLevel == 3) //CyberP: sometimes just turn to the source of the sound instead of running around
 		{
 		SeekLevel = 0;
 		GoTo('TurnToLocation');
@@ -12287,7 +12448,8 @@ GoToLocation:
 	EnableCheckDestLoc(true);
 	if (SeekType == SEEKTYPE_Sound && FRand() < 0.1 && SeekLevel >=3)
 	{
-	Sleep(0.2);
+        if (fHighAlertState == 0)
+            Sleep(0.2);
 	while (GetNextLocation(useLoc))
 	{
 		            if (ShouldPlayWalk(useLoc))
@@ -12315,7 +12477,8 @@ GoToLocation:
 		MoveTarget = GetOvershootDestination(0.5);
 		if (MoveTarget != None)
 		{
-		   sleep(0.2);
+            if (fHighAlertState == 0)
+                sleep(0.2);
 			if (ShouldPlayWalk(MoveTarget.Location))
 				PlayRunning();
 			MoveToward(MoveTarget, MaxDesiredSpeed);
@@ -12355,7 +12518,7 @@ TurnToLocation:
 	PlayWaiting();
 	if (SeekType == SEEKTYPE_Sound)
 	{
-	    if (SeekLevel == 0)
+	    if (SeekLevel == 0 && fHighAlertState == 0)
 	    {
 	       Sleep(FRand()*2+3);
            GoTo('LookAroundAgain');
@@ -13443,13 +13606,13 @@ State Attacking
 		{
 		    if (dxWeapon.bHandToHand)
 		        bDefendHome = False; //CyberP: campers no longer camp if out of ammo
-			if ((dxWeapon.AIFireDelay > 0) && (FireTimer > 0))
+			if ((dxWeapon.AIFireDelay > 0) && (FireTimer > 0) && fHighAlertState == 0)
 				return false;
 			else if (dxWeapon.IsA('WeaponRifle') && FRand() < 0.8)
                 return false;  //CyberP: rand as to whether snipers can fire, to simulate taking variable time to aim.
 			else if (AICanShoot(enemy, true, true, 0.025))
 			{
-                if (currentReactTime > 0)
+                if (currentReactTime > 0 && fHighAlertState == 0)
                 {
                     //Waiting to fire...
                     return false;
@@ -13470,6 +13633,7 @@ State Attacking
                 else if (IsInState('Dying'))
                     dxWeapon.PawnAccuracyModifier += 0.4;
 				Weapon.Fire(0);
+                fHighAlertState = 0;
 				/*if (CombatSeeTimer < 0.75)
 				{
 				   ForEach RadiusActors(class'HumanMilitary',ham,512)
@@ -17534,4 +17698,5 @@ defaultproperties
      randomPainSoundsM(16)=Sound'DeusExSounds.Player.MaleLand' //WTF?
      randomPainSoundsM(17)=Sound'DeusExSounds.Player.MaleGrunt'
      bCanBlink=true
+     fHighAlertChance=0.2
 }

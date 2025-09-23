@@ -73,7 +73,16 @@ event InitWindow()
 
 event DestroyWindow()
 {
-	if ((compOwner.IsA('Computers')) && (compOwner != None))
+    //SARGE: Destroy the notes window too
+    if (winNotes != None)
+    {
+        winNotes.DestroyWindow();
+        winNotes.DestroyAllChildren();
+        winNotes.Destroy();
+        winNotes = None;
+    }
+
+	if (compOwner != None && compOwner.IsA('Computers'))
 	{
       if (Player != Player.GetPlayerPawn())
       {
@@ -283,6 +292,7 @@ function ShowScreen(Class<ComputerUIWindow> newScreen)
 	{
 		winComputer = ComputerUIWindow(NewChild(newScreen));
 		winComputer.SetWindowAlignments(HALIGN_Center, VALIGN_Center);
+		//winComputer.SetCompOwner(compOwner);
 		winComputer.SetNetworkTerminal(Self);
 		winComputer.SetCompOwner(compOwner);
         if (winNotes != None)
@@ -442,8 +452,15 @@ function AddNotesWindow()
     {
         for (i = 0; i < 8;i++)
         {
-            note1 = player.GetCodeNote(C.GetUserName(i),true);
-            note2 = player.GetCodeNote(C.GetPassword(i),true);
+            if (player.IsObfuscatedCode(C.GetUserName(i)) && player.IsObfuscatedCode(C.GetPassword(i)))
+            {
+                note1 = player.GetCodeNote(C.GetUserName(i),true);
+                note2 = player.GetCodeNote(C.GetPassword(i),true);
+            }
+            else
+            {
+                note1 = player.GetCodeNoteStrict(C.GetUserName(i),C.GetPassword(i),true);
+            }
             
             if (note1 != None)
                 codeNotes[numCodes++] = note1;
@@ -455,8 +472,15 @@ function AddNotesWindow()
     {
         for (i = 0; i < 8;i++)
         {
-            note1 = player.GetCodeNote(A.GetAccountNumber(i),true);
-            note2 = player.GetCodeNote(A.GetPIN(i),true);
+            if (player.IsObfuscatedCode(A.GetAccountNumber(i)) && player.IsObfuscatedCode(A.GetPIN(i)))
+            {
+                note1 = player.GetCodeNote(A.GetAccountNumber(i),true);
+                note2 = player.GetCodeNote(A.GetPIN(i),true);
+            }
+            else
+            {
+                note1 = player.GetCodeNoteStrict(A.GetAccountNumber(i),A.GetPIN(i),true);
+            }
 
             if (note1 != None)
                 codeNotes[numCodes++] = note1;
@@ -662,13 +686,12 @@ function ComputerHacked()
 	// Use the first login
 	userIndex = 0;
 
-	if (compOwner.IsA('Computers'))
+	if (compOwner != None && compOwner.IsA('Computers'))
     {
 		userName  = Computers(compOwner).GetUserName(userIndex);
         Computers(compOwner).timesHacked++;
+        Computers(CompOwner).PerformLoginAction(player);
     }
-
-    Computers(CompOwner).PerformLoginAction(player);
 
 	CloseScreen("LOGIN");
 }

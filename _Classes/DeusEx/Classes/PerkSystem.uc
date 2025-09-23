@@ -92,6 +92,7 @@ function InitializePerks(DeusExPlayer newPlayer)	// Trash: Add every perk in the
 	// Stealth Perks
 	AddPerk(Class'DeusEx.PerkNimble');
 	AddPerk(Class'DeusEx.PerkSecurityLoophole');
+	AddPerk(Class'DeusEx.PerkWetwork');
 	AddPerk(Class'DeusEx.PerkTacticalDistraction');
 
 	// Hacking Perks
