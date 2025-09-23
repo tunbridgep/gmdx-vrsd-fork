@@ -4507,7 +4507,8 @@ function RadialMenuToggleCurrentAug()
 
 function RadialMenuClear()
 {
-	DeusExRootWindow(rootWindow).hud.radialAugMenu.Clear();
+	if (rootWindow != None)
+        DeusExRootWindow(rootWindow).hud.radialAugMenu.Clear();
 }
 
 
@@ -15859,7 +15860,7 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
 	    }
     }
 
-	if (instigatedBy.IsA('DeusExPlayer') && (damageType == 'Exploded' || damageType == 'Burned') && PerkManager.GetPerkWithClass(class'DeusEx.PerkBlastPadding').bPerkObtained == true)	// Trash: Less damage if you're wearing a vest and you have Blast Padding
+	if (instigatedBy == Self && (damageType == 'Exploded' || damageType == 'Burned') && PerkManager != None && PerkManager.GetPerkWithClass(class'DeusEx.PerkBlastPadding').bPerkObtained == true)	// Trash: Less damage if you're wearing a vest and you have Blast Padding
 	{
 		if (UsingChargedPickup(class'BallisticArmor'))
 		{

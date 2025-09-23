@@ -651,7 +651,7 @@ log("  event.toActor    = " $ event.toActor );
 	}
     
     // SARGE: If we gave away a disposable weapon, also take it's ammo.
-    if (invItemFrom != none && event.fromActor.IsA('DeusExPlayer') && invItemFrom.IsA('DeusExWeapon'))
+    if (invItemFrom != none && event.fromActor != none && event.fromActor.IsA('DeusExPlayer') && invItemFrom.IsA('DeusExWeapon'))
     {
         wpn = DeusExWeapon(invItemFrom);
         if (wpn != None && wpn.bDisposableWeapon && wpn.AmmoType != None && !wpn.AmmoType.IsA('AmmoNone'))
