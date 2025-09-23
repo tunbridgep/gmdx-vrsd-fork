@@ -829,7 +829,7 @@ var globalconfig bool bConversationKeepWeaponDrawn;             //SARGE: Always 
 
 var globalconfig int iCrosshairVisible;                         //SARGE: Replaces the boolean crosshair setting, now we can control inner and outer crosshair independently.
 
-var globalconfig bool bImprovedWeaponSounds;                    //SARGE: Allow GMDX weapon sounds, rather than vanilla.
+var globalconfig int iImprovedWeaponSounds;                    //SARGE: Allow GMDX weapon sounds, rather than vanilla.
 
 var globalconfig bool bImprovedLasers;                          //SARGE: Prevent pepper spray, boxes etc from disrupting lasers.
 
@@ -864,6 +864,16 @@ var globalconfig bool bShowFullAmmoInHUD;                       //SARGE: When am
 var globalconfig bool bNanoswordEnergyUse;                      //SARGE: Whether or not the DTS requires energy to function.
 
 var globalconfig bool bFasterInfolinks;                         //SARGE: Significantly decreases the time before queued datalinks can play, to make receiving many messages at once far less sluggish.
+
+
+//Markers Stuff and Notes Overhaul
+var travel MarkerInfo markers;                                  //SARGE: A list of markers 
+var travel bool bShowMarkers;                                   //SARGE: Whether or not to show note markers
+var travel bool bShowUserNotes;
+var travel bool bShowRegularNotes;
+var travel bool bShowMarkerNotes;
+var travel bool bAllowNoteEditing;
+var globalconfig bool bEditDefaultNotes;                        //SARGE: If enabled, we can edit the default game notes.
 
 //////////END GMDX
 
@@ -1876,6 +1886,9 @@ event TravelPostAccept()
 
     //Reset Crosshair
     UpdateCrosshair();
+
+    //Destroy any unlinked markers
+    UpdateMarkerValidity();
 
 	info = GetLevelInfo();
 
@@ -2945,13 +2958,16 @@ function ResetPlayer(optional bool bTraining)
 		anItem = Spawn(class'WeaponProd');
 		anItem.Frob(Self, None);
 		anItem.bInObjectBelt = True;
+		anItem.beltPos = 0;
 		anItem = Spawn(class'WeaponPistol');
 		anItem.Frob(Self, None);
 		anItem.bInObjectBelt = True;
+		anItem.beltPos = 1;
         advBelt = 1;
 		anItem = Spawn(class'MedKit');
 		anItem.Frob(Self, None);
 		anItem.bInObjectBelt = True;
+		anItem.beltPos = 2;
 		swimTimer = 1000;  //CyberP: start with full stamina.
 		KillerCount = 0;    //CyberP: start with 0 kills
 		stepCount = 0;      //CyberP: start with 0 steps
@@ -5994,9 +6010,7 @@ function DoJump( optional float F )
     if (bUsingComputer)
         return;
 	
-	if ((CarriedDecoration != None) && (CarriedDecoration.Mass > MusLevel))
-		return;
-	else if (bForceDuck || IsLeaning())
+	if (bForceDuck || IsLeaning())
 		return;
 
 	if (AugmentationSystem == None)
@@ -6014,6 +6028,9 @@ function DoJump( optional float F )
 		MusLevel = 30;
 	else
 		MusLevel = (MusLevel+3)*50;
+
+	if ((CarriedDecoration != None) && (CarriedDecoration.Mass > MusLevel)) //SARGE: Moved this to below the part where we actually set AugMuscle. Previously it did nothing...
+		return;
 
     if (bOnLadder && WallMaterial != 'Ladder' && !IsCrippled())
     {
@@ -8161,26 +8178,31 @@ exec function UseSecondary()
         {
             if(!Binoculars(assigned).bActive)
             {
-                if (inHand != none && inHand.IsA('DeusExWeapon'))
+                if (inHand != None)
                 {
-                    //DeusExWeapon(inHand).GotoState('DownWeapon');
-                    DeusExWeapon(inHand).ScopeOff();
-                    DeusExWeapon(inHand).LaserOff(true);
-                    PutInHand(None);
-                }
-                else if (inHand.IsA('SkilledTool'))
-                {
-                    SkilledTool(inHand).PutDown();
-                }
-                else if (inHand.IsA('DeusExPickup'))
-                {
-                    PutInHand(None);
+                    if (inHand.IsA('DeusExWeapon'))
+                    {
+                        //DeusExWeapon(inHand).GotoState('DownWeapon');
+                        DeusExWeapon(inHand).ScopeOff();
+                        DeusExWeapon(inHand).LaserOff(true);
+                        PutInHand(None,true);
+                    }
+                    else if (inHand.IsA('SkilledTool'))
+                    {
+                        //SkilledTool(inHand).PutDown();
+                        PutInHand(None,true);
+                    }
+                    else if (inHand.IsA('DeusExPickup'))
+                    {
+                        PutInHand(None,true);
+                    }
                 }
                 Binoculars(assigned).Activate();
             }
             else
             {
                 Binoculars(assigned).Activate();
+                SelectLastWeapon(true);
             }
             return;
         }
@@ -8677,6 +8699,7 @@ exec function ParseRightClick()
 	local DeusExWeapon ExWep;
     local DeusExRootWindow root;
     local bool bFarAway;
+    local Inventory assigned;
 
     //SARGE: Add quickloading if pressing right click while dead.
     if (IsInState('dying') && !bDeadLoad)
@@ -8693,6 +8716,17 @@ exec function ParseRightClick()
         return;
     }
 
+    assigned = GetSecondary();
+       
+
+    //SARGE: Hack to handle binocs as secondary
+    if (Binoculars(assigned) != None && Binoculars(assigned).bActive)
+    {
+        Binoculars(assigned).Activate();
+        SelectLastWeapon(true);
+        return;
+    }
+
     //Descope if we have binocs/scope
     if (inHand != None)
     {
@@ -8704,6 +8738,12 @@ exec function ParseRightClick()
         else if (inHand.IsA('Binoculars') && Binoculars(inhand).bActive)
         {
             Binoculars(inhand).Activate();
+            return;
+        }
+        
+        if (inHand.IsA('DeusExWeapon') && DeusExWeapon(inhand).bZoomed)
+        {
+            DeusExWeapon(inhand).ScopeToggle();
             return;
         }
     }
@@ -9299,6 +9339,10 @@ function AddReceivedItem(Inventory item, int count, optional bool bNoGroup, opti
 function String GetNanoKeyDesc(Name nanokey)
 {
     local NanoKeyInfo key;
+
+    if (nanokey == '')
+        return "";
+
     key = KeyList;
     while (key != None)
     {
@@ -12318,6 +12362,9 @@ function UpdateHUD()
 
     if (root != None)
         root.UpdateHUD();
+
+    //Show/Hide Markers
+    UpdateMarkerDisplay(true);
 }
 
 function UpdateSecondaryDisplay()
@@ -14711,6 +14758,10 @@ function Bool DeleteNote( DeusExNote noteToDelete )
 		previousNote = note;
 		note = note.next;
 	}
+
+    //SARGE: Remove markers associated with this note.
+    UpdateMarkerValidity();
+    //DeleteMarkersForNote(noteToDelete);
 
 	return bNoteDeleted;
 }
@@ -19105,6 +19156,124 @@ function bool IsStunted()
     return bStunted || stuntedTime > 0;
 }
 
+// ----------------------------------------------------------------------
+// UpdateMarkerDisplay()
+// SARGE: Added the ability to display Markers
+// ----------------------------------------------------------------------
+
+function UpdateMarkerDisplay(optional bool bUpdateTeleporters)
+{
+    local MarkerDisplayWindow markerDisplay;
+
+    if (DeusExRootWindow(rootWindow) != None)
+        markerDisplay = DeusExRootWindow(rootWindow).markerDisplay; 
+
+    if (markerDisplay == None)
+        return;
+
+    //Setup the marker display
+    markerDisplay.Setup(bShowMarkers,self,bUpdateTeleporters);
+}
+
+//Destroys any markers that no longer have associated notes
+function UpdateMarkerValidity()
+{
+    local MarkerInfo marker, prev, m1;
+    local bool bValid;
+    
+    if (markers == None)
+        return;
+
+    marker = markers;
+
+    while (marker != None)
+    {
+        bValid = marker.associatedNote != None && !marker.associatedNote.bHidden;
+        Log("Marker " $ marker.associatedNote.text $ " is valid: " $ bValid);
+        if (!bValid && prev == None)
+        {
+            markers = marker.next;
+            CriticalDelete(marker);
+            marker = markers;
+        }
+        else if (!bValid)
+        {
+            prev.next = marker.next;
+
+            m1 = marker;
+            marker = marker.next;
+            CriticalDelete(m1);
+        }
+        else
+        {
+            prev = marker;
+            marker = marker.next;
+        }
+    }
+}
+
+function AddMarker(DeusExNote note)
+{
+    local MarkerInfo marker, currMarker;
+    local DeusExLevelInfo dxinfo;
+
+    dxInfo=GetLevelInfo();
+    marker = new(Self) class'MarkerInfo';
+    marker.associatedNote = note;
+    marker.Position = Location;
+    marker.MapName = dxInfo.GetMapNameGeneric();
+
+    if (markers == None)
+    {
+        markers = marker;
+        return;
+    }
+    
+    currMarker = markers;
+
+    while (currMarker.next != None)
+        currMarker = currMarker.next;
+
+    currMarker.next = marker;
+
+}
+
+/*
+function DeleteMarkersForNote(DeusExNote note)
+{
+    local MarkerInfo marker, prev, m1;
+    
+    if (markers == None)
+        return;
+
+    marker = markers;
+
+    while (marker != None)
+    {
+        if (marker.associatedNote == note && prev == None)
+        {
+            markers = marker.next;
+            CriticalDelete(marker);
+            marker = markers;
+        }
+        else if (marker.associatedNote == note)
+        {
+            prev.next = marker.next;
+
+            m1 = marker;
+            marker = marker.next;
+            CriticalDelete(m1);
+        }
+        else
+        {
+            prev = marker;
+            marker = marker.next;
+        }
+    }
+    
+    UpdateMarkerValidity();
+}
+*/
 
 // ----------------------------------------------------------------------
 // LipSynch()
@@ -19441,11 +19610,11 @@ defaultproperties
      iSmartKeyring=1
      iAltFrobDisplay=1
      bDialogHUDColors=True
-     bQuietAugs=True
+     //bQuietAugs=True //DISABLED by request of RoSoDude
      bEnableLeftFrob=True
      bShowDeclinedInReceivedWindow=true
      bAlwaysShowModifiers=true
-     bImprovedWeaponSounds=true
+     iImprovedWeaponSounds=2
      bImprovedLasers=true
      bRearmSkillRequired=true
      bAutoUncrouch=true
@@ -19456,4 +19625,10 @@ defaultproperties
      bShowFullAmmoInHUD=true
      bFasterInfolinks=true
      bNanoswordEnergyUse=true
+     bShowMarkers=true
+     bAllowNoteEditing=trueRegularNotes
+     bShowUserNotes=true
+     bShowRegularNotes=true
+     bShowMarkerNotes=true
+     bEditDefaultNotes=false
 }

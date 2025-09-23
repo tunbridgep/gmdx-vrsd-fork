@@ -24,13 +24,13 @@ replication
 
 function OnEquipped()
 {
-    if (class'DeusExPlayer'.default.bImprovedWeaponSounds)
+    if (class'DeusExPlayer'.default.iImprovedWeaponSounds > 1)
         PlaySound(sound'RSDCrap.Misc.NanoKeyEquip',SLOT_None);
 }
 
 function OnUnEquipped()
 {
-    if (class'DeusExPlayer'.default.bImprovedWeaponSounds)
+    if (class'DeusExPlayer'.default.iImprovedWeaponSounds > 1)
         PlaySound(sound'RSDCrap.Misc.NanoKeyUnEquip',SLOT_None);
 }
 
@@ -46,6 +46,9 @@ simulated function bool HasKey(Name KeyToLookFor)
 	local Bool bHasKey;
 
 	bHasKey = False;
+
+    if (KeyToLookFor == '')
+        return false;
 
 	if (GetPlayer() != None)
 	{

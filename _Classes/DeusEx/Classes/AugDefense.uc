@@ -135,7 +135,7 @@ simulated function DeusExProjectile FindNearestProjectile()
         //SARGE: Dirty hack to prevent scripted grenades from triggering it
         bValidProj = bValidProj && (!proj.IsA('GasGrenade') || !GasGrenade(proj).bScriptedGrenade);
         
-        bValidProj = bValidProj && (!proj.IsA('ThrownProjectile') || !ThrownProjectile(proj).bProximityTriggered);
+        bValidProj = bValidProj && (!proj.IsA('ThrownProjectile') || (!ThrownProjectile(proj).bProximityTriggered && ThrownProjectile(proj).bArmed));
 
       if (bValidProj)
       {

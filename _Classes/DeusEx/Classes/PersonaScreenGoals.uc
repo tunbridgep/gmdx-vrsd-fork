@@ -19,10 +19,16 @@ var localized String       GoalCompletedText;
 // Note Items
 var TileWindow                winNotes;
 var PersonaCheckBoxWindow     chkConfirmNoteDeletion;
+var PersonaCheckBoxWindow     chkShowMarkers;
+var PersonaCheckBoxWindow     chkShowDefaultNotes;
+var PersonaCheckBoxWindow     chkShowUserNotes;
+var PersonaCheckBoxWindow     chkShowMarkerNotes;
+var PersonaCheckBoxWindow     chkAllowEdit;
 var Bool                      bConfirmNoteDeletes;
 var localized String          NotesTitleText;
 var PersonaActionButtonWindow btnAddNote;
 var PersonaActionButtonWindow btnDeleteNote;
+var PersonaActionButtonWindow btnMarker; //SARGE: Added
 var PersonaNotesEditWindow    currentNoteWindow;
 var PersonaNotesEditWindow    firstNoteWindow;
 
@@ -33,6 +39,9 @@ var localized string DeleteNotePrompt;
 var localized string AddButtonLabel;
 var localized string DeleteButtonLabel;
 var localized string ConfirmNoteDeletionLabel;
+
+var localized string MarkerButtonLabel;
+var localized string ShowMarkersLabel;
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -95,8 +104,13 @@ function CreateControls()
 	winNotes = CreateScrollTileWindow(16, 226, 574, 182);
 	winNotes.SetMinorSpacing(4);
 
-	CreateShowCompletedGoalsCheckbox();
 	CreateNotesButtons();
+	CreateShowCompletedGoalsCheckbox();
+    CreateShowMarkerCheckbox();
+    CreateEditCheckbox();
+    CreateShowDefaultNotesCheckbox();
+    CreateShowUserNotesCheckbox();
+    CreateShowMarkerNotesCheckbox();
 	CreateConfirmNoteDeletionCheckbox();
 }
 
@@ -125,16 +139,83 @@ function CreateNotesButtons()
 
 	winActionButtons = PersonaButtonBarWindow(winClient.NewChild(Class'PersonaButtonBarWindow'));
 	winActionButtons.SetPos(10, 411);
-	winActionButtons.SetWidth(179);
+	winActionButtons.SetWidth(502); //was 179
 	winActionButtons.FillAllSpace(False);
 
 	btnAddNote = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow'));
 	btnAddNote.SetButtonText(AddButtonLabel);
+	
+    btnMarker = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow'));
+	btnMarker.SetButtonText(MarkerButtonLabel);
 
 	btnDeleteNote = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow'));
 	btnDeleteNote.SetButtonText(DeleteButtonLabel);
 }
 
+// ----------------------------------------------------------------------
+// SARGE: CreateShowDefaultNotesCheckbox()
+// ----------------------------------------------------------------------
+
+function CreateShowDefaultNotesCheckbox()
+{
+	chkShowDefaultNotes = PersonaCheckBoxWindow(winClient.NewChild(Class'PersonaCheckBoxWindow'));
+
+	chkShowDefaultNotes.SetText("Show Default Notes");
+	chkShowDefaultNotes.SetToggle(player.bShowRegularNotes);
+	chkShowDefaultNotes.SetWindowAlignments(HALIGN_Right, VALIGN_Top, 63, 207);
+}
+
+// ----------------------------------------------------------------------
+// SARGE: CreateShowUserNotesCheckbox()
+// ----------------------------------------------------------------------
+
+function CreateShowUserNotesCheckbox()
+{
+	chkShowUserNotes = PersonaCheckBoxWindow(winClient.NewChild(Class'PersonaCheckBoxWindow'));
+
+	chkShowUserNotes.SetText("Show User Notes");
+	chkShowUserNotes.SetToggle(player.bShowUserNotes);
+	chkShowUserNotes.SetWindowAlignments(HALIGN_Right, VALIGN_Top, 203, 207);
+}
+
+// ----------------------------------------------------------------------
+// SARGE: CreateShowMarkerNotesCheckbox()
+// ----------------------------------------------------------------------
+
+function CreateShowMarkerNotesCheckbox()
+{
+	chkShowMarkerNotes = PersonaCheckBoxWindow(winClient.NewChild(Class'PersonaCheckBoxWindow'));
+
+	chkShowMarkerNotes.SetText("Show Marker Notes");
+	chkShowMarkerNotes.SetToggle(player.bShowMarkerNotes);
+	chkShowMarkerNotes.SetWindowAlignments(HALIGN_Right, VALIGN_Top, 343, 207);
+}
+
+// ----------------------------------------------------------------------
+// SARGE: CreateEditCheckbox()
+// ----------------------------------------------------------------------
+
+function CreateEditCheckbox()
+{
+	chkAllowEdit = PersonaCheckBoxWindow(winClient.NewChild(Class'PersonaCheckBoxWindow'));
+
+	chkAllowEdit.SetText("Allow Editing");
+	chkAllowEdit.SetToggle(player.bAllowNoteEditing);
+	chkAllowEdit.SetWindowAlignments(HALIGN_Right, VALIGN_Top, 263, 412);
+}
+
+// ----------------------------------------------------------------------
+// SARGE: CreateShowMarkerCheckbox()
+// ----------------------------------------------------------------------
+
+function CreateShowMarkerCheckbox()
+{
+	chkShowMarkers = PersonaCheckBoxWindow(winClient.NewChild(Class'PersonaCheckBoxWindow'));
+
+	chkShowMarkers.SetText(ShowMarkersLabel);
+	chkShowMarkers.SetToggle(player.bShowMarkers);
+	chkShowMarkers.SetWindowAlignments(HALIGN_Right, VALIGN_Top, 158, 412);
+}
 
 // ----------------------------------------------------------------------
 // CreateConfirmNoteDeletionCheckbox()
@@ -232,6 +313,7 @@ function PopulateNotes()
 	local PersonaNotesEditWindow noteWindow;
 	local DeusExNote note;
 	local bool   bWasVisible;
+    local bool bAdd;
 
 	// Hide the notes, so we don't flood the tile window with ConfigureChanged() events
 	bWasVisible = winNotes.IsVisible(FALSE);
@@ -239,24 +321,46 @@ function PopulateNotes()
 
 	// First make sure there aren't already notes
 	winNotes.DestroyAllChildren();
+            
+    firstNoteWindow = None;
 
 	// Loop through all the notes
 	note = player.FirstNote;
 	while(note != None)
 	{
-        if (!note.bHidden)
+        bAdd = true;
+        
+        //Filter notes using the filter checkboxes
+        if (note.bHidden)
+            bAdd = false;
+        if (!player.bShowRegularNotes && !note.bUserNote)
+            bAdd = false;
+        else if (!player.bShowUserNotes && note.bUserNote && !note.bMarkerNote)
+            bAdd = false;
+        else if (!player.bShowMarkerNotes && note.bUserNote && note.bMarkerNote)
+            bAdd = false;
+
+        if (bAdd)
         {
             noteWindow = CreateNoteEditWindow( note );
+            noteWindow.SetMarkerNote(note.bMarkerNote);
 
             if (firstNoteWindow == None)
                 firstNoteWindow = noteWindow;
         }
+
 		// Continue on to the next note
 		note = note.next;
 	}
 
 	// Show the notes again, if they were visible before
 	winNotes.Show(bWasVisible);
+	
+    //SARGE: Scroll to the top!
+    //Stolen from WindowReady();
+    //SARGE: TODO: Crashy??
+    if (firstNoteWindow != None)
+		firstNoteWindow.AskParentToShowArea();
 }
 
 // ----------------------------------------------------------------------
@@ -275,7 +379,13 @@ function bool ButtonActivated( Window buttonPressed )
 	switch(buttonPressed)
 	{
 		case btnAddNote:
+            player.bAllowNoteEditing = true;
 			AddNote();
+			break;
+		
+        case btnMarker:
+            player.bAllowNoteEditing = true;
+			AddMarker();
 			break;
 
 		case btnDeleteNote:
@@ -305,9 +415,17 @@ function bool ButtonActivated( Window buttonPressed )
 
 event FocusEnteredDescendant(Window enterWindow)
 {
+	local DeusExNote note;
 	// Ignore this even if we're deleting
 	if (PersonaNotesEditWindow(enterWindow) != None)
 	{
+        //SARGE: If it's a user note, and we have note editing turned off, hide the checkbox
+		note = PersonaNotesEditWindow(enterWindow).GetNote();
+        if (note != None && !note.bUserNote && !player.bEditDefaultNotes)
+            chkAllowEdit.Hide();
+        else
+            chkAllowEdit.Show();
+
 		currentNoteWindow = PersonaNotesEditWindow(enterWindow);
 		EnableButtons();
 	}
@@ -364,6 +482,33 @@ event bool BoxOptionSelected(Window msgBoxWindow, int buttonNumber)
 
 	return true;
 }
+
+// ----------------------------------------------------------------------
+// AddMarker()
+//
+// SARGE: Creates a new note and a marker, and associates the marker with the note.
+// ----------------------------------------------------------------------
+
+function AddMarker()
+{
+	local DeusExNote newNote;
+	local PersonaNotesEditWindow newNoteWindow;
+
+	// Create a new note and then a window to display it in
+	newNote = player.AddNote(defaultNoteText, True);
+    newNote.bMarkerNote = true;
+
+    player.AddMarker(newNote);
+
+	newNoteWindow = CreateNoteEditWindow(newNote);
+    newNoteWindow.SetMarkerNote(true);
+	newNoteWindow.Lower();
+	newNoteWindow.SetSelectedArea(0, Len(defaultNoteText));
+	SetFocusWindow(newNoteWindow);
+    player.bShowMarkers = true;
+    player.UpdateMarkerDisplay();
+}
+
 
 // ----------------------------------------------------------------------
 // AddNote()
@@ -428,6 +573,31 @@ event bool ToggleChanged(Window button, bool bNewToggle)
 	{
 		bConfirmNoteDeletes = bNewToggle;
 	}
+	else if (button == chkShowMarkers)
+	{
+        player.bShowMarkers = bNewToggle;
+        player.UpdateMarkerDisplay();
+	}
+	else if (button == chkAllowEdit)
+    {
+        player.bAllowNoteEditing = bNewToggle;
+        //PopulateNotes();
+    }
+	else if (button == chkShowDefaultNotes)
+    {
+        player.bShowRegularNotes = bNewToggle;
+        PopulateNotes();
+    }
+	else if (button == chkShowUserNotes)
+    {
+        player.bShowUserNotes = bNewToggle;
+        PopulateNotes();
+    }
+	else if (button == chkShowMarkerNotes)
+    {
+        player.bShowMarkerNotes = bNewToggle;
+        PopulateNotes();
+    }
 
 	return True;
 }
@@ -442,6 +612,10 @@ function PersonaNotesEditWindow CreateNoteEditWindow(DeusExNote note)
 
 	newNoteWindow = PersonaNotesEditWindow(winNotes.NewChild(Class'PersonaNotesEditWindow'));
 	newNoteWindow.SetNote(note);
+
+    //SARGE: Set to permanent read only if it's not a user note, and we're not allowed to edit
+    if (!note.bUserNote && !player.bEditDefaultNotes)
+        newNoteWindow.SetReadOnly(true);
 
 	return newNoteWindow;
 }
@@ -473,7 +647,9 @@ defaultproperties
      DeleteNotePrompt="Are you sure you wish to delete this note?"
      AddButtonLabel="Add |&Note"
      DeleteButtonLabel="|&Delete Note"
+     MarkerButtonLabel="Add |&Marker"
      ConfirmNoteDeletionLabel="Confirm Note Deletion"
+     ShowMarkersLabel="Show Markers"
      clientBorderOffsetY=29
      ClientWidth=604
      ClientHeight=433
@@ -484,6 +660,8 @@ defaultproperties
      clientTextures(2)=Texture'DeusExUI.UserInterface.GoalsBackground_3'
      clientTextures(3)=Texture'DeusExUI.UserInterface.GoalsBackground_4'
      clientTextures(4)=Texture'DeusExUI.UserInterface.GoalsBackground_5'
+     clientTextures(3)=Texture'RSDCrap.UserInterface.GoalsBackground_4_edit'
+     clientTextures(4)=Texture'RSDCrap.UserInterface.GoalsBackground_5_edit'
      clientTextures(5)=Texture'DeusExUI.UserInterface.GoalsBackground_6'
      clientBorderTextures(0)=Texture'DeusExUI.UserInterface.GoalsBorder_1'
      clientBorderTextures(1)=Texture'DeusExUI.UserInterface.GoalsBorder_2'

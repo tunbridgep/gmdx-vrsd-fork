@@ -76,7 +76,7 @@ defaultproperties
      items(58)=(HelpText="Loot will not be declined from corpses if the Walk/Run key is held.",actionText="Interaction: Smart Declining",variable="bSmartDecline");
      items(59)=(HelpText="When using a medical bot, automatically switch to the Health screen after using the last Aug canister.",actionText="Interaction: Medbot Auto Switch",variable="bMedbotAutoswitch",defaultValue=1);
      items(60)=(HelpText="Changes lighting on some maps to reduce strobing and flickering.",actionText="Lighting: Lighting Accessibility",variable="bLightingAccessibility");
-     items(61)=(HelpText="If Enabled, music will not restart upon map changes using the same track. Extended mode also stops conversation music in bars and clubs.",actionText="Audio: More Immersive Music",variable="iEnhancedMusicSystem",valueText2="Extended",defaultValue=1);
+     items(61)=(HelpText="If Enabled, music will not restart upon map changes using the same track. Extended mode also stops conversation and combat music in bars and clubs.",actionText="Audio: More Immersive Music",variable="iEnhancedMusicSystem",valueText2="Extended",defaultValue=1);
      items(62)=(HelpText="Enable/disable level transition autosaving.",actionText="Player: Autosave on Level Change",variable="bTogAutoSave",defaultValue=1);
      items(63)=(HelpText="When dying, switch to a first or third person camera.",actionText="Player: Death Perspective",variable="bRemoveVanillaDeath",valueText0="Third Person",valueText1="First Person");
      items(64)=(HelpText="If enabled, the current player stance will be displayed on the HUD.",actionText="Player: Current Stance Display",variable="iStanceHud",defaultValue=3,valueText1="Walk/Run",valueText2="Everything except Default",valueText3="Everything");
@@ -99,7 +99,7 @@ defaultproperties
      items(80)=(HelpText="If Enabled, a smaller version of the messages window will display while an infolink is playing.",actionText="HUD: Enable Log during Infolinks",variable="bShowSmallLog")
      items(81)=(HelpText="When playing at certain resolutions, the outer crosshairs may become misaligned with the central crosshair. Use this setting to correct it.",actionText="HUD: Crosshair Adjustment",variable="iCrosshairOffByOne")
      items(82)=(HelpText="If enabled, double-right click to unholster items in hand, or disable unholstering completely.",actionText="Holstering: Unholstering Mode",variable="iUnholsterMode",valueText1="Standard",valueText2="Double-Click",defaultValue=2);
-     items(83)=(HelpText="If enabled, weapons will use new high-quality sounds.",actionText="Audio: Improved Weapon Sounds",variable="bImprovedWeaponSounds",defaultValue=1);
+     items(83)=(HelpText="If enabled, weapons will use new high-quality sounds.",actionText="Audio: Improved Weapon Sounds",variable="iImprovedWeaponSounds",defaultValue=2,valueText1="Weapons Only",valueText2="Weapons and Tools");
      items(84)=(HelpText="If enabled, pressing the Run key while crouched will automatically uncrouch. Does nothing when Always Run is enabled.",actionText="Game: Auto Uncrouch",variable="bAutoUncrouch",defaultValue=1);
      items(85)=(HelpText="If enabled, always show the Playthrough Modifiers screen before the New Game screen.",actionText="Game: Always Show Playthrough Modifiers",variable="bAlwaysShowModifiers",defaultValue=1);
      items(86)=(HelpText="If enabled, right- and middle-clicking in the inventory and augmentations screens will effect the item under the cursor, rather than the currently selected item.",actionText="HUD: Enhanced Inventory/Aug Interaction",variable="bEnhancedPersonaScreenMouse",defaultValue=1);
@@ -109,6 +109,7 @@ defaultproperties
      items(90)=(HelpText="Alternate display for the accuracy crosshairs. Requires a map load/reload to fully work.",actionText="HUD: Alternate Accuracy Crosshairs",variable="bAlternateCrosshairAcc");
      items(91)=(HelpText="Disables some early-game infolinks containing tutorial messages.",actionText="Game: Disable Tutorial Infolinks",variable="bLessTutorialMessages",defaultValue=0);
      items(92)=(HelpText="Queued Infolinks will play much faster, without needing to wait 5 seconds to finish and start each one.",actionText="HUD: Faster Infolink Playback",variable="bFasterInfolinks",defaultValue=1);
+     items(103)=(HelpText="If enabled, notes added by datacubes, books, etc can be edited.",actionText="HUD: Edit Default Notes",variable="bEditDefaultNotes",defaultValue=0)
      Title="GMDX Quality of Life Options"
      colWidths(0)=214
      colWidths(1)=155
