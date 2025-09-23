@@ -357,6 +357,13 @@ var const Sound ClassicFireSound;
 //we need a hacky variable to distinguish them, so we don't give them combat strength etc
 var const bool bFakeHandToHand;
 
+enum EAddonPenaltyType
+{
+    Silencer,
+    Scope,
+    Laser
+};
+
 //END GMDX:
 
 //
@@ -498,25 +505,6 @@ function ToggleAttachedSilencer(bool bRealtime)
         else
             bHasSilencer = !bHasSilencer;
     }
-}
-
-// ----------------------------------------------------------------------
-// GetDefaultFireSound()
-//
-// SARGE: Returns the default fire sound (standard or classic), based on the players options
-// ----------------------------------------------------------------------
-function Sound GetDefaultFireSound()
-{
-    if (Ammo20mm(AmmoType) != None) //Hack for 20mm grenade launcher
-        return Sound'AssaultGunFire20mm';
-    else if ( AmmoRocketWP(AmmoType) != None )
-        return Sound'GEPGunFireWP';
-    else if ( AmmoRocket(AmmoType) != None )
-        return Sound'GEPGunFire';
-    else if (class'DeusExPlayer'.default.iImprovedWeaponSounds > 0 || default.ClassicFireSound == None)
-        return default.FireSound;
-    else
-        return default.ClassicFireSound;
 }
 
 // ----------------------------------------------------------------------
@@ -1383,6 +1371,8 @@ function bool CopyModsFrom(DeusExWeapon W, optional bool bNotify)
     if (W.ModRecoilStrength < ModRecoilStrength)
     {
         ModRecoilStrength = W.ModRecoilStrength;
+        bCopied = true;
+    }
     
     //SARGE: Added
     if (W.bHadLaser)
