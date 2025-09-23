@@ -31280,6 +31280,7 @@ Begin Actor Class=ClothesRack Name=ClothesRack2
 End Actor
 Begin Actor Class=DeusExMover Name=DeusExMover31
     lockStrength=0.150000
+    bLocked=true
     bBreakable=True
     doorStrength=0.500000
     minDamageThreshold=35
@@ -40506,6 +40507,7 @@ Begin Actor Class=Teleporter Name=Teleporter20
     Name=Teleporter20
 End Actor
 Begin Actor Class=DeusExLevelInfo Name=DeusExLevelInfo0
+    ChairRandomizationToken=96
     MapName="02_NYC_Hotel"
     MapAuthor="Bob White"
     MissionLocation="NYC - 'Ton Hotel"

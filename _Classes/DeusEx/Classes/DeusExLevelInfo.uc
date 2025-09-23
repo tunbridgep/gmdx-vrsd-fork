@@ -18,6 +18,15 @@ var() float                 SoundPropagationMult;                               
 var() byte                  SongCombatSection;                                  //SARGE: Allow us to define a custom section for combat. By default this is 3
 var() int                   SongAmbientSection;                                 //SARGE: Allow us to define a custom section for ambience, since SongSection is read-only.
 var() int                   ChairRandomizationToken;                            //SARGE: For Junk Randomization, use a custom token instead of getting a new one. Used for randomising certain maps together             
+
+//SARGE: Chair Randomisation Tokens:
+//99: UNATCO and Liberty Island
+//12: Vandenberg CMD and Vandenberg Computer
+//98: NYC Bar
+//97: NYC Free Clinic
+//96: NYC Hotel
+//95: NYC Street
+
 //SARGE: Replace the bBarOrClub variable with a more complex music system.
 enum EMusicType
 {

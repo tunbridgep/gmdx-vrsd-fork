@@ -2449,7 +2449,7 @@ exec function LoadGame(int saveIndex)
 }
 
 //Sarge: Move Save Checks to a single function, rather than being everywhere
-function bool CanSave(optional bool allowHardcore)
+function bool CanSave(optional bool allowHardcore, optional bool bDontStopInfolinks)
 {
 	local DeusExLevelInfo info;
 
@@ -2461,7 +2461,7 @@ function bool CanSave(optional bool allowHardcore)
 	// 2) We're on the logo map
 	// 3) The player is dead
 	// 4) We're interpolating (playing outtro)
-	// 5) A datalink is playing
+	// 5) A datalink is playing (can be skipped, unless the bDontStopInfolinks flag is set)
 	// 6) We're in a multiplayer game
     // 7) SARGE: We're in a conversation
     // 8) SARGE: We're currently recreating decals
@@ -2476,7 +2476,7 @@ function bool CanSave(optional bool allowHardcore)
         return false;
 
     //SARGE: Allow saving while infolinks are playing
-	if (dataLinkPlay != None && !bAllowSaveWhileInfolinkPlaying) //Datalink playing
+	if (dataLinkPlay != None && (!bAllowSaveWhileInfolinkPlaying || bDontStopInfolinks)) //Datalink playing //SARGE: Autosaves now ignore this.
         return false;
 
     if (Level.Netmode != NM_Standalone) //Multiplayer Game
@@ -2610,7 +2610,7 @@ function int FindQuicksaveSlot()
 
 function bool PerformAutoSave(bool allowHardcore)
 {
-    if (!CanSave(allowHardcore))
+    if (!CanSave(allowHardcore,true))
         return false;
     
     //Only allow autosaving if we have autosaves turned on,
@@ -12118,6 +12118,40 @@ exec function MinimiseTargetingWindow()
 }
 
 // ----------------------------------------------------------------------
+// CleanUpDebris
+// SARGE: Clean up the debris in the map.
+// ----------------------------------------------------------------------
+
+exec function CleanUpDebris(optional bool bCleanCorpses)
+{
+	local DeusExFragment frag;
+    local DeusExDecoration deco;
+    local DeusExCarcass carc;
+
+    //SARGE: We need to clean up the fragments and decals as well after the fight
+    if (decalManager != None)
+    {
+        DecalManager.HideAllDecals();
+        DecalManager.ClearList();
+    }
+                
+    foreach AllActors(class'DeusExFragment', frag)
+        frag.Destroy();
+
+    if (bCleanCorpses)
+    {
+        foreach AllActors(class'DeusExCarcass', carc)
+            carc.Destroy();
+    }
+
+    foreach AllActors(class'DeusExDecoration', deco)
+    {
+        if (/*deco.IsA('BoneFemur')
+            ||*/ deco.IsA('BoneFemurBloody')
+            || deco.IsA('BoneFemurLessBloody'))
+        deco.Destroy();
+    }
+}
 
 // ----------------------------------------------------------------------
 // Functions to toggle attachments
@@ -12147,6 +12181,7 @@ exec function AttachLaser()
         W.ToggleAttachedLaser(true);
 }
 
+// ----------------------------------------------------------------------
 // SkipMessages
 // ----------------------------------------------------------------------
 

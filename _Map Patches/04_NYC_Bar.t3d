@@ -16056,6 +16056,7 @@ Begin Actor Class=OrdersTrigger Name=OrdersTrigger5
     Name=OrdersTrigger5
 End Actor
 Begin Actor Class=DeusExLevelInfo Name=DeusExLevelInfo0
+    ChairRandomizationToken=98
     MapName="04_NYC_Bar"
     MapAuthor="Bob White"
     MissionLocation="NYC - Underworld Tavern"

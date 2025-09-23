@@ -15,6 +15,7 @@ struct S_KeyDisplayItem
 	var localized String DisplayName;
 };
 
+
 var localized string	FunctionText[84];  		 //CyberP: 61
 var string				MenuValues1[84]; //CyberP: 61
 var string				MenuValues2[84]; //CyberP: 61
@@ -645,6 +646,7 @@ defaultproperties
      FunctionText(77)="Belt Slot 10"
      FunctionText(78)="Belt Slot 11"
      FunctionText(79)="Belt Slot 12"
+     FunctionText(80)="Clean Up Debris"
      FunctionText(81)="Attach/Detach Silencer"
      FunctionText(82)="Attach/Detach Scope"
      FunctionText(83)="Attach/Detach Laser Sight"
@@ -728,6 +730,7 @@ defaultproperties
      AliasNames(77)="AltBelt0"
      AliasNames(78)="AltBelt10"
      AliasNames(79)="AltBelt11"
+     AliasNames(80)="CleanUpDebris"
      AliasNames(81)="AttachSilencer"
      AliasNames(82)="AttachScope"
      AliasNames(83)="AttachLaser"

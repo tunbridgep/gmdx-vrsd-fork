@@ -16,6 +16,7 @@ function FirstFrame()
 	local FordSchick Ford;
 	local AugmentationUpgradeCannister Upgrade;
     local ScriptedPawn pawn;
+    local DeusExCarcass C;
     local Light L;
 
 	Super.FirstFrame();
@@ -36,28 +37,25 @@ function FirstFrame()
 		}
 
         //SARGE: Remove the newly added aug canister if we didn't rescue him, or if we're using ConFix
-        if (flags.GetBool('Enhancement_Detected') || !flags.GetBool('FordSchickRescued'))
+        if (flags.GetBool('Confix_Engaged') || !flags.GetBool('FordSchickRescued'))
         {
             foreach AllActors(class'AugmentationUpgradeCannister', Upgrade)
                 Upgrade.Destroy();
         }
 
 	}
-	else if (localURL == "08_NYC_STREET")
-	{
-	     if (flags.GetBool('Enhancement_Detected'))
-	     {
-            foreach AllActors(class'ScriptedPawn', pawn)
-	        {
-               if (pawn.IsA('UNATCOTroop'))
-               {
-                  if (pawn.BarkBindName == "UNATCOTroop")
-                     pawn.BarkBindName = "UNATCOTroopEnemy";
-                  else if (pawn.BarkBindName == "UNATCOTroopB")
-                     pawn.BarkBindName = "UNATCOTroopEnemyB";
-               }
+	else if (localURL == "08_NYC_HOTEL")
+    {
+        //SARGE: Carcasses already in the map won't bleed
+        //This fixes the junkies having blood pools
+		if (firstTime)
+        {
+            foreach AllActors(class'DeusExCarcass', C)
+            {
+                C.DestroyPool();
+                C.bNoDefaultPools=true;
             }
-	     }
+        }
     }
 
 CanQuickSave=true;
@@ -234,7 +232,8 @@ function Timer()
 		// unhide shady guy
 		if (!flags.GetBool('MS_ShadyGuyUnhidden'))
 		{
-			if (flags.GetBool('StantonDowd_Played')) //(flags.GetBool('MS_StantonUnhidden'))//CyberP: only pawn after dowd talk
+			//if (flags.GetBool('StantonDowd_Played')) //(flags.GetBool('MS_StantonUnhidden'))//CyberP: only pawn after dowd talk
+			if (flags.GetBool('MS_StantonUnhidden')) //SARGE: No, it's fine how it was
 			{
 				if ((flags.GetBool('GreenKnowsAboutDowd') &&
 					!flags.GetBool('JoeGreen_Dead')) ||
