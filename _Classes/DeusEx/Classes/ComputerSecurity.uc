@@ -24,6 +24,15 @@ replication
       Views, team;
 }
 
+//SARGE: Added a new function to check if we have any actual security options,
+//as opposed to only having special options
+function bool HasSecurityOptions()
+{
+    return Views[0].cameraTag != '' || Views[0].turretTag != '' || Views[0].doorTag != ''
+        || Views[1].cameraTag != '' || Views[1].turretTag != '' || Views[1].doorTag != ''
+        || Views[2].cameraTag != '' || Views[2].turretTag != '' || Views[2].doorTag != '';
+}
+
 function PostBeginPlay()
 {
    Super.PostBeginPlay();

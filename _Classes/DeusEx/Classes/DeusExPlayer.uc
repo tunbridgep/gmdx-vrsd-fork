@@ -908,6 +908,10 @@ var travel bool bShowMarkerNotes;
 var travel bool bAllowNoteEditing;
 var globalconfig bool bEditDefaultNotes;                        //SARGE: If enabled, we can edit the default game notes.
 
+var globalconfig bool bClassicScope;                            //SARGE: Classic Scope Mode
+
+var globalconfig bool bExperimentalAmmoSpawning;                //SARGE: Experimental ammo spawning
+
 //////////END GMDX
 
 // OUTFIT STUFF
