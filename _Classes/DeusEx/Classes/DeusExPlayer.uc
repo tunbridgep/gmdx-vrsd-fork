@@ -912,6 +912,8 @@ var globalconfig bool bClassicScope;                            //SARGE: Classic
 
 var globalconfig bool bExperimentalAmmoSpawning;                //SARGE: Experimental ammo spawning
 
+var globalconfig bool bComputerActionsDrainHackTime;            //SARGE: If enabled, performing actions (disabling cameras, etc) drains hack time when hacking computers.
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -20066,4 +20068,5 @@ defaultproperties
      bShowRegularNotes=true
      bShowMarkerNotes=true
      bEditDefaultNotes=false
+     bComputerActionsDrainHackTime=true
 }
