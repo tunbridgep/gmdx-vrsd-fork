@@ -897,8 +897,6 @@ var globalconfig bool bFasterInfolinks;                         //SARGE: Signifi
 
 var globalconfig bool bDrawAddonsOnAmmoDisplay;                 //SARGE: Draws "S", "L" and "S" labels for Scopes, Silencers and Lasers on the Ammo display.
 
-var globalconfig bool bExperimentalFootstepDetection;           //SARGE: Adds experimental footstep detection
-
 //Markers Stuff and Notes Overhaul
 var travel MarkerInfo markers;                                  //SARGE: A list of markers 
 var travel bool bShowMarkers;                                   //SARGE: Whether or not to show note markers
@@ -910,7 +908,10 @@ var globalconfig bool bEditDefaultNotes;                        //SARGE: If enab
 
 var globalconfig bool bClassicScope;                            //SARGE: Classic Scope Mode
 
-var globalconfig bool bExperimentalAmmoSpawning;                //SARGE: Experimental ammo spawning
+//EXPERIMENTAL FEATURES
+
+var globalconfig bool bExperimentalFootstepDetection;           //SARGE: Adds experimental footstep detection
+var globalconfig bool bExperimentalAmmoSpawning;                //SARGE: Adds experimental ammo spawning at our feet if we miss out
 
 //////////END GMDX
 
