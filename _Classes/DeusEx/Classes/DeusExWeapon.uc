@@ -404,7 +404,6 @@ replication
 }
 
 // ----------------------------------------------------------------------
-
 // GetMaxRange()
 //
 // SARGE: Returns the max range of the weapon
