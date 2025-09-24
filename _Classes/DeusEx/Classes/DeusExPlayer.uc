@@ -11078,6 +11078,14 @@ function DropDecoration()
 
                 if (bThrowDecoration)
                     ThrowDecoration(deco);
+
+                //SARGE: Stamina cost for throwing objects.
+                if (bStaminaSystem)
+                {
+                    swimTimer -= MAX(MIN(deco.Mass * 0.005,3),2);
+                    if (swimTimer < 0)
+                        swimTimer = 0;
+                }
             }
 		}
 		else
