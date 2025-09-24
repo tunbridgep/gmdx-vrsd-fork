@@ -19454,7 +19454,7 @@ function int GetAdjustedMaxAmmoByClass(class<Ammo> ammotype)
     DXammotype = class<DeusExAmmo>(ammotype);
 
     //SARGE: Special case for LAW ammo
-    if (ammoType.IsA('AmmoLAW'))
+    if (ammoType == class'AmmoLAW')
     {
         lawfare = PerkManager.GetPerkWithClass(class'PerkLawfare');
         if (lawfare != None && lawfare.bPerkObtained)
