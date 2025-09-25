@@ -52,6 +52,11 @@ File "${SARGE_U_FILES}\GMDXText.u"
 ;Copy int file
 File "..\System\DeusEx.int"
 
+;Install RenderExt
+SetOutPath $INSTDIR\System
+File "game\System\RenderExt.dll"
+File "game\System\RenderExt.int"
+
 ;Install docs
 SetOutPath $INSTDIR\GMDX_AE\Docs
 File ..\Docs\credits.txt
