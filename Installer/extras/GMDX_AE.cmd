@@ -8,9 +8,9 @@ if not exist DeusEx.int_vanilla (
 
 del "DeusEx.int"
 echo Swapping int file...
-copy "..\GMDX_AE\System\DeusEx.int" "DeusEx.int"
+copy "..\Mods\GMDX_AE\System\DeusEx.int" "DeusEx.int"
 
-DeusEx.exe INI="..\GMDX_AE\System\DeusEx.ini" USERINI="..\GMDX_AE\System\User.ini" %*
+DeusEx.exe INI="..\Mods\GMDX_AE\System\DeusEx.ini" USERINI="..\Mods\GMDX_AE\System\User.ini" %*
 
 if exist DeusEx.int_vanilla (
     echo Restoring original DeusEx.int...

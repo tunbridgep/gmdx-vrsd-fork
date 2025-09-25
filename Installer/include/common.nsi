@@ -42,9 +42,9 @@ MessageBox MB_OK "GMDX must be installed to your Deus Ex Directory"
 Quit
 afterFileCheck:
 
-SetOutPath $INSTDIR\GMDX_AE
+SetOutPath $INSTDIR\Mods\GMDX_AE
 File /r /x DeusEx.u /x RSDCrap.u /x GMDXText.u /x DeusEx.int game\GMDXvSARGE\*
-SetOutPath $INSTDIR\GMDX_AE\System
+SetOutPath $INSTDIR\Mods\GMDX_AE\System
 File "${SARGE_U_FILES}\DeusEx.u"
 File "${SARGE_U_FILES}\RSDCrap.u"
 File "${SARGE_U_FILES}\GMDXText.u"
@@ -58,13 +58,13 @@ File "game\System\RenderExt.dll"
 File "game\System\RenderExt.int"
 
 ;Install docs
-SetOutPath $INSTDIR\GMDX_AE\Docs
+SetOutPath $INSTDIR\Mods\GMDX_AE\Docs
 File ..\Docs\credits.txt
 File ..\Docs\EditPackages.txt
 File "..\Docs\GMDX AE changelog.txt"
 File "..\Docs\GMDX AE User's Manual.txt"
 File "..\Docs\List of Changes.html"
-SetOutPath $INSTDIR\GMDX_AE\vRSD_Docs
+SetOutPath $INSTDIR\Mods\GMDX_AE\vRSD_Docs
 File ..\Docs\vRSD_Docs\*.txt
 
 #install launcher

@@ -1,6 +1,6 @@
 Section "Lay-D Denton Project"
 
-SetOutPath $INSTDIR\LDDP\System
+SetOutPath $INSTDIR\Mods\LDDP\System
 File game\System\FemJC.u
 File game\System\DeusEx.u
 ;Install con-fix femJC audio files
