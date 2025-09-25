@@ -845,6 +845,7 @@ defaultproperties
      datacubeTitles(90)=(textTag="DeusExText.15_Datacube18",replacement="Lab 12 Testing Regimen")
      datacubeTitles(91)=(textTag="DeusExText.15_Datacube19",replacement="Reactor Leak")
      datacubeTitles(92)=(textTag="DeusExText.15_Datacube20",replacement="Get Topside!")
+     datacubeTitles(93)=(textTag="DeusExText.00_Datacube03",replacement="Quick Note")
 
      titleIgnored(0)="!=!==!==="
      titleIgnored(1)="* = * = * ="
