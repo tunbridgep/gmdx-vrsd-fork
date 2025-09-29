@@ -140,6 +140,7 @@ defaultproperties
      items(106)=(HelpText="If enabled, weapon scopes will use the vanilla scope textures.",actionText="HUD: Classic Weapon Scope",variable="bClassicScope",defaultValue=0)
      items(107)=(HelpText="If enabled, the Outfits menu will show descriptions.",actionText="Augmentique: Show Outfit Descriptions",variable="noDescriptions",defaultValue=0,valueText0="Enabled",valueText1="Disabled",consoleTarget="OutfitManager")
      items(108)=(HelpText="NPC outfits will be randomised. Changes to this setting require a new map load.",actionText="Augmentique: NPC Outfit Randomisation",consoleTarget="OutfitManager",variable="bEquipNPCs",defaultValue=1);
+     items(109)=(HelpText="If enabled, the Items Received Window will be cleared when interacting with objects, similar to vanilla.",actionText="HUD: Clear Items Received Window",variable="bClearReceivedDisplay",defaultValue=1);
      Title="GMDX Quality of Life Options"
      colWidths(0)=214
      colWidths(1)=155

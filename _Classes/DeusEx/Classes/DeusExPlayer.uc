@@ -908,6 +908,8 @@ var globalconfig bool bEditDefaultNotes;                        //SARGE: If enab
 
 var globalconfig bool bClassicScope;                            //SARGE: Classic Scope Mode
 
+var globalconfig bool bClearReceivedDisplay;                    //SARGE: Whether or not the Items Received iwndow will be cleared when frobbing each item.
+
 var globalconfig bool bQuickReflexes;                           //SARGE: Enemies can snap-shoot at you if they hear you or are alerted, rather than standing around.
 
 //EXPERIMENTAL FEATURES
@@ -9019,7 +9021,7 @@ function PlayPickupAnim(Vector locPickup)
 //
 // Returns the number of rounds they were able to pick up.
 // ----------------------------------------------------------------------
-function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool bShowWindow, optional bool bLootSound, optional bool bNoGroup, optional bool bNoOnes, optional bool bShowOverflowMsg, optional bool bShowOverflowWindow, optional Texture overrideTexture)
+function int LootAmmo(Actor owner, class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool bShowWindow, optional bool bLootSound, optional bool bNoGroup, optional bool bNoOnes, optional bool bShowOverflowMsg, optional bool bShowOverflowWindow, optional Texture overrideTexture)
 {
     local int MaxAmmo, prevAmmo, ammoCount, intj, over, ret;
     local DeusExAmmo AmmoType;
@@ -9087,11 +9089,11 @@ function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool
             {
                 prevTexture = AmmoType.Icon;
                 AmmoType.Icon = overrideTexture;
-                AddReceivedItem(AmmoType, intj, bNoGroup);
+                AddReceivedItem(owner, AmmoType, intj, bNoGroup);
                 AmmoType.Icon = prevTexture;
             }
             else
-                AddReceivedItem(AmmoType, intj, bNoGroup);
+                AddReceivedItem(owner, AmmoType, intj, bNoGroup);
         }
 
         //If we took at least some, make a special sound.
@@ -9107,7 +9109,7 @@ function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool
             ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName $ " (" $ over $ ")" @ AmmoType.MaxAmmoString, 'Pickup');
         
         if (bShowWindow && bShowDeclinedInReceivedWindow && bShowOverflowWindow)
-            AddReceivedItem(AmmoType, over, bNoGroup, true);
+            AddReceivedItem(owner, AmmoType, over, bNoGroup, true);
     }
     return ret;
 }
@@ -9334,7 +9336,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
         //SARGE: Since we haven't looted Disposable weapons yet, do so now.
         if (FrobTarget.IsA('DeusExWeapon') && DeusExWeapon(frobTarget).bDisposableWeapon)
         {
-            bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,!bSlotSearchNeeded,false,false,false,false,false);
+            bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,!bSlotSearchNeeded,bFromCorpse,false,false,false,false);
 
             if (DeusExWeapon(frobTarget).PickupAmmoCount > 0)
             {
@@ -9403,10 +9405,9 @@ function ClearReceivedItems()
     DeusExRootWindow(rootWindow).hud.receivedItems.RemoveItems();
 }
 
-function AddReceivedItem(Inventory item, int count, optional bool bNoGroup, optional bool bDeclined, optional bool bShowAllDeclined)
+function AddReceivedItem(Actor owner, Inventory item, int count, optional bool bNoGroup, optional bool bDeclined)
 {
     local int i;
-    local int rollupType;
 
     //clientMessage("item: " $ item $ ", count: " $ count);
     if (item == None)
@@ -9414,17 +9415,9 @@ function AddReceivedItem(Inventory item, int count, optional bool bNoGroup, opti
 
     if (rootWindow != None && DeusExRootWindow(rootWindow).hud != None)
     {
-        //Carcasses always spawn individual copies of their inventory items,
-        //rather than spawning them as a stack. So when things ARE stacked, (usually
-        //disposable weapons), we display them the same way.
-        if (bNoGroup && count < 5)
-            rollupType = 2;
-        else if (bDeclined && !bShowAllDeclined)
-            rollupType = 1;
+        DebugLog("Item is: " $ item $ ", bDeclined is " $ bDeclined $ ", bNoGroup: " $ bNoGroup);
 
-        Log("Item is: " $ item $ ", rollupType is " $ rollupType $ ", bNoGroup: " $ bNoGroup);
-
-        DeusExRootWindow(rootWindow).hud.receivedItems.AddItem(item, count, bDeclined, rollupType);
+        DeusExRootWindow(rootWindow).hud.receivedItems.AddItemFrom(owner, item, count, bDeclined, bNoGroup);
 
         // Make sure the object belt is updated
         if (item.IsA('Ammo'))
@@ -20094,5 +20087,6 @@ defaultproperties
      bShowRegularNotes=true
      bShowMarkerNotes=true
      bEditDefaultNotes=false
+     //bClearReceivedDisplay=true
      fMusicHackTimer=-1
 }

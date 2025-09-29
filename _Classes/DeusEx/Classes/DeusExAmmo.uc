@@ -249,7 +249,7 @@ function bool HandlePickupQuery( inventory Item )                               
     if ( (class == item.class) ||
 		(ClassIsChildOf(item.class, class'Ammo') && (class == Ammo(item).parentammo)) )
 	{
-        intj = player.LootAmmo(class<DeusExAmmo>(item.class),Ammo(item).AmmoAmount,true,false,false,true,false);
+        intj = player.LootAmmo(self,class<DeusExAmmo>(item.class),Ammo(item).AmmoAmount,true,false,false,true,false);
         
         Ammo(item).AmmoAmount = MAX(Ammo(item).AmmoAmount - intj,0);
 
@@ -265,10 +265,10 @@ function bool HandlePickupQuery( inventory Item )                               
             
             //SARGE: We have to do this here too, yucky!
             if (player.bAlwaysShowReceivedItemsWindow)
-                player.AddReceivedItem(item, intj, false);
+                player.AddReceivedItem(self,item, intj, false);
             
             if (player.bAlwaysShowReceivedItemsWindow && player.bShowDeclinedInReceivedWindow)
-                player.AddReceivedItem(item, Ammo(item).AmmoAmount, false, true);
+                player.AddReceivedItem(self,item, Ammo(item).AmmoAmount, false, true);
         }
         return true;
 	}
@@ -302,7 +302,7 @@ auto state Pickup                                                               
             //SARGE: Replaced with the generic ammo looting code.
             if (P != None)
             {
-                i = P.LootAmmo(Self.Class,AmmoAmount,true,false);
+                i = P.LootAmmo(self,Self.Class,AmmoAmount,true,false);
                 AmmoAmount -= i;
                 if (AmmoAmount == 0)
                     bDestroy = true;

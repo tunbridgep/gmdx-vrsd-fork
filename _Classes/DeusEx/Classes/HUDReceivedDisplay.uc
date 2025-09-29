@@ -13,47 +13,44 @@ var int   topMargin;
 var localized string TextReceivedLabel;
 var localized string TextGivenLabel; //SARGE: Added
 
-/*
-//SARGE: Can't use this in other files.
-//So this will instead use an INT
-//wew lad!
-//0 = combine
-//1 = replace
-//2 = showall
-enum ERollupType
-{
-    RT_Combine,         //Roll up the items into a single stack, combining everything together
-    RT_Replace,         //New instances replace old instances
-    RT_ShowAll,         //Every object is shown individually, with no counts.
-}
-*/
-
 // ----------------------------------------------------------------------
 //SARGE: OH BOY!
 //So, we can now show A LOT of items....
 //Specifically when you get 50 credits a pop for selling Zyme...
 //As a result, we need to handle the items list in a more thorough manner...
 // ----------------------------------------------------------------------
-var HUDReceivedDisplayItem items[20];
+var HUDReceivedDisplayItem displayItems[60];
+var int displayItemNum;
+
+struct ItemInfo
+{
+    var Texture icon;
+    var string label;
+    var int quantity;
+    //var bool bDeclined;
+    var bool bNoGroup;
+    var Actor owner;
+    var bool bHidden;
+    var float batchTime; //SARGE: HACK to only consider items added in a previous batch
+};
+
+var ItemInfo items[30];
+var ItemInfo declineditems[30];
 var int itemNum;
+var int declinedItemNum;
 
 //Whenever we add a new item to the list, we need to
 //make sure it's not already on the list. If it is, update that items text instead...
-function bool RollUp(Texture icon, int rollupType, int quantity, bool bDeclined)
+function bool RollUp(Texture icon, int quantity, bool bDeclined)
 {
     local int i;
 
-    for (i = 0;i < itemNum && i < ArrayCount(items);i++)
+    for (i = 0;i < displayItemNum;i++)
     {
-        if (items[i] != None && items[i].itemIcon == icon && items[i].bItemDeclined == bDeclined)
+        if (displayItems[i].itemIcon == icon && displayItems[i].bItemDeclined == bDeclined)
         {
-            //if set to replace, replace the quantity
-            if (rollupType == 1)
-                items[i].itemQuantity = quantity;
-            else //otherwise add to it
-                items[i].itemQuantity += quantity;
-            items[i].Update();
-            AskParentForReconfigure();
+            displayItems[i].itemQuantity += quantity;
+            displayItems[i].Update();
             return true;
         }
     }
@@ -115,7 +112,7 @@ event Tick(float deltaSeconds)
 	displayTimer += deltaSeconds;
 
 	if (displayTimer > displayLength)
-		RemoveItems();
+        RemoveItems();
 }
 
 // ----------------------------------------------------------------------
@@ -174,13 +171,13 @@ function bool ChildRequestedReconfiguration(window child)
 // SARGE: Added because adding Credits via items is a major PITA
 // ----------------------------------------------------------------------
 
-function bool AddCredits(Int count, optional int rollupType)
+function bool AddCredits(Int count)
 {
     local string label;
     local Texture icon;
     icon = class'Credits'.default.Icon;
     label = class'Credits'.default.beltDescription;
-    return AddGenericIcon(icon,label,count,false);
+    return AddGenericIcon(None,icon,label,count,false,false);
 }
 
 // ----------------------------------------------------------------------
@@ -188,50 +185,171 @@ function bool AddCredits(Int count, optional int rollupType)
 // SARGE: Allow displaying arbitrary icons without an associated item
 // ----------------------------------------------------------------------
 
-function bool AddGenericIcon(Texture icon, string label, optional int quantity, optional bool bDeclined, optional int rollupType)
+function bool AddGenericIcon(Actor owner, Texture icon, string label, optional int quantity, optional bool bDeclined, optional bool bNoGroup)
 {
-	local HUDReceivedDisplayItem item;
-    local int create, i;
+    local int i;
 
     if (quantity == 0)
         quantity = 1;
 
-    if (rollupType != 2 && RollUp(icon,rollupType,quantity,bDeclined))
+    if (HasOwnedItem(owner,icon,label,quantity,bDeclined,bNoGroup,player.saveTime))
+        return false;
+    
+    if (bDeclined)
+    {
+        if (declinedItemNum >= ArrayCount(declinedItems))
+            return false;
+
+        declinedItems[declinedItemNum].icon = icon;
+        declinedItems[declinedItemNum].label = label;
+        declinedItems[declinedItemNum].quantity = quantity;
+        declinedItems[declinedItemNum].bNoGroup = bNoGroup;
+        declinedItems[declinedItemNum].owner = owner;
+        declinedItems[declinedItemNum].bHidden = false;
+        declinedItems[declinedItemNum].batchTime = player.saveTime;
+        //Log("Add Declined Item: " $ icon);
+
+        //Remove any non-declined items that match 
+        for (i = 0;i < declinedItemNum;i++)
+        {
+            if (items[i].owner == declinedItems[itemNum].owner && items[i].icon == declinedItems[itemNum].icon && items[i].quantity == declinedItems[itemNum].quantity)
+            {
+                items[i].bHidden = true;
+                break;
+            }
+        }
+        
+        declinedItemNum++;
+    }
+    else
+    {
+        if (itemNum >= ArrayCount(items))
+            return false;
+
+        items[itemNum].icon = icon;
+        items[itemNum].label = label;
+        items[itemNum].quantity = quantity;
+        items[itemNum].bNoGroup = bNoGroup;
+        items[itemNum].owner = owner;
+        items[itemNum].bHidden = false;
+        items[itemNum].batchTime = player.saveTime;
+        //Log("Add Item: " $ icon);
+
+        //Remove any declined items that match 
+        for (i = 0;i < declinedItemNum;i++)
+        {
+            if (declinedItems[i].owner == items[itemNum].owner && declinedItems[i].icon == items[itemNum].icon && declinedItems[i].quantity == items[itemNum].quantity)
+            {
+                Log("Adding hitten item: " $ declinedItems[i].icon);
+                declinedItems[i].bHidden = true;
+                break;
+            }
+        }
+        
+        itemNum++;
+    }
+
+    RecreateItemDisplay();
+
+    return true;
+}
+
+// ----------------------------------------------------------------------
+// RecreateItemDisplay()
+// ----------------------------------------------------------------------
+
+function private bool _CreateDisplay(Texture icon, string label, int quantity, bool bDeclined, bool bNoGroup)
+{
+    local int times, qLabel, i;
+	local HUDReceivedDisplayItem item;
+    local bool bCreated;
+
+    //Log("Create Display for " $ icon @ label @ quantity @ bDeclined @ bNoGroup);
+
+    if (bNoGroup && quantity <= 4)
+    {
+        times = quantity;
+        qLabel = 1;
+    }
+    else
+    {
+        times = 1;
+        qLabel = quantity;
+    }
+
+    if (bNoGroup || !Rollup(icon,quantity,bDeclined))
+    {
+        for (i = 0;i < times;i++)
+        {
+            item = HUDReceivedDisplayItem(winTile.NewChild(Class'HUDReceivedDisplayItem'));
+            item.SetItemIcon(icon, label, qLabel, bDeclined);
+            displayItems[displayItemNum++] = item;
+            bCreated = true;
+        }
+    }
+
+    return bCreated;
+}
+
+function RecreateItemDisplay()
+{
+    local int create, i;
+    local bool bCreated;
+    local Texture icon;
+    local string label;
+    local int quantity;
+    local bool bNoGroup;
+		
+    DeleteItemWindows();
+
+    for (i = 0;i < itemNum;i++)
+    {
+        icon = items[i].icon;
+        label = items[i].label;
+        quantity = items[i].quantity;
+        bNoGroup = items[i].bNoGroup;
+
+        if (!items[i].bHidden)
+            bCreated = _CreateDisplay(icon,label,quantity,false,bNoGroup) || bCreated;
+    }
+
+    for (i = 0;i < declinedItemNum;i++)
+    {
+        icon = declinedItems[i].icon;
+        label = declinedItems[i].label;
+        quantity = declinedItems[i].quantity;
+        bNoGroup = declinedItems[i].bNoGroup;
+        if (!declinedItems[i].bHidden)
+            bCreated = _CreateDisplay(icon,label,quantity,true,bNoGroup) || bCreated;
+    }
+
+    if (bCreated)
     {
         displayTimer = 0.0;
-        return false;
+        Show();
+        bTickEnabled = True;
+        AskParentForReconfigure();
     }
-    
-    //If we're set to unroll, make 1 item for each, with count of 1 for each one
-    create = 1;
-    if (rollupType == 2)
-    {
-        create = quantity;
-        quantity = 1;
-    }
-
-    for (i = 0;i < create;i++)
-    {
-        item = HUDReceivedDisplayItem(winTile.NewChild(Class'HUDReceivedDisplayItem'));
-        item.SetItemIcon(icon, label, quantity, bDeclined);
-        items[itemNum++] = item;
-    }
-
-	displayTimer = 0.0;
-	Show();
-	bTickEnabled = True;
-	AskParentForReconfigure();
-    return true;
 }
 
 // ----------------------------------------------------------------------
 // AddItem()
 // ----------------------------------------------------------------------
 
-function bool AddItem(Inventory invItem, Int count, optional bool bDeclined, optional int rollup)
+function bool AddItem(Inventory invItem, Int count, optional bool bDeclined, optional bool bNoGroup)
+{
+    return AddItemFrom(None,invItem,count,bDeclined,bNoGroup);
+}
+
+// ----------------------------------------------------------------------
+// AddItemFrom()
+// SARGE: Now we can associate specific actors with each item.
+// ----------------------------------------------------------------------
+
+function bool AddItemFrom(Actor owner, Inventory invItem, Int count, optional bool bDeclined, optional bool bNoGroup)
 {
     local string labelText;
-	
+
     //SARGE: Add a "+" to the item name for upgraded weapons
     if (invItem.isA('DeusExWeapon'))
         labelText = DeusExWeapon(invItem).GetBeltDescription(player);
@@ -240,7 +358,34 @@ function bool AddItem(Inventory invItem, Int count, optional bool bDeclined, opt
     else
         labelText = invItem.beltDescription;
 
-    return AddGenericIcon(invItem.icon, labelText, count, bDeclined, rollup);
+    return AddGenericIcon(owner, invItem.icon, labelText, count, bDeclined, bNoGroup);
+}
+
+// ----------------------------------------------------------------------
+// HasOwnedItem()
+// ----------------------------------------------------------------------
+
+function bool HasOwnedItem(Actor owner, Texture icon, string label, int quantity, bool bDeclined, bool bNoGroup, float batchTime)
+{
+    local int i;
+
+    if (!bDeclined)
+    {
+        for (i = 0;i < itemNum;i++)
+        {
+            if (items[i].owner == owner && items[i].icon == icon && items[i].quantity == quantity && items[i].batchTime < batchTime)
+                return true;
+        }
+    }
+    else
+    {
+        for (i = 0;i < declinedItemNum;i++)
+        {
+            if (declinedItems[i].owner == owner && declinedItems[i].icon == icon && declinedItems[i].quantity == quantity && declinedItems[i].batchTime < batchTime)
+                return true;
+        }
+    }
+    return false;
 }
 
 // ----------------------------------------------------------------------
@@ -249,12 +394,24 @@ function bool AddItem(Inventory invItem, Int count, optional bool bDeclined, opt
 
 function RemoveItems()
 {
+    itemNum = 0;
+    declinedItemNum = 0;
+    DeleteItemWindows();
+	Hide();
+}
+
+// ----------------------------------------------------------------------
+// DeleteItemWindows()
+// ----------------------------------------------------------------------
+
+function DeleteItemWindows()
+{
 	local Window itemWindow;
 	local Window nextWindow;
     local int i;
 
-    for (i = 0;i < ArrayCount(items);i++)
-        items[i] = None;
+    for (i = 0;i < displayItemNum;i++)
+        displayItems[i] = None;
 
 	bTickEnabled = False;
 
@@ -272,7 +429,7 @@ function RemoveItems()
 		itemWindow = nextWindow;
 	}
 
-	Hide();
+    displayItemNum = 0;
 }
 
 // ----------------------------------------------------------------------

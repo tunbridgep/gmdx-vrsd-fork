@@ -1138,6 +1138,7 @@ function Frob(Actor Frobber, Inventory frobWith)
     local bool bLootedAmmo;
     local bool bProcessedImpale;
     local bool bSuppressEmptyMessage;                                           //SARGE: Suppress the "You don't find anything" message
+    local bool bShowReceived;                                                   //SARGE: Show the Received Items Window for new pickups
 	
     badItemCount = 0;
 
@@ -1158,8 +1159,9 @@ function Frob(Actor Frobber, Inventory frobWith)
 		// Make sure the "Received Items" display is cleared
 	  // DEUS_EX AMSD Don't bother displaying in multiplayer.  For propagation
 	  // reasons it is a lot more of a hassle than it is worth.
-		if ( (player != None) && (Level.NetMode == NM_Standalone) )
-		 DeusExRootWindow(player.rootWindow).hud.receivedItems.RemoveItems();
+        //SARGE: Added an additional condition
+		if ( (player != None) && (Level.NetMode == NM_Standalone) && player.bClearReceivedDisplay)
+            player.ClearReceivedItems();
 
 		if (Inventory != None && (!bDblClickStart || player.inHand != None))
 		{
@@ -1417,7 +1419,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 										}
 									}
 
-                                    ShowFixedPickupMessage(player,invItem,itemCount,true);
+                                    ShowFixedPickupMessage(player,invItem,itemCount,bShowReceived);
                                     bFoundSomething = True;
                                     bPickedSomethingUp = True;
 
@@ -1481,7 +1483,6 @@ function Frob(Actor Frobber, Inventory frobWith)
 								}
 
 								DeleteInventory(item);
-
                                 ShowFixedPickupMessage(player,invItem,itemCount,true);
                                 bPickedSomethingUp = True;
 							}
@@ -1514,7 +1515,8 @@ function Frob(Actor Frobber, Inventory frobWith)
                                         bPickedSomethingUp = True;
                                         
                                         // Show the item received in the ReceivedItems window
-                                        ShowFixedPickupMessage(player,item,itemCount,true);
+                                        bShowReceived = !item.IsA('DeusExWeapon') || !DeusExWeapon(item).bDisposableWeapon;
+                                        ShowFixedPickupMessage(player,item,itemCount,bShowReceived);
 
                                         if (item.IsA('WeaponShuriken') && WeaponShuriken(item).bImpaled)
                                             LootPickupSound = Sound'DeusExSounds.Generic.FleshHit1';
@@ -1695,7 +1697,7 @@ function AddReceivedItem(DeusExPlayer player, Inventory item, int count, optiona
 	}
     */
 
-    player.AddReceivedItem(item,count,bNoGroup,bDeclined,true);
+    player.AddReceivedItem(self,item,count,bNoGroup,bDeclined);
 }
 
 //-----------------------------------------------------------------------
