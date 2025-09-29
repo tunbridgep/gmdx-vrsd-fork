@@ -14714,6 +14714,7 @@ static final function string TitleCase(coerce string Text)
                     case "cia":
                     case "fbi":
                     case "unatco":
+                    case "unatco!":
                     case "mj12":
                         Word = Caps(Word);
                         bDontChange = true;
@@ -14735,6 +14736,10 @@ static final function string TitleCase(coerce string Text)
                         break;
                     case "3rd ":
                         Word = "3rd ";
+                        bDontChange = true;
+                        break;
+                    case "mcmoran ":
+                        Word = "McMoran ";
                         bDontChange = true;
                         break;
                 }
@@ -20089,4 +20094,5 @@ defaultproperties
      bShowRegularNotes=true
      bShowMarkerNotes=true
      bEditDefaultNotes=false
+     fMusicHackTimer=-1
 }
