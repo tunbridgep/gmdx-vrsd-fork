@@ -712,6 +712,9 @@ function Draw(DeusExPlayer frobber)
     //Fix allowing more in the clip than we have
 	if(AmmoType != None)
 		ClipCount = min(ClipCount,AmmoType.AmmoAmount);
+
+    //Fix having more in the clip than the max clip size (I **Really** shouldn't have rewritten the ammo system)
+    ClipCount = min(ClipCount,ReloadCount);
     
     SetWeaponHandTex();
 
