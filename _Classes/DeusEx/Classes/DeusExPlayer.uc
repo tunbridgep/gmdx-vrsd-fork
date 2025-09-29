@@ -3540,6 +3540,7 @@ function ClientSetMusic(Music NewSong, byte NewSection, byte NewCdTrack, EMusicT
 
         DebugMessage("ClientSetMusic: Setting music to " $ NewSong @ NewSection @ NewTransition);
         Super.ClientSetMusic(NewSong,NewSection,NewCDTrack,NewTransition);
+        DebugMessage("ClientSetMusic: Music set to section " $ NewSection $ ", actual section is " $ SongSection);
         default.previousTrack = NewSong;
         default.previousLevelSection = info.SongAmbientSection;
         default.previousMusicMode = default.musicMode;
