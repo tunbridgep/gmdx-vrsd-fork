@@ -74,6 +74,7 @@ defaultproperties
      items(16)=(HelpText="Crouching will create footstep sounds, which are detectable by enemies.",actionText="Crouching Footsteps",variable="bCrouchingSounds",defaultValue=1);
      items(17)=(HelpText="Scopes, Silencers and Lasers will come with drawbacks. Weapon mods can be detached/reattached in the inventory screen.",actionText="Strategic Weapon Mods",variable="bAddonDrawbacks",defaultValue=1);
      items(18)=(HelpText="The Dragons Tooth Sword will require energy to attack, and is recharged with biocells.",actionText="Strategic Dragon's Tooth",variable="bNanoswordEnergyUse",defaultValue=1);
+     items(19)=(HelpText="Enemies have a small chance of snap-firing when detecting the player.",actionText="Quick Reflexes",variable="bQuickReflexes",defaultValue=0);
      msgText="The settings available in this menu are always active as part of Hardcore difficulty.|nYou may still edit them freely, but they will have no effect when playing in Hardcore mode."
      msgTitle="Hardcore Mode"
      Title="GMDX Gameplay Options"

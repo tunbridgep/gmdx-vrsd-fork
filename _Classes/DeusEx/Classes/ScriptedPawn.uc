@@ -1759,10 +1759,7 @@ function HandleSighting(Pawn pawnSighted)
     //rather than standing around waiting to be headshotted.
     player = DeusExPlayer(pawnSighted);
     
-    chance = fHighAlertChance;
-    if (player == None || !player.bHardCoreMode)
-        chance = fHighAlertChance * 0.25;
-    if (IsValidEnemy(pawnSighted) && !IsA('Robot') && player != None && FRand() < chance)
+    if (IsValidEnemy(pawnSighted) && !IsA('Robot') && player != None && (player.bHardCoreMode || player.bQuickReflexes) && FRand() < fHighAlertChance)
     {
         //player.DebugMessage("High Alert!");
         SetEnemy(player);
@@ -6797,7 +6794,7 @@ function NoiseHandler(Actor source)
                 //attacking instantly, rather than searching.
                 player = DeusExPlayer(instigator);
 
-                if (!IsA('Robot') && player != None && ((player.bHardcoreMode && Abs(VSize(player.Location - Location)) < 500) || FRand() < fHighAlertChance))
+                if (!IsA('Robot') && player != None && (player.bHardcoreMode || player.bQuickReflexes) && ((Abs(VSize(player.Location - Location)) < 500) || FRand() < fHighAlertChance))
                 {
                     //player.DebugMessage("High Alert!");
                     SetEnemy(player);
@@ -17517,7 +17514,7 @@ function RandomiseSounds()
         bSetupRandomSounds = true;
     }
 
-    Log("PainSounds: " $ numPainSounds $ ", " $ numDeathSounds);
+    //Log("PainSounds: " $ numPainSounds $ ", " $ numDeathSounds);
 
     if (numDeathSounds > 0)
     {

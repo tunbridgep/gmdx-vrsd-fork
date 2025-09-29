@@ -908,6 +908,8 @@ var globalconfig bool bEditDefaultNotes;                        //SARGE: If enab
 
 var globalconfig bool bClassicScope;                            //SARGE: Classic Scope Mode
 
+var globalconfig bool bQuickReflexes;                           //SARGE: Enemies can snap-shoot at you if they hear you or are alerted, rather than standing around.
+
 //EXPERIMENTAL FEATURES
 
 var globalconfig bool bExperimentalFootstepDetection;           //SARGE: Adds experimental footstep detection
