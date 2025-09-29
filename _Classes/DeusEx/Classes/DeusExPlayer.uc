@@ -8375,9 +8375,20 @@ exec function UseSecondary()
 function DoLeftFrob(Actor frobTarget)
 {
     local bool bDefaultFrob;
-    
+
+
     if (inHand == None)
     {
+        //Add pickup cooldown, or bail if we have the pickup cooldown
+        if (frobTarget.IsA('Inventory'))
+        {
+            if (pickupCooldown < 0.01)
+                pickupCooldown = 0.15;
+            else
+                return;
+        }
+
+
         if (frobTarget.isA('DeusExPickup'))
             bDefaultFrob = DeusExPickup(frobTarget).DoLeftFrob(Self);
         else if (frobTarget.isA('DeusExWeapon'))
@@ -9199,10 +9210,10 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 				// single use weapon, and if we already have one in our
 				// inventory another cannot be picked up (puke).
 
-				bCanPickup = ! ( (Weapon(foundItem).ReloadCount == 0) &&
-				                 (Weapon(foundItem).PickupAmmoCount == 0) &&
-				                 (Weapon(foundItem).AmmoName != None) );
-
+				bCanPickup = ! ( (Weapon(foundItem).default.ReloadCount == 0) &&
+				                 (Weapon(foundItem).default.PickupAmmoCount == 0) &&
+				                 (Weapon(foundItem).default.AmmoName != None) );
+								 
 				/*if (Weapon(foundItem).IsA('WeaponHideAGun'))
                 {bCanPickup = True;  bSearchSlotNeeded = True;  }*/
 				
