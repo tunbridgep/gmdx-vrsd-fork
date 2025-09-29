@@ -56903,15 +56903,15 @@ Begin Actor Class=Brush Name=Brush158
     Brush=Model'MyLevel.Model271'
     Name=Brush158
 End Actor
-Begin Actor Class=WeaponModDamage Name=WeaponModDamage7
+Begin Actor Class=WeaponModScope Name=WeaponModScope0
     LastRenderTime=0.348555
     DistanceFromPlayer=3833.279053
     Level=LevelInfo'MyLevel.LevelInfo0'
-    Tag=WeaponModDamage
+    Tag=WeaponModScope
     Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
     Location=(X=1777.509399,Y=591.189392,Z=-192.480453)
     OldLocation=(X=1777.509399,Y=591.189392,Z=-192.480453)
-    Name=WeaponModDamage7
+    Name=WeaponModScope0
 End Actor
 Begin Actor Class=Brush Name=Brush159
     CsgOper=CSG_Add
