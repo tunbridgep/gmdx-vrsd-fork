@@ -187,7 +187,6 @@ function PreTravel()
 function Timer()
 {
 	local Terrorist T;
-	local TerroristCarcass carc;
 	local UNATCOTroop guard;
 	local ThugMale thug;
 	local ThugMale2 thug2;
@@ -230,8 +229,8 @@ function Timer()
 			}
 
 			// count the number of unconscious terrorists
-			foreach AllActors(class'TerroristCarcass', carc, 'ClintonTerrorist')
-				if (carc.bNotDead || carc.itemName == "Unconscious")// || carc.KillerBindName != "JCDenton")
+			foreach AllActors(class'DeusExCarcass', carc2, 'ClintonTerrorist')
+				if (carc2.bNotDead || carc2.itemName == "Unconscious")// || carc.KillerBindName != "JCDenton")
 					count++;
 
 			// if there are less than four, then the player killed at least two.  For shame. //CyberP: 3
@@ -262,11 +261,13 @@ function Timer()
 				flags.SetBool('SubTerroristsDead', True,, 6);
 							
 				// count the number of unconscious terrorists
-				foreach AllActors(class'TerroristCarcass', carc, 'SubTerrorist')
-					if (carc.bNotDead || carc.itemName == "Unconscious")// || carc.KillerBindName != "JCDenton")
+				foreach AllActors(class'DeusExCarcass', carc2, 'SubTerrorist')
+                {
+					if (carc2.bNotDead || carc2.itemName == "Unconscious")// || carc.KillerBindName != "JCDenton")
 						unconscious++;
+                }
 				
-				if (unconscious <= 6)
+				if (unconscious < 6)
 					flags.SetBool('SubTerroristsKilledLethal', True,, 6);
 			}
 		}
@@ -349,9 +350,9 @@ function Timer()
 
 				// there are 5 terrorists total
 				// if player killed 3 or more, call it a slaughter
-				foreach AllActors(class'TerroristCarcass', carc, 'StreetTerrorist')
+				foreach AllActors(class'DeusExCarcass', carc2, 'StreetTerrorist')
 				{
-					if ((carc.KillerBindName == "JCDenton") && (carc.bNotDead != True))
+					if ((carc2.KillerBindName == "JCDenton") && (carc2.bNotDead != True))
 						count++;
 				}
 
