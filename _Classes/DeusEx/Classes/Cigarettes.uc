@@ -77,7 +77,6 @@ defaultproperties
      AddictionType=0
      AddictionIncrement=20.000000
      MaxDrugTimer=120.000000
-     bHasMultipleSkins=True
      bBreakable=True
      FragType=Class'DeusEx.PaperFragment'
      maxCopies=5
