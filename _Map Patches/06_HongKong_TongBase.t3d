@@ -57801,7 +57801,7 @@ Begin Actor Class=Brush Name=Brush361
     CsgOper=CSG_Add
     MainScale=(SheerAxis=SHEER_ZX)
     PostScale=(SheerAxis=SHEER_ZX)
-    PolyFlags=67109132
+    PolyFlags=67109130
     DistanceFromPlayer=1603.398071
     Level=LevelInfo'MyLevel.LevelInfo0'
     Tag=Brush
