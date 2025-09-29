@@ -16,6 +16,8 @@ var private bool bFakeReadOnly;     //SARGE: Block all input, but still allow se
 var private bool bPermanentFakeReadonly;    //SARGE: Read Only is no longer related to the player setting, just prevent it entirely.
 var bool bUseMenuColors;                     //SARGE: Use the menu theme instead of the HUD theme
 
+var bool bBlockEscape;                       //SARGE: This is a hacky fix for the game crashing when we press escape in the notes window.
+
 // ----------------------------------------------------------------------
 // VirtualKeyPressed()
 //
@@ -23,6 +25,10 @@ var bool bUseMenuColors;                     //SARGE: Use the menu theme instead
 // ----------------------------------------------------------------------
 event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
 {
+    //Stop crashing
+    if (key == IK_Escape && bBlockEscape)
+        return true;
+
     //If we're disabled, just passthrough to something else
     if (!bEditable)
         return false;

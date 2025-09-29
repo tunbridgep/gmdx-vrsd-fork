@@ -181,6 +181,7 @@ function PersonaNotesEditWindow CreateNoteEditWindow(TileWindow winTile, DeusExN
         newNoteWindow.EnableEditing(false);
     newNoteWindow.bUseMenuColors = bUseMenuColors;
     newNoteWindow.StyleChanged();
+    newNoteWindow.bBlockEscape = true;
     //newNoteWindow.SetTextAlignments(HALIGN_Left, VALIGN_Center);
     //newNoteWindow.SetTheme(player);
     //newNoteWindow.SetText(note.text);
