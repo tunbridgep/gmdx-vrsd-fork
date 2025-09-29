@@ -666,7 +666,7 @@ function CreateEquipmentWindows()
 
 function UpdateEquipmentWindows()
 {
-	local String infoText, outText;
+	local String infoText, outText, percentText;
     local int i;
     local float energyPercent;
     local ChargedPickup armor;
@@ -684,8 +684,13 @@ function UpdateEquipmentWindows()
     		if (winEquipBar[i] != none)                                         //RSD: accessed none?
     		winEquipBar[i].SetCurrentValue(energyPercent);
 
+            percentText = String(Int(energyPercent)) $ "%";
+
+            if (armor.numCopies > 1)
+                percentText = percentText @ "(" $ armor.numCopies $ ")";
+
             if (winEquipBarText[i] != none)                                     //RSD: accessed none?
-    		winEquipBarText[i].SetText(String(Int(energyPercent)) $ "%");
+    		winEquipBarText[i].SetText(percentText);
 
             /*if (armor.IsA('BallisticArmor') || armor.IsA('HazMatSuit'))
     		    outText = EquipRechargeLabel1 @ int(300*armor.default.chargeMult)$"%";
@@ -695,6 +700,7 @@ function UpdateEquipmentWindows()
             	outText = EquipRechargeLabel3 @ int(450*armor.default.chargeMult)$"%";
            	else
            		outText = EquipRechargeLabel3 @ int(300*armor.default.chargeMult)$"%";
+
            	if (winEquipRechargeText[i] != none)                                //RSD: accessed none?
     		winEquipRechargeText[i].SetText(outText);
             }
