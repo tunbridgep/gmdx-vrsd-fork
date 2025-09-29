@@ -386,7 +386,10 @@ function SupportActor( actor StandingActor )
 
 function PostPostBeginPlay()
 {
-	Super.PostPostBeginPlay();
+    Super.PostPostBeginPlay();
+
+    if (totalSkins > 1)
+        bHasMultipleSkins = true;
 
     if (!bUnlit && ScaleGlow > 0.5)
         ScaleGlow = 0.5;
