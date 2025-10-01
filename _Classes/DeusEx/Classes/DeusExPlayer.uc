@@ -8379,6 +8379,7 @@ exec function UseSecondary()
 	    }
 
     }
+    pickupCooldown = 0.15;
 }
 
 //Sarge: Because we can only inherit from one class,
@@ -8393,15 +8394,9 @@ function DoLeftFrob(Actor frobTarget)
 
     if (inHand == None)
     {
-        //Add pickup cooldown, or bail if we have the pickup cooldown
-        if (frobTarget.IsA('Inventory'))
-        {
-            if (pickupCooldown < 0.01)
-                pickupCooldown = 0.15;
-            else
-                return;
-        }
-
+        //Bail if we have the pickup cooldown
+        if (frobTarget.IsA('Inventory') && pickupCooldown > 0.01)
+            return;
 
         if (frobTarget.isA('DeusExPickup'))
             bDefaultFrob = DeusExPickup(frobTarget).DoLeftFrob(Self);
@@ -8431,6 +8426,7 @@ function DoLeftFrob(Actor frobTarget)
         bLeftClicked = true;
         HandleItemPickup(FrobTarget,false,false,false,true,true);
     }
+    pickupCooldown = 0.15;
 }
 
 //Sarge: Because we can only inherit from one class,
