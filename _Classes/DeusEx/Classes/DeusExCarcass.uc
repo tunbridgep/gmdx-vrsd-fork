@@ -106,6 +106,9 @@ struct BadItem
 var transient BadItem badItems[10];                                                   //SARGE: Keep a list of the declined or ignored items, so that we can add it to the display window.
 var transient int badItemCount;
 
+//SARGE: Breathing time. Carcasses won't instantly die in water, they have about 20 seconds
+var float breatheTime;
+
 // ----------------------------------------------------------------------
 // Augmentique
 // ----------------------------------------------------------------------
@@ -581,9 +584,9 @@ function ZoneChange(ZoneInfo NewZone)
 		{
         Mesh = Mesh3;
         assignedMesh = 3;
-        if (!IsA('ScubaDiverCarcass') && !IsA('KarkianCarcass') && !IsA('KarkianBabyCarcass') && !IsA('GreaselCarcass')) //SARGE: Added aquatic animals.
+        if (bNotDead && !IsA('ScubaDiverCarcass') && !IsA('KarkianCarcass') && !IsA('KarkianBabyCarcass') && !IsA('GreaselCarcass')) //SARGE: Added aquatic animals.
         {
-        	KillUnconscious();                                                  //RSD: Proper kill
+            breatheTime = 18;
 		}
         if (Velocity.Z < -70)         //CyberP: water splash effect. Needs updating
 		{
@@ -705,6 +708,18 @@ function Tick(float deltaSeconds)
 				DblClickTimeout=0;
 			}
 		}
+
+    //SARGE: Handle drowning
+    if (breatheTime > 0)
+    {
+        breatheTime -= deltaSeconds;
+        if (breatheTime <= 0)
+        {
+        	KillUnconscious(DeusExPlayer(GetPlayerPawn()));                                                  //RSD: Proper kill
+            breatheTime = -1;
+        }
+    }
+
 	Super.Tick(deltaSeconds);
 }
 
@@ -798,7 +813,6 @@ function ChunkUp(int Damage)
 	}
 	if (!bAnimalCarcass)
        ExpelInventory();
-    KillUnconscious();
 	Super.ChunkUp(Damage);
 }
 
@@ -845,7 +859,7 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitLocation, Vector mo
 		 }
          else
          {
-            KillUnconscious();
+            KillUnconscious(DeusExPlayer(instigatedBy));
          }
 		}
 
@@ -860,11 +874,9 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitLocation, Vector mo
 		Velocity += 3 * momentum/(Mass + 200);
 		if (bNotDead && (FRand() < 0.4 || Damage > 18)) //CyberP: don't be lazy self, check for headshots...
 		{
-		    KillUnconscious();                                                  //RSD: Proper kill
+		    KillUnconscious(DeusExPlayer(instigatedBy));                                                  //RSD: Proper kill
             bNoDefaultPools = false;                                            //SARGE: Allow creating pools once we take damage.
             CreateBloodPool();
-			if (instigatedBy.IsA('DeusExPlayer'))
-			    DeusExPlayer(instigatedBy).KillCount++;
 		}
         if (DamageType == 'Exploded' || (DamageType == 'Burned' && Damage >= 10))
 		    {
@@ -891,7 +903,10 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitLocation, Vector mo
              CumulativeDamage += Damage;
         }
 		if (CumulativeDamage >= MaxDamage)
+        {
+		    KillUnconscious(DeusExPlayer(instigatedBy));
 			ChunkUp(Damage);
+        }
 		if (bDecorative)
 			Velocity = vect(0,0,0);
 	}
@@ -1972,19 +1987,18 @@ function UpdateName()
     //    AddSearchedString(DeusExPlayer(GetPlayerPawn()));
 }
 
-function KillUnconscious()                                                      //RSD: To properly fix corpse names and trigger any other death effects like MIB explosion
+function KillUnconscious(optional DeusExPlayer playerKiller)                                                      //RSD: To properly fix corpse names and trigger any other death effects like MIB explosion
 {
     local DeusExPlayer player;
 
     if (!bNotDead)
         return;
 
-    player = DeusExPlayer(GetPlayerPawn());
-    if (player != None && !bAnimalCarcass)
+    if (playerKiller != None && !bAnimalCarcass)
     {
-        killerBindName = player.BindName;
-        killerAlliance = player.Alliance;
-        player.killerCount++;
+        killerBindName = playerKiller.BindName;
+        killerAlliance = playerKiller.Alliance;
+        playerKiller.killerCount++;
     }
 
     bNotDead = false;
@@ -2016,4 +2030,5 @@ defaultproperties
      BindName="DeadBody"
      bVisionImportant=True
      LootPickupSound=sound'objpickup3'
+     breatheTime=-1
 }
