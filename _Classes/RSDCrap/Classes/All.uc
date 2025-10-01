@@ -21,6 +21,9 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\PowerIconInactive.pcx"			NAME="PowerIconInactive"			GROUP="UserInterface"
 #exec TEXTURE IMPORT FILE="Textures\WhiteDot.pcx"			NAME="WhiteDot"			GROUP="UserInterface"
 
+//Outfits
+#exec TEXTURE IMPORT  FILE="Textures\Skins\BuddhaFace0.bmp" NAME="BuddhaFace" GROUP="Skins"
+
 // Perks
 
 // Heavy Weapons

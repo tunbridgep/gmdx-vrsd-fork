@@ -10,16 +10,11 @@ function ChunkUp(int Damage)
    Destroy();
 }
 
-function KillUnconscious()                                                      //RSD: MIBs are now mobile bombs with Persistent Corpses disabled
+function KillUnconscious(optional DeusExPlayer playerKiller)            //RSD: MIBs are now mobile bombs with Persistent Corpses disabled
 {
-	local DeusExPlayer player;
-
     Super.KillUnconscious();
-
-	player = DeusExPlayer(GetPlayerPawn());
-	if (!player.bRealisticCarc && !player.bHardCoreMode)
+	if (!playerKiller.bRealisticCarc && !playerKiller.bHardCoreMode)
 		ChunkUp(1);
-
 }
 
 //gmdx: taken from wib pawn

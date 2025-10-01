@@ -2342,6 +2342,7 @@ exec function DualmapF9() { if ( AugmentationSystem != None) AugmentationSystem.
 exec function DualmapF10() { if ( AugmentationSystem != None) AugmentationSystem.ActivateAugByKey(7); }
 exec function DualmapF11() { if ( AugmentationSystem != None) AugmentationSystem.ActivateAugByKey(8); }
 exec function DualmapF12() { if ( AugmentationSystem != None) AugmentationSystem.ActivateAugByKey(9); }
+exec function Flashlight() { if ( AugmentationSystem != None) AugmentationSystem.ActivateAugByKey(10); }
 
 //SARGE: Let the player dual-map belt slots.
 exec function AltBelt0() { ActivateBelt(0); }
@@ -3462,6 +3463,7 @@ function ClientSetMusic(Music NewSong, byte NewSection, byte NewCdTrack, EMusicT
     local bool bChange;
     local bool bContinueOn;
 	local DeusExLevelInfo info;
+    //local bool bSection5Hack;
     
     info = GetLevelInfo();
     
@@ -3482,6 +3484,13 @@ function ClientSetMusic(Music NewSong, byte NewSection, byte NewCdTrack, EMusicT
         bContinueOn = true;
         */
     }
+
+    //SARGE: ARE YOU SHITTING ME GAME???!!!
+    //NYCStreets doesn't use Section 5 (it's a normal track), so
+    //we need to only allow treating it as non-ambient for the outro.
+    //What a fucking mess!
+    //if (NewSong == Music'NYCStreets_Music.NYCStreets_Music' && NewSection == 5 && default.MusicMode == MUS_Ambient)
+    //  bSection5Hack = true;
 
     //SARGE: If changing after a map transition/loadgame, set it to use
     //the proper section in case it's changed.
@@ -3510,7 +3519,8 @@ function ClientSetMusic(Music NewSong, byte NewSection, byte NewCdTrack, EMusicT
     }
 
     //if we're changing to the same track, but a nonstandard section, always allow changing
-    else if (/*default.previousTrack == NewSong && */NewSection >= 1 && NewSection <= 5 && NewSection != 2)
+    //else if (/*default.previousTrack == NewSong && */NewSection == 1 || NewSection == info.SongCombatSection || NewSection == info.SongConversationSection || NewSection == 5)
+    else if (default.MusicMode != MUS_Ambient)
     {
         DebugMessage("ClientSetMusic: Music Change Allowed (To non-ambient section)");
         bChange = true;
@@ -3537,12 +3547,11 @@ function ClientSetMusic(Music NewSong, byte NewSection, byte NewCdTrack, EMusicT
     if (bChange)
     {
         //If we're changing to the start of the track, instead, go to our saved section.
-        if (bContinueOn && (NewSection == 0 || NewSection == 2))
+        if (bContinueOn && NewSection == info.SongAmbientSection)
             NewSection = default.savedSection;
 
         DebugMessage("ClientSetMusic: Setting music to " $ NewSong @ NewSection @ NewTransition);
         Super.ClientSetMusic(NewSong,NewSection,NewCDTrack,NewTransition);
-        DebugMessage("ClientSetMusic: Music set to section " $ NewSection $ ", actual section is " $ SongSection);
         default.previousTrack = NewSong;
         default.previousLevelSection = info.SongAmbientSection;
         default.previousMusicMode = default.musicMode;
@@ -3645,15 +3654,12 @@ function UpdateDynamicMusic(float deltaTime)
 		// don't mess with the music on any of the intro maps
 		if ((info != None) && (info.MissionNumber < 0))
 		{
-            default.previousMusicMode = default.musicMode;
 			default.musicMode = MUS_Outro;
 			return;
 		}
 
 		if (default.musicMode != MUS_Outro && bAllowOther)
 		{
-            default.previousMusicMode = default.musicMode;
-
             // save our place in the ambient track
             if (default.musicMode == MUS_Ambient && default.fMusicHackTimer == 0)
                 default.savedSection = SongSection;
@@ -3666,22 +3672,18 @@ function UpdateDynamicMusic(float deltaTime)
 	{
 		if (default.musicMode != MUS_Conversation)
 		{
-            default.previousMusicMode = default.musicMode;
-
 			// save our place in the ambient track
 			if (default.musicMode == MUS_Ambient && default.fMusicHackTimer == 0)
 				default.savedSection = SongSection;
 
 			default.musicMode = MUS_Conversation;
-			ClientSetMusic(Level.Song, 4, 255, MTRAN_Fade);
+			ClientSetMusic(Level.Song, info.SongConversationSection, 255, MTRAN_Fade);
 		}
 	}
 	else if (IsInState('Dying') && bAllowOther)
 	{
 		if (default.musicMode != MUS_Dying)
 		{
-            default.previousMusicMode = default.musicMode;
-
             // save our place in the ambient track
             if (default.musicMode == MUS_Ambient && default.fMusicHackTimer == 0)
                 default.savedSection = SongSection;
@@ -3708,7 +3710,11 @@ function UpdateDynamicMusic(float deltaTime)
                     npc = ScriptedPawn(CurPawn);
                     if ((npc != None) && (VSize(npc.Location - Location) < (1600 + npc.CollisionRadius)))
                         if ((npc.GetStateName() == 'Attacking') && (npc.Enemy == Self))
+                        {
                             aggro++;
+                            if (npc.IsA('AnnaNavarre') || npc.IsA('WaltonSimons') || npc.IsA('GuntherHermann'))
+                                aggro = 9999;
+                        }
                 }
             }
                 
@@ -3724,7 +3730,6 @@ function UpdateDynamicMusic(float deltaTime)
 					if (default.musicMode == MUS_Ambient && default.fMusicHackTimer == 0)
 						default.savedSection = SongSection;
 
-                    default.previousMusicMode = default.musicMode;
 					default.musicMode = MUS_Combat;
 					ClientSetMusic(Level.Song, info.SongCombatSection, 255, MTRAN_FastFade);
 				}
@@ -3734,7 +3739,6 @@ function UpdateDynamicMusic(float deltaTime)
 				// wait until we've been out of combat for 5 seconds before switching music
 				if (musicChangeTimer >= 5.0)
 				{
-                    default.previousMusicMode = default.musicMode;
                     default.musicMode = MUS_Ambient;
 
 					// fade slower for combat transitions
@@ -9590,6 +9594,8 @@ exec function PutInHand(optional Inventory inv, optional bool bNoPrimary)
 {
     local DeusExWeapon weap;
     local Inventory assigned;
+	local DeusExRootWindow root;
+	local bool bValidBelt;
 
     assigned = GetSecondary();
 
@@ -9647,8 +9653,24 @@ exec function PutInHand(optional Inventory inv, optional bool bNoPrimary)
     bWasForceSelected = bNoPrimary;
     
     //SARGE: If we don't have a valid advBelt selection, the first selection is valid.
-    if (!bNoPrimary && advBelt == -1 && inv.bInObjectBelt)
-        advBelt = inv.beltPos;
+    if (!bNoPrimary)
+    {
+        bValidBelt = advBelt != -1;
+        if (bValidBelt)
+        {
+            root = DeusExRootWindow(rootWindow);
+            if (root != None && root.hud != None && root.hud.belt != None)
+                bValidBelt = root.hud.belt.GetObjectFromBelt(advBelt) != None;
+        }
+        
+        if (!bValidBelt)
+        {
+            if (inv.bInObjectBelt)
+                advBelt = inv.beltPos;
+            else
+                advBelt = -1;
+        }
+    }
 
     SetInHandPending(inv);
                 
@@ -19961,7 +19983,7 @@ defaultproperties
      customColorsHUD(12)=(R=255)
      customColorsHUD(13)=(R=128,G=128,B=128)
      LightLevelDisplay=-1
-     advBelt=1
+     advBelt=0
      RocketTargetMaxDistance=40000.000000
      bShowStatus=True
      bShowAugStatus=True

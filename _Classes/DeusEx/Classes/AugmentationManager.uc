@@ -570,8 +570,8 @@ function AssignAugHotKeys()
         {
             if (aug.IsA('AugIFF') || aug.IsA('AugDataLink')) //horrible dirty hack!!!
                 continue;
-            else if (aug.IsA('AugLight')) //And another one!!!
-                aug.HotKeyNum = 12;
+            else if (aug.IsA('AugLight')) //And another one!!! //SARGE: Okay, no more flashlight on F12!
+                aug.HotKeyNum = 13;
             else if (aug.AugmentationLocation == i && aug.CanBeActivated())
             {
                 aug.HotKeyNum = AugLocs[i].KeyBase + c;
@@ -947,7 +947,7 @@ function bool ActivateAugByKey(int keyNum)
 
 	bActivated = False;
 
-	if ((keyNum < 0) || (keyNum > 9))
+	if ((keyNum < 0) || (keyNum > 10))
 		return False;
 
 	anAug = FirstAug;
@@ -1033,12 +1033,12 @@ function ActivateAug(Augmentation aug, bool active)
 defaultproperties
 {
      AugLocs(0)=(NumSlots=1,KeyBase=4)
-     AugLocs(1)=(NumSlots=1,KeyBase=7)
-     AugLocs(2)=(NumSlots=3,KeyBase=8)
+     AugLocs(1)=(NumSlots=1,KeyBase=8)
+     AugLocs(2)=(NumSlots=3,KeyBase=9)
      AugLocs(3)=(NumSlots=2,KeyBase=5)
-     AugLocs(4)=(NumSlots=1,KeyBase=6)
+     AugLocs(4)=(NumSlots=1,KeyBase=7)
      AugLocs(5)=(NumSlots=2,KeyBase=2)
-     AugLocs(6)=(NumSlots=3,KeyBase=11)
+     AugLocs(6)=(NumSlots=3,KeyBase=12)
      augClasses(0)=Class'DeusEx.AugSpeed'
      augClasses(1)=Class'DeusEx.AugTarget'
      augClasses(2)=Class'DeusEx.AugCloak'
