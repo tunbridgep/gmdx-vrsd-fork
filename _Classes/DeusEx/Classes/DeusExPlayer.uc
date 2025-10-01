@@ -3461,6 +3461,7 @@ function ClientSetMusic(Music NewSong, byte NewSection, byte NewCdTrack, EMusicT
     local bool bChange;
     local bool bContinueOn;
 	local DeusExLevelInfo info;
+    //local bool bSection5Hack;
     
     info = GetLevelInfo();
     
@@ -3481,6 +3482,13 @@ function ClientSetMusic(Music NewSong, byte NewSection, byte NewCdTrack, EMusicT
         bContinueOn = true;
         */
     }
+
+    //SARGE: ARE YOU SHITTING ME GAME???!!!
+    //NYCStreets doesn't use Section 5 (it's a normal track), so
+    //we need to only allow treating it as non-ambient for the outro.
+    //What a fucking mess!
+    //if (NewSong == Music'NYCStreets_Music.NYCStreets_Music' && NewSection == 5 && default.MusicMode == MUS_Ambient)
+    //  bSection5Hack = true;
 
     //SARGE: If changing after a map transition/loadgame, set it to use
     //the proper section in case it's changed.
@@ -3509,7 +3517,8 @@ function ClientSetMusic(Music NewSong, byte NewSection, byte NewCdTrack, EMusicT
     }
 
     //if we're changing to the same track, but a nonstandard section, always allow changing
-    else if (/*default.previousTrack == NewSong && */NewSection >= 1 && NewSection <= 5 && NewSection != 2)
+    //else if (/*default.previousTrack == NewSong && */NewSection == 1 || NewSection == info.SongCombatSection || NewSection == info.SongConversationSection || NewSection == 5)
+    else if (default.MusicMode != MUS_Ambient)
     {
         DebugMessage("ClientSetMusic: Music Change Allowed (To non-ambient section)");
         bChange = true;
@@ -3536,12 +3545,11 @@ function ClientSetMusic(Music NewSong, byte NewSection, byte NewCdTrack, EMusicT
     if (bChange)
     {
         //If we're changing to the start of the track, instead, go to our saved section.
-        if (bContinueOn && (NewSection == 0 || NewSection == 2))
+        if (bContinueOn && NewSection == info.SongAmbientSection)
             NewSection = default.savedSection;
 
         DebugMessage("ClientSetMusic: Setting music to " $ NewSong @ NewSection @ NewTransition);
         Super.ClientSetMusic(NewSong,NewSection,NewCDTrack,NewTransition);
-        DebugMessage("ClientSetMusic: Music set to section " $ NewSection $ ", actual section is " $ SongSection);
         default.previousTrack = NewSong;
         default.previousLevelSection = info.SongAmbientSection;
         default.previousMusicMode = default.musicMode;
@@ -3644,15 +3652,12 @@ function UpdateDynamicMusic(float deltaTime)
 		// don't mess with the music on any of the intro maps
 		if ((info != None) && (info.MissionNumber < 0))
 		{
-            default.previousMusicMode = default.musicMode;
 			default.musicMode = MUS_Outro;
 			return;
 		}
 
 		if (default.musicMode != MUS_Outro && bAllowOther)
 		{
-            default.previousMusicMode = default.musicMode;
-
             // save our place in the ambient track
             if (default.musicMode == MUS_Ambient && default.fMusicHackTimer == 0)
                 default.savedSection = SongSection;
@@ -3665,22 +3670,18 @@ function UpdateDynamicMusic(float deltaTime)
 	{
 		if (default.musicMode != MUS_Conversation)
 		{
-            default.previousMusicMode = default.musicMode;
-
 			// save our place in the ambient track
 			if (default.musicMode == MUS_Ambient && default.fMusicHackTimer == 0)
 				default.savedSection = SongSection;
 
 			default.musicMode = MUS_Conversation;
-			ClientSetMusic(Level.Song, 4, 255, MTRAN_Fade);
+			ClientSetMusic(Level.Song, info.SongConversationSection, 255, MTRAN_Fade);
 		}
 	}
 	else if (IsInState('Dying') && bAllowOther)
 	{
 		if (default.musicMode != MUS_Dying)
 		{
-            default.previousMusicMode = default.musicMode;
-
             // save our place in the ambient track
             if (default.musicMode == MUS_Ambient && default.fMusicHackTimer == 0)
                 default.savedSection = SongSection;
@@ -3707,7 +3708,11 @@ function UpdateDynamicMusic(float deltaTime)
                     npc = ScriptedPawn(CurPawn);
                     if ((npc != None) && (VSize(npc.Location - Location) < (1600 + npc.CollisionRadius)))
                         if ((npc.GetStateName() == 'Attacking') && (npc.Enemy == Self))
+                        {
                             aggro++;
+                            if (npc.IsA('AnnaNavarre') || npc.IsA('WaltonSimons') || npc.IsA('GuntherHermann'))
+                                aggro = 9999;
+                        }
                 }
             }
                 
@@ -3723,7 +3728,6 @@ function UpdateDynamicMusic(float deltaTime)
 					if (default.musicMode == MUS_Ambient && default.fMusicHackTimer == 0)
 						default.savedSection = SongSection;
 
-                    default.previousMusicMode = default.musicMode;
 					default.musicMode = MUS_Combat;
 					ClientSetMusic(Level.Song, info.SongCombatSection, 255, MTRAN_FastFade);
 				}
@@ -3733,7 +3737,6 @@ function UpdateDynamicMusic(float deltaTime)
 				// wait until we've been out of combat for 5 seconds before switching music
 				if (musicChangeTimer >= 5.0)
 				{
-                    default.previousMusicMode = default.musicMode;
                     default.musicMode = MUS_Ambient;
 
 					// fade slower for combat transitions
