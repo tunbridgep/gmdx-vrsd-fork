@@ -9594,6 +9594,8 @@ exec function PutInHand(optional Inventory inv, optional bool bNoPrimary)
 {
     local DeusExWeapon weap;
     local Inventory assigned;
+	local DeusExRootWindow root;
+	local bool bValidBelt;
 
     assigned = GetSecondary();
 
@@ -9651,8 +9653,24 @@ exec function PutInHand(optional Inventory inv, optional bool bNoPrimary)
     bWasForceSelected = bNoPrimary;
     
     //SARGE: If we don't have a valid advBelt selection, the first selection is valid.
-    if (!bNoPrimary && advBelt == -1 && inv.bInObjectBelt)
-        advBelt = inv.beltPos;
+    if (!bNoPrimary)
+    {
+        bValidBelt = advBelt != -1;
+        if (bValidBelt)
+        {
+            root = DeusExRootWindow(rootWindow);
+            if (root != None && root.hud != None && root.hud.belt != None)
+                bValidBelt = root.hud.belt.GetObjectFromBelt(advBelt) != None;
+        }
+        
+        if (!bValidBelt)
+        {
+            if (inv.bInObjectBelt)
+                advBelt = inv.beltPos;
+            else
+                advBelt = -1;
+        }
+    }
 
     SetInHandPending(inv);
                 
@@ -19965,7 +19983,7 @@ defaultproperties
      customColorsHUD(12)=(R=255)
      customColorsHUD(13)=(R=128,G=128,B=128)
      LightLevelDisplay=-1
-     advBelt=1
+     advBelt=0
      RocketTargetMaxDistance=40000.000000
      bShowStatus=True
      bShowAugStatus=True
