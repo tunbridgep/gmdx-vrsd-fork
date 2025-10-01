@@ -1092,7 +1092,7 @@ function bool LootAmmo(DeusExPlayer P, DeusExWeapon item, bool bDisplayOverflowM
 {
     local bool bResult;
     local DeusExAmmo AmmoType;
-    bResult = item.LootAmmo(P,true,true,false,false,bDisplayOverflowMsg,bShowOverflow);
+    bResult = item.LootAmmo(P,true,true,false,false,bDisplayOverflowMsg,bShowOverflow,self);
 
     return bResult;
 }
@@ -1502,7 +1502,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                 if (!bDeclined)
                                 {
                                     bFoundSomething = True;
-                                    if (DeusExPlayer(P).HandleItemPickup(Item,false,true,true,!bLootedAmmo,false) != False)
+                                    if (DeusExPlayer(P).HandleItemPickup(Item,false,true,self,!bLootedAmmo,false) != False)
                                     {
                                         DeleteInventory(item);
 

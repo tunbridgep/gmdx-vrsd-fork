@@ -8417,7 +8417,7 @@ function DoLeftFrob(Actor frobTarget)
         }
         */
         bLeftClicked = true;
-        HandleItemPickup(FrobTarget,false,false,false,true,true);
+        HandleItemPickup(FrobTarget,false,false,None,true,true);
     }
 }
 
@@ -8456,7 +8456,7 @@ function DoRightFrob(Actor frobTarget)
     }
     */
     if (bDefaultFrob && frobTarget.IsA('Inventory'))
-        HandleItemPickup(FrobTarget,false,false,false,true,true);
+        HandleItemPickup(FrobTarget,false,false,None,true,true);
     else if (bDefaultFrob)
         DoFrob(Self, None);
 }
@@ -9131,7 +9131,7 @@ function PlayPartialAmmoSound(Actor source, class<Ammo> ammoName)
 // HandleItemPickup()
 // ----------------------------------------------------------------------
 
-function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, optional bool bSkipDeclineCheck, optional bool bFromCorpse, optional bool bShowOverflow, optional bool bShowOverflowWindow)
+function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, optional bool bSkipDeclineCheck, optional Actor FromCorpse, optional bool bShowOverflow, optional bool bShowOverflowWindow)
 {
 	local bool bCanPickup;
 	local bool bSlotSearchNeeded;
@@ -9142,6 +9142,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     local bool bLootedAmmo;
     local WeaponNanoSword dts;
     local bool bDestroy;
+    local Actor source;
 
 	bSlotSearchNeeded = True;
 	bCanPickup = True;
@@ -9150,6 +9151,12 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     //This should prevent the item dupe glitch.
     if (pickupCooldown > 0.01)
         return false;
+
+    //SARGE: Set the source of the interaction (used by the HUD Display)
+    if (FromCorpse != None)
+        source = FromCorpse;
+    else
+        source = self;
 
 	// Special checks for objects that do not require phsyical inventory
 	// in order to be picked up:
@@ -9284,7 +9291,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     //SARGE: Always try looting non-disposable weapons of their ammo
     if (bCanPickup && FrobTarget.IsA('DeusExWeapon') && !DeusExWeapon(frobTarget).bDisposableWeapon)
     {
-        bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,true,bAlwaysShowReceivedItemsWindow,true,true,bShowOverflow,bShowOverflowWindow);
+        bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,true,bAlwaysShowReceivedItemsWindow,true,true,bShowOverflow,bShowOverflowWindow,source);
 
         //Don't pick up a weapon if there's ammo in it and we already have one
         if (!bSlotSearchNeeded && DeusExWeapon(frobTarget).PickupAmmoCount > 0 && bCanPickup)
@@ -9336,11 +9343,11 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
         //SARGE: Since we haven't looted Disposable weapons yet, do so now.
         if (FrobTarget.IsA('DeusExWeapon') && DeusExWeapon(frobTarget).bDisposableWeapon)
         {
-            bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,!bSlotSearchNeeded,bFromCorpse,false,false,false,false);
+            bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,!bSlotSearchNeeded,FromCorpse != None,false,false,false,false,source);
 
             if (DeusExWeapon(frobTarget).PickupAmmoCount > 0)
             {
-                if (!bFromCorpse)
+                if (FromCorpse == None)
                     //ClientMessage(TooMuchAmmo);
                     ClientMessage(class'DeusExPickup'.default.msgTooMany);
                     

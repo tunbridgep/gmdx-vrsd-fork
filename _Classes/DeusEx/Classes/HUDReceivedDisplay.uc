@@ -358,7 +358,7 @@ function bool AddItemFrom(Actor owner, Inventory invItem, Int count, optional bo
     else
         labelText = invItem.beltDescription;
 
-    return AddGenericIcon(owner, invItem.icon, labelText, count, bDeclined, bNoGroup);
+    return AddGenericIcon(owner, invItem.default.icon, labelText, count, bDeclined, bNoGroup);
 }
 
 // ----------------------------------------------------------------------
