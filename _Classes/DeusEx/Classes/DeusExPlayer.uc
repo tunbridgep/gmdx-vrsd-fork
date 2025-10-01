@@ -14104,6 +14104,10 @@ function bool StartConversation(
 		if ((!bForcePlay) && ((!con.bFirstPerson) && (ScriptedPawn(invokeActor) != None) && (ScriptedPawn(invokeActor).GetPawnAllianceType(Self) == ALLIANCE_Hostile)))
 			return False;
 
+        //SARGE: Check that all the actors involved in this conversation are within range
+        if (!con.CheckActorDistances(self))
+            return false;
+
 		// If the player is involved in this conversation, make sure the
 		// scriptedpawn even WANTS to converse with the player.
 		//
