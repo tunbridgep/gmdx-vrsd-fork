@@ -70508,4 +70508,13 @@ Begin Actor Class=SavePoint Name=SavePoint1
     bSelected=True
     Name=SavePoint1
 End Actor
+Begin Actor Class=WeaponPistol Name=WeaponPistol0
+    LastRenderTime=698.857605
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=WeaponPistol
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=1497,ZoneNumber=1)
+    Location=(X=-2.336853,Y=-2570.799561,Z=99.099792)
+    OldLocation=(X=-232.336853,Y=-2663.799561,Z=65.099785)
+    Name=WeaponPistol0
+End Actor
 End Map

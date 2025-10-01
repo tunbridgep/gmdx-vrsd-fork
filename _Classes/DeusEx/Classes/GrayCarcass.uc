@@ -5,6 +5,7 @@ class GrayCarcass extends DeusExCarcass;
 
 defaultproperties
 {
+     nameReference=class'DeusEx.Gray'
      HDTPMesh="HDTPCharacters.HDTPGrayCarcass"
      HDTPMesh2="HDTPCharacters.HDTPGrayCarcass2"
      HDTPMesh3="HDTPCharacters.HDTPGrayCarcass2"

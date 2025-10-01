@@ -1252,6 +1252,8 @@ function UpgradeAugmentation()
 
 	}
 
+    player.RefreshAugmentationDisplay();
+
     //if (SelectedAug.IsA('AugAmmoCap'))                                          //RSD: Update MaxAmmo
     //   player.ChangeAllMaxAmmo();
 

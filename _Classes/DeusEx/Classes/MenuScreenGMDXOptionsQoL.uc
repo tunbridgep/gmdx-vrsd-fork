@@ -10,7 +10,22 @@ function SaveSettings()
     Super.SaveSettings();
     player.UpdateCrosshairStyle();
     player.UpdateHUD();
+
+    if (player.outfitManager != None)
+        player.outfitManager.SaveConfig();
 }
+
+//We need to change options depending on Augmentique
+function BuildModifierList()
+{
+    //Remove Augmentique options
+    if (player.outfitManager == None || !player.OutfitManager.Installed())
+    {
+        RemoveItem("bEquipNPCs");
+        RemoveItem("noDescriptions");
+    }
+}
+	
 
 defaultproperties
 {
@@ -123,6 +138,8 @@ defaultproperties
      items(104)=(HelpText="If enabled, labels will be displayed on the ammo HUD showing current weapon addons.",actionText="HUD: Ammo Display Shows Addons",variable="bDrawAddonsOnAmmoDisplay",defaultValue=0)
      items(105)=(HelpText="If enabled, the Ammo icons shown when viewing a weapon in the inventory will show max ammo in addition to current ammo.",actionText="HUD: Weapon Info shows Max Ammo",variable="bInventoryAmmoShowsMax",defaultValue=1)
      items(106)=(HelpText="If enabled, weapon scopes will use the vanilla scope textures.",actionText="HUD: Classic Weapon Scope",variable="bClassicScope",defaultValue=0)
+     items(107)=(HelpText="If enabled, the Outfits menu will show descriptions.",actionText="Augmentique: Show Outfit Descriptions",variable="noDescriptions",defaultValue=0,valueText0="Enabled",valueText1="Disabled",consoleTarget="OutfitManager")
+     items(108)=(HelpText="NPC outfits will be randomised. Changes to this setting require a new map load.",actionText="Augmentique: NPC Outfit Randomisation",consoleTarget="OutfitManager",variable="bEquipNPCs",defaultValue=1);
      Title="GMDX Quality of Life Options"
      colWidths(0)=214
      colWidths(1)=155

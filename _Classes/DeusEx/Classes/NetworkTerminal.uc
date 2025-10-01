@@ -292,9 +292,19 @@ function ShowScreen(Class<ComputerUIWindow> newScreen)
 	{
 		winComputer = ComputerUIWindow(NewChild(newScreen));
 		winComputer.SetWindowAlignments(HALIGN_Center, VALIGN_Center);
-		//winComputer.SetCompOwner(compOwner);
-		winComputer.SetNetworkTerminal(Self);
-		winComputer.SetCompOwner(compOwner);
+
+        //SARGE: 11th hour hack!
+        if (compOwner.IsA('ComputerSecurity'))
+        {
+            winComputer.SetCompOwner(compOwner);
+            winComputer.SetNetworkTerminal(Self);
+        }
+        else
+        {
+            winComputer.SetNetworkTerminal(Self);
+            winComputer.SetCompOwner(compOwner);
+        }
+
         if (winNotes != None)
         {
             winComputer.SetNotesWindow(winNotes);
@@ -490,7 +500,7 @@ function AddNotesWindow()
     }
     
     //SARGE: Dirty hack alert!!!!
-    if (numCodes == 0 && (!player.bHardCoreMode || player.iNoKeypadCheese == 0))
+    if (numCodes == 0 && (!player.bHardCoreMode && player.iNoKeypadCheese == 0))
         return;
 
     if (winNotes == None)

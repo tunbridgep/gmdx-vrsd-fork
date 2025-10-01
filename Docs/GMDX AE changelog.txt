@@ -1,0 +1,244 @@
+1.1:
+
+New Features:
+- Using actions while hacking (such as clicking on turrets, cameras, etc) will now drain hack time. Using Worm softwares will prevent this. This can be disabled in the Gameplay menu.
+- Added collectibles. JC can now find one collectible per mission. Can you find them all? Collectibles must be enabled in the Playthrough Modifiers menu to appear.
+- The message log will now appear while a DataLink is playing. Added a new QoL setting to disable this.
+- Added a small blue glow to Datacubes
+- Added "Crosshair off by one" setting, enabled by default, which should fix the crosshairs being misaligned on 1440p and other resolutions.
+- "Double Click Unholstering" setting split out into 2 separate settings, one for holstering, one for unholstering
+  - The unholstering setting now allows not unholstering at all, if desired.
+- Stealth Rework. Stealth is currently far too easy, even on Untrained stealth you can creep up behind anyone for an easy takedown. To remedy this:
+  - Sounds will now propagate more accurately, making sound management and weapon noise significantly more important.
+  - Crouching now makes footsteps. Volume is determined by Stealth skill, with Master stealth being completely silent
+  - Weapon sound ranges are much larger, as well as the sound radius of all explosions
+  - Scopes, Silencers and Lasers now provide drawbacks when attached (Disabled by default, always enabled on Hardcore mode)
+    - Addons can be attached/removed from the Inventory screen, or through a keybinding.
+    - Attachments are always associated with a specific weapon. You cannot remove a scope and attach it to a new weapon, for instance.
+    - Added a new "Wetwork" perk (requires Stealth: MASTER) that will negate all drawbacks from attachments.
+    - The "Wetwork" perk is hidden/unavailable when the feature is disabled.
+  - The Stealth Pistol and Crossbow are completely silent by default
+  - Enemies that notice you while being snuck up on can now react instantly on Hardcore mode, rather than faffing around for a few seconds.
+  - Enemies can eventually hear your footsteps when sneaking up on them, but it takes a while (6+ steps usually).
+  - Damage from attacks from behind now scale with your Stealth level (3x/6x/9x/12x) rather than being a flat 12x bonus.
+    - Attacks from behind now require targets to be in a non-alert state.
+- Increased energy drain when throwing objects with the Muscle augmentation.
+- The Vision Enhancement augmentation now gives all effects (including sonar) at level 1. Additional levels reduce power drain and increase range.
+- Slightly increased energy drain of the ADS and Environmental Resist augmentations.
+- Updated the HUD for Cameras and Turrets which are disabled by computers to properly show as Bypassed.
+- Added a new gameplay setting to enable or disable using Pepper Spray on laser tripwires. Originally this was a Hardcore mode check only. Still always prevented on Hardcore.
+- Increased default Auto Turret damage. Turrets will now deal double damage against enemies, which should help them feeling useless/underpowered in the late-game.
+- The ability to rearm grenades based on skill is now a Gameplay option. When disabled, all grenades can always be rearmed as in Vanilla. Updated the log message to be more clear.
+- The DTS requiring energy to function and recharging using Biocells is now a Gameplay option. When disabled, the DTS will have unlimited charge, as in vanilla.
+- Added a new setting to use the classic Deus Ex weapon sounds, rather than the ones added in GMDX.
+- Right and Middle-Clicking in the Inventory and Aug screens now affects the object under the cursor, rather than the selected object. This can be reverted in the QoL menu.
+- Added a new "Auto Uncrouch" setting, to disable the feature where JC will uncrouch when the run key is pressed while crouching.
+- Added a new setting to enable or disable mantling.
+- Added a notes display beside keypads and computer login screens to show all notes relevant to the code.
+- Added a new Demolitions perk "Remote Detonation", which allows detonating placed wall mines with the change-ammo key.
+- Robots will now only respond to sounds on Hardcore+, this is to further differentiate them from other enemy types.
+- The PS20 now has the same accuracy values as the 10mm pistol, rather than being 100% accurate.
+- Added a new "Permanent Cloaking" modifier, which will make Elites and other cloaked enemies always appear cloaked, for extra challenge.
+- Tech Goggles (and the Vision Aug) can now see pickups through walls at very short range. This is designed to make Tech Goggles remain useful when not upgraded.
+    - Tech Goggles can additionally see Security Devices (Cameras, Turrets, Alarm panels, etc) at short range through walls.
+- The Hacking Window now shows the number of Nuke Viruses remaining.
+- Added blue text for the Total Ammo count on the HUD when using a weapon that has max ammo.
+- The ammo icons in the Inventory screen (used for switching ammo types for a given weapon) now show the max ammo count as well as the total.
+- It's now possible to do a small jump while crippled.
+- Rockets now detonate after 5 seconds of flight. Range mods increase the flight time by 1 second each. This was actually implemented in 1.0 but was broken.
+- Rockets have been made slightly rarer (3 per ammo box instead of 4, 2 on Hardcore).
+- Re-enabled GMDX v9 decapitation system. Disabled by default. Enable it in the Quality of Life settings menu.
+- Healing from Medkits has been reduced by 10 on hardcore mode.
+- Darts will now break when damaging movers
+- Added some tutorial text for adding and removing Augmentations from the wheel in the Augmentation screen.
+- The Repair Bot interface now shows the players reserved energy.
+- Added a playthrough modifier to skip certain tutorial messages, such as Alex's stealth tutorial on Liberty Island.
+- Infolinks will now play much quicker when queued, rather than waiting 5+ seconds between messages.
+- Assault Gun damage increased from 3 to 4.
+- Assault Gun ammo from enemies increased from 2-5 round to 3-6 rounds.
+- Added a new playthrough modifier to prevent Paul from giving you weapons on Liberty Island. Recommended for experienced players only!
+- Added a new Armor Piercing perk. Requires Rifles: MASTER. When obtained, assault gun headshots that would be negated by helmets will now deal 50% damage instead.
+- Added support for the Visible Attachments mod, which is now included in GMDX:AE by default. The models can be toggled through the HDTP Menu.
+- When highlighting nanokeys, their proper names will now be displayed, rather than "Nano Key"
+- The Special Options screen on computers will now show an Email/Security button instead of the Logout button, to prevent accidentally logging out without disabling cameras etc.
+  - This can be disabled in the QoL menu.
+- Third Person Conversation Improvements:
+  - Items given will now appear next to items received.
+  - Credit transfers will also be shown in the given/received windows.
+  - Items that were "missed" (such as buying 4 LAMs but only having space for 3) will now show as darkened versions in the Received Items window.
+    - Additionally, missed items will now be dropped at the players feet.
+  - Both of these options can be disabled in the QoL menu.
+- Highlight Window Overhaul:
+  - When highlighting a door, computer or keypad which you have the key/code for, the border will be green (non-hardcore only)
+  - When higlighting Newspapers, DataCubes and Books, the title will be shown if the item has been previously read.
+  - When highlighing a Carcass, the border will change to blue.
+  - When highlighting a duplicate nanokey, the border will change to red.
+  - When highlighting an Aug canister, the border will change to Blue if it's possible to replace one of the augs in the can, and red if the canister is not usable at all.
+  - When highlightting a disarmed grenade, the border will change to Red if you lack the demolitions skill to rearm it.
+  - When highlighitng a weapon or ammo, the border will change to Blue if it can be partially looted, and Red if it cannot be looted at all.
+  - When highlighting an inventory item, the border will change to Red if the item cannot be picked up due to inventory limits.
+  - All border highlighting settings can be configured in the QoL menu.
+- Nanokeys now display their full name when highlighted, rather than "NanoKey"
+- Automatic Augmentations will now temporarily display as the Active aug colour in the augs display when consuming energy.
+- Credits will now display their amount in brackets when highlighted. Additionally added a new setting to show the Items Received window when picking up credits.
+
+Map Changes:
+- 01_NYC_UnatcoIsland:
+  - Fixed the Terrorist Commander datavault image listing "Hair: None" when he very clearly has black hair.
+  - Moved a few boxes around to incentivise killing some less-desirable enemies
+  - Removed the grating at the top of the statue, allowing JC to explore the upper level balcony.
+- 01_NYC_UnatcoHQ:
+  - Fixed a misaligned office door that would open partially into a wall.
+  - Fixed the Alex Warm/Cold game. Now it can be repeated indefinitely, and he will tell you if you're getting warmer or colder accurately.
+- 02_NYC_Smug/04_NYC_Smug/08_NYC_Smug:
+  - Smugglers elevator now behaves more consitently when transitioning from the NYC Streets map to Smugglers Lair.
+- 02_NYC_FreeClinic:
+  - Jake and Rafael will now properly set their display names after introducing themselves.
+- 04_NYC_BatteryPark:
+  - Upon leaving the map after completing the Subway objective, UNATCO will now take over the subway and clean up the tripwires and TNT crates.
+- 04_NYC_Street:
+  - Removed the Osgood and Sons back door key on Hardcore mode (this key unlocks the room containing the Aug upgrade).
+- 02_NYC_Hotel:
+  - Fixed the dead Junkies in the dirty hotel room having blood pools.
+- 02_NYC_Warehouse:
+  - Added a new option to shut down the generator without blowing it up, which should result in less unwanted NSF casualties.
+- 03_NYC_Airfield:
+  - Fixed a few cases where you could walk through shipping containers
+  - Fixed an invisible ladder on one of the shipping containers
+  - Fixed "sticky floor" in one of the security towers
+  - Accessing the security towers before UNATCO Arrives will now award 50 skill points per tower.
+  - Finding the last barrel of Ambrosia (in the dock house) after UNATCO arrives will no longer award 200 skill points.
+- 03_NYC_BatteryPark:
+  - Added a switch to the bottom of the phone-booth tunnel, to allow returning to Battery Park from the mole tunnels.
+- 03_NYC_747
+  - Fixed Lebedev's outfit being unreachable.
+- 04_NYC_Bar:
+  - Harley Filben is now removed when the 'Ton Hotel raid starts
+- 04_NYC_Street:
+  - Fixed several duplicated items
+  - Fixed non-solid wall
+- 04_NYC_Hotel:
+  - Fixed the dead Junkies in the dirty hotel room having blood pools.
+  - Fixed wrong ATM code.
+- 04_NYC_NSFHQ:
+  - The switch to disable the Halon Gas next to the computer room is now locked inside a utility box with a 10% strength lock. The switch inside the computer room is still accessible freely.
+  - The datacube containing incriminating information has been made easier to interact with, as previously it wasn't selectable without jumping.
+- 05_NYC_UNATCOMJ12Lab:
+  - Added several flares to the Armoury.
+- 06_HongKong_VersaLife:
+  - Fixed Versalife labs employee code not working with the Known Codes modifier if a code was created at the lobby computer.
+- 08_NYC_Hotel:
+  - Fixed the dead Junkies in the dirty hotel room having blood pools.
+- 08_NYC_Street:
+  - The Street Thug will now correctly shadow JC after speaking with Jordan Shea or Joe Green, rather than after talking to Dowd (which made him pointless previously).
+- 09_NYC_Ship:
+  - Fixed Sailor outfit being unreachable.
+- 11_Paris_Cathedral:
+  - Fixed Cathedral datavault image having a purple background.
+- 12_Vandenberg_Cmd:
+  - The friendly bots will now more reliably destroy the enemy bots rather than walking around stupidly and getting themselves blown up (DSPGaming moment?).
+  - Fixed visible missing polygons in terrain near the entrance to the base.
+- 12_Vandenberg_Gase:
+  - Tiffany's Cell Door is now locked, and can be unlocked using any of the Garage keys (there are 3 available in the map).
+  - Tiffany will no longer run out of her door automatically.
+  - Fixed a few unlinked truck doors.
+  - Fixed key with blank name given by the MIB.
+- 15_Area51_Entrance:
+  - Fixed the target range not breaking targets in 1 shot, allowing you to get the completion bonus without destroying all targets.
+- 15_Area51_Page:
+  - Made the UC enemy respawners spawn more reliably.
+
+Bug Fixes:
+- Fixed `meverett` login not working with the Unknown Codes modifier active.
+- Fixed GMDX:AE issue where pain and death sounds were not randomising accurately.
+- Fixed several "Accessed None" and "Array index out of bounds" errors.
+- Fixed vanilla bug where Jock's helicopter would still get destroyed if you knocked the suspicious mechanic unconscious without killing him
+- Fixed character skins not being properly reset when uncloaking.
+- Crate randomisation modifier now properly takes into account items randomised by the game's built-in randomisation system (content2, content3, etc).
+- Fixed the ADS Augmentation not displaying detonated projectiles if they were exploded instantly when being created.
+- Fixed GMDX/Vanilla bug where the Muscle augmentation would not affect ability to jump while holding heavy items, due to the check being in the wrong place.
+- Fixed GMDX/Vanilla bug where doors tagged with no key could still be locked using the Nanokey under certain conditions.
+- Fixed Defense aug blowing up non-armed grenades that are moved by explosions
+- Fixed vanilla bug where Nanokeys wouldn't display the "NANO" text in the item display window when received from other characters.
+- Fixed several carcass looting bugs.
+- Fixed a section in the Paris Cathedral music playing at the wrong speed when switching from the Combat Music.
+- Fixed a GMDX oversight where buying a weapon with attachments wouldn't add those attachments to your existing copy.
+- Fixed a GMDX bug where some purchased weapons would have inconsistent ammo counts.
+- Fixed a GMDX vRSD bug where you could gain above the maximum amount of ammo in some cases.
+- Wall sockets now actually hurt you when used, as intended.
+- Fixed a serious bug where perks would sometimes be lost when transitioning maps
+- Fixed JC's Real Name being reset in the new game screen when clicking the LDDP Help button
+- "Overwhelming Odds" gameplay setting is now a modifier, since it makes permanent map changes.
+- Wall Mines added in Hardcore are now covered by the "Overwhelming Odds" modifier
+- Fixed keypads granting access when pressing Backspace on a keypad with no code (Training mission)
+- Slightly increased Female JC's height, closer to what it was in the original LDDP. This was originally lowered to fix FOV related problems.
+- Fixed a bug where the Keyring could sometimes replace the final belt-slot item on map transition.
+- Fixed a bug where the "Real Killswitch" modifier would continue to tick down when starting a new game, if started from a previous game that had the modifier enabled.
+- Fixed augmentation icons not updating in the Augs screen if not selected, allowing recharging aug icons to stay red until selected.
+- Fixed the Hacking Window not appearing in the login screen after logging out of a security computer or ATM.
+- Fixed several typos.
+- Fixed installer issue which would place the vRSD docs in the regular docs folder
+- Fixed being unable to assign belt items via number keys when using the smaller belt
+- Fixed vices showing fullness amounts when the addiction system is enabled, since they don't add to fullness when it's enabled (this mainly affected alcohol).
+- Fixed some props not moving correctly after changing base (most notable example being the Boat in the first mission).
+- Fixed crash when attempting to quickload after dying in the `Ton Hotel capture sequence.
+- Fixed Assault Rifle gaining a 4-round-burst when at max Fire Rate mods.
+- Toggle and Automatic augs will now remain active when entering the MJ12 Prison Escape mission.
+- Fixed removing the Ammo Capacity augmentation allowing you to temporarily carry more than your maximum allowed ammo.
+- Fixed Augmentation hotkeys getting screwed up sometimes when swapping Augs at a medical bot.
+- Fixed PS20s and other disposable weapons sometimes showing up twice in the received items window when looting corpses.
+- Fixed some issues where the nanokey would replace the final belt slot item when transitioning maps.
+- Fixed various Aug Wheel issues.
+- Fixed LAW's not appearing in UnrealEd.
+- Fixed several cases where combat or conversation music could get "stuck" until you changed maps or restarted the game.
+- Fixed a conversation issue where some mechanics wouldn't switch to their bark state after all conversation options had been exhausted.
+- Fixed the Combat Strength aug applying to PS20s and other melee-only effects being applied to grenades and other weapons (like the Zyme bonus)
+- Fixed integer rounding making ammo counts red inconsistently for certain weapons (like the GEP showing ammo as red when having 2/3 GEP rounds loaded with an extended clip)
+- Grenades now properly show their ammo count in the item's received window in conversations (Like from Defoe, for instance)
+- Ammo counter for current bullets in clip now scales properly when determining whether to use green or red text when max ammo is an odd number.
+
+Misc Changes:
+- The mod now includes RenderExt by Hanfling, which should prevent rendering errors and crashes.
+- Augmentique settings can now be configured in the GMDX Menus
+- Added a small stamina cost for repeatedly dropping objects with right-click.
+- The mod now installs components into the `/Mods` subfolder, which should make your game folder neater.
+- "Camera 1" changed to "Cam 1" in Security computer terminals, to prevent names from overlapping the display window.
+- Autosaves will no longer cancel playing infolinks, and will instead wait until they are finished before saving.
+- Added an alternate accuracy crosshairs option which doesn't show the top line.
+- When using debris persistence, broken movers will now have much smaller fragments, to allow better visibility of nearby items.
+- Removed the recharge time when toggling the EUAS augmentation.
+- When using junk randomisation, certain maps now randomise chairs and couches together, allowing consistency between map changes (most noticeable between Vandenberg base and Vandenberg computer maps, and different UNATCO/NYC visits)
+- Added a new keybinding for cleaning up the debris in the map.
+- Logging out of a Security Computer will now exit the computer completely, rather than going back to the login screen.
+- Slightly reorganised some items in the QoL menu.
+- Small decorations (like trash paper) no longer cause the accuracy crosshairs to appear.
+- Disabled the base-game crate randomisation system.
+    - Now, the random items from crates are rolled before the crate randomisation kicks in, and can be replaced with other objects of the same type afterwards if Crate Randomisation is enabled.
+    - Without Crate Randomisation, the only real change is that crate contents are rolled on map start, not when breaking, so they can no longer be savescummed.
+- Reduced the number of added PS20s per map from 2 to 1
+- Music will now fade out slowly when changing to an empty track, rather than switching instantly (used for Paris Catacombs map)
+- The Lockpicking and Electronics skills have been made more expensive (from 5250->6000 each)
+- WP Rocket pickups now give more ammo. Rocket pickups now give less ammo. This should make the GEP Gun work more as a weapon and less of a lockpick in unskilled hands.
+    - Reduced overall rocket ammo.
+- Carcasses placed in maps will now use the correct name of their associated pawn, rather than simply being called "Dead Body"
+- Updated the User Manual to mention the batch file instead of GMDX_AE.exe
+- The Lighting Accessibility setting has been updated to effect significantly more light sources.
+- Updated credits file to mention cwdohnal (Creator of the included DirectX 9 renderer)
+- Updated ConFix to latest version (June 13, 2025)
+- Added a new "Starving" status text in the Health screen when below 20% fullness.
+- The Playthrough Modifiers menu is now always shown when starting a New Game, to ensure that players see them.
+- Removed the redundant "Strongest Melee doesn't pass threshold" message when left-frobbing objects. 
+- Added a new message when Tracer Tong reactivates your augmentations, if playing with the Real Killswitch modifier.
+
+1.01A - Map Patch:
+
+Map Changes/Fixes:
+- Fixed broken ladder in 02_NYC_Streets map
+- Fixed 08_NYC_Streets map not loading without HDTP due to accidentally missed HDTP asset (Also fixed by map hotfix)
+- Reverted music change in 09_NYC_ShipBelow map
+
+1.01:
+- Minor release to replace GMDX_AE.exe with GMDX_AE.cmd, because of Windows Defender problems.
+
+1.0:
+- Initial Release. See "List of Changes.html" for a list of things changed since vRSD

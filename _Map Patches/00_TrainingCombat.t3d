@@ -4742,7 +4742,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover44
              Vertex   +00001.500000,+00052.000000,+00014.000000
              Vertex   +00001.500000,+00052.000000,-00014.000000
           End Polygon
-          Begin Polygon Texture=bulltprftrans_a Flags=268 Link=10
+          Begin Polygon Texture=bulltprftrans_a Flags=266 Link=10
              Origin   +00000.500000,-00066.000000,-00016.000000
              Normal   -00001.000000,+00000.000000,+00000.000000
              TextureU +00000.000000,+00004.000000,+00000.000000
@@ -33981,7 +33981,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover67
              Vertex   +00001.500000,+00052.000000,+00014.000000
              Vertex   +00001.500000,+00052.000000,-00014.000000
           End Polygon
-          Begin Polygon Texture=bulltprftrans_a Flags=268 Link=10
+          Begin Polygon Texture=bulltprftrans_a Flags=266 Link=10
              Origin   +00000.500000,-00066.000000,-00016.000000
              Normal   -00001.000000,+00000.000000,+00000.000000
              TextureU +00000.000000,+00004.000000,+00000.000000
@@ -43536,7 +43536,7 @@ Begin Actor Class=Brush Name=Brush166
     CsgOper=CSG_Add
     MainScale=(SheerAxis=SHEER_ZX)
     PostScale=(SheerAxis=SHEER_ZX)
-    PolyFlags=268
+    PolyFlags=266
     DistanceFromPlayer=1098.036133
     Level=LevelInfo'MyLevel.LevelInfo0'
     Tag=Brush
@@ -46844,7 +46844,7 @@ Begin Actor Class=Brush Name=Brush338
     CsgOper=CSG_Add
     MainScale=(SheerAxis=SHEER_ZX)
     PostScale=(SheerAxis=SHEER_ZX)
-    PolyFlags=268
+    PolyFlags=266
     DistanceFromPlayer=2135.158447
     Level=LevelInfo'MyLevel.LevelInfo0'
     Tag=Brush
@@ -50230,7 +50230,7 @@ Begin Actor Class=Brush Name=Brush349
     CsgOper=CSG_Add
     MainScale=(SheerAxis=SHEER_ZX)
     PostScale=(SheerAxis=SHEER_ZX)
-    PolyFlags=268
+    PolyFlags=266
     DistanceFromPlayer=5063.013184
     Level=LevelInfo'MyLevel.LevelInfo0'
     Tag=Brush
@@ -60372,7 +60372,7 @@ Begin Actor Class=Brush Name=Brush354
     CsgOper=CSG_Add
     MainScale=(SheerAxis=SHEER_ZX)
     PostScale=(SheerAxis=SHEER_ZX)
-    PolyFlags=268
+    PolyFlags=266
     DistanceFromPlayer=3207.200439
     Level=LevelInfo'MyLevel.LevelInfo0'
     Tag=Brush
@@ -65952,7 +65952,7 @@ Begin Actor Class=Brush Name=Brush365
     CsgOper=CSG_Add
     MainScale=(SheerAxis=SHEER_ZX)
     PostScale=(SheerAxis=SHEER_ZX)
-    PolyFlags=268
+    PolyFlags=266
     DistanceFromPlayer=4453.781250
     Level=LevelInfo'MyLevel.LevelInfo0'
     Tag=Brush
@@ -67945,7 +67945,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover6
              Vertex   -00000.500000,-00054.000000,+00014.000000
              Vertex   -00000.500000,-00054.000000,-00014.000000
           End Polygon
-          Begin Polygon Texture=bulltprftrans_a Flags=264 Link=10
+          Begin Polygon Texture=bulltprftrans_a Flags=266 Link=10
              Origin   +00000.500000,-00056.000000,-00016.000000
              Normal   -00001.000000,+00000.000000,+00000.000000
              TextureU +00000.000000,+00004.000000,+00000.000000

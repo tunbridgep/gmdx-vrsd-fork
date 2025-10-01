@@ -188,6 +188,7 @@ function BeginPlay()
     }
 	SoundRadius=96;
 	default.SoundRadius=96;
+    hackStrength = 0.10;   //Sarge: All cameras are at 10% strength (one multitool at Trained on hardcore, Untrained otherwise)
 	if (Level.NetMode != NM_Standalone)
 	{
 		bInvincible=true;

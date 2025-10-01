@@ -1,6 +1,6 @@
 Section "Augmentique"
 
-SetOutPath $INSTDIR\Augmentique\System
+SetOutPath $INSTDIR\Mods\Augmentique\System
 File "${SARGE_U_FILES}\Augmentique.u"
 SetOutPath $INSTDIR
 

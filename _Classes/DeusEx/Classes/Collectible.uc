@@ -9,6 +9,7 @@ class Collectible extends DeusExDecoration abstract;
 function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 {
     frobber.collectiblesFound++;
+    frobber.ClientMessage(class'DeusExPickup'.default.PickupMessage @ itemArticle @ itemName, 'Pickup');
     Destroy();
     return False;
 }
@@ -17,6 +18,7 @@ defaultproperties
 {
     //Mesh=LodMesh'DeusExDeco.NYEagleStatue'
     //DrawScale=0.100000
+    itemArticle="the"
     ItemName="Small Buddha Statue (Collectible)"
     Mesh=LodMesh'DeusExDeco.HKBuddha'
     DrawScale=0.200000

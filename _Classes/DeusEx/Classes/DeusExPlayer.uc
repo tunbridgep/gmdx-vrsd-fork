@@ -897,8 +897,6 @@ var globalconfig bool bFasterInfolinks;                         //SARGE: Signifi
 
 var globalconfig bool bDrawAddonsOnAmmoDisplay;                 //SARGE: Draws "S", "L" and "S" labels for Scopes, Silencers and Lasers on the Ammo display.
 
-var globalconfig bool bExperimentalFootstepDetection;           //SARGE: Adds experimental footstep detection
-
 //Markers Stuff and Notes Overhaul
 var travel MarkerInfo markers;                                  //SARGE: A list of markers 
 var travel bool bShowMarkers;                                   //SARGE: Whether or not to show note markers
@@ -910,7 +908,12 @@ var globalconfig bool bEditDefaultNotes;                        //SARGE: If enab
 
 var globalconfig bool bClassicScope;                            //SARGE: Classic Scope Mode
 
-var globalconfig bool bExperimentalAmmoSpawning;                //SARGE: Experimental ammo spawning
+var globalconfig bool bQuickReflexes;                           //SARGE: Enemies can snap-shoot at you if they hear you or are alerted, rather than standing around.
+
+//EXPERIMENTAL FEATURES
+
+var globalconfig bool bExperimentalFootstepDetection;           //SARGE: Adds experimental footstep detection
+var globalconfig bool bExperimentalAmmoSpawning;                //SARGE: Adds experimental ammo spawning at our feet if we miss out
 
 var globalconfig bool bComputerActionsDrainHackTime;            //SARGE: If enabled, performing actions (disabling cameras, etc) drains hack time when hacking computers.
 
@@ -3539,6 +3542,7 @@ function ClientSetMusic(Music NewSong, byte NewSection, byte NewCdTrack, EMusicT
 
         DebugMessage("ClientSetMusic: Setting music to " $ NewSong @ NewSection @ NewTransition);
         Super.ClientSetMusic(NewSong,NewSection,NewCDTrack,NewTransition);
+        DebugMessage("ClientSetMusic: Music set to section " $ NewSection $ ", actual section is " $ SongSection);
         default.previousTrack = NewSong;
         default.previousLevelSection = info.SongAmbientSection;
         default.previousMusicMode = default.musicMode;
@@ -8373,9 +8377,20 @@ exec function UseSecondary()
 function DoLeftFrob(Actor frobTarget)
 {
     local bool bDefaultFrob;
-    
+
+
     if (inHand == None)
     {
+        //Add pickup cooldown, or bail if we have the pickup cooldown
+        if (frobTarget.IsA('Inventory'))
+        {
+            if (pickupCooldown < 0.01)
+                pickupCooldown = 0.15;
+            else
+                return;
+        }
+
+
         if (frobTarget.isA('DeusExPickup'))
             bDefaultFrob = DeusExPickup(frobTarget).DoLeftFrob(Self);
         else if (frobTarget.isA('DeusExWeapon'))
@@ -9197,10 +9212,10 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 				// single use weapon, and if we already have one in our
 				// inventory another cannot be picked up (puke).
 
-				bCanPickup = ! ( (Weapon(foundItem).ReloadCount == 0) &&
-				                 (Weapon(foundItem).PickupAmmoCount == 0) &&
-				                 (Weapon(foundItem).AmmoName != None) );
-
+				bCanPickup = ! ( (Weapon(foundItem).default.ReloadCount == 0) &&
+				                 (Weapon(foundItem).default.PickupAmmoCount == 0) &&
+				                 (Weapon(foundItem).default.AmmoName != None) );
+								 
 				/*if (Weapon(foundItem).IsA('WeaponHideAGun'))
                 {bCanPickup = True;  bSearchSlotNeeded = True;  }*/
 				
@@ -11080,6 +11095,14 @@ function DropDecoration()
 
                 if (bThrowDecoration)
                     ThrowDecoration(deco);
+
+                //SARGE: Stamina cost for throwing objects.
+                if (bStaminaSystem)
+                {
+                    swimTimer -= MAX(MIN(deco.Mass * 0.005,3),2);
+                    if (swimTimer < 0)
+                        swimTimer = 0;
+                }
             }
 		}
 		else
@@ -14693,6 +14716,7 @@ static final function string TitleCase(coerce string Text)
                     case "cia":
                     case "fbi":
                     case "unatco":
+                    case "unatco!":
                     case "mj12":
                         Word = Caps(Word);
                         bDontChange = true;
@@ -14714,6 +14738,10 @@ static final function string TitleCase(coerce string Text)
                         break;
                     case "3rd ":
                         Word = "3rd ";
+                        bDontChange = true;
+                        break;
+                    case "mcmoran ":
+                        Word = "McMoran ";
                         bDontChange = true;
                         break;
                 }
@@ -19456,7 +19484,7 @@ function int GetAdjustedMaxAmmoByClass(class<Ammo> ammotype)
     DXammotype = class<DeusExAmmo>(ammotype);
 
     //SARGE: Special case for LAW ammo
-    if (ammoType.IsA('AmmoLAW'))
+    if (ammoType == class'AmmoLAW')
     {
         lawfare = PerkManager.GetPerkWithClass(class'PerkLawfare');
         if (lawfare != None && lawfare.bPerkObtained)
@@ -20069,4 +20097,5 @@ defaultproperties
      bShowMarkerNotes=true
      bEditDefaultNotes=false
      bComputerActionsDrainHackTime=true
+     fMusicHackTimer=-1
 }

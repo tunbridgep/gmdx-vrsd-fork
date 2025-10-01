@@ -231,7 +231,7 @@ function Color GetFrobDisplayBorderColor(Actor frobTarget)
             else if (capacity - myammo < AM.AmmoAmount)
                 return colWireless;
         }
-        else if (WE != None && WE.PickupAmmoCount > 0)
+        else if (WE != None && WE.PickupAmmoCount > 0 && player.FindInventoryType(WE.Class) != None)
         {
             AM = DeusExAmmo(player.FindInventoryType(WE.AmmoName));
             if (AM != None)

@@ -27,6 +27,7 @@ function FirstFrame()
 {
 	local BlackHelicopter chopper;
 	local InterpolateTrigger trig;
+	local DeusExMover M;
 
 	Super.FirstFrame();
 
@@ -53,6 +54,23 @@ function FirstFrame()
 			flags.SetBool('MS_BeginSabotage', True,, 16);
 		}
 	}
+	if (localURL == "15_AREA51_ENTRANCE")
+    {
+		if (!flags.GetBool('GMDXFixedTargets'))
+        {
+            //Fix the targets not breaking properly 
+            foreach AllActors(class'DeusExMover', M)
+            {
+                if (M.Tag == 'c1' || M.Tag == 'c2' || M.Tag == 'c3' || M.Tag == 'c4' || M.Tag == 'c5' || M.Tag == 'c6' || M.Tag == 'c7' || M.Tag == 'c8')
+                {
+                    M.DoorStrength = 0.001;
+                    M.minDamageThreshold = 0;
+                }
+            }
+			
+            flags.SetBool('GMDXFixedTargets', True,, 16);
+        }
+    }
 CanQuickSave=true;
 }
 

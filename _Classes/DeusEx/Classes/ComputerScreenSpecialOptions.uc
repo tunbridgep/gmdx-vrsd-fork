@@ -102,13 +102,13 @@ function SetNetworkTerminal(NetworkTerminal newTerm)
     {
         btnLogout = winButtonBar.AddButton(ButtonLabelLogout, HALIGN_Right);
         btnReturn = winButtonBar.AddButton(buttonText, HALIGN_Left);
-        if (btnReturn != None)
-            CreateLeftEdgeWindow();
+        CreateLeftEdgeWindow();
     }
     else
     {
-        //btnLogout = winButtonBar.AddButton(ButtonLabelLogout, HALIGN_Right);
+        btnLogout = winButtonBar.AddButton(ButtonLabelLogout, HALIGN_Left);
         btnReturn = winButtonBar.AddButton(buttonText, HALIGN_Right);
+        CreateLeftEdgeWindow();
     }
 }
 
