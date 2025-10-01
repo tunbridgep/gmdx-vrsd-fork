@@ -2340,6 +2340,7 @@ exec function DualmapF9() { if ( AugmentationSystem != None) AugmentationSystem.
 exec function DualmapF10() { if ( AugmentationSystem != None) AugmentationSystem.ActivateAugByKey(7); }
 exec function DualmapF11() { if ( AugmentationSystem != None) AugmentationSystem.ActivateAugByKey(8); }
 exec function DualmapF12() { if ( AugmentationSystem != None) AugmentationSystem.ActivateAugByKey(9); }
+exec function Flashlight() { if ( AugmentationSystem != None) AugmentationSystem.ActivateAugByKey(10); }
 
 //SARGE: Let the player dual-map belt slots.
 exec function AltBelt0() { ActivateBelt(0); }
