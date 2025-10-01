@@ -5006,6 +5006,7 @@ simulated function PlayFootStep()
 	local float shakeTime, shakeRoll, shakeVert;
     local float stealthLevel;
 	local Pawn P;
+    local bool bPawnCheck;
 
 	// Only do this on ourself, since this takes into account aug stealth and such
 	if ( Level.NetMode != NM_StandAlone )
@@ -5326,11 +5327,20 @@ simulated function PlayFootStep()
 
         //SARGE: Also alert NPCs for "quiet" footsteps, so they become suspicious over time.
         //I bet this is real slow!
-        if (bExperimentalFootstepDetection)
+        if (bExperimentalFootstepDetection || bHardCoreMode)
         {
             for( P=Level.PawnList; P!=None; P=P.nextPawn )
             {
-                if (P.IsA('ScriptedPawn') && P.IsInState('Patrolling') && ScriptedPawn(P).bReactLoudNoise && VSize(P.Location - Location) < range*volumeMultiplier*0.8)
+                //We need to do several pawn checks, lets start with the cheapest ones...
+                bPawnCheck = P.IsA('ScriptedPawn') && !P.IsA('Robot') && ScriptedPawn(P).bReactLoudNoise;
+                bPawnCheck = bPawnCheck && P.LastRendered() < 5.0;
+                bPawnCheck = bPawnCheck && (P.IsInState('Patrolling') || P.IsInState('Wandering') || P.IsInState('Standing') || P.IsInState('Sitting'));
+                bPawnCheck = bPawnCheck && VSize(P.Location - Location) < range*volumeMultiplier*0.8;
+                bPawnCheck = bPawnCheck && P.LineOfSightTo(Self);
+                //bPawnCheck = bPawnCheck && P.AICanSee(Self) > 0;
+                //Log("Pawn: " $ P.Name @  P.AICanSee(Self));
+
+                if (bPawnCheck)
                     ScriptedPawn(P).HandleFootstepsAwareness(Self,volume*volumeMultiplier*volumeMod*0.6);
             }
         }
