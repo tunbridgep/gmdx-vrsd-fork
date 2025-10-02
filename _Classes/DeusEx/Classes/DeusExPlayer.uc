@@ -916,6 +916,8 @@ var globalconfig bool bExperimentalAmmoSpawning;                //SARGE: Adds ex
 var globalConfig bool bPawnsReactToWeapons;                     //SARGE: Whether or not pawns will react when you have your weapons pointed at them.
 var transient float PawnReactTime;                              //SARGE: Only detect pawn reactions every 10th of a second or so
 
+var transient bool bUpdateHud;                                 //SARGE: Trigger a HUD update next frame.
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -3873,6 +3875,10 @@ function MaintainEnergy(float deltaTime)
 simulated function RefreshSystems(float DeltaTime)
 {
 	local DeusExRootWindow root;
+
+    //SARGE: Also allow the HUD to be updated
+    if (bUpdateHud)
+        _UpdateHUD();
 
 	if (Level.NetMode == NM_Standalone)
 	  return;
@@ -12636,6 +12642,11 @@ function UpdateCrosshair()
 
 function UpdateHUD()
 {
+    bUpdateHud = true;
+}
+
+function private _UpdateHUD()
+{
     local int i;
 	local DeusExRootWindow root;
 	root = DeusExRootWindow(rootWindow);
@@ -12652,6 +12663,10 @@ function UpdateHUD()
 
     //Show/Hide Markers
     UpdateMarkerDisplay(true);
+
+    bUpdateHud = false;
+
+    DebugMessage("UpdateHUD");
 }
 
 function UpdateSecondaryDisplay()
