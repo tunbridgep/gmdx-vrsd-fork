@@ -528,6 +528,9 @@ function PostBeginPlay()
 
 	bCollideWorld = true;
 
+    //Set our ID
+    carcassID = string(name);
+
 	// Use the carcass name by default
     UpdateName();
 
