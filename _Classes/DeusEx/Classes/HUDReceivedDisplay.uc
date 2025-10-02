@@ -29,7 +29,7 @@ struct ItemInfo
     var int quantity;
     //var bool bDeclined;
     var bool bNoGroup;
-    var Actor owner;
+    var string owner;
     var bool bHidden;
     var float batchTime; //SARGE: HACK to only consider items added in a previous batch
 };
@@ -177,7 +177,7 @@ function bool AddCredits(Int count)
     local Texture icon;
     icon = class'Credits'.default.Icon;
     label = class'Credits'.default.beltDescription;
-    return AddGenericIcon(None,icon,label,count,false,false);
+    return AddGenericIcon("",icon,label,count,false,false);
 }
 
 // ----------------------------------------------------------------------
@@ -185,7 +185,7 @@ function bool AddCredits(Int count)
 // SARGE: Allow displaying arbitrary icons without an associated item
 // ----------------------------------------------------------------------
 
-function bool AddGenericIcon(Actor owner, Texture icon, string label, optional int quantity, optional bool bDeclined, optional bool bNoGroup)
+function bool AddGenericIcon(string owner, Texture icon, string label, optional int quantity, optional bool bDeclined, optional bool bNoGroup)
 {
     local int i;
 
@@ -212,7 +212,7 @@ function bool AddGenericIcon(Actor owner, Texture icon, string label, optional i
         //Remove any non-declined items that match 
         for (i = 0;i < declinedItemNum;i++)
         {
-            if (items[i].owner == declinedItems[itemNum].owner && items[i].icon == declinedItems[itemNum].icon && items[i].quantity == declinedItems[itemNum].quantity)
+            if (items[i].owner != "" && items[i].owner == declinedItems[itemNum].owner && items[i].icon == declinedItems[itemNum].icon && items[i].quantity == declinedItems[itemNum].quantity)
             {
                 items[i].bHidden = true;
                 break;
@@ -238,7 +238,7 @@ function bool AddGenericIcon(Actor owner, Texture icon, string label, optional i
         //Remove any declined items that match 
         for (i = 0;i < declinedItemNum;i++)
         {
-            if (declinedItems[i].owner == items[itemNum].owner && declinedItems[i].icon == items[itemNum].icon && declinedItems[i].quantity == items[itemNum].quantity)
+            if (declineditems[i].owner != "" && declinedItems[i].owner == items[itemNum].owner && declinedItems[i].icon == items[itemNum].icon && declinedItems[i].quantity == items[itemNum].quantity)
             {
                 Log("Adding hitten item: " $ declinedItems[i].icon);
                 declinedItems[i].bHidden = true;
@@ -348,6 +348,11 @@ function bool AddItem(Inventory invItem, Int count, optional bool bDeclined, opt
 
 function bool AddItemFrom(Actor owner, Inventory invItem, Int count, optional bool bDeclined, optional bool bNoGroup)
 {
+    return AddItemFromID(string(owner.name), invItem, count, bDeclined, bNoGroup);
+}
+
+function bool AddItemFromID(string owner, Inventory invItem, Int count, optional bool bDeclined, optional bool bNoGroup)
+{
     local string labelText;
 
     //SARGE: Add a "+" to the item name for upgraded weapons
@@ -365,7 +370,7 @@ function bool AddItemFrom(Actor owner, Inventory invItem, Int count, optional bo
 // HasOwnedItem()
 // ----------------------------------------------------------------------
 
-function bool HasOwnedItem(Actor owner, Texture icon, string label, int quantity, bool bDeclined, bool bNoGroup, float batchTime)
+function bool HasOwnedItem(string owner, Texture icon, string label, int quantity, bool bDeclined, bool bNoGroup, float batchTime)
 {
     local int i;
 
@@ -373,7 +378,7 @@ function bool HasOwnedItem(Actor owner, Texture icon, string label, int quantity
     {
         for (i = 0;i < itemNum;i++)
         {
-            if (items[i].owner == owner && items[i].icon == icon && items[i].quantity == quantity && items[i].batchTime < batchTime)
+            if (items[i].owner != "" && items[i].owner == owner && items[i].icon == icon && items[i].quantity == quantity && items[i].batchTime < batchTime)
                 return true;
         }
     }
@@ -381,7 +386,7 @@ function bool HasOwnedItem(Actor owner, Texture icon, string label, int quantity
     {
         for (i = 0;i < declinedItemNum;i++)
         {
-            if (declinedItems[i].owner == owner && declinedItems[i].icon == icon && declinedItems[i].quantity == quantity && declinedItems[i].batchTime < batchTime)
+            if (declinedItems[i].owner != "" && declinedItems[i].owner == owner && declinedItems[i].icon == icon && declinedItems[i].quantity == quantity && declinedItems[i].batchTime < batchTime)
                 return true;
         }
     }

@@ -109,6 +109,8 @@ var transient int badItemCount;
 //SARGE: Breathing time. Carcasses won't instantly die in water, they have about 20 seconds
 var float breatheTime;
 
+var string carcassID;                                                                 //SARGE: Generally, the carcas name. Kept through pickup and put down.
+
 // ----------------------------------------------------------------------
 // Augmentique
 // ----------------------------------------------------------------------
@@ -1059,6 +1061,7 @@ function PickupCorpse(DeusExPlayer player)
                     corpse.bHasSkins = true;
                 }
             }
+            corpse.carcassID = carcassID;
             corpse.carcClassString = String(Class);
             corpse.KillerAlliance = KillerAlliance;
             corpse.KillerBindName = KillerBindName;
@@ -1107,7 +1110,7 @@ function bool LootAmmo(DeusExPlayer P, DeusExWeapon item, bool bDisplayOverflowM
 {
     local bool bResult;
     local DeusExAmmo AmmoType;
-    bResult = item.LootAmmo(P,true,true,false,false,bDisplayOverflowMsg,bShowOverflow,self);
+    bResult = item.LootAmmo(P,true,true,false,false,bDisplayOverflowMsg,bShowOverflow,carcassID);
 
     return bResult;
 }
@@ -1712,7 +1715,8 @@ function AddReceivedItem(DeusExPlayer player, Inventory item, int count, optiona
 	}
     */
 
-    player.AddReceivedItem(self,item,count,bNoGroup,bDeclined);
+    player.DebugMessage("CarcassID: " $ carcassID);
+    player.AddReceivedItem(carcassID,item,count,bNoGroup,bDeclined);
 }
 
 //-----------------------------------------------------------------------

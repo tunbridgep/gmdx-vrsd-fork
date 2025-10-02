@@ -717,7 +717,7 @@ function bool ShowGenericIconFrom(Actor source, Texture icon, string label, opti
 	if (winReceived != None)
 	{
         AskParentForReconfigure(); //SARGE: Added, so we can place the windows properly
-		return winReceived.AddGenericIcon(Source, icon, label, count, bDeclined, bNoGroup);
+		return winReceived.AddGenericIcon(string(Source.name), icon, label, count, bDeclined, bNoGroup);
 	}
     return false;
 }

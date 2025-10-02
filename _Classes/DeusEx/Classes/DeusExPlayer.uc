@@ -9025,7 +9025,7 @@ function PlayPickupAnim(Vector locPickup)
 //
 // Returns the number of rounds they were able to pick up.
 // ----------------------------------------------------------------------
-function int LootAmmo(Actor owner, class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool bShowWindow, optional bool bLootSound, optional bool bNoGroup, optional bool bNoOnes, optional bool bShowOverflowMsg, optional bool bShowOverflowWindow, optional Texture overrideTexture)
+function int LootAmmo(string owner, class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool bShowWindow, optional bool bLootSound, optional bool bNoGroup, optional bool bNoOnes, optional bool bShowOverflowMsg, optional bool bShowOverflowWindow, optional Texture overrideTexture)
 {
     local int MaxAmmo, prevAmmo, ammoCount, intj, over, ret;
     local DeusExAmmo AmmoType;
@@ -9135,7 +9135,7 @@ function PlayPartialAmmoSound(Actor source, class<Ammo> ammoName)
 // HandleItemPickup()
 // ----------------------------------------------------------------------
 
-function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, optional bool bSkipDeclineCheck, optional Actor FromCorpse, optional bool bShowOverflow, optional bool bShowOverflowWindow)
+function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, optional bool bSkipDeclineCheck, optional DeusExCarcass FromCorpse, optional bool bShowOverflow, optional bool bShowOverflowWindow)
 {
 	local bool bCanPickup;
 	local bool bSlotSearchNeeded;
@@ -9146,7 +9146,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     local bool bLootedAmmo;
     local WeaponNanoSword dts;
     local bool bDestroy;
-    local Actor source;
+    local string source;
 
 	bSlotSearchNeeded = True;
 	bCanPickup = True;
@@ -9158,9 +9158,9 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 
     //SARGE: Set the source of the interaction (used by the HUD Display)
     if (FromCorpse != None)
-        source = FromCorpse;
+        source = FromCorpse.carcassID;
     else
-        source = self;
+        source = string(self.Class.name);
 
 	// Special checks for objects that do not require phsyical inventory
 	// in order to be picked up:
@@ -9416,7 +9416,7 @@ function ClearReceivedItems()
     DeusExRootWindow(rootWindow).hud.receivedItems.RemoveItems();
 }
 
-function AddReceivedItem(Actor owner, Inventory item, int count, optional bool bNoGroup, optional bool bDeclined)
+function AddReceivedItem(string owner, Inventory item, int count, optional bool bNoGroup, optional bool bDeclined)
 {
     local int i;
 
@@ -9428,7 +9428,7 @@ function AddReceivedItem(Actor owner, Inventory item, int count, optional bool b
     {
         DebugLog("Item is: " $ item $ ", bDeclined is " $ bDeclined $ ", bNoGroup: " $ bNoGroup);
 
-        DeusExRootWindow(rootWindow).hud.receivedItems.AddItemFrom(owner, item, count, bDeclined, bNoGroup);
+        DeusExRootWindow(rootWindow).hud.receivedItems.AddItemFromID(owner, item, count, bDeclined, bNoGroup);
 
         // Make sure the object belt is updated
         if (item.IsA('Ammo'))
@@ -11403,6 +11403,8 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 						            carc.MultiSkins[i] = POVCorpse(item).pMultitex[i];
                                 }
 						    }
+                            if (POVCorpse(item).carcassID != "")
+                                carc.carcassID = POVCorpse(item).carcassID;
 							carc.Mesh = carc.Mesh2;
 							carc.KillerAlliance = POVCorpse(item).KillerAlliance;
 							carc.KillerBindName = POVCorpse(item).KillerBindName;

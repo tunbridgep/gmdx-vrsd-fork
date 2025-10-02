@@ -33,6 +33,8 @@ var travel int PickupAmmoCount;                                                 
 var travel bool bFirstBloodPool;                                                //SARGE: Stores whether or not the carcass has created a blood pool yet.
 var travel bool bNoDefaultPools;                                                //SARGE: If set, don't make pools at all, unless we receive gunshot wounds or the corpse is otherwise damaged.
 
+var string carcassID;                                                           //SARGE: Unique identifier per carcass. Kept when picking up and putting down
+
 //END GMDX:
 
 //Augmentique Data
