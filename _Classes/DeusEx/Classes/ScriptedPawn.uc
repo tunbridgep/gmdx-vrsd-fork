@@ -525,6 +525,9 @@ var(GMDX) const bool bSmartWeaponDraw;        //SARGE: If set, Pawn will draw th
 var float fSubAwarenessMod;                    //SARGE: gradually improve hearing threshold as we hear footsteps, making us "perk up" more as we hear suspicious sounds. Stops the player "trailing" NPCs.
 var float fSubAwarenessModTime;                //SARGE: How long until sub-awareness state wears off. Usually it's about 5 seconds.
 
+//SARGE: Add new awareness for guns being pointed at them
+var(GMDX) bool bReactGunPointed;
+
 //Augmentique Data
 struct AugmentiqueOutfitData
 {

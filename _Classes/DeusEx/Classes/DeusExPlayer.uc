@@ -915,6 +915,9 @@ var globalconfig bool bQuickReflexes;                           //SARGE: Enemies
 var globalconfig bool bExperimentalFootstepDetection;           //SARGE: Adds experimental footstep detection
 var globalconfig bool bExperimentalAmmoSpawning;                //SARGE: Adds experimental ammo spawning at our feet if we miss out
 
+var globalConfig bool bPawnsReactToWeapons;                     //SARGE: Whether or not pawns will react when you have your weapons pointed at them.
+var transient float PawnReactTime;                              //SARGE: Only detect pawn reactions every 10th of a second or so
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -5411,6 +5414,98 @@ function bool IsFrobbable(actor A)
 }
 
 // ----------------------------------------------------------------------
+// ReactToGunsPointed()
+//
+// SARGE: Makes a pawn react if the player is pointing a gun at them.
+// Based on the one from Transcended, but done here instead of AugmentationDisplayWindow,
+// and rewritten from scratch to not be terrible.
+// ----------------------------------------------------------------------
+function ReactToGunsPointed()
+{
+    local Actor A;
+    local ScriptedPawn P;
+    local bool bCanReact;
+	local Vector HitLoc, HitNormal, StartTrace, EndTrace;
+    local DeusExWeapon weapon;
+		
+    weapon = DeusExWeapon(inHand);
+
+    //Bail out if the setting isn't enabled or we're unarmed.
+    if (!bPawnsReactToWeapons || weapon == None)
+        return;
+
+    // only do the trace every tenth of a second
+	if (PawnReactTime <= 0.1)
+        return;
+
+    PawnReactTime = 0;
+    
+    //DebugMessage("2");
+
+    // figure out how far ahead we should trace
+    StartTrace = Location;
+    EndTrace = Location + (Vector(ViewRotation) * FMIN(160,weapon.MaxRange));
+
+    // adjust for the eye height
+    StartTrace.Z += BaseEyeHeight;
+    EndTrace.Z += BaseEyeHeight;
+
+    //SARGE: Removed the special case for Multitools, see below for how this is done.
+
+    // find the actor that we are looking at
+    foreach TraceActors(class'Actor', A, HitLoc, HitNormal, EndTrace, StartTrace)
+    {
+        if (A.IsA('ScriptedPawn'))
+        {
+            P = ScriptedPawn(A);
+            break; //SARGE: Only affect the first one we hit
+        }
+    }
+
+    if (P == None)
+        return;
+    
+    //DebugMessage("3: " $ P.name);
+
+    //Pawn has to be able to react and not already afraid of guns
+    bCanReact = P.bReactGunPointed && !P.bFearWeapon;
+    
+    //DebugMessage("4 React Gun Drawn Check: " $ bCanReact);
+
+    //Pawn has to be an ally
+    bCanReact = bCanReact && P.GetPawnAllianceType(self) != ALLIANCE_Hostile;
+    
+    //DebugMessage("5 Alliance Type Check: " $ bCanReact);
+
+    //Pawn has to not be trying to start a conversation or otherwise approaching us
+    bCanReact = bCanReact && !P.IsInState('WaitingFor') && !P.IsInState('RunningTo') && !P.IsInState('GoingTo') && !P.IsInState('FirstPersonConversation') && !P.IsInState('Fleeing');
+    
+    //DebugMessage("6 State Check: " $ bCanReact);
+
+    //Pawn can't have reacted recently
+    bCanReact = bCanReact && P.bLookingForFutz && P.FutzTimer <= 0;
+    
+    //DebugMessage("7 Futz Timer Check: " $ bCanReact);
+
+    //Our weapon has to be visible and within range
+    bCanReact = bCanReact && weapon.bEmitWeaponDrawn/* && weapon.MaxRange >= VSize(pawn.Location - Player.Location)*/;
+    
+    //DebugMessage("8 Emit Weapon Check: " $ bCanReact);
+
+    //Pawn has to see us
+    bCanReact = bCanReact && P.AICanSee(self, , false, true, false, false) > 0;
+    
+    //DebugMessage("9 LOS Check: " $ bCanReact);
+
+    if (bCanReact)
+    {
+        DebugMessage("NPC Gun Reaction: " $ P.name);
+        P.FutzTimer = 4.0;
+        P.PlayFutzSound();
+    }
+}
+
+// ----------------------------------------------------------------------
 // HighlightCenterObject()
 //
 // checks to see if an object can be frobbed, if so, then highlight it
@@ -7230,6 +7325,7 @@ state PlayerWalking
 		RecoilEffectTick(deltaTime);
 		Bleed(deltaTime);
 		HighlightCenterObject();
+        ReactToGunsPointed();       //SARGE: Added.
 
 		UpdateDynamicMusic(deltaTime);
 		UpdateWarrenEMPField(deltaTime);
@@ -7238,6 +7334,7 @@ state PlayerWalking
 	  MultiplayerTick(deltaTime);
 	  // DEUS_EX AMSD For multiplayer...
 		FrobTime += deltaTime;
+		PawnReactTime += deltaTime;
 
         if (camInterpol > 0)
         {
@@ -7368,10 +7465,12 @@ state PlayerFlying
 		DrugEffects(deltaTime);
 		RecoilEffectTick(deltaTime);
 		HighlightCenterObject();
+        ReactToGunsPointed();       //SARGE: Added.
 		UpdateDynamicMusic(deltaTime);
 	    // DEUS_EX AMSD For multiplayer...
 	    MultiplayerTick(deltaTime);
 		FrobTime += deltaTime;
+		PawnReactTime += deltaTime;
 
 		// Check if player has walked outside a first-person convo.
 		CheckActiveConversationRadius();
@@ -7526,10 +7625,12 @@ state PlayerSwimming
 
 		DrugEffects(deltaTime);
 		HighlightCenterObject();
+        ReactToGunsPointed();       //SARGE: Added.
 		UpdateDynamicMusic(deltaTime);
 	  // DEUS_EX AMSD For multiplayer...
 	  MultiplayerTick(deltaTime);
 		FrobTime += deltaTime;
+		PawnReactTime += deltaTime;
 
 		if (bOnFire)
 			ExtinguishFire();
@@ -20127,4 +20228,5 @@ defaultproperties
      bShowMarkerNotes=true
      bEditDefaultNotes=false
      fMusicHackTimer=-1
+     bPawnsReactToWeapons=true
 }

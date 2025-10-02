@@ -81,6 +81,7 @@ New Features:
 - Nanokeys now display their full name when highlighted, rather than "NanoKey"
 - Automatic Augmentations will now temporarily display as the Active aug colour in the augs display when consuming energy.
 - Credits will now display their amount in brackets when highlighted. Additionally added a new setting to show the Items Received window when picking up credits.
+- Friendly NPCs will now react to you pointing a gun at them, similar to Revision and Transcended.
 
 Map Changes:
 - 01_NYC_UnatcoIsland:
