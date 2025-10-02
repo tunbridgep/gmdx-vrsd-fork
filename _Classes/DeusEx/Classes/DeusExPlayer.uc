@@ -3591,6 +3591,7 @@ function ResetMusic()
     }
     */
 
+    default.fMusicHackTimer = 8.0;
     default.musicMode = MUS_Ambient;
     bMusicSystemReset = true;
 }
@@ -3660,8 +3661,11 @@ function UpdateDynamicMusic(float deltaTime)
 		if (default.musicMode != MUS_Outro && bAllowOther)
 		{
             // save our place in the ambient track
-            if (default.musicMode == MUS_Ambient && default.fMusicHackTimer == 0)
+            if (default.previousMusicMode == MUS_Ambient && default.fMusicHackTimer == 0)
+            {
+                DebugMessage("SaveSection Outro: " $ SongSection);
                 default.savedSection = SongSection;
+            }
 
 			default.musicMode = MUS_Outro;
 			ClientSetMusic(Level.Song, 5, 255, MTRAN_FastFade);
@@ -3672,8 +3676,11 @@ function UpdateDynamicMusic(float deltaTime)
 		if (default.musicMode != MUS_Conversation)
 		{
 			// save our place in the ambient track
-			if (default.musicMode == MUS_Ambient && default.fMusicHackTimer == 0)
+			if (default.previousMusicMode == MUS_Ambient && default.fMusicHackTimer == 0)
+            {
+                DebugMessage("SaveSection Conversation: " $ SongSection);
 				default.savedSection = SongSection;
+            }
 
 			default.musicMode = MUS_Conversation;
 			ClientSetMusic(Level.Song, info.SongConversationSection, 255, MTRAN_Fade);
@@ -3684,8 +3691,11 @@ function UpdateDynamicMusic(float deltaTime)
 		if (default.musicMode != MUS_Dying)
 		{
             // save our place in the ambient track
-            if (default.musicMode == MUS_Ambient && default.fMusicHackTimer == 0)
+            if (default.previousMusicMode == MUS_Ambient && default.fMusicHackTimer == 0)
+            {
+                DebugMessage("SaveSection Dying: " $ SongSection);
                 default.savedSection = SongSection;
+            }
 
 			default.musicMode = MUS_Dying;
 			ClientSetMusic(Level.Song, 1, 255, MTRAN_Fade);
@@ -3726,8 +3736,11 @@ function UpdateDynamicMusic(float deltaTime)
 				if (default.musicMode != MUS_Combat)
 				{
 					// save our place in the ambient track
-					if (default.musicMode == MUS_Ambient && default.fMusicHackTimer == 0)
+					if (default.previousMusicMode == MUS_Ambient && default.fMusicHackTimer == 0)
+                    {
+                        DebugMessage("SaveSection Combat: " $ SongSection);
 						default.savedSection = SongSection;
+                    }
 
 					default.musicMode = MUS_Combat;
 					ClientSetMusic(Level.Song, info.SongCombatSection, 255, MTRAN_FastFade);
@@ -20204,6 +20217,6 @@ defaultproperties
      bShowRegularNotes=true
      bShowMarkerNotes=true
      bEditDefaultNotes=false
-     fMusicHackTimer=-1
+     fMusicHackTimer=4.0
      bPawnsReactToWeapons=true
 }
