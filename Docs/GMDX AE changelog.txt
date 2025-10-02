@@ -218,6 +218,7 @@ Bug Fixes:
 - Ammo counter for current bullets in clip now scales properly when determining whether to use green or red text when max ammo is an odd number.
 
 Misc Changes:
+- The QoL Menu has now been reduced to only the most impactful and important options. Turn on Advanced Mode to see all of the options.
 - The mod now includes RenderExt by Hanfling, which should prevent rendering errors and crashes.
 - The Flashlight now uses a separate binding and is no longer associated with any of the Function keys. Bound to V by default.
 - Unconscious bodies which are thrown into pools of water will now drown slowly over ~20 seconds, rather than dying instantly.
