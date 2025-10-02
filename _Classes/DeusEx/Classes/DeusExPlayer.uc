@@ -763,8 +763,6 @@ var globalconfig bool bShowItemPickupCounts;                            //SARGE:
 
 var globalconfig bool bShowAmmoTypeInAmmoHUD;                           //SARGE: If true, show the selected ammo type in the Ammo HUD, where the lock on text would normally be.
 
-var transient float pickupCooldown;                                     //SARGE: Add a very short cooldown after picking something up, so that we can't duplicate items while they replicate to the server.
-
 var bool bWasForceSelected;                                             //SARGE: Whether or not our last weapon selection was forced.
 var bool bSelectedOffBelt;                                             //SARGE: Whether or not our last weapon selection was for an item that isn't on the belt.
 var globalconfig bool bAllowOffBeltSelection;                           //SARGE: When selecting off belt, unholstering respects the new selection rather than using the last belt selection. Disabled by default because it can feel weird/inconsistent.
@@ -7392,10 +7390,6 @@ state PlayerWalking
             }
         }
 
-        //SARGE: Tick down our item pickup prevention (stops item dupes)
-        if (pickupCooldown > 0)
-            pickupCooldown -= deltaTime;
-
         //Stop being stunted if we elapse the stunted timer
         if (stuntedTime > 0)
             stuntedTime -= deltaTime;
@@ -7482,10 +7476,6 @@ state PlayerFlying
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
         
-        //SARGE: Tick down our item pickup prevention (stops item dupes)
-        if (pickupCooldown > 0)
-            pickupCooldown -= deltaTime;
-
 		Super.PlayerTick(deltaTime);
 	}
 }
@@ -7691,10 +7681,6 @@ state PlayerSwimming
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
         
-        //SARGE: Tick down our item pickup prevention (stops item dupes)
-        if (pickupCooldown > 0)
-            pickupCooldown -= deltaTime;
-
 		Super.PlayerTick(deltaTime);
 	}
 
@@ -8480,7 +8466,6 @@ exec function UseSecondary()
 	    }
 
     }
-    pickupCooldown = 0.15;
 }
 
 //Sarge: Because we can only inherit from one class,
@@ -8495,10 +8480,6 @@ function DoLeftFrob(Actor frobTarget)
 
     if (inHand == None)
     {
-        //Bail if we have the pickup cooldown
-        if (frobTarget.IsA('Inventory') && pickupCooldown > 0.01)
-            return;
-
         if (frobTarget.isA('DeusExPickup'))
             bDefaultFrob = DeusExPickup(frobTarget).DoLeftFrob(Self);
         else if (frobTarget.isA('DeusExWeapon'))
@@ -8527,7 +8508,6 @@ function DoLeftFrob(Actor frobTarget)
         bLeftClicked = true;
         HandleItemPickup(FrobTarget,false,false,false,true,true);
     }
-    pickupCooldown = 0.15;
 }
 
 //Sarge: Because we can only inherit from one class,
@@ -8718,7 +8698,7 @@ exec function ParseLeftClick()
     }
 
     //Special cases aside, now do the left hand frob behaviour
-    else if (bEnableLeftFrob && FrobTarget != none && IsReallyFrobbable(FrobTarget,true) && !bInHandTransition && (inHand == None || !inHand.IsA('POVcorpse')) && CarriedDecoration == None)
+    else if (bEnableLeftFrob && FrobTarget != none && !FrobTarget.bDeleteMe && IsReallyFrobbable(FrobTarget,true) && !bInHandTransition && (inHand == None || !inHand.IsA('POVcorpse')) && CarriedDecoration == None)
     {
         //SARGE: Hack to fix weapons repeatedly filling the received items window with crap if we're full
         DoLeftFrob(FrobTarget);
@@ -9257,7 +9237,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 
     //If we picked up something in the last 0.25 seconds, prevent pickup again.
     //This should prevent the item dupe glitch.
-    if (pickupCooldown > 0.01)
+    if (frobTarget.bDeleteMe)
         return false;
 
 	// Special checks for objects that do not require phsyical inventory
@@ -9354,7 +9334,6 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
                         //Copy any charge from the target
                         dts.RechargeFrom(WeaponNanoSword(frobTarget));
                         
-                        pickupCooldown = 0.15;
                         UpdateHUD();
 
                         bDestroy = true;
@@ -9480,8 +9459,6 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 
     if ((bCanPickup || !bSlotSearchNeeded) && !bDeclined)
     {
-        pickupCooldown = 0.15;
-        
         //SARGE: Moved left-click interaction to here.
         if (bLeftClicked && inHand == None)
         {

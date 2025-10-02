@@ -1503,12 +1503,6 @@ function Frob(Actor Frobber, Inventory frobWith)
 						}
 						else
 						{
-                            //SARGE: Dirty Hack Alert!
-                            //We restrict the players ability to pickup for a few frames when picking stuff up,
-                            //because it prevents the item dupe glitch, but now we have to turn it off,
-                            //otherwise they can only pick up 1 item from each corpse at a time.
-                            player.pickupCooldown = 0;
-
 							// check if the pawn is allowed to pick this up
 							if ((P.Inventory == None) || (Level.Game.PickupQuery(P, item)))
 							{
