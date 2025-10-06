@@ -356,6 +356,7 @@ function ToggleCameraState(optional bool bCamIsActive, optional bool bCamWasActi
 		{
             player.ToggleCameraState(cam, compOwner, winTerm.bHacked);
             selectedCamera.UpdateCameraStatus();
+            DrainHackTime(hackDrain);
 		}
 	}
 }
@@ -401,6 +402,7 @@ function ToggleDoorLock()
 			M.bLocked = !M.bLocked;
 
 		selectedCamera.UpdateDoorStatus();
+        DrainHackTime(hackDrain);
 	}
 }
 
@@ -419,6 +421,7 @@ function TriggerDoor()
 			M.Trigger(compOwner, player);
 
 		selectedCamera.UpdateDoorStatus();
+        DrainHackTime(hackDrain);
 	}
 }
 
@@ -432,6 +435,7 @@ function SetTurretState(bool bActive, bool bDisabled)
 	{
         player.SetTurretState(selectedCamera.turret,compOwner,bActive,bDisabled,winTerm.bHacked);
         selectedCamera.UpdateTurretStatus();
+        DrainHackTime(hackDrain);
 	}
 }
 
@@ -445,6 +449,8 @@ function SetTurretTrackMode(bool bTrackPlayers, bool bTrackPawns)
 	{
       player.SetTurretTrackMode(ComputerSecurity(selectedCamera.compOwner),selectedCamera.turret,bTrackPlayers,bTrackPawns,winTerm.bHacked);
 		selectedCamera.UpdateTurretStatus();
+
+      DrainHackTime(hackDrain);
 
       if ((selectedCamera.camera != None) && (Player.Level.Netmode != NM_Standalone))
       {

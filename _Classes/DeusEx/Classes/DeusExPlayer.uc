@@ -915,6 +915,8 @@ var globalconfig bool bDragAndDropOffInventory;                 //SARGE: Allow d
 var globalconfig bool bExperimentalFootstepDetection;           //SARGE: Adds experimental footstep detection
 var globalconfig bool bExperimentalAmmoSpawning;                //SARGE: Adds experimental ammo spawning at our feet if we miss out
 
+var globalconfig bool bComputerActionsDrainHackTime;            //SARGE: If enabled, performing actions (disabling cameras, etc) drains hack time when hacking computers.
+
 var globalConfig bool bPawnsReactToWeapons;                     //SARGE: Whether or not pawns will react when you have your weapons pointed at them.
 var transient float PawnReactTime;                              //SARGE: Only detect pawn reactions every 10th of a second or so
 
@@ -20240,6 +20242,7 @@ defaultproperties
      bShowRegularNotes=true
      bShowMarkerNotes=true
      bEditDefaultNotes=false
+     bComputerActionsDrainHackTime=true
      fMusicHackTimer=4.0
      bPawnsReactToWeapons=true
      bDragAndDropOffInventory=true

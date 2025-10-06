@@ -63,6 +63,8 @@ function CreateControls()
 
 function Tick(float deltaTime)
 {
+    /*
+    //SARGE: What a fucking stupid mechanic...
 	disabledDelay -= deltaTime;
 
 	if (disabledDelay <= 0.0)
@@ -72,6 +74,7 @@ function Tick(float deltaTime)
 		// Go to the ATM Disabled screen
 		CloseScreen("ATMDISABLED");
 	}
+    */
 }
 
 // ----------------------------------------------------------------------

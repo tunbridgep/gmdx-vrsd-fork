@@ -21,6 +21,8 @@ var Class<MenuUIClientWindow>   classClient;		// Which client class to use
 var ElectronicDevices           compOwner;			// what computer owns this window?
 var String                      escapeAction;		// Action to invoke when Escape pressed
 
+var const float                 hackDrain;          // SARGE: How much detection time is drained by performing actions.
+
 // Used to process Email and Bulletins
 struct TextFileInfo
 {
@@ -618,6 +620,30 @@ function SetNetworkTerminal(NetworkTerminal newTerm)
 }
 
 // ----------------------------------------------------------------------
+// DrainHackTime()
+// SARGE: Allow draining HackTime from the target computer.
+// Used when performing actions while hacking
+// ----------------------------------------------------------------------
+
+function DrainHackTime(float drain)
+{
+    //Don't drain hack time if we're not hacking
+    if (winTerm == None || !winTerm.bHacked || winTerm.winHack == None)
+        return;
+
+    //Make sure the feature is enabled (or hardcore mode)
+    if (!player.bComputerActionsDrainHackTime && !player.bHardCoreMode)
+        return;
+
+    //Don't drain hack time when under a worm virus
+    if (winTerm.winHack.bTimePaused)
+        return;
+
+    winTerm.winHack.UpdateDetectionTime(winTerm.winHack.detectionTime - drain);
+
+}
+
+// ----------------------------------------------------------------------
 // ProcessEmails()
 // SARGE: Moved this from the email screen to a new function, since now it's
 // also used by the Special Options screen
@@ -844,4 +870,5 @@ defaultproperties
      ButtonLabelLogout="|&Logout"
      ButtonLabelCancel="|&Cancel"
      ButtonLabelSpecial="|&Special Options"
+     hackDrain=4
 }
