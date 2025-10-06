@@ -584,7 +584,7 @@ function ZoneChange(ZoneInfo NewZone)
 		{
         Mesh = Mesh3;
         assignedMesh = 3;
-        if (bNotDead && !IsA('ScubaDiverCarcass') && !IsA('KarkianCarcass') && !IsA('KarkianBabyCarcass') && !IsA('GreaselCarcass')) //SARGE: Added aquatic animals.
+        if (breatheTime == -1 && bNotDead && !IsA('ScubaDiverCarcass') && !IsA('KarkianCarcass') && !IsA('KarkianBabyCarcass') && !IsA('GreaselCarcass')) //SARGE: Added aquatic animals.
         {
             breatheTime = 18;
 		}
@@ -902,11 +902,16 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitLocation, Vector mo
 		  if ((damageType == 'Exploded') || (damageType == 'Munch') || (damageType == 'Burned'))
              CumulativeDamage += Damage;
         }
-		if (CumulativeDamage >= MaxDamage)
+        else
         {
-		    KillUnconscious(DeusExPlayer(instigatedBy));
-			ChunkUp(Damage);
+             CumulativeDamage += Damage;
         }
+		
+        if (CumulativeDamage >= 30)
+		    KillUnconscious(DeusExPlayer(instigatedBy));
+
+		if (CumulativeDamage >= MaxDamage)
+			ChunkUp(Damage);
 		if (bDecorative)
 			Velocity = vect(0,0,0);
 	}
@@ -1042,6 +1047,9 @@ function PickupCorpse(DeusExPlayer player)
 {
 	local POVCorpse corpse;
     local int j;
+
+    //Cancel drowning.
+    breatheTime = -1;
 
     bDblClickStart=false;
     if (!bInvincible)
