@@ -303,6 +303,10 @@ function InitFor(Actor Other)
          else if (Other.IsA('ScriptedPawn'))
             savedName = ScriptedPawn(Other).UnfamiliarName;
 
+        //SARGE: All corpses can be reacted to
+        if (!IsA('Animal'))
+            bEmitCarcass = true;
+
         /*
 		// set as unconscious or add the pawns name to the description
         if (!bAnimalCarcass)
