@@ -15610,7 +15610,7 @@ function bool AddImage(DataVaultImage newImage)
 	image = FirstImage;
 	while(image != None)
 	{
-		if (newImage.imageDescription == image.imageDescription)
+		if (newImage.Class == image.Class) //SARGE: Fix taken from Transcended.
 			return False;
 
 		image = image.NextImage;
