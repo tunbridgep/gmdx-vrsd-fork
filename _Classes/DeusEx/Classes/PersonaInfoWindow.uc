@@ -13,6 +13,7 @@ var int textVerticalOffset;
 var PersonaActionButtonWindow    buttonUpgradeSecond;                           //RSD
 var PersonaActionButtonWindow    buttonRemoveDecline[100];
 var PersonaActionButtonWindow    buttonDecline;
+var PersonaActionButtonWindow    buttonDeclineG;
 var PersonaActionButtonWindow    buttonAddRemoveLaser; //SARGE: Weapon mod buttons
 var PersonaActionButtonWindow    buttonAddRemoveScope; //SARGE: Weapon mod buttons
 var PersonaActionButtonWindow    buttonAddRemoveSilencer; //SARGE: Weapon mod buttons
@@ -61,6 +62,8 @@ var localized String PerkRequiredPoints;
 
 //Decline Manager stuff
 var localized string msgDecline;
+var localized string msgDeclineGlobal;
+var localized string msgDeclineGlobalSuffix;
 var localized string msgRemoveDecline;
 var localized String DeclinedTitleLabel;
 var localized String DeclinedDesc;
@@ -378,6 +381,16 @@ function bool ButtonActivated( Window buttonPressed )
 				else
 					player.declinedItemsManager.AddDeclinedItem(declineThis);
 				UpdateDeclineButton(declineThis);
+                UpdateDeclineButtonG(declineThis);
+			}
+			break;		
+		case buttonDeclineG:
+			declineThis = class<Inventory>(DynamicLoadObject(buttonDeclineG.tags[0], class'Class', true));
+			if (declineThis != None)
+			{
+                player.declinedItemsManager.AddDeclinedItem(declineThis,true);
+				UpdateDeclineButton(declineThis);
+                UpdateDeclineButtonG(declineThis);
 			}
 			break;		
 		default:
@@ -521,6 +534,7 @@ function Clear()
 	winTitle.SetText("");
 	buttonUpgradeSecond = None;
 	buttonDecline = None;
+	buttonDeclineG = None;
     buttonAddRemoveSilencer = None;
     buttonAddRemoveLaser = None;
     buttonAddRemoveScope = None;
@@ -582,6 +596,24 @@ function UpdateSecondaryButton(class<Inventory> item)
 		buttonUpgradeSecond.SetButtonText(msgDoUnassign);
 }
 
+function UpdateDeclineButtonG(class<Inventory> wep)
+{
+    if (wep != None)
+    {
+        buttonDeclineG.tags[0] = string(wep);
+        if (!player.declinedItemsManager.IsDeclined(wep))
+        {
+            buttonDeclineG.Show();
+            buttonDeclineG.SetWidth(100);
+        }
+        else
+        {
+            buttonDeclineG.SetWidth(0); //Get rid of visible gap
+            buttonDeclineG.Hide();
+        }
+    }
+}
+
 function UpdateDeclineButton(class<Inventory> wep)
 {
     if (wep != None)
@@ -600,10 +632,17 @@ function AddDeclineButton(class<Inventory> wep)
     {
         AddLine();
         winActionButtonsSecondary = PersonaButtonBarWindow(winTile.NewChild(class'PersonaButtonBarWindow'));
-        winActionButtonsSecondary.SetWidth(32); //149
+        winActionButtonsSecondary.SetWidth(149); //149
         winActionButtonsSecondary.FillAllSpace(false);
+
+
+        buttonDeclineG = PersonaActionButtonWindow(winActionButtonsSecondary.NewChild(class'PersonaActionButtonWindow'));
+        buttonDeclineG.SetText(msgDeclineGlobal);
+        UpdateDeclineButtonG(wep);
+
         buttonDecline = PersonaActionButtonWindow(winActionButtonsSecondary.NewChild(class'PersonaActionButtonWindow'));
         UpdateDeclineButton(wep);
+
         AddLine();
     }
 }
@@ -739,9 +778,9 @@ function AddDeclinedInfoWindow()
 
 	AddLine();
 
-    for(i = 0; i < ArrayCount(player.declinedItemsManager.declinedTypes);i++)
+    for(i = 0; i < num;i++)
     {
-        invClass = class<Inventory>(DynamicLoadObject(player.declinedItemsManager.declinedTypes[i], class'Class', true));
+        invClass = class<Inventory>(DynamicLoadObject(player.declinedItemsManager.GetDeclinedItem(i), class'Class', true));
         if (invClass != None)
         {
 			if(player.iAltFrobDisplay == 2) //Ygll: French LOVE their line :D
@@ -766,7 +805,10 @@ function AddDeclinedInfoWindow()
 			winText.SetWordWrap(False);
 			winText.SetTextMargins(0, 0);
 			winText.SetTextAlignments(HALIGN_Left, VALIGN_Top);
-			winText.SetText(invClass.default.itemName);
+            if (player.declinedItemsManager.IsDeclinedGlobal(invClass))
+                winText.SetText(invClass.default.itemName $ CR() $ msgDeclineGlobalSuffix);
+            else
+                winText.SetText(invClass.default.itemName);
 
 			//Add "Remove From List" Button
 			winActionButtonRemove = PersonaButtonBarWindow(winTile.NewChild(Class'PersonaButtonBarWindow'));
@@ -795,7 +837,9 @@ defaultproperties
      ob="OBTAINED PERKS"
      GeneralPerksTitleText="Perks - General"
      PerkRequiredSkill="Requires: %s: %s"
-     msgDecline="Add To Decline List"
+     msgDecline="Decline"
+     msgDeclineGlobal="Decline (Global)"
+     msgDeclineGlobalSuffix="(Global)"
      msgRemoveDecline="Remove From Decline List"
      DeclinedTitleLabel="Declined Items"
      DeclinedDesc="Declined Items will not be picked up."

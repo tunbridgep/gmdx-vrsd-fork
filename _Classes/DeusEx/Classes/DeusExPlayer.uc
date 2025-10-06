@@ -1842,6 +1842,10 @@ function PostPostBeginPlay()
 
 	if ((Level.NetMode != NM_Standalone) && ( killProfile == None ))
 		killProfile = Spawn(class'KillerProfile', Self);
+   
+    //Repopulate declined list
+    if (DeclinedItemsManager != None)
+        DeclinedItemsManager.RefreshFromGlobalList();
 
     //Reset Music
     ResetMusic();
