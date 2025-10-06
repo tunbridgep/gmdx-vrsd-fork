@@ -1130,7 +1130,7 @@ function ShowFixedPickupMessage(DeusExPlayer P, Inventory item, int count, optio
         P.ClientMessage(item.PickupMessage @ item.itemArticle @ item.itemName, 'Pickup');
 
     if (bShowReceived)
-        AddReceivedItem(P, item, count, item.IsA('DeusExPickup'));
+        AddReceivedItem(P, item, count);
 }
 
 // ----------------------------------------------------------------------
@@ -1307,7 +1307,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 						{
 						    //if (player.PerkNamesArray[33]==1)                 //RSD: No more Neat Hack perk
 			                //   Credits(item).numCredits *= 1.5;
-							AddReceivedItem(player, item, Credits(item).numCredits, true);
+							AddReceivedItem(player, item, Credits(item).numCredits);
 							player.Credits += Credits(item).numCredits;
 							P.ClientMessage(Sprintf(Credits(item).msgCreditsAdded, Credits(item).numCredits));
 							DeleteInventory(item);
@@ -1573,7 +1573,7 @@ function Frob(Actor Frobber, Inventory frobWith)
         {
             for (i = 0;i < badItemCount;i++)
             {
-                AddReceivedItem(player, badItems[i].item, badItems[i].count, badItems[i].item.IsA('Ammo') || badItems[i].item.IsA('DeusExPickup'), true);
+                AddReceivedItem(player, badItems[i].item, badItems[i].count, false, true);
             }
         }
 
