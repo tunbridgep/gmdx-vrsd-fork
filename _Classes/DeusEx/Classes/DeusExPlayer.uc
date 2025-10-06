@@ -19646,6 +19646,11 @@ function int GetAdjustedMaxAmmoByClass(class<Ammo> ammotype)
     {
         adjustedMaxAmmo = ammotype.default.MaxAmmo;
     }
+
+    //Double ammo capacities on non-hardcore
+    if (!bHardcoreMode && !DXAmmotype.default.bHarderScaling)
+        mult *= 2.0;
+
     //if (bHalveAmmo || (bHardcoreMode && bExtraHardcore))                        //RSD: Hardcore+ forces on halved max ammo
   	//	mult *= 0.5;
     if (mult <= 0.5)
