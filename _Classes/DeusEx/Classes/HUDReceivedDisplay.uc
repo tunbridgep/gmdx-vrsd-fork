@@ -324,12 +324,11 @@ function RecreateItemDisplay()
     }
 
     if (bCreated)
-    {
-        displayTimer = 0.0;
         Show();
-        bTickEnabled = True;
-        AskParentForReconfigure();
-    }
+
+    displayTimer = 0.0;
+    bTickEnabled = True;
+    AskParentForReconfigure();
 }
 
 // ----------------------------------------------------------------------
