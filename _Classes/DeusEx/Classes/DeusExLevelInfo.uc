@@ -85,6 +85,6 @@ defaultproperties
      SoundPropagationMult=1.0
      SongCombatSection=3
      SongConversationSection=4
-     SongAmbientSection=-1
+     SongAmbientSection=255
      ChairRandomizationToken=-1
 }
