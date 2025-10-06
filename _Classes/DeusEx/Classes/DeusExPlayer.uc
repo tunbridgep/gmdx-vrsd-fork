@@ -20118,6 +20118,6 @@ defaultproperties
      bShowRegularNotes=true
      bShowMarkerNotes=true
      bEditDefaultNotes=false
-     //bClearReceivedDisplay=true
      fMusicHackTimer=-1
+     bClearReceivedDisplay=true
 }
