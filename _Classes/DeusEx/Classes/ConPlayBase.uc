@@ -1390,11 +1390,14 @@ function EEventAction SetupEventAddNote( ConEventAddNote event, out String nextL
 {
 	// Only add the note if it hasn't been added already (in case the
 	// PC has the same conversation more than once)
+    local DeusExNote note;
 
 	if ( !event.bNoteAdded )
 	{
 		// Add the note to the player's list of notes
-		player.AddNote(event.noteText, False, True);
+		note = player.AddNote(event.noteText, False, True);
+        note.SetConversationNote(true);             //SARGE: Tell the Note that it was added by Consys
+        //Log("Con note added: " $ note.originalText @ note.bConNote);
 
 		event.bNoteAdded = True;
 	}

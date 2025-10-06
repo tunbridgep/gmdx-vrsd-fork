@@ -67,7 +67,7 @@ simulated function ActivateKeypadWindow(DeusExPlayer Hacker, bool bHacked)
 	local DeusExRootWindow root;
     local DeusExNote note;
 
-    note = Hacker.GetCodeNote(validCode,true);
+    note = Hacker.GetCodeNote(validCode,,true);
 
     root = DeusExRootWindow(Hacker.rootWindow);
     if (root != None)
