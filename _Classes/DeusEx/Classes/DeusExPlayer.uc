@@ -3484,10 +3484,11 @@ function ClientSetMusic(Music NewSong, byte NewSection, byte NewCdTrack, EMusicT
         DebugMessage("ClientSetMusic: Music Fade Hack");
         NewTransition = MTRAN_Instant;
         SoundVolumeHackFix();
-        /*
-        bChange = true;
-        bContinueOn = true;
-        */
+        if (bMusicSystemReset)
+        {
+            bChange = true;
+            bContinueOn = true;
+        }
     }
 
     //SARGE: ARE YOU SHITTING ME GAME???!!!
@@ -3597,7 +3598,7 @@ function ResetMusic()
     }
     */
 
-    default.fMusicHackTimer = 8.0;
+    //default.fMusicHackTimer = 8.0;
     default.musicMode = MUS_Ambient;
     bMusicSystemReset = true;
 }
