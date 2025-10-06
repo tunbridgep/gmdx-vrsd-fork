@@ -908,6 +908,8 @@ var globalconfig bool bClassicScope;                            //SARGE: Classic
 
 var globalconfig bool bQuickReflexes;                           //SARGE: Enemies can snap-shoot at you if they hear you or are alerted, rather than standing around.
 
+var globalconfig bool bDragAndDropOffInventory;                 //SARGE: Allow dropping items by dragging them off the inventory grid
+
 //EXPERIMENTAL FEATURES
 
 var globalconfig bool bExperimentalFootstepDetection;           //SARGE: Adds experimental footstep detection
@@ -20240,4 +20242,5 @@ defaultproperties
      bEditDefaultNotes=false
      fMusicHackTimer=4.0
      bPawnsReactToWeapons=true
+     bDragAndDropOffInventory=true
 }
