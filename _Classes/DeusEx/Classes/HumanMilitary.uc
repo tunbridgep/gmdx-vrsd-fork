@@ -106,6 +106,7 @@ defaultproperties
      SprintRate=1.000000
      CloseCombatMult=0.550000
      bReactAlarm=True
+     bReactGunPointed=true
      EnemyTimeout=14.000000
      bCanTurnHead=True
      smartStrafeRate=0.450000

@@ -185,7 +185,7 @@ function UpdateAllIcons()
 defaultproperties
 {
      FirstKeyNum=3
-     LastKeyNum=12
+     LastKeyNum=13
      texBorderTop=Texture'DeusExUI.UserInterface.HUDAugmentationsBorder_Top'
      texBorderCenter=Texture'DeusExUI.UserInterface.HUDAugmentationsBorder_Center'
      texBorderBottom=Texture'DeusExUI.UserInterface.HUDAugmentationsBorder_Bottom'

@@ -405,6 +405,20 @@ function int RetMaxCopies()
 }
 
 // ----------------------------------------------------------------------
+// SARGE: DisplayPickupMessage()
+//
+// If this has multiple copies, we need to display them in brackets
+// ----------------------------------------------------------------------
+
+function DisplayPickupMessage(DeusExPlayer player,Inventory item,int count)
+{
+    local string extra;
+    if (count > 1)
+        extra = " (" $ count $ ")";
+    player.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName $ extra, 'Pickup');
+}
+
+// ----------------------------------------------------------------------
 // HandlePickupQuery()
 //
 // If the bCanHaveMultipleCopies variable is set to True, then we want
@@ -462,7 +476,7 @@ function bool HandlePickupQuery( inventory Item )
                     if (NumCopies > startCopies)    //CyberP: bugfix
                     {
                         UpdateBeltText();
-                        player.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
+                        DisplayPickupMessage(player,Item,NumCopies - StartCopies);
                         DeusExPickup(item).NumCopies -= (NumCopies - startcopies);
                         Item.PlaySound(Item.PickupSound);
                     }
@@ -507,7 +521,7 @@ function bool HandlePickupQuery( inventory Item )
 
 		if (bResult)
 		{
-            player.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
+            DisplayPickupMessage(player,Item,DeusExPickup(item).NumCopies);
             
             if (bSound)
                 Item.PlaySound(Item.PickupSound);

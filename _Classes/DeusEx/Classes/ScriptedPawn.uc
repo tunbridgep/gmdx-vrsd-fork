@@ -525,6 +525,9 @@ var(GMDX) const bool bSmartWeaponDraw;        //SARGE: If set, Pawn will draw th
 var float fSubAwarenessMod;                    //SARGE: gradually improve hearing threshold as we hear footsteps, making us "perk up" more as we hear suspicious sounds. Stops the player "trailing" NPCs.
 var float fSubAwarenessModTime;                //SARGE: How long until sub-awareness state wears off. Usually it's about 5 seconds.
 
+//SARGE: Add new awareness for guns being pointed at them
+var(GMDX) bool bReactGunPointed;
+
 //Augmentique Data
 struct AugmentiqueOutfitData
 {
@@ -634,21 +637,46 @@ exec function UpdateHDTPsettings()
     SetupSkin();
 
     //Bail out if we have no need to continue
-    if ((hdtp && bSetupHDTP) || (!hdtp && !bSetupHDTP))
-        return;
-
-    if (HDTPMesh != "")
+    if ((hdtp && !bSetupHDTP) || (!hdtp && bSetupHDTP))
     {
-        Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),hdtp);
-        //We have to be careful here, or we will break holo-projectors
-        for(i = 0; i < 8;i++)
-            MultiSkins[i] = class'HDTPLoader'.static.GetTexture2(HDTPMeshTex[i],string(default.MultiSkins[i]),IsHDTP());
+        if (HDTPMesh != "")
+        {
+            Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),hdtp);
+            //We have to be careful here, or we will break holo-projectors
+            for(i = 0; i < 8;i++)
+                MultiSkins[i] = class'HDTPLoader'.static.GetTexture2(HDTPMeshTex[i],string(default.MultiSkins[i]),IsHDTP());
+        }
+        if (HDTPSkin != "")
+            Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),hdtp);
+        if (HDTPTexture != "")
+            Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),hdtp);
+        bSetupHDTP = hdtp;
     }
-    if (HDTPSkin != "")
-        Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),hdtp);
-    if (HDTPTexture != "")
-        Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),hdtp);
-    bSetupHDTP = hdtp;
+
+    //Fix things not appearing cloaked
+    if (bCloakOn)
+        SetSkinStyle(STY_Translucent, Texture'RSDCrap.Skins.CloakingTex', 0.4);
+
+    //Also fix glasses on holograms
+    else if (style == STY_Translucent)
+        GlassesFix();
+
+}
+
+function bool _GlassesFixTest(coerce string tex)
+{
+    return Left(tex,9) == "FramesTex" || Left(tex,9) == "LensesTex";
+}
+
+//SARGE: Remove glasses and frames textures for holograms and cloaked pawns.
+function GlassesFix()
+{
+    local int i;
+    for (i = 0;i < 8;i++)
+    {
+        if (_GlassesFixTest(default.multiskins[i].name) || _GlassesFixTest(augmentiqueData.textures[i].name))
+            multiSkins[i] = Texture'PinkMaskTex';
+    }
 }
 
 //SARGE: On Hardcore, some enemies keep weapons drawn ready for combat when not preoccupied.
@@ -4615,6 +4643,9 @@ function SetSkinStyle(ERenderStyle newStyle, optional texture newTex, optional f
 	if (newScaleGlow == 0)
 		newScaleGlow = ScaleGlow;
 
+    if (newStyle == STY_Translucent)
+        GlassesFix(); //SARGE: Added
+
 	oldSkin = Skin;
 	for (i=0; i<8; i++)
 	{
@@ -4692,7 +4723,8 @@ local SpoofedCorona cor;
 //By default, does nothing, but can be used for things like custom skins for shotgunners
 function SetupSkin()
 {
-    ApplyCurrentOutfit();
+    if (!bCloakOn)
+        ApplyCurrentOutfit();
 }
 
 function ForceCloakOff()                                                        //RSD: Hack function to force cloak off without playing sounds
@@ -6748,7 +6780,7 @@ function HandleShot(Name event, EAIEventState state, XAIParams params)
 
 function HandleFootstepsAwareness(Pawn instigator, float mod)
 {
-	if (instigator != None && bReactLoudNoise && bLookingForLoudNoise && IsInState('Patrolling') && mod > 0)
+	if (instigator != None && bReactLoudNoise && bLookingForLoudNoise && mod > 0)
     {
         //If we are still within the time threshold, keep adding until we hear something!
         //Otherwise, reset

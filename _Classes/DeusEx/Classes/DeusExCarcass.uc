@@ -106,6 +106,9 @@ struct BadItem
 var transient BadItem badItems[10];                                                   //SARGE: Keep a list of the declined or ignored items, so that we can add it to the display window.
 var transient int badItemCount;
 
+//SARGE: Breathing time. Carcasses won't instantly die in water, they have about 20 seconds
+var float breatheTime;
+
 // ----------------------------------------------------------------------
 // Augmentique
 // ----------------------------------------------------------------------
@@ -299,6 +302,10 @@ function InitFor(Actor Other)
             savedName = player.GetDisplayName(Other);
          else if (Other.IsA('ScriptedPawn'))
             savedName = ScriptedPawn(Other).UnfamiliarName;
+
+        //SARGE: All corpses can be reacted to
+        if (!IsA('Animal'))
+            bEmitCarcass = true;
 
         /*
 		// set as unconscious or add the pawns name to the description
@@ -581,9 +588,9 @@ function ZoneChange(ZoneInfo NewZone)
 		{
         Mesh = Mesh3;
         assignedMesh = 3;
-        if (!IsA('ScubaDiverCarcass') && !IsA('KarkianCarcass') && !IsA('KarkianBabyCarcass') && !IsA('GreaselCarcass')) //SARGE: Added aquatic animals.
+        if (breatheTime == -1 && bNotDead && !IsA('ScubaDiverCarcass') && !IsA('KarkianCarcass') && !IsA('KarkianBabyCarcass') && !IsA('GreaselCarcass')) //SARGE: Added aquatic animals.
         {
-        	KillUnconscious();                                                  //RSD: Proper kill
+            breatheTime = 18;
 		}
         if (Velocity.Z < -70)         //CyberP: water splash effect. Needs updating
 		{
@@ -705,6 +712,18 @@ function Tick(float deltaSeconds)
 				DblClickTimeout=0;
 			}
 		}
+
+    //SARGE: Handle drowning
+    if (breatheTime > 0)
+    {
+        breatheTime -= deltaSeconds;
+        if (breatheTime <= 0)
+        {
+        	KillUnconscious(DeusExPlayer(GetPlayerPawn()));                                                  //RSD: Proper kill
+            breatheTime = -1;
+        }
+    }
+
 	Super.Tick(deltaSeconds);
 }
 
@@ -798,7 +817,6 @@ function ChunkUp(int Damage)
 	}
 	if (!bAnimalCarcass)
        ExpelInventory();
-    KillUnconscious();
 	Super.ChunkUp(Damage);
 }
 
@@ -845,7 +863,7 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitLocation, Vector mo
 		 }
          else
          {
-            KillUnconscious();
+            KillUnconscious(DeusExPlayer(instigatedBy));
          }
 		}
 
@@ -860,11 +878,9 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitLocation, Vector mo
 		Velocity += 3 * momentum/(Mass + 200);
 		if (bNotDead && (FRand() < 0.4 || Damage > 18)) //CyberP: don't be lazy self, check for headshots...
 		{
-		    KillUnconscious();                                                  //RSD: Proper kill
+		    KillUnconscious(DeusExPlayer(instigatedBy));                                                  //RSD: Proper kill
             bNoDefaultPools = false;                                            //SARGE: Allow creating pools once we take damage.
             CreateBloodPool();
-			if (instigatedBy.IsA('DeusExPlayer'))
-			    DeusExPlayer(instigatedBy).KillCount++;
 		}
         if (DamageType == 'Exploded' || (DamageType == 'Burned' && Damage >= 10))
 		    {
@@ -890,6 +906,14 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitLocation, Vector mo
 		  if ((damageType == 'Exploded') || (damageType == 'Munch') || (damageType == 'Burned'))
              CumulativeDamage += Damage;
         }
+        else
+        {
+             CumulativeDamage += Damage;
+        }
+		
+        if (CumulativeDamage >= 30)
+		    KillUnconscious(DeusExPlayer(instigatedBy));
+
 		if (CumulativeDamage >= MaxDamage)
 			ChunkUp(Damage);
 		if (bDecorative)
@@ -1027,6 +1051,9 @@ function PickupCorpse(DeusExPlayer player)
 {
 	local POVCorpse corpse;
     local int j;
+
+    //Cancel drowning.
+    breatheTime = -1;
 
     bDblClickStart=false;
     if (!bInvincible)
@@ -1488,12 +1515,6 @@ function Frob(Actor Frobber, Inventory frobWith)
 						}
 						else
 						{
-                            //SARGE: Dirty Hack Alert!
-                            //We restrict the players ability to pickup for a few frames when picking stuff up,
-                            //because it prevents the item dupe glitch, but now we have to turn it off,
-                            //otherwise they can only pick up 1 item from each corpse at a time.
-                            player.pickupCooldown = 0;
-
 							// check if the pawn is allowed to pick this up
 							if ((P.Inventory == None) || (Level.Game.PickupQuery(P, item)))
 							{
@@ -1972,19 +1993,18 @@ function UpdateName()
     //    AddSearchedString(DeusExPlayer(GetPlayerPawn()));
 }
 
-function KillUnconscious()                                                      //RSD: To properly fix corpse names and trigger any other death effects like MIB explosion
+function KillUnconscious(optional DeusExPlayer playerKiller)                                                      //RSD: To properly fix corpse names and trigger any other death effects like MIB explosion
 {
     local DeusExPlayer player;
 
     if (!bNotDead)
         return;
 
-    player = DeusExPlayer(GetPlayerPawn());
-    if (player != None && !bAnimalCarcass)
+    if (playerKiller != None && !bAnimalCarcass)
     {
-        killerBindName = player.BindName;
-        killerAlliance = player.Alliance;
-        player.killerCount++;
+        killerBindName = playerKiller.BindName;
+        killerAlliance = playerKiller.Alliance;
+        playerKiller.killerCount++;
     }
 
     bNotDead = false;
@@ -2016,4 +2036,5 @@ defaultproperties
      BindName="DeadBody"
      bVisionImportant=True
      LootPickupSound=sound'objpickup3'
+     breatheTime=-1
 }

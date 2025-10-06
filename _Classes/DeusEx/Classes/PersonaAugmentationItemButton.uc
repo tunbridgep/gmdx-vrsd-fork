@@ -30,7 +30,7 @@ event DrawWindow(GC gc)
 	Super.DrawWindow(gc);
 
 	// Draw the hotkey info in lower-left corner
-	if (hotkeyNumber >= 3)
+	if (hotkeyNumber >= 3 && hotkeyNumber <= 12)
 	{
 		str = "F" $ hotkeyNumber;
 		gc.SetFont(Font'FontMenuSmall_DS');

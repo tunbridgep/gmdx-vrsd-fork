@@ -40,6 +40,7 @@ struct Title
 var const Title bookTitles[20];
 var const Title newspaperTitles[20];
 var const Title datacubeTitles[150];
+var const Title shenanigansTitles[10];
 var const string titleIgnored[100];
 var const string titlePrefixes[100];
 var const string upcases[100];
@@ -74,6 +75,7 @@ function string GetItemTitle()
     local bool bMatch;
 	local byte T;
     local int paragraphs;
+    local DeusExPlayer player;
 	
     if ( textTag == '' && imageClass == None)
         return msgEmpty;
@@ -82,6 +84,16 @@ function string GetItemTitle()
 
     //Some objects need special handling
     tag = textPackage $ "." $ texttag;
+    player = DeusExPlayer(GetPlayerPawn());
+
+    if (player != None && player.bShenanigans)
+    {
+        for (i = 0; i < ArrayCount(shenanigansTitles);i++)
+        {
+            if (shenanigansTitles[i].textTag == tag)
+                return shenanigansTitles[i].replacement;
+        }
+    }
     for (i = 0; i < ArrayCount(datacubeTitles);i++)
     {
         if (IsA('DataCube') && datacubeTitles[i].textTag == tag)
@@ -783,7 +795,7 @@ defaultproperties
      datacubeTitles(28)=(textTag="DeusExText.05_Datacube01",replacement="Intrusion Attempt")
      datacubeTitles(29)=(textTag="DeusExText.05_Datacube02",replacement="New Password")
      datacubeTitles(30)=(textTag="DeusExText.05_Datacube04",replacement="Armory Code Change")
-     datacubeTitles(31)=(textTag="DeusExText.05_Datacube04",replacement="Greasel Dissection")
+     datacubeTitles(31)=(textTag="DeusExText.05_Datacube05",replacement="Greasel Dissection")
      datacubeTitles(32)=(textTag="DeusExText.05_Datacube09",replacement="Janine's Bots - Page Bravo-3 Peacebringer")
      datacubeTitles(33)=(textTag="DeusExText.05_Datacube10",replacement="Prospectus - Series P Agents")
      datacubeTitles(34)=(textTag="DeusExText.06_Datacube01",replacement="Hong Kong Challenges")
@@ -848,6 +860,8 @@ defaultproperties
      datacubeTitles(93)=(textTag="DeusExText.15_Datacube19",replacement="Reactor Leak")
      datacubeTitles(94)=(textTag="DeusExText.15_Datacube20",replacement="Get Topside!")
      datacubeTitles(95)=(textTag="DeusExText.00_Datacube03",replacement="Quick Note")
+     
+     shenanigansTitles(0)=(textTag="DeusExText.06_Datacube17",replacement="Captains Log: Stardate 00.2345.2223")
 
      titleIgnored(0)="!=!==!==="
      titleIgnored(1)="* = * = * ="

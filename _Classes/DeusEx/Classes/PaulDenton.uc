@@ -48,10 +48,10 @@ function GotoDisabledState(name damageType, EHitLocation hitPos)
 		GotoNextState();
 }
 
-function UpdateHDTPSettings()
+function SetupSkin()
 {
-	super.UpdateHDTPsettings();
 	setskin(deusexplayer(getplayerpawn()));
+	super.SetupSkin();
 }
 
 
@@ -62,6 +62,10 @@ function UpdateHDTPSettings()
 function SetSkin(DeusExPlayer player)
 {
     local Texture tex1, tex2;
+
+    if (bCloakOn)
+        return;
+
 	if (player != None)
 	{
 		if(IsHDTP())

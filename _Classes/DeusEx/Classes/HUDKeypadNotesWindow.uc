@@ -176,12 +176,14 @@ function PersonaNotesEditWindow CreateNoteEditWindow(TileWindow winTile, DeusExN
 	newNoteWindow = PersonaNotesEditWindow(winTile.NewChild(Class'PersonaNotesEditWindow'));
     newNoteWindow.SetNote(note);
     if (bEditableNotes)
+    {
         newNoteWindow.SetReadOnly(true);
+        newNoteWindow.bBlockEscape = true;
+    }
     else
         newNoteWindow.EnableEditing(false);
     newNoteWindow.bUseMenuColors = bUseMenuColors;
     newNoteWindow.StyleChanged();
-    newNoteWindow.bBlockEscape = true;
     //newNoteWindow.SetTextAlignments(HALIGN_Left, VALIGN_Center);
     //newNoteWindow.SetTheme(player);
     //newNoteWindow.SetText(note.text);

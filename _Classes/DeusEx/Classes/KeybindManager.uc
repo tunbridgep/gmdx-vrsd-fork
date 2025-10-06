@@ -42,6 +42,7 @@ enum EKeybind
     KB_Aug7, //F10
     KB_Aug8, //F11
     KB_Aug9, //F12
+    KB_Aug10, //Flashlight
 
     //Keyring button
     KB_Keyring,
@@ -244,6 +245,10 @@ function Setup(DeusExPlayer P)
 			    if (augNum >= 0 && augNum <= 9)
                     AddBindingToArray(KB_Aug0,keyName,augNum);
             }
+
+            //And the new Flashlight Aug key
+            if (Alias == "Flashlight")
+                AddBindingToArray(KB_Aug10,keyName);
             
             //Get the alt belt keys first so they appear before the regular ones.
 			if (Left(alias,7) == "AltBelt")
@@ -275,12 +280,20 @@ function Setup(DeusExPlayer P)
             if (Left(alias,19) == "ToggleRadialAugMenu")
                 AddBindingToArray(KB_AugMenu_Toggle,keyName);
 
+            //HACK: F is autobound to "Center View"
+            //Since literally nobody uses that anymore, just clobber it...
+            if (Left(alias,10) == "CenterView" && keyName == "F")
+            {
+                AddBindingToArray(KB_Secondary,keyName);
+                ReplaceAlias(KB_Secondary,"UseSecondary");
+            }
+            
             //HACK: V is autobound to "Look Down"
             //Since literally nobody uses that anymore, just clobber it...
             if (Left(alias,8) == "LookDown" && keyName == "V")
             {
-                AddBindingToArray(KB_Secondary,keyName);
-                ReplaceAlias(KB_Secondary,"UseSecondary");
+                AddBindingToArray(KB_Aug10,keyName);
+                ReplaceAlias(KB_Aug10,"Flashlight");
             }
 
             //HACK: Allow using the Multiplayer Scores button to
@@ -308,6 +321,7 @@ function Setup(DeusExPlayer P)
     SetupBinding(KB_Aug7,"F10","ActivateAugmentation 7");
     SetupBinding(KB_Aug8,"F11","ActivateAugmentation 8");
     SetupBinding(KB_Aug9,"F12","ActivateAugmentation 9");
+    SetupBinding(KB_Aug10,"V","Flashlight");
     
     //belt
     SetupBinding(KB_Belt0,"0","ActivateBelt 0");
@@ -326,7 +340,7 @@ function Setup(DeusExPlayer P)
 
     //Misc keys
     SetupBinding(KB_Keyring,"","SelectNanoKey");
-    SetupBinding(KB_Secondary,"V","UseSecondary");
+    SetupBinding(KB_Secondary,"F","UseSecondary");
 
     //Bind the Lean Keys to Tiptoes
     ReplaceAlias(KB_LeanLeft,"LeanLeft | SetTiptoesLeft 1 | OnRelease SetTiptoesLeft 0");

@@ -281,6 +281,22 @@ function SetupOutfitManager()
         
         //Add additional outfits below this line
         //---------------------------------------
+
+        if (outfitManager.GetPartsGroup("AMTGM_Trench"))
+        {
+            //Add collector outfit
+            outfitManager.AddPart(PS_Body_M,"Collector's Mask",false,"collectible_b","RSDCrap.Skins.BuddhaFace",,,"RSDCrap.Skins.BuddhaFace");
+            
+            outfitManager.BeginNewOutfit("collectible_outfit", "The Collector", "A collectible mask given to the special few");
+            outfitManager.OutfitAddPartReference("collectible_b");
+            outfitmanager.OutfitAddPartReference("smuggler_s");
+            outfitmanager.OutfitAddPartReference("mib_p");
+            outfitmanager.OutfitAddPartReference("maxchen_t");
+        }
+        
+        //Disable the settings menu, we will handle them via GMDX menus instead.
+        //outfitManager.SetOutfitSettingsMenuVisibility(false,true);
+
         //See docs/mod_integration.pdf for more info
         //---------------------------------------
 
