@@ -5352,7 +5352,7 @@ simulated function PlayFootStep()
             for( P=Level.PawnList; P!=None; P=P.nextPawn )
             {
                 //We need to do several pawn checks, lets start with the cheapest ones...
-                bPawnCheck = P.IsA('ScriptedPawn') && !P.IsA('Robot') && ScriptedPawn(P).bReactLoudNoise;
+                bPawnCheck = P.IsA('ScriptedPawn') && !P.IsA('Robot') && !P.IsA('Animal') && ScriptedPawn(P).bReactLoudNoise;
                 bPawnCheck = bPawnCheck && P.LastRendered() < 5.0;
                 bPawnCheck = bPawnCheck && (P.IsInState('Patrolling') || P.IsInState('Wandering') || P.IsInState('Standing') || P.IsInState('Sitting'));
                 bPawnCheck = bPawnCheck && VSize(P.Location - Location) < range*volumeMultiplier*0.8;
@@ -9768,7 +9768,7 @@ exec function PutInHand(optional Inventory inv, optional bool bNoPrimary)
         
         if (!bValidBelt)
         {
-            if (inv.bInObjectBelt)
+            if (inv != None && inv.bInObjectBelt)
                 advBelt = inv.beltPos;
             else
                 advBelt = -1;
@@ -13580,7 +13580,8 @@ function bool DeleteInventory(inventory item)
 	if (inHand == item)
 	{
 		SetInHand(None);
-		SetInHandPending(None);
+		if (inHandPending == item)
+            SetInHandPending(None);
 	}
 
 	// Make sure the item is removed from the inventory grid
