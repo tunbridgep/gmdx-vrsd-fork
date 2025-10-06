@@ -122,6 +122,18 @@ function DisplayWeapon(bool overlay)
     else if (overlay)
     {
         multiskins[1] = handstex;
+        if (bVanillaModelAttachments)
+        {
+            ShowWeaponAddon(4,bHasLaser);
+            ShowWeaponAddon(5,bHasLaser && bLasing);
+            ShowWeaponAddon(6,bHasScope);
+        }
+    }
+    else if (bVanillaModelAttachments)
+    {
+        ShowWeaponAddon(2,bHasLaser);
+        ShowWeaponAddon(3,bHasLaser && bLasing);
+        ShowWeaponAddon(4,bHasScope);
     }
 }
 
@@ -434,6 +446,9 @@ defaultproperties
      PlayerViewMesh=LodMesh'DeusExItems.StealthPistol'
      PickupViewMesh=LodMesh'DeusExItems.StealthPistolPickup'
      ThirdPersonMesh=LodMesh'DeusExItems.StealthPistol3rd'
+     VanillaAddonPlayerViewMesh="VisibleAttachments.StealthPistol_Mod"
+     VanillaAddonPickupViewMesh="VisibleAttachments.StealthPistolPickup_Mod"
+     VanillaAddonThirdPersonMesh="VisibleAttachments.StealthPistol3rd_Mod"
      Icon=Texture'DeusExUI.Icons.BeltIconStealthPistol'
      largeIcon=Texture'DeusExUI.Icons.LargeIconStealthPistol'
      largeIconWidth=47

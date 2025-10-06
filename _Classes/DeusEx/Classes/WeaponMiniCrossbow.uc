@@ -162,6 +162,20 @@ function DisplayWeapon(bool overlay)
         //Show Darts
         MultiSkins[3] = ammoTex;
         Multiskins[0] = handsTex;
+        
+        if (bVanillaModelAttachments)
+        {
+            ShowWeaponAddon(4,bHasLaser);
+            ShowWeaponAddon(5,bHasLaser && bLasing);
+            ShowWeaponAddon(6,bHasScope);
+        }
+    }
+    else if (bVanillaModelAttachments)
+    {
+        ShowWeaponAddon(2,bHasLaser);
+        ShowWeaponAddon(3,bHasLaser);
+        ShowWeaponAddon(4,bHasLaser && bLasing);
+        ShowWeaponAddon(5,bHasScope);
     }
 }
 
@@ -340,6 +354,9 @@ defaultproperties
      HDTPPlayerViewMesh="HDTPItems.HDTPMiniCrossbow"
      HDTPPickupViewMesh="HDTPItems.HDTPminicrossbowPickup"
      HDTPThirdPersonMesh="HDTPItems.HDTPminicrossbow3rd"
+     VanillaAddonPlayerViewMesh="VisibleAttachments.MiniCrossbow_Mod"
+     VanillaAddonPickupViewMesh="VisibleAttachments.MiniCrossbowPickup_Mod"
+     VanillaAddonThirdPersonMesh="VisibleAttachments.MiniCrossbow3rd_Mod"
      PlayerViewMesh=LodMesh'DeusExItems.MiniCrossbow'
      PickupViewMesh=LodMesh'DeusExItems.MiniCrossbowPickup'
      ThirdPersonMesh=LodMesh'DeusExItems.MiniCrossbow3rd'

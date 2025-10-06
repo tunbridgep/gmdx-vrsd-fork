@@ -123,12 +123,24 @@ function DisplayWeapon(bool overlay)
         multiskins[0] = handsTex;
         if (bVanillaModelAttachments)
         {
-            ShowWeaponAddon(2,!bHasSilencer); //Muzzle Break, hidden when we have silencer
-            ShowWeaponAddon(3,bHasSilencer);
-            ShowWeaponAddon(4,bHasLaser);
-            ShowWeaponAddon(5,bHasScope);
+            ShowWeaponAddon(3,!bHasSilencer); //Muzzle Break, hidden when we have silencer
+            ShowWeaponAddon(4,bHasSilencer);
+            ShowWeaponAddon(5,bHasLaser);
+            ShowWeaponAddon(6,bHasLaser && bLasing);
+            ShowWeaponAddon(7,bHasScope);
         }
     }
+    else if (bVanillaModelAttachments)
+    {
+        ShowWeaponAddon(3,!bHasSilencer); //Muzzle Break, hidden when we have silencer
+        ShowWeaponAddon(4,bHasSilencer);
+        ShowWeaponAddon(5,bHasLaser);
+        ShowWeaponAddon(6,bHasLaser && bLasing);
+        ShowWeaponAddon(7,bHasScope);
+    }
+
+    //Fix muzzle flash.
+    bHasMuzzleFlash = bVanillaModelAttachments && !IsHDTP();
 }
 
 simulated function PlayIdleAnim()                                               //RSD: Clyzm model
@@ -413,6 +425,8 @@ defaultproperties
      HDTPPickupViewMesh="HDTPItems.HDTPSniperPickup"
      HDTPThirdPersonMesh="HDTPItems.HDTPSniper3rd"
      VanillaAddonPlayerViewMesh="VisibleAttachments.SniperRifle_Mod"
+     VanillaAddonPickupViewMesh="VisibleAttachments.SniperRiflePickup_Mod"
+     VanillaAddonThirdPersonMesh="VisibleAttachments.SniperRifle3rd_Mod"
      LandSound=Sound'DeusExSounds.Generic.DropMediumWeapon'
      Icon=Texture'RSDCrap.Icons.BeltIconRifle'
      largeIcon=Texture'RSDCrap.Icons.LargeIconRifle'
@@ -429,5 +443,5 @@ defaultproperties
      minSkillRequirement=2;
      bBigMuzzleFlash=true
      bFancyScopeAnimation=true
-     muzzleSlot=-1 //doesn't have one
+     muzzleSlot=2 //doesn't have one normally, added by Visible Weapon Attachments
 }
