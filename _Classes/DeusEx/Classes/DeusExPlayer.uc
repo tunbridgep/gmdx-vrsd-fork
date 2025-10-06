@@ -3468,7 +3468,7 @@ function ClientSetMusic(Music NewSong, byte NewSection, byte NewCdTrack, EMusicT
     
     info = GetLevelInfo();
     
-    DebugLog("ClientSetMusic called:" @ NewSong @ NewSection @ NewTransition @ "Song is: " $ default.previousTrack @ default.previousLevelSection @ default.previousMusicMode @ bMusicSystemReset);
+    DebugMessage("ClientSetMusic called:" @ NewSong @ NewSection @ NewTransition @ "Song is: " $ default.previousTrack @ default.previousLevelSection @ default.previousMusicMode @ bMusicSystemReset @ Level.SongSection);
 
     //SARGE: Here's the really annoying part...
     //We've just been asked to change tracks or sections, we need to work out
@@ -3511,7 +3511,7 @@ function ClientSetMusic(Music NewSong, byte NewSection, byte NewCdTrack, EMusicT
     else if (default.previousTrack != NewSong || default.previousLevelSection != info.SongAmbientSection)
     {
         //If changing to nothing, fade out
-        if (NewSong != None && (default.previousTrack == None || default.previousLevelSection == 255))
+        if (NewSong == None || NewSection == 255)
             NewTransition = MTRAN_SlowFade;
 
         DebugMessage("ClientSetMusic: Music Change Allowed (Track Change)");
@@ -3612,7 +3612,7 @@ function ResetMusic()
 
 function PopulateLevelAmbientSection(DeusExLevelInfo info)
 {
-    if (info != None && info.SongAmbientSection == -1)
+    if (info != None && info.SongAmbientSection == 255)
     {
         info.SongAmbientSection = Level.SongSection;
         DebugMessage("Setting up SongAmbientSection: " $ info.SongAmbientSection);
@@ -3636,9 +3636,9 @@ function UpdateDynamicMusic(float deltaTime)
 		
     info = GetLevelInfo();
 
-    bAllowConverse = info.MusicType != MT_SingleTrack && info.MusicType != MT_CombatOnly;
-    bAllowCombat = info.MusicType != MT_SingleTrack && info.MusicType != MT_ConversationOnly && iAllowCombatMusic > 0;
-    bAllowOther = info.MusicType == MT_Normal;
+    bAllowConverse = info.SongAmbientSection != 255 && info.MusicType != MT_SingleTrack && info.MusicType != MT_CombatOnly;
+    bAllowCombat = info.SongAmbientSection != 255 && info.MusicType != MT_SingleTrack && info.MusicType != MT_ConversationOnly && iAllowCombatMusic > 0;
+    bAllowOther = info.SongAmbientSection != 255 && info.MusicType == MT_Normal;
 
     //If we have the Extended music option, and we're in a bar or club, stop all of the music entirely
     if ((info.MusicType == MT_ConversationOnly || info.MusicType == MT_CombatOnly) && iEnhancedMusicSystem == 2)
