@@ -43,6 +43,21 @@ static function LodMesh GetMesh2(string m, string m2, bool first, optional bool 
     return MMesh;
 }
 
+//Gets a mesh, or a backup mesh if the first one fails, or a second backup if the second one fails
+static function LodMesh GetMesh3(string m, string m2, string m3, bool first, bool second, optional bool debug)
+{
+    local LodMesh MMesh;
+    if (first)
+        MMesh = LodMesh(DynamicLoadObject(m, class'LodMesh', !debug));
+    if (MMesh == None && second)
+        MMesh = LodMesh(DynamicLoadObject(m2, class'LodMesh', !debug));
+    if (MMesh == None)
+        MMesh = LodMesh(DynamicLoadObject(m3, class'LodMesh', !debug));
+    if (debug)
+        log("Getting mesh: " $ m $ ", " $ m2 $ ", " $ m3 $ ", " $ first $ ":" $ second);
+    return MMesh;
+}
+
 //Gets a texture, or a backup texture if the first one fails
 static function Texture GetTexture2(string tex, string alternative, bool first, optional bool debug)
 {

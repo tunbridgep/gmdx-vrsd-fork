@@ -251,29 +251,42 @@ function DisplayWeapon(bool overlay)
             ShowWeaponAddon(2,bLasing);
             ShowWeaponAddon(3,bHasScope);
         }
-    }
 
-    if (ammoType == none)
-    {
+        if (ammoType == none)
+        {
+        }
+        else if(ammotype.isA('AmmoRocketWP'))
+        {
+            multiskins[4] = texture'pinkmasktex';
+            multiskins[5] = none;
+            multiskins[6] = none;
+        }
+        else if(ammotype.isA('AmmoRocket'))
+        {
+            multiskins[4] = none;
+            multiskins[5] = texture'pinkmasktex';
+            multiskins[6] = texture'pinkmasktex';
+        }
     }
-	else if(ammotype.isA('AmmoRocketWP'))
-	{
-		multiskins[4] = texture'pinkmasktex';
-		multiskins[5] = none;
-		multiskins[6] = none;
-	}
-	else if(ammotype.isA('AmmoRocket'))
-	{
-		multiskins[4] = none;
-		multiskins[5] = texture'pinkmasktex';
-		multiskins[6] = texture'pinkmasktex';
-	}
-//	else //bleh??
-//	{
-//		multiskins[4] = texture'pinkmasktex';
-//		multiskins[5] = texture'pinkmasktex';
-//		multiskins[6] = texture'pinkmasktex';
-//	}
+    else if (overlay)
+    {
+        if (bVanillaModelAttachments)
+        {
+            ShowWeaponAddon(2,bHasLaser);
+            ShowWeaponAddon(3,bHasLaser && bLasing);
+            ShowWeaponAddon(4,bHasScope);
+            multiskins[1] = class'HDTPLoader'.static.GetTexture2("VisibleAttachments.HeavyWeaponModsPOVTex1","DeusExItems.GEPGunTex1",bHasScope);
+            //ShowWeaponAddon(1,bHasScope);
+        }
+    }
+    else if (bVanillaModelAttachments)
+    {
+        ShowWeaponAddon(3,bHasLaser);
+        ShowWeaponAddon(4,bHasLaser && bLasing);
+        ShowWeaponAddon(5,bHasScope);
+        multiskins[2] = class'HDTPLoader'.static.GetTexture2("VisibleAttachments.GEPGun3rdTex2","DeusExItems.GEPGun3rdTex1",bHasScope);
+        //ShowWeaponAddon(2,bHasScope);
+    }
 
 }
 
@@ -582,6 +595,9 @@ defaultproperties
      PlayerViewMesh=LodMesh'DeusExItems.GEPgun'
      PickupViewMesh=LodMesh'DeusExItems.GEPgunPickup'
      ThirdPersonMesh=LodMesh'DeusExItems.GEPgun3rd'
+     VanillaAddonPlayerViewMesh="VisibleAttachments.GEPGun_Mod"
+     VanillaAddonPickupViewMesh="VisibleAttachments.GEPGunPickup_Mod"
+     VanillaAddonThirdPersonMesh="VisibleAttachments.GEPGun3rd_Mod"
      LandSound=Sound'DeusExSounds.Generic.DropLargeWeapon'
      Icon=Texture'DeusExUI.Icons.BeltIconGEPGun'
      largeIcon=Texture'GMDXSFX.Icons.GEP'
