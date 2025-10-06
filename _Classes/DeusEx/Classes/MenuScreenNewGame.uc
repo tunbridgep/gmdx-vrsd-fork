@@ -88,6 +88,9 @@ var bool bHardcoreFilterOption;
 var bool bPermaCloak;
 var bool bNoStartingWeaponChoices;
 
+//SARGE: Save our true player name for future playthroughs
+var globalconfig string savedPlayerName;
+
 //LDDP
 var bool bFemaleEnabled;
 
@@ -353,7 +356,10 @@ function CreateNameEditWindow()
 {
 	editName = CreateMenuEditWindow(18, 92, 113, 32, winClient);
 
-	editName.SetText(player.TruePlayerName);
+    if (savedPlayerName == "")
+        editName.SetText(player.TruePlayerName);
+    else
+        editName.SetText(savedPlayerName);
 	editName.MoveInsertionPoint(MOVEINSERT_End);
 	editName.SetFilter(filterString);
 }
@@ -699,7 +705,10 @@ function DowngradeSkill()
 
 function ResetToDefaults()
 {
-	editName.SetText(player.TruePlayerName);
+    if (savedPlayerName == "")
+        editName.SetText(player.TruePlayerName);
+    else
+        editName.SetText(savedPlayerName);
 
 	//LDDP, 11/01/21: Set LDDP checkbox options to default, hide MI4FJC checkbox because we're male now.
 	MorpheusCheckbox.SetToggle(false);
@@ -815,6 +824,8 @@ function ProcessAction(String actionKey)
 		else
 		{
 			SaveSettings();
+
+            savedPlayerName = player.TruePlayerName;
 
 			// DEUS_EX_DEMO
 			//
