@@ -19585,7 +19585,7 @@ function UpdateMarkerValidity()
     while (marker != None)
     {
         bValid = marker.associatedNote != None && !marker.associatedNote.bHidden;
-        Log("Marker " $ marker.associatedNote.text $ " is valid: " $ bValid);
+        DebugLog("Marker " $ marker.associatedNote.text $ " is valid: " $ bValid);
         if (!bValid && prev == None)
         {
             markers = marker.next;
