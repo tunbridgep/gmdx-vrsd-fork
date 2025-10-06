@@ -121,9 +121,9 @@ var travel float drugEffectTimer;
 var float JoltMagnitude;  // magnitude of bounce imposed by heavy footsteps
 
 // poison dart effects on the player
-var float poisonTimer;      // time remaining before next poison TakeDamage
-var int   poisonCounter;    // number of poison TakeDamages remaining
-var int   poisonDamage;     // damage taken from poison effect
+var travel float poisonTimer;      // time remaining before next poison TakeDamage
+var travel int   poisonCounter;    // number of poison TakeDamages remaining
+var travel int   poisonDamage;     // damage taken from poison effect
 
 // bleeding variables
 var     float       BleedRate;      // how profusely the player is bleeding; 0-1
