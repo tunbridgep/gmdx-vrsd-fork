@@ -470,6 +470,8 @@ var bool bNotFirstDiffMod;                                                      
 //Sarge
 var(GMDX) bool bDontRandomizeWeapons;                                           //If true, this pawn will never have it's weapons randomised amongst other enemies.
 
+var(GMDX) bool bNoDoorInteractions;                                             //If true, this pawn will never open locked doors. Used for Tiffany Savage to stop her running out of her cell.
+
 var bool bFirstTickDone;                                                        //SARGE: Set to true after the first tick. Allows us to do stuff on the first frame
 
 //Sarge: Gender Stuff
@@ -494,16 +496,18 @@ var float blinkTimer;
 var() const bool bCanBlink;                                                     //SARGE: Whether or not this human can blink. Defaults to true. Set to false for Bob Page in the intro so he doesn't ruin his eye-zoom.
 
 //SARGE: Allow randomised pain and death sounds
-var Sound randomDeathSoundsM[11];
-var Sound randomPainSoundsM[21];
-var Sound randomDeathSoundsF[3];
-var Sound randomPainSoundsF[5];
-var bool bSetupRandomSounds; //Have we set up a random sound?
+var Sound randomDeathSoundsM[30];
+var Sound randomPainSoundsM[30];
+var Sound randomDeathSoundsF[30];
+var Sound randomPainSoundsF[30];
 var Sound randomDeathSoundChoice; //These three variables hold the references to
 var Sound randomPainSoundChoice1; //our randomly rolled sounds.
 var Sound randomPainSoundChoice2; //Used by the GetDeathSound and GetPainSound functions.
 var Sound deathSoundOverride;            //If this is set, we will use this instead of our rolled death sounds.
 var bool bDontChangeDeathPainSounds; //If set, we don't randomise death or pain sounds for this actor
+var transient bool bSetupRandomSounds; //Have we set up a random sound?
+var transient int numDeathSounds;
+var transient int numPainSounds;
 
 //SARGE: Copied the poison stuff to allow bleeding, which is lethal poison.
 var      float    bleedTimer;      // time remaining before next poison TakeDamage
@@ -511,6 +515,46 @@ var      int      bleedCounter;    // number of poison TakeDamages remaining
 var      int      bleedDamage;     // damage taken from poison effect
 var      Pawn     BleedSource;         // person who initiated PoisonEffect damage
 
+//SARGE: Allow "high alert" mode which skips some states and makes enemies generally attack instantly. Lasts for a time limit
+var float fHighAlertState;
+
+var(GMDX) const float fHighAlertChance;       //SARGE: The chance of a character going into high alert based on sounds or sights. Will always go on high alert when hearing a sound super close on Hardcore
+
+var(GMDX) const bool bSmartWeaponDraw;        //SARGE: If set, Pawn will draw their weapon when it makes sense to do so.
+
+var float fSubAwarenessMod;                    //SARGE: gradually improve hearing threshold as we hear footsteps, making us "perk up" more as we hear suspicious sounds. Stops the player "trailing" NPCs.
+var float fSubAwarenessModTime;                //SARGE: How long until sub-awareness state wears off. Usually it's about 5 seconds.
+
+//SARGE: Add new awareness for guns being pointed at them
+var(GMDX) bool bReactGunPointed;
+
+//Augmentique Data
+struct AugmentiqueOutfitData
+{
+    var Texture textures[9];
+    var bool bRandomized;
+};
+
+var travel AugmentiqueOutfitData augmentiqueData;
+
+//Augmentique: Update our textures to our Augmentique outfit
+function ApplyCurrentOutfit()
+{
+    local int i;
+
+    if (!augmentiqueData.bRandomized)
+        return;
+    
+    //GMDX Exclusive code
+    if (IsHDTP())
+        return;
+
+    for (i = 0;i < 8;i++)
+        if (augmentiqueData.textures[i] != None)
+            multiskins[i] = augmentiqueData.textures[i];
+    if (augmentiqueData.textures[8] != None)
+        Texture = augmentiqueData.textures[8];
+}
 
 native(2102) final function ConBindEvents();
 
@@ -589,23 +633,60 @@ exec function UpdateHDTPsettings()
     local bool hdtp;
 
     hdtp = IsHDTP();
+    
+    SetupSkin();
 
     //Bail out if we have no need to continue
-    if ((hdtp && bSetupHDTP) || (!hdtp && !bSetupHDTP))
-        return;
-
-    if (HDTPMesh != "")
+    if ((hdtp && !bSetupHDTP) || (!hdtp && bSetupHDTP))
     {
-        Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),hdtp);
-        //We have to be careful here, or we will break holo-projectors
-        for(i = 0; i < 8;i++)
-            MultiSkins[i] = class'HDTPLoader'.static.GetTexture2(HDTPMeshTex[i],string(default.MultiSkins[i]),IsHDTP());
+        if (HDTPMesh != "")
+        {
+            Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),hdtp);
+            //We have to be careful here, or we will break holo-projectors
+            for(i = 0; i < 8;i++)
+                MultiSkins[i] = class'HDTPLoader'.static.GetTexture2(HDTPMeshTex[i],string(default.MultiSkins[i]),IsHDTP());
+        }
+        if (HDTPSkin != "")
+            Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),hdtp);
+        if (HDTPTexture != "")
+            Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),hdtp);
+        bSetupHDTP = hdtp;
     }
-    if (HDTPSkin != "")
-        Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),hdtp);
-    if (HDTPTexture != "")
-        Texture = class'HDTPLoader'.static.GetTexture2(HDTPTexture,string(default.Texture),hdtp);
-    bSetupHDTP = hdtp;
+
+    //Fix things not appearing cloaked
+    if (bCloakOn)
+        SetSkinStyle(STY_Translucent, Texture'RSDCrap.Skins.CloakingTex', 0.4);
+
+    //Also fix glasses on holograms
+    else if (style == STY_Translucent)
+        GlassesFix();
+
+}
+
+function bool _GlassesFixTest(coerce string tex)
+{
+    return Left(tex,9) == "FramesTex" || Left(tex,9) == "LensesTex";
+}
+
+//SARGE: Remove glasses and frames textures for holograms and cloaked pawns.
+function GlassesFix()
+{
+    local int i;
+    for (i = 0;i < 8;i++)
+    {
+        if (_GlassesFixTest(default.multiskins[i].name) || _GlassesFixTest(augmentiqueData.textures[i].name))
+            multiSkins[i] = Texture'PinkMaskTex';
+    }
+}
+
+//SARGE: On Hardcore, some enemies keep weapons drawn ready for combat when not preoccupied.
+function SmartWeaponDraw(DeusExPlayer player)
+{
+    if (player != None && Weapon == None && bSmartWeaponDraw && BindName != string(Class.Name) && player.bHardcoreMode)
+    {
+        bKeepWeaponDrawn = true;
+        SwitchToBestWeapon();
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -616,8 +697,6 @@ function PostBeginPlay()
 {
 
 	Super.PostBeginPlay();
-
-    RandomiseSounds();
 
 	//sort out HDTP settings
 	UpdateHDTPSettings();
@@ -640,6 +719,8 @@ function PostBeginPlay()
 		bHasShadow = False;
 		bCanBleed = False;
 	}
+        
+    SetupSkin();
 }
 
 
@@ -1140,7 +1221,10 @@ function SetSeekLocation(Pawn seekCandidate, vector newLocation, ESeekType newSe
 		CarcassTimer      = 120.0;
 	if (newSeekType == SEEKTYPE_Sight)
 		SeekLevel = Max(SeekLevel, 1);
-	else
+    //SARGE: Seek for twice as long if we have Tactical Distraction perk
+	else if (DeusExPlayer(seekCandidate) != None && DeusExPlayer(seekCandidate).PerkManager != None && DeusExPlayer(seekCandidate).PerkManager.GetPerkWithClass(class'DeusEx.PerkTacticalDistraction').bPerkObtained)
+		SeekLevel = Max(SeekLevel, 5);
+    else
 		SeekLevel = Max(SeekLevel, 3);
 	if (bNewPostCombat)
 		bSeekPostCombat = true;
@@ -1694,8 +1778,26 @@ function HandleEnemy()
 
 function HandleSighting(Pawn pawnSighted)
 {
+    local DeusExPlayer player;
+    local float chance;
+
     SetSeekLocation(pawnSighted, pawnSighted.Location, SEEKTYPE_Sight);
-	GotoState('Seeking');
+                    
+    //SARGE: Add a chance for enemies to instantly open fire,
+    //rather than standing around waiting to be headshotted.
+    player = DeusExPlayer(pawnSighted);
+    
+    if (IsValidEnemy(pawnSighted) && !IsA('Robot') && player != None && (player.bHardCoreMode || player.bQuickReflexes) && FRand() < fHighAlertChance)
+    {
+        //player.DebugMessage("High Alert!");
+        SetEnemy(player);
+        fHighAlertState = 4.0;
+        if (Weapon == None)
+            SwitchToBestWeapon();
+        GotoState('Attacking');
+    }
+    else
+        GotoState('Seeking');
 }
 
 
@@ -2189,8 +2291,8 @@ function bool CheckEnemyPresence(float deltaSeconds,
 							{
 								/*skillStealthMod = (playerCandidate.SkillSystem.GetSkillLevelValue(class'SkillStealth')-0.5)*0.3;
 								if (skillStealthMod < 0.0)
-									skillStealthMod = 0.0;*/                    //RSD: Returns 0/15/35/45% depending on skill level value
-								skillStealthMod = (playerCandidate.SkillSystem.GetSkillLevel(class'SkillStealth'))*0.15;
+									skillStealthMod = 0.0;*/                    //RSD: Returns 0/15/35/45% depending on skill level value //SARGE: 25/50/75/100
+								skillStealthMod = (playerCandidate.SkillSystem.GetSkillLevel(class'SkillStealth'))*0.25;
 								/*litelvl = playerCandidate.AIVisibility();
 								if (playerCandidate.UsingChargedPickup(class'TechGoggles'))
          							litelvl -= 0.031376;                        //RSD: Tech Goggles hack
@@ -3120,42 +3222,30 @@ local vector loc;
   fragg.Velocity = VRand()*80;
  }
  }
- Multiskins[6]=None;
- bHasHelmet=False;
- if (IsA('UNATCOTroop'))
-     CarcassType = Class'DeusEx.UNATCOTroopCarcassDehelm';
- else if (IsA('Soldier'))
-     CarcassType = Class'DeusEx.SoldierCarcassDehelm';
- else if (IsA('Mechanic'))
-     CarcassType=Class'DeusEx.MechanicCarcass2';
 }
 
-singular function HelmetSpawn(Vector hitLocation, int actualDamage, Pawn instigatedBy)
+singular function HelmetSpawn(Vector hitLocation, int actualDamage, Pawn instigatedBy, Texture skin)
 {
-local int i;
-local GMDXUnatcoDamHelmet dh;
-local vector loc;
+    local int i;
+    local GMDXUnatcoDamHelmet dh;
+    local vector loc;
 
- loc = Location;
- loc.Z += CollisionHeight+3;
+    loc = Location;
+    loc.Z += CollisionHeight+3;
 
- if (mesh != default.mesh || instigatedBy == None)
-   return;
+    if (mesh != default.mesh || instigatedBy == None)
+    return;
 
- dh = Spawn(class'GMDXUnatcoDamHelmet',,,loc);
- if (dh != None)
- {
-    dh.Velocity = Vector(instigatedBy.ViewRotation) * (170 + actualDamage); //CyberP/Totalitarian: terrible, lazy hack.
-    dh.Velocity.Z += 50;
-    dh.SetTimer(0.4,false);
- }
+    dh = Spawn(class'GMDXUnatcoDamHelmet',,,loc);
+    
+    dh.Multiskins[1]=skin;
 
- Multiskins[6]=None;
- bHasHelmet=False;
- if (IsA('UNATCOTroop'))
-     CarcassType = Class'DeusEx.UNATCOTroopCarcassDehelm';
- else if (IsA('Soldier'))
-     CarcassType = Class'DeusEx.SoldierCarcassDehelm';
+    if (dh != None)
+    {
+        dh.Velocity = Vector(instigatedBy.ViewRotation) * (170 + actualDamage); //CyberP/Totalitarian: terrible, lazy hack.
+        dh.Velocity.Z += 50;
+        dh.SetTimer(0.4,false);
+    }
 }
 // ----------------------------------------------------------------------
 // SpawnCarcass()
@@ -3441,6 +3531,37 @@ function bool FilterDamageType(Pawn instigatedBy, Vector hitLocation,
 // ModifyDamage()
 // ----------------------------------------------------------------------
 
+//SARGE: Calculate new damage from behind
+// Was previously a flat 12x bonus, now it's Stealth skill dependent
+function float CalculateBehindDamage(int initialDamage, Pawn instigator)
+{
+    local DeusExPlayer player;
+    local int mod;
+    local name s;
+    player = DeusExPlayer(instigator);
+
+    //SARGE: Prevent bonus damage from behind when enemy is aware
+    s = GetStateName();
+    if (s == 'Seeking' || s == 'Attacking' || s == 'Alerting')
+        return initialDamage;
+
+    if (player != None && player.SkillSystem != None)
+        mod = 3 * (player.SkillSystem.GetSkillLevel(class'SkillStealth') + 1); //SARGE: 3x/6x/9x/12x
+    else
+        mod = 12; //CyberP: was 10
+
+    if (mod < 1)
+        mod = 1;
+
+    return initialDamage * mod;
+}
+
+//SARGE: Was done in ModifyDamage. Moved it out to a new function
+function float GetSabotDamage(int actualDamage)
+{
+    return actualDamage * 0.5;                                                    //RSD: 0.5x damage to organics (was 0.7)
+}
+
 function float ModifyDamage(int Damage, Pawn instigatedBy, Vector hitLocation,
 							Vector offset, Name damageType)
 {
@@ -3459,9 +3580,10 @@ function float ModifyDamage(int Damage, Pawn instigatedBy, Vector hitLocation,
 		actualDamage *= 8; //CyberP: now *8, hacky fix
 
 	// if the pawn is hit from behind at point-blank range, he is killed instantly
+    //SARGE: Now Stealth Skill dependent
 	else if (offset.x < 0)
 		if ((instigatedBy != None) && (VSize(instigatedBy.Location - Location) < 96)) //CyberP: was 64
-			actualDamage  *= 12; //CyberP: was 10
+			actualDamage = CalculateBehindDamage(actualDamage,instigatedBy);
 
 	actualDamage = Level.Game.ReduceDamage(actualDamage, DamageType, self, instigatedBy);
 
@@ -3474,7 +3596,7 @@ function float ModifyDamage(int Damage, Pawn instigatedBy, Vector hitLocation,
 	if (damageType == 'TearGas' || damageType == 'EMP' || damageType == 'NanoVirus')
 		actualDamage = 0;
     else if (damageType == 'Sabot')
-        actualDamage *= 0.5;                                                    //RSD: 0.5x damage to organics (was 0.7)
+        actualDamage = GetSabotDamage(actualDamage);                                                    //RSD: 0.5x damage to organics (was 0.7)
 	//if (damageType == 'EMP')
     //{bHasCloak = False; CloakThreshold = 0;}//CyberP: EMP just outright disables cloaking.
 
@@ -3589,6 +3711,64 @@ function bool ShouldReactToInjuryType(name damageType,
 		return false;
 }
 
+// ----------------------------------------------------------------------
+// SARGE: Orders this pawn to don a helmet!
+// Allows characters to equip helmets.
+// Used to give Terrorists and such helmets.
+// ----------------------------------------------------------------------
+
+function DonHelmet()
+{
+}
+
+// ----------------------------------------------------------------------
+// SARGE: Split out helmet breaking to a new function.
+// Fixes TT's horrible mess
+// (I seem to be fixing these messes a lot recently...)
+// ----------------------------------------------------------------------
+
+function bool DoHelmetBreak(bool bForced, float actualDamage, Pawn instigatedBy)
+{
+    local bool bBroken;
+    local Texture tex;
+    
+    if (IsA('MJ12Troop') || IsA('MJ12Elite'))
+        return false;
+
+    if (bHasHelmet && (actualDamage >= 25 || FRand() < 0.08 || bForced))
+    {
+        if (FRand() < 0.6)
+        {
+            HelmetBreak();
+        }
+        else
+        {
+            if (IsA('UNATCOTroop'))
+                tex = Texture'GMDXSFX.Skins.hUNATCOTroopTex3';
+            else if (IsA('Soldier') || IsA('HKMilitary'))
+                tex = Texture'GMDXSFX.Skins.hSoldierTex3';
+            else if (IsA('Mechanic'))
+                tex = Texture'GMDXSFX.Skins.hMechanicTex3';
+            HelmetSpawn(Location+vect(0,0,49), actualDamage, instigatedBy, tex);
+        }
+
+        bBroken = true;
+    }
+    
+    if (bBroken)
+    {
+        Multiskins[6]=None;
+        bHasHelmet=False;
+        if (IsA('UNATCOTroop'))
+            CarcassType = Class'DeusEx.UNATCOTroopCarcassDehelm';
+        else if (IsA('Soldier'))
+            CarcassType = Class'DeusEx.SoldierCarcassDehelm';
+        else if (IsA('Mechanic'))
+            CarcassType=Class'DeusEx.MechanicCarcass2';
+    }
+
+    return bBroken;
+}
 
 // ----------------------------------------------------------------------
 // HandleDamage()
@@ -3600,6 +3780,8 @@ function EHitLocation HandleDamage(out int actualDamage, Vector hitLocation, Vec
 	local float        headOffsetZ, headOffsetY, armOffset;
     local float ricochetRand;                                                   //RSD: Added
     local name origDamageType;                                                  //RSD: Added
+	local Perk perkArmorPiercing;                                               //SARGE: Added
+    local bool bHelmetSoundHack;                                                //SARGE: Added
 
     origDamageType = damageType;                                                //RSD: For distinct helmet hit sounds
 
@@ -3622,32 +3804,25 @@ function EHitLocation HandleDamage(out int actualDamage, Vector hitLocation, Vec
             	&& bHasHelmet && (damageType == 'Shot' || damageType == 'Poison' || damageType == 'Stunned' || damageType == 'Bleed'))
             {
                     //PlaySound(sound'ArmorRicochet',SLOT_Interact,,true,1536); //RSD: New ricochet sounds because I hate that one
-                    if (IsA('Mechanic') && (actualDamage >= 25 || FRand() < 0.2))
+                    DoHelmetBreak(false,actualDamage,instigatedBy);
+                    if (!IsA('Mechanic') && actualDamage < 25)
                     {
-                          HelmetBreak();
-                    }
-                    else if (IsA('UNATCOTroop') && (actualDamage >= 25 || FRand() < 0.08))
-                    {
-                          HelmetSpawn(Location+vect(0,0,49), actualDamage, instigatedBy);
-                          if (actualDamage < 25)
-                          {
-                          actualDamage = 0;
-                          damageType = '';
-                          }
-                    }
-                    else
-                    {
-                    if (actualDamage >= 25)
-                    {
-                    }
-                    else
-                    {
-                        actualDamage = 0;
-                        damageType = '';
-                    }
+                        //SARGE: The new Armor Piercing perk still gives us some amount of damage.
+                        perkArmorPiercing = DeusExPlayer(instigatedBy).PerkManager.GetPerkWithClass(class'DeusEx.PerkArmorPiercing');
+                        if (perkArmorPiercing.bPerkObtained && WeaponAssaultGun(instigatedBy.weapon) != None)
+                        {
+                            actualDamage = actualDamage * perkArmorPiercing.perkValue;
+                            //DeusExPlayer(GetPlayerPawn()).ClientMessage("Armor Pierced: " $ actualDamage);
+                            bHelmetSoundHack = true;
+                        }
+                        else
+                        {
+                            actualDamage = 0;
+                            damageType = '';
+                        }
                     }
 
-                    if (actualDamage <= 0)                                      //RSD: Only play helmet sounds if we didn't do damage!
+                    if (actualDamage <= 0 || bHelmetSoundHack)                                      //RSD: Only play helmet sounds if we didn't do damage! //SARGE: Or if we have armor piercing and did some damage.
                     {
                     if (origDamageType == 'Shot')                               //RSD: Play new ricochet sounds for hard damage
                     {
@@ -3677,14 +3852,7 @@ function EHitLocation HandleDamage(out int actualDamage, Vector hitLocation, Vec
             else if (bHasHelmet && damageType == 'Sabot')
             {
                 actualDamage *= 2.0;                                            //RSD: Armor piercing damage passes through helmets (x2 here because it's halved in ModifyDamage())
-                if (IsA('Mechanic'))                                            //RSD: Also it breaks mechanic helmets
-                    {
-                          HelmetBreak();
-                    }
-                    else if (IsA('UNATCOTroop'))                                //RSD: And it pops off trooper helmets
-                    {
-                          HelmetSpawn(Location+vect(0,0,49), actualDamage, instigatedBy);
-                    }
+                DoHelmetBreak(true,actualDamage,instigatedBy);
             }
 			// narrow the head region
 			if ((Abs(offset.x) < headOffsetY) || (Abs(offset.y) < headOffsetY))
@@ -4475,11 +4643,15 @@ function SetSkinStyle(ERenderStyle newStyle, optional texture newTex, optional f
 	if (newScaleGlow == 0)
 		newScaleGlow = ScaleGlow;
 
+    if (newStyle == STY_Translucent)
+        GlassesFix(); //SARGE: Added
+
 	oldSkin = Skin;
 	for (i=0; i<8; i++)
 	{
 		curSkin = GetMeshTexture(i);
-		MultiSkins[i] = GetStyleTexture(newStyle, curSkin, newTex);
+        if (curSkin != None && curSkin.Name != 'PinkMaskTex')
+            MultiSkins[i] = GetStyleTexture(newStyle, curSkin, newTex);
 	}
 	Skin      = GetStyleTexture(newStyle, Skin, newTex);
 	ScaleGlow = newScaleGlow;
@@ -4500,12 +4672,7 @@ function ResetSkinStyle()
 	Skin      = Default.Skin;
 	ScaleGlow = Default.ScaleGlow;
 	Style     = Default.Style;
-	if ((IsA('MJ12Troop') || IsA('MJ12Elite')) && bHasCloak)
-	{
-	MultiSkins[3] = Texture'DeusExCharacters.Skins.MiscTex1';
-	MultiSkins[6] = Texture'DeusExCharacters.Skins.MJ12TroopTex3';
-	MultiSkins[7] = None;
-	}
+    SetupSkin();
 }
 
 
@@ -4548,7 +4715,16 @@ local SpoofedCorona cor;
 		bCloaked = False;
 		if (Health > 0)
 		PlaySound(Sound'CloakDown', SLOT_Pain, 0.85, ,768,1.0);
+        SetupSkin();
 	}
+}
+
+//SARGE: Added to let us fix up skins when disabling cloak or swapping weapons
+//By default, does nothing, but can be used for things like custom skins for shotgunners
+function SetupSkin()
+{
+    if (!bCloakOn)
+        ApplyCurrentOutfit();
 }
 
 function ForceCloakOff()                                                        //RSD: Hack function to force cloak off without playing sounds
@@ -4558,6 +4734,7 @@ function ForceCloakOff()                                                        
 		LightRadius = 0;
         AmbientGlow = 0;
 		bCloakOn = False;
+        SetupSkin();
 }
 
 // ----------------------------------------------------------------------
@@ -4606,6 +4783,8 @@ function PlayDyingSound()
 {
 	SetDistressTimer();
 
+    //SARGE: Fix the broken sound propagation
+    class'PawnUtils'.static.WakeUpAI(self,336);
 	PlaySound(GetDeathSound(), SLOT_Pain,,,, RandomPitch());
 	if (bEmitDistress)
 		AISendEvent('Distress', EAITYPE_Audio,0.25,336); //CyberP: radius was 490 //RSD: psshh, only 224? We going to 336 baby
@@ -6593,36 +6772,85 @@ function HandleShot(Name event, EAIEventState state, XAIParams params)
 	}
 }
 
+// ----------------------------------------------------------------------
+// SARGE: HandleFootstepsAwareness()
+// When an NPC hears a number of quiet footsteps, eventually
+// they will take notice
+// ----------------------------------------------------------------------
+
+function HandleFootstepsAwareness(Pawn instigator, float mod)
+{
+	if (instigator != None && bReactLoudNoise && bLookingForLoudNoise && mod > 0)
+    {
+        //If we are still within the time threshold, keep adding until we hear something!
+        //Otherwise, reset
+        if (fSubAwarenessModTime > 0)
+            fSubAwarenessMod -= mod;
+        else
+            fSubAwarenessMod = 1.0 - mod;
+
+        fSubAwarenessModTime = 5.0;
+        DeusExPlayer(instigator).DebugMessage("Noise handler level: " $ fSubAwarenessMod);
+        
+        if (fSubAwarenessMod < HearingThreshold)
+        {
+            //DeusExPlayer(GetPlayerPawn()).DebugMessage("Noise handler alerting!");
+            NoiseHandler(instigator);
+        }
+    }
+}
 
 // ----------------------------------------------------------------------
 // HandleLoudNoise()
 // ----------------------------------------------------------------------
+
+//SARGE: Moved HandleLoudNoise to here, so we can call it directly in special cases
+function NoiseHandler(Actor source)
+{
+	local Pawn  instigator;
+    local DeusExPlayer player;          //SARGE: Added
+    if (source != None)
+    {
+        instigator = Pawn(source);
+        if (instigator == None)
+            instigator = source.Instigator;
+        if (instigator != None)
+        {
+            //DeusExPlayer(source).DebugMessage("NoiseHandler: " $ instigator);
+            if (IsValidEnemy(instigator))
+            {
+                //DeusExPlayer(GetPlayerPawn()).DebugMessage("Aw2");
+                SetSeekLocation(instigator, source.Location, SEEKTYPE_Sound);
+
+                //SARGE: If we're super close, and we're in hardcore mode, allow
+                //attacking instantly, rather than searching.
+                player = DeusExPlayer(instigator);
+
+                if (!IsA('Robot') && player != None && (player.bHardcoreMode || player.bQuickReflexes) && ((Abs(VSize(player.Location - Location)) < 500) || FRand() < fHighAlertChance))
+                {
+                    //player.DebugMessage("High Alert!");
+                    SetEnemy(player);
+                    fHighAlertState = 4.0;
+                    if (Weapon == None)
+                        SwitchToBestWeapon();
+                    GotoState('Attacking');
+                }
+                HandleEnemy();
+            }
+        }
+    }
+}
 
 function HandleLoudNoise(Name event, EAIEventState state, XAIParams params)
 {
 	// React
 
 	local Actor bestActor;
-	local Pawn  instigator;
-
 
 	if (state == EAISTATE_Begin || state == EAISTATE_Pulse)
 	{
 		bestActor = params.bestActor;
-		if (bestActor != None)
-		{
-			instigator = Pawn(bestActor);
-			if (instigator == None)
-				instigator = bestActor.Instigator;
-			if (instigator != None)
-			{
-				if (IsValidEnemy(instigator))
-				{
-					SetSeekLocation(instigator, bestActor.Location, SEEKTYPE_Sound);
-					HandleEnemy();
-				}
-			}
-		}
+        NoiseHandler(bestActor);
 	}
 }
 
@@ -8602,6 +8830,12 @@ function Tick(float deltaTime)
     if (!bFirstTickDone && !ShouldCreate(player))
         Destroy();
 
+    
+    //SARGE: tick down high alert state
+    fHighAlertState = FMAX(0,fHighAlertState - deltaTime);
+
+    //SARGE: tick down sub-awareness time
+    fSubAwarenessModTime = FMAX(0,fSubAwarenessModTime - deltaTime);
 
 	bDoLowPriority = true;
 	bCheckPlayer   = true;
@@ -10057,6 +10291,13 @@ function Died(pawn Killer, name damageType, vector HitLocation)
 
 function DifficultyMod(float CombatDifficulty, bool bHardCoreMode, bool bExtraHardcore, bool bFirstLevelLoad) //RSD: New function to streamline NPC stat difficulty modulation
 {
+    //SARGE: If we have perma cloak terned on, and if we can cloak, make it permanent
+    if (!bNotFirstDiffMod && bFirstLevelLoad && bHasCloak && DeusExPlayer(GetPlayerPawn()) != None && DeusExPlayer(GetPlayerPawn()).bPermaCloak && (IsA('Robot') || IsA('MJ12Elite')))
+    {
+        bForcedCloak = true;
+        EnableCloak(true);
+    }
+
 	bNotFirstDiffMod = true;
 }
 
@@ -12202,7 +12443,7 @@ GoToLocation:
 	{
 		PlayPreAttackSearchingSound();
 		disturbanceCount++;
-		if (FRand() < 0.4 && SeekLevel >= 3) //CyberP: sometimes just turn to the source of the sound instead of running around
+		if (FRand() < 0.4 && SeekLevel == 3) //CyberP: sometimes just turn to the source of the sound instead of running around
 		{
 		SeekLevel = 0;
 		GoTo('TurnToLocation');
@@ -12225,7 +12466,8 @@ GoToLocation:
 	EnableCheckDestLoc(true);
 	if (SeekType == SEEKTYPE_Sound && FRand() < 0.1 && SeekLevel >=3)
 	{
-	Sleep(0.2);
+        if (fHighAlertState == 0)
+            Sleep(0.2);
 	while (GetNextLocation(useLoc))
 	{
 		            if (ShouldPlayWalk(useLoc))
@@ -12253,7 +12495,8 @@ GoToLocation:
 		MoveTarget = GetOvershootDestination(0.5);
 		if (MoveTarget != None)
 		{
-		   sleep(0.2);
+            if (fHighAlertState == 0)
+                sleep(0.2);
 			if (ShouldPlayWalk(MoveTarget.Location))
 				PlayRunning();
 			MoveToward(MoveTarget, MaxDesiredSpeed);
@@ -12293,7 +12536,7 @@ TurnToLocation:
 	PlayWaiting();
 	if (SeekType == SEEKTYPE_Sound)
 	{
-	    if (SeekLevel == 0)
+	    if (SeekLevel == 0 && fHighAlertState == 0)
 	    {
 	       Sleep(FRand()*2+3);
            GoTo('LookAroundAgain');
@@ -13381,13 +13624,13 @@ State Attacking
 		{
 		    if (dxWeapon.bHandToHand)
 		        bDefendHome = False; //CyberP: campers no longer camp if out of ammo
-			if ((dxWeapon.AIFireDelay > 0) && (FireTimer > 0))
+			if ((dxWeapon.AIFireDelay > 0) && (FireTimer > 0) && fHighAlertState == 0)
 				return false;
 			else if (dxWeapon.IsA('WeaponRifle') && FRand() < 0.8)
                 return false;  //CyberP: rand as to whether snipers can fire, to simulate taking variable time to aim.
 			else if (AICanShoot(enemy, true, true, 0.025))
 			{
-                if (currentReactTime > 0)
+                if (currentReactTime > 0 && fHighAlertState == 0)
                 {
                     //Waiting to fire...
                     return false;
@@ -13408,6 +13651,7 @@ State Attacking
                 else if (IsInState('Dying'))
                     dxWeapon.PawnAccuracyModifier += 0.4;
 				Weapon.Fire(0);
+                fHighAlertState = 0;
 				/*if (CombatSeeTimer < 0.75)
 				{
 				   ForEach RadiusActors(class'HumanMilitary',ham,512)
@@ -17228,9 +17472,11 @@ function Sound GetDeathSound()
         else
             return Sound'DeusExSounds.Player.MaleDeath';
     }
-
     else
+    {
+        RandomiseSounds();
         return randomDeathSoundChoice;
+    }
 }
 
 //Gets one of this characters two hit sounds
@@ -17274,6 +17520,8 @@ function Sound GetHitSound(optional bool sound2)
         }
     }
 
+    RandomiseSounds();
+
     //Otherwise, use our pain sound choices
     if (sound2)
         return randomPainSoundChoice2;
@@ -17284,31 +17532,30 @@ function Sound GetHitSound(optional bool sound2)
 
 function RandomiseSounds()
 {
-    local int dyingSounds, painSounds, i;
+    local int i;
     
-    //hack
-    //if (HitSound1 == Sound'DeusExSounds.Generic.ArmorRicochet')
     if (bDontChangeDeathPainSounds)
         return;
 
-    if (bSetupRandomSounds || !bIsHuman)
-        return;
-    
-    bSetupRandomSounds = true;
-    
-    while (GetDeathSoundFromIndex(dyingSounds) != None)
-        dyingSounds++;
-    while (GetPainSoundFromIndex(painSounds) != None)
-        painSounds++;
-
-    if (dyingSounds > 0)
+    if (!bSetupRandomSounds)
     {
-        randomDeathSoundChoice = GetDeathSoundFromIndex(int(FRand() * (dyingSounds-1)));
+        while (GetDeathSoundFromIndex(numDeathSounds) != None)
+            numDeathSounds++;
+        while (GetPainSoundFromIndex(numPainSounds) != None)
+            numPainSounds++;
+        bSetupRandomSounds = true;
     }
-    if (painSounds > 0)
+
+    //Log("PainSounds: " $ numPainSounds $ ", " $ numDeathSounds);
+
+    if (numDeathSounds > 0)
     {
-        randomPainSoundChoice1 = GetPainSoundFromIndex(int(FRand() * (painSounds-1)));
-        randomPainSoundChoice2 = GetPainSoundFromIndex(int(FRand() * (painSounds-1)));
+        randomDeathSoundChoice = GetDeathSoundFromIndex(Rand(numDeathSounds));
+    }
+    if (numPainSounds > 0)
+    {
+        randomPainSoundChoice1 = GetPainSoundFromIndex(Rand(numPainSounds));
+        randomPainSoundChoice2 = GetPainSoundFromIndex(Rand(numPainSounds));
     }
 }
 
@@ -17316,6 +17563,7 @@ function RandomiseSounds()
 //SARGE: Called when the Weapon Swap gameplay modifier for this entity has been called
 function WeaponSwap(ScriptedPawn SwappedFrom)
 {
+    SetupSkin();
 }
 
 //SARGE: Set up the Shenanigans gameplay modifier for this entity
@@ -17414,6 +17662,11 @@ defaultproperties
      randomDeathSoundsF(0)=Sound'DeusExSounds.Player.FemaleDeath';
      randomDeathSoundsF(1)=Sound'DeusExSounds.Player.FemaleUnconscious';
      randomDeathSoundsF(2)=Sound'GMDXSFX.Player.fem1grunt1';
+     randomDeathSoundsF(3)=Sound'GMDXSFX.Player.fem1grunt1'
+     randomDeathSoundsF(4)=Sound'GMDXSFX.Player.fem1grunt2'
+     randomDeathSoundsF(5)=Sound'GMDXSFX.Player.fem1grunt3'
+     randomDeathSoundsF(6)=Sound'GMDXSFX.Player.fem2grunt1'
+     randomDeathSoundsF(7)=Sound'GMDXSFX.Player.fem2grunt2'
      //
      randomDeathSoundsM(0)=Sound'DeusExSounds.Player.MaleDeath';
      randomDeathSoundsM(1)=Sound'DeusExSounds.Player.MaleUnconscious';
@@ -17426,16 +17679,27 @@ defaultproperties
      randomDeathSoundsM(8)=Sound'GMDXSFX.Human.Death09';
      randomDeathSoundsM(9)=Sound'GMDXSFX.Human.Death11';
      randomDeathSoundsM(10)=Sound'GMDXSFX.Player.male1grunt2';
+     randomDeathSoundsM(11)=Sound'GMDXSFX.Human.PainBig01' //Despite being labelled pain, these sound like death
+     randomDeathSoundsM(12)=Sound'GMDXSFX.Human.PainBig02'
+     randomDeathSoundsM(13)=Sound'GMDXSFX.Human.PainBig03'
+     randomDeathSoundsM(14)=Sound'GMDXSFX.Human.PainBig04'
+     randomDeathSoundsM(15)=Sound'GMDXSFX.Human.PainBig05'
+     randomDeathSoundsM(16)=Sound'GMDXSFX.Human.PainBig06'
+     randomDeathSoundsM(17)=Sound'GMDXSFX.Human.PainBig07'
+     randomDeathSoundsM(18)=Sound'GMDXSFX.Human.PainBig08'
      //
      randomPainSoundsF(0)=Sound'DeusExSounds.Player.FemalePainSmall'
      randomPainSoundsF(1)=Sound'DeusExSounds.Player.FemalePainMedium'
      randomPainSoundsF(2)=Sound'DeusExSounds.Player.FemalePainLarge'
-     randomPainSoundsF(3)=Sound'GMDXSFX.Player.fem2grunt1'
-     randomPainSoundsF(4)=Sound'GMDXSFX.Player.fem2grunt2'
+     randomPainSoundsF(3)=Sound'GMDXSFX.Player.fem1grunt1'
+     randomPainSoundsF(4)=Sound'GMDXSFX.Player.fem1grunt2'
+     randomPainSoundsF(5)=Sound'GMDXSFX.Player.fem1grunt3'
+     randomPainSoundsF(6)=Sound'GMDXSFX.Player.fem2grunt1'
+     randomPainSoundsF(7)=Sound'GMDXSFX.Player.fem2grunt2'
      //
      randomPainSoundsM(0)=Sound'DeusExSounds.Player.MalePainSmall'
      randomPainSoundsM(1)=Sound'DeusExSounds.Player.MalePainMedium'
-     randomPainSoundsM(2)=Sound'DeusExSounds.Player.MalePainBig'
+     randomPainSoundsM(2)=Sound'DeusExSounds.Player.MalePainLarge'
      randomPainSoundsM(3)=Sound'GMDXSFX.Human.PainSmall01'
      randomPainSoundsM(4)=Sound'GMDXSFX.Human.PainSmall02'
      randomPainSoundsM(5)=Sound'GMDXSFX.Human.PainSmall03'
@@ -17443,16 +17707,14 @@ defaultproperties
      randomPainSoundsM(7)=Sound'GMDXSFX.Human.PainSmall06'
      randomPainSoundsM(8)=Sound'GMDXSFX.Human.PainSmall07'
      randomPainSoundsM(9)=Sound'GMDXSFX.Human.PainSmall08'
-     randomPainSoundsM(10)=Sound'GMDXSFX.Human.PainBig01'
-     randomPainSoundsM(11)=Sound'GMDXSFX.Human.PainBig02'
-     randomPainSoundsM(12)=Sound'GMDXSFX.Human.PainBig04'
-     randomPainSoundsM(13)=Sound'GMDXSFX.Human.PainBig05'
-     randomPainSoundsM(14)=Sound'GMDXSFX.Human.PainBig06'
-     randomPainSoundsM(15)=Sound'GMDXSFX.Human.MGrunt1'
-     randomPainSoundsM(16)=Sound'GMDXSFX.Human.MGrunt3'
-     randomPainSoundsM(17)=Sound'GMDXSFX.Player.malegrunt2'
-     randomPainSoundsM(18)=Sound'GMDXSFX.Player.malegrunt3'
-     randomPainSoundsM(19)=Sound'DeusExSounds.Player.MaleLand' //WTF?
-     randomPainSoundsM(20)=Sound'DeusExSounds.Player.MaleGrunt'
+     randomPainSoundsM(10)=Sound'GMDXSFX.Player.MGrunt1'
+     randomPainSoundsM(11)=Sound'GMDXSFX.Player.MGrunt2'
+     randomPainSoundsM(12)=Sound'GMDXSFX.Player.MGrunt3'
+     randomPainSoundsM(13)=Sound'GMDXSFX.Player.male1grunt1'
+     randomPainSoundsM(14)=Sound'GMDXSFX.Player.male1grunt2'
+     randomPainSoundsM(15)=Sound'GMDXSFX.Player.male1grunt3'
+     randomPainSoundsM(16)=Sound'DeusExSounds.Player.MaleLand' //WTF?
+     randomPainSoundsM(17)=Sound'DeusExSounds.Player.MaleGrunt'
      bCanBlink=true
+     fHighAlertChance=0.2
 }

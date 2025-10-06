@@ -151,12 +151,8 @@ function ModBalance(int userIndex, int numCredits, bool bSync)
 	{
 		foreach AllActors(class'ATM', atm)
 			for (i=0; i<atm.NumUsers(); i++)
-				if (atm != Self)
-					if ((Caps(userList[userIndex].accountNumber) == atm.GetAccountNumber(i)) &&
-						(Caps(userList[userIndex].PIN) == atm.GetPIN(i)))
-					{
-						atm.ModBalance(i, numCredits, False);
-					}
+                if (atm != Self && Caps(GetAccountNumber(i)) == Caps(atm.GetAccountNumber(i)) && Caps(GetPIN(i)) == Caps(atm.GetPIN(i))) //SARGE: Fixed this horrible mess of a conditional
+                    atm.ModBalance(i, numCredits, False);
 	}
 }
 
@@ -167,7 +163,7 @@ function ModBalance(int userIndex, int numCredits, bool bSync)
 function string GetAccountNumber(int userIndex)
 {
 	if ((userIndex >= 0) && (userIndex < ArrayCount(userList)))
-		return Caps(userList[userIndex].accountNumber);
+		return userList[userIndex].accountNumber;
 	else if (userIndex == -1)
 		return "HACKED";
 
@@ -181,7 +177,7 @@ function string GetAccountNumber(int userIndex)
 function string GetPIN(int userIndex)
 {
 	if ((userIndex >= 0) && (userIndex < ArrayCount(userList)))
-		return Caps(userList[userIndex].PIN);
+		return userList[userIndex].PIN;
 	else if (userIndex == -1)
 		return "HACKED";
 

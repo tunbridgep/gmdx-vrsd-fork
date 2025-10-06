@@ -91,7 +91,7 @@ function DifficultyMod(float CombatDifficulty, bool bHardCoreMode, bool bExtraHa
          else if (IsA('MJ12Commando'))
              HearingThreshold = 0.125000;
          }
-         bNotFirstDiffMod = true;
+         super.DifficultyMod(CombatDifficulty,bHardCoreMode,bExtraHardcore,bFirstLevelLoad);
 }
 
 defaultproperties
@@ -106,6 +106,7 @@ defaultproperties
      SprintRate=1.000000
      CloseCombatMult=0.550000
      bReactAlarm=True
+     bReactGunPointed=true
      EnemyTimeout=14.000000
      bCanTurnHead=True
      smartStrafeRate=0.450000

@@ -83,7 +83,10 @@ var bool bShenanigans;
 var bool bRandomizeCrap;
 var bool bCutInteractions;
 var bool bA51Camera;
+var bool bCollectibles;
 var bool bHardcoreFilterOption;
+var bool bPermaCloak;
+var bool bNoStartingWeaponChoices;
 
 //LDDP
 var bool bFemaleEnabled;
@@ -91,6 +94,28 @@ var bool bFemaleEnabled;
 function Timer()
 {
     GiveTip(false);
+}
+
+// ----------------------------------------------------------------------
+// SARGE: InvokePlaythroughModifiersMenu()
+//
+// Show the modifiers screen
+// ----------------------------------------------------------------------
+
+function InvokePlaythroughModifiersMenu(optional bool bCheck)
+{
+	local MenuScreenPlaythroughModifiers mods;
+
+    if (bCheck && !player.bAlwaysShowModifiers)
+        return;
+
+    mods = MenuScreenPlaythroughModifiers(root.InvokeMenuScreen(Class'MenuScreenPlaythroughModifiers'));
+
+    if (mods != None)
+    {
+        mods.bHardcoreSelected = bHardCoreMode;
+        mods.BuildModifierList();
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -154,7 +179,10 @@ event InitWindow()
     bRandomizeCrap=false;                                                       //Sarge
     bCutInteractions=false;                                                     //Sarge
     bA51Camera=false;                                                           //Sarge
+    bCollectibles=false;                                                        //Sarge
     bHardcoreFilterOption=false;                                                //Sarge
+    bPermaCloak=false;                                                          //Sarge
+    bNoStartingWeaponChoices=false;                                             //Sarge
     //bRestrictedMetabolism=false;                                              //Sarge
     default.bRandomizeCrates=false;                                             //RSD: Also need default values! Otherwise get command in modifier menu takes the wrong value
     default.bRandomizeMods=false;                                               //RSD
@@ -175,8 +203,10 @@ event InitWindow()
     default.bRandomizeCrap=false;                                               //Sarge
     default.bCutInteractions=false;                                             //Sarge
     default.bA51Camera=false;                                                   //Sarge
+    default.bCollectibles=false;                                                //Sarge
     default.bHardcoreFilterOption=false;                                        //Sarge
-
+    default.bPermaCloak=false;                                                  //Sarge
+    default.bNoStartingWeaponChoices=false;                                     //Sarge
 	StyleChanged();
 }
 
@@ -796,9 +826,7 @@ function ProcessAction(String actionKey)
 	}
 	else if (actionKey == "MODIFIERS")                                          //RSD: New modifiers menu
     {
-		modMenu = MenuScreenPlaythroughModifiers(root.InvokeMenuScreen(Class'MenuScreenPlaythroughModifiers'));
-        modMenu.bHardcoreSelected = bHardCoreMode;
-        modMenu.BuildModifierList();
+        InvokePlaythroughModifiersMenu();
     }
     else if (actionKey == "HELP")
     {
@@ -831,7 +859,10 @@ function SaveSettings()
     player.bRandomizeCrap=bRandomizeCrap;                                       //Sarge
     player.bCutInteractions=bCutInteractions;                                   //Sarge
     player.bA51Camera=bA51Camera;                                               //Sarge
+    player.bCollectiblesEnabled=bCollectibles;                                  //Sarge
     player.bHardcoreFilterOption=bHardcoreFilterOption;                         //Sarge
+    player.bPermaCloak=bPermaCloak;                                             //Sarge
+    player.bNoStartingWeaponChoices=bNoStartingWeaponChoices;                   //Sarge
     if (player.bRandomizeAugs)                                                  //RSD: New aug randomization feature
         ScrambleAugOrderList();
 

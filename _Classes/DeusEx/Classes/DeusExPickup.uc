@@ -85,6 +85,14 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
     return true;
 }
 
+//Sarge: Update frob display to show item count
+function string GetFrobString(DeusExPlayer player)
+{
+	if (numCopies > 1 && player.bShowItemPickupCounts)
+		return itemName @ "(" $ numCopies $ ")"; //SARGE: Append number of copies, if more than 1
+    return itemName;
+}
+
 static function bool IsHDTP(optional bool bAllowEffects)
 {
     return class'DeusExPlayer'.static.IsHDTPInstalled() && (default.iHDTPModelToggle > 0 || (bAllowEffects && class'DeusExPlayer'.default.bHDTPEffects));
@@ -378,7 +386,10 @@ function SupportActor( actor StandingActor )
 
 function PostPostBeginPlay()
 {
-	Super.PostPostBeginPlay();
+    Super.PostPostBeginPlay();
+
+    if (totalSkins > 1)
+        bHasMultipleSkins = true;
 
     if (!bUnlit && ScaleGlow > 0.5)
         ScaleGlow = 0.5;
@@ -391,6 +402,20 @@ function PostPostBeginPlay()
 function int RetMaxCopies()
 {
 	return default.maxCopies;
+}
+
+// ----------------------------------------------------------------------
+// SARGE: DisplayPickupMessage()
+//
+// If this has multiple copies, we need to display them in brackets
+// ----------------------------------------------------------------------
+
+function DisplayPickupMessage(DeusExPlayer player,Inventory item,int count)
+{
+    local string extra;
+    if (count > 1)
+        extra = " (" $ count $ ")";
+    player.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName $ extra, 'Pickup');
 }
 
 // ----------------------------------------------------------------------
@@ -451,7 +476,7 @@ function bool HandlePickupQuery( inventory Item )
                     if (NumCopies > startCopies)    //CyberP: bugfix
                     {
                         UpdateBeltText();
-                        player.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
+                        DisplayPickupMessage(player,Item,NumCopies - StartCopies);
                         DeusExPickup(item).NumCopies -= (NumCopies - startcopies);
                         Item.PlaySound(Item.PickupSound);
                     }
@@ -496,7 +521,7 @@ function bool HandlePickupQuery( inventory Item )
 
 		if (bResult)
 		{
-            player.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
+            DisplayPickupMessage(player,Item,DeusExPickup(item).NumCopies);
             
             if (bSound)
                 Item.PlaySound(Item.PickupSound);
@@ -821,9 +846,15 @@ auto state Pickup
 
 	function Frob(Actor Other, Inventory frobWith)
 	{
+        local DeusExPickup copy;
 		pickuplist[0] = textureset;    //doublecheck
 
-		super.Frob(other, frobwith);
+        //SARGE: Fix picking up more than the max amount if empty
+        //This is a hack because I'm too lazy to do it properly
+        if (numCopies > RetMaxCopies())
+            numCopies = RetMaxCopies();
+
+        super.Frob(other, frobwith);
 	}
 }
 

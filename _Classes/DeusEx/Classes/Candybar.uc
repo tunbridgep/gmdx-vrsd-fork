@@ -12,7 +12,9 @@ function SetSkin()
 {
     switch (textureSet)
     {
-        case 0: break; //handled by UpdateHDTPSettings();
+        case 0:
+            Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),IsHDTP());
+            break;
         case 1:
             Skin = Texture'DeusExItems.Skins.CandyBarTex2'; //HDTP has no alternate candybar texture
             break;

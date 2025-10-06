@@ -9224,6 +9224,7 @@ Begin Actor Class=Brush Name=Brush29
     Name=Brush29
 End Actor
 Begin Actor Class=DeusExLevelInfo Name=DeusExLevelInfo0
+    ChairRandomizationToken=99
     MapName="03_NYC_UNATCOIsland"
     MapAuthor="Harvey Smith"
     MissionLocation="NYC - Liberty Island"

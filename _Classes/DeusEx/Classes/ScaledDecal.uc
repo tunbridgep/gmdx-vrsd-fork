@@ -5,8 +5,8 @@
 class ScaledDecal extends DeusExDecal abstract;
 
 var float spreadTime;
-var private float maxDrawScale;
-var private float time;
+var float maxDrawScale;
+var float time;
 var const float maxDrawScaleDivisor;
 var const float maxDrawScaleDivisorHDTP;
 

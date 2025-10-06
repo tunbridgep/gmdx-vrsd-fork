@@ -175,4 +175,5 @@ defaultproperties
      bFlammable=True
      bCanBeBase=True
      bSelectMeleeWeapon=True
+     bSmallFragments=True
 }

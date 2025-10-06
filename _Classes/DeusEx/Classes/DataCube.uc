@@ -3,9 +3,11 @@
 //=============================================================================
 class DataCube extends InformationDevices;
 
+var const bool bSkipDarkenCheck;
+
 function bool DarkenScreen()
 {
-    return bRead || (textTag == '' && imageClass == None);
+    return bRead || (textTag == '' && imageClass == None && !bSkipDarkenCheck);
 }
 
 exec function UpdateHDTPsettings()
@@ -39,7 +41,6 @@ function DoDarkenScreen()
 
 defaultproperties
 {
-     bLeftGrab=True
      bAddToVault=True
      bInvincible=True
      bCanBeBase=True
@@ -57,4 +58,5 @@ defaultproperties
      LightSaturation=32
      LightHue=140
      Buoyancy=3.000000
+     bShowNamePrefix=True
 }

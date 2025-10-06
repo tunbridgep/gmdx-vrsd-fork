@@ -4,7 +4,7 @@
 
 !define INSTALLER_NAME "GMDX: Augmented Edition"
 !define INSTALLER_EXE_NAME "GMDX-AE"
-!define INSTALLER_VERSION "1.01"
+!define INSTALLER_VERSION "1.1RC"
 !define INSTALLER_SUFFIX "Full"
 
 #include the common parts of the installer
@@ -25,6 +25,9 @@ SectionGroup "Extras"
 
 #Create Shortcut
 !include .\include\gmdx_shortcut.nsi
+
+#Install VCRedist
+!include .\include\offline_vcredist.nsi
 
 #Install Kenties
 !include .\include\kenties.nsi

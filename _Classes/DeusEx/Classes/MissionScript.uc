@@ -28,6 +28,34 @@ var byte savedMusicVolume;
 var byte savedSpeechVolume;
 
 // ----------------------------------------------------------------------
+// SARGE: GetConversation()
+//
+// Returns a conversation based on a name
+// ----------------------------------------------------------------------
+
+function Conversation GetConversation(Name conName)
+{
+    local Conversation c, fallback;
+    local Name fallbackConName;
+
+    fallbackConName = '';
+
+    if (flags.GetBool('LDDPJCIsFemale'))
+    {
+        fallbackConName=conName;
+        conName = flags.StringToName("FemJC"$string(conName));
+    }
+
+    foreach AllObjects(class'Conversation', c)
+    {
+        if(c.conName == conName || c.conName == fallbackConName)
+            return c;
+    }
+
+    return None;
+}
+
+// ----------------------------------------------------------------------
 // SARGE: UpdateSavePoints()
 //
 // Checks the required flags for all Save Points, and hides/unhides them accordingly.
@@ -268,9 +296,11 @@ function FirstFrame()
     local DeusExCarcass C;                                                      //SARGE
     local DecalManager D;                                                       //SARGE
     local SecurityCamera Cam;                                                      //SARGE
+    local Collectible Coll;                                                     //SARGE
 
 	flags.DeleteFlag('PlayerTraveling', FLAG_Bool);
-
+    flags.SetBool('Enhancement_Detected', True);
+    
     //Recreate/Setup our decal manager
 	foreach AllActors(class'DecalManager', D)
         break;
@@ -362,6 +392,10 @@ function FirstFrame()
             foreach AllActors(class'SecurityCamera', Cam)
                 Cam.bAlarmEvent = true;
 
+        //SARGE: Make the collectibles disappear
+        if (!player.bCollectiblesEnabled)
+            foreach AllActors(class'Collectible', Coll)
+                Coll.Destroy();
 
         //SARGE: Do lighting accessibility
         ApplyLightingAccessibility();
@@ -461,6 +495,9 @@ function Timer()
 		if ((player != None) && (flags.GetBool('PlayerTraveling')))
 			FirstFrame();
 	}
+
+    //Disable some tutorial messages
+    flags.SetBool('GMDXNoTutorials', player.bLessTutorialMessages);
 
     DoConfixCheck();
     UpdateSavePoints();
@@ -669,18 +706,27 @@ function RandomiseCrap()
     local OfficeChair C;
     local CouchLeather L;
     local ChairLeather L2;
-    local int chairSkin;
+    local int chairSkin, couchSkin;
         
     if (!player.bRandomizeCrap)
         return;
 
     foreach AllActors(class'DeusExPickup', P)
-    {
         P.RandomiseSkin(player);
+
+    //If the mission has a custom token, use that for chair colours
+    if (dxInfo.ChairRandomizationToken == -1)
+    {
+        couchSkin=Player.Randomizer.GetRandomInt(4);
+        chairSkin=Player.Randomizer.GetRandomInt(5);
+    }
+    else
+    {
+        couchSkin = (Player.seed + dxInfo.ChairRandomizationToken) % 4;
+        chairSkin = (Player.seed + dxInfo.ChairRandomizationToken) % 5;
     }
     
     //Roll once, so that all the chairs in the level get the same style.
-    chairSkin=Player.Randomizer.GetRandomInt(5);
     //log("Applying chair skin to all swivel chairs: " $ chairSkin);
     foreach AllActors(class'OfficeChair', C)
     {
@@ -689,11 +735,10 @@ function RandomiseCrap()
     }
     
     //Roll once, so that all the couches in the level get the same style.
-    chairSkin=Player.Randomizer.GetRandomInt(4);
     //log("Applying chair skin to all leather couches: " $ chairSkin);
     foreach AllActors(class'CouchLeather', L)
     {
-        L.SkinColor = chairSkin;
+        L.SkinColor = couchSkin;
         L.UpdateHDTPsettings();
     }
     
@@ -701,7 +746,7 @@ function RandomiseCrap()
     //log("Applying chair skin to all leather chairs: " $ chairSkin);
     foreach AllActors(class'ChairLeather', L2)
     {
-        L2.SkinColor = chairSkin;
+        L2.SkinColor = couchSkin;
         L2.UpdateHDTPsettings();
     }
 }
@@ -718,7 +763,7 @@ function InitializeEnemySwap(int pool) //use pool 0 for regular weapons, pool 1 
     //Get all the relevant actors on the map
     foreach AllActors(class'ScriptedPawn', Man)
 	{
-        if (!Man.bImportant && Man.GetPawnAllianceType(Player) == ALLIANCE_Hostile && !Man.isA('Robot') && !Man.isA('Animal') && !Man.isA('HumanCivilian') && !Man.bDontRandomizeWeapons)
+        if (!Man.bImportant && Man.GetPawnAllianceType(Player) == ALLIANCE_Hostile && !Man.isA('Robot') && !Man.isA('Animal') && !Man.isA('HumanCivilian') && !Man.bDontRandomizeWeapons && Man.Weapon != None)
         {
             if (pool == 0 && !Man.Weapon.isA('WeaponRifle') && !Man.Weapon.isA('WeaponGEPGun') && !Man.Weapon.isA('WeaponPlasmaRifle'))
                 randomizeActors[totalRandomized] = Man;

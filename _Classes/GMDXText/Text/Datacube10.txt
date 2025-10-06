@@ -1,0 +1,6 @@
+<DC=255,255,255>
+<P>MANTLING
+<P>
+<P>You can mantle onto objects by pressing the 'Jump' key (default = SPACE BAR) whilst facing an object.
+<P>
+<P>To begin, mantle up the stack of crates, and from there climb up onto the ledge.

@@ -642,6 +642,7 @@ Begin Actor Class=PlayerStart Name=PlayerStart0
     Name=PlayerStart0
 End Actor
 Begin Actor Class=DeusExLevelInfo Name=DeusExLevelInfo1
+    ChairRandomizationToken=98
     MapName="08_NYC_Bar"
     MapAuthor="Bob White"
     MissionLocation="NYC - Underworld Tavern"

@@ -188,6 +188,7 @@ function BeginPlay()
     }
 	SoundRadius=96;
 	default.SoundRadius=96;
+    hackStrength = 0.10;   //Sarge: All cameras are at 10% strength (one multitool at Trained on hardcore, Untrained otherwise)
 	if (Level.NetMode != NM_Standalone)
 	{
 		bInvincible=true;
@@ -276,6 +277,7 @@ function TriggerEvent(bool bTrigger)
 		SoundRadius = 150;
         SoundPitch = 64; //CyberP: set back to default pitch
         MultiSkins[2] = GetCameraLightTex(2);
+        class'PawnUtils'.static.WakeUpAI(self,24*(SoundRadius+4));
 		AIStartEvent('Alarm', EAITYPE_Audio, SoundVolume/255.0, 24*(SoundRadius+4));
 		// make sure we can't go into stasis while we're alarming
 		bStasis = false;
@@ -319,6 +321,7 @@ function TriggerCarcassEvent(bool bTrigger)
 		SoundRadius = 150;
         SoundPitch = 32; //CyberP: Different pitch for carcasses
         MultiSkins[2] = GetCameraLightTex(4);
+        class'PawnUtils'.static.WakeUpAI(self,24*(SoundRadius+4));
 		AIStartEvent('Alarm', EAITYPE_Audio, SoundVolume/255.0, 24*(SoundRadius+2));
 		// make sure we can't go into stasis while we're alarming
 		bStasis = false;
@@ -510,12 +513,16 @@ function Tick(float deltaTime)
 	//local int skillz; //CyberP                                                //RSD: Removed
     local float remainingTime;
     local int remainingTimeInt;
+    local DeusExPlayer P;
 
 	Super.Tick(deltaTime);
 
 	curTarget = None;
 
-    remainingTime = disableTime - DeusExPlayer(GetPlayerPawn()).saveTime;
+    P = DeusExPlayer(GetPlayerPawn());
+
+    if (P != None)
+        remainingTime = disableTime - P.saveTime;
 
     if (bRebooting && !bConfused)
     {
@@ -664,10 +671,12 @@ function Tick(float deltaTime)
 			   
 				if ((bPlayerSeen) && (curplayer != None) && ( curplayer.bHardCoreMode || curplayer.bHardcoreAI1 ) )  //CyberP: AI notice cameras beeping and hunt in the direction they are facing (player pos). bit of a hack.
 				{
+                    class'PawnUtils'.static.WakeUpAI(curplayer,1024);
 					curplayer.AISendEvent('LoudNoise', EAITYPE_Audio,,1024);
 				}
 				else if ((bCarcassSeen) && (curplayer != None) && ( curplayer.bHardCoreMode || curplayer.bHardcoreAI1 ) )
 				{
+                    class'PawnUtils'.static.WakeUpAI(carcass,1024);
 					carcass.AISendEvent('LoudNoise', EAITYPE_Audio,,1024);
 				}
 			}

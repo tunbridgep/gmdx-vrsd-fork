@@ -77,7 +77,7 @@ function UpdateVisibility()
     weapon = DeusExWeapon(curr);
     
     //it's visible if we have a valid weapon
-    validWeap = player.inHand != None && weapon != None && (weapon.ReloadCount > 0 || (weapon.IsA('WeaponNanoSword')));
+    validWeap = player.inHand != None && weapon != None && (weapon.ReloadCount > 0 || (weapon.IsA('WeaponNanoSword') && (player.bNanoswordEnergyUse || player.bHardcoreMode)));
     hasTool = curr != None && weapon == None;
 
     UpdateMaxAmmo();
@@ -157,7 +157,7 @@ function Color GetAmmoTextColor()
 
 event DrawWindow(GC gc)
 {
-    local float ammopostop, ammoposbtm, posX, posY;             //SARGE: Added
+    local float ammopostop, ammoposbtm, posX, posY, addonOffset;             //SARGE: Added
 
 	Super.DrawWindow(gc);
 
@@ -212,7 +212,7 @@ event DrawWindow(GC gc)
          gc.SetTextColor(colAmmoText);
 
         //Draw DTS Charge
-        if (weapon.IsA('WeaponNanoSword'))
+        if (weapon.IsA('WeaponNanoSword') && (player.bNanoswordEnergyUse || player.bHardcoreMode))
         {
             gc.SetTextColor(colAmmoText);
             ammoInClip = WeaponNanoSword(weapon).ChargeManager.GetCurrentCharge();
@@ -299,6 +299,43 @@ event DrawWindow(GC gc)
 			gc.SetFont(Font'FontTiny'); //CyberP: hud scaling Font'FontTiny'
             gc.SetTextColor(GetAmmoTextColor());
             gc.DrawText(posX, posY, 65, 8, DeusExAmmo(weapon.AmmoType).beltDescription);
+        }
+
+        //SARGE: Show Silencer/Laser/Scope since it's way more important in GMDX
+        if (player.bDrawAddonsOnAmmoDisplay)
+        {
+            addonOffset = 47;
+            gc.SetAlignments(HALIGN_Left, VALIGN_Top);
+            if (weapon.bHadLaser)
+            {
+                if (weapon.bHasLaser)
+                    gc.SetTextColor(colAmmoText);
+                else
+                    gc.SetTextColor(colAmmoLowText);
+
+                gc.DrawText(offset+9, addonOffset, 16, 8, "L");
+                addonOffset -= 6;
+            }
+            if (weapon.bHadScope)
+            {
+                if (weapon.bHasScope)
+                    gc.SetTextColor(colAmmoText);
+                else
+                    gc.SetTextColor(colAmmoLowText);
+
+                gc.DrawText(offset+9, addonOffset, 16, 8, "S");
+                addonOffset -= 6;
+            }
+            if (weapon.bHadSilencer)
+            {
+                if (weapon.bHasSilencer)
+                    gc.SetTextColor(colAmmoText);
+                else
+                    gc.SetTextColor(colAmmoLowText);
+
+                gc.DrawText(offset+9, addonOffset, 16, 8, "S");
+                addonOffset -= 6;
+            }
         }
 	}
 }

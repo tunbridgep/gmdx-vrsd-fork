@@ -5,6 +5,7 @@ class BoatPersonCarcass extends DeusExCarcass;
 
 defaultproperties
 {
+     nameReference=class'DeusEx.BoatPerson'
      Mesh2=LodMesh'DeusExCharacters.GM_DressShirt_S_CarcassB'
      Mesh3=LodMesh'DeusExCharacters.GM_DressShirt_S_CarcassC'
      Mesh=LodMesh'DeusExCharacters.GM_DressShirt_S_Carcass'

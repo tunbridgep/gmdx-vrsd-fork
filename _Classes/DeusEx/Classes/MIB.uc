@@ -143,6 +143,8 @@ function Explode()
 	explosionRadius = 288;
 
 	// alert NPCs that I'm exploding
+    //SARGE: Fix the broken sound propagation
+    class'PawnUtils'.static.WakeUpAI(self,explosionRadius*16);
 	AISendEvent('LoudNoise', EAITYPE_Audio, , explosionRadius*16);
 	PlaySound(Sound'LargeExplosion1', SLOT_None,,, explosionRadius*16);
 
@@ -329,7 +331,7 @@ function DifficultyMod(float CombatDifficulty, bool bHardCoreMode, bool bExtraHa
 	SurprisePeriod=0.200000;
 	GroundSpeed=350.000000;
 	}
-    bNotFirstDiffMod = true;
+    super.DifficultyMod(CombatDifficulty,bHardCoreMode,bExtraHardcore,bFirstLevelLoad);
 }
 
 defaultproperties

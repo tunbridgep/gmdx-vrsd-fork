@@ -1,0 +1,8 @@
+<DC=255,255,255>
+<P>ACCURACY BREAKDOWN
+<P>
+<P>Accuracy is negatively modified by damage to your arms, head and/or torso.
+<P>
+<P>Accuracy is positively modified by standing/crouching still, modifying your weapon with accessories such as a laser sight, increasing your weapon skill level from the 'Skills/Perks' menu, and more.
+<P>
+<P>Agents do not usually become a crack shot without extensive field experience.

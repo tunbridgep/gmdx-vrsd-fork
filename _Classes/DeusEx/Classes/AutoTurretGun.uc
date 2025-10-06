@@ -178,9 +178,12 @@ function PostBeginPlay()
     super.PostBeginPlay();
 
 	turret = AutoTurret(Owner);
-    hackStrength = 0.75;     //CyberP: all turrets 0.75 (one multitool at master level + perk)
+    /*
+    hackStrength = 0.75;     //CyberP: all turrets 0.75 (one multitool at master level + perk) //SARGE: No, that's fucking stupid.
     if (FRand() < 0.5)
     hackStrength = 0.5;   //CyberP: sometimes they are 0.5
+    */
+    hackStrength = 0.20;   //Sarge: All turrets are at 20% strength (one multitool at Advanced on all difficulties)
 	if (turret.bUnlit)
 	{
 	 bUnlit=True;

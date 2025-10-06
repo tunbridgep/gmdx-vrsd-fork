@@ -25868,7 +25868,7 @@ Begin Actor Class=Brush Name=Brush306
     Location=(X=-676.000000,Y=1312.000000,Z=484.000000)
     Begin Brush Name=Model522
        Begin PolyList
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Link=0
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=0
              Origin   -00001.000000,-00028.000000,+00064.000000
              Normal   +00000.000000,+00000.000000,+00001.000000
              TextureU +00000.000000,+00001.000000,+00000.000000
@@ -25878,7 +25878,7 @@ Begin Actor Class=Brush Name=Brush306
              Vertex   +00001.000000,+00028.000000,+00064.000000
              Vertex   -00001.000000,+00028.000000,+00064.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Link=1
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=1
              Origin   -00001.000000,+00028.000000,-00064.000000
              Normal   +00000.000000,+00000.000000,-00001.000000
              TextureU +00000.000000,-00001.000000,+00000.000000
@@ -25888,7 +25888,7 @@ Begin Actor Class=Brush Name=Brush306
              Vertex   +00001.000000,-00028.000000,-00064.000000
              Vertex   -00001.000000,-00028.000000,-00064.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Link=2
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=2
              Origin   -00001.000000,+00028.000000,-00064.000000
              Normal   +00000.000000,+00001.000000,+00000.000000
              TextureU +00001.000000,+00000.000000,+00000.000000
@@ -25898,7 +25898,7 @@ Begin Actor Class=Brush Name=Brush306
              Vertex   +00001.000000,+00028.000000,+00064.000000
              Vertex   +00001.000000,+00028.000000,-00064.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Link=3
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=3
              Origin   +00001.000000,-00028.000000,-00064.000000
              Normal   +00000.000000,-00001.000000,+00000.000000
              TextureU -00001.000000,+00000.000000,+00000.000000
@@ -25908,7 +25908,7 @@ Begin Actor Class=Brush Name=Brush306
              Vertex   -00001.000000,-00028.000000,+00064.000000
              Vertex   -00001.000000,-00028.000000,-00064.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Link=4
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=4
              Origin   +00001.000000,+00028.000000,-00064.000000
              Normal   +00001.000000,+00000.000000,+00000.000000
              TextureU +00000.000000,-00004.000000,+00000.000000
@@ -25918,7 +25918,7 @@ Begin Actor Class=Brush Name=Brush306
              Vertex   +00001.000000,-00028.000000,+00064.000000
              Vertex   +00001.000000,-00028.000000,-00064.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Link=5
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=5
              Origin   -00001.000000,-00028.000000,-00064.000000
              Normal   -00001.000000,+00000.000000,+00000.000000
              TextureU +00000.000000,+00004.000000,+00000.000000
@@ -26028,7 +26028,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover19
              Vertex   +00002.000000,+00030.000000,+00066.000000
              Vertex   -00002.000000,+00030.000000,+00066.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Link=7
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=7
              Origin   -00001.000000,+00028.000000,-00064.000000
              Normal   +00000.000000,+00000.000000,-00001.000000
              TextureU +00000.000000,-00001.000000,+00000.000000
@@ -26048,7 +26048,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover19
              Vertex   -00002.000000,-00030.000000,-00066.000000
              Vertex   +00002.000000,-00030.000000,-00066.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Link=9
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=9
              Origin   -00001.000000,-00028.000000,+00064.000000
              Normal   +00000.000000,+00000.000000,+00001.000000
              TextureU +00000.000000,+00001.000000,+00000.000000
@@ -26068,7 +26068,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover19
              Vertex   +00002.000000,-00030.000000,+00066.000000
              Vertex   -00002.000000,-00030.000000,+00066.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Link=11
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=11
              Origin   +00001.000000,+00028.000000,-00064.000000
              Normal   +00001.000000,+00000.000000,+00000.000000
              TextureU +00000.000000,-00004.000000,+00000.000000
@@ -26078,7 +26078,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover19
              Vertex   +00001.000000,+00028.000000,+00064.000000
              Vertex   +00001.000000,-00028.000000,+00064.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Link=12
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=12
              Origin   -00001.000000,-00028.000000,-00064.000000
              Normal   -00001.000000,+00000.000000,+00000.000000
              TextureU +00000.000000,+00004.000000,+00000.000000
@@ -26088,7 +26088,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover19
              Vertex   -00001.000000,-00028.000000,+00064.000000
              Vertex   -00001.000000,+00028.000000,+00064.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Link=13
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=13
              Origin   -00001.000000,+00028.000000,-00064.000000
              Normal   +00000.000000,+00001.000000,+00000.000000
              TextureU +00001.000000,+00000.000000,+00000.000000
@@ -26218,7 +26218,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover19
              Vertex   -00004.000000,-00032.000000,+00064.000000
              Vertex   -00004.000000,-00028.000000,+00064.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Link=26
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=26
              Origin   +00001.000000,-00028.000000,-00064.000000
              Normal   +00000.000000,-00001.000000,+00000.000000
              TextureU -00001.000000,+00000.000000,+00000.000000
@@ -27130,6 +27130,7 @@ Begin Actor Class=PathNode Name=PathNode356
     Name=PathNode356
 End Actor
 Begin Actor Class=DeusExLevelInfo Name=DeusExLevelInfo0
+    ChairRandomizationToken=97
     MapName="08_NYC_FreeClinic"
     MapAuthor="Bob White"
     MissionLocation="NYC - Free Clinic"
@@ -34985,7 +34986,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover0
              Vertex   +00002.000000,+00030.000000,+00066.000000
              Vertex   -00002.000000,+00030.000000,+00066.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Link=7
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=7
              Origin   -00001.000000,+00028.000000,-00064.000000
              Normal   +00000.000000,+00000.000000,-00001.000000
              TextureU +00000.000000,-00001.000000,+00000.000000
@@ -35005,7 +35006,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover0
              Vertex   -00002.000000,-00030.000000,-00066.000000
              Vertex   +00002.000000,-00030.000000,-00066.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Link=9
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=9
              Origin   -00001.000000,-00028.000000,+00064.000000
              Normal   +00000.000000,+00000.000000,+00001.000000
              TextureU +00000.000000,+00001.000000,+00000.000000
@@ -35025,7 +35026,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover0
              Vertex   +00002.000000,-00030.000000,+00066.000000
              Vertex   -00002.000000,-00030.000000,+00066.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Link=11
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=11
              Origin   +00001.000000,+00028.000000,-00064.000000
              Normal   +00001.000000,+00000.000000,+00000.000000
              TextureU +00000.000000,-00004.000000,+00000.000000
@@ -35035,7 +35036,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover0
              Vertex   +00001.000000,+00028.000000,+00064.000000
              Vertex   +00001.000000,-00028.000000,+00064.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Link=12
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=12
              Origin   -00001.000000,-00028.000000,-00064.000000
              Normal   -00001.000000,+00000.000000,+00000.000000
              TextureU +00000.000000,+00004.000000,+00000.000000
@@ -35045,7 +35046,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover0
              Vertex   -00001.000000,-00028.000000,+00064.000000
              Vertex   -00001.000000,+00028.000000,+00064.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Link=13
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=13
              Origin   -00001.000000,+00028.000000,-00064.000000
              Normal   +00000.000000,+00001.000000,+00000.000000
              TextureU +00001.000000,+00000.000000,+00000.000000
@@ -35175,7 +35176,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover0
              Vertex   -00004.000000,-00032.000000,+00064.000000
              Vertex   -00004.000000,-00028.000000,+00064.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Link=26
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=26
              Origin   +00001.000000,-00028.000000,-00064.000000
              Normal   +00000.000000,-00001.000000,+00000.000000
              TextureU -00001.000000,+00000.000000,+00000.000000
@@ -35399,7 +35400,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover2
              Vertex   +00002.000000,+00030.000000,+00066.000000
              Vertex   -00002.000000,+00030.000000,+00066.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Link=7
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=7
              Origin   -00001.000000,+00028.000000,-00064.000000
              Normal   +00000.000000,+00000.000000,-00001.000000
              TextureU +00000.000000,-00001.000000,+00000.000000
@@ -35419,7 +35420,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover2
              Vertex   -00002.000000,-00030.000000,-00066.000000
              Vertex   +00002.000000,-00030.000000,-00066.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Link=9
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=9
              Origin   -00001.000000,-00028.000000,+00064.000000
              Normal   +00000.000000,+00000.000000,+00001.000000
              TextureU +00000.000000,+00001.000000,+00000.000000
@@ -35439,7 +35440,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover2
              Vertex   +00002.000000,-00030.000000,+00066.000000
              Vertex   -00002.000000,-00030.000000,+00066.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Link=11
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=11
              Origin   +00001.000000,+00028.000000,-00064.000000
              Normal   +00001.000000,+00000.000000,+00000.000000
              TextureU +00000.000000,-00004.000000,+00000.000000
@@ -35449,7 +35450,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover2
              Vertex   +00001.000000,+00028.000000,+00064.000000
              Vertex   +00001.000000,-00028.000000,+00064.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Link=12
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=12
              Origin   -00001.000000,-00028.000000,-00064.000000
              Normal   -00001.000000,+00000.000000,+00000.000000
              TextureU +00000.000000,+00004.000000,+00000.000000
@@ -35459,7 +35460,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover2
              Vertex   -00001.000000,-00028.000000,+00064.000000
              Vertex   -00001.000000,+00028.000000,+00064.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Link=13
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=13
              Origin   -00001.000000,+00028.000000,-00064.000000
              Normal   +00000.000000,+00001.000000,+00000.000000
              TextureU +00001.000000,+00000.000000,+00000.000000
@@ -35589,7 +35590,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover2
              Vertex   -00004.000000,-00032.000000,+00064.000000
              Vertex   -00004.000000,-00028.000000,+00064.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Link=26
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=26
              Origin   +00001.000000,-00028.000000,-00064.000000
              Normal   +00000.000000,-00001.000000,+00000.000000
              TextureU -00001.000000,+00000.000000,+00000.000000
@@ -35813,7 +35814,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover3
              Vertex   +00002.000000,+00030.000000,+00066.000000
              Vertex   -00002.000000,+00030.000000,+00066.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Link=7
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=7
              Origin   -00001.000000,+00028.000000,-00064.000000
              Normal   +00000.000000,+00000.000000,-00001.000000
              TextureU +00000.000000,-00001.000000,+00000.000000
@@ -35833,7 +35834,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover3
              Vertex   -00002.000000,-00030.000000,-00066.000000
              Vertex   +00002.000000,-00030.000000,-00066.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Link=9
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=9
              Origin   -00001.000000,-00028.000000,+00064.000000
              Normal   +00000.000000,+00000.000000,+00001.000000
              TextureU +00000.000000,+00001.000000,+00000.000000
@@ -35853,7 +35854,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover3
              Vertex   +00002.000000,-00030.000000,+00066.000000
              Vertex   -00002.000000,-00030.000000,+00066.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Link=11
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=11
              Origin   +00001.000000,+00028.000000,-00064.000000
              Normal   +00001.000000,+00000.000000,+00000.000000
              TextureU +00000.000000,-00004.000000,+00000.000000
@@ -35863,7 +35864,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover3
              Vertex   +00001.000000,+00028.000000,+00064.000000
              Vertex   +00001.000000,-00028.000000,+00064.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Link=12
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=12
              Origin   -00001.000000,-00028.000000,-00064.000000
              Normal   -00001.000000,+00000.000000,+00000.000000
              TextureU +00000.000000,+00004.000000,+00000.000000
@@ -35873,7 +35874,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover3
              Vertex   -00001.000000,-00028.000000,+00064.000000
              Vertex   -00001.000000,+00028.000000,+00064.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Link=13
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=13
              Origin   -00001.000000,+00028.000000,-00064.000000
              Normal   +00000.000000,+00001.000000,+00000.000000
              TextureU +00001.000000,+00000.000000,+00000.000000
@@ -36003,7 +36004,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover3
              Vertex   -00004.000000,-00032.000000,+00064.000000
              Vertex   -00004.000000,-00028.000000,+00064.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Link=26
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=26
              Origin   +00001.000000,-00028.000000,-00064.000000
              Normal   +00000.000000,-00001.000000,+00000.000000
              TextureU -00001.000000,+00000.000000,+00000.000000
@@ -36226,7 +36227,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover4
              Vertex   +00002.000000,+00030.000000,+00066.000000
              Vertex   -00002.000000,+00030.000000,+00066.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Link=7
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=7
              Origin   -00001.000000,+00028.000000,-00064.000000
              Normal   +00000.000000,+00000.000000,-00001.000000
              TextureU +00000.000000,-00001.000000,+00000.000000
@@ -36246,7 +36247,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover4
              Vertex   -00002.000000,-00030.000000,-00066.000000
              Vertex   +00002.000000,-00030.000000,-00066.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Link=9
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=9
              Origin   -00001.000000,-00028.000000,+00064.000000
              Normal   +00000.000000,+00000.000000,+00001.000000
              TextureU +00000.000000,+00001.000000,+00000.000000
@@ -36266,7 +36267,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover4
              Vertex   +00002.000000,-00030.000000,+00066.000000
              Vertex   -00002.000000,-00030.000000,+00066.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Link=11
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=11
              Origin   +00001.000000,+00028.000000,-00064.000000
              Normal   +00001.000000,+00000.000000,+00000.000000
              TextureU +00000.000000,-00004.000000,+00000.000000
@@ -36276,7 +36277,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover4
              Vertex   +00001.000000,+00028.000000,+00064.000000
              Vertex   +00001.000000,-00028.000000,+00064.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Link=12
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=12
              Origin   -00001.000000,-00028.000000,-00064.000000
              Normal   -00001.000000,+00000.000000,+00000.000000
              TextureU +00000.000000,+00004.000000,+00000.000000
@@ -36286,7 +36287,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover4
              Vertex   -00001.000000,-00028.000000,+00064.000000
              Vertex   -00001.000000,+00028.000000,+00064.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Link=13
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=13
              Origin   -00001.000000,+00028.000000,-00064.000000
              Normal   +00000.000000,+00001.000000,+00000.000000
              TextureU +00001.000000,+00000.000000,+00000.000000
@@ -36416,7 +36417,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover4
              Vertex   -00004.000000,-00032.000000,+00064.000000
              Vertex   -00004.000000,-00028.000000,+00064.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Link=26
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=26
              Origin   +00001.000000,-00028.000000,-00064.000000
              Normal   +00000.000000,-00001.000000,+00000.000000
              TextureU -00001.000000,+00000.000000,+00000.000000
@@ -37120,7 +37121,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover6
              Vertex   -00034.000000,+00002.000000,+00070.000000
              Vertex   -00034.000000,-00002.000000,+00070.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=4 Link=8
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=8
              Origin   +00024.000000,+00001.000000,-00060.000000
              Normal   +00000.000000,+00000.000000,-00001.000000
              TextureU -00001.000000,+00000.000000,+00000.000000
@@ -37140,7 +37141,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover6
              Vertex   +00026.000000,-00002.000000,-00062.000000
              Vertex   +00026.000000,+00002.000000,-00062.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=4 Link=10
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=10
              Origin   -00032.000000,+00001.000000,+00068.000000
              Normal   +00000.000000,+00000.000000,+00001.000000
              TextureU +00001.000000,+00000.000000,+00000.000000
@@ -37160,7 +37161,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover6
              Vertex   -00034.000000,-00002.000000,+00070.000000
              Vertex   -00034.000000,+00002.000000,+00070.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=4 Link=12
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=12
              Origin   +00024.000000,-00001.000000,-00060.000000
              Normal   +00000.000000,-00001.000000,+00000.000000
              TextureU -00004.000000,+00000.000000,+00000.000000
@@ -37170,7 +37171,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover6
              Vertex   +00024.000000,-00001.000000,+00068.000000
              Vertex   -00032.000000,-00001.000000,+00068.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=4 Link=13
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=13
              Origin   -00032.000000,+00001.000000,-00060.000000
              Normal   +00000.000000,+00001.000000,+00000.000000
              TextureU +00004.000000,+00000.000000,+00000.000000
@@ -37180,7 +37181,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover6
              Vertex   -00032.000000,+00001.000000,+00068.000000
              Vertex   +00024.000000,+00001.000000,+00068.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=4 Link=14
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=14
              Origin   -00032.000000,-00001.000000,-00060.000000
              Normal   -00001.000000,+00000.000000,+00000.000000
              TextureU +00000.000000,+00001.000000,+00000.000000
@@ -37190,7 +37191,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover6
              Vertex   -00032.000000,-00001.000000,+00068.000000
              Vertex   -00032.000000,+00001.000000,+00068.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=4 Link=15
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=15
              Origin   +00024.000000,+00001.000000,-00060.000000
              Normal   +00001.000000,+00000.000000,+00000.000000
              TextureU +00000.000000,-00001.000000,+00000.000000
@@ -37708,7 +37709,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover7
              Vertex   -00034.000000,+00002.000000,+00070.000000
              Vertex   -00034.000000,-00002.000000,+00070.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=4 Link=8
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=8
              Origin   +00024.000000,+00001.000000,-00060.000000
              Normal   +00000.000000,+00000.000000,-00001.000000
              TextureU -00001.000000,+00000.000000,+00000.000000
@@ -37728,7 +37729,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover7
              Vertex   +00026.000000,-00002.000000,-00062.000000
              Vertex   +00026.000000,+00002.000000,-00062.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=4 Link=10
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=10
              Origin   -00032.000000,+00001.000000,+00068.000000
              Normal   +00000.000000,+00000.000000,+00001.000000
              TextureU +00001.000000,+00000.000000,+00000.000000
@@ -37748,7 +37749,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover7
              Vertex   -00034.000000,-00002.000000,+00070.000000
              Vertex   -00034.000000,+00002.000000,+00070.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=4 Link=12
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=12
              Origin   +00024.000000,-00001.000000,-00060.000000
              Normal   +00000.000000,-00001.000000,+00000.000000
              TextureU -00004.000000,+00000.000000,+00000.000000
@@ -37758,7 +37759,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover7
              Vertex   +00024.000000,-00001.000000,+00068.000000
              Vertex   -00032.000000,-00001.000000,+00068.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=4 Link=13
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=13
              Origin   -00032.000000,+00001.000000,-00060.000000
              Normal   +00000.000000,+00001.000000,+00000.000000
              TextureU +00004.000000,+00000.000000,+00000.000000
@@ -37768,7 +37769,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover7
              Vertex   -00032.000000,+00001.000000,+00068.000000
              Vertex   +00024.000000,+00001.000000,+00068.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=4 Link=14
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=14
              Origin   -00032.000000,-00001.000000,-00060.000000
              Normal   -00001.000000,+00000.000000,+00000.000000
              TextureU +00000.000000,+00001.000000,+00000.000000
@@ -37778,7 +37779,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover7
              Vertex   -00032.000000,-00001.000000,+00068.000000
              Vertex   -00032.000000,+00001.000000,+00068.000000
           End Polygon
-          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=4 Link=15
+          Begin Polygon Item=OUTSIDE Texture=bulltprftrans_a Flags=2 Link=15
              Origin   +00024.000000,+00001.000000,-00060.000000
              Normal   +00001.000000,+00000.000000,+00000.000000
              TextureU +00000.000000,-00001.000000,+00000.000000

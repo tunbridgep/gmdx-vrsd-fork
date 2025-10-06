@@ -408,11 +408,12 @@ local int timeRem;
         if (PersonaAugmentationItemButton(selectedAugButton) != None)
            PersonaAugmentationItemButton(selectedAugButton).SetActive(selectedAug);
   }
-  if (player.Energy == 0 && !bAllIconsReset)
-  {
-    bAllIconsReset = True;
+  //SARGE: Make aug buttons always update, not just when told to.
+  //if (player.Energy == 0 && !bAllIconsReset)
+  //{
+    //bAllIconsReset = True;
     RefreshAugmentationButtons();
-  }
+  //}
 }
 
 function int GetAugCount()
@@ -1250,6 +1251,8 @@ function UpgradeAugmentation()
         }
 
 	}
+
+    player.RefreshAugmentationDisplay();
 
     //if (SelectedAug.IsA('AugAmmoCap'))                                          //RSD: Update MaxAmmo
     //   player.ChangeAllMaxAmmo();

@@ -25,22 +25,6 @@ var float         checkAggTimer;
 var bool          bFoodOverridesAttack;
 
 
-function float ModifyDamage(int Damage, Pawn instigatedBy, Vector hitLocation,
-                            Vector offset, Name damageType)
-{
-	local float actualDamage;
-
-	actualDamage = Super.ModifyDamage(Damage, instigatedBy, hitLocation, offset, damageType);
-
-	//if (damageType == 'Stunned')
-	//	actualDamage = 0;
-
-    if (damageType == 'Sabot')
-    	actualDamage *= 0.5;                                                    //RSD: 0.5x damage to organics (was 1.0)
-
-	return actualDamage;
-}
-
 function GotoDisabledState(name damageType, EHitLocation hitPos)
 {
 	if (!bCollideActors && !bBlockActors && !bBlockPlayers)

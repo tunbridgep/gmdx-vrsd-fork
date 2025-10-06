@@ -249,7 +249,7 @@ ItemName="DEFAULT AMMO NAME - REPORT THIS AS A BUG"
 ItemArticle=""
 
 [ComputerSecurityCameraWindow]
-CameraLabel="Camera"
+CameraLabel="Cam"
 CameraStatusLabel="Camera:"
 DoorStatusLabel="Door:"
 TurretStatusLabel="Turret:"
@@ -606,6 +606,7 @@ automaticLabel="Automatic:"
 
 [WeaponMod]
 DragToUpgrade="Drag over weapon to upgrade.  Weapons highlighted in GREEN can be upgraded with this mod."
+BulkyText="This modification is bulky and will reduce weapon handling characteristics!"
 
 [Faucet]
 ItemName="Faucet"
@@ -917,18 +918,19 @@ FunctionText[46]="Show/Hide HUD (Photo Mode)"
 FunctionText[47]="F3 (Typically Subdermal Aug 1)"
 FunctionText[48]="F4 (Typically Subdermal Aug 2)"
 FunctionText[49]="F5 (Typically Cranial Aug 1)"
-FunctionText[50]="F6 (Typically Arm Aug 2)"
-FunctionText[51]="F7 (Typically Leg Aug 1)"
-FunctionText[52]="F8 (Typically Eye Aug 1)"
-FunctionText[53]="F9 (Typically Torso Aug 1)"
-FunctionText[54]="F10 (Typically Torso Aug 2)"
-FunctionText[55]="F11 (Typically Torso Aug 3)"
-FunctionText[56]="F12 (Flashlight)"
-FunctionText[57]="Show Multiplayer Scores"
-FunctionText[58]="Send Message To Team"
-FunctionText[59]="Send Message To All"
-FunctionText[60]="Activate Multiplayer Skill Menu"
-FunctionText[61]="Show Multiplayer Kill Details"
+FunctionText[50]="F6 (Typically Arm Aug 1)"
+FunctionText[51]="F7 (Typically Arm Aug 2)"
+FunctionText[52]="F8 (Typically Leg Aug 1)"
+FunctionText[53]="F9 (Typically Eye Aug 1)"
+FunctionText[54]="F10 (Typically Torso Aug 1)"
+FunctionText[55]="F11 (Typically Torso Aug 2)"
+FunctionText[56]="F12 (Typically Torso Aug 3)"
+FunctionText[57]="Flashlight Aug"
+FunctionText[58]="Show Multiplayer Scores"
+FunctionText[59]="Send Message To Team"
+FunctionText[60]="Send Message To All"
+FunctionText[61]="Activate Multiplayer Skill Menu"
+FunctionText[62]="Show Multiplayer Kill Details"
 
 [NanoKeyRing]
 NoKeys="No Nano Keys Available!"
@@ -1046,7 +1048,7 @@ LogsTitleText="Logs"
 ClearButtonLabel="Cl|&ear Log"
 
 [AugmentationUpgradeCannister]
-MustBeUsedOn="Must be used on Augmentations Screen."
+MustBeUsedOn="Right-Click to switch to the Augmentations Screen."
 ItemName="Augmentation Upgrade Canister"
 ItemArticle="an"
 Description="An augmentation upgrade canister contains highly specific nanomechanisms that, when combined with a previously programmed module, can increase the efficiency of an installed augmentation. Because no programming is required, upgrade canisters may be used by trained agents in the field with minimal risk."
@@ -2296,7 +2298,7 @@ MPInfo="When active, you heal, but at a rate insufficient for healing in combat.
 
 [AugVision]
 AugmentationName="Vision Enhancement"
-Description="By bleaching selected rod photoreceptors and saturating them with metarhodopsin XII, the 'nightvision' present in most nocturnal animals can be duplicated. Subsequent upgrades and modifications add infravision & sonar-resonance imaging that effectively allows an agent to see through walls and bypass advanced stealth cloaking technology.|n|nTECH ONE: Nightvision.|n|nTECH TWO: Infravision and heat source detection.|n|nTECH THREE: Close range sonar imaging that enables an agent to detect threats through solid material.|n|nTECH FOUR: Long range sonar imaging that enables an agent to detect threats through solid material."
+Description="By bleaching selected rod photoreceptors and saturating them with metarhodopsin XII, the 'nightvision' present in most nocturnal animals can be duplicated, as well as infravision & sonar-resonance imaging that effectively allows an agent to see through walls and bypass advanced stealth cloaking technology.|nAdditionally provides sonar imaging, infravision as well as the ability to detect items, security systems and heat sources through solid material such as walls.|n|nTECH ONE: Extremely High Power Drain, Extremely Low Range.|n|nTECH TWO: High Power Drain, Low Range.|n|nTECH THREE: Moderate Power Drain, Moderate Range.|n|nTECH FOUR: Low Power Drain, Long Range."
 MPInfo="When active, you can see enemy players in the dark from any distance, and for short distances you can see through walls and see cloaked enemies.  Energy Drain: Moderate"
 
 [WeaponBaton]
@@ -2886,7 +2888,7 @@ Description="Practical knowledge of human physiology can be applied by an agent 
 
 [SkillStealth]
 SkillName="Stealth"
-Description="Covert ops require swift and precise stealth skills that must be developed by an agent over time via intensive training.|n|nUNTRAINED: An agent can sneak, most effective if sticking to the shadows. An agent learns to target weak points and attack unaware enemies from behind at close range for bonus damage (3x).|n|nTRAINED: An agent hides slightly more effectively when sneaking in the shadows, movement speed whilst walking, sneaking, leaning and climbing ladders increases slightly (+15%), and weak point damage increases to 6x.|n|nADVANCED: An agent hides much more effectively when sneaking in the shadows, movement speed whilst walking, crouched, leaning and climbing ladders increases moderately (+30%), and weak point damage increases to 9x.|n|nMASTER: An agent need not rely on advanced technology during infiltration (+45%) and can swiftly eliminate almost any unaware target (12x)."
+Description="Covert ops require swift and precise stealth skills that must be developed by an agent over time via intensive training.|n|nTotal skill points to master: 5250|n|nUNTRAINED: An agent can sneak, most effective if sticking to the shadows. An agent learns to target weak points and attack unaware enemies from behind at close range for bonus damage (3x).|n|nTRAINED: An agent hides slightly more effectively when sneaking in the shadows, movement speed whilst walking, sneaking, leaning and climbing ladders increases slightly (+15%), and weak point damage increases to 6x.|n|nADVANCED: An agent hides much more effectively when sneaking in the shadows, movement speed whilst walking, crouched, leaning and climbing ladders increases moderately (+30%), and weak point damage increases to 9x.|n|nMASTER: An agent need not rely on advanced technology during infiltration (+45%) and can swiftly eliminate almost any unaware target (12x)."
 
 [Image12_Tiffany_HostagePic]
 imageDescription="Tiffany Hostage Picture"
@@ -3592,7 +3594,7 @@ ss19="TIP: There are many ways in which you can distract the enemy."
 ss20="Your Deus Ex is Augmented."
 
 [AugmentationUpgradeCannisterOverdrive]
-MustBeUsedOn="Must be used on Augmentations Screen."
+MustBeUsedOn="Right-Click to switch to the Augmentations Screen."
 ItemName="Augmentation Override Cannister"
 Description="An augmentation upgrade cannister with intricately-programmed scripts designed to override certain functionality of the 'Environmental Resistance' and 'Aqualung' augmentations. |nThis specialized upgrade cannister can be used to upgrade any augmentation by two tech levels, however using it on one of the two specified augmentations it was designed for will upgrade it from an 'Active' augmentation to 'Automatic', but will only increase its tech level by one.|n|n<UNATCO OPS FILE NOTE JR189-VIOLET> The Environmental Resistance and Aqualung augmentations share the same sub-routines. Hypothetically-speaking both would benefit from this device even if applied to one, should you happen to have both installed. -- Jaime Reyes <END NOTE>"
 beltDescription="AUG OVER"

@@ -113,13 +113,12 @@ function Deactivate()
 }
 
 //Halved energy rate at level 2
-function Setup()
+simulated function float GetEnergyRate()
 {
-    super.Setup();
     if (CurrentLevel > 0)
-        EnergyRate=default.EnergyRate * 0.5;
+        return EnergyRate * 0.5;
     else
-        EnergyRate=default.EnergyRate;
+        return EnergyRate;
 }
 
 defaultproperties

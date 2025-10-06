@@ -21,6 +21,9 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\PowerIconInactive.pcx"			NAME="PowerIconInactive"			GROUP="UserInterface"
 #exec TEXTURE IMPORT FILE="Textures\WhiteDot.pcx"			NAME="WhiteDot"			GROUP="UserInterface"
 
+//Outfits
+#exec TEXTURE IMPORT  FILE="Textures\Skins\BuddhaFace0.bmp" NAME="BuddhaFace" GROUP="Skins"
+
 // Perks
 
 // Heavy Weapons
@@ -55,12 +58,23 @@ class All expands Object
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\HUDObjectBeltBorder_2_big.pcx"			NAME="HUDOBjectBeltBorder_2_big"			GROUP="UserInterface"
 #exec TEXTURE IMPORT FILE="Textures\UserInterface\InventoryBorder_4_big.pcx"			    NAME="InventoryBorder_4_big"	           	GROUP="UserInterface"
 
+//"Mods Copied" icon
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\modscopied.pcx"		            	    NAME="ModsCopied"	                       	GROUP="UserInterface"
+
+//New buttons on Goals/Notes menu
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\GoalsBackground_4_edit.pcx"			    NAME="GoalsBackground_4_edit"	           	GROUP="UserInterface"
+#exec TEXTURE IMPORT FILE="Textures\UserInterface\GoalsBackground_5_edit.pcx"			    NAME="GoalsBackground_5_edit"	           	GROUP="UserInterface"
+
 // Ammo
 #exec TEXTURE IMPORT FILE="Textures\Ammo10mmAPTex.pcx"			NAME="Ammo10mmAPTex"			GROUP="Skins"
 #exec TEXTURE IMPORT FILE="Textures\AmmoDartTex1.pcx"			NAME="AmmoDartTex1"			GROUP="Skins"
 #exec TEXTURE IMPORT FILE="Textures\AmmoDartTex4.pcx"			NAME="AmmoDartTex4"			GROUP="Skins"
 
 // Misc Textures
+
+//Deus Ex Collectible Disk
+#exec TEXTURE IMPORT FILE="Textures\Skins\deusexdisk.pcx"	        NAME="DeusExDisk"   GROUP="Skins"
+
 //Cloaking Texture
 #exec TEXTURE IMPORT FILE="Textures\CloakingTex.pcx"			NAME="CloakingTex"			GROUP="Skins"
 //Was used by water fountains in HDTP, but used by some effects, is a big blow "ring" of water.
@@ -243,6 +257,8 @@ class All expands Object
 
 #exec AUDIO IMPORT FILE="Sounds\MultitoolEquip.wav"			NAME="MultitoolEquip"	    	GROUP="Misc"
 #exec AUDIO IMPORT FILE="Sounds\MultitoolUnequip.wav"	    NAME="MultitoolUnequip"		    GROUP="Misc"
+
+#exec AUDIO IMPORT FILE="Sounds\dsp_toxic.wav"			    NAME="DSPToxic"	         		GROUP="Misc"
 
 //New poison smoke texture
 #exec TEXTURE IMPORT  FILE="Textures\ef_PoisonSmoke001.pcx" NAME="ef_PoisonSmoke001" GROUP="Skins"

@@ -1,0 +1,4 @@
+<DC=255,255,255>
+<P>You Mantled from a Dolphin Jump, or found a cunning alternative to get up here.
+<P>
+<P>This will count positively toward your final evaluation.

@@ -5,6 +5,8 @@ class NanoKey extends DeusExPickup;
 
 var() name			KeyID;			// unique FName identifier used for movers and such
 
+var const localized string DuplicateMsg; //SARGE: Appended to name when we have a duplicate
+
 enum ESkinColor
 {
 	SC_Level1,
@@ -29,6 +31,25 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
     return false;
 }
 
+//Sarge: Update key frob display when we have a duplicate, and use the description if it's been assigned
+function string GetFrobString(DeusExPlayer player)
+{
+    local string frobString;
+
+    //Don't allow DEFAULT DESCRIPTION NAME keys
+    if (Description != default.Description)
+        frobString = Description;
+    else
+        frobString = itemName;
+
+    //SARGE: Make the frob string look nice
+    //frobString = player.TitleCase(frobString); //SARGE: Now done in BeginPlay
+
+    if ((player.iToolWindowShowDuplicateKeys == 1 || player.iToolWindowShowDuplicateKeys == 3) && player.KeyRing.HasKey(KeyID))
+        frobString = frobString @ DuplicateMsg;
+
+    return frobString;
+}
 
 // ----------------------------------------------------------------------
 // BeginPlay()
@@ -37,6 +58,10 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
 function BeginPlay()
 {
 	Super.BeginPlay();
+    
+    //SARGE: A lot of descriptions weird and inconsistent capitalisation.
+    //I'm too lazy to fix them in the maps, so we will just fix them here.
+    Description = class'DeusExPlayer'.static.TitleCase(Description);
 
 	switch (SkinColor)
 	{
@@ -105,6 +130,7 @@ function TakeDamage(int Damage, Pawn EventInstigator, vector HitLocation, vector
 defaultproperties
 {
      ItemName="NanoKey"
+     DuplicateMsg="(Duplicate)"
      PlayerViewOffset=(X=30.000000,Z=-12.000000)
      PlayerViewMesh=LodMesh'DeusExItems.NanoKey'
      PickupViewMesh=LodMesh'DeusExItems.NanoKey'

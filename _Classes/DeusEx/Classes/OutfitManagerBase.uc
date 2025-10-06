@@ -6,11 +6,13 @@ class OutfitManagerBase extends Object;
 //Part Slot Names
 enum PartSlot
 {
+    PS_Hack,            //Used to override certain NPC textures before others. This is fucking stupid!
     PS_Body_M,
     PS_Body_F,
     PS_Main,             //Main model texture
     PS_Glasses,
-    PS_Hat,
+    PS_Hat,             //Hat for GM_Suit
+    PS_Helmet,
     PS_Mask,
     PS_Trench, //Common trench coats
     PS_Trench_F, //Female Exclusive trench coats
@@ -19,6 +21,7 @@ enum PartSlot
     PS_Trench_Shirt_M, //Male Exclusive Trench Shirts
     PS_Trench_Shirt_F, //Female Exclusive Trench Shirts
     PS_Torso_M,
+    PS_Torso_M_B,   //Male big boy textures (Gunther, etc)
     PS_Torso_F,
     PS_Skirt,
     PS_Legs, //Common Legs
@@ -27,6 +30,12 @@ enum PartSlot
     PS_DressLegs //Legs used for dresses, stockings etc.
 };
 
+//Settings Names
+enum OutfitSetting
+{
+    AllowNPCOutfits,
+    ShowDescriptions
+};
 
 //These should be called in TravelPostAccept
 //This is overridden by the real outfit manager if Augmentique is installed
@@ -52,6 +61,11 @@ function Setup(DeusExPlayer newPlayer)
     }
 }
 
+function bool Installed()
+{
+    return false;
+}
+
 function CompleteSetup() {}
 
 //Parts List Functions
@@ -63,7 +77,7 @@ function GroupTranspose2(PartSlot bodySlot, PartSlot bodySlot2,optional int slot
 
 //Outfit Functions
 function bool GetPartsGroup(string mesh) {}
-function BeginNewPartsGroup(string mesh, bool allowMale, bool allowFemale) {}
+function BeginNewPartsGroup(string mesh, string carcassMesh, bool allowMale, bool allowFemale) {}
 function AddDefaultReference(string defRef) {}
 function BeginNewOutfit(string id, string name, optional string desc, optional string highlightName, optional string pickupName, optional string pickupMessage, optional string pickupArticle) {}
 function OutfitAddPartReference(string partID) {}
@@ -74,3 +88,22 @@ function SpawnerPickup(OutfitSpawner S) {}
 
 //Force-apply current outfit
 function ApplyCurrentOutfit() {}
+
+//Force-apply NPC outfits
+function ApplyNPCOutfits() {}
+
+//Re-Apply NPC Outfits (for testing) //SARGE: TODO: Remove this before release!
+function RedoNPCOutfits() {}
+
+//Add an exception for Holograms using a certain model.
+function ADDNPCHologramOverride(int slot, optional string tex) {}
+
+//NPC Carcass Functions
+function static CopyOutfitFromActorToCarcass(Actor A, DeusExCarcass C, optional bool bStrictMode) {}
+function static CopyAugmentiqueDataToPOVCorpse(POVCorpse pov, DeusExCarcass C, optional bool bStrictMode) {}
+function static CopyAugmentiqueDataFromPOVCorpse(POVCorpse pov, DeusExCarcass C) {}
+function static ApplyOutfitToCarcass(DeusExCarcass C) {}
+
+//Allow modifying mod settings externally
+function SetOutfitSetting(OutfitSetting S, bool bValue) {}
+function SetOutfitSettingsMenuVisibility(bool bValue, optional bool bShowDescriptionsCheckbox) {}

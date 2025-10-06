@@ -26,17 +26,28 @@ struct SNanoKeyInitStruct
 
 var() localized SNanoKeyInitStruct NanoKeyData[8];
 
+//SARGE: This has to be a new variable, it can't be in the struct or the editor breaks.
+struct SNanoKeyExtraData
+{
+    var() bool bDontAllowHardcore;             //SARGE: Don't give out this key in Hardcore mode.
+};
+
+var() SNanoKeyExtraData ExtraData[8];
+
 function PostPostBeginPlay()
 {
 	local int i;
 	local ScriptedPawn P;
 	local NanoKey key;
+	local DeusExPlayer Playa; //SARGE: Added for Hardcore check. See below.
+
+    playa = DeusExPlayer(GetPlayerPawn()); //SARGE: Added for Hardcore check. See below.
 
 	Super.PostPostBeginPlay();
 
 	for(i=0; i<ArrayCount(NanoKeyData); i++)
 	{
-		if (NanoKeyData[i].ScriptedPawnTag != '')
+		if (NanoKeyData[i].ScriptedPawnTag != '' && (playa == None || !playa.bHardcoreMode || !ExtraData[i].bDontAllowHardcore)) //SARGE: Added hardcore checking
 		{
 			foreach AllActors(class'ScriptedPawn', P, NanoKeyData[i].ScriptedPawnTag)
 			{

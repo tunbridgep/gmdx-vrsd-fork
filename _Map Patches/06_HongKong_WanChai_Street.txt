@@ -1,1 +1,0 @@
-Currently has a problem with a missing mover in the main Queens Tower elevator!

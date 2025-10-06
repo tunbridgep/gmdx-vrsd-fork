@@ -35,6 +35,8 @@ var Color colText;
 var const Color colNotEnough;
 var const Color colJustEnough;
 var const Color colWireless;
+var const Color colHasKey;
+var const Color colBadAug;
 
 var localized string msgDoorThreshold; //CyberP: these two vars are for damage threshold display
 var localized string msgObjThreshold;
@@ -42,8 +44,14 @@ var localized string msgMass;
 var localized string msgHP;
 var localized string msgHP2;
 
+//SARGE: This is performance heavy, so only check this when the frobtarget changes
+var Actor prevFrobTarget;
+var Color outlineColour;
+var bool bForceRefreshOutlineColour;
+
 //var to stock value during the calculation of the window
 var float boxTLX, boxTLY, boxBRX, boxBRY;
+
 
 // ----------------------------------------------------------------------
 // StyleChanged()
@@ -99,6 +107,188 @@ function string FormatString(float num)
 	return tempstr;
 }
 
+//SARGE: Determine the border colour as follows:
+//A green border if we know the code (or have the key) to our frob target.
+//A Blue Border when using the wireless strength perk
+//A Blue Border when looking at a searched carcass
+//A Red Border when picking up and aug canister for an aug we can't use.
+//Note: This is a semi-expensive function, so is only called when the frob target changes.
+function Color GetFrobDisplayBorderColor(Actor frobTarget)
+{
+    local Computers C;
+    local ATM ATM;
+    local DeusExCarcass Carc;
+    local DeusExMover M;
+    local Keypad K;
+    local InformationDevices ID;
+    local NanoKey N;
+    local DeusExAmmo AM;
+    local DeusExWeapon WE;
+    local ThrownProjectile TP;
+    local int i;
+    local int capacity, myammo;
+    local Inventory Inv;
+    local Inventory playerInv;
+    
+    //Aug Can stuff
+    local AugmentationCannister A;
+    local Augmentation aug;
+    local bool h1, h2, f1, f2;
+
+    Carc = DeusExCarcass(frobTarget);
+    ATM = ATM(frobTarget);
+    C = Computers(frobTarget);
+    K = Keypad(frobTarget);
+    M = DeusExMover(frobTarget);
+    A = AugmentationCannister(frobTarget);
+    ID = InformationDevices(frobTarget);
+    N = NanoKey(frobTarget);
+    AM = DeusExAmmo(frobTarget);
+    WE = DeusExWeapon(frobTarget);
+    TP = ThrownProjectile(frobTarget);
+    Inv = Inventory(frobTarget);
+    
+    //Carcass Searched
+    if (Carc != None && player.iSearchedCorpseText >= 2 && Carc.bSearched && !Carc.bAnimalCarcass)
+        return colWireless;
+    
+    //Duplicate Keys
+    else if (player.iToolWindowShowDuplicateKeys >= 2 && N != None && player.KeyRing != None && player.KeyRing.HasKey(N.KeyID))
+        return colBadAug;
+        //return colWireless;
+    
+    //Wireless Perk
+    else if (frobTarget == player.HackTarget)
+        return colWireless;
+
+    //uninstallable aug - either we already have both, or the slot is full
+    else if (player.bToolWindowShowAugState && A != None && player.AugmentationSystem != None)
+    {
+        aug = A.GetAugGeneric(0,player);
+        h1 = aug.bHasIt;
+        f1 = player.AugmentationSystem.AreSlotsFull(aug);
+        aug = A.GetAugGeneric(1,player);
+        h2 = aug.bHasIt;
+        f2 = player.AugmentationSystem.AreSlotsFull(aug);
+
+        //player.ClientMessage("Augie: " $ h1 $ ":" $ f1 $ ", " $ h2 $ ":" $ f2);
+        
+        //If we have both augs, and slots are full, then the can is unusable, so return red
+        if (h1 && f1 && h2 && f2)
+            return colBadAug;
+
+        //if we have only one of them, and slots are full, then we can replace, so return blue
+        if ((h1 && f2) || (h2 && f1))
+            return colWireless;
+    }
+
+    //Cannot disarm grenade
+    else if (TP != None && !TP.CanRearm(player))
+        return colBadAug;
+
+    //Book/Datacube/etc has been read.
+    else if (player.bToolWindowShowRead && ID != None && ID.IsRead(player))
+        return colWireless;
+    
+    //Show red for invalid item pickups (not enough space, stack full, etc)
+    //This has to go pretty late in the list because most other things are Inventory items as well
+    if (player.bToolWindowShowInvalidPickup && Inv != None)
+    {
+        //Some items need special handling
+        if (Inv.IsA('Credits') || Inv.IsA('NanoKey'))
+        {
+            //Do Nothing
+        }
+        
+        //Stack is full
+        else if (Inv.IsA('DeusExPickup') && player.GetInventoryCount(Inv.class.name) >= DeusExPickup(Inv).RetMaxCopies() && DeusExPickup(Inv).bCanHaveMultipleCopies)
+        {
+            //Stack is full and we can recharge
+            if (Inv.IsA('ChargedPickup'))
+            {
+		        playerInv = player.FindInventoryType(Inv.Class);
+                if (ChargedPickup(playerInv) != None && ChargedPickup(playerInv).GetCurrentCharge() <= 99)
+                    return colWireless;
+            }
+
+            //Stack is full but we can still left-frob
+            if (player.bEnableLeftFrob && Inv.IsA('ConsumableItem') && !ConsumableItem(Inv).RestrictedUse(player))
+                    return colWireless;
+
+            return colBadAug;
+        }
+        
+        //Weapons and Ammo show BLUE when able to be patially looted, and Red if they can't be looted at all.
+        else if (AM != None)
+        {
+            capacity = player.GetAdjustedMaxAmmo(AM);
+            myammo = player.GetInventoryCount(AM.class.name);
+
+            //player.ClientMessage("Capacity: " $ capacity $ ", myAmmo: " $ myAmmo $ " (" $ AM.class $ ")");
+
+            if (myammo == capacity)
+                return colBadAug;
+            else if (capacity - myammo < AM.AmmoAmount)
+                return colWireless;
+        }
+        else if (WE != None && WE.PickupAmmoCount > 0 && player.FindInventoryType(WE.Class) != None)
+        {
+            AM = DeusExAmmo(player.FindInventoryType(WE.AmmoName));
+            if (AM != None)
+                capacity = player.GetAdjustedMaxAmmo(AM);
+            
+            //player.ClientMessage("Capacity: " $ capacity $ ", myAmmo: " $ AM $ " (" $ AM.class $ ")");
+            if (capacity > 0)
+            {
+                myammo = AM.AmmoAmount;
+
+                if (myammo == capacity)
+                    return colBadAug;
+                else if (capacity - myammo < WE.PickupAmmoCount)
+                    return colWireless;
+            }
+        }
+
+        //Not enough space
+        if (capacity == 0 && player.FindInventoryType(Inv.Class) == None && !player.FindInventorySlot(Inv, True))
+            return colBadAug;
+
+        //Can carry only 1
+        if (WE != None && player.FindInventoryType(WE.Class) != None && (WE.AmmoName == None || WE.AmmoName == class'DeusEx.AmmoNone'))
+            return colBadAug;
+    }
+
+
+    else if (player.bToolWindowShowKnownCodes && !player.bHardcoreMode && player.iNoKeypadCheese == 0)
+    {
+        //We have code for Keypad
+        if (K != None && (!K.bHackable || K.HackStrength > 0.0) && K.IsDiscovered(player,K.validCode,,true) && len(K.validCode) > 2)
+            return colHasKey;
+
+        //We have Key for Door
+        else if (M != None && M.bLocked && M.HasKey(player))
+            return colHasKey;
+    
+        //We have computer login
+        if (C != None)
+        {
+            for(i = 0;i < 8;i++)
+                if (C.IsDiscovered(player,C.GetUsername(i),C.GetPassword(i),true))
+                    return colHasKey;
+        }
+        
+        //We have ATM login (why the fuck does this not extend Computers?)
+        if (ATM != None)
+        {
+            for(i = 0;i < 8;i++)
+                if (ATM.IsDiscovered(player,ATM.GetAccountNumber(i),ATM.GetPIN(i),true))
+                    return colHasKey;
+        }
+    }
+
+    return colBackground;
+}
+
 //Ygll: utility function to draw the dark backbround of the hud window
 function DrawDarkBackground(GC gc, float infoX, float infoY, float infoW, float infoH)
 {
@@ -109,7 +299,7 @@ function DrawDarkBackground(GC gc, float infoX, float infoY, float infoW, float 
 }
 
 //Ygll: utility function to draw hightlight box
-function DrawHightlightBox(GC gc, float infoX, float infoY, float infoW, float infoH, optional bool bWireless)
+function DrawHightlightBox(GC gc, float infoX, float infoY, float infoW, float infoH)
 {
 	// draw the two highlight boxes
 	gc.SetStyle(DSTY_Translucent);
@@ -117,10 +307,7 @@ function DrawHightlightBox(GC gc, float infoX, float infoY, float infoW, float i
 	gc.DrawBox(infoX, infoY, infoW, infoH, 0, 0, 1, Texture'Solid');
 
     //Set color
-    if (bWireless)
-        gc.SetTileColor(colWireless);
-    else
-        gc.SetTileColor(colBackground);
+    gc.SetTileColor(outlineColour);
 
 	gc.DrawBox(infoX+1, infoY+1, infoW-2, infoH-2, 0, 0, 1, Texture'Solid');
 }
@@ -320,7 +507,7 @@ function DrawDoorHudInformation(GC gc, actor frobTarget)
 		gc.DrawPattern(infoX+(infoW-barSize-7), infoY+3+2*(infoH-8)/4, barSize*dxMover.doorStrength, ((infoH-8)/4)-2, 0, 0, Texture'ConWindowBackground');
 
 		//Draw the info Door Damage Threshold number
-		if ( !dxMover.bBreakable || ( player.bColourCodeFrobDisplay && dxMover.bBreakable &&
+		if ( !dxMover.bBreakable || ( player.bToolWindowShowQuantityColours && dxMover.bBreakable &&
 				( DeusExWeapon(player.Weapon) == None || ( DeusExWeapon(player.Weapon) != None && !player.BreaksDamageThreshold(DeusExWeapon(player.Weapon),dxMover.minDamageThreshold) ) ) ) )							
 		{
 			gc.SetTextColor(colNotEnough);
@@ -351,9 +538,9 @@ function DrawDoorHudInformation(GC gc, actor frobTarget)
 					strInfo = numTools @ msgPicks;
 			}
 
-			if (ownedTools < numTools && player.bColourCodeFrobDisplay)
+			if (ownedTools < numTools && player.bToolWindowShowQuantityColours)
 				gc.SetTextColor(colNotEnough);
-			else if (ownedTools == numTools && player.bColourCodeFrobDisplay)
+			else if (ownedTools == numTools && player.bToolWindowShowQuantityColours)
 				gc.SetTextColor(colJustEnough);
 			else
 				gc.SetTextColor(colText);
@@ -481,7 +668,7 @@ function DrawDeviceHudInformation(GC gc, actor frobTarget)
 	// draw a dark background
 	DrawDarkBackground(gc, infoX, infoY, infoW, infoH);
 	// draw the two highlight boxes
-	DrawHightlightBox(gc, infoX, infoY, infoW, infoH, frobTarget == player.HackTarget);
+	DrawHightlightBox(gc, infoX, infoY, infoW, infoH);
 	
 	// Draw the current text information	
 	gc.SetTextColor(colText);
@@ -491,7 +678,7 @@ function DrawDeviceHudInformation(GC gc, actor frobTarget)
 	infoW = extendWInfo + barSize + 4;
 	
 	// Draw the Device Damage Threshold
-	if ( device.bInvincible || ( player.bColourCodeFrobDisplay && !device.bInvincible &&
+	if ( device.bInvincible || ( player.bToolWindowShowQuantityColours && !device.bInvincible &&
 			( DeusExWeapon(player.Weapon) == None || ( DeusExWeapon(player.Weapon) != None && !player.BreaksDamageThreshold(DeusExWeapon(player.Weapon),device.minDamageThreshold) ) ) ) )
 	{
 		gc.SetTextColor(colNotEnough);
@@ -531,9 +718,9 @@ function DrawDeviceHudInformation(GC gc, actor frobTarget)
 				strInfo = numTools @ msgTools;
 		}
 
-		if (ownedTools < numTools && player.bColourCodeFrobDisplay)
+		if (ownedTools < numTools && player.bToolWindowShowQuantityColours)
 			gc.SetTextColor(colNotEnough);
-		else if (ownedTools == numTools && player.bColourCodeFrobDisplay)
+		else if (ownedTools == numTools && player.bToolWindowShowQuantityColours)
 			gc.SetTextColor(colJustEnough);
 		else
 			gc.SetTextColor(colText);
@@ -575,20 +762,18 @@ function DrawOtherHudInformation(GC gc, actor frobTarget)
 	// TODO: Check familiar vs. unfamiliar flags	
 	if (frobTarget.IsA('Pawn'))
 		strInfo = player.GetDisplayName(frobTarget);
+	else if (frobTarget.IsA('InformationDevices')) //SARGE: Show book title etc.
+		strInfo = InformationDevices(frobTarget).GetFrobString(player);
 	else if (frobTarget.IsA('DeusExCarcass'))
-		strInfo = DeusExCarcass(frobTarget).itemName;
+		strInfo = DeusExCarcass(frobTarget).GetFrobString(player);
     else if (frobTarget.IsA('AugmentationCannister'))                          //SARGE: Append the Augs to the display
         strInfo = GetAugCanInformation(AugmentationCannister(frobTarget));
+	else if (frobTarget.IsA('DeusExPickup')) //SARGE: Show copies, nano key names, and much more
+        strInfo = DeusExPickup(frobTarget).GetFrobString(player);
 	else if (frobTarget.IsA('DeusExAmmo'))                          //RSD: Append the ammo count
 		strInfo = DeusExAmmo(frobTarget).itemName @ "(" $ DeusExAmmo(frobTarget).AmmoAmount $ ")";
-	else if (frobTarget.IsA('ChargedPickup') && ChargedPickup(frobTarget).numCopies > 1 && player.bShowItemPickupCounts)
-		strInfo = ChargedPickup(frobTarget).ItemName @ "(" $ int(ChargedPickup(frobTarget).GetCurrentCharge()) $ "%) (" $ ChargedPickup(frobTarget).numCopies $ ")"; //SARGE: Append the current charge and num copies
-	else if (frobTarget.IsA('ChargedPickup'))
-		strInfo = ChargedPickup(frobTarget).ItemName @ "(" $ int(ChargedPickup(frobTarget).GetCurrentCharge()) $ "%)"; //RSD: Append the current charge
 	else if (frobTarget.IsA('DeusExWeapon'))                    //Sarge: Add "(Modified)" to weapons
 		strInfo = DeusExWeapon(frobTarget).GetFrobString(player);
-	else if (frobTarget.IsA('DeusExPickup') && DeusExPickup(frobTarget).numCopies > 1 && player.bShowItemPickupCounts)
-		strInfo = Inventory(frobTarget).itemName @ "(" $ DeusExPickup(frobTarget).numCopies $ ")"; //SARGE: Append number of copies, if more than 1
 	else if (frobTarget.IsA('Inventory'))
 		strInfo = Inventory(frobTarget).itemName;
 	else if (frobTarget.IsA('DeusExDecoration'))
@@ -708,6 +893,12 @@ function DrawWindow(GC gc)
 	if (player != None)
 	{
 		frobTarget = player.FrobTarget;
+        if (frobTarget != prevFrobTarget || bForceRefreshOutlineColour)
+        {
+            prevFrobTarget = frobTarget;
+            outlineColour = GetFrobDisplayBorderColor(frobTarget);
+            bForceRefreshOutlineColour = false;
+        }
 		
 		if (frobTarget != None && player.IsHighlighted(frobTarget))
 		{
@@ -763,6 +954,8 @@ defaultproperties
 	colNotEnough=(R=255,G=50,B=50)
 	colJustEnough=(R=255,G=255,B=50)
     colWireless=(B=255,G=50,R=50)
+    colHasKey=(B=50,G=150,R=50)
+    colBadAug=(B=50,G=50,R=255)
 	msgDisabled="Rebooting"
 	msgTrackAll="Target: All"
 	msgTrackAllies="Target: Allies"

@@ -106,6 +106,121 @@ struct BadItem
 var transient BadItem badItems[10];                                                   //SARGE: Keep a list of the declined or ignored items, so that we can add it to the display window.
 var transient int badItemCount;
 
+//SARGE: Breathing time. Carcasses won't instantly die in water, they have about 20 seconds
+var float breatheTime;
+
+// ----------------------------------------------------------------------
+// Augmentique
+// ----------------------------------------------------------------------
+
+//Augmentique Data
+struct AugmentiqueOutfitData
+{
+    var Texture textures[9];
+    var bool bRandomized;
+};
+
+var travel AugmentiqueOutfitData augmentiqueData;
+
+//Augmentique: Update our textures to our Augmentique outfit
+function ApplyCurrentOutfit()
+{
+    local int i;
+
+    if (!augmentiqueData.bRandomized)
+        return;
+
+    //GMDX Exclusive code
+    if (IsHDTP())
+        return;
+    
+    //Log("Doing carcass stuff");
+
+    for (i = 0;i < 8;i++)
+        if (augmentiqueData.textures[i] != None)
+            multiskins[i] = augmentiqueData.textures[i];
+    if (augmentiqueData.textures[8] != None)
+        Texture = augmentiqueData.textures[8];
+}
+
+function CopyOutfitFrom(Actor A)
+{
+    local ScriptedPawn S;
+    S = ScriptedPawn(A);
+
+    //GMDX Specific Code
+    if (S != None && IsHDTP())
+    {
+        augmentiqueData.textures[0] = S.augmentiqueData.textures[0];
+        augmentiqueData.textures[1] = S.augmentiqueData.textures[1];
+        augmentiqueData.textures[2] = S.augmentiqueData.textures[2];
+        augmentiqueData.textures[3] = S.augmentiqueData.textures[3];
+        augmentiqueData.textures[4] = S.augmentiqueData.textures[4];
+        augmentiqueData.textures[5] = S.augmentiqueData.textures[5];
+        augmentiqueData.textures[6] = S.augmentiqueData.textures[6];
+        augmentiqueData.textures[7] = S.augmentiqueData.textures[7];
+        augmentiqueData.textures[8] = S.augmentiqueData.textures[8];
+    }
+    else if (S != None)
+    {
+        augmentiqueData.textures[0] = S.MultiSkins[0];
+        augmentiqueData.textures[1] = S.MultiSkins[1];
+        augmentiqueData.textures[2] = S.MultiSkins[2];
+        augmentiqueData.textures[3] = S.MultiSkins[3];
+        augmentiqueData.textures[4] = S.MultiSkins[4];
+        augmentiqueData.textures[5] = S.MultiSkins[5];
+        augmentiqueData.textures[6] = S.MultiSkins[6];
+        augmentiqueData.textures[7] = S.MultiSkins[7];
+        augmentiqueData.textures[8] = S.Texture;
+    }
+    augmentiqueData.bRandomized = S.augmentiqueData.bRandomized;
+    ApplyCurrentOutfit();
+}
+
+function CopyAugmentiqueDataToPOVCorpse(POVCorpse pov)
+{
+    //GMDX Specific Code
+    if (pov != None && IsHDTP())
+    {
+        pov.augmentiqueData.textures[0] = augmentiqueData.textures[0];
+        pov.augmentiqueData.textures[1] = augmentiqueData.textures[1];
+        pov.augmentiqueData.textures[2] = augmentiqueData.textures[2];
+        pov.augmentiqueData.textures[3] = augmentiqueData.textures[3];
+        pov.augmentiqueData.textures[4] = augmentiqueData.textures[4];
+        pov.augmentiqueData.textures[5] = augmentiqueData.textures[5];
+        pov.augmentiqueData.textures[6] = augmentiqueData.textures[6];
+        pov.augmentiqueData.textures[7] = augmentiqueData.textures[7];
+        pov.augmentiqueData.textures[8] = augmentiqueData.textures[8];
+    }
+    else if (pov != None)
+    {
+        pov.augmentiqueData.textures[0] = multiskins[0];
+        pov.augmentiqueData.textures[1] = multiskins[1];
+        pov.augmentiqueData.textures[2] = multiskins[2];
+        pov.augmentiqueData.textures[3] = multiskins[3];
+        pov.augmentiqueData.textures[4] = multiskins[4];
+        pov.augmentiqueData.textures[5] = multiskins[5];
+        pov.augmentiqueData.textures[6] = multiskins[6];
+        pov.augmentiqueData.textures[7] = multiskins[7];
+        pov.augmentiqueData.textures[8] = Texture;
+        pov.augmentiqueData.bRandomized = augmentiqueData.bRandomized;
+    }
+}
+
+function CopyAugmentiqueDataFromPOVCorpse(POVCorpse pov)
+{
+    augmentiqueData.textures[0] = pov.augmentiqueData.textures[0];
+    augmentiqueData.textures[1] = pov.augmentiqueData.textures[1];
+    augmentiqueData.textures[2] = pov.augmentiqueData.textures[2];
+    augmentiqueData.textures[3] = pov.augmentiqueData.textures[3];
+    augmentiqueData.textures[4] = pov.augmentiqueData.textures[4];
+    augmentiqueData.textures[5] = pov.augmentiqueData.textures[5];
+    augmentiqueData.textures[6] = pov.augmentiqueData.textures[6];
+    augmentiqueData.textures[7] = pov.augmentiqueData.textures[7];
+    augmentiqueData.textures[8] = pov.augmentiqueData.textures[8];
+    augmentiqueData.bRandomized = pov.augmentiqueData.bRandomized;
+    ApplyCurrentOutfit();
+}
 
 // ----------------------------------------------------------------------
 // ShouldCreate()
@@ -160,6 +275,8 @@ exec function UpdateHDTPsettings()
     else if (assignedMesh == 3)
         Mesh = Mesh3;
 
+    ApplyCurrentOutfit();
+
 }
 
 // ----------------------------------------------------------------------
@@ -178,10 +295,17 @@ function InitFor(Actor Other)
     info = player.GetLevelInfo();                                               //RSD
 	if (Other != None)
 	{
+        //Augmentique: Configure our carcass
+        CopyOutfitFrom(Other);
+
         if (player != None)
             savedName = player.GetDisplayName(Other);
          else if (Other.IsA('ScriptedPawn'))
             savedName = ScriptedPawn(Other).UnfamiliarName;
+
+        //SARGE: All corpses can be reacted to
+        if (!IsA('Animal'))
+            bEmitCarcass = true;
 
         /*
 		// set as unconscious or add the pawns name to the description
@@ -464,9 +588,9 @@ function ZoneChange(ZoneInfo NewZone)
 		{
         Mesh = Mesh3;
         assignedMesh = 3;
-        if (!IsA('ScubaDiverCarcass') && !IsA('KarkianCarcass') && !IsA('KarkianBabyCarcass') && !IsA('GreaselCarcass')) //SARGE: Added aquatic animals.
+        if (breatheTime == -1 && bNotDead && !IsA('ScubaDiverCarcass') && !IsA('KarkianCarcass') && !IsA('KarkianBabyCarcass') && !IsA('GreaselCarcass')) //SARGE: Added aquatic animals.
         {
-        	KillUnconscious();                                                  //RSD: Proper kill
+            breatheTime = 18;
 		}
         if (Velocity.Z < -70)         //CyberP: water splash effect. Needs updating
 		{
@@ -588,6 +712,18 @@ function Tick(float deltaSeconds)
 				DblClickTimeout=0;
 			}
 		}
+
+    //SARGE: Handle drowning
+    if (breatheTime > 0)
+    {
+        breatheTime -= deltaSeconds;
+        if (breatheTime <= 0)
+        {
+        	KillUnconscious(DeusExPlayer(GetPlayerPawn()));                                                  //RSD: Proper kill
+            breatheTime = -1;
+        }
+    }
+
 	Super.Tick(deltaSeconds);
 }
 
@@ -681,7 +817,6 @@ function ChunkUp(int Damage)
 	}
 	if (!bAnimalCarcass)
        ExpelInventory();
-    KillUnconscious();
 	Super.ChunkUp(Damage);
 }
 
@@ -728,7 +863,7 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitLocation, Vector mo
 		 }
          else
          {
-            KillUnconscious();
+            KillUnconscious(DeusExPlayer(instigatedBy));
          }
 		}
 
@@ -743,11 +878,9 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitLocation, Vector mo
 		Velocity += 3 * momentum/(Mass + 200);
 		if (bNotDead && (FRand() < 0.4 || Damage > 18)) //CyberP: don't be lazy self, check for headshots...
 		{
-		    KillUnconscious();                                                  //RSD: Proper kill
+		    KillUnconscious(DeusExPlayer(instigatedBy));                                                  //RSD: Proper kill
             bNoDefaultPools = false;                                            //SARGE: Allow creating pools once we take damage.
             CreateBloodPool();
-			if (instigatedBy.IsA('DeusExPlayer'))
-			    DeusExPlayer(instigatedBy).KillCount++;
 		}
         if (DamageType == 'Exploded' || (DamageType == 'Burned' && Damage >= 10))
 		    {
@@ -773,6 +906,14 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitLocation, Vector mo
 		  if ((damageType == 'Exploded') || (damageType == 'Munch') || (damageType == 'Burned'))
              CumulativeDamage += Damage;
         }
+        else
+        {
+             CumulativeDamage += Damage;
+        }
+		
+        if (CumulativeDamage >= 30)
+		    KillUnconscious(DeusExPlayer(instigatedBy));
+
 		if (CumulativeDamage >= MaxDamage)
 			ChunkUp(Damage);
 		if (bDecorative)
@@ -911,6 +1052,9 @@ function PickupCorpse(DeusExPlayer player)
 	local POVCorpse corpse;
     local int j;
 
+    //Cancel drowning.
+    breatheTime = -1;
+
     bDblClickStart=false;
     if (!bInvincible)
     {
@@ -945,6 +1089,7 @@ function PickupCorpse(DeusExPlayer player)
             corpse.savedName = savedName;
             corpse.bFirstBloodPool = bFirstBloodPool; //SARGE: Remember if we've made a blood pool.
             corpse.bNoDefaultPools = bNoDefaultPools; //SARGE: Remember if we should be making pools or not.
+            CopyAugmentiqueDataToPOVCorpse(corpse);     //AUGMENTIQUE: Copy over outfit data.
             corpse.Frob(player, None);
             corpse.SetBase(player);
             player.PutInHand(corpse);
@@ -977,6 +1122,21 @@ function bool LootAmmo(DeusExPlayer P, DeusExWeapon item, bool bDisplayOverflowM
     bResult = item.LootAmmo(P,true,true,false,false,bDisplayOverflowMsg,bShowOverflow);
 
     return bResult;
+}
+
+//SARGE: Fixes up message displays for items
+function ShowFixedPickupMessage(DeusExPlayer P, Inventory item, int count, optional bool bShowReceived)
+{
+    if (item == None || P == None)
+        return;
+
+    if (count > 1)
+        P.ClientMessage(item.PickupMessage @ item.itemArticle @ item.itemName @ "(" $ count $ ")", 'Pickup');
+    else //Just show the basic one
+        P.ClientMessage(item.PickupMessage @ item.itemArticle @ item.itemName, 'Pickup');
+
+    if (bShowReceived)
+        AddReceivedItem(P, item, count, item.IsA('DeusExPickup'));
 }
 
 // ----------------------------------------------------------------------
@@ -1136,8 +1296,6 @@ function Frob(Actor Frobber, Inventory frobWith)
                             {
                                 if (player.bShowDeclinedInReceivedWindow)
                                     AddBadItem(player,item);
-                                if (!bSearched)
-                                    player.ClientMessage(sprintf(player.DuplicateNanoKey,item.Name));
                             }
 
 							DeleteInventory(item);
@@ -1286,8 +1444,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 										}
 									}
 
-									P.ClientMessage(invItem.PickupMessage @ invItem.itemArticle @ invItem.itemName, 'Pickup');
-									AddReceivedItem(player, invItem, itemCount);
+                                    ShowFixedPickupMessage(player,invItem,itemCount,true);
                                     bFoundSomething = True;
                                     bPickedSomethingUp = True;
 
@@ -1314,8 +1471,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                       					ChargedPickup(invItem).unDimIcon();
                                     }
 
-                       				P.ClientMessage(invItem.PickupMessage @ invItem.itemArticle @ invItem.itemName, 'Pickup');
-                       				AddReceivedItem(player, invItem, itemCount);
+                                    ShowFixedPickupMessage(player,invItem,itemCount,true);
                                     bPickedSomethingUp = True;
 								}
                                 //SARGE: Inform us if our inventory is too full (max stack) to pick these items up.
@@ -1353,19 +1509,12 @@ function Frob(Actor Frobber, Inventory frobWith)
 
 								DeleteInventory(item);
 
-								P.ClientMessage(invItem.PickupMessage @ invItem.itemArticle @ invItem.itemName, 'Pickup');
-								AddReceivedItem(player, invItem, itemCount);
+                                ShowFixedPickupMessage(player,invItem,itemCount,true);
                                 bPickedSomethingUp = True;
 							}
 						}
 						else
 						{
-                            //SARGE: Dirty Hack Alert!
-                            //We restrict the players ability to pickup for a few frames when picking stuff up,
-                            //because it prevents the item dupe glitch, but now we have to turn it off,
-                            //otherwise they can only pick up 1 item from each corpse at a time.
-                            player.pickupCooldown = 0;
-
 							// check if the pawn is allowed to pick this up
 							if ((P.Inventory == None) || (Level.Game.PickupQuery(P, item)))
 							{
@@ -1386,8 +1535,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                         bPickedSomethingUp = True;
                                         
                                         // Show the item received in the ReceivedItems window
-                                        AddReceivedItem(player, item, 1);
-                                        P.ClientMessage(Item.PickupMessage @ Item.itemArticle @ Item.itemName, 'Pickup');
+                                        ShowFixedPickupMessage(player,item,itemCount,true);
 
                                         if (item.IsA('WeaponShuriken') && WeaponShuriken(item).bImpaled)
                                             LootPickupSound = Sound'DeusExSounds.Generic.FleshHit1';
@@ -1423,7 +1571,7 @@ function Frob(Actor Frobber, Inventory frobWith)
         {
             for (i = 0;i < badItemCount;i++)
             {
-                AddReceivedItem(player, badItems[i].item, badItems[i].count, badItems[i].item.IsA('DeusExAmmo'), true);
+                AddReceivedItem(player, badItems[i].item, badItems[i].count, badItems[i].item.IsA('Ammo') || badItems[i].item.IsA('DeusExPickup'), true);
             }
         }
 
@@ -1480,6 +1628,9 @@ function Frob(Actor Frobber, Inventory frobWith)
 
 	Super.Frob(Frobber, frobWith);
 
+    //Make the frob border colour changing work.
+    Player.UpdateCrosshair();
+
 	if ((Level.Netmode != NM_Standalone) && (Player != None))
 	{
 	   bQueuedDestroy = true;
@@ -1527,14 +1678,26 @@ function bool LootWeaponAmmo(DeusExPlayer P, DeusExWeapon item, optional bool bS
 
 // ----------------------------------------------------------------------
 // AddSearchedString()
+// SARGE: Now handled in FrobDisplayWindow
+// See the returning version below
 // ----------------------------------------------------------------------
 
+/*
 function AddSearchedString(DeusExPlayer player)
 {
-    if (player != None && bSearched && player.bSearchedCorpseText && InStr(ItemName, SearchedString) == -1)
+    if (player != None && bSearched && (player.iSearchedCorpseText == 1 || player.iSearchedCorpseText == 3) && InStr(ItemName, SearchedString) == -1)
     {
         itemName = SearchedString @ itemName;
     }
+}
+*/
+
+function string GetFrobString(DeusExPlayer player)
+{
+    if (!bAnimalCarcass && player != None && bSearched && (player.iSearchedCorpseText == 1 || player.iSearchedCorpseText == 3) && InStr(ItemName, SearchedString) == -1)
+        return SearchedString @ itemName;
+    else
+        return itemName;
 }
 
 // ----------------------------------------------------------------------
@@ -1553,7 +1716,7 @@ function AddReceivedItem(DeusExPlayer player, Inventory item, int count, optiona
 	}
     */
 
-    player.AddReceivedItem(item,count,bNoGroup,bDeclined);
+    player.AddReceivedItem(item,count,bNoGroup,bDeclined,true);
 }
 
 //-----------------------------------------------------------------------
@@ -1724,12 +1887,17 @@ function SetupCarcass(bool bAlert)
 
             if (bNotFirstFall && !bHidden)
             {
-            PlaySound(sound'PaperHit2', SLOT_None,,,1024);
-            AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 512); //CyberP: this applies to when corpses are thrown.
+                PlaySound(sound'PaperHit2', SLOT_None,,,1024);
+                //SARGE: Fix the broken sound propagation
+                class'PawnUtils'.static.WakeUpAI(self,512);
+                AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 512); //CyberP: this applies to when corpses are thrown.
             }
             else
             {
-            AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 96); //CyberP: this applies to when corpses are spawned upon pawn death/K.O.
+                //SARGE TODO: Don't bother fixing sound propagation here as it's so short???
+                //SARGE: Fix the broken sound propagation
+                class'PawnUtils'.static.WakeUpAI(self,96);
+                AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 96); //CyberP: this applies to when corpses are spawned upon pawn death/K.O.
             }
         }
 }
@@ -1820,23 +1988,23 @@ function UpdateName()
         itemName = itemName $ " (" $ hdtpReference.default.UnfamiliarName $ ")";
 
     //SARGE: Add searched string
-    if (!bAnimalCarcass)
-        AddSearchedString(DeusExPlayer(GetPlayerPawn()));
+    // SARGE: Now handled in FrobDisplayWindow
+    //if (!bAnimalCarcass)
+    //    AddSearchedString(DeusExPlayer(GetPlayerPawn()));
 }
 
-function KillUnconscious()                                                      //RSD: To properly fix corpse names and trigger any other death effects like MIB explosion
+function KillUnconscious(optional DeusExPlayer playerKiller)                                                      //RSD: To properly fix corpse names and trigger any other death effects like MIB explosion
 {
     local DeusExPlayer player;
 
     if (!bNotDead)
         return;
 
-    player = DeusExPlayer(GetPlayerPawn());
-    if (player != None && !bAnimalCarcass)
+    if (playerKiller != None && !bAnimalCarcass)
     {
-        killerBindName = player.BindName;
-        killerAlliance = player.Alliance;
-        player.killerCount++;
+        killerBindName = playerKiller.BindName;
+        killerAlliance = playerKiller.Alliance;
+        playerKiller.killerCount++;
     }
 
     bNotDead = false;
@@ -1868,4 +2036,5 @@ defaultproperties
      BindName="DeadBody"
      bVisionImportant=True
      LootPickupSound=sound'objpickup3'
+     breatheTime=-1
 }

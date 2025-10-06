@@ -142,45 +142,10 @@ function GotoDisabledState(name damageType, EHitLocation hitPos)
 		GotoNextState();
 }
 
-function float ModifyDamage(int Damage, Pawn instigatedBy, Vector hitLocation,  //RSD: Overruled ModifyDamage just for additional damage with Sabot/AP rounds
-							Vector offset, Name damageType)
+//SARGE: Was done in ModifyDamage. Moved it out to a new function
+function float GetSabotDamage(int actualDamage)
 {
-	local int   actualDamage;
-	local float headOffsetZ, headOffsetY, armOffset;
-
-	actualDamage = Damage;
-
-	// calculate our hit extents
-	headOffsetZ = CollisionHeight * 0.7;
-	headOffsetY = CollisionRadius * 0.3;
-	armOffset   = CollisionRadius * 0.35;
-
-	// if the pawn is stunned, damage is 4X
-	if (bStunned)
-		actualDamage *= 8; //CyberP: now *8, hacky fix
-
-	// if the pawn is hit from behind at point-blank range, he is killed instantly
-	else if (offset.x < 0)
-		if ((instigatedBy != None) && (VSize(instigatedBy.Location - Location) < 96)) //CyberP: was 64
-			actualDamage  *= 12; //CyberP: was 10
-
-	actualDamage = Level.Game.ReduceDamage(actualDamage, DamageType, self, instigatedBy);
-
-	if (ReducedDamageType == 'All') //God mode
-		actualDamage = 0;
-	else if (Inventory != None) //then check if carrying armor
-		actualDamage = Inventory.ReduceDamage(actualDamage, DamageType, HitLocation);
-
-	// gas, EMP and nanovirus do no damage
-	if (damageType == 'TearGas' || damageType == 'EMP' || damageType == 'NanoVirus')
-		actualDamage = 0;
-    else if (damageType == 'Sabot')
-        actualDamage *= 1.5;                                                    //RSD: Extra +50% damage with Sabot and AP ammo
-	//if (damageType == 'EMP')
-    //{bHasCloak = False; CloakThreshold = 0;}//CyberP: EMP just outright disables cloaking.
-
-	return actualDamage;
-
+    return actualDamage * 1.5;                                                    //RSD: 0.5x damage to organics (was 0.7)
 }
 
 function DifficultyMod(float CombatDifficulty, bool bHardCoreMode, bool bExtraHardcore, bool bFirstLevelLoad) //RSD: New function to streamline NPC stat difficulty modulation
@@ -231,7 +196,7 @@ function DifficultyMod(float CombatDifficulty, bool bHardCoreMode, bool bExtraHa
         }
         VisibilityThreshold=0.007000;
         }
-        bNotFirstDiffMod = true;
+        super.DifficultyMod(CombatDifficulty,bHardCoreMode,bExtraHardcore,bFirstLevelLoad);
 }
 
 defaultproperties
@@ -272,4 +237,5 @@ defaultproperties
      FamiliarName="MJ12 Commando"
      UnfamiliarName="MJ12 Commando"
      fireReactTime=0.1
+     fHighAlertChance=0.6
 }

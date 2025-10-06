@@ -361,6 +361,27 @@ var const Sound ClassicFireSound;
 //we need a hacky variable to distinguish them, so we don't give them combat strength etc
 var const bool bFakeHandToHand;
 
+////SARGE: Weapon mod penalties and removal! Now we need to remember the weapon mod state.
+//These store if we've ever had the weapon mod.
+var travel bool bHadLaser;
+var travel bool bHadScope;
+var travel bool bHadSilencer;
+
+//Used during the new "SwitchAttachment" state so we can change attachments during the animation
+var bool bSwitchingToLaser;
+var bool bSwitchingToSilencer;
+var bool bSwitchingToScope;
+
+//Penalties to accuracy and reload speed while using mods.
+enum EAddonPenaltyType
+{
+    Scope,
+    Silencer,
+    Laser
+};
+
+var const float addonPenalties[3];
+
 //END GMDX:
 
 //
@@ -387,6 +408,26 @@ replication
 }
 
 // ----------------------------------------------------------------------
+// GetMaxRange()
+//
+// SARGE: Returns the max range of the weapon
+// ----------------------------------------------------------------------
+function float GetMaxRange()
+{
+    return MaxRange * (1.0 - GetAddonPenalty(Silencer));
+}
+
+// ----------------------------------------------------------------------
+// GetAccurateRange()
+//
+// SARGE: Returns the accurate range of the weapon
+// ----------------------------------------------------------------------
+function float GetAccurateRange()
+{
+    return AccurateRange * (1.0 - GetAddonPenalty(Silencer));
+}
+
+// ----------------------------------------------------------------------
 // GetDefaultFireSound()
 //
 // SARGE: Returns the default fire sound (standard or classic), based on the players options
@@ -399,10 +440,88 @@ function Sound GetDefaultFireSound()
         return Sound'GEPGunFireWP';
     else if ( AmmoRocket(AmmoType) != None )
         return Sound'GEPGunFire';
-    else if (class'DeusExPlayer'.default.bImprovedWeaponSounds || default.ClassicFireSound == None)
+    else if (class'DeusExPlayer'.default.iImprovedWeaponSounds > 0 || default.ClassicFireSound == None)
         return default.FireSound;
     else
         return default.ClassicFireSound;
+}
+
+// ----------------------------------------------------------------------
+// GetAddonPenalty()
+//
+// SARGE: Gets the penalty for using a Scope, Silencer or Laser Sight
+// FUCK ME this is overengineered....
+// ----------------------------------------------------------------------
+function float GetAddonPenalty(EAddonPenaltyType penaltyType)
+{
+    local float mod;
+    local DeusExPlayer player;
+
+    player = DeusExPlayer(Owner);
+
+    //Only enabled on Hardcore or if we have the drawbacks setting enabled
+    if (player != None && !(player.bAddonDrawbacks || player.bHardcoreMode))
+        return 0;
+    
+    //Wetwork perk removes all penalties
+    if (player != None && player.PerkManager != None && player.PerkManager.GetPerkWithClass(class'PerkWetwork').bPerkObtained)
+        return 0;
+
+    if (bHasLaser && bHadLaser && penaltyType == Laser)
+        mod += addonPenalties[penaltyType];
+    if (bHasScope && bHadScope && penaltyType == Scope)
+        mod += addonPenalties[penaltyType];
+    if (bHasSilencer && bHadSilencer && penaltyType == Silencer)
+        mod += addonPenalties[penaltyType];
+
+    return mod;
+}
+
+// ----------------------------------------------------------------------
+// SARGE: Functions for attaching/detaching addons
+// ----------------------------------------------------------------------
+
+function ToggleAttachedLaser(bool bRealtime)
+{
+    if (bHadLaser)
+    {
+        LaserOff();
+        if (bRealtime)
+        {
+            bSwitchingToLaser = true;
+            GotoState('SwitchAttachment');
+        }
+        else
+            bHasLaser = !bHasLaser;
+    }
+}
+
+function ToggleAttachedScope(bool bRealtime)
+{
+    if (bHadScope)
+    {
+        if (bRealtime)
+        {
+            bSwitchingToScope = true;
+            GotoState('SwitchAttachment');
+        }
+        else
+            bHasScope = !bHasScope;
+    }
+}
+
+function ToggleAttachedSilencer(bool bRealtime)
+{
+    if (bHadSilencer)
+    {
+        if (bRealtime)
+        {
+            bSwitchingToSilencer = true;
+            GotoState('SwitchAttachment');
+        }
+        else
+            bHasSilencer = !bHasSilencer;
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -447,7 +566,7 @@ function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, op
     if (IsA('WeaponShuriken') && WeaponShuriken(self).bImpaled)
         overrideTexture = Texture'RSDCrap.Icons.BeltIconShurikenBloody';
 
-    intj = P.LootAmmo(defAmmoClass,PickupAmmoCount,bDisplayMsg,bDisplayWindow,bLootSound,!bDisposableWeapon,bDisposableWeapon,bOverflow && !bDisposableWeapon,bOverflowWindow,overrideTexture);
+    intj = P.LootAmmo(defAmmoClass,PickupAmmoCount,bDisplayMsg,bDisplayWindow,bLootSound,bDisposableWeapon,bDisposableWeapon,bOverflow && !bDisposableWeapon,bOverflowWindow,overrideTexture);
 
     if (intj > 0)
     {
@@ -468,7 +587,7 @@ function string GetFrobString(DeusExPlayer player)
         return itemName @ "(" $ PickupAmmoCount $ ")";
     //Modified weapons show their modified state
     else if (bModified && player != None && player.bBeltShowModified)
-        return itemName @ strModified;
+        return itemName @ "(" $ strModified $ ")";
     else
         return itemName;
 }
@@ -597,6 +716,9 @@ function Draw(DeusExPlayer frobber)
     //Fix allowing more in the clip than we have
 	if(AmmoType != None)
 		ClipCount = min(ClipCount,AmmoType.AmmoAmount);
+
+    //Fix having more in the clip than the max clip size (I **Really** shouldn't have rewritten the ammo system)
+    ClipCount = min(ClipCount,ReloadCount);
     
     SetWeaponHandTex();
 
@@ -1237,61 +1359,133 @@ function TakeDamage(int Damage, Pawn EventInstigator, vector HitLocation, vector
 
 //SARGE: Moved this to a new function so that it can be used
 //even at full ammo.
-function CopyModsFrom(DeusExWeapon W, optional bool bNotify)
+function bool CopyModsFrom(DeusExWeapon W, optional bool bNotify)
 {
+    local bool bCopied;
+
+    if (!W.bModified || W.bDisposableWeapon)
+        return false;
+
     if (W.ModBaseAccuracy > ModBaseAccuracy)
+    {
         ModBaseAccuracy = W.ModBaseAccuracy;
+        bCopied = true;
+    }
     if (W.ModReloadCount > ModReloadCount)
+    {
         ModReloadCount = W.ModReloadCount;
+        bCopied = true;
+    }
     if (W.ModAccurateRange > ModAccurateRange)
+    {
         ModAccurateRange = W.ModAccurateRange;
+        bCopied = true;
+    }
 
     // these are negative
     if (W.ModReloadTime < ModReloadTime)
+    {
         ModReloadTime = W.ModReloadTime;
+        bCopied = true;
+    }
     if (W.ModRecoilStrength < ModRecoilStrength)
+    {
         ModRecoilStrength = W.ModRecoilStrength;
+        bCopied = true;
+    }
+    
+    //SARGE: Added
+    if (W.bHadLaser)
+    {
+        bHadLaser = True;
+        bCopied = true;
+    }
+    if (W.bHadSilencer)
+    {
+        bHadSilencer = True;
+        bCopied = true;
+    }
+    if (W.bHadScope)
+    {
+        bHadScope = True;
+        bCopied = true;
+    }
 
     if (W.bHasLaser)
+    {
         bHasLaser = True;
+        bCopied = true;
+    }
     if (W.bHasSilencer)
+    {
         bHasSilencer = True;
+        bCopied = true;
+    }
     if (W.bHasScope)
+    {
         bHasScope = True;
+        bCopied = true;
+    }
     if (W.bFullAuto)     //CyberP:
+    {
         bFullAuto = True;
+        bCopied = true;
+    }
 
     // copy the actual stats as well
     if (W.ReloadCount > ReloadCount)
+    {
         ReloadCount = W.ReloadCount;
+        bCopied = true;
+    }
     if (W.AccurateRange > AccurateRange)
+    {
         AccurateRange = W.AccurateRange;
+        bCopied = true;
+    }
 
     // these are negative
     if (W.BaseAccuracy < BaseAccuracy)
+    {
         BaseAccuracy = W.BaseAccuracy;
+        bCopied = true;
+    }
     if (W.ReloadTime < ReloadTime)
+    {
         ReloadTime = W.ReloadTime;
+        bCopied = true;
+    }
     if (W.RecoilStrength < RecoilStrength)
+    {
         RecoilStrength = W.RecoilStrength;
+        bCopied = true;
+    }
 
     //ROF mod
-        if(W.ModShotTime < ModShotTime)
-            ModShotTime = W.ModShotTime;
-    //DAM mod
-        if(W.ModDamage > ModDamage)
-            ModDamage = W.ModDamage;
+    if(W.ModShotTime < ModShotTime)
+    {
+        ModShotTime = W.ModShotTime;
+        bCopied = true;
+    }
     
-    if (W.bModified && !bModified && bNotify)
+    //DAM mod
+    if(W.ModDamage > ModDamage)
+    {
+        ModDamage = W.ModDamage;
+        bCopied = true;
+    }
+    
+    if (bCopied && bNotify)
     {
         if (Owner != None && Owner.IsA('DeusExPlayer'))
             DeusExPlayer(Owner).ClientMessage(sprintf(msgModsCopied,W.ItemName));
         PlaySound(CopyModsSound,SLOT_None,0.8);
     }
 
-    if (W.bModified)
+    if (bCopied)
         bModified = true;
 
+    return bCopied;
 }
 
 function bool HandlePickupQuery(Inventory Item)
@@ -1422,7 +1616,7 @@ function SetDroppedAmmoCount(int amountPassed) //RSD: Added optional int amountP
         PickupAmmoCount = 35 + (amountPassed * 3);               //SARGE: Now 38-50 rounds with initialization in MissionScript.uc on first map load
     else if (IsA('WeaponAssaultGun'))
         //PickupAmmoCount = Rand(5) + 1.5;                          //RSD
-        PickupAmmoCount = amountPassed + 1;                      //RSD: Now 2-5 rounds with initialization in MissionScript.uc on first map load
+        PickupAmmoCount = amountPassed + 2;                      //RSD: Now 2-5 rounds with initialization in MissionScript.uc on first map load //SARGE: Now 3-6
     else if (IsA('WeaponGepGun'))
         PickupAmmoCount = 2;
     else if (amountPassed > 0)
@@ -1776,6 +1970,9 @@ simulated function float CalculateAccuracy()
 	// this only works for the player, because NPCs don't need any more aiming help!
 	if (player != None)
 	{
+        //SARGE: Add accuracy penalty for having weapon mods
+        //accuracy += GetAddonPenalty(Silencer);
+
 		tempacc = accuracy;
 		if (standingTimer > 0)
 		{
@@ -2695,6 +2892,9 @@ simulated function Tick(float deltaTime)
 		else
 		   recoil = recoilStrength;
 
+        recoil += GetAddonPenalty(Laser); //SARGE: Penalties for addons
+        recoil += GetAddonPenalty(Scope); //SARGE: Penalties for addons
+
 		if (recoil < 0.0)
 			recoil = 0.0;
 
@@ -3049,7 +3249,7 @@ function LaserOn(optional bool IgnoreSound)
 	  LaserPitch = (currentAccuracy) * (Rand(4096) - 2048);
 }
 
-function LaserOff(bool forced)
+function LaserOff(optional bool forced)
 {
 	if (IsA('WeaponNanoSword')&&!IsInState('DownWeapon')) return;
 	if (bHasLaser && bLasing)
@@ -4548,28 +4748,43 @@ simulated function vector CalcDrawOffset()
 	return DrawOffset;
 }
 
-function GetAIVolume(out float volume, out float radius)
+function GetAIVolume(out float volume, out float radius, optional bool wakeUp)
 {
+    local DeusExPlayer player;
+	local float NL;
+    player = DeusExPlayer(Owner);
+
 	volume = 0;
 	radius = 0;
 
-	if (!bHasSilencer && !bHandToHand)
+    if (Owner == None)
+        return;
+
+	NL = NoiseLevel * 0.451; //SARGE: Dirty hack to make guns quieter now that pawns can actually detect gunfire reliably.
+	//NL = NoiseLevel * 0.451; //SARGE: Dirty hack to make guns quieter now that pawns can actually detect gunfire reliably.
+	//NL = NoiseLevel; //SARGE: Now it's reduced in the WakeUpAI call instead
+
+	if (!bHasSilencer && (!bHandToHand || bFakeHandToHand)) //SARGE: Added PS20
 	{
-		volume = NoiseLevel*Pawn(Owner).SoundDampening;
-		if (Owner.IsA('DeusExPlayer'))
+		volume = NL*Pawn(Owner).SoundDampening;
+		if (player != None)
 		{
-		    if (DeusExPlayer(Owner).CombatDifficulty < 1)
+		    if (player.CombatDifficulty < 1)
 		        volume *= 0.65;  //CyberP: AI are less receptive to gunshots on lower difficulty levels. easy = -50% medium = -25%
-		    else if (DeusExPlayer(Owner).CombatDifficulty < 3)
+		    else if (player.CombatDifficulty < 3)
                 volume *= 0.8;
 		}
 		radius = volume * 800.0;
 	}
 	else if (bHasSilencer && NoiseLevel >= 0.1)                                 //RSD: Added quiet sound for silenced weapons
-	{
-		volume = 1.0*Pawn(Owner).SoundDampening;                                //RSD: Hardcoded value as specified in weapon info
+    {
+        volume = 1.0*Pawn(Owner).SoundDampening;                                //RSD: Hardcoded value as specified in weapon info
 		radius = volume * 800.0;
-	}
+    }
+
+    //SARGE: Wake up the AI
+    if (wakeUp)
+        class'PawnUtils'.static.WakeUpAI(Owner,radius * 0.5);
 }
 
 //Ygll: utility function to test the behaviour of the dart with Fragile dart gameplay option enabled
@@ -4612,6 +4827,7 @@ function DartStickToWall(DeusExProjectile proj)
 //
 simulated function Projectile ProjectileFire(class<projectile> ProjClass, float ProjSpeed, bool bWarn)
 {
+    local float AddonRangeMod;
 	local Vector Start, X, Y, Z;
 	local DeusExProjectile proj;
 	local float mult, speedMult, rangeMult, strengthMult;                       //RSD: Added strengthMult
@@ -4658,7 +4874,7 @@ simulated function Projectile ProjectileFire(class<projectile> ProjClass, float 
 			|| IsA('WeaponSawedOffShotgun') || IsA('WeaponAssaultShotgun') || IsA('WeaponPepperGun')) //RSD: Added shotguns and pepper gun
 		speedMult += (ModAccurateRange*1.3333);
 	}
-
+	
 	ProjSpeed *= speedMult;
 
 	// skill also affects our damage
@@ -4669,9 +4885,9 @@ simulated function Projectile ProjectileFire(class<projectile> ProjClass, float 
     	mult += 0.30;
 
 	// make noise if we are not silenced
-	if (!bHasSilencer && !bHandToHand)
+	if (!bHandToHand || bFakeHandToHand)
 	{
-		GetAIVolume(volume, radius);
+		GetAIVolume(volume, radius, true);
 		Owner.AISendEvent('WeaponFire', EAITYPE_Audio, volume, radius);
 		Owner.AISendEvent('LoudNoise', EAITYPE_Audio, volume, radius);
 		if (!Owner.IsA('PlayerPawn'))
@@ -4792,6 +5008,8 @@ simulated function Projectile ProjectileFire(class<projectile> ProjClass, float 
 			{
 				//SARGE: Added new gameplay setting //Ygll: Add more option to the fragile dart option
 				DartStickToWall(proj);
+
+                mult *= 1.0 - GetAddonPenalty(Silencer);
 					
                 //proj.Damage *= mult;                                          //RSD
                 finalDamage = proj.Damage*mult;                                 //RSD: final input to TakeDamage is a truncated int
@@ -4944,11 +5162,12 @@ simulated function TraceFire( float Accuracy )
     local vector EndTraceCenter, moverStartTrace;                               //RSD: Added
     local float TempAcc;                                                        //RSD: Added
     local Projectile firedProjectile;
+    local float MaxRangeMod;                                                    //SARGE: Added
 
 	// make noise if we are not silenced
-	if (!bHasSilencer && !bHandToHand)
+	if (!bHandToHand || bFakeHandToHand)
 	{
-		GetAIVolume(volume, radius);
+		GetAIVolume(volume, radius, true);
 		Owner.AISendEvent('WeaponFire', EAITYPE_Audio, volume, radius);
 		Owner.AISendEvent('LoudNoise', EAITYPE_Audio, volume, radius);
 		if (!Owner.IsA('PlayerPawn'))
@@ -4989,12 +5208,19 @@ simulated function TraceFire( float Accuracy )
 
     UpdateRecoilShaker();//GMDX: bung it here, less intrusive
 
+    //SARGE: Modifiy range based on silencer
+    if (DeusExPlayer(Owner) != None)
+        MaxRangeMod = GetMaxRange();
+    else
+        MaxRangeMod = MaxRange;
+    
+
     if (numSlugs > 1 && Owner.IsA('DeusExPlayer'))
     {
     	TempAcc = FMax(0.0,Accuracy - 0.75*SlugSpreadAcc);
     	//TempAcc = FClamp(Accuracy*SlugSpreadAcc,0.1,SlugSpreadAcc);
         EndTraceCenter = StartTrace + TempAcc * (FRand()-0.5)*Y*1000 + TempAcc * (FRand()-0.5)*Z*1000;
-		if (MaxRange >= 1024)
+		if (MaxRangeMod >= 1024)
     	{
 			EndTraceCenter += 4000.0 * vector(AdjustedAim);
     		//EndTraceCenter = (FMax(1024.0, MaxRange)/VSize(EndTraceCenter-StartTrace)*(EndTraceCenter-StartTrace))+StartTrace; //RSD: Extend length of vector to max range (doi!)
@@ -5017,20 +5243,20 @@ simulated function TraceFire( float Accuracy )
 	  }
 
       if (bLasing && Emitter != None && !bZoomed)                               //RSD: If we're using a laser but not scoped, shoot at the location of the laser
-  	      EndTrace = StartTrace + (FMax(1024.0, MaxRange)*vector(Emitter.Rotation));
+  	      EndTrace = StartTrace + (FMax(1024.0, MaxRangeMod)*vector(Emitter.Rotation));
       else if (numSlugs > 1 && Owner.IsA('DeusExPlayer'))                       //RSD: If we're using a shotgun, spread slugs from the defined aim center
       {
           EndTrace = EndTraceCenter + TempAcc * (FRand()-0.5)*Y*1000 + TempAcc * (FRand()-0.5)*Z*1000;
-          EndTrace = (FMax(1024.0, MaxRange)*Normal(EndTrace-StartTrace))+StartTrace;
+          EndTrace = (FMax(1024.0, MaxRangeMod)*Normal(EndTrace-StartTrace))+StartTrace;
       }
       else                                                                      //RSD: Otherwise new standard accuracy routine
       {                                                                         //RSD: Bracketed this else statement entirely so we don't mess around with laser pointed shots
       EndTrace = StartTrace + Accuracy * (FRand()-0.5)*Y*1000 + Accuracy * (FRand()-0.5)*Z*1000;
       //EndTrace = StartTrace + Accuracy * (0.5)*Y*1000;                          //RSD: For testing
-	  if (Owner.IsA('DeusExPlayer') && MaxRange >= 1024)
+	  if (Owner.IsA('DeusExPlayer') && MaxRangeMod >= 1024)
       {
 	      EndTrace += 4000.0 * vector(AdjustedAim);                             //RSD: range no longer influences player accuracy (took old pistol range)
-          EndTrace = (FMax(1024.0, MaxRange)*Normal(EndTrace-StartTrace))+StartTrace; //RSD: Extend length of vector to max range (doi!)
+          EndTrace = (FMax(1024.0, MaxRangeMod)*Normal(EndTrace-StartTrace))+StartTrace; //RSD: Extend length of vector to max range (doi!)
       }
       /*if ((IsA('WeaponAssaultGun') || IsA('WeaponRifle')) && Owner.IsA('DeusExPlayer'))
 	      EndTrace += (FMax(1024.0, MaxRange*0.6) * vector(AdjustedAim));*/     //RSD: original player EndTrace code for AR and snipe
@@ -5089,7 +5315,7 @@ simulated function TraceFire( float Accuracy )
 		// check our range
 		dist = Abs(VSize(HitLocation - Owner.Location));
 
-		if (dist <= MaxRange)		// we hit just fine                         //RSD: changed to MaxRange
+		if (dist <= MaxRangeMod)		// we hit just fine                         //RSD: changed to MaxRange
 			ProcessTraceHit(Other, HitLocation, HitNormal, vector(AdjustedAim),Y,Z);
 		/*else if (dist <= MaxRange)                                            //RSD: fuck that actually just do damage dropoff in ProcessTraceHit
 		{
@@ -5107,7 +5333,7 @@ simulated function TraceFire( float Accuracy )
 			moverStartTrace = HitLocation + 8*Normal(EndTrace-StartTrace);       //RSD: Start a little past the mover (6 is minimum necessary to go past, 8 is more reliable)
             Other = Pawn(Owner).TraceShot(HitLocation,HitNormal,EndTrace,moverStartTrace); //RSD: Grab a new target and do it all again (minus Stopping Power perk and tracers)
 			dist = Abs(VSize(HitLocation - Owner.Location));
-			if (dist <= MaxRange)
+			if (dist <= MaxRangeMod)
 				ProcessTraceHit(Other, HitLocation, HitNormal, vector(AdjustedAim),Y,Z);
 		}
 
@@ -5142,6 +5368,7 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
     local BloodMeleeHit spoofer;
     local GMDXSparkFade faded;
     local int finalDamage;                                                      //RSD
+    local float AccurateRangeMod, MaxRangeMod;                                  //SARGE: Added
 
     if (bHandToHand && Owner != None)
     {
@@ -5175,18 +5402,47 @@ simulated function ProcessTraceHit(Actor Other, Vector HitLocation, Vector HitNo
 		// GetWeaponSkill returns 0.0 to -0.7 (max skill/aug)
 		mult += -2.0 * GetWeaponSkill() + ModDamage;   //CyberP: damage mod
 
+        mult *= 1.0 - GetAddonPenalty(Silencer);
+
         //RSD: check our range
         dist = Abs(VSize(HitLocation - Owner.Location));
 
-        if (DeusExPlayer(Owner) != None && dist >= AccurateRange)               //RSD: != none instead of IsA
+        //SARGE: Modifiy range based on silencer
+        if (DeusExPlayer(Owner) != None)
+        {
+            MaxRangeMod = GetMaxRange();
+            AccurateRangeMod = GetAccurateRange();
+        }
+        else
+        {
+            MaxRangeMod = MaxRange;
+            AccurateRangeMod = AccurateRange;
+        }
+
+        if (DeusExPlayer(Owner) != None && dist >= AccurateRangeMod)               //RSD: != none instead of IsA
 		{
 			//RSD: Linear damage falloff up to MaxRange for the player
-            alpha = (dist - AccurateRange) / (MaxRange - AccurateRange);
+            alpha = (dist - AccurateRangeMod) / (MaxRangeMod - AccurateRangeMod);
             mult = (1-alpha)*mult;
+            
             //if (mult*float(HitDamage) < 1.0)
             //	mult = 1.1/float(HitDamage);                                    //RSD: Do at least 1 damage
+
             if (mult < 0.35)
             	mult = 0.35;                                                    //RSD: or cap falloff at 65% instead
+
+            if (DeusExPlayer(Owner) != None)
+            {
+                DeusExPlayer(Owner).DebugMessage("AccurateRange: " $ accurateRange);
+                DeusExPlayer(Owner).DebugMessage("AccurateRangeMod: " $ accurateRangeMod);
+                DeusExPlayer(Owner).DebugMessage("MaxRange: " $ maxRange);
+                DeusExPlayer(Owner).DebugMessage("MaxRangeMod: " $ maxRangeMod);
+                DeusExPlayer(Owner).DebugMessage("dist: " $ dist);
+                DeusExPlayer(Owner).DebugMessage("alpha: " $ alpha);
+                DeusExPlayer(Owner).DebugMessage("dist - accurate range: " $ dist - AccurateRangeMod);
+                DeusExPlayer(Owner).DebugMessage("max range - accuraterange: " $ MaxRangeMod - AccurateRangeMod);
+                DeusExPlayer(Owner).DebugMessage("mult: " $ mult);
+            }
 		}
 
 		// Determine damage type
@@ -5619,6 +5875,7 @@ simulated function bool UpdateInfo(Object winObject)
     local DeusExPlayer player;
     local string noiseLev, msgMultiplier;
     local float prec;                                                           //RSD: Floating point precision
+    local float vol,rad;                                                        //SARGE: Added
 
 	P = Pawn(Owner);
 	if (P == None)
@@ -5630,7 +5887,7 @@ simulated function bool UpdateInfo(Object winObject)
     
     //SARGE: Show modified weapons in title
     if (bModified && DeusExPlayer(owner) != None && DeusExPlayer(owner).bBeltShowModified)
-        winInfo.SetTitle(itemName @ strModified);
+        winInfo.SetTitle(itemName @ "(" $ strModified $ ")");
     else
         winInfo.SetTitle(itemName);
 
@@ -5731,6 +5988,7 @@ simulated function bool UpdateInfo(Object winObject)
 
 	//G-Flex: display the correct damage bonus
 	mod = 1.0 - (2.0 * GetWeaponSkill()) + ModDamage;  //CyberP: damage mods
+    mod *= 1.0 - GetAddonPenalty(Silencer);
 	if (IsA('WeaponSawedoffShotgun') && AmmoName==class'AmmoRubber')            //RSD: Sawed-off gets +30% damage on rubber bullets
 	   mod += 0.30;
 	if (bHandToHand)
@@ -5816,6 +6074,7 @@ simulated function bool UpdateInfo(Object winObject)
 		str = msgInfoNA;
 	else
 	{
+        mod = 0.0;
 		if (Level.NetMode != NM_Standalone )
 			str = FormatFloatString(Default.mpReloadTime, 0.1) @ msgTimeUnit;
 		else if (bPerShellReload)
@@ -5824,26 +6083,28 @@ simulated function bool UpdateInfo(Object winObject)
 			str = FormatFloatString(Default.ReloadTime, 0.1) @ msgTimeUnit;
 	}
 
-	if (HasReloadMod())
+    mod = GetAddonPenalty(Scope); //SARGE: Penalties for addons
+	if (HasReloadMod() || mod > 0.0)
 	{
-		str = str @ BuildPercentString(ModReloadTime);
+		str = str @ BuildPercentString(ModReloadTime + mod);
 		if (bPerShellReload)
-			str = str @ "=" @ FormatFloatString(1 / ReloadTime, 0.1) @ msgInfoRoundsPerSec;
+			str = str @ "=" @ FormatFloatString(1 / (ReloadTime + mod), 0.1) @ msgInfoRoundsPerSec;
 		else
-		str = str @ "=" @ FormatFloatString(ReloadTime, 0.1) @ msgTimeUnit;
+            str = str @ "=" @ FormatFloatString(ReloadTime + mod, 0.1) @ msgTimeUnit;
 	}
     if (!bHandToHand || IsA('WeaponPepperGun') || IsA('WeaponProd'))
-	winInfo.AddInfoItem(msgInfoReload, str, HasReloadMod());
+	winInfo.AddInfoItem(msgInfoReload, str, HasReloadMod() || mod >= 0.01);
 
 	// recoil
+    mod = GetAddonPenalty(Scope); //SARGE: Penalties for addons
 	str = FormatFloatString(Default.recoilStrength, 0.01);
-	if (HasRecoilMod())
+	if (HasRecoilMod() || mod > 0.0)
 	{
-		str = str @ BuildPercentString(ModRecoilStrength);
-		str = str @ "=" @ FormatFloatString(recoilStrength, 0.01);
+		str = str @ BuildPercentString(ModRecoilStrength + mod);
+		str = str @ "=" @ FormatFloatString(recoilStrength + mod, 0.01);
 	}
     if (!bHandToHand)
-	winInfo.AddInfoItem(msgInfoRecoil, str, HasRecoilMod());
+	winInfo.AddInfoItem(msgInfoRecoil, str, HasRecoilMod() || mod > 0.0);
 
 	// base accuracy (2.0 = 0%, 0.0 = 100%)
 	if ( Level.NetMode != NM_Standalone )
@@ -5860,6 +6121,7 @@ simulated function bool UpdateInfo(Object winObject)
 	{
 		str = Int((2.0 - Default.BaseAccuracy)*50.0) $ "%";
 		mod = (Default.BaseAccuracy - (BaseAccuracy + GetWeaponSkill())) * 0.5;
+
 		if (mod != 0.0)
 		{
 			str = str @ BuildPercentString(mod);
@@ -5874,49 +6136,59 @@ simulated function bool UpdateInfo(Object winObject)
 	//	str = msgInfoNA;
 	//else
 	//{
+        mod = GetAddonPenalty(Silencer);
 		if ( Level.NetMode != NM_Standalone )
-			str = FormatFloatString(Default.mpAccurateRange/16.0, 1.0) @ msgRangeUnit;
+			str = FormatFloatString((Default.mpAccurateRange)/16.0, 1.0) @ msgRangeUnit;
 		else
-			str = FormatFloatString(Default.AccurateRange/16.0, 1.0) @ msgRangeUnit;
+			str = FormatFloatString((Default.AccurateRange)/16.0, 1.0) @ msgRangeUnit;
 	//}
 
-	if (HasRangeMod())
+	if (HasRangeMod() || mod > 0.0)
 	{
-		str = str @ BuildPercentString(ModAccurateRange);
-		str = str @ "=" @ FormatFloatString(AccurateRange/16.0, 1.0) @ msgRangeUnit;
+		str = str @ BuildPercentString(ModAccurateRange-mod);
+		str = str @ "=" @ FormatFloatString((AccurateRange*(1.0-mod))/16.0, 1.0) @ msgRangeUnit;
 	}
 	if (!bHandToHand || IsA('WeaponShuriken'))
-	winInfo.AddInfoItem(msgInfoAccRange, str, HasRangeMod());
+	winInfo.AddInfoItem(msgInfoAccRange, str, HasRangeMod() || mod > 0.0);
 
 	// max range
 	//if (bHandToHand)
 	//	str = msgInfoNA;
 	//else
 	//{
+        mod = GetAddonPenalty(Silencer);
 		if ( Level.NetMode != NM_Standalone )
-			str = FormatFloatString(Default.mpMaxRange/16.0, 1.0) @ msgRangeUnit;
+			str = FormatFloatString((Default.mpMaxRange)/16.0, 1.0) @ msgRangeUnit;
 		else
-			str = FormatFloatString(Default.MaxRange/16.0, 1.0) @ msgRangeUnit;
+			str = FormatFloatString((Default.MaxRange)/16.0, 1.0) @ msgRangeUnit;
 	//}
-	if (HasRangeMod())                                                          //RSD: Added because we can now mod MaxRange
+	if (HasRangeMod() || mod > 0.0)                                                          //RSD: Added because we can now mod MaxRange
 	{
-		str = str @ BuildPercentString(ModAccurateRange);
-		str = str @ "=" @ FormatFloatString(MaxRange/16.0, 1.0) @ msgRangeUnit;
+		str = str @ BuildPercentString(ModAccurateRange-mod);
+		str = str @ "=" @ FormatFloatString((MaxRange*(1.0-mod))/16.0, 1.0) @ msgRangeUnit;
 	}
-	winInfo.AddInfoItem(msgInfoMaxRange, str,HasRangeMod());                    //RSD: Added HasRangeMod()
+	winInfo.AddInfoItem(msgInfoMaxRange, str,HasRangeMod() || mod > 0.0);                    //RSD: Added HasRangeMod()
 
 	//Noise level
-	if (!bHandToHand || IsA('WeaponProd') || IsA('WeaponHideAGun') || IsA('WeaponPepperGun') ||  IsA('WeaponLAW'))
+	if (!bHandToHand || IsA('WeaponProd') || IsA('WeaponHideAGun') || IsA('WeaponPepperGun') || IsA('WeaponLAW'))
 	{
 	noiseLev="dB";
 
+    //SARGE: Now we just read it's actual noise level, rather than this dumb bullshit
+
+    GetAIVolume(vol,rad);
+    if (vol == 0)
+        vol = 1;
+	winInfo.AddInfoItem(msgNoise,FormatFloatString(vol * 30,1.0) @ noiseLev);
+    /*
 	  if (bHasSilencer)
       {
          str = "1.0";                                                           //RSD: Was 0.5
          winInfo.AddInfoItem(msgNoise,str @ noiseLev);
       }
       else
-	winInfo.AddInfoItem(msgNoise,FormatFloatString(NoiseLevel,1.0) @ noiseLev);
+	winInfo.AddInfoItem(msgNoise,FormatFloatString(NoiseLevel * 10,1.0) @ noiseLev); //SARGE: Multiplied by 10
+    */
     }
 
     if (meleeStaminaDrain != 0 && !IsA('WeaponShuriken'))  //CyberP: display special, speed rating & stamina drain
@@ -6080,9 +6352,9 @@ simulated function bool UpdateInfo(Object winObject)
 
     if (bCanHaveModBaseAccuracy || bCanHaveModReloadCount || bCanHaveModAccurateRange || bCanHaveModReloadTime || bCanHaveModRecoilStrength || bCanHaveModShotTime || bCanHaveModDamage)
         {
-                winInfo.AddLine();
-                winInfo.SetText(msgAllMods);
-                winInfo.AddLine();
+            winInfo.AddLine();
+            winInfo.SetText(msgAllMods);
+            winInfo.AddLine();
 
                 if (bCanHaveModReloadCount)
                 {
@@ -6167,6 +6439,12 @@ simulated function bool UpdateInfo(Object winObject)
                     winInfo.AddModInfo(msgInfoFullAuto, 0, (numMods == 1), 4);
                 }
          }
+    if (bHadLaser || bHadSilencer || bHadScope)
+    {
+        winInfo.AddLine();
+        winInfo.AddWeaponModButtons(self);
+        winInfo.AddWeaponModDrawbacks(self);
+    }
 	winInfo.AddLine();
 	winInfo.SetText(Description);
 
@@ -6651,6 +6929,39 @@ state Pickup
 	}
 }
 
+//SARGE: New state for attaching/detaching attachments
+state SwitchAttachment
+{
+ignores Fire, AltFire;
+    begin:
+    //FinishAnim();
+    //if(hasAnim('ReloadBegin'))
+    //    PlayAnim('ReloadBegin',1.0-(ModReloadTime*0.8));
+    //FinishAnim();
+    TweenAnim('Reload',0.4);
+    //PlayAnim('Reload',default.ReloadTime/ReloadTime);
+    Sleep(ReloadTime);
+    if (bSwitchingToLaser)
+        bHasLaser = !bHasLaser;
+    else if (bSwitchingToScope)
+        bHasScope = !bHasScope;
+    else if (bSwitchingToSilencer)
+        bHasSilencer = !bHasSilencer;
+    else if (bSwitchingToLaser)
+        bHasLaser = !bHasLaser;
+    Owner.PlaySound(AltFireSound, SLOT_None,,, 1024);
+    if(hasAnim('ReloadEnd'))
+        PlayAnim('ReloadEnd',1.0-(ModReloadTime*0.8));
+    FinishAnim();
+    if (Owner.isA('DeusExPlayer'))
+        DeusExPlayer(Owner).UpdateCrosshair();
+
+    bSwitchingToLaser = false;
+    bSwitchingToScope = false;
+    bSwitchingToSilencer = false;
+	GotoState('Idle');
+}
+
 state Reload
 {
 ignores Fire, AltFire;
@@ -6674,6 +6985,9 @@ ignores Fire, AltFire;
 			// check for skill use if we are the player
 			val = GetWeaponSkill();
 			val = ReloadTime + (val*ReloadTime);
+ 
+            val += GetAddonPenalty(Scope); //SARGE: Penalties for addons
+
 			/*if (AmmoType.IsA('AmmoRubber'))                                   //RSD: Rubber rounds no longer load more quickly (huh?)
 			   val *= 0.75;*/
 		}
@@ -7424,7 +7738,7 @@ defaultproperties
      bRotatingPickup=False
      PickupMessage="You found"
      ItemName="DEFAULT WEAPON NAME - REPORT THIS AS A BUG"
-     strModified="(Modified)"
+     strModified="Modified"
      BobDamping=0.840000
      LandSound=Sound'DeusExSounds.Generic.DropSmallWeapon'
      bNoSmooth=False
@@ -7438,4 +7752,7 @@ defaultproperties
      msgModsCopied="Weapon Modifications applied from %d"
      bVisionImportant=true
      bVanillaModelAttachments=true
+     addonPenalties(0)=0.1 //Scope
+     addonPenalties(1)=0.2 //Silencer
+     addonPenalties(2)=0.075 //Laser
 }

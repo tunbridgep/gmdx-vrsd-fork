@@ -389,6 +389,7 @@ defaultproperties
      EnviroEffective=ENVEFF_Air
      Concealability=CONC_All
      ShotTime=0.300000
+     NoiseLevel=0.050000
      reloadTime=4.000000
      HitDamage=9
      maxRange=2560

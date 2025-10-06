@@ -3,6 +3,8 @@
 //=============================================================================
 class Mission04 expands MissionScript;
 
+var localized string AugSystemShutdown;
+
 // ----------------------------------------------------------------------
 // FirstFrame()
 //
@@ -14,6 +16,7 @@ function FirstFrame()
 	local ScriptedPawn pawn;
 	local PaulDenton paul;
 	local FlagTrigger ftrig;
+    local DeusExCarcass C;
 	local int count;
 
 	if(flags.GetBool('PaulDenton_Dead') && !flags.GetBool('TalkedToPaulAfterMessage')) //== Paul CANNOT die before the raid, period
@@ -51,6 +54,17 @@ function FirstFrame()
 	}*/
 	else if (localURL == "04_NYC_HOTEL")
 	{
+        //SARGE: Carcasses already in the map won't bleed
+        //This fixes the junkies having blood pools
+		if (firstTime)
+        {
+            foreach AllActors(class'DeusExCarcass', C)
+            {
+                C.DestroyPool();
+                C.bNoDefaultPools=true;
+            }
+        }
+
 		// unhide the correct JoJo
 		if (flags.GetBool('SandraRenton_Dead') ||
 			flags.GetBool('GilbertRenton_Dead'))
@@ -478,6 +492,7 @@ function Timer()
             player.PlaySound(sound'GMDXSFX.Generic.biomodscreenselect', SLOT_Pain);
             player.ClientMessage(AugSystemShutdown);
             player.RefreshAugmentationDisplay();
+            player.RefreshChargedPickups();
             //player.killSwitchTimer = 20; //For testing, set it to 20 seconds.
             flags.SetBool('GMDXKillswitchSet', True,, 6);
         }
@@ -496,6 +511,18 @@ function Timer()
 			}
 		}
 	}
+    //SARGE: Remove Harley Filben once we send the signal
+	else if(localURL == "04_NYC_BAR")
+    {
+		if(flags.getBool('M04RaidTeleportDone') && !flags.getBool('GMDXRemoveFilben'))
+        {
+            foreach AllActors(class'ScriptedPawn', pawn)
+                if (pawn.isA('HarleyFilben'))
+                    pawn.LeaveWorld();
+            
+            flags.SetBool('GMDXRemoveFilben', True,, 5);
+        }
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -503,4 +530,5 @@ function Timer()
 
 defaultproperties
 {
+    AugSystemShutdown="Augmentation system access override by user MJ12//SIMONS-W..."
 }

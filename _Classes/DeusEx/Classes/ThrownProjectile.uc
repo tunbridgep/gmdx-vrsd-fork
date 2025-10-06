@@ -341,9 +341,16 @@ function ReEnable()
 	bDisabled = False;
 }
 
-function Frob(Actor Frobber, Inventory frobWith)
+function bool CanRearm(DeusExPlayer player)
 {
     local int skill;
+
+    skill = Player.SkillSystem.GetSkillLevel(class'SkillDemolition');
+    return !(skill < rearmSkillRequired && Owner != Player && (player.bRearmSkillRequired || player.bHardcoreMode));
+}
+
+function Frob(Actor Frobber, Inventory frobWith)
+{
     local DeusExPlayer Player;
 
     Player = DeusExPlayer(Frobber);
@@ -357,15 +364,12 @@ function Frob(Actor Frobber, Inventory frobWith)
         player.ClientMessage(disabledText);
         return;
     }
-        
-
-    skill = Player.SkillSystem.GetSkillLevel(class'SkillDemolition');
 
 	// if the player frobs it and it's disabled, the player can grab it
 	if (bDisabled)
     {
         //SARGE: Cannot pick up grenades if we lack the skill
-        if (skill < rearmSkillRequired && Owner != Player && (player.bRearmSkillRequired || player.bHardcoreMode))
+        if (!CanRearm(player))
             Player.ClientMessage(sprintf(msgCannotRearm,itemName));
         else
             Super.Frob(Frobber, frobWith);
@@ -657,7 +661,11 @@ auto simulated state Flying
 		PlayImpactSound();
 
 		if ( AISoundLevel > 0.0 )
+        {
+            //SARGE: Fix the broken sound propagation
+            class'PawnUtils'.static.WakeUpAI(self,blastRadius*10);
 			AISendEvent('LoudNoise', EAITYPE_Audio, 2.0, AISoundLevel*blastRadius*10);
+        }
 
 		GotoState('Exploding');
 	}
@@ -682,7 +690,10 @@ auto simulated state Flying
 			// I know this is a little cheesy, but certain grenade types should
 			// not alert AIs unless they are really really close - CNN
 			if (AISoundLevel > 0.0)
+            {
+                class'PawnUtils'.static.WakeUpAI(self, AISoundLevel*256);
 				AISendEvent('LoudNoise', EAITYPE_Audio, volume, AISoundLevel*256);
+            }
 			SetPhysics(PHYS_None, HitWall);
 			if (Physics == PHYS_None)
 			{

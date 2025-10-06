@@ -31,7 +31,7 @@ function GetAugSpeed()
 // ----------------------------------------------------------------------
 function Sound GetDefaultUseSound()
 {
-    if (class'DeusExPlayer'.default.bImprovedWeaponSounds || default.ClassicUseSound == None)
+    if (class'DeusExPlayer'.default.iImprovedWeaponSounds > 1 || default.ClassicUseSound == None)
         return default.UseSound;
     else
         return default.ClassicUseSound;

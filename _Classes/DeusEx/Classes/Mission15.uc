@@ -27,6 +27,7 @@ function FirstFrame()
 {
 	local BlackHelicopter chopper;
 	local InterpolateTrigger trig;
+	local DeusExMover M;
 
 	Super.FirstFrame();
 
@@ -35,7 +36,7 @@ function FirstFrame()
 		// unhide a helicopter if a flag is set, and start the countdown
 		// to Jock's death
 
-		if (!flags.GetBool('Ray_dead'))
+		if (!flags.GetBool('GotHelicopterInfo'))
 		{
 			foreach AllActors(class'BlackHelicopter', chopper)
 			{
@@ -53,6 +54,23 @@ function FirstFrame()
 			flags.SetBool('MS_BeginSabotage', True,, 16);
 		}
 	}
+	if (localURL == "15_AREA51_ENTRANCE")
+    {
+		if (!flags.GetBool('GMDXFixedTargets'))
+        {
+            //Fix the targets not breaking properly 
+            foreach AllActors(class'DeusExMover', M)
+            {
+                if (M.Tag == 'c1' || M.Tag == 'c2' || M.Tag == 'c3' || M.Tag == 'c4' || M.Tag == 'c5' || M.Tag == 'c6' || M.Tag == 'c7' || M.Tag == 'c8')
+                {
+                    M.DoorStrength = 0.001;
+                    M.minDamageThreshold = 0;
+                }
+            }
+			
+            flags.SetBool('GMDXFixedTargets', True,, 16);
+        }
+    }
 CanQuickSave=true;
 }
 
@@ -99,6 +117,7 @@ function Timer()
     local DeusExCarcass carc;
     local MJ12Troop mjt;
     local HumanMilitary hm;
+    local int spawnCheckCount;
 
 	Super.Timer();
 
@@ -367,8 +386,11 @@ function Timer()
 				spawnData[i].lastKilledTime = Level.TimeSeconds;
 
 		// spawn any monsters which have been missing for 20 seconds
-		if (FRand() < 0.05) //CyberP: we don't need this for loop happening every few ticks ffs
+		//if (FRand() < 0.05) //CyberP: we don't need this for loop happening every few ticks ffs //SARGE: Lets do this properly!
+        spawnCheckCount++;
+        if (spawnCheckCount >= 21)
 		{
+        spawnCheckCount = 0;
 		for (i=0; i<ArrayCount(spawnData); i++)
 		{
 			if ((spawnData[i].count == 0) && (Level.TimeSeconds - spawnData[i].lastKilledTime > 20))

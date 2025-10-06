@@ -39,7 +39,10 @@ function int SetCharge(int newCharge)
 
 function int GetCurrentCharge()
 {
-	return int((Float(charge) / Float(maxCharge)) * 100.0);
+    if (owner != None && !owner.bNanoswordEnergyUse && !owner.bHardcoreMode)
+        return 100;
+    else
+        return int((Float(charge) / Float(maxCharge)) * 100.0);
 }
 
 //recharges this charge manager from another one.
@@ -114,12 +117,12 @@ function bool Recharge(optional out string msg)
 
 function bool IsFull()
 {
-    return charge >= maxCharge;
+    return charge >= maxCharge || (!owner.bNanoswordEnergyUse && !owner.bHardcoreMode);
 }
 
 function bool IsUsedUp()
 {
-    return charge <= 0;
+    return charge <= 0 && (owner.bNanoswordEnergyUse || owner.bHardcoreMode);
 }
 
 function DimIcon() //RSD: When an item runs out of charge, dim the inv/belt icon in real time
@@ -190,9 +193,9 @@ function int CalcChargeDrain()
 	local float skillValue;
 	local float drain;
     
-    if (owner == None)
+    if (owner == None || (!owner.bNanoswordEnergyUse && !owner.bHardcoreMode))
         return 0;
-
+    
 	drain = 4.0;
 	skillValue = 1.0;
 	if (skillNeeded != None)
@@ -204,6 +207,8 @@ function int CalcChargeDrain()
 
 function Drain(int drainAmount)
 {
+    if (!owner.bNanoswordEnergyUse && !owner.bHardcoreMode)
+        return;
     charge -= drainAmount;
     if (charge <= 0)
     {

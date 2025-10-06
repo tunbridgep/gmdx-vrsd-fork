@@ -34,6 +34,15 @@ var float chargeMult;                                                           
 var const bool bUnequipWhenDrained;
 var travel bool bDrained;                                                              //SARGE: Stores if it was drained without a new one being equipped, even if the next one in the stack is at 100%. This means we no longer have to unequip
 
+//Sarge: Update frob display to show charge and item count
+function string GetFrobString(DeusExPlayer player)
+{
+    if (numCopies > 1 && player.bShowItemPickupCounts)
+		return ItemName @ "(" $ numCopies @ "-" @  int(GetCurrentCharge()) $ "%" $ ")"; //SARGE: Append the current charge and num copies
+	else
+		return ItemName @ "(" $ int(GetCurrentCharge()) $ "%)"; //SARGE: Append the current charge only
+}
+
 function string GetDescription2(DeusExPlayer player)
 {
     local string str;
@@ -454,7 +463,15 @@ function int RetMaxCopies()
 {
 	local DeusExPlayer player;
 	local int skval;
+
 	player = DeusExPlayer(Owner);
+    
+    if (player == None)
+        player = DeusExPlayer(GetPlayerPawn());
+
+    if (player == None)
+        return 1;
+
 	skval = Player.SkillSystem.GetSkillLevel(skillNeeded)+1;
 
 	return skval;

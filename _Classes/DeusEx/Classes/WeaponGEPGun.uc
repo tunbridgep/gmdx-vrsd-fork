@@ -577,7 +577,7 @@ defaultproperties
      invSlotsYtravel=2
      AmmoName=Class'DeusEx.AmmoRocket'
      ReloadCount=1
-     PickupAmmoCount=3
+     PickupAmmoCount=2
      FireOffset=(X=-52.000000,Y=16.000000,Z=6.000000)
      ProjectileClass=Class'DeusEx.Rocket'
      shakemag=600.000000

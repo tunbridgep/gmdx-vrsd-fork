@@ -35,8 +35,6 @@ function CreateControls()
 {
 	Super.CreateControls();
 
-	btnLogout = winButtonBar.AddButton(ButtonLabelLogout, HALIGN_Right);
-
 	CreateSpecialInfoWindow();
 }
 
@@ -70,17 +68,48 @@ function CreateSpecialInfoWindow()
 // SetNetworkTerminal()
 // ----------------------------------------------------------------------
 
+//SARGE: Rewritten to take into account replacing the logout button
 function SetNetworkTerminal(NetworkTerminal newTerm)
 {
+    local string buttonText, emailName;
+    local bool bLeft;
+
 	Super.SetNetworkTerminal(newTerm);
-
+        
 	if (winTerm.IsA('NetworkTerminalPersonal'))
-		btnReturn = winButtonBar.AddButton(EmailButtonLabel, HALIGN_Left);
+        buttonText = EmailButtonLabel;
 	else if (winTerm.IsA('NetworkTerminalSecurity'))
-		btnReturn = winButtonBar.AddButton(SecurityButtonLabel, HALIGN_Left);
+        buttonText = SecurityButtonLabel;
+    
+    bLeft = !player.bStreamlinedComputerInterface;
 
-	if (btnReturn != None)
-		CreateLeftEdgeWindow();
+    //For personal computers it's dependent on emails.
+    if (winTerm.IsA('NetworkTerminalPersonal') && player.bStreamlinedComputerInterface)
+    {
+        ProcessEmails();
+        if (emailIndex == -1)
+            bLeft = true;
+    }
+
+    //For security computers, it's dependent on having at least 1 camera or turret
+    else if (ComputerSecurity(CompOwner) != None && player.bStreamlinedComputerInterface)
+    {
+        DeusExPlayer(GetPlayerPawn()).DebugMessage("We got here");
+        bLeft = !ComputerSecurity(CompOwner).HasSecurityOptions();
+    }
+
+    if (bLeft)
+    {
+        btnLogout = winButtonBar.AddButton(ButtonLabelLogout, HALIGN_Right);
+        btnReturn = winButtonBar.AddButton(buttonText, HALIGN_Left);
+        CreateLeftEdgeWindow();
+    }
+    else
+    {
+        btnLogout = winButtonBar.AddButton(ButtonLabelLogout, HALIGN_Left);
+        btnReturn = winButtonBar.AddButton(buttonText, HALIGN_Right);
+        CreateLeftEdgeWindow();
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -195,6 +224,7 @@ function ActivateSpecialOption(MenuUIChoiceButton buttonPressed)
 	local int buttonIndex;
 	local int specialIndex;
 	local Actor A;
+    local String N;
 
 	specialIndex = -1;
 
@@ -229,6 +259,16 @@ function ActivateSpecialOption(MenuUIChoiceButton buttonPressed)
 
 			if (Computers(compOwner).specialOptions[specialIndex].bTriggerOnceOnly)
 				Computers(compOwner).specialOptions[specialIndex].bAlreadyTriggered = true;
+
+            //SARGE: Add a note if we're told to add a note
+			if (Computers(compOwner).specialOptionsExtra[specialIndex].bAddNote)
+            {
+                if (Computers(compOwner).specialOptionsExtra[specialIndex].noteID != "")
+                    N = Computers(compOwner).specialOptionsExtra[specialIndex].noteID;
+
+                player.NoteAdd(Computers(compOwner).specialOptions[specialIndex].TriggerText,false,false,StringToName(N));
+                //player.NoteAdd(Computers(compOwner).specialOptions[specialIndex].TriggerText);
+            }
 
 			// Display a message
 			winSpecialInfo.SetText(Computers(compOwner).specialOptions[specialIndex].TriggerText);

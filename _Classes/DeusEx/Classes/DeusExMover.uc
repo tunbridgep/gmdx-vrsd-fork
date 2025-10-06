@@ -68,6 +68,14 @@ var float               previousStrength;        //Sarge: What was the strength 
 var float               leftFrobTimer;           //Sarge: Ticks down from 3 seconds after we do a left frob, so that we can use right-click to select different options
 const             leftFrobTimerMax = 6.0;
 
+var(GMDX) const int iSpecialMoverKeyframe;      //SARGE: Allow movers to "snap" into place on map load. Used for the janky smuggler elevator
+
+
+//SARGE: Do we have the key for this lock?
+function bool HasKey(DeusExPlayer Player)
+{
+    return Player.KeyRing.HasKey(KeyIDNeeded);
+}
 
 //SARGE: Check to see if we can re-lock a door
 //Either we have the key for it in our keyring, or we previously picked it open and have the Locksport perk
@@ -216,6 +224,20 @@ function PostBeginPlay()
 	}*/
 }
 
+function PostPostBeginPlay()
+{
+    local EMoverEncroachType prevEncroach;
+
+    super.PostPostBeginPlay();
+
+
+    //SARGE: If we have a special keyframe set, snap to it immediately
+    prevEncroach = MoverEncroachType;
+    MoverEncroachType = ME_IgnoreWhenEncroach;
+    if (iSpecialMoverKeyframe > -1)
+        InterpolateTo(iSpecialMoverKeyframe,0);
+    MoverEncroachType = prevEncroach;
+}
 
 // -------------------------------------------------------------------------------
 // Network Replication
@@ -372,6 +394,24 @@ function BlowItUp(Pawn instigatedBy)
 	local Vector spawnLoc;
 	local ExplosionLight light;
 
+    //SARGE: Added.
+    local float fscale;
+    local int fnum;
+
+    //SARGE: If we have permanent debris turned on, increase
+    //the number of fragments, but significantly reduce their size.
+    //This makes things significantly easier to see
+    if (class'DeusExPlayer'.default.iPersistentDebris >= 2)
+    {
+        fNum = NumFragments * 2;
+        fScale = FragmentScale / 6.0;
+    }
+    else
+    {
+        fNum = NumFragments;
+        fScale = FragmentScale;
+    }
+
 	// force the mover to stop
 	if (Leader != None)
 		Leader.MakeGroupStop();
@@ -394,7 +434,7 @@ function BlowItUp(Pawn instigatedBy)
 	spawnLoc = Location - (PrePivot >> Rotation);
 
 	// spawn some fragments and make a sound
-	for (i=0; i<NumFragments; i++)
+	for (i=0; i<fNum; i++)
 	{
 		frag = Spawn(FragmentClass,,, spawnLoc + FragmentSpread * VRand());
 		if (frag != None)
@@ -402,12 +442,12 @@ function BlowItUp(Pawn instigatedBy)
 			frag.Instigator = instigatedBy;
 
 			// make the last fragment just drop down so we have something to attach the sound to
-			if (i == NumFragments - 1)
+			if (i == fNum - 1)
 				frag.Velocity = vect(0,0,0);
 			else
 				frag.CalcVelocity(VRand(), FragmentSpread);
 
-			frag.DrawScale = FragmentScale;
+			frag.DrawScale = fScale;
 			if (FragmentTexture != None)
 				frag.Skin = FragmentTexture;
 			if (bFragmentTranslucent)
@@ -447,7 +487,7 @@ function BlowItUp(Pawn instigatedBy)
 	MakeNoise(2.0);
 	if (frag != None)
 	{
-		if (NumFragments <= 5)
+		if (fNum <= 5)
 			frag.PlaySound(ExplodeSound1, SLOT_None, 2.0,, FragmentSpread*256);
 		else
 			frag.PlaySound(ExplodeSound2, SLOT_None, 2.0,, FragmentSpread*256);
@@ -733,7 +773,8 @@ function Frob(Actor Frobber, Inventory frobWith)
 
 	// Let any non-player pawn open any door for now
     // SARGE: Unless we manually locked it
-	if (Player == None && !bPlayerLocked)
+	// SARGE: Or the actor has no door interactions set
+	if (Player == None && !bPlayerLocked && (!P.IsA('ScriptedPawn') || !ScriptedPawn(P).bNoDoorInteractions || !bLocked))
 	{
 		bOpenIt = True;
 		msg = "";
@@ -828,6 +869,9 @@ function Frob(Actor Frobber, Inventory frobWith)
 					bLocked = !bLocked;		// toggle the lock state
                     bPlayerLocked = bLocked;
 					TimeSinceReset = 0;
+
+                    //SARGE: Update crosshair so that the frob display border colour updates
+                    player.UpdateCrosshair();
 
                     //if re-locked, reset the lock strength
                     if (bLocked)
@@ -1124,4 +1168,5 @@ defaultproperties
      bBlockSight=True
      InitialState=TriggerToggle
      bDirectional=True
+     iSpecialMoverKeyframe=-1
 }

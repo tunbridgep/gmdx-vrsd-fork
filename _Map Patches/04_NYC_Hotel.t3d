@@ -48128,7 +48128,7 @@ Begin Actor Class=SignFloor Name=SignFloor0
     Name=SignFloor0
 End Actor
 Begin Actor Class=ATM Name=ATM0
-    UserList(0)=(accountNumber="487659",PIN="249087",balance=200)
+    UserList(0)=(accountNumber="487659",PIN="259087",balance=200)
     UserList(1)=(accountNumber="572345",PIN="98746",balance=100)
     UserList(2)=(accountNumber="748506",PIN="54857",balance=100)
     ATMSecLevel=1
@@ -59723,6 +59723,7 @@ Begin Actor Class=Brush Name=Brush996
     Name=Brush996
 End Actor
 Begin Actor Class=DeusExLevelInfo Name=DeusExLevelInfo0
+    ChairRandomizationToken=96
     MapName="04_NYC_Hotel"
     MapAuthor="Bob White"
     MissionLocation="NYC - 'Ton Hotel"
@@ -70506,5 +70507,14 @@ Begin Actor Class=SavePoint Name=SavePoint1
     OldLocation=(X=-405.915222,Y=-2674.844971,Z=114.100502)
     bSelected=True
     Name=SavePoint1
+End Actor
+Begin Actor Class=WeaponPistol Name=WeaponPistol0
+    LastRenderTime=698.857605
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=WeaponPistol
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=1497,ZoneNumber=1)
+    Location=(X=-2.336853,Y=-2570.799561,Z=99.099792)
+    OldLocation=(X=-232.336853,Y=-2663.799561,Z=65.099785)
+    Name=WeaponPistol0
 End Actor
 End Map

@@ -1,0 +1,6 @@
+<DC=255,255,255>
+<P>SECONDARY ITEMS
+<P>
+<P>Pick up the grenade from this table, open your inventory (default = TAB or F1), select the grenade and click the 'Assign' button, which will equip it as your secondary item.
+<P>
+<P>You can then use the grenade at any time by pressing the 'secondary item' key (default=F).

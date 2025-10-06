@@ -51301,4 +51301,14 @@ Begin Actor Class=ControlPanel Name=ControlPanel3
     OldLocation=(X=2107.714844,Y=-546.848633,Z=-786.348450)
     Name=ControlPanel3
 End Actor
+Begin Actor Class=Collectible8 Name=Collectible0
+    LastRenderTime=131.552765
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=Collectible8
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo7',iLeaf=2022,ZoneNumber=1)
+    Location=(X=-64.075104,Y=-774.828613,Z=-1211.009155)
+    Rotation=(Yaw=28900)
+    OldLocation=(X=-72.075104,Y=-776.828613,Z=-1211.009155)
+    Name=Collectible0
+End Actor
 End Map

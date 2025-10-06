@@ -90,12 +90,10 @@ function DisplayWeapon(bool overlay)
         ShowWeaponAddon(6,bHasSilencer);
         ShowWeaponAddon(5,bHasLaser);
     
-        /*
-        if (bHasLaser && bLasing)
+        //Muzzle Flash and Laser Effect both share the same texture slot.
+        //So we need to only show the laser effect if the muzzle flash isn't currently displayed.
+        if (bHasLaser && bLasing && multiskins[3] == Texture'PinkMaskTex')
             multiskins[3] = class'HDTPLoader'.static.GetTexture("HDTPItems.HDTPGlockTex4");
-        else
-            multiskins[3] = texture'PinkMaskTex';
-        */
     }
     else if (overlay)
     {

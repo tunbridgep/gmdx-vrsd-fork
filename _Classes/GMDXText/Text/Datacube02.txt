@@ -1,0 +1,5 @@
+<DC=255,255,255>
+<P>Turn around and press the 'Jump' key to jump from the ladder.
+<P>Moving forward as you do this will increase your reach.
+<P>
+<P>Struggling to reach the platform? Remember that you can mantle and climb anything within reach.

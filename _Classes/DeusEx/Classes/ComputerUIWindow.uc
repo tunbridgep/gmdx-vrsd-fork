@@ -21,6 +21,8 @@ var Class<MenuUIClientWindow>   classClient;		// Which client class to use
 var ElectronicDevices           compOwner;			// what computer owns this window?
 var String                      escapeAction;		// Action to invoke when Escape pressed
 
+var const float                 hackDrain;          // SARGE: How much detection time is drained by performing actions.
+
 // Used to process Email and Bulletins
 struct TextFileInfo
 {
@@ -73,6 +75,40 @@ var localized string ButtonLabelCancel;
 var localized string ButtonLabelSpecial;
 var localized string ComputerNodeFunctionLabel;
 
+//SARGE: Add the ability to have a notes window
+var HUDKeypadNotesWindow winNotes;
+
+var bool bNotFirstTick;             //SARGE: Added
+
+// ----------------------------------------------------------------------
+// SARGE: NOTES WINDOW STUFF
+// ----------------------------------------------------------------------
+
+function SetNotesPos()
+{
+    if (winNotes == None)
+        return;
+
+    winNotes.SetPos(x + winClient.x + winClient.width,y + winClient.y - 8);
+	winNotes.Resize(640/2, winClient.height + winStatus.Height);
+    //winNotes.Show();
+}
+
+//SARGE: This sucks, but I can't make it work any other way...
+function Tick(float deltaTime)
+{
+    if (bWindowBeingDragged || !bNotFirstTick)
+        SetNotesPos();
+
+    bNotFirstTick = true;
+}
+
+function SetNotesWindow(HUDKeypadNotesWindow N)
+{
+    winNotes = N;
+    bTickEnabled = true;
+}
+
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -106,6 +142,7 @@ function DestroyWindow()
 {
 	local int texIndex;
 
+    bTickEnabled = false;
    if (Player != Player.GetPlayerPawn())
    {
       log("==============>Player mismatch!!!!");
@@ -118,6 +155,8 @@ function DestroyWindow()
 
 	for(texIndex=0; texIndex<arrayCount(clientTextures); texIndex++)
 		player.UnloadTexture(clientTextures[texIndex]);
+
+    winNotes = None;
 
 	Super.DestroyWindow();
 }
@@ -581,6 +620,61 @@ function SetNetworkTerminal(NetworkTerminal newTerm)
 }
 
 // ----------------------------------------------------------------------
+// DrainHackTime()
+// SARGE: Allow draining HackTime from the target computer.
+// Used when performing actions while hacking
+// ----------------------------------------------------------------------
+
+function DrainHackTime(float drain)
+{
+    //Don't drain hack time if we're not hacking
+    if (winTerm == None || !winTerm.bHacked || winTerm.winHack == None)
+        return;
+
+    //Make sure the feature is enabled (or hardcore mode)
+    if (!player.bComputerActionsDrainHackTime && !player.bHardCoreMode)
+        return;
+
+    //Don't drain hack time when under a worm virus
+    if (winTerm.winHack.bTimePaused)
+        return;
+
+    winTerm.winHack.UpdateDetectionTime(winTerm.winHack.detectionTime - drain);
+
+}
+
+// ----------------------------------------------------------------------
+// ProcessEmails()
+// SARGE: Moved this from the email screen to a new function, since now it's
+// also used by the Special Options screen
+// ----------------------------------------------------------------------
+
+function ProcessEmails()
+{
+	local String emailName;
+	local String missionNumber;
+	local DeusExLevelInfo info;
+	
+    info = player.GetLevelInfo();
+
+	// hack for the DX.DX splash level
+	if (info != None) 
+	{
+		if (info.MissionNumber < 10)
+			MissionNumber = "0" $ String(info.MissionNumber);
+		else
+			MissionNumber = String(info.MissionNumber);
+	}
+
+	// Open the email menu based on the login id
+	// or if it's been hacked, use the first account in the list
+	emailName = MissionNumber $ "_EmailMenu_" $ winTerm.GetUserName();
+
+	ProcessDeusExText(StringToName(emailName));
+
+}
+
+// ----------------------------------------------------------------------
 // ProcessDeusExText()
 // ----------------------------------------------------------------------
 
@@ -776,4 +870,5 @@ defaultproperties
      ButtonLabelLogout="|&Logout"
      ButtonLabelCancel="|&Cancel"
      ButtonLabelSpecial="|&Special Options"
+     hackDrain=4
 }
