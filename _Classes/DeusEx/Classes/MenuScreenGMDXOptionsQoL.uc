@@ -141,6 +141,7 @@ defaultproperties
      items(108)=(HelpText="NPC outfits will be randomised. Changes to this setting require a new map load.",actionText="Augmentique: NPC Outfit Randomisation",consoleTarget="OutfitManager",variable="bEquipNPCs",defaultValue=1);
      items(110)=(HelpText="Other characters will react to having guns pointed at them.",actionText="Game: Characters React to Weapons",variable="bPawnsReactToWeapons",defaultValue=1);
      items(111)=(HelpText="Dragging items off the inventory grid in the inventory screen will drop the items.",actionText="HUD: Inventory Drag and Drop",variable="bDragAndDropOffInventory",defaultValue=1,bAdvancedModeOnly=true)
+     items(112)=(HelpText="The Change Ammo Key (default: X) will swap selected grenades, melee weapons, and other items, similar to Shifter.",actionText="Game: Change Ammo Swaps Items",variable="iShifterWeaponSwitch",valueText1="Swap Only",valueText2="Swap Belt",valueText3="Autoswap Belt",helpText1="In Swap Only mode, the belt is not considered when swapping items.",helpText2="Swap Belt mode also updates the belt with new items.",helpText3="Autoswap mode also updates the belt when using the last of an item.",bAdvancedModeOnly=true,defaultValue=2)
      items(113)=(HelpText="Immersion/simulation option. If enabled, carried objects are no longer translucent.",actionText="Interaction: Immersive Carryables",variable="bNoTranslucency",bAdvancedModeOnly=true);
      Title="GMDX Quality of Life Options"
      colWidths(0)=214

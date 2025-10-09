@@ -916,6 +916,9 @@ var globalconfig bool bExperimentalAmmoSpawning;                //SARGE: Adds ex
 var globalconfig bool bComputerActionsDrainHackTime;            //SARGE: If enabled, performing actions (disabling cameras, etc) drains hack time when hacking computers.
 
 var globalConfig bool bPawnsReactToWeapons;                     //SARGE: Whether or not pawns will react when you have your weapons pointed at them.
+
+var globalconfig int iShifterWeaponSwitch;                      //SARGE: Allow switching weapon types with the change-ammo key for grenades and melee weapons, similar to Shifter.
+
 var transient float PawnReactTime;                              //SARGE: Only detect pawn reactions every 10th of a second or so
 
 var transient bool bUpdateHud;                                 //SARGE: Trigger a HUD update next frame.
@@ -4538,15 +4541,130 @@ exec function DeactivateAllAugs(optional bool toggle)
 }
 
 // ----------------------------------------------------------------------
+// DoShifterWeaponSwitch()
+// SARGE: Switching your in-hand weapon AND associated belt slot, based on
+// similar types, such as swapping out different grenade types. Blatantly stolen from shifter.
+// ----------------------------------------------------------------------
+
+function private bool _ShifterSwitch(Inventory from, Inventory to)
+{
+    local int beltSlot;
+
+    if (from == None || to == None)
+        return false;
+
+    DebugMessage("BeltPos: " $ from.beltPos @ from.bInObjectBelt);
+
+    //Add the new item to the old belt slot
+    if (from.bInObjectBelt && iShifterWeaponSwitch > 1)
+    {
+        to.beltPos = from.beltPos;
+        to.bInObjectBelt = from.bInObjectBelt;
+
+        //Remove the old item from the slot
+        from.beltPos = -1;
+        from.bInObjectBelt = false;
+    }
+
+    //Select the new weapon
+    SetInHandPending(to);
+    
+    DebugMessage("BeltPos2: " $ to.beltPos @ to.bInObjectBelt);
+
+    //Finally, update the HUD
+    UpdateHUD();
+
+    return true;
+}
+
+function bool DoShifterWeaponSwitch(Inventory toCheck, class<Inventory> switch1,optional class<Inventory> switch2,optional class<Inventory> switch3,optional class<Inventory> switch4,optional class<Inventory> switch5,optional class<Inventory> switch6)
+{
+	local Inventory items[6];
+    local int i, start, times;
+
+    //If it's not enabled, bail
+    if (iShifterWeaponSwitch == 0)
+        return false;
+
+    //First, find the starting item index
+    //This can probably be done better...
+    if (switch1 != None && toCheck.IsA(switch1.name))
+        start = 1;
+    else if (switch2 != None && toCheck.IsA(switch2.name))
+        start = 2;
+    else if (switch3 != None && toCheck.IsA(switch3.name))
+        start = 3;
+    else if (switch4 != None && toCheck.IsA(switch4.name))
+        start = 4;
+    else if (switch5 != None && toCheck.IsA(switch5.name))
+        start = 5;
+    else if (switch6 != None && toCheck.IsA(switch6.name))
+        start = 0;
+    else
+        return false; //We don't have any of the weapons
+
+	items[0] = FindInventoryType(switch1);
+	items[1] = FindInventoryType(switch2);
+	items[2] = FindInventoryType(switch3);
+	items[3] = FindInventoryType(switch4);
+	items[4] = FindInventoryType(switch5);
+	items[5] = FindInventoryType(switch6);
+
+    //keep trying until we either get a hit, or until we're back at our starting index
+    for(i = start;times < 5;i++)
+    {
+        if (i >= 6)
+            i = 0;
+
+        //DebugMessage("item" @ i @ items[i]);
+        if (items[i] != None && /*HasPlaceholderSlot(items[i]) == -1 &&*/ (!items[i].bInObjectBelt || !toCheck.bInObjectBelt || iShifterWeaponSwitch == 1 ))
+        {
+            _ShifterSwitch(toCheck,items[i]);
+            return true;
+        }
+        times++;
+    }
+
+    return false;
+}
+
+function bool ShifterSwitchAll(Inventory invToCheck)
+{
+    local bool bSwitch;
+
+    if (invToCheck == None)
+        return false;
+
+    bSwitch = DoShifterWeaponSwitch(invtoCheck,class'WeaponGasGrenade',class'WeaponEMPGrenade',class'WeaponNanoVirusGrenade',class'WeaponLAM',class'WeaponLAW');
+    bSwitch = bSwitch || DoShifterWeaponSwitch(invtoCheck,class'WeaponCombatKnife',class'WeaponBaton',class'WeaponCrowbar',class'WeaponSword',class'WeaponNanoSword');
+    bSwitch = bSwitch || DoShifterWeaponSwitch(invtoCheck,class'WeaponHideAGun',class'WeaponShuriken');
+    bSwitch = bSwitch || DoShifterWeaponSwitch(invtoCheck,class'Cigarettes',class'Liquor40oz',class'LiquorBottle',class'WineBottle',class'VialCrack');
+    bSwitch = bSwitch || DoShifterWeaponSwitch(invtoCheck,class'SoyFood',class'CandyBar',class'SodaCan');
+    bSwitch = bSwitch || DoShifterWeaponSwitch(invtoCheck,class'Lockpick',class'Multitool');
+    bSwitch = bSwitch || DoShifterWeaponSwitch(invtoCheck,class'Medkit',class'BioelectricCell');
+    bSwitch = bSwitch || DoShifterWeaponSwitch(invtoCheck,class'BallisticArmor',class'HazMatSuit',class'AdaptiveArmor',class'TechGoggles');
+
+    return bSwitch;
+}
+
+// ----------------------------------------------------------------------
 // SwitchAmmo()
 // ----------------------------------------------------------------------
 
 exec function SwitchAmmo()
 {
     local ThrownProjectile P;
+    local bool bSwitch;
 
-	if (inHand != None && inHand.IsA('DeusExWeapon')) //CyberP: fixed vanilla accessed none
-		DeusExWeapon(inHand).CycleAmmo();
+    if (inHand != None)
+    {
+        //SARGE: First, try to do a Shifter-style switch
+        bSwitch = ShifterSwitchAll(inHandPending);
+        
+        //SARGE: Fallback
+        if (!bSwitch && inHand != None && inHand.IsA('DeusExWeapon')) //CyberP: fixed vanilla accessed none
+            DeusExWeapon(inHand).CycleAmmo();
+    }
 
     //SARGE: Allow detonating all of our wall grenades with the switch-ammo button
     else if (inHand == None && PerkManager.GetPerkWithClass(class'DeusEx.PerkRemoteDetonation').bPerkObtained)
@@ -20279,4 +20397,5 @@ defaultproperties
      fMusicHackTimer=4.0
      bPawnsReactToWeapons=true
      bDragAndDropOffInventory=true
+     iShifterWeaponSwitch=2
 }
