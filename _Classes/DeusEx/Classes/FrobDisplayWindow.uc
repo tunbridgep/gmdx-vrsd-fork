@@ -164,6 +164,10 @@ function Color GetFrobDisplayBorderColor(Actor frobTarget)
     //uninstallable aug - either we already have both, or the slot is full
     else if (player.bToolWindowShowAugState && A != None && player.AugmentationSystem != None)
     {
+        //Not enough space
+        if (!player.FindInventorySlot(A, True))
+            return colBadAug;
+
         aug = A.GetAugGeneric(0,player);
         h1 = aug.bHasIt;
         f1 = player.AugmentationSystem.AreSlotsFull(aug);
