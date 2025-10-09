@@ -172,9 +172,13 @@ function private bool _IsDeclined(string invClass)
     return false;
 }
 
-function bool IsDeclined(class<Inventory> invClass)
+function bool IsDeclined(class<Inventory> invClass, optional bool bCheckBelt)
 {
-    return _IsDeclined(string(invClass));
+    local bool bBelt;
+
+    bBelt = !bCheckBelt || DeusExPlayer(owner) == None || DeusExPlayer(owner).HasPlaceholderSlot(invClass) == -1;
+
+    return bBelt && _IsDeclined(string(invClass));
 }
 
 function private bool _IsDeclinedGlobal(string invClass)

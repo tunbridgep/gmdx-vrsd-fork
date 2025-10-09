@@ -1238,7 +1238,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                 //DEBUG TEXT
                 //player.ClientMessage("Inventory Item: " $ item);
 
-                if (item != none && player != none && player.declinedItemsManager.IsDeclined(item.Class)) //RSD: Changed to player, added failsafes //SARGE: Changed to the new generic system
+                if (item != none && player != none && player.declinedItemsManager.IsDeclined(item.Class,true)) //RSD: Changed to player, added failsafes //SARGE: Changed to the new generic system
                 {
                     found = player.FindInventoryType(item.Class);
                     //SARGE: No longer delete knives. Now we just ignore them

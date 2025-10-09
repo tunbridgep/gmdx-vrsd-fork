@@ -2079,6 +2079,10 @@ event TravelPostAccept()
 	SetRocketWireControl();
     
     bDelayInventoryFix = false;
+    
+    //Repopulate declined list
+    if (DeclinedItemsManager != None)
+        DeclinedItemsManager.RefreshFromGlobalList();
 
 	//end GMDX
 }
@@ -8581,7 +8585,7 @@ function DoRightFrob(Actor frobTarget)
 //Returns FALSE if an item was not declined, TRUE if it was
 function bool CheckFrobDeclined(Actor frobTarget)
 {
-    if (frobTarget.IsA('Inventory') && DeclinedItemsManager.IsDeclined(class<Inventory>(frobTarget.class)) && clickCountCyber == 0 && Inventory(frobTarget).ItemName != "")
+    if (frobTarget.IsA('Inventory') && DeclinedItemsManager.IsDeclined(class<Inventory>(frobTarget.class),true) && clickCountCyber == 0 && Inventory(frobTarget).ItemName != "")
     {
         SetDoubleClickTimer();
         ClientMessage(sprintf(msgDeclinedPickup,Inventory(frobTarget).ItemName));
