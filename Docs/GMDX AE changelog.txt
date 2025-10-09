@@ -1,3 +1,4 @@
+- Decline System now maintains separate "playthrough" and "global" decline lists. Only the global list is maintained between playthroughs.
 1.1:
 
 New Features:
