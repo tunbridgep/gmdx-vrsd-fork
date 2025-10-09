@@ -10544,6 +10544,14 @@ function texture GetPlaceholderIcon(int objectNum)
     return beltInfos[objectNum].icon;
 }
 
+function int HasPlaceholderSlot(Class<inventory> obj)
+{
+    local int i;
+    for (i = 0;i < ArrayCount(beltInfos);i++)
+        if (beltInfos[i].icon == obj.default.Icon)
+            return i;
+    return -1;
+}
 
 // ----------------------------------------------------------------------
 // GetWeaponOrAmmo()
