@@ -1,6 +1,7 @@
 1.11 (Hotfix Release):
 
 New Features:
+- Pressing "F" in the inventory screen will now assign the selected item as your secondary item.
 
 Bugfixes:
 - Fixed "Enter" pressing random keypad buttons rather than confirming the code when the Unknown Keypad Length modifier is used

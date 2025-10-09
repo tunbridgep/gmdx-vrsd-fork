@@ -910,8 +910,6 @@ var globalconfig bool bQuickReflexes;                           //SARGE: Enemies
 
 var globalconfig bool bDragAndDropOffInventory;                 //SARGE: Allow dropping items by dragging them off the inventory grid
 
-//EXPERIMENTAL FEATURES
-
 var globalconfig bool bExperimentalFootstepDetection;           //SARGE: Adds experimental footstep detection
 var globalconfig bool bExperimentalAmmoSpawning;                //SARGE: Adds experimental ammo spawning at our feet if we miss out
 
@@ -921,6 +919,8 @@ var globalConfig bool bPawnsReactToWeapons;                     //SARGE: Whether
 var transient float PawnReactTime;                              //SARGE: Only detect pawn reactions every 10th of a second or so
 
 var transient bool bUpdateHud;                                 //SARGE: Trigger a HUD update next frame.
+
+var const localized string MsgSecondaryAdded;
 
 //////////END GMDX
 
@@ -1149,7 +1149,7 @@ function DebugLog(coerce string msg)
 // Sarge: Now needed because we need to fix up our charged item display if it's out of date
 // ----------------------------------------------------------------------
 
-function AssignSecondary(Inventory item)
+function AssignSecondary(Inventory item, optional bool bMessage)
 {
     /*
     if (assignedWeapon.isA('ChargedPickup'))
@@ -1160,6 +1160,12 @@ function AssignSecondary(Inventory item)
         assignedWeapon = "";
     else
         assignedWeapon = string(item.Class);
+
+    if (bMessage)
+    {
+        ClientMessage(Sprintf(msgSecondaryAdded,item.itemName));
+        PlaySound(Sound'Menu_Focus', SLOT_Interface, 0.75);
+    }
 
     RefreshChargedPickups();
     UpdateSecondaryDisplay();
@@ -20106,6 +20112,7 @@ defaultproperties
      fatty="You cannot consume any more at this time"
      noUsing="You cannot use it at this time"
      msgDeclinedPickup="%s is declined. Press again to pick up."
+     msgSecondaryAdded="%s added as Secondary"
      customColorsMenu(0)=(R=61,G=62,B=73)
      customColorsMenu(1)=(G=49,B=255)
      customColorsMenu(2)=(R=210,G=194,B=255)
