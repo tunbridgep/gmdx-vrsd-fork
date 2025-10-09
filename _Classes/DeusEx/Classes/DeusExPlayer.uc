@@ -15167,7 +15167,7 @@ function DeleteAllNotes()
 // NoteAdd()
 // ----------------------------------------------------------------------
 
-exec function NoteAdd( String noteText, optional bool bUserNote, optional bool bHidden, optional name noteName )
+exec function DeusExNote NoteAdd( String noteText, optional bool bUserNote, optional bool bHidden, optional name noteName )
 {
 	local DeusExNote newNote;
 
@@ -15176,6 +15176,8 @@ exec function NoteAdd( String noteText, optional bool bUserNote, optional bool b
 	newNote = AddNote( noteText, bUserNote, !bHidden );
 	newNote.SetHidden( bHidden );
 	newNote.SetTextTag( noteName );
+
+    return newNote;
 }
 
 // ----------------------------------------------------------------------
