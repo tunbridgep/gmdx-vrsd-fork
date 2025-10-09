@@ -43,6 +43,26 @@ simulated function bool TestMPBeltSpot(int BeltSpot)
    return (BeltSpot == 0);
 }
 
+//SARGE: Max number is lowered on Hardcore
+/*
+function int RetMaxCopies()
+{
+    local DeusExPlayer player;
+    local int amount;
+    player = DeusExPlayer(GetPlayerPawn());
+
+    if (player != None && player.bHardcoreMode)
+        amount = 5;
+    else
+        amount = default.maxCopies;
+
+    if (player != None && player.PerkManager != None && player.PerkManager.GetPerkWithClass(class'PerkCombatMedicsBag').bPerkObtained)
+        amount += 5;
+
+    return amount;
+}
+*/
+
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
@@ -53,7 +73,7 @@ defaultproperties
      bioenergyAmount=15
      mpRechargeAmount=50
 	 CannotUse="You're already at full Energy"
-     maxCopies=20
+     maxCopies=15
      bCanHaveMultipleCopies=True
      bActivatable=True
      ItemName="Bioelectric Cell"

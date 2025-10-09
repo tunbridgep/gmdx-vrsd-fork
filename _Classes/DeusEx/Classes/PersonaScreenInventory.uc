@@ -628,6 +628,10 @@ event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
             case IK_Space:                                                      //RSD: Space to rotate inventory item
 				RotateItemButton();
 				break;
+			
+            case IK_F:                                                          //SARGE: Assign secondary with F
+				AssignSecondary();
+				break;
 
 			default:
 				bKeyHandled = False;
@@ -892,6 +896,33 @@ function RefreshInventoryItemButtons()
 function SelectObjectBeltItem(Inventory item, bool bNewToggle)
 {
 	invBelt.SelectObject(item, bNewToggle);
+}
+
+// ----------------------------------------------------------------------
+// AssignSecondary()
+// ----------------------------------------------------------------------
+
+function AssignSecondary()
+{
+	local Inventory inv;
+    local bool bCanAssign;
+    
+    if (selectedItem != None)
+        inv = Inventory(selectedItem.GetClientObject());
+			   
+    if (inv == None)
+        return;
+    
+    if (inv.IsA('DeusExPickup'))
+        bCanAssign = DeusExPickup(inv).CanAssignSecondary(player);
+    else if (inv.IsA('DeusExWeapon'))
+        bCanAssign = DeusExWeapon(inv).CanAssignSecondary(player);
+
+    if (bCanAssign)
+        player.AssignSecondary(inv,true);
+
+    //player.DebugLog("Assigning Secondary to " $ inv.Class.Name);
+    winInfo.UpdateSecondaryButton(inv.class);
 }
 
 // ----------------------------------------------------------------------

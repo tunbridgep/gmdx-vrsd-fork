@@ -22,6 +22,12 @@ var int num;	// what number should I be?
 
 var Texture keypadButtonTextures[2];
 
+//SARGE: Required to fix a stupid keypad bug where enter doesn't work sometimes.
+event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
+{
+    return false;
+}
+
 // ----------------------------------------------------------------------
 // InitWindow()
 //
