@@ -3462,7 +3462,20 @@ function SoundVolumeHackFix()
     ConsoleCommand("set" @ "ini:Engine.Engine.AudioDevice SpeechVolume" @ speechVol);
 }
 
-//SARGE: ClientSetMusic sets the music
+//SARGE: This has been completely revamped entirely.
+//DO NOT EDIT THIS UNLESS YOU KNOW WHAT THE FUCK YOU'RE DOING!
+//IT IS EXTREMELY LIKELY TO BREAK ON EVEN MINOR CHANGES, IN RARE AND HARD TO DEBUG WAYS!
+//IT'S A FUCKING MESS!
+//Now has the following features:
+//- Attempting to fix the horrible vanilla "fade out" bug.
+//- Not restarting tracks on map change or reload to maps using the same track.
+//- Different sections per map, that can be changed dynamically (like changing the combat music after talking to Page in area 51.)
+//- Different ambient tracks per map based on triggers (like entering the lab under versalife, where a trigger changes the map), also saved in your savegame
+//- Restoring the previous music part upon dying and reloading
+//- Fading out slowly when moving to a silent map (like the catacombs) [EXCEPT from the title screen]
+//- Not attempting to change to ambient sections for tracks that don't have them (the bar tracks, Tongs' lab, etc). In vanilla and GMDX v9, there's a noticeable cut when entering/leaving conversations or combat in these areas, in GMDX:AE there's no transition at all, which feels a lot smoother.
+//- Re-added the GMDX v9 cut "bar music" feature that would prevent some track parts playing in bars conditionally (some bars have conversation music, this disables them) - now called the "Extended" option in the "Enhanced Music System" in GMDX:AE
+//- Starting combat music based on a certain number of enemies (rather than being hardcoded to 1), and only leaving combat music when there's no active enemies left (so if it goes from 2 to 1 it doesn't stop even though it's below the threshold for combat music)
 function ClientSetMusic(Music NewSong, byte NewSection, byte NewCdTrack, EMusicTransition NewTransition)
 {
     local bool bChange;
@@ -3472,7 +3485,7 @@ function ClientSetMusic(Music NewSong, byte NewSection, byte NewCdTrack, EMusicT
     
     info = GetLevelInfo();
     
-    DebugMessage("ClientSetMusic called:" @ NewSong @ NewSection @ NewTransition @ "Song is: " $ default.previousTrack @ default.previousLevelSection @ default.previousMusicMode @ bMusicSystemReset @ Level.SongSection);
+    DebugMessage("ClientSetMusic called:" @ NewSong @ NewSection @ NewTransition @ "Song is: " $ default.previousTrack @ default.previousLevelSection @ default.previousMusicMode @ bMusicSystemReset @ Level.SongSection @ saveTime @ default.fMusicHackTimer @ SongSection);
 
     //SARGE: Here's the really annoying part...
     //We've just been asked to change tracks or sections, we need to work out
@@ -3515,9 +3528,15 @@ function ClientSetMusic(Music NewSong, byte NewSection, byte NewCdTrack, EMusicT
     else if (default.previousTrack != NewSong || default.previousLevelSection != info.SongAmbientSection)
     {
         //If changing to nothing, fade out
-        if (NewSong == None || NewSection == 255)
+        //NOTE: But not from the title
+        if (string(Song) != "Title_Music.Title_Music" && (NewSong == None || info.SongAmbientSection == 255))
+        {
+            DebugMessage("ClientSetMusic: Fade Out");
             NewTransition = MTRAN_SlowFade;
+        }
 
+        default.savedSection = info.SongAmbientSection;
+        NewSection = info.SongAmbientSection;
         DebugMessage("ClientSetMusic: Music Change Allowed (Track Change)");
         bChange = true;
         bContinueOn = false;
@@ -3552,21 +3571,35 @@ function ClientSetMusic(Music NewSong, byte NewSection, byte NewCdTrack, EMusicT
     if (bChange)
     {
         //If we're changing to the start of the track, instead, go to our saved section.
-        if (bContinueOn && NewSection == info.SongAmbientSection)
+        if (bContinueOn && NewSection == info.SongAmbientSection && bMusicSystemReset)
             NewSection = default.savedSection;
 
-        DebugMessage("ClientSetMusic: Setting music to " $ NewSong @ NewSection @ NewTransition);
+        //SARGE: Maybe if I call it like 5 times, it won't randomly bug out...
         Super.ClientSetMusic(NewSong,NewSection,NewCDTrack,NewTransition);
+        //Super.ClientSetMusic(NewSong,NewSection,NewCDTrack,NewTransition);
+        //Super.ClientSetMusic(NewSong,NewSection,NewCDTrack,NewTransition);
+        //Super.ClientSetMusic(NewSong,NewSection,NewCDTrack,NewTransition);
+        //Super.ClientSetMusic(NewSong,NewSection,NewCDTrack,NewTransition);
+        DebugMessage("ClientSetMusic: Setting music to " $ NewSong @ NewSection @ NewTransition @ SongSection);
         default.previousTrack = NewSong;
         default.previousLevelSection = info.SongAmbientSection;
         default.previousMusicMode = default.musicMode;
-        if (NewTransition == MTRAN_SlowFade)
+        if (NewTransition == MTRAN_Instant)
+            default.fMusicHackTimer = 1.0;
+        else if (NewTransition == MTRAN_SlowFade)
             default.fMusicHackTimer = 8.0;
         else
-            default.fMusicHackTimer = 4.0;
-
-        bMusicSystemReset = false;
+            default.fMusicHackTimer = 5.0;
     }
+
+    //When we start a new map or load a save, we need to force
+    //the music system to reset it's remembered position, or we get funky shenanigans.
+    if (bMusicSystemReset)
+    {
+        DebugMessage("Resetting Song Ambient Section");
+        default.savedSection = info.SongAmbientSection;
+    }
+    bMusicSystemReset = false;
 }
 
 //SARGE: Resets the music timers and state.
@@ -3577,14 +3610,6 @@ function ResetMusic()
     info = GetLevelInfo();
 
     PopulateLevelAmbientSection(info);
-
-    //When we start a new map or load a save, we need to force
-    //the music system to reset it's remembered position, or we get funky shenanigans.
-    if (default.previousTrack != Level.Song || info.SongAmbientSection != default.previousLevelSection)
-    {
-        DebugMessage("ResetMusic: Resetting Song Ambient Section");
-        default.savedSection = info.SongAmbientSection;
-    }
 
     /*
     //SARGE: Hack to fix the transition bug.
