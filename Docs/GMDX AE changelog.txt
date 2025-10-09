@@ -1,6 +1,7 @@
 1.11 (Hotfix Release):
 
 New Features:
+- The Piercing Perk now also affects security cameras, turrets, and alarm panels, in addition to bots.
 
 Bugfixes:
 - Fixed "Enter" pressing random keypad buttons rather than confirming the code when the Unknown Keypad Length modifier is used

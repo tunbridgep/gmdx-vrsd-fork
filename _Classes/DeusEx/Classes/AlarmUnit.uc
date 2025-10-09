@@ -275,6 +275,9 @@ auto state Active
 			return;
 		}
 
+        //SARGE: Modify damage by the Piercing perk
+        Damage *= class'PerkPiercing'.static.GetPiercingPerkMult(DeusExPlayer(eventInstigator));
+
 		Super.TakeDamage(Damage, EventInstigator, HitLocation, Momentum, DamageType);
 	}
 }

@@ -399,14 +399,8 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
 
     Enemy = instigatedBy;
 
-    if (Enemy != none && Enemy.IsA('DeusExPlayer'))
-	{
-		perkPiercing = DeusExPlayer(Enemy).PerkManager.GetPerkWithClass(class'DeusEx.PerkPiercing');
-		if (perkPiercing.bPerkObtained && DeusExPlayer(Enemy).inHand != none)
-			if (DeusExPlayer(Enemy).inHand.IsA('WeaponCombatKnife') || DeusExPlayer(Enemy).inHand.IsA('WeaponShuriken') ||
-			DeusExPlayer(Enemy).inHand.IsA('WeaponCrowbar') || DeusExPlayer(Enemy).inHand.IsA('WeaponNanoSword'))
-				actualDamage*=perkPiercing.PerkValue;
-	}
+    //SARGE: Modify damage by the Piercing perk
+    actualDamage *= class'PerkPiercing'.static.GetPiercingPerkMult(DeusExPlayer(Enemy));
 	
     if (!bInvincible)
 		Health -= int(actualDamage);
