@@ -2991,6 +2991,12 @@ function ResetPlayer(optional bool bTraining)
     //SARGE: Remove secondary weapon
     AssignSecondary(None);
 
+    //SARGE: Reset collectibles
+    collectiblesFound = 0;
+
+    //SARGE: Reset collectibles
+    collectiblesFound = 0;
+
     //SARGE: Reset killswitch
     killswitchTimer = default.killswitchTimer;
 
