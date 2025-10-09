@@ -5863,6 +5863,17 @@ function string DoAmmoInfoWindow(Pawn P, PersonaInventoryInfoWindow winInfo)
 	winInfo.AddAmmoTypesItem(msgInfoAmmo, str);
 }
 
+//SARGE: Now each object can define it's own function for whether it can be a secondary or not.
+function bool CanAssignSecondary(DeusExPlayer player)
+{
+	if (bHandToHand)
+	{
+        if (DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkInventive').bPerkObtained || GoverningSkill == class'DeusEx.SkillDemolition' || IsA('WeaponCombatKnife') || IsA('WeaponHideAGun') || IsA('WeaponShuriken'))
+            return true;
+	}
+    return false;
+}
+
 //SARGE: TODO: Turn this horrible mess into generic functions that work with child classes
 simulated function bool UpdateInfo(Object winObject)
 {
@@ -5893,20 +5904,12 @@ simulated function bool UpdateInfo(Object winObject)
 
     //SARGE: Add Decline Button
     if (P.IsA('DeusExPlayer'))
+    {
 		winInfo.AddDeclineButton(class);
 
-	if (bHandToHand && Owner.IsA('DeusExPlayer'))
-	{
-	   if (DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkInventive').bPerkObtained == true)
-	   {
-	      winInfo.AddSecondaryButton(self);
-	   }
-	   else if (GoverningSkill != class'DeusEx.SkillDemolition' && !IsA('WeaponCombatKnife') && !IsA('WeaponHideAGun') && !IsA('WeaponShuriken'))
-	   {                                                                        //RSD: Throwing Knives now require the perk, c'mon //RSD: Or nah
-	   }
-	   else
+        if (CanAssignSecondary(DeusExPlayer(P)))
 	       winInfo.AddSecondaryButton(self);
-	}
+    }
 
 	winInfo.SetText(msgInfoWeaponStats);
 	winInfo.AddLine();
