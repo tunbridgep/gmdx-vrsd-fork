@@ -11088,7 +11088,7 @@ function PutCarriedDecorationInHand(optional bool bNoSoundEffect)
 			CarriedDecoration.SetBase(self);
             //CarriedDecoration.SetCollisionSize(CarriedDecoration.CollisionRadius*2,CarriedDecoration.CollisionHeight*2);
 			// make it translucent
-			if ((!bNoTranslucency && !bHardcoreMode) || AugmentationSystem.GetAugLevelValue(class'AugCloak') != -1.0)
+			if (!bNoTranslucency || AugmentationSystem.GetAugLevelValue(class'AugCloak') != -1.0)
 			{
 			CarriedDecoGlow = CarriedDecoration.ScaleGlow;
 			CarriedDecoration.Style = STY_Translucent;
@@ -11249,7 +11249,7 @@ function DropDecoration()
                 // turn off translucency
                 deco.Style = deco.Default.Style;
                 deco.bUnlit = deco.Default.bUnlit;
-                if ((!bNoTranslucency && !bHardcoreMode) && deco.IsA('DeusExDecoration'))
+                if (!bNoTranslucency && deco.IsA('DeusExDecoration'))
                     DeusExDecoration(deco).ScaleGlow = CarriedDecoGlow;
 
                 if (bThrowDecoration)
