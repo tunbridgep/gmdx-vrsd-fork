@@ -13,6 +13,7 @@ Bugfixes:
 - Fixed a bug with wrong music when loading the game while the combat track is transitioning to the ambient track.
 - Fixed a bug where the number of found collectibles would not be reset upon starting a new game.
 - Fixed Computer notes screen scrolling to the bottom when returning to the Login screen.
+- Fixed some code notes not working properly with the Unknown Codes modifier
 - Fixed Markers sometimes displaying at invalid exits (such as the courtyard in the Luminous Path compound)
 - Fixed some typos.
 
