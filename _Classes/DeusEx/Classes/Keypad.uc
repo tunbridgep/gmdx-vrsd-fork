@@ -76,8 +76,7 @@ simulated function ActivateKeypadWindow(DeusExPlayer Hacker, bool bHacked)
         topWindow = HUDKeypadContainerWindow(root.InvokeUIScreen(Class'HUDKeypadContainerWindow', True));
         topWindow.InitKeypadWindow(self,Hacker,bHacked);
 
-        if (len(validCode) > 2) //Don't create notes pages for keypads with 2 letter codes, since there will be lots of invalid notes that match.
-            topWindow.AddNotesWindow(Hacker,note);
+        topWindow.AddNotesWindow(Hacker,note,len(validCode) <= 2);
         root.MaskBackground(True);
     }
 }

@@ -49,8 +49,19 @@ function CreateNotesList()
 
 function AddNote(DeusExNote Note)
 {
-    if (Note != None)
-        Notes[NotesCount++] = Note;
+    local int i;
+
+    if (Note == None)
+        return;
+
+    //Check for already passed in notes, for
+    //computers with multiple logins with the same password,
+    //(fuck you Damocles!)
+    for (i = 0;i < NotesCount;i++)
+        if (Notes[i] == Note)
+            return;
+
+    Notes[NotesCount++] = Note;
 }
 
 function Resize(float width, float height)

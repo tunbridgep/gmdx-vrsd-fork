@@ -13,6 +13,7 @@ struct CodeNote
 };
 
 var const CodeNote codeNotes[150];
+var const string ignoredCodes[10];
 var const string guessableCodes[10];
 
 static function bool IsGuessable(string code, string code2)
@@ -97,11 +98,14 @@ static function DeusExNote GetCodeNote(DeusExPlayer P, string code, string code2
     {
         note = P.FirstNote;
             
-        //Don't search for "security" as it's a default code.
-        if (code2 ~= "security")
+        //Don't check for codes which are common words, such as "Security", "Research", etc.
+        for (i = 0;i < ArrayCount(default.ignoredCodes);i++)
         {
-            P.DebugLog("NOTE CODE " $code$ " NOT FOUND IN NOTES (Security exception)");
-            return None;
+            if (code2 ~= default.ignoredCodes[i])
+            {
+                P.DebugLog("NOTE CODE " $code$ " NOT FOUND IN NOTES (Excepted Code: "$ code2 $" )");
+                return None;
+            }
         }
 
         while( note != None )
@@ -211,73 +215,76 @@ defaultproperties
     codeNotes(60)=(code1="MChow",noteName="06_Datacube10")
     codeNotes(61)=(code1="MJ12",code2="SECURITY",noteName="06_Datacube11")
     codeNotes(62)=(code1="MCHOW",code2="DAMOCLES",noteName="06_Datacube12")
-    codeNotes(63)=(code1="911",noteName="06_Datacube13")
-    codeNotes(64)=(code1="mchow",code2="INSURGENT",noteName="06_Datacube15")
-    codeNotes(65)=(code1="99871",noteName="06_Datacube16")
-    codeNotes(66)=(code1="TALON",code2="SKYEYE",noteName="06_Datacube18")
-    codeNotes(67)=(code1="TAM",code2="Dragon",noteName="06_Datacube19")
-    codeNotes(68)=(code1="QUEENSTOWER",code2="SECURITY",noteName="06_Datacube20")
-    codeNotes(69)=(code1="FLYBOY",code2="5X5",noteName="06_Datacube23")
-    codeNotes(70)=(code1="525",noteName="06_Datacube25")
-    codeNotes(71)=(code1="5878",noteName="06_Datacube29")
-    codeNotes(72)=(code1="768",noteName="06_Datacube30")
-    codeNotes(73)=(code1="ALL_SHIFTS",code2="DATA_ENTRY",noteName="06_Datacube31")
+    codeNotes(63)=(code1="ADONOVAN",code2="DAMOCLES",noteName="06_Datacube12")
+    codeNotes(64)=(code1="MLUNDQUIST",code2="DAMOCLES",noteName="06_Datacube12")
+    codeNotes(65)=(code1="MBATES",code2="DAMOCLES",noteName="06_Datacube12")
+    codeNotes(66)=(code1="911",noteName="06_Datacube13")
+    codeNotes(67)=(code1="mchow",code2="INSURGENT",noteName="06_Datacube15")
+    codeNotes(68)=(code1="99871",noteName="06_Datacube16")
+    codeNotes(69)=(code1="TALON",code2="SKYEYE",noteName="06_Datacube18")
+    codeNotes(70)=(code1="TAM",code2="Dragon",noteName="06_Datacube19")
+    codeNotes(71)=(code1="QUEENSTOWER",code2="SECURITY",noteName="06_Datacube20")
+    codeNotes(72)=(code1="FLYBOY",code2="5X5",noteName="06_Datacube23")
+    codeNotes(73)=(code1="525",noteName="06_Datacube25")
+    codeNotes(74)=(code1="5878",noteName="06_Datacube29")
+    codeNotes(75)=(code1="768",noteName="06_Datacube30")
+    codeNotes(76)=(code1="ALL_SHIFTS",code2="DATA_ENTRY",noteName="06_Datacube31")
     ////M08
-    codeNotes(74)=(code1="jallred",code2="Apple",noteName="08_Datacube01")
-    codeNotes(75)=(code1="Alice_Priest",code2="Secretary",noteName="08_Datacube01")
+    codeNotes(77)=(code1="jallred",code2="Apple",noteName="08_Datacube01")
+    codeNotes(78)=(code1="Alice_Priest",code2="Secretary",noteName="08_Datacube01")
     ////M09
-    codeNotes(76)=(code1="71324",noteName="09_Datacube02")
-    codeNotes(77)=(code1="65678",noteName="09_Datacube03")
-    codeNotes(78)=(code1="83353",noteName="09_Datacube04")
-    codeNotes(79)=(code1="4453",noteName="09_Datacube06")
-    codeNotes(80)=(code1="9753",noteName="09_Datacube07")
-    codeNotes(81)=(code1="2249",noteName="09_Datacube08")
-    codeNotes(82)=(code1="0909",noteName="09_Datacube09")
-    codeNotes(83)=(code1="root",code2="reindeerflotilla",noteName="09_Datacube10")
-    codeNotes(84)=(code1="Walton",code2="Simons",noteName="09_Datacube11")
-    codeNotes(85)=(code1="USFema",code2="Security",noteName="09_Datacube12")
-    codeNotes(86)=(code1="KZhao",code2="Captain",noteName="09_Datacube13")
-    codeNotes(87)=(code1="6655",noteName="09_Datacube14")
+    codeNotes(79)=(code1="71324",noteName="09_Datacube02")
+    codeNotes(80)=(code1="65678",noteName="09_Datacube03")
+    codeNotes(81)=(code1="83353",noteName="09_Datacube04")
+    codeNotes(82)=(code1="4453",noteName="09_Datacube06")
+    codeNotes(83)=(code1="9753",noteName="09_Datacube07")
+    codeNotes(84)=(code1="2249",noteName="09_Datacube08")
+    codeNotes(85)=(code1="0909",noteName="09_Datacube09")
+    codeNotes(86)=(code1="root",code2="reindeerflotilla",noteName="09_Datacube10")
+    codeNotes(87)=(code1="Walton",code2="Simons",noteName="09_Datacube11")
+    codeNotes(88)=(code1="USFema",code2="Security",noteName="09_Datacube12")
+    codeNotes(89)=(code1="KZhao",code2="Captain",noteName="09_Datacube13")
+    codeNotes(90)=(code1="6655",noteName="09_Datacube14")
     ////M10
-    codeNotes(88)=(code1="4003",noteName="10_Book09")
-    codeNotes(89)=(code1="bduclare",code2="nico_angel",noteName="10_Datacube02")
-    codeNotes(90)=(code1="005133",code2="salem008",noteName="10_Datacube03")
-    codeNotes(91)=(code1="004418",code2="morbus13",noteName="10_Datacube04")
-    codeNotes(92)=(code1="002639",code2="aramis01",noteName="10_Datacube05")
-    codeNotes(93)=(code1="001506",code2="naga066",noteName="10_Datacube06")
-    codeNotes(94)=(code1="1966",noteName="10_Datacube07")
-    codeNotes(95)=(code1="2221969",code2="dullbill",noteName="10_Datacube08")
-    codeNotes(96)=(code1="Hela",code2="Ragnarok",noteName="10_Datacube11")
-    codeNotes(97)=(code1="rzelazny",code2="shadowjack",noteName="10_Datacube12")
-    codeNotes(98)=(code1="1784",noteName="10_Datacube13")
+    codeNotes(91)=(code1="4003",noteName="10_Book09")
+    codeNotes(92)=(code1="bduclare",code2="nico_angel",noteName="10_Datacube02")
+    codeNotes(93)=(code1="005133",code2="salem008",noteName="10_Datacube03")
+    codeNotes(94)=(code1="004418",code2="morbus13",noteName="10_Datacube04")
+    codeNotes(95)=(code1="002639",code2="aramis01",noteName="10_Datacube05")
+    codeNotes(96)=(code1="001506",code2="naga066",noteName="10_Datacube06")
+    codeNotes(97)=(code1="1966",noteName="10_Datacube07")
+    codeNotes(98)=(code1="2221969",code2="dullbill",noteName="10_Datacube08")
+    codeNotes(99)=(code1="Hela",code2="Ragnarok",noteName="10_Datacube11")
+    codeNotes(100)=(code1="rzelazny",code2="shadowjack",noteName="10_Datacube12")
+    codeNotes(101)=(code1="1784",noteName="10_Datacube13")
     ////M11
-    codeNotes(99)=(code1="meverrett",code2="pynchon",noteName="11_Datacube01")
-    codeNotes(100)=(code1="8001",noteName="11_Datacube02")
-    codeNotes(101)=(code1="1942",noteName="11_Datacube03")
-    codeNotes(102)=(code1="0022",noteName="11_Datacube03")
-    codeNotes(103)=(code1="34501",code2="08711",noteName="11_Datacube03")
-    codeNotes(104)=(code1="2384",noteName="11_Email01")
-    codeNotes(105)=(code1="6426",noteName="11_Email01")
-    codeNotes(106)=(code1="57601",code2="wyrdred08",noteName="11_Book03")
+    codeNotes(102)=(code1="meverrett",code2="pynchon",noteName="11_Datacube01")
+    codeNotes(103)=(code1="8001",noteName="11_Datacube02")
+    codeNotes(104)=(code1="1942",noteName="11_Datacube03")
+    codeNotes(105)=(code1="0022",noteName="11_Datacube03")
+    codeNotes(106)=(code1="34501",code2="08711",noteName="11_Datacube03")
+    codeNotes(107)=(code1="2384",noteName="11_Email01")
+    codeNotes(108)=(code1="6426",noteName="11_Email01")
+    codeNotes(109)=(code1="57601",code2="wyrdred08",noteName="11_Book03")
     ////M12
-    codeNotes(107)=(code1="Tunnel01",code2="Omega2a",noteName="12_Datacube01")
+    codeNotes(110)=(code1="Tunnel01",code2="Omega2a",noteName="12_Datacube01")
     ////M14
-    codeNotes(108)=(code1="Tech",code2="Sharkman",noteName="14_Datacube01")
-    codeNotes(109)=(code1="5690",noteName="14_Datacube02")
-    codeNotes(110)=(code1="MJ12",code2="Skywalker",noteName="14_Datacube03")
-    codeNotes(111)=(code1="Elder",code2="Armageddon",noteName="14_Datacube05")
-    codeNotes(112)=(code1="Oceanguard",code2="Kraken",noteName="14_Datacube06")
+    codeNotes(111)=(code1="Tech",code2="Sharkman",noteName="14_Datacube01")
+    codeNotes(112)=(code1="5690",noteName="14_Datacube02")
+    codeNotes(113)=(code1="MJ12",code2="Skywalker",noteName="14_Datacube03")
+    codeNotes(114)=(code1="Elder",code2="Armageddon",noteName="14_Datacube05")
+    codeNotes(115)=(code1="Oceanguard",code2="Kraken",noteName="14_Datacube06")
     ////M15
-    codeNotes(113)=(code1="0169",noteName="15_Datacube01")
-    codeNotes(114)=(code1="a51",code2="xx15yz",noteName="15_Datacube07")
-    codeNotes(115)=(code1="1038",noteName="15_Datacube08")
-    codeNotes(116)=(code1="2242",noteName="15_Datacube09")
-    codeNotes(117)=(code1="6765",noteName="15_Datacube11")
-    codeNotes(118)=(code1="4225",noteName="15_Datacube12")
-    codeNotes(119)=(code1="jshears",code2="momerath",noteName="15_Datacube13")
-    codeNotes(120)=(code1="area51",code2="bravo13",noteName="15_Datacube17")
-    codeNotes(121)=(code1="2001",noteName="15_Datacube19")
-    codeNotes(122)=(code1="page",code2="uberalles",noteName="15_Datacube21")
+    codeNotes(116)=(code1="0169",noteName="15_Datacube01")
+    codeNotes(117)=(code1="a51",code2="xx15yz",noteName="15_Datacube07")
+    codeNotes(118)=(code1="1038",noteName="15_Datacube08")
+    codeNotes(119)=(code1="2242",noteName="15_Datacube09")
+    codeNotes(120)=(code1="6765",noteName="15_Datacube11")
+    codeNotes(121)=(code1="4225",noteName="15_Datacube12")
+    codeNotes(122)=(code1="jshears",code2="momerath",noteName="15_Datacube13")
+    codeNotes(123)=(code1="area51",code2="bravo13",noteName="15_Datacube17")
+    codeNotes(124)=(code1="2001",noteName="15_Datacube19")
+    codeNotes(125)=(code1="page",code2="uberalles",noteName="15_Datacube21")
 
     guessableCodes(0)="8675309"
     guessableCodes(1)="7243"
@@ -286,4 +293,7 @@ defaultproperties
     guessableCodes(4)="4321" //This code is so iconic and so memorable, and the code is right next to it, so just allow it anyway...
     guessableCodes(5)="22" //Only 2 digits, guessable
     guessableCodes(6)="12" //Only 2 digits, obvious
+
+    ignoredCodes(0)="SECURITY"
+    ignoredCodes(1)="RESEARCH"
 }
