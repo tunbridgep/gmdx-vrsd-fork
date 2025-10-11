@@ -109,6 +109,8 @@ var transient int badItemCount;
 //SARGE: Breathing time. Carcasses won't instantly die in water, they have about 20 seconds
 var float breatheTime;
 
+var string carcassID;                                                                 //SARGE: Generally, the carcas name. Kept through pickup and put down.
+
 // ----------------------------------------------------------------------
 // Augmentique
 // ----------------------------------------------------------------------
@@ -529,6 +531,9 @@ function PostBeginPlay()
     assignedMesh = 1;
 
 	bCollideWorld = true;
+
+    //Set our ID
+    carcassID = string(name);
 
 	// Use the carcass name by default
     UpdateName();
@@ -1071,6 +1076,7 @@ function PickupCorpse(DeusExPlayer player)
                     corpse.bHasSkins = true;
                 }
             }
+            corpse.carcassID = carcassID;
             corpse.carcClassString = String(Class);
             corpse.KillerAlliance = KillerAlliance;
             corpse.KillerBindName = KillerBindName;
@@ -1119,7 +1125,7 @@ function bool LootAmmo(DeusExPlayer P, DeusExWeapon item, bool bDisplayOverflowM
 {
     local bool bResult;
     local DeusExAmmo AmmoType;
-    bResult = item.LootAmmo(P,true,true,false,false,bDisplayOverflowMsg,bShowOverflow);
+    bResult = item.LootAmmo(P,true,true,false,false,bDisplayOverflowMsg,bShowOverflow,carcassID);
 
     return bResult;
 }
@@ -1136,7 +1142,7 @@ function ShowFixedPickupMessage(DeusExPlayer P, Inventory item, int count, optio
         P.ClientMessage(item.PickupMessage @ item.itemArticle @ item.itemName, 'Pickup');
 
     if (bShowReceived)
-        AddReceivedItem(P, item, count, item.IsA('DeusExPickup'));
+        AddReceivedItem(P, item, count);
 }
 
 // ----------------------------------------------------------------------
@@ -1165,6 +1171,8 @@ function Frob(Actor Frobber, Inventory frobWith)
     local bool bLootedAmmo;
     local bool bProcessedImpale;
     local bool bSuppressEmptyMessage;                                           //SARGE: Suppress the "You don't find anything" message
+    local bool bShowReceived;                                                   //SARGE: Show the Received Items Window for new pickups
+    local bool bAddBad;                                                         //SARGE: Prevent adding the same items to the bad list more than once.
 	
     badItemCount = 0;
 
@@ -1185,8 +1193,9 @@ function Frob(Actor Frobber, Inventory frobWith)
 		// Make sure the "Received Items" display is cleared
 	  // DEUS_EX AMSD Don't bother displaying in multiplayer.  For propagation
 	  // reasons it is a lot more of a hassle than it is worth.
-		if ( (player != None) && (Level.NetMode == NM_Standalone) )
-		 DeusExRootWindow(player.rootWindow).hud.receivedItems.RemoveItems();
+        //SARGE: Added an additional condition
+		if ( (player != None) && (Level.NetMode == NM_Standalone) && player.bClearReceivedDisplay)
+            player.ClearReceivedItems();
 
 		if (Inventory != None && (!bDblClickStart || player.inHand != None))
 		{
@@ -1234,11 +1243,12 @@ function Frob(Actor Frobber, Inventory frobWith)
 				bPickedItemUp = False;
                 bDeclined = False;
                 bLootedAmmo = false;
+                bAddBad = false;
 
                 //DEBUG TEXT
                 //player.ClientMessage("Inventory Item: " $ item);
 
-                if (item != none && player != none && player.declinedItemsManager.IsDeclined(item.Class)) //RSD: Changed to player, added failsafes //SARGE: Changed to the new generic system
+                if (item != none && player != none && player.declinedItemsManager.IsDeclined(item.Class,true)) //RSD: Changed to player, added failsafes //SARGE: Changed to the new generic system
                 {
                     found = player.FindInventoryType(item.Class);
                     //SARGE: No longer delete knives. Now we just ignore them
@@ -1250,8 +1260,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                     }
                     bDeclined=True;
                     bFoundInvalid=True;
-                    if (!item.IsA('DeusExWeapon'))
-                        AddBadItem(player,item);
+                    bAddBad = true;
                 }
 				else if (item != none && (item.IsA('Ammo') || (item.IsA('WeaponSpiderBotConstructor')) || (item.IsA('WeaponAssaultGunSpider')))) //CyberP: new type weapons exclusive to pawns //RSD: Failsafe
 				{
@@ -1294,8 +1303,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                             //SARGE: Show declined nanokeys
                             else
                             {
-                                if (player.bShowDeclinedInReceivedWindow)
-                                    AddBadItem(player,item);
+                                bAddBad = true;
                             }
 
 							DeleteInventory(item);
@@ -1311,7 +1319,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 						{
 						    //if (player.PerkNamesArray[33]==1)                 //RSD: No more Neat Hack perk
 			                //   Credits(item).numCredits *= 1.5;
-							AddReceivedItem(player, item, Credits(item).numCredits, true);
+							AddReceivedItem(player, item, Credits(item).numCredits);
 							player.Credits += Credits(item).numCredits;
 							P.ClientMessage(Sprintf(Credits(item).msgCreditsAdded, Credits(item).numCredits));
 							DeleteInventory(item);
@@ -1330,7 +1338,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 
                         //SARGE: Always show declined weapons, unless we already have a disposable weapon
                         if (bDeclined && (W == None || !DeusExWeapon(item).bDisposableWeapon))
-                            AddBadItem(player,item);
+                            bAddBad = true;
 
                         //SARGE: Disposable weapons don't give ammo if we don't have space for them, or if declined
                         if (W == None && DeusExWeapon(item).bDisposableWeapon && (!player.FindInventorySlot(item, True) || bDeclined))
@@ -1385,8 +1393,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                     if (!bSearched)
                                         P.ClientMessage(item.PickupMessage @ item.itemArticle @ Item.itemName @ IgnoredString);
                                 
-                                    if (!bDeclined) //SARGE: declined items are already added.
-                                        AddBadItem(player,item);
+                                    bAddBad = true;
                                 }
                                 else if (item != None)
                                 {
@@ -1445,6 +1452,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 									}
 
                                     ShowFixedPickupMessage(player,invItem,itemCount,true);
+                                    bAddBad = false;
                                     bFoundSomething = True;
                                     bPickedSomethingUp = True;
 
@@ -1453,7 +1461,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                     {
                                         if (!bSearched)
                                             player.ClientMessage(invItem.PickupMessage @ invItem.itemArticle @ invItem.itemName @ msgTooMany, 'Pickup');
-                                        AddBadItem(player,item,DeusExPickup(item).numCopies);
+                                        bAddBad = true;
                                         bFoundInvalid=true;
                                     }
 								}
@@ -1472,6 +1480,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                     }
 
                                     ShowFixedPickupMessage(player,invItem,itemCount,true);
+                                    bAddBad = false;
                                     bPickedSomethingUp = True;
 								}
                                 //SARGE: Inform us if our inventory is too full (max stack) to pick these items up.
@@ -1480,7 +1489,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                     if (!bSearched)
                                         player.ClientMessage(invItem.PickupMessage @ invItem.itemArticle @ invItem.itemName @ msgTooMany, 'Pickup');
                                     bFoundSomething = True;
-                                    AddBadItem(player,item);
+                                    bAddBad = true;
                                     bFoundInvalid=true;
 
                                 }
@@ -1508,8 +1517,8 @@ function Frob(Actor Frobber, Inventory frobWith)
 								}
 
 								DeleteInventory(item);
-
                                 ShowFixedPickupMessage(player,invItem,itemCount,true);
+                                bAddBad = false;
                                 bPickedSomethingUp = True;
 							}
 						}
@@ -1522,7 +1531,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                 if (!bDeclined)
                                 {
                                     bFoundSomething = True;
-                                    if (DeusExPlayer(P).HandleItemPickup(Item,false,true,true,!bLootedAmmo,false) != False)
+                                    if (DeusExPlayer(P).HandleItemPickup(Item,false,true,self,!bLootedAmmo,false) != False)
                                     {
                                         DeleteInventory(item);
 
@@ -1535,7 +1544,9 @@ function Frob(Actor Frobber, Inventory frobWith)
                                         bPickedSomethingUp = True;
                                         
                                         // Show the item received in the ReceivedItems window
-                                        ShowFixedPickupMessage(player,item,itemCount,true);
+                                        bShowReceived = !item.IsA('DeusExWeapon') || !DeusExWeapon(item).bDisposableWeapon;
+                                        ShowFixedPickupMessage(player,item,itemCount,bShowReceived);
+                                        bAddBad = false;
 
                                         if (item.IsA('WeaponShuriken') && WeaponShuriken(item).bImpaled)
                                             LootPickupSound = Sound'DeusExSounds.Generic.FleshHit1';
@@ -1545,7 +1556,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                     else
                                     {
                                         bSuppressEmptyMessage = True;
-                                        AddBadItem(player,item);
+                                        bAddBad = true;
                                     }
                                 }
 							}
@@ -1559,6 +1570,18 @@ function Frob(Actor Frobber, Inventory frobWith)
 							}
 						}
 					}
+
+                    if (bAddBad)
+                    {
+                        if (item.isA('DeusExPickup'))
+                            AddBadItem(player,item,DeusExPickup(item).NumCopies);
+                        //else if (item.isA('DeusExWeapon'))
+                        //    AddBadItem(player,item,DeusExWeapon(item).PickupAmmoCount);
+                        //else if (item.isA('DeusExAmmo'))
+                        //    AddBadItem(player,item,DeusExAmmo(item).AmmoAmount);
+                        else
+                            AddBadItem(player,item);
+                    }
 				}
                 //log("Processed Item: " $ item.name $ ", bFoundSomething: " $ bFoundSomething);
 				item = nextItem;
@@ -1571,7 +1594,7 @@ function Frob(Actor Frobber, Inventory frobWith)
         {
             for (i = 0;i < badItemCount;i++)
             {
-                AddReceivedItem(player, badItems[i].item, badItems[i].count, badItems[i].item.IsA('Ammo') || badItems[i].item.IsA('DeusExPickup'), true);
+                AddReceivedItem(player, badItems[i].item, badItems[i].count, false, true);
             }
         }
 
@@ -1716,7 +1739,8 @@ function AddReceivedItem(DeusExPlayer player, Inventory item, int count, optiona
 	}
     */
 
-    player.AddReceivedItem(item,count,bNoGroup,bDeclined,true);
+    player.DebugMessage("CarcassID: " $ carcassID);
+    player.AddReceivedItem(carcassID,item,count,bNoGroup,bDeclined);
 }
 
 //-----------------------------------------------------------------------

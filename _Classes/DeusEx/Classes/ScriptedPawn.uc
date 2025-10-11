@@ -6790,7 +6790,7 @@ function HandleFootstepsAwareness(Pawn instigator, float mod)
             fSubAwarenessMod = 1.0 - mod;
 
         fSubAwarenessModTime = 5.0;
-        DeusExPlayer(instigator).DebugMessage("Noise handler level: " $ fSubAwarenessMod);
+        //DeusExPlayer(instigator).DebugMessage("Noise handler level: " $ fSubAwarenessMod);
         
         if (fSubAwarenessMod < HearingThreshold)
         {
