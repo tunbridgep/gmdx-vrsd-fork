@@ -12,6 +12,12 @@ Bugfixes:
 - Fixed a bug with wrong music when loading the game while the combat track is transitioning to the ambient track.
 - Fixed a bug where the number of found collectibles would not be reset upon starting a new game.
 
+Map Changes:
+- 02_NYC_Street
+  - Fixed a bug that would cause the game to crash if the player attempted to carry TNT from Battery Park.
+- 04_NYC_NSFHQ
+  - Changed the underground security login from TJEFFERSON/NEWREVOLUTION to GWASHINGTON/NEWREVOLUTION, so you can't open up the whole underground area super easily without hacking.
+
 1.1:
 
 New Features:
