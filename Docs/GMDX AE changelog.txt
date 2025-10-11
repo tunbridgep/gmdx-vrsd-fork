@@ -2,6 +2,7 @@
 
 New Features:
 - Pressing "F" in the inventory screen will now assign the selected item as your secondary item.
+- Tech Goggles and the Vision Augmentation can now see items inside containers (could previously only show items in the world).
 
 Misc Changes:
 - Reduced the stack size of Medkits and Biocells
