@@ -595,13 +595,16 @@ function string GetFrobString(DeusExPlayer player)
 
     if (player != None)
     {
-        //If it's empty, add "Empty" to the weapon name
-        if (PickupAmmoCount == 0 && player.bShowItemPickupCounts && AmmoName != None && AmmoName != class'AmmoNone')
-            str = strEmpty;
+        if (player.bShowItemPickupCounts && AmmoName != None && AmmoName != class'AmmoNone')
+        {
+            //If it's empty, add "Empty" to the weapon name
+            if (PickupAmmoCount == 0)
+                str = strEmpty;
 
-        //Otherwise If it's loaded, show it's ammo
-        else if (PickupAmmoCount > 0 && player.bShowItemPickupCounts)
-            str = string(PickupAmmoCount);
+            //Otherwise If it's loaded, show it's ammo
+            else if (PickupAmmoCount > 0 && player.bShowItemPickupCounts)
+                str = string(PickupAmmoCount);
+        }
 
         //Show if it's modified
         if (bModified && player.bBeltShowModified)
