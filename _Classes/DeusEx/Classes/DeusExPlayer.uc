@@ -8566,6 +8566,9 @@ function DoLeftFrob(Actor frobTarget)
         bLeftClicked = true;
         HandleItemPickup(FrobTarget,false,false,false,true,true);
     }
+    
+    //Now required because of the green frob display
+    UpdateHUD();
 }
 
 //Sarge: Because we can only inherit from one class,
@@ -8606,6 +8609,9 @@ function DoRightFrob(Actor frobTarget)
         HandleItemPickup(FrobTarget,false,false,false,true,true);
     else if (bDefaultFrob)
         DoFrob(Self, None);
+    
+    //Now required because of the green frob display
+    UpdateHUD();
 }
 
 //SARGE: Check if a frobbed item is declined, and handle it

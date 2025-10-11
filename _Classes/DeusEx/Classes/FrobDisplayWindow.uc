@@ -235,26 +235,28 @@ function Color GetFrobDisplayBorderColor(Actor frobTarget)
             else if (capacity - myammo < AM.AmmoAmount)
                 return colWireless;
         }
-        else if (WE != None && WE.PickupAmmoCount > 0 && player.FindInventoryType(WE.Class) != None)
+        else if (WE != None && WE.PickupAmmoCount > 0)
         {
             AM = DeusExAmmo(player.FindInventoryType(WE.AmmoName));
             if (AM != None)
                 capacity = player.GetAdjustedMaxAmmo(AM);
             
-            //player.ClientMessage("Capacity: " $ capacity $ ", myAmmo: " $ AM $ " (" $ AM.class $ ")");
             if (capacity > 0)
             {
                 myammo = AM.AmmoAmount;
+                //player.DebugMessage("Capacity: " $ capacity $ ", myAmmo: " $ myAmmo $ ", diff: " $ (capacity-myammo) $ " (" $ AM.class $ ")");
 
-                if (myammo == capacity)
+                if (myammo >= capacity)
                     return colBadAug;
                 else if (capacity - myammo < WE.PickupAmmoCount)
+                    return colWireless;
+                if (capacity - myammo > 0 && player.FindInventoryType(Inv.Class) == None && !player.FindInventorySlot(Inv, True)) //No space but can still loot
                     return colWireless;
             }
         }
 
         //Not enough space
-        if (capacity == 0 && player.FindInventoryType(Inv.Class) == None && !player.FindInventorySlot(Inv, True))
+        if (player.FindInventoryType(Inv.Class) == None && !player.FindInventorySlot(Inv, True))
             return colBadAug;
 
         //Can carry only 1
