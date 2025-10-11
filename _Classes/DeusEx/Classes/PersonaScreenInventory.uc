@@ -2372,7 +2372,7 @@ function WeaponUpdateInfo(DeusExWeapon weaponFrom)                              
      if (aWeapon != none && aWeapon == weaponFrom)
      {
         // Send status message and update info window
-        winStatus.AddText(Sprintf(AmmoLoadedLabel, aWeapon.ammoType.itemName));
+        //winStatus.AddText(Sprintf(AmmoLoadedLabel, aWeapon.ammoType.itemName));
 		aWeapon.UpdateInfo(winInfo);
 		//winInfo.SetLoaded(aWeapon.AmmoName);
 

@@ -29,6 +29,7 @@ Bugfixes:
 - Fixed some code notes not working properly with the Unknown Codes modifier
 - Fixed Markers sometimes displaying at invalid exits (such as the courtyard in the Luminous Path compound)
 - Fixed numerous bugs related to the Received Items display, including showing wrong icons or duplicated icons.
+- Fixed the information display not updating correctly when attaching/detatching addons for unequipped weapons.
 - Fixed some typos.
 
 Map Changes:

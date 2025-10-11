@@ -345,21 +345,21 @@ function bool ButtonActivated( Window buttonPressed )
 		case buttonAddRemoveSilencer:
             if (modifyThis != None)
             {
-                modifyThis.ToggleAttachedSilencer(player.bRealUI || player.bHardcoreMode);
+                modifyThis.ToggleAttachedSilencer((player.bRealUI || player.bHardcoreMode) && player.inHand == modifyThis);
                 modifyThis.UpdateInventoryInfo();
             }
             break;
 		case buttonAddRemoveLaser:
             if (modifyThis != None)
             {
-                modifyThis.ToggleAttachedLaser(player.bRealUI || player.bHardcoreMode);
+                modifyThis.ToggleAttachedLaser((player.bRealUI || player.bHardcoreMode) && player.inHand == modifyThis);
                 modifyThis.UpdateInventoryInfo();
             }
             break;
 		case buttonAddRemoveScope:
             if (modifyThis != None)
             {
-                modifyThis.ToggleAttachedScope(player.bRealUI || player.bHardcoreMode);
+                modifyThis.ToggleAttachedScope((player.bRealUI || player.bHardcoreMode) && player.inHand == modifyThis);
                 modifyThis.UpdateInventoryInfo();
             }
             break;
@@ -716,9 +716,9 @@ function AddWeaponModDrawbacks(DeusExWeapon weapon)
 {
     local bool bDrawLaser, bDrawScope, bDrawSilencer;
 
-    bDrawLaser = weapon.bHasLaser && weapon.bHadLaser && weapon.GetAddonPenalty(Laser) > 0.0;
-    bDrawScope = weapon.bHasScope && weapon.bHadScope && weapon.GetAddonPenalty(Scope) > 0.0;
-    bDrawSilencer = weapon.bHasSilencer && weapon.bHadSilencer && weapon.GetAddonPenalty(Silencer) > 0.0;
+    bDrawLaser = (weapon.bHasLaser || weapon.bSwitchingToLaser) && weapon.bHadLaser && weapon.GetAddonPenalty(Laser) > 0.0;
+    bDrawScope = (weapon.bHasScope || weapon.bSwitchingToScope) && weapon.bHadScope && weapon.GetAddonPenalty(Scope) > 0.0;
+    bDrawSilencer = (weapon.bHasSilencer || weapon.bSwitchingToSilencer) && weapon.bHadSilencer && weapon.GetAddonPenalty(Silencer) > 0.0;
 
     if (!bDrawLaser && !bDrawSilencer && !bDrawScope)
         return;
