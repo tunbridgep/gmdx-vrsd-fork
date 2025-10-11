@@ -235,26 +235,28 @@ function Color GetFrobDisplayBorderColor(Actor frobTarget)
             else if (capacity - myammo < AM.AmmoAmount)
                 return colWireless;
         }
-        else if (WE != None && WE.PickupAmmoCount > 0 && player.FindInventoryType(WE.Class) != None)
+        else if (WE != None && WE.PickupAmmoCount > 0)
         {
             AM = DeusExAmmo(player.FindInventoryType(WE.AmmoName));
             if (AM != None)
                 capacity = player.GetAdjustedMaxAmmo(AM);
             
-            //player.ClientMessage("Capacity: " $ capacity $ ", myAmmo: " $ AM $ " (" $ AM.class $ ")");
             if (capacity > 0)
             {
                 myammo = AM.AmmoAmount;
+                //player.DebugMessage("Capacity: " $ capacity $ ", myAmmo: " $ myAmmo $ ", diff: " $ (capacity-myammo) $ " (" $ AM.class $ ")");
 
-                if (myammo == capacity)
+                if (myammo >= capacity)
                     return colBadAug;
                 else if (capacity - myammo < WE.PickupAmmoCount)
+                    return colWireless;
+                if (capacity - myammo > 0 && player.FindInventoryType(Inv.Class) == None && !player.FindInventorySlot(Inv, True)) //No space but can still loot
                     return colWireless;
             }
         }
 
         //Not enough space
-        if (capacity == 0 && player.FindInventoryType(Inv.Class) == None && !player.FindInventorySlot(Inv, True))
+        if (player.FindInventoryType(Inv.Class) == None && !player.FindInventorySlot(Inv, True))
             return colBadAug;
 
         //Can carry only 1
@@ -609,7 +611,10 @@ function DrawDeviceHudInformation(GC gc, actor frobTarget)
 	if (!device.bHackable || device.hackStrength == 0.0)
 		barSize = 45.00000;		
 
-	strInfo = DeusExDecoration(frobTarget).itemName $ strDoubleDot;
+    if (player.bGMDXDebug && frobTarget.isA('Keypad'))
+        strInfo = DeusExDecoration(frobTarget).itemName $ " (Code: " $ Keypad(frobTarget).validCode $ ")" $ strDoubleDot;
+    else
+        strInfo = DeusExDecoration(frobTarget).itemName $ strDoubleDot;
 	
 	if( ( frobTarget.IsA('AutoTurretGun') && frobTarget.Owner != None && frobTarget.Owner.IsA('AutoTurret') && AutoTurret(frobTarget.Owner).bRebooting )
 			|| ( frobTarget.IsA('SecurityCamera') && SecurityCamera(frobTarget).bRebooting ) )
@@ -762,6 +767,8 @@ function DrawOtherHudInformation(GC gc, actor frobTarget)
 	local float				infoX, infoY, infoW, infoH;
 	local string			strInfo;
 	local int 				typecastIt;
+    local int               i;
+    local string            un,p;
 	
 	// TODO: Check familiar vs. unfamiliar flags	
 	if (frobTarget.IsA('Pawn'))
@@ -803,6 +810,33 @@ function DrawOtherHudInformation(GC gc, actor frobTarget)
 		   }
 		}
 	}
+
+    //SARGE: Show passwords when debugging
+    if (player.bGMDXDebug && strInfo != "")
+    {
+        if (frobTarget.isA('Computers'))
+        {
+            strInfo = strInfo $ CR() $ "Logins:";
+            for (i = 0;i < 8;i++)
+            {
+                un = Computers(frobTarget).GetUserName(i);
+                p = Computers(frobTarget).GetPassWord(i);
+                if (un != "")
+                    strInfo = strInfo $ CR() $ un @ ":" @ p;
+            }
+        }
+        else if (frobTarget.isA('ATM'))
+        {
+            strInfo = strInfo $ CR() $ "Logins:";
+            for (i = 0;i < 8;i++)
+            {
+                un = ATM(frobTarget).GetAccountNumber(i);
+                p = ATM(frobTarget).GetPIN(i);
+                if (un != "")
+                    strInfo = strInfo $ CR() $ un @ ":" @ p;
+            }
+        }
+    }
 
 	infoX = boxTLX + 10;
 	infoY = boxTLY + 10;

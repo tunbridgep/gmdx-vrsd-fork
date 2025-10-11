@@ -332,9 +332,10 @@ var bool bBigMuzzleFlash;                                            //SARGE: Al
 
 var bool bDisposableWeapon;                                         //SARGE: Used for disposable weapons, such as grenades, PS20s, LAWs, etc. Disposable weapons can't be reloaded, and track ammo differently to regular weapons when dropped/picked up. Their ammo doesn't show up when being looted, either - The weapon is shown instead.
 
-//SARGE: Show Modified
+//SARGE: Show Modified and Empty
 var travel bool bModified;                                                             //SARGE: Keeps track of whether or not a particular weapon has been modified
 var localized string strModified;
+var localized string strEmpty;
 
 //SARGE: Weapon Requirements Matter
 var int minSkillRequirement;                                          //SARGE: Minimum skill requirement to use this weapon
@@ -544,7 +545,7 @@ function class<Ammo> GetPrimaryAmmoType()
 // SARGE: Refactored this out of the Carcass Frob function so it was hopefully less horribly long,
 // and it was repeated everywhere, all over the codebase. For shame, GMDX!!!
 // ----------------------------------------------------------------------
-function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, optional bool bLootSound, optional bool bNoRemoveClipAmmo, optional bool bOverflow, optional bool bOverflowWindow)
+function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, optional bool bLootSound, optional bool bNoRemoveClipAmmo, optional bool bOverflow, optional bool bOverflowWindow, optional string owner)
 {
     local class<Ammo> defAmmoClass;
     local int intj;
@@ -553,6 +554,9 @@ function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, op
     if (P == None)
         return false;
 			
+    if (owner == "")
+        owner = string(self.name);
+
     // Only add ammo of the default type
     // There was an easy way to get 32 20mm shells, buy picking up another assault rifle with 20mm ammo selected
     // Add to default ammo only
@@ -566,7 +570,7 @@ function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, op
     if (IsA('WeaponShuriken') && WeaponShuriken(self).bImpaled)
         overrideTexture = Texture'RSDCrap.Icons.BeltIconShurikenBloody';
 
-    intj = P.LootAmmo(defAmmoClass,PickupAmmoCount,bDisplayMsg,bDisplayWindow,bLootSound,bDisposableWeapon,bDisposableWeapon,bOverflow && !bDisposableWeapon,bOverflowWindow,overrideTexture);
+    intj = P.LootAmmo(owner,defAmmoClass,PickupAmmoCount,bDisplayMsg,bDisplayWindow,bLootSound,bDisposableWeapon,bDisposableWeapon,bOverflow && !bDisposableWeapon,bOverflowWindow,overrideTexture);
 
     if (intj > 0)
     {
@@ -582,14 +586,44 @@ function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, op
 //Sarge: Update weapon frob display when we have a mod applied
 function string GetFrobString(DeusExPlayer player)
 {
+    local string str;
+    
     //Disposable weapons show their ammo count, if above 1 (which should only ever happen in the MJ12 prison facility)
-    if (bDisposableWeapon && PickupAmmoCount > 1 && player.bShowItemPickupCounts)
-        return itemName @ "(" $ PickupAmmoCount $ ")";
-    //Modified weapons show their modified state
-    else if (bModified && player != None && player.bBeltShowModified)
-        return itemName @ "(" $ strModified $ ")";
-    else
+    if (bDisposableWeapon)
+    {
+        if (PickupAmmoCount > 1 && player != None && player.bShowItemPickupCounts)
+            return itemName @ "(" $ PickupAmmoCount $ ")";
         return itemName;
+    }
+
+    if (player != None)
+    {
+        if (player.bShowItemPickupCounts && AmmoName != None && AmmoName != class'AmmoNone')
+        {
+            //If it's empty, add "Empty" to the weapon name
+            if (PickupAmmoCount == 0)
+                str = strEmpty;
+
+            //Otherwise If it's loaded, show it's ammo
+            else if (PickupAmmoCount > 0 && player.bShowItemPickupCounts)
+                str = string(PickupAmmoCount);
+        }
+
+        //Show if it's modified
+        if (bModified && player.bBeltShowModified)
+        {
+            //If it's been set, add a dash
+            if (str != "")
+                str = str $ " - ";
+            str = str $ strModified;
+        }
+    }
+
+    //If we have any text, bracketise it
+    if (str != "")
+        str = " (" $ str $ ")";
+
+    return itemName $ str;
 }
 
 //Sarge: Update weapon description/display when we have a mod applied
@@ -7631,6 +7665,9 @@ function DestroyMe()
 {
 	local DeusExPlayer player;
 	player = DeusExPlayer(GetPlayerPawn());
+        
+    if (owner != None && owner.IsA('DeusExPlayer') && DeusExPlayer(owner).iShifterWeaponSwitch > 2 && bInObjectBelt)
+        DeusExPlayer(owner).ShifterSwitchAll(self,true);
 
     player.RemoveObjectFromBelt(self);
     Destroy();
@@ -7742,6 +7779,7 @@ defaultproperties
      PickupMessage="You found"
      ItemName="DEFAULT WEAPON NAME - REPORT THIS AS A BUG"
      strModified="Modified"
+     strEmpty="Empty"
      BobDamping=0.840000
      LandSound=Sound'DeusExSounds.Generic.DropSmallWeapon'
      bNoSmooth=False

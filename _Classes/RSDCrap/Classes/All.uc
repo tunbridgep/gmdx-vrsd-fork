@@ -23,6 +23,7 @@ class All expands Object
 
 //Outfits
 #exec TEXTURE IMPORT  FILE="Textures\Skins\BuddhaFace0.bmp" NAME="BuddhaFace" GROUP="Skins"
+#exec TEXTURE IMPORT  FILE="Textures\Skins\BuddhaFaceFem0.bmp" NAME="BuddhaFaceFem" GROUP="Skins"
 
 // Perks
 

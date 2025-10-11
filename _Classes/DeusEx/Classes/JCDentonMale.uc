@@ -282,14 +282,26 @@ function SetupOutfitManager()
         //Add additional outfits below this line
         //---------------------------------------
 
+        //Add collector outfit (Male)
         if (outfitManager.GetPartsGroup("AMTGM_Trench"))
         {
-            //Add collector outfit
             outfitManager.AddPart(PS_Body_M,"Collector's Mask",false,"collectible_b","RSDCrap.Skins.BuddhaFace",,,"RSDCrap.Skins.BuddhaFace");
             
             outfitManager.BeginNewOutfit("collectible_outfit", "The Collector", "A collectible mask given to the special few");
             outfitManager.OutfitAddPartReference("collectible_b");
             outfitmanager.OutfitAddPartReference("smuggler_s");
+            outfitmanager.OutfitAddPartReference("mib_p");
+            outfitmanager.OutfitAddPartReference("maxchen_t");
+        }
+        
+        //Add collector outfit (Female)
+        if (outfitManager.GetPartsGroup("AMTGFM_Trench"))
+        {
+            outfitManager.AddPart(PS_Body_F,"Collector's Mask",false,"collectible_bf","RSDCrap.Skins.BuddhaFaceFem",,,"RSDCrap.Skins.BuddhaFaceFem");
+            
+            outfitManager.BeginNewOutfit("collectible_outfit", "The Collector", "A collectible mask given to the special few");
+            outfitManager.OutfitAddPartReference("collectible_bf");
+            outfitmanager.OutfitAddPartReference("matrix_s");
             outfitmanager.OutfitAddPartReference("mib_p");
             outfitmanager.OutfitAddPartReference("maxchen_t");
         }

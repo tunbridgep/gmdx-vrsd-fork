@@ -85,7 +85,7 @@ function GenerateTeleporterList()
 
     foreach player.AllActors(class'MapExit',exit)
     {
-        if (exit.DestMap ~= "" || numTeleporters >= 10)
+        if (exit.DestMap ~= "" || exit.bPlayTransition || numTeleporters >= 10)
             continue;
 
         //Horrible filthy hack

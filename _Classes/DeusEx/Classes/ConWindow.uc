@@ -525,7 +525,11 @@ function bool ProcessCameraKey(EInputKey key)
 // ShowReceivedItem()
 // ----------------------------------------------------------------------
 
-function bool ShowReceivedItem(Inventory invItem, int count, optional bool bDeclined, optional int rollupType)
+function bool ShowReceivedItem(Inventory invItem, int count, optional bool bDeclined, optional bool bNoGroup)
+{
+}
+
+function bool ShowReceivedItemFrom(Actor owner, Inventory invItem, int count, optional bool bDeclined, optional bool bNoGroup)
 {
 }
 
