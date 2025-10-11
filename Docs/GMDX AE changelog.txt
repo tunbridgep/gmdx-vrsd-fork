@@ -2,6 +2,7 @@
 
 New Features:
 - Pressing "F" in the inventory screen will now assign the selected item as your secondary item.
+- The player's Real Name is now remembered when entering/leaving the new game screen, and between playthroughs.
 - Added Shifter-style weapon switching.
     - Press the Change Ammo key while holding a grenade, consumable, or other item, to swap it for a similar item.
     - Doing so will also swap the item on the toolbelt.
