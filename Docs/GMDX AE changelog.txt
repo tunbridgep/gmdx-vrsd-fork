@@ -9,6 +9,7 @@ Misc Changes:
 - "Immersive Carryables" is now a QoL option, rather than a Gameplay option, and is no longer enforced on Hardcore.
 - Updated a few default settings.
 - Ammo capacity modifier on non-hardcore reduced from 200% to 150%.
+- Minor optimisations for body fragments. More work needs to be done, but this should still give a minor performance incrase with a large number of body fragments.
 
 Bugfixes:
 - Fixed "Enter" pressing random keypad buttons rather than confirming the code when the Unknown Keypad Length modifier is used
