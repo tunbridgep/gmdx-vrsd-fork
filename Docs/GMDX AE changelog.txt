@@ -8,6 +8,7 @@ Misc Changes:
 - Reduced the stack size of Medkits and Biocells
 - "Immersive Carryables" is now a QoL option, rather than a Gameplay option, and is no longer enforced on Hardcore.
 - Updated a few default settings.
+- Ammo capacity modifier on non-hardcore reduced from 200% to 150%.
 
 Bugfixes:
 - Fixed "Enter" pressing random keypad buttons rather than confirming the code when the Unknown Keypad Length modifier is used
