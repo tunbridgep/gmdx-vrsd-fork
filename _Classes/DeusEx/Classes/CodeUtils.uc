@@ -101,7 +101,7 @@ static function DeusExNote GetCodeNote(DeusExPlayer P, string code, string code2
         //Don't check for codes which are common words, such as "Security", "Research", etc.
         for (i = 0;i < ArrayCount(default.ignoredCodes);i++)
         {
-            if (code2 ~= default.ignoredCodes[i])
+            if (code2 ~= default.ignoredCodes[i] && default.ignoredCodes[i] != "")
             {
                 P.DebugLog("NOTE CODE " $code$ " NOT FOUND IN NOTES (Excepted Code: "$ code2 $" )");
                 return None;
