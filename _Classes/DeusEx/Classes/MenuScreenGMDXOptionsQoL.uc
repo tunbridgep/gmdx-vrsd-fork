@@ -142,6 +142,7 @@ defaultproperties
      items(110)=(HelpText="Other characters will react to having guns pointed at them.",actionText="Game: Characters React to Weapons",variable="bPawnsReactToWeapons",defaultValue=1);
      items(111)=(HelpText="Dragging items off the inventory grid in the inventory screen will drop the items.",actionText="HUD: Inventory Drag and Drop",variable="bDragAndDropOffInventory",defaultValue=1,bAdvancedModeOnly=true)
      items(113)=(HelpText="Immersion/simulation option. If enabled, carried objects are no longer translucent.",actionText="Interaction: Immersive Carryables",variable="bNoTranslucency",bAdvancedModeOnly=true);
+     items(114)=(HelpText="The players Real Name will be remembered between playthroughs",actionText="Game: Remember Real Name",variable="bRememberTheName",bAdvancedModeOnly=true);
      Title="GMDX Quality of Life Options"
      colWidths(0)=214
      colWidths(1)=155

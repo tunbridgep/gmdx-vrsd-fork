@@ -918,6 +918,8 @@ var globalconfig bool bComputerActionsDrainHackTime;            //SARGE: If enab
 var globalConfig bool bPawnsReactToWeapons;                     //SARGE: Whether or not pawns will react when you have your weapons pointed at them.
 var transient float PawnReactTime;                              //SARGE: Only detect pawn reactions every 10th of a second or so
 
+var globalconfig bool bRememberTheName;                         //SARGE: Remember the players real-name. Does not increase the players pain threshold by 50%.
+
 var transient bool bUpdateHud;                                 //SARGE: Trigger a HUD update next frame.
 
 var const localized string MsgSecondaryAdded;
@@ -20293,4 +20295,5 @@ defaultproperties
      fMusicHackTimer=4.0
      bPawnsReactToWeapons=true
      bDragAndDropOffInventory=true
+     bRememberTheName=true
 }

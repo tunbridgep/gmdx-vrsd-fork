@@ -825,8 +825,11 @@ function ProcessAction(String actionKey)
 		{
 			SaveSettings();
 
-            savedPlayerName = playerName;
-            SaveConfig();
+            if (player.bRememberTheName)
+            {
+                savedPlayerName = playerName;
+                SaveConfig();
+            }
 
 			// DEUS_EX_DEMO
 			//
