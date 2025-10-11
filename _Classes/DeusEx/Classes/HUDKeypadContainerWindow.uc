@@ -28,13 +28,18 @@ function InitKeypadWindow(Keypad owner, DeusExPlayer user, bool instantSuccess)
 }
 
 //SARGE: Add a notes window showing all relevant notes.
-function AddNotesWindow(DeusExPlayer player, DeusExNote codeNote)
+function AddNotesWindow(DeusExPlayer player, DeusExNote codeNote, bool fakeDisplay)
 {
     if (!player.bShowCodeNotes)
         return;
 
+    //AWFUL hack!
+    //If we have fakeDisplay on, pretend there are no notes.
+    if (fakeDisplay && !player.bHardcoreMode && player.iNoKeypadCheese == 0)
+        codeNote = None;
+
     //SARGE: What an AWFUL conditional...
-    if (((codeNote == None && (!player.bHardcoreMode || player.iNoKeypadCheese == 0))) || keypadWindow == None || keypadWindow.bInstantSuccess)
+    if ((codeNote == None && !player.bHardcoreMode && player.iNoKeypadCheese == 0) || !player.HasAnyNotes() || keypadWindow == None || keypadWindow.bInstantSuccess)
         return;
 
     //winNotes = root.hud.ShowInfowindow(); //Can't do this, HUD is hidden

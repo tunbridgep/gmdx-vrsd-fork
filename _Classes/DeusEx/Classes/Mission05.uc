@@ -23,12 +23,23 @@ function FirstFrame()
     local int ammoCount;
     local DeusExWeapon MiguelWeapon;
     local DeusExAmmo MiguelAmmo;
+    local bool bFollowing;
 
 	Super.FirstFrame();
     
     //SARGE: Disable cut content without the modifier
     if (!player.bCutInteractions && firstTime)
 		flags.SetBool('Miguel_No_Arming', True);
+        
+    //On all maps, make sure Miguel is configured properly.
+    bFollowing = flags.GetBool('MiguelFollowing');
+    player.DebugMessage("Configuring Miguel First Time:" @ bFollowing);
+    foreach AllActors(class'Terrorist', T)
+    {
+        T.bKeepWeaponDrawn = bFollowing;
+        T.bReactShot = bFollowing;
+        break;
+    }
 
     //On all maps except the lab map, give Miguel the correct weapon
     if (localURL != "05_NYC_UNATCOMJ12LAB" && firstTime && flags.GetBool('MiguelArmed'))
@@ -76,7 +87,6 @@ function FirstFrame()
                 T.AddInventory(MiguelWeapon);
                 T.SetWeapon(MiguelWeapon);
             }
-
         }    
     }
 
@@ -298,14 +308,24 @@ function Timer()
 	local BlackHelicopter B;
     local SkillAwardTrigger TR;
     local UnatcoTroop Trooper;
+    local bool bFollowing, bConfig;         //SARGE: Added.
 
 	Super.Timer();
     
     //SARGE: When miguel is following, make sure he's always got his weapon drawn.
-    if (flags.GetBool('MiguelFollowing'))
+    //SARGE: Also make sure he doesn't react to gunfire when not following
+    bFollowing = flags.GetBool('MiguelFollowing');
+    bConfig = flags.GetBool('GMDXMiguelFollowingConfigured');
+    if ((bFollowing && !bConfig) || (!bFollowing && bConfig))
     {
+        player.DebugMessage("Configuring Miguel:" @ bFollowing @ bConfig);
         foreach AllActors(class'Terrorist', T)
-            T.bKeepWeaponDrawn = true;
+        {
+            T.bKeepWeaponDrawn = bFollowing;
+            T.bReactShot = bFollowing;
+            break;
+        }
+        flags.SetBool('GMDXMiguelFollowingConfigured', bFollowing,, 6);
     }
 
 	if (localURL == "05_NYC_UNATCOHQ")

@@ -102,6 +102,13 @@ function Eat(DeusExPlayer player)
 {
 }
 
+//Shenanigans Fatness
+function FattenUp(DeusExPlayer player)
+{
+    if (player.bShenanigans && player.fullUp >= 90 && FRand() < 0.1) //When nearly full, have a 10% chance of getting fatter
+        player.Fatness = MIN(player.Fatness + 1,255);
+}
+
 //What happens when we eat this.
 function OnActivate(DeusExPlayer player)
 {
@@ -109,6 +116,7 @@ function OnActivate(DeusExPlayer player)
     player.ClientMessage(sprintf(msgConsumed,ItemName));
     Super.OnActivate(player);
     Eat(player);
+    FattenUp(player);
     FillUp(player);
 }
 

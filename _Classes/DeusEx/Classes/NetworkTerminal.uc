@@ -270,7 +270,10 @@ function ShowFirstScreen()
     	ShowScreen(FirstScreen);
     //Show the notes screen
     if (winNotes != None)
+    {
         winNotes.Show();
+        winNotes.ResetNotePosition();
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -366,7 +369,10 @@ function CloseScreen(String action)
     if (action == "LOGOUT")
     {
         if (winNotes != None)
+        {
             winNotes.Show();
+            winNotes.ResetNotePosition();
+        }
         CreateHackWindow();
 		bNoHack = False;
     }
@@ -446,7 +452,7 @@ function CreateHackWindow()
 function AddNotesWindow()
 {
     local DeusExNote codeNotes[10];
-    local DeusExNote note1, note2;
+    local DeusExNote note;
     local int numCodes;
     local Computers C;
     local ATM A;
@@ -462,45 +468,28 @@ function AddNotesWindow()
     {
         for (i = 0; i < 8;i++)
         {
-            if (player.IsObfuscatedCode(C.GetUserName(i)) && player.IsObfuscatedCode(C.GetPassword(i)))
-            {
-                note1 = player.GetCodeNote(C.GetUserName(i),true);
-                note2 = player.GetCodeNote(C.GetPassword(i),true);
-            }
-            else
-            {
-                note1 = player.GetCodeNoteStrict(C.GetUserName(i),C.GetPassword(i),true);
-            }
+            note = player.GetCodeNote(C.GetUserName(i),C.GetPassword(i),true);
             
-            if (note1 != None)
-                codeNotes[numCodes++] = note1;
-            if (note2 != None && note2 != note1)
-                codeNotes[numCodes++] = note2;
+            if (note != None)
+                codeNotes[numCodes++] = note;
         }
     }
     else if (A != None)
     {
         for (i = 0; i < 8;i++)
         {
-            if (player.IsObfuscatedCode(A.GetAccountNumber(i)) && player.IsObfuscatedCode(A.GetPIN(i)))
-            {
-                note1 = player.GetCodeNote(A.GetAccountNumber(i),true);
-                note2 = player.GetCodeNote(A.GetPIN(i),true);
-            }
-            else
-            {
-                note1 = player.GetCodeNoteStrict(A.GetAccountNumber(i),A.GetPIN(i),true);
-            }
+            note = player.GetCodeNote(A.GetAccountNumber(i),A.GetPIN(i),true);
 
-            if (note1 != None)
-                codeNotes[numCodes++] = note1;
-            if (note2 != None && note2 != note1)
-                codeNotes[numCodes++] = note2;
+            if (note != None)
+                codeNotes[numCodes++] = note;
         }
     }
     
     //SARGE: Dirty hack alert!!!!
-    if (numCodes == 0 && (!player.bHardCoreMode && player.iNoKeypadCheese == 0))
+    if (numCodes == 0 && !player.bHardCoreMode && player.iNoKeypadCheese == 0)
+        return;
+
+    if (!player.HasAnyNotes())
         return;
 
     if (winNotes == None)
