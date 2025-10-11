@@ -60,13 +60,13 @@ selecting Manage, and then selecting Browse Local Files.
 
 |||Special Cases and Alternate Launchers|||
 
-**IT IS HIGHLY RECOMMENDED THAT YOU RUN THE MOD THROUGH THE DEDICATED BATCH FILE. THIS SECTION IS ONLY FOR ADVANCED USERS**
+**IT IS HIGHLY RECOMMENDED THAT YOU RUN THE MOD THROUGH THE DEDICATED EXE FILE. THIS SECTION IS ONLY FOR ADVANCED USERS**
 
-GMDX: AE may also be played without Kenties Deus Exe (or by using alternative launchers), as the GMDX_AE batch will replace the DeusEx.int file automatically.
+GMDX: AE may also be played without Kenties Deus Exe (or by using alternative launchers), as the GMDX_AE exe will replace the DeusEx.int file automatically.
 
 Additionally, it can be played without the GMDX_AE.exe file at all, which may be desired for users with pre-existing Deus Ex setups with multiple mods already installed.
 
-To get GMDX working without the dedicate batch file, follow these steps:
+To get GMDX working without the dedicated exe file, follow these steps:
 
 1. Ensure the GMDX: AE directory is added to DeusEx.ini
 2. Ensure that DeusEx.int is copied from the GMDX: AE directory into the base System directory (this is not necessary if using Kenties Deus Exe on Windows)

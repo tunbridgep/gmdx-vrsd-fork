@@ -24,6 +24,8 @@ var int NotesCount;
 
 var bool bEditableNotes;                //If the notes should be read only but selectable, or non-interactive entirely.
 
+var PersonaNotesEditWindow firstNoteWindow;
+
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -77,6 +79,17 @@ event DestroyWindow()
     winBackground = None;
 }
 
+// ----------------------------------------------------------------------
+// WindowReady()
+// ----------------------------------------------------------------------
+
+function ResetNotePosition()
+{
+    DeusExPlayer(GetPlayerPawn()).DebugMessage("ResetNotePosition");
+	// Make sure the most recent note is scrolled to the top
+	if (firstNoteWindow != None)
+		firstNoteWindow.AskParentToShowArea();
+}
 // ----------------------------------------------------------------------
 // CreateScrollTileWindow()
 // ----------------------------------------------------------------------
@@ -148,6 +161,9 @@ function PopulateNotes(TileWindow winTile)
             if (!note.bHidden)
                 noteWindow = CreateNoteEditWindow(winTile,note);
             note = note.next;
+
+            if (noteWindow != None && firstNoteWindow == None)
+                firstNoteWindow = noteWindow;
         }
     }
     else
@@ -157,12 +173,16 @@ function PopulateNotes(TileWindow winTile)
         {
             if (!Notes[i].bHidden)
                 noteWindow = CreateNoteEditWindow(winTile,Notes[i]);
-
+            
+            if (noteWindow != None && firstNoteWindow == None)
+                firstNoteWindow = noteWindow;
         }
     }
 
 	// Show the notes again, if they were visible before
 	winTile.Show(bWasVisible);
+
+    ResetNotePosition();
 }
 
 // ----------------------------------------------------------------------
@@ -176,12 +196,14 @@ function PersonaNotesEditWindow CreateNoteEditWindow(TileWindow winTile, DeusExN
 	newNoteWindow = PersonaNotesEditWindow(winTile.NewChild(Class'PersonaNotesEditWindow'));
     newNoteWindow.SetNote(note);
     if (bEditableNotes)
+    {
         newNoteWindow.SetReadOnly(true);
+        newNoteWindow.bBlockEscape = true;
+    }
     else
         newNoteWindow.EnableEditing(false);
     newNoteWindow.bUseMenuColors = bUseMenuColors;
     newNoteWindow.StyleChanged();
-    newNoteWindow.bBlockEscape = true;
     //newNoteWindow.SetTextAlignments(HALIGN_Left, VALIGN_Center);
     //newNoteWindow.SetTheme(player);
     //newNoteWindow.SetText(note.text);

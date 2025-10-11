@@ -85,6 +85,7 @@ function Timer()
 	local Greasel greasel;
 	local GuntherHermann gunther;
 	local MJ12Commando commando;
+    local Male2 defoe;
 	local Actor A;
 
 	Super.Timer();
@@ -110,7 +111,20 @@ function Timer()
 				count++;
 
 			if (count == 0)
+            {
 				flags.SetBool('defoequestcomplete', True,, 11);
+
+                //SARGE: In shenanigans mode, rename Defoe to Defriend when we finish his quest.
+                //But only if we have spoken to him before.
+                if (player.bShenanigans)
+                {
+                    foreach AllActors(class'Male2', defoe)
+                    {
+                        if (defoe.FamiliarName == "Defoe" && defoe.LastConEndTime > 0)
+                            defoe.FamiliarName = "Defriend";
+                    }
+                }
+            }
 		}
 	}
 	else if (localURL == "10_PARIS_CATACOMBS_TUNNELS")

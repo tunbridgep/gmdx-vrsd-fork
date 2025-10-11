@@ -38,6 +38,13 @@ var const bool bShortHeaderButtons;                 //SARGE: The vanilla lists h
 var const bool bShowDefaults;                       //SARGE: Shows "(Default: <Value>)" text in the help area when looking at an item in the list.
 var localized string DefaultValueString;
 
+var config bool bAdvancedMode;                      //SARGE: When toggled on, show ALL the options, not just the advanced ones.
+var const bool bHasAdvancedMode;                    //SARGE: When set, the menu has "advanced options" buttons and restricts it's available options depending on the setting above.
+
+var const localized string MsgEnableAdvancedMode;
+var const localized string MsgAdvancedModeOn;
+var const localized string MsgAdvancedModeOff;
+
 struct S_ListItem
 {
 	var localized string helpText;
@@ -64,17 +71,38 @@ struct S_ListItem
     var int defaultValue; //TODO: Find a way to reset to default value via console
     var string consoleTarget; //If not set, use the global one instead
     var string sortCategory;  //Will be prepended to the name in the third col, for sorting
+    var bool bAdvancedModeOnly;     //Will only appear in "advanced" mode.
 };
 
 var S_ListItem items[255];
 
 event InitWindow()
 {
+    if (bHasAdvancedMode)
+    {
+        actionButtons[2].Action=AB_Other;
+        actionButtons[2].Text=MsgEnableAdvancedMode;
+        actionButtons[2].Key="toggleAdvanced";
+    }
 	Super.InitWindow();
     LoadSettings();
     CreateHeaderButtons();
     CreateChoices();
     ShowHelpString(-1);
+}
+
+function ProcessAction(String actionKey)
+{
+    if (actionKey == "toggleAdvanced")
+    {
+        bAdvancedMode = !bAdvancedMode;
+        SaveConfig();
+        CreateChoices();
+        if (bAdvancedMode)
+            ShowHelp(MsgAdvancedModeOn);
+        else
+            ShowHelp(MsgAdvancedModeOff);
+    }
 }
 
 function CreateChoices()
@@ -112,6 +140,10 @@ function CreateChoices()
             //set to use the global help text if one is not set
             if (items[i].helpText == "")
                 items[i].helpText = helpText;
+            
+            //If it's an advanced mode option, bail out if we're not in advanced mode
+            if (bHasAdvancedMode && items[i].bAdvancedModeOnly && !bAdvancedMode)
+                continue;
 
             lstItems.AddRow(items[i].actionText $ ";" $ GetValueString(i) $ ";" $ i $ ";" $ items[i].sortCategory $ items[i].actionText);
             //lstItems.AddRow(items[i].actionText @ items[i].variable $ ";" $ GetValueString(i) $ ", " $ items[i].value);
@@ -517,4 +549,7 @@ defaultproperties
      colWidths(1)=205
      bShortHeaderButtons=true
      DefaultValueString="(Default: %s)"
+     MsgEnableAdvancedMode="Toggle Advanced Mode"
+     MsgAdvancedModeOn="Advanced Mode Enabled"
+     MsgAdvancedModeOff="Advanced Mode Disabled"
 }

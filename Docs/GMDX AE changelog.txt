@@ -1,8 +1,36 @@
+1.11 (Hotfix Release):
+
+New Features:
+- Pressing "F" in the inventory screen will now assign the selected item as your secondary item.
+
+Misc Changes:
+- Reduced the stack size of Medkits and Biocells
+- "Immersive Carryables" is now a QoL option, rather than a Gameplay option, and is no longer enforced on Hardcore.
+- Updated a few default settings.
+
+Bugfixes:
+- Fixed "Enter" pressing random keypad buttons rather than confirming the code when the Unknown Keypad Length modifier is used
+- Fixed a bug with wrong music when loading the game while the combat track is transitioning to the ambient track.
+- Fixed a bug where the number of found collectibles would not be reset upon starting a new game.
+- Fixed Computer notes screen scrolling to the bottom when returning to the Login screen.
+- Fixed Markers sometimes displaying at invalid exits (such as the courtyard in the Luminous Path compound)
+- Fixed some typos.
+
+Map Changes:
+- 02_NYC_Street
+  - Fixed a bug that would cause the game to crash if the player attempted to carry TNT from Battery Park.
+- 04_NYC_NSFHQ
+  - Changed the underground security login from TJEFFERSON/NEWREVOLUTION to GWASHINGTON/NEWREVOLUTION, so you can't open up the whole underground area super easily without hacking.
+- 05_NYC_MJ12Lab/05_NYC_UNATCOHQ
+  - Miguel no longer goes running around and getting into fights at random times.
+
 1.1:
 
 New Features:
+- Items can now be dropped by dragging them off the inventory grid. This feature can be disabled in the QoL menu.
 - Using actions while hacking (such as clicking on turrets, cameras, etc) will now drain hack time. Using Worm softwares will prevent this. This can be disabled in the Gameplay menu.
 - Added collectibles. JC can now find one collectible per mission. Can you find them all? Collectibles must be enabled in the Playthrough Modifiers menu to appear.
+  - Finding them all will unlock a unique outfit! (Augmentique required)
 - The message log will now appear while a DataLink is playing. Added a new QoL setting to disable this.
 - Added a small blue glow to Datacubes
 - Added "Crosshair off by one" setting, enabled by default, which should fix the crosshairs being misaligned on 1440p and other resolutions.
@@ -62,6 +90,9 @@ New Features:
 - When highlighting nanokeys, their proper names will now be displayed, rather than "Nano Key"
 - The Special Options screen on computers will now show an Email/Security button instead of the Logout button, to prevent accidentally logging out without disabling cameras etc.
   - This can be disabled in the QoL menu.
+- General Looting Improvements:
+  - The Items Received window will now show a running total of items found as you loot multiple corpses in quick succession, rather than being cleared between each one.
+  - This can be reverted to how it was in GMDX:AE 1.0 (and vanilla) by using the QoL menu.
 - Third Person Conversation Improvements:
   - Items given will now appear next to items received.
   - Credit transfers will also be shown in the given/received windows.
@@ -81,6 +112,7 @@ New Features:
 - Nanokeys now display their full name when highlighted, rather than "NanoKey"
 - Automatic Augmentations will now temporarily display as the Active aug colour in the augs display when consuming energy.
 - Credits will now display their amount in brackets when highlighted. Additionally added a new setting to show the Items Received window when picking up credits.
+- Friendly NPCs will now react to you pointing a gun at them, similar to Revision and Transcended.
 
 Map Changes:
 - 01_NYC_UnatcoIsland:
@@ -112,6 +144,8 @@ Map Changes:
   - Added a switch to the bottom of the phone-booth tunnel, to allow returning to Battery Park from the mole tunnels.
 - 03_NYC_747
   - Fixed Lebedev's outfit being unreachable.
+- 03_NYC_UnatcoHQ:
+  - Changed a Scope Mod in JC's office to a Damage mod.
 - 04_NYC_Bar:
   - Harley Filben is now removed when the 'Ton Hotel raid starts
 - 04_NYC_Street:
@@ -120,11 +154,17 @@ Map Changes:
 - 04_NYC_Hotel:
   - Fixed the dead Junkies in the dirty hotel room having blood pools.
   - Fixed wrong ATM code.
+  - Added an unmodified 10mm pistol to Paul's apartment, allowing us to give something to Mr Renton to fight JoJo.
+- 04_NYC_UnatcoHQ:
+  - The conversation music now starts with a previously unused section that adds a bit more to the creepy vibe.
 - 04_NYC_NSFHQ:
   - The switch to disable the Halon Gas next to the computer room is now locked inside a utility box with a 10% strength lock. The switch inside the computer room is still accessible freely.
   - The datacube containing incriminating information has been made easier to interact with, as previously it wasn't selectable without jumping.
 - 05_NYC_UNATCOMJ12Lab:
   - Added several flares to the Armoury.
+  - Fixed a few cases of duplicated furniture.
+- 06_HongKong_TongBase:
+  - Changed a Damage Mod to a Scope mod.
 - 06_HongKong_VersaLife:
   - Fixed Versalife labs employee code not working with the Known Codes modifier if a code was created at the lobby computer.
 - 08_NYC_Hotel:
@@ -133,6 +173,9 @@ Map Changes:
   - The Street Thug will now correctly shadow JC after speaking with Jordan Shea or Joe Green, rather than after talking to Dowd (which made him pointless previously).
 - 09_NYC_Ship:
   - Fixed Sailor outfit being unreachable.
+- 09_NYC_ShipBelow:
+  - Fixed a bilge pump having weird display/rendering issues.
+  - Fixed a ladder that wasn't able to be climbed properly.
 - 11_Paris_Cathedral:
   - Fixed Cathedral datavault image having a purple background.
 - 12_Vandenberg_Cmd:
@@ -149,13 +192,15 @@ Map Changes:
   - Made the UC enemy respawners spawn more reliably.
 
 Bug Fixes:
-- Fixed `meverett` login not working with the Unknown Codes modifier active.
+- Complete overhaul of the Unknown Codes system, now it should be much more robust and a lot less error-prone.
 - Fixed GMDX:AE issue where pain and death sounds were not randomising accurately.
 - Fixed several "Accessed None" and "Array index out of bounds" errors.
 - Fixed vanilla bug where Jock's helicopter would still get destroyed if you knocked the suspicious mechanic unconscious without killing him
 - Fixed character skins not being properly reset when uncloaking.
 - Crate randomisation modifier now properly takes into account items randomised by the game's built-in randomisation system (content2, content3, etc).
 - Fixed the ADS Augmentation not displaying detonated projectiles if they were exploded instantly when being created.
+- Fixed a GMDX/vanilla issue where conversations with multiple actors would erroneously start if one actor was far away and the other one tried to talk to you
+    - This was throwing the player into the conversation state for a split second, "jerking" their movement and causing them to stutter.
 - Fixed GMDX/Vanilla bug where the Muscle augmentation would not affect ability to jump while holding heavy items, due to the check being in the wrong place.
 - Fixed GMDX/Vanilla bug where doors tagged with no key could still be locked using the Nanokey under certain conditions.
 - Fixed Defense aug blowing up non-armed grenades that are moved by explosions
@@ -165,6 +210,11 @@ Bug Fixes:
 - Fixed a GMDX oversight where buying a weapon with attachments wouldn't add those attachments to your existing copy.
 - Fixed a GMDX bug where some purchased weapons would have inconsistent ammo counts.
 - Fixed a GMDX vRSD bug where you could gain above the maximum amount of ammo in some cases.
+- Fixed several issue related to cloaking textures not being restored when loading a savegame, glasses textures looking strange when transparent, and other issues.
+- Fixed GMDX:AE version 1 bug where the alternate toolbelt wouldn't update properly when losing belt items (such as at the start of the MJ12 prison mission)
+- Fixed several GMDX:AE version 1 and vanilla music switching bugs. Now it should be much harder to break the music!
+- Fixed a GMDX:AE version 1 bug where the player would be blamed when others gib unconscious corpses, increasing their kill number.
+- Fixed a GMDX:AE version 1 bug where the pickup cooldown was not being set when left-frobbing items, so players with scroll-wheel binds could repeatedly use the same item multiple times via left-frobbing.
 - Wall sockets now actually hurt you when used, as intended.
 - Fixed a serious bug where perks would sometimes be lost when transitioning maps
 - Fixed JC's Real Name being reset in the new game screen when clicking the LDDP Help button
@@ -198,7 +248,11 @@ Bug Fixes:
 - Ammo counter for current bullets in clip now scales properly when determining whether to use green or red text when max ammo is an odd number.
 
 Misc Changes:
+- Removed the 1-2 second recharge time on most augmentations.
+- The QoL Menu has now been reduced to only the most impactful and important options. Turn on Advanced Mode to see all of the options.
 - The mod now includes RenderExt by Hanfling, which should prevent rendering errors and crashes.
+- The Flashlight now uses a separate binding and is no longer associated with any of the Function keys. Bound to V by default.
+- Unconscious bodies which are thrown into pools of water will now drown slowly over ~20 seconds, rather than dying instantly.
 - Augmentique settings can now be configured in the GMDX Menus
 - Added a small stamina cost for repeatedly dropping objects with right-click.
 - The mod now installs components into the `/Mods` subfolder, which should make your game folder neater.

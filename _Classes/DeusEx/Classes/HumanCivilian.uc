@@ -28,6 +28,7 @@ defaultproperties
      MinHealth=40.000000
      bPlayIdle=True
      bAvoidAim=False
+     bReactGunPointed=true
      bReactProjectiles=False
      bFearShot=True
      bFearIndirectInjury=True

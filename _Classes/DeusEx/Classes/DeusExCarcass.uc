@@ -305,6 +305,10 @@ function InitFor(Actor Other)
          else if (Other.IsA('ScriptedPawn'))
             savedName = ScriptedPawn(Other).UnfamiliarName;
 
+        //SARGE: All corpses can be reacted to
+        if (!IsA('Animal'))
+            bEmitCarcass = true;
+
         /*
 		// set as unconscious or add the pawns name to the description
         if (!bAnimalCarcass)
@@ -589,7 +593,7 @@ function ZoneChange(ZoneInfo NewZone)
 		{
         Mesh = Mesh3;
         assignedMesh = 3;
-        if (bNotDead && !IsA('ScubaDiverCarcass') && !IsA('KarkianCarcass') && !IsA('KarkianBabyCarcass') && !IsA('GreaselCarcass')) //SARGE: Added aquatic animals.
+        if (breatheTime == -1 && bNotDead && !IsA('ScubaDiverCarcass') && !IsA('KarkianCarcass') && !IsA('KarkianBabyCarcass') && !IsA('GreaselCarcass')) //SARGE: Added aquatic animals.
         {
             breatheTime = 18;
 		}
@@ -907,11 +911,16 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitLocation, Vector mo
 		  if ((damageType == 'Exploded') || (damageType == 'Munch') || (damageType == 'Burned'))
              CumulativeDamage += Damage;
         }
-		if (CumulativeDamage >= MaxDamage)
+        else
         {
-		    KillUnconscious(DeusExPlayer(instigatedBy));
-			ChunkUp(Damage);
+             CumulativeDamage += Damage;
         }
+		
+        if (CumulativeDamage >= 30)
+		    KillUnconscious(DeusExPlayer(instigatedBy));
+
+		if (CumulativeDamage >= MaxDamage)
+			ChunkUp(Damage);
 		if (bDecorative)
 			Velocity = vect(0,0,0);
 	}
@@ -1047,6 +1056,9 @@ function PickupCorpse(DeusExPlayer player)
 {
 	local POVCorpse corpse;
     local int j;
+
+    //Cancel drowning.
+    breatheTime = -1;
 
     bDblClickStart=false;
     if (!bInvincible)
@@ -1512,12 +1524,6 @@ function Frob(Actor Frobber, Inventory frobWith)
 						}
 						else
 						{
-                            //SARGE: Dirty Hack Alert!
-                            //We restrict the players ability to pickup for a few frames when picking stuff up,
-                            //because it prevents the item dupe glitch, but now we have to turn it off,
-                            //otherwise they can only pick up 1 item from each corpse at a time.
-                            player.pickupCooldown = 0;
-
 							// check if the pawn is allowed to pick this up
 							if ((P.Inventory == None) || (Level.Game.PickupQuery(P, item)))
 							{

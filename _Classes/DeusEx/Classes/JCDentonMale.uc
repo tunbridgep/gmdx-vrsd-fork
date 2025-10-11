@@ -282,7 +282,7 @@ function SetupOutfitManager()
         //Add additional outfits below this line
         //---------------------------------------
 
-        if (outfitManager.GetPartsGroup("GM_Trench"))
+        if (outfitManager.GetPartsGroup("AMTGM_Trench"))
         {
             //Add collector outfit
             outfitManager.AddPart(PS_Body_M,"Collector's Mask",false,"collectible_b","RSDCrap.Skins.BuddhaFace",,,"RSDCrap.Skins.BuddhaFace");

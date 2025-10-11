@@ -121,9 +121,9 @@ var travel float drugEffectTimer;
 var float JoltMagnitude;  // magnitude of bounce imposed by heavy footsteps
 
 // poison dart effects on the player
-var float poisonTimer;      // time remaining before next poison TakeDamage
-var int   poisonCounter;    // number of poison TakeDamages remaining
-var int   poisonDamage;     // damage taken from poison effect
+var travel float poisonTimer;      // time remaining before next poison TakeDamage
+var travel int   poisonCounter;    // number of poison TakeDamages remaining
+var travel int   poisonDamage;     // damage taken from poison effect
 
 // bleeding variables
 var     float       BleedRate;      // how profusely the player is bleeding; 0-1
@@ -763,8 +763,6 @@ var globalconfig bool bShowItemPickupCounts;                            //SARGE:
 
 var globalconfig bool bShowAmmoTypeInAmmoHUD;                           //SARGE: If true, show the selected ammo type in the Ammo HUD, where the lock on text would normally be.
 
-var transient float pickupCooldown;                                     //SARGE: Add a very short cooldown after picking something up, so that we can't duplicate items while they replicate to the server.
-
 var bool bWasForceSelected;                                             //SARGE: Whether or not our last weapon selection was forced.
 var bool bSelectedOffBelt;                                             //SARGE: Whether or not our last weapon selection was for an item that isn't on the belt.
 var globalconfig bool bAllowOffBeltSelection;                           //SARGE: When selecting off belt, unholstering respects the new selection rather than using the last belt selection. Disabled by default because it can feel weird/inconsistent.
@@ -912,10 +910,19 @@ var globalconfig bool bClearReceivedDisplay;                    //SARGE: Whether
 
 var globalconfig bool bQuickReflexes;                           //SARGE: Enemies can snap-shoot at you if they hear you or are alerted, rather than standing around.
 
-//EXPERIMENTAL FEATURES
+var globalconfig bool bDragAndDropOffInventory;                 //SARGE: Allow dropping items by dragging them off the inventory grid
 
 var globalconfig bool bExperimentalFootstepDetection;           //SARGE: Adds experimental footstep detection
 var globalconfig bool bExperimentalAmmoSpawning;                //SARGE: Adds experimental ammo spawning at our feet if we miss out
+
+var globalconfig bool bComputerActionsDrainHackTime;            //SARGE: If enabled, performing actions (disabling cameras, etc) drains hack time when hacking computers.
+
+var globalConfig bool bPawnsReactToWeapons;                     //SARGE: Whether or not pawns will react when you have your weapons pointed at them.
+var transient float PawnReactTime;                              //SARGE: Only detect pawn reactions every 10th of a second or so
+
+var transient bool bUpdateHud;                                 //SARGE: Trigger a HUD update next frame.
+
+var const localized string MsgSecondaryAdded;
 
 //////////END GMDX
 
@@ -1144,7 +1151,7 @@ function DebugLog(coerce string msg)
 // Sarge: Now needed because we need to fix up our charged item display if it's out of date
 // ----------------------------------------------------------------------
 
-function AssignSecondary(Inventory item)
+function AssignSecondary(Inventory item, optional bool bMessage)
 {
     /*
     if (assignedWeapon.isA('ChargedPickup'))
@@ -1155,6 +1162,12 @@ function AssignSecondary(Inventory item)
         assignedWeapon = "";
     else
         assignedWeapon = string(item.Class);
+
+    if (bMessage)
+    {
+        ClientMessage(Sprintf(msgSecondaryAdded,item.itemName));
+        PlaySound(Sound'Menu_Focus', SLOT_Interface, 0.75);
+    }
 
     RefreshChargedPickups();
     UpdateSecondaryDisplay();
@@ -2980,6 +2993,9 @@ function ResetPlayer(optional bool bTraining)
     //SARGE: Remove secondary weapon
     AssignSecondary(None);
 
+    //SARGE: Reset collectibles
+    collectiblesFound = 0;
+
     //SARGE: Reset killswitch
     killswitchTimer = default.killswitchTimer;
 
@@ -3457,7 +3473,20 @@ function SoundVolumeHackFix()
     ConsoleCommand("set" @ "ini:Engine.Engine.AudioDevice SpeechVolume" @ speechVol);
 }
 
-//SARGE: ClientSetMusic sets the music
+//SARGE: This has been completely revamped entirely.
+//DO NOT EDIT THIS UNLESS YOU KNOW WHAT THE FUCK YOU'RE DOING!
+//IT IS EXTREMELY LIKELY TO BREAK ON EVEN MINOR CHANGES, IN RARE AND HARD TO DEBUG WAYS!
+//IT'S A FUCKING MESS!
+//Now has the following features:
+//- Attempting to fix the horrible vanilla "fade out" bug.
+//- Not restarting tracks on map change or reload to maps using the same track.
+//- Different sections per map, that can be changed dynamically (like changing the combat music after talking to Page in area 51.)
+//- Different ambient tracks per map based on triggers (like entering the lab under versalife, where a trigger changes the map), also saved in your savegame
+//- Restoring the previous music part upon dying and reloading
+//- Fading out slowly when moving to a silent map (like the catacombs) [EXCEPT from the title screen]
+//- Not attempting to change to ambient sections for tracks that don't have them (the bar tracks, Tongs' lab, etc). In vanilla and GMDX v9, there's a noticeable cut when entering/leaving conversations or combat in these areas, in GMDX:AE there's no transition at all, which feels a lot smoother.
+//- Re-added the GMDX v9 cut "bar music" feature that would prevent some track parts playing in bars conditionally (some bars have conversation music, this disables them) - now called the "Extended" option in the "Enhanced Music System" in GMDX:AE
+//- Starting combat music based on a certain number of enemies (rather than being hardcoded to 1), and only leaving combat music when there's no active enemies left (so if it goes from 2 to 1 it doesn't stop even though it's below the threshold for combat music)
 function ClientSetMusic(Music NewSong, byte NewSection, byte NewCdTrack, EMusicTransition NewTransition)
 {
     local bool bChange;
@@ -3467,7 +3496,7 @@ function ClientSetMusic(Music NewSong, byte NewSection, byte NewCdTrack, EMusicT
     
     info = GetLevelInfo();
     
-    DebugLog("ClientSetMusic called:" @ NewSong @ NewSection @ NewTransition @ "Song is: " $ default.previousTrack @ default.previousLevelSection @ default.previousMusicMode @ bMusicSystemReset);
+    DebugMessage("ClientSetMusic called:" @ NewSong @ NewSection @ NewTransition @ "Song is: " $ default.previousTrack @ default.previousLevelSection @ default.previousMusicMode @ bMusicSystemReset @ Level.SongSection @ saveTime @ default.fMusicHackTimer @ SongSection);
 
     //SARGE: Here's the really annoying part...
     //We've just been asked to change tracks or sections, we need to work out
@@ -3479,10 +3508,11 @@ function ClientSetMusic(Music NewSong, byte NewSection, byte NewCdTrack, EMusicT
         DebugMessage("ClientSetMusic: Music Fade Hack");
         NewTransition = MTRAN_Instant;
         SoundVolumeHackFix();
-        /*
-        bChange = true;
-        bContinueOn = true;
-        */
+        if (bMusicSystemReset)
+        {
+            bChange = true;
+            bContinueOn = true;
+        }
     }
 
     //SARGE: ARE YOU SHITTING ME GAME???!!!
@@ -3510,9 +3540,15 @@ function ClientSetMusic(Music NewSong, byte NewSection, byte NewCdTrack, EMusicT
     else if (default.previousTrack != NewSong || default.previousLevelSection != info.SongAmbientSection)
     {
         //If changing to nothing, fade out
-        if (NewSong != None && (default.previousTrack == None || default.previousLevelSection == 255))
+        //NOTE: But not from the title
+        if (string(Song) != "Title_Music.Title_Music" && (NewSong == None || info.SongAmbientSection == 255))
+        {
+            DebugMessage("ClientSetMusic: Fade Out");
             NewTransition = MTRAN_SlowFade;
+        }
 
+        default.savedSection = info.SongAmbientSection;
+        NewSection = info.SongAmbientSection;
         DebugMessage("ClientSetMusic: Music Change Allowed (Track Change)");
         bChange = true;
         bContinueOn = false;
@@ -3547,21 +3583,35 @@ function ClientSetMusic(Music NewSong, byte NewSection, byte NewCdTrack, EMusicT
     if (bChange)
     {
         //If we're changing to the start of the track, instead, go to our saved section.
-        if (bContinueOn && NewSection == info.SongAmbientSection)
+        if (bContinueOn && NewSection == info.SongAmbientSection && bMusicSystemReset)
             NewSection = default.savedSection;
 
-        DebugMessage("ClientSetMusic: Setting music to " $ NewSong @ NewSection @ NewTransition);
+        //SARGE: Maybe if I call it like 5 times, it won't randomly bug out...
         Super.ClientSetMusic(NewSong,NewSection,NewCDTrack,NewTransition);
+        //Super.ClientSetMusic(NewSong,NewSection,NewCDTrack,NewTransition);
+        //Super.ClientSetMusic(NewSong,NewSection,NewCDTrack,NewTransition);
+        //Super.ClientSetMusic(NewSong,NewSection,NewCDTrack,NewTransition);
+        //Super.ClientSetMusic(NewSong,NewSection,NewCDTrack,NewTransition);
+        DebugMessage("ClientSetMusic: Setting music to " $ NewSong @ NewSection @ NewTransition @ SongSection);
         default.previousTrack = NewSong;
         default.previousLevelSection = info.SongAmbientSection;
         default.previousMusicMode = default.musicMode;
-        if (NewTransition == MTRAN_SlowFade)
+        if (NewTransition == MTRAN_Instant)
+            default.fMusicHackTimer = 1.0;
+        else if (NewTransition == MTRAN_SlowFade)
             default.fMusicHackTimer = 8.0;
         else
-            default.fMusicHackTimer = 4.0;
-
-        bMusicSystemReset = false;
+            default.fMusicHackTimer = 5.0;
     }
+
+    //When we start a new map or load a save, we need to force
+    //the music system to reset it's remembered position, or we get funky shenanigans.
+    if (bMusicSystemReset)
+    {
+        DebugMessage("Resetting Song Ambient Section");
+        default.savedSection = info.SongAmbientSection;
+    }
+    bMusicSystemReset = false;
 }
 
 //SARGE: Resets the music timers and state.
@@ -3572,14 +3622,6 @@ function ResetMusic()
     info = GetLevelInfo();
 
     PopulateLevelAmbientSection(info);
-
-    //When we start a new map or load a save, we need to force
-    //the music system to reset it's remembered position, or we get funky shenanigans.
-    if (default.previousTrack != Level.Song || info.SongAmbientSection != default.previousLevelSection)
-    {
-        DebugMessage("ResetMusic: Resetting Song Ambient Section");
-        default.savedSection = info.SongAmbientSection;
-    }
 
     /*
     //SARGE: Hack to fix the transition bug.
@@ -3592,6 +3634,7 @@ function ResetMusic()
     }
     */
 
+    //default.fMusicHackTimer = 8.0;
     default.musicMode = MUS_Ambient;
     bMusicSystemReset = true;
 }
@@ -3610,7 +3653,7 @@ function ResetMusic()
 
 function PopulateLevelAmbientSection(DeusExLevelInfo info)
 {
-    if (info != None && info.SongAmbientSection == -1)
+    if (info != None && info.SongAmbientSection == 255)
     {
         info.SongAmbientSection = Level.SongSection;
         DebugMessage("Setting up SongAmbientSection: " $ info.SongAmbientSection);
@@ -3634,9 +3677,9 @@ function UpdateDynamicMusic(float deltaTime)
 		
     info = GetLevelInfo();
 
-    bAllowConverse = info.MusicType != MT_SingleTrack && info.MusicType != MT_CombatOnly;
-    bAllowCombat = info.MusicType != MT_SingleTrack && info.MusicType != MT_ConversationOnly && iAllowCombatMusic > 0;
-    bAllowOther = info.MusicType == MT_Normal;
+    bAllowConverse = info.SongAmbientSection != 255 && info.MusicType != MT_SingleTrack && info.MusicType != MT_CombatOnly;
+    bAllowCombat = info.SongAmbientSection != 255 && info.MusicType != MT_SingleTrack && info.MusicType != MT_ConversationOnly && iAllowCombatMusic > 0;
+    bAllowOther = info.SongAmbientSection != 255 && info.MusicType == MT_Normal;
 
     //If we have the Extended music option, and we're in a bar or club, stop all of the music entirely
     if ((info.MusicType == MT_ConversationOnly || info.MusicType == MT_CombatOnly) && iEnhancedMusicSystem == 2)
@@ -3661,8 +3704,11 @@ function UpdateDynamicMusic(float deltaTime)
 		if (default.musicMode != MUS_Outro && bAllowOther)
 		{
             // save our place in the ambient track
-            if (default.musicMode == MUS_Ambient && default.fMusicHackTimer == 0)
+            if (default.previousMusicMode == MUS_Ambient && default.fMusicHackTimer == 0)
+            {
+                DebugMessage("SaveSection Outro: " $ SongSection);
                 default.savedSection = SongSection;
+            }
 
 			default.musicMode = MUS_Outro;
 			ClientSetMusic(Level.Song, 5, 255, MTRAN_FastFade);
@@ -3673,8 +3719,11 @@ function UpdateDynamicMusic(float deltaTime)
 		if (default.musicMode != MUS_Conversation)
 		{
 			// save our place in the ambient track
-			if (default.musicMode == MUS_Ambient && default.fMusicHackTimer == 0)
+			if (default.previousMusicMode == MUS_Ambient && default.fMusicHackTimer == 0)
+            {
+                DebugMessage("SaveSection Conversation: " $ SongSection);
 				default.savedSection = SongSection;
+            }
 
 			default.musicMode = MUS_Conversation;
 			ClientSetMusic(Level.Song, info.SongConversationSection, 255, MTRAN_Fade);
@@ -3685,8 +3734,11 @@ function UpdateDynamicMusic(float deltaTime)
 		if (default.musicMode != MUS_Dying)
 		{
             // save our place in the ambient track
-            if (default.musicMode == MUS_Ambient && default.fMusicHackTimer == 0)
+            if (default.previousMusicMode == MUS_Ambient && default.fMusicHackTimer == 0)
+            {
+                DebugMessage("SaveSection Dying: " $ SongSection);
                 default.savedSection = SongSection;
+            }
 
 			default.musicMode = MUS_Dying;
 			ClientSetMusic(Level.Song, 1, 255, MTRAN_Fade);
@@ -3727,8 +3779,11 @@ function UpdateDynamicMusic(float deltaTime)
 				if (default.musicMode != MUS_Combat)
 				{
 					// save our place in the ambient track
-					if (default.musicMode == MUS_Ambient && default.fMusicHackTimer == 0)
+					if (default.previousMusicMode == MUS_Ambient && default.fMusicHackTimer == 0)
+                    {
+                        DebugMessage("SaveSection Combat: " $ SongSection);
 						default.savedSection = SongSection;
+                    }
 
 					default.musicMode = MUS_Combat;
 					ClientSetMusic(Level.Song, info.SongCombatSection, 255, MTRAN_FastFade);
@@ -3861,6 +3916,10 @@ function MaintainEnergy(float deltaTime)
 simulated function RefreshSystems(float DeltaTime)
 {
 	local DeusExRootWindow root;
+
+    //SARGE: Also allow the HUD to be updated
+    if (bUpdateHud)
+        _UpdateHUD();
 
 	if (Level.NetMode == NM_Standalone)
 	  return;
@@ -5008,6 +5067,7 @@ simulated function PlayFootStep()
 	local float shakeTime, shakeRoll, shakeVert;
     local float stealthLevel;
 	local Pawn P;
+    local bool bPawnCheck;
 
 	// Only do this on ourself, since this takes into account aug stealth and such
 	if ( Level.NetMode != NM_StandAlone )
@@ -5328,11 +5388,20 @@ simulated function PlayFootStep()
 
         //SARGE: Also alert NPCs for "quiet" footsteps, so they become suspicious over time.
         //I bet this is real slow!
-        if (bExperimentalFootstepDetection)
+        if (bExperimentalFootstepDetection || bHardCoreMode)
         {
             for( P=Level.PawnList; P!=None; P=P.nextPawn )
             {
-                if (P.IsA('ScriptedPawn') && P.IsInState('Patrolling') && ScriptedPawn(P).bReactLoudNoise && VSize(P.Location - Location) < range*volumeMultiplier*0.8)
+                //We need to do several pawn checks, lets start with the cheapest ones...
+                bPawnCheck = P.IsA('ScriptedPawn') && !P.IsA('Robot') && !P.IsA('Animal') && ScriptedPawn(P).bReactLoudNoise;
+                bPawnCheck = bPawnCheck && P.LastRendered() < 5.0;
+                bPawnCheck = bPawnCheck && (P.IsInState('Patrolling') || P.IsInState('Wandering') || P.IsInState('Standing') || P.IsInState('Sitting'));
+                bPawnCheck = bPawnCheck && VSize(P.Location - Location) < range*volumeMultiplier*0.8;
+                bPawnCheck = bPawnCheck && P.LineOfSightTo(Self);
+                //bPawnCheck = bPawnCheck && P.AICanSee(Self) > 0;
+                //Log("Pawn: " $ P.Name @  P.AICanSee(Self));
+
+                if (bPawnCheck)
                     ScriptedPawn(P).HandleFootstepsAwareness(Self,volume*volumeMultiplier*volumeMod*0.6);
             }
         }
@@ -5400,6 +5469,98 @@ function bool IsFrobbable(actor A)
 			return True;
 
 	return False;
+}
+
+// ----------------------------------------------------------------------
+// ReactToGunsPointed()
+//
+// SARGE: Makes a pawn react if the player is pointing a gun at them.
+// Based on the one from Transcended, but done here instead of AugmentationDisplayWindow,
+// and rewritten from scratch to not be terrible.
+// ----------------------------------------------------------------------
+function ReactToGunsPointed()
+{
+    local Actor A;
+    local ScriptedPawn P;
+    local bool bCanReact;
+	local Vector HitLoc, HitNormal, StartTrace, EndTrace;
+    local DeusExWeapon weapon;
+		
+    weapon = DeusExWeapon(inHand);
+
+    //Bail out if the setting isn't enabled or we're unarmed.
+    if (!bPawnsReactToWeapons || weapon == None)
+        return;
+
+    // only do the trace every tenth of a second
+	if (PawnReactTime <= 0.1)
+        return;
+
+    PawnReactTime = 0;
+    
+    //DebugMessage("2");
+
+    // figure out how far ahead we should trace
+    StartTrace = Location;
+    EndTrace = Location + (Vector(ViewRotation) * FMIN(160,weapon.MaxRange));
+
+    // adjust for the eye height
+    StartTrace.Z += BaseEyeHeight;
+    EndTrace.Z += BaseEyeHeight;
+
+    //SARGE: Removed the special case for Multitools, see below for how this is done.
+
+    // find the actor that we are looking at
+    foreach TraceActors(class'Actor', A, HitLoc, HitNormal, EndTrace, StartTrace)
+    {
+        if (A.IsA('ScriptedPawn'))
+        {
+            P = ScriptedPawn(A);
+            break; //SARGE: Only affect the first one we hit
+        }
+    }
+
+    if (P == None)
+        return;
+    
+    //DebugMessage("3: " $ P.name);
+
+    //Pawn has to be able to react and not already afraid of guns
+    bCanReact = P.bReactGunPointed && !P.bFearWeapon;
+    
+    //DebugMessage("4 React Gun Drawn Check: " $ bCanReact);
+
+    //Pawn has to be an ally
+    bCanReact = bCanReact && P.GetPawnAllianceType(self) != ALLIANCE_Hostile;
+    
+    //DebugMessage("5 Alliance Type Check: " $ bCanReact);
+
+    //Pawn has to not be trying to start a conversation or otherwise approaching us
+    bCanReact = bCanReact && !P.IsInState('WaitingFor') && !P.IsInState('RunningTo') && !P.IsInState('GoingTo') && !P.IsInState('FirstPersonConversation') && !P.IsInState('Fleeing');
+    
+    //DebugMessage("6 State Check: " $ bCanReact);
+
+    //Pawn can't have reacted recently
+    bCanReact = bCanReact && P.bLookingForFutz && P.FutzTimer <= 0;
+    
+    //DebugMessage("7 Futz Timer Check: " $ bCanReact);
+
+    //Our weapon has to be visible and within range
+    bCanReact = bCanReact && weapon.bEmitWeaponDrawn/* && weapon.MaxRange >= VSize(pawn.Location - Player.Location)*/;
+    
+    //DebugMessage("8 Emit Weapon Check: " $ bCanReact);
+
+    //Pawn has to see us
+    bCanReact = bCanReact && P.AICanSee(self, , false, true, false, false) > 0;
+    
+    //DebugMessage("9 LOS Check: " $ bCanReact);
+
+    if (bCanReact)
+    {
+        DebugMessage("NPC Gun Reaction: " $ P.name);
+        P.FutzTimer = 4.0;
+        P.PlayFutzSound();
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -7222,6 +7383,7 @@ state PlayerWalking
 		RecoilEffectTick(deltaTime);
 		Bleed(deltaTime);
 		HighlightCenterObject();
+        ReactToGunsPointed();       //SARGE: Added.
 
 		UpdateDynamicMusic(deltaTime);
 		UpdateWarrenEMPField(deltaTime);
@@ -7230,6 +7392,7 @@ state PlayerWalking
 	  MultiplayerTick(deltaTime);
 	  // DEUS_EX AMSD For multiplayer...
 		FrobTime += deltaTime;
+		PawnReactTime += deltaTime;
 
         if (camInterpol > 0)
         {
@@ -7286,10 +7449,6 @@ state PlayerWalking
                 clickCountCyber=0;
             }
         }
-
-        //SARGE: Tick down our item pickup prevention (stops item dupes)
-        if (pickupCooldown > 0)
-            pickupCooldown -= deltaTime;
 
         //Stop being stunted if we elapse the stunted timer
         if (stuntedTime > 0)
@@ -7360,10 +7519,12 @@ state PlayerFlying
 		DrugEffects(deltaTime);
 		RecoilEffectTick(deltaTime);
 		HighlightCenterObject();
+        ReactToGunsPointed();       //SARGE: Added.
 		UpdateDynamicMusic(deltaTime);
 	    // DEUS_EX AMSD For multiplayer...
 	    MultiplayerTick(deltaTime);
 		FrobTime += deltaTime;
+		PawnReactTime += deltaTime;
 
 		// Check if player has walked outside a first-person convo.
 		CheckActiveConversationRadius();
@@ -7375,10 +7536,6 @@ state PlayerFlying
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
         
-        //SARGE: Tick down our item pickup prevention (stops item dupes)
-        if (pickupCooldown > 0)
-            pickupCooldown -= deltaTime;
-
 		Super.PlayerTick(deltaTime);
 	}
 }
@@ -7518,10 +7675,12 @@ state PlayerSwimming
 
 		DrugEffects(deltaTime);
 		HighlightCenterObject();
+        ReactToGunsPointed();       //SARGE: Added.
 		UpdateDynamicMusic(deltaTime);
 	  // DEUS_EX AMSD For multiplayer...
 	  MultiplayerTick(deltaTime);
 		FrobTime += deltaTime;
+		PawnReactTime += deltaTime;
 
 		if (bOnFire)
 			ExtinguishFire();
@@ -7582,10 +7741,6 @@ state PlayerSwimming
 		// Update Time Played
 		UpdateTimePlayed(deltaTime);
         
-        //SARGE: Tick down our item pickup prevention (stops item dupes)
-        if (pickupCooldown > 0)
-            pickupCooldown -= deltaTime;
-
 		Super.PlayerTick(deltaTime);
 	}
 
@@ -8385,16 +8540,6 @@ function DoLeftFrob(Actor frobTarget)
 
     if (inHand == None)
     {
-        //Add pickup cooldown, or bail if we have the pickup cooldown
-        if (frobTarget.IsA('Inventory'))
-        {
-            if (pickupCooldown < 0.01)
-                pickupCooldown = 0.15;
-            else
-                return;
-        }
-
-
         if (frobTarget.isA('DeusExPickup'))
             bDefaultFrob = DeusExPickup(frobTarget).DoLeftFrob(Self);
         else if (frobTarget.isA('DeusExWeapon'))
@@ -8613,7 +8758,7 @@ exec function ParseLeftClick()
     }
 
     //Special cases aside, now do the left hand frob behaviour
-    else if (bEnableLeftFrob && FrobTarget != none && IsReallyFrobbable(FrobTarget,true) && !bInHandTransition && (inHand == None || !inHand.IsA('POVcorpse')) && CarriedDecoration == None)
+    else if (bEnableLeftFrob && FrobTarget != none && !FrobTarget.bDeleteMe && IsReallyFrobbable(FrobTarget,true) && !bInHandTransition && (inHand == None || !inHand.IsA('POVcorpse')) && CarriedDecoration == None)
     {
         //SARGE: Hack to fix weapons repeatedly filling the received items window with crap if we're full
         DoLeftFrob(FrobTarget);
@@ -9153,7 +9298,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 
     //If we picked up something in the last 0.25 seconds, prevent pickup again.
     //This should prevent the item dupe glitch.
-    if (pickupCooldown > 0.01)
+    if (frobTarget.bDeleteMe)
         return false;
 
     //SARGE: Set the source of the interaction (used by the HUD Display)
@@ -9256,7 +9401,6 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
                         //Copy any charge from the target
                         dts.RechargeFrom(WeaponNanoSword(frobTarget));
                         
-                        pickupCooldown = 0.15;
                         UpdateHUD();
 
                         bDestroy = true;
@@ -9382,8 +9526,6 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
 
     if ((bCanPickup || !bSlotSearchNeeded) && !bDeclined)
     {
-        pickupCooldown = 0.15;
-        
         //SARGE: Moved left-click interaction to here.
         if (bLeftClicked && inHand == None)
         {
@@ -9665,7 +9807,7 @@ exec function PutInHand(optional Inventory inv, optional bool bNoPrimary)
         
         if (!bValidBelt)
         {
-            if (inv.bInObjectBelt)
+            if (inv != None && inv.bInObjectBelt)
                 advBelt = inv.beltPos;
             else
                 advBelt = -1;
@@ -10405,6 +10547,14 @@ function texture GetPlaceholderIcon(int objectNum)
     return beltInfos[objectNum].icon;
 }
 
+function int HasPlaceholderSlot(Class<inventory> obj)
+{
+    local int i;
+    for (i = 0;i < ArrayCount(beltInfos);i++)
+        if (beltInfos[i].icon == obj.default.Icon)
+            return i;
+    return -1;
+}
 
 // ----------------------------------------------------------------------
 // GetWeaponOrAmmo()
@@ -10949,7 +11099,7 @@ function PutCarriedDecorationInHand(optional bool bNoSoundEffect)
 			CarriedDecoration.SetBase(self);
             //CarriedDecoration.SetCollisionSize(CarriedDecoration.CollisionRadius*2,CarriedDecoration.CollisionHeight*2);
 			// make it translucent
-			if ((!bNoTranslucency && !bHardcoreMode) || AugmentationSystem.GetAugLevelValue(class'AugCloak') != -1.0)
+			if (!bNoTranslucency || AugmentationSystem.GetAugLevelValue(class'AugCloak') != -1.0)
 			{
 			CarriedDecoGlow = CarriedDecoration.ScaleGlow;
 			CarriedDecoration.Style = STY_Translucent;
@@ -11110,7 +11260,7 @@ function DropDecoration()
                 // turn off translucency
                 deco.Style = deco.Default.Style;
                 deco.bUnlit = deco.Default.bUnlit;
-                if ((!bNoTranslucency && !bHardcoreMode) && deco.IsA('DeusExDecoration'))
+                if (!bNoTranslucency && deco.IsA('DeusExDecoration'))
                     DeusExDecoration(deco).ScaleGlow = CarriedDecoGlow;
 
                 if (bThrowDecoration)
@@ -12541,6 +12691,11 @@ function UpdateCrosshair()
 
 function UpdateHUD()
 {
+    bUpdateHud = true;
+}
+
+function private _UpdateHUD()
+{
     local int i;
 	local DeusExRootWindow root;
 	root = DeusExRootWindow(rootWindow);
@@ -12557,6 +12712,10 @@ function UpdateHUD()
 
     //Show/Hide Markers
     UpdateMarkerDisplay(true);
+
+    bUpdateHud = false;
+
+    DebugMessage("UpdateHUD");
 }
 
 function UpdateSecondaryDisplay()
@@ -13470,7 +13629,8 @@ function bool DeleteInventory(inventory item)
 	if (inHand == item)
 	{
 		SetInHand(None);
-		SetInHandPending(None);
+		if (inHandPending == item)
+            SetInHandPending(None);
 	}
 
 	// Make sure the item is removed from the inventory grid
@@ -14099,6 +14259,10 @@ function bool StartConversation(
 		// If so, ABORT!
 		if ((!bForcePlay) && ((!con.bFirstPerson) && (ScriptedPawn(invokeActor) != None) && (ScriptedPawn(invokeActor).GetPawnAllianceType(Self) == ALLIANCE_Hostile)))
 			return False;
+
+        //SARGE: Check that all the actors involved in this conversation are within range
+        if (!con.CheckActorDistances(self))
+            return false;
 
 		// If the player is involved in this conversation, make sure the
 		// scriptedpawn even WANTS to converse with the player.
@@ -15496,7 +15660,7 @@ function bool AddImage(DataVaultImage newImage)
 	image = FirstImage;
 	while(image != None)
 	{
-		if (newImage.imageDescription == image.imageDescription)
+		if (newImage.Class == image.Class) //SARGE: Fix taken from Transcended.
 			return False;
 
 		image = image.NextImage;
@@ -19532,6 +19696,11 @@ function int GetAdjustedMaxAmmoByClass(class<Ammo> ammotype)
     {
         adjustedMaxAmmo = ammotype.default.MaxAmmo;
     }
+
+    //Double ammo capacities on non-hardcore
+    if (!bHardcoreMode && !DXAmmotype.default.bHarderScaling)
+        mult *= 2.0;
+
     //if (bHalveAmmo || (bHardcoreMode && bExtraHardcore))                        //RSD: Hardcore+ forces on halved max ammo
   	//	mult *= 0.5;
     if (mult <= 0.5)
@@ -19956,6 +20125,7 @@ defaultproperties
      fatty="You cannot consume any more at this time"
      noUsing="You cannot use it at this time"
      msgDeclinedPickup="%s is declined. Press again to pick up."
+     msgSecondaryAdded="%s added as Secondary"
      customColorsMenu(0)=(R=61,G=62,B=73)
      customColorsMenu(1)=(G=49,B=255)
      customColorsMenu(2)=(R=210,G=194,B=255)
@@ -20040,7 +20210,7 @@ defaultproperties
      bBeltMemory=True
      bEnhancedCorpseInteractions=True
      bBeltShowModified=true
-     iSearchedCorpseText=1
+     iSearchedCorpseText=3
      bDisplayClips=false
      iCutsceneFOVAdjust=2
      iFrobDisplayStyle=1
@@ -20101,11 +20271,11 @@ defaultproperties
      bEnhancedPersonaScreenMouse=true
      bShowFullAmmoInHUD=true
      bToolWindowShowKnownCodes=true
-     bToolWindowShowRead=false
+     bToolWindowShowRead=true
      bToolWindowShowAugState=true
      iToolWindowShowDuplicateKeys=1
      iToolWindowShowBookNames=1
-     bToolWindowShowInvalidPickup=false
+     bToolWindowShowInvalidPickup=true
      bStreamlinedComputerInterface=true
      bInventoryAmmoShowsMax=true
      bFasterInfolinks=true
@@ -20118,6 +20288,9 @@ defaultproperties
      bShowRegularNotes=true
      bShowMarkerNotes=true
      bEditDefaultNotes=false
-     fMusicHackTimer=-1
      bClearReceivedDisplay=true
+     bComputerActionsDrainHackTime=true
+     fMusicHackTimer=4.0
+     bPawnsReactToWeapons=true
+     bDragAndDropOffInventory=true
 }

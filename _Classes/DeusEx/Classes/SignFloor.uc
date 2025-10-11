@@ -3,7 +3,15 @@
 //=============================================================================
 class SignFloor extends DeusExDecoration;
 
-var() bool bSparta;                       //SARGE: If shenanigans are enabled, turn into the Sparta sign
+var() bool bSparta;                       //SARGE: If shenanigans are enabled, turn into the Sparta sign //SARGE: Unused but might re-enable it??
+
+var bool bRolledSparta;                   //Roll for sparta only once per map load.
+
+function PostBeginPlay()
+{
+    Super.PostBeginPlay();
+    bRolledSparta = FRand() <= 0.05 /*|| bSparta*/;
+}
 
 exec function UpdateHDTPsettings()
 {
@@ -11,7 +19,7 @@ exec function UpdateHDTPsettings()
 
     player = DeusExPlayer(GetPlayerPawn());
 
-    if (bSparta && player != None && player.bShenanigans)
+    if (bRolledSparta && player != None && player.bShenanigans) //5% chance of sparta signs in shenanigans mode.
     {
         bHDTPFailsafe = false;
         Super.UpdateHDTPsettings();

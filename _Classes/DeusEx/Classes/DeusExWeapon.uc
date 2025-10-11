@@ -313,8 +313,12 @@ var float sleeptime;                                                            
 //SARGE: HDTP Model toggles
 var config int iHDTPModelToggle;
 var globalconfig bool bHDTPMuzzleFlashes;                                       //SARGE: If set, all weapons will use HDTP muzzle flashes all the time
+var globalconfig bool bVanillaModelAttachments;                                 //SARGE: If set, use the vanilla models with attachments, rather than the actual vanilla models
 var string HDTPSkin;
 var string HDTPTexture;
+var string VanillaAddonPlayerViewMesh;
+var string VanillaAddonPickupViewMesh;
+var string VanillaAddonThirdPersonMesh;
 var string HDTPPlayerViewMesh;
 var string HDTPPickupViewMesh;
 var string HDTPThirdPersonMesh;
@@ -5862,6 +5866,17 @@ function string DoAmmoInfoWindow(Pawn P, PersonaInventoryInfoWindow winInfo)
 	winInfo.AddAmmoTypesItem(msgInfoAmmo, str);
 }
 
+//SARGE: Now each object can define it's own function for whether it can be a secondary or not.
+function bool CanAssignSecondary(DeusExPlayer player)
+{
+	if (bHandToHand)
+	{
+        if (DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkInventive').bPerkObtained || GoverningSkill == class'DeusEx.SkillDemolition' || IsA('WeaponCombatKnife') || IsA('WeaponHideAGun') || IsA('WeaponShuriken'))
+            return true;
+	}
+    return false;
+}
+
 //SARGE: TODO: Turn this horrible mess into generic functions that work with child classes
 simulated function bool UpdateInfo(Object winObject)
 {
@@ -5892,20 +5907,12 @@ simulated function bool UpdateInfo(Object winObject)
 
     //SARGE: Add Decline Button
     if (P.IsA('DeusExPlayer'))
+    {
 		winInfo.AddDeclineButton(class);
 
-	if (bHandToHand && Owner.IsA('DeusExPlayer'))
-	{
-	   if (DeusExPlayer(Owner).PerkManager.GetPerkWithClass(class'DeusEx.PerkInventive').bPerkObtained == true)
-	   {
-	      winInfo.AddSecondaryButton(self);
-	   }
-	   else if (GoverningSkill != class'DeusEx.SkillDemolition' && !IsA('WeaponCombatKnife') && !IsA('WeaponHideAGun') && !IsA('WeaponShuriken'))
-	   {                                                                        //RSD: Throwing Knives now require the perk, c'mon //RSD: Or nah
-	   }
-	   else
+        if (CanAssignSecondary(DeusExPlayer(P)))
 	       winInfo.AddSecondaryButton(self);
-	}
+    }
 
 	winInfo.SetText(msgInfoWeaponStats);
 	winInfo.AddLine();
@@ -6720,12 +6727,12 @@ exec function UpdateHDTPsettings()
         LargeIconRot = class'HDTPLoader'.static.GetTexture2(HDTPLargeIconRot,string(default.LargeIconRot),IsHDTP());
     if (HDTPIcon != "")
         Icon = class'HDTPLoader'.static.GetTexture2(HDTPIcon,string(default.Icon),IsHDTP());
-    if (HDTPPlayerViewMesh != "")
-        PlayerViewMesh = class'HDTPLoader'.static.GetMesh2(HDTPPlayerViewMesh,string(default.PlayerViewMesh),IsHDTP());
-    if (HDTPPickupViewMesh != "")
-        PickupViewMesh = class'HDTPLoader'.static.GetMesh2(HDTPPickupViewMesh,string(default.PickupViewMesh),isHDTP());
-    if (HDTPThirdPersonMesh != "")
-        ThirdPersonMesh = class'HDTPLoader'.static.GetMesh2(HDTPThirdPersonMesh,string(default.ThirdPersonMesh),IsHDTP());
+    if (HDTPPlayerViewMesh != "" || VanillaAddonPlayerViewMesh != "")
+        PlayerViewMesh = class'HDTPLoader'.static.GetMesh3(HDTPPlayerViewMesh,VanillaAddonPlayerViewMesh,string(default.PlayerViewMesh),IsHDTP(),bVanillaModelAttachments);
+    if (HDTPPickupViewMesh != "" || VanillaAddonPickupViewMesh != "")
+        PickupViewMesh = class'HDTPLoader'.static.GetMesh3(HDTPPickupViewMesh,VanillaAddonPickupViewMesh,string(default.PickupViewMesh),isHDTP(),bVanillaModelAttachments);
+    if (HDTPThirdPersonMesh != "" || VanillaAddonThirdPersonMesh != "")
+        ThirdPersonMesh = class'HDTPLoader'.static.GetMesh3(HDTPThirdPersonMesh,VanillaAddonThirdPersonMesh,string(default.ThirdPersonMesh),IsHDTP(),bVanillaModelAttachments);
     if (HDTPSkin != "")
         Skin = class'HDTPLoader'.static.GetTexture2(HDTPSkin,string(default.Skin),IsHDTP());
     if (HDTPTexture != "")
@@ -7750,6 +7757,7 @@ defaultproperties
      CopyModsSound=sound'M4ClipOut'
      msgModsCopied="Weapon Modifications applied from %d"
      bVisionImportant=true
+     bVanillaModelAttachments=true
      addonPenalties(0)=0.1 //Scope
      addonPenalties(1)=0.2 //Silencer
      addonPenalties(2)=0.075 //Laser

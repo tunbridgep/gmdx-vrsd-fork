@@ -26,6 +26,7 @@ var bool bBlockEscape;                       //SARGE: This is a hacky fix for th
 event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
 {
     //Stop crashing
+    //SARGE: This is a last minute hack, and I hate it
     if (key == IK_Escape && bBlockEscape)
         return true;
 

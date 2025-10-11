@@ -39,7 +39,7 @@ function int SetCharge(int newCharge)
 
 function int GetCurrentCharge()
 {
-    if (!owner.bNanoswordEnergyUse && !owner.bHardcoreMode)
+    if (owner != None && !owner.bNanoswordEnergyUse && !owner.bHardcoreMode)
         return 100;
     else
         return int((Float(charge) / Float(maxCharge)) * 100.0);

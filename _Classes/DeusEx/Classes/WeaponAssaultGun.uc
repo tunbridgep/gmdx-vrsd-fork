@@ -141,6 +141,20 @@ function DisplayWeapon(bool overlay)
     else if (overlay)
     {
         multiskins[0]=handsTex;
+        if (bVanillaModelAttachments)
+        {
+            ShowWeaponAddon(4,bHasSilencer);
+            ShowWeaponAddon(5,bHasLaser);
+            ShowWeaponAddon(6,bHasLaser && bLasing);
+            ShowWeaponAddon(7,bHasScope);
+        }
+    }
+    else if (bVanillaModelAttachments)
+    {
+        ShowWeaponAddon(3,bHasSilencer);
+        ShowWeaponAddon(4,bHasLaser);
+        ShowWeaponAddon(5,bHasLaser && bLasing);
+        ShowWeaponAddon(6,bHasScope);
     }
 
 
@@ -318,6 +332,9 @@ defaultproperties
      HDTPPlayerViewMesh="HDTPItems.HDTPAssaultGun"
      HDTPPickupViewMesh="HDTPItems.HDTPassaultGunPickup"
      HDTPThirdPersonMesh="HDTPItems.HDTPassaultGun3rd"
+     VanillaAddonPlayerViewMesh="VisibleAttachments.AssaultGun_Mod"
+     VanillaAddonPickupViewMesh="VisibleAttachments.AssaultGunPickup_Mod"
+     VanillaAddonThirdPersonMesh="VisibleAttachments.AssaultGun3rd_Mod"
      PlayerViewMesh=LodMesh'DeusExItems.AssaultGun'
      //PlayerViewMesh=LodMesh'HDTPEditsRSD.AssaultGunRSD' //Required for 3-shot burst
      //PlayerViewMesh=LodMesh'RSDCrap.AssaultGunRSD'

@@ -6,7 +6,7 @@ class PerkThermalImaging extends Perk;
 defaultproperties
 {
     PerkName="THERMAL IMAGING"
-    PerkDescription="An agent modifies tech goggle functionality, implementing short-ranged sonar scanning which enables the user to see potential threats through solid material."
+    PerkDescription="An agent modifies tech goggle functionality, implementing short-ranged sonar scanning which enables the user to see potential threats through solid material, including targets utilising thermoptic camo and other cloaking technology."
     PerkSkill=Class'DeusEx.SkillEnviro'
     PerkCost=175
     PerkLevelRequirement=3
