@@ -21,6 +21,8 @@ Map Changes:
   - Fixed a bug that would cause the game to crash if the player attempted to carry TNT from Battery Park.
 - 04_NYC_NSFHQ
   - Changed the underground security login from TJEFFERSON/NEWREVOLUTION to GWASHINGTON/NEWREVOLUTION, so you can't open up the whole underground area super easily without hacking.
+- 05_NYC_MJ12Lab/05_NYC_UNATCOHQ
+  - Miguel no longer goes running around and getting into fights at random times.
 
 1.1:
 
