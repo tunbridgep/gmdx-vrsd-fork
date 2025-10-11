@@ -1,6 +1,33 @@
+1.11 (Hotfix Release):
+
+New Features:
+- Pressing "F" in the inventory screen will now assign the selected item as your secondary item.
+
+Misc Changes:
+- Reduced the stack size of Medkits and Biocells
+- "Immersive Carryables" is now a QoL option, rather than a Gameplay option, and is no longer enforced on Hardcore.
+- Updated a few default settings.
+
+Bugfixes:
+- Fixed "Enter" pressing random keypad buttons rather than confirming the code when the Unknown Keypad Length modifier is used
+- Fixed a bug with wrong music when loading the game while the combat track is transitioning to the ambient track.
+- Fixed a bug where the number of found collectibles would not be reset upon starting a new game.
+- Fixed Computer notes screen scrolling to the bottom when returning to the Login screen.
+- Fixed Markers sometimes displaying at invalid exits (such as the courtyard in the Luminous Path compound)
+- Fixed some typos.
+
+Map Changes:
+- 02_NYC_Street
+  - Fixed a bug that would cause the game to crash if the player attempted to carry TNT from Battery Park.
+- 04_NYC_NSFHQ
+  - Changed the underground security login from TJEFFERSON/NEWREVOLUTION to GWASHINGTON/NEWREVOLUTION, so you can't open up the whole underground area super easily without hacking.
+- 05_NYC_MJ12Lab/05_NYC_UNATCOHQ
+  - Miguel no longer goes running around and getting into fights at random times.
+
 1.1:
 
 New Features:
+- Items can now be dropped by dragging them off the inventory grid. This feature can be disabled in the QoL menu.
 - Using actions while hacking (such as clicking on turrets, cameras, etc) will now drain hack time. Using Worm softwares will prevent this. This can be disabled in the Gameplay menu.
 - Added collectibles. JC can now find one collectible per mission. Can you find them all? Collectibles must be enabled in the Playthrough Modifiers menu to appear.
   - Finding them all will unlock a unique outfit! (Augmentique required)
@@ -146,6 +173,9 @@ Map Changes:
   - The Street Thug will now correctly shadow JC after speaking with Jordan Shea or Joe Green, rather than after talking to Dowd (which made him pointless previously).
 - 09_NYC_Ship:
   - Fixed Sailor outfit being unreachable.
+- 09_NYC_ShipBelow:
+  - Fixed a bilge pump having weird display/rendering issues.
+  - Fixed a ladder that wasn't able to be climbed properly.
 - 11_Paris_Cathedral:
   - Fixed Cathedral datavault image having a purple background.
 - 12_Vandenberg_Cmd:
@@ -162,7 +192,7 @@ Map Changes:
   - Made the UC enemy respawners spawn more reliably.
 
 Bug Fixes:
-- Fixed `meverett` login not working with the Unknown Codes modifier active.
+- Complete overhaul of the Unknown Codes system, now it should be much more robust and a lot less error-prone.
 - Fixed GMDX:AE issue where pain and death sounds were not randomising accurately.
 - Fixed several "Accessed None" and "Array index out of bounds" errors.
 - Fixed vanilla bug where Jock's helicopter would still get destroyed if you knocked the suspicious mechanic unconscious without killing him
@@ -218,6 +248,7 @@ Bug Fixes:
 - Ammo counter for current bullets in clip now scales properly when determining whether to use green or red text when max ammo is an odd number.
 
 Misc Changes:
+- Removed the 1-2 second recharge time on most augmentations.
 - The QoL Menu has now been reduced to only the most impactful and important options. Turn on Advanced Mode to see all of the options.
 - The mod now includes RenderExt by Hanfling, which should prevent rendering errors and crashes.
 - The Flashlight now uses a separate binding and is no longer associated with any of the Function keys. Bound to V by default.

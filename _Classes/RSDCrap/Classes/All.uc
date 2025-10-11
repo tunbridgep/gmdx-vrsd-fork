@@ -72,6 +72,9 @@ class All expands Object
 
 // Misc Textures
 
+//HQ Bob Page Face
+#exec TEXTURE IMPORT FILE="Textures\Skins\hqbob.pcx"	        NAME="HQbob" GROUP="Skins"
+
 //Deus Ex Collectible Disk
 #exec TEXTURE IMPORT FILE="Textures\Skins\deusexdisk.pcx"	        NAME="DeusExDisk"   GROUP="Skins"
 

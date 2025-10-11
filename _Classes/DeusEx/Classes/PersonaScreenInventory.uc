@@ -57,6 +57,8 @@ var Float refreshInterval;                                                      
 var PersonaInventoryHomeButton homeButton;                                      //RSD: home for our drag, in case the rotation fails or we want to draw a swap
 var bool bHomeButtonHack;                                                       //RSD: meh
 
+var bool bDeferredDrop;                                                         //SARGE: ugh
+
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -92,6 +94,12 @@ function cancelButtonRotation()                                                 
 
 function Tick(float deltaTime)
 {
+    if (bDeferredDrop)
+    {
+        DropSelectedItem();
+		bTickEnabled = False;
+        bDeferredDrop = False;
+    }
 	if (destroyWindow != None)
 	{
         destroyWindow.Destroy();
@@ -620,6 +628,10 @@ event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
             case IK_Space:                                                      //RSD: Space to rotate inventory item
 				RotateItemButton();
 				break;
+			
+            case IK_F:                                                          //SARGE: Assign secondary with F
+				AssignSecondary();
+				break;
 
 			default:
 				bKeyHandled = False;
@@ -887,6 +899,33 @@ function SelectObjectBeltItem(Inventory item, bool bNewToggle)
 }
 
 // ----------------------------------------------------------------------
+// AssignSecondary()
+// ----------------------------------------------------------------------
+
+function AssignSecondary()
+{
+	local Inventory inv;
+    local bool bCanAssign;
+    
+    if (selectedItem != None)
+        inv = Inventory(selectedItem.GetClientObject());
+			   
+    if (inv == None)
+        return;
+    
+    if (inv.IsA('DeusExPickup'))
+        bCanAssign = DeusExPickup(inv).CanAssignSecondary(player);
+    else if (inv.IsA('DeusExWeapon'))
+        bCanAssign = DeusExWeapon(inv).CanAssignSecondary(player);
+
+    if (bCanAssign)
+        player.AssignSecondary(inv,true);
+
+    //player.DebugLog("Assigning Secondary to " $ inv.Class.Name);
+    winInfo.UpdateSecondaryButton(inv.class);
+}
+
+// ----------------------------------------------------------------------
 // UseSelectedItem()
 // ----------------------------------------------------------------------
 
@@ -986,7 +1025,7 @@ function DropSelectedItem()
 				}
 
 				// Send status message
-				winStatus.AddText(Sprintf(DroppedLabel, anItem.itemName));
+				//winStatus.AddText(Sprintf(DroppedLabel, anItem.itemName));
 
 				// Update the object belt
 				invBelt.UpdateBeltText(anItem);
@@ -1848,6 +1887,8 @@ function FinishButtonDrag()
     local ChargedPickup ChargedTarget;                                          //RSD: Added
     local float mult;                                                           //RSD: Added
     local string msg;
+    local float cursorX, cursorY;                                               //SARGE: Added
+    local int tempX, tempY;                                                     //SARGE: Added
 
 	// Take a look at the last window we were over to determine
 	// what to do now.  If we were over the Inventory Items window,
@@ -2038,9 +2079,26 @@ function FinishButtonDrag()
 				ReturnButton(PersonaInventoryItemButton(dragButton));
 			}
 			else if (lastDragOverButton != dragButton)
-			{
-				// move back to original spot
-				ReturnButton(PersonaInventoryItemButton(dragButton));
+			{   
+                
+                ReturnButton(PersonaInventoryItemButton(dragButton));
+
+                //SARGE: Check if we're in the inventory grid. If not, drop the item.
+                //This is crappy and awful, but I couldn't find a better way to do it...
+                if (player.bDragAndDropOffInventory)
+                {
+                    GetCursorPos(cursorX,cursorY);
+                    cursorX -= clientOffsetX;
+                    cursorY -= clientOffsetY;
+
+                    //If we're outside of the grid, drop the item.
+                    if (cursorX < 0 || cursorY < 0 || cursorX > invButtonWidth  * player.maxInvCols || cursorY > invButtonHeight * player.maxInvRows)
+                    {
+                        SelectInventory(PersonaInventoryItemButton(dragButton),true);
+                        bTickEnabled = True;
+                        bDeferredDrop = true;
+                    }
+                }
 			}
         }
 		//}

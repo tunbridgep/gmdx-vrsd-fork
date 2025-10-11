@@ -57,6 +57,27 @@ simulated function bool TestMPBeltSpot(int BeltSpot)
    return (BeltSpot == 9);
 }
 
+//SARGE: Max number is lowered on Hardcore
+/*
+//SARGE: If reenabling this, remember to also change PerkCombatMedicsBag!
+function int RetMaxCopies()
+{
+    local DeusExPlayer player;
+    local int amount;
+    player = DeusExPlayer(GetPlayerPawn());
+
+    if (player != None && player.bHardcoreMode)
+        amount = 5;
+    else
+        amount = default.maxCopies;
+
+    if (player != None && player.PerkManager != None && player.PerkManager.GetPerkWithClass(class'PerkCombatMedicsBag').bPerkObtained)
+        amount += 5;
+
+    return amount;
+}
+*/
+
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
@@ -65,7 +86,7 @@ defaultproperties
      bAutoActivate=True
      healAmount=30
 	 CannotUse="You're already at full Health"
-     maxCopies=15
+     maxCopies=10
      bCanHaveMultipleCopies=True
      bActivatable=True
      ItemName="Medkit"

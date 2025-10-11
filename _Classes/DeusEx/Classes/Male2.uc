@@ -3,12 +3,6 @@
 //=============================================================================
 class Male2 extends HumanCivilian;
 
-function Shenanigans(bool bEnabled)
-{
-    if (bEnabled && bindName == "Defoe")
-        FamiliarName="Defriend";
-}
-
 defaultproperties
 {
      CarcassType=Class'DeusEx.Male2Carcass'

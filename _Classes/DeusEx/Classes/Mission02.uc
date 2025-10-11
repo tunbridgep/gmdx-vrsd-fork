@@ -130,6 +130,9 @@ function FirstFrame()
             //remove all the TNT Crates
             foreach AllActors(class'CrateExplosiveSmall', tnt)
             {
+                //Stop crash and let the player take 1 if they really, really want to (ugh...)
+                if (tnt == player.CarriedDecoration)
+                    continue;
                 tnt.DrawScale = 0.00001;
                 tnt.SetCollision(false,false,false);
                 tnt.SetCollisionSize(0,0);

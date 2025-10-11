@@ -725,10 +725,13 @@ auto simulated state Flying
 		{
 			HitWall(normal(Velocity), Other);
 		}
+        /*
+        //SARGE: Disabled as it causes darts to get stuck in mid air when doing things like blowing up crates
 		else if(Other != None && DeusExDecoration(Other) != None && !Other.IsA('DeusExPlayer')) //Ygll: test to have some visual hit event with all object, add the player to the test to advert issue when moving
 		{
 			HitWall(normal(Velocity), Other);
 		}
+        */
 
 		if( Other != None && (Other != instigator) && (DeusExProjectile(Other) == None) && (Other != Owner) )
 		{

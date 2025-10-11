@@ -1,5 +1,5 @@
 <P>
-<P><B>GIVE ME DEUS EX: AUGMENTED EDITION
+<P><B>GIVE ME DEUS EX: AUGMENTED EDITION 1.1
 <P>
 <B>Lead Developer
 <P>Paul "Sarge945" Tunbridge
@@ -12,12 +12,17 @@
 <P>
 <B>Notable Contributions
 <P>Joe Wintergreen for the Blink and Lip Sync Fix mod
+<P>Made in China and Georg for various icons and other art
 <P>GEPGUN for custom HUD colour schemes
+<P>WCCC, cappucciNO for models and textures
+<P>Hanfling for the amazing RenderExt and Editor Patch
 <P>
 <B>Testing and QA
 <P>Julian, Georg, the1truepickaxe, Xriborg, domitomi,
 <P>Made in China, RoSoDude, Ygll, ShadowDancer,
-<P>BennyTheFearless, Tony Swan, Augmented
+<P>BennyTheFearless, Tony Swan, Augmented, NG+,
+<P>Patrick (http://rspodcast.net), Hydra Spectre, Melissa,
+<P>Luscious Carrot, Solomon Ichi, BootsandCats, Irascible
 <P>
 <B>Special Thanks
 <P>Totalitarian for making the original Give Me Deus Ex

@@ -35,6 +35,21 @@ function DisplayWeapon(bool overlay)
         }
 
     }
+    else if (bVanillaModelAttachments)
+    {
+        if (overlay)
+        {
+            ShowWeaponAddon(3,bHasLaser);
+            ShowWeaponAddon(4,bHasLaser && bLasing);
+            ShowWeaponAddon(5,bHasScope);
+        }
+        else
+        {
+            ShowWeaponAddon(2,bHasLaser);
+            ShowWeaponAddon(3,bHasLaser && bLasing);
+            ShowWeaponAddon(4,bHasScope);
+        }
+    }
 }
 
 state Reload
@@ -148,6 +163,9 @@ defaultproperties
      PlayerViewMesh=LodMesh'DeusExItems.PlasmaRifle';
      PickupViewMesh=LodMesh'DeusExItems.PlasmaRiflePickup';
      ThirdPersonMesh=LodMesh'DeusExItems.PlasmaRifle3rd';
+     VanillaAddonPlayerViewMesh="VisibleAttachments.PlasmaRifle_Mod"
+     VanillaAddonPickupViewMesh="VisibleAttachments.PlasmaRiflePickup_Mod"
+     VanillaAddonThirdPersonMesh="VisibleAttachments.PlasmaRifle3rd_Mod"
      LandSound=Sound'DeusExSounds.Generic.DropLargeWeapon'
      Icon=Texture'DeusExUI.Icons.BeltIconPlasmaRifle'
      largeIcon=Texture'GMDXSFX.Icons.Plasma'

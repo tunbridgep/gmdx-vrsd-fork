@@ -270,7 +270,10 @@ function ShowFirstScreen()
     	ShowScreen(FirstScreen);
     //Show the notes screen
     if (winNotes != None)
+    {
         winNotes.Show();
+        winNotes.ResetNotePosition();
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -366,7 +369,10 @@ function CloseScreen(String action)
     if (action == "LOGOUT")
     {
         if (winNotes != None)
+        {
             winNotes.Show();
+            winNotes.ResetNotePosition();
+        }
         CreateHackWindow();
 		bNoHack = False;
     }

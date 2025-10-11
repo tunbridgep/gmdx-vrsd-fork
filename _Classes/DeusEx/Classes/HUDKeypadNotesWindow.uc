@@ -24,6 +24,8 @@ var int NotesCount;
 
 var bool bEditableNotes;                //If the notes should be read only but selectable, or non-interactive entirely.
 
+var PersonaNotesEditWindow firstNoteWindow;
+
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -88,6 +90,17 @@ event DestroyWindow()
     winBackground = None;
 }
 
+// ----------------------------------------------------------------------
+// WindowReady()
+// ----------------------------------------------------------------------
+
+function ResetNotePosition()
+{
+    DeusExPlayer(GetPlayerPawn()).DebugMessage("ResetNotePosition");
+	// Make sure the most recent note is scrolled to the top
+	if (firstNoteWindow != None)
+		firstNoteWindow.AskParentToShowArea();
+}
 // ----------------------------------------------------------------------
 // CreateScrollTileWindow()
 // ----------------------------------------------------------------------
@@ -159,6 +172,9 @@ function PopulateNotes(TileWindow winTile)
             if (!note.bHidden)
                 noteWindow = CreateNoteEditWindow(winTile,note);
             note = note.next;
+
+            if (noteWindow != None && firstNoteWindow == None)
+                firstNoteWindow = noteWindow;
         }
     }
     else
@@ -168,12 +184,16 @@ function PopulateNotes(TileWindow winTile)
         {
             if (!Notes[i].bHidden)
                 noteWindow = CreateNoteEditWindow(winTile,Notes[i]);
-
+            
+            if (noteWindow != None && firstNoteWindow == None)
+                firstNoteWindow = noteWindow;
         }
     }
 
 	// Show the notes again, if they were visible before
 	winTile.Show(bWasVisible);
+
+    ResetNotePosition();
 }
 
 // ----------------------------------------------------------------------

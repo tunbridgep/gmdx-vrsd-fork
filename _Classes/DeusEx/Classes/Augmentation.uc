@@ -762,7 +762,7 @@ defaultproperties
      bHidden=true
      bTravel=true
      NetUpdateFrequency=5.000000
-     chargeTime=1.000000
+     chargeTime=0.000000
      AugmentationType=Aug_Active
      colToggle=(R=76,G=255,B=0)
      //colInactive=(R=255,G=255,B=255)

@@ -4,7 +4,7 @@
 
 !define INSTALLER_NAME "GMDX: Augmented Edition"
 !define INSTALLER_EXE_NAME "GMDX-AE"
-!define INSTALLER_VERSION "1.1RC"
+!define INSTALLER_VERSION "1.11"
 !define INSTALLER_SUFFIX "Full"
 
 #include the common parts of the installer
@@ -43,5 +43,8 @@ SectionGroup "Extras"
 
 #Install Augmentique
 !include .\include\offline_jcoutfits.nsi
+
+#Install Visible Attachments
+!include .\include\offline_visible_attachments.nsi
 
 SectionGroupEnd

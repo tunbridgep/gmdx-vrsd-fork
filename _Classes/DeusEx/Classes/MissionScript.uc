@@ -955,8 +955,8 @@ function InitializeRandomCrateContents(bool bRandomCrates)                      
             //We will fix it by just rolling it now instead.
             //This is a horribly lazy hacky implementation.
             itemClass = CO.contents;
-            if (CO.Content2!=None && FRand()<0.33) itemClass = CO.Content2;
-            if (CO.Content3!=None && FRand()<0.33) itemClass = CO.Content3;
+            if (CO.Content2!=None && Player.Randomizer.GetRandomFloat()<0.33) itemClass = CO.Content2;
+            if (CO.Content3!=None && Player.Randomizer.GetRandomFloat()<0.33) itemClass = CO.Content3;
             CO.contents = itemClass;
             CO.Content2 = None;
             CO.Content3 = None;

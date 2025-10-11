@@ -344,6 +344,12 @@ event bool ListSelectionChanged(window list, int numSelections, int focusRowId)
     
     //SARGE: Update "add to datavault" button
     RefreshEmailSaveButton(emailInfo[emailInfoIndex].emailName);
+    
+    //Drain hack time
+    //Don't do it the first time the window is created
+    //if (bCanDrainHack)
+    //    DrainHackTime(hackDrain);
+    //bCanDrainHack = true;
 }
 
 // ----------------------------------------------------------------------
