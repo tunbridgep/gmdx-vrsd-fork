@@ -4,6 +4,7 @@ New Features:
 - Pressing "F" in the inventory screen will now assign the selected item as your secondary item.
 
 Misc Changes:
+- Added a female version of The Collector outfit.
 - Reduced the stack size of Medkits and Biocells
 - "Immersive Carryables" is now a QoL option, rather than a Gameplay option, and is no longer enforced on Hardcore.
 - Updated a few default settings.
