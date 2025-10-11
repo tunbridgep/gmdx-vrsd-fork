@@ -14,6 +14,7 @@ Bugfixes:
 - Fixed a bug where the number of found collectibles would not be reset upon starting a new game.
 - Fixed Computer notes screen scrolling to the bottom when returning to the Login screen.
 - Fixed Markers sometimes displaying at invalid exits (such as the courtyard in the Luminous Path compound)
+- Fixed numerous bugs related to the Received Items display, including showing wrong icons or duplicated icons.
 - Fixed some typos.
 
 Map Changes:
