@@ -18,6 +18,8 @@ var travel bool bHidden;            //SARGE: Allow us to add "hidden" notes that
 
 var travel bool bMarkerNote;        //SARGE: Does this note have a marker associated with it?
 
+var travel bool bConNote;           //SARGE: Was this note added as part of a conversation? These can simply be searched for passwords.
+
 // ----------------------------------------------------------------------
 // SetUserNote()
 // ----------------------------------------------------------------------
@@ -39,6 +41,11 @@ function SetTextTag( Name newTextTag )
 function SetHidden( bool bNewHidden )
 {
     bHidden = bNewHidden;
+}
+
+function SetConversationNote( bool bNewConvNote)
+{
+    bConNote = bNewConvNote;
 }
 
 defaultproperties

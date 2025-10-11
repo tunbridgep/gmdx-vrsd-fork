@@ -906,6 +906,8 @@ var globalconfig bool bEditDefaultNotes;                        //SARGE: If enab
 
 var globalconfig bool bClassicScope;                            //SARGE: Classic Scope Mode
 
+var globalconfig bool bClearReceivedDisplay;                    //SARGE: Whether or not the Items Received iwndow will be cleared when frobbing each item.
+
 var globalconfig bool bQuickReflexes;                           //SARGE: Enemies can snap-shoot at you if they hear you or are alerted, rather than standing around.
 
 var globalconfig bool bDragAndDropOffInventory;                 //SARGE: Allow dropping items by dragging them off the inventory grid
@@ -916,7 +918,12 @@ var globalconfig bool bExperimentalAmmoSpawning;                //SARGE: Adds ex
 var globalconfig bool bComputerActionsDrainHackTime;            //SARGE: If enabled, performing actions (disabling cameras, etc) drains hack time when hacking computers.
 
 var globalConfig bool bPawnsReactToWeapons;                     //SARGE: Whether or not pawns will react when you have your weapons pointed at them.
+
+var globalconfig int iShifterWeaponSwitch;                      //SARGE: Allow switching weapon types with the change-ammo key for grenades and melee weapons, similar to Shifter.
+
 var transient float PawnReactTime;                              //SARGE: Only detect pawn reactions every 10th of a second or so
+
+var globalconfig bool bRememberTheName;                         //SARGE: Remember the players real-name. Does not increase the players pain threshold by 50%.
 
 var transient bool bUpdateHud;                                 //SARGE: Trigger a HUD update next frame.
 
@@ -2994,9 +3001,6 @@ function ResetPlayer(optional bool bTraining)
     //SARGE: Reset collectibles
     collectiblesFound = 0;
 
-    //SARGE: Reset collectibles
-    collectiblesFound = 0;
-
     //SARGE: Reset killswitch
     killswitchTimer = default.killswitchTimer;
 
@@ -4544,15 +4548,151 @@ exec function DeactivateAllAugs(optional bool toggle)
 }
 
 // ----------------------------------------------------------------------
+// DoShifterWeaponSwitch()
+// SARGE: Switching your in-hand weapon AND associated belt slot, based on
+// similar types, such as swapping out different grenade types. Blatantly stolen from shifter.
+// ----------------------------------------------------------------------
+
+function private bool _ShifterSwitch(Inventory from, class<Inventory> fromClass, Inventory to, bool bSelect)
+{
+    local int beltSlot;
+    local bool bInBelt;
+
+    if (to == None)
+        return false;
+
+    if (from == None)
+    {
+        beltSlot = HasPlaceholderSlot(fromClass);
+        bInBelt = beltSlot != -1;
+    }
+    else
+    {
+        beltSlot = from.beltPos;
+        bInBelt = from.bInObjectBelt;
+    }
+
+    DebugMessage("BeltPos:" @ beltSlot @ bInBelt);
+
+    //Add the new item to the old belt slot
+    if (bInBelt && iShifterWeaponSwitch > 1)
+    {
+        to.beltPos = beltSlot;
+        to.bInObjectBelt = true;
+
+        //Remove the old item from the slot
+        if (from != None)
+        {
+            from.beltPos = -1;
+            from.bInObjectBelt = false;
+        }
+    }
+
+    //Select the new weapon
+    if (bSelect)
+        SetInHandPending(to);
+    
+    DebugMessage("BeltPos2: " $ to.beltPos @ to.bInObjectBelt);
+
+    //Finally, update the HUD
+    UpdateHUD();
+
+    return true;
+}
+
+function bool DoShifterWeaponSwitch(bool bSelectWeapon, class<Inventory> toCheck, class<Inventory> switch1,optional class<Inventory> switch2,optional class<Inventory> switch3,optional class<Inventory> switch4,optional class<Inventory> switch5,optional class<Inventory> switch6)
+{
+	local Inventory items[6], itemToCheck;
+	local Class<Inventory> itemClasses[6];
+    local int i, start, times;
+
+    //If it's not enabled, bail
+    if (iShifterWeaponSwitch == 0)
+        return false;
+
+    //First, find the starting item index
+    //This can probably be done better...
+    if (switch1 != None && toCheck == switch1)
+        start = 1;
+    else if (switch2 != None && toCheck == switch2)
+        start = 2;
+    else if (switch3 != None && toCheck == switch3)
+        start = 3;
+    else if (switch4 != None && toCheck == switch4)
+        start = 4;
+    else if (switch5 != None && toCheck == switch5)
+        start = 5;
+    else if (switch6 != None && toCheck == switch6)
+        start = 0;
+    else
+        return false; //We don't have any of the weapons
+
+	items[0] = FindInventoryType(switch1);
+	items[1] = FindInventoryType(switch2);
+	items[2] = FindInventoryType(switch3);
+	items[3] = FindInventoryType(switch4);
+	items[4] = FindInventoryType(switch5);
+	items[5] = FindInventoryType(switch6);
+	itemToCheck = FindInventoryType(toCheck);
+
+    //keep trying until we either get a hit, or until we're back at our starting index
+    for(i = start;times < 5;i++)
+    {
+        if (i >= 6)
+            i = 0;
+
+        //DebugMessage("item" @ i @ items[i]);
+        if (items[i] != None && items[i] != GetSecondary() && (!items[i].bInObjectBelt || (itemToCheck != None && !itemToCheck.bInObjectBelt) || iShifterWeaponSwitch == 1 ))
+        {
+            _ShifterSwitch(itemToCheck,toCheck,items[i],bSelectWeapon);
+            return true;
+        }
+        times++;
+    }
+
+    return false;
+}
+
+function bool ShifterSwitchAll(Inventory invItemToCheck, bool bSelect)
+{
+    local bool bSwitch;
+    local Class<Inventory> invToCheck;
+
+    if (invItemToCheck == None)
+        return false;
+
+    invToCheck = invItemToCheck.Class;
+
+    bSwitch = DoShifterWeaponSwitch(bSelect,invtoCheck,class'WeaponGasGrenade',class'WeaponEMPGrenade',class'WeaponNanoVirusGrenade',class'WeaponLAM',class'WeaponLAW');
+    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,invtoCheck,class'WeaponCombatKnife',class'WeaponBaton',class'WeaponCrowbar',class'WeaponSword',class'WeaponNanoSword');
+    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,invtoCheck,class'WeaponHideAGun',class'WeaponShuriken');
+    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,invtoCheck,class'Cigarettes',class'Liquor40oz',class'LiquorBottle',class'WineBottle',class'VialCrack');
+    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,invtoCheck,class'SoyFood',class'CandyBar',class'SodaCan');
+    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,invtoCheck,class'Lockpick',class'Multitool');
+    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,invtoCheck,class'Medkit',class'BioelectricCell');
+    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,invtoCheck,class'BallisticArmor',class'HazMatSuit',class'AdaptiveArmor',class'TechGoggles',class'Rebreather');
+
+    return bSwitch;
+}
+
+// ----------------------------------------------------------------------
 // SwitchAmmo()
 // ----------------------------------------------------------------------
 
 exec function SwitchAmmo()
 {
     local ThrownProjectile P;
+    local bool bSwitch;
 
-	if (inHand != None && inHand.IsA('DeusExWeapon')) //CyberP: fixed vanilla accessed none
-		DeusExWeapon(inHand).CycleAmmo();
+    if (inHand != None)
+    {
+        //SARGE: First, try to do a Shifter-style switch
+        bSwitch = ShifterSwitchAll(inHandPending,true);
+        
+        //SARGE: Fallback
+        if (!bSwitch && inHand != None && inHand.IsA('DeusExWeapon')) //CyberP: fixed vanilla accessed none
+            DeusExWeapon(inHand).CycleAmmo();
+    }
 
     //SARGE: Allow detonating all of our wall grenades with the switch-ammo button
     else if (inHand == None && PerkManager.GetPerkWithClass(class'DeusEx.PerkRemoteDetonation').bPerkObtained)
@@ -8567,8 +8707,11 @@ function DoLeftFrob(Actor frobTarget)
         }
         */
         bLeftClicked = true;
-        HandleItemPickup(FrobTarget,false,false,false,true,true);
+        HandleItemPickup(FrobTarget,false,false,None,true,true);
     }
+    
+    //Now required because of the green frob display
+    UpdateHUD();
 }
 
 //Sarge: Because we can only inherit from one class,
@@ -8606,9 +8749,12 @@ function DoRightFrob(Actor frobTarget)
     }
     */
     if (bDefaultFrob && frobTarget.IsA('Inventory'))
-        HandleItemPickup(FrobTarget,false,false,false,true,true);
+        HandleItemPickup(FrobTarget,false,false,None,true,true);
     else if (bDefaultFrob)
         DoFrob(Self, None);
+    
+    //Now required because of the green frob display
+    UpdateHUD();
 }
 
 //SARGE: Check if a frobbed item is declined, and handle it
@@ -9171,7 +9317,7 @@ function PlayPickupAnim(Vector locPickup)
 //
 // Returns the number of rounds they were able to pick up.
 // ----------------------------------------------------------------------
-function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool bShowWindow, optional bool bLootSound, optional bool bNoGroup, optional bool bNoOnes, optional bool bShowOverflowMsg, optional bool bShowOverflowWindow, optional Texture overrideTexture)
+function int LootAmmo(string owner, class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool bShowWindow, optional bool bLootSound, optional bool bNoGroup, optional bool bNoOnes, optional bool bShowOverflowMsg, optional bool bShowOverflowWindow, optional Texture overrideTexture)
 {
     local int MaxAmmo, prevAmmo, ammoCount, intj, over, ret;
     local DeusExAmmo AmmoType;
@@ -9239,11 +9385,11 @@ function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool
             {
                 prevTexture = AmmoType.Icon;
                 AmmoType.Icon = overrideTexture;
-                AddReceivedItem(AmmoType, intj, bNoGroup);
+                AddReceivedItem(owner, AmmoType, intj, bNoGroup);
                 AmmoType.Icon = prevTexture;
             }
             else
-                AddReceivedItem(AmmoType, intj, bNoGroup);
+                AddReceivedItem(owner, AmmoType, intj, bNoGroup);
         }
 
         //If we took at least some, make a special sound.
@@ -9259,7 +9405,7 @@ function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool
             ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName $ " (" $ over $ ")" @ AmmoType.MaxAmmoString, 'Pickup');
         
         if (bShowWindow && bShowDeclinedInReceivedWindow && bShowOverflowWindow)
-            AddReceivedItem(AmmoType, over, bNoGroup, true);
+            AddReceivedItem(owner, AmmoType, over, bNoGroup, true);
     }
     return ret;
 }
@@ -9281,7 +9427,7 @@ function PlayPartialAmmoSound(Actor source, class<Ammo> ammoName)
 // HandleItemPickup()
 // ----------------------------------------------------------------------
 
-function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, optional bool bSkipDeclineCheck, optional bool bFromCorpse, optional bool bShowOverflow, optional bool bShowOverflowWindow)
+function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, optional bool bSkipDeclineCheck, optional DeusExCarcass FromCorpse, optional bool bShowOverflow, optional bool bShowOverflowWindow)
 {
 	local bool bCanPickup;
 	local bool bSlotSearchNeeded;
@@ -9292,6 +9438,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     local bool bLootedAmmo;
     local WeaponNanoSword dts;
     local bool bDestroy;
+    local string source;
 
 	bSlotSearchNeeded = True;
 	bCanPickup = True;
@@ -9300,6 +9447,12 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     //This should prevent the item dupe glitch.
     if (frobTarget.bDeleteMe)
         return false;
+
+    //SARGE: Set the source of the interaction (used by the HUD Display)
+    if (FromCorpse != None)
+        source = FromCorpse.carcassID;
+    else
+        source = string(self.Class.name);
 
 	// Special checks for objects that do not require phsyical inventory
 	// in order to be picked up:
@@ -9433,7 +9586,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     //SARGE: Always try looting non-disposable weapons of their ammo
     if (bCanPickup && FrobTarget.IsA('DeusExWeapon') && !DeusExWeapon(frobTarget).bDisposableWeapon)
     {
-        bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,true,bAlwaysShowReceivedItemsWindow,true,true,bShowOverflow,bShowOverflowWindow);
+        bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,true,bAlwaysShowReceivedItemsWindow,true,true,bShowOverflow,bShowOverflowWindow,source);
 
         //Don't pick up a weapon if there's ammo in it and we already have one
         if (!bSlotSearchNeeded && DeusExWeapon(frobTarget).PickupAmmoCount > 0 && bCanPickup)
@@ -9485,11 +9638,11 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
         //SARGE: Since we haven't looted Disposable weapons yet, do so now.
         if (FrobTarget.IsA('DeusExWeapon') && DeusExWeapon(frobTarget).bDisposableWeapon)
         {
-            bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,!bSlotSearchNeeded,false,false,false,false,false);
+            bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,!bSlotSearchNeeded,FromCorpse != None,false,false,false,false,source);
 
             if (DeusExWeapon(frobTarget).PickupAmmoCount > 0)
             {
-                if (!bFromCorpse)
+                if (FromCorpse == None)
                     //ClientMessage(TooMuchAmmo);
                     ClientMessage(class'DeusExPickup'.default.msgTooMany);
                     
@@ -9552,10 +9705,9 @@ function ClearReceivedItems()
     DeusExRootWindow(rootWindow).hud.receivedItems.RemoveItems();
 }
 
-function AddReceivedItem(Inventory item, int count, optional bool bNoGroup, optional bool bDeclined, optional bool bShowAllDeclined)
+function AddReceivedItem(string owner, Inventory item, int count, optional bool bNoGroup, optional bool bDeclined)
 {
     local int i;
-    local int rollupType;
 
     //clientMessage("item: " $ item $ ", count: " $ count);
     if (item == None)
@@ -9563,17 +9715,9 @@ function AddReceivedItem(Inventory item, int count, optional bool bNoGroup, opti
 
     if (rootWindow != None && DeusExRootWindow(rootWindow).hud != None)
     {
-        //Carcasses always spawn individual copies of their inventory items,
-        //rather than spawning them as a stack. So when things ARE stacked, (usually
-        //disposable weapons), we display them the same way.
-        if (bNoGroup && count < 5)
-            rollupType = 2;
-        else if (bDeclined && !bShowAllDeclined)
-            rollupType = 1;
+        DebugLog("Item is: " $ item $ ", bDeclined is " $ bDeclined $ ", bNoGroup: " $ bNoGroup);
 
-        Log("Item is: " $ item $ ", rollupType is " $ rollupType $ ", bNoGroup: " $ bNoGroup);
-
-        DeusExRootWindow(rootWindow).hud.receivedItems.AddItem(item, count, bDeclined, rollupType);
+        DeusExRootWindow(rootWindow).hud.receivedItems.AddItemFromID(owner, item, count, bDeclined, bNoGroup);
 
         // Make sure the object belt is updated
         if (item.IsA('Ammo'))
@@ -11556,6 +11700,8 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 						            carc.MultiSkins[i] = POVCorpse(item).pMultitex[i];
                                 }
 						    }
+                            if (POVCorpse(item).carcassID != "")
+                                carc.carcassID = POVCorpse(item).carcassID;
 							carc.Mesh = carc.Mesh2;
 							carc.KillerAlliance = POVCorpse(item).KillerAlliance;
 							carc.KillerBindName = POVCorpse(item).KillerBindName;
@@ -11656,7 +11802,11 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 		//DEUS_EX AMSD Use the function call for this, helps multiplayer
 		PlaceItemInSlot(item, itemPosX, itemPosY);
 	}
-	
+    
+    //SARGE: Swap to a new belt item
+    if (bRemovedFromSlots && bDropped && iShifterWeaponSwitch > 2)
+        ShifterSwitchAll(item,false);
+
     //Sarge: Fix up disposable weapons
     if (item != None && item.IsA('DeusExWeapon') && DeusExWeapon(item).bDisposableWeapon && bDropped)
     {
@@ -12716,7 +12866,7 @@ function private _UpdateHUD()
 
     bUpdateHud = false;
 
-    DebugMessage("UpdateHUD");
+    //DebugMessage("UpdateHUD");
 }
 
 function UpdateSecondaryDisplay()
@@ -15079,222 +15229,29 @@ function string StripFromTo(string text)
     return text;
 }
 
-function bool HasCodeNote(string code, optional bool bNoHidden)
+function bool HasCodeNote(string code, optional string code2, optional bool bNoHidden)
 {
-    return GetCodeNote(code,bNoHidden) != None;
+    return class'CodeUtils'.static.HasCode(self,code,code2,bNoHidden);
 }
 
-function bool HasCodeNoteStrict(string code, string code2, optional bool bNoHidden)
+function DeusExNote GetCodeNote(string code, optional string code2, optional bool bNoHidden)
 {
-    return GetCodeNoteStrict(code,code2,bNoHidden) != None;
+    return class'CodeUtils'.static.GetCodeNote(self,code,code2,bNoHidden);
 }
 
-function private bool ProcessCodeNote(DeusExNote note, string code, optional bool bStrictMode)
+//Returns if the player has any non-hidden notes at all
+function bool HasAnyNotes()
 {
-    local string noteText;
-    local int noteTextNumeric;
-
-    //handle any notes we were given which might not have "original" text for whatever reason
-    if (note.originalText == "")
-        note.originalText = note.text;
-    
-    //noteText = note.originalText;
-
-    //DebugLog("NOTE (pre trim): " $ note.text);
-
-    //SARGE: This is some WEIRD logic!
-    //Because we need to dynamically check the notes for codes,
-    //HOWEVER We DON'T want to be able to login if the words simply exist in notes,
-    //because some logins are common words, like SECURITY,
-    //or WALTON and SIMONS, which means we need to check more thoroughly.
-    //Generally, though, Passwords follow these rules:
-    //1. Normally they are either in ALL CAPS or all lower case.
-    //2. There's a few times where they will have Login: Somename, Password: Somename, which are in camel caps (becase of course....)
-    //3. Lots of notes also have allcaps FROM and TO text in them, like an email,
-    //such as FROM: WALTON SIMONS TO: SOME GUY
-    //So we need to account for all of these.
-    
-    //First, strip off the first line if there's FROM: and TO: text...
-    noteText = StripFromTo(note.originalText);
-
-    noteTextNumeric = int(noteText);
-    
-    //DebugLog("CODE: " $ code);
-
-    //First, if it's numeric, Check note contents for the code exactly
-    if (noteTextNumeric != 0 && InStrSpaced(noteText,code) != -1)
-    {
-        //DebugLog("NOTE: " $ noteText);
-        DebugLog("NOTE CODE " $code$ " FOUND (NUMERIC)");
-        return true;
-    }
-
-    //Next, Check note contents for the code
-    //Start by checking that our code matches CAPS in the note...
-    else if (InStrSpaced(noteText,Caps(code)) != -1)
-    {
-        //DebugLog("NOTE: " $ noteText);
-        DebugLog("NOTE CODE " $code$ " FOUND (CAPS)");
-        return true;
-    }
-
-    //Next, Check note contents for the code exactly
-    else if (InStrSpaced(noteText,code) != -1)
-    {
-        //DebugLog("NOTE: " $ noteText);
-        DebugLog("NOTE CODE " $code$ " FOUND (EXACT)");
-        return true;
-    }
-    
-    //Then check that our code matches all lower case in the note...
-    //locs is not allowed in strict mode!
-    else if (InStrSpaced(noteText,Locs(code)) != -1 && !bStrictMode)
-    {
-        //DebugLog("NOTE: " $ noteText);
-        DebugLog("NOTE CODE " $code$ " FOUND (LOCS)");
-        return true;
-    }
-    
-    //Some codes are in quotes, so always allows things in quotes
-    if (InStr(Caps(noteText),"\""$Caps(code)$"\"") != -1)
-    {
-        //DebugLog("NOTE: " $ noteText);
-        DebugLog("NOTE CODE " $code$ " FOUND (CAPS QUOTES)");
-        return true;
-    }
-    
-    //Some notes have Login: Username and Password: Whatever in them, so handle them.
-    else if (InStr(Caps(noteText),Caps("LOGIN: " $ code)) != -1)
-        return true;
-    else if (InStr(Caps(noteText),Caps("PASSWORD: " $ code)) != -1)
-        return true;
-    else if (InStr(Caps(noteText),Caps("ACCOUNT: " $ code)) != -1)
-        return true;
-    else if (InStr(Caps(noteText),Caps("PIN: " $ code)) != -1)
-        return true;
-    else if (InStr(Caps(noteText),Caps("LOGIN/PASSWORD: " $ code)) != -1)
-        return true;
-}
-
-//A stricter version of GetCodeNote which requires the username and password to be contained
-//within the same note.
-function DeusExNote GetCodeNoteStrict(string username, string password, optional bool bNoHidden)
-{
-	local DeusExNote note;
-    
-    if (username == "" && password == "")
-        return None;
-
-    //Default username/password.
-    if (username == "SECURITY" && password == "SECURITY")
-        return None;
-	
+    local DeusExNote note;
     note = FirstNote;
-
-	while( note != None)
-	{
-        //Skip user notes and hidden notes
-        if (!note.bUserNote && (!bNoHidden || !note.bHidden))
-        {
-            if (ProcessCodeNote(note,username,true) && ProcessCodeNote(note,password,true))
-                return note;
-        }
+    while (note != None)
+    {
+        if (!note.bHidden)
+            return true;
 
         note = note.next;
-	}
-
-    DebugLog("NOTE CODE " $username$"/"$password$ " NOT FOUND");
-	return None;
-
-}
-
-function DeusExNote GetCodeNote(string code, optional bool bNoHidden)
-{
-	local DeusExNote note;
-
-    if (code == "")
-        return None;
-
-    //Some codes are so obvious that they will never have valid notes.
-    //if (bNoHidden && IsObfuscatedCode(code))
-    //    return None;
-
-	note = FirstNote;
-
-	while( note != None)
-	{
-        //Skip user notes and hidden notes
-        if (!note.bUserNote && (!bNoHidden || !note.bHidden))
-        {
-            if (ProcessCodeNote(note,code))
-                return note;
-        }
-
-        note = note.next;
-	}
-
-    DebugLog("NOTE CODE " $code$ " NOT FOUND");
-	return None;
-}
-
-//This is the OPPOSITE of the below function.
-//Some codes should NEVER appear in notes, as they are far too common
-//within notes to actually be detected properly.
-function bool IsObfuscatedCode(string code)
-{
-    code = Caps(code);
-    return code == "RIGHTEOUS";
-    /*
-    return code == "NSF"
-        || code == "MJ12"
-        || code == "RECEPTION"
-        || code == "UNKNOWN"
-        || code == "CAPTAIN"
-        || code == "SECURITY";
-    */
+    }
     return false;
-}
-
-//This is a simple list of codes which serve as exceptions to No Keypad Cheese
-//See here for a full list. https://deusex.fandom.com/wiki/Passwords,_Logins,_and_Codes_(DX)
-function bool GetExceptedCode(string code)
-{
-    code = Caps(code);
-	return code == "CALVO" //Alex Jacobson computer password on the wall next to his computer
-        || code == "AJACOBSON" //Alex Jacobson computer password on the wall next to his computer
-        || code == "NSF" //NSF/Righteous, but the Righteous is given out and the NSF is reasonably guessable.
-        || code == "JCD" //we get our code as soon as we enter our office, but it takes a little bit. Fix it not working when we should know it
-        || code == "BIONICMAN" //we get our code as soon as we enter our office, but it takes a little bit. Fix it not working when we should know it
-        || code == "MCHOW" //maggie chows code can only be guessed, never found, but is designed that way.
-        || code == "INSURGENT" //maggie chows code can only be guessed, never found, but is designed that way.
-        || code == "MLUNDQUIST" //mlundquist is never mentioned anywhere
-        || code == "DAMOCLES" //Only ever mentioned by itself
-        //|| code == "2167" //Only displayed in a computer message, so we never get a note for it //NOW RANDOMISED
-        || code == "718" //Can only be guessed based on cryptic information
-        || code == "7243" //We are only given 3 digits, need to guess the 4th
-        || code == "CAPTAIN" //Login/Password: KZHao, Captain, am too lazy to check for the Captain in that string.
-        || code == "WYRDRED08" //We are not given the last digit
-        || (code == "1966" && FlagBase.GetBool('GaveCassandraMoney')) //Only given in conversation, no note
-        //|| code == "1966" //Only given in conversation, no note
-        || code == "4321" //We are told to "count backwards from 4"
-        || code == "NICOLETTE" //Given in conversation
-        || code == "CHAD" //Given in conversation
-        || (code == "2167" && FlagBase.GetBool('NYCUndergroundCodeObtained')) //Allow us to use it after we access the computer. Also adds a note from a datacube.
-        || (code == "6512" && FlagBase.GetBool('VersalifeCodeObtained')) //Allow us to use it after we access generate a temp security pass.
-        || code == "12" //Guessable code for the keypad in the MJ12 lab above the entry stairs
-        || code == "APPLE" //Special case, spelled "Apple" in note so it fails the LOCS and CAPS checks...
-        || code == "MEVERETT" //Can only be guessed, but it's pretty obvious
-        || code == "PYNCHON" //Can only be guessed, but it's pretty obvious
-        || code == "JCDENTON"; //Uses Base: JCDenton instead of Username: JCDenton.
-}
-
-//"Security" is a commonly used word in many logs.
-//It's also a login for a lot of computers.
-//But none of the computers with that username have in-game logs
-//So anything with security as the username needs to be ignored
-function bool EvilUsernameHack(string username)
-{
-    return (Caps(username) == "SECURITY") && iNoKeypadCheese > 0;
 }
 
 // ----------------------------------------------------------------------
@@ -15411,13 +15368,17 @@ function DeleteAllNotes()
 // NoteAdd()
 // ----------------------------------------------------------------------
 
-exec function NoteAdd( String noteText, optional bool bUserNote, optional bool bHidden, optional name noteName )
+exec function DeusExNote NoteAdd( String noteText, optional bool bUserNote, optional bool bHidden, optional name noteName )
 {
 	local DeusExNote newNote;
+
+    DebugMessage("NoteName: " $ noteName);
 
 	newNote = AddNote( noteText, bUserNote, !bHidden );
 	newNote.SetHidden( bHidden );
 	newNote.SetTextTag( noteName );
+
+    return newNote;
 }
 
 // ----------------------------------------------------------------------
@@ -19698,16 +19659,17 @@ function int GetAdjustedMaxAmmoByClass(class<Ammo> ammotype)
         adjustedMaxAmmo = ammotype.default.MaxAmmo;
     }
 
-    //Double ammo capacities on non-hardcore
-    if (!bHardcoreMode && !DXAmmotype.default.bHarderScaling)
-        mult *= 2.0;
-
     //if (bHalveAmmo || (bHardcoreMode && bExtraHardcore))                        //RSD: Hardcore+ forces on halved max ammo
   	//	mult *= 0.5;
     if (mult <= 0.5)
     	mult = 0.5;
 
     adjustedMaxAmmo = int(float(adjustedMaxAmmo)*mult);
+
+    //Increase ammo capacities on non-hardcore
+    if (!bHardcoreMode && !DXAmmotype.default.bHarderScaling)
+        adjustedMaxAmmo *= 1.5;
+
     //BroadcastMessage(adjustedMaxAmmo);
     return adjustedMaxAmmo;
 }
@@ -19832,7 +19794,7 @@ function UpdateMarkerValidity()
     while (marker != None)
     {
         bValid = marker.associatedNote != None && !marker.associatedNote.bHidden;
-        Log("Marker " $ marker.associatedNote.text $ " is valid: " $ bValid);
+        DebugLog("Marker " $ marker.associatedNote.text $ " is valid: " $ bValid);
         if (!bValid && prev == None)
         {
             markers = marker.next;
@@ -20211,7 +20173,7 @@ defaultproperties
      bBeltMemory=True
      bEnhancedCorpseInteractions=True
      bBeltShowModified=true
-     iSearchedCorpseText=1
+     iSearchedCorpseText=3
      bDisplayClips=false
      iCutsceneFOVAdjust=2
      iFrobDisplayStyle=1
@@ -20272,11 +20234,11 @@ defaultproperties
      bEnhancedPersonaScreenMouse=true
      bShowFullAmmoInHUD=true
      bToolWindowShowKnownCodes=true
-     bToolWindowShowRead=false
+     bToolWindowShowRead=true
      bToolWindowShowAugState=true
      iToolWindowShowDuplicateKeys=1
      iToolWindowShowBookNames=1
-     bToolWindowShowInvalidPickup=false
+     bToolWindowShowInvalidPickup=true
      bStreamlinedComputerInterface=true
      bInventoryAmmoShowsMax=true
      bFasterInfolinks=true
@@ -20289,8 +20251,11 @@ defaultproperties
      bShowRegularNotes=true
      bShowMarkerNotes=true
      bEditDefaultNotes=false
+     bClearReceivedDisplay=true
      bComputerActionsDrainHackTime=true
      fMusicHackTimer=4.0
      bPawnsReactToWeapons=true
      bDragAndDropOffInventory=true
+     bRememberTheName=true
+     iShifterWeaponSwitch=2
 }

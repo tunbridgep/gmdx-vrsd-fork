@@ -225,6 +225,8 @@ function ActivateSpecialOption(MenuUIChoiceButton buttonPressed)
 	local int specialIndex;
 	local Actor A;
     local String N;
+    local DeusExNote note;
+    local DeusExLevelInfo info;
 
 	specialIndex = -1;
 
@@ -265,8 +267,22 @@ function ActivateSpecialOption(MenuUIChoiceButton buttonPressed)
             {
                 if (Computers(compOwner).specialOptionsExtra[specialIndex].noteID != "")
                     N = Computers(compOwner).specialOptionsExtra[specialIndex].noteID;
+                else
+                {
+                    info = player.GetLevelInfo();
+                    if (info != None)
+                        N = info.MapName $ "_" $ Computers(compOwner).name $ "_Special" $ specialIndex;
+                }
 
-                player.NoteAdd(Computers(compOwner).specialOptions[specialIndex].TriggerText,false,false,StringToName(N));
+                if (!player.HasNote(StringToName(N)))
+                {
+                    note = player.NoteAdd(Computers(compOwner).specialOptions[specialIndex].TriggerText,false,false,StringToName(N));
+                    if (note != None)
+                    {
+                        note.textTag = StringToName(N);//StringToName(Computers(compOwner).Name $ "_Special" $ specialIndex);
+                        note.bConNote = true;
+                    }
+                }
                 //player.NoteAdd(Computers(compOwner).specialOptions[specialIndex].TriggerText);
             }
 

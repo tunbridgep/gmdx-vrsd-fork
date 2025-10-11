@@ -38,7 +38,7 @@ auto state Pickup
 			player.FrobTarget = None;
 
             if (player.bCreditsShowReceivedItemsWindow)
-                player.AddReceivedItem(self,numCredits);
+                player.AddReceivedItem(string(self.name),self,numCredits);
 
 			Destroy();
 		}
