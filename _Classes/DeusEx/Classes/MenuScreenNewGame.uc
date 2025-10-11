@@ -825,7 +825,8 @@ function ProcessAction(String actionKey)
 		{
 			SaveSettings();
 
-            savedPlayerName = player.TruePlayerName;
+            savedPlayerName = playerName;
+            SaveConfig();
 
 			// DEUS_EX_DEMO
 			//
