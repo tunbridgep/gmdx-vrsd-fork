@@ -2994,9 +2994,6 @@ function ResetPlayer(optional bool bTraining)
     //SARGE: Reset collectibles
     collectiblesFound = 0;
 
-    //SARGE: Reset collectibles
-    collectiblesFound = 0;
-
     //SARGE: Reset killswitch
     killswitchTimer = default.killswitchTimer;
 
