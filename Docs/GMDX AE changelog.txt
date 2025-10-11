@@ -1,6 +1,7 @@
 1.11 (Hotfix Release):
 
 New Features:
+- The Piercing Perk now also affects security cameras, turrets, and alarm panels, in addition to bots.
 - Pressing "F" in the inventory screen will now assign the selected item as your secondary item.
 - Decline System now maintains separate "playthrough" and "global" decline lists. Only the global list is maintained between playthroughs.
 - Tech Goggles and the Vision Augmentation can now see items inside containers (could previously only show items in the world).

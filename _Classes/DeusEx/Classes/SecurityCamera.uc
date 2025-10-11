@@ -731,6 +731,7 @@ auto state Active
         local int i;
 		local GMDXImpactSpark s;
 		local GMDXImpactSpark2 t;
+        local Perk perkPiercing;
 
         if (DamageType == 'Sabot' || DamageType == 'Shot')
         PlaySound(sound'ArmorRicochet',SLOT_Interact,,true,1280);
@@ -767,6 +768,9 @@ auto state Active
 		}
 		if (( Level.NetMode != NM_Standalone ) && (EventInstigator.IsA('DeusExPlayer')))
 			DeusExPlayer(EventInstigator).ServerConditionalNotifyMsg( DeusExPlayer(EventInstigator).MPMSG_CameraInv );
+
+        //SARGE: Modify damage by the Piercing perk
+        Damage *= class'PerkPiercing'.static.GetPiercingPerkMult(DeusExPlayer(eventInstigator));
 
 		Super.TakeDamage(Damage, EventInstigator, HitLocation, Momentum, DamageType);
 	}
