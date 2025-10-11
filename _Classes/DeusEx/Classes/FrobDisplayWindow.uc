@@ -611,7 +611,10 @@ function DrawDeviceHudInformation(GC gc, actor frobTarget)
 	if (!device.bHackable || device.hackStrength == 0.0)
 		barSize = 45.00000;		
 
-	strInfo = DeusExDecoration(frobTarget).itemName $ strDoubleDot;
+    if (player.bGMDXDebug && frobTarget.isA('Keypad'))
+        strInfo = DeusExDecoration(frobTarget).itemName $ " (Code: " $ Keypad(frobTarget).validCode $ ")" $ strDoubleDot;
+    else
+        strInfo = DeusExDecoration(frobTarget).itemName $ strDoubleDot;
 	
 	if( ( frobTarget.IsA('AutoTurretGun') && frobTarget.Owner != None && frobTarget.Owner.IsA('AutoTurret') && AutoTurret(frobTarget.Owner).bRebooting )
 			|| ( frobTarget.IsA('SecurityCamera') && SecurityCamera(frobTarget).bRebooting ) )
@@ -764,6 +767,8 @@ function DrawOtherHudInformation(GC gc, actor frobTarget)
 	local float				infoX, infoY, infoW, infoH;
 	local string			strInfo;
 	local int 				typecastIt;
+    local int               i;
+    local string            un,p;
 	
 	// TODO: Check familiar vs. unfamiliar flags	
 	if (frobTarget.IsA('Pawn'))
@@ -805,6 +810,33 @@ function DrawOtherHudInformation(GC gc, actor frobTarget)
 		   }
 		}
 	}
+
+    //SARGE: Show passwords when debugging
+    if (player.bGMDXDebug && strInfo != "")
+    {
+        if (frobTarget.isA('Computers'))
+        {
+            strInfo = strInfo $ CR() $ "Logins:";
+            for (i = 0;i < 8;i++)
+            {
+                un = Computers(frobTarget).GetUserName(i);
+                p = Computers(frobTarget).GetPassWord(i);
+                if (un != "")
+                    strInfo = strInfo $ CR() $ un @ ":" @ p;
+            }
+        }
+        else if (frobTarget.isA('ATM'))
+        {
+            strInfo = strInfo $ CR() $ "Logins:";
+            for (i = 0;i < 8;i++)
+            {
+                un = ATM(frobTarget).GetAccountNumber(i);
+                p = ATM(frobTarget).GetPIN(i);
+                if (un != "")
+                    strInfo = strInfo $ CR() $ un @ ":" @ p;
+            }
+        }
+    }
 
 	infoX = boxTLX + 10;
 	infoY = boxTLY + 10;

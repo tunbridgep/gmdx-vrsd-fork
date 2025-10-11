@@ -15225,222 +15225,29 @@ function string StripFromTo(string text)
     return text;
 }
 
-function bool HasCodeNote(string code, optional bool bNoHidden)
+function bool HasCodeNote(string code, optional string code2, optional bool bNoHidden)
 {
-    return GetCodeNote(code,bNoHidden) != None;
+    return class'CodeUtils'.static.HasCode(self,code,code2,bNoHidden);
 }
 
-function bool HasCodeNoteStrict(string code, string code2, optional bool bNoHidden)
+function DeusExNote GetCodeNote(string code, optional string code2, optional bool bNoHidden)
 {
-    return GetCodeNoteStrict(code,code2,bNoHidden) != None;
+    return class'CodeUtils'.static.GetCodeNote(self,code,code2,bNoHidden);
 }
 
-function private bool ProcessCodeNote(DeusExNote note, string code, optional bool bStrictMode)
+//Returns if the player has any non-hidden notes at all
+function bool HasAnyNotes()
 {
-    local string noteText;
-    local int noteTextNumeric;
-
-    //handle any notes we were given which might not have "original" text for whatever reason
-    if (note.originalText == "")
-        note.originalText = note.text;
-    
-    //noteText = note.originalText;
-
-    //DebugLog("NOTE (pre trim): " $ note.text);
-
-    //SARGE: This is some WEIRD logic!
-    //Because we need to dynamically check the notes for codes,
-    //HOWEVER We DON'T want to be able to login if the words simply exist in notes,
-    //because some logins are common words, like SECURITY,
-    //or WALTON and SIMONS, which means we need to check more thoroughly.
-    //Generally, though, Passwords follow these rules:
-    //1. Normally they are either in ALL CAPS or all lower case.
-    //2. There's a few times where they will have Login: Somename, Password: Somename, which are in camel caps (becase of course....)
-    //3. Lots of notes also have allcaps FROM and TO text in them, like an email,
-    //such as FROM: WALTON SIMONS TO: SOME GUY
-    //So we need to account for all of these.
-    
-    //First, strip off the first line if there's FROM: and TO: text...
-    noteText = StripFromTo(note.originalText);
-
-    noteTextNumeric = int(noteText);
-    
-    //DebugLog("CODE: " $ code);
-
-    //First, if it's numeric, Check note contents for the code exactly
-    if (noteTextNumeric != 0 && InStrSpaced(noteText,code) != -1)
-    {
-        //DebugLog("NOTE: " $ noteText);
-        DebugLog("NOTE CODE " $code$ " FOUND (NUMERIC)");
-        return true;
-    }
-
-    //Next, Check note contents for the code
-    //Start by checking that our code matches CAPS in the note...
-    else if (InStrSpaced(noteText,Caps(code)) != -1)
-    {
-        //DebugLog("NOTE: " $ noteText);
-        DebugLog("NOTE CODE " $code$ " FOUND (CAPS)");
-        return true;
-    }
-
-    //Next, Check note contents for the code exactly
-    else if (InStrSpaced(noteText,code) != -1)
-    {
-        //DebugLog("NOTE: " $ noteText);
-        DebugLog("NOTE CODE " $code$ " FOUND (EXACT)");
-        return true;
-    }
-    
-    //Then check that our code matches all lower case in the note...
-    //locs is not allowed in strict mode!
-    else if (InStrSpaced(noteText,Locs(code)) != -1 && !bStrictMode)
-    {
-        //DebugLog("NOTE: " $ noteText);
-        DebugLog("NOTE CODE " $code$ " FOUND (LOCS)");
-        return true;
-    }
-    
-    //Some codes are in quotes, so always allows things in quotes
-    if (InStr(Caps(noteText),"\""$Caps(code)$"\"") != -1)
-    {
-        //DebugLog("NOTE: " $ noteText);
-        DebugLog("NOTE CODE " $code$ " FOUND (CAPS QUOTES)");
-        return true;
-    }
-    
-    //Some notes have Login: Username and Password: Whatever in them, so handle them.
-    else if (InStr(Caps(noteText),Caps("LOGIN: " $ code)) != -1)
-        return true;
-    else if (InStr(Caps(noteText),Caps("PASSWORD: " $ code)) != -1)
-        return true;
-    else if (InStr(Caps(noteText),Caps("ACCOUNT: " $ code)) != -1)
-        return true;
-    else if (InStr(Caps(noteText),Caps("PIN: " $ code)) != -1)
-        return true;
-    else if (InStr(Caps(noteText),Caps("LOGIN/PASSWORD: " $ code)) != -1)
-        return true;
-}
-
-//A stricter version of GetCodeNote which requires the username and password to be contained
-//within the same note.
-function DeusExNote GetCodeNoteStrict(string username, string password, optional bool bNoHidden)
-{
-	local DeusExNote note;
-    
-    if (username == "" && password == "")
-        return None;
-
-    //Default username/password.
-    if (username == "SECURITY" && password == "SECURITY")
-        return None;
-	
+    local DeusExNote note;
     note = FirstNote;
-
-	while( note != None)
-	{
-        //Skip user notes and hidden notes
-        if (!note.bUserNote && (!bNoHidden || !note.bHidden))
-        {
-            if (ProcessCodeNote(note,username,true) && ProcessCodeNote(note,password,true))
-                return note;
-        }
+    while (note != None)
+    {
+        if (!note.bHidden)
+            return true;
 
         note = note.next;
-	}
-
-    DebugLog("NOTE CODE " $username$"/"$password$ " NOT FOUND");
-	return None;
-
-}
-
-function DeusExNote GetCodeNote(string code, optional bool bNoHidden)
-{
-	local DeusExNote note;
-
-    if (code == "")
-        return None;
-
-    //Some codes are so obvious that they will never have valid notes.
-    //if (bNoHidden && IsObfuscatedCode(code))
-    //    return None;
-
-	note = FirstNote;
-
-	while( note != None)
-	{
-        //Skip user notes and hidden notes
-        if (!note.bUserNote && (!bNoHidden || !note.bHidden))
-        {
-            if (ProcessCodeNote(note,code))
-                return note;
-        }
-
-        note = note.next;
-	}
-
-    DebugLog("NOTE CODE " $code$ " NOT FOUND");
-	return None;
-}
-
-//This is the OPPOSITE of the below function.
-//Some codes should NEVER appear in notes, as they are far too common
-//within notes to actually be detected properly.
-function bool IsObfuscatedCode(string code)
-{
-    code = Caps(code);
-    return code == "RIGHTEOUS";
-    /*
-    return code == "NSF"
-        || code == "MJ12"
-        || code == "RECEPTION"
-        || code == "UNKNOWN"
-        || code == "CAPTAIN"
-        || code == "SECURITY";
-    */
+    }
     return false;
-}
-
-//This is a simple list of codes which serve as exceptions to No Keypad Cheese
-//See here for a full list. https://deusex.fandom.com/wiki/Passwords,_Logins,_and_Codes_(DX)
-function bool GetExceptedCode(string code)
-{
-    code = Caps(code);
-	return code == "CALVO" //Alex Jacobson computer password on the wall next to his computer
-        || code == "AJACOBSON" //Alex Jacobson computer password on the wall next to his computer
-        || code == "NSF" //NSF/Righteous, but the Righteous is given out and the NSF is reasonably guessable.
-        || code == "JCD" //we get our code as soon as we enter our office, but it takes a little bit. Fix it not working when we should know it
-        || code == "BIONICMAN" //we get our code as soon as we enter our office, but it takes a little bit. Fix it not working when we should know it
-        || code == "MCHOW" //maggie chows code can only be guessed, never found, but is designed that way.
-        || code == "INSURGENT" //maggie chows code can only be guessed, never found, but is designed that way.
-        || code == "MLUNDQUIST" //mlundquist is never mentioned anywhere
-        || code == "DAMOCLES" //Only ever mentioned by itself
-        //|| code == "2167" //Only displayed in a computer message, so we never get a note for it //NOW RANDOMISED
-        || code == "718" //Can only be guessed based on cryptic information
-        || code == "7243" //We are only given 3 digits, need to guess the 4th
-        || code == "CAPTAIN" //Login/Password: KZHao, Captain, am too lazy to check for the Captain in that string.
-        || code == "WYRDRED08" //We are not given the last digit
-        || (code == "1966" && FlagBase.GetBool('GaveCassandraMoney')) //Only given in conversation, no note
-        //|| code == "1966" //Only given in conversation, no note
-        || code == "4321" //We are told to "count backwards from 4"
-        || code == "NICOLETTE" //Given in conversation
-        || code == "CHAD" //Given in conversation
-        || (code == "2167" && FlagBase.GetBool('NYCUndergroundCodeObtained')) //Allow us to use it after we access the computer. Also adds a note from a datacube.
-        || (code == "6512" && FlagBase.GetBool('VersalifeCodeObtained')) //Allow us to use it after we access generate a temp security pass.
-        || code == "12" //Guessable code for the keypad in the MJ12 lab above the entry stairs
-        || code == "APPLE" //Special case, spelled "Apple" in note so it fails the LOCS and CAPS checks...
-        || code == "MEVERETT" //Can only be guessed, but it's pretty obvious
-        || code == "PYNCHON" //Can only be guessed, but it's pretty obvious
-        || code == "JCDENTON"; //Uses Base: JCDenton instead of Username: JCDenton.
-}
-
-//"Security" is a commonly used word in many logs.
-//It's also a login for a lot of computers.
-//But none of the computers with that username have in-game logs
-//So anything with security as the username needs to be ignored
-function bool EvilUsernameHack(string username)
-{
-    return (Caps(username) == "SECURITY") && iNoKeypadCheese > 0;
 }
 
 // ----------------------------------------------------------------------
@@ -15557,13 +15364,17 @@ function DeleteAllNotes()
 // NoteAdd()
 // ----------------------------------------------------------------------
 
-exec function NoteAdd( String noteText, optional bool bUserNote, optional bool bHidden, optional name noteName )
+exec function DeusExNote NoteAdd( String noteText, optional bool bUserNote, optional bool bHidden, optional name noteName )
 {
 	local DeusExNote newNote;
+
+    DebugMessage("NoteName: " $ noteName);
 
 	newNote = AddNote( noteText, bUserNote, !bHidden );
 	newNote.SetHidden( bHidden );
 	newNote.SetTextTag( noteName );
+
+    return newNote;
 }
 
 // ----------------------------------------------------------------------
@@ -19979,7 +19790,7 @@ function UpdateMarkerValidity()
     while (marker != None)
     {
         bValid = marker.associatedNote != None && !marker.associatedNote.bHidden;
-        Log("Marker " $ marker.associatedNote.text $ " is valid: " $ bValid);
+        DebugLog("Marker " $ marker.associatedNote.text $ " is valid: " $ bValid);
         if (!bValid && prev == None)
         {
             markers = marker.next;
