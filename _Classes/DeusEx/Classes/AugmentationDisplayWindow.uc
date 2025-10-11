@@ -2025,12 +2025,15 @@ function DrawVisionAugmentation(GC gc)
 				{
 					dist = VSize(A.Location - loc);
                     //SARGE: Added a new condition for detecting items and security systems only
-                    if (visionLevelValue == 0 && dist <= ITEM_SONAR_DISTANCE && (A.IsA('Inventory') || A.IsA('SecurityCamera') || A.IsA('AutoTurret') || A.IsA('AutoTurretGun') || A.IsA('AlarmUnit')))
+                    if (visionLevelValue == 0 && dist <= ITEM_SONAR_DISTANCE && (A.IsA('Inventory') || A.IsA('Containers') || A.IsA('SecurityCamera') || A.IsA('AutoTurret') || A.IsA('AutoTurretGun') || A.IsA('AlarmUnit')))
                     {
 						VisionTargetStatus = GetVisionTargetStatus(A);
 						SetSkins(A, oldSkins);
 
-						gc.DrawActor(A, False, False, True, 1.0, 2.0, None);
+                        if (A.IsA('Containers'))
+                            DrawContents(gc,Containers(A));
+                        else
+                            gc.DrawActor(A, False, False, True, 1.0, 2.0, None);
 
 						ResetSkins(A, oldSkins);
                     }
@@ -2041,7 +2044,10 @@ function DrawVisionAugmentation(GC gc)
 						VisionTargetStatus = GetVisionTargetStatus(A);
 						SetSkins(A, oldSkins);
 
-						gc.DrawActor(A, False, False, True, 1.0, 2.0, None);
+                        if (A.IsA('Containers'))
+                            DrawContents(gc,Containers(A));
+                        else
+                            gc.DrawActor(A, False, False, True, 1.0, 2.0, None);
 
 						ResetSkins(A, oldSkins);
 					}
@@ -2078,7 +2084,10 @@ function DrawVisionAugmentation(GC gc)
 							DrawGlow = FMax(DrawGlow,0.15);
 						}
 
-						gc.DrawActor(A, False, False, True, 1.0, DrawGlow, None);
+                        if (A.IsA('Containers'))
+                            DrawContents(gc,Containers(A));
+                        else
+                            gc.DrawActor(A, False, False, True, 1.0, 2.0, None);
 
 						ResetSkins(A, oldSkins);
 					}
@@ -2156,6 +2165,45 @@ function DrawVisionAugmentation(GC gc)
 	}
 }
 
+function DrawContents(GC gc, Containers C)
+{
+    local Mesh oldMesh, newMesh;
+    local float oldScale;
+    local class<DeusExPickup> P;
+    local class<DeusExWeapon> W;
+    local class<DeusExAmmo> A;
+
+    //Don't draw empty crates/boxes
+    if (C.Contents == None)
+        return;
+
+    oldMesh = C.Mesh;
+    oldScale = C.DrawScale;
+
+    //Get the right mesh - a bit of a hack
+    P = class<DeusExPickup>(C.Contents);
+    W = class<DeusExWeapon>(C.Contents);
+    A = class<DeusExAmmo>(C.Contents);
+    if (P != None)
+        newMesh = class'HDTPLoader'.static.GetMesh2(P.default.HDTPMesh,string(P.default.PickupViewMesh),P.static.isHDTP());
+    if (W != None)
+        newMesh = class'HDTPLoader'.static.GetMesh2(W.default.HDTPPickupViewMesh,string(W.default.PickupViewMesh),W.static.isHDTP());
+    if (A != None)
+        newMesh = class'HDTPLoader'.static.GetMesh2(A.default.HDTPMesh,string(A.default.Mesh),A.static.isHDTP());
+
+    C.Mesh = newMesh;
+
+    //SARGE: Hackfix for LAW
+    if (C.Contents == class'WeaponLAW')
+        C.DrawScale = C.Contents.default.DrawScale * 0.25;
+    else
+        C.DrawScale = C.Contents.default.DrawScale;
+
+    gc.DrawActor(C, False, False, True, 1.0, 2.0, None);
+    C.Mesh = oldMesh;
+    C.DrawScale = oldScale;
+}
+
 // ----------------------------------------------------------------------
 // IsHeatSource()
 // ----------------------------------------------------------------------
@@ -2191,6 +2239,9 @@ function bool IsHeatSource(Actor A)
         return true;
     //SARGE: Added pickups and weapons as well
     else if (A.IsA('Inventory'))
+        return true;
+    //SARGE: And crates
+    else if (A.IsA('CrateBreakableMedCombat') || A.IsA('CrateBreakableMedGeneral') || A.IsA('CrateBreakableMedMedical') || A.IsA('BoxSmall'))
         return true;
 	else
 		return False;
@@ -2308,7 +2359,7 @@ function int GetVisionTargetStatus(Actor Target)
 		return VISIONNEUTRAL;
 	
     //SARGE: Added. Show items as a different colour
-    if (target.IsA('Inventory'))
+    if (target.IsA('Inventory') || target.IsA('CrateBreakableMedCombat') || target.IsA('CrateBreakableMedGeneral') || target.IsA('CrateBreakableMedMedical') || target.IsA('BoxSmall'))
         return VISIONITEM;
 
 	if (player.Level.NetMode == NM_Standalone)
