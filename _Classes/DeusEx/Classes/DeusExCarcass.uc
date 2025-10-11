@@ -1160,6 +1160,7 @@ function Frob(Actor Frobber, Inventory frobWith)
     local bool bProcessedImpale;
     local bool bSuppressEmptyMessage;                                           //SARGE: Suppress the "You don't find anything" message
     local bool bShowReceived;                                                   //SARGE: Show the Received Items Window for new pickups
+    local bool bAddBad;                                                         //SARGE: Prevent adding the same items to the bad list more than once.
 	
     badItemCount = 0;
 
@@ -1230,6 +1231,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 				bPickedItemUp = False;
                 bDeclined = False;
                 bLootedAmmo = false;
+                bAddBad = false;
 
                 //DEBUG TEXT
                 //player.ClientMessage("Inventory Item: " $ item);
@@ -1246,8 +1248,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                     }
                     bDeclined=True;
                     bFoundInvalid=True;
-                    if (!item.IsA('DeusExWeapon'))
-                        AddBadItem(player,item);
+                    bAddBad = true;
                 }
 				else if (item != none && (item.IsA('Ammo') || (item.IsA('WeaponSpiderBotConstructor')) || (item.IsA('WeaponAssaultGunSpider')))) //CyberP: new type weapons exclusive to pawns //RSD: Failsafe
 				{
@@ -1290,8 +1291,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                             //SARGE: Show declined nanokeys
                             else
                             {
-                                if (player.bShowDeclinedInReceivedWindow)
-                                    AddBadItem(player,item);
+                                bAddBad = true;
                             }
 
 							DeleteInventory(item);
@@ -1326,7 +1326,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 
                         //SARGE: Always show declined weapons, unless we already have a disposable weapon
                         if (bDeclined && (W == None || !DeusExWeapon(item).bDisposableWeapon))
-                            AddBadItem(player,item);
+                            bAddBad = true;
 
                         //SARGE: Disposable weapons don't give ammo if we don't have space for them, or if declined
                         if (W == None && DeusExWeapon(item).bDisposableWeapon && (!player.FindInventorySlot(item, True) || bDeclined))
@@ -1381,8 +1381,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                     if (!bSearched)
                                         P.ClientMessage(item.PickupMessage @ item.itemArticle @ Item.itemName @ IgnoredString);
                                 
-                                    if (!bDeclined) //SARGE: declined items are already added.
-                                        AddBadItem(player,item);
+                                    bAddBad = true;
                                 }
                                 else if (item != None)
                                 {
@@ -1440,7 +1439,8 @@ function Frob(Actor Frobber, Inventory frobWith)
 										}
 									}
 
-                                    ShowFixedPickupMessage(player,invItem,itemCount,bShowReceived);
+                                    ShowFixedPickupMessage(player,invItem,itemCount,true);
+                                    bAddBad = false;
                                     bFoundSomething = True;
                                     bPickedSomethingUp = True;
 
@@ -1449,7 +1449,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                     {
                                         if (!bSearched)
                                             player.ClientMessage(invItem.PickupMessage @ invItem.itemArticle @ invItem.itemName @ msgTooMany, 'Pickup');
-                                        AddBadItem(player,item,DeusExPickup(item).numCopies);
+                                        bAddBad = true;
                                         bFoundInvalid=true;
                                     }
 								}
@@ -1468,6 +1468,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                     }
 
                                     ShowFixedPickupMessage(player,invItem,itemCount,true);
+                                    bAddBad = false;
                                     bPickedSomethingUp = True;
 								}
                                 //SARGE: Inform us if our inventory is too full (max stack) to pick these items up.
@@ -1476,7 +1477,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                     if (!bSearched)
                                         player.ClientMessage(invItem.PickupMessage @ invItem.itemArticle @ invItem.itemName @ msgTooMany, 'Pickup');
                                     bFoundSomething = True;
-                                    AddBadItem(player,item);
+                                    bAddBad = true;
                                     bFoundInvalid=true;
 
                                 }
@@ -1505,6 +1506,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 
 								DeleteInventory(item);
                                 ShowFixedPickupMessage(player,invItem,itemCount,true);
+                                bAddBad = false;
                                 bPickedSomethingUp = True;
 							}
 						}
@@ -1538,6 +1540,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                         // Show the item received in the ReceivedItems window
                                         bShowReceived = !item.IsA('DeusExWeapon') || !DeusExWeapon(item).bDisposableWeapon;
                                         ShowFixedPickupMessage(player,item,itemCount,bShowReceived);
+                                        bAddBad = false;
 
                                         if (item.IsA('WeaponShuriken') && WeaponShuriken(item).bImpaled)
                                             LootPickupSound = Sound'DeusExSounds.Generic.FleshHit1';
@@ -1547,7 +1550,7 @@ function Frob(Actor Frobber, Inventory frobWith)
                                     else
                                     {
                                         bSuppressEmptyMessage = True;
-                                        AddBadItem(player,item);
+                                        bAddBad = true;
                                     }
                                 }
 							}
@@ -1561,6 +1564,18 @@ function Frob(Actor Frobber, Inventory frobWith)
 							}
 						}
 					}
+
+                    if (bAddBad)
+                    {
+                        if (item.isA('DeusExPickup'))
+                            AddBadItem(player,item,DeusExPickup(item).NumCopies);
+                        //else if (item.isA('DeusExWeapon'))
+                        //    AddBadItem(player,item,DeusExWeapon(item).PickupAmmoCount);
+                        //else if (item.isA('DeusExAmmo'))
+                        //    AddBadItem(player,item,DeusExAmmo(item).AmmoAmount);
+                        else
+                            AddBadItem(player,item);
+                    }
 				}
                 //log("Processed Item: " $ item.name $ ", bFoundSomething: " $ bFoundSomething);
 				item = nextItem;
