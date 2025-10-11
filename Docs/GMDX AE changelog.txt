@@ -12,6 +12,7 @@ Bugfixes:
 - Fixed "Enter" pressing random keypad buttons rather than confirming the code when the Unknown Keypad Length modifier is used
 - Fixed a bug with wrong music when loading the game while the combat track is transitioning to the ambient track.
 - Fixed a bug where the number of found collectibles would not be reset upon starting a new game.
+- Fixed Computer notes screen scrolling to the bottom when returning to the Login screen.
 
 Map Changes:
 - 02_NYC_Street
