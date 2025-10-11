@@ -6996,6 +6996,7 @@ ignores Fire, AltFire;
     bSwitchingToLaser = false;
     bSwitchingToScope = false;
     bSwitchingToSilencer = false;
+    UpdateInventoryInfo();
 	GotoState('Idle');
 }
 
