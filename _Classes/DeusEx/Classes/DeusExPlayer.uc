@@ -20208,7 +20208,7 @@ defaultproperties
      bBeltMemory=True
      bEnhancedCorpseInteractions=True
      bBeltShowModified=true
-     iSearchedCorpseText=1
+     iSearchedCorpseText=3
      bDisplayClips=false
      iCutsceneFOVAdjust=2
      iFrobDisplayStyle=1
@@ -20269,11 +20269,11 @@ defaultproperties
      bEnhancedPersonaScreenMouse=true
      bShowFullAmmoInHUD=true
      bToolWindowShowKnownCodes=true
-     bToolWindowShowRead=false
+     bToolWindowShowRead=true
      bToolWindowShowAugState=true
      iToolWindowShowDuplicateKeys=1
      iToolWindowShowBookNames=1
-     bToolWindowShowInvalidPickup=false
+     bToolWindowShowInvalidPickup=true
      bStreamlinedComputerInterface=true
      bInventoryAmmoShowsMax=true
      bFasterInfolinks=true
