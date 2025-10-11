@@ -13,6 +13,9 @@ var globalconfig int iHDTPModelToggle;
 var string HDTPSkin;
 var string HDTPMesh;
 
+var transient bool bPersistant; //SARGE: For perf.
+var bool bSmokeDone;
+
 //
 // copied from Engine.Fragment
 //
@@ -151,7 +154,7 @@ function PostBeginPlay()
 
 	speed *= 1.1;
 
-    if (class'DeusExPlayer'.default.iPersistentDebris >= 2) //SARGE: Stick around forever, if we've enabled the setting.
+    if (bPersistant) //SARGE: Stick around forever, if we've enabled the setting.
         LifeSpan = 0;
     else if (!IsA('GMDXImpactSpark') && !IsA('GMDXImpactSpark2'))
         // randomize the lifespan a bit so things don't all disappear at once
@@ -165,6 +168,8 @@ static function bool IsHDTP()
 
 exec function UpdateHDTPsettings()
 {
+    //Cache this for performance
+    bPersistant = class'DeusExPlayer'.default.iPersistentDebris >= 2;
 	if(HDTPMesh != "")
 		Mesh = class'HDTPLoader'.static.GetMesh2(HDTPMesh,string(default.Mesh),IsHDTP());
 }
@@ -182,7 +187,7 @@ function SkinVariation()
 
 simulated function AddSmoke()
 {
-    if (smokeTime == -1 && class'DeusExPlayer'.default.iPersistentDebris >= 2)
+    if (smokeTime == -1 && bPersistant)
         return;
             
     bVisionImportant = true;
@@ -200,7 +205,7 @@ simulated function AddSmoke()
 		smokeGen.bRandomEject = True;
 		smokeGen.bFade = True;
 		smokeGen.SetBase(Self);
-        if (class'DeusExPlayer'.default.iPersistentDebris >= 2)
+        if (bPersistant)
             smokeTime = 30 + (FRand() * 10); //Sarge: only smoke for 30 seconds, now that we can have permanent gore.
         else
             smokeTime = -1;
@@ -209,8 +214,13 @@ simulated function AddSmoke()
 
 simulated function Tick(float deltaTime)
 {
-   if ((bSmoking) && (smokeGen == None))
-		AddSmoke();
+
+    //SARGE: Shortcut! If we have already smoked out, and have persistence on, then there's no need to do anything, so just bail
+    if (bSmokeDone && bPersistant)
+        return;
+
+    if ((bSmoking) && (smokeGen == None))
+        AddSmoke();
 
 	// fade out the object smoothly 2 seconds before it dies completely
 	if (LifeSpan <= 2 && LifeSpan != 0 && !IsA('GMDXImpactSpark') && !IsA('GMDXImpactSpark2'))
@@ -235,6 +245,7 @@ simulated function Tick(float deltaTime)
             if (smokeGen != none)
                 smokeGen.Destroy();
             bVisionImportant = false;
+            bSmokeDone = true;
         }
     }
 }

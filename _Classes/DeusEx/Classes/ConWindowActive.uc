@@ -683,12 +683,22 @@ function CreateTakenWindow()
 // ShowReceivedItem()
 // ----------------------------------------------------------------------
 
-function bool ShowReceivedItem(Inventory invItem, int count, optional bool bDeclined, optional int rollupType)
+function bool ShowReceivedItem(Inventory invItem, int count, optional bool bDeclined, optional bool bNoGroup)
 {
 	if (winReceived != None)
 	{
         AskParentForReconfigure(); //SARGE: Added, so we can place the windows properly
-		return winReceived.AddItem(invItem, count, bDeclined, rollupType);
+		return winReceived.AddItem(invItem, count, bDeclined, bNoGroup);
+	}
+    return false;
+}
+
+function bool ShowReceivedItemFrom(Actor owner, Inventory invItem, int count, optional bool bDeclined, optional bool bNoGroup)
+{
+	if (winReceived != None)
+	{
+        AskParentForReconfigure(); //SARGE: Added, so we can place the windows properly
+		return winReceived.AddItemFrom(owner,invItem, count, bDeclined, bNoGroup);
 	}
     return false;
 }
@@ -697,12 +707,17 @@ function bool ShowReceivedItem(Inventory invItem, int count, optional bool bDecl
 // ShowGenericIcon()
 // ----------------------------------------------------------------------
 
-function bool ShowGenericIcon(Texture icon, string label, optional int count, optional bool bDeclined, optional int rollupType)
+function bool ShowGenericIcon(Texture icon, string label, optional int count, optional bool bDeclined, optional bool bNoGroup)
+{
+    return ShowGenericIconFrom(None,icon,label,count,bDeclined,bNoGroup);
+}
+
+function bool ShowGenericIconFrom(Actor source, Texture icon, string label, optional int count, optional bool bDeclined, optional bool bNoGroup)
 {
 	if (winReceived != None)
 	{
         AskParentForReconfigure(); //SARGE: Added, so we can place the windows properly
-		return winReceived.AddGenericIcon(icon, label, count, bDeclined, rollupType);
+		return winReceived.AddGenericIcon(string(Source.name), icon, label, count, bDeclined, bNoGroup);
 	}
     return false;
 }
@@ -711,12 +726,12 @@ function bool ShowGenericIcon(Texture icon, string label, optional int count, op
 // ShowTakenItem()
 // ----------------------------------------------------------------------
 
-function bool ShowTakenItem(Inventory invItem, int count)
+function bool ShowTakenItem(Actor owner, Inventory invItem, int count)
 {
 	if (winTaken != None)
 	{
         AskParentForReconfigure(); //SARGE: Added, so we can place the windows properly
-		return winTaken.AddItem(invItem, count);
+		return winTaken.AddItemFrom(owner, invItem, count);
 	}
     return false;
 }

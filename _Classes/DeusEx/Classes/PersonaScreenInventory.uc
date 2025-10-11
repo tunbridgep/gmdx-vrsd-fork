@@ -1028,7 +1028,9 @@ function DropSelectedItem()
 				//winStatus.AddText(Sprintf(DroppedLabel, anItem.itemName));
 
 				// Update the object belt
-				invBelt.UpdateBeltText(anItem);
+				//invBelt.UpdateBeltText(anItem);
+                //SARGE: This is now required because RemoveItem can update the belt now.
+                UpdateBelt();
 
                 //SARGE: Actually update the item text
                 UpdateWinInfo(anItem);

@@ -3,14 +3,37 @@
 New Features:
 - Pressing "F" in the inventory screen will now assign the selected item as your secondary item.
 - The player's Real Name is now remembered when entering/leaving the new game screen, and between playthroughs.
+- Added Shifter-style weapon switching.
+    - Press the Change Ammo key while holding a grenade, consumable, or other item, to swap it for a similar item.
+    - Doing so will also swap the item on the toolbelt.
+    - In "Autoswap" mode, using the last of an item will also switch it's belt icon.
+    - This can be disabled in the Advanced QoL Menu.
 
 Misc Changes:
+- Added a female version of The Collector outfit.
 - Reduced the stack size of Medkits and Biocells
 - "Immersive Carryables" is now a QoL option, rather than a Gameplay option, and is no longer enforced on Hardcore.
+- Updated a few default settings.
+- Ammo capacity modifier on non-hardcore reduced from 200% to 150%.
+- Minor optimisations for body fragments. More work needs to be done, but this should still give a minor performance incrase with a large number of body fragments.
 
 Bugfixes:
 - Fixed "Enter" pressing random keypad buttons rather than confirming the code when the Unknown Keypad Length modifier is used
 - Fixed a bug with wrong music when loading the game while the combat track is transitioning to the ambient track.
+- Fixed a bug where the number of found collectibles would not be reset upon starting a new game.
+- Fixed Computer notes screen scrolling to the bottom when returning to the Login screen.
+- Fixed some code notes not working properly with the Unknown Codes modifier
+- Fixed Markers sometimes displaying at invalid exits (such as the courtyard in the Luminous Path compound)
+- Fixed numerous bugs related to the Received Items display, including showing wrong icons or duplicated icons.
+- Fixed some typos.
+
+Map Changes:
+- 02_NYC_Street
+  - Fixed a bug that would cause the game to crash if the player attempted to carry TNT from Battery Park.
+- 04_NYC_NSFHQ
+  - Changed the underground security login from TJEFFERSON/NEWREVOLUTION to GWASHINGTON/NEWREVOLUTION, so you can't open up the whole underground area super easily without hacking.
+- 05_NYC_MJ12Lab/05_NYC_UNATCOHQ
+  - Miguel no longer goes running around and getting into fights at random times.
 
 1.1:
 
