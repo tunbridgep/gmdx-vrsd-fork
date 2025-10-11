@@ -23,6 +23,7 @@ Bugfixes:
 - Fixed Computer notes screen scrolling to the bottom when returning to the Login screen.
 - Fixed some code notes not working properly with the Unknown Codes modifier
 - Fixed Markers sometimes displaying at invalid exits (such as the courtyard in the Luminous Path compound)
+- Fixed numerous bugs related to the Received Items display, including showing wrong icons or duplicated icons.
 - Fixed some typos.
 
 Map Changes:

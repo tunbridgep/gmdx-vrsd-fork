@@ -906,6 +906,8 @@ var globalconfig bool bEditDefaultNotes;                        //SARGE: If enab
 
 var globalconfig bool bClassicScope;                            //SARGE: Classic Scope Mode
 
+var globalconfig bool bClearReceivedDisplay;                    //SARGE: Whether or not the Items Received iwndow will be cleared when frobbing each item.
+
 var globalconfig bool bQuickReflexes;                           //SARGE: Enemies can snap-shoot at you if they hear you or are alerted, rather than standing around.
 
 var globalconfig bool bDragAndDropOffInventory;                 //SARGE: Allow dropping items by dragging them off the inventory grid
@@ -8703,7 +8705,7 @@ function DoLeftFrob(Actor frobTarget)
         }
         */
         bLeftClicked = true;
-        HandleItemPickup(FrobTarget,false,false,false,true,true);
+        HandleItemPickup(FrobTarget,false,false,None,true,true);
     }
     
     //Now required because of the green frob display
@@ -8745,7 +8747,7 @@ function DoRightFrob(Actor frobTarget)
     }
     */
     if (bDefaultFrob && frobTarget.IsA('Inventory'))
-        HandleItemPickup(FrobTarget,false,false,false,true,true);
+        HandleItemPickup(FrobTarget,false,false,None,true,true);
     else if (bDefaultFrob)
         DoFrob(Self, None);
     
@@ -9313,7 +9315,7 @@ function PlayPickupAnim(Vector locPickup)
 //
 // Returns the number of rounds they were able to pick up.
 // ----------------------------------------------------------------------
-function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool bShowWindow, optional bool bLootSound, optional bool bNoGroup, optional bool bNoOnes, optional bool bShowOverflowMsg, optional bool bShowOverflowWindow, optional Texture overrideTexture)
+function int LootAmmo(string owner, class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool bShowWindow, optional bool bLootSound, optional bool bNoGroup, optional bool bNoOnes, optional bool bShowOverflowMsg, optional bool bShowOverflowWindow, optional Texture overrideTexture)
 {
     local int MaxAmmo, prevAmmo, ammoCount, intj, over, ret;
     local DeusExAmmo AmmoType;
@@ -9381,11 +9383,11 @@ function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool
             {
                 prevTexture = AmmoType.Icon;
                 AmmoType.Icon = overrideTexture;
-                AddReceivedItem(AmmoType, intj, bNoGroup);
+                AddReceivedItem(owner, AmmoType, intj, bNoGroup);
                 AmmoType.Icon = prevTexture;
             }
             else
-                AddReceivedItem(AmmoType, intj, bNoGroup);
+                AddReceivedItem(owner, AmmoType, intj, bNoGroup);
         }
 
         //If we took at least some, make a special sound.
@@ -9401,7 +9403,7 @@ function int LootAmmo(class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool
             ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName $ " (" $ over $ ")" @ AmmoType.MaxAmmoString, 'Pickup');
         
         if (bShowWindow && bShowDeclinedInReceivedWindow && bShowOverflowWindow)
-            AddReceivedItem(AmmoType, over, bNoGroup, true);
+            AddReceivedItem(owner, AmmoType, over, bNoGroup, true);
     }
     return ret;
 }
@@ -9423,7 +9425,7 @@ function PlayPartialAmmoSound(Actor source, class<Ammo> ammoName)
 // HandleItemPickup()
 // ----------------------------------------------------------------------
 
-function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, optional bool bSkipDeclineCheck, optional bool bFromCorpse, optional bool bShowOverflow, optional bool bShowOverflowWindow)
+function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, optional bool bSkipDeclineCheck, optional DeusExCarcass FromCorpse, optional bool bShowOverflow, optional bool bShowOverflowWindow)
 {
 	local bool bCanPickup;
 	local bool bSlotSearchNeeded;
@@ -9434,6 +9436,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     local bool bLootedAmmo;
     local WeaponNanoSword dts;
     local bool bDestroy;
+    local string source;
 
 	bSlotSearchNeeded = True;
 	bCanPickup = True;
@@ -9442,6 +9445,12 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     //This should prevent the item dupe glitch.
     if (frobTarget.bDeleteMe)
         return false;
+
+    //SARGE: Set the source of the interaction (used by the HUD Display)
+    if (FromCorpse != None)
+        source = FromCorpse.carcassID;
+    else
+        source = string(self.Class.name);
 
 	// Special checks for objects that do not require phsyical inventory
 	// in order to be picked up:
@@ -9575,7 +9584,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     //SARGE: Always try looting non-disposable weapons of their ammo
     if (bCanPickup && FrobTarget.IsA('DeusExWeapon') && !DeusExWeapon(frobTarget).bDisposableWeapon)
     {
-        bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,true,bAlwaysShowReceivedItemsWindow,true,true,bShowOverflow,bShowOverflowWindow);
+        bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,true,bAlwaysShowReceivedItemsWindow,true,true,bShowOverflow,bShowOverflowWindow,source);
 
         //Don't pick up a weapon if there's ammo in it and we already have one
         if (!bSlotSearchNeeded && DeusExWeapon(frobTarget).PickupAmmoCount > 0 && bCanPickup)
@@ -9627,11 +9636,11 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
         //SARGE: Since we haven't looted Disposable weapons yet, do so now.
         if (FrobTarget.IsA('DeusExWeapon') && DeusExWeapon(frobTarget).bDisposableWeapon)
         {
-            bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,!bSlotSearchNeeded,false,false,false,false,false);
+            bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,!bSlotSearchNeeded,FromCorpse != None,false,false,false,false,source);
 
             if (DeusExWeapon(frobTarget).PickupAmmoCount > 0)
             {
-                if (!bFromCorpse)
+                if (FromCorpse == None)
                     //ClientMessage(TooMuchAmmo);
                     ClientMessage(class'DeusExPickup'.default.msgTooMany);
                     
@@ -9694,10 +9703,9 @@ function ClearReceivedItems()
     DeusExRootWindow(rootWindow).hud.receivedItems.RemoveItems();
 }
 
-function AddReceivedItem(Inventory item, int count, optional bool bNoGroup, optional bool bDeclined, optional bool bShowAllDeclined)
+function AddReceivedItem(string owner, Inventory item, int count, optional bool bNoGroup, optional bool bDeclined)
 {
     local int i;
-    local int rollupType;
 
     //clientMessage("item: " $ item $ ", count: " $ count);
     if (item == None)
@@ -9705,17 +9713,9 @@ function AddReceivedItem(Inventory item, int count, optional bool bNoGroup, opti
 
     if (rootWindow != None && DeusExRootWindow(rootWindow).hud != None)
     {
-        //Carcasses always spawn individual copies of their inventory items,
-        //rather than spawning them as a stack. So when things ARE stacked, (usually
-        //disposable weapons), we display them the same way.
-        if (bNoGroup && count < 5)
-            rollupType = 2;
-        else if (bDeclined && !bShowAllDeclined)
-            rollupType = 1;
+        DebugLog("Item is: " $ item $ ", bDeclined is " $ bDeclined $ ", bNoGroup: " $ bNoGroup);
 
-        Log("Item is: " $ item $ ", rollupType is " $ rollupType $ ", bNoGroup: " $ bNoGroup);
-
-        DeusExRootWindow(rootWindow).hud.receivedItems.AddItem(item, count, bDeclined, rollupType);
+        DeusExRootWindow(rootWindow).hud.receivedItems.AddItemFromID(owner, item, count, bDeclined, bNoGroup);
 
         // Make sure the object belt is updated
         if (item.IsA('Ammo'))
@@ -11698,6 +11698,8 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 						            carc.MultiSkins[i] = POVCorpse(item).pMultitex[i];
                                 }
 						    }
+                            if (POVCorpse(item).carcassID != "")
+                                carc.carcassID = POVCorpse(item).carcassID;
 							carc.Mesh = carc.Mesh2;
 							carc.KillerAlliance = POVCorpse(item).KillerAlliance;
 							carc.KillerBindName = POVCorpse(item).KillerBindName;
@@ -20247,6 +20249,7 @@ defaultproperties
      bShowRegularNotes=true
      bShowMarkerNotes=true
      bEditDefaultNotes=false
+     bClearReceivedDisplay=true
      bComputerActionsDrainHackTime=true
      fMusicHackTimer=4.0
      bPawnsReactToWeapons=true

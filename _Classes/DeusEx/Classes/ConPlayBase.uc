@@ -676,7 +676,7 @@ function EEventAction SetupEventTransferObject( ConEventTransferObject event, ou
     local bool bPlaySound;                                                      //SARGE: Added.
     local int missedAmount;                                                     //SARGE: How much of the given stuff we've missed out on.
     local int extraAmmo, missedAmmo;                                            //SARGE: Used to track ammo when receiving a weapon.
-    local int rollupType;                                   //SARGE: Determines the behaviour of the item display, either combining items or not.
+    local bool bNoGroup;                                                        //SARGE: Determines the behaviour of the item display, either combining items or not.
     local int spawned;                                      //SARGE: How many items were spawned at our feet
 /*
 log("SetupEventTransferObject()------------------------------------------");
@@ -867,7 +867,7 @@ log("  event.toActor    = " $ event.toActor );
             //Copy mods across and show icon
             if (invItemTo.IsA('DeusExWeapon'))
                 if (DeusExWeapon(invItemTo).CopyModsFrom(DeusExWeapon(invItemFrom)))
-                    conWinThird.ShowGenericIcon(Texture'RSDCrap.UserInterface.ModsCopied',ModsCopiedString);
+                    conWinThird.ShowGenericIconFrom(event.fromActor,Texture'RSDCrap.UserInterface.ModsCopied',ModsCopiedString);
                     
 
 			AmmoType = Ammo(DeusExPlayer(event.ToActor).FindInventoryType(Weapon(invItemTo).AmmoName));
@@ -887,7 +887,7 @@ log("  event.toActor    = " $ event.toActor );
 						return nextAction;
 					}
 					event.TransferCount = Weapon(invItemFrom).PickUpAmmoCount;
-                    rollupType = 2; //SARGE: Added to make disposable weapons look nicer
+                    bNoGroup = event.TransferCount <= 3; //SARGE: Added to make disposable weapons look nicer
 				}
 				else
 				{
@@ -1003,7 +1003,7 @@ log("  event.toActor    = " $ event.toActor );
                         missedAmount = MAX(0,event.transferCount - DeusExPlayer(event.toActor).GetAdjustedMaxAmmoByClass(Weapon(invItemFrom).AmmoName));
                         event.transferCount -= missedAmount;
 
-                        rollupType = 2;
+                        bNoGroup = event.transferCount <= 3;
                     }
                 }
 
@@ -1039,9 +1039,9 @@ log("  event.toActor    = " $ event.toActor );
 			DeusExPlayer(event.toActor).AddImage(DataVaultImage(invItemTo));
 
 			if (conWinThird != None)
-				conWinThird.ShowReceivedItem(invItemTo, 1, false, 3);
+				conWinThird.ShowReceivedItem(invItemTo, 1, false, true);
 			else
-				DeusExRootWindow(player.rootWindow).hud.receivedItems.AddItem(invItemTo, 1, false, 3);
+				DeusExRootWindow(player.rootWindow).hud.receivedItems.AddItem(invItemTo, 1, false, true);
 
 			invItemFrom = None;
 			invItemTo   = None;
@@ -1051,9 +1051,9 @@ log("  event.toActor    = " $ event.toActor );
 		else if ((invItemTo.IsA('Credits')) && (event.toActor.IsA('DeusExPlayer')))
 		{
 			if (conWinThird != None)
-				conWinThird.ShowReceivedItem(invItemTo, Credits(invItemTo).numCredits);
+				conWinThird.ShowReceivedItemFrom(event.fromActor, invItemTo, Credits(invItemTo).numCredits);
 			else
-				DeusExRootWindow(player.rootWindow).hud.receivedItems.AddItem(invItemTo, Credits(invItemTo).numCredits);
+				DeusExRootWindow(player.rootWindow).hud.receivedItems.AddItemFrom(event.fromActor,invItemTo, Credits(invItemTo).numCredits);
 
 			player.Credits += Credits(invItemTo).numCredits;
 
@@ -1092,34 +1092,34 @@ log("  event.toActor    = " $ event.toActor );
 	{
 
         //SARGE: If we received a small amount of items, unroll them
-        if (invItemTo.IsA('DeusExPickup') && itemsTransferred <= 4)
-            rollupType = 2;
+        if (invItemTo.IsA('DeusExPickup'))
+            bNoGroup = event.transferCount <= 4;
 
 		if (conWinThird != None)
         {
             //Display what we got, showing any declined items
-            bPlaySound = conWinThird.ShowReceivedItem(invItemTo, itemsTransferred, false, rollupType);
+            bPlaySound = conWinThird.ShowReceivedItemFrom(event.fromActor, invItemTo, itemsTransferred, false, bNoGroup);
             if (missedAmount > 0)
-                conWinThird.ShowReceivedItem(invItemTo, missedAmount, true, rollupType);
+                conWinThird.ShowReceivedItemFrom(event.fromActor, invItemTo, missedAmount, true, bNoGroup);
 
             //If we received a weapon, we have some extra ammo to show too
             if (extraAmmo > 0)
-                conWinThird.ShowReceivedItem(Weapon(invItemTo).AmmoType, extraAmmo);
+                conWinThird.ShowReceivedItemFrom(event.fromActor, Weapon(invItemTo).AmmoType, extraAmmo);
             if (missedAmmo > 0)
-                conWinThird.ShowReceivedItem(Weapon(invItemTo).AmmoType, missedAmmo, true);
+                conWinThird.ShowReceivedItemFrom(event.fromActor, Weapon(invItemTo).AmmoType, missedAmmo, true);
 
         }
 		else
         {
-			DeusExRootWindow(player.rootWindow).hud.receivedItems.AddItem(invItemTo, itemsTransferred, false, rollupType);
+			DeusExRootWindow(player.rootWindow).hud.receivedItems.AddItemFrom(event.fromActor, invItemTo, itemsTransferred, false, bNoGroup);
             if (missedAmount > 0)
-                bPlaySound = DeusExRootWindow(player.rootWindow).hud.receivedItems.AddItem(invItemTo, missedAmount, true, rollupType);
+                bPlaySound = DeusExRootWindow(player.rootWindow).hud.receivedItems.AddItemFrom(event.fromActor, invItemTo, missedAmount, true, bNoGroup);
             
             //If we received a weapon, we have some extra ammo to show too
             if (extraAmmo > 0)
-                DeusExRootWindow(player.rootWindow).hud.receivedItems.AddItem(Weapon(invItemTo).AmmoType, extraAmmo);
+                DeusExRootWindow(player.rootWindow).hud.receivedItems.AddItemFrom(event.fromActor, Weapon(invItemTo).AmmoType, extraAmmo);
             if (missedAmmo > 0)
-                DeusExRootWindow(player.rootWindow).hud.receivedItems.AddItem(Weapon(invItemTo).AmmoType, missedAmmo, true);
+                DeusExRootWindow(player.rootWindow).hud.receivedItems.AddItemFrom(event.fromActor, Weapon(invItemTo).AmmoType, missedAmmo, true);
         }
 
 	}
@@ -1143,7 +1143,7 @@ log("  event.toActor    = " $ event.toActor );
 	{
         if (conWinThird != None)
         {
-            bPlaySound = conWinThird.ShowTakenItem(invItemTo, itemsTransferred) || bPlaySound;
+            bPlaySound = conWinThird.ShowTakenItem(event.fromActor,invItemTo, itemsTransferred) || bPlaySound;
         }
     }
 
