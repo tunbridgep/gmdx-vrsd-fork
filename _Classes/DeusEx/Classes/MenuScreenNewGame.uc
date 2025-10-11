@@ -356,7 +356,7 @@ function CreateNameEditWindow()
 {
 	editName = CreateMenuEditWindow(18, 92, 113, 32, winClient);
 
-    if (savedPlayerName == "")
+    if (savedPlayerName == "" || !player.bRememberTheName)
         editName.SetText(player.TruePlayerName);
     else
         editName.SetText(savedPlayerName);
@@ -825,11 +825,8 @@ function ProcessAction(String actionKey)
 		{
 			SaveSettings();
 
-            if (player.bRememberTheName)
-            {
-                savedPlayerName = playerName;
-                SaveConfig();
-            }
+            savedPlayerName = playerName;
+            SaveConfig();
 
 			// DEUS_EX_DEMO
 			//
