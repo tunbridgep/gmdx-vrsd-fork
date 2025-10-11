@@ -2,6 +2,11 @@
 
 New Features:
 - Pressing "F" in the inventory screen will now assign the selected item as your secondary item.
+- Added Shifter-style weapon switching.
+    - Press the Change Ammo key while holding a grenade, consumable, or other item, to swap it for a similar item.
+    - Doing so will also swap the item on the toolbelt.
+    - In "Autoswap" mode, using the last of an item will also switch it's belt icon.
+    - This can be disabled in the Advanced QoL Menu.
 
 Misc Changes:
 - Added a female version of The Collector outfit.
