@@ -12713,7 +12713,7 @@ function private _UpdateHUD()
 
     bUpdateHud = false;
 
-    DebugMessage("UpdateHUD");
+    //DebugMessage("UpdateHUD");
 }
 
 function UpdateSecondaryDisplay()
