@@ -4546,28 +4546,44 @@ exec function DeactivateAllAugs(optional bool toggle)
 // similar types, such as swapping out different grenade types. Blatantly stolen from shifter.
 // ----------------------------------------------------------------------
 
-function private bool _ShifterSwitch(Inventory from, Inventory to)
+function private bool _ShifterSwitch(Inventory from, class<Inventory> fromClass, Inventory to, bool bSelect)
 {
     local int beltSlot;
+    local bool bInBelt;
 
-    if (from == None || to == None)
+    if (to == None)
         return false;
 
-    DebugMessage("BeltPos: " $ from.beltPos @ from.bInObjectBelt);
+    if (from == None)
+    {
+        beltSlot = HasPlaceholderSlot(fromClass);
+        bInBelt = beltSlot != -1;
+    }
+    else
+    {
+        beltSlot = from.beltPos;
+        bInBelt = from.bInObjectBelt;
+    }
+
+    DebugMessage("BeltPos:" @ beltSlot @ bInBelt);
 
     //Add the new item to the old belt slot
-    if (from.bInObjectBelt && iShifterWeaponSwitch > 1)
+    if (bInBelt && iShifterWeaponSwitch > 1)
     {
-        to.beltPos = from.beltPos;
-        to.bInObjectBelt = from.bInObjectBelt;
+        to.beltPos = beltSlot;
+        to.bInObjectBelt = true;
 
         //Remove the old item from the slot
-        from.beltPos = -1;
-        from.bInObjectBelt = false;
+        if (from != None)
+        {
+            from.beltPos = -1;
+            from.bInObjectBelt = false;
+        }
     }
 
     //Select the new weapon
-    SetInHandPending(to);
+    if (bSelect)
+        SetInHandPending(to);
     
     DebugMessage("BeltPos2: " $ to.beltPos @ to.bInObjectBelt);
 
@@ -4577,9 +4593,10 @@ function private bool _ShifterSwitch(Inventory from, Inventory to)
     return true;
 }
 
-function bool DoShifterWeaponSwitch(Inventory toCheck, class<Inventory> switch1,optional class<Inventory> switch2,optional class<Inventory> switch3,optional class<Inventory> switch4,optional class<Inventory> switch5,optional class<Inventory> switch6)
+function bool DoShifterWeaponSwitch(bool bSelectWeapon, class<Inventory> toCheck, class<Inventory> switch1,optional class<Inventory> switch2,optional class<Inventory> switch3,optional class<Inventory> switch4,optional class<Inventory> switch5,optional class<Inventory> switch6)
 {
-	local Inventory items[6];
+	local Inventory items[6], itemToCheck;
+	local Class<Inventory> itemClasses[6];
     local int i, start, times;
 
     //If it's not enabled, bail
@@ -4588,17 +4605,17 @@ function bool DoShifterWeaponSwitch(Inventory toCheck, class<Inventory> switch1,
 
     //First, find the starting item index
     //This can probably be done better...
-    if (switch1 != None && toCheck.IsA(switch1.name))
+    if (switch1 != None && toCheck == switch1)
         start = 1;
-    else if (switch2 != None && toCheck.IsA(switch2.name))
+    else if (switch2 != None && toCheck == switch2)
         start = 2;
-    else if (switch3 != None && toCheck.IsA(switch3.name))
+    else if (switch3 != None && toCheck == switch3)
         start = 3;
-    else if (switch4 != None && toCheck.IsA(switch4.name))
+    else if (switch4 != None && toCheck == switch4)
         start = 4;
-    else if (switch5 != None && toCheck.IsA(switch5.name))
+    else if (switch5 != None && toCheck == switch5)
         start = 5;
-    else if (switch6 != None && toCheck.IsA(switch6.name))
+    else if (switch6 != None && toCheck == switch6)
         start = 0;
     else
         return false; //We don't have any of the weapons
@@ -4609,6 +4626,7 @@ function bool DoShifterWeaponSwitch(Inventory toCheck, class<Inventory> switch1,
 	items[3] = FindInventoryType(switch4);
 	items[4] = FindInventoryType(switch5);
 	items[5] = FindInventoryType(switch6);
+	itemToCheck = FindInventoryType(toCheck);
 
     //keep trying until we either get a hit, or until we're back at our starting index
     for(i = start;times < 5;i++)
@@ -4617,9 +4635,9 @@ function bool DoShifterWeaponSwitch(Inventory toCheck, class<Inventory> switch1,
             i = 0;
 
         //DebugMessage("item" @ i @ items[i]);
-        if (items[i] != None && /*HasPlaceholderSlot(items[i]) == -1 &&*/ (!items[i].bInObjectBelt || !toCheck.bInObjectBelt || iShifterWeaponSwitch == 1 ))
+        if (items[i] != None && items[i] != GetSecondary() && (!items[i].bInObjectBelt || (itemToCheck != None && !itemToCheck.bInObjectBelt) || iShifterWeaponSwitch == 1 ))
         {
-            _ShifterSwitch(toCheck,items[i]);
+            _ShifterSwitch(itemToCheck,toCheck,items[i],bSelectWeapon);
             return true;
         }
         times++;
@@ -4628,21 +4646,24 @@ function bool DoShifterWeaponSwitch(Inventory toCheck, class<Inventory> switch1,
     return false;
 }
 
-function bool ShifterSwitchAll(Inventory invToCheck)
+function bool ShifterSwitchAll(Inventory invItemToCheck, bool bSelect)
 {
     local bool bSwitch;
+    local Class<Inventory> invToCheck;
 
-    if (invToCheck == None)
+    if (invItemToCheck == None)
         return false;
 
-    bSwitch = DoShifterWeaponSwitch(invtoCheck,class'WeaponGasGrenade',class'WeaponEMPGrenade',class'WeaponNanoVirusGrenade',class'WeaponLAM',class'WeaponLAW');
-    bSwitch = bSwitch || DoShifterWeaponSwitch(invtoCheck,class'WeaponCombatKnife',class'WeaponBaton',class'WeaponCrowbar',class'WeaponSword',class'WeaponNanoSword');
-    bSwitch = bSwitch || DoShifterWeaponSwitch(invtoCheck,class'WeaponHideAGun',class'WeaponShuriken');
-    bSwitch = bSwitch || DoShifterWeaponSwitch(invtoCheck,class'Cigarettes',class'Liquor40oz',class'LiquorBottle',class'WineBottle',class'VialCrack');
-    bSwitch = bSwitch || DoShifterWeaponSwitch(invtoCheck,class'SoyFood',class'CandyBar',class'SodaCan');
-    bSwitch = bSwitch || DoShifterWeaponSwitch(invtoCheck,class'Lockpick',class'Multitool');
-    bSwitch = bSwitch || DoShifterWeaponSwitch(invtoCheck,class'Medkit',class'BioelectricCell');
-    bSwitch = bSwitch || DoShifterWeaponSwitch(invtoCheck,class'BallisticArmor',class'HazMatSuit',class'AdaptiveArmor',class'TechGoggles');
+    invToCheck = invItemToCheck.Class;
+
+    bSwitch = DoShifterWeaponSwitch(bSelect,invtoCheck,class'WeaponGasGrenade',class'WeaponEMPGrenade',class'WeaponNanoVirusGrenade',class'WeaponLAM',class'WeaponLAW');
+    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,invtoCheck,class'WeaponCombatKnife',class'WeaponBaton',class'WeaponCrowbar',class'WeaponSword',class'WeaponNanoSword');
+    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,invtoCheck,class'WeaponHideAGun',class'WeaponShuriken');
+    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,invtoCheck,class'Cigarettes',class'Liquor40oz',class'LiquorBottle',class'WineBottle',class'VialCrack');
+    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,invtoCheck,class'SoyFood',class'CandyBar',class'SodaCan');
+    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,invtoCheck,class'Lockpick',class'Multitool');
+    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,invtoCheck,class'Medkit',class'BioelectricCell');
+    bSwitch = bSwitch || DoShifterWeaponSwitch(bSelect,invtoCheck,class'BallisticArmor',class'HazMatSuit',class'AdaptiveArmor',class'TechGoggles');
 
     return bSwitch;
 }
@@ -4659,7 +4680,7 @@ exec function SwitchAmmo()
     if (inHand != None)
     {
         //SARGE: First, try to do a Shifter-style switch
-        bSwitch = ShifterSwitchAll(inHandPending);
+        bSwitch = ShifterSwitchAll(inHandPending,true);
         
         //SARGE: Fallback
         if (!bSwitch && inHand != None && inHand.IsA('DeusExWeapon')) //CyberP: fixed vanilla accessed none
@@ -11768,7 +11789,11 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 		//DEUS_EX AMSD Use the function call for this, helps multiplayer
 		PlaceItemInSlot(item, itemPosX, itemPosY);
 	}
-	
+    
+    //SARGE: Swap to a new belt item
+    if (bRemovedFromSlots && bDropped && iShifterWeaponSwitch > 2)
+        ShifterSwitchAll(item,false);
+
     //Sarge: Fix up disposable weapons
     if (item != None && item.IsA('DeusExWeapon') && DeusExWeapon(item).bDisposableWeapon && bDropped)
     {
