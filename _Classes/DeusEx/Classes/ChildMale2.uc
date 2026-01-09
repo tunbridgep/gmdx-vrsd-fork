@@ -36,4 +36,5 @@ defaultproperties
      HitSound2=Sound'ChildPainLarge'
      Die=Sound'ChildDeath'
      bDontChangeDeathPainSounds=True
+     bRandomHeightAdjust=false
 }

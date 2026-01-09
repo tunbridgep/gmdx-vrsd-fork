@@ -1,6 +1,7 @@
 1.2:
 
 New Features:
+- Added height randomisation for NPCs. Now every NPC in the game will randomly be up to 5% taller or shorter.
 
 Bugfixes:
 - Fixed several codes which weren't working correctly when using Unknown Codes

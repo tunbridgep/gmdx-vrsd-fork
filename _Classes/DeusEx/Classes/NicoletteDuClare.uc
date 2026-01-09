@@ -36,4 +36,5 @@ defaultproperties
      BindName="NicoletteDuClare"
      FamiliarName="Nicolette DuClare"
      UnfamiliarName="Nicolette DuClare"
+     bRandomHeightAdjust=false
 }

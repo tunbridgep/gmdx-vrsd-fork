@@ -121,4 +121,5 @@ defaultproperties
      Mass=150.000000
      Buoyancy=155.000000
      BindName="HumanMilitary"
+     bRandomHeightAdjust=true
 }

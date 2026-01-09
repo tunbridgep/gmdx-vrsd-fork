@@ -153,4 +153,5 @@ defaultproperties
      BindName="PaulDenton"
      FamiliarName="Paul Denton"
      UnfamiliarName="Paul Denton"
+     bRandomHeightAdjust=false
 }
