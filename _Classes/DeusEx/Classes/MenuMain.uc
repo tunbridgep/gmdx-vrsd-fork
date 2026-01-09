@@ -88,7 +88,7 @@ function ShowVersionInfo()
 
 defaultproperties
 {
-     GMDXText="GMDX: Augmented Edition 1.11"
+     GMDXText="GMDX: Augmented Edition 1.2 BETA 1"
      ButtonNames(0)="New Game"
      ButtonNames(1)="Save Game"
      ButtonNames(2)="Load Game"
