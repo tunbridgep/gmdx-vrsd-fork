@@ -87,6 +87,7 @@ var bool bCollectibles;
 var bool bHardcoreFilterOption;
 var bool bPermaCloak;
 var bool bNoStartingWeaponChoices;
+var bool bSkillsSetAtStart;
 
 //SARGE: Save our true player name for future playthroughs
 var globalconfig string savedPlayerName;
@@ -186,6 +187,7 @@ event InitWindow()
     bHardcoreFilterOption=false;                                                //Sarge
     bPermaCloak=false;                                                          //Sarge
     bNoStartingWeaponChoices=false;                                             //Sarge
+    bSkillsSetAtStart=false;                                                    //Sarge
     //bRestrictedMetabolism=false;                                              //Sarge
     default.bRandomizeCrates=false;                                             //RSD: Also need default values! Otherwise get command in modifier menu takes the wrong value
     default.bRandomizeMods=false;                                               //RSD
@@ -210,6 +212,7 @@ event InitWindow()
     default.bHardcoreFilterOption=false;                                        //Sarge
     default.bPermaCloak=false;                                                  //Sarge
     default.bNoStartingWeaponChoices=false;                                     //Sarge
+    default.bSkillsSetAtStart=false;                                            //Sarge
 	StyleChanged();
 }
 
@@ -875,6 +878,7 @@ function SaveSettings()
     player.bHardcoreFilterOption=bHardcoreFilterOption;                         //Sarge
     player.bPermaCloak=bPermaCloak;                                             //Sarge
     player.bNoStartingWeaponChoices=bNoStartingWeaponChoices;                   //Sarge
+    player.bSkillsSetAtStart=bSkillsSetAtStart;                                 //Sarge
     if (player.bRandomizeAugs)                                                  //RSD: New aug randomization feature
         ScrambleAugOrderList();
 

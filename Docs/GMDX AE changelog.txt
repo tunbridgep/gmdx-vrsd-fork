@@ -1,6 +1,7 @@
 1.2:
 
 New Features:
+- Added a new playthrough modifier for upfront character creation. You will start with more skill points initially, but will get far less overall.
 
 Bugfixes:
 - Fixed several codes which weren't working correctly when using Unknown Codes

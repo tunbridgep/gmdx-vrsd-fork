@@ -929,6 +929,8 @@ var transient bool bUpdateHud;                                 //SARGE: Trigger 
 
 var const localized string MsgSecondaryAdded;
 
+
+var travel bool bSkillsSetAtStart;                           //SARGE: Gain a bunch of skill points at the start of the game, but gain no more skill points from then on.
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -17360,20 +17362,27 @@ function PlayDeathHit(float Damage, vector HitLocation, name damageType, vector 
 // SkillPointsAdd()
 // ----------------------------------------------------------------------
 
-function SkillPointsAdd(int numPoints)
+function SkillPointsAdd(int numPoints, optional bool bAlwaysAllow)
 {
 	local int i;                                                                //RSD: For loop later
+    local int actualPoints;
 
     if (numPoints > 0)
 	{
-		SkillPointsAvail += numPoints;
-		SkillPointsTotal += numPoints;
+        
+        //SARGE: Give almost no skill points if modifier is on.
+        actualPoints = numPoints;
+        if (bSkillsSetAtStart && !bAlwaysAllow && numPoints > 5)
+            actualPoints = 5;
+
+        SkillPointsAvail += actualPoints;
+        SkillPointsTotal += actualPoints;
 
 		if ((DeusExRootWindow(rootWindow) != None) &&
 		    (DeusExRootWindow(rootWindow).hud != None) &&
 			(DeusExRootWindow(rootWindow).hud.msgLog != None))
 		{
-			ClientMessage(Sprintf(SkillPointsAward, numPoints));
+			ClientMessage(Sprintf(SkillPointsAward, actualPoints));
 			DeusExRootWindow(rootWindow).hud.msgLog.PlayLogSound(Sound'LogSkillPoints');
 		}
 	}
