@@ -929,6 +929,8 @@ var transient bool bUpdateHud;                                 //SARGE: Trigger 
 
 var const localized string MsgSecondaryAdded;
 
+
+var travel bool bSkillsSetAtStart;                           //SARGE: Gain a bunch of skill points at the start of the game, but gain no more skill points from then on.
 //////////END GMDX
 
 // OUTFIT STUFF
