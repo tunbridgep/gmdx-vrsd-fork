@@ -1,5 +1,11 @@
 1.2:
 
+New Features:
+
+Bugfixes:
+
+Misc Changes:
+- Pepper Spray now requires Trained in Low-Tech when using the Weapon Requirements Matter modifier.
 1.11 (Hotfix Release):
 
 New Features:
