@@ -27,4 +27,5 @@ defaultproperties
      BindName="MaggieChow"
      FamiliarName="Maggie Chow"
      UnfamiliarName="Maggie Chow"
+     bRandomHeightAdjust=false
 }

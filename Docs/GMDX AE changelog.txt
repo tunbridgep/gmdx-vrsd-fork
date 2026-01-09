@@ -1,3 +1,6 @@
+New Features:
+- Added height randomisation for NPCs. Now every NPC in the game will randomly be up to 5% taller or shorter.
+
 1.11 (Hotfix Release):
 
 New Features:

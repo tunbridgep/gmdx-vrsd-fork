@@ -29,4 +29,5 @@ defaultproperties
      BindName="TracerTong"
      FamiliarName="Tracer Tong"
      UnfamiliarName="Tracer Tong"
+     bRandomHeightAdjust=false
 }

@@ -528,6 +528,12 @@ var float fSubAwarenessModTime;                //SARGE: How long until sub-aware
 //SARGE: Add new awareness for guns being pointed at them
 var(GMDX) bool bReactGunPointed;
 
+//SARGE: Variable height NPCs
+//NPCs will be slightly taller or shorter (+-5%) for variance and to make headshots a bit harder
+var(GMDX) const bool bRandomHeightAdjust;
+var travel float fHeightMod;
+var travel bool bSetupVariableHeightActor;
+
 //Augmentique Data
 struct AugmentiqueOutfitData
 {
@@ -564,6 +570,29 @@ native(2107) final function EAllianceType GetPawnAllianceType(Pawn QueryPawn);
 
 native(2108) final function bool HaveSeenCarcass(Name CarcassName);
 native(2109) final function AddCarcass(Name CarcassName);
+
+// ----------------------------------------------------------------------
+// SetupRandomHeight()
+// Gives the pawn a random height (within 10% of it's default height)
+// ----------------------------------------------------------------------
+
+function SetupRandomHeight(float fNewHeightMod)
+{
+    //Log("SetupRandomHeight" $ fNewHeightMod @ class.Name);
+
+    if (!bRandomHeightAdjust || bSetupVariableHeightActor || fNewHeightMod < - 0.9 || fNewHeightMod > 1.1)
+        return;
+
+    //Don't allow special characters to be height adjusted
+    if (BindName != string(class.Name) || bImportant)
+        return;
+
+    fHeightMod = fNewHeightMod;
+    bSetupVariableHeightActor = true;
+	if (!bSitting && !bCrouching)
+        ResetBasedPawnSize();
+}
+
 
 // ----------------------------------------------------------------------
 // ShouldCreate()
@@ -1565,6 +1594,10 @@ function bool SetBasedPawnSize(float newRadius, float newHeight)
 		PrePivot        -= centerDelta;
 		DesiredPrePivot -= centerDelta;
 		BaseEyeHeight   = newHeight - deltaEyeHeight;
+        //SARGE: We need to scale the drawscale based on the new height, since it can be
+        //otherwise wrong when making character taller/shorter
+        if (bSetupVariableHeightActor && DrawScale == default.DrawScale)
+            DrawScale = default.DrawScale * fHeightMod;
 	}
 
 	return (bSuccess);
@@ -1587,7 +1620,10 @@ function ResetBasedPawnSize()
 
 function float GetDefaultCollisionHeight()
 {
-	return (Default.CollisionHeight-4.5);
+    if (bSetupVariableHeightActor)
+        return (Default.CollisionHeight-4.5) * fHeightMod;
+    else
+        return (Default.CollisionHeight-4.5);
 }
 
 
