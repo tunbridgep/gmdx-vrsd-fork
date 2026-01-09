@@ -929,6 +929,11 @@ var transient bool bUpdateHud;                                 //SARGE: Trigger 
 
 var const localized string MsgSecondaryAdded;
 
+/////////Version 1.2 Additions
+/////////January 2026
+
+var globalconfig int iSmartBinocs;                           //SARGE: Pressing the Scope key selects binoculars
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -10902,13 +10907,20 @@ exec function ReloadWeapon()
 exec function ToggleScope()
 {
 	local DeusExWeapon W;
+	local Inventory anItem;
+    local bool bContinue;
+	
+    W = DeusExWeapon(Weapon);
 
 	//log("ToggleScope "@IsInState('Interpolating')@" "@IsInState('Dying')@" "@IsInState('Paralyzed'));
 	if (RestrictInput())
 		return;
 
-	W = DeusExWeapon(Weapon);
-	if (W != None)
+    //Zoom if we've got binocs out
+    else if (Binoculars(inHand) != None)
+        Binoculars(inHand).Activate();
+
+	else if (W != None)
 	{
 	  if (W.IsInState('Idle') || (W.bZoomed == False && W.AnimSequence == 'Shoot') || (W.bZoomed == True && RecoilTime==0)) //CyberP: far less restrictive
 	  {
@@ -10924,6 +10936,26 @@ exec function ToggleScope()
             SetLaser(false);
 	  }
 	}
+
+    else if (inHand == None && iSmartBinocs > 0)
+    {
+        anItem = Inventory;
+        bContinue = true;
+
+        //SARGE: If we don't have a weapon out, select Binocs
+        while(anItem != None && bContinue)
+        {
+            if (anItem.IsA('Binoculars') && !anItem.bActive)
+            {
+                PutInHand(anItem,true);
+                if (iSmartBinocs >= 2)
+                    Binoculars(anItem).Activate();
+                bContinue = false;
+            }
+
+            anItem = anItem.Inventory;
+        }
+    }
 
     UpdateCrosshair();
 }
@@ -20266,4 +20298,5 @@ defaultproperties
      bDragAndDropOffInventory=true
      bRememberTheName=true
      iShifterWeaponSwitch=2
+     iSmartBinocs=1
 }
