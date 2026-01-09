@@ -4,13 +4,13 @@ New Features:
 - Added height randomisation for NPCs. Now every NPC in the game will randomly be up to 5% taller or shorter.
 
 Bugfixes:
+- Fixed several codes which weren't working correctly when using Unknown Codes
+- Fixed a few Accessed None's
+- Fixed typo in Synth Heart description.
 
 Misc Changes:
 - Pepper Spray now requires Trained in Low-Tech when using the Weapon Requirements Matter modifier.
 - The previously experimental feature to drop items from conversations at the players feet is now enabled by default.
-- Fixed several codes which weren't working correctly when using Unknown Codes
-- Fixed a few Accessed None's
-- Fixed typo in Synth Heart description.
 
 1.11 (Hotfix Release):
 
