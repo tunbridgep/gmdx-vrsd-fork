@@ -6,6 +6,7 @@ Bugfixes:
 - Fixed several codes which weren't working correctly when using Unknown Codes
 - Fixed a few Accessed None's
 - Fixed typo in Synth Heart description.
+- Fixed attempting to select melee weapons with Left Frob when unable to use them due to the Weapon Requirements Matter modifier.
 
 Misc Changes:
 - Pepper Spray now requires Trained in Low-Tech when using the Weapon Requirements Matter modifier.

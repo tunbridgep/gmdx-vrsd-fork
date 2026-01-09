@@ -3292,15 +3292,15 @@ function bool SelectMeleePriority(int damageThreshold)	// Trash: Used to automat
 		return false;
 
 
-	if (crowbar != None && (bHardCoreMode || BreaksDamageThreshold(crowbar, damageThreshold)))
+	if (crowbar != None && crowbar.CanUseWeapon(self,true) && (BreaksDamageThreshold(crowbar, damageThreshold)))
 		meleeWeapon = crowbar;
-	else if (sword != None && (bHardCoreMode || BreaksDamageThreshold(sword, damageThreshold)))
+	else if (sword != None && sword.CanUseWeapon(self,true) && (BreaksDamageThreshold(sword, damageThreshold)))
 		meleeWeapon = sword;
-	else if (knife != None && (bHardCoreMode || BreaksDamageThreshold(knife, damageThreshold)))
+	else if (knife != None && knife.CanUseWeapon(self,true) && (BreaksDamageThreshold(knife, damageThreshold)))
 		meleeWeapon = knife;
-	else if (baton != None && (bHardCoreMode || BreaksDamageThreshold(baton, damageThreshold)))
+	else if (baton != None && baton.CanUseWeapon(self,true) && (BreaksDamageThreshold(baton, damageThreshold)))
 		meleeWeapon = baton;
-	else if (dts != None && (bHardCoreMode || BreaksDamageThreshold(dts, damageThreshold)))
+	else if (dts != None && dts.CanUseWeapon(self,true) && (BreaksDamageThreshold(dts, damageThreshold)))
 		meleeWeapon = dts;
 	else if (!bHardCoreMode)
     {
