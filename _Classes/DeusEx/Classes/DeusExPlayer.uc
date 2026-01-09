@@ -913,7 +913,7 @@ var globalconfig bool bQuickReflexes;                           //SARGE: Enemies
 var globalconfig bool bDragAndDropOffInventory;                 //SARGE: Allow dropping items by dragging them off the inventory grid
 
 var globalconfig bool bExperimentalFootstepDetection;           //SARGE: Adds experimental footstep detection
-var globalconfig bool bExperimentalAmmoSpawning;                //SARGE: Adds experimental ammo spawning at our feet if we miss out
+var /*globalconfig*/ const bool bExperimentalAmmoSpawning;                //SARGE: Adds experimental ammo spawning at our feet if we miss out
 
 var globalconfig bool bComputerActionsDrainHackTime;            //SARGE: If enabled, performing actions (disabling cameras, etc) drains hack time when hacking computers.
 
@@ -20298,5 +20298,6 @@ defaultproperties
      bDragAndDropOffInventory=true
      bRememberTheName=true
      iShifterWeaponSwitch=2
+     bExperimentalAmmoSpawning=true
      iSmartBinocs=1
 }
