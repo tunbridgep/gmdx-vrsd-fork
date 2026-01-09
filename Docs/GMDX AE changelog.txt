@@ -1,3 +1,6 @@
+
+Misc Changes:
+- The Bioenergy Bar will now be Blue when not using the "Animated Bioenergy Bar" setting.
 1.11 (Hotfix Release):
 
 New Features:
