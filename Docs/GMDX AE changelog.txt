@@ -5,14 +5,14 @@ Misc Changes:
 New Features:
 
 Bugfixes:
+- Fixed several codes which weren't working correctly when using Unknown Codes
+- Fixed a few Accessed None's
+- Fixed typo in Synth Heart description.
 
 Misc Changes:
 - Pepper Spray now requires Trained in Low-Tech when using the Weapon Requirements Matter modifier.
 - The Bioenergy Bar will now be Blue when not using the "Animated Bioenergy Bar" setting.
 - The previously experimental feature to drop items from conversations at the players feet is now enabled by default.
-- Fixed several codes which weren't working correctly when using Unknown Codes
-- Fixed a few Accessed None's
-- Fixed typo in Synth Heart description.
 
 1.11 (Hotfix Release):
 
