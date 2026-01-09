@@ -11,7 +11,7 @@ Bugfixes:
 Misc Changes:
 - Left-Frobbing a locked object will no longer always select a Lockpick on Hardcore mode.
 - Left-Frobbing a breakable object will no longer select inadequate melee weapons on Hardcore mode.
-- Pepper Spray now requires Trained in Low-Tech when using the Weapon Requirements Matter modifier.
+- Pepper Spray and the Prod now require Trained in Low-Tech when using the Weapon Requirements Matter modifier.
 - The previously experimental feature to drop items from conversations at the players feet is now enabled by default.
 
 1.11 (Hotfix Release):
