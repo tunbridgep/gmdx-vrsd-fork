@@ -82,6 +82,7 @@ var Localized string BarString;
 var Localized string BarStringRes;
 
 var Color    colBlue; //SARGE: Added
+var Color    colWhite; //SARGE: Added
 
 //SARGE: UnrealScript sucks and doesn't let us access enums from other classes
 enum EAugmentationType
@@ -595,7 +596,10 @@ function CreateBioCellBar()
 	winBioEnergy.SetSize(140, 12);
 	winBioEnergy.SetValues(0, 100);
 	//winBioEnergy.UseScaledColor(True); //SARGE: Disabled since the purely blue bar looks way better
-    winBioEnergy.SetColors(colBlue,colBlue);
+    if (player.bAnimBar1)
+        winBioEnergy.SetColors(colWhite,colWhite);
+    else
+        winBioEnergy.SetColors(colBlue,colBlue);
 	if (player.bAnimBar1)
 	    winBioEnergy.bSpecialFX = True;
 	winBioEnergy.SetVertical(False);
@@ -1445,4 +1449,5 @@ defaultproperties
      clientBorderTextureRows=2
      clientBorderTextureCols=3
      colBlue=(R=20,G=20,B=255)
+     colWhite=(R=255,G=255,B=255)
 }

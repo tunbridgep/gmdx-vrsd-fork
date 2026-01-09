@@ -71,6 +71,7 @@ var Localized String EquipRechargeLabel1, EquipRechargeLabel2, EquipRechargeLabe
 var Localized String EquipButtonLabel1, EquipButtonLabel2, EquipButtonLabel3;
 
 var Color    colBlue; //SARGE: Added
+var Color    colWhite; //SARGE: Added
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -253,7 +254,10 @@ function CreateBioWindows()
 	winBioBar.SetSize(140, 12);
 	winBioBar.SetValues(0, 100);
 	//winBioBar.UseScaledColor(True); //SARGE: Disabled since the purely blue bar looks way better
-    winBioBar.SetColors(colBlue,colBlue);
+    if (player.bAnimBar1)
+        winBioBar.SetColors(colWhite,colWhite);
+    else
+        winBioBar.SetColors(colBlue,colBlue);
 	if (player.bAnimBar1)
 	    winBioBar.bSpecialFX = True;
 	winBioBar.SetVertical(False);
@@ -814,4 +818,5 @@ defaultproperties
      EquipButtonLabel3="N/A"
      ScreenType=ST_Popup
      colBlue=(R=20,G=20,B=255)
+     colWhite=(R=255,G=255,B=255)
 }
