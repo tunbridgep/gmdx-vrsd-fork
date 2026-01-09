@@ -258,14 +258,14 @@ defaultproperties
     codeNotes(100)=(code1="rzelazny",code2="shadowjack",noteName="10_Datacube12")
     codeNotes(101)=(code1="1784",noteName="10_Datacube13")
     ////M11
-    codeNotes(102)=(code1="meverrett",code2="pynchon",noteName="11_Datacube01")
+    codeNotes(102)=(code1="meverett",code2="pynchon",noteName="11_Datacube01")
     codeNotes(103)=(code1="8001",noteName="11_Datacube02")
     codeNotes(104)=(code1="1942",noteName="11_Datacube03")
     codeNotes(105)=(code1="0022",noteName="11_Datacube03")
     codeNotes(106)=(code1="34501",code2="08711",noteName="11_Datacube03")
     codeNotes(107)=(code1="2384",noteName="11_Email01")
     codeNotes(108)=(code1="6426",noteName="11_Email01")
-    codeNotes(109)=(code1="57601",code2="wyrdred08",noteName="11_Book03")
+    codeNotes(109)=(code1="57601",code2="wyrdred03",noteName="11_Book03")
     ////M12
     codeNotes(110)=(code1="Tunnel01",code2="Omega2a",noteName="12_Datacube01")
     ////M14
