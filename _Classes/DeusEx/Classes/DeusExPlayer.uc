@@ -8242,7 +8242,11 @@ Begin:
    LoadHack:
     if (bDeadLoad)
 	{
-	    Sleep(0.2);
+        //SARGE: Now we sleep until we've been dead for at least 1.5 seconds
+        //This prevents a nasty crash when loading too quickly
+        //DebugLog("DEADLOAD: " $ Level.TimeSeconds @ FrobTime @ Level.TimeSeconds - FrobTime);
+        if (Level.TimeSeconds - FrobTime < 1.0)
+            Sleep(1.0 - (Level.TimeSeconds - FrobTime));
 	    bDeadLoad = False;
 	    QuickLoadConfirmed();
 	}
