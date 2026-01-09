@@ -1,6 +1,7 @@
 1.2:
 
 New Features:
+- If you have Binoculars in your inventory, they can now be selected using the "Toggle Scope" key when your hands are empty.
 
 Bugfixes:
 - Fixed several codes which weren't working correctly when using Unknown Codes
