@@ -324,13 +324,16 @@ function bool HandleResetMessagebox(Window msgBoxWindow, int buttonNumber)
 }
 
 //A bit of a dodgy hack.
-function string ShowHelpString(int id)
+function ShowHelpString(int id)
 {
     local string help1, help2, help3;
 
     //Show the default help text if it's -1
     if (id == -1)
+    {
         ShowHelp(helpText);
+        return;
+    }
 
     //This is a bit of a hack
     help1 = items[id].helpText;
