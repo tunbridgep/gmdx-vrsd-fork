@@ -1,3 +1,5 @@
+Misc Changes:
+=======
 1.2:
 
 New Features:
@@ -12,6 +14,7 @@ Misc Changes:
 - Left-Frobbing a locked object will no longer always select a Lockpick on Hardcore mode.
 - Left-Frobbing a breakable object will no longer select inadequate melee weapons on Hardcore mode.
 - Pepper Spray now requires Trained in Low-Tech when using the Weapon Requirements Matter modifier.
+- The Bioenergy Bar will now be Blue when not using the "Animated Bioenergy Bar" setting.
 - The previously experimental feature to drop items from conversations at the players feet is now enabled by default.
 
 1.11 (Hotfix Release):
