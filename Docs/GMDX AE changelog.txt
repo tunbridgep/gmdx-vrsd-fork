@@ -6,6 +6,7 @@ Bugfixes:
 
 Misc Changes:
 - Pepper Spray now requires Trained in Low-Tech when using the Weapon Requirements Matter modifier.
+- The previously experimental feature to drop items from conversations at the players feet is now enabled by default.
 1.11 (Hotfix Release):
 
 New Features:

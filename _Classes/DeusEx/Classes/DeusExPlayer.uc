@@ -20266,4 +20266,5 @@ defaultproperties
      bDragAndDropOffInventory=true
      bRememberTheName=true
      iShifterWeaponSwitch=2
+     bExperimentalAmmoSpawning=true
 }
