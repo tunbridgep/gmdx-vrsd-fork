@@ -12708,7 +12708,7 @@ function bool GetCrosshairState(optional bool bCheckForOuterCrosshairs)
     if (root != None && root.WindowStackCount() > 0) //No crosshair while windows are open
         return false;
 
-    if (frobTarget != None && frobTarget.isA('InformationDevices') && InformationDevices(frobTarget).aReader == Self)
+    if (frobTarget != None && frobTarget.isA('InformationDevices') && InformationDevices(frobTarget).infoWindow != None)
         return false;
         
     if(bRadialAugMenuVisible) //RSD: Remove the crosshair if the radial aug menu is visible
@@ -12776,7 +12776,7 @@ function bool GetBracketsState()
         return False;
 
     //No brackets while reading books/datacubes/etc
-    if (frobTarget != None && frobTarget.isA('InformationDevices') && InformationDevices(frobTarget).aReader == Self)
+    if (frobTarget != None && frobTarget.isA('InformationDevices') && InformationDevices(frobTarget).infoWindow != None)
         return false;
         
     if(bRadialAugMenuVisible)
