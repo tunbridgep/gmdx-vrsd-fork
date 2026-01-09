@@ -84,4 +84,5 @@ defaultproperties
      CollisionHeight=1.500000
      Mass=7.000000
      Buoyancy=2.000000
+     minSkillRequirement=1
 }
