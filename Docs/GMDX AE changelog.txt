@@ -11,6 +11,7 @@ Misc Changes:
 - Pepper Spray now requires Trained in Low-Tech when using the Weapon Requirements Matter modifier.
 - The previously experimental feature to drop items from conversations at the players feet is now enabled by default.
 
+- Fixed an issue where using the Targeting augmentation in Minimized mode (such as when putting your weapon away) would cause the targeting window to appear occasionally for 1 frame.
 1.11 (Hotfix Release):
 
 New Features:

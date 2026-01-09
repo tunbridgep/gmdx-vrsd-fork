@@ -681,7 +681,7 @@ function Tick(float deltaTime)
     drawTime = FMAX(0.0,drawTime - deltaTime);
 
 	// check for the target ViewportWindow being constructed
-	if (bTargetActive && (targetLevel > 2) && (winZoom == None) && (lastTarget != None) && (Player.Level.NetMode == NM_Standalone))
+	if (bTargetActive && (targetLevel > 2) && (winZoom == None) && (lastTarget != None) && (Player.Level.NetMode == NM_Standalone) && !IsMinimised(true))
 	{
 		winZoom = ViewportWindow(NewChild(class'ViewportWindow'));
 		if (winZoom != None)
@@ -772,7 +772,7 @@ function Tick(float deltaTime)
 
 	if (winZoom != None)
 	{
-		if ((bTargetActive && (lastTarget == None)) || !bTargetActive)
+		if ((bTargetActive && (lastTarget == None)) || !bTargetActive || IsMinimised(true))
 		{
 			winZoom.Destroy();
 			winZoom = None;
