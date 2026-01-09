@@ -400,6 +400,10 @@ function FirstFrame()
         //SARGE: Do lighting accessibility
         ApplyLightingAccessibility();
         firstTime = true;
+        
+        //SARGE: Make Pawns have random heights
+        foreach AllActors(class'ScriptedPawn', P)
+            P.SetupRandomHeight(0.95 + Player.Randomizer.GetRandomFloat()*0.1);
 	}
 
 	flagName = Player.rootWindow.StringToName("M"$dxInfo.MissionNumber$"MissionStart");
