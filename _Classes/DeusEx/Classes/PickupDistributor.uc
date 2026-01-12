@@ -34,7 +34,12 @@ struct SNanoKeyExtraData
 
 var() SNanoKeyExtraData ExtraData[8];
 
-function PostPostBeginPlay()
+function PostBeginPlay()
+{
+    SetTimer(0.1,false);
+}
+
+function Timer()    //SARGE: This is now on a timer so that we can get the player properly.
 {
 	local int i;
 	local ScriptedPawn P;
@@ -42,8 +47,6 @@ function PostPostBeginPlay()
 	local DeusExPlayer Playa; //SARGE: Added for Hardcore check. See below.
 
     playa = DeusExPlayer(GetPlayerPawn()); //SARGE: Added for Hardcore check. See below.
-
-	Super.PostPostBeginPlay();
 
 	for(i=0; i<ArrayCount(NanoKeyData); i++)
 	{

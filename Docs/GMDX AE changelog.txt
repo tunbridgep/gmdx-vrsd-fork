@@ -9,6 +9,7 @@ Bugfixes:
 - Fixed typo in Synth Heart description.
 - Fixed attempting to select melee weapons with Left Frob when unable to use them due to the Weapon Requirements Matter modifier.
 - Fixed a bug where interacting with empty datacubes would cause the crosshair and selection brackets to disappear.
+- Fixed a few cases where NanoKeys weren't being removed in Hardcore mode.
 
 Misc Changes:
 - Left-Frobbing a locked object will no longer always select a Lockpick on Hardcore mode.
