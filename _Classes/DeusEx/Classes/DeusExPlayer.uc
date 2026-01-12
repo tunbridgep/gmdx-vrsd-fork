@@ -9045,6 +9045,7 @@ function SetDoubleClickTimer()
 {
     doubleClickCheck=0.5;
     clickCountCyber=1;
+    UpdateHUD(); //SARGE: May be inefficient...
 }
     
 function DoAutoHolster()
