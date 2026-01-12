@@ -3485,7 +3485,7 @@ function SoundVolumeHackFix()
 //- Attempting to fix the horrible vanilla "fade out" bug.
 //- Not restarting tracks on map change or reload to maps using the same track.
 //- Different sections per map, that can be changed dynamically (like changing the combat music after talking to Page in area 51.)
-//- Different ambient tracks per map based on triggers (like entering the lab under versalife, where a trigger changes the map), also saved in your savegame
+//- Different ambient tracks per map based on triggers (like entering the lab under versalife, where a trigger changes the music), also saved in your savegame
 //- Restoring the previous music part upon dying and reloading
 //- Fading out slowly when moving to a silent map (like the catacombs) [EXCEPT from the title screen]
 //- Not attempting to change to ambient sections for tracks that don't have them (the bar tracks, Tongs' lab, etc). In vanilla and GMDX v9, there's a noticeable cut when entering/leaving conversations or combat in these areas, in GMDX:AE there's no transition at all, which feels a lot smoother.
@@ -3500,106 +3500,64 @@ function ClientSetMusic(Music NewSong, byte NewSection, byte NewCdTrack, EMusicT
     
     info = GetLevelInfo();
     
-    DebugMessage("ClientSetMusic called:" @ NewSong @ NewSection @ NewTransition @ "Song is: " $ default.previousTrack @ default.previousLevelSection @ default.previousMusicMode @ bMusicSystemReset @ Level.SongSection @ saveTime @ default.fMusicHackTimer @ SongSection);
+    DebugMessage("ClientSetMusic called:" @ NewSong @ NewSection @ NewTransition @ "Song is: " $ default.previousTrack @ SongSection @ default.previousLevelSection @ default.previousMusicMode @ bMusicSystemReset @ Level.SongSection @ saveTime @ default.fMusicHackTimer @ SongSection);
 
     //SARGE: Here's the really annoying part...
     //We've just been asked to change tracks or sections, we need to work out
     //whether it's okay to ignore it or continue.
-
     if (default.fMusicHackTimer > 0)
     {
         //DebugMessage("ClientSetMusic: Music Change Allowed (Fade Hack)");
         DebugMessage("ClientSetMusic: Music Fade Hack");
         NewTransition = MTRAN_Instant;
         SoundVolumeHackFix();
-        if (bMusicSystemReset)
-        {
-            bChange = true;
-            bContinueOn = true;
-        }
     }
 
-    //SARGE: ARE YOU SHITTING ME GAME???!!!
-    //NYCStreets doesn't use Section 5 (it's a normal track), so
-    //we need to only allow treating it as non-ambient for the outro.
-    //What a fucking mess!
-    //if (NewSong == Music'NYCStreets_Music.NYCStreets_Music' && NewSection == 5 && default.MusicMode == MUS_Ambient)
-    //  bSection5Hack = true;
-
-    //SARGE: If changing after a map transition/loadgame, set it to use
-    //the proper section in case it's changed.
-    if (bMusicSystemReset && NewSection == level.SongSection)
-        NewSection = default.savedSection;
+    //Horrible bugfix!
+    //For some reason it sometimes gets 255 on a track or two
+    //So just reset it
+    if (NewSection == 255 && info.SongAmbientSection != 255)
+        NewSection = info.SongAmbientSection;
 
     //If we're changing to the opposite ambient section, make that our default
-    if (!bMusicSystemReset && (NewSection == 0 && info.SongAmbientSection == 2 || NewSection == 2 && info.SongAmbientSection == 0))
+    if (NewSection == 0 && info.SongAmbientSection == 2 || NewSection == 2 && info.SongAmbientSection == 0)
     {
-        DebugMessage("ClientSetMusic: Music Change Allowed (Swapping Ambient from "$info.SongAmbientSection$")");
+        DebugMessage("ClientSetMusic: Swapping Ambient from " $ info.SongAmbientSection $ " to " $ NewSection);
         info.SongAmbientSection = NewSection;
-        bChange = true;
-        bContinueOn = false;
     }
 
-    //If we're changing tracks, or we're changing to a different level with the same track, but a different default section, ALWAYS allow changing.
-    else if (default.previousTrack != NewSong || default.previousLevelSection != info.SongAmbientSection)
+    DebugMessage("ClientSetMusic: NewSection " $ NewSection @ ", reset: " $ bMusicSystemReset);
+    bChange = true;
+
+    //We've just loaded a game or switched maps with the same track, so we need to not change to the new music, IF we're already on ambient and aren't fadehacking
+    if (bMusicSystemReset && default.fMusicHackTimer == 0 && default.previousMusicMode == MUS_Ambient && NewSection == info.SongAmbientSection && NewSong == default.previousTrack && info.SongAmbientSection == default.previousLevelSection)
+        bChange = false;
+
+    //If we've just loaded a game or switched maps, but still need to change, then change to our saved section rather than the default section.
+    else if (bMusicSystemReset)
     {
-        //If changing to nothing, fade out
-        //NOTE: But not from the title
-        if (string(Song) != "Title_Music.Title_Music" && (NewSong == None || info.SongAmbientSection == 255))
-        {
-            DebugMessage("ClientSetMusic: Fade Out");
-            NewTransition = MTRAN_SlowFade;
-        }
+        //Reset our song position if we're changing track/levelSection
+        if (NewSong != default.previousTrack || info.SongAmbientSection != default.previousLevelSection)
+            default.savedSection = info.SongAmbientSection;
 
-        default.savedSection = info.SongAmbientSection;
-        NewSection = info.SongAmbientSection;
-        DebugMessage("ClientSetMusic: Music Change Allowed (Track Change)");
-        bChange = true;
-        bContinueOn = false;
+        //Otherwise, switch back to our default section instead of the start
+        else if (NewSection == info.SongAmbientSection)
+            NewSection = default.savedSection;
     }
 
-    //if we're changing to the same track, but a nonstandard section, always allow changing
-    //else if (/*default.previousTrack == NewSong && */NewSection == 1 || NewSection == info.SongCombatSection || NewSection == info.SongConversationSection || NewSection == 5)
-    else if (default.MusicMode != MUS_Ambient)
-    {
-        DebugMessage("ClientSetMusic: Music Change Allowed (To non-ambient section)");
-        bChange = true;
-        bContinueOn = false;
-    }
-    
-    //Allow changing back to ambient, if we were on something else
-    else if (default.MusicMode == MUS_Ambient && default.previousMusicMode != MUS_Ambient)
-    {
-        DebugMessage("ClientSetMusic: Music Change Allowed (From Non-Ambient to Ambient)");
-        bChange = true;
-        bContinueOn = true;
-    }
-
-    //if we're using the basic music system, don't ever skip,
-    //and always restart when we're told to.
-    if (iEnhancedMusicSystem == 0)
-    {
-        bChange = true;
-        bContinueOn = false;
-    }
-
-    DebugMessage("ClientSetMusic: bChange " $ bChange $ ", bContinueOn " $ bContinueOn);
     if (bChange)
     {
-        //If we're changing to the start of the track, instead, go to our saved section.
-        if (bContinueOn && NewSection == info.SongAmbientSection && bMusicSystemReset)
-            NewSection = default.savedSection;
+        if (bMusicSystemReset) //This is a HACK to stop UpdateDynamicMusic from kicking in again.
+            default.musicMode = MUS_Ambient;
 
-        //SARGE: Maybe if I call it like 5 times, it won't randomly bug out...
+        //Set the new track and remember what we changed to.
         Super.ClientSetMusic(NewSong,NewSection,NewCDTrack,NewTransition);
-        //Super.ClientSetMusic(NewSong,NewSection,NewCDTrack,NewTransition);
-        //Super.ClientSetMusic(NewSong,NewSection,NewCDTrack,NewTransition);
-        //Super.ClientSetMusic(NewSong,NewSection,NewCDTrack,NewTransition);
-        //Super.ClientSetMusic(NewSong,NewSection,NewCDTrack,NewTransition);
         DebugMessage("ClientSetMusic: Setting music to " $ NewSong @ NewSection @ NewTransition @ SongSection);
         default.previousTrack = NewSong;
         default.previousLevelSection = info.SongAmbientSection;
         default.previousMusicMode = default.musicMode;
+
+        //Set the music hack timer.
         if (NewTransition == MTRAN_Instant)
             default.fMusicHackTimer = 1.0;
         else if (NewTransition == MTRAN_SlowFade)
@@ -3608,13 +3566,6 @@ function ClientSetMusic(Music NewSong, byte NewSection, byte NewCdTrack, EMusicT
             default.fMusicHackTimer = 5.0;
     }
 
-    //When we start a new map or load a save, we need to force
-    //the music system to reset it's remembered position, or we get funky shenanigans.
-    if (bMusicSystemReset)
-    {
-        DebugMessage("Resetting Song Ambient Section");
-        default.savedSection = info.SongAmbientSection;
-    }
     bMusicSystemReset = false;
 }
 
@@ -3627,19 +3578,7 @@ function ResetMusic()
 
     PopulateLevelAmbientSection(info);
 
-    /*
-    //SARGE: Hack to fix the transition bug.
-    if (default.fMusicHackTimer > 0)
-    {
-        DebugMessage("ResetMusic: Music Hack Timer stuff");
-        //Set transition to instant and fix the sound volume.
-        SoundVolumeHackFix();
-        ClientSetMusic();
-    }
-    */
-
     //default.fMusicHackTimer = 8.0;
-    default.musicMode = MUS_Ambient;
     bMusicSystemReset = true;
 }
 
