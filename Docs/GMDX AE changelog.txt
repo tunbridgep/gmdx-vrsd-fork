@@ -2,6 +2,7 @@
 
 New Features:
 - The Frob Display now shows a Red border for Declined items.
+- Disabled grenades can now be detonated using the Remote Detonation perk (they will show as "Remote" instead of "Disabled" in the HUD)
 
 Bugfixes:
 - Fixed several codes which weren't working correctly when using Unknown Codes
