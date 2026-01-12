@@ -707,9 +707,6 @@ function checkMantle()                                                          
 								bStunted = true;
 								if (!bOnLadder && FRand() < 0.7)
 									PlayBreatheSound();
-								
-								if (bBoosterUpgrade && Energy > 0)
-									AugmentationSystem.AutoAugs(false,false);
 							}
 						}
 						
