@@ -262,6 +262,10 @@ function Color GetFrobDisplayBorderColor(Actor frobTarget)
         //Can carry only 1
         if (WE != None && player.FindInventoryType(WE.Class) != None && (WE.AmmoName == None || WE.AmmoName == class'DeusEx.AmmoNone'))
             return colBadAug;
+        
+        //Declined
+        if (player.DeclinedItemsManager.IsDeclined(Inv.Class,true) && player.clickCountCyber < 1)
+            return colBadAug;
     }
 
 

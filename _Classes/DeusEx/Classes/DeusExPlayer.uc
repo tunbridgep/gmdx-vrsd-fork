@@ -7584,6 +7584,7 @@ state PlayerWalking
             {
                 doubleClickCheck = 0;
                 clickCountCyber=0;
+                UpdateHUD();
             }
         }
 
