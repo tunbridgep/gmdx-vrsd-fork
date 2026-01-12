@@ -156,6 +156,10 @@ function int HealPlayer(DeusExPlayer player)
 	  	    healMaxTimes--;
 		healedPoints = player.HealPlayer(healAmount);
 		lastHealTime = Level.TimeSeconds;
+
+        //SARGE: Also cure all wounds
+        if (player.WoundManager != None)
+            player.WoundManager.ClearAllWounds();
 	}
 	return healedPoints;
 }

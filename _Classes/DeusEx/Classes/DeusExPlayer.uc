@@ -643,6 +643,7 @@ var travel PerkSystem PerkManager;
 var travel RandomTable Randomizer;
 var travel FontManager FontManager;
 var travel KeybindManager KeybindManager;
+var travel WoundManager WoundManager;
 var DecalManager DecalManager;
 
 const DRUG_TOBACCO = 0;
@@ -1689,6 +1690,17 @@ function SetupDecalManager()
     }
 }
 
+function SetupWoundManager()
+{
+	// install the Wound Manager if not found
+	if (WoundManager == None)
+    {
+        DebugMessage("Make new Wound Manager");
+	    WoundManager = new(Self) class'WoundManager';
+    }
+    WoundManager.Initialize(Self);
+}
+
 function SetupPerkManager()
 {
 	// install the Perk Manager if not found
@@ -1795,6 +1807,7 @@ function InitializeSubSystems()
     SetupRandomizer();
     SetupAddictionManager();
 	SetupPerkManager();
+	SetupWoundManager();
 	SetupFontManager();
     SetupKeybindManager();
 	SetupDecalManager();
@@ -1935,6 +1948,7 @@ event TravelPostAccept()
     SetupRandomizer();
     SetupAddictionManager();
 	SetupPerkManager();
+	SetupWoundManager();
     SetupFontManager();
     SetupKeybindManager();
 	SetupDecalManager();
@@ -16688,13 +16702,39 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
 		else
 			PlayAnim('WaterHitTorso',,0.1);
 	}
+    
+    //SARGE: Apply wound damage
+    if (WoundManager != None)
+    {
+        if (damageType == 'Drowned')
+            WoundManager.AddWoundDamage(WOUND_Drowning,actualDamage);
+        else if (damageType == 'Fell')
+            WoundManager.AddWoundDamage(WOUND_Falling,actualDamage);
+        else if (damageType == 'TearGas' || damageType == 'Poison' || damageType == 'PoisonGas' || damageType == 'PoisonEffect' || damageType == 'HalonGas')
+            WoundManager.AddWoundDamage(WOUND_Poison,actualDamage);
+        else if (damageType == 'Flamed' || damageType == 'Burned' || damageType == 'Exploded')
+            WoundManager.AddWoundDamage(WOUND_Fire,actualDamage);
+        else if (damageType == 'Radiation')
+            WoundManager.AddWoundDamage(WOUND_Radiation,actualDamage);
+        else if (damageType == 'EMP' || damageType == 'NanoVirus' || damageType == 'Shocked')
+            WoundManager.AddWoundDamage(WOUND_Shock,actualDamage);
+        else //Otherwise, assume shot
+            WoundManager.AddWoundDamage(WOUND_Shot,actualDamage);
+    }
 
 	GenerateTotalHealth();
 
 	if ((damageType != 'Stunned') && (damageType != 'TearGas') && (damageType != 'HalonGas') &&
 	    (damageType != 'PoisonGas') && (damageType != 'Radiation') && (damageType != 'EMP') &&
+	    (damageType != 'Poison') && (damageType != 'PoisonEffect') && //SARGE: Added
 	    (damageType != 'NanoVirus') && (damageType != 'Drowned') && (damageType != 'KnockedOut'))
+    {
 		bleedRate += (origHealth-Health)/30.0;  // 30 points of damage = bleed profusely
+    
+        //SARGE: Apply blood loss wound
+        if (WoundManager != None)
+            WoundManager.AddWoundDamage(WOUND_Bleeding,actualDamage);
+    }
 
 	if (CarriedDecoration != None)
         if (FRand() < 0.3 && AugmentationSystem.GetAugLevelValue(class'AugMuscle') < 2 && Damage > 0)
