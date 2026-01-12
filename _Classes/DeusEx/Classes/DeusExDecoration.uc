@@ -678,6 +678,7 @@ function ZoneChange(ZoneInfo NewZone)
 
 	if (NewZone.bWaterZone)
 		{
+        bFirstLanded = true;
         ExtinguishFire();
         RotationRate.Pitch = default.RotationRate.Pitch;
         RotationRate.Yaw = default.RotationRate.Yaw;
