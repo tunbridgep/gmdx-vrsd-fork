@@ -84,8 +84,6 @@ var(GMDX) bool bSkipLOSFrobCheck;
 
 var(GMDX) bool bSmallFragments;                                                 //SARGE: If we have debris persistence turned on, create many more much smaller fragments for readability.
 
-var bool bFirstLanded;                                                          //SARGE: Is set to true after the first time it's landed. Prevents exploding on map load.
-
 // ----------------------------------------------------------------------
 // ShouldCreate()
 // If this returns FALSE, the object will be deleted on it's first tick
@@ -464,9 +462,6 @@ function Landed(vector HitNormal)
     !IsA('FireExtinguisherEmpty') && !IsA('CrateUnbreakableSmall') && !IsA('CrateUnbreakableMed')))
             TakeDamage((1-Velocity.Z/35), Instigator, Location, vect(0,0,0), 'fell');
     }             //CyberP: more forgiving in SP too
-
-    //Log("First Landed ("$itemName$"): " $bFirstLanded);
-    bFirstLanded = true;
 }
 
 // ----------------------------------------------------------------------
@@ -678,7 +673,6 @@ function ZoneChange(ZoneInfo NewZone)
 
 	if (NewZone.bWaterZone)
 		{
-        bFirstLanded = true;
         ExtinguishFire();
         RotationRate.Pitch = default.RotationRate.Pitch;
         RotationRate.Yaw = default.RotationRate.Yaw;
@@ -1208,10 +1202,6 @@ auto state Active
         local int i;
         local DeusExFragment s;
         local bool hit;
-
-        //SARGE: Hack to prevent TNT from exploding on map load.
-        if (!bFirstLanded)
-            return;
 
 		stickaround=false;
 		//log("IN STATE ACTIVE AND DAMAGED "@Damage@" "@EventInstigator@" "@Momentum@" "@DamageType@" "@bStatic@" "@(Damage >= minDamageThreshold)@" "@HitPoints);
