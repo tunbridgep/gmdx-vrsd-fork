@@ -3518,6 +3518,10 @@ function ClientSetMusic(Music NewSong, byte NewSection, byte NewCdTrack, EMusicT
     //So just reset it
     if (NewSection == 255 && info.SongAmbientSection != 255)
         NewSection = info.SongAmbientSection;
+    
+    //If we're changing to 255, fade out slowly
+    if (NewSection == 255 || NewSong == None)
+        NewTransition = MTRAN_SlowFade;
 
     //If we're changing to the opposite ambient section, make that our default
     if (NewSection == 0 && info.SongAmbientSection == 2 || NewSection == 2 && info.SongAmbientSection == 0)
