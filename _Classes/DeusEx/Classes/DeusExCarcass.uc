@@ -120,6 +120,7 @@ struct AugmentiqueOutfitData
 {
     var Texture textures[9];
     var bool bRandomized;
+    var bool bUnique;
 };
 
 var travel AugmentiqueOutfitData augmentiqueData;
