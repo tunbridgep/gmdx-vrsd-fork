@@ -17,6 +17,7 @@ Misc Changes:
 - Left-Frobbing a breakable object will no longer select inadequate melee weapons on Hardcore mode.
 - Pepper Spray and the Prod now require Trained in Low-Tech when using the Weapon Requirements Matter modifier.
 - The previously experimental feature to drop items from conversations at the players feet is now enabled by default.
+- Oxygen is now drained slightly faster while swimming, as a slight buff to the Athletics skill and to make the Rebreather less able to be relied upon.
 
 1.11 (Hotfix Release):
 

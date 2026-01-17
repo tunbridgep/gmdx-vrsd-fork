@@ -7834,9 +7834,9 @@ state PlayerSwimming
 		mult = AugmentationSystem.GetAugLevelValue(class'AugAqualung');         //RSD: Aqualung decreases drain rate
 		if (mult == -1.0)
 		    mult = 1.0;
-		swimTimer -= (2.0-mult)*deltaTime;
-		swimTimer = FMax(0, swimTimer);
 
+        swimTimer -= (2.0-mult)*deltaTime*1.2; //SARGE: Added a 20% extra multiplier to really emphasise the importance of the swimming skill.
+		swimTimer = FMax(0, swimTimer);
 
 		if ( Role == ROLE_Authority )
 		{
