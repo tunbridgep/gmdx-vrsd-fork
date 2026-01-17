@@ -106,7 +106,7 @@ simulated function Tick(float deltaTime)
 	{
 		Super.Tick(deltaTime);
 
-		if (bDisabled && !bDoExplode)
+		if ((bDisabled && !bDoExplode) || bEMPDisabled)
 			return;
 
 		if ( (Owner == None) && ((Level.NetMode == NM_DedicatedServer) || (Level.NetMode == NM_ListenServer)) )
