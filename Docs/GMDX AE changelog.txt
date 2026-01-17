@@ -2,6 +2,7 @@
 
 New Features:
 - The Frob Display now shows a Red border for Declined items.
+- Added a new playthrough modifier to take Ammo when imprisoned by MJ12. This feature was previously hardcore-exclusive. Still always enabled on Hardcore.
 
 Bugfixes:
 - Fixed several codes which weren't working correctly when using Unknown Codes

@@ -929,6 +929,8 @@ var transient bool bUpdateHud;                                 //SARGE: Trigger 
 
 var const localized string MsgSecondaryAdded;
 
+
+var travel bool bImprisonmentTakesAmmo;                     //SARGE: Take Ammo when being imprisoned by UNATCO, similar to Hardcore mode.
 //////////END GMDX
 
 // OUTFIT STUFF
