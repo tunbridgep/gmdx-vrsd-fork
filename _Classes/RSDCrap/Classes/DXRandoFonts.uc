@@ -34,3 +34,5 @@ class DXRandoFonts extends Object abstract;
 //#exec FONT IMPORT FILE="Fonts\DXRTechSmallFix_DS.pcx"            NAME="DXRTechSmallFix_DS"                GROUP="RandoFonts"
 #exec FONT IMPORT FILE="Fonts\DXRTechTiny.pcx"                   NAME="DXRTechTiny"                       GROUP="RandoFonts"
 #exec FONT IMPORT FILE="Fonts\DXRTechTinyFix.pcx"                NAME="DXRTechTinyFix"                    GROUP="RandoFonts"
+//#exec FONT IMPORT File="Fonts\DXRMedFont.pcx"                    NAME="DXRMedFont"                        GROUP="RandoFonts"
+//#exec FONT IMPORT File="Fonts\DXRBigFont.pcx"                    NAME="DXRBigFont"                        GROUP="RandoFonts"
