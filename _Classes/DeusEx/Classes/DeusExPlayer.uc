@@ -9386,7 +9386,7 @@ function int LootAmmo(string owner, class<Ammo> LootAmmoClass, int max, bool bDi
 
         //If we took at least some, make a special sound.
         if (bLootSound)
-            PlayPartialAmmoSound(AmmoType,AmmoType.Class);
+            PlayPartialAmmoSound(self,AmmoType.Class);
 
         ret = intj;
     }
