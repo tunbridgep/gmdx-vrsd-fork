@@ -37,6 +37,7 @@ var int fontBaseLine;
 var int fontAcceleratorLineHeight;
 
 // Defaults
+var Font fontButtonText;
 var int  verticalTextMargin;
 var int  buttonHeight;
 var int  minimumButtonWidth;
@@ -60,6 +61,8 @@ event InitWindow()
 
 	// Get a pointer to the player
 	player = DeusExPlayer(GetRootWindow().parentPawn);
+     
+    fontButtonText=player.FontManager.GetFont(TT_FontMenuSmall);
 
 	SetButtonSounds(None, Sound'Menu_Press');
 	SetFocusSounds(Sound'Menu_Focus');
@@ -108,7 +111,7 @@ event DrawWindow(GC gc)
 		Right_Textures[textureIndex].tex);
 
 	// Draw the text!
-	gc.SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
+	gc.SetFont(fontButtonText);
 	gc.SetTextColor(colText[textColorIndex]);
 	gc.EnableTranslucentText(bTranslucentText);
 	gc.SetVerticalAlignment(VALIGN_Center);
@@ -154,7 +157,7 @@ event ParentRequestedPreferredSize(bool bWidthSpecified, out float preferredWidt
 
 	gc = GetGC();
 
-	gc.SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
+	gc.SetFont(fontButtonText);
 	gc.GetTextExtent(maxTextWidth, textWidth, textHeight, buttonText);
 
 	preferredWidth  = Max(minimumButtonWidth, Left_Textures[0].width + textWidth + Right_Textures[0].width);

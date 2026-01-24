@@ -12,6 +12,8 @@ var globalconfig bool bClassicFont; //Whether or not we're using the "Classic" f
 
 var globalconfig bool bDXRandoFonts; //Use the DXRando fonts provided by TheAstropath
 
+var globalconfig bool bBigDatacubeFont; //Use the TechMedium font for datacubes and other readable objects
+
 //Holds a list of the different "text types",
 //so we can return the right fonts for them.
 
@@ -22,6 +24,7 @@ enum TextType
     TT_DamageAbsorb,
     TT_AugHotKey,
     TT_MainMenu,
+    TT_DataCube,
 
     //Implement DXRandoFonts
     TT_FontComputer8x20_A,
@@ -147,13 +150,18 @@ function Font GetFont(TextType TT)
 
 
         //Special Cases for Classic Fonts
+        case TT_DataCube:
+            if (bBigDatacubeFont)
+                return GetFontSelection(Font'FontMenuTitle',,Font'RSDCrap.DXRFontMenuTitle');
+            else
+                return GetFontSelection(Font'FontMenuSmall',,Font'RSDCrap.DXRFontMenuSmall');
         case TT_AmmoCount:
         case TT_DamageAbsorb:
-            return GetFontSelection(Font'TechMedium',Font'FontTiny');
+            return GetFontSelection(Font'TechMedium',Font'FontTiny',Font'RSDCrap.DXRTechMedium',Font'RSDCrap.DXRFontTiny');
         case TT_AugHotKey:
-            return GetFontSelection(Font'FontMenuSmall',Font'FontTiny',Font'RSDCrap.DXRFontMenuSmall');
+            return GetFontSelection(Font'FontMenuSmall',Font'FontTiny',Font'RSDCrap.DXRFontMenuSmall',Font'RSDCrap.DXRFontTiny');
         case TT_MainMenu:
-            return GetFontSelection(Font'DeusExUI.FontConversationLarge',Font(DynamicLoadObject("DXFonts.MainMenuTrueType", class'Font')));
+            return GetFontSelection(Font'DeusExUI.FontConversationLarge',Font(DynamicLoadObject("DXFonts.MainMenuTrueType", class'Font')),Font'RSDCrap.DXRFontConversationLarge');
     }
 }
 
@@ -169,4 +177,5 @@ defaultproperties
 {
     bClassicFont=True
     bDXRandoFonts=True
+    bBigDatacubeFont=True
 }

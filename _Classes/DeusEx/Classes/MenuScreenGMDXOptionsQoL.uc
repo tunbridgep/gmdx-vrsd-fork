@@ -146,6 +146,8 @@ defaultproperties
      items(113)=(HelpText="Immersion/simulation option. If enabled, carried objects are no longer translucent.",actionText="Interaction: Immersive Carryables",variable="bNoTranslucency",bAdvancedModeOnly=true);
      items(114)=(HelpText="The players Real Name will be remembered between playthroughs",actionText="Game: Remember Real Name",variable="bRememberTheName",bAdvancedModeOnly=true);
      items(116)=(HelpText="Use more readable fonts for most UI elements.",actionText="HUD: More Readable Fonts",variable="bDXRandoFonts",consoleTarget="DeusEx.FontManager",defaultValue=1,bAdvancedModeOnly=true);
+     items(117)=(HelpText="Use a larger font for Datacubes, Books and other readable objects",actionText="HUD: Big Reading Font",variable="bBigDatacubeFont",consoleTarget="DeusEx.FontManager",defaultValue=1,bAdvancedModeOnly=false);
+
      Title="GMDX Quality of Life Options"
      colWidths(0)=214
      colWidths(1)=155

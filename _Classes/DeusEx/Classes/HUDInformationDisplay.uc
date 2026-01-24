@@ -102,7 +102,7 @@ function TextWindow AddTextWindow()
 
 	// Create the Text window containing the message text
 	winText = TextWindow(winTile.NewChild(Class'TextWindow'));
-	winText.SetFont(player.FontManager.GetFont(TT_FontMenuTitle));
+	winText.SetFont(player.FontManager.GetFont(TT_DataCube));
 	winText.SetTextColor(colInfoText);
 	winText.SetWordWrap(True);
 	winText.SetTextAlignments(HALIGN_Left, VALIGN_Top);

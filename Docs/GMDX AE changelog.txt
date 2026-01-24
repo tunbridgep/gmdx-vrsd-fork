@@ -2,6 +2,8 @@
 
 New Features:
 - The Frob Display now shows a Red border for Declined items.
+- Added a new more readable font, enabled by default. This should fix issues with 1, l and I looking similar to each other.
+- Added a new option to use large text when reading books and datacubes. On by default.
 
 Bugfixes:
 - Fixed several codes which weren't working correctly when using Unknown Codes
