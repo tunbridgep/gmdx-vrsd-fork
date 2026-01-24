@@ -12,7 +12,6 @@ var String buttonText;
 var Color colText;
 var Color colTextDisabled;
 
-var Font fontText;
 var int fontBaseLine;
 var int fontAcceleratorLineHeight;
 
@@ -26,18 +25,18 @@ event InitWindow()
 {
 	Super.InitWindow();
 
+	// Get a pointer to the player
+	player = DeusExPlayer(GetRootWindow().parentPawn);
+
 	EnableTextAsAccelerator(false);
 
 	SetSize(70, 17);
-	SetFont(fontText);
+	SetFont(player.FontManager.GetFont(TT_FontMenuTitle));
 	SetBackgroundStyle(DSTY_Masked);
 	SetButtonTextures(
 		Texture'MenuTabButton_Normal', Texture'MenuTabButton_Pressed',
 		Texture'MenuTabButton_Normal', Texture'MenuTabButton_Pressed',
 		Texture'MenuTabButton_Normal', Texture'MenuTabButton_Normal');
-
-	// Get a pointer to the player
-	player = DeusExPlayer(GetRootWindow().parentPawn);
 
 	SetBaselineData(fontBaseLine, fontAcceleratorLineHeight);
 
@@ -100,7 +99,6 @@ event StyleChanged()
 
 defaultproperties
 {
-     fontText=Font'DeusExUI.FontMenuTitle'
      fontBaseLine=1
      fontAcceleratorLineHeight=1
 }

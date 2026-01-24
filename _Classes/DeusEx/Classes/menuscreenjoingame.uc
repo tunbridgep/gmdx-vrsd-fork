@@ -569,21 +569,21 @@ function CreateGameFilterBoxes()
 
 	chkShowGameTypeOne.SetPos(154, 333);
 	chkShowGameTypeOne.SetText(GameTypeOneLabel);
-	chkShowGameTypeOne.SetFont(Font'FontMenuSmall');
+	chkShowGameTypeOne.SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
 	chkShowGameTypeOne.SetToggle(bShowGameTypeOne);
 
    chkShowGameTypeTwo = MenuUICheckboxWindow(winClient.NewChild(Class'MenuUICheckboxWindow'));
 
 	chkShowGameTypeTwo.SetPos(154, 347);
 	chkShowGameTypeTwo.SetText(GameTypeTwoLabel);
-	chkShowGameTypeTwo.SetFont(Font'FontMenuSmall');
+	chkShowGameTypeTwo.SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
 	chkShowGameTypeTwo.SetToggle(bShowGameTypeTwo);
 
    chkShowAllGameTypes = MenuUICheckboxWindow(winClient.NewChild(Class'MenuUICheckboxWindow'));
 
 	chkShowAllGameTypes.SetPos(154, 360);
 	chkShowAllGameTypes.SetText(ShowAllGameTypesLabel);
-	chkShowAllGameTypes.SetFont(Font'FontMenuSmall');
+	chkShowAllGameTypes.SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
 	chkShowAllGameTypes.SetToggle(bShowAllGameTypes);
 }
 

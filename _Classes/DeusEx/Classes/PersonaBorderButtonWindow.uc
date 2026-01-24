@@ -38,7 +38,6 @@ var int fontBaseLine;
 var int fontAcceleratorLineHeight;
 
 // Defaults
-var Font fontButtonText;
 var int  verticalTextMargin;
 var int  buttonHeight;
 var bool bBaseWidthOnText;
@@ -111,7 +110,7 @@ event DrawWindow(GC gc)
 		Right_Textures[textureIndex].tex);
 
 	// Draw the text!
-	gc.SetFont(fontButtonText);
+	gc.SetFont(player.FontManager.GetFont(TT_FontMenuHeaders));
 	gc.SetTextColor(colText[textColorIndex]);
 	gc.SetVerticalAlignment(VALIGN_Center);
 
@@ -161,7 +160,7 @@ event ParentRequestedPreferredSize(bool bWidthSpecified, out float preferredWidt
 
 	gc = GetGC();
 
-	gc.SetFont(fontButtonText);
+	gc.SetFont(player.FontManager.GetFont(TT_FontMenuHeaders));
 	gc.GetTextExtent(maxTextWidth, textWidth, textHeight, buttonText);
 
 	preferredWidth  = Max(minimumButtonWidth, Left_Textures[0].width + leftMargin + textWidth + rightMargin + Right_Textures[0].width);
@@ -264,7 +263,6 @@ defaultproperties
      leftMargin=6
      fontBaseLine=1
      fontAcceleratorLineHeight=1
-     fontButtonText=Font'DeusExUI.FontMenuHeaders'
      verticalTextMargin=1
      maxTextWidth=200
      bUseTextOffset=true

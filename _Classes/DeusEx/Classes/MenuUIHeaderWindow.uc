@@ -6,8 +6,3 @@ class MenuUIHeaderWindow extends MenuUILabelWindow;
 
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
-
-defaultproperties
-{
-     fontLabel=Font'DeusExUI.FontMenuHeaders'
-}

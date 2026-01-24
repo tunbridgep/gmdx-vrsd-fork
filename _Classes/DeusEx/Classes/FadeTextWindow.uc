@@ -3,6 +3,8 @@
 //=============================================================================
 class FadeTextWindow extends TextWindow;
 
+var DeusExPlayer player;
+
 var float moveRateX;
 var float moveRateY;
 var float fadeSpeed;
@@ -21,7 +23,10 @@ event InitWindow()
 {
 	Super.InitWindow();
 
-	SetFont(Font'FontLocation');
+	// Get a pointer to the player
+	player = DeusExPlayer(GetRootWindow().parentPawn);
+
+	SetFont(player.FontManager.GetFont(TT_FontLocation));
 	EnableTranslucentText(True);
 
 	fadeSpeed = FRand() / 20;

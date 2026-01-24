@@ -7,6 +7,8 @@ class MenuUIMenuButtonWindow extends MenuUIBorderButtonWindow;
 var Texture buttonLights[4];
 var int buttonLightWidth;
 
+var Font fontButtonText;
+
 // ----------------------------------------------------------------------
 // InitWindow()
 //

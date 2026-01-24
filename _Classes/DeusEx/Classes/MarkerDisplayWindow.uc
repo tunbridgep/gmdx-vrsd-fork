@@ -283,7 +283,7 @@ function DrawSpot(GC gc, string text, float centerx, float centery, float boxSiz
         //Draw the note text
         gc.SetTextColor(noteColor);
         gc.SetAlignments(HALIGN_Center, VALIGN_Bottom);
-        gc.SetFont(Font'TechSmall');
+        gc.SetFont(player.FontManager.GetFont(TT_TechSmall));
         gc.DrawText(leftX-40, topY-140, 80+rightX-leftX, 135, text);
     }
 }

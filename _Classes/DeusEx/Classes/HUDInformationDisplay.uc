@@ -13,7 +13,6 @@ class HUDInformationDisplay expands HUDSharedBorderWindow;
 // Tile window containing all the child TextWindows
 var TileWindow winTile;
 var Color colInfoText;
-var Font fontInfo;
 
 var Texture texBackgrounds[9];
 var Texture texBorders[9];
@@ -103,7 +102,7 @@ function TextWindow AddTextWindow()
 
 	// Create the Text window containing the message text
 	winText = TextWindow(winTile.NewChild(Class'TextWindow'));
-	winText.SetFont(fontInfo);
+	winText.SetFont(player.FontManager.GetFont(TT_FontMenuTitle));
 	winText.SetTextColor(colInfoText);
 	winText.SetWordWrap(True);
 	winText.SetTextAlignments(HALIGN_Left, VALIGN_Top);
@@ -146,5 +145,5 @@ function ClearTextWindows()
 defaultproperties
 {
      colInfoText=(R=250,G=250,B=250)
-     fontInfo=Font'DeusExUI.FontMenuTitle'
+     //fontInfo=Font'DeusExUI.FontMenuTitle'
 }

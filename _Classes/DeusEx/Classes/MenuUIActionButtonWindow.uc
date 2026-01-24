@@ -15,7 +15,6 @@ defaultproperties
      Right_Textures(1)=(Tex=Texture'DeusExUI.UserInterface.MenuActionButtonPressed_Right',Width=11)
      Center_Textures(0)=(Tex=Texture'DeusExUI.UserInterface.MenuActionButtonNormal_Center',Width=2)
      Center_Textures(1)=(Tex=Texture'DeusExUI.UserInterface.MenuActionButtonPressed_Center',Width=2)
-     fontButtonText=Font'DeusExUI.FontMenuTitle'
      buttonHeight=19
      minimumButtonWidth=83
      textLeftMargin=8

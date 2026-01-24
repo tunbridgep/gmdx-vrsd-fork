@@ -10,6 +10,8 @@ var bool bFlash;
 var float time;
 var float flashTime;
 var string message;
+
+var DeusExPlayer player;
 		
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -18,6 +20,9 @@ var string message;
 event InitWindow()
 {
 	Super.InitWindow();
+	
+    // Get a pointer to the player
+	player = DeusExPlayer(GetRootWindow().parentPawn);
 
 	bTickEnabled = True;
 	SetBackgroundStyle(DSTY_Modulated);
@@ -48,7 +53,7 @@ event DrawWindow(GC gc)
 	Super.DrawWindow(gc);
 
 	// Draw the timer
-	gc.SetFont(Font'FontComputer8x20_B');
+	gc.SetFont(player.FontManager.GetFont(TT_FontComputer8x20_B));
 	gc.SetAlignments(HALIGN_Center, VALIGN_Bottom);
 	gc.EnableWordWrap(False);
 
@@ -78,7 +83,7 @@ event DrawWindow(GC gc)
 	gc.DrawText(0, 0, width, height, str);
 
 	// draw title
-	gc.SetFont(Font'TechSmall');
+	gc.SetFont(player.FontManager.GetFont(TT_TechSmall));
 	gc.SetAlignments(HALIGN_Left, VALIGN_Top);
 	gc.DrawText(2, 2, width-2, height-2, message);
 }

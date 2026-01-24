@@ -5,7 +5,6 @@
 class PersonaNormalLargeTextWindow extends LargeTextWindow;
 
 var DeusExPlayer player;
-var Font         fontText;
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -17,12 +16,12 @@ event InitWindow()
 {
 	Super.InitWindow();
 
-	SetFont(fontText);
-	SetTextMargins(0, 0);
-	SetTextAlignments(HALIGN_Left, VALIGN_Center);
-
 	// Get a pointer to the player
 	player = DeusExPlayer(GetRootWindow().parentPawn);
+
+    SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
+	SetTextMargins(0, 0);
+	SetTextAlignments(HALIGN_Left, VALIGN_Center);
 
 	StyleChanged();
 }
@@ -49,5 +48,5 @@ event StyleChanged()
 
 defaultproperties
 {
-     fontText=Font'DeusExUI.FontMenuSmall'
+     //fontText=Font'RSDCrap.DXRFontMenuSmall'
 }

@@ -233,7 +233,7 @@ function DisplayStanceInfo(GC gc)
 {
 	local float alignX, alignY, alignH, alignW;
 	
-	gc.SetFont(Font'FontMenuSmall');
+	gc.SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
 	gc.SetStyle(DSTY_Normal);		
 	gc.SetTextColor(colText);
 	
@@ -303,7 +303,7 @@ event DrawWindow(GC gc)
 	Super.DrawWindow(gc);
 
 	// Draw energy bar
-	gc.SetFont(Font'FontTiny');
+	gc.SetFont(player.FontManager.GetFont(TT_FontTiny));
 	gc.SetTextColorRGB(128,128,128);  //gc.SetTextColor(winEnergy.GetBarColor());
 
     //SARGE: Draw the percentage
@@ -334,7 +334,7 @@ event DrawWindow(GC gc)
 		colBar = winBreath.GetBarColor();
 
 		// draw the O2 text and blink it if really low
-		gc.SetFont(Font'FontTiny');
+		gc.SetFont(player.FontManager.GetFont(TT_FontTiny));
 		if (breathPercent < 10)
 		{
 			if ((player.swimTimer % 0.5) > 0.25)
@@ -366,7 +366,7 @@ event DrawWindow(GC gc)
             colMult.R = 125;
             colMult.G = 125;
         }
-        gc.SetFont(Font'FontConversationBold');
+        gc.SetFont(player.FontManager.GetFont(TT_FontConversationBold));
         gc.SetTextColor(colMult);
 		gc.DrawText(31, 72, 36, 12, noted);
     }

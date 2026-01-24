@@ -259,7 +259,7 @@ function TextWindow CreateActionText(int posX, int posY, String label)
 	winText.SetTextMargins(0, 0);
 	winText.SetTextAlignments(HALIGN_Left, VALIGN_Top);
 	winText.SetText(label);
-	winText.SetFont(Font'FontMenuTitle');
+	winText.SetFont(player.FontManager.GetFont(TT_FontMenuTitle));
 
 	return winText;
 }
@@ -294,7 +294,7 @@ function TextWindow CreateSmallText(int posX, int posY, String label)
 	winText.SetTextMargins(0, 0);
 	winText.SetTextAlignments(HALIGN_Left, VALIGN_Top);
 	winText.SetText(label);
-	winText.SetFont(Font'FontMenuHeaders');
+	winText.SetFont(player.FontManager.GetFont(TT_FontMenuHeaders));
 
 	return winText;
 }
@@ -312,7 +312,7 @@ function TextWindow CreateListText(int posX, int posY, String label)
 	winText.SetTextMargins(0, 0);
 	winText.SetTextAlignments(HALIGN_Left, VALIGN_Top);
 	winText.SetText(label);
-	winText.SetFont(Font'FontMenuSmall');
+	winText.SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
 
 	return winText;
 }

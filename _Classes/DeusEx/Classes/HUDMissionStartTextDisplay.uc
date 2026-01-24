@@ -11,7 +11,6 @@ class HUDMissionStartTextDisplay extends Window
 var String message;
 var int    charIndex;
 
-var Font       fontText;
 var TextWindow winText;
 var TextWindow winTextShadow;
 
@@ -24,6 +23,8 @@ var Int        maxTextWidth;
 var Color colText;
 var Color colBlack;
 
+var DeusExPlayer player;
+
 // ----------------------------------------------------------------------
 // InitWindow()
 // ----------------------------------------------------------------------
@@ -32,14 +33,17 @@ event InitWindow()
 {
 	Super.InitWindow();
 
+	// Get a pointer to the player
+	player = DeusExPlayer(GetRootWindow().parentPawn);
+
 	winTextShadow = TextWindow(NewChild(Class'TextWindow'));
-	winTextShadow.SetFont(fontText);
+	winTextShadow.SetFont(player.FontManager.GetFont(TT_FontLocation));
 	winTextShadow.SetTextColor(colBlack);
 	winTextShadow.SetTextMargins(0, 0);
 	winTextShadow.SetTextAlignments(HALIGN_Left, VALIGN_Top);
 
 	winText = TextWindow(NewChild(Class'TextWindow'));
-	winText.SetFont(fontText);
+	winText.SetFont(player.FontManager.GetFont(TT_FontLocation));
 	winText.SetTextColor(colText);
 	winText.EnableTranslucentText(True);
 	winText.SetTextMargins(0, 0);
@@ -88,7 +92,7 @@ event ParentRequestedPreferredSize(bool bWidthSpecified, out float preferredWidt
 
 	gc = GetGC();
 
-	gc.SetFont(fontText);
+	gc.SetFont(player.FontManager.GetFont(TT_FontLocation));
 	gc.GetTextExtent(maxTextWidth, preferredWidth, preferredHeight, ConvertScriptString(message));
 
 	preferredWidth  += shadowDist;
@@ -189,7 +193,6 @@ function SetVisibility( bool bNewVisibility )                                   
 
 defaultproperties
 {
-     fontText=Font'DeusExUI.FontLocation'
      shadowDist=2
      perCharDelay=0.100000
      displayTime=5.000000

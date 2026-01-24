@@ -47,7 +47,7 @@ function CreateControls()
 	txtAugDesc.SetSize(148, 34);//(133, 34);
 	txtAugDesc.SetTextMargins(0, 0);
 	txtAugDesc.SetWordWrap(False);
-	//txtAugDesc.SetFont(Font'FontTiny');
+	//txtAugDesc.SetFont(player.FontManager.GetFont(TT_FontTiny));
 
 	btnAug1 = HUDMedBotAugItemButton(NewChild(Class'HUDMedBotAugItemButton'));
 	btnAug1.SetPos(167, 2);//(155, 2);

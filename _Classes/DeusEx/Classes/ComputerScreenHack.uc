@@ -131,7 +131,7 @@ function CreateTextDigits()
 	winDigits = PersonaNormalTextWindow(NewChild(Class'PersonaNormalTextWindow'));
 	winDigits.SetPos(22, 19);
 	winDigits.SetSize(168, 47);
-	winDigits.SetFont(Font'FontFixedWidthSmall');
+	winDigits.SetFont(player.FontManager.GetFont(TT_FontFixedWidthSmall));
 	winDigits.SetTextColor(colDigits);
 	winDigits.SetTextAlignments(HALIGN_Left, VALIGN_Top);
 	winDigits.SetTextMargins(0, 0);

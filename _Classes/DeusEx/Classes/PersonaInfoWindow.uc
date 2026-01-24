@@ -152,7 +152,7 @@ function CreatePerkOverview(Skill skill, Perk Perk, int index)	//Trash: Creates 
 	winActionButtons1[index].FillAllSpace(false);
 	WinPerkTitle[index] = TextWindow(winActionButtons1[index].NewChild(class'TextWindow'));
 	WinPerkTitle[index].SetText(Caps(Perk.PerkName));
-	WinPerkTitle[index].SetFont(Font'FontMenuSmall');
+	WinPerkTitle[index].SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
 	WinPerkTitle[index].SetTextColor(colText);
 	WinPerkTitle[index].SetTextMargins(6,4);
 	winSkillIconP[index] = winActionButtons1[index].NewChild(class'Window');
@@ -452,16 +452,16 @@ function PersonaNormalLargeTextWindow SetText(String newText)
     }
     else if (bStylization2)
     {
-       winText.SetFont(Font'FontMenuSmall');
+       winText.SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
     }
     else if (bStylization3)
     {
        winText.SetTextColorRGB(224,224,244);
-       winText.SetFont(Font'FontComputer8x20_B');
+       winText.SetFont(player.FontManager.GetFont(TT_FontComputer8x20_B));
     }
     else
     {
-       winText.SetFont(Font'FontMenuSmall');
+       winText.SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
        winText.SetBackground(None);
     }
 

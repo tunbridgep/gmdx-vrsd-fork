@@ -134,16 +134,16 @@ function CreateEmailHeaders()
 
 	// First create the headers
 	newLabel = CreateMenuLabel(12, 104, EmailFromHeader, winClient);
-	newLabel.SetFont(Font'FontMenuTitle');
+	newLabel.SetFont(player.FontManager.GetFont(TT_FontMenuTitle));
 
 	newLabel = CreateMenuLabel(212, 104, EmailToHeader, winClient);
-	newLabel.SetFont(Font'FontMenuTitle');
+	newLabel.SetFont(player.FontManager.GetFont(TT_FontMenuTitle));
 
 	newLabel = CreateMenuLabel(12, 118, EmailSubjectHeader, winClient);
-	newLabel.SetFont(Font'FontMenuTitle');
+	newLabel.SetFont(player.FontManager.GetFont(TT_FontMenuTitle));
 
 	winEmailCCHeader = CreateMenuLabel(212, 118, EmailCarbonCopyHeader, winClient);
-	winEmailCCHeader.SetFont(Font'FontMenuTitle');
+	winEmailCCHeader.SetFont(player.FontManager.GetFont(TT_FontMenuTitle));
 	winEmailCCHeader.Hide();
 
 	// Now create the text fields

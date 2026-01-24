@@ -6,8 +6,3 @@ class MenuUISmallLabelWindow extends MenuUILabelWindow;
 
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
-
-defaultproperties
-{
-     fontLabel=Font'DeusExUI.FontMenuSmall'
-}

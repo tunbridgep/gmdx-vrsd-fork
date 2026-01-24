@@ -328,10 +328,10 @@ function CreateTextHeaders()
 	CreateMenuLabel(172,  17, HeaderSkillsLabel,       winClient);
 
 	winLabel = CreateMenuLabel(430,  18, HeaderSkillLevelLabel,   winClient);
-	winLabel.SetFont(Font'FontMenuSmall');
+	winLabel.SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
 
 	winLabel = CreateMenuLabel(505,  18, HeaderPointsNeededLabel, winClient);
-	winLabel.SetFont(Font'FontMenuSmall');
+	winLabel.SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
 
 	CreateMenuLabel(409, 344, HeaderSkillPointsLabel,  winClient);
 }
@@ -383,7 +383,7 @@ function CreateSkillsListWindow()
 	lstSkills.SetColumnWidth(2,  60);
 	lstSkills.SetColumnAlignment(2, HALIGN_Right);
 
-	lstSkills.SetColumnFont(0, Font'FontMenuSmall'); //'FontMenuHeaders'
+	lstSkills.SetColumnFont(0, player.FontManager.GetFont(TT_FontMenuSmall)); //'FontMenuHeaders'
 	lstSkills.SetSortColumn(0, False);
 	lstSkills.EnableAutoSort(True);
 }

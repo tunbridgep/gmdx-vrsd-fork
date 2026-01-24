@@ -84,11 +84,11 @@ event InitWindow()
 
 	SetSelectability(false);
 
-	SetSize(51, 54);
-	SetFont(Font'DeusExUI.FontTiny');
-
 	// Get a pointer to the player
 	player = DeusExPlayer(GetRootWindow().parentPawn);
+
+	SetSize(51, 54);
+	SetFont(player.FontManager.GetFont(TT_FontTiny));
 
 	// Position where we'll be drawing the item-dependent text
 	itemTextPosY = slotFillHeight - 8 + slotIconY;

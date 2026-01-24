@@ -117,7 +117,6 @@ function CreateAugButtons()
          }
          btnAugChoice[iButtonIndex].SetWidth(163);
          btnAugChoice[iButtonIndex].SetHelpText(curAug.MPInfo);         
-         btnAugChoice[iButtonIndex].fontButtonText = font'FontMenuSmall';
 
          ChoiceNames[iButtonIndex] = String(CurAug.Class.Name);
       }
