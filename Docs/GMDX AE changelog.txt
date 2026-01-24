@@ -2,6 +2,7 @@
 
 New Features:
 - The Frob Display now shows a Red border for Declined items.
+- The Player's Skin Colour will now be remembered alongside their name if the option to remember their name is enabled. (Enabled by default).
 
 Bugfixes:
 - Fixed several codes which weren't working correctly when using Unknown Codes
