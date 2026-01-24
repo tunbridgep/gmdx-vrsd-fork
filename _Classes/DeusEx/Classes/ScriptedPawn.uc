@@ -542,12 +542,15 @@ var travel AugmentiqueOutfitData augmentiqueData;
 function ApplyCurrentOutfit()
 {
     local int i;
-
-    if (!augmentiqueData.bRandomized)
-        return;
     
     //GMDX Exclusive code
     if (IsHDTP())
+        return;
+
+    //Reset Skin
+    ResetSkinStyle(true);
+
+    if (!augmentiqueData.bRandomized)
         return;
 
     for (i = 0;i < 8;i++)
@@ -4664,7 +4667,7 @@ function SetSkinStyle(ERenderStyle newStyle, optional texture newTex, optional f
 // ResetSkinStyle()
 // ----------------------------------------------------------------------
 
-function ResetSkinStyle()
+function ResetSkinStyle(optional bool bDontSetupSkin)
 {
 	local int i;
 
@@ -4673,7 +4676,8 @@ function ResetSkinStyle()
 	Skin      = Default.Skin;
 	ScaleGlow = Default.ScaleGlow;
 	Style     = Default.Style;
-    SetupSkin();
+    if (!bDontSetupSkin)
+        SetupSkin();
 }
 
 

@@ -125,20 +125,32 @@ struct AugmentiqueOutfitData
 
 var travel AugmentiqueOutfitData augmentiqueData;
 
+//Copied from ScriptedPawn
+function ResetSkinStyle()
+{
+	local int i;
+
+	for (i=0; i<8; i++)
+		MultiSkins[i] = Default.MultiSkins[i];
+	Skin      = Default.Skin;
+	ScaleGlow = Default.ScaleGlow;
+	Style     = Default.Style;
+}
+
 //Augmentique: Update our textures to our Augmentique outfit
 function ApplyCurrentOutfit()
 {
     local int i;
-
-    if (!augmentiqueData.bRandomized)
-        return;
-
+    
     //GMDX Exclusive code
     if (IsHDTP())
         return;
-    
-    //Log("Doing carcass stuff");
 
+    ResetSkinStyle();
+
+    if (!augmentiqueData.bRandomized)
+        return;
+    
     for (i = 0;i < 8;i++)
         if (augmentiqueData.textures[i] != None)
             multiskins[i] = augmentiqueData.textures[i];
@@ -150,9 +162,7 @@ function CopyOutfitFrom(Actor A)
 {
     local ScriptedPawn S;
     S = ScriptedPawn(A);
-
-    //GMDX Specific Code
-    if (S != None && IsHDTP())
+    if (S != None)
     {
         augmentiqueData.textures[0] = S.augmentiqueData.textures[0];
         augmentiqueData.textures[1] = S.augmentiqueData.textures[1];
@@ -163,51 +173,26 @@ function CopyOutfitFrom(Actor A)
         augmentiqueData.textures[6] = S.augmentiqueData.textures[6];
         augmentiqueData.textures[7] = S.augmentiqueData.textures[7];
         augmentiqueData.textures[8] = S.augmentiqueData.textures[8];
+        augmentiqueData.bRandomized = S.augmentiqueData.bRandomized;
+        augmentiqueData.bUnique = S.augmentiqueData.bUnique;
     }
-    else if (S != None)
-    {
-        augmentiqueData.textures[0] = S.MultiSkins[0];
-        augmentiqueData.textures[1] = S.MultiSkins[1];
-        augmentiqueData.textures[2] = S.MultiSkins[2];
-        augmentiqueData.textures[3] = S.MultiSkins[3];
-        augmentiqueData.textures[4] = S.MultiSkins[4];
-        augmentiqueData.textures[5] = S.MultiSkins[5];
-        augmentiqueData.textures[6] = S.MultiSkins[6];
-        augmentiqueData.textures[7] = S.MultiSkins[7];
-        augmentiqueData.textures[8] = S.Texture;
-    }
-    augmentiqueData.bRandomized = S.augmentiqueData.bRandomized;
     ApplyCurrentOutfit();
 }
 
 function CopyAugmentiqueDataToPOVCorpse(POVCorpse pov)
 {
-    //GMDX Specific Code
-    if (pov != None && IsHDTP())
-    {
-        pov.augmentiqueData.textures[0] = augmentiqueData.textures[0];
-        pov.augmentiqueData.textures[1] = augmentiqueData.textures[1];
-        pov.augmentiqueData.textures[2] = augmentiqueData.textures[2];
-        pov.augmentiqueData.textures[3] = augmentiqueData.textures[3];
-        pov.augmentiqueData.textures[4] = augmentiqueData.textures[4];
-        pov.augmentiqueData.textures[5] = augmentiqueData.textures[5];
-        pov.augmentiqueData.textures[6] = augmentiqueData.textures[6];
-        pov.augmentiqueData.textures[7] = augmentiqueData.textures[7];
-        pov.augmentiqueData.textures[8] = augmentiqueData.textures[8];
-    }
-    else if (pov != None)
-    {
-        pov.augmentiqueData.textures[0] = multiskins[0];
-        pov.augmentiqueData.textures[1] = multiskins[1];
-        pov.augmentiqueData.textures[2] = multiskins[2];
-        pov.augmentiqueData.textures[3] = multiskins[3];
-        pov.augmentiqueData.textures[4] = multiskins[4];
-        pov.augmentiqueData.textures[5] = multiskins[5];
-        pov.augmentiqueData.textures[6] = multiskins[6];
-        pov.augmentiqueData.textures[7] = multiskins[7];
-        pov.augmentiqueData.textures[8] = Texture;
-        pov.augmentiqueData.bRandomized = augmentiqueData.bRandomized;
-    }
+    pov.augmentiqueData.textures[0] = augmentiqueData.textures[0];
+    pov.augmentiqueData.textures[1] = augmentiqueData.textures[1];
+    pov.augmentiqueData.textures[2] = augmentiqueData.textures[2];
+    pov.augmentiqueData.textures[3] = augmentiqueData.textures[3];
+    pov.augmentiqueData.textures[4] = augmentiqueData.textures[4];
+    pov.augmentiqueData.textures[5] = augmentiqueData.textures[5];
+    pov.augmentiqueData.textures[6] = augmentiqueData.textures[6];
+    pov.augmentiqueData.textures[7] = augmentiqueData.textures[7];
+    pov.augmentiqueData.textures[8] = augmentiqueData.textures[8];
+    pov.augmentiqueData.textures[8] = augmentiqueData.textures[8];
+    pov.augmentiqueData.bRandomized = augmentiqueData.bRandomized;
+    pov.augmentiqueData.bUnique = augmentiqueData.bUnique;
 }
 
 function CopyAugmentiqueDataFromPOVCorpse(POVCorpse pov)
@@ -222,6 +207,7 @@ function CopyAugmentiqueDataFromPOVCorpse(POVCorpse pov)
     augmentiqueData.textures[7] = pov.augmentiqueData.textures[7];
     augmentiqueData.textures[8] = pov.augmentiqueData.textures[8];
     augmentiqueData.bRandomized = pov.augmentiqueData.bRandomized;
+    augmentiqueData.bUnique = pov.augmentiqueData.bUnique;
     ApplyCurrentOutfit();
 }
 
