@@ -125,18 +125,6 @@ struct AugmentiqueOutfitData
 
 var travel AugmentiqueOutfitData augmentiqueData;
 
-//Copied from ScriptedPawn
-function ResetSkinStyle()
-{
-	local int i;
-
-	for (i=0; i<8; i++)
-		MultiSkins[i] = Default.MultiSkins[i];
-	Skin      = Default.Skin;
-	ScaleGlow = Default.ScaleGlow;
-	Style     = Default.Style;
-}
-
 //Augmentique: Update our textures to our Augmentique outfit
 function ApplyCurrentOutfit()
 {
@@ -146,7 +134,14 @@ function ApplyCurrentOutfit()
     if (IsHDTP())
         return;
 
-    ResetSkinStyle();
+    //Reset Skin
+	for (i=0; i<8; i++)
+    {
+        if (augmentiqueData.textures[i] != None)
+            MultiSkins[i] = Default.MultiSkins[i];
+    }
+    if (augmentiqueData.textures[8] != None)
+        Texture = default.Texture;
 
     if (!augmentiqueData.bRandomized)
         return;

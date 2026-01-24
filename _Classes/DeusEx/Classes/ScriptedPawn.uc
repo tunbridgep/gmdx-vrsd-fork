@@ -548,7 +548,13 @@ function ApplyCurrentOutfit()
         return;
 
     //Reset Skin
-    ResetSkinStyle(true);
+	for (i=0; i<8; i++)
+    {
+        if (augmentiqueData.textures[i] != None)
+            MultiSkins[i] = Default.MultiSkins[i];
+    }
+    if (augmentiqueData.textures[8] != None)
+        Texture = default.Texture;
 
     if (!augmentiqueData.bRandomized)
         return;
@@ -4667,7 +4673,7 @@ function SetSkinStyle(ERenderStyle newStyle, optional texture newTex, optional f
 // ResetSkinStyle()
 // ----------------------------------------------------------------------
 
-function ResetSkinStyle(optional bool bDontSetupSkin)
+function ResetSkinStyle()
 {
 	local int i;
 
@@ -4676,8 +4682,7 @@ function ResetSkinStyle(optional bool bDontSetupSkin)
 	Skin      = Default.Skin;
 	ScaleGlow = Default.ScaleGlow;
 	Style     = Default.Style;
-    if (!bDontSetupSkin)
-        SetupSkin();
+    SetupSkin();
 }
 
 
