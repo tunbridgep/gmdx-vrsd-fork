@@ -3497,7 +3497,14 @@ function ClientSetMusic(Music NewSong, byte NewSection, byte NewCdTrack, EMusicT
     local bool bContinueOn;
 	local DeusExLevelInfo info;
     //local bool bSection5Hack;
-    
+
+    //If using dxrando, use dxrando's music player instead.
+    if (RandomizerEnabled())
+    {
+        Super.ClientSetMusic(NewSong,NewSection,NewCdTrack,NewTransition);
+        return;
+    }
+
     info = GetLevelInfo();
     
     DebugMessage("ClientSetMusic called:" @ NewSong @ NewSection @ NewTransition @ "Song is: " $ default.previousTrack @ default.previousLevelSection @ default.previousMusicMode @ bMusicSystemReset @ Level.SongSection @ saveTime @ default.fMusicHackTimer @ SongSection);
@@ -3674,7 +3681,8 @@ function UpdateDynamicMusic(float deltaTime)
 	local DeusExLevelInfo info;
     local bool bAllowConverse, bAllowCombat, bAllowOther;
 
-	if (Level.Song == None)
+    //Bail out and don't update if we're running dxrando
+	if (Level.Song == None || RandomizerEnabled())
 		return;
 
     default.fMusicHackTimer = FMAX(default.fMusicHackTimer - deltaTime,0);
@@ -19590,6 +19598,16 @@ exec function MyLogInfos()
     ammotype.ChangeMaxAmmo(mult);
     BroadcastMessage(ammotype.maxAmmo);
 }*/
+
+//SARGE: Cap any passed-in ammo to our maximum allowed amount
+function CapMaxAmmo(Class<Ammo> ammotype)
+{
+    local ammo AM;
+    AM = Ammo(FindInventoryType(ammotype));
+
+    if (AM != None)
+        AM.ammoAmount = MIN(AM.AmmoAmount,GetAdjustedMaxAmmoByClass(ammotype));
+}
 
 //SARGE: Make a generic version that works with classes,
 //so we don't need literal ammo to check this.
