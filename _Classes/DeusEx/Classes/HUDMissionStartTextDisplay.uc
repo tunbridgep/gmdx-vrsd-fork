@@ -188,6 +188,13 @@ function SetVisibility( bool bNewVisibility )                                   
 	Show( bNewVisibility );
 }
 
+//SARGE: Crash Fix due to Player being required for new font support
+function DestroyWindow()
+{
+    player = None;
+	Super.DestroyWindow();
+}
+
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 

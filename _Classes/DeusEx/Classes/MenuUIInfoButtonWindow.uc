@@ -4,6 +4,13 @@
 
 class MenuUIInfoButtonWindow extends MenuUIBorderButtonWindow;
 
+//SARGE: Now we need to actually do this with a function, a property is no longer good enough!
+event InitWindow()
+{
+	Super.InitWindow();
+    fontButtonText=player.FontManager.GetFont(TT_FontMenuTitle);
+}
+
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 

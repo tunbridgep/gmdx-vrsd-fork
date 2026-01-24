@@ -88,6 +88,13 @@ event DrawWindow(GC gc)
 	gc.DrawText(2, 2, width-2, height-2, message);
 }
 
+//SARGE: Crash Fix due to Player being required for new font support
+function DestroyWindow()
+{
+    player = None;
+	Super.DestroyWindow();
+}
+
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 

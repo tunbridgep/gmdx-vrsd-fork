@@ -128,6 +128,13 @@ function HSLToRGB(
 	}
 }
 
+//SARGE: Crash Fix due to Player being required for new font support
+function DestroyWindow()
+{
+    player = None;
+	Super.DestroyWindow();
+}
+
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
