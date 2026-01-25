@@ -412,10 +412,14 @@ simulated function bool CanBeUpgraded()
 	if ( CurrentLevel < MaxLevel )
 	{
 	  augCan = AugmentationUpgradeCannister(player.FindInventoryType(Class'AugmentationUpgradeCannister'));
+
+      //SARGE: Also allow upgrade cans
+	  if (augCan == None)
+	    augCan = AugmentationUpgradeCannister(player.FindInventoryType(Class'AugmentationUpgradeCannisterOverdrive'));
+
 	  if (augCan != None)
 	  {
 		bCanUpgrade = True;
-		player.bSpecialUpgrade = False;
 	  }
 	}
 
