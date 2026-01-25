@@ -1045,6 +1045,18 @@ function UpdatePhotoMode()
     }
 }
 
+exec function OpenConsole()
+{
+	if (bDisableConsoleAccess)
+        return;
+    if (Player.Console != None)
+    {
+        Player.Console.TypedStr="";
+        Player.Console.bNoStuff = true;
+        Player.Console.GotoState( 'Typing' );
+    }
+}
+
 exec function cheat()
 {
 	if (bHardCoreMode) bCheatsEnabled = false;

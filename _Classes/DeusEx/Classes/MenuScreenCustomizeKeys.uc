@@ -16,10 +16,10 @@ struct S_KeyDisplayItem
 };
 
 
-var localized string	FunctionText[85];  		 //CyberP: 61
-var string				MenuValues1[85]; //CyberP: 61
-var string				MenuValues2[85]; //CyberP: 61
-var string				AliasNames[85];  //CyberP: 61
+var localized string	FunctionText[86];  		 //CyberP: 61
+var string				MenuValues1[86]; //CyberP: 61
+var string				MenuValues2[86]; //CyberP: 61
+var string				AliasNames[86];  //CyberP: 61
 var string				PendingCommands[100];
 var localized S_KeyDisplayItem    keyDisplayNames[71];
 var localized string			  NoneText;
@@ -651,6 +651,7 @@ defaultproperties
      FunctionText(82)="Attach/Detach Silencer"
      FunctionText(83)="Attach/Detach Scope"
      FunctionText(84)="Attach/Detach Laser Sight"
+     FunctionText(85)="Open Console"
      AliasNames(0)="ParseLeftClick|Fire"
      AliasNames(1)="ParseRightClick"
      AliasNames(2)="DropItem"
@@ -736,6 +737,7 @@ defaultproperties
      AliasNames(82)="AttachSilencer"
      AliasNames(83)="AttachScope"
      AliasNames(84)="AttachLaser"
+     AliasNames(85)="OpenConsole"
      keyDisplayNames(0)=(inputKey=IK_LeftMouse,displayName="Left Mouse Button")
      keyDisplayNames(1)=(inputKey=IK_RightMouse,displayName="Right Mouse Button")
      keyDisplayNames(2)=(inputKey=IK_MiddleMouse,displayName="Middle Mouse Button")
