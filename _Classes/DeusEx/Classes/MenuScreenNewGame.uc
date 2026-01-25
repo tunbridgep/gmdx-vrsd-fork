@@ -87,6 +87,7 @@ var bool bCollectibles;
 var bool bHardcoreFilterOption;
 var bool bPermaCloak;
 var bool bNoStartingWeaponChoices;
+var bool bImprisonmentTakesAmmo;
 var bool bSkillsSetAtStart;
 
 //SARGE: Save our true player name for future playthroughs
@@ -189,6 +190,7 @@ event InitWindow()
     bHardcoreFilterOption=false;                                                //Sarge
     bPermaCloak=false;                                                          //Sarge
     bNoStartingWeaponChoices=false;                                             //Sarge
+    bImprisonmentTakesAmmo=false;                                               //Sarge
     bSkillsSetAtStart=false;                                                    //Sarge
     //bRestrictedMetabolism=false;                                              //Sarge
     default.bRandomizeCrates=false;                                             //RSD: Also need default values! Otherwise get command in modifier menu takes the wrong value
@@ -214,6 +216,7 @@ event InitWindow()
     default.bHardcoreFilterOption=false;                                        //Sarge
     default.bPermaCloak=false;                                                  //Sarge
     default.bNoStartingWeaponChoices=false;                                     //Sarge
+    default.bImprisonmentTakesAmmo=false;                                       //Sarge
     default.bSkillsSetAtStart=false;                                            //Sarge
 	StyleChanged();
 }
@@ -881,6 +884,7 @@ function SaveSettings()
     player.bHardcoreFilterOption=bHardcoreFilterOption;                         //Sarge
     player.bPermaCloak=bPermaCloak;                                             //Sarge
     player.bNoStartingWeaponChoices=bNoStartingWeaponChoices;                   //Sarge
+    player.bImprisonmentTakesAmmo=bImprisonmentTakesAmmo;                       //Sarge
     player.bSkillsSetAtStart=bSkillsSetAtStart;                                 //Sarge
     if (player.bRandomizeAugs)                                                  //RSD: New aug randomization feature
         ScrambleAugOrderList();
