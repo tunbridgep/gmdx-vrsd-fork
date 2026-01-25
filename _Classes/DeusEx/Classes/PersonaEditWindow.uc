@@ -11,8 +11,6 @@ var Color colHighlight;
 var Color colCursor;
 var Color colBlack;
 
-var Font  fontText;
-
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -22,13 +20,13 @@ var Font  fontText;
 event InitWindow()
 {
 	Super.InitWindow();
-	
-	SetFont(fontText);
-	SetInsertionPointType(INSTYPE_Insert);
-	EnableSingleLineEditing(False);
 
 	// Get a pointer to the player
 	player = DeusExPlayer(GetRootWindow().parentPawn);
+	
+	SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
+	SetInsertionPointType(INSTYPE_Insert);
+	EnableSingleLineEditing(False);
 
 	StyleChanged();
 }
@@ -90,5 +88,5 @@ event StyleChanged()
 
 defaultproperties
 {
-     fontText=Font'DeusExUI.FontMenuSmall'
+     //fontText=Font'RSDCrap.DXRFontMenuSmall'
 }

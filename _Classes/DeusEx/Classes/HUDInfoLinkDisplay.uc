@@ -24,8 +24,6 @@ var Color colCursor;
 var Color colQueued;
 var Color colLine;
 
-var Font  fontName;
-var Font  fontText;
 var int   fontTextX;
 var int   fontTextY;
 
@@ -79,7 +77,7 @@ function CreateControls()
 	winName.SetTextAlignments(HALIGN_Left, VALIGN_Center);
 	winName.SetSize(293, 15);
 	winName.SetPos(94, 15);
-	winName.SetFont(fontName);
+	winName.SetFont(player.FontManager.GetFont(TT_FontMenuHeaders_DS));
 	winName.SetTextColor(colName);
 	winName.SetTextMargins(0, 0);
 	winName.SetText(IncomingTransmission);
@@ -89,7 +87,7 @@ function CreateControls()
 	winQueued.SetTextAlignments(HALIGN_Right, VALIGN_Center);
 	winQueued.SetSize(200, 15);
 	winQueued.SetPos(187, 15);
-	winQueued.SetFont(fontName);
+	winQueued.SetFont(player.FontManager.GetFont(TT_FontMenuHeaders_DS));
 	winQueued.SetTextColor(colQueued);
 	winQueued.SetTextMargins(0, 0);
 
@@ -97,7 +95,7 @@ function CreateControls()
 	winText = ComputerWindow(NewChild(Class'ComputerWindow'));
 	winText.SetPos(94, 36);
 	winText.SetTextSize(42, 6);
-	winText.SetTextFont(fontText, fontTextX, fontTextY, colText);
+	winText.SetTextFont(player.FontManager.GetFont(TT_FontFixedWidthSmall_DS), fontTextX, fontTextY, colText);
 	winText.SetTextTiming(0.03);
 	winText.SetFadeSpeed(0.75);
 	winText.SetCursorColor(colCursor);
@@ -280,8 +278,8 @@ event StyleChanged()
 
 defaultproperties
 {
-     FontName=Font'DeusExUI.FontMenuHeaders_DS'
-     fontText=Font'DeusExUI.FontFixedWidthSmall_DS'
+     //FontName=Font'DeusExUI.FontMenuHeaders_DS'
+     //fontText=Font'DeusExUI.FontFixedWidthSmall_DS'
      fontTextX=7
      fontTextY=10
      texBackgrounds(0)=Texture'DeusExUI.UserInterface.HUDInfolinkBackground_1'

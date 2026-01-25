@@ -5,7 +5,6 @@ class HUDReceivedDisplay extends HUDSharedBorderWindow;
 
 var TileWindow winTile;
 var TextWindow txtReceived;
-var Font  fontReceived;
 var Float displayTimer;
 var Float displayLength;
 var int   topMargin;
@@ -99,7 +98,7 @@ function CreateTileWindow()
 function CreateReceivedLabel()
 {
 	txtReceived = TextWindow(winTile.NewChild(Class'TextWindow'));
-	txtReceived.SetFont(fontReceived);
+	txtReceived.SetFont(player.FontManager.GetFont(TT_FontMenuHeaders_DS));
 	txtReceived.SetText(TextReceivedLabel);
 }
 
@@ -473,7 +472,6 @@ event StyleChanged()
 
 defaultproperties
 {
-     fontReceived=Font'DeusExUI.FontMenuHeaders_DS'
      displayLength=3.000000
      TopMargin=5
      TextReceivedLabel="Received:"

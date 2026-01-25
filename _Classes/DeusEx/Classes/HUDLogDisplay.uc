@@ -19,7 +19,6 @@ var Float lastLogMsg;
 var Sound logSoundToPlay;
 
 // defaults
-var Font  fontLog;
 var Float logMargin;
 var int   MinLogLines;
 var int   MaxLogLines;
@@ -57,7 +56,7 @@ function CreateControls()
 	winLog = TextLogWindow(NewChild(Class'TextLogWindow'));
 	winLog.SetTextAlignments(HALIGN_Left, VALIGN_Top);
 	winLog.SetTextMargins(0, 0);
-	winLog.SetFont(fontLog);
+	winLog.SetFont(player.FontManager.GetFont(TT_FontMenuSmall_DS));
 	winLog.SetLines(MinLogLines, MaxLogLines);
     winLog.SetWordWrap(False); //Sarge: Added so that it doesn't wrap horribly when in small mode
 }
@@ -300,7 +299,7 @@ event StyleChanged()
 defaultproperties
 {
      displayTime=3.000000
-     fontLog=Font'DeusExUI.FontMenuSmall_DS'
+     //fontLog=Font'DeusExUI.FontMenuSmall_DS'
      logMargin=10.000000
      MinLogLines=4
      maxLogLines=10

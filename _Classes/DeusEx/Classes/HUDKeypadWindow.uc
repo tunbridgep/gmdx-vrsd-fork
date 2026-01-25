@@ -234,7 +234,7 @@ function CreateInputTextWindow()
 	winText.SetSize(75, 11);
 	winText.SetTextMargins(0, 0);
 	winText.SetTextAlignments(HALIGN_Center, VALIGN_Center);
-	winText.SetFont(Font'FontMenuSmall');
+	winText.SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
 	winText.SetTextColor(colHeaderText);
 	winText.SetText(msgEnterCode);
 }

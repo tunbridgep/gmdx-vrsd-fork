@@ -80,7 +80,7 @@ event DrawWindow(GC gc)
 
 	// If the button is currently being depressed, then draw the 
 	// graphic down and to the right one.
-	gc.SetFont(Font'FontMenuExtraLarge');
+	gc.SetFont(player.FontManager.GetFont(TT_FontMenuExtraLarge));
 	gc.SetAlignments(HALIGN_Center, VALIGN_Center);
 	gc.EnableTranslucentText(True);
 

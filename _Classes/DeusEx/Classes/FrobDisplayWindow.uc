@@ -484,7 +484,7 @@ function DrawDoorHudInformation(GC gc, actor frobTarget)
 	infoX = boxTLX + 10; //CyberP: both +10
 	infoY = boxTLY + 10;
 
-	gc.SetFont(Font'FontMenuSmall_DS');
+	gc.SetFont(player.FontManager.GetFont(TT_FontMenuSmall_DS));
 	gc.GetTextExtent(0, infoW, infoH, strInfo);
 	infoH += 8;
 	infoW += barSize + 16;
@@ -662,7 +662,7 @@ function DrawDeviceHudInformation(GC gc, actor frobTarget)
 	infoX = boxTLX + 10;
 	infoY = boxTLY + 10;
 
-	gc.SetFont(Font'FontMenuSmall_DS');
+	gc.SetFont(player.FontManager.GetFont(TT_FontMenuSmall_DS));
 	gc.GetTextExtent(0, infoW, infoH, strInfo);		
 	infoH += 8;	
 	
@@ -845,7 +845,7 @@ function DrawOtherHudInformation(GC gc, actor frobTarget)
 	infoX = boxTLX + 10;
 	infoY = boxTLY + 10;
 
-	gc.SetFont(Font'FontMenuSmall_DS');
+	gc.SetFont(player.FontManager.GetFont(TT_FontMenuSmall_DS));
 	gc.GetTextExtent(0, infoW, infoH, strInfo);
 	infoW += 8;
 	infoH += 8;

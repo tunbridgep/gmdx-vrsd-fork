@@ -269,7 +269,7 @@ simulated function TeamWinScreen( DeusExPlayer thisPlayer, GC gc, float screenWi
 	else
 		gc.SetTextColor( RedColor );
 
-	gc.SetFont(Font'FontMenuExtraLarge');
+	gc.SetFont(thisPlayer.FontManager.GetFont(TT_FontMenuExtraLarge));
 
 	switch( winningTeam )
 	{
@@ -294,7 +294,7 @@ simulated function TeamWinScreen( DeusExPlayer thisPlayer, GC gc, float screenWi
 	// Show who won it and who got killed
 	if ( VictoryCondition ~= "Frags" )
 	{
-		gc.SetFont(Font'FontMenuTitle');
+		gc.SetFont(thisPlayer.FontManager.GetFont(TT_FontMenuTitle));
 		if (( killerStr ~= "" ) || (killeeStr ~= "") || (methodStr ~=""))
 			log( "Warning:Bad kill string in final death message." );
 		else
@@ -627,7 +627,7 @@ simulated function ShowTeamDMScoreboard( DeusExPlayer thisPlayer, GC gc, float s
 		return;
 
 	// Always use this font
-	gc.SetFont(Font'FontMenuSmall');
+	gc.SetFont(thisPlayer.FontManager.GetFont(TT_FontMenuSmall));
 	str = "TEST";
 	gc.GetTextExtent( 0, xlen, ylen, str );
 

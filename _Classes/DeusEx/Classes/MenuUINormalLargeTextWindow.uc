@@ -7,7 +7,6 @@ class MenuUINormalLargeTextWindow extends LargeTextWindow;
 var DeusExPlayer player;
 
 var Color colLabel;
-var Font  fontLabel;
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -19,11 +18,11 @@ event InitWindow()
 {
 	Super.InitWindow();
 
-	SetFont(fontLabel);
-	SetTextMargins(0, 0);
-
 	// Get a pointer to the player
 	player = DeusExPlayer(GetRootWindow().parentPawn);
+
+	SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
+	SetTextMargins(0, 0);
 
 	StyleChanged();
 }
@@ -50,5 +49,4 @@ event StyleChanged()
 defaultproperties
 {
      colLabel=(R=255,G=255,B=255)
-     fontLabel=Font'DeusExUI.FontMenuSmall'
 }

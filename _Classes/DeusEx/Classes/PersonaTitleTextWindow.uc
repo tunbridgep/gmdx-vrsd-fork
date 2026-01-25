@@ -5,7 +5,6 @@
 class PersonaTitleTextWindow extends TextWindow;
 
 var DeusExPlayer player;
-var Font         fontTitle;
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -17,11 +16,11 @@ event InitWindow()
 {
 	Super.InitWindow();
 
-	SetFont(fontTitle);
-	SetTextMargins(0, 0);
-
 	// Get a pointer to the player
 	player = DeusExPlayer(GetRootWindow().parentPawn);
+
+    SetFont(player.FontManager.GetFont(TT_FontMenuHeaders));
+	SetTextMargins(0, 0);
 
 	StyleChanged();
 }
@@ -45,8 +44,3 @@ event StyleChanged()
 
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
-
-defaultproperties
-{
-     fontTitle=Font'DeusExUI.FontMenuHeaders'
-}

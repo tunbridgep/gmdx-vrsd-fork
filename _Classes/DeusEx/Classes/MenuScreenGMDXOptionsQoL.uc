@@ -77,7 +77,7 @@ defaultproperties
      items(45)=(HelpText="If Enabled, ammo type is displayed at the bottom of the Ammo HUD.",actionText="HUD: Show Ammo Type in HUD",variable="bShowAmmoTypeInAmmoHUD",defaultValue=1,bAdvancedModeOnly=true);
      items(46)=(HelpText="Modified weapons will have a '+' added to their name in the belt and inventory screens.",actionText="HUD: Show Modified Weapons",variable="bBeltShowModified",defaultValue=1,bAdvancedModeOnly=true);
      items(47)=(HelpText="Don't show the Repair Bot interface if it's not currently charged.",actionText="HUD: Streamlined Repair Bot Interface",variable="bStreamlinedRepairBotInterface",defaultValue=1,bAdvancedModeOnly=true);
-     items(48)=(HelpText="Use smaller fonts for some HUD Elements.",actionText="HUD: Use Classic Fonts",variable="bClassicFont",consoleTarget="DeusEx.FontManager",defaultValue=1,bAdvancedModeOnly=true);
+     items(48)=(HelpText="Use smaller fonts for some HUD Elements.",actionText="Fonts: Use Classic Fonts",variable="bClassicFont",consoleTarget="DeusEx.FontManager",defaultValue=1,bAdvancedModeOnly=true);
      items(49)=(HelpText="If enabled, the crosshair will turn blue when attempting to attach a mine to a surface, or when highlighting with the Wireless Strength perk.",actionText="HUD: Wall Placement Helper",variable="bWallPlacementCrosshair",defaultValue=1,bAdvancedModeOnly=true);
      items(50)=(HelpText="If enabled, attempting to pick up carryable objects will automatically holster your held weapon, enabling you to pick up the object.",actionText="Holstering: Auto-Holster",variable="iAutoHolster",valueText1="Carcasses Only",valueText2="Everything");
      items(51)=(HelpText="If enabled, Data Cubes will show when they have been interacted with.",actionText="Interaction: Darken Data-Cube Screens",variable="bShowDataCubeRead",defaultValue=1,bAdvancedModeOnly=true);
@@ -144,10 +144,13 @@ defaultproperties
      items(111)=(HelpText="Dragging items off the inventory grid in the inventory screen will drop the items.",actionText="HUD: Inventory Drag and Drop",variable="bDragAndDropOffInventory",defaultValue=1,bAdvancedModeOnly=true)
      items(112)=(HelpText="The Change Ammo Key (default: X) will swap selected grenades, melee weapons, and other items, similar to Shifter.",actionText="Game: Change Ammo Swaps Items",variable="iShifterWeaponSwitch",valueText1="Swap Only",valueText2="Swap Belt",valueText3="Autoswap Belt",helpText1="In Swap Only mode, the belt is not considered when swapping items.",helpText2="Swap Belt mode also updates the belt with new items.",helpText3="Autoswap mode also updates the belt when using the last of an item.",bAdvancedModeOnly=true,defaultValue=2)
      items(113)=(HelpText="Immersion/simulation option. If enabled, carried objects are no longer translucent.",actionText="Interaction: Immersive Carryables",variable="bNoTranslucency",bAdvancedModeOnly=true);
-
+     
      //Version 1.2 Additions
-     items(114)=(HelpText="The players Real Name and Appearance will be remembered between playthroughs",actionText="Game: Remember Player Identity",variable="bRememberTheName",bAdvancedModeOnly=true);
-     items(115)=(HelpText="Using the Scope key with no item equipped will use any Binoculars in your inventory",actionText="Interaction: Smart Binocular Selection",variable="iSmartBinocs",defaultValue=1,valueText2="Select and Activate",bAdvancedModeOnly=true);
+     items(114)=(HelpText="The players Real Name and Appearance will be remembered between playthroughs",actionText="Game: Remember Player Identity",variable="bRememberTheName",bAdvancedModeOnly=true);   
+     items(115)=(HelpText="Use more readable fonts for most UI elements.",actionText="Fonts: More Readable Fonts",variable="bDXRandoFonts",consoleTarget="DeusEx.FontManager",defaultValue=1,bAdvancedModeOnly=true);
+     items(116)=(HelpText="Use a larger font for Datacubes, Books and other readable objects",actionText="Fonts: Big Reading Font",variable="bBigDatacubeFont",consoleTarget="DeusEx.FontManager",defaultValue=1,bAdvancedModeOnly=false);        
+     items(117)=(HelpText="Using the Scope key with no item equipped will use any Binoculars in your inventory",actionText="Interaction: Smart Binocular Selection",variable="iSmartBinocs",defaultValue=1,valueText2="Select and Activate",bAdvancedModeOnly=true);
+
 
      Title="GMDX Quality of Life Options"
      colWidths(0)=214

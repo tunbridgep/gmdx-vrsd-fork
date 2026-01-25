@@ -4,6 +4,13 @@
 
 class MenuUIListHeaderButtonWindow extends MenuUIBorderButtonWindow;
 
+//SARGE: Now we need to actually do this with a function, a property is no longer good enough!
+event InitWindow()
+{
+	Super.InitWindow();
+	SetFont(player.FontManager.GetFont(TT_FontMenuHeaders));
+}
+
 // ----------------------------------------------------------------------
 // StyleChanged()
 // ----------------------------------------------------------------------
@@ -29,7 +36,6 @@ defaultproperties
      Center_Textures(1)=(Tex=Texture'DeusExUI.UserInterface.MenuListHeaderButtonPressed_Center',Width=2)
      colText(0)=(R=197,G=225,B=247)
      colText(3)=(R=255,G=255,B=255)
-     fontButtonText=Font'DeusExUI.FontMenuHeaders'
      buttonHeight=15
      minimumButtonWidth=83
      textLeftMargin=8

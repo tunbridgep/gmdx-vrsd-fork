@@ -149,7 +149,7 @@ event DrawWindow(GC gc)
             // Draw the ammo count
             gc.SetAlignments(HALIGN_Center, VALIGN_Top);   //CyberP: Valignment
             gc.EnableWordWrap(false);
-            gc.SetFont(Font'FontTiny');
+            gc.SetFont(player.FontManager.GetFont(TT_FontTiny));
             gc.SetTextColor(colText);
 
             if (amount > 0)

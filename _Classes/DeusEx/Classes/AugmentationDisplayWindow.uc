@@ -807,7 +807,7 @@ function PostDrawWindow(GC gc)
 	// draw IFF and accuracy information all the time, return False if target aug is not active
 	DrawTargetAugmentation(gc);
 
-	gc.SetFont(Font'FontMenuSmall_DS');
+	gc.SetFont(player.FontManager.GetFont(TT_FontMenuSmall_DS));
 	gc.SetTextColor(colHeaderText);
 	gc.SetStyle(DSTY_Normal);
 	gc.SetTileColor(colBorder);
@@ -1020,7 +1020,7 @@ function float TopCentralMessage( GC gc, String str, color textColor )
 {
 	local float x, y, w, h;
 
-	gc.SetFont(Font'FontMenuTitle');
+	gc.SetFont(player.FontManager.GetFont(TT_FontMenuTitle));
 	gc.GetTextExtent( 0, w, h, str );
 	gc.SetTextColor( textColor );
 	x = (width * 0.5) - (w * 0.5);
@@ -1198,7 +1198,7 @@ function DrawMiscStatusMessages( GC gc )
 	}
 	if ( Player.Level.Timeseconds < targetPlayerTime )
 	{
-		gc.SetFont(Font'FontMenuSmall');
+        gc.SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
 		gc.GetTextExtent(0, w, h, targetPlayerName $ targetPlayerHealthString $ targetPlayerLocationString);
 		gc.SetTextColor(targetPlayerColor);
 		x = width * targetPlayerXMul - (w*0.5);
@@ -1224,7 +1224,7 @@ function DrawMiscStatusMessages( GC gc )
 		{
 			if ( Player.Level.Timeseconds < OutOfAmmoTime )
 			{
-				gc.SetFont(Font'FontMenuTitle');
+				gc.SetFont(player.FontManager.GetFont(TT_FontMenuTitle));
 				gc.GetTextExtent( 0, w, h, OutOfAmmoString );
 				gc.SetTextColor(colRed);
 				x = (width*0.5) - (w*0.5);

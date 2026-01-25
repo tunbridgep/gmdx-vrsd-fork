@@ -67,10 +67,16 @@ var MarkerDisplayWindow markerDisplay;
 
 event InitWindow()
 {
+    local DeusExPlayer player;
+
 	Super.InitWindow();
 
 	// Initialize variables
 	winCount = 0;
+
+    //SARGE: Fix fonts
+    player = DeusExPlayer(GetPlayerPawn());
+    SetFont(player.FontManager.GetFont(TT_TechMedium));
 
 	actorDisplay = ActorDisplayWindow(NewChild(Class'ActorDisplayWindow'));
 	actorDisplay.SetWindowAlignments(HALIGN_Full, VALIGN_Full);

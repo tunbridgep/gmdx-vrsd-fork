@@ -612,7 +612,7 @@ function CreateBioCellBar()
 	winBioEnergyText.SetSize(140, 12);
 	winBioEnergyText.SetTextMargins(0, 0);
 	winBioEnergyText.SetTextAlignments(HALIGN_Center, VALIGN_Center);
-	winBioEnergyText.SetFont(Font'FontMenuSmall_DS');
+	winBioEnergyText.SetFont(player.FontManager.GetFont(TT_FontMenuSmall_DS));
 	winBioEnergyText.SetTextColorRGB(255, 255, 255);
 
 	UpdateBioEnergyBar();

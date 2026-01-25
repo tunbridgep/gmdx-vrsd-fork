@@ -233,12 +233,12 @@ function CreateHeaders()
 	local MenuUIHeaderWindow winHeader;
 
 	winHeader = MenuUIHeaderWindow(winClient.NewChild(Class'MenuUIHeaderWindow'));
-	winHeader.SetFont(Font'FontMenuTitle');
+	winHeader.SetFont(player.FontManager.GetFont(TT_FontMenuTitle));
 	winHeader.SetPos(12, 9);
 	winHeader.SetText(ActiveWindowOptionsHeader);
 
 	winHeader = MenuUIHeaderWindow(winClient.NewChild(Class'MenuUIHeaderWindow'));
-	winHeader.SetFont(Font'FontMenuTitle');
+	winHeader.SetFont(player.FontManager.GetFont(TT_FontMenuTitle));
 	winHeader.SetPos(298, 9);
 	winHeader.SetTextAlignments(HALIGN_Center, VALIGN_Top);
 	winHeader.SetText(CameraOptionsHeader);

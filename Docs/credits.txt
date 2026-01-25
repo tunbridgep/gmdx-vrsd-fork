@@ -21,6 +21,7 @@ This fork is possible thanks to the following awesome people:
 - cappucciNO - for the vanilla weapon models with attachments
 - WCCC - for the masked GM_Trench model, left-hand models, and other help/support.
 - Diva - for the masked models (except GM_Trench)
+- TheAstropath - for the new more readable HUD Fonts.
 
 This mod would not have been possible without these testers:
 Julian, Georg, the1truepickaxe, Xriborg, domitomi, the1truepickaxe, Made In China,

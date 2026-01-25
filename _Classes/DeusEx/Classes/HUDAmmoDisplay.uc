@@ -268,7 +268,7 @@ event DrawWindow(GC gc)
 			}
 		}		
 		
-		gc.SetFont(Font'FontTiny'); //CyberP: hud scaling Font'FontTiny' //SARGE: always force the tiny font for this text display section
+		gc.SetFont(player.FontManager.GetFont(TT_FontTiny)); //CyberP: hud scaling Font'FontTiny' //SARGE: always force the tiny font for this text display section
 		gc.SetAlignments(HALIGN_Center, VALIGN_Top);   //Ygll: make the text alignment to the left for a consistant display
 		
 		posX = offset+9;
@@ -296,7 +296,7 @@ event DrawWindow(GC gc)
         //especially if an infolink is playing.
         else if (player.bShowAmmoTypeInAmmoHUD && !weapon.bDisposableWeapon)
         {
-			gc.SetFont(Font'FontTiny'); //CyberP: hud scaling Font'FontTiny'
+			gc.SetFont(player.FontManager.GetFont(TT_FontTiny)); //CyberP: hud scaling Font'FontTiny'
             gc.SetTextColor(GetAmmoTextColor());
             gc.DrawText(posX, posY, 65, 8, DeusExAmmo(weapon.AmmoType).beltDescription);
         }
@@ -353,7 +353,7 @@ function DrawBackground(GC gc)
     gc.DrawTexture(offset, 13, 80, 54, 0, 0, texBackground);
 
 	// Draw the Ammo and Clips text labels
-	gc.SetFont(Font'FontTiny');
+	gc.SetFont(player.FontManager.GetFont(TT_FontTiny));
 	gc.SetTextColor(colText);
 	gc.SetAlignments(HALIGN_Center, VALIGN_Top);
 

@@ -269,7 +269,7 @@ function CreateBioWindows()
 	winBioBarText.SetSize(140, 12);
 	winBioBarText.SetTextMargins(0, 0);
 	winBioBarText.SetTextAlignments(HALIGN_Center, VALIGN_Center);
-	winBioBarText.SetFont(Font'FontMenuSmall_DS');
+	winBioBarText.SetFont(player.FontManager.GetFont(TT_FontMenuSmall_DS));
 	winBioBarText.SetTextColorRGB(255, 255, 255);
 
 	winBioInfoText = PersonaNormalTextWindow(NewChild(Class'PersonaNormalTextWindow'));
@@ -301,7 +301,7 @@ function CreateRepairbotWindows()
 	winRepairBotBarText.SetSize(140, 12);
 	winRepairBotBarText.SetTextMargins(0, 0);
 	winRepairBotBarText.SetTextAlignments(HALIGN_Center, VALIGN_Center);
-	winRepairBotBarText.SetFont(Font'FontMenuSmall_DS');
+	winRepairBotBarText.SetFont(player.FontManager.GetFont(TT_FontMenuSmall_DS));
 	winRepairBotBarText.SetTextColorRGB(255, 255, 255);
 
 	winRepairBotInfoText = PersonaNormalTextWindow(NewChild(Class'PersonaNormalTextWindow'));
@@ -634,7 +634,7 @@ function CreateEquipmentWindows()
 		winEquipInfoText[i].SetSize(52, 12);
 		winEquipInfoText[i].SetTextMargins(0, 0);
 		winEquipInfoText[i].SetTextAlignments(HALIGN_Left, VALIGN_Center);
-		winEquipInfoText[i].SetFont(Font'FontTiny');
+		winEquipInfoText[i].SetFont(player.FontManager.GetFont(TT_FontTiny));
 		winEquipInfoText[i].SetTextColorRGB(255, 255, 255);
 
 		winEquipRechargeText[i] = PersonaNormalTextWindow(NewChild(Class'PersonaNormalTextWindow'));
@@ -642,7 +642,7 @@ function CreateEquipmentWindows()
 		winEquipRechargeText[i].SetSize(100, 12);
 		winEquipRechargeText[i].SetTextMargins(0, 0);
 		winEquipRechargeText[i].SetTextAlignments(HALIGN_Left, VALIGN_Center);
-		winEquipRechargeText[i].SetFont(Font'FontMenuSmall_DS');
+		winEquipRechargeText[i].SetFont(player.FontManager.GetFont(TT_FontMenuSmall_DS));
 		winEquipRechargeText[i].SetTextColorRGB(255, 255, 255);
 
 		winEquipBar[i] = ProgressBarWindow(NewChild(Class'ProgressBarWindow'));
@@ -659,7 +659,7 @@ function CreateEquipmentWindows()
 		winEquipBarText[i].SetSize(140, 12);
 		winEquipBarText[i].SetTextMargins(0, 0);
 		winEquipBarText[i].SetTextAlignments(HALIGN_Center, VALIGN_Center);
-		winEquipBarText[i].SetFont(Font'FontMenuSmall_DS');
+		winEquipBarText[i].SetFont(player.FontManager.GetFont(TT_FontMenuSmall_DS));
 		winEquipBarText[i].SetTextColorRGB(255, 255, 255);
     }
 

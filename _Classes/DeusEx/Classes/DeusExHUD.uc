@@ -49,7 +49,7 @@ event InitWindow()
     if (player.ThemeManager != None)
         player.ThemeManager.UpdateCustomTheme();
 
-	SetFont(Font'TechMedium');
+	SetFont(player.FontManager.GetFont(TT_TechMedium));
 	SetSensitivity(false);
 
 	//gepDisplay	= HUDGEPProjectile(NewChild(Class'HUDGEPProjectile'));
