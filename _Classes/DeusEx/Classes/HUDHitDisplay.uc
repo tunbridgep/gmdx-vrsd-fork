@@ -25,6 +25,8 @@ var BodyPart armor;
 var Color    colArmor;
 var Color    col02;
 var Color    colRed;
+var Color    colBlue; //SARGE: Added
+var Color    colWhite; //SARGE: Added
 
 var float    damageFlash;
 var float    healFlash;
@@ -103,6 +105,7 @@ event InitWindow()
 	healFlash   = 1.0;  // seconds
 	
     winEnergy = CreateProgressBar(15, 20);
+	winEnergy.UseScaledColor(False);
 	winBreath = CreateProgressBar(61, 20);
 
     UpdateBars();
@@ -110,6 +113,10 @@ event InitWindow()
 
 function UpdateBars()
 {
+    if (player.bAnimBar1)
+        winEnergy.SetColors(colWhite,colWhite);
+    else
+        winEnergy.SetColors(colBlue,colBlue);
     winEnergy.bSpecialFX = player.bAnimBar1;
     winBreath.bSpecialFX2 = player.bAnimBar2;
 }
@@ -553,6 +560,8 @@ defaultproperties
      colLight=(R=255,G=255);
      colLightDark=(R=140,G=140);
      colRed=(R=255);
+     colBlue=(R=20,G=20,B=255)
+     colWhite=(R=255,G=255,B=255)
 	 crouching="Crouching";
 	 walking="Walking";
 	 running="Running";

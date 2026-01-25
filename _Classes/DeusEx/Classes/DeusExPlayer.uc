@@ -929,6 +929,14 @@ var transient bool bUpdateHud;                                 //SARGE: Trigger 
 
 var const localized string MsgSecondaryAdded;
 
+/////////Version 1.2 Additions
+/////////January 2026
+
+var travel bool bSkillsSetAtStart;                           //SARGE: Gain a bunch of skill points at the start of the game, but gain no more skill points from then on.
+var travel bool bImprisonmentTakesAmmo;                      //SARGE: Take Ammo when being imprisoned by UNATCO, similar to Hardcore mode.
+
+var globalconfig int iSmartBinocs;                           //SARGE: Pressing the Scope key selects binoculars
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -1355,6 +1363,7 @@ local DeusExPickup     PU;                                                      
               DC.DrawScale = 0.00001;
               DC.SetCollision(false,false,false);
               DC.SetCollisionSize(0,0);
+              DC.SetPhysics(PHYS_Flying);
 	       }
        }
        if (SkillSystem != None)
@@ -3497,7 +3506,14 @@ function ClientSetMusic(Music NewSong, byte NewSection, byte NewCdTrack, EMusicT
     local bool bContinueOn;
 	local DeusExLevelInfo info;
     //local bool bSection5Hack;
-    
+
+    //If using dxrando, use dxrando's music player instead.
+    if (RandomizerEnabled())
+    {
+        Super.ClientSetMusic(NewSong,NewSection,NewCdTrack,NewTransition);
+        return;
+    }
+
     info = GetLevelInfo();
     
     DebugMessage("ClientSetMusic called:" @ NewSong @ NewSection @ NewTransition @ "Song is: " $ default.previousTrack @ default.previousLevelSection @ default.previousMusicMode @ bMusicSystemReset @ Level.SongSection @ saveTime @ default.fMusicHackTimer @ SongSection);
@@ -3674,7 +3690,8 @@ function UpdateDynamicMusic(float deltaTime)
 	local DeusExLevelInfo info;
     local bool bAllowConverse, bAllowCombat, bAllowOther;
 
-	if (Level.Song == None)
+    //Bail out and don't update if we're running dxrando
+	if (Level.Song == None || RandomizerEnabled())
 		return;
 
     default.fMusicHackTimer = FMAX(default.fMusicHackTimer - deltaTime,0);
@@ -4698,7 +4715,7 @@ exec function SwitchAmmo()
     {
         foreach AllActors(class'ThrownProjectile',P)
         {
-            if (P.Owner == self && P.bProximityTriggered)
+            if (P.Owner == self && P.bProximityTriggered && !P.bEMPDisabled)
                 P.bDoExplode = true;
         }
     }
@@ -8225,7 +8242,11 @@ Begin:
    LoadHack:
     if (bDeadLoad)
 	{
-	    Sleep(0.2);
+        //SARGE: Now we sleep until we've been dead for at least 1.5 seconds
+        //This prevents a nasty crash when loading too quickly
+        //DebugLog("DEADLOAD: " $ Level.TimeSeconds @ FrobTime @ Level.TimeSeconds - FrobTime);
+        if (Level.TimeSeconds - FrobTime < 1.0)
+            Sleep(1.0 - (Level.TimeSeconds - FrobTime));
 	    bDeadLoad = False;
 	    QuickLoadConfirmed();
 	}
@@ -9386,7 +9407,7 @@ function int LootAmmo(string owner, class<Ammo> LootAmmoClass, int max, bool bDi
 
         //If we took at least some, make a special sound.
         if (bLootSound)
-            PlayPartialAmmoSound(AmmoType,AmmoType.Class);
+            PlayPartialAmmoSound(self,AmmoType.Class);
 
         ret = intj;
     }
@@ -10886,13 +10907,20 @@ exec function ReloadWeapon()
 exec function ToggleScope()
 {
 	local DeusExWeapon W;
+	local Inventory anItem;
+    local bool bContinue;
+	
+    W = DeusExWeapon(Weapon);
 
 	//log("ToggleScope "@IsInState('Interpolating')@" "@IsInState('Dying')@" "@IsInState('Paralyzed'));
 	if (RestrictInput())
 		return;
 
-	W = DeusExWeapon(Weapon);
-	if (W != None)
+    //Zoom if we've got binocs out
+    else if (Binoculars(inHand) != None)
+        Binoculars(inHand).Activate();
+
+	else if (W != None)
 	{
 	  if (W.IsInState('Idle') || (W.bZoomed == False && W.AnimSequence == 'Shoot') || (W.bZoomed == True && RecoilTime==0)) //CyberP: far less restrictive
 	  {
@@ -10908,6 +10936,26 @@ exec function ToggleScope()
             SetLaser(false);
 	  }
 	}
+
+    else if (inHand == None && iSmartBinocs > 0)
+    {
+        anItem = Inventory;
+        bContinue = true;
+
+        //SARGE: If we don't have a weapon out, select Binocs
+        while(anItem != None && bContinue)
+        {
+            if (anItem.IsA('Binoculars') && !anItem.bActive)
+            {
+                PutInHand(anItem,true);
+                if (iSmartBinocs >= 2)
+                    Binoculars(anItem).Activate();
+                bContinue = false;
+            }
+
+            anItem = anItem.Inventory;
+        }
+    }
 
     UpdateCrosshair();
 }
@@ -17338,20 +17386,27 @@ function PlayDeathHit(float Damage, vector HitLocation, name damageType, vector 
 // SkillPointsAdd()
 // ----------------------------------------------------------------------
 
-function SkillPointsAdd(int numPoints)
+function SkillPointsAdd(int numPoints, optional bool bAlwaysAllow)
 {
 	local int i;                                                                //RSD: For loop later
+    local int actualPoints;
 
     if (numPoints > 0)
 	{
-		SkillPointsAvail += numPoints;
-		SkillPointsTotal += numPoints;
+        
+        //SARGE: Give almost no skill points if modifier is on.
+        actualPoints = numPoints;
+        if (bSkillsSetAtStart && !bAlwaysAllow && numPoints > 5)
+            actualPoints = 5;
+
+        SkillPointsAvail += actualPoints;
+        SkillPointsTotal += actualPoints;
 
 		if ((DeusExRootWindow(rootWindow) != None) &&
 		    (DeusExRootWindow(rootWindow).hud != None) &&
 			(DeusExRootWindow(rootWindow).hud.msgLog != None))
 		{
-			ClientMessage(Sprintf(SkillPointsAward, numPoints));
+			ClientMessage(Sprintf(SkillPointsAward, actualPoints));
 			DeusExRootWindow(rootWindow).hud.msgLog.PlayLogSound(Sound'LogSkillPoints');
 		}
 	}
@@ -19591,6 +19646,16 @@ exec function MyLogInfos()
     BroadcastMessage(ammotype.maxAmmo);
 }*/
 
+//SARGE: Cap any passed-in ammo to our maximum allowed amount
+function CapMaxAmmo(Class<Ammo> ammotype)
+{
+    local ammo AM;
+    AM = Ammo(FindInventoryType(ammotype));
+
+    if (AM != None)
+        AM.ammoAmount = MIN(AM.AmmoAmount,GetAdjustedMaxAmmoByClass(ammotype));
+}
+
 //SARGE: Make a generic version that works with classes,
 //so we don't need literal ammo to check this.
 //This is just here as a shorthand/placeholder since it was used like this
@@ -20245,4 +20310,5 @@ defaultproperties
      bRememberTheName=true
      iShifterWeaponSwitch=2
      bExperimentalAmmoSpawning=true
+     iSmartBinocs=1
 }

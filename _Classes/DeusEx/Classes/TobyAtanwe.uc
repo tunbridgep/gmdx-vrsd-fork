@@ -24,4 +24,5 @@ defaultproperties
      BindName="TobyAtanwe"
      FamiliarName="Toby Atanwe"
      UnfamiliarName="Toby Atanwe"
+     bRandomHeightAdjust=false
 }

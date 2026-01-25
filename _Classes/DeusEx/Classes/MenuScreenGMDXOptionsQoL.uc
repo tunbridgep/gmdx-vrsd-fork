@@ -144,9 +144,13 @@ defaultproperties
      items(111)=(HelpText="Dragging items off the inventory grid in the inventory screen will drop the items.",actionText="HUD: Inventory Drag and Drop",variable="bDragAndDropOffInventory",defaultValue=1,bAdvancedModeOnly=true)
      items(112)=(HelpText="The Change Ammo Key (default: X) will swap selected grenades, melee weapons, and other items, similar to Shifter.",actionText="Game: Change Ammo Swaps Items",variable="iShifterWeaponSwitch",valueText1="Swap Only",valueText2="Swap Belt",valueText3="Autoswap Belt",helpText1="In Swap Only mode, the belt is not considered when swapping items.",helpText2="Swap Belt mode also updates the belt with new items.",helpText3="Autoswap mode also updates the belt when using the last of an item.",bAdvancedModeOnly=true,defaultValue=2)
      items(113)=(HelpText="Immersion/simulation option. If enabled, carried objects are no longer translucent.",actionText="Interaction: Immersive Carryables",variable="bNoTranslucency",bAdvancedModeOnly=true);
-     items(114)=(HelpText="The players Real Name will be remembered between playthroughs",actionText="Game: Remember Real Name",variable="bRememberTheName",bAdvancedModeOnly=true);
-     items(116)=(HelpText="Use more readable fonts for most UI elements.",actionText="Fonts: More Readable Fonts",variable="bDXRandoFonts",consoleTarget="DeusEx.FontManager",defaultValue=1,bAdvancedModeOnly=true);
-     items(117)=(HelpText="Use a larger font for Datacubes, Books and other readable objects",actionText="Fonts: Big Reading Font",variable="bBigDatacubeFont",consoleTarget="DeusEx.FontManager",defaultValue=1,bAdvancedModeOnly=false);
+     
+     //Version 1.2 Additions
+     items(114)=(HelpText="The players Real Name and Appearance will be remembered between playthroughs",actionText="Game: Remember Player Identity",variable="bRememberTheName",bAdvancedModeOnly=true);   
+     items(115)=(HelpText="Use more readable fonts for most UI elements.",actionText="Fonts: More Readable Fonts",variable="bDXRandoFonts",consoleTarget="DeusEx.FontManager",defaultValue=1,bAdvancedModeOnly=true);
+     items(116)=(HelpText="Use a larger font for Datacubes, Books and other readable objects",actionText="Fonts: Big Reading Font",variable="bBigDatacubeFont",consoleTarget="DeusEx.FontManager",defaultValue=1,bAdvancedModeOnly=false);        
+     items(117)=(HelpText="Using the Scope key with no item equipped will use any Binoculars in your inventory",actionText="Interaction: Smart Binocular Selection",variable="iSmartBinocs",defaultValue=1,valueText2="Select and Activate",bAdvancedModeOnly=true);
+
 
      Title="GMDX Quality of Life Options"
      colWidths(0)=214

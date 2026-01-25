@@ -254,17 +254,17 @@ function Color GetFrobDisplayBorderColor(Actor frobTarget)
                     return colWireless;
             }
         }
+        
+        //Declined
+        else if (player.DeclinedItemsManager.IsDeclined(Inv.Class,true) && player.clickCountCyber < 1)
+            return colBadAug;
 
         //Not enough space
-        if (player.FindInventoryType(Inv.Class) == None && !player.FindInventorySlot(Inv, True))
+        else if (player.FindInventoryType(Inv.Class) == None && !player.FindInventorySlot(Inv, True))
             return colBadAug;
 
         //Can carry only 1
-        if (WE != None && player.FindInventoryType(WE.Class) != None && (WE.AmmoName == None || WE.AmmoName == class'DeusEx.AmmoNone'))
-            return colBadAug;
-        
-        //Declined
-        if (player.DeclinedItemsManager.IsDeclined(Inv.Class,true) && player.clickCountCyber < 1)
+        else if (WE != None && player.FindInventoryType(WE.Class) != None && (WE.AmmoName == None || WE.AmmoName == class'DeusEx.AmmoNone'))
             return colBadAug;
     }
 
