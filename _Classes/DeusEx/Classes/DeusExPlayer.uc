@@ -1355,6 +1355,7 @@ local DeusExPickup     PU;                                                      
               DC.DrawScale = 0.00001;
               DC.SetCollision(false,false,false);
               DC.SetCollisionSize(0,0);
+              DC.SetPhysics(PHYS_Flying);
 	       }
        }
        if (SkillSystem != None)
