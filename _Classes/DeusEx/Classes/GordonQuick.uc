@@ -25,4 +25,5 @@ defaultproperties
      BindName="GordonQuick"
      FamiliarName="Gordon Quick"
      UnfamiliarName="Gordon Quick"
+     bRandomHeightAdjust=false
 }

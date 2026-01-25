@@ -23,4 +23,5 @@ defaultproperties
      BindName="HarleyFilben"
      FamiliarName="Harley Filben"
      UnfamiliarName="Bum"
+     bRandomHeightAdjust=false
 }
