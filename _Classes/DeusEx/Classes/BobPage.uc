@@ -42,4 +42,5 @@ defaultproperties
      BindName="BobPage"
      FamiliarName="Bob Page"
      UnfamiliarName="Bob Page"
+     bRandomHeightAdjust=false
 }
