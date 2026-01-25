@@ -30,13 +30,6 @@ enum PartSlot
     PS_DressLegs //Legs used for dresses, stockings etc.
 };
 
-//Settings Names
-enum OutfitSetting
-{
-    AllowNPCOutfits,
-    ShowDescriptions
-};
-
 //These should be called in TravelPostAccept
 //This is overridden by the real outfit manager if Augmentique is installed
 //By default, all we want to do is destroy any spawners.
@@ -104,6 +97,4 @@ function static CopyAugmentiqueDataToPOVCorpse(POVCorpse pov, DeusExCarcass C, o
 function static CopyAugmentiqueDataFromPOVCorpse(POVCorpse pov, DeusExCarcass C) {}
 function static ApplyOutfitToCarcass(DeusExCarcass C) {}
 
-//Allow modifying mod settings externally
-function SetOutfitSetting(OutfitSetting S, bool bValue) {}
 function SetOutfitSettingsMenuVisibility(bool bValue, optional bool bShowDescriptionsCheckbox) {}

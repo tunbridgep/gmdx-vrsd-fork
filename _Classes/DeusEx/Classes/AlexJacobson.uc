@@ -26,4 +26,5 @@ defaultproperties
      BindName="AlexJacobson"
      FamiliarName="Alex Jacobson"
      UnfamiliarName="Hacker"
+     bRandomHeightAdjust=false
 }

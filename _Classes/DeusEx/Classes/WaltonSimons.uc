@@ -251,4 +251,5 @@ defaultproperties
      BindName="WaltonSimons"
      FamiliarName="Walton Simons"
      UnfamiliarName="Walton Simons"
+     bRandomHeightAdjust=false
 }
