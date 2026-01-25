@@ -3,6 +3,7 @@ Misc Changes:
 1.2:
 
 New Features:
+- Added a new playthrough modifier for upfront character creation. You will start with more skill points initially, but will get far less overall.
 - If you have Binoculars in your inventory, they can now be selected using the "Toggle Scope" key when your hands are empty.
 - The Frob Display now shows a Red border for Declined items.
 - The Player's Skin Colour will now be remembered alongside their name if the option to remember their name is enabled. (Enabled by default).
