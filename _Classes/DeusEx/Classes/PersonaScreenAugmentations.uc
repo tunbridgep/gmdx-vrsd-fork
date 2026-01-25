@@ -666,8 +666,6 @@ function UpdateAugCans()
 		{
 			if (anItem.IsA('AugmentationUpgradeCannister'))
 				augCanCount++;
-			else if (anItem.IsA('AugmentationUpgradeCannisterOverdrive'))
-                augCanCount++;
 			anItem = anItem.Inventory;
 		}
 
@@ -1203,40 +1201,13 @@ function SelectAugmentation(PersonaItemButton buttonPressed)
 function UpgradeAugmentation()
 {
 	local AugmentationUpgradeCannister augCan;
-    local AugmentationUpgradeCannisterOverdrive augCan2;
 	// First make sure we have a selected Augmentation
 	if (selectedAug == None)
 		return;
 
 	// Now check to see if we have an upgrade cannister
 	augCan = AugmentationUpgradeCannister(player.FindInventoryType(Class'AugmentationUpgradeCannister'));
-    augCan2 = AugmentationUpgradeCannisterOverdrive(player.FindInventoryType(Class'AugmentationUpgradeCannisterOverdrive'));
-    if (augCan2 != None)
-	{
-		// Increment the level and remove the aug cannister from
-		// the player's inventory
-        if (selectedAug.IsA('AugAqualung') || selectedAug.IsA('AugEnviro'))
-        {
-            player.bBoosterUpgrade = True;
-        }
-        else
-            selectedAug.IncLevel();
-		selectedAug.IncLevel();
-		selectedAug.UpdateInfo(winInfo);
-		player.PlaySound(sound'medkituse',SLOT_None,,,,1.3);
-		augCan2.UseOnce();
-        if (winAugCans != None)
-        {
-          winAugCans.SetIcon(Texture'DeusExUI.Icons.LargeIconAugmentationUpgrade');
-        }
-		// Update the level icons
-		if (selectedAugButton != None)
-        {
-			PersonaAugmentationItemButton(selectedAugButton).SetLevel(selectedAug.GetCurrentLevel());
-			PersonaAugmentationItemButton(selectedAugButton).SetHeartUpgraded(selectedAug.heartUpgraded,bMedBot);
-        }
-	}
-	else if (augCan != None)
+    if (augCan != None)
 	{
 		// Increment the level and remove the aug cannister from
 		// the player's inventory

@@ -149,4 +149,5 @@ defaultproperties
      beltDescription="PROD"
      CollisionRadius=8.750000
      CollisionHeight=1.350000
+     minSkillRequirement=1
 }
