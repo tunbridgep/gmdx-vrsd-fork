@@ -138,15 +138,15 @@ defaultproperties
      items(105)=(HelpText="If enabled, the Ammo icons shown when viewing a weapon in the inventory will show max ammo in addition to current ammo.",actionText="HUD: Weapon Info shows Max Ammo",variable="bInventoryAmmoShowsMax",defaultValue=1,bAdvancedModeOnly=true)
      items(106)=(HelpText="If enabled, weapon scopes will use the vanilla scope textures.",actionText="HUD: Classic Weapon Scope",variable="bClassicScope",defaultValue=0)
      items(107)=(HelpText="If enabled, the Outfits menu will show descriptions.",actionText="Augmentique: Show Outfit Descriptions",variable="noDescriptions",defaultValue=0,valueText0="Enabled",valueText1="Disabled",consoleTarget="OutfitManager")
-     items(108)=(HelpText="NPC outfits will be randomised. Changes to this setting require a new map load.",actionText="Augmentique: NPC Outfit Randomisation",consoleTarget="OutfitManager",variable="bEquipNPCs",defaultValue=1);
+     items(108)=(HelpText="NPC outfits will be randomised. Changes to this setting require a new map load.",actionText="Augmentique: NPC Outfit Randomisation",consoleTarget="OutfitManager",variable="iEquipNPCs",defaultValue=1,valueText1="Generic NPCs Only",valueText2="Generic and Unique NPCs")
      items(109)=(HelpText="If enabled, the Items Received Window will be cleared when interacting with objects, similar to vanilla.",actionText="HUD: Clear Items Received Window",variable="bClearReceivedDisplay",defaultValue=1);
      items(110)=(HelpText="Other characters will react to having guns pointed at them.",actionText="Game: Characters React to Weapons",variable="bPawnsReactToWeapons",defaultValue=1);
      items(111)=(HelpText="Dragging items off the inventory grid in the inventory screen will drop the items.",actionText="HUD: Inventory Drag and Drop",variable="bDragAndDropOffInventory",defaultValue=1,bAdvancedModeOnly=true)
      items(112)=(HelpText="The Change Ammo Key (default: X) will swap selected grenades, melee weapons, and other items, similar to Shifter.",actionText="Game: Change Ammo Swaps Items",variable="iShifterWeaponSwitch",valueText1="Swap Only",valueText2="Swap Belt",valueText3="Autoswap Belt",helpText1="In Swap Only mode, the belt is not considered when swapping items.",helpText2="Swap Belt mode also updates the belt with new items.",helpText3="Autoswap mode also updates the belt when using the last of an item.",bAdvancedModeOnly=true,defaultValue=2)
      items(113)=(HelpText="Immersion/simulation option. If enabled, carried objects are no longer translucent.",actionText="Interaction: Immersive Carryables",variable="bNoTranslucency",bAdvancedModeOnly=true);
-     items(114)=(HelpText="The players Real Name will be remembered between playthroughs",actionText="Game: Remember Real Name",variable="bRememberTheName",bAdvancedModeOnly=true);
 
      //Version 1.2 Additions
+     items(114)=(HelpText="The players Real Name and Appearance will be remembered between playthroughs",actionText="Game: Remember Player Identity",variable="bRememberTheName",bAdvancedModeOnly=true);
      items(115)=(HelpText="Using the Scope key with no item equipped will use any Binoculars in your inventory",actionText="Interaction: Smart Binocular Selection",variable="iSmartBinocs",defaultValue=1,valueText2="Select and Activate",bAdvancedModeOnly=true);
 
      Title="GMDX Quality of Life Options"

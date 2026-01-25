@@ -108,32 +108,17 @@ function bool DoLeftFrob(DeusExPlayer frobber)
     }
 
     //When not on hardcore, always select the keyring if we have the key
-    if (!frobber.bHardcoreMode && CanToggleLock(frobber,frobber.KeyRing))
+    if (CanToggleLock(frobber,frobber.KeyRing))
     {
         frobber.PutInHand(frobber.KeyRing,true);
         return false;
     }
-    else if (bLocked && frobber.bHardcoreMode) //Hardcore Mode: Always select picks. If we don't have one, always select keyring
-    {
-        if (bPickable && frobber.SelectInventoryItem('Lockpick',true))
-            return false;
-        //else if (bBreakable && frobber.SelectMeleePriority(minDamageThreshold))
-        //    return false;
-        else
-            frobber.PutInHand(frobber.KeyRing,true);
-        return false;
-    }
-    else if (bLocked) //Non-Hardcore. See if we have a melee weapon to bust the mover. Otherwise, select picks
+    else if (bLocked) //See if we have a melee weapon to bust the mover. Otherwise, select picks
     {
         if (bBreakable && frobber.SelectMeleePriority(minDamageThreshold))
 			return false;
         else if (!bPickable || !frobber.SelectInventoryItem('Lockpick',true))
             frobber.PutInHand(frobber.KeyRing,true);
-        return false;
-    }
-    else if (CanToggleLock(frobber,frobber.KeyRing)) //Keyring check for Hardcore mode
-    {
-        frobber.PutInHand(frobber.KeyRing,true);
         return false;
     }
     
@@ -743,14 +728,22 @@ function Frob(Actor Frobber, Inventory frobWith)
     local Actor A;
     local string KeyName;
         
-
-	// if we shouldn't be frobbed, get out
-	if (!bFrobbable)
-		return;
-
 	// if we are destroyed, don't do anything
 	if (bDestroyed)
 		return;
+
+	// if we shouldn't be frobbed, get out
+    if (!bFrobbable)
+    {
+        // SARGE: Allow fake nanokey anim on highlightable but unfrobbable doors
+        if (bHighlight && bLocked && NanoKeyRing(frobWith) != None && KeyIDNeeded == '')
+        {
+            Player.ClientMessage(msgNoNanoKey);
+            NanoKeyRing(frobWith).PlayUseAnim();
+            //DeusExPlayer(Frobber).DebugMessage("stuff");
+        }
+		return;
+    }
 
 	// make sure we frob our leader if we are a slave
 	if (bSlave)
