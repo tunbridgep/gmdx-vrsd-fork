@@ -12,6 +12,9 @@ Bugfixes:
 - Fixed a bug where interacting with empty datacubes would cause the crosshair and selection brackets to disappear.
 - Fixed a few cases where NanoKeys weren't being removed in Hardcore mode.
 - Fixed a minor bug related to the Nano-Keyring.
+- Fixed an issue where using the Targeting augmentation in Minimized mode (such as when putting your weapon away) would cause the targeting window to appear occasionally for 1 frame.
+- Fixed TNT Crates exploding on map load.
+- Fixed game crashing when right-clicking after death by adding a 1 second minimum time before loading.
 
 Misc Changes:
 - Left-Frobbing a locked object will no longer always select a Lockpick on Hardcore mode.
@@ -19,8 +22,6 @@ Misc Changes:
 - Pepper Spray and the Prod now require Trained in Low-Tech when using the Weapon Requirements Matter modifier.
 - The previously experimental feature to drop items from conversations at the players feet is now enabled by default.
 
-- Fixed TNT Crates exploding on map load.
-- Attempted Fix for game crashing when right-clicking after death by adding a 1 second minimum time before loading.
 1.11 (Hotfix Release):
 
 New Features:
