@@ -4,6 +4,76 @@
 class DeusExGameInfo expands GameInfo
 	config;
 
+//SARGE: Allow loading gameinfo modules.
+//Inspired by similar system in DXRando.
+//TODO: Move a lot of gameplay systems to here, so they can work
+//without needing to store 10 billion things on the player object.
+
+var DXGameInfoModule modules;
+
+//Fetches a module if it exists, or creates a new one
+function DXGameInfoModule GetModule(class<DXGameInfoModule> moduleToLoad)
+{
+    local DXGameInfoModule mod, newMod;
+    mod = default.modules;
+
+    if (default.modules == None)
+    {
+        default.modules = new(Self) moduleToLoad;
+        default.modules.Init(self);
+        return default.modules;
+    }
+
+    while (mod != None)
+    {
+        if (mod.class == moduleToLoad)
+            return mod;
+        mod = mod.GetNext();
+    }
+    
+    //Not found, create a new one and add it to the end
+    newMod = new(Self) moduleToLoad;
+    newMod.Init(self);
+
+    mod.SetNext(newMod);
+    return newMod;
+}
+
+function LoginAllModules(PlayerPawn newPlayer)
+{
+    local DXGameInfoModule mod;
+    mod = default.modules;
+    while (mod != None)
+    {
+        mod.PlayerLogin(newPlayer);
+        mod = mod.GetNext();
+    }
+
+}
+
+//SARGE: Tick all of our modules
+event Tick(float deltaTime)
+{
+    local DXGameInfoModule mod;
+        
+    //Log("Ticking Info: " $ self);
+    
+    super.Tick(deltaTime);
+    mod = default.modules;
+    while (mod != None)
+    {
+        //Log("Ticking Module: " $ mod.Class);
+        mod.Tick(deltaTime);
+        mod = mod.GetNext();
+    }
+}
+
+//Setup modules
+function PreBeginPlay()
+{
+    GetModule(class'MusicPlayer');
+}
+
 // ----------------------------------------------------------------------
 // Login()
 // ----------------------------------------------------------------------
@@ -65,6 +135,40 @@ event playerpawn Login
 		}
 	}
 	return player;
+}
+
+//
+// SARGE: Copied from Engine/GameInfo.uc so that we can change the music.
+// SARGE: No longer starts players music
+// Called after a successful login. This is the first place
+// it is safe to call replicated functions on the PlayerPawn.
+//
+event PostLogin( playerpawn NewPlayer )
+{
+	local Pawn P;
+	
+    LoginAllModules(NewPlayer);
+
+	if ( Level.NetMode != NM_Standalone )
+	{
+		// replicate skins
+		for ( P=Level.PawnList; P!=None; P=P.NextPawn )
+			if ( P.bIsPlayer && (P != NewPlayer) )
+			{
+				if ( P.bIsMultiSkinned )
+					NewPlayer.ClientReplicateSkins(P.MultiSkins[0], P.MultiSkins[1], P.MultiSkins[2], P.MultiSkins[3]);
+				else
+					NewPlayer.ClientReplicateSkins(P.Skin);	
+					
+				if ( (P.PlayerReplicationInfo != None) && P.PlayerReplicationInfo.bWaitingPlayer && P.IsA('PlayerPawn') )
+				{
+					if ( NewPlayer.bIsMultiSkinned )
+						PlayerPawn(P).ClientReplicateSkins(NewPlayer.MultiSkins[0], NewPlayer.MultiSkins[1], NewPlayer.MultiSkins[2], NewPlayer.MultiSkins[3]);
+					else
+						PlayerPawn(P).ClientReplicateSkins(NewPlayer.Skin);	
+				}						
+			}
+	}
 }
 
 event DetailChange()
