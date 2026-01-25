@@ -404,7 +404,6 @@ simulated function bool CanBeUpgraded()
 	local bool bCanUpgrade;
 	local Augmentation anAug;
 	local AugmentationUpgradeCannister augCan;
-	local AugmentationUpgradeCannisterOverdrive augCan2;
 
 	bCanUpgrade = False;
 
@@ -412,24 +411,12 @@ simulated function bool CanBeUpgraded()
 	// the maximum level
 	if ( CurrentLevel < MaxLevel )
 	{
-		// Now check to see if the player has a cannister that can
-		// be used to upgrade this Augmentation
-        augCan2 = AugmentationUpgradeCannisterOverdrive(player.FindInventoryType(Class'AugmentationUpgradeCannisterOverdrive'));
-
-        if (augCan2 != None)
-        {
-           bCanUpgrade = True;
-           player.bSpecialUpgrade = True;
-        }
-		else
-        {
-          augCan = AugmentationUpgradeCannister(player.FindInventoryType(Class'AugmentationUpgradeCannister'));
-          if (augCan != None)
-          {
-			bCanUpgrade = True;
-			player.bSpecialUpgrade = False;
-		  }
-        }
+	  augCan = AugmentationUpgradeCannister(player.FindInventoryType(Class'AugmentationUpgradeCannister'));
+	  if (augCan != None)
+	  {
+		bCanUpgrade = True;
+		player.bSpecialUpgrade = False;
+	  }
 	}
 
 	return bCanUpgrade;
