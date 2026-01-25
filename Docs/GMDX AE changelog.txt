@@ -14,6 +14,7 @@ New Features:
 - The Player's Skin Colour will now be remembered alongside their name if the option to remember their name is enabled. (Enabled by default).
 
 Bugfixes:
+- Fixed bloody throwing knives not displaying when retrieving them from enemy corpses.
 - Fixed several codes which weren't working correctly when using Unknown Codes
 - Fixed a few Accessed None's
 - Fixed typo in Synth Heart description.

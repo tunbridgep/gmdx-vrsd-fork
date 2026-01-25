@@ -9391,22 +9391,10 @@ function int LootAmmo(string owner, class<Ammo> LootAmmoClass, int max, bool bDi
         }
             
         if (bShowWindow)
-        {
-            //SARGE: This is a hack to allow us to change icons for ammo.
-            //Used for bloody shurikens.
-            if (overrideTexture != None)
-            {
-                prevTexture = AmmoType.Icon;
-                AmmoType.Icon = overrideTexture;
-                AddReceivedItem(owner, AmmoType, intj, bNoGroup);
-                AmmoType.Icon = prevTexture;
-            }
-            else
-                AddReceivedItem(owner, AmmoType, intj, bNoGroup);
-        }
+            AddReceivedItem(owner, AmmoType, intj, bNoGroup, false, overrideTexture);
 
         //If we took at least some, make a special sound.
-        if (bLootSound)
+        if (bLootSound && (over > 0 || (DeclinedItemsManager.IsDeclined(sourceWeapon) && clickCountCyber == 0)))
             PlayPartialAmmoSound(self,AmmoType.Class);
 
         ret = intj;
@@ -9418,7 +9406,7 @@ function int LootAmmo(string owner, class<Ammo> LootAmmoClass, int max, bool bDi
             ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName $ " (" $ over $ ")" @ AmmoType.MaxAmmoString, 'Pickup');
         
         if (bShowWindow && bShowDeclinedInReceivedWindow && bShowOverflowWindow)
-            AddReceivedItem(owner, AmmoType, over, bNoGroup, true);
+            AddReceivedItem(owner, AmmoType, over, bNoGroup, true, overrideTexture);
     }
     return ret;
 }
@@ -9718,7 +9706,7 @@ function ClearReceivedItems()
     DeusExRootWindow(rootWindow).hud.receivedItems.RemoveItems();
 }
 
-function AddReceivedItem(string owner, Inventory item, int count, optional bool bNoGroup, optional bool bDeclined)
+function AddReceivedItem(string owner, Inventory item, int count, optional bool bNoGroup, optional bool bDeclined, optional Texture overrideTexture)
 {
     local int i;
 
@@ -9730,7 +9718,7 @@ function AddReceivedItem(string owner, Inventory item, int count, optional bool 
     {
         DebugLog("Item is: " $ item $ ", bDeclined is " $ bDeclined $ ", bNoGroup: " $ bNoGroup);
 
-        DeusExRootWindow(rootWindow).hud.receivedItems.AddItemFromID(owner, item, count, bDeclined, bNoGroup);
+        DeusExRootWindow(rootWindow).hud.receivedItems.AddItemFromID(owner, item, count, bDeclined, bNoGroup, overrideTexture);
 
         // Make sure the object belt is updated
         if (item.IsA('Ammo'))

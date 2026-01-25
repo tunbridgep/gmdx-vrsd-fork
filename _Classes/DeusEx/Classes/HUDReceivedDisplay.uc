@@ -351,7 +351,7 @@ function bool AddItemFrom(Actor owner, Inventory invItem, Int count, optional bo
     return AddItemFromID(string(owner.name), invItem, count, bDeclined, bNoGroup);
 }
 
-function bool AddItemFromID(string owner, Inventory invItem, Int count, optional bool bDeclined, optional bool bNoGroup)
+function bool AddItemFromID(string owner, Inventory invItem, Int count, optional bool bDeclined, optional bool bNoGroup, optional Texture iconOverride)
 {
     local string labelText;
     local texture icon;
@@ -364,7 +364,9 @@ function bool AddItemFromID(string owner, Inventory invItem, Int count, optional
     else
         labelText = invItem.beltDescription;
 
-    if (invItem.IsA('DeusExAmmo'))
+    if (iconOverride != None)
+        icon = iconOverride;
+    else if (invItem.IsA('DeusExAmmo'))
         icon = DeusExAmmo(invItem).GetHDTPIcon();
     else
         icon = invItem.default.icon;
