@@ -1,5 +1,3 @@
-Misc Changes:
-=======
 1.2:
 
 New Features:
