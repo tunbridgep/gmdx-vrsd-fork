@@ -130,6 +130,7 @@ var ConLight lite;
 var ThrownProjectile lastGrenade;
 
 var localized String msgDisarmed;
+var localized String msgRemoteOnly;             //SARGE: Grenade is disabled and we have remote detonation perk
 
 const ITEM_SONAR_DISTANCE = 256;                //SARGE: Range for special item-only sonar
 
@@ -1876,6 +1877,8 @@ function string GetWallGrenadeDisabledText(Actor target, bool TargetingDisplay)
     if (target.IsA('ThrownProjectile') && ThrownProjectile(target).bDisabled && ThrownProjectile(target).bProximityTriggered)
     if (ThrownProjectile(target).bEMPDisabled)
         str = msgDisabled;
+    else if (player != None && player.PerkManager != None && ThrownProjectile(target).Owner == player && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkRemoteDetonation').bPerkObtained)
+        str = msgRemoteOnly;
     else
         str = msgDisarmed;
     
@@ -2472,6 +2475,7 @@ defaultproperties
      msgNoImage="Image Not Available"
      msgDisabled="Disabled"
      msgDisarmed="Disarmed"
+     msgRemoteOnly="Remote"
      msgReboot="Rebooting in %s"
      SpottedTeamString="You have spotted a teammate!"
      YouArePoisonedString="You have been poisoned!"

@@ -4714,7 +4714,7 @@ exec function SwitchAmmo()
     {
         foreach AllActors(class'ThrownProjectile',P)
         {
-            if (P.Owner == self && P.bProximityTriggered)
+            if (P.Owner == self && P.bProximityTriggered && !P.bEMPDisabled)
                 P.bDoExplode = true;
         }
     }
