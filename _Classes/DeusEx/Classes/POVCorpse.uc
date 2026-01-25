@@ -44,6 +44,7 @@ struct AugmentiqueCarcassData
 {
     var Texture textures[9];
     var bool bRandomized;
+    var bool bUnique;
 };
 
 var travel AugmentiqueCarcassData augmentiqueData;

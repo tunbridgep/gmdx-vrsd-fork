@@ -122,10 +122,12 @@ function UpdateBars()
 		colForeground.b = Int(Float(colForeground.b) * scaleColorModifier);
 		}
 	}
+    /* //SARGE: Why was this here?
 	else
 	{
 		colForeground = Default.colForeground;
 	}
+    */
 }
 
 // ----------------------------------------------------------------------

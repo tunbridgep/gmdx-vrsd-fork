@@ -1,15 +1,31 @@
+Misc Changes:
+=======
 1.2:
 
 New Features:
-- Added height randomisation for NPCs. Now every NPC in the game will randomly be up to 5% taller or shorter.
+- Added height randomisation for NPCs. Now every NPC in the game will randomly be up to 10% taller or shorter.
+- Added a new playthrough modifier for upfront character creation. You will start with more skill points initially, but will get far less overall.
+- If you have Binoculars in your inventory, they can now be selected using the "Toggle Scope" key when your hands are empty.
+- The Frob Display now shows a Red border for Declined items.
+- The Player's Skin Colour will now be remembered alongside their name if the option to remember their name is enabled. (Enabled by default).
 
 Bugfixes:
 - Fixed several codes which weren't working correctly when using Unknown Codes
 - Fixed a few Accessed None's
 - Fixed typo in Synth Heart description.
+- Fixed attempting to select melee weapons with Left Frob when unable to use them due to the Weapon Requirements Matter modifier.
+- Fixed a bug where interacting with empty datacubes would cause the crosshair and selection brackets to disappear.
+- Fixed a few cases where NanoKeys weren't being removed in Hardcore mode.
+- Fixed a minor bug related to the Nano-Keyring.
+- Fixed an issue where using the Targeting augmentation in Minimized mode (such as when putting your weapon away) would cause the targeting window to appear occasionally for 1 frame.
+- Fixed TNT Crates exploding on map load.
+- Fixed game crashing when right-clicking after death by adding a 1 second minimum time before loading.
 
 Misc Changes:
 - Pepper Spray now requires Trained in Low-Tech when using the Weapon Requirements Matter modifier.
+- The Bioenergy Bar will now be Blue when not using the "Animated Bioenergy Bar" setting.
+- Left-Frobbing a locked object will no longer always select a Lockpick on Hardcore mode.
+- Left-Frobbing a breakable object will no longer select inadequate melee weapons on Hardcore mode.
 - The previously experimental feature to drop items from conversations at the players feet is now enabled by default.
 
 1.11 (Hotfix Release):

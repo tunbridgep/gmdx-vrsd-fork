@@ -81,6 +81,9 @@ var Localized string toggleLabel;
 var Localized string BarString;
 var Localized string BarStringRes;
 
+var Color    colBlue; //SARGE: Added
+var Color    colWhite; //SARGE: Added
+
 //SARGE: UnrealScript sucks and doesn't let us access enums from other classes
 enum EAugmentationType
 {
@@ -592,7 +595,11 @@ function CreateBioCellBar()
 	winBioEnergy.SetPos(446, 389);
 	winBioEnergy.SetSize(140, 12);
 	winBioEnergy.SetValues(0, 100);
-	winBioEnergy.UseScaledColor(True);
+	//winBioEnergy.UseScaledColor(True); //SARGE: Disabled since the purely blue bar looks way better
+    if (player.bAnimBar1)
+        winBioEnergy.SetColors(colWhite,colWhite);
+    else
+        winBioEnergy.SetColors(colBlue,colBlue);
 	if (player.bAnimBar1)
 	    winBioEnergy.bSpecialFX = True;
 	winBioEnergy.SetVertical(False);
@@ -659,8 +666,6 @@ function UpdateAugCans()
 		{
 			if (anItem.IsA('AugmentationUpgradeCannister'))
 				augCanCount++;
-			else if (anItem.IsA('AugmentationUpgradeCannisterOverdrive'))
-                augCanCount++;
 			anItem = anItem.Inventory;
 		}
 
@@ -1196,40 +1201,13 @@ function SelectAugmentation(PersonaItemButton buttonPressed)
 function UpgradeAugmentation()
 {
 	local AugmentationUpgradeCannister augCan;
-    local AugmentationUpgradeCannisterOverdrive augCan2;
 	// First make sure we have a selected Augmentation
 	if (selectedAug == None)
 		return;
 
 	// Now check to see if we have an upgrade cannister
 	augCan = AugmentationUpgradeCannister(player.FindInventoryType(Class'AugmentationUpgradeCannister'));
-    augCan2 = AugmentationUpgradeCannisterOverdrive(player.FindInventoryType(Class'AugmentationUpgradeCannisterOverdrive'));
-    if (augCan2 != None)
-	{
-		// Increment the level and remove the aug cannister from
-		// the player's inventory
-        if (selectedAug.IsA('AugAqualung') || selectedAug.IsA('AugEnviro'))
-        {
-            player.bBoosterUpgrade = True;
-        }
-        else
-            selectedAug.IncLevel();
-		selectedAug.IncLevel();
-		selectedAug.UpdateInfo(winInfo);
-		player.PlaySound(sound'medkituse',SLOT_None,,,,1.3);
-		augCan2.UseOnce();
-        if (winAugCans != None)
-        {
-          winAugCans.SetIcon(Texture'DeusExUI.Icons.LargeIconAugmentationUpgrade');
-        }
-		// Update the level icons
-		if (selectedAugButton != None)
-        {
-			PersonaAugmentationItemButton(selectedAugButton).SetLevel(selectedAug.GetCurrentLevel());
-			PersonaAugmentationItemButton(selectedAugButton).SetHeartUpgraded(selectedAug.heartUpgraded,bMedBot);
-        }
-	}
-	else if (augCan != None)
+    if (augCan != None)
 	{
 		// Increment the level and remove the aug cannister from
 		// the player's inventory
@@ -1441,4 +1419,6 @@ defaultproperties
      clientTextureCols=3
      clientBorderTextureRows=2
      clientBorderTextureCols=3
+     colBlue=(R=20,G=20,B=255)
+     colWhite=(R=255,G=255,B=255)
 }

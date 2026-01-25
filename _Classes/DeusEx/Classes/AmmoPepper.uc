@@ -13,6 +13,8 @@ defaultproperties
      ItemArticle="a"
      PickupViewMesh=LodMesh'DeusExItems.AmmoPepper'
      LandSound=Sound'DeusExSounds.Generic.GlassHit1'
+     PartialAmmoSound=Sound'DeusExSounds.Weapons.PepperGunSelect'
+     PickupSound=Sound'DeusExSounds.Weapons.PepperGunSelect'
      Icon=Texture'DeusExUI.Icons.BeltIconAmmoPepper'
      largeIconWidth=19
      largeIconHeight=45

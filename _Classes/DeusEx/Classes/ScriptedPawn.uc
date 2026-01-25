@@ -539,6 +539,7 @@ struct AugmentiqueOutfitData
 {
     var Texture textures[9];
     var bool bRandomized;
+    var bool bUnique;
 };
 
 var travel AugmentiqueOutfitData augmentiqueData;
@@ -547,12 +548,21 @@ var travel AugmentiqueOutfitData augmentiqueData;
 function ApplyCurrentOutfit()
 {
     local int i;
-
-    if (!augmentiqueData.bRandomized)
-        return;
     
     //GMDX Exclusive code
     if (IsHDTP())
+        return;
+
+    //Reset Skin
+	for (i=0; i<8; i++)
+    {
+        if (augmentiqueData.textures[i] != None)
+            MultiSkins[i] = Default.MultiSkins[i];
+    }
+    if (augmentiqueData.textures[8] != None)
+        Texture = default.Texture;
+
+    if (!augmentiqueData.bRandomized)
         return;
 
     for (i = 0;i < 8;i++)
