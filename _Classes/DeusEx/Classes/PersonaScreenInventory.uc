@@ -599,6 +599,9 @@ event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
     //SARGE: Added
     if (!bDragging)
         GetInventoryButtonFromMouse();
+    
+    KeyName = player.ConsoleCommand("KEYNAME " $ key);
+    Alias = player.ConsoleCommand("KEYBINDING " $ KeyName);
 
 	// If a number key was pressed and we have a selected inventory item,
 	// then assign the hotkey
@@ -606,6 +609,14 @@ event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
 	{
 		invBelt.AssignObjectBeltByKey(Inventory(selectedItem.GetClientObject()), key);
 	}
+	else if (Alias ~= "UseSecondary")
+    {
+        AssignSecondary();
+    }
+	else if (Alias ~= "DropItem")
+    {
+        DropSelectedItem();
+    }
 	else
 	{
 		switch( key )
@@ -629,9 +640,9 @@ event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
 				RotateItemButton();
 				break;
 			
-            case IK_F:                                                          //SARGE: Assign secondary with F
-				AssignSecondary();
-				break;
+            //case IK_F:                                                          //SARGE: Assign secondary with F
+				//AssignSecondary();
+				//break;
 
 			default:
 				bKeyHandled = False;
