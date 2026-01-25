@@ -728,14 +728,22 @@ function Frob(Actor Frobber, Inventory frobWith)
     local Actor A;
     local string KeyName;
         
-
-	// if we shouldn't be frobbed, get out
-	if (!bFrobbable)
-		return;
-
 	// if we are destroyed, don't do anything
 	if (bDestroyed)
 		return;
+
+	// if we shouldn't be frobbed, get out
+    if (!bFrobbable)
+    {
+        // SARGE: Allow fake nanokey anim on highlightable but unfrobbable doors
+        if (bHighlight && bLocked && NanoKeyRing(frobWith) != None && KeyIDNeeded == '')
+        {
+            Player.ClientMessage(msgNoNanoKey);
+            NanoKeyRing(frobWith).PlayUseAnim();
+            //DeusExPlayer(Frobber).DebugMessage("stuff");
+        }
+		return;
+    }
 
 	// make sure we frob our leader if we are a slave
 	if (bSlave)

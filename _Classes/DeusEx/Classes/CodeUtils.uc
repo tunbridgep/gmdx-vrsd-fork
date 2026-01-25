@@ -175,7 +175,7 @@ defaultproperties
     codeNotes(24)=(code1="947761",code2="2867",noteName="02_Datacube13")
     codeNotes(25)=(code1="NSF",code2="Righteous",noteName="02_Datacube14") //NSF
     codeNotes(26)=(code1="666",noteName="02_Datacube15")
-    codeNotes(27)=(code1="TFrase",code2="valleyforge",noteName="02_Datacube15")
+    codeNotes(27)=(code1="TFrase",code2="valleyforge",noteName="02_Datacube18")
     codeNotes(28)=(code1="2167",noteName="02_Email08") //Make that 3 copies...
     ////M03
     codeNotes(29)=(code1="6653",noteName="03_Book06")

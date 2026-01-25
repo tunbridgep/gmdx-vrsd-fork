@@ -929,8 +929,13 @@ var transient bool bUpdateHud;                                 //SARGE: Trigger 
 
 var const localized string MsgSecondaryAdded;
 
+/////////Version 1.2 Additions
+/////////January 2026
 
 var travel bool bSkillsSetAtStart;                           //SARGE: Gain a bunch of skill points at the start of the game, but gain no more skill points from then on.
+
+var globalconfig int iSmartBinocs;                           //SARGE: Pressing the Scope key selects binoculars
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -1357,6 +1362,7 @@ local DeusExPickup     PU;                                                      
               DC.DrawScale = 0.00001;
               DC.SetCollision(false,false,false);
               DC.SetCollisionSize(0,0);
+              DC.SetPhysics(PHYS_Flying);
 	       }
        }
        if (SkillSystem != None)
@@ -3353,17 +3359,8 @@ simulated function DrugEffects(float deltaTime)
             UpdateCrosshair();
         }
     }
-    if (enviroAutoTime > 0)
-	{
-	   enviroAutoTime -= deltaTime;
-	   if (enviroAutoTime <= 0)
-	   {
-	      enviroAutoTime = 0;
-	      if (bBoosterUpgrade)
-	          AugmentationSystem.AutoAugs(true,true);
-       }
-	}
-	if (drugEffectTimer > 0)
+	
+    if (drugEffectTimer > 0)
 	{
 		if ((root != None) && (root.hud != None))
 		{
@@ -3508,7 +3505,14 @@ function ClientSetMusic(Music NewSong, byte NewSection, byte NewCdTrack, EMusicT
     local bool bContinueOn;
 	local DeusExLevelInfo info;
     //local bool bSection5Hack;
-    
+
+    //If using dxrando, use dxrando's music player instead.
+    if (RandomizerEnabled())
+    {
+        Super.ClientSetMusic(NewSong,NewSection,NewCdTrack,NewTransition);
+        return;
+    }
+
     info = GetLevelInfo();
     
     DebugMessage("ClientSetMusic called:" @ NewSong @ NewSection @ NewTransition @ "Song is: " $ default.previousTrack @ default.previousLevelSection @ default.previousMusicMode @ bMusicSystemReset @ Level.SongSection @ saveTime @ default.fMusicHackTimer @ SongSection);
@@ -3685,7 +3689,8 @@ function UpdateDynamicMusic(float deltaTime)
 	local DeusExLevelInfo info;
     local bool bAllowConverse, bAllowCombat, bAllowOther;
 
-	if (Level.Song == None)
+    //Bail out and don't update if we're running dxrando
+	if (Level.Song == None || RandomizerEnabled())
 		return;
 
     default.fMusicHackTimer = FMAX(default.fMusicHackTimer - deltaTime,0);
@@ -7224,8 +7229,6 @@ state PlayerWalking
                {
                    PlayBreatheSound();
                }
-               if (bBoosterUpgrade && Energy > 0)
-	               AugmentationSystem.AutoAugs(false,false);
             }
         }
 	  }
@@ -7370,7 +7373,6 @@ state PlayerWalking
 		// if we jump into water, empty our hands
 		if (NewZone.bWaterZone)
 			{
-			//AugmentationSystem.AutoAugs(false,false);
             DropDecoration();
             //loc = Location + VRand() * 4;
 	        //loc.Z += CollisionHeight * 0.9;
@@ -7598,6 +7600,7 @@ state PlayerWalking
             {
                 doubleClickCheck = 0;
                 clickCountCyber=0;
+                UpdateHUD();
             }
         }
 
@@ -7732,7 +7735,6 @@ event HeadZoneChange(ZoneInfo newHeadZone)
 		SoundPitch = 46;
 		Buoyancy=155.000000;
 		//if (bBoosterUpgrade && Energy > 0)
-		//    AugmentationSystem.AutoAugs(false,false);
 		if (!bHardCoreMode && !bStaminaSystem)
 		   SwimTimer = swimDuration;
         //SARGE: Disabled so we can't "dolphin dive" repeatedly for free stamina
@@ -7770,8 +7772,6 @@ event HeadZoneChange(ZoneInfo newHeadZone)
     Buoyancy=150.500000;
     if (bBoosterUpgrade)
     {
-        if (AugmentationSystem != None)                                         //RSD: Failsafe
-            AugmentationSystem.AutoAugs(true,false);
         SwimTimer += 0.5;
     }
     /*UnderWaterTime = AugmentationSystem.GetAugLevelValue(class'AugAqualung');   //RSD: Passive Aqualung
@@ -7853,9 +7853,6 @@ state PlayerSwimming
 		swimTimer -= (2.0-mult)*deltaTime;
 		swimTimer = FMax(0, swimTimer);
 
-        if (swimTimer < swimDuration*0.7 && AugmentationSystem.GetAugLevelValue(class'AugAqualung') == -1.0)
-            if (bBoosterUpgrade && Energy > 0)
-		        AugmentationSystem.AutoAugs(false,false);
 
 		if ( Role == ROLE_Authority )
 		{
@@ -8244,7 +8241,11 @@ Begin:
    LoadHack:
     if (bDeadLoad)
 	{
-	    Sleep(0.2);
+        //SARGE: Now we sleep until we've been dead for at least 1.5 seconds
+        //This prevents a nasty crash when loading too quickly
+        //DebugLog("DEADLOAD: " $ Level.TimeSeconds @ FrobTime @ Level.TimeSeconds - FrobTime);
+        if (Level.TimeSeconds - FrobTime < 1.0)
+            Sleep(1.0 - (Level.TimeSeconds - FrobTime));
 	    bDeadLoad = False;
 	    QuickLoadConfirmed();
 	}
@@ -9064,6 +9065,7 @@ function SetDoubleClickTimer()
 {
     doubleClickCheck=0.5;
     clickCountCyber=1;
+    UpdateHUD(); //SARGE: May be inefficient...
 }
     
 function DoAutoHolster()
@@ -9404,7 +9406,7 @@ function int LootAmmo(string owner, class<Ammo> LootAmmoClass, int max, bool bDi
 
         //If we took at least some, make a special sound.
         if (bLootSound)
-            PlayPartialAmmoSound(AmmoType,AmmoType.Class);
+            PlayPartialAmmoSound(self,AmmoType.Class);
 
         ret = intj;
     }
@@ -10904,13 +10906,20 @@ exec function ReloadWeapon()
 exec function ToggleScope()
 {
 	local DeusExWeapon W;
+	local Inventory anItem;
+    local bool bContinue;
+	
+    W = DeusExWeapon(Weapon);
 
 	//log("ToggleScope "@IsInState('Interpolating')@" "@IsInState('Dying')@" "@IsInState('Paralyzed'));
 	if (RestrictInput())
 		return;
 
-	W = DeusExWeapon(Weapon);
-	if (W != None)
+    //Zoom if we've got binocs out
+    else if (Binoculars(inHand) != None)
+        Binoculars(inHand).Activate();
+
+	else if (W != None)
 	{
 	  if (W.IsInState('Idle') || (W.bZoomed == False && W.AnimSequence == 'Shoot') || (W.bZoomed == True && RecoilTime==0)) //CyberP: far less restrictive
 	  {
@@ -10926,6 +10935,26 @@ exec function ToggleScope()
             SetLaser(false);
 	  }
 	}
+
+    else if (inHand == None && iSmartBinocs > 0)
+    {
+        anItem = Inventory;
+        bContinue = true;
+
+        //SARGE: If we don't have a weapon out, select Binocs
+        while(anItem != None && bContinue)
+        {
+            if (anItem.IsA('Binoculars') && !anItem.bActive)
+            {
+                PutInHand(anItem,true);
+                if (iSmartBinocs >= 2)
+                    Binoculars(anItem).Activate();
+                bContinue = false;
+            }
+
+            anItem = anItem.Inventory;
+        }
+    }
 
     UpdateCrosshair();
 }
@@ -12710,7 +12739,7 @@ function bool GetCrosshairState(optional bool bCheckForOuterCrosshairs)
     if (root != None && root.WindowStackCount() > 0) //No crosshair while windows are open
         return false;
 
-    if (frobTarget != None && frobTarget.isA('InformationDevices') && InformationDevices(frobTarget).aReader == Self)
+    if (frobTarget != None && frobTarget.isA('InformationDevices') && InformationDevices(frobTarget).infoWindow != None)
         return false;
         
     if(bRadialAugMenuVisible) //RSD: Remove the crosshair if the radial aug menu is visible
@@ -12778,7 +12807,7 @@ function bool GetBracketsState()
         return False;
 
     //No brackets while reading books/datacubes/etc
-    if (frobTarget != None && frobTarget.isA('InformationDevices') && InformationDevices(frobTarget).aReader == Self)
+    if (frobTarget != None && frobTarget.isA('InformationDevices') && InformationDevices(frobTarget).infoWindow != None)
         return false;
         
     if(bRadialAugMenuVisible)
@@ -16884,9 +16913,6 @@ function bool DXReduceDamage(int Damage, name damageType, vector hitLocation, ou
 	    {
             if (AugmentationSystem != None)
             {
-                if (bBoosterUpgrade && Energy > 0 && Damage > 0)
-                    AugmentationSystem.AutoAugs(false,true);
-
                 enviro = AugEnviro(AugmentationSystem.GetAug(class'AugEnviro'));
                 if (enviro != None)
                 {
@@ -17162,9 +17188,6 @@ function ClientDeath()
 function Timer()      //CyberP: my god I've turned this into a mess.
 {                     //This can be called at any time by doubleClicking (if thr respective option is enabled)
 	local int damage; //This wouldbe a lot cleaner if doubleClickHolster did not use Timer(), so this code needs refactoring.
-
-    if (bBoosterUpgrade && !HeadRegion.Zone.bWaterZone)
-        AugmentationSystem.AutoAugs(true,false);
 
     if (Physics == PHYS_Flying)
     {
@@ -19622,6 +19645,16 @@ exec function MyLogInfos()
     BroadcastMessage(ammotype.maxAmmo);
 }*/
 
+//SARGE: Cap any passed-in ammo to our maximum allowed amount
+function CapMaxAmmo(Class<Ammo> ammotype)
+{
+    local ammo AM;
+    AM = Ammo(FindInventoryType(ammotype));
+
+    if (AM != None)
+        AM.ammoAmount = MIN(AM.AmmoAmount,GetAdjustedMaxAmmoByClass(ammotype));
+}
+
 //SARGE: Make a generic version that works with classes,
 //so we don't need literal ammo to check this.
 //This is just here as a shorthand/placeholder since it was used like this
@@ -20276,4 +20309,5 @@ defaultproperties
      bRememberTheName=true
      iShifterWeaponSwitch=2
      bExperimentalAmmoSpawning=true
+     iSmartBinocs=1
 }

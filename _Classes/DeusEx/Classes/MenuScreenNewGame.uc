@@ -90,7 +90,9 @@ var bool bNoStartingWeaponChoices;
 var bool bSkillsSetAtStart;
 
 //SARGE: Save our true player name for future playthroughs
+//SARGE: And now the player skin too!
 var globalconfig string savedPlayerName;
+var globalconfig int savedPlayerSkin;
 
 //LDDP
 var bool bFemaleEnabled;
@@ -265,7 +267,9 @@ function CreatePortraitButton()
 	btnPortrait.SetSize(114, 161);
 	btnPortrait.SetPos(18, 152);
 
-	btnPortrait.SetBackgroundStyle(DSTY_Masked);
+    //SARGE: Set the player skin
+    if (player.bRememberTheName)
+        portraitIndex = savedPlayerSkin;
 }
 
 // ----------------------------------------------------------------------
@@ -708,10 +712,7 @@ function DowngradeSkill()
 
 function ResetToDefaults()
 {
-    if (savedPlayerName == "")
-        editName.SetText(player.TruePlayerName);
-    else
-        editName.SetText(savedPlayerName);
+    editName.SetText(player.TruePlayerName);
 
 	//LDDP, 11/01/21: Set LDDP checkbox options to default, hide MI4FJC checkbox because we're male now.
 	MorpheusCheckbox.SetToggle(false);
@@ -721,6 +722,7 @@ function ResetToDefaults()
 	player.SkillPointsAvail = player.Default.SkillPointsAvail;
 	player.SkillPointsTotal = player.Default.SkillPointsTotal;
 
+	savedPlayerName = "";
 	portraitIndex = 0;
 	btnPortrait.SetBackground(texPortraits[portraitIndex]);
 
@@ -829,6 +831,7 @@ function ProcessAction(String actionKey)
 			SaveSettings();
 
             savedPlayerName = playerName;
+			savedPlayerSkin = portraitIndex;
             SaveConfig();
 
 			// DEUS_EX_DEMO

@@ -450,18 +450,18 @@ function Landed(vector HitNormal)
 	bWasCarried = false;
 	bBobbing    = false;
 
-	// The crouch height is higher in multiplayer, so we need to be more forgiving on the drop velocity to explode
-	if ( Level.NetMode != NM_Standalone )
-	{
-		if ((bExplosive && (VSize(Velocity) > 478)) || (!bExplosive && (Velocity.Z < -500)))
-			TakeDamage((1-Velocity.Z/30), Instigator, Location, vect(0,0,0), 'fell');
-	}
-	else
-	{
-		if ((bExplosive && (VSize(Velocity) > 500)) || (!bExplosive && (Velocity.Z < -600) &&
-      !IsA('FireExtinguisherEmpty') && !IsA('CrateUnbreakableSmall') && !IsA('CrateUnbreakableMed')))
-			TakeDamage((1-Velocity.Z/35), Instigator, Location, vect(0,0,0), 'fell');
-	}             //CyberP: more forgiving in SP too
+    // The crouch height is higher in multiplayer, so we need to be more forgiving on the drop velocity to explode
+    if ( Level.NetMode != NM_Standalone )
+    {
+        if ((bExplosive && (VSize(Velocity) > 478)) || (!bExplosive && (Velocity.Z < -500)))
+            TakeDamage((1-Velocity.Z/30), Instigator, Location, vect(0,0,0), 'fell');
+    }
+    else
+    {
+        if ((bExplosive && (VSize(Velocity) > 500)) || (!bExplosive && (Velocity.Z < -600) &&
+    !IsA('FireExtinguisherEmpty') && !IsA('CrateUnbreakableSmall') && !IsA('CrateUnbreakableMed')))
+            TakeDamage((1-Velocity.Z/35), Instigator, Location, vect(0,0,0), 'fell');
+    }             //CyberP: more forgiving in SP too
 }
 
 // ----------------------------------------------------------------------

@@ -107,7 +107,6 @@ defaultproperties
      Items(55)=(actionText="Ambrosia Container",defaultValue=1,consoleTarget="DeusEx.BarrelAmbrosia")
      Items(56)=(actionText="Augmentation Canister",defaultValue=1,consoleTarget="DeusEx.AugmentationCannister")
      Items(57)=(actionText="Augmentation Upgrade",defaultValue=1,consoleTarget="DeusEx.AugmentationUpgradeCannister")
-     //Items(58)=(actionText="Augmentation Override",defaultValue=1,consoleTarget="DeusEx.AugmentationUpgradeCannisterOverdrive")
      Items(58)=(actionText="Barrel",defaultValue=1,consoleTarget="DeusEx.Barrel1")
      Items(59)=(actionText="Barrel (Flaming)",defaultValue=1,consoleTarget="DeusEx.BarrelFire")
      Items(60)=(actionText="Basket",defaultValue=1,consoleTarget="DeusEx.Basket")
@@ -250,6 +249,7 @@ defaultproperties
      Items(196)=(actionText="Shells (Rubber)",defaultValue=1,consoleTarget="DeusEx.AmmoRubber",sortcategory="1Ammo")
      Items(197)=(actionText="Laser Tripwire",defaultValue=1,consoleTarget="DeusEx.LaserTrigger")
      Items(198)=(actionText="Lockpick",defaultValue=1,consoleTarget="DeusEx.Lockpick")
+	 Items(199)=(actionText="Augmentation Override",defaultValue=1,consoleTarget="DeusEx.AugmentationUpgradeCannisterOverdrive")
      Title="HDTP Model Options"
      disabledText="Vanilla"
      enabledText="HDTP"
