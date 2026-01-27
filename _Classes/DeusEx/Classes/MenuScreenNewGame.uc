@@ -159,6 +159,7 @@ event InitWindow()
 
 	SaveSkillPoints();
 	ResetToDefaults();
+    RepopulateRememberedValues();
 
 	// Need to do this because of the edit control used for
 	// saving games.
@@ -269,10 +270,6 @@ function CreatePortraitButton()
 
 	btnPortrait.SetSize(114, 161);
 	btnPortrait.SetPos(18, 152);
-
-    //SARGE: Set the player skin
-    if (player.bRememberTheName)
-        portraitIndex = savedPlayerSkin;
 }
 
 // ----------------------------------------------------------------------
@@ -365,13 +362,22 @@ function CreateCodeNameEditWindow()
 function CreateNameEditWindow()
 {
 	editName = CreateMenuEditWindow(18, 92, 113, 32, winClient);
-
-    if (savedPlayerName == "" || !player.bRememberTheName)
-        editName.SetText(player.TruePlayerName);
-    else
-        editName.SetText(savedPlayerName);
+    editName.SetText(player.TruePlayerName);
 	editName.MoveInsertionPoint(MOVEINSERT_End);
 	editName.SetFilter(filterString);
+}
+
+//SARGE: Reset the name and skin independently, so we can reset to defaults properly.
+function RepopulateRememberedValues()
+{
+    if (editName == None || btnPortrait == None || !player.bRememberTheName)
+        return;
+
+    if (savedPlayerName != "")
+        editName.SetText(savedPlayerName);
+	
+    portraitIndex = savedPlayerSkin;
+	btnPortrait.SetBackground(texPortraits[portraitIndex]);
 }
 
 // ----------------------------------------------------------------------
@@ -715,8 +721,6 @@ function DowngradeSkill()
 
 function ResetToDefaults()
 {
-    editName.SetText(player.TruePlayerName);
-
 	//LDDP, 11/01/21: Set LDDP checkbox options to default, hide MI4FJC checkbox because we're male now.
 	MorpheusCheckbox.SetToggle(false);
 	MaleInteractionsCheckbox.SetToggle(false);
@@ -725,9 +729,10 @@ function ResetToDefaults()
 	player.SkillPointsAvail = player.Default.SkillPointsAvail;
 	player.SkillPointsTotal = player.Default.SkillPointsTotal;
 
-	savedPlayerName = "";
 	portraitIndex = 0;
 	btnPortrait.SetBackground(texPortraits[portraitIndex]);
+    
+    editName.SetText(player.TruePlayerName);
 
 	CopySkills();
 	PopulateSkillsList();
@@ -831,10 +836,10 @@ function ProcessAction(String actionKey)
 		}
 		else
 		{
-			SaveSettings();
-
             savedPlayerName = playerName;
 			savedPlayerSkin = portraitIndex;
+			
+            SaveSettings();
             SaveConfig();
 
 			// DEUS_EX_DEMO
