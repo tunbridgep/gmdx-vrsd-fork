@@ -35,11 +35,11 @@ function AddNotesWindow(DeusExPlayer player, DeusExNote codeNote, bool fakeDispl
 
     //AWFUL hack!
     //If we have fakeDisplay on, pretend there are no notes.
-    if (fakeDisplay && !player.bHardcoreMode && player.iNoKeypadCheese == 0)
+    if (fakeDisplay && (!player.bHardcoreMode || player.bGMDXDebug) && player.iNoKeypadCheese == 0)
         codeNote = None;
 
     //SARGE: What an AWFUL conditional...
-    if ((codeNote == None && !player.bHardcoreMode && player.iNoKeypadCheese == 0) || !player.HasAnyNotes() || keypadWindow == None || keypadWindow.bInstantSuccess)
+    if ((codeNote == None && (!player.bHardcoreMode || player.bGMDXDebug) && player.iNoKeypadCheese == 0) || !player.HasAnyNotes() || keypadWindow == None || keypadWindow.bInstantSuccess)
         return;
 
     //winNotes = root.hud.ShowInfowindow(); //Can't do this, HUD is hidden

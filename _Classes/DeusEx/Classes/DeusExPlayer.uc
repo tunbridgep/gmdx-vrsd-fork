@@ -1021,6 +1021,12 @@ exec function RedoOutfits()
     }
 }
 
+//SARGE: Helper function to log to the console from console
+exec function WriteLog(string msg)
+{
+    Log("CUSTOM LOG: " $ msg);
+}
+
 //SARGE: Hide/Show the entire HUD at once
 exec function TogglePhotoMode()
 {
