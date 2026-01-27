@@ -269180,6 +269180,7 @@ Begin Actor Class=OutfitSpawner3 Name=OutfitSpawner22
 End Actor
 Begin Actor Class=UNATCOTroop Name=UNATCOTroop6
     Orders=Standing
+    bInWorld=False
     bInvincible=True
     InitialAlliances(0)=(AllianceName=Player,AllianceLevel=1.000000)
     requiresLDDP=True
@@ -269203,6 +269204,7 @@ Begin Actor Class=UNATCOTroop Name=UNATCOTroop6
 End Actor
 Begin Actor Class=UNATCOTroop Name=UNATCOTroop8
     Orders=Sitting
+    bInWorld=False
     bInvincible=True
     InitialAlliances(0)=(AllianceName=Player,AllianceLevel=1.000000)
     requiresLDDP=True
