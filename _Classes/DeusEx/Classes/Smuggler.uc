@@ -3,6 +3,18 @@
 //=============================================================================
 class Smuggler extends HumanThug;
 
+function Shenanigans(bool bEnabled)
+{
+    local DeusExPlayer player;
+    player = DeusExPlayer(GetPlayerPawn());
+
+    if (player != None && bEnabled && player.FlagBase.GetBool('FordSchickRescued'))
+    {
+        FamiliarName="Snuggler";
+        UnfamiliarName="Snuggler";
+    }
+}
+
 defaultproperties
 {
      CarcassType=Class'DeusEx.SmugglerCarcass'
