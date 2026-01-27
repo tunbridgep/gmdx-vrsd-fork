@@ -23,6 +23,7 @@ exec function UpdateHDTPsettings()
 
 defaultproperties
 {
+     bSelectMeleeWeapon=False
      HitPoints=30
      bInvincible=True
      bFlammable=False
