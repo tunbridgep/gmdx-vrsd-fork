@@ -1164,4 +1164,5 @@ defaultproperties
      InitialState=TriggerToggle
      bDirectional=True
      iSpecialMoverKeyframe=-1
+     bDontOpenOnMissionComplete=true
 }

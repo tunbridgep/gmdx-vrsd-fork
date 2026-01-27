@@ -195,6 +195,36 @@ function SetOrders(Name orderName, optional Name newOrderTag, optional bool bImm
 // TakeDamageBase()
 // ----------------------------------------------------------------------
 
+function DoEMPEffect(int oldEMPHitPoints)
+{
+    if (bHasCloak)
+        bHasCloak=False; //CyberP: no cloaking when disabled.
+    EMPHitPoints = 0;
+    rebootTime = 0; //SARGE: Disable the reboot timer when disabled
+
+    if (oldEMPHitPoints > 0)
+    {
+        PlaySound(sound'EMPZap', SLOT_None,,, (CollisionRadius+CollisionHeight)*8, 2.0);
+        InitGenerator();
+        if (sparkGen != None)
+        {
+            sparkGen.LifeSpan = 6;
+            sparkGen.particleTexture = Texture'Effects.Smoke.SmokePuff1';
+            sparkGen.particleDrawScale = 0.3;
+            sparkGen.bRandomEject = False;
+            sparkGen.ejectSpeed = 10.0;
+            sparkGen.bGravity = False;
+            sparkGen.bParticlesUnlit = True;
+            sparkGen.frequency = 0.3;
+            sparkGen.riseRate = 3;
+            sparkGen.spawnSound = Sound'Spark2';
+        }
+    }
+    AmbientSound = None;
+    if (GetStateName() != 'Disabled')
+        GotoState('Disabled');
+}
+
 function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vector momentum, name damageType, bool bPlayAnim)
 {
 	local float actualDamage;
@@ -262,34 +292,7 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
 
 		// make smoke!
 		if (EMPHitPoints <= 0)
-		{
-            if (bHasCloak)
-                bHasCloak=False; //CyberP: no cloaking when disabled.
-			EMPHitPoints = 0;
-            rebootTime = 0; //SARGE: Disable the reboot timer when disabled
-
-			if (oldEMPHitPoints > 0)
-			{
-				PlaySound(sound'EMPZap', SLOT_None,,, (CollisionRadius+CollisionHeight)*8, 2.0);
-				InitGenerator();
-				if (sparkGen != None)
-				{
-					sparkGen.LifeSpan = 6;
-					sparkGen.particleTexture = Texture'Effects.Smoke.SmokePuff1';
-					sparkGen.particleDrawScale = 0.3;
-					sparkGen.bRandomEject = False;
-					sparkGen.ejectSpeed = 10.0;
-					sparkGen.bGravity = False;
-					sparkGen.bParticlesUnlit = True;
-					sparkGen.frequency = 0.3;
-					sparkGen.riseRate = 3;
-					sparkGen.spawnSound = Sound'Spark2';
-				}
-			}
-			AmbientSound = None;
-			if (GetStateName() != 'Disabled')
-				GotoState('Disabled');
-		}
+            DoEMPEffect(oldEMPHitPoints);
 
 		// make sparks!
 		else if (sparkGen == None && !IsA('SpiderBot3')) //CyberP: hackity hack once again
