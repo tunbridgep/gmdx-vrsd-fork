@@ -18,6 +18,11 @@ exec function UpdateHDTPsettings()
     local DeusExPlayer player;
 
     player = DeusExPlayer(GetPlayerPawn());
+        
+    //Don't allow changing signfloor's that are using a different mesh.
+    //Stops a rather nasty bug
+    if (!(string(Mesh) ~= HDTPMesh || Mesh == default.Mesh || string(Mesh) ~= string(default.Mesh)))
+        return;
 
     if (bRolledSparta && player != None && player.bShenanigans) //5% chance of sparta signs in shenanigans mode.
     {
