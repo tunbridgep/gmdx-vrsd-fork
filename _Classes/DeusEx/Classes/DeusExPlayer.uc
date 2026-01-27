@@ -388,9 +388,11 @@ struct augBinary                                                                
 };
 
 //Holds information about the reserved items on the belt
+//ALSO used for Secondary slot
 struct BeltInfo
 {
-    var texture		icon;				    //Sarge. Disconnect the icon from the inventory item, so we can keep it when the item disappears.
+    var string      itemClass;
+    var texture		icon;				    //Sarge. Disconnect the icon from the inventory item, so we can keep the last used icon when the item disappears (for items with multiple skins).
 };
 
 var globalconfig bool bWallPlacementCrosshair;		// SARGE: Show a blue crosshair when placing objects on walls
@@ -496,7 +498,7 @@ var float stuntedTime; //SARGE: Replaces the SetTimer calls with a stuntedTime v
 var bool bRegenStamina; //CyberP: regen when in water but head above water
 var bool bCrouchRegen;  //CyberP: regen when crouched and has skill
 var float doubleClickCheck; //CyberP: to return from double clicking.
-var travel string assignedWeapon;                                                   //SARGE: Changed from a hard object reference to an object class. Needs to be a string or the game crashes
+var travel BeltInfo assignedWeapon;                                                   //SARGE: Changed from a hard object reference to an object class. Needs to be a string or the game crashes
 var travel Inventory primaryWeapon;
 var travel bool bLastWasEmpty;                                                     //SARGE: Whether or not we were empty before being switched to this weapon.
 var travel bool bSelectedFromMainBeltSelection;                                    //SARGE: Whether or not we selected our main belt slot before going to this item, since our last holster. IW belt only. Determines if we should switch back to our main selection, or .
@@ -1172,9 +1174,15 @@ function AssignSecondary(Inventory item, optional bool bMessage)
     */
 
     if (item == None)
-        assignedWeapon = "";
+    {
+        assignedWeapon.itemClass = "";
+        assignedWeapon.icon = None;
+    }
     else
-        assignedWeapon = string(item.Class);
+    {
+        assignedWeapon.itemClass = string(item.Class);
+        assignedWeapon.icon = item.Icon;
+    }
 
     if (bMessage)
     {
@@ -1197,11 +1205,16 @@ function Inventory GetSecondary()
 	return FindInventoryType(GetSecondaryClass());
 }
 
+function Texture GetSecondaryIcon()
+{
+    return assignedWeapon.icon;
+}
+
 function Class<Inventory> GetSecondaryClass()
 {
     local class<Inventory> assignedClass;
-    if (assignedWeapon != "")
-        assignedClass = class<Inventory>(DynamicLoadObject(assignedWeapon, class'Class'));
+    if (assignedWeapon.itemClass != "")
+        assignedClass = class<Inventory>(DynamicLoadObject(assignedWeapon.itemClass, class'Class'));
     //ClientMessage("Get Secondary Class: " $ assignedClass $ " (" $ assignedWeapon $ ")");
     return assignedClass;
 }
@@ -2284,7 +2297,7 @@ function RefreshChargedPickups()
 			if (anItem.IsA('TechGoggles') && anItem.IsActive())
 				TechGoggles(anItem).UpdateHUDDisplay(Self);
 
-            if (anItem.IsActive() && assignedWeapon != string(anItem.Class) && (anItem.GetCurrentCharge() > 0 || !anItem.bUnequipWhenDrained)) //SARGE: Modified get current charge check, since we can now have chargedpickups at 0 charge
+            if (anItem.IsActive() && assignedWeapon.itemClass != string(anItem.Class) && (anItem.GetCurrentCharge() > 0 || !anItem.bUnequipWhenDrained)) //SARGE: Modified get current charge check, since we can now have chargedpickups at 0 charge
                 AddChargedDisplay(anItem);
 		}
 	}
@@ -10674,32 +10687,36 @@ function AddObjectToBelt(Inventory item, int pos, bool bOverride)
 ////Sarge: Functions for dealing with belt memory
 
 // Set Placeholder
-function SetPlaceholder(int objectNum, texture icon)
+function SetPlaceholder(int objectNum, Inventory item)
 {
-    if (icon != None && icon != class'NanoKeyRing'.default.icon)
-        beltInfos[objectNum].icon = icon;
+    if (item != None && item.Class != class'NanoKeyRing')
+    {
+        beltInfos[objectNum].itemClass = string(item.Class);
+        beltInfos[objectNum].icon = item.icon;
+    }
 }
 
 function ClearPlaceholder(int objectNum)
 {
     beltInfos[objectNum].icon = None;
+    beltInfos[objectNum].itemClass = "";
 }
 
-function bool GetPlaceholder(int objectNum)
+function bool IsPlaceholder(int objectNum)
 {
-    return beltInfos[objectNum].icon != None;
+    return beltInfos[objectNum].itemClass != "";
 }
 
-function texture GetPlaceholderIcon(int objectNum)
+function BeltInfo GetPlaceholder(int objectNum)
 {
-    return beltInfos[objectNum].icon;
+    return beltInfos[objectNum];
 }
 
 function int HasPlaceholderSlot(Class<inventory> obj)
 {
     local int i;
     for (i = 0;i < ArrayCount(beltInfos);i++)
-        if (beltInfos[i].icon == obj.default.Icon)
+        if (beltInfos[i].itemClass == string(obj.Class))
             return i;
     return -1;
 }

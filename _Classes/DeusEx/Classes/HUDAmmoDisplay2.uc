@@ -30,6 +30,7 @@ var Color colIconDimmed;
 //SARGE: Cache the players secondary
 var transient Inventory assigned;
 var transient class<Inventory> assignedClass;
+var transient Texture assignedIcon;
 var bool bUpdateAssigned;
 
 // ----------------------------------------------------------------------
@@ -73,6 +74,7 @@ event Tick(float deltaSeconds)
     {
         assigned = player.GetSecondary();
         assignedClass = player.GetSecondaryClass();
+        assignedIcon = player.GetSecondaryIcon();
         bUpdateAssigned = false;
     }
 
@@ -108,7 +110,7 @@ event DrawWindow(GC gc)
     {
         gc.SetTileColor(colIconDimmed);
 		gc.SetStyle(DSTY_Masked);
-		gc.DrawTexture(9+offset, 20, 40, 35, 0, 0, assignedClass.default.icon);
+		gc.DrawTexture(9+offset, 20, 40, 35, 0, 0, assignedIcon);
         return;
     }
 

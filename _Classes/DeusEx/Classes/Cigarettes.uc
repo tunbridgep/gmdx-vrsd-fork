@@ -22,7 +22,8 @@ function SetSkin()
             Skin = class'HDTPLoader'.static.GetTexture2("RSDCrap.Skins.HDTPCigarettestex2","RSDCrap.Skins.Cigarettestex2",IsHDTP());
             Description = Description2;
             //TODO: Port these across
-            if (IsHDTP())
+            //if (IsHDTP())
+            if (class'DeusExPlayer'.static.IsHDTPInstalled())
             {
                 Icon = class'HDTPLoader'.static.GetTexture("HDTPitems.skins.belticonCigarettes2");
                 LargeIcon = class'HDTPLoader'.static.GetTexture("HDTPitems.skins.largeiconCigarettes2");
