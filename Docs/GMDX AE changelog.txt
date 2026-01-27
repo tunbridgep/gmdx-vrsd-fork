@@ -10,6 +10,7 @@ New Features:
 - Added a new playthrough modifier to take Ammo when imprisoned by MJ12. This feature was previously hardcore-exclusive. Still always enabled on Hardcore.
 - Disabled grenades can now be detonated using the Remote Detonation perk (they will show as "Remote" instead of "Disabled" in the HUD)
 - The Player's Skin Colour will now be remembered alongside their name if the option to remember their name is enabled. (Enabled by default).
+- Laser, Scope and Silencer mods are no longer randomized when using the "Randomize Weapon Mods" modifier.
 
 Bugfixes:
 - Fixed bloody throwing knives not displaying when retrieving them from enemy corpses.
@@ -23,6 +24,7 @@ Bugfixes:
 - Fixed an issue where using the Targeting augmentation in Minimized mode (such as when putting your weapon away) would cause the targeting window to appear occasionally for 1 frame.
 - Fixed TNT Crates exploding on map load.
 - Fixed game crashing when right-clicking after death by adding a 1 second minimum time before loading.
+- Fixed issue where certain decorations could display incorrectly in Shenanigans mode.
 
 Misc Changes:
 - Pepper Spray now requires Trained in Low-Tech when using the Weapon Requirements Matter modifier.
