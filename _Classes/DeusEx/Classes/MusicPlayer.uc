@@ -28,6 +28,7 @@ var byte savedSection;
 var float musicCheckTimer;
 var float musicChangeTimer;
 var float fMusicHackTimer;                                           //SARGE: A hack for fixing music fading when loading music.
+var int delayHack;                                                  //SARGE: Ugh...
 
 var globalconfig int iAllowCombatMusic;                                        //SARGE: Enable/Disable combat music, or make it require 2 enemies
 
@@ -49,21 +50,24 @@ function SetNewSong(Music song, optional byte section)
         musicMode = MUS_Ambient;
         savedSection = section;
         musicChangeTimer = 0.0;
-        fMusicHackTimer = 5;
+        fMusicHackTimer = 10;
         
+        Log("SetNewSong Changing Song: " $ currentSong @ section);
+
         //If changing to none, or if new section is 255, slow transition.
         if (bFade)
             player.ClientSetMusic(currentSong,section,255,MTRAN_SlowFade);
         else
             player.ClientSetMusic(currentSong,section,255,MTRAN_Instant);
     }
-
     //If we're in a different section of the same song, then reset it
+    //This breaks sometimes, so we just want to cancel out the music entirely and restart it
     else if (musicMode != MUS_Ambient)
     {
         musicMode = MUS_Ambient;
         musicChangeTimer = 0.0;
-        SetNewSection(savedSection,true);
+        delayHack = savedSection;
+        player.ClientSetMusic(currentSong,255,255,MTRAN_Instant);
     }
 }
 
@@ -75,17 +79,22 @@ function SetNewSection(byte section, optional bool bInstant)
 {
     local PlayerPawn player;
     player = GetGameInfo().GetPlayerPawn();
+        
+    Log("SetNewSong Changing Section: " $ currentSong @ section);
 
     if (bInstant)
         player.ClientSetMusic(currentSong,section,255,MTRAN_Instant);
     else
         player.ClientSetMusic(currentSong,section,255,MTRAN_Fade);
+    fMusicHackTimer = 5;
+    
+    Log("SetNewSong Changed Section: " $ section @ player.SongSection);
 }
 
 function PlayerLogin(PlayerPawn P)
 {
 	local DeusExLevelInfo info;
-    //Log("PlayerLogin" @ p.Level.Song @ p.Level.SongSection);
+    Log("PlayerLogin" @ p.Level.Song @ p.Level.SongSection);
 
     //If we're doing a transition already, we need to apply the sound hack fix
     if (fMusicHackTimer > 0 && DeusExPlayer(P) != None)
@@ -102,6 +111,8 @@ function PlayerLogin(PlayerPawn P)
 
     //Always start our default song when adding a new player
     SetNewSong(p.Level.Song,info.SongAmbientSection);
+    musicMode = MUS_Ambient;
+    savedSection = info.SongAmbientSection;
 }
 
 function DeusExLevelInfo GetLevelInfo()
@@ -138,6 +149,13 @@ function Tick(float deltaTime)
     bAllowCombat = info.SongAmbientSection != 255 && info.MusicType != MT_SingleTrack && info.MusicType != MT_ConversationOnly && iAllowCombatMusic > 0;
     bAllowOther = info.SongAmbientSection != 255 && info.MusicType == MT_Normal;
 
+    if (delayHack >= 0)
+    {
+        player.ClientSetMusic(currentSong,delayHack,255,MTRAN_Instant);
+        delayHack = -1;
+        return;
+    }
+
     //If we have the Extended music option, and we're in a bar or club, stop all of the music entirely
     if ((info.MusicType == MT_ConversationOnly || info.MusicType == MT_CombatOnly) && iEnhancedMusicSystem == 2)
     {
@@ -166,7 +184,7 @@ function Tick(float deltaTime)
 			player.ClientSetMusic(currentSong, 5, 255, MTRAN_FastFade);
 			musicMode = MUS_Outro;
             fMusicHackTimer = 5;
-            //savedSection = info.SongAmbientSection;
+            savedSection = info.SongAmbientSection;
 		}
 	}
 	else if (player.IsInState('Conversation') && bAllowConverse)
@@ -251,11 +269,21 @@ function Tick(float deltaTime)
 
                     musicMode = MUS_Ambient;
 					musicChangeTimer = 0.0;
-                    fMusicHackTimer = 5;
+                    fMusicHackTimer = 10;
 				}
 			}
 		}
 	}
+}
+
+event OnPreTravel()
+{
+    Disable('Tick');
+}
+
+event OnTravelPostAccept()
+{
+    Enable('Tick');
 }
 
 /*

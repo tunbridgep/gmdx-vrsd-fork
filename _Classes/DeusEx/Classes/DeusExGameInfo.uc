@@ -48,7 +48,28 @@ function LoginAllModules(PlayerPawn newPlayer)
         mod.PlayerLogin(newPlayer);
         mod = mod.GetNext();
     }
+}
 
+function PreTravelAllModules()
+{
+    local DXGameInfoModule mod;
+    mod = default.modules;
+    while (mod != None)
+    {
+        mod.OnPreTravel();
+        mod = mod.GetNext();
+    }
+}
+
+function PostTravelAllModules()
+{
+    local DXGameInfoModule mod;
+    mod = default.modules;
+    while (mod != None)
+    {
+        mod.OnTravelPostAccept();
+        mod = mod.GetNext();
+    }
 }
 
 //SARGE: Tick all of our modules
@@ -72,6 +93,18 @@ event Tick(float deltaTime)
 function PreBeginPlay()
 {
     GetModule(class'MusicPlayer');
+}
+
+event TravelPostAccept()
+{
+    PostTravelAllModules();
+    super.TravelPostAccept();
+}
+
+function ProcessServerTravel( string URL, bool bItems )
+{
+    PreTravelAllModules();
+    super.ProcessServerTravel(URL,bItems);
 }
 
 // ----------------------------------------------------------------------

@@ -17,6 +17,7 @@ function DXGameInfoModule SetNext(DXGameInfoModule n)
 function Init(DeusExGameInfo info)
 {
     gameInfo = info;
+    Disable('Tick');
 }
 
 function DeusExGameInfo GetGameInfo()
@@ -29,5 +30,13 @@ function Tick(float deltaTime)
 }
 
 function PlayerLogin(PlayerPawn newPlayer)
+{
+}
+
+event OnPreTravel()
+{
+}
+
+event OnTravelPostAccept()
 {
 }
