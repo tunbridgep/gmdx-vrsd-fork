@@ -1069,7 +1069,10 @@ function InitializeRandomItems()
 	        bMatchFound = CheckItemLootTable(WM,tableModBallistics);
         if (!bMatchFound)// && Player.bRandomizeModsAttachments)
 	        bMatchFound = CheckItemLootTable(WM,tableModAttachments);*/
-        bMatchFound = CheckItemLootTable(WM,tableModGeneral);
+        
+            //SARGE: No more specialist mod randomisation!
+            if (!WM.IsA('WeaponModLaser') && !WM.IsA('WeaponModSilencer') && !WM.IsA('WeaponModScope') && !WM.IsA('WeaponModFullAuto'))
+                bMatchFound = CheckItemLootTable(WM,tableModGeneral);
         }
 	}
 
