@@ -18506,6 +18506,7 @@ Begin Actor Class=Vase1 Name=Vase0
     Name=Vase0
 End Actor
 Begin Actor Class=Sodacan Name=Sodacan0
+    bDontRemoveOnMissionComplete=true
     LastRenderTime=32.428009
     DistanceFromPlayer=4524.101074
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -18516,6 +18517,7 @@ Begin Actor Class=Sodacan Name=Sodacan0
     Name=Sodacan0
 End Actor
 Begin Actor Class=Candybar Name=Candybar0
+    bDontRemoveOnMissionComplete=true
     LastRenderTime=32.428009
     DistanceFromPlayer=4531.347168
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -18908,6 +18910,7 @@ Begin Actor Class=Light Name=Light220
     Name=Light220
 End Actor
 Begin Actor Class=Sodacan Name=Sodacan1
+    bDontRemoveOnMissionComplete=true
     LastRenderTime=29.092501
     DistanceFromPlayer=11087.332031
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -20924,6 +20927,7 @@ Begin Actor Class=AmbientSound Name=AmbientSound28
     Name=AmbientSound28
 End Actor
 Begin Actor Class=WeaponCombatKnife Name=WeaponCombatKnife0
+    bDontRemoveOnMissionComplete=true
     LastRenderTime=32.428009
     DistanceFromPlayer=9778.323242
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -23899,6 +23903,7 @@ Begin Actor Class=Trashbag Name=Trashbag0
     Name=Trashbag0
 End Actor
 Begin Actor Class=WeaponCrowbar Name=WeaponCrowbar1
+    bDontRemoveOnMissionComplete=true
     LastRenderTime=524.312988
     DistanceFromPlayer=9764.953125
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -23909,6 +23914,7 @@ Begin Actor Class=WeaponCrowbar Name=WeaponCrowbar1
     Name=WeaponCrowbar1
 End Actor
 Begin Actor Class=FireExtinguisher Name=FireExtinguisher0
+    bDontRemoveOnMissionComplete=true
     LastRenderTime=32.428009
     DistanceFromPlayer=9742.985352
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -23919,6 +23925,7 @@ Begin Actor Class=FireExtinguisher Name=FireExtinguisher0
     Name=FireExtinguisher0
 End Actor
 Begin Actor Class=Flare Name=Flare0
+    bDontRemoveOnMissionComplete=true
     LastRenderTime=32.428009
     DistanceFromPlayer=9718.374023
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -23930,6 +23937,7 @@ Begin Actor Class=Flare Name=Flare0
     Name=Flare0
 End Actor
 Begin Actor Class=Flare Name=Flare1
+    bDontRemoveOnMissionComplete=true
     LastRenderTime=32.428009
     DistanceFromPlayer=9762.580078
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -23941,6 +23949,7 @@ Begin Actor Class=Flare Name=Flare1
     Name=Flare1
 End Actor
 Begin Actor Class=Flare Name=Flare2
+    bDontRemoveOnMissionComplete=true
     LastRenderTime=32.428009
     DistanceFromPlayer=9762.177734
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -23961,6 +23970,7 @@ Begin Actor Class=Flare Name=Flare3
     Name=Flare3
 End Actor
 Begin Actor Class=WeaponCrowbar Name=WeaponCrowbar2
+    bDontRemoveOnMissionComplete=true
     LastRenderTime=108.020897
     DistanceFromPlayer=11284.962891
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -33576,6 +33586,7 @@ Begin Actor Class=AmbientSound Name=AmbientSound45
     Name=AmbientSound45
 End Actor
 Begin Actor Class=Flare Name=Flare4
+    bDontRemoveOnMissionComplete=true
     LastRenderTime=32.428009
     DistanceFromPlayer=9754.764648
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -33587,6 +33598,7 @@ Begin Actor Class=Flare Name=Flare4
     Name=Flare4
 End Actor
 Begin Actor Class=Flare Name=Flare5
+    bDontRemoveOnMissionComplete=true
     LastRenderTime=32.428009
     DistanceFromPlayer=9774.399414
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -33742,6 +33754,7 @@ Begin Actor Class=Plant2 Name=Plant3
     Name=Plant3
 End Actor
 Begin Actor Class=Flare Name=Flare7
+    bDontRemoveOnMissionComplete=true
     LastRenderTime=36.162262
     DistanceFromPlayer=4274.037598
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -33752,6 +33765,7 @@ Begin Actor Class=Flare Name=Flare7
     Name=Flare7
 End Actor
 Begin Actor Class=Flare Name=Flare8
+    bDontRemoveOnMissionComplete=true
     LastRenderTime=36.162262
     DistanceFromPlayer=4284.628418
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -43725,6 +43739,7 @@ Begin Actor Class=Brush Name=Brush308
     Name=Brush308
 End Actor
 Begin Actor Class=WeaponCrowbar Name=WeaponCrowbar3
+    bDontRemoveOnMissionComplete=true
     LastRenderTime=554.343079
     DistanceFromPlayer=6026.887695
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -44486,6 +44501,7 @@ Begin Actor Class=Lamp3 Name=Lamp4
     Name=Lamp4
 End Actor
 Begin Actor Class=NanoKey Name=NanoKey0
+    bDontRemoveOnMissionComplete=true
     KeyID=UNhatchdoor
     Description="UNATCO Compound Hatch"
     LastRenderTime=32.428009
@@ -44513,6 +44529,7 @@ Begin Actor Class=Light Name=Light486
     Name=Light486
 End Actor
 Begin Actor Class=MedKit Name=MedKit2
+    bDontRemoveOnMissionComplete=true
     LastRenderTime=32.428009
     DistanceFromPlayer=5478.266113
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -59654,6 +59671,7 @@ Begin Actor Class=SkillAwardTrigger Name=SkillAwardTrigger6
     Name=SkillAwardTrigger6
 End Actor
 Begin Actor Class=SkillAwardTrigger Name=SkillAwardTrigger7
+    bDontRemoveOnMissionComplete=false
     skillPointsAdded=50
     awardMessage="Exploration Bonus"
     LastRenderTime=30.336723
@@ -60244,6 +60262,7 @@ Begin Actor Class=PatrolPoint Name=PatrolPoint14
     Name=PatrolPoint14
 End Actor
 Begin Actor Class=Liquor40oz Name=Liquor40oz8
+    bDontRemoveOnMissionComplete=true
     LastRenderTime=36.162262
     DistanceFromPlayer=3969.121582
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -60275,6 +60294,7 @@ Begin Actor Class=Liquor40oz Name=Liquor40oz10
     Name=Liquor40oz10
 End Actor
 Begin Actor Class=Liquor40oz Name=Liquor40oz11
+    bDontRemoveOnMissionComplete=true
     LastRenderTime=29.092501
     DistanceFromPlayer=11057.458008
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -60631,6 +60651,7 @@ Begin Actor Class=PathNode Name=PathNode908
     Name=PathNode908
 End Actor
 Begin Actor Class=CrateBreakableMedGeneral Name=CrateBreakableMedGeneral2
+    bDontRemoveOnMissionComplete=true
     LastRenderTime=29.092501
     DistanceFromPlayer=10893.130859
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -64032,6 +64053,7 @@ Begin Actor Class=DataLinkTrigger Name=DataLinkTrigger7
     Name=DataLinkTrigger7
 End Actor
 Begin Actor Class=AugmentationCannister Name=AugmentationCannister0
+    bDontRemoveOnMissionComplete=true
     AddAugs(0)=AugMuscle
     AddAugs(1)=AugCombat
     augListNum=1
@@ -100362,7 +100384,7 @@ Begin Actor Class=CrateBreakableMedGeneral Name=CrateBreakableMedGeneral4
     Level=LevelInfo'MyLevel.LevelInfo0'
     Tag=CrateBreakableMedGeneral
     Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=3138,ZoneNumber=2)
-    Location=(X=10139.497070,Y=381.979492,Z=-55.899986)
+    Location=(X=10188.497070,Y=381.979492,Z=-55.899986)
     Rotation=(Yaw=5000)
     OldLocation=(X=2149.496826,Y=5233.979492,Z=-55.899986)
     ScaleGlow=0.500000
@@ -102795,6 +102817,7 @@ Begin Actor Class=FishGenerator Name=FishGenerator2
 End Actor
 Begin Actor Class=CrateBreakableMedGeneral Name=CrateBreakableMedGeneral5
     contents=Class'DeusEx.WeaponModAccuracy'
+    bDontRemoveOnMissionComplete=true
     LastRenderTime=32.428009
     DistanceFromPlayer=10874.007813
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -102807,6 +102830,7 @@ Begin Actor Class=CrateBreakableMedGeneral Name=CrateBreakableMedGeneral5
 End Actor
 Begin Actor Class=CrateBreakableMedGeneral Name=CrateBreakableMedGeneral8
     contents=Class'DeusEx.WeaponModReload'
+    bDontRemoveOnMissionComplete=true
     LastRenderTime=32.428009
     DistanceFromPlayer=10791.911133
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -161765,6 +161789,7 @@ Begin Actor Class=TerroristCarcass Name=TerroristCarcass4
     Name=TerroristCarcass4
 End Actor
 Begin Actor Class=CrateBreakableMedCombat Name=CrateBreakableMedCombat4
+    bDontRemoveOnMissionComplete=true
     contents=Class'DeusEx.Ammo10mmAP'
     LastRenderTime=29.092501
     DistanceFromPlayer=11370.944336
@@ -166890,6 +166915,7 @@ Begin Actor Class=Barrel1 Name=Barrel10
     Name=Barrel10
 End Actor
 Begin Actor Class=CrateBreakableMedCombat Name=CrateBreakableMedCombat0
+    bDontRemoveOnMissionComplete=true
     contents=Class'DeusEx.AmmoDartFlare'
     LastRenderTime=32.428009
     DistanceFromPlayer=5349.053711
@@ -177536,6 +177562,7 @@ Begin Actor Class=Light Name=Light476
     Name=Light476
 End Actor
 Begin Actor Class=Cigarettes Name=Cigarettes0
+    bDontRemoveOnMissionComplete=true
     LastRenderTime=32.428009
     DistanceFromPlayer=5615.179199
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -181043,6 +181070,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover4
     Name=DeusExMover4
 End Actor
 Begin Actor Class=Credits Name=Credits3
+    bDontRemoveOnMissionComplete=true
     numCredits=77
     LastRenderTime=32.428009
     DistanceFromPlayer=9872.081055
@@ -181054,6 +181082,7 @@ Begin Actor Class=Credits Name=Credits3
     Name=Credits3
 End Actor
 Begin Actor Class=Credits Name=Credits4
+    bDontRemoveOnMissionComplete=true
     numCredits=32
     LastRenderTime=32.428009
     DistanceFromPlayer=9863.396484
@@ -181298,6 +181327,7 @@ Begin Actor Class=Brush Name=Brush1539
     Name=Brush1539
 End Actor
 Begin Actor Class=Sodacan Name=Sodacan5
+    bDontRemoveOnMissionComplete=true
     textureSet=3
     LastRenderTime=32.428009
     DistanceFromPlayer=9734.536133
@@ -183126,6 +183156,7 @@ Begin Actor Class=Brush Name=Brush1563
     Name=Brush1563
 End Actor
 Begin Actor Class=CrateBreakableMedGeneral Name=CrateBreakableMedGeneral1
+    bDontRemoveOnMissionComplete=true
     contents=Class'DeusEx.BioelectricCell'
     LastRenderTime=29.092501
     DistanceFromPlayer=7590.537598
@@ -191905,6 +191936,7 @@ Begin Actor Class=PathNode Name=PathNode209
     Name=PathNode209
 End Actor
 Begin Actor Class=Multitool Name=Multitool0
+    bDontRemoveOnMissionComplete=true
     LastRenderTime=32.428009
     DistanceFromPlayer=3547.105225
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -194955,6 +194987,7 @@ Begin Actor Class=Trashbag2 Name=Trashbag12
     Name=Trashbag12
 End Actor
 Begin Actor Class=Sodacan Name=Sodacan7
+    bDontRemoveOnMissionComplete=true
     textureSet=1
     LastRenderTime=32.119930
     DistanceFromPlayer=4885.563965
@@ -194966,6 +194999,7 @@ Begin Actor Class=Sodacan Name=Sodacan7
     Name=Sodacan7
 End Actor
 Begin Actor Class=WeaponModAuto Name=WeaponModAuto1
+    bDontRemoveOnMissionComplete=true
     LastRenderTime=30.336723
     DistanceFromPlayer=4850.300781
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -194977,6 +195011,7 @@ Begin Actor Class=WeaponModAuto Name=WeaponModAuto1
     Name=WeaponModAuto1
 End Actor
 Begin Actor Class=Flare Name=Flare12
+    bDontRemoveOnMissionComplete=true
     LastRenderTime=30.336723
     DistanceFromPlayer=4849.593262
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -194988,6 +195023,7 @@ Begin Actor Class=Flare Name=Flare12
     Name=Flare12
 End Actor
 Begin Actor Class=WeaponCrowbar Name=WeaponCrowbar5
+    bDontRemoveOnMissionComplete=true
     LastRenderTime=7.361934
     DistanceFromPlayer=4888.975586
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -195117,6 +195153,7 @@ Begin Actor Class=DamageTrigger Name=DamageTrigger5
     Name=DamageTrigger5
 End Actor
 Begin Actor Class=AmmoShell Name=AmmoShell0
+    bDontRemoveOnMissionComplete=true
     AmmoAmount=4
     LastRenderTime=32.428009
     DistanceFromPlayer=5547.552246
@@ -195128,6 +195165,7 @@ Begin Actor Class=AmmoShell Name=AmmoShell0
     Name=AmmoShell0
 End Actor
 Begin Actor Class=AmmoShell Name=AmmoShell1
+    bDontRemoveOnMissionComplete=true
     Style=E_Single
     PickupViewMesh=LodMesh'DeusExItems.ShellCasing2'
     LastRenderTime=32.428009
@@ -195145,6 +195183,7 @@ Begin Actor Class=AmmoShell Name=AmmoShell1
     Name=AmmoShell1
 End Actor
 Begin Actor Class=AmmoShell Name=AmmoShell2
+    bDontRemoveOnMissionComplete=true
     Style=E_Single
     PickupViewMesh=LodMesh'DeusExItems.ShellCasing2'
     LastRenderTime=32.428009
@@ -195230,6 +195269,7 @@ Begin Actor Class=FlagPole Name=FlagPole1
     Name=FlagPole1
 End Actor
 Begin Actor Class=Liquor40oz Name=Liquor40oz4
+    bDontRemoveOnMissionComplete=true
     textureSet=3
     LastRenderTime=32.428009
     DistanceFromPlayer=5564.721191
@@ -199158,6 +199198,7 @@ Begin Actor Class=PathNode Name=PathNode1204
     Name=PathNode1204
 End Actor
 Begin Actor Class=AmmoDartTaser Name=AmmoDartTaser1
+    bDontRemoveOnMissionComplete=true
     LastRenderTime=32.428009
     DistanceFromPlayer=5588.820801
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -213881,6 +213922,7 @@ Begin Actor Class=AmbientSound Name=AmbientSound68
     Name=AmbientSound68
 End Actor
 Begin Actor Class=CrateBreakableMedGeneral Name=CrateBreakableMedGeneral0
+    bDontRemoveOnMissionComplete=true
     contents=Class'DeusEx.Binoculars'
     LastRenderTime=29.092501
     DistanceFromPlayer=11044.583984
@@ -214620,6 +214662,7 @@ Begin Actor Class=BoxPaperClip Name=BoxPaperClip14
     Name=BoxPaperClip14
 End Actor
 Begin Actor Class=CrateBreakableMedGeneral Name=CrateBreakableMedGeneral3
+    bDontRemoveOnMissionComplete=true
     contents=Class'DeusEx.Multitool'
     LastRenderTime=29.092501
     DistanceFromPlayer=7547.989258
@@ -218586,6 +218629,7 @@ Begin Actor Class=BoxSmall Name=BoxSmall12
     Name=BoxSmall12
 End Actor
 Begin Actor Class=WeaponCrowbar Name=WeaponCrowbar7
+    bDontRemoveOnMissionComplete=true
     LastRenderTime=353.798645
     DistanceFromPlayer=8128.813477
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -218984,6 +219028,7 @@ Begin Actor Class=CrateUnbreakableSmall Name=CrateUnbreakableSmall28
     Name=CrateUnbreakableSmall28
 End Actor
 Begin Actor Class=Flare Name=Flare15
+    bDontRemoveOnMissionComplete=true
     LastRenderTime=29.092501
     DistanceFromPlayer=11326.083008
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -218994,6 +219039,7 @@ Begin Actor Class=Flare Name=Flare15
     Name=Flare15
 End Actor
 Begin Actor Class=Flare Name=Flare16
+    bDontRemoveOnMissionComplete=true
     LastRenderTime=29.092501
     DistanceFromPlayer=11326.937500
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -220162,6 +220208,7 @@ Begin Actor Class=PathNode Name=PathNode17
     Name=PathNode17
 End Actor
 Begin Actor Class=SoftwareNuke Name=SoftwareNuke4
+    bDontRemoveOnMissionComplete=true
     LastRenderTime=32.428009
     DistanceFromPlayer=5522.367188
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -220172,6 +220219,7 @@ Begin Actor Class=SoftwareNuke Name=SoftwareNuke4
     Name=SoftwareNuke4
 End Actor
 Begin Actor Class=DeusExMover Name=DeusExMover7
+    bDontOpenOnMissionComplete=false
     bLocked=True
     lockStrength=0.050000
     bBreakable=True
@@ -220672,6 +220720,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover7
     Name=DeusExMover7
 End Actor
 Begin Actor Class=DeusExMover Name=DeusExMover24
+    bDontOpenOnMissionComplete=false
     bLocked=True
     lockStrength=0.150000
     doorStrength=0.600000
@@ -240372,6 +240421,7 @@ Begin Actor Class=Brush Name=Brush1825
 End Actor
 Begin Actor Class=CrateBreakableMedGeneral Name=CrateBreakableMedGeneral6
     contents=Class'DeusEx.HazMatSuit'
+    bDontRemoveOnMissionComplete=true
     LastRenderTime=29.092501
     DistanceFromPlayer=7470.856934
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -260748,6 +260798,7 @@ Begin Actor Class=OfficeChair Name=OfficeChair2
     Name=OfficeChair2
 End Actor
 Begin Actor Class=CrateBreakableMedCombat Name=CrateBreakableMedCombat8
+    bDontRemoveOnMissionComplete=true
     bLowDifficultyOnly=True
     LastRenderTime=29.092501
     DistanceFromPlayer=11231.311523
@@ -260771,6 +260822,7 @@ Begin Actor Class=CrateBreakableMedMedical Name=CrateBreakableMedMedical0
     Name=CrateBreakableMedMedical0
 End Actor
 Begin Actor Class=CrateBreakableMedMedical Name=CrateBreakableMedMedical6
+    bDontRemoveOnMissionComplete=true
     bLowDifficultyOnly=True
     LastRenderTime=36.444309
     DistanceFromPlayer=5342.529297
@@ -268942,6 +268994,7 @@ Begin Actor Class=GasGrenade Name=GasGrenade0
     Name=GasGrenade0
 End Actor
 Begin Actor Class=Flare Name=Flare14
+    bDontRemoveOnMissionComplete=true
     LastRenderTime=36.162262
     DistanceFromPlayer=4021.563232
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -269085,6 +269138,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover23
     Name=DeusExMover23
 End Actor
 Begin Actor Class=CrateBreakableMedCombat Name=CrateBreakableMedCombat2
+    bDontRemoveOnMissionComplete=true
     contents=Class'DeusEx.AmmoDart'
     LastRenderTime=32.428009
     DistanceFromPlayer=6121.872559
@@ -269096,6 +269150,7 @@ Begin Actor Class=CrateBreakableMedCombat Name=CrateBreakableMedCombat2
     Name=CrateBreakableMedCombat2
 End Actor
 Begin Actor Class=CrateBreakableMedCombat Name=CrateBreakableMedCombat10
+    bDontRemoveOnMissionComplete=true
     bHardcoreRemoveIt=True
     contents=Class'DeusEx.WeaponGasGrenade'
     LastRenderTime=32.428009
@@ -269108,6 +269163,7 @@ Begin Actor Class=CrateBreakableMedCombat Name=CrateBreakableMedCombat10
     Name=CrateBreakableMedCombat10
 End Actor
 Begin Actor Class=CrateBreakableMedCombat Name=CrateBreakableMedCombat11
+    bDontRemoveOnMissionComplete=true
     contents=Class'DeusEx.AmmoBattery'
     LastRenderTime=29.092501
     DistanceFromPlayer=8327.755859
@@ -269225,6 +269281,7 @@ Begin Actor Class=UNATCOTroop Name=UNATCOTroop8
     Name=UNATCOTroop8
 End Actor
 Begin Actor Class=WeaponCombatKnife Name=WeaponCombatKnife1
+    bDontRemoveOnMissionComplete=true
     bDynamicLight=True
     LastRenderTime=63.198116
     Level=LevelInfo'MyLevel.LevelInfo0'

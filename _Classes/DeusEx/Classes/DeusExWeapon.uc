@@ -368,6 +368,8 @@ var travel bool bHadLaser;
 var travel bool bHadScope;
 var travel bool bHadSilencer;
 
+var(GMDX) const bool bDontRemoveOnMissionComplete;                                    //SARGE: Don't remove this weapon on mission completion.
+
 //Used during the new "SwitchAttachment" state so we can change attachments during the animation
 var bool bSwitchingToLaser;
 var bool bSwitchingToSilencer;

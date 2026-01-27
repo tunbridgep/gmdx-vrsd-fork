@@ -148576,6 +148576,7 @@ Begin Actor Class=Brush Name=Brush148
     Name=Brush148
 End Actor
 Begin Actor Class=SkillAwardTrigger Name=SkillAwardTrigger10
+    bDontRemoveOnMissionComplete=false
     skillPointsAdded=200
     awardMessage="Goal Accomplishment Bonus"
     LastRenderTime=73.599884
@@ -207465,6 +207466,7 @@ Begin Actor Class=Ammo20mm Name=Ammo20mm1
     Name=Ammo20mm1
 End Actor
 Begin Actor Class=SkillAwardTrigger Name=SkillAwardTrigger0
+    bDontRemoveOnMissionComplete=false
     skillPointsAdded=50
     awardMessage="Exploration Bonus"
     bDynamicLight=True
@@ -207477,6 +207479,7 @@ Begin Actor Class=SkillAwardTrigger Name=SkillAwardTrigger0
     Name=SkillAwardTrigger0
 End Actor
 Begin Actor Class=SkillAwardTrigger Name=SkillAwardTrigger1
+    bDontRemoveOnMissionComplete=false
     skillPointsAdded=50
     awardMessage="Exploration Bonus"
     bDynamicLight=True
@@ -207489,6 +207492,7 @@ Begin Actor Class=SkillAwardTrigger Name=SkillAwardTrigger1
     Name=SkillAwardTrigger1
 End Actor
 Begin Actor Class=SkillAwardTrigger Name=SkillAwardTrigger3
+    bDontRemoveOnMissionComplete=false
     skillPointsAdded=50
     awardMessage="Exploration Bonus"
     bDynamicLight=True
@@ -207501,6 +207505,7 @@ Begin Actor Class=SkillAwardTrigger Name=SkillAwardTrigger3
     Name=SkillAwardTrigger3
 End Actor
 Begin Actor Class=SkillAwardTrigger Name=SkillAwardTrigger4
+    bDontRemoveOnMissionComplete=false
     skillPointsAdded=50
     awardMessage="Exploration Bonus"
     bDynamicLight=True
@@ -207513,6 +207518,7 @@ Begin Actor Class=SkillAwardTrigger Name=SkillAwardTrigger4
     Name=SkillAwardTrigger4
 End Actor
 Begin Actor Class=SkillAwardTrigger Name=SkillAwardTrigger5
+    bDontRemoveOnMissionComplete=false
     skillPointsAdded=50
     awardMessage="Exploration Bonus"
     bDynamicLight=True

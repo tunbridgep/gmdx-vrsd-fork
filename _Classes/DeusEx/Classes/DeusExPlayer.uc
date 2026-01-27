@@ -934,6 +934,7 @@ var const localized string MsgSecondaryAdded;
 
 var travel bool bSkillsSetAtStart;                           //SARGE: Gain a bunch of skill points at the start of the game, but gain no more skill points from then on.
 var travel bool bImprisonmentTakesAmmo;                      //SARGE: Take Ammo when being imprisoned by UNATCO, similar to Hardcore mode.
+var travel bool bUNATCOCleanup;                              //SARGE: UNATCO does a proper job cleaning up. They will strip corpses and remove crates.
 
 var globalconfig int iSmartBinocs;                           //SARGE: Pressing the Scope key selects binoculars
 

@@ -60691,6 +60691,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover130
     Name=DeusExMover130
 End Actor
 Begin Actor Class=DeusExMover Name=DeusExMover131
+    bDontOpenOnMissionComplete=false
     bLocked=True
     lockStrength=0.300000
     bBreakable=True

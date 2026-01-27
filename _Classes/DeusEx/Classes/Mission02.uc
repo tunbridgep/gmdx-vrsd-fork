@@ -136,8 +136,11 @@ function FirstFrame()
             }
             
             //disable the tripwires
-            foreach AllActors(class'BeamTrigger', trig)
-                trig.Untrigger(player, player);
+            //foreach AllActors(class'BeamTrigger', trig)
+            //    trig.Untrigger(player, player);
+
+            //SARGE: Trigger the full takeover
+            TriggerUNATCOTakeover();
             
             flags.SetBool('GMDXRemoveTNT', True,, 3);
         }

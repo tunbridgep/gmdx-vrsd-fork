@@ -51,6 +51,8 @@ var string HDTPMesh;
 var int totalSkins;                                                             //Sarge: How many total skins this object has. Used to select random skins
 var(GMDX) bool dontRandomiseSkin;                                               //Sarge: Prevents individual items from having their skin randomised
 
+var(GMDX) const bool bDontRemoveOnMissionComplete;                                    //SARGE: Don't remove this item on mission completion.
+
 //SARGE: MissionScript calls this on all objects on map start.
 function RandomiseSkin(DeusExPlayer player)
 {

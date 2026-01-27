@@ -38,6 +38,8 @@ var const Sound PartialAmmoSound;
 //SARGE: Ammo handling moved to ammo class
 var localized string MaxAmmoString;                                            //SARGE: Appended to searches when we can't pick ammo up
 
+var(GMDX) const bool bDontRemoveOnMissionComplete;                                    //SARGE: Don't remove this ammo on mission completion.
+
 function bool HasCustomAmmoColor()
 {
     return default.ammoHUDColor != class'DeusExAmmo'.default.ammoHUDColor;
