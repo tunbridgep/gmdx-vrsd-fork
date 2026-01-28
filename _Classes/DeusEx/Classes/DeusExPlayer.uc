@@ -8711,6 +8711,10 @@ function DoLeftFrob(Actor frobTarget)
             bDefaultFrob = DeusExDecoration(frobTarget).DoLeftFrob(Self);
         else if (frobTarget.isA('DeusExCarcass'))
             bDefaultFrob = DeusExCarcass(frobTarget).DoLeftFrob(Self);
+        else if (frobTarget.isA('DeusExAmmo'))
+        {
+            bDefaultFrob = class'CarriedAmmo'.static.CreateCarriedAmmoFor(self,DeusExAmmo(frobTarget));
+        }
     }
 
     //Pick up and equip items by default
@@ -11231,7 +11235,6 @@ function GrabDecoration()
 			{
 				CarriedDecoration = Decoration(FrobTarget);
 				PutCarriedDecorationInHand();
-
 			}
 }
 
@@ -11334,6 +11337,7 @@ function DropDecoration()
 	local bool bSuccess;
 	local Actor hitActor;
     local Decoration deco;
+    local DeusExAmmo carriedAmmo;
 
 	bSuccess = False;
 
@@ -11454,6 +11458,10 @@ function DropDecoration()
                     if (swimTimer < 0)
                         swimTimer = 0;
                 }
+
+                //SARGE: If it's a CarriedAmmo, turn it into the real ammo
+                if (deco.IsA('CarriedAmmo') && !bThrowDecoration)
+                    carriedAmmo = class'CarriedAmmo'.static.CreateRealAmmoFor(CarriedAmmo(deco));
             }
 		}
 		else
