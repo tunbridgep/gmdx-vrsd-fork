@@ -7,7 +7,9 @@ class PersonaScreenGoals extends PersonaScreenBaseWindow;
 // Goal Items
 var TileWindow             winGoals;
 var PersonaCheckBoxWindow  chkShowCompletedGoals;
+var PersonaCheckBoxWindow  chkShowOnScreen;
 var Bool                   bDisplayCompletedGoals;
+var Bool                   bShowOnScreen;
 
 var localized String       GoalsTitleText;
 var localized String       PrimaryGoalsHeader;
@@ -28,6 +30,7 @@ var Bool                      bConfirmNoteDeletes;
 var localized String          NotesTitleText;
 var PersonaActionButtonWindow btnAddNote;
 var PersonaActionButtonWindow btnDeleteNote;
+var PersonaActionButtonWindow btnPin; //SARGE: Added
 var PersonaActionButtonWindow btnMarker; //SARGE: Added
 var PersonaNotesEditWindow    currentNoteWindow;
 var PersonaNotesEditWindow    firstNoteWindow;
@@ -40,8 +43,11 @@ var localized string AddButtonLabel;
 var localized string DeleteButtonLabel;
 var localized string ConfirmNoteDeletionLabel;
 
+//SARGE: Additions
 var localized string MarkerButtonLabel;
+var localized string PinButtonLabel;
 var localized string ShowMarkersLabel;
+var localized String DisplayOnScreen;
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -109,9 +115,25 @@ function CreateControls()
     CreateShowMarkerCheckbox();
     CreateEditCheckbox();
     CreateShowDefaultNotesCheckbox();
+    CreateShowOnScreenCheckbox();
     CreateShowUserNotesCheckbox();
     CreateShowMarkerNotesCheckbox();
 	CreateConfirmNoteDeletionCheckbox();
+}
+
+// ----------------------------------------------------------------------
+// CreateShowCompletedGoalsCheckbox()
+// ----------------------------------------------------------------------
+
+function CreateShowOnScreenCheckbox()
+{
+	chkShowOnScreen = PersonaCheckBoxWindow(winClient.NewChild(Class'PersonaCheckBoxWindow'));
+
+	bShowOnScreen = player.bShowGoalsOnScreen;
+
+	chkShowOnScreen.SetText(DisplayOnScreen);
+	chkShowOnScreen.SetToggle(bShowOnScreen);
+	chkShowOnScreen.SetWindowAlignments(HALIGN_Right, VALIGN_Top, 13, 1);
 }
 
 // ----------------------------------------------------------------------
@@ -150,6 +172,9 @@ function CreateNotesButtons()
 
 	btnDeleteNote = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow'));
 	btnDeleteNote.SetButtonText(DeleteButtonLabel);
+    
+    btnPin = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow'));
+	btnPin.SetButtonText(PinButtonLabel);
 }
 
 // ----------------------------------------------------------------------
@@ -308,23 +333,14 @@ function PopulateGoalsByType(Bool bPrimaryGoals, String goalHeaderText)
 // SARGE: Ignore hidden notes
 // ----------------------------------------------------------------------
 
-function PopulateNotes()
+//Moved the actual populating out to here so it's more generic
+function GenerateNotesList(bool bPinned)
 {
 	local PersonaNotesEditWindow noteWindow;
 	local DeusExNote note;
-	local bool   bWasVisible;
     local bool bAdd;
-
-	// Hide the notes, so we don't flood the tile window with ConfigureChanged() events
-	bWasVisible = winNotes.IsVisible(FALSE);
-	winNotes.Hide();
-
-	// First make sure there aren't already notes
-	winNotes.DestroyAllChildren();
-            
-    firstNoteWindow = None;
-
-	// Loop through all the notes
+    
+    // Loop through all the notes, show the pinned ones first
 	note = player.FirstNote;
 	while(note != None)
 	{
@@ -339,11 +355,16 @@ function PopulateNotes()
             bAdd = false;
         else if (!player.bShowMarkerNotes && note.bUserNote && note.bMarkerNote)
             bAdd = false;
+        else if (note.bPinned && !bPinned)
+            bAdd = false;
+        else if (!note.bPinned && bPinned)
+            bAdd = false;
 
         if (bAdd)
         {
             noteWindow = CreateNoteEditWindow( note );
             noteWindow.SetMarkerNote(note.bMarkerNote);
+            noteWindow.SetPinnedNote(note.bPinned);
 
             if (firstNoteWindow == None)
                 firstNoteWindow = noteWindow;
@@ -352,6 +373,24 @@ function PopulateNotes()
 		// Continue on to the next note
 		note = note.next;
 	}
+
+}
+
+function PopulateNotes()
+{
+	local bool   bWasVisible;
+
+	// Hide the notes, so we don't flood the tile window with ConfigureChanged() events
+	bWasVisible = winNotes.IsVisible(FALSE);
+	winNotes.Hide();
+
+	// First make sure there aren't already notes
+	winNotes.DestroyAllChildren();
+            
+    firstNoteWindow = None;
+
+    GenerateNotesList(true);
+    GenerateNotesList(false);
 
 	// Show the notes again, if they were visible before
 	winNotes.Show(bWasVisible);
@@ -387,9 +426,14 @@ function bool ButtonActivated( Window buttonPressed )
             player.bAllowNoteEditing = true;
 			AddMarker();
 			break;
+		
+        case btnPin:
+            PinNote(currentNoteWindow);
+            PopulateNotes();
+			break;
 
 		case btnDeleteNote:
-			if (bConfirmNoteDeletes && !player.bHardCoreMode)
+			if (bConfirmNoteDeletes)
 			{
 				root.MessageBox(DeleteNoteTitle, DeleteNotePrompt, 0, False, Self);
 			}
@@ -532,6 +576,21 @@ function AddNote()
 }
 
 // ----------------------------------------------------------------------
+// SARGE: PinNote()
+//
+// Pins or Unpins the specified note
+// ----------------------------------------------------------------------
+
+function PinNote(PersonaNotesEditWindow noteWindow)
+{
+	if (noteWindow == None)
+		return;
+
+	// Remove it from the collection
+	player.PinNote(noteWindow.GetNote());
+}
+
+// ----------------------------------------------------------------------
 // DeleteNote()
 //
 // Deletes the specified note
@@ -568,6 +627,11 @@ event bool ToggleChanged(Window button, bool bNewToggle)
 	{
 		bDisplayCompletedGoals = bNewToggle;
 		PopulateGoals();
+	}
+	else if (button == chkShowOnScreen)
+	{
+        bShowOnScreen = bNewToggle;
+        player.bShowGoalsOnScreen = bShowOnScreen;
 	}
 	else if (button == chkConfirmNoteDeletion)
 	{
@@ -638,6 +702,7 @@ defaultproperties
      PrimaryGoalsHeader="Primary Goals"
      SecondaryGoalsHeader="Secondary Goals"
      DisplayCompletedGoals="Display C|&ompleted Goals"
+     DisplayOnScreen="Display Goals On Screen"
      NoGoalsLabel="None"
      GoalCompletedText="[Completed]"
      NotesTitleText="Notes"
@@ -648,6 +713,7 @@ defaultproperties
      AddButtonLabel="Add |&Note"
      DeleteButtonLabel="|&Delete Note"
      MarkerButtonLabel="Add |&Marker"
+     PinButtonLabel="|&Pin Note"
      ConfirmNoteDeletionLabel="Confirm Note Deletion"
      ShowMarkersLabel="Show Markers"
      clientBorderOffsetY=29

@@ -661,6 +661,8 @@ function DeusExBaseWindow InvokeUIScreen(
                  hud.startDisplay.SetVisibility(false);                         //RSD: Also hide the mission start display
              if (hud.receivedItems != none)
                  hud.receivedItems.SetVisibility(false);                        //RSD: Also hide the loot window
+             if (hud.goalsWindow != none)
+                 hud.goalsWindow.SetVisibility(false);                             //SARGE: Also hide the goals window
         }
 
 

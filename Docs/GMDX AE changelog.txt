@@ -11,6 +11,9 @@ New Features:
 - Disabled grenades can now be detonated using the Remote Detonation perk (they will show as "Remote" instead of "Disabled" in the HUD)
 - The Player's Skin Colour will now be remembered alongside their name if the option to remember their name is enabled. (Enabled by default).
 - Laser, Scope and Silencer mods are no longer randomized when using the "Randomize Weapon Mods" modifier.
+- Added a new "Show on Screen" checkbox to display Goals on the main HUD.
+- Notes can now be pinned, which will add them to the top of the notes list
+    - Pinned notes will also be visible on the main HUD
 
 Bugfixes:
 - Fixed bloody throwing knives not displaying when retrieving them from enemy corpses.

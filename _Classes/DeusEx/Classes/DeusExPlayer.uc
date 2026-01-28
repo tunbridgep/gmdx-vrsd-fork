@@ -937,6 +937,8 @@ var travel bool bImprisonmentTakesAmmo;                      //SARGE: Take Ammo 
 
 var globalconfig int iSmartBinocs;                           //SARGE: Pressing the Scope key selects binoculars
 
+var globalconfig bool bShowGoalsOnScreen;                    //SARGE: Show goals on-screen
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -15323,6 +15325,35 @@ function bool HasNote(Name textTag)
 }
 
 // ----------------------------------------------------------------------
+// PinNote()
+//
+// Toggles the Pinned state for the specified note
+// Returns True if the note successfully pinned or unpinned
+// ----------------------------------------------------------------------
+
+function Bool PinNote( DeusExNote noteToPin )
+{
+	local DeusExNote note;
+    local bool bPinned;
+	
+    note = FirstNote;
+
+	while( note != None )
+	{
+		if ( note == noteToPin )
+		{
+            note.bPinned = !note.bPinned;
+            bPinned = true;
+			break;
+		}
+		note = note.next;
+	}
+
+	return bPinned;
+}
+
+
+// ----------------------------------------------------------------------
 // DeleteNote()
 //
 // Deletes the specified note
@@ -20305,4 +20336,5 @@ defaultproperties
      iShifterWeaponSwitch=2
      bExperimentalAmmoSpawning=true
      iSmartBinocs=1
+     bShowGoalsOnScreen=false
 }

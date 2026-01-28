@@ -9,7 +9,9 @@ var Texture texBordersNormal[9];
 var Texture texBordersFocus[9];
 
 var Color colMarkerNote;            //SARGE: Added a new colour for borders of marker notes
+var Color colPinnedNote;            //SARGE: Added a new colour for borders of pinned notes
 var private bool bMarkerNote;
+var private bool bPinnedNote;
 
 var private bool bNoteSet;          //SARGE: Hack.
 var private bool bFakeReadOnly;     //SARGE: Block all input, but still allow selecting and copying
@@ -84,6 +86,17 @@ function SetReadOnly(bool bValue)
 function SetMarkerNote(bool bValue)
 {
     bMarkerNote = bValue;
+    StyleChanged();
+}
+
+// ----------------------------------------------------------------------
+// SetPinnedNote()
+//
+// Sets this note window as being for a marker note, giving it a coloured border.
+// ----------------------------------------------------------------------
+function SetPinnedNote(bool bValue)
+{
+    bPinnedNote = bValue;
     StyleChanged();
 }
 
@@ -165,7 +178,7 @@ event StyleChanged()
 	local ColorTheme theme;
 
 	Super.StyleChanged();
-
+    
     if (bUseMenuColors)
     {
         theme = player.ThemeManager.GetCurrentMenuColorTheme();
@@ -176,13 +189,16 @@ event StyleChanged()
         colHighlight     = theme.GetColorFromName('MenuColor_ButtonFace');
         colCursor        = theme.GetColorFromName('MenuColor_Cursor');
     }
-    else if (bMarkerNote)
-        colBracket = colMarkerNote;
     else
     {
         theme = player.ThemeManager.GetCurrentHUDColorTheme();
         colBracket = theme.GetColorFromName('HUDColor_HeaderText');
     }
+
+    if (bMarkerNote)
+        colBracket = colMarkerNote;
+    else if (bPinnedNote)
+        colBracket = colPinnedNote;
 	
     SetTextColor(colText);
 	SetTileColor(colHighlight);
@@ -217,4 +233,5 @@ defaultproperties
      texBordersFocus(8)=Texture'DeusExUI.UserInterface.PersonaNoteFocus_Center'
      //colMarkerNote=(R=255,G=255,B=255)
      colMarkerNote=(G=255)
+     colPinnedNote=(R=255)
 }
