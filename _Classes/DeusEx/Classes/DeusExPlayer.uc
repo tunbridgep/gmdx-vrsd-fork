@@ -10716,8 +10716,11 @@ function int HasPlaceholderSlot(Class<inventory> obj)
 {
     local int i;
     for (i = 0;i < ArrayCount(beltInfos);i++)
-        if (beltInfos[i].itemClass == string(obj.Class))
+    {
+        //DebugLog("BeltInfos["$i$"]:" @ beltInfos[i].itemClass @ ", obj: " $ string(obj));
+        if (beltInfos[i].itemClass == string(obj))
             return i;
+    }
     return -1;
 }
 
