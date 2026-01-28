@@ -82,6 +82,7 @@ function SetDefaultLevelMusic(DeusExLevelInfo info)
         //SetNewSection(savedSection, true);
     }
     //savedSection = info.SongAmbientSection;
+    musicCheckTimer = 5.0;
     musicChangeTimer = 5.0;
 }
 
@@ -238,7 +239,7 @@ function Tick(float deltaTime)
             }
                 
             //SARGE: Don't stop combat music until aggro has returned to zero.
-            if (aggro > 0)
+            if (aggro > 0 && musicMode == MUS_Combat)
 				musicChangeTimer = 0.0;
 
 			if (aggro >= iAllowCombatMusic && aggro > 0)
