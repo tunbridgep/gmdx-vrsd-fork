@@ -937,6 +937,8 @@ var travel bool bImprisonmentTakesAmmo;                      //SARGE: Take Ammo 
 
 var globalconfig int iSmartBinocs;                           //SARGE: Pressing the Scope key selects binoculars
 
+
+var globalconfig bool bAllowItemPickup;                      //SARGE: Allow picking up items as decorations with left-clicking if enabled
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -8699,7 +8701,9 @@ function DoLeftFrob(Actor frobTarget)
 
     if (inHand == None)
     {
-        if (frobTarget.isA('DeusExPickup'))
+        if (bRun != 0 && bAllowItemPickup && (frobTarget.isA('DeusExAmmo') || (frobTarget.isA('DeusExWeapon') && DeusExWeapon(frobTarget).bDisposableWeapon) || frobTarget.isA('DeusExPickup')))
+            bDefaultFrob = !class'CarriedAmmo'.static.CreateCarriedAmmoFor(self,Inventory(frobTarget));
+        else if (frobTarget.isA('DeusExPickup'))
             bDefaultFrob = DeusExPickup(frobTarget).DoLeftFrob(Self);
         else if (frobTarget.isA('DeusExWeapon'))
             bDefaultFrob = DeusExWeapon(frobTarget).DoLeftFrob(Self);
@@ -8711,10 +8715,6 @@ function DoLeftFrob(Actor frobTarget)
             bDefaultFrob = DeusExDecoration(frobTarget).DoLeftFrob(Self);
         else if (frobTarget.isA('DeusExCarcass'))
             bDefaultFrob = DeusExCarcass(frobTarget).DoLeftFrob(Self);
-        else if (frobTarget.isA('DeusExAmmo'))
-        {
-            bDefaultFrob = class'CarriedAmmo'.static.CreateCarriedAmmoFor(self,DeusExAmmo(frobTarget));
-        }
     }
 
     //Pick up and equip items by default
@@ -9685,7 +9685,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     if ((bCanPickup || !bSlotSearchNeeded) && !bDeclined)
     {
         //SARGE: Moved left-click interaction to here.
-        if (bLeftClicked && inHand == None)
+        if (bLeftClicked && inHand == None && (DeusExWeapon(FrobTarget) == None || !DeusExWeapon(FrobTarget).bDisposableWeapon))
         {
             //PutInHand(anItem); //CyberP: left click interaction //SARGE: This breaks stacked items
             SelectInventoryItem(FrobTarget.Class.name);
@@ -11461,7 +11461,7 @@ function DropDecoration()
 
                 //SARGE: If it's a CarriedAmmo, turn it into the real ammo
                 if (deco.IsA('CarriedAmmo') && !bThrowDecoration)
-                    carriedAmmo = class'CarriedAmmo'.static.CreateRealAmmoFor(CarriedAmmo(deco));
+                    class'CarriedAmmo'.static.CreateRealAmmoFor(CarriedAmmo(deco));
             }
 		}
 		else
@@ -20313,4 +20313,5 @@ defaultproperties
      iShifterWeaponSwitch=2
      bExperimentalAmmoSpawning=true
      iSmartBinocs=1
+     bAllowItemPickup=true
 }
