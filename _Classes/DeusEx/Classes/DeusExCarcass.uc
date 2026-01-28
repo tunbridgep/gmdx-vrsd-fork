@@ -152,6 +152,15 @@ function ApplyCurrentOutfit()
             multiskins[i] = augmentiqueData.textures[i];
     if (augmentiqueData.textures[8] != None)
         Texture = augmentiqueData.textures[8];
+
+    //GMDX Specific Code to handle beheading...
+    //This is horrible
+    for (i = 0;i < 8;i++)
+        if (InStr(CAPS(default.multiskins[i]),"BEHEADED") > -1 /*|| default.multiskins[i] == Texture'DeusEx.PinkMaskTex'*/)
+            multiskins[i] = default.multiskins[i];
+
+    if (InStr(CAPS(default.texture),"BEHEADED") > -1 /*|| default.texture == Texture'DeusEx.PinkMaskTex'*/)
+        texture = default.texture;
 }
 
 function CopyOutfitFrom(Actor A)
