@@ -15,10 +15,11 @@ var private bool bPinnedNote;
 
 var private bool bNoteSet;          //SARGE: Hack.
 var private bool bFakeReadOnly;     //SARGE: Block all input, but still allow selecting and copying
-var private bool bPermanentFakeReadonly;    //SARGE: Read Only is no longer related to the player setting, just prevent it entirely.
 var bool bUseMenuColors;                     //SARGE: Use the menu theme instead of the HUD theme
 
 var bool bBlockEscape;                       //SARGE: This is a hacky fix for the game crashing when we press escape in the notes window.
+
+var transient bool bTempEdit;                         //SARGE: Allow temporarily editing even if allow note editing is turned off
 
 // ----------------------------------------------------------------------
 // VirtualKeyPressed()
@@ -27,6 +28,9 @@ var bool bBlockEscape;                       //SARGE: This is a hacky fix for th
 // ----------------------------------------------------------------------
 event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
 {
+    local DeusExNote note;
+    note = GetNote();
+
     //Stop crashing
     //SARGE: This is a last minute hack, and I hate it
     if (key == IK_Escape && bBlockEscape)
@@ -36,8 +40,9 @@ event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
     if (!bEditable)
         return false;
 
-    if (bNoteSet && !bPermanentFakeReadonly)
-        bFakeReadOnly = !player.bAllowNoteEditing;
+    if (bNoteSet && note != None)
+        bFakeReadOnly = !default.bTempEdit && (!player.bAllowNoteEditing || (!player.bEditDefaultNotes && !note.bUserNote));
+    Log("bFakeReadOnly1: " $ bNoteSet @ note != None @ bFakeReadOnly @ "---" @ default.bTempEdit @ player.bAllowNoteEditing @ player.bEditDefaultNotes @ note.bUserNote @ Left(note.text,5));
 
     //when editing is turned off, we have to stop editing operations
     if (bFakeReadOnly)
@@ -74,7 +79,6 @@ event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
 // ----------------------------------------------------------------------
 function SetReadOnly(bool bValue)
 {
-    bPermanentFakeReadonly = bValue;
     bFakeReadOnly = bValue;
 }
 
@@ -139,8 +143,11 @@ event DrawWindow(GC gc)
 
 function bool FilterChar(out string chStr)
 {
-    if (bNoteSet && !bPermanentFakeReadonly)
-        bFakeReadOnly = !player.bAllowNoteEditing;
+    local DeusExNote note;
+    note = GetNote();
+
+    if (bNoteSet && note != None)
+        bFakeReadOnly = !default.bTempEdit && (!player.bAllowNoteEditing || (!player.bEditDefaultNotes && !note.bUserNote));
 
     if (bFakeReadOnly)
         return false;
@@ -157,7 +164,7 @@ function SetNote( DeusExNote newNote )
 
 	SetText( newNote.text );
 
-    bNoteSet = true;
+    bNoteSet = newNote != None;
 }
 
 // ----------------------------------------------------------------------

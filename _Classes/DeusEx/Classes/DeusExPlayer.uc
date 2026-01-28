@@ -20327,7 +20327,7 @@ defaultproperties
      bShowUserNotes=true
      bShowRegularNotes=true
      bShowMarkerNotes=true
-     bEditDefaultNotes=false
+     bEditDefaultNotes=true
      bClearReceivedDisplay=true
      bComputerActionsDrainHackTime=true
      fMusicHackTimer=4.0

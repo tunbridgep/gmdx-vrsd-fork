@@ -49,6 +49,8 @@ var localized string PinButtonLabel;
 var localized string ShowMarkersLabel;
 var localized String DisplayOnScreen;
 
+var transient bool bFakeEditUpdate;             //SARGE: Allow updating the edit checkbox without modifying the players variable
+
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -224,9 +226,8 @@ function CreateShowMarkerNotesCheckbox()
 function CreateEditCheckbox()
 {
 	chkAllowEdit = PersonaCheckBoxWindow(winClient.NewChild(Class'PersonaCheckBoxWindow'));
-
+    chkAllowEdit.SetToggle(player.bAllowNoteEditing);
 	chkAllowEdit.SetText("Allow Editing");
-	chkAllowEdit.SetToggle(player.bAllowNoteEditing);
 	chkAllowEdit.SetWindowAlignments(HALIGN_Right, VALIGN_Top, 263, 412);
 }
 
@@ -419,12 +420,10 @@ function bool ButtonActivated( Window buttonPressed )
 	switch(buttonPressed)
 	{
 		case btnAddNote:
-            player.bAllowNoteEditing = true;
 			AddNote();
 			break;
 		
         case btnMarker:
-            player.bAllowNoteEditing = true;
 			AddMarker();
 			break;
 		
@@ -466,13 +465,10 @@ event FocusEnteredDescendant(Window enterWindow)
 	{
         //SARGE: If it's a user note, and we have note editing turned off, hide the checkbox
 		note = PersonaNotesEditWindow(enterWindow).GetNote();
-        if (note != None && !note.bUserNote && !player.bEditDefaultNotes)
-            chkAllowEdit.Hide();
-        else
-            chkAllowEdit.Show();
-
-		currentNoteWindow = PersonaNotesEditWindow(enterWindow);
-		EnableButtons();
+		
+        currentNoteWindow = PersonaNotesEditWindow(enterWindow);
+        EnableButtons();
+        class'PersonaNotesEditWindow'.default.bTempEdit = false;
 	}
 }
 
@@ -491,6 +487,8 @@ event FocusLeftDescendant(Window leaveWindow)
 
 	if (noteWindow != None)
 		SaveNote(noteWindow);
+    
+    class'PersonaNotesEditWindow'.default.bTempEdit = false;
 }
 
 // ----------------------------------------------------------------------
@@ -552,6 +550,8 @@ function AddMarker()
 	SetFocusWindow(newNoteWindow);
     player.bShowMarkers = true;
     player.UpdateMarkerDisplay();
+    class'PersonaNotesEditWindow'.default.bTempEdit = true;
+    EnableButtons();
 }
 
 
@@ -574,6 +574,8 @@ function AddNote()
 	newNoteWindow.Lower();
 	newNoteWindow.SetSelectedArea(0, Len(defaultNoteText));
 	SetFocusWindow(newNoteWindow);
+    class'PersonaNotesEditWindow'.default.bTempEdit = true;
+    EnableButtons();
 }
 
 // ----------------------------------------------------------------------
@@ -643,10 +645,10 @@ event bool ToggleChanged(Window button, bool bNewToggle)
         player.bShowMarkers = bNewToggle;
         player.UpdateMarkerDisplay();
 	}
-	else if (button == chkAllowEdit)
+	else if (button == chkAllowEdit && !bFakeEditUpdate)
     {
         player.bAllowNoteEditing = bNewToggle;
-        //PopulateNotes();
+        EnableButtons();
     }
 	else if (button == chkShowDefaultNotes)
     {
@@ -678,10 +680,6 @@ function PersonaNotesEditWindow CreateNoteEditWindow(DeusExNote note)
 	newNoteWindow = PersonaNotesEditWindow(winNotes.NewChild(Class'PersonaNotesEditWindow'));
 	newNoteWindow.SetNote(note);
 
-    //SARGE: Set to permanent read only if it's not a user note, and we're not allowed to edit
-    if (!note.bUserNote && !player.bEditDefaultNotes)
-        newNoteWindow.SetReadOnly(true);
-
 	return newNoteWindow;
 }
 
@@ -691,8 +689,30 @@ function PersonaNotesEditWindow CreateNoteEditWindow(DeusExNote note)
 
 function EnableButtons()
 {
-	btnDeleteNote.SetSensitivity(currentNoteWindow != None && currentNoteWindow.GetNote() != None && (currentNoteWindow.GetNote().bUserNote || player.bAllowNoteEditing));
-	btnPin.SetSensitivity(currentNoteWindow != None && currentNoteWindow.GetNote() != None && !currentNoteWindow.GetNote().bMarkerNote);
+    local DeusExNote note;
+
+    if (currentNoteWindow != None)
+        note = currentNoteWindow.GetNote();
+
+	btnDeleteNote.SetSensitivity(note != None);
+	//btnDeleteNote.SetSensitivity(note != None && player.bAllowNoteEditing && (player.bEditDefaultNotes || note.bUserNote));
+	btnPin.SetSensitivity(note != None && !note.bMarkerNote);
+        
+    chkAllowEdit.SetSensitivity(!class'PersonaNotesEditWindow'.default.bTempEdit && (player.bEditDefaultNotes || (note != None && note.bUserNote) || note == None));
+    
+    bFakeEditUpdate = true;
+    chkAllowEdit.SetToggle(class'PersonaNotesEditWindow'.default.bTempEdit || (player.bAllowNoteEditing && note != None && note.bUserNote) || (player.bAllowNoteEditing && player.bEditDefaultNotes));
+    bFakeEditUpdate = false;
+
+    chkAllowEdit.StyleChanged();
+    /*
+    if((player.bEditDefaultNotes || (note != None && note.bUserNote)))
+        chkAllowEdit.Show();
+    else
+        chkAllowEdit.Hide();
+    */
+
+	//chkAllowEdit.SetToggle(class'PersonaNotesEditWindow'.default.bTempEdit || (player.bAllowNoteEditing && (player.bEditDefaultNotes || (note != None && note.bUserNote && player.bAllowNoteEditing))));
 }
 
 // ----------------------------------------------------------------------
