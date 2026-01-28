@@ -267383,6 +267383,7 @@ Begin Actor Class=BlockPlayer Name=BlockPlayer338
     Name=BlockPlayer338
 End Actor
 Begin Actor Class=WeaponEMPGrenade Name=WeaponEMPGrenade0
+    bDontRemoveOnMissionComplete=true
     LastRenderTime=554.343079
     DistanceFromPlayer=6215.283203
     Level=LevelInfo'MyLevel.LevelInfo0'
