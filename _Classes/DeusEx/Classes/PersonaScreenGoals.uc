@@ -691,7 +691,8 @@ function PersonaNotesEditWindow CreateNoteEditWindow(DeusExNote note)
 
 function EnableButtons()
 {
-	btnDeleteNote.SetSensitivity(currentNoteWindow != None);
+	btnDeleteNote.SetSensitivity(currentNoteWindow != None && currentNoteWindow.GetNote() != None && (currentNoteWindow.GetNote().bUserNote || player.bAllowNoteEditing));
+	btnPin.SetSensitivity(currentNoteWindow != None && currentNoteWindow.GetNote() != None && !currentNoteWindow.GetNote().bMarkerNote);
 }
 
 // ----------------------------------------------------------------------
