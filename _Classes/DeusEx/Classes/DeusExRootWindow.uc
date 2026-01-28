@@ -545,12 +545,13 @@ function MenuUIMessageBoxWindow MessageBox
 	String msgText,
 	int msgBoxMode,
 	bool hideCurrentScreen,
-	Window winParent
+	Window winParent,
+    optional bool bNoPause
 	)
 {
 	local MenuUIMessageBoxWindow msgBox;
 
-	msgBox = MenuUIMessageBoxWindow(PushWindow(Class'MenuUIMessageBoxWindow', hideCurrentScreen ));
+	msgBox = MenuUIMessageBoxWindow(PushWindow(Class'MenuUIMessageBoxWindow', hideCurrentScreen, bNoPause ));
 	msgBox.SetTitle(msgTitle);
 	msgBox.SetMessageText(msgText);
 	msgBox.SetMode(msgBoxMode);

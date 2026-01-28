@@ -938,6 +938,7 @@ var travel bool bImprisonmentTakesAmmo;                      //SARGE: Take Ammo 
 var globalconfig int iSmartBinocs;                           //SARGE: Pressing the Scope key selects binoculars
 
 var globalconfig bool bShowGoalsOnScreen;                    //SARGE: Show goals on-screen
+var globalconfig bool bShowPinnedNotesOnScreen;              //SARGE: Show pinned notes on-screen
 
 //////////END GMDX
 
@@ -20337,4 +20338,5 @@ defaultproperties
      bExperimentalAmmoSpawning=true
      iSmartBinocs=1
      bShowGoalsOnScreen=false
+     bShowPinnedNotesOnScreen=true
 }

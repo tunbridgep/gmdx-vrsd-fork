@@ -185,8 +185,11 @@ event DrawWindow(GC gc)
         offset = DrawGoals(gc,false,offset);
     }
 
-    //Pinned Notes
-    offset = DrawPinnedNotes(gc,offset);
+    if (player.bShowPinnedNotesOnScreen)
+    {
+        //Pinned Notes
+        offset = DrawPinnedNotes(gc,offset);
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -205,5 +208,5 @@ defaultproperties
      texBorderRight=Texture'RSDCrap.UserInterface.HUDAmmoDisplayBorder_1F'
      colText=(R=250,G=250,B=250)
      colCompletedText=(R=150,G=150,B=150)
-     colShadow(R=0,G=0,B=0)
+     colShadow=(R=0,G=0,B=0)
 }

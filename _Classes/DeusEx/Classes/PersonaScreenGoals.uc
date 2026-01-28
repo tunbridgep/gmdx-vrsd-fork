@@ -164,17 +164,18 @@ function CreateNotesButtons()
 	winActionButtons.SetWidth(502); //was 179
 	winActionButtons.FillAllSpace(False);
 
+    btnPin = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow'));
+	btnPin.SetButtonText(PinButtonLabel);
+    
+    btnMarker = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow'));
+	btnMarker.SetButtonText(MarkerButtonLabel);
+	
+    btnDeleteNote = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow'));
+	btnDeleteNote.SetButtonText(DeleteButtonLabel);
+
 	btnAddNote = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow'));
 	btnAddNote.SetButtonText(AddButtonLabel);
 	
-    btnMarker = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow'));
-	btnMarker.SetButtonText(MarkerButtonLabel);
-
-	btnDeleteNote = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow'));
-	btnDeleteNote.SetButtonText(DeleteButtonLabel);
-    
-    btnPin = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow'));
-	btnPin.SetButtonText(PinButtonLabel);
 }
 
 // ----------------------------------------------------------------------
@@ -435,7 +436,7 @@ function bool ButtonActivated( Window buttonPressed )
 		case btnDeleteNote:
 			if (bConfirmNoteDeletes)
 			{
-				root.MessageBox(DeleteNoteTitle, DeleteNotePrompt, 0, False, Self);
+				root.MessageBox(DeleteNoteTitle, DeleteNotePrompt, 0, False, Self, player.bHardcoreMode || player.bRealUI);
 			}
 			else
 			{
@@ -710,10 +711,10 @@ defaultproperties
      ClickToEditNote="Click on a Note to edit it:"
      DeleteNoteTitle="Delete Note?"
      DeleteNotePrompt="Are you sure you wish to delete this note?"
-     AddButtonLabel="Add |&Note"
-     DeleteButtonLabel="|&Delete Note"
+     AddButtonLabel="|&Add"
+     DeleteButtonLabel="|&Delete"
      MarkerButtonLabel="Add |&Marker"
-     PinButtonLabel="|&Pin Note"
+     PinButtonLabel="|&Pin"
      ConfirmNoteDeletionLabel="Confirm Note Deletion"
      ShowMarkersLabel="Show Markers"
      clientBorderOffsetY=29

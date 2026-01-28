@@ -28,6 +28,7 @@ Bugfixes:
 - Fixed TNT Crates exploding on map load.
 - Fixed game crashing when right-clicking after death by adding a 1 second minimum time before loading.
 - Fixed issue where certain decorations could display incorrectly in Shenanigans mode.
+- Fixed GMDXv9 issue where "Confirm Note Deletion" checkbox did nothing on Hardcore (or with realtime UI turned on).
 
 Misc Changes:
 - Pepper Spray now requires Trained in Low-Tech when using the Weapon Requirements Matter modifier.
