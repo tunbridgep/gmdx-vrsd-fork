@@ -8701,9 +8701,9 @@ function DoLeftFrob(Actor frobTarget)
 
     if (inHand == None)
     {
-        if (bRun != 0 && bAllowItemPickup && (frobTarget.isA('DeusExAmmo') || (frobTarget.isA('DeusExWeapon') && DeusExWeapon(frobTarget).bDisposableWeapon) || frobTarget.isA('DeusExPickup')))
-            bDefaultFrob = !class'CarriedAmmo'.static.CreateCarriedAmmoFor(self,Inventory(frobTarget));
-        else if (frobTarget.isA('DeusExPickup'))
+        //if (bRun != 0 && bAllowItemPickup && frobTarget.isA('Inventory'))
+        //    bDefaultFrob = !class'CarriedObject'.static.CreateCarriedObjectFor(self,Inventory(frobTarget));
+        /*else*/ if (frobTarget.isA('DeusExPickup'))
             bDefaultFrob = DeusExPickup(frobTarget).DoLeftFrob(Self);
         else if (frobTarget.isA('DeusExWeapon'))
             bDefaultFrob = DeusExWeapon(frobTarget).DoLeftFrob(Self);
@@ -8751,7 +8751,9 @@ function DoRightFrob(Actor frobTarget)
     bDefaultFrob = true;
     bLeftClicked = false;
 
-    if (frobTarget.isA('DeusExPickup'))
+    if (inHand == None && bRun != 0 && bAllowItemPickup && frobTarget.isA('Inventory'))
+        bDefaultFrob = !class'CarriedObject'.static.CreateCarriedObjectFor(self,Inventory(frobTarget));
+    else if (frobTarget.isA('DeusExPickup'))
         bDefaultFrob = DeusExPickup(frobTarget).DoRightFrob(Self,inHand != None);
     else if (frobTarget.isA('DeusExWeapon'))
         bDefaultFrob = DeusExWeapon(frobTarget).DoRightFrob(Self,inHand != None);
@@ -11156,7 +11158,7 @@ function bool CanBeLifted(Decoration deco)
 	}
 
     //Always allow left-grabbing if we have bLeftGrab set, no matter what
-    if (deco.isA('DeusExDecoration') && DeusExDecoration(deco).bLeftGrab)
+    if (deco.isA('DeusExDecoration') && DeusExDecoration(deco).bAltGrab)
     {
     }
     else if (!deco.bPushable || (deco.Mass > maxLift) || (deco.StandingCount > 1))
@@ -11337,7 +11339,6 @@ function DropDecoration()
 	local bool bSuccess;
 	local Actor hitActor;
     local Decoration deco;
-    local DeusExAmmo carriedAmmo;
 
 	bSuccess = False;
 
@@ -11460,8 +11461,8 @@ function DropDecoration()
                 }
 
                 //SARGE: If it's a CarriedAmmo, turn it into the real ammo
-                if (deco.IsA('CarriedAmmo') && !bThrowDecoration)
-                    class'CarriedAmmo'.static.CreateRealAmmoFor(CarriedAmmo(deco));
+                if (deco.IsA('CarriedObject') && !bThrowDecoration)
+                    class'CarriedObject'.static.CreateRealObjectFor(CarriedObject(deco));
             }
 		}
 		else
