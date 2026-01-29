@@ -27,6 +27,10 @@ Bugfixes:
 - Fixed issue where certain decorations could display incorrectly in Shenanigans mode.
 
 Misc Changes:
+- In Hardcore mode, weapons will now be emptied at the start of reloading (except for one-at-a-time weapons).
+    - This means that you will no longer be able to cancel reloading to regain your previous ammo amount. Instead your weapon will be empty.
+    - This does not affect your total ammo amount, only the amount loaded in your weapon.
+    - This can be toggled in the Gameplay Settings menu.
 - Pepper Spray now requires Trained in Low-Tech when using the Weapon Requirements Matter modifier.
 - The Bioenergy Bar will now be Blue when not using the "Animated Bioenergy Bar" setting.
 - Left-Frobbing a locked object will no longer always select a Lockpick on Hardcore mode.

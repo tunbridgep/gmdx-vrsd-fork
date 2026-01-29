@@ -937,6 +937,8 @@ var travel bool bImprisonmentTakesAmmo;                      //SARGE: Take Ammo 
 
 var globalconfig int iSmartBinocs;                           //SARGE: Pressing the Scope key selects binoculars
 
+var globalconfig bool bNoPartialReloads;                     //SARGE: When cancelling reloading, empty the weapon instead of keeping the previous ammo amount.
+
 //////////END GMDX
 
 // OUTFIT STUFF
