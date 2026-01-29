@@ -181811,6 +181811,7 @@ Begin Actor Class=Keypad1 Name=Keypad0
 End Actor
 Begin Actor Class=Pot1 Name=Pot0
     bNoConversations=true
+    bIncincible=true
     DrawScale=0.00
     Physics=PHYS_None
     LastRenderTime=121.597321
@@ -181830,6 +181831,7 @@ Begin Actor Class=Pot1 Name=Pot0
 End Actor
 Begin Actor Class=Pot1 Name=Pot1
     bNoConversations=true
+    bIncincible=true
     DrawScale=0.00
     Physics=PHYS_None
     LastRenderTime=121.597321
