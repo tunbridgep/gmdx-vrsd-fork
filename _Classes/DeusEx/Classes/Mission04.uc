@@ -68,7 +68,7 @@ function FirstFrame()
         
         //Remove the phone in Paul's apartment
         if (!player.bCutInteractions)
-            foreach AllActors(class'Phone', P, 'CutContentPhone');
+            foreach AllActors(class'Phone', P, 'CutContentPhone')
                 P.Destroy();
 
 		// unhide the correct JoJo

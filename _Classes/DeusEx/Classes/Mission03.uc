@@ -33,18 +33,18 @@ function FirstFrame()
         if (!player.bCutInteractions)
         {
             //Remove the invisible keypad
-            foreach AllActors(class'Actor', A, 'VOIPKeypad');
+            foreach AllActors(class'Actor', A, 'VOIPKeypad')
                 A.Destroy();
 
             //Make the phone work in random mode
-            foreach AllActors(class'Actor', A, 'VOIPPhone');
+            foreach AllActors(class'Actor', A, 'VOIPPhone')
             {
                 Phone(A).AnswerSound = AS_Random;
                 Phone(A).bScriptedPhone = false;
             }
 
             //Remove the VOIP details from the computer
-            foreach AllActors(class'Actor', A, 'VOIPComputer');
+            foreach AllActors(class'Actor', A, 'VOIPComputer')
                 Computers(A).SpecialOptions[0].Text = "";
         }
 
