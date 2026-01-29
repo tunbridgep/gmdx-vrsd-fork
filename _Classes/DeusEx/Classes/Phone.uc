@@ -24,128 +24,106 @@ enum EAnswerSound
 };
 
 var() ERingSound RingSound;
-var() EAnswerSound AnswerSound;
+var() EAnswerSound AnswerSound;         //Sound when frobbing the phone
+var() EAnswerSound OfflineSound;        //Sound when frobbing the phone, if we can't trigger it.
 var() float ringFreq;
 var float ringTimer;
-var float burstTimer;
 var bool bUsing;
 var() bool bUnatcoPhone;
 var() bool bPayPhone;
 var int pSoundID;
 
-var() bool bAnsweringMachine;       //SARGE: If set, we will make no sound the first time we're frobbed, then switch to our AnswerSound.
+var() bool bScriptedPhone;       //SARGE: If set, the phone won't ring randomly, will activate all linked triggers and keypads, and will follow logic based on flags.
 
 var private int numRings;           //SARGE: Now, we ring in groups of 3-5 rings, to be more realistic, rather than 1 random ring every so often.
 
-var private int ringBurst;          //SARGE: A bit of a hack to make phones ring in "burst", so they sound semi realistic.
+var() private name TriggerFlag;   //SARGE: Flag that must be set to trigger linked objects.
+var() private bool bCheckFalse;
+
+var private float startedSound;     //SARGE: Add a maximum time each sound can play for, like 10 seconds, since some can go forever.
 
 //SARGE: Some of the phones in the game have weird bools set, instead of using the enum (stupid original devs!)
 //Lets fix that!
 function PostBeginPlay()
 {
-    if (bindName != "Phone")
-        bAnsweringMachine = true;
-
     if (bUnatcoPhone)
     {
         AnswerSound = AS_Authorisation;
-        ringFreq=0.1; //Ring lots and lots.
+        ringFreq=0.2; //Ring lots and lots.
     }
     else if (bPayphone)
         AnswerSound = AS_ShutDownByUNATCO;
 }
 
-function bool InConversation(DeusExPlayer player)
+function bool InConversation(DeusExPlayer player, bool bCheckFirstPerson)
 {
-    return player != None && player.InConversation();
+    return player != None && player.InConversation(bCheckFirstPerson);
 }
 
 function bool CanRing()
 {
-    return !bAnsweringMachine && AnswerSound != AS_Investigation && AnswerSound != AS_ShutDownByUNATCO;
+    return AnswerSound != AS_Investigation && AnswerSound != AS_ShutDownByUNATCO;
 }
 
 function Tick(float deltaTime)
 {
 	Super.Tick(deltaTime);
 
-	ringTimer += deltaTime;
-	burstTimer += deltaTime;
-	
-    if (burstTimer >= 1.0 && ringBurst > 0 && numRings > 0)
+    //Add a maximum timer for each sound
+    if (startedSound > 0)
     {
-        burstTimer -= 1.0;
-        Ring();
+        startedSound -= deltaTime;
+        if (startedSound < 0)
+        {
+            startedSound = 0;
+            StopSound(pSoundID);
+        }
     }
 
-	if (ringTimer >= 2.5)
-	{
-		ringTimer -= 2.5;
+    if (!bScriptedPhone)
+    {
+        ringTimer += deltaTime;
+        
+        if (ringTimer >= 2.5)
+        {
+            ringTimer -= 2.5;
 
-        if (bUsing)
-        {
-            //do nothing
+            if (!bUsing && numRings == 0 && FRand() < ringFreq && CanRing())
+                numRings = Rand(2)+5; //5 to 7 random rings
         }
-        else if (numRings > 0 && ringBurst == 0)
-            ringBurst = 2;
-        else if (numRings == 0 && FRand() < ringFreq && !InConversation(DeusExPlayer(GetPlayerPawn())) && CanRing())
-        {
-            numRings = Rand(2)+5; //5 to 7 random rings
-            ringBurst = 2;
-        }
-	}
+    }
 }
 
 function Ring()
 {
-    numRings--;
-    ringBurst--;
-    switch (RingSound)
+    if (!InConversation(DeusExPlayer(GetPlayerPawn()),false))
     {
-        case RS_Office1:	PlaySound(sound'PhoneRing1', SLOT_Misc,,, 256); break;
-        case RS_Office2:	PlaySound(sound'PhoneRing2', SLOT_Misc,,, 256); break;
+        numRings--;
+        switch (RingSound)
+        {
+            case RS_Office1:	PlaySound(sound'PhoneRing1', SLOT_Misc,,, 256); break;
+            case RS_Office2:	PlaySound(sound'PhoneRing2', SLOT_Misc,,, 256); break;
+        }
+    }
+    else
+    {
+        numRings = 0;
     }
 }
 
 function Timer()
 {
 	bUsing = False;
-	if (bPayphone)
-	   StopSound(pSoundID);
 }
 
-function Frob(actor Frobber, Inventory frobWith)
+function private PlayAnswerSound(EAnswerSound snd)
 {
 	local float rnd;
-
-    //no re-frobbing in conversation
-    if (Frobber.IsA('DeusExPlayer') && DeusExPlayer(Frobber).InConversation())
-        return;
-
-	Super.Frob(Frobber, frobWith);
-
-	if (bUsing)
-		return;
-
-    SetTimer(3.0, False);
-    numRings = 0;
-    ringBurst = 0;
-	bUsing = True;
-
-    //If we have an answering machine, play it's custom sound, then allow normal phone use.
-    //Make sure to clear the bind name too!
-    if (bAnsweringMachine)
-    {
-        if (!InConversation(DeusExPlayer(Frobber)))
-        {
-            bAnsweringMachine = false;
-            bindName = "";
-            ConBindEvents();
-        }
-        return;
-    }
-
-    switch (AnswerSound)
+	if (bPayphone)
+        startedSound = 2;
+    else
+        startedSound = 5;
+    switch (snd)
     {
         case AS_DialTone:
             pSoundID = PlaySound(sound'PhoneDialtone', SLOT_Misc,,, 256);
@@ -185,6 +163,70 @@ function Frob(actor Frobber, Inventory frobWith)
     }
 }
 
+function Frob(actor Frobber, Inventory frobWith)
+{
+    local Keypad K;
+    local DeusExPlayer P;
+    local bool bTrigger;
+    local EAnswerSound snd;
+
+    P = DeusExPlayer(Frobber);
+
+    snd = AnswerSound;
+
+	if (bUsing)
+		return;
+
+    if (bScriptedPhone)
+    {
+        P.DebugMessage("InConversation: " $ P.InConversation());
+        //no re-frobbing in conversation
+        if (InConversation(P,true))
+            return;
+
+        //SARGE: Activate all linked Keypads.
+        //This is a bit of a hack, but lets us "dial" numbers,
+        //which is nice.
+        if (TriggerFlag == '' || P == None || P.FlagBase == None)
+            bTrigger = true;
+        else if (!P.FlagBase.GetBool(TriggerFlag) && bCheckFalse)
+            bTrigger = true;
+        else if (P.FlagBase.GetBool(TriggerFlag) && !bCheckFalse)
+            bTrigger = true;
+
+        //P.DebugMessage("Phone Frobbed: " $ TriggerFlag @ P @ P.FlagBase.GetBool(TriggerFlag) @ bCheckFalse @ bTrigger);
+
+        //If the checked flag is set, don't let us keep frobbing
+        if (bTrigger)
+        {
+            StopSound(pSoundID);
+            Super.Frob(Frobber, frobWith);
+            //Trigger any linked keypads - allows dialing the phone
+            if (Event != '')
+            {
+                foreach AllActors(class 'Keypad', K, Event)
+                {
+                    P.DebugMessage("Frobbing " $ K);
+                    K.Frob(Frobber,None);
+                }
+            }
+        }
+        else
+            snd = OfflineSound;
+    }
+    else
+        Super.Frob(Frobber, frobWith);
+        
+    PlayAnswerSound(snd);
+
+    if (bTrigger)
+        SetTimer(1.0, False);
+    else
+        SetTimer(3.0, False);
+    numRings = 0;
+	bUsing = True;
+}
+
 defaultproperties
 {
      ringFreq=0.040000
@@ -199,4 +241,5 @@ defaultproperties
      Mass=20.000000
      Buoyancy=15.000000
      AnswerSound=AS_Random
+     OfflineSound=AS_Busy
 }

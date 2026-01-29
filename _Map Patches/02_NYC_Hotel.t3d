@@ -73295,7 +73295,7 @@ Begin Actor Class=LDDPHotelAddictS Name=LDDPHotelAddict0
     Name=LDDPHotelAddict0
 End Actor
 Begin Actor Class=Phone Name=Phone0
-    AnswerSound=AS_NotRecognised
+    AnswerSound=AS_Dialtone
     LastRenderTime=17.093836
     Level=LevelInfo'MyLevel.LevelInfo0'
     Tag=CutContentPhone

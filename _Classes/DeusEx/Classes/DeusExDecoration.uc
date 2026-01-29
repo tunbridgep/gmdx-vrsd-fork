@@ -84,6 +84,9 @@ var(GMDX) bool bSkipLOSFrobCheck;
 
 var(GMDX) bool bSmallFragments;                                                 //SARGE: If we have debris persistence turned on, create many more much smaller fragments for readability.
 
+//SARGE: Prevent entering into conversation with this decoration. Used for scripted conversations only.
+var(GMDX) bool bNoConversations;
+
 // ----------------------------------------------------------------------
 // ShouldCreate()
 // If this returns FALSE, the object will be deleted on it's first tick
@@ -640,7 +643,7 @@ simulated function Tick(float deltaTime)
 	// to the player to start one (and all the other checks that take place
 	// when a valid conversation can be started);
 
-	if (conListItems != None)
+	if (conListItems != None && !bNoConversations) //SARGE: Added bNoConversations check
 	{
 		if (player != None)
 			player.StartConversation(Self, IM_Radius);
