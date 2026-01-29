@@ -9687,7 +9687,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     if ((bCanPickup || !bSlotSearchNeeded) && !bDeclined)
     {
         //SARGE: Moved left-click interaction to here.
-        if (bLeftClicked && inHand == None && (DeusExWeapon(FrobTarget) == None || !DeusExWeapon(FrobTarget).bDisposableWeapon))
+        if (bLeftClicked && inHand == None)
         {
             //PutInHand(anItem); //CyberP: left click interaction //SARGE: This breaks stacked items
             SelectInventoryItem(FrobTarget.Class.name);
