@@ -71189,4 +71189,15 @@ Begin Actor Class=BumMale2 Name=BumMale0
     UnfamiliarName="Bum"
     Name=BumMale0
 End Actor
+Begin Actor Class=Phone Name=Phone0
+    AnswerSound=AS_ShutDownByUNATCO
+    LastRenderTime=17.093836
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=CutContentPhone
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=1918,ZoneNumber=1)
+    Location=(X=-614.886963,Y=-3232.170410,Z=95.880081)
+    Rotation=(Yaw=32000)
+    OldLocation=(X=-614.886963,Y=-3232.170410,Z=95.880081)
+    Name=Phone0
+End Actor
 End Map

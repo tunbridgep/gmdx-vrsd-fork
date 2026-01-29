@@ -19,6 +19,7 @@ function FirstFrame()
     local CrateExplosiveSmall tnt;
     local BeamTrigger trig;
     local UnatcoTroop troop;
+    local Phone P;
 
 	Super.FirstFrame();
 
@@ -31,6 +32,14 @@ function FirstFrame()
             C.DestroyPool();
             C.bNoDefaultPools=true;
         }
+    }
+
+	if (localURL == "02_NYC_HOTEL")
+    {
+        //Remove the phone in Paul's apartment
+        if (!player.bCutInteractions)
+            foreach AllActors(class'Phone', P, 'CutContentPhone');
+                P.Destroy();
     }
 	else if (localURL == "02_NYC_STREET")
 	{

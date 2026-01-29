@@ -70517,4 +70517,17 @@ Begin Actor Class=WeaponPistol Name=WeaponPistol0
     OldLocation=(X=-232.336853,Y=-2663.799561,Z=65.099785)
     Name=WeaponPistol0
 End Actor
+Begin Actor Class=Phone Name=Phone0
+    AnswerSound=AS_ShutDownByUNATCO
+    bAnsweringMachine=True
+    LastRenderTime=17.093836
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=CutContentPhone
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=1918,ZoneNumber=1)
+    Location=(X=-614.886963,Y=-3232.170410,Z=95.880081)
+    Rotation=(Yaw=32000)
+    OldLocation=(X=-614.886963,Y=-3232.170410,Z=95.880081)
+    BindName="AnsweringMachine"
+    Name=Phone0
+End Actor
 End Map

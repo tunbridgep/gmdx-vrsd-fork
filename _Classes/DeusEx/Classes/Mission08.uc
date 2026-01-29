@@ -18,6 +18,7 @@ function FirstFrame()
     local ScriptedPawn pawn;
     local DeusExCarcass C;
     local Light L;
+    local Phone P;
 
 	Super.FirstFrame();
 
@@ -56,6 +57,11 @@ function FirstFrame()
                 C.bNoDefaultPools=true;
             }
         }
+        
+        //Remove the phone in Paul's apartment
+        if (!player.bCutInteractions)
+            foreach AllActors(class'Phone', P, 'CutContentPhone');
+                P.Destroy();
     }
 
 CanQuickSave=true;
