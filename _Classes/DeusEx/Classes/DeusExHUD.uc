@@ -631,7 +631,7 @@ function UpdateSettings( DeusExPlayer player , optional bool bNoBelt)
 	compass.SetVisibility(player.bCompassVisible);
     UpdateCrosshair(player);
 	radialAugMenu.Show(player.bRadialAugMenuVisible);
-	goalsWindow.SetVisibility(true);
+	goalsWindow.SetVisibility(!bNoBelt);
     hit.UpdateBars();
 
 	//RSD: Also bring back any windows we may have closed in realtime UI
