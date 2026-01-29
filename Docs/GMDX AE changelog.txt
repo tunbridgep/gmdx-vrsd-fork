@@ -33,10 +33,18 @@ Misc Changes:
 - Left-Frobbing a breakable object will no longer select inadequate melee weapons on Hardcore mode.
 - The previously experimental feature to drop items from conversations at the players feet is now enabled by default.
 - The "Drop Item" and "Assign Secondary" keys will now work properly in the inventory screen, rather than being hardcoded to F and BACKSPACE
+- Minor changes to phones to make them more realistic (for instance, they will "ring out" rather than ringing once, and disconnected phones won't ring at all).
 
 Map Changes:
+- 02_NYC_BatteryPark
+    - The Police Boat will now spout dialog when interacted with, and can be used to exit the map.
+    - The Police Boat has been moved slightly closer to the dock, in order to allow interacting with it without needing to jump off.
 - 02_NYC_Underground
     - Removed a datacube containing the MJ12/Coupdetat password on Hardcore mode, so that you are incentivised to use the much harder entrance (the one with all the lasers and turrets).
+- 02_NYC_Hotel/04_NYC_Hotel/08_NYC_Hotel
+    - Added a Phone to Paul's apartment, which on Mission 4 will play a message from Lebedev.
+        - This message was cut from the vanilla game, and has been restored.
+        - The phone will not appear unless the "Additional NPC Interactions" modifier is used.
 
 1.11 (Hotfix Release):
 
