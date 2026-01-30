@@ -368,7 +368,7 @@ var travel bool bHadLaser;
 var travel bool bHadScope;
 var travel bool bHadSilencer;
 
-var(GMDX) const bool bDontRemoveOnMissionComplete;                                    //SARGE: Don't remove this weapon on mission completion.
+var(GMDX) bool bDontRemoveOnMissionComplete;                                    //SARGE: Don't remove this weapon on mission completion.
 
 //Used during the new "SwitchAttachment" state so we can change attachments during the animation
 var bool bSwitchingToLaser;
@@ -408,6 +408,13 @@ replication
 	// Functions Server calls in client
 	reliable if ( Role == ROLE_Authority )
 	  RefreshScopeDisplay, ReadyClientToFire, SetClientAmmoParams, ClientDownWeapon, ClientActive, ClientReload;
+}
+	
+
+function Frob(Actor Other, Inventory frobWith)
+{
+    bDontRemoveOnMissionComplete = false;
+    super.Frob(other, frobwith);
 }
 
 // ----------------------------------------------------------------------

@@ -27888,6 +27888,7 @@ Begin Actor Class=Teleporter Name=Teleporter1
     Name=Teleporter1
 End Actor
 Begin Actor Class=VialCrack Name=VialCrack0
+    bDontRemoveOnMissionComplete=true
     LastRenderTime=0.718360
     DistanceFromPlayer=2631.516357
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -60078,6 +60079,7 @@ Begin Actor Class=Light Name=Light429
     Name=Light429
 End Actor
 Begin Actor Class=DeusExMover Name=DeusExMover38
+    bDontOpenOnMissionComplete=false
     bLocked=True
     bBreakable=True
     doorStrength=0.300000
@@ -60169,6 +60171,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover38
     Name=DeusExMover38
 End Actor
 Begin Actor Class=DeusExMover Name=DeusExMover1
+    bDontOpenOnMissionComplete=false
     bLocked=True
     bBreakable=True
     doorStrength=0.300000
@@ -60260,6 +60263,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover1
     Name=DeusExMover1
 End Actor
 Begin Actor Class=DeusExMover Name=DeusExMover2
+    bDontOpenOnMissionComplete=false
     bLocked=True
     bBreakable=True
     doorStrength=0.300000
@@ -60353,6 +60357,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover2
     Name=DeusExMover2
 End Actor
 Begin Actor Class=DeusExMover Name=DeusExMover3
+    bDontOpenOnMissionComplete=false
     bBreakable=True
     doorStrength=0.300000
     minDamageThreshold=5
@@ -62190,6 +62195,7 @@ Begin Actor Class=CrateBreakableMedGeneral Name=CrateBreakableMedGeneral5
     Name=CrateBreakableMedGeneral5
 End Actor
 Begin Actor Class=CrateBreakableMedMedical Name=CrateBreakableMedMedical0
+    bDontRemoveOnMissionComplete=true
     LastRenderTime=0.718360
     DistanceFromPlayer=3607.195801
     Level=LevelInfo'MyLevel.LevelInfo0'
@@ -92026,6 +92032,7 @@ Begin Actor Class=FlagTrigger Name=FlagTrigger4
     Name=FlagTrigger4
 End Actor
 Begin Actor Class=DeusExMover Name=DeusExMover19
+    bDontOpenOnMissionComplete=false
     bLocked=True
     lockStrength=0.050000
     bBreakable=True
@@ -99180,6 +99187,7 @@ Begin Actor Class=Brush Name=Brush694
     Name=Brush694
 End Actor
 Begin Actor Class=DeusExMover Name=DeusExMover25
+    bDontOpenOnMissionComplete=false
     bLocked=True
     lockStrength=0.100000
     bBreakable=True
@@ -104076,6 +104084,7 @@ Begin Actor Class=PathNode Name=PathNode18
     Name=PathNode18
 End Actor
 Begin Actor Class=DeusExMover Name=DeusExMover0
+    bDontOpenOnMissionComplete=false
     bLocked=True
     lockStrength=0.150000
     bBreakable=True
@@ -104262,6 +104271,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover0
     Name=DeusExMover0
 End Actor
 Begin Actor Class=DeusExMover Name=DeusExMover40
+    bDontOpenOnMissionComplete=false
     bLocked=True
     lockStrength=0.100000
     bBreakable=True
@@ -144055,6 +144065,7 @@ Begin Actor Class=Liquor40oz Name=Liquor40oz1
     Name=Liquor40oz1
 End Actor
 Begin Actor Class=Liquor40oz Name=Liquor40oz2
+    bDontRemoveOnMissionComplete=true
     Physics=PHYS_Rolling
     LastRenderTime=0.718360
     DistanceFromPlayer=3201.179199
@@ -182958,6 +182969,7 @@ Begin Actor Class=Light Name=Light170
     Name=Light170
 End Actor
 Begin Actor Class=Liquor40oz Name=Liquor40oz9
+    bDontRemoveOnMissionComplete=true
     Physics=PHYS_Rolling
     LastRenderTime=0.718360
     DistanceFromPlayer=3061.367432
@@ -183685,6 +183697,7 @@ Begin Actor Class=BarrelFire Name=BarrelFire12
     Name=BarrelFire12
 End Actor
 Begin Actor Class=DeusExMover Name=DeusExMover20
+    bDontOpenOnMissionComplete=false
     lockStrength=0.150000
     bBreakable=True
     doorStrength=0.500000
@@ -196470,6 +196483,7 @@ Begin Actor Class=CrateBreakableMedCombat Name=CrateBreakableMedCombat17
     Name=CrateBreakableMedCombat17
 End Actor
 Begin Actor Class=CrateBreakableMedCombat Name=CrateBreakableMedCombat18
+    bDontRemoveOnMissionComplete=true
     bLowDifficultyOnly=True
     contents=Class'DeusEx.Ammo762mm'
     LastRenderTime=0.718360
