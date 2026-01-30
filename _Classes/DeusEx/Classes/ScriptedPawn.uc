@@ -6824,10 +6824,23 @@ function HandleShot(Name event, EAIEventState state, XAIParams params)
 	// React, Fear, Hate
 
 	local Pawn pawnActor;
+    local DeusExZoneInfo info;
 
 	if (state == EAISTATE_Begin || state == EAISTATE_Pulse)
 	{
 		pawnActor = InstigatorToPawn(params.bestActor);
+
+        //SARGE: Only react to shots in the same zone, if the zone doesn't allow propogation.
+        if (DeusExPlayer(pawnActor) != None && pawnActor.Region.Zone != Region.Zone)
+        {
+            info = DeusExPlayer(pawnActor).GetZoneInfo();
+            if (info != None && info.bSilentWeaponZone)
+            {
+                DeusExPlayer(pawnActor).DebugMessage(Self @ "HandleShot: Zone Difference, not reacting");
+                return;
+            }
+        }
+
 		if (pawnActor != None)
 		{
 			if (bHateShot)
