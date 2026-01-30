@@ -150,6 +150,7 @@ defaultproperties
      items(115)=(HelpText="Use more readable fonts for most UI elements.",actionText="Fonts: More Readable Fonts",variable="bDXRandoFonts",consoleTarget="DeusEx.FontManager",defaultValue=1,bAdvancedModeOnly=true);
      items(116)=(HelpText="Use a larger font for Datacubes, Books and other readable objects",actionText="Fonts: Big Reading Font",variable="bBigDatacubeFont",consoleTarget="DeusEx.FontManager",defaultValue=1,bAdvancedModeOnly=false);        
      items(117)=(HelpText="Using the Scope key with no item equipped will use any Binoculars in your inventory",actionText="Interaction: Smart Binocular Selection",variable="iSmartBinocs",defaultValue=1,valueText2="Select and Activate",bAdvancedModeOnly=true);
+     items(121)=(HelpText="Right clicking pickups while the Walk/Run key is held will allow you to carry them around similar to boxes and other decoration items.",actionText="Interaction: Allow Carrying Pickups",variable="bAllowItemPickup",defaultValue=1,bAdvancedModeOnly=false)
 
 
      Title="GMDX Quality of Life Options"
