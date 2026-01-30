@@ -42,6 +42,11 @@ function FirstFrame()
 				if (pawn.IsA('UNATCOTroop') || pawn.IsA('SecurityBot2'))
 					pawn.EnterWorld();
 		}
+        
+        //Remove the phone in Paul's apartment
+        if (!player.bCutInteractions)
+            foreach AllActors(class'Phone', P, 'CutContentPhone')
+                P.Destroy();
 	}
 	/*else if (localURL == "04_NYC_FREECLINIC")
 	{

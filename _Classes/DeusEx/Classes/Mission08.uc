@@ -63,6 +63,14 @@ function FirstFrame()
             foreach AllActors(class'Phone', P, 'CutContentPhone');
                 P.Destroy();
     }
+	else if (localURL == "08_NYC_STREET")
+    {
+        //Remove the phone in Paul's apartment
+        if (!player.bCutInteractions)
+            foreach AllActors(class'Phone', P, 'CutContentPhone')
+                P.Destroy();
+    }
+
 
 CanQuickSave=true;
 }

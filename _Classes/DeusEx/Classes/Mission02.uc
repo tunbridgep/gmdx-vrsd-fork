@@ -44,6 +44,11 @@ function FirstFrame()
 	else if (localURL == "02_NYC_STREET")
 	{
 		flags.SetBool('M02StreetLoaded', True,, 3);
+        
+        //Remove the phone in Paul's apartment
+        if (!player.bCutInteractions)
+            foreach AllActors(class'Phone', P, 'CutContentPhone')
+                P.Destroy();
 
 		// if you went to the warehouse without finishing the streets,
 		// set some flags
