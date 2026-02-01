@@ -937,6 +937,9 @@ var travel bool bImprisonmentTakesAmmo;                      //SARGE: Take Ammo 
 
 var globalconfig int iSmartBinocs;                           //SARGE: Pressing the Scope key selects binoculars
 
+var globalconfig bool bShowGoalsOnScreen;                    //SARGE: Show goals on-screen
+var globalconfig bool bShowPinnedNotesOnScreen;              //SARGE: Show pinned notes on-screen
+
 var globalconfig bool bAllowItemPickup;                      //SARGE: Allow picking up items as decorations with left-clicking if enabled
 
 var globalconfig bool bNoPartialReloads;                     //SARGE: When cancelling reloading, empty the weapon instead of keeping the previous ammo amount.
@@ -15388,6 +15391,35 @@ function bool HasNote(Name textTag)
 }
 
 // ----------------------------------------------------------------------
+// PinNote()
+//
+// Toggles the Pinned state for the specified note
+// Returns True if the note successfully pinned or unpinned
+// ----------------------------------------------------------------------
+
+function Bool PinNote( DeusExNote noteToPin )
+{
+	local DeusExNote note;
+    local bool bPinned;
+	
+    note = FirstNote;
+
+	while( note != None )
+	{
+		if ( note == noteToPin )
+		{
+            note.bPinned = !note.bPinned;
+            bPinned = true;
+			break;
+		}
+		note = note.next;
+	}
+
+	return bPinned;
+}
+
+
+// ----------------------------------------------------------------------
 // DeleteNote()
 //
 // Deletes the specified note
@@ -20360,7 +20392,7 @@ defaultproperties
      bShowUserNotes=true
      bShowRegularNotes=true
      bShowMarkerNotes=true
-     bEditDefaultNotes=false
+     bEditDefaultNotes=true
      bClearReceivedDisplay=true
      bComputerActionsDrainHackTime=true
      fMusicHackTimer=4.0
@@ -20370,5 +20402,7 @@ defaultproperties
      iShifterWeaponSwitch=2
      bExperimentalAmmoSpawning=true
      iSmartBinocs=1
+     bShowGoalsOnScreen=false
+     bShowPinnedNotesOnScreen=true
      bAllowItemPickup=true
 }

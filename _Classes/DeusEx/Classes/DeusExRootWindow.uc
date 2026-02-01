@@ -556,12 +556,13 @@ function MenuUIMessageBoxWindow MessageBox
 	String msgText,
 	int msgBoxMode,
 	bool hideCurrentScreen,
-	Window winParent
+	Window winParent,
+    optional bool bNoPause
 	)
 {
 	local MenuUIMessageBoxWindow msgBox;
 
-	msgBox = MenuUIMessageBoxWindow(PushWindow(Class'MenuUIMessageBoxWindow', hideCurrentScreen ));
+	msgBox = MenuUIMessageBoxWindow(PushWindow(Class'MenuUIMessageBoxWindow', hideCurrentScreen, bNoPause ));
 	msgBox.SetTitle(msgTitle);
 	msgBox.SetMessageText(msgText);
 	msgBox.SetMode(msgBoxMode);
@@ -672,6 +673,8 @@ function DeusExBaseWindow InvokeUIScreen(
                  hud.startDisplay.SetVisibility(false);                         //RSD: Also hide the mission start display
              if (hud.receivedItems != none)
                  hud.receivedItems.SetVisibility(false);                        //RSD: Also hide the loot window
+             if (hud.goalsWindow != none)
+                 hud.goalsWindow.SetVisibility(false);                             //SARGE: Also hide the goals window
         }
 
 

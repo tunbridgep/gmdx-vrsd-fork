@@ -16,6 +16,9 @@ New Features:
 - Disabled grenades can now be detonated using the Remote Detonation perk (they will show as "Remote" instead of "Disabled" in the HUD)
 - The Player's Skin Colour will now be remembered alongside their name if the option to remember their name is enabled. (Enabled by default).
 - Laser, Scope and Silencer mods are no longer randomized when using the "Randomize Weapon Mods" modifier.
+- Added a new "Show on Screen" checkbox to display Goals on the main HUD.
+- Notes can now be pinned, which will add them to the top of the notes list
+    - Pinned notes will also be visible on the main HUD
 
 Bugfixes:
 - Fixed bloody throwing knives not displaying when retrieving them from enemy corpses.
@@ -30,6 +33,7 @@ Bugfixes:
 - Fixed TNT Crates exploding on map load.
 - Fixed game crashing when right-clicking after death by adding a 1 second minimum time before loading.
 - Fixed issue where certain decorations could display incorrectly in Shenanigans mode.
+- Fixed GMDXv9 issue where "Confirm Note Deletion" checkbox did nothing on Hardcore (or with realtime UI turned on).
 
 Misc Changes:
 - In Hardcore mode, weapons will now be emptied at the start of reloading (except for one-at-a-time weapons).
