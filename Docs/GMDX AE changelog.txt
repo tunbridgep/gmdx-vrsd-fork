@@ -37,6 +37,9 @@ Bugfixes:
 - Fixed game crashing when right-clicking after death by adding a 1 second minimum time before loading.
 - Fixed issue where certain decorations could display incorrectly in Shenanigans mode.
 - Fixed GMDXv9 issue where "Confirm Note Deletion" checkbox did nothing on Hardcore (or with realtime UI turned on).
+- The Pedometer heartrate display will is no longer unreadable and won't update every frame
+    - Now it trends towards target values slowly, like a real heart.
+    - For example, if we're at 90 bpm and want to reach 120 bpm due to stress, our heart will slowly rise to 120 bpm over a few seconds.
 
 Misc Changes:
 - In Hardcore mode, weapons will now be emptied at the start of reloading (except for one-at-a-time weapons).
