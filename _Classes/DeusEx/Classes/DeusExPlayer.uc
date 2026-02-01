@@ -951,6 +951,8 @@ var globalconfig bool bAllowItemPickup;                      //SARGE: Allow pick
 var globalconfig bool bNoPartialReloads;                     //SARGE: When cancelling reloading, empty the weapon instead of keeping the previous ammo amount.
 
 
+var globalconfig bool bShowExits;                            //SARGE: Show exit icons
+
 //New method for detecting if we're in combat efficiently
 var private transient int combatantsCached;
 var private transient float combatCheckTime;                 //SARGE: When checking for combat, cache the result for 1 second.
@@ -1932,6 +1934,9 @@ function PostPostBeginPlay()
     ResetMusic();
     //Fix any erroneous item icons/skins. Probably not necessary.
     UpdateItemIcons();
+    
+    //Display or hide any Exits as necessary based on settings.
+    ShowExits();
 }
 
 // ----------------------------------------------------------------------
@@ -2374,6 +2379,24 @@ function UpdateItemIcons()
 
 		anItem = anItem.Inventory;
     }
+}
+
+// ----------------------------------------------------------------------
+// SARGE: ShowExits()
+// Updates each map exit to reflect if it should be displayed or not
+// ----------------------------------------------------------------------
+
+function ShowExits()
+{
+    local Teleporter T;
+    local MapExit E;
+
+    foreach AllObjects(class'Teleporter',T)
+        if (T.URL != "")
+            T.bHidden = !bShowExits;
+    foreach AllObjects(class'MapExit',E)
+        if (E.bCollideActors == true)
+            E.bHidden = !bShowExits;
 }
 
 // ----------------------------------------------------------------------

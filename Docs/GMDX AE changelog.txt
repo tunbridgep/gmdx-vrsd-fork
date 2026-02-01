@@ -1,6 +1,7 @@
 1.2:
 
 New Features:
+- Added a new option to show Exits on the map. This is mostly for debugging but may be useful for some people, so it's available for anyone to use.
 - Items that would be picked up and placed into your inventory with right click can now be carried using Walk+Right Click if your hands are empty.
     - This can be disabled in the Quality of Life settings menu.
     - This is useful for consolidating items together, such as ammo, which you might not need just yet.
