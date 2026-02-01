@@ -1436,6 +1436,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 											invItem.pickuplist[i] = deusexpickup(item).textureset;
 											invItem.textureset = deusexpickup(item).textureset;
 											invItem.SetSkin();
+											invItem.SetIcon();
 											startcopies++;
 										}
 									}
@@ -1501,6 +1502,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 										invItem.pickuplist[i] = deusexpickup(item).textureset;
 										invItem.textureset = deusexpickup(item).textureset;
 										invItem.SetSkin();
+										invItem.SetIcon();
 										startcopies++;
 									}
 								}

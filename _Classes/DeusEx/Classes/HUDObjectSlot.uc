@@ -356,7 +356,7 @@ function DrawHUDIcon(GC gc)
         if (item != None)
             icon = item.icon;
         else
-            icon = player.GetPlaceholder(objectNum).icon;
+            icon = player.GetPlaceholderIcon(objectNum);
 
         if (icon == None)
             return;

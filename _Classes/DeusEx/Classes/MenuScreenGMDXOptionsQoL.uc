@@ -10,6 +10,9 @@ function SaveSettings()
     Super.SaveSettings();
     player.UpdateCrosshairStyle();
     player.UpdateHUD();
+    
+    //We need to refresh our item icons too.
+    player.UpdateItemIcons();
 
     if (player.outfitManager != None)
         player.outfitManager.SaveConfig();
@@ -151,6 +154,7 @@ defaultproperties
      items(116)=(HelpText="Use a larger font for Datacubes, Books and other readable objects",actionText="Fonts: Big Reading Font",variable="bBigDatacubeFont",consoleTarget="DeusEx.FontManager",defaultValue=1,bAdvancedModeOnly=false);        
      items(117)=(HelpText="Using the Scope key with no item equipped will use any Binoculars in your inventory",actionText="Interaction: Smart Binocular Selection",variable="iSmartBinocs",defaultValue=1,valueText2="Select and Activate",bAdvancedModeOnly=true);
 
+     items(125)=(HelpText="Item icons in the Inventory and Belt will reflect item skins. Otherwise the default icon is used.",actionText="HUD: Show Skinned Icons",variable="bSkinnedBeltIcons",defaultValue=1,bAdvancedModeOnly=false)
 
      Title="GMDX Quality of Life Options"
      colWidths(0)=214
