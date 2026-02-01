@@ -1,6 +1,9 @@
 1.2:
 
 New Features:
+- Items that would be picked up and placed into your inventory with right click can now be carried using Walk+Right Click if your hands are empty.
+    - This can be disabled in the Quality of Life settings menu.
+    - This is useful for consolidating items together, such as ammo, which you might not need just yet.
 - Added height randomisation for NPCs. Now every NPC in the game will randomly be up to 10% taller or shorter.
 - Added a new playthrough modifier for upfront character creation. You will start with more skill points initially, but will get far less overall.
 - If you have Binoculars in your inventory, they can now be selected using the "Toggle Scope" key when your hands are empty.

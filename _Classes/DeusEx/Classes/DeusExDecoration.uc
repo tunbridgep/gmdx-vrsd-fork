@@ -54,7 +54,7 @@ var float psychoLiftTime;
 var bool bPsychoBump;
 var() bool bDoNotResetRotationOnLanded;
 var bool bWrapped;
-var bool bLeftGrab;               //Sarge: Can this object be picked up with left click
+var bool bAltGrab;                //Sarge: Can this object be picked up with alternate grab. Used for datacubes etc.
 var bool bEMPHitMarkers;          //Sarge: Show hitmarkers for all EMP damage, for things like cameras
 var bool bHitMarkers;             //Sarge: Show hitmarkers when damaged. For things like glass panes
 
@@ -131,6 +131,7 @@ replication
 //Return true to use the default frobbing mechanism (right click), or false for custom behaviour
 function bool DoLeftFrob(DeusExPlayer frobber)
 {
+    /*
     //Don't allow frobbing while swimming, and only allow objects grabbable via left click
     if (bLeftGrab)
     {
@@ -144,7 +145,7 @@ function bool DoLeftFrob(DeusExPlayer frobber)
             return false;
         }
     }
-    else if (!bInvincible && frobber.SelectMeleePriority(minDamageThreshold))
+    else*/ if (!bInvincible && frobber.SelectMeleePriority(minDamageThreshold))
         return false;
     return true;
 }
@@ -162,6 +163,12 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
             frobber.GrabDecoration();
             return false;
         }
+    }
+    //SARGE: Allow the new Alternate Grab mechanism to pick this up, even if it's not pushable
+    else if (bAltGrab && !frobber.IsInState('PlayerSwimming') && !objectInHand && frobber.bRun != 0 && frobber.bAllowItemPickup)
+    {
+        frobber.GrabDecoration();
+        return false;
     }
     return true;
 }
@@ -260,7 +267,7 @@ function BeginPlay()
 	local float Volume,temp;
 
 	if (Physics == PHYS_None)
-		bLeftGrab = false;
+		bAltGrab = false;
 
 	Super.BeginPlay();
 

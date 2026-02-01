@@ -937,6 +937,8 @@ var travel bool bImprisonmentTakesAmmo;                      //SARGE: Take Ammo 
 
 var globalconfig int iSmartBinocs;                           //SARGE: Pressing the Scope key selects binoculars
 
+var globalconfig bool bAllowItemPickup;                      //SARGE: Allow picking up items as decorations with left-clicking if enabled
+
 var globalconfig bool bNoPartialReloads;                     //SARGE: When cancelling reloading, empty the weapon instead of keeping the previous ammo amount.
 
 
@@ -944,6 +946,7 @@ var globalconfig bool bNoPartialReloads;                     //SARGE: When cance
 var private transient int combatantsCached;
 var private transient float combatCheckTime;                 //SARGE: When checking for combat, cache the result for 1 second.
 var travel float lastCombatTime;                             //SARGE: The last time when the player was in combat
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -8718,7 +8721,9 @@ function DoLeftFrob(Actor frobTarget)
 
     if (inHand == None)
     {
-        if (frobTarget.isA('DeusExPickup'))
+        //if (bRun != 0 && bAllowItemPickup && frobTarget.isA('Inventory'))
+        //    bDefaultFrob = !class'CarriedObject'.static.CreateCarriedObjectFor(self,Inventory(frobTarget));
+        /*else*/ if (frobTarget.isA('DeusExPickup'))
             bDefaultFrob = DeusExPickup(frobTarget).DoLeftFrob(Self);
         else if (frobTarget.isA('DeusExWeapon'))
             bDefaultFrob = DeusExWeapon(frobTarget).DoLeftFrob(Self);
@@ -8766,7 +8771,9 @@ function DoRightFrob(Actor frobTarget)
     bDefaultFrob = true;
     bLeftClicked = false;
 
-    if (frobTarget.isA('DeusExPickup'))
+    if (inHand == None && bRun != 0 && bAllowItemPickup && frobTarget.isA('Inventory'))
+        bDefaultFrob = !class'CarriedObject'.static.CreateCarriedObjectFor(self,Inventory(frobTarget));
+    else if (frobTarget.isA('DeusExPickup'))
         bDefaultFrob = DeusExPickup(frobTarget).DoRightFrob(Self,inHand != None);
     else if (frobTarget.isA('DeusExWeapon'))
         bDefaultFrob = DeusExWeapon(frobTarget).DoRightFrob(Self,inHand != None);
@@ -11171,7 +11178,7 @@ function bool CanBeLifted(Decoration deco)
 	}
 
     //Always allow left-grabbing if we have bLeftGrab set, no matter what
-    if (deco.isA('DeusExDecoration') && DeusExDecoration(deco).bLeftGrab)
+    if (deco.isA('DeusExDecoration') && DeusExDecoration(deco).bAltGrab)
     {
     }
     else if (!deco.bPushable || (deco.Mass > maxLift) || (deco.StandingCount > 1))
@@ -11250,7 +11257,6 @@ function GrabDecoration()
 			{
 				CarriedDecoration = Decoration(FrobTarget);
 				PutCarriedDecorationInHand();
-
 			}
 }
 
@@ -11473,6 +11479,10 @@ function DropDecoration()
                     if (swimTimer < 0)
                         swimTimer = 0;
                 }
+
+                //SARGE: If it's a CarriedAmmo, turn it into the real ammo
+                if (deco.IsA('CarriedObject') && !bThrowDecoration)
+                    class'CarriedObject'.static.CreateRealObjectFor(CarriedObject(deco));
             }
 		}
 		else
@@ -20360,4 +20370,5 @@ defaultproperties
      iShifterWeaponSwitch=2
      bExperimentalAmmoSpawning=true
      iSmartBinocs=1
+     bAllowItemPickup=true
 }
