@@ -56,6 +56,7 @@ Misc Changes:
 - Minor changes to phones to make them more realistic (for instance, they will "ring out" rather than ringing once, and disconnected phones won't ring at all).
 - Notes in the Computer/Keypad notes display are now sorted in descending order like the regular Notes screen.
 - Using the "Assign Secondary" hotkey in the Inventory screen will now unassign if used on the secondary item.
+- The Electric Prod will now no longer display electricity in it's viewmodel when empty.
 
 Map Changes:
 - 02_NYC_BatteryPark
