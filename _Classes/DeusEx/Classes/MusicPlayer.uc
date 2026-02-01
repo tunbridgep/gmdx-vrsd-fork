@@ -138,9 +138,7 @@ function Tick(float deltaTime)
 {
 	//local bool bCombat; //SARGE: Replaced with aggro below
     local int aggro;
-	local ScriptedPawn npc;
-    local Pawn CurPawn;
-    local PlayerPawn player;
+    local DeusExPlayer player;
 	local DeusExLevelInfo info;
     local bool bAllowConverse, bAllowCombat, bAllowOther;
 
@@ -148,7 +146,7 @@ function Tick(float deltaTime)
 		
     info = GetLevelInfo();
 
-    player = GetGameInfo().GetPlayerPawn();
+    player = DeusExPlayer(GetGameInfo().GetPlayerPawn());
 
     bAllowConverse = info.SongAmbientSection != 255 && info.MusicType != MT_SingleTrack && info.MusicType != MT_CombatOnly;
     bAllowCombat = info.SongAmbientSection != 255 && info.MusicType != MT_SingleTrack && info.MusicType != MT_ConversationOnly && iAllowCombatMusic > 0;
@@ -223,20 +221,7 @@ function Tick(float deltaTime)
             // XXXDEUS_EX AMSD Slow Pawn Iterator
             //foreach RadiusActors(class'ScriptedPawn', npc, 1600)
             if (bAllowCombat)
-            {
-                for (CurPawn = player.Level.PawnList; CurPawn != None; CurPawn = CurPawn.NextPawn)
-                {
-                    npc = ScriptedPawn(CurPawn);
-                    if ((npc != None) && (VSize(npc.Location - player.Location) < (1600 + npc.CollisionRadius)))
-                        if ((npc.GetStateName() == 'Attacking') && (npc.Enemy == player))
-                        {
-                            aggro++;
-                            //SARGE: Bosses always have music
-                            if (npc.IsA('AnnaNavarre') || npc.IsA('WaltonSimons') || npc.IsA('GuntherHermann'))
-                                aggro = 9999;
-                        }
-                }
-            }
+                aggro = player.GetCombatants(true);
                 
             //SARGE: Don't stop combat music until aggro has returned to zero.
             if (aggro > 0 && musicMode == MUS_Combat)
