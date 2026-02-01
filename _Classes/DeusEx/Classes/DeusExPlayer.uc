@@ -388,9 +388,12 @@ struct augBinary                                                                
 };
 
 //Holds information about the reserved items on the belt
+//ALSO used for Secondary slot
 struct BeltInfo
 {
-    var texture		icon;				    //Sarge. Disconnect the icon from the inventory item, so we can keep it when the item disappears.
+    var string      itemClass;
+    var texture		icon;				    //Sarge. Disconnect the icon from the inventory item, so we can keep the last used icon when the item disappears (for items with multiple skins).
+    var texture		defaultIcon;			//Sarge. This probably isn't necessary, but it's still a hell of a lot better than trying to fuck around with DynamicLoadObject just to get the default icon...
 };
 
 var globalconfig bool bWallPlacementCrosshair;		// SARGE: Show a blue crosshair when placing objects on walls
@@ -496,7 +499,7 @@ var float stuntedTime; //SARGE: Replaces the SetTimer calls with a stuntedTime v
 var bool bRegenStamina; //CyberP: regen when in water but head above water
 var bool bCrouchRegen;  //CyberP: regen when crouched and has skill
 var float doubleClickCheck; //CyberP: to return from double clicking.
-var travel string assignedWeapon;                                                   //SARGE: Changed from a hard object reference to an object class. Needs to be a string or the game crashes
+var travel BeltInfo assignedWeapon;                                                   //SARGE: Changed from a hard object reference to an object class. Needs to be a string or the game crashes
 var travel Inventory primaryWeapon;
 var travel bool bLastWasEmpty;                                                     //SARGE: Whether or not we were empty before being switched to this weapon.
 var travel bool bSelectedFromMainBeltSelection;                                    //SARGE: Whether or not we selected our main belt slot before going to this item, since our last holster. IW belt only. Determines if we should switch back to our main selection, or .
@@ -937,6 +940,8 @@ var travel bool bImprisonmentTakesAmmo;                      //SARGE: Take Ammo 
 
 var globalconfig int iSmartBinocs;                           //SARGE: Pressing the Scope key selects binoculars
 
+var globalconfig bool bSkinnedBeltIcons;                     //SARGE: Show different belt icons for different food and drink skins.
+
 var globalconfig bool bShowGoalsOnScreen;                    //SARGE: Show goals on-screen
 var globalconfig bool bShowPinnedNotesOnScreen;              //SARGE: Show pinned notes on-screen
 
@@ -1203,13 +1208,27 @@ function AssignSecondary(Inventory item, optional bool bMessage)
     */
 
     if (item == None)
-        assignedWeapon = "";
+    {
+        assignedWeapon.itemClass = "";
+        assignedWeapon.icon = None;
+        assignedWeapon.defaultIcon = None;
+    }
     else
-        assignedWeapon = string(item.Class);
+    {
+        assignedWeapon.itemClass = string(item.Class);
+        assignedWeapon.icon = item.Icon;
+        if (item.IsA('DeusExPickup'))
+            assignedWeapon.defaultIcon = item.default.icon;
+        else
+            assignedWeapon.defaultIcon = item.icon;
+    }
 
     if (bMessage)
     {
-        ClientMessage(Sprintf(msgSecondaryAdded,item.itemName));
+        if (item == None)
+            ClientMessage(Sprintf(msgSecondaryRemoved));
+        else
+            ClientMessage(Sprintf(msgSecondaryAdded,item.itemName));
         PlaySound(Sound'Menu_Focus', SLOT_Interface, 0.75);
     }
 
@@ -1228,11 +1247,19 @@ function Inventory GetSecondary()
 	return FindInventoryType(GetSecondaryClass());
 }
 
+function Texture GetSecondaryIcon()
+{
+    if (bSkinnedBeltIcons)
+        return assignedWeapon.icon;
+    else
+        return assignedWeapon.defaultIcon;
+}
+
 function Class<Inventory> GetSecondaryClass()
 {
     local class<Inventory> assignedClass;
-    if (assignedWeapon != "")
-        assignedClass = class<Inventory>(DynamicLoadObject(assignedWeapon, class'Class'));
+    if (assignedWeapon.itemClass != "")
+        assignedClass = class<Inventory>(DynamicLoadObject(assignedWeapon.itemClass, class'Class'));
     //ClientMessage("Get Secondary Class: " $ assignedClass $ " (" $ assignedWeapon $ ")");
     return assignedClass;
 }
@@ -1902,6 +1929,8 @@ function PostPostBeginPlay()
 
     //Reset Music
     ResetMusic();
+    //Fix any erroneous item icons/skins. Probably not necessary.
+    UpdateItemIcons();
 }
 
 // ----------------------------------------------------------------------
@@ -2315,10 +2344,35 @@ function RefreshChargedPickups()
 			if (anItem.IsA('TechGoggles') && anItem.IsActive())
 				TechGoggles(anItem).UpdateHUDDisplay(Self);
 
-            if (anItem.IsActive() && assignedWeapon != string(anItem.Class) && (anItem.GetCurrentCharge() > 0 || !anItem.bUnequipWhenDrained)) //SARGE: Modified get current charge check, since we can now have chargedpickups at 0 charge
+            if (anItem.IsActive() && assignedWeapon.itemClass != string(anItem.Class) && (anItem.GetCurrentCharge() > 0 || !anItem.bUnequipWhenDrained)) //SARGE: Modified get current charge check, since we can now have chargedpickups at 0 charge
                 AddChargedDisplay(anItem);
 		}
 	}
+}
+
+// ----------------------------------------------------------------------
+// SARGE: UpdateItemIcons()
+// Updates the icons of every pickup in our inventory.
+// Needed to have the right icons when we change to/from skinned icons
+// ----------------------------------------------------------------------
+
+function UpdateItemIcons()
+{
+	local Inventory anItem;
+    local DeusExPickup PK;
+	anItem = Inventory;
+	
+    while(anItem != None)
+	{
+        PK = DeusExPickup(anItem);
+        if (PK != None)
+        {
+            PK.SetSkin();
+            PK.SetIcon();
+        }
+
+		anItem = anItem.Inventory;
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -10709,33 +10763,57 @@ function AddObjectToBelt(Inventory item, int pos, bool bOverride)
 ////Sarge: Functions for dealing with belt memory
 
 // Set Placeholder
-function SetPlaceholder(int objectNum, texture icon)
+function SetPlaceholder(int objectNum, Inventory item)
 {
-    if (icon != None && icon != class'NanoKeyRing'.default.icon)
-        beltInfos[objectNum].icon = icon;
+    if (item != None && item.Class != class'NanoKeyRing')
+    {
+        beltInfos[objectNum].itemClass = string(item.Class);
+        beltInfos[objectNum].icon = item.icon;
+
+        //This is a HORRIBLE, DISGUSTING dirty hack, to make sure we get default icons for pickups,
+        //but that HDTP belt icons for weapons stay how they should be.
+        if (item.IsA('DeusExPickup'))
+            beltInfos[objectNum].defaultIcon = item.default.icon;
+        else
+            beltInfos[objectNum].defaultIcon = item.icon;
+    }
 }
 
 function ClearPlaceholder(int objectNum)
 {
     beltInfos[objectNum].icon = None;
+    beltInfos[objectNum].defaultIcon = None;
+    beltInfos[objectNum].itemClass = "";
 }
 
-function bool GetPlaceholder(int objectNum)
+function bool IsPlaceholder(int objectNum)
 {
-    return beltInfos[objectNum].icon != None;
+    return beltInfos[objectNum].itemClass != "";
 }
 
-function texture GetPlaceholderIcon(int objectNum)
+function BeltInfo GetPlaceholder(int objectNum)
 {
-    return beltInfos[objectNum].icon;
+    return beltInfos[objectNum];
+}
+
+//Gets a belt placeholder, while preserving the default icons setting
+function Texture GetPlaceholderIcon(int objectNum)
+{
+    if (bSkinnedBeltIcons)
+        return beltInfos[objectNum].Icon;
+    else
+        return beltInfos[objectNum].defaultIcon;
 }
 
 function int HasPlaceholderSlot(Class<inventory> obj)
 {
     local int i;
     for (i = 0;i < ArrayCount(beltInfos);i++)
-        if (beltInfos[i].icon == obj.default.Icon)
+    {
+        //DebugLog("BeltInfos["$i$"]:" @ beltInfos[i].itemClass @ ", obj: " $ string(obj));
+        if (beltInfos[i].itemClass == string(obj))
             return i;
+    }
     return -1;
 }
 
@@ -11597,7 +11675,6 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 			tex = deusExPickUp(item).textureset; //our current tex
 
 			DeusExPickup(item).NumCopies--;
-
 			UpdateBeltText(item);
 
 			if (DeusExPickup(item).NumCopies > 0)
@@ -11623,6 +11700,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 					{
 						deusExPickUp(item).textureSet = tex;
 						deusExPickUp(item).SetSkin();
+						deusExPickUp(item).SetIcon();
 						deusExPickUp(previtem).UpdateCurrentSkin();
 					}
 				}
@@ -11633,6 +11711,7 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 				{
 					deusExPickUp(item).textureSet = tex;
 					deusExPickUp(item).SetSkin();
+					deusExPickUp(item).SetIcon();
 				}
 
 				// Keep track of this so we can undo it
@@ -20234,6 +20313,7 @@ defaultproperties
      noUsing="You cannot use it at this time"
      msgDeclinedPickup="%s is declined. Press again to pick up."
      msgSecondaryAdded="%s added as Secondary"
+     msgSecondaryRemoved="Secondary item removed"
      customColorsMenu(0)=(R=61,G=62,B=73)
      customColorsMenu(1)=(G=49,B=255)
      customColorsMenu(2)=(R=210,G=194,B=255)
@@ -20405,6 +20485,7 @@ defaultproperties
      iShifterWeaponSwitch=2
      bExperimentalAmmoSpawning=true
      iSmartBinocs=1
+     bSkinnedBeltIcons=true
      bShowGoalsOnScreen=false
      bShowPinnedNotesOnScreen=true
      bAllowItemPickup=true

@@ -3,6 +3,20 @@
 //=============================================================================
 class SoyFood extends RSDEdible;
 
+function PostBeginPlay()
+{
+    //When TT was placing soyfood in the maps, he simply changed their texture to the HK_Sign texture
+    //instead of setting their skins properly. So we need to fix it.
+    //I could just go through the maps and reset it that way, but fuck it...
+    if (multiskins[0] != None && string(multiskins[0].Name) == "HK_Sign_28")
+    {
+        textureSet = 1;
+        Skin = class'HDTPLoader'.static.GetTexture2("HK_Signs.HK_Sign_28","RSDCrap.Skins.SoyFoodTex2",IsHDTP());
+    }
+
+    Super.PostBeginPlay();
+}
+
 function Eat(DeusExPlayer player)
 {
 	player.PlaySound(sound'EatingChips',SLOT_None,3.0);
@@ -10,14 +24,14 @@ function Eat(DeusExPlayer player)
 
 function SetSkin()
 {
-    local Texture tex;
     Super.SetSkin();
 
     //Set up Meshes
     switch(textureSet)
     {
-        case 0: tex = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPSoyFoodTex1","",IsHDTP()); break;
-        case 1: tex = class'HDTPLoader'.static.GetTexture("HK_Signs.HK_Sign_28"); break;
+        case 0: Skin = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPSoyFoodTex1","",IsHDTP()); break;
+        //case 1: Skin = class'HDTPLoader'.static.GetTexture("HK_Signs.HK_Sign_28"); break;
+        case 1: Skin = class'HDTPLoader'.static.GetTexture2("HK_Signs.HK_Sign_28","RSDCrap.Skins.SoyFoodTex2",IsHDTP()); break; //SARGE: Replaced with a nice new texture!
     }
 }
 
@@ -48,7 +62,7 @@ defaultproperties
      Mass=3.000000
      Buoyancy=4.000000
      fullness=8
-     //SARGE: Disabled for now. We're going to manually set these, because
-     //the Hong-Kong style ones are in Hong Kong only.
-     //totalSkins=2
+     dontRandomiseSkin=true //We want the HK ones to only appear in HK, so don't randomise them. Might change this later!
+     totalSkins=2
+     bHasMultipleSkins=true
 }

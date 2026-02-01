@@ -64,7 +64,7 @@ function PreBeginPlay()
 
 defaultproperties
 {
-     healAmount=2;
+     healAmount=2
      bBreakable=True
      FragType=Class'DeusEx.PlasticFragment'
      maxCopies=10
@@ -74,8 +74,10 @@ defaultproperties
      ItemArticle="some"
      PlayerViewOffset=(X=30.000000,Z=-12.000000)
      LandSound=Sound'DeusExSounds.Generic.MetalHit1'
-     Icon=Texture'DeusExUI.Icons.BeltIconSodaCan'
-     largeIcon=Texture'DeusExUI.Icons.LargeIconSodaCan'
+     //Icon=Texture'DeusExUI.Icons.BeltIconSodaCan'
+     //largeIcon=Texture'DeusExUI.Icons.LargeIconSodaCan'
+     Icon=Texture'RSDCrap.Icons.BeltIconSodaCanTex1' //Closed lid
+     largeIcon=Texture'RSDCrap.Icons.LargeIconSodaCanTex1' //Closed lid
      largeIconWidth=24
      largeIconHeight=45
      Description="The can is blank except for the phrase 'PRODUCT PLACEMENT HERE.' It is unclear whether this is a name or an invitation."

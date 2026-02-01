@@ -49,6 +49,10 @@ Misc Changes:
 - Left-Frobbing a breakable object will no longer select inadequate melee weapons on Hardcore mode.
 - The previously experimental feature to drop items from conversations at the players feet is now enabled by default.
 - The "Drop Item" and "Assign Secondary" keys will now work properly in the inventory screen, rather than being hardcoded to F and BACKSPACE
+- Added a number of new icons for edibles and other pickups, now inventory icons will always reflect item skins
+    - The Belt and Secondary Item display will now show the proper icon for a given item, rather than always showing the default, and belt memory will preserve the icon.
+    - These new icons can be disabled in the Quality of Life menu (enabled by default)
+    - The old "Big Top" cigatettes icon no longer requires HDTP and is now only shown when the new icons are enabled
 - Minor changes to phones to make them more realistic (for instance, they will "ring out" rather than ringing once, and disconnected phones won't ring at all).
 
 Map Changes:
