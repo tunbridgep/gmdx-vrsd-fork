@@ -20490,4 +20490,5 @@ defaultproperties
      bShowGoalsOnScreen=false
      bShowPinnedNotesOnScreen=true
      bAllowItemPickup=true
+     bRandomizeCrap=true
 }
