@@ -133,7 +133,7 @@ defaultproperties
      items(100)=(HelpText="Items given to other characters will show alongside the items received window during conversations.",actionText="Conversations: Show Given Items",variable="bConversationShowGivenItems",defaultValue=1,bAdvancedModeOnly=true);
      items(101)=(HelpText="Credits transferred will show in the items received window during conversations.",actionText="Conversations: Show Credit Transfers",variable="bConversationShowCredits",defaultValue=1,bAdvancedModeOnly=true);
      items(102)=(HelpText="If enabled, the Items Received window will be shown when picking up credits.",actionText="HUD: Show Items Window for Credits",variable="bCreditsShowReceivedItemsWindow",defaultValue=0)
-     items(103)=(HelpText="If enabled, notes added by datacubes, books, etc can be edited.",actionText="HUD: Edit Default Notes",variable="bEditDefaultNotes",defaultValue=0,bAdvancedModeOnly=true)
+     items(103)=(HelpText="If enabled, notes added by datacubes, books, etc can be edited.",actionText="HUD: Edit Default Notes",variable="bEditDefaultNotes",defaultValue=1,bAdvancedModeOnly=true)
      items(104)=(HelpText="If enabled, labels will be displayed on the ammo HUD showing current weapon addons.",actionText="HUD: Ammo Display Shows Addons",variable="bDrawAddonsOnAmmoDisplay",defaultValue=0,bAdvancedModeOnly=true)
      items(105)=(HelpText="If enabled, the Ammo icons shown when viewing a weapon in the inventory will show max ammo in addition to current ammo.",actionText="HUD: Weapon Info shows Max Ammo",variable="bInventoryAmmoShowsMax",defaultValue=1,bAdvancedModeOnly=true)
      items(106)=(HelpText="If enabled, weapon scopes will use the vanilla scope textures.",actionText="HUD: Classic Weapon Scope",variable="bClassicScope",defaultValue=0)
@@ -149,8 +149,11 @@ defaultproperties
      items(114)=(HelpText="The players Real Name and Appearance will be remembered between playthroughs",actionText="Game: Remember Player Identity",variable="bRememberTheName",bAdvancedModeOnly=true,defaultValue=1);
      items(115)=(HelpText="Use more readable fonts for most UI elements.",actionText="Fonts: More Readable Fonts",variable="bDXRandoFonts",consoleTarget="DeusEx.FontManager",defaultValue=1,bAdvancedModeOnly=true);
      items(116)=(HelpText="Use a larger font for Datacubes, Books and other readable objects",actionText="Fonts: Big Reading Font",variable="bBigDatacubeFont",consoleTarget="DeusEx.FontManager",defaultValue=1,bAdvancedModeOnly=false);        
-     items(117)=(HelpText="Using the Scope key with no item equipped will use any Binoculars in your inventory",actionText="Interaction: Smart Binocular Selection",variable="iSmartBinocs",defaultValue=1,valueText2="Select and Activate",bAdvancedModeOnly=true);
-
+     items(117)=(HelpText="Use a larger font for the Console. Requires the More Readable fonts option enabled.",actionText="Fonts: Big Console Font",variable="iBigConsoleFont",consoleTarget="DeusEx.FontManager",defaultValue=1,valueText1="2x",valueText2="3x",bAdvancedModeOnly=false)
+     items(118)=(HelpText="Using the Scope key with no item equipped will use any Binoculars in your inventory",actionText="Interaction: Smart Binocular Selection",variable="iSmartBinocs",defaultValue=1,valueText2="Select and Activate",bAdvancedModeOnly=true)
+     items(119)=(HelpText="Show your current goals on the HUD",actionText="HUD: Display Goals",variable="bShowGoalsOnScreen",defaultValue=1,bAdvancedModeOnly=false)
+     items(120)=(HelpText="Show pinned notes on the HUD",actionText="HUD: Display Pinned Notes",variable="bShowPinnedNotesOnScreen",defaultValue=1,bAdvancedModeOnly=true)
+     items(121)=(HelpText="Right clicking pickups while the Walk/Run key is held will allow you to carry them around similar to boxes and other decoration items.",actionText="Interaction: Allow Carrying Pickups",variable="bAllowItemPickup",defaultValue=1,bAdvancedModeOnly=false)
 
      Title="GMDX Quality of Life Options"
      colWidths(0)=214

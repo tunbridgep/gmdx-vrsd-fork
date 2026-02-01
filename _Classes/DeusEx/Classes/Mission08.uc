@@ -43,6 +43,14 @@ function FirstFrame()
             foreach AllActors(class'AugmentationUpgradeCannister', Upgrade)
                 Upgrade.Destroy();
         }
+        
+        //SARGE: If we finished the initial smuggler quest without "finishing" the quest,
+        //just give us the discount anyway. This conversation is so fucking stupid...
+		if (flags.GetBool('FordSchickRescued'))
+        {
+			flags.SetBool('SchickThankedPlayer', True,, 9);
+			flags.SetBool('SmugglerThankedPlayer', True,, 9);
+        }
 
 	}
 	else if (localURL == "08_NYC_HOTEL")
