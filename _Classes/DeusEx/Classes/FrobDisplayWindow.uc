@@ -235,11 +235,8 @@ function Color GetFrobDisplayBorderColor(Actor frobTarget)
             else if (capacity - myammo < AM.AmmoAmount)
                 return colWireless;
         }
-        else if (WE != None && WE.PickupAmmoCount > 0)
+        else if (WE != None && WE.PickupAmmoCount > 0 && player.FindInventoryType(Inv.Class) != None) //Check ammo for weapons we already have
         {
-            if (WE.bDisposableWeapon && player.FindInventoryType(Inv.Class) == None && !player.FindInventorySlot(Inv, True))
-                return colBadAug;
-
             AM = DeusExAmmo(player.FindInventoryType(WE.AmmoName));
             if (AM != None)
                 capacity = player.GetAdjustedMaxAmmo(AM);
@@ -253,21 +250,37 @@ function Color GetFrobDisplayBorderColor(Actor frobTarget)
                     return colBadAug;
                 else if (capacity - myammo < WE.PickupAmmoCount)
                     return colWireless;
-                if (capacity - myammo > 0 && player.FindInventoryType(Inv.Class) == None && !player.FindInventorySlot(Inv, True)) //No space but can still loot
+            }
+        }
+        else if (WE != None && WE.PickupAmmoCount > 0) //Check ammo for weapons we don't have
+        {
+            if (WE.bDisposableWeapon && !player.FindInventorySlot(Inv, True))
+                return colBadAug;
+
+            AM = DeusExAmmo(player.FindInventoryType(WE.AmmoName));
+            if (AM != None)
+                capacity = player.GetAdjustedMaxAmmo(AM);
+            
+            if (capacity > 0)
+            {
+                myammo = AM.AmmoAmount;
+                //player.DebugMessage("Capacity: " $ capacity $ ", myAmmo: " $ myAmmo $ ", diff: " $ (capacity-myammo) $ " (" $ AM.class $ ")");
+
+                if (myammo < capacity)
                     return colWireless;
             }
         }
         
         //Declined
-        else if (player.DeclinedItemsManager.IsDeclined(Inv.Class,true) && player.clickCountCyber < 1)
+        if (player.DeclinedItemsManager.IsDeclined(Inv.Class,true) && player.clickCountCyber < 1)
             return colBadAug;
 
         //Not enough space
-        else if (player.FindInventoryType(Inv.Class) == None && !player.FindInventorySlot(Inv, True))
+        if (player.FindInventoryType(Inv.Class) == None && !player.FindInventorySlot(Inv, True))
             return colBadAug;
 
         //Can carry only 1
-        else if (WE != None && player.FindInventoryType(WE.Class) != None && (WE.AmmoName == None || WE.AmmoName == class'DeusEx.AmmoNone'))
+        if (WE != None && player.FindInventoryType(WE.Class) != None && (WE.AmmoName == None || WE.AmmoName == class'DeusEx.AmmoNone'))
             return colBadAug;
     }
 
