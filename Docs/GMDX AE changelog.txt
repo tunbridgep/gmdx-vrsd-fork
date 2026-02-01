@@ -46,6 +46,8 @@ Misc Changes:
 Map Changes:
 - 02_NYC_Underground
     - Removed a datacube containing the MJ12/Coupdetat password on Hardcore mode, so that you are incentivised to use the much harder entrance (the one with all the lasers and turrets).
+- 04_NYC_Smug/08_NYC_Smug
+    - The player will still receive Smuggler's discount even if they didn't revisit Smuggler after rescuing Ford Schick in Mission 2.
 
 1.11 (Hotfix Release):
 
