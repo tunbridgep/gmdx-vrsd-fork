@@ -157,6 +157,7 @@ defaultproperties
      items(119)=(HelpText="Show your current goals on the HUD",actionText="HUD: Display Goals",variable="bShowGoalsOnScreen",defaultValue=1,bAdvancedModeOnly=false)
      items(120)=(HelpText="Show pinned notes on the HUD",actionText="HUD: Display Pinned Notes",variable="bShowPinnedNotesOnScreen",defaultValue=1,bAdvancedModeOnly=true)
      items(121)=(HelpText="Right clicking pickups while the Walk/Run key is held will allow you to carry them around similar to boxes and other decoration items.",actionText="Interaction: Allow Carrying Pickups",variable="bAllowItemPickup",defaultValue=1,bAdvancedModeOnly=false)
+     items(122)=(HelpText="Picking up a charged item will make a 'hiss' sound if it recharges the last item in the stack, rather than the regular pickup sound. You should leave this enabled.",actionText="Interaction: Charged Item Recharge Sounds",variable="bItemRechargeSound",defaultValue=1,bAdvancedModeOnly=true)
      items(123)=(HelpText="Randomizes the skins of junk food, sofas, etc around the world. If disabled they will use preset skins. Takes effect on loading a new map.",actionText="Game: Randomized Object Skins",variable="bRandomizeCrap",defaultValue=1,bAdvancedModeOnly=true)
      items(125)=(HelpText="Item icons in the Inventory and Belt will reflect item skins. Otherwise the default icon is used.",actionText="HUD: Show Skinned Icons",variable="bSkinnedBeltIcons",defaultValue=1,bAdvancedModeOnly=false)
 

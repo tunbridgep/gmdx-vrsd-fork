@@ -950,6 +950,8 @@ var globalconfig bool bAllowItemPickup;                      //SARGE: Allow pick
 
 var globalconfig bool bNoPartialReloads;                     //SARGE: When cancelling reloading, empty the weapon instead of keeping the previous ammo amount.
 
+var globalconfig bool bItemRechargeSound;                    //SARGE: Okay Roso, you win, here's your damned option!
+
 
 //New method for detecting if we're in combat efficiently
 var private transient int combatantsCached;
@@ -20491,4 +20493,5 @@ defaultproperties
      bShowPinnedNotesOnScreen=true
      bAllowItemPickup=true
      bRandomizeCrap=true
+     bItemRechargeSound=true
 }
