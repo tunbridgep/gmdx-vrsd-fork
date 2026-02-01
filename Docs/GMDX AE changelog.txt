@@ -6,6 +6,8 @@ New Features:
 - If you have Binoculars in your inventory, they can now be selected using the "Toggle Scope" key when your hands are empty.
 - The Frob Display now shows a Red border for Declined items.
 - Added a new more readable font, enabled by default. This should fix issues with 1, l and I looking similar to each other.
+    - Additionally added a larger version of the console font.
+- Added a new keybinding to access the console without the "say" prompt.
 - Added a new option to use large text when reading books and datacubes. On by default.
 - Added a new playthrough modifier to take Ammo when imprisoned by MJ12. This feature was previously hardcore-exclusive. Still always enabled on Hardcore.
 - Disabled grenades can now be detonated using the Remote Detonation perk (they will show as "Remote" instead of "Disabled" in the HUD)
