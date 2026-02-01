@@ -53,6 +53,9 @@ enum EKeybind
     //Aug Menu
     KB_AugMenu_Hold,
     KB_AugMenu_Toggle,
+    
+    //Misc
+    KB_Console,
 };
 
 //Associates a keybinding with an alias
@@ -304,6 +307,10 @@ function Setup(DeusExPlayer P)
                 bReplaceShowScores = true;
                 AddBindingToArray(KB_Belt12,keyName);
             }
+            
+            //Bind the console
+            if (Left(alias,11) == "OpenConsole")
+                AddBindingToArray(KB_Console,keyName);
 	    }
     }
 
@@ -341,6 +348,7 @@ function Setup(DeusExPlayer P)
     //Misc keys
     SetupBinding(KB_Keyring,"","SelectNanoKey");
     SetupBinding(KB_Secondary,"F","UseSecondary");
+    SetupBinding(KB_Console,"Slash","OpenConsole");
 
     //Bind the Lean Keys to Tiptoes
     ReplaceAlias(KB_LeanLeft,"LeanLeft | SetTiptoesLeft 1 | OnRelease SetTiptoesLeft 0");
