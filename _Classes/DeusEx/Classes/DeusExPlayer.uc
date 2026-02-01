@@ -14181,9 +14181,10 @@ Begin:
 // InConversation()
 //
 // Returns True if the player is currently engaged in conversation
+// SARGE: Added optional value, was previously just false
 // ----------------------------------------------------------------------
 
-function bool InConversation()
+function bool InConversation(optional bool bCheckFirstPerson)
 {
 	if ( conPlay == None )
 	{
@@ -14191,7 +14192,9 @@ function bool InConversation()
 	}
 	else
 	{
-		if (conPlay.con != None)
+		if (conPlay.con != None && bCheckFirstPerson)
+			return (!conPlay.GetForcePlay());
+        else if (conPlay.con != None && !bCheckFirstPerson)
 			return ((conPlay.con.bFirstPerson == False) && (!conPlay.GetForcePlay()));
 		else
 			return False;

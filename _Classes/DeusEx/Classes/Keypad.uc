@@ -12,6 +12,9 @@ var() bool bToggleLock;		// if True, toggle the lock state instead of triggering
 
 var HUDKeypadContainerWindow topWindow;           //SARGE: Put everything on a temp window so that we can interact with the keypad and the notes window simultaneously.
 
+var() bool bForcePhoneStyleKeypad;                                                   //SARGE: Use the phone style keypad, even when we've got the number pad style enabled.
+
+
 // ----------------------------------------------------------------------
 // Network Replication
 // ----------------------------------------------------------------------

@@ -68014,4 +68014,14 @@ Begin Actor Class=OutfitSpawner3 Name=OutfitSpawner22
     OldLocation=(X=-4259.008789,Y=2387.650879,Z=-146.720139)
     Name=OutfitSpawner22
 End Actor
+Begin Actor Class=Teleporter Name=Teleporter0
+    LastRenderTime=277.564117
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=GateEntrance
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=1007,ZoneNumber=1)
+    Location=(X=-4704.100098,Y=3059.254639,Z=-99.900002)
+    Rotation=(Yaw=-16384)
+    OldLocation=(X=-4668.100098,Y=3026.254639,Z=-99.900002)
+    Name=Teleporter0
+End Actor
 End Map
