@@ -54,6 +54,7 @@ Misc Changes:
     - These new icons can be disabled in the Quality of Life menu (enabled by default)
     - The old "Big Top" cigatettes icon no longer requires HDTP and is now only shown when the new icons are enabled
 - Minor changes to phones to make them more realistic (for instance, they will "ring out" rather than ringing once, and disconnected phones won't ring at all).
+- Notes in the Computer/Keypad notes display are now sorted in descending order like the regular Notes screen.
 
 Map Changes:
 - 02_NYC_BatteryPark
