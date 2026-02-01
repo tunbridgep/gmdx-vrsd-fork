@@ -939,6 +939,11 @@ var globalconfig int iSmartBinocs;                           //SARGE: Pressing t
 
 var globalconfig bool bNoPartialReloads;                     //SARGE: When cancelling reloading, empty the weapon instead of keeping the previous ammo amount.
 
+
+//New method for detecting if we're in combat efficiently
+var private transient int combatantsCached;
+var private transient float combatCheckTime;                 //SARGE: When checking for combat, cache the result for 1 second.
+var travel float lastCombatTime;                             //SARGE: The last time when the player was in combat
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -14199,6 +14204,42 @@ function bool CanStartConversation()
 		return False;
 	else
 		return True;
+}
+
+//SARGE: Helper function to return if we're in combat
+//Taken from the UpdateDynamicMusic function and made generic.
+//Returns the number of combatants we're fighting
+function int GetCombatants(optional bool bCountBosses)
+{
+    local int aggro;
+	local ScriptedPawn npc;
+    local Pawn CurPawn;
+
+    if (saveTime < combatCheckTime)
+        return combatantsCached;
+        
+    //DebugMessage("Refreshing Combatants:" @ saveTime);
+
+    combatCheckTime = saveTime + 2.0;
+
+    for (CurPawn = Level.PawnList; CurPawn != None; CurPawn = CurPawn.NextPawn)
+    {
+        npc = ScriptedPawn(CurPawn);
+        if ((npc != None) && (VSize(npc.Location - Location) < (1600 + npc.CollisionRadius)))
+            if ((npc.GetStateName() == 'Attacking') && (npc.Enemy == self))
+            {
+                aggro++;
+                //SARGE: Bosses count for a billion combatants, so we always have music.
+                if (bCountBosses && (npc.IsA('AnnaNavarre') || npc.IsA('WaltonSimons') || npc.IsA('GuntherHermann')))
+                    aggro = 9999;
+            }
+    }
+
+    if (aggro > 0)
+        lastCombatTime = saveTime;
+
+    combatantsCached = aggro;
+    return aggro;
 }
 
 // ----------------------------------------------------------------------
