@@ -42523,6 +42523,7 @@ Begin Actor Class=Trigger Name=Trigger2
     Name=Trigger2
 End Actor
 Begin Actor Class=DataCube Name=DataCube9
+    bHardcoreRemoveIt=True
     textTag=02_Datacube11
     bDynamicLight=True
     LastRenderTime=257.646759

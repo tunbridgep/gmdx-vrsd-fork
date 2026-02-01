@@ -223943,4 +223943,15 @@ Begin Actor Class=Brush Name=Brush34
     PrePivot=(X=1.000000,Y=32.000000,Z=121.000000)
     Name=Brush34
 End Actor
+Begin Actor Class=Phone Name=Phone0
+    AnswerSound=AS_Dialtone
+    LastRenderTime=173.994110
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=CutContentPhone
+    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
+    Location=(X=-404.455261,Y=438.454193,Z=-8.119958)
+    Rotation=(Yaw=32000)
+    OldLocation=(X=-408.455261,Y=437.454193,Z=-8.119958)
+    Name=Phone0
+End Actor
 End Map

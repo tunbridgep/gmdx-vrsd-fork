@@ -31,11 +31,11 @@ event InitWindow()
 
 	SetSize(405, 130);
 
-	// Create controls
-	CreateControls();
-
 	// Get a pointer to the player
 	player = DeusExPlayer(GetRootWindow().parentPawn);
+
+	// Create controls
+	CreateControls();
 
 	StyleChanged();
 }

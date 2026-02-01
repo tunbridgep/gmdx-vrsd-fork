@@ -228,7 +228,7 @@ function Color GetFrobDisplayBorderColor(Actor frobTarget)
             capacity = player.GetAdjustedMaxAmmo(AM);
             myammo = player.GetInventoryCount(AM.class.name);
 
-            //player.ClientMessage("Capacity: " $ capacity $ ", myAmmo: " $ myAmmo $ " (" $ AM.class $ ")");
+            //player.DebugMessage("Capacity: " $ capacity $ ", myAmmo: " $ myAmmo $ " (" $ AM.class $ ")");
 
             if (myammo == capacity)
                 return colBadAug;
@@ -237,6 +237,9 @@ function Color GetFrobDisplayBorderColor(Actor frobTarget)
         }
         else if (WE != None && WE.PickupAmmoCount > 0)
         {
+            if (WE.bDisposableWeapon && player.FindInventoryType(Inv.Class) == None && !player.FindInventorySlot(Inv, True))
+                return colBadAug;
+
             AM = DeusExAmmo(player.FindInventoryType(WE.AmmoName));
             if (AM != None)
                 capacity = player.GetAdjustedMaxAmmo(AM);

@@ -163,7 +163,7 @@ function PopulateNotes(TileWindow winTile)
 	// First make sure there aren't already notes
 	winTile.DestroyAllChildren();
 
-    if (player.bHardcoreMode || player.iNoKeypadCheese > 0)
+    if ((player.bHardcoreMode && !player.bGMDXDebug) || player.iNoKeypadCheese > 0)
     {
         //All notes mode - simply display everything
         note = player.FirstNote;
