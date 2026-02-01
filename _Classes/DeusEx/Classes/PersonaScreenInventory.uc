@@ -924,7 +924,9 @@ function AssignSecondary()
     else if (inv.IsA('DeusExWeapon'))
         bCanAssign = DeusExWeapon(inv).CanAssignSecondary(player);
 
-    if (bCanAssign)
+    if (player.GetSecondaryClass() == inv.Class)
+        player.AssignSecondary(None,true);
+    else if (bCanAssign)
         player.AssignSecondary(inv,true);
 
     //player.DebugLog("Assigning Secondary to " $ inv.Class.Name);

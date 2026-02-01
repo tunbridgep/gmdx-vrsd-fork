@@ -931,6 +931,7 @@ var globalconfig bool bRememberTheName;                         //SARGE: Remembe
 var transient bool bUpdateHud;                                 //SARGE: Trigger a HUD update next frame.
 
 var const localized string MsgSecondaryAdded;
+var const localized string MsgSecondaryRemoved;
 
 /////////Version 1.2 Additions
 /////////January 2026
