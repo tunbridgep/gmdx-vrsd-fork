@@ -348,7 +348,10 @@ function bool AddItem(Inventory invItem, Int count, optional bool bDeclined, opt
 
 function bool AddItemFrom(Actor owner, Inventory invItem, Int count, optional bool bDeclined, optional bool bNoGroup)
 {
-    return AddItemFromID(string(owner.name), invItem, count, bDeclined, bNoGroup);
+    if (owner == None)
+        return AddItemFromID("", invItem, count, bDeclined, bNoGroup);
+    else
+        return AddItemFromID(string(owner.name), invItem, count, bDeclined, bNoGroup);
 }
 
 function bool AddItemFromID(string owner, Inventory invItem, Int count, optional bool bDeclined, optional bool bNoGroup, optional Texture iconOverride)
