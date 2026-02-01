@@ -395,6 +395,10 @@ function ShowHud(bool bShow)
 
 function UpdateHud()
 {
+    local Canvas c;
+    local DeusExPlayer player;
+    player = DeusExPlayer(parentPawn);
+
 	if (hud != None)
     {
         hud.RecreateBelt();
@@ -402,6 +406,13 @@ function UpdateHud()
 		hud.UpdateSettings(DeusExPlayer(parentPawn), WindowStackCount() != 0);
         hud.RefreshActiveAugs();
         hud.frobDisplay.bForceRefreshOutlineColour = true;
+    } 
+
+    //SARGE: Also update the canvas font
+    if (player != None && player.FontManager != None)
+    {
+        foreach player.AllObjects(class'Canvas',c)
+            c.MedFont = player.FontManager.GetFont(TT_MedFont);
     }
 }
 

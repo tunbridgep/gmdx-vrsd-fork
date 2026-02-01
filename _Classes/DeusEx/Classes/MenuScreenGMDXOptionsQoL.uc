@@ -149,10 +149,11 @@ defaultproperties
      items(114)=(HelpText="The players Real Name and Appearance will be remembered between playthroughs",actionText="Game: Remember Player Identity",variable="bRememberTheName",bAdvancedModeOnly=true,defaultValue=1);
      items(115)=(HelpText="Use more readable fonts for most UI elements.",actionText="Fonts: More Readable Fonts",variable="bDXRandoFonts",consoleTarget="DeusEx.FontManager",defaultValue=1,bAdvancedModeOnly=true);
      items(116)=(HelpText="Use a larger font for Datacubes, Books and other readable objects",actionText="Fonts: Big Reading Font",variable="bBigDatacubeFont",consoleTarget="DeusEx.FontManager",defaultValue=1,bAdvancedModeOnly=false);        
-     items(117)=(HelpText="Using the Scope key with no item equipped will use any Binoculars in your inventory",actionText="Interaction: Smart Binocular Selection",variable="iSmartBinocs",defaultValue=1,valueText2="Select and Activate",bAdvancedModeOnly=true);
+     items(117)=(HelpText="Use a larger font for the Console. Requires the More Readable fonts option enabled.",actionText="Fonts: Big Console Font",variable="iBigConsoleFont",consoleTarget="DeusEx.FontManager",defaultValue=1,valueText1="2x",valueText2="3x",bAdvancedModeOnly=false)
+     items(118)=(HelpText="Using the Scope key with no item equipped will use any Binoculars in your inventory",actionText="Interaction: Smart Binocular Selection",variable="iSmartBinocs",defaultValue=1,valueText2="Select and Activate",bAdvancedModeOnly=true)
      items(119)=(HelpText="Show your current goals on the HUD",actionText="HUD: Display Goals",variable="bShowGoalsOnScreen",defaultValue=1,bAdvancedModeOnly=false)
      items(120)=(HelpText="Show pinned notes on the HUD",actionText="HUD: Display Pinned Notes",variable="bShowPinnedNotesOnScreen",defaultValue=1,bAdvancedModeOnly=true)
-
+     items(121)=(HelpText="Right clicking pickups while the Walk/Run key is held will allow you to carry them around similar to boxes and other decoration items.",actionText="Interaction: Allow Carrying Pickups",variable="bAllowItemPickup",defaultValue=1,bAdvancedModeOnly=false)
 
      Title="GMDX Quality of Life Options"
      colWidths(0)=214

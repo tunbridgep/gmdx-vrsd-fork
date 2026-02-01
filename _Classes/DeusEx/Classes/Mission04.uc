@@ -115,6 +115,16 @@ function FirstFrame()
 			}
 		}
 	}
+	else if(localURL == "04_NYC_SMUG")
+    {
+        //SARGE: If we finished the initial smuggler quest without "finishing" the quest,
+        //just give us the discount anyway. This conversation is so fucking stupid...
+		if (flags.GetBool('FordSchickRescued'))
+        {
+			flags.SetBool('SchickThankedPlayer', True,, 9);
+			flags.SetBool('SmugglerThankedPlayer', True,, 9);
+        }
+    }
 
 CanQuickSave=true;
 }

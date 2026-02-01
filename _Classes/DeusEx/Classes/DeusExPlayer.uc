@@ -940,6 +940,16 @@ var globalconfig int iSmartBinocs;                           //SARGE: Pressing t
 var globalconfig bool bShowGoalsOnScreen;                    //SARGE: Show goals on-screen
 var globalconfig bool bShowPinnedNotesOnScreen;              //SARGE: Show pinned notes on-screen
 
+var globalconfig bool bAllowItemPickup;                      //SARGE: Allow picking up items as decorations with left-clicking if enabled
+
+var globalconfig bool bNoPartialReloads;                     //SARGE: When cancelling reloading, empty the weapon instead of keeping the previous ammo amount.
+
+
+//New method for detecting if we're in combat efficiently
+var private transient int combatantsCached;
+var private transient float combatCheckTime;                 //SARGE: When checking for combat, cache the result for 1 second.
+var travel float lastCombatTime;                             //SARGE: The last time when the player was in combat
+
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -1051,6 +1061,18 @@ function UpdatePhotoMode()
             root.hud.Hide();
         else
             root.hud.Show();
+    }
+}
+
+exec function OpenConsole()
+{
+	if (bDisableConsoleAccess)
+        return;
+    if (Player.Console != None)
+    {
+        Player.Console.TypedStr="";
+        Player.Console.bNoStuff = true;
+        Player.Console.GotoState( 'Typing' );
     }
 }
 
@@ -8702,7 +8724,9 @@ function DoLeftFrob(Actor frobTarget)
 
     if (inHand == None)
     {
-        if (frobTarget.isA('DeusExPickup'))
+        //if (bRun != 0 && bAllowItemPickup && frobTarget.isA('Inventory'))
+        //    bDefaultFrob = !class'CarriedObject'.static.CreateCarriedObjectFor(self,Inventory(frobTarget));
+        /*else*/ if (frobTarget.isA('DeusExPickup'))
             bDefaultFrob = DeusExPickup(frobTarget).DoLeftFrob(Self);
         else if (frobTarget.isA('DeusExWeapon'))
             bDefaultFrob = DeusExWeapon(frobTarget).DoLeftFrob(Self);
@@ -8750,7 +8774,9 @@ function DoRightFrob(Actor frobTarget)
     bDefaultFrob = true;
     bLeftClicked = false;
 
-    if (frobTarget.isA('DeusExPickup'))
+    if (inHand == None && bRun != 0 && bAllowItemPickup && frobTarget.isA('Inventory'))
+        bDefaultFrob = !class'CarriedObject'.static.CreateCarriedObjectFor(self,Inventory(frobTarget));
+    else if (frobTarget.isA('DeusExPickup'))
         bDefaultFrob = DeusExPickup(frobTarget).DoRightFrob(Self,inHand != None);
     else if (frobTarget.isA('DeusExWeapon'))
         bDefaultFrob = DeusExWeapon(frobTarget).DoRightFrob(Self,inHand != None);
@@ -11155,7 +11181,7 @@ function bool CanBeLifted(Decoration deco)
 	}
 
     //Always allow left-grabbing if we have bLeftGrab set, no matter what
-    if (deco.isA('DeusExDecoration') && DeusExDecoration(deco).bLeftGrab)
+    if (deco.isA('DeusExDecoration') && DeusExDecoration(deco).bAltGrab)
     {
     }
     else if (!deco.bPushable || (deco.Mass > maxLift) || (deco.StandingCount > 1))
@@ -11234,7 +11260,6 @@ function GrabDecoration()
 			{
 				CarriedDecoration = Decoration(FrobTarget);
 				PutCarriedDecorationInHand();
-
 			}
 }
 
@@ -11457,6 +11482,10 @@ function DropDecoration()
                     if (swimTimer < 0)
                         swimTimer = 0;
                 }
+
+                //SARGE: If it's a CarriedAmmo, turn it into the real ammo
+                if (deco.IsA('CarriedObject') && !bThrowDecoration)
+                    class'CarriedObject'.static.CreateRealObjectFor(CarriedObject(deco));
             }
 		}
 		else
@@ -14200,6 +14229,42 @@ function bool CanStartConversation()
 		return False;
 	else
 		return True;
+}
+
+//SARGE: Helper function to return if we're in combat
+//Taken from the UpdateDynamicMusic function and made generic.
+//Returns the number of combatants we're fighting
+function int GetCombatants(optional bool bCountBosses)
+{
+    local int aggro;
+	local ScriptedPawn npc;
+    local Pawn CurPawn;
+
+    if (saveTime < combatCheckTime)
+        return combatantsCached;
+        
+    //DebugMessage("Refreshing Combatants:" @ saveTime);
+
+    combatCheckTime = saveTime + 2.0;
+
+    for (CurPawn = Level.PawnList; CurPawn != None; CurPawn = CurPawn.NextPawn)
+    {
+        npc = ScriptedPawn(CurPawn);
+        if ((npc != None) && (VSize(npc.Location - Location) < (1600 + npc.CollisionRadius)))
+            if ((npc.GetStateName() == 'Attacking') && (npc.Enemy == self))
+            {
+                aggro++;
+                //SARGE: Bosses count for a billion combatants, so we always have music.
+                if (bCountBosses && (npc.IsA('AnnaNavarre') || npc.IsA('WaltonSimons') || npc.IsA('GuntherHermann')))
+                    aggro = 9999;
+            }
+    }
+
+    if (aggro > 0)
+        lastCombatTime = saveTime;
+
+    combatantsCached = aggro;
+    return aggro;
 }
 
 // ----------------------------------------------------------------------
@@ -20339,4 +20404,5 @@ defaultproperties
      iSmartBinocs=1
      bShowGoalsOnScreen=false
      bShowPinnedNotesOnScreen=true
+     bAllowItemPickup=true
 }

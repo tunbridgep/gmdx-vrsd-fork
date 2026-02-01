@@ -732,7 +732,8 @@ function ResetToDefaults()
 	portraitIndex = 0;
 	btnPortrait.SetBackground(texPortraits[portraitIndex]);
     
-    editName.SetText(player.TruePlayerName);
+    if (editName != None)
+        editName.SetText(player.TruePlayerName);
 
 	CopySkills();
 	PopulateSkillsList();
