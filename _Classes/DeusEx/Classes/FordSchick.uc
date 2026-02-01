@@ -3,6 +3,18 @@
 //=============================================================================
 class FordSchick extends HumanCivilian;
 
+function Shenanigans(bool bEnabled)
+{
+    local DeusExPlayer player;
+    player = DeusExPlayer(GetPlayerPawn());
+    
+    if (player != None && bEnabled && player.FlagBase.GetBool('FordSchickRescued'))
+    {
+        FamiliarName="Holden Gillette";
+        UnfamiliarName="Holden Gillette";
+    }
+}
+
 defaultproperties
 {
      CarcassType=Class'DeusEx.FordSchickCarcass'

@@ -88,6 +88,7 @@ function CreateLogWindow()
 	lstLogs.SetColumnWidth(0, 394);
 	lstLogs.HideColumn(1);
 	lstLogs.EnableAutoSort(False);
+    lstLogs.SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
 }
 
 // ----------------------------------------------------------------------

@@ -79,7 +79,7 @@ function CreateTextWindow()
 {
 	winText = CreateMenuHeader(21, 13, "", winClient);
 	winText.SetTextAlignments(HALIGN_Center, VALIGN_Center);
-	winText.SetFont(Font'FontMenuSmall');   //FontMenuHeaders_DS
+	winText.SetFont(player.FontManager.GetFont(TT_FontMenuSmall));   //FontMenuHeaders_DS
 	winText.SetWindowAlignments(HALIGN_Full, VALIGN_Full, textBorderX, textBorderY);
 }
 

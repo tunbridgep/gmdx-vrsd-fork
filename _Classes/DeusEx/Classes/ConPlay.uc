@@ -36,10 +36,6 @@ var Inventory playerInHand;
 var Float perCharDelay;
 var Float minimumTextPause;
 
-// Conversation fonts for third-person convos
-var Font ConversationSpeechFonts[2];
-var Font ConversationNameFonts[2];
-
 // ----------------------------------------------------------------------
 // StartConversation()
 //
@@ -716,9 +712,9 @@ function Font GetCurrentSpeechFont()
 	resWidth = GetCurrentResolutionWidth();
 
 	if ((resWidth > 800) && (resWidth < 1280))
-		return ConversationSpeechFonts[1];
+        return player.FontManager.GetFont(TT_FontConversationLarge);
 	else
-		return ConversationSpeechFonts[0];
+        return player.FontManager.GetFont(TT_FontConversation);
 }
 
 // ----------------------------------------------------------------------
@@ -732,9 +728,9 @@ function Font GetCurrentNameFont()
 	resWidth = GetCurrentResolutionWidth();
 
 	if ((resWidth > 800) && (resWidth < 1280))
-		return ConversationNameFonts[1];
+        return player.FontManager.GetFont(TT_FontConversationLargeBold);
 	else
-		return ConversationNameFonts[0];
+        return player.FontManager.GetFont(TT_FontConversationBold);
 }
 
 // ----------------------------------------------------------------------
@@ -1277,9 +1273,5 @@ defaultproperties
 {
      perCharDelay=0.100000
      minimumTextPause=3.000000
-     ConversationSpeechFonts(0)=Font'DeusExUI.FontConversation'
-     ConversationSpeechFonts(1)=Font'DeusExUI.FontConversationLarge'
-     ConversationNameFonts(0)=Font'DeusExUI.FontConversationBold'
-     ConversationNameFonts(1)=Font'DeusExUI.FontConversationLargeBold'
      bHidden=True
 }

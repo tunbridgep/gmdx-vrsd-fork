@@ -570,7 +570,7 @@ function bool LootAmmo(DeusExPlayer P, bool bDisplayMsg, bool bDisplayWindow, op
     if (IsA('WeaponShuriken') && WeaponShuriken(self).bImpaled)
         overrideTexture = Texture'RSDCrap.Icons.BeltIconShurikenBloody';
 
-    intj = P.LootAmmo(owner,defAmmoClass,PickupAmmoCount,bDisplayMsg,bDisplayWindow,bLootSound,bDisposableWeapon,bDisposableWeapon,bOverflow && !bDisposableWeapon,bOverflowWindow,overrideTexture);
+    intj = P.LootAmmo(owner,defAmmoClass,PickupAmmoCount,bDisplayMsg,bDisplayWindow,bLootSound,bDisposableWeapon,bDisposableWeapon,bOverflow && !bDisposableWeapon,bOverflowWindow,overrideTexture,self.Class);
 
     if (intj > 0)
     {
@@ -7081,6 +7081,11 @@ ignores Fire, AltFire;
 	}
 
 Begin:
+    
+    //On hardcore, drain ammo from the clip immediately, rather than letting players cancel reloading to keep their partial old clip.
+    if (!bDisposableWeapon && DeusExPlayer(Owner) != None && (DeusExPlayer(Owner).bHardCoreMode||DeusExPlayer(Owner).bNoPartialReloads) && !bPerShellReload)
+        ClipCount = 0;
+
 	FinishAnim();
 	/*if (!bLasing && Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).bHardcoreMode) //RSD: Reset accuracy when starting a reloading cycle on Hardcore mode
 	{

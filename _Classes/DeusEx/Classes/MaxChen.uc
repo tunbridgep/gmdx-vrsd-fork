@@ -25,4 +25,5 @@ defaultproperties
      BindName="MaxChen"
      FamiliarName="Max Chen"
      UnfamiliarName="Max Chen"
+     bRandomHeightAdjust=false
 }

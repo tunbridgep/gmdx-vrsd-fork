@@ -336,7 +336,7 @@ return;
 
 
         gc.SetAlignments(HALIGN_Left, VALIGN_Center);
-        gc.SetFont(Font'TechMedium');
+        gc.SetFont(player.FontManager.GetFont(TT_TechMedium));
         gc.SetTextColorRGB(0, 160, 16);
         gc.GetTextExtent(0, w, h, rangeStr);
         gc.DrawText(x-30, y+30, w, h, rangeStr);

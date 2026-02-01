@@ -87,6 +87,8 @@ var bool bCollectibles;
 var bool bHardcoreFilterOption;
 var bool bPermaCloak;
 var bool bNoStartingWeaponChoices;
+var bool bImprisonmentTakesAmmo;
+var bool bSkillsSetAtStart;
 
 //SARGE: Save our true player name for future playthroughs
 //SARGE: And now the player skin too!
@@ -157,6 +159,7 @@ event InitWindow()
 
 	SaveSkillPoints();
 	ResetToDefaults();
+    RepopulateRememberedValues();
 
 	// Need to do this because of the edit control used for
 	// saving games.
@@ -188,6 +191,8 @@ event InitWindow()
     bHardcoreFilterOption=false;                                                //Sarge
     bPermaCloak=false;                                                          //Sarge
     bNoStartingWeaponChoices=false;                                             //Sarge
+    bImprisonmentTakesAmmo=false;                                               //Sarge
+    bSkillsSetAtStart=false;                                                    //Sarge
     //bRestrictedMetabolism=false;                                              //Sarge
     default.bRandomizeCrates=false;                                             //RSD: Also need default values! Otherwise get command in modifier menu takes the wrong value
     default.bRandomizeMods=false;                                               //RSD
@@ -212,6 +217,8 @@ event InitWindow()
     default.bHardcoreFilterOption=false;                                        //Sarge
     default.bPermaCloak=false;                                                  //Sarge
     default.bNoStartingWeaponChoices=false;                                     //Sarge
+    default.bImprisonmentTakesAmmo=false;                                       //Sarge
+    default.bSkillsSetAtStart=false;                                            //Sarge
 	StyleChanged();
 }
 
@@ -263,10 +270,6 @@ function CreatePortraitButton()
 
 	btnPortrait.SetSize(114, 161);
 	btnPortrait.SetPos(18, 152);
-
-    //SARGE: Set the player skin
-    if (player.bRememberTheName)
-        portraitIndex = savedPlayerSkin;
 }
 
 // ----------------------------------------------------------------------
@@ -332,10 +335,10 @@ function CreateTextHeaders()
 	CreateMenuLabel(172,  17, HeaderSkillsLabel,       winClient);
 
 	winLabel = CreateMenuLabel(430,  18, HeaderSkillLevelLabel,   winClient);
-	winLabel.SetFont(Font'FontMenuSmall');
+	winLabel.SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
 
 	winLabel = CreateMenuLabel(505,  18, HeaderPointsNeededLabel, winClient);
-	winLabel.SetFont(Font'FontMenuSmall');
+	winLabel.SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
 
 	CreateMenuLabel(409, 344, HeaderSkillPointsLabel,  winClient);
 }
@@ -359,13 +362,22 @@ function CreateCodeNameEditWindow()
 function CreateNameEditWindow()
 {
 	editName = CreateMenuEditWindow(18, 92, 113, 32, winClient);
-
-    if (savedPlayerName == "" || !player.bRememberTheName)
-        editName.SetText(player.TruePlayerName);
-    else
-        editName.SetText(savedPlayerName);
+    editName.SetText(player.TruePlayerName);
 	editName.MoveInsertionPoint(MOVEINSERT_End);
 	editName.SetFilter(filterString);
+}
+
+//SARGE: Reset the name and skin independently, so we can reset to defaults properly.
+function RepopulateRememberedValues()
+{
+    if (editName == None || btnPortrait == None || !player.bRememberTheName)
+        return;
+
+    if (savedPlayerName != "")
+        editName.SetText(savedPlayerName);
+	
+    portraitIndex = savedPlayerSkin;
+	btnPortrait.SetBackground(texPortraits[portraitIndex]);
 }
 
 // ----------------------------------------------------------------------
@@ -387,7 +399,7 @@ function CreateSkillsListWindow()
 	lstSkills.SetColumnWidth(2,  60);
 	lstSkills.SetColumnAlignment(2, HALIGN_Right);
 
-	lstSkills.SetColumnFont(0, Font'FontMenuSmall'); //'FontMenuHeaders'
+	lstSkills.SetColumnFont(0, player.FontManager.GetFont(TT_FontMenuSmall)); //'FontMenuHeaders'
 	lstSkills.SetSortColumn(0, False);
 	lstSkills.EnableAutoSort(True);
 }
@@ -709,8 +721,6 @@ function DowngradeSkill()
 
 function ResetToDefaults()
 {
-    editName.SetText(player.TruePlayerName);
-
 	//LDDP, 11/01/21: Set LDDP checkbox options to default, hide MI4FJC checkbox because we're male now.
 	MorpheusCheckbox.SetToggle(false);
 	MaleInteractionsCheckbox.SetToggle(false);
@@ -719,9 +729,11 @@ function ResetToDefaults()
 	player.SkillPointsAvail = player.Default.SkillPointsAvail;
 	player.SkillPointsTotal = player.Default.SkillPointsTotal;
 
-	savedPlayerName = "";
 	portraitIndex = 0;
 	btnPortrait.SetBackground(texPortraits[portraitIndex]);
+    
+    if (editName != None)
+        editName.SetText(player.TruePlayerName);
 
 	CopySkills();
 	PopulateSkillsList();
@@ -825,10 +837,10 @@ function ProcessAction(String actionKey)
 		}
 		else
 		{
-			SaveSettings();
-
             savedPlayerName = playerName;
 			savedPlayerSkin = portraitIndex;
+			
+            SaveSettings();
             SaveConfig();
 
 			// DEUS_EX_DEMO
@@ -878,6 +890,8 @@ function SaveSettings()
     player.bHardcoreFilterOption=bHardcoreFilterOption;                         //Sarge
     player.bPermaCloak=bPermaCloak;                                             //Sarge
     player.bNoStartingWeaponChoices=bNoStartingWeaponChoices;                   //Sarge
+    player.bImprisonmentTakesAmmo=bImprisonmentTakesAmmo;                       //Sarge
+    player.bSkillsSetAtStart=bSkillsSetAtStart;                                 //Sarge
     if (player.bRandomizeAugs)                                                  //RSD: New aug randomization feature
         ScrambleAugOrderList();
 

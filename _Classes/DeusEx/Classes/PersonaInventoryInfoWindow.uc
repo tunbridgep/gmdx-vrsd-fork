@@ -70,7 +70,7 @@ function AddAmmoCheckbox(bool bChecked)
 	local PersonaCheckboxWindow winCheck;
 
 	winCheck = PersonaCheckboxWindow(winTile.NewChild(Class'PersonaCheckboxWindow'));
-	winCheck.SetFont(Font'FontMenuSmall');
+	winCheck.SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
 	winCheck.SetText(ShowAmmoDescriptionsLabel);
 	winCheck.SetToggle(bChecked);
 }

@@ -400,6 +400,10 @@ function FirstFrame()
         //SARGE: Do lighting accessibility
         ApplyLightingAccessibility();
         firstTime = true;
+        
+        //SARGE: Make Pawns have random heights
+        foreach AllActors(class'ScriptedPawn', P)
+            P.SetupRandomHeight(0.95 + Player.Randomizer.GetRandomFloat()*0.1);
 	}
 
 	flagName = Player.rootWindow.StringToName("M"$dxInfo.MissionNumber$"MissionStart");
@@ -1065,7 +1069,10 @@ function InitializeRandomItems()
 	        bMatchFound = CheckItemLootTable(WM,tableModBallistics);
         if (!bMatchFound)// && Player.bRandomizeModsAttachments)
 	        bMatchFound = CheckItemLootTable(WM,tableModAttachments);*/
-        bMatchFound = CheckItemLootTable(WM,tableModGeneral);
+        
+            //SARGE: No more specialist mod randomisation!
+            if (!WM.IsA('WeaponModLaser') && !WM.IsA('WeaponModSilencer') && !WM.IsA('WeaponModScope') && !WM.IsA('WeaponModFullAuto'))
+                bMatchFound = CheckItemLootTable(WM,tableModGeneral);
         }
 	}
 

@@ -101,6 +101,7 @@ struct BadItem
 {
     var Inventory item;
     var int count;
+	var Texture override;
 };
 
 var transient BadItem badItems[10];                                                   //SARGE: Keep a list of the declined or ignored items, so that we can add it to the display window.
@@ -151,6 +152,18 @@ function ApplyCurrentOutfit()
             multiskins[i] = augmentiqueData.textures[i];
     if (augmentiqueData.textures[8] != None)
         Texture = augmentiqueData.textures[8];
+
+    //GMDX Specific Code to handle beheading...
+    //This is horrible
+    if (InStr(CAPS(string(Class)),"BEHEADED") > -1)
+    {
+        for (i = 0;i < 8;i++)
+            if (InStr(CAPS(default.multiskins[i]),"BEHEADED") > -1 || default.multiskins[i] == Texture'DeusEx.PinkMaskTex' || default.multiskins[i] == Texture'DeusEx.GrayMaskTex' || default.multiskins[i] == None)
+                multiskins[i] = default.multiskins[i];
+
+        if (InStr(CAPS(default.texture),"BEHEADED") > -1 || default.texture == Texture'DeusEx.PinkMaskTex' || default.texture == Texture'DeusEx.GrayMaskTex' || default.texture == None)
+            texture = default.texture;
+    }
 }
 
 function CopyOutfitFrom(Actor A)
@@ -1099,6 +1112,12 @@ function AddBadItem(DeusExPlayer P, Inventory item, optional int count)
 
     badItems[badItemCount].item = item;
     badItems[badItemCount].count = count;
+	
+    //Shuriken hack
+    if (item.IsA('WeaponShuriken') && WeaponShuriken(item).bImpaled)
+        badItems[badItemCount].override = Texture'RSDCrap.Icons.BeltIconShurikenBloody';
+
+	
     badItemCount++;
 }
 
@@ -1576,7 +1595,7 @@ function Frob(Actor Frobber, Inventory frobWith)
         {
             for (i = 0;i < badItemCount;i++)
             {
-                AddReceivedItem(player, badItems[i].item, badItems[i].count, false, true);
+                AddReceivedItem(player, badItems[i].item, badItems[i].count, false, true, badItems[i].override);
             }
         }
 
@@ -1709,7 +1728,7 @@ function string GetFrobString(DeusExPlayer player)
 // AddReceivedItem()
 // ----------------------------------------------------------------------
 
-function AddReceivedItem(DeusExPlayer player, Inventory item, int count, optional bool bNoGroup, optional bool bDeclined)
+function AddReceivedItem(DeusExPlayer player, Inventory item, int count, optional bool bNoGroup, optional bool bDeclined, optional Texture overrideTexture)
 {
     /*
     //SARGE: TODO: This needs to be split out into a separate function, because now we can display
@@ -1722,7 +1741,7 @@ function AddReceivedItem(DeusExPlayer player, Inventory item, int count, optiona
     */
 
     player.DebugMessage("CarcassID: " $ carcassID);
-    player.AddReceivedItem(carcassID,item,count,bNoGroup,bDeclined);
+    player.AddReceivedItem(carcassID,item,count,bNoGroup,bDeclined,overrideTexture);
 }
 
 //-----------------------------------------------------------------------

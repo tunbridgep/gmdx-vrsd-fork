@@ -132,7 +132,7 @@ function TileWindow CreateTileWindow(Window parent)
 
 	// Create Tile Window inside the scroll window
 	tileWindow = TileWindow(parent.NewChild(Class'TileWindow'));
-	tileWindow.SetFont(Font'FontMenuSmall');
+	tileWindow.SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
 	tileWindow.SetOrder(ORDER_Down);
 	tileWindow.SetChildAlignments(HALIGN_Full, VALIGN_Top);
 	tileWindow.MakeWidthsEqual(False);
@@ -163,7 +163,7 @@ function PopulateNotes(TileWindow winTile)
 	// First make sure there aren't already notes
 	winTile.DestroyAllChildren();
 
-    if (player.bHardcoreMode || player.iNoKeypadCheese > 0)
+    if ((player.bHardcoreMode && !player.bGMDXDebug) || player.iNoKeypadCheese > 0)
     {
         //All notes mode - simply display everything
         note = player.FirstNote;

@@ -917,6 +917,21 @@ var transient bool bUpdateHud;                                 //SARGE: Trigger 
 
 var const localized string MsgSecondaryAdded;
 
+/////////Version 1.2 Additions
+/////////January 2026
+
+var travel bool bSkillsSetAtStart;                           //SARGE: Gain a bunch of skill points at the start of the game, but gain no more skill points from then on.
+var travel bool bImprisonmentTakesAmmo;                      //SARGE: Take Ammo when being imprisoned by UNATCO, similar to Hardcore mode.
+
+var globalconfig int iSmartBinocs;                           //SARGE: Pressing the Scope key selects binoculars
+
+var globalconfig bool bNoPartialReloads;                     //SARGE: When cancelling reloading, empty the weapon instead of keeping the previous ammo amount.
+
+
+//New method for detecting if we're in combat efficiently
+var private transient int combatantsCached;
+var private transient float combatCheckTime;                 //SARGE: When checking for combat, cache the result for 1 second.
+var travel float lastCombatTime;                             //SARGE: The last time when the player was in combat
 //////////END GMDX
 
 // OUTFIT STUFF
@@ -998,6 +1013,12 @@ exec function RedoOutfits()
         outfitManager.RedoNPCOutfits();
         ClientMessage("Rerolling NPC Outfits");
     }
+}
+
+//SARGE: Helper function to log to the console from console
+exec function WriteLog(string msg)
+{
+    Log("CUSTOM LOG: " $ msg);
 }
 
 //SARGE: Hide/Show the entire HUD at once
@@ -1343,6 +1364,7 @@ local DeusExPickup     PU;                                                      
               DC.DrawScale = 0.00001;
               DC.SetCollision(false,false,false);
               DC.SetCollisionSize(0,0);
+              DC.SetPhysics(PHYS_Flying);
 	       }
        }
        if (SkillSystem != None)
@@ -4351,7 +4373,7 @@ exec function SwitchAmmo()
     {
         foreach AllActors(class'ThrownProjectile',P)
         {
-            if (P.Owner == self && P.bProximityTriggered)
+            if (P.Owner == self && P.bProximityTriggered && !P.bEMPDisabled)
                 P.bDoExplode = true;
         }
     }
@@ -7874,7 +7896,11 @@ Begin:
    LoadHack:
     if (bDeadLoad)
 	{
-	    Sleep(0.2);
+        //SARGE: Now we sleep until we've been dead for at least 1.5 seconds
+        //This prevents a nasty crash when loading too quickly
+        //DebugLog("DEADLOAD: " $ Level.TimeSeconds @ FrobTime @ Level.TimeSeconds - FrobTime);
+        if (Level.TimeSeconds - FrobTime < 1.0)
+            Sleep(1.0 - (Level.TimeSeconds - FrobTime));
 	    bDeadLoad = False;
 	    QuickLoadConfirmed();
 	}
@@ -8957,7 +8983,7 @@ function PlayPickupAnim(Vector locPickup)
 //
 // Returns the number of rounds they were able to pick up.
 // ----------------------------------------------------------------------
-function int LootAmmo(string owner, class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool bShowWindow, optional bool bLootSound, optional bool bNoGroup, optional bool bNoOnes, optional bool bShowOverflowMsg, optional bool bShowOverflowWindow, optional Texture overrideTexture)
+function int LootAmmo(string owner, class<Ammo> LootAmmoClass, int max, bool bDisplayMsg, bool bShowWindow, optional bool bLootSound, optional bool bNoGroup, optional bool bNoOnes, optional bool bShowOverflowMsg, optional bool bShowOverflowWindow, optional Texture overrideTexture, optional class<Weapon> sourceWeapon)
 {
     local int MaxAmmo, prevAmmo, ammoCount, intj, over, ret;
     local DeusExAmmo AmmoType;
@@ -9018,22 +9044,10 @@ function int LootAmmo(string owner, class<Ammo> LootAmmoClass, int max, bool bDi
         }
             
         if (bShowWindow)
-        {
-            //SARGE: This is a hack to allow us to change icons for ammo.
-            //Used for bloody shurikens.
-            if (overrideTexture != None)
-            {
-                prevTexture = AmmoType.Icon;
-                AmmoType.Icon = overrideTexture;
-                AddReceivedItem(owner, AmmoType, intj, bNoGroup);
-                AmmoType.Icon = prevTexture;
-            }
-            else
-                AddReceivedItem(owner, AmmoType, intj, bNoGroup);
-        }
+            AddReceivedItem(owner, AmmoType, intj, bNoGroup, false, overrideTexture);
 
         //If we took at least some, make a special sound.
-        if (bLootSound)
+        if (bLootSound && (over > 0 || (DeclinedItemsManager.IsDeclined(sourceWeapon) && clickCountCyber == 0)))
             PlayPartialAmmoSound(self,AmmoType.Class);
 
         ret = intj;
@@ -9045,7 +9059,7 @@ function int LootAmmo(string owner, class<Ammo> LootAmmoClass, int max, bool bDi
             ClientMessage(AmmoType.PickupMessage @ AmmoType.itemArticle @ AmmoType.itemName $ " (" $ over $ ")" @ AmmoType.MaxAmmoString, 'Pickup');
         
         if (bShowWindow && bShowDeclinedInReceivedWindow && bShowOverflowWindow)
-            AddReceivedItem(owner, AmmoType, over, bNoGroup, true);
+            AddReceivedItem(owner, AmmoType, over, bNoGroup, true, overrideTexture);
     }
     return ret;
 }
@@ -9226,7 +9240,7 @@ function bool HandleItemPickup(Actor FrobTarget, optional bool bSearchOnly, opti
     //SARGE: Always try looting non-disposable weapons of their ammo
     if (bCanPickup && FrobTarget.IsA('DeusExWeapon') && !DeusExWeapon(frobTarget).bDisposableWeapon)
     {
-        bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,true,bAlwaysShowReceivedItemsWindow,true,true,bShowOverflow,bShowOverflowWindow,source);
+        bLootedAmmo = DeusExWeapon(frobTarget).LootAmmo(self,true,bAlwaysShowReceivedItemsWindow,FromCorpse == None,true,bShowOverflow,bShowOverflowWindow,source);
 
         //Don't pick up a weapon if there's ammo in it and we already have one
         if (!bSlotSearchNeeded && DeusExWeapon(frobTarget).PickupAmmoCount > 0 && bCanPickup)
@@ -9345,7 +9359,7 @@ function ClearReceivedItems()
     DeusExRootWindow(rootWindow).hud.receivedItems.RemoveItems();
 }
 
-function AddReceivedItem(string owner, Inventory item, int count, optional bool bNoGroup, optional bool bDeclined)
+function AddReceivedItem(string owner, Inventory item, int count, optional bool bNoGroup, optional bool bDeclined, optional Texture overrideTexture)
 {
     local int i;
 
@@ -9357,7 +9371,7 @@ function AddReceivedItem(string owner, Inventory item, int count, optional bool 
     {
         DebugLog("Item is: " $ item $ ", bDeclined is " $ bDeclined $ ", bNoGroup: " $ bNoGroup);
 
-        DeusExRootWindow(rootWindow).hud.receivedItems.AddItemFromID(owner, item, count, bDeclined, bNoGroup);
+        DeusExRootWindow(rootWindow).hud.receivedItems.AddItemFromID(owner, item, count, bDeclined, bNoGroup, overrideTexture);
 
         // Make sure the object belt is updated
         if (item.IsA('Ammo'))
@@ -10534,13 +10548,20 @@ exec function ReloadWeapon()
 exec function ToggleScope()
 {
 	local DeusExWeapon W;
+	local Inventory anItem;
+    local bool bContinue;
+	
+    W = DeusExWeapon(Weapon);
 
 	//log("ToggleScope "@IsInState('Interpolating')@" "@IsInState('Dying')@" "@IsInState('Paralyzed'));
 	if (RestrictInput())
 		return;
 
-	W = DeusExWeapon(Weapon);
-	if (W != None)
+    //Zoom if we've got binocs out
+    else if (Binoculars(inHand) != None)
+        Binoculars(inHand).Activate();
+
+	else if (W != None)
 	{
 	  if (W.IsInState('Idle') || (W.bZoomed == False && W.AnimSequence == 'Shoot') || (W.bZoomed == True && RecoilTime==0)) //CyberP: far less restrictive
 	  {
@@ -10556,6 +10577,26 @@ exec function ToggleScope()
             SetLaser(false);
 	  }
 	}
+
+    else if (inHand == None && iSmartBinocs > 0)
+    {
+        anItem = Inventory;
+        bContinue = true;
+
+        //SARGE: If we don't have a weapon out, select Binocs
+        while(anItem != None && bContinue)
+        {
+            if (anItem.IsA('Binoculars') && !anItem.bActive)
+            {
+                PutInHand(anItem,true);
+                if (iSmartBinocs >= 2)
+                    Binoculars(anItem).Activate();
+                bContinue = false;
+            }
+
+            anItem = anItem.Inventory;
+        }
+    }
 
     UpdateCrosshair();
 }
@@ -13804,6 +13845,42 @@ function bool CanStartConversation()
 		return True;
 }
 
+//SARGE: Helper function to return if we're in combat
+//Taken from the UpdateDynamicMusic function and made generic.
+//Returns the number of combatants we're fighting
+function int GetCombatants(optional bool bCountBosses)
+{
+    local int aggro;
+	local ScriptedPawn npc;
+    local Pawn CurPawn;
+
+    if (saveTime < combatCheckTime)
+        return combatantsCached;
+        
+    //DebugMessage("Refreshing Combatants:" @ saveTime);
+
+    combatCheckTime = saveTime + 2.0;
+
+    for (CurPawn = Level.PawnList; CurPawn != None; CurPawn = CurPawn.NextPawn)
+    {
+        npc = ScriptedPawn(CurPawn);
+        if ((npc != None) && (VSize(npc.Location - Location) < (1600 + npc.CollisionRadius)))
+            if ((npc.GetStateName() == 'Attacking') && (npc.Enemy == self))
+            {
+                aggro++;
+                //SARGE: Bosses count for a billion combatants, so we always have music.
+                if (bCountBosses && (npc.IsA('AnnaNavarre') || npc.IsA('WaltonSimons') || npc.IsA('GuntherHermann')))
+                    aggro = 9999;
+            }
+    }
+
+    if (aggro > 0)
+        lastCombatTime = saveTime;
+
+    combatantsCached = aggro;
+    return aggro;
+}
+
 // ----------------------------------------------------------------------
 // GetDisplayName()
 //
@@ -16985,20 +17062,27 @@ function PlayDeathHit(float Damage, vector HitLocation, name damageType, vector 
 // SkillPointsAdd()
 // ----------------------------------------------------------------------
 
-function SkillPointsAdd(int numPoints)
+function SkillPointsAdd(int numPoints, optional bool bAlwaysAllow)
 {
 	local int i;                                                                //RSD: For loop later
+    local int actualPoints;
 
     if (numPoints > 0)
 	{
-		SkillPointsAvail += numPoints;
-		SkillPointsTotal += numPoints;
+        
+        //SARGE: Give almost no skill points if modifier is on.
+        actualPoints = numPoints;
+        if (bSkillsSetAtStart && !bAlwaysAllow && numPoints > 5)
+            actualPoints = 5;
+
+        SkillPointsAvail += actualPoints;
+        SkillPointsTotal += actualPoints;
 
 		if ((DeusExRootWindow(rootWindow) != None) &&
 		    (DeusExRootWindow(rootWindow).hud != None) &&
 			(DeusExRootWindow(rootWindow).hud.msgLog != None))
 		{
-			ClientMessage(Sprintf(SkillPointsAward, numPoints));
+			ClientMessage(Sprintf(SkillPointsAward, actualPoints));
 			DeusExRootWindow(rootWindow).hud.msgLog.PlayLogSound(Sound'LogSkillPoints');
 		}
 	}
@@ -19899,4 +19983,5 @@ defaultproperties
      bRememberTheName=true
      iShifterWeaponSwitch=2
      bExperimentalAmmoSpawning=true
+     iSmartBinocs=1
 }

@@ -24,6 +24,7 @@ function BuildModifierList()
     {
         RemoveItem("bRestrictedSaving");
         RemoveItem("bHardcoreFilterOption");
+        RemoveItem("bImprisonmentTakesAmmo");
         //RemoveItem("bRestrictedMetabolism");
     }
 
@@ -65,7 +66,9 @@ defaultproperties
 	 items(18)=(HelpText="When enabled, NPCs with cloaking will be permanently cloaked. Extremely difficult - Not recommended for normal play.",actionText="Permanent Cloaking",variable="bPermaCloak");
      items(19)=(HelpText="No longer receive a starting weapon from Paul during the first mission.",actionText="Limited Starting Equipment",variable="bNoStartingWeaponChoices");
      items(20)=(HelpText="Enable additional NPC's added by the Lay-D Denton mod. By default only the most relevant ones are enabled.",actionText="Add extra Lay-D Denton NPCs",variable="bMoreLDDPNPCs");
-     items(21)=(HelpText="We shall partake in a miniscule amount of tomfoolery.",actionText="Shenanigans",variable="bShenanigans");
+     items(21)=(HelpText="Start with a large number of skill points, but you won't be able to gain any more during play.",actionText="UNATCO Academy Graduate",variable="bSkillsSetAtStart");
+     items(22)=(HelpText="When imprisoned by MJ12, lose ammo in addition to weapons. Your ammo will be placed in a box and can be recovered from the Armoury.",actionText="Take Ammo when Imprisoned",variable="bImprisonmentTakesAmmo");
+     items(23)=(HelpText="We shall partake in a miniscule amount of tomfoolery.",actionText="Shenanigans",variable="bShenanigans");
      Title="Playthrough Modifiers"
      consoleTarget="MenuScreenNewGame"
      bNoSort=true

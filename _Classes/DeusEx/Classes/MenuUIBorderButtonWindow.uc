@@ -61,6 +61,8 @@ event InitWindow()
 
 	// Get a pointer to the player
 	player = DeusExPlayer(GetRootWindow().parentPawn);
+     
+    fontButtonText=player.FontManager.GetFont(TT_FontMenuSmall);
 
 	SetButtonSounds(None, Sound'Menu_Press');
 	SetFocusSounds(Sound'Menu_Focus');
@@ -255,7 +257,6 @@ defaultproperties
      colText(3)=(R=50,G=50,B=50)
      fontBaseLine=1
      fontAcceleratorLineHeight=1
-     fontButtonText=Font'DeusExUI.FontMenuSmall'
      verticalTextMargin=1
      maxTextWidth=200
      bUseTextOffset=True

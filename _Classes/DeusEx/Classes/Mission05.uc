@@ -186,7 +186,7 @@ function FirstFrame()
 						item = nextItem;
 				}
 
-                if (player.bHardcoreMode)                                       //RSD: Take away the player's ammo in Hardcore
+                if (player.bHardcoreMode || player.bImprisonmentTakesAmmo)                                       //RSD: Take away the player's ammo in Hardcore //SARGE: Or if the option is enabled
                 {
 				//RSD: First we copy the player's inventory onto the ammo crate so that it has all the player's ammo
 				foreach AllActors(class'ammocrate', crate, 'ammostoredhere')

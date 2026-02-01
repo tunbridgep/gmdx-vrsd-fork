@@ -5,7 +5,6 @@ class HUDReceivedDisplay extends HUDSharedBorderWindow;
 
 var TileWindow winTile;
 var TextWindow txtReceived;
-var Font  fontReceived;
 var Float displayTimer;
 var Float displayLength;
 var int   topMargin;
@@ -99,7 +98,7 @@ function CreateTileWindow()
 function CreateReceivedLabel()
 {
 	txtReceived = TextWindow(winTile.NewChild(Class'TextWindow'));
-	txtReceived.SetFont(fontReceived);
+	txtReceived.SetFont(player.FontManager.GetFont(TT_FontMenuHeaders_DS));
 	txtReceived.SetText(TextReceivedLabel);
 }
 
@@ -212,7 +211,7 @@ function bool AddGenericIcon(string owner, Texture icon, string label, optional 
         //Remove any non-declined items that match 
         for (i = 0;i < declinedItemNum;i++)
         {
-            Log("penis" @ items[i].owner @ declinedItems[itemNum].owner @ items[i].icon @ declinedItems[itemNum].icon);
+            //Log("penis" @ items[i].owner @ declinedItems[itemNum].owner @ items[i].icon @ declinedItems[itemNum].icon);
             if (items[i].owner != "" && items[i].owner == declinedItems[itemNum].owner && items[i].icon == declinedItems[itemNum].icon && items[i].quantity == declinedItems[itemNum].quantity)
             {
                 items[i].bHidden = true;
@@ -239,7 +238,7 @@ function bool AddGenericIcon(string owner, Texture icon, string label, optional 
         //Remove any declined items that match 
         for (i = 0;i < declinedItemNum;i++)
         {
-            Log("penis" @ items[i].owner @ declinedItems[itemNum].owner @ items[i].icon @ declinedItems[itemNum].icon);
+            //Log("penis" @ items[i].owner @ declinedItems[itemNum].owner @ items[i].icon @ declinedItems[itemNum].icon);
             if (declineditems[i].owner != "" && declinedItems[i].owner == items[itemNum].owner && declinedItems[i].icon == items[itemNum].icon && declinedItems[i].quantity == items[itemNum].quantity)
             {
                 Log("Adding hitten item: " $ declinedItems[i].icon);
@@ -352,7 +351,7 @@ function bool AddItemFrom(Actor owner, Inventory invItem, Int count, optional bo
     return AddItemFromID(string(owner.name), invItem, count, bDeclined, bNoGroup);
 }
 
-function bool AddItemFromID(string owner, Inventory invItem, Int count, optional bool bDeclined, optional bool bNoGroup)
+function bool AddItemFromID(string owner, Inventory invItem, Int count, optional bool bDeclined, optional bool bNoGroup, optional Texture iconOverride)
 {
     local string labelText;
     local texture icon;
@@ -365,7 +364,9 @@ function bool AddItemFromID(string owner, Inventory invItem, Int count, optional
     else
         labelText = invItem.beltDescription;
 
-    if (invItem.IsA('DeusExAmmo'))
+    if (iconOverride != None)
+        icon = iconOverride;
+    else if (invItem.IsA('DeusExAmmo'))
         icon = DeusExAmmo(invItem).GetHDTPIcon();
     else
         icon = invItem.default.icon;
@@ -473,7 +474,6 @@ event StyleChanged()
 
 defaultproperties
 {
-     fontReceived=Font'DeusExUI.FontMenuHeaders_DS'
      displayLength=3.000000
      TopMargin=5
      TextReceivedLabel="Received:"

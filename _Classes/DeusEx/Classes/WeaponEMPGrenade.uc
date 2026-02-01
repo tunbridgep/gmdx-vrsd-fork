@@ -151,6 +151,7 @@ defaultproperties
      PlayerViewMesh=LodMesh'DeusExItems.EMPGrenade'
      PickupViewMesh=LodMesh'DeusExItems.EMPGrenadePickup'
      ThirdPersonMesh=LodMesh'DeusExItems.EMPGrenade3rd'
+     Mesh=LodMesh'DeusExItems.EMPGrenadePickup'
      Icon=Texture'DeusExUI.Icons.BeltIconEMPGrenade'
      largeIcon=Texture'DeusExUI.Icons.LargeIconEMPGrenade'
      largeIconWidth=31
