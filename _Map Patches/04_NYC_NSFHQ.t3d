@@ -32504,13 +32504,12 @@ Begin Actor Class=BoxMedium Name=BoxMedium1
     Name=BoxMedium1
 End Actor
 Begin Actor Class=UNATCOTroop Name=UNATCOTroop0
-    bHateShot=True
     maxRange=1526.000000
     MinHealth=10.000000
     Orders=Sitting
     bLikesNeutral=False
     bAvoidAim=False
-    bHateShot=False
+    bHateShot=True
     bHateDistress=True
     bReactLoudNoise=True
     bReactShot=True
@@ -32538,14 +32537,13 @@ Begin Actor Class=UNATCOTroop Name=UNATCOTroop0
     Name=UNATCOTroop0
 End Actor
 Begin Actor Class=UNATCOTroop Name=UNATCOTroop1
-    bHateShot=True
     maxRange=1526.000000
     MinHealth=10.000000
     Orders=Standing
     bKeepWeaponDrawn=True
     bLikesNeutral=False
     bAvoidAim=False
-    bHateShot=False
+    bHateShot=True
     bHateCarcass=True
     bHateDistress=True
     bReactLoudNoise=True
@@ -32577,14 +32575,13 @@ Begin Actor Class=UNATCOTroop Name=UNATCOTroop1
     Name=UNATCOTroop1
 End Actor
 Begin Actor Class=UNATCOTroop Name=UNATCOTroop2
-    bHateShot=True
     maxRange=1526.000000
     MinHealth=10.000000
     Orders=Standing
     bKeepWeaponDrawn=True
     bLikesNeutral=False
     bAvoidAim=False
-    bHateShot=False
+    bHateShot=True
     bHateDistress=True
     bReactLoudNoise=True
     bReactShot=True
@@ -32613,7 +32610,6 @@ Begin Actor Class=UNATCOTroop Name=UNATCOTroop2
     Name=UNATCOTroop2
 End Actor
 Begin Actor Class=UNATCOTroop Name=UNATCOTroop3
-    bHateShot=True
     maxRange=1526.000000
     MinHealth=10.000000
     Orders=Patrolling
@@ -32621,7 +32617,7 @@ Begin Actor Class=UNATCOTroop Name=UNATCOTroop3
     bKeepWeaponDrawn=True
     bLikesNeutral=False
     bAvoidAim=False
-    bHateShot=False
+    bHateShot=True
     bHateCarcass=True
     bHateDistress=True
     bReactLoudNoise=True
@@ -32650,7 +32646,6 @@ Begin Actor Class=UNATCOTroop Name=UNATCOTroop3
     Name=UNATCOTroop3
 End Actor
 Begin Actor Class=UNATCOTroop Name=UNATCOTroop4
-    bHateShot=True
     maxRange=1526.000000
     MinHealth=10.000000
     Orders=Patrolling
@@ -32658,7 +32653,7 @@ Begin Actor Class=UNATCOTroop Name=UNATCOTroop4
     bKeepWeaponDrawn=True
     bLikesNeutral=False
     bAvoidAim=False
-    bHateShot=False
+    bHateShot=True
     bHateDistress=True
     bReactLoudNoise=True
     bReactShot=True
@@ -33353,7 +33348,6 @@ Begin Actor Class=PatrolPoint Name=PatrolPoint3
     Name=PatrolPoint3
 End Actor
 Begin Actor Class=UNATCOTroop Name=UNATCOTroop5
-    bHateShot=True
     maxRange=1526.000000
     MinHealth=10.000000
     Orders=Standing
@@ -33361,7 +33355,7 @@ Begin Actor Class=UNATCOTroop Name=UNATCOTroop5
     bKeepWeaponDrawn=True
     bLikesNeutral=False
     bAvoidAim=False
-    bHateShot=False
+    bHateShot=True
     bHateDistress=True
     bReactLoudNoise=True
     bReactShot=True
@@ -33898,7 +33892,6 @@ Begin Actor Class=PatrolPoint Name=PatrolPoint14
     Name=PatrolPoint14
 End Actor
 Begin Actor Class=UNATCOTroop Name=UNATCOTroop6
-    bHateShot=True
     maxRange=1526.000000
     MinHealth=10.000000
     Orders=Patrolling
@@ -33906,7 +33899,7 @@ Begin Actor Class=UNATCOTroop Name=UNATCOTroop6
     bKeepWeaponDrawn=True
     bLikesNeutral=False
     bAvoidAim=False
-    bHateShot=False
+    bHateShot=True
     bHateCarcass=True
     bHateDistress=True
     bReactLoudNoise=True
@@ -33936,7 +33929,6 @@ Begin Actor Class=UNATCOTroop Name=UNATCOTroop6
     Name=UNATCOTroop6
 End Actor
 Begin Actor Class=UNATCOTroop Name=UNATCOTroop7
-    bHateShot=True
     maxRange=1526.000000
     MinHealth=10.000000
     Orders=Patrolling
@@ -33944,7 +33936,7 @@ Begin Actor Class=UNATCOTroop Name=UNATCOTroop7
     bKeepWeaponDrawn=True
     bLikesNeutral=False
     bAvoidAim=False
-    bHateShot=False
+    bHateShot=True
     bHateCarcass=True
     bHateDistress=True
     bReactLoudNoise=True
@@ -35767,14 +35759,13 @@ Begin Actor Class=Sodacan Name=Sodacan0
     Name=Sodacan0
 End Actor
 Begin Actor Class=UNATCOTroop Name=UNATCOTroop9
-    bHateShot=True
     maxRange=1526.000000
     MinHealth=10.000000
     Orders=Standing
     bKeepWeaponDrawn=True
     bLikesNeutral=False
     bAvoidAim=False
-    bHateShot=False
+    bHateShot=True
     bHateCarcass=True
     bHateDistress=True
     bReactLoudNoise=True
@@ -35804,14 +35795,13 @@ Begin Actor Class=UNATCOTroop Name=UNATCOTroop9
     Name=UNATCOTroop9
 End Actor
 Begin Actor Class=UNATCOTroop Name=UNATCOTroop10
-    bHateShot=True
     maxRange=1526.000000
     MinHealth=10.000000
     Orders=Standing
     bKeepWeaponDrawn=True
     bLikesNeutral=False
     bAvoidAim=False
-    bHateShot=False
+    bHateShot=True
     bHateDistress=True
     bReactLoudNoise=True
     bReactShot=True
@@ -43540,13 +43530,12 @@ Begin Actor Class=AmbientSound Name=AmbientSound19
     Name=AmbientSound19
 End Actor
 Begin Actor Class=UNATCOTroop Name=UNATCOTroop24
-    bHateShot=True
     maxRange=1526.000000
     MinHealth=10.000000
     bKeepWeaponDrawn=True
     bLikesNeutral=False
     bAvoidAim=False
-    bHateShot=False
+    bHateShot=True
     bHateCarcass=True
     bHateDistress=True
     bReactLoudNoise=True
@@ -43578,14 +43567,13 @@ Begin Actor Class=UNATCOTroop Name=UNATCOTroop24
     Name=UNATCOTroop24
 End Actor
 Begin Actor Class=UNATCOTroop Name=UNATCOTroop25
-    bHateShot=True
     maxRange=1526.000000
     MinHealth=10.000000
     Orders=Standing
     bKeepWeaponDrawn=True
     bLikesNeutral=False
     bAvoidAim=False
-    bHateShot=False
+    bHateShot=True
     bHateDistress=True
     bReactLoudNoise=True
     bReactShot=True
@@ -43615,7 +43603,6 @@ Begin Actor Class=UNATCOTroop Name=UNATCOTroop25
     Name=UNATCOTroop25
 End Actor
 Begin Actor Class=UNATCOTroop Name=UNATCOTroop26
-    bHateShot=True
     maxRange=1526.000000
     MinHealth=10.000000
     RandomWandering=0.050000
@@ -43624,7 +43611,7 @@ Begin Actor Class=UNATCOTroop Name=UNATCOTroop26
     bKeepWeaponDrawn=True
     bLikesNeutral=False
     bAvoidAim=False
-    bHateShot=False
+    bHateShot=True
     bHateCarcass=True
     bHateDistress=True
     bReactLoudNoise=True
@@ -43658,13 +43645,12 @@ Begin Actor Class=UNATCOTroop Name=UNATCOTroop26
     Name=UNATCOTroop26
 End Actor
 Begin Actor Class=UNATCOTroop Name=UNATCOTroop27
-    bHateShot=True
     maxRange=1526.000000
     MinHealth=10.000000
     bKeepWeaponDrawn=True
     bLikesNeutral=False
     bAvoidAim=False
-    bHateShot=False
+    bHateShot=True
     bHateCarcass=True
     bHateDistress=True
     bReactLoudNoise=True
@@ -43695,13 +43681,12 @@ Begin Actor Class=UNATCOTroop Name=UNATCOTroop27
     Name=UNATCOTroop27
 End Actor
 Begin Actor Class=UNATCOTroop Name=UNATCOTroop28
-    bHateShot=True
     maxRange=1526.000000
     MinHealth=10.000000
     bKeepWeaponDrawn=True
     bLikesNeutral=False
     bAvoidAim=False
-    bHateShot=False
+    bHateShot=True
     bHateCarcass=True
     bHateDistress=True
     bReactLoudNoise=True
@@ -83352,12 +83337,11 @@ Begin Actor Class=Brush Name=Brush1124
     Name=Brush1124
 End Actor
 Begin Actor Class=UNATCOTroop Name=UNATCOTroop15
-    bHateShot=True
     maxRange=1526.000000
     MinHealth=10.000000
     Orders=Standing
     bLikesNeutral=False
-    bHateShot=False
+    bHateShot=True
     bHateCarcass=True
     bHateDistress=True
     bReactLoudNoise=True
@@ -92118,7 +92102,6 @@ Begin Actor Class=CrateBreakableMedCombat Name=CrateBreakableMedCombat12
     Name=CrateBreakableMedCombat12
 End Actor
 Begin Actor Class=UNATCOTroop Name=UNATCOTroop8
-    bHateShot=True
     maxRange=1526.000000
     MinHealth=10.000000
     Orders=Patrolling
@@ -92126,7 +92109,7 @@ Begin Actor Class=UNATCOTroop Name=UNATCOTroop8
     bKeepWeaponDrawn=True
     bLikesNeutral=False
     bAvoidAim=False
-    bHateShot=False
+    bHateShot=True
     bHateCarcass=True
     bHateDistress=True
     bReactLoudNoise=True
