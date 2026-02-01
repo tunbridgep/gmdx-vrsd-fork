@@ -80,7 +80,6 @@ var bool bWeaponRequirementsMatter;
 var bool bRealKillswitch;
 var bool bCameraDetectUnconscious;
 var bool bShenanigans;
-var bool bRandomizeCrap;
 var bool bCutInteractions;
 var bool bA51Camera;
 var bool bCollectibles;
@@ -185,7 +184,6 @@ event InitWindow()
     bRealKillswitch=false;                                                      //Sarge
   	bCameraDetectUnconscious=false;
     bShenanigans=false;                                                         //Sarge
-    bRandomizeCrap=false;                                                       //Sarge
     bCutInteractions=false;                                                     //Sarge
     bA51Camera=false;                                                           //Sarge
     bCollectibles=false;                                                        //Sarge
@@ -212,7 +210,6 @@ event InitWindow()
     default.bRealKillswitch=false;                                              //Sarge
 	default.bCameraDetectUnconscious=false;
     default.bShenanigans=false;                                                 //Sarge
-    default.bRandomizeCrap=false;                                               //Sarge
     default.bCutInteractions=false;                                             //Sarge
     default.bA51Camera=false;                                                   //Sarge
     default.bCollectibles=false;                                                //Sarge
@@ -735,7 +732,8 @@ function ResetToDefaults()
 	portraitIndex = 0;
 	btnPortrait.SetBackground(texPortraits[portraitIndex]);
     
-    editName.SetText(player.TruePlayerName);
+    if (editName != None)
+        editName.SetText(player.TruePlayerName);
 
 	CopySkills();
 	PopulateSkillsList();
@@ -885,7 +883,6 @@ function SaveSettings()
     player.iNoKeypadCheese=iNoKeypadCheese;                                     //Sarge
     player.bRandomizeEnemies=bRandomizeEnemies;                                 //Sarge
     player.bPrisonStart=bPrisonStart;                                           //Sarge
-    player.bRandomizeCrap=bRandomizeCrap;                                       //Sarge
     player.bCutInteractions=bCutInteractions;                                   //Sarge
     player.bA51Camera=bA51Camera;                                               //Sarge
     player.bCollectiblesEnabled=bCollectibles;                                  //Sarge

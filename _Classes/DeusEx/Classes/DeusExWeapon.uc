@@ -7090,6 +7090,11 @@ ignores Fire, AltFire;
 	}
 
 Begin:
+    
+    //On hardcore, drain ammo from the clip immediately, rather than letting players cancel reloading to keep their partial old clip.
+    if (!bDisposableWeapon && DeusExPlayer(Owner) != None && (DeusExPlayer(Owner).bHardCoreMode||DeusExPlayer(Owner).bNoPartialReloads) && !bPerShellReload)
+        ClipCount = 0;
+
 	FinishAnim();
 	/*if (!bLasing && Owner.IsA('DeusExPlayer') && DeusExPlayer(Owner).bHardcoreMode) //RSD: Reset accuracy when starting a reloading cycle on Hardcore mode
 	{

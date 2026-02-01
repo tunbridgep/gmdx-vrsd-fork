@@ -390,7 +390,7 @@ defaultproperties
      PickupViewMesh=LodMesh'DeusExItems.GlockPickup'
      ThirdPersonMesh=LodMesh'DeusExItems.Glock3rd'
      Icon=Texture'DeusExUI.Icons.BeltIconPistol'
-     //HDTPIcon="HDTPItems.Icons.HDTPBeltIconPistol" //HDTP-styled icon //DISABLED as it breaks belt memory
+     HDTPIcon="HDTPItems.Icons.HDTPBeltIconPistol" //HDTP-styled icon
      HDTPlargeIcon="RSDCrap.Icons.LargeIconPistol" //HDTP-styled icon
      largeIcon=Texture'DeusExUI.Icons.LargeIconPistol'
      largeIconWidth=46

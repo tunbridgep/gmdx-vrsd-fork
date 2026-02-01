@@ -211,7 +211,7 @@ function bool AddGenericIcon(string owner, Texture icon, string label, optional 
         //Remove any non-declined items that match 
         for (i = 0;i < declinedItemNum;i++)
         {
-            Log("penis" @ items[i].owner @ declinedItems[itemNum].owner @ items[i].icon @ declinedItems[itemNum].icon);
+            //Log("penis" @ items[i].owner @ declinedItems[itemNum].owner @ items[i].icon @ declinedItems[itemNum].icon);
             if (items[i].owner != "" && items[i].owner == declinedItems[itemNum].owner && items[i].icon == declinedItems[itemNum].icon && items[i].quantity == declinedItems[itemNum].quantity)
             {
                 items[i].bHidden = true;
@@ -238,7 +238,7 @@ function bool AddGenericIcon(string owner, Texture icon, string label, optional 
         //Remove any declined items that match 
         for (i = 0;i < declinedItemNum;i++)
         {
-            Log("penis" @ items[i].owner @ declinedItems[itemNum].owner @ items[i].icon @ declinedItems[itemNum].icon);
+            //Log("penis" @ items[i].owner @ declinedItems[itemNum].owner @ items[i].icon @ declinedItems[itemNum].icon);
             if (declineditems[i].owner != "" && declinedItems[i].owner == items[itemNum].owner && declinedItems[i].icon == items[itemNum].icon && declinedItems[i].quantity == items[itemNum].quantity)
             {
                 Log("Adding hitten item: " $ declinedItems[i].icon);
@@ -348,7 +348,10 @@ function bool AddItem(Inventory invItem, Int count, optional bool bDeclined, opt
 
 function bool AddItemFrom(Actor owner, Inventory invItem, Int count, optional bool bDeclined, optional bool bNoGroup)
 {
-    return AddItemFromID(string(owner.name), invItem, count, bDeclined, bNoGroup);
+    if (owner == None)
+        return AddItemFromID("", invItem, count, bDeclined, bNoGroup);
+    else
+        return AddItemFromID(string(owner.name), invItem, count, bDeclined, bNoGroup);
 }
 
 function bool AddItemFromID(string owner, Inventory invItem, Int count, optional bool bDeclined, optional bool bNoGroup, optional Texture iconOverride)

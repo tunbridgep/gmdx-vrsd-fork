@@ -152,6 +152,18 @@ function ApplyCurrentOutfit()
             multiskins[i] = augmentiqueData.textures[i];
     if (augmentiqueData.textures[8] != None)
         Texture = augmentiqueData.textures[8];
+
+    //GMDX Specific Code to handle beheading...
+    //This is horrible
+    if (InStr(CAPS(string(Class)),"BEHEADED") > -1)
+    {
+        for (i = 0;i < 8;i++)
+            if (InStr(CAPS(default.multiskins[i]),"BEHEADED") > -1 || default.multiskins[i] == Texture'DeusEx.PinkMaskTex' || default.multiskins[i] == Texture'DeusEx.GrayMaskTex' || default.multiskins[i] == None)
+                multiskins[i] = default.multiskins[i];
+
+        if (InStr(CAPS(default.texture),"BEHEADED") > -1 || default.texture == Texture'DeusEx.PinkMaskTex' || default.texture == Texture'DeusEx.GrayMaskTex' || default.texture == None)
+            texture = default.texture;
+    }
 }
 
 function CopyOutfitFrom(Actor A)
@@ -1436,6 +1448,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 											invItem.pickuplist[i] = deusexpickup(item).textureset;
 											invItem.textureset = deusexpickup(item).textureset;
 											invItem.SetSkin();
+											invItem.SetIcon();
 											startcopies++;
 										}
 									}
@@ -1501,6 +1514,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 										invItem.pickuplist[i] = deusexpickup(item).textureset;
 										invItem.textureset = deusexpickup(item).textureset;
 										invItem.SetSkin();
+										invItem.SetIcon();
 										startcopies++;
 									}
 								}

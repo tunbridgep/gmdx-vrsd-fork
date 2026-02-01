@@ -23,11 +23,31 @@ function FirstFrame()
     local Doberman dob;
     local Light L;
     local SkillAwardTrigger TRIG;
+    local Actor A;
 
 	Super.FirstFrame();
 
 	if (localURL == "03_NYC_AIRFIELDHELIBASE")
 	{
+        //Remove the VOIP Phone
+        if (!player.bCutInteractions)
+        {
+            //Remove the invisible keypad
+            foreach AllActors(class'Actor', A, 'VOIPKeypad')
+                A.Destroy();
+
+            //Make the phone work in random mode
+            foreach AllActors(class'Actor', A, 'VOIPPhone')
+            {
+                Phone(A).AnswerSound = AS_Random;
+                Phone(A).bScriptedPhone = false;
+            }
+
+            //Remove the VOIP details from the computer
+            foreach AllActors(class'Actor', A, 'VOIPComputer')
+                Computers(A).SpecialOptions[0].Text = "";
+        }
+
 		// delete terrorists and unhide reinforcements
 		if (flags.GetBool('MeetLebedev_Played') ||
 			flags.GetBool('JuanLebedev_Dead'))
