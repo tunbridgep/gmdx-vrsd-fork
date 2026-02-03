@@ -8042,12 +8042,14 @@ Begin:
 		PutInHand(None);
 	}
 
+    /*
 	// can't carry decorations across levels
 	if (CarriedDecoration != None)
 	{
 		CarriedDecoration.Destroy();
 		CarriedDecoration = None;
 	}
+    */
 
 	PlayAnim('Still');
 }
@@ -8108,11 +8110,13 @@ Begin:
 	}
 
 	// can't carry decorations across levels
+    /*
 	if (CarriedDecoration != None)
 	{
 		CarriedDecoration.Destroy();
 		CarriedDecoration = None;
 	}
+    */
 
 	SetPhysics(PHYS_None);
 	PlayAnim('Still');
@@ -8133,11 +8137,13 @@ Letterbox:
 	}
 
 	// can't carry decorations across levels
+    /*
 	if (CarriedDecoration != None)
 	{
 		CarriedDecoration.Destroy();
 		CarriedDecoration = None;
 	}
+    */
 
 	SetPhysics(PHYS_None);
 	PlayAnim('Still');
