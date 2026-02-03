@@ -26,6 +26,10 @@ New Features:
     - Pinned notes will also be visible on the main HUD
 
 Bugfixes:
+- Fixed GMDX:AE Bugs related to 20mm grenades:
+    - Fixed issue where 20mm ammo projectiles would fly sideways.
+    - They now use their proper mesh, rather than the Shotgun Casing mesh.
+    - They now also have the smoke trail they had in Vanilla.
 - Fixed bloody throwing knives not displaying when retrieving them from enemy corpses.
 - Fixed several codes which weren't working correctly when using Unknown Codes
 - Fixed a few Accessed None's
