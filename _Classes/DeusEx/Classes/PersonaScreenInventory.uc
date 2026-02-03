@@ -986,6 +986,21 @@ function UseSelectedItem()
 		else
 			numCopies = 0;
 		
+        //SARGE: Update the icon if it's still in the inventory
+        if (inv != None && selectedItem != None)
+        {
+            if (inv.largeIcon != None)
+            {
+                selectedItem.SetIcon(inv.largeIcon);
+                selectedItem.SetIconSize(inv.largeIconWidth, inv.largeIconHeight);
+            }
+            else
+            {
+                selectedItem.SetIcon(inv.icon);
+                selectedItem.SetIconSize(smallInvWidth, smallInvHeight);
+            }
+        }
+
         //SARGE: Reset players accuracy bonus.
         player.ResetAim();
 
