@@ -712,6 +712,7 @@ function RandomiseCrap()
     local ChairLeather L2;
     local int chairSkin, couchSkin;
         
+    //SARGE: TODO: Make this work in real-time rather than being per-mission.
     if (!player.bRandomizeCrap)
         return;
 

@@ -750,7 +750,7 @@ function string GetString(string text, bool bClosed)
 
 defaultproperties
 {
-     bLeftGrab=True
+     bAltGrab=True
      TextPackage="DeusExText"
      msgNoText="It is blank"
      msgEmpty="Empty"

@@ -924,7 +924,9 @@ function AssignSecondary()
     else if (inv.IsA('DeusExWeapon'))
         bCanAssign = DeusExWeapon(inv).CanAssignSecondary(player);
 
-    if (bCanAssign)
+    if (player.GetSecondaryClass() == inv.Class)
+        player.AssignSecondary(None,true);
+    else if (bCanAssign)
         player.AssignSecondary(inv,true);
 
     //player.DebugLog("Assigning Secondary to " $ inv.Class.Name);
@@ -1000,6 +1002,7 @@ function DropSelectedItem()
 {
 	local Inventory anItem;
 	local int numCopies;
+    local bool bRemoved;
 
 	if (selectedItem == None)
 		return;
@@ -1027,6 +1030,7 @@ function DropSelectedItem()
        			if ( ((!anItem.IsA('DeusExPickup')) && !(anItem.IsA('DeusExWeapon') && DeusExWeapon(anItem).bDisposableWeapon)) ||
 					 (anItem.IsA('DeusExPickup') && (numCopies <= 1)))
 				{
+                    bRemoved = true;
 					RemoveSelectedItem();
 				}
 
@@ -1051,7 +1055,24 @@ function DropSelectedItem()
                 if (player.Level.NetMode == NM_Standalone)
                     winStatus.AddText(Sprintf(CannotBeDroppedLabel, anItem.itemName));
 			}
+
+            //SARGE: Update the icon if it's still in the inventory
+            if (!bRemoved && anItem != None)
+            {
+                if (anItem.largeIcon != None)
+                {
+                    selectedItem.SetIcon(anItem.largeIcon);
+                    selectedItem.SetIconSize(anItem.largeIconWidth, anItem.largeIconHeight);
+                }
+                else
+                {
+                    selectedItem.SetIcon(anItem.icon);
+                    selectedItem.SetIconSize(smallInvWidth, smallInvHeight);
+                }
+            }
+
 		}
+
 	}
 }
 

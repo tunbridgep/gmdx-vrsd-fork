@@ -50,10 +50,20 @@ event StyleChanged()
 
 	theme = player.ThemeManager.GetCurrentHUDColorTheme();
 
-	colText       = theme.GetColorFromName('HUDColor_ButtonTextNormal');
-	colButtonFace = theme.GetColorFromName('HUDColor_ButtonFace');
+    //SARGE: Allow sensitivity to change colour
+	if (bIsSensitive)
+    {
+        colText       = theme.GetColorFromName('HUDColor_ButtonTextNormal');
+        colButtonFace = theme.GetColorFromName('HUDColor_ButtonFace');
+        SetTextColors(colText, colText, colText, colText, colText, colText);
+    }
+    else
+    {
+        colText       = theme.GetColorFromName('HUDColor_ButtonTextDisabled');
+        colButtonFace = theme.GetColorFromName('HUDColor_ButtonTextDisabled');
+        SetTextColors(colText, colText, colText, colText, colText, colText);
+    }
 
-	SetTextColors(colText, colText, colText, colText, colText, colText);
 	SetCheckboxColor(colText);
 }
 

@@ -395,6 +395,10 @@ function ShowHud(bool bShow)
 
 function UpdateHud()
 {
+    local Canvas c;
+    local DeusExPlayer player;
+    player = DeusExPlayer(parentPawn);
+
 	if (hud != None)
     {
         hud.RecreateBelt();
@@ -402,6 +406,13 @@ function UpdateHud()
 		hud.UpdateSettings(DeusExPlayer(parentPawn), WindowStackCount() != 0);
         hud.RefreshActiveAugs();
         hud.frobDisplay.bForceRefreshOutlineColour = true;
+    } 
+
+    //SARGE: Also update the canvas font
+    if (player != None && player.FontManager != None)
+    {
+        foreach player.AllObjects(class'Canvas',c)
+            c.MedFont = player.FontManager.GetFont(TT_MedFont);
     }
 }
 
@@ -545,12 +556,13 @@ function MenuUIMessageBoxWindow MessageBox
 	String msgText,
 	int msgBoxMode,
 	bool hideCurrentScreen,
-	Window winParent
+	Window winParent,
+    optional bool bNoPause
 	)
 {
 	local MenuUIMessageBoxWindow msgBox;
 
-	msgBox = MenuUIMessageBoxWindow(PushWindow(Class'MenuUIMessageBoxWindow', hideCurrentScreen ));
+	msgBox = MenuUIMessageBoxWindow(PushWindow(Class'MenuUIMessageBoxWindow', hideCurrentScreen, bNoPause ));
 	msgBox.SetTitle(msgTitle);
 	msgBox.SetMessageText(msgText);
 	msgBox.SetMode(msgBoxMode);
@@ -661,6 +673,8 @@ function DeusExBaseWindow InvokeUIScreen(
                  hud.startDisplay.SetVisibility(false);                         //RSD: Also hide the mission start display
              if (hud.receivedItems != none)
                  hud.receivedItems.SetVisibility(false);                        //RSD: Also hide the loot window
+             if (hud.goalsWindow != none)
+                 hud.goalsWindow.SetVisibility(false);                             //SARGE: Also hide the goals window
         }
 
 
