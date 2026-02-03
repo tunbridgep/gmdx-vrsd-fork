@@ -40,6 +40,7 @@ Bugfixes:
 - Fixed issue where certain decorations could display incorrectly in Shenanigans mode.
 - Fixed GMDXv9 issue where "Confirm Note Deletion" checkbox did nothing on Hardcore (or with realtime UI turned on).
 - Fixed the light on the Flamethrower continuing to show after dropping the weapon.
+- Fixed a crash when changing ammo types from the inventory screen.
 - The Pedometer heartrate display will is no longer unreadable and won't update every frame
     - Now it trends towards target values slowly, like a real heart.
     - For example, if we're at 90 bpm and want to reach 120 bpm due to stress, our heart will slowly rise to 120 bpm over a few seconds.
