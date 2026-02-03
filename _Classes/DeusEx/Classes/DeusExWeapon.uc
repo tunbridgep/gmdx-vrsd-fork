@@ -438,7 +438,7 @@ function Sound GetFireSound(optional bool bSilenced)
 {
     //No firing sound if we are firing projectiles, since they play the sound.
     //SARGE: I wish this wasn't the case, what a hacky mess...
-    if (ProjectileClass != None)
+    if (ProjectileClass != None && !IsA('WeaponFlamethrower'))
         return None;
 
     //First, do the special cases
@@ -1715,8 +1715,8 @@ function PlaySelect()
      {
        if (IsA('WeaponNanoSword') && !bAlreadyQuickMelee)
        {
-             Owner.PlaySound(SelectSound, SLOT_Misc, Pawn(Owner).SoundDampening);
-             AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 416);
+            Owner.PlaySound(SelectSound, SLOT_Misc, Pawn(Owner).SoundDampening);
+            AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 416);
        }
        if (ReloadCount > 0)
 			AmmoType.UseAmmo(1);
