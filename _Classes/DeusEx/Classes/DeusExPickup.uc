@@ -474,7 +474,10 @@ function bool HandlePickupQuery( inventory Item )
 				if (item.IsA('ChargedPickup') && anItem.Charge < anItem.default.Charge)
                 {
                     //SARGE: Let us know we're charging the thing...
-                    player.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
+                    if (player.bItemRechargeSound) //SARGE: Rosodude asked for this to be an option.
+                        player.PlaySound(sound'BioElectricHiss', SLOT_None,,, 256);
+                    else
+                        player.PlaySound(Item.PickupSound, SLOT_None,,, 256);
                     
                     bSound = false;
                     
