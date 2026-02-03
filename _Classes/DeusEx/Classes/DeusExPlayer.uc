@@ -2393,10 +2393,16 @@ function ShowExits()
 
     foreach AllObjects(class'Teleporter',T)
         if (T.URL != "")
+        {
             T.bHidden = !bShowExits;
+            T.bNoSmooth = true;
+        }
     foreach AllObjects(class'MapExit',E)
         if (E.bCollideActors == true)
+        {
             E.bHidden = !bShowExits;
+            E.bNoSmooth = true;
+        }
 }
 
 // ----------------------------------------------------------------------
