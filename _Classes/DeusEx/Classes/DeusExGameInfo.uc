@@ -14,7 +14,7 @@ var DXGameInfoModule modules;
 //Fetches a module if it exists, or creates a new one
 function DXGameInfoModule GetModule(class<DXGameInfoModule> moduleToLoad)
 {
-    local DXGameInfoModule mod, newMod;
+    local DXGameInfoModule mod, newMod, last;
     mod = default.modules;
 
     if (default.modules == None)
@@ -28,6 +28,7 @@ function DXGameInfoModule GetModule(class<DXGameInfoModule> moduleToLoad)
     {
         if (mod.class == moduleToLoad)
             return mod;
+        last = mod;
         mod = mod.GetNext();
     }
     
@@ -35,7 +36,7 @@ function DXGameInfoModule GetModule(class<DXGameInfoModule> moduleToLoad)
     newMod = new(Self) moduleToLoad;
     newMod.Init(self);
 
-    mod.SetNext(newMod);
+    last.SetNext(newMod);
     return newMod;
 }
 
@@ -89,10 +90,16 @@ event Tick(float deltaTime)
     }
 }
 
+function private GetDefaultModules()
+{
+    GetModule(class'MusicPlayer');
+    GetModule(class'TextureFilterer');
+}
+
 //Setup modules
 function PreBeginPlay()
 {
-    GetModule(class'MusicPlayer');
+    GetDefaultModules();
 }
 
 event TravelPostAccept()
