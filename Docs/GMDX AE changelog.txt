@@ -76,6 +76,10 @@ Map Changes:
     - Added a Phone to Paul's apartment, which on Mission 4 will play a message from Lebedev.
         - This message was cut from the vanilla game, and has been restored.
         - The phone will not appear unless the "Additional NPC Interactions" modifier is used.
+- 04_NYC_Hotel
+    - Removed an erroneous "DEFAULT SKILL AWARD MESSAGE, REPORT THIS AS A BUG" 50 skill point bonus which would be given to the player semi-randomly when the raid starts.
+    - The 50 skill point bonus for saving Paul is now a lot more reliable and should trigger as soon as the last enemy is dead, as long as Paul is alive
+    - Previously, it was possible to get 100 skill points unreliably, with the player almost always receiving 0. Now they will receive 50 reliably.
 - 04_NYC_Smug/08_NYC_Smug
     - The player will still receive Smuggler's discount even if they didn't revisit Smuggler after rescuing Ford Schick in Mission 2.
 
