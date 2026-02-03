@@ -17,7 +17,6 @@ function DXGameInfoModule SetNext(DXGameInfoModule n)
 function Init(DeusExGameInfo info)
 {
     gameInfo = info;
-    Disable('Tick');
 }
 
 function DeusExGameInfo GetGameInfo()
