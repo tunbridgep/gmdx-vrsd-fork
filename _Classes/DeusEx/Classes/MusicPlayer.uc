@@ -99,8 +99,8 @@ function SetNewSection(byte section, optional bool bInstant)
         player.ClientSetMusic(currentSong,section,255,MTRAN_Fade);
 
     //If we're doing a transition already, we need to apply the sound hack fix
-    if (fMusicHackTimer > 0 && DeusExPlayer(player) != None)
-        DeusExPlayer(player).SoundVolumeHackFix();
+    //if (fMusicHackTimer > 0 && DeusExPlayer(player) != None)
+    //    DeusExPlayer(player).SoundVolumeHackFix();
     
     SetHackTimer();
 
@@ -168,6 +168,7 @@ function Tick(float deltaTime)
 
 	if (player.IsInState('Interpolating'))
 	{
+        savedSection = info.SongAmbientSection;
 		// don't mess with the music on any of the intro maps
 		if ((info != None) && (info.MissionNumber < 0))
 		{
@@ -180,7 +181,6 @@ function Tick(float deltaTime)
 			player.ClientSetMusic(currentSong, 5, 255, MTRAN_FastFade);
 			musicMode = MUS_Outro;
             SetHackTimer();
-            savedSection = info.SongAmbientSection;
 		}
 	}
 	else if (player.IsInState('Conversation') && bAllowConverse)
@@ -264,12 +264,12 @@ function Tick(float deltaTime)
 
 event OnPreTravel()
 {
-    Disable('Tick');
+    //Disable('Tick');
 }
 
 event OnTravelPostAccept()
 {
-    Enable('Tick');
+    //Enable('Tick');
 }
 
 /*
