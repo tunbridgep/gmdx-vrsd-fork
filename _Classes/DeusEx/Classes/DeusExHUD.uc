@@ -29,6 +29,8 @@ var HUDReceivedDisplay				receivedItems;
 var HUDMultiSkills					hms;
 var HUDAmmoDisplay2					ammo2;
 var HUDRadialMenu				    radialAugMenu;
+
+var GoalsDisplayWindow				goalsWindow;
 // ----------------------------------------------------------------------
 // InitWindow()
 // ----------------------------------------------------------------------
@@ -98,6 +100,9 @@ event InitWindow()
 
 	// Received Items Display
 	receivedItems = HUDReceivedDisplay(NewChild(Class'HUDReceivedDisplay', False));
+	
+    //
+    goalsWindow	  = GoalsDisplayWindow(NewChild(Class'GoalsDisplayWindow'));
 }
 
 //SARGE: Updates the Assigned Weapon
@@ -185,6 +190,8 @@ event DescendantRemoved(Window descendant)
 		ammo2 = none;
 	else if ( descendant == radialAugMenu )
 		radialAugMenu = None;
+	else if (descendant == goalsWindow)                                        //SARGE: No clue what this does either...
+		goalsWindow = none;
 
 }
 
@@ -271,11 +278,14 @@ function ConfigurationChanged()
 	// Stick the Compass directly under the Hit display
 	if (compass != None)
 	{
-		compass.QueryPreferredSize(compassWidth, compassHeight);
-		compass.ConfigureChild(0, hitHeight + 4, compassWidth, compassHeight);
+        if (compass.IsVisible())
+        {
+            compass.QueryPreferredSize(compassWidth, compassHeight);
+            compass.ConfigureChild(0, hitHeight + 4, compassWidth, compassHeight);
 
-		if (hitWidth == 0)
-			hitWidth = compassWidth;
+            if (hitWidth == 0)
+                hitWidth = compassWidth;
+        }
 	}
 
 	if (cross != None)
@@ -425,6 +435,16 @@ function ConfigurationChanged()
 		startDisplay.ConfigureChild(
 			(width / 2) - (qWidth / 2), (height / 2) - (qHeight / 2) - 75,
 			qWidth, qHeight);
+	}
+
+	// Display the Goals under the hit display and compass
+	if (goalsWindow != None)
+	{
+		if (goalsWindow.IsVisible())
+		{
+			goalsWindow.QueryPreferredSize(qWidth, qHeight);
+			goalsWindow.ConfigureChild(5, 10 + hitHeight + compassHeight, qWidth, qHeight);
+		}
 	}
 
 	// Display the Info Window sandwiched between all the other windows.  :)
@@ -610,6 +630,7 @@ function UpdateSettings( DeusExPlayer player , optional bool bNoBelt)
 	damageDisplay.SetVisibility(player.bHitDisplayVisible);
 	compass.SetVisibility(player.bCompassVisible);
     UpdateCrosshair(player);
+    UpdateGoalsWindow(player);
 	radialAugMenu.Show(player.bRadialAugMenuVisible);
     hit.UpdateBars();
 
@@ -651,6 +672,11 @@ function UpdateCrosshair(DeusExPlayer player)
         frobDisplay.Show();
     else
         frobDisplay.Hide();
+}
+
+function UpdateGoalsWindow(DeusExPlayer player)
+{
+    goalsWindow.SetVisibility(player.GetGoalWindowState());
 }
 
 defaultproperties

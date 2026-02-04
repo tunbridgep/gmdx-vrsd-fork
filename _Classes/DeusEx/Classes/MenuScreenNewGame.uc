@@ -80,7 +80,6 @@ var bool bWeaponRequirementsMatter;
 var bool bRealKillswitch;
 var bool bCameraDetectUnconscious;
 var bool bShenanigans;
-var bool bRandomizeCrap;
 var bool bCutInteractions;
 var bool bA51Camera;
 var bool bCollectibles;
@@ -89,6 +88,7 @@ var bool bPermaCloak;
 var bool bNoStartingWeaponChoices;
 var bool bImprisonmentTakesAmmo;
 var bool bSkillsSetAtStart;
+var bool bUNATCOCleanup;
 
 //SARGE: Save our true player name for future playthroughs
 //SARGE: And now the player skin too!
@@ -184,7 +184,6 @@ event InitWindow()
     bRealKillswitch=false;                                                      //Sarge
   	bCameraDetectUnconscious=false;
     bShenanigans=false;                                                         //Sarge
-    bRandomizeCrap=false;                                                       //Sarge
     bCutInteractions=false;                                                     //Sarge
     bA51Camera=false;                                                           //Sarge
     bCollectibles=false;                                                        //Sarge
@@ -193,6 +192,7 @@ event InitWindow()
     bNoStartingWeaponChoices=false;                                             //Sarge
     bImprisonmentTakesAmmo=false;                                               //Sarge
     bSkillsSetAtStart=false;                                                    //Sarge
+    bUNATCOCleanup=false;                                                       //Sarge
     //bRestrictedMetabolism=false;                                              //Sarge
     default.bRandomizeCrates=false;                                             //RSD: Also need default values! Otherwise get command in modifier menu takes the wrong value
     default.bRandomizeMods=false;                                               //RSD
@@ -210,7 +210,6 @@ event InitWindow()
     default.bRealKillswitch=false;                                              //Sarge
 	default.bCameraDetectUnconscious=false;
     default.bShenanigans=false;                                                 //Sarge
-    default.bRandomizeCrap=false;                                               //Sarge
     default.bCutInteractions=false;                                             //Sarge
     default.bA51Camera=false;                                                   //Sarge
     default.bCollectibles=false;                                                //Sarge
@@ -219,6 +218,7 @@ event InitWindow()
     default.bNoStartingWeaponChoices=false;                                     //Sarge
     default.bImprisonmentTakesAmmo=false;                                       //Sarge
     default.bSkillsSetAtStart=false;                                            //Sarge
+    default.bUNATCOCleanup=false;                                               //Sarge
 	StyleChanged();
 }
 
@@ -883,7 +883,6 @@ function SaveSettings()
     player.iNoKeypadCheese=iNoKeypadCheese;                                     //Sarge
     player.bRandomizeEnemies=bRandomizeEnemies;                                 //Sarge
     player.bPrisonStart=bPrisonStart;                                           //Sarge
-    player.bRandomizeCrap=bRandomizeCrap;                                       //Sarge
     player.bCutInteractions=bCutInteractions;                                   //Sarge
     player.bA51Camera=bA51Camera;                                               //Sarge
     player.bCollectiblesEnabled=bCollectibles;                                  //Sarge
@@ -892,6 +891,7 @@ function SaveSettings()
     player.bNoStartingWeaponChoices=bNoStartingWeaponChoices;                   //Sarge
     player.bImprisonmentTakesAmmo=bImprisonmentTakesAmmo;                       //Sarge
     player.bSkillsSetAtStart=bSkillsSetAtStart;                                 //Sarge
+    player.bUNATCOCleanup=bUNATCOCleanup;                                       //Sarge
     if (player.bRandomizeAugs)                                                  //RSD: New aug randomization feature
         ScrambleAugOrderList();
 

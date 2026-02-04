@@ -164,7 +164,7 @@ function CreateNanoKeySlot()
                 RemoveObjectFromBelt(objects[KeyRingSlot].item,false,true);
                 //player.ClientMessage("aaaaahhh");
             }
-            else if (player.iSmartKeyring == 1 && objects[KeyRingSlot].item == None && !player.GetPlaceholder(KeyRingSlot)) //Smart Keyring is 1 - update the slot if it's empty
+            else if (player.iSmartKeyring == 1 && objects[KeyRingSlot].item == None && !player.IsPlaceholder(KeyRingSlot)) //Smart Keyring is 1 - update the slot if it's empty
             {
     			objects[KeyRingSlot].SetItem(player.KeyRing);
                 //player.ClientMessage("ooooohhhh: " $ objects[KeyRingSlot].item);
@@ -301,7 +301,7 @@ function RefreshAlternateToolbelt()
 	{
 		for (slotIndex=0; slotIndex < numSlots; slotIndex++)
 		{
-            placeholderSlot = player.GetPlaceholder(slotIndex);
+            placeholderSlot = player.IsPlaceholder(slotIndex);
 			
             if (player.bReversedAltBeltColours)
             {
@@ -371,7 +371,7 @@ function ClearBelt()
 	for(beltPos=0; beltPos<numSlots; beltPos++)
     {
         if (player.bBeltMemory && objects[beltPos].item != None && objects[beltPos].bAllowDragging)
-            player.SetPlaceholder(beltPos,objects[beltPos].item.icon);
+            player.SetPlaceholder(beltPos,objects[beltPos].item);
 		ClearPosition(beltPos);
     }
 }
@@ -394,7 +394,7 @@ function RemoveObjectFromBelt(Inventory item, optional bool Placeholder, optiona
 		if (objects[i].GetItem() == item && (objects[i].bAllowDragging || bForce))
 		{
             if (placeholder)
-                player.SetPlaceholder(i,objects[i].item.icon);
+                player.SetPlaceholder(i,objects[i].item);
 
 			objects[i].SetItem(None);
 			item.bInObjectBelt = False;
@@ -453,7 +453,7 @@ function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
                     for (i=0; IsValidPos(i); i++)
                     {
                         //Additionally, allow slots with the same icon if we have a placeholder
-                        if (player.GetPlaceholderIcon(i) == newItem.default.icon)
+                        if (player.GetPlaceholder(i).itemClass == string(newItem.Class))
                         {
                             if (player.bBeltMemory)
                             {
@@ -474,7 +474,7 @@ function bool AddObjectToBelt(Inventory newItem, int pos, bool bOverride)
                     if (( (Player.Level.NetMode == NM_Standalone) || (!Player.bBeltIsMPInventory) || (newItem.TestMPBeltSpot(i))))
                     {
                         //First, always allow empty slots if we have autofill turned on
-                        if (objects[i].GetItem() == None && (!player.GetPlaceholder(i) || !player.bBeltMemory) && objects[i].bAllowDragging)
+                        if (objects[i].GetItem() == None && (!player.IsPlaceholder(i) || !player.bBeltMemory) && objects[i].bAllowDragging)
                             break;
                     }
                 }

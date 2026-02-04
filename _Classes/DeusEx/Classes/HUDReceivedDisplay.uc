@@ -348,13 +348,22 @@ function bool AddItem(Inventory invItem, Int count, optional bool bDeclined, opt
 
 function bool AddItemFrom(Actor owner, Inventory invItem, Int count, optional bool bDeclined, optional bool bNoGroup)
 {
-    return AddItemFromID(string(owner.name), invItem, count, bDeclined, bNoGroup);
+    if (owner == None)
+        return AddItemFromID("", invItem, count, bDeclined, bNoGroup);
+    else
+        return AddItemFromID(string(owner.name), invItem, count, bDeclined, bNoGroup);
 }
 
 function bool AddItemFromID(string owner, Inventory invItem, Int count, optional bool bDeclined, optional bool bNoGroup, optional Texture iconOverride)
 {
     local string labelText;
     local texture icon;
+    
+    if (invItem.isA('DeusExPickup'))
+    {
+        DeusExPickup(invItem).SetSkin();
+        DeusExPickup(invItem).SetIcon();
+    }
 
     //SARGE: Add a "+" to the item name for upgraded weapons
     if (invItem.isA('DeusExWeapon'))
@@ -369,7 +378,7 @@ function bool AddItemFromID(string owner, Inventory invItem, Int count, optional
     else if (invItem.IsA('DeusExAmmo'))
         icon = DeusExAmmo(invItem).GetHDTPIcon();
     else
-        icon = invItem.default.icon;
+        icon = invItem.icon;
 
     return AddGenericIcon(owner, icon, labelText, count, bDeclined, bNoGroup);
 }

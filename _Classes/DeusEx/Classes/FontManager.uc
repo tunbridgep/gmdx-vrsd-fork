@@ -14,6 +14,8 @@ var globalconfig bool bDXRandoFonts; //Use the DXRando fonts provided by TheAstr
 
 var globalconfig bool bBigDatacubeFont; //Use the TechMedium font for datacubes and other readable objects
 
+var globalconfig int iBigConsoleFont; //Use larger versions of the console fonts
+
 //Holds a list of the different "text types",
 //so we can return the right fonts for them.
 
@@ -60,6 +62,8 @@ enum TextType
     //TT_TechSmallFix,
     //TT_TechSmallFix_DS,
     TT_TechTiny,
+    TT_MedFont,
+    TT_MedFont_x2,
 
 };
 
@@ -147,6 +151,14 @@ function Font GetFont(TextType TT)
         //    return GetFontSelection(Font'TechSmallFix_DS',,Font'RSDCrap.DXRTechSmallFix_DS');
         case TT_TechTiny:
             return GetFontSelection(Font'TechTiny',,Font'RSDCrap.DXRTechTiny');
+        
+        case TT_MedFont:
+            if (iBigConsoleFont == 2)
+                return GetFontSelection(Font'MedFont',,Font'RSDCrap.DXRMedFont_x3');
+            if (iBigConsoleFont == 1)
+                return GetFontSelection(Font'MedFont',,Font'RSDCrap.DXRMedFont_x2');
+            else
+                return GetFontSelection(Font'MedFont',,Font'RSDCrap.DXRMedFont');
 
 
         //Special Cases for Classic Fonts
@@ -178,4 +190,5 @@ defaultproperties
     bClassicFont=True
     bDXRandoFonts=True
     bBigDatacubeFont=True
+    iBigConsoleFont=1
 }

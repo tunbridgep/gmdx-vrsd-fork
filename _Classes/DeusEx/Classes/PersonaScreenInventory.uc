@@ -401,8 +401,11 @@ function bool HandleGenericKeyPress(EInputKey key, bool bMouse)
 	local bool bKeyHandled;
     local Inventory anItem;
 
+    if (selectedItem == None)
+        return false;
+
     anItem = Inventory(selectedItem.GetClientObject());
-    
+
     KeyName = player.ConsoleCommand("KEYNAME " $ key);
     Alias = player.ConsoleCommand("KEYBINDING " $ KeyName);
 	
@@ -410,9 +413,9 @@ function bool HandleGenericKeyPress(EInputKey key, bool bMouse)
        
     // If a number key was pressed and we have a selected inventory item,
 	// then assign the hotkey
-	if ((( key >= IK_0 ) && ( key <= IK_9 ) || key == IK_Minus || key == IK_Equals) && (selectedItem != None) && (Inventory(selectedItem.GetClientObject()) != None))
+	if ((( key >= IK_0 ) && ( key <= IK_9 ) || key == IK_Minus || key == IK_Equals) && (invBelt != None) && anItem != None)
 	{
-		invBelt.AssignObjectBeltByKey(Inventory(selectedItem.GetClientObject()), key);
+		invBelt.AssignObjectBeltByKey(anItem, key);
 	}
 	else if (Alias ~= "UseSecondary")
     {
@@ -422,7 +425,7 @@ function bool HandleGenericKeyPress(EInputKey key, bool bMouse)
     {
         DropSelectedItem();
     }
-    else if (key == IK_RightMouse)
+    else if (key == IK_RightMouse && anItem != None)
     {
         //TODO: Sarge: Create a generic Inventory Use/Equip function per item
         if (anItem.IsA('DeusExWeapon') || anItem.IsA('Lockpick') || anItem.IsA('Multitool') || anItem.IsA('FireExtinguisher'))
@@ -924,7 +927,9 @@ function AssignSecondary()
     else if (inv.IsA('DeusExWeapon'))
         bCanAssign = DeusExWeapon(inv).CanAssignSecondary(player);
 
-    if (bCanAssign)
+    if (player.GetSecondaryClass() == inv.Class)
+        player.AssignSecondary(None,true);
+    else if (bCanAssign)
         player.AssignSecondary(inv,true);
 
     //player.DebugLog("Assigning Secondary to " $ inv.Class.Name);
@@ -981,6 +986,21 @@ function UseSelectedItem()
 		else
 			numCopies = 0;
 		
+        //SARGE: Update the icon if it's still in the inventory
+        if (inv != None && selectedItem != None)
+        {
+            if (inv.largeIcon != None)
+            {
+                selectedItem.SetIcon(inv.largeIcon);
+                selectedItem.SetIconSize(inv.largeIconWidth, inv.largeIconHeight);
+            }
+            else
+            {
+                selectedItem.SetIcon(inv.icon);
+                selectedItem.SetIconSize(smallInvWidth, smallInvHeight);
+            }
+        }
+
         //SARGE: Reset players accuracy bonus.
         player.ResetAim();
 
@@ -1000,6 +1020,7 @@ function DropSelectedItem()
 {
 	local Inventory anItem;
 	local int numCopies;
+    local bool bRemoved;
 
 	if (selectedItem == None)
 		return;
@@ -1027,6 +1048,7 @@ function DropSelectedItem()
        			if ( ((!anItem.IsA('DeusExPickup')) && !(anItem.IsA('DeusExWeapon') && DeusExWeapon(anItem).bDisposableWeapon)) ||
 					 (anItem.IsA('DeusExPickup') && (numCopies <= 1)))
 				{
+                    bRemoved = true;
 					RemoveSelectedItem();
 				}
 
@@ -1051,7 +1073,24 @@ function DropSelectedItem()
                 if (player.Level.NetMode == NM_Standalone)
                     winStatus.AddText(Sprintf(CannotBeDroppedLabel, anItem.itemName));
 			}
+
+            //SARGE: Update the icon if it's still in the inventory
+            if (!bRemoved && anItem != None)
+            {
+                if (anItem.largeIcon != None)
+                {
+                    selectedItem.SetIcon(anItem.largeIcon);
+                    selectedItem.SetIconSize(anItem.largeIconWidth, anItem.largeIconHeight);
+                }
+                else
+                {
+                    selectedItem.SetIcon(anItem.icon);
+                    selectedItem.SetIconSize(smallInvWidth, smallInvHeight);
+                }
+            }
+
 		}
+
 	}
 }
 

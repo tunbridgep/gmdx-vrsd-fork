@@ -18,14 +18,15 @@ This fork is possible thanks to the following awesome people:
 - Made In China - LDDP+ConFix Conversation files, various art assets and icons.
 - Joe Wintergreen (https://www.joewintergreen.com/) - for help with the Lip Synch and Blinking issue.
 - Sebastian Kaufel (Hanfling) - for the awesome RenderExt and Editor patch, which fixed a lot of rendering-related crashes.
-- cappucciNO - for the vanilla weapon models with attachments
+- cappucciNO - for the vanilla weapon models with attachments, and the new junk item inventory/belt icons
 - WCCC - for the masked GM_Trench model, left-hand models, and other help/support.
 - Diva - for the masked models (except GM_Trench)
 - TheAstropath - for the new more readable HUD Fonts.
+- The Scummiest of them All - for the GMDX AE logos, splash screens, and other promotional artwork.
 
 This mod would not have been possible without these testers:
 Julian, Georg, the1truepickaxe, Xriborg, domitomi, the1truepickaxe, Made In China,
-RoSoDude, Solomon Ichi, ShadowDancer, BennyTheFearless, Tony Swan and many others.
+RoSoDude, Solomon Ichi, ShadowDancer, BennyTheFearless, Tony Swan, Corbent, NG+ and many others.
 
 Special thanks to the Revision Framerowk team for some small code snippets
 which were used as inspiration for fixing the HUD aspect ratio for cinematics,

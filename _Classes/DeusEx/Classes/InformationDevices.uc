@@ -275,6 +275,7 @@ function DestroyWindow()
 	{
         OnEndRead(aReader);
         aReader.UpdateCrosshair();
+        aReader.UpdateGoalsWindow();
 	}
 
 	if (infoWindow != None)
@@ -339,6 +340,7 @@ function Frob(Actor Frobber, Inventory frobWith)
             else
             {
                 player.UpdateCrosshair();
+                player.UpdateGoalsWindow();
                 player.ClearReceivedItems(); //SARGE: Clear received items window as it's blocking the reading window
             }
 		}
@@ -346,6 +348,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 		{
 			DestroyWindow();
             player.UpdateCrosshair();
+            player.UpdateGoalsWindow();
 		}
 
         //SARGE: Re-cache the fancy item name, to make testing easier.
@@ -750,7 +753,7 @@ function string GetString(string text, bool bClosed)
 
 defaultproperties
 {
-     bLeftGrab=True
+     bAltGrab=True
      TextPackage="DeusExText"
      msgNoText="It is blank"
      msgEmpty="Empty"

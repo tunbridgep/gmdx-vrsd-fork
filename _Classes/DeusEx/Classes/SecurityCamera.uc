@@ -86,6 +86,7 @@ function DisableCamera()
 {
     TriggerEvent(false);
     TriggerCarcassEvent(false); // eshkrm
+    bConfused = false;
     bActive = false;
     AmbientSound = None;
     DesiredRotation = origRot;

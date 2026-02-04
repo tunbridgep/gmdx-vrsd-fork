@@ -1448,6 +1448,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 											invItem.pickuplist[i] = deusexpickup(item).textureset;
 											invItem.textureset = deusexpickup(item).textureset;
 											invItem.SetSkin();
+											invItem.SetIcon();
 											startcopies++;
 										}
 									}
@@ -1513,6 +1514,7 @@ function Frob(Actor Frobber, Inventory frobWith)
 										invItem.pickuplist[i] = deusexpickup(item).textureset;
 										invItem.textureset = deusexpickup(item).textureset;
 										invItem.SetSkin();
+										invItem.SetIcon();
 										startcopies++;
 									}
 								}
@@ -1981,14 +1983,19 @@ function CreateBloodPool()
 //Lork: Corpses take falling damage
 function Landed(vector HitNormal)
 {
+    local DeusExPlayer player;
     super.Landed(HitNormal);
+    player = DeusExPlayer(GetPlayerPawn());
+
+    if (player == None)
+        return;
 
     if (Velocity.Z < -1750)
-        TakeDamage(1000, None, Location, Velocity, 'Exploded');
+        TakeDamage(1000, player, Location, Velocity, 'Exploded');
     else if (Velocity.Z < -1000)
-        TakeDamage(20, None, Location, Velocity, 'Shot');
-    else if (Velocity.Z < -600) //SARGE: Extra check, even a low fall will kill you, you just won't bleed everywhere.
-        TakeDamage(5, None, Location, Velocity, 'Throw'); //Sarge: Changed from Shot to Throw
+        TakeDamage(20, player, Location, Velocity, 'Shot');
+    else if (Velocity.Z < -600 && player.bHardCoreMode) //SARGE: Extra check, even a low fall will kill you, you just won't bleed everywhere. Only on hardcore mode. Be careful when lugging around corpses!
+        TakeDamage(5, player, Location, Velocity, 'Throw'); //Sarge: Changed from Shot to Throw
 }
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------

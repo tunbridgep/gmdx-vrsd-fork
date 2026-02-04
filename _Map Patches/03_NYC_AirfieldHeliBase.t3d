@@ -51753,10 +51753,16 @@ Begin Actor Class=OfficeChair Name=OfficeChair5
     Name=OfficeChair5
 End Actor
 Begin Actor Class=Phone Name=Phone1
-    LastRenderTime=0.663045
+    AnswerSound=AS_Dialtone
+    OfflineSound=AS_NotRecognised
+    bScriptedPhone=True
+    TriggerFlag=OverhearLebedev_Played
+    bCheckFalse=True
+    LastRenderTime=121.597321
     DistanceFromPlayer=1213.050659
     Level=LevelInfo'MyLevel.LevelInfo0'
-    Tag=Phone
+    Tag=VOIPPhone
+    Event=VOIPKeypad
     Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
     Location=(X=-1250.613770,Y=620.337708,Z=52.880024)
     Rotation=(Yaw=-23464)
@@ -60691,6 +60697,7 @@ Begin Actor Class=DeusExMover Name=DeusExMover130
     Name=DeusExMover130
 End Actor
 Begin Actor Class=DeusExMover Name=DeusExMover131
+    bDontOpenOnMissionComplete=false
     bLocked=True
     lockStrength=0.300000
     bBreakable=True
@@ -67962,6 +67969,8 @@ Begin Actor Class=AttackHelicopter Name=AttackHelicopter0
     Name=AttackHelicopter0
 End Actor
 Begin Actor Class=ComputerPersonal Name=ComputerPersonal1
+    specialOptions(0)=(Text="Join VoIP Call",TriggerText="Access using temporary passcode: 170391",bTriggerOnceOnly=True)
+    specialOptionsExtra(0)=(bAddNote=True)
     secLevel=2
     UserList(0)=(username="etodd",Password="saintmary")
     nodeName=""
@@ -67969,7 +67978,7 @@ Begin Actor Class=ComputerPersonal Name=ComputerPersonal1
     LastRenderTime=0.663045
     DistanceFromPlayer=1241.499634
     Level=LevelInfo'MyLevel.LevelInfo0'
-    Tag=ComputerPersonal
+    Tag=VOIPComputer
     Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
     Location=(X=-1225.343872,Y=666.932922,Z=57.475151)
     Rotation=(Yaw=-14184)
@@ -181782,5 +181791,86 @@ Begin Actor Class=Collectible3 Name=Collectible0
     OldLocation=(X=779.515198,Y=-1261.442261,Z=337.100800)
     bSelected=True
     Name=Collectible0
+End Actor
+Begin Actor Class=Keypad1 Name=Keypad0
+    DrawScale=0.00
+    validCode="170391"
+    bToggleLock=False
+    bForcePhoneStyleKeypad=True
+    bHackable=False
+    LastRenderTime=121.597321
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=VOIPKeypad
+    Event=VOIPJoin
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo5',iLeaf=5432,ZoneNumber=12)
+    Location=(X=-1253.194336,Y=641.055115,Z=55.099930)
+    OldLocation=(X=-1248.194336,Y=641.055115,Z=55.099930)
+    bCollideActors=False
+    bBlockActors=False
+    bBlockPlayers=False
+    Name=Keypad0
+End Actor
+Begin Actor Class=Pot1 Name=Pot0
+    bNoConversations=true
+    bIncincible=true
+    DrawScale=0.00
+    Physics=PHYS_None
+    LastRenderTime=121.597321
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=JuanPot
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo5',iLeaf=5434,ZoneNumber=12)
+    Location=(X=-1250.613770,Y=620.337708,Z=52.880024)
+    OldLocation=(X=-1342.432373,Y=635.078613,Z=7.500198)
+    bCollideActors=False
+    bCollideWorld=False
+    bBlockActors=False
+    bBlockPlayers=False
+    BindName="JuanLebedev"
+    FamiliarName="juan//NYCNET.7786.786.658"
+    UnfamiliarName="juan//NYCNET.7786.786.658"
+    Name=Pot0
+End Actor
+Begin Actor Class=Pot1 Name=Pot1
+    bNoConversations=true
+    bIncincible=true
+    DrawScale=0.00
+    Physics=PHYS_None
+    LastRenderTime=121.597321
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=TracerPot
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo5',iLeaf=5434,ZoneNumber=12)
+    Location=(X=-1250.613770,Y=620.337708,Z=52.880024)
+    OldLocation=(X=-1207.432373,Y=665.078613,Z=65.500198)
+    bCollideActors=False
+    bCollideWorld=False
+    bBlockActors=False
+    bBlockPlayers=False
+    BindName="TracerTong"
+    FamiliarName="TT//UnderNet.0924.243.886"
+    UnfamiliarName="TT//UnderNet.0924.243.886"
+    Name=Pot1
+End Actor
+Begin Actor Class=ConversationTrigger Name=ConversationTrigger1
+    conversationTag=OverhearLebedev
+    BindName="JCDenton"
+    LastRenderTime=121.597321
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=VOIPJoinDelayed
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo5',iLeaf=5301,ZoneNumber=12)
+    Location=(X=-1253.831299,Y=620.965637,Z=89.099899)
+    OldLocation=(X=-1255.831299,Y=626.965637,Z=89.099899)
+    bCollideActors=False
+    Name=ConversationTrigger1
+End Actor
+Begin Actor Class=Dispatcher Name=Dispatcher0
+    OutEvents(0)=VOIPJoinDelayed
+    OutDelays(0)=1.500000
+    LastRenderTime=121.597321
+    Level=LevelInfo'MyLevel.LevelInfo0'
+    Tag=VOIPJoin
+    Region=(Zone=ZoneInfo'MyLevel.ZoneInfo5',iLeaf=5432,ZoneNumber=12)
+    Location=(X=-1253.332397,Y=660.013794,Z=89.100273)
+    OldLocation=(X=-1253.332397,Y=660.013794,Z=89.100273)
+    Name=Dispatcher0
 End Actor
 End Map

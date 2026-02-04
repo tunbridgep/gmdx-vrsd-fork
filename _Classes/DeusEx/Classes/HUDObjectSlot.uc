@@ -272,7 +272,7 @@ event DrawWindow(GC gc)
 	}
 
 	// Don't draw any of this if we're dragging
-	if ( ( item != None || ( player != None && player.GetPlaceholder(objectNum) ) ) && !bDragging)
+	if ( ( item != None || ( player != None && player.IsPlaceholder(objectNum) ) ) && !bDragging)
 	{
 		// Draw the icon
 		DrawHUDIcon(gc);
@@ -363,7 +363,7 @@ function DrawHUDIcon(GC gc)
 
         gc.SetStyle(DSTY_Masked);
 		//gc.SetTileColorRGB(255, 255, 255);
-		if (bDimIcon || player.GetPlaceholder(objectNum))	                                        //RSD: Can now dim icons
+		if (bDimIcon || player.IsPlaceholder(objectNum))	                                        //RSD: Can now dim icons
 		{
 			gc.SetTileColorRGB(64,64,64);
 		}

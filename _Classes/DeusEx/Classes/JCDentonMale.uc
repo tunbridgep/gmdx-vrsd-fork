@@ -287,7 +287,7 @@ function SetupOutfitManager()
         {
             outfitManager.AddPart(PS_Body_M,"Collector's Mask",false,"collectible_b","RSDCrap.Skins.BuddhaFace",,,"RSDCrap.Skins.BuddhaFace");
             
-            outfitManager.BeginNewOutfit("collectible_outfit", "The Collector", "A collectible mask given to the special few");
+            outfitManager.BeginNewOutfit("collectible_outfit", "The Collector", 0, "A collectible mask given to the special few");
             outfitManager.OutfitAddPartReference("collectible_b");
             outfitmanager.OutfitAddPartReference("smuggler_s");
             outfitmanager.OutfitAddPartReference("mib_p");
@@ -299,7 +299,7 @@ function SetupOutfitManager()
         {
             outfitManager.AddPart(PS_Body_F,"Collector's Mask",false,"collectible_bf","RSDCrap.Skins.BuddhaFaceFem",,,"RSDCrap.Skins.BuddhaFaceFem");
             
-            outfitManager.BeginNewOutfit("collectible_outfit", "The Collector", "A collectible mask given to the special few");
+            outfitManager.BeginNewOutfit("collectible_outfit", "The Collector", 0, "A collectible mask given to the special few");
             outfitManager.OutfitAddPartReference("collectible_bf");
             outfitmanager.OutfitAddPartReference("matrix_s");
             outfitmanager.OutfitAddPartReference("mib_p");

@@ -1912,6 +1912,18 @@ function string GetHackDisabledText(Actor target,bool TargetingDisplay)
     if (target.IsA('Robot'))
         amt = int(Robot(target).rebootTime - player.saveTime);
 
+    //SARGE: Weird hacky special case for "truly" disabled cameras and turrets.
+    //This sucks on ice!
+    if ((turr != None && turr.bDisabled && !turr.bRebooting) || cam != None && !cam.bActive && !cam.bRebooting)
+    {
+        //If using the targeting aug, we need to format it
+        if (TargetingDisplay)
+            str = " (" $ msgDisabled $ ")";
+        else
+            str = msgDisabled;
+        return str;
+    }
+
     //ZAP!
     if (amt <= 0)
         return "";

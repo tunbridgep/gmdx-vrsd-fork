@@ -213,6 +213,7 @@ function PersonaNotesEditWindow CreateNoteEditWindow(TileWindow winTile, DeusExN
     }
     else
         newNoteWindow.EnableEditing(false);
+	newNoteWindow.Lower();
     newNoteWindow.bUseMenuColors = bUseMenuColors;
     newNoteWindow.StyleChanged();
     //newNoteWindow.SetTextAlignments(HALIGN_Left, VALIGN_Center);

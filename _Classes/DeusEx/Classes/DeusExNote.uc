@@ -20,6 +20,8 @@ var travel bool bMarkerNote;        //SARGE: Does this note have a marker associ
 
 var travel bool bConNote;           //SARGE: Was this note added as part of a conversation? These can simply be searched for passwords.
 
+var travel bool bPinned;            //SARGE: Display this note on the HUD
+
 // ----------------------------------------------------------------------
 // SetUserNote()
 // ----------------------------------------------------------------------
