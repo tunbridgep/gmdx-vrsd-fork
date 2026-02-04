@@ -51,6 +51,8 @@ var string HDTPMesh;
 var int totalSkins;                                                             //Sarge: How many total skins this object has. Used to select random skins
 var(GMDX) bool dontRandomiseSkin;                                               //Sarge: Prevents individual items from having their skin randomised
 
+var(GMDX) bool bDontRemoveOnMissionComplete;                                    //SARGE: Don't remove this item on mission completion.
+
 //SARGE: Icon Info.
 //TODO: Use SSkinInfo above instead, and handle all the skins the same way you handle icons.
 struct IconInfo
@@ -878,6 +880,8 @@ auto state Pickup
         if (numCopies > RetMaxCopies())
             numCopies = RetMaxCopies();
 
+        bDontRemoveOnMissionComplete = false;
+        
         //SARGE: Last minute skin check.
         SetSkin();
         SetIcon();

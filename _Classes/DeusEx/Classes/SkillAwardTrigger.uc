@@ -10,6 +10,8 @@ var() int skillPointsAdded;
 var() localized String awardMessage;
 var localized String totalMessage;
 
+var(GMDX) const bool bDontRemoveOnMissionComplete;                                    //SARGE: Don't remove this weapon on mission completion.
+
 function Trigger(Actor Other, Pawn Instigator)
 {
 	local DeusExPlayer player;
@@ -67,4 +69,5 @@ defaultproperties
      awardMessage="DEFAULT SKILL AWARD MESSAGE - REPORT THIS AS A BUG"
      totalMessage="Total Skill Points Available:"
      bTriggerOnceOnly=True
+     bDontRemoveOnMissionComplete=true
 }
