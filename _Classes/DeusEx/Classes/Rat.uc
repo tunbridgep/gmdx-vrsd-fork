@@ -236,4 +236,5 @@ defaultproperties
      BindName="Rat"
      FamiliarName="Rat"
      UnfamiliarName="Rat"
+     bEmitDistress=false
 }

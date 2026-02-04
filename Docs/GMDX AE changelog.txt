@@ -31,6 +31,7 @@ Bugfixes:
     - They now use their proper mesh, rather than the Shotgun Casing mesh.
     - They now also have the smoke trail they had in Vanilla.
 - Fixed issue where downloaded Emails would not appear in the keypad/computer notes display.
+- Fixed issue where killing rats would trigger enemy hostility in some cases.
 - Fixed bloody throwing knives not displaying when retrieving them from enemy corpses.
 - Fixed several codes which weren't working correctly when using Unknown Codes
 - Fixed a few Accessed None's

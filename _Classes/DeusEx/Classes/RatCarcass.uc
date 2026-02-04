@@ -108,4 +108,5 @@ defaultproperties
      CollisionRadius=10.000000
      CollisionHeight=3.400000
      Mass=20.000000
+     bEmitCarcass=false
 }
