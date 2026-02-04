@@ -403,7 +403,7 @@ function UpdateHud()
     {
         hud.RecreateBelt();
 		hud.UpdateAssigned();
-		hud.UpdateSettings(DeusExPlayer(parentPawn), WindowStackCount() != 0);
+		hud.UpdateSettings(player, WindowStackCount() != 0);
         hud.RefreshActiveAugs();
         hud.frobDisplay.bForceRefreshOutlineColour = true;
     } 
@@ -429,6 +429,12 @@ function UpdateCrosshair()
 		hud.UpdateCrosshair(DeusExPlayer(parentPawn));
         hud.frobDisplay.bForceRefreshOutlineColour = true;
     }
+}
+
+function UpdateGoalsWindow()
+{
+	if (hud != None)
+		hud.UpdateGoalsWindow(DeusExPlayer(parentPawn));
 }
 
 // ----------------------------------------------------------------------

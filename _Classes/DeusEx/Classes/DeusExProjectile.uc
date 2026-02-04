@@ -1173,6 +1173,15 @@ simulated function Tick(float deltaTime)
 			}
 		}
 		SetRotation(Rotator(Velocity));
+
+        //SARGE: I have ABSOLUTELY NO FUCKING IDEA why this is necessary,
+        //it's ridiculous and insane and stupid. But here we are...
+        if (IsA('HECannister20mm') && !IsHDTP())
+        {
+            dir = Rotation;
+            dir.Pitch -= 16384;
+            SetRotation(dir);
+        }
 	}
 
 	dist = Abs(VSize(initLoc - Location));

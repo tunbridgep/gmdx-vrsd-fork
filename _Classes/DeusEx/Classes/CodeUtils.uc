@@ -81,7 +81,8 @@ static function DeusExNote GetCodeNote(DeusExPlayer P, string code, string code2
 
                 //Datacube/email/etc notes need to be linked manually
                 //P.DebugLog("Compare: " $ caps(string(note.textTag)) @ caps(default.codeNotes[i].noteName));
-                if (caps(string(note.textTag)) == caps(default.codeNotes[i].noteName))
+                if (caps(string(note.textTag)) == caps(default.codeNotes[i].noteName) ||
+                   (caps(string(note.textTag)) == caps(default.codeNotes[i].noteName $ "_DV"))) //Also check downloaded emails.
                 {
                     P.DebugLog("CODE FOUND: " $ code $ " IN NOTE " $ default.codeNotes[i].noteName);
                     return note;

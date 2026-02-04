@@ -2,6 +2,8 @@
 
 New Features:
 - Added a new option to show Exits on the map. This is mostly for debugging but may be useful for some people, so it's available for anyone to use.
+- Added a new setting to remove the "hiss" sound when recharging charged items on pickup, by request.
+    - When recharging your current wearable, they will make their regular pickup sound instead.
 - Items that would be picked up and placed into your inventory with right click can now be carried using Walk+Right Click if your hands are empty.
     - This can be disabled in the Quality of Life settings menu.
     - This is useful for consolidating items together, such as ammo, which you might not need just yet.
@@ -25,6 +27,12 @@ New Features:
     - Pinned notes will also be visible on the main HUD
 
 Bugfixes:
+- Fixed GMDX:AE Bugs related to 20mm grenades:
+    - Fixed issue where 20mm ammo projectiles would fly sideways.
+    - They now use their proper mesh, rather than the Shotgun Casing mesh.
+    - They now also have the smoke trail they had in Vanilla.
+- Fixed issue where downloaded Emails would not appear in the keypad/computer notes display.
+- Fixed issue where killing rats would trigger enemy hostility in some cases.
 - Fixed bloody throwing knives not displaying when retrieving them from enemy corpses.
 - Fixed several codes which weren't working correctly when using Unknown Codes
 - Fixed a few Accessed None's
@@ -38,11 +46,15 @@ Bugfixes:
 - Fixed game crashing when right-clicking after death by adding a 1 second minimum time before loading.
 - Fixed issue where certain decorations could display incorrectly in Shenanigans mode.
 - Fixed GMDXv9 issue where "Confirm Note Deletion" checkbox did nothing on Hardcore (or with realtime UI turned on).
+- Fixed the light on the Flamethrower continuing to show after dropping the weapon.
+- Fixed a crash when changing ammo types from the inventory screen.
 - The Pedometer heartrate display will is no longer unreadable and won't update every frame
     - Now it trends towards target values slowly, like a real heart.
     - For example, if we're at 90 bpm and want to reach 120 bpm due to stress, our heart will slowly rise to 120 bpm over a few seconds.
+- Other minor bugfixes
 
 Misc Changes:
+- The Flamethrower no longer shows a flame when out of ammo.
 - In Hardcore mode, weapons will now be emptied at the start of reloading (except for one-at-a-time weapons).
     - This means that you will no longer be able to cancel reloading to regain your previous ammo amount. Instead your weapon will be empty.
     - This does not affect your total ammo amount, only the amount loaded in your weapon.
@@ -72,6 +84,10 @@ Map Changes:
     - Added a Phone to Paul's apartment, which on Mission 4 will play a message from Lebedev.
         - This message was cut from the vanilla game, and has been restored.
         - The phone will not appear unless the "Additional NPC Interactions" modifier is used.
+- 04_NYC_Hotel
+    - Removed an erroneous "DEFAULT SKILL AWARD MESSAGE, REPORT THIS AS A BUG" 50 skill point bonus which would be given to the player semi-randomly when the raid starts.
+    - The 50 skill point bonus for saving Paul is now a lot more reliable and should trigger as soon as the last enemy is dead, as long as Paul is alive
+    - Previously, it was possible to get 100 skill points unreliably, with the player almost always receiving 0. Now they will receive 50 reliably.
 - 04_NYC_Smug/08_NYC_Smug
     - The player will still receive Smuggler's discount even if they didn't revisit Smuggler after rescuing Ford Schick in Mission 2.
 
