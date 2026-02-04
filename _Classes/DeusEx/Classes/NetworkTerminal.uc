@@ -486,7 +486,7 @@ function AddNotesWindow()
     }
     
     //SARGE: Dirty hack alert!!!!
-    if (numCodes == 0 && !player.bHardCoreMode && player.iNoKeypadCheese == 0)
+    if (numCodes == 0 && ((!player.bHardCoreMode && player.iNoKeypadCheese == 0) || player.bGMDXDebug))
         return;
 
     if (!player.HasAnyNotes())

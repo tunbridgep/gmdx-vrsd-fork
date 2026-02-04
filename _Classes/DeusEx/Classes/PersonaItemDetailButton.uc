@@ -42,7 +42,7 @@ event DrawWindow(GC gc)
 	{
 		str = Sprintf(CountLabel, itemCount);
 
-		gc.SetFont(Font'FontMenuSmall_DS');
+		gc.SetFont(player.FontManager.GetFont(TT_FontMenuSmall_DS));
 		gc.SetAlignments(HALIGN_Center, VALIGN_Top);
 		gc.SetTextColor(colHeaderText);
 		gc.GetTextExtent(0, strWidth, strHeight, str);

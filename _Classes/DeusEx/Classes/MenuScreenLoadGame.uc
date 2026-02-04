@@ -245,7 +245,7 @@ function CreateConfirmCheckbox()
 
 	chkConfirmDelete.SetPos(389, 256);
 	chkConfirmDelete.SetText(ConfirmDeleteLabel);
-	chkConfirmDelete.SetFont(Font'FontMenuSmall');
+	chkConfirmDelete.SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
 	chkConfirmDelete.SetToggle(player.bConfirmSaveDeletes);
 }
 
@@ -257,7 +257,7 @@ function CreateSaveInfoWindow()
 {
 	winSaveInfo = MenuUILabelWindow(winClient.NewChild(Class'MenuUILabelWindow'));
 
-	winSaveInfo.SetFont(Font'FontMenuSmall');
+	winSaveInfo.SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
 	winSaveInfo.SetPos(390, 166);
 	winSaveInfo.SetSize(155, 60);
 	winSaveInfo.SetTextMargins(0, 0);
@@ -271,7 +271,7 @@ function CreateSaveInfoWindow()
 function CreateFreeSpaceWindow()
 {
 	winFreeSpace = MenuUILabelWindow(winClient.NewChild(Class'MenuUILabelWindow'));
-	winFreeSpace.SetFont(Font'FontMenuSmall');
+	winFreeSpace.SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
 	winFreeSpace.SetPos(390, 228);
 	winFreeSpace.SetSize(155, 12);
 	winFreeSpace.SetTextMargins(0, 0);

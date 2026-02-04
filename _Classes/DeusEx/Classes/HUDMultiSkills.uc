@@ -145,7 +145,7 @@ function SkillMessage( GC gc )
 				if ( (Player.Level.Timeseconds % 1.5) < 1 )
 				{
 					offset = 0;
-					gc.SetFont(Font'FontMenuSmall_DS');
+                    gc.SetFont(player.FontManager.GetFont(TT_FontMenuSmall_DS));
 					cury = height * skillMsgY;
 					curx = width * skillListX;
 					str = PressString $ curKeyName $ PressEndString;
@@ -188,7 +188,7 @@ event DrawWindow(GC gc)
 	{
 		if (( Player != None ) && ( Player.SkillSystem != None ))
 		{
-			gc.SetFont(Font'FontMenuSmall_DS');
+            gc.SetFont(player.FontManager.GetFont(TT_FontMenuSmall_DS));
 			index = 1;
 			askill = Player.SkillSystem.FirstSkill;
 			cury = height * skillListY;

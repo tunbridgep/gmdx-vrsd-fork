@@ -228,7 +228,7 @@ function Color GetFrobDisplayBorderColor(Actor frobTarget)
             capacity = player.GetAdjustedMaxAmmo(AM);
             myammo = player.GetInventoryCount(AM.class.name);
 
-            //player.ClientMessage("Capacity: " $ capacity $ ", myAmmo: " $ myAmmo $ " (" $ AM.class $ ")");
+            //player.DebugMessage("Capacity: " $ capacity $ ", myAmmo: " $ myAmmo $ " (" $ AM.class $ ")");
 
             if (myammo == capacity)
                 return colBadAug;
@@ -237,6 +237,9 @@ function Color GetFrobDisplayBorderColor(Actor frobTarget)
         }
         else if (WE != None && WE.PickupAmmoCount > 0)
         {
+            if (WE.bDisposableWeapon && player.FindInventoryType(Inv.Class) == None && !player.FindInventorySlot(Inv, True))
+                return colBadAug;
+
             AM = DeusExAmmo(player.FindInventoryType(WE.AmmoName));
             if (AM != None)
                 capacity = player.GetAdjustedMaxAmmo(AM);
@@ -254,17 +257,17 @@ function Color GetFrobDisplayBorderColor(Actor frobTarget)
                     return colWireless;
             }
         }
+        
+        //Declined
+        else if (player.DeclinedItemsManager.IsDeclined(Inv.Class,true) && player.clickCountCyber < 1)
+            return colBadAug;
 
         //Not enough space
-        if (player.FindInventoryType(Inv.Class) == None && !player.FindInventorySlot(Inv, True))
+        else if (player.FindInventoryType(Inv.Class) == None && !player.FindInventorySlot(Inv, True))
             return colBadAug;
 
         //Can carry only 1
-        if (WE != None && player.FindInventoryType(WE.Class) != None && (WE.AmmoName == None || WE.AmmoName == class'DeusEx.AmmoNone'))
-            return colBadAug;
-        
-        //Declined
-        if (player.DeclinedItemsManager.IsDeclined(Inv.Class,true) && player.clickCountCyber < 1)
+        else if (WE != None && player.FindInventoryType(WE.Class) != None && (WE.AmmoName == None || WE.AmmoName == class'DeusEx.AmmoNone'))
             return colBadAug;
     }
 
@@ -484,7 +487,7 @@ function DrawDoorHudInformation(GC gc, actor frobTarget)
 	infoX = boxTLX + 10; //CyberP: both +10
 	infoY = boxTLY + 10;
 
-	gc.SetFont(Font'FontMenuSmall_DS');
+	gc.SetFont(player.FontManager.GetFont(TT_FontMenuSmall_DS));
 	gc.GetTextExtent(0, infoW, infoH, strInfo);
 	infoH += 8;
 	infoW += barSize + 16;
@@ -662,7 +665,7 @@ function DrawDeviceHudInformation(GC gc, actor frobTarget)
 	infoX = boxTLX + 10;
 	infoY = boxTLY + 10;
 
-	gc.SetFont(Font'FontMenuSmall_DS');
+	gc.SetFont(player.FontManager.GetFont(TT_FontMenuSmall_DS));
 	gc.GetTextExtent(0, infoW, infoH, strInfo);		
 	infoH += 8;	
 	
@@ -845,7 +848,7 @@ function DrawOtherHudInformation(GC gc, actor frobTarget)
 	infoX = boxTLX + 10;
 	infoY = boxTLY + 10;
 
-	gc.SetFont(Font'FontMenuSmall_DS');
+	gc.SetFont(player.FontManager.GetFont(TT_FontMenuSmall_DS));
 	gc.GetTextExtent(0, infoW, infoH, strInfo);
 	infoW += 8;
 	infoH += 8;

@@ -88,6 +88,13 @@ function FirstFrame()
 			foreach AllActors(class'TerroristCommander', cmdr, 'TerroristCommander')
 				cmdr.Destroy();
 		}
+		
+        //If we have the Academy Skills modifier, add a bunch of skill points
+        if (!flags.GetBool('GMDXUpfrontSkills') && player.bSkillsSetAtStart)
+        {
+            player.SkillPointsAdd(12000,true);
+            flags.SetBool('GMDXUpfrontSkills', True);
+        }
 
 	}
 	//DDL added to fix a newspaper that gets destroyed by JC's door
@@ -244,7 +251,10 @@ function Timer()
 					}
 				}
 
-				// unhide the troop, delete the terrorists, Gunther, and teleport Paul
+                //Kill all the terrorists, disable cameras, etc.
+                TriggerUNATCOTakeover();
+
+				// unhide the troops, Gunther, and teleport Paul
 				foreach AllActors(class'ScriptedPawn', P)
 				{
 					if (P.IsA('UNATCOTroop') && (P.BindName == "custodytroop"))
@@ -253,29 +263,10 @@ function Timer()
 						P.EnterWorld();
 					else if (P.IsA('UNATCOTroop') && (P.BindName == "PrivateLloyd"))
                         P.EnterWorld();
-					else if (P.IsA('ThugMale2') || P.IsA('SecurityBot3') || P.IsA('Doberman')) //CyberP: Get rid of the doberman
-						P.Destroy();
-					else if (P.IsA('Terrorist') && (P.BindName != "TerroristCommander"))
-					{
-						// actually kill the terrorists instead of destroying them
-						P.HealthTorso = 0;
-						P.Health = 0;
-						P.TakeDamage(1, P, P.Location, vect(0,0,0), 'Shot');
-
-						// delete their inventories as well
-						if (P.Inventory != None)
-						{
-							do
-							{
-								item = P.Inventory;
-								nextItem = item.Inventory;
-								P.DeleteInventory(item);
-								item.Destroy();
-								item = nextItem;
-							}
-							until (item == None);
-						}
-					}
+					else if (P.IsA('UNATCOTroop') && (P.BindName == "LDDPPrivateNash"))
+                        P.EnterWorld();
+					else if (P.IsA('UNATCOTroop') && (P.BindName == "LDDPPrivateWills"))
+                        P.EnterWorld();
 					else if (P.BindName == "GuntherHermann")
 						P.Destroy();
 					else if (P.BindName == "PaulDenton")
@@ -290,20 +281,6 @@ function Timer()
 						}
 					}
 				}
-
-				// delete all tagged turrets
-				foreach AllActors(class'AutoTurret', turret)
-					if ((turret.Tag == 'NSFTurret01') || (turret.Tag == 'NSFTurret02'))
-						turret.Destroy();
-
-				// delete all tagged lasertriggers  //CyberP: just delete all laser triggers.
-				foreach AllActors(class'LaserTrigger', laser)//, 'statue_lasertrap')
-					laser.Destroy();
-
-				// turn off all tagged cameras
-				foreach AllActors(class'SecurityCamera', cam)
-					if ((cam.Tag == 'NSFCam01') || (cam.Tag == 'NSFCam02') || (cam.Tag == 'NSFCam03'))
-						cam.bNoAlarm = True;
 
 				flags.SetBool('MS_MissionComplete', True,, 2);
 			}

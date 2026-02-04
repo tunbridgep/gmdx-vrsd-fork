@@ -33,7 +33,7 @@ event DrawWindow(GC gc)
 	if (hotkeyNumber >= 3 && hotkeyNumber <= 12)
 	{
 		str = "F" $ hotkeyNumber;
-		gc.SetFont(Font'FontMenuSmall_DS');
+		gc.SetFont(player.FontManager.GetFont(TT_FontMenuSmall_DS));
 		gc.SetAlignments(HALIGN_Left, VALIGN_Top);
 		gc.SetTextColor(colHeaderText);
 		gc.DrawText(2, iconPosHeight - 9, iconPosWidth - 2, 10, str);

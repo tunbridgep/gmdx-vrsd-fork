@@ -27,14 +27,8 @@ enum PartSlot
     PS_Legs, //Common Legs
     PS_Legs_M, //Male exclusive legs
     PS_Legs_F, //Female exclusive legs
-    PS_DressLegs //Legs used for dresses, stockings etc.
-};
-
-//Settings Names
-enum OutfitSetting
-{
-    AllowNPCOutfits,
-    ShowDescriptions
+    PS_DressLegs, //Legs used for dresses, stockings etc.
+    PS_Ponytail,    //Ponytail used by women (and some men?)
 };
 
 //These should be called in TravelPostAccept
@@ -78,8 +72,9 @@ function GroupTranspose2(PartSlot bodySlot, PartSlot bodySlot2,optional int slot
 //Outfit Functions
 function bool GetPartsGroup(string mesh) {}
 function BeginNewPartsGroup(string mesh, string carcassMesh, bool allowMale, bool allowFemale) {}
+function AddNewPartsMesh(string mesh, string carcassMesh, string menuName) {} //Add a new mesh variant for an existing group, such as a "Fat" GM_Trench variant.
 function AddDefaultReference(string defRef) {}
-function BeginNewOutfit(string id, string name, optional string desc, optional string highlightName, optional string pickupName, optional string pickupMessage, optional string pickupArticle) {}
+function BeginNewOutfit(string id, string name, int meshIndex, optional string desc, optional string highlightName, optional string pickupName, optional string pickupMessage, optional string pickupArticle) {}
 function OutfitAddPartReference(string partID) {}
 function Unlock(string id, optional bool bShowMessage) {}
 
@@ -104,6 +99,4 @@ function static CopyAugmentiqueDataToPOVCorpse(POVCorpse pov, DeusExCarcass C, o
 function static CopyAugmentiqueDataFromPOVCorpse(POVCorpse pov, DeusExCarcass C) {}
 function static ApplyOutfitToCarcass(DeusExCarcass C) {}
 
-//Allow modifying mod settings externally
-function SetOutfitSetting(OutfitSetting S, bool bValue) {}
 function SetOutfitSettingsMenuVisibility(bool bValue, optional bool bShowDescriptionsCheckbox) {}

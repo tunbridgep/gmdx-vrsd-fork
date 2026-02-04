@@ -775,6 +775,9 @@ simulated function ContinueMsg( GC gc, float screenWidth, float screenHeight )
 	local String str;
 	local float x, y, w, h;
 	local int t;
+    local DeusExPlayer player;
+
+    player = DeusExPlayer(GetPlayerPawn());
 
 	if ( bNewMap && !bClientNewMap)
 	{
@@ -788,7 +791,10 @@ simulated function ContinueMsg( GC gc, float screenWidth, float screenHeight )
 	str = t $ NewMapSecondsString;
 
 	gc.SetTextColor( WhiteColor );
-	gc.SetFont(Font'FontMenuTitle');
+    if (player != None)
+        gc.SetFont(player.FontManager.GetFont(TT_FontMenuTitle));
+    else
+        gc.SetFont(Font'FontMenuTitle');
 	gc.GetTextExtent( 0, w, h, str );
 	x = (screenWidth * 0.5) - (w * 0.5);
 	y = screenHeight * FireContY;

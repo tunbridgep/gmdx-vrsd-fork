@@ -18,6 +18,7 @@ function FirstFrame()
 	local FlagTrigger ftrig;
     local DeusExCarcass C;
 	local int count;
+    local Phone P;
 
 	if(flags.GetBool('PaulDenton_Dead') && !flags.GetBool('TalkedToPaulAfterMessage')) //== Paul CANNOT die before the raid, period
 		flags.SetBool('PaulDenton_Dead',False,, 16);  //CyberP: now checks until talked to paul after message
@@ -41,6 +42,11 @@ function FirstFrame()
 				if (pawn.IsA('UNATCOTroop') || pawn.IsA('SecurityBot2'))
 					pawn.EnterWorld();
 		}
+        
+        //Remove the phone in Paul's apartment
+        if (!player.bCutInteractions)
+            foreach AllActors(class'Phone', P, 'CutContentPhone')
+                P.Destroy();
 	}
 	/*else if (localURL == "04_NYC_FREECLINIC")
 	{
@@ -64,6 +70,11 @@ function FirstFrame()
                 C.bNoDefaultPools=true;
             }
         }
+        
+        //Remove the phone in Paul's apartment
+        if (!player.bCutInteractions)
+            foreach AllActors(class'Phone', P, 'CutContentPhone')
+                P.Destroy();
 
 		// unhide the correct JoJo
 		if (flags.GetBool('SandraRenton_Dead') ||
@@ -115,6 +126,16 @@ function FirstFrame()
 			}
 		}
 	}
+	else if(localURL == "04_NYC_SMUG")
+    {
+        //SARGE: If we finished the initial smuggler quest without "finishing" the quest,
+        //just give us the discount anyway. This conversation is so fucking stupid...
+		if (flags.GetBool('FordSchickRescued'))
+        {
+			flags.SetBool('SchickThankedPlayer', True,, 9);
+			flags.SetBool('SmugglerThankedPlayer', True,, 9);
+        }
+    }
 
 CanQuickSave=true;
 }
@@ -214,9 +235,11 @@ function Timer()
 	local GilbertRentonCarcass GilbertCarc;
 	local SandraRentonCarcass SandraCarc;
 	local UNATCOTroop troop;
+	local MIB mblack;
 	local Actor A;
 	local PaulDenton Paul;
 	local FordSchick Ford;
+    local SkillAwardTrigger TR;
     local int count;
 
 	Super.Timer();
@@ -282,11 +305,31 @@ function Timer()
 
         if (flags.GetBool('M04RaidDone') && flags.GetBool('M04RaidTeleportDone'))
         {
-           foreach AllActors(class'PaulDenton', paul)
-           {
-           paul.HomeTag = '';
-           paul.bDefendHome = False;
-           }
+            foreach AllActors(class'PaulDenton', paul)
+            {
+                paul.HomeTag = '';
+                paul.bDefendHome = False;
+            }
+			
+            //SARGE: Sometimes you can miss the 50 skill points for sticking with paul, so give them to him now if we haven't already.
+            if(paul != None && !flags.GetBool('PaulDenton_Dead') && !flags.GetBool('GMDXPaulSkillFix'))
+            {
+                count = 0;
+                foreach AllActors(Class'UNATCOTroop', troop)
+                    if(troop.bHidden == False)
+                        count++;
+
+                foreach AllActors(Class'MIB', mblack)
+                    if(mblack.bHidden == False)
+                        count++;
+
+                if (count == 0)
+                {
+                    foreach AllActors(class 'SkillAwardTrigger', TR, 'PaulOutaHere')
+                        TR.Trigger(player, player);
+                    flags.SetBool('GMDXPaulSkillFix', True,, 5);
+                }
+            }
         }
 
 		if (!flags.GetBool('TalkedToPaulAfterMessage_Played') &&

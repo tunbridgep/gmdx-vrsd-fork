@@ -31,11 +31,11 @@ event InitWindow()
 
 	SetSize(405, 130);
 
-	// Create controls
-	CreateControls();
-
 	// Get a pointer to the player
 	player = DeusExPlayer(GetRootWindow().parentPawn);
+
+	// Create controls
+	CreateControls();
 
 	StyleChanged();
 }
@@ -55,7 +55,7 @@ function CreateControls()
 	winSkillName.SetPos(39, 2);
 	winSkillName.SetSize(300, 12);
 	winSkillName.SetTextMargins(0, 0);
-	winSkillName.SetFont(Font'FontMenuHeaders');
+	winSkillName.SetFont(player.FontManager.GetFont(TT_FontMenuHeaders));
 	winSkillName.SetTextAlignments(HALIGN_Left, VALIGN_Top);
 
 	winScroll = MenuUIScrollAreaWindow(NewChild(Class'MenuUIScrollAreaWindow'));
@@ -64,7 +64,7 @@ function CreateControls()
 
 	winSkillDescription = LargeTextWindow(winScroll.clipWindow.NewChild(Class'LargeTextWindow'));
 	winSkillDescription.SetTextMargins(0, 0);
-	winSkillDescription.SetFont(Font'FontMenuSmall');
+	winSkillDescription.SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
 	winSkillDescription.SetTextAlignments(HALIGN_Left, VALIGN_Top);
 }
 

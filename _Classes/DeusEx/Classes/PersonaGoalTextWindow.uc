@@ -4,7 +4,7 @@
 
 class PersonaGoalTextWindow extends TextWindow;
 
-var Font fontText;
+var DeusExPlayer player;
 
 // ----------------------------------------------------------------------
 // InitWindow()
@@ -16,7 +16,10 @@ event InitWindow()
 {
 	Super.InitWindow();
 
-	SetFont(fontText);
+	// Get a pointer to the player
+	player = DeusExPlayer(GetRootWindow().parentPawn);
+
+	SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
 	SetTextAlignments(HALIGN_Left, VALIGN_Center);
 	SetTextMargins(5, 2);
 }
@@ -29,10 +32,12 @@ event StyleChanged()
 {
 }
 
-// ----------------------------------------------------------------------
-// ----------------------------------------------------------------------
-
-defaultproperties
+//SARGE: Crash Fix due to Player being required for new font support
+function DestroyWindow()
 {
-     fontText=Font'DeusExUI.FontMenuSmall'
+    player = None;
+	Super.DestroyWindow();
 }
+
+// ----------------------------------------------------------------------
+// ----------------------------------------------------------------------

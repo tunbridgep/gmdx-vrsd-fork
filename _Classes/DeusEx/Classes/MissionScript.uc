@@ -28,6 +28,170 @@ var byte savedMusicVolume;
 var byte savedSpeechVolume;
 
 // ----------------------------------------------------------------------
+// SARGE: TriggerUNATCOTakeover()
+//
+// Generic version of mission end event where UNATCO sends troops to take over an area
+// Kills all enemy units, disables all cameras, etc.
+// This was made generic so that we can configure it further.
+// ----------------------------------------------------------------------
+function TriggerUNATCOTakeover(optional bool bAlwaysRemoveSkillTriggers)
+{
+	local ScriptedPawn P;
+    local DeusExCarcass CARC;
+    local LaserTrigger L;
+    local BeamTrigger B;
+    local AutoTurret T;
+    local Robot R;
+    local SecurityCamera C;
+    local Containers CN;
+    local ControlPanel H;
+    local DeusExMover M;
+    local DeusExPickup PK;
+    local DeusExWeapon W;
+    local DeusExAmmo A;
+    local ThrownProjectile TP;
+    local SkillAwardTrigger TRIG;
+	local Inventory item, nextItem;
+
+    //Deal with all the terrorists
+    foreach AllActors(class'ScriptedPawn', P)
+    {
+        if ((P.IsA('Terrorist') || P.IsA('ThugMale2') || P.IsA('Doberman')) && (P.BindName != "TerroristCommander")) //Bind name is unnecessary??
+        {
+            // actually kill the terrorists instead of destroying them
+            P.HealthTorso = 0;
+            P.Health = 0;
+            P.TakeDamage(1, P, P.Location, vect(0,0,0), 'Shot');
+
+            // delete their inventories as well
+            if (P.Inventory != None)
+            {
+                do
+                {
+                    item = P.Inventory;
+                    nextItem = item.Inventory;
+                    P.DeleteInventory(item);
+                    item.Destroy();
+                    item = nextItem;
+                }
+                until (item == None);
+            }
+        }
+
+        //Shut down bots
+        else if (P.IsA('SecurityBot3') && SecurityBot3(P).EMPHitPoints > 0)
+            SecurityBot3(P).DoEMPEffect(100);
+    }
+    
+    //Delete all tagged turrets //SARGE: Just shut them off
+    foreach AllActors(class'AutoTurret', T)
+        //if (T.Tag == 'NSFTurret01' || T.Tag == 'NSFTurret02')
+            T.UnTrigger(None, None);
+
+    // delete all tagged lasertriggers  //CyberP: just delete all laser triggers. //SARGE: Just turn em off
+    foreach AllActors(class'LaserTrigger', L)//, 'statue_lasertrap')
+        L.Untrigger(player, player);
+        //L.emitter.Destroy();
+
+    // delete all tagged beamtriggers  //CyberP: just delete all laser triggers. //SARGE: Just turn em off
+    foreach AllActors(class'BeamTrigger', B)
+        B.Untrigger(player, player);
+        //B.emitter.Destroy();
+
+    // turn off all tagged cameras
+    foreach AllActors(class'SecurityCamera', C)
+        //if (bAllCameras || C.Tag == 'NSFCam01' || C.Tag == 'NSFCam02' || C.Tag == 'NSFCam03')
+        if (!C.bNoAlarm)
+            //C.bNoAlarm = True;
+            C.UnTrigger(None, None);
+    
+    if (player.bUNATCOCleanup)
+    {
+        //Also Deal with all the terrorists corpses
+        foreach AllActors(class'DeusExCarcass', CARC)
+        {
+            //if ((P.IsA('TerroristCarcass') || P.IsA('ThugMale2') || (P.IsA('SecurityBot3') && SecurityBot3(P).EMPHitPoints > 0) || P.IsA('Doberman')) && (P.BindName != "TerroristCommander")) //Bind name is unnecessary??
+            if (CARC.hdtpReference == class'DeusEx.Terrorist' || CARC.isA('ThugMale2Carcass') || carc.hdtpReference == class'DeusEx.UNATCOTroop')
+            {
+                // delete their inventories
+                if (CARC.Inventory != None)
+                {
+                    do
+                    {
+                        item = CARC.Inventory;
+                        nextItem = item.Inventory;
+                        CARC.DeleteInventory(item);
+                        item.Destroy();
+                        item = nextItem;
+                    }
+                    until (item == None);
+                }
+            }
+        }
+        
+        // Destroy all crates
+        foreach AllActors(class'Containers', CN)
+        {
+            if (CN.IsA('CrateBreakableMedCombat') || CN.IsA('CrateBreakableMedMedical') || CN.IsA('CrateBreakableMedGeneral'))
+            {
+                if (!CN.bFloating && !CN.bDontRemoveOnMissionComplete) //Dirty hack to preserve the underwater boxes
+                {
+                    CN.DrawScale = 0.00001;
+                    CN.SetCollision(false,false,false);
+                    CN.SetCollisionSize(0,0);
+                }
+            }
+        }
+        
+        //Un-Hack all hackable devices
+        foreach AllActors(class'ControlPanel', H)
+        {
+            if (H.bHackable && !H.bBeenHacked)
+            {
+                H.hackStrength = 0.0;
+                H.bBeenHacked = true;
+                H.HackAction(H, true);
+                H.PlayAnim('Open');
+            }
+        }
+        
+        //Open all doors, except those marked as non-cleanup
+        foreach AllActors(class'DeusExMover', M)
+        {
+            if (M.bLocked && M.bPickable && M.bFrobbable && !M.bDontOpenOnMissionComplete)
+            {
+                M.bLocked = False;
+                M.TimeSinceReset = 0;
+                M.lockStrength = 0.0;
+            }
+        }
+            
+        //Remove all pickups, except those marked as non-cleanup
+        foreach AllActors(class'DeusExPickup', PK)
+            if (PK.Owner == None && !PK.bDontRemoveOnMissionComplete)
+                PK.Destroy();
+        foreach AllActors(class'DeusExWeapon', W)
+            if (W.Owner == None && !W.bDontRemoveOnMissionComplete)
+                W.Destroy();
+        foreach AllActors(class'DeusExAmmo', A)
+            if (A.Owner == None && !A.bDontRemoveOnMissionComplete)
+                A.Destroy();
+        foreach AllActors(class'ThrownProjectile', TP)
+            if (TP.Owner != player && TP.bProximityTriggered)
+                TP.Destroy();
+            
+    }
+
+    if (player.bUNATCOCleanup || bAlwaysRemoveSkillTriggers)
+    {
+        //SARGE: Remove the Tower Skill Award bonuses.
+        foreach AllActors(class'SkillAwardTrigger', TRIG)
+            if (!TRIG.bDontRemoveOnMissionComplete)
+                TRIG.Destroy();
+    }
+}
+
+// ----------------------------------------------------------------------
 // SARGE: GetConversation()
 //
 // Returns a conversation based on a name
@@ -400,6 +564,10 @@ function FirstFrame()
         //SARGE: Do lighting accessibility
         ApplyLightingAccessibility();
         firstTime = true;
+        
+        //SARGE: Make Pawns have random heights
+        foreach AllActors(class'ScriptedPawn', P)
+            P.SetupRandomHeight(0.95 + Player.Randomizer.GetRandomFloat()*0.1);
 	}
 
 	flagName = Player.rootWindow.StringToName("M"$dxInfo.MissionNumber$"MissionStart");
@@ -708,6 +876,7 @@ function RandomiseCrap()
     local ChairLeather L2;
     local int chairSkin, couchSkin;
         
+    //SARGE: TODO: Make this work in real-time rather than being per-mission.
     if (!player.bRandomizeCrap)
         return;
 
@@ -1065,7 +1234,10 @@ function InitializeRandomItems()
 	        bMatchFound = CheckItemLootTable(WM,tableModBallistics);
         if (!bMatchFound)// && Player.bRandomizeModsAttachments)
 	        bMatchFound = CheckItemLootTable(WM,tableModAttachments);*/
-        bMatchFound = CheckItemLootTable(WM,tableModGeneral);
+        
+            //SARGE: No more specialist mod randomisation!
+            if (!WM.IsA('WeaponModLaser') && !WM.IsA('WeaponModSilencer') && !WM.IsA('WeaponModScope') && !WM.IsA('WeaponModFullAuto'))
+                bMatchFound = CheckItemLootTable(WM,tableModGeneral);
         }
 	}
 

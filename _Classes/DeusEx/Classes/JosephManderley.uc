@@ -28,4 +28,5 @@ defaultproperties
      BindName="JosephManderley"
      FamiliarName="Joseph Manderley"
      UnfamiliarName="Joseph Manderley"
+     bRandomHeightAdjust=false
 }

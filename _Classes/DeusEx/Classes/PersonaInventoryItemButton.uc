@@ -134,7 +134,7 @@ event DrawWindow(GC gc)
 
 		if ( anItem.bInObjectBelt )
 		{
-			gc.SetFont(Font'FontMenuSmall_DS');
+			gc.SetFont(player.FontManager.GetFont(TT_FontMenuSmall_DS));
 			gc.SetAlignments(HALIGN_Right, VALIGN_Center);
 			gc.SetTextColor(colHeaderText);
 			gc.GetTextExtent(0, strWidth, strHeight, GetBeltNumText(anItem));
@@ -147,7 +147,7 @@ event DrawWindow(GC gc)
         // TODO: Add a proper icon, rather than a plus
     	if ( anItem.isA('DeusExWeapon') && DeusExWeapon(anItem).bModified && player.bBeltShowModified )
 		{
-			gc.SetFont(Font'FontMenuSmall_DS');
+			gc.SetFont(player.FontManager.GetFont(TT_FontMenuSmall_DS));
 			gc.SetAlignments(HALIGN_Left, VALIGN_Center);
 			gc.SetTextColor(colHeaderText);
 			gc.GetTextExtent(0, strWidth, strHeight, "+");
@@ -215,7 +215,7 @@ event DrawWindow(GC gc)
 		}
 	}
 
-    gc.SetFont(Font'FontMenuSmall_DS');
+    gc.SetFont(player.FontManager.GetFont(TT_FontMenuSmall_DS));
     gc.SetAlignments(HALIGN_Center, VALIGN_Center);
     gc.SetTextColor(colHeaderText);
     gc.GetTextExtent(0, strWidth, strHeight, "      ");

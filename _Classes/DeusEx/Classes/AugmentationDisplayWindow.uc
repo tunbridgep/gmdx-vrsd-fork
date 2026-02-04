@@ -130,6 +130,7 @@ var ConLight lite;
 var ThrownProjectile lastGrenade;
 
 var localized String msgDisarmed;
+var localized String msgRemoteOnly;             //SARGE: Grenade is disabled and we have remote detonation perk
 
 const ITEM_SONAR_DISTANCE = 256;                //SARGE: Range for special item-only sonar
 
@@ -681,7 +682,7 @@ function Tick(float deltaTime)
     drawTime = FMAX(0.0,drawTime - deltaTime);
 
 	// check for the target ViewportWindow being constructed
-	if (bTargetActive && (targetLevel > 2) && (winZoom == None) && (lastTarget != None) && (Player.Level.NetMode == NM_Standalone))
+	if (bTargetActive && (targetLevel > 2) && (winZoom == None) && (lastTarget != None) && (Player.Level.NetMode == NM_Standalone) && !IsMinimised(true))
 	{
 		winZoom = ViewportWindow(NewChild(class'ViewportWindow'));
 		if (winZoom != None)
@@ -772,7 +773,7 @@ function Tick(float deltaTime)
 
 	if (winZoom != None)
 	{
-		if ((bTargetActive && (lastTarget == None)) || !bTargetActive)
+		if ((bTargetActive && (lastTarget == None)) || !bTargetActive || IsMinimised(true))
 		{
 			winZoom.Destroy();
 			winZoom = None;
@@ -806,7 +807,7 @@ function PostDrawWindow(GC gc)
 	// draw IFF and accuracy information all the time, return False if target aug is not active
 	DrawTargetAugmentation(gc);
 
-	gc.SetFont(Font'FontMenuSmall_DS');
+	gc.SetFont(player.FontManager.GetFont(TT_FontMenuSmall_DS));
 	gc.SetTextColor(colHeaderText);
 	gc.SetStyle(DSTY_Normal);
 	gc.SetTileColor(colBorder);
@@ -1019,7 +1020,7 @@ function float TopCentralMessage( GC gc, String str, color textColor )
 {
 	local float x, y, w, h;
 
-	gc.SetFont(Font'FontMenuTitle');
+	gc.SetFont(player.FontManager.GetFont(TT_FontMenuTitle));
 	gc.GetTextExtent( 0, w, h, str );
 	gc.SetTextColor( textColor );
 	x = (width * 0.5) - (w * 0.5);
@@ -1197,7 +1198,7 @@ function DrawMiscStatusMessages( GC gc )
 	}
 	if ( Player.Level.Timeseconds < targetPlayerTime )
 	{
-		gc.SetFont(Font'FontMenuSmall');
+        gc.SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
 		gc.GetTextExtent(0, w, h, targetPlayerName $ targetPlayerHealthString $ targetPlayerLocationString);
 		gc.SetTextColor(targetPlayerColor);
 		x = width * targetPlayerXMul - (w*0.5);
@@ -1223,7 +1224,7 @@ function DrawMiscStatusMessages( GC gc )
 		{
 			if ( Player.Level.Timeseconds < OutOfAmmoTime )
 			{
-				gc.SetFont(Font'FontMenuTitle');
+				gc.SetFont(player.FontManager.GetFont(TT_FontMenuTitle));
 				gc.GetTextExtent( 0, w, h, OutOfAmmoString );
 				gc.SetTextColor(colRed);
 				x = (width*0.5) - (w*0.5);
@@ -1876,6 +1877,8 @@ function string GetWallGrenadeDisabledText(Actor target, bool TargetingDisplay)
     if (target.IsA('ThrownProjectile') && ThrownProjectile(target).bDisabled && ThrownProjectile(target).bProximityTriggered)
     if (ThrownProjectile(target).bEMPDisabled)
         str = msgDisabled;
+    else if (player != None && player.PerkManager != None && ThrownProjectile(target).Owner == player && player.PerkManager.GetPerkWithClass(class'DeusEx.PerkRemoteDetonation').bPerkObtained)
+        str = msgRemoteOnly;
     else
         str = msgDisarmed;
     
@@ -1908,6 +1911,18 @@ function string GetHackDisabledText(Actor target,bool TargetingDisplay)
 
     if (target.IsA('Robot'))
         amt = int(Robot(target).rebootTime - player.saveTime);
+
+    //SARGE: Weird hacky special case for "truly" disabled cameras and turrets.
+    //This sucks on ice!
+    if ((turr != None && turr.bDisabled && !turr.bRebooting) || cam != None && !cam.bActive && !cam.bRebooting)
+    {
+        //If using the targeting aug, we need to format it
+        if (TargetingDisplay)
+            str = " (" $ msgDisabled $ ")";
+        else
+            str = msgDisabled;
+        return str;
+    }
 
     //ZAP!
     if (amt <= 0)
@@ -2472,6 +2487,7 @@ defaultproperties
      msgNoImage="Image Not Available"
      msgDisabled="Disabled"
      msgDisarmed="Disarmed"
+     msgRemoteOnly="Remote"
      msgReboot="Rebooting in %s"
      SpottedTeamString="You have spotted a teammate!"
      YouArePoisonedString="You have been poisoned!"

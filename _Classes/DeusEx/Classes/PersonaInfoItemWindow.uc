@@ -6,8 +6,6 @@ class PersonaInfoItemWindow expands AlignWindow;
 var DeusExPlayer player;
 var TextWindow winLabel;
 var TextWindow winText;
-var Font fontText;
-var Font fontTextHighlight;
 var bool bHighlight;
 
 // ----------------------------------------------------------------------
@@ -20,24 +18,24 @@ event InitWindow()
 {
 	Super.InitWindow();
 
+	// Get a pointer to the player
+	player = DeusExPlayer(GetPlayerPawn());
+
 	// Defaults for tile window
 	SetChildVAlignment(VALIGN_Top);
 	SetChildSpacing(10);
 
 	winLabel = TextWindow(NewChild(Class'TextWindow'));
-	winLabel.SetFont(fontText);
+	winLabel.SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
 	winLabel.SetTextAlignments(HALIGN_Right, VALIGN_Top);
 	winLabel.SetTextMargins(0, 0);
 	winLabel.SetWidth(70);
 
 	winText = TextWindow(NewChild(Class'TextWindow'));
 	winText.SetTextAlignments(HALIGN_Left, VALIGN_Top);
-	winText.SetFont(fontText);
+	winText.SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
 	winText.SetTextMargins(0, 0);
 	winText.SetWordWrap(True);
-
-	// Get a pointer to the player
-	player = DeusExPlayer(GetPlayerPawn());
 
 	StyleChanged();
 }
@@ -140,9 +138,9 @@ function SetHighlight(bool bNewHighlight)
 	bHighlight = bNewHighlight;
 
 	if (bHighlight)
-		winText.SetFont(fontTextHighlight);
+        winText.SetFont(player.FontManager.GetFont(TT_FontMenuHeaders));
 	else
-		winText.SetFont(fontText);
+        winText.SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
 
 	StyleChanged();
 }
@@ -170,6 +168,6 @@ event StyleChanged()
 
 defaultproperties
 {
-     fontText=Font'DeusExUI.FontMenuSmall'
-     fontTextHighlight=Font'DeusExUI.FontMenuHeaders'
+     //fontText=Font'RSDCrap.DXRFontMenuSmall'
+     //fontTextHighlight=Font'RSDCrap.DXRFontMenuHeaders'
 }

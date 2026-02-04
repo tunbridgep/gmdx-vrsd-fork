@@ -9,8 +9,6 @@ function SetSkin()
 {
     Skin = default.skin;
     Description = default.Description;
-    Icon = default.Icon;
-    LargeIcon = default.LargeIcon;
 
     if (IsHDTP() && textureSet == 0)
         Skin = class'HDTPLoader'.static.GetTexture("HDTPItems.Skins.HDTPCigarettestex1");
@@ -21,12 +19,6 @@ function SetSkin()
         case 1: //Big Top
             Skin = class'HDTPLoader'.static.GetTexture2("RSDCrap.Skins.HDTPCigarettestex2","RSDCrap.Skins.Cigarettestex2",IsHDTP());
             Description = Description2;
-            //TODO: Port these across
-            if (IsHDTP())
-            {
-                Icon = class'HDTPLoader'.static.GetTexture("HDTPitems.skins.belticonCigarettes2");
-                LargeIcon = class'HDTPLoader'.static.GetTexture("HDTPitems.skins.largeiconCigarettes2");
-            }
             break;
         case 2: //Holy Smokes!
             Skin = class'HDTPLoader'.static.GetTexture2("RSDCrap.Skins.HDTPCigarettestex3","RSDCrap.Skins.Cigarettestex3",IsHDTP());

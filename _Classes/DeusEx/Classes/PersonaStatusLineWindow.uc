@@ -5,7 +5,6 @@
 class PersonaStatusLineWindow extends TextWindow;
 
 var DeusExPlayer player;
-var Font         fontText;
 var Float        logDuration;
 var Float        logTimer;
 
@@ -19,13 +18,13 @@ event InitWindow()
 {
 	Super.InitWindow();
 
-	SetFont(fontText);
+	// Get a pointer to the player
+	player = DeusExPlayer(GetRootWindow().parentPawn);
+
+    SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
 	SetWidth(238);
 	SetTextMargins(2, 1);
 	SetTextAlignments(HALIGN_Left, VALIGN_Top);
-
-	// Get a pointer to the player
-	player = DeusExPlayer(GetRootWindow().parentPawn);
 
 	StyleChanged();
 }
@@ -88,6 +87,5 @@ function ClearText()
 
 defaultproperties
 {
-     fontText=Font'DeusExUI.FontMenuSmall'
      logDuration=5.000000
 }

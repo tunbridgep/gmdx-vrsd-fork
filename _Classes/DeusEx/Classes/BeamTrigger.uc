@@ -224,7 +224,8 @@ function Destroyed()
 
 static function bool IsHDTP()
 {
-    return class'DeusExPlayer'.static.IsHDTPInstalled() && default.iHDTPModelToggle > 0;
+    //return class'DeusExPlayer'.static.IsHDTPInstalled() && default.iHDTPModelToggle > 0;
+    return class'DeusExPlayer'.static.IsHDTPInstalled() && class'LaserTrigger'.default.iHDTPModelToggle > 0;
 }
 
 //Ygll: Setup the HDTP settings for this classe

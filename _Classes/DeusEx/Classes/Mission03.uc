@@ -23,29 +23,39 @@ function FirstFrame()
     local Doberman dob;
     local Light L;
     local SkillAwardTrigger TRIG;
+    local Actor A;
 
 	Super.FirstFrame();
 
 	if (localURL == "03_NYC_AIRFIELDHELIBASE")
 	{
+        //Remove the VOIP Phone
+        if (!player.bCutInteractions)
+        {
+            //Remove the invisible keypad
+            foreach AllActors(class'Actor', A, 'VOIPKeypad')
+                A.Destroy();
+
+            //Make the phone work in random mode
+            foreach AllActors(class'Actor', A, 'VOIPPhone')
+            {
+                Phone(A).AnswerSound = AS_Random;
+                Phone(A).bScriptedPhone = false;
+            }
+
+            //Remove the VOIP details from the computer
+            foreach AllActors(class'Actor', A, 'VOIPComputer')
+                Computers(A).SpecialOptions[0].Text = "";
+        }
+
 		// delete terrorists and unhide reinforcements
 		if (flags.GetBool('MeetLebedev_Played') ||
 			flags.GetBool('JuanLebedev_Dead'))
 		{
-			foreach AllActors(class'Terrorist', T)
-				T.Destroy();
-
-			foreach AllActors(class'SecurityBot3', bot)
-				bot.Destroy();
-
-			foreach AllActors(class'LaserTrigger', AT)
-				AT.Destroy();
-
 			foreach AllActors(class'UNATCOTroop', troop, 'UNATCOTroop')
 				troop.EnterWorld();
-
-			foreach AllActors(class'SecurityCamera', cam)
-				cam.bNoAlarm = True;
+            
+            TriggerUNATCOTakeover();
 		}
 	}
 	else if (localURL == "03_NYC_AIRFIELD")
@@ -55,40 +65,17 @@ function FirstFrame()
 		if (flags.GetBool('MeetLebedev_Played') ||
 			flags.GetBool('JuanLebedev_Dead'))
 		{
-			foreach AllActors(class'Terrorist', T)
-				T.Destroy();
-
-            foreach AllActors(class'Doberman', dob)
-				dob.Destroy();
-
-			foreach AllActors(class'SecurityBot3', bot)
-				bot.Destroy();
-
-            foreach AllActors(class'LaserTrigger', AT)
-				AT.Destroy();
-
 			foreach AllActors(class'UNATCOTroop', troop, 'UNATCOTroop')
 				troop.EnterWorld();
 
 			foreach AllActors(class'BlackHelicopter', chopper)
 				chopper.EnterWorld();
 
-			foreach AllActors(class'SecurityCamera', cam)
-				cam.UnTrigger(None, None);
-
-			foreach AllActors(class'AutoTurret', turret)
-				turret.UnTrigger(None, None);
-
 			foreach AllActors(class'GuntherHermann', Gunther)
 				Gunther.EnterWorld();
-
-            //SARGE: Remove the Tower Skill Award bonuses.
-			foreach AllActors(class'SkillAwardTrigger', TRIG, 'TowerSkillTrigger')
-				TRIG.Destroy();
-
-            //SARGE: Remove the Ambrosia Skill Award bonus.
-			foreach AllActors(class'SkillAwardTrigger', TRIG, 'skills')
-				TRIG.Destroy();
+            
+            //SARGE: Replace the manual takeover with this
+            TriggerUNATCOTakeover(true);
 		}
 	}
 	else if (localURL == "03_NYC_HANGAR")
@@ -97,20 +84,13 @@ function FirstFrame()
 		if (flags.GetBool('MeetLebedev_Played') ||
 			flags.GetBool('JuanLebedev_Dead'))
 		{
-			foreach AllActors(class'Terrorist', T)
-				T.Destroy();
-
-			foreach AllActors(class'SecurityBot3', bot)
-				bot.Destroy();
-
-			foreach AllActors(class'LaserTrigger', AT)
-				AT.Destroy();
-
 			foreach AllActors(class'PaulDenton', Paul)
 				Paul.Destroy();
 
 			foreach AllActors(class'UNATCOTroop', troop, 'UNATCOTroop')
 				troop.EnterWorld();
+
+            TriggerUNATCOTakeover();
 		}
 	}
 	else if (localURL == "03_NYC_747")
@@ -119,11 +99,8 @@ function FirstFrame()
 		if (flags.GetBool('MeetLebedev_Played') ||
 			flags.GetBool('JuanLebedev_Dead'))
 		{
-			foreach AllActors(class'Terrorist', T)
-				T.Destroy();
-
-			foreach AllActors(class'SecurityBot3', bot)
-				bot.Destroy();
+            //SARGE: Removed as it didn't seem to do much, and only caused problems.
+            //TriggerUNATCOTakeover();
 		}
 	}
 

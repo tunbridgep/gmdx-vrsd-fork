@@ -14,7 +14,6 @@ enum ENoteMode
 
 var DataVaultImage image;
 var DeusExRootWindow root;
-var Font fontNoImages;
 var Color colTextNoImages;
 var int imageSizeX;
 var int imageSizeY;
@@ -56,7 +55,7 @@ event DrawWindow(GC gc)
 	{
 		gc.SetHorizontalAlignment(HALIGN_Center);
 		gc.SetVerticalAlignment(VALIGN_Center);
-		gc.SetFont(fontNoImages);
+	    gc.SetFont(player.FontManager.GetFont(TT_FontMenuHeaders));
 		gc.SetTextColor(colTextNoImages);
 		gc.DrawText(0, 0, width, height, strNoImages);
 	}
@@ -368,7 +367,6 @@ function SetAddNoteMode(Bool bNewAddMode)
 
 defaultproperties
 {
-     fontNoImages=Font'DeusExUI.FontMenuHeaders'
      colTextNoImages=(R=255,G=255,B=255)
      imageSizeX=400
      imageSizeY=400

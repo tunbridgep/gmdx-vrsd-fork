@@ -75,6 +75,7 @@ defaultproperties
      items(16)=(HelpText="The Dragons Tooth Sword will require energy to attack, and is recharged with biocells.",actionText="Strategic Dragon's Tooth",variable="bNanoswordEnergyUse",defaultValue=1);
      items(17)=(HelpText="Using actions while hacking computers will increase detection time.",actionText="Hacking Energy Management",variable="bComputerActionsDrainHackTime",defaultValue=1);
      items(18)=(HelpText="Enemies have a small chance of snap-firing when detecting the player.",actionText="Quick Reflexes",variable="bQuickReflexes",defaultValue=0);
+     items(19)=(HelpText="If reloading is cancelled, your weapon will be empty instead of keeping the previous ammo amount. This does not affect your total ammo count.",actionText="Empty Weapon When Reloading",variable="bNoPartialReloads",defaultValue=1)
      msgText="The settings available in this menu are always active as part of Hardcore difficulty.|nYou may still edit them freely, but they will have no effect when playing in Hardcore mode."
      msgTitle="Hardcore Mode"
      Title="GMDX Gameplay Options"
