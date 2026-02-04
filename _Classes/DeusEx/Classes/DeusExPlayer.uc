@@ -9448,6 +9448,14 @@ function AddReceivedItem(string owner, Inventory item, int count, optional bool 
     if (item == None)
         return;
 
+    //SARGE: For now, let's just override bNoGroup
+    bNoGroup = bNoGroup ||
+    (item.IsA('DeusExPickup') && count <= 3) ||
+    (item.IsA('DeusExWeapon') && DeusExWeapon(item).bDisposableWeapon && count <= 3) ||
+    ((item.IsA('AmmoShuriken') || item.IsA('AmmoGasGrenade') || item.IsA('AmmoEMPGrenade')
+    || item.IsA('AmmoNanoVirusGrenade') || item.IsA('AmmoLAM')
+    || item.IsA('AmmoHideAGun') || item.IsA('AmmoLAW')) && count <= 3);
+
     if (rootWindow != None && DeusExRootWindow(rootWindow).hud != None)
     {
         DebugLog("Item is: " $ item $ ", bDeclined is " $ bDeclined $ ", bNoGroup: " $ bNoGroup);
@@ -11085,6 +11093,10 @@ function DropDecoration()
 	local bool bSuccess;
 	local Actor hitActor;
     local Decoration deco;
+
+    //SARGE: Bugfix??
+    if (IsInState('Interpolating'))
+        return;
 
 	bSuccess = False;
 
