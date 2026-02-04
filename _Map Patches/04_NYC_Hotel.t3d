@@ -50197,19 +50197,6 @@ Begin Actor Class=OrdersTrigger Name=OrdersTrigger0
     bCollideActors=False
     Name=OrdersTrigger0
 End Actor
-Begin Actor Class=SkillAwardTrigger Name=SkillAwardTrigger5
-    skillPointsAdded=50
-    LastRenderTime=0.574755
-    DistanceFromPlayer=554.711731
-    Level=LevelInfo'MyLevel.LevelInfo0'
-    Tag=StayedWithPaul
-    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
-    Location=(X=6.894859,Y=-2114.739014,Z=104.739594)
-    Rotation=(Yaw=-18280)
-    OldLocation=(X=640.330444,Y=-652.667053,Z=518.102661)
-    bCollideActors=False
-    Name=SkillAwardTrigger5
-End Actor
 Begin Actor Class=FlagTrigger Name=FlagTrigger30
     FlagName=NSFSignalSent
     bSetFlag=False
@@ -50241,25 +50228,6 @@ Begin Actor Class=FlagTrigger Name=FlagTrigger16
     CollisionRadius=40.000000
     bCollideActors=False
     Name=FlagTrigger16
-End Actor
-Begin Actor Class=FlagTrigger Name=FlagTrigger18
-    FlagName=M04RaidBegan
-    bSetFlag=False
-    bTrigger=True
-    TriggerType=TT_ClassProximity
-    ClassProximityType=Class'DeusEx.MIB'
-    LastRenderTime=0.574755
-    DistanceFromPlayer=447.275970
-    Level=LevelInfo'MyLevel.LevelInfo0'
-    Tag=FlagTrigger
-    Event=StayedWithPaul
-    Region=(Zone=LevelInfo'MyLevel.LevelInfo0',iLeaf=-1)
-    Location=(X=-95.721992,Y=-2043.057617,Z=104.736298)
-    Rotation=(Yaw=-18280)
-    OldLocation=(X=705.470032,Y=-608.888611,Z=518.099365)
-    SoundRadius=4
-    CollisionRadius=40.000000
-    Name=FlagTrigger18
 End Actor
 Begin Actor Class=Chair1 Name=Chair0
     LastRenderTime=0.574755

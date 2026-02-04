@@ -3,6 +3,7 @@
 New Features:
 - Added Texture Filtering setting. It can be turned on in the Display menu and the QoL menu.
     - This is different to the `bNoFiltering` setting in rendering settings, as it doesn't unfilter shadows, decals, and some other things.
+- Added a new option to show Exits on the map. This is mostly for debugging but may be useful for some people, so it's available for anyone to use.
 - Added a new setting to remove the "hiss" sound when recharging charged items on pickup, by request.
     - When recharging your current wearable, they will make their regular pickup sound instead.
 - Items that would be picked up and placed into your inventory with right click can now be carried using Walk+Right Click if your hands are empty.
@@ -20,6 +21,7 @@ New Features:
 - Disabled grenades can now be detonated using the Remote Detonation perk (they will show as "Remote" instead of "Disabled" in the HUD)
 - The Player's Skin Colour will now be remembered alongside their name if the option to remember their name is enabled. (Enabled by default).
 - Laser, Scope and Silencer mods are no longer randomized when using the "Randomize Weapon Mods" modifier.
+- Added a new playthrough modifier to remove crates and loose items when UNATCO takes over various areas, such as the Statue of Liberty and Lebedev's Airfield.
 - Added new cut content, available under the "Additional NPC Interactions" modifier
     - Added a phone to Paul's apartment, with a message from a mysterious friend.
     - Added the ability to eavesdrop a conversation between Tong and Lebedev.
@@ -28,6 +30,12 @@ New Features:
     - Pinned notes will also be visible on the main HUD
 
 Bugfixes:
+- Fixed GMDX:AE Bugs related to 20mm grenades:
+    - Fixed issue where 20mm ammo projectiles would fly sideways.
+    - They now use their proper mesh, rather than the Shotgun Casing mesh.
+    - They now also have the smoke trail they had in Vanilla.
+- Fixed issue where downloaded Emails would not appear in the keypad/computer notes display.
+- Fixed issue where killing rats would trigger enemy hostility in some cases.
 - Fixed bloody throwing knives not displaying when retrieving them from enemy corpses.
 - Fixed several codes which weren't working correctly when using Unknown Codes
 - Fixed a few Accessed None's
@@ -41,11 +49,15 @@ Bugfixes:
 - Fixed game crashing when right-clicking after death by adding a 1 second minimum time before loading.
 - Fixed issue where certain decorations could display incorrectly in Shenanigans mode.
 - Fixed GMDXv9 issue where "Confirm Note Deletion" checkbox did nothing on Hardcore (or with realtime UI turned on).
+- Fixed the light on the Flamethrower continuing to show after dropping the weapon.
+- Fixed a crash when changing ammo types from the inventory screen.
 - The Pedometer heartrate display will is no longer unreadable and won't update every frame
     - Now it trends towards target values slowly, like a real heart.
     - For example, if we're at 90 bpm and want to reach 120 bpm due to stress, our heart will slowly rise to 120 bpm over a few seconds.
+- Other minor bugfixes
 
 Misc Changes:
+- The Flamethrower no longer shows a flame when out of ammo.
 - In Hardcore mode, weapons will now be emptied at the start of reloading (except for one-at-a-time weapons).
     - This means that you will no longer be able to cancel reloading to regain your previous ammo amount. Instead your weapon will be empty.
     - This does not affect your total ammo amount, only the amount loaded in your weapon.
@@ -55,6 +67,7 @@ Misc Changes:
 - Left-Frobbing a locked object will no longer always select a Lockpick on Hardcore mode.
 - Left-Frobbing a breakable object will no longer select inadequate melee weapons on Hardcore mode.
 - The previously experimental feature to drop items from conversations at the players feet is now enabled by default.
+- Oxygen is now drained slightly faster while swimming, as a slight buff to the Athletics skill and to make the Rebreather less able to be relied upon.
 - The "Drop Item" and "Assign Secondary" keys will now work properly in the inventory screen, rather than being hardcoded to F and BACKSPACE
 - Added a number of new icons for edibles and other pickups, now inventory icons will always reflect item skins
     - The Belt and Secondary Item display will now show the proper icon for a given item, rather than always showing the default, and belt memory will preserve the icon.
@@ -71,10 +84,16 @@ Map Changes:
     - The Police Boat has been moved slightly closer to the dock, in order to allow interacting with it without needing to jump off.
 - 02_NYC_Underground
     - Removed a datacube containing the MJ12/Coupdetat password on Hardcore mode, so that you are incentivised to use the much harder entrance (the one with all the lasers and turrets).
+- 05_NYC_UNATCOHQ
+    - The two UNATCO Troopers near the front of the compound will no longer open the locked door and allow the Player to escape before receiving the key from Alex
 - 02_NYC_Hotel/04_NYC_Hotel/08_NYC_Hotel
     - Added a Phone to Paul's apartment, which on Mission 4 will play a message from Lebedev.
         - This message was cut from the vanilla game, and has been restored.
         - The phone will not appear unless the "Additional NPC Interactions" modifier is used.
+- 04_NYC_Hotel
+    - Removed an erroneous "DEFAULT SKILL AWARD MESSAGE, REPORT THIS AS A BUG" 50 skill point bonus which would be given to the player semi-randomly when the raid starts.
+    - The 50 skill point bonus for saving Paul is now a lot more reliable and should trigger as soon as the last enemy is dead, as long as Paul is alive
+    - Previously, it was possible to get 100 skill points unreliably, with the player almost always receiving 0. Now they will receive 50 reliably.
 - 04_NYC_Smug/08_NYC_Smug
     - The player will still receive Smuggler's discount even if they didn't revisit Smuggler after rescuing Ford Schick in Mission 2.
 
@@ -110,6 +129,7 @@ Bugfixes:
 - Fixed Markers sometimes displaying at invalid exits (such as the courtyard in the Luminous Path compound)
 - Fixed numerous bugs related to the Received Items display, including showing wrong icons or duplicated icons.
 - Fixed the information display not updating correctly when attaching/detatching addons for unequipped weapons.
+- Fixed an issue where weapon firing sounds would become silent under certain circumstances.
 - Fixed some typos.
 
 Map Changes:

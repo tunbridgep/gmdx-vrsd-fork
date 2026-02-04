@@ -88,6 +88,7 @@ var bool bPermaCloak;
 var bool bNoStartingWeaponChoices;
 var bool bImprisonmentTakesAmmo;
 var bool bSkillsSetAtStart;
+var bool bUNATCOCleanup;
 
 //SARGE: Save our true player name for future playthroughs
 //SARGE: And now the player skin too!
@@ -191,6 +192,7 @@ event InitWindow()
     bNoStartingWeaponChoices=false;                                             //Sarge
     bImprisonmentTakesAmmo=false;                                               //Sarge
     bSkillsSetAtStart=false;                                                    //Sarge
+    bUNATCOCleanup=false;                                                       //Sarge
     //bRestrictedMetabolism=false;                                              //Sarge
     default.bRandomizeCrates=false;                                             //RSD: Also need default values! Otherwise get command in modifier menu takes the wrong value
     default.bRandomizeMods=false;                                               //RSD
@@ -216,6 +218,7 @@ event InitWindow()
     default.bNoStartingWeaponChoices=false;                                     //Sarge
     default.bImprisonmentTakesAmmo=false;                                       //Sarge
     default.bSkillsSetAtStart=false;                                            //Sarge
+    default.bUNATCOCleanup=false;                                               //Sarge
 	StyleChanged();
 }
 
@@ -888,6 +891,7 @@ function SaveSettings()
     player.bNoStartingWeaponChoices=bNoStartingWeaponChoices;                   //Sarge
     player.bImprisonmentTakesAmmo=bImprisonmentTakesAmmo;                       //Sarge
     player.bSkillsSetAtStart=bSkillsSetAtStart;                                 //Sarge
+    player.bUNATCOCleanup=bUNATCOCleanup;                                       //Sarge
     if (player.bRandomizeAugs)                                                  //RSD: New aug randomization feature
         ScrambleAugOrderList();
 

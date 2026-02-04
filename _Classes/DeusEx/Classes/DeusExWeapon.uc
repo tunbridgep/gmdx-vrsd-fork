@@ -368,6 +368,8 @@ var travel bool bHadLaser;
 var travel bool bHadScope;
 var travel bool bHadSilencer;
 
+var(GMDX) bool bDontRemoveOnMissionComplete;                                    //SARGE: Don't remove this weapon on mission completion.
+
 //Used during the new "SwitchAttachment" state so we can change attachments during the animation
 var bool bSwitchingToLaser;
 var bool bSwitchingToSilencer;
@@ -407,6 +409,13 @@ replication
 	reliable if ( Role == ROLE_Authority )
 	  RefreshScopeDisplay, ReadyClientToFire, SetClientAmmoParams, ClientDownWeapon, ClientActive, ClientReload;
 }
+	
+
+function Frob(Actor Other, Inventory frobWith)
+{
+    bDontRemoveOnMissionComplete = false;
+    super.Frob(other, frobwith);
+}
 
 // ----------------------------------------------------------------------
 // GetMaxRange()
@@ -429,18 +438,38 @@ function float GetAccurateRange()
 }
 
 // ----------------------------------------------------------------------
-// GetDefaultFireSound()
+// GetFireSound()
 //
 // SARGE: Returns the default fire sound (standard or classic), based on the players options
+// SARGE: Now also handles all fire sound handling, since the previous implementation was buggy and broken.
 // ----------------------------------------------------------------------
-function Sound GetDefaultFireSound()
+function Sound GetFireSound(optional bool bSilenced)
 {
+    //No firing sound if we are firing projectiles, since they play the sound.
+    //SARGE: I wish this wasn't the case, what a hacky mess...
+    if (ProjectileClass != None && !IsA('WeaponFlamethrower'))
+        return None;
+
+    //First, do the special cases
     if (Ammo20mm(AmmoType) != None) //Hack for 20mm grenade launcher
         return Sound'AssaultGunFire20mm';
     else if ( AmmoRocketWP(AmmoType) != None )
         return Sound'GEPGunFireWP';
     else if ( AmmoRocket(AmmoType) != None )
         return Sound'GEPGunFire';
+
+
+    //Then do silenced
+    else if (bSilenced)
+    {
+        //SARGE: Very silly rat squeak silencers!
+        if (Owner != None && Owner.IsA('DeusExPlayer') && DeusExPlayer(owner).bShenanigans)
+            return Sound'RatSqueak2';
+        else
+            return default.FireSilentSound;
+    }
+
+    //Lastly, discern between regular and classic
     else if (class'DeusExPlayer'.default.iImprovedWeaponSounds > 0 || default.ClassicFireSound == None)
         return default.FireSound;
     else
@@ -864,7 +893,6 @@ function TravelPostAccept()
 		// since we can't "var travel class" (AmmoName and ProjectileClass)
 		if (AmmoType != None)
 		{
-			FireSound = None;
 			for (i=0; i<ArrayCount(AmmoNames); i++)
 			{
 				if (AmmoNames[i] == AmmoName)
@@ -1696,8 +1724,8 @@ function PlaySelect()
      {
        if (IsA('WeaponNanoSword') && !bAlreadyQuickMelee)
        {
-             Owner.PlaySound(SelectSound, SLOT_Misc, Pawn(Owner).SoundDampening);
-             AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 416);
+            Owner.PlaySound(SelectSound, SLOT_Misc, Pawn(Owner).SoundDampening);
+            AISendEvent('LoudNoise', EAITYPE_Audio, TransientSoundVolume, 416);
        }
        if (ReloadCount > 0)
 			AmmoType.UseAmmo(1);
@@ -2133,7 +2161,6 @@ function bool LoadAmmo(int ammoNum)
 				else
 					ReloadTime = Default.ReloadTime;
 				}
-				FireSound = None;		// handled by the projectile
 				ProjectileClass = ProjectileNames[ammoNum];
 				ProjectileSpeed = ProjectileClass.Default.Speed;
 			}
@@ -2150,26 +2177,10 @@ function bool LoadAmmo(int ammoNum)
 			{
 				SwitchModes();
 			}
-
+                
             //P.BroadcastMessage(ClipCount);
-
-			// AlexB had a new sound for 20mm but there's no mechanism for playing alternate sounds per ammo type
-			// Same for WP rocket
-			if ( Ammo20mm(newAmmo) != None )
-				{
-                    if (bHasSilencer)
-                        FireSilentSound=Sound'AssaultGunFire20mm';     //CyberP: if silenced also
-                }
-            /*else if ( Ammo20mmEMP(newAmmo) != None )
-				{
-                FireSound=Sound'MediumExplosion1';
-                if (bHasSilencer)
-                   FireSilentSound=Sound'MediumExplosion1';     //CyberP: if silenced also
-                }*/
             else if ( Ammo762mm(newAmmo) != None)
             {
-                if (bHasSilencer)    //CyberP: revert back to norm
-                   FireSilentSound=default.FireSilentSound;
             }
             /*else if ( AmmoPlasmaSuperheated(newAmmo) != None )
                 {
@@ -4162,25 +4173,19 @@ simulated function PlayFiringSound()
 {
 	if (bHasSilencer)
     {
-        //SARGE: Very silly rat squeak silencers!
-        if (Owner != None && Owner.IsA('DeusExPlayer') && DeusExPlayer(owner).bShenanigans)
-            PlaySimSound(Sound'RatSqueak2', SLOT_None, TransientSoundVolume, 2048 );
-        else
-            PlaySimSound(FireSilentSound, SLOT_None, TransientSoundVolume, 2048 );
+        PlaySimSound(GetFireSound(true), SLOT_None, TransientSoundVolume, 2048 );
     }
 	else
 	{
-        if (FireSound != None)
-            FireSound = GetDefaultFireSound();
 		// The sniper rifle sound is heard to it's range in multiplayer
 		if ( ( Level.NetMode != NM_Standalone ) &&  Self.IsA('WeaponRifle') )
 			PlaySimSound( FireSound, SLOT_Interface, TransientSoundVolume, class'WeaponRifle'.Default.mpMaxRange );
 		else if (IsA('WeaponRifle'))
-            PlaySimSound( FireSound, SLOT_None, TransientSoundVolume, class'WeaponRifle'.Default.MaxRange );
+            PlaySimSound(GetFireSound(), SLOT_None, TransientSoundVolume, class'WeaponRifle'.Default.MaxRange );
         else if ((bHandToHand || IsA('WeaponPlasmaRifle')) && Level.NetMode == NM_Standalone)
-            PlaySound( FireSound, SLOT_None, TransientSoundVolume, ,1024,0.95+(FRand()*0.1));
+            PlaySound(GetFireSound(), SLOT_None, TransientSoundVolume, ,1024,0.95+(FRand()*0.1));
         else
-			PlaySimSound( FireSound, SLOT_None, TransientSoundVolume, 3074 ); //CyberP: All weapons can now be heard by the player at further distances. Sniper especially so.
+			PlaySimSound(GetFireSound(), SLOT_None, TransientSoundVolume, 3074 ); //CyberP: All weapons can now be heard by the player at further distances. Sniper especially so.
 	}
 }
 

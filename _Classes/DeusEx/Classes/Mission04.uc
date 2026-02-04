@@ -235,9 +235,11 @@ function Timer()
 	local GilbertRentonCarcass GilbertCarc;
 	local SandraRentonCarcass SandraCarc;
 	local UNATCOTroop troop;
+	local MIB mblack;
 	local Actor A;
 	local PaulDenton Paul;
 	local FordSchick Ford;
+    local SkillAwardTrigger TR;
     local int count;
 
 	Super.Timer();
@@ -303,11 +305,31 @@ function Timer()
 
         if (flags.GetBool('M04RaidDone') && flags.GetBool('M04RaidTeleportDone'))
         {
-           foreach AllActors(class'PaulDenton', paul)
-           {
-           paul.HomeTag = '';
-           paul.bDefendHome = False;
-           }
+            foreach AllActors(class'PaulDenton', paul)
+            {
+                paul.HomeTag = '';
+                paul.bDefendHome = False;
+            }
+			
+            //SARGE: Sometimes you can miss the 50 skill points for sticking with paul, so give them to him now if we haven't already.
+            if(paul != None && !flags.GetBool('PaulDenton_Dead') && !flags.GetBool('GMDXPaulSkillFix'))
+            {
+                count = 0;
+                foreach AllActors(Class'UNATCOTroop', troop)
+                    if(troop.bHidden == False)
+                        count++;
+
+                foreach AllActors(Class'MIB', mblack)
+                    if(mblack.bHidden == False)
+                        count++;
+
+                if (count == 0)
+                {
+                    foreach AllActors(class 'SkillAwardTrigger', TR, 'PaulOutaHere')
+                        TR.Trigger(player, player);
+                    flags.SetBool('GMDXPaulSkillFix', True,, 5);
+                }
+            }
         }
 
 		if (!flags.GetBool('TalkedToPaulAfterMessage_Played') &&

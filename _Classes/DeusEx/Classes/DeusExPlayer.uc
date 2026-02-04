@@ -927,6 +927,7 @@ var globalconfig bool bRandomizeCrap;                          //Sarge: Randomiz
 
 var travel bool bSkillsSetAtStart;                           //SARGE: Gain a bunch of skill points at the start of the game, but gain no more skill points from then on.
 var travel bool bImprisonmentTakesAmmo;                      //SARGE: Take Ammo when being imprisoned by UNATCO, similar to Hardcore mode.
+var travel bool bUNATCOCleanup;                              //SARGE: UNATCO does a proper job cleaning up. They will strip corpses and remove crates.
 
 var globalconfig int iSmartBinocs;                           //SARGE: Pressing the Scope key selects binoculars
 
@@ -941,6 +942,8 @@ var globalconfig bool bNoPartialReloads;                     //SARGE: When cance
 
 var globalconfig bool bItemRechargeSound;                    //SARGE: Okay Roso, you win, here's your damned option!
 
+
+var globalconfig bool bShowExits;                            //SARGE: Show exit icons
 
 //New method for detecting if we're in combat efficiently
 var private transient int combatantsCached;
@@ -1921,6 +1924,9 @@ function PostPostBeginPlay()
 
     //Fix any erroneous item icons/skins. Probably not necessary.
     UpdateItemIcons();
+    
+    //Display or hide any Exits as necessary based on settings.
+    ShowExits();
 }
 
 // ----------------------------------------------------------------------
@@ -2366,6 +2372,30 @@ function UpdateItemIcons()
 }
 
 // ----------------------------------------------------------------------
+// SARGE: ShowExits()
+// Updates each map exit to reflect if it should be displayed or not
+// ----------------------------------------------------------------------
+
+function ShowExits()
+{
+    local Teleporter T;
+    local MapExit E;
+
+    foreach AllObjects(class'Teleporter',T)
+        if (T.URL != "")
+        {
+            T.bHidden = !bShowExits;
+            T.bNoSmooth = true;
+        }
+    foreach AllObjects(class'MapExit',E)
+        if (E.bCollideActors == true)
+        {
+            E.bHidden = !bShowExits;
+            E.bNoSmooth = true;
+        }
+}
+
+// ----------------------------------------------------------------------
 // UpdatePlayerSkin()
 // ----------------------------------------------------------------------
 
@@ -2428,6 +2458,18 @@ function DeusExLevelInfo GetLevelInfo()
 //   log("MYCHK:LevelInfo: ,"@info.Name);
 
 	return info;
+}
+
+//SARGE: When we change zones, get the relevant DeusExZoneInfo from the zone.
+function DeusExZoneInfo GetZoneInfo()
+{
+	local DeusExZoneInfo info;
+
+	foreach AllActors(class'DeusExZoneInfo', info)
+        if (info.Region.Zone == Region.Zone)
+            return info;
+
+	return None;
 }
 
 //SARGE: Dedicated Nanokey Button
@@ -4340,7 +4382,7 @@ function private bool _ShifterSwitch(Inventory from, class<Inventory> fromClass,
     }
 
     //Select the new weapon
-    if (bSelect)
+    if (bSelect && inHand == from)
         SetInHandPending(to);
     
     DebugMessage("BeltPos2: " $ to.beltPos @ to.bInObjectBelt);
@@ -7583,9 +7625,9 @@ state PlayerSwimming
 		mult = AugmentationSystem.GetAugLevelValue(class'AugAqualung');         //RSD: Aqualung decreases drain rate
 		if (mult == -1.0)
 		    mult = 1.0;
-		swimTimer -= (2.0-mult)*deltaTime;
-		swimTimer = FMax(0, swimTimer);
 
+        swimTimer -= (2.0-mult)*deltaTime*1.2; //SARGE: Added a 20% extra multiplier to really emphasise the importance of the swimming skill.
+		swimTimer = FMax(0, swimTimer);
 
 		if ( Role == ROLE_Authority )
 		{
@@ -9448,6 +9490,14 @@ function AddReceivedItem(string owner, Inventory item, int count, optional bool 
     if (item == None)
         return;
 
+    //SARGE: For now, let's just override bNoGroup
+    bNoGroup = bNoGroup ||
+    (item.IsA('DeusExPickup') && count <= 3) ||
+    (item.IsA('DeusExWeapon') && DeusExWeapon(item).bDisposableWeapon && count <= 3) ||
+    ((item.IsA('AmmoShuriken') || item.IsA('AmmoGasGrenade') || item.IsA('AmmoEMPGrenade')
+    || item.IsA('AmmoNanoVirusGrenade') || item.IsA('AmmoLAM')
+    || item.IsA('AmmoHideAGun') || item.IsA('AmmoLAW')) && count <= 3);
+
     if (rootWindow != None && DeusExRootWindow(rootWindow).hud != None)
     {
         DebugLog("Item is: " $ item $ ", bDeclined is " $ bDeclined $ ", bNoGroup: " $ bNoGroup);
@@ -11086,6 +11136,10 @@ function DropDecoration()
 	local Actor hitActor;
     local Decoration deco;
 
+    //SARGE: Bugfix??
+    if (IsInState('Interpolating'))
+        return;
+
 	bSuccess = False;
 
 	if (CarriedDecoration != None)
@@ -12458,6 +12512,24 @@ exec function ToggleCrosshair()
 }
 
 
+// ----------------------------------------------------------------------
+// GetGoalsWindow State()
+// returns whether or not we should show the goals window based on current conditions, such as windows being open
+// ----------------------------------------------------------------------
+
+function bool GetGoalWindowState()
+{
+	local DeusExRootWindow root;
+
+	root = DeusExRootWindow(rootWindow);
+    if (root != None && root.WindowStackCount() > 0) //No crosshair while windows are open
+        return false;
+
+    if (frobTarget != None && frobTarget.isA('InformationDevices') && InformationDevices(frobTarget).infoWindow != None)
+        return false;
+
+    return true;
+}
 
 // ----------------------------------------------------------------------
 // GetCrosshairState()
@@ -12659,12 +12731,23 @@ function private _UpdateHUD()
     //DebugMessage("UpdateHUD");
 }
 
+function UpdateGoalsWindow()
+{
+	local DeusExRootWindow root;
+	root = DeusExRootWindow(rootWindow);
+
+    //DebugMessage("Updating Goals Display" @ GetGoalWindowState());
+
+    if (root != None)
+        root.UpdateGoalsWindow();
+}
+
 function UpdateSecondaryDisplay()
 {
 	local DeusExRootWindow root;
 	root = DeusExRootWindow(rootWindow);
 
-    //ClientMessage("Updating Secondary Display");
+    //DebugMessage("Updating Secondary Display");
 
     if (root != None)
         root.UpdateSecondaryDisplay();

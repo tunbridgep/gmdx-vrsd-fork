@@ -70,6 +70,8 @@ const             leftFrobTimerMax = 6.0;
 
 var(GMDX) const int iSpecialMoverKeyframe;      //SARGE: Allow movers to "snap" into place on map load. Used for the janky smuggler elevator
 
+var(GMDX) const bool bDontOpenOnMissionComplete;                                    //SARGE: Don't open this door on mission completion.
+
 
 //SARGE: Do we have the key for this lock?
 function bool HasKey(DeusExPlayer Player)
@@ -1162,4 +1164,5 @@ defaultproperties
      InitialState=TriggerToggle
      bDirectional=True
      iSpecialMoverKeyframe=-1
+     bDontOpenOnMissionComplete=true
 }
