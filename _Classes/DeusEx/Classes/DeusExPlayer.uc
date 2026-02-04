@@ -671,6 +671,7 @@ var globalconfig bool bAugWheelDisableAll;                                      
 var globalconfig bool bAugWheelFreeCursor;                                      //Sarge: Allow free cursor movement in the augmentation wheel
 var globalconfig bool bAugWheelRememberCursor;                                  //Sarge: Remember the cursor position in the Aug Wheel, otherwise it will be reset to the center position
 var globalconfig int iAugWheelAutoAdd;                                          //SARGE: Automatically add items to the augmentation wheel. 0 = Don't add. 1 = Active Augs only. 2 = Everything.
+var globalconfig bool bAugWheelPresetPositions;                                 //Sarge: Always show all augmentations in the same positions on the wheel, regardless of how many you have.
 
 var globalconfig bool bBeltShowModified;                                        //SARGE: Shows a "+" in the belt for modified weapons.
 
@@ -946,6 +947,9 @@ var globalconfig bool bItemRechargeSound;                    //SARGE: Okay Roso,
 var private transient int combatantsCached;
 var private transient float combatCheckTime;                 //SARGE: When checking for combat, cache the result for 1 second.
 var travel float lastCombatTime;                             //SARGE: The last time when the player was in combat
+
+//For the aug wheel, now we store the mouse position here, so that it gets saved
+var travel Vector radialMenuCursorPos;
 
 //////////END GMDX
 
@@ -2082,6 +2086,7 @@ event TravelPostAccept()
 		AugmentationSystem.SetPlayer(Self);
 		AugmentationSystem.Setup();
 		AugmentationSystem.RefreshAugDisplay();
+		AugmentationSystem.RefreshAugWheel();
 	}
 
 	// Nuke any existing conversation
@@ -3692,7 +3697,10 @@ simulated function RefreshSystems(float DeltaTime)
 	  return;
 
 	if (AugmentationSystem != None)
+    {
 	  AugmentationSystem.RefreshAugDisplay();
+	  AugmentationSystem.RefreshAugWheel();
+    }
 
 	root = DeusExRootWindow(rootWindow);
 	if (root != None)
@@ -4478,9 +4486,9 @@ function RemoveInventoryType(Class<Inventory> removeType)
 // RadialMenuAddAug
 // ----------------------------------------------------------------------
 
-function RadialMenuAddAug(Augmentation aug)
+function RadialMenuAddAug(Augmentation aug, optional bool bAllowNone)
 {
-	if ((rootWindow != None) && (aug != None))
+	if ((rootWindow != None) && (aug != None || bAllowNone))
 		DeusExRootWindow(rootWindow).hud.radialAugMenu.AddItem(aug);
 }
 
@@ -4563,6 +4571,16 @@ function RefreshAugmentationDisplay()
 {
 	if (AugmentationSystem != None)
 		AugmentationSystem.RefreshAugDisplay();
+}
+
+// ----------------------------------------------------------------------
+// SARGE: RefreshAugmentationWheel()
+// ----------------------------------------------------------------------
+
+function RefreshAugmentationWheel()
+{
+	if (AugmentationSystem != None)
+		AugmentationSystem.RefreshAugWheel();
 }
 
 // ----------------------------------------------------------------------

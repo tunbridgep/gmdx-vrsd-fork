@@ -136,7 +136,6 @@ simulated function RefreshAugDisplay()
 
 	// First make sure there are no augs visible in the HUD
 	player.ClearAugmentationDisplay();
-    player.RadialMenuClear();
 
     if (player.killswitchTimer > -1)
         return;
@@ -148,14 +147,114 @@ simulated function RefreshAugDisplay()
 		if (anAug.CanBeActivated())
 		{
 			if ((player.bHUDShowAllAugs) || (anAug.bIsActive))
-			{
                  player.AddAugmentationDisplay(anAug);
-			}
-            player.RadialMenuAddAug(anAug);
 		}
+		anAug = anAug.next;
+	}
+
+}
+
+function RefreshAugWheel()
+{
+    if (player.bAugWheelPresetPositions)
+        DoPresetAugWheelConfig();
+    else
+        DoNormalAugWheelConfig();
+}
+
+//SARGE: If we're using the normal aug wheel, add any augs that can be activated
+function DoNormalAugWheelConfig()
+{
+	local Augmentation anAug;
+
+    player.RadialMenuClear();
+	
+    anAug = FirstAug;
+	while(anAug != None)
+	{
+        //Add any activatable augs to the list
+		if (anAug.CanBeActivated() && anAug.bAddedToWheel)
+            player.RadialMenuAddAug(anAug);
 
 		anAug = anAug.next;
 	}
+}
+
+//This is a weird one, we have to add them in specific orders.
+//This is HORRIBLY inefficient, I should redo it.
+function DoPresetAugWheelConfig()
+{
+    local int i;
+	local Augmentation anAug;
+
+    player.RadialMenuClear();
+	
+    //Flashlight first
+    player.RadialMenuAddAug(GetAug(class'AugLight'));
+
+    //Then do the single-slot augs
+    _AddAugChoiceToWheel(class'AugSpeed',class'AugStealth');
+    _AddAugChoiceToWheel(class'AugTarget',class'AugVision');
+    _AddAugChoiceToWheel(class'AugDefense',class'AugDrone');
+
+    //Now for the trickier ones.
+    _AddAugSlotToWheel(2,class'AugCombat',class'AugCombatStrength',class'AugMuscle',class'AugEnergyTransfer',class'AugIcarus'); //Arms
+    _AddAugSlotToWheel(3,class'AugAqualung',class'AugEMP',class'AugEnviro',class'AugHealing',class'AugShield'); //Torso
+    _AddAugSlotToWheel(2,class'AugBallistic',class'AugBallisticPassive',class'AugCloak',class'AugRadarTrans'); //Subdermal
+
+}
+
+//Given 2 augs, adds the first one we have to the wheel, or adds an empty aug otherwise
+function _AddAugChoiceToWheel(class<Augmentation> aug1, class<Augmentation> aug2)
+{
+    local Augmentation a1, a2;
+
+    a1 = GetAug(aug1,,true);
+    a2 = GetAug(aug2,,true);
+
+    if (a1.bHasIt)
+        player.RadialMenuAddAug(a1);
+    else
+        player.RadialMenuAddAug(a2);
+}
+
+//God, this is fucking awful
+function _AddAugSlotToWheel(int total, class<Augmentation> aug1, optional class<Augmentation> aug2, optional class<Augmentation> aug3, optional class<Augmentation> aug4, optional class<Augmentation> aug5, optional class<Augmentation> aug6)
+{
+    local int done, i;
+    local Augmentation augs[6];
+        
+    player.DebugMessage("_AddAugSlotToWheel");
+    player.DebugMessage("--");
+
+    augs[0] = GetAug(aug1,,true);
+    augs[1] = GetAug(aug2,,true);
+    augs[2] = GetAug(aug3,,true);
+    augs[3] = GetAug(aug4,,true);
+    augs[4] = GetAug(aug5,,true);
+    augs[5] = GetAug(aug6,,true);
+    
+    for(i = 0;i < 6;i++)
+    {
+        if (augs[i] != None && augs[i].bHasIt)
+        {
+            if (done >= total)
+                break;
+            player.RadialMenuAddAug(augs[i]);
+            done++;
+        }
+    }
+    
+    for(i = 0;i < 6;i++)
+    {
+        if (augs[i] != None && !augs[i].bHasIt)
+        {
+            if (done >= total)
+                break;
+            player.RadialMenuAddAug(augs[i]);
+            done++;
+        }
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -668,45 +767,12 @@ function Augmentation GivePlayerAugmentation(Class<Augmentation> giveClass)
 	// Manage our AugLocs[] array
 	AugLocs[anAug.AugmentationLocation].augCount++;
 
-	// Assign hot key to new aug
-	// (must be after before augCount is incremented!)
-    /*
-   if (anAug.CanBeActivated())
-   {
-   if (Level.NetMode == NM_Standalone && anAug.IsA('AugCombatStrength') || anAug.IsA('AugDrone') || anAug.IsA('AugDefense'))
-   {
-      //BroadcastMessage("begin");                                              //RSD: Shouldn't broadcast these to the player anymore
-      ForEach AllActors(class'Augmentation',augie)
-      {
-         //BroadcastMessage(augie.AugmentationName);                            //RSD: Stop broadcasting, yikes
-         if (augie.bHasIt && augie.GetHotKey() == 5)
-         {
-            //BroadcastMessage("found you");                                    //RSD: double yikes
-            anAug.HotKeyNum = 6;
-            break;
-         }
-      }
-      if (anAug.HotKeyNum == anAug.default.HotKeyNum)
-          anAug.HotKeyNum = 5;   //BroadcastMessage("default");                 //RSD: That's gonna be a triple yikes from me, dawg
-   }
-   else if (Level.NetMode == NM_Standalone)
-      anAug.HotKeyNum = AugLocs[anAug.AugmentationLocation].augCount + AugLocs[anAug.AugmentationLocation].KeyBase;
-   else
-      anAug.HotKeyNum = anAug.MPConflictSlot + 2;
-   }
-	if ((anAug.CanBeActivated()) && (Player.bHUDShowAllAugs))
-	    Player.AddAugmentationDisplay(anAug);
-    */
     AssignAugHotKeys();
     anAug.Setup();
     
-    //Add to aug wheel
-    if (anAug.CanBeActivated())                                                   //RSD: Otherwise we get passive augs showing up in the radial menu
-        player.RadialMenuAddAug(anAug);
-
+    //Refresh display
     RefreshAugDisplay();
-
-    RefreshAugDisplay();
+    RefreshAugWheel();
 
 	return anAug;
 }
@@ -932,14 +998,17 @@ function ResetAugmentations()
 }
 
 //Returns the actual augmentation based on class
-function Augmentation GetAug(class<Augmentation> AugClass, optional bool active)
+function Augmentation GetAug(class<Augmentation> AugClass, optional bool active, optional bool bAlways)
 {
 	local Augmentation anAug;
+
+    if (augClass == None)
+        return None;
 
 	anAug = FirstAug;
 	while(anAug != None)
 	{
-		if (anAug.Class == augClass && anAug.bHasIt && (anAug.bIsActive||!active))
+		if (anAug.Class == augClass && (anAug.bHasIt||bAlways) && (anAug.bIsActive||!active))
             return anAug;
 
 		anAug = anAug.next;
