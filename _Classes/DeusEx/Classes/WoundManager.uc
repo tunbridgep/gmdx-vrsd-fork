@@ -3,36 +3,68 @@
 // SARGE: This handles Wounds on the player, including adding and removing them, etc.
 //=============================================================================
 
-class WoundManager extends object;
+class WoundManager extends Actor;
 
 var private DeusExPlayer PlayerAttached;
 
 var private travel int numWounds;
 var private travel Wound WoundsList[20];
 
-enum EWoundDamageType
-{
-    WOUND_Shot,
-    WOUND_Fire,
-    WOUND_Shock,
-    WOUND_Bleeding,
-    WOUND_Falling,
-    WOUND_Drowning,
-    WOUND_Radiation,
-    WOUND_Poison
-};
-
-struct WoundDamage
-{
-    var EWoundDamageType DamageType;
-    var int totalDamage;
-};
-
-var private travel WoundDamage WoundDamages[8];
-
 function Initialize(DeusExPlayer newPlayer)
 {
     PlayerAttached = newPlayer;
+
+    SetupWound(class'WoundBloodLoss');
+    SetupWound(class'WoundBurning');
+    SetupWound(class'WoundDrowning');
+    SetupWound(class'WoundFalling');
+    SetupWound(class'WoundPoison');
+    SetupWound(class'WoundRadiation');
+    SetupWound(class'WoundShock');
+    SetupWound(class'WoundShot');
+}
+
+function int GetWoundNumber()
+{
+    return numWounds;
+}
+
+function Wound GetWoundByIndex(int id)
+{
+    if (id < numWounds)
+        return WoundsList[id];
+    else
+        return None;
+}
+
+function bool HasWounds()
+{
+    local int i;
+
+    for (i = 0;i < numWounds;i++)
+        if (woundsList[i].HasWound())
+            return true;
+
+    return false;
+}
+
+function private SetupWound(class<Wound> woundClass)
+{
+	local Wound woundInstance;
+    local int i;
+
+    for (i = 0;i < numWounds;i++)
+        if (WoundsList[i].Class == woundClass)
+            woundInstance = WoundsList[i];
+
+    if (woundInstance == None)
+    {
+        woundInstance = Spawn(woundClass, Self);
+        woundsList[numWounds++] = woundInstance;
+        PlayerAttached.DebugMessage("Creating new wound: " $ woundClass);
+    }
+    
+    woundInstance.player = PlayerAttached;
 }
 
 function ClearAllWounds()
@@ -44,39 +76,44 @@ function ClearAllWounds()
     {
         if (WoundsList[i] != None)
         {
-            //WoundsList[i].Destroy();
-            WoundsList[i] = None;
+            WoundsList[i].RemoveWound();
         }
     }
-
-    numWounds = 0;
-    
-    //Reset wound damage
-    for (i = 0;i < 8;i++)
-        WoundDamages[i].totalDamage = 0;
 }
 
-function AddWoundDamage(EWoundDamageType damageType, int Amount)
+function AddWoundDamage(class<Wound> woundType, int Amount)
 {
-    PlayerAttached.DebugMessage("Adding wound damage of type " $ string(damageType) $ ": " $ Amount);
-    WoundDamages[damageType].totalDamage += Amount;
+    local Wound W;
+    local int i;
+
+    for(i = 0;i < numWounds;i++)
+        if (WoundsList[i].Class == woundType)
+            W = WoundsList[i];
+
+    if (W == None)
+        return;
+    
+    PlayerAttached.DebugMessage("Adding wound damage of type " $ string(woundType) $ ": " $ Amount);
+    W.AddWoundDamage(Amount);
 }
 
-function private AddWound(class<Wound> wound)
+/*
+function AddWound(class<Wound> wound)
 {
 	local Wound woundInstance;
     local int i;
     
-    //If we already have it, don't re-add it.
     for (i = 0;i < numWounds;i++)
         if (WoundsList[i].class == wound)
+        {
+            WoundsList[i].bHasIt = true;
             return;
+        }
+}
+*/
 
-
-	woundInstance = new(self) wound;
-
-	WoundsList[numWounds] = woundInstance;
-	//WoundsList[numWounds].PerkOwner = PlayerAttached;
-
-    numWounds++;
+defaultproperties
+{
+     bHidden=True
+     bTravel=True
 }

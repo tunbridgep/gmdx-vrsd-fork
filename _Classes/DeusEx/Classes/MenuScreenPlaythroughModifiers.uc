@@ -66,6 +66,7 @@ defaultproperties
      items(19)=(HelpText="No longer receive a starting weapon from Paul during the first mission.",actionText="Limited Starting Equipment",variable="bNoStartingWeaponChoices");
      items(20)=(HelpText="Enable additional NPC's added by the Lay-D Denton mod. By default only the most relevant ones are enabled.",actionText="Add extra Lay-D Denton NPCs",variable="bMoreLDDPNPCs");
      items(21)=(HelpText="We shall partake in a miniscule amount of tomfoolery.",actionText="Shenanigans",variable="bShenanigans");
+     items(23)=(HelpText="Taking damage will add traumas, which need to be removed using medical kits.",actionText="Trauma System",variable="bWoundSystem");
      Title="Playthrough Modifiers"
      consoleTarget="MenuScreenNewGame"
      bNoSort=true

@@ -72,6 +72,22 @@ var localized string drugInactiveLabel;
 var localized string drugEffectLabel;
 var localized string drugStacks;
 
+//SARGE: Trauma System, called the Wound System internally
+var TileWindow       winTrauma;
+var PersonaWoundButtonWindow  selectedTraumaButton;
+var Wound  selectedTrauma;
+var PersonaWoundButtonWindow  traumaButtons[15];
+var const localized String TraumaLevelText;
+var const localized String KitsNeededHeaderText;
+var const localized String TraumaButtonLabel;
+var const localized String CureTraumaButtonLabel;
+var const localized String CureAllButtonLabel;
+var const localized String TraumaTitleText;
+var PersonaActionButtonWindow buttonTraumas;
+var PersonaNormalTextWindow     winTraumaLevel;
+var PersonaNormalTextWindow     winMedkitsNeeded;
+var bool bTraumasSelected;
+
 // ----------------------------------------------------------------------
 // InitWindow()
 //
@@ -105,6 +121,9 @@ function CreateControls()
 	CreateMedKitWindow();
 	CreatePartButtons();
 	CreateStatusWindow();
+	CreateTraumasHeaders();
+    CreateTraumaTileWindow();
+    CreateTraumasList();
 
 	PersonaNavBarWindow(winNavBar).btnHealth.SetSensitivity(False);
 }
@@ -140,9 +159,16 @@ function CreateButtons()
 
 	winActionButtons = PersonaButtonBarWindow(winClient.NewChild(Class'PersonaButtonBarWindow'));
 	winActionButtons.SetPos(13, 407);
-	winActionButtons.SetWidth(160);
+	winActionButtons.SetWidth(220); //Was 160
 	winActionButtons.FillAllSpace(False);
+
     buttonStats = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow'));
+	
+    if (player.bWoundSystem)
+    {
+        buttonTraumas = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow'));
+        buttonTraumas.SetButtonText(TraumaButtonLabel);
+    }
     
 	btnHealAll = PersonaActionButtonWindow(winActionButtons.NewChild(Class'PersonaActionButtonWindow'));
 	btnHealAll.SetButtonText(HealAllButtonLabel);
@@ -325,8 +351,13 @@ function bool ButtonActivated(Window buttonPressed)
 
 	bHandled = true;
 
+	// Check if this is one of our Trauma buttons
+	if (buttonPressed.IsA('PersonaWoundButtonWindow'))
+	{
+		SelectTraumaButton(PersonaWoundButtonWindow(buttonPressed));
+	}
 	// Check if this is one of our Augmentation buttons
-	if (buttonPressed.IsA('PersonaHealthItemButton'))
+	else if (buttonPressed.IsA('PersonaHealthItemButton'))
 	{
 		SelectHealth(PersonaHealthItemButton(buttonPressed));
 	}
@@ -351,8 +382,16 @@ function bool ButtonActivated(Window buttonPressed)
 		switch(buttonPressed)
 		{
 			case btnHealAll:
-				HealAllParts();
+                if (bTraumasSelected)
+                {
+                }
+                else
+                    HealAllParts();
 				break;
+            
+            case buttonTraumas:
+                ToggleTraumaWindow();
+                break;
 
             case buttonStats:
                 if (bBodyPartPressed && !player.bAddictionSystem) //Always show pedometer if we click regular Status button, rather than an empty window.
@@ -449,7 +488,11 @@ function Tick(float deltaTime)
 	regionWindows[4].SetHealth(player.HealthLegRight);
 	regionWindows[5].SetHealth(player.HealthLegLeft);
 
-    if (!bBodyPartPressed)
+    if (bTraumasSelected)
+    {
+        selectedTrauma.UpdateInfo(winInfo);
+    }
+    else if (!bBodyPartPressed)
     {
         if (player.bShowStatus)
             UpdateStatusText();                                                     //Sarge: Added the ability for the Status button to toggle addictions, rather than on/off empty page
@@ -466,8 +509,6 @@ function Tick(float deltaTime)
         buttonStats.SetButtonText(AddictionButtonLabel); //Show Addiction Button
     else
         buttonStats.SetButtonText(PedometerButtonLabel); //Show Pedometer Button
-
-
 }
 
 function DisplayCommonInfo()
@@ -1023,12 +1064,24 @@ function EnableButtons()
 	// parts is damaged and the player has at least one
 	// kit
 
-	btnHealAll.EnableWindow((medKit != None) && (IsPlayerDamaged()));
+    //SARGE: Now it's also used as the "Cure All" button, so we need to update it
+    //to reflect that, every time the selected Trauma changes, given that we might
+    //need different amounts of medkits per trauma.
+    
+    if (bTraumasSelected)
+        btnHealAll.EnableWindow(medKit != None && selectedTrauma != None && medkit.numCopies >= selectedTrauma.GetRequiredMedkits());
+    else
+        btnHealAll.EnableWindow((medKit != None) && (IsPlayerDamaged()));
 
 	// Loop through the region windows, since they have Heal buttons
 	// attached to them
 	for (regionIndex=0; regionIndex<arrayCount(regionWindows); regionIndex++)
 		regionWindows[regionIndex].EnableButtons();
+
+
+    //SARGE: We can only select the Traumas button if we have any wounds
+    if (buttonTraumas != None)
+        buttonTraumas.EnableWindow(player.WoundManager.HasWounds());
 }
 
 // ----------------------------------------------------------------------
@@ -1056,6 +1109,17 @@ function bool IsPlayerDamaged()
 	return bDamaged;
 }
 
+// ----------------------------------------------------------------------
+// IsPlayerWounded()
+//
+// Looks at all the player's parts to see if he/she/it is damaged
+// ----------------------------------------------------------------------
+
+function bool IsPlayerWounded()
+{
+	return player.WoundManager != None && player.WoundManager.HasWounds();
+}
+
 function UpdateRegionsMaxHealth()                                               //RSD: Update max health from alcohol buff/zyme debuff
 {
    local int spill;
@@ -1075,6 +1139,136 @@ function UpdateRegionsMaxHealth()                                               
    }
 	regionWindows[0].SetMaxHealth(player.default.HealthHead+MedSkillAdd);
 	regionWindows[1].SetMaxHealth(player.default.HealthTorso+MedSkillAdd+AddictionAdd); //RSD: Added drunk, zyme
+}
+
+// ----------------------------------------------------------------------
+// ToggleTraumaWindow()
+// SARGE: God, what a hack!
+// ----------------------------------------------------------------------
+
+function ToggleTraumaWindow()
+{
+    local int i;
+
+    if (!bTraumasSelected)
+    {
+        bTraumasSelected = true;
+        winTrauma.Show();
+        winTraumaLevel.Show();
+        winMedkitsNeeded.Show();
+        winBody.Hide();
+        winOverlays.Hide();
+        btnHealAll.SetButtonText(CureTraumaButtonLabel);
+        buttonStats.Hide();
+
+        for (i = 0;i < 6;i++)
+            partButtons[i].Hide();
+
+        for (i = 0;i < 6;i++)
+            regionWindows[i].Hide();
+		
+        //Reselect the first trauma button
+		SelectTraumaButton(traumaButtons[0]);
+    }
+    else
+    {
+        bTraumasSelected = false;
+        winTrauma.Hide();
+        winTraumaLevel.Hide();
+        winMedkitsNeeded.Hide();
+        winBody.Show();
+        winOverlays.Show();
+        btnHealAll.SetButtonText(HealAllButtonLabel);
+        buttonStats.Show();
+
+        for (i = 0;i < 6;i++)
+            partButtons[i].Show();
+
+        for (i = 0;i < 6;i++)
+            regionWindows[i].Show();
+    }
+
+    EnableButtons();
+}
+
+// ----------------------------------------------------------------------
+// CreateTraumaTileWindow()
+// ----------------------------------------------------------------------
+
+function CreateTraumaTileWindow()
+{
+	winTrauma = TileWindow(winClient.NewChild(Class'TileWindow'));
+
+	winTrauma.SetPos(12, 39);
+	winTrauma.SetSize(302, 324);    //297 GMDX:- set the skill list hight (font size is 27) , also have to mod the update button position
+	winTrauma.SetMinorSpacing(0);
+	winTrauma.SetMargins(0, 0);
+	winTrauma.SetOrder(ORDER_Down);
+    winTrauma.Hide();
+}
+
+// ----------------------------------------------------------------------
+// CreateTraumasHeaders()
+// ----------------------------------------------------------------------
+
+function CreateTraumasHeaders()
+{
+	winTraumaLevel = PersonaNormalTextWindow(winClient.NewChild(Class'PersonaNormalTextWindow'));
+	winTraumaLevel.SetPos(177, 24);
+	winTraumaLevel.SetText(TraumaLevelText);
+
+	winMedkitsNeeded = PersonaNormalTextWindow(winClient.NewChild(Class'PersonaNormalTextWindow'));
+	winMedkitsNeeded.SetPos(247, 24);
+	winMedkitsNeeded.SetText(KitsNeededHeaderText);
+}
+
+// ----------------------------------------------------------------------
+// CreateTraumasList()
+// ----------------------------------------------------------------------
+
+function CreateTraumasList()
+{
+    local int i;
+	local int   buttonIndex;
+	local PersonaWoundButtonWindow woundButton;
+	local PersonaWoundButtonWindow firstButton;
+
+	// Iterate through the skills, adding them to our list
+    for (i = 0; i < player.WoundManager.GetWoundNumber();i++)
+	{
+        woundButton = PersonaWoundButtonWindow(winTrauma.NewChild(Class'PersonaWoundButtonWindow'));
+        woundButton.SetWound(player.WoundManager.GetWoundByIndex(i));
+
+        traumaButtons[buttonIndex++] = woundButton;
+
+        if (firstButton == None)
+            firstButton = woundButton;
+	}
+
+	// Select the first skill
+	SelectTraumaButton(firstButton);
+}
+
+// ----------------------------------------------------------------------
+// SelectTraumaButton()
+// ----------------------------------------------------------------------
+
+function SelectTraumaButton(PersonaWoundButtonWindow buttonPressed)
+{
+	// Don't do extra work.
+	//if (selectedTraumaButton != buttonPressed)
+	//{
+		// Deselect current button
+		if (selectedTraumaButton != None)
+			selectedTraumaButton.SelectButton(False);
+
+		selectedTraumaButton = buttonPressed;
+		selectedTrauma       = selectedTraumaButton.GetWound();
+
+		selectedTraumaButton.SelectButton(True);
+
+		EnableButtons();
+	//}
 }
 
 // ----------------------------------------------------------------------
@@ -1160,4 +1354,10 @@ defaultproperties
      clientTextureCols=3
      clientBorderTextureRows=2
      clientBorderTextureCols=3
+     TraumaLevelText="Severity"
+     KitsNeededHeaderText="Medkits Needed"
+     CureTraumaButtonLabel="  |&Cure  "
+     CureAllButtonLabel="Cure All"
+     TraumaButtonLabel="|&Traumas"
+     TraumaTitleText="Health"
 }
