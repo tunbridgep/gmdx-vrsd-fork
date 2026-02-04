@@ -82,6 +82,8 @@ Map Changes:
     - The Police Boat has been moved slightly closer to the dock, in order to allow interacting with it without needing to jump off.
 - 02_NYC_Underground
     - Removed a datacube containing the MJ12/Coupdetat password on Hardcore mode, so that you are incentivised to use the much harder entrance (the one with all the lasers and turrets).
+- 05_NYC_UNATCOHQ
+    - The two UNATCO Troopers near the front of the compound will no longer open the locked door and allow the Player to escape before receiving the key from Alex
 - 02_NYC_Hotel/04_NYC_Hotel/08_NYC_Hotel
     - Added a Phone to Paul's apartment, which on Mission 4 will play a message from Lebedev.
         - This message was cut from the vanilla game, and has been restored.

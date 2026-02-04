@@ -2460,6 +2460,18 @@ function DeusExLevelInfo GetLevelInfo()
 	return info;
 }
 
+//SARGE: When we change zones, get the relevant DeusExZoneInfo from the zone.
+function DeusExZoneInfo GetZoneInfo()
+{
+	local DeusExZoneInfo info;
+
+	foreach AllActors(class'DeusExZoneInfo', info)
+        if (info.Region.Zone == Region.Zone)
+            return info;
+
+	return None;
+}
+
 //SARGE: Dedicated Nanokey Button
 exec function SelectNanokey()
 {
