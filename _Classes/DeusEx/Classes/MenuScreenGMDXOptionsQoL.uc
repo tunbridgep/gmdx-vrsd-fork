@@ -13,6 +13,9 @@ function SaveSettings()
     
     //We need to refresh our item icons too.
     player.UpdateItemIcons();
+    
+    //Show/Hide exits based on settings
+    player.ShowExits();
 
     if (player.outfitManager != None)
         player.outfitManager.SaveConfig();
@@ -159,6 +162,7 @@ defaultproperties
      items(121)=(HelpText="Right clicking pickups while the Walk/Run key is held will allow you to carry them around similar to boxes and other decoration items.",actionText="Interaction: Allow Carrying Pickups",variable="bAllowItemPickup",defaultValue=1,bAdvancedModeOnly=false)
      items(122)=(HelpText="Picking up a charged item will make a 'hiss' sound if it recharges the last item in the stack, rather than the regular pickup sound. You should leave this enabled.",actionText="Audio: Charged Item Recharge Sounds",variable="bItemRechargeSound",defaultValue=1,bAdvancedModeOnly=true)
      items(123)=(HelpText="Randomizes the skins of junk food, sofas, etc around the world. If disabled they will use preset skins. Takes effect on loading a new map.",actionText="Game: Randomized Object Skins",variable="bRandomizeCrap",defaultValue=1,bAdvancedModeOnly=true)
+     items(124)=(HelpText="Shows icons for map exits.",actionText="Game: Show Map Exits",variable="bShowExits",defaultValue=0,bAdvancedModeOnly=true)
      items(125)=(HelpText="Item icons in the Inventory and Belt will reflect item skins. Otherwise the default icon is used.",actionText="HUD: Show Skinned Icons",variable="bSkinnedBeltIcons",defaultValue=1,bAdvancedModeOnly=false)
 
      Title="GMDX Quality of Life Options"

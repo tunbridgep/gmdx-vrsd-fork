@@ -942,6 +942,8 @@ var globalconfig bool bNoPartialReloads;                     //SARGE: When cance
 var globalconfig bool bItemRechargeSound;                    //SARGE: Okay Roso, you win, here's your damned option!
 
 
+var globalconfig bool bShowExits;                            //SARGE: Show exit icons
+
 //New method for detecting if we're in combat efficiently
 var private transient int combatantsCached;
 var private transient float combatCheckTime;                 //SARGE: When checking for combat, cache the result for 1 second.
@@ -1921,6 +1923,9 @@ function PostPostBeginPlay()
 
     //Fix any erroneous item icons/skins. Probably not necessary.
     UpdateItemIcons();
+    
+    //Display or hide any Exits as necessary based on settings.
+    ShowExits();
 }
 
 // ----------------------------------------------------------------------
@@ -2363,6 +2368,30 @@ function UpdateItemIcons()
 
 		anItem = anItem.Inventory;
     }
+}
+
+// ----------------------------------------------------------------------
+// SARGE: ShowExits()
+// Updates each map exit to reflect if it should be displayed or not
+// ----------------------------------------------------------------------
+
+function ShowExits()
+{
+    local Teleporter T;
+    local MapExit E;
+
+    foreach AllObjects(class'Teleporter',T)
+        if (T.URL != "")
+        {
+            T.bHidden = !bShowExits;
+            T.bNoSmooth = true;
+        }
+    foreach AllObjects(class'MapExit',E)
+        if (E.bCollideActors == true)
+        {
+            E.bHidden = !bShowExits;
+            E.bNoSmooth = true;
+        }
 }
 
 // ----------------------------------------------------------------------

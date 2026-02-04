@@ -1,6 +1,7 @@
 1.2:
 
 New Features:
+- Added a new option to show Exits on the map. This is mostly for debugging but may be useful for some people, so it's available for anyone to use.
 - Added a new setting to remove the "hiss" sound when recharging charged items on pickup, by request.
     - When recharging your current wearable, they will make their regular pickup sound instead.
 - Items that would be picked up and placed into your inventory with right click can now be carried using Walk+Right Click if your hands are empty.
