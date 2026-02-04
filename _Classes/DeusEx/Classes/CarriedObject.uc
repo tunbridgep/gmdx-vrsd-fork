@@ -144,6 +144,17 @@ static function bool CreateCarriedObjectFor(DeusExPlayer pawn,Inventory item)
     }
 }
 
+// ----------------------------------------------------------------------
+// Landed()
+//
+// Called when we hit the ground
+// ----------------------------------------------------------------------
+
+function Landed(vector HitNormal)
+{
+    ActuallyCreateRealObjectFor(self);
+}
+
 event TravelPostAccept()
 {
     super.TravelPostAccept();
