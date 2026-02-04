@@ -8479,7 +8479,7 @@ function DoRightFrob(Actor frobTarget)
     bDefaultFrob = true;
     bLeftClicked = false;
 
-    if (inHand == None && bRun != 0 && bAllowItemPickup && frobTarget.isA('Inventory'))
+    if (inHand == None && bRun != 0 && bAllowItemPickup && frobTarget.isA('Inventory') && !frobTarget.isA('NanoKey'))
         bDefaultFrob = !class'CarriedObject'.static.CreateCarriedObjectFor(self,Inventory(frobTarget));
     else if (frobTarget.isA('DeusExPickup'))
         bDefaultFrob = DeusExPickup(frobTarget).DoRightFrob(Self,inHand != None);
