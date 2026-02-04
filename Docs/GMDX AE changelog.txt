@@ -65,6 +65,7 @@ Misc Changes:
 - Left-Frobbing a locked object will no longer always select a Lockpick on Hardcore mode.
 - Left-Frobbing a breakable object will no longer select inadequate melee weapons on Hardcore mode.
 - The previously experimental feature to drop items from conversations at the players feet is now enabled by default.
+- Oxygen is now drained slightly faster while swimming, as a slight buff to the Athletics skill and to make the Rebreather less able to be relied upon.
 - The "Drop Item" and "Assign Secondary" keys will now work properly in the inventory screen, rather than being hardcoded to F and BACKSPACE
 - Added a number of new icons for edibles and other pickups, now inventory icons will always reflect item skins
     - The Belt and Secondary Item display will now show the proper icon for a given item, rather than always showing the default, and belt memory will preserve the icon.
