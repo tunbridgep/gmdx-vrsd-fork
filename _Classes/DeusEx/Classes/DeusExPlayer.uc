@@ -4340,7 +4340,7 @@ function private bool _ShifterSwitch(Inventory from, class<Inventory> fromClass,
     }
 
     //Select the new weapon
-    if (bSelect)
+    if (bSelect && inHand == from)
         SetInHandPending(to);
     
     DebugMessage("BeltPos2: " $ to.beltPos @ to.bInObjectBelt);
