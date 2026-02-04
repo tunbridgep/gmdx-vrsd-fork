@@ -199,6 +199,7 @@ event DrawWindow(GC gc)
 function SetVisibility( bool bNewVisibility )
 {
 	Show( bNewVisibility );
+    super.SetVisibility(bNewVisibility);
 }
 
 defaultproperties

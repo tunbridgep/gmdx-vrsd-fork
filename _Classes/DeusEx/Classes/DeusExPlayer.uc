@@ -12458,6 +12458,24 @@ exec function ToggleCrosshair()
 }
 
 
+// ----------------------------------------------------------------------
+// GetGoalsWindow State()
+// returns whether or not we should show the goals window based on current conditions, such as windows being open
+// ----------------------------------------------------------------------
+
+function bool GetGoalWindowState()
+{
+	local DeusExRootWindow root;
+
+	root = DeusExRootWindow(rootWindow);
+    if (root != None && root.WindowStackCount() > 0) //No crosshair while windows are open
+        return false;
+
+    if (frobTarget != None && frobTarget.isA('InformationDevices') && InformationDevices(frobTarget).infoWindow != None)
+        return false;
+
+    return true;
+}
 
 // ----------------------------------------------------------------------
 // GetCrosshairState()
@@ -12659,12 +12677,23 @@ function private _UpdateHUD()
     //DebugMessage("UpdateHUD");
 }
 
+function UpdateGoalsWindow()
+{
+	local DeusExRootWindow root;
+	root = DeusExRootWindow(rootWindow);
+
+    //DebugMessage("Updating Goals Display" @ GetGoalWindowState());
+
+    if (root != None)
+        root.UpdateGoalsWindow();
+}
+
 function UpdateSecondaryDisplay()
 {
 	local DeusExRootWindow root;
 	root = DeusExRootWindow(rootWindow);
 
-    //ClientMessage("Updating Secondary Display");
+    //DebugMessage("Updating Secondary Display");
 
     if (root != None)
         root.UpdateSecondaryDisplay();
