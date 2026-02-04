@@ -929,6 +929,7 @@ var globalconfig bool bRememberTheName;                         //SARGE: Remembe
 var transient bool bUpdateHud;                                 //SARGE: Trigger a HUD update next frame.
 
 var const localized string MsgSecondaryAdded;
+var travel bool bWoundSystem;                                //SARGE: Enable Traumas when taking damage.
 
 //////////END GMDX
 
