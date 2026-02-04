@@ -1695,8 +1695,8 @@ function SetupWoundManager()
 	// install the Wound Manager if not found
 	if (WoundManager == None)
     {
+		WoundManager = Spawn(class'WoundManager', Self);
         DebugMessage("Make new Wound Manager");
-	    WoundManager = new(Self) class'WoundManager';
     }
     WoundManager.Initialize(Self);
 }
@@ -16707,19 +16707,19 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
     if (WoundManager != None)
     {
         if (damageType == 'Drowned')
-            WoundManager.AddWoundDamage(WOUND_Drowning,actualDamage);
+            WoundManager.AddWoundDamage(class'WoundDrowning',actualDamage);
         else if (damageType == 'Fell')
-            WoundManager.AddWoundDamage(WOUND_Falling,actualDamage);
+            WoundManager.AddWoundDamage(class'WoundFalling',actualDamage);
         else if (damageType == 'TearGas' || damageType == 'Poison' || damageType == 'PoisonGas' || damageType == 'PoisonEffect' || damageType == 'HalonGas')
-            WoundManager.AddWoundDamage(WOUND_Poison,actualDamage);
+            WoundManager.AddWoundDamage(class'WoundPoison',actualDamage);
         else if (damageType == 'Flamed' || damageType == 'Burned' || damageType == 'Exploded')
-            WoundManager.AddWoundDamage(WOUND_Fire,actualDamage);
+            WoundManager.AddWoundDamage(class'WoundBurning',actualDamage);
         else if (damageType == 'Radiation')
-            WoundManager.AddWoundDamage(WOUND_Radiation,actualDamage);
+            WoundManager.AddWoundDamage(class'WoundRadiation',actualDamage);
         else if (damageType == 'EMP' || damageType == 'NanoVirus' || damageType == 'Shocked')
-            WoundManager.AddWoundDamage(WOUND_Shock,actualDamage);
+            WoundManager.AddWoundDamage(class'WoundShock',actualDamage);
         else //Otherwise, assume shot
-            WoundManager.AddWoundDamage(WOUND_Shot,actualDamage);
+            WoundManager.AddWoundDamage(class'WoundShot',actualDamage);
     }
 
 	GenerateTotalHealth();
@@ -16733,7 +16733,7 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitlocation, Vector mo
     
         //SARGE: Apply blood loss wound
         if (WoundManager != None)
-            WoundManager.AddWoundDamage(WOUND_Bleeding,actualDamage);
+            WoundManager.AddWoundDamage(class'WoundBloodLoss',actualDamage);
     }
 
 	if (CarriedDecoration != None)
