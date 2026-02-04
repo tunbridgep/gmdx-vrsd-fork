@@ -72,6 +72,7 @@ function RefreshTextureFiltering()
     
     //Some things get picked up by the generic classes, but not all
     class'Actor'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'Effects'.default.bNoSmooth = !bSmartTextureFiltering;
     class'Pawn'.default.bNoSmooth = !bSmartTextureFiltering;
     class'Inventory'.default.bNoSmooth = !bSmartTextureFiltering;
     class'Carcass'.default.bNoSmooth = !bSmartTextureFiltering;
@@ -356,8 +357,71 @@ function RefreshTextureFiltering()
     class'HazMatSuit'.default.bNoSmooth = !bSmartTextureFiltering;
     class'Rebreather'.default.bNoSmooth = !bSmartTextureFiltering;
     class'TechGoggles'.default.bNoSmooth = !bSmartTextureFiltering;
+    
+    //Gore
+    class'GMDXEffect'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'FleshFragment'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'FleshFragmentNub'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'FleshFragmentSmall'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'FleshFragmentArm'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'FleshFragmentGuts'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'FleshFragmentLeg'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'FleshFragmentAnimal'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'FleshFragmentSmoking'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'FleshFragmentBurned'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'FleshFragmentWall'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'BloodDrop'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'BloodDropFlying'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'BloodDropWall'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'BloodExplodeHit'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'BloodMeleeHit'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'BloodPool'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'BloodSplat'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'BloodSpurt'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'BoneFemur'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'BoneFemurBloody'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'BoneFemurBloodyFragment'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'BoneFemurLessBloody'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'BoneFemurLessBloodyFragment'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'BoneSkull'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'BoneSkullBloody'.default.bNoSmooth = !bSmartTextureFiltering;
 
-    //Decals and Misc
+    //Misc
+    class'SpyDrone'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'SavePoint'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'POVCorpse'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'Fireball'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'FireballRocket'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'FlameEffect'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'MuzzleFlash'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'FireSmoke'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'PlasmaParticleSpoof'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'GMDXFireSmokeFade'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'GMDXSparkFade'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'SFXExp'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'SFXExplosionLarge'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'GMDXImpactSpark'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'GMDXImpactSpark2'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'TraceHitSpawner'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'TraceHitHandSpawner'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'TraceHitHandNonPenSpawner'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'TraceHitNonPenSpawner'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'Tracer'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'SniperTracer'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'ExplosionLight'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'ExplosionLarge'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'ExplosionSmall'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'ExplosionMedium'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'ExplosionExtra'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'ShockRing'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'SphereEffect'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'FireballSpoof'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'ShockRingProjectile'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'RubberBullet'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'PoolBall'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'PoolTableLight'.default.bNoSmooth = !bSmartTextureFiltering;
+
+    //Decals
     //Don't make these unfiltered, because it's inconsistent, and looks bad.
     class'PlaceableDecal'.default.bNoSmooth = false;
     /*
