@@ -10,6 +10,7 @@ struct CodeNote
     var string code1;
     var string code2;
     var string noteName;
+    var bool bHidden;
 };
 
 var const CodeNote codeNotes[150];
@@ -84,8 +85,11 @@ static function DeusExNote GetCodeNote(DeusExPlayer P, string code, string code2
                 if (caps(string(note.textTag)) == caps(default.codeNotes[i].noteName) ||
                    (caps(string(note.textTag)) == caps(default.codeNotes[i].noteName $ "_DV"))) //Also check downloaded emails.
                 {
-                    P.DebugLog("CODE FOUND: " $ code $ " IN NOTE " $ default.codeNotes[i].noteName);
-                    return note;
+                    if (!bNoHidden || !default.codeNotes[i].bHidden)
+                    {
+                        P.DebugLog("CODE FOUND: " $ code $ " IN NOTE " $ default.codeNotes[i].noteName);
+                        return note;
+                    }
                 }
 
                 note = note.next;
@@ -212,7 +216,7 @@ defaultproperties
     ////M06
     codeNotes(57)=(code1="3444",noteName="06_Bulletin07")
     codeNotes(58)=(code1="989",noteName="06_Datacube02")
-    codeNotes(59)=(code1="718",noteName="06_Datacube05")
+    codeNotes(59)=(code1="718",noteName="06_Datacube05",bHidden=true)
     codeNotes(60)=(code1="MChow",noteName="06_Datacube10")
     codeNotes(61)=(code1="MJ12",code2="SECURITY",noteName="06_Datacube11")
     codeNotes(62)=(code1="MCHOW",code2="DAMOCLES",noteName="06_Datacube12")
