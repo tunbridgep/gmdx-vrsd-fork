@@ -1899,8 +1899,8 @@ function string GetHackDisabledText(Actor target,bool TargetingDisplay)
 
     if (target.IsA('AutoTurretGun'))
         turr = AutoTurret(target.Owner);
-    //else if (target.IsA('AutoTurret'))
-    //    turr = AutoTurret(target);
+    else if (target.IsA('AutoTurret'))
+        turr = AutoTurret(target);
     
     cam = SecurityCamera(target);
 
@@ -1914,7 +1914,7 @@ function string GetHackDisabledText(Actor target,bool TargetingDisplay)
 
     //SARGE: Weird hacky special case for "truly" disabled cameras and turrets.
     //This sucks on ice!
-    if ((turr != None && turr.bDisabled && !turr.bRebooting) || cam != None && !cam.bActive && !cam.bRebooting)
+    if ((turr != None && !turr.bActive && turr.bDisabled && !turr.bRebooting) || cam != None && !cam.bActive && !cam.bRebooting)
     {
         //If using the targeting aug, we need to format it
         if (TargetingDisplay)
