@@ -25,6 +25,7 @@ New Features:
     - Added the ability to eavesdrop a conversation between Tong and Lebedev.
 - Added a new "Show on Screen" checkbox to display Goals on the main HUD.
 - Added a sound for each round loaded by the GEP Gun
+- The Plasma Rifle's green circle is now removed when unloaded
 - Notes can now be pinned, which will add them to the top of the notes list
     - Pinned notes will also be visible on the main HUD
 
