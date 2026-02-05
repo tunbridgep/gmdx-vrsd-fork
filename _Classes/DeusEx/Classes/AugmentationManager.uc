@@ -224,8 +224,8 @@ function _AddAugSlotToWheel(int total, class<Augmentation> aug1, optional class<
     local int done, i;
     local Augmentation augs[6];
         
-    player.DebugMessage("_AddAugSlotToWheel");
-    player.DebugMessage("--");
+    //player.DebugMessage("_AddAugSlotToWheel");
+    //player.DebugMessage("--");
 
     augs[0] = GetAug(aug1,,true);
     augs[1] = GetAug(aug2,,true);
