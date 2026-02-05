@@ -401,10 +401,8 @@ function bool HandleGenericKeyPress(EInputKey key, bool bMouse)
 	local bool bKeyHandled;
     local Inventory anItem;
 
-    if (selectedItem == None)
-        return false;
-
-    anItem = Inventory(selectedItem.GetClientObject());
+    if (selectedItem != None)
+        anItem = Inventory(selectedItem.GetClientObject());
 
     KeyName = player.ConsoleCommand("KEYNAME " $ key);
     Alias = player.ConsoleCommand("KEYBINDING " $ KeyName);
