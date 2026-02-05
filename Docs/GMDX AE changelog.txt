@@ -1,6 +1,11 @@
 1.2:
 
 New Features:
+- Augmentation Wheel improvements:
+    - Now shows a proper mouse cursor when in free mouse mode
+    - Fixed mouse position being reset between game loads
+    - Fixed being able to select hidden and invalid aug slots
+    - Aug Wheel can now use preset positions for every augmentation.
 - Added a new setting to remove the "hiss" sound when recharging charged items on pickup, by request.
     - When recharging your current wearable, they will make their regular pickup sound instead.
 - Items that would be picked up and placed into your inventory with right click can now be carried using Walk+Right Click if your hands are empty.
