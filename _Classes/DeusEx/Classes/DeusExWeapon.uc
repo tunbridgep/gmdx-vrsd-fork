@@ -7157,6 +7157,9 @@ else
 
                     if (IsA('WeaponMiniCrossbow') && Owner.IsA('DeusExPlayer'))
                         Owner.PlaySound(sound'GMDXSFX.Weapons.PDxbowreload', SLOT_None,,, 1024); //RSD: New Xbow reload sound, play after waiting
+
+                    if (IsA('WeaponGEPGun') && Owner.IsA('DeusExPlayer'))
+                        Owner.PlaySound(Sound'GMDXSFX.Weapons.UMP45_BoltOpened1', SLOT_None,,, 1024); //SARGE: New GEP reload sound per rocket
                     ClipCount++;
                     //Owner.BroadcastMessage(ClipCount);                           //RSD: For testing
                     /*else if (IsA('WeaponGEPGun') && Owner.IsA('DeusExPlayer')) //RSD: need a new sound for rocket reloads
