@@ -553,15 +553,22 @@ struct AugmentiqueOutfitData
 var travel AugmentiqueOutfitData augmentiqueData;
 
 //Augmentique: Update our textures to our Augmentique outfit
-function ApplyCurrentOutfit()
+//SARGE: This is the default Augmentique ApplyCurrentOutfit function, but we're
+//not using it, since we need to instead do the HDTP stuff and things
+function _ApplyCurrentOutfit()
 {
     local int i;
+    
+    if (bCloakOn)
+        return;
     
     //GMDX Exclusive code
     if (IsHDTP())
         return;
 
-    //Reset Skin
+    //Reset Skin. We can't use ResetSkinStyle,
+    //because we're respecting non-augmentique skin changes,
+    //So we wrote our own version here
 	for (i=0; i<8; i++)
     {
         if (augmentiqueData.textures[i] != None)
@@ -706,8 +713,6 @@ exec function UpdateHDTPsettings()
 
     hdtp = IsHDTP();
     
-    SetupSkin();
-
     //Bail out if we have no need to continue
     if ((hdtp && !bSetupHDTP) || (!hdtp && bSetupHDTP))
     {
@@ -725,31 +730,60 @@ exec function UpdateHDTPsettings()
         bSetupHDTP = hdtp;
     }
 
-    //Fix things not appearing cloaked
-    if (bCloakOn)
-        SetSkinStyle(STY_Translucent, Texture'RSDCrap.Skins.CloakingTex', 0.4);
-
-    //Also fix glasses on holograms
-    else if (style == STY_Translucent)
-        GlassesFix();
-
+    SetupSkin();
 }
 
+/*
 function bool _GlassesFixTest(coerce string tex)
 {
+    Log("Glasses Fix: " $ tex @ Left(tex,9));
     return Left(tex,9) == "FramesTex" || Left(tex,9) == "LensesTex";
 }
+*/
 
 //SARGE: Remove glasses and frames textures for holograms and cloaked pawns.
+//SARGE: For now only works with GM_Trench (checked in SetupSkin),
+//but it makes things MUCH simpler. TODO: Make this generic, so that if
+//Augmentique ever decides to implement random meshes for NPCs, this still works.
 function GlassesFix()
 {
-    local int i;
-    for (i = 0;i < 8;i++)
+    if (Style == STY_Normal)
+        return;
+
+    Log("Character: " $ self $ "doing glasses fix");
+    
+    if (Mesh == LodMesh'GM_Trench')
     {
-        if (_GlassesFixTest(default.multiskins[i].name) || _GlassesFixTest(augmentiqueData.textures[i].name))
-            multiSkins[i] = Texture'PinkMaskTex';
+        multiSkins[6] = GetMaskedTexture();
+        multiSkins[7] = GetMaskedTexture();
     }
 }
+
+function Texture GetMaskedTexture()
+{
+    if (style == STY_Translucent)
+        return Texture'BlackMaskTex';
+    else if (style == STY_Modulated)
+        return Texture'GrayMaskTex';
+    else/* if (style == STY_Masked)*/
+        return Texture'PinkMaskTex';
+}
+
+//Based on if we're masked, swap out pink/black/gray mask textures
+//These otherwise look fine with filtering on, but horrible with it off.
+/*
+function FixAllTextureMasks()
+{
+    local Texture tex;
+    local int i;
+
+    for (i = 0; i < 8; i++)
+    {
+        if (multiskins[i] == Texture'GrayMaskTex' || multiskins[i] == Texture'PinkMaskTex' || multiskins[i] == Texture'BlackMaskTex')
+            multiskins[i] = GetMaskedTexture();
+    }
+}
+*/
 
 //SARGE: On Hardcore, some enemies keep weapons drawn ready for combat when not preoccupied.
 function SmartWeaponDraw(DeusExPlayer player)
@@ -4722,9 +4756,6 @@ function SetSkinStyle(ERenderStyle newStyle, optional texture newTex, optional f
 	if (newScaleGlow == 0)
 		newScaleGlow = ScaleGlow;
 
-    if (newStyle == STY_Translucent)
-        GlassesFix(); //SARGE: Added
-
 	oldSkin = Skin;
 	for (i=0; i<8; i++)
 	{
@@ -4735,6 +4766,8 @@ function SetSkinStyle(ERenderStyle newStyle, optional texture newTex, optional f
 	Skin      = GetStyleTexture(newStyle, Skin, newTex);
 	ScaleGlow = newScaleGlow;
 	Style     = newStyle;
+
+    GlassesFix();
 }
 
 
@@ -4798,12 +4831,24 @@ local SpoofedCorona cor;
 	}
 }
 
+function ApplyCurrentOutfit()
+{
+    SetupSkin();
+}
+
 //SARGE: Added to let us fix up skins when disabling cloak or swapping weapons
 //By default, does nothing, but can be used for things like custom skins for shotgunners
 function SetupSkin()
 {
-    if (!bCloakOn)
-        ApplyCurrentOutfit();
+    //Fix things not appearing cloaked
+    if (bCloakOn)
+        SetSkinStyle(STY_Translucent, Texture'RSDCrap.Skins.CloakingTex', 0.4);
+    else if (!IsHDTP())
+        _ApplyCurrentOutfit();
+
+    //Also fix glasses on holograms
+    GlassesFix();
+    //FixAllTextureMasks();
 }
 
 function ForceCloakOff()                                                        //RSD: Hack function to force cloak off without playing sounds
