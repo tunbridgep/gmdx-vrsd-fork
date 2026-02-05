@@ -135,6 +135,8 @@ function RefreshTextureFiltering()
     class'TerroristCarcass3'.default.bNoSmooth = !bSmartTextureFiltering;
     class'TerroristCarcass4'.default.bNoSmooth = !bSmartTextureFiltering;
     class'TerroristCarcassBeheaded'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'Mechanic'.default.bNoSmooth = !bSmartTextureFiltering;
+    class'MechanicCarcass'.default.bNoSmooth = !bSmartTextureFiltering;
     class'RiotCop'.default.bNoSmooth = !bSmartTextureFiltering;
     class'RiotCopCarcass'.default.bNoSmooth = !bSmartTextureFiltering;
     class'WaltonSimons'.default.bNoSmooth = !bSmartTextureFiltering;
