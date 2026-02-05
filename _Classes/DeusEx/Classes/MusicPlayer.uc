@@ -41,7 +41,7 @@ function SetNewSong(Music song, optional byte section)
 
     player = GetGameInfo().GetPlayerPawn();
 
-    if (currentSong != song)
+    if (currentSong != song || iEnhancedMusicSystem == 0)
     {
         //Fade out when we're changing to an empty track
         bFade = (section == 255 || song == None);
