@@ -17,6 +17,10 @@ New Features:
 - Added a new option to use large text when reading books and datacubes. On by default.
 - Added a new playthrough modifier to take Ammo when imprisoned by MJ12. This feature was previously hardcore-exclusive. Still always enabled on Hardcore.
 - Disabled grenades can now be detonated using the Remote Detonation perk (they will show as "Remote" instead of "Disabled" in the HUD)
+- Improvements to Scripted Grenade traps
+    - Grenade traps can now triggered more than once
+    - Grenade traps can now use all types of grenades, not just Gas grenades
+    - Mover detection is much more robust, now grenade traps should be more reliable.
 - The Player's Skin Colour will now be remembered alongside their name if the option to remember their name is enabled. (Enabled by default).
 - Laser, Scope and Silencer mods are no longer randomized when using the "Randomize Weapon Mods" modifier.
 - Added a new playthrough modifier to remove crates and loose items when UNATCO takes over various areas, such as the Statue of Liberty and Lebedev's Airfield.
