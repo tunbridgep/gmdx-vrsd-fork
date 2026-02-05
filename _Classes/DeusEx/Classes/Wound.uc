@@ -64,7 +64,7 @@ defaultproperties
      WoundName="Default Trauma."
      WoundDescription="Report this as a bug!"
      requiredMedkits=1
-     MaxWoundDamage=1500
+     MaxWoundDamage=450
      bHidden=True
      bTravel=True
 }
