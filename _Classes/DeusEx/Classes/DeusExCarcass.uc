@@ -1137,6 +1137,8 @@ function ShowFixedPickupMessage(DeusExPlayer P, Inventory item, int count, optio
     if (item == None || P == None)
         return;
 
+    //P.DebugMessage("Adding display for item: " $ item @ bShowReceived);
+
     if (count > 1)
         P.ClientMessage(item.PickupMessage @ item.itemArticle @ item.itemName @ "(" $ count $ ")", 'Pickup');
     else //Just show the basic one
