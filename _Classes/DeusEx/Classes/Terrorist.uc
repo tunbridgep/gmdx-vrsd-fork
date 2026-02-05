@@ -41,7 +41,7 @@ defaultproperties
      HealthArmLeft=90
      HealthArmRight=90
      Texture=Texture'DeusExItems.Skins.PinkMaskTex'
-     Mesh=LodMesh'DeusExCharacters.GM_Jumpsuit'
+     Mesh=LodMesh'RSDCrap.Fixed_Jumpsuit'
      MultiSkins(0)=Texture'DeusExCharacters.Skins.TerroristTex0'
      MultiSkins(1)=Texture'DeusExCharacters.Skins.TerroristTex2'
      MultiSkins(2)=Texture'DeusExCharacters.Skins.TerroristTex1'
