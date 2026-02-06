@@ -34,6 +34,8 @@ New Features:
     - Pinned notes will also be visible on the main HUD
 
 Bugfixes:
+- Fixed GMDX:AE Bug where unassigning Secondaries could re-appear when revisiting old maps.
+- Fixed GMDX:AE Bug where saving would fail after reaching a save ID of 1000. Now it will loop back around from 0.
 - Fixed GMDX:AE Bugs related to 20mm grenades:
     - Fixed issue where 20mm ammo projectiles would fly sideways.
     - They now use their proper mesh, rather than the Shotgun Casing mesh.
@@ -61,6 +63,7 @@ Bugfixes:
 - Other minor bugfixes
 
 Misc Changes:
+- Save Points now use Quicksaves rather than always using a new save slot.
 - The Flamethrower no longer shows a flame when out of ammo.
 - In Hardcore mode, weapons will now be emptied at the start of reloading (except for one-at-a-time weapons).
     - This means that you will no longer be able to cancel reloading to regain your previous ammo amount. Instead your weapon will be empty.
