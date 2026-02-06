@@ -53,6 +53,7 @@ static function bool CreateCarriedObjectFor(DeusExPlayer pawn,Inventory item)
     local DeusExAmmo A;
     local DeusExWeapon W;
     local AugmentationCannister Can;
+    local Credits CR;
     
     carrier = CarriedObject(class'SpawnUtils'.static.SpawnSafe(class'CarriedObject',item,item.Tag,item.Location,item.Rotation));
 
@@ -73,6 +74,7 @@ static function bool CreateCarriedObjectFor(DeusExPlayer pawn,Inventory item)
     A = DeusExAmmo(item);
     W = DeusExWeapon(item);
     Can = AugmentationCannister(item);
+    CR = Credits(item);
 
     if (A != None) //Ammo is super easy, just store the amount
     {
@@ -84,6 +86,10 @@ static function bool CreateCarriedObjectFor(DeusExPlayer pawn,Inventory item)
         carrier.copiedData[1] = string(Can.AddAugs[1]);
         carrier.copiedData[2] = string(Can.AugListNum);
 
+    }
+    else if (CR != None) //Copy over the credits amount
+    {
+        carrier.copiedData[0] = string(CR.numCredits);
     }
     else if (P != None) //For DeusExPickups, store the numCopies, charge and the skin information.
     {
@@ -214,6 +220,7 @@ static function private Inventory ActuallyCreateRealObjectFor(CarriedObject carr
     local DeusExAmmo A;
     local DeusExWeapon W;
     local AugmentationCannister Can;
+    local Credits CR;
     
     C = Class<Actor>(DynamicLoadObject(carrier.itemClass, class'Class'));
 
@@ -235,6 +242,7 @@ static function private Inventory ActuallyCreateRealObjectFor(CarriedObject carr
     A = DeusExAmmo(item);
     W = DeusExWeapon(item);
     Can = AugmentationCannister(item);
+    CR = Credits(item);
     
     if (A != None) //Ammo is super easy, just copy the amount
     {
@@ -244,6 +252,10 @@ static function private Inventory ActuallyCreateRealObjectFor(CarriedObject carr
     {
         Can.SetAugs(carrier.copiedData[0],carrier.copiedData[1]);
         Can.AugListNum = int(carrier.copiedData[2]);
+    }
+    else if (CR != None) //Copy over the credits amount
+    {
+        CR.numCredits = int(carrier.copiedData[0]);
     }
     else if (P != None) //For DeusExPickups, copy the numCopies, charge and the skin information.
     {
