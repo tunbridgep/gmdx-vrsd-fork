@@ -1205,12 +1205,14 @@ simulated event RenderOverlays( canvas Canvas )
         activateAn = false;
 
     //Draw blood effects
-    if (PlayerOwner != None && bCoveredInBlood)
+    if (PlayerOwner != None && !Level.Game.bLowGore && bCoveredInBlood && !bIsCloaked && !bIsRadar)
     {
         Style = STY_Modulated;
         ScaleGlow = 0.25;
+        bNoSmooth = false;
         DisplayWeaponBlood(true);
         DrawViewModel(canvas,PlayerOwner,cachedDrawOffset,cachedRotation);
+        bNoSmooth = default.bNoSmooth;
         Style = STY_Normal;
         ScaleGlow = default.ScaleGlow;
     }
