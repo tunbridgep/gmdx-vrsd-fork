@@ -116,6 +116,19 @@ simulated function PreBeginPlay()
 	    bHasSilencer = True;
 }
 
+function DisplayWeaponBlood(bool overlay)
+{
+    super.DisplayWeaponBlood(overlay);
+    
+    if (!overlay)
+        return;
+
+    if (IsHDTP())
+        multiskins[5] = Texture'PinkMaskTex';
+    else
+        multiskins[6] = Texture'PinkMaskTex';
+}
+
 function DisplayWeapon(bool overlay)
 {
     super.DisplayWeapon(overlay);

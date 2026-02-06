@@ -1205,7 +1205,7 @@ simulated event RenderOverlays( canvas Canvas )
         activateAn = false;
 
     //Draw blood effects
-    if (PlayerOwner != None && !Level.Game.bLowGore && bCoveredInBlood && !bIsCloaked && !bIsRadar)
+    if (PlayerOwner != None && !Level.Game.bLowGore && !Level.Game.bVeryLowGore && bCoveredInBlood && !bIsCloaked && !bIsRadar)
     {
         Style = STY_Modulated;
         ScaleGlow = 0.25;
@@ -3522,7 +3522,7 @@ function DisplayWeaponBlood(bool overlay)
 {
     local int i;
 
-    for (i = 0;i < 7;i++)
+    for (i = 0;i < 8;i++)
         if (multiskins[i] != Texture'PinkMaskTex' && (i != muzzleslot || bHasSilencer || !bHasMuzzleFlash))
             multiskins[i] = class'HDTPLoader'.static.GetTexture2(BloodTextures[i].tex1,BloodTextures[i].tex2,IsHDTP());
 }
@@ -7728,8 +7728,6 @@ Begin:
 	bOnlyOwnerSee = false;
 	if (Pawn(Owner) != None)
 		Pawn(Owner).ChangedWeapon();
-
-    bCoveredInBlood = false;
 }
 
 state ADSToggle                                                                 //RSD: Taken from WeaponSawedOffShotgun.uc for inheritance

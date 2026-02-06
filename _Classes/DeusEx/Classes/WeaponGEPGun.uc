@@ -234,6 +234,20 @@ simulated function renderoverlays(Canvas canvas)
 	if (GEPinout>=1) RenderPortal(canvas);
 
 }
+
+function DisplayWeaponBlood(bool overlay)
+{
+    super.DisplayWeaponBlood(overlay);
+    
+    if (!overlay)
+        return;
+
+    if (IsHDTP())
+        multiskins[3] = Texture'PinkMaskTex';
+    else
+        multiskins[3] = Texture'PinkMaskTex';
+}
+
 function DisplayWeapon(bool overlay)
 {
     super.DisplayWeapon(overlay);

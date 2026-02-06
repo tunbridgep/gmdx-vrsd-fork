@@ -9974,6 +9974,10 @@ function UpdateInHand()
 		// OK to actually switch?
 		if (bSwitch)
 		{
+            //SARGE: Remove blood from weapon
+            if (DeusExWeapon(inHand) != None)
+                DeusExWeapon(inHand).SetCoveredInBlood(false);
+
 			SetInHand(inHandPending);
 			SelectedItem = inHandPending;
         
