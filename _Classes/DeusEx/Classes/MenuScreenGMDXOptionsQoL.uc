@@ -165,6 +165,7 @@ defaultproperties
      items(124)=(HelpText="Shows icons for map exits.",actionText="Game: Show Map Exits",variable="bShowExits",defaultValue=0,bAdvancedModeOnly=true)
      items(125)=(HelpText="Item icons in the Inventory and Belt will reflect item skins. Otherwise the default icon is used.",actionText="HUD: Show Skinned Icons",variable="bSkinnedBeltIcons",defaultValue=1,bAdvancedModeOnly=false)
      items(128)=(HelpText="Show visible blood on weapons when attacking enemies at close range",actionText="Game: Bloody Weapons",variable="bBloodyWeapons",defaultValue=1,bAdvancedModeOnly=false)
+     items(129)=(HelpText="The players weapon will be moved backwards when up against a wall.",actionText="Game: Weapon Wall Detection",variable="bWeaponWallDetection",defaultValue=1,bAdvancedModeOnly=false)
 
      Title="GMDX Quality of Life Options"
      colWidths(0)=214
