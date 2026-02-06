@@ -947,6 +947,8 @@ var globalconfig bool bShowExits;                            //SARGE: Show exit 
 
 var globalconfig bool bBloodyWeapons;                        //SARGE: Attacks at close range will cover the players weapon in blood.
 
+var globalconfig bool bWeaponWallDetection;                  //SARGE: Move weapons back when up against a wall
+
 //New method for detecting if we're in combat efficiently
 var private transient int combatantsCached;
 var private transient float combatCheckTime;                 //SARGE: When checking for combat, cache the result for 1 second.
@@ -1050,7 +1052,7 @@ function DoBloodEffect(int Damage, name DamageType, Vector ObjLocation, bool fla
                 bloodTime = 4.000000;
             }
             if (bBloodyWeapons && DeusExWeapon(inHand) != None)
-                DeusExWeapon(inHand).bCoveredInBlood = true;
+                DeusExWeapon(inHand).SetCoveredInBlood(true);
         }
     }
 }
@@ -7176,7 +7178,7 @@ state PlayerWalking
 			{
                 //SARGE: Remove blood from weapon
                 if (DeusExWeapon(inHand) != None)
-                    DeusExWeapon(inHand).bCoveredInBlood = false;
+                    DeusExWeapon(inHand).SetCoveredInBlood(false);
             DropDecoration();
             //loc = Location + VRand() * 4;
 	        //loc.Z += CollisionHeight * 0.9;
@@ -7463,7 +7465,7 @@ state PlayerFlying
         {
             //SARGE: Remove blood from weapon
             if (DeusExWeapon(inHand) != None)
-                DeusExWeapon(inHand).bCoveredInBlood = false;
+                DeusExWeapon(inHand).SetCoveredInBlood(false);
 
 			DropDecoration();
         }
@@ -7616,7 +7618,7 @@ state PlayerSwimming
 		{
             //SARGE: Remove blood from weapon
             if (DeusExWeapon(inHand) != None)
-                DeusExWeapon(inHand).bCoveredInBlood = false;
+                DeusExWeapon(inHand).SetCoveredInBlood(false);
 
 			DropDecoration();
 			if (bOnFire)
@@ -20252,4 +20254,5 @@ defaultproperties
      bRandomizeCrap=true
      bItemRechargeSound=true
      bBloodyWeapons=true
+     bWeaponWallDetection=true
 }
