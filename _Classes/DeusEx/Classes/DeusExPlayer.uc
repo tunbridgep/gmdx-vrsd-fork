@@ -2695,6 +2695,10 @@ function int DoSaveGame(int saveIndex, optional String saveDesc)
         saveDir = GetSaveGameDirectory();
 		saveIndex=saveDir.GetNewSaveFileIndex();
     }
+
+    //Loop back around
+    if (saveIndex >= 1000)
+        saveIndex = 1;
     
     //If a datalink is playing, abort it
     if (dataLinkPlay != None)
