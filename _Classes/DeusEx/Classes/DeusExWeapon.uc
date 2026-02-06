@@ -385,6 +385,9 @@ enum EAddonPenaltyType
 
 var const float addonPenalties[3];
 
+//Blood on weapons
+var travel bool bCoveredInBlood;
+
 //END GMDX:
 
 //
@@ -1110,12 +1113,9 @@ function Texture GetGridTexture(Texture tex)
 
 simulated event RenderOverlays( canvas Canvas )
 {
-	local rotator NewRot, ExRot, rfs;                                           //RSD: Added rfs
 	local bool bPlayerOwner;
 	local int Hand;
 	local DeusExPlayer PlayerOwner;
-    local int newPitch;
-    local vector dx, dy, dz;                                                    //RSD: Added
 
 	if ( bHideWeapon || (Owner == None) )
 		return;
@@ -1174,11 +1174,47 @@ simulated event RenderOverlays( canvas Canvas )
 	}
 	else
 		bSetFlashTime = false;
+        
+	if (PlayerOwner != none)
+    {
+        //RSD: Overhauled cloak/radar routines
+        SetCloakRadar(class'DeusExPlayer'.default.bCloakEnabled,class'DeusExPlayer'.default.bRadarTran);
+    }
+    
+    DrawViewModel(canvas,PlayerOwner);
+
+    if (activateAn && bHasScope)
+        DrawScopeAnimation();
+    else
+        activateAn = false;
+
+    //Draw blood effects
+    if (PlayerOwner != None && bCoveredInBlood)
+    {
+        Style = STY_Modulated;
+        ScaleGlow = 0.25;
+        DisplayWeaponBlood(true);
+        DrawViewModel(canvas,PlayerOwner);
+        Style = STY_Normal;
+        ScaleGlow = default.ScaleGlow;
+    }
+
+    //Reset weapon to standard display
+    DisplayWeapon(false);
+}
+
+//DrawViewModel()
+//SARGE: Positions the viewmodel properly, then draws it
+function DrawViewModel(Canvas canvas, DeusExPlayer PlayerOwner)
+{
+    local int newPitch;
+    local vector dx, dy, dz;                                                    //RSD: Added
+	local rotator NewRot, ExRot, rfs;                                           //RSD: Added rfs
 
 	SetLocation( Owner.Location + CalcDrawOffset() );
     NewRot = Pawn(Owner).ViewRotation;
 
-	if (PlayerOwner != none)
+    if (PlayerOwner != None)
     {
         //RSD: New adjustment to rotation without being pitch-dependent
         rfs.Yaw=addYaw;
@@ -1189,21 +1225,10 @@ simulated event RenderOverlays( canvas Canvas )
         dz=dz>>PlayerOwner.GetCurrentViewRotation();
         rfs=OrthoRotation(dx,dy,dz);
         NewRot = rfs;
-
-        //RSD: Overhauled cloak/radar routines
-        SetCloakRadar(class'DeusExPlayer'.default.bCloakEnabled,class'DeusExPlayer'.default.bRadarTran);
     }
-    
+
     setRotation(NewRot);
     Canvas.DrawActor(self, false);
-
-    if (activateAn && bHasScope)
-        DrawScopeAnimation();
-    else
-        activateAn = false;
-
-    //Reset weapon to standard display
-    DisplayWeapon(false);
 }
 
 //
@@ -3442,6 +3467,16 @@ function DisplayWeapon(bool overlay)
         else
             multiskins[i] = default.multiskins[i];
     }
+}
+
+//SARGE: Show blood on weapons
+function DisplayWeaponBlood(bool overlay)
+{
+    local int i;
+
+    for (i = 0;i < 7;i++)
+        if (multiskins[i] != Texture'PinkMaskTex' && (i != muzzleslot || bHasSilencer || !bHasMuzzleFlash))
+            multiskins[i] = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFlatFXtex1","DeusExItems.Skins.FlatFXTex1",IsHDTP());
 }
 
 simulated function EraseMuzzleFlashTexture()
@@ -7645,6 +7680,8 @@ Begin:
 	bOnlyOwnerSee = false;
 	if (Pawn(Owner) != None)
 		Pawn(Owner).ChangedWeapon();
+
+    bCoveredInBlood = false;
 }
 
 state ADSToggle                                                                 //RSD: Taken from WeaponSawedOffShotgun.uc for inheritance
