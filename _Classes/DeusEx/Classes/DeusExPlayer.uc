@@ -949,7 +949,7 @@ var private transient float combatCheckTime;                 //SARGE: When check
 var travel float lastCombatTime;                             //SARGE: The last time when the player was in combat
 
 //For the aug wheel, now we store the mouse position here, so that it gets saved
-var travel Vector radialMenuCursorPos;
+var globalconfig Vector radialMenuCursorPos;
 
 //////////END GMDX
 
