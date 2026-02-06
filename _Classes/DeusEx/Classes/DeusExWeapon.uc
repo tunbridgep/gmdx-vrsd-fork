@@ -399,6 +399,9 @@ var travel BloodTex BloodTextures[7];
 //SARGE: No more checking for specific grenade types, now we just set this instead.
 var const bool bIsPlaceableOnWall;
 
+//SARGE: An annoying hack to fix GMDX's hacky GEP bullshit.
+var transient bool bDontActuallyRenderViewModel;
+
 //END GMDX:
 
 //
@@ -1197,33 +1200,42 @@ simulated event RenderOverlays( canvas Canvas )
     }
         
     
-    DrawViewModel(canvas,PlayerOwner,cachedDrawOffset,cachedRotation);
+    PositionViewModel(canvas,PlayerOwner,cachedDrawOffset,cachedRotation);
 
-    if (activateAn && bHasScope)
-        DrawScopeAnimation();
-    else
-        activateAn = false;
+    if (!bDontActuallyRenderViewModel)
+    {
+        Canvas.DrawActor(self, false);
 
+        if (activateAn && bHasScope)
+            DrawScopeAnimation();
+        else
+            activateAn = false;
+
+        DrawBloodyViewModel(canvas);
+
+        //Reset weapon to standard display
+        DisplayWeapon(false);
+    }
+}
+
+function DrawBloodyViewModel(Canvas canvas)
+{
     //Draw blood effects
-    if (PlayerOwner != None && !Level.Game.bLowGore && !Level.Game.bVeryLowGore && bCoveredInBlood && !bIsCloaked && !bIsRadar)
+    if (DeusExPlayer(Owner) != None && !Level.Game.bLowGore && !Level.Game.bVeryLowGore && bCoveredInBlood && !bIsCloaked && !bIsRadar)
     {
         Style = STY_Modulated;
         ScaleGlow = 0.25;
         bNoSmooth = false;
         DisplayWeaponBlood(true);
-        DrawViewModel(canvas,PlayerOwner,cachedDrawOffset,cachedRotation);
+        canvas.DrawActor(self, false);
         bNoSmooth = default.bNoSmooth;
         Style = STY_Normal;
         ScaleGlow = default.ScaleGlow;
     }
-
-    //Reset weapon to standard display
-    DisplayWeapon(false);
 }
 
-//DrawViewModel()
-//SARGE: Positions the viewmodel properly, then draws it
-function DrawViewModel(Canvas canvas, DeusExPlayer PlayerOwner, vector drawOffset, Rotator rot)
+//SARGE: Positions the viewmodel properly, ready for drawing.
+function PositionViewModel(Canvas canvas, DeusExPlayer PlayerOwner, vector drawOffset, Rotator rot)
 {
     local int newPitch;
     local vector dx, dy, dz;                                                    //RSD: Added
@@ -1246,7 +1258,6 @@ function DrawViewModel(Canvas canvas, DeusExPlayer PlayerOwner, vector drawOffse
     }
 
     setRotation(NewRot);
-    Canvas.DrawActor(self, false);
 }
 
 //
