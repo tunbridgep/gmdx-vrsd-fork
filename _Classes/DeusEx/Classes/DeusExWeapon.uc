@@ -385,7 +385,7 @@ enum EAddonPenaltyType
 
 var const float addonPenalties[3];
 
-//Blood on weapons
+//SARGE: Blood on weapons
 var travel bool bCoveredInBlood;
 
 //END GMDX:
@@ -1116,6 +1116,8 @@ simulated event RenderOverlays( canvas Canvas )
 	local bool bPlayerOwner;
 	local int Hand;
 	local DeusExPlayer PlayerOwner;
+    local Vector cachedDrawOffset;
+    local Rotator cachedRotation;
 
 	if ( bHideWeapon || (Owner == None) )
 		return;
@@ -1175,13 +1177,16 @@ simulated event RenderOverlays( canvas Canvas )
 	else
 		bSetFlashTime = false;
         
+    cachedDrawOffset = CalcDrawOffset();
 	if (PlayerOwner != none)
     {
+        cachedRotation = PlayerOwner.GetCurrentViewRotation();
         //RSD: Overhauled cloak/radar routines
         SetCloakRadar(class'DeusExPlayer'.default.bCloakEnabled,class'DeusExPlayer'.default.bRadarTran);
     }
+        
     
-    DrawViewModel(canvas,PlayerOwner);
+    DrawViewModel(canvas,PlayerOwner,cachedDrawOffset,cachedRotation);
 
     if (activateAn && bHasScope)
         DrawScopeAnimation();
@@ -1194,7 +1199,7 @@ simulated event RenderOverlays( canvas Canvas )
         Style = STY_Modulated;
         ScaleGlow = 0.25;
         DisplayWeaponBlood(true);
-        DrawViewModel(canvas,PlayerOwner);
+        DrawViewModel(canvas,PlayerOwner,cachedDrawOffset,cachedRotation);
         Style = STY_Normal;
         ScaleGlow = default.ScaleGlow;
     }
@@ -1205,13 +1210,13 @@ simulated event RenderOverlays( canvas Canvas )
 
 //DrawViewModel()
 //SARGE: Positions the viewmodel properly, then draws it
-function DrawViewModel(Canvas canvas, DeusExPlayer PlayerOwner)
+function DrawViewModel(Canvas canvas, DeusExPlayer PlayerOwner, vector drawOffset, Rotator rot)
 {
     local int newPitch;
     local vector dx, dy, dz;                                                    //RSD: Added
 	local rotator NewRot, ExRot, rfs;                                           //RSD: Added rfs
 
-	SetLocation( Owner.Location + CalcDrawOffset() );
+	SetLocation( Owner.Location + drawOffset );
     NewRot = Pawn(Owner).ViewRotation;
 
     if (PlayerOwner != None)
@@ -1220,9 +1225,9 @@ function DrawViewModel(Canvas canvas, DeusExPlayer PlayerOwner)
         rfs.Yaw=addYaw;
         rfs.Pitch=addPitch;
         GetAxes(rfs,dx,dy,dz);
-        dx=dx>>PlayerOwner.GetCurrentViewRotation();
-        dy=dy>>PlayerOwner.GetCurrentViewRotation();
-        dz=dz>>PlayerOwner.GetCurrentViewRotation();
+        dx=dx>>rot;
+        dy=dy>>rot;
+        dz=dz>>rot;
         rfs=OrthoRotation(dx,dy,dz);
         NewRot = rfs;
     }
