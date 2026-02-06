@@ -7681,7 +7681,7 @@ function DestroyMe()
 	player = DeusExPlayer(GetPlayerPawn());
         
     if (owner != None && owner.IsA('DeusExPlayer') && DeusExPlayer(owner).iShifterWeaponSwitch > 2 && bInObjectBelt)
-        DeusExPlayer(owner).ShifterSwitchAll(self,true);
+        DeusExPlayer(owner).ShifterSwitchAll(self,DeusExPlayer(owner).iShifterWeaponSwitch >= 4);
 
     player.RemoveObjectFromBelt(self);
     Destroy();
