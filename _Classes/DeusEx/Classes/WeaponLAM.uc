@@ -196,4 +196,5 @@ defaultproperties
      Buoyancy=2.000000
      bDisposableWeapon=true
      bFakeHandToHand=true
+     bIsPlaceableOnWall=true
 }
