@@ -4216,13 +4216,13 @@ function TakeDamageBase(int Damage, Pawn instigatedBy, Vector hitlocation, Vecto
              AST.SoundPitch=64;
 		  }
     }
+    
+    //Cover the players weapon in blood
+    if (bCanBleed && player != None)
+        player.DoBloodEffect(actualDamage,damageType,Location,false);
 
 	if (Health <= 0)
 	{
-        //Cover the players weapon in blood
-        if (bCanBleed && player != None)
-            player.DoBloodEffect(actualDamage,damageType,Location,false);
-
 		ClearNextState();
 		//PlayDeathHit(actualDamage, hitLocation, damageType);
 		if ( actualDamage > mass )
