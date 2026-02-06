@@ -20,7 +20,7 @@ var private travel string copiedSkin;
 var private travel string copiedSkins[8];
 
 //Copy over data in a custom data structure.
-var private travel float copiedData[53];
+var private travel string copiedData[53];
 
 //Setup the carrier to mimic the carried object
 function ApplyProperties()
@@ -52,6 +52,7 @@ static function bool CreateCarriedObjectFor(DeusExPlayer pawn,Inventory item)
     local DeusExPickup P;
     local DeusExAmmo A;
     local DeusExWeapon W;
+    local AugmentationCannister Can;
     
     carrier = CarriedObject(class'SpawnUtils'.static.SpawnSafe(class'CarriedObject',item,item.Tag,item.Location,item.Rotation));
 
@@ -71,54 +72,62 @@ static function bool CreateCarriedObjectFor(DeusExPlayer pawn,Inventory item)
     P = DeusExPickup(item);
     A = DeusExAmmo(item);
     W = DeusExWeapon(item);
+    Can = AugmentationCannister(item);
 
     if (A != None) //Ammo is super easy, just store the amount
     {
-        carrier.copiedData[0] = A.AmmoAmount;
+        carrier.copiedData[0] = string(A.AmmoAmount);
+    }
+    else if (Can != None) //Cannisters need to store both their relevant augs
+    {
+        carrier.copiedData[0] = string(Can.AddAugs[0]);
+        carrier.copiedData[1] = string(Can.AddAugs[1]);
+        carrier.copiedData[2] = string(Can.AugListNum);
+
     }
     else if (P != None) //For DeusExPickups, store the numCopies, charge and the skin information.
     {
-        carrier.copiedData[0] = P.numCopies;
-        carrier.copiedData[1] = P.Charge;
-        carrier.copiedData[2] = P.textureSet;
+        carrier.copiedData[0] = string(P.numCopies);
+        carrier.copiedData[1] = string(P.Charge);
+        carrier.copiedData[2] = string(P.textureSet);
 
         for (i = 0;i < 50;i++)
-            carrier.copiedData[3+i] = P.PickUpList[i];
+            carrier.copiedData[3+i] = string(P.PickUpList[i]);
     }
     else if (W != None) //For DeusExWeapons, store the pickupammocount, clipcount and the weapon mod information.
     {
 
         //These are based off the CopyModsFrom function in DeusExWeapon.uc
         //If that's wrong, then this is also wrong.
-        carrier.copiedData[0] = W.pickupAmmoCount;
-        carrier.copiedData[1] = int(W.bModified);
-        carrier.copiedData[2] = W.ClipCount;
-        carrier.copiedData[3] = W.ModBaseAccuracy;
-        carrier.copiedData[4] = W.ModReloadCount;
-        carrier.copiedData[5] = W.ModAccurateRange;
-        carrier.copiedData[6] = W.ModReloadTime;
-        carrier.copiedData[7] = W.ModRecoilStrength;
-        carrier.copiedData[8] = int(W.bHadLaser);
-        carrier.copiedData[9] = int(W.bHadSilencer);
-        carrier.copiedData[10] = int(W.bHadScope);
-        carrier.copiedData[11] = int(W.bHasLaser);
-        carrier.copiedData[12] = int(W.bHasSilencer);
-        carrier.copiedData[13] = int(W.bHasScope);
-        carrier.copiedData[14] = int(W.bFullAuto);
-        carrier.copiedData[15] = W.ReloadCount;
-        carrier.copiedData[16] = W.AccurateRange;
-        carrier.copiedData[17] = W.BaseAccuracy;
-        carrier.copiedData[18] = W.ReloadTime;
-        carrier.copiedData[19] = W.RecoilStrength;
-        carrier.copiedData[20] = W.ModShotTime;
-        carrier.copiedData[21] = W.ModDamage;
+        carrier.copiedData[0] = string(W.pickupAmmoCount);
+        carrier.copiedData[1] = string(int(W.bModified));
+        carrier.copiedData[2] = string(W.ClipCount);
+        carrier.copiedData[3] = string(W.ModBaseAccuracy);
+        carrier.copiedData[4] = string(W.ModReloadCount);
+        carrier.copiedData[5] = string(W.ModAccurateRange);
+        carrier.copiedData[6] = string(W.ModReloadTime);
+        carrier.copiedData[7] = string(W.ModRecoilStrength);
+        carrier.copiedData[8] = string(int(W.bHadLaser));
+        carrier.copiedData[9] = string(int(W.bHadSilencer));
+        carrier.copiedData[10] = string(int(W.bHadScope));
+        carrier.copiedData[11] = string(int(W.bHasLaser));
+        carrier.copiedData[12] = string(int(W.bHasSilencer));
+        carrier.copiedData[13] = string(int(W.bHasScope));
+        carrier.copiedData[14] = string(int(W.bFullAuto));
+        carrier.copiedData[15] = string(W.ReloadCount);
+        carrier.copiedData[16] = string(W.AccurateRange);
+        carrier.copiedData[17] = string(W.BaseAccuracy);
+        carrier.copiedData[18] = string(W.ReloadTime);
+        carrier.copiedData[19] = string(W.RecoilStrength);
+        carrier.copiedData[20] = string(W.ModShotTime);
+        carrier.copiedData[21] = string(W.ModDamage);
         
         //If we're using the GL, we need to copy the old values instead
         //This is a dirty, disgusting, filthy, garbage hack!
         if (W.AmmoName == class'Ammo20mm')
         {
-            carrier.copiedData[2] = W.ARLoaded;
-            carrier.copiedData[15] = W.ARClipSize;
+            carrier.copiedData[2] = string(W.ARLoaded);
+            carrier.copiedData[15] = string(W.ARClipSize);
         }
 
     }
@@ -204,6 +213,7 @@ static function private Inventory ActuallyCreateRealObjectFor(CarriedObject carr
     local DeusExPickup P;
     local DeusExAmmo A;
     local DeusExWeapon W;
+    local AugmentationCannister Can;
     
     C = Class<Actor>(DynamicLoadObject(carrier.itemClass, class'Class'));
 
@@ -224,19 +234,25 @@ static function private Inventory ActuallyCreateRealObjectFor(CarriedObject carr
     P = DeusExPickup(item);
     A = DeusExAmmo(item);
     W = DeusExWeapon(item);
+    Can = AugmentationCannister(item);
     
     if (A != None) //Ammo is super easy, just copy the amount
     {
-        A.AmmoAmount = carrier.copiedData[0];
+        A.AmmoAmount = int(carrier.copiedData[0]);
+    }
+    else if (Can != None) //Cannisters need to store both their relevant augs
+    {
+        Can.SetAugs(carrier.copiedData[0],carrier.copiedData[1]);
+        Can.AugListNum = int(carrier.copiedData[2]);
     }
     else if (P != None) //For DeusExPickups, copy the numCopies, charge and the skin information.
     {
-        P.numCopies = carrier.copiedData[0];
-        P.Charge = carrier.copiedData[1];
-        P.textureSet = carrier.copiedData[2];
+        P.numCopies = int(carrier.copiedData[0]);
+        P.Charge = float(carrier.copiedData[1]);
+        P.textureSet = int(carrier.copiedData[2]);
 
         for (i = 0;i < 50;i++)
-            P.PickUpList[i] = carrier.copiedData[3+i];
+            P.PickUpList[i] = int(carrier.copiedData[3+i]);
 
         P.UpdateHDTPSettings();
     }
@@ -244,14 +260,14 @@ static function private Inventory ActuallyCreateRealObjectFor(CarriedObject carr
     {
         //These are based off the CopyModsFrom function in DeusExWeapon.uc
         //If that's wrong, then this is also wrong.
-        W.pickupAmmoCount = carrier.copiedData[0];
+        W.pickupAmmoCount = int(carrier.copiedData[0]);
         W.bModified = bool(carrier.copiedData[1]);
-        W.ClipCount = carrier.copiedData[2];
-        W.ModBaseAccuracy = carrier.copiedData[3];
-        W.ModReloadCount = carrier.copiedData[4];
-        W.ModAccurateRange = carrier.copiedData[5];
-        W.ModReloadTime = carrier.copiedData[6];
-        W.ModRecoilStrength = carrier.copiedData[7];
+        W.ClipCount = int(carrier.copiedData[2]);
+        W.ModBaseAccuracy = float(carrier.copiedData[3]);
+        W.ModReloadCount = float(carrier.copiedData[4]);
+        W.ModAccurateRange = float(carrier.copiedData[5]);
+        W.ModReloadTime = float(carrier.copiedData[6]);
+        W.ModRecoilStrength = float(carrier.copiedData[7]);
         W.bHadLaser = bool(carrier.copiedData[8]);
         W.bHadSilencer = bool(carrier.copiedData[9]);
         W.bHadScope = bool(carrier.copiedData[10]);
@@ -259,13 +275,13 @@ static function private Inventory ActuallyCreateRealObjectFor(CarriedObject carr
         W.bHasSilencer = bool(carrier.copiedData[12]);
         W.bHasScope = bool(carrier.copiedData[13]);
         W.bFullAuto = bool(carrier.copiedData[14]);
-        W.ReloadCount = carrier.copiedData[15];
-        W.AccurateRange = carrier.copiedData[16];
-        W.BaseAccuracy = carrier.copiedData[17];
-        W.ReloadTime = carrier.copiedData[18];
-        W.RecoilStrength = carrier.copiedData[19];
-        W.ModShotTime = carrier.copiedData[20];
-        W.ModDamage = carrier.copiedData[21];
+        W.ReloadCount = int(carrier.copiedData[15]);
+        W.AccurateRange = float(carrier.copiedData[16]);
+        W.BaseAccuracy = float(carrier.copiedData[17]);
+        W.ReloadTime = float(carrier.copiedData[18]);
+        W.RecoilStrength = float(carrier.copiedData[19]);
+        W.ModShotTime = float(carrier.copiedData[20]);
+        W.ModDamage = float(carrier.copiedData[21]);
 
         //Reset GL stats
         W.ARGLLoaded = 0;
