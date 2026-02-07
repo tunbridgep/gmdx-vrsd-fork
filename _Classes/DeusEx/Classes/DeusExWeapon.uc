@@ -3487,6 +3487,8 @@ function DisplayWeapon(bool overlay)
     }
 }
 
+//SARGE: NOTE: We're deliberately using the vanilla blood tex here,
+//not the new ones, because they look better.
 function private BloodTex GetRandomBloodTex()
 {
     local float roll;
