@@ -945,7 +945,7 @@ var globalconfig bool bItemRechargeSound;                    //SARGE: Okay Roso,
 
 var globalconfig bool bShowExits;                            //SARGE: Show exit icons
 
-var globalconfig bool bBloodyWeapons;                        //SARGE: Attacks at close range will cover the players weapon in blood.
+var globalconfig int iBloodyWeapons;                        //SARGE: Attacks at close range will cover the players weapon in blood.
 
 var globalconfig bool bWeaponWallDetection;                  //SARGE: Move weapons back when up against a wall
 
@@ -1051,7 +1051,7 @@ function DoBloodEffect(int Damage, name DamageType, Vector ObjLocation, bool fla
                 ClientFlash(14, vect(160,0,0));
                 bloodTime = 4.000000;
             }
-            if (bBloodyWeapons && DeusExWeapon(inHand) != None)
+            if (iBloodyWeapons > 0 && DeusExWeapon(inHand) != None)
                 DeusExWeapon(inHand).SetCoveredInBlood(true);
         }
     }
@@ -9979,7 +9979,7 @@ function UpdateInHand()
 		if (bSwitch)
 		{
             //SARGE: Remove blood from weapon
-            if (DeusExWeapon(inHand) != None)
+            if (iBloodyWeapons == 1 && DeusExWeapon(inHand) != None)
                 DeusExWeapon(inHand).SetCoveredInBlood(false);
 
 			SetInHand(inHandPending);
@@ -11708,6 +11708,10 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
             DeusExWeapon(item).PickupAmmoCount = 1;
         }
     }
+    
+    //SARGE: Remove blood from weapon
+    if (bDropped && DeusExWeapon(item) != None)
+        DeusExWeapon(item).SetCoveredInBlood(false);
 
 	return bDropped;
 }
@@ -20261,6 +20265,6 @@ defaultproperties
      bAllowItemPickup=true
      bRandomizeCrap=true
      bItemRechargeSound=true
-     bBloodyWeapons=true
+     iBloodyWeapons=1
      bWeaponWallDetection=true
 }
