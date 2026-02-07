@@ -51,6 +51,11 @@ static function bool IsHDTP()
     return class'DeusExPlayer'.static.IsHDTPInstalled() && class'DeusExDecal'.default.iHDTPModelToggle > 0;
 }
 
+static function bool IsNewBlood()
+{
+    return class'DeusExPlayer'.default.bNewBlood;
+}
+
 exec function UpdateHDTPsettings()
 {
     local int i;
@@ -80,10 +85,10 @@ exec function UpdateHDTPsettings()
     super.UpdateHDTPsettings();
 	switch(TextureSetup)
 	{
-        case E_Blood1:		break;//Skin = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFlatFXtex2","DeusExItems.Skins.FlatFXTex1",IsHDTP()); break;
-        case E_Blood2:		Skin = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFlatFXtex3","DeusExItems.Skins.FlatFXTex3",IsHDTP()); break;
-        case E_Blood3:		Skin = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFlatFXtex5","DeusExItems.Skins.FlatFXTex5",IsHDTP()); break;
-        case E_Blood4:		Skin = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFlatFXtex6","DeusExItems.Skins.FlatFXTex6",IsHDTP()); break;
+        case E_Blood1:		break;//Skin = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFlatFXtex2","RSDCrap.Blood.FlatFXTex1",IsHDTP()); break;
+        case E_Blood2:		Skin = class'HDTPLoader'.static.GetTexture3("HDTPItems.Skins.HDTPFlatFXtex3","RSDCrap.Blood.FlatFXTex3","DeusExItems.Skins.FlatFXTex3",IsHDTP(),IsNewBlood()); break;
+        case E_Blood3:		Skin = class'HDTPLoader'.static.GetTexture3("HDTPItems.Skins.HDTPFlatFXtex5","RSDCrap.Blood.FlatFXTex5","DeusExItems.Skins.FlatFXTex5",IsHDTP(),IsNewBlood()); break;
+        case E_Blood4:		Skin = class'HDTPLoader'.static.GetTexture3("HDTPItems.Skins.HDTPFlatFXtex6","RSDCrap.Blood.FlatFXTex6","DeusExItems.Skins.FlatFXTex6",IsHDTP(),IsNewBlood()); break;
         case E_Ambrosia:	Skin = class'HDTPLoader'.static.GetTexture("DeusExItems.Skins.FlatFXtex48"); break;
         case E_Water:		Skin = class'HDTPLoader'.static.GetTexture("DeusExItems.Skins.FlatFXtex47"); break;
         case E_Burn1:		Skin = class'HDTPLoader'.static.GetTexture2("HDTPItems.Skins.HDTPFlatFXtex38","DeusExItems.Skins.FlatFXTex38",IsHDTP()); break;

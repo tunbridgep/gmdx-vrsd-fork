@@ -945,6 +945,8 @@ var globalconfig bool bItemRechargeSound;                    //SARGE: Okay Roso,
 
 var globalconfig bool bShowExits;                            //SARGE: Show exit icons
 
+var globalconfig bool bNewBlood;                            //SARGE: Use nicer looking blood textures
+
 //New method for detecting if we're in combat efficiently
 var private transient int combatantsCached;
 var private transient float combatCheckTime;                 //SARGE: When checking for combat, cache the result for 1 second.
@@ -20219,4 +20221,5 @@ defaultproperties
      bAllowItemPickup=true
      bRandomizeCrap=true
      bItemRechargeSound=true
+     bNewBlood=true
 }

@@ -20,7 +20,10 @@ function DoHDTP()
     if (IsHDTP())
         spreadTime=4.000000;
     else
+    {
+        Texture = class'HDTPLoader'.static.GetTexture2("RSDCrap.Blood.FlatFXTex1","DeusExItems.Skins.FlatFXTex1",IsNewBlood());
         spreadTime=5.000000;
+    }
 }
 
 defaultproperties
