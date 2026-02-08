@@ -8,6 +8,8 @@ class MenuScreenListWindow expands MenuUIScreenWindow;
 var MenuUIListHeaderButtonWindow btnHeaderSetting;
 var MenuUIListHeaderButtonWindow btnHeaderValue;
 
+var Window ImageWindows[2];
+
 var localized string strHeaderSettingLabel;
 var localized string strHeaderValueLabel;
 
@@ -38,12 +40,39 @@ var const bool bShortHeaderButtons;                 //SARGE: The vanilla lists h
 var const bool bShowDefaults;                       //SARGE: Shows "(Default: <Value>)" text in the help area when looking at an item in the list.
 var localized string DefaultValueString;
 
-var config bool bAdvancedMode;                      //SARGE: When toggled on, show ALL the options, not just the advanced ones.
-var const bool bHasAdvancedMode;                    //SARGE: When set, the menu has "advanced options" buttons and restricts it's available options depending on the setting above.
+Struct ObjectPos
+{
+    var int X;
+    var int Y;
+};
 
-var const localized string MsgEnableAdvancedMode;
-var const localized string MsgAdvancedModeOn;
-var const localized string MsgAdvancedModeOff;
+var const ObjectPos ScrollWindowPos;
+var const ObjectPos ScrollWindowSize;
+var const ObjectPos DescriptionPos;
+var const ObjectPos DescriptionSize;
+var const ObjectPos SearchPos;
+var const ObjectPos SearchSize;
+
+var const bool bHasHeaderButtons;
+var const bool bHasImages;
+var const bool bShowValueInHelp;
+
+var int numItems;             //Recalculated every time we do a Refreshchoices
+var bool bFocusedOnItemsList;   //Is our current focus on the list?
+
+//SARGE: The help screen is busted, just use this one instead
+var TextWindow winDesc;
+
+//SARGE: Lets add a search bar, since these lists are getting LONG.
+var localized string defaultSearchText;
+var String filterString;
+var MenuUIEditWindow         editSearch;
+var const bool bAllowSearch;
+var string lastSearch;
+var string searchFilter;
+var TextWindow winSearchText; //A window for a fake "Search..." text, since if we change the textbox, it steals focus from the list window.
+
+var int lastSelected;
 
 struct S_ListItem
 {
@@ -71,38 +100,120 @@ struct S_ListItem
     var int defaultValue; //TODO: Find a way to reset to default value via console
     var string consoleTarget; //If not set, use the global one instead
     var string sortCategory;  //Will be prepended to the name in the third col, for sorting
-    var bool bAdvancedModeOnly;     //Will only appear in "advanced" mode.
+    var string image1;         //Will be displayed in the first image box
+    var string image2;         //Will be displayed in the second image box
 };
 
 var S_ListItem items[255];
 
 event InitWindow()
 {
-    if (bHasAdvancedMode)
-    {
-        actionButtons[2].Action=AB_Other;
-        actionButtons[2].Text=MsgEnableAdvancedMode;
-        actionButtons[2].Key="toggleAdvanced";
-    }
 	Super.InitWindow();
     LoadSettings();
+    SetMouseFocusMode(MFocus_Click);
     CreateHeaderButtons();
+    CreateSearchBar();
+    CreateDescriptionWindow();
+    CreateImageWindows();
     CreateChoices();
     ShowHelpString(-1);
 }
 
-function ProcessAction(String actionKey)
+function CreateDescriptionWindow()
 {
-    if (actionKey == "toggleAdvanced")
+    winDesc = TextWindow(winClient.NewChild(Class'TextWindow'));
+    winDesc.SetPos(DescriptionPos.X, DescriptionPos.Y);
+    winDesc.SetSize(DescriptionSize.X, DescriptionSize.Y);
+    winDesc.SetTextAlignments(HALIGN_Left, VALIGN_Top);
+    winDesc.SetText("");
+    winDesc.SetWordWrap(true);
+	winDesc.SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
+    winDesc.SetTextColor(player.ThemeManager.GetCurrentMenuColorTheme().GetColorFromName('MenuColor_HelpText'));
+}
+
+function CreateSearchBar()
+{
+    if (bAllowSearch)
     {
-        bAdvancedMode = !bAdvancedMode;
-        SaveConfig();
-        CreateChoices();
-        if (bAdvancedMode)
-            ShowHelp(MsgAdvancedModeOn);
-        else
-            ShowHelp(MsgAdvancedModeOff);
+        winSearchText = TextWindow(winClient.NewChild(Class'TextWindow'));
+        winSearchText.SetPos(SearchPos.X + 4,SearchPos.Y + 2);
+        winSearchText.SetSize(SearchSize.X,SearchSize.Y);
+        winSearchText.SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
+        winSearchText.SetTextColor(player.ThemeManager.GetCurrentMenuColorTheme().GetColorFromName('MenuColor_HelpText'));
+        winSearchText.SetTextAlignments(HALIGN_Left, VALIGN_Center);
+        winSearchText.SetText(defaultSearchText);
+
+        editSearch = CreateMenuEditWindow(SearchPos.X, SearchPos.Y, SearchSize.X, SearchSize.Y, winClient);
+        editSearch.SetFilter(filterString);
     }
+}
+
+function ShowDescription(string desc)
+{
+    winDesc.SetText(desc);
+}
+
+function CreateImageWindows()
+{
+    if (bHasImages)
+    {
+        ImageWindows[0] = NewChild(class'Window');
+        ImageWindows[0].SetPos(224,64);
+        
+        ImageWindows[1] = NewChild(class'Window');
+        ImageWindows[1].SetPos(420, 64);
+
+        //ImageWindows[0].SetBackground(Texture'RSDCrap.UserInterface.SpecializationsComputersLarge');
+        //ImageWindows[1].SetBackground(Texture'RSDCrap.UserInterface.SpecializationsComputersLarge');
+    }
+}
+
+function UpdateImageWindows(int id)
+{
+    if (id == -1)
+    {
+        ImageWindows[0].SetBackground(None);
+        ImageWindows[1].SetBackground(None);
+    }
+    else if (bHasImages)
+    {
+        ImageWindows[0].SetBackground(None);
+        ImageWindows[1].SetBackground(None);
+        
+        if (items[id].image1 != "")
+            ImageWindows[0].SetBackground(Texture(DynamicLoadObject("RSDCrap.UserInterface." $ items[id].image1, class'Texture')));
+        if (items[id].image2 != "")
+            ImageWindows[1].SetBackground(Texture(DynamicLoadObject("RSDCrap.UserInterface." $ items[id].image2, class'Texture')));
+    }
+}
+
+function DrawWindow(GC gc)
+{
+    local string str;
+
+    str = editSearch.GetText();
+
+    if (lastSearch != str /*&& str != "" && str != defaultSearchText*/)
+    {
+        searchFilter = str;
+        lastSearch = str;
+        RefreshChoices();
+    }
+    super.DrawWindow(gc);
+}
+
+//Prevent esc-key crash.
+event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
+{
+    if (key == IK_Escape)
+    {
+        if (GetFocusWindow() == editSearch)
+        {
+            SetFocusWindow(lstItems);
+            return true;
+        }
+    }
+    return super.VirtualKeyPressed(key, bRepeat);
 }
 
 function CreateChoices()
@@ -114,9 +225,6 @@ function CreateChoices()
         log("lstItems is none!");
 	    CreateOptionsList();
     }
-
-    //Remove all existing choices
-    lstItems.DeleteAllRows();
 
     // Loop through the Menu Choices and create the appropriate menu items
 	for(i = 0; i < arrayCount(items); i++)
@@ -141,14 +249,61 @@ function CreateChoices()
             if (items[i].helpText == "")
                 items[i].helpText = helpText;
             
-            //If it's an advanced mode option, bail out if we're not in advanced mode
-            if (bHasAdvancedMode && items[i].bAdvancedModeOnly && !bAdvancedMode)
-                continue;
-
-            lstItems.AddRow(items[i].actionText $ ";" $ GetValueString(i) $ ";" $ i $ ";" $ items[i].sortCategory $ items[i].actionText);
             //lstItems.AddRow(items[i].actionText @ items[i].variable $ ";" $ GetValueString(i) $ ", " $ items[i].value);
         }
     }
+
+    RefreshChoices();
+}
+
+function RefreshChoices()
+{
+	local int i;
+    local string s1, s2, s3;
+    
+    //Remove all existing choices
+    lstItems.DeleteAllRows();
+    numItems = 0;
+
+    // Loop through the Menu Choices and create the appropriate menu items
+	for(i = 0; i < arrayCount(items); i++)
+    {
+		if (items[i].actionText != "")
+        {
+            s1 = CAPS(items[i].actionText);
+            s2 = CAPS(items[i].helpText);
+            s3 = CAPS(searchFilter);
+            //Log("searchFilter: " $ searchFilter @ items[i].actionText @ items[i].helpText @ InStr(items[i].actionText,searchFilter) @ InStr(items[i].helpText,searchFilter));
+            if (searchFilter != "" && searchFilter != defaultSearchText && InStr(s1,s3) == -1 && InStr(s2,s3) == -1)
+                continue;
+                
+            //Log("searchFilter: " $ searchFilter @ " - " @ items[i].actionText @ items[i].helpText);
+
+            lstItems.AddRow(items[i].actionText $ ";" $ GetValueString(i) $ ";" $ i $ ";" $ items[i].sortCategory $ items[i].actionText);
+            numItems++;
+        }
+    }
+    
+    searchFilter = "";
+}
+
+event FocusEnteredDescendant(Window enterWindow)
+{
+    //Clear the search bar if we enter it and it's at default
+    if (enterWindow == editSearch && winSearchText != None)
+        winSearchText.Hide();
+}
+
+event FocusLeftDescendant(Window leaveWindow)
+{
+    //Reset the search bar if we leave it and it's empty
+    if (leaveWindow == editSearch && editSearch != None && winSearchText != None && editSearch.GetText() == "")
+        winSearchText.Show();
+
+    /*
+    if (leaveWindow == lstItems)
+        ArtificiallySelectIndex(lastSelected);
+        */
 }
 
 function LoadSettings()
@@ -166,6 +321,10 @@ function LoadSettings()
 function int GetConsoleValue(int index)
 {
     local string command;
+
+    if (items[index].consoleTarget == "")
+        return 0;
+
     command = player.ConsoleCommand("get " $ items[index].consoleTarget @ items[index].variable);
 
     //Sometimes it can return True and False, convert it to numeric
@@ -179,6 +338,9 @@ function int GetConsoleValue(int index)
 
 function SetConsoleValue(int index, int value)
 {
+    if (items[index].consoleTarget == "")
+        return;
+
     player.ConsoleCommand("set " $ items[index].consoleTarget @ items[index].variable @ value);
 }
 
@@ -318,7 +480,7 @@ function bool HandleResetMessagebox(Window msgBoxWindow, int buttonNumber)
         }
         LoadSettings();
         SaveSettings();
-        CreateChoices();
+        RefreshChoices();
         ShowHelpString(-1);
     }
 }
@@ -326,12 +488,12 @@ function bool HandleResetMessagebox(Window msgBoxWindow, int buttonNumber)
 //A bit of a dodgy hack.
 function ShowHelpString(int id)
 {
-    local string help1, help2, help3;
+    local string help1, help2, help3, h;
 
     //Show the default help text if it's -1
     if (id == -1)
     {
-        ShowHelp(helpText);
+        ShowDescription(helpText);
         return;
     }
 
@@ -345,7 +507,14 @@ function ShowHelpString(int id)
     if (help2 != "" && help2 != " " && help3 != "")
         help3 = " " $ help3;
 
-    ShowHelp(help1 $ help2 $ help3);
+    h = (help1 $ help2 $ help3);
+
+    if (bShowValueInHelp)
+    {
+        h = h $ "|n|n" $ "Current Value: " $ GetValueString(id);
+    }
+
+    ShowDescription(h);
 }
 
 event bool BoxOptionSelected(Window msgBoxWindow, int buttonNumber)
@@ -379,7 +548,7 @@ event bool ListRowActivated(window list, int rowId)
 
     //Refresh List
     lstItems.SetField(rowId, 1, GetValueString(id));
-    //CreateChoices();
+    //RefreshChoices();
 
 	return True;
 }
@@ -390,17 +559,25 @@ event bool ListRowActivated(window list, int rowId)
 
 function CreateHeaderButtons()
 {
-	btnHeaderSetting   = CreateHeaderButton(10,  3, colWidths[0]-2, strHeaderSettingLabel,   winClient);
-    if (bShortHeaderButtons)
-        btnHeaderValue = CreateHeaderButton(colWidths[0]+11, 3, 157, strHeaderValueLabel, winClient);
-    else
-        btnHeaderValue = CreateHeaderButton(colWidths[0]+11, 3, 380-(colWidths[0]+26), strHeaderValueLabel, winClient);
-
-    //Header buttons are disabled if we can't sort.
-    if (bNoSort)
+    if (bHasHeaderButtons)
     {
-        btnHeaderSetting.SetSensitivity(False);
-        btnHeaderValue.SetSensitivity(False);
+        btnHeaderSetting   = CreateHeaderButton(10,  3, colWidths[0]-2, strHeaderSettingLabel,   winClient);
+
+        if (!bAllowSearch)
+        {
+            if (bShortHeaderButtons)
+                btnHeaderValue = CreateHeaderButton(colWidths[0]+11, 3, 157, strHeaderValueLabel, winClient);
+            else
+                btnHeaderValue = CreateHeaderButton(colWidths[0]+11, 3, 380-(colWidths[0]+26), strHeaderValueLabel, winClient);
+        }
+
+        //Header buttons are disabled if we can't sort.
+        if (bNoSort)
+        {
+            btnHeaderSetting.SetSensitivity(False);
+            if (!bAllowSearch)
+                btnHeaderValue.SetSensitivity(False);
+        }
     }
 }
 
@@ -445,8 +622,8 @@ function CreateOptionsList()
 {
     winScroll = CreateScrollAreaWindow(winClient);
 
-	winScroll.SetPos(11, 23);
-	winScroll.SetSize(369, 268);
+	winScroll.SetPos(ScrollWindowPos.X, ScrollWindowPos.Y);
+	winScroll.SetSize(ScrollWindowSize.X, ScrollWindowSize.Y);
 
 	lstItems = MenuUIListWindow(winScroll.clipWindow.NewChild(Class'MenuUIListWindow'));
 	lstItems.EnableMultiSelect(False);
@@ -473,7 +650,6 @@ function CreateOptionsList()
         lstItems.EnableAutoSort(True);
     }
     bLastPressedHeaderWasSetting = true;
-
 }
 
 event bool ListSelectionChanged(window list, int numSelections, int focusRowId)
@@ -481,13 +657,28 @@ event bool ListSelectionChanged(window list, int numSelections, int focusRowId)
 	local bool bResult;
     local int rowIndex;
 
+    if (lstItems.GetNumSelectedRows() == 0 || numSelections == 0)
+        return true;
+
     bResult = Super.ListSelectionChanged(list, numSelections, focusRowId);
     rowIndex = int(lstItems.GetFieldValue(focusRowId, 2));
-
+    
+    lastSelected = focusRowId;
+    
     ShowHelpString(rowIndex);
-
+    UpdateImageWindows(rowIndex);
+    
     return bResult;
 }
+
+/*
+//Thanks to WCCC for this
+function ArtificiallySelectIndex(int index)
+{
+    lstItems.SelectToRow(index);
+    lstItems.SetFocusRow(index);
+}
+*/
 
 function SaveSettings()
 {
@@ -537,9 +728,6 @@ defaultproperties
      clientTextures(2)=Texture'DeusExUI.UserInterface.MenuCustomizeKeysBackground_3'
      clientTextures(3)=Texture'DeusExUI.UserInterface.MenuCustomizeKeysBackground_4'
      textureCols=2
-     bHelpAlwaysOn=True
-     helpPosY=312
-     defaultHelpHeight=27
      disabledText="Disabled"
      enabledText="Enabled"
      confirmDefaultsTitle="Reset to default settings?"
@@ -552,7 +740,17 @@ defaultproperties
      colWidths(1)=205
      bShortHeaderButtons=true
      DefaultValueString="(Default: %s)"
-     MsgEnableAdvancedMode="Toggle Advanced Mode"
-     MsgAdvancedModeOn="Advanced Mode Enabled"
-     MsgAdvancedModeOff="Advanced Mode Disabled"
+     ScrollWindowPos=(X=11,Y=23)
+     ScrollWindowSize=(X=369,Y=268)
+     DescriptionPos=(X=8,Y=310)
+     DescriptionSize=(X=362,Y=200)
+     //SearchPos=(X=0,Y=410)
+     SearchPos=(X=174,Y=0)
+     SearchSize=(X=160,Y=16)
+     bHasHeaderButtons=true
+     bHasImages=false
+     bAllowSearch=true
+     defaultSearchText="Search..."
+     filterString="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890:. "
+     bTickEnabled=true
 }

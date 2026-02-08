@@ -16,6 +16,10 @@ function SaveSettings()
     
     //Show/Hide exits based on settings
     player.ShowExits();
+    
+    //Reset HDTP
+    //Now needed for blood textures
+    player.HDTP();
 
     if (player.outfitManager != None)
         player.outfitManager.SaveConfig();
@@ -165,16 +169,16 @@ defaultproperties
      items(124)=(HelpText="Shows icons for map exits.",actionText="Game: Show Map Exits",variable="bShowExits",defaultValue=0,bAdvancedModeOnly=true)
      items(125)=(HelpText="Item icons in the Inventory and Belt will reflect item skins. Otherwise the default icon is used.",actionText="HUD: Show Skinned Icons",variable="bSkinnedBeltIcons",defaultValue=1,bAdvancedModeOnly=false)
 
-     Title="GMDX Quality of Life Options"
+     Title="GMDX Advanced Options"
      colWidths(0)=214
      colWidths(1)=155
-     helpPosY=307
      bShowDefaults=true
      bShortHeaderButtons=false
-     defaultHelpHeight=37
      clientTextures(0)=Texture'RSDCrap.UserInterface.MenuQoLBackground_1'
      clientTextures(1)=Texture'RSDCrap.UserInterface.MenuQoLBackground_2'
      clientTextures(2)=Texture'RSDCrap.UserInterface.MenuQoLBackground_3'
      clientTextures(3)=Texture'RSDCrap.UserInterface.MenuQoLBackground_4'
-     bHasAdvancedMode=true
+     DescriptionPos=(X=8,Y=305)
+     SearchPos=(X=224,Y=0)
+     SearchSize=(X=140,Y=16)
 }
