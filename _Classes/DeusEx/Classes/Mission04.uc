@@ -238,6 +238,7 @@ function Timer()
 	local MIB mblack;
 	local Actor A;
 	local PaulDenton Paul;
+	local PaulDentonCarcass PaulC;
 	local FordSchick Ford;
     local SkillAwardTrigger TR;
     local int count;
@@ -312,14 +313,17 @@ function Timer()
             }
 			
             //SARGE: Sometimes you can miss the 50 skill points for sticking with paul, so give them to him now if we haven't already.
-            if(paul != None && !flags.GetBool('PaulDenton_Dead') && !flags.GetBool('GMDXPaulSkillFix'))
+            if(!flags.GetBool('PaulDenton_Dead') && !flags.GetBool('GMDXPaulSkillFix'))
             {
                 count = 0;
-                foreach AllActors(Class'UNATCOTroop', troop)
-                    if(troop.bHidden == False)
-                        count++;
+                foreach AllActors(Class'PaulDentonCarcass', PaulC)
+                    count++;
 
                 foreach AllActors(Class'MIB', mblack)
+                    if(mblack.bHidden == False)
+                        count++;
+                
+                foreach AllActors(Class'UNATCOTroop', troop)
                     if(mblack.bHidden == False)
                         count++;
 

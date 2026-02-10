@@ -50,6 +50,13 @@ function DisplayWeapon(bool overlay)
             ShowWeaponAddon(4,bHasScope);
         }
     }
+
+    //If we're unloaded, get rid of the green plasma effect.
+    if (overlay && clipcount == 0)
+        if (IsHDTP())
+            multiskins[3] = Texture'BlackMaskTex';
+        else
+            multiskins[1] = Texture'BlackMaskTex';
 }
 
 state Reload

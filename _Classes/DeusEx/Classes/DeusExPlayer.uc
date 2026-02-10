@@ -391,7 +391,7 @@ struct augBinary                                                                
 //ALSO used for Secondary slot
 struct BeltInfo
 {
-    var string      itemClass;
+    var string      itemClass;              //SARGE: Note. This is set to "none" rather than "" when empty, so that it doesn't reset between map loads when it's none (the default value).
     var texture		icon;				    //Sarge. Disconnect the icon from the inventory item, so we can keep the last used icon when the item disappears (for items with multiple skins).
     var texture		defaultIcon;			//Sarge. This probably isn't necessary, but it's still a hell of a lot better than trying to fuck around with DynamicLoadObject just to get the default icon...
 };
@@ -1204,7 +1204,7 @@ function AssignSecondary(Inventory item, optional bool bMessage)
 
     if (item == None)
     {
-        assignedWeapon.itemClass = "";
+        assignedWeapon.itemClass = "none";
         assignedWeapon.icon = None;
         assignedWeapon.defaultIcon = None;
     }
@@ -1253,7 +1253,7 @@ function Texture GetSecondaryIcon()
 function Class<Inventory> GetSecondaryClass()
 {
     local class<Inventory> assignedClass;
-    if (assignedWeapon.itemClass != "")
+    if (assignedWeapon.itemClass != "none")
         assignedClass = class<Inventory>(DynamicLoadObject(assignedWeapon.itemClass, class'Class'));
     //ClientMessage("Get Secondary Class: " $ assignedClass $ " (" $ assignedWeapon $ ")");
     return assignedClass;
@@ -2695,6 +2695,10 @@ function int DoSaveGame(int saveIndex, optional String saveDesc)
         saveDir = GetSaveGameDirectory();
 		saveIndex=saveDir.GetNewSaveFileIndex();
     }
+
+    //Loop back around
+    if (saveIndex >= 1000)
+        saveIndex = 1;
     
     //If a datalink is playing, abort it
     if (dataLinkPlay != None)
@@ -8084,12 +8088,14 @@ Begin:
 		PutInHand(None);
 	}
 
+    /*
 	// can't carry decorations across levels
 	if (CarriedDecoration != None)
 	{
 		CarriedDecoration.Destroy();
 		CarriedDecoration = None;
 	}
+    */
 
 	PlayAnim('Still');
 }
@@ -8150,11 +8156,13 @@ Begin:
 	}
 
 	// can't carry decorations across levels
+    /*
 	if (CarriedDecoration != None)
 	{
 		CarriedDecoration.Destroy();
 		CarriedDecoration = None;
 	}
+    */
 
 	SetPhysics(PHYS_None);
 	PlayAnim('Still');
@@ -8175,11 +8183,13 @@ Letterbox:
 	}
 
 	// can't carry decorations across levels
+    /*
 	if (CarriedDecoration != None)
 	{
 		CarriedDecoration.Destroy();
 		CarriedDecoration = None;
 	}
+    */
 
 	SetPhysics(PHYS_None);
 	PlayAnim('Still');
@@ -8515,7 +8525,8 @@ function DoRightFrob(Actor frobTarget)
     bDefaultFrob = true;
     bLeftClicked = false;
 
-    if (inHand == None && bRun != 0 && bAllowItemPickup && frobTarget.isA('Inventory'))
+    //SARGE TODO: Make this conditional not horrible
+    if (inHand == None && bRun != 0 && bAllowItemPickup && frobTarget.isA('Inventory') && !frobTarget.isA('NanoKey') && (!frobTarget.IsA('Flare') || Flare(frobTarget).gen == None))
         bDefaultFrob = !class'CarriedObject'.static.CreateCarriedObjectFor(self,Inventory(frobTarget));
     else if (frobTarget.isA('DeusExPickup'))
         bDefaultFrob = DeusExPickup(frobTarget).DoRightFrob(Self,inHand != None);
@@ -9500,7 +9511,7 @@ function AddReceivedItem(string owner, Inventory item, int count, optional bool 
 
     if (rootWindow != None && DeusExRootWindow(rootWindow).hud != None)
     {
-        DebugLog("Item is: " $ item $ ", bDeclined is " $ bDeclined $ ", bNoGroup: " $ bNoGroup);
+        DebugLog("AddReceivedItem - Item is: " $ item $ ", bDeclined is " $ bDeclined $ ", bNoGroup: " $ bNoGroup $ ", Icon: " $ item.Icon);
 
         DeusExRootWindow(rootWindow).hud.receivedItems.AddItemFromID(owner, item, count, bDeclined, bNoGroup, overrideTexture);
 
@@ -10478,12 +10489,12 @@ function ClearPlaceholder(int objectNum)
 {
     beltInfos[objectNum].icon = None;
     beltInfos[objectNum].defaultIcon = None;
-    beltInfos[objectNum].itemClass = "";
+    beltInfos[objectNum].itemClass = "none";
 }
 
 function bool IsPlaceholder(int objectNum)
 {
-    return beltInfos[objectNum].itemClass != "";
+    return beltInfos[objectNum].itemClass != "none";
 }
 
 function BeltInfo GetPlaceholder(int objectNum)

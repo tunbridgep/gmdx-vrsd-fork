@@ -26,10 +26,16 @@ New Features:
     - Added a phone to Paul's apartment, with a message from a mysterious friend.
     - Added the ability to eavesdrop a conversation between Tong and Lebedev.
 - Added a new "Show on Screen" checkbox to display Goals on the main HUD.
+- Improvements to Weapon Loaded/Unloaded readability and usability
+    - Added a sound for each round loaded by the GEP Gun.
+    - The Plasma Rifle's green circle is now removed when unloaded.
+    - The Electric Prod will no longer display electricity when unloaded.
 - Notes can now be pinned, which will add them to the top of the notes list
     - Pinned notes will also be visible on the main HUD
 
 Bugfixes:
+- Fixed GMDX:AE Bug where unassigning Secondaries could re-appear when revisiting old maps.
+- Fixed GMDX:AE Bug where saving would fail after reaching a save ID of 1000. Now it will loop back around from 0.
 - Fixed GMDX:AE Bugs related to 20mm grenades:
     - Fixed issue where 20mm ammo projectiles would fly sideways.
     - They now use their proper mesh, rather than the Shotgun Casing mesh.
@@ -57,6 +63,7 @@ Bugfixes:
 - Other minor bugfixes
 
 Misc Changes:
+- Save Points now use Quicksaves rather than always using a new save slot.
 - The Flamethrower no longer shows a flame when out of ammo.
 - In Hardcore mode, weapons will now be emptied at the start of reloading (except for one-at-a-time weapons).
     - This means that you will no longer be able to cancel reloading to regain your previous ammo amount. Instead your weapon will be empty.
@@ -76,7 +83,7 @@ Misc Changes:
 - Minor changes to phones to make them more realistic (for instance, they will "ring out" rather than ringing once, and disconnected phones won't ring at all).
 - Notes in the Computer/Keypad notes display are now sorted in descending order like the regular Notes screen.
 - Using the "Assign Secondary" hotkey in the Inventory screen will now unassign if used on the secondary item.
-- The Electric Prod will now no longer display electricity in it's viewmodel when empty.
+- Updated the INI to fix an infinite recursion issue with the enhanced renderer, which would cause low-poly models to render and tank performance.
 
 Map Changes:
 - 02_NYC_BatteryPark
