@@ -6,9 +6,6 @@ class AugCloak extends Augmentation;
 var float mpAugValue;
 var float mpEnergyDrain;
 var ExplosionLight lite;
-var SpoofedCoronaSmall cor;
-var Vector offset, X, Y, Z;
-var Vector Dir;
 
 state Active
 {
@@ -16,46 +13,15 @@ state Active
 Begin:
 	if ((Player.inHand != None) && (Player.inHand.IsA('DeusExWeapon')))
 		Player.ServerConditionalNotifyMsg( Player.MPMSG_NoCloakWeapon );
-	Player.PlaySound(Sound'CloakUp', SLOT_None, 0.85, ,768,1.0);
-    AISendEvent('LoudNoise',EAITYPE_Audio,,416);
-    lite=Spawn(class'ExplosionLight',,,Player.Location);
-    if (lite != none)
-    {
-     //lite.LightType=LT_Flicker;
-     //lite.LightBrightness=255;
-     lite.LightHue=144;
-     lite.LightSaturation=80;
-     lite.size=6;
-    }
 
-    if (Player.bNoTranslucency && Player.CarriedDecoration != none)
-	{
-    Player.CarriedDecoration.Style = STY_Translucent;
-	Player.CarriedDecoration.ScaleGlow = 0.2; //was 1.0
-	Player.CarriedDecoration.bUnlit = True;
-    }
-	class'DeusExPlayer'.default.bCloakEnabled=true;
-	Player.Style = STY_Translucent;
-	Player.ScaleGlow = 0.001;
-	Player.MultiSkins[6] = Texture'PinkMaskTex';
-    Player.MultiSkins[7] = Texture'PinkMaskTex';
-    offset=vect(0,0,0);
+    AISendEvent('LoudNoise',EAITYPE_Audio,,416);
+	player.CloakManager.SetCloaked(true,true); //GMDX
  }
 
 function Deactivate()
 {
-	Player.PlaySound(Sound'CloakDown', SLOT_None, 0.85, ,768,1.0);
-	class'DeusExPlayer'.default.bCloakEnabled=false; //GMDX
-    Player.Style = Player.default.Style;
-	Player.ScaleGlow = Player.default.ScaleGlow;
-	Player.MultiSkins[6] = Texture'DeusExCharacters.Skins.FramesTex4';
-    Player.MultiSkins[7] = Texture'DeusExCharacters.Skins.LensesTex5';
-	if (Player.bNoTranslucency && Player.CarriedDecoration != none)
-	{
-    Player.CarriedDecoration.Style = Player.CarriedDecoration.default.Style;
-	Player.CarriedDecoration.ScaleGlow = Player.CarriedDecoration.default.ScaleGlow;
-	Player.CarriedDecoration.bUnlit = False;
-    }
+    AISendEvent('LoudNoise',EAITYPE_Audio,,416);
+	player.CloakManager.ForceOff(true); //GMDX
 	Super.Deactivate();
 }
 

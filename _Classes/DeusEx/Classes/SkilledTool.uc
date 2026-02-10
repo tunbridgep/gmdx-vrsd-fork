@@ -45,24 +45,19 @@ simulated function renderoverlays(Canvas canvas)
 	
     if ( PlayerOwner != None )
     {
-
-        DisplayWeapon(true);
-    
-        if (bIsRadar || bIsCloaked)
-        {
-            ShowCamo();
-        }
+        PreDisplayWeapon(true);
     }
     
     super.RenderOverlays(canvas);
 
     //Reset weapon to standard display
-    DisplayWeapon(false);
+    PreDisplayWeapon(false);
 }
 
-function DisplayWeapon(bool overlay)
+function PreDisplayWeapon(bool overlay)
 {
     local int i;
+    local DeusExPlayer OP;
     for (i = 0;i < 8;i++)
     {
         //SARGE: No HDTP models for these
@@ -73,6 +68,23 @@ function DisplayWeapon(bool overlay)
     }
     Skin = default.Skin;
     Texture = default.Texture;
+    ScaleGlow = default.ScaleGlow;
+    Style = default.Style;
+    
+    DisplayWeapon(overlay);
+
+    //SARGE: Don't even bother checking for ScriptedPawns here, they never use this stuff.
+    OP = DeusExPlayer(Owner);
+    if (OP != None && OP.CloakManager.IsInAnyState())
+    {
+        OP.CloakManager.UpdateSkin(self);
+        ScaleGlow = OP.CloakManager.GetScaleGlow();
+    }
+}
+
+//Overwrite this for custom display functionality.
+function DisplayWeapon(bool overlay)
+{
 }
 
 // ----------------------------------------------------------------------

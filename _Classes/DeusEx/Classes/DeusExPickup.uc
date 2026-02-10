@@ -30,13 +30,7 @@ var localized String CountLabel;
 var localized String msgTooMany;
 
 //gmdx
-var travel bool bIsCloaked;
-var texture NormalPlayerViewSkins[10];
-var texture CamoPlayerViewSkins[10];
 var() bool bSimplePhysics;
-var travel bool bIsRadar;                                                       //RSD: for splitting cloak/radar texture functionality
-var bool bJustUncloaked;                                                        //RSD: for splitting cloak/radar texture functionality
-var bool bJustUnRadar;                                                          //RSD: for splitting cloak/radar texture functionality
 var bool bAutoActivate;                                                         //Sarge: Auto activate with left click, rather than placing in the players hands                                                                                
 var localized string StackSizeLabel;                                            //Sarge: Show the stack size in the description
 
@@ -50,6 +44,9 @@ var string HDTPMesh;
 
 var int totalSkins;                                                             //Sarge: How many total skins this object has. Used to select random skins
 var(GMDX) bool dontRandomiseSkin;                                               //Sarge: Prevents individual items from having their skin randomised
+
+//SARGE: Add "Item Stealing" mechanics
+var(GMDX) bool bIsOwnedItem;                                                    //SARGE: Send a futz event when picking this up.
 
 var(GMDX) bool bDontRemoveOnMissionComplete;                                    //SARGE: Don't remove this item on mission completion.
 
@@ -162,168 +159,9 @@ replication
 		UseOnce;
 }
 
-//SARGE: TODO: Move this (and the version from DeusExWeapon) to a new object, and share it between SkilledTools and Weapons
-function SetCloakRadar(bool bEnableCloak, bool bEnableRadar, optional bool bForce) //RSD: Overhauled cloak/radar routines
-{
-	local bool bCheckCloak, bCheckRadar;
-
-    if ((Owner==none)||(!Owner.IsA('DeusExPlayer'))) return;
-	if (Owner!=none && Owner.IsA('DeusExPlayer'))
-	{
-	//DeusExPlayer(Owner).BroadcastMessage("Owner");
-	//DeusExPlayer(Owner).BroadcastMessage(bIsRadar);
-	if(!bEnableCloak&&(bIsCloaked||bForce))
-	{
- 	  //if (ScaleGlow==10.500001)                                               //RSD: Bad implementation and also no longer needed
-      //   Style=default.Style;
-
-	  bJustUncloaked = True;
-	  if (bIsCloaked)
-	     HideCamo();
-	  bIsCloaked=false;
-	  bCheckRadar=true;
-	  //DeusExPlayer(Owner).BroadcastMessage("Cloak Off");
-	}
-	if (!bEnableRadar&&(bIsRadar||bForce))
-	{
- 	  //if (ScaleGlow==10.500001)                                               //RSD: Bad implementation and also no longer needed
-      //    Style=default.Style;
-
-	  bJustUnradar = True;
-	  if (bIsRadar)
-	     HideCamo();
-	  bIsRadar=false;
-	  bCheckCloak=true;
-	  //DeusExPlayer(Owner).BroadcastMessage("Radar Off");
-	}
-	if (bEnableRadar &&(!bIsRadar||bForce||bCheckRadar))
-	{
-	  //AmbientGlow=255;                                                        //RSD: Removed ambient glow for proper stacking effect
-	  bIsRadar=true;
- 	  ShowCamo();
- 	  //DeusExPlayer(Owner).BroadcastMessage("Radar On");
-	}
-    if (bEnableCloak&&(!bIsCloaked||bForce||bCheckCloak))
-	{
-	  //AmbientGlow=255;
-	  bIsCloaked=true;
-	  ShowCamo();
-	  //DeusExPlayer(Owner).BroadcastMessage("Cloak On");
-	}
-    }
-}
-
-function ShowCamo()
-{
-	local int     i;
-	local texture curSkin;
-
-		for (i=0; i<8; i++)
-			NormalPlayerViewSkins[i] = MultiSkins[i];
-
-		NormalPlayerViewSkins[8] = Skin;
-		NormalPlayerViewSkins[9] = Texture;
-
-		for (i=0; i<8; i++)
-		{
-			curSkin = GetMeshTexture(i);
-			CamoPlayerViewSkins[i] = GetGridTexture(curSkin);
-		}
-
-		CamoPlayerViewSkins[8] = GetGridTexture(NormalPlayerViewSkins[8]);
-		CamoPlayerViewSkins[9] = GetGridTexture(NormalPlayerViewSkins[9]);
-
-		for (i=0; i<8; i++)
-			MultiSkins[i] = CamoPlayerViewSkins[i];
-
-        //RSD: Overhauled cloak/radar routines
-        if (bIsCloaked && !bIsRadar)
-        {
-		    Skin = FireTexture'GameEffects.InvisibleTex';
-		    Texture = FireTexture'GameEffects.InvisibleTex';
-		    Style = STY_Translucent;
-		    ScaleGlow=0.500000;                                                 //RSD: If only cloak on, use cloak ScaleGlow
-        }
-        else if (bIsRadar && !bIsCloaked)
-        {
-            Skin = Texture'Effects.Electricity.Xplsn_EMPG';
-		    Texture = Texture'Effects.Electricity.Xplsn_EMPG';
-		    Style = STY_Normal;                                                 //RSD: Going for a solid texture here
-		    ScaleGlow=10.500001;                                                //RSD: If only radar on, use radar ScaleGlow
-        }
-        else
-        {
-            Skin = Texture'Effects.Electricity.Xplsn_EMPG';
-		    Texture = Texture'Effects.Electricity.Xplsn_EMPG';
-		    Style = STY_Translucent;                                            //RSD: But translucent if we have cloak + radar
-		    ScaleGlow=default.ScaleGlow;                                        //RSD: If both are on, default to cloak ScaleGlow
-        }
-		//Style = STY_Translucent;
-}
-
-function HideCamo()
-{
-	local int i;
-    local bool bSetFailure;
-
-		for (i=0; i<8; i++)
-			MultiSkins[i] = NormalPlayerViewSkins[i];
-
-		Skin = NormalPlayerViewSkins[8];
-		Texture = NormalPlayerViewSkins[9];
-
-        //CyberP: failsafe                                                      //RSD: Taken from DeusExWeapon.uc
-		for (i=0; i<8; i++)
-		{
-			if (MultiSkins[i] == Texture'Effects.Electricity.Xplsn_EMPG' || MultiSkins[i] == FireTexture'GameEffects.InvisibleTex')
-			{
-			  bSetFailure = True;
-			  break;
-			}
-		}
-		if (bSetFailure)
-		{
-		   for (i=0; i<8; i++)
-			MultiSkins[i] = default.MultiSkins[i];
-			Skin = default.Skin;
-		    Texture = default.Texture;
-		}
-
-		//RSD: Overhauled cloak/radar routines:
-		if (bJustUnradar && bIsCloaked)
-		{
-			Style=STY_Translucent;
-			ScaleGlow=0.500000;                                                 //RSD: If only cloak on, use cloak ScaleGlow
-		}
-		else if (bJustUncloaked && bIsRadar)
-		{
-		    Style=STY_Normal;
-		    ScaleGlow=10.500001;                                                //RSD: If only radar on, use radar ScaleGlow
-        }
-        else                                                                    //RSD: Note that Style normal is reset a bit after decloaking (and no radar) in Tick()
-            ScaleGlow=default.ScaleGlow;                                        //RSD: If neither on, use default ScaleGlow (otherwise too bright after radar)
-}
-
-function Texture GetGridTexture(Texture tex)
-{
-	if (tex == None)
-		return Texture'BlackMaskTex';
-	else if (tex == Texture'BlackMaskTex')
-		return Texture'BlackMaskTex';
-	else if (tex == Texture'GrayMaskTex')
-		return Texture'BlackMaskTex';
-	else if (tex == Texture'PinkMaskTex')
-		return Texture'BlackMaskTex';
-	else if (class'DeusExPlayer'.default.bRadarTran==True)
-        return Texture'Effects.Electricity.Xplsn_EMPG';
-	else
-		return FireTexture'GameEffects.InvisibleTex';
-}
-
 function DropFrom(vector StartLocation)
 {
-    if (bIsCloaked || bIsRadar)                                                 //RSD: Overhauled cloak/radar routines
-	 SetCloakRadar(false,false,true);//SetCloak(false,true);
+    Style = default.Style;
     ScaleGlow = default.ScaleGlow;                                              //RSD: Also reset ScaleGlow so we don't get dim/bright due to cloak/radar
     UpdateHDTPsettings();
 	super.DropFrom(StartLocation);
@@ -331,6 +169,7 @@ function DropFrom(vector StartLocation)
 
 simulated function Tick(float deltaTime)                                        //RSD: Relevant portion taken from DeusExWeapon.uc for overhauled cloak/radar routines
 {
+    /*
 		if (bJustUncloaked && !bIsCloaked)
 		{
 		   ScaleGlow+=DeltaTime;
@@ -345,6 +184,7 @@ simulated function Tick(float deltaTime)                                        
 		       AmbientGlow=default.AmbientGlow;
 		   }
 		}
+    */
 }
 
 //=============================================================================
@@ -352,19 +192,50 @@ simulated function Tick(float deltaTime)                                        
 // Draw first person view of inventory
 simulated event RenderOverlays( canvas Canvas )
 {
-	/*if (class'DeusExPlayer'.default.bCloakEnabled&&!bIsCloaked)
-	{
-		SetCloak(true);
-	} else
-	if (!class'DeusExPlayer'.default.bCloakEnabled&&bIsCloaked)
-	{
-		SetCloak(false);
-	}*/
-	//RSD: Overhauled cloak/radar routines
-	SetCloakRadar(class'DeusExPlayer'.default.bCloakEnabled,class'DeusExPlayer'.default.bRadarTran);
-	super.RenderOverlays(Canvas);
+	local DeusExPlayer PlayerOwner;
+	PlayerOwner = DeusExPlayer(Owner);
+
+    if ( PlayerOwner != None )
+        PreDisplay(true);
+    
+    super.RenderOverlays(canvas);
+
+    //Reset to standard display
+    PreDisplay(false);
 }
 
+function PreDisplay(bool overlay)
+{
+    local int i;
+    local DeusExPlayer OP;
+    for (i = 0;i < 8;i++)
+    {
+        //SARGE: No HDTP models for these
+        //if (IsHDTP())
+        //    multiskins[i] = none;
+        //else
+            multiskins[i] = default.multiskins[i];
+    }
+    Skin = default.Skin;
+    Texture = default.Texture;
+    ScaleGlow = default.ScaleGlow;
+    Style = default.Style;
+    
+    Display(overlay);
+
+    //SARGE: Don't even bother checking for ScriptedPawns here, they never use this stuff.
+    OP = DeusExPlayer(Owner);
+    if (OP != None && OP.CloakManager.IsInAnyState())
+    {
+        OP.CloakManager.UpdateSkin(self);
+        ScaleGlow = OP.CloakManager.GetScaleGlow();
+    }
+}
+
+//Overwrite this for custom display functionality.
+function Display(bool overlay)
+{
+}
 
 function HandleMultipleSkins(inventory item, int startcopies)
 {

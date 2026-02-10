@@ -514,9 +514,6 @@ var bool bCanTiptoes; //based on legs/crouch/can raise body
 var bool bIsTiptoes;
 var bool bPreTiptoes;
 var bool bLeftToe,bRightToe;
-var bool bRadarTran; //CyberP: radar trans effect
-var bool bCloakEnabled; //player is cloaked was class'DeusExWeapon'.default.this=T/F wow :)
-var transient bool bIsCloaked; //weapon is cloaked
 var int LightLevelDisplay; //CyberP: augIFF light value
 var travel int KillerCount; //CyberP: are we a pacifist
 var travel Actor RocketTarget; //GEPDummyTarget (basic actor)
@@ -645,6 +642,7 @@ var travel PerkSystem PerkManager;
 var travel RandomTable Randomizer;
 var travel FontManager FontManager;
 var travel KeybindManager KeybindManager;
+var travel CloakManager CloakManager;
 var DecalManager DecalManager;
 
 const DRUG_TOBACCO = 0;
@@ -1042,10 +1040,18 @@ exec function RedoOutfits()
 function DoBloodEffect(int Damage, name DamageType, Vector ObjLocation, bool flash)
 {
     local float dist;
+    local float maxDist;
+
+    maxDist = 90;
+
     if (Damage > 0 && (damageType == 'Shot' || damageType == 'Exploded' || damageType == 'Sabot' || (DamageType == 'Burned' && Damage >= 10)))
     {
+        //Get bloody from a longer range if gibbed
+        if (damageType == 'Exploded' || (DamageType == 'Burned' && Damage >= 10))
+            maxDist = 180;
+
         dist = Abs(VSize(Location - ObjLocation));
-        if (dist < 160)
+        if (dist < maxdist)
         {
             if (flash)
             {
@@ -1053,7 +1059,10 @@ function DoBloodEffect(int Damage, name DamageType, Vector ObjLocation, bool fla
                 bloodTime = 4.000000;
             }
             if (iBloodyWeapons > 0 && DeusExWeapon(inHand) != None)
-                DeusExWeapon(inHand).SetCoveredInBlood(true);
+            {
+                DeusExWeapon(inHand).SetBloodyWeapon(true);
+                DeusExWeapon(inHand).SetBloodyHands(true);
+            }
         }
     }
 }
@@ -1330,11 +1339,7 @@ function UpdateHDTPsettings()
 	}
 	else
 	{
-		mesh = default.mesh;
-		for(i=0; i<=7;i++)
-		{
-			multiskins[i]=default.multiskins[i];
-		}
+        class'SkinUtils'.static.ResetSkinStyle(Self);
 	}
 }
 
@@ -1777,6 +1782,18 @@ function SetupDecalManager()
     }
 }
 
+function SetupCloakManager()
+{
+	// install the Perk Manager if not found
+	if (CloakManager == None)
+    {
+        DebugMessage("Make new Cloak Manager");
+	    CloakManager = new(Self) class'CloakManager';
+    }
+    CloakManager.Init(Self);
+    CloakManager.SetSkinStyle(SK_Animated); //Wavy tex
+}
+
 function SetupPerkManager()
 {
 	// install the Perk Manager if not found
@@ -1886,6 +1903,7 @@ function InitializeSubSystems()
 	SetupFontManager();
     SetupKeybindManager();
 	SetupDecalManager();
+	SetupCloakManager();
 }
 
 //SARGE: Helper function to get the count of an item type
@@ -2029,6 +2047,7 @@ event TravelPostAccept()
     SetupFontManager();
     SetupKeybindManager();
 	SetupDecalManager();
+	SetupCloakManager();
 
     //reset "fake" death
     bFakeDeath = false;
@@ -2586,47 +2605,6 @@ exec function LoadGame(int saveIndex)
     SetupRendererSettings();
 
 //   log("MYCHK:LoadGame: ,"@saveIndex);
-	// Reset the FOV
-	if (class'DeusExPlayer'.default.bRadarTran == True)
-    {
-       class'DeusExPlayer'.default.bRadarTran = False;   //CyberP: disable the radar effect
-       class'DeusExPlayer'.default.bCloakEnabled = False;
-       ScaleGlow = default.ScaleGlow;
-       Style = default.Style;
-       AmbientGlow = default.AmbientGlow;
-       if (inhand != None)
-       {
-           if (inHand.IsA('DeusExWeapon'))
-           {
-              DeusExWeapon(inHand).HideCamo();
-           }
-           else if (inHand.IsA('DeusExPickup'))
-           {
-              DeusExPickup(inHand).HideCamo();
-           }
-       }
-    }
-	else if (class'DeusExPlayer'.default.bCloakEnabled || class'DeusExPlayer'.default.bRadarTran) //RSD: Added bRadarTran
-	{
-       class'DeusExPlayer'.default.bCloakEnabled = False; //CyberP: disable the cloak effect
-       class'DeusExPlayer'.default.bRadarTran = False;
-       ScaleGlow = default.ScaleGlow;
-       Style = default.Style;
-       MultiSkins[6] = Texture'DeusExCharacters.Skins.FramesTex4';
-       MultiSkins[7] = Texture'DeusExCharacters.Skins.LensesTex5';
-       AmbientGlow = default.AmbientGlow;
-       if (inhand != None)
-       {
-           if (inHand.IsA('DeusExWeapon'))
-           {
-              DeusExWeapon(inHand).HideCamo();
-           }
-           else if (inHand.IsA('DeusExPickup'))
-           {
-              DeusExPickup(inHand).HideCamo();
-           }
-       }
-    }
     if (DeusExRootWindow(rootWindow) != None)
     {
        DeusExRootWindow(rootWindow).ClearWindowStack();
@@ -2636,6 +2614,8 @@ exec function LoadGame(int saveIndex)
 	   DeusExRootWindow(rootWindow).ClearWindowStack();
 	}
     if (bRadialAugMenuVisible) ToggleRadialAugMenu();
+	
+    // Reset the FOV
 	DesiredFOV = Default.DesiredFOV;
 	ClientTravel("?loadgame=" $ saveIndex, TRAVEL_Absolute, False);
 }
@@ -7183,7 +7163,10 @@ state PlayerWalking
 			{
                 //SARGE: Remove blood from weapon
                 if (DeusExWeapon(inHand) != None)
-                    DeusExWeapon(inHand).SetCoveredInBlood(false);
+                {
+                    DeusExWeapon(inHand).SetBloodyWeapon(false);
+                    DeusExWeapon(inHand).SetBloodyHands(false);
+                }
             DropDecoration();
             //loc = Location + VRand() * 4;
 	        //loc.Z += CollisionHeight * 0.9;
@@ -7453,6 +7436,19 @@ state PlayerWalking
         else
             lastWalkTimer = 0.4;
 
+        //SARGE: Tick Cloaking
+        CloakManager.TickCloaking(deltaTime);
+        if (CloakManager.IsInAnyState())
+        {
+            CloakManager.UpdateSkin(self);
+            ScaleGlow = CloakManager.GetScaleGlow();
+        }
+        else
+        {
+            ScaleGlow = default.ScaleGlow;
+            Style = default.Style;
+        }
+
 		Super.PlayerTick(deltaTime);
 	}
 }
@@ -7470,7 +7466,10 @@ state PlayerFlying
         {
             //SARGE: Remove blood from weapon
             if (DeusExWeapon(inHand) != None)
-                DeusExWeapon(inHand).SetCoveredInBlood(false);
+            {
+                DeusExWeapon(inHand).SetBloodyWeapon(false);
+                DeusExWeapon(inHand).SetBloodyHands(false);
+            }
 
 			DropDecoration();
         }
@@ -7623,7 +7622,10 @@ state PlayerSwimming
 		{
             //SARGE: Remove blood from weapon
             if (DeusExWeapon(inHand) != None)
-                DeusExWeapon(inHand).SetCoveredInBlood(false);
+            {
+                DeusExWeapon(inHand).SetBloodyWeapon(false);
+                DeusExWeapon(inHand).SetBloodyHands(false);
+            }
 
 			DropDecoration();
 			if (bOnFire)
@@ -9987,8 +9989,12 @@ function UpdateInHand()
 		if (bSwitch)
 		{
             //SARGE: Remove blood from weapon
-            if (iBloodyWeapons == 1 && DeusExWeapon(inHand) != None)
-                DeusExWeapon(inHand).SetCoveredInBlood(false);
+            if (DeusExWeapon(inHand) != None)
+            {
+                if (iBloodyWeapons < 2)
+                    DeusExWeapon(inHand).SetBloodyWeapon(false);
+                DeusExWeapon(inHand).SetBloodyHands(false);
+            }
 
 			SetInHand(inHandPending);
 			SelectedItem = inHandPending;
@@ -11393,11 +11399,6 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
 			{
 				DeusExWeapon(item).ScopeOff();
 				DeusExWeapon(item).LaserOff(false);
-				if (DeusExWeapon(item).bIsCloaked)
-				{
-				   DeusExWeapon(item).HideCamo();
-				   DeusExWeapon(item).AmbientGlow=DeusExWeapon(item).default.AmbientGlow;
-				}
 			}
 		}
 
@@ -11492,11 +11493,17 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
                 // hand originally!!!
                 if (previousItemInHand == item)
                     PutInHand(previousItemInHand);
+                    
+                DeusExWeapon(inHand).SetBloodyWeapon(false);
 
                 item = Spawn(item.Class, Owner);
             }
             else
             {
+                    
+                DeusExWeapon(inHand).SetBloodyWeapon(false);
+                DeusExWeapon(inHand).SetBloodyHands(false);
+
                 // Keep track of this so we can undo it
 				// if necessary
 				bRemovedFromSlots = True;
@@ -11718,10 +11725,14 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
     }
     
     //SARGE: Remove blood from weapon
-    if (bDropped && DeusExWeapon(item) != None)
-        DeusExWeapon(item).SetCoveredInBlood(false);
-
-	return bDropped;
+    if (bDropped && DeusExWeapon(item) != None && !DeusExWeapon(item).bDisposableWeapon)
+    {
+        DeusExWeapon(item).SetBloodyWeapon(false);
+        DeusExWeapon(item).SetBloodyHands(false);
+    }
+     
+	
+    return bDropped;
 }
 
 // ----------------------------------------------------------------------
@@ -12240,11 +12251,6 @@ function texture GetWeaponHandTex()
 	local texture tex;
     local bool femHands;
     
-    if (bRadarTran)
-        return Texture'Effects.Electricity.Xplsn_EMPG';
-    else if (bIsCloaked)
-        return FireTexture'GameEffects.InvisibleTex';
-
 	if (FemaleEnabled() && (bFemaleHandsAlways || (FlagBase != None && FlagBase.GetBool('LDDPJCIsFemale'))))
     {
         switch(PlayerSkin)
