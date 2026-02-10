@@ -942,8 +942,9 @@ var globalconfig bool bNoPartialReloads;                     //SARGE: When cance
 
 var globalconfig bool bItemRechargeSound;                    //SARGE: Okay Roso, you win, here's your damned option!
 
-
 var globalconfig bool bShowExits;                            //SARGE: Show exit icons
+
+var globalconfig bool bNewBlood;                            //SARGE: Use nicer looking blood textures
 
 var globalconfig int iBloodyWeapons;                        //SARGE: Attacks at close range will cover the players weapon in blood.
 
@@ -20272,6 +20273,7 @@ defaultproperties
      bAllowItemPickup=true
      bRandomizeCrap=true
      bItemRechargeSound=true
+     bNewBlood=true
      iBloodyWeapons=1
      bWeaponWallDetection=true
 }

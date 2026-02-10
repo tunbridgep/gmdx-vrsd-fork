@@ -309,6 +309,13 @@ class All expands Object
 #exec TEXTURE IMPORT  FILE="Textures\ef_PoisonSmoke011.pcx" NAME="ef_PoisonSmoke011" GROUP="Skins"
 #exec TEXTURE IMPORT  FILE="Textures\ef_PoisonSmoke012.pcx" NAME="ef_PoisonSmoke012" GROUP="Skins"
 
+//New blood textures
+#exec TEXTURE IMPORT  FILE="Textures\Blood\FlatFXtex1.pcx" NAME="FlatFXTex1" GROUP="Blood"
+#exec TEXTURE IMPORT  FILE="Textures\Blood\FlatFXtex2.pcx" NAME="FlatFXTex2" GROUP="Blood"
+#exec TEXTURE IMPORT  FILE="Textures\Blood\FlatFXtex3.pcx" NAME="FlatFXTex3" GROUP="Blood"
+#exec TEXTURE IMPORT  FILE="Textures\Blood\FlatFXtex5.pcx" NAME="FlatFXTex5" GROUP="Blood"
+#exec TEXTURE IMPORT  FILE="Textures\Blood\FlatFXtex6.pcx" NAME="FlatFXTex6" GROUP="Blood"
+
 defaultproperties
 {
 }
