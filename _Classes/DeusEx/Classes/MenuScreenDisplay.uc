@@ -11,7 +11,8 @@ defaultproperties
 {
      choices(0)=Class'DeusEx.MenuChoice_Brightness'
      choices(1)=Class'DeusEx.MenuChoice_FullScreen'
-     choices(2)=Class'DeusEx.MenuChoice_RenderDevice'
+     //choices(2)=Class'DeusEx.MenuChoice_RenderDevice'
+     choices(2)=Class'DeusEx.MenuChoice_TextureFilter'
      choices(3)=Class'DeusEx.MenuChoice_Resolution'
      choices(4)=Class'DeusEx.MenuChoice_TextureColorBits'
      choices(5)=Class'DeusEx.MenuChoice_WorldTextureDetail'

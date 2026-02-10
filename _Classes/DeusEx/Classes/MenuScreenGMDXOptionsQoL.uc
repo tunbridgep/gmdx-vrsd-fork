@@ -164,6 +164,7 @@ defaultproperties
      items(123)=(HelpText="Randomizes the skins of junk food, sofas, etc around the world. If disabled they will use preset skins. Takes effect on loading a new map.",actionText="Game: Randomized Object Skins",variable="bRandomizeCrap",defaultValue=1,bAdvancedModeOnly=true)
      items(124)=(HelpText="Shows icons for map exits.",actionText="Game: Show Map Exits",variable="bShowExits",defaultValue=0,bAdvancedModeOnly=true)
      items(125)=(HelpText="Item icons in the Inventory and Belt will reflect item skins. Otherwise the default icon is used.",actionText="HUD: Show Skinned Icons",variable="bSkinnedBeltIcons",defaultValue=1,bAdvancedModeOnly=false)
+     items(126)=(HelpText="Enable or Disable smart texture filtering, which will filter only level and item textures while leaving decals, shadows and other elements filtered.",actionText="Game: Texture Filtering",variable="bSmartTextureFiltering",consoleTarget="DeusEx.TextureFilterer",defaultValue=1,bAdvancedModeOnly=false)
 
      Title="GMDX Quality of Life Options"
      colWidths(0)=214
