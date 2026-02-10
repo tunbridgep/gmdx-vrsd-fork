@@ -4,6 +4,30 @@
 //=============================================================================
 
 class MenuScreenListWindowBig expands MenuScreenListWindow;
+	
+var MenuUIScrollAreaWindow winScroll;
+
+//SARGE: Add a scrolling text area
+function CreateDescriptionWindow()
+{
+    //Create Scroll area Window
+    winScroll = CreateScrollAreaWindow(winClient);
+    winScroll.SetPos(DescriptionPos.X, DescriptionPos.Y);
+    winScroll.SetSize(DescriptionSize.X, DescriptionSize.Y);
+
+    winDesc = MenuUINormalLargeTextWindow(winScroll.ClipWindow.NewChild(Class'MenuUINormalLargeTextWindow'));
+    winDesc.SetTextMargins(4, 2);
+    winDesc.SetWordWrap(true);
+    winDesc.SetTextAlignments(HALIGN_Left, VALIGN_Top);
+    winDesc.SetText("");
+}
+
+function RefreshChoices()
+{
+    winScroll.Hide(); //Stop spamming messages during draw.
+    super.RefreshChoices();
+    winScroll.Show();
+}
 
 defaultproperties
 {
@@ -11,8 +35,8 @@ defaultproperties
      SearchSize=(X=160,Y=16)
      ScrollWindowPos=(X=26,Y=42)
      ScrollWindowSize=(X=178,Y=350)
-     DescriptionPos=(X=220,Y=255)
-     DescriptionSize=(X=362,Y=200)
+     DescriptionPos=(X=220,Y=253)
+     DescriptionSize=(X=379,Y=142)
      bHasHeaderButtons=false
      bHasImages=true
      bShowValueInHelp=true

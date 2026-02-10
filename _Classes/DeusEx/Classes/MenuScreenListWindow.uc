@@ -61,7 +61,7 @@ var int numItems;             //Recalculated every time we do a Refreshchoices
 var bool bFocusedOnItemsList;   //Is our current focus on the list?
 
 //SARGE: The help screen is busted, just use this one instead
-var TextWindow winDesc;
+var MenuUINormalLargeTextWindow winDesc;
 
 //SARGE: Lets add a search bar, since these lists are getting LONG.
 var localized string defaultSearchText;
@@ -121,14 +121,13 @@ event InitWindow()
 
 function CreateDescriptionWindow()
 {
-    winDesc = TextWindow(winClient.NewChild(Class'TextWindow'));
+    winDesc = MenuUINormalLargeTextWindow(winClient.NewChild(Class'MenuUINormalLargeTextWindow'));
     winDesc.SetPos(DescriptionPos.X, DescriptionPos.Y);
     winDesc.SetSize(DescriptionSize.X, DescriptionSize.Y);
     winDesc.SetTextAlignments(HALIGN_Left, VALIGN_Top);
+    winDesc.SetTextMargins(4, 2);
     winDesc.SetText("");
     winDesc.SetWordWrap(true);
-	winDesc.SetFont(player.FontManager.GetFont(TT_FontMenuSmall));
-    winDesc.SetTextColor(player.ThemeManager.GetCurrentMenuColorTheme().GetColorFromName('MenuColor_HelpText'));
 }
 
 function CreateSearchBar()
@@ -205,11 +204,21 @@ function DrawWindow(GC gc)
 //Prevent esc-key crash.
 event bool VirtualKeyPressed(EInputKey key, bool bRepeat)
 {
-    if (key == IK_Escape)
+    if (GetFocusWindow() == editSearch)
     {
-        if (GetFocusWindow() == editSearch)
+        //Esc and Enter to leave the window
+        if (key == IK_Escape)
         {
             SetFocusWindow(lstItems);
+            return true;
+        }
+    }
+    //Ctrl-F to search
+    else
+    {
+        if (IsKeyDown( IK_Ctrl ) && key == IK_F)
+        {
+            SetFocusWindow(editSearch);
             return true;
         }
     }
@@ -260,6 +269,8 @@ function RefreshChoices()
 {
 	local int i;
     local string s1, s2, s3;
+	
+    lstItems.Hide(); //Stop spamming messages during draw.
     
     //Remove all existing choices
     lstItems.DeleteAllRows();
@@ -285,6 +296,7 @@ function RefreshChoices()
     }
     
     searchFilter = "";
+    lstItems.Show();
 }
 
 event FocusEnteredDescendant(Window enterWindow)
@@ -750,7 +762,7 @@ defaultproperties
      bHasHeaderButtons=true
      bHasImages=false
      bAllowSearch=true
-     defaultSearchText="Search..."
+     defaultSearchText="Search... (Ctrl-F)"
      filterString="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890:. "
      bTickEnabled=true
 }
