@@ -46,6 +46,13 @@ enum ETextureSetup
 
 var() ETextureSetup TextureSetup;
 
+//SARGE: Allow unfiltering placeabledecal textures based on
+function bool ShouldBeUnfiltered()
+{
+    //return IsHDTP() || (TextureSetup != E_Blood2 && TextureSetup != E_Blood3 && TextureSetup != E_Blood4);
+    return IsHDTP() || TextureSetup == E_Blood1;
+}
+
 static function bool IsHDTP()
 {
     return class'DeusExPlayer'.static.IsHDTPInstalled() && class'DeusExDecal'.default.iHDTPModelToggle > 0;
