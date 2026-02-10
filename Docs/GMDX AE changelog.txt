@@ -1,6 +1,8 @@
 1.2:
 
 New Features:
+- Added blood to weapons when exploding or attacking enemies at extreme close range.
+    - This can be disabled in the QoL menu.
 - Added Texture Filtering setting. It can be turned on in the Display menu and the QoL menu.
     - This is different to the `bNoFiltering` setting in rendering settings, as it doesn't unfilter shadows, decals, and some other things.
 - Added a new option to show Exits on the map. This is mostly for debugging but may be useful for some people, so it's available for anyone to use.
@@ -34,6 +36,8 @@ New Features:
     - Pinned notes will also be visible on the main HUD
 
 Bugfixes:
+- Fixed GMDX:AE Bug where the GEP Gun would be "double rendered" when using the scope.
+    - It now also shows all addons correctly when zooming.
 - Fixed GMDX:AE Bug where unassigning Secondaries could re-appear when revisiting old maps.
 - Fixed GMDX:AE Bug where saving would fail after reaching a save ID of 1000. Now it will loop back around from 0.
 - Fixed GMDX:AE Bugs related to 20mm grenades:

@@ -74,6 +74,19 @@ simulated function DrawScopeAnimation()
     }
 }
 
+function DisplayWeaponBlood(bool overlay)
+{
+    super.DisplayWeaponBlood(overlay);
+    
+    if (!overlay)
+        return;
+
+    if (IsHDTP())
+        multiskins[3] = Texture'PinkMaskTex';
+    else
+        multiskins[6] = Texture'PinkMaskTex';
+}
+
 function DisplayWeapon(bool overlay)
 {
     if (IsHDTP())

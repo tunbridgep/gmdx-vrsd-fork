@@ -945,6 +945,10 @@ var globalconfig bool bItemRechargeSound;                    //SARGE: Okay Roso,
 
 var globalconfig bool bShowExits;                            //SARGE: Show exit icons
 
+var globalconfig int iBloodyWeapons;                        //SARGE: Attacks at close range will cover the players weapon in blood.
+
+var globalconfig bool bWeaponWallDetection;                  //SARGE: Move weapons back when up against a wall
+
 //New method for detecting if we're in combat efficiently
 var private transient int combatantsCached;
 var private transient float combatCheckTime;                 //SARGE: When checking for combat, cache the result for 1 second.
@@ -1032,6 +1036,27 @@ exec function RedoOutfits()
         ClientMessage("Rerolling NPC Outfits");
     }
 }
+
+//SARGE: Do a blood effect on the screen and on our weapon
+function DoBloodEffect(int Damage, name DamageType, Vector ObjLocation, bool flash)
+{
+    local float dist;
+    if (Damage > 0 && (damageType == 'Shot' || damageType == 'Exploded' || damageType == 'Sabot' || (DamageType == 'Burned' && Damage >= 10)))
+    {
+        dist = Abs(VSize(Location - ObjLocation));
+        if (dist < 160)
+        {
+            if (flash)
+            {
+                ClientFlash(14, vect(160,0,0));
+                bloodTime = 4.000000;
+            }
+            if (iBloodyWeapons > 0 && DeusExWeapon(inHand) != None)
+                DeusExWeapon(inHand).SetCoveredInBlood(true);
+        }
+    }
+}
+
 
 //SARGE: Helper function to log to the console from console
 exec function WriteLog(string msg)
@@ -7155,6 +7180,9 @@ state PlayerWalking
 		// if we jump into water, empty our hands
 		if (NewZone.bWaterZone)
 			{
+                //SARGE: Remove blood from weapon
+                if (DeusExWeapon(inHand) != None)
+                    DeusExWeapon(inHand).SetCoveredInBlood(false);
             DropDecoration();
             //loc = Location + VRand() * 4;
 	        //loc.Z += CollisionHeight * 0.9;
@@ -7438,7 +7466,13 @@ state PlayerFlying
 	{
 		// if we jump into water, empty our hands
 		if (NewZone.bWaterZone)
+        {
+            //SARGE: Remove blood from weapon
+            if (DeusExWeapon(inHand) != None)
+                DeusExWeapon(inHand).SetCoveredInBlood(false);
+
 			DropDecoration();
+        }
 
 		Super.ZoneChange(NewZone);
 	}
@@ -7586,6 +7620,10 @@ state PlayerSwimming
 		// if we jump into water, empty our hands
 		if (NewZone.bWaterZone)
 		{
+            //SARGE: Remove blood from weapon
+            if (DeusExWeapon(inHand) != None)
+                DeusExWeapon(inHand).SetCoveredInBlood(false);
+
 			DropDecoration();
 			if (bOnFire)
 				ExtinguishFire();
@@ -9947,6 +9985,10 @@ function UpdateInHand()
 		// OK to actually switch?
 		if (bSwitch)
 		{
+            //SARGE: Remove blood from weapon
+            if (iBloodyWeapons == 1 && DeusExWeapon(inHand) != None)
+                DeusExWeapon(inHand).SetCoveredInBlood(false);
+
 			SetInHand(inHandPending);
 			SelectedItem = inHandPending;
         
@@ -11673,6 +11715,10 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
             DeusExWeapon(item).PickupAmmoCount = 1;
         }
     }
+    
+    //SARGE: Remove blood from weapon
+    if (bDropped && DeusExWeapon(item) != None)
+        DeusExWeapon(item).SetCoveredInBlood(false);
 
 	return bDropped;
 }
@@ -20226,4 +20272,6 @@ defaultproperties
      bAllowItemPickup=true
      bRandomizeCrap=true
      bItemRechargeSound=true
+     iBloodyWeapons=1
+     bWeaponWallDetection=true
 }

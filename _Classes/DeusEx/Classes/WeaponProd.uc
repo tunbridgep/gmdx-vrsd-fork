@@ -25,6 +25,21 @@ simulated function PreBeginPlay()
 	}
 }
 
+function DisplayWeaponBlood(bool overlay)
+{
+    super.DisplayWeaponBlood(overlay);
+    if (IsHDTP())
+    {
+        multiskins[2] = texture'PinkMaskTex';
+        multiskins[3] = texture'PinkMaskTex';
+    }
+    else
+    {
+        multiskins[1] = texture'PinkMaskTex';
+        multiskins[2] = texture'PinkMaskTex';
+    }
+}
+
 function DisplayWeapon(bool overlay)
 {
     super.DisplayWeapon(overlay);

@@ -753,7 +753,6 @@ function ChunkUp(int Damage)
 	local BloodSpurt spur;
 	local FleshFragment chunk;
     local DeusExPlayer player;   //CyberP: for screenflash if near gibs
-    local float dist;            //CyberP: for screenflash if near gibs
 
     bDontRemovePool = true;
 
@@ -783,12 +782,8 @@ function ChunkUp(int Damage)
         //spawn(class'BoneSkullBloody');
 		if (player!=none)
         {
-   		dist = Abs(VSize(player.Location - Location));
-   		if (dist < 128)
-   		     {
-                player.ClientFlash(dist*4, vect(170,0,0));
-                player.bloodTime = 5.000000;
-             }
+            //Cover the players weapon in blood
+            player.DoBloodEffect(Damage,'Exploded',Location,true);
         }
 		for (i=0; i<size/1.4; i++) //CyberP: was 2.0
 		{
@@ -833,6 +828,12 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitLocation, Vector mo
 
 	if (bInvincible)
 		return;
+		
+    player = DeusExPlayer(GetPlayerPawn());
+        
+    //Cover the players weapon in blood
+    if (player != None)
+        player.DoBloodEffect(Damage,damageType,Location,false);
 
 	// only take "gib" damage from these damage types
 	if ((damageType == 'Shot') || (damageType == 'Sabot') || (damageType == 'Exploded') || (damageType == 'Munch') ||
@@ -900,7 +901,6 @@ function TakeDamage(int Damage, Pawn instigatedBy, Vector hitLocation, Vector mo
 			spawn(class'FleshFragmentSmoking');
 			spawn(class'FleshFragmentSmoking');
 			}
-		player = DeusExPlayer(GetPlayerPawn());
 		if ((player.bRealisticCarc || player.bHardCoreMode) && !bAnimalCarcass)  //CyberP: with this option enabled carcasses can only be damaged by explosions, plasma rifle and being eaten
         {
 		  if ((damageType == 'Exploded') || (damageType == 'Munch') || (damageType == 'Burned'))
