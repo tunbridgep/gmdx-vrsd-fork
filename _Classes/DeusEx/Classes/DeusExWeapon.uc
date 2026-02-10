@@ -221,7 +221,7 @@ var travel bool bIsCloaked;
 var travel bool bContactDeton; //CyberP: toggle contact detonation
 var vector RecoilShaker; //cosmetic shaking per shot, amount +/- added to dxplayers current as frand
 var int maxiAmmo;  //CyberP: for frobbing weapon pickups when we have max ammo
-var bool bInvisibleWhore; //CyberP: emulating the weapon movement if player near wall
+var bool bCachedNearWall; //CyberP: emulating the weapon movement if player near wall //SARGE: Lets rename this because it's name is meaningless otherwise
 var travel bool bSuperheated;  //unused
 var bool bCanHaveModShotTime;
 var bool bCanHaveModDamage;
@@ -384,6 +384,23 @@ enum EAddonPenaltyType
 };
 
 var const float addonPenalties[3];
+
+//SARGE: Blood on weapons
+var private travel bool bCoveredInBlood;
+
+struct BloodTex
+{
+    var string tex1;
+    var string tex2;
+};
+
+var travel BloodTex BloodTextures[7];
+
+//SARGE: No more checking for specific grenade types, now we just set this instead.
+var const bool bIsPlaceableOnWall;
+
+//SARGE: An annoying hack to fix GMDX's hacky GEP bullshit.
+var transient bool bDontActuallyRenderViewModel;
 
 //END GMDX:
 
@@ -1110,12 +1127,11 @@ function Texture GetGridTexture(Texture tex)
 
 simulated event RenderOverlays( canvas Canvas )
 {
-	local rotator NewRot, ExRot, rfs;                                           //RSD: Added rfs
 	local bool bPlayerOwner;
 	local int Hand;
 	local DeusExPlayer PlayerOwner;
-    local int newPitch;
-    local vector dx, dy, dz;                                                    //RSD: Added
+    local Vector cachedDrawOffset;
+    local Rotator cachedRotation;
 
 	if ( bHideWeapon || (Owner == None) )
 		return;
@@ -1174,36 +1190,74 @@ simulated event RenderOverlays( canvas Canvas )
 	}
 	else
 		bSetFlashTime = false;
+        
+    cachedDrawOffset = CalcDrawOffset();
+	if (PlayerOwner != none)
+    {
+        cachedRotation = PlayerOwner.GetCurrentViewRotation();
+        //RSD: Overhauled cloak/radar routines
+        SetCloakRadar(class'DeusExPlayer'.default.bCloakEnabled,class'DeusExPlayer'.default.bRadarTran);
+    }
+        
+    
+    PositionViewModel(canvas,PlayerOwner,cachedDrawOffset,cachedRotation);
 
-	SetLocation( Owner.Location + CalcDrawOffset() );
+    if (!bDontActuallyRenderViewModel)
+    {
+        Canvas.DrawActor(self, false);
+
+        if (activateAn && bHasScope)
+            DrawScopeAnimation();
+        else
+            activateAn = false;
+
+        DrawBloodyViewModel(canvas);
+
+        //Reset weapon to standard display
+        DisplayWeapon(false);
+    }
+}
+
+function DrawBloodyViewModel(Canvas canvas)
+{
+    //Draw blood effects
+    if (DeusExPlayer(Owner) != None && !Level.Game.bLowGore && !Level.Game.bVeryLowGore && bCoveredInBlood && !bIsCloaked && !bIsRadar)
+    {
+        Style = STY_Modulated;
+        ScaleGlow = 0.25;
+        bNoSmooth = false;
+        DisplayWeaponBlood(true);
+        canvas.DrawActor(self, false);
+        bNoSmooth = default.bNoSmooth;
+        Style = STY_Normal;
+        ScaleGlow = default.ScaleGlow;
+    }
+}
+
+//SARGE: Positions the viewmodel properly, ready for drawing.
+function PositionViewModel(Canvas canvas, DeusExPlayer PlayerOwner, vector drawOffset, Rotator rot)
+{
+    local int newPitch;
+    local vector dx, dy, dz;                                                    //RSD: Added
+	local rotator NewRot, ExRot, rfs;                                           //RSD: Added rfs
+
+	SetLocation( Owner.Location + drawOffset );
     NewRot = Pawn(Owner).ViewRotation;
 
-	if (PlayerOwner != none)
+    if (PlayerOwner != None)
     {
         //RSD: New adjustment to rotation without being pitch-dependent
         rfs.Yaw=addYaw;
         rfs.Pitch=addPitch;
         GetAxes(rfs,dx,dy,dz);
-        dx=dx>>PlayerOwner.GetCurrentViewRotation();
-        dy=dy>>PlayerOwner.GetCurrentViewRotation();
-        dz=dz>>PlayerOwner.GetCurrentViewRotation();
+        dx=dx>>rot;
+        dy=dy>>rot;
+        dz=dz>>rot;
         rfs=OrthoRotation(dx,dy,dz);
         NewRot = rfs;
-
-        //RSD: Overhauled cloak/radar routines
-        SetCloakRadar(class'DeusExPlayer'.default.bCloakEnabled,class'DeusExPlayer'.default.bRadarTran);
     }
-    
+
     setRotation(NewRot);
-    Canvas.DrawActor(self, false);
-
-    if (activateAn && bHasScope)
-        DrawScopeAnimation();
-    else
-        activateAn = false;
-
-    //Reset weapon to standard display
-    DisplayWeapon(false);
 }
 
 //
@@ -1771,8 +1825,6 @@ function PlaySelect()
      {
      if (player != none && player.AugmentationSystem != none)
      {
-        if (!NearWallCheck())
-           bInvisibleWhore=False;
         p = player.AugmentationSystem.GetAugLevelValue(class'AugCombat');
         if (p < 1.0)
         {
@@ -2687,6 +2739,8 @@ simulated function Tick(float deltaTime)
 		return;
 	}
 
+    bCachedNearWall = NearWallCheck();
+
     if (bAmmoSelectWait)                                                        //RSD: After one tick, engage ammo load queued by LoadAmmo() or WeaponChangeAmmo() in PersonaScreenInventory.uc
     {
     	if (ammoSelectClass == none)                                            //RSD: If no ammo type specified (as in WeaponChangeAmmo), simply cycle
@@ -2705,25 +2759,14 @@ simulated function Tick(float deltaTime)
 	//GMDX: ADD PROJECTILE TEST INFLIGHT
 	if ((player!=none)&&player.bGEPprojectileInflight)//(player.aGEPProjectile!=none)) //RSD: Changed so it still updates laser position
 		return;
-    //CyberP: moves held item back if facing & standing next to a wall
-   if (player != none && IsInState('Idle'))
-   {
-      if (NearWallCheck() && player.Physics != PHYS_Falling)
-      {
-         bInvisibleWhore=True;
-      }
-      else if (!NearWallCheck() && player.Physics != PHYS_Falling)
-      {
-         bInvisibleWhore=False;
-      }
-   }
-	// all this should only happen IF you have ammo loaded
+	
+    // all this should only happen IF you have ammo loaded
 	if (ClipCount > 0)
 	{
 		// check for LAM or other placed mine placement
-		if (bHandToHand && ProjectileClass != None && !Self.IsA('WeaponShuriken') && !Self.IsA('WeaponLAW') && !Self.IsA('WeaponHideAGun'))
+		if (bHandToHand && bIsPlaceableOnWall)
 		{
-			if (NearWallCheck())
+			if (bCachedNearWall)
 			{
 				if (( Level.NetMode != NM_Standalone ) && IsAnimating() && (AnimSequence == 'Select'))
 				{
@@ -3442,6 +3485,59 @@ function DisplayWeapon(bool overlay)
         else
             multiskins[i] = default.multiskins[i];
     }
+}
+
+//SARGE: NOTE: We're deliberately using the vanilla blood tex here,
+//not the new ones, because they look better.
+function private BloodTex GetRandomBloodTex()
+{
+    local float roll;
+    local BloodTex tex;
+
+    roll = fRand();
+
+    if (roll < 0.66)
+    {
+        tex.tex1 = "HDTPItems.Skins.HDTPFlatFXtex1";
+        tex.tex2 = "DeusExItems.Skins.FlatFXTex1";
+    }
+    else if (roll < 0.33)
+    {
+        tex.tex1 = "HDTPItems.Skins.HDTPFlatFXtex6";
+        tex.tex2 = "DeusExItems.Skins.FlatFXTex6";
+    }
+    else
+    {
+        tex.tex1 = "HDTPItems.Skins.HDTPFlatFXtex5";
+        tex.tex2 = "DeusExItems.Skins.FlatFXTex5";
+    }
+
+    return tex;
+}
+
+function SetCoveredInBlood(bool value)
+{
+    local int i;
+    if (bCoveredInBlood == value)
+        return;
+
+    //Repopulate the blood texture
+    bCoveredInBlood = value;
+    if (value)
+    {
+        for (i = 0;i < 7;i++)
+            BloodTextures[i] = GetRandomBloodTex();
+    }
+}
+
+//SARGE: Show blood on weapons
+function DisplayWeaponBlood(bool overlay)
+{
+    local int i;
+
+    for (i = 0;i < 8;i++)
+        if (multiskins[i] != Texture'PinkMaskTex' && (i != muzzleslot || bHasSilencer || !bHasMuzzleFlash))
+            multiskins[i] = class'HDTPLoader'.static.GetTexture2(BloodTextures[i].tex1,BloodTextures[i].tex2,IsHDTP());
 }
 
 simulated function EraseMuzzleFlashTexture()
@@ -4732,9 +4828,9 @@ simulated function vector CalcDrawOffset()
 	}
 	else
 	{
-	    if (activateAn == False && !IsA('WeaponGEPGun'))
+	    if (activateAn == False && !IsA('WeaponGEPGun') && !bIsPlaceableOnWall)
 	    {
-		if (!bAimingDown && (bInvisibleWhore || bMantlingEffect))
+		if (!bAimingDown && IsInState('idle') && DeusExPlayer(Owner) != None && DeusExPlayer(Owner).Physics != PHYS_Falling && DeusExPlayer(Owner).bWeaponWallDetection && (bCachedNearWall || bMantlingEffect))
 	    {
 	       lerpAid -= 8.4;
 	       if (lerpAid < -100)

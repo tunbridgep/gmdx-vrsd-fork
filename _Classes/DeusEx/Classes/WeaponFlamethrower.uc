@@ -36,6 +36,19 @@ function PostBeginPlay()
     FireOffset=vect(30,9,4);
 }
 
+function DisplayWeaponBlood(bool overlay)
+{
+    super.DisplayWeaponBlood(overlay);
+    
+    if (!overlay)
+        return;
+
+    if (IsHDTP())
+        multiskins[2] = Texture'PinkMaskTex';
+    else
+        multiskins[1] = Texture'PinkMaskTex';
+}
+
 function DisplayWeapon(bool overlay)
 {
 	super.DisplayWeapon(overlay);

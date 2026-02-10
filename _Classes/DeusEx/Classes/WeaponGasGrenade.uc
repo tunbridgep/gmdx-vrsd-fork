@@ -194,4 +194,5 @@ defaultproperties
      bDisposableWeapon=true
      minSkillRequirement=1
      bFakeHandToHand=true
+     bIsPlaceableOnWall=true
 }
