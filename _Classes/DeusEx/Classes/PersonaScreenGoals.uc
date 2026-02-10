@@ -469,6 +469,10 @@ event FocusEnteredDescendant(Window enterWindow)
         currentNoteWindow = PersonaNotesEditWindow(enterWindow);
         EnableButtons();
         class'PersonaNotesEditWindow'.default.bTempEdit = false;
+
+        //And debug show the note name too
+        if (!note.bUserNote)
+            player.DebugMessage("Note Tag:" $ note.textTag);
 	}
 }
 

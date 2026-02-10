@@ -209,11 +209,11 @@ function bool AddGenericIcon(string owner, Texture icon, string label, optional 
         //Log("Add Declined Item: " $ icon);
 
         //Remove any non-declined items that match 
-        for (i = 0;i < declinedItemNum;i++)
+        for (i = 0;i < itemNum;i++)
         {
-            //Log("penis" @ items[i].owner @ declinedItems[itemNum].owner @ items[i].icon @ declinedItems[itemNum].icon);
-            if (items[i].owner != "" && items[i].owner == declinedItems[itemNum].owner && items[i].icon == declinedItems[itemNum].icon && items[i].quantity == declinedItems[itemNum].quantity)
+            if (items[i].owner != "" && items[i].owner == declinedItems[declinedItemNum].owner && items[i].icon == declinedItems[declinedItemNum].icon && items[i].quantity == declinedItems[declinedItemNum].quantity)
             {
+                //Log("penis" @ items[i].owner @ declinedItems[itemNum].owner @ items[i].icon @ declinedItems[itemNum].icon);
                 items[i].bHidden = true;
                 break;
             }
@@ -241,7 +241,7 @@ function bool AddGenericIcon(string owner, Texture icon, string label, optional 
             //Log("penis" @ items[i].owner @ declinedItems[itemNum].owner @ items[i].icon @ declinedItems[itemNum].icon);
             if (declineditems[i].owner != "" && declinedItems[i].owner == items[itemNum].owner && declinedItems[i].icon == items[itemNum].icon && declinedItems[i].quantity == items[itemNum].quantity)
             {
-                Log("Adding hitten item: " $ declinedItems[i].icon);
+                //Log("Adding hitten item: " $ declinedItems[i].icon);
                 declinedItems[i].bHidden = true;
                 break;
             }
@@ -358,6 +358,12 @@ function bool AddItemFromID(string owner, Inventory invItem, Int count, optional
 {
     local string labelText;
     local texture icon;
+    
+    if (invItem.isA('DeusExPickup'))
+    {
+        DeusExPickup(invItem).SetSkin();
+        DeusExPickup(invItem).SetIcon();
+    }
 
     //SARGE: Add a "+" to the item name for upgraded weapons
     if (invItem.isA('DeusExWeapon'))
@@ -372,7 +378,7 @@ function bool AddItemFromID(string owner, Inventory invItem, Int count, optional
     else if (invItem.IsA('DeusExAmmo'))
         icon = DeusExAmmo(invItem).GetHDTPIcon();
     else
-        icon = invItem.default.icon;
+        icon = invItem.icon;
 
     return AddGenericIcon(owner, icon, labelText, count, bDeclined, bNoGroup);
 }

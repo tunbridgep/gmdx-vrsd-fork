@@ -401,8 +401,9 @@ function bool HandleGenericKeyPress(EInputKey key, bool bMouse)
 	local bool bKeyHandled;
     local Inventory anItem;
 
-    anItem = Inventory(selectedItem.GetClientObject());
-    
+    if (selectedItem != None)
+        anItem = Inventory(selectedItem.GetClientObject());
+
     KeyName = player.ConsoleCommand("KEYNAME " $ key);
     Alias = player.ConsoleCommand("KEYBINDING " $ KeyName);
 	
@@ -410,9 +411,9 @@ function bool HandleGenericKeyPress(EInputKey key, bool bMouse)
        
     // If a number key was pressed and we have a selected inventory item,
 	// then assign the hotkey
-	if ((( key >= IK_0 ) && ( key <= IK_9 ) || key == IK_Minus || key == IK_Equals) && (selectedItem != None) && (Inventory(selectedItem.GetClientObject()) != None))
+	if ((( key >= IK_0 ) && ( key <= IK_9 ) || key == IK_Minus || key == IK_Equals) && (invBelt != None) && anItem != None)
 	{
-		invBelt.AssignObjectBeltByKey(Inventory(selectedItem.GetClientObject()), key);
+		invBelt.AssignObjectBeltByKey(anItem, key);
 	}
 	else if (Alias ~= "UseSecondary")
     {
@@ -422,7 +423,7 @@ function bool HandleGenericKeyPress(EInputKey key, bool bMouse)
     {
         DropSelectedItem();
     }
-    else if (key == IK_RightMouse)
+    else if (key == IK_RightMouse && anItem != None)
     {
         //TODO: Sarge: Create a generic Inventory Use/Equip function per item
         if (anItem.IsA('DeusExWeapon') || anItem.IsA('Lockpick') || anItem.IsA('Multitool') || anItem.IsA('FireExtinguisher'))
@@ -983,6 +984,21 @@ function UseSelectedItem()
 		else
 			numCopies = 0;
 		
+        //SARGE: Update the icon if it's still in the inventory
+        if (inv != None && selectedItem != None)
+        {
+            if (inv.largeIcon != None)
+            {
+                selectedItem.SetIcon(inv.largeIcon);
+                selectedItem.SetIconSize(inv.largeIconWidth, inv.largeIconHeight);
+            }
+            else
+            {
+                selectedItem.SetIcon(inv.icon);
+                selectedItem.SetIconSize(smallInvWidth, smallInvHeight);
+            }
+        }
+
         //SARGE: Reset players accuracy bonus.
         player.ResetAim();
 

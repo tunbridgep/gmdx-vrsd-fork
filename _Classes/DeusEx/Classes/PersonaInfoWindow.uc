@@ -397,8 +397,8 @@ function bool ButtonActivated( Window buttonPressed )
 			bHandled = false;
 			break;
 	}
-
-	if (!bHandled)
+    
+	if (!bHandled && player != None && !buttonPressed.IsA('PersonaAmmoDetailButton')) //SARGE: Avoids a crash from Ammo Buttons?
 	{
 		//Handle the decline buttons separately
 		for(i = 0; i < player.declinedItemsManager.GetDeclinedNumber();i++)

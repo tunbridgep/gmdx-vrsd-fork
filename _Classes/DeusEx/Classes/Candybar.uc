@@ -27,7 +27,6 @@ function SetSkin()
 //This is the worst hack ever devised.
 function IconInfo GetIcon(int skinIndex)
 {
-    Log("SkinIndex: " $ skinIndex);
     if (skinIndex == 1)
         return super.GetIcon(0);
     else
