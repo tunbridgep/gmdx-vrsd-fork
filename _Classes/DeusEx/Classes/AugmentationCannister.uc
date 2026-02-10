@@ -22,6 +22,23 @@ replication
 }
 
 // ----------------------------------------------------------------------
+// SetAugs()
+// SARGE: Helper function to set augs based on passed in strings
+// ----------------------------------------------------------------------
+
+function SetAugs(string AugName1, string AugName2)
+{
+    local DeusExPlayer player;
+    player = DeusExPlayer(GetPlayerPawn());
+
+    if (player != None && player.rootWindow != None)
+    {
+        AddAugs[0] = player.rootWindow.StringToName(AugName1);
+        AddAugs[1] = player.rootWindow.StringToName(AugName2);
+    }
+}
+
+// ----------------------------------------------------------------------
 // UpdateInfo()
 // ----------------------------------------------------------------------
 
