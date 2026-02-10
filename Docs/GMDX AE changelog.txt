@@ -1,6 +1,12 @@
 1.2:
 
 New Features:
+- Added new downscaled HDTP blood sprites, for use when not using HDTP. These look significantly better than the vanilla ones.
+    - The vanilla ones can still be used by disabling these in the QoL menu.
+- Added blood to weapons when exploding or attacking enemies at extreme close range.
+    - This can be disabled in the QoL menu.
+- Added Texture Filtering setting. It can be turned on in the Display menu and the QoL menu.
+    - This is different to the `bNoFiltering` setting in rendering settings, as it doesn't unfilter shadows, decals, and some other things.
 - Added a new option to show Exits on the map. This is mostly for debugging but may be useful for some people, so it's available for anyone to use.
 - Added a new setting to remove the "hiss" sound when recharging charged items on pickup, by request.
     - When recharging your current wearable, they will make their regular pickup sound instead.
@@ -32,6 +38,10 @@ New Features:
     - Pinned notes will also be visible on the main HUD
 
 Bugfixes:
+- Fixed GMDX:AE Bug where the GEP Gun would be "double rendered" when using the scope.
+    - It now also shows all addons correctly when zooming.
+- Fixed GMDX:AE Bug where unassigning Secondaries could re-appear when revisiting old maps.
+- Fixed GMDX:AE Bug where saving would fail after reaching a save ID of 1000. Now it will loop back around from 0.
 - Fixed GMDX:AE Bugs related to 20mm grenades:
     - Fixed issue where 20mm ammo projectiles would fly sideways.
     - They now use their proper mesh, rather than the Shotgun Casing mesh.
@@ -59,6 +69,7 @@ Bugfixes:
 - Other minor bugfixes
 
 Misc Changes:
+- Save Points now use Quicksaves rather than always using a new save slot.
 - The Flamethrower no longer shows a flame when out of ammo.
 - In Hardcore mode, weapons will now be emptied at the start of reloading (except for one-at-a-time weapons).
     - This means that you will no longer be able to cancel reloading to regain your previous ammo amount. Instead your weapon will be empty.
@@ -78,6 +89,7 @@ Misc Changes:
 - Minor changes to phones to make them more realistic (for instance, they will "ring out" rather than ringing once, and disconnected phones won't ring at all).
 - Notes in the Computer/Keypad notes display are now sorted in descending order like the regular Notes screen.
 - Using the "Assign Secondary" hotkey in the Inventory screen will now unassign if used on the secondary item.
+- Updated the INI to fix an infinite recursion issue with the enhanced renderer, which would cause low-poly models to render and tank performance.
 
 Map Changes:
 - 02_NYC_BatteryPark

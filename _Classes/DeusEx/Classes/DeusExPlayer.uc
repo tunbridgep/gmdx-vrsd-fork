@@ -391,7 +391,7 @@ struct augBinary                                                                
 //ALSO used for Secondary slot
 struct BeltInfo
 {
-    var string      itemClass;
+    var string      itemClass;              //SARGE: Note. This is set to "none" rather than "" when empty, so that it doesn't reset between map loads when it's none (the default value).
     var texture		icon;				    //Sarge. Disconnect the icon from the inventory item, so we can keep the last used icon when the item disappears (for items with multiple skins).
     var texture		defaultIcon;			//Sarge. This probably isn't necessary, but it's still a hell of a lot better than trying to fuck around with DynamicLoadObject just to get the default icon...
 };
@@ -942,8 +942,13 @@ var globalconfig bool bNoPartialReloads;                     //SARGE: When cance
 
 var globalconfig bool bItemRechargeSound;                    //SARGE: Okay Roso, you win, here's your damned option!
 
-
 var globalconfig bool bShowExits;                            //SARGE: Show exit icons
+
+var globalconfig bool bNewBlood;                            //SARGE: Use nicer looking blood textures
+
+var globalconfig int iBloodyWeapons;                        //SARGE: Attacks at close range will cover the players weapon in blood.
+
+var globalconfig bool bWeaponWallDetection;                  //SARGE: Move weapons back when up against a wall
 
 //New method for detecting if we're in combat efficiently
 var private transient int combatantsCached;
@@ -1032,6 +1037,27 @@ exec function RedoOutfits()
         ClientMessage("Rerolling NPC Outfits");
     }
 }
+
+//SARGE: Do a blood effect on the screen and on our weapon
+function DoBloodEffect(int Damage, name DamageType, Vector ObjLocation, bool flash)
+{
+    local float dist;
+    if (Damage > 0 && (damageType == 'Shot' || damageType == 'Exploded' || damageType == 'Sabot' || (DamageType == 'Burned' && Damage >= 10)))
+    {
+        dist = Abs(VSize(Location - ObjLocation));
+        if (dist < 160)
+        {
+            if (flash)
+            {
+                ClientFlash(14, vect(160,0,0));
+                bloodTime = 4.000000;
+            }
+            if (iBloodyWeapons > 0 && DeusExWeapon(inHand) != None)
+                DeusExWeapon(inHand).SetCoveredInBlood(true);
+        }
+    }
+}
+
 
 //SARGE: Helper function to log to the console from console
 exec function WriteLog(string msg)
@@ -1204,7 +1230,7 @@ function AssignSecondary(Inventory item, optional bool bMessage)
 
     if (item == None)
     {
-        assignedWeapon.itemClass = "";
+        assignedWeapon.itemClass = "none";
         assignedWeapon.icon = None;
         assignedWeapon.defaultIcon = None;
     }
@@ -1253,7 +1279,7 @@ function Texture GetSecondaryIcon()
 function Class<Inventory> GetSecondaryClass()
 {
     local class<Inventory> assignedClass;
-    if (assignedWeapon.itemClass != "")
+    if (assignedWeapon.itemClass != "none")
         assignedClass = class<Inventory>(DynamicLoadObject(assignedWeapon.itemClass, class'Class'));
     //ClientMessage("Get Secondary Class: " $ assignedClass $ " (" $ assignedWeapon $ ")");
     return assignedClass;
@@ -2695,6 +2721,10 @@ function int DoSaveGame(int saveIndex, optional String saveDesc)
         saveDir = GetSaveGameDirectory();
 		saveIndex=saveDir.GetNewSaveFileIndex();
     }
+
+    //Loop back around
+    if (saveIndex >= 1000)
+        saveIndex = 1;
     
     //If a datalink is playing, abort it
     if (dataLinkPlay != None)
@@ -7151,6 +7181,9 @@ state PlayerWalking
 		// if we jump into water, empty our hands
 		if (NewZone.bWaterZone)
 			{
+                //SARGE: Remove blood from weapon
+                if (DeusExWeapon(inHand) != None)
+                    DeusExWeapon(inHand).SetCoveredInBlood(false);
             DropDecoration();
             //loc = Location + VRand() * 4;
 	        //loc.Z += CollisionHeight * 0.9;
@@ -7434,7 +7467,13 @@ state PlayerFlying
 	{
 		// if we jump into water, empty our hands
 		if (NewZone.bWaterZone)
+        {
+            //SARGE: Remove blood from weapon
+            if (DeusExWeapon(inHand) != None)
+                DeusExWeapon(inHand).SetCoveredInBlood(false);
+
 			DropDecoration();
+        }
 
 		Super.ZoneChange(NewZone);
 	}
@@ -7582,6 +7621,10 @@ state PlayerSwimming
 		// if we jump into water, empty our hands
 		if (NewZone.bWaterZone)
 		{
+            //SARGE: Remove blood from weapon
+            if (DeusExWeapon(inHand) != None)
+                DeusExWeapon(inHand).SetCoveredInBlood(false);
+
 			DropDecoration();
 			if (bOnFire)
 				ExtinguishFire();
@@ -8084,12 +8127,14 @@ Begin:
 		PutInHand(None);
 	}
 
+    /*
 	// can't carry decorations across levels
 	if (CarriedDecoration != None)
 	{
 		CarriedDecoration.Destroy();
 		CarriedDecoration = None;
 	}
+    */
 
 	PlayAnim('Still');
 }
@@ -8150,11 +8195,13 @@ Begin:
 	}
 
 	// can't carry decorations across levels
+    /*
 	if (CarriedDecoration != None)
 	{
 		CarriedDecoration.Destroy();
 		CarriedDecoration = None;
 	}
+    */
 
 	SetPhysics(PHYS_None);
 	PlayAnim('Still');
@@ -8175,11 +8222,13 @@ Letterbox:
 	}
 
 	// can't carry decorations across levels
+    /*
 	if (CarriedDecoration != None)
 	{
 		CarriedDecoration.Destroy();
 		CarriedDecoration = None;
 	}
+    */
 
 	SetPhysics(PHYS_None);
 	PlayAnim('Still');
@@ -8515,7 +8564,8 @@ function DoRightFrob(Actor frobTarget)
     bDefaultFrob = true;
     bLeftClicked = false;
 
-    if (inHand == None && bRun != 0 && bAllowItemPickup && frobTarget.isA('Inventory'))
+    //SARGE TODO: Make this conditional not horrible
+    if (inHand == None && bRun != 0 && bAllowItemPickup && frobTarget.isA('Inventory') && !frobTarget.isA('NanoKey') && (!frobTarget.IsA('Flare') || Flare(frobTarget).gen == None))
         bDefaultFrob = !class'CarriedObject'.static.CreateCarriedObjectFor(self,Inventory(frobTarget));
     else if (frobTarget.isA('DeusExPickup'))
         bDefaultFrob = DeusExPickup(frobTarget).DoRightFrob(Self,inHand != None);
@@ -9936,6 +9986,10 @@ function UpdateInHand()
 		// OK to actually switch?
 		if (bSwitch)
 		{
+            //SARGE: Remove blood from weapon
+            if (iBloodyWeapons == 1 && DeusExWeapon(inHand) != None)
+                DeusExWeapon(inHand).SetCoveredInBlood(false);
+
 			SetInHand(inHandPending);
 			SelectedItem = inHandPending;
         
@@ -10478,12 +10532,12 @@ function ClearPlaceholder(int objectNum)
 {
     beltInfos[objectNum].icon = None;
     beltInfos[objectNum].defaultIcon = None;
-    beltInfos[objectNum].itemClass = "";
+    beltInfos[objectNum].itemClass = "none";
 }
 
 function bool IsPlaceholder(int objectNum)
 {
-    return beltInfos[objectNum].itemClass != "";
+    return beltInfos[objectNum].itemClass != "none";
 }
 
 function BeltInfo GetPlaceholder(int objectNum)
@@ -11662,6 +11716,10 @@ exec function bool DropItem(optional Inventory inv, optional bool bDrop)
             DeusExWeapon(item).PickupAmmoCount = 1;
         }
     }
+    
+    //SARGE: Remove blood from weapon
+    if (bDropped && DeusExWeapon(item) != None)
+        DeusExWeapon(item).SetCoveredInBlood(false);
 
 	return bDropped;
 }
@@ -20215,4 +20273,7 @@ defaultproperties
      bAllowItemPickup=true
      bRandomizeCrap=true
      bItemRechargeSound=true
+     bNewBlood=true
+     iBloodyWeapons=1
+     bWeaponWallDetection=true
 }

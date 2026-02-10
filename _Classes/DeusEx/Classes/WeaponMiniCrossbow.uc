@@ -115,6 +115,18 @@ function SetWeaponHandTex()
     //p.ClientMessage("Skin Tex: " $ handsTex);
 }
 
+function DisplayWeaponBlood(bool overlay)
+{
+    super.DisplayWeaponBlood(overlay);
+    
+    if (!overlay)
+        return;
+
+    if (IsHDTP())
+        multiskins[5] = Texture'PinkMaskTex';
+    else
+        multiskins[5] = Texture'PinkMaskTex';
+}
 
 function DisplayWeapon(bool overlay)
 {

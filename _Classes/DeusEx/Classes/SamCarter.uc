@@ -15,7 +15,7 @@ defaultproperties
      walkAnimMult=0.780000
      GroundSpeed=200.000000
      Texture=Texture'DeusExItems.Skins.PinkMaskTex'
-     Mesh=LodMesh'DeusExCharacters.GM_Jumpsuit'
+     Mesh=LodMesh'RSDCrap.Fixed_Jumpsuit'
      MultiSkins(0)=Texture'DeusExCharacters.Skins.SamCarterTex0'
      MultiSkins(1)=Texture'DeusExCharacters.Skins.SamCarterTex2'
      MultiSkins(2)=Texture'DeusExCharacters.Skins.SamCarterTex1'

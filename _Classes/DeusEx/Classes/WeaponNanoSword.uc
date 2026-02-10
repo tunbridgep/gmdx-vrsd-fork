@@ -136,6 +136,28 @@ function Fire(float Value)
     super.Fire(Value);
 }
 
+//SARGE: Custom blood textures to not affect the wave blade
+function DisplayWeaponBlood(bool overlay)
+{
+    super.DisplayWeaponBlood(overlay);
+    if (IsHDTP())
+    {
+        multiskins[2] = Texture'PinkMaskTex';
+        multiskins[3] = Texture'PinkMaskTex';
+        multiskins[4] = Texture'PinkMaskTex';
+        multiskins[6] = Texture'PinkMaskTex';
+        multiskins[7] = Texture'PinkMaskTex';
+    }
+    else
+    {
+        multiskins[1] = Texture'PinkMaskTex';
+        multiskins[2] = Texture'PinkMaskTex';
+        multiskins[4] = Texture'PinkMaskTex';
+        multiskins[6] = Texture'PinkMaskTex';
+        multiskins[7] = Texture'PinkMaskTex';
+    }
+}
+
 //SARGE: Sets and unsets textures based on our charge amount
 function SetWeaponSkin(bool hdtp)
 {

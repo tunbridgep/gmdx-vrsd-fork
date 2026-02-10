@@ -210,13 +210,19 @@ function RenderME(Canvas canvas,bool bSetWire,optional bool bClearZ)
 */
 //  PlayerViewOffset=default.PlayerViewOffset*100;
 //   SetHand(PlayerPawn(Owner).Handedness); //meh meh
+
+    DisplayWeapon(true);
 	Canvas.DrawActor(self, bSetWire,bClearZ);
+
+    DrawBloodyViewModel(canvas);
+    DisplayWeapon(false);
 
 	if (lightFlicker!=none) lightFlicker.UpdateLocation(player);
 }
 
 simulated function renderoverlays(Canvas canvas)
 {
+    bDontActuallyRenderViewModel = (GEPinout!=0.0);
     super.renderoverlays(canvas);
 	if(GEPinout==0.0)
 	{
@@ -234,6 +240,20 @@ simulated function renderoverlays(Canvas canvas)
 	if (GEPinout>=1) RenderPortal(canvas);
 
 }
+
+function DisplayWeaponBlood(bool overlay)
+{
+    super.DisplayWeaponBlood(overlay);
+    
+    if (!overlay)
+        return;
+
+    if (IsHDTP())
+        multiskins[3] = Texture'PinkMaskTex';
+    else
+        multiskins[3] = Texture'PinkMaskTex';
+}
+
 function DisplayWeapon(bool overlay)
 {
     super.DisplayWeapon(overlay);
