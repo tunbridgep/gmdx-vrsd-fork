@@ -5,6 +5,8 @@ New Features:
     - Requires Heavy Weapons: MASTER
 - Added a new "Breakdown" perk that allows destroying pickable but previously un-breakable containers
     - Requires Demolitions: MASTER
+- GEP Gun now uses WP Rockets by default
+    - WP Rockets will be a lot more plentiful, but regular rockets are still available
 - Added new downscaled HDTP blood sprites, for use when not using HDTP. These look significantly better than the vanilla ones.
     - The vanilla ones can still be used by disabling these in the QoL menu.
 - Added blood to weapons when exploding or attacking enemies at extreme close range.
