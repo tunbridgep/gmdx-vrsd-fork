@@ -4,6 +4,51 @@
 class WeaponPlasmaRifle extends DeusExWeapon;
 
 var int lerpClamp;
+var travel int breedCount;
+
+//SARGE: Generate breeder ammo
+function OnProjectileFired(Projectile firedProjectile)
+{
+    local DeusExPlayer P;
+    local PerkPlasmaBreeder PK;
+    local Ammo AmmoType;
+
+    P = DeusExPlayer(Owner);
+
+    if (P != None && P.PerkManager != None)
+    {
+        Log("Plasma Check");
+        PK = PerkPlasmaBreeder(P.PerkManager.GetPerkWithClass(class'PerkPlasmaBreeder'));
+        if (PK != None)
+        {
+            if (PK.bPerkObtained)
+                breedCount++;
+
+            //Log("Perk Exists: " $ PK.bPerkObtained @ breedCount @ PK.PerkValue);
+
+            if (breedCount >= PK.PerkValue)
+            {
+                AmmoType = Ammo(P.FindInventoryType(class'AmmoPlasmaBreeder'));
+                //Log("AmmoType: " $ AmmoType);
+
+                if (AmmoType == None)
+                {
+                    //Log("AmmoType 1: " $ AmmoType);
+                    AmmoType = spawn(class'AmmoPlasmaBreeder');
+                    AmmoType.AmmoAmount = 1;
+                    AmmoType.Frob(P,None);
+                } 
+                else
+                {
+                    //Log("AmmoType 2: " $ AmmoType);
+                    AmmoType.AmmoAmount += 1;
+                }
+
+                breedCount = 0;
+            }
+        }
+    }
+}
 
 /*
 //SARGE: Resize if we have the Mobile Ordnance perk
@@ -13,6 +58,18 @@ function bool DoRightFrob(DeusExPlayer frobber, bool objectInHand)
     return super.DoRightFrob(Frobber,objectInHand);
 }
 */
+
+//Hide the green firing streaks
+function DisplayCloaking(bool overlay, float ScaleGlow, bool bCloak, bool bRadar)
+{
+    if (!overlay)
+        return;
+
+    if (IsHDTP())
+        multiskins[1] = texture'PinkMaskTex';
+    else
+        multiskins[2] = texture'PinkMaskTex';
+}
 
 //SARGE: Don't make the green bit bloody
 function DisplayWeaponBlood(bool overlay)
@@ -24,12 +81,14 @@ function DisplayWeaponBlood(bool overlay)
 
     if (IsHDTP())
     {
+        multiskins[1] = Texture'PinkMaskTex'; //Green energy burst when firing
         multiskins[3] = Texture'PinkMaskTex';
         multiskins[5] = Texture'PinkMaskTex';
     }
     else
     {
         multiskins[1] = Texture'PinkMaskTex';
+        multiskins[2] = Texture'PinkMaskTex'; //Green energy burst when firing
         multiskins[4] = Texture'PinkMaskTex';
     }
 }
@@ -73,10 +132,19 @@ function DisplayWeapon(bool overlay)
 
     //If we're unloaded, get rid of the green plasma effect.
     if (overlay && clipcount == 0)
+    {
         if (IsHDTP())
             multiskins[3] = Texture'BlackMaskTex';
         else
             multiskins[1] = Texture'BlackMaskTex';
+    }
+    else if (overlay && AmmoType.IsA('AmmoPlasmaBreeder'))
+    {
+        if (IsHDTP())
+            multiskins[3] = Texture'Nano_SFX';
+        else
+            multiskins[1] = Texture'Nano_SFX';
+    }
 }
 
 state Reload
@@ -140,7 +208,9 @@ defaultproperties
      ScopeFOV=30
      bCanHaveLaser=True
      AmmoNames(0)=Class'DeusEx.AmmoPlasma'
+     AmmoNames(1)=Class'DeusEx.AmmoPlasmaBreeder'
      ProjectileNames(0)=Class'DeusEx.PlasmaBolt'
+     ProjectileNames(1)=Class'DeusEx.PlasmaBoltBreeder'
      AreaOfEffect=AOE_Cone
      bHasMuzzleFlash=False
      recoilStrength=0.800000

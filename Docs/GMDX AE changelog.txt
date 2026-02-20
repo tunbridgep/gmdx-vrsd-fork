@@ -1,6 +1,8 @@
 1.2:
 
 New Features:
+- Added a new "Plasma Breeder" perk that allows creating a less-powerful variant of plasma ammo when firing.
+    - Requires Heavy Weapons: MASTER
 - Added new downscaled HDTP blood sprites, for use when not using HDTP. These look significantly better than the vanilla ones.
     - The vanilla ones can still be used by disabling these in the QoL menu.
 - Added blood to weapons when exploding or attacking enemies at extreme close range.
