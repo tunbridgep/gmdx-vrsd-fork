@@ -67748,7 +67748,7 @@ Begin Actor Class=MJ12Commando Name=MJ12Commando3
 End Actor
 Begin Actor Class=DataCube Name=DataCube4
     textTag=10_Datacube09
-    imageClass=Class'DeusEx.Image10_Paris_Catacombs'
+    imageClass=Class'DeusEx.Image10_Paris_Metro'
     LastRenderTime=223.265228
     DistanceFromPlayer=4117.887695
     Level=LevelInfo'MyLevel.LevelInfo0'
