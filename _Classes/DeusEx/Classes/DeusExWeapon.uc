@@ -380,8 +380,8 @@ enum EAddonPenaltyType
 var const float addonPenalties[3];
 
 //SARGE: Blood on weapons
-var private bool bBloodOnWeapon;
-var private bool bBloodOnHands;
+var private travel bool bBloodOnWeapon;
+var private travel bool bBloodOnHands;
 
 struct BloodTex
 {
