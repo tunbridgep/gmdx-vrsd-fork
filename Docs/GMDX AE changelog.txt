@@ -91,6 +91,7 @@ Misc Changes:
 - Notes in the Computer/Keypad notes display are now sorted in descending order like the regular Notes screen.
 - Using the "Assign Secondary" hotkey in the Inventory screen will now unassign if used on the secondary item.
 - Updated the INI to fix an infinite recursion issue with the enhanced renderer, which would cause low-poly models to render and tank performance.
+- Minor updates to weapon description text.
 
 Map Changes:
 - 02_NYC_BatteryPark

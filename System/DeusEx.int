@@ -1831,7 +1831,7 @@ beltDescription="TK"
 
 [WeaponSawedOffShotgun]
 ItemName="Sawed-off Shotgun"
-Description="The sawed-off shotgun is manufactured with a short barrel and a full choke, producing a relatively narrow spread despite its compactness. Its pump action allows it to fire less-lethal rubber ammunition without sacrificing reliability or muzzle velocity. It accepts a wide variety of shells"
+Description="The sawed-off shotgun has been modified to have a short barrel and a full choke, producing a relatively narrow spread despite its compactness. Its pump action allows it to fire less-lethal rubber ammunition without sacrificing reliability or muzzle velocity. It accepts a wide variety of shells"
 beltDescription="SAWED-OFF"
 msgSpec="+30% rubber bullet damage"
 
