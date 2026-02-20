@@ -1415,6 +1415,7 @@ local DeusExPickup     PU;                                                      
               DC.DrawScale = 0.00001;
               DC.SetCollision(false,false,false);
               DC.SetCollisionSize(0,0);
+              DC.LightType=LT_None;
 	       }
         }
         if (SkillSystem != None && CombatDifficulty <= 1)
@@ -1446,6 +1447,7 @@ local DeusExPickup     PU;                                                      
               DC.SetCollision(false,false,false);
               DC.SetCollisionSize(0,0);
               DC.SetPhysics(PHYS_Flying);
+              DC.LightType=LT_None;
 	       }
        }
        if (SkillSystem != None)
